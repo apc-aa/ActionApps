@@ -53,7 +53,6 @@
    perm_core.php            Calls only functions from Perm API (resolves semantics of perm strings, makes object hierarchy (aa->slice) ...)
 
   init_page.php    File included on the bgegin of each admin page - selects slice, language file, sets variables
-  navbar.php       Shows top navigation bar
   leftbar_se.php   Shows left menu on slice edit pages (se_*.php)
   se_inc.php       Common include file for slice edit pages (se_*.php)
   um_inc.php       Common include file for user management pages (um_*.php) includinf left menu

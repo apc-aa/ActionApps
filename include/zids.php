@@ -268,7 +268,7 @@ class zids implements Iterator, ArrayAccess, Countable {
     /** Is zids empty? */
     public function isEmpty(): bool
     {
-        return (count($this->arr) < 1);
+        return empty($this->arr);
     }
 
     /** warnid function

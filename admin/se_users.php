@@ -61,6 +61,8 @@ if (!IfSlPerm(PS_USERS)) {
     exit;
 }
 
+$editor_perms = AA::$perm->getModulePerms(AuthGetUid(), $slice_id);
+
 /** function shows link only if condition is true
  * @param $cond
  * @param $url

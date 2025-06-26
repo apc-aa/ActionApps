@@ -261,11 +261,11 @@ define("DOCUMENTATION_URL", "https://actionapps.org/aa/doc");
  *  Therefore, if constants are defined in SITE_CONFIG and also defined
  *  in the //add new CONSTANTS section, the second definitions do not take hold.
  *
- *  Switches here are based on SERVER_ADDR so that all virtual hosts
+ *  Switches here are based on $_SERVER['SERVER_ADDR'] so that all virtual hosts
  *  can be configured in one place
  */
 /*
-  switch ($SERVER_ADDR) {
+  switch ($_SERVER['SERVER_ADDR']) {
     case "209.220.30.175":
     case "209.220.30.171":
       define (SITE_CONFIG, "config-cyborganic.inc"); break;

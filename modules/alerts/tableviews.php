@@ -36,6 +36,7 @@ function GetAlertsTableView($viewID, $processForm = false): array {
     if ($viewID === "email_edit") {
         $tableview = GetEmailTableView($viewID);
         $tableview["mainmenu"] = "admin";
+        $tableview["submenu"] = "settings";
         return $tableview;
     }
 

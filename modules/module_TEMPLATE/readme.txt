@@ -3,9 +3,9 @@ How to create new module in ActionApps?
 1) copy the module_TEMPLATE to the new directory and name it by the name of
    module (just for clarity).
 
-2) open /include/constants.php3 and add new module in  the $MODULES array.
+2) open /include/constants.php and add new module in  the $MODULES array.
 
-Done - module is created. Optional but probale next steps are:
+Done - module is created. Optional but probable next steps are:
 
 a) insert new language file to /include/ directory (just like
    en_site_lang.php), if you want to use module specific texts

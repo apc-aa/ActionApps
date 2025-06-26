@@ -18,8 +18,6 @@
  * along with this program (LICENSE); if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @param $value
- * @return array|string
  * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
  * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
  * @link      https://www.apc.org/ APC
@@ -50,7 +48,6 @@
 use AA\IO\DB\DB_AA;
 use AA\IO\FeedUtil;
 use AA\IO\LastEditList;
-use JetBrains\PhpStorm\NoReturn;
 
 /**
  * @param $value
@@ -130,7 +127,7 @@ function GetFlagFormat($flag): string
  * @param $str
  * @return void
  */
-#[NoReturn]
+// #[NoReturn]
 function Error($str): void
 {
     echo $str;
@@ -284,10 +281,12 @@ function GetXMLFieldData($slice_id, $field_id, $content4id): string
 
 /** GetXMLItem function
  * Get one item
- * @param $slice_id
- * @param $item_id
- * @param $content4id (by link)
- * @param $sfields
+ *
+ * @param             $slice_id
+ * @param             $item_id
+ * @param             $content4id  (by link)
+ * @param  AA_Fields  $sfields
+ *
  * @return string xml_items
  */
 function GetXMLItem($slice_id, $item_id, $content4id, AA_Fields $sfields): string {
@@ -380,14 +379,14 @@ function GetXMLItem($slice_id, $item_id, $content4id, AA_Fields $sfields): strin
                  "\t</item>\n";
     return $xml_items;
 }
+
 /** CreateXMLItems function
  * prints a result of the GetXMLItem() function for all items
  *
- * @param $slice_id
- * @param $items_ids (by link)
- * @param $content (by link)
- * @param $slice_fields
- *
+ * @param             $slice_id
+ * @param             $items_ids  (by link)
+ * @param             $content    (by link)
+ * @param  AA_Fields  $slice_fields
  *
  */
 function CreateXMLItems($slice_id, $items_ids, $content, AA_Fields $slice_fields): void
@@ -414,11 +413,13 @@ function GetXMLItemsRefs(array $items_ids): string {
 /** RestrictIdsByCategory function
  * Takes array of item ids and returns only the item ids which belongs to any
  *  of specified categories
- * @param $ids[]
- * @param $categories[]
- * @param $slice_id
- * @param $content
- * @param $cat_field
+ *
+ * @param         $ids[]
+ * @param         $categories[]
+ * @param         $slice_id
+ * @param  array  $content
+ * @param         $cat_field
+ *
  * @return array
  */
 function RestrictIdsByCategory( $ids, $categories, $slice_id, array $content, $cat_field ): array

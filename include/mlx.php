@@ -740,13 +740,12 @@ class MLXView {
 class MLXEvents {
 
     /** itemsBeforeDelete function
-     * @param $item_ids
+     * @param zids $item_ids
      * @param $slice_id
      */
-    function itemsBeforeDelete($item_ids, $slice_id): void
+    function itemsBeforeDelete(zids $zids, $slice_id): void
     {
-
-        if (empty($item_ids)) {
+        if ($zids->isEmpty()) {
             return;
         }
         if (!MLXSlice(AA_Slice::getModule($slice_id))) {
@@ -758,7 +757,9 @@ class MLXEvents {
         // dont use this unless you use the special field type mlxctrl everywhere
         $rm_itemids = [];
         $db         = getDB();
+        $item_ids = $zids->longids();
         foreach($item_ids as $itemid) {
+            $itemid = pack_id($itemid);
             $db->query("SELECT item_id FROM content WHERE ( `field_id` "
                     ."LIKE '".MLX_LANG2ID_TYPE."%' AND "
                     ."`text`='".quote($itemid)."')");

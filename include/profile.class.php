@@ -280,6 +280,7 @@ class AA_Profile {
     {
         $property = quote($property); $selector = quote($selector); $value=quote($value);
         $SQL = "UPDATE profile SET";
+        $SQL2 = '';
         if ($selector != "") {
             $SQL2 .= " selector='".$selector."'";
         }

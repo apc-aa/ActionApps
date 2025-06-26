@@ -3682,7 +3682,7 @@ The changes could be tracked on:
            definitions (user defined actions/functions) for you in the future
            (not finished, yet).
          - some query optimization for GetItemContent()
-         - make sure that $_GET, _$POST, $_COOKIES are always unquoted
+         - make sure that $_GET, _$POST, $_COOKIE are always unquoted
            (check in init_page.php)
 07-03-29 - increased max size of val field in active_sessions (to mediumtext)
 (brazda)

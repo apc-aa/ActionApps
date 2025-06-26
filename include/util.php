@@ -57,7 +57,7 @@ function a_href($url, $label='', array $attr=[]): string {
 }
 
 /* @usage htmlattr(['class'=>['info','disabled']])  // any attr could be array */
-function htmlattr(array $attr) {
+function htmlattr(array $attr): string {
     return array_reduce( array_keys($attr), static fn($str, $key) => $str . (($attr[$key] !== '') ? ' ' . $key . '="' . safe(is_array($attr[$key]) ? implode(' ', $attr[$key]) : $attr[$key]) . '"' : ''));
 }
 
@@ -250,7 +250,7 @@ function ConvertEncodingDeep($value, $from=null, $to=null) {
     return $value;
 }
 
-/** Converts the string to anoteher encoding. Wrong characters are transliterated.
+/** Converts the string to another encoding. Wrong characters are transliterated.
  * @param string $str   text to convert
  * @param string $from  source      encoding utf-8|windows-1250|us-ascii|...  - utf-8 is default
  * @param string $to    destination encoding utf-8|windows-1250|us-ascii|...  - utf-8 is default

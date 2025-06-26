@@ -3109,13 +3109,17 @@ class AA_Stringexpand_Rss2html extends AA_Stringexpand {
         $proc->importStylesheet($xsl);
 
         // perform transformation and display result
-        return $proc->transformToXML($xml);
+        if (is_string($ret=$proc->transformToXML($xml))) {
+            return $ret;
+        }
+        warn('No Output from XSLT transformation of RSS feed: ' . $rss_url);
+        return '';
     }
 }
 
 
 /**
- * Converts the string to anoteher encoding. Wrong characters are transliterated.
+ * Converts the string to another encoding. Wrong characters are transliterated.
  * Usage:  {convert:{include:https://example.org/page.html}:windows-1250:utf-8}
  *          {convert:{full_text.......}:windows-1250:us-ascii}
  *

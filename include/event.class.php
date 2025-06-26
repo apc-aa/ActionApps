@@ -491,7 +491,7 @@ function Event_ItemsBeforeDelete( $type, $slice_id, $slice_type, $zids, $foo, $f
     AA_Mailman::createSynchroFiles($slice_id);
     //mimo added
     $mlx = new MLXEvents();
-    $mlx->itemsBeforeDelete($item_ids,$slice_id);
+    $mlx->itemsBeforeDelete($zids, $slice_id);
     return true;
 }
 

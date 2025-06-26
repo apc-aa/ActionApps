@@ -102,7 +102,7 @@ if (! $tableview["cond"] )  {
     exit;
 }
 
-$apage = new AA_Adminpageutil($tableview["mainmenu"], $tableview["submenu"]);
+$apage = new AA_Adminpageutil((string)$tableview["mainmenu"], (string)$tableview["submenu"]);
 $apage->setModuleMenu('modules/alerts');
 $apage->setTitle($tableview["caption"]);
 $apage->addRequire(get_aa_url('tabledit.css', ['v'=>AA_JS_VERSION], false ));

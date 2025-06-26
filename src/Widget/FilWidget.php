@@ -130,7 +130,7 @@ class FilWidget extends Widget
         $widget_add = htmlattr($attrs);
 
         $widget = '';
-        // $width = $this->getProperty('width', 60);            // @todo - width is not property of file widget, yet
+        $width = ""; // $this->getProperty('width', 60);            // @todo - width is not property of file widget, yet
         $max_characters = (int)$this->getProperty('max_characters', 254);  // @todo - width is not property of file widget, yet
         $allowed_ftypes = $this->getProperty('allowed_ftypes', '');
         $display_url = (int)$this->getProperty('display_url', 0);

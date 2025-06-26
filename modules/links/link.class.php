@@ -319,7 +319,7 @@ class assignmentset {
             $cid    = $GLOBALS["selcatSelect$i"];
 //            $cstate = $GLOBALS["selcatSelect$i"];
             if ( strrpos($cid, ',') ) {   // get category id if in path
-                 $cid = GetCategoryFromPath( $path );
+                 $cid = GetCategoryFromPath( $cid );  // was $path (which was undefined)
             }
             if ( $cid ) {
                 $new_ass->add($cid, null, $base);

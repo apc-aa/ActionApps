@@ -30,8 +30,6 @@
 // optionally $Msg to show under <h1>Headline</h1>
 // (typically: Category update successful)
 
-$editor_perms = AA::$perm->getModulePerms(AuthGetUid(), $slice_id);
-
 /** CanChangeRole function
  *  decides whether current user can change role
  *  of specified user. Only allowed when $editor_perm (current user) is greater
