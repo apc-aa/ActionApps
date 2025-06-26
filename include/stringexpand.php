@@ -2004,7 +2004,7 @@ class AA_Stringexpand_Date extends AA_Stringexpand_Nevercache {
      * @return bool
      */
     static function isEmptyDate($timestamp): bool {
-        return (trim($timestamp,'0')==='' || IsSigInt((string)$timestamp) && abs($timestamp) < 86400);
+        return (trim($timestamp,'0')==='' || (IsSigInt((string)$timestamp) && abs($timestamp) < 86400));
     }
 }
 
@@ -7480,7 +7480,7 @@ class AA_Requires {
             foreach ($requires_definitions as $code_id => $req) {
                 $base_code_id = strtok($code_id,'@');
                 // process if exact match or we do not care about version or this one is_a the right exact version
-                if ($this->reqs[$code_id] || $this->reqs[$base_code_id] && (!isset($exact_versions[$base_code_id]) || $exact_versions[$base_code_id] === $code_id)) {    // we are checking jquery@3 and then also jquery
+                if ($this->reqs[$code_id] || ($this->reqs[$base_code_id] && (!isset($exact_versions[$base_code_id]) || $exact_versions[$base_code_id] === $code_id))) {    // we are checking jquery@3 and then also jquery
                     if ($already_in[$base_code_id]) {
                         continue;
                     }

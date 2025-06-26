@@ -1481,7 +1481,7 @@ table.aa-table table {
 }
 /* form new item */
 form[name="inputform"] {
-    margin: 0 -10px 0 0;
+    margin: 0 -10px 0 -15px;
     box-sizing: border-box;
 }
 h1:has(+form[name="inputform"]) {
