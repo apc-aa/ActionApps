@@ -751,7 +751,7 @@ class LastEditList {
     }
 
     /** used as parameter for $itemview in generating item_id-lastedit pair */
-    static function getContent($zids, $settings): ?array {
+    static function getContent(zids $zids, $settings): array {
         return GetItemContentMinimal($zids, ['id', 'last_edit']);
     }
 

@@ -537,9 +537,9 @@ class itemview {
         // Example [['AA_Metabase','getContent'],[table=>'toexecute']]
         // getContent is in this case static class method
         // parameter array (if supplied) is passed as FIRST parameter of the method
-        $this->_content = call_user_func_array($this->get_content_funct[0], [$foo_zids, $this->get_content_funct[1]]);
+        $this->_content = ($this->get_content_funct[0])($foo_zids, $this->get_content_funct[1]);
     } else {
-        $this->_content = call_user_func_array($this->get_content_funct, [$foo_zids]);
+        $this->_content = ($this->get_content_funct)($foo_zids);
     }
 
     $CurItem = new AA_Item("", $this->aa_aliases);   // just prepare

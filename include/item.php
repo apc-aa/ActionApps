@@ -281,7 +281,7 @@ function GetFormatedConstants($constgroup, $format, $restrict_zids, $conds, $sor
         return [];
     }
 
-    $content = GetConstantContent($zids);
+    $content =  GetConstantContent($zids);
     if ($for_id) {
         $aliases = new AA_Aliases((new AA_Aliasgenerator_Constant())->addAliases((new AA_Aliases)->addTextAlias('_#ITEM_ID_', $for_id)));
     } else {

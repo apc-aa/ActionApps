@@ -460,7 +460,7 @@ class zids implements Iterator, ArrayAccess, Countable {
     function sqlin( string $column = 'short_or_long', bool $asis = false ): string
     {
         $id_list = '';
-        if ($this->count()) {
+        if (!$this->isEmpty()) {
             if ( $column === 'short_or_long' ) {
                 $column = ( $this->use_short_ids() ? "item.short_id" : "item.id" );
             }

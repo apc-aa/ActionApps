@@ -967,21 +967,19 @@ function GetItemContent($zids, $unused_use_short_ids=false, $ignore_reading_pass
  *  If $fields2get is specified, it MUST contain at least 'id'.
  * @param $zids
  * @param $fields2get
- * @return array|null
  */
-function GetItemContentMinimal($zids, $fields2get=false): ?array
+function GetItemContentMinimal(zids $zids, $fields2get=false): array
 {
     if ( !$fields2get ) {
         $fields2get = ['id', 'short_id'];
     }
     $columns = implode(',',$fields2get);
 
-    if ( !is_object($zids) ) {
-        $zids = new zids( $zids, 'l');
+    if ( $zids->isEmpty() ) {
+        return [];
     }
     $sel_in = $zids->sqlin( '' );
     $content = [];
-    $n_items = 0;
 
     if ($sel_in) {
         // get content from item table
@@ -989,7 +987,6 @@ function GetItemContentMinimal($zids, $fields2get=false): ?array
         $SQL   = "SELECT $columns FROM item WHERE id $sel_in";
         $db->query($SQL);
         while ( $db->next_record() ) {
-            $n_items++;
             $foo_id = unpack_id($db->f("id"));
             foreach ( $fields2get as $fld ) {
                 $content[$foo_id][AA_Fields::createFieldId($fld)][] = ["value" => $db->f($fld)];
@@ -997,8 +994,7 @@ function GetItemContentMinimal($zids, $fields2get=false): ?array
         }
         freeDB($db);
     }
-
-    return ($n_items == 0) ? null : $content;   // null returned if no items found
+    return $content;
 }
 
 /**
@@ -1025,12 +1021,12 @@ function GrabConstantColumn($db, $column): array
  *
  * @param $zids
  *
- * @return false|array
+ * @return array
  */
-function GetConstantContent( $zids): false|array
+function GetConstantContent(zids $zids): array
 {
-    if ( !$zids ) {
-        return false;
+    if ( $zids->isEmpty() ) {
+        return [];
     }
     $db = getDB();
 

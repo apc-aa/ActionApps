@@ -253,11 +253,11 @@ class AA_Showview {
             $random = 0;
         }
 
-        $page = 0;
+        $page = '';
         if ( isset($this->_view_param["page"]) ) {
-            $page = (int)$this->_view_param["page"];
+            $page = $this->_view_param["page"]; // page could be '2' as well as '2-5' (page 2 of 5)
         } elseif ($scroller_settings===1 || $scroller_settings===2) {  // 1 accept xpage, 2 use continuing page
-            $page = (int)$GLOBALS['apc_state']['xpage'];
+            $page = (string)(int)$GLOBALS['apc_state']['xpage'];
         }
 
         $list_from = max(0, $from - 1);    // user counts items from 1, we from 0
@@ -269,17 +269,17 @@ class AA_Showview {
 
         if ($page) {      // split listing to pages
             // Format:  <page>-<number of pages>
-            $pos = strpos($page, '-');
-            if ($pos) {
-                $no_of_pages = substr($page, $pos + 1);
-                $page_n      = substr($page, 0, $pos) - 1;    // count from zero
+            if (str_contains($page, '-')) {
+                [$page_n, $no_of_pages] = explode('-', $page, 2);
+                $no_of_pages = max(1, (int)$no_of_pages);   // at least one page
+                $page_n      = max(0, (int)$page_n - 1);    // count from zero
                 // to be last page shorter than others if there is bad number of items
                 $list_from = $page_n * floor($idscount / $no_of_pages);
                 $listlen   = floor(($idscount * ($page_n + 1)) / $no_of_pages) - floor(($idscount * $page_n) / $no_of_pages);
             } else {
                 // second parameter is not specified - take listlen parameter
                 // we can also specify both - page and from, which means from the item xy on the page p
-                $list_from += $listlen * ($page - 1);
+                $list_from += $listlen * ((int)$page - 1);
             }
         }
         return [$listlen, $random ?: ($list_from ?: 0)];

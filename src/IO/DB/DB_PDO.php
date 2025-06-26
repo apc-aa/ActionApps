@@ -3,6 +3,7 @@
 namespace AA\IO\DB;
 
 use AA;
+// use AA_Log;
 use PDO;
 use PDOException;
 use PDOStatement;
@@ -791,6 +792,7 @@ class DB_PDO  {
     {
         printf("<p><b>Database error:</b> %s<br>\n", safe($msg));
         printf("<b>%s Error</b>: %s (%s)</p>\n", get_class_name($this), $this->Errno, $this->Error);
+        // AA::$dbg->log(AA_Log::backtrack());
     }
 
     public function set_halt(string $mode): bool {
