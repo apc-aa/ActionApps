@@ -54,15 +54,15 @@ use AA\Widget\Widget;
 class AA_Property extends AA_Storable {
 
     /** Id of property - like: new_flag */
-    var $id;
+    var string $id = '';
 
     /** Property name - like: _m('Mark as') */
-    var $name;
+    var string $name = '';
 
     /** Property type - text | int | bool | float | readonly | <class_name>
      *  If the type is <class_name>, then it should support getAaValue() method.
      */
-    var $type;
+    var string $type = '';
 
     /** Contain one or multiple values (numbered array) - bool (default is false)  */
     var $multi;
@@ -82,13 +82,13 @@ class AA_Property extends AA_Storable {
     private ?AA_Value $default;
 
     /** Help text for the property */
-    var $input_help;
+    var string $input_help = '';
 
     /** Url, where user can get more information about the property */
-    var $input_morehlp;
+    var string $input_morehlp = '';
 
     /** Value example */
-    var $example;
+    var string $example = '';
 
     /** show_content_type_switch is used instead of $html_show or $html_rb_show.
      *  It is more generalized, so we can use more formatters in the future (not
@@ -140,16 +140,16 @@ class AA_Property extends AA_Storable {
      * @param $content_type_switch_default
      */
     function __construct($id='', $name='', $type='text', $multi=false, $persistent=true, $validator=null, $required=false, $input_help='', $input_morehlp='', $example='', $show_content_type_switch=0, $content_type_switch_default=FLAG_HTML, $perm=null, $default=null, $translations=null) {  // default values are needed for AA_Storable's construction
-        $this->id                          = $id;
-        $this->name                        = $name;
-        $this->type                        = $type;
+        $this->id                          = (string)$id;
+        $this->name                        = (string)$name;
+        $this->type                        = (string)$type;
         $this->multi                       = $multi;
         $this->persistent                  = $persistent;
         $this->_validator                  = is_object($validator) ? $validator : ($validator ?: $type);   // we do not create AA_Validator object here, because then it makes infinite loop - AA_Property contains validator...
         $this->required                    = $required;
-        $this->input_help                  = $input_help;
-        $this->input_morehlp               = $input_morehlp;
-        $this->example                     = $example;
+        $this->input_help                  = (string)$input_help;
+        $this->input_morehlp               = (string)$input_morehlp;
+        $this->example                     = (string)$example;
         $this->show_content_type_switch    = (int)$show_content_type_switch;
         $this->content_type_switch_default = (int)$content_type_switch_default;
         $this->perm                        = $perm;
@@ -185,12 +185,12 @@ class AA_Property extends AA_Storable {
 
 
     /** getters */
-    function getId(): string { return $this->id;            }
-    function getName()                { return $this->name;          }
-    function getType(): string { return $this->type;          }
-    function getHelp(): string { return $this->input_help;    }
+    function getId(): string       { return $this->id;            }
+    function getName()             { return $this->name;          }
+    function getType(): string     { return $this->type;          }
+    function getHelp(): string     { return $this->input_help;    }
     function getMorehelp(): string { return $this->input_morehlp; }
-    function getExample(): string { return $this->example;       }
+    function getExample(): string  { return $this->example;       }
     function getConstants()           { return $this->const_arr;     }
 
     /** @return string[] */
@@ -212,9 +212,11 @@ class AA_Property extends AA_Storable {
     function setHelp($val): static
     { $this->input_help = (string)$val; return $this; }
     function setExample($val): static
-    { $this->example =         $val; return $this; }
+    { $this->example =    (string)$val; return $this; }
     function setName($val): static
     { $this->name = (string)$val; return $this; }
+    function setType($val): static
+    { $this->type = (string)$val; return $this; }
 
     public function setValidator($validator): void { $this->_validator = $validator; }   // we do not create AA_Validator object here, because then it makes infinite loop - AA_Property contains validator...        $val; return $this; }
 

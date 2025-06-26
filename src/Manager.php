@@ -370,7 +370,7 @@ class Managed_Table extends Managed {
         foreach ($props as $k => $prop) {
             if ($setting = $this->widget_setting[$k]) {
                 if (isset($setting['type'])) {
-                    $prop->type = $setting['type'];
+                    $prop->setType($setting['type']);
                 }
                 if (isset($setting['enum'])) {
                     $prop->setConstants($setting['enum']);
