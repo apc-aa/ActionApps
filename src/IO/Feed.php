@@ -8,6 +8,7 @@ use AA\Later\Toexecute;
 use AA_File_Wrapper;
 use AA_Slice;
 use itemview;
+use zids;
 
 class Feed {
     public const FEEDTYPE_RSS   = 1;
