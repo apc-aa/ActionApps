@@ -58,7 +58,7 @@ function a_href($url, $label='', array $attr=[]): string {
 
 /* @usage htmlattr(['class'=>['info','disabled']])  // any attr could be array */
 function htmlattr(array $attr): string {
-    return array_reduce( array_keys($attr), static fn($str, $key) => $str . (($attr[$key] !== '') ? ' ' . $key . '="' . safe(is_array($attr[$key]) ? implode(' ', $attr[$key]) : $attr[$key]) . '"' : ''));
+    return (string)array_reduce( array_keys($attr), static fn($str, $key) => $str . (($attr[$key] !== '') ? ' ' . $key . '="' . safe(is_array($attr[$key]) ? implode(' ', $attr[$key]) : $attr[$key]) . '"' : ''));
 }
 
 /** creates html tag with attributes
