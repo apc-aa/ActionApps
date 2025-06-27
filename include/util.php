@@ -1668,7 +1668,7 @@ class AA_Contentcache {
      *  @param $access_code
      *  @return false if the value is not cached for the $access_code (use ===)
      */
-    function get($access_code): false|string
+    function get($access_code)
     {
         $key = hash('md5', $access_code);
         if ($this->is_soft($access_code)) {
@@ -1734,7 +1734,7 @@ class AA_Contentcache {
     /** pop function
      * @param $access_code
      */
-    function pop($access_code): false|string
+    function pop($access_code)
     {
         $ret = $this->get($access_code);
         if ( $this->exists('_'.$access_code) ) {
