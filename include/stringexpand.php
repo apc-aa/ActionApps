@@ -6033,12 +6033,17 @@ class AA_Stringexpand_Dictionary extends AA_Stringexpand {
      */
     function expand($dictoinaries='', $text='', $format='', $conds=''): string
     {
+        $dict_arr = explode_ids($dictoinaries);
+
+        if (!$dict_arr) {
+            warn(_m('No dictionaries specified for {dictionary}'));
+            return $text;
+        }
+
         // sometimes this function last to much time - try to extend it
         if (($max_execution_time = (int)ini_get('max_execution_time')) > 0) {
             MoreTimeLimit($max_execution_time+20);
         }
-
-        $dict_arr = explode_ids($dictoinaries);
 
         $delimiters = self::defineDelimiters();
         // get pairs (like APC - <a href="https://apc.org">APC</a>' from dict. slice
@@ -6091,13 +6096,15 @@ class AA_Stringexpand_Dictionary extends AA_Stringexpand {
      *  Return array of substitution pairs for dictionary, based on given dictionary
      *  slice, format string which defines the format and possible slice codnitions.
      *   [biom] => <a href="http://biom.cz">_#KEYWORD_</a>, ...
-     * @param        $dictionaries (array)
+     *
+     * @param array  $dictionaries
      * @param        $format
      * @param        $delimiters
      * @param string $conds
+     *
      * @return array
      */
-    static function getDictReplacePairs($dictionaries, $format, $delimiters, $conds = ''): array
+    static function getDictReplacePairs(array $dictionaries, $format, $delimiters, $conds = ''): array
     {
         // return array of pairs: [biom] => <a href="http://biom.cz">_#KEYWORD_</a>
         $replace_pairs = [];
@@ -6111,7 +6118,12 @@ class AA_Stringexpand_Dictionary extends AA_Stringexpand {
          *  used in format string
          */
 
-        $format = AA_Slice::getModule($dictionaries[0])->getField($format) ? '{substr:{' . $format . '}:0:50}' : $format;
+        if (!($module = AA_Slice::getModule($dictionaries[0]))) {
+            warn(_m('No module for dictionary slice'));
+            return $replace_pairs;
+        }
+
+        $format = $module->getField($format) ? '{substr:{' . $format . '}:0:50}' : $format;
         $format = "{@keywords........:##}_AA_DeLiM_$format";
 
         // above is little hack - we need keyword pair, but we want to call
