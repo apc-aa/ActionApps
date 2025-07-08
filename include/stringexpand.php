@@ -8182,7 +8182,7 @@ class AA_Stringexpand_Fmod extends AA_Stringexpand_Nevercachenotrim {
      * @return string
      */
     function expand($num1='', $num2=''): string {
-        return (string)fmod($num1, $num2);
+        return (string)fmod((float)$num1, (float)$num2);
     }
 }
 
