@@ -10609,7 +10609,7 @@ class AA_Stringexpand_File2text extends AA_Stringexpand_Nevercache {
      */
     function expand($url=null): string {
         $out = [];
-        $file_name  = Files::getTmpFilename(FILE_PREFIX);
+        $file_name  = Files::getTmpFilename('importFile2text');
         if (preg_match('/.doc$/i',$url)) {
             if ( defined('CONV_TEXTFILTERS_DOC')) {
                 $dest_file = Files::createFileFromString(expandFilenameWithHttp($url), Files::aadestinationDir(), $file_name);
