@@ -74,8 +74,8 @@ class AA_Auth extends Auth {
     function auth_loginform($login_msg = ''): void
     {
         global $sess, $_PHPLIB, $anonymous_user;
-        $username = $_POST["username"];  // there was problem with variables
-        $password = $_POST["password"];  // in cookies - if someone writes
+        $username = $_POST["username"] ?? '';  // there was problem with variables
+        $password = $_POST["password"] ?? '';  // in cookies - if someone writes
         // to cookies username, then the
         // cookies username is used - error
 

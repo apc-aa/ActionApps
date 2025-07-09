@@ -21,6 +21,12 @@ class MflWidget extends Widget
     /** @var array  list of textareas for CodeMirror creation */
     protected $ids_4_editor = [];
 
+    protected $show_buttons_txt;
+    protected $row_count;        // number of rows in the textarea
+    protected $max_characters;  // maximum number of characters in the textfield
+    protected $width;          // width of the textfield
+    protected $rows;           // number of rows in the textarea, if > 1 then textareas are used, otherwise textfields
+
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)
      */

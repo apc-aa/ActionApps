@@ -1273,6 +1273,11 @@ class AA_Modulesettings_Slice extends AA_AbstractModulesettings {
 
     // must be protected or public - AA_Object needs to read it
     protected $translations;
+    protected $autofields;
+    protected $fieldslice;
+    protected $historylog;
+    protected $nocheck_pending;
+    protected $nocheck_expired;
 
     /** do not display Name property on the form by default */
     const USES_NAME = false;
@@ -1311,6 +1316,18 @@ class AA_Modulesettings_Site extends AA_AbstractModulesettings {
 
     // must be protected or public - AA_Object needs to read it
     protected $translation_slice;
+    protected $add_aliases;
+    protected $web_languages;
+    protected $page404;
+    protected $page404_code;
+    protected $sitemap_alias;
+    protected $perm_alias;
+    protected $loginpage_code;
+    protected $perm_mode;
+    protected $ga_id;
+    protected $alternate_url;
+
+
     protected $additional_aliases;
 
     /** do not display Name property on the form by default */

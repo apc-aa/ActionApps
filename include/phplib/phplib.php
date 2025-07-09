@@ -412,7 +412,7 @@ class Session {
         }
 
         // restore session variables to global scope
-        if (is_array($_SESSION)) {
+        if (!empty($_SESSION)) {
             foreach ($_SESSION as $key => $value) {
                 $GLOBALS[$key] = $value;
             }
@@ -564,7 +564,7 @@ class Auth {
   }
 
   function is_authenticated() {
-      if ( !$this->nobody && $this->auth["uid"]==='nobody' ) { // nobody setting could be changed for specific page. Honza
+      if ( !$this->nobody && (($this->auth["uid"] ?? null) === 'nobody') ) { // nobody setting could be changed for specific page. Honza
           return false;
       }
 

@@ -85,9 +85,9 @@ if (ctype_digit((string)$time_limit)) {
 AA::$debug&2 && AA::$dbg->group("/view.php", "Start");
 
 // Need to be able to set content-type for RSS, cannot do it in the view
-// because the cache wont reflect this
+// because the cache won't reflect this
 if ($contenttype) {
-    $contenttype = trim(strtolower($contenttype));
+    $contenttype = strtolower(trim($contenttype));
     if ($len = strspn($contenttype,'abcdefghijklmnopqrstuvwxyz/')) {
         AA::$headers['type'] = substr($contenttype,0,$len);
     }

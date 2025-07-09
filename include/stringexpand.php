@@ -2218,7 +2218,11 @@ class AA_Stringexpand_Substr extends AA_Stringexpand_Nevercachenotrim {
      */
     function expand($string='', $start='', $length=999999999, $add=''): string
     {
-        $ret = aa_substr($string,$start,$length);
+        if (empty($string)) {
+            return '';
+        }
+        $length = empty($length) ? null : (int)$length;
+        $ret = aa_substr($string,(int)$start,$length);
         if ( $add && aa_strlen($ret) < aa_strlen($string) ) {
             $ret .= $add;
         }
@@ -3074,6 +3078,10 @@ class AA_Stringexpand_Rss2html extends AA_Stringexpand {
      */
     function expand($rss_url='', $number='', $format=''): string
     {
+        if (empty($rss_url)) {
+            warn('RSS URL is empty');
+            return '';
+        }
 
         $xsl_cond = ($number>0) ? '[position() &lt; '. ($number+1) .']' : '';
 
@@ -3349,7 +3357,7 @@ class AA_Stringexpand_Item extends AA_Stringexpand {
     function expand($ids_string='', $content=null, $delim=null, $top=null, $bottom=null, $bin=null): string
     {
 
-        if (!($ids_string = trim(strtolower($ids_string)))) {
+        if (!($ids_string = strtolower(trim($ids_string)))) {
             return '';
         }
 
@@ -6702,7 +6710,7 @@ class AA_Stringexpand_Preg_Match extends AA_Stringexpand_Nevercachenotrim {
     {
         $matched = ctype_digit((string)$matched) ? (int)$matched : 0;
         preg_match($pattern, $subject, $matches);
-        return $matches[$matched];
+        return $matches[$matched] ?? '';
     }
 }
 
@@ -8187,7 +8195,7 @@ class AA_Stringexpand_Fmod extends AA_Stringexpand_Nevercachenotrim {
 }
 
 /** AA counterpart of PHP log() */
-class AA_Stringexpand_Log extends AA_Stringexpand_Nevercachenotrim {
+class AA_Stringexpand_Log extends AA_Stringexpand_Nevercache {
 
     /**
      * @param  string  $num
@@ -8196,7 +8204,7 @@ class AA_Stringexpand_Log extends AA_Stringexpand_Nevercachenotrim {
      * @return string
      */
     function expand($num='', $base=''): string {
-        return (string)log($num, $base);
+        return ($base==="") ? (string)log((float)$num) : (string)log((float)$num, (float)$base);
     }
 }
 
@@ -8245,7 +8253,12 @@ class AA_Stringexpand_Max extends AA_Stringexpand {
      */
     function expand(): string
     {
-        return (count($arr = self::_get_array(func_get_args())) < 2) ? $arr[0] : max(...$arr);
+        $arr = self::_get_array(func_get_args());
+        return match (count($arr)) {
+            0 => '',
+            1 => (string)$arr[0],
+            default => (string)max(...$arr),
+        };
     }
 
     static function _get_array($arg_list): array {
@@ -8270,7 +8283,12 @@ class AA_Stringexpand_Min extends AA_Stringexpand_Max {
      */
     function expand(): string
     {
-        return (string)((count($arr = self::_get_array(func_get_args())) < 2) ? $arr[0] : min(...$arr));
+        $arr = self::_get_array(func_get_args());
+        return match (count($arr)) {
+            0 => '',
+            1 => (string)$arr[0],
+            default => (string)min(...$arr),
+        };
     }
 }
 

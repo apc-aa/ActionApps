@@ -1094,12 +1094,12 @@ function ParseFnc($s): array
 }
 
 /** identical to old myspecialchars() which replaced htmlspecialchars because of changes in php 5.4
- * @param string $var
+ * @param string|null $var
  * @return string - html safe code (used for preparing variable to print in form)
  */
 function safe( $var='' ): string
 {
-    return htmlspecialchars( $var, ENT_QUOTES | ENT_HTML5, 'ISO-8859-1');
+    return htmlspecialchars($var ?? '', ENT_QUOTES | ENT_HTML5, 'ISO-8859-1');
 }
 
 /** quotes utf string for use in xml attributes and content */
@@ -1828,6 +1828,14 @@ function get_if($value, $else, $else2='aa_NoNe', $else3='aa_NoNe') {
     return $value ?: ($else ?: (($else2==='aa_NoNe') ? $else : (($else3==='aa_NoNe') ? $else2 : $else3)));
 }
 
+/**
+ * Value from array/object or default if not set or empty
+ * clean way to write $arr[$key] ?: $default without PHP warning
+ */
+function arrval(array|ArrayAccess $arr, string|int $key, mixed $default = null): mixed {
+    return !empty($arr[$key]) ? $arr[$key] : $default;
+}
+
 /** aa_version function
  *  Version of AA - automatically included also date and revision of util.php
  *  file, for better version information
@@ -1987,7 +1995,7 @@ function RestoreVariables(array $r_state_vars): void
 
 /** susbstr with utf in mind */
 function aa_substr($text, $start, $len=null): string {
-    return mb_substr($text, $start, $len);
+    return empty($text) ? '' : mb_substr($text, (int)$start, $len);
 }
 
 /** strlen with utf in mind */

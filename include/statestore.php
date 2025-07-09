@@ -627,6 +627,9 @@ class AA_Object extends AA_Storable implements AA_iEditable {
     {
         static $cache = []; // cache for loaded objects - AA_Plannedtask was loaded multiple times for multiple storeItem() -> executeForEvent()
 
+        if (empty($id)) {
+            return null; // no id - no object
+        }
         // AA::$dbg->log($id, $type);
 
         if ($type) {

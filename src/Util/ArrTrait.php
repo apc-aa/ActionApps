@@ -10,25 +10,25 @@ namespace AA\Util;
 trait ArrTrait {
 
     /** implements Iterator interface */
-    public function rewind()                   { reset($this->arr); }
+    public function rewind(): void { reset($this->arr); }
 
-    public function current()                  { return current($this->arr); }
+    public function current(): mixed { return current($this->arr); }
 
-    public function key()                      { return key($this->arr); }
+    public function key(): mixed                      { return key($this->arr); }
 
-    public function next()                     { next($this->arr); }
+    public function next(): void { next($this->arr); }
 
-    public function valid()                    { return (current($this->arr) !== false); }
+    public function valid(): bool { return (current($this->arr) !== false); }
 
     /** implements Countable interface */
-    public function count()                    { return count($this->arr); }
+    public function count(): int { return count($this->arr); }
 
     /** implements ArrayAccess interface */
-    public function offsetSet($offset, $value) { $this->arr[$offset] = $value; }
+    public function offsetSet($offset, $value): void { $this->arr[$offset] = $value; }
 
-    public function offsetExists($offset)      { return isset($this->arr[$offset]); }
+    public function offsetExists($offset): bool { return isset($this->arr[$offset]); }
 
-    public function offsetUnset($offset)       { unset($this->arr[$offset]); }
+    public function offsetUnset($offset): void { unset($this->arr[$offset]); }
 
-    public function offsetGet($offset)         { return $this->arr[$offset] ?? null; }
+    public function offsetGet($offset): mixed { return $this->arr[$offset] ?? null; }
 }

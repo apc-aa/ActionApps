@@ -427,7 +427,7 @@ class AA_Set extends AA_Object {
     /** AA_Set function
      * @param $slices array or one slice id, where to search
      * @param $conds  array or conds url string
-     * @param $sort   array or sort  url string in various formats:
+     * @param $sort   array|string or sort  url string in various formats:
      *                1)   sort = headline........-
      *                1b)  sort = category.......1+publish_date....-headline........
      *                2)   sort[0] = headline........-
@@ -516,7 +516,7 @@ class AA_Set extends AA_Object {
         if (is_array($slices)) {
             $this->slices = $slices;
         } elseif (is_string($slices)) {
-            $this->slices = explode('-', $slices);
+            $this->slices = explode_ids($slices);
         } else {
             $this->slices = [];
         }
@@ -895,7 +895,7 @@ class AA_Set extends AA_Object {
      */
     function getModules(): array
     {
-        return $this->slices;
+        return (array)$this->slices;  // when loaded by AA_Object, it is not allways array
     }
 
     /** @return int bins bitfield - AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING | AA_BIN_HOLDING | AA_BIN_TRASH */

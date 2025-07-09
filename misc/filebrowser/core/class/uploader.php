@@ -491,7 +491,7 @@ class uploader {
     }
 
     protected function validateExtension($ext, $type) {
-        $ext = trim(strtolower($ext));
+        $ext = strtolower(trim($ext));
         if (!isset($this->types[$type]))
             return false;
 

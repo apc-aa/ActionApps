@@ -629,7 +629,7 @@ class AA_Inputfield {
         //$funct = ParamExplode($field["input_show_func"]);
         //$this->input_type    = AA::Un($funct[0]);
         $funct = array_values(Widget::parseClassProperties($field['input_show_func']));
-        $this->input_type    = substr(strtolower($funct[0]),-9,3);    // grab from AA\Widget\FldWidget
+        $this->input_type    = strtolower(substr($funct[0], -9, 3));    // grab from AA\Widget\FldWidget
         $this->param         = array_slice( $funct, 1 );
         $this->html_rb_show  = (bool)$field['html_show'];
         $this->valid         = $field['input_validate'];
@@ -688,7 +688,7 @@ class AA_Inputfield {
      */
     function fill_const_arr($slice_field="", $conds=false, $sort=false, $whichitems=AA_BIN_ACT_PEND, $ids_arr=null, $crypted_additional_slice_pwd=null, $tagprefix=null, $const_arr_param=null): string
     {
-        $constgroup = $this->param[0];
+        $constgroup = $this->param[0] ?? '';
         $sid        = (str_starts_with($constgroup, "#sLiCe-")) ? substr($constgroup, 7) : '';
 
         if ( isset($this->const_arr) && is_array($this->const_arr) ) {  // already filled
