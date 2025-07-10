@@ -15,6 +15,17 @@ use Exception;
 /** Radio Button widget */
 class RioWidget extends Widget
 {
+    protected $const;                // constant group or slice id
+    protected $columns;             // number of columns in matrix
+    protected $move_right;          // move right the last column
+    protected $slice_field;         // field used for slice
+    protected $bin_filter;          // binary filter for slice
+    protected $filter_conds;        // filter conditions for slice
+    protected $sort_by;            // sort by field
+    protected $additional_slice_pwd; // additional password for slice
+    protected $const_arr;          // array of constants
+    protected $other_option;       // if true, the last option is Other with text input
+
 
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)

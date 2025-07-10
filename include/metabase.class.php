@@ -208,7 +208,7 @@ class AA_MbC {
         if (!$this->c[2]) {                                 // NULL ?
             $SQL .= ' NOT NULL';
         }
-        if (strlen($this->c[4])) {
+        if (strlen($this->c[4] ?? '')) {
             // look for keywords for default
             if ( $this->c[4] === 'CURRENT_TIMESTAMP' ) {
                 // we ignore it, because DEFAULT CURRENT_TIMESTAMP is

@@ -17,6 +17,10 @@ use Exception;
 /** Text Field widget */
 class FldWidget extends Widget
 {
+    protected $max_characters;
+    protected $width;
+    protected $input_type;
+    protected $placeholder;
 
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)

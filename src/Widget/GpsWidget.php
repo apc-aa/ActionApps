@@ -18,6 +18,10 @@ use Exception;
 /** GPS coords widget */
 class GpsWidget extends Widget
 {
+    protected $load_from_fld;
+    protected $map_shapes;
+    protected $multi_shape;
+
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)
      */

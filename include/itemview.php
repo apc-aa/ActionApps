@@ -500,7 +500,7 @@ class itemview {
             $this->group_fld = $grp_al;   // replaces possible ABCDEFGH alias with _#ABCDEFGH
             $this->zids = new zids(explode_ids(StrExp('order', [implode('-',$this->zids->short_or_longids()), $this->group_fld, 'locale'])));
         }
-        elseif ((strlen($this->slice_info['group_by2'])===10) && (str_starts_with($this->slice_info['group_by2'], '_#'))) {
+        elseif ((strlen($this->slice_info['group_by2'] ?? '')===10) && (str_starts_with($this->slice_info['group_by2'], '_#'))) {
             define('SORT_CONST', [0 => 'locale', 1 => 'rlocale', 4 => 'numeric', 5 => 'rnumeric']);
             $this->zids = new zids(explode_ids(StrExp('order', [implode('-',$this->zids->short_or_longids()), $this->slice_info['group_by2'], SORT_CONST[(int)$this->slice_info['g2_direction']]])));
         }

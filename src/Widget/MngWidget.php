@@ -17,6 +17,12 @@ use ItemContent;
 /** Manager widget */
 class MngWidget extends Widget
 {
+    protected $const;
+    protected $related_field;
+    protected $row_code;
+    protected $row_edit;
+    protected $mng_buttons;
+    protected $sort_by;
 
     /** \AA\Util\NamedInterface function */
     public static function name(): string {

@@ -109,7 +109,7 @@ class AA_Operators {
      * @return string
      */
     public static function normalize(?string $operator): string {
-        return str_replace(['eq', 'ne', '&lt;', 'lt', 'le', '&gt;', 'gt', 'ge', '&amp;'], ['==', '<>', '<', '<', '<=', '>', '>', '>=', '&'], $operator);
+        return str_replace(['eq', 'ne', '&lt;', 'lt', 'le', '&gt;', 'gt', 'ge', '&amp;'], ['==', '<>', '<', '<', '<=', '>', '>', '>=', '&'], $operator ?? '');
     }
 
     /** getJsDefinition function

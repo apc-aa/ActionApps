@@ -17,6 +17,18 @@ class SelWidget extends Widget
     /** @var array  list of selects for select2 library */
     protected array $ids_4_select2 = [];
 
+    protected $const;
+    protected $slice_field;
+    protected $use_name;
+    protected $bin_filter;
+    protected $filter_conds;
+    protected $sort_by;
+    protected $additional_slice_pwd;
+    protected $const_arr;
+    protected $select_plus;
+
+
+
 
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)
@@ -102,6 +114,11 @@ class SelWidget extends Widget
         $options = $this->getOptions($selected, $content, (bool)$this->getProperty('use_name', false), false, $add_empty);
         $widget .= $this->getSelectOptions($options);
         $widget .= "</select>";
+
+        $widget .="
+            <script> 
+              AA_LoadJs( jQuery.fn.select2, function() { $('#$input_id').select2();}, '".\AA_Requires::getUrl4Lib('select2@4')."');
+            </script>";
 
         return ['html' => $widget, 'last_input_name' => $input_name, 'base_name' => $base_name, 'base_id' => $base_id, 'required' => $aa_property->isRequired()];
     }

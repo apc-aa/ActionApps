@@ -580,10 +580,10 @@ function guesstype($str): string {
 }
 
 /** type validating functions */
-function is_short_id($id): bool  { return strlen($id) < 12 && ctype_digit((string) $id); }
-function is_long_id($id): bool   { return (strlen($id)===32 && ctype_xdigit($id)); }
-function is_packed_id($id): bool { return (strlen($id)===16); }
-function is_string_id($id): bool { return ($id[0] === "'"); }
+function is_short_id($id): bool  { return !empty($id) && strlen($id) < 12 && ctype_digit((string) $id); }
+function is_long_id($id): bool   { return !empty($id) && (strlen($id)===32 && ctype_xdigit($id)); }
+function is_packed_id($id): bool { return !empty($id) && (strlen($id)===16); }
+function is_string_id($id): bool { return !empty($id) && ($id[0] === "'"); }
 
 /** used instead of explode ('-'... which returns [0 => ''] for empty string and not empty string
  *  @return string[] - array of non-empty ids
@@ -665,7 +665,7 @@ function unpack_id($packed_id=''): string {
  * @return string
  */
 function quote($str): string {
-    return addslashes($str);
+    return empty($str) ? '' : addslashes($str);
 }
 
 /**

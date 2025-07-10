@@ -19,6 +19,17 @@ use zids;
 /** Tag input - in fact the result is very similar to related item window - it adds related items */
 class TagWidget extends Widget
 {
+    protected $const;
+    protected $bin_filter;
+    protected $filter_conds;
+    protected $slice_field;
+    protected $sort_by;
+    protected $additional_slice_pwd;
+    protected $max_values;
+    protected $disable_new;
+    protected $filter_conds_rw;
+
+
 
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)

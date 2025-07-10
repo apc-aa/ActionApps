@@ -3367,7 +3367,7 @@ class AA_Stringexpand_Item extends AA_Stringexpand {
         AA_Items::preload($zids);
 
         if (aa_strpos($ids_string,'(')===false) {
-            if (strlen($bin)) {
+            if (strlen($bin ?? '')) {
                 $bins        = explode('-',$bin);
                 $numeric_bin = 0 | (in_array('ACTIVE',$bins) ?  AA_BIN_ACTIVE : 0) | (in_array('HOLDING',$bins) ?  AA_BIN_HOLDING : 0) | (in_array('TRASH',$bins) ?  AA_BIN_TRASH : 0);
             } else {
@@ -3396,6 +3396,7 @@ class AA_Stringexpand_Item extends AA_Stringexpand {
      */
     static function itemJoin($arr, $delim): string
     {
+        $delim = (string)$delim;
         $arr = array_filter($arr,'strlen');
         switch ($delim) {
             case 'json':
@@ -6839,7 +6840,7 @@ class AA_Stringexpander implements LaterInterface {
         }
 
         if (is_object($item)) {
-            $text = $item->substitute_alias_and_remove($text, strlen($remove) ? explode('##',$remove) : []);
+            $text = $item->substitute_alias_and_remove($text, (string)$remove==='' ? explode('##',$remove) : []);
         }
 
         // if ( !$dequote ) { }

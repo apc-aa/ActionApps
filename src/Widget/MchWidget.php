@@ -17,6 +17,17 @@ use Exception;
 class MchWidget extends Widget
 {
 
+    protected $const;
+    protected $columns;
+    protected $move_right;
+    protected $slice_field;
+    protected $bin_filter;
+    protected $filter_conds;
+    protected $sort_by;
+    protected $additional_slice_pwd;
+    protected $const_arr;
+    protected $height;
+
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)
      */

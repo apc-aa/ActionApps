@@ -18,6 +18,17 @@ use zids;
 /** Related Item Manager widget */
 class RimWidget extends Widget
 {
+    protected $const;
+    protected $slice_field;
+    protected $show_buttons;
+    protected $item_template;
+    protected $bin_filter;
+    protected $filter_conds;
+    protected $sort_by;
+    protected $additional_slice_pwd;
+    protected $const_arr;
+    protected $filter_conds_rw;
+    protected $item_width;
 
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)

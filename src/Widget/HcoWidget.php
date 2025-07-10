@@ -11,6 +11,16 @@ namespace AA\Widget;
 /** hierarchical constants widget */
 class HcoWidget extends Widget
 {
+    protected $const;
+    protected $level_count;
+    protected $box_width;
+    protected $target_size;
+    protected $horizontal;
+    protected $first_selectable_level;
+    protected $level_names;
+    protected $const_arr;
+
+
 
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)

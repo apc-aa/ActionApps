@@ -11,6 +11,9 @@ namespace AA\Widget;
 /** Textarea with Presets widget */
 class TprWidget extends TxtWidget
 {
+    protected $cols;
+    protected $const;
+    protected $const_arr;
 
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)

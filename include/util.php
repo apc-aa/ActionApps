@@ -921,7 +921,7 @@ function GetItemContent($zids, $unused_use_short_ids=false, $ignore_reading_pass
             }
 
             // which database field is used (from 05/15/2004 we have FLAG_TEXT_STORED set for text-field-stored values
-            if ( $row['flag'] & FLAG_TEXT_STORED || strlen($row['text'])) {
+            if ( $row['flag'] & FLAG_TEXT_STORED || strlen($row['text'] ?? '')) {
                 if (is_array($content[$unpack_id][$row['field_id']][0]) && $content[$unpack_id][$row['field_id']][0]['value'] == $row['text']) {
                     // ignore content duplicates (there could be more that two values for field
                     // with the same number (=NULL) - the ones which comes from "add value to field" operation)
@@ -1970,6 +1970,9 @@ function IsAlias($identifier): bool {
  * @return bool
  */
 function IsSigInt($var): bool { // like function is_signed(),function is_number(), function is_positive(), function is_numeric(),
+    if (empty($var)) {
+        return false;
+    }
     if (is_int(filter_var($var, FILTER_VALIDATE_INT))) {
         return true;
     }

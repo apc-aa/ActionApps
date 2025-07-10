@@ -16,6 +16,7 @@ use Exception;
 /** Info text - just Output */
 class InfWidget extends Widget
 {
+    protected $code;
 
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)

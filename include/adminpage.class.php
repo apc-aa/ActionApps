@@ -215,7 +215,7 @@ class AA_Adminpageutil {
             echo "<div>" . $this->subtitle . "</div>";
         }
 
-        if (strlen($Msg)) {
+        if (!empty($Msg)) {
             echo "<div class='mb-3 mt-3'>$Msg</div>";
         }
 

@@ -39,16 +39,16 @@ trait DataArrayAccessTrait {
     }
 
     /** implements Iterator interface */
-    public function rewind()                   { reset($this->data); }
+    public function rewind(): void { reset($this->data); }
 
-    public function current()                  { return current($this->data); }
+    public function current(): mixed                  { return current($this->data); }
 
-    public function key()                      { return key($this->data); }
+    public function key(): mixed                      { return key($this->data); }
 
-    public function next()                     { next($this->data); }
+    public function next(): void { next($this->data); }
 
-    public function valid()                    { return (current($this->data) !== false); }
+    public function valid(): bool { return (current($this->data) !== false); }
 
     /** implements Countable interface */
-    public function count()                    { return count($this->data); }
+    public function count(): int { return count($this->data); }
 }

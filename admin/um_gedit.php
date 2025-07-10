@@ -236,7 +236,7 @@ do {
             $group_name        = $group_data['name'];
             $group_description = $group_data['description'];
             $aa_users          = AA::$perm->getObjectsPerms(AA_ID, "aa");
-            if (str_contains($aa_users[$selected_group], AA_Perm::ROLES["SUPER"]['id'])) {
+            if (str_contains($aa_users[$selected_group] ?? '', AA_Perm::ROLES["SUPER"]['id'])) {
                 $group_super   = true;
             }
         }

@@ -16,6 +16,13 @@ use Exception;
 /** Password and Change password widget */
 class PwdWidget extends Widget
 {
+    protected $width;
+    protected $change_label;
+    protected $retype_label;
+    protected $delete_label;
+    protected $change_hint;
+    protected $retype_hint;
+
 
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)

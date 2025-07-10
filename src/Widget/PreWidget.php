@@ -11,6 +11,18 @@ namespace AA\Widget;
 /** Text Field with Presets widget */
 class PreWidget extends FldWidget
 {
+    protected $const;
+    protected $slice_field;
+    protected $use_name;
+    protected $adding;
+    protected $second_field;
+    protected $add2constant;
+    protected $bin_filter;
+    protected $filter_conds;
+    protected $sort_by;
+    protected $additional_slice_pwd;
+    protected $const_arr;
+
 
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)

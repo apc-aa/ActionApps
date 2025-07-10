@@ -17,6 +17,11 @@ use Exception;
 /** Date widget */
 class DteWidget extends Widget
 {
+    protected $start_year;
+    protected $end_year;
+    protected $relative;
+    protected $show_time;
+
 
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)

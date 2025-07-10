@@ -134,7 +134,7 @@ abstract class AA_Serializable {
      */
     static function constructClassName($name, $class_mask=null): string {
         $name       = ucwords(strtolower(str_replace('-', '', $name)));    // str_replace probably for validator e-mail, but maybe not necessary
-        $class_mask = rtrim($class_mask,'_') ?: static::class;
+        $class_mask = rtrim($class_mask ?? '','_') ?: static::class;
         if (($pos=strrpos($class_mask, '\\')) !== false) {
             return substr_replace($class_mask, "\\$name", $pos, 1);
         }

@@ -15,6 +15,11 @@ use Exception;
 /** Two Boxes widget */
 class Wi2Widget extends MchWidget {
 
+    protected $row_count;
+    protected $offer_label;
+    protected $selected_label;
+    protected $add_form;
+    
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)
      */

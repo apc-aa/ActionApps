@@ -14,6 +14,16 @@ use AA_Validate;
 class IsoWidget extends MchWidget
 {
 
+    //            $ret = Widget::propertiesShop(['', 'row_count', 'show_actions', 'admin_design', 'tag_prefix', 'show_buttons', '', '', 'filter_conds_rw', '', '', '', '', 'listlen']);
+    protected $row_count;
+    protected $show_actions;
+    protected $admin_design;
+    protected $tag_prefix;
+    protected $show_buttons;
+    protected $filter_conds_rw;
+    protected $listlen;
+
+
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)
      */

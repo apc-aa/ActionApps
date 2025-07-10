@@ -11,6 +11,7 @@ namespace AA\Widget;
 /** Local URL Picker widget */
 class LupWidget extends Widget
 {
+    protected $url;
 
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)

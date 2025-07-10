@@ -63,7 +63,7 @@ function HttpGetParameters($parameters): string
             } elseif ( ctype_digit((string)$variable)) {
                 $param_string .= $delimiter. $value;
             } else {
-                $param_string .= $delimiter. rawurlencode($variable). '='. rawurlencode($value);
+                $param_string .= $delimiter. rawurlencode($variable). '='. rawurlencode((string)$value);
             }
             $delimiter     = '&';
         }

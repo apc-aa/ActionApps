@@ -11,6 +11,9 @@ namespace AA\Widget;
 /** Rich Edit Text Area widget */
 class EdtWidget extends TxtWidget
 {
+    protected $cols;
+    protected $area_type;
+
     /** name function  */
     public static function name(): string
     {

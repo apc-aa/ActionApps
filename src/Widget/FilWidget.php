@@ -18,6 +18,11 @@ use Exception;
 /** File Upload widget */
 class FilWidget extends Widget
 {
+    protected $allowed_ftypes;
+    protected $label;
+    protected $hint;
+    protected $display_url;
+    protected $multiple;
 
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)

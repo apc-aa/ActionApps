@@ -78,10 +78,10 @@ class datectrl {
      */
     function update(): void
     {
-        $timevar  = trim($_REQUEST["tdctr_" . $this->name . "_time"]);
-        $dayvar   = trim($_REQUEST["tdctr_" . $this->name . "_day"]);
-        $monthvar = trim($_REQUEST["tdctr_" . $this->name . "_month"]);
-        $yearvar  = trim($_REQUEST["tdctr_" . $this->name . "_year"]);
+        $timevar  = trim($_REQUEST["tdctr_" . $this->name . "_time"] ?? '');
+        $dayvar   = trim($_REQUEST["tdctr_" . $this->name . "_day"] ?? '');
+        $monthvar = trim($_REQUEST["tdctr_" . $this->name . "_month"] ?? '');
+        $yearvar  = trim($_REQUEST["tdctr_" . $this->name . "_year"] ?? '');
 
         // no date
         if ( strlen($yearvar) && !(int)$yearvar) {

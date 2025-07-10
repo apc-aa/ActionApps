@@ -18,6 +18,10 @@ use Exception;
 /** Textarea widget */
 class TxtWidget extends Widget
 {
+    protected $rows;
+    protected $max_characters;
+    protected $ajaxtype;
+
     /** @var array  list of textareas for CodeMirror creation */
     protected $ids_4_editor = [];
 
