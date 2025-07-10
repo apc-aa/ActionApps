@@ -1970,13 +1970,10 @@ function IsAlias($identifier): bool {
  * @return bool
  */
 function IsSigInt($var): bool { // like function is_signed(),function is_number(), function is_positive(), function is_numeric(),
-    if (empty($var)) {
-        return false;
-    }
     if (is_int(filter_var($var, FILTER_VALIDATE_INT))) {
         return true;
     }
-    return (strlen($var) && is_int(filter_var(ltrim($var,'0'), FILTER_VALIDATE_INT)));  // the 04 is int
+    return (strlen((string)$var) && is_int(filter_var(ltrim($var,'0'), FILTER_VALIDATE_INT)));  // the 04 is int
 }
 
 /** check, if variable could be converted to string

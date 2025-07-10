@@ -8230,8 +8230,8 @@ class AA_Stringexpand_Gethostbyaddr extends AA_Stringexpand {
     }
 }
 
-/** Prints version of AA as full-string, AA version (2.11.0), or svn revision (2368)
- *  {version[:aa|svn|svn2]}
+/** Prints a version of AA as full-string, AA version (2.11.0), svn revision (2368) or php version
+ *  {version[:aa|svn|svn2|php|full]}
  */
 class AA_Stringexpand_Version extends AA_Stringexpand_Nevercachenotrim {
 
