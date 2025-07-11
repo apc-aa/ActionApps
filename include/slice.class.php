@@ -1315,7 +1315,7 @@ class AA_Modulesettings_Slice extends AA_AbstractModulesettings {
 class AA_Modulesettings_Site extends AA_AbstractModulesettings {
 
     // must be protected or public - AA_Object needs to read it
-    protected $translation_slice;
+    protected $translate_slice;
     protected $add_aliases;
     protected $web_languages;
     protected $page404;

@@ -1011,7 +1011,7 @@ function GrabConstantColumn($db, $column): array
         "id"          => ["value" => unpack_id($db->f("id"))],
         "description" => ["value" => $db->f("description"), "flag" => FLAG_HTML],
         "short_id"    => ["value" => $db->f("short_id")],
-        "level"       => ["value" => strlen($db->f("ancestors")) / 16],
+        "level"       => ["value" => strlen((string)$db->f("ancestors")) / 16],
         default       => [],
     };
 }
@@ -1995,52 +1995,52 @@ function RestoreVariables(array $r_state_vars): void
 
 /** susbstr with utf in mind */
 function aa_substr($text, $start, $len=null): string {
-    return empty($text) ? '' : mb_substr($text, (int)$start, $len);
+    return mb_substr((string)$text, (int)$start, $len);
 }
 
 /** strlen with utf in mind */
 function aa_strlen($text) {
-    return grapheme_strlen($text);   // mb_ functions do not work well - see https://tonsky.me/blog/unicode/
+    return grapheme_strlen((string)$text);   // mb_ functions do not work well - see https://tonsky.me/blog/unicode/
 }
 
 /** strpos with utf in mind */
 function aa_strpos($haystack , $needle , $offset = 0): false|int
 {
-    return mb_strpos($haystack , $needle , $offset);
+    return mb_strpos((string)$haystack , (string)$needle , (int)$offset);
 }
 
 /** strrpos with utf in mind */
 function aa_strrpos($haystack , $needle , $offset = 0): false|int
 {
-    return mb_strrpos($haystack , $needle , $offset);
+    return mb_strrpos((string)$haystack , (string)$needle , (int)$offset);
 }
 
 /** trim  with utf in mind */
 function aa_trim(string $string='', string $chars=''): string {
-    return (empty($chars) && Langs::isUTF()) ? preg_replace("/^\s+|\s+$/u", "", $string) : trim($string, $chars);
+    return ($chars==='' && Langs::isUTF()) ? preg_replace("/^\s+|\s+$/u", "", $string) : trim($string, $chars);
     // trim($string, " \t\n\r\0\x0B\xA0");  // standard + chr(160) - hard space   // does not work for UTF characters - the hardspace \xA0 can break some UTF chars - "MŠ" for example
 }
 
 /** strtolower with utf in mind */
 function aa_strtolower($string): string
 {
-    return Langs::isUTF() ? mb_strtolower($string) : strtolower($string); // maybe we could count with other languages
+    return Langs::isUTF() ? mb_strtolower((string)$string) : strtolower((string)$string); // maybe we could count with other languages
 }
 
 /** lcfirst with utf in mind */
-function aa_lcfirst($string): string
+function aa_lcfirst(string $string): string
 {
     return Langs::isUTF() ? mb_strtolower(mb_substr($string, 0, 1)).mb_substr($string, 1) : lcfirst($string); // maybe we could count with other languages
 }
 
 /** ucfirst with utf in mind */
-function aa_ucfirst($string): string
+function aa_ucfirst(string $string): string
 {
     return Langs::isUTF() ? mb_strtoupper(mb_substr($string, 0, 1)).mb_substr($string, 1) : ucfirst($string); // maybe we could count with other languages
 }
 
 /** strtoupper with utf in mind */
-function aa_strtoupper($string): string
+function aa_strtoupper(string $string): string
 {
     return Langs::isUTF() ? mb_strtoupper($string) : strtoupper($string); // maybe we could count with other languages
 }

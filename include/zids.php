@@ -665,7 +665,7 @@ function unpack_id($packed_id=''): string {
  * @return string
  */
 function quote($str): string {
-    return empty($str) ? '' : addslashes($str);
+    return addslashes((string)$str);
 }
 
 /**

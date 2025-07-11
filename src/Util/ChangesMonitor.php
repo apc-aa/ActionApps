@@ -413,7 +413,7 @@ class ChangesMonitor {
      * @return int
      */
     static function toTimestamp(int $sometime): int {
-        return ($sometime >	10000000000) ? ($sometime / 1000000000) : $sometime;
+        return ($sometime >	10000000000) ? (int)($sometime / 1000000000) : $sometime;
     }
 
     /**  if the time is in seconds, convert it to nanoseconds for DB query

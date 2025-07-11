@@ -150,7 +150,7 @@ function json2arr($string, $do_not_filter=false) {
  */
 function json2asoc($string): array
 {
-    if (!strlen($string)) {
+    if ((string)$string === '') {
         return [];
     }
     if ($string[0] === '{') {
@@ -2218,10 +2218,8 @@ class AA_Stringexpand_Substr extends AA_Stringexpand_Nevercachenotrim {
      */
     function expand($string='', $start='', $length=999999999, $add=''): string
     {
-        if (empty($string)) {
-            return '';
-        }
-        $length = empty($length) ? null : (int)$length;
+        $string = (string)$string;
+        $length = is_null($length) ? null : (int)$length;
         $ret = aa_substr($string,(int)$start,$length);
         if ( $add && aa_strlen($ret) < aa_strlen($string) ) {
             $ret .= $add;
@@ -5337,7 +5335,7 @@ class AA_Stringexpand_Ajax extends AA_Stringexpand_Nevercache {
                         }
                     }
 
-                    $widget_properties = str_replace(["'", '"',"\r\n", "\r", "\n"], ["\'", "&quot;", " ", " ", " "], $widget_properties);
+                    $widget_properties = str_replace(["'", '"',"\r\n", "\r", "\n"], ["\'", "&quot;", " ", " ", " "], (string)$widget_properties);
                     $iid         = $item->getItemID();
                     $input_name  = FormArray::getName4Form($field_id, $item);
                     $input_id    = FormArray::formName2Id($input_name);
@@ -8025,7 +8023,7 @@ class AA_Stringexpand_Strlen extends AA_Stringexpand_Nevercachenotrim {
 
     /** @param string $string  */
     function expand($string=''): string {
-        return (string)strlen($string);
+        return (string)strlen((string)$string);
     }
 }
 
@@ -8035,7 +8033,7 @@ class AA_Stringexpand_Strtoupper extends AA_Stringexpand_Nevercachenotrim {
     /** @param string $string  */
     function expand($string=''): string
     {
-        return aa_strtoupper($string);
+        return aa_strtoupper((string)$string);
     }
 }
 
@@ -8055,7 +8053,7 @@ class AA_Stringexpand_Lcfirst extends AA_Stringexpand_Nevercachenotrim {
     /** @param string $string  */
     function expand($string=''): string
     {
-        return aa_lcfirst($string);
+        return aa_lcfirst((string)$string);
     }
 }
 
@@ -8065,7 +8063,7 @@ class AA_Stringexpand_Ucfirst extends AA_Stringexpand_Nevercachenotrim {
     /** @param string $string  */
     function expand($string=''): string
     {
-        return aa_ucfirst($string);
+        return aa_ucfirst((string)$string);
     }
 }
 
@@ -8205,7 +8203,7 @@ class AA_Stringexpand_Log extends AA_Stringexpand_Nevercache {
      * @return string
      */
     function expand($num='', $base=''): string {
-        return ($base==="") ? (string)log((float)$num) : (string)log((float)$num, (float)$base);
+        return ((string)$base==="") ? (string)log((float)$num) : (string)log((float)$num, (float)$base);
     }
 }
 
