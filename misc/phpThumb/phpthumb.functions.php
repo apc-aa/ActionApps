@@ -855,7 +855,7 @@ class phpthumb_functions {
 				}
 				@mkdir($test_directory, $mask);
 				@chmod($test_directory, $mask);
-				if (!@is_dir($test_directory) || !@is_writeable($test_directory)) {
+				if (!@is_dir($test_directory) || !@is_writable($test_directory)) {
 					return false;
 				}
 			}

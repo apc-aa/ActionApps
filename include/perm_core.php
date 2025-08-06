@@ -726,7 +726,7 @@ class AA_Perm {
         $ret = false;
         if (strlen($hash) === 30) {
             // legacy only - not so secure to timing attacks... but in current AA it shouldn't be executed
-            // passwords in SQL perms in AA 2.x was 30 characers long (in user table),
+            // passwords in SQL perms in AA 2.x was 30 characters long (in user table),
             // so we have to compare it with shortened hash
             $ret = ($hash === substr(crypt($password, $hash),0,30));
         } else {

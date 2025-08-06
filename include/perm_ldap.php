@@ -74,7 +74,7 @@ function AddUser($user, $flags = 0): false|string
     // add data to directory
     $user_dn = "uid=".$user['uid']."," . $aa_default_ldap['people'];
     $r       = @ldap_add($ds, $user_dn, $record);
-    ldap_close($ds);
+    ldap_unbind($ds);
     return ($r ? $user_dn : false);
 }
 
@@ -117,7 +117,7 @@ function DelUser($user_id, $flags = 3): bool
 
     $r = @ldap_delete($ds, $user_id);
 
-    ldap_close($ds);
+    ldap_unbind($ds);
     return $r;
 }
 
@@ -147,7 +147,7 @@ function ChangeUser($user, $flags = 0): bool
 
     // add data to directory
     $r = @ldap_mod_replace($ds, $user['uid'], $record);
-    ldap_close($ds);
+    ldap_unbind($ds);
     return $r;
 }
 
@@ -182,7 +182,7 @@ function AddGroup($group, $flags = 0): false|string
     // add data to directory
     $group_dn = "cn=".$group['name']."," . $aa_default_ldap['groups'];
     $r = @ldap_add($ds, $group_dn, $record);
-    ldap_close($ds);
+    ldap_unbind($ds);
 
     return ($r ? $group_dn : false);
 }
@@ -227,7 +227,7 @@ function AddGroup($group, $flags = 0): false|string
 
      $r = @ldap_delete($ds, $group_id);
 
-     ldap_close($ds);
+     ldap_unbind($ds);
      return $r;
 }
 
@@ -251,7 +251,7 @@ function ChangeGroup($group, $flags = 0): bool
 
     // add data to directory
     $r = @ldap_mod_replace($ds, $group['uid'], $record);
-    ldap_close($ds);
+    ldap_unbind($ds);
     return $r;
 }
 
@@ -268,7 +268,7 @@ function AddGroupMember($group_id, $id, $flags = 0): bool
     }
 
     $r = @ldap_mod_add($ds, $group_id, ["member" => (string)$id]);
-    ldap_close($ds);
+    ldap_unbind($ds);
     return $r;
 }
 
@@ -305,7 +305,7 @@ function DelGroupMember($group_id, $id, $flags = 0): bool
     }                                     // schema where member is required
 
     $r = ldap_mod_replace($ds, $group_id, $new);
-    ldap_close($ds);
+    ldap_unbind($ds);
     return $r;
 }
 
@@ -335,7 +335,7 @@ function AddPermObject($objectID, $objectType, $flags = 0): bool
 
     // add data to directory
     $r = ldap_add($ds, "apcobjectid=$objectID,". $aa_default_ldap['acls'], $record);
-    ldap_close($ds);
+    ldap_unbind($ds);
     return $r;
 }
 
@@ -355,7 +355,7 @@ function DelPermObject($objectID, $objectType, $flags = 0): bool
 
     $r=@ldap_delete($ds, "apcobjectid=$objectID,". $aa_default_ldap['acls']);
 
-    ldap_close($ds);
+    ldap_unbind($ds);
     return $r;
 }
 
@@ -414,7 +414,7 @@ function AddPerm($id, $objectID, $objectType, $perm, $flags = 0): bool
         $r=ldap_mod_del($ds, $basedn, $old);
     }
 
-    ldap_close($ds);
+    ldap_unbind($ds);
     return $r;          // true or false
 }
 
@@ -588,7 +588,7 @@ class AA_Permsystem_Ldap extends AA_Permsystem {
                 if ( $arr["count"] > 0 ) {
                     $userdn = $arr[0]["dn"];
                 } else {
-                    @ldap_close($ds);
+                    @ldap_unbind($ds);
                     return false;
                 }
             }
@@ -599,7 +599,7 @@ class AA_Permsystem_Ldap extends AA_Permsystem {
         if (@ldap_bind($ds, $userdn, $password)) {  // try to authenticate
             $return_val = $userdn;
         }
-        @ldap_close($ds);
+        @ldap_unbind($ds);
         return $return_val;
     }
 
@@ -640,7 +640,7 @@ class AA_Permsystem_Ldap extends AA_Permsystem {
             $result[$arr[$i]['dn']] = ["name"=>$arr[$i]['cn'][0], "mail"=>$arr[$i]['mail'][0]];
         }
 
-        ldap_close($ds);
+        ldap_unbind($ds);
         return $result;
     }
 
@@ -681,7 +681,7 @@ class AA_Permsystem_Ldap extends AA_Permsystem {
             $result[$arr[$i]['dn']] = ["name"=>$arr[$i]['cn'][0]];
         }
 
-        ldap_close($ds);
+        ldap_unbind($ds);
         return $result;
     }
 
@@ -713,7 +713,7 @@ class AA_Permsystem_Ldap extends AA_Permsystem {
             $res["description"] = $arr["description"][0];
         }
 
-        ldap_close($ds);
+        ldap_unbind($ds);
         return $res;
     }
 
@@ -768,7 +768,7 @@ class AA_Permsystem_Ldap extends AA_Permsystem {
         $res["mail"]  = $arr["mail"][0];
         $res["mails"] = $arr["mail"];
 
-        ldap_close($ds);
+        ldap_unbind($ds);
         return $res;
     }
 
@@ -799,7 +799,7 @@ class AA_Permsystem_Ldap extends AA_Permsystem {
             }
         }
 
-        ldap_close($ds);
+        ldap_unbind($ds);
         return $res;
     }
 
@@ -842,7 +842,7 @@ class AA_Permsystem_Ldap extends AA_Permsystem {
             }
         } while ( is_array($last_groups) && $flags==0 );
 
-        ldap_close($ds);
+        ldap_unbind($ds);
         if (is_array($groups)) {
             $result = array_merge($result, array_keys($groups));  // transform to a numbered array
         }

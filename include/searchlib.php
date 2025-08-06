@@ -1149,7 +1149,7 @@ class AA_Dbcondition {
                 $querystring = str_replace(['*', '?'], ['%', '_'], trim($querystring));
             // continue!
             case '=':
-                // it is not possible to use wildcard characers with '='
+                // it is not possible to use wildcard characters with '='
                 $syntax = new Syntax($field, $operator, SQL_Lex::lex(trim($querystring)));
 
                 // ret will be quoted
