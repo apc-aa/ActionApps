@@ -6838,7 +6838,7 @@ class AA_Stringexpander implements LaterInterface {
         }
 
         if (is_object($item)) {
-            $text = $item->substitute_alias_and_remove($text, (string)$remove==='' ? explode('##',$remove) : []);
+            $text = $item->substitute_alias_and_remove($text, (string)$remove!=='' ? explode('##',$remove) : []);
         }
 
         // if ( !$dequote ) { }
