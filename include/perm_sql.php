@@ -364,9 +364,9 @@ class AA_Permsystem_Sql extends AA_Permsystem {
 
     /** getGroup function
      *  @param $user_id
-     *  @return array(uid, name, description) or false if not found
+     *  @return false|array [uid, name, description] or false if not found
      */
-    function getGroup($group_id): array
+    function getGroup($group_id): false|array
     {
         return DB_AA::select1('', 'SELECT id AS uid, name, description FROM `users`', [['id', $group_id, 'i']]);
     }

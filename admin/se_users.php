@@ -104,12 +104,13 @@ function PrintUser($perm, $usr_id, $editor_perm): void
         'User'        => "um_uedit.php?usr_edit=1&selected_user=$usr_id_enc",
         'Group'       => "um_gedit.php?grp_edit=1&selected_group=$usr_id_enc",
         'Reader'      => "um_uedit.php?usr_edit=1&selected_user=$usr_id_enc",
-        'ReaderGroup' => "index.php?change_id=$usr_id_enc"
+        'ReaderGroup' => "index.php?change_id=$usr_id_enc",
+        'ReaderSet'   => "se_sets.php?change_id=$usr_id_enc"
     ];
     $usrinfo = AA::$perm->getIDsInfo($usr_id);
 
     // add link to user settings for superadmins
-    $usr_code = ( !IsSuperadmin() ? $usrinfo['name'] :
+    $usr_code = ( (!IsSuperadmin() || !array_key_exists($usrinfo['type'],$go_url_arr)) ? $usrinfo['name'] :
         '<a href="'. get_admin_url(  $go_url_arr[$usrinfo['type']] ) .'">'. safe($usrinfo['name']) .'</a>' );
 
     echo "<td>". $usr_code ."</td>\n";

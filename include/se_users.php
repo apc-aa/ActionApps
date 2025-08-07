@@ -155,11 +155,11 @@ function AddUserForm(string $usr, string $grp, bool $GrpSrch, bool $UsrSrch, $ed
                 echo "<tr><td>" . _m("No user (group) found") . "</td>\n";
             }
         } else {
-            foreach ($addable as $usr_id => $usr) {
+            foreach ($addable as $usr_id => $user) {
                 if (!$slice_users[$usr_id]) {                         // show only new users
-                    PrintAddableUser($usr, $usr_id, $curr_role, true);
+                    PrintAddableUser($user, $usr_id, $curr_role, true);
                 } else {
-                    PrintAddableUser($usr, $usr_id, $curr_role, false);
+                    PrintAddableUser($user, $usr_id, $curr_role, false);
                 }
                 if ($l_counter++ >= MAX_ENTRIES_SHOWN) {
                     break;

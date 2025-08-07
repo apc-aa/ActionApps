@@ -1668,7 +1668,7 @@ class AA_Contentcache {
      *  @param $access_code
      *  @return false if the value is not cached for the $access_code (use ===)
      */
-    function get($access_code)
+    function get($access_code): mixed
     {
         $key = hash('md5', $access_code);
         if ($this->is_soft($access_code)) {
