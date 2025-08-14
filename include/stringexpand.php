@@ -962,7 +962,7 @@ class AA_Stringexpand_Protectmail extends AA_Stringexpand_Nevercache {
         $linktext    = ($text=='') ? $mailprotect : "'".escape4js($text)."'";
         $ret = "<a href=\"\" id=\"$ahrefid\"></a><!--AA script generated, AA script removed-->";
         // we delete the script because when the content is redisplayed again (by {htmlajaxtoggle} for example, the script is executed again, which leads to wrong content)
-        $ret .= "<script>var el=document.getElementById('$ahrefid');el.setAttribute('href','mai'+'lto:'+$mailprotect);el.insertAdjacentHTML('afterbegin',$linktext);var cs=document.currentScript; if (cs) {el.parentNode.removeChild(cs);}</script>";
+        $ret .= "<script>var el=document.getElementById('$ahrefid');el.setAttribute('href','mai'+'lto:'+$mailprotect);el.insertAdjacentHTML('afterbegin',$linktext);document.currentScript?.parentNode?.removeChild(document.currentScript);</script>";
         return $ret;
     }
     // another option - no need the ID
@@ -3736,8 +3736,7 @@ class AA_Stringexpand_Fulltext extends AA_Stringexpand {
             $id_type    = guesstype($item_id);
             if ( $item_id && ($id_type === 's' || $id_type === 'l')) {
                 $item = AA_Items::getItem(new zids($item_id,$id_type));
-                if ($item && $item->isActive()) {
-                    $slice = AA_Slice::getModule($item->getSliceID());
+                if ($item && $item->isActive() && ($slice = AA_Slice::getModule($item->getSliceID()))) {
                     $text  = $slice->getProperty('fulltext_format_top'). $slice->getProperty('fulltext_format'). $slice->getProperty('fulltext_format_bottom');
                     $ret  .= AA::Un($text, $slice->getProperty('fulltext_remove'), $item);
                 }
@@ -6144,7 +6143,7 @@ class AA_Stringexpand_Dictionary extends AA_Stringexpand {
         foreach ($kw_item as $kw_string) {
             [$keywords, $link] = explode('_AA_DeLiM_', $kw_string, 2);
             $kw_array = explode('##', $keywords);
-            foreach ((array)$kw_array as $kw) {
+            foreach ($kw_array as $kw) {
                 if (!strlen($kw)) {
                     continue;
                 }
@@ -6582,8 +6581,8 @@ class AA_Unalias_Callback {
                 if (!strlen($outparam)) {
                     $ebres = @$fnctn();
                 } else {
-                    $param = array_map('DeQuoteColons',ParamExplode($outparam));
-                    $ebres = @call_user_func_array($fnctn, (array)$param);
+                    // $param = array_map('DeQuoteColons',ParamExplode($outparam));
+                    $ebres = @call_user_func_array($fnctn, array_map('DeQuoteColons',ParamExplode($outparam)));
                 }
                 return QuoteColons($ebres);
             }
@@ -6807,7 +6806,7 @@ class AA_Stringexpander implements LaterInterface {
                 // replace all {(.....)} with {var:...}, which will be expanded into {...}
                 // this alows to write expressions like
                 //   {item:6625:{(some text {headline........}...etc.)}}
-                $text = (string)self::ApplyInlineAlias($text);
+                $text = self::ApplyInlineAlias($text);
             }
 
             $last_replacements  = 0;
@@ -10997,12 +10996,12 @@ class AA_Stringexpand_Tr extends AA_Stringexpand {
                     $zids = $set->query();
 
                     if (!$zids->isEmpty()) {
-                        return AA_Items::getItem($zids[0])->f_2('headline........');
+                        return AA_Items::getItem($zids[0])?->f_2('headline........') ?? '';
                     }
                     // if not present - translate to default language of the slice
 
                     $translate_slice = AA_Slice::getModule($translate_slice_id);
-                    if ($translate_slice->isValid()) {  // could be already deleted slice
+                    if ($translate_slice && $translate_slice->isValid()) {  // could be already deleted slice
                         $translations = $translate_slice->getProperty('translations');
                         $html_flag    = $translate_slice->getField('headline........')->getDefaultFormatterFlag(); // get the flag
 
