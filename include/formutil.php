@@ -1840,6 +1840,7 @@ class AA_Inputfield {
 
         $this->field_name('plus');
         $this->echovar( getHierConstInitJavaScript($hcid, $group_id, $levelCount, "inputform", false), 'init_javascript' );
+        $this->echoo( getHierConstStart($horizontal));
         $this->echoo( getHierConstBoxes($hcid, $levelCount, $horizontal, $name, false, $firstSelect, $boxWidth, $levelNames));
 
         $widthTxt = str_repeat("m",$boxWidth);
@@ -1856,13 +1857,12 @@ class AA_Inputfield {
             [,$fieldid,] = explode("'",$aa_onchange_exist,3);
             $delete_button_trigger = 'aa_onChange("'.$fieldid.'"); ';
         }
+        $buttonDel = "<input type=\"button\" value=\""._m("Delete")."\" onclick='hcDelete(\"$name\"); $delete_button_trigger'>";
 
-        $this->echoo("
-            <!-- {require:aa-constedit} -->
-            <table><tr>
-            <td><b><span class=\"redtext\">"._m("Selected").":<span></b><br><br><input type=\"button\" value=\""._m("Delete")."\" onclick='hcDelete(\"$name\"); $delete_button_trigger'></td>
-            <td>");
-        $out = "\n<select name=\"$name\" multiple size=\"$rows\" $triggers>";
+        $out  = $horizontal ? '<div class="pl-3">' : '<div>';
+        $out .= "\n<label class=\"aa-label-above selected\" for=\"$name\">"._m("Selected")."</label>";
+
+        $out .= "\n<select name=\"$name\" id=\"$name\" multiple size=\"$rows\" $triggers>";
             if (is_array($val)) {
                 $constants_names = GetConstants($group_id);
                 foreach ( $val as $v) {
@@ -1872,11 +1872,12 @@ class AA_Inputfield {
                 }
             }
         $out .= "\n  <option value=\"wIdThTor\">$widthTxt";
-        $out .= "</select>";
+        $out .= "</select><br><br>$buttonDel
+              </div>";
 
-
+        $this->echoo( "<!-- {require:aa-constedit} -->");
         $this->echovar($out);
-        $this->echoo("</td></tr></table>\n");
+        $this->echoo( getHierConstEnd());
         $this->echoo(getFrmJavascript("
             hcInit($hcid);
             hcDeleteLast('$name');
@@ -1910,7 +1911,7 @@ class AA_Inputfield {
      */
     function inputWidget($item, $slice_id): void
     {
-        if ( !($field = AA_Slice::getModule($slice_id)->getField($this->id)) ) {
+        if ( !($field = AA_Slice::getModule($slice_id)?->getField($this->id)) ) {
             return;
         }
 

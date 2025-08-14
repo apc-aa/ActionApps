@@ -80,6 +80,15 @@ function getHierConstInitJavaScript($hcid, $group_id, $levelCount=3, $formName='
     return getFrmJavascript($js);
 }
 
+function getHierConstStart(bool $horizontal): string
+{
+    return  $horizontal ? '<div style="display: flex; align-items: flex-start;">' : '<div style="display: flex; align-items: flex-start; flex-direction: column;">';
+}
+function getHierConstEnd(): string
+{
+    return  '</div>';
+}
+
 /** getHierConstBoxes function
  *     paints horizontally or vertically the level boxes in a table. Params:
  *
@@ -98,7 +107,7 @@ function getHierConstInitJavaScript($hcid, $group_id, $levelCount=3, $formName='
  */
 function getHierConstBoxes($hcid, int $levelCount, bool $horizontal=false, string $targetBox="", $admin=true, $minLevelSelect=0, int $boxWidth=0, array $levelNames= []): string {
     $admin = $admin ? 1 : 0;
-    if ($boxWidth == 0) {
+    if ($boxWidth === 0) {
         $boxWidth = $horizontal ? 30 : 70;
     }
 
@@ -111,15 +120,12 @@ function getHierConstBoxes($hcid, int $levelCount, bool $horizontal=false, strin
     $aa_onchange_exist = strstr($this_triggers,'aa_onChange(');
     $add_button_trigger = "";
     if ( $aa_onchange_exist ) {
-       [,$fieldid,] = explode("'",$aa_onchange_exist,3);
-       $add_button_trigger = "aa_onChange('".$fieldid."'); ";
+        [,$fieldid,] = explode("'",$aa_onchange_exist,3);
+        $add_button_trigger = "aa_onChange('".$fieldid."'); ";
     }
 
-    $out = "<table>";
-    if ($horizontal) {
-        $out .= "<tr>";
-    }
     $widthTxt = str_repeat("m",$boxWidth);
+    $out = '';
 
     for ($i=0; $i < $levelCount; ++$i) {
         if ($admin) {
@@ -132,31 +138,19 @@ function getHierConstBoxes($hcid, int $levelCount, bool $horizontal=false, strin
         if (!$levelNames[$i]) {
             $levelNames[$i] = _m("Level")." $i";
         }
-        if ($horizontal) {
-            $out .= "
-              <td width=\"10%\"><b>".$levelNames[$i]."</b><br>
-              <select name=\"hclevel{$i}_{$hcid}\" multiple size=\"10\" onChange=\"hcSelectItem($hcid,$i,$admin)\">
-                <option>$widthTxt</select>
-                <br><br>$buttonAdd&nbsp;&nbsp;$buttonSelect
-              </td>";
-        } else {
-            $out .= "
-              <tr><td>
-                <b>".$levelNames[$i]."</b><br>$buttonAdd<br>
-                <img src=\"../images/spacer.gif\" width=\"1\" height=\"2\"><br>$buttonSelect
-                </td><td>
-                <select name=\"hclevel{$i}_{$hcid}\" multiple size=\"4\" onChange=\"hcSelectItem($hcid,$i,$admin)\">
-                <option>$widthTxt</select>
-              </td></tr>";
-        }
+        // if ($horizontal) { ...
+        $out .= "<div>
+              <label class=\"aa-label-above\" for=\"hclevel{$i}_{$hcid}\">".$levelNames[$i]."</label>
+              <select id=\"hclevel{$i}_{$hcid}\" name=\"hclevel{$i}_{$hcid}\" multiple size=\"10\" onChange=\"hcSelectItem($hcid,$i,$admin)\">
+                <option>$widthTxt
+              </select>
+              <br><br>$buttonAdd&nbsp;&nbsp;$buttonSelect
+              </div>";
     }
 
-    if ($horizontal) {
-        $out .= "</tr>";
-    }
-    $out .= "</table>";
     return $out;
 }
+
 /** showHierConstInitJavaScript function
  *
  */
@@ -169,7 +163,9 @@ function showHierConstInitJavaScript($hcid, $group_id, $levelCount=3, $formName=
  */
 function showHierConstBoxes($hcid, int $levelCount, bool $horizontal=false, string $targetBox="", bool $admin=true, int $minLevelSelect=0, int $boxWidth=0, array $levelNames= []): void
 {
+    echo getHierConstStart($horizontal);
     echo getHierConstBoxes($hcid, $levelCount, $horizontal, $targetBox, $admin, $minLevelSelect, $boxWidth, $levelNames);
+    echo getHierConstEnd();
 }
 
 /** createConstsJavaScript function
