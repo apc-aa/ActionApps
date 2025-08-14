@@ -179,7 +179,7 @@ class RequestMonitor
     }
 
     protected function join2pages(string $page, string $type, ?string $serialized_arr): bool {
-        if (!$serialized_arr || !is_array($arr = unserialize($serialized_arr))) {
+        if (!$serialized_arr || !is_array($arr = unserialize($serialized_arr, ['allowed_classes' => false]))) {
             return false;
         }
 

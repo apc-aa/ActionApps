@@ -175,7 +175,7 @@ class AA_Collection {
 
         // Use the emails sent as param
         } else {
-            AA_Log::write("ALERTS", $ho, "Emails for collection " . $this->id . ": " . ((int)count($emails)));
+            AA_Log::write("ALERTS", $ho, "Emails for collection " . $this->id . ": " .count($emails));
             $als = new AA_Aliases();
 //          $als->addAlias(new AA_Alias("_#FILTERS_", "id..............", 'f_t', array(get_filter_text_4_reader(null, $filters, $this->id))));
             $als->addTextAlias("_#FILTERS_", $this->getFilterText4Reader(null, $filters));
@@ -190,12 +190,12 @@ class AA_Collection {
             }
             $aliases = $als->getArray();
         }
-        AA_Log::write("ALERTS", $ho, "Sent for collection " . $this->id . ": " . ((int)$email_count));
+        AA_Log::write("ALERTS", $ho, "Sent for collection " . $this->id . ": " .$email_count);
         AA_Log::write("ALERTS", $ho, implode('; ', [
             "Debug collection " . $this->id,
             $this->getProp('email_id_alert'),
             implode(',', (array)$emails),
-            implode(',', (array)$aliases)
+            implode(',', $aliases)
         ]));
         return $email_count;
     }

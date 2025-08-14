@@ -239,7 +239,7 @@ class AA_Request {
      *     $request = AA_Request::decode($_POST['request']);
      */
     public static function decode(string $posted_data) {
-        return unserialize($posted_data);
+        return unserialize($posted_data, ['allowed_classes' => [AA_Request::class]]);
     }
 
     function getCommand() {
@@ -271,7 +271,7 @@ class AA_Request {
             //echo "<br>Error - response: ". AA_Http::lastErrMsg();
             return new AA_Response('No response recieved ('. AA_Http::lastErr() .' - '. AA_Http::lastErrMsg(). ')', 3);
         }
-        $response  = unserialize(trim($result));
+        $response  = unserialize(trim($result), ['allowed_classes' => [AA_Response::class]]);
         if ( $response === false ) {
             return new AA_Response("Bad response", 3);
         }

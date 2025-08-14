@@ -16,7 +16,7 @@
         return;
     }
 
-    $resarr = unserialize (stripslashes($result));
+    $resarr = unserialize(stripslashes($result), ['allowed_classes' => false]);
 
     // If there were too many errors, the array is not complete and thus
     // unserialize does not work.

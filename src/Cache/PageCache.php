@@ -149,7 +149,7 @@ class PageCache  {
         $action = (string)$action;
         $key = get_hash($function, $params);
         if ( $res = $this->get($key, $action) ) {
-            return unserialize($res);  // it is setrialized for storing in the database
+            return unserialize($res);  // it is serialized for storing in the database
         }
         $res = call_user_func_array($function, (array)$params);
         if (!ctype_digit($action)) {  // nocache is not
@@ -260,7 +260,7 @@ class PageCache  {
         $action = (string)$action;
         $entry = $this->get($key, $action);
         AA::$debug&2 && AA::$dbg->log("Pagecache->getPage(output): ".($entry ? 'cached text' : 'not found'), 'Pagecache action:'.$action);
-        return $entry ? unserialize($entry) : null;
+        return $entry ? unserialize($entry, ['allowed_classes' => Cacheentry::class]) : null;
     }
 
 

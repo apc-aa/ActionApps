@@ -394,7 +394,7 @@ function collect_messages($logfile, $files_base_dir, $files, &$messages, &$warni
     $warnings = "";
     require_once $logfile;
     foreach ($processed_files as $msgwrn) {
-        $msg = unserialize($msgwrn["messages"]);
+        $msg = unserialize($msgwrn["messages"], ['allowed_classes' => false]);
         if (is_array($msg)) {
             foreach ($msg as $message => $code) {
                 foreach ($code["code"] as $filename => $rows) {
@@ -404,7 +404,7 @@ function collect_messages($logfile, $files_base_dir, $files, &$messages, &$warni
                 }
             }
         }
-        $wrn = unserialize($msgwrn["warnings"]);
+        $wrn = unserialize($msgwrn["warnings"], ['allowed_classes' => false]);
         if (is_array($wrn)) {
             foreach ($wrn as $warning) {
                 $warnings[] = $warning;

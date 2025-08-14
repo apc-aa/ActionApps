@@ -1134,7 +1134,7 @@ class AA_Dbcondition {
         //    }
 
         $querystring = stripslashes($querystring);
-        $querystring = (string)$querystring;   // to be able to do string operations
+        // $querystring = (string)$querystring;   // to be able to do string operations
         $cleanstr    = quote(($querystring[0] === '"' || $querystring[0] === "'") ? substr($querystring, 1, -1) : $querystring);
 
         switch ($operator) {

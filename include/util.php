@@ -1367,7 +1367,7 @@ function add_post2shtml_vars($delete = true): void
     $db = getDB();
     $db->query("SELECT * FROM post2shtml WHERE id='$post2shtml_id'");
     $db->next_record();
-    $vars = unserialize ($db->f("vars"));
+    $vars = unserialize($db->f("vars"), ['allowed_classes' => false]);
     if ($delete) {
         $db->query("DELETE FROM post2shtml WHERE id='$post2shtml_id'");
     }

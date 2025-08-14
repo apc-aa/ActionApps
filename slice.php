@@ -194,7 +194,7 @@ pageOpen('noauth');
 $sess->register('r_packed_state_vars');
 $sess->register('slices');
 
-$r_state_vars = unserialize($r_packed_state_vars);
+$r_state_vars = unserialize($r_packed_state_vars, ['allowed_classes' => false]);
 
 // there was problems with storing too much ids in session variable,
 // so I commented it out. It is not necessary to have it in session. The only

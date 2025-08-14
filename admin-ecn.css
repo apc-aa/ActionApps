@@ -1602,7 +1602,7 @@ a.aa-externallink + a.aa-morehelp  {
     padding-top: 5px;
     white-space: nowrap;
 }
-#inputtab .aa-widget-wi2 label, #inputtab .aa-widget-iso label {
+#inputtab .aa-widget-wi2 label, #inputtab .aa-widget-iso label, .aa-label-above {
     display: block;
     text-align: center;
     background-color: #f7f7f7;
@@ -1611,7 +1611,7 @@ a.aa-externallink + a.aa-morehelp  {
     padding: 4px 0;
     margin-top: 2px;
 }
-#inputtab .aa-widget-wi2 .aa-wi2-selected label {
+#inputtab .aa-widget-wi2 .aa-wi2-selected label, .aa-label-above.selected {
     border-top: solid 1px var(--clr-green);
 }
 #inputtab img[title="new"] {

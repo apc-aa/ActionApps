@@ -46,7 +46,7 @@ try {
     $f_slices         = InputVars::arrayPOST('f_slices');
     $remote_node_name = InputVars::stringPOST('remote_node_name');
     $exact_copy       = InputVars::boolPOST('exact_copy');
-    $aa_rss           = unserialize(InputVars::stringPOST('aa'));
+    $aa_rss           = unserialize(InputVars::stringPOST('aa'), ['allowed_classes' => false]);
     
 } catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
 

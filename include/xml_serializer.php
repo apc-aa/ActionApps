@@ -174,13 +174,13 @@ class xml_unserializer {
                 if ($this->coding === "serializegzip") {
                     $c = gzuncompress($c);
                 }
-                $this->top = unserialize($c);
+                $this->top = unserialize($c, ['allowed_classes' => false]);
                 $this->chardata = "";
                 break;
           default:
     //       $this->chardata = preg_replace("/^\s+/",'',$this->chardata);
     // Strip trailing whitespace, note this occurs in parent stack
-            $this->chardata = preg_replace("/\s+$/",'',$this->chardata);
+            $this->chardata = rtrim($this->chardata);
         }
         $n = $this->name;
         if (isset($this->top)) { // Already seen children or attrs

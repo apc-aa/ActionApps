@@ -777,7 +777,7 @@ class AA_Bookmarks {
             foreach ( $b_arr as $selector => $property_arr ) {
                 $this->bookmarks[] = [
                     'name' => (string)$selector,
-                    'state'=> unserialize($property_arr[0]),
+                    'state'=> unserialize($property_arr[0], ['allowed_classes' => false]),
                     'type' => (string)$property_arr[1],
                     'id'   => (string)$property_arr[2],
                     'uid'  => (string)$property_arr[3]
@@ -788,12 +788,14 @@ class AA_Bookmarks {
     }
 
     /** Store bookmark to the database
-     * @param $name
-     * @param $state
-     * @param $to_global
+     *
+     * @param         $name
+     * @param  array  $state
+     * @param         $to_global
+     *
      * @return bool
      */
-    function store( $name, $state, $to_global ): bool
+    function store( $name, array $state, $to_global ): bool
     {
         if ( !is_object($this->profile) ) {
             return false;

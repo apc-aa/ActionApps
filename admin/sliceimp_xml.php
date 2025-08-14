@@ -140,7 +140,7 @@ function sliceimp_xml_parse($xml_data, $dry_run=false, $force_this_slice=false) 
 
     if ($s['VERSION'] == "1.0") {   // older format of XML file
         $sl            = $s['SLICE'][0];
-        $slice         = unserialize (base64_decode($sl['DATA']));
+        $slice         = unserialize(base64_decode($sl['DATA']), ['allowed_classes' => false]);
         if (!is_array($slice)) {
             si_err(_m("ERROR: Text is not OK. Check whether you copied it well from the Export.") . " Version=" . $s['VERSION']);
         }
@@ -162,7 +162,7 @@ function sliceimp_xml_parse($xml_data, $dry_run=false, $force_this_slice=false) 
                 if ($sld['CHARDATA']) { // Its an encoded serialized data
                     $chardata = base64_decode($sld['CHARDATA']);
                     $chardata = $sld['GZIP'] ? gzuncompress($chardata) : $chardata;
-                    $slice    = unserialize ($chardata);
+                    $slice    = unserialize($chardata, ['allowed_classes' => false]);
                 } elseif ($sld['slice']) {
                     $slice    = $sld['slice'];
                 }
@@ -190,7 +190,7 @@ function sliceimp_xml_parse($xml_data, $dry_run=false, $force_this_slice=false) 
                 foreach ( $sl['VIEWS'] as $viewdata ) {
                     $viewdata = base64_decode($viewdata);
                     $viewdata = $sld['GZIP'] ? gzuncompress($viewdata) : $viewdata;
-                    $view = unserialize ($viewdata);
+                    $view = unserialize($viewdata);
                     import_views($view, $slice_id_new);
                 }
             }
@@ -200,7 +200,7 @@ function sliceimp_xml_parse($xml_data, $dry_run=false, $force_this_slice=false) 
                     if (isset($sld['CHARDATA'])) {
                         $chardata   = base64_decode($sld['CHARDATA']);
                         $chardata   = $sld['GZIP'] ? gzuncompress($chardata) : $chardata;
-                        $content4id = unserialize ($chardata);
+                        $content4id = unserialize($chardata, ['allowed_classes' => false]);
                     } else { // Its in XML
                         $content4id = $sld['item'];
                     }

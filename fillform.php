@@ -117,7 +117,7 @@ require_once __DIR__ . "/include/fillform.php";
 
 pageOpen('noauth');
 
-if (is_array($tmp_state_vars = unserialize($r_packed_state_vars))) {
+if (is_array($tmp_state_vars = unserialize($r_packed_state_vars, ['allowed_classes' => false]))) {
     RestoreVariables($tmp_state_vars);
 }
 

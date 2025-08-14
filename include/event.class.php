@@ -207,7 +207,7 @@ class NewDiscussionCommentEvent {
      * @param $selector
      */
     function __construct( $params, $type, $class, $selector ) {
-        $this->email = unserialize($params);
+        $this->email = unserialize($params, ['allowed_classes' => false]);
     }
 
     /** matches function

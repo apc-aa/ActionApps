@@ -153,7 +153,7 @@ class AA_Csv_Importer {
         $this->itemIdMappedParams  = $_REQUEST['itemIdMappedParams'];
         $this->actionIfItemExists  = $_REQUEST['actionIfItemExists'];
         $this->insertSilent        = (bool)$_REQUEST['insertSilent'];
-        $this->addParams           = unserialize(url2bin($_REQUEST['addParamsSerial']));
+        $this->addParams           = unserialize(url2bin($_REQUEST['addParamsSerial']), ['allowed_classes' => false]);
         $this->auth_uid            = AuthGetUid();
     }
 
@@ -357,9 +357,7 @@ class AA_Csv_Importer {
         //----------------------------------------------------------------------------
         // Create output fields
 
-        $slice = AA_Slice::getModule($this->slice_id);
-
-        $outFields = $slice->getFields()->getNameArray();
+        $outFields = AA_Slice::getModule($this->slice_id)?->getFields()->getNameArray();
         unset($outFields['slice_id........']);
 
         //create list of actions, : todo : possible loading from a file

@@ -33,7 +33,7 @@ if ($handle = opendir('/data/www/aa-config/')) {
         $result = file_get_contents("https://odm.colnodo.apc.org/apc-aa-dev/misc/test/confreader.php?file=". rawurlencode($file));
         print_r($file);
         print_r($result);
-        $conf   = unserialize($result);
+        $conf   = unserialize($result, ['allowed_classes' => false]);
         $varset->clear();
         foreach ( $conf as $k=>$v ) {
             $varset->add($k, 'text', $v);

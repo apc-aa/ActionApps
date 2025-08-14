@@ -601,7 +601,7 @@ class MLXView {
             }
             return "";
         }
-        $ctrlSliceID = $GLOBALS['MLX_TRANSLATIONS'][(string)unpack_id($slice_id)];
+        $ctrlSliceID = $GLOBALS['MLX_TRANSLATIONS'][unpack_id($slice_id)];
         if (!$ctrlSliceID) {
             return "";
         }
@@ -645,13 +645,13 @@ class MLXView {
             }
             return "";
         }
-        $ctrlSliceID = $GLOBALS['MLX_TRANSLATIONS'][(string)unpack_id($slice_id)];
+        $ctrlSliceID = $GLOBALS['MLX_TRANSLATIONS'][unpack_id($slice_id)];
         if (!$ctrlSliceID) {
             $ctrlSliceID = MLXSlice(AA_Slice::getModule(unpack_id($slice_id)));
             if (!$ctrlSliceID) {
                 return "MLXView::getTranslations no ctrlSliceID";
             }
-            $GLOBALS['MLX_TRANSLATIONS'][(string)unpack_id($slice_id)] = unpack_id($ctrlSliceID);
+            $GLOBALS['MLX_TRANSLATIONS'][unpack_id($slice_id)] = unpack_id($ctrlSliceID);
         }
         $translations = $this->getPrioTranslationFields($ctrlSliceID);
         $db  = getDB();

@@ -82,9 +82,8 @@ class AA_Moduleregistry implements Iterator, ArrayAccess, Countable {
         $classes = ["AA_Slice", ...array_values(AA_Components::getClassNames('AA_Module_'))];
 
         // call getModuleconfig() on each class
-        /** @var string $class */
+        /** @var class-string<AA_Module> $class */
         foreach ($classes as $class) {
-            /** @var AA_Moduleconfig $conf */
             $conf = $class::getModuleconfig();
             $this->arr[$conf->get('type')] = $conf;
         }
@@ -1013,7 +1012,7 @@ class AA_Module_Site extends AA_Module {
     public function getTree(): ?sitetree {
         $tree = null;
         if ($structure = $this->getProperty('structure')) {
-            $tree = unserialize($structure);
+            $tree = unserialize($structure, ['allowed_classes' => ['sitetree']]);
         } elseif ($spotrow = DB_AA::select1('', "SELECT * FROM site_spot", [
             ['site_id', $this->module_id, 'l'],
             ['spot_id', '1'],

@@ -216,7 +216,7 @@ FrmTabCaption(_m("Slice"), $form_buttons);
 ModuleFieldsForm($foo_source, $marr = GetModuleFields($foo_source), $superadmin, ($slice_id==""), $new_owner, $new_owner_email);
 
 $convert_action = '';
-if (DB_CHARACTER_SET === "cp1250" && $slice_id && AA_Slice::getModule($slice_id)->getCharset() === 'windows-1250') {
+if (DB_CHARACTER_SET === "cp1250" && $slice_id && AA_Slice::getModule($slice_id)?->getCharset() === 'windows-1250') {
     $convert_action = 'Convert encoding of this slice to utf <a href=' . StateUrl($_SERVER['PHP_SELF'] . '?convert=utf') . '>test</a> <a href=' . StateUrl($_SERVER['PHP_SELF'] . '?convert=doutf') . '>convert</a>';
 }
 
