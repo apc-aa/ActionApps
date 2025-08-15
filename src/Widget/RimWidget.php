@@ -225,7 +225,8 @@ class RimWidget extends Widget
         $actbuttonsdown = [];
         if (str_contains($actions2show, 'R')) {
 //            $actbuttonsdown['R'] = "<article><!--i class=\"ico insert\">add</i--><input type=search placeholder='"._m('search in existing')."' value onkeyup=\"DisplayAaResponse('flt$base_id', 'Widget_Selection', {s:'$def_slice_id',f:'$def_field_id',q:this.value})\"></article>";
-            $actbuttonsdown['R'] = "<article><!--i class=\"ico insert\">add</i--><input type=search placeholder='"._m('search in existing')."' value onkeyup=\"AA_$('#flt$base_id').style.visibility='visible'; DisplayAaResponse('flt$base_id',   'Widget_Selection', {s:'$def_slice_id',f:'$def_field_id',q:this.value})\" onblur=\"setTimeout(() => AA_$('#flt$base_id').style.visibility=(this === document.activeElement) ? 'visible':'hidden', 100)\"></article>";
+            // we use setTimeout here - we do not want to close the section before the user click on the selected item is prossecced (copied to the itemgroup). 100 ms was too low, sometimes (the click just closed the selection and did not add the item)
+            $actbuttonsdown['R'] = "<article><!--i class=\"ico insert\">add</i--><input type=search placeholder='"._m('search in existing')."' value onkeyup=\"AA_$('#flt$base_id').style.visibility='visible'; DisplayAaResponse('flt$base_id',   'Widget_Selection', {s:'$def_slice_id',f:'$def_field_id',q:this.value})\" onblur=\"setTimeout(() => AA_$('#flt$base_id').style.visibility=(this === document.activeElement) ? 'visible':'hidden', 500)\"></article>";
         }
         if (str_contains($actions2show, 'N')) {
             $actbuttonsdown['N'] = "<article><i class=\"ico new\" onclick=\"OpenWindowTop('".Inputform_url(true, null, $sid, 'close_dialog', null, "/rim/$def_slice_id/$def_field_id/$base_id")."');\">"._m('new').'</i></article>';
@@ -303,7 +304,7 @@ class RimWidget extends Widget
         foreach ($options as $id => $v) {
             $id  = safe($id);
             $ret .= <<<HTML
-                       <article class="item"  onclick="event.stopPropagation(); this.closest('.aa-rim').querySelector('input[type=search]').focus(); AA_RimAdd2Current(this)" $item_width>
+                       <article class="item" onclick="event.stopPropagation();let el=this.closest('.aa-rim')?.querySelector('input[type=search]');el?.focus();el?.select();this.closest('.aa-rim').querySelector('input[type=search]').focus();AA_RimAdd2Current(this)" $item_width>
                            <section class="iteminfo"> $v </section>
                            <section class="icogroup">
                                <input type="hidden" name="" value="$id" class="id2add"><article class="select" onclick="event.stopPropagation(); this.closest('.aa-rim').querySelector('input[type=search]').focus(); AA_RimAdd2Current(this.closest('.item'))"><i class="ico select">+</i></article>
