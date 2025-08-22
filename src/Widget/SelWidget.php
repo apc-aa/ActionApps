@@ -91,6 +91,7 @@ class SelWidget extends Widget
         $base_name = FormArray::getName4Form($aa_property->getId(), $content, $this->item_index);
         $base_id = FormArray::formName2Id($base_name);
         $required = $aa_property->isRequired() ? 'required' : '';
+        $select_plus = (bool)$this->getProperty('select_plus', false);
 
         $attrs = Widget::stdInputAttrs($type, $base_id, ['dirty']);
         $widget_add = htmlattr($attrs);
@@ -102,7 +103,6 @@ class SelWidget extends Widget
         // This widget uses constants - show selectbox!
         $input_name = $base_name . "[]";
         $input_id = FormArray::formName2Id($input_name);
-        $this->ids_4_select2[] = "#$input_id";
         $multiple = self::multiple() ? ' multiple' : '';
 
         //$widget    = AA\Widget\Widget::_saveIcon($base_id, $type === 'live', 'left')."<select name=\"$input_name\" id=\"$input_id\"$multiple $required $widget_adds $autofocus>";
@@ -115,10 +115,15 @@ class SelWidget extends Widget
         $widget .= $this->getSelectOptions($options);
         $widget .= "</select>";
 
-        $widget .="
-            <script> 
-              AA_LoadJs( jQuery.fn.select2, function() { $('#$input_id').select2();}, '".\AA_Requires::getUrl4Lib('select2@4')."');
-            </script>";
+        if ($select_plus || (count($options) > 8)) {   // if there are more than 8 options, use select2 library
+            $this->ids_4_select2[] = "#$input_id";
+        }
+
+//        now managed by ids_4_select2
+//        $widget .="
+//            <script>
+//              AA_LoadJs( jQuery.fn.select2, function() { $('#$input_id').select2();}, '".\AA_Requires::getUrl4Lib('select2@4')."');
+//            </script>";
 
         return ['html' => $widget, 'last_input_name' => $input_name, 'base_name' => $base_name, 'base_id' => $base_id, 'required' => $aa_property->isRequired()];
     }
