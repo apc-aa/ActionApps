@@ -260,7 +260,7 @@ class PageCache  {
         $action = (string)$action;
         $entry = $this->get($key, $action);
         AA::$debug&2 && AA::$dbg->log("Pagecache->getPage(output): ".($entry ? 'cached text' : 'not found'), 'Pagecache action:'.$action);
-        return $entry ? unserialize($entry, ['allowed_classes' => Cacheentry::class]) : null;
+        return $entry ? unserialize($entry, ['allowed_classes' => [Cacheentry::class]]) : null;
     }
 
 
