@@ -1,5 +1,9 @@
 ### List of removed, no longer maintained files in ActionApps
 
+/**ac1.php3**  
+Shortcut for alerts confirmation to make the URL shorter (Location: $self/misc/alerts/unsubscribe.php3?id=$id)   
+_No longer maintained. Removed 2025-08-13 - honzam
+
 /**hiercons.php3**  
 Show hierarchical constants  
 _No longer maintained. It was unfunctional for some time already. Hierarchy now should be solved on slice level - withe related items. Removed 2022-08-19 - honzam (see older apc-aa branches to get the code)_

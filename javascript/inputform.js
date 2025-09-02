@@ -51,15 +51,16 @@ function OpenRelated(varname, sid, mode, design, frombins, conds, condsrw, slice
     relatedwindow = open( url, "relatedwindow", "scrollbars=1, resizable=1, width=570");
 }
 
-function sb_RemoveItem(selectbox) {
-    var si = selectbox.selectedIndex;
-    if ( si > -1 ) {
-        selectbox.removeChild(selectbox.options[si]);
-        if (selectbox.options.length) {
-            selectbox.selectedIndex = Math.max(si-1, 0);
-        }
+function sb_RemoveItem(sb) {
+    if (!sb || !sb.options?.length) return;
+    const si = sb.selectedIndex;
+    [...sb.selectedOptions].forEach(opt => opt.remove());
+    if (sb.options.length) {
+        sb.selectedIndex = Math.min(si, sb.options.length - 1);
     }
+    sb.focus();
 }
+
 
 function sb_SetValue(selectbox, index, text, value) {
     if (selectbox != null && selectbox.options != null) {
