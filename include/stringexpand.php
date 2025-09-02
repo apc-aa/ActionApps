@@ -3666,16 +3666,16 @@ class AA_Stringexpand_Aggregate extends AA_Stringexpand {
         $ret = '';
         switch ($function) {
             case 'sum':
-                $ret = array_sum(str_replace(',', '.', $results));
+                $ret = array_sum(array_map('PhpFloat', $results));
                 break;
             case 'max':
-                $ret = max(str_replace(',', '.', $results));
+                $ret = max(array_map('PhpFloat', $results));
                 break;
             case 'min':
-                $ret = min(str_replace(',', '.', $results));
+                $ret = min(array_map('PhpFloat', $results));
                 break;
             case 'avg':
-                array_walk($results, static fn($a) => (float)str_replace(',', '.', $a));
+                array_walk($results, static fn($a) => (float)PhpFloat($a));
                 $ret = ($results !== []) ? array_sum($results)/count($results) : '';
                 break;
             case 'concat':
@@ -8265,7 +8265,7 @@ class AA_Stringexpand_Max extends AA_Stringexpand {
             case 1:  $arr = json2arr($arg_list[0]); break;
             default: $arr = $arg_list;
         }
-        return str_replace(',','.',$arr);
+        return array_map('PhpFloat', $arr);
     }
 }
 

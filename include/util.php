@@ -233,7 +233,7 @@ function ParamImplode($param): string {
 function PhpFloat($value): string {
     // internally uses PHP float always with decimal point, so we have to convert
     // twice, since (float) typecasting is unfortunately LOCALE dependent. Grr
-    return str_replace(',', '.',(float)str_replace(',', '.', trim($value)));
+    return str_replace(',', '.',(float)str_replace([',','&#8239;',' '], ['.','',''], trim($value)));
 }
 
 function ConvertEncodingDeep($value, $from=null, $to=null) {

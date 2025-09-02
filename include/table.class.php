@@ -71,7 +71,7 @@ class AA_Table {
     function addset($r, $c, $value): void
     {
         $cur = $this->getOne($r, $c);
-        $val = ((float) str_replace(',', '.', $cur)) + ((float) str_replace(',', '.', $value));
+        $val = ((float)PhpFloat($cur)) + ((float)PhpFloat($value));
         $this->set($r, $c, $val);
     }
 
@@ -123,7 +123,7 @@ class AA_Table {
         // todo - sum also rows;
         $ret  = 0.0;
         foreach ($this->rows as $row => $cols) {
-            $ret += (float) str_replace(',', '.', $this->getOne($row, $c));
+            $ret += (float)PhpFloat($this->getOne($row, $c));
         }
         return str_replace('_#1', $ret, $exp);
     }
@@ -171,7 +171,7 @@ class AA_Array {
 
     function addset($i, $value): void
     {
-        $this->arr[(string)$i] = ((float)str_replace(',', '.',$this->arr[(string)$i])) + ((float) str_replace(',', '.', $value));
+        $this->arr[(string)$i] = ((float)PhpFloat($this->arr[(string)$i])) + ((float)PhpFloat($value));
     }
     
     function joinset($i, $value, $delimiter): void

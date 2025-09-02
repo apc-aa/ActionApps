@@ -1,6 +1,6 @@
 <?php
 /**
-* go.php for finding links to asociated items (fed from...)
+* go.php for finding links to associated items (fed from...)
 *
 * Parameters:
 * <pre>
