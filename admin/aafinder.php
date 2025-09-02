@@ -194,8 +194,7 @@ function PrintItemInfo($item_id): void
 
         if ($res = DB_AA::select([], "SELECT LOWER(HEX(`item_id`)) as Item, '' as Status, '' as PubDate, '' as ExpDate, '' as LastEdit, '' as FieldName, `field_id`, `number`,`text`, `flag` FROM `content`", [['text',$long_id]])) {
             array_walk($res, static function (&$v, $k) {
-                if (is_long_id($iid = $v['Item'])) {
-                    $item = AA_Items::getItem(new zids($iid, 'l'));
+                if (is_long_id($iid = $v['Item']) AND ($item = AA_Items::getItem(new zids($iid, 'l')))) {
                     $v['Item'] = Adminlink::itemLink($iid, $item->getSliceID());
                     $v['Status'] = $item->getStatusCode();
                     $v['PubDate'] = date('j.n.Y H:i:s', (int)$item->getval('publish_date....'));
