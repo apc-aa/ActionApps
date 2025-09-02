@@ -39,7 +39,7 @@ function dec2hex(dec) {
 
 function unpackID(packedID) {
     let retval = "";
-    for (i = 0; i < packedID.length; i ++) {
+    for (let i = 0; i < packedID.length; i ++) {
         retval += dec2hex(packedID.charCodeAt(i));
     }
     return retval;
@@ -183,7 +183,7 @@ function getAADate(formName,dateField,emptyValue) {
 
    Sets the control, trying:
     1. given controlName - if succeeds, tries to set the HTML radio button as well
-    2. controlName + '[]' - usefull on multiple selectboxes, checkboxes, radios
+    2. controlName + '[]' - useful on multiple selectboxes, checkboxes, radios
     3. AA date
 
     sets the AA like date in 3 select boxes:
@@ -218,9 +218,9 @@ function setControlOrAADate(formName, controlName, newValue, datePrefix, html, t
 
 /*  E N D  O F  A A   D A T E   F U N C T I O N S  */
 
-/* gets a control by name in IE and Netscape */
+/* gets a control by name */
 function getControlByName(formName, controlName) {
-    return document.forms[formName] ? document.forms[formName][controlName] : null;
+    return document.forms[formName]?.[controlName] ?? null;
 }
 
 /* sets a control value to the given one - works fine with text fields, hidden fields,
@@ -359,8 +359,9 @@ function getField(fieldID) {
 }
 
 function setField(fieldID, newValue) {
+    const name = document.querySelector('form[name="inputform"] :is(input,select,textarea)[name*="[' + fieldID.replaceAll('.', '_') + ']"]')?.getAttribute('name') ?? 'v' + unpackID(fieldID);  // new AA forms - basic input fields
     const myDate = new Date();
-    setControlOrAADate('inputform','v'+unpackID(fieldID),newValue,'tdctr_', 0, myDate.getTimezoneOffset()/60);
+    setControlOrAADate('inputform', name, newValue, 'tdctr_', 0, myDate.getTimezoneOffset()/60);
 }
 
 function hideField(fieldID) {
