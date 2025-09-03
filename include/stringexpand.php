@@ -7695,8 +7695,8 @@ class AA_Stringexpand {
     /** @var bool switches caching ON and OFF for cacheable stringexpands - default is true - Cache  */
     protected static $doCache = true;
 
-    public const UNQUOTED_ARRAY = [":", "(", ")", "{", "}"];
-    public const QUOTED_ARRAY   = ["|~@_a", "|~@_b", "|~@_c", "|~@_d", "|~@_e", "_AA_ReMoVe"];
+    public const UNQUOTED_ARRAY = [":", "(", ")", "{", "}", "#"];    // there was problem with # in {ifset:_#this:<a href="_#1">{ifset:{name...........1}:_#1:_#this}</a>} if field ends with #
+    public const QUOTED_ARRAY   = ["|~@_a", "|~@_b", "|~@_c", "|~@_d", "|~@_e", "|~@_f", "_AA_ReMoVe"];
 
     /**
      * @var AA_Item - item, for which we are stringexpanding (Not used in many expand functions)
