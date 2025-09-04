@@ -663,16 +663,16 @@ class AA_Field implements ArrayAccess, Countable, Iterator {
 
         $indexes = '';
         if ($text_stored) {
-            $arr = DB_AA::select(['number'=>'cnt'], 'SELECT `number`, COUNT(*) as cnt FROM content, item ', [['content.item_id', 'item.id', 'j'], ['item.slice_id', $slice_id, 'l'], ['field_id', $id], ['text', '', '>']], null, ['number']);
+            $arr = DB_AA::select(['number'=>'cnt'], 'SELECT `number`, COUNT(*) as cnt FROM content, item ', [['content.item_id', 'item.id', 'j'], ['item.slice_id', $slice_id, 'l'], ['field_id', $id], ['text', '', 'FILLED']], null, ['number']);
             $indexes = implode(', ', array_map(static fn($idx, $cnt) => "$idx ($cnt)", array_keys($arr), $arr));
         }
 
         $arr = ['Items'                     => $items,
-                'Items with field'          => $items_field['cnt'],
+                'Content values'            => $items_field['cnt'],
                 'Distinct values'           => ($items_field['cntitm'] == $items && $items_field[$text_stored ? 'cntval' : 'cntnum'] == 1 && $items > 1) ? "<b title=\"All the values are the same - maybe you can delete the field\">Distinct: $distinct_val</b>" : $distinct_val,
                 'Distinct items with field' => $items_field['cntitm'],
-                'Text fields'               => $text_rows,
-                'Numeric fields'            => $num_rows,
+                'Text values'               => $text_rows,
+                'Numeric values'            => $num_rows,
                 'Empty fields'              => $empty_text.":".$empty,
                 'Fields marked as HTML'     => ($items_field['cntitm'] == $items && $items == $num_html && $items > 1) ? "<b title=\"All values marked as HTML\">HTML</b>:$num_html" : "HTML:$num_html",
                 'Indexes'                   => $indexes,

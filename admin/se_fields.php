@@ -275,6 +275,8 @@ $s_fields = $slice->getFields((bool)$slice_fields);
 
 // check duplicated aliases
 $all_aliasses = [];
+
+/** @var AA_Field $fld */
 foreach ($s_fields as $fld) {
     foreach (['alias1','alias2','alias3',] as $fldname) {
         $alias = $fld[$fldname];

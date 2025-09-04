@@ -1792,9 +1792,10 @@ function getConstantValue($group, $what, $field_name) {
  * @param $text string
  */
 function QuoteColons($text): string {
-    return str_replace(AA_Stringexpand::UNQUOTED_ARRAY, AA_Stringexpand::QUOTED_ARRAY, $text);
+    return str_ends_with($text, '#') ?
+        str_replace(AA_Stringexpand::UNQUOTED_ARRAY, AA_Stringexpand::QUOTED_ARRAY, substr($str, 0, -1)). '|~@_f' :
+        str_replace(AA_Stringexpand::UNQUOTED_ARRAY, AA_Stringexpand::QUOTED_ARRAY, $text);
 }
-
 
 /** DeQuoteColons function
  *  Substitutes special AA 'colon' string back to colon ':' character
@@ -1802,7 +1803,7 @@ function QuoteColons($text): string {
  * @param $text string
  */
 function DeQuoteColons($text): string {
-    return str_replace(AA_Stringexpand::QUOTED_ARRAY, AA_Stringexpand::UNQUOTED_ARRAY, $text);
+    return str_replace(AA_Stringexpand::QUOTED_ARRAY_BACK, AA_Stringexpand::UNQUOTED_ARRAY_BACK, $text);
 }
 
 /* just for speedup stringexpand parameter parsing */
@@ -1810,7 +1811,7 @@ function DeQuoteColons($text): string {
  * @param $text string
  */
 function DeQuoteColonsTrim($text): string {
-    return str_replace(AA_Stringexpand::QUOTED_ARRAY, AA_Stringexpand::UNQUOTED_ARRAY, trim($text));
+    return str_replace(AA_Stringexpand::QUOTED_ARRAY_BACK, AA_Stringexpand::UNQUOTED_ARRAY_BACK, trim($text));
 }
 
 //$quot_arr    = array();
@@ -6647,7 +6648,7 @@ function StrExpand(string $class_name, array $params= [], array $context_arr= []
     } else {
         $res = call_user_func_array( [$stringexpand,'expand'], $params);
     }
-    return (string)(($allow_quote_colons && $stringexpand->doQuoteColons()) ? str_replace(AA_Stringexpand::UNQUOTED_ARRAY, AA_Stringexpand::QUOTED_ARRAY, $res) : $res);  // QuoteColons() - inlined for speedup
+    return (string)(($allow_quote_colons && $stringexpand->doQuoteColons()) ? QuoteColons($res) : $res);
 }
 
 /**
@@ -7695,8 +7696,11 @@ class AA_Stringexpand {
     /** @var bool switches caching ON and OFF for cacheable stringexpands - default is true - Cache  */
     protected static $doCache = true;
 
-    public const UNQUOTED_ARRAY = [":", "(", ")", "{", "}", "#"];    // there was problem with # in {ifset:_#this:<a href="_#1">{ifset:{name...........1}:_#1:_#this}</a>} if field ends with #
-    public const QUOTED_ARRAY   = ["|~@_a", "|~@_b", "|~@_c", "|~@_d", "|~@_e", "|~@_f", "_AA_ReMoVe"];
+    public const UNQUOTED_ARRAY = [":", "(", ")", "{", "}"];
+    public const QUOTED_ARRAY   = ["|~@_a", "|~@_b", "|~@_c", "|~@_d", "|~@_e", "_AA_ReMoVe"];
+    // back conversion adds ending # to the list
+    public const QUOTED_ARRAY_BACK   = ["|~@_a", "|~@_b", "|~@_c", "|~@_d", "|~@_e", "|~@_f", "_AA_ReMoVe"];
+    public const UNQUOTED_ARRAY_BACK = [":", "(", ")", "{", "}", "#"];    // there was problem with # in {ifset:_#this:<a href="_#1">{ifset:{name...........1}:_#1:_#this}</a>} if field ends with #
 
     /**
      * @var AA_Item - item, for which we are stringexpanding (Not used in many expand functions)
@@ -7755,11 +7759,11 @@ class AA_Stringexpand {
         $result = [];
         if (static::doTrimParams()) {
             foreach ($items as $item) {
-                $result[] = str_replace(self::QUOTED_ARRAY, self::UNQUOTED_ARRAY, trim($item));  // QuoteColonsTrim() - inlined for speed
+                $result[] = str_replace(self::QUOTED_ARRAY_BACK, self::UNQUOTED_ARRAY_BACK, trim($item));  // QuoteColonsTrim() - inlined for speed
             }
         } else {
             foreach ($items as $item) {
-                $result[] = str_replace(self::QUOTED_ARRAY, self::UNQUOTED_ARRAY, $item);        // QuoteColons() - inlined for speed
+                $result[] = str_replace(self::QUOTED_ARRAY_BACK, self::UNQUOTED_ARRAY_BACK, $item);        // QuoteColons() - inlined for speed
             }
         }
         return $result;

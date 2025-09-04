@@ -996,6 +996,8 @@ class AA_Module_Site extends AA_Module {
         }
         $show_ids    = [];
 
+        huhl($tree);
+
         // it fills $show_ids array
         $tree->walkTree($apc_state, 1, function ($spot_id) use (&$show_ids) { $show_ids[] = $spot_id; });
 
@@ -1012,7 +1014,7 @@ class AA_Module_Site extends AA_Module {
     public function getTree(): ?sitetree {
         $tree = null;
         if ($structure = $this->getProperty('structure')) {
-            $tree = unserialize($structure, ['allowed_classes' => ['sitetree']]);
+            $tree = unserialize($structure, ['allowed_classes' => ['sitetree','spot']]);
         } elseif ($spotrow = DB_AA::select1('', "SELECT * FROM site_spot", [
             ['site_id', $this->module_id, 'l'],
             ['spot_id', '1'],
