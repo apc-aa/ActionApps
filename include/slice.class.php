@@ -996,8 +996,6 @@ class AA_Module_Site extends AA_Module {
         }
         $show_ids    = [];
 
-        huhl($tree);
-
         // it fills $show_ids array
         $tree->walkTree($apc_state, 1, function ($spot_id) use (&$show_ids) { $show_ids[] = $spot_id; });
 
