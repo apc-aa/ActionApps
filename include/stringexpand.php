@@ -469,9 +469,9 @@ class AA_Stringexpand_Inputvar extends AA_Stringexpand_Nevercache {
     {
         // replace inputform field
         // destroy all aliases, since the content of the variables could contain
-        // aliases, but we don't want to unalias them. The _AA_ReMoVe_ string
+        // aliases, but we don't want to unalias them. The "\x1E|~@X" string
         // will be removed in dequteColons
-        return str_replace('_#','__AA_ReMoVe#', AA::Contentcache()->get('inputvar:'. implode(':',$arg_list)));
+        return str_replace('_#',"\x1E|~@X#", AA::Contentcache()->get('inputvar:'. implode(':',$arg_list)));
     }
 }
 
@@ -1792,9 +1792,19 @@ function getConstantValue($group, $what, $field_name) {
  * @param $text string
  */
 function QuoteColons($text): string {
-    return str_ends_with($text, '#') ?
-        str_replace(AA_Stringexpand::UNQUOTED_ARRAY, AA_Stringexpand::QUOTED_ARRAY, substr($str, 0, -1)). '|~@_f' :
-        str_replace(AA_Stringexpand::UNQUOTED_ARRAY, AA_Stringexpand::QUOTED_ARRAY, $text);
+    if ($text === '') {
+        return '';
+    }
+    if (strpbrk($text, ':(){}') === false) {
+        if ($text[-1] !== '#') {
+            return $text;
+        }
+        return $text."\x1E|~@X";
+    }
+    if ($text[-1] !== '#') {
+        return strtr($text, AA_Stringexpand::QUOTE_MAP);
+    }
+    return strtr($text, AA_Stringexpand::QUOTE_MAP)."\x1E|~@X";
 }
 
 /** DeQuoteColons function
@@ -1803,7 +1813,10 @@ function QuoteColons($text): string {
  * @param $text string
  */
 function DeQuoteColons($text): string {
-    return str_replace(AA_Stringexpand::QUOTED_ARRAY_BACK, AA_Stringexpand::UNQUOTED_ARRAY_BACK, $text);
+    if (!str_contains($text, "\x1E")) {
+        return $test;
+    }
+    return strtr($text, AA_Stringexpand::UNQUOTE_MAP);
 }
 
 /* just for speedup stringexpand parameter parsing */
@@ -1811,7 +1824,10 @@ function DeQuoteColons($text): string {
  * @param $text string
  */
 function DeQuoteColonsTrim($text): string {
-    return str_replace(AA_Stringexpand::QUOTED_ARRAY_BACK, AA_Stringexpand::UNQUOTED_ARRAY_BACK, trim($text));
+    if (!str_contains($text, "\x1E")) {
+        return trim($text);
+    }
+    return strtr(trim($text), AA_Stringexpand::UNQUOTE_MAP);
 }
 
 //$quot_arr    = array();
@@ -6638,7 +6654,7 @@ class AA_Unalias_Callback {
  * @param  bool     $ignore_cache
  *
  * @return string
- *@deprecated use StrExp() or AA::Un();
+ * @deprecated use StrExp() or AA::Un();
  */
 function StrExpand(string $class_name, array $params= [], array $context_arr= [], bool $allow_quote_colons=false, bool $ignore_cache=false): string {
     /** @var AA_Stringexpand $stringexpand */
@@ -7696,11 +7712,22 @@ class AA_Stringexpand {
     /** @var bool switches caching ON and OFF for cacheable stringexpands - default is true - Cache  */
     protected static $doCache = true;
 
-    public const UNQUOTED_ARRAY = [":", "(", ")", "{", "}"];
-    public const QUOTED_ARRAY   = ["|~@_a", "|~@_b", "|~@_c", "|~@_d", "|~@_e", "_AA_ReMoVe"];
-    // back conversion adds ending # to the list
-    public const QUOTED_ARRAY_BACK   = ["|~@_a", "|~@_b", "|~@_c", "|~@_d", "|~@_e", "|~@_f", "_AA_ReMoVe"];
-    public const UNQUOTED_ARRAY_BACK = [":", "(", ")", "{", "}", "#"];    // there was problem with # in {ifset:_#this:<a href="_#1">{ifset:{name...........1}:_#1:_#this}</a>} if field ends with #
+    public const QUOTE_MAP = [
+        ':' => "\x1E|~@a",
+        '(' => "\x1E|~@b",
+        ')' => "\x1E|~@c",
+        '{' => "\x1E|~@d",
+        '}' => "\x1E|~@e",
+    ];
+
+    public const UNQUOTE_MAP = [
+        "\x1E|~@a" => ':',
+        "\x1E|~@b" => '(',
+        "\x1E|~@c" => ')',
+        "\x1E|~@d" => '{',
+        "\x1E|~@e" => '}',
+        "\x1E|~@X" => '',    // added removal (previous _AA_ReMoVe, but it is quicker to hav the same length as others)
+    ];
 
     /**
      * @var AA_Item - item, for which we are stringexpanding (Not used in many expand functions)
@@ -7758,12 +7785,12 @@ class AA_Stringexpand {
         $items = ParamExplode($params);
         $result = [];
         if (static::doTrimParams()) {
-            foreach ($items as $item) {
-                $result[] = str_replace(self::QUOTED_ARRAY_BACK, self::UNQUOTED_ARRAY_BACK, trim($item));  // QuoteColonsTrim() - inlined for speed
+            foreach ($items as $text) {
+                $result[] = str_contains($text, "\x1E") ? strtr(trim($text), AA_Stringexpand::UNQUOTE_MAP) : trim($text); // DeQuoteColonsTrim() - inlined for speed
             }
         } else {
-            foreach ($items as $item) {
-                $result[] = str_replace(self::QUOTED_ARRAY_BACK, self::UNQUOTED_ARRAY_BACK, $item);        // QuoteColons() - inlined for speed
+            foreach ($items as $text) {
+                $result[] = str_contains($text, "\x1E") ? strtr($text, AA_Stringexpand::UNQUOTE_MAP) : $text;            // DeQuoteColons() - inlined for speed
             }
         }
         return $result;

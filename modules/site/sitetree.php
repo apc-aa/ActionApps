@@ -270,11 +270,11 @@ class spot {
 
 class sitetree {
     /** @var spot[] -  Array of spots */
-    protected $tree;
-    protected $start_id;
+    private array $tree;
+    private int|string $start_id;  // string just for old unserialized objects
 
     /** @var int Current spot id */
-    protected int $current_id;
+    private int $current_id;
 
     function __construct($spot=false) {
         $this->tree[1]    = new spot( $spot['spot_id'], $spot['name'] ?:'start', $spot['conditions'], $spot['variables'], $spot['spot_id'], [$spot['spot_id']], $spot['flag'] );
@@ -284,6 +284,7 @@ class sitetree {
 
     /** current_id could be undefined when we deserialize older object */
     public function __wakeup() {
+        $this->start_id = (int)$this->start_id;
         $this->current_id ??= $this->start_id;
     }
 
