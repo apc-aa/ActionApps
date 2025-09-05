@@ -1814,7 +1814,7 @@ function QuoteColons($text): string {
  */
 function DeQuoteColons($text): string {
     if (!str_contains($text, "\x1E")) {
-        return $test;
+        return (string)$test;
     }
     return strtr($text, AA_Stringexpand::UNQUOTE_MAP);
 }
