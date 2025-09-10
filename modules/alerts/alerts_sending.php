@@ -137,6 +137,7 @@ class AA_Collection {
                 $filters[$filter_id] = &$unordered_filters[$filter_id];
             }
         }
+        $aliases    = [];
 
         // Find all users who should receive anything
         if ( !is_array($emails) || !count($emails) ) {
