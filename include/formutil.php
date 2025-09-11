@@ -487,7 +487,11 @@ class AA_Inputfield {
     private $const_arr;        // array of constants used for selections (selectbox, radio, ...)
     private $msg;                         // stores return code from functions
 
+    /** Used as slice id for editing - mainly for triggers, but also for SEO field */
     private $use_triggers_4_slice = 0;  // shall the input contain aa_onXxxx() triggers? used for item-editing widgets
+
+    /** rarely used edited Item property, but we need it for seo field, for example */
+    private ?AA_item $item = null;
 
     /** AA_Inputfield function
      * Constructor - initializes AA_Inputfield
@@ -849,7 +853,7 @@ class AA_Inputfield {
      * @param AA_Item $item
      * @param string  $slice_id
      */
-    function get( $item, $slice_id ): string
+    function get( ?AA_item $item, $slice_id ): string
     {
         // @todo check, how to do it better - this do not work if "slice_field" parameter uses {subst...} for example
         AA::Stringexpander()->unaliasArray($this->param);
@@ -857,6 +861,7 @@ class AA_Inputfield {
         $this->echoo($this->input_before);
 
         $this->use_triggers_4_slice = $slice_id;  // we are in item editing mode - add triggers
+        $this->item = $item;
 
         if ($this->mode === 'freeze') {
             switch ($this->input_type) {
@@ -1351,8 +1356,7 @@ class AA_Inputfield {
 
                 $widg .= "<label class=\"aa-langtrans aa-lang-$lang\" id=\"part$id2\" ".($first ? '' : ' style="display:none;"')."><strong class=\"aa-langtrans-label\">$lang</strong>";
 
-
-                $link  = (str_starts_with($value, 'http://') || str_starts_with($value, 'https://')) ? a_href($value, GetAAImage('external-link.png', _m('Show'), 16, 16), ['class' =>'aa-externallink']) : '';
+                $link  = $this->getPreviewLink($value);
                 $widg .= "<input id=\"$id2\" name=\"$name2\" $attr_string ". (($this->required && $first) ? " required": ''). $GLOBALS['mlxFormControlExtra']. " value=\"$value\" $triggers>$link";
                 $widg .= "</label>";
                 $first = false;
@@ -1361,16 +1365,25 @@ class AA_Inputfield {
             $widg .= "\n</div>";
 
         } else {
-            $value     = safe($val[0]['value']);
-            $link    = (str_starts_with($value, 'http://') || str_starts_with($value, 'https://')) ? a_href($value, GetAAImage('external-link.png', _m('Show'), 16, 16), ['class' =>'aa-externallink']) : '';
-
+            $value = is_null($i=array_key_first($val)) ? '' : safe($val[$i]['value']);  // it was 0, but when you switch the field from translated to non-translated, the value is stored in $val[78000000] or so
+            $link  = $this->getPreviewLink($value);
             $widg =  "<input name=\"$name\" $attr_string ". ($this->required ? " required": ''). $GLOBALS['mlxFormControlExtra']." value=\"$value\" $triggers>$link";
         }
 
         $this->echovar($widg);
         $this->helps('plus');
+    }
 
-
+    private function getPreviewLink($value): string {
+        $link = '';
+        if (str_starts_with($value, 'http://') || str_starts_with($value, 'https://')) {
+            $link = a_href($value, GetAAImage('external-link.png', _m('Show'), 16, 16), ['class' => 'aa-externallink']);
+        } elseif ($this->id === 'seo.............' && !empty($value) && $this->item) {
+            if ($url = AA_Slice::getModule($this->use_triggers_4_slice)?->getPreviewUrl($this->item->getId())) {
+                $link = a_href($url, GetAAImage('external-link.png', _m('Show'), 16, 16), ['class' => 'aa-externallink']);
+            }
+        }
+        return $link;
     }
 
     /** staticText function

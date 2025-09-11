@@ -45,32 +45,12 @@ $sh_itm     = $_GET['sh_itm'];
 $return_url = $_GET['return_url'];
 
 $slice = AA_Slice::getModule(AA::$module_id);
-if (empty($slice)) {
+if ($slice === null) {
      echo _m("Wrong slice_id.");
      exit;
 }
 
-$item = AA_Item::getItem(new zids($sh_itm, 'l'));
-if (empty($item)) {
-     echo _m("Wrong item_id.");
-     exit;
-}
-
-//header("Content-Security-Policy: default-src * 'unsafe-inline' 'unsafe-eval'");
-//header("Content-Security-Policy: frame-src 'self' http://svetelnykoren.cz/");
-//header("Strict-Transport-Security: max-age=0");
-
-if ($preview_url = $slice->getProperty('_url_preview....')) {
-    $preview_url = $item->unalias($preview_url);
-} elseif ('_#SEO_URL_' !== ($preview_url = $item->unalias('_#SEO_URL_')))  {
-    // Contain _#SEO_URL_ already server?
-    // we are really looking for the begining of the string - pos = 0
-    if ( !str_starts_with($preview_url, 'http://') && !str_starts_with($preview_url, 'https://') && !str_starts_with($preview_url, '//') ) {
-        $preview_url = rtrim($r_slice_view_url,'/').'/'.ltrim($preview_url,'/');
-    }
-} else {
-    $preview_url = con_url($r_slice_view_url, "sh_itm=$sh_itm");
-}
+$preview_url = $slice->getPreviewURL($sh_itm, true);
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 
