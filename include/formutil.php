@@ -1496,7 +1496,7 @@ class AA_Inputfield {
             $widg .= "\n</div>";
         } else {
 
-            $value    = safe($val[0]['value']);
+            $value = is_null($i=array_key_first($val)) ? '' : safe($val[$i]['value']);  // it was 0, but when you switch the field from translated to non-translated, the value is stored in $val[78000000] or so
             $rows     = max($rows, 2, min(floor(substr_count($value,"\n")*1.35), 30));
             $rows_css = $rows*1.3;  // firefox adds extra line, so we specify the height in css as well. Not so important, can be changed later.
 
