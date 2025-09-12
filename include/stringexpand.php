@@ -471,7 +471,7 @@ class AA_Stringexpand_Inputvar extends AA_Stringexpand_Nevercache {
         // destroy all aliases, since the content of the variables could contain
         // aliases, but we don't want to unalias them. The "\x1E|~@X" string
         // will be removed in dequteColons
-        return str_replace('_#',"\x1E|~@X#", AA::Contentcache()->get('inputvar:'. implode(':',$arg_list)));
+        return str_replace('_#',"_\x1E|~@X#", AA::Contentcache()->get('inputvar:'. implode(':',$arg_list)));
     }
 }
 
@@ -8790,6 +8790,11 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
             case 'picture':
                 $thumb_params_arr = [];
                 parse_str($phpthumb_params, $thumb_params_arr);
+                if ( empty($thumb_params_arr['w']) || empty($thumb_params_arr['h']) ) {  // this gona be slow - better to provide w and h in params if possible
+                    $a = @getimagesize(str_replace('&amp;', '&', $img_url));
+                    $thumb_params_arr['w'] = $a[0] ?? 0;
+                    $thumb_params_arr['h'] = $a[1] ?? 0;
+                }
                 return self::getPicture($img_short, (int)$thumb_params_arr['w'], (int)$thumb_params_arr['h'], $param1, $param2);
         }
 
@@ -8835,6 +8840,42 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
         $ret .= "\n  <img src=\"$src\" width=$w height=$h $add loading=lazy $alt_title>";  // lazy is enough on img for <picture> element
         $ret .= "\n</picture>";
         
+        return $ret;
+    }
+    
+    /**
+     * Get array of ideal widths for srcset
+     * - efective width = min(original, desired)  // WITHOUT rounding
+     * - 0.5× a 2×, rounded to roundStep
+     * - no upscaling
+     * - minimal relative difference between widths
+     */
+    protected static function idealImageWidths(int $originalWidth, int $desiredCssWidth): array {
+        define("ROUND_STEP", 64);
+        define("MIN_USEFUL_WIDTH", 320);
+        define("MIN_DELTA_PCT", 0.15); // 15 %
+        
+        if ($originalWidth <= 0 || $desiredCssWidth <= 0) {
+            return [];
+        }
+        $ret = [];
+
+        $eff = min($originalWidth, $desiredCssWidth);
+
+        // 0.5× efectictive width (rounded to roundStep)
+        $half = max(ROUND_STEP, (int)(round((int)floor($eff / 2) / ROUND_STEP) * ROUND_STEP));
+        if ($half >= MIN_USEFUL_WIDTH && $half < $eff &&  ($eff - $half) / $eff >= MIN_DELTA_PCT) {
+            $ret[] = $half;
+        }
+
+        $ret[] = $eff;
+
+        // 2× efekctive width - only if it is still less than original width
+        $double = max(ROUND_STEP, (int)(round($eff * 2 / ROUND_STEP) * ROUND_STEP));
+        if ($double <= $originalWidth && $double > $eff && ($double - $eff) / $double >= MIN_DELTA_PCT) {
+            $ret[] = $double;
+        }
+
         return $ret;
     }
 

@@ -452,11 +452,11 @@ class AA_Content implements Iterator, ArrayAccess, Countable {
             return $idx;
         }
         // the same test as in isMultilingual($field_id) above;
-        if ( key($a)>=AA_Value::MAX_INDEX && $idx<AA_Value::MAX_INDEX ) {
-            if (strlen($a[$index = AA::$langnum[0]+$idx]['value'])) {
+        if ( $idx<AA_Value::MAX_INDEX && key($a)>=AA_Value::MAX_INDEX ) {
+            if (array_key_exists($index = AA::$langnum[0]+$idx, $a)) {      // old - slower strlen($a[$index = AA::$langnum[0]+$idx]['value'])
                 return $index;
             }
-            if (strlen($a[$index = $this->_getDefaultLangNum()+$idx]['value'])) {
+            if (array_key_exists($index = $this->_getDefaultLangNum()+$idx, $a)) { // strlen($a[$index = $this->_getDefaultLangNum()+$idx]['value'])) {
                 return $index;
             }
         }
