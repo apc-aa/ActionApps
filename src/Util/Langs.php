@@ -2,6 +2,7 @@
 
 namespace AA\Util;
 
+use AA;
 use AA_Value;
 
 class Langs {
@@ -98,6 +99,27 @@ class Langs {
         $lang = strtolower($lang);
         $ret  = strlen($lang) ? AA_Value::MAX_INDEX * ((ord($lang[0]) - 97) * 26 + (ord($lang[1]) - 97 + 1)) : 0;
         return max(0, $ret);
+    }
+
+    /** test for two letters from a-z range */
+    public static function isValidLangName(string $lang): bool {
+        return strlen($lang) === 2 && $lang[0] >= 'a' AND $lang[0] <= 'z' && $lang[1] >= 'a' && $lang[1] <= 'z';   // only en, de - not cz-utf8, EN, ...
+    }
+
+    public static function getSql4Langs(array $langs, string $table): string {
+        $sql = '';
+        foreach ($langs as $lang) {
+            // two letters from a-z range
+            if ( !self::isValidLangName($lang) ) {
+                warn("Wrong language name '$lang'.");
+                continue;
+            }
+            $n = self::getLangName2Num($lang);
+            if ($n) {
+                $sql .= ($sql ? ' OR ' : '') . "(`$table`.`number` BETWEEN $n AND " . ($n + AA_Value::MAX_INDEX - 1) . ')';
+            }
+        }
+        return $sql ? " AND ($sql) " : '';
     }
 
     /** reverse function to getLangNumber

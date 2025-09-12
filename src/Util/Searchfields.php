@@ -13,9 +13,8 @@ namespace AA\Util;
 use AA;
 use ArrayAccess;
 use Countable;
-use Iterator;
 
-class Searchfields implements Iterator, ArrayAccess, Countable {
+class Searchfields implements \IteratorAggregate, ArrayAccess, Countable {
     use ArrTrait;
 
     /** @var array fields - arr is used also by ArrTrait */
@@ -244,5 +243,5 @@ class Searchfields implements Iterator, ArrayAccess, Countable {
         return $this->arr;
     }
 
-    // ArrayAccess, Countable and Iterator interface implementation is in ArrTrait --------------------------
+    // ArrayAccess, Countable and IteratorAggregate interface implementation is in ArrTrait --------------------------
 }

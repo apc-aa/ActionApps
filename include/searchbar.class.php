@@ -63,7 +63,7 @@ class AA_Searchbar_Row extends AA_Storable {
         $this->readonly  = $readonly;
     }
 
-    /** getField function
+    /**
      *  Access function to searchbar_row field
      */
     function getField() {
@@ -75,7 +75,7 @@ class AA_Searchbar_Row extends AA_Storable {
         return reset($fields);
     }
 
-    /** getOperator function
+    /**
      *  Access function to searchbar_row operator
      */
     function getOperator(): string
@@ -83,10 +83,11 @@ class AA_Searchbar_Row extends AA_Storable {
         return ( is_null($this->condition) ? '' : $this->condition->getOperator() );
     }
 
-    /** getValue function
+    /**
      *  Access function to searchbar_row value
      */
-    function getValue() {
+    function getValue(): string
+    {
         return ( is_null($this->condition) ? '' : $this->condition->getValue() );
     }
 
@@ -99,7 +100,7 @@ class AA_Searchbar_Row extends AA_Storable {
         return $this->condition;
     }
 
-    /** isReadonly function
+    /**
      *  Returns, if the search row is marked as readonly
      */
     function isReadonly(): bool

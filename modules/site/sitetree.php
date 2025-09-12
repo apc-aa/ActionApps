@@ -271,7 +271,7 @@ class spot {
 class sitetree {
     /** @var spot[] -  Array of spots */
     private array $tree;
-    private int|string $start_id;  // string just for old unserialized objects
+    private $start_id;
 
     /** @var int Current spot id */
     private int $current_id;
@@ -284,7 +284,6 @@ class sitetree {
 
     /** current_id could be undefined when we deserialize older object */
     public function __wakeup() {
-        $this->start_id = (int)$this->start_id;
         $this->current_id ??= $this->start_id;
     }
 

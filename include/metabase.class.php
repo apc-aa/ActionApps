@@ -306,7 +306,7 @@ class AA_MbI {
 
 
 
-class AA_MbT implements Iterator, ArrayAccess, Countable {
+class AA_MbT implements IteratorAggregate, ArrayAccess, Countable {
 
     /** @var string Name of the table */
     var $t;
@@ -583,21 +583,17 @@ class AA_MbT implements Iterator, ArrayAccess, Countable {
         return $ret;
     }
 
-
-
-    /** Iterator interface */
-    public function rewind(): void   { reset($this->c);                        }
-    public function current(): mixed { return current($this->c);               }
-    public function key(): mixed     { return key($this->c);                   }
-    public function next(): void     { next($this->c);                         }
-    public function valid(): bool    { return (current($this->c) !== false);   }
+    /** implements IteratorAggregate */
+    public function getIterator(): \Traversable   {
+        return new \ArrayIterator($this->c);
+    }
 
     /** Countable interface */
     public function count(): int     { return count($this->c);                 }
 
     /** ArrayAccess interface */
     public function offsetSet($offset, $value): void { $this->c[$offset] = $value;      }
-    public function offsetExists($offset): bool      { return isset($this->c[$offset]); }
+    public function offsetExists($offset): bool      { return array_key_exists($offset, $this->c); }
     public function offsetUnset($offset): void       { unset($this->c[$offset]);        }
     public function offsetGet($offset): mixed        { return $this->c[$offset] ?? null; }
 }

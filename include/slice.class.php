@@ -66,7 +66,7 @@ class AA_Moduleconfig {
     }
 }
 
-class AA_Moduleregistry implements Iterator, ArrayAccess, Countable {
+class AA_Moduleregistry implements IteratorAggregate, ArrayAccess, Countable {
     use ArrTrait, SingletonTrait;
 
     /** array of the values */
@@ -694,6 +694,37 @@ class AA_Slice extends AA_Module {
     /** for translated fields - if not translated, use default language of the module */
     function getDefaultLang(): string  {
         return ($translations = $this->getTranslations()) ? $translations[0] : $this->getLang();
+    }
+
+    /** url for the item for preview and seo field link */
+    function getPreviewUrl(string $item_id, bool $fallback_old_sh_itm = false): string {
+        $item = AA_Item::getItem(new zids($item_id, 'l'));
+        if ($item?->getSliceId() !== $this->getId()) {
+            return '';
+        }
+
+        //header("Content-Security-Policy: default-src * 'unsafe-inline' 'unsafe-eval'");
+        //header("Content-Security-Policy: frame-src 'self' http://svetelnykoren.cz/");
+        //header("Strict-Transport-Security: max-age=0");
+
+        if ($preview_url = $this->getProperty('_url_preview....')) {
+            return $item->unalias($preview_url);
+        }
+        if ('_#FULL_URL' !== ($preview_url = $item->unalias('_#FULL_URL')))  {
+            return $preview_url;
+        }
+        if ('_#SEO_URL_' !== ($preview_url = $item->unalias('_#SEO_URL_')))  {
+            // Contain _#SEO_URL_ already server?
+            // we are really looking for the begining of the string - pos = 0
+            if ( !str_starts_with($preview_url, 'http://') && !str_starts_with($preview_url, 'https://') && !str_starts_with($preview_url, '//') ) {
+                $preview_url = rtrim($this->getProperty('slice_url'),'/').'/'.ltrim($preview_url,'/');
+            }
+            return $preview_url;
+        }
+        if ($fallback_old_sh_itm) {
+            return con_url($this->getProperty('slice_url'), "sh_itm=$item_id");
+        }
+        return '';
     }
 
     /** find default field for upload to - first file...........x or img_upload.....x or img_src........x field

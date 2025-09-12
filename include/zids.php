@@ -66,7 +66,7 @@ use AA\Util\ArrTrait;
 
 //require_once __DIR__."/util.php";  // quote
 
-class zids implements Iterator, ArrayAccess, Countable {
+class zids implements IteratorAggregate, ArrayAccess, Countable {
     use ArrTrait;
 
     protected array $arr = [];  // Array of ids of type specified in $t
@@ -547,7 +547,7 @@ class zids implements Iterator, ArrayAccess, Countable {
         return "'{$type}/{$id}". (strlen($sel) ? "/{$sel}" : '');
     }
 
-    // Iterator, ArrayAccess and Countable interface implementation is in ArrTrait --------------------------
+    // IteratorAggregate, ArrayAccess and Countable interface implementation is in ArrTrait --------------------------
 
 } // class zids
 

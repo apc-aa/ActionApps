@@ -5,9 +5,8 @@ namespace AA\Manageraction;
 use AA\Util\ArrTrait;
 use ArrayAccess;
 use Countable;
-use Iterator;
 
-class Manageractions implements Iterator, ArrayAccess, Countable {
+class Manageractions implements \IteratorAggregate, ArrayAccess, Countable {
     use ArrTrait;
 
     /** @var AbstractManageraction[] */
@@ -43,5 +42,5 @@ class Manageractions implements Iterator, ArrayAccess, Countable {
         return $this->arr[$action->getId()] = $action;
     }
 
-    // ArrayAccess, Countable and Iterator interface implementation is in ArrTrait --------------------------
+    // ArrayAccess, Countable and IteratorAggregate interface implementation is in ArrTrait --------------------------
 }

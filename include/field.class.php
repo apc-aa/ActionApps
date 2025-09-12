@@ -27,6 +27,7 @@
 
 use AA\IO\DB\DB_AA;
 use AA\Cache\CacheStr2find;
+use AA\Util\Langs;
 use AA\Util\Searchfields;
 use AA\Util\Txt;
 use AA\Widget\Widget;
@@ -35,7 +36,7 @@ use AA\Widget\Widget;
 /** for AA_Generator_*   */
 require_once __DIR__ . "/itemfunc.php";
 
-class AA_Field implements ArrayAccess, Countable, Iterator {
+class AA_Field implements ArrayAccess, Countable, IteratorAggregate {
     use AA\Util\DataArrayAccessTrait;
 
     /** @var string[] list of field table rows manager by this class - other are unused */
@@ -76,6 +77,20 @@ class AA_Field implements ArrayAccess, Countable, Iterator {
     {
         // changed this from [a-z_]+\.+[0-9]*$ because of alerts[12]....abcde
         return strlen($field_id)===16 && preg_match('/^[a-z0-9_]+\.+[0-9A-Za-z]*$/',$field_id);
+    }
+
+    /**
+     * @param string $fid - field id possibly with |lang1|lang2 suffix  - like 'headline........|en|de'
+     * @return [string clean_field_id, array langs_to_search_in[]] - like ['headline........',['en','de']]
+     */
+    public static function parseWithLang(string $fid) {
+        if (!str_contains($fid, '|')) {
+            return [$fid, []];
+        }
+        $arr = explode('|', $fid);
+        $fid = array_shift($arr);
+        $langs = array_filter($arr, static fn($l) => Langs::isValidLangName($l));
+        return [$fid, $langs];
     }
 
     /** Check for misconfigured mandatory fields */
@@ -769,7 +784,7 @@ class AA_Field_Slicedef extends AA_Field {
 
 
 
-class AA_Fields implements Iterator, Countable {
+class AA_Fields implements IteratorAggregate, Countable {
 
     /** @var string[] list of text fields in fields table of database
      *  @todo grab it form AA_Metabase
@@ -1232,40 +1247,11 @@ class AA_Fields implements Iterator, Countable {
         return $lookup_fields;
     }
 
-
-    // ----- Iterator interface --------------
-
-    /**
-     * Rewind the Iterator to the first element
-     * @link https://php.net/manual/en/iterator.rewind.php
-     * @return void Any returned value is ignored.
-     */
-    public function rewind(): void { $this->loaded_all || $this->load(); reset($this->fields); }
-
-    /** Return the current element
-     *  @link https://php.net/manual/en/iterator.current.php
-     *  @return AA_Field
-     */
-    public function current(): mixed { $this->loaded_all || $this->load(); return current($this->fields); }
-
-    /**
-     * Return the key of the current element
-     * @link https://php.net/manual/en/iterator.key.php
-     * @return string|null scalar on success, or null on failure.
-     */
-    public function key(): mixed { $this->loaded_all || $this->load(); return key($this->fields);                }
-
-    /** Move forward to next element
-     *  @link https://php.net/manual/en/iterator.next.php
-     *  @return void Any returned value is ignored.
-     */
-    public function next(): void { $this->loaded_all || $this->load(); next($this->fields); }
-
-    /** Checks if current position is valid
-     *  @link https://php.net/manual/en/iterator.valid.php
-     *  @return bool The return value will be casted to boolean and then evaluated. Returns true on success or false on failure.
-     */
-    public function valid(): bool { $this->loaded_all || $this->load(); return (current($this->fields) !== false);    }
+    /** implements IteratorAggregate */
+    public function getIterator(): \Traversable   {
+        $this->loaded_all || $this->load();
+        return new \ArrayIterator($this->fields);
+    }
 
     // ----- Countable interface --------------
 

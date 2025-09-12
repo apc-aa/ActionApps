@@ -43,7 +43,7 @@ require_once __DIR__ . "/itemfunc.php";
  *            could contain flags...
  *          - the values are always plain (= no quoting, no htmlspecialchars...)
  */
-class AA_Value implements Iterator, ArrayAccess, Countable {
+class AA_Value implements IteratorAggregate, ArrayAccess, Countable {
     use ArrTrait;
 
     /** you can use MAX_INDEX numerical values for multivalues - bigger indexes are used for language translations */
@@ -292,7 +292,7 @@ class AA_Value implements Iterator, ArrayAccess, Countable {
         return $ret;
     }
 
-    // ArrayAccess, Countable and Iterator interface implementation is in ArrTrait --------------------------
+    // ArrayAccess, Countable and IteratorAggregate interface implementation is in ArrTrait --------------------------
 }
 
 /** Class holds any data (AA_Values)

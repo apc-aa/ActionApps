@@ -207,7 +207,7 @@ trait LazyloadTrait {
     }
 }
 
-class AA_Aliases implements Iterator, ArrayAccess, Countable {
+class AA_Aliases implements IteratorAggregate, ArrayAccess, Countable {
 
     use LazyloadTrait;
 
@@ -324,19 +324,18 @@ class AA_Aliases implements Iterator, ArrayAccess, Countable {
         return $ret;
     }
 
-    /** Iterator interface */
-    public function rewind(): void   { $this->lazyGet('lazy_aliases'); reset($this->lazy_aliases); }
-    public function current(): mixed { $this->lazyGet('lazy_aliases'); return current($this->lazy_aliases); }
-    public function key(): mixed     { $this->lazyGet('lazy_aliases'); return key($this->lazy_aliases); }
-    public function next(): void     { $this->lazyGet('lazy_aliases'); next($this->lazy_aliases); }
-    public function valid(): bool    { $this->lazyGet('lazy_aliases'); return (current($this->lazy_aliases) !== false); }
+    /** implements IteratorAggregate */
+    public function getIterator(): \Traversable   {
+        $this->lazyGet('lazy_aliases');
+        return new \ArrayIterator($this->lazy_aliases);
+    }
 
     /** Countable interface - Returns number of values  */
     public function count(): int     { $this->lazyGet('lazy_aliases'); return count($this->lazy_aliases); }
 
     /** ArrayAccess interface */
     public function offsetSet($offset, $value): void { $this->lazyGet('lazy_aliases');$this->lazy_aliases[$offset] = $value; }
-    public function offsetExists($offset): bool      { $this->lazyGet('lazy_aliases'); return isset($this->lazy_aliases[$offset]); }
+    public function offsetExists($offset): bool      { $this->lazyGet('lazy_aliases'); return array_key_exists($offset, $this->lazy_aliases); }
     public function offsetUnset($offset): void       { $this->lazyGet('lazy_aliases'); unset($this->lazy_aliases[$offset]); }
     public function offsetGet($offset): mixed        { $this->lazyGet('lazy_aliases'); return $this->lazy_aliases[$offset] ?? null; }
 }
