@@ -71,20 +71,21 @@ class Manageraction_History_Apply extends AbstractManageraction {
     /** @inheritDoc */
     function perform(Manager $manager, zids $item_zids, $action_param): string|false
     {
+        $change_ids = $item_zids;  // just rename to match real content
 
         if ( !IfSlPerm(PS_EDIT) ) {    // permission to delete items?
             /** @todo Should be changed to different permission */
             return _m("You have not permissions to change items");
         }
 
-        if ($item_zids->isEmpty()) {
+        if ($change_ids->isEmpty()) {
             return false;     // OK - no errors
         }
 
         // AA::$debug = 255;
 
         $sid = $manager->getModuleId();
-        $changes_to_apply = DB_AA::select('id', 'SELECT `change`.id FROM `change`, `item`', [['item.id', 'UNHEX(change.resource_id)', 'j'], ['change.id', $item_zids->longids()], ['slice_id', $sid, 'l']]);
+        $changes_to_apply = DB_AA::select('id', 'SELECT `change`.id FROM `change`, `item`', [['item.id', 'UNHEX(change.resource_id)', 'j'], ['change.id', $change_ids->longids()], ['slice_id', $sid, 'l']]);
 
         $changes = ChangesMonitor::GetHistoryContent(new zids($changes_to_apply, 'l'));
 

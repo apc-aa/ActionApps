@@ -504,9 +504,11 @@ class AA_Content implements Iterator, ArrayAccess, Countable {
         return is_array($this->content[$field_id]) ? (int)reset($this->content[$field_id])['flag'] : 0;
     }
 
-    /** getValues function
+    /** getValues - low level - function
+     *  use just for low level manipulations
      * @param string $field_id
      * @return array
+     * @deprecated
      */
     public function getValues($field_id): array {
         return is_array($a = $this->content[$field_id]) ? $a : [] ;

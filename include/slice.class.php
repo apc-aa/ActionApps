@@ -710,7 +710,7 @@ class AA_Slice extends AA_Module {
         if ($preview_url = $this->getProperty('_url_preview....')) {
             return $item->unalias($preview_url);
         }
-        if ('_#FULL_URL' !== ($preview_url = $item->unalias('_#FULL_URL')))  {
+        if (('_#FULL_URL' !== ($preview_url = $item->unalias('_#FULL_URL'))) && str_starts_with($preview_url, 'https://'))  {   // not empty and FULL_URL returns full url withj protocol
             return $preview_url;
         }
         if ('_#SEO_URL_' !== ($preview_url = $item->unalias('_#SEO_URL_')))  {

@@ -50,7 +50,7 @@ if ($slice === null) {
      exit;
 }
 
-$preview_url = $slice->getPreviewURL($sh_itm, true);
+$preview_url = AA_Http::makeProtocolCompatible($slice->getPreviewURL($sh_itm, true));
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 

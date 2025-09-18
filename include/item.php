@@ -518,8 +518,11 @@ class AA_Item {
     }
 
     /** shortcut for ItemContent->getValues()
-     * @param $field_id
+     *  low level - function
+     *  use just for low level manipulations
+     * @param  string  $field_id
      * @return array
+     * @deprecated
      */
     function getValues($field_id): array
     {
