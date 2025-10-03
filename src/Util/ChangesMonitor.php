@@ -343,28 +343,67 @@ class ChangesMonitor {
                                 FROM `change`, `change_record`", [['change.id', 'change_record.change_id' , 'j'], ["`change`.resource_id", $resource_ids], ['change.type',$type]], ['change.resource_id', 'change.time-', 'change_record.change_id', 'change_record.selector', 'change_record.priority'])) {
 //            echo "<div class='aa-table'><table class='aa-history'><tr><th>&nbsp;</th><th>field</th><th>value</th><th>diff".Difftext::renderHtml(_m("newer\neee<br>www"), _m("older\neee<br>wqqq"))."</th><th>priority</th><th>type</th><th>resource</th></tr>";
             echo $this->getCSS();
-            echo "<div class='aa-table'><table class='aa-history'><tr class=aa-tbl-header><th>&nbsp;</th><th>field</th><th class='aa-hist-content'>value</th><th class='aa-hist-content'>diff</th><th>priority</th><th>type</th><th>resource</th></tr>";
+            echo <<<HTML
+                  <div class='aa-table'>
+                    <table class='aa-history'>
+                      <tr class=aa-tbl-header>
+                        <th>&nbsp;</th>
+                        <th>field</th>
+                        <th class='aa-hist-content'>value</th>
+                        <th class='aa-hist-content'>restore</th>
+                        <th class='aa-hist-content'>diff versions  <span class='difftext'><del>older</del> <ins>newer</ins></span></th>
+                        <th class='aa-hist-content'>diff to current <span class='difftext'><del>version</del> <ins>current</ins></span></th>
+                        <th>priority</th>
+                        <th>type</th>
+                        <th>resource</th>
+                        </tr>
+                  HTML;
             $chid = '';
+
+            $forms = [];
 
             foreach ($arr as $key => $change) {
                 if ($chid !== $change['change_id']) {
-                    echo "<tr><th colspan=7>" . date('Y-m-d H:i:s', self::toTimestamp((int)$change['time'])) . ' - ' . safe(perm_username($change['user'])) . " <small>($change[type], uid:$change[user], res:$change[resource_id], change:$change[change_id], time:$change[time])</small></th></tr>";
+                    $forms[] = ($form = "frm$chid");
                     $chid = $change['change_id'];
-                    $flds = ($slice_id = AA_Items::getItem(new zids($change['resource_id'], 'l'))?->getSliceID()) ? AA_Fields::factoryFor($slice_id) : null;
+                    $iid = $change['resource_id'];
+                    $item = AA_Items::getItem(new zids($iid, 'l'));
+                    $flds = ($slice_id = $item?->getSliceID()) ? AA_Fields::factoryFor($slice_id) : null;
+                    echo sprintf("<tr><th colspan=9>
+                               [r%d] %s - %s <small>($change[type], uid:$change[user], res:$iid, change:$chid, time:$change[time])</small> 
+                               <button type=submit form=$form>Restore</button>
+                               <input type=hidden name=slice_id form=$form value='$slice_id'>
+                             </th></tr>",
+                        $key + 1,
+                        date('Y-m-d H:i:s', self::toTimestamp((int)$change['time'])),
+                        safe(perm_username($change['user']))
+                    );
                 }
-                $value = AA\Util\Adminlink::richValue($change['value']);
-                $field = $change['selector']. ($flds ? AA\Util\Adminlink::additionalInfo([$flds->getProperty($change['selector'], 'name')]) : '');
+                $fid = $change['selector'];
+                $value = Txt::richValue($change['value']);
+                $field = $change['selector']. ($flds ? Txt::additionalInfo([$flds->getProperty($change['selector'], 'name')]) : '');
+                // document.querySelector(\'article[data-aa-part=&quot;' . $hash . '&quot;]\').classList.add(\'aa-updating\');
+                // $restore =  '<span class="btn" onclick="if (confirm(\'' . _m('really restore this value') . '\')) { AA_SiteUpdate(\''.$change['resource_id'].'\',\''.$change['selector'].'\',\''.escape4js($value).'\');}">' . _m('Restore') . '</span>';
+                $restore =  "<input form=$form type=hidden name='aa[u$iid][$fid]' value=\"".safe($change['value'])."\" disabled><input type=checkbox onchange=\"this.previousElementSibling.disabled = !this.checked\">";
 
                 $prev_value = $this->findPrevValue($change['selector'], $change['priority'], $arr, $key);
-                $diff = is_null($prev_value) ? '' : Difftext::renderHtml($prev_value,$change['value']);
+                $diff_version = is_null($prev_value) ? '' : Difftext::renderHtml($prev_value,$change['value']);
+                $current = $item?->getAaValue($change['selector'])->getValue($change['priority']);
+                $diff_current = $current ? Difftext::renderHtml((string)$change['value'],(string)$current) : '';
                 echo sprintf(
-                    "<tr><td>&nbsp;</td><td>$field</td><td class='aa-hist-content'><pre>%s</pre><td class='aa-hist-content'>%s</td></td><td>$change[priority]</td><td>$change[chtype]</td><td>%s</td></tr>",
+                    "<tr><td>&nbsp;</td><td>$field</td><td class='aa-hist-content'><pre>%s</pre></td><td>%s</td><td>%s</td><td>%s</td><td>$change[priority]</td><td>$change[chtype]</td><td>%s</td></tr>",
                     $value,
-                    $diff,
+                    $restore,
+                    $diff_version,
+                    $diff_current,
                     safe($change['resource_id']),
                 );
             }
             echo "</table></div>";
+            foreach ($forms as $form) {
+                echo "\n<form id=$form action='".get_aa_url('filler.php')."' method='POST'></form>";
+            }
+            // AA::Stringexpander()->addRequire('aa-jslib');  // for AA_SiteUpdate, ...
         }
 
         //    print_r(array_keys(reset($arr)));

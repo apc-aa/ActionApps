@@ -30,6 +30,7 @@ use AA\Manager;
 use AA\Util\Adminlink;
 use AA\Util\ChangesMonitor;
 use AA\Util\InputVars;
+use AA\Util\Txt;
 
 $require_default_lang = true;      // do not use module specific language file
                                    // (message for init_page.php)
@@ -158,21 +159,23 @@ function PrintItemInfo($item_id): void
         if ($res = DB_AA::select([], 'SELECT * FROM `item`', [['id',$long_id, 'l']])) {
             $res[0]['id']            = unpack_id($res[0]['id']);
             $res[0]['slice_id']      = unpack_id($res[0]['slice_id']);
-            $res[0]['post_date']    .= '<br><small>('.date('j.n.Y H:i:s', (int)$res[0]['post_date']) .'</small>)';
-            $res[0]['publish_date'] .= '<br><small>('.date('j.n.Y H:i:s', (int)$res[0]['publish_date']) .'</small>)';
-            $res[0]['expiry_date']  .= '<br><small>('.date('j.n.Y H:i:s', (int)$res[0]['expiry_date']) .'</small>)';
-            $res[0]['last_edit']    .= '<br><small>('.date('j.n.Y H:i:s', (int)$res[0]['last_edit']) .'</small>)';
-            $res[0]['moved2active'] .= '<br><small>('.date('j.n.Y H:i:s', (int)$res[0]['moved2active']) .'</small>)';
+            $res[0]['post_date']    .= Txt::additionalInfo([date('j.n.Y H:i:s', (int)$res[0]['post_date'])]);
+            $res[0]['publish_date'] .= Txt::additionalInfo([date('j.n.Y H:i:s', (int)$res[0]['publish_date'])]);
+            $res[0]['expiry_date']  .= Txt::additionalInfo([date('j.n.Y H:i:s', (int)$res[0]['expiry_date'])]);
+            $res[0]['last_edit']    .= Txt::additionalInfo([date('j.n.Y H:i:s', (int)$res[0]['last_edit'])]);
+            $res[0]['moved2active'] .= Txt::additionalInfo([date('j.n.Y H:i:s', (int)$res[0]['moved2active'])]);
+            $res[0]['posted_by']    .= Txt::additionalInfo([perm_username($res[0]['posted_by'])]);
+            $res[0]['edited_by']    .= Txt::additionalInfo([perm_username($res[0]['edited_by'])]);
             echo GetHtmlTable($res, 'key', _m('Item table record for the item'));
         }
 
         $slice = AA_Slice::getModule($sid);
 
-        if ($res = DB_AA::select([], "SELECT '' as FieldName, `field_id`, `number`,`text`, `flag` FROM `content`", [['item_id',$long_id, 'l']])) {              // empty FieldName - will be filled later
+        if ($res = DB_AA::select([], "SELECT '' as FieldName, `field_id`, `number`,`text`, `flag` FROM `content`", [['item_id',$long_id, 'l']], ['field_id','number'])) {              // empty FieldName - will be filled later
             array_walk($res, static function (&$v, $k) use ($slice) {
                 $v['FieldName'] =  ($f=$slice->getField($v['field_id'])) ? $f->getName() : '-- invalid --';
-                if (is_long_id($v['text']) && ($hdln = AA::Un("{item:$v[text]:_#HEADLINE}"))) {
-                    $v['text'] .= "<br><small>($hdln)</small>";
+                if (is_long_id($v['text']) && ($hdln = StrExp('item', [$v['text'], '_#HEADLINE']))) {
+                    $v['text'] .= Txt::additionalInfo([$hdln]);
                 }
                 $flags = '';
                 if ($v['flag'] & FLAG_HTML) { $flags .= '<span  title="">HTML '; }
@@ -182,7 +185,7 @@ function PrintItemInfo($item_id): void
                 if ($v['flag'] & FLAG_UPDATE) { $flags .= '<span  title="content should be updated if source is changed (after feeding)">UPDATE</span> '; }
                 if ($v['flag'] & FLAG_TEXT_STORED) { $flags .= '<span  title="value is stored in the text field (and not number field of content table)">TEXT</span> '; }
                 if ($v['flag'] & ITEM_FLAG_ANONYMOUS_EDITABLE ) { $flags .= '<span  title="anonymously added and thus anonymously editable (reset on every use of itemedit.php)">ANONYMEDITABLE</span> '; }
-                $v['flag'] .= "<br><small>($flags)</small>";
+                $v['flag'] .= Txt::additionalInfo([$flags]);
 
             });
             echo GetHtmlTable($res, 'key', _m('Content table records for the item'));
@@ -197,12 +200,12 @@ function PrintItemInfo($item_id): void
                 if (is_long_id($iid = $v['Item']) AND ($item = AA_Items::getItem(new zids($iid, 'l')))) {
                     $v['Item'] = Adminlink::itemLink($iid, $item->getSliceID());
                     $v['Status'] = $item->getStatusCode();
-                    $v['PubDate'] = date('j.n.Y H:i:s', (int)$item->getval('publish_date....'));
-                    $v['ExpDate'] = date('j.n.Y H:i:s', (int)$item->getval('expiry_date.....'));
-                    $v['LastEdit'] = date('j.n.Y H:i:s', (int)$item->getval('last_edit.......')).'<br><small>('.$item->getval('edited_by.......').' - '.perm_username($item->getval('edited_by.......')).')</small>';
+                    $v['PubDate']  .= ($tmp = (int)$item->getval('publish_date....')). Txt::additionalInfo([date('j.n.Y H:i:s', $tmp)]);
+                    $v['ExpDate']  .= ($tmp = (int)$item->getval('expiry_date.....')). Txt::additionalInfo([date('j.n.Y H:i:s', $tmp)]);
+                    $v['LastEdit'] .= ($tmp = (int)$item->getval('last_edit.......')). Txt::additionalInfo([date('j.n.Y H:i:s', $tmp), $item->getval('edited_by.......').' - '.perm_username($item->getval('edited_by.......'))]);
 
                     $islice = AA_Slice::getModule($item->getSliceID());
-                    $v['FieldName'] = ($f=$islice->getField($v['field_id'])) ? $f->getName() : '-- invalid --';
+                    $v['FieldName'] = ($f=$islice?->getField($v['field_id'])) ? $f->getName() : '-- invalid --';
                 }
             });
             echo GetHtmlTable($res, 'key', _m('Referenced items'));
@@ -267,32 +270,7 @@ if (strlen($findtext)) {
     }
 
     if ($findinview) {
-        $fields = [
-            'id',
-            'before',
-            'even',
-            'row_delimiter',
-            'odd',
-            'after',
-            'group_title',
-            'order1',
-            'order2',
-            'group_by1',
-            'group_by2',
-            'cond1field',
-            'cond2field',
-            'cond3field',
-            'aditional',
-            'aditional2',
-            'aditional3',
-            'aditional4',
-            'aditional5',
-            'aditional6',
-            'group_bottom',
-            'field1',
-            'field2',
-            'field3'
-        ];
+        $fields = ['id', 'before', 'even', 'row_delimiter', 'odd', 'after', 'group_title', 'order1', 'order2', 'group_by1', 'group_by2', 'cond1field', 'cond2field', 'cond3field', 'aditional', 'aditional2', 'aditional3', 'aditional4', 'aditional5', 'aditional6', 'group_bottom', 'field1', 'field2', 'field3'];
 
         $SQL = "SELECT `view`.`id`, `view`.`type`, `view`.`slice_id`, `slice`.`name` FROM `view` INNER JOIN `slice` ON `view`.`slice_id` = `slice`.`id` WHERE "; 
         foreach ($fields as $field) {
@@ -346,33 +324,7 @@ if (strlen($findtext)) {
     }
 
     if ($findinfield) {
-        $fields = [
-            'id',
-            'type',
-            'slice_id',
-            'name',
-            'input_pri',
-            'input_help',
-            'input_morehlp',
-            'input_default',
-            'feed',
-            'input_show_func',
-            'alias1',
-            'alias1_func',
-            'alias1_help',
-            'alias2',
-            'alias2_func',
-            'alias2_help',
-            'alias3',
-            'alias3_func',
-            'alias3_help',
-            'input_before',
-            'aditional',
-            'content_edit',
-            'input_validate',
-            'input_insert_func',
-            'input_show'
-        ];
+        $fields = ['id', 'type', 'slice_id', 'name', 'input_pri', 'input_help', 'input_morehlp', 'input_default', 'feed', 'input_show_func', 'alias1', 'alias1_func', 'alias1_help', 'alias2', 'alias2_func', 'alias2_help', 'alias3', 'alias3_func', 'alias3_help', 'input_before', 'aditional', 'content_edit', 'input_validate', 'input_insert_func', 'input_show'];
 
         $SQL = "SELECT slice_id, id, name FROM field WHERE ";
         foreach ($fields as $field) {
@@ -426,17 +378,7 @@ if (strlen($findtext)) {
     }
 
     if ($findindiscus) {
-        $fields = [
-            'subject',
-            'author',
-            'e_mail',
-            'body',
-            'url_address',
-            'url_description',
-            'remote_addr',
-            'free1',
-            'free2'
-        ];
+        $fields = ['subject', 'author', 'e_mail', 'body', 'url_address', 'url_description', 'remote_addr', 'free1', 'free2'];
 
         $SQL = "SELECT slice_id, discussion.* FROM discussion, item WHERE discussion.item_id = item.id AND (";
         foreach ($fields as $field) {

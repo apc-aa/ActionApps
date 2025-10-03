@@ -37,4 +37,22 @@ class Txt {
         }
         return '<div class=aa-log-entry>'.$ret.'</div>';
     }
+
+    /** enhance value - item_id, date */
+    public static function richValue(mixed $value): string
+    {
+        if (is_long_id($value)) {
+            return Adminlink::itemLink($value);
+        }
+        if ((int)$value >= 883609200 && (int)$value <= 2208985200) {   // 1998 - 2040
+            return $value.self::additionalInfo([date("Y-m-d H:i", (int)$value)]);
+        }
+        return safe($value);
+    }
+
+    /** Prints additional info box */
+    public static function additionalInfo(array $texts): string
+    {
+        return '<div class="tabhlp">'.implode(' | ', $texts)."</div>";
+    }
 }

@@ -99,7 +99,7 @@ class Adminlink
         }
         $info[] = ChangesMonitor::getHistoryLink($item_id);
         $info[] = a_href(get_admin_url('se_statistics.php', ['change_id' => $slice_id, 'items' => $item_id]), _m('Statistics'));
-        return $item_id.self::additionalInfo($info);
+        return $item_id.Txt::additionalInfo($info);
     }
 
     public static function searchLink(string $searchtext, string $label = "🔍"): string
@@ -114,22 +114,4 @@ class Adminlink
     }
 
 
-    /** enhance value - item_id, date */
-    public static function richValue(mixed $value): string
-    {
-        if (is_long_id($value)) {
-            return self::itemLink($value);
-        }
-        if ((int)$value >= 883609200 && (int)$value <= 2208985200) {   // 1998 - 2040
-            return $value.self::additionalInfo([date("Y-m-d H:i", (int)$value)]);
-        }
-        return safe($value);
-    }
-
-
-    /** Prints additional info box */
-    public static function additionalInfo(array $texts): string
-    {
-        return '<div class="tabhlp">'.implode(' | ', $texts)."</div>";
-    }
 }

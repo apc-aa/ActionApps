@@ -2657,10 +2657,11 @@ class AA_Stringexpand_Jsonstring extends AA_Stringexpand_Nevercache {
      */
     function expand($string=''): string
     {
+        $flags = JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES;    // RFC allows utf and slashes and parsers do as well
         if (AA::$encoding && (AA::$encoding !== 'utf-8')) {
-            return json_encode(ConvertEncoding($string, AA::$encoding));
+            return json_encode(ConvertEncoding($string, AA::$encoding), $flags);
         }
-        return json_encode($string);
+        return json_encode($string, $flags);
     }
 }
 
