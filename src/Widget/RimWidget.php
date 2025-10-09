@@ -241,7 +241,7 @@ class RimWidget extends Widget
             $actbuttonsdown['F'] = "<article id=\"fileup$hash\">"._m('drop files here or click to upload')."</article>";
             AA::Stringexpander()->addRequire('dropzone');
 
-            $filerurl = AA_INSTAL_URL.'filler.php';
+            $filerurl = get_aa_url('filler.php');
             $script2run = <<<JS
                     function AA_UploadInitRim(fu_id, baseid, sid, fid) {
                         const aaDz = new Dropzone('#'+fu_id, { url: "$filerurl", uploadMultiple: true, params: { inline:1 } });
