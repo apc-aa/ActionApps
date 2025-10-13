@@ -1165,12 +1165,12 @@ class AA_Inputfield {
             $htmlvar     = $varname."html";
             $radio_html  = "<input type=\"radio\" name=\"$htmlvar\" value=\"h\"". (  $this->html_flag ? " checked>" : ">" );
             $radio_plain = "<input type=\"radio\" name=\"$htmlvar\" value=\"t\"". ( $this->html_flag ? ">" : " checked>" );
-            $htmlareaedit= "<a href=\"javascript:openHTMLAreaFullscreen('".$varname."');\">"._m("Edit in HTMLArea")."</a>"; // used for HTMLArea
+            $htmlareaedit= "<a href=\"javascript:openHTMLAreaFullscreen('".$varname."');\">"._m("Edit in Editor")."</a>"; // used for HTMLArea
             // conversions menu
             $convertor   = $conv ? $this->get_convertors() : false;
 
             // show plaintext / html radio
-            $this->echoo('<div class="aa-fld-toolbar" id="htmlplainspan'.$varname.'">');  // used for hiding "edit in htmlarea" link, dont remove
+            $this->echoo('<div class="aa-fld-toolbar" id="htmlplainspan'.$varname.'">');  // used for hiding "Edit in Editor" link, dont remove
 
             $this->echoo('<span class="aa-formatters">');
             $this->echoo('<label>');
@@ -1180,7 +1180,7 @@ class AA_Inputfield {
             $this->echovar($radio_plain, 'plain_rb');
             $this->echoo(_m("Plain text"));
             $this->echoo('</label></span>');
-            $this->echoo('<span id="arealinkspan'.$varname.'" class="btn aa-arealink" style="display:none">'); // used for hiding "edit in htmlarea" link, don't remove
+            $this->echoo('<span id="arealinkspan'.$varname.'" class="btn aa-arealink" style="display:none">'); // used for hiding "Edit in Editor" link, don't remove
             $this->echovar($htmlareaedit, 'htmlarea_edit_link');
             $this->echoo('</span>');
 
@@ -1411,12 +1411,9 @@ class AA_Inputfield {
     function hidden($safing=true): void
     {
         [$name,$val,$add] = $this->prepareVars();
-        if ( $safing ) {
-            $val=safe($val);
-        }
         $this->echoo('<tr style="visibility:collapse;"><td colspan=2>');
-        $this->echovar( "<input type=hidden name=\"$name\" value=\"$val\">" );
-        $this->echoo('</td></tr><tr style="visibility:collapse;"><td colspan=2></td></tr>'."\n");  // add extra row fro zebra stripes
+        $this->echovar( getFrmHiddenEasy($name, $val, $safing) );
+        $this->echoo('</td></tr><tr style="visibility:collapse;"><td colspan=2></td></tr>'."\n");  // add extra row for zebra stripes
     }
 
     /** textarea function
@@ -2399,11 +2396,21 @@ function FrmStaticText($txt, $val, $hlp = "", $morehlp = "", $safing = true): vo
  * @param string $val
  * @param bool $safing
  */
-function getFrmHidden($name, $val, $safing=true ): string {
+function getFrmHidden($name, $val='', $safing=true ): string {
     $input = new AA_Inputfield($val, false, 'normal', $name);
     $input->hidden($safing);
     return $input->get_result();
 }
+
+/** Gets html tag <input type=hidden .. for use within <form>
+ */
+function getFrmHiddenEasy(string $name, string $val='', bool $safing=true ): string {
+    if ( $safing ) {
+        $val=safe($val);
+    }
+    return "<input type=hidden name=\"$name\" value=\"$val\">";
+}
+
 
 /** Printss html tag <input type=hidden .. to 2-column table for use within <form> and <table> tag
  * @param string $name

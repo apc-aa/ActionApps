@@ -4775,7 +4775,7 @@ $_m["import"]
     = "";
 
 // include/formutil.php, row 1144
-$_m["Edit in HTMLArea"]
+$_m["Edit in Editor"]
     = "";
 
 // include/formutil.php, row 1615, 1619

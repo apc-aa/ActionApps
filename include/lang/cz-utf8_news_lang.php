@@ -4999,7 +4999,7 @@ $_m["import"]
  = "načíst";
 
 // include/formutil.php, row 1144
-$_m["Edit in HTMLArea"]
+$_m["Edit in Editor"]
  = "Zobraz Editor";
 
 // include/formutil.php, row 1615, 1619
