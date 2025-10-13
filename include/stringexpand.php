@@ -1614,7 +1614,7 @@ function parseLoop($out, $item): string
     }
 
     // alternative syntax {@field...} or {list:field...}
-    if ( (aa_substr($out,0,5) === "list:") ) {
+    if ( str_starts_with($out, 'list:') ) {
         $out = '@'. aa_substr($out,5);
     }
 
@@ -1689,7 +1689,7 @@ function parseLoop($out, $item): string
             $dummy = $format_str; // make work-copy of format string
             foreach ($params as $i => $iValue) { // for every special parameter do:
                 $par = '';
-                if (aa_substr($iValue,0,6) === "const_") {
+                if (str_starts_with($iValue, 'const_')){
                     // what we need some constants parameters ( like name, short_id, value, ...)
                     $what = aa_substr($iValue, aa_strpos($iValue, "_")+1);
                     if ($what === 'value') {
@@ -1698,7 +1698,7 @@ function parseLoop($out, $item): string
                         // for something else we need use db
                         $par = getConstantValue($group_id, $what, $value);
                     }
-                } elseif (aa_substr($iValue,0,2) === "_#") { // special parameter is alias
+                } elseif (str_starts_with($iValue,'_#')) { // special parameter is alias
                     /** alias could be used as:
                      *       {list:relation........(_#GET_HEAD): ,:_#1}
                      *  where _#GET_HEAD is alias defined somewhere in
@@ -1707,9 +1707,9 @@ function parseLoop($out, $item): string
                      *  this displays all the related headlines delimeted
                      *   by comma
                      */
-                    // we need set some special field, which will be changed to actual
-                    // constant value
-                    $item->setAaValue('loop............', new AA_Value($value));
+                          // we need set some special field, which will be changed to actual
+                          // constant value
+                          $item->setAaValue('loop............', new AA_Value($value));
                     // get for this alias his output
                     $par = $item->get_alias_subst($iValue, null, 'loop............');
                 }
@@ -6152,7 +6152,7 @@ class AA_Stringexpand_Dictionary extends AA_Stringexpand {
             return $replace_pairs;
         }
 
-        $format = $module->getField($format) ? '{substr:{' . $format . '}:0:50}' : $format;
+        $format = $module->getField($format) ? '{substr:{index:' . $format . '}:0:50}' : $format;
         $format = "{@keywords........:##}_AA_DeLiM_$format";
 
         // above is little hack - we need keyword pair, but we want to call
@@ -6513,52 +6513,54 @@ class AA_Unalias_Callback {
 
             // like AA_Stringexpand_Const
             // look for {const_*:} for changing viewing type of constants
-            if ((aa_substr($out, 0, 6) === "const_") && isset($this->item)) {
-                // $what - name of column (e.g. from const_name we get name)
-                $what = aa_substr($out, aa_strpos($out, "_")+1, aa_strpos($out, ":") - aa_strpos($out, "_")-1);
-                // parameters - first is field
-                $parts = ParamExplode(aa_substr($out,aa_strpos($out,":")+1));
-                // get group id
-                $group_id = AA_Slice::getModule($this->item->getSliceID())?->getFields()->getCategoryGroup($parts[0]);
-                /* get short_id/name/... of constant with specified value from constants category with
-                   group $group_id */
+            if (!is_null($this->item)) {
+                if (str_starts_with($out, 'const_')) {
+                    // $what - name of column (e.g. from const_name we get name)
+                    $what = aa_substr($out, aa_strpos($out, "_") + 1, aa_strpos($out, ":") - aa_strpos($out, "_") - 1);
+                    // parameters - first is field
+                    $parts = ParamExplode(aa_substr($out, aa_strpos($out, ":") + 1));
+                    // get group id
+                    $group_id = AA_Slice::getModule($this->item->getSliceID())?->getFields()->getCategoryGroup($parts[0]);
+                    /* get short_id/name/... of constant with specified value from constants category with
+                       group $group_id */
 
-                $value = getConstantValue($group_id, $what, $this->item->getval($parts[0]));
+                    $value = getConstantValue($group_id, $what, $this->item->getval($parts[0]));
 
-                return QuoteColons($value);
-            }
-
-            // like AA_Stringexpand_Alias
-            // s - multiline - without it, it does not work for expressions across multiple lines
-            if ( (aa_substr($out, 0, 5)==='alias') && isset($this->item) && preg_match('/^alias:([^:]*):([a-zA-Z0-9_]{1,3}):?(.*)$/s', $out, $parts) ) {
-                // call function (called by function reference (pointer))
-                // like f_d("start_date......", "m-d")
-                if ($parts[1] && !$this->item->isField($parts[1])) {
-                    huhe("Warning: $out: $parts[1] is not a field, don't wrap it in { } ");
+                    return QuoteColons($value);
                 }
-                $fce     = $parts[2];
-                // if is callable $this->item->$fce
-                if (!is_callable([$this->item, $fce])) {
-                    huhe("Warning: $out: $fce is not a callable method of the item");
-                    return '';
+
+                // like AA_Stringexpand_Alias
+                // s - multiline - without it, it does not work for expressions across multiple lines
+                if (str_starts_with($out, 'alias') && preg_match('/^alias:([^:]*):([a-zA-Z0-9_]{1,3}):?(.*)$/s', $out, $parts)) {
+                    // call function (called by function reference (pointer))
+                    // like f_d("start_date......", "m-d")
+                    if ($parts[1] && !$this->item->isField($parts[1])) {
+                        huhe("Warning: $out: $parts[1] is not a field, don't wrap it in { } ");
+                    }
+                    $fce = $parts[2];
+                    // if is callable $this->item->$fce
+                    if (!is_callable([$this->item, $fce])) {
+                        huhe("Warning: $out: $fce is not a callable method of the item");
+                        return '';
+                    }
+                    return QuoteColons($this->item->$fce($parts[1], $parts[3]));
+                    // QuoteColons used to mark colons, which is not parameter separators.
                 }
-                return QuoteColons($this->item->$fce($parts[1], $parts[3]));
-                // QuoteColons used to mark colons, which is not parameter separators.
             }
 
             // like AA_Stringexpand_Math
-            if ( aa_substr($out, 0, 5) === "math(" ) {
+            if ( str_starts_with($out, 'math(') ) {
                 // replace math
                 return QuoteColons( parseMath(DeQuoteColons(AA::Un(aa_substr($out,5), '', $this->item, false, $this->itemview))) ); // Need to unalias in case expression contains _#XXX or ( )
             }
 
             // like AA_Stringexpand_List
-            if ( aa_substr($out, 0, 5) === "list:" ) {       // like AA_Stringexpand_List
+            if ( str_starts_with($out, 'list:') ) {       // like AA_Stringexpand_List
                 return QuoteColons(parseLoop($out, $this->item));
             }
 
             // like AA_Stringexpand_Include
-            if ( aa_substr($out, 0, 8) === "include(" ) {
+            if ( str_starts_with($out, 'include(') ) {
                 // include file
                 if ( !($pos = aa_strpos($out,')')) ) {
                     return "";
@@ -6569,9 +6571,9 @@ class AA_Unalias_Callback {
             }
 
             // like AA_Stringexpand_View
-            if ( aa_substr($out,0,9) === 'view.php?' || aa_substr($out,0,10) === 'view.php3?' ) {
+            if ( str_starts_with($out, 'view.php?') || str_starts_with($out, 'view.php3?') ) {
                 // CKEditor editor replaces & with &amp; so we need to change it back
-                $param      = str_replace(['&amp;','-&lt;','-&gt;','&lt;-','&gt;-'], ['&','-<','->','<-','>-'], aa_substr($out, (aa_substr($out,0,9) === 'view.php?') ? 9 : 10));
+                $param      = str_replace(['&amp;','-&lt;','-&gt;','&lt;-','&gt;-'], ['&','-<','->','<-','>-'], aa_substr($out, (str_starts_with($out, 'view.php?')) ? 9 : 10));
                 // do not store in the pagecache, but store into contentcache
 
                 $showview   = new AA_Showview(AA_View::parseViewParameters(DeQuoteColons($param)));
@@ -6582,7 +6584,7 @@ class AA_Unalias_Callback {
             // like AA_Stringexpand_Dequote
             // This is a little hack to enable a field to contain expandable { ... } functions
             // if you don't use this then the field will be quoted to protect syntactical characters
-            if ( aa_substr($out, 0, 8) === "dequote:" ) {   // like AA_Stringexpand_Dequote
+            if ( str_starts_with($out, 'dequote:') ) {   // like AA_Stringexpand_Dequote
                 return DeQuoteColons(aa_substr($out,8));
             }
         }
@@ -6624,7 +6626,7 @@ class AA_Unalias_Callback {
             return QuoteColons(AA::Un($als[$out], '', $this->item, false, $this->itemview));
         }
 
-        if (aa_substr($out,0,8) === "mlx_view") {
+        if (str_starts_with($out, 'mlx_view')) {
             if(!$GLOBALS['mlxView']) {
                 return (string)$out;
             }
@@ -7473,9 +7475,9 @@ class AA_Requires {
             $hash = $this->addUsrRequire($require, 'AA_Req_Htm');
         } elseif ($type === 'AA_Req_CSScode') {
             $hash = $this->addUsrRequire($require, 'AA_Req_CSScode');
-        } elseif (aa_substr($require,-4) === '.css' || aa_strpos($require,'.css?') || aa_strpos($require,'.css ') || aa_strpos($require,'/css?')) {  //  /css? for google fonts
+        } elseif (str_ends_with($require,'.css') || aa_strpos($require,'.css?') || aa_strpos($require,'.css ') || aa_strpos($require,'/css?')) {  //  /css? for google fonts
             $hash = $this->addUsrRequire($require, 'AA_Req_Css');
-        } elseif (aa_substr($require,-3) === '.js' || aa_strpos($require,'.js?') || aa_strpos($require,'/')!==false) {
+        } elseif (str_ends_with($require,'.js') || aa_strpos($require,'.js?') || aa_strpos($require,'/')!==false) {
             $hash = $this->addUsrRequire($require, 'AA_Req_Lib');
         } else {
             $hash = $require;   // must be system require
@@ -8774,32 +8776,29 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
         if (!$image) {
             return '';
         }
-        [$img_url,$img_short] = self::_getUrl($image, $phpthumb_params);
-
-        if (empty($img_url)) {
-            return $img_short;
-        }
 
         switch ( $info ) {
             case '':
             case 'url':
-                return $img_short;
+                return self::getUrl($image, $phpthumb_params, 'rel_escaped');
             case 'rawurl':
-                return str_replace('&amp;', '&', $img_url);
+                return self::getUrl($image, $phpthumb_params, 'abs_raw');
+            case 'cache': // experimental - return direct url to cached image - this option will be deleted and all img.php will go through cahce
+                return self::getUrl($image, $phpthumb_params, 'cache');
             case 'im':      //  quick version - img without width and height
-                return "<img src=\"$img_short\" $param2 loading=lazy". (($param1 = safe(strip_tags($param1))) ? " title=\"$param1\" alt=\"$param1\" />" : ' />');
+                return '<img src="'.self::getUrl($image, $phpthumb_params, 'rel_escaped')."\" $param2 loading=lazy". (($param1 = safe(strip_tags($param1))) ? " title=\"$param1\" alt=\"$param1\" />" : ' />');
             case 'picture':
                 $thumb_params_arr = [];
                 parse_str($phpthumb_params, $thumb_params_arr);
                 if ( empty($thumb_params_arr['w']) || empty($thumb_params_arr['h']) ) {  // this gona be slow - better to provide w and h in params if possible
-                    $a = @getimagesize(str_replace('&amp;', '&', $img_url));
+                    $a = @getimagesize(self::getUrl($image, $phpthumb_params, 'abs_raw'));
                     $thumb_params_arr['w'] = $a[0] ?? 0;
                     $thumb_params_arr['h'] = $a[1] ?? 0;
                 }
-                return self::getPicture($img_short, (int)$thumb_params_arr['w'], (int)$thumb_params_arr['h'], $param1, $param2);
+                return self::getPicture(self::getUrl($image, $phpthumb_params, 'rel_escaped'), (int)$thumb_params_arr['w'], (int)$thumb_params_arr['h'], $param1, $param2);
         }
 
-        $a = @getimagesize(str_replace('&amp;', '&', $img_url));
+        $a = @getimagesize(self::getUrl($image, $phpthumb_params, 'abs_raw'));
         if (! $a) {
             return '';
         }
@@ -8819,7 +8818,7 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
             case 'imgb':    $param2 .= ' border=0';  // no break!!!
             case 'img':     $param1 = safe(strip_tags($param1));
                 $alt = $param1 ? " title=\"$param1\" alt=\"$param1\"" : '';
-                return "<img src=\"$img_short\" loading=lazy ". $a[3] ." $alt $param2 />";
+                return '<img src="'.self::getUrl($image, $phpthumb_params, 'rel_escaped').'" loading=lazy '.$a[3] ." $alt $param2 />";
         }
         return '';
     }
@@ -8882,18 +8881,16 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
 
 
     /**
-     * @param $image
-     * @param $phpthumb_params
-     * @return array
+     * @param          $image
+     * @param          $phpthumb_params
+     * @param  string  $type    'abs_raw'|'rel_escaped'  link to img.php with params - "absolute & unecsaped" or "relative & HTMLescaped"
+     *
+     * @return string
      */
-    protected static function _getUrl($image, $phpthumb_params): array
+    public static function getUrl($image, $phpthumb_params, string $type): string
     {
         if (empty($phpthumb_params)) {
-            return [$image,$image];
-        }
-        // separate parameters
-        if (!str_contains($phpthumb_params, '&amp;')) {
-            $phpthumb_params = str_replace('&', '&amp;', $phpthumb_params);
+            return $image;
         }
 
         // it is much better for phpThumb to access the files as files relative
@@ -8901,11 +8898,25 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
         if (AA_HTTP_DOMAIN !== "/") {
             $image = str_replace(AA_HTTP_DOMAIN, '', $image);
         }
-        if (aa_substr($image,0,4)==="http" || aa_substr($image,0,2) === "//") {
+        if (str_starts_with($image, 'http') || str_starts_with($image, '//')) {
             $image = preg_replace("~^(http[s]?:)?//(www\.)?(.+)\.([a-z]{1,6})/(.+)~", "\\5", $image);
         }
 
-        return [AA_INSTAL_URL. "img.php?src=/$image&amp;$phpthumb_params", AA_INSTAL_PATH. "img.php?src=/$image&amp;$phpthumb_params"];
+        if ($type === 'rel_escaped') {
+            if (!str_contains($phpthumb_params, '&amp;')) {
+                $phpthumb_params = str_replace('&', '&amp;', $phpthumb_params);
+            }
+            return AA_INSTAL_PATH. "img.php?src=/$image&amp;$phpthumb_params";
+        }
+        if ($type === 'abs_raw') {
+            return str_replace('&amp;', '&', AA_INSTAL_URL. "img.php?src=/$image&$phpthumb_params");
+        }
+        if ($type === 'cache') {
+            $mC = new \MissCache\MissCache();
+
+            return str_replace('&amp;', '&', AA_INSTAL_URL. "img.php?src=/$image&$phpthumb_params");
+        }
+        return '';  // not an option - we must call it with correct type
     }
 }
 
@@ -8925,27 +8936,21 @@ class AA_Stringexpand_Imgtext extends AA_Stringexpand_Nevercachenotrim {
      * @param $phpthumb_params - parameters as you would put to url for phpThumb
      *                           see http://phpthumb.sourceforge.net/demo/demo/phpThumb.demo.demo.php
      *   <s> is the font size (1-5 for built-in font, or point size for TrueType fonts);
-     *   <a> is the alignment (one of BR, BL, TR, TL, C, R, L,
-     *       T, B, * where B=bottom, T=top, L=left, R=right,
-     *       C=centre, *=tile);
+     *   <a> is the alignment (one of BR, BL, TR, TL, C, R, L, T, B,
+     *       where B=bottom, T=top, L=left, R=right, C=centre, *=tile);
      *       note: * does not work for built-in font "wmt"
      *       *or*
      *       an absolute position in pixels (from top-left
      *       corner of canvas to top-left corner of overlay)
      *       in format {xoffset}x{yoffset} (eg: "10x20")
      *   <c> is the hex color of the text;
-     *   <f> is the filename of the TTF file (optional, if
-     *       omitted a built-in font will be used);
+     *   <f> is the filename of the TTF file (optional, if omitted a built-in font will be used);
      *   <o> is opacity from 0 (transparent) to 100 (opaque)
-     *       (requires PHP v4.3.2, otherwise 100% opaque);
      *   <m> is the edge (and inter-tile) margin in percent;
      *   <n> is the angle
      *   <b> is the hex color of the background;
-     *   <O> is background opacity from 0 (transparent) to
-     *       100 (opaque)
-     *       (requires PHP v4.3.2, otherwise 100% opaque);
-     *   <x> is the direction(s) in which the background is
-     *       extended (either 'x' or 'y' (or both, but both
+     *   <O> is background opacity from 0 (transparent) to 100 (opaque)
+     *   <x> is the direction(s) in which the background is extended (either 'x' or 'y' (or both, but both
      *       will obscure entire image))
      *       Note: works with TTF fonts only, not built-in
      * @return string
@@ -10462,15 +10467,30 @@ class AA_Stringexpand_Mailform extends AA_Stringexpand_Nevercache {
 
 /** Generates html code (<input name=answer) to be inside <form> which protects the form from spammers by easy trick
  *  The code could be changed in future
+ *  Even better protection you will gain, if you provide $slice_id - this protection will generate <input hidden with slice_id JS with protection
  */
 class AA_Stringexpand_Formantispam extends AA_Stringexpand_Nevercache {
 
     /**  */
-    function expand(): string {
-        return '<style>
-           div.aaskryto { display:none };
-        </style>
-        <div class="aaskryto"><input type="text" name="answer" value=""></div>';
+    function expand($slice_id=''): string {
+        $hidden_slice = '';
+        if (is_long_id($slice_id)) {
+            // spammers do not generate Date or even no have JS
+            $code = <<<JS
+                      ['mousemove', 'keydown', 'touchstart'].forEach(e => document.addEventListener(e, () => {
+                          const d = new Date().toLocaleString();
+                          if (d?.length) { document.querySelectorAll('[name="slice_id"]').forEach(e => e.value='$slice_id'); }
+                        }, { once: true })
+                      );
+                    JS;
+            AA::Stringexpander()->addRequire($code, 'AA_Req_Load');
+            $hidden_slice = getFrmHiddenEasy('slice_id');
+        }
+        return <<<HTML
+               <style> div.aaskryto { display:none }; </style>
+               $hidden_slice
+               <div class=aaskryto><input type=text name=answer value=""></div>
+               HTML;
     }
 }
 
