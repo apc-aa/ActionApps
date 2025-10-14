@@ -8,6 +8,7 @@
 
 namespace AA\IO\Grabber;
 
+use AA_Content;
 use AA_Property;
 use Exception;
 use FTP\Connection;
@@ -166,10 +167,10 @@ class FilesFTP extends AbstractGrabber
     }
 
     /** Method called by the AA\IO\Saver to get next item from the data input */
-    function getItem(): false|ItemContent
+    function getItem(): ?AA_Content
     {
         if ( !count($this->filepaths) || !($file = current($this->filepaths))) {
-            return false;
+            return null;
         }
         $item = new ItemContent();
         if (!count($info = array_intersect($this->info, ['name','dir','path','size','mtime','content']))) {

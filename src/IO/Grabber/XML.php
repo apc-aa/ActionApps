@@ -27,6 +27,7 @@
 
 namespace AA\IO\Grabber;
 
+use AA_Content;
 use AA_Property;
 use Exception;
 use ItemContent;
@@ -170,10 +171,10 @@ class XML extends AbstractGrabber
     }
 
     /** Method called by the AA\IO\Saver to get next item from the data input */
-    function getItem(): false|ItemContent
+    function getItem(): ?AA_Content
     {
         if (false === ($xml = current($this->_items))) {
-            return false;
+            return null;
         }
         next($this->_items);
 

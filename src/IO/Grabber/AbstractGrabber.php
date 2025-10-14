@@ -164,9 +164,10 @@ abstract class AbstractGrabber implements NamedInterface {
 
     /** getItem function
      *  Method called by the AA\IO\Saver to get next item from the data input
-     * @return ItemContent|AA_Content|null
+     *
+     * @return AA_Content|null
      */
-    function getItem() { return null; }
+    function getItem(): ?AA_Content { return null; }
 
     /** getAllItems function
      *  Shortcut method to get array of all the Items

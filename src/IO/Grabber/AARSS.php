@@ -10,6 +10,7 @@ namespace AA\IO\Grabber;
 
 use AA\IO\Feed;
 use AA\IO\FeedUtil;
+use AA_Content;
 use AA_Fields;
 use AA_Item;
 use AA_Log;
@@ -399,14 +400,14 @@ class AARSS extends AbstractGrabber
     /** getItem function
      *
      */
-    function getItem(): false|ItemContent
+    function getItem(): ?AA_Content
     {
         if (!is_array($this->aa_rss['items'])) {
-            return false;
+            return null;
         }
 
         if (!($item = current($this->aa_rss['items']))) {
-            return false;
+            return null;
         }
         $item_id = key($this->aa_rss['items']);
 

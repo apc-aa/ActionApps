@@ -8,6 +8,7 @@
 
 namespace AA\IO\Grabber;
 
+use AA_Content;
 use iCalFile;
 use ItemContent;
 
@@ -61,7 +62,7 @@ class Ical extends AbstractGrabber
     }
 
     /** Method called by the AA\IO\Saver to get next item from the data input */
-    function getItem(): ItemContent|int
+    function getItem(): ?AA_Content
     {
         // set pointers
         $vCalPos = 0;
@@ -139,6 +140,6 @@ class Ical extends AbstractGrabber
                 $vComponentsTypePos = 0;
             }
         }
-        return 0;
+        return null;
     }
 }

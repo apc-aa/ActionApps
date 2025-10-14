@@ -8,6 +8,7 @@
 
 namespace AA\IO\Grabber;
 
+use AA_Content;
 use ItemContent;
 
 /** AA\IO\AbstractGrabber\AbstractGrabber\XMLIekis - grabs data from XML files in one directory
@@ -56,10 +57,10 @@ class XMLIekis extends AbstractGrabber
     }
 
     /** Method called by the AA\IO\Saver to get next item from the data input */
-    function getItem(): false|ItemContent
+    function getItem(): ?AA_Content
     {
         if (!($file = current($this->_files))) {
-            return false;
+            return null;
         }
         next($this->_files);
 

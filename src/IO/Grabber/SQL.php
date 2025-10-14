@@ -8,6 +8,7 @@
 
 namespace AA\IO\Grabber;
 
+use AA_Content;
 use AA_Property;
 use Exception;
 use ItemContent;
@@ -129,10 +130,10 @@ class SQL extends AbstractGrabber
     }
 
     /** Method called by the AA\IO\Saver to get next item from the data input */
-    function getItem(): false|ItemContent
+    function getItem(): ?AA_Content
     {
         if (!$this->dbresult || false === ($data = $this->dbresult->fetch(PDO::FETCH_ASSOC))) {
-            return false;
+            return null;
         }
         $item = new ItemContent();
         foreach ($data as $k => $v) {

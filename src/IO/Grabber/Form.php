@@ -10,6 +10,7 @@ namespace AA\IO\Grabber;
 
 use AA\FormArray;
 use AA\Widget\Widget;
+use AA_Content;
 use AA_Fields;
 use AA_Item;
 use AA_Slice;
@@ -143,9 +144,10 @@ class Form extends AbstractGrabber {
 
 
     /** Method called by the AA\IO\Saver to get next item from the data input */
-    function getItem() {
+    function getItem(): ?AA_Content
+    {
         if (!($tostore = current($this->_items))) {
-            return false;
+            return null;
         }
         next($this->_items);
         $this->_last_store_mode = $tostore[1];

@@ -9,6 +9,7 @@
 namespace AA\IO\Grabber;
 
 use AA;
+use AA_Content;
 use ItemContent;
 
 /** AA\IO\AbstractGrabber\AbstractGrabber\PohodaStocks - Imports stock from POHODA accounting system
@@ -53,15 +54,14 @@ class PohodaOrdersResult extends AA\IO\Grabber\AbstractGrabber {
     }
 
     /** Method called by the AA\IO\Saver to get next item from the data input */
-    function getItem(): false|ItemContent
+    function getItem(): ?AA_Content
     {
         if (!($polozka = current($this->_items))) {
-            return false;
+            return null;
         }
         next($this->_items);
 
         $response_att = $polozka->attributes();
-
 
         //$zids     = new zids($response_att['id'], 's');
         $item_id = AA::Un('{item:' . $response_att['id'] . ':_#ITEM_ID_}');

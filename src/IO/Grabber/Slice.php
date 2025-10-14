@@ -8,6 +8,7 @@
 
 namespace AA\IO\Grabber;
 
+use AA_Content;
 use AA_Set;
 use AA_Slice;
 use ItemContent;
@@ -71,10 +72,10 @@ class Slice extends AbstractGrabber
     }
 
     /** Method called by the AA\IO\Saver to get next item from the data input */
-    function getItem(): false|ItemContent
+    function getItem(): ?AA_Content
     {
         if (!($longid = $this->_longids[$this->_index])) {
-            return false;
+            return null;
         }
         if (empty($this->_content_cache[$longid])) {
             $this->_fillCache();
