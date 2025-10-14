@@ -2404,10 +2404,8 @@ function getFrmHidden($name, $val='', $safing=true ): string {
 
 /** Gets html tag <input type=hidden .. for use within <form>
  */
-function getFrmHiddenEasy(string $name, string $val='', bool $safing=true ): string {
-    if ( $safing ) {
-        $val=safe($val);
-    }
+function getFrmHiddenEasy(string $name, ?string $val='', bool $safing=true ): string {
+    $val = $safing ? safe($val) : (string)$val;
     return "<input type=hidden name=\"$name\" value=\"$val\">";
 }
 
