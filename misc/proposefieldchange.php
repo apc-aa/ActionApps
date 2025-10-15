@@ -108,9 +108,10 @@ class GrabberAssignmentform extends AA\IO\Grabber\AbstractGrabber {
     }
 
     /** Method called by the AA\IO\Saver to get next item from the data input */
-    function getItem() {
+    function getItem(): ?AA_Content
+    {
         if (!($item = $this->_items[$this->_index])) {
-            return false;
+            return null;
         }
         $this->_index++;
         return $item;

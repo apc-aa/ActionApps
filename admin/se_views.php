@@ -198,7 +198,7 @@ echo "</select></td>
         <td><input type=\"submit\" name=\"new\" class=\"aa-button-new\" value=\"". _m("New") ."\"></td>
      </tr>";
 
-// row for new view creaded from template
+// row for new view created from template
 echo "<tr>
         <td>"._m("by&nbsp;template:")."</td>
         <td>

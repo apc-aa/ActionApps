@@ -76,7 +76,7 @@ if ( isset($_GET['sid']) )  {
        'showcondsro' => $showcondsro,
        'showcondsrw' => $showcondsrw,
        'slice_field' => $slice_field,
-       'listlen'     => $slice_field
+       'listlen'     => $listlen
         ];
 } else {
     // it is not stored inside Manager - we have to store it in session
@@ -89,7 +89,7 @@ if ( isset($_GET['sid']) )  {
     $showcondsrw = $r_state['related']['showcondsrw'];
     $short       = $r_state['related']['sort'];
     $slice_field = $r_state['related']['slice_field'];
-    $listlen     = $r_state['related']['slice_fiel'];
+    $listlen     = $r_state['related']['listlen'];
 }
 
 $manager_id = 'related'. $sid.$var_id;

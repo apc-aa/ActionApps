@@ -203,7 +203,7 @@ abstract class AbstractGrabber implements NamedInterface {
         $ret = null;
         $this->prepare();
         while ($item = $this->getItem()) {
-            if ($item->getId() == $id) {
+            if ($item->getId() === $id) {
                 $ret = $item;
                 break;
             }

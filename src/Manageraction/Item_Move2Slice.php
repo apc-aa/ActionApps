@@ -76,11 +76,9 @@ class Item_Move2Slice extends AbstractManageraction {
     /** @inheritDoc */
     function perform(Manager $manager, zids $item_zids, $action_param): string|false
     {
-        if (strlen($action_param['dest_slice_id']) < 1) {
+        if (!is_long_id($dest_slice_id = $action_param['dest_slice_id'])) {
             return _m('No slice selected');
         }
-
-        $dest_slice_id = $action_param['dest_slice_id'];
 
         if (!IfSlPerm(PS_DELETE_ITEMS, $this->slice_id) || !IfSlPerm(PS_ITEMS2ACT, $dest_slice_id)) {    // permission to delete items and add items in destination slice?
             return _m("You have not permissions to move items");

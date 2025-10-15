@@ -554,8 +554,8 @@ class AA_Formatters {
         static $formatters = null;
         if (is_null($formatters)) {
             $formatters = [
+                1 => ['RAW', _m("HTML")],
                 0 => ['TEXT2HTML', _m("Plain text")],
-                1 => ['RAW', _m("HTML")]
             ];
         }
         return $formatters;
@@ -578,13 +578,13 @@ class AA_Formatters {
 
         $ret  = '<div class=aa-formatters>';
         foreach ($formatters as $bit => $formdef) {
-            if ($bit==0 || $contenttypes & $bit) {
+            if ($bit===0 || $contenttypes & $bit) {
                 $ret .= ' <label><input type=radio name="'.$basevarname.'[flag]" value="'.$bit.'"'. (($flag_frmtr == $bit) ? ' checked' : ''). '>'.$formdef[1].'</label>';
             }
         }
         $ret .= '</div>';
 
-        //$htmlareaedit= "<a href=\"javascript:openHTMLAreaFullscreen('".$varname."');\">"._m("Edit in HTMLArea")."</a>"; // used for HTMLArea
+        //$htmlareaedit= "<a href=\"javascript:openHTMLAreaFullscreen('".$varname."');\">"._m("Edit in Editor")."</a>"; // used for HTMLArea
 
         //// conversions menu
         // if ($convertor = ($convert ? $this->get_convertors() : false) ) {

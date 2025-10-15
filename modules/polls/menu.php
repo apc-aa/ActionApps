@@ -92,8 +92,8 @@ function get_aamenus(): array
         "items"     => [
             "header1"     => _m("Folders"),
             "app"       => ["cond"=>1,                           "href"=>"modules/polls/index.php?Folder1a=1",                         "label"=>"<img src='../../images/ico-items.png'>"._m("Active")." <span class='aa-bin-cnt'>". $r_state['bin_cnt']['app'] ."</span>"],
-            "appb"      => ["cond"=>1,                           "href"=>"modules/polls/index.php?Folder1b=1",                         "label"=>"<img src='../../images/ico-items-pend.png'>"._m("... pending")." <span class='aa-bin-cnt'>". $r_state['bin_cnt']['appb'] ."</span>"],
-            "appc"      => ["cond"=>1,                           "href"=>"modules/polls/index.php?Folder1c=1",                         "label"=>"<img src='../../images/ico-items-exp.png'>"._m("... expired")." <span class='aa-bin-cnt'>". $r_state['bin_cnt']['appc'] ."</span>"],
+            "appb"      => ["cond"=>1,                           "href"=>"modules/polls/index.php?Folder1b=1",                         "label"=>_m("... pending")." <span class='aa-bin-cnt'>". $r_state['bin_cnt']['appb'] ."</span>"],
+            "appc"      => ["cond"=>1,                           "href"=>"modules/polls/index.php?Folder1c=1",                         "label"=>_m("... expired")." <span class='aa-bin-cnt'>". $r_state['bin_cnt']['appc'] ."</span>"],
             "folder2"   => ["cond"=>1,                           "href"=>"modules/polls/index.php?Folder2=1",                          "label"=>"<img src='../../images/ico-holdbin.png'>"._m("Hold bin")." <span class='aa-bin-cnt'>". $r_state['bin_cnt']['folder2'] ."</span>"],
             "folder3"   => ["cond"=>1,                           "href"=>"modules/polls/index.php?Folder3=1",                          "label"=>"<img src='../../images/ico-trashbin.png'>"._m("Trash bin")." <span class='aa-bin-cnt'>". $r_state['bin_cnt']['folder3'] ."</span>"],
 

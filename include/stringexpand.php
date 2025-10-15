@@ -10473,8 +10473,13 @@ class AA_Stringexpand_Formantispam extends AA_Stringexpand_Nevercache {
 
     /**  */
     function expand($slice_id=''): string {
-        $hidden_slice = '';
+
+        $hiddens = '';
         if (is_long_id($slice_id)) {
+            // we are using token, so we have to switch caching off
+            AA::Pagecache()->switchCacheNostore();
+            AA_Session::tokenStoreSet($token = new_id());     // we can add IP, time, site_id if we would need it for validation in future
+
             // spammers do not generate Date or even no have JS
             $code = <<<JS
                       ['mousemove', 'keydown', 'touchstart'].forEach(e => document.addEventListener(e, () => {
@@ -10484,11 +10489,12 @@ class AA_Stringexpand_Formantispam extends AA_Stringexpand_Nevercache {
                       );
                     JS;
             AA::Stringexpander()->addRequire($code, 'AA_Req_Load');
-            $hidden_slice = getFrmHiddenEasy('slice_id');
+            $hiddens  = getFrmHiddenEasy('slice_id');
+            $hiddens .= getFrmHiddenEasy('aa_token', $token);
         }
         return <<<HTML
                <style> div.aaskryto { display:none }; </style>
-               $hidden_slice
+               $hiddens
                <div class=aaskryto><input type=text name=answer value=""></div>
                HTML;
     }

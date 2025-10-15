@@ -27,12 +27,12 @@ class Adminlink
         return '';
     }
 
-    public static function linkByTable($table, $fld, $row): string
+    public static function linkByTable(string $table, string $fld, array $row): string
     {
         return match ($table) {
             'content', 'discussion', 'item' => self::itemLink($row['iid'], $row['sid'], true),
             'view' => self::viewLink($row['iid']),
-            'slice', 'module', 'site', 'polls' => self::moduleLink($row['iid']),
+            'slice', 'module', 'site', 'polls' => self::moduleLink($row['iid'], $fld),
             'field' => self::fieldLink($row['iid'], $row['sid'], $fld),
             'site_spot' => self::siteLink($row['iid'], $row['sid']),
             'object_text', 'object_integer', 'object_float' => self::objectLink($row['iid']),
@@ -50,9 +50,15 @@ class Adminlink
         return '';
     }
 
-    public static function moduleLink($module_id): string
+    public static function moduleLink($module_id, ?string $fid): string
     {
-        return AA_Module::getModuleName($module_id, true)." ($module_id) &nbsp; ".ChangesMonitor::getHistoryLink($module_id);
+        return match ($fid) {
+            'fulltext_format_top', 'fulltext_format', 'fulltext_format_bottom' => AA_Module::getModuleName($module_id, true, 'admin/se_fulltext.php')." ($module_id) &nbsp; ".ChangesMonitor::getHistoryLink($module_id),
+            'odd_row_format', 'even_row_format', 'compact_top', 'compact_bottom', 'category_top', 'category_format', 'category_bottom' => AA_Module::getModuleName($module_id, true, 'admin/se_compact.php')." ($module_id) &nbsp; ".ChangesMonitor::getHistoryLink($module_id),
+            'admin_format_top', 'admin_format', 'admin_format_bottom' => AA_Module::getModuleName($module_id, true, 'admin/se_admin.php')." ($module_id) &nbsp; ".ChangesMonitor::getHistoryLink($module_id),
+            'javascript' => AA_Module::getModuleName($module_id, true, 'admin/se_javascript.php')." ($module_id) &nbsp; ".ChangesMonitor::getHistoryLink($module_id),
+            default => AA_Module::getModuleName($module_id, true)." ($module_id) &nbsp; ".ChangesMonitor::getHistoryLink($module_id)
+        };
     }
 
     public static function siteLink($spot_id, $module_id): string

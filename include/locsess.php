@@ -42,6 +42,16 @@ use AA\Util\Txt;
 // supress PHP notices
 error_reporting(error_reporting() & ~(E_WARNING | E_NOTICE | E_DEPRECATED | E_STRICT));
 
+/*
+register_shutdown_function(function() {
+    $error = error_get_last();
+    if ($error && in_array($error['type'], [E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR])) {
+        error_log("FATAL ERROR: {$error['message']} in {$error['file']} on line {$error['line']}");
+        // You can also notify admin, write to DB, etc.
+    }
+});
+*/
+
 // if AA used in proxy mode, we need to correct some internal variables
 if ($_SERVER['HTTP_X_FORWARDED_SERVER']) {
     $_SERVER['HTTP_HOST']   = $_SERVER['HTTP_X_FORWARDED_HOST'];
@@ -351,19 +361,19 @@ class AA_Debug {
         $ret .= '</table>';
 
         $ret .= <<<EOF
-              <script>
-                function AA_DbgToggleRows(button) {
-                    let isVisible = (button.textContent === '-');
-                    let nextRows = button.parentNode.parentNode.nextElementSibling;
-                    while (nextRows && nextRows.className.startsWith(button.closest('tr').getAttribute('class')+'_')) {
-                        nextRows.style.display = isVisible ? 'none' : '';
-                        nextRows = nextRows.nextElementSibling;
+                  <script>
+                    function AA_DbgToggleRows(button) {
+                        let isVisible = (button.textContent === '-');
+                        let nextRows = button.parentNode.parentNode.nextElementSibling;
+                        while (nextRows && nextRows.className.startsWith(button.closest('tr').getAttribute('class')+'_')) {
+                            nextRows.style.display = isVisible ? 'none' : '';
+                            nextRows = nextRows.nextElementSibling;
+                        }
+                        button.textContent = isVisible ? '+' : '-';
                     }
-                    button.textContent = isVisible ? '+' : '-';
-                }
-                // document.querySelectorAll("tr[class^='l_'] button").forEach(function(el) { el.click(); });
-              </script>
-EOF;
+                    // document.querySelectorAll("tr[class^='l_'] button").forEach(function(el) { el.click(); });
+                  </script>
+                EOF;
 
         $ret .= AA::Contentcache()->duration_stat();
         $ret .= StrExp('sortable');
@@ -656,12 +666,43 @@ function AuthGetUname(): string {
     return is_object($auth) ? $auth->getUname() : '';
 }
 
-class AA_Session extends Session {
-    function __construct() {
-        $this->lifetime  = defined('AA_LOGIN_TIMEOUT') ? constant('AA_LOGIN_TIMEOUT') : 1440;   // day
+class AA_Session extends Session
+{
+    private const AA_FORM_TOKEN_LIFETIME = 172800; // 2 days = 2*24*60*60 seconds =  172800 seconds
+
+    function __construct()
+    {
+        $this->lifetime = defined('AA_LOGIN_TIMEOUT') ? constant('AA_LOGIN_TIMEOUT') : 1440;   // day
         parent::__construct();
         // in AA_Session we also start it
         $this->start();
+    }
+
+    /** Token store for AA forms - to avoid CSRF attacks
+     *  Call AA_Session::tokenStoreSet() to set new token
+     *
+     * @todo move tokenStore to its class
+     */
+    public static function tokenStoreSet(string $token): void
+    {
+        self::tokenStoreClean();
+        $_SESSION['r_tokens'][$token] = time();
+    }
+
+    public static function tokenStoreCheck(string $token): bool
+    {
+        self::tokenStoreClean();
+        if (array_key_exists($token, $_SESSION['r_tokens'])) { // valid token
+            unset($_SESSION['r_tokens'][$token]);
+            session_write_close();
+            return true;
+        }
+        return false;
+    }
+
+    private static function tokenStoreClean(): void
+    {
+        $_SESSION['r_tokens'] = !is_array($_SESSION['r_tokens']) ? [] : array_filter($_SESSION['r_tokens'], static fn($t) => $t > time() - self::AA_FORM_TOKEN_LIFETIME);   // AA_FORM_TOKEN_LIFETIME
     }
 }
 

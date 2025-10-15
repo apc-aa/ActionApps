@@ -491,10 +491,10 @@ class AA_Object extends AA_Storable implements AA_iEditable {
     {
         // @todo DB Transaction start
         static::deleteObjects([$this->getId()], $prop_names);
-        $props = static::getClassProperties();
         $object_id = $this->getId();
+        $owner_id  = $this->getOwnerId();
         foreach ($prop_names as $property_id) {
-            $props[$property_id]?->save($this->$property_id, $object_id, $this->getOwnerId());
+            static::getPropertyObject($property_id)?->save($this->$property_id, $object_id, $owner_id);
         }
     }
 
@@ -512,7 +512,7 @@ class AA_Object extends AA_Storable implements AA_iEditable {
             'aa_version'    => new AA_Property('aa_version', 'Version', 'int', false, true, 'int', false),
             'aa_subobjects' => new AA_Property('aa_subobjects', 'Subobjects', 'string', true, true, 'string', false),     // helper field aa_subobjects used for quicker load of object
             'aa_id'         => new AA_Property('aa_id', 'Id', 'string', false, true, 'id', true),
-            default         => null,
+            default         => static::getClassProperties()[$property_id] ?? null,
         };
     }
 

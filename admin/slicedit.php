@@ -133,11 +133,19 @@ try {
     $Msg = InputVars::stringGETPOST('Msg');
 } catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
 
-define ('PERMS_STATE', [
+define ('PERMS_STATE_POST', [
+    0 => _m("Not allowed"),
+    3 => _m("Active with antiSPAM tokens"),
+    1 => _m("Active"),
+    2 => _m("Hold bin")
+]);
+
+define ('PERMS_STATE_OFFLINE', [
     0 => _m("Not allowed"),
     1 => _m("Active"),
     2 => _m("Hold bin")
 ]);
+
 
 define ('PERMS_ANONYMOUS_EDIT', [
     ANONYMOUS_EDIT_NOT_ALLOWED      => _m("Not allowed"),
@@ -231,9 +239,9 @@ if ( $superadmin ) {
 
 FrmInputChBox("flag_allow_expired", _m("Show content of expired items"), $flag_allow_expired);
 FrmInputChBox("flag_allow_pending", _m("Show content of pending items"), $flag_allow_pending);
-FrmInputSelect("permit_anonymous_post", _m("Allow anonymous posting of items"), PERMS_STATE, $sarr['permit_anonymous_post']);
+FrmInputSelect("permit_anonymous_post", _m("Allow anonymous posting of items"), PERMS_STATE_POST, $sarr['permit_anonymous_post']);
 FrmInputSelect("permit_anonymous_edit", _m("Allow anonymous editing of items"), PERMS_ANONYMOUS_EDIT, $sarr['permit_anonymous_edit'], false, "", "../doc/anonym.html");
-FrmInputSelect("permit_offline_fill", _m("Allow off-line item filling"),        PERMS_STATE, $sarr['permit_offline_fill']);
+FrmInputSelect("permit_offline_fill", _m("Allow off-line item filling"),        PERMS_STATE_OFFLINE, $sarr['permit_offline_fill']);
 
 // Reader Management specific settings (Jakub, 7.2.2003)
 $slice     = AA_Slice::getModule($slice_id);

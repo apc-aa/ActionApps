@@ -124,6 +124,7 @@ abstract class AA_Module {
     /** get module - called as:
      *   $name = AA_Module_Site::getModuleName($module_id)
      *   $name = AA_Slice::getModuleName($module_id)
+     *   $name = AA_Module::getModuleName($module_id, IfSlPerm(PS_FIELDS, $module_id), 'admin/se_inputform.php', ['fid' => $fid]])
      * @param      $module_id
      * @param bool $link
      * @return string
@@ -596,6 +597,11 @@ class AA_Slice extends AA_Module {
     /** should we show Expired Bin in AA UI */
     function noExpiredBin(): bool { return (string)$this->getProperty('nocheck_expired')==='1'; }
 
+    /** this slice needs tokens for its filler forms - see {formantispam} */
+    public function useFormTokens(): bool {
+        return (string)$this->getProperty('permit_anonymous_post') === '3';
+    }
+
     public function countItemsInBins() {
         $now = now('step');
         $ret = ['folder1'=>0, 'folder2'=>0, 'folder3'=>0, 'expired'=>0, 'pending'=>0];
@@ -846,6 +852,9 @@ class AA_Slice extends AA_Module {
     {
         // put the item into the right bin
         $bin2fill = IfSlPerm(PS_EDIT_ALL_ITEMS, $this->module_id) ? 1 : (int) $this->getProperty("permit_anonymous_post");
+        if ($bin2fill === 3) {
+            $bin2fill = 1;       // 3 in permit_anonymous_post is "Active with antiSPAM token"
+        }
         return ($bin2fill < 1) ? SC_NO_BIN : $bin2fill;
     }
 

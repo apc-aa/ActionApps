@@ -319,8 +319,15 @@ if ( isset($_POST['aa']) || isset($_FILES['aa']) ) {
         // }
     //}
 
+    $use_tokens = AA\IO\Grabber\Form::useFormTokens();
+    if ( $_REQUEST['aa_token'] || $use_tokens ) {
+        if (!AA_Session::tokenStoreCheck($_REQUEST['aa_token'] ?? '')) {
+            SendErrorPage(["fatal" => _m("Bad Token. Not allowed to post comments")]);
+        }
+    }
+
     $grabber = new AA\IO\Grabber\Form();
-    $saver   = new AA\IO\Saver($grabber, null, null, 'by_grabber', '', ($_REQUEST["err_url"] ? 'STRICT' : 'LOG'));
+    $saver   = new AA\IO\Saver($grabber, null, null, 'by_grabber', '', (($_REQUEST["err_url"] || $use_tokens) ? 'STRICT' : 'LOG'));   // use_tokens is new, so we switch to desired STRICT mode
     [$ok,$err] = $saver->run();
 
     if ($err && $_REQUEST["err_url"]) {
@@ -347,6 +354,15 @@ $slice        = AA_Slice::getModule($slice_id);
 if (!is_object($slice) || !$slice->isValid()) {
     SendErrorPage(["fatal"=>_m("Bad slice ID")]);
 }
+
+// huhl($_REQUEST['aa_token'], $slice->useFormTokens(), $_SESSION);
+
+if ( $_REQUEST['aa_token'] || $slice->useFormTokens() ) {
+    if (!AA_Session::tokenStoreCheck($_REQUEST['aa_token'] ?? '')) {
+        SendErrorPage(["fatal" => _m("Bad Token. Not allowed to post comments")]);
+    }
+}
+
 
 // if you want to edit an item from an anonymous form, prepare its ID into
 // the my_item_id hidden field

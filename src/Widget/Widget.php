@@ -201,7 +201,7 @@ class Widget extends AA_Object implements NamedInterface {
                     return [];
                 }
             }
-            $format = $slice?->getField($slice_field) ? '{substr:{' . $slice_field . '}:0:50}' : $slice_field;
+            $format = $slice?->getField($slice_field) ? '{substr:{index:' . $slice_field . '}:0:50}' : $slice_field;
             $set = new AA_Set($sid, $filter_conds, $sort_by, $bin_filter);
             if ($filter_conds_rw) {
                 $set->addCondsFromString($filter_conds_rw);

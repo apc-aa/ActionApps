@@ -115,6 +115,32 @@ class Form extends AbstractGrabber {
         return $ret;
     }
 
+    private static function getNewItemSlices(): array {
+        $slices = [];
+        $aa_ops = array_merge(array_keys($_POST['aa'] ?? []), array_keys($_FILES['aa']?? []));
+        foreach ($aa_ops as $dirty_item_id) {
+            if ($dirty_item_id[0] === 'n' OR $dirty_item_id[0] === 'f') {
+                [$letter, $sid] = explode('_', $dirty_item_id);
+                $slices[$sid] = true;
+            }
+        }
+        return array_keys($slices);
+    }
+
+    /** If any of the slices used by new items requires form tokens, return true
+     *  (so the Saver will check the form token)
+     *  @todo get slices also from edited items
+     */
+    public static function useFormTokens(): bool {
+        $slices = self::getNewItemSlices();
+        foreach ($slices as $sid) {
+            if (AA_Slice::getModule($sid)?->useFormTokens()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /** process the   aa[f_54343ea876898b6754e3578a8cc544e6][file][fil][var][] type of upload produced by {manager} and RimWidget and
      *  convert it to aa[n1_54343ea876898b6754e3578a8cc544e6][file............][fil][var][]
      * @return true|string - string is error
