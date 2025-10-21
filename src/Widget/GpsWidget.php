@@ -114,7 +114,18 @@ class GpsWidget extends Widget
             JS;
         }
 
+        /** @todo - load API key from property / slice / site / aa / config constant - first in this order.
+         *          Create new AA_Apikeys object and admin pages on AA + site + slice levels (like Tasks objects)
+         *         For now, we use constant AA_APIKEY_MAPY if defined.
+         */
+        $mapy_api_key =  defined('AA_APIKEY_MAPY') ? AA_APIKEY_MAPY : '';  // safe($this->getProperty('mapy_api_key', ''));
+
         return <<<JS
+           if (!window.aa_gps_qcache) {
+                window.MAPY_API_KEY = '$mapy_api_key';
+                window.aa_gps_qcache = {};
+           }          
+          
             const inputEl$js_id = AA_$('#adresa4suggest$js_id');
             const optsEl$js_id  = AA_$('#optssuggest$js_id');    
             const valEl$js_id = AA_$('#$val_id');
@@ -163,24 +174,6 @@ class GpsWidget extends Widget
         function AA_GpsShowGeo(map, itemid, geojsonData, title, drawnItems) {
             // Clear previous items if you wish to display only the latest GeoJSON
             drawnItems.clearLayers();
-            
-            // if geojsonData is string, convert to object
-            /*if (typeof geojsonData === "string") {
-              geojsonData = geojsonData.trim();
-              // check if the value is in format "lat lon" or GeoJSON by regexp
-              let match = geojsonData.match(/^([+-]?(\d*[.])?\d+)\s([+-]?(\d*[.])?\d+)$/);
-              if (match) {
-                  geojsonData  = {"type":"Point","coordinates":[match[3], match[1]]};
-              } else {
-                try {
-                    geojsonData = JSON.parse(geojsonData);
-                } catch (e) {
-                    console.error("Invalid GeoJSON data");
-                    return;
-                }
-              }
-            }
-            */
             
             if (typeof geojsonData === "string") {
               geojsonData = geojsonData.trim();
@@ -244,39 +237,104 @@ class GpsWidget extends Widget
             }
         }
         
+        // --- Main listener ---
         function AA_GpsSuggestListener(inputEl, optsEl, map, jsId, drawnItems) {
-            const query = inputEl.value;
+            const query = inputEl.value.trim();
             if (query.length < 3) {
                 optsEl.innerHTML = '';
                 return;
             }
-
-            // fetch(`https://nominatim.openstreetmap.org/search?format=json&q=\${encodeURIComponent(query)}&countrycodes=cz&addressdetails=1&limit=5`)
-            fetch(`https://photon.komoot.io/api/?q=\${encodeURIComponent(query)}&limit=5&lat=50.3&lon=14.95`)
+        
+            // Debounce: wait 300ms after user stops typing
+            clearTimeout(inputEl._debounceTimer);
+            inputEl._debounceTimer = setTimeout(() => {
+                // Check cache
+                if (window.aa_gps_qcache[query]) {
+                    AA_renderSuggestions(window.aa_gps_qcache[query], optsEl, inputEl, map, jsId, drawnItems);
+                    return;
+                }
+        
+                // Decide which provider to use
+                const providerPromise = window.MAPY_API_KEY
+                    ? AA_SuggestProviderMapy(query, window.MAPY_API_KEY, 5)
+                        .catch(err => {
+                            console.warn('Mapy.cz failed, falling back to Photon:', err);
+                            return AA_SuggestProviderPhoton(query, '', 5);
+                        })
+                    : AA_SuggestProviderPhoton(query, '', 5);
+        
+                providerPromise.then(suggestions => {
+                    window.aa_gps_qcache[query] = suggestions;
+                    AA_renderSuggestions(suggestions, optsEl, inputEl, map, jsId, drawnItems);
+                });
+            }, 300);
+        }
+        
+        // --- Suggest rendering helper ---
+        function AA_renderSuggestions(suggestions, optsEl, inputEl, map, jsId, drawnItems) {
+            optsEl.innerHTML = '';
+            if (!suggestions || suggestions.length === 0) return;
+        
+            suggestions.forEach(item => {
+                const option = document.createElement('div');
+                option.className = 'aa-gps-suggest-item';
+                option.innerHTML = `<strong>\${item.name}</strong><div>\${item.info}</div>`;
+                option.style.cursor = 'pointer';
+                option.addEventListener('click', () => {
+                    inputEl.value = item.name;
+                    optsEl.innerHTML = '';
+                    AA_GpsShowGeo(map, jsId, item.geometry, inputEl.value, drawnItems);
+                });
+                optsEl.appendChild(option);
+            });
+        }               
+        
+        
+        function AA_SuggestProviderPhoton(query, apikey, limit = 5) {
+                // fetch(`https://nominatim.openstreetmap.org/search?format=json&q=\${encodeURIComponent(query)}&countrycodes=cz&addressdetails=1&limit=5`)
+            return fetch(`https://photon.komoot.io/api/?q=\${encodeURIComponent(query)}&limit=\${limit}&lat=50.3&lon=14.95`)
                 .then(res => res.json())
                 .then(data => {
-                    optsEl.innerHTML = '';
-                    data.features.forEach(item => {
-                        const option = document.createElement('div');
-                        option.className = 'aa-gps-suggest-item';
-                        // //const mainName = item.address.city || item.address.town || item.address.village || item.address.county || item.display_name.split(',')[0];
-                        // //const extraInfo = item.display_name.replace(mainName + ', ', '');
-                        // option.innerHTML = (([f, ...r] = item.display_name.split(',').map(s => s.trim())), `<strong>\${f}</strong>\${r.length ? '<br><em>' + r.join(', ') + '</em>' : ''}`);
-                        // //option.textContent = item.display_name;
-                        const mainName = [item.properties.name, item.properties.street, item.properties.housenumber, item.properties.district].filter(Boolean).join(', ');
-                        const extraInfo = [item.properties.city, item.properties.state, item.properties.country].filter(Boolean).join(', ');
-                        option.innerHTML = `<strong>\${mainName}</strong><div>\${extraInfo}</div>`;
-        
-                        option.style.cursor = 'pointer';
-                        option.addEventListener('click', () => {
-                            inputEl.value = mainName;
-                            optsEl.innerHTML = '';
-                            AA_GpsShowGeo(map, jsId, item.geometry, inputEl.value, drawnItems);
-                        });
-                        optsEl.appendChild(option);
+                    // console.info('Photon map query result here');
+                    return data.features.map(item => {
+                        const mainName = [item.properties.name, item.properties.street, item.properties.housenumber, item.properties.district]
+                            .filter(Boolean)
+                            .join(', ');
+                        const extraInfo = [item.properties.city, item.properties.state, item.properties.country]
+                            .filter(Boolean)
+                            .join(', ');
+                        return {
+                            name: mainName,
+                            info: extraInfo,
+                            geometry: item.geometry
+                        };
                     });
                 })
-                .catch(err => console.error('Maps API error:', err));
+                .catch(err => {
+                    console.error('Photon API error:', err);
+                    return [];
+                });
+        }
+
+        
+        function AA_SuggestProviderMapy(query, apikey, limit = 5) {
+            return fetch(`https://api.mapy.com/v1/suggest?query=\${encodeURIComponent(query)}&limit=\${limit}&lang=cs&type=regional.address&apikey=\${encodeURIComponent(apikey)}`)
+                .then(res => res.json())
+                .then(data => {
+                    // console.info('Mapy.com query result here');
+                    if (!data || !data.items || !Array.isArray(data.items)) {
+                        throw new Error('Mapy.com API error:'. data?.detail[0]?.msg);
+                    }
+                    return  data.items.map(item => {
+                        return {
+                          name: item.name,
+                          info: item.location,
+                          geometry: { 
+                              type: 'Point', 
+                              coordinates: [item.position.lon, item.position.lat] 
+                          }
+                    }});
+                });
         }
         
         function AA_GpsShowMarker(map, itemid, lat, lon, title) {
