@@ -49,7 +49,8 @@ AA::Stringexpander()->addRequire($css, 'AA_Req_CSScode');
 
 $managed = AA::Metabase()->getManagerConf('log');
 $managed->settings['searchbar']['default_sort'] =  [0 => ['time' => 'd']];
-$managed->setColumn('params', '{internal:AA_Log:print}');
+$managed->setColumn('params',   '{internal:AA_Log:print}');
+$managed->setColumn('selector', '{internal:AA_Log:context}');
 $managed->setColumn('_aa_action', '');   // do not display Edit and Delete action buttons on the row
 
 $apage = new AA_Adminpageutil('aaadmin', 'log');

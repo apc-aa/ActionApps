@@ -79,6 +79,16 @@ abstract class AA_Serializable {
         return static::factory($params['class'], $params);
     }
 
+    /** For Log selector we use param1:param2...:class serialization (for faster DB lookup in log table) */
+    public static function factoryByStringReversed($string): ?AA_Serializable {
+        if (false !== ($pos = strrpos($string, ':'))) {
+            if (($id = substr($string, $pos + 1)) !== '') {
+                return static::factoryByString($id.':'.substr($string, 0, $pos));
+            }
+        }
+        return null;
+    }
+
     /** Constructor
      *  @param $params array of parameters in form 'property_name' => 'value'
      */
@@ -191,10 +201,15 @@ abstract class AA_Serializable {
         return $params;
     }
 
-    /** Reverse to parseClassProperties */
-    public function serializeToString(): string {
+    /** Reverse to parseClassProperties
+     *
+     * @param  bool  $reversed - for Logentry Qa - log -> selector we use format param1:param2...:class for quicker DB lookup for selector's first value
+     *
+     * @return string
+     */
+    public function serializeToString(bool $reversed=false): string {
         $class_shotcut = AA_Components::getClassType(static::class, 'AA_Logentry_');
-        $parts = [$class_shotcut];
+        $parts = $reversed ? [] : [$class_shotcut];
         $props = static::getPersistentProperties();
 
         foreach (array_keys($props) as $name) {
@@ -210,6 +225,9 @@ abstract class AA_Serializable {
                 $value = '';
             }
             $parts[] = $value;
+        }
+        if ($reversed) {
+            $parts[] = $class_shotcut;
         }
         return ParamImplode($parts);
     }

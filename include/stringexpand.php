@@ -2582,13 +2582,13 @@ class AA_Stringexpand_Xmlfield extends AA_Stringexpand_Nevercache {
                 if ( $field->isMultilingual() ) {
                     $values->fixTranslations($slice->getTranslations());
                     foreach ($values as $ind => $val) {
-                        if (strlen($val) || ($field->getType()==='date' && !AA_Stringexpand_Date::isEmptyDate($val))) {
+                        if (strlen($val) && !($field->getType()==='date' && AA_Stringexpand_Date::isEmptyDate($val))) {
                             $ret .= xmltag($tag, $val, $atrs + ['lang' => Langs::getLangNum2Code($ind)]);
                         }
                     }
                 } else {
                     foreach ($values as $val) {
-                        if (strlen($val) !== 0) {
+                        if (strlen($val) && !($field->getType()==='date' && AA_Stringexpand_Date::isEmptyDate($val))) {
                             $ret .= xmltag($tag, $val, $atrs);
                         }
                     }

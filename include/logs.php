@@ -159,8 +159,9 @@ class AA_Log implements InternalExpandInterface {
         //     ParamImplode([AA::$module_id,'',str_replace(':','_',$_SERVER['REMOTE_ADDR']), ($_SERVER['HTTPS'] ? '' : 'http/'). "{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}"]);
         // }
 
-        // we need to be searchable by selector - so in DB index
-        return ParamImplode([$selector, AA::$module_id,str_replace(':','_',$_SERVER['REMOTE_ADDR']), ($_SERVER['HTTPS'] ? '' : 'http/'). "{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}"]);
+        // we need to be searchable by selector - so in DB index we use reversed format with Qa at the end
+        $entry = new AA_Logentry_Qa(['ident'=>$selector, 'module'=>AA::$module_id,'ip'=>str_replace(':','_',$_SERVER['REMOTE_ADDR']), 'uri'=>($_SERVER['HTTPS'] ? '' : 'http/'). "{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}"]);
+        return $entry->serializeToString(true);
     }
 
     public static function getAdminUrl(string $event, string $selector = ""): string {
@@ -235,11 +236,16 @@ class AA_Log implements InternalExpandInterface {
                 [$type, $selector, $seconds] = $params;
                 $seconds = (int)$seconds ?: 3600;
                 return (!$type || !$selector) ? '' : (string)DB_AA::select1('cnt', "SELECT count(*) as cnt FROM `log`", [['type', $type], ['selector', $selector], ['time', time() - $seconds, '>=']]);
-            case 'print':  // print entries for type / selector in last seconds
+            case 'print':  // print entries params based on logentry
                 if ($content && ($logEntry = AA_Logentry::factoryByString($content->getValue('params')))) {
                     return $logEntry->getPrintRow(); // also adds CSS to header
                 }
-                return '';
+                return (string)$content->getValue('params');
+            case 'context':  // special format of selector logentry - param is first
+                if ($content && ($logEntry = AA_Logentry::factoryByStringReversed($content->getValue('selector')))) {
+                    return $logEntry->getPrintRow(); // also adds CSS to header
+                }
+                return (string)$content->getValue('selector');
         }
         return '';
     }
@@ -351,3 +357,21 @@ class AA_Logentry_Sys extends AA_Logentry {
         ];
     }
 }
+
+/** Log-selector-context
+ *  uses special format with class Qa at the end for better selector DB lookup
+ *
+ */
+class AA_Logentry_Qa extends AA_Logentry {
+// $entry = new AA_Logentry_Qa(['ident'=>$selector, 'module'=>AA::$module_id,'ip'=>str_replace(':','_',$_SERVER['REMOTE_ADDR']), 'url'=>($_SERVER['HTTPS'] ? '' : 'http/'). "{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}"]);
+
+public static function getClassProperties(): array {
+        return [
+            'ident'        => new AA_Property('ident',        _m('Identifier'), 'string'),
+            'module'       => new AA_Property('module',       _m('Module ID'), 'string'),
+            'ip'           => new AA_Property('ip',           _m('IP Address'), 'string'),
+            'uri'          => new AA_Property('uri',          _m('Url'), 'string'),
+        ];
+    }
+}
+

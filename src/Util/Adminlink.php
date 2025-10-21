@@ -55,7 +55,7 @@ class Adminlink
         return match ($fid) {
             'fulltext_format_top', 'fulltext_format', 'fulltext_format_bottom' => AA_Module::getModuleName($module_id, true, 'admin/se_fulltext.php')." ($module_id) &nbsp; ".ChangesMonitor::getHistoryLink($module_id),
             'odd_row_format', 'even_row_format', 'compact_top', 'compact_bottom', 'category_top', 'category_format', 'category_bottom' => AA_Module::getModuleName($module_id, true, 'admin/se_compact.php')." ($module_id) &nbsp; ".ChangesMonitor::getHistoryLink($module_id),
-            'admin_format_top', 'admin_format', 'admin_format_bottom' => AA_Module::getModuleName($module_id, true, 'admin/se_admin.php')." ($module_id) &nbsp; ".ChangesMonitor::getHistoryLink($module_id),
+            'admin_format_top', 'admin_format', 'admin_format_bottom', 'admin_noitem_msg', 'admin_remove' => AA_Module::getModuleName($module_id, true, 'admin/se_admin.php')." ($module_id) &nbsp; ".ChangesMonitor::getHistoryLink($module_id),
             'javascript' => AA_Module::getModuleName($module_id, true, 'admin/se_javascript.php')." ($module_id) &nbsp; ".ChangesMonitor::getHistoryLink($module_id),
             default => AA_Module::getModuleName($module_id, true)." ($module_id) &nbsp; ".ChangesMonitor::getHistoryLink($module_id)
         };
