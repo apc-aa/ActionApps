@@ -439,9 +439,9 @@ class GpsWidget extends Widget
                         <div class="aa-gps-map" id="mapdiv$js_id" style="height: 200px;"></div>
                         <input class="aa-gps-use" type=button id="copygps$js_id" value="&larr; {$use_string}" disabled onclick="AA_GpsUse('#$input_id', '$js_id', this);">
                       </div>
+                     </div>
                     </div>
-                  </div>
-EOF;
+                  EOF;
         return ['html' => $widget, 'last_input_name' => $input_name, 'base_name' => $base_name, 'base_id' => $base_id, 'required' => $aa_property->isRequired()];
     }
 }

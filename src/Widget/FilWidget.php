@@ -179,7 +179,7 @@ class FilWidget extends Widget
         $accept  = $allowed_ftypes ? "accept=\"$allowed_ftypes\"" : '';
 
         if ($type === 'normal') {
-            $required = ($aa_property->isRequired() && !$value->count() && $display_url > 0) ? 'required' : '';
+            $required = ($aa_property->isRequired() && !$value->count()) ? 'required' : '';   //  && $display_url > 0   - removed 2025-10-22 HM - make no sense to me (and required file upload in not required)
             $widget .= "    <br><input type=file class=filepond size=\"$width\"$multiple maxlength=\"$max_characters\" name=\"$input_name\" id=\"$input_id\" $required $accept><!--$type -->";
         } else {
             $url_params = [
