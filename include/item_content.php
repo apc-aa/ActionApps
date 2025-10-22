@@ -88,8 +88,11 @@ class AA_Value implements IteratorAggregate, ArrayAccess, Countable {
      *  Called as
      *     AA_Value::factoryFromJson($val);
      */
-    static function factoryFromJson($json): AA_Value {
+    static function factoryFromJson(?string $json): AA_Value {
         $aav = new AA_Value();
+        if (is_null($json) || $json === '') {
+            return $aav;
+        }
         if ($json[0] === '[' && !is_null($arr = json_decode($json, true))) {
             $aav->setValues(array_values($arr));
         } else {
