@@ -1,4 +1,5 @@
 /** AA Javascripts library usable on the public pages, just like:
+ *
  *  <script src="https://actionapps.org/apc-aa/javascript/jquery.min.js"></script>
  *  <script src="https://actionapps.org/apc-aa/javascript/aajslib-jquery.php"></script>
  *  (replace "https://actionapps.org/apc-aa" with your server and aa path
@@ -81,7 +82,7 @@ function AA_AjaxInsert(a_obj, form_url) {
  *  Usage:
  *     FrmSelectEasy('from_slice', $slice_array, $from_slice, 'onchange="DisplayAaResponse(\'fieldselection\', \'Get_Fields\', {slice_id:this.value})"');
  *     echo '<div id="fieldselection"></div>';
- */
+*/
 function DisplayAaResponse(div_id, method, params) {
     AA_AjaxCss('#'+CSS.escape(div_id), AA_GetConf('path') + 'central/responder.php?command='+ method, params);
 }
@@ -156,6 +157,25 @@ function AA_IsLoaded() {
     if (!AA_IsLoaded.cnt && AA_IsLoaded.callback) {
         AA_IsLoaded.callback();
         AA_IsLoaded.callback = undefined;       // run it just once
+    }
+}
+
+async function AA_InnerHtmlWithScripts(el, html) {
+    el.innerHTML = html;
+    const scripts = el.querySelectorAll('script');
+    for (const s of scripts) {
+        const ns = document.createElement('script');
+        [...s.attributes].forEach(a => ns.setAttribute(a.name, a.value));
+        if (s.src) {         // External script — load sequentially (blocking style)
+            document.head.appendChild(ns);
+            await new Promise((resolve, reject) => {
+                ns.onload = resolve;
+                ns.onerror = reject;
+            });
+        } else {            // Inline script — execute immediately
+            ns.textContent = s.textContent;
+            s.parentNode.replaceChild(ns, s);
+        }
     }
 }
 
@@ -367,7 +387,7 @@ function displayInput(valdivid, item_id, fid, widget_type, widget_properties, co
         if (width>200) {
             responseText = responseText.replace('class="ajax_widget aa-widget aa-ajax-open"', 'class="ajax_widget aa-widget aa-ajax-open" style="width:'+width+'px;"');
         }
-        el.innerHTML = responseText;
+        AA_InnerHtmlWithScripts(el, responseText);
         el.setAttribute("data-aa-edited", "1");
         var firstInput = el.querySelector('input, select, textarea');
         if (firstInput != null) {
