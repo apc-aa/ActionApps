@@ -222,7 +222,7 @@ class AA_Stringexpand_Jsonasoc extends AA_Stringexpand_Nevercachenotrim {
         $i        = 0;
         $arr      = [];
         while (isset($arg_list[$i]) && isset($arg_list[$i+1])) {  // regular option-text pair
-            if ( !strlen($field_id = trim($arg_list[$i])) ) {
+            if ('' === ($field_id = trim($arg_list[$i]))) {
                 $i += 2;
                 continue;
             }
@@ -4567,7 +4567,10 @@ class AA_Stringexpand_Sequence extends AA_Stringexpand_Nevercache {
         switch ($type) {
             case 'num':
                 if (ctype_digit((string)$min) && ctype_digit((string)$max)) {
-                    $arr = strlen($step) ? range((int)$min, (int)$max, (int)$step) : range((int)$min, (int)$max);
+                    $step = abs((int)$step) ?: 1;
+                    $min = (int)$min;
+                    $max = (int)$max;
+                    $arr = range($min, $max, $min>$max ? -$step : $step);
                 }
                 break;
             case 'string':
@@ -7729,7 +7732,7 @@ class AA_Stringexpand {
         "\x1E|~@c" => ')',
         "\x1E|~@d" => '{',
         "\x1E|~@e" => '}',
-        "\x1E|~@X" => '',    // added removal (previous _AA_ReMoVe, but it is quicker to hav the same length as others)
+        "\x1E|~@X" => '',    // added removal (previous _AA_ReMoVe, but it is quicker to have the same length as others)
     ];
 
     /**
