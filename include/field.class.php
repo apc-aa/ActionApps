@@ -233,7 +233,7 @@ class AA_Field implements ArrayAccess, Countable, IteratorAggregate {
     }
 
     /**
-     * @return string date|pwd|bool|text|int
+     * @return string date|pwd|bool|text|int|id
      */
     function getType(): string {
         [$validate_type] = explode(":", $this->getProperty('input_validate'), 2);
@@ -248,7 +248,7 @@ class AA_Field implements ArrayAccess, Countable, IteratorAggregate {
         if ($insert_type === 'boo') {
             return 'bool';
         }
-        if ($insert_type === 'ids') {
+        if ($insert_type === 'ids' || $validate_type === 'id' || $validate_type === 'packedid') {
             return 'id';
         }
         if ($this->getProperty('text_stored')) {  // not used from here down - it is possible to add more types - ids, ...
