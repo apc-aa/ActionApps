@@ -180,5 +180,5 @@ if ( !count($err) ) {
     AA_Adminpageutil::MsgPageMenu(StateUrl(self_base() . "se_import.php"), $err, "admin");
 }
 
-page_close();
+Session::page_close();
 

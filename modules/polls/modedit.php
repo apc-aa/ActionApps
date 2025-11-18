@@ -222,7 +222,6 @@ if ( $template['P'] ) {
 }
 
 $apage = new AA_Adminpageutil('modadmin', 'main');
-$apage->setModuleMenu('modules/polls');
 $apage->setTitle($template['P'] ? _m("Add Polls") : _m("Edit Polls"));
 $apage->printHead($err, $Msg);
 

@@ -751,7 +751,7 @@ class AA_Item {
                     // new approach - do not support $add
                     return "<script>var el=document.createElement('a');el.setAttribute('href','$link');el.innerHTML='$inner';var scrs=document.getElementsByTagName('script');var scr=scrs[scrs.length-1];scr.parentNode.insertBefore(el,scr);</script>";
                 }
-                // old, but hart to replace by createElement
+                // old, but hard to replace by createElement
                 return "<script>\n document.write('<a href=\"".$linkpart[0]."'+'@'+'".$linkpart[1]."\" ".$add.">". $inner ."</a>')\n</script>";
             }
 
@@ -776,8 +776,8 @@ class AA_Item {
         // try alternative alias (old form of _#ITEM_ID_ alias was _#ITEM_ID#. It was bad for
         // unaliasing with colon ':', so we change it, but for compatibility we have to test _#ITEM_ID# too)
             if ( ! ((substr($alias,9,1) === '#') && ($ali = $this->aliases->getAlias(substr($alias,0,9).'_')))) {
-            return is_null($default) ? $alias : $default;
-        }
+                return is_null($default) ? $alias : $default;
+            }
         }
 
         // get from "f_d:mm-hh" array fnc="f_d", param="mm-hh"

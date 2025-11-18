@@ -55,7 +55,7 @@ $module_id   = AA::$module_id;
 
 if ( !($module = AA_Module_Site::getModule($module_id)) ) {
     MsgErr(_m("Site module not found"));
-    page_close();
+    Session::page_close();
     exit;
 }
 
@@ -66,7 +66,7 @@ if ( !IfSlPerm(PS_MODW_EDIT_CODE) ) {
 
 if (!($tree = $module->getTree())) {
     MsgErr(_m("Starting spot not found"));
-    page_close();
+    Session::page_close();
     exit;
 }
 
@@ -146,7 +146,6 @@ if ($addcond || $delcond || $content || $name || $akce || $addvar || $delvar) {
 }
 
 $apage = new AA_Adminpageutil('modadmin', 'codemanager');
-$apage->setModuleMenu( 'modules/site');
 $apage->setTitle( _m("Editor window - site code manager") );
 $apage->addRequire('codemirror@5');
 $apage->addRequire('aa-jslib');   // {htmltoggle in helpbox}

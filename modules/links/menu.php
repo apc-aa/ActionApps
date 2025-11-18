@@ -61,10 +61,11 @@ function get_aamenus(): array
 
 
     $aamenus["view"] = [
-        "label"      => GetAAImage('enabled.png', _m("View site") , 16, 16),
+        "label"      => _m("View site"),
         "exact_href"  => $r_slice_view_url,
         "cond"  => 1,
-        "level" => "main"
+        "level" => "main",
+        "class"      => "aa-ui-moduleview"
     ];
 
     $aamenus["addlink"] = [

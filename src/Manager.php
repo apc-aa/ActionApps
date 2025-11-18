@@ -870,7 +870,6 @@ class Manager extends AA_Storable {
      */
     function getDisplayPage(zids $zids=null): string {
         global $r_state;
-        $html = '';
 
         $zids = $zids ?? $this->getZids();
 

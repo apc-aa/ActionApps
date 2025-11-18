@@ -103,7 +103,6 @@ if (! $tableview["cond"] )  {
 }
 
 $apage = new AA_Adminpageutil((string)$tableview["mainmenu"], (string)$tableview["submenu"]);
-$apage->setModuleMenu('modules/alerts');
 $apage->setTitle($tableview["caption"]);
 $apage->addRequire(get_aa_url('tabledit.css', ['v'=>AA_JS_VERSION], false ));
 $apage->setForm();

@@ -54,5 +54,5 @@ echo '
   </body>
 </html>';
 
-page_close();
+Session::page_close();
 exit;

@@ -188,5 +188,5 @@ FrmTabEnd([
 echo "\n  </form>";
 FrmItemListForm($items);
 echo "\n  </body>\n</html>";
-page_close();
+Session::page_close();
 

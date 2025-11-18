@@ -158,4 +158,4 @@ echo '
 unset($r_err);
 unset($r_msg);
 
-page_close();
+Session::page_close();

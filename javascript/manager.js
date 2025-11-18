@@ -1,8 +1,8 @@
 /** shortcut to parent.querySelector() */
-if (typeof AA_$ !== 'function')  { var AA_$ = (sel, el = document) => el.querySelector(sel); }
+if (typeof AA_$ !== 'function')  { var AA_$ = (s, el=document) => el.querySelector(s); }
 /** shortcut to parent.querySelectorAll() */
-if (typeof AA_$$ !== 'function') { var AA_$$ = (sel, el = document) => Array.from(el.querySelectorAll(sel)); }
-if (typeof AA_$N !== 'function') { var AA_$N = function (n) { let ret; return (ret = document.getElementsByName(n)) ? ret[0] : null; } }
+if (typeof AA_$$ !== 'function') { var AA_$$ = (s, el=document) => Array.from(el.querySelectorAll(s)); }
+if (typeof AA_$N !== 'function') { var AA_$N = (n, el=document) => el.getElementsByName(n)?.[0] ?? null; }
 
 // Scripts used in Manager.php
 // - following global javascript variables should be set before calling

@@ -308,4 +308,4 @@ switch ($phase) {
 
 HtmlEnd();
 
-page_close();
+Session::page_close();

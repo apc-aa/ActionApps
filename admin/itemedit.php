@@ -44,8 +44,8 @@
 //   cancel      - button - "Cancel"
 
 use AA\IO\OnPageChanger;
-use AA\Util\Langs;
 use AA\Util\InputVars;
+use AA\Util\Langs;
 
 if ( isset($_REQUEST['edit']) || isset($_REQUEST['edit_new']) || isset($_REQUEST['add'])) {         // parameter for init_page - we edited new item so
     $unset_r_hidden = true;  // clear stored content
@@ -301,7 +301,7 @@ if ( ($insert || $update) && count($fields) ) {
         // removed $oldcontent4id (see ItemContent::storeItem)
         $added_to_db = $content4id->storeItem($insert ? 'insert' : 'update');     // invalidatecache, feed
 
-        page_close();
+        Session::page_close();
         if ($preview) {
             $preview_url = get_admin_url("preview.php", ["slice_id" => $slice_id, "sh_itm" => $id, "return_url" => $return_url]);
         }
@@ -310,7 +310,7 @@ if ( ($insert || $update) && count($fields) ) {
         } elseif ($return_url === 'close_dialog') {
             // Used for adding item to another slice from itemedit's popup - Related Item Window - iso widget, ....
             CloseDialog(new zids($added_to_db, 'l'), $openervar, $insert, $preview_url);
-            page_close();
+            Session::page_close();
             exit;
         } elseif ($preview) {
             go_url( $preview_url );
@@ -413,5 +413,5 @@ if ( $inputform_settings['form4update'] ) {
 $form = new inputform($inputform_settings);
 $form->printForm($content4id, $slice, ($edit || $update));
 
-page_close();
+Session::page_close();
 

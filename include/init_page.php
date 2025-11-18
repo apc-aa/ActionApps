@@ -136,7 +136,7 @@ if (!is_object( $db )) {
 $db->query("SELECT id, name, type, deleted FROM module ORDER BY priority, name");
 while ($db->next_record()) {
     $my_slice_id = unpack_id($db->f('id'));
-    if (IsSuperadmin() || !$db->f('deleted') && $perm_slices[$my_slice_id]) {
+    if (IsSuperadmin() || (!$db->f('deleted') && $perm_slices[$my_slice_id])) {
         $g_modules[$my_slice_id] = [
             'name' => $db->f('name'),
             'type' => AA_Moduleregistry::singleton()[$db->f('type')] ? $db->f('type') : 'S'   // @todo remove type and use AA_Module::getModuleType() or AA_Module::getModuleInfo() instead
@@ -198,7 +198,7 @@ if (!$no_slice_id) {
 //        }
 //        if ($web_dir.$page != $_SERVER['PHP_SELF']) {
 //            $page = StateUrl($web_dir.$page."?slice_id=$slice_id");
-//            page_close();
+//            Session::page_close();
 //            go_url($page);
 //            exit;
 //        }

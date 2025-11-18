@@ -117,5 +117,5 @@ $form_buttons = [
 FrmTabEnd($form_buttons);
 echo "</form>
 </body></html>";
-page_close();
+Session::page_close();
 ?>

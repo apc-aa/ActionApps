@@ -580,4 +580,4 @@ echo '
 
 unset($checked_url);
 
-page_close();
+Session::page_close();

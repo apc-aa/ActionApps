@@ -429,6 +429,15 @@ class Session {
         return $ok;
     } // end func start
 
+    public static function page_close(): void
+    {
+        global $sess;
+
+        if (is_object($sess)) {
+            $sess->freeze();
+        }
+    }
+
 } // end func session
 
 /**
@@ -537,52 +546,52 @@ class Auth {
         exit;
     }
 
-  function unauth($nobody = false): void
-  {
-    $this->auth["uid"]   = "";
-    $this->auth["uname"] = "";
-    $this->auth["perm"]  = "";
-    $this->auth["exp"]   = 0;
+    function unauth($nobody = false): void
+    {
+        $this->auth["uid"]   = "";
+        $this->auth["uname"] = "";
+        $this->auth["perm"]  = "";
+        $this->auth["exp"]   = 0;
 
-    // Back compatibility: passing $nobody to this method is
-    // deprecated
-    if ($nobody) {
-      $this->auth["uid"]   = "nobody";
-      $this->auth["perm"]  = "";
-      $this->auth["exp"]   = 0x7fffffff;
+        // Back compatibility: passing $nobody to this method is
+        // deprecated
+        if ($nobody) {
+            $this->auth["uid"]   = "nobody";
+            $this->auth["perm"]  = "";
+            $this->auth["exp"]   = 0x7fffffff;
+        }
     }
-  }
 
 
-  function logout(): void
-  {
+    function logout(): void
+    {
         global $sess;
 
-    $sess->unregister("auth");
-    // unset($this->auth["uname"]);  - now in unauth
-    $this->unauth($this->nobody);
-  }
+        $sess->unregister("auth");
+        // unset($this->auth["uname"]);  - now in unauth
+        $this->unauth($this->nobody);
+    }
 
-  function is_authenticated() {
-      if ( !$this->nobody && (($this->auth["uid"] ?? null) === 'nobody') ) { // nobody setting could be changed for specific page. Honza
-          return false;
-      }
+    function is_authenticated() {
+        if ( !$this->nobody && (($this->auth["uid"] ?? null) === 'nobody') ) { // nobody setting could be changed for specific page. Honza
+            return false;
+        }
 
-      if ( isset($this->auth["uid"]) && $this->auth["uid"] && (($this->lifetime <= 0) || (time() < $this->auth["exp"])) ) {
-          // If more than $this->refresh minutes are passed since last check,
-          // perform auth data refreshing. Refresh is only done when current
-          // session is valid (registered, not expired).
-          if ( ($this->refresh > 0) && ($this->auth["refresh"]) && ($this->auth["refresh"] < time()) ) {
-              if ( $this->auth_refreshlogin() ) {
-                  $this->auth["refresh"] = time() + (60 * $this->refresh);
-              } else {
-                  return false;
-              }
-          }
-          return $this->auth["uid"];
-      }
-      return false;
-  }
+        if ( isset($this->auth["uid"]) && $this->auth["uid"] && (($this->lifetime <= 0) || (time() < $this->auth["exp"])) ) {
+            // If more than $this->refresh minutes are passed since last check,
+            // perform auth data refreshing. Refresh is only done when current
+            // session is valid (registered, not expired).
+            if ( ($this->refresh > 0) && ($this->auth["refresh"]) && ($this->auth["refresh"] < time()) ) {
+                if ( $this->auth_refreshlogin() ) {
+                    $this->auth["refresh"] = time() + (60 * $this->refresh);
+                } else {
+                    return false;
+                }
+            }
+            return $this->auth["uid"];
+        }
+        return false;
+    }
 
     ////////////////////////////////////////////////////////////////////////
     //
@@ -621,15 +630,6 @@ class Auth {
     }
 
     function auth_doregister() {
-    }
-}
-
-function page_close(): void
-{
-    global $sess;
-
-    if (is_object($sess)) {
-        $sess->freeze();
     }
 }
 

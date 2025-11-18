@@ -1,4 +1,5 @@
 /** AA Javascripts library usable on the public pages, just like:
+ *
  *  <script src="https://actionapps.org/apc-aa/javascript/jquery.min.js"></script>
  *  <script src="https://actionapps.org/apc-aa/javascript/aajslib-jquery.php"></script>
  *  (replace "https://actionapps.org/apc-aa" with your server and aa path

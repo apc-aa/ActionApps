@@ -60,7 +60,7 @@ if (is_null($exportset)) {
 
 $exportset->export();
 
-page_close();
+Session::page_close();
 exit;
 
 

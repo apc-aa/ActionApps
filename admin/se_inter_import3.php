@@ -114,4 +114,4 @@ foreach ($f_slices as $f_slice) {
 }
 
 go_url( StateUrl(self_base() . "se_inter_import.php"). "&Msg=" . $msg );
-page_close();
+Session::page_close();

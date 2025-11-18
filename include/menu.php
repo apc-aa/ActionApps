@@ -62,10 +62,11 @@ function get_aamenus(): array
 
     if ($slice) {
         $aamenus["view"] = [
-            "label"      => GetLabel($profile, 'ui_manager', 'top_view', GetAAImage('enabled.png', _m("View site") , 16, 16)),
+            "label"      => GetLabel($profile, 'ui_manager', 'top_view', _m("View site")),
             "exact_href" => $slice->getProperty('slice_url'),
             "cond"       => ($profile->getProperty('ui_manager', 'top_view') !== ''),
-            "level"      => "main"
+            "level"      => "main",
+            "class"      => "aa-ui-moduleview",
         ];
     }
 
@@ -188,9 +189,10 @@ function get_aamenus(): array
 
     if ( $profile->getProperty('ui_manager', 'itemmanager_submenu_bookmarks') !== false ) {
         $aamenus["itemmanager_submenu"]['items']['headerbookmarks'] = GetLabel($profile,'ui_manager', 'itemmanager_submenu_bookmarks', _m("Bookmarks"));
+        $searchbar = new AA_Searchbar(AA::$module_id);
 
         foreach ( (array) $bookmarks as $bookid => $bookname ) {
-            $aamenus["itemmanager_submenu"]['items']['bookmark'.$bookid] = ["href"=> "admin/index.php?GoBookmark=$bookid", "label"=>$bookname];
+            $aamenus["itemmanager_submenu"]['items']['bookmark'.$bookid] = ["href"=> "admin/index.php?GoBookmark=$bookid", "label"=>"$bookname <span class='aa-bin-cnt'>". count($searchbar->getBookmarkZids($bookid)) ."</span>"];
         }
     }
 

@@ -52,7 +52,6 @@ function GetTableView($viewID): array
         "type"      => "browse",
         "mainmenu"  => "modadmin",
         "submenu"   => "design",
-        "modulemenu"=> "modules/polls",
         "readonly"  => true,
         "addrecord" => false,
         "where"     => "(module_id=". xpack_id($slice_id).")",

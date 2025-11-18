@@ -43,7 +43,7 @@ $module_id   = AA::$module_id;        // id in long form (32-digit hexadecimal n
 
 if ( !($module = AA_Module_XX::getModule($module_id)) ) {
     MsgErr(_m("Module XX not found"));
-    page_close();
+    Session::page_close();
     exit;
 }
 
@@ -59,7 +59,6 @@ if ( !IfSlPerm(PS_MODX_EDIT_CODE) ) {
 
 
 $apage = new AA_Adminpageutil('modadmin', 'xxmanager');
-$apage->setModuleMenu( 'modules/xx');
 $apage->setTitle( _m("Editor window - xx manager") );
 
 // possible other imports

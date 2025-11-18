@@ -9,9 +9,17 @@
 // polyfills - will be removed when the incompatible browsers are not supported by its creator
 if (window.NodeList && !NodeList.prototype.forEach) { NodeList.prototype.forEach = Array.prototype.forEach; }
 /** shortcut to parent.querySelector() */
-if (typeof AA_$ !== 'function')  { var AA_$ = (sel, el = document) => el.querySelector(sel); }
+if (typeof AA_$ !== 'function')  { var AA_$ = (s, el = document) => el.querySelector(s); }
 /** shortcut to parent.querySelectorAll() */
-if (typeof AA_$$ !== 'function') { var AA_$$ = (sel, el = document) => Array.from(el.querySelectorAll(sel)); }
+if (typeof AA_$$ !== 'function') { var AA_$$ = (s, el = document) => Array.from(el.querySelectorAll(s)); }
+if (typeof AA_$N !== 'function') { var AA_$N = (s, el = document) => el.getElementsByName(s)?.[0] ?? null; }
+if (typeof AA_$V !== 'function') { var AA_$V = (s, el = document) => {
+    if (!(el = typeof s === 'string' ? (AA_$(s, el) || AA_$N(s, el)) : s)) return null;
+    if (el.type === 'checkbox') return el.checked;
+    if (el.type === 'radio') return AA_$( `[name="${el.name}"]:checked`, el.form || document )?.value ?? null;
+    if (el.multiple) return [...el.selectedOptions].map(o => o.value);
+    return el.value ?? null;
+};}
 
 if (typeof window.AA_GetConf === 'undefined') {
     window.AA_GetConf = function(prop) {
@@ -125,6 +133,28 @@ function AA_IsLoaded() {
     if (!AA_IsLoaded.cnt && AA_IsLoaded.callback) {
         AA_IsLoaded.callback();
         AA_IsLoaded.callback = undefined;       // run it just once
+    }
+}
+
+async function AA_InnerHtmlWithScripts(el, html) {
+    el.innerHTML = html;
+    const scripts = el.querySelectorAll('script');
+    for (const s of scripts) {
+        const ns = document.createElement('script');
+        [...s.attributes].forEach(a => ns.setAttribute(a.name, a.value));
+
+        if (s.src) {
+            // External script — load sequentially (blocking style)
+            document.head.appendChild(ns);
+            await new Promise((resolve, reject) => {
+                ns.onload = resolve;
+                ns.onerror = reject;
+            });
+        } else {
+            // Inline script — execute immediately
+            ns.textContent = s.textContent;
+            s.parentNode.replaceChild(ns, s);
+        }
     }
 }
 
@@ -336,7 +366,7 @@ function displayInput(valdivid, item_id, fid, widget_type, widget_properties, co
         if (width>200) {
             responseText = responseText.replace('class="ajax_widget aa-widget aa-ajax-open"', 'class="ajax_widget aa-widget aa-ajax-open" style="width:'+width+'px;"');
         }
-        el.innerHTML = responseText;
+        AA_InnerHtmlWithScripts(el, responseText);
         el.setAttribute("data-aa-edited", "1");
         var firstInput = el.querySelector('input, select, textarea');
         if (firstInput != null) {

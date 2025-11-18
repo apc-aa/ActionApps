@@ -514,10 +514,6 @@ EOT;
 
 $apage = new AA_Adminpageutil($mainmenu, $submenu);
 
-if ($view_type === 'categories' || $view_type === 'links') {
-    $apage->setModuleMenu('modules/links');
-}
-
 $apage->setTitle(_m("Admin - design View"));
 if ($view_field_names["even_odd_differ"]) {
     $apage->addRequire('InitPage();', 'AA_Req_Load');

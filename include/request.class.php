@@ -63,7 +63,7 @@ class AA_Http {
         global $sess;
 
         if (is_object($sess) && $sess_close) {
-            page_close();
+            Session::page_close();
         }
 
         // if headers are already sent, we have to use javascript redirect

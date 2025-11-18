@@ -46,4 +46,4 @@ if ($db->next_record()) {
     echo "<html><body>Something is wrong. I didn't find any record for this slice in the <b>jump</b> table.</body></html>";
 }
 
-page_close();
+Session::page_close();

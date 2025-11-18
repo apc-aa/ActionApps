@@ -60,7 +60,6 @@ if ($collectionprop) {
 }
 
 $apage = new AA_Adminpageutil('admin', 'synchro');
-$apage->setModuleMenu('modules/alerts');
 $apage->setTitle(_m("Synchronization with Reader Management Slice"));
 $apage->addRequire('aa-jslib@1');
 $apage->setForm();

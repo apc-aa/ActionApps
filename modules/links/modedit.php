@@ -60,7 +60,7 @@ try {
     // array ( 'já@jsem.bo…' => 3, '' => 1, 'mati.hejny@…' => 1, 'já@Fň.cz' => 1, )
     $new_owner_email = InputVars::stringPOST('new_owner_email'); // empty
     // array ( 1 => 10, )
-    $no_slice_id = InputVars::boolGET('no_slice_id', true);
+    $no_slice_id = InputVars::boolGET('no_slice_id');
     // array ( 0 => 3, '' => 2, '96ab12bbeae…' => 1, )
     $owner = InputVars::stringPOST('owner'); // alnum, empty
     // array ( 3838 => 1, 'nejvě' => 1, 0 => 2, 38 => 2, )
@@ -183,7 +183,7 @@ if ( ($insert && $superadmin) || $update ) {
     } while (false);
 
     if ( !count($err) ) {
-        page_close();                                // to save session variables
+        Session::page_close();                                // to save session variables
         $netscape = (($r=="") ? "r=1" : "r=".++$r);  // special parameter for Netscape to reload page
         // added by Setu, 2002-0227
         if ($return_url) {  // after work for action, if return_url is there, we go to the page.
@@ -214,7 +214,6 @@ if ( $template['Links'] ) {           // set new name and owner for NEW module
 }
 
 $apage = new AA_Adminpageutil('modadmin','main');
-$apage->setModuleMenu( 'modules/links');
 $apage->setTitle( $template['Links'] ? _m("Add Links module") : _m("Edit Links module"));
 $apage->printHead($err, $Msg);
 

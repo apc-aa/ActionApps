@@ -49,7 +49,7 @@ class AA_Searchbar_Row extends AA_Storable {
     public static function getClassProperties(): array {  //  id             name          type   multi  persistent - validator, required, help, morehelp, example
         return [
             'condition' => new AA_Property( 'condition'  , _m('Condition'), 'AA_Condition', false, true),
-            'readonly'  => new AA_Property( 'readonly'   , _m('Readonly' ), 'bool',         false, true)
+            'readonly'  => new AA_Property( 'readonly'   , _m('Readonly' ), 'bool',         false, true),
         ];
     }
 
@@ -140,7 +140,7 @@ class AA_Searchbar extends AA_Storable {
     public static function getClassProperties(): array {  //  id             name          type   multi  persistent - validator, required, help, morehelp, example
         return [
             'search_row' => new AA_Property( 'search_row'  , _m('Search row'), 'AA_Searchbar_Row', true, true),
-            'order_row'  => new AA_Property( 'order_row'   , _m('Order row' ), 'text',             true, true)   // @todo probably it should be done better, since it is in fact array of arrays
+            'order_row'  => new AA_Property( 'order_row'   , _m('Order row' ), 'text',             true, true),   // @todo probably it should be done better, since it is in fact array of arrays
         ];
     }
 
@@ -281,8 +281,8 @@ class AA_Searchbar extends AA_Storable {
                 $this->addSearch( [
                     0 => [ $fld       => 1,
                            'operator' => $_GET["srchbr_oper"][$k],
-                           'value'    => $_GET["srchbr_value"][$k]
-                    ]
+                           'value'    => $_GET["srchbr_value"][$k],
+                    ],
                 ]);
             }
         }
@@ -349,9 +349,9 @@ class AA_Searchbar extends AA_Storable {
                     'condition' => [
                                                  'fields'   => [$row['field']],
                                                  'operator' => $row['oper'],
-                                                 'value'    => $row['value']
+                                                 'value'    => $row['value'],
                     ],
-                                             'readonly' => $row['readonly']
+                                             'readonly' => $row['readonly'],
                 ];
             }
             $state['search_row'] = $new_search_row;
@@ -382,7 +382,7 @@ class AA_Searchbar extends AA_Storable {
                 $this->order_row[] =
                      [
                          'field' => key($s),
-                            'dir' => (current($s) && current($s)!=='a') ? 'd' : 'a'
+                            'dir' => (current($s) && current($s)!=='a') ? 'd' : 'a',
                      ];
             }
         }
@@ -486,6 +486,11 @@ class AA_Searchbar extends AA_Storable {
     function getBookmarkNames(): array
     {
         return isset($this->bookmarks) ? $this->bookmarks->getKeyName() : [];
+    }
+
+    public function getBookmarkZids(string $key): zids
+    {
+        return $this->setFromBookmark($key) ? $this->getSet()->setModules([$this->module_id])->query() : new zids();
     }
 
     /**
@@ -718,7 +723,7 @@ class AA_Bookmarks {
         $ret = [];
         if ( $this->bookmarks ) {
             foreach ( $this->bookmarks as $key => $book ) {
-                $name = $book['name'] . ($this->isSelected($key) ? ' -' : '');
+                $name = $book['name'] . ($this->isSelected($key) ? ' ▶' : '');
                 $ret[(string)$key] = $name;
             }
             // return the bookmarks sorted by name (used in left menu bookmark display)
@@ -781,7 +786,7 @@ class AA_Bookmarks {
                     'state'=> unserialize($property_arr[0], ['allowed_classes' => false]),
                     'type' => (string)$property_arr[1],
                     'id'   => (string)$property_arr[2],
-                    'uid'  => (string)$property_arr[3]
+                    'uid'  => (string)$property_arr[3],
                 ];
             }
         }

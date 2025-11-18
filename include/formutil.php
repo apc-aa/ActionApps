@@ -3163,21 +3163,22 @@ function getRadioBookmarkRow( $selected, $name, $count, $value, $list_type, $lis
 
 /** FrmItemGroupSelect function
  *   Allows select items group (used for bulk e-mails as well as for Find&Replace)
- *  @param array         $items       - array of item ids with 'x' prefix
- *  @param AA_Searchbar  $searchbar
- *  @param string        $selected    - selected group
- *  @param string        $list_type   - items preview type ('items' | 'users') @see usershow.php
- *  @param array         $messages    - $messages['view_items']     = _m("View Recipients")
+ *
+ *  @param array          $items        - array of item ids with 'x' prefix
+ *  @param  AA_Searchbar  $searchbar
+ *  @param string         $selected     - selected group
+ *  @param string         $list_type    - items preview type ('items' | 'users') @see usershow.php
+ *  @param array          $messages     - $messages['view_items']     = _m("View Recipients")
  *                                      messages['selected_items'] = _m('Selected users')
- *  @param array         $additional  additional = array( 'text' => 'Test', 'varname'=>'testuser');
+ *  @param array          $additional   additional = array( 'text' => 'Test', 'varname'=>'testuser');
  */
-function FrmItemGroupSelect( $items, $searchbar, $selected, $list_type, $messages, $additional=[]): void
+function FrmItemGroupSelect( $items, ?AA_Searchbar $searchbar, $selected, $list_type, $messages, $additional=[]): void
 {
 
     $out = '';
     if (is_array($items) && count($items)) {
         $out = getRadioBookmarkRow( $selected, $messages['selected_items'], count($items), 'sel_item', $list_type, $messages['view_items']);
-    } elseif ( isset($searchbar) && is_object($searchbar) ) {
+    } elseif ( !is_null($searchbar) ) {
         $book_arr = $searchbar->getBookmarkNames();
         if ( count($book_arr) ) {
             $out .= "<tr>
@@ -3211,34 +3212,25 @@ function FrmItemGroupSelect( $items, $searchbar, $selected, $list_type, $message
 
 /** getZidsFromGroupSelect function
  *  Returns zids according to user selection of FrmItemGroupSelect
- * @param array        $items
- * @param AA_Searchbar $searchbar
+ *
+ * @param array          $items
+ * @param  AA_Searchbar  $searchbar
  */
-function getZidsFromGroupSelect($group, $items, $searchbar): zids {
+function getZidsFromGroupSelect($group, $items, ?AA_Searchbar $searchbar): zids {
     global $slice_id;
     if ( (string)$group === 'sel_item' ) {  // user specified users
         return (new zids())->setFromItemArr($items);
     }
-    // user defined by bookmark
-    $conds = false;
-    $sort  = false;
-    $bins  = null;
-    switch ((string)$group) {
-        case 'AA_BIN_ACTIVE':  $bins = AA_BIN_ACTIVE;  break;
-        case 'AA_ALL':         $bins = AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING | AA_BIN_HOLDING | AA_BIN_TRASH;  break;
-        case 'AA_BIN_PENDING': $bins = AA_BIN_PENDING; break;
-        case 'AA_BIN_EXPIRED': $bins = AA_BIN_EXPIRED; break;
-        case 'AA_BIN_HOLDING': $bins = AA_BIN_HOLDING; break;
-        case 'AA_BIN_TRASH':   $bins = AA_BIN_TRASH;   break;
-        default:
-            if ( $searchbar->setFromBookmark($group) ) {
-                $set   = $searchbar->getSet();
-                $bins  = AA_BIN_ACTIVE;
-                $conds = $set->getConds();
-                $sort  = $set->getSort();
-            }
-    }
-    return is_null($bins) ? new zids() : QueryZids( [$slice_id], $conds, $sort,  $bins);
+
+    return match ((string)$group) {
+        'AA_BIN_ACTIVE'  => QueryZids([$slice_id], '', '', AA_BIN_ACTIVE),
+        'AA_ALL'         => QueryZids([$slice_id], '', '', AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING | AA_BIN_HOLDING | AA_BIN_TRASH),
+        'AA_BIN_PENDING' => QueryZids([$slice_id], '', '', AA_BIN_PENDING),
+        'AA_BIN_EXPIRED' => QueryZids([$slice_id], '', '', AA_BIN_EXPIRED),
+        'AA_BIN_HOLDING' => QueryZids([$slice_id], '', '', AA_BIN_HOLDING),
+        'AA_BIN_TRASH'   => QueryZids([$slice_id], '', '', AA_BIN_TRASH),
+        default => $searchbar?->getBookmarkZids($group) ?? new zids(),         // user defined by bookmark
+    };
 }
 
 /** FrmItemListForm function

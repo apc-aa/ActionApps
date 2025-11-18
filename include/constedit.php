@@ -108,6 +108,6 @@ echo ">"._m("Levels horizontal"); ?>&nbsp;&nbsp;
 <?php
 FrmJavascript("hcInit($hcid);");
 HtmlPageEnd();
-page_close();
+Session::page_close();
 exit;
 ?>

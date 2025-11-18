@@ -92,7 +92,7 @@ function ExitPage($msg=''): void
         Page_HTML_End();
     }
     $r_packed_state_vars = serialize($r_state_vars);
-    page_close();
+    Session::page_close();
     exit;
 }
 

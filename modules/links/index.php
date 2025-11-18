@@ -338,5 +338,5 @@ echo $tree->goCategory($r_state['cat_id'], 'patharea', 'document.filterform.cat_
 
 
 HtmlPageEnd();
-page_close();
+Session::page_close();
 

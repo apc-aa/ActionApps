@@ -152,7 +152,7 @@ function go_url($url, $add_param="", $usejs=false, $code=302): void
 {
     global $sess;
     if (is_object($sess)) {
-        page_close();
+        Session::page_close();
     }
     if ($add_param != "") {
         $url = get_url($url, $add_param);

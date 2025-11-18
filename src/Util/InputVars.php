@@ -12,8 +12,8 @@ class InputVars {
         $valid = !$required || match ($type) {
                 'int'    => is_numeric($value) && (int)$value == $value,
                 'bool'   => in_array((string)$value, ['0', '1'], true),
-                'string' => is_string($value) && strlen(trim($value)),
-                'quoted' => is_string($value) && strlen(trim($value)),    // @deprecated - use string
+                'string' => is_string($value) && (trim($value) !== ''),
+                'quoted' => is_string($value) && (trim($value) !== ''),    // @deprecated - use string
                 'id'     => is_long_id((string)$value),
                 'array'  => is_array($value),
                 'qarray' => is_array($value),                             // @deprecated - use array

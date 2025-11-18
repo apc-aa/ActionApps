@@ -26,15 +26,13 @@
 */
 
 
-use AA\IO\Grabber\Form;
 use AA\Manager;
-use AA\Util\Langs;
 
 require_once __DIR__ . "/menu_util.php";
 
 
 /** Admin page helper class
- *  Simplifies and unifies admin page apptroach. It uses {generate:head} for automatic script load, ...
+ *  Simplifies and unifies admin page approach. It uses {generate:head} for automatic script load, ...
  *  Used for slower move towards more radical AA_Adminpage approach below...
  */
 class AA_Adminpageutil {
@@ -262,7 +260,7 @@ class AA_Adminpageutil {
         $html_end = AA::Un($html_end);
         $html_end = AA::Stringexpander()->postprocess($html_end);
         echo $html_end;
-        page_close();
+        Session::page_close();
     }
 
     public function printAllPage($body_html, $err, $Msg): void

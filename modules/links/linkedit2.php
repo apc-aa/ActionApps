@@ -125,7 +125,7 @@ $new_link = new linkobj($r_state['link_id']);
 $new_link->loadFromForm($r_err);
 
 if ( $r_err && count($r_err) > 1) {
-    page_close();
+    Session::page_close();
     go_url( con_url($senderUrlErr, "getOldV=1"));
 }
 
@@ -147,7 +147,7 @@ if ( $r_state['link_id'] ) {
 }
 cattree::singleton()->count_all_links();  // update number of links info in all categories
 
-page_close();
+Session::page_close();
 debug('<a href="'.$senderUrlOK.'">'._m('Continue').'</a>');
 go_url( $senderUrlOK );
 exit;

@@ -31,10 +31,10 @@
 require_once __DIR__ . "/../include/init_page.php";
 $sess->delete();
 
-// go to url - we can't use go_url() function since it call page_close().
+// go to url - we can't use go_url() function since it call Session::page_close().
 // We can't call it, because then the deleted session is stored again!
 header("HTTP/1.1 Status: 302 Moved Temporarily");
 header("Location: ". get_admin_url('index.php', '', false));
 
-//page_close();  NO!!!
+//Session::page_close();  NO!!!
 

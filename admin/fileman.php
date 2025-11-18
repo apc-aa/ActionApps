@@ -105,7 +105,7 @@ if ($cmd === 'edit' || $cmd === 'createfile') {
     $fe_wwwpath = FILEMAN_BASE_URL;
     // NOTE require_once outputs text, its not just defining functions
     require_once __DIR__ . "/../include/filedit.php";
-    page_close ();
+    Session::page_close();
     exit;
 }
 

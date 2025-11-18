@@ -30,7 +30,6 @@
 
 use AA\IO\DB\DB_AA;
 use AA\Util\Langs;
-use AA\Util\InputVars;
 use AA\Util\SingletonTrait;
 
 require_once __DIR__ . '/locsess.php';
@@ -1224,7 +1223,7 @@ function MsgPage($msg, string $url = ''): void
     $url = safe(StateUrl($url));
     echo "<a href=\"$url\">"._m("Back")."</a>";
     echo "</body></html>";
-    page_close();
+    Session::page_close();
     exit;
 }
 

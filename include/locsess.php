@@ -71,9 +71,8 @@ if (!defined('AA_BASE_PATH')) {
     define('AA_BASE_PATH', substr(__DIR__, 0, -7));
 }
 
-
 /* Change this to match your database. */
-require_once __DIR__."/phplib/phplib.php";
+require_once __DIR__."/phplib.php";
 require_once __DIR__."/../vendor/autoload.php";
 
 spl_autoload_register(static function ($class_name) {

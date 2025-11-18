@@ -180,5 +180,5 @@ echo "<table>
 </table>";
 
 HtmlPageEnd();
-page_close();
+Session::page_close();
 

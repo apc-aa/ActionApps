@@ -149,5 +149,5 @@ if ( $err === [] ) {
   MsgPage($err, StateUrl(self_base() . "se_import.php"));
 }
 
-page_close();
+Session::page_close();
 

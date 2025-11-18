@@ -251,11 +251,12 @@ function GetModuleSelection(): string {
 //                                SHOW MENU
 
 /**
- * @param        $activeMain    -- selected item in main (top) menu
- * @param string $activeSubmenu -- selected item in sub (left) menu
+ * @param  string  $activeMain     -- selected item in main (top) menu
+ * @param  string  $activeSubmenu  -- selected item in sub (left) menu
+ *
  * @return string
  */
-function getMenu($activeMain, $activeSubmenu = ""): string {
+function getMenu(string $activeMain, string $activeSubmenu = ''): string {
     global $slice_id;
     $ret = '';
 
@@ -283,7 +284,7 @@ function getMenu($activeMain, $activeSubmenu = ""): string {
             mgettext_bind(Langs::currentLang(), 'news');
         }
 
-        $nb_logo = GetLabel($profile, 'ui_manager', 'top_logo', '<a href="'. AA_INSTAL_PATH .'">'. GetAAImage('action-apps.png', aa_version(), 106, 50). '</a>');
+        $nb_logo = GetLabel($profile, 'ui_manager', 'top_logo', '<a href="'. AA_INSTAL_PATH .'">'. GetAAImage('action-apps.svg', aa_version(), 112, 11). '</a>');
 
         // --- showMain menu -----
         // Show the Alerts and Reader management images in the header
@@ -299,9 +300,10 @@ function getMenu($activeMain, $activeSubmenu = ""): string {
                 break;
         }
 
-        $title_title = GetLabel($profile, 'ui_manager', 'top_title', $smmenus[$activeMain]['title']);
-        $title_name  = safe($slice_id ? AA_Module::getModuleName($slice_id) : _m("New slice"));
-        $title_out   = $title_title . (($title_title && $title_name) ? ' - ' : '') . $title_name. $title_img;
+        // $title_title = GetLabel($profile, 'ui_manager', 'top_title', $smmenus[$activeMain]['title']);
+        // $title_name  = safe($slice_id ? AA_Module::getModuleName($slice_id) : _m("New slice"));
+        // $title_out   = $title_title . (($title_title && $title_name) ? ' - ' : '') . $title_name. $title_img;
+
         $prop_logout = $profile->getProperty('ui_manager', 'top_logout');
 
         $logout_out = match ($prop_logout) {
@@ -315,6 +317,40 @@ function getMenu($activeMain, $activeSubmenu = ""): string {
         // @todo change it to method=get (+ hidden fields or so) in order the Back button in browser works there better
         $search_out = IsSuperadmin() ? "<form name=aasearchform action=\"".get_admin_url('aafinder.php')."\">".StateHidden()."<input type=search name=search value=\"".safe($_REQUEST['findtext'])."\" placeholder=\"". _m('Search..') ."\"><input type=hidden name=searchinview value=1><input type=hidden name=searchinslice value=1><input type=hidden name=searchinfield value=1><input type=hidden name=searchinspot value=1><input type=hidden name=searchinobject value=1><input type=hidden name=searchincodeitems value=1><input type=hidden name=go_search value=1></form>"  : '';
 
+        $submenu = $smmenus[$activeMain]["submenu"];
+        $submenu_code = $submenu ? getSubmenu($smmenus[$submenu], $activeSubmenu) : '';
+        $logout_url = get_admin_url('logout.php');
+
+        $links = [];
+        foreach ($smmenus as $aamenu =>$aamenuprop) {
+            if ($aamenuprop["level"] === "main") {
+                $links[$aamenu] = GetMenuLink($aamenu === $activeMain, $aamenuprop['label'], $aamenuprop['cond'] ?? true, $aamenuprop['href'], $aamenuprop['exact_href'], $aamenuprop['ico'], $aamenuprop['class'] ?? '');
+            }
+        }
+
+        if ($viewlink = $links['view']) {
+            unset($links['view']);
+        }
+        $mainmenu_code = implode(' ',$links);
+
+        // mobile menu
+        $ret .= <<<HTML
+                    <div class="mobilmenu white-menu no-screen noprint">
+                      <i class="ico-menu" onclick="document.querySelectorAll('.mobilmenu').forEach(el=>el.classList.toggle('active'));"></i>  
+                      <nav>
+                        <div class="mainmenu">
+                           {$mainmenu_code}
+                        </div>
+                        <div class="leftmenu noprint">
+                          {$submenu_code}
+                        </div>
+                        <form name="logoutform" method="post" action="$logout_url" class="p-3 right">
+                          $user_out  {$logout_out}
+                        </form>
+                      </nav>
+                    </div>
+                HTML;
+
         $ret .= '
           <div class="aa-ui-top noprint" id="aa_top">
             <div class="nblogo">'.$nb_logo.'</div>
@@ -322,30 +358,20 @@ function getMenu($activeMain, $activeSubmenu = ""): string {
               <nav class="navbar">
         ';
 
-        $links = [];
-        foreach ($smmenus as $aamenu =>$aamenuprop) {
-            if ($aamenuprop["level"] === "main") {
-                $links[$aamenu] = GetMenuLink($aamenu == $activeMain, $aamenuprop['label'], $aamenuprop['cond'] ?? true, $aamenuprop['href'], $aamenuprop['exact_href'], $aamenuprop['ico'], $aamenuprop['class'] ?? '');
-            }
-        }
+        $ret .= $mainmenu_code;
 
-        if ($viewlink = $links['view']) {
-            unset($links['view']);
-        }
-        $ret .= implode(' ',$links);
-
-        $ret .= '  
+        $ret .= $search_out .'  
                 </nav>
                 <div class="aa-ui-modules">'.$viewlink.'
                   <form name="aanbform" id="aanbform" enctype="multipart/form-data" method="post" action="'. StateUrl() .'">'."\n";
         $ret .= GetModuleSelection();
         $ret .= '</form>
-                </div>
-                <div class="aa-ui-custom-nav">'. $search_out .'
-                  <form name=logoutform method="post" action="'. get_admin_url('logout.php').'">
+                <div class="aa-ui-custom-nav">
+                  <form name=logoutform method="post" action="'. get_admin_url('logout.php').'" class="no-mobile">
                    '. $user_out .' '. $logout_out .'
                   </form>
                 </div>
+              </div>
             </div>
           </div>
           ';
@@ -355,10 +381,13 @@ function getMenu($activeMain, $activeSubmenu = ""): string {
         $ret .= "\n<div class='aa-ui-main'>";
 
     // showSub menu -----
-        if ($submenu = $smmenus[$activeMain]["submenu"]) {
-            $ret .= "<div class='aa-ui-leftmenu'>";
-            $ret .= getSubmenu($smmenus[$submenu], $activeSubmenu);
-            $ret .= "</div>";
+        if ($submenu) {
+            $copyright = _m("Copyright (C) 2001 the <a href=\"https://www.apc.org\">Association for Progressive Communications (APC)</a>");
+            $ret .= <<<HTML
+                      <div class="aa-ui-leftmenu"><div class="leftmenu noprint">{$submenu_code}</div>
+                        <div class='aa-ui-copyright'>{$copyright}</div>
+                      </div>
+                    HTML;
         }
     } else {
         $ret .= "\n<div class='aa-ui-main'>";
@@ -380,7 +409,7 @@ function getMenu($activeMain, $activeSubmenu = ""): string {
 function GetMenuLink($active, $label, $cond, $aa_href, $exact_href='', $ico='', $add_css=''): string
 {
 
-    $cssclass  = $active ? 'nbactive' : 'nbenable';
+    $cssclass  = $active ? 'nbactive' : '';
     $cssclass .= $add_css ? ' '.$add_css : '';
 
     if (AA::$module_id && $cond) {
@@ -434,7 +463,10 @@ function getSubMenuRows(array $aamenuitems, $active ): string {
             if (!isset($item["cond"])) {
                 $item["cond"] = 1;
             }
-            $cssclass = ($itemshow == $active) ? 'leftmenua' : 'leftmenuy';
+            $cssclass = (($itemshow === $active) || str_contains($item["label"], ' ▶ ')) ? 'leftmenua' : '';
+            if (str_contains($item["label"], ' ▶ ')) {
+                $item["label"] = str_replace(' ▶ ', ' ', $item["label"]);
+            }
 //            if ($itemshow == $active) {
 //                $ret .= "<span class=\"leftmenua\">".$item["label"]."</span>\n";
 //            } elseif (($slice_id || $item["show_always"]) && $item["cond"]) {
@@ -445,10 +477,10 @@ function getSubMenuRows(array $aamenuitems, $active ): string {
                     $item['js'] = str_replace("{exact_href}",$href,$item['js']);
                     $href       = "javascript:".$item['js'];
                 }
-                $ret .= "<li class='aa-leftmenu-link aa-menuname-$itemshow'><a href=\"".$href.'" class='.$cssclass.'>'.$ico. $item["label"]."</a></li>\n";
+                $ret .= "<li class='aa-menuname-$itemshow'><a href=\"".$href.'" class='.$cssclass.'>'.$ico. $item["label"]."</a></li>\n";
             } elseif ( !$item["hide"] ) {
                 // no need to show not active menu items 2023-02-15 HM
-                // $ret .= '<li class="aa-leftmenu-link"><span class="leftmenun">'.$ico.$item["label"]."</span></li>\n";
+                // $ret .= '<li><span class="leftmenun">'.$ico.$item["label"]."</span></li>\n";
             }
         }
     }
@@ -461,16 +493,12 @@ function getSubMenuRows(array $aamenuitems, $active ): string {
  * @param $aamenu
  * @param $active
  */
-function getSubmenu($aamenu, $active): string {
-    $ret = '<div class="leftmenu noprint">'."\n";
-
+function getSubmenu($aamenu, $active,): string {
     $aamenuitems = $aamenu["items"];
-
+    $ret = '';
     if ($submenu = getSubMenuRows( $aamenuitems, $active )) {
         $ret .= "<ul>\n  $submenu\n</ul>";
     }
-
-    $ret .= "</div>\n<div class='aa-ui-copyright'>". _m("Copyright (C) 2001 the <a href=\"https://www.apc.org\">Association for Progressive Communications (APC)</a>") ."</div>\n";
     return $ret;
 }
 

@@ -88,7 +88,7 @@ if ( $update && !count($err) && $fields->count() ) {
     $content4id->storeSliceFields( $slice_id, $fields );
 
     if (!$go_edit) {
-        page_close();
+        Session::page_close();
         go_return_or_url(self_base() . "index.php",true,true);
     }
 }
@@ -145,5 +145,5 @@ if ($vid) {
 $form = new inputform($inputform_settings);
 $form->printForm($content4id, $slice, $edit, true);
 
-page_close();
+Session::page_close();
 

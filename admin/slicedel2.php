@@ -72,7 +72,7 @@ if (!AA_Module::deleteModules($deletearr)) {
 //echo AA::$dbg->duration_stat();
 //exit;
 
-page_close();                                // to save session variables
+Session::page_close();                                // to save session variables
 
 // There is a bug in here, that typically if you go SliceAdmin->delete->AA->delete it
 // will delete your current slice, and leave you nowhere to go to, you have to login again (mitra)

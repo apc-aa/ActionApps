@@ -495,7 +495,7 @@ if (!$responder->isPerm()) {
 $response = $responder->run();
 
 if ($request->getCommand() !== 'Logout') {
-    page_close();
+    Session::page_close();
 }
 
 $response->respond();

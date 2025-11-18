@@ -81,9 +81,6 @@ if (! $tableview["cond"] ) {
 
 $apage = new AA_Adminpageutil($tableview["mainmenu"],  $tableview["submenu"]);
 $apage->setTitle($tableview["title"]);
-if ($tableview["modulemenu"]) {
-    $apage->setModuleMenu($tableview["modulemenu"]);
-}
 $apage->setForm();
 $apage->addRequire(get_aa_url('tabledit.css', ['v'=>AA_JS_VERSION], false ));
 //$apage->addRequire(get_aa_url('javascript/js_lib.min.js', ['v'=>AA_JS_VERSION], false ));

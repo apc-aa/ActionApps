@@ -199,7 +199,7 @@ class AA_Mail extends htmlMimeMail implements LaterInterface {
             if (!$attachment) {
                 continue;
             }
-            if (!strlen($att_data = AA_File_Wrapper::wrapper($attachment)->contents())) {
+            if ('' === ($att_data = AA_File_Wrapper::wrapper($attachment)->contents())) {
                 continue;
             }
             if (ctype_digit((string)$name)) {

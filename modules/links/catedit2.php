@@ -230,7 +230,7 @@ if (!$r_err || count($r_err) <= 1) {
     $db->query("UPDATE links_categories SET ". $varset->makeUPDATE() . " WHERE id=$cid");
     $r_msg[] = MsgOk(_m('Category data changed'));
 } else {
-    page_close();
+    Session::page_close();
     go_url( StateUrl(self_base() . "catedit.php"));
 }
 
@@ -321,5 +321,5 @@ if (isset($oldBaseSubcat) && is_array($oldBaseSubcat) ) {
     }
 }
 
-page_close();
+Session::page_close();
 go_url( StateUrl(self_base() . "index.php"));
