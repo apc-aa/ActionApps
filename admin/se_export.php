@@ -98,10 +98,16 @@ if ($_GET['export']) {
 $apage = new AA_Adminpageutil('sliceadmin','export');
 $apage->setTitle(_m("Admin - Export Items"));
 $apage->setForm();
+
+
+// manager code is here since we want some requires (managger.min.js, ...) to be included in head
+$manager = new Manager('exportsetings'.AA::$module_id, AA_Exportsetings::getManagerConf());
+$manager->performActions();
+$manager_html =  $manager->getDisplayPage(); // zids should be generated in manager now.
+
 $apage->printHead($err, $Msg);
 
 $form_buttons = ['export' => ['type'=>'submit', 'value'=> _m('Export')]];
-
 $grabber_arr = [
     'AA\IO\Grabber\Slice' => _m('Item Contents'),
     'AA\IO\Grabber\Discussion' => _m('Discussion')
@@ -116,6 +122,12 @@ $bins_arr = [
     AA_BIN_HOLDING  => _m('Holding'),
     AA_BIN_TRASH    => _m('Trash')
 ];
+
+$bins   = $bins   ?: AA_BIN_ALL;
+$format = $format ?: 'AA_Exporter_Csv';
+$type   = $type   ?: 'db';
+$conds  = $conds  ?? '';
+$sort   = $sort   ?? '';
 
 $types_arr = [
     'db'    => _m('Database backup (as stored in DB)'),
@@ -147,15 +159,6 @@ FrmTabEnd($form_buttons);
 <br>
 <?php
 
-$manager = new Manager('exportsetings'.AA::$module_id, AA_Exportsetings::getManagerConf());
-$manager->performActions();
-
-//$aa_set = $manager->getSet();
-//$aa_set->setModules($module_id);
-//$aa_set->addCondition(new AA_Condition('aa_user',       '==', AuthGetUid()));
-
-//$zids  = AA_Object::querySet('AA_Exportsetings', $aa_set);
-echo $manager->getDisplayPage(); // zids should be generated in manager now.
-
+echo $manager_html;
 
 $apage->printFoot();

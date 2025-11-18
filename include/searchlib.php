@@ -25,6 +25,7 @@
  */
 
 use AA\IO\DB\DB_AA;
+use AA\Util\Langs;
 
 require_once __DIR__ . "/sql_parser.php";
 require_once __DIR__ . "/zids.php";
@@ -140,9 +141,9 @@ class AA_Operators {
 
 class AA_Condition extends AA_Object {
 
-    var $fields;    // (array)
-    var $operator;
-    var $value;
+    protected array $fields;    // (array)  // private is not accepted - statestore can't access it
+    protected string $operator;
+    protected string $value;
 
     // don't check whether these fields exist (in the conds[] array used by searchform):
     public const CONDS_NOT_FIELD_NAMES = [
@@ -182,7 +183,7 @@ class AA_Condition extends AA_Object {
     function __construct($fields = null, $operator = null, $value = null) {
         $this->fields   = (array)$fields;
         $this->operator = AA_Operators::normalize($operator);
-        $this->value    = $value;
+        $this->value    = (string)$value;
     }
 
     /** getFields function
@@ -204,7 +205,8 @@ class AA_Condition extends AA_Object {
     /** getValue function
      *  Access function to condition value
      */
-    function getValue() {
+    function getValue(): string
+    {
         return $this->value;
     }
 
@@ -524,7 +526,7 @@ class AA_Set extends AA_Object {
     }
 
     /** addCondition function
-     * @param $condition
+     * @param AA_Condition $condition
      */
     function addCondition($condition): static {
         if ($condition) {
@@ -1612,9 +1614,6 @@ function QueryZids($slices, $conds = "", $sort = "", $type = "ACTIVE", $neverAll
     ParseMultiSelectConds($conds);
     ParseEasyConds($conds, $defaultCondsOperator);
 
-    $select_order = '';
-    $ignore_expiry_date  = false;
-
     // we need fields just in case we use sort or conds. Not necessary for
     // restrict_zids queries, where we often do not have slice id
     if ((is_array($conds) and count($conds)) or (is_array($sort) and count($sort))) {
@@ -1638,27 +1637,78 @@ function QueryZids($slices, $conds = "", $sort = "", $type = "ACTIVE", $neverAll
 
     AA::$debug & 2 && AA::$dbg->log("QueryZids: Conds=", $conds, "Sort=", $sort, "Slices=", implode('-', $slices));
 
-    // parse conditions ----------------------------------
-    if (is_array($conds)) {
-        $tbl_count = 0;
+    $query_helper = new QueryZidsHelper($fields, $conds, $sort, $restrict_zids);
+
+    $SQL = $query_helper->constructSQL($restrict_zids, $type, $limit, $slices, $slice);
+
+    return $query_helper->getZids($SQL, $neverAllItems);
+}
+
+class QueryZidsHelper
+{
+    private array $select_tabs = [];
+
+    // for conditions
+    private array $select_conds = [];
+    private array $sortable = [];
+    private bool  $ignore_expiry_date = false;
+
+    // for sort
+    private string $select_distinct = '';
+    private string $select_order = '';
+    private string $select_limit_field = '';
+
+    private string $delim = '';
+
+    // for all
+    private int   $tbl_count = 0;
+
+    private ?AA_Fields $fields;
+
+
+    public function __construct(?AA_Fields $fields, $conds, $sort, $restrict_zids) {
+        $this->fields = $fields;
+
+        if (is_array($conds)) {
+            $this->prepareConds($conds);
+        }
+        $this->prepareSort($sort, $restrict_zids);
+    }
+
+    /**
+     * @param  array  $conds
+     *
+     * @return array
+     */
+    private function prepareConds(array $conds): void
+    {
+        $this->ignore_expiry_date = false;
 
         foreach ($conds as $cond) {
-
             // fill arrays according to this condition
             $field_count = 0;
             $cond_flds   = '';
+            $fid_langs   = [];
             foreach ($cond as $fid => $v) {
                 // search in all content table fields (new in AA v2.8)
-                switch (strtolower($fid)) {
-                    case 'all_fields':
-                        $cond_flds = 'all_fields';
-                        $store     = 'text';
-                        continue 2;  // continue with next foreach
-                    case 'all_fields_numeric':
-                        $cond_flds = 'all_fields';
-                        $store     = 'number';
-                        continue 2;  // continue with next foreach
+                $lowerfid = strtolower($fid);
+                if ($lowerfid === 'all_fields_numeric') {
+                     $cond_flds = 'all_fields';
+                     $store     = 'number';
+                     continue;
                 }
+                if (str_starts_with($lowerfid, 'all_fields|')) {
+                    [$fid, $fid_langs] = AA_Field::parseWithLang($lowerfid);
+                    $cond_flds = 'all_fields';
+                    $store     = 'text';
+                    continue;
+                }
+                if ($lowerfid === 'all_fields') {
+                    $cond_flds = 'all_fields';
+                    $store     = 'text';
+                    continue;
+                }
+
                 if (AA_Condition::CONDS_NOT_FIELD_NAMES[$fid]) {
                     continue;      // it is not field_id parameters - skip it for now
                 }
@@ -1691,7 +1741,7 @@ function QueryZids($slices, $conds = "", $sort = "", $type = "ACTIVE", $neverAll
                         //     (relation.......1 field pointed to related items)
                         [$cf, $rel_fld] = explode('@', $fid);
 
-                        $field = $fields->getField($rel_fld);
+                        $field = $this->fields->getField($rel_fld);
                         if (!is_object($field)) {
                             AA::$debug && AA::$dbg->warn("Skipping '$fid' in conds[]: '$rel_fld' is not field.");
                             continue;            // bad field_id or not defined condition - skip
@@ -1703,9 +1753,9 @@ function QueryZids($slices, $conds = "", $sort = "", $type = "ACTIVE", $neverAll
                         }
                         $rel_fld = "'$rel_fld'";
                         if ($cf === 'all_fields') {
-                            $tbl           = 'c' . $tbl_count++;
-                            $tbl2          = 'c' . $tbl_count++;
-                            $select_tabs[] = "LEFT JOIN content as $tbl  ON ($tbl.item_id=item.id AND ($tbl.field_id=$rel_fld OR $tbl.field_id is NULL))
+                            $tbl           = 'c'.$this->tbl_count++;
+                            $tbl2          = 'c'.$this->tbl_count++;
+                            $this->select_tabs[] = "LEFT JOIN content as $tbl  ON ($tbl.item_id=item.id AND ($tbl.field_id=$rel_fld OR $tbl.field_id is NULL))
                                               LEFT JOIN content as $tbl2 ON ($tbl2.item_id=UNHEX($tbl.text))";
                             $cur_cond      = (new AA_Dbcondition($tbl2, 'text', $cond['operator'], $cond['value']))->getWhereExp();
                         } else {
@@ -1716,14 +1766,14 @@ function QueryZids($slices, $conds = "", $sort = "", $type = "ACTIVE", $neverAll
                             }
 
                             $cond_flds = "'$cf'";
-                            $tbl       = 'c' . $tbl_count++;
-                            $tbl2      = 'c' . $tbl_count++;
+                            $tbl       = 'c'.$this->tbl_count++;
+                            $tbl2      = 'c'.$this->tbl_count++;
                             if ($cond_field->storageTable() === 'item') {   // field is stored in table 'item'
                                 // Long ID in conds should be specified as unpacked, but in db it is packed
-                                $select_tabs[] = "LEFT JOIN content as $tbl  ON ($tbl.item_id=item.id AND ($tbl.field_id=$rel_fld OR $tbl.field_id is NULL))
+                                $this->select_tabs[] = "LEFT JOIN content as $tbl  ON ($tbl.item_id=item.id AND ($tbl.field_id=$rel_fld OR $tbl.field_id is NULL))
                                                   LEFT JOIN item as $tbl2 ON ($tbl2.id=UNHEX($tbl.text))";
                             } else {
-                                $select_tabs[] = "LEFT JOIN content as $tbl  ON ($tbl.item_id=item.id AND ($tbl.field_id=$rel_fld OR $tbl.field_id is NULL))
+                                $this->select_tabs[] = "LEFT JOIN content as $tbl  ON ($tbl.item_id=item.id AND ($tbl.field_id=$rel_fld OR $tbl.field_id is NULL))
                                                   LEFT JOIN content as $tbl2 ON ($tbl2.item_id=UNHEX($tbl.text) AND ($tbl2.field_id=$cond_flds OR $tbl2.field_id is NULL))";
                             }
                             $cur_cond = (new AA_Dbcondition($tbl2, $cond_field->storageColumn(), $cond['operator'], $cond['value']))->getWhereExp();
@@ -1731,8 +1781,8 @@ function QueryZids($slices, $conds = "", $sort = "", $type = "ACTIVE", $neverAll
 //                                $cur_cond = preg_replace("/'([0-9a-f]{32})'/i", "0x\\1", $cur_cond);
 //                            }
                         }
-                        $select_conds[] = $cur_cond;
-                        $sortable[$cf]  = $tbl;  // @todo - test if it works
+                        $this->select_conds[] = $cur_cond;
+                        $this->sortable[$cf]  = $tbl;  // @todo - test if it works
                         $cond_flds      = '';
                         continue;
                     }
@@ -1768,29 +1818,34 @@ function QueryZids($slices, $conds = "", $sort = "", $type = "ACTIVE", $neverAll
                     }
                     $cond_flds = "'$cond_fld_id'";
                     $rel_fld   = "'$rel_fld_id'";
-                    $tbl       = 'c' . $tbl_count++;
-                    $tbl2      = 'c' . $tbl_count++;
+                    $tbl       = 'c'.$this->tbl_count++;
+                    $tbl2      = 'c'.$this->tbl_count++;
                     if ($cond_field->storageTable() === 'item') {   // field is stored in table 'item'
-                        $rel_bins_cond = ($rel_bins != AA_BIN_ALL) ? " AND " . CreateBinCondition($rel_bins, $tbl2) : '';
+                        $rel_bins_cond = ($rel_bins != AA_BIN_ALL) ? " AND ".CreateBinCondition($rel_bins, $tbl2) : '';
                         // Long ID in conds should be specified as unpacked, but in db it is packed
-                        $select_tabs[] = "LEFT JOIN content as $tbl  ON ($tbl.field_id=$rel_fld AND HEX(item.id)=$tbl.text)
-                                              LEFT JOIN item as $tbl2 ON ($tbl2.id=$tbl.item_id AND $tbl2.slice_id=" . xpack_id($rel_slice_id) . "$rel_bins_cond)";
+                        $this->select_tabs[] = "LEFT JOIN content as $tbl  ON ($tbl.field_id=$rel_fld AND HEX(item.id)=$tbl.text)
+                                              LEFT JOIN item as $tbl2 ON ($tbl2.id=$tbl.item_id AND $tbl2.slice_id=".xpack_id($rel_slice_id)."$rel_bins_cond)";
                     } else {
-                        $select_tabs[] = "LEFT JOIN content as $tbl  ON ($tbl.field_id=$rel_fld AND HEX(item.id)=$tbl.text)
+                        $this->select_tabs[] = "LEFT JOIN content as $tbl  ON ($tbl.field_id=$rel_fld AND HEX(item.id)=$tbl.text)
                                               LEFT JOIN content as $tbl2 ON ($tbl2.item_id=$tbl.item_id AND ($tbl2.field_id=$cond_flds OR $tbl2.field_id is NULL))";
                     }
                     $cur_cond = (new AA_Dbcondition($tbl2, $cond_field->storageColumn(), $cond['operator'], $cond['value']))->getWhereExp();
                     //                        if (in_array($cond_flds, ['id..............', 'slice_id........'])) {
                     //                            $cur_cond = preg_replace("/'([0-9a-f]{32})'/i", "0x\\1", $cur_cond);
                     //                        }
-                    $select_conds[]                             = $cur_cond;
-                    $sortable[str_replace("'", "", $cond_flds)] = $tbl;
+                    $this->select_conds[]                             = $cur_cond;
+                    $this->sortable[str_replace("'", "", $cond_flds)] = $tbl;
                     // @todo - test if it works
-                    $cond_flds                                  = '';
+                    $cond_flds = '';
                     continue;
                 }
 
-                $field = $fields->getField($fid);
+                $fid_langs = [];
+                if (str_contains($fid, '|')) {
+                    [$fid, $fid_langs] = AA_Field::parseWithLang($fid);
+                }
+
+                $field = $this->fields->getField($fid);
 
                 if (is_null($field) || $v == "") {
                     AA::$debug && AA::$dbg->warn("Skipping '$fid' in conds[]: not known.");
@@ -1801,251 +1856,291 @@ function QueryZids($slices, $conds = "", $sort = "", $type = "ACTIVE", $neverAll
                     // Long ID in conds should be specified as unpacked, but in db it is packed
                     $cur_cond = (new AA_Dbcondition('item', $field->storageColumn(), $cond['operator'], $cond['value']))->getWhereExp();  // 'text' is maybe not correct, but it worked this way so far - no need to change - HM - 2024-05-17
                     if ($fid === 'expiry_date.....') {
-                        $ignore_expiry_date = true;
+                        $this->ignore_expiry_date = true;
                     }
-                    $select_conds[] = $cur_cond;
+                    $this->select_conds[] = $cur_cond;
                 } else {
-                    $cond_flds .= (($field_count++ > 0) ? ',' : "") . "'$fid'";
+                    $cond_flds .= (($field_count++ > 0) ? ',' : "")."'$fid'";
                     // will not work with one condition for text and number fields
                     $store = $field->storageColumn();
                 }
             }
 
-            if ($cond_flds != '') {
-
-                $dbcond      = new AA_Dbcondition('c'.$tbl_count, $store, $cond['operator'], $cond['value'], $store, true);
-                $dbcjointype = $dbcond->getJoinType();
-                if ($dbcjointype === 'ALL') {
-                    // nothing;
-                } elseif ($dbcjointype === 'NONE') {
-                    $select_conds[] = '1=0';
-                } else {
-                    // INNER / LEFT
-                    $tbl = 'c' . $tbl_count++;
-
-                    $selprefix = ($dbcjointype === 'INNER') ? 'INNER' : 'LEFT';
-
-                    $selcondadd = ($dbcjointype === 'INNER') ? '' : "OR $tbl.field_id is NULL";
-
-                    // fill arrays to be able to construct select command
-                    $select_conds[] = $dbcond->getWhereExp();
-
-                    if ($addjoincond = $dbcond->getJoinCond()) {
-                        $addjoincond = " AND $addjoincond";
-                    }
-
-                    if (str_contains($cond_flds, 'all_fields')) {  // we are searching all fields in content table
-                        $select_tabs[] = "$selprefix JOIN content as $tbl ON ($tbl.item_id=item.id $addjoincond)";
-                    } elseif ($field_count > 1) {
-                        $select_tabs[] = "$selprefix JOIN content as $tbl ON ($tbl.item_id=item.id AND ($tbl.field_id IN ($cond_flds) $selcondadd)$addjoincond)";
-                    } else {
-                        $select_tabs[] = "$selprefix JOIN content as $tbl ON ($tbl.item_id=item.id AND ($tbl.field_id=$cond_flds $selcondadd)$addjoincond)";
-                        // mark this field as sortable (store without apostrofs)
-                        $sortable[str_replace("'", "", $cond_flds)] = $tbl;
-                    }
-                }
+            if ($cond_flds !== '') {
+                $this->addTableCondition($store, $cond['operator'], $cond['value'], $cond_flds, $fid_langs);
             }
         }
     }
 
-    $delim           = '';
-    $select_distinct = '';
+    /** Adds condition to select_tabs, select_conds and updates sortable and tbl_count
+     *
+     * @param  string  $store  storageColumn
+     * @param          $operator
+     * @param          $value
+     * @param  string  $cond_flds
+     * @param  array   $languages
+     *
+     * @return void
+     */
+    private function addTableCondition(string $store, $operator, $value, string $cond_flds, array $languages): void
+    {
+        $dbcond      = new AA_Dbcondition('c'.$this->tbl_count, $store, $operator, $value, $store, true);
+        $dbcjointype = $dbcond->getJoinType();
+        if ($dbcjointype === 'ALL') {
+            // nothing;
+        } elseif ($dbcjointype === 'NONE') {
+            $this->select_conds[] = '1=0';
+        } else {
+            // INNER / LEFT
+            $tbl = 'c'.$this->tbl_count++;
 
-    if (!is_array($sort) || count($sort) < 1) {
-        $select_order = is_object($restrict_zids) ? '' : 'item.publish_date DESC';   // default item order
-    } else {
-        foreach ($sort as $sort_no => $srt) {
-            if (key($srt) === 'limit') {
-                next($srt);       // skip the 'limit' record in the array
+            $selprefix = ($dbcjointype === 'INNER') ? 'INNER' : 'LEFT';
+
+            $selcondadd = ($dbcjointype === 'INNER') ? '' : "OR $tbl.field_id is NULL";
+
+            $langcond = !$languages ? '' : ' '.Langs::getSql4Langs($languages,$tbl);
+
+            // fill arrays to be able to construct select command
+            $this->select_conds[] = $dbcond->getWhereExp();
+
+            if ($addjoincond = $dbcond->getJoinCond()) {
+                $addjoincond = " AND $addjoincond";
             }
 
-            $fid = trim(key($srt));
-            if (!$fid) {
-                continue;
-            }
-
-            // random sorting by following url parameters:
-            //    sort[0]=random
-            //    sort[0]=category........&sort[1]=random
-            //    /apc-aa/view.php?vid=13&cmd[13]=c-1-1&set[13]=sort-random
-            // This operation is quite slow in MySQL, so if you need just
-            // one random item (for banner, ...), you should rather use
-            // set[]=random-1 parameter for view.php
-            if ($fid === 'random') {
-                $select_order .= $delim . ' RAND()';
-                $delim        = ',';
-
-                // break! - we do not want to create expressions like
-                //    ORDER BY RAND(),item.publish_date DESC
-                // bacause it makes no sense
-                // (on the other hand the following expressions are perfectly OK:
-                //    ORDER BY s0, RAND()
-                break;
-            }
-
-            $field = $fields->getField($fid);
-            if (is_null($field)) { // bad field_id - skip
-                AA::$debug && AA::$dbg->warn("Skipping sort[x][$fid], don't know '$fid'.");
-                continue;
-            }
-
-            if ($field->storageTable() === 'item') {   // field is stored in table 'item'
-                $fieldId      = 'item.' . $field->storageColumn();
-                $select_order .= $delim . $fieldId;
-                if (stripos(current($srt), 'd') !== false) {
-                    $select_order .= ' DESC';
-                }
+            if (str_contains($cond_flds, 'all_fields')) {  // we are searching all fields in content table
+                $this->select_tabs[] = "$selprefix JOIN content as $tbl ON ($tbl.item_id=item.id $addjoincond$langcond)";
+            } elseif (str_contains($cond_flds, ',')) {     // $field_count > 1
+                $this->select_tabs[] = "$selprefix JOIN content as $tbl ON ($tbl.item_id=item.id AND ($tbl.field_id IN ($cond_flds) $selcondadd$langcond)$addjoincond)";
             } else {
-                if (!$sortable[$fid]) {           // this field is not joined, yet
-                    $tbl = 'c' . $tbl_count++;
-                    // fill arrays to be able to construct select command
-                    $select_tabs[] = "LEFT JOIN content as $tbl
+                $this->select_tabs[] = "$selprefix JOIN content as $tbl ON ($tbl.item_id=item.id AND ($tbl.field_id=$cond_flds $selcondadd$langcond)$addjoincond)";
+                // mark this field as sortable (store without apostrofs)
+                $this->sortable[str_replace("'", "", $cond_flds)] = $tbl;
+            }
+        }
+    }
+
+
+    /**
+     * @param  array      $sort
+     * @param  zids|null  $restrict_zids
+     *
+     */
+    private function prepareSort($sort, $restrict_zids): void
+    {
+
+        if (!is_array($sort) || count($sort) < 1) {
+            $this->select_order = is_object($restrict_zids) ? '' : 'item.publish_date DESC';   // default item order
+        } else {
+            foreach ($sort as $sort_no => $srt) {
+                if (key($srt) === 'limit') {
+                    next($srt);       // skip the 'limit' record in the array
+                }
+
+                $fid = trim(key($srt));
+                if (!$fid) {
+                    continue;
+                }
+
+                // random sorting by following url parameters:
+                //    sort[0]=random
+                //    sort[0]=category........&sort[1]=random
+                //    /apc-aa/view.php?vid=13&cmd[13]=c-1-1&set[13]=sort-random
+                // This operation is quite slow in MySQL, so if you need just
+                // one random item (for banner, ...), you should rather use
+                // set[]=random-1 parameter for view.php
+                if ($fid === 'random') {
+                    $this->select_order .= $this->delim.' RAND()';
+                    $this->delim        = ',';
+
+                    // break! - we do not want to create expressions like
+                    //    ORDER BY RAND(),item.publish_date DESC
+                    // bacause it makes no sense
+                    // (on the other hand the following expressions are perfectly OK:
+                    //    ORDER BY s0, RAND()
+                    break;
+                }
+
+                $field = $this->fields->getField($fid);
+                if (is_null($field)) { // bad field_id - skip
+                    AA::$debug && AA::$dbg->warn("Skipping sort[x][$fid], don't know '$fid'.");
+                    continue;
+                }
+
+                if ($field->storageTable() === 'item') {   // field is stored in table 'item'
+                    $fieldId      = 'item.'.$field->storageColumn();
+                    $this->select_order .= $this->delim.$fieldId;
+                    if (stripos(current($srt), 'd') !== false) {
+                        $this->select_order .= ' DESC';
+                    }
+                } else {
+                    if (!$this->sortable[$fid]) {           // this field is not joined, yet
+                        $tbl = 'c'.$this->tbl_count++;
+                        // fill arrays to be able to construct select command
+                        $this->select_tabs[] = "LEFT JOIN content as $tbl
                                       ON ($tbl.item_id=item.id
                                       AND ($tbl.field_id='$fid' OR $tbl.field_id is NULL))";
-                    // mark this field as sortable (store without apostrofs)
-                    $sortable[$fid] = $tbl;
-                }
-
-                // join constant table if we want to sort by priority
-                $direction = current($srt);
-                if (str_contains($direction, '1') || str_contains($direction, '9')) { // sort by priority
-                    if (!($constgroup = $field->getConstantGroup())) {
-                        // no constant group defined - can't assign priority
-                        continue;
+                        // mark this field as sortable (store without apostrofs)
+                        $this->sortable[$fid] = $tbl;
                     }
 
-                    $tbl = 'o' . $tbl_count++;
-                    // fill arrays to be able to construct select command
-                    $select_tabs[] = "LEFT JOIN constant as $tbl
-                                      ON ($tbl.value=" . $sortable[$fid] . ".text
+                    // join constant table if we want to sort by priority
+                    $direction = current($srt);
+                    if (str_contains($direction, '1') || str_contains($direction, '9')) { // sort by priority
+                        if (!($constgroup = $field->getConstantGroup())) {
+                            // no constant group defined - can't assign priority
+                            continue;
+                        }
+
+                        $tbl = 'o'.$this->tbl_count++;
+                        // fill arrays to be able to construct select command
+                        $this->select_tabs[] = "LEFT JOIN constant as $tbl
+                                      ON ($tbl.value=".$this->sortable[$fid].".text
                                       AND ($tbl.group_id='$constgroup'
                                       OR $tbl.group_id is NULL))";
-                    // mark this field as sortable (store without apostrofs)
+                        // mark this field as sortable (store without apostrofs)
 
-                    // fill arrays according to this sort specification
-                    $fieldId      = $tbl . ".pri";
-                    $select_order .= $delim . $fieldId;
-                    if (str_contains($direction, '9')) {
-                        $select_order .= " DESC";
-                    }
-                } else {                                                   // sort by value
-                    $store = $field->storageColumn();
-                    // fill arrays according to this sort specification
-                    $fieldId      = $sortable[$fid] . ".$store";
-                    $select_order .= $delim . $fieldId;
-                    if (stripos(current($srt), 'd') !== false) {
-                        $select_order .= " DESC";
+                        // fill arrays according to this sort specification
+                        $fieldId      = $tbl.".pri";
+                        $this->select_order .= $this->delim.$fieldId;
+                        if (str_contains($direction, '9')) {
+                            $this->select_order .= " DESC";
+                        }
+                    } else {                                                   // sort by value
+                        $store = $field->storageColumn();
+                        // fill arrays according to this sort specification
+                        $fieldId      = $this->sortable[$fid].".$store";
+                        $this->select_order .= $this->delim.$fieldId;
+                        if (stripos(current($srt), 'd') !== false) {
+                            $this->select_order .= " DESC";
+                        }
                     }
                 }
+                $this->delim = ',';
+                if ($srt['limit']) {
+                    // select_distinct added in order we can group by multiple value fields
+                    // (items are shown more times)
+                    $this->select_distinct    .= ", $fieldId as s$sort_no";
+                    $this->select_limit_field = ['field' => "s$sort_no", 'limit' => $srt['limit']];
+                }
             }
-            $delim = ',';
-            if ($srt['limit']) {
-                // select_distinct added in order we can group by multiple value fields
-                // (items are shown more times)
-                $select_distinct    .= ", $fieldId as s$sort_no";
-                $select_limit_field = ['field' => "s$sort_no", 'limit' => $srt['limit']];
+        }
+
+        // sort in order of zids as last sort order
+        // good for preservation of sortorder (now works also with grouping in views)
+        if (is_object($restrict_zids)) {
+            if ($restrict_zids->use_short_ids()) {
+                $ord_field = 'short_id';
+                $ord_ids   = implode(",", $restrict_zids->shortids());
+            } else {
+                $ord_field = 'id';
+                $ord_ids   = implode(",", array_map('xpack_id', $restrict_zids->longids()));
+            }
+            if ($ord_ids) { // not false, null, empty array
+                $this->select_order .= "$this->delim field(item.$ord_field,$ord_ids)";
             }
         }
     }
 
-    // sort in order of zids as last sort order
-    // good for preservation of sortorder (now works also with grouping in views)
-    if (is_object($restrict_zids)) {
-        if ($restrict_zids->use_short_ids()) {
-            $ord_field = 'short_id';
-            $ord_ids   = implode(",", $restrict_zids->shortids());
-        } else {
-            $ord_field = 'id';
-            $ord_ids   = implode(",", array_map('xpack_id', $restrict_zids->longids()));
+    public function constructSQL($restrict_zids, $type, $limit, $slices, $slice): string
+    {
+        AA::$debug & 2 && AA::$dbg->log("QueryZids:slice_id=", implode('-', $slices), "  select_tabs=", $this->select_tabs, "  select_conds=", $this->select_conds, "  select_order=", $this->select_order);
+
+        // construct query --------------------------
+        $SQL = "SELECT DISTINCT item.id as itemid $this->select_distinct FROM item ";
+        if (isset($this->select_tabs) && is_array($this->select_tabs)) {
+            $SQL .= ' ' . implode(' ', $this->select_tabs);
         }
-        if ($ord_ids) { // not false, null, empty array
-            $select_order .= "$delim field(item.$ord_field,$ord_ids)";
+
+        $SQL .= ' WHERE ';                                         // slice ----------
+
+        if (!empty($slices)) {
+            $slices_SQL = implode(",", array_map("xpack_id", $slices));
+            $SQL        .= 'item.slice_id' . ((count($slices) === 1) ? " = $slices_SQL AND " :
+                    " IN ($slices_SQL) AND ");
         }
-    }
 
-    // parse group by parameter ----------------------------
-    // .. removed 2/27/2005 Honza (was never used)
-    // ---
+        if (is_object($restrict_zids)) {
+            $SQL .= " " . $restrict_zids->sqlin() . " AND ";
+        } elseif (!$slices_SQL) {
+            // slice(s) or $restrict_zids MUST be specified (in order we can get answer in limited time)
+            return new zids();
+        }
 
-    AA::$debug & 2 && AA::$dbg->log("QueryZids:slice_id=", implode('-', $slices), "  select_tabs=", $select_tabs, "  select_conds=", $select_conds, "  select_order=", $select_order);
+        if (!$slice && $slices) {
+            $slice = AA_Slice::getModule(reset($slices));
+        }
 
-    // construct query --------------------------
-    $SQL = "SELECT DISTINCT item.id as itemid $select_distinct FROM item ";
-    if (isset($select_tabs) && is_array($select_tabs)) {
-        $SQL .= ' ' . implode(' ', $select_tabs);
-    }
+        /** @todo deal with no slice id for restrict_zids without conds */
+        $this->ignore_expiry_date  = ($slice && $slice->noCheckExpired($this->ignore_expiry_date));
+        $ignore_publish_date = ($slice && $slice->noCheckPending());
 
-    $SQL .= ' WHERE ';                                         // slice ----------
+        // not this way - HM 2023:
+        // // $ignore_expiry_date  = $ignore_expiry_date  AND $slice AND $slice->isExpiredContentAllowed();  // expiry date is not so strict (we historically used it before allowing pending items - for archives, old events, ...)
+        // $ignore_publish_date = $ignore_publish_date AND $slice AND $slice->isPendingContentAllowed();
 
-    if (!empty($slices)) {
-        $slices_SQL = implode(",", array_map("xpack_id", $slices));
-        $SQL        .= 'item.slice_id' . ((count($slices) === 1) ? " = $slices_SQL AND " :
-                " IN ($slices_SQL) AND ");
-    }
+        $SQL .= CreateBinCondition($type, 'item', $this->ignore_expiry_date, $ignore_publish_date);
 
-    if (is_object($restrict_zids)) {
-        $SQL .= " " . $restrict_zids->sqlin() . " AND ";
-    } elseif (!$slices_SQL) {
-        // slice(s) or $restrict_zids MUST be specified (in order we can get answer in limited time)
-        return new zids();
-    }
+        if ($this->select_conds) {     // conditions -----
+            $SQL .= " AND (" . implode(") AND (", $this->select_conds) . ") ";
+        }
 
-    if (!$slice && $slices) {
-        $slice = AA_Slice::getModule(reset($slices));
-    }
-
-    /** @todo deal with no slice id for restrict_zids without conds */
-    $ignore_expiry_date  = ($slice && $slice->noCheckExpired($ignore_expiry_date));
-    $ignore_publish_date = ($slice && $slice->noCheckPending());
-
-    // not this way - HM 2023:
-    // // $ignore_expiry_date  = $ignore_expiry_date  AND $slice AND $slice->isExpiredContentAllowed();  // expiry date is not so strict (we historically used it before allowing pending items - for archives, old events, ...)
-    // $ignore_publish_date = $ignore_publish_date AND $slice AND $slice->isPendingContentAllowed();
-
-    $SQL .= CreateBinCondition($type, 'item', $ignore_expiry_date, $ignore_publish_date);
-
-    if (isset($select_conds) && is_array($select_conds)) {     // conditions -----
-        $SQL .= " AND (" . implode(") AND (", $select_conds) . ") ";
-    }
-
-    if ($select_order) {                                // order ----------
-        $SQL .= " ORDER BY $select_order";
-//        if (defined("DB_COLLATION") AND (strpos($select_order, '.text') !== false)) {
+        if ($this->select_order) {                                // order ----------
+            $SQL .= " ORDER BY $this->select_order";
+//        if (defined("DB_COLLATION") AND (strpos($this->select_order, '.text') !== false)) {
 //            $SQL .= " COLLATE ". DB_COLLATION;
 //        }
+        }
+
+        if ($limit > 0) {
+            $SQL .= ' LIMIT ' . $limit;
+        }
+
+        // add comment to the SQL command (for debug purposes)
+        $SQL .= $this->getSQLcomment($slices);
+
+        // @todo - replace LEFT JOIN with INNER JOIN for conditions where possible (for speedup)
+        // if ($_GET['dd']>70) {
+        //     $SQL = str_replace('LEFT JOIN', 'INNER JOIN', $SQL);
+        // }
+        return $SQL;
     }
 
-    if ($limit > 0) {
-        $SQL .= ' LIMIT ' . $limit;
+    /** add comment to the SQL command (for debug purposes)
+     * @param $slices
+     *
+     * @return string
+     */
+    public function getSQLcomment($slices): string
+    {
+        $SQL_comment = " -- AA slice: ".implode('-', $slices);
+        if ($GLOBALS['slice_info']) {
+            $SQL_comment .= ", slice_name: ".$GLOBALS['slice_info']['name'];
+        }
+        if ($GLOBALS['vid']) {
+            $SQL_comment .= ", vid: ".$GLOBALS['vid'];
+        }
+        if ($GLOBALS['view_info']) {
+            $SQL_comment .= ", view_name: ".$GLOBALS['view_info']['name'];
+        }
+        return str_replace(["\n", "\r"], ' ', $SQL_comment);
     }
 
-    // add comment to the SQL command (for debug purposes)
-    $SQL_comment = " -- AA slice: " . implode('-', $slices);
-    if ($GLOBALS['slice_info']) {
-        $SQL_comment .= ", slice_name: " . $GLOBALS['slice_info']['name'];
+    /**
+     * @param  string           $SQL
+     * @param  bool       $neverAllItems
+     *
+     * @return zids
+     */
+    function getZids(string $SQL, bool $neverAllItems): zids
+    {
+        AA::$debug & 2 && AA::$dbg->log("QueryZids: SQL: $SQL");
+
+        // if neverAllItems is set, return empty set if no conds[] are used
+        $ret = GetZidsFromSQL($SQL, 'itemid', 'p', empty($this->select_conds) && $neverAllItems, $this->select_limit_field);
+
+        AA::$debug & 2 && AA::$dbg->log("QueryZids: result:", $ret);
+        return $ret;
     }
-    if ($GLOBALS['vid']) {
-        $SQL_comment .= ", vid: " . $GLOBALS['vid'];
-    }
-    if ($GLOBALS['view_info']) {
-        $SQL_comment .= ", view_name: " . $GLOBALS['view_info']['name'];
-    }
-
-    $SQL .= str_replace(["\n", "\r"], ' ', $SQL_comment);
-
-    AA::$debug & 2 && AA::$dbg->log("QueryZids: SQL: $SQL");
-
-    // @todo - replace LEFT JOIN with INNER JOIN for conditions where possible (for speedup)
-    // if ($_GET['dd']>70) {
-    //     $SQL = str_replace('LEFT JOIN', 'INNER JOIN', $SQL);
-    // }
-
-    // if neverAllItems is set, return empty set if no conds[] are used
-    $ret = GetZidsFromSQL($SQL, 'itemid', 'p', !is_array($select_conds) && $neverAllItems, $select_limit_field);
-
-    AA::$debug & 2 && AA::$dbg->log("QueryZids: result:", $ret);
-
-    return $ret;
 }
 
 /** QueryConstantZIDs function
