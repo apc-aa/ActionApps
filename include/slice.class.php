@@ -328,7 +328,7 @@ abstract class AA_Module {
         $class = static::SETTING_CLASS;
         if ($module_id && !empty($class)) {
             try {
-                return AA_Form::factoryForm($class, static::getModuleObjectId($module_id), $module_id)->getObjectEditHtml();
+                return AA_Form::factoryForm($class, static::getModuleObjectId($module_id), $module_id)->getObjectEditHtml(true);
             } catch (Exception $e) {
                 return MsgErr( _m('Error while loading module settings form:') . ' ' . $e->getMessage());
             }

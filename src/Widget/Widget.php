@@ -454,6 +454,13 @@ class Widget extends AA_Object implements NamedInterface {
         return $ret;
     }
 
+    /** widget in old <tr><th><td> design
+     * @throws Exception
+     */
+    public function stdHtml(AA_Property $aa_property, AA_Content $content): string {
+        return $this->stdFormStart($aa_property). $this->getOnlyHtml($aa_property, $content). $this->stdFormEnd($aa_property);
+    }
+
     /** Decorate widget in the standard AA form - end
      * @param AA_Property $aa_property
      * @return string

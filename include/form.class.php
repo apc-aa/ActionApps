@@ -56,11 +56,34 @@ class AA_Formrow extends AA_Storable {
     function getRowHtml(AA_Content $content, string $type=''): string {
         $widget = $this->getWidget();
         // $widget->registerRequires(); // now in _finalizeHtml
+        $prop = $this->getRowProperty();
         return match ($type) {
-            'ajax'  => $widget->getAjaxHtml($this->getRowProperty(), $content),
-            'live'  => $widget->getliveHtml($this->getRowProperty(), $content),
-            default => $widget->getHtml($this->getRowProperty(), $content),
+            'ajax'  => $widget->getAjaxHtml($prop, $content),
+            'live'  => $widget->getLiveHtml($prop, $content),
+            'tr'    => $widget->stdHtml($prop, $content),
+            default => $widget->getHtml($prop, $content),
         };
+
+        $this->echoo($widget->stdFormStart($aa_property));
+
+        if (is_null($item) || $item->isEmpty()) {
+            $this->echovar($field->getWidgetNewHtml(null, null, null, null, $this->getAaValue(), null, true));
+        } else {
+            // another approach would be, but it had troubles in InfWidget with {manager:...{_#ITEM_ID_}...}
+            //$content = (new AA_Content() )->setOwnerId($slice_id)->setId($item->getId())->setAaValue($this->id, $this->getAaValue());
+            $content = $item->getItemContent();
+
+            $this->echovar($widget->getOnlyHtml($aa_property, $content));
+        }
+//        if (is_null($item)) {
+//            $this->echovar(AA::Un('{inputonly:'.$slice_id.':'.$this->id.'}'));
+//        } else {
+//            $this->echovar(AA::Un('{edit:'.$item->getId().':'.$this->id.'}','',$item));
+//        }
+        $this->echoo($widget->stdFormEnd($aa_property));
+
+
+
     }
 
     // in order we can display row widget (used for editing forms)
@@ -182,7 +205,7 @@ class FormrowWidget extends Widget {
     }
 
 
-    /** Creates base widget HTML, which will be surrounded by Live, Ajxax
+    /** Creates base widget HTML, which will be surrounded by Live, Ajax
      *  or normal decorations (added by _finalize*Html)
      *
      * @param  AA_Property  $aa_property
@@ -212,7 +235,7 @@ class FormrowWidget extends Widget {
         $fields    = new AA_Content;
         $selected  = new AA_Value($arr);
         $fields->setAaValue($aa_property->getId(), $selected);
-        $widget    = "<select name=\"$input_name\" id=\"$input_name\" multiple size=20>";
+        $widget    = "<select name=\"$input_name\" id=\"$base_id\" multiple size=20>";
         $options   = $this->getOptions($selected, $fields, false, false, $aa_property->isRequired() ? 2 : 1);
         $widget   .= $this->getSelectOptions( $options );
         $widget   .= "</select>";
@@ -323,18 +346,27 @@ class AA_Form extends AA_Object implements NamedInterface {
      * @return string
      * @throws Exception
      */
-    function getObjectEditHtml(): string
+    public function getObjectEditHtml(bool $std_table=false): string
     {
         $content = $this->loadContent();
 
-        $html    = $this->getRowsHtml($content);
-        $html   .= (new HidWidget )->getHtml(AA_Object::getPropertyObject('aa_owner'), $content);
-        $html   .= (new HidWidget )->getHtml(AA_Object::getPropertyObject('aa_type'),  $content);
+        if ($std_table) {
+            $html    = $this->getRowsHtml($content, 'tr');
+            $html   .= (new HidWidget )->stdHtml(AA_Object::getPropertyObject('aa_owner'), $content);
+            $html   .= (new HidWidget )->stdHtml(AA_Object::getPropertyObject('aa_type'),  $content);
 
-        if ($this->object_id) {
-            $html .= (new HidWidget )->getHtml(AA_Object::getPropertyObject('aa_id'), $content);
+            if ($this->object_id) {
+                $html .= (new HidWidget )->stdHtml(AA_Object::getPropertyObject('aa_id'), $content);
+            }
+        } else {
+            $html = $this->getRowsHtml($content, $std_table ? 'tr' : '');
+            $html .= (new HidWidget)->getHtml(AA_Object::getPropertyObject('aa_owner'), $content);
+            $html .= (new HidWidget)->getHtml(AA_Object::getPropertyObject('aa_type'), $content);
+
+            if ($this->object_id) {
+                $html .= (new HidWidget)->getHtml(AA_Object::getPropertyObject('aa_id'), $content);
+            }
         }
-
         return $html;
     }
 
