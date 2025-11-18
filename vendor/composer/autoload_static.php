@@ -12,21 +12,21 @@ class ComposerStaticInit43e15006db6c3041e7b8c7c57cf04d54
     );
 
     public static $prefixLengthsPsr4 = array (
-        'J' => 
+        'J' =>
         array (
             'Jfcherng\\Utility\\' => 17,
             'Jfcherng\\Diff\\' => 14,
         ),
-        'I' => 
+        'I' =>
         array (
             'Iban\\Validation\\' => 16,
         ),
-        'F' => 
+        'F' =>
         array (
             'Flow\\JSONPath\\' => 14,
             'Firebase\\JWT\\' => 13,
         ),
-        'D' => 
+        'D' =>
         array (
             'Defr\\QRPlatba\\' => 14,
             'DASPRiD\\Enum\\' => 13,
@@ -34,42 +34,42 @@ class ComposerStaticInit43e15006db6c3041e7b8c7c57cf04d54
     );
 
     public static $prefixDirsPsr4 = array (
-        'Jfcherng\\Utility\\' => 
+        'Jfcherng\\Utility\\' =>
         array (
             0 => __DIR__ . '/..' . '/jfcherng/php-mb-string/src',
             1 => __DIR__ . '/..' . '/jfcherng/php-color-output/src',
         ),
-        'Jfcherng\\Diff\\' => 
+        'Jfcherng\\Diff\\' =>
         array (
             0 => __DIR__ . '/..' . '/jfcherng/php-diff/src',
             1 => __DIR__ . '/..' . '/jfcherng/php-sequence-matcher/src',
         ),
-        'Iban\\Validation\\' => 
+        'Iban\\Validation\\' =>
         array (
             0 => __DIR__ . '/..' . '/honzito/iban-validation/src',
         ),
-        'Flow\\JSONPath\\' => 
+        'Flow\\JSONPath\\' =>
         array (
             0 => __DIR__ . '/..' . '/softcreatr/jsonpath/src',
         ),
-        'Firebase\\JWT\\' => 
+        'Firebase\\JWT\\' =>
         array (
             0 => __DIR__ . '/..' . '/firebase/php-jwt/src',
         ),
-        'Defr\\QRPlatba\\' => 
+        'Defr\\QRPlatba\\' =>
         array (
             0 => __DIR__ . '/..' . '/honzito/qr-platba/src',
         ),
-        'DASPRiD\\Enum\\' => 
+        'DASPRiD\\Enum\\' =>
         array (
             0 => __DIR__ . '/..' . '/dasprid/enum/src',
         ),
     );
 
     public static $prefixesPsr0 = array (
-        'D' => 
+        'D' =>
         array (
-            'Detection' => 
+            'Detection' =>
             array (
                 0 => __DIR__ . '/..' . '/mobiledetect/mobiledetectlib/namespaced',
             ),
@@ -412,6 +412,7 @@ class ComposerStaticInit43e15006db6c3041e7b8c7c57cf04d54
         'AA_Logentry_H' => __DIR__ . '/../..' . '/include/logs.php',
         'AA_Logentry_MR' => __DIR__ . '/../..' . '/include/logs.php',
         'AA_Logentry_Mail2reader' => __DIR__ . '/../..' . '/include/logs.php',
+        'AA_Logentry_Qa' => __DIR__ . '/../..' . '/include/logs.php',
         'AA_Logentry_Sys' => __DIR__ . '/../..' . '/include/logs.php',
         'AA_Logentry_W' => __DIR__ . '/../..' . '/include/logs.php',
         'AA_Logentry_X' => __DIR__ . '/../..' . '/include/logs.php',
@@ -769,7 +770,7 @@ class ComposerStaticInit43e15006db6c3041e7b8c7c57cf04d54
         'AA_iEditable' => __DIR__ . '/../..' . '/include/statestore.php',
         'Action' => __DIR__ . '/../..' . '/include/import_util.php',
         'Actions' => __DIR__ . '/../..' . '/include/import_util.php',
-        'Auth' => __DIR__ . '/../..' . '/include/phplib/phplib.php',
+        'Auth' => __DIR__ . '/../..' . '/include/phplib.php',
         'BaconQrCode\\Common\\BitArray' => __DIR__ . '/..' . '/honzito/bacon-qr-code-basis/src/Common/BitArray.php',
         'BaconQrCode\\Common\\BitMatrix' => __DIR__ . '/..' . '/honzito/bacon-qr-code-basis/src/Common/BitMatrix.php',
         'BaconQrCode\\Common\\BitUtils' => __DIR__ . '/..' . '/honzito/bacon-qr-code-basis/src/Common/BitUtils.php',
@@ -917,7 +918,7 @@ class ComposerStaticInit43e15006db6c3041e7b8c7c57cf04d54
         'QueryZidsHelper' => __DIR__ . '/../..' . '/include/searchlib.php',
         'SQL_Lex' => __DIR__ . '/../..' . '/include/sql_parser.php',
         'SQL_Parser_Constants' => __DIR__ . '/../..' . '/include/sql_parser.php',
-        'Session' => __DIR__ . '/../..' . '/include/phplib/phplib.php',
+        'Session' => __DIR__ . '/../..' . '/include/phplib.php',
         'Syntax' => __DIR__ . '/../..' . '/include/sql_parser.php',
         'TokenList' => __DIR__ . '/../..' . '/include/sql_parser.php',
         'ViewCommand' => __DIR__ . '/../..' . '/include/view.php',

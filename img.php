@@ -42,49 +42,49 @@ $PHPTHUMB_CONFIG = [];
 # docasny hack pro biom nez se vrati Honza
 #echo AA_HTTP_DOMAIN;
 #exit;
-if (AA_HTTP_DOMAIN == "https://biom.cz/") {
+if (AA_HTTP_DOMAIN === "https://biom.cz/") {
     $PHPTHUMB_CONFIG['document_root'] = '/data/www/htdocs/biom.cz';
-} elseif (AA_HTTP_DOMAIN == "http://www.romea.cz/") {
+} elseif (AA_HTTP_DOMAIN === "https://www.romea.cz/") {
     $PHPTHUMB_CONFIG['document_root'] = '/data/www/htdocs/romea.cz';
-} elseif (AA_HTTP_DOMAIN == "https://360re.ecn.cz/") {
+} elseif (AA_HTTP_DOMAIN === "https://360re.ecn.cz/") {
     $PHPTHUMB_CONFIG['document_root'] = '/data/www/htdocs/360re.ecn.cz';
-} elseif (AA_HTTP_DOMAIN == "https://cii.ecn.cz/") {
+} elseif (AA_HTTP_DOMAIN === "https://cii.ecn.cz/") {
     $PHPTHUMB_CONFIG['document_root'] = '/data/www/htdocs/cii.ecn.cz';
-} elseif (AA_HTTP_DOMAIN == "https://dagmarzarubova.com/") {
+} elseif (AA_HTTP_DOMAIN === "https://dagmarzarubova.com/") {
     $PHPTHUMB_CONFIG['document_root'] = '/data/www/htdocs/dagmarzarubova.com';
-} elseif (AA_HTTP_DOMAIN == "https://horseriding-school.cz/") {
+} elseif (AA_HTTP_DOMAIN === "https://horseriding-school.cz/") {
     $PHPTHUMB_CONFIG['document_root'] = '/data/www/htdocs/horseriding-school.cz';
-} elseif (AA_HTTP_DOMAIN == "https://www.penzionchrudim.cz/") {
+} elseif (AA_HTTP_DOMAIN === "https://www.penzionchrudim.cz/") {
     $PHPTHUMB_CONFIG['document_root'] = '/data/www/htdocs/penzionchrudim.cz';
-} elseif (AA_HTTP_DOMAIN == "https://himapanprague.cz/") {
+} elseif (AA_HTTP_DOMAIN === "https://himapanprague.cz/") {
     $PHPTHUMB_CONFIG['document_root'] = '/data/www/htdocs/himapanprague.cz';
-} elseif (AA_HTTP_DOMAIN == "https://jitkakrejcova.com/") {
+} elseif (AA_HTTP_DOMAIN === "https://jitkakrejcova.com/") {
     $PHPTHUMB_CONFIG['document_root'] = '/data/www/htdocs/jitkakrejcova.com';
-} elseif (AA_HTTP_DOMAIN == "https://u-veze.cz/") {
+} elseif (AA_HTTP_DOMAIN === "https://u-veze.cz/") {
     $PHPTHUMB_CONFIG['document_root'] = '/data/www/htdocs/u-veze.cz';
-} elseif (AA_HTTP_DOMAIN == "https://reiki-moravcova.cz/") {
+} elseif (AA_HTTP_DOMAIN === "https://reiki-moravcova.cz/") {
     $PHPTHUMB_CONFIG['document_root'] = '/data/www/htdocs/reiki-moravcova.cz';
-} elseif (AA_HTTP_DOMAIN == "https://prvnigeotermalni.cz/") {
+} elseif (AA_HTTP_DOMAIN === "https://prvnigeotermalni.cz/") {
     $PHPTHUMB_CONFIG['document_root'] = '/data/www/htdocs/prvnigeotermalni.cz';
-} elseif (AA_HTTP_DOMAIN == "https://rin-gen.cz/") {
+} elseif (AA_HTTP_DOMAIN === "https://rin-gen.cz/") {
     $PHPTHUMB_CONFIG['document_root'] = '/data/www/htdocs/rin-gen.cz';
-} elseif (AA_HTTP_DOMAIN == "https://holkyvamtoudelaj.cz/") {
+} elseif (AA_HTTP_DOMAIN === "https://holkyvamtoudelaj.cz/") {
     $PHPTHUMB_CONFIG['document_root'] = '/data/www/htdocs/holkyvamtoudelaj.cz';
-} elseif (AA_HTTP_DOMAIN == "https://sasa.obetiznasilneni.cz/") {
+} elseif (AA_HTTP_DOMAIN === "https://sasa.obetiznasilneni.cz/") {
     $PHPTHUMB_CONFIG['document_root'] = '/data/www/htdocs/sasa.obetiznasilneni.cz';
-} elseif (AA_HTTP_DOMAIN == "https://praha-2.cz/") {
+} elseif (AA_HTTP_DOMAIN === "https://praha-2.cz/") {
     $PHPTHUMB_CONFIG['document_root'] = '/data/www/htdocs/praha-2.cz';
-} elseif (AA_HTTP_DOMAIN == "https://adamsbeauty.ecn.cz/") {
+} elseif (AA_HTTP_DOMAIN === "https://adamsbeauty.ecn.cz/") {
     $PHPTHUMB_CONFIG['document_root'] = '/data/www/htdocs/adamsbeauty.ecn.cz';
-} elseif (AA_HTTP_DOMAIN == "https://biofarma.cz/") {
+} elseif (AA_HTTP_DOMAIN === "https://biofarma.cz/") {
     $PHPTHUMB_CONFIG['document_root'] = '/data/www/htdocs/biofarma.cz';
-} elseif (AA_HTTP_DOMAIN == "https://www.dataplan.info/") {
+} elseif (AA_HTTP_DOMAIN === "https://www.dataplan.info/") {
     $PHPTHUMB_CONFIG['document_root'] = '/data/www/htdocs/dataplan.info';
-} elseif (AA_HTTP_DOMAIN == "https://www.mpo-efekt.cz/") {
+} elseif (AA_HTTP_DOMAIN === "https://www.mpo-efekt.cz/") {
     $PHPTHUMB_CONFIG['document_root'] = '/data/www/htdocs/mpo-efekt.cz';
 } else {
     $PHPTHUMB_CONFIG['document_root'] = AA_SITE_PATH;
-};
+}
 
 
 // * Security configuration
@@ -112,7 +112,7 @@ $PHPTHUMB_CONFIG['additional_allowed_dirs']  = []; // array of additional direct
 //$PHPTHUMB_CONFIG['cache_directory'] = $PHPTHUMB_CONFIG['document_root'].DIRECTORY_SEPARATOR.'phpthumb'.DIRECTORY_SEPARATOR.'cache'.DIRECTORY_SEPARATOR; // set the cache directory to an absolute directory for all source images
 //$PHPTHUMB_CONFIG['cache_directory'] = '.'.DIRECTORY_SEPARATOR.'cache'.DIRECTORY_SEPARATOR;                                                              // set the cache directory relative to the source image - must start with '.' (will not work to cache URL- or database-sourced images, please use an absolute directory name)
 //$PHPTHUMB_CONFIG['cache_directory'] = null;                                                 // disable thumbnail caching (not recommended)
-//if (strtoupper(substr(PHP_OS, 0, 3)) == 'WIN') {
+//if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
 //	$PHPTHUMB_CONFIG['cache_directory'] = __DIR__.DIRECTORY_SEPARATOR.'cache'.DIRECTORY_SEPARATOR;                                                        // set the cache directory to an absolute directory for all source images
 //	$PHPTHUMB_CONFIG['cache_directory'] = '/tmp/persistent/phpthumb/cache/';
 //}
@@ -185,7 +185,7 @@ $PHPTHUMB_CONFIG['temp_directory'] = $PHPTHUMB_CONFIG['cache_directory'];  // se
 // ImageMagick configuration
 $PHPTHUMB_CONFIG['prefer_imagemagick']        = true;  // If true, use ImageMagick to resize thumbnails if possible, since it is usually faster than GD functions; if false only use ImageMagick if PHP memory limit is too low.
 $PHPTHUMB_CONFIG['imagemagick_use_thumbnail'] = true;  // If true, use ImageMagick's "-thumbnail" resizing parameter (if available) which removes extra non-image metadata (profiles, EXIF info, etc) resulting in much smaller filesize; if false, use "-resize" paramter which retains this info
-if (strtoupper(substr(PHP_OS, 0, 3)) == 'WIN') {
+if (PHP_OS_FAMILY === 'Windows') {
     // Windows: set absolute pathname
     $PHPTHUMB_CONFIG['imagemagick_path'] = 'C:/ImageMagick/convert.exe';
 } else {
@@ -312,7 +312,9 @@ $PHPTHUMB_DEFAULTS_DISABLEGETPARAMS  = false; // if true, GETstring parameters w
 
 //$PHPTHUMB_DEFAULTS['w']    = 200;
 //$PHPTHUMB_DEFAULTS['fltr'] = array('blur|10');
-$PHPTHUMB_DEFAULTS['q'] = 90;
+$PHPTHUMB_DEFAULTS['q'] = 90; // for jpeg
+//$PHPTHUMB_DEFAULTS['q'] = 80;   // 80-85 for webp should be the same as 90 for jpeg
+//$PHPTHUMB_DEFAULTS['f'] = 'webp';
 
 
 /* END DEFAULT PARAMETERS SECTION */
@@ -325,7 +327,8 @@ $PHPTHUMB_DEFAULTS['q'] = 90;
 //   echo '<img src="'.htmlspecialchars(phpThumbURL('src=/images/pic.jpg&w=50', '/phpThumb/phpThumb.php')).'">';
 
 $GLOBALS['PHPTHUMB_CONFIG'] = $PHPTHUMB_CONFIG;
-function phpThumbURL($ParameterString, $path_to_phpThumb = 'phpThumb.php') {
+function phpThumbURL($ParameterString, $path_to_phpThumb = 'phpThumb.php'): string
+{
     global $PHPTHUMB_CONFIG;
     if (is_array($ParameterString)) {
         $ParameterStringArray = $ParameterString;
