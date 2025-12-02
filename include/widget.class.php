@@ -544,7 +544,7 @@ class AA_Formatters {
 
     /** @returns string id of formatter */
     public static function getType(int $formatter): string {
-        return ($formatter===1) ? 'plain' : 'html';
+        return ($formatter===1) ? 'html' : 'plain';
     }
 
     /**
