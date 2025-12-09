@@ -50,7 +50,7 @@ class Adminlink
         return '';
     }
 
-    public static function moduleLink($module_id, ?string $fid): string
+    public static function moduleLink($module_id, ?string $fid=null): string
     {
         return match ($fid) {
             'fulltext_format_top', 'fulltext_format', 'fulltext_format_bottom' => AA_Module::getModuleName($module_id, true, 'admin/se_fulltext.php')." ($module_id) &nbsp; ".ChangesMonitor::getHistoryLink($module_id),

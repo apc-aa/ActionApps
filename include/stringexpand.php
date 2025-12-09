@@ -1590,7 +1590,7 @@ function parseMath($text): string
             $val = calculate($val);
             if ($variable) {
                 $format = explode("#",$variable);
-                $val    = number_format((double)$val, (int)$format[0], $format[1], $format[2]);
+                $val    = number_format((float)$val, (int)$format[0], $format[1], $format[2]);
             }
             $ret .= $val;
             $key  = true;
@@ -1902,7 +1902,7 @@ class AA_Stringexpand_Math extends AA_Stringexpand_Nevercachenotrim {
         if (strlen($emptytext) && !strlen(trim($expression))) {
             return $emptytext;
         }
-        $ret = (double)calculate($expression);
+        $ret = (float)calculate($expression);
         if ($decimals === 'bool') {
             return $ret ? _m('Yes') : _m('No');
         }

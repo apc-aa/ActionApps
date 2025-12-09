@@ -210,7 +210,7 @@ class Searchfields implements \IteratorAggregate, ArrayAccess, Countable {
     /** Helper function to sort search fields
      *  @param $a array first field for comparison
      *  @param $b array second
-     *  @return integer  (0 or 1 or -1)
+     *  @return int  (0 or 1 or -1)
      */
     protected static function searchfields_cmp($a, $b): int
     {

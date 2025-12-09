@@ -99,8 +99,8 @@ class cattree {
     {
         $aname = $this->catnames[$a->getTo()];
         $bname = $this->catnames[$b->getTo()];
-        $apri  = (integer) Links_GlobalCatPriority($aname);
-        $bpri  = (integer) Links_GlobalCatPriority($bname);
+        $apri  = (int)Links_GlobalCatPriority($aname);
+        $bpri  = (int)Links_GlobalCatPriority($bname);
 
         if ( $apri === $bpri ) {
             return strcmp($aname, $bname);

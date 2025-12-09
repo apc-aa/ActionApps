@@ -221,7 +221,6 @@ class Linkcheck {
             $result['comment'] = 'No response ('.curl_error($ch).')';
             $result['weight']  = 5;
             $result['error']   = curl_error($ch);
-            curl_close($ch);
             return $result;
         }
 
@@ -230,8 +229,6 @@ class Linkcheck {
         $http_code   = $info['http_code'];
         $finalUrl    = $info['url'];
         $contentType = $info['content_type'] ?? null;
-
-        curl_close($ch);
 
         // get all codes from Location chain from response headers
         $headers    = explode("\r\n\r\n", trim($response));
