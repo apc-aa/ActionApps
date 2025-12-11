@@ -325,7 +325,7 @@ class AA_Stringexpand_User extends AA_Stringexpand {
         $auth_user     = get_if($_SERVER['PHP_AUTH_USER'],AuthGetUname(),$_SERVER['REMOTE_USER']);
         switch ($field) {
             case '':         return $auth_user;
-            case 'password': return $_SERVER['PHP_AUTH_PW'];
+            case 'password': return $_SERVER['PHP_AUTH_PW'] ?? '';
             case 'role' : // returns users permission to slice
             case 'permission' :
                 if (IfSlPerm(AA_Perm::ROLES['SUPER']['perm'])) {

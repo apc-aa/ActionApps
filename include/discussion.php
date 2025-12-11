@@ -237,6 +237,7 @@ function GetDiscussionFormat($view_info): array
  */
 function GetDiscussionTree(array $d_content): array
 {
+    $d_tree = [];
     if (!$d_content) {
         return [];
     }

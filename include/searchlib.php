@@ -1641,7 +1641,7 @@ function QueryZids($slices, $conds = "", $sort = "", $type = "ACTIVE", $neverAll
 
     $SQL = $query_helper->constructSQL($restrict_zids, $type, $limit, $slices, $slice);
 
-    return $query_helper->getZids($SQL, $neverAllItems);
+    return $query_helper->getZids($SQL, (bool)$neverAllItems);
 }
 
 class QueryZidsHelper
