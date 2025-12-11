@@ -1641,7 +1641,7 @@ function QueryZids($slices, $conds = "", $sort = "", $type = "ACTIVE", $neverAll
 
     $SQL = $query_helper->constructSQL($restrict_zids, $type, $limit, $slices, $slice);
 
-    return $query_helper->getZids($SQL, (bool)$neverAllItems);
+    return ($SQL !== '') ? $query_helper->getZids($SQL, (bool)$neverAllItems) : new zids();
 }
 
 class QueryZidsHelper
@@ -2063,7 +2063,7 @@ class QueryZidsHelper
             $SQL .= " " . $restrict_zids->sqlin() . " AND ";
         } elseif (!$slices_SQL) {
             // slice(s) or $restrict_zids MUST be specified (in order we can get answer in limited time)
-            return new zids();
+            return '';
         }
 
         if (!$slice && $slices) {
