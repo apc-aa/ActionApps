@@ -38,8 +38,8 @@ use AA\FormArray;
 use AA\IO\DB\DB_AA;
 use AA\Later\LaterInterface;
 use AA\Optimize\AddDurationLog;
-use AA\Util\Langs;
 use AA\Util\ChangesMonitor;
+use AA\Util\Langs;
 use AA\Util\LogarithmIndex;
 use AA\Util\NamedInterface;
 use BaconQrCode\Common\ErrorCorrectionLevel;
@@ -1540,66 +1540,6 @@ class AA_Stringexpand_Lazy extends AA_Stringexpand_Nevercache { // do not cache 
     }
 }
 
-/**
- * @param $exp
- */
-function calculate($exp): string
-{
-    $replaces = 1;
-    $exp = "($exp)";
-    while ($replaces) {
-        $exp = str_replace(['{', '}', ' ',"\t", "\r", "\n", '&#8239;', ',', '(+', '(-', '(*', '(/', '(%', '(&', '(|', '(^', '+)', '-)', '*)', '/)', '%)', '&)', '|)', '^)', '()', '++', '--', '**'], ['(', ')', '', '', '', '', '', '.', '(0+', '(0-', '(0*', '(0/', '(0%', '(0&', '(0|', '(0^', '+0)', '-0)', '*0)', '/0)', '%0)', '&0)', '|0)', '^0)', '0', '+', '-', '*'], $exp, $replaces);
-    }
-    if (strspn($exp, '0123456789.+-*/%&|^()E') !== strlen($exp)) {
-        return 'wrong characters';
-    }
-    try {
-        $ret = @eval("return $exp;");
-    } catch (ParseError $e) {
-        return "Math Parse Err: $exp";
-    } catch (DivisionByZeroError $e) {
-        return "Math Division by zero Err: $exp";
-    }
-    return ($ret===false) ? "Math Err: $exp" : $ret;
-}
-
-// text = [ decimals [ # dec_point [ thousands_sep ]]] )
-/** parseMath function
- * @param $text
- * @return string
- */
-function parseMath($text): string
-{
-    // get format string, need to add and remove // to
-    // allow for empty string
-
-    $variable = aa_substr(strtok("#".$text,")"),1);
-    $twos     = ParamExplode( strtok("") );
-    $i        = 0;
-    $key      = true;
-    $ret      = '';
-
-    while ( $i < count($twos) ) {
-        $val = trim($twos[$i]);
-        if ($key) {
-            if ($val) {
-                $ret.=str_replace("#:","",$val);
-            }
-            $key=false;
-        } else {
-            $val = calculate($val);
-            if ($variable) {
-                $format = explode("#",$variable);
-                $val    = number_format((float)$val, (int)$format[0], $format[1], $format[2]);
-            }
-            $ret .= $val;
-            $key  = true;
-        }
-        $i++;
-    }
-    return $ret;
-}
-
 /** parseLoop function - like AA_Stringexpand_List / AA_Stringexpand_@
  *  - in loop writes out values from field
  * @param $out
@@ -1902,7 +1842,7 @@ class AA_Stringexpand_Math extends AA_Stringexpand_Nevercachenotrim {
         if (strlen($emptytext) && !strlen(trim($expression))) {
             return $emptytext;
         }
-        $ret = (float)calculate($expression);
+        $ret = (float)self::calculate($expression);
         if ($decimals === 'bool') {
             return $ret ? _m('Yes') : _m('No');
         }
@@ -1930,6 +1870,35 @@ class AA_Stringexpand_Math extends AA_Stringexpand_Nevercachenotrim {
             $ret      = number_format($ret, (int)$decimals);
         }
         return $ret;
+    }
+
+    public static function calculate(string $exp): string
+    {
+        $replaces = 1;
+        $exp      = "($exp)";
+        while ($replaces) {
+            $exp = str_replace(
+                ['{', '}', ' ', "\t", "\r", "\n", '&#8239;', ',', '(+', '(-', '(*', '(/', '(%', '(&', '(|', '(^', '+)', '-)', '*)', '/)', '%)', '&)', '|)', '^)', '()', '++', '--', '**'],
+                ['(', ')', '', '', '', '', '', '.', '(0+', '(0-', '(0*', '(0/', '(0%', '(0&', '(0|', '(0^', '+0)', '-0)', '*0)', '/0)', '%0)', '&0)', '|0)', '^0)', '0', '+', '-', '*'],
+                $exp,
+                $replaces
+            );
+        }
+        if (strspn($exp, '0123456789.+-*/%&|^()E') !== strlen($exp)) {
+            return 'wrong characters';
+        }
+        // replace 00401 value with 401, since 00401 or 0401 is treated as octal value in PHP eval
+        $exp = preg_replace('/(^|[^0-9.])0+([1-9]\d*)/', '$1$2', $exp);
+        try {
+            // return \AA\Util\Matheval::eval($exp);   // it was attempt to remove eval for speedup and security, but it is was a bit slower (2x)
+            $ret = @eval("return $exp;");
+        } catch (ParseError $e) {
+            return "Math Parse Err: $exp";
+        } catch (DivisionByZeroError $e) {
+            return "Math Division by zero Err: $exp";
+        }
+
+        return ($ret === false) ? "Math Err: $exp" : $ret;
     }
 }
 
@@ -2169,10 +2138,10 @@ class AA_Stringexpand_Distance extends AA_Stringexpand_Nevercache {
     function expand($lat1='', $lon1='', $lat2='', $lon2=''): string {
         $EARTHRADIUS = 6371000;
         // convert from degrees to radians
-        $latFrom = deg2rad(calculate($lat1));
-        $lonFrom = deg2rad(calculate($lon1));
-        $latTo   = deg2rad(calculate($lat2));
-        $lonTo   = deg2rad(calculate($lon2));
+        $latFrom = deg2rad(AA_Stringexpand_Math::calculate($lat1));
+        $lonFrom = deg2rad(AA_Stringexpand_Math::calculate($lon1));
+        $latTo   = deg2rad(AA_Stringexpand_Math::calculate($lat2));
+        $lonTo   = deg2rad(AA_Stringexpand_Math::calculate($lon2));
         //huhl($lat1, $latFrom, $lon1, $lonFrom, $lat2, $latTo, $lon2, $lonTo);
         return (string)(int)($EARTHRADIUS * 2 * asin(sqrt((sin(($latTo - $latFrom) / 2) ** 2) + cos($latFrom) * cos($latTo) * (sin(($lonTo - $lonFrom) / 2) ** 2))));
     }
@@ -2509,7 +2478,7 @@ class AA_Stringexpand_Csv extends AA_Stringexpand_Nevercache {
      */
     function expand($text='', $char=''): string
     {
-        return Csv_escape($text, (strlen($char)==1) ? $char : ',');
+        return Csv_escape($text, (strlen($char)===1) ? $char : ',');
     }
 }
 
@@ -2726,7 +2695,9 @@ class AA_Stringexpand_Utfnormalize extends AA_Stringexpand_Nevercache {
     }
 }
 
-/** Used for sending text e-mails by {mail...} function */
+/** Used for sending text e-mails by {mail...} function
+ * {text2html:{_#FULLTEXT}:CZHTML} - transform text to HTML with some basic (Czech) typography
+ */
 class AA_Stringexpand_Text2html extends AA_Stringexpand_Nevercachenotrim {
     /** Do not trim all parameters (maybe we can?) */
 
@@ -6551,10 +6522,10 @@ class AA_Unalias_Callback {
                 }
             }
 
-            // like AA_Stringexpand_Math
+            // like AA_Stringexpand_Math - deprecated syntax version of {math...
             if ( str_starts_with($out, 'math(') ) {
                 // replace math
-                return QuoteColons( parseMath(DeQuoteColons(AA::Un(aa_substr($out,5), '', $this->item, false, $this->itemview))) ); // Need to unalias in case expression contains _#XXX or ( )
+                return QuoteColons(self::parseMath(DeQuoteColons(AA::Un(aa_substr($out, 5), '', $this->item, false, $this->itemview)))); // Need to unalias in case expression contains _#XXX or ( )
             }
 
             // like AA_Stringexpand_List
@@ -6647,6 +6618,45 @@ class AA_Unalias_Callback {
         // }
         return QuoteColons("{" . $out . "}");
     }
+
+    /** parseMath function
+     *
+     * @param $text   // text = [ decimals [ # dec_point [ thousands_sep ]]] )
+     *
+     * @return string
+     * @deprecated
+     */
+    private static function parseMath(string $text): string
+    {
+        // get format string, need to add and remove // to
+        // allow for empty string
+
+        $variable = aa_substr(strtok("#".$text, ")"), 1);
+        $twos     = ParamExplode(strtok(""));
+        $i        = 0;
+        $key      = true;
+        $ret      = '';
+
+        while ($i < count($twos)) {
+            $val = trim($twos[$i]);
+            if ($key) {
+                if ($val) {
+                    $ret .= str_replace("#:", "", $val);
+                }
+                $key = false;
+            } else {
+                $val = AA_Stringexpand_Math::calculate($val);
+                if ($variable) {
+                    $format = explode("#", $variable);
+                    $val    = number_format((float)$val, (int)$format[0], $format[1], $format[2]);
+                }
+                $ret .= $val;
+                $key = true;
+            }
+            $i++;
+        }
+        return $ret;
+   }
 }
 
 /**
@@ -8915,9 +8925,7 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
             return str_replace('&amp;', '&', AA_INSTAL_URL. "img.php?src=/$image&$phpthumb_params");
         }
         if ($type === 'cache') {
-            $mC = new \MissCache\MissCache();
-
-            return str_replace('&amp;', '&', AA_INSTAL_URL. "img.php?src=/$image&$phpthumb_params");
+            return (new \MissCache\MissCache(MISSCACHE_DIR, [new \MissCache\Plugins\PhpThumbPlugin()]))->getCachedUrl('pT', "$image?$phpthumb_params");
         }
         return '';  // not an option - we must call it with correct type
     }
@@ -11018,7 +11026,7 @@ class AA_Stringexpand_Manager extends AA_Stringexpand_Nevercache {
             if ($mode_arr['F']) {
 
                 $input_name =  "aa[f_".reset($slices_arr)."][file][fil][var]";  // we are making it compatible with widget to easier file upload handling (rearangeAaFilesArray())
-//              fallback would be nice, but it uses <form>, so we sometimes endup with <form> inside another <form>, which is not allowed. It is solveable (by dynamic form at the and of page...)
+//              fallback would be nice, but it uses <form>, so we sometimes endup with <form> inside another <form>, which is not allowed. It is solveable (by dynamic form at the end of page...)
 //              $inner_code .= "<article class=\"item\" id=\"fileup$hash\"><form action=\".\"><input name=\"aa[all][$field][0]\" type=\"hidden\" value=\"$item_id\" /><div class=\"fallback\"><input name=\"".$input_name."[]\" type=\"file\" multiple /></div></form>".$mode_arr['F']."</article>";
                 $inner_code .= "<article class=\"item\" id=\"fileup$hash\">".$mode_arr['F']."</article>";
                 AA::Stringexpander()->addRequire('dropzone');
@@ -11031,6 +11039,7 @@ class AA_Stringexpand_Manager extends AA_Stringexpand_Nevercache {
                         aaDz.on("completemultiple", function(files) {
                             var f = files[files.length-1];
                             AA__SiteUpdateParts(JSON.parse(f.xhr.response));
+                            AA_UploadInit(fu_id,field_id,item_id);
                         });
                     };
                     EOT;
