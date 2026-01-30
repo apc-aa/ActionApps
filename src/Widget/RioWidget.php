@@ -46,34 +46,48 @@ class RioWidget extends Widget
         return Widget::propertiesShop(['const', 'columns', 'move_right', 'slice_field', 'bin_filter', 'filter_conds', 'sort_by', 'additional_slice_pwd', 'const_arr', 'other_option']);
     }
 
+    /**
+     * @param  mixed  $other
+     * @param         $input_id
+     * @param         $option
+     *
+     * @return string
+     */
+    public static function getOtherInputText(mixed $other, $input_id, $option, string $class): string
+    {
+        $input_text = '';
+        if ($other) {
+            $input_text = "<span class=\"$class\"><input id=\"{$input_id}txt\" onchange=\"document.getElementById('{$input_id}').value=this.value\" placeholder=\"".safe($option['k']).'" value="'
+                .($option['mis'] ? safe($option['k']) : '').'"';
+            if (!$option['mis']) {
+                $input_text .= ' style="display:none;">';
+            }
+        }
+        return $input_text;
+    }
+
+    public static function generateJS4OtherOption(string $tab_selector, string $opt_selector): string {
+        return <<<JS
+           document.querySelectorAll('{$tab_selector}').forEach((rb) => { rb.addEventListener('change', (event) => {  // must be set on every radio button - change is not fired on uncheck 
+               const last = document.querySelector('{$opt_selector}[name="'+event.target.name+'"]');
+               const otherText = document.getElementById(last.id + 'txt');
+               if (otherText) {
+                  otherText.style.display = last.checked ? '' : 'none'; // document.querySelector('input[type="radio"][name="'+event.target.name+'"]'  ).checked ? '' : 'none';
+               }
+           })});
+           JS;
+    }
+
     /** script to run after the page DOM is loaded */
     protected function requireRun($aa_property, $winfo): string {
-        $ret = '';
-        if ($this->getProperty('other_option', false)) {
-            $ret .= <<<JS
-               document.querySelectorAll('.aa-tab-rio-other input[type="radio"]').forEach((rb) => { rb.addEventListener('change', (event) => {  // must be set on every radio button - change is not fired on uncheck 
-                   const last = document.querySelector('.aa-rio-other-option input[type="radio"][name="'+event.target.name+'"]');
-                   const otherText = document.getElementById(last.id + 'txt');
-                   if (otherText) {
-                      otherText.style.display = last.checked ? '' : 'none'; // document.querySelector('input[type="radio"][name="'+event.target.name+'"]'  ).checked ? '' : 'none';
-                   }
-               })});
-               JS;
-        }
-        return $ret;
+        return $this->getProperty('other_option', false) ? self::generateJS4OtherOption('.aa-tab-rio-other input[type="radio"]', '.aa-rio-other-option input[type="radio"]') : '';
     }
 
     /** Returns one checkbox tag - Used in removed inputMultiChBox */
     function getRadioButtonTag($option, $input_name, $input_id, $add = '', $other = false): string
     {
         $class = $other ? ' class=aa-rio-other-option' : ($option['mis'] ? ' class=aa-missing-option' : '');
-        $input_text = '';
-        if ($other) {
-            $input_text = "<span class=aa-rio-other-txt><input id=\"{$input_id}txt\" onchange=\"document.getElementById('{$input_id}').value=this.value\" placeholder=\"".safe($option['k']).'" value="'. ( $option['mis'] ? safe($option['k']) : '').'"';
-            if (!$option['mis']) {
-                $input_text .= ' style="display:none;">';
-            }
-        }
+        $input_text = self::getOtherInputText($other, $input_id, $option, 'aa-rio-other-txt');
         $ret = "\n<label$class><input type=radio name=\"$input_name\" id=\"$input_id\" value='" . safe($option['k']) . "' $add";
         if ($option['selected'] || ($other && $option['mis'])) {
             $ret .= " checked";

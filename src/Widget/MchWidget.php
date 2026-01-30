@@ -27,6 +27,7 @@ class MchWidget extends Widget
     protected $additional_slice_pwd;
     protected $const_arr;
     protected $height;
+    protected $other_option;
 
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)
@@ -39,7 +40,7 @@ class MchWidget extends Widget
         return _m('Multiple Checkboxes');   // widget name
     }
 
-    /** returns if the widget handles multivalue or just single value   */
+    /** returns if the widget handles multivalue or just a single value   */
     public static function multiple(): bool {
         return true;
     }
@@ -49,17 +50,25 @@ class MchWidget extends Widget
      * @return array
      */
     public static function getClassProperties(): array {
-        return Widget::propertiesShop(['const', 'columns', 'move_right', 'slice_field', 'bin_filter', 'filter_conds', 'sort_by', 'additional_slice_pwd', 'const_arr', 'height']);
+        return Widget::propertiesShop(['const', 'columns', 'move_right', 'slice_field', 'bin_filter', 'filter_conds', 'sort_by', 'additional_slice_pwd', 'const_arr', 'height', 'other_option']);
+    }
+
+    protected function requireRun($aa_property, $winfo): string {
+        return $this->getProperty('other_option', false) ? RioWidget::generateJS4OtherOption('.aa-tab-mch-other input[type="checkbox"]', '.aa-mch-other-option input[type="checkbox"]') : '';
     }
 
     /** Returns one checkbox tag - Used in removed inputMultiChBox */
-    function getOneChBoxTag($option, $input_name, $input_id, $add = ''): string
+    function getOneChBoxTag($option, $input_name, $input_id, $add = '', bool $other = false): string
     {
-        $ret = "\n<label class=\"aa-chb\"><input type=\"checkbox\" name=\"$input_name\" id=\"$input_id\" value=\"" . safe($option['k']) . "\" $add";
+        $class = $other ? ' class="aa-mch-other-option"' : ($option['mis'] ? ' class="aa-missing-option"' : '');
+
+        $input_text = RioWidget::getOtherInputText($other, $input_id, $option, 'aa-mch-other-txt');
+
+        $ret = "\n<label$class><input type=\"checkbox\" name=\"$input_name\" id=\"$input_id\" value=\"" . safe($option['k']) . "\" $add";
         if ($option['selected']) {
             $ret .= " checked";
         }
-        $ret .= ">" . safe($option['v']) . '</label>';
+        $ret .= "><span>" . safe($option['v']) . "    </span>$input_text</label>";
         return $ret;
     }
 
@@ -86,13 +95,23 @@ class MchWidget extends Widget
             $height = 400;
         }
 
+        $other    = $this->getProperty('other_option', false);
+
         $selected = $content->getAaValue($aa_property->getId());
         $options = $this->getOptions($selected, $content, (bool)$this->getProperty('use_name', false));
         $htmlopt = [];
-        foreach ($options as $i => $option) {
+        for ($i = 0, $ino = count($options); $i < $ino; ++$i) {
+            $option = $options[$i];
             $input_name = $base_name_add . "[$i]";
             $input_id = FormArray::formName2Id($input_name);
-            $htmlopt[] = $this->getOneChBoxTag($option, $input_name, $input_id, $widget_add);
+            if ($other && ($i === $ino-2) && $options[$ino-1]['mis']) {  // special case - the filled Other option - use mis value added as last option and name from current option
+                $opt = $options[$ino-1];
+                $opt['v'] = $options[$i]['v'];
+
+                $htmlopt[] = $this->getOneChBoxTag($opt, $input_name, $input_id, $widget_add, true);
+                break;
+            }
+            $htmlopt[] = $this->getOneChBoxTag($option, $input_name, $input_id, $widget_add, ($other && $i === $ino - 1));
         }
 
         $selection = [];
@@ -110,7 +129,7 @@ class MchWidget extends Widget
         $widget = count($selection) ? ("<div class=\"aa-mch-selected$small\"><strong>" . _m('Selected') . ':</strong><div class="aa-mch-tags">' . implode(' ', $selection)) . '</div></div>' : '';
         $widget .= '<div class="aa-mch-list" style="max-height:' . $height . 'px; overflow:auto;">';
         $widget .= "\n<input type=\"hidden\" name=\"$input_name\" id=\"$input_id\" value=\"\">";
-        $widget .= $this->getInMatrix($htmlopt, $this->getProperty('columns', 0), $this->getProperty('move_right', false), 'aa-tab-mch');
+        $widget .= $this->getInMatrix($htmlopt, $this->getProperty('columns', 0), $this->getProperty('move_right', false), $other ? 'aa-tab-mch aa-tab-mch-other' : 'aa-tab-mch');
         $widget .= '</div>';
 
         return ['html' => $widget, 'last_input_name' => $input_name, 'base_name' => $base_name, 'base_id' => $base_id, 'required' => $aa_property->isRequired()];

@@ -18,7 +18,7 @@ use zids;
 /** Collection of static functions used for aa[..][..] form variables handling */
 class FormArray
 {
-    /** ID of the field input - used for name atribute of input tag (or so)
+    /** ID of the field input - used for name attribute of input tag (or so)
      *   Format is:
      *       aa[u<long_item_id>][modified_field_id][]
      *   Note:
