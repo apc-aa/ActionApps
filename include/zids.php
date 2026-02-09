@@ -106,18 +106,14 @@ class zids implements IteratorAggregate, ArrayAccess, Countable {
         } else {
             $this->arr[] = $initial;
         }
-        unset( $initial );
         $this->clean(); // this also sets ->type
     }
 
     /** remove non valid ids */
     function clean(): void
     {
-        if ($this->type === "z") {
-        // find and set current
-            if ( $this->guesstype() === 'z' ) {
+        if (($this->type === "z") && $this->guesstype() === 'z') {             // find and set current
             $this->clear();
-        }
         }
         switch ($this->type) {
             case 's': $this->arr = array_values(array_filter($this->arr, 'is_short_id'));  break;
@@ -297,7 +293,7 @@ class zids implements IteratorAggregate, ArrayAccess, Countable {
         switch ($this->type) {
             case "l":  return (isset($i) ? $this->arr[$i]            : $this->arr);
             case "p":  return (isset($i) ? unpack_id($this->arr[$i]) : array_map("unpack_id", $this->arr));
-            case "t":  return (isset($i) ? id_t2l($this->arr[$i])    : array_map("id_t2l", $this->arr));
+            case "t":  return (isset($i) ? id_t2l($this->arr[$i])    : array_filter(array_map("id_t2l", $this->arr)));
             case 's':  $trans = $this->translate('l');
                        return (isset($i) ? $trans[$i] : $trans );
             default:
@@ -437,7 +433,7 @@ class zids implements IteratorAggregate, ArrayAccess, Countable {
         }
         $tags = [];
         foreach ($this->arr as $v ) {
-            if (preg_match('/^(.*?)([0-9a-f]{24,32})$/',$v,$parts)) {
+            if (preg_match('/^(.*?)([0-9a-f]{32})$/',$v,$parts)) {
                 $tags[$parts[2]] = $parts[1]; // Note can be empty
             } else {
                 warn("Cant parse tagged id '$v' - tell Mitra");
@@ -572,7 +568,7 @@ function guesstype($str): string {
     if ($s >= 24 && $s <= 32 && ctype_xdigit($str)) {
         return 'l';
     }
-    if ($s > 32) {
+    if ($s > 32 && ctype_xdigit(substr($str, -32))) {
         return 't'; // Could also test last 32 hex
     }
     warn("Error, unable to guess type of id '$str' - ask mitra");
@@ -649,7 +645,7 @@ function pack_id($unpacked_id): string
 function xpack_id($id): string
 {
     // must be 32 character long hexadecimal number
-    return is_long_id($id) ? "0x$id" : '0';
+    return is_long_id($id) ? "0x$id" : '0x00';
 }
 
 /**
@@ -712,8 +708,8 @@ function id_t2l($str): ?string {
         return null;
     }
     // TODO: Look online for quicker way to substr last 32 chars - mitra
-    if (preg_match('/^(.*?)([0-9a-f]{24,32})$/',$str,$parts)) {
-        return $parts[2];
+    if (preg_match('/[0-9a-f]{32}$/',$str,$parts)) {
+        return $parts[0];
     }
     warn("Unable to parse tagged id '$str' - tell mitra");
     return null;

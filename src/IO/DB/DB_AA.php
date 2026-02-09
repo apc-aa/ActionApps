@@ -24,7 +24,7 @@ final class DB_AA
      *  used as: $sdata = DB_AA::select1('', 'SELECT * FROM `slice`', [['id',$long_id, 'l']]));
      *           $chid  = DB_AA::select1('id', "SELECT id FROM `change` WHERE ...");
      *                    DB_AA::select1('last_edit', "SELECT last_edit FROM `item`", $where, ['last_edit-'])
-     *                    DB_AA::select1('cnt', "SELECT count(*) as cnt FROM content, item", [['content.item_id','item.id', 'j'], ['item.slice_id', $slice_id, 'l'], ['content.field_id', $fld['id']], ['content.flag', 64, 'set']]);
+     *                    DB_AA::select1('cnt', "SELECT count(*) as cnt FROM content, item", [['content.item_id','item.id', 'j'], ['item.slice_id', $slice_id, 'l'], ['content.field_id', $fld['id']], ['content.flag', 64, 'set']]);  // now use DB_AA::count()
      *          ['ENGINE'=>$engine, 'TABLE_COLLATION' => $collation] = DB_AA::select1(['ENGINE','TABLE_COLLATION'],'SELECT ENGINE, TABLE_COLLATION FROM information_schema.TABLES', [['TABLE_NAME',$engine_template_table]]);
      * @param string|array $column
      * @param string $query
@@ -153,11 +153,25 @@ final class DB_AA
         return $ret;
     }
 
+    /** used as: $count = DB_AA::count('content', [['item_id', $item_id, 'l'], ['field_id', $field_id, 'i']]);
+     *           $count = DB_AA::count('profile')
+     *           $numeric_rows = DB_AA::count(['content', 'item'], [['content.item_id', 'item.id', 'j'], ['item.slice_id', AA::$module_id, 'l'], ['content.field_id', $fld['id']], ['content.flag', 64, 'unset']]);
+     *
+     * @param string       $table   - single or multiple - like 'content' or 'content, item' with JOIN in $where
+     * @param  array|null  $where
+     *
+     * @return int
+     */
+    public static function count(string|array $table, array $where = null): int {
+        return self::select1('cnt', "SELECT count(*) as cnt FROM ". self::makeTables($table), $where);
+    }
+
+
     /** static
      *  used as: DB_AA::sql("INSERT SELECT id FROM `change` WHERE ...");
      * @return false|int - number of affected rows (useful for INSERT/UPDATE/DELETE) or false on problem
     */
-    static function sql($query, $where = null): false|int
+    public static function sql($query, $where = null): false|int
     {
         $db = getDB();
         $query .= is_array($where) ? ' ' . self::makeWhere($where) : '';
@@ -171,7 +185,7 @@ final class DB_AA
      * @param array $where
      * @return false|int
      */
-    static function delete($table, $where = null): false|int
+    public static function delete($table, $where = null): false|int
     {
         return self::sql("DELETE FROM `$table` ", $where);
     }
@@ -181,7 +195,7 @@ final class DB_AA
      * @param array $where
      * @return false|int
      */
-    static function delete_low_priority($table, $where = null): false|int
+    public static function delete_low_priority($table, $where = null): false|int
     {
         return self::sql("DELETE LOW_PRIORITY FROM `$table` ", $where);
     }
@@ -202,7 +216,7 @@ final class DB_AA
      */
     public static function exists_column(string $table, string $col): bool
     {
-        return (self::select1('', 'SELECT COUNT(*) AS count FROM information_schema.columns', [['table_schema', DB_NAME], ['table_name', $table], ['column_name', $col]])['count'] > 0);
+        return self::count('information_schema.columns', [['table_schema', DB_NAME], ['table_name', $table], ['column_name', $col]]) > 0;
     }
 
     /** creates cols string for INSERT or UPDATE
@@ -228,12 +242,14 @@ final class DB_AA
     }
 
     /** used as: DB_AA::update('slice', [['javascript', $_POST['javascript']]], [['id', $slice_id, 'l']]);
-     * @param string $table
-     * @param array $varlist
-     * @param array $where
-     * @return false|void
+     *
+     * @param string  $table
+     * @param  array  $varlist
+     * @param  array  $where
+     *
+     * @return false|int - number of affected rows or false on a problem
      */
-    static function update(string $table, array $varlist, array $where) {
+    public static function update(string $table, array $varlist, array $where) {
         $cols = self::makeCols($varlist);
         $wh   = self::makeWhere($where);
         $ret  = false;
@@ -253,9 +269,16 @@ final class DB_AA
     /** used as: DB_AA::test('perms', [['object_type', $object_type], ['objectid', $objectID], ['flag', REL_FLAG_FEED, 'i']]);
      *           DB_AA::test(['content','item'], [['content.item_id', 'item.id', 'j'],['item.slice_id', $slice_id, 'l']]);
      */
-    static function test($table, $where): bool {
-        $tbl = is_array($table) ? '`' . implode('`,`', $table) . '`' : "`$table`";
-        return (false !== self::select1('', "SELECT " . ($where[0][0]) . " FROM $tbl ", $where));
+    public static function test(string|array $table, $where): bool {
+        return (false !== self::select1('', "SELECT " . ($where[0][0]) . " FROM ". self::makeTables($table), $where));
+    }
+
+    private static function makeTables(string|array $tables): string {
+        if (is_array($tables)) {
+            // information_schema.columns should not be backticked
+            return implode(',', array_map(static fn($t) => str_contains($t,'.') ? $t : self::quoteIdentifier($t), $tables));
+        }
+        return str_contains($tables,'.') ? $tables : self::quoteIdentifier($tables);
     }
 
     /** makeWhere function
@@ -272,9 +295,10 @@ final class DB_AA
      *     >=       - integer           >=               single             ['date', 1478547854, '>=']
      *     <=       - integer           <=               single             ['date', 1478547854, '<=']
      *     <>       - integer           <>               single             ['date', 1478547854, '<>']
+     *     i<>      - integer           <>               single             ['date', 1478547854, '<>']
+     *     !=       - integer           <>               single             ['date', 1478547854, '!=']   // the same as above - "<>"
      *     s<>      - string            <>               single or array    ['name', $name, 's<>']
      *     l<>      - longid            <>               single             ['id', $slice_id, 'l<>']
-     *     !=       - integer           <>               single             ['date', 1478547854, '!=']   // the same as above - "<>"
      *     ISNULL   -                   IS NULL                             ['number', '', 'ISNULL']
      *     NOTNULL  -                   IS NOT NULL                         ['number', '', 'NOTNULL']
      *     LIKE     -                   LIKE             single             ['id', '\_%', 'LIKE']
@@ -294,8 +318,8 @@ final class DB_AA
             // $vardef is array(varname, type, value)
             [$name, $value, $type] = $vardef;
             $type = (string)$type;   // just normalize to RLIKE and LIKE (in this context we do not use expression parsing as we do for RLIKE in public search)
-            if (in_array($type, ['>', '<', '<=', '>=', '<>', '!='])) {
-                $operator = $type;
+            if (in_array($type, ['>', '<', '<=', '>=', '<>', 'i<>', '!='])) {
+                $operator = $type==='i<>' ? '<>' : $type;
                 $type = 'i';
             } elseif ($type === 'LIKE' || $type === 'NOT LIKE') {
                 $where[] = "$name $type '". addcslashes($value,"'") . "'";    // see field LIKE '\_%'
@@ -377,6 +401,7 @@ final class DB_AA
                         $where[] = "$name = " . qquote($value);
                 }
             } else {
+                $value = array_filter($value, static fn($v) => $v !== null);
                 $arr = match ($type) {
                     "i"     => array_map('intval', $value),
                     "l"     => array_map('xpack_id', $value),
