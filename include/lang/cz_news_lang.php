@@ -4106,7 +4106,7 @@ $_m["Currently exported to"]
     = "Nyn� exportov�n do";
 
 // admin/se_import.php, row 177
-$_m["Wrong export (non existant slice!):"]
+$_m["Wrong export (non-existent slice!):"]
     = "";
 
 // admin/se_import.php, row 182
@@ -6667,7 +6667,7 @@ $_m["Feeds table inconsistent records"]
     = "";
 
 // AA\Optimize\... #xx190
-$_m["Testing if feeds table do not contain relations to non existant slices (after slice deletion)"]
+$_m["Testing if feeds table do not contain relations to non-existent slices (after slice deletion)"]
     = "";
 
 // AA\Optimize\... #xx206
@@ -6755,11 +6755,11 @@ $_m["Old pagecache_*_bak tables dropped"]
     = "";
 
 // AA\Optimize\... #xx658
-$_m["Fix inconcistency in pagecache"]
+$_m["Fix inconsistency in pagecache"]
     = "";
 
 // AA\Optimize\... #xx665
-$_m["Delete not existant keys in pagecache_str2find table"]
+$_m["Delete non-existent keys in pagecache_str2find table"]
     = "";
 
 // AA\Optimize\... #xx679

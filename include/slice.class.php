@@ -132,7 +132,7 @@ abstract class AA_Module {
     public static function getModuleName($module_id, bool $link=false, ?string $page=null, array $params=[]): string {
         $module = static::getModule($module_id);
         if ($module) {
-            return $link ? a_href(static::getModuleUrl($module_id, $page, $params), $module->getName()) : $module->getName();
+            return $link ? a_href(static::getModuleUrl($module_id, $page, $params), safe($module->getName())) : $module->getName();
         }
         return '';
     }
@@ -301,7 +301,7 @@ abstract class AA_Module {
             $class = static::SETTING_CLASS;
             $this->moduleobject_setting = empty(static::SETTING_CLASS) ? null : $class::load(static::getModuleObjectId($this->module_id));
         }
-        return is_null($this->moduleobject_setting) ? null : $this->moduleobject_setting->getProperty($prop);
+        return $this->moduleobject_setting?->getProperty($prop);
     }
 
     public static function processModuleObject($module_id): void
@@ -589,7 +589,7 @@ class AA_Slice extends AA_Module {
     function noCheckExpired(bool $suggestion=false): bool
     {
         $expr = (string)$this->getProperty('nocheck_expired');
-        return !strlen($expr) ? $suggestion : ($expr === "1" || AA::Un($expr) === "1");
+        return $expr === '' ? $suggestion : ($expr === "1" || AA::Un($expr) === "1");
     }
 
     /** should we show Pending Bin in AA UI */
@@ -607,12 +607,12 @@ class AA_Slice extends AA_Module {
         $ret = ['folder1'=>0, 'folder2'=>0, 'folder3'=>0, 'expired'=>0, 'pending'=>0];
 
         $ret = array_merge($ret, DB_AA::select(['fldr'=>'cnt'], "SELECT concat('folder',status_code) as fldr, count(*) as cnt FROM item ". DB_AA::makeWhere([['slice_id', $this->module_id, 'l']]). ' GROUP BY status_code'));
-        $ret['expired'] = $this->noExpiredBin() ? 0 : DB_AA::select1('cnt', "SELECT count(*) as cnt FROM item ", [
+        $ret['expired'] = $this->noExpiredBin() ? 0 : DB_AA::count('item', [
             ['slice_id', $this->module_id, 'l'],
             ['status_code', 1],
             ['expiry_date', $now, '<='],
         ]);
-        $ret['pending'] = $this->noPendingBin() ? 0 : DB_AA::select1('cnt', "SELECT count(*) as cnt FROM item ", [
+        $ret['pending'] = $this->noPendingBin() ? 0 : DB_AA::count('item', [
             ['slice_id', $this->module_id, 'l'],
             ['status_code', 1],
             ['publish_date', $now, '>'],
@@ -779,7 +779,7 @@ class AA_Slice extends AA_Module {
         if ($fileman_dir && is_dir(FILEMAN_BASE_DIR.$fileman_dir)) {
             $ret['path']  = FILEMAN_BASE_DIR.$fileman_dir."/items";
             $ret['url']   = FILEMAN_BASE_URL.$fileman_dir."/items";
-            $ret['perms'] = FILEMAN_MODE_DIR;
+            $ret['perms'] = (int)FILEMAN_MODE_DIR;
         } else {
             // files are copied to subdirectory of IMG_UPLOAD_PATH named as slice_id
             $ret['path']  = IMG_UPLOAD_PATH. $this->getId();
@@ -789,7 +789,7 @@ class AA_Slice extends AA_Module {
         return $ret;
     }
 
-    /** Try to transform file path to file url - based on setting of file uploads or filemanager
+    /** Try to transform file path to file url - based on the setting of file uploads or filemanager
      * @param $filename
      * @return string
      */

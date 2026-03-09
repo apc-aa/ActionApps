@@ -36,7 +36,7 @@ function CheckR( $r, $w ) {
 
 function CheckP( $p ): int
 {
-  return ((integer)$p>0) ? (integer)$p : 1;
+  return ((int)$p>0) ? (int)$p : 1;
 }
 
 function CheckT( $t ): string {
@@ -45,7 +45,7 @@ function CheckT( $t ): string {
 
 function CheckX( $x ): int|string
 {
-  return ((integer)$x>0) ? (integer)$x : '-';
+  return ((int)$x>0) ? (int)$x : '-';
 }
 
 // ------------- functions definition end ------------------------------------

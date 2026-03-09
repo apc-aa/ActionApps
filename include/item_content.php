@@ -1687,7 +1687,7 @@ class AA_Field_Cleaner {
             }
         }
         }
-        // delete aslo the fields introduces by otherfield of thumbnail feature - abandoned:
+        // delete also the fields introduces by otherfield of thumbnail feature - abandoned:
         // not used approach - we delete such fields in executeMulti() in Inserter (it is hard to say, if the field use new values or stores the old values and thumbs are not necessary)
         // if ($more_fields) {
         //     // convert $more_fields to array of field_id => [] to be +/- compatible with $content

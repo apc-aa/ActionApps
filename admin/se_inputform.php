@@ -466,8 +466,8 @@ echo "
          if ($fld['in_item_tbl']) {
              echo _m('Stored in <em>item</em> table - it is not possible to change store method');
          } else {
-             $text_rows    = DB_AA::select1('cnt', "SELECT count(*) as cnt FROM content, item", [['content.item_id', 'item.id', 'j'], ['item.slice_id', AA::$module_id, 'l'], ['content.field_id', $fld['id']], ['content.flag', 64, 'set']]);
-             $numeric_rows = DB_AA::select1('cnt', "SELECT count(*) as cnt FROM content, item", [['content.item_id', 'item.id', 'j'], ['item.slice_id', AA::$module_id, 'l'], ['content.field_id', $fld['id']], ['content.flag', 64, 'unset']]);
+             $text_rows    = DB_AA::count(['content','item'], [['content.item_id', 'item.id', 'j'], ['item.slice_id', AA::$module_id, 'l'], ['content.field_id', $fld['id']], ['content.flag', 64, 'set']]);
+             $numeric_rows = DB_AA::count(['content','item'], [['content.item_id', 'item.id', 'j'], ['item.slice_id', AA::$module_id, 'l'], ['content.field_id', $fld['id']], ['content.flag', 64, 'unset']]);
              FrmSelectEasy("text_stored", ['1' => _m('Text'), '0' => _m('Number')], $text_stored);
              echo "<div class=tabhlp>"._m('Text').": $text_rows, "._m('Number').": $numeric_rows</div>";
          }

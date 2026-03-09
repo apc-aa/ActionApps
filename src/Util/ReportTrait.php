@@ -3,7 +3,7 @@
 namespace AA\Util;
 
 trait ReportTrait {
-    protected $messages = [];
+    protected array $messages = [];
 
     /** Message function
      *  Records Error/Information message

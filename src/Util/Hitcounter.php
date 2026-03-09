@@ -155,7 +155,7 @@ class Hitcounter
             $varset->doInsert('hit_long_id');
         }
 
-        // no longer necessary to plan it here - we plan the task in toexecute.php which must be called anyway if we want to tun tasks
+        // no longer necessary to plan it here - we plan the task in toexecute.php which must be called anyway if we want to run tasks
         // it is not necessary to check, if the  AA\Later\HitcounterUpdate is planed
         // on each hit. We check it only once for 1000 (COUNTHIT_PROBABILITY)
         // if (COUNTHIT_PROBABILITY and rand(0, COUNTHIT_PROBABILITY) == 1) {

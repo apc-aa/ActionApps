@@ -124,7 +124,7 @@ function PrintUser($perm, $usr_id, $editor_perm): void
     echo IfLink( CanChangeRole($perm, $editor_perm, AA_Perm::ROLES["AUTHOR"]['perm']),        get_url('', ['UsrDel'=>$usr_id, 'role'=>"AUTHOR"],        true), _m("Revoke"), 'aa-button-delete');
 
     // show profile button also for groups
-    $cnt = ($cnt = DB_AA::select1('cnt', 'SELECT count(*) as cnt FROM profile', [
+    $cnt = ($cnt = DB_AA::count('profile', [
         ['slice_id', $GLOBALS['slice_id'], 'l'],
         ['uid', $usr_id]
     ])) ? " <span class='aa-bin-cnt'>$cnt</span>" : '';
@@ -182,7 +182,7 @@ if ( $continue ) {
         PrintUser($prm, $usr_id, $editor_perms);
     }
 
-    $cnt = ($cnt = DB_AA::select1('cnt', 'SELECT count(*) as cnt FROM profile', [
+    $cnt = ($cnt = DB_AA::count('profile', [
         ['slice_id', AA::$module_id, 'l'],
         ['uid', '*']
     ])) ? " <span class='aa-bin-cnt'>$cnt</span>" : '';

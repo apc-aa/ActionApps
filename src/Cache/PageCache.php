@@ -1,6 +1,6 @@
 <?php
 /**
- * File contains definition of inputform class - used for displaying input form
+ * File contains a definition of Pagecache class - used for caching information
  * for item add/edit and other form utility functions
  *
  * Should be included to other scripts (as /admin/itemedit.php)
@@ -51,16 +51,16 @@ use Mobile_Detect;
 
 class PageCache  {
 
-    protected $cacheTime     = 600; // number of seconds to store cached information
+    private int $cacheTime     = 600; // number of seconds to store cached information
 
-    protected bool $cache_nostore = false; // if true, the cache is not stored (used for {user:xxxx} alias)
+    private bool $cache_nostore = false; // if true, the cache is not stored (used for {user:xxxx} alias)
 
     /** AA\Cache\PageCache function
      *  AA\Cache\PageCache class constructor
      * @param $ct
      */
     function __construct($ct = 600) {
-        $this->cacheTime = $ct;
+        $this->cacheTime = (int)$ct;
     }
 
     /** static getKeystring function
@@ -92,7 +92,7 @@ class PageCache  {
         }
 
         // for JSON request the parameters are in body, but is not parsed into $_POST variable
-        if ($_SERVER['CONTENT_TYPE'] === 'application/json') {
+        if (($_SERVER['CONTENT_TYPE'] ?? '') === 'application/json') {
             $ks["php-input"] = file_get_contents('php://input');
         }
 
@@ -118,7 +118,7 @@ class PageCache  {
         if ( ENABLE_PAGE_CACHE ) {
             if ($action === 'invalidate') {
                 $this->invalidateById( $key );
-                AA::$debug&2 && AA::$dbg->log("Pagecache: return false - invlaidating");
+                AA::$debug&2 && AA::$dbg->log("Pagecache: return false - invalidating");
                 return false;
             }
 
@@ -227,11 +227,11 @@ class PageCache  {
             // SELECT+INSERT/UPDATE (which is better for tables with
             // autoincremented columns). There is no autoincrement, so we can
             // use true Replace
-            // I'm trying to avoid problms with:
+            // I'm trying to avoid problems with:
             //    Database error: Invalid SQL: INSERT INTO pagecache ...
             //    Error Number (description): 1062 (Duplicate entry '52e2804826c438a439cf301817c07020' for key 1)
 
-            $varset->doTrueReplace('pagecache');  // true replace mean it calls REPLACE command and no SELECT+INSERT/UPDATE (which is better for tables with autoincremented columns, which is no
+            $varset->doTrueReplace('pagecache');  // true replace mean it calls REPLACE command and no SELECT+INSERT/UPDATE (which is better for tables with autoincremented columns, which is not the case of pagecache table)
 
             // it is not necessary to check, if the  AA\Later\PagecachePurge is planed
             // store. We check it only once for 1000 (PAGECACHEPURGE_PROBABILITY)
@@ -270,11 +270,11 @@ class PageCache  {
      */
     function invalidateById( $keys ): void
     {
-        // we will delete it in chuns in order we do not get max_packet_size error from MySQL
+        // we will delete it in chunks in order we do not get max_packet_size error from MySQL
         $chunks = array_chunk((array)$keys, 10000);
         foreach ($chunks as $chunk) {
             $keystring = implode("','", $chunk);
-            if ( $keystring != '' ) {
+            if ( $keystring !== '' ) {
                 $varset = new Cvarset();
                 if ( $varset->doDeleteWhere('pagecache', "id IN ('$keystring')", 'nohalt') ) {
                     // delete keys only in case the pagecache deletion was successful

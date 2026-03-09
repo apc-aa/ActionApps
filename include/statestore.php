@@ -501,6 +501,13 @@ class AA_Object extends AA_Storable implements AA_iEditable {
         return $this->aa_id;
     }
 
+
+    public static function updateProperties(array $props): void
+    {
+        AA_Object::load($id, $class)?->setOwnerId($dest_slice_id)->update(['aa_owner']);
+    }
+
+
     /** Update just selected properties
      * @param  array  $prop_names  like ['status', 'status_text']
      * @throws Exception
@@ -1214,7 +1221,7 @@ class AA_Components {
      */
     static function getClassArray($mask, $filter=null, $tolower=true): array {
         $classes = self::getClassNames($mask, $filter, $tolower);
-        $arr = array_map(static fn ($v) => $v::name(), $classes);
+        $arr = array_map(static fn ($v) => (is_callable([$v, 'name']) ? $v::name() : ''), $classes);
         $arr = array_filter($arr, 'trim');  // remove all with empty name()
         asort($arr);
         return $arr;

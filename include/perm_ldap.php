@@ -391,7 +391,7 @@ function AddPerm($id, $objectID, $objectType, $perm, $flags = 0): bool
     $entry = ldap_first_entry ($ds, $result);
     $arr   = ldap_get_attributes($ds, $entry);
 
-    // some older AAs could have mixed case atributes :-( (apcAci)
+    // some older AAs could have mixed case attributes :-( (apcAci)
     $aci = (is_array($arr["apcaci"]) ? $arr["apcaci"] : $arr["apcAci"]);
     $new = [];
     $old = [];
@@ -880,7 +880,7 @@ class AA_Permsystem_Ldap extends AA_Permsystem {
         $perms = [];
         $arr   = ldap_get_entries($ds,$result);
         for ($i=0; $i < $arr["count"]; ++$i) {
-            // some older AAs could have mixed case atributes :-( (apcAci)
+            // some older AAs could have mixed case attributes :-( (apcAci)
             $aci = (is_array($arr[$i]["apcaci"]) ? $arr[$i]["apcaci"] : $arr[$i]["apcAci"]);
             for ($j=0; $j < $aci["count"]; ++$j) {
                 foreach ($groups as $kValue) {
@@ -922,7 +922,7 @@ class AA_Permsystem_Ldap extends AA_Permsystem {
         $entry = ldap_first_entry ($ds, $result);
         $arr   = ldap_get_attributes($ds, $entry);
 
-        // some older AAs could have mixed case atributes :-( (apcAci)
+        // some older AAs could have mixed case attributes :-( (apcAci)
         $aci = (is_array($arr["apcaci"]) ? $arr["apcaci"] : $arr["apcAci"]);
 
         $info = [];

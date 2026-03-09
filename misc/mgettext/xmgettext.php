@@ -505,7 +505,7 @@ function collect_messages_from_file($base_dir, $filename, &$messages, &$warnings
                     $pos++;
 
                     // Following code prevents from looking into quoted string
-                    // for _m() strings, which I found as nonsence, because the
+                    // for _m() strings, which I found as nonsense, because the
                     //  code often looks like:
                     // <input type="submit" value="< ?php echo _m("Login now") ? >">
                     // Honzam 2005-22-06

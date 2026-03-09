@@ -426,7 +426,7 @@ class ConvertCharset {
      */
     function Convert($StringToChange, $FromCharset = null, $ToCharset = null, $TurnOnEntities = false): string {
 
-        $StringToChange = (string)$StringToChange; // it returned nonsence for 0 as int for iso-8859-1 to utf-8
+        $StringToChange = (string)$StringToChange; // it returned nonsense for 0 as int for iso-8859-1 to utf-8
 
         // get default conversions, if it is not specified in parameter
         if ( is_null($FromCharset) ) {

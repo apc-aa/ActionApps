@@ -235,7 +235,7 @@ class AA_Log implements InternalExpandInterface {
             case 'count':  // number of entries for type / selector in last seconds
                 [$type, $selector, $seconds] = $params;
                 $seconds = (int)$seconds ?: 3600;
-                return (!$type || !$selector) ? '' : (string)DB_AA::select1('cnt', "SELECT count(*) as cnt FROM `log`", [['type', $type], ['selector', $selector], ['time', time() - $seconds, '>=']]);
+                return (!$type || !$selector) ? '' : (string)DB_AA::count('log', [['type', $type], ['selector', $selector], ['time', time() - $seconds, '>=']]);
             case 'print':  // print entries params based on logentry
                 if ($content && ($logEntry = AA_Logentry::factoryByString($content->getValue('params')))) {
                     return $logEntry->getPrintRow(); // also adds CSS to header

@@ -853,7 +853,7 @@ The changes could be tracked on:
          - fixed err_url for public page login (it was used even if login was OK
            in some cases)
          - {ajax:..} widget improved - better default size and autofocus
-         - CKEditor (HTMLarea) better title atribute
+         - CKEditor (HTMLarea) better title attribute
          - better and quicker item deletion
            (removed tracks also from hit archive, ...)
 17-02-07 - more accurate slice delele
@@ -1061,7 +1061,7 @@ The changes could be tracked on:
            <placeholder> - placeholder text to search field
            <default>     - the phrase to search if the search field is empty.
              It is not necessary to fill it, if you want to see first
-             the results by defaut. You can put there some nonsence value,
+             the results by defaut. You can put there some nonsense value,
              if you want to see the item list empty by default
          - allow subscript and superscript buttons in CKEditor
          - fixed http / https validation for input type url
@@ -2465,7 +2465,7 @@ The changes could be tracked on:
          - AA displays user names better in AA admin interface
          - fixed Slice Admin -> Forms setting
          - fixed preselect widget - empty string is default
-         - helper atributes we use for temporary data staroing in HTML
+         - helper attributes we use for temporary data staroing in HTML
            (like aaalias) rewritten to HTML5 standard data-xy attributes
          - prototype.js upgraded to 1.6.1 version
          - speedup of several functions md5, ...
@@ -3209,7 +3209,7 @@ The changes could be tracked on:
            also for unfilled aliases (like _#HEADLINE)
          - validation added to timestamp values for date widget
 08-06-02 - HTMLArea (Xinha) updated to last svn version
-(honzam) - new "Fix inconcistency in pagecache" optimalization action
+(honzam) - new "Fix inconsistency in pagecache" optimalization action
          - slice deletion - improved UI
          - cleanup - reading password checking optimalizations
          - cleanup - simplified (and quicker) queries for some cases
@@ -3582,7 +3582,7 @@ The changes could be tracked on:
 07-05-29 - fixed some typos (so view editing works again)
 (honzam)
 07-05-28 - new Optimize_db_feed_inconsistency action in AA -> Optimize, which
-(honzam)   tests, if feeds table do not contain relations to non existant
+(honzam)   tests, if feeds table do not contain relations to non-existent
            slices. Also fixed for use with PHP4.
          - inner node feeding setting page now displays wrong assignments to non
            existant slice (database inconsistence after slice deletion)
@@ -3968,7 +3968,7 @@ The changes could be tracked on:
            Thanks to Omar Martinez / Jaime Torres
          - Superadmin is now able to change posted_by field through
            "Modify content" feature of Admin interface
-         - New {expresions}
+         - New {expressions}
              - {log:number:base} for logarithm
              - {unpack:pcked_id} for unpacking packed id
          - es language files updated (just 2 additions)
@@ -4153,7 +4153,7 @@ The changes could be tracked on:
              - conversion of permissions for items, which was filled by some
                reader from Reader slice.
            Run /test.php for more details.
-         - HTMLArea generates shorter <p> tags (instead of javascript nonsence)
+         - HTMLArea generates shorter <p> tags (instead of javascript nonsense)
          - Fixed deletion of temporary uploaded files
          - SQL query optimalization in perm_core.php
          - Fixed bug with Links module - in some specific cases the link was
@@ -4865,7 +4865,7 @@ The changes could be tracked on:
            records from pagecache table, now
          - fixed expansion of aliases, when contain colon character
 04-05-17 - anonymous form wizard works again
-(honzam) - added AA version info on title atribute of ActionApps logo
+(honzam) - added AA version info on title attribute of ActionApps logo
            in admin interface
          - added possibility to preview the view from admin interface
          - fixed "category top" and "category bottom" HTML for category grouped
@@ -4903,7 +4903,7 @@ The changes could be tracked on:
                (from string/packed id/unpacked id)
              - better cache handling (invalidated after whole import
          - new parameters for i_s (image size) alias function
-             - html    - (default) - returns image size as HTML atributes
+             - html    - (default) - returns image size as HTML attributes
                          (height='xxx' width='yyy')
              - width   - returns width of image in pixes
              - height  - returns height of image in pixels

@@ -55,4 +55,14 @@ class Txt {
     {
         return '<div class="tabhlp">'.implode(' | ', $texts)."</div>";
     }
+
+    /** Prefixes all  */
+    public static function prefixArrayKeys(array $arr, string $prefix): array
+    {
+        $ret = [];
+        foreach ($arr as $k => $v) {
+            $ret[$prefix.$k] = $v;
+        }
+        return $ret;
+    }
 }

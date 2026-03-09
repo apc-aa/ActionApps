@@ -177,7 +177,7 @@ FrmTabCaption(_m("Enable export to slice:"));
       FrmStaticText(_m("Currently exported to"), implode("<br>", $exported), '', '', false);
   }
   if ( isset($wrong_exp) && is_array($wrong_exp) ) {
-      FrmStaticText(_m("Wrong export (non existant slice!):"), implode("<br>", $wrong_exp), '', '', false);
+      FrmStaticText(_m("Wrong export (non-existent slice!):"), implode("<br>", $wrong_exp), '', '', false);
   }
 ?>
 </table></td></tr>

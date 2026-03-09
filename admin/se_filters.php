@@ -29,6 +29,7 @@
 */
 
 // const  AA_REGISTER_GLOBALS = true;
+use AA\IO\DB\DB_AA;
 use AA\IO\FeedUtil;
 use AA\Util\InputVars;
 
@@ -137,12 +138,10 @@ if ($feed_id = $remote_slices[$import_id]) {   // not comparison! - external fee
     }
 } else {   // inner feeding
 // lookup (to_categories)
-    $imp_group =  AA_Slice::getModule($import_id)?->getFields()->getCategoryGroup();
+    $imp_group =  AA_Slice::getModule($import_id)?->getFields()->getCategoryGroup() ?? '';
 
     // count number of imported categories
-    $SQL= "SELECT count(*) as cnt FROM constant WHERE group_id='$imp_group'";
-    $db->query($SQL);
-    $imp_count = ($db->next_record() ? $db->f('cnt') : 0);
+    $imp_count = ($imp_group==='') ? 0 : DB_AA::count('constant', [['group_id', $imp_group]]);
 
     // preset variables due to feeds database
     $SQL= "SELECT category_id, to_category_id, all_categories, to_approved FROM feeds WHERE from_id=$p_import_id AND to_id='$p_slice_id'";

@@ -635,31 +635,31 @@ class AA_Field implements ArrayAccess, Countable, IteratorAggregate {
         $id          = $this->getId();
         $text_stored = (bool)$this->getProperty('text_stored');
 
-        $items       = DB_AA::select1('cnt', 'SELECT count(*) as cnt FROM item', [['item.slice_id', $slice_id, 'l']]);
+        $items       = DB_AA::count('item', [['item.slice_id', $slice_id, 'l']]);
         $items_field = DB_AA::select1('', 'SELECT count(*) as cnt, count(DISTINCT text) as cntval,  count(DISTINCT number) as cntnum, count(DISTINCT item_id) as cntitm  FROM content, item', [
             ['content.item_id', 'item.id', 'j'],
             ['item.slice_id', $slice_id, 'l'],
             ['field_id', $id]
         ]);
-        $text_rows   = DB_AA::select1('cnt', 'SELECT count(*) as cnt FROM content, item', [
+        $text_rows   = DB_AA::count(['content','item'], [
             ['content.item_id', 'item.id', 'j'],
             ['item.slice_id', $slice_id, 'l'],
             ['field_id', $id],
             ['(content.flag & '.FLAG_TEXT_STORED.')', 64, 'i']
         ]);
-        $num_rows    = DB_AA::select1('cnt', 'SELECT count(*) as cnt FROM content, item', [
+        $num_rows    = DB_AA::count(['content','item'], [
             ['content.item_id', 'item.id', 'j'],
             ['item.slice_id', $slice_id, 'l'],
             ['field_id', $id],
             ['(content.flag & '.FLAG_TEXT_STORED.')', 0, 'i']
         ]);
-        $num_html    = DB_AA::select1('cnt', 'SELECT count(*) as cnt FROM content, item', [
+        $num_html    = DB_AA::count(['content','item'], [
             ['content.item_id', 'item.id', 'j'],
             ['item.slice_id', $slice_id, 'l'],
             ['field_id', $id],
             ['(content.flag & '.FLAG_HTML.')', 1, 'i']
         ]);
-        $empty       = DB_AA::select1('cnt', 'SELECT count(*) as cnt FROM content, item', [
+        $empty       = DB_AA::count(['content','item'], [
             ['content.item_id', 'item.id', 'j'],
             ['item.slice_id', $slice_id, 'l'],
             ['field_id', $id],

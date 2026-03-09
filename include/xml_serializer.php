@@ -96,7 +96,7 @@ function xml_serialize($k, $v, $i, $ii, $a=null): string
 class xml_unserializer {
     var $stack = [];          // stack of items above oen being worked on
     var $chardata = "";          // Current string of CDATA
-    var $top = null;        // Element we are working on
+    var $top = null;        // Element we are working on (array? at least sometimes)
     var $coding = "";   // set to bin2hex when coded id
     var $debug = false;          // set to true to debug this
     var $parser;
@@ -115,9 +115,9 @@ class xml_unserializer {
 
     /** parse function
      * @param $xml_data
-     * @return null|string
+     * @return null|array|string
      */
-    function parse($xml_data): ?string
+    public function parse($xml_data): null|array|string
     {
         if (!xml_parse($this->parser, $xml_data, true)) {
             $ret =  sprintf("XML parse error: %s at line %d", xml_error_string(xml_get_error_code($this->parser)), xml_get_current_line_number($this->parser));

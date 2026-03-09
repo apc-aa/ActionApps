@@ -4,7 +4,6 @@ namespace AA\Util;
 
 use AA;
 use AA_Slice;
-use function pack_id;
 
 /**
  *

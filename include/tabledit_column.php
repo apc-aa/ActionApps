@@ -44,7 +44,7 @@ function gfd_error($x): void
  * @param $datestring
  * @param $format
  *   @return string - the Unix timestamp counted from the formatted date string.
- *   Does not check the date format, rather returns nonsence values for
+ *   Does not check the date format, rather returns nonsense values for
  *   wrong date strings.
  *   Uses non-format letters as separators only,
  *   i.e. "2.3.2002" is parsed the same as "2/3/2002" or even "2;3#2002".

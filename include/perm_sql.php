@@ -433,7 +433,7 @@ class AA_Permsystem_Sql extends AA_Permsystem {
             foreach ($groupids as $gid) {
                 // Realize that it has already checked a group and eliminate it.
 
-                if ( $gid && !in_array($gid, $all_groups) ) {  // eliminate also $gid == 0 - nonsence, but sometimes it is in DB
+                if ( $gid && !in_array($gid, $all_groups) ) {  // eliminate also $gid == 0 - nonsense, but sometimes it is in DB
                     $last_groups[] = $gid;
                     $all_groups[]  = $gid;
                 }
