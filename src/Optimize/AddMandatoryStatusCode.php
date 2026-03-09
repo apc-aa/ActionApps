@@ -2,10 +2,6 @@
 
 namespace AA\Optimize;
 
-use function _m;
-use function GetTable2Array;
-use function quote;
-
 /** Add mandtory fields to each slice where missing */
 class AddMandatoryStatusCode extends \AA\Optimize\AbstractOptimize {
 
@@ -42,10 +38,7 @@ class AddMandatoryStatusCode extends \AA\Optimize\AbstractOptimize {
         return $ret;
     }
 
-    /** Deletes the pagecache - the renaming and deleting is much, much quicker,
-     *  than easy DELETE FROM ...
-     * @return bool
-     */
+
     public function repair(): bool {
         $this->message(_m('Fixing missing %1 fields in slices', [$this->_field()]));
 

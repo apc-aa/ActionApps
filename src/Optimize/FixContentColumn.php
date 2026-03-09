@@ -2,12 +2,6 @@
 
 namespace AA\Optimize;
 
-use function _m;
-use function freeDB;
-use function getDB;
-use function GetTable2Array;
-use function quote;
-
 /** Set flag FLAG_TEXT_STORED for all content, where field is marked as text
  *  field, and reset it for numer fields
  */

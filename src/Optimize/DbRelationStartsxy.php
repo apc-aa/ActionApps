@@ -2,12 +2,6 @@
 
 namespace AA\Optimize;
 
-use function _m;
-use function freeDB;
-use function getDB;
-use function GetTable2Array;
-use function quote;
-
 /** Testing if relation between slices are OK (without x or y chars on the begining)
  */
 class DbRelationStartsxy extends AbstractOptimize {

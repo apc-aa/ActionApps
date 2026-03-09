@@ -2,8 +2,6 @@
 
 namespace AA\Optimize;
 
-use function _m;
-
 /** Recreates the template view - calendar */
 class RedefineViewCalendarTemplates extends \AA\Optimize\RedefineViewDiscusTemplates {
 

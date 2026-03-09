@@ -6,9 +6,6 @@ use AA;
 use AA\IO\DB\DB_AA;
 use AA_Metabase;
 use AA_Module_Site;
-use function _m;
-use function freeDB;
-use function getDB;
 
 /** Fix user login problem, constants editiong problem, ...
  *  Replaces binary fields by varbinary and removes trailing zeros

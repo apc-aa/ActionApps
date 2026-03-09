@@ -3,7 +3,6 @@
 namespace AA\Optimize;
 
 use AA\IO\DB\DB_AA;
-use function _m;
 
 /** Recreates the default site module template */
 class RedefineSiteTemplates extends \AA\Optimize\AbstractOptimize {
@@ -26,8 +25,8 @@ class RedefineSiteTemplates extends \AA\Optimize\AbstractOptimize {
     public function test(): bool {
         $ret = true;
 
-        $row_count = DB_AA::select1('count', 'SELECT count(*) as count FROM module', [['id', 'SiteTemplate....']]);
-        if ($row_count != 1) {
+        $row_count = DB_AA::count('module', [['id', 'SiteTemplate....']]);
+        if ($row_count !== 1) {
             $this->message(_m('Site Module template should be recreated'));
             $ret = false;
         }

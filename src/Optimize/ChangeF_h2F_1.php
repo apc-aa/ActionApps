@@ -6,7 +6,6 @@ use AA\IO\DB\DB_AA;
 use AA_Field;
 use AA_Module;
 use AA_Slice;
-use function _m;
 
 /** Set Expiry date to maximum value for items in slices, where expiry_date.....
  *  field is not shown. It also sets the field's default to that value.

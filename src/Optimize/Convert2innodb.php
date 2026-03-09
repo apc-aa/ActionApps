@@ -3,8 +3,6 @@
 namespace AA\Optimize;
 
 use AA\IO\DB\DB_AA;
-use function _m;
-use const DB_NAME;
 
 /**
  *
@@ -44,10 +42,7 @@ class Convert2innodb extends AbstractOptimize {
         return !$count;
     }
 
-    /** Deletes the pagecache - the renaming and deleting is much, much quicker,
-     *  than easy DELETE FROM ...
-     * @return bool
-     */
+
     public function repair(): bool {
         //$tables   = $metabase->getTableNames();
         $engines = DB_AA::select(['TABLE_NAME' => 'ENGINE'], "SELECT TABLE_NAME,ENGINE FROM information_schema.TABLES", [['TABLE_SCHEMA', DB_NAME], ['ENGINE', '', 'NOTNULL'], ['ENGINE', 'InnoDB', 's<>']]);

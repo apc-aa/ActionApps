@@ -3,9 +3,6 @@
 namespace AA\Optimize;
 
 use Cvarset;
-use function _m;
-use function GetTable2Array;
-use function quote;
 
 /** Fix field table duplicate keys */
 class FieldDuplicates extends \AA\Optimize\AbstractOptimize {

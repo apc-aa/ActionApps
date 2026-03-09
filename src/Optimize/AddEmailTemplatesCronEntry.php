@@ -4,7 +4,6 @@ namespace AA\Optimize;
 
 use AA;
 use AA\IO\DB\DB_AA;
-use function _m;
 
 /** Adds email templates for Alerts module */
 class AddEmailTemplatesCronEntry extends \AA\Optimize\AbstractOptimize {
@@ -27,7 +26,7 @@ class AddEmailTemplatesCronEntry extends \AA\Optimize\AbstractOptimize {
     public function test(): bool {
         $ret = true;
 
-        $row_count = DB_AA::select1('count', 'SELECT count(*) as count FROM email', [['type', 'alerts welcome']]);
+        $row_count = DB_AA::count('email', [['type', 'alerts welcome']]);
 
         if ($row_count < 1) {
             $this->message(_m('The e-mail templates are not complete'));

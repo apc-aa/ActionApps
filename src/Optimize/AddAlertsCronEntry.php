@@ -3,7 +3,6 @@
 namespace AA\Optimize;
 
 use AA\IO\DB\DB_AA;
-use function _m;
 
 /** Adds cron entry for Alerts Sending into AA cron */
 class AddAlertsCronEntry extends \AA\Optimize\AbstractOptimize {
@@ -26,12 +25,7 @@ class AddAlertsCronEntry extends \AA\Optimize\AbstractOptimize {
     public function test(): bool {
         $ret = true;
 
-        $row_count = DB_AA::select1('count', 'SELECT count(*) as count FROM cron', [
-            [
-                'script',
-                'modules/alerts/alerts.php',
-            ],
-        ]);
+        $row_count = DB_AA::count('cron', [['script', 'modules/alerts/alerts.php']]);
         if ($row_count < 1) {
             $this->message(_m('Cron entry for Alerts Sending is not installed in AA Cron'));
             $ret = false;

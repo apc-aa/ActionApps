@@ -3,13 +3,8 @@
 namespace AA\Optimize;
 
 use AA_Slice;
-use function _m;
-use function freeDB;
-use function getDB;
-use function GetTable2Array;
-use function xpack_id;
 
-/** Testing if feeds table do not contain relations to non existant slices
+/** Testing if feeds table do not contain relations to non-existent slices
  */
 class DbFeedInconsistency extends AbstractOptimize {
 
@@ -24,7 +19,7 @@ class DbFeedInconsistency extends AbstractOptimize {
      * @return string - a description
      */
     public static function description(): string {
-        return _m("Testing if feeds table do not contain relations to non existant slices (after slice deletion)");
+        return _m("Testing if feeds table do not contain relations to non-existent slices (after slice deletion)");
     }
 
     /** Test function

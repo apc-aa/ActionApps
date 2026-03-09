@@ -2,9 +2,6 @@
 
 namespace AA\Optimize;
 
-use function _m;
-use function quote;
-
 /** Add mandtory fields to each slice where missing */
 class AddMandatoryDiscApp extends \AA\Optimize\AddMandatoryStatusCode {
     public static function name(): string { return _m("Fixing missing %1 field definitions in slices", ['disc_app........']); }

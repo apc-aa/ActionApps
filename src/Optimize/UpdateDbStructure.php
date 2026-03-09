@@ -7,8 +7,6 @@ use AA\Util\Difftext;
 use AA_Metabase;
 use RuntimeException;
 
-use function _m;
-
 /** Updates the database structure for AA. It checks all the tables in current
  *  system and compare it with the newest database structure. The new table
  *  is created as tmp_*, then the content from old table is copied and if

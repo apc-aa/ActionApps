@@ -5,8 +5,6 @@ namespace AA\Optimize;
 use AA\IO\DB\DB_AA;
 use AA\Util\Adminlink;
 
-use function _m;
-
 /** Testing if feeds table do not contain relations to non-existent slices
  */
 class DbInconsistencyConstants extends AbstractOptimize {

@@ -2,10 +2,6 @@
 
 namespace AA\Optimize;
 
-use function _m;
-use function freeDB;
-use function getDB;
-
 /** Whole pagecache will be invalidated and deleted */
 class ClearPagecache extends AbstractOptimize {
 

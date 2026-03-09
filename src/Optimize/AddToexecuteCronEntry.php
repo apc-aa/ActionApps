@@ -3,7 +3,6 @@
 namespace AA\Optimize;
 
 use AA\IO\DB\DB_AA;
-use function _m;
 
 /** Adds cron entry for AA\Later\Toexecute queue execution into AA cron */
 class AddToexecuteCronEntry extends \AA\Optimize\AbstractOptimize {
@@ -26,8 +25,7 @@ class AddToexecuteCronEntry extends \AA\Optimize\AbstractOptimize {
     public function test(): bool {
         $ret = true;
 
-        $row_count = DB_AA::select1('count', 'SELECT count(*) as count FROM cron', [['script', 'misc/toexecute.php']]);
-        if ($row_count < 1) {
+        if (!DB_AA::test('cron', [['script', 'misc/toexecute.php']])) {
             $this->message(_m('Cron entry for "Toexecute queue execution" is not installed in AA Cron'));
             $ret = false;
         }

@@ -3,8 +3,6 @@
 namespace AA\Optimize;
 
 use AA;
-use function _m;
-use function GetTable2Array;
 
 /** Restore Data from Backup Tables
  *  This script DELETES all the current tables (slice, item, ...) where we have

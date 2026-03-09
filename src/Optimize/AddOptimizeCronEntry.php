@@ -3,7 +3,6 @@
 namespace AA\Optimize;
 
 use AA\IO\DB\DB_AA;
-use function _m;
 
 /** Adds cron entry for Database Optimalization into AA cron */
 class AddOptimizeCronEntry extends \AA\Optimize\AbstractOptimize {
@@ -26,7 +25,7 @@ class AddOptimizeCronEntry extends \AA\Optimize\AbstractOptimize {
     public function test(): bool {
         $ret = true;
 
-        $row_count = DB_AA::select1('count', 'SELECT count(*) as count FROM cron', [['script', 'misc/optimize.php']]);
+        $row_count = DB_AA::count('cron', [['script', 'misc/optimize.php']]);
         if ($row_count < 1) {
             $this->message(_m('Cron entry for Database Optimalization is not installed in AA Cron'));
             $ret = false;

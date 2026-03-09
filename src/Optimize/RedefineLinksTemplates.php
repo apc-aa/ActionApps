@@ -4,8 +4,6 @@ namespace AA\Optimize;
 
 use AA;
 use AA\IO\DB\DB_AA;
-use function _m;
-use function unpack_id;
 
 /** Recreates the default Links module template */
 class RedefineLinksTemplates extends \AA\Optimize\AbstractOptimize {
@@ -28,9 +26,9 @@ class RedefineLinksTemplates extends \AA\Optimize\AbstractOptimize {
     public function test(): bool {
         $ret = true;
 
-        $row_count = DB_AA::select1('count', 'SELECT count(*) as count FROM module', [['id', '1Links%', 'LIKE']]);
-        if ($row_count != 1) {
-            $this->message(_m('There is no root Link Module category - Links module should be recreted'));
+        $row_count = DB_AA::count('module', [['id', '1Links%', 'LIKE']]);
+        if ($row_count !== 1) {
+            $this->message(_m('There is no root Link Module category - Links module should be recreated'));
             $ret = false;
         }
         return $ret;

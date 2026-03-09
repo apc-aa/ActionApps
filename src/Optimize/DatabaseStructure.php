@@ -2,10 +2,6 @@
 
 namespace AA\Optimize;
 
-use function _m;
-use function freeDB;
-use function getDB;
-
 /** There was change in Reader management functionality in AA v2.8.1 */
 class DatabaseStructure extends AbstractOptimize {
 

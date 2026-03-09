@@ -3,8 +3,6 @@
 namespace AA\Optimize;
 
 use AA\IO\DB\DB_AA;
-use function _m;
-use const DB_NAME;
 
 /**
  *

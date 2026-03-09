@@ -2,12 +2,6 @@
 
 namespace AA\Optimize;
 
-use function _m;
-use function freeDB;
-use function getDB;
-use function GetTable2Array;
-use function xpack_id;
-
 /** Testing if feeds table do not contain relations to non-existent slices
  */
 class DbInconsistency extends AbstractOptimize {

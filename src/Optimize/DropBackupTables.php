@@ -5,8 +5,6 @@ namespace AA\Optimize;
 use AA;
 use AA_Metabase;
 
-use function _m;
-
 /** Drop all bck_* tables
  *  This script DELETES all the current tables (slice, item, ...) where we have
  *  bck_table and renames all backup tables (bck_slice, bck_item, ...) to right

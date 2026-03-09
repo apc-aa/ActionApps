@@ -3,8 +3,6 @@
 namespace AA\Optimize;
 
 use AA\IO\DB\DB_AA;
-use function _m;
-use const AA_BASE_DIR;
 
 /** Recreates the template view - discus */
 class RedefineViewDiscusTemplates extends \AA\Optimize\AbstractOptimize {
@@ -38,11 +36,8 @@ class RedefineViewDiscusTemplates extends \AA\Optimize\AbstractOptimize {
     public function test(): bool {
         $ret = true;
 
-        $row_count = DB_AA::select1('count', 'SELECT count(*) as count FROM view', [
-            ['slice_id', 'AA_Core_Fields..'],
-            ['type', $this->_viewType()],
-        ]);
-        if ($row_count != 1) {
+        $row_count = DB_AA::count('view', [['slice_id', 'AA_Core_Fields..'], ['type', $this->_viewType()]]);
+        if ($row_count !== 1) {
             $this->message(_m('"%1" template view is not defined', [$this->_viewType()]));
             $ret = false;
         }

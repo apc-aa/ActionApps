@@ -2,8 +2,6 @@
 
 namespace AA\Optimize;
 
-use function _m;
-
 /** Recreates the template view - rss */
 class RedefineViewRssTemplates extends \AA\Optimize\RedefineViewDiscusTemplates {
 

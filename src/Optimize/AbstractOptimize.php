@@ -9,13 +9,10 @@ use AA_Property;
 use AA_Value;
 use RuntimeException;
 
-use function getDB;
-use function safe;
-
 abstract class AbstractOptimize implements NamedInterface {
     use ReportTrait;
 
-    /** @var array used in manager to store test results in order we can use it in alias _#RESULT__ */
+    /** @var array used in the manager to store test results in order we can use it in alias _#RESULT__ */
     public static array $action_results = [];
     public static array $action_results_text = [];
 
@@ -49,10 +46,17 @@ abstract class AbstractOptimize implements NamedInterface {
 
     public function repair4modules(array $modules): bool { return true; } // repair just for specified modules
 
+    /**
+     * @param  array  $ids
+     *
+     * @return  false|string false - err, string - very short report (to be printed on button) - like number of fixed items
+     */
+    public function repair4ids(array $ids): false|string { return false; } // repair just for specified ids - allows repair4ids - fix one after another
+
     /** implemented actions within this class
      * @return string[]
      */
-    public static function actions(): array { return ['test', 'repair']; }  // full set is ['test', 'repair', 'revert', 'test4modules', 'repair4modules']
+    public static function actions(): array { return ['test', 'repair']; }  // full set is ['test', 'repair', 'revert', 'test4modules', 'repair4modules', 'repair4ids']
 
     /** is action present in this class
      * @param string $action

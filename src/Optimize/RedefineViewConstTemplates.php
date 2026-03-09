@@ -2,8 +2,6 @@
 
 namespace AA\Optimize;
 
-use function _m;
-
 /** Recreates the template view - const */
 class RedefineViewConstTemplates extends \AA\Optimize\RedefineViewDiscusTemplates {
 

@@ -29,8 +29,6 @@ namespace AA\Optimize;
 
 use AA\IO\DB\DB_AA;
 use AA_Metabase;
-use function _m;
-
 
 // this is wrong! it deletes the priority field! Disabled for now.
 /*

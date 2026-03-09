@@ -2,11 +2,6 @@
 
 namespace AA\Optimize;
 
-use function _m;
-use function freeDB;
-use function getDB;
-use function GetTable2Array;
-
 /** Testing if relation table contain records, where values in both columns are
  *  identical (which was bug fixed in Jan 2006)
  */

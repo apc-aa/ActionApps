@@ -4,7 +4,6 @@ namespace AA\Optimize;
 
 use AA;
 use AA\IO\DB\DB_AA;
-use function _m;
 
 /** Add column to hit_archive table which will store duration/cache/not_modified records for the hit
  * Optional AA feature
@@ -25,7 +24,7 @@ class AddDurationLog extends \AA\Optimize\AbstractOptimize {
         return _m("Add column 'duration' to hit_archive table which will store duration/cache/not_modified records for the hit");
     }
 
-    /** checks if this Optimize class belongs to specified type (like "sql_update") */
+    /** checks if this Optimize class belongs to a specified type (like "sql_update") */
     public static function types(): array { return ['opt_feature']; }
 
     /** @inheritDoc  */
@@ -67,7 +66,8 @@ class AddDurationLog extends \AA\Optimize\AbstractOptimize {
 
     /** get time from which we measure duration
      * @todo Cache it forever - this query is quite slow */
-    public function getFromTime() {
-        return DB_AA::select1('time', 'SELECT `time` FROM `hit_archive`', [['duration', 0, '<>'],['time', 1743458400, '>']], ['time']);  // big speedup - 2025-04-01 - this feature is there from 2024-06-27 (with bug till 2025-04-28) in SVN so we check only part of the table
+    public function getFromTime(): int
+    {
+        return (int)DB_AA::select1('time', 'SELECT `time` FROM `hit_archive`', [['duration', 0, '<>'],['time', 1743458400, '>']], ['time']);  // big speedup - 2025-04-01 - this feature is there from 2024-06-27 (with bug till 2025-04-28) in SVN so we check only part of the table
     }
 }

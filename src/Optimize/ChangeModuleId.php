@@ -4,9 +4,6 @@ namespace AA\Optimize;
 
 use AA;
 use AA_Metabase;
-use function _m;
-use function new_id;
-use function xpack_id;
 
 /** Change module ID to new one
  *  Used sometimes if you clone database or copy slices to another database

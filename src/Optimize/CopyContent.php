@@ -2,10 +2,6 @@
 
 namespace AA\Optimize;
 
-use function _m;
-use function freeDB;
-use function getDB;
-
 /** Whole pagecache will be invalidated and deleted */
 class CopyContent extends AbstractOptimize {
 
@@ -34,10 +30,7 @@ class CopyContent extends AbstractOptimize {
         return true;
     }
 
-    /** Deletes the pagecache - the renaming and deleting is much, much quicker,
-     *  than easy DELETE FROM ...
-     * @return bool
-     */
+
     public function repair(): bool {
         $db = getDb();
 

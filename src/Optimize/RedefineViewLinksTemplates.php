@@ -2,8 +2,6 @@
 
 namespace AA\Optimize;
 
-use function _m;
-
 /** Recreates the template view - links */
 class RedefineViewLinksTemplates extends \AA\Optimize\RedefineViewDiscusTemplates {
 

@@ -3,9 +3,6 @@
 namespace AA\Optimize;
 
 use AA_Permsystem_Reader;
-use function _m;
-use function getDB;
-use function GetTable2Array;
 
 /** There was change in Reader management functionality in AA v2.8.1 */
 class ReadersLogin2id extends AbstractOptimize {

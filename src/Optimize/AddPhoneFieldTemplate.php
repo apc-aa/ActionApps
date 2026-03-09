@@ -2,8 +2,6 @@
 
 namespace AA\Optimize;
 
-use function _m;
-
 /** Recreates the new field types to be used as templates (in "ActionApps Core" slice) */
 class AddPhoneFieldTemplate extends \AA\Optimize\AddSeoFieldTemplate {
 

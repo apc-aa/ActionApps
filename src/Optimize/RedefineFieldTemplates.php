@@ -29,10 +29,6 @@ use AA\Optimize\AddRangeFieldTemplate;
 use AA\Optimize\AddRealFieldTemplate;
 use AA\Optimize\AddSecretFieldTemplate;
 use AA\Optimize\AddSeoFieldTemplate;
-use function _m;
-use const AA_BASE_DIR;
-use const AA_HTTP_DOMAIN;
-use const ERROR_REPORTING_EMAIL;
 
 /** Recreates the "ActionApps Core" slice fields (delete and insert). The fields
  *  form the "ActionApps Core" slice is used as template fields for other slices
@@ -63,11 +59,8 @@ class RedefineFieldTemplates extends \AA\Optimize\AbstractOptimize {
     public function test(): bool {
         $ret = true;
 
-        $row_count = DB_AA::select1('count', 'SELECT count(*) as count FROM field', [
-            ['id', 'headline'],
-            ['slice_id', 'AA_Core_Fields..'],
-        ]);
-        if ($row_count != 1) {
+        $row_count = DB_AA::count('field', [['id', 'headline'], ['slice_id', 'AA_Core_Fields..']]);
+        if ($row_count !== 1) {
             $this->message(_m('teplate fields are not prenent'));
             $ret = false;
         }

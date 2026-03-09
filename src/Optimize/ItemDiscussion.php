@@ -3,10 +3,6 @@
 namespace AA\Optimize;
 
 use Cvarset;
-use function _m;
-use function freeDB;
-use function getDB;
-use function GetTable2Array;
 
 /** Delete discussion comments for not existing items
  */

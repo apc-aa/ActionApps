@@ -3,7 +3,6 @@
 namespace AA\Optimize;
 
 use AA\IO\DB\DB_AA;
-use function _m;
 
 /** Recreates the "ActionApps Core" constants (delete and insert). */
 class RedefineCoreConstants extends \AA\Optimize\AbstractOptimize {
@@ -32,7 +31,7 @@ class RedefineCoreConstants extends \AA\Optimize\AbstractOptimize {
         $ret = true;
 
         // Code-pages
-        $row_count = DB_AA::select1('count', 'SELECT count(*) as count FROM constant', [['group_id', 'lt_codepages']]);
+        $row_count = DB_AA::count('constant', [['group_id', 'lt_codepages']]);
 
         if ($row_count < 9) {
             $this->message(_m('Code-pages constants (lt_codepages) are not up-to-date - found: %1 from 9', [$row_count]));
@@ -40,31 +39,21 @@ class RedefineCoreConstants extends \AA\Optimize\AbstractOptimize {
         }
 
         // Language
-        $row_count = DB_AA::select1('count', 'SELECT count(*) as count FROM constant', [['group_id', 'lt_languages']]);
+        $row_count = DB_AA::count('constant', [['group_id', 'lt_languages']]);
         if ($row_count < 46) {
             $this->message(_m('Language constants (lt_languages) are not up-to-date - found: %1 from 46', [$row_count]));
             $ret = false;
         }
 
         // AA Bins
-        $row_count = DB_AA::select1('count', 'SELECT count(*) as count FROM constant', [
-            [
-                'group_id',
-                'AA_Core_Bins....',
-            ],
-        ]);
+        $row_count = DB_AA::count('constant', [['group_id', 'AA_Core_Bins....',]]);
         if ($row_count < 3) {
             $this->message(_m('AA Bins constants (AA_Core_Bins....) are not up-to-date - found: %1 from 3', [$row_count]));
             $ret = false;
         }
 
         // APC-wide categories
-        $row_count = DB_AA::select1('count', 'SELECT count(*) as count FROM constant', [
-            [
-                'group_id',
-                'lt_apcCategories',
-            ],
-        ]);
+        $row_count = DB_AA::count('constant', [['group_id', 'lt_apcCategories',]]);
         if ($row_count < 82) {
             $this->message(_m('APC-wide categories (lt_apcCategories) are not up-to-date - found: %1 from 82', [$row_count]));
             $ret = false;

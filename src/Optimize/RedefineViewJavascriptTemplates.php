@@ -2,9 +2,6 @@
 
 namespace AA\Optimize;
 
-use function _m;
-use const AA_INSTAL_PATH;
-
 /** Recreates the template view - javascript */
 class RedefineViewJavascriptTemplates extends \AA\Optimize\RedefineViewDiscusTemplates {
 

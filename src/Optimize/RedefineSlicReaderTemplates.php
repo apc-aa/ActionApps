@@ -3,8 +3,6 @@
 namespace AA\Optimize;
 
 use AA\IO\DB\DB_AA;
-use function _m;
-use const AA_BASE_DIR;
 
 /** Recreates the template (example) slice - Reader Management */
 class RedefineSlicReaderTemplates extends \AA\Optimize\AbstractOptimize {
@@ -33,8 +31,8 @@ class RedefineSlicReaderTemplates extends \AA\Optimize\AbstractOptimize {
     public function test(): bool {
         $ret = true;
 
-        $row_count = DB_AA::select1('count', 'SELECT count(*) as count FROM module', [['id', 'ReaderManagement']]);
-        if ($row_count != 1) {
+        $row_count = DB_AA::count('module', [['id', 'ReaderManagement']]);
+        if ($row_count !== 1) {
             $this->message(_m('"Reader Management" template slice is not defined'));
             $ret = false;
         }

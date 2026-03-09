@@ -2,11 +2,6 @@
 
 namespace AA\Optimize;
 
-use function _m;
-use function getDB;
-use function GetTable2Array;
-use function quote;
-
 /**
  */
 class MultivalueDuplicates extends AbstractOptimize {

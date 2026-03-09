@@ -4,9 +4,6 @@ namespace AA\Optimize;
 
 use AA;
 use AA\IO\DB\DB_AA;
-use function _m;
-use function freeDB;
-use function getDB;
 
 /** Whole pagecache will be invalidated and deleted */
 class CopyItemsFromBackup extends AbstractOptimize {

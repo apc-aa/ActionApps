@@ -3,8 +3,6 @@
 namespace AA\Optimize;
 
 use AA\IO\DB\DB_AA;
-use function _m;
-
 /** Adds cron entry for Checking link status in Links module into AA cron */
 class AddLinkcheckCronEntry extends \AA\Optimize\AbstractOptimize {
 
@@ -26,12 +24,7 @@ class AddLinkcheckCronEntry extends \AA\Optimize\AbstractOptimize {
     public function test(): bool {
         $ret = true;
 
-        $row_count = DB_AA::select1('count', 'SELECT count(*) as count FROM cron', [
-            [
-                'script',
-                'modules/links/linkcheck.php',
-            ],
-        ]);
+        $row_count = DB_AA::count('cron', [['script', 'modules/links/linkcheck.php']]);
         if ($row_count < 1) {
             $this->message(_m('Cron entry for "Checking link status in Links module" is not installed in AA Cron'));
             $ret = false;

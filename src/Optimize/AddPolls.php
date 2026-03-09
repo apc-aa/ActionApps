@@ -4,7 +4,6 @@ namespace AA\Optimize;
 
 use AA;
 use AA\IO\DB\DB_AA;
-use function _m;
 
 /** Add tables for new polls module */
 class AddPolls extends \AA\Optimize\AbstractOptimize {
@@ -48,18 +47,14 @@ class AddPolls extends \AA\Optimize\AbstractOptimize {
     public function test(): bool {
         $ret = true;
 
-        $row_count = DB_AA::select1('count', 'SELECT count(*) as count FROM module', [['id', 'PollsTemplate...']]);
-        if ($row_count != 1) {
+        if (!DB_AA::test('module', [['id', 'PollsTemplate...']])) {
             $this->message(_m('Poll module is not installed'));
             $ret = false;
         }
         return $ret;
     }
 
-    /** Deletes the pagecache - the renaming and deleting is much, much quicker,
-     *  than easy DELETE FROM ...
-     * @return bool
-     */
+
     public function repair(): bool {
 
         $metabase = AA::Metabase();

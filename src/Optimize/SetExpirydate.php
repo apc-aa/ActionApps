@@ -4,15 +4,11 @@ namespace AA\Optimize;
 
 use AA\IO\DB\DB_AA;
 use AA_Slice;
-use function _m;
-use function freeDB;
-use function getDB;
-use function xpack_id;
 
 /** Set Expiry date to maximum value for items in slices, where expiry_date.....
  *  field is not shown. It also sets the field's default to that value.
  */
-class SetExpirydate extends AbstractOptimize {
+class SetExpirydate extends AbstractOptimizeById {
 
     /** Name function
      * @return string - a name
@@ -28,56 +24,38 @@ class SetExpirydate extends AbstractOptimize {
         return _m("Set Expiry date to maximum value for items in slices, where expiry_date..... field is not shown. It also sets the field's default to that value.<br><b>Is it really what you want?</b>");
     }
 
-    /** Test function
-     * @return bool
+    /** Find bad record and return their ids with the description
+     * get ['id' => ['some'=>'', 'fields'=>'', 'to_be_shown'=>'']] - id could be number, string or compound value
+     *                                                                but must describe the row to fix/delete
      */
-    public function test(): bool {
+    protected function get_bad_ids(): array
+    {
+        $bad_ids = [];
 
-//      $slices   = GetTable2Array("SELECT slice_id, input_default FROM `field` WHERE id='expiry_date.....' AND input_show=0", "unpack:slice_id", 'input_default');
-        $slices = DB_AA::select(['sid' => 'input_default'], 'SELECT LOWER(HEX(`slice_id`)) AS sid, input_default FROM `field`', [
+        $potential_slices = DB_AA::select(['sid' => []], 'SELECT LOWER(HEX(`slice_id`)) AS sid, input_default FROM `field`', [
             ['id', 'expiry_date.....',],
             ['input_show', 0, 'i',],
         ]);
-        foreach ($slices as $sid => $default) {
-            $this->message([
-                _m('Slice ID')                           => $sid,
-                _m('Slice Name')                         => safe(AA_Slice::getModuleName($sid)),
-                _m('default value for expiry_date.....') => $default,
-            ]);
+
+        foreach ($potential_slices as $sid => $row) {
+            if (DB_AA::test('item', [['slice_id', $sid, 'l'], ['expiry_date', 2145826800, 'i<>']]) OR DB_AA::test('field', [['slice_id', $sid, 'l'], ['id', 'expiry_date.....',], ['input_default','never:', 's<>']])) {
+                $bad_ids[$sid] = ['name' => AA_Slice::getModuleName($sid), ...$row];
+            }
         }
-        $this->message(_m('We found %1 hidden exipry_date..... fields', [count($slices)]));
-        // $this->message(_m('We found %1 inconsistent rows from %2 in pagecache_str2find', array($wrong_count, $row_count)));
-        return !count($slices);
+
+        return $bad_ids;
     }
 
-    /** Deletes the pagecache - the renaming and deleting is much, much quicker,
-     *  than easy DELETE FROM ...
-     * @return bool
-     */
-    public function repair(): bool {
-        $db = getDb();
-//        $slices   = GetTable2Array("SELECT slice_id, input_default FROM `field` WHERE id='expiry_date.....' AND input_show=0", "unpack:slice_id", 'input_default');
-        $slices = DB_AA::select(['sid' => 'input_default'], 'SELECT LOWER(HEX(`slice_id`)) AS sid, input_default FROM `field`', [
-            ['id', 'expiry_date.....',],
-            ['input_show', 0, 'i',],
-        ]);
-        foreach (array_keys($slices) as $sid) {
-            $db->query("UPDATE item SET expiry_date=2145826800 WHERE slice_id=" . xpack_id($sid));
-            //huhl("UPDATE item SET expiry_date=2145826800 WHERE slice_id='".q_pack_id($sid)."'");
-            $this->message(_m('items changed: %1 in slice: %2 (%3)', [
-                $db->affected_rows(),
-                $sid,
-                AA_Slice::getModuleName($sid),
-            ]));
+    public function repair4ids(array $ids): false|string {
 
-            $db->query("UPDATE field SET input_default='never:' WHERE id='expiry_date.....' AND slice_id=" . xpack_id($sid));
-            //huhl("UPDATE field SET input_default='txt:2145826800' WHERE id='expiry_date.....' AND slice_id='".q_pack_id($sid)."'");
-            $this->message(_m('field default changed for expiry_date..... in %1 (%2)', [
-                $sid,
-                AA_Slice::getModuleName($sid),
-            ]));
-        }
-        freeDb($db);
-        return true;
+        $ids = $this->filter_valid_ids($ids); // security check to not repair invalid ids
+
+        $items = DB_AA::update('item', [['expiry_date',2145826800,'i']], [['slice_id', $ids, 'l'], ['expiry_date', 2145826800, 'i<>']]);
+        $this->message(_m('items changed: %1 / %2 slices: %3', [$items, count($ids), implode(', ', $ids)]));            // AA_Slice::getModuleName($sid),
+
+        $fields = DB_AA::update('field', [['input_default','never:']], [['id','expiry_date.....'],['slice_id',$ids, 'l']]);
+        $this->message(_m('field default changed for expiry_date..... in %1 /%2 slices: %3)', [$fields, count($ids), implode(', ', $ids)]));            // AA_Slice::getModuleName($sid),
+
+        return "items $items, fields $fields";
     }
 }

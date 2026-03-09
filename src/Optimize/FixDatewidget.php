@@ -4,7 +4,6 @@ namespace AA\Optimize;
 
 use AA\IO\DB\DB_AA;
 use AA_Slice;
-use function _m;
 
 /** Fix older format of date widget parameters
  *
