@@ -267,7 +267,7 @@ class phpthumb {
 	public $issafemode       = null;
 	public $php_memory_limit = null;
 
-	public $phpthumb_version = '1.7.23-202506091232';
+	public $phpthumb_version = '1.7.24-202601081042';
 
 	//////////////////////////////////////////////////////////////////////
 
@@ -829,7 +829,7 @@ class phpthumb {
 			$CacheDirOldFilesSize = array();
 			$AllFilesInCacheDirectory = phpthumb_functions::GetAllFilesInSubfolders($this->config_cache_directory);
 			foreach ($AllFilesInCacheDirectory as $fullfilename) {
-				if (preg_match('#'.preg_quote($this->config_cache_prefix).'#i', $fullfilename) && file_exists($fullfilename)) {
+				if (preg_match('#'.preg_quote($this->config_cache_prefix, '#').'#i', $fullfilename) && file_exists($fullfilename)) {
 					$CacheDirOldFilesAge[$fullfilename] = @fileatime($fullfilename);
 					if ($CacheDirOldFilesAge[$fullfilename] == 0) {
 						$CacheDirOldFilesAge[$fullfilename] = @filemtime($fullfilename);
@@ -1214,7 +1214,7 @@ class phpthumb {
 	public function matchPath($path, $allowed_dirs) {
 		if (!empty($allowed_dirs)) {
 			foreach ($allowed_dirs as $one_dir) {
-				if (preg_match('#^'.preg_quote(str_replace(DIRECTORY_SEPARATOR, '/', $this->realPathSafe($one_dir))).'#', $path)) {
+				if (preg_match('#^'.preg_quote(str_replace(DIRECTORY_SEPARATOR, '/', $this->realPathSafe($one_dir)), '#').'#', $path)) {
 					return true;
 				}
 			}
@@ -1335,22 +1335,22 @@ class phpthumb {
 			$beforeloop = $newfilename;
 
 			// Replace all sequences of more than one / with a single one [[ If you're working on a system that treats // at the start of a path as special, make sure you replace multiple / characters at the start with two of them. This is the only place where POSIX allows (but does not mandate) special handling for multiples, in all other cases, multiple / characters are equivalent to a single one.]]
-			$newfilename = preg_replace('#'.preg_quote(DIRECTORY_SEPARATOR).'+#', DIRECTORY_SEPARATOR, $newfilename);
+			$newfilename = preg_replace('#'.preg_quote(DIRECTORY_SEPARATOR, '#').'+#', DIRECTORY_SEPARATOR, $newfilename);
 
 			// Replace all occurrences of /./ with /
-			$newfilename = preg_replace('#'.preg_quote(DIRECTORY_SEPARATOR).'\\.'.preg_quote(DIRECTORY_SEPARATOR).'#', DIRECTORY_SEPARATOR, $newfilename);
+			$newfilename = preg_replace('#'.preg_quote(DIRECTORY_SEPARATOR, '#').'\\.'.preg_quote(DIRECTORY_SEPARATOR, '#').'#', DIRECTORY_SEPARATOR, $newfilename);
 
 			// Remove ./ if at the start
-			$newfilename = preg_replace('#^\\.'.preg_quote(DIRECTORY_SEPARATOR).'#', '', $newfilename);
+			$newfilename = preg_replace('#^\\.'.preg_quote(DIRECTORY_SEPARATOR, '#').'#', '', $newfilename);
 
 			// Remove /. if at the end
-			$newfilename = preg_replace('#'.preg_quote(DIRECTORY_SEPARATOR).'\\.$#', '', $newfilename);
+			$newfilename = preg_replace('#'.preg_quote(DIRECTORY_SEPARATOR, '#').'\\.$#', '', $newfilename);
 
 			// Replace /anything/../ with /
-			$newfilename = preg_replace('#'.preg_quote(DIRECTORY_SEPARATOR).'[^'.preg_quote(DIRECTORY_SEPARATOR).']+'.preg_quote(DIRECTORY_SEPARATOR).'\\.\\.'.preg_quote(DIRECTORY_SEPARATOR).'#', DIRECTORY_SEPARATOR, $newfilename);
+			$newfilename = preg_replace('#'.preg_quote(DIRECTORY_SEPARATOR, '#').'[^'.preg_quote(DIRECTORY_SEPARATOR, '#').']+'.preg_quote(DIRECTORY_SEPARATOR, '#').'\\.\\.'.preg_quote(DIRECTORY_SEPARATOR, '#').'#', DIRECTORY_SEPARATOR, $newfilename);
 
 			// Remove /anything/.. if at the end
-			$newfilename = preg_replace('#'.preg_quote(DIRECTORY_SEPARATOR).'[^'.preg_quote(DIRECTORY_SEPARATOR).']+'.preg_quote(DIRECTORY_SEPARATOR).'\\.\\.$#', '', $newfilename);
+			$newfilename = preg_replace('#'.preg_quote(DIRECTORY_SEPARATOR, '#').'[^'.preg_quote(DIRECTORY_SEPARATOR, '#').']+'.preg_quote(DIRECTORY_SEPARATOR, '#').'\\.\\.$#', '', $newfilename);
 
 		} while ($newfilename != $beforeloop);
 		return $newfilename;
@@ -1406,7 +1406,7 @@ class phpthumb {
 			} else {
 
 				// relative filename (any OS)
-				if (preg_match('#^'.preg_quote($this->config_document_root).'#', $filename)) {
+				if (preg_match('#^'.preg_quote($this->config_document_root, '#').'#', $filename)) {
 					$AbsoluteFilename = $filename;
 					$this->DebugMessage('ResolveFilenameToAbsolute() NOT prepending $this->config_document_root ('.$this->config_document_root.') to $filename ('.$filename.') resulting in ($AbsoluteFilename = "'.$AbsoluteFilename.'")', __FILE__, __LINE__);
 				} else {
@@ -1448,18 +1448,22 @@ class phpthumb {
 		}
 		*/
 		if ($this->iswindows) {
-			$AbsoluteFilename = preg_replace('#^'.preg_quote($this->realPathSafe($this->config_document_root)).'#i', str_replace('\\', '\\\\', $this->realPathSafe($this->config_document_root)), $AbsoluteFilename);
+			$AbsoluteFilename = preg_replace('#^'.preg_quote($this->realPathSafe($this->config_document_root), '#').'#i', str_replace('\\', '\\\\', $this->realPathSafe($this->config_document_root)), $AbsoluteFilename);
 			$AbsoluteFilename = str_replace(DIRECTORY_SEPARATOR, '/', $AbsoluteFilename);
 		}
 		$resolvedAbsoluteFilename = $this->resolvePath($AbsoluteFilename, $this->config_additional_allowed_dirs);
-		if (!$this->config_allow_src_above_docroot && !preg_match('#^'.preg_quote(str_replace(DIRECTORY_SEPARATOR, '/', $this->realPathSafe($this->config_document_root))).'#', (string)$resolvedAbsoluteFilename)) {
-			$this->DebugMessage('!$this->config_allow_src_above_docroot therefore setting "'.$AbsoluteFilename.'" (outside "'.$this->realPathSafe($this->config_document_root).'") to null', __FILE__, __LINE__);
-			return false;
-		}
-		if (!$this->config_allow_src_above_phpthumb && !preg_match('#^'.preg_quote(str_replace(DIRECTORY_SEPARATOR, '/',  __DIR__ )).'#', $resolvedAbsoluteFilename)) {
-			$this->DebugMessage('!$this->config_allow_src_above_phpthumb therefore setting "'.$AbsoluteFilename.'" (outside "'. __DIR__ .'") to null', __FILE__, __LINE__);
-			return false;
-		}
+        /*
+        // removed 2025-Sep-22: https://github.com/JamesHeinrich/phpThumb/issues/231
+        // these checks should not be needed as the above call to resolvePath() should already include these checks (and more)
+        if (!$this->config_allow_src_above_docroot && !preg_match('#^'.preg_quote(str_replace(DIRECTORY_SEPARATOR, '/', $this->realPathSafe($this->config_document_root)), '#').'#', (string)$resolvedAbsoluteFilename)) {
+            $this->DebugMessage('!$this->config_allow_src_above_docroot therefore setting "'.$AbsoluteFilename.'" (outside "'.$this->realPathSafe($this->config_document_root).'") to null', __FILE__, __LINE__);
+            return false;
+        }
+        if (!$this->config_allow_src_above_phpthumb && !preg_match('#^'.preg_quote(str_replace(DIRECTORY_SEPARATOR, '/',  __DIR__ ), '#').'#', $resolvedAbsoluteFilename)) {
+            $this->DebugMessage('!$this->config_allow_src_above_phpthumb therefore setting "'.$AbsoluteFilename.'" (outside "'. __DIR__ .'") to null', __FILE__, __LINE__);
+            return false;
+        }
+        */
 		return $resolvedAbsoluteFilename;
 	}
 
@@ -1920,11 +1924,18 @@ class phpthumb {
 							} else {
 								$commandline .= ' -crop '.phpthumb_functions::escapeshellarg_replacement($side.'x'.$side.'+0+0');
 							}
-							if ($this->ImageMagickSwitchAvailable('repage')) {
-								$commandline .= ' +repage';
-							} else {
-								$this->DebugMessage('Skipping "+repage" because ImageMagick (v'.$this->ImageMagickVersion().') does not support it', __FILE__, __LINE__);
-							}
+                            if ($this->ImageMagickSwitchAvailable('repage')) {
+                                $commandline .= ' +repage';
+                                $commandline .= ' +repage -define heic:chroma=420';
+                            } else {
+                                $this->DebugMessage('Skipping "+repage" because ImageMagick (v'.$this->ImageMagickVersion().') does not support it', __FILE__, __LINE__);
+                            }
+                            if ($getimagesize[2] == IMAGETYPE_AVIF) {
+                                $commandline .= ' -define heic:chroma=420';  // fix for Firefox - some files are corruped, in FF 146 - this fix it
+                                                                             // adamsbeauty .. img.php?src=/upload/b5b02e9b10a63182fd33966655afbe4e/xx-1768470045-rada-jpg-honzam-1195-grada.jpg&w=700&h=700&zc=1&f=avif
+                            } else {
+                                $this->DebugMessage('Skipping "+repage" because ImageMagick (v'.$this->ImageMagickVersion().') does not support it', __FILE__, __LINE__);
+                            }
 
 						} elseif ($this->sw || $this->sh || $this->sx || $this->sy) {
 
@@ -2604,7 +2615,7 @@ if (false) {
 				$starpos = strpos($valid_domain, '*');
 				if ($starpos !== false) {
 					$valid_domain = substr($valid_domain, $starpos + 1);
-					if (preg_match('#'.preg_quote($valid_domain).'$#', $hostname)) {
+					if (preg_match('#'.preg_quote($valid_domain, '#').'$#', $hostname)) {
 						$domain_is_allowed[$hostname] = true;
 						break;
 					}
