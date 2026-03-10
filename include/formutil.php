@@ -2851,6 +2851,10 @@ function getFrmInputButtons($buttons, $print_hidden = true, $prefix = ''): strin
     }
     $noaccess = false;
 
+
+    $save_btn_id = '';
+    $esc_btn_id  = '';
+
     foreach ( $buttons as  $name => $properties ) {
         if ( !is_array($properties) ) {
             $name = $properties;
@@ -2862,13 +2866,16 @@ function getFrmInputButtons($buttons, $print_hidden = true, $prefix = ''): strin
                 if ($properties['type'] === 'hidden') {
                     $ret .= ' <input type="hidden" name="update" id="'.$prefix .'update"'.$title.' value="'. get_if($properties['value'], "") .'">';
                 } else {
-                    $ret .= ' <input type="submit" class="btn-l" name="update" id="'.$prefix .'update"'.$title.' accesskey="S" value=" '. get_if($properties['value'], _m("Update")) ." [^S] " .' ">';
+                    $save_btn_id = $prefix .'update';
+                    $ret .= ' <input type="submit" class="btn-l" name="update" id="'.$save_btn_id.'"'.$title.' accesskey="S" value=" '. get_if($properties['value'], _m("Update")) ." [^S] " .' ">';
+                    AA::Stringexpander()->addRequire("if (sessionStorage.getItem('aa_pgtop')>0) { window.scrollTo(0,sessionStorage.getItem('aa_pgtop')); sessionStorage.setItem('aa_pgtop', 0); }", 'AA_Req_Load');
                     $noaccess = true; // use for update of item, bug was, that both "update" and "insert" has accesskey S
                 }
                 break;
             case 'insert':
                 $ret .= ' <input type="submit" class="btn-l" name="insert"'.$title.' id="'.$prefix .'insert" ';
                 if (!$noaccess) { // was accesskey used ?
+                    $save_btn_id = $prefix .'insert';
                     $ret .= 'accesskey="S" ';
                 }
                 $ret .= 'value=" '. get_if($properties['value'], _m("Insert")) ." ";
@@ -2885,15 +2892,18 @@ function getFrmInputButtons($buttons, $print_hidden = true, $prefix = ''): strin
                 $url  = StateUrl($url);
                 //          echo ' <input type="button" name="cancel" value=" '. get_if($properties['value'], _m("Cancel")) .' "> ';
                 $ret .= ' <input type="button" name="cancel" id="'.$prefix .'cancel"'.$title.' value=" '. get_if($properties['value'], _m("Cancel")) .' " class="btn-l btn-secondary" onclick="window.location=\''.$url.'\'"> ';
+                $esc_btn_id = $prefix .'cancel';
                 break;
             case 'close':
                 $ret .= ' <input type="button" name="cancel" id="'.$prefix .'cancel"'.$title.' value=" '. get_if($properties['value'], _m("Cancel")) .' " class="btn-l btn-secondary" onclick="window.close();"> ';
+                $esc_btn_id = $prefix .'cancel';
                 break;
             case 'reset':
                 $ret .= ' <input type="reset" id="'.$prefix .'reset"'.$title.' value=" '. _m("Reset form") .' " class="btn-l btn-secondary"> ';
                 break;
             case 'submit': // name is not submit because it breaks document.f.submit() function call
                 $ret .= ' <input type="submit" class="btn-l" name="submitbtn"'.$title.' id="'.$prefix .'submit" accesskey="S" value=" '. get_if($properties['value'], _m("Submit")) ."  [^S] ". ' "> ';
+                $save_btn_id = $prefix .'submit';
                 break;
             default:
                 if ($properties['js']) {
@@ -2921,7 +2931,20 @@ function getFrmInputButtons($buttons, $print_hidden = true, $prefix = ''): strin
         }
         $ret .= "\n";
     }
-
+    
+    if ($save_btn_id || $esc_btn_id) {
+        $shotcuts_js =  <<<JS
+                        document.addEventListener('keydown', e => {
+                            if (e.repeat || !(e.ctrlKey || e.metaKey) || e.shiftKey || e.altKey) return;
+                            const btn = document.getElementById(({ s:'{$save_btn_id}', Escape:'{$esc_btn_id}' })[e.key.length===1 ? e.key.toLowerCase() : e.key]);
+                            if (!btn || btn.disabled) return;
+                            e.preventDefault();
+                            btn.click();
+                        });
+                        JS;
+        AA::Stringexpander()->addRequire( $shotcuts_js, 'AA_Req_Load');
+     }
+ 
     if ($print_hidden) {
         $ret .= StateHidden();
     }
