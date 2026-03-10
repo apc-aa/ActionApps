@@ -251,12 +251,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/honzito/phpthumb.git",
-                "reference": "a5c4a7923baf5a449ade9846e6e8e71d8aeaa273"
+                "reference": "51a5e2ab342ea23de6ac95aa6db19d52132e1de7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/honzito/phpthumb/zipball/a5c4a7923baf5a449ade9846e6e8e71d8aeaa273",
-                "reference": "a5c4a7923baf5a449ade9846e6e8e71d8aeaa273",
+                "url": "https://api.github.com/repos/honzito/phpthumb/zipball/51a5e2ab342ea23de6ac95aa6db19d52132e1de7",
+                "reference": "51a5e2ab342ea23de6ac95aa6db19d52132e1de7",
                 "shasum": ""
             },
             "require": {
@@ -266,7 +266,7 @@
                 "ext-gd": "PHP GD library",
                 "ext-imagick": "PHP ImageMagick"
             },
-            "time": "2025-08-06T12:29:11+00:00",
+            "time": "2026-01-12T14:59:26+00:00",
             "type": "library",
             "installation-source": "dist",
             "autoload": {
