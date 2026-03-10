@@ -236,6 +236,33 @@ class AA_Responder_Get_Widget extends AA_Responder {
     }
 }
 
+/** return html widget for the field of item */
+class AA_Responder_Optimize4id extends AA_Responder
+{
+    protected string $class;  // class to run
+    protected string $id;     // optimize ID - could be slice, item, record ot some compound ID
+
+    function __construct($param = null)
+    {
+        $this->class = (string)$param['class'];
+        $this->id    = (string)$param['id'];
+    }
+
+    function isPerm() { return IsSuperadmin(); }
+
+    function run(): AA_Response
+    {
+        /** @var \AA\Optimize\AbstractOptimize $optimizer */
+        $optimizer = AA_Serializable::factory('AA\\Optimize\\'.$this->class);
+        $ret = 'no repair4ids';
+        if ($optimizer?->hasAction('repair4ids')) {
+            $ret = $optimizer->repair4ids([$this->id]);
+        }
+        return new AA_Response($ret);
+    }
+}
+
+
 ///** @return html widget for the field of item */
 //class AA_Responder_Get_Hco_Widget_Options extends AA_Responder {
 //    var $field_id;
