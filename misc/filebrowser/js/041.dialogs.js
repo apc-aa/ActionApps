@@ -120,7 +120,7 @@ _.fileNameDialog = function(post, inputName, inputValue, url, labels, callBack, 
     var html = '<form method="post" action="javascript:;"><input name="' + inputName + '" type="text" /></form>',
         submit = function() {
             var name = dlg.find('[type="text"]').get(0);
-            name.value = $.trim(name.value);
+            name.value = name.value.trim();
             if (name.value == "") {
                 _.alert(_.label(labels.errEmpty), function() {
                     name.focus();

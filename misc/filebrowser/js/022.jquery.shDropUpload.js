@@ -183,7 +183,7 @@
                     el = '<div>' + el.toString() + '</div>';
                     var urls = [], types = [];
 
-                    var selectors = $.isArray(ro.selectors)
+                    var selectors = Array.isArray(ro.selectors)
                         ? ro.selectors
                         : ro.selectors.split(/\s*,\s*/g);
 

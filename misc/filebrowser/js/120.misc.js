@@ -112,7 +112,7 @@ _.check4errors = function(data) {
 _.post = function(url, data) {
     var html = '<form id="postForm" method="post" action="' + url + '">';
     $.each(data, function(key, val) {
-        if ($.isArray(val))
+        if (Array.isArray(val))
             $.each(val, function(i, aval) {
                 html += '<input type="hidden" name="' + $.$.htmlValue(key) + '[]" value="' + $.$.htmlValue(aval) + '" />';
             });

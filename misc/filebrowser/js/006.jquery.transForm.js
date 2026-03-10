@@ -558,7 +558,7 @@
                             return ret;
                         }
 
-                        if (!$.isArray(values))
+                        if (!Array.isArray(values))
                             return;
 
                         // Set values

@@ -219,7 +219,7 @@
         },
 
         inArray: function(needle, arr) {
-            if (!$.isArray(arr))
+            if (!Array.isArray(arr))
                 return false;
             for (var i = 0; i < arr.length; i++)
                 if (arr[i] == needle)
