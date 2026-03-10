@@ -49,7 +49,7 @@ class AA_Site_Spot_Match {
             $arr = ParamExplode($string);
             return new AA_Site_Spot_Match($arr[1], $arr[2]);
         }
-        // special case - for {aa_expresions} we used "=" in history
+        // special case - for {aa_expressions} we used "=" in history
         return new AA_Site_Spot_Match(($var && $var[0] === '{') ? '=' : 'REGEXP', $string);
     }
 
@@ -269,6 +269,8 @@ class spot {
 }
 
 class sitetree {
+    use AA\Util\SerializerTrait;
+
     /** @var spot[] -  Array of spots */
     private array $tree;
     private $start_id;
@@ -283,8 +285,10 @@ class sitetree {
     }
 
     /** current_id could be undefined when we deserialize older object */
-    public function __wakeup() {
-        $this->current_id ??= $this->start_id;
+    public function __unserialize(array $data): void
+    {
+        $this->assignUnserializedData($data);
+        $this->current_id  = $data[$this->getSerializedProperty('current_id')]  ??  $this->start_id;
     }
 
     public function setCurrentId(int $id): void

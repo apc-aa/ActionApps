@@ -30,6 +30,8 @@
 /**	Scroller - Implements navigation bar for scrolling through long lists.
  */
 class AA_Scroller extends AA_Storable {
+    use AA\Util\SerializerTrait;
+
     /** null values just for upgrade from older AA and scrollers in sessions */
     protected ?int    $current = 1;	   /** current page     */
     protected ?string $id;			   /** scroller id - identifies scroller on a web page */
@@ -92,12 +94,13 @@ class AA_Scroller extends AA_Storable {
     }
 
     /** current_id could be undefined when we deserialize older object */
-    public function __wakeup() {
-        $this->itmcnt  ??= 0;
-        $this->listlen ??= 0;
-        $this->current ??= 1;
+    public function __unserialize(array $data): void
+    {
+        $this->assignUnserializedData($data);
+        $this->itmcnt  = $data[$this->getSerializedProperty('itmcnt')]  ??  0;
+        $this->listlen = $data[$this->getSerializedProperty('listlen')] ??  0;
+        $this->current = $data[$this->getSerializedProperty('current')] ??  1;
     }
-
 
     /** setShowAll function
      * @param $val

@@ -138,7 +138,6 @@ class phpGet {
         return
             function_exists('curl_init') &&
             function_exists('curl_exec') &&
-            function_exists('curl_close') &&
             function_exists('ob_start') &&
             function_exists('ob_get_clean');
     }
