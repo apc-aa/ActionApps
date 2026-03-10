@@ -276,7 +276,7 @@ function AA_AjaxInsert(a_obj, form_url) {
  *  @param refresh   - id of the html element, which you want to refresh.
  *                   - Such element must have data-aa-url attributes
  *  @param ok_html   - function to call after the page update
- *  Note, that the form action atribute must be RELATIVE (not with 'http://...')
+ *  Note, that the form action attribute must be RELATIVE (not with 'http://...')
  */
 function SendAjaxForm(id, refresh, ok_func) {
     $(id).insert(AA_GetConf('loader'));
@@ -297,7 +297,7 @@ function SendAjaxForm(id, refresh, ok_func) {
  *  @param refresh   - id of the html element, which you want to refresh.
  *                   - Such element must have data-aa-url attributes
  *  @param ok_html   - function to call after the page update
- *  Note, that the form action atribute must be RELATIVE (not with 'http://...')
+ *  Note, that the form action attribute must be RELATIVE (not with 'http://...')
  */
 function AA_SendForm(id, refresh, ok_func) {
     $(id).insert(AA_GetConf('loader'));
@@ -313,7 +313,7 @@ function AA_SendForm(id, refresh, ok_func) {
  */
 function AA_AjaxSendForm(form_id, url) {
     var filler_url = url || 'modules/polls/poll.php3';  // by default it is used for Polls
-    if (filler_url.charAt(0)!='/') {
+    if (filler_url.charAt(0)!=='/') {
         filler_url = AA_GetConf('path') + filler_url;   // AA link
     }
     var code       = Form.serialize(form_id);
@@ -369,7 +369,7 @@ function AA_Refresh(id,inside,ok_func) {
  *  @param loader_id - id of the html element, where you want to display the loader gif
  *                   - the button itself could be used here (not the form!)
  *  @param ok_html   - what text (html) should be displayed after the success
- *  Note, that the form action atribute must be RELATIVE (not with 'http://...')
+ *  Note, that the form action attribute must be RELATIVE (not with 'http://...')
  */
 function AA_AjaxSendAddForm(id) {
     var code = Form.serialize(id);

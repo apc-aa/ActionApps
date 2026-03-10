@@ -44,11 +44,12 @@ function BeforeSubmit() {
 }
 
 function OpenRelated(varname, sid, mode, design, frombins, conds, condsrw, slice_field, relwind_url, sort, listlen) {
-    if ((relatedwindow != null) && (!relatedwindow.closed)) {
-        relatedwindow.close()    // in order to preview go on top after open
-    }
-    var url = GetUrl(relwind_url, ["sid=" + sid, "var_id=" + varname, "mode=" + mode, "design=" + design, "frombins=" + frombins, "showcondsro=" + conds, "showcondsrw=" + condsrw, "slice_field=" + slice_field, "sort=" + sort, "listlen="+listlen]);
-    relatedwindow = open( url, "relatedwindow", "scrollbars=1, resizable=1, width=570");
+    (relatedwindow?.closed === false) && relatedwindow.close();  // in order to preview go on top after open
+    const url    = GetUrl(relwind_url, ["sid=" + sid, "var_id=" + varname, "mode=" + mode, "design=" + design, "frombins=" + frombins, "showcondsro=" + conds, "showcondsrw=" + condsrw, "slice_field=" + slice_field, "sort=" + sort, "listlen="+listlen]);
+    const width  = Math.round(window.screen.availWidth * 0.9);
+    const height = Math.round(window.screen.availHeight * 0.8);
+    const left   = Math.round(width / 18);
+    relatedwindow = open( url, "relatedwindow", `scrollbars=yes,resizable=yes,width=${width},height=${height},left=${left}`);
 }
 
 function sb_RemoveItem(sb) {
