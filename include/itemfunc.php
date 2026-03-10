@@ -843,7 +843,7 @@ class AA_Inserter_Fil extends AA_Inserter {
     /**
      * @return false|string
      */
-    protected function uploadFile(array $up_file, $item_id, $slice, $fid): false|string
+    protected function uploadFile(array $up_file, $item_id, ?AA_Module $slice, $fid): false|string
     {
         // determine filename ----
         $filename = null;

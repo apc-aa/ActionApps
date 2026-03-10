@@ -17,14 +17,20 @@ class Adminlink
 
     public static function fieldLink($field_id, $slice_id, $db_fld = ''): string
     {
+        $als_name = '';
+        $disabled = false;
+        $txt = '';
         if ($fld = AA_Field::factoryFromDb($field_id, $slice_id)) {
-            $txt = $fld->linkToField("$field_id - ".$fld->getName());
-            if (str_starts_with($db_fld, 'alias') && DB_AA::test('field', [['slice_id', $slice_id, 'l'], ['id', $field_id], [substr($db_fld, 0, 6), 'X', 'BEGIN']])) {
-                return "<s title=\""._m('disabled')."\">$txt</s>";
+            if (str_starts_with($db_fld, 'alias')) {
+                $als_name = substr($fld->getProperty(substr($db_fld, 0, 6)),2);
+                if (DB_AA::test('field', [['slice_id', $slice_id, 'l'], ['id', $field_id], [substr($db_fld, 0, 6), 'X', 'BEGIN']])) {
+                    $disabled = true;
+                }
             }
-            return $txt;
+            $txt = $fld->linkToField("$field_id - ".$fld->getName() . ($als_name ? " (_#$als_name)" : ''), $als_name);
+            $txt = $disabled ? "<s title=\""._m('disabled')."\">$txt</s>" : $txt;
         }
-        return '';
+        return $txt;
     }
 
     public static function linkByTable(string $table, string $fld, array $row): string

@@ -62,15 +62,19 @@ function GetTimeZone(): float|int
  */
 function safeChars($str): string
 {
-    for ( $i=0, $ino=strlen($str); $i<$ino; ++$i) {
-        if ($str[$i] === "\n") {
-            $retVal .= "\\n";
+    $out = [];
+    $len = strlen($str);
+    for ($i = 0; $i < $len; $i++) {
+        $ch = $str[$i];
+        if ($ch === "\n") {
+            $out[] = '\\n';
+            continue;
         }
-        if (ord($str[$i]) > 31) {
-            $retVal .= (($str[$i] === "'") ? "\\'" : $str[$i]);
+        if (ord($ch) > 31) {
+            $out[] = ($ch === "'") ? "\\'" : $ch;
         }
     }
-    return $retVal;
+    return implode('', $out);
 }
 
 
@@ -201,6 +205,8 @@ function fillForm(): string {
 function fillFormWithContent($oldcontent4id): string {
     global $form, $suffix, $my_item_id;
 
+    $formStr = is_scalar($form) ? (string)$form : '';
+
     $timezone = GetTimeZone();
     $js = "const fillform_fields". $suffix. " = [\n";
 
@@ -213,7 +219,7 @@ function fillFormWithContent($oldcontent4id): string {
                     $control_id = 'v'.unpack_id($field_id);
                     // field password.......x is used to authenticate item edit
                     if (!in_array(substr($field_id, 0, 10), ['password..','secret....']) && !in_array($field_id, ['id..............', 'slice_id........'])) {
-                        $jsarr[] = "\t['$form','$control_id','$myvalue','tdctr_','". ($field["flag"] & FLAG_HTML ? "h" : "t")."',$timezone]";
+                        $jsarr[] = "\t['". $formStr ."','".$control_id."','".$myvalue."','tdctr_','". ($field["flag"] & FLAG_HTML ? "h" : "t")."',".$timezone."]";
                     }
                 }
             }

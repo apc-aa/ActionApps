@@ -57,10 +57,14 @@ class Files {
      *
      * @return string|false
      */
-    static function destinationDir($slice): string|false
+    static function destinationDir(?AA_Module $slice): string|false
     {
+        if (!$slice) {
+            // self::lastErr(AA_DIRECTORY_WRAPPER_ERROR_NOT_DIR, _m("No slice specified"));  // could ba added this more info
+            return false;
+        }
         $upload = $slice->getUploadBase();
-        return self::_destinationDirCreate((string)$upload['path'], $upload['perms']);
+        return self::_destinationDirCreate((string)$upload['path'], (int)$upload['perms']);
     }
 
     /** aadestinationDir
@@ -75,19 +79,17 @@ class Files {
     /** _destinationDirCreate function
      *  Prepares directory for uploaded file and returns destination dir name
      *
-     * @param  string  $path
-     * @param $perms
-     *
      * @return string|false
      */
-    static function _destinationDirCreate(string $path, $perms): string|false
+    static function _destinationDirCreate(string $path, int $perms): string|false
     {
-        if (!$path || !is_dir($path)) {
-            if (!self::createFolder($path, $perms)) {
-                self::lastErr(FILE_ERROR_DIR_CREATE, _m("Can't create directory for image uploads"));
-                // set error code
-                return false;
-            }
+        if ($path==='') {
+            self::lastErr(FILE_ERROR_NO_DESTINATION, _m('No destination directory for image uploads specified'));  // set error code
+            return false;
+        }
+        if (!is_dir($path) && !self::createFolder($path, $perms)) {
+            self::lastErr(FILE_ERROR_DIR_CREATE, _m("Can't create directory for image uploads"));
+            return false;
         }
         return $path;
     }
@@ -368,14 +370,18 @@ class Files {
     }
 
 
-    /** createFolder function
+    /**
      * Create a new folder.
-     * @param string $newFolder specifiy the full path of the new folder.
-     * @param $perms
+     *
+     * @param  string  $newFolder  specify the full path of the new folder.
+     * @param  int     $perms
+     *
      * @return boolean true if the new folder is created, false otherwise.
      */
-    static function createFolder($newFolder, $perms=0777): bool {
-        mkdir($newFolder, $perms);
+    static function createFolder(string $newFolder, int $perms=0777): bool {
+        if (!mkdir($newFolder, $perms) && !is_dir($newFolder)) {
+            return false;
+        }
         return chmod($newFolder, $perms);
     }
 
@@ -493,6 +499,236 @@ class Files {
          }
          return 'FILE';
      }
+
+     //****************  Secure file_get_content and readfile form https ***************/
+
+    /**
+     * Safe file_get_contents() variant (HTTPS + allowlist + size limit).
+     */
+    public static function safe_file_get_contents_https(string $url, array $allowedHosts=[], int $maxBytes = 0): string {   // int $maxBytes = 5_000_000, int $timeoutSeconds = 10
+        self::safe_https_validate_url($url, $allowedHosts);
+
+        $ctx = self::safe_https_stream_context(); // $timeoutSeconds
+
+        $data = file_get_contents($url, false, $ctx, 0, $maxBytes + 1);
+        if ($data === false) {
+            throw new RuntimeException('Download failed.');
+        }
+        if ($maxBytes && strlen($data) > $maxBytes) {
+            throw new RuntimeException('Response too large.');
+        }
+
+        return $data;
+    }
+
+    /**
+     * Safe readfile() variant (streams to output; HTTPS + allowlist + size limit).
+     * @return int bytes streamed
+     */
+    public static function safe_readfile_https( string $url, array $allowedHosts=[], int $maxBytes = 0 ): int {    // int $maxBytes = 10_000_000, int $timeoutSeconds = 10
+        self::safe_https_validate_url($url, $allowedHosts);
+
+        $ctx = self::safe_https_stream_context();  // $timeoutSeconds
+
+        $in = @fopen($url, 'rb', false, $ctx);
+        if (!$in) {
+            throw new RuntimeException('Failed to open URL.');
+        }
+
+        $bytes = 0;
+        while (!feof($in)) {
+            $chunk = fread($in, 8192);
+            if ($chunk === false) {
+                break;
+            }
+
+            $bytes += strlen($chunk);
+            if ($maxBytes && $bytes > $maxBytes) {
+                fclose($in);
+                throw new RuntimeException('Response too large.');
+            }
+
+            echo $chunk;
+        }
+
+        fclose($in);
+        return $bytes;
+    }
+
+    private static function safe_https_stream_context() {
+        return stream_context_create([
+            'http' => [
+                'method' => 'GET',
+                // 'timeout' => $timeoutSeconds,
+                'follow_location' => 0,
+                'max_redirects' => 0,
+            ],
+            'ssl' => [
+                'verify_peer' => true,
+                'verify_peer_name' => true,
+                'allow_self_signed' => false,
+            ],
+        ]);
+    }
+
+    /** allow only safe https urls - no localhosts... */
+    private static function safe_https_validate_url(string $url, array $allowedHosts): array
+    {
+        $u = parse_url($url);
+        if (!$u || empty($u['scheme']) || empty($u['host'])) {
+            throw new RuntimeException('Invalid URL.');
+        }
+        if (strtolower($u['scheme']) !== 'https') {
+            throw new RuntimeException('Only https:// URLs are allowed.');
+        }
+        if (!empty($u['user']) || !empty($u['pass'])) {
+            throw new RuntimeException('Credentials in URL are not allowed.');
+        }
+
+        $host = $u['host'];
+
+        // IDN -> ASCII (optional)
+        if (function_exists('idn_to_ascii')) {
+            $ascii = idn_to_ascii($host, IDNA_DEFAULT, INTL_IDNA_VARIANT_UTS46);
+            if ($ascii !== false) {
+                $host = $ascii;
+            }
+        }
+
+        $host = strtolower(rtrim($host, '.'));
+        if ($host === 'localhost' || str_ends_with($host, '.local')) {
+            throw new RuntimeException('Local hosts are not allowed.');
+        }
+
+        // Allowlist (recommended)
+        if ($allowedHosts) {
+            $allowed = array_map(fn($h) => strtolower(rtrim($h, '.')), $allowedHosts);
+            if (!in_array($host, $allowed, true)) {
+                throw new RuntimeException('Host not allowed.');
+            }
+        }
+
+        // DNS resolve + block private/loopback/link-local/reserved
+        $ips = self::safe_dns_resolve_ips($host);
+        foreach ($ips as $ip) {
+            if (self::is_disallowed_ip($ip)) {
+                throw new RuntimeException("Disallowed target IP: {$ip}");
+            }
+        }
+
+        $u['host']   = $host;
+        $u['scheme'] = 'https';
+        return $u;
+    }
+
+    private static function safe_dns_resolve_ips(string $host): array
+    {
+        // If host is already an IP literal, validate directly.
+        if (filter_var($host, FILTER_VALIDATE_IP)) {
+            return [$host];
+        }
+
+        $recs = dns_get_record($host, DNS_A + DNS_AAAA);
+        if (!$recs) {
+            throw new RuntimeException('DNS resolution failed.');
+        }
+
+        $ips = [];
+        foreach ($recs as $r) {
+            if (!empty($r['ip'])) {
+                $ips[] = $r['ip'];
+            }   // A
+            if (!empty($r['ipv6'])) {
+                $ips[] = $r['ipv6'];
+            } // AAAA
+        }
+        $ips = array_values(array_unique($ips));
+
+        if (!$ips) {
+            throw new RuntimeException('DNS returned no usable IPs.');
+        }
+        return $ips;
+    }
+
+    /** true = block (private/loopback/link-local/multicast/reserved...) */
+    private static function is_disallowed_ip(string $ip): bool
+    {
+        // IPv4
+        if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
+            $long = ip2long($ip);
+            if ($long === false) {
+                return true;
+            }
+
+            // Blocks: 0/8, 10/8, 100.64/10, 127/8, 169.254/16, 172.16/12, 192.168/16,
+            // plus documentation/reserved/multicast etc.
+            $blocked = [
+                ['0.0.0.0', 8],
+                ['10.0.0.0', 8],
+                ['100.64.0.0', 10],
+                ['127.0.0.0', 8],
+                ['169.254.0.0', 16],
+                ['172.16.0.0', 12],
+                ['192.0.0.0', 24],
+                ['192.0.2.0', 24],
+                ['192.168.0.0', 16],
+                ['198.18.0.0', 15],
+                ['198.51.100.0', 24],
+                ['203.0.113.0', 24],
+                ['224.0.0.0', 4],
+                ['240.0.0.0', 4],
+            ];
+
+            foreach ($blocked as [$net, $mask]) {
+                $netLong = ip2long($net);
+                $m       = -1 << (32 - $mask);
+                if (($long & $m) === ($netLong & $m)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        // IPv6
+        if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
+            $lower = strtolower($ip);
+
+            // Unspecified / loopback
+            if ($lower === '::' || $lower === '::1') {
+                return true;
+            }
+
+            // ULA fc00::/7 (covers fc.. and fd..)
+            if (preg_match('/^(fc|fd)/', $lower)) {
+                return true;
+            }
+
+            // Link-local fe80::/10 (rough check)
+            if (str_starts_with($lower, 'fe80:')) {
+                return true;
+            }
+
+            // Multicast ff00::/8
+            if (str_starts_with($lower, 'ff')) {
+                return true;
+            }
+
+            // Documentation 2001:db8::/32
+            if (str_starts_with($lower, '2001:db8:')) {
+                return true;
+            }
+
+            // IPv4-mapped IPv6 ::ffff:0:0/96 -> validate embedded IPv4 too
+            if (str_starts_with($lower, '::ffff:')) {
+                $v4 = substr($lower, 7);
+                return !filter_var($v4, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4) || is_disallowed_ip($v4);
+            }
+
+            return false;
+        }
+
+        return true;
+    }
 }
 
 /**

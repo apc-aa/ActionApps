@@ -570,16 +570,14 @@ class AA_Exportsetings extends AA_Object {
                     continue;
                 }
                 $field = $fields->getField($field_id);
+                $fs->addField($field_id, $field->getProperty('name'));
                 if ($this->type === 'human') {
-                    // try to convert the data to human readable form
+                    // try to convert the data to human-readable form and addi it as second column
                     [$field_type,] = $field->getSearchType();
                     switch ($field_type) {
-                        case 'date':     $fs->addAlias('{date:Y-m-d H#:i:{'.$field_id.'}}', $field->getProperty('name')); break;
+                        case 'date':     $fs->addAlias('{date:Y-m-d H#:i:{'.$field_id.'}}', $field->getProperty('name'));      break;
                         case 'relation': $fs->addAlias('{item:{@'.$field_id.':-}:_#HEADLINE:|}', $field->getProperty('name')); break;
-                        default:         $fs->addField($field_id, $field->getProperty('name'));
                     }
-                } else {
-                    $fs->addField($field_id, $field->getProperty('name'));
                 }
             }
             $fs->addField('u_slice_id......', 'Slice ID');
