@@ -257,14 +257,15 @@ class AA_Router_Seo extends AA_Router {
     }
 
     /** static function - calling from outside is not necessary, now */
-    static function parseApc($apc, $home='', $langs= []) {
+    public static function parseApc($apc, $home='', $langs= []): array
+    {
         if (!$home) {
             $home = '/'. Langs::currentLang();
         }
         // manage links like example.org/?filter=22
         if (str_starts_with($apc, '/?')) {  // maybe also "#"
             $apc = $home.$apc;
-        } elseif ($apc === '/index.php') { // useful for AA behind proxy (HTTP_X_FORWARDED_SERVER) - Appache adds index.php as default path so we have to re
+        } elseif ($apc === '/index.php') { // useful for AA behind proxy (HTTP_X_FORWARDED_SERVER) - Apache adds index.php as default path so we have to re
             $apc = $home;
         }
 
@@ -275,7 +276,7 @@ class AA_Router_Seo extends AA_Router {
 
         $matches    = [];
         $ret        = [];
-        if (!(preg_match("/^($re_lang)([0-9]*)([^-0-9]*)[-]?(.*)/", $arr[0], $matches))) {
+        if (!(preg_match("/^($re_lang)([0-9]*)([^-0-9]*)-?(.*)/", $arr[0], $matches))) {
             if (count($langs) && trim($arr[0])) {
                 // if we define web_languages in Site Module setting (so for newer sites), then we can use pages without
                 // the first directory - so instead of /en/users we can use just /users (xlang will be filled form first web_language)
@@ -292,12 +293,19 @@ class AA_Router_Seo extends AA_Router {
             // add xseoX from $home if only the {xlang} is provided -- /cz/   -> /cz/home
             // if (count($arr) < 2) {
             if (count($arr) < 2) {
-                if (str_ends_with(trim($apc), '/') || ($arr[0] == $ret['xlang']) || !count($langs)) {
-                    // the last OR with $lang is used for backward compatibility - the slash rule will be applied
-                    // only to newer sites, where you set web_languages (so for newer sites we are more strict - there must be the ending slash, if we want to use cz/).
-                    // However - I think it is not necessary - the links like /cz will work, and /cz2 are not common
-                    // (and should be rewritten to /cz2/ or better /cz2/page )
+                if (count($langs)) {  // newer sites, where you set web_languages (so for newer sites we are stricter - there must be the ending slash, if we want to use cz/).
+                    if (str_ends_with(trim($apc), '/') || ($arr[0] == $ret['xlang'])) {
+                        // the last OR with $lang is used for backward compatibility - the slash rule will be applied
+                        // only to newer sites, where you set web_languages (so for newer sites we are stricter - there must be the ending slash, if we want to use cz/).
+                        // However - I think it is not necessary - the links like /cz will work, and /cz2 are not common
+                        // (and should be rewritten to /cz2/ or better /cz2/page )
+                        $arr = explode('/', trim(parse_url($home, PHP_URL_PATH), '/'));
+                    }
+                } elseif (!$ret['xflag'] && !$ret['xcat']) { // older sites - we are more tolerant - the ending slash is not necessary
+                    // but apply only if xflag nor xcat is set - otherwise we can have problems with links /bflmpsvf
                     $arr = explode('/', trim(parse_url($home, PHP_URL_PATH), '/'));
+                } else {  // no xseo, but xflag or xcat is set - it is not good url (/somenonsence), so we do not try to fix it, but just return empty array (so 404)
+                    return [];
                 }
             }
         }
@@ -314,8 +322,7 @@ class AA_Router_Seo extends AA_Router {
         }
 
         // set default values - like xseo, xseo10, ...
-        $ret = self::newState($ret, '');
-        return $ret;
+        return self::newState($ret, '');
     }
 
     /** static function - calling from outside is not necessary, now
@@ -350,7 +357,7 @@ class AA_Router_Seo extends AA_Router {
     /** From the current $apc_state and parsed query-string updates the values in $apc_state and returns
      *  the new current apc string
      */
-    static function newState($apc_state, $query_string) {
+    public static function newState($apc_state, $query_string): array {
         $new_arr = [];
         parse_str($query_string, $new_arr);   // now we have $new_arr['x'], $new_arr['p'], etc.
 
