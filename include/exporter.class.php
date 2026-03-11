@@ -48,7 +48,7 @@ abstract class AA_Exporter extends AA_Object {
         $this->grabber   = $params['grabber'];
     }
 
-    function sendFile($file_name): void
+    function sendFile($file_name): never
     {
 
         $temp_file = $this->_createTmpFile();

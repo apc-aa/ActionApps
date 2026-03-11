@@ -127,8 +127,7 @@ function GetFlagFormat($flag): string
  * @param $str
  * @return void
  */
-// #[NoReturn]
-function Error($str): void
+function Error($str): never
 {
     echo $str;
     exit();

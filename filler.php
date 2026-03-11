@@ -125,8 +125,7 @@ require_once __DIR__ . "/include/date.php";
 require_once __DIR__ . "/include/feeding.php";
 require_once __DIR__ . "/include/zids.php";
 
-
-function UseShowResult($txt,$url): void
+function UseShowResult($txt,$url): never
 {
     // allows to call a script showing the error results from fillform
     $_POST["result"]        = $txt;
@@ -147,7 +146,7 @@ function UseShowResult($txt,$url): void
  * else generates an error page with the $txt message.
  * @param string[] $txt error message to print
  */
-function SendErrorPage(array $txt): void
+function SendErrorPage(array $txt): never
 {
     // $wap variable is set in filler-wap.php
     if ($GLOBALS['wap']) {

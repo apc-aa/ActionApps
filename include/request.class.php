@@ -58,7 +58,7 @@ class AA_Http {
      *                      we do not want to try it, when database connection
      *                      error occurs, for example
      */
-    public static function go(string $url, array $parameters, string $type='GET', bool $sess_close=true): void
+    public static function go(string $url, array $parameters, string $type='GET', bool $sess_close=true): never
     {
         global $sess;
 
@@ -87,7 +87,7 @@ class AA_Http {
     }
 
     /** Move (redirect) to page $url using javascript */
-    private static function _goJs($url, array $parameters= []): void
+    private static function _goJs($url, array $parameters= []): never
     {
         $url = get_url( $url, $parameters);
         echo '

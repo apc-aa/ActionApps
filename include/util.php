@@ -1205,7 +1205,7 @@ function getHtmlPage($code): string
  * @param $msg        - displayed message
  * @param string $url - where to go if user clicks on Back link on this message page
  */
-function MsgPage($msg, string $url = ''): void
+function MsgPage($msg, string $url = ''): never
 {
     HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
     echo "<title>" . _m("Toolkit news message") . "</title>

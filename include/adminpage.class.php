@@ -59,8 +59,7 @@ class AA_Adminpageutil {
         $this->addRequire($formsetup, 'AA_Req_Load');
     }
 
-    // #[NoReturn]
-    public static function pageParameterError(Exception $e): void
+    public static function pageParameterError(Exception $e): never
     {
         $msg = $e->getMessage();
         $param_name = substr($e->getMessage(), 0, strpos($e->getMessage(), ':'));
@@ -277,7 +276,7 @@ class AA_Adminpageutil {
      * @param $mode - items/admin/standalone for surrounding of message
      * @param $menu
      */
-    public static function MsgPageMenu($url, $msg, $mode, $menu = ""): void
+    public static function MsgPageMenu($url, $msg, $mode, $menu = ""): never
     {
         global $sess;
 

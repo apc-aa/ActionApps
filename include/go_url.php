@@ -29,6 +29,7 @@
  *
 */
 
+
 /** Escapes url for usage on HTML page
  *  - it is better to use get_url() function and then escape the url before printing
  * @param $url
@@ -148,7 +149,7 @@ function get_help_url($href, $anchor): string {
  * @param $add_param array|string
  * @param $usejs
  */
-function go_url($url, $add_param="", $usejs=false, $code=302): void
+function go_url($url, $add_param="", $usejs=false, $code=302): never
 {
     global $sess;
     if (is_object($sess)) {

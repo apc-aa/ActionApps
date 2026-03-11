@@ -56,7 +56,7 @@ class GenerateMetabase extends \AA\Optimize\AbstractOptimize {
     /** implemented actions within this class */
     public static function actions(): array { return ['repair']; }
 
-    /** Name function
+    /** Main update function
      * @return bool
      */
     public function repair(): bool {

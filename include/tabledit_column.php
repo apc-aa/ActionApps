@@ -34,7 +34,7 @@
 /** gdf_error function
  * @param $x
  */
-function gfd_error($x): void
+function gfd_error($x): never
 {
     echo "Unrecognized date format charcacter $x";
     exit;

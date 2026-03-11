@@ -82,7 +82,7 @@ function pCatSelector($url, $sli_id): void
 /** ExitPage function
  *
  */
-function ExitPage($msg=''): void
+function ExitPage($msg=''): never
 {
     global $encap, $r_packed_state_vars, $r_state_vars;
     if ($msg) {

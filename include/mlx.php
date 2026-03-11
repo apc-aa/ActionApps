@@ -35,6 +35,8 @@
 * @note the names dont follow any standard (but are based on DIN) and can be extended
 * the font face and align info should be in the stylesheet
 */
+
+
 $mlxScriptsTable = [
     "DR" => ["name"=>"Dari", "DIR"=>"RTL","FONT"=>"FACE=\"Pashto Kror Asiatype\"","ALIGN"=>"JUSTIFY"],
     "AR" => ["name"=>"Arabic","DIR"=>"RTL","ALIGN"=>"JUSTIFY"],
@@ -103,7 +105,7 @@ const MLX_NOTRANSLATION = 'eMpTy';
 /** __mlx_fatal function
  * @param $msg
  */
-function __mlx_fatal($msg): void
+function __mlx_fatal($msg): never
 {
     global $err;
     if (is_array($msg)) {

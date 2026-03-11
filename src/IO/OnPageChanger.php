@@ -71,7 +71,7 @@ class OnPageChanger  {
         }
     }
 
-    protected function sendPartsAndExit($vars, $add_error_msg =''): void
+    protected function sendPartsAndExit($vars, $add_error_msg =''): never
     {
         // we need to evaluate $page_content in order to reevaluate DependentParts
         call_user_func($this->content_function);
