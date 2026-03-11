@@ -26,12 +26,24 @@ use AA\Cache\PageCache;
 use AA\IO\DB\DB_AA;
 use AA\IO\OnPageChanger;
 use AA\Util\Langs;
+///use MissCache\MissCache;
+///use MissCache\Plugins\PhpThumbPlugin;
 
 require_once __DIR__."/../../include/config.php";
 require_once __DIR__."/../../include/locsess.php";
 require_once __DIR__."/../../include/zids.php";
-
 require_once __DIR__."/../../include/locauth.php";
+require_once __DIR__."/../../include/locauth.php";
+
+///$mc_dir = parse_url(IMG_UPLOAD_URL, PHP_URL_PATH).'mC';  // e.g. /upload/mC
+///
+///// if ( (defined('MISSCACHE_DIR') && $dir = MISSCACHE_DIR) || (str_starts_with(IMG_UPLOAD_PATH, $_SERVER['DOCUMENT_ROOT']) && ($dir = substr(IMG_UPLOAD_PATH, strlen($_SERVER['DOCUMENT_ROOT'])))) ) {
+///if (str_starts_with($_SERVER['REQUEST_URI'], $mc_dir)) {
+///    huhl($mc_dir);
+///    $mC = new MissCache(IMG_UPLOAD_URL, IMG_UPLOAD_PATH, 'mC', IMG_UPLOAD_DIR_MODE, [new PhpThumbPlugin()]);
+///    $mC->handleRequest($_SERVER['REQUEST_URI']);
+///    exit;
+///}
 
 $auth4cache = '';
 if ($_COOKIE['AA_Session'] && !isset($_REQUEST['username'])) {   // do not authenticate new user - we could restrict reader slices later
@@ -76,22 +88,36 @@ if ($cacheentry = AA::Pagecache()->getPage($cache_key, (string)$site_nocache)) {
 require_once __DIR__."/../../include/util.php";
 
 function IsInDomain( $domain ): bool {
-    return (($_SERVER['HTTP_HOST'] == $domain)  || ($_SERVER['HTTP_HOST'] === 'www.'.$domain));
+    return (($_SERVER['HTTP_HOST'] === $domain)  || ($_SERVER['HTTP_HOST'] === 'www.'.$domain));
 }
 
-/**
+/** Send 404 header and optionally output custom page content, then exit.
  * @param null $page
  */
-function Die404($page=null): void
+function Die404($page=null): never
 {
-    function_exists('http_response_code') ? http_response_code(404) : header( ($_SERVER['SERVER_PROTOCOL'] ?: 'HTTP/1.0'). ' 404 Not Found');
+    http_response_code(404);
+
+    // If client doesn't accept HTML, return empty body
+    // (avoids content-type mismatch that triggers antivirus false positives)
     if (!is_null($page)) {
-        header('Content-Type: '. (AA::$headers['type'] ?: 'text/html') .'; charset='.(AA::$headers['encoding'] ?: AA::$encoding ?: Langs::getCharset()));
-        echo AA::Stringexpander()->postprocess(AA::Un($page));
+        $accept = strtolower($_SERVER['HTTP_ACCEPT'] ?? '');
+        if ( $accept === '' || str_contains($accept, 'text/') || str_contains($accept, 'application/') ) {
+            header('Content-Type: '. (AA::$headers['type'] ?: 'text/html') .'; charset='.(AA::$headers['encoding'] ?: AA::$encoding ?: Langs::getCharset()));
+            echo AA::Stringexpander()->postprocess(AA::Un($page));
+        }
     }
+    exit;   // empty body — proper 404 for non-HTML resources
+
+    //    $path = parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH);
+    //    $ext = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+    //    $nonHtmlExts = ['png','jpg','jpeg','gif','ico','svg','webp','avif','woff','woff2','ttf','eot','css','js','json','xml','map'];
+    //    if (in_array($ext, $nonHtmlExts)) {
+    //        exit;
+    //    }
     //    else { echo '<!doctype html><html><head><title>404 Not Found</title></head><body><h1>Not Found</h1><p>The requested URL was not found on this server.</p></body></html>'; }
-    exit;
 }
+
 // ----------------- function definition end -----------------------------------
 
 // change the state
@@ -192,7 +218,8 @@ if ($module->getProperty('flag') == 1) {    // 1 - Use AA_Router_Seo
     $apc_state    = $router->parse($uri);
     $lang_file    = substr_replace($lang_file, $apc_state['xlang'], 0, 2);
 
-    // count hit for current page - deffered after the page is sent to user
+    // count hit for current page - deferred after the page is sent to user
+
     if (!($hit_lid = $router->xid())) {
         if ($module->getProperty('page404') == '2') {
             Die404();
@@ -204,6 +231,7 @@ if ($module->getProperty('flag') == 1) {    // 1 - Use AA_Router_Seo
         }
         // else - older behavior - site cares
     }
+
     //    } elseif ( $uri AND $router->xid(null, "/$lang_file/_404-not-found")) {  // item not found => 404
     //        $apc_state = $router->parse("/$lang_file/_404-not-found");
 } elseif ( $module->getProperty('state_file') ) {
