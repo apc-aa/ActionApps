@@ -925,7 +925,7 @@ class Manager extends AA_Storable {
      * with getSearchbarEnd() function
      */
     function getSearchbarBegin(): string {
-        $ret = '<form name="filterform" action="'.StateUrl().'" class="noprint aa-ui-filterform">';
+        $ret = '<form name="filterform" class="noprint aa-ui-filterform">'.StateHidden();
         if ( isset($this->searchbar) ) {
             $ret .= $this->searchbar->getBar();
         }
