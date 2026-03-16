@@ -635,7 +635,11 @@ function GetModuleInfo($module_id, $type): array
     // $ret = GetTable2Array($SQL, 'aa_first', 'aa_fields');
     $ret = DB_AA::select1([], "SELECT * FROM " . $table, [['id', $module_id, 'l']]);
 
-    if ( $ret && $ret['reading_password'] ) {
+    if (!$ret) {
+        return [];
+    }
+
+    if ($ret['reading_password'] ) {
         // do it more secure and do not store it plain
         // (we should be careful - mainly with debug outputs)
         $ret['reading_password'] = AA_Credentials::encrypt($ret['reading_password']);

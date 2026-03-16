@@ -258,7 +258,7 @@ class itemview {
       $this->_content = GetDiscussionContent($zids, true, $this->disc['html_format'], $this->clean_url);
       $d_tree         = GetDiscussionTree($this->_content);
 
-      $out = '<a name="disc"></a><form name="discusform" action="">';
+      $out = '<a name="disc"></a><form name="discusform">';
       $cnt = 0;     // count of discussion comments
 
       if ($d_tree) {    // if not empty tree

@@ -35,7 +35,7 @@ echo '
 
 if (!array_key_exists('userfile', $_FILES)) {
     ?>
-    <form method="post" action="" enctype="multipart/form-data">
+    <form method="post" enctype="multipart/form-data">
     <input type="file" name="userfile"> <br>
     <input type="submit" value="Preview">
     <input type="submit" name="submit" value="Import">

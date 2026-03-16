@@ -9946,7 +9946,7 @@ class AA_Password_Manager_Reader {
      * @return string
      */
     static function getFirstForm(): string {  // Type in either your username or e-mail
-        return '<form id="pwdmanager-firstform" action="" method="post"><div class="aa-widget">
+        return '<form id="pwdmanager-firstform" method="post"><div class="aa-widget">
         <label for="aapwd1">' ._m('Forgot your password? Fill in your email.'). '</label>
         <div class="aa-input">
            <input size="30" maxlength="128" name="aapwd1" id="aapwd1" value="" placeholder="'._m('e-mail').'" required type="email">
@@ -10023,7 +10023,7 @@ class AA_Password_Manager_Reader {
             return self::bad(_m("Bad or expired key."));  // @todo get messages from somewhere
         }
         return '
-        <form name="pwdmanagerchangeform" method="post" action="" class="aapwdmanagerchangeform">
+        <form name="pwdmanagerchangeform" method="post" class="aapwdmanagerchangeform">
           <fieldset>
             <legend>'. _m("Fill in the new password") .'</legend>
             <div style="display:inline-block; text-align:right;">
