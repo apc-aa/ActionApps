@@ -7882,14 +7882,14 @@ class AA_Stringexpand {
         return str_replace($search, $replace, $texts);
     }
 
-    /** get all related slices (provided or counted from current item, site od slice)
+    /** get all related slices (provided or counted from the current item, site or slice)
      * @param string $slices_str  '' | 'all' | '<slice_id>-<slice_id>-...'
      * @return string[]
      */
     protected function getRelatedModules($slices_str=''): array {
         $slices = [];
         if (!strlen($slices_str) || $slices_str==='all') {
-            if (is_object($this->item)) {
+            if (is_object($this->item) && !$this->item->isEmpty()) {
                 $slices = explode_ids(AA::Un("{unique:{slice_id........}-{modulefield:{slice_id........}:site_ids}-{site:{modulefield:{slice_id........}:site_ids}:modules}}", '', $this->item));
             } elseif (AA::$site_id) {
                 $slices = AA_Module_Site::getRelatedModules([AA::$site_id], true);
