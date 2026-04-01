@@ -557,7 +557,7 @@ class AA_Router_Seo extends AA_Router {
  *               2587-2877-3004
  *  {xid:<slice_id>} - returns the last item id in path, which is in the slice_id
  *  {xid:this is my _#NAME____} - {item:{xid}:this is my _#NAME____}
- *  @param string $param specifies, which information you want to get (see above)
+ *  @param string $param specifies which information you want to get (see above)
  *  @param string $url   if filled, returns the information about the specified
  *                       url instead of the current item
  */
@@ -584,14 +584,14 @@ class AA_Stringexpand_Xid extends AA_Stringexpand_Nevercache {
  *  {xseo:1}   - returns {xseo1} - first directory level in url
  *               for /cz/project/about-us returns "project"
  *  {xseo:3}   - returns {xseo1} - third directory level in url
- *  @param string $level specifies, which information you want to get (see above)
+ *  @param string $level specifies which information you want to get (see above)
  */
 class AA_Stringexpand_Xseo extends AA_Stringexpand_Nevercache {
     // Never cached (extends AA_Stringexpand_Nevercache)
     /** expand function */
     function expand($level=''): string
     {
-        return $GLOBALS['apc_state']['xseo'.(ctype_digit((string)$level) ? $level : '' )];
+        return $GLOBALS['apc_state']['xseo'.(ctype_digit((string)$level) ? $level : '' )] ?? '';
     }
 }
 
