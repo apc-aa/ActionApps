@@ -162,6 +162,12 @@ if (!$no_slice_id) {
                 AA::$module_id = $mid;
                 break;
             }
+            // fallback - if no slice found, use another type of module with parms
+            AA::$module_id = $mid;
+        }
+        if ($g_modules[AA::$module_id]['type'] !== 'S') {  // for fallback
+            go_url(AA_Module::getModuleUrl(AA::$module_id));
+            exit;
         }
     }
 

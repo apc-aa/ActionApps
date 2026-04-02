@@ -99,7 +99,7 @@ $varset      = new CVarset();
 $superadmin  = IsSuperadmin();
 $module_id   = $slice_id;
 
-if ($template_id) {        // add module
+if ($template['W']) {        // add module
     if (!CheckPerms( AuthGetUid(), "aa", AA_ID, PS_ADD)) {
         MsgPage(_m("You have not permissions to add slice"));
         exit;

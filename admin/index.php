@@ -84,7 +84,7 @@ try {
 // Allow editing current slice without slice_pwd
 AA_Credentials::singleton()->loadFromSlice(AA::$module_id);
 
-// id of the editted module (id in long form (32-digit hexadecimal number))
+// id of the edited module (id in long form (32-digit hexadecimal number))
 $module_id = AA::$module_id;
 // module_id is the same as slice_id (slice_id was used before AA introduced
 // modules. Now it is better to use module_id, because in other modules
