@@ -9227,7 +9227,7 @@ class AA_Stringexpand_Credentials extends AA_Stringexpand_Nevercache {
 /** @return string - url GET parameter - {qs[:<varname>[:delimiter]]}
  *  Usage:
  *   {qs:surname}    - returns Havel for https://example.org/cz/page?surname=Havel
- *   {qs}            - returns whole querystring (including GET and POST variables)
+ *   {qs}            - returns the whole querystring (including GET and POST variables)
  *   {qs:aa[n1000_3130303132312d726d2d7361736f762d][con_email_______][]}
  *                   - returns the value of the variable - exactly as posted
  */

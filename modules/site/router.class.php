@@ -301,7 +301,7 @@ class AA_Router_Seo extends AA_Router {
                         // (and should be rewritten to /cz2/ or better /cz2/page )
                         $arr = explode('/', trim(parse_url($home, PHP_URL_PATH), '/'));
                     }
-                } elseif (!$ret['xflag'] && !$ret['xcat']) { // older sites - we are more tolerant - the ending slash is not necessary
+                } elseif ((!$ret['xflag'] && !$ret['xcat']) || str_ends_with(trim($apc), '/')) { // older sites - we are more tolerant - the ending slash is not necessary
                     // but apply only if xflag nor xcat is set - otherwise we can have problems with links /bflmpsvf
                     $arr = explode('/', trim(parse_url($home, PHP_URL_PATH), '/'));
                 } else {  // no xseo, but xflag or xcat is set - it is not good url (/somenonsence), so we do not try to fix it, but just return empty array (so 404)

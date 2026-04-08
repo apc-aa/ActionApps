@@ -268,7 +268,7 @@ class zids implements IteratorAggregate, ArrayAccess, Countable {
     }
 
     /** warnid function
-     * Quick check to warn if item doesn't exist
+     * Quick check to warn if the item doesn't exist
      */
     function warnid($i=null,$warnstr=""): bool {
         if ( (isset($i) && !(isset($this->arr[$i]))) ) {
