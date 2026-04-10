@@ -470,6 +470,7 @@ class AA_Exportsetings extends AA_Object {
     protected $conds;
     protected $sort;
     protected $fields;
+    protected $expressions;
 
     /** allows storing form in database
      *  AA_Object's method
@@ -519,6 +520,7 @@ class AA_Exportsetings extends AA_Object {
             'type'         => $type,
             'bins'         => $bins,
             'fields'       => new AA_Property( 'fields',   _m("Fields"),        'string', true,  true, '', false, _m('you can put there field id (like headline........) or any AA expression (like _#HEADLINE)<br>for export all the fields, letf this field blank')),
+            'expressions'  => new AA_Property( 'expressions', _m("Custom columns"), 'string', true, true, '', false, _m('Add any AA expression as extra column. Each row = one column.')),
             'filename'     => new AA_Property( 'filename', _m("Filename"),      'string', false, true, '', false, _m('save as...')),
             'conds'        => new AA_Property( 'conds',    _m("Conditions"),    'text'  , false, true, '', false, _m('conditions are in "d-..." or "conds[]" form - just like:<br> &nbsp; d-headline........,category.......1-BEGIN-Bio (d-&lt;fields&gt;-&lt;operator&gt;-&lt;value&gt;-&lt;fields&gt;-&lt;op...)<br> &nbsp; conds[0][category........]=first&conds[1][switch.........1]=1 (default operator is RLIKE, here!)')),  // it is not absolutet necessary to use alphanum only, but it is easier to use, then
             'sort'         => new AA_Property( 'sort',     _m("Sort"),          'string', false, true, '', false, _m('like: publish_date....-'))  // it is not absolutet necessary to use alphanum only, but it is easier to use, then
@@ -582,6 +584,17 @@ class AA_Exportsetings extends AA_Object {
             }
             $fs->addField('u_slice_id......', 'Slice ID');
             $fs->addField('unpacked_id.....', 'Item ID');
+        }
+
+        // add custom expression columns (appended after regular fields)
+        // supports both array (MFL widget in saved exports) and string (textarea in quick export)
+        $expressions = $this->expressions;
+        if (is_string($expressions)) {
+            $expressions = explode("\n", $expressions);
+        }
+        $expressions = is_array($expressions) ? array_filter(array_map('trim', $expressions), 'strlen') : [];
+        foreach ($expressions as $expr) {
+            $fs->addAlias($expr);
         }
 
         MoreTimeLimit(3600); // set_time_limit to 1 hour (at least)
