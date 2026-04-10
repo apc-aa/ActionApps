@@ -1225,7 +1225,8 @@ function MsgPage($msg, string $url = ''): never
         $url = self_base(). "index.php";
     }
     $url = safe(StateUrl($url));
-    echo "<a href=\"$url\">"._m("Back")."</a>";
+    $relogin_url = safe(get_admin_url('logout.php', '', false));
+    echo "<a href=\"$url\">"._m("Back")."</a> | <a href=\"$relogin_url\">"._m("Relogin")."</a>";
     echo "</body></html>";
     Session::page_close();
     exit;

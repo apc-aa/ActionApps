@@ -116,7 +116,7 @@ function PrintUser($perm, $usr_id, $editor_perm): void
     echo "<td>". $usr_code ."</td>\n";
     echo "<td>". safe($username) ."</td>\n";
     echo "<td>". (safe($usrinfo['mail']) ?: "&nbsp;") ."</td>\n";
-    echo "<td>". _mdelayed($usrinfo['type']) ."</td>\n";
+    echo "<td>". UserTypeLabel($usrinfo, $usr_id) ."</td>\n";
 
     echo IfLink( CanChangeRole($perm, $editor_perm, AA_Perm::ROLES["AUTHOR"]['perm']),        get_url('', ['UsrAdd'=>$usr_id, 'role'=>"AUTHOR"],        true), _m("Author"));
     echo IfLink( CanChangeRole($perm, $editor_perm, AA_Perm::ROLES["EDITOR"]['perm']),        get_url('', ['UsrAdd'=>$usr_id, 'role'=>"EDITOR"],        true), _m("Editor"));
@@ -178,6 +178,7 @@ if ( $continue ) {
         }
     }
 
+    echo "<tr><th></th><th>"._m("Name")."</th><th>"._m("Username")."</th><th>"._m("Email")."</th><th>"._m("Type")."</th><th>"._m("Author")."</th><th>"._m("Editor")."</th><th>"._m("Administrator")."</th><th>"._m("Revoke")."</th><th>"._m("Profile")."</th></tr>\n";
     foreach ($slice_users as $usr_id => $prm) {
         PrintUser($prm, $usr_id, $editor_perms);
     }
