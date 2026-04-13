@@ -27,7 +27,7 @@
  * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
  * @link      https://www.apc.org/ APC
  *
-*/
+ */
 
 use AA\Cache\CacheStr2find;
 use AA\Util\Langs;
@@ -36,8 +36,8 @@ use AA\Widget\Widget;
 
 
 /**
-* Form utility functions
-*/
+ * Form utility functions
+ */
 
 require_once __DIR__ . "/constedit_util.php";
 require_once __DIR__ . "/itemfunc.php";
@@ -48,25 +48,25 @@ require_once __DIR__ . "/validate.php";
 require_once __DIR__."/perm_" . PERM_LIB . ".php";
 
 // Deprecated GYR tagged ids - it adds letter before item id in related item, which is not practical for joined tables, ...
-    // Easy to redefine this functionality by changing the array below
-    // prefix is what goes in the selection box in "Edit Item",
-    // tag is what goes on the front of the id as stored in the database
-    // str is the string to display in the Related Items window
-    // Note that A M B are hard-coded in the Related Items Window param wizard,
-    // but any letters can be used, i.e. this table can be extended.
-    // Next step might be to extend parameter recognition to load this table
-    // Retaining backward compatibility with "[AMB]+" recognition
+// Easy to redefine this functionality by changing the array below
+// prefix is what goes in the selection box in "Edit Item",
+// tag is what goes on the front of the id as stored in the database
+// str is the string to display in the Related Items window
+// Note that A M B are hard-coded in the Related Items Window param wizard,
+// but any letters can be used, i.e. this table can be extended.
+// Next step might be to extend parameter recognition to load this table
+// Retaining backward compatibility with "[AMB]+" recognition
 const TPS = [
-  'AMB' => [
-    'A' => ['prefix' => '&rarr; ',   'tag' => '',  'str' => 'Add'],             // _m("Add") ),             - we call the translation later - here it is not translated
-    'M' => ['prefix' => '&harr; ',   'tag' => 'y', 'str' => 'Add&nbsp;Mutual'], // _m("Add&nbsp;Mutual") ),
-    'B' => ['prefix' => '&larr; ',   'tag' => 'z', 'str' => 'Backward']
-  ],      // _m("Backward") ) ),
-  'GYR' => [
-    'G' => ['prefix' => 'Good:', 'tag' => 'x', 'str' => 'Good'],
-    'Y' => ['prefix' => 'OK  :', 'tag' => 'y', 'str' => 'OK'],
-    'R' => ['prefix' => 'Bad :', 'tag' => 'z', 'str' => 'Bad']
-  ]
+    'AMB' => [
+        'A' => ['prefix' => '&rarr; ',   'tag' => '',  'str' => 'Add'],             // _m("Add") ),             - we call the translation later - here it is not translated
+        'M' => ['prefix' => '&harr; ',   'tag' => 'y', 'str' => 'Add&nbsp;Mutual'], // _m("Add&nbsp;Mutual") ),
+        'B' => ['prefix' => '&larr; ',   'tag' => 'z', 'str' => 'Backward']
+    ],      // _m("Backward") ) ),
+    'GYR' => [
+        'G' => ['prefix' => 'Good:', 'tag' => 'x', 'str' => 'Good'],
+        'Y' => ['prefix' => 'OK  :', 'tag' => 'y', 'str' => 'OK'],
+        'R' => ['prefix' => 'Bad :', 'tag' => 'z', 'str' => 'Bad']
+    ]
 ];
 
 /** varname4form function
@@ -258,7 +258,7 @@ class inputform {
             }
         }
 
-    //added for MLX
+        //added for MLX
         if ($this->formheading) {// added for mlx tab
             echo $this->formheading;
         }
@@ -335,9 +335,9 @@ class inputform {
             $field = $fields->getField($fid);
 
             if ( ($form4anonymous_wizard  && !$show[$fid]) ||
-                 (!$form4anonymous_wizard && (!$field->getProperty('input_show') ||
-                                         $profile->getProperty('hide',$fid) ||
-                                         $profile->getProperty('hide&fill',$fid)))) {
+                (!$form4anonymous_wizard && (!$field->getProperty('input_show') ||
+                        $profile->getProperty('hide',$fid) ||
+                        $profile->getProperty('hide&fill',$fid)))) {
                 // do not show this field
                 continue;
             }
@@ -452,9 +452,9 @@ class AA_Inputfield {
     private $value;                              // current value of the field in [0]['value'] form
     private $html_flag;                          // field (value) is/isn't HTML formated
     private $mode;                               // 'normal' - just show input type
-                                             // 'freeze' - display as static
-                                             // 'anonym' - special display of field on anonym form
-                                             //            (used for passwords, ...)
+    // 'freeze' - display as static
+    // 'anonym' - special display of field on anonym form
+    //            (used for passwords, ...)
     private $input_before;                       // HTML code displayed before the field
     private $required;                           // boolean - is this field required (needed)?
     private $input_help;                         // help/description text for the field
@@ -463,13 +463,13 @@ class AA_Inputfield {
     private bool $html_rb_show;                  // show HTML/Plaintext radiobutton?
 
     private $valid;                              // string validation function used - could be 'number' or 'number:0:9999' - in order og getClassProperties of AA_Validate_Number
-                                             // (this function we added in order we can use this class for AA Admin forms as well)
+    // (this function we added in order we can use this class for AA Admin forms as well)
     private ?array $translations = [];                       // field allows translation
     private $dbfield;                            // contains name of database field. It is often
-                                             // empty, so we will use varname, but there are some
-                                             // cases, where we use different database field than
-                                             // the varname (for examlpe "name" is good database
-                                             // column name, but wrong for HTML form)
+    // empty, so we will use varname, but there are some
+    // cases, where we use different database field than
+    // the varname (for examlpe "name" is good database
+    // column name, but wrong for HTML form)
 
     // --- privates ---
     /** @var string $result Collects output of the field  */
@@ -483,7 +483,7 @@ class AA_Inputfield {
     private $result_mode;
     private $value_modified;   // sometimes we have to modify value before output
     private $selected;         // helper array used for quick search, if specified
-                           // value is selected (mainly for multivalues)
+    // value is selected (mainly for multivalues)
     private $const_arr;        // array of constants used for selections (selectbox, radio, ...)
     private $msg;                         // stores return code from functions
 
@@ -547,7 +547,7 @@ class AA_Inputfield {
         $arr         = $val->getValues();
         $this->value = [];
         foreach ($arr as $k => $v) {
-             $this->value[$k] = ['value'=>$v];
+            $this->value[$k] = ['value'=>$v];
         }
         $this->html_flag = $val->getFlag() & FLAG_HTML;
     }
@@ -577,19 +577,19 @@ class AA_Inputfield {
     {
         return [
             'value'         =>  [0 => ['value' => '']],
-                      'html_flag'     => true,
-                      'mode'          => 'normal',
-                      'varname'       => '',
-                      'name'          => '',
-                      'required'      => false,
-                      'input_help'    => '',
-                      'input_morehlp' => '',
-                      'additional'    => false,
-                      'const_arr'     => null,
-                      'result_mode'   => 'expand',
-                      'html_rb_show'  => false,
-                      'valid'         => 'text',
-                      'dbfield'       => null
+            'html_flag'     => true,
+            'mode'          => 'normal',
+            'varname'       => '',
+            'name'          => '',
+            'required'      => false,
+            'input_help'    => '',
+            'input_morehlp' => '',
+            'additional'    => false,
+            'const_arr'     => null,
+            'result_mode'   => 'expand',
+            'html_rb_show'  => false,
+            'valid'         => 'text',
+            'dbfield'       => null
         ];
     }
 
@@ -866,16 +866,16 @@ class AA_Inputfield {
         if ($this->mode === 'freeze') {
             switch ($this->input_type) {
                 case 'chb': $this->value_modified = $this->value[0]['value'] ? _m("set") : _m("unset");
-                            $this->staticText();       break;
+                    $this->staticText();       break;
                 case 'lup':     // Local URL Picker | Omar/Jaime | 11-06-2005
                 case 'iso': $this->value_modified = $this->implodeVal('<br>');
-                            $this->staticText();       break;
+                    $this->staticText();       break;
                 case 'pwd': $this->value_modified = $this->value[0] ? "*****" : "";
-                            $this->staticText();       break;
+                    $this->staticText();       break;
                 case 'dte': $datectrl = new datectrl($this->varname());
-                            $datectrl->setdate_int($this->value[0]['value']);
-                            $this->value_modified = $datectrl->get_datestring();
-                            $this->staticText();       break;
+                    $datectrl->setdate_int($this->value[0]['value']);
+                    $this->value_modified = $datectrl->get_datestring();
+                    $this->staticText();       break;
                 case 'nul': break;
                 case 'txt':
                 case 'hid':
@@ -893,7 +893,7 @@ class AA_Inputfield {
                 case 'mfl':
                 case 'mch':
                 default:    $this->value_modified = $this->implodeVal();
-                            $this->staticText();       break;
+                    $this->staticText();       break;
 
             }
         } elseif ($this->mode === 'anonym' || $this->mode === 'normal') {
@@ -904,12 +904,12 @@ class AA_Inputfield {
                 case 'chb': $this->inputChBox();       break;
                 case 'hid': $this->hidden();           break;
                 case 'fld': if (!$this->translations) {
-                                // not yet prepared for standard widget - Triggers - SetField, GetField do not work. @TODO
-                                $this->inputText(get_if($this->param[0],255), get_if($this->param[1],0), get_if($this->param[2],'text')); // maxlength, fieldsize, input_type
-                            } else {
-                                $this->inputWidget($item, $slice_id);          // standard
-                            }
-                            break;
+                    // not yet prepared for standard widget - Triggers - SetField, GetField do not work. @TODO
+                    $this->inputText(get_if($this->param[0],255), get_if($this->param[1],0), get_if($this->param[2],'text')); // maxlength, fieldsize, input_type
+                } else {
+                    $this->inputWidget($item, $slice_id);          // standard
+                }
+                    break;
                 // case 'mfl': [$actions, $rows, $max_characters, $width] = $this->param;
                 //            $actions = get_if($actions, 'MDAC'); // move, delete, add, change
                 //            $this->varname_modify('[]');         // use slightly modified varname
@@ -927,19 +927,19 @@ class AA_Inputfield {
                 //            $GLOBALS['list_fnc_edt'][] = $this->varname();
                 //            break;
                 case 'sel': [,$slice_field, $usevalue, $whichitems, $conds_str, $sort_str, $add_slice_pwd, $const_param, $select_plus] = $this->param;
-                            if ( $select_plus ) {
-                                $this->inputWidget($item, $slice_id);          // standard new widget
-                            } else {
-                                if (!is_null($item)) {
-                                    $conds_str = $item->unalias($conds_str);
-                                }
-                                if ($whichitems < 1) {
-                                    $whichitems = AA_BIN_ACT_PEND;
-                                }              // fix for older (bool) format
-                                $this->fill_const_arr($slice_field, $conds_str, $sort_str, $whichitems, null, ($add_slice_pwd ? AA_Credentials::encrypt($add_slice_pwd) : null), null, $const_param);  // if we fill it there, it is not refilled in inputSel()
-                                $this->inputSelect($usevalue);
-                            }
-                            break;
+                    if ( $select_plus ) {
+                        $this->inputWidget($item, $slice_id);          // standard new widget
+                    } else {
+                        if (!is_null($item)) {
+                            $conds_str = $item->unalias($conds_str);
+                        }
+                        if ($whichitems < 1) {
+                            $whichitems = AA_BIN_ACT_PEND;
+                        }              // fix for older (bool) format
+                        $this->fill_const_arr($slice_field, $conds_str, $sort_str, $whichitems, null, ($add_slice_pwd ? AA_Credentials::encrypt($add_slice_pwd) : null), null, $const_param);  // if we fill it there, it is not refilled in inputSel()
+                        $this->inputSelect($usevalue);
+                    }
+                    break;
 //                case 'rio': [,$ncols, $move_right, $slice_field, $whichitems, $conds_str, $sort_str, $add_slice_pwd, $const_arr] = $this->param;
 //                            if ( !is_null($item) ) {
 //                                $conds_str = $item->unalias($conds_str);
@@ -954,73 +954,68 @@ class AA_Inputfield {
                 //            $this->inputMultiChBox($ncols, $move_right, $slice_field, $whichitems, $conds_str, $sort_str, $add_slice_pwd, false, $height);  // move_right
                 //            break;
                 case 'mse': [,$rows, $slice_field, $whichitems, $conds_str, $sort_str, $add_slice_pwd, $const_param] = $this->param;
-                            if ( !is_null($item) ) {
-                                $conds_str = $item->unalias($conds_str);
-                            }
-                            $rows = ($rows < 1) ? 5 : $rows;
-                            $this->varname_modify('[]');         // use slightly modified varname
-                            $this->fill_const_arr($slice_field, $conds_str, $sort_str, $whichitems, null, ($add_slice_pwd ? AA_Credentials::encrypt($add_slice_pwd) : null), null, $const_param);
-                            $this->inputMultiSelect($rows);
-                            break;
+                    if ( !is_null($item) ) {
+                        $conds_str = $item->unalias($conds_str);
+                    }
+                    $rows = ($rows < 1) ? 5 : $rows;
+                    $this->varname_modify('[]');         // use slightly modified varname
+                    $this->fill_const_arr($slice_field, $conds_str, $sort_str, $whichitems, null, ($add_slice_pwd ? AA_Credentials::encrypt($add_slice_pwd) : null), null, $const_param);
+                    $this->inputMultiSelect($rows);
+                    break;
 //                case 'fil': [$accepts, $text, $hlp] = $this->param;
 //                            $this->inputFile($accepts, $text, $hlp);
 //                            break;
                 case 'dte': if (str_contains($this->param[0], "'")) {     // old format
-                                $this->param = explode("'",$this->param[0]);
-                            }
-                            [$y_range_minus, $y_range_plus, $from_now, $display_type] = $this->param;
-                            if ($display_type == 2) {
-                                $this->inputWidget($item, $slice_id);  // new form of input type
-                            } else {
-                                $this->dateSelect($y_range_minus, $y_range_plus, $from_now, $display_type);
-                            }
-                            break;
+                    $this->param = explode("'",$this->param[0]);
+                }
+                    [$y_range_minus, $y_range_plus, $from_now, $display_type] = $this->param;
+                    if ($display_type == 2) {
+                        $this->inputWidget($item, $slice_id);  // new form of input type
+                    } else {
+                        $this->dateSelect($y_range_minus, $y_range_plus, $from_now, $display_type);
+                    }
+                    break;
                 case 'pre': [, $maxlength, $fieldsize, $slice_field, $usevalue, $adding, $secondfield, $add2constant, $whichitems, $conds_str, $sort_str, $add_slice_pwd, $const_param] = $this->param;
-                            // add2constant is used in AA_Inserter - adds new value to constant table
-                            if ( $whichitems < 1 ) {
-                                $whichitems = AA_BIN_ACT_PEND;              // fix for older (bool) format
-                            }
-                            if ($adding || $secondfield) {
-                                $this->fill_const_arr($slice_field, $conds_str, $sort_str, $whichitems, null, ($add_slice_pwd ? AA_Credentials::encrypt($add_slice_pwd) : null), null, $const_param);
-                                $this->inputPreSelect($maxlength, $fieldsize, $adding, $secondfield, $usevalue);
-                            } else {
-                                $this->inputWidget($item, $slice_id);          // standard
-                            }
-                            break;
+                    // add2constant is used in AA_Inserter - adds new value to constant table
+                    if ( $whichitems < 1 ) {
+                        $whichitems = AA_BIN_ACT_PEND;              // fix for older (bool) format
+                    }
+                    if ($adding || $secondfield) {
+                        $this->fill_const_arr($slice_field, $conds_str, $sort_str, $whichitems, null, ($add_slice_pwd ? AA_Credentials::encrypt($add_slice_pwd) : null), null, $const_param);
+                        $this->inputPreSelect($maxlength, $fieldsize, $adding, $secondfield, $usevalue);
+                    } else {
+                        $this->inputWidget($item, $slice_id);          // standard
+                    }
+                    break;
                 case 'tpr': $this->textareaPreSelect(get_if($this->param[1],4),    // rows
-                                                     get_if($this->param[2],60));  // cols
-                            break;
+                    get_if($this->param[2],60));  // cols
+                    break;
                 case 'iso': [, $rows, $mode, $design, $tp, $actions, $whichitems, $conds, $condsrw, $slice_field, $sort_by, $additional_slice_pwd, $const_arr, $listlen] = $this->param;
-                            $mode      = get_if($mode,'AMB');         // AMB - show 'Add', 'Add mutual' and 'Add backward' buttons
-                            $tp        = get_if($tp,  'AMB');         // Default to use the AMP table
-                            $tagprefix = TPS[$tp] ?? ( $GLOBALS['apc_state']['TPS'][$tp] ?? null );
-                            if ( is_null($tagprefix) ) {
-                                $this->msg[] = _m("Unable to find tagprefix table %1", [$tp]);
-                            }
-                            $this->varname_modify('[]');         // use slightly modified varname
-                            // read related items for selected items
-                            $sid = $this->fill_const_arr($slice_field, false, false, AA_BIN_ALL, $this->value, null, $tagprefix);  // if we fill it there, it is not refilled in inputSel()
-                            //$sid = (substr($this->param[0],0,7) === "#sLiCe-") ? substr($this->param[0], 7) : '';
-                            $this->inputRelation($rows, $sid, $mode, $design, $actions, $whichitems, $conds, $condsrw, $slice_field, $sort_by, $listlen);
-                            break;
+                    $mode      = get_if($mode,'AMB');         // AMB - show 'Add', 'Add mutual' and 'Add backward' buttons
+                    $tp        = get_if($tp,  'AMB');         // Default to use the AMP table
+                    $tagprefix = TPS[$tp] ?? ( $GLOBALS['apc_state']['TPS'][$tp] ?? null );
+                    if ( is_null($tagprefix) ) {
+                        $this->msg[] = _m("Unable to find tagprefix table %1", [$tp]);
+                    }
+                    $this->varname_modify('[]');         // use slightly modified varname
+                    // read related items for selected items
+                    $sid = $this->fill_const_arr($slice_field, false, false, AA_BIN_ALL, $this->value, null, $tagprefix);  // if we fill it there, it is not refilled in inputSel()
+                    //$sid = (substr($this->param[0],0,7) === "#sLiCe-") ? substr($this->param[0], 7) : '';
+                    $this->inputRelation($rows, $sid, $mode, $design, $actions, $whichitems, $conds, $condsrw, $slice_field, $sort_by, $listlen);
+                    break;
                 case 'hco': [$constgroup, $levelCount, $boxWidth, $rows, $horizontalLevels, $firstSelectable, $levelNames] = $this->param;
-                            $this->varname_modify('[]');         // use slightly modified varname
-                            $this->hierarchicalConstant((string)$constgroup, (int)$levelCount, (int)$boxWidth, (int)$rows, (bool)$horizontalLevels, (int)$firstSelectable, explode('~',$levelNames));
-                            break;
+                    $this->varname_modify('[]');         // use slightly modified varname
+                    $this->hierarchicalConstant((string)$constgroup, (int)$levelCount, (int)$boxWidth, (int)$rows, (bool)$horizontalLevels, (int)$firstSelectable, explode('~',$levelNames));
+                    break;
                 case 'pwd':  // handled in passwordModify
-                            [$fieldsize, $change_pwd_label, $retype_pwd_label, $delete_pwd_label, $change_pwd_help, $retype_pwd_help] = $this->param;
-                            $this->passwordModify( $fieldsize, $change_pwd_label, $retype_pwd_label, $delete_pwd_label, $change_pwd_help, $retype_pwd_help);
-                            break;
-                            //BEGIN// Local URL Picker | Omar/Jaime | 11-06-2005
-                case 'lup': [$url] = $this->param;
-                            $this->inputLocalURLPick($url);
-                            break;
-                            //END// Local URL Picker | Omar/Jaime | 11-06-2005
+                    [$fieldsize, $change_pwd_label, $retype_pwd_label, $delete_pwd_label, $change_pwd_help, $retype_pwd_help] = $this->param;
+                    $this->passwordModify( $fieldsize, $change_pwd_label, $retype_pwd_label, $delete_pwd_label, $change_pwd_help, $retype_pwd_help);
+                    break;
                 case 'txt': if (!$this->translations) {
-                                $this->textarea(get_if($this->param[0], 4));   // not yet prepared for standard widget - Triggers - SetField, GetField do not work. Also the converters are not implemented @TODO
-                            } else {
-                                $this->inputWidget($item, $slice_id);          // standard
-                            }
+                    $this->textarea(get_if($this->param[0], 4));   // not yet prepared for standard widget - Triggers - SetField, GetField do not work. Also the converters are not implemented @TODO
+                } else {
+                    $this->inputWidget($item, $slice_id);          // standard
+                }
                     break;
                 //case 'txt': $this->textarea(get_if($this->param[0], 4));   // not yet prepared for standard widget - Triggers - SetField, GetField do not work. @TODO
                 //            break;
@@ -1031,12 +1026,12 @@ class AA_Inputfield {
                 //            }
                 //    break;
                 case 'wi2': [$constgroup, $rows, $wi2_offer, $wi2_selected, $slice_field, $whichitems, $conds_str, $sort_str, $addform, $add_slice_pwd] = $this->param;
-                            if ( !is_null($item) ) {
-                                $conds_str = $item->unalias($conds_str);
-                            }
-                            $this->varname_modify('[]');         // use slightly modified varname
-                            $this->twoBox(get_if($rows,5), $wi2_offer, $wi2_selected, $slice_field, $whichitems, $conds_str, $sort_str, $addform, $add_slice_pwd);
-                            break;
+                    if ( !is_null($item) ) {
+                        $conds_str = $item->unalias($conds_str);
+                    }
+                    $this->varname_modify('[]');         // use slightly modified varname
+                    $this->twoBox(get_if($rows,5), $wi2_offer, $wi2_selected, $slice_field, $whichitems, $conds_str, $sort_str, $addform, $add_slice_pwd);
+                    break;
                 //case 'wi2':  // still uses mch
                 case 'tag':
                 case 'mfl':
@@ -1048,10 +1043,11 @@ class AA_Inputfield {
                 case 'mch':
                 case 'mng': // Manager
                 case 'fil':
-                //case 'hid': // not prepared yet - the field name and help is visible in inputWidget
-                //case 'pwd':
-                //case 'txt':
-                //case 'fld':
+                case 'lup':
+                    //case 'hid': // not prepared yet - the field name and help is visible in inputWidget
+                    //case 'pwd':
+                    //case 'txt':
+                    //case 'fld':
                 default:    $this->inputWidget($item, $slice_id);
 
             }
@@ -1131,9 +1127,9 @@ class AA_Inputfield {
     {
         $name = is_null($name) ? $this->name : $name;
         switch( $plus ) {
-        case 'plus':    $this->field_tr();
-                        break;
-        case 'secrow':  $this->field_tr(false);
+            case 'plus':    $this->field_tr();
+                break;
+            case 'secrow':  $this->field_tr(false);
         }
         $this->echoo("\n <th ". (($colspan==1) ? '': "colspan=\"$colspan\""). "><div>$name</div>" );  // div for min max width styling HM/SV 2023-11-23
         $this->needed();
@@ -1186,7 +1182,7 @@ class AA_Inputfield {
 
             if ( $convertor ) {
                 $this->echovar($convertor,   'conv');
-            } 
+            }
             $this->echoo("</div>\n");
         }
     }
@@ -1387,11 +1383,11 @@ class AA_Inputfield {
     }
 
     /** staticText function
-    * Prints two static text to 2-column table
-    * for use within <table> tag
-    * @param $safing
-    * @param $type
-    */
+     * Prints two static text to 2-column table
+     * for use within <table> tag
+     * @param $safing
+     * @param $type
+     */
     function staticText($safing=true, $type='first'): void
     {
         [$name,$val,$add] = $this->prepareVars($type);
@@ -1404,10 +1400,10 @@ class AA_Inputfield {
     }
 
     /** hidden function
-    * Prints html tag <input type=hidden .. to 2-column table
-    * for use within <form> and <table> tag
-    * @param $safing
-    */
+     * Prints html tag <input type=hidden .. to 2-column table
+     * for use within <form> and <table> tag
+     * @param $safing
+     */
     function hidden($safing=true): void
     {
         [$name,$val,$add] = $this->prepareVars();
@@ -1622,8 +1618,8 @@ class AA_Inputfield {
             if (!$selectedused) {
                 $emptyret .= ' selected class="sel_on"';
             }
-           $emptyret .= '> </option>';
-           $ret = $emptyret . $ret;
+            $emptyret .= '> </option>';
+            $ret = $emptyret . $ret;
         }
         return $ret;
     }
@@ -1706,10 +1702,10 @@ class AA_Inputfield {
         $this->echovar( $ret );
         $this->echoo("</div>\n");
         if ($movebuttons) {
-             $this->echoo("<div class='aa-iso-updown'>");
-             $this->echoo("<input type=\"button\" value=\" &#9650; \" class=aa-widg-up onClick=\"moveItem(this.parentNode.parentNode.querySelector(&quot;select[name='$name']&quot;),'up');\">");
-             $this->echoo("<input type=\"button\" value=\" &#9660; \" class=aa-widg-down onClick=\"moveItem(this.parentNode.parentNode.querySelector(&quot;select[name='$name']&quot;), 'down');\">");
-             $this->echoo("</div>");
+            $this->echoo("<div class='aa-iso-updown'>");
+            $this->echoo("<input type=\"button\" value=\" &#9650; \" class=aa-widg-up onClick=\"moveItem(this.parentNode.parentNode.querySelector(&quot;select[name='$name']&quot;),'up');\">");
+            $this->echoo("<input type=\"button\" value=\" &#9660; \" class=aa-widg-down onClick=\"moveItem(this.parentNode.parentNode.querySelector(&quot;select[name='$name']&quot;), 'down');\">");
+            $this->echoo("</div>");
         }
         $this->echoo("</div>\n <div class='aa-iso-foot'>\n");
         if (str_contains($actions, 'R')) {
@@ -1873,14 +1869,14 @@ class AA_Inputfield {
         $out .= "\n<label class=\"aa-label-above selected\" for=\"$name\">"._m("Selected")."</label>";
 
         $out .= "\n<select name=\"$name\" id=\"$name\" multiple size=\"$rows\" $triggers>";
-            if (is_array($val)) {
-                $constants_names = GetConstants($group_id);
-                foreach ( $val as $v) {
-                    if ($v['value']) {
-                        $out .= "\n  <option value=\"".safe($v['value'])."\">".safe($constants_names[$v['value']])."\n";
-                    }
+        if (is_array($val)) {
+            $constants_names = GetConstants($group_id);
+            foreach ( $val as $v) {
+                if ($v['value']) {
+                    $out .= "\n  <option value=\"".safe($v['value'])."\">".safe($constants_names[$v['value']])."\n";
                 }
             }
+        }
         $out .= "\n  <option value=\"wIdThTor\">$widthTxt";
         $out .= "</select><br><br>$buttonDel
               </div>";
@@ -1897,10 +1893,10 @@ class AA_Inputfield {
     }
 
     /** inputSelect function
-    * Prints html tag <select .. to 2-column table
-    * for use within <form> and <table> tag
-    * @param $usevalue
-    */
+     * Prints html tag <select .. to 2-column table
+     * for use within <form> and <table> tag
+     * @param $usevalue
+     */
     function inputSelect($usevalue=false): void
     {
         [$name,$val,$add] = $this->prepareVars();
@@ -1948,12 +1944,12 @@ class AA_Inputfield {
     }
 
     /** inputFile function
-    * Prints html tag <input type=file .. to 2-column table
-    * for use within <form> and <table> tag
-    * @param $accepts
-    * @param $text
-    * @param $hlp
-    */
+     * Prints html tag <input type=file .. to 2-column table
+     * for use within <form> and <table> tag
+     * @param $accepts
+     * @param $text
+     * @param $hlp
+     */
     function inputFile($accepts="*/*", $text="", $hlp=""): void
     {
         [$name,$val,$add] = $this->prepareVars();
@@ -1978,14 +1974,14 @@ class AA_Inputfield {
     }
 
     /** inputPreSelect function
-    * Prints html tag <intup type=text ...> with <select ...> as presets to 2-column
-    * table for use within <form> and <table> tag
-    * @param $maxsize
-    * @param $size
-    * @param $adding
-    * @param $secondfield
-    * @param $usevalue
-    */
+     * Prints html tag <intup type=text ...> with <select ...> as presets to 2-column
+     * table for use within <form> and <table> tag
+     * @param $maxsize
+     * @param $size
+     * @param $adding
+     * @param $secondfield
+     * @param $usevalue
+     */
     function inputPreSelect($maxsize=254, $size=25, $adding=0, $secondfield="", $usevalue=false): void
     {
         [$name,$val,$add] = $this->prepareVars();
@@ -2007,8 +2003,8 @@ class AA_Inputfield {
             $out .= "$varsecfield.value=this.options[this.selectedIndex].value\">";      // could be just this.value, but in this case I want to be consistent with this.options[this.selectedIndex].text method above
         } else {
             $out .= ($adding ?
-                     " onchange=\"add_to_line($name, this.value)\">" :
-                     " onchange=\"$name.value=this.value\">");
+                " onchange=\"add_to_line($name, this.value)\">" :
+                " onchange=\"$name.value=this.value\">");
         }
         $out .= $this->get_options( $this->const_arr, $usevalue, $secondfield, 'all', true); // add empty option
         $out .= '</select>';
@@ -2177,30 +2173,6 @@ class AA_Inputfield {
         $this->echovar("<input type=\"password\" name=\"$ch_name\" size=\"$fieldsize\" maxlength=\"255\" autocomplete=\"new-password\" value=\"\" $triggers>", 'retype' );
         $this->helps('plus',$retype_pwd_help );
     }
-
-    //BEGIN// Local URL Picker | Omar/Jaime | 11-06-2005
-    /** inputLocalURLPick function
-     * Local URL Picker | Omar/Jaime | 11-06-2005
-     * @param $url
-     */
-    function inputLocalURLPick($url): void
-    {
-        [$name,$val] = $this->prepareVars();
-        $this->field_name('plus');
-        $triggers  = $this->use_triggers_4_slice ? JsTriggers::singleton4id($this->use_triggers_4_slice)->get("input", $name) : '';
-        $ret ="<input type=\"text\" name=\"$name\" size=\"60\" value=\"".safe($val)."\" $triggers>";
-
-        $this->echoo('<table><tr>');
-        $this->echoo("\n <td>");
-        $this->echovar( $ret );
-        $this->echoo("</td>\n");
-        $this->echoo("</tr>\n <tr><td>\n");
-        $this->echoo("<input type=\"button\" value=\"". _m("Add") ."\" onclick=\"OpenLocalURLPick(\"$name\",\"$url\",\"".self_server().get_aa_url("admin", '', false)."\",\"$val\")\">\n");
-        $this->echoo("&nbsp;&nbsp;<input type='button' value='". _m("Clear") ."' onclick=\"sb_ClearField(document.inputform['".$name."']);\">\n");
-        $this->echoo("</td></tr></table>\n");
-        $this->helps('plus');
-    }
-    //END// Local URL Picker | Omar/Jaime | 11-06-2005
 
     /** Hidden field added to inputs, which sends no POST variable if unfilled
      *  (so we do not know the widget for the field was shown)
@@ -2496,27 +2468,27 @@ function FrmInputMultiSelect($name, $txt, $arr, $selected="", $rows=5, $needed=f
 
 
 
-    /** FrmInputRadio function
-     *  Prints a radio group, html tags <input type="radio" .. to 2-column table
-     *  for use within <form> and <table> tag
-     * @param $name
-     * @param $txt
-     * @param $arr
-     * @param $selected
-     * @param $needed
-     * @param $hlp
-     * @param $morehlp
-     * @param $ncols
-     * @param $move_right
-     * @param $add
-     */
-    function FrmInputRadio($name, $txt, $arr, $selected="", $needed=false, $hlp="", $morehlp="", $ncols=0, $move_right=true, $add=''): void
-    {
-        $html  = false;   // in parameter, but never filled. Honza 24.4.2013
-        $input = new AA_Inputfield($selected, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp, $arr);
-        $input->inputRadio($ncols, $move_right);
-        echo $input->get_result();
-    }
+/** FrmInputRadio function
+ *  Prints a radio group, html tags <input type="radio" .. to 2-column table
+ *  for use within <form> and <table> tag
+ * @param $name
+ * @param $txt
+ * @param $arr
+ * @param $selected
+ * @param $needed
+ * @param $hlp
+ * @param $morehlp
+ * @param $ncols
+ * @param $move_right
+ * @param $add
+ */
+function FrmInputRadio($name, $txt, $arr, $selected="", $needed=false, $hlp="", $morehlp="", $ncols=0, $move_right=true, $add=''): void
+{
+    $html  = false;   // in parameter, but never filled. Honza 24.4.2013
+    $input = new AA_Inputfield($selected, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp, $arr);
+    $input->inputRadio($ncols, $move_right);
+    echo $input->get_result();
+}
 
 
 /** FrmInputMultiText function - Multiple Text Field Widget
@@ -2668,13 +2640,13 @@ function FrmChBoxEasy($name, $checked=true, $add="", $value='', $id=''): void
  * @return string
  */
 function getFrmChBoxEasy($name, $checked=true, $add="", $value='', $id=''): string {
-  $name  = safe($name);
-  $value = safe($value); // $add=safe($add); NO!!
+    $name  = safe($name);
+    $value = safe($value); // $add=safe($add); NO!!
 
-  return "<input type=\"checkbox\" name=\"$name\" $add".
-    ($id      ? " id=\"$id\"" : '').
-    ($value   ? " value=\"$value\"" : '').
-    ($checked ? " checked>" : ">");
+    return "<input type=\"checkbox\" name=\"$name\" $add".
+        ($id      ? " id=\"$id\"" : '').
+        ($value   ? " value=\"$value\"" : '').
+        ($checked ? " checked>" : ">");
 }
 
 /** FrmSelectEasy function
@@ -2843,8 +2815,12 @@ function getFrmInputButtons($buttons, $print_hidden = true, $prefix = ''): strin
         return '';
     }
 
-    $sticky = ($prefix === 'top') ? ' style="position: sticky; top: 0; z-index: 5;"' : ''; //z-index - CodeMirror goes over if not > 2
-    $ret = "<div class=aa-tab-buttons $sticky>";
+    if ($prefix === 'top') {
+        $sticky = true;
+        $ret = '<div class="aa-tab-buttons-wrap"> <div class=aa-tab-buttons style="position: sticky; top: 0; z-index: 5;">';  //z-index - CodeMirror goes over if not > 2
+    } else {
+        $ret = '<div class="aa-tab-buttons">';
+    }
 
     if ($prefix) {
         $prefix .= '_';
@@ -2924,10 +2900,10 @@ function getFrmInputButtons($buttons, $print_hidden = true, $prefix = ''): strin
                 }
                 $nbsp = ( $type === 'hidden' ) ? '' : ' ';
                 $ret .= $nbsp.'<input type="'.  $type .'"'.$onclick .
-                      ' name="'.  $name .
-                     '" id="'.  $prefix . $name .
-                     '" value="'. $properties['value'] . ($properties['accesskey'] ? "  [^".$properties['accesskey']."]  " : "").
-                     '" '.($properties['accesskey'] ? 'accesskey="'.$properties['accesskey'].'" ' : ""). $properties['add'] . ' class="btn-l btn-secondary"'.$title.'>'.$nbsp;
+                    ' name="'.  $name .
+                    '" id="'.  $prefix . $name .
+                    '" value="'. $properties['value'] . ($properties['accesskey'] ? "  [^".$properties['accesskey']."]  " : "").
+                    '" '.($properties['accesskey'] ? 'accesskey="'.$properties['accesskey'].'" ' : ""). $properties['add'] . ' class="btn-l btn-secondary"'.$title.'>'.$nbsp;
         }
         $ret .= "\n";
     }
@@ -2945,10 +2921,23 @@ function getFrmInputButtons($buttons, $print_hidden = true, $prefix = ''): strin
         AA::Stringexpander()->addRequire( $shotcuts_js, 'AA_Req_Load');
      }
  
+    if ($save_btn_id || $esc_btn_id) {
+        $shotcuts_js =  <<<JS
+                        document.addEventListener('keydown', e => {
+                            if (e.repeat || !(e.ctrlKey || e.metaKey) || e.shiftKey || e.altKey) return;
+                            const btn = document.getElementById(({ s:'{$save_btn_id}', Escape:'{$esc_btn_id}' })[e.key.length===1 ? e.key.toLowerCase() : e.key]);
+                            if (!btn || btn.disabled) return;
+                            e.preventDefault();
+                            btn.click();
+                        });
+                        JS;
+        AA::Stringexpander()->addRequire( $shotcuts_js, 'AA_Req_Load');
+    }
+
     if ($print_hidden) {
         $ret .= StateHidden();
     }
-    $ret .= "</div>";
+    $ret .= $sticky ? "</div></div>" : "</div>";  // sticky is wrapped
     return $ret;
 }
 

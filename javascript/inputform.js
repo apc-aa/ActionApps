@@ -3,7 +3,7 @@
 var listboxes = [];
 var myform    = document.inputform;
 var relatedwindow;  // window for related stories
-var urlpickerwindow; // window for local URL picking
+// var urlpickerwindow; // removed — LupWidget uses <dialog> instead of popup
 
 // polyfills - will be removed when the incompatible browsers will not be supported by its creator
 if (window.NodeList && !NodeList.prototype.forEach) { NodeList.prototype.forEach = Array.prototype.forEach; }
@@ -214,19 +214,7 @@ function TabWidgetToggle(class2togle) {
     for (i = 0; i < els.length; i++) { els[i].classList.add('tabsactiv'); els[i].classList.remove('tabsnonactiv'); }
 }
 
-//BEGIN// Local URL Picker | Omar/Jaime | 11-06-2005
-function OpenLocalURLPick(varname, url, aa_instal_path, value) {
-    if ((urlpickerwindow != null) && (!urlpickerwindow.closed)) {
-        urlpickerwindow.close()    // in order to preview go on top after open
-    }
-    let page = aa_instal_path + "/localurlpick.php?var_id=" + varname + "&url=" + url + "&value=" + value
-    urlpickerwindow = open(page, "urlpickerwindow", "scrollbars=1, resizable=1, height=600 width=800 menubar=no");
-}
 
-function sb_ClearField(field) {
-    field.value='';
-}
-//END// Local URL Picker | Omar/Jaime | 11-06-2005
 
 
 // APC-AA javascript 3 functions for HTMLArea -- was in htmlarea/aafunc.js
