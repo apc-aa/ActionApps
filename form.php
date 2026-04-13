@@ -59,7 +59,7 @@ if (!$_GET['form_id']) {
 $form = AA_Object::load($_GET['form_id'], 'AA_Form');
 
 if (is_null($form)) {
-    echo '<!-- bad form_id in /form.php - '. $_GET['form_id']. ' -->';
+    echo '<!-- bad form_id in /form.php - '. safe($_GET['form_id'] ?? ''). ' -->';
     exit;
 }
 

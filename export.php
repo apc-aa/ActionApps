@@ -54,7 +54,7 @@ if (!$_GET['id']) {
 $exportset = AA_Exportsetings::load($_GET['id'], 'AA_Exportsetings');
 
 if (is_null($exportset)) {
-    echo 'Bad export id - '. $_GET['form_id'];
+    echo 'Bad export id - '. safe($_GET['form_id'] ?? '');
     exit;
 }
 
