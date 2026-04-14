@@ -300,7 +300,7 @@ function DelGroupMember($group_id, $id, $flags = 0): bool
         }
     }
 
-    if (!count($new["member"])) {
+    if (empty($new["member"])) {
         $new["member"][] = LDAP_BINDDN;   // in order to be compatible with LDAP
     }                                     // schema where member is required
 
