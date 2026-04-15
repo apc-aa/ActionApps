@@ -1242,7 +1242,7 @@ $_m["No user (group) found"]
 
 // admin/um_uedit.php, row 77, 80, 96
 // admin/um_gedit.php, row 68
-$_m["Too much groups found."]
+$_m["Too many groups found."]
     = "Prona�eno previ�e grupa";
 
 // admin/um_uedit.php, row 77, 80

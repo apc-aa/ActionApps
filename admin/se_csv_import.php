@@ -56,6 +56,7 @@
 
 // const  AA_REGISTER_GLOBALS = true;
 use AA\Util\InputVars;
+use AA\Util\Txt;
 
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/import_util.php";
@@ -160,7 +161,7 @@ if ($upload) {
     $addParams['caption']   = $caption;
 
     // continue with settings transformation actions
-    go_url(StateUrl(self_base()."se_csv_import2.php"). "&fileName=".rawurlencode($dest_file)."&addParamsSerial=" .bin2url(serialize($addParams)));
+    go_url(StateUrl(self_base()."se_csv_import2.php"). "&fileName=".rawurlencode($dest_file)."&addParamsSerial=" .Txt::bin2url(serialize($addParams)));
 }
 
 require_once __DIR__ . "/../include/formutil.php";

@@ -111,7 +111,7 @@ if ( $grp_new ) {
     $rgrp = $selected_group = "";
 }
 
-$groups  = GetFiltered("G", $rgrp, _m("Too much groups found."), _m("No groups found"));   // get list of users
+$groups  = GetFiltered("G", $rgrp, _m("Too many groups found."), _m("No groups found"));   // get list of users
 if ( $GrpSrch ) {
     reset( $groups );
     $selected_group = key($groups);
@@ -132,14 +132,16 @@ if ( $selected_group ) {
     }
 }
 
-$err = [];          // error array (Init - just for initializing variable
+$err = [];          // error array (Init - just for initializing variable)
 $varset      = new Cvarset();
 
-// Process submited form -------------------------------------------------------
+// Process submitted form -------------------------------------------------------
 
 if ( $add_submit || $submit_action === "update_submit") {
     // all the actions are in following require_once (we reuse this part of code for slice wizard)
     require_once __DIR__ . "/../include/um_gedit.php";
+    // reload the page
+    go_url( StateUrl($_SERVER['PHP_SELF']), ['selected_group'=>$selected_group, 'Msg'=>($add_submit ? _m("Group successfully added to permission system") : _m("Group successfully updated"))]);
 }
 
 
@@ -152,7 +154,7 @@ function UpdateGroup(action) {
   document.f.submit()
 }
 
-function RealyDelete() {
+function ReallyDelete() {
   if ( window.confirm('". _m("Are you sure you want to delete selected group from whole permission system?") . "')) {
     document.f2.submit_action.value = 'grp_del'
     document.f2.submit()
@@ -219,7 +221,7 @@ FrmTabSeparator("");
           ?></td>
             <td width="33%"><input type="submit" name="grp_edit" value="<?php echo _m("Edit")?>">&nbsp;
                 <input type="hidden" name="submit_action" value=0>  <!-- to this variable store "usr_del" (by javascript) -->
-                <input type="button" name="grp_del" value="<?php echo _m("Delete")?>" onclick="RealyDelete()"></td>
+                <input type="button" name="grp_del" value="<?php echo _m("Delete")?>" onclick="ReallyDelete()"></td>
      </tr>
     </table>
    </form>
@@ -295,8 +297,8 @@ if ($grp_new || $selected_group && AA::$perm->isUserEditable($selected_group)) {
     FrmInputText("group_name", _m("Name"), $group_name, 50, 50, true);
     FrmInputText("group_description", _m("Description"), $group_description, 50, 50);
 } else {
-    if ($group_name) { FrmStaticText(_m("Name"), $group_name); }
-    if ($group_name) { FrmStaticText(_m("Description"), $group_description); }
+    if ($group_name)        { FrmStaticText(_m("Name"), $group_name); }
+    if ($group_description) { FrmStaticText(_m("Description"), $group_description); }
 }
 
 FrmInputChBox("group_super", _m("Superadmin group"), $group_super);

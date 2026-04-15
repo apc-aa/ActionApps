@@ -31,9 +31,9 @@ final class Crypt {
      */
     public static function encryptAesGcm($text, $pass): string {
         $key   = self::createKey($pass);
-        $nonce = mb_substr(bin2url(random_bytes(self::AES256GCM_NPUBBYTES)),0,self::AES256GCM_NPUBBYTES,'8bit'); // nonce is already base64_url encoded
+        $nonce = mb_substr(Txt::bin2url(random_bytes(self::AES256GCM_NPUBBYTES)),0,self::AES256GCM_NPUBBYTES,'8bit'); // nonce is already base64_url encoded
         $enc = sodium_crypto_aead_aes256gcm_encrypt($text, '', $nonce, $key);
-        return $nonce.bin2url($enc);
+        return $nonce.Txt::bin2url($enc);
     }
 
     /** Decrypts the text with password using aes256gcm crypt function. Works from PHP >5.3
@@ -48,7 +48,7 @@ final class Crypt {
         }
         $key   = self::createKey($pass);
         $nonce = mb_substr($text, 0, self::AES256GCM_NPUBBYTES, '8bit');
-        $enc   = url2bin(mb_substr($text, self::AES256GCM_NPUBBYTES, null,'8bit'));
+        $enc   = Txt::url2bin(mb_substr($text, self::AES256GCM_NPUBBYTES, null,'8bit'));
         $decrypted = sodium_crypto_aead_aes256gcm_decrypt($enc, '', $nonce, $key);
         return is_string($decrypted) ? $decrypted : false;
     }

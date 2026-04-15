@@ -1116,26 +1116,6 @@ function aa_html_entity_decode(string $text): string
     return html_entity_decode($text, ENT_QUOTES | ENT_HTML5);
 }
 
-/** Base64url version of base64
- * @param string $data
- * @return string
- */
-function bin2url($data): string
-{
-    return rtrim(strtr(base64_encode($data), '+/', '-_'), '=');
-}
-
-/** reverse Base64url version of base64
- *
- * @param string  $data
- *
- * @return false|string
- */
-function url2bin($data): false|string
-{
-    return base64_decode(str_pad(strtr($data, '-_', '+/'), strlen($data) % 4, '='));
-}
-
 /** Prints HTML start page tags (html begin, encoding, style sheet, but no title).
  * Chooses the right encoding by get_mgettext_lang().
  *

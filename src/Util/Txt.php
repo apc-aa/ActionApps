@@ -65,4 +65,18 @@ class Txt {
         }
         return $ret;
     }
+
+    /** Base64url encode (RFC 4648 §5, no padding). */
+    public static function bin2url(string $data): string
+    {
+        return rtrim(strtr(base64_encode($data), '+/', '-_'), '=');
+    }
+
+    /** Base64url decode. Tolerant: accepts missing padding and mixed +/-_ alphabets.
+     *  Returns false on undecodable input (matches base64_decode semantics).
+     */
+    public static function url2bin(string $data): false|string
+    {
+        return base64_decode(str_pad(strtr($data, '-_', '+/'), strlen($data) % 4, '='));
+    }
 }

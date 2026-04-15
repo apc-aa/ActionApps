@@ -132,10 +132,10 @@ if ( $UsrSrch ) {
     $selected_user = key($users);
     $usr_edit      = true;
 }
-$groups = GetFiltered("G", $grp, _m("Too much groups found."), _m("No groups found")); // get list of groups
+$groups = GetFiltered("G", $grp, _m("Too many groups found."), _m("No groups found")); // get list of groups
 
 if ( $grp1_flt ) {  // user editation - list of all groups
-    $all_groups = GetFiltered("G", $grp1_flt, _m("Too much groups found."), _m("No groups found"));
+    $all_groups = GetFiltered("G", $grp1_flt, _m("Too many groups found."), _m("No groups found"));
 } else {
     $all_groups = $groups;  // in user editation is $grp=="", so $groups are list of all groups
 }
@@ -152,7 +152,7 @@ if ( $selected_user ) {
         $user_groups = AA::$perm->getMembership($selected_user,1);   // get list of groups in which the user is (just first level groups)
     }
     if ( !isset($user_groups) || !is_array($user_groups) ) {
-        $sel_groups["n"]['name'] = (( $user_groups === "too much" ) ? _m("Too much groups found.") : "");
+        $sel_groups["n"]['name'] = (( $user_groups === "too much" ) ? _m("Too many groups found.") : "");
     } else {
         foreach ($user_groups as $foo_gid) {
             $sel_groups[$foo_gid] = AA::$perm->getGroup($foo_gid);
@@ -195,7 +195,7 @@ $headcode = "
     document.fx.submit()
   }
 
-  function RealyDelete() {
+  function ReallyDelete() {
     if ( window.confirm('". _m("Are you sure you want to delete selected user from whole permission system?") . "')) {
       document.f2.submit_action.value = 'usr_del'
       document.f2.submit()
@@ -262,7 +262,7 @@ FrmTabSeparator("");
           ?></td>
             <td width="33%"><input type="submit" name="usr_edit" value="<?php echo _m("Edit")?>">&nbsp;
                 <input type="hidden" name="submit_action" value="0">  <!-- to this variable store "usr_del" (by javascript) -->
-                <input type="button" name="usr_del" value="<?php echo _m("Delete")?>" onclick="RealyDelete()"></td>
+                <input type="button" name="usr_del" value="<?php echo _m("Delete")?>" onclick="ReallyDelete()"></td>
      </tr>
     </table>
    </form>

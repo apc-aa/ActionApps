@@ -35,6 +35,7 @@
 
 use AA\IO\DB\DB_AA;
 use AA\Util\InputVars;
+use AA\Util\Txt;
 
 // const  AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
@@ -153,7 +154,7 @@ class AA_Csv_Importer {
         $this->itemIdMappedParams  = $_REQUEST['itemIdMappedParams'];
         $this->actionIfItemExists  = $_REQUEST['actionIfItemExists'];
         $this->insertSilent        = (bool)$_REQUEST['insertSilent'];
-        $this->addParams           = unserialize(url2bin($_REQUEST['addParamsSerial']), ['allowed_classes' => false]);
+        $this->addParams           = unserialize(Txt::url2bin($_REQUEST['addParamsSerial']), ['allowed_classes' => false]);
         $this->auth_uid            = AuthGetUid();
     }
 
@@ -389,7 +390,7 @@ class AA_Csv_Importer {
                 "accesskey" => "L"
             ],
             "fileName"        => ["value"     => $this->fileName],
-            "addParamsSerial" => ["value"     => bin2url(serialize($this->addParams))]
+            "addParamsSerial" => ["value"     => Txt::bin2url(serialize($this->addParams))]
         ];
 
 

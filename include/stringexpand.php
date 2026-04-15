@@ -42,6 +42,7 @@ use AA\Util\ChangesMonitor;
 use AA\Util\Langs;
 use AA\Util\LogarithmIndex;
 use AA\Util\NamedInterface;
+use AA\Util\Txt;
 use BaconQrCode\Common\ErrorCorrectionLevel;
 use BaconQrCode\Renderer\GDLibRenderer;
 use BaconQrCode\Writer;
@@ -253,20 +254,27 @@ class AA_Stringexpand_Switch extends AA_Stringexpand_Nevercache {
 
     /** redefine parseParam - we can't use the standard function - there is problem with:
      *  {switch({text............}).:OK} if the text.. contain ')' - we do not know, where the parameters are separated
+     *  Also supports new colon syntax: {switch:condition:case1:result1:...[:default]}
      * @retrun string[]
      */
-    public static function parseParam(string $params): array
+    public static function parseParam(string $params, string $delimiter=':'): array
     {
         if (empty($params)) {
             return [];
         }
+
+        /* New syntax: {switch:condition:case1:result1} - standard colon-separated params. */
+        if ($delimiter === ':') {
+            return parent::parseParam($params, $delimiter);
+        }
+        /* Old syntax: {switch(condition):case1:result1} - condition wrapped in parentheses. */
         [$condition,$rest] = explode(')', $params, 2);
         return array_map('DeQuoteColons', array_merge([$condition], ParamExplode($rest)));
     }
 
-    /** expand function
-     * @params string - first parameter is filename, second is hints on where to find it
-     */
+/** expand function
+* @params string - first parameter is filename, second is hints on where to find it
+*/
     function expand(...$twos): string
     {
         $condition = array_shift($twos);
@@ -3002,7 +3010,7 @@ class AA_Stringexpand_Bin2url extends AA_Stringexpand_Nevercachenotrim {
      */
     function expand($data=''): string
     {
-        return bin2url($data);
+        return Txt::bin2url($data);
     }
 }
 
@@ -3013,7 +3021,7 @@ class AA_Stringexpand_Url2bin extends AA_Stringexpand_Nevercache {
      */
     function expand($data=''): string
     {
-        return url2bin($data);
+        return Txt::url2bin($data);
     }
 }
 
@@ -6573,13 +6581,14 @@ class AA_Unalias_Callback {
         // the longest php function name in whole PHP is 38 chars - test 40 should be enough
 
         $initiallen = strspn(strtolower(aa_substr($out,0,40)), 'abcdefghijklmnopqrstuvwxyz0123456789_');
-        if ( ($outcmd   = aa_substr($out,0,$initiallen)) && ($initiallen === strlen($out) || $out[$initiallen] === ':' || $out[$initiallen] === '(') ) {
+        $cmd_delim  = $out[$initiallen];
+        if ( ($outcmd   = aa_substr($out,0,$initiallen)) && ($initiallen === strlen($out) || $cmd_delim === ':' || $cmd_delim === '(') ) {
         // if ( $outcmd   = aa_substr($out,0,$initiallen) ) {   // older - it also runs {math on {Math.parse(...
             $outparam = aa_substr($out,$initiallen+1);  // skip one more char - delimiter
 
             /** @var class-string<AA_Stringexpand> $class_name */
             if (class_exists($class_name = AA_Serializable::constructClassName($outcmd, 'AA_Stringexpand_'))) {
-                return StrExpand($class_name, $class_name::parseParam($outparam), ['item'=>$this->item, 'itemview'=> $this->itemview], true);
+                return StrExpand($class_name, $class_name::parseParam($outparam, $cmd_delim), ['item'=>$this->item, 'itemview'=> $this->itemview], true);
             }
 
             if (is_callable($fnctn = "stringexpand_$outcmd")) {  // old version of stringexpand_ functions (could be in old custom aa setups)
@@ -7795,10 +7804,12 @@ class AA_Stringexpand {
     }
 
     /**
-     * @param $params
+     * @param string $params
+     * @param string $delimiter   in most cases ':', but for switch() could be '('
+     *
      * @return string[]
      */
-    public static function parseParam(string $params): array
+    public static function parseParam(string $params, string $delimiter=':'): array
     {
         if (empty($params)) {
             return [];

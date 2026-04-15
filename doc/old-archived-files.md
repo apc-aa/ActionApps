@@ -8,6 +8,13 @@ _No longer maintained. Removed 2025-08-13 - honzam
 Show hierarchical constants  
 _No longer maintained. It was unfunctional for some time already. Hierarchy now should be solved on slice level - withe related items. Removed 2022-08-19 - honzam (see older apc-aa branches to get the code)_
 
+/**localurlpick.php**
+/**localurlpick_navigator.php**
+/**localurlpick_picker.php**
+Local URL picker field tyupe - a tool for picking a URL from site - frames used
+_Now implemented by LupWidget_
+
+
 /admin/**sumarize.php3**  
 Generates a human readable output page that summarizes the slices on a system, compare slices and sync its settings  
 _No longer maintained. Removed 2022-02-25 - honzam (see older apc-aa branches to get the code)_
