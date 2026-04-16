@@ -123,7 +123,7 @@ class AA_Responder_Get_Module_Defs extends AA_Responder {
     function run(): AA_Response
     {
         $ret        = [];
-        $class_name = 'AA_Module_Definition_'. $this->type;
+        $class_name = 'AA_Definition_Module_'. $this->type;
         foreach ( $this->ids as $sid ) {
             $ret[$sid] = new $class_name;
             $ret[$sid]->loadForId($sid, $this->limited);
@@ -155,7 +155,7 @@ class AA_Responder_Do_Synchronize extends AA_Responder {
 
 /** imports the slice to the database */
 class AA_Responder_Do_Import_Module_Chunk extends AA_Responder {
-    private ?AA_Module_Definition_Chunk $definition_chunk;
+    private ?AA_Definition_Module_Chunk $definition_chunk;
 
     function __construct($param) {
         $this->definition_chunk = $param['definition_chunk'];

@@ -183,7 +183,7 @@ class AA_Actionapps {
     /** Imports slice to the current AA. The id of slice is the same as in
      *  definition
      */
-    function importModuleChunk(AA_Module_Definition_Chunk $definition_chunk) {
+    function importModuleChunk(AA_Definition_Module_Chunk $definition_chunk) {
         // We will use rather one call which returns all the data for all the
         // slices, since it is much quicker than separate call for each slice
 
@@ -268,7 +268,7 @@ class AA_Actionapps {
 }
 
 
-class AA_Module_Definition {
+class AA_Definition_Module {
     /** module id is unpacked */
     protected $module_id;
     /** data for the module */
@@ -343,16 +343,16 @@ class AA_Module_Definition {
         }
 
         foreach ($this->data as $table => $rows) {
-            $chunks[] = AA_Module_Definition_Chunk::factoryArray($this->module_id, $table, $rows);
+            $chunks[] = AA_Definition_Module_Chunk::factoryArray($this->module_id, $table, $rows);
         }
         return array_merge(...$chunks);  // avoiding array_merge() in loop
     }
 }
 
-/** AA_Module_Definition could be splited to more pieces (chunks) for easier
+/** AA_Definition_Module could be splited to more pieces (chunks) for easier
  *  transmission and import
  */
-class AA_Module_Definition_Chunk {
+class AA_Definition_Module_Chunk {
 
     /** module id is unpacked */
     protected $module_id;
@@ -367,7 +367,7 @@ class AA_Module_Definition_Chunk {
         // maximum 1000 rows in one chunk
         $chunks_data = array_chunk($rows, 1000, true);
         foreach ($chunks_data as $chunk_data) {
-            $chunks[] = new AA_Module_Definition_Chunk($module_id, $table, $chunk_data);
+            $chunks[] = new AA_Definition_Module_Chunk($module_id, $table, $chunk_data);
         }
         return $chunks;
     }
@@ -436,7 +436,7 @@ class AA_Module_Definition_Chunk {
     }
 }
 
-class AA_Module_Definition_Slice extends AA_Module_Definition {
+class AA_Definition_Module_Slice extends AA_Definition_Module {
 
     function loadForId($module_id, $limited= []): void
     {
@@ -499,7 +499,7 @@ class AA_Module_Definition_Slice extends AA_Module_Definition {
     }
 }
 
-class AA_Module_Definition_Site extends AA_Module_Definition {
+class AA_Definition_Module_Site extends AA_Definition_Module {
 
     function loadForId($module_id, $limited=false): void
     {
@@ -516,7 +516,7 @@ class AA_Module_Definition_Site extends AA_Module_Definition {
     }
 }
 
-class AA_Module_Definition_Alerts extends AA_Module_Definition {
+class AA_Definition_Module_Alerts extends AA_Definition_Module {
 
     function loadForId($module_id, $limited=false): void
     {
@@ -793,13 +793,13 @@ class AA_Task_Sync implements LaterInterface {
  */
 class AA_Task_Import_Module_Chunk implements LaterInterface {
 
-    /** @var AA_Module_Definition_Chunk $module_definition_chunk -  object or similar for import */
-    protected AA_Module_Definition_Chunk $module_definition_chunk;
+    /** @var AA_Definition_Module_Chunk $module_definition_chunk -  object or similar for import */
+    protected AA_Definition_Module_Chunk $module_definition_chunk;
 
     /** @var AA_Actionapps $actionapps object in which AA we have to do the action */
     protected $actionapps;
 
-    function __construct(AA_Module_Definition_Chunk $module_definition_chunk, AA_Actionapps $actionapps) {
+    function __construct(AA_Definition_Module_Chunk $module_definition_chunk, AA_Actionapps $actionapps) {
         $this->module_definition_chunk = $module_definition_chunk;
         $this->actionapps              = $actionapps;
     }

@@ -566,7 +566,7 @@ echo '</form>';
 echo '</td></tr>';
 FrmTabSeparator(_m("Search"));
 echo '<tr><td>';
-echo '<form name="f_findtext" action="">';
+echo '<form name="f_findtext">';
 echo '<b>'._m('Find in').'</b>
       <label><input type="checkbox" name="findinseo"    value="1" '. ((!$findtext || $findinseo)? 'checked':'').'>'._m("ID & SEO").'</label>&nbsp;&nbsp;
       <label><input type="checkbox" name="findinview"   value="1" '. ((!$findtext || $findinview)? 'checked':'').'>'._m("Views").'</label>&nbsp;&nbsp;
@@ -580,7 +580,7 @@ echo '<b>'._m('Find in').'</b>
 echo '</form>';
 echo '</td></tr><tr><td>';
 
-echo '<form name="f_replace" action="">';
+echo '<form name="f_replace">';
 echo '<b>'._m('Search and Replace in').'</b>
       <label><input type="checkbox" name="searchinview"      value="1" '. ((!$search || $searchinview)? 'checked':'').'>'._m("Views").'</label>&nbsp;&nbsp;
       <label><input type="checkbox" name="searchinslice"     value="1" '. ((!$search || $searchinslice)? 'checked':'').'>'._m("Slices").'</label>&nbsp;&nbsp;
@@ -601,14 +601,14 @@ echo '</form>';
 echo '</td></tr><tr><td>';
 
 
-echo '<form name="f_finditem" action="">';
+echo '<form name="f_finditem">';
 echo '<b>'._m("Get all information about the ITEM").'</b><br>
     <input type="text" name="finditem" value="'.safe($finditem).'" size=120>&nbsp;&nbsp;
     <input type="submit" name="go_finditem" value="'._m("Go!").'">' .StateHidden();
 echo '</form>';
 echo '</td></tr><tr><td>';
 
-echo '<form name="f_finditem_edit" action="">';
+echo '<form name="f_finditem_edit">';
 echo '<b>'._m("Shorcut to edit ITEM").'</b><br>
     <input type="text" name="finditem_edit" value="'.safe($finditem_edit).'" size=120>&nbsp;&nbsp;
     <select name="finditem_edit_op">
