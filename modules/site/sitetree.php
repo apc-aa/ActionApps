@@ -23,7 +23,7 @@ https://www.apc.org/
 */
 function normalize_arr($arr): array
 {
-    $ret = false;
+    $ret = [];
     if ( isset($arr) && is_array($arr) ) {
         foreach ($arr as $v) {
             if ( isset($v) ) {
