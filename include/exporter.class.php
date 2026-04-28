@@ -345,12 +345,12 @@ class AA_Exporter_Excel5 extends AA_Exporter {
 
     }
 
-    function _outputStart($item)  {
+    function _outputStart($item): string  {
         $this->_ar[] = $this->field_set->getNameArray(true);
         return "";
     }
 
-    function _outputEnd($item)   {
+    function _outputEnd($item): string   {
 
         // Create new PHPExcel object
         $this->sheet = new PHPExcel();
@@ -374,7 +374,7 @@ class AA_Exporter_Excel5 extends AA_Exporter {
         return "";  // EOF
     }
 
-    function _outputItem($item)  {
+    function _outputItem($item): string  {
         $this->_ar[] = $this->field_set->getValueArray($item);
         return "";
     }

@@ -83,7 +83,7 @@ class AA_Field implements ArrayAccess, Countable, IteratorAggregate {
      * @param string $fid - field id possibly with |lang1|lang2 suffix  - like 'headline........|en|de'
      * @return [string clean_field_id, array langs_to_search_in[]] - like ['headline........',['en','de']]
      */
-    public static function parseWithLang(string $fid) {
+    public static function parseWithLang(string $fid): array {
         if (!str_contains($fid, '|')) {
             return [$fid, []];
         }

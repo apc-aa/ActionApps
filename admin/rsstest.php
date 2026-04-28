@@ -35,7 +35,7 @@ require_once __DIR__ . "/../include/tv_common.php";
  * @param $var
  * @return string
  */
-function tv_field_value($feed_id,$param,$var) {
+function tv_field_value($feed_id,$param,$var): string {
     return "+'&$param='+encodeURIComponent(document.tv_rsstest.elements['val[$feed_id][$var]'].value)";
 }
 /** showRSSFeedActions function
