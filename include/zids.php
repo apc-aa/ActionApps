@@ -247,7 +247,7 @@ class zids implements IteratorAggregate, ArrayAccess, Countable {
     /** Debugging function to print zids
      *  Don't rely on the output format, its only for debuging
      */
-    function __toString() {
+    function __toString(): string {
         return "zids object: type=".$this->type." (". ($this->count()<=0 ? 'Empty' : implode(",",$this->arr) ).")";
     }
 

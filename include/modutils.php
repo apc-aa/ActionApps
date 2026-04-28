@@ -119,7 +119,7 @@ function ValidateModuleFields( $name, $slice_url, $priority, $lang_file, $owner,
  *
  * @return string
  */
-function WriteModuleFields( ?string $module_id, $superadmin, $type, $name, $slice_url, $priority, $lang_file, $owner, $deleted, string $new_id="" ): string
+function WriteModuleFields( ?string $module_id, $superadmin, $type, $name, $slice_url, $priority, $lang_file, $owner, $deleted, string $new_id="" ): ?string
 {
     global $err;
     $varset     = new CVarset();
@@ -137,7 +137,7 @@ function WriteModuleFields( ?string $module_id, $superadmin, $type, $name, $slic
 
         if (!$varset->doUpdate('module', null, $module_id)) {  // not necessary - we have set the halt_on_error
             $err["DB"] = MsgErr("Can't change module");
-            return false;
+            return null;
         }
 
         $GLOBALS['r_lang_file']      = stripslashes($lang_file);
@@ -158,7 +158,7 @@ function WriteModuleFields( ?string $module_id, $superadmin, $type, $name, $slic
 
         if ( !$varset->doInsert('module') ) {
             $err["DB"] .= MsgErr("Can't add module");
-            return false;
+            return null;
         }
 
         $GLOBALS['r_lang_file'] = stripslashes($lang_file);
