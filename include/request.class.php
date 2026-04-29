@@ -254,7 +254,10 @@ class AA_Request {
      *     $request = AA_Request::decode($_POST['request']);
      */
     public static function decode(string $posted_data) {
-        return unserialize($posted_data, ['allowed_classes' => [AA_Request::class]]);
+        return unserialize($posted_data, ['allowed_classes' => [
+            AA_Request::class,
+            AA_Definition_Module_Chunk::class,    // Do_Import_Module_Chunk carries a chunk in params
+        ]]);
     }
 
     function getCommand() {
@@ -286,7 +289,15 @@ class AA_Request {
             //echo "<br>Error - response: ". AA_Http::lastErrMsg();
             return new AA_Response('No response recieved ('. AA_Http::lastErr() .' - '. AA_Http::lastErrMsg(). ')', 3);
         }
-        $response  = unserialize(trim($result), ['allowed_classes' => [AA_Response::class]]);
+        $response  = unserialize(trim($result), ['allowed_classes' => [
+            AA_Response::class,
+            // Central module Get_Module_Defs returns these wrapped in AA_Response:
+            AA_Definition_Module::class,
+            AA_Definition_Module_Slice::class,
+            AA_Definition_Module_Site::class,
+            AA_Definition_Module_Alerts::class,
+            AA_Definition_Module_Chunk::class,
+        ]]);
         if ( $response === false ) {
             return new AA_Response("Bad response", 3);
         }
