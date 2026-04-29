@@ -141,9 +141,9 @@ pageOpen('noauth');
 
 $db = getDB();
 
-// Check if database is already created - random table
-$db->query_halt("SELECT item_id FROM content LIMIT 1", 'report');
-if ( !$db->next_record() ) {
+// Check if database is already created - test that the `content` table exists
+$info = $db->metadata('content');
+if ( !is_array($info) || count($info) < 1 ) {
     HtmlStart();
     echo _m('Database is not configured correctly or the database is empty.<br>
              Check please the database credentials in <b>include/config.php</b>
