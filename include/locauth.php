@@ -135,10 +135,29 @@ class AA_Auth extends Auth {
         if (isset($_POST['username']) && isset($_POST['password'])) {
             return $this->_validatelogin($_POST['username'], $_POST['password'], $_POST['code2fa']);
         }
-        if (isset($_GET['username']) && isset($_GET['password'])) {
-            return $this->_validatelogin($_GET['username'], $_GET['password'], $_GET['code2fa']);
+        // JWT Bearer token authentication (used by Central for remote AA access)
+        if (($auth_header = get_authorization_header()) && str_starts_with($auth_header, 'Bearer ')) {
+            return $this->_validateJwt(substr($auth_header, 7));
         }
         return false;
+    }
+
+    /** Validate JWT token and set auth context
+     *  JWT must be signed with this AA's AA_ID using HS256
+     */
+    protected function _validateJwt(string $jwt): false|string
+    {
+        try {
+            $decoded = (array)\Firebase\JWT\JWT::decode(
+                $jwt,
+                new \Firebase\JWT\Key(AA_ID, 'HS256')
+            );
+            $this->auth['uname'] = $decoded['name'] ?? '';
+            $this->auth['uid']   = $decoded['sub'] ?? '';
+            return $decoded['sub'] ?: false;
+        } catch (\Exception $e) {
+            return false;
+        }
     }
 }
 

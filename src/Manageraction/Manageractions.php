@@ -32,6 +32,22 @@ class Manageractions implements \IteratorAggregate, ArrayAccess, Countable {
         return $btns;
     }
 
+    /** Same as getManagerButtons() but split by isSecondaryButton().
+     *  @return array{primary: array<string,string>, secondary: array<string,string>}
+     */
+    public function getManagerButtonsGrouped(string $manager_url, string $id_alias, string $module_alias): array {
+        $primary = $secondary = [];
+        foreach ($this->arr as $a) {
+            $btn = $a->getButton($manager_url, $id_alias, $module_alias);
+            if ($a->isSecondaryButton()) {
+                $secondary = array_merge($secondary, $btn);
+            } else {
+                $primary   = array_merge($primary, $btn);
+            }
+        }
+        return ['primary' => $primary, 'secondary' => $secondary];
+    }
+
     /**
      * @param  AbstractManageraction  $action
      *

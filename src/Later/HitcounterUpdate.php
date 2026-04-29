@@ -78,6 +78,11 @@ class HitcounterUpdate implements LaterInterface
         $is_duration_log_feature = (new AddDurationLog())->test();
 
         if ($is_duration_log_feature) {
+            // SUBSTRING_INDEX(info, ':', 5) takes the first 5 colon-separated parts of the
+            // serialized AA_Logentry_H, then SUBSTRING_INDEX(..., ':', -1) returns the LAST
+            // of those = the 5th field, which is `packtime` (1-byte tttttttcn encoding).
+            // The positional contract is documented on AA_Logentry_H::getClassProperties().
+            // @see \AA_Logentry_H — DO NOT reorder its property array.
             DB_AA::sql("INSERT INTO hit_archive (`id`, `time`, `duration`) SELECT `id`, `time`, SUBSTRING_INDEX(SUBSTRING_INDEX(`info`, ':', 5), ':', -1) AS duration FROM hit_short_id WHERE time < $time");
             DB_AA::sql("DELETE FROM hit_short_id WHERE time < $time");
 

@@ -28,6 +28,7 @@ https://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+use AA\IO\DB\DB_AA;
 use AA\Later\LaterInterface;
 use AA\Later\Toexecute;
 
@@ -46,7 +47,7 @@ class AA_Actionapps {
     /** local data (central_conf table) in ItemContent structure */
     private ItemContent $local_data;
 
-    private ?int $last_error = null;
+    private $last_error = null;
 
     /** cached remote session ID */
     private ?string $_remote_session_id = null;
@@ -104,9 +105,58 @@ class AA_Actionapps {
         return $this->getValue('AA_ADMIN_PWD');
     }
 
+    /** Get JWT auth token if available (stored with 'jwt:' prefix in AA_ADMIN_PWD) */
+    function getAuthToken(): ?string
+    {
+        $pwd = $this->getValue('AA_ADMIN_PWD');
+        if ($pwd && str_starts_with($pwd, 'jwt:')) {
+            return substr($pwd, 4);
+        }
+        return null;
+    }
+
+    /** Store JWT auth token (with 'jwt:' prefix) in local_data */
+    function setAuthToken(string $jwt): void
+    {
+        $this->local_data->setValue('AA_ADMIN_PWD', 'jwt:' . $jwt);
+    }
+
+    /** Authenticate to remote AA and get JWT token
+     *  @return string JWT token on success, empty string on failure
+     */
+    function requestJwt(string $username, string $password): string
+    {
+        $request  = new AA_Request('Get_Jwt');
+        $response = $request->ask(
+            $this->getComunicatorUrl(),
+            ['username' => $username, 'password' => $password]
+        );
+        if (!$response->isError()) {
+            return (string)$response->getResponse();
+        }
+        $this->last_error = $response->getError();
+        return '';
+    }
+
+    /** Persist auth token to central_conf database
+     *  central_conf.id is int(10) unsigned, not a long-id, so use type 'i' for the WHERE clause.
+     */
+    static function saveAuthToken(string $aa_id, string $token): void
+    {
+        DB_AA::update('central_conf',
+            [['AA_ADMIN_PWD', $token]],
+            [['id', $aa_id, 'i']]
+        );
+    }
+
     /** get value from locally stored data (central_conf) */
     function getValue($field) {
         return $this->local_data->getValue($field);
+    }
+
+    /** Get last communication error code */
+    function getLastError() {
+        return $this->last_error;
     }
 
 
@@ -193,17 +243,35 @@ class AA_Actionapps {
 
     /** Main communication function - returns AA_Response object */
     function getResponse($request) {
-        if ( !$this->_remote_session_id || $this->_remote_session_id_time < (now() - 10*60)) {  // 10 minutes
+        $jwt = $this->getAuthToken();
+        if ($jwt) {
+            // Stateless JWT auth — send token with every request
+            $response = $request->ask(
+                $this->getComunicatorUrl(),
+                [],
+                ['Authorization' => 'Bearer ' . $jwt]
+            );
+            if (!$response->isError()) {
+                return $response;
+            }
+            // JWT might be expired — store error for reporting
+            $this->last_error = $response->getError();
+            return $response;
+        }
+
+        // Legacy: session-based auth with username/password
+        if (!$this->_remote_session_id || $this->_remote_session_id_time < (now() - 10*60)) {
             $response = $this->_authenticate();
             if ($response->isError()) {
                 $this->last_error = $response->getError();
                 return $response;
             }
         }
-        // _remote_session_id is set
-        return $request->ask($this->getComunicatorUrl(), ['AA_CP_Session'=>$this->_remote_session_id], ['Cookie'=>'AA_Session='.$this->_remote_session_id]);
-        // return $request->ask($this->getComunicatorUrl(), array('username' => $this->getAccessUsername(), 'password' =>$this->getAccessPassword()));
-        // return $request->ask($this->getComunicatorUrl(), array('username' => $this->getAccessUsername(), 'password' =>$this->getAccessPassword()));
+        return $request->ask(
+            $this->getComunicatorUrl(),
+            ['AA_CP_Session' => $this->_remote_session_id],
+            ['Cookie' => 'AA_Session=' . $this->_remote_session_id]
+        );
     }
 
     function _authenticate() {
@@ -833,6 +901,10 @@ function Central_GetAaContent($zids): array
 {
     $content = [];
     $ret     = [];
+
+    if ($zids->isEmpty()) {
+        return $ret;
+    }
 
     // construct WHERE clausule
     $sel_in = $zids->sqlin( false );

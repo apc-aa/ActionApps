@@ -318,6 +318,14 @@ class AA_Logentry_X extends AA_Logentry {
 }
 
 /** Hitcounter entry
+ *
+ *  @WARNING positional contract — the order of these properties is part of an
+ *  implicit data contract with src/Later/HitcounterUpdate.php. The serialized
+ *  form is `H:cached:not_modified:time:packtime:mem_usage:uri` and that file
+ *  extracts the packtime byte via `SUBSTRING_INDEX(info, ':', 5)`. Reordering
+ *  will silently break archival of duration data. If you need to add a field,
+ *  append it at the end of the array.
+ *  @see \AA\Later\HitcounterUpdate::toexecutelater()
  */
 class AA_Logentry_H extends AA_Logentry {
     public static function getClassProperties(): array {

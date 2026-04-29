@@ -73,6 +73,13 @@ abstract class AbstractManageraction extends AA_Storable {
         return [];
     }
 
+    /** True → button is rendered in the per-row "..." overflow menu instead of inline.
+     *  Override in subclasses for actions that should not clutter the primary button row.
+     */
+    public function isSecondaryButton(): bool {
+        return false;
+    }
+
     /** for adding button to manager redefine rather getButtonDef method */
     public function getButton(string $manager_url, string $id_alias, string $module_alias): array {
         $ret = [];

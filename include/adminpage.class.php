@@ -186,6 +186,26 @@ class AA_Adminpageutil {
         AA::Stringexpander()->addRequire('css-aa-system');
         AA::Stringexpander()->addRequire(AA_INSTAL_PATH . ADMIN_CSS.'?v='.AA_JS_VERSION);
 
+        // Positioner for the reusable .aa-overflow-menu popover (HTML5 popover API,
+        // top-layer rendering). Open the popover via <button popovertarget="…">⋯</button>
+        // and the menu is anchored under the trigger automatically.
+        AA::Stringexpander()->addRequire(<<<'JS'
+(function(){
+    document.addEventListener('toggle', function(e){
+        var m = e.target;
+        if (!m.classList || !m.classList.contains('aa-overflow-menu') || e.newState !== 'open') return;
+        var btn = document.querySelector('[popovertarget="' + CSS.escape(m.id) + '"]');
+        if (!btn) return;
+        var r = btn.getBoundingClientRect();
+        var w = m.offsetWidth || 180;
+        var left = r.right - w;       // right-align under trigger
+        if (left < 4) left = r.left;  // flip if it would clip viewport-left
+        m.style.top  = (r.bottom + 4) + 'px';
+        m.style.left = left + 'px';
+    }, true);
+})();
+JS, 'AA_Req_Load');
+
         if ($errtext = trim(implode('<br>',(array)$err))) {
             //$errtext = 'some text';
             AA::Stringexpander()->addRequire('aa-jslib');

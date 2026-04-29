@@ -110,6 +110,20 @@ class AA_Formrow_Text extends AA_Formrow {
     }
 }
 
+/** Raw HTML row — emits text verbatim with no surrounding <div>.
+ *  Useful when the text itself opens or closes a block element that must
+ *  span multiple form rows (e.g. <details>…</details> grouping).
+ */
+class AA_Formrow_Html extends AA_Formrow {
+    protected $html;
+    function __construct($html=null) {
+        $this->html = (string)$html;
+    }
+    function getRowHtml(AA_Content $content, string $type=''): string {
+        return $this->html;
+    }
+}
+
 /** Fully qualified form row */
 class AA_Formrow_Full extends AA_Formrow {
     protected $property;        // protected - we need the data visible for AA_Statestore
@@ -448,6 +462,14 @@ class AA_Form extends AA_Object implements NamedInterface {
     {
         if (empty($this->object_id)) {
             $content = (new AA_Content())->setOwnerId($this->object_owner);
+            // Pre-populate the empty form with each property's default so the
+            // Add form shows defaults (not just relies on them at insert time).
+            foreach ($this->rows as $row) {
+                $prop = $row->getRowProperty();
+                if ($prop && ($default = $prop->getDefault()) && !$default->isEmpty()) {
+                    $content->setAaValue($prop->getId(), $default);
+                }
+            }
         } else {
             $managed  = Managed::factoryFromType($this->object_type);
             $contents = $managed->getContent(new zids($this->object_id, $managed->getZidsType()));

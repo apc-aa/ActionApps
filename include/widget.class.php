@@ -220,6 +220,18 @@ class AA_Property extends AA_Storable {
 
     public function setValidator($validator): void { $this->_validator = $validator; }   // we do not create AA_Validator object here, because then it makes infinite loop - AA_Property contains validator...        $val; return $this; }
 
+    /** Set the default value used when no value is supplied (e.g. on the Add form). */
+    function setDefault($val): static
+    {
+        $this->default = ($val instanceof AA_Value) ? $val : new AA_Value($val);
+        return $this;
+    }
+
+    function getDefault(): ?AA_Value
+    {
+        return $this->default;
+    }
+
     /** set the Values array and also the validator */
     function setConstants($arr): void
     {

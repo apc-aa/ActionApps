@@ -67,6 +67,26 @@ if ( !IsSuperadmin() ) {
     exit;
 }
 
+// Handle JWT authentication request for a remote AA
+$auth_aa_id = InputVars::stringPOST('authenticate_aa');
+if ($auth_aa_id) {
+    $auth_username = InputVars::stringPOST('auth_username');
+    $auth_password = InputVars::stringPOST('auth_password');
+    if ($auth_username && $auth_password) {
+        $aa = AA_Actionapps::getActionapps($auth_aa_id);
+        if ($aa) {
+            $jwt = $aa->requestJwt($auth_username, $auth_password);
+            if ($jwt) {
+                AA_Actionapps::saveAuthToken($auth_aa_id, 'jwt:' . $jwt);
+                $Msg = _m("Successfully authenticated to %1", [$aa->getName()]);
+            } else {
+                $err = _m("Authentication failed for %1: %2",
+                    [$aa->getName(), $aa->getLastError()]);
+            }
+        }
+    }
+}
+
 // we do not manage more "modules" here, so unique id is OK
 $module_id = '43656e7472616c2d41412d61646d696e';
 
@@ -112,7 +132,39 @@ $managed->setTitle(_m('ActionApps Central'));
 //         'get_content_funct'    => 'Central_GetAaContent'
 
 $managed->addColumn('admin_link', _m('Admin Link'), '<a href="_#AA_HTTP_/_#AA_BASE_/admin">Admin</a>');
-$managed->setColumns2show(['ORG_NAME','AA_HTTP_DOMAIN','AA_BASE_DIR', 'admin_link']);
+
+// Auth column: status badge + collapsible Authenticate form. AA_ADMI2 is the
+// alias for AA_ADMIN_PWD (AA_ADMIN_USER takes _#AA_ADMIN first).
+//   - Wrapping the alias as {_#AA_ADMI2} makes the engine evaluate it first
+//     and pass the value as a single parameter (safe with ':' inside a JWT).
+//   - {substr:...:0:3} extracts "jwt" / first-3-chars / "" so we can branch in {switch}.
+//   - QuoteColons on the translated labels keeps any future translation containing ':' safe.
+$auth_format = ''
+    . '<div class="aa-auth-cell">'
+    .   '<div>{switch:{substr:{_#AA_ADMI2}:0:3}:^jwt$:'
+    .       QuoteColons(_m('Authenticated'))
+    .     ':.:'
+    .       QuoteColons(_m('Legacy password'))
+    .     ':'
+    .       QuoteColons(_m('Not configured'))
+    .   '}</div>'
+    .   '<details>'
+    .     '<summary>'._m('Authenticate').'</summary>'
+    .     '<div>'
+    .       '<label>'._m('Username').': <input type="text" class="aa-auth-user" size="15" autocomplete="username"></label> '
+    .       '<label>'._m('Password').': <input type="password" class="aa-auth-pass" size="15" autocomplete="current-password"></label> '
+    .       '<button type="button" onclick="aaCentralAuth(this, \'_#ID______\')">'._m('Get Token').'</button>'
+    .     '</div>'
+    .   '</details>'
+    . '</div>';
+$managed->addColumn('auth', _m('Auth'), $auth_format);
+
+$managed->setColumns2show(['ORG_NAME','AA_HTTP_DOMAIN','AA_BASE_DIR', 'admin_link', 'auth']);
+
+// Edit form: keep ORG_NAME and the URL fields visible at top, hide the rest under "Optional".
+$managed->setPriorityFields(['ORG_NAME', 'AA_HTTP_DOMAIN', 'AA_BASE_DIR']);
+// status_code: 1 = active, 2 = hold, 3 = trash — render as a select, default 1 on Add.
+$managed->setWidgetSetting('status_code', ['enum' => ['1' => '1', '2' => '2', '3' => '3'], 'default' => '1']);
 $manager = new Manager('central', $managed);
 $manager->performActions();
 
@@ -123,6 +175,31 @@ $apage = new AA_Adminpageutil('central',$manager->getBin());
 $apage->setForm();
 
 $html = $manager->getDisplayPage();
+
+// JS helper for the per-row Authenticate button: builds & POSTs a hidden form.
+// Required because the manager already wraps rows in <form>, and HTML5 disallows nested forms.
+$html .= <<<'HTML'
+<script>
+function aaCentralAuth(btn, aaId) {
+    var box  = btn.closest('details');
+    var user = box.querySelector('.aa-auth-user').value;
+    var pass = box.querySelector('.aa-auth-pass').value;
+    var f = document.createElement('form');
+    f.method = 'POST';
+    f.style.display = 'none';
+    function add(name, value) {
+        var i = document.createElement('input');
+        i.name = name; i.value = value;
+        f.appendChild(i);
+    }
+    add('authenticate_aa', aaId);
+    add('auth_username',   user);
+    add('auth_password',   pass);
+    document.body.appendChild(f);
+    f.submit();
+}
+</script>
+HTML;
 
 // this allows to automatically load codemirror in the head (printHead is called after $form->getObjectEditHtml)
 $apage->printAllPage($html, $err, $Msg);

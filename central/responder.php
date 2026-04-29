@@ -58,6 +58,30 @@ class AA_Responder_Get_Sessionid extends AA_Responder {
     }
 }
 
+/** Issue a JWT token for authenticated superadmin
+ *  Used by Central to obtain long-lived auth token
+ *  @return JWT string
+ */
+class AA_Responder_Get_Jwt extends AA_Responder {
+
+    function __construct($param=null) {}
+
+    /** Only superadmins can get JWT tokens */
+    // isPerm() inherited — returns IsSuperadmin()
+
+    function run(): AA_Response
+    {
+        $token = [
+            'sub'  => AuthGetUid(),
+            'name' => AuthGetUname(),
+            'iat'  => time(),
+            'exp'  => time() + 30 * 24 * 3600,  // 30 days
+        ];
+        $jwt = \Firebase\JWT\JWT::encode($token, AA_ID, 'HS256');
+        return new AA_Response($jwt);
+    }
+}
+
 /** Used for autentication
  *  @return Session ID
  */
@@ -150,6 +174,35 @@ class AA_Responder_Do_Synchronize extends AA_Responder {
             $ret[] = $cmd->doAction();
         }
         return new AA_Response($ret);
+    }
+}
+
+/** Run an Optimize class method on this AA — used by Central's optimize buttons
+ *  (Update_Db_Structure_Test/Repair, Field_Duplicates_Test/Repair, ...).
+ *  $param['class']  - fully qualified Optimize class, e.g. 'AA\Optimize\UpdateDbStructure'
+ *  $param['method'] - one of the actions declared by that class (typically 'test' or 'repair')
+ */
+class AA_Responder_Do_Optimize extends AA_Responder {
+    protected string $class;
+    protected string $method;
+
+    function __construct($param = null) {
+        $this->class  = (string)($param['class']  ?? '');
+        $this->method = (string)($param['method'] ?? '');
+    }
+
+    function run(): AA_Response
+    {
+        if (!is_subclass_of($this->class, \AA\Optimize\AbstractOptimize::class)) {
+            return new AA_Response("Unknown optimize class: $this->class", 4);
+        }
+        /** @var \AA\Optimize\AbstractOptimize $optimizer */
+        $optimizer = new $this->class();
+        if (!$optimizer->hasAction($this->method)) {
+            return new AA_Response("Unsupported method '$this->method' for $this->class", 5);
+        }
+        $optimizer->{$this->method}();
+        return new AA_Response($optimizer->report());
     }
 }
 
@@ -308,7 +361,14 @@ class AA_Responder_Get_Fields extends AA_Responder {
         $this->slice_fields = (bool) $param['slice_fields'];
     }
 
-    function isPerm() { return IfSlPerm(PS_FIELDS); }
+    function isPerm() {
+        // AA Core Fields slice must be readable by any slice Administrator (for field template picking)
+        if ($this->slice_id === '41415f436f72655f4669656c64732e2e') {
+            $slices = GetUserSlices(PS_FIELDS);
+            return $slices === 'all' || !empty($slices);
+        }
+        return IfSlPerm(PS_FIELDS);
+    }
 
     function run(): AA_Response
     {
