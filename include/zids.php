@@ -467,7 +467,7 @@ class zids implements IteratorAggregate, ArrayAccess, Countable {
             }
         }
         if (!$id_list) {
-            return $column ? '0' : ' = "" ';
+            return $column ? '0' : " = '' ";
         }
 
         // '=' is much quicker than 'IN ()' in MySQL 4.0.x
