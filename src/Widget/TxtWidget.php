@@ -21,6 +21,10 @@ class TxtWidget extends Widget
     protected $rows;
     protected $max_characters;
     protected $ajaxtype;
+    protected $audio_enable;
+    protected $audio_max_seconds;
+    protected $audio_lang;
+    protected $audio_mode;
 
     /** @var array  list of textareas for CodeMirror creation */
     protected $ids_4_editor = [];
@@ -41,7 +45,16 @@ class TxtWidget extends Widget
      * @return array
      */
     public static function getClassProperties(): array {
-        return Widget::propertiesShop(['rows', 'max_characters', 'ajaxtype']);
+        return Widget::propertiesShop(['rows', 'max_characters', 'ajaxtype', 'audio_enable', 'audio_max_seconds', 'audio_lang', 'audio_mode']);
+    }
+
+    /** Whether the speech-dictation UI should render on this widget instance.
+     *  Only the plain TxtWidget gets it today; EdtWidget (CKEditor) and
+     *  CodWidget (CodeMirror) override the textarea surface so their
+     *  integration is deferred. */
+    protected function speechEnabled(): bool {
+        if (static::class !== self::class) { return false; }
+        return (bool)$this->getProperty('audio_enable', false);
     }
 
     /** libs to run after the page DOM is loaded */
@@ -50,7 +63,19 @@ class TxtWidget extends Widget
         if ($aa_property->getContentTypeSwitches()) {
             $ret[] = 'ckeditor@4';
         }
+        if ($this->speechEnabled()) {
+            $ret[] = 'aa-speech@1';
+        }
         return $ret;
+    }
+
+    /** Kick auto-attach again after the widget HTML lands. The JS also
+     *  auto-attaches on DOMContentLoaded; this call covers AJAX-rendered
+     *  forms where that event has already fired. AA_Speech.autoInit() is
+     *  idempotent — already-attached textareas are skipped. */
+    protected function requireRun($aa_property, $winfo): string {
+        if (!$this->speechEnabled()) { return ''; }
+        return 'if (window.AA_Speech) { AA_Speech.autoInit(); }';
     }
 
     /** Creates base widget HTML, which will be surrounded by Live, Ajxax
@@ -90,6 +115,24 @@ class TxtWidget extends Widget
         }
         $attrs['class'] = $attrs['class'] ? $attrs['class']. ' aa-w-full' : 'aa-w-full';
 
+        if ($this->speechEnabled()) {
+            $attrs['data-aa-speech']         = '1';
+            $attrs['data-aa-speech-max-sec'] = (int)$this->getProperty('audio_max_seconds', defined('AA_SPEECH_MAX_SECONDS') ? AA_SPEECH_MAX_SECONDS : 120);
+            // Absolute path to the API endpoint. AA_INSTAL_PATH already ends with "/"
+            // and starts with "/"; the site-root "/" default would land at the wrong
+            // host path when AA is installed under a subdirectory (e.g. /aadev/).
+            $attrs['data-aa-speech-api-url'] = (defined('AA_INSTAL_PATH') ? AA_INSTAL_PATH : '/') . 'api/v1/speech/transcribe';
+            // Transcription path selector. Validated to a known value so we can't
+            // leak arbitrary strings to the JS switch.
+            $mode = strtolower((string)$this->getProperty('audio_mode', 'auto'));
+            $attrs['data-aa-speech-mode'] = in_array($mode, ['auto', 'webspeech', 'openai'], true) ? $mode : 'auto';
+            // audio_lang override wins; per-translation langcode fills in from the
+            // foreach loop below for multilingual fields; otherwise JS infers from <html lang>.
+            if ($audio_lang_prop = trim((string)$this->getProperty('audio_lang', ''))) {
+                $attrs['data-aa-speech-lang'] = $audio_lang_prop;
+            }
+        }
+
         $required = $aa_property->isRequired() ? 'required' : '';
 
         if ($this instanceof \AA\Widget\EdtWidget) { // Rich edit textarea allways produces HTML code
@@ -113,6 +156,15 @@ class TxtWidget extends Widget
             if ( !$base ) {
                 $base['id']       = FormArray::formName2Id($input_name);
                 $base['langcode'] = Langs::getLangName2Code(Langs::getLangNum2Name($i));
+            }
+            if ($this->speechEnabled()) {
+                // Only override the property-level default when we actually have
+                // a per-translation language code. For single-language fields
+                // both lookups yield '' — keep the audio_lang property (or let JS infer).
+                $per_lang = Langs::getLangName2Code(Langs::getLangNum2Name($i)) ?: $base['langcode'];
+                if ($per_lang) {
+                    $attrs['data-aa-speech-lang'] = $per_lang;
+                }
             }
             $widget .= $this->getOneInput($input_name, $i, $val, $attrs, $required, !$aa_property->getContentTypeSwitches() || $type === 'live', $base);
             $required = ''; // only one is required

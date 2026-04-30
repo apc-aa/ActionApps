@@ -842,6 +842,25 @@ class Widget extends AA_Object implements NamedInterface {
                 case 'ajaxtype':
                     $ret[$pid] = new AA_Property($pid, _m("Ajax inline"), 'string', false, true, 'string', false, _m("If called as {ajax...} it modifies the visual - inline: old-way (not in window, but inline)"), '', 'inline');
                     break;
+                case 'audio_enable':
+                    $ret[$pid] = new AA_Property($pid, _m("Enable voice dictation"), 'bool', false, true, 'bool', false, _m("Show a microphone button next to the textarea. Uses the browser's Web Speech API when available, otherwise falls back to server-side OpenAI transcription (requires AA_APIKEY_OPENAI define)."), '', '0');
+                    break;
+                case 'audio_max_seconds':
+                    $ret[$pid] = new AA_Property($pid, _m("Max dictation seconds"), 'int', false, true, 'int', false, _m("Upper bound for a single dictation recording. Overrides the AA_SPEECH_MAX_SECONDS define. Enforced client-side (auto-stop) and server-side (reject oversized uploads)."), '', '120');
+                    break;
+                case 'audio_lang':
+                    $ret[$pid] = new AA_Property($pid, _m("Dictation language"), 'string', false, true, 'string', false, _m("BCP-47 locale code for voice recognition (e.g. cs-CZ, en-US, sk-SK, de-DE). Leave blank to auto-infer from the page's &lt;html lang&gt; attribute — which is usually the admin UI language, not the content language, so setting this explicitly is recommended."), '', 'cs-CZ');
+                    break;
+                case 'audio_mode':
+                    $ret[$pid] = new AA_Property($pid, _m("Dictation engine"), 'string', false, true, [
+                        'enum',
+                        [
+                            'auto'      => _m('Auto — browser Web Speech when available, server OpenAI as fallback'),
+                            'webspeech' => _m('Browser Web Speech API only (free, no server key, Chromium-based browsers)'),
+                            'openai'    => _m('Server-side OpenAI gpt-4o-transcribe only (requires AA_APIKEY_OPENAI, better accuracy)'),
+                        ],
+                    ], false, _m("Which speech-to-text engine to use."), '', 'auto');
+                    break;
                 case 'item_template':
                     $ret[$pid] = new AA_Property($pid, _m("New item template ID"), 'string', false, true, 'string', false, _m("The ID of item in destination slice used as Template for new items (probably in Holding bin)"), '', '3e86c0be745dd7b35f406d6997c46b8e');
                     break;

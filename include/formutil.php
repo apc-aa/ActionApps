@@ -1011,7 +1011,7 @@ class AA_Inputfield {
                     [$fieldsize, $change_pwd_label, $retype_pwd_label, $delete_pwd_label, $change_pwd_help, $retype_pwd_help] = $this->param;
                     $this->passwordModify( $fieldsize, $change_pwd_label, $retype_pwd_label, $delete_pwd_label, $change_pwd_help, $retype_pwd_help);
                     break;
-                case 'txt': if (!$this->translations) {
+                case 'txt': if (!$this->translations AND ($this->param[3]!=='1')) {  // [3] - audio_enable
                     $this->textarea(get_if($this->param[0], 4));   // not yet prepared for standard widget - Triggers - SetField, GetField do not work. Also the converters are not implemented @TODO
                 } else {
                     $this->inputWidget($item, $slice_id);          // standard
@@ -1058,7 +1058,8 @@ class AA_Inputfield {
     /**
      * @return string
      */
-    function get_result(): string {
+    function get_result(): string
+    {
         return $this->result;
     }
 
@@ -1637,7 +1638,7 @@ class AA_Inputfield {
 
         $this->field_name('plus');
         $ret       = "<select name=\"$name\" size=\"$rows\" multiple $triggers". ($this->required ? " required": '') .">";
-        $ret      .= $this->get_options( $this->const_arr, false, false, 'all', !$this->required);
+        $ret      .= $this->get_options( $this->const_arr, false, false, 'all', !$this->required );
         // $option_no = count($this->const_arr) + ($this->required ? 0:1);
         // add blank rows if asked for
         // removed - since it was never used and it just works - $minrows is not filled here
@@ -1917,6 +1918,7 @@ class AA_Inputfield {
      */
     function inputWidget($item, $slice_id): void
     {
+        /** @var AA_Field $field */
         if ( !($field = AA_Slice::getModule($slice_id)?->getField($this->id)) ) {
             return;
         }

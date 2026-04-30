@@ -1,0 +1,98 @@
+/* aa-speech — mic + clear button styling for TxtWidget dictation.
+ *
+ * The buttons are absolute-positioned over the textarea's parent (forced
+ * position:relative by aa-speech.js if needed). Mic sits in the bottom-right;
+ * the clear button sits in the top-right so a user won't hit it accidentally
+ * while reaching for the mic.
+ */
+
+.aa-speech-host {
+    pointer-events: none;   /* children re-enable pointer events explicitly */
+}
+
+.aa-speech-mic,
+.aa-speech-clear {
+    position: absolute;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: 1px solid rgba(0,0,0,.15);
+    border-radius: 50%;
+    background: rgba(255,255,255,.92);
+    color: #444;
+    cursor: pointer;
+    pointer-events: auto;
+    box-shadow: 0 1px 3px rgba(0,0,0,.1);
+    transition: background-color .15s, color .15s, transform .15s;
+}
+
+.aa-speech-mic { bottom: 6px; right: 6px; }
+.aa-speech-clear { top: 6px; right: 6px; width: 24px; height: 24px; opacity: .6; }
+
+.aa-speech-mic:hover,
+.aa-speech-clear:hover {
+    background: #fff;
+    color: #000;
+}
+
+.aa-speech-clear:hover { opacity: 1; }
+
+.aa-speech-mic:focus-visible,
+.aa-speech-clear:focus-visible {
+    outline: 2px solid #2684ff;
+    outline-offset: 2px;
+}
+
+/* Ready — neutral. */
+.aa-speech-mic--ready { color: #555; }
+
+/* Recording — red, pulsing ring. */
+.aa-speech-mic--recording {
+    color: #fff;
+    background: #d63939;
+    border-color: #a02525;
+    animation: aa-speech-pulse 1.2s infinite;
+}
+
+.aa-speech-mic--recording::after {
+    content: attr(data-countdown) "s";
+    position: absolute;
+    bottom: -16px;
+    right: 0;
+    font-size: 10px;
+    color: #d63939;
+    background: rgba(255,255,255,.95);
+    padding: 1px 4px;
+    border-radius: 3px;
+    box-shadow: 0 1px 2px rgba(0,0,0,.15);
+    white-space: nowrap;
+}
+
+@keyframes aa-speech-pulse {
+    0%   { box-shadow: 0 0 0 0 rgba(214, 57, 57, .55); }
+    70%  { box-shadow: 0 0 0 8px rgba(214, 57, 57, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(214, 57, 57, 0); }
+}
+
+/* Transcribing — spinner. */
+.aa-speech-mic--transcribing {
+    color: #2684ff;
+    cursor: progress;
+}
+.aa-speech-spin {
+    animation: aa-speech-spin 0.9s linear infinite;
+    transform-origin: 50% 50%;
+}
+@keyframes aa-speech-spin {
+    to { transform: rotate(-360deg); }
+}
+
+/* Done — green flash. */
+.aa-speech-mic--done {
+    color: #fff;
+    background: #2f9e44;
+    border-color: #1e6c30;
+}

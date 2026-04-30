@@ -1,0 +1,11 @@
+# AA /api/ front controller — route all non-file requests under /api/
+# through index.php. The original path is passed as ?_path=... because
+# PATH_INFO-style routes (index.php/v1/ping) fail under Apache configs
+# without AcceptPathInfo enabled — ?_path=v1/ping is portable everywhere.
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)$ index.php?_path=$1 [L,QSA]
+</IfModule>
