@@ -291,7 +291,7 @@ class AA_Request {
         }
         $response  = unserialize(trim($result), ['allowed_classes' => [
             AA_Response::class,
-            // Central module Get_Module_Defs returns these wrapped in AA_Response:
+            // Central module Get_Module_Defs returns these wrapped in AA_Response, so we need to allow them for unserialization as wellS
             AA_Definition_Module::class,
             AA_Definition_Module_Slice::class,
             AA_Definition_Module_Site::class,
