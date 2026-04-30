@@ -75,6 +75,13 @@ class Managed {
 
     protected $widget_setting = [];
 
+    /** Field IDs (in order) that should appear at the top of the edit form;
+     *  the remaining fields are rendered inside a collapsed <details> "Optional" section.
+     *  Empty array (default) keeps the original behaviour: every field rendered in metabase order.
+     *  @var string[]
+     */
+    protected array $priority_fields = [];
+
     /** Create Managed object based on the specific (unique) string submitted by form...
      *  necessary for Edit and Add
      * @param string|null $type
@@ -298,6 +305,20 @@ class Managed {
         }
     }
 
+    /** Mark these field IDs as priority — they render first in the edit form,
+     *  in the order given. All other fields are wrapped in a collapsible
+     *  "Optional" <details> block.
+     *  @param string[] $fields
+     */
+    public function setPriorityFields(array $fields): static {
+        $this->priority_fields = array_values($fields);
+        return $this;
+    }
+
+    public function getPriorityFields(): array {
+        return $this->priority_fields;
+    }
+
     /** which typ of zids it uses - 's' | 'l' | 'w' */
     public function getZidsType(): string {
         return $this->zids_type;
@@ -368,7 +389,7 @@ class Managed_Table extends Managed {
     public function getForm(?string $id, ?string $module_id): ?AA_Form {
         $props = AA::Metabase()->getColumnProperties($this->table, (bool)$id);
         foreach ($props as $k => $prop) {
-            if ($setting = $this->widget_setting[$k]) {
+            if ($setting = $this->widget_setting[$k] ?? null) {
                 if (isset($setting['type'])) {
                     $prop->setType($setting['type']);
                 }
@@ -382,10 +403,31 @@ class Managed_Table extends Managed {
                 if (isset($setting['help'])) {
                     $prop->setHelp($setting['help']);
                 }
+                if (array_key_exists('default', $setting)) {
+                    $prop->setDefault($setting['default']);
+                }
                 // $props['html']->setHelp('xxx');
             }
         }
-        $form = (new AA_Form())->addProperties($props);
+        $form = new AA_Form();
+        if ($this->priority_fields) {
+            $rest = $props;
+            foreach ($this->priority_fields as $fid) {
+                if (isset($rest[$fid])) {
+                    $rest[$fid]->addPropertyFormrows($form);
+                    unset($rest[$fid]);
+                }
+            }
+            if ($rest) {
+                $form->addRow(new \AA_Formrow_Html('<details class="aa-form-optional"><summary>'._m('Optional').'</summary>'));
+                foreach ($rest as $prop) {
+                    $prop->addPropertyFormrows($form);
+                }
+                $form->addRow(new \AA_Formrow_Html('</details>'));
+            }
+        } else {
+            $form->addProperties($props);
+        }
 //        if ($id) {
 //            $form->addRow(new AA_Formrow_Text('ddd'.$id));
 //        }

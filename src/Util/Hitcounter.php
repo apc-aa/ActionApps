@@ -121,13 +121,27 @@ class Hitcounter
             return;
         }
 
-        // do not count hits from Bots
-        $agent = strtolower($_SERVER["HTTP_USER_AGENT"]);
-        if ((str_contains($agent, 'bot')) ||
-            (str_contains($agent, 'crawl')) ||
-            (str_contains($agent, 'check')) ||
-            (str_contains($agent, 'spider')) ||
-            (str_contains($agent, 'download'))
+        // Read $_SERVER variables defensively — HTTP_USER_AGENT and REQUEST_URI may
+        // be missing on CLI requests, internal HTTP probes, or hand-crafted clients.
+        // Without the (string)?? '' guard, PHP 8.1+ raises deprecation warnings and
+        // PHP 9 will TypeError.
+        $ua_raw = (string)($_SERVER["HTTP_USER_AGENT"] ?? '');
+        $uri    = (string)($_SERVER["REQUEST_URI"]    ?? '');
+
+        // do not count hits from Bots; treat empty UA as bot too.
+        // Note: changing this list shifts the meaning of "human hits" forward in
+        // time — annotate the cut-over date in the audit doc when extending.
+        $agent = strtolower($ua_raw);
+        if ($agent === '' ||
+            str_contains($agent, 'bot')          ||
+            str_contains($agent, 'crawl')        ||
+            str_contains($agent, 'check')        ||
+            str_contains($agent, 'spider')       ||
+            str_contains($agent, 'download')     ||
+            str_contains($agent, 'wget')         ||
+            str_contains($agent, 'curl/')        ||  // matches "curl/8.x" but not "Mercury" or other strings containing "curl"
+            str_contains($agent, 'python-')      ||  // python-requests, python-urllib, etc.
+            str_contains($agent, 'chatgpt-user')
         ) {
             return;
         }
@@ -139,12 +153,12 @@ class Hitcounter
             "time"          => $time,
             "packtime"      => (new AA_Packtime($time, $cached, $not_modified))->getAsInt(),
             "mem_usage"     => sprintf('%.3g',(memory_get_usage() / (1024*1024))),
-            'uri'           => $_SERVER["REQUEST_URI"],
+            'uri'           => $uri,
         ]))->serializeToString();
 
         $varset = new CVarset;
         $varset->add('time', 'number', time());
-        $varset->add('agent', 'text', substr($_SERVER["HTTP_USER_AGENT"], 0, 255));  // @todo - convert to metabase and check the length using metabase real field length
+        $varset->add('agent', 'text', substr($ua_raw, 0, 255));  // @todo - convert to metabase and check the length using metabase real field length
         $varset->add('info', 'text', substr($info, 0, 255)); // @todo - convert to metabase and check the length using metabase real field length
 
         if ($zids->use_short_ids()) {

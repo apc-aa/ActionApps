@@ -25,6 +25,7 @@
 */
 
 use AA\Later\HitcounterStats;
+use AA\Util\HitcounterDisplay;
 use AA\Util\InputVars;
 use AA\Widget\Widget;
 
@@ -33,12 +34,16 @@ require_once __DIR__ . "/../include/formutil.php";
 require_once __DIR__ . "/../include/mgettext.php";
 // ----------------------------------------------------------------------------------------
 try {
-    $items_code = InputVars::stringGETPOST('items_code');  // could be posted as url parameter as well
-    $item_count = InputVars::intPOST('item_count');
-    $item_set   = InputVars::stringPOST('item_set');
-    $date_from  = InputVars::stringPOST('date_from');
-    $for_module = InputVars::stringPOST('for_module');
-    $show       = InputVars::boolPOST('show');
+    // GET-or-POST so diagnostics-card click links work (?item_sort=slowest&item_period=last_day)
+    $items_code  = InputVars::stringGETPOST('items_code');
+    $item_count  = InputVars::intGETPOST('item_count');
+    $item_sort   = InputVars::stringGETPOST('item_sort');
+    $item_period = InputVars::stringGETPOST('item_period');
+    $tip_period  = InputVars::stringGETPOST('tip_period');
+    $item_set    = InputVars::stringGETPOST('item_set');   // legacy single-selectbox value
+    $date_from   = InputVars::stringGETPOST('date_from');
+    $for_module  = InputVars::stringGETPOST('for_module');
+    $show        = InputVars::boolGETPOST('show');
 } catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
 
 if (!IfSlPerm(PS_EDIT_ALL_ITEMS)) {
@@ -46,7 +51,24 @@ if (!IfSlPerm(PS_EDIT_ALL_ITEMS)) {
     exit;
 }
 
-$item_count = $item_count ?: 5;
+// Bridge legacy `item_set` (single selectbox) → new `item_sort` × `item_period` pair.
+// Old bookmarks like `item_set=last_day` map to (top hits, last day).
+if (!$item_sort && !$item_period && $item_set) {
+    if ($item_set === 'exact') {
+        $item_sort   = 'exact';
+        $item_period = 'last_day';
+    } else {
+        $item_sort   = 'top';
+        $item_period = $item_set;     // 'all' | 'year' | … | 'last_day'
+    }
+}
+
+$item_count  = $item_count  ?: 5;
+$item_sort   = $item_sort   ?: 'top';
+$item_period = $item_period ?: 'last_day';
+$tip_period  = $tip_period  ?: 'week';   // diagnostics window — default last 7 days
+$for_module  = $for_module  ?: 'all';
+$date_from   = $date_from   ?: date('Y-m-d', strtotime('-1 month'));
 
 //$script2run = '
 //   var opts = { lineWrapping:true, matchBrackets: true, matchTags: true, viewportMargin: 10000, mode: "htmlmixed" };
@@ -71,18 +93,30 @@ define('HITCOUNTER_OPTIONS', [
     'weekdays' => _m('week-days'),
 ]);
 
-define ('ITEM_SETS', [
-    'exact'      => _m('Specified below'),
-    'all'        => _m('Top all time'),
-    'year'       => _m('Top this year'),
-    'month'      => _m('Top this month'),
-    'week'       => _m('Top this week'),
-    'day'        => _m('Top this day'),
-    'last_year'  => _m('Top last year'),
-    'last_month' => _m('Top last month'),
-    'last_week'  => _m('Top last week'),
-    'last_day'   => _m('Top last day'),
-    ]);
+define('ITEM_SORTS', [
+    'top'          => _m('Most hits'),
+    'most-time'    => _m('Most server time'),
+    'slowest'      => _m('Slowest (avg ms)'),
+    'fastest'      => _m('Fastest (avg ms)'),
+    'worst-cached' => _m('Worst cached'),
+    'best-cached'  => _m('Best cached'),
+    'most-wasted'  => _m('Most wasted (NC+NM)'),
+    'slowed-down'  => _m('Slowed down vs prior period'),
+    'sped-up'      => _m('Sped up vs prior period'),
+    'exact'        => _m('Specified below'),
+]);
+
+define('ITEM_PERIODS', [
+    'last_day'   => _m('Last day'),
+    'last_week'  => _m('Last week'),
+    'last_month' => _m('Last month'),
+    'last_year'  => _m('Last year'),
+    'day'        => _m('This day'),
+    'week'       => _m('This week'),
+    'month'      => _m('This month'),
+    'year'       => _m('This year'),
+    'all'        => _m('All time'),
+]);
 
 $MODULES_FROM = [
     'all' => _m('All AA'),
@@ -93,10 +127,38 @@ $MODULES_FROM += AA_Module::getModules('W', true, ['deleted','type','priority','
 $MODULES_FROM['AA_OPTGROUP3'] = _m('Slices');
 $MODULES_FROM += AA_Module::getModules('S', true, ['deleted','type','priority','name']);   // ORDER matches the DB index
 
+// Diagnostics scope (slices) — needed before form to render the panel above it.
+$slices = [];
+if ($for_module !== 'all') {
+    $type = AA_Module::getModuleType($for_module);
+    if ($type === 'W') {
+        $slices = AA_Module_Site::getRelatedModules([$for_module]);
+    } elseif ($type === 'S') {
+        $slices = [$for_module];
+    }
+    if (!$slices) {
+        $slices = ['11112222333344445555666677778888'];   // sentinel — no slice for this site
+    }
+}
+
+// Quick diagnostics panel — rendered ABOVE the form. Independent of the form's
+// item-selection choices: shows AA-wide (or per-slice) ranked top-N over the
+// tip_period window. Card click-throughs land in the form below.
+echo HitcounterDisplay::renderDiagnosticsPanel(
+    $slices,
+    $tip_period,
+    (int)$item_count,
+    [
+        'for_module' => $for_module,
+        'date_from'  => $date_from,
+    ]
+);
+
 // ------------------------------------------------------------------------------------------
 FrmTabCaption(_m('Item Statistics'));
 FrmStaticText(_m("Display for module"), getFrmSelectEasy("for_module", $MODULES_FROM, $for_module), '', '', false);
-FrmInputSelect('item_set', _m('Show items'), ITEM_SETS, $item_set, true);
+FrmInputSelect('item_sort',   _m('Sort items by'),         ITEM_SORTS,   $item_sort,   true);
+FrmInputSelect('item_period', _m('Period (item ranking)'), ITEM_PERIODS, $item_period, true);
 FrmTextarea('items_code', _m('Exact items to show'), $items_code, 4, 60, false, _m('dash-separated list of item ids/short_ids or AA expression like {ids:{_#SLICE_ID}:d-publish_date....-gt-{timestamp:2023-08-22}}}'));
 FrmInputNumber('item_count', _m('Number of items to show'), $item_count, 1, 9999, true);
 FrmInputDatetime('date_from', _m('From date'), $date_from, );
@@ -120,7 +182,8 @@ if (is_array($_POST['aa'] ?? null)) {
     }
     // huhl($grabber->getAllItems());
 } else {
-    $content = (new AA_Content())->setId('admin_statistics');
+    // first-load default: pre-check the "days" granularity
+    $content = (new AA_Content())->setId('admin_statistics')->setValue('stats', 'days');
 }
 
 echo $w->getHtml(new AA_Property( 'stats', _m('Stats to show'), 'string', true), $content);
@@ -131,33 +194,72 @@ if ($show) {
 
     echo '<br><br><div class=aa-tab-title>'._m('Display Statistics for Item').'</div>';
 
-    $slices = [];
-    if ($for_module !== 'all') {
-        $type = AA_Module::getModuleType($for_module);
-        if ($type === 'W') {
-            $slices = AA_Module_Site::getRelatedModules([$for_module]);
-        } elseif ($type === 'S') {
-            $slices = [$for_module];
-        }
-        if (!$slices) { // no S or W or Site have no slices
-            $slices = ['11112222333344445555666677778888'];  // no slice for this site
-        }
-    }
-
-    // determine, which items to show
-    $items = match ($item_set) {
-        'all'        => implode('-', array_keys(HitcounterStats::getStats($slices, 0, 0, true, $item_count))),
-        'year'       => implode('-', array_keys(HitcounterStats::getStats($slices, time() - 60 * 60 * 24 * 365, 0, true, $item_count))),
-        'month'      => implode('-', array_keys(HitcounterStats::getStats($slices, time() - 60 * 60 * 24 * 30, 0, true, $item_count))),
-        'week'       => implode('-', array_keys(HitcounterStats::getStats($slices, time() - 60 * 60 * 24 * 7, 0, true, $item_count))),
-        'day'        => implode('-', array_keys(HitcounterStats::getStats($slices, time() - 60 * 60 * 24, 0, true, $item_count))),
-        'last_year'  => implode('-', array_keys(HitcounterStats::getStats($slices, time() - 60 * 60 * 24 * 365 * 2, time() - 60 * 60 * 24 * 365, true, $item_count))),
-        'last_month' => implode('-', array_keys(HitcounterStats::getStats($slices, time() - 60 * 60 * 24 * 30 * 2, time() - 60 * 60 * 24 * 30, true, $item_count))),
-        'last_week'  => implode('-', array_keys(HitcounterStats::getStats($slices, time() - 60 * 60 * 24 * 7 * 2, time() - 60 * 60 * 24 * 7, true, $item_count))),
-        'last_day'   => implode('-', array_keys(HitcounterStats::getStats($slices, time() - 60 * 60 * 24 * 2, time() - 60 * 60 * 24, true, $item_count))),
-        'exact'      => $items_code, // StrExp('ids', [AA::$module_id, '', '', '-', AA::Un($items_code) ?: 'xxx']),
-        default      => '',
+    // ranking time window from $item_period
+    $now = time();
+    [$rank_from, $rank_to] = match ($item_period) {
+        'all'        => [0,                                  0],
+        'year'       => [$now - 60 * 60 * 24 * 365,          0],
+        'month'      => [$now - 60 * 60 * 24 * 30,           0],
+        'week'       => [$now - 60 * 60 * 24 * 7,            0],
+        'day'        => [$now - 60 * 60 * 24,                0],
+        'last_year'  => [$now - 60 * 60 * 24 * 365 * 2,      $now - 60 * 60 * 24 * 365],
+        'last_month' => [$now - 60 * 60 * 24 * 30 * 2,       $now - 60 * 60 * 24 * 30],
+        'last_week'  => [$now - 60 * 60 * 24 * 7 * 2,        $now - 60 * 60 * 24 * 7],
+        'last_day'   => [$now - 60 * 60 * 24 * 2,            $now - 60 * 60 * 24],
+        default      => [$now - 60 * 60 * 24 * 2,            $now - 60 * 60 * 24],
     };
+
+    // items selection — combine sort × period
+    if ($item_sort === 'exact') {
+        $items = $items_code;
+    } elseif ($item_sort === 'top') {
+        // ranking by hits — uses HitcounterStats::getStats (existing path)
+        $items = implode('-', array_keys(HitcounterStats::getStats($slices, $rank_from, $rank_to, true, $item_count)));
+    } else {
+        // ranking by performance metrics — uses Hitcounter::getGlobalTotals.
+        $rank_to_safe = $rank_to ?: $now;
+        $globals = HitcounterDisplay::getGlobalTotals($slices, $rank_from, $rank_to_safe, 10000);
+
+        // slowed-down / sped-up need a second query for the prior-equivalent window
+        $globals_prev = [];
+        if ($item_sort === 'slowed-down' || $item_sort === 'sped-up') {
+            $duration_secs = max(1, $rank_to_safe - $rank_from);
+            $prev_from     = $rank_from - $duration_secs;
+            $globals_prev  = HitcounterDisplay::getGlobalTotals($slices, $prev_from, $rank_from, 10000);
+        }
+
+        $scored = [];
+        if ($item_sort === 'slowed-down' || $item_sort === 'sped-up') {
+            foreach ($globals as $sid => $tc) {
+                $tp = $globals_prev[$sid] ?? null;
+                if (!$tp) continue;
+                if ($tc['bucket_sum'] < 5 || $tp['bucket_sum'] < 5) continue;
+                $cur_avg = $tc['ms_x_hits'] / $tc['bucket_sum'];
+                $prv_avg = $tp['ms_x_hits'] / $tp['bucket_sum'];
+                if ($prv_avg <= 0) continue;
+                $scored[$sid] = (($cur_avg - $prv_avg) / $prv_avg) * 100;   // % delta
+            }
+            $desc = ($item_sort === 'slowed-down');
+        } else {
+            $key_fn = match ($item_sort) {
+                'slowest'      => static fn($t) => $t['bucket_sum'] >= 5 ? $t['ms_x_hits'] / $t['bucket_sum'] : null,
+                'fastest'      => static fn($t) => $t['bucket_sum'] >= 5 ? $t['ms_x_hits'] / $t['bucket_sum'] : null,
+                'worst-cached' => static fn($t) => $t['bucket_sum'] >= 5 ? ($t['cache_hits'] / $t['bucket_sum']) * 100 : null,
+                'best-cached'  => static fn($t) => $t['bucket_sum'] >= 5 ? ($t['cache_hits'] / $t['bucket_sum']) * 100 : null,
+                'most-wasted'  => static fn($t) => $t['wasted'] > 0 ? $t['wasted'] : null,
+                'most-time'    => static fn($t) => $t['ms_x_hits'],
+                default        => static fn($t) => $t['hits'],
+            };
+            $desc = !in_array($item_sort, ['fastest', 'best-cached'], true);
+            foreach ($globals as $sid => $t) {
+                $v = $key_fn($t);
+                if ($v === null) continue;
+                $scored[$sid] = $v;
+            }
+        }
+        $desc ? arsort($scored) : asort($scored);
+        $items = implode('-', array_slice(array_keys($scored), 0, $item_count));
+    }
 
     if (strlen($items)) {
         $from = $date_from ? strtotime($date_from) : 0;
