@@ -130,6 +130,12 @@ class TxtWidget extends Widget
             $attrs['data-aa-speech-slice'] = (string)$content->getOwnerID();
             $attrs['data-aa-speech-field'] = (string)$aa_property->getId();
             $attrs['data-aa-speech-item']  = (string)$content->getId();
+            // In live mode, programmatic value injection does not fire the
+            // textarea's onchange (and therefore AA_SendWidgetLive) — JS will
+            // dispatch a change event after insertion when this flag is set.
+            if ($type === 'live') {
+                $attrs['data-aa-speech-live'] = '1';
+            }
             // Transcription path selector. Validated to a known value so we can't
             // leak arbitrary strings to the JS switch.
             $mode = strtolower((string)$this->getProperty('audio_mode', 'auto'));

@@ -52,13 +52,14 @@
         }
         textarea.dataset.aaSpeechAttached = '1';
 
-        const maxSec  = Math.max(5, parseInt(opts.maxSec, 10) || DEFAULT_MAX_SECONDS);
-        const lang    = opts.lang || inferLang(textarea);
-        const apiUrl  = opts.apiUrl || DEFAULT_API_URL;
-        const mode    = (opts.mode || 'auto').toLowerCase();   // 'auto' | 'webspeech' | 'openai'
-        const sliceId = opts.sliceId || '';
-        const fieldId = opts.fieldId || '';
-        const itemId  = opts.itemId  || '';
+        const maxSec   = Math.max(5, parseInt(opts.maxSec, 10) || DEFAULT_MAX_SECONDS);
+        const lang     = opts.lang || inferLang(textarea);
+        const apiUrl   = opts.apiUrl || DEFAULT_API_URL;
+        const mode     = (opts.mode || 'auto').toLowerCase();   // 'auto' | 'webspeech' | 'openai'
+        const sliceId  = opts.sliceId || '';
+        const fieldId  = opts.fieldId || '';
+        const itemId   = opts.itemId  || '';
+        const liveSave = !!opts.liveSave;   // dispatch 'change' after insert so AA_SendWidgetLive fires
         // Re-evaluated at each mic click so the path decision honours the live
         // widget mode AND the debug override (window.AA_SPEECH_FORCE_OPENAI=true).
         const shouldUseWebSpeech = () => {
@@ -175,6 +176,13 @@
             if (!clean) { return; }
             insertAtCaret(textarea, clean + '\n');
             log('inserted text at caret:', JSON.stringify(clean));
+            if (liveSave) {
+                // Programmatic .value writes don't fire 'change'. AA wires
+                // onchange="AA_SendWidgetLive(...)" inline, so dispatching here
+                // triggers the same save path the user would get on blur.
+                textarea.dispatchEvent(new Event('change', { bubbles: true }));
+                log('dispatched change event for live save');
+            }
         }
 
         // ---- MediaRecorder + OpenAI proxy path ----
@@ -476,13 +484,14 @@
         log('autoInit: found', tas.length, 'textarea(s) with data-aa-speech=1 under', root ? (root.id || root.tagName) : 'document');
         tas.forEach((ta) => {
             attach(ta, {
-                maxSec:  parseInt(ta.getAttribute('data-aa-speech-max-sec'), 10) || DEFAULT_MAX_SECONDS,
-                lang:    ta.getAttribute('data-aa-speech-lang')     || '',
-                apiUrl:  ta.getAttribute('data-aa-speech-api-url')  || DEFAULT_API_URL,
-                mode:    ta.getAttribute('data-aa-speech-mode')     || 'auto',
-                sliceId: ta.getAttribute('data-aa-speech-slice')    || '',
-                fieldId: ta.getAttribute('data-aa-speech-field')    || '',
-                itemId:  ta.getAttribute('data-aa-speech-item')     || ''
+                maxSec:   parseInt(ta.getAttribute('data-aa-speech-max-sec'), 10) || DEFAULT_MAX_SECONDS,
+                lang:     ta.getAttribute('data-aa-speech-lang')     || '',
+                apiUrl:   ta.getAttribute('data-aa-speech-api-url')  || DEFAULT_API_URL,
+                mode:     ta.getAttribute('data-aa-speech-mode')     || 'auto',
+                sliceId:  ta.getAttribute('data-aa-speech-slice')    || '',
+                fieldId:  ta.getAttribute('data-aa-speech-field')    || '',
+                itemId:   ta.getAttribute('data-aa-speech-item')     || '',
+                liveSave: ta.getAttribute('data-aa-speech-live')   === '1'
             });
         });
     };
