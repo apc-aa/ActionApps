@@ -192,16 +192,27 @@
                 notifyError(micErrorMessage(e));
                 return;
             }
-            recorder = new MediaRecorder(stream);
+            // Negotiate the recording mimeType up front so recorder.mimeType is
+            // never empty. Firefox without an explicit type yields '' and then
+            // produces ogg/opus — if we then ship "audio/webm" to OpenAI, it
+            // rejects the file as "corrupted or unsupported".
+            const chosenMime = pickRecorderMime();
+            log('startMediaRecorder: chosen mime=', chosenMime || '(browser default)');
+            recorder = chosenMime
+                ? new MediaRecorder(stream, { mimeType: chosenMime })
+                : new MediaRecorder(stream);
             chunks = [];
             recorder.ondataavailable = (e) => {
                 if (e.data?.size) { chunks.push(e.data); log('recorder ondataavailable: bytes=', e.data.size); }
             };
             recorder.onstop = () => {
-                log('recorder.onstop: total chunks=', chunks.length, 'mime=', recorder.mimeType);
+                // recorder.mimeType is the most authoritative; fall back through
+                // our negotiated choice and finally a webm guess for legacy paths.
+                const mime = recorder.mimeType || chosenMime || 'audio/webm';
+                log('recorder.onstop: total chunks=', chunks.length, 'mime=', mime);
                 releaseStream();
                 setState('transcribing');
-                uploadForTranscription(new Blob(chunks, { type: recorder.mimeType || 'audio/webm' }));
+                uploadForTranscription(new Blob(chunks, { type: mime }));
             };
             recorder.start();
             log('recorder.start() called, state=', recorder.state);
@@ -293,6 +304,32 @@
     };
 
     // ---- Shared helpers ----
+
+    /**
+     * Pick the first MediaRecorder mimeType this browser supports out of a
+     * priority list. Returning '' lets the constructor pick its own default
+     * (very old browsers without isTypeSupported).
+     *
+     * Order matters: opus containers first (best codec, smallest), AAC for
+     * iOS Safari (which has no opus encoder), generic fallbacks last.
+     */
+    function pickRecorderMime() {
+        if (!window.MediaRecorder || typeof MediaRecorder.isTypeSupported !== 'function') {
+            return '';
+        }
+        const candidates = [
+            'audio/webm;codecs=opus',
+            'audio/ogg;codecs=opus',
+            'audio/mp4;codecs=mp4a.40.2',
+            'audio/mp4',
+            'audio/webm',
+            'audio/ogg'
+        ];
+        for (const m of candidates) {
+            if (MediaRecorder.isTypeSupported(m)) { return m; }
+        }
+        return '';
+    }
 
     /**
      * Map a MediaRecorder blob mime to a file extension OpenAI's
