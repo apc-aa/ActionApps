@@ -25,10 +25,11 @@ class SpeechController
 
     public function transcribe(): JsonResponse
     {
-        /** @var \AA_Auth|null $auth */
-        global $auth;
-
-        if (!is_object($auth) || !$auth->is_user()) {
+        // Anonymous-allowed (public-form dictation). Same-host gate only —
+        // Origin or Referer must point at this AA host. Spoofable but blocks
+        // off-site browsers and casual curl. TODO: add per-slice opt-in +
+        // rate limit before opening to many sites.
+        if (!$this->sameHostRequest()) {
             return JsonResponse::error(401, 'Unauthorized');
         }
         if (!$this->getApiKey()) {
@@ -51,8 +52,19 @@ class SpeechController
 
         $lang = $this->sanitizeLang($_POST['lang'] ?? null);
 
+        // Persist the recording first (best-effort) so it survives even if the
+        // OpenAI call fails. The store call uses Files::uploadFile() which does
+        // move_uploaded_file() — afterwards $file['tmp_name'] is gone, so the
+        // OpenAI request below MUST read from $stored_path when storage ran.
+        $stored_path = $this->maybeStoreAudio(
+            (string)($file['type'] ?? 'audio/webm'),
+            (string)($_POST['slice_id'] ?? ''),
+            (string)($_POST['field_id'] ?? ''),
+            (string)($_POST['item_id']  ?? '')
+        );
+
         $result = $this->callOpenAi(
-            (string)$file['tmp_name'],
+            $stored_path ?? (string)$file['tmp_name'],
             (string)($file['name'] ?? 'audio.webm'),
             (string)($file['type'] ?? 'audio/webm'),
             $lang
@@ -70,6 +82,95 @@ class SpeechController
     protected function getApiKey(): ?string
     {
         return (defined('AA_APIKEY_OPENAI') && AA_APIKEY_OPENAI) ? (string)AA_APIKEY_OPENAI : null;
+    }
+
+    /** Persist the uploaded audio to the slice's upload directory if the
+     *  field's TxtWidget has audio_store=true. Server-truth check — the flag
+     *  comes from stored field config, not the request. Reuses AA's standard
+     *  upload pipeline (Files::destinationDir + Files::uploadFile) so dir
+     *  creation, permissions, conflict handling and last-error reporting all
+     *  follow the same code path as every other upload in AA. Returns the
+     *  final stored path on success, null on any miss (off / bad context /
+     *  upload failure). */
+    protected function maybeStoreAudio(string $mimeType, string $sliceId, string $fieldId, string $itemId): ?string
+    {
+        if ($sliceId === '' || $fieldId === '' || !\is_long_id($sliceId)) {
+            return null;
+        }
+        $slice = \AA_Slice::getModule($sliceId);
+        if (!is_object($slice)) {
+            return null;
+        }
+        $field = $slice->getField($fieldId);
+        if (!is_object($field)) {
+            return null;
+        }
+        $widget = $field->getWidget();
+        if (!is_object($widget) || !$widget->getProperty('audio_store', false)) {
+            return null;
+        }
+
+        $dest_dir = \Files::destinationDir($slice);
+        if ($dest_dir === false) {
+            error_log('[aa-speech] Files::destinationDir failed: ' . \Files::lastErrMsg());
+            return null;
+        }
+
+        $filename = sprintf(
+            'audio-%s-%s-%s.%s',
+            \Files::escape($itemId === '' ? 'new' : $itemId),
+            \Files::escape($fieldId),
+            date('Ymd-His'),
+            $this->extensionForMime($mimeType)
+        );
+
+        // 'new' so a same-second collision yields _1, _2, … via
+        // Files::generateUnusedFilename(). uploadFile() does
+        // move_uploaded_file() under the hood — the tmp file is gone after
+        // this returns, see comment in transcribe().
+        $stored = \Files::uploadFile($_FILES['audio'], $dest_dir, '', 'new', $filename);
+        if ($stored === false) {
+            error_log('[aa-speech] Files::uploadFile failed: ' . \Files::lastErrMsg());
+            return null;
+        }
+        return $stored;
+    }
+
+    /** Map the browser-recorded mime type to a sane file extension. */
+    protected function extensionForMime(string $mimeType): string
+    {
+        $base = strtolower(trim(explode(';', $mimeType)[0]));
+        return match ($base) {
+            'audio/webm'      => 'webm',
+            'audio/ogg'       => 'ogg',
+            'audio/mp4'       => 'm4a',
+            'audio/mpeg'      => 'mp3',
+            'audio/wav',
+            'audio/x-wav'     => 'wav',
+            'audio/flac'      => 'flac',
+            default           => 'bin',
+        };
+    }
+
+    /** Origin or Referer host must match this server's host. Cheap anti-abuse
+     *  for public anonymous dictation; not a security boundary. */
+    protected function sameHostRequest(): bool
+    {
+        $own = strtolower((string)($_SERVER['HTTP_HOST'] ?? ''));
+        if ($own === '') {
+            return false;
+        }
+        foreach (['HTTP_ORIGIN', 'HTTP_REFERER'] as $hdr) {
+            $val = $_SERVER[$hdr] ?? '';
+            if ($val === '') {
+                continue;
+            }
+            $host = strtolower((string)parse_url($val, PHP_URL_HOST));
+            if ($host !== '' && $host === $own) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /** Accept only "xx" or "xx-YY" locale codes; reject anything else. */

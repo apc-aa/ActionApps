@@ -25,6 +25,7 @@ class TxtWidget extends Widget
     protected $audio_max_seconds;
     protected $audio_lang;
     protected $audio_mode;
+    protected $audio_store;
 
     /** @var array  list of textareas for CodeMirror creation */
     protected $ids_4_editor = [];
@@ -45,7 +46,7 @@ class TxtWidget extends Widget
      * @return array
      */
     public static function getClassProperties(): array {
-        return Widget::propertiesShop(['rows', 'max_characters', 'ajaxtype', 'audio_enable', 'audio_max_seconds', 'audio_lang', 'audio_mode']);
+        return Widget::propertiesShop(['rows', 'max_characters', 'ajaxtype', 'audio_enable', 'audio_max_seconds', 'audio_lang', 'audio_mode', 'audio_store']);
     }
 
     /** Whether the speech-dictation UI should render on this widget instance.
@@ -122,6 +123,13 @@ class TxtWidget extends Widget
             // and starts with "/"; the site-root "/" default would land at the wrong
             // host path when AA is installed under a subdirectory (e.g. /aadev/).
             $attrs['data-aa-speech-api-url'] = (defined('AA_INSTAL_PATH') ? AA_INSTAL_PATH : '/') . 'api/transcribe.php';
+            // Slice / field / item context for server-side storage. The flag
+            // itself is NOT sent — the server reads audio_store from the
+            // field's stored widget config so a malicious client cannot opt
+            // in to disk writes on its own.
+            $attrs['data-aa-speech-slice'] = (string)$content->getOwnerID();
+            $attrs['data-aa-speech-field'] = (string)$aa_property->getId();
+            $attrs['data-aa-speech-item']  = (string)$content->getId();
             // Transcription path selector. Validated to a known value so we can't
             // leak arbitrary strings to the JS switch.
             $mode = strtolower((string)$this->getProperty('audio_mode', 'auto'));

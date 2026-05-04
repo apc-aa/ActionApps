@@ -861,6 +861,9 @@ class Widget extends AA_Object implements NamedInterface {
                         ],
                     ], false, _m("Which speech-to-text engine to use."), '', 'auto');
                     break;
+                case 'audio_store':
+                    $ret[$pid] = new AA_Property($pid, _m("Store audio recording"), 'bool', false, true, 'bool', false, _m("Save the uploaded audio to the slice's upload directory (img_upload/&lt;slice_id&gt;/) as audio-&lt;item_id&gt;-&lt;field_id&gt;-&lt;YYYYMMDD-HHMMSS&gt;.&lt;ext&gt;. Server enforces this flag from the field config — clients cannot opt in by themselves."), '', '0');
+                    break;
                 case 'item_template':
                     $ret[$pid] = new AA_Property($pid, _m("New item template ID"), 'string', false, true, 'string', false, _m("The ID of item in destination slice used as Template for new items (probably in Holding bin)"), '', '3e86c0be745dd7b35f406d6997c46b8e');
                     break;

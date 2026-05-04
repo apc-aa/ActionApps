@@ -42,7 +42,7 @@
     /**
      * Attach dictation UI to a <textarea>.
      * @param {HTMLTextAreaElement} textarea
-     * @param {{maxSec?:number, lang?:string, apiUrl?:string}} [opts]
+     * @param {{maxSec?:number, lang?:string, apiUrl?:string, sliceId?:string, fieldId?:string, itemId?:string}} [opts]
      */
     const attach = (textarea, opts = {}) => {
         if (!textarea) { log('attach: no textarea given, skipping'); return; }
@@ -52,10 +52,13 @@
         }
         textarea.dataset.aaSpeechAttached = '1';
 
-        const maxSec = Math.max(5, parseInt(opts.maxSec, 10) || DEFAULT_MAX_SECONDS);
-        const lang   = opts.lang || inferLang(textarea);
-        const apiUrl = opts.apiUrl || DEFAULT_API_URL;
-        const mode   = (opts.mode || 'auto').toLowerCase();   // 'auto' | 'webspeech' | 'openai'
+        const maxSec  = Math.max(5, parseInt(opts.maxSec, 10) || DEFAULT_MAX_SECONDS);
+        const lang    = opts.lang || inferLang(textarea);
+        const apiUrl  = opts.apiUrl || DEFAULT_API_URL;
+        const mode    = (opts.mode || 'auto').toLowerCase();   // 'auto' | 'webspeech' | 'openai'
+        const sliceId = opts.sliceId || '';
+        const fieldId = opts.fieldId || '';
+        const itemId  = opts.itemId  || '';
         // Re-evaluated at each mic click so the path decision honours the live
         // widget mode AND the debug override (window.AA_SPEECH_FORCE_OPENAI=true).
         const shouldUseWebSpeech = () => {
@@ -186,7 +189,7 @@
                 log('getUserMedia: stream granted');
             } catch (e) {
                 log('getUserMedia: rejected', e.name, e.message);
-                notifyError(`Microphone access denied: ${e.message}`);
+                notifyError(micErrorMessage(e));
                 return;
             }
             recorder = new MediaRecorder(stream);
@@ -208,10 +211,20 @@
 
         async function uploadForTranscription(blob) {
             const fd = new FormData();
-            const ext = blob.type.includes('ogg') ? 'ogg' : 'webm';
+            // OpenAI's transcriptions endpoint dispatches by filename extension,
+            // so the extension MUST match the actual codec/container — iOS Safari's
+            // MediaRecorder produces audio/mp4 (AAC), Chrome produces audio/webm,
+            // Firefox audio/ogg. Mismatch → "Audio file might be corrupted".
+            const ext = extForMime(blob.type);
             fd.append('audio', blob, `speech.${ext}`);
-            if (lang) { fd.append('lang', lang); }
-            log('uploadForTranscription: POSTing', apiUrl, 'blob bytes=', blob.size, 'ext=', ext, 'lang=', lang);
+            if (lang)    { fd.append('lang',     lang); }
+            // Context for server-side audio storage. The server only stores
+            // when the field's audio_store property is set; these fields just
+            // tell it WHERE.
+            if (sliceId) { fd.append('slice_id', sliceId); }
+            if (fieldId) { fd.append('field_id', fieldId); }
+            if (itemId)  { fd.append('item_id',  itemId);  }
+            log('uploadForTranscription: POSTing', apiUrl, 'blob bytes=', blob.size, 'ext=', ext, 'lang=', lang, 'slice=', sliceId, 'field=', fieldId, 'item=', itemId);
 
             try {
                 const resp = await fetch(apiUrl, { method: 'POST', body: fd, credentials: 'same-origin' });
@@ -280,6 +293,67 @@
     };
 
     // ---- Shared helpers ----
+
+    /**
+     * Map a MediaRecorder blob mime to a file extension OpenAI's
+     * /v1/audio/transcriptions endpoint accepts. The endpoint accepts:
+     * flac, m4a, mp3, mp4, mpeg, mpga, oga, ogg, wav, webm.
+     * iOS Safari emits audio/mp4 (AAC); Chrome emits audio/webm; Firefox ogg.
+     */
+    function extForMime(mimeType) {
+        const base = String(mimeType || '').toLowerCase().split(';')[0].trim();
+        switch (base) {
+            case 'audio/webm':              return 'webm';
+            case 'audio/ogg':               return 'ogg';
+            case 'audio/mp4':
+            case 'audio/x-m4a':
+            case 'audio/aac':               return 'mp4';   // iOS Safari path
+            case 'audio/mpeg':              return 'mp3';
+            case 'audio/wav':
+            case 'audio/x-wav':             return 'wav';
+            case 'audio/flac':              return 'flac';
+            default:                        return 'webm'; // safest default for Chromium
+        }
+    }
+
+
+    /**
+     * Map a getUserMedia rejection to a user-actionable message. The default
+     * browser error is too vague on mobile — users don't know that "Permission
+     * denied" really means "Settings → Safari → Microphone" or that an in-app
+     * browser is the actual culprit.
+     */
+    function micErrorMessage(err) {
+        const ua = navigator?.userAgent || '';
+        const inApp =
+            /FBAN|FBAV|FB_IAB|Instagram|Line|MicroMessenger|TikTok|GSA\//i.test(ua) ||
+            (/LinkedInApp/i.test(ua));
+        if (inApp) {
+            return 'Voice input does not work in this in-app browser. Tap the menu (⋯ or share icon) and choose "Open in Safari" / "Open in Chrome".';
+        }
+        const isIOS     = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
+        const isAndroid = /Android/.test(ua);
+        const settings  = isIOS     ? 'Settings → Safari → Microphone (and reload this page)'
+                       : isAndroid  ? 'tap the lock icon next to the address bar → Permissions → Microphone → Allow'
+                       :              'click the lock/info icon in the address bar → Site settings → Microphone → Allow';
+        switch (err?.name) {
+            case 'NotAllowedError':
+            case 'SecurityError':
+                return `Microphone access was blocked. To enable it: ${settings}.`;
+            case 'NotFoundError':
+            case 'DevicesNotFoundError':
+                return 'No microphone was detected on this device.';
+            case 'NotReadableError':
+            case 'TrackStartError':
+                return 'The microphone is busy in another app. Close it and try again.';
+            case 'OverconstrainedError':
+                return 'Microphone does not meet the required constraints.';
+            case 'AbortError':
+                return 'Microphone request was cancelled. Tap the mic again to retry.';
+            default:
+                return `Microphone error (${err?.name || 'unknown'}): ${err?.message || ''}`.trim();
+        }
+    }
 
     function supportsWebSpeech() {
         const hasSR = !!(window.SpeechRecognition || window.webkitSpeechRecognition);
@@ -365,10 +439,13 @@
         log('autoInit: found', tas.length, 'textarea(s) with data-aa-speech=1 under', root ? (root.id || root.tagName) : 'document');
         tas.forEach((ta) => {
             attach(ta, {
-                maxSec: parseInt(ta.getAttribute('data-aa-speech-max-sec'), 10) || DEFAULT_MAX_SECONDS,
-                lang:   ta.getAttribute('data-aa-speech-lang') || '',
-                apiUrl: ta.getAttribute('data-aa-speech-api-url') || DEFAULT_API_URL,
-                mode:   ta.getAttribute('data-aa-speech-mode') || 'auto'
+                maxSec:  parseInt(ta.getAttribute('data-aa-speech-max-sec'), 10) || DEFAULT_MAX_SECONDS,
+                lang:    ta.getAttribute('data-aa-speech-lang')     || '',
+                apiUrl:  ta.getAttribute('data-aa-speech-api-url')  || DEFAULT_API_URL,
+                mode:    ta.getAttribute('data-aa-speech-mode')     || 'auto',
+                sliceId: ta.getAttribute('data-aa-speech-slice')    || '',
+                fieldId: ta.getAttribute('data-aa-speech-field')    || '',
+                itemId:  ta.getAttribute('data-aa-speech-item')     || ''
             });
         });
     };
