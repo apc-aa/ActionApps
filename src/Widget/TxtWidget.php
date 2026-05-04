@@ -121,7 +121,7 @@ class TxtWidget extends Widget
             // Absolute path to the API endpoint. AA_INSTAL_PATH already ends with "/"
             // and starts with "/"; the site-root "/" default would land at the wrong
             // host path when AA is installed under a subdirectory (e.g. /aadev/).
-            $attrs['data-aa-speech-api-url'] = (defined('AA_INSTAL_PATH') ? AA_INSTAL_PATH : '/') . 'api/v1/speech/transcribe';
+            $attrs['data-aa-speech-api-url'] = (defined('AA_INSTAL_PATH') ? AA_INSTAL_PATH : '/') . 'api/transcribe.php';
             // Transcription path selector. Validated to a known value so we can't
             // leak arbitrary strings to the JS switch.
             $mode = strtolower((string)$this->getProperty('audio_mode', 'auto'));

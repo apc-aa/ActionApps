@@ -1,7 +1,8 @@
 <?php
 /**
- * /api/v1/speech/transcribe — proxies uploaded audio to OpenAI's
+ * Speech-to-text controller — proxies uploaded audio to OpenAI's
  * /v1/audio/transcriptions endpoint so the API key never leaves the server.
+ * Invoked from api/transcribe.php (direct PHP entry point).
  *
  * Authentication: requires a logged-in AA user ($auth->is_user()).
  * Config: AA_APIKEY_OPENAI (required), AA_SPEECH_MAX_SECONDS (default 120).

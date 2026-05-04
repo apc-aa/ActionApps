@@ -7,8 +7,8 @@
  *   1. Web Speech API — browser-native recognition; no server round-trip,
  *      no API key cost. Collects pause-separated finals, one per line.
  *   2. OpenAI gpt-4o-transcribe — records to a Blob, uploads to AA's
- *      /api/v1/speech/transcribe proxy endpoint. Server-side key, single
- *      paragraph returned.
+ *      api/transcribe.php proxy endpoint. Server-side key, single paragraph
+ *      returned.
  *
  * Which path runs is controlled by the `audio_mode` widget property:
  *   'auto' (default) — Web Speech when available, else OpenAI.
@@ -20,7 +20,7 @@
 (() => {
     'use strict';
 
-    const DEFAULT_API_URL = '/api/v1/speech/transcribe';
+    const DEFAULT_API_URL = '/api/transcribe.php';
     const DEFAULT_MAX_SECONDS = 120;
     const DONE_FLASH_MS = 700;
 
