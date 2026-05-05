@@ -91,7 +91,7 @@ class SelWidget extends Widget
         $base_name = FormArray::getName4Form($aa_property->getId(), $content, $this->item_index);
         $base_id = FormArray::formName2Id($base_name);
         $required = $aa_property->isRequired() ? 'required' : '';
-        $select_plus = (bool)$this->getProperty('select_plus', false);
+        $select_plus = $this->getProperty('select_plus');  // null if not set; "0"/"" → off; truthy → on
 
         $attrs = Widget::stdInputAttrs($type, $base_id, ['dirty']);
         $widget_add = htmlattr($attrs);
@@ -115,7 +115,9 @@ class SelWidget extends Widget
         $widget .= $this->getSelectOptions($options);
         $widget .= "</select>";
 
-        if ($select_plus || (count($options) > 8)) {   // if there are more than 8 options, use select2 library
+        // select_plus: unset → heuristic (>8 options); set → honor explicit on/off
+        $use_select2 = $select_plus === null ? count($options) > 8 : (bool)$select_plus;
+        if ($use_select2) {
             $this->ids_4_select2[] = "#$input_id";
         }
 
