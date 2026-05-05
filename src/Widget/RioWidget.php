@@ -57,7 +57,8 @@ class RioWidget extends Widget
     {
         $input_text = '';
         if ($other) {
-            $input_text = "<span class=\"$class\"><input id=\"{$input_id}txt\" onchange=\"document.getElementById('{$input_id}').value=this.value\" placeholder=\"".safe($option['k']).'" value="'
+            // Update the radio's value AND dispatch change so AA_SendWidgetLive (live mode) persists the typed text.
+            $input_text = "<span class=\"$class\"><input id=\"{$input_id}txt\" onchange=\"var r=document.getElementById('{$input_id}');r.value=this.value;r.dispatchEvent(new Event('change'))\" placeholder=\"".safe($option['k']).'" value="'
                 .($option['mis'] ? safe($option['k']) : '').'"';
             if (!$option['mis']) {
                 $input_text .= ' style="display:none;">';
