@@ -8263,7 +8263,7 @@ class AA_Stringexpand_Fmod extends AA_Stringexpand_Nevercachenotrim {
     }
 }
 
-/** AA counterpart of PHP log() */
+/** mathematical function - AA counterpart of PHP log() */
 class AA_Stringexpand_Log extends AA_Stringexpand_Nevercache {
 
     /**

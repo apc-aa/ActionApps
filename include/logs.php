@@ -226,6 +226,22 @@ class AA_Log implements InternalExpandInterface {
         return $tab;
     }
 
+    /** Render a log row's `params` and `selector` cells as inline AA_Logentry
+     *  key-value tables, matching the display used by `admin/aa_log.php`.
+     *  Cells that are not AA_Logentry-serialized are returned unchanged.
+     */
+    public static function renderLogentryCells(array $row): array
+    {
+        if (!empty($row['params']) && str_contains($row['params'], ':')
+                && ($entry = AA_Logentry::factoryByString($row['params']))) {
+            $row['params'] = $entry->getPrintRow();
+        }
+        if (!empty($row['selector']) && ($entry = AA_Logentry::factoryByStringReversed($row['selector']))) {
+            $row['selector'] = $entry->getPrintRow();
+        }
+        return $row;
+    }
+
     /** Internal aliases for Admin interface
      *  @usage {internal:AA_Log:entries:CSN:RSS#:22:3600} - display number of entries in log for CSN event with selector RSS:{feed_id} in last 3600 seconds
      */

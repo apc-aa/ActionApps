@@ -135,7 +135,7 @@ function PrintIdsInfo($l_or_s_id): void
         echo GetHtmlTable(DB_AA::select([], 'SELECT * FROM `object_float`', [['object_id', $l_or_s_id]]), 'key', _m('Object'), 'td');
     }
     if ($res = DB_AA::select([], 'SELECT `id`, FROM_UNIXTIME(`time`) as Date, `user`, `type`, `selector`, `params` FROM `log`', [['selector', $l_or_s_id, 'RLIKE']])) {
-        echo GetHtmlTable($res, 'key', _m('Log'));
+        echo GetHtmlTable(array_map([AA_Log::class, 'renderLogentryCells'], $res), 'key', _m('Log'));
     }
 }
 
@@ -212,7 +212,7 @@ function PrintItemInfo($item_id): void
         }
 
         if ($res = DB_AA::select([], 'SELECT `id`, FROM_UNIXTIME(`time`) as Date, `user`, `type`, `selector`, `params` FROM `log`', [['selector',$long_id,'RLIKE']])) {
-            echo GetHtmlTable($res, 'key', _m('Log'));
+            echo GetHtmlTable(array_map([AA_Log::class, 'renderLogentryCells'], $res), 'key', _m('Log'));
         }
 
 
@@ -243,6 +243,9 @@ if (!IsSuperadmin()) {
 $apage = new AA_Adminpageutil('aaadmin','aafinder');
 $apage->setTitle(_m("AA finder"));
 $apage->setForm();   // do not use form around code
+// printHead emits the page <head> and locks-in registered CSS — pre-register
+// keyValTable's CSS so AA_Logentry cells in the Log table render correctly.
+Txt::registerKeyValTableCss();
 $apage->printHead($err, $Msg);
 
 if (!is_object( $db )) {

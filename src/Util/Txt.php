@@ -15,17 +15,27 @@ class Txt {
         return (aa_strlen($str) > $len) ? aa_substr($str,0,$len-strlen($ellipsis)).$ellipsis : $str;
     }
 
-    /** small key -> value table for logs, ... */
-    public static function keyValTable(array $arr, bool $html=false): string
-    {
-        $css = <<<CSS
+    private const KEY_VAL_TABLE_CSS = <<<CSS
             .aa-log-entry { display: flex;gap: .5rem;
               div { position: relative;display: flex;flex-direction: column;align-items: flex-start;
                 label { font-size: 0.7rem; color: #666; margin-bottom: -.5rem; line-height: .9rem;}
                 span { font-size: .8rem; }
             }}
             CSS;
-        AA::Stringexpander()->addRequire($css, 'AA_Req_CSScode');
+
+    /** Register the CSS used by keyValTable(). Call this before head emission
+     *  on pages that render keyValTable output AFTER printHead (e.g. legacy
+     *  pages that echo body content directly instead of buffering it).
+     */
+    public static function registerKeyValTableCss(): void
+    {
+        AA::Stringexpander()->addRequire(self::KEY_VAL_TABLE_CSS, 'AA_Req_CSScode');
+    }
+
+    /** small key -> value table for logs, ... */
+    public static function keyValTable(array $arr, bool $html=false): string
+    {
+        self::registerKeyValTableCss();
 
         $ret = '';
         foreach ($arr as $name => $val) {
