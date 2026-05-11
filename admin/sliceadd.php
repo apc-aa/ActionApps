@@ -26,6 +26,7 @@
 
 
 // messages for init_page:
+use AA\IO\DB\DB_AA;
 use AA\Util\InputVars;
 
 // $no_slice_id          = true;
@@ -80,6 +81,10 @@ FrmTabCaption(_m("Modules"));
 $module_types = AA_Moduleregistry::singleton();
 foreach ($module_types as $type => $conf) {
     if ($type === 'S') {
+        continue;
+    }
+    // Jump is a legacy module: hide entirely on installs that have never used it
+    if ($type === 'J' && !DB_AA::test('module', [['type','J'],['deleted',0,'i']])) {
         continue;
     }
     echo "<tr>

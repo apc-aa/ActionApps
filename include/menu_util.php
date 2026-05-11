@@ -60,7 +60,8 @@ function GetCommonMenu(AA_Profile $profile): array {
         //"slicewiz"    => ["label"=>_m("Create new Wizard"), "cond"=>IfSlPerm(PS_ADD),    "href"=>"admin/slicewiz.php"],
         "slicedel"    => ["label"=>_m("Delete"),          "cond"=>IsSuperadmin(),        "href"=>"admin/slicedel.php"],
         "jumpedit"    => [
-            "label"=>_m("Edit Jump"),       "cond"=>IfSlPerm(PS_ADD),      "exact_href" =>
+            // Jump is a legacy module: hide entirely on installs that have never used it
+            "label"=>_m("Edit Jump"),       "cond"=>IfSlPerm(PS_ADD) && DB_AA::test('module', [['type','J'],['deleted',0,'i']]),      "exact_href" =>
                        StateUrl(AA_INSTAL_PATH."modules/jump/modedit.php?edit=1")
         ],
     /*    "delete" => array ("label" => _m("Empty trash"), "cond"=>IfSlPerm(PS_DELETE_ITEMS), "href"=>"admin/index.php?Delete=trash"),*/

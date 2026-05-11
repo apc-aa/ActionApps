@@ -96,7 +96,8 @@ function ModuleFieldsForm($module_id, array $module_arr, bool $superadmin, bool 
     FrmInputEmail("new_owner_email", _m("New Owner's E-mail"), $new_owner_email, 99);
 
     if (!$js_emitted) {
-        echo '<style>tr.cont-new_owner > td:first-child, tr.cont-new_owner_email > td:first-child { padding-left: 2em; color: #666; font-style: italic; }</style>' . "\n";
+        // AA's Frm* helpers emit the label cell as <th>, not <td>, so target :first-child generically
+        echo '<style>tr.cont-new_owner > :first-child, tr.cont-new_owner_email > :first-child { padding-left: 2em; color: #666; font-style: italic; }</style>' . "\n";
         echo '<script>
 function aaToggleNewOwner() {
     const rows = document.querySelectorAll(".cont-new_owner, .cont-new_owner_email");
