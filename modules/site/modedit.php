@@ -269,7 +269,7 @@ $apage->printHead($err, $Msg);
 <?php
     FrmTabCaption(_m("Site"), $form_buttons);
 
-    ModuleFieldsForm($source_id, $marr = GetModuleFields($source_id), $superadmin, (bool)$template['W'], $new_owner, $new_owner_email);
+    $marr = RenderModuleFieldsForm($source_id, $superadmin, (bool)$template['W'], (bool)count($err), compact('name', 'slice_url', 'priority', 'lang_file', 'owner', 'deleted'), $new_owner, $new_owner_email);
     $lang_file = rtrim($marr[3],'3');   // trim for old php3 lang file extension
 
     //FrmInputText("slice_url", _m("URL"), $slice_url, 254, 60, false, _m("Main URL of the website."), '', 'false', 'https://www.example.org/');

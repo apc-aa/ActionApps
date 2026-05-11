@@ -97,7 +97,7 @@ try {
     $slice_url  = InputVars::stringPOST('slice_url'); // empty
     $slice_type = InputVars::stringPOST('slice_type'); // empty
     // array ( 'on' => 18, )
-    $template = InputVars::arrayPOST('template'); // alnum
+    $template = InputVars::boolPOST('template'); // alpha (checkbox; wizard's template[$type] read directly from $_POST below)
     // array ( 'Přidat' => 3, )
     $template_from_slice = InputVars::boolPOST('template_from_slice');
     // array ( 'Přidat' => 1, )
@@ -190,6 +190,28 @@ if (!$sarr) {
     $sarr = [];
 }
 
+$is_new     = ($slice_id == "");
+$has_errors = (bool)count($err);
+
+// On validation error, redisplay form with user's submitted values instead of template/DB values
+if ($has_errors && ($add || $update)) {
+    $sarr['slice_type']            = $slice_type;
+    $sarr['template']              = $template ? 1 : 0;
+    $sarr['permit_anonymous_post'] = $permit_anonymous_post;
+    $sarr['permit_anonymous_edit'] = $permit_anonymous_edit;
+    $sarr['permit_offline_fill']   = $permit_offline_fill;
+    $sarr['lang_file']             = $lang_file;
+    $sarr['d_listlen']             = $d_listlen;
+    $sarr['mlxctrl']               = $mlxctrl ? pack_id($mlxctrl) : '';
+    $sarr['fileman_access']        = $fileman_access;
+    $sarr['fileman_dir']           = $fileman_dir;
+    $sarr['auth_field_group']      = $auth_field_group;
+    $sarr['mailman_field_lists']   = $mailman_field_lists;
+    $sarr['reading_password']      = $reading_password;
+    $sarr['flag']                  = ($flag_allow_expired ? SLICE_ALLOW_EXPIRED_CONTENT : 0)
+                                   | ($flag_allow_pending ? SLICE_ALLOW_PENDING_CONTENT : 0);
+}
+
 if ($_GET['convert'] === 'utf') {
     $optimizer = new AA\Optimize\ConvertSliceEncoding();
     $optimizer->test4modules([$slice_id]);
@@ -221,7 +243,7 @@ if ($slice_id == "") {
 
 FrmTabCaption(_m("Slice"), $form_buttons);
 
-ModuleFieldsForm($foo_source, $marr = GetModuleFields($foo_source), $superadmin, ($slice_id==""), $new_owner, $new_owner_email);
+RenderModuleFieldsForm($foo_source, $superadmin, $is_new, $has_errors && ($add || $update), compact('name', 'slice_url', 'priority', 'lang_file', 'owner', 'deleted'), $new_owner, $new_owner_email);
 
 $convert_action = '';
 if (DB_CHARACTER_SET === "cp1250" && $slice_id && AA_Slice::getModule($slice_id)?->getCharset() === 'windows-1250') {

@@ -219,7 +219,7 @@ $apage->printHead($err, $Msg);
 
 FrmTabCaption(_m('Module Links data'));
 
-ModuleFieldsForm($source_id, $marr = GetModuleFields($source_id), $superadmin, (bool)$template['Links'], $new_owner, $new_owner_email);
+$marr = RenderModuleFieldsForm($source_id, $superadmin, (bool)$template['Links'], (bool)count($err), compact('name', 'slice_url', 'priority', 'lang_file', 'owner', 'deleted'), $new_owner, $new_owner_email);
 $lang_file = rtrim($marr[3],'3');   // trim for old php3 lang file extension
 
 FrmInputSelect("lang_file", _m('Used Language File'), $LINKS_LANGUAGE_FILES, $lang_file);
