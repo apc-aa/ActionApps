@@ -317,7 +317,8 @@ function SliceEditProcess($slice_id, $user_firstname, $user_surname, $err, $add_
                 $varset->add("mailman_field_lists", "text", $mailman_field_lists);
                 $varset->add("reading_password", "text", $reading_password);
 
-                $slice_flag = $flag_allow_expired ? SLICE_ALLOW_EXPIRED_CONTENT : 0;
+                $slice_flag  = $flag_allow_expired ? SLICE_ALLOW_EXPIRED_CONTENT : 0;
+                $slice_flag |= $flag_allow_pending ? SLICE_ALLOW_PENDING_CONTENT : 0;
                 $varset->add("flag", "number", $slice_flag);
 
                 //mimo

@@ -161,7 +161,8 @@ abstract class AA_Serializable {
     public static function parseClassProperties($string): array {
 
         // the first parameter is the class identifier - the parameters start then
-        [$class_shortcut, $prop_string] = explode(':', $string, 2);
+        // pad so single-token strings (e.g. 'uid', 'insert_if_new') don't emit "Undefined array key 1"
+        [$class_shortcut, $prop_string] = array_pad(explode(':', (string)$string, 2), 2, '');
         $class  = self::constructClassName($class_shortcut, static::class.'_');
         $params = ['class' => $class];
 
