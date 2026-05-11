@@ -66,7 +66,7 @@ if (!$item_sort && !$item_period && $item_set) {
 $item_count  = $item_count  ?: 5;
 $item_sort   = $item_sort   ?: 'top';
 $item_period = $item_period ?: 'last_day';
-$tip_period  = $tip_period  ?: 'week';   // diagnostics window — default last 7 days
+$tip_period  = $tip_period  ?: 'last_day';   // diagnostics window — default last day (cheap on heavy sites)
 $for_module  = $for_module  ?: 'all';
 $date_from   = $date_from   ?: date('Y-m-d', strtotime('-1 month'));
 
@@ -154,40 +154,40 @@ echo HitcounterDisplay::renderDiagnosticsPanel(
     ]
 );
 
-// ------------------------------------------------------------------------------------------
-FrmTabCaption(_m('Item Statistics'));
-FrmStaticText(_m("Display for module"), getFrmSelectEasy("for_module", $MODULES_FROM, $for_module), '', '', false);
-FrmInputSelect('item_sort',   _m('Sort items by'),         ITEM_SORTS,   $item_sort,   true);
-FrmInputSelect('item_period', _m('Period (item ranking)'), ITEM_PERIODS, $item_period, true);
-FrmTextarea('items_code', _m('Exact items to show'), $items_code, 4, 60, false, _m('dash-separated list of item ids/short_ids or AA expression like {ids:{_#SLICE_ID}:d-publish_date....-gt-{timestamp:2023-08-22}}}'));
-FrmInputNumber('item_count', _m('Number of items to show'), $item_count, 1, 9999, true);
-FrmInputDatetime('date_from', _m('From date'), $date_from, );
-
-//        //$widget_definition_string = 'dte::::2';
-//        $widget_definition_string = 'mch:::::::::{"1"#:"Yes","0"#:"No"}:';
-//        $params       = Widget::parseClassProperties($widget_definition_string);
-//        $widget_class = $params['class'];
-
+// Granularity widget (mch multi-checkbox) needs $content prepared up-front so it
+// can render with the right pre-checked values.
 $w = Widget::factoryByName('mch', ['const_arr' => HITCOUNTER_OPTIONS]);
- //echo $w->getHtml(new AA_Property( 'stats', _m('Items to show'), 'string', true), (new AA_Content())->setId('admin_statistics')->setValue('stats','1324567899'));
-
 if (is_array($_POST['aa'] ?? null)) {
     try {
-    $grabber = new AA\IO\Grabber\ObjectForm();
-    $grabber->prepare();
-    $content = $grabber->getItem();
-    $grabber->finish();
+        $grabber = new AA\IO\Grabber\ObjectForm();
+        $grabber->prepare();
+        $content = $grabber->getItem();
+        $grabber->finish();
     } catch (Exception $e) {
         $content = (new AA_Content())->setId('admin_statistics');
     }
-    // huhl($grabber->getAllItems());
 } else {
     // first-load default: pre-check the "days" granularity
     $content = (new AA_Content())->setId('admin_statistics')->setValue('stats', 'days');
 }
 
-echo $w->getHtml(new AA_Property( 'stats', _m('Stats to show'), 'string', true), $content);
+// ---- Section 1: Stats to show (granularity for the per-day table) ----
+FrmTabCaption(_m('Stats to show'));
+echo $w->getHtml(new AA_Property('stats', _m('Granularity'), 'string', true), $content);
+FrmTabEnd();
 
+// ---- Section 2: Items to show (which items to put in the table) ----
+FrmTabCaption(_m('Items to show'));
+FrmStaticText(_m('Display for module'), getFrmSelectEasy('for_module', $MODULES_FROM, $for_module), '', '', false);
+FrmInputSelect('item_sort',   _m('Sort items by'),         ITEM_SORTS,   $item_sort,   true);
+FrmInputSelect('item_period', _m('Period (item ranking)'), ITEM_PERIODS, $item_period, true);
+FrmTextarea('items_code', _m('Exact items to show'), $items_code, 4, 60, false, _m('dash-separated list of item ids/short_ids or AA expression like {ids:{_#SLICE_ID}:d-publish_date....-gt-{timestamp:2023-08-22}}}'));
+FrmInputNumber('item_count', _m('Number of items to show'), $item_count, 1, 9999, true);
+FrmTabEnd();
+
+// ---- Section 3: Show for period (table time window) — Show button lives here ----
+FrmTabCaption(_m('Show for period'));
+FrmInputDatetime('date_from', _m('From date'), $date_from, );
 FrmTabEnd($form_buttons);
 
 if ($show) {

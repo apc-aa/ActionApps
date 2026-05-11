@@ -48,9 +48,10 @@ class HitcounterDisplay
         }
 
         $sql = 'SELECT
-            LOWER(HEX(`item`.`id`)) AS long_id,
-            `hit_archive`.`id`      AS short_id,
-            SUM(`hits`)             AS total_hits,
+            LOWER(HEX(`item`.`id`))       AS long_id,
+            `hit_archive`.`id`            AS short_id,
+            LOWER(HEX(`item`.`slice_id`)) AS slice_id,
+            SUM(`hits`)                   AS total_hits,
             SUM(CASE WHEN `duration` & 3 = 0 THEN `hits` ELSE 0 END) AS h0,
             SUM(CASE WHEN `duration` & 3 = 1 THEN `hits` ELSE 0 END) AS h1,
             SUM(CASE WHEN `duration` & 3 = 2 THEN `hits` ELSE 0 END) AS h2,
@@ -87,6 +88,7 @@ class HitcounterDisplay
                 'wasted'     => (int)$r['h1'],
                 'ms_x_hits'  => $ms_x_hits,
                 'long_id'    => $r['long_id'],
+                'slice_id'   => $r['slice_id'],
             ];
         }
         return $totals;
@@ -140,14 +142,24 @@ class HitcounterDisplay
         $globals      = self::getGlobalTotals($slice_ids, $tip_from,      $tip_to,      10000);
         $globals_prev = self::getGlobalTotals($slice_ids, $prev_tip_from, $prev_tip_to, 10000);
 
-        // Per-item display labels — populated lazily; safe() handles HTML escaping
-        $item_labels = [];
-        $get_label = static function (string $sid) use (&$item_labels): string {
-            if (!isset($item_labels[$sid])) {
+        // Per-item display data — populated lazily; safe() handles HTML escaping.
+        // The diagnostics card shows the headline as the visible label, with the
+        // numeric short-id appended in small grey text. The full headline + slice
+        // name go into the title tooltip.
+        $item_meta_cache = [];
+        $get_meta = static function (string $sid) use (&$item_meta_cache, $globals): array {
+            if (!isset($item_meta_cache[$sid])) {
                 $headline = trim((string)\AA::Un("{shorten:{item:$sid:_#HEADLINE}:30:1}"));
-                $item_labels[$sid] = $headline !== '' ? "$sid — $headline" : $sid;
+                $headline = $headline !== '' ? $headline : $sid;
+                $slice_id = $globals[$sid]['slice_id'] ?? '';
+                $slice_nm = $slice_id ? (string)\AA_Slice::getModuleProperty($slice_id, 'name') : '';
+                $item_meta_cache[$sid] = [
+                    'headline' => $headline,
+                    'sid'      => $sid,
+                    'slice'    => $slice_nm,
+                ];
             }
-            return $item_labels[$sid];
+            return $item_meta_cache[$sid];
         };
 
         // ---- Build top-N rankings -------------------------------------------------
@@ -169,7 +181,8 @@ class HitcounterDisplay
         $top_lowc  = $top_n($globals, static fn($t) => $t['bucket_sum'] >= $min_hits_for_avg ? ($t['cache_hits'] / $t['bucket_sum']) * 100 : null, 3, false);
         $top_waste = $top_n($globals, static fn($t) => $t['wasted'] > 0 ? $t['wasted'] : null, 3, true);
 
-        $diff = [];
+        $diff        = [];   // [sid => pct change], used for sorting
+        $diff_detail = [];   // [sid => [cur_avg_ms, prv_avg_ms]], used in tooltips
         foreach ($globals as $sid => $tc) {
             $tp = $globals_prev[$sid] ?? null;
             if (!$tp) continue;
@@ -177,7 +190,8 @@ class HitcounterDisplay
             $cur_avg = $tc['ms_x_hits'] / $tc['bucket_sum'];
             $prv_avg = $tp['ms_x_hits'] / $tp['bucket_sum'];
             if ($prv_avg <= 0) continue;
-            $diff[$sid] = (($cur_avg - $prv_avg) / $prv_avg) * 100;
+            $diff[$sid]        = (($cur_avg - $prv_avg) / $prv_avg) * 100;
+            $diff_detail[$sid] = [$cur_avg, $prv_avg];
         }
         arsort($diff);
         $top_slowed_down = array_filter(array_slice($diff, 0, 3, true), static fn($v) => $v >  1);
@@ -200,21 +214,37 @@ class HitcounterDisplay
             'show'        => '1',
         ];
 
-        $card_html = static function (string $title, array $rows, callable $row_fmt, ?string $sort_key = null) use ($globals, $get_label, $card_base_qs): string {
+        // card_html accepts a 5th $title_help arg with a longer plain-text explanation
+        // surfaced as a tooltip on the card title (or the click-link if linkable).
+        $card_html = static function (string $title, string $title_help, array $rows, callable $row_fmt, ?string $sort_key = null) use ($get_meta, $card_base_qs): string {
             if (empty($rows)) {
                 return '';
             }
-            $title_html = \safe($title);
             if ($sort_key !== null) {
                 $href = 'aa_statistics.php?' . http_build_query(['item_sort' => $sort_key] + $card_base_qs);
-                $title_html = '<a href="'.\safe($href).'" class="aa-stat-tip-link" title="'.\safe(\_m('Show these items in the table')).'">'.\safe($title).' &raquo;</a>';
+                $title_attr = $title_help !== ''
+                    ? $title_help . ' — ' . \_m('click to show these items in the table')
+                    : \_m('Show these items in the table');
+                $title_html = '<a href="'.\safe($href).'" class="aa-stat-tip-link" title="'.\safe($title_attr).'">'.\safe($title).' &raquo;</a>';
+            } else {
+                $title_html = $title_help !== ''
+                    ? '<span title="'.\safe($title_help).'">'.\safe($title).'</span>'
+                    : \safe($title);
             }
             $h  = '<div class="aa-stat-tip-card"><h4>'.$title_html.'</h4><ol>';
             foreach ($rows as $sid => $val) {
-                $label = $get_label($sid);
-                $href  = 'itemedit.php?id=' . urlencode($sid);
+                $m       = $get_meta($sid);
+                // Headline-first label; numeric short_id appended in small grey text.
+                // Slice name + short_id in the link tooltip.
+                $tooltip = $m['headline']
+                    . ($m['slice'] !== '' ? ' · ' . $m['slice'] : '')
+                    . ' · #' . $m['sid'];
+                $href = 'itemedit.php?id=' . urlencode($sid);
                 $h .= '<li>'
-                    . '<a class="aa-stat-tip-name" href="'.\safe($href).'" title="'.\safe($label).'">'.\safe($label).'</a> '
+                    . '<a class="aa-stat-tip-name" href="'.\safe($href).'" title="'.\safe($tooltip).'">'
+                    . \safe($m['headline'])
+                    . ' <small style="color:#aaa">'.\safe($m['sid']).'</small>'
+                    . '</a> '
                     . '<span class="aa-stat-tip-val">'.$row_fmt($val, $sid).'</span>'
                     . '</li>';
             }
@@ -267,33 +297,72 @@ class HitcounterDisplay
         if (empty($globals)) {
             $h .= '<p class="aa-stat-tips-empty">'.\safe(\_m('No measured data in the selected window — Diagnostics needs at least the AddDurationLog feature on and a non-empty period.')).'</p>';
         } else {
+            // Format helper: total ms → "1.2 s" / "5.4 s" / "12 s", small ms stays as "120 ms"
+            $fmt_total = static function (float $total_ms) use ($fmt_int): string {
+                if ($total_ms < 1000)    return number_format($total_ms, 0).' ms';
+                if ($total_ms < 60000)   return number_format($total_ms / 1000, 1).' s';
+                return number_format($total_ms / 60000, 1).' min';
+            };
+            $compared_lbl = $prev_tip_from > 0
+                ? \_m('Current period') . ' ' . $fmt_date($tip_from) . ' → ' . $fmt_date($tip_to)
+                  . '; ' . \_m('Prior period') . ' ' . $fmt_date($prev_tip_from) . ' → ' . $fmt_date($prev_tip_to)
+                : '';
+
             $h .= '<div class="aa-stat-tip-grid">';
-            $h .= $card_html(\_m('Most hits'), $top_hits,
+            $h .= $card_html(\_m('Most hits'),
+                \_m('Items with the most page views over the diagnostics window — where the public traffic is going.'),
+                $top_hits,
                 fn($v, $sid) => \safe($fmt_int($v)).' hits',
                 'top');
-            $h .= $card_html(\_m('Most server time'), $top_srvt,
-                function ($v, $sid) use ($globals, $fmt_ms, $fmt_int) {
+            $h .= $card_html(\_m('Heaviest (ms × hits)'),
+                \_m('Items where the server spent the most aggregate render time across all hits, i.e. avg page render time × hit count. The biggest performance levers — even a small per-hit speedup compounds across many requests.'),
+                $top_srvt,
+                function ($v, $sid) use ($globals, $fmt_ms, $fmt_int, $fmt_total) {
                     $t = $globals[$sid];
                     $avg_ms = $t['bucket_sum'] > 0 ? $t['ms_x_hits'] / $t['bucket_sum'] : 0;
-                    return \safe($fmt_ms($avg_ms)).' ms in '.\safe($fmt_int($t['hits'])).' hits';
+                    $tip = $fmt_ms($avg_ms).' ms × '.$fmt_int($t['hits']).' hits = '.$fmt_total($t['ms_x_hits']);
+                    return '<span title="'.\safe($tip).'">'.\safe($fmt_total($t['ms_x_hits'])).'</span>';
                 },
                 'most-time');
-            $h .= $card_html(\_m('Slowest (avg ms)'), $top_slow,
-                fn($v, $sid) => \safe($fmt_ms($v)).' ms',
+            $h .= $card_html(\_m('Slowest (avg ms)'),
+                \_m('Items with the highest average page render time across all hits in the window. Best targets for individual-page optimisation.'),
+                $top_slow,
+                function ($v, $sid) use ($globals, $fmt_ms, $fmt_int) {
+                    $t = $globals[$sid];
+                    $tip = $fmt_int($t['hits']).' hits';
+                    return '<span title="'.\safe($tip).'">'.\safe($fmt_ms($v)).' ms</span>';
+                },
                 'slowest');
-            $h .= $card_html(\_m('Worst cached'), $top_lowc,
+            $h .= $card_html(\_m('Worst cached'),
+                \_m('Items with the lowest AA PageCache hit ratio — fraction of requests served from the cache vs regenerated fresh. Low % means most requests pay the regeneration cost.'),
+                $top_lowc,
                 fn($v, $sid) => \safe(number_format($v, 0)).'%',
                 'worst-cached');
-            $h .= $card_html(\_m('Most wasted (NC+NM)'), $top_waste,
+            $h .= $card_html(\_m('Most wasted (NC+NM)'),
+                \_m('Items with the most "wasted work" hits — page regenerated fresh AND then a 304 returned because the client already had it. Pure server cost with no benefit.'),
+                $top_waste,
                 fn($v, $sid) => \safe($fmt_int($v)).' hits',
                 'most-wasted');
+
             if ($prev_tip_from > 0) {
                 $compared = ' ('.\safe($fmt_date($prev_tip_from)).' → '.\safe($fmt_date($prev_tip_to)).')';
-                $h .= $card_html(\_m('Slowed down vs').$compared, $top_slowed_down,
-                    fn($v, $sid) => '<span style="color:#a02222">'.\safe($fmt_pct($v)).'</span>',
+                $h .= $card_html(\_m('Slowed down vs').$compared,
+                    \_m('Items whose average render time grew the most between the prior equivalent window and the current one. ').$compared_lbl,
+                    $top_slowed_down,
+                    function ($v, $sid) use ($diff_detail, $fmt_ms, $fmt_pct) {
+                        [$cur, $prv] = $diff_detail[$sid];
+                        $tip = \_m('current') . ' ' . $fmt_ms($cur) . ' ms · ' . \_m('prior') . ' ' . $fmt_ms($prv) . ' ms';
+                        return '<span style="color:#a02222" title="'.\safe($tip).'">'.\safe($fmt_pct($v)).'</span>';
+                    },
                     'slowed-down');
-                $h .= $card_html(\_m('Sped up vs').$compared, $top_sped_up,
-                    fn($v, $sid) => '<span style="color:#2e7d52">'.\safe($fmt_pct($v)).'</span>',
+                $h .= $card_html(\_m('Sped up vs').$compared,
+                    \_m('Items whose average render time fell the most between the prior equivalent window and the current one. ').$compared_lbl,
+                    $top_sped_up,
+                    function ($v, $sid) use ($diff_detail, $fmt_ms, $fmt_pct) {
+                        [$cur, $prv] = $diff_detail[$sid];
+                        $tip = \_m('current') . ' ' . $fmt_ms($cur) . ' ms · ' . \_m('prior') . ' ' . $fmt_ms($prv) . ' ms';
+                        return '<span style="color:#2e7d52" title="'.\safe($tip).'">'.\safe($fmt_pct($v)).'</span>';
+                    },
                     'sped-up');
             }
             $h .= '</div>';
