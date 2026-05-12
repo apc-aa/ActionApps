@@ -274,12 +274,16 @@ if ($slice && $slice->getProperty("type") === 'ReaderManagement') {
 }
 FrmInputText("reading_password", _m("Password for Reading"), $sarr['reading_password'], 100, 50, false, "", "https://actionapps.org/faq/detail.shtml?x=1667");
 
+FrmStaticText(_m("Id"), $slice_id);
+
+$created_at  = $sarr['created_at'] ? date('Y-m-d H:i', $sarr['created_at']) : '-';
+$created_by  = $sarr['created_by'] ? perm_username($sarr['created_by']) : '-';
+FrmStaticText(_m("Created"), safe($created_at) . ' ' . safe(_m('by')) . ' ' . safe($created_by), "", "", false);
+
 if ($slice_id) {
     FrmTabSeparator(_m("Additional setting"));
     echo AA_Slice::getModuleObjectForm($slice_id);
 }
-
-FrmStaticText(_m("Created"), date('Y-m-d H:i', $sarr['created_at']). ' ('. perm_username($sarr['created_by']). ')');
 
 FrmTabSeparator(_m("Settings for older AA - you will probably not use it for new slices"));
 FrmInputNumber("d_listlen", _m("Listing length"), $sarr['d_listlen'], 0, 99999, false, _m('Used by slice.php. Fill 0 to disable slice.php output for this slice (recommended for all newer slices - they are presented by Site Module).'));

@@ -1106,7 +1106,7 @@ class AA_Item {
         $value = $this->getval($col);
         // - no length - not shorten
         // - shorten diffent field, but actual is filled - use whole current
-        if ($value && ($plength === '' || ($field !== '' && $col != $field))) {
+        if ($value && ($plength === '' || ($field !== '' && $col !== $field))) {
             return $this->text2Html( $value, $this->getFlag($col) );
         }
 

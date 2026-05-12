@@ -72,7 +72,7 @@ function ModuleFieldsForm($module_id, array $module_arr, bool $superadmin, bool 
         $owner = '';
     }
 
-    FrmStaticText(_m("Id"), $module_id);
+    // Id row is rendered by callers near the bottom of the form (see slicedit, polls, links, site)
 
     FrmInputText("name", _m("Title"), $name, 99, 25, true);
     FrmInputText("slice_url", _m("URL of .shtml page (often leave blank)"), $slice_url);
@@ -83,7 +83,7 @@ function ModuleFieldsForm($module_id, array $module_arr, bool $superadmin, bool 
     $expand = !$owner && ($new_owner !== '' || $new_owner_email !== '' || $expand_new_owner);
     $btn_add    = _m("+ Add new owner");
     $btn_cancel = _m("× Cancel");
-    $owner_btn  = ' <button type="button" id="aa-new-owner-toggle" onclick="aaToggleNewOwner()">'
+    $owner_btn  = ' <button type="button" id="aa-new-owner-toggle" class="btn-l btn-secondary" onclick="aaToggleNewOwner()">'
         . safe($expand ? $btn_cancel : $btn_add) . '</button>';
     // Inject the toggle button inline into the owner select's cell (right after </select>)
     ob_start();
