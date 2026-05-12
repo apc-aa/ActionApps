@@ -911,14 +911,14 @@ class AA_Stringexpand_Jabber extends AA_Stringexpand {
     }
 }
 
-/** {facebook:<url>} "I like" button
+/** {facebook:<url>} Facebook share button
  *  {facebook:{_#SEO_URL_}}
- *  @param $url      - url of liked page
+ *  @param $url      - url of the shared page
  */
 class AA_Stringexpand_Facebook extends AA_Stringexpand_Nevercache {
     /** expand function
      * @param string $url
-     * @param string $type '+share' to add share button
+     * @param string $type '+share' renders button_count layout with share-count badge; default is icon-only
      * @return string
      */
     function expand($url='', $type=''): string
@@ -926,14 +926,23 @@ class AA_Stringexpand_Facebook extends AA_Stringexpand_Nevercache {
         if (!$url) {
             return '';
         }
-        $share  = 'false';
-        $width  = 120;
-        $height = 21;
-        if ($type === '+share') {
-            $share  = 'true';
-            $width  = 165;
+        $with_count = ($type === '+share');
+        $width      = $with_count ? 110 : 77;
+        $height     = 20;
+        $params     = ['href' => $url, 'width' => $width, 'height' => $height];
+        if ($with_count) {
+            $params['layout'] = 'button_count';
         }
-        return "<iframe src=\"https://www.facebook.com/plugins/like.php?href=".rawurlencode($url)."&amp;width=$width&amp;layout=button_count&amp;action=like&amp;size=small&amp;show_faces=false&amp;share=$share&amp;height=$height\" width=\"$width\" height=\"$height\" style=\"border:none;overflow:hidden\" scrolling=no frameborder=0 allowTransparency=true allow=\"encrypted-media\"></iframe>";
+        return htmltag('iframe', '', [
+            'src'             => 'https://www.facebook.com/plugins/share_button.php?'.http_build_query($params),
+            'width'           => $width,
+            'height'          => $height,
+            'style'           => 'border:none;overflow:hidden',
+            'scrolling'       => 'no',
+            'frameborder'     => '0',
+            'allowfullscreen' => 'true',
+            'allow'           => 'autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share',
+        ]);
     }
 }
 
