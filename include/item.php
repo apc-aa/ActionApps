@@ -1100,14 +1100,18 @@ class AA_Item {
      * @return string
      */
     function f_a($col, $param=""): string {
-        [         , $field ]               = ParamExplode($param);  // we need $field unexpanded
-        [ $plength, $pfield, $pparagraph ] = $this->subst_aliases( ParamExplode($param) );
+        $parts = array_pad(ParamExplode($param), 3, '');
+        $field = $parts[1];   // unexpanded - needed for the $col != $field test below
+        [ $plength, $pfield, $pparagraph ] = $this->subst_aliases( $parts );
         $value = $this->getval($col);
-        if ($value && $col != $field) {  // special case - return whole field
+        // - no length - not shorten
+        // - shorten diffent field, but actual is filled - use whole current
+        if ($value && ($plength === '' || ($field !== '' && $col != $field))) {
             return $this->text2Html( $value, $this->getFlag($col) );
         }
 
-        $shorted_text = $pparagraph ? StrExp('shorten', [get_if($value, $pfield), $plength]) : substr($value, 0, $plength);
+        $source = get_if($value, $pfield);
+        $shorted_text = $pparagraph ? StrExp('shorten', [$source, $plength]) : substr($source, 0, (int)$plength);
         return strip_tags( $shorted_text );
     }
 
