@@ -170,6 +170,18 @@ define("ALERTS_EMAIL", "aaadmin@somewhere.com");
  *  Default value is 16.0 [second] */
 define('TOEXECUTE_ALLOWED_TIME', 59.0);
 
+/** Post-response cron fallback
+ *  When OS-level cron is not configured, AA can run the toexecute queue and
+ *  scheduled maintenance tasks AFTER sending the response on a normal page
+ *  request. The trigger is mtime-gated via <IMG_UPLOAD_PATH>cron-fallback.lock,
+ *  so the hot path costs only two filesystem syscalls (no DB query).
+ *  Recommended: keep enabled. Disable only if real cron (calling cron.php
+ *  every minute) is reliably configured.
+ */
+// define('DISABLE_CRON_FALLBACK', true);
+/** Minimum seconds between fallback runs. Default: 120 (2 minutes). */
+// define('CRON_FALLBACK_INTERVAL', 120);
+
 /** File uploads settings
  *  The directory for file uploads should be webserver writeable and it
  *  shouldn't be inside AA directory (for security reasons - PHP script upload)
@@ -305,3 +317,18 @@ $XMGETTEXT_DESTINATION_DIR = "/www/php_rw/lang/";
  * The dir must exist, it is not created by the mailman.php script.
  * ( @see https://actionapps.org/faq/detail.shtml?x=2009 )   */
 $MAILMAN_SYNCHRO_DIR = "/www/mailman/";
+
+/** Voice dictation on TxtWidget (audio_enable property).
+ *  Primary path uses the browser's Web Speech API (free, streams at the caret)
+ *  and falls back to OpenAI's gpt-4o-transcribe model via the api/transcribe.php
+ *  proxy. The proxy keeps the API key on the server — browsers never see it.
+ *  Leave undefined to disable the OpenAI fallback; Web Speech still works on
+ *  browsers that support it (Chrome, Edge on most platforms).
+ */
+// define('AA_APIKEY_OPENAI', 'sk-...');
+
+/** Upper bound (seconds) for a single dictation recording. The per-widget
+ *  `audio_max_seconds` property overrides this default. Enforced client-side
+ *  (auto-stop) and server-side (reject oversized uploads — paid-API cost guard).
+ */
+// define('AA_SPEECH_MAX_SECONDS', 120);

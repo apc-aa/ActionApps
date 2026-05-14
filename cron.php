@@ -45,6 +45,9 @@ https://www.apc.org/
 
 use AA\IO\DB\DB_AA;
 
+// Real cron entry — suppress the post-response fallback in locsess.php.
+define('AA_NO_CRON_FALLBACK_THIS_REQUEST', true);
+
 require_once __DIR__."/./include/config.php";
 /** Main include file for using session management function on page */
 require_once __DIR__ . "/include/locsess.php";

@@ -719,3 +719,6 @@ function pageOpen($type = ''): void
         $auth->start();
     }
 }
+
+// Self-healing scheduled-tasks trigger (no-op when OS cron is healthy).
+\AA\Later\CronFallback::maybeTrigger();

@@ -93,7 +93,16 @@ $managed->setColumn('last_run', '{date:j.n.Y H#:i#:s:{last_run}}');
 //}
 $doc_url = "https://actionapps.org/faq/detail.shtml?x=1726";
 $run_url = get_aa_url('cron.php',[],false);
-$managed->setAbout( _m("For help see FAQ: ")."<a href=\"$doc_url\">$doc_url</a><br>". _m("To run cron manualy now: ")."<a href=\"$run_url\">$run_url</a>");
+
+$fallback_lock   = \AA\Later\CronFallback::lockFile();
+$fallback_last   = is_file($fallback_lock) ? date('j.n.Y H:i:s', filemtime($fallback_lock)) : _m('never');
+$fallback_status = \AA\Later\CronFallback::isDisabled() ? _m('disabled') : _m('enabled');
+
+$managed->setAbout(
+    _m("For help see FAQ: ")."<a href=\"$doc_url\">$doc_url</a><br>".
+    _m("To run cron manualy now: ")."<a href=\"$run_url\">$run_url</a><br>".
+    _m("Post-response cron fallback")." ($fallback_status), "._m("last run").": $fallback_last"
+);
 
 $apage = new AA_Adminpageutil('aaadmin', 'cron');
 $apage->setTitle(_m("Cron"));

@@ -8,7 +8,7 @@
  *
  *  to the file ".mailman" in the $MAILMAN_SYNCHRO_DIR.
  *
- *  To avoid conflicts, uses the file lock (see file_lock.php).
+ *  To avoid conflicts, uses the file lock (see src/Util/FileLock.php).
  *  A Unix shell script should be run regularly by cron and use the file-lock
  *  mechanism as well. The Unix script executes the commands and deletes the file.
  *
@@ -47,7 +47,6 @@ require_once __DIR__ . "/../include/formutil.php";
 require_once __DIR__ . "/../include/varset.php";
 
 require_once __DIR__ . "/../include/itemfunc.php";
-require_once __DIR__ . "/../include/file_lock.php";
 
 try {
     $admin_email = InputVars::stringPOST('admin_email');
@@ -116,7 +115,7 @@ function add_mailman_list($admin_email, $list_name, $admin_password, $groupid): 
 
     global $MAILMAN_SYNCHRO_DIR;
     endslash($MAILMAN_SYNCHRO_DIR);
-    $filelock = new FileLock($MAILMAN_SYNCHRO_DIR.".mailman_lock");
+    $filelock = new \AA\Util\FileLock($MAILMAN_SYNCHRO_DIR.".mailman_lock");
     if (! $filelock->Lock()) {
         echo "Internal Error when creating lock file.";
         return;

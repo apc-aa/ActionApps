@@ -33,8 +33,12 @@ https://www.apc.org/
 /** APC-AA configuration file */
 
 use AA\IO\DB\DB_AA;
+use AA\Later\CronFallback;
 use AA\Later\ScheduleAaTasks;
 use AA\Later\Toexecute;
+
+// Real cron runner — suppress the post-response fallback in locsess.php.
+define('AA_NO_CRON_FALLBACK_THIS_REQUEST', true);
 
 require_once __DIR__."/../include/config.php";
 /** Main include file for using session management function on page */
@@ -76,6 +80,8 @@ $toexecute->later($mail,array(array('rrrrrrrrrrrx@ecn.cz')));
 AA::$perm->setPermMode('cron');
 
 $toexecute->execute();
+
+touch(CronFallback::lockFile());
 
 if (AA::$debug) {
     echo '<br>Dababase instances: '. DB_PDO::$_instances_no;

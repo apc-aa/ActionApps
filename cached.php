@@ -31,6 +31,8 @@ https://www.apc.org/
 
 /** APC-AA configuration file */
 require_once __DIR__."/./include/config.php";
+// Fast asset-serving path — no cron-fallback work here.
+define('AA_NO_CRON_FALLBACK_THIS_REQUEST', true);
 /** Main include file for using session management function on page */
 require_once __DIR__ . "/include/locsess.php";
 /** Caching functions */
