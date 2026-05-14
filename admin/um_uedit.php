@@ -227,13 +227,17 @@ $headcode = "
 </script>";
 
 
-$apage = new AA_Adminpageutil('aaadmin',$usr_new ? "u_new" : "u_edit");
-$apage->setTitle(_m("User management").' - '. ($usr_new ? _m("New User") : _m("Edit User")));
+$apage = new AA_Adminpageutil('aaadmin', "u_edit");
+$apage->setTitle(_m("Users") . ($usr_new ? ' — '. _m("Add new user") : ''));
 $apage->addRequire($headcode, 'AA_Req_Headcode');
 $apage->addRequire(get_aa_url('javascript/inputform.min.js', ['v'=>AA_JS_VERSION], false)); // for MoveSelected(), Moveitem()
 $apage->addRequire(get_aa_url('javascript/js_lib.min.js', ['v'=>AA_JS_VERSION], false)); // for CommaDelimited
 $apage->setForm();
 $apage->printHead($err, $Msg);
+
+if (!$usr_new) {
+    echo '<p class="aa-pageaction"><a class="btn btn-l btn-primary" href="'. safe(get_aa_url('admin/um_uedit.php', ['usr_new'=>1])) .'">+ '. _m("Add user") .'</a></p>';
+}
 
 FrmTabCaption(_m("Users"));
 ?>
@@ -241,9 +245,8 @@ FrmTabCaption(_m("Users"));
    <form method="post" action="<?php echo StateUrl() ?>">
     <table>
      <tr>
-            <td width="20%">&nbsp;</td>
-            <td width="46%"><input type="text" name="usr" value="<?php echo safe($rusr)?>"></td>
-            <td width="33%"><input type="submit" value="<?php echo _m("Search")?>">
+            <td><input type="text" name="usr" value="<?php echo safe($rusr)?>" placeholder="<?php echo _m("Find user")?>"></td>
+            <td><input type="submit" value="<?php echo _m("Search")?>">
           <input type="hidden" name="UsrSrch" value="1"></td>
      </tr>
     </table>

@@ -186,13 +186,16 @@ function SetRole(no) {
 </script>
 ";
 
-$apage = new AA_Adminpageutil('aaadmin',$grp_new ? "g_new" : "g_edit");
-$apage->setTitle(_m("User management - Groups"));
-//$apage->setSubtitle($grp_new ? _m("New Group") : _m("Edit Group"));
+$apage = new AA_Adminpageutil('aaadmin', "g_edit");
+$apage->setTitle(_m("Groups") . ($grp_new ? ' — '. _m("Add new group") : ''));
 $apage->addRequire($headcode, 'AA_Req_Headcode');
 $apage->addRequire(get_aa_url('/javascript/js_lib.min.js?v='.AA_JS_VERSION, '', false));
 $apage->setForm();
 $apage->printHead($err, $Msg);
+
+if (!$grp_new) {
+    echo '<p class="aa-pageaction"><a class="btn btn-l btn-primary" href="'. safe(get_aa_url('admin/um_gedit.php', ['grp_new'=>1])) .'">+ '. _m("Add group") .'</a></p>';
+}
 
 FrmTabCaption(_m("Groups"));
 
@@ -201,9 +204,8 @@ FrmTabCaption(_m("Groups"));
    <form method="post" action="<?php echo StateUrl() ?>">
     <table>
      <tr>
-            <td width="20%">&nbsp;</td>
-            <td width="46%"><input type="text" name="grp" value="<?php echo safe($rgrp)?>"></td>
-            <td width="33%"><input type="submit" value="<?php echo _m("Search")?>">
+            <td><input type="text" name="grp" value="<?php echo safe($rgrp)?>" placeholder="<?php echo _m("Find group")?>"></td>
+            <td><input type="submit" value="<?php echo _m("Search")?>">
           <input type="hidden" name="GrpSrch" value="1"></td>
      </tr>
     </table>

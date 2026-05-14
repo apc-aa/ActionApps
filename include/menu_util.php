@@ -66,13 +66,9 @@ function GetCommonMenu(AA_Profile $profile): array {
         ],
     /*    "delete" => array ("label" => _m("Empty trash"), "cond"=>IfSlPerm(PS_DELETE_ITEMS), "href"=>"admin/index.php?Delete=trash"),*/
 
-        "header1"     => ['label'=>_m("Users"), 'ico'=>'ico-user.png'],
-        "u_edit"      => ["label"=>_m("Edit User"),       "cond"=>IfSlPerm(PS_NEW_USER), "href"=>"admin/um_uedit.php"],
-        "u_new"       => ["label"=>_m("New User"),        "cond"=>IfSlPerm(PS_NEW_USER), "href"=>"admin/um_uedit.php?usr_new=1"],
-
-        "header2"     => ['label'=>_m("Groups"), 'ico'=>'ico-users.png'],
-        "g_edit"      => ["label"=>_m("Edit Group"),      "cond"=>IfSlPerm(PS_NEW_USER), "href"=>"admin/um_gedit.php"],
-        "g_new"       => ["label"=>_m("New Group"),       "cond"=>IfSlPerm(PS_NEW_USER), "href"=>"admin/um_gedit.php?grp_new=1"],
+        "header1"     => ['label'=>_m("Permissions"), 'ico'=>'ico-permissions.png'],
+        "u_edit"      => ["label"=>_m("Users"),           "cond"=>IfSlPerm(PS_NEW_USER), "href"=>"admin/um_uedit.php"],
+        "g_edit"      => ["label"=>_m("Groups"),          "cond"=>IfSlPerm(PS_NEW_USER), "href"=>"admin/um_gedit.php"],
 
         "header9"     =>_m("Misc"),
         "toexecute"   => ["label"=>_m("Task Manager"),    "cond"=>IsSuperadmin(),        "href"=>"admin/aa_toexecute.php"],
