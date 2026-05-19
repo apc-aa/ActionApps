@@ -4,6 +4,7 @@ namespace AA\Util;
 
 use AA\IO\DB\DB_AA;
 use AA\Optimize\AddDurationLog;
+use AA\Util\Txt;
 
 /**
  * Display-side helpers for hitcounter data — used by admin/aa_statistics.php
@@ -143,20 +144,24 @@ class HitcounterDisplay
         $globals_prev = self::getGlobalTotals($slice_ids, $prev_tip_from, $prev_tip_to, 10000);
 
         // Per-item display data — populated lazily; safe() handles HTML escaping.
-        // The diagnostics card shows the headline as the visible label, with the
-        // numeric short-id appended in small grey text. The full headline + slice
-        // name go into the title tooltip.
+        // The diagnostics card shows "[Slicena…] headline" as the visible label,
+        // with the numeric short-id appended in small grey text. Full headline +
+        // slice name go into the title tooltip.
         $item_meta_cache = [];
         $get_meta = static function (string $sid) use (&$item_meta_cache, $globals): array {
             if (!isset($item_meta_cache[$sid])) {
-                $headline = trim((string)\AA::Un("{shorten:{item:$sid:_#HEADLINE}:30:1}"));
-                $headline = $headline !== '' ? $headline : $sid;
-                $slice_id = $globals[$sid]['slice_id'] ?? '';
-                $slice_nm = $slice_id ? (string)\AA_Slice::getModuleProperty($slice_id, 'name') : '';
+                $headline    = trim(\AA::Un("{shorten:{item:$sid:_#HEADLINE}:30:1}"));
+                $headline    = $headline !== '' ? $headline : $sid;
+                $slice_id    = $globals[$sid]['slice_id'] ?? '';
+                $long_id     = $globals[$sid]['long_id']  ?? '';
+                $slice_nm    = $slice_id ? (string)\AA_Slice::getModuleProperty($slice_id, 'name') : '';
                 $item_meta_cache[$sid] = [
-                    'headline' => $headline,
-                    'sid'      => $sid,
-                    'slice'    => $slice_nm,
+                    'headline'    => $headline,
+                    'sid'         => $sid,
+                    'slice_name'  => $slice_nm,
+                    'slice_short' => Txt::shorten($slice_nm, 11, '…'),
+                    'long_id'     => $long_id,
+                    'slice_id'    => $slice_id,
                 ];
             }
             return $item_meta_cache[$sid];
@@ -233,19 +238,10 @@ class HitcounterDisplay
             }
             $h  = '<div class="aa-stat-tip-card"><h4>'.$title_html.'</h4><ol>';
             foreach ($rows as $sid => $val) {
-                $m       = $get_meta($sid);
-                // Headline-first label; numeric short_id appended in small grey text.
-                // Slice name + short_id in the link tooltip.
-                $tooltip = $m['headline']
-                    . ($m['slice'] !== '' ? ' · ' . $m['slice'] : '')
-                    . ' · #' . $m['sid'];
-                $href = 'itemedit.php?id=' . urlencode($sid);
+                $m = $get_meta($sid);
                 $h .= '<li>'
-                    . '<a class="aa-stat-tip-name" href="'.\safe($href).'" title="'.\safe($tooltip).'">'
-                    . \safe($m['headline'])
-                    . ' <small style="color:#aaa">'.\safe($m['sid']).'</small>'
-                    . '</a> '
-                    . '<span class="aa-stat-tip-val">'.$row_fmt($val, $sid).'</span>'
+                    . self::renderItemLink($sid, $m['headline'], $m['headline'], $m, 'aa-stat-tip-name')
+                    . ' <span class="aa-stat-tip-val">'.$row_fmt($val, $sid).'</span>'
                     . '</li>';
             }
             $h .= '</ol></div>';
@@ -479,12 +475,12 @@ class HitcounterDisplay
                     'b2_cnt' => $b2_cnt, 'b2_dur' => $b2_dur,
                     'b3_cnt' => $b3_cnt, 'b3_dur' => $b3_dur,
                 ];
-                $cols[$sid]['avgMs'][] = is_null($avg_ms) ? 0 : (float)$avg_ms;
+                $cols[$sid]['avgMs'][] = is_null($avg_ms) ? 0 : $avg_ms;
                 if ((int)$hits > $row_max_hits) {
                     $row_max_hits = (int)$hits;
                 }
                 if (!is_null($avg_ms)) {
-                    $col_max_ms[$sid] = max($col_max_ms[$sid] ?? 0.0, (float)$avg_ms);
+                    $col_max_ms[$sid] = max($col_max_ms[$sid] ?? 0.0, $avg_ms);
                 }
             }
             $collected[$day] = ['row_max_hits' => $row_max_hits, 'items' => $row];
@@ -496,15 +492,18 @@ class HitcounterDisplay
             if ($sid === 'all') {
                 $item_labels[$sid] = 'all';
             } else {
-                $headline = trim((string)\AA::Un("{shorten:{item:$sid:_#HEADLINE}:30:1}"));
+                $headline = trim(\AA::Un("{shorten:{item:$sid:_#HEADLINE}:30:1}"));
                 $item_labels[$sid] = $headline !== '' ? "$sid — $headline" : (string)$sid;
             }
         }
 
+        // ---- Per-item metadata (long_id, slice_id, slice_short) for header links
+        $item_meta = self::buildItemMeta($s_ids);
+
         // ---- Render: CSS + legend + table + charts
         $ret  = self::renderStatsCss();
         $ret .= self::renderLegend();
-        $ret .= self::renderStatsTable($collected, $s_ids, $item_labels, $col_max_ms, $do_duration);
+        $ret .= self::renderStatsTable($collected, $s_ids, $item_labels, $col_max_ms, $do_duration, $item_meta);
         $ret .= self::renderHitsChart($cols, $labels, $item_labels);
         $ret .= self::renderCacheStateCharts($cols, $s_ids, $labels, $item_labels);
         $ret .= self::renderAvgMsChart($cols, $labels, $item_labels);
@@ -571,6 +570,79 @@ class HitcounterDisplay
     // composes, so the main flow stays readable.
     // -------------------------------------------------------------------------
 
+    /**
+     * Batched item-meta lookup for hit_archive short_ids. One JOIN — matches the
+     * pattern in admin/aafinder.php — instead of one SELECT plus N per-slice
+     * AA_Slice::getModuleProperty() calls.
+     *
+     * @param  string[] $sids  short_ids (numeric strings); 'all' is ignored
+     * @return array<string, array{long_id:string,slice_id:string,slice_name:string,slice_short:string}>
+     */
+    private static function buildItemMeta(array $sids): array
+    {
+        $real_sids = array_values(array_filter($sids, static fn($s) => $s !== 'all'));
+        if (empty($real_sids)) return [];
+
+        $rows = DB_AA::select(
+            [],
+            'SELECT `item`.`short_id`,
+                    LOWER(HEX(`item`.`id`))       AS long_id,
+                    LOWER(HEX(`item`.`slice_id`)) AS slice_id,
+                    `slice`.`name`                AS slice_name
+             FROM `item` INNER JOIN `slice` ON `slice`.`id` = `item`.`slice_id`',
+            [['item.short_id', $real_sids, 'i']]
+        );
+
+        $meta = [];
+        foreach ($rows as $r) {
+            $slice_nm = (string)$r['slice_name'];
+            $meta[(string)$r['short_id']] = [
+                'long_id'     => (string)$r['long_id'],
+                'slice_id'    => (string)$r['slice_id'],
+                'slice_name'  => $slice_nm,
+                'slice_short' => Txt::shorten($slice_nm, 11, '…'),
+            ];
+        }
+        return $meta;
+    }
+
+    /**
+     * Render an item label as a linked anchor (or span when long_id is unknown)
+     * with optional "[slice_short]" prefix and "headline · slice · #sid" tooltip.
+     * Shared between the diagnostics card list and the per-day stats-table header
+     * so both UIs stay in sync.
+     *
+     * @param string $sid              short_id
+     * @param string $visible_headline pre-truncated headline shown inline (raw text)
+     * @param string $tooltip_headline headline used in title attribute (often full)
+     * @param array  $meta             keys: long_id, slice_id, slice_name, slice_short
+     * @param string $anchor_class     CSS class applied to the wrapping <a>
+     */
+    private static function renderItemLink(string $sid, string $visible_headline, string $tooltip_headline, array $meta, string $anchor_class): string
+    {
+        $slice_short = $meta['slice_short'] ?? '';
+        $slice_name  = $meta['slice_name']  ?? '';
+        $long_id     = $meta['long_id']     ?? '';
+        $slice_id    = $meta['slice_id']    ?? '';
+
+        $tooltip = ($tooltip_headline !== '' ? $tooltip_headline : $sid)
+                 . ($slice_name !== '' ? ' · ' . $slice_name : '')
+                 . ' · #' . $sid;
+
+        $prefix = $slice_short !== ''
+            ? '<span class="aa-stat-slice-prefix">['.\safe($slice_short).']</span> '
+            : '';
+        $inner = $prefix
+               . \safe($visible_headline !== '' ? $visible_headline : $sid)
+               . ' <small class="aa-stat-item-sid">'.\safe($sid).'</small>';
+
+        if ($long_id !== '') {
+            $href = \get_admin_url('itemedit.php', ['id' => $long_id, 'change_id' => $slice_id, 'edit' => 1]);
+            return '<a class="'.\safe($anchor_class).'" href="'.\safe($href).'" title="'.\safe($tooltip).'">'.$inner.'</a>';
+        }
+        return '<span title="'.\safe($tooltip).'">'.$inner.'</span>';
+    }
+
     /** Cache-state palette ordered by quality (best → worst) — used by stacked charts. */
     private const CACHE_STATE_ORDER = [
         ['cnmH',  'C+NM (cheapest)', '#2e7d52'],   // cache hit + 304   — best  (deepest green, bottom of stack)
@@ -611,6 +683,10 @@ class HitcounterDisplay
             . '.aa-stat-zero{color:#aaa}'
             . '.aa-stat-all-bdr{border-left:2px solid #999}'
             . '.aa-stat-all{background-color:#f0f0f0!important;font-weight:bold}'
+            . '.aa-stat-slice-prefix{color:#888}'
+            . '.aa-stat-item-sid{color:#aaa}'
+            . '.aa-stat-th-link{color:inherit;text-decoration:none}'
+            . '.aa-stat-th-link:hover{text-decoration:underline}'
             . '.aa-stat-detail{font-size:90%;margin:.3em 0;border-collapse:collapse}'
             . '.aa-stat-detail th,.aa-stat-detail td{padding:1px 4px;border:1px solid #ddd}'
             . '.aa-stat-detail td:first-child{text-align:left}'
@@ -636,7 +712,7 @@ class HitcounterDisplay
         return $h;
     }
 
-    private static function renderStatsTable(array $collected, array $s_ids, array $item_labels, array $col_max_ms, bool $do_duration): string
+    private static function renderStatsTable(array $collected, array $s_ids, array $item_labels, array $col_max_ms, bool $do_duration, array $item_meta = []): string
     {
         $per_item_cols = $do_duration ? 4 : 1;
 
@@ -651,13 +727,15 @@ class HitcounterDisplay
             if ($is_all) {
                 $head_html = \safe('all');
             } else {
-                $headline_short = trim((string)\AA::Un("{shorten:{item:$sid:_#HEADLINE}:25:1}"));
-                $title          = (string)\AA::Un("{safe:{item:$sid:_#HEADLINE}}");
-                $head_text      = $headline_short !== '' ? \safe($headline_short) : \safe((string)$sid);
-                $head_html      = "$head_text <small style=\"color:#aaa\">".\safe((string)$sid)."</small>";
-                if ($title !== '') {
-                    $head_html = "<span title=\"$title\">$head_html</span>";
-                }
+                $headline_short = trim(\AA::Un("{shorten:{item:$sid:_#HEADLINE}:25:1}"));
+                $headline_full  = trim(\AA::Un("{item:$sid:_#HEADLINE}"));
+                $head_html      = self::renderItemLink(
+                    (string)$sid,
+                    $headline_short,
+                    $headline_full,
+                    $item_meta[$sid] ?? [],
+                    'aa-stat-th-link'
+                );
             }
             $ret .= "\n      <th colspan=\"$per_item_cols\"$cls_attr>$head_html</th>";
         }
@@ -938,6 +1016,8 @@ class HitcounterDisplay
 .aa-stat-tip-name{flex:1 1 auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#06c;text-decoration:none}
 .aa-stat-tip-name:hover{text-decoration:underline}
 .aa-stat-tip-val{flex:0 0 auto;color:#222;font-variant-numeric:tabular-nums}
+.aa-stat-slice-prefix{color:#888}
+.aa-stat-item-sid{color:#aaa}
 </style>';
     }
 }
