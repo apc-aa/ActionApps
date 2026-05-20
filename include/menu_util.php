@@ -166,77 +166,260 @@ function GetModuleSelection(): string {
         $permitted_slices = GetUserSlices();
         $modules_cond = ($permitted_slices==='all') ? [] : [['module.id', array_keys($permitted_slices), 'l']];
 
-        $mymodules =  DB_AA::select([], 'SELECT LOWER(HEX(module.id)) AS unpackid, module.type, module.deleted, module.name, slice.type AS slice_type FROM `module` LEFT JOIN `slice` ON module.id=slice.id', $modules_cond, ['module.deleted','module.priority','module.name']);
+        $mymodules = DB_AA::select([],
+            'SELECT LOWER(HEX(module.id)) AS unpackid, module.type, module.deleted, module.name, slice.type AS slice_type FROM `module` LEFT JOIN `slice` ON module.id=slice.id',
+            $modules_cond,
+            ['module.deleted','module.priority','module.name']);
 
-        $module_types = [
-            "Alerts" => [5, _m("Alerts")],
-            "J" => [6, _m("Jump inside control panel")],
-            "Links" => [7, _m("Links")],
-            "A" => [8, _m("MySQL Auth (old version)")],
-            "P" => [9, _m("Polls")],
-            "W" => [10,_m("Site")],
-            "S" => [0, _m("Slice")],
-            "RM"=> [1, _m("Reader Management Slice")]
-        ];
-
-        // do not print deleted modules when you ase not admin of the slice or superadmin
-        if($permitted_slices !== 'all') {
-            // huhl($_SESSION, AuthGetUid(), $GLOBALS['permission_uid'], AA::$perm->getUserPerms($GLOBALS['permission_uid'], "slice"), AA_Perm::ROLES, $GLOBALS['permission_to']);
-            $mymodules = array_filter($mymodules, static fn($slice) => (!$slice['deleted'] || IfSlPerm(PS_FIELDS, $slice['unpackid'])));  // huhl($slice['name'], $slice['deleted'],  $slice['unpackid'], IfSlPerm(PS_FIELDS, $slice['unpackid']));
+        // do not print deleted modules when you are not admin of the slice or superadmin
+        if ($permitted_slices !== 'all') {
+            $mymodules = array_filter($mymodules, static fn($slice) => (!$slice['deleted'] || IfSlPerm(PS_FIELDS, $slice['unpackid'])));
         }
 
-        $modules = [];
-        foreach ($mymodules as $mymodule) {
-            if (($order = $module_types[$mymodule['type']][0]) === 0) {
-                $order = $mymodule['slice_type'] === "ReaderManagement" ? 1 : 0;
+        // Partition modules: sites (W), regular slices (S, non-RM), and other types (RM, Polls, Alerts, ...).
+        // Order inside each bucket follows the query order (deleted asc, priority asc, name asc).
+        $sites         = [];   // unpackid => row
+        $slices_by_id  = [];   // unpackid => row  (non-RM slices)
+        $other_by_type = [];   // type => [row, ...]  (RM bucket uses key 'RM')
+        foreach ($mymodules as $row) {
+            if ($row['type'] === 'W') {
+                $sites[$row['unpackid']] = $row;
+            } elseif ($row['type'] === 'S' && $row['slice_type'] !== 'ReaderManagement') {
+                $slices_by_id[$row['unpackid']] = $row;
+            } else {
+                $bucket = ($row['type'] === 'S') ? 'RM' : $row['type'];
+                $other_by_type[$bucket][] = $row;
             }
-            $name = str_replace("'","`",safe($mymodule['name']));
-            if ( $mymodule['deleted'] ) {
-                $name = "&times;&times;&times; $name &times;&times;&times;";
-            }
-           // $modules[$order][$mymodule['unpackid']] = ($mymodule['deleted'] ? '&times;&times;&times; '.$mymodule['name']. ' &times;&times;&times;' : $mymodule['name']);
-           $modules[$order][$mymodule['unpackid']] = $name;
         }
 
-        // count($modules) - count of module types
-        $display_modtypes = ( count($modules) > 1 ); // display types in selectbox?
+        // One batched query for site->slice memberships, scoped to visible sites & slices.
+        // Wrapped in Contentcache for cross-request reuse (mirrors the canonical path in
+        // AA_Module_Site::getRelatedModules()). Needs both directions, so we keep the
+        // raw pair list rather than calling getRelatedModules() per site.
+        $site2slices = [];
+        $slice2sites = [];
+        if (!empty($sites) && !empty($slices_by_id)) {
+            $rels = AA::Contentcache()->get_result(['AA\IO\DB\DB_AA','select'], [[],
+                'SELECT LOWER(HEX(source_id)) AS site_id, LOWER(HEX(destination_id)) AS slice_id FROM `relation`',
+                [['source_id',      array_keys($sites),        'l'],
+                 ['destination_id', array_keys($slices_by_id), 'l'],
+                 ['flag',           REL_FLAG_MODULE_DEPEND,    'i']]]);
+            foreach ($rels as $rel) {
+                $site2slices[$rel['site_id']][$rel['slice_id']] = true;
+                $slice2sites[$rel['slice_id']][$rel['site_id']] = true;
+            }
+        }
+
+        // Pre-bucket slices under each site so the rendering loop is O(rels + slices)
+        // rather than O(sites × slices). Preserves $slices_by_id's priority/name order.
+        $slices_under_site = [];
+        foreach ($slices_by_id as $slice_id => $slice_row) {
+            foreach (array_keys($slice2sites[$slice_id] ?? []) as $site_id) {
+                $slices_under_site[$site_id][$slice_id] = $slice_row;
+            }
+        }
 
         $mydir = AA_Module::getModuleInfo('url', AA::$module_id);
 
-        $options      = '';
-        ksort ($modules);
-        foreach ($modules as $order => $mods) {
-            if ( $display_modtypes ) {
-                foreach ($module_types as $module_type) {
-                    if ($module_type[0] === $order) {
-                        $options .= '<optgroup label="'.$module_type[1].'">';   // &#x1f464;&#x1f468; men symbol
-                    }
-                }
+        /* Indent prefixes for fallback browsers. HTML entity (not raw U+00A0) so the
+           bytes are valid in both UTF-8 and 8859-1 page encodings — a UTF-8 NBSP byte
+           sequence renders as garbage on legacy 8-bit slice admin pages. */
+        $nbsp4 = str_repeat('&nbsp;', 4);   // for orphan slices + non-slice modules
+        $nbsp6 = str_repeat('&nbsp;', 6);   // for site-child slices (deeper level)
+
+        /* Pick an icon code per module/slice. Falls through to slice_type for S-type rows.
+           Slice-type literals must stay in sync with AA_Slice::getSliceTypes(). */
+        $by_module_type = ['W' => 'site', 'RM' => 'reader', 'P' => 'polls',
+                           'Alerts' => 'alerts', 'Links' => 'links', 'J' => 'jump'];
+        $by_slice_type  = ['ReaderManagement' => 'reader', '___CodePage' => 'pages',
+                           '___CodeView' => 'views', '___Constant' => 'constants',
+                           '___Translate' => 'translate', '___Field' => 'field'];
+        $iconFor = static function(array $row) use ($by_module_type, $by_slice_type): string {
+            return $by_module_type[$row['type']]
+                ?? $by_slice_type[$row['slice_type'] ?? '']
+                ?? 'items';
+        };
+
+        /* Inline SVG <symbol> defs referenced via <use>. Kept single-line because the
+           dropdown HTML is injected through innerHTML (see $js below) and embedded
+           newlines would break the JS string. */
+        $icon_symbols = [
+            'site'      => '<symbol id="aa-ic-site" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="5.5"/><path d="M2.5 8h11"/><path d="M8 2.5c1.8 2 1.8 9 0 11M8 2.5c-1.8 2-1.8 9 0 11"/></symbol>',
+            'reader'    => '<symbol id="aa-ic-reader" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="5.5" r="2.3"/><path d="M3 14c.7-2.5 2.8-3.8 5-3.8s4.3 1.3 5 3.8"/></symbol>',
+            'constants' => '<symbol id="aa-ic-constants" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="3.5" width="11" height="9" rx="1"/><path d="M2.5 6.5h11M2.5 9.5h11M7 3.5v9"/></symbol>',
+            'pages'     => '<symbol id="aa-ic-pages" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="square" stroke-linejoin="miter"><rect x="1" y="6" width="4" height="4"/><rect x="10" y="2" width="5" height="4"/><rect x="10" y="10" width="5" height="4"/><path d="M5 8H7.5M7.5 4V12M7.5 4H10M7.5 12H10"/></symbol>',
+            'items'     => '<symbol id="aa-ic-items" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"><circle cx="3" cy="4" r=".7" fill="currentColor" stroke="none"/><circle cx="3" cy="8" r=".7" fill="currentColor" stroke="none"/><circle cx="3" cy="12" r=".7" fill="currentColor" stroke="none"/><path d="M5 4h8.5M5 8h8.5M5 12h8.5"/></symbol>',
+            'views'     => '<symbol id="aa-ic-views" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="2.5" width="11" height="11" rx="1.2"/><path d="M6 6L4.5 8 6 10M10 6l1.5 2L10 10M8 5.5l-1 5"/></symbol>',
+            'translate' => '<symbol id="aa-ic-translate" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3h4M5 2.5V7"/><path d="M3 7c0-2 2-2 2-2s2 0 2 2"/><path d="M9 14L12 7l3 7M9.8 12h4.4"/></symbol>',
+            'field'     => '<symbol id="aa-ic-field" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="square" stroke-linejoin="miter"><path d="M1.5 2h4"/><rect x="1.5" y="3.5" width="13" height="2.75"/><path d="M1.5 9h4"/><rect x="1.5" y="10.5" width="13" height="2.75"/></symbol>',
+            'polls'     => '<symbol id="aa-ic-polls" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 4.5h10M2.5 8h7M2.5 11.5h4.5"/></symbol>',
+            'alerts'    => '<symbol id="aa-ic-alerts" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="4" width="11" height="8" rx="1"/><path d="M2.5 4.5L8 9l5.5-4.5"/></symbol>',
+            'links'     => '<symbol id="aa-ic-links" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 11.3l-1.5 1.5a2.5 2.5 0 11-3.5-3.5l3-3a2.5 2.5 0 013.5 0"/><path d="M9.5 4.7l1.5-1.5a2.5 2.5 0 113.5 3.5l-3 3a2.5 2.5 0 01-3.5 0"/></symbol>',
+            'jump'      => '<symbol id="aa-ic-jump" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8h7.5"/><path d="M6.5 5l3 3-3 3"/><circle cx="12.5" cy="8" r="1.2" fill="currentColor" stroke="none"/></symbol>',
+        ];
+
+        /* Non-selectable section header — replaces the dropped <optgroup>. Firefox
+           fallback shows the disabled option in default grey; modern browsers pick
+           up .aa-section-header styling. The leading spacer option supplies vertical
+           breathing room in the fallback path where option padding/margin is ignored;
+           modern browsers hide it via CSS (display:none) and rely on real padding. */
+        $emitSection = static function(string $label): string {
+            // No aria-hidden on the spacer: Chrome blocks aria-hidden on <option>. The
+            // disabled attribute alone suffices — AT skips non-interactive options.
+            return '<option value="" class="aa-section-spacer" disabled>&nbsp;</option>'
+                 . '<option value="" class="aa-section-header" disabled>' . safe($label) . '</option>';
+        };
+
+        /**
+         * Emit one <option>.
+         *  - $prefix is concatenated verbatim (no auto-space) so the caller can pad with
+         *    leading characters/spaces that act as a fallback hierarchy cue in older
+         *    browsers where the option class CSS won't apply.
+         *  - $class adds a CSS hook for modern browsers (`appearance: base-select`).
+         *  - $aria_desc fills `aria-description` to convey parent-site context to AT
+         *    in lieu of the dropped <optgroup> grouping announcement.
+         *  - $disabled emits a non-selectable header-style option (used when the user
+         *    can see a site's child slices but lacks permission to the site itself).
+         *  - $icon names a symbol in $icon_symbols; rendered via <use> after the label.
+         *    Renders as empty text in old browsers, as a visible icon under base-select.
+         */
+        // Track whether the HTML 'selected' attribute has already been emitted: a slice
+        // that lives under multiple sites would otherwise get 'selected' on every row,
+        // causing a wrong-row flash before the localStorage JS reconciles.
+        $selected_emitted = false;
+        $emitOption = static function (string $id, string $name, bool $deleted,
+                                       string $site_id = '', string $prefix = '',
+                                       string $class = '', string $aria_desc = '',
+                                       bool $disabled = false, string $icon = '') use ($mydir, &$selected_emitted): string {
+            $mod_dir = AA_Module::getModuleInfo('url', $id);
+            $val     = (($mydir === $mod_dir) ? '' : AA_INSTAL_PATH.$mod_dir) . "?module_id=$id";
+            $label   = safe($name);
+            if ($deleted) {
+                $label = "&times;&times;&times; $label &times;&times;&times;";
             }
-            //        asort ($mods);
-            foreach ($mods as $id => $name) {
-                $mod_dir = AA_Module::getModuleInfo('url',$id);
-                $val = (($mydir === $mod_dir) ? '' : AA_INSTAL_PATH.$mod_dir). "?module_id=$id";
-                $options .= '<option value="' . $val .'"';
-                if (AA::$module_id == $id) {
-                    $options .= ' selected';
-                }
-                $options .= '>'. $name;
+            // $prefix is raw HTML (callers pass empty string or repeated &nbsp; entities,
+            // never user input) — kept unescaped so HTML entities survive intact.
+            $label = $prefix . $label;
+            if ($icon !== '') {
+                $label .= '<svg class="aa-icon" viewBox="0 0 16 16" aria-hidden="true"><use href="#aa-ic-' . safe($icon) . '"/></svg>';
+            }
+
+            $opt = '<option value="' . safe($val) . '"';
+            if ($class !== '') {
+                $opt .= ' class="' . safe($class) . '"';
+            }
+            if ($site_id !== '') {
+                $opt .= ' data-site-id="' . safe($site_id) . '"';
+            }
+            if ($aria_desc !== '') {
+                $opt .= ' aria-description="' . safe($aria_desc) . '"';
+            }
+            if ($disabled) {
+                $opt .= ' disabled';
+            } elseif (!$selected_emitted && AA::$module_id == $id) {
+                $opt .= ' selected';
+                $selected_emitted = true;
+            }
+            return $opt . '>' . $label . '</option>';
+        };
+
+        $options = '';
+
+        // 1) Sites + their slices, rendered as flat <option>s (no per-site <optgroup>).
+        //    The site row is a styled "header-like" option:
+        //      - selectable when the user can access the site
+        //      - disabled-but-visible when the user only has perms to its child slices
+        //        (preserves the grouping cue without misleading the user)
+        //    Child slices follow immediately, indented in the option text for old-browser
+        //    fallback, and via CSS padding-left in modern browsers.
+        foreach ($sites as $site_id => $site_row) {
+            $site_perm = IfSlPerm(PS_FIELDS, $site_id);
+            $kids      = $slices_under_site[$site_id] ?? [];
+            if (!$site_perm && empty($kids)) {
+                continue;
+            }
+            $options .= $emitOption(
+                $site_id, $site_row['name'], (bool)$site_row['deleted'],
+                $site_id, '',
+                $site_perm ? 'aa-site' : 'aa-site aa-site-readonly',
+                '', !$site_perm, 'site'
+            );
+            foreach ($kids as $slice_id => $slice_row) {
+                $options .= $emitOption(
+                    $slice_id, $slice_row['name'], (bool)$slice_row['deleted'],
+                    $site_id, $nbsp6, 'aa-slice-of-site',
+                    sprintf(_m('Part of %s'), $site_row['name']),
+                    false, $iconFor($slice_row)
+                );
             }
         }
 
-        if ( !AA::$module_id ) {   // new slice
-            $options .= '<option value="new" selected>'. _m("New slice");
+        // 2) orphan slices (no parent site) — preceded by a disabled section header.
+        //    $nbsp4 prefix indents members visually under the header in the fallback
+        //    path where CSS padding-left on options is ignored. Regular spaces get
+        //    collapsed by some browsers; &nbsp; is preserved.
+        $orphans = '';
+        foreach ($slices_by_id as $slice_id => $slice_row) {
+            if (empty($slice2sites[$slice_id])) {
+                $orphans .= $emitOption($slice_id, $slice_row['name'], (bool)$slice_row['deleted'],
+                                        '', $nbsp4, '', '', false, $iconFor($slice_row));
+            }
+        }
+        if ($orphans !== '') {
+            $options .= $emitSection(_m('Other slices')) . $orphans;
         }
 
-        //$type = AA_Module::getModuleType(AA::$module_id);
+        $other_type_labels = [
+            'RM'     => _m("Reader Management Slice"),
+            'Alerts' => _m("Alerts"),
+            'J'      => _m("Jump inside control panel"),
+            'Links'  => _m("Links"),
+            'A'      => _m("MySQL Auth (old version)"),
+            'P'      => _m("Polls"),
+        ];
+        foreach ($other_type_labels as $tcode => $tlabel) {
+            if (empty($other_by_type[$tcode])) {
+                continue;
+            }
+            $options .= $emitSection($tlabel);
+            foreach ($other_by_type[$tcode] as $row) {
+                $options .= $emitOption($row['unpackid'], $row['name'], (bool)$row['deleted'],
+                                        '', $nbsp4, '', '', false, $iconFor($row));
+            }
+        }
+
+        if (!AA::$module_id) {   // new slice
+            $options .= '<option value="new" selected>' . safe(_m('New slice')) . '</option>';
+        }
 
         $html  = GetLabel($profile, 'ui_manager', 'top_moduleswitchtext', '');
-        $html .= '<select name=sel_module onChange="if (this.value !== \'\') window.location=this.value">';
+        $html .= '<svg id="aa-modsel-icons" style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true">' . implode('', $icon_symbols) . '</svg>';
+        $html .= '<select name="sel_module" aria-label="' . safe(_m('Switch module')) . '" onChange="if (this.value !== \'\') window.location=this.value">';
         $html .= $options;
         $html .= '</select>';
 
-        $js = "document.getElementById('aanbform').innerHTML = '".str_replace("'", "\\'", $html)."';";
+        $js  = "document.getElementById('aanbform').innerHTML = '" . str_replace("'", "\\'", $html) . "';";
+
+        // Selector CSS lives in admin-ecn.css under the "Module selector" heading.
+
+        /* Remember the chosen site in localStorage so the dropdown can highlight the right
+           occurrence when the same slice appears under several sites. Purely cosmetic. */
+        $js .= "(()=>{"
+              . "const s=document.querySelector('select[name=sel_module]');"
+              . "if(!s)return;"
+              . "const K='aa_current_site_id',r=localStorage.getItem(K);"
+              . "if(r&&s.selectedOptions[0]){"
+              .   "const v=s.selectedOptions[0].value;"
+              .   "for(const o of s.options){"
+              .     "if(o.value===v&&o.dataset.siteId===r){o.selected=true;break;}"
+              .   "}"
+              . "}"
+              . "s.addEventListener('change',()=>{"
+              .   "const o=s.selectedOptions[0];"
+              .   "if(o?.dataset?.siteId){localStorage.setItem(K,o.dataset.siteId);}"
+              .   "else{localStorage.removeItem(K);}"
+              . "});"
+              . "})();";
         $ret .= getFrmJavascriptCached($js, 'modules');
     } else {
         $ret .= GetLabel($profile, 'ui_manager', 'top_moduleselection', "&nbsp;");
