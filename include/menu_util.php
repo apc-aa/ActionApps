@@ -304,7 +304,11 @@ function GetModuleSelection(): string {
                 $label .= '<svg class="aa-icon" viewBox="0 0 16 16" aria-hidden="true"><use href="#aa-ic-' . safe($icon) . '"/></svg>';
             }
 
-            $opt = '<option value="' . safe($val) . '"';
+            // label attribute carries the bare slice name (without NBSP indent or
+            // SVG icon) so native typeahead matches on what the user reads, not on
+            // the leading whitespace. The JS keydown handler below adds substring
+            // matching on top of (or instead of) the browser's prefix typeahead.
+            $opt = '<option value="' . safe($val) . '" label="' . safe($name) . '"';
             if ($class !== '') {
                 $opt .= ' class="' . safe($class) . '"';
             }
@@ -419,6 +423,11 @@ function GetModuleSelection(): string {
               .   "if(o?.dataset?.siteId){localStorage.setItem(K,o.dataset.siteId);}"
               .   "else{localStorage.removeItem(K);}"
               . "});"
+              /* Native prefix typeahead is sufficient — keyboard chars move the popup
+                 cursor (browser-internal), and the label attribute on each <option>
+                 above carries the bare slice name so matches ignore the NBSP indent.
+                 Substring search would need to move the popup cursor too (JS can't
+                 reach it for native <select>), so we don't override default behavior. */
               . "})();";
         $ret .= getFrmJavascriptCached($js, 'modules');
     } else {
