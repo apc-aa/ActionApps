@@ -1128,11 +1128,23 @@ function HtmlPageBegin(bool $js_lib=false, string $lang= '', bool $inc_by_requir
 {
     AA::sendAdminHeaders($lang);
     $inc_css = '';
+    /* Skinning model: admin-ecn.css holds the structural baseline (and the
+     * legacy :root palette). Other admin-*.css files are skin overlays that
+     * redefine :root and override individual selectors -- they are loaded
+     * AFTER the baseline so their cascade wins. When ADMIN_CSS already is
+     * the baseline, no overlay is appended. */
     if ($inc_by_require) {
         AA::Stringexpander()->addRequire('css-aa-system');
-        AA::Stringexpander()->addRequire(AA_INSTAL_PATH . ADMIN_CSS.'?v='.AA_JS_VERSION);
+        AA::Stringexpander()->addRequire(AA_INSTAL_PATH . 'admin-ecn.css?v='.AA_JS_VERSION);
+        if (ADMIN_CSS !== 'admin-ecn.css') {
+            AA::Stringexpander()->addRequire(AA_INSTAL_PATH . ADMIN_CSS.'?v='.AA_JS_VERSION);
+        }
     } else {
-        $inc_css = '<link rel="stylesheet" href="'.(AA_INSTAL_PATH .ADMIN_CSS).'?v='.AA_JS_VERSION.'"><link rel="stylesheet" href="'.AA_INSTAL_PATH. 'css/aa-system.css?v='.AA_JS_VERSION.'">';
+        $inc_css = '<link rel="stylesheet" href="'.AA_INSTAL_PATH.'admin-ecn.css?v='.AA_JS_VERSION.'">'
+                 . '<link rel="stylesheet" href="'.AA_INSTAL_PATH.'css/aa-system.css?v='.AA_JS_VERSION.'">';
+        if (ADMIN_CSS !== 'admin-ecn.css') {
+            $inc_css .= '<link rel="stylesheet" href="'.(AA_INSTAL_PATH . ADMIN_CSS).'?v='.AA_JS_VERSION.'">';
+        }
     }
 
     echo
