@@ -1,0 +1,161 @@
+/* AA admin skin — "gold" (2026 redesign)
+ *
+ * Skin overlay loaded by the admin page builder AFTER admin-ecn.css and
+ * aa-system.css (see include/util.php::HtmlPageBegin and
+ * include/adminpage.class.php). Selectable via:
+ *
+ *     define("ADMIN_CSS", "admin-gold.css");   // in config.php
+ *
+ * Color-only overlay: structural rules live in admin-ecn.css. This file
+ * redefines :root tokens and applies hardcoded / gold-only-token colors
+ * to selectors whose look differs from the default skin.
+ */
+:root {
+    --clr-body: #fff;
+    --clr-basic: #f3f2ed;
+    --clr-warmgray: #ebe9e3;
+    --clr-hover-light:#e7dab3;
+    --clr-text-gold: #8d3410;
+    --clr-btn-border: #d7bd99;
+    --clr-border: #d9d9d9;
+    --clr-basic-light: #f3f2ed;
+    --sz-m: 1rem;
+
+    /* UI states — gold-skin override of the defaults in admin-ecn.css. Accent
+       borrows --clr-text-gold for cross-component consistency; popup surface
+       stays white to match the skin's clean palette. */
+    --clr-surface-popup:    #fff;
+    --clr-text-accent:      #8d3410;
+    --clr-border-hover:     #b78b3d;
+    --clr-surface-selected: #f6e8c7;
+}
+
+/* utility classes that depend on the new tokens */
+.bg-clr-warmgray {background-color: var(--clr-warmgray) !important;}
+.bg-clr-btn-border {background-color: var(--clr-btn-border) !important;}
+.bg-clr-gold {background-color: var(--clr-gold) !important;}
+.clr-text-gold {color: var(--clr-text-gold) !important;}
+.clr-hover-light {background-color: var(--clr-hover-light) !important;}
+
+/* ============================================================
+ * Color overrides — hardcoded colors and gold-only-token colors
+ * for selectors whose structure lives in admin-ecn.css.
+ * ============================================================ */
+
+.aa-mch-selected span {
+    background-color: rgb(30 181 133 / 11%);
+}
+.aa-rim.flex .itemselect {
+    background: #e1e1e1;
+}
+.aa-formatters label {
+    color: #412e31;
+}
+#inputtab .aa-formatters label:has(input:checked) {
+    background: white;
+    border-bottom-color: white;
+}
+.btn.aa-arealink, .btn.aa-convertor, .btn.aa-langtrans-tbtn {
+    color: #000000;
+}
+#inputtab .aa-formatters label:hover, .aa-fld-toolbar .btn:hover, .btn.aa-arealink:hover, .btn.aa-langtrans-tbtn:hover {
+    color: #000000;
+    border-top-color: #000000;
+}
+.aa-fld-toolbar .btn a:hover, .btn.aa-arealink:hover, .btn.aa-convertor:hover {
+    color: #000000;
+}
+input[type="submit"].btn-secondary, input[type="button"].btn-secondary, button.btn-secondary, .button.btn-secondary, .btn.btn-secondary, .btn-secondary .aa-sb-bkmrks-btns .btn.btn-xs,
+[class^="aa-button"], [class^="aa-button"]{
+    border-color: var(--clr-btn-border);
+}
+input[type="submit"].btn-secondary:hover, input[type="button"].btn-secondary:hover, button.btn-secondary:hover, .button.btn-secondary:hover, .btn.btn-secondary:hover, .btn-secondary .aa-sb-bkmrks-btns .btn.btn-xs:hover,
+[class^=aa-button]:hover, [class^="aa-button"]:hover, .btn.aa-langtrans-tbtn:hover, .btn.aa-convertor:hover {
+    background-color: var(--clr-hover-light);
+    border-color: var(--clr-btn-border);
+}
+.aa-ui-nav .navbar a {
+    color: black;
+}
+.aa-ui-nav a.aa-ui-btn-additem {
+    color: white;
+}
+.aa-ui-nav .navbar a.nbactive {
+    color: #057e58;
+}
+.aa-ui-nav a:hover, .aa-ui-nav input[type="submit"]:hover, .aa-ui-custom-nav .aa-ui-userinfo:hover, .aa-ui-nav .navbar a.nbactive {
+    background-color: hsl(46 15% 98% / 1);
+}
+.aa-ui-nav select {
+    border-color: #79c9af;
+}
+.aa-ui-leftmenu {
+    background: var(--clr-gold);
+}
+.leftmenu a, li.aa-leftmenu-header {
+    border-color: rgb(255 255 255 / 20%);
+}
+li.aa-leftmenu-header {
+    color: #ffffff;
+}
+.leftmenu a:hover {
+    color: #8d3410;
+    background-color: transparent;
+}
+.leftmenu .leftmenua:hover {
+    background-color: rgb(255 255 255 / 20%);
+    color: #000000;
+}
+.leftmenu .leftmenua:before, .leftmenu .leftmenua:after {
+    background: rgb(255 255 255 / 20%);
+    border-bottom: solid 1px rgb(255 255 255 / 20%);
+}
+.aa-bin-cnt, .aa-morehelp, .leftmenu .aa-bin-cnt, .leftmenu .aa-morehelp {
+    color: #836b52;
+    background: var(--clr-hover-light);
+}
+.aa-table thead td, .aa-table thead th, .aa-table .aa-tbl-header td, .aa-table .aa-tbl-header th, .tabtit, .aa-items-manager tr:first-child th, .aa-items-manager .tablename td, .aa-items-manager .aa-tbl-header td, .aa-table.aa-table-simple thead td, .aa-table.aa-table-simple thead th {
+    background-color: var(--clr-dark);
+    color: white;
+    border-color: #5e5e5e;
+}
+.aa-tbl-header a {
+    color: #b9c6eb;
+}
+.aa-table.aa-table-simple td, .aa-table.aa-table-simple th {
+    background: rgb(243 242 237 / 44%);
+    border-bottom: solid 1px var(--clr-border);
+}
+#inputtab .aa-table tr:hover, #inputtab .aa-table tr:nth-of-type(odd):hover {
+    background: rgb(0 0 0 / 1%);
+}
+#inputtab .aa-morehelp {
+    background: var(--clr-basic);
+}
+#sitetree .spot {
+    background-color: rgb(250 249 247);
+}
+#sitetree div.selected a {
+    background-color: var(--clr-green);
+}
+.pager a, .pager [aria-current] {
+    background-color: transparent;
+    border-right: solid 1px var(--clr-border);
+}
+.pager a:hover {
+    color: black;
+    background-color: var(--clr-basic);
+    border-color: transparent;
+}
+.pager [aria-current] {
+    background-color: var(--clr-gold);
+    border: 0;
+}
+@media (min-width: 768px) {
+    table.aa-table, .mgr_table {
+        border: solid 1px var(--clr-border);
+    }
+    .nblogo {
+        background-color: var(--clr-dark);
+    }
+}

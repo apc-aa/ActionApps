@@ -1,8 +1,8 @@
-    /* AA styles from widgets and other components
- * Dynamicaly loaded if these css rules are not already loaded in the page
- * You can redefine these default by loadidng other css, which will use
- * div#aa-bottom-toolbar {position: fixed;...}  - we use it as test
- */
+/* AA styles from widgets and other components
+* Dynamicaly loaded if these css rules are not already loaded in the page
+* You can redefine these default by loading other css, which will use
+* div#aa-bottom-toolbar {position: fixed;...}  - we use it as test
+*/
 
 /* HTMLeditor */
 *[contenteditable] {
@@ -490,8 +490,8 @@ i.ico.aa-tool-edit:hover {
 .CodeMirror {
     margin: 2px;
     width: 100%;
-    height:auto; 
-    min-height: 42px; 
+    height:auto;
+    min-height: 42px;
     font-size: 12px;
 }
 .CodeMirror-scroll { height: auto; overflow-y: hidden !important; overflow-x: auto !important; }
@@ -509,7 +509,7 @@ i.ico.aa-tool-edit:hover {
     text-align: center;
 }
 .aa-stdwidget .aa-wi2-up, .aa-stdwidget .aa-wi2-down, .aa-stdwidget .aa-wi2-left, .aa-stdwidget .aa-wi2-right,
-  .aa-stdwidget .aa-widg-up, .aa-stdwidget .aa-widg-down, .aa-stdwidget .aa-widg-left, .aa-stdwidget .aa-widg-right{
+.aa-stdwidget .aa-widg-up, .aa-stdwidget .aa-widg-down, .aa-stdwidget .aa-widg-left, .aa-stdwidget .aa-widg-right{
     padding: 0;
     margin: 5px;
     display: block;
@@ -581,10 +581,10 @@ i.ico.aa-tool-edit:hover {
     margin: 0;
 }
 .aa-rim .item:last-child {
-	border-bottom: 1px solid rgba(0, 0, 0, 0.21);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.21);
 }
 .aa-rim footer {
-	width: 100%;
+    width: 100%;
 }
 .aa-rim footer article {
     margin: 0;
@@ -595,7 +595,7 @@ i.ico.aa-tool-edit:hover {
     background-color: white;
     vertical-align: middle;
 }
-.aa-rim input[type="checkbox"], .aa-rim input[type="radio"] {
+.aa-rim .aa-group-ajax input[type="checkbox"], .aa-rim .aa-group-ajax input[type="radio"] {
     margin-top: 0 !important;
 }
 .aa-rim textarea {
@@ -608,8 +608,8 @@ i.ico.aa-tool-edit:hover {
     color: #ffffff;
     background: #545350;
     display: inline-block;
-    padding: 2.8px 6.6px 2.2px;
-    min-height: 23px;
+    padding: 2.8px 8px 2.2px;
+    min-height: 22px;
     cursor: pointer;
     text-align: center;
     font-size: 12px;
@@ -621,8 +621,8 @@ i.ico.move {
     display: inline-block;
     cursor: move;
     line-height: 16px;
-    padding-left: 2px;
-    padding-right: 2px;
+    padding-left: 3px;
+    padding-right: 3px;
     color: #9867a7;
 }
 i.ico.move:after {
@@ -665,35 +665,35 @@ i.ico.move:hover {
     margin-right: -7px;
 }
 .aa-widget .icogroup {
-	text-align: right;
-	border-left: 0;
-	border-right-width: 1px;
-	padding-right: 2px;
-	padding-left: 20px;
+    text-align: right;
+    border-left: 0;
+    border-right-width: 1px;
+    padding-right: 2px;
+    padding-left: 20px;
 }
 .aa-iso-list {
-	display:table;
-	border-collapse: collapse;
+    display:table;
+    border-collapse: collapse;
 }
 .aa-iso-item, .aa-rim .item {
-	background-color: rgb(0 0 0 / 2%);
+    background-color: rgb(0 0 0 / 2%);
 }
 .aa-iso-item{
-	display:table-row;
+    display:table-row;
 }
 .aa-iso-item > div {
-	display:table-cell;
-	border: 1px solid transparent;
-	border-top-color: rgba(0, 0, 0, 0.21);
-	border-bottom-color: rgba(0, 0, 0, 0.21);
-	border-right-width: 0;
-	padding: 4px 7px;
+    display:table-cell;
+    border: 1px solid transparent;
+    border-top-color: rgba(0, 0, 0, 0.21);
+    border-bottom-color: rgba(0, 0, 0, 0.21);
+    border-right-width: 0;
+    padding: 4px 7px;
 }
 .aa-iso-item > div:first-child {
-	border-left-color: rgba(0, 0, 0, 0.21);
+    border-left-color: rgba(0, 0, 0, 0.21);
 }
 .aa-iso-item > div:last-child {
-	border-right-color: rgba(0, 0, 0, 0.21);
+    border-right-color: rgba(0, 0, 0, 0.21);
 }
 .aa-rim footer i.ico {
     padding: 4px 12px;
@@ -717,6 +717,12 @@ i.ico.move:hover {
     flex-shrink: 1;
     margin: 0 5px 5px 0;
     font-size: 12px;
+}
+.aa-rim.flex .item[style="width:100%"] {
+    margin: 0 0 -1px;
+}
+.aa-rim.flex .item[style="width:100%"]:last-child {
+    margin-bottom: 5px;
 }
 .aa-rim.flex footer {
     margin: 10px 0 10px;
@@ -747,17 +753,19 @@ i.ico.move:hover {
     width: 100%;
 }
 .aa-rim.flex .itemselect {
-    width: calc(100% - 40px);
+    width: max-content;
+    max-width: calc(100% - 47px);
     display: flex;
     flex-wrap: wrap;
-    min-height: 300px;
+    /* min-height: 200px; */
     max-height: 400px;
-    padding: 5px;
+    padding: 5px 5px 0 5px;
     overflow-y: auto;
-    background: #ccc;
+    background: #e1e1e1;
     border: 1px solid rgba(0, 0, 0, 0.21);
     position: absolute;
-    z-index: 300;
+    z-index: 2000;
+    align-content: flex-start;
 }
 .aa-rim .toggleclass {
     margin-top: 10px;
@@ -978,7 +986,7 @@ i.ico.move:hover {
     display: flex;
     align-items: flex-start;
 }
-.aa-widget-txt .aa-langtrans {
+.aa-langtrans {
     margin: 2px 0 8px;
 }
 .aa-langtrans-label {
@@ -1004,12 +1012,6 @@ i.ico.move:hover {
 }
 .aa-langtrans-tbtn:hover {
     cursor:pointer;
-}
-.aa-widget-txt .aa-langtrans .aa-langtrans-tbtn, .aa-widget-edt .aa-langtrans .aa-langtrans-tbtn {
-    /* vertical-align: middle; */
-    /* position: absolute; */
-    /* top: 0; */
-    /* right: 0; */
 }
 .aa-one-val {
     position: relative;
@@ -1102,7 +1104,7 @@ i.ico.move:hover {
     transition: all 0.3s;
     cursor: pointer;
 }
-.btn.aa-arealink, .btn.aa-convertor, .aa-langtrans-tbtn {
+.btn.aa-arealink, .btn.aa-convertor, .btn.aa-langtrans-tbtn {
     padding: 5px 14px 5px 14px;
     display: inline-block;
     box-sizing: border-box;
@@ -1119,8 +1121,8 @@ i.ico.move:hover {
     margin-left: 20px;
 }
 .aa-formatters label:hover {
-	outline: solid 1px rgb(168 151 122 / 50%);
-	outline-offset: -1px;
+    outline: solid 1px rgb(168 151 122 / 50%);
+    outline-offset: -1px;
 }
 .aa-fld-toolbar .btn:hover {
     background-color: var(--clr-basic-dark);
@@ -1137,6 +1139,7 @@ i.ico.move:hover {
 }
 .cke_chrome {
     margin: 2px 0 2px 2px !important;
+    box-shadow: none;
 }
 .aa-input .btn:hover {
     background: var(--clr-basic-dark);
@@ -1149,11 +1152,31 @@ i.ico.move:hover {
         -webkit-mask-position: right;
     }
 }
-
-
 @media screen and (min-width: 767px) {
-/* ala row */
-.aa-group-row .aa-field {
-    display: flex;
+    /* ala row */
+    .aa-group-row .aa-field {
+        display: flex;
+    }
 }
+@media (max-width: 768px) {
+    .btn.aa-convertor {
+        font-size: 0;
+    }
+    .btn.aa-convertor:before {
+        content: "im";
+        font-size: var(--sz-s);
+        display: inline-block;
+        position: absolute;
+        left: 7px;
+    }
+    .aa-langtrans-label {
+        width: 22px;
+        height: 22px;
+        margin: 5px 0 0;
+        padding: 0;
+        line-height: 18px;
+        left: -18px;
+        outline: solid 5px white;
+        border-radius: 50%;
+    }
 }

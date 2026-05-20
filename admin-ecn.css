@@ -1,6 +1,6 @@
 :root {
+    /* Surfaces and chrome */
     --clr-body: #f3f3f1;
-    --clr-dark: #1f1f1f;
     --clr-footer: #e6e3d9;
     --clr-basic: #ebdcc3;
     --clr-basic-dark: #d5c2a4;
@@ -8,9 +8,22 @@
     --clr-basic-light: #eeebe3;
     --clr-opacity-light: rgb(255 255 255 / 30%);
     --clr-opacity-dark: rgb(0 0 0 / 0.02);
+
+    /* Text + lines */
+    --clr-dark: #1f1f1f;                  /* TODO: rename → --clr-text */
     --clr-border: rgb(186 180 171 / 84%);
-    --clr-gold: #c9b57f;
-    --clr-green: #1eb585;
+    --clr-gold: #c9b57f;                  /* TODO: rename → --clr-border-strong / --clr-accent */
+    --clr-green: #1eb585;                 /* TODO: rename → --clr-success */
+
+    /* UI states — floating surfaces (popups, dropdowns), accent text,
+       hovered borders, selected rows. Skins can override these without
+       touching structural CSS. */
+    --clr-surface-popup:    #fffdf5;
+    --clr-text-accent:      #6a5e22;
+    --clr-border-hover:     #a59850;
+    --clr-surface-selected: #e8df9c;
+
+    /* Sizing */
     --sz-m: 1rem;
     --sz-s: 0.955rem;
     --sz-xs: 0.867rem;
@@ -373,7 +386,7 @@ details[open] summary:after, .aa-ui-searchbar[open] .btn.aa-ad-filter:after  {
 .sz-xs, .x-small {
     font-size: var(--sz-xs);
 }
-input[type="text"], input[type="tel"], input[type="email"], input[type="number"], input[type="password"], input[type="date"], input[type="search"], input[type="url"], select, textarea, input[type="datetime-local"] {
+input[type="text"], input[type="tel"], input[type="email"], input[type="number"], input[type="password"], input[type="date"], input[type="search"], input[type="url"], select, textarea, input[type="datetime-local"], input:not([type]) {
     font-family: 'Open Sans', sans-serif;
     font-size: var(--sz-s);
     border: 1px solid var(--clr-border);
@@ -448,13 +461,13 @@ input[type="submit"], input[type="button"], button, .button, .btn {
 }
 /* bigger buttons */
 input[type="submit"].btn-l, input[type="button"].btn-l, button.btn-l, .button.btn-l, .btn.btn-l, .btn-l  {
-    padding: 6px 15px;
+    padding: 6px 18px;
 }
 input[type="submit"].btn-primary, input[type="button"].btn-primary, button.btn-primary, .button.btn-primary, .btn.btn-primary, .btn-primary  {
     background-color: var(--clr-green);
 }
 .btn.btn-s, button.btn-s, input[type="submit"].btn-s, .aa-table input[type="button"].btn-s, input[type="button"].btn-s, .aa-table input[type="button"].btn-s {
-    padding: 2px 7px; /*zatim jen u editace policka*/
+    padding: 3px 7px; /*zatim jen u editace policka*/
 }
 /* aa- buttons */
 .aa-filter .btn, .aa-ui-searches button {
@@ -479,7 +492,7 @@ input[type="submit"].btn-secondary, input[type="button"].btn-secondary, button.b
     color: #61454A;
 }
 /* all buttons hover */
-input[type="submit"]:hover, input[type="button"]:hover, button:hover, [class^="aa-button"]:hover, .btn:hover, .btn-l:hover {
+input[type="submit"]:hover, input[type="button"]:hover, button:hover, [class^="aa-button"]:hover, .btn:hover, .btn-l:hover, .aa-rim i.ico:hover, .icogroup i.ico:hover, input[type="file"]:hover:before {
     background-color: /* #009688*/ var(--clr-basic-darker);
     color: rgb(255 255 255 / 95%);
     border-color: transparent;
@@ -526,8 +539,8 @@ input[type="submit"].btn-secondary:hover, input[type="button"].btn-secondary:hov
     background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAALCAMAAABxsOwqAAAAAXNSR0IB2cksfwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAD9QTFRFAAAAhmgthmgthmgthmgthmgthmgthmgthmgthmgthmgthmgthmgthmgthmgthmgthmgthmgthmgthmgthmgtqkexIAAAABV0Uk5TAJsG/8cZ5i/2V4sD9G8Cwh/wZQGvvnnTRwAAAEFJREFUeJxjZIADRiBi/AdjMjMy/oYxgZyfMCYDK+N3GJOBgZ3xK5TJycj4CcLkYfwAUcDHyPgWok3k42+YuTAAACZ6Cgz7AuAHAAAAAElFTkSuQmCC);
 }
 .aa-button-delete:hover {
-    border-color: #e00303;
-    background-color: #e00303;
+    border-color: #e00303 !important;
+    background-color: #e00303 !important;
     background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAALCAYAAABGbhwYAAAAAXNSR0IB2cksfwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAFBJREFUeJxjYCAF/P//vwWHuCwQv0MWeIOuGKYIiIuRBYWQFWNVhEXxDJyKkBTr/YeAg/gUwaxrwOZmrA5HdzOyQgw3YVWMy+EwxTjdiw0AAFxakTfhiqBuAAAAAElFTkSuQmCC);
     color: white;
 }
@@ -595,10 +608,11 @@ input[type="radio"] {
     justify-content: space-between;
     align-content: center;
     background: var(--clr-basic);
+    min-height: 50px;
 }
 .slicehead {
     font-size: 1.1rem;
-    padding: 15px 10px 0 49px;
+    padding: 0 10px 0 19px;
     flex: 1 0 auto;
 }
 .aa-ui-custom-nav {
@@ -623,6 +637,7 @@ input[type="radio"] {
     white-space: nowrap;
     font-size: var(--sz-xs);
     align-items: center;
+    min-height: 50px;
 }
 .slicehead img {
     margin: -10px 9px;
@@ -695,7 +710,7 @@ input[type="radio"] {
     position: absolute;
     background: #009688;
     bottom: -1px;
-    left: 0px;
+    left: 0;
     width: 100%;
     height: 1px;
 }
@@ -725,7 +740,7 @@ input[type="submit"].aa-off {
 .aa-ui-nav select {
     padding: 2px 5px;
     height: 33px;
-    border: none;
+    border-color: transparent;
     margin-left: 5px;
     font-size: 13px;
     max-width: 260px;
@@ -962,7 +977,7 @@ h1:has(+.aa-site-codemanager) {
     font-size: var(--sz-s);
     color: #000000;
     flex: 0 1 280px;
-    margin-right: 35px;
+    padding-right: 35px;
 }
 #sitetree a {
     display: block;
@@ -983,6 +998,9 @@ h1:has(+.aa-site-codemanager) {
     padding: 3px 7px;
     display: block;
     white-space: normal;
+}
+#sitetree div[title^="spot"] + div[title^="spot"] {
+    margin-top: 5px;
 }
 #sitetree div.choice .spot, #sitetree div.lastchoice .spot  {
     border-top: 0;
@@ -1226,7 +1244,7 @@ tr.aa-tab-separate + tr td {
 .aa-table tr:nth-of-type(even) {
     background-color: var(--clr-opacity-dark);
 }
-#inputtab .aa-table tr:nth-of-type(even) {
+#inputtab .aa-table tr:nth-of-type(even), #inputtab .aa-table tr:nth-of-type(odd) {
     background-color: transparent;
 }
 table.aa-table table {
@@ -1359,23 +1377,24 @@ table.aa-table table td {
 }
 /* form new item */
 form[name="inputform"] {
-    margin: 0 -10px 0 -15px;
+    margin: 0 -20px 0 -20px;
     box-sizing: border-box;
 }
 h1:has(+form[name="inputform"]) {
     text-align: center;
-    margin: 0 -10px 0 -15px;
-    padding: 13px 0 10px 0;
+    margin: -20px -35px 0 -35px;
+    padding: 20px 17px 10px 17px;
     background: var(--clr-basic);
     font-size: 1.1em;
 }
 #inputtab {
     display: inline-block;
     width: 100%;
-    margin: auto
+    margin: auto;
 }
 #inputtab .aa-tab-buttons {
     max-width: 100%;
+    border-bottom: solid 1px var(--clr-border);
 }
 #inputtab thead td, #inputtab thead th {
     border-left: solid 1px rgb(255 255 255 / 45%);
@@ -1508,7 +1527,7 @@ a.aa-externallink + a.aa-morehelp  {
     line-height: 1.5;
 }
 input[type="checkbox"] {
-    margin: 0px 6px 2px 6px;
+    margin: 0 6px 2px 6px;
     padding: 0;
     width: 20px;
     height: 20px;
@@ -1522,7 +1541,6 @@ input[type="checkbox"]:checked:before {
     width: 20px;
     height: 20px;
     text-align: center;
-    background-color: var(--clr-basic-dark);
     background: #66cda3 no-repeat center url(data:image/webp;base64,UklGRrAAAABXRUJQVlA4WAoAAAAQAAAACQAACgAAQUxQSGYAAAAJgFvb1rLo4g4NuLtkpCxyQpfQHSpwb8Attcxn0inF3TXlp4eImACcDJVP2PpCIu05s0hAX/JWNce/BogbXiOw0jqQlJB7xvjOaW8KdjPgNYOB9ycMAPO1EoWrI8S/LrogvHSFcQxWUDggJAAAAJABAJ0BKgoACwAAAAAlpAAC51m2AAD+//++LKj///S6YAAAAA==);
     color: white;
     content: "";
@@ -1808,14 +1826,13 @@ input[type="checkbox"]:checked:before {
     }
     details.aa-ui-searchbar[open] summary {
         position: relative;
-        margin: 5px 0 15px 0;
-        margin-left: calc(100% - 137px);
+        margin: 5px 0 15px calc(100% - 137px);
     }
     .aa-save-filters .aa-formgroup-inline {justify-content: flex-start;}
     .aa-sb-btns {
         margin: 7px 0 20px;
     }
-    .aa-ui-searches1 {
+    .aa-ui-searches {
         margin-top: 15px;
     }
     .mobilmenu a.aa-ui-userinfo {
@@ -1882,7 +1899,7 @@ input[type="checkbox"]:checked:before {
       border: 0;
     }*/
 }
-/* FILTERFORM */
+/* FILTERFORM old
 .aa-ui-content > .aa-ui-filterform {
     display: block;
     margin: 25px 0 10px 3px;
@@ -1908,7 +1925,7 @@ select[name="srchbr_bookmark"] {
     width: 45px;
     border: 1px solid var(--clr-border);
     border-right: 0;
-    margin: 2px 0px 2px 0;
+    margin: 2px 0 2px 0;
     position: relative;
     z-index: 1;
 }
@@ -1927,8 +1944,8 @@ select[name="srchbr_bookmark"] {
     display:inline-block;
     padding: 3px;
 }
-/**/
-/* FILTERFORM for new single input
+*/
+/* FILTERFORM for new single input */
 .aa-ui-content > .aa-ui-filterform {
     display: block;
     margin: 25px 0 10px 3px;
@@ -1966,11 +1983,11 @@ select[name="srchbr_bookmark"] {
 input[type="text"].aa-fiter-user, input[type="text"].aa-fiter-users {
     width: 190px;
     padding-left: 32px;
-    background: white url(/aa-dev/images/ico-user-xs.png) no-repeat 10px center;
+    background: white url(images/ico-user-xs.png) no-repeat 10px center;
     margin-left: 0;
 }
 input[type="text"].aa-fiter-users {
-    background-image: url(/aa-dev/images/ico-users-xs.png);
+    background-image: url(images/ico-users-xs.png);
     background-position-x: 6px;
 }
 .btn-action {
@@ -1996,7 +2013,7 @@ summary.aa-ad-filter {
     width: 120px;
 }
 details[open] .aa-ui-searchbar-block div {
-   opacity: 1;
+    opacity: 1;
 }
 .aa-ui-filterform #patharea {
     padding: 11px;
@@ -2006,7 +2023,7 @@ details[open] .aa-ui-searchbar-block div {
     display:inline-block;
     padding: 3px;
 }
-.aa-ui-searches1 {
+.aa-ui-searches {
     padding-right: 124px;
 }
 .aa-search-img {
@@ -2055,4 +2072,327 @@ details[open] .aa-ui-searchbar-block div {
     height: 25px;
     background-position: center;
 }
-*/
+
+/* === Module selector (top-right dropdown, emitted by include/menu_util.php) ===
+   Pure structure + spacing. All colors come from :root tokens, so skins
+   re-theme without touching this block. Two layers:
+   1. Always-applied rules — only the font-weight bits the native fallback honors.
+   2. @supports (appearance: base-select) — Chromium 130+ rich popup with icons,
+      hover state, section dividers, custom chevron.
+   Note: the chevron is an inline SVG inside a data: URI and cannot reference
+   CSS custom properties, so its stroke colour (#6a5e22) must be kept in sync
+   with --clr-text-accent by hand if that token is retuned. */
+select[name="sel_module"] option.aa-site { font-weight: 700; }
+select[name="sel_module"] option.aa-section-header {
+    font-weight: 600;
+    font-style: italic;
+    letter-spacing: .05em;
+}
+
+@supports (appearance: base-select) {
+    /* Fallback-only blank spacer (see menu_util.php). Modern popups get real
+       padding on the header, so the spacer is redundant — hide it. */
+    select[name="sel_module"] option.aa-section-spacer { display: none; }
+
+    select[name="sel_module"] {
+        appearance: base-select;
+        font: 13px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+        background: var(--clr-surface-popup) url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 12" fill="none" stroke="%236a5e22" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4.5l3 3 3-3"/></svg>') no-repeat right 8px center / 11px;
+        border: 1px solid var(--clr-gold);
+        border-radius: 4px;
+        padding: 4px 26px 4px 10px;
+        color: var(--clr-dark);
+        cursor: pointer;
+        transition: border-color .12s ease, box-shadow .12s ease;
+    }
+    select[name="sel_module"]:hover { border-color: var(--clr-border-hover); }
+    select[name="sel_module"]:focus {
+        outline: none;
+        border-color: var(--clr-text-accent);
+        box-shadow: 0 0 0 3px rgba(184, 162, 70, .20);
+    }
+    /* Chromium's default ::picker-icon often doesn't paint in this layout; the
+       chevron above is reliable, so suppress the default to avoid duplication. */
+    select[name="sel_module"]::picker-icon { display: none; }
+    select[name="sel_module"]::picker(select) {
+        appearance: base-select;
+        background: var(--clr-surface-popup);
+        border: 1px solid var(--clr-gold);
+        border-radius: 6px;
+        padding: 4px 0;
+        box-shadow: 0 14px 36px rgba(60, 50, 20, .20);
+        min-width: 280px;
+    }
+    select[name="sel_module"] option {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 5px 14px;
+        font-size: 13px;
+        color: var(--clr-dark);
+        background: transparent;
+        transition: background .08s ease;
+    }
+    select[name="sel_module"] option:hover { background: var(--clr-basic); }
+    select[name="sel_module"] option:checked {
+        background: var(--clr-surface-selected);
+        font-weight: 500;
+    }
+    select[name="sel_module"] option .aa-icon {
+        width: 14px;
+        height: 14px;
+        margin-left: auto;
+        opacity: .55;
+        flex-shrink: 0;
+    }
+    select[name="sel_module"] option:hover .aa-icon { opacity: .75; }
+    select[name="sel_module"] option.aa-site {
+        color: var(--clr-dark);
+        padding-top: 10px;
+        padding-bottom: 6px;
+        margin-top: 4px;
+        border-top: 1px solid var(--clr-gold);
+        letter-spacing: .015em;
+    }
+    select[name="sel_module"] option.aa-site:first-of-type {
+        border-top: none;
+        margin-top: 0;
+    }
+    select[name="sel_module"] option.aa-site-readonly { cursor: not-allowed; }
+    select[name="sel_module"] option.aa-slice-of-site {
+        padding-left: 34px;
+        color: var(--clr-dark);
+    }
+    select[name="sel_module"] option.aa-section-header {
+        padding-top: 10px;
+        padding-bottom: 4px;
+        margin-top: 4px;
+        color: var(--clr-text-accent);
+        border-top: 1px solid var(--clr-basic);
+        letter-spacing: .01em;
+    }
+}
+
+/* ============================================================
+ * Promoted from admin-gold.css (2026 redesign). Each rule keeps
+ * structural properties (layout, spacing, sizes, pseudo-element
+ * scaffolding, font weights) plus colors that resolve via tokens
+ * defined in every skin. Hardcoded colors and references to
+ * gold-only tokens stay behind in admin-gold.css.
+ * ============================================================ */
+
+.aa-mch-selected span {
+    border: none;
+    outline: 1px solid var(--clr-border);
+    padding: 2px 14px 2px 3px;
+    font-weight: normal;
+}
+.aa-rim kbd {
+    background: var(--clr-dark);
+}
+.aa-widget-txt .aa-formatters {
+    border-bottom: solid 1px var(--clr-border);
+}
+.aa-langtrans-tbtn {
+    background-color: var(--clr-basic-light);
+}
+.aa-formatters label {
+    padding: 5px 14px 4px 14px;
+    margin: 0 2px -1px;
+    background: var(--clr-basic-light);
+    border: solid 1px var(--clr-border);
+    white-space: nowrap;
+    outline: none;
+}
+#inputtab .aa-formatters input[type="checkbox"], #inputtab .aa-formatters input[type="radio"] {
+    display: none;
+}
+#inputtab .aa-formatters label:has(input:checked) {
+    border-top-color: var(--clr-green);
+}
+.btn.aa-arealink, .btn.aa-convertor, .btn.aa-langtrans-tbtn {
+    border: solid 1px var(--clr-border);
+    background-color: var(--clr-basic-light);
+}
+.cke_chrome {
+    box-shadow: none;
+}
+#inputtab .aa-formatters label:hover, .aa-fld-toolbar .btn:hover, .btn.aa-arealink:hover, .btn.aa-langtrans-tbtn:hover {
+    box-shadow: none;
+    border-color: var(--clr-border);
+    background-color: var(--clr-basic-light);
+}
+.aa-tab-buttons {
+    justify-content: flex-start;
+}
+.nblogo {
+    text-align: center;
+    max-width: 245px;
+    padding-top: 14px;
+}
+.nblogo a {
+    margin: 0 auto 0 35px;
+    max-width: 102px;
+}
+.nblogo img {
+    width: 112px;
+    height: 11px;
+}
+.aa-ui-nav .navbar a {
+    text-transform: none;
+}
+.aa-ui-nav .navbar a.nbactive {
+    background-color: transparent;
+}
+.leftmenu a, li.aa-leftmenu-header {
+    padding: 7px 43px 7px 50px;
+}
+li.aa-leftmenu-header {
+    padding-left: 18px;
+    padding-top: 20px;
+    font-size: var(--sz-m);
+    text-transform: none;
+}
+.leftmenu .leftmenua:before, .leftmenu .leftmenua:after {
+    content: "";
+    display: inline-block;
+    position: absolute;
+    left: -20px;
+    width: 20px;
+    height: calc(100% + 2px);
+    top: -1px;
+    box-sizing: border-box;
+}
+.leftmenu .leftmenua:after {
+    right: -20px;
+    left: auto;
+}
+.aa-bin-cnt, .aa-morehelp, .leftmenu .aa-bin-cnt, .leftmenu .aa-morehelp {
+    padding: 3px 5px;
+    border-color: transparent;
+}
+.aa-table thead td, .aa-table thead th, .aa-table .aa-tbl-header td, .aa-table .aa-tbl-header th, .tabtit, .aa-items-manager tr:first-child th, .aa-items-manager .tablename td, .aa-items-manager .aa-tbl-header td, .aa-table.aa-table-simple thead td, .aa-table.aa-table-simple thead th {
+    font-weight: normal;
+}
+#inputtab tr > th:first-child > div {
+    padding-right: 5px;
+}
+h1:has(+form[name="inputform"]) {
+    text-align: left;
+}
+.pager a, .pager [aria-current] {
+    margin: 0;
+}
+@media (min-width: 768px) {
+    .nblogo {
+        text-align: center;
+        flex: 0 0 245px;
+        max-width: 245px;
+        padding-top: 16px;
+    }
+}
+
+
+/* ============================================================
+   .aa-overflow — reusable "kebab/dot-dot-dot" overflow menu.
+   Built on the HTML5 popover API (Baseline 2024). Trigger and
+   menu are decoupled via popovertarget so the menu lives in the
+   browser top-layer and is never clipped by table cells / overflow.
+   Positioning is set imperatively in JS (see metabase.class.php
+   getManagerConf()), because cross-browser CSS anchor positioning
+   is not yet baseline.
+   Reuse anywhere:
+     <button type="button" class="aa-overflow-trigger"
+             popovertarget="my-menu-id">…</button>
+     <div popover id="my-menu-id" class="aa-overflow-menu">
+       <div class="aa-overflow-item"><a href="…">Item</a></div>
+       …
+     </div>
+   ============================================================ */
+
+/* Trigger is a regular button (white bg, border, light shadow, rounded), neutral
+   so it sits well next to existing admin buttons across themes. */
+.aa-overflow-trigger {
+    display: inline-block;
+    background: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.20);
+    border-radius: 7px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.10);
+    padding: 1px 10px 2px;
+    line-height: 1.2;
+    font-size: 1em;
+    cursor: pointer;
+    color: inherit;
+    vertical-align: middle;
+    user-select: none;
+}
+.aa-overflow-trigger:hover {
+    background: #f5f5f5;
+    border-color: rgba(0, 0, 0, 0.32);
+}
+.aa-overflow-trigger:focus-visible {
+    outline: 2px solid #0050c8;
+    outline-offset: 1px;
+}
+.aa-overflow-trigger:active {
+    background: #ebebeb;
+}
+
+/* HTML5 popover — reset UA defaults (centered modal-ish look) and
+   let our JS place it next to the trigger via top/left. */
+.aa-overflow-menu {
+    position: fixed;
+    inset: auto;
+    margin: 0;
+    padding: 4px;
+    min-width: 160px;
+    max-width: min(320px, calc(100vw - 16px));
+    border: 1px solid rgba(0, 0, 0, 0.10);
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14);
+    color: inherit;
+    /* fade-in when opened */
+    opacity: 0;
+    transform: translateY(-4px);
+    transition: opacity 120ms ease, transform 120ms ease;
+}
+.aa-overflow-menu:popover-open {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.aa-overflow-item {
+    display: block;
+}
+/* Make whatever lives inside an item (most often <a>) look like a menu row,
+   regardless of the original CSS classes the action's getButtonDef() set. */
+.aa-overflow-item > a,
+.aa-overflow-item > button,
+.aa-overflow-item > * {
+    display: block;
+    width: 100%;
+    padding: 6px 12px;
+    border-radius: 4px;
+    text-decoration: none;
+    color: inherit;
+    background: transparent;
+    border: none;
+    text-align: left;
+    cursor: pointer;
+    white-space: nowrap;
+    font: inherit;
+    box-sizing: border-box;
+}
+.aa-overflow-item > a:hover,
+.aa-overflow-item > button:hover {
+    background: rgba(0, 80, 200, 0.08);
+}
+.aa-overflow-item > a:focus-visible,
+.aa-overflow-item > button:focus-visible {
+    outline: 2px solid #0050c8;
+    outline-offset: -2px;
+}
+.aa-overflow-item:empty {
+    display: none;
+}
