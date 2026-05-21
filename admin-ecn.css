@@ -11,17 +11,17 @@
 
     /* Text + lines */
     --clr-dark: #1f1f1f;                  /* TODO: rename → --clr-text */
-    --clr-border: rgb(186 180 171 / 84%);
+    --clr-border: rgb(220 213 194);
     --clr-gold: #c9b57f;                  /* TODO: rename → --clr-border-strong / --clr-accent */
     --clr-green: #1eb585;                 /* TODO: rename → --clr-success */
 
     /* UI states — floating surfaces (popups, dropdowns), accent text,
        hovered borders, selected rows. Skins can override these without
        touching structural CSS. */
-    --clr-surface-popup:    #fffdf5;
+    --clr-surface-popup: #fbfaf9;
     --clr-text-accent:      #6a5e22;
     --clr-border-hover:     #a59850;
-    --clr-surface-selected: #e8df9c;
+    --clr-surface-selected: #f3e6c3;
 
     /* Sizing */
     --sz-m: 1rem;
@@ -389,7 +389,8 @@ details[open] summary:after, .aa-ui-searchbar[open] .btn.aa-ad-filter:after  {
 input[type="text"], input[type="tel"], input[type="email"], input[type="number"], input[type="password"], input[type="date"], input[type="search"], input[type="url"], select, textarea, input[type="datetime-local"], input:not([type]) {
     font-family: 'Open Sans', sans-serif;
     font-size: var(--sz-s);
-    border: 1px solid var(--clr-border);
+    border: 1px solid var(--clr-basic);
+    border-color: var(--clr-border);
     margin: 2px;
     padding: 3px 3px;
     vertical-align: middle;
@@ -471,7 +472,8 @@ input[type="submit"].btn-primary, input[type="button"].btn-primary, button.btn-p
 }
 /* aa- buttons */
 .aa-filter .btn, .aa-ui-searches button {
-    padding: 4px 8px 3px;
+    padding: 4px 8px;
+    line-height: 15px;
 }
 [class^="aa-button"], [class^="aa-button"] {
     border: solid 1px rgb(26 4 4 / 30%);
@@ -721,10 +723,11 @@ input[type="radio"] {
 input[type="submit"].aa-off:hover {
     color: transparent;
 }
-.aa-ui-custom-nav .aa-ui-userinfo {
-    padding: 10px 28px 10px 15px;
+.aa-ui-custom-nav .aa-icon {
+    /* padding: 10px 28px 10px 15px; */
     border-color: transparent;
-    background: url(images/ico-user.png) no-repeat right center;
+    height: 20px;
+    vertical-align: middle;
 }
 input[type="submit"].aa-off {
     background: transparent url(images/ico-off.svg) no-repeat center;
@@ -739,12 +742,11 @@ input[type="submit"].aa-off {
 }
 .aa-ui-nav select {
     padding: 2px 5px;
-    height: 33px;
+    height: 30px;
     border-color: transparent;
-    margin-left: 5px;
+    margin: 0 10px 0 5px;
     font-size: 13px;
     max-width: 260px;
-    font-weight: 600;
 }
 .aa-ui-modules a.aa-ui-moduleview {
     background: url(images/ico-oko.svg) no-repeat right 9px;
@@ -753,6 +755,7 @@ input[type="submit"].aa-off {
     text-align: right;
     font-size: 0;
     margin-right: 5px;
+    background-size: 15px;
 }
 .aa-ui-modules a.aa-ui-moduleview:hover {
     background-image: none;
@@ -763,7 +766,7 @@ input[type="submit"].aa-off {
     color: #4a4a4a;
     flex: 0 0 245px;
     max-width: 245px;
-    background: #d5c2a4;
+    background: var(--clr-basic-dark);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -1566,7 +1569,7 @@ input[type="checkbox"]:checked:before {
     }
     summary.aa-ad-filter {
         position: absolute;
-        right: 0;
+        right: -15px;
         top: 0;
     }
     .aa-filter {
@@ -2011,6 +2014,10 @@ select[name="srchbr_bookmark"] {
 }
 summary.aa-ad-filter {
     width: 120px;
+    border: 0;
+    margin: 2px;
+    padding-top: 4px;
+    padding-bottom: 3px;
 }
 details[open] .aa-ui-searchbar-block div {
     opacity: 1;
@@ -2050,6 +2057,10 @@ details[open] .aa-ui-searchbar-block div {
     top: -28px;
     white-space: nowrap;
     line-height: 16px;
+    border: 0;
+    margin: 2px;
+    padding-top: 4px;
+    padding-bottom: 3px;
 }
 .aa-save-filters .aa-formgroup-inline {
     white-space:nowrap;
@@ -2067,7 +2078,7 @@ details[open] .aa-ui-searchbar-block div {
 }
 .aa-sb-bkmrks-btns button {
     padding-left: 9px;
-    margin: 2px 0 2px -1px;
+    margin: 2px;
     min-width: 26px;
     height: 25px;
     background-position: center;
@@ -2096,11 +2107,11 @@ select[name="sel_module"] option.aa-section-header {
 
     select[name="sel_module"] {
         appearance: base-select;
-        font: 13px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+        font-size: var(--sz-m);
         background: var(--clr-surface-popup) url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 12" fill="none" stroke="%236a5e22" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4.5l3 3 3-3"/></svg>') no-repeat right 8px center / 11px;
         border: 1px solid var(--clr-gold);
         border-radius: 4px;
-        padding: 4px 26px 4px 10px;
+        padding: 4px 36px 0px 5px;
         color: var(--clr-dark);
         cursor: pointer;
         transition: border-color .12s ease, box-shadow .12s ease;
@@ -2127,9 +2138,7 @@ select[name="sel_module"] option.aa-section-header {
         display: flex;
         align-items: center;
         gap: 8px;
-        padding: 5px 14px;
-        font-size: 13px;
-        color: var(--clr-dark);
+        padding: 2px 5px;
         background: transparent;
         transition: background .08s ease;
     }
@@ -2147,9 +2156,8 @@ select[name="sel_module"] option.aa-section-header {
     }
     select[name="sel_module"] option:hover .aa-icon { opacity: .75; }
     select[name="sel_module"] option.aa-site {
-        color: var(--clr-dark);
         padding-top: 10px;
-        padding-bottom: 6px;
+        padding-bottom: 0px;
         margin-top: 4px;
         border-top: 1px solid var(--clr-gold);
         letter-spacing: .015em;
@@ -2160,7 +2168,6 @@ select[name="sel_module"] option.aa-section-header {
     }
     select[name="sel_module"] option.aa-site-readonly { cursor: not-allowed; }
     select[name="sel_module"] option.aa-slice-of-site {
-        padding-left: 34px;
         color: var(--clr-dark);
     }
     select[name="sel_module"] option.aa-section-header {
@@ -2203,6 +2210,7 @@ select[name="sel_module"] option.aa-section-header {
     border: solid 1px var(--clr-border);
     white-space: nowrap;
     outline: none;
+    height: 28px;
 }
 #inputtab .aa-formatters input[type="checkbox"], #inputtab .aa-formatters input[type="radio"] {
     display: none;
