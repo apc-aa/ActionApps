@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: honzama
@@ -12,8 +13,8 @@ namespace AA\Util;
  * Interface NamedInterface
  * @package AA\Util
  */
-interface NamedInterface {
-
+interface NamedInterface
+{
     /** name function     */
     public static function name(): string;
 

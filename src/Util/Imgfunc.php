@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Image manipulation functions - all functions require GD Library
  *
@@ -171,7 +172,7 @@ class Imgfunc
             $dst_img = imagecreate($new_w, $new_h);
         }
         $imagetype = $simg_info['e'];
-        $f       = "ImageCreateFrom".$imagetype;
+        $f       = "ImageCreateFrom" . $imagetype;
         $src_img = $f($simage);
         if (!$src_img) {
             return _m("ResampleImage unable to %1", [$f]);
@@ -179,7 +180,7 @@ class Imgfunc
         // imagecopyresampled - better quality resizing - works with GD 2.0.1
         imagecopyresampled($dst_img, $src_img, 0, 0, $offset_w, $offset_h, $new_width, $new_height, $simg_w, $simg_h);
         //    imagecopyresized($dst_img,$src_img,0,0,$offset_w,$offset_h,$new_width,$new_height,$imginfo[0],$imginfo[1]);
-        $f = "Image".$imagetype;
+        $f = "Image" . $imagetype;
         if ($simg_info['q']) {
             $f($dst_img, $dimage, $simg_info['q']);  // for jpeg 100
         } else {
@@ -193,7 +194,7 @@ class Imgfunc
     {
         $it = imagetypes();
         foreach (self::IMAGE_TABLE as $v) {
-            print($v["u"].(($it & $v["b"]) ? " " : " Not ")."Supported \n");
+            print($v["u"] . (($it & $v["b"]) ? " " : " Not ") . "Supported \n");
         }
     }
 
@@ -210,7 +211,7 @@ class Imgfunc
             return true;
         }
         // Note won't see this warning when run in itemedit cos redirects
-        huhe("Warning: GD cant manipulate ".self::imgU($type)." images");
+        huhe("Warning: GD cant manipulate " . self::imgU($type) . " images");
         return false;
     }
 
@@ -221,6 +222,6 @@ class Imgfunc
      */
     public static function imgU($type): string
     {
-        return (self::IMAGE_TABLE[$type]["u"] ?: ("Type ".$type));
+        return (self::IMAGE_TABLE[$type]["u"] ?: ("Type " . $type));
     }
 }

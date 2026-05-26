@@ -8,29 +8,35 @@ use AA_Slice;
 /** List Checkbox fields marked as required
  *
  */
-class RequiredChecboxes extends AbstractOptimize {
-
+class RequiredChecboxes extends AbstractOptimize
+{
     /** Name function
      * @return string - a name
      */
-    public static function name(): string {
+    public static function name(): string
+    {
         return _m("List Checkbox fields marked as required");
     }
 
     /** Description function
      * @return string - a description
      */
-    public static function description(): string {
+    public static function description(): string
+    {
         return _m("AA are now more strict about Required field, so checkboxes marked as Required must be filled (=checked). This could be problem if you acidentaly have it set in history. This test just list all of such fields, in order you can check it.");
     }
 
     /** implemented actions within this class */
-    public static function actions(): array { return ['test']; }
+    public static function actions(): array
+    {
+        return ['test'];
+    }
 
     /** Test function
      * @return bool
      */
-    public function test(): bool {
+    public function test(): bool
+    {
         //$metabase = AA::Metabase();
         if ($fields = DB_AA::select([], 'SELECT `id`, LOWER(HEX(`slice_id`)) AS uslice_id, `name`, `input_show` FROM `field`', [
             [

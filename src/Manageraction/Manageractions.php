@@ -6,13 +6,14 @@ use AA\Util\ArrTrait;
 use ArrayAccess;
 use Countable;
 
-class Manageractions implements \IteratorAggregate, ArrayAccess, Countable {
+class Manageractions implements \IteratorAggregate, ArrayAccess, Countable
+{
     use ArrTrait;
 
     /** @var AbstractManageraction[] */
     protected array $arr = [];
 
-    public function __construct()    {}
+    public function __construct() {}
 
     /**
      * @param $id
@@ -24,7 +25,8 @@ class Manageractions implements \IteratorAggregate, ArrayAccess, Countable {
         return $this->arr[$id] ?: null;
     }
 
-    public function getManagerButtons(string $manager_url, string $id_alias, string $module_alias): array {
+    public function getManagerButtons(string $manager_url, string $id_alias, string $module_alias): array
+    {
         $btns = [];
         foreach ($this->arr as $a) {
             $btns = array_merge($btns, $a->getButton($manager_url, $id_alias, $module_alias));
@@ -35,7 +37,8 @@ class Manageractions implements \IteratorAggregate, ArrayAccess, Countable {
     /** Same as getManagerButtons() but split by isSecondaryButton().
      *  @return array{primary: array<string,string>, secondary: array<string,string>}
      */
-    public function getManagerButtonsGrouped(string $manager_url, string $id_alias, string $module_alias): array {
+    public function getManagerButtonsGrouped(string $manager_url, string $id_alias, string $module_alias): array
+    {
         $primary = $secondary = [];
         foreach ($this->arr as $a) {
             $btn = $a->getButton($manager_url, $id_alias, $module_alias);

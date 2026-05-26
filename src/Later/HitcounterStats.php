@@ -9,14 +9,13 @@ use AA\IO\DB\DB_AA;
  */
 class HitcounterStats implements LaterInterface
 {
-
     /** For which slice we will count the hits */
     private string $slice_id;
 
     /** For which field we will cont the hits (hit_1...., hit_2...) */
     private string $field_id;
 
-    function __construct(string $slice_id, string $field_id)
+    public function __construct(string $slice_id, string $field_id)
     {
         $this->slice_id = $slice_id;
         $this->field_id = $field_id;
@@ -46,7 +45,7 @@ class HitcounterStats implements LaterInterface
             shuffle($item_ids);
             $field = DB_AA::select1('', 'SELECT `id`,`text_stored` FROM `field`', [
                 ['slice_id', $this->slice_id, 'l'],
-                ['id', $this->field_id]
+                ['id', $this->field_id],
             ]);
 
             foreach ($item_ids as $id) {
@@ -60,7 +59,8 @@ class HitcounterStats implements LaterInterface
         return count($item_ids) . '-' . number_format($dbgtime[1] - $dbgtime[0], 2) . '-' . number_format($dbgtime[2] - $dbgtime[1], 2) . '-' . number_format($dbgtime[3] - $dbgtime[2], 2);
     }
 
-    public static function getStats(array $slice_ids, int $from=0, int $to=0, $order=true, $limit=0): array {
+    public static function getStats(array $slice_ids, int $from = 0, int $to = 0, $order = true, $limit = 0): array
+    {
         $where = [['hit_archive.id', 'item.short_id', 'j']];
         if ($from) {
             $where[] = ['time', $from, '>='];
@@ -68,20 +68,20 @@ class HitcounterStats implements LaterInterface
         if ($to) {
             $where[] = ['time', $to, '<='];
         }
-        if ( $slice_ids ) {
+        if ($slice_ids) {
             $where[] = ['item.slice_id', $slice_ids, 'l'];
         }
         $order = $order ? ['count-'] : null;
-        return DB_AA::select(['id'=>'count'], "SELECT LOWER(HEX(`item`.`id`)) as id, sum(`hits`) as count FROM `hit_archive`, `item`", $where, $order, ['hit_archive.id'], $limit);
+        return DB_AA::select(['id' => 'count'], "SELECT LOWER(HEX(`item`.`id`)) as id, sum(`hits`) as count FROM `hit_archive`, `item`", $where, $order, ['hit_archive.id'], $limit);
     }
 
-    function getDays(): int
+    public function getDays(): int
     {
-        return (int)substr($this->field_id, 4);
+        return (int) substr($this->field_id, 4);
     }
 
     /** used as identifier for AA_Log when run from toexecute */
-    function getId(): string
+    public function getId(): string
     {
         return $this->slice_id . "/" . $this->field_id;
     }

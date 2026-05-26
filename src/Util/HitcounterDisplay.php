@@ -68,25 +68,25 @@ class HitcounterDisplay
         $timex  = new LogarithmIndex(.002, 80, 63);
         $totals = [];
         foreach ($rows as $r) {
-            $hits = (int)$r['total_hits'];
+            $hits = (int) $r['total_hits'];
             if ($hits <= 0) {
                 continue;
             }
-            $bucket_sum = (int)$r['h0'] + (int)$r['h1'] + (int)$r['h2'] + (int)$r['h3'];
+            $bucket_sum = (int) $r['h0'] + (int) $r['h1'] + (int) $r['h2'] + (int) $r['h3'];
             $ms_x_hits  = 0.0;
             for ($b = 0; $b < 4; $b++) {
-                $bh = (int)$r["h$b"];
-                $bw = (int)$r["w$b"];
+                $bh = (int) $r["h$b"];
+                $bw = (int) $r["w$b"];
                 if ($bh > 0) {
                     $avg_ms_bucket = $timex->index2float($bw / $bh) * 1000;
                     $ms_x_hits     += $avg_ms_bucket * $bh;
                 }
             }
-            $totals[(string)$r['short_id']] = [
+            $totals[(string) $r['short_id']] = [
                 'hits'       => $hits,
                 'bucket_sum' => $bucket_sum,
-                'cache_hits' => (int)$r['h2'] + (int)$r['h3'],
-                'wasted'     => (int)$r['h1'],
+                'cache_hits' => (int) $r['h2'] + (int) $r['h3'],
+                'wasted'     => (int) $r['h1'],
                 'ms_x_hits'  => $ms_x_hits,
                 'long_id'    => $r['long_id'],
                 'slice_id'   => $r['slice_id'],
@@ -140,7 +140,7 @@ class HitcounterDisplay
 
         // Limit 10000 matches the items-selection path in aa_statistics.php so the box's
         // top-N is identical to what the form returns when the operator clicks through.
-        $globals      = self::getGlobalTotals($slice_ids, $tip_from,      $tip_to,      10000);
+        $globals      = self::getGlobalTotals($slice_ids, $tip_from, $tip_to, 10000);
         $globals_prev = self::getGlobalTotals($slice_ids, $prev_tip_from, $prev_tip_to, 10000);
 
         // Per-item display data — populated lazily; safe() handles HTML escaping.
@@ -154,7 +154,7 @@ class HitcounterDisplay
                 $headline    = $headline !== '' ? $headline : $sid;
                 $slice_id    = $globals[$sid]['slice_id'] ?? '';
                 $long_id     = $globals[$sid]['long_id']  ?? '';
-                $slice_nm    = $slice_id ? (string)\AA_Slice::getModuleProperty($slice_id, 'name') : '';
+                $slice_nm    = $slice_id ? (string) \AA_Slice::getModuleProperty($slice_id, 'name') : '';
                 $item_meta_cache[$sid] = [
                     'headline'    => $headline,
                     'sid'         => $sid,
@@ -172,7 +172,9 @@ class HitcounterDisplay
             $scored = [];
             foreach ($totals_map as $sid => $t) {
                 $v = $metric($t);
-                if ($v === null) continue;
+                if ($v === null) {
+                    continue;
+                }
                 $scored[$sid] = $v;
             }
             $desc ? arsort($scored) : asort($scored);
@@ -190,11 +192,17 @@ class HitcounterDisplay
         $diff_detail = [];   // [sid => [cur_avg_ms, prv_avg_ms]], used in tooltips
         foreach ($globals as $sid => $tc) {
             $tp = $globals_prev[$sid] ?? null;
-            if (!$tp) continue;
-            if ($tc['bucket_sum'] < $min_hits_for_avg || $tp['bucket_sum'] < $min_hits_for_avg) continue;
+            if (!$tp) {
+                continue;
+            }
+            if ($tc['bucket_sum'] < $min_hits_for_avg || $tp['bucket_sum'] < $min_hits_for_avg) {
+                continue;
+            }
             $cur_avg = $tc['ms_x_hits'] / $tc['bucket_sum'];
             $prv_avg = $tp['ms_x_hits'] / $tp['bucket_sum'];
-            if ($prv_avg <= 0) continue;
+            if ($prv_avg <= 0) {
+                continue;
+            }
             $diff[$sid]        = (($cur_avg - $prv_avg) / $prv_avg) * 100;
             $diff_detail[$sid] = [$cur_avg, $prv_avg];
         }
@@ -204,7 +212,7 @@ class HitcounterDisplay
         $top_sped_up     = array_filter(array_slice($diff, 0, 3, true), static fn($v) => $v < -1);
 
         // ---- Format helpers + card builder ----------------------------------------
-        $fmt_int  = static fn($v) => number_format((int)$v, 0, '.', ' ');
+        $fmt_int  = static fn($v) => number_format((int) $v, 0, '.', ' ');
         $fmt_ms   = static fn($v) => number_format($v, $v < 10 ? 1 : 0, '.', ' ');
         $fmt_pct  = static fn($v) => sprintf('%+.0f%%', $v);
         $fmt_date = static fn($ts) => date('Y-m-d', $ts);
@@ -215,7 +223,7 @@ class HitcounterDisplay
         $card_base_qs = $base_qs + [
             'item_period' => $tip_period,
             'tip_period'  => $tip_period,
-            'item_count'  => (string)$item_count,
+            'item_count'  => (string) $item_count,
             'show'        => '1',
         ];
 
@@ -230,18 +238,18 @@ class HitcounterDisplay
                 $title_attr = $title_help !== ''
                     ? $title_help . ' — ' . \_m('click to show these items in the table')
                     : \_m('Show these items in the table');
-                $title_html = '<a href="'.\safe($href).'" class="aa-stat-tip-link" title="'.\safe($title_attr).'">'.\safe($title).' &raquo;</a>';
+                $title_html = '<a href="' . \safe($href) . '" class="aa-stat-tip-link" title="' . \safe($title_attr) . '">' . \safe($title) . ' &raquo;</a>';
             } else {
                 $title_html = $title_help !== ''
-                    ? '<span title="'.\safe($title_help).'">'.\safe($title).'</span>'
+                    ? '<span title="' . \safe($title_help) . '">' . \safe($title) . '</span>'
                     : \safe($title);
             }
-            $h  = '<div class="aa-stat-tip-card"><h4>'.$title_html.'</h4><ol>';
+            $h  = '<div class="aa-stat-tip-card"><h4>' . $title_html . '</h4><ol>';
             foreach ($rows as $sid => $val) {
                 $m = $get_meta($sid);
                 $h .= '<li>'
                     . self::renderItemLink($sid, $m['headline'], $m['headline'], $m, 'aa-stat-tip-name')
-                    . ' <span class="aa-stat-tip-val">'.$row_fmt($val, $sid).'</span>'
+                    . ' <span class="aa-stat-tip-val">' . $row_fmt($val, $sid) . '</span>'
                     . '</li>';
             }
             $h .= '</ol></div>';
@@ -270,12 +278,12 @@ class HitcounterDisplay
         $preserve_json = json_encode($preserve_qs + ['show' => '1'], JSON_UNESCAPED_SLASHES);
         $onchange = sprintf(
             "var p=%s;p.tip_period=this.value;location.href='aa_statistics.php?'+new URLSearchParams(p).toString()",
-            $preserve_json
+            $preserve_json,
         );
-        $period_select  = '<select class="aa-stat-tips-period" onchange="'.\safe($onchange).'">';
+        $period_select  = '<select class="aa-stat-tips-period" onchange="' . \safe($onchange) . '">';
         foreach ($periods as $k => $lbl) {
             $sel = $k === $tip_period ? ' selected' : '';
-            $period_select .= '<option value="'.\safe($k).'"'.$sel.'>'.\safe($lbl).'</option>';
+            $period_select .= '<option value="' . \safe($k) . '"' . $sel . '>' . \safe($lbl) . '</option>';
         }
         $period_select .= '</select>';
 
@@ -285,19 +293,23 @@ class HitcounterDisplay
 
         $h  = '<div class="aa-stat-tips">';
         $h .= '<div class="aa-stat-tips-head">';
-        $h .= '<h3>'.\safe(\_m('Quick diagnostics')).'</h3>';
+        $h .= '<h3>' . \safe(\_m('Quick diagnostics')) . '</h3>';
         $h .= $period_select;
-        $h .= '<small class="aa-stat-tips-range">'.$period_lbl.' &middot; '.$scope_lbl.'</small>';
+        $h .= '<small class="aa-stat-tips-range">' . $period_lbl . ' &middot; ' . $scope_lbl . '</small>';
         $h .= '</div>';
 
         if (empty($globals)) {
-            $h .= '<p class="aa-stat-tips-empty">'.\safe(\_m('No measured data in the selected window — Diagnostics needs at least the AddDurationLog feature on and a non-empty period.')).'</p>';
+            $h .= '<p class="aa-stat-tips-empty">' . \safe(\_m('No measured data in the selected window — Diagnostics needs at least the AddDurationLog feature on and a non-empty period.')) . '</p>';
         } else {
             // Format helper: total ms → "1.2 s" / "5.4 s" / "12 s", small ms stays as "120 ms"
             $fmt_total = static function (float $total_ms) use ($fmt_int): string {
-                if ($total_ms < 1000)    return number_format($total_ms, 0).' ms';
-                if ($total_ms < 60000)   return number_format($total_ms / 1000, 1).' s';
-                return number_format($total_ms / 60000, 1).' min';
+                if ($total_ms < 1000) {
+                    return number_format($total_ms, 0) . ' ms';
+                }
+                if ($total_ms < 60000) {
+                    return number_format($total_ms / 1000, 1) . ' s';
+                }
+                return number_format($total_ms / 60000, 1) . ' min';
             };
             $compared_lbl = $prev_tip_from > 0
                 ? \_m('Current period') . ' ' . $fmt_date($tip_from) . ' → ' . $fmt_date($tip_to)
@@ -305,61 +317,75 @@ class HitcounterDisplay
                 : '';
 
             $h .= '<div class="aa-stat-tip-grid">';
-            $h .= $card_html(\_m('Most hits'),
+            $h .= $card_html(
+                \_m('Most hits'),
                 \_m('Items with the most page views over the diagnostics window — where the public traffic is going.'),
                 $top_hits,
-                fn($v, $sid) => \safe($fmt_int($v)).' hits',
-                'top');
-            $h .= $card_html(\_m('Heaviest (ms × hits)'),
+                fn($v, $sid) => \safe($fmt_int($v)) . ' hits',
+                'top',
+            );
+            $h .= $card_html(
+                \_m('Heaviest (ms × hits)'),
                 \_m('Items where the server spent the most aggregate render time across all hits, i.e. avg page render time × hit count. The biggest performance levers — even a small per-hit speedup compounds across many requests.'),
                 $top_srvt,
                 function ($v, $sid) use ($globals, $fmt_ms, $fmt_int, $fmt_total) {
                     $t = $globals[$sid];
                     $avg_ms = $t['bucket_sum'] > 0 ? $t['ms_x_hits'] / $t['bucket_sum'] : 0;
-                    $tip = $fmt_ms($avg_ms).' ms × '.$fmt_int($t['hits']).' hits = '.$fmt_total($t['ms_x_hits']);
-                    return '<span title="'.\safe($tip).'">'.\safe($fmt_total($t['ms_x_hits'])).'</span>';
+                    $tip = $fmt_ms($avg_ms) . ' ms × ' . $fmt_int($t['hits']) . ' hits = ' . $fmt_total($t['ms_x_hits']);
+                    return '<span title="' . \safe($tip) . '">' . \safe($fmt_total($t['ms_x_hits'])) . '</span>';
                 },
-                'most-time');
-            $h .= $card_html(\_m('Slowest (avg ms)'),
+                'most-time',
+            );
+            $h .= $card_html(
+                \_m('Slowest (avg ms)'),
                 \_m('Items with the highest average page render time across all hits in the window. Best targets for individual-page optimisation.'),
                 $top_slow,
                 function ($v, $sid) use ($globals, $fmt_ms, $fmt_int) {
                     $t = $globals[$sid];
-                    $tip = $fmt_int($t['hits']).' hits';
-                    return '<span title="'.\safe($tip).'">'.\safe($fmt_ms($v)).' ms</span>';
+                    $tip = $fmt_int($t['hits']) . ' hits';
+                    return '<span title="' . \safe($tip) . '">' . \safe($fmt_ms($v)) . ' ms</span>';
                 },
-                'slowest');
-            $h .= $card_html(\_m('Worst cached'),
+                'slowest',
+            );
+            $h .= $card_html(
+                \_m('Worst cached'),
                 \_m('Items with the lowest AA PageCache hit ratio — fraction of requests served from the cache vs regenerated fresh. Low % means most requests pay the regeneration cost.'),
                 $top_lowc,
-                fn($v, $sid) => \safe(number_format($v, 0)).'%',
-                'worst-cached');
-            $h .= $card_html(\_m('Most wasted (NC+NM)'),
+                fn($v, $sid) => \safe(number_format($v, 0)) . '%',
+                'worst-cached',
+            );
+            $h .= $card_html(
+                \_m('Most wasted (NC+NM)'),
                 \_m('Items with the most "wasted work" hits — page regenerated fresh AND then a 304 returned because the client already had it. Pure server cost with no benefit.'),
                 $top_waste,
-                fn($v, $sid) => \safe($fmt_int($v)).' hits',
-                'most-wasted');
+                fn($v, $sid) => \safe($fmt_int($v)) . ' hits',
+                'most-wasted',
+            );
 
             if ($prev_tip_from > 0) {
-                $compared = ' ('.\safe($fmt_date($prev_tip_from)).' → '.\safe($fmt_date($prev_tip_to)).')';
-                $h .= $card_html(\_m('Slowed down vs').$compared,
-                    \_m('Items whose average render time grew the most between the prior equivalent window and the current one. ').$compared_lbl,
+                $compared = ' (' . \safe($fmt_date($prev_tip_from)) . ' → ' . \safe($fmt_date($prev_tip_to)) . ')';
+                $h .= $card_html(
+                    \_m('Slowed down vs') . $compared,
+                    \_m('Items whose average render time grew the most between the prior equivalent window and the current one. ') . $compared_lbl,
                     $top_slowed_down,
                     function ($v, $sid) use ($diff_detail, $fmt_ms, $fmt_pct) {
                         [$cur, $prv] = $diff_detail[$sid];
                         $tip = \_m('current') . ' ' . $fmt_ms($cur) . ' ms · ' . \_m('prior') . ' ' . $fmt_ms($prv) . ' ms';
-                        return '<span style="color:#a02222" title="'.\safe($tip).'">'.\safe($fmt_pct($v)).'</span>';
+                        return '<span style="color:#a02222" title="' . \safe($tip) . '">' . \safe($fmt_pct($v)) . '</span>';
                     },
-                    'slowed-down');
-                $h .= $card_html(\_m('Sped up vs').$compared,
-                    \_m('Items whose average render time fell the most between the prior equivalent window and the current one. ').$compared_lbl,
+                    'slowed-down',
+                );
+                $h .= $card_html(
+                    \_m('Sped up vs') . $compared,
+                    \_m('Items whose average render time fell the most between the prior equivalent window and the current one. ') . $compared_lbl,
                     $top_sped_up,
                     function ($v, $sid) use ($diff_detail, $fmt_ms, $fmt_pct) {
                         [$cur, $prv] = $diff_detail[$sid];
                         $tip = \_m('current') . ' ' . $fmt_ms($cur) . ' ms · ' . \_m('prior') . ' ' . $fmt_ms($prv) . ' ms';
-                        return '<span style="color:#2e7d52" title="'.\safe($tip).'">'.\safe($fmt_pct($v)).'</span>';
+                        return '<span style="color:#2e7d52" title="' . \safe($tip) . '">' . \safe($fmt_pct($v)) . '</span>';
                     },
-                    'sped-up');
+                    'sped-up',
+                );
             }
             $h .= '</div>';
         }
@@ -452,21 +478,22 @@ class HitcounterDisplay
                 $cols[$sid]['cnmH'][] = $b3_cnt;
                 $cols[$sid]['cnmD'][] = $b3_dur;
 
-                $bucket_sum = (int)$b0_cnt + (int)$b1_cnt + (int)$b2_cnt + (int)$b3_cnt;
+                $bucket_sum = (int) $b0_cnt + (int) $b1_cnt + (int) $b2_cnt + (int) $b3_cnt;
                 $cache_pct  = $bucket_sum
-                    ? round((((int)$b2_cnt + (int)$b3_cnt) / $bucket_sum) * 100)
+                    ? round((((int) $b2_cnt + (int) $b3_cnt) / $bucket_sum) * 100)
                     : null;
                 $avg_ms = $bucket_sum
                     ? round(
-                        ((float)$b0_dur * (int)$b0_cnt
-                         + (float)$b1_dur * (int)$b1_cnt
-                         + (float)$b2_dur * (int)$b2_cnt
-                         + (float)$b3_dur * (int)$b3_cnt) / $bucket_sum,
-                        1)
+                        ((float) $b0_dur * (int) $b0_cnt
+                         + (float) $b1_dur * (int) $b1_cnt
+                         + (float) $b2_dur * (int) $b2_cnt
+                         + (float) $b3_dur * (int) $b3_cnt) / $bucket_sum,
+                        1,
+                    )
                     : null;
 
                 $row[$sid] = [
-                    'hits'       => (int)$hits,
+                    'hits'       => (int) $hits,
                     'cache_pct'  => $cache_pct,
                     'avg_ms'     => $avg_ms,
                     'bucket_sum' => $bucket_sum,
@@ -476,8 +503,8 @@ class HitcounterDisplay
                     'b3_cnt' => $b3_cnt, 'b3_dur' => $b3_dur,
                 ];
                 $cols[$sid]['avgMs'][] = is_null($avg_ms) ? 0 : $avg_ms;
-                if ((int)$hits > $row_max_hits) {
-                    $row_max_hits = (int)$hits;
+                if ((int) $hits > $row_max_hits) {
+                    $row_max_hits = (int) $hits;
                 }
                 if (!is_null($avg_ms)) {
                     $col_max_ms[$sid] = max($col_max_ms[$sid] ?? 0.0, $avg_ms);
@@ -493,7 +520,7 @@ class HitcounterDisplay
                 $item_labels[$sid] = 'all';
             } else {
                 $headline = trim(\AA::Un("{shorten:{item:$sid:_#HEADLINE}:30:1}"));
-                $item_labels[$sid] = $headline !== '' ? "$sid — $headline" : (string)$sid;
+                $item_labels[$sid] = $headline !== '' ? "$sid — $headline" : (string) $sid;
             }
         }
 
@@ -534,7 +561,7 @@ class HitcounterDisplay
         $hits = DB_AA::select(
             [],
             'SELECT id, time, hits' . ($do_duration ? ', duration' : '') . ' FROM hit_archive',
-            $conds
+            $conds,
         );
 
         $stat  = [];
@@ -581,7 +608,9 @@ class HitcounterDisplay
     private static function buildItemMeta(array $sids): array
     {
         $real_sids = array_values(array_filter($sids, static fn($s) => $s !== 'all'));
-        if (empty($real_sids)) return [];
+        if (empty($real_sids)) {
+            return [];
+        }
 
         $rows = DB_AA::select(
             [],
@@ -590,15 +619,15 @@ class HitcounterDisplay
                     LOWER(HEX(`item`.`slice_id`)) AS slice_id,
                     `slice`.`name`                AS slice_name
              FROM `item` INNER JOIN `slice` ON `slice`.`id` = `item`.`slice_id`',
-            [['item.short_id', $real_sids, 'i']]
+            [['item.short_id', $real_sids, 'i']],
         );
 
         $meta = [];
         foreach ($rows as $r) {
-            $slice_nm = (string)$r['slice_name'];
-            $meta[(string)$r['short_id']] = [
-                'long_id'     => (string)$r['long_id'],
-                'slice_id'    => (string)$r['slice_id'],
+            $slice_nm = (string) $r['slice_name'];
+            $meta[(string) $r['short_id']] = [
+                'long_id'     => (string) $r['long_id'],
+                'slice_id'    => (string) $r['slice_id'],
                 'slice_name'  => $slice_nm,
                 'slice_short' => Txt::shorten($slice_nm, 11, '…'),
             ];
@@ -630,17 +659,17 @@ class HitcounterDisplay
                  . ' · #' . $sid;
 
         $prefix = $slice_short !== ''
-            ? '<span class="aa-stat-slice-prefix">['.\safe($slice_short).']</span> '
+            ? '<span class="aa-stat-slice-prefix">[' . \safe($slice_short) . ']</span> '
             : '';
         $inner = $prefix
                . \safe($visible_headline !== '' ? $visible_headline : $sid)
-               . ' <small class="aa-stat-item-sid">'.\safe($sid).'</small>';
+               . ' <small class="aa-stat-item-sid">' . \safe($sid) . '</small>';
 
         if ($long_id !== '') {
             $href = \get_admin_url('itemedit.php', ['id' => $long_id, 'change_id' => $slice_id, 'edit' => 1]);
-            return '<a class="'.\safe($anchor_class).'" href="'.\safe($href).'" title="'.\safe($tooltip).'">'.$inner.'</a>';
+            return '<a class="' . \safe($anchor_class) . '" href="' . \safe($href) . '" title="' . \safe($tooltip) . '">' . $inner . '</a>';
         }
-        return '<span title="'.\safe($tooltip).'">'.$inner.'</span>';
+        return '<span title="' . \safe($tooltip) . '">' . $inner . '</span>';
     }
 
     /** Cache-state palette ordered by quality (best → worst) — used by stacked charts. */
@@ -697,17 +726,17 @@ class HitcounterDisplay
     private static function renderLegend(): string
     {
         $h  = '<div class="aa-stat-legend">';
-        $h .= '<strong>'.\_m('Cache state').':</strong> ';
-        $h .= '<code>C</code> = '.\_m('page served from AA PageCache (cheap)').'; ';
-        $h .= '<code>NC</code> = '.\_m('PageCache miss — page regenerated').'; ';
-        $h .= '<code>M</code> = '.\_m('HTTP 200, full body sent').'; ';
-        $h .= '<code>NM</code> = '.\_m('HTTP 304 Not Modified, body omitted').'.<br>';
-        $h .= '<strong>'.\_m('Combined').':</strong> ';
-        $h .= '<code>NC+M</code> '.\_m('normal request').'; ';
-        $h .= '<em><code>NC+NM</code> '.\_m('wasted work: page rebuilt, then client cache matched (304)').'</em>; ';
-        $h .= '<code>C+M</code> '.\_m('cheap request').'; ';
-        $h .= '<code>C+NM</code> '.\_m('cheapest').'.<br>';
-        $h .= '<small>'.\_m('Background bars show value relative to row maximum (cache % uses raw value). Avg ms tints red as it grows. The "all" column aggregates across queried items.').'</small>';
+        $h .= '<strong>' . \_m('Cache state') . ':</strong> ';
+        $h .= '<code>C</code> = ' . \_m('page served from AA PageCache (cheap)') . '; ';
+        $h .= '<code>NC</code> = ' . \_m('PageCache miss — page regenerated') . '; ';
+        $h .= '<code>M</code> = ' . \_m('HTTP 200, full body sent') . '; ';
+        $h .= '<code>NM</code> = ' . \_m('HTTP 304 Not Modified, body omitted') . '.<br>';
+        $h .= '<strong>' . \_m('Combined') . ':</strong> ';
+        $h .= '<code>NC+M</code> ' . \_m('normal request') . '; ';
+        $h .= '<em><code>NC+NM</code> ' . \_m('wasted work: page rebuilt, then client cache matched (304)') . '</em>; ';
+        $h .= '<code>C+M</code> ' . \_m('cheap request') . '; ';
+        $h .= '<code>C+NM</code> ' . \_m('cheapest') . '.<br>';
+        $h .= '<small>' . \_m('Background bars show value relative to row maximum (cache % uses raw value). Avg ms tints red as it grows. The "all" column aggregates across queried items.') . '</small>';
         $h .= '</div>';
         return $h;
     }
@@ -719,7 +748,7 @@ class HitcounterDisplay
         // ---- Header
         $ret  = "\n<div class=\"aa-stat-wrap\"><table class=\"aa-stat-table\">";
         $ret .= "\n  <thead>\n    <tr>";
-        $ret .= "\n      <th rowspan=\"2\">".\_m('Date')."</th>";
+        $ret .= "\n      <th rowspan=\"2\">" . \_m('Date') . "</th>";
         foreach ($s_ids as $sid) {
             $is_all   = ($sid === 'all');
             $cls      = trim(($is_all ? 'aa-stat-all ' : '') . ($is_all ? 'aa-stat-all-bdr' : ''));
@@ -730,11 +759,11 @@ class HitcounterDisplay
                 $headline_short = trim(\AA::Un("{shorten:{item:$sid:_#HEADLINE}:25:1}"));
                 $headline_full  = trim(\AA::Un("{item:$sid:_#HEADLINE}"));
                 $head_html      = self::renderItemLink(
-                    (string)$sid,
+                    (string) $sid,
                     $headline_short,
                     $headline_full,
                     $item_meta[$sid] ?? [],
-                    'aa-stat-th-link'
+                    'aa-stat-th-link',
                 );
             }
             $ret .= "\n      <th colspan=\"$per_item_cols\"$cls_attr>$head_html</th>";
@@ -745,11 +774,11 @@ class HitcounterDisplay
             $is_all = ($sid === 'all');
             $base = $is_all ? 'aa-stat-all' : '';
             $bdr  = $is_all ? ' aa-stat-all-bdr' : '';
-            $ret .= "\n      <th class=\"$base$bdr\">".\_m('Hits')."</th>";
+            $ret .= "\n      <th class=\"$base$bdr\">" . \_m('Hits') . "</th>";
             if ($do_duration) {
-                $ret .= "\n      <th class=\"$base\">".\_m('Cache %')."</th>";
-                $ret .= "\n      <th class=\"$base\">".\_m('Avg ms')."</th>";
-                $ret .= "\n      <th class=\"$base\">".\_m('More')."</th>";
+                $ret .= "\n      <th class=\"$base\">" . \_m('Cache %') . "</th>";
+                $ret .= "\n      <th class=\"$base\">" . \_m('Avg ms') . "</th>";
+                $ret .= "\n      <th class=\"$base\">" . \_m('More') . "</th>";
             }
         }
         $ret .= "\n    </tr>\n  </thead>\n  <tbody>";
@@ -759,36 +788,36 @@ class HitcounterDisplay
             $row_max_hits = $bag['row_max_hits'];
             $row          = $bag['items'];
             $ret .= "\n    <tr>";
-            $ret .= "\n      <td>".\safe((string)$day)."</td>";
+            $ret .= "\n      <td>" . \safe((string) $day) . "</td>";
             foreach ($s_ids as $sid) {
                 $r       = $row[$sid];
                 $is_all  = ($sid === 'all');
                 $all_cls = $is_all ? ' aa-stat-all' : '';
                 $bdr_cls = $is_all ? ' aa-stat-all-bdr' : '';
 
-                $h_pct  = $row_max_hits > 0 ? (int)round(($r['hits'] / $row_max_hits) * 100) : 0;
+                $h_pct  = $row_max_hits > 0 ? (int) round(($r['hits'] / $row_max_hits) * 100) : 0;
                 $h_zero = ($r['hits'] === 0) ? ' aa-stat-zero' : '';
-                $ret .= "\n      <td class=\"aa-stat-bar$all_cls$bdr_cls$h_zero\" style=\"--pct:$h_pct\">".\safe((string)$r['hits'])."</td>";
+                $ret .= "\n      <td class=\"aa-stat-bar$all_cls$bdr_cls$h_zero\" style=\"--pct:$h_pct\">" . \safe((string) $r['hits']) . "</td>";
 
                 if ($do_duration) {
                     $cp      = $r['cache_pct'];
-                    $cp_pct  = is_null($cp) ? 0 : (int)$cp;
-                    $cp_zero = (is_null($cp) || (int)$cp === 0) ? ' aa-stat-zero' : '';
-                    $cp_str  = is_null($cp) ? '&mdash;' : \safe((string)$cp).'%';
+                    $cp_pct  = is_null($cp) ? 0 : (int) $cp;
+                    $cp_zero = (is_null($cp) || (int) $cp === 0) ? ' aa-stat-zero' : '';
+                    $cp_str  = is_null($cp) ? '&mdash;' : \safe((string) $cp) . '%';
                     $ret .= "\n      <td class=\"aa-stat-bar aa-stat-bar--pct$all_cls$cp_zero\" style=\"--pct:$cp_pct\">$cp_str</td>";
 
                     $am       = $r['avg_ms'];
                     $col_max  = $col_max_ms[$sid] ?? 0.0;
-                    $am_pct   = ($col_max > 0 && !is_null($am)) ? (int)round(((float)$am / $col_max) * 100) : 0;
-                    $am_zero  = (is_null($am) || (float)$am === 0.0) ? ' aa-stat-zero' : '';
-                    $am_str   = is_null($am) ? '&mdash;' : \safe((string)$am);
+                    $am_pct   = ($col_max > 0 && !is_null($am)) ? (int) round(((float) $am / $col_max) * 100) : 0;
+                    $am_zero  = (is_null($am) || (float) $am === 0.0) ? ' aa-stat-zero' : '';
+                    $am_str   = is_null($am) ? '&mdash;' : \safe((string) $am);
                     $ret .= "\n      <td class=\"aa-stat-bar aa-stat-bar--ms$all_cls$am_zero\" style=\"--pct:$am_pct\">$am_str</td>";
 
                     $ret .= "\n      <td class=\"$all_cls\">";
                     if ($r['bucket_sum']) {
-                        $ret .= '<details><summary>'.\_m('more').'</summary>';
+                        $ret .= '<details><summary>' . \_m('more') . '</summary>';
                         $ret .= '<table class="aa-stat-detail"><thead><tr>';
-                        $ret .= '<th>'.\_m('Cache state').'</th><th>'.\_m('Hits').'</th><th>'.\_m('Avg ms').'</th>';
+                        $ret .= '<th>' . \_m('Cache state') . '</th><th>' . \_m('Hits') . '</th><th>' . \_m('Avg ms') . '</th>';
                         $ret .= '</tr></thead><tbody>';
                         $detail = [
                             [\_m('NC+M (normal)'),    $r['b0_cnt'], $r['b0_dur']],
@@ -797,10 +826,10 @@ class HitcounterDisplay
                             [\_m('C+NM (cheapest)'),  $r['b3_cnt'], $r['b3_dur']],
                         ];
                         foreach ($detail as [$d_label, $d_cnt, $d_dur]) {
-                            $d_zero = ((int)$d_cnt === 0) ? ' class="aa-stat-zero"' : '';
-                            $ret .= '<tr'.$d_zero.'><td>'.\safe((string)$d_label).'</td>'
-                                  . '<td>'.\safe((string)$d_cnt).'</td>'
-                                  . '<td>'.((int)$d_cnt ? \safe((string)$d_dur) : '&mdash;').'</td></tr>';
+                            $d_zero = ((int) $d_cnt === 0) ? ' class="aa-stat-zero"' : '';
+                            $ret .= '<tr' . $d_zero . '><td>' . \safe((string) $d_label) . '</td>'
+                                  . '<td>' . \safe((string) $d_cnt) . '</td>'
+                                  . '<td>' . ((int) $d_cnt ? \safe((string) $d_dur) : '&mdash;') . '</td></tr>';
                         }
                         $ret .= '</tbody></table></details>';
                     }
@@ -815,7 +844,7 @@ class HitcounterDisplay
 
     private static function renderHitsChart(array $cols, array $labels, array $item_labels): string
     {
-        $ret = '<h3>'.\_m('Hits').'</h3>';
+        $ret = '<h3>' . \_m('Hits') . '</h3>';
         $datasets = [];
         $i = 0;
         foreach ($cols as $sid => $sidcols) {
@@ -843,17 +872,19 @@ class HitcounterDisplay
                 $datasets[] = ['label' => $label, 'data' => $sidcols[$key], 'color' => $color, 'dash' => []];
             }
         }
-        $ret = '<h3>'.\_m('Cache state breakdown for all queried items').'</h3>';
+        $ret = '<h3>' . \_m('Cache state breakdown for all queried items') . '</h3>';
         $ret .= self::getGraph($datasets, $labels, 'stacked', 'aa-stat-chart-pct');
 
         // Per-item mini stacks
         $item_sids = array_filter($s_ids, static fn($s) => $s !== 'all');
         if (count($item_sids) > 0) {
-            $ret .= '<h3>'.\_m('Cache state per item').'</h3>';
+            $ret .= '<h3>' . \_m('Cache state per item') . '</h3>';
             $ret .= '<div class="aa-stat-chart-grid">';
             $series_keys = ['cnmH', 'cmH', 'ncmH', 'ncnmH'];
             foreach ($item_sids as $sid) {
-                if (!isset($cols[$sid])) continue;
+                if (!isset($cols[$sid])) {
+                    continue;
+                }
                 $sidcols = $cols[$sid];
                 foreach ($series_keys as $t) {
                     if (isset($sidcols[$t], $sidcols['H']) && count($sidcols[$t]) === count($sidcols['H'])) {
@@ -865,24 +896,33 @@ class HitcounterDisplay
                 $n_days    = count($labels);
                 for ($i = 0; $i < $n_days; $i++) {
                     foreach ($series_keys as $k) {
-                        if (!empty($sidcols[$k][$i])) { $first_idx = $i; break 2; }
+                        if (!empty($sidcols[$k][$i])) {
+                            $first_idx = $i;
+                            break 2;
+                        }
                     }
                 }
-                if ($first_idx === null) continue;
+                if ($first_idx === null) {
+                    continue;
+                }
                 $mini_labels = array_slice($labels, $first_idx);
                 $datasets_i = [];
                 foreach (self::CACHE_STATE_ORDER as [$key, $label, $color]) {
-                    if (empty($sidcols[$key])) continue;
+                    if (empty($sidcols[$key])) {
+                        continue;
+                    }
                     $vals = array_slice($sidcols[$key], $first_idx);
                     if (array_filter($vals, static fn($v) => $v !== 0)) {
                         $datasets_i[] = ['label' => $label, 'data' => $vals, 'color' => $color, 'dash' => []];
                     }
                 }
-                if (empty($datasets_i)) continue;
+                if (empty($datasets_i)) {
+                    continue;
+                }
 
                 $label = $item_labels[$sid] ?? $sid;
                 $ret .= '<div class="aa-stat-chart-mini-wrap">';
-                $ret .= '<div class="aa-stat-chart-mini-title" title="'.\safe($label).'">'.\safe($label).'</div>';
+                $ret .= '<div class="aa-stat-chart-mini-title" title="' . \safe($label) . '">' . \safe($label) . '</div>';
                 $ret .= self::getGraph($datasets_i, $mini_labels, 'stacked', 'aa-stat-chart-mini');
                 $ret .= '</div>';
             }
@@ -893,11 +933,13 @@ class HitcounterDisplay
 
     private static function renderAvgMsChart(array $cols, array $labels, array $item_labels): string
     {
-        $ret = '<h3>'.\_m('Average duration (ms)').'</h3>';
+        $ret = '<h3>' . \_m('Average duration (ms)') . '</h3>';
         $datasets = [];
         $i = 0;
         foreach ($cols as $sid => $sidcols) {
-            if (empty($sidcols['avgMs'])) continue;
+            if (empty($sidcols['avgMs'])) {
+                continue;
+            }
             $hue   = self::generateSaturatedColor($i++);
             $color = $sid === 'all' ? '#222' : self::hslToHex($hue, 70, 45);
             if (array_filter($sidcols['avgMs'], static fn($v) => $v !== 0)) {
@@ -942,8 +984,8 @@ class HitcounterDisplay
                 'plugins' => [
                     'legend' => ['position' => 'top', 'display' => !$is_mini],
                     'title'  => ['display' => false],
-                ]
-            ]
+                ],
+            ],
         ];
         if ($type === 'stacked') {
             $conf['type'] = 'bar';
@@ -963,7 +1005,7 @@ class HitcounterDisplay
         $ret  = "<div class=\"$cls\">";
         $ret .= "<canvas id=\"$chart_id\"></canvas>";
         $ret .= "</div>";
-        $ret .= "<script> new Chart(document.getElementById('$chart_id'), ".json_encode($conf)."); </script>";
+        $ret .= "<script> new Chart(document.getElementById('$chart_id'), " . json_encode($conf) . "); </script>";
         return $ret;
     }
 
@@ -983,12 +1025,31 @@ class HitcounterDisplay
         $c = (1 - abs(2 * $l - 1)) * $s;
         $x = $c * (1 - abs(fmod($h / 60, 2) - 1));
         $m = $l - ($c / 2);
-        if ($h < 60)        { $r = $c; $g = $x; $b = 0; }
-        elseif ($h < 120)   { $r = $x; $g = $c; $b = 0; }
-        elseif ($h < 180)   { $r = 0;  $g = $c; $b = $x; }
-        elseif ($h < 240)   { $r = 0;  $g = $x; $b = $c; }
-        elseif ($h < 300)   { $r = $x; $g = 0;  $b = $c; }
-        else                { $r = $c; $g = 0;  $b = $x; }
+        if ($h < 60) {
+            $r = $c;
+            $g = $x;
+            $b = 0;
+        } elseif ($h < 120) {
+            $r = $x;
+            $g = $c;
+            $b = 0;
+        } elseif ($h < 180) {
+            $r = 0;
+            $g = $c;
+            $b = $x;
+        } elseif ($h < 240) {
+            $r = 0;
+            $g = $x;
+            $b = $c;
+        } elseif ($h < 300) {
+            $r = $x;
+            $g = 0;
+            $b = $c;
+        } else {
+            $r = $c;
+            $g = 0;
+            $b = $x;
+        }
         return sprintf('#%02X%02X%02X', round(($r + $m) * 255), round(($g + $m) * 255), round(($b + $m) * 255));
     }
 

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: honzama
@@ -28,7 +29,6 @@ use PDOException;
  */
 class SQL extends AbstractGrabber
 {
-
     /** @var string sql query */
     protected $sql = '';
 
@@ -51,23 +51,24 @@ class SQL extends AbstractGrabber
      * new AA\IO\Grabber\SQL('SELECT * FROM data', 'DBname', 'DBuser', 'DBPasswd', 'mysql', '127.0.0.1');
      * new AA\IO\Grabber\SQL('SELECT * FROM data', 'DBname', 'DBuser', 'DBPasswd', 'mysql', 'mydbserver');
      */
-    function __construct($sql='', $dbname='', $username='', $password='', $type='', $host='', $port='', $charset='') {
+    public function __construct($sql = '', $dbname = '', $username = '', $password = '', $type = '', $host = '', $port = '', $charset = '')
+    {
         $this->sql  = $sql;
-        $this->dsn  = ( ctype_alpha($type) ? $type : 'mysql');
+        $this->dsn  = (ctype_alpha($type) ? $type : 'mysql');
         $arr = [];
-        if ( ctype_alnum($dbname) ) {
+        if (ctype_alnum($dbname)) {
             $arr[] = 'dbname=' . $dbname;
         }
-        if ( filter_var($host, FILTER_VALIDATE_IP) || ctype_alnum($host) ) {
+        if (filter_var($host, FILTER_VALIDATE_IP) || ctype_alnum($host)) {
             $arr[] = 'host=' . $host;
         }
-        if ( ctype_digit((string)$port) ) {
+        if (ctype_digit((string) $port)) {
             $arr[] = 'port=' . $port;
         }
-        if ( ctype_alnum($charset) ) {
+        if (ctype_alnum($charset)) {
             $arr[] = 'charset=' . $charset;
         }
-        $this->dsn .= ':'.implode(';',$arr);
+        $this->dsn .= ':' . implode(';', $arr);
 
         $this->username         = $username;
         $this->password         = $password;
@@ -76,7 +77,8 @@ class SQL extends AbstractGrabber
     /** name function
      * Name of the grabber - used for grabber selection box
      */
-    public static function name() : string {
+    public static function name(): string
+    {
         return _m('SQL');
     }
 
@@ -84,14 +86,16 @@ class SQL extends AbstractGrabber
      *  Description of the grabber - used as help text for the users.
      *  Description is in HTML
      */
-    public static function description(): string {
+    public static function description(): string
+    {
         return _m('Import data from SQL database');
     }
 
     /** true, if grabber returns already prepared item. false, when just parsed source structure is returned which must be converted by transformations
      * @return bool
      */
-    public function isDirectfill(): bool {
+    public function isDirectfill(): bool
+    {
         return false;
     }
 
@@ -99,16 +103,17 @@ class SQL extends AbstractGrabber
      *  Used for importer and htmlSettings()
      * @return array  $sql='', $dbname='', $username='', $password='', $type='', $host='', $port='', $charset=''
      */
-    public static function getClassProperties(): array {
+    public static function getClassProperties(): array
+    {
         $properties = [];   //                   id             name        type    multi  persistent - validator, required, help, morehelp, example
-        $properties['sql']      = new AA_Property('sql',      _m("SQL query"), 'string', false, true);
-        $properties['dbname']   = new AA_Property('dbname',   _m("Database name"), 'string', false, true);
+        $properties['sql']      = new AA_Property('sql', _m("SQL query"), 'string', false, true);
+        $properties['dbname']   = new AA_Property('dbname', _m("Database name"), 'string', false, true);
         $properties['username'] = new AA_Property('username', _m("Database Username"), 'string', false, true);
         $properties['password'] = new AA_Property('password', _m("Database Password"), 'string', false, true);
-        $properties['type']     = new AA_Property('type',     _m("Database type (mysql, ...)"), 'string', false, true);
-        $properties['host']     = new AA_Property('host',     _m("Host IP address"), 'string', false, true);
-        $properties['port']     = new AA_Property('port',     _m("Port"), 'string', false, true);
-        $properties['charset']  = new AA_Property('charset',  _m("Charset (utf8mb4,...)"), 'string', false, true);
+        $properties['type']     = new AA_Property('type', _m("Database type (mysql, ...)"), 'string', false, true);
+        $properties['host']     = new AA_Property('host', _m("Host IP address"), 'string', false, true);
+        $properties['port']     = new AA_Property('port', _m("Port"), 'string', false, true);
+        $properties['charset']  = new AA_Property('charset', _m("Charset (utf8mb4,...)"), 'string', false, true);
         return $properties;
     }
 
@@ -117,20 +122,20 @@ class SQL extends AbstractGrabber
      *  method is called - it means "we are going really to grab the data
      * @throws Exception
      */
-    function prepare(): void
+    public function prepare(): void
     {
         try {
             $this->db       = new PDO($this->dsn, $this->username, $this->password);
         } catch (PDOException $e) {
             throw new Exception('not possible to connect to DB', $e->getCode(), $e);
-	    }
+        }
         $this->message('connected');
-	    $this->dbresult = $this->db->query($this->sql);
+        $this->dbresult = $this->db->query($this->sql);
         // $this->message("parsed items ". count($this->_items));
     }
 
     /** Method called by the AA\IO\Saver to get next item from the data input */
-    function getItem(): ?AA_Content
+    public function getItem(): ?AA_Content
     {
         if (!$this->dbresult || false === ($data = $this->dbresult->fetch(PDO::FETCH_ASSOC))) {
             return null;
@@ -146,7 +151,7 @@ class SQL extends AbstractGrabber
      *  Function called by AA\IO\Saver after we get the last item from the data
      *  input
      */
-    function finish(): void
+    public function finish(): void
     {
         // close connections
         $this->dbresult = null;

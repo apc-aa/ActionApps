@@ -7,19 +7,21 @@ use AA_Object;
 use zids;
 
 /** Manager action Export - Exports selected items to Excel file */
-class Item_Export extends AbstractManageraction {
-
-    function __construct($id) {
+class Item_Export extends AbstractManageraction
+{
+    public function __construct($id)
+    {
         parent::__construct($id);
     }
 
     /** Name of this Manager's action */
-    public function getName(): string {
+    public function getName(): string
+    {
         return _m('Export to file');
     }
 
     /** @inheritDoc */
-    function perform(Manager $manager, zids $item_zids, $action_param): string|false
+    public function perform(Manager $manager, zids $item_zids, $action_param): string|false
     {
 
         if (!$item_zids->isEmpty()) {
@@ -41,7 +43,8 @@ class Item_Export extends AbstractManageraction {
      *
      * @return bool
      */
-    function isPerm4Action($manager):bool {
+    public function isPerm4Action($manager): bool
+    {
         return IfSlPerm(PS_EDIT_ALL_ITEMS);
     }
 }

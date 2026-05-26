@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: honzama
@@ -7,6 +8,7 @@
  */
 
 namespace AA\Widget;
+
 use AA;
 use AA\FormArray;
 use AA_Content;
@@ -39,35 +41,36 @@ class FilWidget extends Widget
      *  Used parameter format (in fields.input_show_func table)
      * @return array
      */
-    public static function getClassProperties(): array {
+    public static function getClassProperties(): array
+    {
         return Widget::propertiesShop(['allowed_ftypes', 'label', 'hint', 'display_url', 'multiple']);
     }
 
-//    function requireLibs($aa_property, $winfo)
-//    {
-//        return array('https://unpkg.com/filepond/dist/filepond.css', 'https://unpkg.com/filepond/dist/filepond.js');
-//    }
-//
-//    /** script to run after the page DOM is loaded */
-//    function requireRun($aa_property, $winfo)
-//    {
-//        return '
-//
-//        FilePond.setOptions({
-//            allowReplace: false,
-//            instantUpload: false,
-//            server: {
-//                url: \'http://192.168.33.10\',
-//                process: \'./process.php\',
-//                revert: \'./revert.php\',
-//                restore: \'./restore.php?id=\',
-//                fetch: \'./fetch.php?data=\'
-//            }
-//        });
-//
-//        FilePond.parse(document.body);
-//      ';
-//    }
+    //    function requireLibs($aa_property, $winfo)
+    //    {
+    //        return array('https://unpkg.com/filepond/dist/filepond.css', 'https://unpkg.com/filepond/dist/filepond.js');
+    //    }
+    //
+    //    /** script to run after the page DOM is loaded */
+    //    function requireRun($aa_property, $winfo)
+    //    {
+    //        return '
+    //
+    //        FilePond.setOptions({
+    //            allowReplace: false,
+    //            instantUpload: false,
+    //            server: {
+    //                url: \'http://192.168.33.10\',
+    //                process: \'./process.php\',
+    //                revert: \'./revert.php\',
+    //                restore: \'./restore.php?id=\',
+    //                fetch: \'./fetch.php?data=\'
+    //            }
+    //        });
+    //
+    //        FilePond.parse(document.body);
+    //      ';
+    //    }
 
 
     /** @return AA_Value for the data send by the widget
@@ -88,9 +91,9 @@ class FilWidget extends Widget
     public static function getWidgetValue(array $data4field, ?AA_Value $default): AA_Value
     {
         $data4field = $data4field['fil'];
-        $uploads = (array)$data4field['var'];
-        $urls = (array)$data4field['url'];
-        $add = $data4field['add']=='1';  // if the widget is multiple, then it behaves differently with deletion - the old uploads are not cleaned
+        $uploads = (array) $data4field['var'];
+        $urls = (array) $data4field['url'];
+        $add = $data4field['add'] == '1';  // if the widget is multiple, then it behaves differently with deletion - the old uploads are not cleaned
 
         // upload could be also multivalue
 
@@ -99,7 +102,7 @@ class FilWidget extends Widget
         $upload_ok = false;
         if (!empty($uploads)) {
             foreach ($uploads as $file) {
-                if (isset($file['error']) && $file['error']==0) { // 0 means UPLOAD_ERR_OK - sometimes (when using FormData JS API) the array is present even for empty field upload
+                if (isset($file['error']) && $file['error'] == 0) { // 0 means UPLOAD_ERR_OK - sometimes (when using FormData JS API) the array is present even for empty field upload
                     $upload_ok = true;
                     // the information about file is in array - ['name'=>..,'type'=>..,'tmp_name'=>..,'error'=>..,'size'=>..]
                     $values[] = 'AA_UPLOAD:' . serialize($file);
@@ -127,7 +130,8 @@ class FilWidget extends Widget
      *  @return array
      *  @throws Exception
      */
-    function _getRawHtml(AA_Property $aa_property, AA_Content $content, string $type = 'normal'): array {
+    public function _getRawHtml(AA_Property $aa_property, AA_Content $content, string $type = 'normal'): array
+    {
         $base_name = FormArray::getName4Form($aa_property->getId(), $content, $this->item_index);
         $base_id = FormArray::formName2Id($base_name);
 
@@ -136,17 +140,17 @@ class FilWidget extends Widget
 
         $widget = '';
         $width = ""; // $this->getProperty('width', 60);            // @todo - width is not property of file widget, yet
-        $max_characters = (int)$this->getProperty('max_characters', 254);  // @todo - width is not property of file widget, yet
+        $max_characters = (int) $this->getProperty('max_characters', 254);  // @todo - width is not property of file widget, yet
         $allowed_ftypes = $this->getProperty('allowed_ftypes', '');
-        $display_url = (int)$this->getProperty('display_url', 0);
-        $multiple = (int)$this->getProperty('multiple', 0) ? ' multiple' : '';
+        $display_url = (int) $this->getProperty('display_url', 0);
+        $multiple = (int) $this->getProperty('multiple', 0) ? ' multiple' : '';
         $value = $content->getAaValue($aa_property->getId());
 
         for ($i = 0, $ino = $value->count(); $i < $ino; ++$i) {
             $input_name  = $base_name . "[fil][url][$i]";
             $input_id    = FormArray::formName2Id($input_name);
             $input_value = safe($value->getValue($i));
-            $link        = $input_value ? a_href($input_value, GetAAImage('external-link.png', _m('Show').' '.$input_value, 16, 16),['class'=>'aa-fil-link']) : '';
+            $link        = $input_value ? a_href($input_value, GetAAImage('external-link.png', _m('Show') . ' ' . $input_value, 16, 16), ['class' => 'aa-fil-link']) : '';
             $widget     .= "\n<div class=aa-fil-file>";
             if ($display_url < 2 && $type === 'normal') {
                 $widget .= "<input type=\"text\" class=aa-w-full maxlength=\"$max_characters\" name=\"$input_name\" id=\"$input_id\" value=\"$input_value\"$widget_add> $link";
@@ -163,9 +167,9 @@ class FilWidget extends Widget
             $widget .= "\n<input type=\"hidden\" name=\"$input_name\" id=\"$input_id\" value=\"1\">";
         }
 
-//        if ($_GET['dd']==='wer') {
-//            huhl($display_url, $widget, $value, $value->count(), $content, $this);
-//        }
+        //        if ($_GET['dd']==='wer') {
+        //            huhl($display_url, $widget, $value, $value->count(), $content, $this);
+        //        }
         // no input was printed, we need to print one
         if (!$widget && $display_url === 0) {
             $input_name = $base_name . "[fil][url][0]";
@@ -184,7 +188,7 @@ class FilWidget extends Widget
         } else {
             $url_params = [
                 'inline' => 1,
-                'ret_code_js' => 'parent.AA_ReloadAjaxResponse(\'' . $base_id . '\', AA_ITEM_JSON)'
+                'ret_code_js' => 'parent.AA_ReloadAjaxResponse(\'' . $base_id . '\', AA_ITEM_JSON)',
             ];
             $widget .= '
                 <form id="fuf' . $base_id . '" method="POST" enctype="multipart/form-data" action="' . safe(get_aa_url('filler.php', $url_params)) . '" target="iframe' . $base_id . '">';
@@ -193,7 +197,7 @@ class FilWidget extends Widget
                     <input type="button" value="' . _m('Delete') . '" onclick="document.getElementById(\'fuf' . $base_id . '\').submit()"><br>';
             }
             $widget .= '
-                <input type="file" size="' . $width . '"'. $multiple.' maxlength="' . $max_characters . '" name="' . $input_name . '" id="' . $input_id . '" ' .$accept. ' onchange="document.getElementById(\'' . $base_id . 'upload\').style.display = ((this.value == \'\') ? \'none\' : \'inline-block\');">
+                <input type="file" size="' . $width . '"' . $multiple . ' maxlength="' . $max_characters . '" name="' . $input_name . '" id="' . $input_id . '" ' . $accept . ' onchange="document.getElementById(\'' . $base_id . 'upload\').style.display = ((this.value == \'\') ? \'none\' : \'inline-block\');">
                 <input type="hidden" name="ret_code_enc" id="ret_code_enc' . $base_id . '" value="">
                 <input type="submit" name="' . $base_id . 'upload" id="' . $base_id . 'upload" value="' . _m('Upload') . '" style="display:none;">
                 </form>
@@ -215,7 +219,7 @@ class FilWidget extends Widget
      * @return string - widget HTML for using as Live component (in place editing)
      * @throws Exception
      */
-    function getLiveHtml(AA_Property $aa_property, AA_Content $content, $function = null): string
+    public function getLiveHtml(AA_Property $aa_property, AA_Content $content, $function = null): string
     {
         //return $this->getAjaxHtml($aa_property, $content);
         // this is not standard implementation - we reuse Ajax function instead of Live function, because it is more natural for file upload
@@ -230,7 +234,8 @@ class FilWidget extends Widget
         //return str_replace('AA_LIVE_OK_FUNC', $function ? $function : "''", $this->_finalizeAjaxHtml($this->_getRawHtml($aa_property, $content)));
     }
 
-    function _finalizeAjaxHtml($winfo, $aa_property): string {
+    public function _finalizeAjaxHtml($winfo, $aa_property): string
+    {
         // not standard - we do not show save button (the upload input works the same way here)
         $base_name = $winfo['base_name'];
         $base_id = FormArray::formName2Id($base_name);
@@ -245,7 +250,8 @@ class FilWidget extends Widget
     }
 
     /** @inheritDoc */
-    public static function description(): string {
+    public static function description(): string
+    {
         return ''; // TODO: Implement description() method.
     }
 }

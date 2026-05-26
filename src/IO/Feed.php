@@ -10,7 +10,8 @@ use AA_Slice;
 use itemview;
 use zids;
 
-class Feed {
+class Feed
+{
     public const FEEDTYPE_RSS   = 1;
     public const FEEDTYPE_APC   = 2;
     public const FEEDTYPE_EXACT = 3;
@@ -32,7 +33,8 @@ class Feed {
      * @param $destination_slice_id = null
      * @param $fire                 = 'write'
      */
-    function __construct($grabber = null, $destination_slice_id = null, $fire = 'write') {
+    public function __construct($grabber = null, $destination_slice_id = null, $fire = 'write')
+    {
         $this->grabber              = $grabber;
         $this->destination_slice_id = $destination_slice_id;
         $this->fire                 = $fire;
@@ -42,7 +44,7 @@ class Feed {
      * @param             $id
      * @param string|null $url = null
      */
-    function loadRSSFeed($id, ?string $url = null): void
+    public function loadRSSFeed($id, ?string $url = null): void
     {
         $this->id   = $id;
         $this->type = self::FEEDTYPE_RSS;
@@ -66,7 +68,7 @@ class Feed {
      * @param $id
      * @param $time = null
      */
-    function loadAAFeed($id, $time = null): void
+    public function loadAAFeed($id, $time = null): void
     {
         $this->id   = $id;
         $this->type = self::FEEDTYPE_APC;
@@ -75,7 +77,7 @@ class Feed {
         //           FROM nodes, external_feeds WHERE nodes.name=external_feeds.node_name AND feed_id='$id'";
         // $feeddata                    = GetTable2Array($SQL, 'aa_first', 'aa_fields');
         $feeddata = DB_AA::select1([], "SELECT feed_id, password, server_url, name, slice_id, remote_slice_id, newest_item, user_id, remote_slice_name, feed_mode FROM nodes, external_feeds", [
-            ['nodes.name', 'external_feeds.node_name', 'j',], ['feed_id', $id,]
+            ['nodes.name', 'external_feeds.node_name', 'j',], ['feed_id', $id,],
         ]);
         $feeddata['feed_type'] = ($feeddata['feed_mode'] === 'exact') ? self::FEEDTYPE_EXACT : self::FEEDTYPE_APC;
 
@@ -94,7 +96,8 @@ class Feed {
      *                       display - only display the data from the feed
      * @return string saver report
      */
-    function feed(string $fire=''): string {
+    public function feed(string $fire = ''): string
+    {
         $fire = $fire ?: $this->fire;
         $run = ($this->fire === 'write');
         $saver = new AA\IO\Saver($this->grabber, null, $this->destination_slice_id, 'by_grabber', 'by_grabber');
@@ -103,16 +106,16 @@ class Feed {
         $importer = new AA\IO\Importer($saver, $run, $name);
 
         $ret = '';
-        switch($fire) {
+        switch ($fire) {
             case 'test': // do not use toexecute queue
                 $ret = $importer->toexecutelater();
                 break;
             case 'write':
-                (new Toexecute)->laterOnce($importer, [], $importer->getId(), 10); // write   - feed and write the items to the database
+                (new Toexecute())->laterOnce($importer, [], $importer->getId(), 10); // write   - feed and write the items to the database
                 $ret = 'queued';
                 break;
             case 'display':
-                $ret = implode('',$importer->getSources());
+                $ret = implode('', $importer->getSources());
         }
         return $ret;
     }
@@ -153,10 +156,11 @@ class Feed {
 }
 
 
-class FeedUtil {
+class FeedUtil
+{
     public const CONTENT_FORMATS           = [
         "http://www.isi.edu/in-notes/iana/assignments/media-types/text/html"  => self::HTML,
-        "http://www.isi.edu/in-notes/iana/assignments/media-types/text/plain" => self::PLAIN
+        "http://www.isi.edu/in-notes/iana/assignments/media-types/text/plain" => self::PLAIN,
     ];
 
     // server module's error message
@@ -205,7 +209,8 @@ class FeedUtil {
      * @param $d
      * @return string
      */
-    public static function http_fetch($url, $d = null): string {
+    public static function http_fetch($url, $d = null): string
+    {
         if (isset($d)) {
             $param = [];
             foreach ($d as $k => $v) {
@@ -241,8 +246,8 @@ class FeedUtil {
     {
 
         // we have set mapping for this category
-        $ext_category_id = ((!$all_categories && isset($ext_categs[$remote_cat_id])) ?
-            $remote_cat_id : self::UNPACKED_AA_OTHER_CATEGOR);
+        $ext_category_id = ((!$all_categories && isset($ext_categs[$remote_cat_id]))
+            ? $remote_cat_id : self::UNPACKED_AA_OTHER_CATEGOR);
 
         $local_cat_id = $ext_categs[$ext_category_id]['target_category_id'];
         $approved     = $ext_categs[$ext_category_id]['approved'];
@@ -265,7 +270,8 @@ class FeedUtil {
      *                    target_category_id, approved)
      * @param $l_categs - local categories array [id] => (name, value, parent_id)
      */
-    public static function translateCategories($cat_field_id, &$item, $ext_categs, $l_categs) {
+    public static function translateCategories($cat_field_id, &$item, $ext_categs, $l_categs)
+    {
 
         $return_approved = null;
 
@@ -552,7 +558,7 @@ class FeedUtil {
                 "value"              => $db->f('category'),
                 "name"               => $db->f('category_name'),
                 "approved"           => $db->f('approved'),
-                "target_category_id" => unpack_id($db->f('target_category_id'))
+                "target_category_id" => unpack_id($db->f('target_category_id')),
             ];
         }
         freeDB($db);
@@ -561,7 +567,7 @@ class FeedUtil {
                 "value"              => 'AA_Other_Categor',
                 "name"               => _m('Other categories'),
                 "approved"           => false,
-                "target_category_id" => ''  // default is umpapped, not UNPACKED_AA_THE_SAME_CATE
+                "target_category_id" => '',  // default is umpapped, not UNPACKED_AA_THE_SAME_CATE
             ];
         }
         return $ext_categs;
@@ -573,7 +579,8 @@ class FeedUtil {
      * @param $ext_categs (by link)
      * @return bool
      */
-    public static function UseAllCategoriesOption($ext_categs): bool {
+    public static function UseAllCategoriesOption($ext_categs): bool
+    {
         foreach ($ext_categs as $k => $v) {
             if ($v['target_category_id'] && $k != self::UNPACKED_AA_OTHER_CATEGOR) {
                 return false;
@@ -599,23 +606,23 @@ class FeedUtil {
         $db->query("SELECT * FROM feedmap WHERE from_slice_id=" . xpack_id($r_slice_id) . " AND to_slice_id=" . xpack_id($l_slice_id) . " ORDER BY from_field_name");
         while ($db->next_record()) {
             switch ($f = $db->f('flag')) {
-                case FEEDMAP_FLAG_EXTMAP :
+                case FEEDMAP_FLAG_EXTMAP:
                 case FEEDMAP_FLAG_MAP:
                     $v          = $db->f('from_field_id');
                     $map_to[$v] = $db->f('from_field_name');
                     break;
                 case FEEDMAP_FLAG_JOIN:
                 case FEEDMAP_FLAG_RSS:
-                case FEEDMAP_FLAG_VALUE :
+                case FEEDMAP_FLAG_VALUE:
                     $v = $db->f('value');
                     break;
-                case FEEDMAP_FLAG_EMPTY :
+                case FEEDMAP_FLAG_EMPTY:
                     $v = "";
                     break;
             }
             $map_from[$db->f('to_field_id')] = ["feedmap_flag"    => $f,
-                                                "value"           => $v,
-                                                "from_field_name" => $db->f('from_field_name')
+                "value"           => $v,
+                "from_field_name" => $db->f('from_field_name'),
             ];
         }
         freeDB($db);
@@ -654,7 +661,8 @@ class FeedUtil {
      * @return string identifier of remote slice created from server_url
      * @todo rewrite the concept to not rely on server_url
      */
-    public static function rssid2rssfeed(int $rss_id): string {
+    public static function rssid2rssfeed(int $rss_id): string
+    {
         $server_url = DB_AA::select1('server_url', 'SELECT `server_url` FROM `rssfeeds`', [['feed_id',$rss_id,'i']]);
         return $server_url ? self::attr2id($server_url) : '';
     }
@@ -682,7 +690,7 @@ class FeedUtil {
             $cat_ids[unpack_id($db->f('id'))] = [
                 "name"      => $db->f('name'),
                 "value"     => $db->f('value'),
-                "parent_id" => $db->f('class')
+                "parent_id" => $db->f('class'),
             ];
         }
         freeDB($db);
@@ -694,7 +702,8 @@ class FeedUtil {
      * @param $value
      * @param $parent_id
      */
-    public static function MapDefaultCategory(&$categories, $value, $parent_id) {
+    public static function MapDefaultCategory(&$categories, $value, $parent_id)
+    {
         // try to find the same category
         foreach ($categories as $to_id => $v) {
             if ($v['value'] == $value) {
@@ -716,7 +725,8 @@ class FeedUtil {
      * @param $t
      * @return string
      */
-    public static function unixstamp_to_iso8601($t): string {
+    public static function unixstamp_to_iso8601($t): string
+    {
         $tz = date("Z", $t) / 60;
         $tm = $tz % 60;
         $tz /= 60;
@@ -732,34 +742,36 @@ class FeedUtil {
     }
 }
 
-class LastEditList {
-    var $lastlist = null;
+class LastEditList
+{
+    public $lastlist = null;
 
     /** return list of items with last_edit date (id-last_edit,) used for 'exact'
      *  feeding between slices
      *  @param $conds
      *  @param $slice (by link)
      */
-    function setFromSlice($conds, $slice): void
+    public function setFromSlice($conds, $slice): void
     {
         ParseEasyConds($conds);
         $zids    = QueryZids([$slice->getId()], $conds, '', 'ALL');
         $format  = [
             'odd_row_format' => '{id..............}-{last_edit.......}',
-            'row_delimiter'  => ','
+            'row_delimiter'  => ',',
         ];
         $this->lastlist = (new itemview($format, null, $zids))->setContentFunct(['AA\IO\LastEditList::getContent', []])->get_output("view");
     }
 
     /** used as parameter for $itemview in generating item_id-lastedit pair */
-    static function getContent(zids $zids, $settings): array {
+    public static function getContent(zids $zids, $settings): array
+    {
         return GetItemContentMinimal($zids, ['id', 'last_edit']);
     }
 
     /** setList function
      * @param $list
      */
-    function setList($list): void
+    public function setList($list): void
     {
         $this->lastlist = $list;
     }
@@ -767,22 +779,24 @@ class LastEditList {
     /** printList function
      *
      */
-    function printList(): void
-    {        // print() can't be name of the method :-( -
+    public function printList(): void
+    {
+        // print() can't be name of the method :-( -
         echo $this->lastlist;     // parse error, unexpected T_PRINT, expecting
     }                             // T_STRING (php 4.3.10),
     // so I postfixed all functions with *List :-(
     /** getList function
      *
      */
-    function getList() {
+    public function getList()
+    {
         return $this->lastlist;
     }
 
     /** getPairs function
      *
      */
-    function getPairs(): array
+    public function getPairs(): array
     {
         $ret = [];
         foreach (explode(',', $this->lastlist) as $pair) {

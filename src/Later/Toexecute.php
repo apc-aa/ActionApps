@@ -1,4 +1,5 @@
 <?php
+
 /**
  *
  * PHP version 7.2+
@@ -58,10 +59,11 @@ use Cvarset;
  *  We do not want to allow users to execute any method of any object just
  *  by inserting some data in the database.
  */
-class Toexecute {
+class Toexecute
+{
     use ReportTrait;
 
-    const TOEXECUTE_USER_TASK_TIME =  2000000000;
+    public const TOEXECUTE_USER_TASK_TIME =  2000000000;
 
     /** later function
      *  Stores the object and params to the database for later execution.
@@ -80,16 +82,16 @@ class Toexecute {
      *           so we need to cancel all older "recount" tasks, since it will
      *           be doubled in the queue (we call cancel_all() method for it)
      */
-    function later($object, $params = [], $selector = '', $priority = 100, $time = null): string|true
+    public function later($object, $params = [], $selector = '', $priority = 100, $time = null): string|true
     {
         $varset = new Cvarset([
             ['created', time()],
-            ['execute_after', ((int)$time < time() ? time() : $time)],  // task for user queue uses TOEXECUTE_USER_TASK_TIME
+            ['execute_after', ((int) $time < time() ? time() : $time)],  // task for user queue uses TOEXECUTE_USER_TASK_TIME
             ['aa_user', AuthGetUid()],
             ['priority', $priority],
             ['selector', ($selector ?: get_class_name($object, true))],
             ['object', serialize($object)],
-            ['params', serialize($params)]
+            ['params', serialize($params)],
         ]);
 
         // store the task in the queue (toexecute table)
@@ -111,7 +113,7 @@ class Toexecute {
      * @param int|null $time
      * @param bool     $just_once - this task (based on selector) is (re)planed only once in script execution (AA_Mysqlauth_Maintain we want to schedule once - not on every deleted item))
      */
-    function laterOnce(object $object, array $params, string $selector, int $priority = 100, ?int $time = null, bool $just_once=false): void
+    public function laterOnce(object $object, array $params, string $selector, int $priority = 100, ?int $time = null, bool $just_once = false): void
     {
         static $scheduled = [];  // selector => true for tasks where $just_once is true
 
@@ -122,11 +124,11 @@ class Toexecute {
             $scheduled[$selector] = true;
         }
 
-        $time = (int)$time < time() ? time() : $time; // the same as in later()
+        $time = (int) $time < time() ? time() : $time; // the same as in later()
         $task = self::scheduledTask($selector);  // ['id' => $id, 'time' => $time]
         if (!$task['id']) {
             $this->later($object, $params, $selector, $priority, $time);
-        } elseif ( $task['time'] > $time) {
+        } elseif ($task['time'] > $time) {
             // we need it run earlier
             DB_AA::update('toexecute', [['execute_after' => $time]], [['id', $task['id'], 'i']]);
         }
@@ -135,9 +137,10 @@ class Toexecute {
     /** @returns array scheduled ['id'=>.., 'time'=>..] or ['id'=>false, 'time'=>false]
      *  @usage  ['id' => $id, 'time' => $time] = self::scheduledTask($selector);
      */
-    static function scheduledTask($selector): array {
+    public static function scheduledTask($selector): array
+    {
         $ret = DB_AA::select1([], "SELECT `id`,`execute_after` FROM `toexecute`", [['selector', $selector], ['priority', 0, '>']]);
-        return $ret ?: ['id'=>false, 'time'=>false];
+        return $ret ?: ['id' => false, 'time' => false];
     }
 
 
@@ -149,7 +152,7 @@ class Toexecute {
      *  toexecute table (which also means, that such task are never autoexecuted
      *  from the cron)
      */
-    function userQueue($object, $params, $selector, $priority = 100): void
+    public function userQueue($object, $params, $selector, $priority = 100): void
     {
         $this->later($object, $params, $selector, $priority, self::TOEXECUTE_USER_TASK_TIME);
     }
@@ -157,19 +160,19 @@ class Toexecute {
     /** cancel_all function
      * @param $selector
      */
-    function cancel_all($selector): void
+    public function cancel_all($selector): void
     {
-        $varset = new Cvarset;
+        $varset = new Cvarset();
         $varset->doDeleteWhere('toexecute', "selector='" . quote($selector) . "'");
     }
 
     /** execute function - function called periodically from /misc/toexecute.php
      */
-    function execute(): void
+    public function execute(): void
     {
 
         // MoreTimeLimit();  // try to set 5 minutes to run
-        $allowed_time = (float)(defined('TOEXECUTE_ALLOWED_TIME') ? TOEXECUTE_ALLOWED_TIME : ((ini_get('max_execution_time') > 0) ? ini_get('max_execution_time') - 9 : 16.0));
+        $allowed_time = (float) (defined('TOEXECUTE_ALLOWED_TIME') ? TOEXECUTE_ALLOWED_TIME : ((ini_get('max_execution_time') > 0) ? ini_get('max_execution_time') - 9 : 16.0));
 
         /** there we store the time needed for last task of given type
          *  (selector) - this value we use in next round to determine, if we can
@@ -200,7 +203,7 @@ class Toexecute {
     /** Executes as many tasks from the $tasks array as time allows
      * @param $tasks - array of ids of tasks to execute
      */
-    function executeTask($tasks): void
+    public function executeTask($tasks): void
     {
 
         if (!is_array($tasks) || !count($tasks)) {
@@ -208,7 +211,7 @@ class Toexecute {
         }
 
         set_time_limit(360);   // try to set 360 seconds to run
-        $allowed_time = (float)(defined('TOEXECUTE_ALLOWED_TIME') ? TOEXECUTE_ALLOWED_TIME : ((ini_get('max_execution_time') > 0) ? ini_get('max_execution_time') - 9 : 16.0));
+        $allowed_time = (float) (defined('TOEXECUTE_ALLOWED_TIME') ? TOEXECUTE_ALLOWED_TIME : ((ini_get('max_execution_time') > 0) ? ini_get('max_execution_time') - 9 : 16.0));
         /** there we store the time needed for last task of given type
          *  (selector) - this value we use in next round to determine, if we can
          *  run one more such task or if we left it for next time */
@@ -227,12 +230,13 @@ class Toexecute {
                 break;
             }
         }
-        AA_Log::write('TOEXECUTE', 'AA\Later\Toexecute', "finished $count/$started in " . sprintf('%.3g',microtime(true) - $execute_start) . "/$allowed_time");
+        AA_Log::write('TOEXECUTE', 'AA\Later\Toexecute', "finished $count/$started in " . sprintf('%.3g', microtime(true) - $execute_start) . "/$allowed_time");
     }
 
-    function _exeOne($task, &$execute_times, $execute_start, $allowed_time): int {
+    public function _exeOne($task, &$execute_times, $execute_start, $allowed_time): int
+    {
         $task_type = get_if($task['selector'], 'aa_unspecified');
-        $expected_time = (float)get_if($execute_times[$task_type], 1.0);  // default time expected for one task is 1 second
+        $expected_time = (float) get_if($execute_times[$task_type], 1.0);  // default time expected for one task is 1 second
         $task_start = microtime(true);
 
         // can we run next task? Does it (most probably) fit in allowed_time?
@@ -254,17 +258,17 @@ class Toexecute {
         } else {
             $this->message('Toexecute:execute - unserialize err:' . $task['object']);
             $retcode = 'no execute, removed from queue';
-            $selector = 'no object:'.$task['object'];
+            $selector = 'no object:' . $task['object'];
         }
 
         // Task is done - remove it from queue
         $varset->doDelete('toexecute');
         $execute_times[$task_type] = microtime(true) - $task_start;
 
-        $mem_usage = sprintf('%.3g',(memory_get_usage() / (1024*1024)));
-        $mem_peak  = sprintf('%.3g',(memory_get_peak_usage() / (1024*1024)));
+        $mem_usage = sprintf('%.3g', (memory_get_usage() / (1024 * 1024)));
+        $mem_peak  = sprintf('%.3g', (memory_get_peak_usage() / (1024 * 1024)));
 
-        AA_Log::write('TOEXECUTE', $selector, new AA_Logentry_X(["time"=>sprintf('%.3g', $execute_times[$task_type]), "mem_usage"=>$mem_usage, 'mem_peak'=>$mem_peak, 'ret'=>$retcode, 'params'=>(string)$task['params']]));
+        AA_Log::write('TOEXECUTE', $selector, new AA_Logentry_X(["time" => sprintf('%.3g', $execute_times[$task_type]), "mem_usage" => $mem_usage, 'mem_peak' => $mem_peak, 'ret' => $retcode, 'params' => (string) $task['params']]));
         return 1;
     }
 
@@ -275,15 +279,12 @@ class Toexecute {
      *
      * @return string
      */
-    function execute_one($object, $params): string
+    public function execute_one($object, $params): string
     {
         if (!is_object($object) || is_a($object, '__PHP_Incomplete_Class', false)) {
             return 'Toexecute:execute_one: No object: ' . serialize($object); // Error
         }
         set_time_limit(max(30, ini_get('max_execution_time')));   // 30 seconds (at least) for each task
-        return $object->toexecutelater((array)$params);
+        return $object->toexecutelater((array) $params);
     }
 } // end of toexecute class
-
-
-

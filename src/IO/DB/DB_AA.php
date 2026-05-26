@@ -1,6 +1,5 @@
 <?php
 
-
 namespace AA\IO\DB;
 
 use AA;
@@ -13,11 +12,12 @@ final class DB_AA
     private function __construct(array $connection) {}
 
     /** just for debug purposes */
-     public static function getDbType(): string {
-         $db = getDB();
-         $type = $db->getType();
-         freeDB($db);
-         return $type;
+    public static function getDbType(): string
+    {
+        $db = getDB();
+        $type = $db->getType();
+        freeDB($db);
+        return $type;
     }
 
     /**
@@ -32,12 +32,13 @@ final class DB_AA
      * @param array $order
      * @param int $row
      */
-    public static function select1($column, $query, $where = [], $order = [], int $row=1) {
+    public static function select1($column, $query, $where = [], $order = [], int $row = 1)
+    {
         $db = getDB();
         $query .= $where ? ' ' . self::makeWhere($where) : '';
         $query .= $order ? ' ' . self::makeOrder($order) : '';
 
-        $offset = ($row>1) ? (($row-1).',') : '';
+        $offset = ($row > 1) ? (($row - 1) . ',') : '';
 
         // AA::$debug & 8 && AA::$dbg->log("$query LIMIT $offset 1");
 
@@ -51,7 +52,7 @@ final class DB_AA
             } else {
                 $key = key($column);
                 $val = array_intersect_key($db->record(), array_flip($column));
-                $ret = ctype_digit((string)$key) ? $val : [$db->record($key) => $val];
+                $ret = ctype_digit((string) $key) ? $val : [$db->record($key) => $val];
             }
         }
         freeDB($db);
@@ -82,12 +83,13 @@ final class DB_AA
      *
      * @return array
      */
-    static function select($column, $query, $where = null, $order = null, ?array $group = null, int $rows=0): array {
+    public static function select($column, $query, $where = null, $order = null, ?array $group = null, int $rows = 0): array
+    {
         $db = getDB();
         $query .= is_array($where) ? ' ' . self::makeWhere($where) : '';
-        $query .= $group           ? ' ' . self::makeGroup($group) : '';
+        $query .= $group ? ' ' . self::makeGroup($group) : '';
         $query .= is_array($order) ? ' ' . self::makeOrder($order) : '';
-        $query .= ($rows>0)        ? ' LIMIT 0,'.$rows              : '';
+        $query .= ($rows > 0) ? ' LIMIT 0,' . $rows : '';
 
         $db->query($query);
 
@@ -110,7 +112,7 @@ final class DB_AA
         } else {
             $key = key($column);
             $values = reset($column);
-            if (ctype_digit((string)$key) || empty($key)) {
+            if (ctype_digit((string) $key) || empty($key)) {
                 if (!is_array($values)) {
                     while ($db->next_record()) {
                         $ret[] = $db->record($values);
@@ -162,8 +164,9 @@ final class DB_AA
      *
      * @return int
      */
-    public static function count(string|array $table, array $where = null): int {
-        return self::select1('cnt', "SELECT count(*) as cnt FROM ". self::makeTables($table), $where);
+    public static function count(string|array $table, array $where = null): int
+    {
+        return self::select1('cnt', "SELECT count(*) as cnt FROM " . self::makeTables($table), $where);
     }
 
 
@@ -223,17 +226,18 @@ final class DB_AA
      * @param string[] $varlist
      * @return string
      */
-    protected static function makeCols(array $varlist): string {
+    protected static function makeCols(array $varlist): string
+    {
         $delim = '';
         $cols  = '';
         foreach ($varlist as $vardef) {
             // $vardef is array(varname, value, type)
             [$name, $value, $type] = $vardef;
             $part  = match ($type) {
-                "i" => (int)$value,
+                "i" => (int) $value,
                 "l" => xpack_id($value),
                 "q" => "'$value'",
-                default => "'".addslashes($value)."'",
+                default => "'" . addslashes($value) . "'",
             };
             $cols .= "$delim $name = $part";
             $delim = " ,";
@@ -249,7 +253,8 @@ final class DB_AA
      *
      * @return false|int - number of affected rows or false on a problem
      */
-    public static function update(string $table, array $varlist, array $where) {
+    public static function update(string $table, array $varlist, array $where)
+    {
         $cols = self::makeCols($varlist);
         $wh   = self::makeWhere($where);
         $ret  = false;
@@ -269,16 +274,18 @@ final class DB_AA
     /** used as: DB_AA::test('perms', [['object_type', $object_type], ['objectid', $objectID], ['flag', REL_FLAG_FEED, 'i']]);
      *           DB_AA::test(['content','item'], [['content.item_id', 'item.id', 'j'],['item.slice_id', $slice_id, 'l']]);
      */
-    public static function test(string|array $table, $where): bool {
-        return (false !== self::select1('', "SELECT " . ($where[0][0]) . " FROM ". self::makeTables($table), $where));
+    public static function test(string|array $table, $where): bool
+    {
+        return (false !== self::select1('', "SELECT " . ($where[0][0]) . " FROM " . self::makeTables($table), $where));
     }
 
-    private static function makeTables(string|array $tables): string {
+    private static function makeTables(string|array $tables): string
+    {
         if (is_array($tables)) {
             // information_schema.columns should not be backticked
-            return implode(',', array_map(static fn($t) => str_contains($t,'.') ? $t : self::quoteIdentifier($t), $tables));
+            return implode(',', array_map(static fn($t) => str_contains($t, '.') ? $t : self::quoteIdentifier($t), $tables));
         }
-        return str_contains($tables,'.') ? $tables : self::quoteIdentifier($tables);
+        return str_contains($tables, '.') ? $tables : self::quoteIdentifier($tables);
     }
 
     /** makeWhere function
@@ -317,12 +324,12 @@ final class DB_AA
         foreach ($varlist as $vardef) {
             // $vardef is array(varname, type, value)
             [$name, $value, $type] = $vardef;
-            $type = (string)$type;   // just normalize to RLIKE and LIKE (in this context we do not use expression parsing as we do for RLIKE in public search)
+            $type = (string) $type;   // just normalize to RLIKE and LIKE (in this context we do not use expression parsing as we do for RLIKE in public search)
             if (in_array($type, ['>', '<', '<=', '>=', '<>', 'i<>', '!='])) {
-                $operator = $type==='i<>' ? '<>' : $type;
+                $operator = $type === 'i<>' ? '<>' : $type;
                 $type = 'i';
             } elseif ($type === 'LIKE' || $type === 'NOT LIKE') {
-                $where[] = "$name $type '". addcslashes($value,"'") . "'";    // see field LIKE '\_%'
+                $where[] = "$name $type '" . addcslashes($value, "'") . "'";    // see field LIKE '\_%'
                 continue;
             } elseif ($type === 'RLIKE') {
                 $where[] = "$name LIKE " . qquote($value . '%');
@@ -332,7 +339,7 @@ final class DB_AA
                     // join conditions by OR
                     $where[] = '(' . implode(' OR ', array_map(fn($v) => "$name LIKE '" . addcslashes(quote($v), "_%") . "%'", $value)) . ')';
                 } else {
-                    $where[] = "$name LIKE '". addcslashes(quote($value),"_%") ."%'";
+                    $where[] = "$name LIKE '" . addcslashes(quote($value), "_%") . "%'";
                 }
                 continue;
             } elseif ($type === 'NOT BEGIN') {
@@ -340,11 +347,11 @@ final class DB_AA
                     // join conditions by OR
                     $where[] = '(' . implode(' AND ', array_map(fn($v) => "$name NOT LIKE '" . addcslashes(quote($v), "_%") . "%'", $value)) . ')';
                 } else {
-                    $where[] = "$name NOT LIKE '". addcslashes(quote($value),"_%") ."%'";
+                    $where[] = "$name NOT LIKE '" . addcslashes(quote($value), "_%") . "%'";
                 }
                 continue;
             } elseif ($type === 'CONTAIN') {
-                $where[] = "$name LIKE '%". addcslashes(quote($value),"_%") ."%'";
+                $where[] = "$name LIKE '%" . addcslashes(quote($value), "_%") . "%'";
                 continue;
             } elseif ($type === 's<>' || $type === 's!=') {
                 if (is_array($value)) {
@@ -381,7 +388,7 @@ final class DB_AA
             if (!is_array($value)) {
                 switch ($type) {
                     case "i":
-                        $where[] = "$name $operator " . (int)$value;
+                        $where[] = "$name $operator " . (int) $value;
                         break;
                     case "l":
                         $where[] = "$name = " . xpack_id($value);
@@ -390,11 +397,11 @@ final class DB_AA
                         $where[] = "$name = " . quote($value);
                         break;
                     case "set":
-                        $value = (int)$value;
+                        $value = (int) $value;
                         $where[] = "(($name & $value) = $value)";
                         break;
                     case "unset":
-                        $value = (int)$value;
+                        $value = (int) $value;
                         $where[] = "(($name & $value) = 0)";
                         break;
                     default:
@@ -431,7 +438,7 @@ final class DB_AA
         $order = [];
         foreach ($orderarr as $sort) {
             $order[] = match (substr($sort, -1)) {
-                '-' => substr($sort, 0, -1).' DESC',
+                '-' => substr($sort, 0, -1) . ' DESC',
                 '+' => substr($sort, 0, -1),
                 default => $sort,
             };
@@ -443,13 +450,15 @@ final class DB_AA
      * @param array $group  fields - ['id','time']
      * @return string
      */
-    protected static function makeGroup(array $group): string {
+    protected static function makeGroup(array $group): string
+    {
         return 'GROUP BY ' . implode(',', $group);
     }
 
-    public static function quoteIdentifier(string $str): string {
+    public static function quoteIdentifier(string $str): string
+    {
         $char = in_array(DB_TYPE, ['db_mysql','db_mysqli','db_pdo:mysql']) ? '`' : '"';   // in original was used just '"' character (which is SQL standard and could be OK), but using PDO with mysql needs '`' character
-        return $char. implode("$char.$char", explode(".", $str)) . $char;
+        return $char . implode("$char.$char", explode(".", $str)) . $char;
     }
 
 }

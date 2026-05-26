@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: honzama
@@ -7,6 +8,7 @@
  */
 
 namespace AA\Widget;
+
 use AA;
 use AA\FormArray;
 use AA_Content;
@@ -39,28 +41,34 @@ class MflWidget extends Widget
     }
 
     /** @inheritDoc */
-    public static function description(): string { return ''; }
+    public static function description(): string
+    {
+        return '';
+    }
 
     // inherited from \AA\Widget\Widget
-    protected function requireLibs($aa_property, $winfo): array {
+    protected function requireLibs($aa_property, $winfo): array
+    {
         return ['codemirror@5'];
     }
 
     /** script to run after the page DOM is loaded */
-    protected function requireRun($aa_property, $winfo): string {
+    protected function requireRun($aa_property, $winfo): string
+    {
         $ret = '';
         // are there some textareas not converted to CodeMirror?
         if ($this->ids_4_editor) {
-           $ret .= "\n  document.querySelectorAll(\"". implode(',',$this->ids_4_editor) .'").forEach( function(el) { CodeMirror.fromTextArea(el, { lineWrapping:true, matchBrackets: true, matchTags: true, viewportMargin: 10000, mode: "htmlmixed" });});';
+            $ret .= "\n  document.querySelectorAll(\"" . implode(',', $this->ids_4_editor) . '").forEach( function(el) { CodeMirror.fromTextArea(el, { lineWrapping:true, matchBrackets: true, matchTags: true, viewportMargin: 10000, mode: "htmlmixed" });});';
 
-           // clean the list - all textareas are converted
-           $this->ids_4_editor = [];
+            // clean the list - all textareas are converted
+            $this->ids_4_editor = [];
         }
         return $ret;
     }
 
     /** returns if the widget handles multivalue or just single value   */
-    public static function multiple(): bool {
+    public static function multiple(): bool
+    {
         return true;
     }
 
@@ -68,7 +76,8 @@ class MflWidget extends Widget
      *  Used parameter format (in fields.input_show_func table)
      * @return array
      */
-    public static function getClassProperties(): array {
+    public static function getClassProperties(): array
+    {
         $ret = Widget::propertiesShop(['show_buttons_txt', 'row_count', 'max_characters', 'width', 'rows']);
         $ret['rows']->setHelp(_m("if 1 (default), textfield used. for rows>1 textareas are used"))->setExample(1);
         return $ret;
@@ -84,7 +93,8 @@ class MflWidget extends Widget
      *  @return array
      *  @throws Exception
      */
-    function _getRawHtml(AA_Property $aa_property, AA_Content $content, string $type = 'normal'): array {
+    public function _getRawHtml(AA_Property $aa_property, AA_Content $content, string $type = 'normal'): array
+    {
         $base_name = FormArray::getName4Form($aa_property->getId(), $content, $this->item_index);
         $base_name_add = $base_name . '[mfl]';
 
@@ -92,8 +102,8 @@ class MflWidget extends Widget
         // $widget_add    = ($type === 'live') ? " class=\"live\" onkeypress=\"AA_StateChange('$base_id', 'dirty')\" onchange=\"AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\"" : '';
         // $widget_add2   = ($type === 'live') ? '<img width=16 height=16 title="'._m('To save changes click here or outside the field.').'" alt="'._m('Save').'" class="'.$base_id.'ico" src="'. AA_INSTAL_PATH.'images/px.gif" style="position:absolute; right:0; top:0;">' : '';
 
-        $row_count = (int)$this->getProperty('row_count', 2);
-        $def_rows = (int)$this->getProperty('rows', 1);
+        $row_count = (int) $this->getProperty('row_count', 2);
+        $def_rows = (int) $this->getProperty('rows', 1);
         //$show_buttons  = $this->getProperty('show_buttons', 'MDAC');
 
         $inputtype = ($def_rows > 1) ? 'textarea' : 'textfield';
@@ -119,11 +129,11 @@ class MflWidget extends Widget
             }
             $attrs['maxlength'] = get_if($this->getProperty('max_characters'), $attrs['maxlength'], 255);
             if (!$attrs['size']) {
-                $attrs['class'] = $attrs['class'] ? $attrs['class']. ' aa-w-full' : 'aa-w-full'; // $attrs['style'] = 'width:95%';
+                $attrs['class'] = $attrs['class'] ? $attrs['class'] . ' aa-w-full' : 'aa-w-full'; // $attrs['style'] = 'width:95%';
             }
         }
 
-        AA::$debug&2 && AA::$dbg->log('mfl', $aa_property, $attrs, $this->getProperty('width'));
+        AA::$debug & 2 && AA::$dbg->log('mfl', $aa_property, $attrs, $this->getProperty('width'));
 
         $attr_string = htmlattr($attrs);
 
@@ -150,7 +160,7 @@ class MflWidget extends Widget
                 $widget .= "<div><input $attr_string name=\"$input_name\" id=\"$input_id\" value=\"$input_value\" $required $widget_onchange>$widget_add2</div>";  // do not insert \n here - javascript for sorting tables sorttable do not work then
             }
             $widget_add2 = '';
-            $widget_onchange = ($type === 'live') ? "onchange=\"document.getElementById('".FormArray::formName2Id($base_name_add . "[0]")."').onchange()\"" : '';
+            $widget_onchange = ($type === 'live') ? "onchange=\"document.getElementById('" . FormArray::formName2Id($base_name_add . "[0]") . "').onchange()\"" : '';
         }
         $widget = "<div id=\"allrows$base_id\">$widget</div>";
         $img = GetAAImage('icon_new.gif', _m('new'), 17, 17);
@@ -183,8 +193,8 @@ class MflWidget extends Widget
 
         $fld_value_arr = [];
 
-        foreach ((array)$data4field as $key => $value) {
-            if (ctype_digit((string)$key) && strlen($value)) {
+        foreach ((array) $data4field as $key => $value) {
+            if (ctype_digit((string) $key) && strlen($value)) {
                 $fld_value_arr[$key] = ['value' => $value, 'flag' => $flag];
             }
         }

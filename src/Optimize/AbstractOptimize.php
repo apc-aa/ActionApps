@@ -9,7 +9,8 @@ use AA_Property;
 use AA_Value;
 use RuntimeException;
 
-abstract class AbstractOptimize implements NamedInterface {
+abstract class AbstractOptimize implements NamedInterface
+{
     use ReportTrait;
 
     /** @var array used in the manager to store test results in order we can use it in alias _#RESULT__ */
@@ -19,10 +20,16 @@ abstract class AbstractOptimize implements NamedInterface {
     protected $db;
 
     /** \AA\Util\NamedInterface function */
-    public static function name(): string { return ''; }
+    public static function name(): string
+    {
+        return '';
+    }
 
     /** \AA\Util\NamedInterface function */
-    public static function description(): string { return ''; }
+    public static function description(): string
+    {
+        return '';
+    }
 
     /** true for the actions which should be performed from time to time on every AA
      *  false for the specific tasks which you run on specific cases - like converting character encodings, ...
@@ -30,39 +37,61 @@ abstract class AbstractOptimize implements NamedInterface {
     // public static function isOptimizing(): bool { return true; }  // not used - better to use isType() here
 
     /** @return bool - true if everything is OK - no action needed */
-    public function test(): bool { return true; }
+    public function test(): bool
+    {
+        return true;
+    }
 
     /** @return bool - true if everything is OK */
-    public function repair(): bool { return true; }
+    public function repair(): bool
+    {
+        return true;
+    }
 
     /** Reverts the changes made by repair() method
      *  Normally it should not be needed to revert the changes - used mainly for optional features like AddDurationLog
      * @return bool - true if everything is OK
      */
-    public function revert(): bool { return true; }
+    public function revert(): bool
+    {
+        return true;
+    }
 
     /** @return bool - true if everything is OK - no action needed */
-    public function test4modules(array $modules): bool { return true; }   // test just for specified modules
+    public function test4modules(array $modules): bool
+    {
+        return true;
+    }   // test just for specified modules
 
-    public function repair4modules(array $modules): bool { return true; } // repair just for specified modules
+    public function repair4modules(array $modules): bool
+    {
+        return true;
+    } // repair just for specified modules
 
     /**
      * @param  array  $ids
      *
      * @return  false|string false - err, string - very short report (to be printed on button) - like number of fixed items
      */
-    public function repair4ids(array $ids): false|string { return false; } // repair just for specified ids - allows repair4ids - fix one after another
+    public function repair4ids(array $ids): false|string
+    {
+        return false;
+    } // repair just for specified ids - allows repair4ids - fix one after another
 
     /** implemented actions within this class
      * @return string[]
      */
-    public static function actions(): array { return ['test', 'repair']; }  // full set is ['test', 'repair', 'revert', 'test4modules', 'repair4modules', 'repair4ids']
+    public static function actions(): array
+    {
+        return ['test', 'repair'];
+    }  // full set is ['test', 'repair', 'revert', 'test4modules', 'repair4modules', 'repair4ids']
 
     /** is action present in this class
      * @param string $action
      * @return bool
      */
-    public function hasAction(string $action): bool {
+    public function hasAction(string $action): bool
+    {
         return in_array($action, static::actions());
     }
 
@@ -73,40 +102,47 @@ abstract class AbstractOptimize implements NamedInterface {
      *    add_field   - just tag the add field optimizers
      *    private_fix - private_fix for site specific repairs - probably not useful for others
      */
-    public static function types(): array { return []; }      // full set is ['sql_update','add_field', 'private_fix']  - private_fix for site specific repairs - probably not useful for others
+    public static function types(): array
+    {
+        return [];
+    }      // full set is ['sql_update','add_field', 'private_fix']  - private_fix for site specific repairs - probably not useful for others
 
     /** the optimizers are ordered by priority when executed in chain (like for sql_update) */
-    public static function priority(): int { return 100; }
+    public static function priority(): int
+    {
+        return 100;
+    }
 
 
     /** used for generating aliases and content for Manager
      * @return array
      */
-    public static function getClassProperties(): array {
+    public static function getClassProperties(): array
+    {
         //                                          id              name            type     multi  persist validator, required, help, morehelp, example
         return [
-                 'aa_id'       => new AA_Property( 'aa_id',       _m("ID"),          'string', false,  false),
-                 'name'        => new AA_Property( 'name',        _m("Name"),        'string', false,  false),
-                 'description' => new AA_Property( 'description', _m("Description"), 'string', false,  false),
-                 'actions'     => new AA_Property( 'actions',     _m("Actions"),     'string', true,  false),
-                 'types'       => new AA_Property( 'types',       _m("Types"),       'string', true,  false),
-                 'priority'    => new AA_Property( 'priority',    _m("Priority"),    'int',    false, false),
-                 'result'      => new AA_Property( 'result',      _m("Result"),      'string', false, false),
-                 'resulttxt'   => new AA_Property( 'resulttxt',   _m("Result text"), 'string', false, false)
-               ];
+            'aa_id'       => new AA_Property('aa_id', _m("ID"), 'string', false, false),
+            'name'        => new AA_Property('name', _m("Name"), 'string', false, false),
+            'description' => new AA_Property('description', _m("Description"), 'string', false, false),
+            'actions'     => new AA_Property('actions', _m("Actions"), 'string', true, false),
+            'types'       => new AA_Property('types', _m("Types"), 'string', true, false),
+            'priority'    => new AA_Property('priority', _m("Priority"), 'int', false, false),
+            'result'      => new AA_Property('result', _m("Result"), 'string', false, false),
+            'resulttxt'   => new AA_Property('resulttxt', _m("Result text"), 'string', false, false),
+        ];
     }
 
     /** function to add content fields to getContent of Component for each type of Components (for Manager)*/
     public static function contentAdd(AA_Content $content): void
     {
-        $content->setAaValue('name',        new AA_Value(static::name()));
+        $content->setAaValue('name', new AA_Value(static::name()));
         $content->setAaValue('description', new AA_Value(static::description()));
-        $content->setAaValue('actions',     new AA_Value(static::actions()));
-        $content->setAaValue('types',       new AA_Value(static::types()));
-        $content->setAaValue('priority',    new AA_Value(static::priority()));
+        $content->setAaValue('actions', new AA_Value(static::actions()));
+        $content->setAaValue('types', new AA_Value(static::types()));
+        $content->setAaValue('priority', new AA_Value(static::priority()));
         $res = self::$action_results[get_class_name(static::class)] ?? '-';
-        $content->setAaValue('result',      new AA_Value(($res==='-') ? '' : ($res ? 'OK' : 'ERR'))); // result is '' when no action was performed, OK or ERR as action result
-        $content->setAaValue('resulttxt',   new AA_Value(self::$action_results_text[get_class_name(static::class)] ?? ''));
+        $content->setAaValue('result', new AA_Value(($res === '-') ? '' : ($res ? 'OK' : 'ERR'))); // result is '' when no action was performed, OK or ERR as action result
+        $content->setAaValue('resulttxt', new AA_Value(self::$action_results_text[get_class_name(static::class)] ?? ''));
     }
 
     /** This function stores global state for all optimizations.
@@ -118,7 +154,8 @@ abstract class AbstractOptimize implements NamedInterface {
      *  Called as AA\Optimize\AA_Optimize::justPrint();
      * @todo convert to static class variable (after migration to PHP5)
      */
-    static function justPrint($state = null) {
+    public static function justPrint($state = null)
+    {
         static $just_print = false;
         if (!is_null($state)) {
             $just_print = $state;
@@ -131,7 +168,8 @@ abstract class AbstractOptimize implements NamedInterface {
      *
      * @throws RuntimeException
      */
-    public function query($SQL): bool {
+    public function query($SQL): bool
+    {
         $this->message(safe($SQL));
         $just_print = self::justPrint();
 

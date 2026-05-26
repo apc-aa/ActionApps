@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: honzama
@@ -7,6 +8,7 @@
  */
 
 namespace AA\Widget;
+
 use AA\FormArray;
 use AA_Content;
 use AA_Property;
@@ -16,7 +18,6 @@ use Exception;
 /** Multiple Checkboxes widget */
 class MchWidget extends Widget
 {
-
     protected $const;
     protected $columns;
     protected $move_right;
@@ -41,7 +42,8 @@ class MchWidget extends Widget
     }
 
     /** returns if the widget handles multivalue or just a single value   */
-    public static function multiple(): bool {
+    public static function multiple(): bool
+    {
         return true;
     }
 
@@ -49,16 +51,18 @@ class MchWidget extends Widget
      *  Used parameter format (in fields.input_show_func table)
      * @return array
      */
-    public static function getClassProperties(): array {
+    public static function getClassProperties(): array
+    {
         return Widget::propertiesShop(['const', 'columns', 'move_right', 'slice_field', 'bin_filter', 'filter_conds', 'sort_by', 'additional_slice_pwd', 'const_arr', 'height', 'other_option']);
     }
 
-    protected function requireRun($aa_property, $winfo): string {
+    protected function requireRun($aa_property, $winfo): string
+    {
         return $this->getProperty('other_option', false) ? RioWidget::generateJS4OtherOption('.aa-tab-mch-other input[type="checkbox"]', '.aa-mch-other-option input[type="checkbox"]') : '';
     }
 
     /** Returns one checkbox tag - Used in removed inputMultiChBox */
-    function getOneChBoxTag($option, $input_name, $input_id, $add = '', bool $other = false): string
+    public function getOneChBoxTag($option, $input_name, $input_id, $add = '', bool $other = false): string
     {
         $class = $other ? ' class="aa-mch-other-option"' : ($option['mis'] ? ' class="aa-missing-option"' : '');
 
@@ -82,7 +86,8 @@ class MchWidget extends Widget
      *  @return array
      *  @throws Exception
      */
-    function _getRawHtml(AA_Property $aa_property, AA_Content $content, string $type = 'normal'): array {
+    public function _getRawHtml(AA_Property $aa_property, AA_Content $content, string $type = 'normal'): array
+    {
         $base_name = FormArray::getName4Form($aa_property->getId(), $content, $this->item_index);
         $base_id = FormArray::formName2Id($base_name);
         $base_name_add = $base_name . '[mch]';
@@ -90,7 +95,7 @@ class MchWidget extends Widget
         $attrs = Widget::stdInputAttrs($type, $base_id);
         $widget_add = htmlattr($attrs);
 
-        $height = (int)$this->getProperty('height');
+        $height = (int) $this->getProperty('height');
         if ($height < 1) {
             $height = 400;
         }
@@ -98,14 +103,14 @@ class MchWidget extends Widget
         $other    = $this->getProperty('other_option', false);
 
         $selected = $content->getAaValue($aa_property->getId());
-        $options = $this->getOptions($selected, $content, (bool)$this->getProperty('use_name', false));
+        $options = $this->getOptions($selected, $content, (bool) $this->getProperty('use_name', false));
         $htmlopt = [];
         for ($i = 0, $ino = count($options); $i < $ino; ++$i) {
             $option = $options[$i];
             $input_name = $base_name_add . "[$i]";
             $input_id = FormArray::formName2Id($input_name);
-            if ($other && ($i === $ino-2) && $options[$ino-1]['mis']) {  // special case - the filled Other option - use mis value added as last option and name from current option
-                $opt = $options[$ino-1];
+            if ($other && ($i === $ino - 2) && $options[$ino - 1]['mis']) {  // special case - the filled Other option - use mis value added as last option and name from current option
+                $opt = $options[$ino - 1];
                 $opt['v'] = $options[$i]['v'];
 
                 $htmlopt[] = $this->getOneChBoxTag($opt, $input_name, $input_id, $widget_add, true);
@@ -149,8 +154,8 @@ class MchWidget extends Widget
         $data4field = $data4field['mch'];
         $fld_value_arr = [];
 
-        foreach ((array)$data4field as $key => $value) {
-            if (ctype_digit((string)$key)) {
+        foreach ((array) $data4field as $key => $value) {
+            if (ctype_digit((string) $key)) {
                 $fld_value_arr[$key] = ['value' => $value, 'flag' => $flag];
             }
         }
@@ -161,7 +166,8 @@ class MchWidget extends Widget
     }
 
     /** @inheritDoc */
-    public static function description(): string {
+    public static function description(): string
+    {
         return ''; // TODO: Implement description() method.
     }
 }

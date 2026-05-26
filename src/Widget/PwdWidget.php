@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: honzama
@@ -7,6 +8,7 @@
  */
 
 namespace AA\Widget;
+
 use AA\FormArray;
 use AA_Content;
 use AA_Property;
@@ -45,7 +47,8 @@ class PwdWidget extends Widget
      *  @return array
      *  @throws Exception
      */
-    function _getRawHtml(AA_Property $aa_property, AA_Content $content, string $type = 'normal'): array {
+    public function _getRawHtml(AA_Property $aa_property, AA_Content $content, string $type = 'normal'): array
+    {
         $base_name = FormArray::getName4Form($aa_property->getId(), $content, $this->item_index);
         $base_id = FormArray::formName2Id($base_name);
 
@@ -61,14 +64,14 @@ class PwdWidget extends Widget
             $input_name = $base_name . "[pwd][old]";
             $input_id = FormArray::formName2Id($input_name);
             $widget .= "\n<input type=\"password\" id=\"$input_id\" name=\"$input_name\" placeholder=\"" . _m('Current password') . "\" $widget_add>";
-//            $widget .= "\n<input type=\"password\" id=\"$input_id\" name=\"$input_name\" placeholder=\"" . _m('Current password') . "\" required  checkValidity=\"function () {alert('no'); this.setCustomValidity('jaj'); return false;}\">";
+            //            $widget .= "\n<input type=\"password\" id=\"$input_id\" name=\"$input_name\" placeholder=\"" . _m('Current password') . "\" required  checkValidity=\"function () {alert('no'); this.setCustomValidity('jaj'); return false;}\">";
         }
         $input_name = $base_name . "[pwd][new1]";
         $input_id = FormArray::formName2Id($input_name);
         $widget .= "\n<input type=\"password\" id=\"$input_id\" name=\"$input_name\" placeholder=\"" . _m('Password') . "\" $required $widget_add>";
         $input_name = $base_name . "[pwd][new2]";
         $input_id = FormArray::formName2Id($input_name);
-//        $widget .= "\n<input type=\"password\" id=\"$input_id\" name=\"$input_name\" placeholder=\"" . _m('Retype New Password') . "\" $required $widget_add checkValidity=\"function () {return false;}\">";
+        //        $widget .= "\n<input type=\"password\" id=\"$input_id\" name=\"$input_name\" placeholder=\"" . _m('Retype New Password') . "\" $required $widget_add checkValidity=\"function () {return false;}\">";
         return ['html' => $widget, 'last_input_name' => $input_name, 'base_name' => $base_name, 'base_id' => $base_id, 'required' => $aa_property->isRequired()];
     }
 
@@ -93,14 +96,16 @@ class PwdWidget extends Widget
      *  Used parameter format (in fields.input_show_func table)
      * @return array
      */
-    public static function getClassProperties(): array {
+    public static function getClassProperties(): array
+    {
         return Widget::propertiesShop(['width', 'change_label', 'retype_label', 'delete_label', 'change_hint', 'retype_hint']);
     }
 
     /**
      * @inheritDoc
      */
-    public static function description(): string {
+    public static function description(): string
+    {
         return ''; // TODO: Implement description() method.
     }
 }

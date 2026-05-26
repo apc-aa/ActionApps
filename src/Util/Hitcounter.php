@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Class ItemContent.
  *
@@ -46,23 +47,26 @@ use zids;
  *          3 - cached + not modified
  *      - there is special Optimize function "Add hit duration log feature" for adding the column (so switching this feature on)
  */
-class AA_Packtime {
+class AA_Packtime
+{
     protected int  $index;
     protected bool $cached;
     protected bool $not_modified;
 
     public function __construct(float $time, bool $cached, bool $not_modified)
     {
-        $this->index        = (new LogarithmIndex(.002,80,63))->getIndex($time);
+        $this->index        = (new LogarithmIndex(.002, 80, 63))->getIndex($time);
         $this->cached       = $cached;
         $this->not_modified = $not_modified;
     }
 
-    public function getAsInt(): int {
-        return $this->index*4 + ($this->cached ? 2 : 0) + ($this->not_modified ? 1 : 0);
+    public function getAsInt(): int
+    {
+        return $this->index * 4 + ($this->cached ? 2 : 0) + ($this->not_modified ? 1 : 0);
     }
 
-    public static function factoryFromInt(int $int): static {
+    public static function factoryFromInt(int $int): static
+    {
         $x = new self(0, ($int & 2) !== 0, ($int & 1) !== 0);
         $x->index = $int >> 2;
         return $x;
@@ -104,7 +108,6 @@ class AA_Packtime {
  */
 class Hitcounter
 {
-
     /** Stores one item hot to temporary table and with some probability
      *  invokes the updateDisplayCount() method.
      *
@@ -115,7 +118,7 @@ class Hitcounter
      * @param zids $zids
      * @param bool $cached
      */
-    static function hit($zids, bool $cached = false, bool $not_modified = false): void
+    public static function hit($zids, bool $cached = false, bool $not_modified = false): void
     {
         if (!is_object($zids) || $zids->isEmpty()) {
             return;
@@ -125,23 +128,23 @@ class Hitcounter
         // be missing on CLI requests, internal HTTP probes, or hand-crafted clients.
         // Without the (string)?? '' guard, PHP 8.1+ raises deprecation warnings and
         // PHP 9 will TypeError.
-        $ua_raw = (string)($_SERVER["HTTP_USER_AGENT"] ?? '');
-        $uri    = (string)($_SERVER["REQUEST_URI"]    ?? '');
+        $ua_raw = (string) ($_SERVER["HTTP_USER_AGENT"] ?? '');
+        $uri    = (string) ($_SERVER["REQUEST_URI"]    ?? '');
 
         // do not count hits from Bots; treat empty UA as bot too.
         // Note: changing this list shifts the meaning of "human hits" forward in
         // time — annotate the cut-over date in the audit doc when extending.
         $agent = strtolower($ua_raw);
-        if ($agent === '' ||
-            str_contains($agent, 'bot')          ||
-            str_contains($agent, 'crawl')        ||
-            str_contains($agent, 'check')        ||
-            str_contains($agent, 'spider')       ||
-            str_contains($agent, 'download')     ||
-            str_contains($agent, 'wget')         ||
-            str_contains($agent, 'curl/')        ||  // matches "curl/8.x" but not "Mercury" or other strings containing "curl"
-            str_contains($agent, 'python-')      ||  // python-requests, python-urllib, etc.
-            str_contains($agent, 'chatgpt-user')
+        if ($agent === ''
+            || str_contains($agent, 'bot')
+            || str_contains($agent, 'crawl')
+            || str_contains($agent, 'check')
+            || str_contains($agent, 'spider')
+            || str_contains($agent, 'download')
+            || str_contains($agent, 'wget')
+            || str_contains($agent, 'curl/')  // matches "curl/8.x" but not "Mercury" or other strings containing "curl"
+            || str_contains($agent, 'python-')  // python-requests, python-urllib, etc.
+            || str_contains($agent, 'chatgpt-user')
         ) {
             return;
         }
@@ -152,11 +155,11 @@ class Hitcounter
             "not_modified"  => $not_modified,
             "time"          => $time,
             "packtime"      => (new AA_Packtime($time, $cached, $not_modified))->getAsInt(),
-            "mem_usage"     => sprintf('%.3g',(memory_get_usage() / (1024*1024))),
+            "mem_usage"     => sprintf('%.3g', (memory_get_usage() / (1024 * 1024))),
             'uri'           => $uri,
         ]))->serializeToString();
 
-        $varset = new CVarset;
+        $varset = new CVarset();
         $varset->add('time', 'number', time());
         $varset->add('agent', 'text', substr($ua_raw, 0, 255));  // @todo - convert to metabase and check the length using metabase real field length
         $varset->add('info', 'text', substr($info, 0, 255)); // @todo - convert to metabase and check the length using metabase real field length
@@ -177,5 +180,3 @@ class Hitcounter
         // }
     }
 }
-
-

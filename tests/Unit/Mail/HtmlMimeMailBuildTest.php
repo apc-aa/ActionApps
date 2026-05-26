@@ -111,7 +111,7 @@ final class HtmlMimeMailBuildTest extends TestCase
         sort($rcpts);
         $this->assertSame(
             ['bcc@example.org', 'cc@example.org', 'shared@example.org', 'to@example.org'],
-            $rcpts
+            $rcpts,
         );
     }
 

@@ -15,22 +15,24 @@ use zids;
  *                     'x' character (javascript purposes only)
  * @param $akce_param  - unpacked id of slice, where items should be moved
  */
-class Item_Move2Slice extends AbstractManageraction {
-
+class Item_Move2Slice extends AbstractManageraction
+{
     /** specifies, to which bin the move should be performed */
-    var $slice_id;
+    public $slice_id;
 
     /** Constructor - fills the information about the target bin
      *  We use default empty parameters, since we need to construct this
      *  class from state by setFromState() method
      */
-    function __construct($id = '', $slice_id = '') {
+    public function __construct($id = '', $slice_id = '')
+    {
         $this->slice_id = $slice_id;
         parent::__construct($id);
     }
 
     /** Name of this Manager's action */
-    public function getName(): string {
+    public function getName(): string
+    {
         return _m('Move to another slice');
     }
 
@@ -42,7 +44,8 @@ class Item_Move2Slice extends AbstractManageraction {
      *  we need to pass all parameters of the object
      * @return array
      */
-    public static function getClassProperties(): array {
+    public static function getClassProperties(): array
+    {
         $properties = parent::getClassProperties();
         //                                          id             name                              type    multi  persistent - validator, required, help, morehelp, example
         $properties['slice_id'] = new AA_Property('slice_id', _m('Slice ID'), 'text', false, true);
@@ -52,7 +55,7 @@ class Item_Move2Slice extends AbstractManageraction {
     /** Defines the HTNML for parameters. All parameters stored into akce_param[]
      *  array will be passed to perform() method for action execution
      */
-    function htmlSettings(): false|string
+    public function htmlSettings(): false|string
     {
         global $g_modules;
 
@@ -60,7 +63,7 @@ class Item_Move2Slice extends AbstractManageraction {
         if (is_array($g_modules) && count($g_modules) > 1) {
             foreach ($g_modules as $sid => $v) {
                 //  we can feed just between slices ('S')                                                 // we must have autor or editor perms in destination slices
-                if ($v['type'] === 'S' && (string)$this->slice_id !== (string)$sid && IfSlPerm(PS_ITEMS2ACT, $sid)) {
+                if ($v['type'] === 'S' && (string) $this->slice_id !== (string) $sid && IfSlPerm(PS_ITEMS2ACT, $sid)) {
                     $options[$sid] = $v['name'];
                 }
             }
@@ -74,7 +77,7 @@ class Item_Move2Slice extends AbstractManageraction {
     }
 
     /** @inheritDoc */
-    function perform(Manager $manager, zids $item_zids, $action_param): string|false
+    public function perform(Manager $manager, zids $item_zids, $action_param): string|false
     {
         if (!is_long_id($dest_slice_id = $action_param['dest_slice_id'])) {
             return _m('No slice selected');
@@ -111,7 +114,8 @@ class Item_Move2Slice extends AbstractManageraction {
      *
      * @return bool
      */
-    function isPerm4Action($manager):bool {
+    public function isPerm4Action($manager): bool
+    {
         return IfSlPerm(PS_DELETE_ITEMS, $this->slice_id);
     }
 }

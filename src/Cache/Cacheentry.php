@@ -1,4 +1,5 @@
 <?php
+
 /**
  * File contains definition of inputform class - used for displaying input form
  * for item add/edit and other form utility functions
@@ -28,6 +29,7 @@
  * @link      https://www.apc.org/ APC
  *
  */
+
 namespace AA\Cache;
 
 use AA;
@@ -42,7 +44,7 @@ class Cacheentry
     protected $p = '';      // Cacheability - private/public/no-cache - private used for pages, where user is logged in
     protected $t = 0;       // timestamp
 
-    function __construct($content, array $headers = [], $item_id = '', $cacheability = 'public')
+    public function __construct($content, array $headers = [], $item_id = '', $cacheability = 'public')
     {
         $this->c = $content;
         $this->h = $headers;
@@ -52,7 +54,7 @@ class Cacheentry
     }
 
     /** send headers, print output and count hit */
-    function processPage(bool $cached = false): void
+    public function processPage(bool $cached = false): void
     {
         $lastModified = $this->t;     // get the last-modified-date of this very file
         $etag = hash('md5', 'x' . $this->c . 'q'); // get a unique hash of this content (etag) (make it not the same as key in db for (maybe paranoid) security reasons)

@@ -4,15 +4,17 @@ namespace AA\Util;
 
 use AA;
 
-class Txt {
-    public static function decoratedName(string $name, bool $deleted = false): string {
-        return $deleted ? (Langs::isUTF() ? "××× $name ×××" : "xxx $name xxx")  : $name;
+class Txt
+{
+    public static function decoratedName(string $name, bool $deleted = false): string
+    {
+        return $deleted ? (Langs::isUTF() ? "××× $name ×××" : "xxx $name xxx") : $name;
     }
 
     /** shorten with possible ellipsis character */
-    public static function shorten(string $str, int $len=20, string $ellipsis="…"): string
+    public static function shorten(string $str, int $len = 20, string $ellipsis = "…"): string
     {
-        return (aa_strlen($str) > $len) ? aa_substr($str,0,$len-strlen($ellipsis)).$ellipsis : $str;
+        return (aa_strlen($str) > $len) ? aa_substr($str, 0, $len - strlen($ellipsis)) . $ellipsis : $str;
     }
 
     private const KEY_VAL_TABLE_CSS = <<<CSS
@@ -33,7 +35,7 @@ class Txt {
     }
 
     /** small key -> value table for logs, ... */
-    public static function keyValTable(array $arr, bool $html=false): string
+    public static function keyValTable(array $arr, bool $html = false): string
     {
         self::registerKeyValTableCss();
 
@@ -41,11 +43,11 @@ class Txt {
         foreach ($arr as $name => $val) {
             $name = $html ? $name : safe($name);
             $val  = $html ? $val : safe(trim($val));
-            if ( $val !== '') {
+            if ($val !== '') {
                 $ret .= "<div class=aa-log-entry><label>$name</label><span>$val</span></div>";
             }
         }
-        return '<div class=aa-log-entry>'.$ret.'</div>';
+        return '<div class=aa-log-entry>' . $ret . '</div>';
     }
 
     /** enhance value - item_id, date */
@@ -54,8 +56,8 @@ class Txt {
         if (is_long_id($value)) {
             return Adminlink::itemLink($value);
         }
-        if ((int)$value >= 883609200 && (int)$value <= 2208985200) {   // 1998 - 2040
-            return $value.self::additionalInfo([date("Y-m-d H:i", (int)$value)]);
+        if ((int) $value >= 883609200 && (int) $value <= 2208985200) {   // 1998 - 2040
+            return $value . self::additionalInfo([date("Y-m-d H:i", (int) $value)]);
         }
         return safe($value);
     }
@@ -63,7 +65,7 @@ class Txt {
     /** Prints additional info box */
     public static function additionalInfo(array $texts): string
     {
-        return '<div class="tabhlp">'.implode(' | ', $texts)."</div>";
+        return '<div class="tabhlp">' . implode(' | ', $texts) . "</div>";
     }
 
     /** Prefixes all  */
@@ -71,7 +73,7 @@ class Txt {
     {
         $ret = [];
         foreach ($arr as $k => $v) {
-            $ret[$prefix.$k] = $v;
+            $ret[$prefix . $k] = $v;
         }
         return $ret;
     }

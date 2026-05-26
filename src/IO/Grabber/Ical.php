@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: honzama
@@ -18,7 +19,6 @@ use ItemContent;
  */
 class Ical extends AbstractGrabber
 {
-
     protected $url;
     /** URL of .ics file */
     protected $ical;
@@ -32,26 +32,29 @@ class Ical extends AbstractGrabber
     /** pointer of components */
 
 
-    function __construct($url) {
+    public function __construct($url)
+    {
         $this->url = $url;
     }
 
     /** Name of the grabber - used for grabber selection box */
-    public static function name(): string {
+    public static function name(): string
+    {
         return _m('iCal');
     }
 
     /** Description of the grabber - used as help text for the users.
      *  Description is in HTML
      */
-    public static function description(): string {
+    public static function description(): string
+    {
         return _m('Import data from iCal (.ics) format');
     }
 
     /** Possibly preparation of grabber - it is called directly before getItem()
      *  method is called - it means "we are going really to grab the data
      */
-    function prepare(): void
+    public function prepare(): void
     {
         // instance of class iCalFile (external file ical.php)
         $this->ical = new iCalFile($this->url);
@@ -62,7 +65,7 @@ class Ical extends AbstractGrabber
     }
 
     /** Method called by the AA\IO\Saver to get next item from the data input */
-    function getItem(): ?AA_Content
+    public function getItem(): ?AA_Content
     {
         // set pointers
         $vCalPos = 0;

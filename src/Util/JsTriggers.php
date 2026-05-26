@@ -31,8 +31,8 @@ use AA_Slice;
  * @link      https://www.apc.org/ APC
  *
  */
-class JsTriggers {
-    
+class JsTriggers
+{
     use Singleton4idTrait;
 
     private const CONTROL_TRIGGERS = [
@@ -49,7 +49,8 @@ class JsTriggers {
     protected string  $javascript = '';
 
     /** called from Singleton4idTrait */
-    protected function __construct($id) {
+    protected function __construct($id)
+    {
         $this->slice_id = $id;
     }
 
@@ -61,7 +62,7 @@ class JsTriggers {
         }
         $this->js_trig = [];
 
-        if ($this->javascript = (string)AA_Slice::getModuleProperty($this->slice_id, 'javascript')) {
+        if ($this->javascript = (string) AA_Slice::getModuleProperty($this->slice_id, 'javascript')) {
             $all_trig = array_unique(array_merge(...array_values(self::CONTROL_TRIGGERS)));
 
             $ws = "\s*";
@@ -84,7 +85,8 @@ class JsTriggers {
      * @param array  $add
      * @return string
      */
-    public function get(string $control, string $unpacked_fieldid = '', array $add = []): string {
+    public function get(string $control, string $unpacked_fieldid = '', array $add = []): string
+    {
 
         $this->loadTriggers();
         $control_triggers = self::CONTROL_TRIGGERS[$control];
@@ -162,7 +164,7 @@ class JsTriggers {
                     // special case for body onload
                     $listeners[] = "aa_onLoad('');";
                 } else {
-                    $listeners[] = 'document.querySelectorAll("'.implode(', ', array_map(static fn($el) => "form[name=inputform] $el", $els)).'").forEach(function(el) { el.addEventListener("'.strtolower(substr($e,2)).'", aa_runevent, false); });';
+                    $listeners[] = 'document.querySelectorAll("' . implode(', ', array_map(static fn($el) => "form[name=inputform] $el", $els)) . '").forEach(function(el) { el.addEventListener("' . strtolower(substr($e, 2)) . '", aa_runevent, false); });';
                     $script2run = <<<'JS'
                         function aa_runevent(e) {
                             const fnc = `aa_on${e.type.charAt(0).toUpperCase()}${e.type.slice(1)}`;
@@ -176,7 +178,7 @@ class JsTriggers {
                 }
             }
             if ($listeners) {
-                AA::Stringexpander()->addRequire(implode("\n",$listeners), 'AA_Req_Load');
+                AA::Stringexpander()->addRequire(implode("\n", $listeners), 'AA_Req_Load');
             }
             if ($script2run) {
                 AA::Stringexpander()->addRequire($script2run, 'AA_Req_Run');
@@ -187,7 +189,8 @@ class JsTriggers {
 
 
     /** @deprecated  */
-    public static function getFromGlobalSliceId(string $control, string $unpacked_fieldid = '', array $add = []): string {
+    public static function getFromGlobalSliceId(string $control, string $unpacked_fieldid = '', array $add = []): string
+    {
         global $slice_id;
         return $slice_id ? self::singleton4id($slice_id)->get($control, $unpacked_fieldid, $add) : '';
     }
@@ -195,7 +198,8 @@ class JsTriggers {
     /** get html table with list of possible triggers
      * @return string
      */
-    public static function getSummary(): string {
+    public static function getSummary(): string
+    {
         $ret = '';
         foreach (self::CONTROL_TRIGGERS as $control => $trigs) {
             $ret .= '<tr><td>' . $control . '</td><td>' . implode(", ", $trigs) . '</td></tr>';
@@ -203,8 +207,8 @@ class JsTriggers {
         return $ret;
     }
 
-    public function isTriggers(): bool {
+    public function isTriggers(): bool
+    {
         return count($this->loadTriggers()) > 0;
     }
 }
-

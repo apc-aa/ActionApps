@@ -3,15 +3,22 @@
 namespace AA\Optimize;
 
 /** Recreates the new field types to be used as templates (in "ActionApps Core" slice) */
-class AddMailListsFieldTemplate extends \AA\Optimize\AddSeoFieldTemplate {
-
-    public static function name(): string { return _m("Add mail_lists field template"); }
+class AddMailListsFieldTemplate extends \AA\Optimize\AddSeoFieldTemplate
+{
+    public static function name(): string
+    {
+        return _m("Add mail_lists field template");
+    }
 
     /** the field identifier  */
-    protected function fieldType(): string { return 'mail_lists'; }
+    protected function fieldType(): string
+    {
+        return 'mail_lists';
+    }
 
     /** field settings different from standard field setting  */
-    protected function fieldSpecialSetting(): array {
+    protected function fieldSpecialSetting(): array
+    {
         return [
             'name'            => 'Mailing Lists',
             'input_pri'       => '1000',

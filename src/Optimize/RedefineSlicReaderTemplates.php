@@ -5,30 +5,36 @@ namespace AA\Optimize;
 use AA\IO\DB\DB_AA;
 
 /** Recreates the template (example) slice - Reader Management */
-class RedefineSlicReaderTemplates extends \AA\Optimize\AbstractOptimize {
-
+class RedefineSlicReaderTemplates extends \AA\Optimize\AbstractOptimize
+{
     /** Name function
      * @return string - a name
      */
-    public static function name(): string {
+    public static function name(): string
+    {
         return _m("Redefine Reader Management template slice");
     }
 
     /** Description function
      * @return string - a description
      */
-    public static function description(): string {
+    public static function description(): string
+    {
         return _m("Deletes and recreates the Reader Management slice, used as template or example slice");
     }
 
     /** checks if this Optimize class belongs to specified type (like "sql_update") */
-    public static function types(): array { return ['sql_update']; }
+    public static function types(): array
+    {
+        return ['sql_update'];
+    }
 
 
     /** Test function
      * @return bool
      */
-    public function test(): bool {
+    public function test(): bool
+    {
         $ret = true;
 
         $row_count = DB_AA::count('module', [['id', 'ReaderManagement']]);
@@ -42,7 +48,8 @@ class RedefineSlicReaderTemplates extends \AA\Optimize\AbstractOptimize {
     /** Main update function
      * @return bool
      */
-    public function repair(): bool {
+    public function repair(): bool
+    {
 
         $now = time();
         $AA_IMG_URL = '/' . AA_BASE_DIR . 'images/';

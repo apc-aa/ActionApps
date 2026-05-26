@@ -23,15 +23,15 @@ use Throwable;
  *  writes to the SQL permission tables are therefore done directly
  *  via DB_AA from this class.
  */
-class LdapPermsToSql extends AbstractOptimize {
-
-    const MAP_TABLE = 'ldap2sql_map';
+class LdapPermsToSql extends AbstractOptimize
+{
+    public const MAP_TABLE = 'ldap2sql_map';
 
     /** Columns in AA data tables that store the current user id and
      *  therefore need rewriting from LDAP DN form to SQL numeric id.
      *  Hard-coded for safety and inspectability (see plan).
      */
-    const REWRITE_COLUMNS = [
+    public const REWRITE_COLUMNS = [
         ['table' => 'item', 'col' => 'posted_by'],
         ['table' => 'item', 'col' => 'edited_by'],
     ];
@@ -43,21 +43,30 @@ class LdapPermsToSql extends AbstractOptimize {
     private $ldap;
 
     /** Name function */
-    public static function name(): string {
+    public static function name(): string
+    {
         return _m("Migrate LDAP perms to SQL perms");
     }
 
     /** Description function */
-    public static function description(): string {
+    public static function description(): string
+    {
         return _m("Copies all users, groups, memberships and permissions from the LDAP backend into the SQL backend tables (users, membership, perms), and rewrites item.posted_by / item.edited_by from LDAP DN form (uid=...,ou=...) to the new SQL numeric ids. Run once per install, then switch PERM_LIB to 'sql' in config. 'Test' is a read-only dry run. 'Repair' performs the migration and is re-runnable. 'Revert' uses the mapping table to undo everything.");
     }
 
-    public static function actions(): array { return ['test', 'repair', 'revert']; }
+    public static function actions(): array
+    {
+        return ['test', 'repair', 'revert'];
+    }
 
-    public static function types(): array { return ['private_fix']; }
+    public static function types(): array
+    {
+        return ['private_fix'];
+    }
 
     /** Guard + initialize both permission backends */
-    private function init(): bool {
+    private function init(): bool
+    {
         if (!defined('PERM_LIB') || PERM_LIB !== 'ldap') {
             $this->message(_m("This optimizer only runs when PERM_LIB='ldap'. Current PERM_LIB='%1'.", [defined('PERM_LIB') ? PERM_LIB : '?']));
             return false;
@@ -68,7 +77,8 @@ class LdapPermsToSql extends AbstractOptimize {
     }
 
     /** Create the persistent DN->id mapping table if it does not exist. */
-    private function ensureMapTable(): void {
+    private function ensureMapTable(): void
+    {
         if (DB_AA::exists_table(self::MAP_TABLE)) {
             return;
         }
@@ -92,11 +102,14 @@ class LdapPermsToSql extends AbstractOptimize {
 
     //-------------------------------------------------------------- test
 
-    public function test(): bool {
+    public function test(): bool
+    {
         $this->clear_report();
         $this->dry_run = true;
         try {
-            if (!$this->init()) { return false; }
+            if (!$this->init()) {
+                return false;
+            }
             $this->runMigration();
         } catch (Throwable $e) {
             $this->message(_m("Test failed: %1", [$e->getMessage()]));
@@ -108,11 +121,14 @@ class LdapPermsToSql extends AbstractOptimize {
 
     //------------------------------------------------------------ repair
 
-    public function repair(): bool {
+    public function repair(): bool
+    {
         $this->clear_report();
         $this->dry_run = false;
         try {
-            if (!$this->init()) { return false; }
+            if (!$this->init()) {
+                return false;
+            }
             $this->runMigration();
         } catch (Throwable $e) {
             $this->message(_m("Repair failed: %1", [$e->getMessage()]));
@@ -124,11 +140,14 @@ class LdapPermsToSql extends AbstractOptimize {
 
     //------------------------------------------------------------ revert
 
-    public function revert(): bool {
+    public function revert(): bool
+    {
         $this->clear_report();
         $this->dry_run = false;
         try {
-            if (!$this->init()) { return false; }
+            if (!$this->init()) {
+                return false;
+            }
             $this->runRevert();
         } catch (Throwable $e) {
             $this->message(_m("Revert failed: %1", [$e->getMessage()]));
@@ -140,7 +159,8 @@ class LdapPermsToSql extends AbstractOptimize {
 
     //============================================================== core
 
-    private function runMigration(): void {
+    private function runMigration(): void
+    {
         $this->migrateUsers();
         $this->migrateGroups();
         $this->migrateMemberships();
@@ -150,20 +170,27 @@ class LdapPermsToSql extends AbstractOptimize {
 
     //----- phase 1+2: users
 
-    private function migrateUsers(): void {
+    private function migrateUsers(): void
+    {
         $ldap_users = $this->ldap->findUsernames('');
         if (!is_array($ldap_users)) {
-            $this->message(_m("LDAP findUsernames failed or returned: %1", [(string)$ldap_users]));
+            $this->message(_m("LDAP findUsernames failed or returned: %1", [(string) $ldap_users]));
             return;
         }
         $this->message(_m("LDAP users found: %1", [count($ldap_users)]));
 
-        $created = 0; $reused = 0; $failed = 0;
+        $created = 0;
+        $reused = 0;
+        $failed = 0;
         foreach ($ldap_users as $dn => $_row) {
-            if ($this->mapGet($dn)) { continue; }
+            if ($this->mapGet($dn)) {
+                continue;
+            }
 
             $info = $this->ldap->getIDsInfo($dn);
-            if (!$info || ($info['type'] ?? '') !== 'User') { continue; }
+            if (!$info || ($info['type'] ?? '') !== 'User') {
+                continue;
+            }
             $login = $info['login'] ?: $this->extractUidFromDn($dn);
             if (!$login) {
                 $this->message(_m("Skipping user %1 - cannot determine login", [$dn]));
@@ -174,7 +201,7 @@ class LdapPermsToSql extends AbstractOptimize {
             // Conflict policy (plan): reuse existing sql user with same login.
             $existing = DB_AA::select1('', "SELECT id, password FROM `users`", [['uid', $login], ['type', 'User']]);
             if (is_array($existing)) {
-                $sql_id = (int)$existing['id'];
+                $sql_id = (int) $existing['id'];
                 $this->message(_m("User %1 already exists in SQL (id %2), reusing", [$login, $sql_id]));
                 if (!$this->dry_run) {
                     $this->mapPut($dn, $sql_id, 'user', $login);
@@ -209,23 +236,30 @@ class LdapPermsToSql extends AbstractOptimize {
 
     //----- phase 3: groups
 
-    private function migrateGroups(): void {
+    private function migrateGroups(): void
+    {
         $ldap_groups = $this->ldap->findGroups('');
         $this->message(_m("LDAP groups found: %1", [count($ldap_groups)]));
 
-        $created = 0; $reused = 0; $failed = 0;
+        $created = 0;
+        $reused = 0;
+        $failed = 0;
         foreach ($ldap_groups as $dn => $row) {
-            if ($this->mapGet($dn)) { continue; }
+            if ($this->mapGet($dn)) {
+                continue;
+            }
 
             $gname = $row['name'] ?? '';
-            if (!$gname) { continue; }
+            if (!$gname) {
+                continue;
+            }
             $full = $this->ldap->getGroup($dn) ?: [];
             $gdesc = $full['description'] ?? '';
 
             // Conflict policy: reuse existing SQL group by name.
             $existing = DB_AA::select1('', "SELECT id FROM `users`", [['name', $gname], ['type', 'Group']]);
             if (is_array($existing)) {
-                $sql_id = (int)$existing['id'];
+                $sql_id = (int) $existing['id'];
                 $this->message(_m("Group %1 already exists in SQL (id %2), reusing", [$gname, $sql_id]));
                 if (!$this->dry_run) {
                     $this->mapPut($dn, $sql_id, 'group', $gname);
@@ -254,16 +288,23 @@ class LdapPermsToSql extends AbstractOptimize {
 
     //----- phase 4: memberships
 
-    private function migrateMemberships(): void {
+    private function migrateMemberships(): void
+    {
         $ldap_groups = $this->ldap->findGroups('');
-        $added = 0; $skipped = 0;
+        $added = 0;
+        $skipped = 0;
         foreach ($ldap_groups as $group_dn => $_row) {
             $group_sql_id = $this->mapGet($group_dn);
-            if (!$group_sql_id) { continue; }
+            if (!$group_sql_id) {
+                continue;
+            }
             $members = $this->ldap->getGroupMembers($group_dn);
             foreach ($members as $member_dn => $_info) {
                 $member_sql_id = $this->mapGet($member_dn);
-                if (!$member_sql_id) { $skipped++; continue; }
+                if (!$member_sql_id) {
+                    $skipped++;
+                    continue;
+                }
                 if ($this->dry_run) {
                     $added++;
                     continue;
@@ -272,8 +313,8 @@ class LdapPermsToSql extends AbstractOptimize {
                 DB_AA::delete('membership', [['groupid', $group_sql_id, 'i'], ['memberid', $member_sql_id, 'i']]);
                 $db = getDb();
                 $varset = new CVarset([
-                    ['groupid',  (int)$group_sql_id],
-                    ['memberid', (int)$member_sql_id],
+                    ['groupid',  (int) $group_sql_id],
+                    ['memberid', (int) $member_sql_id],
                 ]);
                 $varset->doInsert('membership');
                 freeDB($db);
@@ -285,28 +326,36 @@ class LdapPermsToSql extends AbstractOptimize {
 
     //----- phase 5: permissions
 
-    private function migratePerms(): void {
+    private function migratePerms(): void
+    {
         $object_ids = $this->collectPermObjects();
         $total = 0;
         foreach ($object_ids as $object_type => $ids) {
             foreach ($ids as $oid) {
                 $acl = $this->ldap->getObjectsPerms($oid, $object_type);
-                if (!$acl) { continue; }
+                if (!$acl) {
+                    continue;
+                }
                 foreach ($acl as $dn => $perm) {
                     $sql_id = $this->mapGet($dn);
-                    if (!$sql_id) { continue; }
-                    if ($this->dry_run) { $total++; continue; }
+                    if (!$sql_id) {
+                        continue;
+                    }
+                    if ($this->dry_run) {
+                        $total++;
+                        continue;
+                    }
                     // idempotent: delete+insert (mirrors perm_sql AddPerm)
                     DB_AA::delete('perms', [
                         ['object_type', $object_type],
                         ['objectid',    $oid],
-                        ['userid',      (string)$sql_id],
+                        ['userid',      (string) $sql_id],
                     ]);
                     $varset = new CVarset([
                         ['object_type', $object_type],
                         ['objectid',    $oid],
-                        ['userid',      (string)$sql_id],
-                        ['perm',        (string)$perm],
+                        ['userid',      (string) $sql_id],
+                        ['perm',        (string) $perm],
                     ]);
                     $varset->doInsert('perms');
                     $total++;
@@ -320,7 +369,8 @@ class LdapPermsToSql extends AbstractOptimize {
      *  In AA there are two object types: "aa" (single = AA_ID) and
      *  "slice" (all modules in the module table).
      */
-    private function collectPermObjects(): array {
+    private function collectPermObjects(): array
+    {
         $slices = DB_AA::select('unpackid', "SELECT LOWER(HEX(`id`)) AS unpackid FROM `module`");
         return [
             'aa'    => [AA_ID],
@@ -330,23 +380,27 @@ class LdapPermsToSql extends AbstractOptimize {
 
     //----- phase 6: rewrite user-id references in AA data
 
-    private function rewriteUserRefs(): void {
+    private function rewriteUserRefs(): void
+    {
         $pairs = $this->mapAll();
         if (!$pairs) {
             $this->message(_m("No mapping entries - nothing to rewrite."));
             return;
         }
         foreach (self::REWRITE_COLUMNS as $spec) {
-            $t = $spec['table']; $c = $spec['col'];
+            $t = $spec['table'];
+            $c = $spec['col'];
             $changed = 0;
             foreach ($pairs as $row) {
                 $cnt = DB_AA::count($t, [[$c, $row['ldap_dn']]]);
-                if (!$cnt) { continue; }
+                if (!$cnt) {
+                    continue;
+                }
                 if ($this->dry_run) {
                     $changed += $cnt;
                     continue;
                 }
-                DB_AA::update($t, [[$c, (string)$row['sql_id']]], [[$c, $row['ldap_dn']]]);
+                DB_AA::update($t, [[$c, (string) $row['sql_id']]], [[$c, $row['ldap_dn']]]);
                 $changed += $cnt;
             }
             $this->message(_m("Rewrite %1.%2: %3 rows", [$t, $c, $changed]));
@@ -355,7 +409,8 @@ class LdapPermsToSql extends AbstractOptimize {
 
     //============================================================ revert
 
-    private function runRevert(): void {
+    private function runRevert(): void
+    {
         $pairs = $this->mapAll();
         if (!$pairs) {
             $this->message(_m("Mapping table is empty - nothing to revert."));
@@ -363,25 +418,33 @@ class LdapPermsToSql extends AbstractOptimize {
         }
         // 1. Reverse user-id rewrites in AA data.
         foreach (self::REWRITE_COLUMNS as $spec) {
-            $t = $spec['table']; $c = $spec['col'];
+            $t = $spec['table'];
+            $c = $spec['col'];
             $changed = 0;
             foreach ($pairs as $row) {
-                $cnt = DB_AA::count($t, [[$c, (string)$row['sql_id']]]);
-                if (!$cnt) { continue; }
-                DB_AA::update($t, [[$c, $row['ldap_dn']]], [[$c, (string)$row['sql_id']]]);
+                $cnt = DB_AA::count($t, [[$c, (string) $row['sql_id']]]);
+                if (!$cnt) {
+                    continue;
+                }
+                DB_AA::update($t, [[$c, $row['ldap_dn']]], [[$c, (string) $row['sql_id']]]);
                 $changed += $cnt;
             }
             $this->message(_m("Revert %1.%2: %3 rows", [$t, $c, $changed]));
         }
         // 2. Delete SQL users/groups we created (mirrors perm_sql DelUser/DelGroup).
-        $users = 0; $groups = 0;
+        $users = 0;
+        $groups = 0;
         foreach ($pairs as $row) {
-            $sql_id = (int)$row['sql_id'];
+            $sql_id = (int) $row['sql_id'];
             DB_AA::delete('membership', [['memberid', $sql_id, 'i']]);
             DB_AA::delete('membership', [['groupid',  $sql_id, 'i']]);
-            DB_AA::delete('perms',      [['userid', (string)$sql_id]]);
-            DB_AA::delete('users',      [['id', $sql_id, 'i']]);
-            if ($row['kind'] === 'group') { $groups++; } else { $users++; }
+            DB_AA::delete('perms', [['userid', (string) $sql_id]]);
+            DB_AA::delete('users', [['id', $sql_id, 'i']]);
+            if ($row['kind'] === 'group') {
+                $groups++;
+            } else {
+                $users++;
+            }
         }
         $this->message(_m("Deleted SQL users=%1 groups=%2", [$users, $groups]));
         // 3. Drop mapping rows but keep the table itself for audit.
@@ -391,13 +454,17 @@ class LdapPermsToSql extends AbstractOptimize {
     //========================================================== helpers
 
     /** Extract the `uid` component from a DN like `uid=foo,ou=People,...`. */
-    private function extractUidFromDn(string $dn): string {
-        if (preg_match('/^uid=([^,]+),/i', $dn, $m)) { return $m[1]; }
+    private function extractUidFromDn(string $dn): string
+    {
+        if (preg_match('/^uid=([^,]+),/i', $dn, $m)) {
+            return $m[1];
+        }
         return '';
     }
 
     /** Direct SQL insert into the users table (mirrors perm_sql::AddUser). */
-    private function sqlInsertUser(string $login, array $info, string $pwd_hash): ?int {
+    private function sqlInsertUser(string $login, array $info, string $pwd_hash): ?int
+    {
         $varset = new CVarset([
             ['type',        'User'],
             ['uid',         $login],
@@ -409,13 +476,14 @@ class LdapPermsToSql extends AbstractOptimize {
             ['password',    $pwd_hash],
         ]);
         $id = $varset->doInsert('users');
-        return $id ? (int)$id : null;
+        return $id ? (int) $id : null;
     }
 
     /** Direct SQL insert into the users table for a group
      *  (mirrors perm_sql::AddGroup).
      */
-    private function sqlInsertGroup(string $name, string $description): ?int {
+    private function sqlInsertGroup(string $name, string $description): ?int
+    {
         $varset = new CVarset([
             ['type',        'Group'],
             ['uid',         ''],
@@ -427,56 +495,75 @@ class LdapPermsToSql extends AbstractOptimize {
             ['password',    'crypt will never return this'],
         ]);
         $id = $varset->doInsert('users');
-        return $id ? (int)$id : null;
+        return $id ? (int) $id : null;
     }
 
     /** Read the userPassword attribute from LDAP for a given user DN.
      *  Returns the raw hash string (e.g. {SSHA}...) or null on failure.
      *  Uses perm_ldap.php's InitLDAP() which is already loaded.
      */
-    private function readLdapUserPassword(string $dn): ?string {
-        if (!function_exists('InitLDAP')) { return null; }
+    private function readLdapUserPassword(string $dn): ?string
+    {
+        if (!function_exists('InitLDAP')) {
+            return null;
+        }
         $ds = \InitLDAP();
-        if (!$ds) { return null; }
+        if (!$ds) {
+            return null;
+        }
         $result = @\ldap_read($ds, $dn, 'objectclass=*', ['userPassword']);
-        if (!$result) { @\ldap_unbind($ds); return null; }
+        if (!$result) {
+            @\ldap_unbind($ds);
+            return null;
+        }
         $entries = \ldap_get_entries($ds, $result);
         @\ldap_unbind($ds);
-        if (!$entries || $entries['count'] < 1) { return null; }
+        if (!$entries || $entries['count'] < 1) {
+            return null;
+        }
         $attr = $entries[0]['userpassword'] ?? null;
-        if (!is_array($attr) || $attr['count'] < 1) { return null; }
-        return (string)$attr[0];
+        if (!is_array($attr) || $attr['count'] < 1) {
+            return null;
+        }
+        return (string) $attr[0];
     }
 
     /** An unusable placeholder hash used when we cannot read the LDAP
      *  userPassword. It will fail both legacy-hash and bcrypt checks,
      *  and can later be overwritten by a repair re-run.
      */
-    private function placeholderHash(): string {
+    private function placeholderHash(): string
+    {
         return '{CRYPT}$6$disabled$x';
     }
 
-    private function isPlaceholderHash(?string $hash): bool {
-        return $hash === null || $hash === '' || str_contains((string)$hash, '$disabled$');
+    private function isPlaceholderHash(?string $hash): bool
+    {
+        return $hash === null || $hash === '' || str_contains((string) $hash, '$disabled$');
     }
 
     /** Overwrite the SQL users.password with the raw LDAP hash so the
      *  opportunistic-rehash login path can verify it on first login.
      */
-    private function maybeCopyLdapHash(string $dn, int $sql_id): void {
+    private function maybeCopyLdapHash(string $dn, int $sql_id): void
+    {
         $hash = $this->readLdapUserPassword($dn);
-        if (!$hash) { return; }
+        if (!$hash) {
+            return;
+        }
         DB_AA::update('users', [['password', $hash]], [['id', $sql_id, 'i']]);
     }
 
     //----- mapping table helpers
 
-    private function mapGet(string $dn): ?int {
+    private function mapGet(string $dn): ?int
+    {
         $row = DB_AA::select1('sql_id', "SELECT sql_id FROM `" . self::MAP_TABLE . "`", [['ldap_dn', $dn]]);
-        return $row ? (int)$row : null;
+        return $row ? (int) $row : null;
     }
 
-    private function mapPut(string $dn, int $sql_id, string $kind, string $login): void {
+    private function mapPut(string $dn, int $sql_id, string $kind, string $login): void
+    {
         $varset = new CVarset([
             ['ldap_dn', $dn],
             ['sql_id',  $sql_id],
@@ -488,7 +575,8 @@ class LdapPermsToSql extends AbstractOptimize {
     }
 
     /** @return array<int,array{ldap_dn:string,sql_id:int,kind:string,login:string}> */
-    private function mapAll(): array {
+    private function mapAll(): array
+    {
         $rows = DB_AA::select([], "SELECT ldap_dn, sql_id, kind, login FROM `" . self::MAP_TABLE . "`");
         return is_array($rows) ? $rows : [];
     }

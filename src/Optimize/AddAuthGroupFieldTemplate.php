@@ -3,15 +3,22 @@
 namespace AA\Optimize;
 
 /** Recreates the new field types to be used as templates (in "ActionApps Core" slice) */
-class AddAuthGroupFieldTemplate extends \AA\Optimize\AddSeoFieldTemplate {
-
-    public static function name(): string { return _m("Add auth_group...... field template"); }
+class AddAuthGroupFieldTemplate extends \AA\Optimize\AddSeoFieldTemplate
+{
+    public static function name(): string
+    {
+        return _m("Add auth_group...... field template");
+    }
 
     /** the field identifier  */
-    protected function fieldType(): string { return 'auth_group'; }
+    protected function fieldType(): string
+    {
+        return 'auth_group';
+    }
 
     /** field settings different from standard field setting  */
-    protected function fieldSpecialSetting(): array {
+    protected function fieldSpecialSetting(): array
+    {
         return [
             'name'            => 'Auth Group',
             'input_pri'       => '350',

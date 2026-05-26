@@ -6,8 +6,8 @@ use AA;
 use AA_Aliases;
 use LazyloaderInterface;
 
-abstract class AbstractAliasgenerator implements LazyloaderInterface {
-
+abstract class AbstractAliasgenerator implements LazyloaderInterface
+{
     /**
      * @var AA_Aliases|null $add_aliases
      */
@@ -28,7 +28,8 @@ abstract class AbstractAliasgenerator implements LazyloaderInterface {
     }
 
     /** generate params array for getAliasesFromParams from real generator object */
-    protected function getParamsArray(): array {
+    protected function getParamsArray(): array
+    {
         return [];
     }
 
@@ -38,7 +39,8 @@ abstract class AbstractAliasgenerator implements LazyloaderInterface {
     /** add nonstandard aliases
      * @usage (new AA_Aliasgenerator_Constant)->addAliases((new AA_Aliases)->addTextAlias('_#ITEM_ID_',$for_id))
      */
-    public function addAliases(?AA_Aliases $aliases): static {
+    public function addAliases(?AA_Aliases $aliases): static
+    {
         $this->add_aliases = $aliases;
         return $this;
     }

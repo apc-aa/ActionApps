@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: honzama
@@ -7,12 +8,12 @@
  */
 
 namespace AA\Widget;
+
 use AA\FormArray;
 use AA_Content;
 use AA\Util\Langs;
 use AA_Property;
 use Exception;
-
 
 /** Text Field widget */
 class FldWidget extends Widget
@@ -37,13 +38,15 @@ class FldWidget extends Widget
      *  Used parameter format (in fields.input_show_func table)
      * @return array
      */
-    public static function getClassProperties(): array {
+    public static function getClassProperties(): array
+    {
         return Widget::propertiesShop(['max_characters', 'width', 'input_type', 'placeholder']);
     }
 
     /** libs to run after the page DOM is loaded */
-    protected function requireLibs($aa_property, $winfo): array {
-        return ( count($aa_property->getTranslations())>1 ) ? ['aa-jslib@3'] : [];
+    protected function requireLibs($aa_property, $winfo): array
+    {
+        return (count($aa_property->getTranslations()) > 1) ? ['aa-jslib@3'] : [];
     }
 
 
@@ -57,7 +60,8 @@ class FldWidget extends Widget
      *  @return array
      *  @throws Exception
      */
-    function _getRawHtml(AA_Property $aa_property, AA_Content $content, string $type = 'normal'): array {
+    public function _getRawHtml(AA_Property $aa_property, AA_Content $content, string $type = 'normal'): array
+    {
         $base_name = FormArray::getName4Form($aa_property->getId(), $content, $this->item_index);
         $base_id = FormArray::formName2Id($base_name);
         $required = $aa_property->isRequired() ? 'required' : '';
@@ -88,10 +92,10 @@ class FldWidget extends Widget
             $attrs['size'] = get_if($this->getProperty('width'), $attrs['size']);
             if (!$attrs['size']) {
                 unset($attrs['size']);
-                if (count($translations)>1) {
+                if (count($translations) > 1) {
                     $attrs['style'] = 'width:85%'; // for translations, we need more space for buttons
                 } else {
-                    $attrs['class'] = $attrs['class'] ? $attrs['class']. ' aa-w-full' : 'aa-w-full'; // $attrs['style'] = 'width:95%';
+                    $attrs['class'] = $attrs['class'] ? $attrs['class'] . ' aa-w-full' : 'aa-w-full'; // $attrs['style'] = 'width:95%';
                 }
             }
             $attrs['maxlength'] = get_if($this->getProperty('max_characters'), $attrs['maxlength'], 255);
@@ -100,10 +104,10 @@ class FldWidget extends Widget
         $datalist = '';
         if ($this instanceof \AA\Widget\PreWidget) {
             // $widget .= Widget::getWidgetIdentificationCode($base_name, 'pre');   // not necessary, I think - we can stay with Fld styles...
-            $options  = $this->getOptions(null, $content, (bool)$this->getProperty('use_name', false));
+            $options  = $this->getOptions(null, $content, (bool) $this->getProperty('use_name', false));
             if ($options) {
-                $datalist_id = $base_id. '_lst';
-                $datalist = "<datalist id=\"{$datalist_id}\">".$this->getSelectOptions($options)."</datalist>";
+                $datalist_id = $base_id . '_lst';
+                $datalist = "<datalist id=\"{$datalist_id}\">" . $this->getSelectOptions($options) . "</datalist>";
                 $attrs['list'] = $datalist_id;
             }
         }
@@ -119,7 +123,7 @@ class FldWidget extends Widget
         $base = [];
         foreach ($value as $i => $val) {
             $input_name = $base_name . "[$i]";
-            if ( !$base ) {
+            if (!$base) {
                 $base['id']       = FormArray::formName2Id($input_name);
                 $base['langcode'] = Langs::getLangName2Code(Langs::getLangNum2Name($i));
             }
@@ -153,14 +157,15 @@ class FldWidget extends Widget
         $ret = "<input $attr_string name=\"$input_name\" id=\"$input_id\" value=\"$input_value\" $required $widget_add $autofocus>$link" . Widget::_saveIcon($base_id, $type === 'live'); //, 'right', $link ? 16 : 0);
         if ($lang = Langs::getLangNum2Name($i)) {
             $langcode  = Langs::getLangName2Code($lang);
-            $translate =  ($langcode == $base['langcode']) ? '' :  "<span class=\"btn aa-langtrans-tbtn\" onclick=\"AA_Translate(document.getElementById('". $base['id'] ."').value, '".$base['langcode']."', '$langcode').then(txt => { const inp=document.getElementById('$input_id'); inp.value=txt; inp.dispatchEvent(new Event('change'));});\">". _m("translate from"). ' '. Langs::getLangCode2Name($base['langcode']) . "</span>";
+            $translate =  ($langcode == $base['langcode']) ? '' : "<span class=\"btn aa-langtrans-tbtn\" onclick=\"AA_Translate(document.getElementById('" . $base['id'] . "').value, '" . $base['langcode'] . "', '$langcode').then(txt => { const inp=document.getElementById('$input_id'); inp.value=txt; inp.dispatchEvent(new Event('change'));});\">" . _m("translate from") . ' ' . Langs::getLangCode2Name($base['langcode']) . "</span>";
             $ret = "<div class=\"aa-langtrans aa-lang-$lang\"><strong class=\"aa-langtrans-label\">$lang</strong>$ret $translate</div>";
         }
         return "<div class='aa-one-val'>$ret</div>";
     }
 
     /** @inheritDoc */
-    public static function description(): string {
-return ''; // TODO: Implement description() method.
+    public static function description(): string
+    {
+        return ''; // TODO: Implement description() method.
     }
 }

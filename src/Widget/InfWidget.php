@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: honzama
@@ -7,6 +8,7 @@
  */
 
 namespace AA\Widget;
+
 use AA\FormArray;
 use AA_Content;
 use AA_Item;
@@ -33,7 +35,8 @@ class InfWidget extends Widget
      *  Used parameter format (in fields.input_show_func table)
      * @return array
      */
-    public static function getClassProperties(): array {
+    public static function getClassProperties(): array
+    {
         return Widget::propertiesShop(['code']);
     }
 
@@ -47,7 +50,8 @@ class InfWidget extends Widget
      *  @return array
      *  @throws Exception
      */
-    function _getRawHtml(AA_Property $aa_property, AA_Content $content, string $type = 'normal'): array {
+    public function _getRawHtml(AA_Property $aa_property, AA_Content $content, string $type = 'normal'): array
+    {
         $property_id = $aa_property->getId();
         // $item_id     = $content->getId();
         $code = $this->getProperty('code', '{' . $property_id . '}');
@@ -68,7 +72,8 @@ class InfWidget extends Widget
     /**
      * @inheritDoc
      */
-    public static function description(): string {
+    public static function description(): string
+    {
         return ''; // TODO: Implement description() method.
     }
 }

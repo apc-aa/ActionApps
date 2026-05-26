@@ -8,26 +8,31 @@ use AA_Metabase;
 use AA_Module;
 use AA_Module_Site;
 
-class ConvertSliceEncoding extends AA\Optimize\AbstractOptimize {
-
+class ConvertSliceEncoding extends AA\Optimize\AbstractOptimize
+{
     /** Name function
      * @return string - a name
      */
-    public static function name(): string {
+    public static function name(): string
+    {
         return _m("Convert Slice Encoding to UTF");
     }
 
     /** Description function
      * @return string - a description
      */
-    public static function description(): string {
+    public static function description(): string
+    {
         return _m("[experimental] probably useless for most AA installs - good only for AA where you mix 1B (cp1250) encoded and UTF encoded slices, use 1B database and want to convert data to (fake) UTF in order you can then switch it to real UTF on database level");
     }
 
     /** implemented actions within this class
      * @return string[]
      */
-    public static function actions(): array { return ['test', 'repair', 'test4modules', 'repair4modules']; }
+    public static function actions(): array
+    {
+        return ['test', 'repair', 'test4modules', 'repair4modules'];
+    }
 
     /** done
         (-) alerts_collection
@@ -232,7 +237,7 @@ class ConvertSliceEncoding extends AA\Optimize\AbstractOptimize {
         givenname ...
         sn ...
 
-      
+
 
     // all links* tables are in 1B - recode all
     links
@@ -360,10 +365,11 @@ class ConvertSliceEncoding extends AA\Optimize\AbstractOptimize {
     /** Test function
      * @return bool - true if everything is OK - no action needed
      */
-    public function test4modules(array $modules): bool {
+    public function test4modules(array $modules): bool
+    {
         // $this->justTablecolumsTest($modules);
 
-        if ( DB_CHARACTER_SET !== "latin1") {
+        if (DB_CHARACTER_SET !== "latin1") {
             $this->message(_m('Database (DB_CHARACTER_SET) is not in latin1 encoding. Skipping.'));
             return true;  // all OK - can't do anything
         }
@@ -398,7 +404,7 @@ class ConvertSliceEncoding extends AA\Optimize\AbstractOptimize {
             $SQLs = array_merge($SQLs, $this->getSliceUpdateSlowFinalSqls($slicemodules));
         }
 
-        $this->message(_m('SQL commands to be performed: <br>%1.', [implode(';<br>', $SQLs).";"]));
+        $this->message(_m('SQL commands to be performed: <br>%1.', [implode(';<br>', $SQLs) . ";"]));
 
         return empty($allmodules);
     }
@@ -407,8 +413,9 @@ class ConvertSliceEncoding extends AA\Optimize\AbstractOptimize {
      * @param array $modules
      * @return bool
      */
-    public function repair4modules(array $modules): bool {
-        if ( DB_CHARACTER_SET !== "latin1") {
+    public function repair4modules(array $modules): bool
+    {
+        if (DB_CHARACTER_SET !== "latin1") {
             $this->message(_m('Database (DB_CHARACTER_SET) is not in latin1 encoding. Skipping.'));
             return true;  // all OK - can't do anything
         }
@@ -426,7 +433,7 @@ class ConvertSliceEncoding extends AA\Optimize\AbstractOptimize {
         $SQLs = array_merge($SQLs, $this->getSliceUpdateSqls($slicemodules));
         $SQLs = array_merge($SQLs, $this->getSiteUpdateSqls($sitemodules));
 
-        $this->message(_m('SQL commands to be performed: <br>%1.', [implode(';<br>', $SQLs).";"]));
+        $this->message(_m('SQL commands to be performed: <br>%1.', [implode(';<br>', $SQLs) . ";"]));
 
         DB_AA::sql('START TRANSACTION');
         foreach ($SQLs as $sql) {
@@ -451,22 +458,23 @@ class ConvertSliceEncoding extends AA\Optimize\AbstractOptimize {
         return true;
     }
 
-     /** SQL queries to update common tables for all modules
-     * @param array $modules
-     * @return array
-     */
-    protected function getModuleUpdateSqls(array $modules): array {
+    /** SQL queries to update common tables for all modules
+    * @param array $modules
+    * @return array
+    */
+    protected function getModuleUpdateSqls(array $modules): array
+    {
         $ret = [];
         if ($modules) {
-            if ( $this->constructSet($this->getTextCols('email')) ) {
+            if ($this->constructSet($this->getTextCols('email'))) {
                 $ret[] = "UPDATE `email` SET " . $this->constructSet($this->getTextCols('email')) . " WHERE " . sqlin('owner_module_id', $modules, true);
-	    }
-            if ( $this->constructSet($this->getTextCols('module')) ) {
+            }
+            if ($this->constructSet($this->getTextCols('module'))) {
                 $ret[] = "UPDATE `module` SET " . $this->constructSet($this->getTextCols('module')) . " WHERE " . sqlin('id', $modules, true);
-	    }
-            if ( $this->constructSet($this->getTextCols('slice_owner')) ) {
+            }
+            if ($this->constructSet($this->getTextCols('slice_owner'))) {
                 $ret[] = "UPDATE `slice_owner` SET " . $this->constructSet($this->getTextCols('slice_owner')) . " WHERE `id` IN ( SELECT `owner` FROM `module` WHERE " . sqlin('id', $modules, true) . ")";  // unpack_id($module->getProperty('owner'));  // SELECT * FROM `module` LEFT JOIN slice_owner ON module.owner=slice_owner.id;
-	    }
+            }
         }
         return $ret;
     }
@@ -475,45 +483,46 @@ class ConvertSliceEncoding extends AA\Optimize\AbstractOptimize {
      * @param array $modules
      * @return array
      */
-    protected function getSliceUpdateSqls(array $modules): array {
-        $ret = [];                                                                                                  
+    protected function getSliceUpdateSqls(array $modules): array
+    {
+        $ret = [];
         if ($modules) {
-            if ( $this->constructSet($this->getTextCols('item')) ) {
+            if ($this->constructSet($this->getTextCols('item'))) {
                 $ret[] = "UPDATE `item` SET " . $this->constructSet($this->getTextCols('item')) . " WHERE " . sqlin('slice_id', $modules, true);
             }
-            if ( $this->constructSet($this->getTextCols('content')) ) {
+            if ($this->constructSet($this->getTextCols('content'))) {
                 $ret[] = "UPDATE `content` SET " . $this->constructSet($this->getTextCols('content')) . " WHERE `item_id` IN ( SELECT `id` FROM `item` WHERE " . sqlin('slice_id', $modules, true) . ")";
             }
-            if ( $this->constructSet($this->getTextCols('view')) ) {
+            if ($this->constructSet($this->getTextCols('view'))) {
                 $ret[] = "UPDATE `view` SET " . $this->constructSet($this->getTextCols('view')) . " WHERE " . sqlin('slice_id', $modules, true);
             }
-            if ( $this->constructSet($this->getTextCols('alerts_filter')) ) {
+            if ($this->constructSet($this->getTextCols('alerts_filter'))) {
                 $ret[] = "UPDATE `alerts_filter` SET " . $this->constructSet($this->getTextCols('alerts_filter')) . " WHERE `vid` IN ( SELECT `id` FROM `view` WHERE " . sqlin('slice_id', $modules, true) . ")";
-            // change_record takes too much time to convert - moved outside of the transaction as the last SQL
-            //$ret[] = "UPDATE `change_record` SET " . $this->constructSet($this->getTextCols('change_record')) . " WHERE `change_id` IN ( SELECT `id` FROM `change` WHERE `resource_id` IN ( SELECT LOWER(HEX(`id`)) FROM `item` WHERE " . sqlin('slice_id', $modules, true) . "))";
+                // change_record takes too much time to convert - moved outside of the transaction as the last SQL
+                //$ret[] = "UPDATE `change_record` SET " . $this->constructSet($this->getTextCols('change_record')) . " WHERE `change_id` IN ( SELECT `id` FROM `change` WHERE `resource_id` IN ( SELECT LOWER(HEX(`id`)) FROM `item` WHERE " . sqlin('slice_id', $modules, true) . "))";
             }
-            if ( $this->constructSet($this->getTextCols('constant')) ) {
+            if ($this->constructSet($this->getTextCols('constant'))) {
                 $ret[] = "UPDATE `constant` SET " . $this->constructSet($this->getTextCols('constant')) . " WHERE `group_id` IN ( SELECT `group_id` FROM `constant_slice` WHERE " . sqlin('slice_id', $modules, true) . ")";
             }
-            if ( $this->constructSet($this->getTextCols('discussion')) ) {
+            if ($this->constructSet($this->getTextCols('discussion'))) {
                 $ret[] = "UPDATE `discussion` SET " . $this->constructSet($this->getTextCols('discussion')) . " WHERE `item_id` IN ( SELECT `id` FROM `item` WHERE " . sqlin('slice_id', $modules, true) . ")";
             }
-            if ( $this->constructSet($this->getTextCols('ef_categories')) ) {
+            if ($this->constructSet($this->getTextCols('ef_categories'))) {
                 $ret[] = "UPDATE `ef_categories` SET " . $this->constructSet($this->getTextCols('ef_categories')) . " WHERE `target_category_id` IN ( SELECT `id` FROM `constant` WHERE `group_id` IN ( SELECT `group_id` FROM `constant_slice` WHERE " . sqlin('slice_id', $modules, true) . "))";
             }
-            if ( $this->constructSet($this->getTextCols('field')) ) {
+            if ($this->constructSet($this->getTextCols('field'))) {
                 $ret[] = "UPDATE `field` SET " . $this->constructSet($this->getTextCols('field')) . " WHERE " . sqlin('slice_id', $modules, true);
             }
-            if ( $this->constructSet($this->getTextCols('slice')) ) {
+            if ($this->constructSet($this->getTextCols('slice'))) {
                 $ret[] = "UPDATE `slice` SET " . $this->constructSet($this->getTextCols('slice')) . " WHERE " . sqlin('id', $modules, true);
             }
-            if ( $this->constructSet($this->getTextCols('rssfeeds')) ) {
+            if ($this->constructSet($this->getTextCols('rssfeeds'))) {
                 $ret[] = "UPDATE `rssfeeds` SET " . $this->constructSet($this->getTextCols('rssfeeds')) . " WHERE " . sqlin('slice_id', $modules, true);
             }
-            if ( $this->constructSet($this->getTextCols('profile')) ) {
+            if ($this->constructSet($this->getTextCols('profile'))) {
                 $ret[] = "UPDATE `profile` SET " . $this->constructSet($this->getTextCols('profile')) . " WHERE " . sqlin('slice_id', $modules, true);
             }
-            if ( $this->constructSet($this->getTextCols('feedmap')) ) {
+            if ($this->constructSet($this->getTextCols('feedmap'))) {
                 $ret[] = "UPDATE `feedmap` SET " . $this->constructSet($this->getTextCols('feedmap')) . " WHERE " . sqlin('to_slice_id', $modules, true);
             }
 
@@ -527,7 +536,8 @@ class ConvertSliceEncoding extends AA\Optimize\AbstractOptimize {
      * @param array $modules
      * @return array
      */
-    protected function getSliceUpdateSlowFinalSqls(array $modules): array {
+    protected function getSliceUpdateSlowFinalSqls(array $modules): array
+    {
         $ret = [];
         if ($modules) {
             $ret[] = "CREATE TEMPORARY TABLE IF NOT EXISTS `tmp_change_id_tmp` (`change_id` varbinary(32) NOT NULL DEFAULT '                                ') ENGINE=InnoDB DEFAULT CHARSET=latin1";
@@ -542,7 +552,8 @@ class ConvertSliceEncoding extends AA\Optimize\AbstractOptimize {
      * @param array $modules
      * @return array
      */
-    protected function getSiteUpdateSqls(array $modules): array {
+    protected function getSiteUpdateSqls(array $modules): array
+    {
         $ret = [];
         if ($modules) {
             $ret[] = "UPDATE `site_spot` SET " . $this->constructSet($this->getTextCols('site_spot')) . " WHERE " . sqlin('site_id', $modules, true);
@@ -552,7 +563,8 @@ class ConvertSliceEncoding extends AA\Optimize\AbstractOptimize {
     }
 
     /** go through all modules and return only modules of the $type. Look also into all related slices of site module */
-    protected function getRelatedModulesOfType(array $modules, string $type, string $filter_charset=''): array {
+    protected function getRelatedModulesOfType(array $modules, string $type, string $filter_charset = ''): array
+    {
         if ($type !== 'W') {
             $sites = $this->getRelatedModulesOfType($modules, 'W', $filter_charset);
             $modules += AA_Module_Site::getRelatedModules([$sites]);  // slices and polls..
@@ -575,12 +587,16 @@ class ConvertSliceEncoding extends AA\Optimize\AbstractOptimize {
         return $ret;
     }
 
-    protected function constructSet(array $cols): string {
-        array_walk($cols, function (&$v) { $v = "`$v` = cast(convert(convert(cast(`$v` as binary) using cp1250) using utf8) as binary)"; });
+    protected function constructSet(array $cols): string
+    {
+        array_walk($cols, function (&$v) {
+            $v = "`$v` = cast(convert(convert(cast(`$v` as binary) using cp1250) using utf8) as binary)";
+        });
         return implode(', ', $cols);
     }
 
-    protected function getTextCols(string $tablename): array {
+    protected function getTextCols(string $tablename): array
+    {
         $ret = [];
         $metabase = AA::Metabase();
         $cols = $metabase->getColumns($tablename);
@@ -597,7 +613,8 @@ class ConvertSliceEncoding extends AA\Optimize\AbstractOptimize {
      * @param array $modules
      * @return bool
      */
-    protected function justTablecolumsTest(array $modules): bool {
+    protected function justTablecolumsTest(array $modules): bool
+    {
         $metabase = AA::Metabase();
         $tablenames = $metabase->getTableNames();
 
@@ -607,19 +624,19 @@ class ConvertSliceEncoding extends AA\Optimize\AbstractOptimize {
                 if (str_starts_with($tablename, 'bck_')) {
                     continue;
                 }
-                if ( !($cols = $metabase->getColumns($tablename))) {
+                if (!($cols = $metabase->getColumns($tablename))) {
                     continue;
                 }
                 foreach ($cols as $colname => $coldef) {
                     if ($coldef->getFieldType() === 'text' && !$coldef->isBinary()) {
-                        echo "<br> &nbsp; $colname ". (AA_Metabase::isPacked($tablename, $colname) ? 'P' : '.'). ($coldef->isBinary() ? 'B' : '.'). ($coldef->isKey() ? 'K' : '.');
+                        echo "<br> &nbsp; $colname " . (AA_Metabase::isPacked($tablename, $colname) ? 'P' : '.') . ($coldef->isBinary() ? 'B' : '.') . ($coldef->isKey() ? 'K' : '.');
                     }
                 }
             }
 
 
             //$SQL =  "UPDATE content SET text = convert(text using utf8) WHERE item_id IN ( SELECT id FROM item WHERE slice_id=0x" . quote($this->slice_id).")";
-            $SQL =  "UPDATE content SET text = cast(convert(convert(cast(text as binary) using cp1250) using utf8) as binary) WHERE item_id IN ( SELECT id FROM item WHERE slice_id=0x" . quote($module_id).")";
+            $SQL =  "UPDATE content SET text = cast(convert(convert(cast(text as binary) using cp1250) using utf8) as binary) WHERE item_id IN ( SELECT id FROM item WHERE slice_id=0x" . quote($module_id) . ")";
             /*
               alerts_filter - conds, description
               auth_group - username, groups      ??
@@ -629,7 +646,7 @@ class ConvertSliceEncoding extends AA\Optimize\AbstractOptimize {
               constant - name, value, ancestors ??, description
               content - text
               cron - * ??
-              discussion - subject,  author,  	e_mail, body, url_address,  url_description,  	remote_addr ??,  	free1,   	free2
+              discussion - subject,  author,      e_mail, body, url_address,  url_description,      remote_addr ??,      free1,       free2
               ef_categories - category, category_name
                ef_permissions -
             */

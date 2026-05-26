@@ -1,4 +1,5 @@
 <?php
+
 /**
  *
  * PHP version 7.2+
@@ -27,7 +28,6 @@
 
 namespace AA\Later;
 
-
 /**
  * Interface LaterInterface - enable to plan this object execution for later time
  * Usage:
@@ -36,12 +36,12 @@ namespace AA\Later;
  *   $toexecute->laterOnce($cache_purger, array($this->cacheTime), 'AA\Later\PagecachePurge', 101, now() + 300);  // run it once in 5 minutes
  * @package AA\Util
  */
-interface LaterInterface {
-
+interface LaterInterface
+{
     /** special function called from AA\Later\Toexecute class - used for queued tasks (ran form cron)
      *  @param array $params - numeric array of additional parameters for the execution passed in time of call
      *  @return string - message about execution to be logged
      */
-    public function toexecutelater($params= []): string;
+    public function toexecutelater($params = []): string;
 
 }

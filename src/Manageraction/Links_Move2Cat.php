@@ -6,23 +6,25 @@ use AA\Manager;
 use zids;
 
 /**  */
-class Links_Move2Cat extends AbstractManageraction {
-
+class Links_Move2Cat extends AbstractManageraction
+{
     /** Constructor - fills the information about the target bin */
-    function __construct($id, $url) {
+    public function __construct($id, $url)
+    {
         parent::__construct($id);
         $this->setOpenUrl($url);
     }
 
     /** Name of this Manager's action */
-    public function getName(): string {
+    public function getName(): string
+    {
         return _m('Move to category');
     }
 
     /** @inheritDoc */
-    function perform(Manager $manager, zids $item_zids, $action_param): string|false
+    public function perform(Manager $manager, zids $item_zids, $action_param): string|false
     {
-        if (ctype_digit((string)$action_param)) {
+        if (ctype_digit((string) $action_param)) {
             foreach ($item_zids as $lid) {
                 Links_DeleteLink($lid);
                 Links_Assign2Category($lid, $action_param);
@@ -37,7 +39,8 @@ class Links_Move2Cat extends AbstractManageraction {
      *
      * @return bool
      */
-    function isPerm4Action($manager):bool {
+    public function isPerm4Action($manager): bool
+    {
         return !$GLOBALS['r_state']['show_subtree'] && IsCatPerm(PS_LINKS_DELETE_LINK, $GLOBALS['r_state']['cat_path']);
     }
 }

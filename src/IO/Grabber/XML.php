@@ -1,4 +1,5 @@
 <?php
+
 /**
  *
  * PHP version 7.2+
@@ -38,7 +39,6 @@ use ItemContent;
  */
 class XML extends AbstractGrabber
 {
-
     /** @var $file string url of the file */
     protected $file = '';
 
@@ -67,7 +67,8 @@ class XML extends AbstractGrabber
      * @param string $direct_input
      * @param string $item_xpath
      */
-    function __construct($file, $post_body=null, $direct_input='', $item_xpath = '') {
+    public function __construct($file, $post_body = null, $direct_input = '', $item_xpath = '')
+    {
         $this->file = $file;
         $this->post_body = $post_body;
         $this->direct_input = $direct_input;
@@ -75,21 +76,24 @@ class XML extends AbstractGrabber
     }
 
     /** Name of the grabber - used for grabber selection box */
-    public static function name(): string {
+    public static function name(): string
+    {
         return _m('XML');
     }
 
     /** Description of the grabber - used as help text for the users.
      *  Description is in HTML
      */
-    public static function description(): string {
+    public static function description(): string
+    {
         return _m('General XML file');
     }
 
     /** true, if grabber returns already prepared item. false, when just parsed source structure is returned which must be converted by transformations
      * @return bool
      */
-    public function isDirectfill(): bool {
+    public function isDirectfill(): bool
+    {
         return false;
     }
 
@@ -97,12 +101,13 @@ class XML extends AbstractGrabber
      *  Used for importer and htmlSettings()
      * @return array
      */
-    public static function getClassProperties(): array {
+    public static function getClassProperties(): array
+    {
         $properties = [];//                        id             name        type    multi  persistent - validator, required, help, morehelp, example
-        $properties['file']         = new AA_Property('file',         _m("URL of the file"), 'string', false, true);
-        $properties['post_body']    = new AA_Property('post_body',    _m("POST request body"), 'string', false, true);
+        $properties['file']         = new AA_Property('file', _m("URL of the file"), 'string', false, true);
+        $properties['post_body']    = new AA_Property('post_body', _m("POST request body"), 'string', false, true);
         $properties['direct_input'] = new AA_Property('direct_input', _m("use direct text instead of file"), 'string', false, true);
-        $properties['item_xpath']   = new AA_Property('item_xpath',   _m("XPath to one item"), 'string', false, true, 'string', false, _m("Specify, how to grab one item from the file using XPath expression"), '', _m("//item"));
+        $properties['item_xpath']   = new AA_Property('item_xpath', _m("XPath to one item"), 'string', false, true, 'string', false, _m("Specify, how to grab one item from the file using XPath expression"), '', _m("//item"));
         return $properties;
     }
 
@@ -113,7 +118,8 @@ class XML extends AbstractGrabber
     }
 
     /** loads all the data based on grabber setting and return it */
-    public function getSources(): array {
+    public function getSources(): array
+    {
         return [$this->loadData($this->file, $this->direct_input, $this->post_body)];
     }
 
@@ -121,7 +127,7 @@ class XML extends AbstractGrabber
      *  method is called - it means "we are going really to grab the data
      * @throws Exception
      */
-    function prepare(): void
+    public function prepare(): void
     {
         $data = implode('', $this->getSources());
 
@@ -132,15 +138,15 @@ class XML extends AbstractGrabber
             throw new Exception('xml parse error: ' . $data);
         }
 
-        if ( $nss = $xml->getNamespaces(true) ) {
+        if ($nss = $xml->getNamespaces(true)) {
             if ($this->fake_namespaces) {
                 $search = [];
                 foreach (array_keys($nss) as $prefix) {
                     $search[] = "<$prefix:";
                     $search[] = "</$prefix:";
                     $search[] = "xmlns:$prefix";
-                    $replace[] = "<$prefix".'_';
-                    $replace[] = "</$prefix".'_';
+                    $replace[] = "<$prefix" . '_';
+                    $replace[] = "</$prefix" . '_';
                     $replace[] = "xmlns_$prefix";
                 }
                 $data = str_replace($search, $replace, $data);
@@ -165,13 +171,13 @@ class XML extends AbstractGrabber
         foreach ($splitted as $item) {
             $this->_items[] = $item;
         }
-        $this->message(__CLASS__.' -> '. __FUNCTION__);
-        $this->message("parsed items ". count($this->_items));
+        $this->message(__CLASS__ . ' -> ' . __FUNCTION__);
+        $this->message("parsed items " . count($this->_items));
         reset($this->_items);
     }
 
     /** Method called by the AA\IO\Saver to get next item from the data input */
-    function getItem(): ?AA_Content
+    public function getItem(): ?AA_Content
     {
         if (false === ($xml = current($this->_items))) {
             return null;

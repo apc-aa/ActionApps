@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: honzama
@@ -18,7 +19,6 @@ use PDO;
 /** FTP directory grabber */
 class FilesFTP extends AbstractGrabber
 {
-
     /** @var string sql query */
     protected $server = '';
 
@@ -52,7 +52,8 @@ class FilesFTP extends AbstractGrabber
      * new AA\IO\Grabber\FileFTP('ftp.server.com', 'ftpuser', 'ftppassword', 'directory', [], [], 10);
      * new AA\IO\Grabber\FilesFTP('example.org', 'honza', 'mySecretPwd', '/data', ['/.*\.txt$/'], ['~/pressreleases/~', '~/news/~'], 0);
      */
-    function __construct(string $server='', string $username='', string $password='', string $directory='', array $include=[], array $exclude=[], int $max_files=0, array $info=[]) {
+    public function __construct(string $server = '', string $username = '', string $password = '', string $directory = '', array $include = [], array $exclude = [], int $max_files = 0, array $info = [])
+    {
         $this->server           = $server;
         $this->username         = $username;
         $this->password         = $password;
@@ -66,7 +67,8 @@ class FilesFTP extends AbstractGrabber
     /** name function
      * Name of the grabber - used for grabber selection box
      */
-    public static function name() : string {
+    public static function name(): string
+    {
         return _m('FTP files recursive');
     }
 
@@ -74,14 +76,16 @@ class FilesFTP extends AbstractGrabber
      *  Description of the grabber - used as help text for the users.
      *  Description is in HTML
      */
-    public static function description(): string {
+    public static function description(): string
+    {
         return _m('Import data from FTP directories');
     }
 
     /** true, if grabber returns already prepared item. false, when just parsed source structure is returned which must be converted by transformations
      * @return bool
      */
-    public function isDirectfill(): bool {
+    public function isDirectfill(): bool
+    {
         return false;
     }
 
@@ -89,16 +93,17 @@ class FilesFTP extends AbstractGrabber
      *  Used for importer and htmlSettings()
      * @return array  $sql='', $dbname='', $username='', $password='', $type='', $host='', $port='', $charset=''
      */
-    public static function getClassProperties(): array {
+    public static function getClassProperties(): array
+    {
         $properties = [];   //                   id             name        type    multi  persistent - validator, required, help, morehelp, example
-        $properties['server']    = new AA_Property('server',    _m("FTP server"), 'string', false, true);
+        $properties['server']    = new AA_Property('server', _m("FTP server"), 'string', false, true);
         $properties['username']  = new AA_Property('username', _m("FTP Username"), 'string', false, true);
         $properties['password']  = new AA_Property('password', _m("FTP Password"), 'string', false, true);
         $properties['directory'] = new AA_Property('directory', _m("FTP directory"), 'string', false, true);
-        $properties['include']   = new AA_Property('include',   _m("Include files regexp"), 'string',  true, true);
-        $properties['exclude']   = new AA_Property('exclude',   _m("Exclude files regexp"), 'string',  true, true);
-        $properties['max_files'] = new AA_Property('max_files', _m("Max files to process"), 'int',    false, true);
-        $properties['info']      = new AA_Property('info',      _m("Info to get"), 'string',  true, true, null, false, 'name,dir,path,size,mtime,content - default is all except content');
+        $properties['include']   = new AA_Property('include', _m("Include files regexp"), 'string', true, true);
+        $properties['exclude']   = new AA_Property('exclude', _m("Exclude files regexp"), 'string', true, true);
+        $properties['max_files'] = new AA_Property('max_files', _m("Max files to process"), 'int', false, true);
+        $properties['info']      = new AA_Property('info', _m("Info to get"), 'string', true, true, null, false, 'name,dir,path,size,mtime,content - default is all except content');
         return $properties;
     }
 
@@ -107,7 +112,7 @@ class FilesFTP extends AbstractGrabber
      *  method is called - it means "we are going really to grab the data
      * @throws Exception
      */
-    function prepare(): void
+    public function prepare(): void
     {
         $this->connection = ftp_connect($this->server);
 
@@ -130,7 +135,7 @@ class FilesFTP extends AbstractGrabber
             throw new Exception('Couldn\'t list files in directory');
         }
 
-//      $current_path = '';
+        //      $current_path = '';
         $current_path = $this->directory;
         foreach ($file_list as $file_info) {
 
@@ -163,13 +168,13 @@ class FilesFTP extends AbstractGrabber
             }
         }
 
-        $this->message("found files: ". count($this->filepaths));
+        $this->message("found files: " . count($this->filepaths));
     }
 
     /** Method called by the AA\IO\Saver to get next item from the data input */
-    function getItem(): ?AA_Content
+    public function getItem(): ?AA_Content
     {
-        if ( !count($this->filepaths) || !($file = current($this->filepaths))) {
+        if (!count($this->filepaths) || !($file = current($this->filepaths))) {
             return null;
         }
         $item = new ItemContent();
@@ -177,22 +182,22 @@ class FilesFTP extends AbstractGrabber
             $info = ['name','dir','path','size','mtime'];
         }
         // parse the file name
-        if (in_array('name',$info)) {
+        if (in_array('name', $info)) {
             $item->setValue('name', basename($file));
         }
-        if (in_array('dir',$info)) {
-            $item->setValue('dir',  dirname($file));
+        if (in_array('dir', $info)) {
+            $item->setValue('dir', dirname($file));
         }
-        if (in_array('path',$info)) {
+        if (in_array('path', $info)) {
             $item->setValue('path', $file);
         }
-        if (in_array('size',$info)) {
-            $item->setValue('size',  ftp_size($this->connection, $file));
+        if (in_array('size', $info)) {
+            $item->setValue('size', ftp_size($this->connection, $file));
         }
-        if (in_array('mtime',$info)) {
+        if (in_array('mtime', $info)) {
             $item->setValue('mtime', ftp_mdtm($this->connection, $file));
         }
-        if (in_array('content',$info)) {
+        if (in_array('content', $info)) {
             $item->setValue('content', $this->getFtpFileContent($file));
         }
         //               'content' => get_file_content($conn_id, $full_path)
@@ -220,7 +225,7 @@ class FilesFTP extends AbstractGrabber
 
     /** Function called by AA\IO\Saver after we get the last item from the data input
      */
-    function finish(): void
+    public function finish(): void
     {
         // close connections
         if ($this->connection) {

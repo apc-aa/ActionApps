@@ -6,10 +6,10 @@ use AA\Manager;
 use zids;
 
 /**  */
-class Links_DeleteTrash extends AbstractManageraction {
-
+class Links_DeleteTrash extends AbstractManageraction
+{
     /** @inheritDoc */
-    function perform(Manager $manager, zids $item_zids, $action_param): string|false
+    public function perform(Manager $manager, zids $item_zids, $action_param): string|false
     {
         $db = getDB();
 
@@ -49,7 +49,8 @@ class Links_DeleteTrash extends AbstractManageraction {
      *
      * @return bool
      */
-    function isPerm4Action($manager):bool {
+    public function isPerm4Action($manager): bool
+    {
         return IsSuperadmin();
     }
 }

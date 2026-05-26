@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: honzama
@@ -54,23 +55,24 @@ use zids;
  *   where "dte" points to the AA\Widget\DteWidget. The method AA\Widget\DteWidget::getValue()
  *   is called to grab the value (or multivalues) from the submitted form
  */
-class Form extends AbstractGrabber {
+class Form extends AbstractGrabber
+{
     private $_items = [];
     private $_last_store_mode;
 
-    function __construct()
-    {
-    }
+    public function __construct() {}
 
     /** Name of the grabber - used for grabber selection box */
-    public static function name(): string {
+    public static function name(): string
+    {
         return _m('Form');
     }
 
     /** Description of the grabber - used as help text for the users.
      *  Description is in HTML
      */
-    public static function description(): string {
+    public static function description(): string
+    {
         return _m('Grabs data POSTed by AA form');
     }
 
@@ -105,7 +107,7 @@ class Form extends AbstractGrabber {
         foreach ($files as $type => $items) {
             foreach ($items as $item => $fields) {
                 foreach ($fields as $field => $f) {
-                    foreach ((array)$f['fil']['var'] as $k => $value) {
+                    foreach ((array) $f['fil']['var'] as $k => $value) {
                         $arr = [$item => [$field => ['fil' => ['var' => ["_$k" => [$type => $value]]]]]];
                         $ret = array_merge_recursive($ret, $arr);
                     }
@@ -115,11 +117,12 @@ class Form extends AbstractGrabber {
         return $ret;
     }
 
-    private static function getNewItemSlices(): array {
+    private static function getNewItemSlices(): array
+    {
         $slices = [];
-        $aa_ops = array_merge(array_keys($_POST['aa'] ?? []), array_keys($_FILES['aa']?? []));
+        $aa_ops = array_merge(array_keys($_POST['aa'] ?? []), array_keys($_FILES['aa'] ?? []));
         foreach ($aa_ops as $dirty_item_id) {
-            if ($dirty_item_id[0] === 'n' OR $dirty_item_id[0] === 'f') {
+            if ($dirty_item_id[0] === 'n' or $dirty_item_id[0] === 'f') {
                 [$letter, $sid] = explode('_', $dirty_item_id);
                 $slices[$sid] = true;
             }
@@ -131,7 +134,8 @@ class Form extends AbstractGrabber {
      *  (so the Saver will check the form token)
      *  @todo get slices also from edited items
      */
-    public static function useFormTokens(): bool {
+    public static function useFormTokens(): bool
+    {
         $slices = self::getNewItemSlices();
         foreach ($slices as $sid) {
             if (AA_Slice::getModule($sid)?->useFormTokens()) {
@@ -170,7 +174,7 @@ class Form extends AbstractGrabber {
 
 
     /** Method called by the AA\IO\Saver to get next item from the data input */
-    function getItem(): ?AA_Content
+    public function getItem(): ?AA_Content
     {
         if (!($tostore = current($this->_items))) {
             return null;
@@ -184,7 +188,8 @@ class Form extends AbstractGrabber {
      *  method is called - it means "we are going really to grab the data
      * @throws Exception
      */
-    function prepare() {
+    public function prepare()
+    {
 
         $this->_items = [];
         if (!isset($_POST['aa']) || !is_array($_POST['aa'])) {
@@ -209,7 +214,7 @@ class Form extends AbstractGrabber {
         // Also, it is stored as array...[name][file___________1][...] array...[type][file___________1][...]
         // so the information about one file is quite far in the structure
         if (isset($_FILES['aa'])) {
-            
+
             // collect together the information about one file - array(name, type, tmp_name, error, size)
             //$files = array_merge_recursive($_FILES['aa']['name'], $_FILES['aa']['type'], $_FILES['aa']['tmp_name'], $_FILES['aa']['error'], $_FILES['aa']['size']);
             $files = $this->rearangeAaFilesArray($_FILES['aa']);
@@ -298,7 +303,7 @@ class Form extends AbstractGrabber {
                 if (!($field = $slice?->getField($field_id))) {
                     continue;
                 }
-                $default_val = ($store_mode==='new') ? $field->getDefault() : $oldcontent4id->getAaValue($field_id);
+                $default_val = ($store_mode === 'new') ? $field->getDefault() : $oldcontent4id->getAaValue($field_id);
 
                 // Get the content of the field (values and flags)
                 // Convert to array - designers sometimes set (wrongly) as scalar:
@@ -306,7 +311,7 @@ class Form extends AbstractGrabber {
                 //  (which somehow works in PHP<8) - now we typecasting it to array to be sure
 
                 // default used just for HTML flag, right now
-                $aa_value = Widget::getValue((array)$val_array, $default_val);
+                $aa_value = Widget::getValue((array) $val_array, $default_val);
                 $aa_value->replaceInValues($trans_item_alias, $trans_item_ids);
 
                 if ($dirty_item_id[0] === 'r' && $field_id !== 'slice_id........') {
@@ -323,11 +328,10 @@ class Form extends AbstractGrabber {
     /** Function called by AA\IO\Saver after we get the last item from the data
      *  input
      */
-    function finish(): void
+    public function finish(): void
     {
         $this->_items = [];
     }
 
-    public static function grab() {
-    }
+    public static function grab() {}
 }

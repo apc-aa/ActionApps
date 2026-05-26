@@ -2,7 +2,8 @@
 
 namespace AA\Util;
 
-trait ReportTrait {
+trait ReportTrait
+{
     protected array $messages = [];
 
     /** Message function
@@ -15,7 +16,7 @@ trait ReportTrait {
         if (is_array($row)) {
             $m = $row;
         } elseif (is_object($row)) {
-            $m = ['txt' => is_callable([$row, "__toString"]) ? $row : '<pre>'.safe(print_r($row, true)).'</pre>'];
+            $m = ['txt' => is_callable([$row, "__toString"]) ? $row : '<pre>' . safe(print_r($row, true)) . '</pre>'];
         } else {
             $m = ['txt' => $row];
         }
@@ -28,7 +29,8 @@ trait ReportTrait {
      * @param string $type html | plain
      * @return string - messages in table
      */
-    public function report(int $verbosity = 1, string $type='html'): string {
+    public function report(int $verbosity = 1, string $type = 'html'): string
+    {
         $ret = '';
         $rows = [];
         foreach ($this->messages as $m) {
@@ -39,10 +41,10 @@ trait ReportTrait {
 
         if ($rows) {
             $caption =  is_callable([$this, "getId"]) ? $this->getId() : '';
-            if ($type==='html') {
+            if ($type === 'html') {
                 $ret = GetHtmlTable($rows, 'key', $caption);
-            } elseif ($type==='plain') {
-                $msgs = $caption ? array_merge([['name'=>$caption]], $rows) : $rows;
+            } elseif ($type === 'plain') {
+                $msgs = $caption ? array_merge([['name' => $caption]], $rows) : $rows;
                 $ret = json_encode($msgs);
             }
         }

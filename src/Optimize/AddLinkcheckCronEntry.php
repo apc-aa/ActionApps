@@ -3,25 +3,32 @@
 namespace AA\Optimize;
 
 use AA\IO\DB\DB_AA;
-/** Adds cron entry for Checking link status in Links module into AA cron */
-class AddLinkcheckCronEntry extends \AA\Optimize\AbstractOptimize {
 
+/** Adds cron entry for Checking link status in Links module into AA cron */
+class AddLinkcheckCronEntry extends \AA\Optimize\AbstractOptimize
+{
     /**  {@inheritdoc} Implementation of \AA\Util\NamedInterface  */
-    public static function name(): string {
+    public static function name(): string
+    {
         return _m("Adds cron entry for Link checking in Links Module into AA cron");
     }
 
     /**  {@inheritdoc} Implementation of \AA\Util\NamedInterface */
-    public static function description(): string {
+    public static function description(): string
+    {
         return _m("It however do not install the system cron for AA - you should do it by yourself (see /misc/aa-http-request script)");
     }
 
     /** checks if this Optimize class belongs to specified type (like "sql_update") */
-    public static function types(): array { return ['sql_update']; }
+    public static function types(): array
+    {
+        return ['sql_update'];
+    }
 
 
     /** Test function @return bool */
-    public function test(): bool {
+    public function test(): bool
+    {
         $ret = true;
 
         $row_count = DB_AA::count('cron', [['script', 'modules/links/linkcheck.php']]);
@@ -33,7 +40,8 @@ class AddLinkcheckCronEntry extends \AA\Optimize\AbstractOptimize {
     }
 
     /** Main update function @return bool */
-    public function repair(): bool {
+    public function repair(): bool
+    {
 
         $this->message(_m('Deleting AA Cron entry for Checking link status in Links module'));
         $this->query("DELETE FROM cron WHERE script='modules/links/linkcheck.php'");

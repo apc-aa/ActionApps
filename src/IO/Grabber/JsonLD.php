@@ -1,4 +1,5 @@
 <?php
+
 /**
  *
  * PHP version 7.2+
@@ -38,7 +39,6 @@ use ItemContent;
  */
 class JsonLD extends AbstractGrabber
 {
-
     /** @var $file string url of the file */
     protected $file = '';
 
@@ -66,26 +66,30 @@ class JsonLD extends AbstractGrabber
      * JsonLD constructor.
      * @param        $file
      */
-    function __construct($file) {
+    public function __construct($file)
+    {
         $this->file = $file;
     }
 
     /** Name of the grabber - used for grabber selection box */
-    public static function name(): string {
+    public static function name(): string
+    {
         return _m('JSON-LD');
     }
 
     /** Description of the grabber - used as help text for the users.
      *  Description is in HTML
      */
-    public static function description(): string {
+    public static function description(): string
+    {
         return _m('General JSON-LD file');
     }
 
     /** true, if grabber returns already prepared item. false, when just parsed source structure is returned which must be converted by transformations
      * @return bool
      */
-    public function isDirectfill(): bool {
+    public function isDirectfill(): bool
+    {
         return false;
     }
 
@@ -93,12 +97,13 @@ class JsonLD extends AbstractGrabber
      *  Used for importer and htmlSettings()
      * @return array
      */
-    public static function getClassProperties(): array {
+    public static function getClassProperties(): array
+    {
         $properties = [];//                        id             name        type    multi  persistent - validator, required, help, morehelp, example
-        $properties['file']         = new AA_Property('file',         _m("URL of the file"), 'string', false, true);
-//        $properties['post_body']    = new AA_Property('post_body',    _m("POST request body"), 'string', false, true);
-//        $properties['direct_input'] = new AA_Property('direct_input', _m("use direct text instead of file"), 'string', false, true);
-//        $properties['item_xpath']   = new AA_Property('item_xpath',   _m("XPath to one item"), 'string', false, true, 'string', false, _m("Specify, how to grab one item from the file using XPath expression"), '', _m("//item"));
+        $properties['file']         = new AA_Property('file', _m("URL of the file"), 'string', false, true);
+        //        $properties['post_body']    = new AA_Property('post_body',    _m("POST request body"), 'string', false, true);
+        //        $properties['direct_input'] = new AA_Property('direct_input', _m("use direct text instead of file"), 'string', false, true);
+        //        $properties['item_xpath']   = new AA_Property('item_xpath',   _m("XPath to one item"), 'string', false, true, 'string', false, _m("Specify, how to grab one item from the file using XPath expression"), '', _m("//item"));
         return $properties;
     }
 
@@ -106,7 +111,8 @@ class JsonLD extends AbstractGrabber
      * @param string|null $item_splitter
      * @return JsonLD
      */
-    public function setItemSplitter(string $item_splitter = null): static {
+    public function setItemSplitter(string $item_splitter = null): static
+    {
         $this->item_splitter = $item_splitter;
         return $this;
     }
@@ -129,12 +135,14 @@ class JsonLD extends AbstractGrabber
     /**
      * @param string|null $next_func
      */
-    public function setNextFunc(string $next_func = null): static {
+    public function setNextFunc(string $next_func = null): static
+    {
         $this->next_func = $next_func;
         return $this;
     }
 
-    protected function nextfunction($json): string {
+    protected function nextfunction($json): string
+    {
         // for now just one non-standard next function - Empty
         if ($this->next_func === 'None') {
             return '';
@@ -144,18 +152,20 @@ class JsonLD extends AbstractGrabber
     }
 
     /** You can get token dynamically, so you will set it through  setAuth, or you already have token, then you setToken directly */
-    protected function loadAuth(): bool {
+    protected function loadAuth(): bool
+    {
         if (!$this->token) {
-            $post_body = json_encode(["username"=>$this->authdata['username'], "password"=>$this->authdata['password']]);
+            $post_body = json_encode(["username" => $this->authdata['username'], "password" => $this->authdata['password']]);
             $data      = $this->loadUrl($this->authdata['tokenurl'], $post_body);
             $data      = json_decode($data, true);
             $this->token = $data ? $data['token'] : '';
         }
-        return (bool)$this->token;
+        return (bool) $this->token;
     }
 
     /** You can get token dynamically, so you weill set it through  setAuth, or you already have token, then you setToken directly */
-    public function setAuth(array $authdata): static {
+    public function setAuth(array $authdata): static
+    {
         $this->authdata['username'] = $authdata['username'];
         $this->authdata['password'] = $authdata['password'];
         $this->authdata['tokenurl'] = $authdata['tokenurl'];
@@ -165,7 +175,8 @@ class JsonLD extends AbstractGrabber
     /** Mainly for debugging
      * @return string
      */
-    public function getToken(): string {
+    public function getToken(): string
+    {
         if (!$this->token) {
             $this->loadAuth();
         }
@@ -173,7 +184,8 @@ class JsonLD extends AbstractGrabber
     }
 
     /** You can get token dynamically, so you weill set it through  setAuth, or you already have token, then you setToken directly */
-    public function setToken(string $token): static {
+    public function setToken(string $token): static
+    {
         $this->token = $token;
         return $this;
     }
@@ -186,7 +198,8 @@ class JsonLD extends AbstractGrabber
      *
      * @return string data
      */
-    protected function loadUrl(string $url, ?string $post_body = ''): string {
+    protected function loadUrl(string $url, ?string $post_body = ''): string
+    {
         $header =  "Content-Type: application/json";
         $header .= "\r\nAccept: application/json";
         if ($this->token) {
@@ -205,21 +218,23 @@ class JsonLD extends AbstractGrabber
         return file_get_contents($url, false, $context);
     }
 
-    protected function nextPage($json): string {
+    protected function nextPage($json): string
+    {
         if ($this->next_func) {
             return $this->nextfunction($json);
         }
         $url = '';
         if ($next = $json['hydra:view']['hydra:next']) {
-            $needle = substr($next,0,(max(3,strlen($next)/2)));
-            $url = substr($this->file,0,strrpos($this->file,$needle)).$next;
-//            huhl('NP',$next, $needle, $url);
+            $needle = substr($next, 0, (max(3, strlen($next) / 2)));
+            $url = substr($this->file, 0, strrpos($this->file, $needle)) . $next;
+            //            huhl('NP',$next, $needle, $url);
         }
         return $url;
     }
 
     /** loads all the data based on grabber setting and return it */
-    public function getSources(): array {
+    public function getSources(): array
+    {
         $ret = [];
         $next_url = $this->file;
         while ($next_url) {
@@ -235,7 +250,7 @@ class JsonLD extends AbstractGrabber
      *  method is called - it means "we are going really to grab the data
      * @throws Exception
      */
-    function prepare(): void
+    public function prepare(): void
     {
         $this->_items = [];
         $data = $this->getSources();
@@ -255,20 +270,20 @@ class JsonLD extends AbstractGrabber
             //                }
             //            }
         }
-        
-            //    [hydra:view] => Array
-            //        (
-            //            [@id] => /api/ukazatel?page=1
-            //            [@type] => hydra:PartialCollectionView
-            //            [hydra:next] => /api/ukazatel?page=2
 
-        $this->message(__CLASS__.' -> '. __FUNCTION__);
-        $this->message("parsed items ". count($this->_items));
+        //    [hydra:view] => Array
+        //        (
+        //            [@id] => /api/ukazatel?page=1
+        //            [@type] => hydra:PartialCollectionView
+        //            [hydra:next] => /api/ukazatel?page=2
+
+        $this->message(__CLASS__ . ' -> ' . __FUNCTION__);
+        $this->message("parsed items " . count($this->_items));
         reset($this->_items);
     }
 
     /** Method called by the AA\IO\Saver to get next item from the data input */
-    function getItem(): ?AA_Content
+    public function getItem(): ?AA_Content
     {
         if (false === ($data = current($this->_items))) {
             return null;

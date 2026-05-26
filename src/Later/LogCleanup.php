@@ -1,4 +1,5 @@
 <?php
+
 /**
  *
  * PHP version 7.2+
@@ -27,8 +28,8 @@
 
 namespace AA\Later;
 
-class LogCleanup implements LaterInterface {
-
+class LogCleanup implements LaterInterface
+{
     /** @var int delete older than $time in seconds */
     protected int   $time;
 
@@ -38,7 +39,8 @@ class LogCleanup implements LaterInterface {
     /** @var array delete all log types except this ones */
     protected array $except;
 
-    function __construct(int $time, array $type=[], array $except=[]) {
+    public function __construct(int $time, array $type = [], array $except = [])
+    {
         $this->time   = $time;
         $this->type   = $type;
         $this->except = $except;
@@ -49,13 +51,13 @@ class LogCleanup implements LaterInterface {
      * @return string - message about execution to be logged
      * @see \AA\Later\LaterInterface
      */
-    public function toexecutelater($params= []): string
+    public function toexecutelater($params = []): string
     {
         $where = [['time', $this->time, '<']];
-        if ( $this->type ) {
+        if ($this->type) {
             $where[] = ['type',$this->type];
         }
-        if ( $this->except ) {
+        if ($this->except) {
             $where[] = ['type',$this->except, 's<>'];
         }
         return (new TableCleaner('log', $where))->clean();

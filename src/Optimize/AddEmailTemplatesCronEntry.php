@@ -6,24 +6,30 @@ use AA;
 use AA\IO\DB\DB_AA;
 
 /** Adds email templates for Alerts module */
-class AddEmailTemplatesCronEntry extends \AA\Optimize\AbstractOptimize {
-
+class AddEmailTemplatesCronEntry extends \AA\Optimize\AbstractOptimize
+{
     /**  {@inheritdoc} Implementation of \AA\Util\NamedInterface */
-    public static function name(): string {
+    public static function name(): string
+    {
         return _m("Adds email templates for Alerts module");
     }
 
     /**  {@inheritdoc} Implementation of \AA\Util\NamedInterface */
-    public static function description(): string {
+    public static function description(): string
+    {
         return _m("");
     }
 
     /** checks if this Optimize class belongs to specified type (like "sql_update") */
-    public static function types(): array { return ['sql_update']; }
+    public static function types(): array
+    {
+        return ['sql_update'];
+    }
 
 
     /** Test function @return bool */
-    public function test(): bool {
+    public function test(): bool
+    {
         $ret = true;
 
         $row_count = DB_AA::count('email', [['type', 'alerts welcome']]);
@@ -36,7 +42,8 @@ class AddEmailTemplatesCronEntry extends \AA\Optimize\AbstractOptimize {
     }
 
     /** Main update function @return bool */
-    public function repair(): bool {
+    public function repair(): bool
+    {
         $std_row = AA::Metabase()->getEmptyRowArray('email');
         $std_row = array_merge($std_row, [
             'lang' => 'en',

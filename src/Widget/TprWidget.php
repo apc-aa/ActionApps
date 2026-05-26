@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: honzama
@@ -30,12 +31,14 @@ class TprWidget extends TxtWidget
      * Used parameter format (in fields.input_show_func table)
      * @return array
      */
-    public static function getClassProperties(): array {
+    public static function getClassProperties(): array
+    {
         return Widget::propertiesShop(['rows', 'cols', 'const', 'const_arr']);
     }
 
     /** @inheritDoc */
-    public static function description(): string {
+    public static function description(): string
+    {
         return ''; // TODO: Implement description() method.
     }
 }

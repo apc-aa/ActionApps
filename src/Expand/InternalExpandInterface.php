@@ -13,6 +13,7 @@ use AA_Content;
  *   results are not guaranteed.
  * /
  */
-interface InternalExpandInterface {
-    static function internal_expand(?AA_Content $content, ...$params): string;
+interface InternalExpandInterface
+{
+    public static function internal_expand(?AA_Content $content, ...$params): string;
 }

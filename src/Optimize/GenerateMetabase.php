@@ -1,4 +1,5 @@
 <?php
+
 /**
  *
  * PHP version 7.2+
@@ -37,34 +38,38 @@ $SQL_update_modules[] = "REPLACE INTO module (id, name, deleted, type, slice_url
 
 
 /** Generate metabase definition row */
-class GenerateMetabase extends \AA\Optimize\AbstractOptimize {
-
+class GenerateMetabase extends \AA\Optimize\AbstractOptimize
+{
     /** Name function
      * @return string - a name
      */
-    public static function name(): string {
+    public static function name(): string
+    {
         return _m("Generate metabase definition row");
     }
 
     /** Description function
      * @return string - a description
      */
-    public static function description(): string {
+    public static function description(): string
+    {
         return _m("For programmers only - Generate metabace definition row from current database bo be placed in /service/metabase.class.php and /include/metabase.class.php scripts");
     }
 
     /** implemented actions within this class */
-    public static function actions(): array { return ['repair']; }
+    public static function actions(): array
+    {
+        return ['repair'];
+    }
 
     /** Main update function
      * @return bool
      */
-    public function repair(): bool {
-        $metabase = new AA_Metabase;
+    public function repair(): bool
+    {
+        $metabase = new AA_Metabase();
         $metabase->loadFromDb();
         echo '$instance = unserialize(\'' . str_replace("'", '\\\'', serialize($metabase)) . '\');';
         exit;
     }
 }
-
-

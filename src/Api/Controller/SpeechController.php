@@ -1,10 +1,12 @@
 <?php
+
 /**
  * Speech-to-text controller — proxies uploaded audio to OpenAI's
  * /v1/audio/transcriptions endpoint so the API key never leaves the server.
  * Invoked from api/transcribe.php (direct PHP entry point).
  *
- * Authentication: requires a logged-in AA user ($auth->is_user()).
+ * Authentication: same-host gate only (Origin/Referer host must equal
+ * HTTP_HOST) — anonymous-allowed public-form dictation, not a logged-in check.
  * Config: AA_APIKEY_OPENAI (required), AA_SPEECH_MAX_SECONDS (default 120).
  *
  * @package Api
@@ -41,12 +43,12 @@ class SpeechController
             return JsonResponse::error(400, 'Missing or invalid audio upload');
         }
 
-        $maxSeconds = (int)(defined('AA_SPEECH_MAX_SECONDS') ? AA_SPEECH_MAX_SECONDS : 120);
+        $maxSeconds = (int) (defined('AA_SPEECH_MAX_SECONDS') ? AA_SPEECH_MAX_SECONDS : 120);
         if ($maxSeconds <= 0) {
             $maxSeconds = 120;
         }
         $maxBytes = $maxSeconds * self::BYTES_PER_SECOND;
-        if ((int)$file['size'] > $maxBytes) {
+        if ((int) $file['size'] > $maxBytes) {
             return JsonResponse::error(413, "Audio exceeds configured max length of {$maxSeconds} s");
         }
 
@@ -57,17 +59,17 @@ class SpeechController
         // move_uploaded_file() — afterwards $file['tmp_name'] is gone, so the
         // OpenAI request below MUST read from $stored_path when storage ran.
         $stored_path = $this->maybeStoreAudio(
-            (string)($file['type'] ?? 'audio/webm'),
-            (string)($_POST['slice_id'] ?? ''),
-            (string)($_POST['field_id'] ?? ''),
-            (string)($_POST['item_id']  ?? '')
+            (string) ($file['type'] ?? 'audio/webm'),
+            (string) ($_POST['slice_id'] ?? ''),
+            (string) ($_POST['field_id'] ?? ''),
+            (string) ($_POST['item_id']  ?? ''),
         );
 
         $result = $this->callOpenAi(
-            $stored_path ?? (string)$file['tmp_name'],
-            (string)($file['name'] ?? 'audio.webm'),
-            (string)($file['type'] ?? 'audio/webm'),
-            $lang
+            $stored_path ?? (string) $file['tmp_name'],
+            (string) ($file['name'] ?? 'audio.webm'),
+            (string) ($file['type'] ?? 'audio/webm'),
+            $lang,
         );
         if (!$result['ok']) {
             return JsonResponse::error($result['status'], $result['message']);
@@ -81,7 +83,7 @@ class SpeechController
     /** Override point for tests; production reads from the PHP define. */
     protected function getApiKey(): ?string
     {
-        return (defined('AA_APIKEY_OPENAI') && AA_APIKEY_OPENAI) ? (string)AA_APIKEY_OPENAI : null;
+        return (defined('AA_APIKEY_OPENAI') && AA_APIKEY_OPENAI) ? (string) AA_APIKEY_OPENAI : null;
     }
 
     /** Persist the uploaded audio to the slice's upload directory if the
@@ -121,7 +123,7 @@ class SpeechController
             \Files::escape($itemId === '' ? 'new' : $itemId),
             \Files::escape($fieldId),
             date('Ymd-His'),
-            $this->extensionForMime($mimeType)
+            $this->extensionForMime($mimeType),
         );
 
         // 'new' so a same-second collision yields _1, _2, … via
@@ -156,7 +158,7 @@ class SpeechController
      *  for public anonymous dictation; not a security boundary. */
     protected function sameHostRequest(): bool
     {
-        $own = strtolower((string)($_SERVER['HTTP_HOST'] ?? ''));
+        $own = strtolower((string) ($_SERVER['HTTP_HOST'] ?? ''));
         if ($own === '') {
             return false;
         }
@@ -165,7 +167,7 @@ class SpeechController
             if ($val === '') {
                 continue;
             }
-            $host = strtolower((string)parse_url($val, PHP_URL_HOST));
+            $host = strtolower((string) parse_url($val, PHP_URL_HOST));
             if ($host !== '' && $host === $own) {
                 return true;
             }
@@ -209,20 +211,20 @@ class SpeechController
             CURLOPT_TIMEOUT        => 60,
         ]);
         $body   = curl_exec($ch);
-        $status = (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $status = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
         $err    = curl_error($ch);
         curl_close($ch);
 
         if ($body === false) {
             return ['ok' => false, 'status' => 502, 'message' => 'OpenAI request failed: ' . $err];
         }
-        $payload = json_decode((string)$body, true);
+        $payload = json_decode((string) $body, true);
         if ($status >= 400 || !is_array($payload)) {
             $msg = is_array($payload) && isset($payload['error']['message'])
-                ? (string)$payload['error']['message']
+                ? (string) $payload['error']['message']
                 : 'OpenAI returned HTTP ' . $status;
             return ['ok' => false, 'status' => 502, 'message' => $msg];
         }
-        return ['ok' => true, 'text' => (string)($payload['text'] ?? '')];
+        return ['ok' => true, 'text' => (string) ($payload['text'] ?? '')];
     }
 }

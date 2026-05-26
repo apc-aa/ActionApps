@@ -10,19 +10,21 @@ use zids;
 
 /**
  */
-class Item_MoveItem extends AbstractManageraction {
-
+class Item_MoveItem extends AbstractManageraction
+{
     /** specifies, to which bin the move should be performed */
-    var $to_bin;
+    public $to_bin;
 
     /** Constructor - fills the information about the target bin */
-    function __construct($id, $to_bin) {
+    public function __construct($id, $to_bin)
+    {
         $this->to_bin = $to_bin;
         parent::__construct($id);
     }
 
     /** Name of this Manager's action */
-    public function getName(): string {
+    public function getName(): string
+    {
         return match ($this->to_bin) {
             1       => _m('Move to Active'),
             2       => _m('Move to Holding bin'),
@@ -38,7 +40,8 @@ class Item_MoveItem extends AbstractManageraction {
      * @param string $slice_id
      * @return int
      */
-    protected static function doMove($zids, $to_bin, string $slice_id): int {
+    protected static function doMove($zids, $to_bin, string $slice_id): int
+    {
         $ids = $zids->longids();
 
         $newcontent4id = new ItemContent();
@@ -50,7 +53,7 @@ class Item_MoveItem extends AbstractManageraction {
             // older and slower approach - needs GetItemContent() ...
             // UpdateField($id, 'status_code.....', $val, [false, false, false]);   // invalidate cache, feed, throw events
             $newcontent4id->setItemID($id);
-            if ($newcontent4id->storeItem( 'update', [false, true, true, false] )) {    // !invalidatecache, feed, throw_events
+            if ($newcontent4id->storeItem('update', [false, true, true, false])) {    // !invalidatecache, feed, throw_events
                 ++$updated_items;
             }
         }
@@ -58,7 +61,7 @@ class Item_MoveItem extends AbstractManageraction {
     }
 
     /** @inheritDoc */
-    function perform(Manager $manager, zids $item_zids, $action_param): string|false
+    public function perform(Manager $manager, zids $item_zids, $action_param): string|false
     {
         $sid = $manager->getModuleId();
         self::doMove($item_zids->itemFilter([$sid]), $this->to_bin, $sid);
@@ -72,7 +75,8 @@ class Item_MoveItem extends AbstractManageraction {
      *
      * @return bool
      */
-    function isPerm4Action($manager):bool {
+    public function isPerm4Action($manager): bool
+    {
         $current_bin = $manager->getBin();
         $module_id   = $manager->getModuleId();
 

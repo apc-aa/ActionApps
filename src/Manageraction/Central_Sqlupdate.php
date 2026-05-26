@@ -9,24 +9,26 @@ use zids;
 /** Manager action Central_Sqlupdate - Runs sql_update.php script on selected
  *  AAs
  */
-class Central_Sqlupdate extends AbstractManageraction {
-
+class Central_Sqlupdate extends AbstractManageraction
+{
     /** sql_update action - dotest|update*/
-    var $update_action;
+    public $update_action;
 
     /** Constructor - fills the information about the optimize method */
-    function __construct($id, $action) {
+    public function __construct($id, $action)
+    {
         $this->update_action = $action;
         parent::__construct($id);
     }
 
     /** Name of this Manager's action */
-    public function getName(): string {
+    public function getName(): string
+    {
         return _m('Update DB (sql_update)') . ' - ' . $this->update_action;
     }
 
     /** @inheritDoc */
-    function perform(Manager $manager, zids $item_zids, $action_param): string|false
+    public function perform(Manager $manager, zids $item_zids, $action_param): string|false
     {
         $item_ids = $item_zids->shortids();
 
@@ -57,7 +59,8 @@ class Central_Sqlupdate extends AbstractManageraction {
      *
      * @return bool
      */
-    function isPerm4Action($manager):bool {
+    public function isPerm4Action($manager): bool
+    {
         return IsSuperadmin();
     }
 }

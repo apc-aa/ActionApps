@@ -5,30 +5,36 @@ namespace AA\Optimize;
 use AA\IO\DB\DB_AA;
 
 /** Recreates the template (example) slice - News EN */
-class RedefineSliceNewsTemplates extends \AA\Optimize\AbstractOptimize {
-
+class RedefineSliceNewsTemplates extends \AA\Optimize\AbstractOptimize
+{
     /** Name function
      * @return string - a name
      */
-    public static function name(): string {
+    public static function name(): string
+    {
         return _m("Redefine News EN template slice");
     }
 
     /** Description function
      * @return string - a description
      */
-    public static function description(): string {
+    public static function description(): string
+    {
         return _m("Deletes and recreates the News EN slice, used as template or example slice");
     }
 
     /** checks if this Optimize class belongs to specified type (like "sql_update") */
-    public static function types(): array { return ['sql_update']; }
+    public static function types(): array
+    {
+        return ['sql_update'];
+    }
 
 
     /** Test function
      * @return bool
      */
-    public function test(): bool {
+    public function test(): bool
+    {
         $ret = true;
 
         if (!DB_AA::test('module', [['id', 'News_EN_tmpl....']])) {
@@ -41,7 +47,8 @@ class RedefineSliceNewsTemplates extends \AA\Optimize\AbstractOptimize {
     /** Main update function
      * @return bool
      */
-    public function repair(): bool {
+    public function repair(): bool
+    {
 
         $now = time();
         $AA_IMG_URL = '/' . AA_BASE_DIR . 'images/';

@@ -8,15 +8,19 @@ namespace AA\Util;
  *
  * @see DataArrayAccessTrait  used as associative array property data storage
  */
-trait ArrTrait {
-
+trait ArrTrait
+{
     /** implements IteratorAggregate */
-    public function getIterator(): \Traversable   {
+    public function getIterator(): \Traversable
+    {
         return new \ArrayIterator($this->arr);
     }
 
     /** implements Countable interface */
-    public function count(): int { return count($this->arr); }
+    public function count(): int
+    {
+        return count($this->arr);
+    }
 
     /** implements ArrayAccess interface */
     public function offsetSet(mixed $offset, mixed $value): void
@@ -28,9 +32,18 @@ trait ArrTrait {
         }
     }
 
-    public function offsetExists(mixed $offset): bool { return array_key_exists($offset, $this->arr); }
+    public function offsetExists(mixed $offset): bool
+    {
+        return array_key_exists($offset, $this->arr);
+    }
 
-    public function offsetUnset(mixed $offset): void { unset($this->arr[$offset]); }
+    public function offsetUnset(mixed $offset): void
+    {
+        unset($this->arr[$offset]);
+    }
 
-    public function offsetGet(mixed $offset): mixed { return $this->arr[$offset] ?? null; }
+    public function offsetGet(mixed $offset): mixed
+    {
+        return $this->arr[$offset] ?? null;
+    }
 }

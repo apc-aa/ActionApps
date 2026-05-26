@@ -1,4 +1,5 @@
 <?php
+
 /**
  * File contains definitions of functions which corresponds with actions
  * on Item Manager page (admin/index.php) - manipulates with central_confs
@@ -46,33 +47,34 @@ use AA\Util\Linkcheck;
 use AA_Actionapps;
 use zids;
 
-
 /** Call remote AA_Optimize_* function
  *
  */
-class Central_Optimize extends AbstractManageraction {
-
+class Central_Optimize extends AbstractManageraction
+{
     /** class to be executed in remote AA */
-    var $optimize_class;
+    public $optimize_class;
 
     /** method to be called in optimize_class */
-    var $optimize_method;
+    public $optimize_method;
 
     /** Constructor - fills the information about the optimize method */
-    function __construct($id, $class, $method) {
+    public function __construct($id, $class, $method)
+    {
         $this->optimize_class  = $class;
         $this->optimize_method = $method;
         parent::__construct($id);
     }
 
     /** Name of this Manager's action */
-    public function getName(): string {
+    public function getName(): string
+    {
         $class = $this->optimize_class;
         return $class::name() . ' - ' . $this->optimize_method;
     }
 
     /** @inheritDoc */
-    function perform(Manager $manager, zids $item_zids, $action_param): string|false
+    public function perform(Manager $manager, zids $item_zids, $action_param): string|false
     {
         $ret = [];
 
@@ -89,10 +91,8 @@ class Central_Optimize extends AbstractManageraction {
      *
      * @return bool
      */
-    function isPerm4Action($manager):bool {
+    public function isPerm4Action($manager): bool
+    {
         return IsSuperadmin();
     }
 }
-
-
-

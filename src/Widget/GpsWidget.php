@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: honzama
@@ -7,6 +8,7 @@
  */
 
 namespace AA\Widget;
+
 use AA;
 use AA\FormArray;
 use AA_Content;
@@ -27,34 +29,42 @@ class GpsWidget extends Widget
      */
 
     /** @inheritDoc */
-    public static function name(): string {
+    public static function name(): string
+    {
         return _m('GPS coordinates');   // widget name
     }
 
-    public static function description(): string { return ''; }
+    public static function description(): string
+    {
+        return '';
+    }
 
     /** getClassProperties function of AA_Serializable
      *  Used parameter format (in fields.input_show_func table)
      * @return array
      */
-    public static function getClassProperties(): array {
+    public static function getClassProperties(): array
+    {
         return Widget::propertiesShop(['load_from_fld', 'map_shapes', 'multi_shape']);
     }
 
     /** returns if the widget handles shapes (line, polygon, ...) or just markers   */
-    protected function usedShapes(): string {
+    protected function usedShapes(): string
+    {
         // if map_shapes contain another letter than M
         $shapes = strtoupper(trim($this->getProperty('map_shapes')));
         return strlen($shapes) ? $shapes : 'M';
     }
 
     // inherited from \AA\Widget\Widget
-    protected function requireLibs($aa_property, $winfo): array {
+    protected function requireLibs($aa_property, $winfo): array
+    {
         return ['leaflet', 'leaflet-draw', 'aa-fillform'];
     }
 
     /** script to run after the page DOM is loaded */
-    protected function requireRun($aa_property, $winfo): string {
+    protected function requireRun($aa_property, $winfo): string
+    {
         $js_id    = FormArray::formName2Id($winfo['last_input_name'], true);
         $val_id   = FormArray::formName2Id($winfo['last_input_name']);
         $drawComponent = '';
@@ -66,13 +76,13 @@ class GpsWidget extends Widget
                  position: 'bottomright',
                  edit: { featureGroup: drawnItems$js_id, poly: { allowIntersection: false }, remove: false, edit: false },
                  draw: { ";
-                        $drawComponent .= str_contains($shapes, 'M') ? 'marker: true'         : ', marker: false';
-                        $drawComponent .= str_contains($shapes, 'L') ? ', polyline: true'     : ', polyline: false';
-                        $drawComponent .= str_contains($shapes, 'P') ? ', polygon: true'      : ', polygon: false';
-                        $drawComponent .= str_contains($shapes, 'R') ? ', rectangle: true'    : ', rectangle: false';
-                        $drawComponent .= false                      ? ', circle: true'       : ', circle: false';        // circles are not supported by toGeoJSON()
-                        $drawComponent .= false                      ? ', circlemarker: true' : ', circlemarker: false';
-                        $drawComponent .= "}
+            $drawComponent .= str_contains($shapes, 'M') ? 'marker: true' : ', marker: false';
+            $drawComponent .= str_contains($shapes, 'L') ? ', polyline: true' : ', polyline: false';
+            $drawComponent .= str_contains($shapes, 'P') ? ', polygon: true' : ', polygon: false';
+            $drawComponent .= str_contains($shapes, 'R') ? ', rectangle: true' : ', rectangle: false';
+            $drawComponent .= false ? ', circle: true' : ', circle: false';        // circles are not supported by toGeoJSON()
+            $drawComponent .= false ? ', circlemarker: true' : ', circlemarker: false';
+            $drawComponent .= "}
                 });
               map$js_id.addControl(drawControl);
             
@@ -142,7 +152,8 @@ class GpsWidget extends Widget
           JS;
     }
 
-    protected function requireCssCode($aa_property, $winfo): string  {
+    protected function requireCssCode($aa_property, $winfo): string
+    {
         /** @lang CSS */
         return '.aa-widget-gps input[type="button"][disabled] { background-color: #dfdfdf; cursor: default;} 
           .aa-gps-content { display: flex; }
@@ -169,7 +180,8 @@ class GpsWidget extends Widget
           ';
     }
 
-    protected function requireLibCode($aa_property, $winfo): string  {
+    protected function requireLibCode($aa_property, $winfo): string
+    {
         return <<<JS
         function AA_GpsShowGeo(map, itemid, geojsonData, title, drawnItems) {
             // Clear previous items if you wish to display only the latest GeoJSON
@@ -402,7 +414,8 @@ class GpsWidget extends Widget
      *  @return array
      *  @throws Exception
      */
-    function _getRawHtml(AA_Property $aa_property, AA_Content $content, string $type = 'normal'): array {
+    public function _getRawHtml(AA_Property $aa_property, AA_Content $content, string $type = 'normal'): array
+    {
         $field_id = $aa_property->getId();
         $base_name = FormArray::getName4Form($field_id, $content, $this->item_index);
         $base_id = FormArray::formName2Id($base_name);
@@ -420,7 +433,7 @@ class GpsWidget extends Widget
 
         $msg_search = _m('Search');
 
-        $load_from_fld_btn = ( $load_from_fld = $this->getProperty('load_from_fld', '') ) ? "<input type=button id=\"copyaddr$js_id\" value=\"" . _m('Load from address') . "\" onclick=\"AA_$('#adresa4suggest$js_id').value=getField('$load_from_fld');AA_$('#adresa4suggest$js_id').dispatchEvent(new Event('input'));\">" : '';
+        $load_from_fld_btn = ($load_from_fld = $this->getProperty('load_from_fld', '')) ? "<input type=button id=\"copyaddr$js_id\" value=\"" . _m('Load from address') . "\" onclick=\"AA_$('#adresa4suggest$js_id').value=getField('$load_from_fld');AA_$('#adresa4suggest$js_id').dispatchEvent(new Event('input'));\">" : '';
 
         $use_string = _m("Use");
 

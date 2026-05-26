@@ -1,14 +1,14 @@
 <?php
 
-
 namespace AA\Util;
 
-trait LastErrTrait {
-
+trait LastErrTrait
+{
     /** lastErrMsg function
      * @return string - last error message - it is grabbed from static variable
      *  of lastErr() method */
-    public static function lastErrMsg(): string {
+    public static function lastErrMsg(): string
+    {
         return self::lastErr(null, null, true);
     }
 
@@ -25,7 +25,7 @@ trait LastErrTrait {
      * @param bool   $getmsg
      * @return int|string
      */
-    public static function lastErr( ?int $err_id = null, ?string $err_msg = null, bool $getmsg = false): int|string
+    public static function lastErr(?int $err_id = null, ?string $err_msg = null, bool $getmsg = false): int|string
     {
         static $lastErr;
         static $lastErrMsg;
@@ -33,7 +33,7 @@ trait LastErrTrait {
             $lastErr = $err_id;
             $lastErrMsg = $err_msg;
         }
-        return $getmsg ? (string)$lastErrMsg : (int)$lastErr;
+        return $getmsg ? (string) $lastErrMsg : (int) $lastErr;
     }
 }
 

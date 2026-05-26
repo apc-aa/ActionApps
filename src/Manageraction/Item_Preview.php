@@ -3,10 +3,11 @@
 namespace AA\Manageraction;
 
 /** Manager action */
-class Item_Preview extends AbstractManageraction {
-
+class Item_Preview extends AbstractManageraction
+{
     /** Name of this Manager's action */
-    public function getName(): string {
+    public function getName(): string
+    {
         return _m('Preview');
     }
 

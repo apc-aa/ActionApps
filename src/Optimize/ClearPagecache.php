@@ -3,29 +3,35 @@
 namespace AA\Optimize;
 
 /** Whole pagecache will be invalidated and deleted */
-class ClearPagecache extends AbstractOptimize {
-
+class ClearPagecache extends AbstractOptimize
+{
     /** Name function
      * @return string - a name
      */
-    public static function name(): string {
+    public static function name(): string
+    {
         return _m("Clear Pagecache");
     }
 
     /** Description function
      * @return string - a description
      */
-    public static function description(): string {
+    public static function description(): string
+    {
         return _m("Whole pagecache will be invalidated and deleted");
     }
 
     /** implemented actions within this class */
-    public static function actions(): array { return ['repair']; }
+    public static function actions(): array
+    {
+        return ['repair'];
+    }
 
     /** Test function
      * @return bool
      */
-    public function test(): bool {
+    public function test(): bool
+    {
         $this->message(_m('There is nothing to test.'));
         return true;
     }
@@ -34,7 +40,8 @@ class ClearPagecache extends AbstractOptimize {
      *  than easy DELETE FROM ...
      * @return bool
      */
-    public function repair(): bool {
+    public function repair(): bool
+    {
         $db = getDb();
         $db->query('CREATE TABLE IF NOT EXISTS pagecache_new LIKE pagecache');
         $this->message(_m('Table pagecache_new created'));

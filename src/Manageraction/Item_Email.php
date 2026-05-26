@@ -5,10 +5,11 @@ namespace AA\Manageraction;
 use AA\Manager;
 
 /** Manager action */
-class Item_Email extends AbstractManageraction {
-
+class Item_Email extends AbstractManageraction
+{
     /** Name of this Manager's action */
-    public function getName(): string {
+    public function getName(): string
+    {
         return _m('Send email');
     }
 
@@ -20,7 +21,8 @@ class Item_Email extends AbstractManageraction {
      *
      * @return bool
      */
-    function isPerm4Action($manager): bool {
+    public function isPerm4Action($manager): bool
+    {
         // $slice = AA_Slice::getModule($manager->getModuleId());
         // return ($slice->type() === 'ReaderManagement');
         return true; // allow in all slices

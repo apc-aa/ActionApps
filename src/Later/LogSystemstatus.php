@@ -1,4 +1,5 @@
 <?php
+
 /**
  *
  * PHP version 8.1+
@@ -34,14 +35,14 @@ use AA_Logentry_Sys;
 /** logs system state which can help us to identify problems in AA (speed, stability) after upgrades */
 class LogSystemstatus implements LaterInterface
 {
-    public function __construct() { }
+    public function __construct() {}
 
     /** special function called from AA\Later\Toexecute class - used for queued tasks (run form cron)
      * @param array $params - numeric array of additional parameters for the execution passed in time of call
      * @return string - message about execution to be logged
      * @see \AA\Later\LaterInterface
      */
-    public function toexecutelater($params= []): string
+    public function toexecutelater($params = []): string
     {
         return AA_Log::writeIfChanged('SYS_STAT', 'basic', new AA_Logentry_Sys($this->getSystemInfo()));
     }
@@ -50,9 +51,9 @@ class LogSystemstatus implements LaterInterface
     {
         return [
             'aa'  => aa_version('aa'),
-            'svn' => aa_version('svn2'). ' ('. aa_version('svn'). ')',
+            'svn' => aa_version('svn2') . ' (' . aa_version('svn') . ')',
             'php' => PHP_VERSION,
-            'db' => DB_AA::select1('ver', 'SELECT VERSION() as ver'). '/'. DB_AA::getDbType(),
+            'db' => DB_AA::select1('ver', 'SELECT VERSION() as ver') . '/' . DB_AA::getDbType(),
             'mem' => trim(shell_exec("free -m | awk 'NR==2{print $2 \" MB\"}'")),
             'cpu' => trim(str_replace('Model name:', '', shell_exec("lscpu | grep 'Model name:'"))),
         ];

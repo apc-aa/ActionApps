@@ -7,26 +7,29 @@ use AA\IO\DB\DB_AA;
 /**
  *
  */
-class Convert2utf8mb4 extends AbstractOptimize {
-
+class Convert2utf8mb4 extends AbstractOptimize
+{
     /** Name function
      * @return string - a name
      */
-    public static function name(): string {
+    public static function name(): string
+    {
         return _m("Convert old database collation utf8 to utf8mb4");
     }
 
     /** Description function
      * @return string - a description
      */
-    public static function description(): string {
+    public static function description(): string
+    {
         return _m("Convert old database collation utf8 (or utf8mb3) to utf8mb4 for all tables and set database default to utf8mb4");
     }
 
     /** Test function
      * @return bool
      */
-    public function test(): bool {
+    public function test(): bool
+    {
         $collations = $this->get_tables('utf8_');
         $collations = array_merge($collations, $this->get_tables('utf8mb3_'));
         $count = 0;
@@ -43,7 +46,8 @@ class Convert2utf8mb4 extends AbstractOptimize {
 
     /**
      */
-    public function repair(): bool {
+    public function repair(): bool
+    {
         $new_collation1 = $this->convert('utf8_', 'utf8mb4_');
         $new_collation2 = $this->convert('utf8mb3_', 'utf8mb4_');
 
@@ -54,7 +58,8 @@ class Convert2utf8mb4 extends AbstractOptimize {
         return true;
     }
 
-    protected function convert(string $from_colation_prefix, string $to_colation_prefix) {
+    protected function convert(string $from_colation_prefix, string $to_colation_prefix)
+    {
         $collations = $this->get_tables($from_colation_prefix);
         $converted = 0;
         $new_collation = '';

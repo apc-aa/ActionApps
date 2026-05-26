@@ -5,26 +5,29 @@ namespace AA\Optimize;
 use AA_Permsystem_Reader;
 
 /** There was change in Reader management functionality in AA v2.8.1 */
-class ReadersLogin2id extends AbstractOptimize {
-
+class ReadersLogin2id extends AbstractOptimize
+{
     /** Name function
      * @return string - a name
      */
-    public static function name(): string {
+    public static function name(): string
+    {
         return _m("Convert Readers login to reader id");
     }
 
     /** Description function
      * @return string - a description
      */
-    public static function description(): string {
+    public static function description(): string
+    {
         return _m("There was change in Reader management functionality in AA v2.8.1, so readers are not internally identified by its login, but by reader ID (item ID of reader in Reader slice). This is much more powerful - you can create relations just as in normal slice. It works well without any change. The only problem is, if you set any slice to be editable by users from Reader slice. In that case the fields edited_by........ and posted_by........ are filled by readers login instead of reader id. You can fix it by \"Repair\".");
     }
 
     /** Test function
      * @return bool
      */
-    public function test(): bool {
+    public function test(): bool
+    {
         $this->clear_report();
         $ret = true;  // which means OK
 
@@ -51,7 +54,7 @@ class ReadersLogin2id extends AbstractOptimize {
      *  by login name (instead of item_id)
      * @return array of such users
      */
-    function _test_field($readers, $item_field): array
+    public function _test_field($readers, $item_field): array
     {
         // get posted_by, edit_by, ... array:  posted_by => 1
         $SQL = "SELECT DISTINCT $item_field FROM item";
@@ -68,7 +71,8 @@ class ReadersLogin2id extends AbstractOptimize {
     /** Repair function
      * @return bool
      */
-    public function repair(): bool {
+    public function repair(): bool
+    {
         $this->clear_report();
 
         // get all readers in array: id => arrary( name => ...)

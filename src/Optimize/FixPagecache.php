@@ -8,19 +8,21 @@ use AA\IO\DB\DB_AA;
  *  Delete non-existent keys in pagecache_str2find table
  *  and delete pagecache records without its pagecache_str2find counterpart
  */
-class FixPagecache extends AbstractOptimizeById {
-
+class FixPagecache extends AbstractOptimizeById
+{
     /** Name function
      * @return string - a name
      */
-    public static function name(): string {
+    public static function name(): string
+    {
         return _m("Fix inconsistency in pagecache");
     }
 
     /** Description function
      * @return string - a description
      */
-    public static function description(): string {
+    public static function description(): string
+    {
         return _m("Delete not existent keys in pagecache_str2find table and vice versa");
     }
 

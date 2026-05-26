@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: honzama
@@ -7,6 +8,7 @@
  */
 
 namespace AA\Widget;
+
 use AA\FormArray;
 use AA_Value;
 
@@ -14,20 +16,23 @@ use AA_Value;
 class CodWidget extends TxtWidget
 {
     /** widget name  */
-    public static function name(): string {
+    public static function name(): string
+    {
         return _m('Code editor');
     }
 
-    protected function requireLibs($aa_property, $winfo): array {
+    protected function requireLibs($aa_property, $winfo): array
+    {
         return array_merge(['codemirror@5'], parent::requireLibs($aa_property, $winfo));
     }
 
     /** script to run after the page DOM is loaded */
-    protected function requireRun($aa_property, $winfo): string {
+    protected function requireRun($aa_property, $winfo): string
+    {
         $ret = '';
         // are there some textareas not converted to CodeMirror?
         if ($this->ids_4_editor) {
-            $ret .= "\n  document.querySelectorAll(\"". implode(',',$this->ids_4_editor) .'").forEach( function(el) { CodeMirror.fromTextArea(el, { lineWrapping:true, matchBrackets: true, matchTags: true, viewportMargin: 10000, mode: "htmlmixed", spellcheck:true, inputStyle: "contenteditable" }).on("change", function(editor) {editor.save(); const ta = editor.getTextArea(); if (typeof ta.onchange === "function") { ta.onchange() }; }) });';
+            $ret .= "\n  document.querySelectorAll(\"" . implode(',', $this->ids_4_editor) . '").forEach( function(el) { CodeMirror.fromTextArea(el, { lineWrapping:true, matchBrackets: true, matchTags: true, viewportMargin: 10000, mode: "htmlmixed", spellcheck:true, inputStyle: "contenteditable" }).on("change", function(editor) {editor.save(); const ta = editor.getTextArea(); if (typeof ta.onchange === "function") { ta.onchange() }; }) });';
             // clean the list - all textareas are converted
             $this->ids_4_editor = [];
         }
@@ -45,7 +50,8 @@ class CodWidget extends TxtWidget
      *  Used parameter format (in fields.input_show_func table)
      * @return array
      */
-    public static function getClassProperties(): array {
+    public static function getClassProperties(): array
+    {
         return Widget::propertiesShop(['rows']);
     }
 

@@ -13,38 +13,47 @@ use RuntimeException;
  *  everything is OK, then the old table is renamed to bck_* and tmp_*
  *  is renamed to new table
  */
-class UpdateDbStructure extends \AA\Optimize\AbstractOptimize {
-
+class UpdateDbStructure extends \AA\Optimize\AbstractOptimize
+{
     /** Name function
      * @return string - a name
      */
-    public static function name(): string {
+    public static function name(): string
+    {
         return _m("Update database structure");
     }
 
     /** Description function
      * @return string - a description
      */
-    public static function description(): string {
+    public static function description(): string
+    {
         return _m("[experimental] ") . _m("Updates the database structure for AA. It checks all the tables in current system and compare it with the newest database structure. The new table is created as tmp_*, then the content from old table is copied and if everything is OK, then the old table is renamed to bck_* and tmp_* is renamed to new table. (new version based on the metabase structure)");
     }
 
     /** checks if this Optimize class belongs to specified type (like "sql_update") */
-    public static function types(): array { return ['sql_update']; }
+    public static function types(): array
+    {
+        return ['sql_update'];
+    }
 
     /** the optimizers are ordered by priority (less first) when executed
      *  in chain (like for sql_update)
      *  Default value is 100
      *  Execute this first
      */
-    public static function priority(): int { return 50; }  // quite big priority but not first
+    public static function priority(): int
+    {
+        return 50;
+    }  // quite big priority but not first
 
     /** Test function
      * @return string - a message
      */
-    public function test(): bool {
+    public function test(): bool
+    {
         $template_metabase = AA::Metabase();
-        $this_metabase = new AA_Metabase;
+        $this_metabase = new AA_Metabase();
         $this_metabase->loadFromDb();
         $diffs = $template_metabase->compare($this_metabase);
         $different = false;
@@ -74,9 +83,10 @@ class UpdateDbStructure extends \AA\Optimize\AbstractOptimize {
     /** Main update function
      * @return bool
      */
-    public function repair(): bool {
+    public function repair(): bool
+    {
         $template_metabase = AA::Metabase();
-        $this_metabase = new AA_Metabase;
+        $this_metabase = new AA_Metabase();
         $this_metabase->loadFromDb();
         $diffs = $template_metabase->compare($this_metabase);
         foreach ($diffs as $tablename => $diff) {
@@ -121,7 +131,7 @@ class UpdateDbStructure extends \AA\Optimize\AbstractOptimize {
 
                 $matches = array_intersect($tmp_columns, $old_columns);
                 if (count($matches) > 1) {
-                    $field_list = '`' .  implode('`, `', $matches) . '`';
+                    $field_list = '`' . implode('`, `', $matches) . '`';
                     // there was longer "type" column in old AA (contains "history"). Now we use just 'h', so we ignore the error for insert
                     $ignore = ($tablename === 'change') ? 'IGNORE' : '';
                     $this->query("INSERT $ignore INTO `tmp_$tablename` ($field_list) SELECT $field_list FROM `$tablename`");

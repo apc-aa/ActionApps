@@ -8,15 +8,16 @@ use AA_Actionapps;
 use zids;
 
 /** AA\Manageraction\Central_Linkcheck - checks if the AA are acessible */
-class Central_Linkcheck extends AbstractManageraction {
-
+class Central_Linkcheck extends AbstractManageraction
+{
     /** Name of this Manager's action */
-    public function getName(): string {
+    public function getName(): string
+    {
         return _m('Check the AA availability');
     }
 
     /** @inheritDoc */
-    function perform(Manager $manager, zids $item_zids, $action_param): string|false
+    public function perform(Manager $manager, zids $item_zids, $action_param): string|false
     {
         if (count($item_zids) < 1) {
             return false;                                     // OK - no error
@@ -29,7 +30,7 @@ class Central_Linkcheck extends AbstractManageraction {
             '<b>' . _m('Description') . '</b>',
             '<b>' . _m('Auth') . '</b>',
         ];
-        $linkcheck = new Linkcheck;
+        $linkcheck = new Linkcheck();
 
         foreach ($item_zids as $aa_id) {
             $aa        = AA_Actionapps::getActionapps($aa_id);
@@ -48,7 +49,8 @@ class Central_Linkcheck extends AbstractManageraction {
      *
      * @return bool
      */
-    function isPerm4Action($manager):bool {
+    public function isPerm4Action($manager): bool
+    {
         return IsSuperadmin();
     }
 }

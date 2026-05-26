@@ -1,4 +1,5 @@
 <?php
+
 /**
  *
  * PHP version 7.2+
@@ -35,7 +36,6 @@ use AA_Property;
  */
 class SOAP extends XML
 {
-
     // imported form XML Grabber
     //protected $file;
     /** file to grab - internal array */
@@ -48,20 +48,23 @@ class SOAP extends XML
      * @param        $soap_body
      * @param string $item_xpath
      */
-    function __construct($file, $soap_body, $item_xpath = '') {
-        $post_body = '<?xml version="1.0" encoding="UTF-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"><soap:Header/><soap:Body>'.$soap_body.'</soap:Body></soap:Envelope>';
-        parent::__construct($file, $post_body, '', $item_xpath );
+    public function __construct($file, $soap_body, $item_xpath = '')
+    {
+        $post_body = '<?xml version="1.0" encoding="UTF-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"><soap:Header/><soap:Body>' . $soap_body . '</soap:Body></soap:Envelope>';
+        parent::__construct($file, $post_body, '', $item_xpath);
     }
 
     /** Name of the grabber - used for grabber selection box */
-    public static function name(): string {
+    public static function name(): string
+    {
         return _m('SOAP');
     }
 
     /** Description of the grabber - used as help text for the users.
      *  Description is in HTML
      */
-    public static function description(): string {
+    public static function description(): string
+    {
         return _m('General SOAP request');
     }
 
@@ -69,7 +72,8 @@ class SOAP extends XML
      *  Used for importer and htmlSettings()
      * @return array
      */
-    public static function getClassProperties(): array {
+    public static function getClassProperties(): array
+    {
         $properties = parent::getClassProperties(); //   id         name        type    multi  persistent - validator, required, help, morehelp, example
         $properties['body'] = new AA_Property('body', _m("SOAP body request"), 'string', false, true);
         return $properties;

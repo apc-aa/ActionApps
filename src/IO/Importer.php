@@ -1,4 +1,5 @@
 <?php
+
 /**
  *
  * PHP version 7.2+
@@ -27,17 +28,17 @@
 
 namespace AA\IO;
 
-
 use AA\Later\LaterInterface;
 use AA\Util\NamedInterface;
 
-class Importer implements LaterInterface {
+class Importer implements LaterInterface
+{
     protected $id;
 
     /** @var Saver  */
     protected $saver;
 
-    protected bool $run=true;
+    protected bool $run = true;
 
     /**
      * Importer constructor.
@@ -46,7 +47,8 @@ class Importer implements LaterInterface {
      * @param bool   $run
      * @param string $id
      */
-    public function __construct(Saver $saver, bool $run=true, string $id='') {
+    public function __construct(Saver $saver, bool $run = true, string $id = '')
+    {
         $this->id    = $id;
         $this->saver = $saver;
         $this->run   = $run;
@@ -55,7 +57,8 @@ class Importer implements LaterInterface {
     /** loads all the data based on grabber setting and return it
      * @return array
      */
-    public function getSources(): array {
+    public function getSources(): array
+    {
         return $this->saver->getSources();
     }
 
@@ -64,17 +67,18 @@ class Importer implements LaterInterface {
      *  @return string - message about execution to be logged
      *  @see \AA\Later\LaterInterface
      */
-    public function toexecutelater($params= []): string {
+    public function toexecutelater($params = []): string
+    {
         [$ok,$err] = $this->saver->run($this->run);
         $ret = "items OK: $ok";
         if ($err) {
             $ret .= ", error items: $err";
         }
         if ($newids = $this->saver->newIds()) {
-            $ret .= '(new['.count($newids).'] '. implode(',', array_slice($newids, 0, 3)) .'...)';
+            $ret .= '(new[' . count($newids) . '] ' . implode(',', array_slice($newids, 0, 3)) . '...)';
         }
         if ($upids = $this->saver->updatedIds()) {
-            $ret .= '(updated['.count($upids).'] '. implode(',', array_slice($upids, 0, 3)) .'...)';
+            $ret .= '(updated[' . count($upids) . '] ' . implode(',', array_slice($upids, 0, 3)) . '...)';
         }
         return $ret . (($p = $this->saver->report(1, 'plain')) ? ", $p" : '');
     }
@@ -82,7 +86,8 @@ class Importer implements LaterInterface {
     /** used in Report to identify the Importer in the log
      * @return string
      */
-    public function getId(): string {
+    public function getId(): string
+    {
         return $this->id;
     }
 }

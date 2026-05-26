@@ -76,7 +76,7 @@ final class SmtpTransportTest extends TestCase
         $transport = new SmtpTransport();
         $this->assertSame(
             SmtpTransport::RESULT_PERMANENT,
-            $transport->sendRaw('from@example.org', [], "Subject: x\r\n\r\nbody")
+            $transport->sendRaw('from@example.org', [], "Subject: x\r\n\r\nbody"),
         );
     }
 
@@ -86,7 +86,7 @@ final class SmtpTransportTest extends TestCase
         $transport = new SmtpTransport();
         $this->assertSame(
             SmtpTransport::RESULT_PERMANENT,
-            $transport->sendRaw('', ['to@example.org'], "Subject: x\r\n\r\nbody")
+            $transport->sendRaw('', ['to@example.org'], "Subject: x\r\n\r\nbody"),
         );
     }
 

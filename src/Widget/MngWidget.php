@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: honzama
@@ -7,6 +8,7 @@
  */
 
 namespace AA\Widget;
+
 use AA\FormArray;
 use AA_Content;
 use AA_Property;
@@ -25,16 +27,19 @@ class MngWidget extends Widget
     protected $sort_by;
 
     /** \AA\Util\NamedInterface function */
-    public static function name(): string {
+    public static function name(): string
+    {
         return _m('Manager');
     }   // widget name
 
     /** \AA\Util\NamedInterface function */
-    public static function description(): string {
+    public static function description(): string
+    {
         return _m('Best for galleries and other tabular data which is multivalue and different for each item');
     }   // widget name
 
-    protected function requireLibs($aa_property, $winfo): array {
+    protected function requireLibs($aa_property, $winfo): array
+    {
         return array_merge(['aa-jslib@3'], parent::requireLibs($aa_property, $winfo));  // aa-jslib@3 for  AA__SiteUpdateParts
     }
 
@@ -42,7 +47,8 @@ class MngWidget extends Widget
      *  Used parameter format (in fields.input_show_func table)
      * @return array
      */
-    public static function getClassProperties(): array {
+    public static function getClassProperties(): array
+    {
         return Widget::propertiesShop(['const', 'related_field', 'row_code', 'row_edit', 'mng_buttons', 'sort_by']);
     }
 
@@ -56,7 +62,8 @@ class MngWidget extends Widget
      *  @return array
      *  @throws Exception
      */
-    function _getRawHtml(AA_Property $aa_property, AA_Content $content, string $type = 'normal'): array {
+    public function _getRawHtml(AA_Property $aa_property, AA_Content $content, string $type = 'normal'): array
+    {
         $property_id = $aa_property->getId();
         $item_id     = $content->getId();
         $base_name   = FormArray::getName4Form($property_id, $content, $this->item_index);
@@ -78,9 +85,9 @@ class MngWidget extends Widget
             } else {
                 $input_value = new_id();
                 //if (($type === 'ajax') OR ($type === 'live')) {
-                 if (is_long_id($item_id)) {
+                if (is_long_id($item_id)) {
                     // we have to store the connectorID to the database immediately
-                   UpdateField($item_id, $property_id, new AA_Value($input_value, FLAG_HTML), ItemContent::FLAG_JUST_STORE);
+                    UpdateField($item_id, $property_id, new AA_Value($input_value, FLAG_HTML), ItemContent::FLAG_JUST_STORE);
                 }
             }
         }

@@ -7,26 +7,29 @@ use AA\IO\DB\DB_AA;
 /**
  *
  */
-class Convert2innodb extends AbstractOptimize {
-
+class Convert2innodb extends AbstractOptimize
+{
     /** Name function
      * @return string - a name
      */
-    public static function name(): string {
+    public static function name(): string
+    {
         return _m("Convert database engine to InnoDB");
     }
 
     /** Description function
      * @return string - a description
      */
-    public static function description(): string {
+    public static function description(): string
+    {
         return _m("Converts older MyISAM database storage engine to InnoDB for all tables");
     }
 
     /** Test function
      * @return bool
      */
-    public function test(): bool {
+    public function test(): bool
+    {
         //$metabase = AA::Metabase();
         //$tables   = $metabase->getTableNames();
         $engines = DB_AA::select(['TABLE_NAME' => 'ENGINE'], "SELECT TABLE_NAME,ENGINE FROM information_schema.TABLES", [['TABLE_SCHEMA', DB_NAME], ['ENGINE', '', 'NOTNULL'], ['ENGINE', 'InnoDB', 's<>']]);
@@ -43,7 +46,8 @@ class Convert2innodb extends AbstractOptimize {
     }
 
 
-    public function repair(): bool {
+    public function repair(): bool
+    {
         //$tables   = $metabase->getTableNames();
         $engines = DB_AA::select(['TABLE_NAME' => 'ENGINE'], "SELECT TABLE_NAME,ENGINE FROM information_schema.TABLES", [['TABLE_SCHEMA', DB_NAME], ['ENGINE', '', 'NOTNULL'], ['ENGINE', 'InnoDB', 's<>']]);
         $converted = 0;

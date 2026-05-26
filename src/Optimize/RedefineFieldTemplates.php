@@ -33,30 +33,36 @@ use AA\Optimize\AddSeoFieldTemplate;
 /** Recreates the "ActionApps Core" slice fields (delete and insert). The fields
  *  form the "ActionApps Core" slice is used as template fields for other slices
  */
-class RedefineFieldTemplates extends \AA\Optimize\AbstractOptimize {
-
+class RedefineFieldTemplates extends \AA\Optimize\AbstractOptimize
+{
     /** Name function
      * @return string - a name
      */
-    public static function name(): string {
+    public static function name(): string
+    {
         return _m("Redefine field templates");
     }
 
     /** Description function
      * @return string - a description
      */
-    public static function description(): string {
+    public static function description(): string
+    {
         return _m("Updates field templates (in ActionApps Core slice), which is used when you adding new field to slice");
     }
 
     /** checks if this Optimize class belongs to specified type (like "sql_update") */
-    public static function types(): array { return ['sql_update']; }
+    public static function types(): array
+    {
+        return ['sql_update'];
+    }
 
 
     /** Test function
      * @return bool
      */
-    public function test(): bool {
+    public function test(): bool
+    {
         $ret = true;
 
         $row_count = DB_AA::count('field', [['id', 'headline'], ['slice_id', 'AA_Core_Fields..']]);
@@ -72,7 +78,8 @@ class RedefineFieldTemplates extends \AA\Optimize\AbstractOptimize {
     /** Main update function
      * @return bool
      */
-    public function repair(): bool {
+    public function repair(): bool
+    {
 
         $now = time();
         $AA_IMG_URL = '/' . AA_BASE_DIR . 'images/';

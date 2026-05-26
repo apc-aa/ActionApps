@@ -1,4 +1,5 @@
 <?php
+
 /**
  *
  * PHP version 7.2+
@@ -36,10 +37,9 @@ use AA_Mysqlauth_Maintain;
  */
 class ScheduleAaTasks implements LaterInterface
 {
-
     public function planAaTasks(): void
     {
-        $toexecute = new Toexecute;
+        $toexecute = new Toexecute();
 
         $display_counter = new HitcounterUpdate();
         $toexecute->laterOnce($display_counter, [], 'HitcounterUpdate', 100, time() + 300);  // run it once in 5 minutes
@@ -48,23 +48,23 @@ class ScheduleAaTasks implements LaterInterface
         $planned_task_scheduler = new PlannedtaskSchedule();
         $toexecute->laterOnce($planned_task_scheduler, [], 'PlannedtaskSchedule', 150, time() + 120);  // run it once in 2 minutes - high priority - the schedule must run even if there is big queue of e-mails/imports/...
 
-        $computedfields_updater = new ComputedfieldsUpdater;
+        $computedfields_updater = new ComputedfieldsUpdater();
         $computedfields_updater->plan();
 
-        $toexecute->laterOnce(new AA_Mysqlauth_Maintain(), [], 'AA_Mysqlauth_Maintain', 10, now() + (60*60*24));
+        $toexecute->laterOnce(new AA_Mysqlauth_Maintain(), [], 'AA_Mysqlauth_Maintain', 10, now() + (60 * 60 * 24));
 
         // we plan this tasks for future (tomorrow)
         // it should be enough to clean the logs once a day
 
         // clean all older than 40 days
         //                                                                what to clean                                                                       when to run
-        $toexecute->laterOnce(new LogCleanup(now() - (60*60*24*40), [], ['LOGIN', 'BM_CREATE', 'BM_DELETE', 'BM_RENAME', 'BM_UPDATE', 'SYS_STAT']), [], "LogCleanup", 10, now() + (60*60*24));  // delete all log entries older than 40 days except LOGINs and Bookmark opperations
+        $toexecute->laterOnce(new LogCleanup(now() - (60 * 60 * 24 * 40), [], ['LOGIN', 'BM_CREATE', 'BM_DELETE', 'BM_RENAME', 'BM_UPDATE', 'SYS_STAT']), [], "LogCleanup", 10, now() + (60 * 60 * 24));  // delete all log entries older than 40 days except LOGINs and Bookmark opperations
 
         $toexecute->laterOnce(new LogSystemstatus(), [], "LogSystemstatus", 10, now() + 600);  // log system status every 10 minutes
 
-        $toexecute->laterOnce(new Post2shtmlCleanup(now() - (60*60*24*40)), [], "Post2shtmlCleanup", 10, now() + (60*60*24));
+        $toexecute->laterOnce(new Post2shtmlCleanup(now() - (60 * 60 * 24 * 40)), [], "Post2shtmlCleanup", 10, now() + (60 * 60 * 24));
 
-        $toexecute->laterOnce(new ToexecuteCleanup(), [], "ToexecuteCleanup", 10, now() + (60*60*24));
+        $toexecute->laterOnce(new ToexecuteCleanup(), [], "ToexecuteCleanup", 10, now() + (60 * 60 * 24));
     }
 
     /** Not used - we call it directly from toxecute.php

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: honzama
@@ -52,18 +53,19 @@ class ObjectForm extends AbstractGrabber
     private $_content = [];
     private $_last_store_mode;
 
-    function __construct() {
-    }
+    public function __construct() {}
 
     /** Name of the grabber - used for grabber selection box */
-    public static function name(): string {
+    public static function name(): string
+    {
         return _m('Form');
     }
 
     /** Description of the grabber - used as help text for the users.
      *  Description is in HTML
      */
-    public static function description(): string {
+    public static function description(): string
+    {
         return _m('Grabs data POSTed by AA form');
     }
 
@@ -90,7 +92,7 @@ class ObjectForm extends AbstractGrabber
     }
 
     /** Method called by the AA\IO\Saver to get next object from the data input */
-    function getItem(): ?AA_Content
+    public function getItem(): ?AA_Content
     {
         if (!($tostore = current($this->_content))) {
             return null;
@@ -104,7 +106,7 @@ class ObjectForm extends AbstractGrabber
      *  method is called - it means "we are going really to grab the data
      * @throws Exception
      */
-    function prepare(): void
+    public function prepare(): void
     {
         $this->_content = [];
         if (!is_array($_POST['aa'] ?? null)) {
@@ -150,7 +152,7 @@ class ObjectForm extends AbstractGrabber
             }
             foreach ($obj_fields as $field_id => $val_array) {
                 // get the content of the field (values and flags)
-                $aa_value = Widget::getValue((array)$val_array);
+                $aa_value = Widget::getValue((array) $val_array);
                 $aa_value->replaceInValues($trans_obj_alias, $trans_obj_ids);
                 $content->setAaValue($field_id, $aa_value);
             }
@@ -164,7 +166,7 @@ class ObjectForm extends AbstractGrabber
     /** Function called by AA\IO\Saver after we get the last object from the data
      *  input
      */
-    function finish(): void
+    public function finish(): void
     {
         $this->_content = [];
     }

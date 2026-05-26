@@ -9,28 +9,34 @@ use AA;
  *  bck_table and renames all backup tables (bck_slice, bck_item, ...) to right
  *  names (slice, item, ...).
  */
-class BackupTables extends \AA\Optimize\AbstractOptimize {
-
+class BackupTables extends \AA\Optimize\AbstractOptimize
+{
     /** Name function
      * @return string - a name
      */
-    public static function name(): string {
+    public static function name(): string
+    {
         return _m("Backup tables");
     }
 
     /** Description function
      * @return string - a description
      */
-    public static function description(): string {
+    public static function description(): string
+    {
         return _m("[experimental] ") . _m("Deletes all the current backup tables (bck_slice, bck_item, ...) and copies there live tables (slice, item, ...).");
     }
 
-    public static function actions(): array { return ['repair']; }
+    public static function actions(): array
+    {
+        return ['repair'];
+    }
 
     /** Main update function
      * @return bool
      */
-    public function repair(): bool {
+    public function repair(): bool
+    {
         $metabase = AA::Metabase();
         $tablenames = $metabase->getTableNames();
 

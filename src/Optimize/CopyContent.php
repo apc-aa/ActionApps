@@ -3,35 +3,42 @@
 namespace AA\Optimize;
 
 /** Whole pagecache will be invalidated and deleted */
-class CopyContent extends AbstractOptimize {
-
+class CopyContent extends AbstractOptimize
+{
     /** Name function
      * @return string - a name
      */
-    public static function name(): string {
+    public static function name(): string
+    {
         return _m("Copy Content Table");
     }
 
     /** Description function
      * @return string - a description
      */
-    public static function description(): string {
+    public static function description(): string
+    {
         return _m("Copy data for all items newer than short_id=1941629 from content table to content2 table. Used for recovery content table on Ecn server. Not useful for any other users, I think.");
     }
 
     /** implemented actions within this class */
-    public static function actions(): array { return ['repair']; }
+    public static function actions(): array
+    {
+        return ['repair'];
+    }
 
     /** Test function
      * @return string - a message
      */
-    public function test(): bool {
+    public function test(): bool
+    {
         $this->message(_m('There is nothing to test.'));
         return true;
     }
 
 
-    public function repair(): bool {
+    public function repair(): bool
+    {
         $db = getDb();
 
         $SQL = "INSERT INTO content2 SELECT content.* FROM content

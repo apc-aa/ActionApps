@@ -1,4 +1,5 @@
 <?php
+
 /**
  *
  * PHP version 8.2+
@@ -17,6 +18,4 @@ namespace AA\Mail;
 /**
  * Base SMTP failure. Callers that don't care about retryability catch this.
  */
-abstract class SmtpException extends \RuntimeException {
-
-}
+abstract class SmtpException extends \RuntimeException {}

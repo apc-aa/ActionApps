@@ -1,4 +1,5 @@
 <?php
+
 /**
  *
  * PHP version 7.2+
@@ -25,8 +26,6 @@
  *
  */
 
-
-
 namespace AA\IO\Grabber;
 
 use AA\Util\NamedInterface;
@@ -41,7 +40,8 @@ use ItemContent;
 /** AA\IO\AbstractGrabber\AbstractGrabber - Base class, which is used as abstraction for data input
  *  From this class we derive concrete data grabbers, like RSS, AARSS, CSV, ...
  */
-abstract class AbstractGrabber implements NamedInterface {
+abstract class AbstractGrabber implements NamedInterface
+{
     use ReportTrait;
 
     /** @var array of domain and time of the last request to them - used with $load_frequency to  limit request frequency to domains*/
@@ -51,7 +51,8 @@ abstract class AbstractGrabber implements NamedInterface {
     protected ?float $load_frequency = null;
 
     /** @todo - not yet implemented */
-    static function factoryFromFile($file): AbstractGrabber {
+    public static function factoryFromFile($file): AbstractGrabber
+    {
         $grabbers = AA_Components::getClassNames('AA\\IO\\Grabber\\AbstractGrabber');
         exit;
     }
@@ -59,26 +60,36 @@ abstract class AbstractGrabber implements NamedInterface {
     /** true, if grabber returns already prepared item. false, when just parsed source structure is returned which must be converted by transformations
      * @return bool
      */
-    public function isDirectfill(): bool {
+    public function isDirectfill(): bool
+    {
         return true;
     }
 
     /** name function
      *  Name of the grabber - used for grabber selection box
      */
-    public static function name() : string { return ''; }
+    public static function name(): string
+    {
+        return '';
+    }
 
     /** description function
      *  Description of the grabber - used as help text for the users.
      *  Description is in HTML
      */
-    public static function description() : string { return ''; }
+    public static function description(): string
+    {
+        return '';
+    }
 
 
     /** Called before loadUrl to make authentication - used in loadData() as higher level function
      * @return bool
      */
-    protected function loadAuth(): bool { return true; }
+    protected function loadAuth(): bool
+    {
+        return true;
+    }
 
     /** the real low level get data from url - used in loadData() as higher level function
      *
@@ -87,7 +98,8 @@ abstract class AbstractGrabber implements NamedInterface {
      *
      * @return string data
      */
-    protected function loadUrl(string $url, ?string $post_body = ''): string {
+    protected function loadUrl(string $url, ?string $post_body = ''): string
+    {
         $context = $post_body ? stream_context_create(['http' => ['method'  => 'POST', 'header'  => 'Content-Type: text/xml', 'content' => $post_body ]]) : null;
         return file_get_contents($url, false, $context);
     }
@@ -102,7 +114,7 @@ abstract class AbstractGrabber implements NamedInterface {
      * @return false|string
      * @throws Exception
      */
-    protected function loadData($url, $direct_input='', $post_body='', $source_encoding=''): false|string
+    protected function loadData($url, $direct_input = '', $post_body = '', $source_encoding = ''): false|string
     {
         if (strlen($direct_input)) {
             return $direct_input;
@@ -120,10 +132,10 @@ abstract class AbstractGrabber implements NamedInterface {
         if (false === ($data = $this->loadUrl($url, $post_body))) {
             throw new Exception('file not loaded: ' . $url);
         }
-        $this->message(__CLASS__.' -> '. __FUNCTION__);
-        $this->message("read ". strlen($data). " Bytes of data <br><pre>".safe(substr($data,0,1000))."...</pre>");
+        $this->message(__CLASS__ . ' -> ' . __FUNCTION__);
+        $this->message("read " . strlen($data) . " Bytes of data <br><pre>" . safe(substr($data, 0, 1000)) . "...</pre>");
 
-        if ($source_encoding && $source_encoding!=='utf-8') {
+        if ($source_encoding && $source_encoding !== 'utf-8') {
             $data = ConvertCharset::singleton()->Convert($data, $source_encoding, 'utf-8');
             $this->message("Data converted from $source_encoding to utf-8");
         }
@@ -132,7 +144,8 @@ abstract class AbstractGrabber implements NamedInterface {
     }
 
     /** loads all the data based on grabber setting and return it */
-    public function getSources(): array {
+    public function getSources(): array
+    {
         return [];
     }
 
@@ -143,10 +156,11 @@ abstract class AbstractGrabber implements NamedInterface {
      * @param $params
      * @return string
      */
-    static function htmlSetting($input_prefix, $params): string
-    {     // $input_prefix - here grabber_id
+    public static function htmlSetting($input_prefix, $params): string
+    {
+        // $input_prefix - here grabber_id
         $properties = static::getClassProperties();
-        $form = new AA_Form;
+        $form = new AA_Form();
         foreach ($properties as $id => $property) {
             $property->addPropertyFormrows($form);
         }
@@ -158,7 +172,8 @@ abstract class AbstractGrabber implements NamedInterface {
     /** getClassProperties function of AA_Serializable - used for htmlSetting()
      * @return array
      */
-    public static function getClassProperties(): array {
+    public static function getClassProperties(): array
+    {
         return [];
     }
 
@@ -167,7 +182,10 @@ abstract class AbstractGrabber implements NamedInterface {
      *
      * @return AA_Content|null
      */
-    function getItem(): ?AA_Content { return null; }
+    public function getItem(): ?AA_Content
+    {
+        return null;
+    }
 
     /** getAllItems function
      *  Shortcut method to get array of all the Items
@@ -175,7 +193,8 @@ abstract class AbstractGrabber implements NamedInterface {
      * @return AA_Content[]  or ItemContent[]
      * @throws Exception
      */
-    final public function getAllItems(string $key=''): array {
+    final public function getAllItems(string $key = ''): array
+    {
         $this->prepare();
         $ret = [];
         if ($key) {
@@ -199,7 +218,8 @@ abstract class AbstractGrabber implements NamedInterface {
      * @return AA_Content|null
      * @throws Exception
      */
-    public function getItemWithId(string $id): ?AA_Content {
+    public function getItemWithId(string $id): ?AA_Content
+    {
         $ret = null;
         $this->prepare();
         while ($item = $this->getItem()) {
@@ -217,7 +237,8 @@ abstract class AbstractGrabber implements NamedInterface {
      * @return AA_Content|null
      * @throws Exception
      */
-    public function getFirstItem(): ?AA_Content {
+    public function getFirstItem(): ?AA_Content
+    {
         $this->prepare();
         $item = $this->getItem();
         $this->finish();
@@ -248,8 +269,7 @@ abstract class AbstractGrabber implements NamedInterface {
      *  method is called - it means "we are going really to grab the data
      *  @throws Exception
      */
-    function prepare() {
-    }
+    public function prepare() {}
 
     /** get data encoding - like UTF-8, windows-1250, ... */
     public function getCharset(): string
@@ -258,8 +278,7 @@ abstract class AbstractGrabber implements NamedInterface {
     }
 
     /** Function called by AA\IO\Saver after we get the last item from the data input  */
-    function finish() {
-    }
+    public function finish() {}
 
     /**
      * @param  float  $load_frequency  - how often we can contact domain in miliseconds - 1000.0 = 1s
@@ -279,7 +298,7 @@ abstract class AbstractGrabber implements NamedInterface {
     {
         $time_diff = microtime(true) - (self::$last_request_4_domain[$domain] ?: 0);
         if ($time_diff < ($this->load_frequency / 1000.0)) {   // protect is in miliseconds, $time_diff in seconds
-            usleep((int)(1000000 * (($this->load_frequency / 1000.0) - $time_diff)));
+            usleep((int) (1000000 * (($this->load_frequency / 1000.0) - $time_diff)));
         }
         self::$last_request_4_domain[$domain] = microtime(true);
     }

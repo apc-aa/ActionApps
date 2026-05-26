@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: honzama
@@ -7,6 +8,7 @@
  */
 
 namespace AA\Widget;
+
 use AA\FormArray;
 use AA_Content;
 use AA_Property;
@@ -16,7 +18,6 @@ use Exception;
 /** Check Box widget */
 class ChbWidget extends Widget
 {
-
     /** Creates base widget HTML, which will be surrounded by Live, Ajxax
      *  or normal decorations (added by _finalize*Html)
      *
@@ -27,7 +28,8 @@ class ChbWidget extends Widget
      *  @return array
      *  @throws Exception
      */
-    function _getRawHtml(AA_Property $aa_property, AA_Content $content, string $type = 'normal'): array {
+    public function _getRawHtml(AA_Property $aa_property, AA_Content $content, string $type = 'normal'): array
+    {
         $base_name = FormArray::getName4Form($aa_property->getId(), $content, $this->item_index);
         $base_id = FormArray::formName2Id($base_name);
         // we use extended version, because of ajax and live widget and the fact
@@ -82,7 +84,8 @@ class ChbWidget extends Widget
      *  Used parameter format (in fields.input_show_func table)
      * @return array
      */
-    public static function getClassProperties(): array {
+    public static function getClassProperties(): array
+    {
         return [];
     }
 
@@ -101,8 +104,8 @@ class ChbWidget extends Widget
 
         $fld_value_arr = [];
 
-        foreach ((array)$data4field as $key => $value) {
-            if (ctype_digit((string)$key)) {
+        foreach ((array) $data4field as $key => $value) {
+            if (ctype_digit((string) $key)) {
                 $fld_value_arr[$key] = ['value' => $value, 'flag' => $flag];
             }
         }
@@ -115,7 +118,8 @@ class ChbWidget extends Widget
     /**
      * @inheritDoc
      */
-    public static function description(): string {
+    public static function description(): string
+    {
         return ''; // TODO: Implement description() method.
     }
 }

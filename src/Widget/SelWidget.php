@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: honzama
@@ -7,6 +8,7 @@
  */
 
 namespace AA\Widget;
+
 use AA\FormArray;
 use AA_Content;
 use AA_Property;
@@ -45,21 +47,24 @@ class SelWidget extends Widget
      *  Used parameter format (in fields.input_show_func table)
      * @return array
      */
-    public static function getClassProperties(): array {
+    public static function getClassProperties(): array
+    {
         return Widget::propertiesShop(['const', 'slice_field', 'use_name', 'bin_filter', 'filter_conds', 'sort_by', 'additional_slice_pwd', 'const_arr', 'select_plus']);  // it also counts with 'filter_conds_rw', but it is not used for this widget
     }
 
-    protected function requireLibs($aa_property, $winfo): array {
+    protected function requireLibs($aa_property, $winfo): array
+    {
         return ['select2@4','aa-jslib@3'];
         //    return array_merge(['select2'], parent::requireLibs($aa_property, $winfo));
     }
 
     /** script to run after the page DOM is loaded */
-    protected function requireRun($aa_property, $winfo): string {
+    protected function requireRun($aa_property, $winfo): string
+    {
         $ret = '';
         // are there some textareas not converted to CodeMirror?
         if ($this->ids_4_select2) {
-            $sel2ids = implode(',',$this->ids_4_select2);
+            $sel2ids = implode(',', $this->ids_4_select2);
             $ret .= <<<JS
                const conf = {
                     matcher: (params, data) => {
@@ -87,7 +92,8 @@ class SelWidget extends Widget
      *  @return array
      *  @throws \Exception
      */
-    function _getRawHtml(AA_Property $aa_property, AA_Content $content, string $type = 'normal'): array {
+    public function _getRawHtml(AA_Property $aa_property, AA_Content $content, string $type = 'normal'): array
+    {
         $base_name = FormArray::getName4Form($aa_property->getId(), $content, $this->item_index);
         $base_id = FormArray::formName2Id($base_name);
         $required = $aa_property->isRequired() ? 'required' : '';
@@ -111,21 +117,21 @@ class SelWidget extends Widget
         // empty select option for not required fields and also for live selectbox,
         // because people thinks, that the first value is filled in the database (which is not)
         $add_empty = (!$required ? 1 : 2);
-        $options = $this->getOptions($selected, $content, (bool)$this->getProperty('use_name', false), false, $add_empty);
+        $options = $this->getOptions($selected, $content, (bool) $this->getProperty('use_name', false), false, $add_empty);
         $widget .= $this->getSelectOptions($options);
         $widget .= "</select>";
 
         // select_plus: unset → heuristic (>8 options); set → honor explicit on/off
-        $use_select2 = $select_plus === null ? count($options) > 8 : (bool)$select_plus;
+        $use_select2 = $select_plus === null ? count($options) > 8 : (bool) $select_plus;
         if ($use_select2) {
             $this->ids_4_select2[] = "#$input_id";
         }
 
-//        now managed by ids_4_select2
-//        $widget .="
-//            <script>
-//              AA_LoadJs( jQuery.fn.select2, function() { $('#$input_id').select2();}, '".\AA_Requires::getUrl4Lib('select2@4')."');
-//            </script>";
+        //        now managed by ids_4_select2
+        //        $widget .="
+        //            <script>
+        //              AA_LoadJs( jQuery.fn.select2, function() { $('#$input_id').select2();}, '".\AA_Requires::getUrl4Lib('select2@4')."');
+        //            </script>";
 
         return ['html' => $widget, 'last_input_name' => $input_name, 'base_name' => $base_name, 'base_id' => $base_id, 'required' => $aa_property->isRequired()];
     }
@@ -134,7 +140,8 @@ class SelWidget extends Widget
     /**
      * @inheritDoc
      */
-    public static function description(): string {
+    public static function description(): string
+    {
         return ''; // TODO: Implement description() method.
     }
 }

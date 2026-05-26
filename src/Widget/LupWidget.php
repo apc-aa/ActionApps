@@ -1,4 +1,5 @@
 <?php
+
 namespace AA\Widget;
 
 use AA\FormArray;
@@ -11,20 +12,24 @@ class LupWidget extends Widget
 {
     protected $url;
 
-    public static function name(): string {
+    public static function name(): string
+    {
         return _m('Local URL Picker');
     }
 
-    public static function description(): string {
+    public static function description(): string
+    {
         return _m('Browse a local website and pick a URL');
     }
 
-    public static function getClassProperties(): array {
+    public static function getClassProperties(): array
+    {
         return Widget::propertiesShop(['url']);
     }
 
     /** JS functions for the dialog - runs once per page */
-    protected function requireLibCode($aa_property, $winfo): string {
+    protected function requireLibCode($aa_property, $winfo): string
+    {
         return <<<'JS'
 function AA_LupOpen(baseId, url) {
     const dlg    = document.getElementById(`lupdlg_${baseId}`);
@@ -59,7 +64,8 @@ JS;
     }
 
     /** CSS for the dialog */
-    protected function requireCssCode($aa_property, $winfo): string {
+    protected function requireCssCode($aa_property, $winfo): string
+    {
         return <<<'CSS'
 .aa-lup-dialog { width: 90vw; height: 85vh; padding: 0; border: 1px solid #888; }
 .aa-lup-dialog::backdrop { background: rgba(0,0,0,0.4); }
@@ -70,7 +76,8 @@ CSS;
     }
 
     /** Attach click handler - runs per widget instance */
-    protected function requireRun($aa_property, $winfo): string {
+    protected function requireRun($aa_property, $winfo): string
+    {
         $base_id = $winfo['base_id'];
         $url     = json_encode($this->getProperty('url', ''), JSON_HEX_APOS | JSON_HEX_QUOT);
         return "document.getElementById('lupbtn_{$base_id}')?.addEventListener('click', function() { AA_LupOpen('{$base_id}', {$url}); });";
@@ -79,7 +86,8 @@ CSS;
     /**
      * @throws Exception
      */
-    function _getRawHtml(AA_Property $aa_property, AA_Content $content, string $type = 'normal'): array {
+    public function _getRawHtml(AA_Property $aa_property, AA_Content $content, string $type = 'normal'): array
+    {
         $base_name = FormArray::getName4Form($aa_property->getId(), $content, $this->item_index);
         $base_id   = FormArray::formName2Id($base_name);
         $required  = $aa_property->isRequired() ? 'required' : '';
@@ -87,7 +95,7 @@ CSS;
 
         $attrs['type']        = 'url';
         $attrs['placeholder'] = 'https://';
-        $attrs['class']       = $attrs['class'] ? $attrs['class']. ' aa-w-full' : 'aa-w-full';
+        $attrs['class']       = $attrs['class'] ? $attrs['class'] . ' aa-w-full' : 'aa-w-full';
 
         $attr_string = htmlattr($attrs);
 

@@ -6,19 +6,21 @@ use AA_Slice;
 
 /** Testing if feeds table do not contain relations to non-existent slices
  */
-class DbFeedInconsistency extends AbstractOptimize {
-
+class DbFeedInconsistency extends AbstractOptimize
+{
     /** Name function
      * @return string - a name
      */
-    public static function name(): string {
+    public static function name(): string
+    {
         return _m("Feeds table inconsistent records");
     }
 
     /** Description function
      * @return string - a description
      */
-    public static function description(): string {
+    public static function description(): string
+    {
         return _m("Testing if feeds table do not contain relations to non-existent slices (after slice deletion)");
     }
 
@@ -26,7 +28,8 @@ class DbFeedInconsistency extends AbstractOptimize {
      * tests for duplicate entries
      * @return bool
      */
-    public function test(): bool {
+    public function test(): bool
+    {
         $ret = true;
 
         // test wrong destination slices
@@ -59,7 +62,8 @@ class DbFeedInconsistency extends AbstractOptimize {
     /** Name function
      * @return bool
      */
-    public function repair(): bool {
+    public function repair(): bool
+    {
         $db = getDb();
 
         // test wrong destination slices

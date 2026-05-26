@@ -1,4 +1,5 @@
 <?php
+
 /**
  *
  * PHP version 8.2+
@@ -42,8 +43,8 @@ use RuntimeException;
  *   - safe()-equivalent CR/LF stripping on server-supplied text before logging
  *   - CR/LF/NUL validation on caller-supplied helo/user/pass/envelope/rcpts
  */
-class SmtpTransport {
-
+class SmtpTransport
+{
     /** Values for AA_MAIL_TRANSPORT. */
     public const TRANSPORT_MAIL = 'mail';
     public const TRANSPORT_SMTP = 'smtp';
@@ -69,14 +70,15 @@ class SmtpTransport {
 
     private string $lastError = '';
 
-    public function __construct() {
-        $this->host       = defined('AA_SMTP_HOST')       ? (string) AA_SMTP_HOST       : '';
-        $this->port       = defined('AA_SMTP_PORT')       ? (int) AA_SMTP_PORT          : 587;
+    public function __construct()
+    {
+        $this->host       = defined('AA_SMTP_HOST') ? (string) AA_SMTP_HOST : '';
+        $this->port       = defined('AA_SMTP_PORT') ? (int) AA_SMTP_PORT : 587;
         $this->encryption = defined('AA_SMTP_ENCRYPTION') ? (string) AA_SMTP_ENCRYPTION : self::ENC_TLS;
-        $this->user       = defined('AA_SMTP_USER')       ? (string) AA_SMTP_USER       : '';
-        $this->pass       = defined('AA_SMTP_PASS')       ? (string) AA_SMTP_PASS       : '';
-        $this->timeout    = defined('AA_SMTP_TIMEOUT')    ? max(1, (int) AA_SMTP_TIMEOUT) : 15;
-        $this->cafile     = defined('AA_SMTP_CAFILE')     ? (string) AA_SMTP_CAFILE     : '';
+        $this->user       = defined('AA_SMTP_USER') ? (string) AA_SMTP_USER : '';
+        $this->pass       = defined('AA_SMTP_PASS') ? (string) AA_SMTP_PASS : '';
+        $this->timeout    = defined('AA_SMTP_TIMEOUT') ? max(1, (int) AA_SMTP_TIMEOUT) : 15;
+        $this->cafile     = defined('AA_SMTP_CAFILE') ? (string) AA_SMTP_CAFILE : '';
         $this->helo       = self::resolveHostname();
 
         if ($this->host === '') {
@@ -103,7 +105,8 @@ class SmtpTransport {
      * $_SERVER['HTTP_HOST'] is empty -- without it, Message-IDs end up as
      * "<...@localhost>" which hurts DKIM alignment.
      */
-    public static function resolveHostname(): string {
+    public static function resolveHostname(): string
+    {
         foreach (['AA_SMTP_HELO', 'AA_MAIL_HOSTNAME'] as $const) {
             if (defined($const) && constant($const) !== '') {
                 return (string) constant($const);
@@ -124,7 +127,8 @@ class SmtpTransport {
         return 'localhost';
     }
 
-    public function getLastError(): string {
+    public function getLastError(): string
+    {
         return $this->lastError;
     }
 
@@ -136,7 +140,8 @@ class SmtpTransport {
      * @param string   $rfc822       Full headers + blank line + body
      * @return int one of self::RESULT_*
      */
-    public function sendRaw(string $envelopeFrom, array $rcpts, string $rfc822): int {
+    public function sendRaw(string $envelopeFrom, array $rcpts, string $rfc822): int
+    {
         if ($envelopeFrom === '' || $rcpts === []) {
             return self::RESULT_PERMANENT;
         }
@@ -171,7 +176,7 @@ class SmtpTransport {
                  * fatal so we don't fall through to cleartext AUTH. */
                 if ($starttls === false) {
                     throw new RuntimeException(
-                        'SmtpTransport: server did not offer STARTTLS but AA_SMTP_ENCRYPTION=tls'
+                        'SmtpTransport: server did not offer STARTTLS but AA_SMTP_ENCRYPTION=tls',
                     );
                 }
                 $this->check($starttls, 'starttls');
@@ -211,7 +216,8 @@ class SmtpTransport {
      *
      * @param mixed $result true on success, PEAR_Error on failure
      */
-    private function check($result, string $context): void {
+    private function check($result, string $context): void
+    {
         if ($result === true) {
             return;
         }
@@ -231,7 +237,8 @@ class SmtpTransport {
         throw new TransientSmtpException($full, $code);
     }
 
-    private function safeDisconnect(Net_SMTP $smtp): void {
+    private function safeDisconnect(Net_SMTP $smtp): void
+    {
         try {
             $smtp->disconnect();
         } catch (\Throwable) {
@@ -240,7 +247,8 @@ class SmtpTransport {
     }
 
     /** TLSv1_2 + TLSv1_3 floor; never SSLv2/v3/TLSv1.0/1.1. */
-    private static function cryptoFloor(): int {
+    private static function cryptoFloor(): int
+    {
         $method = 0;
         if (defined('STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT')) {
             $method |= STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT;
@@ -255,14 +263,16 @@ class SmtpTransport {
     }
 
     /** Prevents SMTP command injection via helo/user/pass/envelope/rcpt. */
-    private static function assertNoControl(string $value, string $what): void {
+    private static function assertNoControl(string $value, string $what): void
+    {
         if (preg_match('/[\r\n\x00]/', $value)) {
             throw new RuntimeException("SmtpTransport: $what contains forbidden control characters");
         }
     }
 
     /** Neutralize CR/LF in server-supplied text before it lands in a log line. */
-    private static function stripControl(string $s): string {
+    private static function stripControl(string $s): string
+    {
         return preg_replace('/[\r\n\x00]+/', ' ', $s) ?? '';
     }
 }

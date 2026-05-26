@@ -5,10 +5,11 @@ namespace AA\Manageraction;
 use AA\Manager;
 
 /** Manager action */
-class Item_Modifycontent extends AbstractManageraction {
-
+class Item_Modifycontent extends AbstractManageraction
+{
     /** Name of this Manager's action */
-    public function getName(): string {
+    public function getName(): string
+    {
         return _m('Modify content');
     }
 
@@ -20,7 +21,8 @@ class Item_Modifycontent extends AbstractManageraction {
      *
      * @return bool
      */
-    function isPerm4Action($manager):bool {
+    public function isPerm4Action($manager): bool
+    {
         return IfSlPerm(PS_EDIT_ALL_ITEMS);
     }
 }

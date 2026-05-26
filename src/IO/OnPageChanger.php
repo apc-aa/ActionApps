@@ -1,4 +1,5 @@
 <?php
+
 /**
  *
  * PHP version 7.2+
@@ -32,25 +33,26 @@ use ConvertCharset;
 
 /** OnPageChanger class - reacts to AJAX calls on page and changes page parts
  */
-class OnPageChanger  {
-
+class OnPageChanger
+{
     protected $content_function;
 
-    function __construct($content_function) {
+    public function __construct($content_function)
+    {
         $this->content_function = $content_function;
     }
 
-    public function checkAndProcessCall(bool $additional_validity_check=true): void
+    public function checkAndProcessCall(bool $additional_validity_check = true): void
     {
         global $auth;
         if (IsAjaxCall()) {
             header("Content-type: application/json");
             if (!$additional_validity_check) {
                 if (is_object($auth) && $auth->is_user()) {
-                    echo json_encode(['message'=>_m('No permission for current user.')]);
+                    echo json_encode(['message' => _m('No permission for current user.')]);
                 } else {
                     // @todo - show login
-                    echo json_encode(['message'=>_m('No permission - no user is authenticated. Try to relogin, please.')]);
+                    echo json_encode(['message' => _m('No permission - no user is authenticated. Try to relogin, please.')]);
                 }
                 exit;
             }
@@ -59,11 +61,11 @@ class OnPageChanger  {
                 $grabber = new AA\IO\Grabber\Form();
                 $saver   = new AA\IO\Saver($grabber, null, null, 'by_grabber');
                 // $saver - > check Perms @todo
-                
+
                 [$saved_ok,$saved_err] = $saver->run();
 
                 $err_msg = $saved_err ? $saver->report() : ''; //"$saved_ok,$saved_err"; // ''
-                $this->sendPartsAndExit($saver->changedModules(),$err_msg);
+                $this->sendPartsAndExit($saver->changedModules(), $err_msg);
             }
             if (isset($_GET['aaedit'])) {
                 $this->sendPartsAndExit([$_GET['aaedit']]);
@@ -71,7 +73,7 @@ class OnPageChanger  {
         }
     }
 
-    protected function sendPartsAndExit($vars, $add_error_msg =''): never
+    protected function sendPartsAndExit($vars, $add_error_msg = ''): never
     {
         // we need to evaluate $page_content in order to reevaluate DependentParts
         call_user_func($this->content_function);

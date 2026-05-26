@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: honzama
@@ -13,7 +14,6 @@ use AA_Validate;
 /** Related Item Window widget */
 class IsoWidget extends MchWidget
 {
-
     //            $ret = Widget::propertiesShop(['', 'row_count', 'show_actions', 'admin_design', 'tag_prefix', 'show_buttons', '', '', 'filter_conds_rw', '', '', '', '', 'listlen']);
     protected $row_count;
     protected $show_actions;
@@ -36,21 +36,26 @@ class IsoWidget extends MchWidget
     }
 
     /** returns if the widget handles multivalue or just single value   */
-    public static function multiple(): bool {
+    public static function multiple(): bool
+    {
         return true;
     }
 
     /** To use css for mch (for ajax...))
      * @inheritDoc
      */
-    protected function getWidgetType(): string { return 'mch'; }
+    protected function getWidgetType(): string
+    {
+        return 'mch';
+    }
 
 
     /** getClassProperties function of AA_Serializable
      *  Used parameter format (in fields.input_show_func table)
      * @return array
      */
-    public static function getClassProperties(): array {
+    public static function getClassProperties(): array
+    {
         $ret = Widget::propertiesShop(['const', 'row_count', 'show_actions', 'admin_design', 'tag_prefix', 'show_buttons', 'bin_filter', 'filter_conds', 'filter_conds_rw', 'slice_field', 'sort_by', 'additional_slice_pwd', 'const_arr', 'listlen']);
         $ret['filter_conds_rw']->setHelp(_m("Conditions for filtering items in related items window. This conds user can change."));
         return $ret;
@@ -59,7 +64,8 @@ class IsoWidget extends MchWidget
     /**
      * @inheritDoc
      */
-    public static function description(): string {
+    public static function description(): string
+    {
         return ''; // TODO: Implement description() method.
     }
 
@@ -67,8 +73,9 @@ class IsoWidget extends MchWidget
      * @param string $validator_string
      * @return AA_Validate|null
      */
-    public function getUpgradedValidator(string $validator_string): ?AA_Validate {
-        if ( (str_starts_with($validator_string, 'id')) ) {
+    public function getUpgradedValidator(string $validator_string): ?AA_Validate
+    {
+        if ((str_starts_with($validator_string, 'id'))) {
             $validator_string = 'markedid';  // we should allow marked ids
         }
         return AA_Validate::factoryByString($validator_string);

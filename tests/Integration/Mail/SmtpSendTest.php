@@ -57,7 +57,7 @@ final class SmtpSendTest extends TestCase
                 $mail->setText("Hello over SMTP.\nSecond line.");
 
                 return $mail->send(['to@example.org']);
-            }
+            },
         );
 
         // htmlMimeMail::send() returns the recipient count on success.
@@ -96,9 +96,9 @@ final class SmtpSendTest extends TestCase
                 return (new SmtpTransport())->sendRaw(
                     'from@example.org',
                     ['to@example.org'],
-                    "Subject: x\r\n\r\nbody"
+                    "Subject: x\r\n\r\nbody",
                 );
-            }
+            },
         );
 
         $this->assertSame(SmtpTransport::RESULT_SENT, $run['result']);
@@ -118,9 +118,9 @@ final class SmtpSendTest extends TestCase
                 return (new SmtpTransport())->sendRaw(
                     'from@example.org',
                     ['to@example.org'],
-                    "Subject: x\r\n\r\nbody"
+                    "Subject: x\r\n\r\nbody",
                 );
-            }
+            },
         );
 
         $this->assertSame(SmtpTransport::RESULT_TRANSIENT, $run['result']);
@@ -139,9 +139,9 @@ final class SmtpSendTest extends TestCase
                 return (new SmtpTransport())->sendRaw(
                     'from@example.org',
                     ['to@example.org'],
-                    "Subject: x\r\n\r\nbody"
+                    "Subject: x\r\n\r\nbody",
                 );
-            }
+            },
         );
 
         $this->assertSame(SmtpTransport::RESULT_PERMANENT, $run['result']);

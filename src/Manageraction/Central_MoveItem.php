@@ -7,19 +7,21 @@ use AA\Manager;
 use zids;
 
 /** Manager action */
-class Central_MoveItem extends AbstractManageraction {
-
+class Central_MoveItem extends AbstractManageraction
+{
     /** specifies, to which bin the move should be performed */
-    var $to_bin;
+    public $to_bin;
 
     /** Constructor - fills the information about the target bin */
-    function __construct($id, $to_bin) {
+    public function __construct($id, $to_bin)
+    {
         $this->to_bin = $to_bin;
         parent::__construct($id);
     }
 
     /** Name of this Manager's action */
-    public function getName(): string {
+    public function getName(): string
+    {
         return match ($this->to_bin) {
             1       => _m('Move to Active'),
             2       => _m('Move to Holding bin'),
@@ -33,7 +35,8 @@ class Central_MoveItem extends AbstractManageraction {
      *  row's status_code already equals to_bin (no point clicking "Trash" on a
      *  trashed row).
      */
-    protected function getButtonDef(): array {
+    protected function getButtonDef(): array
+    {
         $label = match ($this->to_bin) {
             1       => _m('Activate'),
             2       => _m('Hold'),
@@ -52,17 +55,18 @@ class Central_MoveItem extends AbstractManageraction {
             // The alias must be wrapped as {_#STATUS_C} — `{}` expressions evaluate
             // FIRST in AA, _#XXX___ aliases are substituted AFTER, so unwrapped
             // aliases inside template commands are literal text at compare time.
-            'cond'  => '{ifeq:{_#STATUS_C}:'. $this->to_bin .':0:1}',
+            'cond'  => '{ifeq:{_#STATUS_C}:' . $this->to_bin . ':0:1}',
         ];
     }
 
     /** Render under the row's "..." overflow menu instead of inline. */
-    public function isSecondaryButton(): bool {
+    public function isSecondaryButton(): bool
+    {
         return true;
     }
 
     /** @inheritDoc */
-    function perform(Manager $manager, zids $item_zids, $action_param): string|false
+    public function perform(Manager $manager, zids $item_zids, $action_param): string|false
     {
         $item_ids = $item_zids->shortids();
 
@@ -79,7 +83,8 @@ class Central_MoveItem extends AbstractManageraction {
      *
      * @return bool
      */
-    function isPerm4Action($manager):bool {
+    public function isPerm4Action($manager): bool
+    {
         $current_bin = $manager->getBin();
 
         /** for acces to Central you have to be superadmin */
@@ -90,10 +95,10 @@ class Central_MoveItem extends AbstractManageraction {
         switch ($this->to_bin) {
             case 1:
                 return $current_bin !== 'app' && $current_bin !== 'appb' && $current_bin !== 'appc';
-            // Folder2 is Holding bin - prepared for more than three bins
+                // Folder2 is Holding bin - prepared for more than three bins
             case 2:
                 return ($current_bin !== 'hold');
-            // Folder3 is Trash
+                // Folder3 is Trash
             case 3:
                 return ($current_bin !== 'trash');
         }

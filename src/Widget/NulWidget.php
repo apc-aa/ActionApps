@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: honzama
@@ -11,7 +12,6 @@ namespace AA\Widget;
 /** Do not show widget */
 class NulWidget extends Widget
 {
-
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)
      */
@@ -26,7 +26,8 @@ class NulWidget extends Widget
     /**
      * @inheritDoc
      */
-    public static function description(): string {
+    public static function description(): string
+    {
         return ''; // TODO: Implement description() method.
     }
 
@@ -34,7 +35,8 @@ class NulWidget extends Widget
      *  Used parameter format (in fields.input_show_func table)
      * @return array
      */
-    public static function getClassProperties(): array {
+    public static function getClassProperties(): array
+    {
         return [];
     }
 }

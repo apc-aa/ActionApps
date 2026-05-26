@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: honzama
@@ -7,6 +8,7 @@
  */
 
 namespace AA\Widget;
+
 use AA\FormArray;
 use AA_Content;
 use AA_Formatters;
@@ -45,7 +47,8 @@ class TxtWidget extends Widget
      *  Used parameter format (in fields.input_show_func table)
      * @return array
      */
-    public static function getClassProperties(): array {
+    public static function getClassProperties(): array
+    {
         return Widget::propertiesShop(['rows', 'max_characters', 'ajaxtype', 'audio_enable', 'audio_max_seconds', 'audio_lang', 'audio_mode', 'audio_store']);
     }
 
@@ -53,14 +56,18 @@ class TxtWidget extends Widget
      *  Only the plain TxtWidget gets it today; EdtWidget (CKEditor) and
      *  CodWidget (CodeMirror) override the textarea surface so their
      *  integration is deferred. */
-    protected function speechEnabled(): bool {
-        if (static::class !== self::class) { return false; }
-        return (bool)$this->getProperty('audio_enable', false);
+    protected function speechEnabled(): bool
+    {
+        if (static::class !== self::class) {
+            return false;
+        }
+        return (bool) $this->getProperty('audio_enable', false);
     }
 
     /** libs to run after the page DOM is loaded */
-    protected function requireLibs($aa_property, $winfo): array {
-        $ret = ( count($aa_property->getTranslations())>1 ) ? ['aa-jslib@3'] : [];
+    protected function requireLibs($aa_property, $winfo): array
+    {
+        $ret = (count($aa_property->getTranslations()) > 1) ? ['aa-jslib@3'] : [];
         if ($aa_property->getContentTypeSwitches()) {
             $ret[] = 'ckeditor@4';
         }
@@ -74,8 +81,11 @@ class TxtWidget extends Widget
      *  auto-attaches on DOMContentLoaded; this call covers AJAX-rendered
      *  forms where that event has already fired. AA_Speech.autoInit() is
      *  idempotent — already-attached textareas are skipped. */
-    protected function requireRun($aa_property, $winfo): string {
-        if (!$this->speechEnabled()) { return ''; }
+    protected function requireRun($aa_property, $winfo): string
+    {
+        if (!$this->speechEnabled()) {
+            return '';
+        }
         return 'if (window.AA_Speech) { AA_Speech.autoInit(); }';
     }
 
@@ -89,7 +99,8 @@ class TxtWidget extends Widget
      * @return array
      * @throws Exception
      */
-    function _getRawHtml(AA_Property $aa_property, AA_Content $content, string $type = 'normal'): array {
+    public function _getRawHtml(AA_Property $aa_property, AA_Content $content, string $type = 'normal'): array
+    {
         $base_name = FormArray::getName4Form($aa_property->getId(), $content, $this->item_index);
         $base_id = FormArray::formName2Id($base_name);
 
@@ -111,14 +122,14 @@ class TxtWidget extends Widget
         $value = $content->getAaValue($aa_property->getId());
         $def_rows = $this->getProperty('rows', 4);
 
-        if ($maxlength = (int)$this->getProperty('max_characters', 0)) {
+        if ($maxlength = (int) $this->getProperty('max_characters', 0)) {
             $attrs['maxlength'] = $maxlength;
         }
-        $attrs['class'] = $attrs['class'] ? $attrs['class']. ' aa-w-full' : 'aa-w-full';
+        $attrs['class'] = $attrs['class'] ? $attrs['class'] . ' aa-w-full' : 'aa-w-full';
 
         if ($this->speechEnabled()) {
             $attrs['data-aa-speech']         = '1';
-            $attrs['data-aa-speech-max-sec'] = (int)$this->getProperty('audio_max_seconds', defined('AA_SPEECH_MAX_SECONDS') ? AA_SPEECH_MAX_SECONDS : 120);
+            $attrs['data-aa-speech-max-sec'] = (int) $this->getProperty('audio_max_seconds', defined('AA_SPEECH_MAX_SECONDS') ? AA_SPEECH_MAX_SECONDS : 120);
             // Absolute path to the API endpoint. AA_INSTAL_PATH already ends with "/"
             // and starts with "/"; the site-root "/" default would land at the wrong
             // host path when AA is installed under a subdirectory (e.g. /aadev/).
@@ -127,9 +138,9 @@ class TxtWidget extends Widget
             // itself is NOT sent — the server reads audio_store from the
             // field's stored widget config so a malicious client cannot opt
             // in to disk writes on its own.
-            $attrs['data-aa-speech-slice'] = (string)$content->getOwnerID();
-            $attrs['data-aa-speech-field'] = (string)$aa_property->getId();
-            $attrs['data-aa-speech-item']  = (string)$content->getId();
+            $attrs['data-aa-speech-slice'] = (string) $content->getOwnerID();
+            $attrs['data-aa-speech-field'] = (string) $aa_property->getId();
+            $attrs['data-aa-speech-item']  = (string) $content->getId();
             // In live mode, programmatic value injection does not fire the
             // textarea's onchange (and therefore AA_SendWidgetLive) — JS will
             // dispatch a change event after insertion when this flag is set.
@@ -138,11 +149,11 @@ class TxtWidget extends Widget
             }
             // Transcription path selector. Validated to a known value so we can't
             // leak arbitrary strings to the JS switch.
-            $mode = strtolower((string)$this->getProperty('audio_mode', 'auto'));
+            $mode = strtolower((string) $this->getProperty('audio_mode', 'auto'));
             $attrs['data-aa-speech-mode'] = in_array($mode, ['auto', 'webspeech', 'openai'], true) ? $mode : 'auto';
             // audio_lang override wins; per-translation langcode fills in from the
             // foreach loop below for multilingual fields; otherwise JS infers from <html lang>.
-            if ($audio_lang_prop = trim((string)$this->getProperty('audio_lang', ''))) {
+            if ($audio_lang_prop = trim((string) $this->getProperty('audio_lang', ''))) {
                 $attrs['data-aa-speech-lang'] = $audio_lang_prop;
             }
         }
@@ -167,7 +178,7 @@ class TxtWidget extends Widget
             // $rows         = max( $def_rows, min($my_rows>$def_rowssubstr_count($val,"\n")+4, 30));
 
             $input_name = $base_name . "[$i]";
-            if ( !$base ) {
+            if (!$base) {
                 $base['id']       = FormArray::formName2Id($input_name);
                 $base['langcode'] = Langs::getLangName2Code(Langs::getLangNum2Name($i));
             }
@@ -186,7 +197,7 @@ class TxtWidget extends Widget
         }
 
         // if CKEditor called outside AA - in sitemodule, we have to tell, which slice to use for image uploads
-        $_SESSION['r_last_module_id']=$content->getOwnerID();
+        $_SESSION['r_last_module_id'] = $content->getOwnerID();
 
         return ['html' => $widget, 'last_input_name' => $input_name, 'base_name' => $base_name, 'base_id' => $base_id, 'required' => $aa_property->isRequired()];
     }
@@ -227,7 +238,7 @@ class TxtWidget extends Widget
 
         if ($showhtmlarea || $showcodeeditor) {
             // add this textarea to the list for CKEditor creation or CodeMirror
-            $this->ids_4_editor[] = '#'.$input_id;
+            $this->ids_4_editor[] = '#' . $input_id;
             // $attrs['class'] = 'ckeditor';
 
             // we do not mark base textarea as required for CodeMirror, since it causes "An invalid form control with name='' is not focusable."
@@ -255,11 +266,11 @@ class TxtWidget extends Widget
             // @todo make AA_Translate work on CodeMirror
             if ($langcode != $base['langcode']) {
                 if ($showhtmlarea) {
-                    $translate =  "<span class=\"btn aa-langtrans-tbtn\" onclick=\"AA_Translate(CKEDITOR.instances['".$base['id']."'].getData(), '" . $base['langcode'] . "', '$langcode').then(txt => CKEDITOR.instances['$input_id'].setData(txt));\">" . _m("translate from") . ' ' . Langs::getLangCode2Name($base['langcode']) . "</span>";
+                    $translate =  "<span class=\"btn aa-langtrans-tbtn\" onclick=\"AA_Translate(CKEDITOR.instances['" . $base['id'] . "'].getData(), '" . $base['langcode'] . "', '$langcode').then(txt => CKEDITOR.instances['$input_id'].setData(txt));\">" . _m("translate from") . ' ' . Langs::getLangCode2Name($base['langcode']) . "</span>";
                 } elseif ($showcodeeditor) {
-                    $translate = "<span class=\"btn aa-langtrans-tbtn\" onclick=\"AA_Translate(document.getElementById('".$base['id']."').value, '".$base['langcode']."', '$langcode').then(txt => document.getElementById('$input_id').nextSibling.CodeMirror.setValue(txt));\">" ._m("translate from").' '.Langs::getLangCode2Name($base['langcode'])."</span>";
+                    $translate = "<span class=\"btn aa-langtrans-tbtn\" onclick=\"AA_Translate(document.getElementById('" . $base['id'] . "').value, '" . $base['langcode'] . "', '$langcode').then(txt => document.getElementById('$input_id').nextSibling.CodeMirror.setValue(txt));\">" . _m("translate from") . ' ' . Langs::getLangCode2Name($base['langcode']) . "</span>";
                 } else {
-                    $translate = "<span class=\"btn aa-langtrans-tbtn\" onclick=\"AA_Translate(document.getElementById('".$base['id']."').value, '".$base['langcode']."', '$langcode').then(txt => document.getElementById('$input_id').value = txt);\">" ._m("translate from").' '.Langs::getLangCode2Name($base['langcode'])."</span>";
+                    $translate = "<span class=\"btn aa-langtrans-tbtn\" onclick=\"AA_Translate(document.getElementById('" . $base['id'] . "').value, '" . $base['langcode'] . "', '$langcode').then(txt => document.getElementById('$input_id').value = txt);\">" . _m("translate from") . ' ' . Langs::getLangCode2Name($base['langcode']) . "</span>";
                 }
             }
             $ret = "<div class=\"aa-langtrans aa-lang-$lang\"><strong class=\"aa-langtrans-label\">$lang</strong>$ret$translate</div>";
@@ -268,7 +279,8 @@ class TxtWidget extends Widget
     }
 
     /** @inheritDoc */
-    public static function description(): string {
+    public static function description(): string
+    {
         return ''; // TODO: Implement description() method.
     }
 }

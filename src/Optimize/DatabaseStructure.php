@@ -3,26 +3,29 @@
 namespace AA\Optimize;
 
 /** There was change in Reader management functionality in AA v2.8.1 */
-class DatabaseStructure extends AbstractOptimize {
-
+class DatabaseStructure extends AbstractOptimize
+{
     /** Name function
      * @return string - a name
      */
-    public static function name(): string {
+    public static function name(): string
+    {
         return _m("Checks if all tables have right columns and indexes");
     }
 
     /** Description function
      * @return string - a description
      */
-    public static function description(): string {
+    public static function description(): string
+    {
         return _m("We are time to time add new table or column to existing table in order we can support new features. This option will update the datastructure to the last one. No data will be lost.");
     }
 
     /** Name function
      * @return bool
      */
-    public function test(): bool {
+    public function test(): bool
+    {
         $this->clear_report();
         $ret = true;  // which means OK
 
@@ -42,5 +45,8 @@ class DatabaseStructure extends AbstractOptimize {
     /** Repair function
      * @return bool
      */
-    public function repair(): bool { return true; }
+    public function repair(): bool
+    {
+        return true;
+    }
 }

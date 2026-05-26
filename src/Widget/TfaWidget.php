@@ -1,4 +1,5 @@
 <?php
+
 /** 2FA - how to
  * The 2FA field on AA login page is shown when the first user in the AA installation use 2FA.
  *
@@ -23,6 +24,7 @@
  */
 
 namespace AA\Widget;
+
 use AA;
 use AA\FormArray;
 use AA_Content;
@@ -33,7 +35,6 @@ use Exception;
 /** 2FA Auth - generate secret widget */
 class TfaWidget extends Widget
 {
-
     /** name function
      *
      */
@@ -42,7 +43,8 @@ class TfaWidget extends Widget
         return _m('2FA Secret generator');
     }
 
-    protected function requireLibs($aa_property, $winfo): array {
+    protected function requireLibs($aa_property, $winfo): array
+    {
         return ['aa-jslib'];  // for AA_SendWidgetAjax
     }
 
@@ -56,16 +58,17 @@ class TfaWidget extends Widget
      *  @return array
      *  @throws Exception
      */
-    function _getRawHtml(AA_Property $aa_property, AA_Content $content, string $type = 'normal'): array {
+    public function _getRawHtml(AA_Property $aa_property, AA_Content $content, string $type = 'normal'): array
+    {
         $base_name = FormArray::getName4Form($aa_property->getId(), $content, $this->item_index);
         $base_id = FormArray::formName2Id($base_name);
 
-        $widget = "\n<div id=\"ajaxv_$base_id\" data-aa-alias=\"". safe(base64_encode('AA_2FA_QR')) ."\">";
+        $widget = "\n<div id=\"ajaxv_$base_id\" data-aa-alias=\"" . safe(base64_encode('AA_2FA_QR')) . "\">";
         $widget .= "\n<div class=\"aa-2fa-changeform aa-widget aa-widget-2fa\" id=\"widget-$base_id\">";
 
         $input_name = $base_name . "[tfa][usr]";
         $input_id = FormArray::formName2Id($input_name);
-        $widget .= "\n<div class=aa-2fa-username><input type=text readonly id=\"$input_id\" name=\"$input_name\" placeholder=\"" . _m('Username') . "\" value=\"". AuthGetUname() ."\"></div>";
+        $widget .= "\n<div class=aa-2fa-username><input type=text readonly id=\"$input_id\" name=\"$input_name\" placeholder=\"" . _m('Username') . "\" value=\"" . AuthGetUname() . "\"></div>";
 
         $input_name = $base_name . "[tfa][pwd]";
         $input_id = FormArray::formName2Id($input_name);
@@ -103,7 +106,7 @@ class TfaWidget extends Widget
     {
         $data4field = $data4field['tfa'];
         if (is_array($data4field) && isset($data4field['usr'])) {
-            return new AA_Value(ParamImplode([(($data4field['gen']==1) ? 'AA_2FASECRET' : 'AA_doNotGenerate'), $data4field['usr'], $data4field['pwd'], $data4field['otc']]), FLAG_HTML);
+            return new AA_Value(ParamImplode([(($data4field['gen'] == 1) ? 'AA_2FASECRET' : 'AA_doNotGenerate'), $data4field['usr'], $data4field['pwd'], $data4field['otc']]), FLAG_HTML);
         }
         return new AA_Value('', FLAG_HTML); // ? or something else ?
     }
@@ -112,14 +115,16 @@ class TfaWidget extends Widget
      *  Used parameter format (in fields.input_show_func table)
      * @return array
      */
-    public static function getClassProperties(): array {
+    public static function getClassProperties(): array
+    {
         return Widget::propertiesShop([]);
     }
 
     /**
      * @inheritDoc
      */
-    public static function description(): string {
+    public static function description(): string
+    {
         return ''; // TODO: Implement description() method.
     }
 }

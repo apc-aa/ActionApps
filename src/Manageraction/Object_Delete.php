@@ -9,24 +9,26 @@ use zids;
 
 /**  Delete specified object
  */
-class Object_Delete extends AbstractManageraction {
-
+class Object_Delete extends AbstractManageraction
+{
     /** Name of this Manager's action */
-    public function getName(): string {
+    public function getName(): string
+    {
         return _m('Delete row');
     }
 
     /** @inheritDoc */
-    protected function getButtonDef(): array {
+    protected function getButtonDef(): array
+    {
         return [
             'label' => _m('Delete'),
-            'attr'  => ['class'=>'aa-button-delete',
-                        'onclick' => "return confirm('" . _m("Do you really want to delete this row?") . "')"],
+            'attr'  => ['class' => 'aa-button-delete',
+                'onclick' => "return confirm('" . _m("Do you really want to delete this row?") . "')"],
         ];
     }
 
     /** @inheritDoc */
-    function perform(Manager $manager, zids $item_zids, $action_param): string|false
+    public function perform(Manager $manager, zids $item_zids, $action_param): string|false
     {
 
         if ($item_zids->isEmpty()) {
@@ -51,7 +53,8 @@ class Object_Delete extends AbstractManageraction {
      *
      * @return bool
      */
-    function isPerm4Action($manager):bool {
+    public function isPerm4Action($manager): bool
+    {
         /** @todo Should be changed to different permission */
         return IfSlPerm(PS_EDIT);
     }

@@ -14,16 +14,17 @@ use zids;
  *  actions. Action selectbox is able to display settings by AJAX call, where
  *  we need to pass all parameters of the object
  */
-abstract class AbstractManageraction extends AA_Storable {
-
-    var $id;
+abstract class AbstractManageraction extends AA_Storable
+{
+    public $id;
 
     protected string $open_url = '';
 
     protected string $open_url_add = '';
 
     /** constructor - assigns identifier of action */
-    function __construct($id, string $open_url = '', string $open_url_add = '') {
+    public function __construct($id, string $open_url = '', string $open_url_add = '')
+    {
         $this->id = $id;
         if ($open_url) {
             $this->setOpenUrl($open_url, $open_url_add);
@@ -38,7 +39,9 @@ abstract class AbstractManageraction extends AA_Storable {
      *  we need to pass all parameters of the object
      * @return array
      */
-    public static function getClassProperties(): array {          //  id             name                              type    multi  persistent - validator, required, help, morehelp, example
+    public static function getClassProperties(): array
+    {
+        //  id             name                              type    multi  persistent - validator, required, help, morehelp, example
         return [
             'id'           => new AA_Property('id', _m('Action ID'), 'text', false, true),
             'open_url'     => new AA_Property('open_url', _m('URL to open'), 'text', false, true),
@@ -49,26 +52,39 @@ abstract class AbstractManageraction extends AA_Storable {
     /** Name of this Manager's action
      * @return string
      */
-    public function getName(): string { return ''; }
+    public function getName(): string
+    {
+        return '';
+    }
 
     /** ID of this Manager's action
      * @return string
      */
-    function getId(): string { return $this->id; }
+    public function getId(): string
+    {
+        return $this->id;
+    }
 
     /** Should this action open new window? And if so, which one?
      * @return string
      */
-    function getOpenUrl(): string { return $this->open_url; }
+    public function getOpenUrl(): string
+    {
+        return $this->open_url;
+    }
 
     /** Any addition to url
      * @return string
      */
-    function getOpenUrlAdd(): string { return $this->open_url_add; }
+    public function getOpenUrlAdd(): string
+    {
+        return $this->open_url_add;
+    }
 
     /** if you want to generate button to manager, redefine this method
      * @return array   ['label'=>, 'attr'=>, 'cond'] */
-    protected function getButtonDef(): array {
+    protected function getButtonDef(): array
+    {
         //return ['label'=>_m('Edit'), attr=>['class'=>'aa-button-edit', 'onclick' =>"return confirm('". _m("Do you really want to delete this object?"). "')"]];
         return [];
     }
@@ -76,12 +92,14 @@ abstract class AbstractManageraction extends AA_Storable {
     /** True → button is rendered in the per-row "..." overflow menu instead of inline.
      *  Override in subclasses for actions that should not clutter the primary button row.
      */
-    public function isSecondaryButton(): bool {
+    public function isSecondaryButton(): bool
+    {
         return false;
     }
 
     /** for adding button to manager redefine rather getButtonDef method */
-    public function getButton(string $manager_url, string $id_alias, string $module_alias): array {
+    public function getButton(string $manager_url, string $id_alias, string $module_alias): array
+    {
         $ret = [];
         $b = $this->getButtonDef();
         if ($b && !$b['attr']['class']) {
@@ -101,7 +119,7 @@ abstract class AbstractManageraction extends AA_Storable {
      * @param string $url
      * @param string $add
      */
-    public function setOpenUrl(string $url, string $add=''): void
+    public function setOpenUrl(string $url, string $add = ''): void
     {
         $this->open_url     = $url;
         $this->open_url_add = $add;
@@ -115,7 +133,8 @@ abstract class AbstractManageraction extends AA_Storable {
      *
      * @return string|false false is OK, string contain Error message
      */
-    function perform(Manager $manager, zids $item_zids, $action_param): string|false {
+    public function perform(Manager $manager, zids $item_zids, $action_param): string|false
+    {
         return false;
     }
 
@@ -127,7 +146,8 @@ abstract class AbstractManageraction extends AA_Storable {
      *
      * @return bool
      */
-    function isPerm4Perform($manager, $item_zids, $action_param): bool {
+    public function isPerm4Perform($manager, $item_zids, $action_param): bool
+    {
         return $this->isPerm4Action($manager);  // in most cases it is enough
     }
 
@@ -137,12 +157,13 @@ abstract class AbstractManageraction extends AA_Storable {
      *
      * @return bool
      */
-    function isPerm4Action($manager): bool {
+    public function isPerm4Action($manager): bool
+    {
         return true;
     }
 
     /** Does this action have some settings, which should be displayed? */
-    function isSetting(): bool
+    public function isSetting(): bool
     {
         return is_callable([$this, 'htmlSettings']);
     }

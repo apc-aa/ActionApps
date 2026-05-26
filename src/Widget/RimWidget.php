@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: honzama
@@ -7,6 +8,7 @@
  */
 
 namespace AA\Widget;
+
 use AA;
 use AA\FormArray;
 use AA_Content;
@@ -41,7 +43,8 @@ class RimWidget extends Widget
         return _m('Related Item Manager');   // widget name
     }
 
-    protected function requireLibs($aa_property, $winfo): array {
+    protected function requireLibs($aa_property, $winfo): array
+    {
         if (str_contains($this->getProperty('show_buttons', 'MRND'), 'M')) {
             return array_merge(['orderable'], parent::requireLibs($aa_property, $winfo));
         }
@@ -49,14 +52,16 @@ class RimWidget extends Widget
     }
 
     /** script to run after the page DOM is loaded */
-    protected function requireRun($aa_property, $winfo): string {
+    protected function requireRun($aa_property, $winfo): string
+    {
         if (str_contains($this->getProperty('show_buttons', 'MRND'), 'M')) {
             return "document.querySelectorAll('.itemgroup.orderable').forEach(grp => { Sortable.create(grp, { handle: '.move', animation: 150, ghostClass: 'orderableghost' }); });";
         }
         return '';
     }
 
-    protected function requireCssCode($aa_property, $winfo): string  {
+    protected function requireCssCode($aa_property, $winfo): string
+    {
         /** @lang CSS */
         return '.orderableghost  { opacity: 0.5; }';
     }
@@ -89,7 +94,8 @@ class RimWidget extends Widget
     }
 
     /** returns if the widget handles multivalue or just single value   */
-    public static function multiple(): bool {
+    public static function multiple(): bool
+    {
         return true;
     }
 
@@ -97,7 +103,8 @@ class RimWidget extends Widget
      *  Used parameter format (in fields.input_show_func table)
      * @return array
      */
-    public static function getClassProperties(): array {
+    public static function getClassProperties(): array
+    {
         return Widget::propertiesShop(['const', 'slice_field', 'show_buttons', 'item_template', 'bin_filter', 'filter_conds', 'sort_by', 'additional_slice_pwd', 'const_arr', 'filter_conds_rw', 'item_width']);
     }
 
@@ -111,7 +118,8 @@ class RimWidget extends Widget
      *  @return array
      *  @throws Exception
      */
-    function _getRawHtml(AA_Property $aa_property, AA_Content $content, string $type = 'normal'): array {
+    public function _getRawHtml(AA_Property $aa_property, AA_Content $content, string $type = 'normal'): array
+    {
         $base_name = FormArray::getName4Form($aa_property->getId(), $content, $this->item_index);
         $base_id = FormArray::formName2Id($base_name);
         $base_name_add = $base_name . '[rim]';
@@ -157,7 +165,7 @@ class RimWidget extends Widget
         $actions2show = $this->getProperty('show_buttons', 'MRND');
 
         $widget = '<article class="aa-rim aa-related-item flex">
-                              <section class="itemgroup'.(str_contains($actions2show, 'M') ? ' orderable' : '').'">';
+                              <section class="itemgroup' . (str_contains($actions2show, 'M') ? ' orderable' : '') . '">';
 
         $def_field_id = $aa_property->getId();
         $def_slice_id = $content->getOwnerId();
@@ -165,7 +173,7 @@ class RimWidget extends Widget
         $buttons = $this->getButtons($base_id, $def_field_id, $def_slice_id);
         $downbuttons = $this->getButtonsDown($aa_property, $content, $base_id, $sid, $def_field_id, $def_slice_id);
 
-        $widget = "<template>$buttons</template>".$widget;
+        $widget = "<template>$buttons</template>" . $widget;
 
         // if (strpos($actions,'N') !== false) {
         //     $this->echoo("&nbsp;&nbsp;<input type='button' value='". _m("New") ."' onclick=\"OpenWindowTop('". Inputform_url(true, null, $sid, 'close_dialog', null, $name) .  "');\">\n");
@@ -213,7 +221,7 @@ class RimWidget extends Widget
             $actbuttons['D'] = '<article onclick="this.closest(\'.item\').remove()"><i class="ico delete">&#215;</i></article>';
         }// @todo
         if (str_contains($actions2show, 'E')) {
-            $actbuttons['E'] = "<article onclick=\"OpenWindowTop('itemedit.php?edit=1&id=***_#id***&encap=false&return_url=close_dialog&openervar=/rim/$def_slice_id/$def_field_id/$base_id');\"><i class=\"ico edit\">"._m('edit').'</i></article>';
+            $actbuttons['E'] = "<article onclick=\"OpenWindowTop('itemedit.php?edit=1&id=***_#id***&encap=false&return_url=close_dialog&openervar=/rim/$def_slice_id/$def_field_id/$base_id');\"><i class=\"ico edit\">" . _m('edit') . '</i></article>';
         }// @todo
         return implode("\n", array_values($actbuttons));
     }
@@ -224,21 +232,21 @@ class RimWidget extends Widget
 
         $actbuttonsdown = [];
         if (str_contains($actions2show, 'R')) {
-//            $actbuttonsdown['R'] = "<article><!--i class=\"ico insert\">add</i--><input type=search placeholder='"._m('search in existing')."' value onkeyup=\"DisplayAaResponse('flt$base_id', 'Widget_Selection', {s:'$def_slice_id',f:'$def_field_id',q:this.value})\"></article>";
+            //            $actbuttonsdown['R'] = "<article><!--i class=\"ico insert\">add</i--><input type=search placeholder='"._m('search in existing')."' value onkeyup=\"DisplayAaResponse('flt$base_id', 'Widget_Selection', {s:'$def_slice_id',f:'$def_field_id',q:this.value})\"></article>";
             // we use setTimeout here - we do not want to close the section before the user click on the selected item is prossecced (copied to the itemgroup). 100 ms was too low, sometimes (the click just closed the selection and did not add the item)
-            $actbuttonsdown['R'] = "<article><!--i class=\"ico insert\">add</i--><input type=search placeholder='"._m('search in existing')."' value onkeyup=\"AA_$('#flt$base_id').style.visibility='visible'; DisplayAaResponse('flt$base_id',   'Widget_Selection', {s:'$def_slice_id',f:'$def_field_id',q:this.value})\" onblur=\"setTimeout(() => AA_$('#flt$base_id').style.visibility=(this === document.activeElement) ? 'visible':'hidden', 500)\"></article>";
+            $actbuttonsdown['R'] = "<article><!--i class=\"ico insert\">add</i--><input type=search placeholder='" . _m('search in existing') . "' value onkeyup=\"AA_$('#flt$base_id').style.visibility='visible'; DisplayAaResponse('flt$base_id',   'Widget_Selection', {s:'$def_slice_id',f:'$def_field_id',q:this.value})\" onblur=\"setTimeout(() => AA_$('#flt$base_id').style.visibility=(this === document.activeElement) ? 'visible':'hidden', 500)\"></article>";
         }
         if (str_contains($actions2show, 'N')) {
-            $actbuttonsdown['N'] = "<article><i class=\"ico new\" onclick=\"OpenWindowTop('".Inputform_url(true, null, $sid, 'close_dialog', null, "/rim/$def_slice_id/$def_field_id/$base_id")."');\">"._m('new').'</i></article>';
+            $actbuttonsdown['N'] = "<article><i class=\"ico new\" onclick=\"OpenWindowTop('" . Inputform_url(true, null, $sid, 'close_dialog', null, "/rim/$def_slice_id/$def_field_id/$base_id") . "');\">" . _m('new') . '</i></article>';
         }
         if (str_contains($actions2show, 'F')) {
 
             $hash = get_short_hash($base_id);
 
-            $input_name =  "aa[f_".$sid."][file][fil][var]";  // we are making it compatible with widget to easier file upload handling (rearangeAaFilesArray())
-//              fallback would be nice, but it uses <form>, so we sometimes endup with <form> inside another <form>, which is not allowed. It is solveable (by dynamic form at the and of page...)
-//              $inner_code .= "<article class=\"item\" id=\"fileup$base_id\"><form action=\".\"><input name=\"aa[all][$field][0]\" type=\"hidden\" value=\"$item_id\" /><div class=\"fallback\"><input name=\"".$input_name."[]\" type=\"file\" multiple /></div></form>".$mode_arr['F']."</article>";
-            $actbuttonsdown['F'] = "<article id=\"fileup$hash\">"._m('drop files here or click to upload')."</article>";
+            $input_name =  "aa[f_" . $sid . "][file][fil][var]";  // we are making it compatible with widget to easier file upload handling (rearangeAaFilesArray())
+            //              fallback would be nice, but it uses <form>, so we sometimes endup with <form> inside another <form>, which is not allowed. It is solveable (by dynamic form at the and of page...)
+            //              $inner_code .= "<article class=\"item\" id=\"fileup$base_id\"><form action=\".\"><input name=\"aa[all][$field][0]\" type=\"hidden\" value=\"$item_id\" /><div class=\"fallback\"><input name=\"".$input_name."[]\" type=\"file\" multiple /></div></form>".$mode_arr['F']."</article>";
+            $actbuttonsdown['F'] = "<article id=\"fileup$hash\">" . _m('drop files here or click to upload') . "</article>";
             AA::Stringexpander()->addRequire('dropzone');
 
             $filerurl = get_aa_url('filler.php');
@@ -260,16 +268,17 @@ class RimWidget extends Widget
             }
         }
 
-        return "<script> $dz_setup_code </script>". implode("\n", array_values($actbuttonsdown));
+        return "<script> $dz_setup_code </script>" . implode("\n", array_values($actbuttonsdown));
     }
 
 
     /** get HTML for one or more related items from another slice based on this widget configuration  */
-    public function getRelatedItemsHtml(zids $zids, string $base_id, string $def_field_id, string $def_slice_id): string {
-        $input_name = FormArray::formId2Name($base_id)."[rim][]";
+    public function getRelatedItemsHtml(zids $zids, string $base_id, string $def_field_id, string $def_slice_id): string
+    {
+        $input_name = FormArray::formId2Name($base_id) . "[rim][]";
 
         if ($item_width = $this->getProperty('item_width')) {
-            $item_width = ctype_digit((string)$item_width) ? " style=\"width:${item_width}px\"" : " style=\"width:$item_width\"";
+            $item_width = ctype_digit((string) $item_width) ? " style=\"width:${item_width}px\"" : " style=\"width:$item_width\"";
         }
 
         $buttons = $this->getButtons($base_id, $def_field_id, $def_slice_id);
@@ -294,9 +303,10 @@ class RimWidget extends Widget
     /** function which offers filtered selections for current widget
      *  @param  int  $limit
      */
-    public function getFilterSelection(string $searchstring, int $limit = 0): string {
+    public function getFilterSelection(string $searchstring, int $limit = 0): string
+    {
         if ($item_width = $this->getProperty('item_width')) {
-            $item_width = ctype_digit((string)$item_width) ? " style=\"width:${item_width}px\"" : " style=\"width:$item_width\"";
+            $item_width = ctype_digit((string) $item_width) ? " style=\"width:${item_width}px\"" : " style=\"width:$item_width\"";
         }
 
         $options = $this->getFormattedOptions('', null, $searchstring, false, $limit);
@@ -323,7 +333,8 @@ class RimWidget extends Widget
     }
 
     /** @inheritDoc */
-    public static function description(): string {
+    public static function description(): string
+    {
         return ''; // TODO: Implement description() method.
     }
 }

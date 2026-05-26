@@ -68,6 +68,6 @@ final class CryptTest extends TestCase
         $longPw  = str_repeat('x', 100);
 
         $this->assertSame($plain, Crypt::decryptAesGcm(Crypt::encryptAesGcm($plain, $shortPw), $shortPw));
-        $this->assertSame($plain, Crypt::decryptAesGcm(Crypt::encryptAesGcm($plain, $longPw),  $longPw));
+        $this->assertSame($plain, Crypt::decryptAesGcm(Crypt::encryptAesGcm($plain, $longPw), $longPw));
     }
 }

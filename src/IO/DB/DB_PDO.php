@@ -8,8 +8,8 @@ use PDO;
 use PDOException;
 use PDOStatement;
 
-class DB_PDO  {
-
+class DB_PDO
+{
     /* public: connection parameters */
     protected $Host       = "";
     protected $Port       = "";
@@ -53,13 +53,15 @@ class DB_PDO  {
     }
 
     /** Quotes table name or column name */
-    public function quote_identifier(string $str): string {
+    public function quote_identifier(string $str): string
+    {
         $char = ($this->Server === 'mysql') ? '`' : '"';   // in original was used just '"' character (which is SQL standard and could be OK)
-        return $char. implode("$char.$char", explode(".", $str)) . $char;
+        return $char . implode("$char.$char", explode(".", $str)) . $char;
     }
 
     /** just for debug purposes */
-    public function getType() {
+    public function getType()
+    {
         return get_class_name($this);
     }
 
@@ -67,7 +69,8 @@ class DB_PDO  {
      * @deprecated Used just as compatibility layer for external scripts calling $db->Record['name']
      * @param $name
      */
-    public function __get($name) {
+    public function __get($name)
+    {
         if ($name === 'Record') {
             return $this->record();
         }
@@ -80,13 +83,14 @@ class DB_PDO  {
      * DB_PDO constructor.
      * @param array $connection
      */
-    function __construct(array $connection) {
+    public function __construct(array $connection)
+    {
 
         // in reality, we switched all the databases to PDO
         if (in_array($connection['type'], ['db_mysql', 'db_mysqli'])) {
             $connection['type'] = 'db_pdo:mysql';
         }
-        [$type,$driver] = explode(':',$connection['type'].':');  // $driver used in  PDO: db_pdo:mysql, ...
+        [$type,$driver] = explode(':', $connection['type'] . ':');  // $driver used in  PDO: db_pdo:mysql, ...
         $connection['driver'] = $driver;
 
         $this->Database   = $connection['database']   ?? '';
@@ -101,7 +105,7 @@ class DB_PDO  {
         $this->dbg_id     = ++self::$_instances_no;
     }
 
-    function beginTransaction(): bool
+    public function beginTransaction(): bool
     {
         if (!$this->connect()) {
             return false;
@@ -109,7 +113,7 @@ class DB_PDO  {
         return $this->dbh->beginTransaction();
     }
 
-    function prepare($query = ""): false|PDOStatement
+    public function prepare($query = ""): false|PDOStatement
     {
         if (!$this->connect()) {
             return false;
@@ -118,17 +122,17 @@ class DB_PDO  {
         return $this->sth;
     }
 
-    function commit(): bool
+    public function commit(): bool
     {
         return $this->dbh->commit();
     }
 
-    function rollback(): bool
+    public function rollback(): bool
     {
         return $this->dbh->rollback();
     }
 
-    function execute(array $param=[]): bool
+    public function execute(array $param = []): bool
     {
         if (!$this->connect()) {
             return false;
@@ -138,7 +142,7 @@ class DB_PDO  {
                 if ($this->Debug) {
                     var_dump($param);
                 }
-                $this->halt(array_search(null,$param)?"Null Parameter":"Cannot Execute");
+                $this->halt(array_search(null, $param) ? "Null Parameter" : "Cannot Execute");
             }
         } else {
             foreach ($param as $key => &$val) {
@@ -156,7 +160,8 @@ class DB_PDO  {
         return $status;
     }
 
-    public function last_insert_id(): false|string {
+    public function last_insert_id(): false|string
+    {
         return $this->dbh->lastInsertId();
     }
 
@@ -180,7 +185,7 @@ class DB_PDO  {
                         }
                         $this->dbh = new PDO("$this->Server:$Database", null, null, [PDO::ATTR_PERSISTENT => true]);
                         break;
-                    case "pgsql";
+                    case "pgsql":
                         $this->dbh = new PDO("$this->Server:host=$Host;dbname=$Database;port=5432", $User);
                         // $this->dbh = new PDO("$this->Server:host=$Host;dbname=$Database;port=5432", $User, $Password);
                         break;
@@ -219,14 +224,30 @@ class DB_PDO  {
                     if ($this->Debug) {
                         echo "Creating sqlite functions...";
                     }
-                    $this->dbh->sqliteCreateFunction('now', function (): string { return date('Y-m-d H:i:s'); }, 0);
-                    $this->dbh->sqliteCreateFunction('year', function (): string { return date('Y'); }, 0);
-                    $this->dbh->sqliteCreateFunction('month', function (): string { return date('n'); }, 0);
-                    $this->dbh->sqliteCreateFunction('day', function (): string { return date('j'); }, 0);
-                    $this->dbh->sqliteCreateFunction('hour', function (): string { return date('G'); }, 0);
-                    $this->dbh->sqliteCreateFunction('minute', function (): string { return date('i'); }, 0);
-                    $this->dbh->sqliteCreateFunction('second', function (): string { return date('s'); }, 0);
-                    $this->dbh->sqliteCreateFunction('unix_timestamp', function ($string = '') { return strtotime($string); });
+                    $this->dbh->sqliteCreateFunction('now', function (): string {
+                        return date('Y-m-d H:i:s');
+                    }, 0);
+                    $this->dbh->sqliteCreateFunction('year', function (): string {
+                        return date('Y');
+                    }, 0);
+                    $this->dbh->sqliteCreateFunction('month', function (): string {
+                        return date('n');
+                    }, 0);
+                    $this->dbh->sqliteCreateFunction('day', function (): string {
+                        return date('j');
+                    }, 0);
+                    $this->dbh->sqliteCreateFunction('hour', function (): string {
+                        return date('G');
+                    }, 0);
+                    $this->dbh->sqliteCreateFunction('minute', function (): string {
+                        return date('i');
+                    }, 0);
+                    $this->dbh->sqliteCreateFunction('second', function (): string {
+                        return date('s');
+                    }, 0);
+                    $this->dbh->sqliteCreateFunction('unix_timestamp', function ($string = '') {
+                        return strtotime($string);
+                    });
                     $this->dbh->sqliteCreateFunction('compress', 'gzcompress');
                     $this->dbh->sqliteCreateFunction('uncompress', 'gzuncompress');
                     $this->dbh->sqliteCreateFunction('length', 'strlen', 1);
@@ -250,7 +271,7 @@ class DB_PDO  {
                     $this->dbh->sqliteCreateFunction('least', '_sql_least');
                     $this->dbh->sqliteCreateFunction('regexp', function ($pattern, $value) {
                         #mb_internal_encoding('UTF-8'); // multibyte character encoding
-                        #mb_regex_encoding('UTF-8');	// should be set at the application level
+                        #mb_regex_encoding('UTF-8');    // should be set at the application level
                         return (mb_ereg($pattern, $value)) ? 1 : 0;
                     });
                     break;
@@ -266,7 +287,8 @@ class DB_PDO  {
         $this->sth->closeCursor();
     }
 
-    public function query($Query_String): bool {
+    public function query($Query_String): bool
+    {
         AA::$debug & 16 && AA::$dbg->tracestart('Query', $Query_String);
         $ret = $this->query_internal($Query_String);
         AA::$debug & 16 && AA::$dbg->traceend('Query', (stripos($Query_String, "SELECT") === 0) ? $this->num_rows() : $this->affected_rows());
@@ -306,16 +328,16 @@ class DB_PDO  {
         try {
             $this->sth = $this->dbh->query($Query_String, PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
-            $this->halt("SQL Query Failed: $Query_String ". $e->getMessage());
+            $this->halt("SQL Query Failed: $Query_String " . $e->getMessage());
             return false;
         }
         #if ($this->sth->rowCount()) {
-        #	$result = $this->sth->setFetchMode(PDO::FETCH_BOTH); /wasn't required, must be default.
+        #    $result = $this->sth->setFetchMode(PDO::FETCH_BOTH); /wasn't required, must be default.
         #}
         $this->Row = 0;
         $this->getErrorInfo();
         if (!$this->sth) {
-            $this->halt("SQL Query Failed: ".$Query_String);
+            $this->halt("SQL Query Failed: " . $Query_String);
             return false;
         }
 
@@ -323,7 +345,8 @@ class DB_PDO  {
     }
 
     /* public get 1 column */
-  public function fetch_column($col): array {
+    public function fetch_column($col): array
+    {
         if (!$this->sth) {
             $this->halt("fetchColumn called with no query pending.");
             return [];
@@ -331,55 +354,55 @@ class DB_PDO  {
         return array_column($this->sth->fetchAll(PDO::FETCH_ASSOC), $col);
     }
 
-//    /* public get all records */
-//    function fetch_all($cast=false,$num=false) {
-//        if (!$this->sth) {
-//            $this->halt("fetchAll called with no query pending.");
-//            return 0;
-//        }
-//        if ($cast) $meta = $this->metadata();
-//        if ($this->sth->columnCount()>1) {
-//            // Array of records (rows)
-//            if ($cast) {
-//                # perhaps this should be changed: see...
-//                # https://phpdelusions.net/pdo#returntypes
-//                # https://phpdelusions.net/pdo#emulation
-//                foreach ($this->sth->fetchAll(PDO::FETCH_NUM) as $row) {
-//                    $count=0;
-//                    foreach($row as $key=>$val) {
-//                        if ($num) $name=$count; else
-//                            $name = $meta[$key]["name"];
-//                        $type = $meta[$key]["type"];
-//                        if ( preg_match("/int$/i",$type)) $type = "int";
-//                        switch($type) {
-//                            case "date":
-//                            case "datetime":
-//                                $casted_row[$name] = (strtotime($val)/86400)+25569.4167;
-//                                break;
-//                            case "int":
-//                            case "long":
-//                            case "longlong":
-//                            case "newdecimal":
-//                            case "float":
-//                            case "double":
-//                                $casted_row[$name] = $val + 0;
-//                                break;
-//                            default:
-//                                $casted_row[$name] = $val;
-//                        }
-//                        $count++;
-//                    }
-//                    $data[] = $casted_row;
-//                }
-//            } else
-//                $data = $this->sth->fetchAll(PDO::FETCH_ASSOC);
-//            if (!$data) $data = array();  // if no records return empty array/
-//        } else {
-//            // Array of values
-//            foreach ($this->sth->fetchAll(PDO::FETCH_NUM) as $row) $data[]=$row[0];
-//        }
-//        return $data;  // Always return an array,
-//    }
+    //    /* public get all records */
+    //    function fetch_all($cast=false,$num=false) {
+    //        if (!$this->sth) {
+    //            $this->halt("fetchAll called with no query pending.");
+    //            return 0;
+    //        }
+    //        if ($cast) $meta = $this->metadata();
+    //        if ($this->sth->columnCount()>1) {
+    //            // Array of records (rows)
+    //            if ($cast) {
+    //                # perhaps this should be changed: see...
+    //                # https://phpdelusions.net/pdo#returntypes
+    //                # https://phpdelusions.net/pdo#emulation
+    //                foreach ($this->sth->fetchAll(PDO::FETCH_NUM) as $row) {
+    //                    $count=0;
+    //                    foreach($row as $key=>$val) {
+    //                        if ($num) $name=$count; else
+    //                            $name = $meta[$key]["name"];
+    //                        $type = $meta[$key]["type"];
+    //                        if ( preg_match("/int$/i",$type)) $type = "int";
+    //                        switch($type) {
+    //                            case "date":
+    //                            case "datetime":
+    //                                $casted_row[$name] = (strtotime($val)/86400)+25569.4167;
+    //                                break;
+    //                            case "int":
+    //                            case "long":
+    //                            case "longlong":
+    //                            case "newdecimal":
+    //                            case "float":
+    //                            case "double":
+    //                                $casted_row[$name] = $val + 0;
+    //                                break;
+    //                            default:
+    //                                $casted_row[$name] = $val;
+    //                        }
+    //                        $count++;
+    //                    }
+    //                    $data[] = $casted_row;
+    //                }
+    //            } else
+    //                $data = $this->sth->fetchAll(PDO::FETCH_ASSOC);
+    //            if (!$data) $data = array();  // if no records return empty array/
+    //        } else {
+    //            // Array of values
+    //            foreach ($this->sth->fetchAll(PDO::FETCH_NUM) as $row) $data[]=$row[0];
+    //        }
+    //        return $data;  // Always return an array,
+    //    }
 
     /* public: walk result set */
     public function next_record(): bool
@@ -410,7 +433,7 @@ class DB_PDO  {
     {
         $query = "lock tables ";
         if (is_array($table)) {
-            foreach ($table as $key=>$value) {
+            foreach ($table as $key => $value) {
                 if (!is_int($key)) {
                     // texts key are "read", "read local", "write", "low priority write"
                     $query .= "$value $key, ";
@@ -448,21 +471,25 @@ class DB_PDO  {
         return $this->sth->rowCount();
     }
 
-    public function num_fields(): int {
+    public function num_fields(): int
+    {
         return $this->sth->columnCount();
     }
 
-    public function f($Name) {
+    public function f($Name)
+    {
         return $this->Record[$Name] ?? null;
     }
 
     /** based on my test mysqli contains string[], while db_pdo:mysql returns columns in type based on table column type */
-    public function record($Name = null) {
+    public function record($Name = null)
+    {
         return  $Name ? $this->Record[$Name] : $this->Record;
     }
 
     /* public: return table metadata */
-    public function metadata(string $table=""): array|false {
+    public function metadata(string $table = ""): array|false
+    {
         $count = 0;
         $res = [];
         $stmt = false;
@@ -477,22 +504,22 @@ class DB_PDO  {
                 $this->halt("No table specified.");
                 return false;
             }
-##################################################################################
-## This section causes it to prefer pdo metadata functions over DESCRIBE table.
-## Unfortunately, it's broken, as it can't tell the difference between TEXT & BLOB
-## If your database server does not support DESCRIBE, you may turn this back on.
-## Also does not return default values or auto_increment data.
-## pdo_type returned was always 2 (PDO::PARAM_STR) in my testing.
-## PHP MANUAL STATES "getColumnMeta() Warning: This function is EXPERIMENTAL.
-## The behaviour of this function, its name, and surrounding documentation may
-## change without notice in a future release of PHP.
-## This function should be used at your own risk."
+            ##################################################################################
+            ## This section causes it to prefer pdo metadata functions over DESCRIBE table.
+            ## Unfortunately, it's broken, as it can't tell the difference between TEXT & BLOB
+            ## If your database server does not support DESCRIBE, you may turn this back on.
+            ## Also does not return default values or auto_increment data.
+            ## pdo_type returned was always 2 (PDO::PARAM_STR) in my testing.
+            ## PHP MANUAL STATES "getColumnMeta() Warning: This function is EXPERIMENTAL.
+            ## The behaviour of this function, its name, and surrounding documentation may
+            ## change without notice in a future release of PHP.
+            ## This function should be used at your own risk."
             /*
                 } else {
                   $q = "SELECT * FROM ".$this->qi($table)." LIMIT 1";
                   $stmt = $this->dbh->query($q);
             */
-##################################################################################
+            ##################################################################################
         }
         if ($stmt) {
             if (!@$stmt->columnCount()) {
@@ -546,11 +573,11 @@ class DB_PDO  {
                 "sqlite" => "PRAGMA table_info($table)",
                 "mssql" => "SELECT COLUMN_NAME, DATA_TYPE, CHARACTER_MAXIMUM_LENGTH, COLLATION_NAME, CHARACTER_SET_NAME, IS_NULLABLE, COLUMN_DEFAULT  
                               FROM INFORMATION_SCHEMA.COLUMNS             
-                              WHERE TABLE_SCHEMA=".$this->quote($this->Database)." AND TABLE_NAME=".$this->quote($table),
+                              WHERE TABLE_SCHEMA=" . $this->quote($this->Database) . " AND TABLE_NAME=" . $this->quote($table),
                 "mysql" => "SELECT COLUMN_NAME, DATA_TYPE, CHARACTER_MAXIMUM_LENGTH, COLLATION_NAME, EXTRA, COLUMN_COMMENT, COLUMN_KEY, PRIVILEGES, COLUMN_TYPE, CHARACTER_SET_NAME, IS_NULLABLE, COLUMN_DEFAULT
                               FROM INFORMATION_SCHEMA.COLUMNS
-                              WHERE TABLE_SCHEMA=".$this->quote($this->Database)." AND TABLE_NAME=".$this->quote($table),
-                default => "DESCRIBE ".$this->quote_identifier($table),
+                              WHERE TABLE_SCHEMA=" . $this->quote($this->Database) . " AND TABLE_NAME=" . $this->quote($table),
+                default => "DESCRIBE " . $this->quote_identifier($table),
             };
             try {
                 if (!$stmt = $this->dbh->query($q)) {
@@ -562,9 +589,9 @@ class DB_PDO  {
             }
             #  $res["num_fields"] = $stmt->rowCount();
             $i = 0;
-#echo "<h1>$table</h1>";
+            #echo "<h1>$table</h1>";
             foreach ($stmt as $row) {
-#var_dump($row);
+                #var_dump($row);
                 $res[$i]["table"] = $table;
                 if (array_key_exists('DATA_TYPE', $row)) {
                     $type = $row['DATA_TYPE'];
@@ -700,8 +727,8 @@ class DB_PDO  {
             "pgsql"  => "SELECT c.relname FROM pg_catalog.pg_class c LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
                           WHERE c.relkind IN ('r','') AND n.nspname NOT IN ('pg_catalog', 'pg_toast') AND pg_catalog.pg_table_is_visible(c.oid);",
             "oracle" => "SELECT table_name FROM tabs",
-            default  => "SELECT table_name FROM information_schema.tables ".
-                          "WHERE table_type = 'BASE TABLE' AND table_schema NOT IN ('pg_catalog', 'information_schema')",
+            default  => "SELECT table_name FROM information_schema.tables "
+                          . "WHERE table_type = 'BASE TABLE' AND table_schema NOT IN ('pg_catalog', 'information_schema')",
         };
         if ($stmt = $this->dbh->query($q)) {
             foreach ($stmt as $row) {
@@ -714,7 +741,8 @@ class DB_PDO  {
         return $res;
     }
 
-    function primary_key($table) {
+    public function primary_key($table)
+    {
         $this->connect();
         switch ($this->Server) {
             case "pgsql":
@@ -730,8 +758,8 @@ class DB_PDO  {
             case "sqlite":
                 return "rowid";
             default:
-                $q = "SELECT column_name FROM information_schema.columns " .
-                    "WHERE column_key = 'PRI' AND table_name=" . $this->quote($table);
+                $q = "SELECT column_name FROM information_schema.columns "
+                    . "WHERE column_key = 'PRI' AND table_name=" . $this->quote($table);
         }
         if ($stmt = $this->dbh->query($q)) {
             return $stmt->fetchColumn();
@@ -739,7 +767,7 @@ class DB_PDO  {
         return false;
     }
 
-    function getErrorInfo(): void
+    public function getErrorInfo(): void
     {
         if (is_object($this->dbh)) {
             $e = $this->dbh->errorInfo();
@@ -775,10 +803,10 @@ class DB_PDO  {
             ob_end_clean();
             // AA_Http::go(DB_ERROR_PAGE, array('Err'=>$this->Errno, 'ErrMsg'=>$this->Error, 'Msg'=>$msg), 'POST', false);
             // sending variables disabled - see the comment above
-            if ( headers_sent()) {
+            if (headers_sent()) {
                 echo sprintf('<script>window.location = "%s";</script>', DB_ERROR_PAGE);
             } else {
-                header("Location: ". DB_ERROR_PAGE, true, 302);
+                header("Location: " . DB_ERROR_PAGE, true, 302);
             }
         }
 
@@ -795,7 +823,8 @@ class DB_PDO  {
         // AA::$dbg->log(AA_Log::backtrack());
     }
 
-    public function set_halt(string $mode): bool {
+    public function set_halt(string $mode): bool
+    {
         if (!in_array($mode, ['yes','report','no'])) {
             return false;
         }
@@ -803,7 +832,8 @@ class DB_PDO  {
         return true;
     }
 
-    public function get_halt(): string {
+    public function get_halt(): string
+    {
         return $this->Halt_On_Error;
     }
 

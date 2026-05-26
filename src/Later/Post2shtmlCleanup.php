@@ -1,4 +1,5 @@
 <?php
+
 /**
  *
  * PHP version 7.2+
@@ -31,7 +32,8 @@ class Post2shtmlCleanup implements LaterInterface
 {
     protected $time;
 
-    function __construct($time) {
+    public function __construct($time)
+    {
         $this->time = $time;
     }
 
@@ -40,7 +42,7 @@ class Post2shtmlCleanup implements LaterInterface
      * @return string - message about execution to be logged
      * @see \AA\Later\LaterInterface
      */
-    public function toexecutelater($params= []): string
+    public function toexecutelater($params = []): string
     {
         $where = [['time', $this->time, '<']];
         return (new TableCleaner('post2shtml', $where))->clean();

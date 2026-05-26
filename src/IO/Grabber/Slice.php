@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: honzama
@@ -19,7 +20,6 @@ use zids;
  */
 class Slice extends AbstractGrabber
 {
-
     /** @var AA_Set specifies the slice, conds and sort */
     protected $set;
 
@@ -38,32 +38,35 @@ class Slice extends AbstractGrabber
 
     /**  */
 
-    function __construct($set, $restrict_zids = null, $restrict_fields = null) {
+    public function __construct($set, $restrict_zids = null, $restrict_fields = null)
+    {
         $this->set = $set;
         $this->restrict_zids = $restrict_zids;
         $this->restrict_fields = is_array($restrict_fields) ? $restrict_fields : false;
     }
 
     /** Name of the grabber - used for grabber selection box */
-    public static function name(): string {
+    public static function name(): string
+    {
         return _m('Items from slice');
     }
 
     /** Description of the grabber - used as help text for the users.
      *  Description is in HTML
      */
-    public static function description(): string {
+    public static function description(): string
+    {
         return _m('grabs items from some slice');
     }
 
     /** Possibly preparation of grabber - it is called directly before getItem()
      *  method is called - it means "we are going really to grab the data
      */
-    function prepare(): void
+    public function prepare(): void
     {
         $zids = $this->set->query($this->restrict_zids);
         if ($this->restrict_zids && $zids->count() !== $this->restrict_zids->count()) {
-            warn('Not all restrict_zids found - '.$this->restrict_zids->count().' vs '.$zids->count().' found');
+            warn('Not all restrict_zids found - ' . $this->restrict_zids->count() . ' vs ' . $zids->count() . ' found');
         }
         $this->_longids = $zids->longids();
         $this->_content_cache = [];
@@ -72,7 +75,7 @@ class Slice extends AbstractGrabber
     }
 
     /** Method called by the AA\IO\Saver to get next item from the data input */
-    function getItem(): ?AA_Content
+    public function getItem(): ?AA_Content
     {
         if (!($longid = $this->_longids[$this->_index])) {
             return null;
@@ -86,7 +89,7 @@ class Slice extends AbstractGrabber
     }
 
     /** speedup */
-    function _fillCache(): void
+    public function _fillCache(): void
     {
         // read next 100 items (we can laborate with cache size in future to get even better performance)
         $this->_content_cache = GetItemContent(new zids(array_slice($this->_longids, $this->_index, 100), 'l'), '', false, $this->restrict_fields);
@@ -101,7 +104,7 @@ class Slice extends AbstractGrabber
         return 'utf-8';
     }
 
-    function finish(): void
+    public function finish(): void
     {
         $this->_longids = [];
     }

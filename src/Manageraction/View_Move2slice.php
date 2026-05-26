@@ -14,15 +14,16 @@ use zids;
  *                     'x' character (javascript purposes only)
  * @param $akce_param  - unpacked id of slice, where items should be moved
  */
-class View_Move2slice extends \AA\Manageraction\Item_Move2Slice {
-
+class View_Move2slice extends \AA\Manageraction\Item_Move2Slice
+{
     /** Name of this Manager's action */
-    public function getName(): string {
+    public function getName(): string
+    {
         return _m('Move view to another slice');
     }
 
     /** @inheritDoc */
-    function perform(Manager $manager, zids $item_zids, $action_param): string|false
+    public function perform(Manager $manager, zids $item_zids, $action_param): string|false
     {
         if (strlen($action_param['dest_slice_id']) < 1) {
             return _m('No slice selected');
@@ -60,7 +61,8 @@ class View_Move2slice extends \AA\Manageraction\Item_Move2Slice {
      *
      * @return bool
      */
-    function isPerm4Action($manager):bool {
+    public function isPerm4Action($manager): bool
+    {
         return IfSlPerm(PS_FULLTEXT, $this->slice_id);
     }
 }

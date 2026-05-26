@@ -9,26 +9,29 @@ use AA;
  *  bck_table and renames all backup tables (bck_slice, bck_item, ...) to right
  *  names (slice, item, ...).
  */
-class RestoreBckTables extends \AA\Optimize\AbstractOptimize {
-
+class RestoreBckTables extends \AA\Optimize\AbstractOptimize
+{
     /** Name function
      * @return string - a name
      */
-    public static function name(): string {
+    public static function name(): string
+    {
         return _m("Restore data from backup tables");
     }
 
     /** Description function
      * @return string - a description
      */
-    public static function description(): string {
+    public static function description(): string
+    {
         return _m("[experimental] ") . _m("Deletes all the current tables (slice, item, ...) where we have bck_table and renames all backup tables (bck_slice, bck_item, ...) to right names (slice, item, ...).");
     }
 
     /** Test function
      * @return string - a message
      */
-    public function test(): bool {
+    public function test(): bool
+    {
         $ret = true;
 
         $bck_exists = GetTable2Array("SHOW TABLES LIKE 'bck_content'", "aa_first");
@@ -42,7 +45,8 @@ class RestoreBckTables extends \AA\Optimize\AbstractOptimize {
     /** Main update function
      * @return bool
      */
-    public function repair(): bool {
+    public function repair(): bool
+    {
         $metabase = AA::Metabase();
         $tablenames = $metabase->getTableNames();
 

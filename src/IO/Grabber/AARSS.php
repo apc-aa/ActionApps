@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: honzama
@@ -21,11 +22,11 @@ use AA\IO\LastEditList;
 require_once __DIR__ . "/../../../include/xml_rssparse.php";
 
 // started to rewrite xml_rssparese.php to be more object oriented
-class AARSS_Parser {
-
+class AARSS_Parser
+{
     // An array mapping all the name spaces we've seen in RSS feeds to abbreviations
     // Only a few of the abbreviations are likely to be used below
-    const MODULE2ABBREV = [
+    public const MODULE2ABBREV = [
         "HTTP://WWW.W3.ORG/1999/02/22-RDF-SYNTAX-NS#"   => "RDF",
         "HTTP://PURL.ORG/RSS/1.0/"                      => "RSS",
         "HTTP://MY.NETSCAPE.COM/RDF/SIMPLE/0.9/"        => "RSS", //same items
@@ -38,7 +39,7 @@ class AARSS_Parser {
         "HTTP://PURL.ORG/RSS/1.0/MODULES/SUBSCRIPTION/" => "SUBSCRIPTION",
         "HTTP://PURL.ORG/RSS/1.0/MODULES/LINK/"         => "LINK",
         "HTTP://PURL.ORG/RSS/1.0/MODULES/RICHEQUIV/"    => "REQV",
-        "HTTP://XMLNS.COM/FOAF/0.1/"					=> "FOAF",
+        "HTTP://XMLNS.COM/FOAF/0.1/"                    => "FOAF",
         "HTTP://PURL.ORG/RSS/1.0/MODULES/SYNDICATION/"  => "SYNDICATION",
         "HTTP://WEBNS.NET/MVCB/"                        => "ADMIN",
     ];
@@ -95,7 +96,8 @@ class AARSS extends AbstractGrabber
      * @param $feed
      * @param $fire
      */
-    function __construct($feed_id, $feed, $fire) {
+    public function __construct($feed_id, $feed, $fire)
+    {
 
         /** Process one feed and returns parsed RSS (both AA and other)
          *  in $this->aa_rss */
@@ -109,14 +111,16 @@ class AARSS extends AbstractGrabber
     /** name function
      *
      */
-    public static function name(): string {
+    public static function name(): string
+    {
         return _m("AA RSS");
     }
 
     /** description function
      *
      */
-    public static function description(): string {
+    public static function description(): string
+    {
         return _m("Grabs data from generic RSS or AA RSS (used for item exchange between different AA installations)");
     }
 
@@ -124,7 +128,7 @@ class AARSS extends AbstractGrabber
      * @param $url
      */
 
-    function setUrl($url): void
+    public function setUrl($url): void
     {
         $this->feed['server_url'] = $url;
     }
@@ -132,7 +136,7 @@ class AARSS extends AbstractGrabber
     /** setTime function
      * @param $time
      */
-    function setTime($time): void
+    public function setTime($time): void
     {
         $this->feed['newest_item'] = $time;
     }
@@ -140,14 +144,15 @@ class AARSS extends AbstractGrabber
     /** _getRssData function
      *
      */
-    function _getRssData(): string {
+    public function _getRssData(): string
+    {
         return trim(FeedUtil::http_fetch($this->feed['server_url']), "\xef\xbb\xbf \t\n\r\0\x0B"); // remove also BOM (the first three characters)
     }
 
     /** _getApcData function
      *
      */
-    function _getApcData(): string
+    public function _getApcData(): string
     {
         // for APC feeds we need to list all categories, which we want receive
         $this->ext_categs = FeedUtil::GetExternalCategories($this->feed_id); // we will need it later
@@ -182,7 +187,7 @@ class AARSS extends AbstractGrabber
     /** _getExactData function
      *
      */
-    function _getExactData(): string
+    public function _getExactData(): string
     {
         global $debugfeed;
 
@@ -247,27 +252,29 @@ class AARSS extends AbstractGrabber
     /**
      * @return array[]
      */
-    public static function getDefaultRssMap(): array {
+    public static function getDefaultRssMap(): array
+    {
         return [
             // Note this matches code in xml_rssparse.php for parsing DC fields
             // Can change the names without affecting anything
-            "author.........." => ["feedmap_flag"=>FEEDMAP_FLAG_RSS,  "value"=>"DC/creator",                                "from_field_name"=>"DC:creator"],
-            "abstract........" => ["feedmap_flag"=>FEEDMAP_FLAG_RSS,  "value"=>"ITEM/description|DC/description|DC/subject","from_field_name"=>"Any abstract"],
-            "publish_date...." => ["feedmap_flag"=>FEEDMAP_FLAG_RSS,  "value"=>"DATE(DC/date)|DATE(ITEM/pubdate)|NOW",      "from_field_name"=>"DC:date"],
-            "source.........." => ["feedmap_flag"=>FEEDMAP_FLAG_RSS,  "value"=>"DC/source|CHANNEL/title",                   "from_field_name"=>"DC:source"],
-            "lang_code......." => ["feedmap_flag"=>FEEDMAP_FLAG_RSS,  "value"=>"DC/language",                               "from_field_name"=>"DC:language"],
-            "source_href....." => ["feedmap_flag"=>FEEDMAP_FLAG_RSS,  "value"=>"DC/relation|CHANNEL/link",                  "from_field_name"=>"DC:relation"],
-            "place..........." => ["feedmap_flag"=>FEEDMAP_FLAG_RSS,  "value"=>"DC/coverage",                               "from_field_name"=>"DC:coverage"],
-            "headline........" => ["feedmap_flag"=>FEEDMAP_FLAG_RSS,  "value"=>"DC/title|ITEM/title",                       "from_field_name"=>"DC:title"],
-            "full_text......." => ["feedmap_flag"=>FEEDMAP_FLAG_RSS,  "value"=>"CONTENT",                                   "from_field_name"=>"Content"],
-            "status_code....." => ["feedmap_flag"=>FEEDMAP_FLAG_VALUE,"value"=>2,                                           "from_field_name"=>"Approved"],
-            "hl_href........." => ["feedmap_flag"=>FEEDMAP_FLAG_RSS,  "value"=>"ITEM/link|ITEM/guid",                       "from_field_name"=>"ITEM:link"],
-            "expiry_date....." => ["feedmap_flag"=>FEEDMAP_FLAG_VALUE,"value"=>(time()+2000*24*60*60),                      "from_field_name"=>"Expiry Date"],
+            "author.........." => ["feedmap_flag" => FEEDMAP_FLAG_RSS,  "value" => "DC/creator",                                "from_field_name" => "DC:creator"],
+            "abstract........" => ["feedmap_flag" => FEEDMAP_FLAG_RSS,  "value" => "ITEM/description|DC/description|DC/subject","from_field_name" => "Any abstract"],
+            "publish_date...." => ["feedmap_flag" => FEEDMAP_FLAG_RSS,  "value" => "DATE(DC/date)|DATE(ITEM/pubdate)|NOW",      "from_field_name" => "DC:date"],
+            "source.........." => ["feedmap_flag" => FEEDMAP_FLAG_RSS,  "value" => "DC/source|CHANNEL/title",                   "from_field_name" => "DC:source"],
+            "lang_code......." => ["feedmap_flag" => FEEDMAP_FLAG_RSS,  "value" => "DC/language",                               "from_field_name" => "DC:language"],
+            "source_href....." => ["feedmap_flag" => FEEDMAP_FLAG_RSS,  "value" => "DC/relation|CHANNEL/link",                  "from_field_name" => "DC:relation"],
+            "place..........." => ["feedmap_flag" => FEEDMAP_FLAG_RSS,  "value" => "DC/coverage",                               "from_field_name" => "DC:coverage"],
+            "headline........" => ["feedmap_flag" => FEEDMAP_FLAG_RSS,  "value" => "DC/title|ITEM/title",                       "from_field_name" => "DC:title"],
+            "full_text......." => ["feedmap_flag" => FEEDMAP_FLAG_RSS,  "value" => "CONTENT",                                   "from_field_name" => "Content"],
+            "status_code....." => ["feedmap_flag" => FEEDMAP_FLAG_VALUE,"value" => 2,                                           "from_field_name" => "Approved"],
+            "hl_href........." => ["feedmap_flag" => FEEDMAP_FLAG_RSS,  "value" => "ITEM/link|ITEM/guid",                       "from_field_name" => "ITEM:link"],
+            "expiry_date....." => ["feedmap_flag" => FEEDMAP_FLAG_VALUE,"value" => (time() + 2000 * 24 * 60 * 60),                      "from_field_name" => "Expiry Date"],
         ];
     }
 
     /** loads all the data based on grabber setting and return it */
-    public function getSources(): array {
+    public function getSources(): array
+    {
         $feed_type = $this->feed['feed_type'];
 
         $xml_data = match ($feed_type) {
@@ -279,14 +286,16 @@ class AARSS extends AbstractGrabber
         return [$xml_data];
     }
 
-    protected function getLogSelector(): string {
-        return 'RSS:'.$this->feed_id;
+    protected function getLogSelector(): string
+    {
+        return 'RSS:' . $this->feed_id;
     }
 
     /** prepare function
      *  Fetch data and parse it
      */
-    function prepare() {
+    public function prepare()
+    {
         global $debugfeed;
 
         // just shortcut
@@ -295,9 +304,9 @@ class AARSS extends AbstractGrabber
         set_time_limit(240); // Allow 4 minutes per feed
 
         $slice = AA_Slice::getModule($this->slice_id);
-        $feed_debug_name = 'Feed #' . $this->feed_id . ' (' . Feed::getFeedTypeName($feed_type) . '): ' .
-            $this->feed['name'] . ' : ' . $this->feed['remote_slice_name'] .
-            ' -> ' . $slice->getName();
+        $feed_debug_name = 'Feed #' . $this->feed_id . ' (' . Feed::getFeedTypeName($feed_type) . '): '
+            . $this->feed['name'] . ' : ' . $this->feed['remote_slice_name']
+            . ' -> ' . $slice->getName();
         // Get XML Data
         if ($debugfeed >= 1) {
             print("\n<br>$feed_debug_name");
@@ -400,7 +409,7 @@ class AARSS extends AbstractGrabber
     /** getItem function
      *
      */
-    function getItem(): ?AA_Content
+    public function getItem(): ?AA_Content
     {
         if (!is_array($this->aa_rss['items'])) {
             return null;
@@ -463,7 +472,7 @@ class AARSS extends AbstractGrabber
     /** finish function
      *
      */
-    function finish(): void
+    public function finish(): void
     {
         if ($this->feed['feed_type'] == Feed::FEEDTYPE_APC) {
             $db = getDB();

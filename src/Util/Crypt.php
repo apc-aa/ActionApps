@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: honzama
@@ -17,8 +18,8 @@ use Exception;
  *
  * @package AA\Util
  */
-final class Crypt {
-
+final class Crypt
+{
     private const AES256GCM_KEYBYTES  = 32;   // = SODIUM_CRYPTO_AEAD_AES256GCM_KEYBYTES
     private const AES256GCM_NPUBBYTES = 12;   // = SODIUM_CRYPTO_AEAD_AES256GCM_NPUBBYTES
 
@@ -29,11 +30,12 @@ final class Crypt {
      * @return string
      * @throws Exception
      */
-    public static function encryptAesGcm($text, $pass): string {
+    public static function encryptAesGcm($text, $pass): string
+    {
         $key   = self::createKey($pass);
-        $nonce = mb_substr(Txt::bin2url(random_bytes(self::AES256GCM_NPUBBYTES)),0,self::AES256GCM_NPUBBYTES,'8bit'); // nonce is already base64_url encoded
+        $nonce = mb_substr(Txt::bin2url(random_bytes(self::AES256GCM_NPUBBYTES)), 0, self::AES256GCM_NPUBBYTES, '8bit'); // nonce is already base64_url encoded
         $enc = sodium_crypto_aead_aes256gcm_encrypt($text, '', $nonce, $key);
-        return $nonce.Txt::bin2url($enc);
+        return $nonce . Txt::bin2url($enc);
     }
 
     /** Decrypts the text with password using aes256gcm crypt function. Works from PHP >5.3
@@ -48,7 +50,7 @@ final class Crypt {
         }
         $key   = self::createKey($pass);
         $nonce = mb_substr($text, 0, self::AES256GCM_NPUBBYTES, '8bit');
-        $enc   = Txt::url2bin(mb_substr($text, self::AES256GCM_NPUBBYTES, null,'8bit'));
+        $enc   = Txt::url2bin(mb_substr($text, self::AES256GCM_NPUBBYTES, null, '8bit'));
         $decrypted = sodium_crypto_aead_aes256gcm_decrypt($enc, '', $nonce, $key);
         return is_string($decrypted) ? $decrypted : false;
     }
@@ -65,6 +67,6 @@ final class Crypt {
         if ($passlen === self::AES256GCM_KEYBYTES) {
             return $pass;
         }
-        return str_pad($pass,self::AES256GCM_KEYBYTES, pack("H*",hash('sha256', $pass)));
+        return str_pad($pass, self::AES256GCM_KEYBYTES, pack("H*", hash('sha256', $pass)));
     }
 }

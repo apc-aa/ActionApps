@@ -9,20 +9,22 @@ use zids;
 
 /** Manager action Item_Duplicate - Duplicate selected item in the slice.
  */
-class Item_Duplicate extends AbstractManageraction {
-
+class Item_Duplicate extends AbstractManageraction
+{
     /** Constructor - fills the information about the target bin */
-    function __construct($id) {
+    public function __construct($id)
+    {
         parent::__construct($id);
     }
 
     /** Name of this Manager's action */
-    public function getName(): string {
+    public function getName(): string
+    {
         return _m('Duplicate Item');
     }
 
     /** @inheritDoc */
-    function perform(Manager $manager, zids $item_zids, $action_param): string|false
+    public function perform(Manager $manager, zids $item_zids, $action_param): string|false
     {
         $sid = $manager->getModuleId();
 
@@ -40,7 +42,8 @@ class Item_Duplicate extends AbstractManageraction {
      *
      * @return bool
      */
-    function isPerm4Action($manager):bool {
+    public function isPerm4Action($manager): bool
+    {
         return IfSlPerm(PS_EDIT_ALL_ITEMS, $manager->getModuleId());
     }
 }

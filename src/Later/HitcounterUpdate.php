@@ -1,4 +1,5 @@
 <?php
+
 /**
  *
  * PHP version 7.2+
@@ -36,7 +37,6 @@ use AA\Optimize\AddDurationLog;
  */
 class HitcounterUpdate implements LaterInterface
 {
-
     /** updateDisplayCount - updates item.display_count and hit_archive based
      *  on hit log in hit_short_id and hit_long_id tables
      *                     - it also plans the hit_x..... field counting into toexecute queue
@@ -45,33 +45,34 @@ class HitcounterUpdate implements LaterInterface
      * @return string - message about execution to be logged
      * @see \AA\Later\LaterInterface
      */
-    public function toexecutelater($params= []): string {
+    public function toexecutelater($params = []): string
+    {
 
         // we can't count with current second, since the records for current
         // second could grow. Two seconds back should be OK.
         $time = time() - 2;
 
         // first look to the short id hit table;
-        $hits_s = DB_AA::select(['id'=>'count'], 'SELECT `id`, count(*) as count FROM hit_short_id '. DB_AA::makeWhere([['time',$time, '<']]). " GROUP BY `id`");
+        $hits_s = DB_AA::select(['id' => 'count'], 'SELECT `id`, count(*) as count FROM hit_short_id ' . DB_AA::makeWhere([['time',$time, '<']]) . " GROUP BY `id`");
 
         // now look for long ids hits
-        $hits_l = DB_AA::select(['short_id'=>'count'], 'SELECT item.short_id, count(*) as count FROM hit_long_id INNER JOIN item ON hit_long_id.id=item.id '. DB_AA::makeWhere([['hit_long_id.time',$time, '<']]). " GROUP BY item.short_id");
+        $hits_l = DB_AA::select(['short_id' => 'count'], 'SELECT item.short_id, count(*) as count FROM hit_long_id INNER JOIN item ON hit_long_id.id=item.id ' . DB_AA::makeWhere([['hit_long_id.time',$time, '<']]) . " GROUP BY item.short_id");
 
-        foreach ( $hits_s as $short_id => $count ) {
+        foreach ($hits_s as $short_id => $count) {
             // add long ids count
-            if ( isset($hits_l[$short_id]) ) {
+            if (isset($hits_l[$short_id])) {
                 $count += $hits_l[$short_id];
                 unset($hits_l[$short_id]);
             }
-            if ( $count > 0 ) {
-                DB_AA::sql( "UPDATE item SET display_count=(display_count+$count) WHERE short_id = $short_id");
+            if ($count > 0) {
+                DB_AA::sql("UPDATE item SET display_count=(display_count+$count) WHERE short_id = $short_id");
             }
         }
 
         // Now the rest long_ids
-        foreach ( $hits_l as $short_id => $count ) {
-            if ( $count > 0 ) {
-                DB_AA::sql( "UPDATE item SET display_count=(display_count+$count) WHERE short_id = $short_id");
+        foreach ($hits_l as $short_id => $count) {
+            if ($count > 0) {
+                DB_AA::sql("UPDATE item SET display_count=(display_count+$count) WHERE short_id = $short_id");
             }
         }
 
@@ -99,27 +100,27 @@ class HitcounterUpdate implements LaterInterface
         // once a day plan 3 new grouping (which means, that each day is counted
         // 3 times - in case it fails in one or two cases. If it fails three
         // times it is not so big problem - we can plan(0) sometime in the future
-        $grouper = new HitcounterGroup;
+        $grouper = new HitcounterGroup();
         $grouper->plan(3);
 
         $this->updateDisplayStatistics();
-        return "S:".count($hits_s)." L:".count($hits_l);
+        return "S:" . count($hits_s) . " L:" . count($hits_l);
     }
 
     /** Plan task for counting statistics fields (hit_1, hit_7, ...)
      *  It is planed as AA\Later\Toexecute jobs
      */
-    function updateDisplayStatistics(): void
+    public function updateDisplayStatistics(): void
     {
         $stats2count = GetTable2Array("SELECT id, slice_id FROM field WHERE slice_id <> 'AA_Core_Fields..' AND id LIKE 'hit_%'", '');
 
         if (is_array($stats2count)) {
 
-            $toexecute = new Toexecute;
+            $toexecute = new Toexecute();
             $timeshift = 0;
             foreach ($stats2count as $to_count) {
                 $count_slice_id = unpack_id($to_count['slice_id']);
-                $field_id       = (string)$to_count['id'];
+                $field_id       = (string) $to_count['id'];
                 $stats_counter  = new HitcounterStats($count_slice_id, $field_id);
 
                 // we plan this tasks for future
@@ -127,7 +128,7 @@ class HitcounterUpdate implements LaterInterface
                 // hit_7  (week)  plan +/- 350  minutes later (5,8 hours)
                 // hit_30 (month) plan +/- 1500 minutes later (25 hours)
                 $time2execute   = time() + ($stats_counter->getDays() * 300 * (10 + $timeshift++));
-                $toexecute->laterOnce($stats_counter, [], "Count_". $count_slice_id.'_'.$field_id, 100, $time2execute);
+                $toexecute->laterOnce($stats_counter, [], "Count_" . $count_slice_id . '_' . $field_id, 100, $time2execute);
             }
         }
     }

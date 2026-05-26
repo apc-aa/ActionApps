@@ -9,29 +9,35 @@ use AA_Metabase;
  *  Used sometimes if you clone database or copy slices to another database
  *  for another client and do not want to use the same ids )
  */
-class ChangeModuleId extends AbstractOptimize {
-
+class ChangeModuleId extends AbstractOptimize
+{
     /** Name function
      * @return string - a name
      */
-    public static function name(): string {
+    public static function name(): string
+    {
         return _m("Change current module ID to new one");
     }
 
     /** Description function
      * @return string - a description
      */
-    public static function description(): string {
+    public static function description(): string
+    {
         return _m("Used sometimes if you clone database or copy slices to another database for another client and do not want to use the same slice/site ids. You probably need to do it for all slices and site module.<br>IT CHANGES CURRENT SLICE ID!");
     }
 
     /** implemented actions within this class */
-    public static function actions(): array { return ['repair']; }
+    public static function actions(): array
+    {
+        return ['repair'];
+    }
 
     /** Test function
      * @return true
      */
-    public function test(): bool {
+    public function test(): bool
+    {
         $this->message(_m('Nothing to test here. Just be careful - IT CHANGES CURRENT SLICE ID without asking!'));
         return true;
     }
@@ -40,7 +46,8 @@ class ChangeModuleId extends AbstractOptimize {
      * repairs tables
      * @return true
      */
-    public function repair(): bool {
+    public function repair(): bool
+    {
         $module_fields = AA_Metabase::getModuleFields();
 
         // additional fields to change

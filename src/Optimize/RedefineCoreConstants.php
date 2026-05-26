@@ -5,29 +5,35 @@ namespace AA\Optimize;
 use AA\IO\DB\DB_AA;
 
 /** Recreates the "ActionApps Core" constants (delete and insert). */
-class RedefineCoreConstants extends \AA\Optimize\AbstractOptimize {
-
+class RedefineCoreConstants extends \AA\Optimize\AbstractOptimize
+{
     /** Name function
      * @return string - a name
      */
-    public static function name(): string {
+    public static function name(): string
+    {
         return _m("Redefine core constants");
     }
 
     /** Description function
      * @return string - a description
      */
-    public static function description(): string {
+    public static function description(): string
+    {
         return _m("Updates core constants - like Code-pages, Languge Constants and AA Bins");
     }
 
     /** checks if this Optimize class belongs to specified type (like "sql_update") */
-    public static function types(): array { return ['sql_update']; }
+    public static function types(): array
+    {
+        return ['sql_update'];
+    }
 
     /** Test function
      * @return bool
      */
-    public function test(): bool {
+    public function test(): bool
+    {
         $ret = true;
 
         // Code-pages
@@ -65,7 +71,8 @@ class RedefineCoreConstants extends \AA\Optimize\AbstractOptimize {
     /** Main update function
      * @return bool
      */
-    public function repair(): bool {
+    public function repair(): bool
+    {
 
 
         $this->message(_m('Deleting Code-pages, Languge Constants, AA Bins constants and APC-wide categories'));

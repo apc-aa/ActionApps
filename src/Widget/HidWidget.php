@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: honzama
@@ -7,6 +8,7 @@
  */
 
 namespace AA\Widget;
+
 use AA\FormArray;
 use AA_Content;
 use AA_Property;
@@ -15,7 +17,6 @@ use Exception;
 /** Hidden field widget */
 class HidWidget extends Widget
 {
-
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)
      */
@@ -31,7 +32,8 @@ class HidWidget extends Widget
      *  Used parameter format (in fields.input_show_func table)
      * @return array
      */
-    public static function getClassProperties(): array {
+    public static function getClassProperties(): array
+    {
         return [];
     }
 
@@ -39,11 +41,12 @@ class HidWidget extends Widget
      * @param AA_Property $aa_property
      * @return string
      */
-    function stdFormStart($aa_property): string {
-        $ret  = '<tr style="visibility:collapse;"><td colspan=2></td></tr>'."\n";  // add extra row for zebra stripes
-        $ret .= "\n<tr class=\"formrow{formpart} fieldstart cont-".varname4form($aa_property->getId())."\" style=\"visibility:collapse;\">";
-        $ret .= "\n <th>".$aa_property->getName();
-        if ( $aa_property->isRequired() ) {
+    public function stdFormStart($aa_property): string
+    {
+        $ret  = '<tr style="visibility:collapse;"><td colspan=2></td></tr>' . "\n";  // add extra row for zebra stripes
+        $ret .= "\n<tr class=\"formrow{formpart} fieldstart cont-" . varname4form($aa_property->getId()) . "\" style=\"visibility:collapse;\">";
+        $ret .= "\n <th>" . $aa_property->getName();
+        if ($aa_property->isRequired()) {
             $ret .= "&nbsp;*";
         }
         $ret .= "</th>\n <td>";
@@ -60,7 +63,8 @@ class HidWidget extends Widget
      * @return array
      * @throws Exception
      */
-    function _getRawHtml(AA_Property $aa_property, AA_Content $content, string $type='normal'): array {
+    public function _getRawHtml(AA_Property $aa_property, AA_Content $content, string $type = 'normal'): array
+    {
         $property_id = $aa_property->getId();
         $base_name   = FormArray::getName4Form($property_id, $content, $this->item_index);
         $base_id     = FormArray::formName2Id($base_name);
@@ -68,7 +72,7 @@ class HidWidget extends Widget
         $input_id    = FormArray::formName2Id($input_name);
         $input_value = safe($content->getValue($property_id));
         $widget      = "\n<input type=hidden name=\"$input_name\" id=\"$input_id\" value=\"$input_value\">";
-        
+
         return ['html' => $widget, 'last_input_name' => $input_name, 'base_name' => $base_name, 'base_id' => $base_id, 'required' => $aa_property->isRequired()];
     }
 
@@ -78,8 +82,9 @@ class HidWidget extends Widget
      * @param bool        $widget_only
      * @return string
      */
-    function _finalizeHtml($winfo, $aa_property, $widget_only = false): string {
-        return (string)$winfo['html'];
+    public function _finalizeHtml($winfo, $aa_property, $widget_only = false): string
+    {
+        return (string) $winfo['html'];
     }
 
     /** Creates all common ajax editing buttons to be used by different inputs
@@ -87,19 +92,22 @@ class HidWidget extends Widget
      * @param $aa_property AA_Property
      * @return string
      */
-    function _finalizeAjaxHtml($winfo, $aa_property): string {
-        return (string)$winfo['html'];
+    public function _finalizeAjaxHtml($winfo, $aa_property): string
+    {
+        return (string) $winfo['html'];
     }
 
     /* Decorates Live Widget. Prepared for overriding in subclasses */
-    function _finalizeLiveHtml($winfo, $aa_property): string {
-        return (string)$winfo['html'];
+    public function _finalizeLiveHtml($winfo, $aa_property): string
+    {
+        return (string) $winfo['html'];
     }
 
     /**
      * @inheritDoc
      */
-    public static function description(): string {
+    public static function description(): string
+    {
         return ''; // TODO: Implement description() method.
     }
 }

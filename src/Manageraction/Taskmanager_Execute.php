@@ -9,15 +9,16 @@ use zids;
 /** Manager action Item_DeleteTrash - Handler for DeleteTrash switch
  *  Delete all items in the trash bin
  */
-class Taskmanager_Execute extends AbstractManageraction {
-
+class Taskmanager_Execute extends AbstractManageraction
+{
     /** Name of this Manager's action */
-    public function getName(): string {
+    public function getName(): string
+    {
         return _m('Execute');
     }
 
     /** @inheritDoc */
-    function perform(Manager $manager, zids $item_zids, $action_param): string|false
+    public function perform(Manager $manager, zids $item_zids, $action_param): string|false
     {
 
         if (!IfSlPerm(PS_EDIT)) {    // permission to delete items?
@@ -29,7 +30,7 @@ class Taskmanager_Execute extends AbstractManageraction {
             return false;     // OK
         }
 
-        $toexecute = new Toexecute;
+        $toexecute = new Toexecute();
         $toexecute->executeTask($item_zids->shortids());
         return $toexecute->report();
     }
@@ -40,7 +41,8 @@ class Taskmanager_Execute extends AbstractManageraction {
      *
      * @return bool
      */
-    function isPerm4Action($manager):bool {
+    public function isPerm4Action($manager): bool
+    {
         /** @todo Should be changed to different permission */
         // if we want to use it as "action" (not "switch"), then we should be in trash bin
         return IfSlPerm(PS_EDIT);
@@ -48,10 +50,11 @@ class Taskmanager_Execute extends AbstractManageraction {
 
 
     /** @inheritDoc */
-    protected function getButtonDef(): array {
+    protected function getButtonDef(): array
+    {
         return [
             'label' => $this->getName(),
-            'attr'  => ['class'=>'aa-button-run']
+            'attr'  => ['class' => 'aa-button-run'],
         ];
     }
 }

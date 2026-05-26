@@ -1,4 +1,5 @@
 <?php
+
 /**
  * File contains definition of inputform class - used for displaying input form
  * for item add/edit and other form utility functions
@@ -35,14 +36,13 @@ use AA\Cache\PageCache;
 
 class PagecachePurge implements LaterInterface
 {
-
     /** purge function  - Clears all old cached data
      *  special function called from AA\Later\Toexecute class - used for queued tasks (ran form cron)
      *  @param array $params - numeric array of additional parameters for the execution passed in time of call
      *  @return string - message about execution to be logged
      *  @see \AA\Later\LaterInterface
      */
-    public function toexecutelater($params= []): string
+    public function toexecutelater($params = []): string
     {
         [$cache_time] = $params;
         // $tm   = time();
@@ -51,6 +51,6 @@ class PagecachePurge implements LaterInterface
         //  WHERE pagecache.id = pagecache_str2find.pagecache_id AND pagecache.stored<'1200478499'
         // (supported in MySQL >= 4.0), but it takes ages
 
-        return PageCache::invalidateOlder( time() - $cache_time );
+        return PageCache::invalidateOlder(time() - $cache_time);
     }
 }

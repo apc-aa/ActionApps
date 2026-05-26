@@ -1,4 +1,5 @@
 <?php
+
 /**
  *
  * PHP version 8.2+
@@ -18,6 +19,4 @@ namespace AA\Mail;
  * Unrecoverable SMTP failure (5xx, bad address, refused content).
  * Callers should log and drop -- a retry will fail again.
  */
-class PermanentSmtpException extends SmtpException {
-
-}
+class PermanentSmtpException extends SmtpException {}

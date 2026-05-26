@@ -5,36 +5,45 @@ namespace AA\Optimize;
 use Cvarset;
 
 /** Fix field table duplicate keys */
-class FieldDuplicates extends \AA\Optimize\AbstractOptimize {
-
+class FieldDuplicates extends \AA\Optimize\AbstractOptimize
+{
     /** Name function
      * @return string - a name
      */
-    public static function name(): string {
+    public static function name(): string
+    {
         return _m("Fix field definitions duplicates");
     }
 
     /** Description function
      * @return string - a description
      */
-    public static function description(): string {
+    public static function description(): string
+    {
         return _m("There should be only one slice_id - field_id pair in all slices, but sometimes there are more than one (mainly because of error in former sql_update.php script, where more than one display_count... fields were added).");
     }
 
     /** checks if this Optimize class belongs to specified type (like "sql_update") */
-    public static function types(): array { return ['sql_update']; }
+    public static function types(): array
+    {
+        return ['sql_update'];
+    }
 
     /** the optimizers are ordered by priority (less first) when executed
      *  in chain (like for sql_update)
      *  Default value is 100
      *  Execute this first
      */
-    public static function priority(): int { return 10; }  // big priority
+    public static function priority(): int
+    {
+        return 10;
+    }  // big priority
 
     /** Test function
      * @return bool
      */
-    public function test(): bool {
+    public function test(): bool
+    {
         $duplicates = $this->_check_table();
 
         if (!count($duplicates)) {
@@ -47,8 +56,9 @@ class FieldDuplicates extends \AA\Optimize\AbstractOptimize {
         return false;
     }
 
-    public function repair(): bool {
-        $varset = new Cvarset;
+    public function repair(): bool
+    {
+        $varset = new Cvarset();
         // $varset->setDebug();
 
         $duplicates = $this->_check_table();
@@ -72,7 +82,7 @@ class FieldDuplicates extends \AA\Optimize\AbstractOptimize {
         return true;
     }
 
-    function _check_table(): array
+    public function _check_table(): array
     {
         // does the table exist at all?
         $field_exists = GetTable2Array("SHOW TABLES LIKE 'field'", "aa_first");

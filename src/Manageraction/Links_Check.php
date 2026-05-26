@@ -9,22 +9,24 @@ use zids;
 /** Marks given link as checked (means visited and content checked)
  *  - used also as AA\Manageraction\Links_* superclass
  */
-class Links_Check extends AbstractManageraction {
-
+class Links_Check extends AbstractManageraction
+{
     protected $perm = PS_LINKS_CHECK_LINK;
 
     /** Constructor - fills the information about the target bin */
-    function __construct($id) {
+    public function __construct($id)
+    {
         parent::__construct($id);
     }
 
     /** Name of this Manager's action */
-    public function getName(): string {
+    public function getName(): string
+    {
         return _m('Check Link');
     }
 
     /** @inheritDoc */
-    function perform(Manager $manager, zids $item_zids, $action_param): string|false
+    public function perform(Manager $manager, zids $item_zids, $action_param): string|false
     {
         DB_AA::sql("UPDATE links_links SET checked = '" . time() . "', checked_by = '" . AuthGetUid() . "' WHERE " . $item_zids->sqlin('id', true));
         return false;                                     // OK - no error
@@ -36,7 +38,8 @@ class Links_Check extends AbstractManageraction {
      *
      * @return bool
      */
-    function isPerm4Action($manager):bool {
+    public function isPerm4Action($manager): bool
+    {
         return IsCatPerm($this->perm, $GLOBALS['r_state']['cat_path']);
     }
 
@@ -48,12 +51,14 @@ class Links_Check extends AbstractManageraction {
      *
      * @return bool
      */
-    function isPerm4Perform($manager, $item_zids, $action_param):bool {
+    public function isPerm4Perform($manager, $item_zids, $action_param): bool
+    {
         return $this->isPerm4Action($manager) && self::permCheck($item_zids, $this->perm);       // _m('No permission to change state of the link');  // error
     }
 
     /** function, which checks permissions in for many Links action classes */
-    public static function permCheck($item_zids, $perm, $allow_nobase4super = false) {
+    public static function permCheck($item_zids, $perm, $allow_nobase4super = false)
+    {
 
         $base_categs = [];
         $check_super = false;

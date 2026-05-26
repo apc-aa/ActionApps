@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: honzama
@@ -25,21 +26,26 @@ class MseWidget extends MchWidget
     }
 
     /** @inheritDoc */
-    public static function description(): string {
+    public static function description(): string
+    {
         return ''; // TODO: Implement description() method.
     }
 
     /** To use css for mch (for ajax...))
      * @inheritDoc
      */
-    protected function getWidgetType(): string { return 'mch'; }
+    protected function getWidgetType(): string
+    {
+        return 'mch';
+    }
 
 
     /** getClassProperties function of AA_Serializable
      *  Used parameter format (in fields.input_show_func table)
      * @return array
      */
-    public static function getClassProperties(): array {
+    public static function getClassProperties(): array
+    {
         return Widget::propertiesShop(['const', 'row_count', 'slice_field', 'bin_filter', 'filter_conds', 'sort_by', 'additional_slice_pwd', 'const_arr']);
     }
 }

@@ -4,19 +4,21 @@ namespace AA\Optimize;
 
 /**
  */
-class MultivalueDuplicates extends AbstractOptimize {
-
+class MultivalueDuplicates extends AbstractOptimize
+{
     /** Name function
      * @return string - a name
      */
-    public static function name(): string {
+    public static function name(): string
+    {
         return _m("Multivalue Duplicates");
     }
 
     /** Description function
      * @return string - a description
      */
-    public static function description(): string {
+    public static function description(): string
+    {
         return _m("Removes duplicate values in multivalue text fields");
     }
 
@@ -24,7 +26,8 @@ class MultivalueDuplicates extends AbstractOptimize {
      * tests for duplicate entries
      * @return bool
      */
-    public function test(): bool {
+    public function test(): bool
+    {
         $ret = true;
 
         $SQL = "SELECT `item_id`, `field_id`, `text`, `number`, count(*) AS `cnt` FROM `content` WHERE (flag & 64) GROUP BY `item_id`, `field_id`, `text`, `number` HAVING `cnt` >1";
@@ -68,7 +71,8 @@ class MultivalueDuplicates extends AbstractOptimize {
     /** Name function
      * @return bool
      */
-    public function repair(): bool {
+    public function repair(): bool
+    {
         $db = getDb();
 
         $ret = true;

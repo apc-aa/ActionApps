@@ -1,4 +1,5 @@
 <?php
+
 /**
  *
  * PHP version 8.2+
@@ -96,7 +97,8 @@ class CronFallback
         $path     = ($parts['path'] ?? '/') . (isset($parts['query']) ? '?' . $parts['query'] : '');
         $target   = $is_https ? "ssl://$host" : $host;
 
-        $errno = 0; $errstr = '';
+        $errno = 0;
+        $errstr = '';
         $fp = @fsockopen($target, $port, $errno, $errstr, self::CONNECT_TIMEOUT);
         if (!$fp) {
             return;
@@ -126,7 +128,7 @@ class CronFallback
         try {
             // Anti-DoS: re-check gate inside the lock — covers concurrent callers in the open window.
             clearstatcache(true, $lock_file);
-            if ((time() - (int)filemtime($lock_file)) < self::interval()) {
+            if ((time() - (int) filemtime($lock_file)) < self::interval()) {
                 return;
             }
             touch($lock_file);
@@ -147,13 +149,13 @@ class CronFallback
 
     private static function constBool(string $name): bool
     {
-        return defined($name) && (bool)constant($name);
+        return defined($name) && (bool) constant($name);
     }
 
     private static function interval(): int
     {
         return defined('CRON_FALLBACK_INTERVAL')
-            ? (int)constant('CRON_FALLBACK_INTERVAL')
+            ? (int) constant('CRON_FALLBACK_INTERVAL')
             : self::DEFAULT_INTERVAL;
     }
 }

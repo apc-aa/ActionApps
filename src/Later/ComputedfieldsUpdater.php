@@ -6,10 +6,9 @@ use AA_Set;
 
 class ComputedfieldsUpdater implements LaterInterface
 {
-
     /** plan filed updater process for future time based on field settings
      */
-    function plan(): void
+    public function plan(): void
     {
 
         $fields2count = GetTable2Array("SELECT id, slice_id, input_insert_func FROM field WHERE slice_id <> 'AA_Core_Fields..' AND input_insert_func LIKE 'co2:%'", '');
@@ -28,7 +27,7 @@ class ComputedfieldsUpdater implements LaterInterface
             }
 
             if (count($updaters)) {
-                $toexecute = new Toexecute;
+                $toexecute = new Toexecute();
                 foreach ($updaters as $sid => $interval) {
                     $time = null;
                     switch ($interval) {
@@ -77,7 +76,7 @@ class ComputedfieldsUpdater implements LaterInterface
         $chunks = array_chunk($long_ids, 20);
 
         $item_updater = new ComputedfieldsItemUpdater();
-        $toexecute = new Toexecute;
+        $toexecute = new Toexecute();
         foreach ($chunks as $k => $ids) {
             $toexecute->laterOnce($item_updater, [$sid, $ids], "AA_ComputedfieldsItem_Updater_" . $sid . '_' . $k, 40, time() + 10);
         }

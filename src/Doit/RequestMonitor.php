@@ -1,12 +1,10 @@
 <?php
 
-
 namespace AA\Doit;
 
 use AA;
 use AA\IO\DB\DB_AA;
 use AA\Util\Txt;
-
 
 /** request monitor - developer temporary tool for catching all the REQUEST variables in order we can remove
  * foreach addslashesdeep() calls
@@ -15,22 +13,32 @@ class RequestMonitor
 {
     protected $pages = [];
 
-    public function record(): void {
+    public function record(): void
+    {
         if (count($_REQUEST)) {
-            $request_monitorow_row   = ['page'=>$_SERVER["REQUEST_URI"]];
-            $request_monitorow_row['userinfo'] = time(). ':' .$_SERVER['REMOTE_ADDR'];
-            if (count($_GET))                   { $request_monitorow_row['get']     = serialize($_GET); }
-            if (count($_POST))                  { $request_monitorow_row['post']    = serialize($_POST); }
-            if (count($_COOKIE))                { $request_monitorow_row['cookie']  = serialize($_COOKIE); }
-            if ($_SESSION && count($_SESSION)) { $request_monitorow_row['session'] = serialize($_SESSION); }
+            $request_monitorow_row   = ['page' => $_SERVER["REQUEST_URI"]];
+            $request_monitorow_row['userinfo'] = time() . ':' . $_SERVER['REMOTE_ADDR'];
+            if (count($_GET)) {
+                $request_monitorow_row['get']     = serialize($_GET);
+            }
+            if (count($_POST)) {
+                $request_monitorow_row['post']    = serialize($_POST);
+            }
+            if (count($_COOKIE)) {
+                $request_monitorow_row['cookie']  = serialize($_COOKIE);
+            }
+            if ($_SESSION && count($_SESSION)) {
+                $request_monitorow_row['session'] = serialize($_SESSION);
+            }
             if (DB_AA::exists_table('tmp_request_monitor')) {
-                AA::Metabase()->loadFromDb(false,['tmp_request_monitor']);  // it is not standard table - we have to read it
-                AA::Metabase()->doInsert('tmp_request_monitor',$request_monitorow_row);
+                AA::Metabase()->loadFromDb(false, ['tmp_request_monitor']);  // it is not standard table - we have to read it
+                AA::Metabase()->doInsert('tmp_request_monitor', $request_monitorow_row);
             }
         }
     }
 
-    public function analyze(): void {
+    public function analyze(): void
+    {
         $request = DB_AA::select([], 'SELECT * FROM `tmp_request_monitor`');
         foreach ($request as $req) {
             [$page] = explode('?', $req['page'], 2);
@@ -48,9 +56,10 @@ class RequestMonitor
         }
     }
 
-    public function report(): string {
+    public function report(): string
+    {
         $ret = '';
-        $SUPERARRS = ['P'=>'POST', 'G'=>'GET'];
+        $SUPERARRS = ['P' => 'POST', 'G' => 'GET'];
         foreach ($this->pages as $page => $type) {
 
             $table = [];
@@ -67,31 +76,31 @@ class RequestMonitor
                     }
                     $detail .= "<br><b>$name</b>";
                     foreach ($vals as $val) {
-                        $detail .= "<br> &nbsp; = ". safe(is_array($val) ? var_export(array_count_values($val), true) : $val);
+                        $detail .= "<br> &nbsp; = " . safe(is_array($val) ? var_export(array_count_values($val), true) : $val);
                     }
-                    $detail .= '<br><em>'. safe(var_export(array_count_values($vals), true)). '</em>';
+                    $detail .= '<br><em>' . safe(var_export(array_count_values($vals), true)) . '</em>';
                     $vartype = $this->analyze_variable($vals, $this->pages[$page]['count']);
-                    $detail .= '<br>'. $vartype. '</em>';
+                    $detail .= '<br>' . $vartype . '</em>';
                     $table[$name]['type'][$SUPERARRS[$t]] = 1;
                     $table[$name]['valmain'][] = $vartype['main'];
                     $table[$name]['valsub'][] = $vartype['sub'];
                     $table[$name]['valempty'][] = $vartype['empty'];
                     $table[$name]['valreq'][] = $vartype['req'];
                     $table[$name]['vals'][] = implode('|', $vals);
-                    $table[$name]['valsum'][] = var_export(array_count_values(array_map( fn ($str) => (is_string($str) ? Txt::shorten($str,12) : $str), $vals)), true);
+                    $table[$name]['valsum'][] = var_export(array_count_values(array_map(fn($str) => (is_string($str) ? Txt::shorten($str, 12) : $str), $vals)), true);
                 }
             }
             ksort($table);
             foreach ($table as $name => $def) {
                 $ftype = array_keys($def['type']);
                 sort($ftype);
-                $ftype = implode('',$ftype);
+                $ftype = implode('', $ftype);
                 $sum   = safe(implode('-', $def['valsum']));
-                $com   = implode(', ',array_filter([implode('-', $def['valsub']), ((implode('-', $def['valempty'])=='1') ? 'empty' :'')]));
-                $f     = "// $sum<br>  &nbsp;   &nbsp;\$$name = InputVars::".implode('-',array_unique($def['valmain'])) ."$ftype('$name'". ((implode('-', $def['valreq'])=='1') ? ', true' :'') .");". ($com ? "     // $com" : '');
+                $com   = implode(', ', array_filter([implode('-', $def['valsub']), ((implode('-', $def['valempty']) == '1') ? 'empty' : '')]));
+                $f     = "// $sum<br>  &nbsp;   &nbsp;\$$name = InputVars::" . implode('-', array_unique($def['valmain'])) . "$ftype('$name'" . ((implode('-', $def['valreq']) == '1') ? ', true' : '') . ");" . ($com ? "     // $com" : '');
                 $code .= "<br>  &nbsp;   &nbsp;$f";
                 $detail  .= "<br><b>$f</b>";
-                $detail  .= "<br><small><em>".safe(implode('|', $def['vals']))."$sum</em></small>";
+                $detail  .= "<br><small><em>" . safe(implode('|', $def['vals'])) . "$sum</em></small>";
             }
             $code .= '<br>  &nbsp;   &nbsp;$cancel = InputVars::boolPOST(\'cancel\');';
             $code .= '<br>  &nbsp;   &nbsp;$Msg = InputVars::stringGETPOST(\'Msg\');';
@@ -103,7 +112,7 @@ class RequestMonitor
     /**
      * @return array
      */
-    public function analyze_variable(array $vals, int $visits=0): array
+    public function analyze_variable(array $vals, int $visits = 0): array
     {
         if (!$vals) {
             return [];
@@ -115,10 +124,10 @@ class RequestMonitor
         foreach ($vals as $v) {
             if (is_array($v)) {
                 $array = true;
-                $subarray = array_merge($subarray,$v);
+                $subarray = array_merge($subarray, $v);
                 continue;
             }
-            $vs = (string)$v;
+            $vs = (string) $v;
             if (!strlen($vs)) {
                 $empty = true;
                 continue;
@@ -136,7 +145,7 @@ class RequestMonitor
             if ($vs != '1' && $vs != '0' && $vs !== 'on') {
                 $bool = false;
             }
-            if (!ctype_digit((string)$vs)) {
+            if (!ctype_digit((string) $vs)) {
                 $int = false;
             }
             if (!is_numeric($vs)) {
@@ -152,11 +161,11 @@ class RequestMonitor
                 $alnum = false;
             }
         }
-        $ret = ['main'=>'', 'sub'=>'', 'empty'=> $empty, 'req' => (count($vals)==$visits)];
-        if ( $array ) {
+        $ret = ['main' => '', 'sub' => '', 'empty' => $empty, 'req' => (count($vals) == $visits)];
+        if ($array) {
             $ret['main'] = 'array';
             $ret['sub']  = $this->analyze_variable($subarray)['sub'];
-        } elseif ( $bool ) {
+        } elseif ($bool) {
             $ret['main'] = 'bool';
         } elseif ($int) {
             $ret['main'] = 'int';
@@ -178,7 +187,8 @@ class RequestMonitor
         return $ret;
     }
 
-    protected function join2pages(string $page, string $type, ?string $serialized_arr): bool {
+    protected function join2pages(string $page, string $type, ?string $serialized_arr): bool
+    {
         if (!$serialized_arr || !is_array($arr = unserialize($serialized_arr, ['allowed_classes' => false]))) {
             return false;
         }

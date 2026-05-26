@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: honzama
@@ -7,6 +8,7 @@
  */
 
 namespace AA\Widget;
+
 use AA\FormArray;
 use AA_Content;
 use AA_Property;
@@ -43,12 +45,14 @@ class TagWidget extends Widget
     }
 
     /** returns if the widget handles multivalue or just single value   */
-    public static function multiple(): bool {
+    public static function multiple(): bool
+    {
         return true;
     }
 
     /** array of libs needed for the widget - automatically inserted to the inputform */
-    protected function requireLibs($aa_property, $winfo): array {
+    protected function requireLibs($aa_property, $winfo): array
+    {
         return ['select2@4','aa-jslib@3'];
     }
 
@@ -56,7 +60,8 @@ class TagWidget extends Widget
      *  Used parameter format (in fields.input_show_func table)
      * @return array
      */
-    public static function getClassProperties(): array {
+    public static function getClassProperties(): array
+    {
         return Widget::propertiesShop(['const', 'bin_filter', 'filter_conds', 'slice_field', 'sort_by', 'additional_slice_pwd', 'max_values', 'disable_new', 'filter_conds_rw']);
     }
 
@@ -70,42 +75,43 @@ class TagWidget extends Widget
      *  @return array
      *  @throws Exception
      */
-    function _getRawHtml(AA_Property $aa_property, AA_Content $content, string $type = 'normal'): array {
+    public function _getRawHtml(AA_Property $aa_property, AA_Content $content, string $type = 'normal'): array
+    {
         $def_field_id = $aa_property->getId();
         $def_slice_id = $content->getOwnerId();
         $def_item_id  = $content->getId() ?: '';
 
-    //    $disable_new = (int)$this->getProperty('disable_new', 0);
-    //
-    //    $base_name = FormArray::getName4Form($def_field_id, $content, $this->item_index);
-    //    $base_id = FormArray::formName2Id($base_name);
-    //
-    //    $input_name = $base_name . '[tag][]';
-    //    $input_id = FormArray::formName2Id($input_name);
-    //
-    //    // $widget_add    = ($type === 'live') ? " class=\"live\" onkeypress=\"AA_StateChange('$base_id', 'dirty')\" onchange=\"AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\"" : '';
-    //    // $widget_add2   = ($type === 'live') ? '<img width=16 height=16 title="'._m('To save changes click here or outside the field.').'" alt="'._m('Save').'" class="'.$base_id.'ico" src="'. AA_INSTAL_PATH.'images/px.gif" style="position:absolute; right:0; top:0;">' : '';
-    //
-    //    // $show_buttons  = $this->getProperty('show_buttons', 'MDAC');
-    //
-    //    // we send to responder the slice and field id of the field with the DEFINITION
-    //    // I do not want to transport all the settings over GET parameter
-    //
-    //    $opts = $this->getFormattedOptions(null, new zids($content->getValuesArray($def_field_id), 'l'));
-    //    $json_val = array();
-    //    foreach ($opts as $id => $text) {
-    //        $json_val[] = array('id' => $id, 'text' => $text);
-    //    }
-    //
-    //    $prefill = json_encode($json_val);     //'[{id:"CA", text:"Califoria"}, {id:"CERVENA", text:"Red"}]';
-    //
-    //    $widget = "<input type=hidden id=\"$input_id\" name=\"$input_name\" style=\"width:300px;\">
-    //    <script>
-    //      //AA_LoadCss('" . AA_INSTAL_PATH . "javascript/select2/select2.css');
-    //      AA_LoadJs( true, function() {aa_maketags('$input_id', $prefill, '$def_slice_id', '$def_field_id','" . AA_INSTAL_PATH . "', $disable_new);}, '');
-    //    </script>
-    //    ";
-    //    return array('html' => $widget, 'last_input_name' => $input_name, 'base_name' => $base_name, 'base_id' => $base_id, 'required' => $aa_property->isRequired());
+        //    $disable_new = (int)$this->getProperty('disable_new', 0);
+        //
+        //    $base_name = FormArray::getName4Form($def_field_id, $content, $this->item_index);
+        //    $base_id = FormArray::formName2Id($base_name);
+        //
+        //    $input_name = $base_name . '[tag][]';
+        //    $input_id = FormArray::formName2Id($input_name);
+        //
+        //    // $widget_add    = ($type === 'live') ? " class=\"live\" onkeypress=\"AA_StateChange('$base_id', 'dirty')\" onchange=\"AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\"" : '';
+        //    // $widget_add2   = ($type === 'live') ? '<img width=16 height=16 title="'._m('To save changes click here or outside the field.').'" alt="'._m('Save').'" class="'.$base_id.'ico" src="'. AA_INSTAL_PATH.'images/px.gif" style="position:absolute; right:0; top:0;">' : '';
+        //
+        //    // $show_buttons  = $this->getProperty('show_buttons', 'MDAC');
+        //
+        //    // we send to responder the slice and field id of the field with the DEFINITION
+        //    // I do not want to transport all the settings over GET parameter
+        //
+        //    $opts = $this->getFormattedOptions(null, new zids($content->getValuesArray($def_field_id), 'l'));
+        //    $json_val = array();
+        //    foreach ($opts as $id => $text) {
+        //        $json_val[] = array('id' => $id, 'text' => $text);
+        //    }
+        //
+        //    $prefill = json_encode($json_val);     //'[{id:"CA", text:"Califoria"}, {id:"CERVENA", text:"Red"}]';
+        //
+        //    $widget = "<input type=hidden id=\"$input_id\" name=\"$input_name\" style=\"width:300px;\">
+        //    <script>
+        //      //AA_LoadCss('" . AA_INSTAL_PATH . "javascript/select2/select2.css');
+        //      AA_LoadJs( true, function() {aa_maketags('$input_id', $prefill, '$def_slice_id', '$def_field_id','" . AA_INSTAL_PATH . "', $disable_new);}, '');
+        //    </script>
+        //    ";
+        //    return array('html' => $widget, 'last_input_name' => $input_name, 'base_name' => $base_name, 'base_id' => $base_id, 'required' => $aa_property->isRequired());
 
         // $disable_new = (int)$this->getProperty('disable_new', 0); // this parameter is maintained in responder
 
@@ -128,7 +134,7 @@ class TagWidget extends Widget
         $input_name = $base_name . "[tag][]";
         $input_id = FormArray::formName2Id($input_name);
 
-        $max_values = (int)$this->getProperty('max_values', 0); // Limit the number of values entered. If 0 or empty, the number is unlimitted
+        $max_values = (int) $this->getProperty('max_values', 0); // Limit the number of values entered. If 0 or empty, the number is unlimitted
 
         if ($required && $max_values === 1) {
             $multiple   = '';
@@ -149,7 +155,7 @@ class TagWidget extends Widget
         $sel_options_plain = $this->getFormattedOptions('', new zids($content->getValuesArray($aa_property->getId()), 'l'));
         $sel_options = [];
         foreach ($sel_options_plain as $k => $v) {
-            $sel_options[] = ['k'=>$k, 'v'=>$v, 'selected'=>true];
+            $sel_options[] = ['k' => $k, 'v' => $v, 'selected' => true];
         }
         $widget .= $this->getSelectOptions($sel_options);
         $widget .= "</select>";
@@ -158,13 +164,13 @@ class TagWidget extends Widget
         // AA_LoadJs( true, function() {aa_maketags('$input_id', '$def_slice_id', '$def_field_id','" . AA_INSTAL_PATH . "');}, '');
         // when called by Ajax, the requireLibs() in called in responder is not enough for some reason
         // maybe we can change it to async / await / Promises
-        $widget .="
+        $widget .= "
             <script> 
-              AA_LoadJs( jQuery.fn.select2, function() {aa_maketags('$input_id', '$def_slice_id', '$def_field_id', $max_values, '$def_item_id');}, '".AA_Requires::getUrl4Lib('select2@4')."');
+              AA_LoadJs( jQuery.fn.select2, function() {aa_maketags('$input_id', '$def_slice_id', '$def_field_id', $max_values, '$def_item_id');}, '" . AA_Requires::getUrl4Lib('select2@4') . "');
             </script>";
 
         return ['html' => $widget, 'last_input_name' => $input_name, 'base_name' => $base_name, 'base_id' => $base_id, 'required' => $aa_property->isRequired()];
-        
+
 
     }
 
@@ -183,10 +189,10 @@ class TagWidget extends Widget
         $data4field = $data4field['tag'];
         $fld_value_arr = [];
 
-        foreach ((array)$data4field as $key => $value) {
+        foreach ((array) $data4field as $key => $value) {
             $value = trim($value);
-            if (strlen($value) && ctype_digit((string)$key)) {
-                $fld_value_arr[] = ['value' => (is_long_id($value) ? '':'t') .$value, 'flag' => $flag];
+            if (strlen($value) && ctype_digit((string) $key)) {
+                $fld_value_arr[] = ['value' => (is_long_id($value) ? '' : 't') . $value, 'flag' => $flag];
             }
         }
         return new AA_Value($fld_value_arr, $flag);
@@ -195,7 +201,8 @@ class TagWidget extends Widget
     /**
      * @inheritDoc
      */
-    public static function description(): string {
+    public static function description(): string
+    {
         return ''; // TODO: Implement description() method.
     }
 
@@ -203,8 +210,9 @@ class TagWidget extends Widget
      * @param string $validator_string
      * @return AA_Validate|null
      */
-    public function getUpgradedValidator(string $validator_string): ?AA_Validate {
-        if ( str_starts_with($validator_string, 'id') && (int)$this->getProperty('disable_new', 0) != 1) {
+    public function getUpgradedValidator(string $validator_string): ?AA_Validate
+    {
+        if (str_starts_with($validator_string, 'id') && (int) $this->getProperty('disable_new', 0) != 1) {
             $validator_string = 'text';  // we should allow adding new text here
         }
         return AA_Validate::factoryByString($validator_string);

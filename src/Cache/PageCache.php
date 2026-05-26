@@ -1,4 +1,5 @@
 <?php
+
 /**
  * File contains a definition of Pagecache class - used for caching information
  * for item add/edit and other form utility functions
@@ -28,6 +29,7 @@
  * @link      https://www.apc.org/ APC
  *
  */
+
 namespace AA\Cache;
 
 use AA;
@@ -49,8 +51,8 @@ use Mobile_Detect;
  *   );
  */
 
-class PageCache  {
-
+class PageCache
+{
     private int $cacheTime     = 600; // number of seconds to store cached information
 
     private bool $cache_nostore = false; // if true, the cache is not stored (used for {user:xxxx} alias)
@@ -59,18 +61,19 @@ class PageCache  {
      *  AA\Cache\PageCache class constructor
      * @param $ct
      */
-    function __construct($ct = 600) {
-        $this->cacheTime = (int)$ct;
+    public function __construct($ct = 600)
+    {
+        $this->cacheTime = (int) $ct;
     }
 
     /** static getKeystring function
      *  Return string to use in keystr for cache if could do a stringexpand
      *  Returns part of keystring
      */
-    static function globalKeyArray(): array
+    public static function globalKeyArray(): array
     {
         // valid just for one domain (there are sites, where content is based also on domain - enviro.example.org, culture.example.org, ... )
-        $ks = ['host' => (str_starts_with($host = $_SERVER['HTTP_HOST'], 'www.')) ? substr($host,4) : $host];
+        $ks = ['host' => (str_starts_with($host = $_SERVER['HTTP_HOST'], 'www.')) ? substr($host, 4) : $host];
         if (isset($GLOBALS['apc_state'])) {
             $ks['apc_state'] = $GLOBALS['apc_state'];
         }
@@ -84,8 +87,8 @@ class PageCache  {
         if (isset($_COOKIE)) {
             // do not count with cookie names starting with underscore
             // (Google urchin uses cookies like __utmz which varies very often)
-            foreach( $_COOKIE as $key => $val ) {
-                if ( $key[0] !== '_' && $key!=='AA_Session') {
+            foreach ($_COOKIE as $key => $val) {
+                if ($key[0] !== '_' && $key !== 'AA_Session') {
                     $ks["C$key"] = $val;
                 }
             }
@@ -97,8 +100,8 @@ class PageCache  {
         }
 
         // for the websites using {detect} in the site
-        $detect = new Mobile_Detect;
-        $ks['detect'] = $detect->isMobile() . ','. $detect->isTablet();
+        $detect = new Mobile_Detect();
+        $ks['detect'] = $detect->isMobile() . ',' . $detect->isTablet();
 
         return $ks;
     }
@@ -111,22 +114,22 @@ class PageCache  {
      *
      * @return false|string
      */
-    function get($key, string $action='get'): false|string
+    public function get($key, string $action = 'get'): false|string
     {
-        AA::$debug&2 && AA::$dbg->log("Pagecache->get(key):$key", 'Pagecache action:'.$action);
+        AA::$debug & 2 && AA::$dbg->log("Pagecache->get(key):$key", 'Pagecache action:' . $action);
 
-        if ( ENABLE_PAGE_CACHE ) {
+        if (ENABLE_PAGE_CACHE) {
             if ($action === 'invalidate') {
-                $this->invalidateById( $key );
-                AA::$debug&2 && AA::$dbg->log("Pagecache: return false - invalidating");
+                $this->invalidateById($key);
+                AA::$debug & 2 && AA::$dbg->log("Pagecache: return false - invalidating");
                 return false;
             }
 
             if ($action === '1') {  // nocache=1
-                AA::$debug&2 && AA::$dbg->log("Pagecache: return false - nocache");
+                AA::$debug & 2 && AA::$dbg->log("Pagecache: return false - nocache");
                 return false;
             }
-            return $this->getById( $key );
+            return $this->getById($key);
         }
         return false;
     }
@@ -144,14 +147,14 @@ class PageCache  {
      * @param $str2find
      * @param $action
      */
-    function cacheDb($function, $params, $str2find, $action='get'): mixed
+    public function cacheDb($function, $params, $str2find, $action = 'get'): mixed
     {
-        $action = (string)$action;
+        $action = (string) $action;
         $key = get_hash($function, $params);
-        if ( $res = $this->get($key, $action) ) {
+        if ($res = $this->get($key, $action)) {
             return unserialize($res);  // it is serialized for storing in the database
         }
-        $res = call_user_func_array($function, (array)$params);
+        $res = call_user_func_array($function, (array) $params);
         if (!ctype_digit($action)) {  // nocache is not
             $this->store($key, serialize($res), $str2find);
         }
@@ -166,14 +169,14 @@ class PageCache  {
      * @param $str2find
      * @param $action
      */
-    function cacheMemDb($function, $params, $str2find, $action='get'): mixed
+    public function cacheMemDb($function, $params, $str2find, $action = 'get'): mixed
     {
         $key = get_hash($function, $params);
         if ($res = AA::Contentcache()->get($key)) {
             return $res;
         }
         $res = $this->cacheDb($function, $params, $str2find, $action);
-        AA::Contentcache()->set($key,$res);
+        AA::Contentcache()->set($key, $res);
         return $res;
     }
 
@@ -182,9 +185,9 @@ class PageCache  {
      * @param $function
      * @param $params
      */
-    function cacheMem($function, $params): mixed
+    public function cacheMem($function, $params): mixed
     {
-        return AA::Contentcache()->get_result( $function, $params );
+        return AA::Contentcache()->get_result($function, $params);
     }
 
     /** getById function
@@ -192,10 +195,10 @@ class PageCache  {
      * @param $keyid
      * @return string|false
      */
-    function getById($keyid): false|string
+    public function getById($keyid): false|string
     {
         $arr   = DB_AA::select1('', 'SELECT stored, content FROM `pagecache`', [['id', $keyid]]);
-        return ( $arr && (time() - $this->cacheTime) < $arr['stored'] ) ? $arr['content'] : false;
+        return ($arr && (time() - $this->cacheTime) < $arr['stored']) ? $arr['content'] : false;
     }
 
     /** set function
@@ -212,14 +215,15 @@ class PageCache  {
      *
      * @return bool
      */
-    function store($key, $content, $str2find, $force=false): bool {
+    public function store($key, $content, $str2find, $force = false): bool
+    {
         $ret = false;
 
-        AA::$debug&2 && AA::$dbg->log("Pagecache->store(key):$key", 'Pagecache str2find:'.implode(',', $str2find->getStrings()), 'Pagecache content (length):'.strlen($content), 'Pagecache cache_nostore:'.$this->cache_nostore );
+        AA::$debug & 2 && AA::$dbg->log("Pagecache->store(key):$key", 'Pagecache str2find:' . implode(',', $str2find->getStrings()), 'Pagecache content (length):' . strlen($content), 'Pagecache cache_nostore:' . $this->cache_nostore);
 
         if ($force || (ENABLE_PAGE_CACHE && !$this->cache_nostore)) {  // $this->cache_nostore used if {user:xxxx} alias is used
-            AA::$debug&2 && AA::$dbg->log("Pagecache->store(): - storing");
-            $varset = new Cvarset( [['content', $content], ['stored', time()]]);
+            AA::$debug & 2 && AA::$dbg->log("Pagecache->store(): - storing");
+            $varset = new Cvarset([['content', $content], ['stored', time()]]);
             $varset->addkey('id', 'text', $key);
             $str2find->store($key);
 
@@ -236,10 +240,10 @@ class PageCache  {
             // it is not necessary to check, if the  AA\Later\PagecachePurge is planed
             // store. We check it only once for 1000 (PAGECACHEPURGE_PROBABILITY)
             /** @noinspection RandomApiMigrationInspection */ // mt_rand is used for speed
-            if (mt_rand(0,PAGECACHEPURGE_PROBABILITY) === 1) {
+            if (mt_rand(0, PAGECACHEPURGE_PROBABILITY) === 1) {
                 // purge only each PAGECACHEPURGE_PROBABILITY-th call of store
                 $cache_purger  = new PagecachePurge();
-                (new Toexecute)->laterOnce($cache_purger, [$this->cacheTime], 'PagecachePurge', 101, now() + 300);  // run it once in 5 minutes
+                (new Toexecute())->laterOnce($cache_purger, [$this->cacheTime], 'PagecachePurge', 101, now() + 300);  // run it once in 5 minutes
             }
             $ret = true;
         }
@@ -251,15 +255,17 @@ class PageCache  {
      *  When page is stored with storePage(), then you have to use getPage()
      *  counterpart function
      */
-    function storePage($key, Cacheentry $entry, $str2find, $force=false): bool {
+    public function storePage($key, Cacheentry $entry, $str2find, $force = false): bool
+    {
         // @todo - we can use json_encode, when $entry->$h['encoding']==='utf-8' which is quicker, than serialize
         return $this->store($key, serialize($entry), $str2find, $force);
     }
 
-    function getPage($key, $action='get'): ?Cacheentry {
-        $action = (string)$action;
+    public function getPage($key, $action = 'get'): ?Cacheentry
+    {
+        $action = (string) $action;
         $entry = $this->get($key, $action);
-        AA::$debug&2 && AA::$dbg->log("Pagecache->getPage(output): ".($entry ? 'cached text' : 'not found'), 'Pagecache action:'.$action);
+        AA::$debug & 2 && AA::$dbg->log("Pagecache->getPage(output): " . ($entry ? 'cached text' : 'not found'), 'Pagecache action:' . $action);
         return $entry ? unserialize($entry, ['allowed_classes' => [Cacheentry::class]]) : null;
     }
 
@@ -268,15 +274,15 @@ class PageCache  {
      *  Remove specified ids from cache
      * @param $keys
      */
-    function invalidateById( $keys ): void
+    public function invalidateById($keys): void
     {
         // we will delete it in chunks in order we do not get max_packet_size error from MySQL
-        $chunks = array_chunk((array)$keys, 10000);
+        $chunks = array_chunk((array) $keys, 10000);
         foreach ($chunks as $chunk) {
             $keystring = implode("','", $chunk);
-            if ( $keystring !== '' ) {
+            if ($keystring !== '') {
                 $varset = new Cvarset();
-                if ( $varset->doDeleteWhere('pagecache', "id IN ('$keystring')", 'nohalt') ) {
+                if ($varset->doDeleteWhere('pagecache', "id IN ('$keystring')", 'nohalt')) {
                     // delete keys only in case the pagecache deletion was successful
                     $varset->doDeleteWhere('pagecache_str2find', " pagecache_id IN ('$keystring')", 'nohalt');
                 }
@@ -289,7 +295,7 @@ class PageCache  {
      *
      * @return string
      */
-    static function invalidateOlder( $time ): string
+    public static function invalidateOlder($time): string
     {
         $highest_old_pid = DB_AA::select1('id', 'SELECT id FROM pagecache', [['stored', $time, '<']], ['id-']);
         $highest_old_id  = DB_AA::select1('id', 'SELECT id FROM pagecache_str2find', [['pagecache_id', $highest_old_pid]]);
@@ -305,7 +311,7 @@ class PageCache  {
      * @param string | array $strings
      * @param string         $type
      */
-    function invalidateFor($strings, $type='M'): void
+    public function invalidateFor($strings, $type = 'M'): void
     {
         // We do not want to report errors here. Sometimes this SQL leads to:
         //   "MySQL Error: 1213 (Deadlock found when trying to get lock; Try
@@ -324,20 +330,21 @@ class PageCache  {
         //   DELETE pagecache, pagecache_str2find FROM pagecache, pagecache_str2find
         //    WHERE pagecache.id = pagecache_str2find.pagecache_id AND pagecache_str2find.str2find = '".quote($cond)."'";
 
-        $this->invalidateById( $keys );
+        $this->invalidateById($keys);
     }
 
     /** invalidate function
      *  Remove cached information for all rows
      */
-    function invalidate(): void
+    public function invalidate(): void
     {
         DB_AA::delete('pagecache_str2find');
         DB_AA::delete('pagecache');
     }
 
     /** the page is not stored in the cache */
-    public function switchCacheNostore(): void {
+    public function switchCacheNostore(): void
+    {
         $this->cache_nostore = true;
     }
 }

@@ -6,20 +6,22 @@ use AA\Manager;
 use zids;
 
 /**  */
-class Links_Delete extends AbstractManageraction {
-
+class Links_Delete extends AbstractManageraction
+{
     /** Constructor - fills the information about the target bin */
-    function __construct($id) {
+    public function __construct($id)
+    {
         parent::__construct($id);
     }
 
     /** Name of this Manager's action */
-    public function getName(): string {
+    public function getName(): string
+    {
         return _m('Remove from category');
     }
 
     /** @inheritDoc */
-    function perform(Manager $manager, zids $item_zids, $action_param): string|false
+    public function perform(Manager $manager, zids $item_zids, $action_param): string|false
     {
         foreach ($item_zids as $lid) {
             Links_DeleteLink($lid);
@@ -33,7 +35,8 @@ class Links_Delete extends AbstractManageraction {
      *
      * @return bool
      */
-    function isPerm4Action($manager):bool {
+    public function isPerm4Action($manager): bool
+    {
         return !$GLOBALS['r_state']['show_subtree'] && IsCatPerm(PS_LINKS_DELETE_LINK, $GLOBALS['r_state']['cat_path']);
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * File contains definition of inputform class - used for displaying input form
  * for item add/edit and other form utility functions
@@ -28,6 +29,7 @@
  * @link      https://www.apc.org/ APC
  *
  */
+
 namespace AA\Cache;
 
 use AA;
@@ -36,14 +38,17 @@ use Cvarset;
 /** AA\Cache\CacheStr2find class - storage for str2find pairs used by pagecache
  *  to identify records to be deleted (invalidated) from cache
  */
-class CacheStr2find {
+class CacheStr2find
+{
     protected $strings = [];
 
     /** AA\Cache\CacheStr2find function
      * @param string[]|null   $strings
      * @param string $type
      */
-    function __construct( $strings=null, $type='M') {   // it was $type=slice_id, but for cache it is better to use shorter - M
+    public function __construct($strings = null, $type = 'M')
+    {
+        // it was $type=slice_id, but for cache it is better to use shorter - M
         $this->add($strings, $type);
     }
 
@@ -52,12 +57,13 @@ class CacheStr2find {
      * @param string[] $strings
      * @param string   $type
      */
-    function add($strings, $type='M'): void
-    {    // it was $type=slice_id, but for cache it is better to use shorter - M (like Module id)
-        if ( !$strings ) {
+    public function add($strings, $type = 'M'): void
+    {
+        // it was $type=slice_id, but for cache it is better to use shorter - M (like Module id)
+        if (!$strings) {
             return;
         }
-        $strings = array_filter((array)$strings, 'trim');
+        $strings = array_filter((array) $strings, 'trim');
         foreach ($strings as $str) {
             $this->strings["$type=$str"] = true;   // match type-id pair
         }
@@ -66,16 +72,17 @@ class CacheStr2find {
     /**
      * @return array
      */
-    function getStrings(): array {
+    public function getStrings(): array
+    {
         return array_keys($this->strings);
     }
 
     /** add_str2find function
      * @param CacheStr2find $str2find
      */
-    function add_str2find($str2find): void
+    public function add_str2find($str2find): void
     {
-        if ( is_a($str2find, 'AA\Cache\CacheStr2find') ) {
+        if (is_a($str2find, 'AA\Cache\CacheStr2find')) {
             foreach ($str2find->strings as $k => $v) {
                 $this->strings[$k] = true;   // copy all the $str2find ids to this
             }
@@ -84,7 +91,7 @@ class CacheStr2find {
 
     /** clear function
      */
-    function clear(): void
+    public function clear(): void
     {
         $this->strings = [];
     }
@@ -92,11 +99,11 @@ class CacheStr2find {
     /** store function
      * @param $keyid
      */
-    function store($keyid): void
+    public function store($keyid): void
     {
-        $varset = new Cvarset( [['pagecache_id', $keyid], ['str2find','']]);
-        $varset->doDeleteWhere('pagecache_str2find', "pagecache_id='$keyid'" );
-        foreach (array_keys((array)$this->strings) as $str) {
+        $varset = new Cvarset([['pagecache_id', $keyid], ['str2find','']]);
+        $varset->doDeleteWhere('pagecache_str2find', "pagecache_id='$keyid'");
+        foreach (array_keys((array) $this->strings) as $str) {
             $varset->set('str2find', $str);
             $varset->doInsert('pagecache_str2find');
         }

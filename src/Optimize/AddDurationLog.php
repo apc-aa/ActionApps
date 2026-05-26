@@ -8,32 +8,41 @@ use AA\IO\DB\DB_AA;
 /** Add column to hit_archive table which will store duration/cache/not_modified records for the hit
  * Optional AA feature
  */
-class AddDurationLog extends \AA\Optimize\AbstractOptimize {
-
+class AddDurationLog extends \AA\Optimize\AbstractOptimize
+{
     /** Name function
      * @return string - a name
      */
-    public static function name(): string {
+    public static function name(): string
+    {
         return _m("Add hit duration log feature");
     }
 
     /** Description function
      * @return string - a description
      */
-    public static function description(): string {
+    public static function description(): string
+    {
         return _m("Add column 'duration' to hit_archive table which will store duration/cache/not_modified records for the hit");
     }
 
     /** checks if this Optimize class belongs to a specified type (like "sql_update") */
-    public static function types(): array { return ['opt_feature']; }
+    public static function types(): array
+    {
+        return ['opt_feature'];
+    }
 
     /** @inheritDoc  */
-    public static function actions(): array { return ['test', 'repair', 'revert']; }
+    public static function actions(): array
+    {
+        return ['test', 'repair', 'revert'];
+    }
 
     /** Test function
      * @return bool
      */
-    public function test(): bool {
+    public function test(): bool
+    {
         if (!DB_AA::exists_column('hit_archive', 'duration')) {
             $this->message(_m('The "duration" column missing in hit_archive table'));
             return false;
@@ -45,7 +54,8 @@ class AddDurationLog extends \AA\Optimize\AbstractOptimize {
     /** Main update function - add the duration column to hit_archive table
      * @return bool
      */
-    public function repair(): bool {
+    public function repair(): bool
+    {
         if ($this->test()) {
             $this->message(_m('Table already has the column "duration"'));
             return true;
@@ -57,7 +67,8 @@ class AddDurationLog extends \AA\Optimize\AbstractOptimize {
     }
 
     /** @inheritDoc   */
-    public function revert(): bool {
+    public function revert(): bool
+    {
         $this->message(_m('Do alter table hit_archive to remove duration column - it disables the feature'));
         DB_AA::sql('ALTER TABLE `hit_archive` DROP COLUMN `duration`');
         $this->message(_m('Column deleted'));
@@ -68,6 +79,6 @@ class AddDurationLog extends \AA\Optimize\AbstractOptimize {
      * @todo Cache it forever - this query is quite slow */
     public function getFromTime(): int
     {
-        return (int)DB_AA::select1('time', 'SELECT `time` FROM `hit_archive`', [['duration', 0, '<>'],['time', 1743458400, '>']], ['time']);  // big speedup - 2025-04-01 - this feature is there from 2024-06-27 (with bug till 2025-04-28) in SVN so we check only part of the table
+        return (int) DB_AA::select1('time', 'SELECT `time` FROM `hit_archive`', [['duration', 0, '<>'],['time', 1743458400, '>']], ['time']);  // big speedup - 2025-04-01 - this feature is there from 2024-06-27 (with bug till 2025-04-28) in SVN so we check only part of the table
     }
 }

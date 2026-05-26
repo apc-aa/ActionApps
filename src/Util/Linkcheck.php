@@ -44,8 +44,8 @@ use AA\IO\DB\DB_AA;
  * @link      https://www.apc.org/ APC
  *
  */
-class Linkcheck {
-
+class Linkcheck
+{
     // http codes, error names and their weight
     private const HTTP_ERROR_CODES = [
         // first 3 are for checking domain from email
@@ -218,7 +218,7 @@ class Linkcheck {
 
         if ($response === false) {
             $result['code']    = "999";
-            $result['comment'] = 'No response ('.curl_error($ch).')';
+            $result['comment'] = 'No response (' . curl_error($ch) . ')';
             $result['weight']  = 5;
             $result['error']   = curl_error($ch);
             return $result;
@@ -242,7 +242,7 @@ class Linkcheck {
 
         $result['content_type'] = $contentType;
 
-        [$type, $params] = explode(';', $contentType.';', 2);
+        [$type, $params] = explode(';', $contentType . ';', 2);
         $result['mime']    = trim($type);
         $result['charset'] = preg_match('/charset\s*=\s*"?([^\s;"]+)"?/i', $params, $matches) ? strtolower($matches[1]) : '';
 
@@ -250,7 +250,7 @@ class Linkcheck {
             $result['redir_chain'] = $chain;
             $result['http_codes']  = $http_codes;
             $result['redir']       = $finalUrl;
-            $result['code']        = $http_codes ? (string)$http_codes[0] : (string)$http_code;
+            $result['code']        = $http_codes ? (string) $http_codes[0] : (string) $http_code;
             $result['comment']     = self::HTTP_ERROR_CODES[$result['code']]['comment'] ?? 'Unknown';
             $result['weight']      = self::HTTP_ERROR_CODES[$result['code']]['weight'] ?? 5;
 
@@ -263,7 +263,7 @@ class Linkcheck {
             return $result;
         }
 
-        $result['code']    = (string)$http_code;
+        $result['code']    = (string) $http_code;
         $result['comment'] = self::HTTP_ERROR_CODES[$http_code]['comment'] ?? 'Unknown';
         $result['weight']  = self::HTTP_ERROR_CODES[$http_code]['weight'] ?? 5;
         return $result;
@@ -272,7 +272,7 @@ class Linkcheck {
     /** checking function
      *  checking - runs check_url for links (count defined in LINKS_VALIDATION_COUNT)
      */
-    function checking(): void
+    public function checking(): void
     {
         $db = getDB();
 
@@ -284,7 +284,7 @@ class Linkcheck {
         for ($i = 0; $i < $max; ++$i) {
 
             $l_id  = $links['id'];
-            $l_url = (string)$links['url'];
+            $l_url = (string) $links['url'];
             $l_vc  = $links['valid_codes'];
             $l_vr  = $links['valid_rank'];
 
@@ -308,9 +308,9 @@ class Linkcheck {
      * @param $valid_codes
      * @return string
      */
-    function add_check($arr, $valid_codes): string
+    public function add_check($arr, $valid_codes): string
     {
-        return $arr["timestamp"] . "," .$arr["code"] . ":" .$this->remove_old($valid_codes);
+        return $arr["timestamp"] . "," . $arr["code"] . ":" . $this->remove_old($valid_codes);
     }
 
     /** remove_old function
@@ -318,7 +318,7 @@ class Linkcheck {
      * @param $valid_codes
      * @return string
      */
-    function remove_old($valid_codes): string
+    public function remove_old($valid_codes): string
     {
         $dummy = explode(":", $valid_codes);
         rsort($dummy);
@@ -338,7 +338,8 @@ class Linkcheck {
      * @param $valid_codes
      * @return float
      */
-    function count_weight($valid_codes): float {
+    public function count_weight($valid_codes): float
+    {
         $dummy = explode(":", $valid_codes);
         rsort($dummy); // sort descend (newest is first)
         foreach ($dummy as $i => $singleDummy) {
@@ -369,5 +370,3 @@ class Linkcheck {
         return round($num * (1000 / 14.644841269841));
     }
 } // end - class AA_Linkcheck
-
-

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: honzama
@@ -15,8 +16,7 @@ use ItemContent;
 /** AA\IO\AbstractGrabber\AbstractGrabber\CSV - CSV (Comma Separated Values) format grabber */
 class CSV extends AbstractGrabber
 {
-
-     /** @var string url of the file */
+    /** @var string url of the file */
     protected $file = '';
 
     /** @var string use direct text instead of file */
@@ -48,7 +48,8 @@ class CSV extends AbstractGrabber
      * @param bool   $caption
      * @param string $source_encoding
      */
-    function __construct($file, $direct_input='', $delimiter=',', $enclosure='"', $caption=true, $source_encoding='') {
+    public function __construct($file, $direct_input = '', $delimiter = ',', $enclosure = '"', $caption = true, $source_encoding = '')
+    {
         $this->file             = $file;
         $this->direct_input     = $direct_input;
         $this->delimiter        = strlen($delimiter) ? (($delimiter === '\t') ? chr(9) : $delimiter) : ','; // tabulator ascii
@@ -60,7 +61,8 @@ class CSV extends AbstractGrabber
     /** name function
      * Name of the grabber - used for grabber selection box
      */
-    public static function name() : string {
+    public static function name(): string
+    {
         return _m('CSV');
     }
 
@@ -68,14 +70,16 @@ class CSV extends AbstractGrabber
      *  Description of the grabber - used as help text for the users.
      *  Description is in HTML
      */
-    public static function description(): string {
+    public static function description(): string
+    {
         return _m('Import data from CSV (Comma Separated Values) format');
     }
 
     /** true, if grabber returns already prepared item. false, when just parsed source structure is returned which must be converted by transformations
      * @return bool
      */
-    public function isDirectfill(): bool {
+    public function isDirectfill(): bool
+    {
         return false;
     }
 
@@ -83,7 +87,8 @@ class CSV extends AbstractGrabber
      *  Used for importer and htmlSettings()
      * @return array
      */
-    public static function getClassProperties(): array {
+    public static function getClassProperties(): array
+    {
         $properties = [];   //                   id             name        type    multi  persistent - validator, required, help, morehelp, example
         $properties['file'] = new AA_Property('file', _m("URL of the file"), 'string', false, true);
         $properties['direct_input'] = new AA_Property('direct_input', _m("use direct text instead of file"), 'string', false, true);
@@ -95,26 +100,27 @@ class CSV extends AbstractGrabber
                 '\t' => '\t (tabulator)',
                 '|' => '| (pipe)',
                 '~' => '~ (tilde)',
-                '' => 'other'
-            ]
+                '' => 'other',
+            ],
         ], false, '', '', ',');
         $properties['enclosure'] = new AA_Property('enclosure', _m("Enclosure"), 'string', false, true, [
             'enum',
-            ['"' => '" (double quote )', "'" => '\' (single quote)']
+            ['"' => '" (double quote )', "'" => '\' (single quote)'],
         ], false, '', '', '"');
         $properties['caption'] = new AA_Property('caption', _m("Use first row as field names"), 'bool', false, true);
         return $properties;
     }
 
     /** loads all the data based on grabber setting and return it */
-    public function getSources(): array {
+    public function getSources(): array
+    {
         return [$this->loadData($this->file, $this->direct_input, '', $this->source_encoding)];
     }
 
     /** Possibly preparation of grabber - it is called directly before getItem()
      *  method is called - it means "we are going really to grab the data
      */
-    function prepare(): void
+    public function prepare(): void
     {
         $this->_items    = [];
         $this->_colnames = [];
@@ -135,21 +141,23 @@ class CSV extends AbstractGrabber
             // read the first data row
             $array = fgetcsv($stream, 0, $this->delimiter, $this->enclosure);
         } else {
-            $this->_colnames = array_fill(0,count($array),'field');
-            array_walk($this->_colnames, function (&$v, $k) {$v .= $k+1;});
+            $this->_colnames = array_fill(0, count($array), 'field');
+            array_walk($this->_colnames, function (&$v, $k) {
+                $v .= $k + 1;
+            });
         }
 
         while ($array !== false) {
             $this->_items[] = $array;
             $array = fgetcsv($stream, 0, $this->delimiter, $this->enclosure);
         }
-        $this->message(__CLASS__.' -> '. __FUNCTION__);
-        $this->message("parsed items ". count($this->_items));
+        $this->message(__CLASS__ . ' -> ' . __FUNCTION__);
+        $this->message("parsed items " . count($this->_items));
         reset($this->_items);
     }
 
     /** Method called by the AA\IO\Saver to get next item from the data input */
-    function getItem(): ?AA_Content
+    public function getItem(): ?AA_Content
     {
         if (false === ($data = current($this->_items))) {
             return null;
@@ -167,6 +175,5 @@ class CSV extends AbstractGrabber
      *  Function called by AA\IO\Saver after we get the last item from the data
      *  input
      */
-    function finish() {
-    }
+    public function finish() {}
 }

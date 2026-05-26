@@ -6,35 +6,45 @@ use AA;
 use AA\IO\DB\DB_AA;
 
 /** Recreates the new field types to be used as templates (in "ActionApps Core" slice) */
-class AddSeoFieldTemplate extends \AA\Optimize\AbstractOptimize {
-
+class AddSeoFieldTemplate extends \AA\Optimize\AbstractOptimize
+{
     /** Name function
      * @return string - a name
      */
-    public static function name(): string {
+    public static function name(): string
+    {
         return _m("Add seo fields template");
     }
 
     /** Description function
      * @return string - a description
      */
-    public static function description(): string {
+    public static function description(): string
+    {
         return _m("Updates field templates (in ActionApps Core slice) - redefine the field template");
     }
 
     /** checks if this Optimize class belongs to specified type (like "sql_update") */
-    public static function types(): array { return ['sql_update','add_field']; }
+    public static function types(): array
+    {
+        return ['sql_update','add_field'];
+    }
 
     /** the field identifier  */
-    protected function fieldType(): string { return 'seo'; }
+    protected function fieldType(): string
+    {
+        return 'seo';
+    }
 
     /** field settings different from standard field setting  */
-    protected function fieldSpecialSetting(): array {
+    protected function fieldSpecialSetting(): array
+    {
         return [];
     }
 
     /** @return array - whole field definition - merged standard fields and special setting */
-    protected function fieldDefinition(): array {
+    protected function fieldDefinition(): array
+    {
         $field_standard = [
             'id'                => $this->fieldType(),
             'type'              => '',
@@ -83,7 +93,8 @@ class AddSeoFieldTemplate extends \AA\Optimize\AbstractOptimize {
     /** Test function
      * @return bool
      */
-    public function test(): bool {
+    public function test(): bool
+    {
         $ret = true;
         if (!DB_AA::test('field', [['id', $this->fieldType()], ['slice_id', 'AA_Core_Fields..']])) {
             $this->message(_m('The "%1" field template missing', [$this->fieldType()]));
@@ -98,7 +109,8 @@ class AddSeoFieldTemplate extends \AA\Optimize\AbstractOptimize {
     /** Main update function
      * @return bool
      */
-    public function repair(): bool {
+    public function repair(): bool
+    {
         $this->message(_m('Recreate "%1" field definition', [$this->fieldType()]));
         AA::Metabase()->doReplace('field', $this->fieldDefinition());
         $this->message(_m('New "%1" field template added', [$this->fieldType()]));

@@ -1,13 +1,14 @@
 <?php
 
-
 namespace AA\Util;
 
-trait Singleton4idTrait {
+trait Singleton4idTrait
+{
     private static array $instances = [];
 
-    final public static function singleton4id($id) {
-        if(!self::$instances[$id]) {
+    final public static function singleton4id($id)
+    {
+        if (!self::$instances[$id]) {
             self::$instances[$id] = new self($id);
         }
 

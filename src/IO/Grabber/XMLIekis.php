@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: honzama
@@ -15,33 +16,35 @@ use ItemContent;
  */
 class XMLIekis extends AbstractGrabber
 {
-
     protected $dir;
     /** directory, where teh files are */
     private $_files;
 
     /** list if files to grab - internal array */
 
-    function __construct($dir) {
+    public function __construct($dir)
+    {
         $this->dir = $dir;
     }
 
     /** Name of the grabber - used for grabber selection box */
-    public static function name(): string {
+    public static function name(): string
+    {
         return _m('iEKIS XML files');
     }
 
     /** Description of the grabber - used as help text for the users.
      *  Description is in HTML
      */
-    public static function description(): string {
+    public static function description(): string
+    {
         return _m('special iEKIS XML files in one directory');
     }
 
     /** Possibly preparation of grabber - it is called directly before getItem()
      *  method is called - it means "we are going really to grab the data
      */
-    function prepare(): void
+    public function prepare(): void
     {
         $this->_files = [];
         // instance of class iCalFile (external file ical.php)
@@ -57,7 +60,7 @@ class XMLIekis extends AbstractGrabber
     }
 
     /** Method called by the AA\IO\Saver to get next item from the data input */
-    function getItem(): ?AA_Content
+    public function getItem(): ?AA_Content
     {
         if (!($file = current($this->_files))) {
             return null;
@@ -72,11 +75,11 @@ class XMLIekis extends AbstractGrabber
             switch ($text_att['typ']) {
                 case 'otazka':
                     $t0a = $text_att;
-                    $t0 = (string)$text;
+                    $t0 = (string) $text;
                     break;
                 case 'odpoved':
                     $t1a = $text_att;
-                    $t1 = (string)$text;
+                    $t1 = (string) $text;
                     break;
             }
         }
@@ -128,11 +131,11 @@ class XMLIekis extends AbstractGrabber
             '22' => '15efaadbec739b0965a098da205a0d31',   // Nízkoenergetické a pasivní domy (179)
             '23' => '3c3e0d17813eccc67afd3a267329595a',   // Projekty energetických služeb se zárukou
             '24' => '3c3e0d17813eccc67afd3a267329595a',   // Financování z fondů Evropské unie
-            '25' => 'b2269049caf8e47737b718e62ccc905c'    // Ostatní (536)
+            '25' => 'b2269049caf8e47737b718e62ccc905c',    // Ostatní (536)
         ];
 
-        if ($TEMAS[(string)$att['obor']]) {
-            $item->setValue('relation.......2', $TEMAS[(string)$att['obor']]);
+        if ($TEMAS[(string) $att['obor']]) {
+            $item->setValue('relation.......2', $TEMAS[(string) $att['obor']]);
         }
 
         return $item;

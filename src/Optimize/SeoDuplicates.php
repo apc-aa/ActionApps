@@ -9,29 +9,35 @@ use AA_Slice;
 /**
  *
  */
-class SeoDuplicates extends AbstractOptimize {
-
+class SeoDuplicates extends AbstractOptimize
+{
     /** Name function
      * @return string message
      */
-    public static function name(): string {
+    public static function name(): string
+    {
         return _m("SEO name duplicates");
     }
 
     /** Description function
      * @return string message
      */
-    public static function description(): string {
+    public static function description(): string
+    {
         return _m("Check items for duplicate SEO name inside sitemodule");
     }
 
     /** implemented actions within this class */
-    public static function actions(): array { return ['test']; }
+    public static function actions(): array
+    {
+        return ['test'];
+    }
 
     /** Test function
      * @return bool
      */
-    public function test(): bool {
+    public function test(): bool
+    {
         AA_Module::getUserModules();
         if ($fields = DB_AA::select([], 'SELECT `id`, LOWER(HEX(`slice_id`)) AS uslice_id, `name`, `input_show` FROM `field`', [
             [

@@ -11,31 +11,37 @@ use AA_Module_Site;
  *  Replaces binary fields by varbinary and removes trailing zeros
  *  Needed for MySQL > 5.0.17
  */
-class DbBinaryTrailingZeros extends AbstractOptimize {
-
+class DbBinaryTrailingZeros extends AbstractOptimize
+{
     /** Name function
      * @return string - a name
      */
-    public static function name(): string {
+    public static function name(): string
+    {
         return _m("Fix user login problem, constants editing problem, ...");
     }
 
     /** Description function
      * @return string - a description
      */
-    public static function description(): string {
+    public static function description(): string
+    {
         return _m("Replaces binary fields by varbinary and removes trailing zeros. Needed for MySQL > 5.0.17");
     }
 
     /** implemented actions within this class */
-    public static function actions(): array { return ['repair','test']; }
+    public static function actions(): array
+    {
+        return ['repair','test'];
+    }
 
     /** Test function
      * @return true
      */
-    public function test(): bool {
+    public function test(): bool
+    {
         $metabase = AA::Metabase();
-        
+
         $tablenames = $metabase->getTableNames();
 
         foreach ($tablenames as $tablename) {
@@ -43,24 +49,24 @@ class DbBinaryTrailingZeros extends AbstractOptimize {
             if (str_starts_with($tablename, 'bck_')) {
                 continue;
             }
-            if ( !($cols = $metabase->getColumns($tablename))) {
+            if (!($cols = $metabase->getColumns($tablename))) {
                 continue;
             }
             foreach ($cols as $colname => $coldef) {
                 if (str_starts_with($coldef->c[1], 'char(')) {
-//                        echo "<br> &nbsp; $tablename . $colname ";
-                    $this->_fixCol($tablename,$colname);
+                    //                        echo "<br> &nbsp; $tablename . $colname ";
+                    $this->_fixCol($tablename, $colname);
                 }
                 if ($coldef->getFieldType() === 'text' && !$coldef->isBinary()) {
-                   // echo "<br> &nbsp; $colname ". (AA_Metabase::isPacked($tablename, $colname) ? 'P' : '.'). ($coldef->isBinary() ? 'B' : '.'). ($coldef->isKey() ? 'K' : '.');
+                    // echo "<br> &nbsp; $colname ". (AA_Metabase::isPacked($tablename, $colname) ? 'P' : '.'). ($coldef->isBinary() ? 'B' : '.'). ($coldef->isKey() ? 'K' : '.');
                 }
             }
         }
         return true;
     }
-    
+
     /** Helper _fixTable function */
-    function _fixCol($table, $field): void
+    public function _fixCol($table, $field): void
     {
         $db = getDb();
         $SQL = "UPDATE `$table` SET `$field`=TRIM(TRAILING '\0' FROM `$field`)";
@@ -68,14 +74,15 @@ class DbBinaryTrailingZeros extends AbstractOptimize {
         //$db->query($SQL);
         freeDb($db);
     }
-    
-    
+
+
 
     /** Repair function
      * repairs tables
      * @return true
      */
-    public function repair(): bool {
+    public function repair(): bool
+    {
         $this->_fixTable('change', 'id', "varbinary(32)  NOT NULL default ''");
         $this->_fixTable('change', 'resource_id', "varbinary(32)  NOT NULL default ''");
         $this->_fixTable('change_record', 'change_id', "varbinary(32)  NOT NULL default ''");
@@ -210,7 +217,7 @@ class DbBinaryTrailingZeros extends AbstractOptimize {
     }
 
     /** Helper _fixTable function */
-    function _fixTable($table, $field, $definition): void
+    public function _fixTable($table, $field, $definition): void
     {
         $db = getDb();
         $SQL = "ALTER TABLE `$table` CHANGE `$field` `$field` $definition";

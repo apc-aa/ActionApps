@@ -1,4 +1,5 @@
 <?php
+
 /**
  *
  * PHP version 7.2+
@@ -27,15 +28,14 @@
 
 namespace AA\Util;
 
-
 use AA_Serializable;
 
 /**
  * Class Paramwizard
  * @package AA\Util
  */
-class Paramwizard {
-
+class Paramwizard
+{
     /** getParamWizardArr - get array for ParamWizard from widgets
      *  (replaces array in constants_param_wizard.php)
      *  called as AA\Widget\Widget::getParamWizardArr('fld');

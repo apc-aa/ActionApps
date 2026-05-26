@@ -4,19 +4,21 @@ namespace AA\Optimize;
 
 /** Testing if feeds table do not contain relations to non-existent slices
  */
-class DbInconsistency extends AbstractOptimize {
-
+class DbInconsistency extends AbstractOptimize
+{
     /** Name function
      * @return string - a name
      */
-    public static function name(): string {
+    public static function name(): string
+    {
         return _m("Check database consistency");
     }
 
     /** Description function
      * @return string - a description
      */
-    public static function description(): string {
+    public static function description(): string
+    {
         return _m("Test content table for records without item table reference, test discussion for the same, ...");
     }
 
@@ -24,7 +26,8 @@ class DbInconsistency extends AbstractOptimize {
      * tests for duplicate entries
      * @return bool
      */
-    public function test(): bool {
+    public function test(): bool
+    {
         $ret = true;
 
 
@@ -66,7 +69,8 @@ class DbInconsistency extends AbstractOptimize {
     /** Name function
      * @return bool
      */
-    public function repair(): bool {
+    public function repair(): bool
+    {
         $db = getDb();
 
         // test wrong content records

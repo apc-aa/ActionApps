@@ -6,8 +6,8 @@ use AA;
 use AA\IO\DB\DB_AA;
 
 /** Add tables for new polls module */
-class AddPolls extends \AA\Optimize\AbstractOptimize {
-
+class AddPolls extends \AA\Optimize\AbstractOptimize
+{
     public const POLLS_DEFAULT_VALUES = [
         'id'         => 'PollsTemplate...',
         'name'       => 'Polls Template',
@@ -18,33 +18,42 @@ class AddPolls extends \AA\Optimize\AbstractOptimize {
         'created_at' => 1043151515,
         'created_by' => '',
         'owner'      => 'AA_Core.........',
-        'flag'       => 0
+        'flag'       => 0,
     ];
 
     /** Name function
      * @return string - a name
      */
-    public static function name(): string {
+    public static function name(): string
+    {
         return _m("Add Polls tables");
     }
 
     /** Description function
      * @return string - a description
      */
-    public static function description(): string {
+    public static function description(): string
+    {
         return _m("Create tables for new Polls module and adds first - template polls. It removes all current polls!");
     }
 
     /** implemented actions within this class */
-    public static function actions(): array { return ['repair']; }
+    public static function actions(): array
+    {
+        return ['repair'];
+    }
 
     /** checks if this Optimize class belongs to specified type (like "sql_update") */
-    public static function types(): array { return ['sql_update']; }
+    public static function types(): array
+    {
+        return ['sql_update'];
+    }
 
     /** Test function
      * @return string - a message
      */
-    public function test(): bool {
+    public function test(): bool
+    {
         $ret = true;
 
         if (!DB_AA::test('module', [['id', 'PollsTemplate...']])) {
@@ -55,7 +64,8 @@ class AddPolls extends \AA\Optimize\AbstractOptimize {
     }
 
 
-    public function repair(): bool {
+    public function repair(): bool
+    {
 
         $metabase = AA::Metabase();
         $this->query("DROP TABLE IF EXISTS `polls`");

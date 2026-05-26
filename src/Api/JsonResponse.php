@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Small helper for typed JSON responses from AA API controllers.
  *

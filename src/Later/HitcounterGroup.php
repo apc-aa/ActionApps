@@ -30,7 +30,7 @@ class HitcounterGroup implements LaterInterface
             if ($duration_helper->test()) {
                 self::$duration_log_feature_from = $duration_helper->getFromTime();
                 // reload table structure from the database - in standard metabase we do not have an extended hit_archive table
-                AA::Metabase()->loadFromDb(true,['hit_archive']);  // it is not a standard table - we have to read it
+                AA::Metabase()->loadFromDb(true, ['hit_archive']);  // it is not a standard table - we have to read it
             } else {
                 // duration isn't used
                 self::$duration_log_feature_from = 0;
@@ -40,7 +40,7 @@ class HitcounterGroup implements LaterInterface
         [$begin, $step] = $params;
 
         $type = 'basic';
-        if (self::$duration_log_feature_from && self::$duration_log_feature_from <= ($begin+$step)) {
+        if (self::$duration_log_feature_from && self::$duration_log_feature_from <= ($begin + $step)) {
             $this->groupHitsDuration($begin, $step);
             $type = 'duration';
         } else {
@@ -57,8 +57,8 @@ class HitcounterGroup implements LaterInterface
         // possible new approach
         // SELECT id, CONCAT(FROM_UNIXTIME(`time`, '%Y-%m-%d'),' ',`id`) as grp, sum(hits) as sum, count(*) as cnt FROM hit_archive WHERE time < 1250000000 GROUP BY grp HAVING cnt > 1
 
-        $varset = new CVarset;
-        $hits = DB_AA::select(['id'=>'sum'], 'SELECT `id`, SUM(`hits`) as sum FROM `hit_archive`', $time_cond, null, ['id']);
+        $varset = new CVarset();
+        $hits = DB_AA::select(['id' => 'sum'], 'SELECT `id`, SUM(`hits`) as sum FROM `hit_archive`', $time_cond, null, ['id']);
         DB_AA::delete('hit_archive', $time_cond);
         foreach ($hits as $id => $sum) {
             $varset->clear();
@@ -76,7 +76,8 @@ class HitcounterGroup implements LaterInterface
      */
     public function countHitsDuration(array $time_cond): array
     {
-        return DB_AA::select([],
+        return DB_AA::select(
+            [],
             'SELECT `id`,
             AVG(CASE WHEN (`duration` & 3) = 0 THEN `duration` >> 2 END) << 2 AS avg_0,
             AVG(CASE WHEN (`duration` & 3) = 1 THEN `duration` >> 2 END) << 2 AS avg_1,
@@ -87,7 +88,10 @@ class HitcounterGroup implements LaterInterface
             SUM(CASE WHEN (`duration` & 3) = 2 THEN `hits` END) AS sum_2,
             SUM(CASE WHEN (`duration` & 3) = 3 THEN `hits` END) AS sum_3
             FROM `hit_archive`',
-            $time_cond, null, ['id']);
+            $time_cond,
+            null,
+            ['id'],
+        );
     }
 
     public function getTimecondition(int $begin, int $step): array
@@ -104,17 +108,17 @@ class HitcounterGroup implements LaterInterface
 
         $to_insert = [];
         foreach ($hits as $hit) {
-            if ($hit['sum_0']>0) {
-                $to_insert[] = ['id'=>$hit['id'], 'hits'=>$hit['sum_0'], 'time'=>$begin, 'duration'=>$hit['avg_0']];
+            if ($hit['sum_0'] > 0) {
+                $to_insert[] = ['id' => $hit['id'], 'hits' => $hit['sum_0'], 'time' => $begin, 'duration' => $hit['avg_0']];
             }
-            if ($hit['sum_1']>0) {
-                $to_insert[] = ['id'=>$hit['id'], 'hits'=>$hit['sum_1'], 'time'=>$begin, 'duration'=>$hit['avg_1']+1];
+            if ($hit['sum_1'] > 0) {
+                $to_insert[] = ['id' => $hit['id'], 'hits' => $hit['sum_1'], 'time' => $begin, 'duration' => $hit['avg_1'] + 1];
             }
-            if ($hit['sum_2']>0) {
-                $to_insert[] = ['id'=>$hit['id'], 'hits'=>$hit['sum_2'], 'time'=>$begin, 'duration'=>$hit['avg_2']+2];
+            if ($hit['sum_2'] > 0) {
+                $to_insert[] = ['id' => $hit['id'], 'hits' => $hit['sum_2'], 'time' => $begin, 'duration' => $hit['avg_2'] + 2];
             }
-            if ($hit['sum_3']>0) {
-                $to_insert[] = ['id'=>$hit['id'], 'hits'=>$hit['sum_3'], 'time'=>$begin, 'duration'=>$hit['avg_3']+3];
+            if ($hit['sum_3'] > 0) {
+                $to_insert[] = ['id' => $hit['id'], 'hits' => $hit['sum_3'], 'time' => $begin, 'duration' => $hit['avg_3'] + 3];
             }
         }
         // exit;
@@ -131,7 +135,7 @@ class HitcounterGroup implements LaterInterface
         $grouping_start = mktime(0, 0, 0, date("m"), date("d") - 8, date("Y")); // week ago
         $step = 60 * 60 * 24;                        // day
 
-        $toexecute = new Toexecute;
+        $toexecute = new Toexecute();
         // run for all the days from $oldest to week ago
         $no_task = 0;
         for ($begin = $grouping_start; $begin + $step >= $oldest; $begin -= $step) {

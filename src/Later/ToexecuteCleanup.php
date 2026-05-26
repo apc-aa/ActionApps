@@ -1,4 +1,5 @@
 <?php
+
 /**
  *
  * PHP version 7.2+
@@ -29,15 +30,14 @@ namespace AA\Later;
 
 class ToexecuteCleanup implements LaterInterface
 {
-    function __construct() {
-    }
+    public function __construct() {}
 
     /** special function called from AA\Later\Toexecute class - used for queued tasks (run form cron)
      * @param array $params - numeric array of additional parameters for the execution passed in time of call
      * @return string - message about execution to be logged
      * @see \AA\Later\LaterInterface
      */
-    public function toexecutelater($params= []): string
+    public function toexecutelater($params = []): string
     {
         return (new TableCleaner('toexecute', [['priority',0,'i']]))->clean();
     }

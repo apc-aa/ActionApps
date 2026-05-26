@@ -1,4 +1,5 @@
 <?php
+
 /**
  *
  * PHP version 7.2+
@@ -34,26 +35,29 @@ use AA_Slice;
 /** Remove _#UNDEFINE alias and default help.html for more help text in field
  *
  */
-class RemoveUndefineAlias extends AbstractOptimize {
-
+class RemoveUndefineAlias extends AbstractOptimize
+{
     /** Name function
      * @return string - a name
      */
-    public static function name(): string {
+    public static function name(): string
+    {
         return _m("Remove _#UNDEFINE alias and default help.html for more help text in field");
     }
 
     /** Description function
      * @return string - a description
      */
-    public static function description(): string {
+    public static function description(): string
+    {
         return _m("AA used to use _#UNDEFINE alias and some preset help text for field, which make little sense for real fields in real project. The help text and alias weill be removed.");
     }
 
     /** Test function
      * @return bool
      */
-    public function test(): bool {
+    public function test(): bool
+    {
         //$metabase = AA::Metabase();
         $ret = false;
         if ($fields = DB_AA::select([], 'SELECT `id`, LOWER(HEX(`slice_id`)) AS uslice_id, `name`, `alias1` FROM `field`', [
@@ -103,7 +107,8 @@ class RemoveUndefineAlias extends AbstractOptimize {
     /** Repair function
      * @return bool
      */
-    public function repair(): bool {
+    public function repair(): bool
+    {
         //$metabase = AA::Metabase();
         $changed = DB_AA::sql("UPDATE field SET alias1='', alias1_help=''", [['alias1', "_#UNDEFINE"]]);
         $this->message(_m('Removed %1 _#UNDEFINE aliases', [$changed]));
@@ -114,5 +119,3 @@ class RemoveUndefineAlias extends AbstractOptimize {
     }
 
 }
-
-

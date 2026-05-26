@@ -1,4 +1,5 @@
 <?php
+
 /**
  * File contains definition of inputform class - used for displaying input form
  * for item add/edit and other form utility functions
@@ -37,7 +38,6 @@ use AA\Later\Toexecute;
  */
 class AA_Plannedtask extends AA_Object implements LaterInterface, AA\Util\NamedInterface, AA\Expand\InternalExpandInterface
 {
-
     protected $task = '';
     protected $condition = '';
     protected $event = '';
@@ -56,11 +56,11 @@ class AA_Plannedtask extends AA_Object implements LaterInterface, AA\Util\NamedI
             'condition' => new AA_Property('condition', _m("Condition"), 'text', false, true, '', false, _m('If specified, the task is performed only if Condition is evaluated to value different from zero or empty value')),
             'event' => new AA_Property('event', _m("Event to run"), 'string', true, true, [
                 'enum',
-                ['ITEM_NEW' => _m('New Item'), 'ITEM_UPDATED' => _m('Item Updated')]
+                ['ITEM_NEW' => _m('New Item'), 'ITEM_UPDATED' => _m('Item Updated')],
             ], false, _m('Event, when the task should be executed. It is independent on Time setting below (so you can run the task when Event occures and also on specific time). If you do not specify "+ seconds" parameter or set it to 0, then the task is executed directly. If the "+ seconds" offset is set, then the task is planed to execute once after x seconds.')),
             'time' => new AA_Property('time', _m("Time to run"), 'string', false, true, '', false, _m('Specify the time, when the task should be executed. It will be then procesed periodicaly at this time. The specification of the time should be in "<a href="https://www.php.net/manual/en/datetime.formats.relative.php">Relative Format</a>", so the time like:<br>"midnight" - runs every midnight <br>"+1 hour" - runs every hour, <br>"+30 min" - runs every 30 minutes, <br>"16:00" - runs every day at 16:00<br>"Monday 10:00" - runs every Monday at 16:00<br>"first day of this month 10:00"<br>The times are not exact, the tasks are performed one after another by the script, which runs every 5 minutes, or so.')),
             'shift' => new AA_Property('shift', _m("+ seconds"), 'int', false, true, '', false, _m('Optionally specify the extra time offset added to previous time (in seconds).<br>It is hard to specify the "15-th in the month" by previous row, so you can combine both:<br> - "time" = "first day of this month 10:00"<br> - "+ seconds" = "1209600"<br> (60 seconds * 60 minutes * 24 hours * 14 days) - mention the 14 (1st + 14 = 15th)')),
-            'item_id' => new AA_Property('item_id', _m("Item ID"), 'string', false, true, 'id', false, _m('Optionally specify the context - the long Item Id for which the task will be executed. You can then use {id..............} and other aliases of the item in the task. The id of item could be also obtained in variable {var:aa_event_for}. For "event" tasks (Item updated/new) is always filled with id of modified item.'))
+            'item_id' => new AA_Property('item_id', _m("Item ID"), 'string', false, true, 'id', false, _m('Optionally specify the context - the long Item Id for which the task will be executed. You can then use {id..............} and other aliases of the item in the task. The id of item could be also obtained in variable {var:aa_event_for}. For "event" tasks (Item updated/new) is always filled with id of modified item.')),
         ];
     }
 
@@ -72,27 +72,30 @@ class AA_Plannedtask extends AA_Object implements LaterInterface, AA\Util\NamedI
      * @inheritDoc
      * needed as title to Alias manager page /modules/site/aliases.php
      */
-    public static function name(): string {
+    public static function name(): string
+    {
         return _m('Planned tasks');
     }
 
     /**
      * @inheritDoc
      */
-    public static function description(): string {
+    public static function description(): string
+    {
         return '';
     }
 
     /** @inheritDoc */
-    protected static function getAdminUrlTemplate(): string {
+    protected static function getAdminUrlTemplate(): string
+    {
         return get_admin_url('se_tasks.php', ['id=_#AA_ID___','module_id=_#AA_OWNER']);
     }
 
     /** Manager top HTML  */
     protected static function getManagerTopHtml($fields): string
     {
-        return _m('Current time on server') . ' ' . date('Y-m-d H:i') .
-            '
+        return _m('Current time on server') . ' ' . date('Y-m-d H:i')
+            . '
           <table>
             <thead>
             <tr>
@@ -109,10 +112,10 @@ class AA_Plannedtask extends AA_Object implements LaterInterface, AA\Util\NamedI
         return '
             <tr>
               <td><input name="chb[x_#AA_ID___]" value="" type="checkbox"></td>
-              <td style="white-space:nowrap;">' .
-            $buttons['Edit'].' '.
-            a_href(AA_Log::getAdminUrl('', 'AA_Plannedtask:_#AA_ID___'), _m('Log'), ['class' => 'aa-button-show']) . ' ' .
-            $buttons['DeleteObject'].' </td>
+              <td style="white-space:nowrap;">'
+            . $buttons['Edit'] . ' '
+            . a_href(AA_Log::getAdminUrl('', 'AA_Plannedtask:_#AA_ID___'), _m('Log'), ['class' => 'aa-button-show']) . ' '
+            . $buttons['DeleteObject'] . ' </td>
               <td>_#AA_NAME_</td>
               <td>_#EVENT___</td>
               <td>_#TIME____<br>{ifeq:{_#SHIFT___}:::0::+_#1s}</td>
@@ -126,25 +129,26 @@ class AA_Plannedtask extends AA_Object implements LaterInterface, AA\Util\NamedI
             ';
     }
 
-    function nexttime(): int
+    public function nexttime(): int
     {
         // every 5 min
         if (!strlen($time = trim($this->getProperty('time')))) {
             return 0;
         }
-        return strtotime($time) + (int)$this->getProperty('shift');
+        return strtotime($time) + (int) $this->getProperty('shift');
     }
 
     /** Implement internal aliases for Admin interface Such aliases then could be called as {internal:AA_Plannedtask:lastrun:...},
      * @implements InternalExpandInterface::internal_expand()
      */
-    static function internal_expand(?AA_Content $content, ...$params): string {
+    public static function internal_expand(?AA_Content $content, ...$params): string
+    {
         [$info] = $params;
         if ($task_id = $content?->getId()) {
             switch ($info) {
                 case 'scheduledto':
                     $task = Toexecute::scheduledTask(self::toexecuteSelector($task_id));
-                    return '<span title="task.id:'.$task['id'].'">'.($task['execute_after'] ? date('Y-m-d H:i:s', $task['execute_after']) : '--').'</span>';
+                    return '<span title="task.id:' . $task['id'] . '">' . ($task['execute_after'] ? date('Y-m-d H:i:s', $task['execute_after']) : '--') . '</span>';
                 case 'computedtime':
                     $task = AA_Object::load($task_id, 'AA_Plannedtask');
                     $time = $task->nexttime();
@@ -185,29 +189,32 @@ class AA_Plannedtask extends AA_Object implements LaterInterface, AA\Util\NamedI
      * @param string $id
      * @return string
      */
-    static function toexecuteSelector($id): string {
+    public static function toexecuteSelector($id): string
+    {
         return "Plannedtask_$id";
     }
 
     /** method called after save */
-    function aftersave(): void
+    public function aftersave(): void
     {
-        $toexecute = new Toexecute;
+        $toexecute = new Toexecute();
         $toexecute->cancel_all(self::toexecuteSelector($this->getId()));
         $this->schedule();
     }
 
     /** check if the task is scheduled and if not - schedule it for future execution */
-    function schedule($force_time = null): string {
+    public function schedule($force_time = null): string
+    {
         $time = is_null($force_time) ? $this->nexttime() : $force_time;
         if ($time >= time()) {
-            $toexecute = new Toexecute;
+            $toexecute = new Toexecute();
             $toexecute->laterOnce($this, [], self::toexecuteSelector($this->getId()), 100, $time);
         }
         return "$time>=" . time() . ' ';
     }
 
-    static function getForm($oid = null, $owner = null, $otype = null) {
+    public static function getForm($oid = null, $owner = null, $otype = null)
+    {
         $form = parent::getForm($oid, $owner, $otype);
         $next_time = DB_AA::select1('execute_after', "SELECT execute_after FROM `toexecute`", [['selector', "Plannedtask_$oid"]]);
         $next_time = $next_time ? date('Y-m-d H:i', $next_time) : _m('not scheduled, yet');
@@ -226,7 +233,7 @@ class AA_Plannedtask extends AA_Object implements LaterInterface, AA\Util\NamedI
             if (is_long_id($item_id)) {
                 $task->setProperty('item_id', $item_id);
             }
-            if (($shift = (int)$task->getProperty('shift')) === 0) {
+            if (($shift = (int) $task->getProperty('shift')) === 0) {
                 $task->toexecutelater();
             } else {
                 $task->schedule(time() + $shift);
@@ -239,7 +246,8 @@ class AA_Plannedtask extends AA_Object implements LaterInterface, AA\Util\NamedI
      * @param string $event_id
      * @return AA_Plannedtask[]
      */
-    public static function getModuleTasks($module_id, $event_id): array {
+    public static function getModuleTasks($module_id, $event_id): array
+    {
         $aa_set = new AA_Set();
         $aa_set->setModules([$module_id]);
         $aa_set->addCondition(new AA_Condition('event', '==', $event_id));
@@ -255,7 +263,3 @@ class AA_Plannedtask extends AA_Object implements LaterInterface, AA\Util\NamedI
     }
 
 }
-
-
-
-

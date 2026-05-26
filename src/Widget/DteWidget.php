@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: honzama
@@ -7,6 +8,7 @@
  */
 
 namespace AA\Widget;
+
 use AA\FormArray;
 use AA_Content;
 use AA_Property;
@@ -38,7 +40,8 @@ class DteWidget extends Widget
      *  Used parameter format (in fields.input_show_func table)
      * @return array
      */
-    public static function getClassProperties(): array {
+    public static function getClassProperties(): array
+    {
         return Widget::propertiesShop(['start_year', 'end_year', 'relative', 'show_time']);
     }
 
@@ -52,9 +55,10 @@ class DteWidget extends Widget
      *  @return array
      *  @throws Exception
      */
-    function _getRawHtml(AA_Property $aa_property, AA_Content $content, string $type = 'normal'): array {
+    public function _getRawHtml(AA_Property $aa_property, AA_Content $content, string $type = 'normal'): array
+    {
         // time parameter==date or all is totally unset - use alternative
-        if (($this->getProperty('show_time',0)==2) || (!$this->getProperty('relative',0) && !$this->getProperty('start_year',0) && !$this->getProperty('end_year',0) && !$this->getProperty('show_time',0)))  {
+        if (($this->getProperty('show_time', 0) == 2) || (!$this->getProperty('relative', 0) && !$this->getProperty('start_year', 0) && !$this->getProperty('end_year', 0) && !$this->getProperty('show_time', 0))) {
             return $this->_getRawHtml_dateinput($aa_property, $content, $type);
         }
 
@@ -69,8 +73,8 @@ class DteWidget extends Widget
 
         $delim = '';
         $from_now = $this->getProperty('relative', 0);
-        $y_range_minus = $this->getProperty('start_year', $from_now ? 1  : (int)date('Y')-1);
-        $y_range_plus = $this->getProperty('end_year',    $from_now ? 10 : (int)date('Y')+10);
+        $y_range_minus = $this->getProperty('start_year', $from_now ? 1 : (int) date('Y') - 1);
+        $y_range_plus = $this->getProperty('end_year', $from_now ? 10 : (int) date('Y') + 10);
         $display_time = $this->getProperty('show_time', 0);
 
         $datectrl = new datectrl('', $y_range_minus, $y_range_plus, $from_now, $display_time, $aa_property->isRequired());
@@ -106,7 +110,7 @@ class DteWidget extends Widget
      *  @return array
      *  @throws Exception
      */
-    function _getRawHtml_dateinput($aa_property, $content, $type = 'normal'): array
+    public function _getRawHtml_dateinput($aa_property, $content, $type = 'normal'): array
     {
         $base_name = FormArray::getName4Form($aa_property->getId(), $content, $this->item_index);
         $base_id = FormArray::formName2Id($base_name);
@@ -119,10 +123,10 @@ class DteWidget extends Widget
 
         $from_now = $this->getProperty('relative', 0);
         if ($start_year = $this->getProperty('start_year', 0)) {
-            $attrs['min'] = $from_now ? ((date('Y') - $start_year) . '-01-01') : ( is_numeric($start_year) ? "$start_year-01-01" : date('Y-m-d', strtotime($start_year)));
+            $attrs['min'] = $from_now ? ((date('Y') - $start_year) . '-01-01') : (is_numeric($start_year) ? "$start_year-01-01" : date('Y-m-d', strtotime($start_year)));
         }
         if ($end_year  = $this->getProperty('end_year', 0)) {
-            $attrs['max'] = $from_now ? ((date('Y') + $end_year) . '-12-31') : ( is_numeric($end_year) ? "$end_year-12-31" : date('Y-m-d', strtotime($end_year)));
+            $attrs['max'] = $from_now ? ((date('Y') + $end_year) . '-12-31') : (is_numeric($end_year) ? "$end_year-12-31" : date('Y-m-d', strtotime($end_year)));
         }
         // $display_time = $this->getProperty('show_time', 0);
 
@@ -141,7 +145,7 @@ class DteWidget extends Widget
         for ($i = 0; $i < $count; ++$i) {
             $input_name = $base_name_add . "[i][$i]";
             $input_id   = FormArray::formName2Id($input_name);
-            $val_attr   = ($val = $value->getValue($i)) ? date('Y-m-d',$val) : '';
+            $val_attr   = ($val = $value->getValue($i)) ? date('Y-m-d', $val) : '';
 
             $curr_attrs = $attrs;
 
@@ -154,7 +158,7 @@ class DteWidget extends Widget
                     $curr_attrs['min'] = $val_attr;
                 }
             }
-            $attr_string = implode(' ', array_map(fn ($k, $v) => "$k=\"$v\"", array_keys($attrs), $curr_attrs));
+            $attr_string = implode(' ', array_map(fn($k, $v) => "$k=\"$v\"", array_keys($attrs), $curr_attrs));
 
             $widget    .= $delim . "\n<input $attr_string name=\"$input_name\" value=\"$val_attr\" id=\"$input_id\"$widget_add{$required}>";
             $delim      = '<br>';
@@ -183,28 +187,28 @@ class DteWidget extends Widget
         $values = [];
 
         // special case - we use <input type=date
-        $input_date = (array)$data4field['i'];
+        $input_date = (array) $data4field['i'];
         if ($input_date) {
             foreach ($input_date as $dte) {
                 $values[] = strtotime($dte);
             }
         } else {
-            $years = (array)$data4field['y'];
-            $months = (array)$data4field['m'];
-            $days = (array)$data4field['d'];
-            $times = (array)$data4field['t'];
+            $years = (array) $data4field['y'];
+            $months = (array) $data4field['m'];
+            $days = (array) $data4field['d'];
+            $times = (array) $data4field['t'];
 
             // date could be also multivalue
             $max = max(count($years), count($months), count($days), count($times));
 
             for ($i = 0; $i < $max; ++$i) {
                 // no date
-                if (isset($years[$i]) && !(int)$years[$i]) {
+                if (isset($years[$i]) && !(int) $years[$i]) {
                     $values[] = 0;
                     continue;
                 }
                 // check if anything is filled
-                if (!(int)$years[$i] && !(int)$months[$i] && !(int)$days[$i] && !$times[$i]) {
+                if (!(int) $years[$i] && !(int) $months[$i] && !(int) $days[$i] && !$times[$i]) {
                     continue;
                 }
                 $year = $years[$i] ?: date('Y'); // specified year or current
@@ -212,7 +216,7 @@ class DteWidget extends Widget
                 $day = $days[$i] ?: 1;         // specified day or 1st
                 $time = explode(':', $times[$i] ?: "0:0:0");         // specified time or midnight
 
-                $values[] = mktime($time[0], $time[1], $time[2], (int)$month, (int)$day, (int)$year);
+                $values[] = mktime($time[0], $time[1], $time[2], (int) $month, (int) $day, (int) $year);
             }
         }
 
@@ -222,7 +226,8 @@ class DteWidget extends Widget
     /**
      * @inheritDoc
      */
-    public static function description(): string {
+    public static function description(): string
+    {
         return ''; // TODO: Implement description() method.
     }
 }

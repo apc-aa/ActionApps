@@ -1,4 +1,5 @@
 <?php
+
 /**
  *
  * PHP version 8.2+
@@ -18,6 +19,4 @@ namespace AA\Mail;
  * Recoverable SMTP failure (4xx, network blip, TLS hiccup).
  * Callers should re-queue the message rather than drop it.
  */
-class TransientSmtpException extends SmtpException {
-
-}
+class TransientSmtpException extends SmtpException {}

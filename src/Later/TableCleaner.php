@@ -1,4 +1,5 @@
 <?php
+
 /**
  *
  * PHP version 7.2+
@@ -34,7 +35,7 @@ class TableCleaner
     protected $table;
     protected $where;
 
-    function __construct(string $table, array $where)
+    public function __construct(string $table, array $where)
     {
         $this->table = $table;
         $this->where = $where;
@@ -47,7 +48,7 @@ class TableCleaner
     {
         $ret = 'Err - wrong params';
         if ($this->table && $this->where) {
-            if ( ($rows = DB_AA::delete($this->table, $this->where)) === false) {
+            if (($rows = DB_AA::delete($this->table, $this->where)) === false) {
                 $ret = 'Err - SQL delete';
             } else {
                 $ret = "OK - $rows deleted in $this->table";

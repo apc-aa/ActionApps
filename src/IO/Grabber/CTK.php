@@ -1,4 +1,5 @@
 <?php
+
 /**
  *
  * PHP version 7.2+
@@ -31,36 +32,37 @@ use AA_Content;
 use AA_Value;
 use ItemContent;
 
-
 /** AA\IO\AbstractGrabber\AbstractGrabber\CTK - Imports items from CTK xml export
  */
 class CTK extends AbstractGrabber
 {
-
     protected $file;
     /** list if files to grab - internal array */
     private $_items;
 
-    function __construct($file) {
+    public function __construct($file)
+    {
         $this->file = $file;
     }
 
     /** Name of the grabber - used for grabber selection box */
-    public static function name(): string {
+    public static function name(): string
+    {
         return _m('CTK - xml import');
     }
 
     /** Description of the grabber - used as help text for the users.
      *  Description is in the HTML
      */
-    public static function description(): string {
+    public static function description(): string
+    {
         return _m('Process import xml file exported from CTK');
     }
 
     /** Possibly preparation of grabber - it is called directly before getItem()
      *  method is called - it means "we are going really to grab the data
      */
-    function prepare(): void
+    public function prepare(): void
     {
         #$data = file_get_contents($this->file);
         #$xml  = simplexml_load_string($data);
@@ -74,7 +76,7 @@ class CTK extends AbstractGrabber
     }
 
     /** Method called by the AA\IO\Saver to get next item from the data input */
-    function getItem(): ?AA_Content
+    public function getItem(): ?AA_Content
     {
         if (!($polozka = current($this->_items))) {
             return null;
@@ -83,9 +85,9 @@ class CTK extends AbstractGrabber
 
         $domicil = '';
         foreach ($polozka->DescriptiveMetadata->Location->Property as $prop) {
-            switch ((string)$prop['FormalName']) { // Get attributes as element indices
+            switch ((string) $prop['FormalName']) { // Get attributes as element indices
                 case 'City':
-                    $domicil = (string)$prop['Value'];
+                    $domicil = (string) $prop['Value'];
                     break;
             }
         }
@@ -94,37 +96,35 @@ class CTK extends AbstractGrabber
         foreach ($polozka->ContentItem->DataContent->body->p as $f) {
             $ftext .= $f->asXML() . "\n";
         }
-	// cisteni kodu
-	$EraseCTKStrings = ['<span class="linkTagNoBg">', '<i class="icon-ico-arrow-up icon"/></span>'];
-	$ftext = str_replace($EraseCTKStrings,'',$ftext);
+        // cisteni kodu
+        $EraseCTKStrings = ['<span class="linkTagNoBg">', '<i class="icon-ico-arrow-up icon"/></span>'];
+        $ftext = str_replace($EraseCTKStrings, '', $ftext);
 
         $item = new ItemContent();
         $item->setItemID(new_id());
-/* utf-8 verze */
-        $item->setValue('headline........', (string)$polozka->NewsComponent->NewsLines->Headline);      // Název
+        /* utf-8 verze */
+        $item->setValue('headline........', (string) $polozka->NewsComponent->NewsLines->Headline);      // Název
         $item->setValue('place..........3', mb_strtoupper($domicil, 'UTF-8'));                          // Domicil
         $item->setValue('publish_date....', strtotime($polozka->NewsManagement->ThisRevisionCreated));                                  // Datum zveřejnění - 20160127T145301+01:00
-//      $item->setValue('expiry_date.....', strtotime($polozka->NewsManagement->ThisRevisionCreated)+3600*24*365);                      // Datum expirace - rok po zveřejnění - zruseno dle emailu 7.12.2016
+        //      $item->setValue('expiry_date.....', strtotime($polozka->NewsManagement->ThisRevisionCreated)+3600*24*365);                      // Datum expirace - rok po zveřejnění - zruseno dle emailu 7.12.2016
         $item->setValue('expiry_date.....', '2145913199');                                                                              // Nekonecno
         $item->setAaValue('full_text......1', new AA_Value($ftext, FLAG_HTML));                         // Plný text
         $item->setValue('source.........1', 'ČTK');                                                                                     // Zdroj
         $item->setValue('source_href.....', 'https://www.ctk.cz/');                                                                       // URL zdroje
         $item->setValue('status_code.....', 2);                                                                                         // Do zasobniku
-/* windows-1250 verze */
-/*
-        $item->setValue('headline........', iconv('UTF-8', 'windows-1250', (string)$polozka->NewsComponent->NewsLines->Headline));      // Název
-        $item->setValue('place..........3', iconv('UTF-8', 'windows-1250', mb_strtoupper($domicil, 'UTF-8')));                          // Domicil
-        $item->setValue('publish_date....', strtotime($polozka->NewsManagement->ThisRevisionCreated));                                  // Datum zveřejnění - 20160127T145301+01:00
-//      $item->setValue('expiry_date.....', strtotime($polozka->NewsManagement->ThisRevisionCreated)+3600*24*365);                      // Datum expirace - rok po zveřejnění - zruseno dle emailu 7.12.2016
-        $item->setValue('expiry_date.....', '2145913199');                                                                              // Nekonecno
-        $item->setAaValue('full_text......1', new AA_Value(iconv('UTF-8', 'windows-1250', $ftext), FLAG_HTML));                         // Plný text
-        $item->setValue('source.........1', iconv('UTF-8', 'windows-1250', 'ČTK'));                                                                                     // Zdroj
-        $item->setValue('source_href.....', 'http://www.ctk.cz');                                                                       // URL zdroje
-        $item->setValue('status_code.....', 2);                                                                                         // Do zasobniku
-*/
+        /* windows-1250 verze */
+        /*
+                $item->setValue('headline........', iconv('UTF-8', 'windows-1250', (string)$polozka->NewsComponent->NewsLines->Headline));      // Název
+                $item->setValue('place..........3', iconv('UTF-8', 'windows-1250', mb_strtoupper($domicil, 'UTF-8')));                          // Domicil
+                $item->setValue('publish_date....', strtotime($polozka->NewsManagement->ThisRevisionCreated));                                  // Datum zveřejnění - 20160127T145301+01:00
+        //      $item->setValue('expiry_date.....', strtotime($polozka->NewsManagement->ThisRevisionCreated)+3600*24*365);                      // Datum expirace - rok po zveřejnění - zruseno dle emailu 7.12.2016
+                $item->setValue('expiry_date.....', '2145913199');                                                                              // Nekonecno
+                $item->setAaValue('full_text......1', new AA_Value(iconv('UTF-8', 'windows-1250', $ftext), FLAG_HTML));                         // Plný text
+                $item->setValue('source.........1', iconv('UTF-8', 'windows-1250', 'ČTK'));                                                                                     // Zdroj
+                $item->setValue('source_href.....', 'http://www.ctk.cz');                                                                       // URL zdroje
+                $item->setValue('status_code.....', 2);                                                                                         // Do zasobniku
+        */
         return $item;
     }
 
 }
-
-

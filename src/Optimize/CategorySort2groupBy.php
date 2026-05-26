@@ -5,26 +5,29 @@ namespace AA\Optimize;
 /** Testing if relation table contain records, where values in both columns are
  *  identical (which was bug fixed in Jan 2006)
  */
-class CategorySort2groupBy extends AbstractOptimize {
-
+class CategorySort2groupBy extends AbstractOptimize
+{
     /** Name function
      * @return string - name
      */
-    public static function name(): string {
+    public static function name(): string
+    {
         return _m("Convert slice.category_sort to slice.group_by");
     }
 
     /** Description function
      * @return string - description
      */
-    public static function description(): string {
+    public static function description(): string
+    {
         return _m("In older version of AA we used just category fields for grouping items. Now it is universal, so boolean category_sort is not enough. We use newer group_by field for quite long time s most probably all your slices are already conevrted.");
     }
 
     /** Test function
      * @return bool
      */
-    public function test(): bool {
+    public function test(): bool
+    {
         $SQL = "SELECT name FROM slice WHERE category_sort>0 AND ((group_by IS NULL) OR (group_by=''))";
         $slice_names = GetTable2Array($SQL, '', 'name');
         if ($slice_names && count($slice_names)) {
@@ -39,7 +42,8 @@ class CategorySort2groupBy extends AbstractOptimize {
      * runs a series of SQL commands
      * @return bool
      */
-    public function repair(): bool {
+    public function repair(): bool
+    {
         $db = getDb();
         $SQL = "SELECT id FROM slice WHERE category_sort>0 AND ((group_by IS NULL) OR (group_by=''))";
         $slices = GetTable2Array($SQL, '', 'id');

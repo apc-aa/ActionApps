@@ -3,15 +3,22 @@
 namespace AA\Optimize;
 
 /** Recreates the new field types to be used as templates (in "ActionApps Core" slice) */
-class AddDateFieldTemplate extends \AA\Optimize\AddSeoFieldTemplate {
-
-    public static function name(): string { return _m("Add date field template"); }
+class AddDateFieldTemplate extends \AA\Optimize\AddSeoFieldTemplate
+{
+    public static function name(): string
+    {
+        return _m("Add date field template");
+    }
 
     /** the field identifier  */
-    protected function fieldType(): string { return 'date'; }
+    protected function fieldType(): string
+    {
+        return 'date';
+    }
 
     /** field settings different from standard field setting  */
-    protected function fieldSpecialSetting(): array {
+    protected function fieldSpecialSetting(): array
+    {
         return [
             'input_default'     => 'now',
             'input_show_func'   => 'dte::::2',

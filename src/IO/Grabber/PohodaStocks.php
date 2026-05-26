@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: honzama
@@ -17,25 +18,27 @@ use ItemContent;
  */
 class PohodaStocks extends AbstractGrabber
 {
-
     protected $file;
     /** list if files to grab - internal array */
     private $_items;
     private string $_last_store_mode;
 
-    function __construct($file) {
+    public function __construct($file)
+    {
         $this->file = $file;
     }
 
     /** Name of the grabber - used for grabber selection box */
-    public static function name(): string {
+    public static function name(): string
+    {
         return _m('Pohoda (www.stormware.cz) - Stocks');
     }
 
     /** Description of the grabber - used as help text for the users.
      *  Description is in HTML
      */
-    public static function description(): string {
+    public static function description(): string
+    {
         return _m('Imports stock from POHODA accounting system');
     }
 
@@ -51,7 +54,7 @@ class PohodaStocks extends AbstractGrabber
     /** Possibly preparation of grabber - it is called directly before getItem()
      *  method is called - it means "we are going really to grab the data
      */
-    function prepare(): void
+    public function prepare(): void
     {
         $data = file_get_contents($this->file);
         // remove namespaces (it is pain to work with it in simple XML interface)
@@ -63,7 +66,7 @@ class PohodaStocks extends AbstractGrabber
             '<stk:',
             '</stk:',
             '<typ:',
-            '</typ:'
+            '</typ:',
         ], ['<rsp_', '</rsp_', '<lst_', '</lst_', '<stk_', '</stk_', '<typ_', '</typ_'], $data);
         $xml = simplexml_load_string($data);
 
@@ -72,12 +75,12 @@ class PohodaStocks extends AbstractGrabber
             $this->_items[] = $v->stk_stockHeader;
         }
 
-//        $this->_items = $xml->rsp_responsePackItem->lst_listStock->lst_stock;
-//       huhl($this->_items);
+        //        $this->_items = $xml->rsp_responsePackItem->lst_listStock->lst_stock;
+        //       huhl($this->_items);
     }
 
     /** Method called by the AA\IO\Saver to get next item from the data input */
-    function getItem(): ?AA_Content
+    public function getItem(): ?AA_Content
     {
         $VAT_RATES = ['none' => 0, 'low' => 10, 'high' => 20];
 
@@ -90,16 +93,16 @@ class PohodaStocks extends AbstractGrabber
         $zids = $set->query();
 
         $item = new ItemContent();
-        $item->setValue('source.........1', (string)$polozka->stk_name);
-        $item->setValue('source.........2', (string)$polozka->stk_count);               // stav zasob
-        $item->setValue('source.........3', (string)$polozka->stk_countReceivedOrders); // objednavky
-        $item->setValue('source.........4', (string)$polozka->stk_reservation);         // rezervace
-        $item->setValue('source.........5', (string)$polozka->stk_sellingPrice);        // cena bez DPH
+        $item->setValue('source.........1', (string) $polozka->stk_name);
+        $item->setValue('source.........2', (string) $polozka->stk_count);               // stav zasob
+        $item->setValue('source.........3', (string) $polozka->stk_countReceivedOrders); // objednavky
+        $item->setValue('source.........4', (string) $polozka->stk_reservation);         // rezervace
+        $item->setValue('source.........5', (string) $polozka->stk_sellingPrice);        // cena bez DPH
 
-        $dan = $VAT_RATES[(string)$polozka->stk_sellingRateVAT];
-        $cena = round((string)$polozka->stk_sellingPrice * (($dan + 100.0) / 100.0), 1);
-        $cena = ((float)round($cena) === (float)$cena) ? round($cena) : $cena;
-        $jedn = (string)$polozka->stk_unit;
+        $dan = $VAT_RATES[(string) $polozka->stk_sellingRateVAT];
+        $cena = round((string) $polozka->stk_sellingPrice * (($dan + 100.0) / 100.0), 1);
+        $cena = ((float) round($cena) === (float) $cena) ? round($cena) : $cena;
+        $jedn = (string) $polozka->stk_unit;
 
         $item->setValue('number..........', $dan);         // DPH
 
@@ -118,8 +121,8 @@ class PohodaStocks extends AbstractGrabber
         } else {
             $this->_last_store_mode = 'insert';
             $item_id = new_id();
-            $item->setValue('number.........1', (string)$polozka->stk_PLU);
-            $item->setValue('headline........', (string)$polozka->stk_name);
+            $item->setValue('number.........1', (string) $polozka->stk_PLU);
+            $item->setValue('headline........', (string) $polozka->stk_name);
             $item->setValue('status_code.....', '2');  // nove importujeme do zasobniku
         }
         $item->setItemID($item_id);

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: honzama
@@ -7,6 +8,7 @@
  */
 
 namespace AA\Widget;
+
 use AA\FormArray;
 use AA_Content;
 use AA_Property;
@@ -42,7 +44,8 @@ class RioWidget extends Widget
      *  Used parameter format (in fields.input_show_func table)
      * @return array
      */
-    public static function getClassProperties(): array {
+    public static function getClassProperties(): array
+    {
         return Widget::propertiesShop(['const', 'columns', 'move_right', 'slice_field', 'bin_filter', 'filter_conds', 'sort_by', 'additional_slice_pwd', 'const_arr', 'other_option']);
     }
 
@@ -58,8 +61,8 @@ class RioWidget extends Widget
         $input_text = '';
         if ($other) {
             // Update the radio's value AND dispatch change so AA_SendWidgetLive (live mode) persists the typed text.
-            $input_text = "<span class=\"$class\"><input id=\"{$input_id}txt\" onchange=\"var r=document.getElementById('{$input_id}');r.value=this.value;r.dispatchEvent(new Event('change'))\" placeholder=\"".safe($option['k']).'" value="'
-                .($option['mis'] ? safe($option['k']) : '').'"';
+            $input_text = "<span class=\"$class\"><input id=\"{$input_id}txt\" onchange=\"var r=document.getElementById('{$input_id}');r.value=this.value;r.dispatchEvent(new Event('change'))\" placeholder=\"" . safe($option['k']) . '" value="'
+                . ($option['mis'] ? safe($option['k']) : '') . '"';
             if (!$option['mis']) {
                 $input_text .= ' style="display:none;">';
             }
@@ -67,7 +70,8 @@ class RioWidget extends Widget
         return $input_text;
     }
 
-    public static function generateJS4OtherOption(string $tab_selector, string $opt_selector): string {
+    public static function generateJS4OtherOption(string $tab_selector, string $opt_selector): string
+    {
         return <<<JS
            document.querySelectorAll('{$tab_selector}').forEach((rb) => { rb.addEventListener('change', (event) => {  // must be set on every radio button - change is not fired on uncheck 
                const last = document.querySelector('{$opt_selector}[name="'+event.target.name+'"]');
@@ -80,12 +84,13 @@ class RioWidget extends Widget
     }
 
     /** script to run after the page DOM is loaded */
-    protected function requireRun($aa_property, $winfo): string {
+    protected function requireRun($aa_property, $winfo): string
+    {
         return $this->getProperty('other_option', false) ? self::generateJS4OtherOption('.aa-tab-rio-other input[type="radio"]', '.aa-rio-other-option input[type="radio"]') : '';
     }
 
     /** Returns one checkbox tag - Used in removed inputMultiChBox */
-    function getRadioButtonTag($option, $input_name, $input_id, $add = '', $other = false): string
+    public function getRadioButtonTag($option, $input_name, $input_id, $add = '', $other = false): string
     {
         $class = $other ? ' class=aa-rio-other-option' : ($option['mis'] ? ' class=aa-missing-option' : '');
         $input_text = self::getOtherInputText($other, $input_id, $option, 'aa-rio-other-txt');
@@ -107,7 +112,8 @@ class RioWidget extends Widget
      *  @return array
      *  @throws Exception
      */
-    function _getRawHtml(AA_Property $aa_property, AA_Content $content, string $type = 'normal'): array {
+    public function _getRawHtml(AA_Property $aa_property, AA_Content $content, string $type = 'normal'): array
+    {
         $base_name = FormArray::getName4Form($aa_property->getId(), $content, $this->item_index);
         $base_id = FormArray::formName2Id($base_name);
 
@@ -122,17 +128,17 @@ class RioWidget extends Widget
         $input_name = $base_name . "[]";
         $input_id = FormArray::formName2Id($input_name);
         $selected = $content->getAaValue($aa_property->getId());
-        $options = $this->getOptions($selected, $content, (bool)$this->getProperty('use_name', false));
+        $options = $this->getOptions($selected, $content, (bool) $this->getProperty('use_name', false));
         $htmlopt = [];
         for ($i = 0, $ino = count($options); $i < $ino; ++$i) {
-            if ($other && ($i === $ino-2) && $options[$ino-1]['mis']) {  // special case - the filled Other option - use mis value added as last option and name from current option
-                $opt = $options[$ino-1];
+            if ($other && ($i === $ino - 2) && $options[$ino - 1]['mis']) {  // special case - the filled Other option - use mis value added as last option and name from current option
+                $opt = $options[$ino - 1];
                 $opt['v'] = $options[$i]['v'];
                 $htmlopt[] = $this->getRadioButtonTag($opt, $input_name, $input_id . $i, "$widget_add $required", true);
                 break;
             }
 
-            $htmlopt[] = $this->getRadioButtonTag($options[$i], $input_name, $input_id.$i, "$widget_add $required", ($other && $i === $ino - 1));
+            $htmlopt[] = $this->getRadioButtonTag($options[$i], $input_name, $input_id . $i, "$widget_add $required", ($other && $i === $ino - 1));
             // $required     = ''; // for radio it could be in all options
         }
 
@@ -143,7 +149,8 @@ class RioWidget extends Widget
     /**
      * @inheritDoc
      */
-    public static function description(): string {
+    public static function description(): string
+    {
         return ''; // TODO: Implement description() method.
     }
 }

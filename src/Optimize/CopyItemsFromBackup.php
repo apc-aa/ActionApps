@@ -6,27 +6,35 @@ use AA;
 use AA\IO\DB\DB_AA;
 
 /** Whole pagecache will be invalidated and deleted */
-class CopyItemsFromBackup extends AbstractOptimize {
-
+class CopyItemsFromBackup extends AbstractOptimize
+{
     /** Name function
      * @return string - a name
      */
-    public static function name(): string {
+    public static function name(): string
+    {
         return _m("Undelete items from backup tables");
     }
 
     /** Description function
      * @return string - a description
      */
-    public static function description(): string {
+    public static function description(): string
+    {
         return _m("Copy data from content2 and item2 tables for slice XY which was deleted in item and content table. Used for recovery content table on Ecn server. Not useful for any other users, I think.");
     }
 
     /** implemented actions within this class */
-    public static function actions(): array { return ['test', 'repair']; }
+    public static function actions(): array
+    {
+        return ['test', 'repair'];
+    }
 
     /** @inheritDoc */
-    public static function types(): array { return ['private_fix']; }
+    public static function types(): array
+    {
+        return ['private_fix'];
+    }
 
     protected function getDeletedItemIds(string $module_id, string $item_table_bck): array
     {
@@ -42,14 +50,15 @@ class CopyItemsFromBackup extends AbstractOptimize {
         return $diff_ids;
     }
 
-    protected function copyFomBackup(array $ids, string $item_table_bck, string $content_table_bck, bool $delete=true): bool {
+    protected function copyFomBackup(array $ids, string $item_table_bck, string $content_table_bck, bool $delete = true): bool
+    {
         if (!$ids || !DB_AA::exists_table($item_table_bck) || !DB_AA::exists_table($content_table_bck)) {
             return false;
         }
 
         if ($delete) {
-            $deleted_item    = DB_AA::delete('item',[['id',$ids,'l']]);
-            $deleted_content = DB_AA::delete('content',[['item_id',$ids,'l']]);
+            $deleted_item    = DB_AA::delete('item', [['id',$ids,'l']]);
+            $deleted_content = DB_AA::delete('content', [['item_id',$ids,'l']]);
         }
 
         $ins_item    = DB_AA::sql("INSERT INTO `item` SELECT `$item_table_bck`.* FROM `$item_table_bck`", [['id',$ids,'l']]);
@@ -62,7 +71,8 @@ class CopyItemsFromBackup extends AbstractOptimize {
 
     /** Test function - @return true if everything is OK - no action needed
      */
-    public function test(): bool {
+    public function test(): bool
+    {
         $diff_ids = $this->getDeletedItemIds('6cf969ebbf5d8794f1304e55744cf0d7', 'item20240109');
         $this->message(_m('Deleted items to be recreated: %1.', [count($diff_ids)]));
         return true;
@@ -71,7 +81,8 @@ class CopyItemsFromBackup extends AbstractOptimize {
     /**
      * @return bool
      */
-    public function repair(): bool {
+    public function repair(): bool
+    {
         $diff_ids = $this->getDeletedItemIds(AA::$module_id, 'item20240109');
         $this->copyFomBackup($diff_ids, 'item20240109', 'content20240109');
         return true;

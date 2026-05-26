@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: honzama
@@ -8,13 +9,12 @@
 
 namespace AA\Util;
 
-
-
 use AA;
 use ArrayAccess;
 use Countable;
 
-class Searchfields implements \IteratorAggregate, ArrayAccess, Countable {
+class Searchfields implements \IteratorAggregate, ArrayAccess, Countable
+{
     use ArrTrait;
 
     /** @var array fields - arr is used also by ArrTrait */
@@ -28,7 +28,7 @@ class Searchfields implements \IteratorAggregate, ArrayAccess, Countable {
         'table'      => true,
         'search_pri' => true,
         'order_pri'  => true,
-        'opt_group'  => true
+        'opt_group'  => true,
     ];
 
     /**
@@ -36,7 +36,8 @@ class Searchfields implements \IteratorAggregate, ArrayAccess, Countable {
      *
      * @return Searchfields
      */
-    public static function factoryFromProperties($properties): Searchfields {
+    public static function factoryFromProperties($properties): Searchfields
+    {
         $i            = 0;
         $searchfields = new self();
 
@@ -59,7 +60,7 @@ class Searchfields implements \IteratorAggregate, ArrayAccess, Countable {
                 case 'numconstants':
                     break;
 
-                // case 'string':
+                    // case 'string':
                 default:
                     $field_type = 'text';
             }
@@ -83,15 +84,15 @@ class Searchfields implements \IteratorAggregate, ArrayAccess, Countable {
      * @param int    $order_pri orderbar  priority (0 = "do not show in orderbar")
      * @param string $opt_group
      */
-    public function add( $id, $name, $field, $operators='text', $table='', $search_pri=0, $order_pri=0, $opt_group=''): void
+    public function add($id, $name, $field, $operators = 'text', $table = '', $search_pri = 0, $order_pri = 0, $opt_group = ''): void
     {
         if (!$id) {
             return;
         }
-        $this->arr[$id] = ['name' =>$name, 'field' =>$field, 'operators' =>$operators, 'table' =>$table, 'search_pri' =>$search_pri, 'order_pri' =>$order_pri, 'opt_group' =>$opt_group];
+        $this->arr[$id] = ['name' => $name, 'field' => $field, 'operators' => $operators, 'table' => $table, 'search_pri' => $search_pri, 'order_pri' => $order_pri, 'opt_group' => $opt_group];
     }
 
-    public function addArray( $id, array $fld): void
+    public function addArray($id, array $fld): void
     {
         if (!$id) {
             return;
@@ -105,7 +106,7 @@ class Searchfields implements \IteratorAggregate, ArrayAccess, Countable {
      * @param bool $add_allnum
      * @return array
      */
-    public function getSearchArray($add_alltext=true, $add_allnum=true): array
+    public function getSearchArray($add_alltext = true, $add_allnum = true): array
     {
         return $this->generateArray('search', $add_alltext, $add_allnum);
     }
@@ -115,7 +116,7 @@ class Searchfields implements \IteratorAggregate, ArrayAccess, Countable {
      * @param bool $add_allnum
      * @return array
      */
-    public function getOperatorsArray($add_alltext=true, $add_allnum=true): array
+    public function getOperatorsArray($add_alltext = true, $add_allnum = true): array
     {
         return $this->generateArray('operators', $add_alltext, $add_allnum);
     }
@@ -131,12 +132,12 @@ class Searchfields implements \IteratorAggregate, ArrayAccess, Countable {
         // sort
         uasort($fields, [self::class, 'orderfields_cmp']);
         $last_pri = 0;
-        foreach ( $fields as $fid => $v) {
-            if ($v['order_pri'] > 0 ) {
+        foreach ($fields as $fid => $v) {
+            if ($v['order_pri'] > 0) {
                 // orderfields could be splited into groups
                 // one group is always with order_pri 0-999, 1000-1999, ...
-                if ( $last_pri && floor($last_pri/1000) !== floor($v['order_pri']/1000) ) {
-                    $order_fields['AA_OPTGROUP '.$last_pri] = ($v['opt_group'] ?: '---------------');
+                if ($last_pri && floor($last_pri / 1000) !== floor($v['order_pri'] / 1000)) {
+                    $order_fields['AA_OPTGROUP ' . $last_pri] = ($v['opt_group'] ?: '---------------');
                 }
                 $last_pri = $v['order_pri'];
                 $order_fields[$fid]     = $v['name'];
@@ -158,7 +159,7 @@ class Searchfields implements \IteratorAggregate, ArrayAccess, Countable {
      */
     public function getFieldnamesArray(): array
     {
-        return array_column($this->arr,'name');
+        return array_column($this->arr, 'name');
     }
 
     /**
@@ -167,7 +168,7 @@ class Searchfields implements \IteratorAggregate, ArrayAccess, Countable {
      * @param bool $add_allnum
      * @return array
      */
-    private function generateArray($type, $add_alltext=true, $add_allnum=true): array
+    private function generateArray($type, $add_alltext = true, $add_allnum = true): array
     {
         $search_fields    = [];
         $search_operators = [];
@@ -185,12 +186,12 @@ class Searchfields implements \IteratorAggregate, ArrayAccess, Countable {
 
         uasort($fields, [ self::class, 'searchfields_cmp']);
         $last_pri = 0;
-        foreach ( $fields as $fid => $v) {
-            if ($v['search_pri'] > 0 ) {           // not searchable fields
+        foreach ($fields as $fid => $v) {
+            if ($v['search_pri'] > 0) {           // not searchable fields
                 // searchfields could be splited into groups
                 // one group is always with search_pri 0-999, 1000-1999, ...
-                if ( $last_pri && floor($last_pri/1000) !== floor($v['search_pri']/1000) ) {
-                    $search_fields['AA_OPTGROUP '.$last_pri] = ($v['opt_group'] ?: '---------------');
+                if ($last_pri && floor($last_pri / 1000) !== floor($v['search_pri'] / 1000)) {
+                    $search_fields['AA_OPTGROUP ' . $last_pri] = ($v['opt_group'] ?: '---------------');
                     $search_operators[$fid] = 'text';
                 }
                 $last_pri = $v['search_pri'];
@@ -202,8 +203,9 @@ class Searchfields implements \IteratorAggregate, ArrayAccess, Countable {
         return ($type === 'search') ? $search_fields : $search_operators;
     }
 
-    public function containNumeric(): bool {
-        return in_array('numeric', array_column($this->arr,'operators'));
+    public function containNumeric(): bool
+    {
+        return in_array('numeric', array_column($this->arr, 'operators'));
     }
 
 

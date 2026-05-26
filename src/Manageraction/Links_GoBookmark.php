@@ -6,17 +6,17 @@ use AA\Manager;
 use zids;
 
 /**  */
-class Links_GoBookmark extends AbstractManageraction {
-
+class Links_GoBookmark extends AbstractManageraction
+{
     /** @inheritDoc */
-    function perform(Manager $manager, zids $item_zids, $action_param): string|false
+    public function perform(Manager $manager, zids $item_zids, $action_param): string|false
     {
         global $links_info;
 
         $start_id   = $links_info['start_id'];
         $start_path = GetCategoryPath($start_id);
 
-        switch ((string)$action_param) {
+        switch ((string) $action_param) {
             case '1':             // all links
                 $GLOBALS['r_state']['show_subtree']    = 1;
                 $GLOBALS['r_state']['cat_id']          = $start_id;

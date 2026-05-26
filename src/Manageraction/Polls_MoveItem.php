@@ -9,29 +9,31 @@ use zids;
 /** AA\Manageraction - Item manager actions. Just create new class and assign
  *  it to your manager
  */
-class Polls_MoveItem extends AbstractManageraction {
-
+class Polls_MoveItem extends AbstractManageraction
+{
     /** specifies, to which bin the move should be performed */
-    var $to_bin;
+    public $to_bin;
 
     /** Constructor - fills the information about the target bin */
-    function __construct($id, $to_bin) {
+    public function __construct($id, $to_bin)
+    {
         $this->to_bin = $to_bin;
         parent::__construct($id);
     }
 
     /** Name of this Manager's action */
-    public function getName(): string {
+    public function getName(): string
+    {
         return match ($this->to_bin) {
-                  1 => _m('Move to Active'),
-                  2 => _m('Move to Holding bin'),
-                  3 => _m('Move to Trash'),
+            1 => _m('Move to Active'),
+            2 => _m('Move to Holding bin'),
+            3 => _m('Move to Trash'),
             default => "",
         };
     }
 
     /** @inheritDoc */
-    function perform(Manager $manager, zids $item_zids, $action_param): string|false
+    public function perform(Manager $manager, zids $item_zids, $action_param): string|false
     {
         $SQL = "UPDATE polls SET status_code = '" . $this->to_bin . "' WHERE " . $item_zids->sqlin('id', true);
         DB_AA::sql($SQL);
@@ -44,7 +46,8 @@ class Polls_MoveItem extends AbstractManageraction {
      *
      * @return bool
      */
-    function isPerm4Action($manager):bool {
+    public function isPerm4Action($manager): bool
+    {
         $current_bin = $manager->getBin();
 
         switch ($this->to_bin) {

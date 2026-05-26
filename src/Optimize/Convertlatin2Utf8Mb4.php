@@ -7,26 +7,29 @@ use AA\IO\DB\DB_AA;
 /**
  *
  */
-class Convertlatin2Utf8Mb4 extends \AA\Optimize\Convert2utf8mb4 {
-
+class Convertlatin2Utf8Mb4 extends \AA\Optimize\Convert2utf8mb4
+{
     /** Name function
      * @return string - a name
      */
-    public static function name(): string {
+    public static function name(): string
+    {
         return _m("Convert database from 1Byte latin1 encoding to utf8mb4 collation");
     }
 
     /** Description function
      * @return string - a description
      */
-    public static function description(): string {
+    public static function description(): string
+    {
         return _m("Convert database from 1Byte latin1 encoding to utf8mb4 for all tables and set database default to utf8mb4");
     }
 
     /** Test function
      * @return bool
      */
-    public function test(): bool {
+    public function test(): bool
+    {
         $collations = $this->get_tables('latin1_');
         $count = 0;
         foreach ($collations as $tablename => $collation) {
@@ -42,7 +45,8 @@ class Convertlatin2Utf8Mb4 extends \AA\Optimize\Convert2utf8mb4 {
 
     /**
      */
-    public function repair(): bool {
+    public function repair(): bool
+    {
         $new_collation1 = $this->convert('latin1_swedish_', 'utf8mb4_unicode_');  // if default encoding is used, convert to general  (*_unicode_* is better for most cases than *_general_*)
         $new_collation2 = $this->convert('latin1_', 'utf8mb4_');
 

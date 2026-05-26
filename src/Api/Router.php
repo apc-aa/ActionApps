@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Minimal HTTP router for the AA /api/ front controller.
  *

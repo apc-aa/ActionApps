@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: honzama
@@ -14,32 +15,35 @@ use ItemContent;
 
 /** AA\IO\AbstractGrabber\AbstractGrabber\PohodaStocks - Imports stock from POHODA accounting system
  */
-class PohodaOrdersResult extends AA\IO\Grabber\AbstractGrabber {
-
+class PohodaOrdersResult extends AA\IO\Grabber\AbstractGrabber
+{
     protected $file;
     /** list if files to grab - internal array */
     private $_items;
 
-    function __construct($file) {
+    public function __construct($file)
+    {
         $this->file = $file;
     }
 
     /** Name of the grabber - used for grabber selection box */
-    public static function name(): string {
+    public static function name(): string
+    {
         return _m('Pohoda (www.stormware.cz) - Orders import result');
     }
 
     /** Description of the grabber - used as help text for the users.
      *  Description is in HTML
      */
-    public static function description(): string {
+    public static function description(): string
+    {
         return _m('Process Order import results from POHODA accounting system');
     }
 
     /** Possibly preparation of grabber - it is called directly before getItem()
      *  method is called - it means "we are going really to grab the data
      */
-    function prepare(): void
+    public function prepare(): void
     {
         $data = file_get_contents($this->file);
         // remove namespaces (it is pain to work with it in simple XML interface)
@@ -54,7 +58,7 @@ class PohodaOrdersResult extends AA\IO\Grabber\AbstractGrabber {
     }
 
     /** Method called by the AA\IO\Saver to get next item from the data input */
-    function getItem(): ?AA_Content
+    public function getItem(): ?AA_Content
     {
         if (!($polozka = current($this->_items))) {
             return null;
@@ -70,9 +74,9 @@ class PohodaOrdersResult extends AA\IO\Grabber\AbstractGrabber {
         $item = new ItemContent();
         $item->setItemID($item_id);
 
-        $item->setValue('source.........1', (string)$response_att['state']);    // stav importu
+        $item->setValue('source.........1', (string) $response_att['state']);    // stav importu
         // poznamku pripojujeme na zacatek
-        $item->setValue('source.........2', date('ymd-His') . (string)$response_att['note'] . "\n" . $poznamka);     // import poznamka
+        $item->setValue('source.........2', date('ymd-His') . (string) $response_att['note'] . "\n" . $poznamka);     // import poznamka
         return $item;
     }
 

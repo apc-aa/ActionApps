@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: honzama
@@ -7,6 +8,7 @@
  */
 
 namespace AA;
+
 use AA_Content;
 use AA_Fields;
 use AA_Item;
@@ -66,14 +68,14 @@ class FormArray
 
         $oid = $content->getId();
         if ($oid) {
-            return 'aa[u'.rawurlencode($oid).']['.rawurlencode($form_field_id).']';
+            return 'aa[u' . rawurlencode($oid) . '][' . rawurlencode($form_field_id) . ']';
         }
 
         $oowner = $content->getOwnerID();
         if (!$oowner) {
-        //    throw new Exception('No owner specified for ' . $form_field_id);
+            //    throw new Exception('No owner specified for ' . $form_field_id);
         }
-        $item_index = ctype_digit((string)$item_index) ? (int)$item_index : 1;
+        $item_index = ctype_digit((string) $item_index) ? (int) $item_index : 1;
         return "aa[n${item_index}_$oowner][$form_field_id]";
     }
 
@@ -84,14 +86,15 @@ class FormArray
      *
      * @return string
      */
-    public static function formName2Id($name, bool $universal = false ): string
+    public static function formName2Id($name, bool $universal = false): string
     {
         return str_replace([']', '['], ['', $universal ? '_' : '-'], $name);
     }
 
     /** aa-ud359b5b4e82a6cd9e40750ca6771b077-relation_______4 -> aa[ud359b5b4e82a6cd9e40750ca6771b077][relation_______4]" */
-    public static function formId2Name(string $id): string {
-        return str_replace(['aa-', '-'], ['aa[', ']['], $id).']';
+    public static function formId2Name(string $id): string
+    {
+        return str_replace(['aa-', '-'], ['aa[', ']['], $id) . ']';
     }
 
     /** returns array(item_id,field_id) from name of variable used on AA form */
