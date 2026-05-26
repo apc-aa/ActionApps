@@ -11,7 +11,7 @@
  *        define("name", "value);
  *
  *
- * PHP version 7.2+
+ * PHP version 8.2+
  *
  * LICENSE: This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,7 +58,7 @@ define('AA_BASE_DIR', "apc-aa/"); // AA_BASE_DIR is only used in this file so th
 /** AA_INSTAL_PATH is server url relative path to base AA directory
  *  You need to change this option only if your AA directory accessible through
  *  Apache webserver differ from AA_BASE_DIR (for example if you install AA to
- *  apc-aa-2.6.0 directory and then create defgine aa -> apc-aa-2.6.0 in Apache.
+ *  apc-aa-2026.6 directory and then create define aa -> apc-aa-2026.6 in Apache.
  */
 define('AA_INSTAL_PATH', "/".AA_BASE_DIR);  // you can left it as it is
 
@@ -108,9 +108,9 @@ define("DB_TYPE",    "db_mysql");      // you can use db_mysql, db_pdo:mysql and
  *  you are using another character sets (maybe for historical reason), then you
  *  need to specify it by "SET CHARACTER SET" and "SET COLLATION_CONNECTION" SQL
  *  commands. Just set the right values to following variables.
- *  We use (for czech character set "Windows 1250"):
- *     define("DB_CHARACTER_SET", "cp1250");
- *     define("DB_COLLATION_CONNECTION", "cp1250_czech_cs");
+ *  We use (for czech character set):
+ *     define("DB_CHARACTER_SET", "utf8mb4");
+ *     define("DB_COLLATION_CONNECTION", "utf8mb4_czech_ci");
  *  Default is: commented out
  */
 define("DB_CHARACTER_SET", "utf8mb4");
@@ -164,23 +164,42 @@ define("ERROR_REPORTING_EMAIL", "webmaster@my.domain.org");
 /** e-mail for Alerts management */
 define("ALERTS_EMAIL", "aaadmin@somewhere.com");
 
+/** Outgoing mail transport.
+ *  'mail' = PHP's built-in mail() function (default, unchanged behavior).
+ *  'smtp' = relay through an external SMTP server (recommended on shared
+ *           hosting and any setup that needs DKIM/SPF/DMARC alignment to
+ *           pass at Gmail/Outlook -- the hosting MTA usually can't be
+ *           trusted to sign on behalf of arbitrary From: domains).
+ *  When 'smtp', the AA_SMTP_* constants below are consulted.
+ */
+define('AA_MAIL_TRANSPORT', 'mail');
+
+/** SMTP relay settings -- only consulted when AA_MAIL_TRANSPORT === 'smtp'.
+ *  AA_SMTP_PASS is a credential; treat config.php as 0600 and keep secrets
+ *  out of version control.
+ */
+define('AA_SMTP_HOST',       'smtp.example.org');
+define('AA_SMTP_PORT',       587);              // 25 (cleartext, rare), 465 (implicit TLS / SMTPS), 587 (submission + STARTTLS)
+define('AA_SMTP_ENCRYPTION', 'tls');            // 'tls' (STARTTLS), 'ssl' (implicit TLS for port 465), 'none' (cleartext, dev only)
+define('AA_SMTP_USER',       '');               // empty = no AUTH
+define('AA_SMTP_PASS',       '');               // SMTP password / app password
+define('AA_SMTP_HELO',       '');               // EHLO hostname; empty -> AA_MAIL_HOSTNAME, then HTTP_HOST, then 'localhost'
+define('AA_SMTP_TIMEOUT',    15);               // socket timeout in seconds (MUST be > 0)
+define('AA_SMTP_CAFILE',     '');               // optional explicit CA bundle path, empty = system default
+
+/** Hostname used in Message-ID and as a fallback EHLO. Set this on cron-driven
+ *  installs where $_SERVER['HTTP_HOST'] is empty -- otherwise Message-IDs end
+ *  up as <…@localhost>, which hurts DKIM alignment and looks suspicious to
+ *  receivers. Set to your site's public hostname - like yourdomain.org.
+ */
+define('AA_MAIL_HOSTNAME', '');
+
 /** Queue script run duration (in seconds)
  *  How long could run the script, which goes through queued tasks and executes
  *  them (toexecute class - used for Alerts mail sending, ...).
  *  Default value is 16.0 [second] */
 define('TOEXECUTE_ALLOWED_TIME', 59.0);
 
-/** Post-response cron fallback
- *  When OS-level cron is not configured, AA can run the toexecute queue and
- *  scheduled maintenance tasks AFTER sending the response on a normal page
- *  request. The trigger is mtime-gated via <IMG_UPLOAD_PATH>cron-fallback.lock,
- *  so the hot path costs only two filesystem syscalls (no DB query).
- *  Recommended: keep enabled. Disable only if real cron (calling cron.php
- *  every minute) is reliably configured.
- */
-// define('DISABLE_CRON_FALLBACK', true);
-/** Minimum seconds between fallback runs. Default: 120 (2 minutes). */
-// define('CRON_FALLBACK_INTERVAL', 120);
 
 /** File uploads settings
  *  The directory for file uploads should be webserver writeable and it
@@ -188,10 +207,13 @@ define('TOEXECUTE_ALLOWED_TIME', 59.0);
  *  ( @see https://actionapps.org/faq/detail.shtml?x=1696 )
  *  ( @see https://actionapps.org/faq/detail.shtml?x=1694 )
  */
+
 /** url to image/file directory */
 define("IMG_UPLOAD_URL", AA_HTTP_DOMAIN."img_upload/");
+
 /** path from server root to image/file directory */
 define("IMG_UPLOAD_PATH", AA_SITE_PATH."img_upload/");
+
 /** mkdir perms - AA creates new directory for each slice in image/file upload
 *  directory specified above. Each slice then have its own subdirectory.
 *  Default is 774 */
@@ -208,15 +230,22 @@ define("IMG_UPLOAD_DIR_MODE",  octdec('0774'));
 /** number of shown pages links in scroller's navigation bar */
 define("SCROLLER_LENGTH", 3);
 
-/** Select color profile for administation pages - colors or css files */
-// WebNetworks profile (green - default) ------------------------------------
-define("ADMIN_CSS",       "admin.css");         // style for admin interface
+/** Select color profile (skin) for the administration UI.
+ *  ADMIN_CSS is the skin overlay. The admin page builder always loads
+ *  admin-ecn.css as the structural baseline first; non-baseline skins
+ *  are appended afterward to redefine the :root palette and override
+ *  selectors. Pick the value that matches the look you want. */
+// Econnects profile (legacy beige/gold — current production look) ----------
+define("ADMIN_CSS",       "admin-ecn.css");     // style for admin interface
 
-//  // Econnects profile --------------------------------------------------------
-//  define("ADMIN_CSS",       "admin-ecn.css");     // style for admin interface
+//  // 2026 redesign (warm gold) ------------------------------------------------
+//  define("ADMIN_CSS",       "admin-gold.css");     // style for admin interface
 //
-//  // Comlink profile ----------------------------------------------------------
-//  define("ADMIN_CSS",       "admin-cml.css");     // style for admin interface
+//  // WebNetworks profile (modernized green) -----------------------------------
+//  define("ADMIN_CSS",       "admin.css");          // style for admin interface
+//
+//  // Comlink profile (legacy) -------------------------------------------------
+//  define("ADMIN_CSS",       "admin-cml.css");      // style for admin interface
 
 /** Page cache setting
  *  pages with items/views/slices/sites are automatically cached by AA
@@ -233,6 +262,18 @@ define( "ENABLE_PAGE_CACHE", true );
 */
 define("CACHE_TTL", 10800 ); // 3 hours
 
+
+/** Post-response cron fallback
+ *  When OS-level cron is not configured, AA can run the toexecute queue and
+ *  scheduled maintenance tasks AFTER sending the response on a normal page
+ *  request. The trigger is mtime-gated via <IMG_UPLOAD_PATH>cron-fallback.lock,
+ *  so the hot path costs only two filesystem syscalls (no DB query).
+ *  Recommended: keep enabled. Disable only if real cron (calling cron.php
+ *  every minute) is reliably configured.
+ */
+// define('DISABLE_CRON_FALLBACK', true);
+/** Minimum seconds between fallback runs. Default: 120 (2 minutes). */
+// define('CRON_FALLBACK_INTERVAL', 120);
 
 /** Convertors - you can install it and then use
  *  Just uncomment and fill the right path and convert option will be shown

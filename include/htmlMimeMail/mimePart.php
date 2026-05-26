@@ -121,7 +121,7 @@ class Mail_mimePart {
      */
     function __construct($body = '', $params = []) {
         if (!defined('MAIL_MIMEPART_CRLF')) {
-            define('MAIL_MIMEPART_CRLF', defined('MAIL_MIME_CRLF') ? MAIL_MIME_CRLF : "\r\n", TRUE);
+            define('MAIL_MIMEPART_CRLF', defined('MAIL_MIME_CRLF') ? MAIL_MIME_CRLF : "\r\n");
         }
 
         foreach ($params as $key => $value) {

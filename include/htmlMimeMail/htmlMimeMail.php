@@ -124,11 +124,11 @@ class htmlMimeMail {
 	public function setCrlf($crlf = "\n"): void
     {
         if (!defined('CRLF')) {
-            define('CRLF', $crlf, true);
+            define('CRLF', $crlf);
         }
 
         if (!defined('MAIL_MIMEPART_CRLF')) {
-            define('MAIL_MIMEPART_CRLF', $crlf, true);
+            define('MAIL_MIMEPART_CRLF', $crlf);
         }
     }
 
@@ -593,22 +593,13 @@ class htmlMimeMail {
             $this->output   = $output['body'];
             $this->headers  = array_merge($this->headers, $output['headers']);
 
-            // Figure out hostname
-            if (!empty($_SERVER['HTTP_HOST'])) {
-                $hostname = $_SERVER['HTTP_HOST'];
-
-            } elseif (!empty($_SERVER['SERVER_NAME'])) {
-                $hostname = $_SERVER['SERVER_NAME'];
-
-            } elseif (!empty($_ENV['HOSTNAME'])) {
-                $hostname = $_ENV['HOSTNAME'];
-
-            } else {
-                $hostname = 'localhost';
+            /* Self-set Date so DKIM canonicalization on the relay is stable.
+             * mail() and most MTAs would add one, but a self-set Date avoids
+             * the case where two hops disagree on the second the message
+             * crossed and the signature breaks. */
+            if (empty($this->headers['Date'])) {
+                $this->headers['Date'] = date('r');
             }
-
-            $message_id = sprintf('<%s.%s@%s>', base_convert(time(), 10, 36), base_convert(mt_rand(), 10, 36), $hostname);
-            $this->headers['Message-ID'] = $message_id;
 
             $this->is_built = true;
             return true;
@@ -618,10 +609,32 @@ class htmlMimeMail {
     }
 
     /**
+     * Generate a fresh Message-ID. Called from send() rather than buildMessage()
+     * so that every recipient in a sendLater() batch gets its own ID -- otherwise
+     * Gmail/Outlook collapse the whole batch into one thread.
+     */
+    protected function generateMessageId(): string
+    {
+        return sprintf('<%s.%s@%s>',
+            base_convert((string)time(), 10, 36),
+            base_convert((string)mt_rand(), 10, 36),
+            \AA\Mail\SmtpTransport::resolveHostname()
+        );
+    }
+
+    /**
      * Function to encode a header if necessary according to RFC2047
      */
     function _encodeHeader($input, $charset = 'ISO-8859-1')
     {
+        /* Header-injection guard. Every header value on both the mail() and
+         * SMTP transports is serialized through this method, so neutralizing
+         * CR / LF / NUL here stops a value -- e.g. a user-controlled item
+         * field aliased into Subject or From: by AA_Mail::setFromTemplate()
+         * -- from forging extra headers or smuggling a Bcc recipient. Fold to
+         * a single space rather than reject, so legacy callers keep sending. */
+        $input = preg_replace('/[\r\n\x00]+/', ' ', (string)$input);
+
         preg_match_all('/(\s?\w*[\x80-\xFF]+\w*\s?)/', $input, $matches);
         foreach ($matches[1] as $value) {
             //$replacement = preg_replace('/([\x20\x80-\xFF])/e', '"=" . strtoupper(dechex(ord("\1")))', $value);
@@ -638,12 +651,13 @@ class htmlMimeMail {
     }
 
     /**
-     * Sends the mail.
+     * Sends the mail. Transport is chosen from AA_MAIL_TRANSPORT.
      *
-     * @param  array  $recipients
+     * @param  string[]  $recipients
+     * @throws \AA\Mail\TransientSmtpException on retryable SMTP failure
      */
-   public function send($recipients): int
-   {
+    public function send($recipients): int
+    {
         if ( !(isset($recipients) && is_array($recipients)) ) {
             return 0;
         }
@@ -656,24 +670,34 @@ class htmlMimeMail {
             $this->buildMessage();
         }
 
+        /* Fresh Message-ID per send() call so a sendLater() batch doesn't
+         * collapse into one Gmail/Outlook thread. */
+        $this->headers['Message-ID'] = $this->generateMessageId();
+
+        if (defined('AA_MAIL_TRANSPORT') && AA_MAIL_TRANSPORT === \AA\Mail\SmtpTransport::TRANSPORT_SMTP) {
+            return $this->sendViaSmtp($recipients);
+        }
+        return $this->sendViaMail($recipients);
+    }
+
+    /** @param string[] $recipients */
+    private function sendViaMail(array $recipients): int
+    {
         $subject = '';
         if (!empty($this->headers['Subject'])) {
             $subject = $this->_encodeHeader($this->headers['Subject'], $this->build_params['head_charset']);
             unset($this->headers['Subject']);
         }
 
-        // Get flat representation of headers
+        $headers = [];
         foreach ($this->headers as $name => $value) {
             $headers[] = $name . ': ' . $this->_encodeHeader($value, $this->build_params['head_charset']);
         }
 
         $to = $this->_encodeHeader(implode(', ', $recipients), $this->build_params['head_charset']);
 
-        if ( !empty($this->return_path) ) {
-            $result = mail($to, $subject, $this->output, implode(CRLF, $headers), '-f' . $this->return_path);
-        } else {
-            $result = mail($to, $subject, $this->output, implode(CRLF, $headers));
-        }
+        $params = !empty($this->return_path) ? '-f' . $this->return_path : '';
+        $result = $this->nativeMail($to, $subject, $this->output, implode(CRLF, $headers), $params);
 
         // Reset the subject in case mail is resent
         if ($subject !== '') {
@@ -681,6 +705,123 @@ class htmlMimeMail {
         }
 
         return $result ? count($recipients) : 0;
+    }
+
+    /**
+     * Thin wrapper around PHP's mail(). Isolated as a seam so the mail()
+     * transport can be exercised in tests (a subclass overrides this to
+     * capture the assembled arguments without actually sending).
+     *
+     * @param string $params sendmail extra args ('-f<envelope>' or '')
+     * @return bool mail() result
+     */
+    protected function nativeMail(string $to, string $subject, string $body, string $headers, string $params = ''): bool
+    {
+        return $params !== ''
+            ? mail($to, $subject, $body, $headers, $params)
+            : mail($to, $subject, $body, $headers);
+    }
+
+    /**
+     * @param string[] $recipients
+     * @throws \AA\Mail\TransientSmtpException
+     */
+    private function sendViaSmtp(array $recipients): int
+    {
+        $rcpts        = $this->collectRcpts($recipients);
+        $envelopeFrom = $this->resolveEnvelopeFrom();
+        $rfc822       = $this->assembleRfc822($recipients);
+
+        $transport = new \AA\Mail\SmtpTransport();
+        $result    = $transport->sendRaw($envelopeFrom, $rcpts, $rfc822);
+
+        switch ($result) {
+            case \AA\Mail\SmtpTransport::RESULT_SENT:
+                return count($recipients);
+            case \AA\Mail\SmtpTransport::RESULT_TRANSIENT:
+                throw new \AA\Mail\TransientSmtpException(
+                    'SMTP transient failure: ' . $transport->getLastError()
+                );
+            case \AA\Mail\SmtpTransport::RESULT_PERMANENT:
+            default:
+                return 0;
+        }
+    }
+
+    /**
+     * Extract bare e-mail addresses from a header string:
+     *   "Econnect <info@ecn.cz>, foo@bar.cz" -> ['info@ecn.cz', 'foo@bar.cz']
+     *
+     * Used by the SMTP envelope helpers below and by AA_Mail for return-path
+     * extraction. Lives in the base class because the SMTP send path here
+     * depends on it.
+     *
+     * @return string[]
+     */
+    public function extractEmails($string): array
+    {
+        preg_match_all("/[._a-zA-Z0-9-]+@[._a-zA-Z0-9-]+/i", (string)$string, $matches);
+        return $matches[0];
+    }
+
+    /**
+     * Collect the SMTP envelope recipient list -- To + Cc + Bcc, deduplicated.
+     *
+     * @param string[] $recipients
+     * @return string[]
+     */
+    private function collectRcpts(array $recipients): array
+    {
+        $rcpts = $recipients;
+        if (!empty($this->headers['Cc'])) {
+            $rcpts = array_merge($rcpts, $this->extractEmails((string)$this->headers['Cc']));
+        }
+        if (!empty($this->headers['Bcc'])) {
+            $rcpts = array_merge($rcpts, $this->extractEmails((string)$this->headers['Bcc']));
+        }
+        return array_values(array_unique(array_filter(array_map('trim', $rcpts))));
+    }
+
+    /** Envelope sender: return_path takes precedence over the From: header. */
+    private function resolveEnvelopeFrom(): string
+    {
+        if (!empty($this->return_path)) {
+            return $this->return_path;
+        }
+        if (!empty($this->headers['From'])) {
+            $fromAddrs = $this->extractEmails((string)$this->headers['From']);
+            return $fromAddrs[0] ?? '';
+        }
+        return '';
+    }
+
+    /**
+     * Assemble the RFC822 payload for SMTP DATA. To/Subject get synthesized
+     * (mail() used to add them as separate args). Bcc is stripped -- it goes
+     * only into RCPT TO envelopes, never on the wire.
+     *
+     * @param string[] $recipients
+     */
+    private function assembleRfc822(array $recipients): string
+    {
+        $charset = $this->build_params['head_charset'];
+
+        $headersForData = $this->headers;
+        /* Drop Bcc (envelope-only) and any caller-set To: -- we synthesize a
+         * canonical To: from $recipients below. Avoids a duplicate header on
+         * the wire if a future caller ever sets $this->headers['To']. */
+        unset($headersForData['Bcc'], $headersForData['To']);
+
+        $lines   = [];
+        $lines[] = 'To: ' . $this->_encodeHeader(implode(', ', $recipients), $charset);
+        if (!empty($headersForData['Subject'])) {
+            $lines[] = 'Subject: ' . $this->_encodeHeader((string)$headersForData['Subject'], $charset);
+            unset($headersForData['Subject']);
+        }
+        foreach ($headersForData as $name => $value) {
+            $lines[] = $name . ': ' . $this->_encodeHeader((string)$value, $charset);
+        }
+        return implode("\r\n", $lines) . "\r\n\r\n" . $this->output;
     }
 
     /**

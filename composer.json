@@ -45,7 +45,8 @@
     "ext-pdo": "*",
     "ext-fileinfo": "*",
     "ext-curl": "*",
-    "ext-sodium": "*"
+    "ext-sodium": "*",
+    "pear/net_smtp": "^1.12"
   }
   ,
   "require-dev": {
@@ -72,6 +73,14 @@
   "autoload": {
     "classmap": ["include/","src/"],
     "exclude-from-classmap": ["include/custom/"]
+  },
+  "scripts": {
+    "lint":  "find src include -name '*.php' -not -path 'include/custom/*' -print0 | xargs -0 -n1 -P4 php -l > /dev/null",
+    "stan":  "phpstan analyse --no-progress --memory-limit=1G",
+    "cs":    "phpcs --standard=phpcs.xml",
+    "cbf":   "phpcbf --standard=phpcs.xml",
+    "test":  "phpunit",
+    "check": ["@lint", "@stan", "@test"]
   },
   "config": {
     "discard-changes": true,

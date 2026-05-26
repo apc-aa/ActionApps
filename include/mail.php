@@ -120,9 +120,39 @@ class AA_Mail extends htmlMimeMail implements LaterInterface {
     private $template_id = '';
     private $reader_id   = '';
 
+    /** Attempt counter for SMTP-transient retries via Toexecute. Cap at MAX_SMTP_RETRIES. */
+    private int $retry_attempts = 0;
+    private const MAX_SMTP_RETRIES = 3;
+    /** Seconds between SMTP retry attempts. */
+    private const SMTP_RETRY_DELAY = 300;
+
     /** used in AA_Log after toexecute */
     function getId(): string {
         return $this->template_id.':'.$this->reader_id;
+    }
+
+    /**
+     * Catch transient SMTP failures (4xx / network blip) and requeue via
+     * Toexecute.
+     */
+    public function send($recipients): int
+    {
+        try {
+            return parent::send($recipients);
+        } catch (\AA\Mail\TransientSmtpException $e) {
+            $this->retry_attempts++;
+            if ($this->retry_attempts > self::MAX_SMTP_RETRIES) {
+                trigger_error(
+                    'AA_Mail: giving up after '.self::MAX_SMTP_RETRIES.' SMTP retries: '.$e->getMessage(),
+                    E_USER_WARNING
+                );
+                return 0;
+            }
+            $toexecute = new Toexecute;
+            $selector  = 'AA_Mail_retry:'.$this->getId().':'.$this->retry_attempts;
+            $toexecute->later($this, [$recipients], $selector, 90, time() + self::SMTP_RETRY_DELAY);
+            return 0;
+        }
     }
 
     /** setFromTemplate function
@@ -287,15 +317,8 @@ class AA_Mail extends htmlMimeMail implements LaterInterface {
         }
     }
 
-    /** Extracts e-mail from the string:
-     *  Econnect <info@ecn.cz>  -> info@ecn.cz
-     *  @retrun string[]
-     */
-    function extractEmails($string): array
-    {
-        preg_match_all("/[._a-zA-Z0-9-]+@[._a-zA-Z0-9-]+/i", $string, $matches);
-        return $matches[0];
-    }
+    /* extractEmails() is inherited from htmlMimeMail -- the base SMTP send
+     * path depends on it, so it lives there as the single canonical copy. */
 
     /** _encodeHeader function
      *  header encoding does not seem to work correctly
