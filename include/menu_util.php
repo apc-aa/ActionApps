@@ -150,10 +150,16 @@ function GetLabel(AA_Profile $profile, string $property, string $selector, ?stri
 }
 
 // ----------------------------------------------------------------------------------------
-/* creates a JavaScript variable modulesOptions, which allows to create another Module selectbox
-    without reprinting all the options */
-/** PrintModuleSelection function
+/**
+ * Build the top-bar module/slice selector.
  *
+ * Renders a <select name="sel_module"> listing the user's sites (each with its
+ * child modules indented beneath it), orphan slices, and type-specific sections.
+ * The markup is returned as a script that assigns it to the #aanbform element
+ * via innerHTML; a fallback IIFE adds NBSP indent and reconciles the remembered
+ * site for browsers without `appearance: base-select`.
+ *
+ * @return string  HTML/JS to embed, or empty string when no selector is shown
  */
 function GetModuleSelection(): string {
     global $g_modules;
@@ -162,7 +168,7 @@ function GetModuleSelection(): string {
     $profile = AA_Profile::getProfile(AuthGetUid(), AA::$module_id); // current user settings
 
     if ( is_array($g_modules) && count($g_modules) > 1 && $profile->getProperty('ui_manager', 'top_moduleselection') === false) {
-        // create the modulesOptions content:
+        // build the selector options:
         $permitted_slices = GetUserSlices();
         $modules_cond = ($permitted_slices==='all') ? [] : [['module.id', array_keys($permitted_slices), 'l']];
 
@@ -176,15 +182,23 @@ function GetModuleSelection(): string {
             $mymodules = array_filter($mymodules, static fn($slice) => (!$slice['deleted'] || IfSlPerm(PS_FIELDS, $slice['unpackid'])));
         }
 
-        // Partition modules: sites (W), regular slices (S, non-RM), and other types (RM, Polls, Alerts, ...).
-        // Order inside each bucket follows the query order (deleted asc, priority asc, name asc).
-        $sites         = [];   // unpackid => row
-        $slices_by_id  = [];   // unpackid => row  (non-RM slices)
-        $other_by_type = [];   // type => [row, ...]  (RM bucket uses key 'RM')
+        // Partition modules: sites (W), regular slices (S, non-RM), and other types
+        // (RM, Polls, Alerts, Links, Jump, ...). Order inside each bucket follows
+        // the query order (deleted asc, priority asc, name asc).
+        // $non_sites_by_id mirrors the union of $slices_by_id + flattened $other_by_type
+        // so the relation query and the under-site bucketing can address any non-site
+        // module by id, regardless of its type-specific bucket.
+        $sites           = [];   // unpackid => row
+        $slices_by_id    = [];   // unpackid => row  (non-RM slices)
+        $other_by_type   = [];   // type => [row, ...]  (RM bucket uses key 'RM')
+        $non_sites_by_id = [];   // unpackid => row  (everything that isn't 'W')
         foreach ($mymodules as $row) {
             if ($row['type'] === 'W') {
                 $sites[$row['unpackid']] = $row;
-            } elseif ($row['type'] === 'S' && $row['slice_type'] !== 'ReaderManagement') {
+                continue;
+            }
+            $non_sites_by_id[$row['unpackid']] = $row;
+            if ($row['type'] === 'S' && $row['slice_type'] !== 'ReaderManagement') {
                 $slices_by_id[$row['unpackid']] = $row;
             } else {
                 $bucket = ($row['type'] === 'S') ? 'RM' : $row['type'];
@@ -192,40 +206,49 @@ function GetModuleSelection(): string {
             }
         }
 
-        // One batched query for site->slice memberships, scoped to visible sites & slices.
-        // Wrapped in Contentcache for cross-request reuse (mirrors the canonical path in
-        // AA_Module_Site::getRelatedModules()). Needs both directions, so we keep the
-        // raw pair list rather than calling getRelatedModules() per site.
-        $site2slices = [];
+        // One batched query for site->module memberships, scoped to all visible sites
+        // and all non-site modules — including RM/Polls/Alerts/Links/Jump, since the
+        // site editor (modules/site/modedit.php) lets the user attach any module type
+        // via REL_FLAG_MODULE_DEPEND. Wrapped in Contentcache for cross-request reuse
+        // (mirrors AA_Module_Site::getRelatedModules()). We index by slice (a module can
+        // hang under several sites), which serves both the under-site bucketing and the
+        // "is this module unassigned?" checks below.
         $slice2sites = [];
-        if (!empty($sites) && !empty($slices_by_id)) {
+        if (!empty($sites) && !empty($non_sites_by_id)) {
             $rels = AA::Contentcache()->get_result(['AA\IO\DB\DB_AA','select'], [[],
                 'SELECT LOWER(HEX(source_id)) AS site_id, LOWER(HEX(destination_id)) AS slice_id FROM `relation`',
-                [['source_id',      array_keys($sites),        'l'],
-                 ['destination_id', array_keys($slices_by_id), 'l'],
-                 ['flag',           REL_FLAG_MODULE_DEPEND,    'i']]]);
+                [['source_id',      array_keys($sites),           'l'],
+                 ['destination_id', array_keys($non_sites_by_id), 'l'],
+                 ['flag',           REL_FLAG_MODULE_DEPEND,        'i']]]);
             foreach ($rels as $rel) {
-                $site2slices[$rel['site_id']][$rel['slice_id']] = true;
                 $slice2sites[$rel['slice_id']][$rel['site_id']] = true;
             }
         }
 
-        // Pre-bucket slices under each site so the rendering loop is O(rels + slices)
-        // rather than O(sites × slices). Preserves $slices_by_id's priority/name order.
+        // Pre-bucket modules under each site. Iterate $mymodules (not $non_sites_by_id)
+        // to preserve the query order (deleted asc, priority asc, name asc) across the
+        // combined pool — so a site's children stay alphabetised regardless of which
+        // type-specific bucket they came from.
         $slices_under_site = [];
-        foreach ($slices_by_id as $slice_id => $slice_row) {
-            foreach (array_keys($slice2sites[$slice_id] ?? []) as $site_id) {
-                $slices_under_site[$site_id][$slice_id] = $slice_row;
+        foreach ($mymodules as $row) {
+            if ($row['type'] === 'W') {
+                continue;
+            }
+            $mod_id = $row['unpackid'];
+            foreach (array_keys($slice2sites[$mod_id] ?? []) as $site_id) {
+                $slices_under_site[$site_id][$mod_id] = $row;
             }
         }
 
         $mydir = AA_Module::getModuleInfo('url', AA::$module_id);
 
-        /* Indent prefixes for fallback browsers. HTML entity (not raw U+00A0) so the
-           bytes are valid in both UTF-8 and 8859-1 page encodings — a UTF-8 NBSP byte
-           sequence renders as garbage on legacy 8-bit slice admin pages. */
-        $nbsp4 = str_repeat('&nbsp;', 4);   // for orphan slices + non-slice modules
-        $nbsp6 = str_repeat('&nbsp;', 6);   // for site-child slices (deeper level)
+        /* Single indent depth for every sub-row (site-child slices, orphan slices,
+           and non-slice modules under a header), expressed as a leading-space count.
+           Modern browsers (`appearance: base-select`) indent via CSS padding keyed
+           on the option class, so the default markup carries no layout spacing and
+           stays clean for native typeahead. Browsers without base-select get the
+           indent from the fallback JS, which injects this many NBSPs into the text. */
+        $indent = 4;
 
         /* Pick an icon code per module/slice. Falls through to slice_type for S-type rows.
            Slice-type literals must stay in sync with AA_Slice::getSliceTypes(). */
@@ -239,24 +262,6 @@ function GetModuleSelection(): string {
                 ?? $by_slice_type[$row['slice_type'] ?? '']
                 ?? 'items';
         };
-
-        /* Inline SVG <symbol> defs referenced via <use>. Kept single-line because the
-           dropdown HTML is injected through innerHTML (see $js below) and embedded
-           newlines would break the JS string. */
-        $icon_symbols = [
-            'site'      => '<symbol id="aa-ic-site" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="5.5"/><path d="M2.5 8h11"/><path d="M8 2.5c1.8 2 1.8 9 0 11M8 2.5c-1.8 2-1.8 9 0 11"/></symbol>',
-            'reader'    => '<symbol id="aa-ic-reader" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="5.5" r="2.3"/><path d="M3 14c.7-2.5 2.8-3.8 5-3.8s4.3 1.3 5 3.8"/></symbol>',
-            'constants' => '<symbol id="aa-ic-constants" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="3.5" width="11" height="9" rx="1"/><path d="M2.5 6.5h11M2.5 9.5h11M7 3.5v9"/></symbol>',
-            'pages'     => '<symbol id="aa-ic-pages" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="square" stroke-linejoin="miter"><rect x="1" y="6" width="4" height="4"/><rect x="10" y="2" width="5" height="4"/><rect x="10" y="10" width="5" height="4"/><path d="M5 8H7.5M7.5 4V12M7.5 4H10M7.5 12H10"/></symbol>',
-            'items'     => '<symbol id="aa-ic-items" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"><circle cx="3" cy="4" r=".7" fill="currentColor" stroke="none"/><circle cx="3" cy="8" r=".7" fill="currentColor" stroke="none"/><circle cx="3" cy="12" r=".7" fill="currentColor" stroke="none"/><path d="M5 4h8.5M5 8h8.5M5 12h8.5"/></symbol>',
-            'views'     => '<symbol id="aa-ic-views" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="2.5" width="11" height="11" rx="1.2"/><path d="M6 6L4.5 8 6 10M10 6l1.5 2L10 10M8 5.5l-1 5"/></symbol>',
-            'translate' => '<symbol id="aa-ic-translate" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3h4M5 2.5V7"/><path d="M3 7c0-2 2-2 2-2s2 0 2 2"/><path d="M9 14L12 7l3 7M9.8 12h4.4"/></symbol>',
-            'field'     => '<symbol id="aa-ic-field" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="square" stroke-linejoin="miter"><path d="M1.5 2h4"/><rect x="1.5" y="3.5" width="13" height="2.75"/><path d="M1.5 9h4"/><rect x="1.5" y="10.5" width="13" height="2.75"/></symbol>',
-            'polls'     => '<symbol id="aa-ic-polls" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 4.5h10M2.5 8h7M2.5 11.5h4.5"/></symbol>',
-            'alerts'    => '<symbol id="aa-ic-alerts" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="4" width="11" height="8" rx="1"/><path d="M2.5 4.5L8 9l5.5-4.5"/></symbol>',
-            'links'     => '<symbol id="aa-ic-links" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 11.3l-1.5 1.5a2.5 2.5 0 11-3.5-3.5l3-3a2.5 2.5 0 013.5 0"/><path d="M9.5 4.7l1.5-1.5a2.5 2.5 0 113.5 3.5l-3 3a2.5 2.5 0 01-3.5 0"/></symbol>',
-            'jump'      => '<symbol id="aa-ic-jump" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8h7.5"/><path d="M6.5 5l3 3-3 3"/><circle cx="12.5" cy="8" r="1.2" fill="currentColor" stroke="none"/></symbol>',
-        ];
 
         /* Non-selectable section header — replaces the dropped <optgroup>. Firefox
            fallback shows the disabled option in default grey; modern browsers pick
@@ -272,23 +277,26 @@ function GetModuleSelection(): string {
 
         /**
          * Emit one <option>.
-         *  - $prefix is concatenated verbatim (no auto-space) so the caller can pad with
-         *    leading characters/spaces that act as a fallback hierarchy cue in older
-         *    browsers where the option class CSS won't apply.
+         *  - $indent is the hierarchy depth (leading-space count). Modern browsers
+         *    indent via CSS padding keyed on $class, so the markup stays free of
+         *    layout spacing; the fallback JS injects $indent NBSPs into the option
+         *    text for browsers that lack `appearance: base-select`.
          *  - $class adds a CSS hook for modern browsers (`appearance: base-select`).
          *  - $aria_desc fills `aria-description` to convey parent-site context to AT
          *    in lieu of the dropped <optgroup> grouping announcement.
          *  - $disabled emits a non-selectable header-style option (used when the user
          *    can see a site's child slices but lacks permission to the site itself).
-         *  - $icon names a symbol in $icon_symbols; rendered via <use> after the label.
-         *    Renders as empty text in old browsers, as a visible icon under base-select.
+         *  - $icon adds an `aa-ic-{icon}` class on the option. CSS in admin-ecn.css
+         *    paints the matching SVG via an `::after` background-image — pseudo-elements
+         *    render reliably inside <option> in Chromium's base-select popup and keep
+         *    the option markup free of presentational child nodes.
          */
         // Track whether the HTML 'selected' attribute has already been emitted: a slice
         // that lives under multiple sites would otherwise get 'selected' on every row,
         // causing a wrong-row flash before the localStorage JS reconciles.
         $selected_emitted = false;
         $emitOption = static function (string $id, string $name, bool $deleted,
-                                       string $site_id = '', string $prefix = '',
+                                       string $site_id = '', int $indent = 0,
                                        string $class = '', string $aria_desc = '',
                                        bool $disabled = false, string $icon = '') use ($mydir, &$selected_emitted): string {
             $mod_dir = AA_Module::getModuleInfo('url', $id);
@@ -297,20 +305,23 @@ function GetModuleSelection(): string {
             if ($deleted) {
                 $label = "&times;&times;&times; $label &times;&times;&times;";
             }
-            // $prefix is raw HTML (callers pass empty string or repeated &nbsp; entities,
-            // never user input) — kept unescaped so HTML entities survive intact.
-            $label = $prefix . $label;
             if ($icon !== '') {
-                $label .= '<svg class="aa-icon" viewBox="0 0 16 16" aria-hidden="true"><use href="#aa-ic-' . safe($icon) . '"/></svg>';
+                // Icon is painted by CSS ::after on the option (see admin-ecn.css).
+                // We just add a marker class; the data: URI lives in CSS so it can
+                // share the popup's accent colour with the rest of the skin.
+                $class = trim($class . ' aa-ic-' . $icon);
             }
 
-            // label attribute carries the bare slice name (without NBSP indent or
-            // SVG icon) so native typeahead matches on what the user reads, not on
-            // the leading whitespace. The JS keydown handler below adds substring
-            // matching on top of (or instead of) the browser's prefix typeahead.
-            $opt = '<option value="' . safe($val) . '" label="' . safe($name) . '"';
+            // No NBSP indent or label= in the default markup: the option text is the
+            // bare (optionally deleted-decorated) name, so native typeahead matches
+            // what the user reads. Indentation is CSS padding in modern browsers and
+            // JS-injected NBSPs in the fallback (see the data-indent handling below).
+            $opt = '<option value="' . safe($val) . '"';
             if ($class !== '') {
                 $opt .= ' class="' . safe($class) . '"';
+            }
+            if ($indent > 0) {
+                $opt .= ' data-indent="' . $indent . '"';
             }
             if ($site_id !== '') {
                 $opt .= ' data-site-id="' . safe($site_id) . '"';
@@ -320,7 +331,7 @@ function GetModuleSelection(): string {
             }
             if ($disabled) {
                 $opt .= ' disabled';
-            } elseif (!$selected_emitted && AA::$module_id == $id) {
+            } elseif (!$selected_emitted && AA::$module_id === $id) {
                 $opt .= ' selected';
                 $selected_emitted = true;
             }
@@ -344,14 +355,14 @@ function GetModuleSelection(): string {
             }
             $options .= $emitOption(
                 $site_id, $site_row['name'], (bool)$site_row['deleted'],
-                $site_id, '',
+                $site_id, 0,
                 $site_perm ? 'aa-site' : 'aa-site aa-site-readonly',
                 '', !$site_perm, 'site'
             );
             foreach ($kids as $slice_id => $slice_row) {
                 $options .= $emitOption(
                     $slice_id, $slice_row['name'], (bool)$slice_row['deleted'],
-                    $site_id, $nbsp6, 'aa-slice-of-site',
+                    $site_id, $indent, 'aa-slice-of-site',
                     sprintf(_m('Part of %s'), $site_row['name']),
                     false, $iconFor($slice_row)
                 );
@@ -359,14 +370,13 @@ function GetModuleSelection(): string {
         }
 
         // 2) orphan slices (no parent site) — preceded by a disabled section header.
-        //    $nbsp4 prefix indents members visually under the header in the fallback
-        //    path where CSS padding-left on options is ignored. Regular spaces get
-        //    collapsed by some browsers; &nbsp; is preserved.
+        //    $indent gives the fallback indent depth (NBSPs injected by JS) for
+        //    browsers where CSS padding-left on options is ignored.
         $orphans = '';
         foreach ($slices_by_id as $slice_id => $slice_row) {
             if (empty($slice2sites[$slice_id])) {
                 $orphans .= $emitOption($slice_id, $slice_row['name'], (bool)$slice_row['deleted'],
-                                        '', $nbsp4, '', '', false, $iconFor($slice_row));
+                                        '', $indent, '', '', false, $iconFor($slice_row));
             }
         }
         if ($orphans !== '') {
@@ -381,14 +391,21 @@ function GetModuleSelection(): string {
             'A'      => _m("MySQL Auth (old version)"),
             'P'      => _m("Polls"),
         ];
+        // Only modules without a parent-site relation land in the type-specific
+        // sections; assigned ones were already emitted under their site above.
         foreach ($other_type_labels as $tcode => $tlabel) {
             if (empty($other_by_type[$tcode])) {
                 continue;
             }
+            $unassigned = array_filter($other_by_type[$tcode],
+                static fn(array $row): bool => empty($slice2sites[$row['unpackid']]));
+            if (empty($unassigned)) {
+                continue;
+            }
             $options .= $emitSection($tlabel);
-            foreach ($other_by_type[$tcode] as $row) {
+            foreach ($unassigned as $row) {
                 $options .= $emitOption($row['unpackid'], $row['name'], (bool)$row['deleted'],
-                                        '', $nbsp4, '', '', false, $iconFor($row));
+                                        '', $indent, '', '', false, $iconFor($row));
             }
         }
 
@@ -397,12 +414,14 @@ function GetModuleSelection(): string {
         }
 
         $html  = GetLabel($profile, 'ui_manager', 'top_moduleswitchtext', '');
-        $html .= '<svg id="aa-modsel-icons" style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true">' . implode('', $icon_symbols) . '</svg>';
         $html .= '<select name="sel_module" aria-label="' . safe(_m('Switch module')) . '" onChange="if (this.value !== \'\') window.location=this.value">';
         $html .= $options;
         $html .= '</select>';
 
-        $js  = "document.getElementById('aanbform').innerHTML = '" . str_replace("'", "\\'", $html) . "';";
+        // Embed $html as a single-quoted JS string literal. Escape backslashes
+        // first, then single quotes — a module name containing '\' (or a trailing
+        // one) would otherwise corrupt the literal and break the whole selector.
+        $js  = "document.getElementById('aanbform').innerHTML = '" . str_replace(['\\', "'"], ['\\\\', "\\'"], $html) . "';";
 
         // Selector CSS lives in admin-ecn.css under the "Module selector" heading.
 
@@ -411,6 +430,19 @@ function GetModuleSelection(): string {
         $js .= "(()=>{"
               . "const s=document.querySelector('select[name=sel_module]');"
               . "if(!s)return;"
+              /* Browsers without `appearance: base-select` (Firefox, Safari) render a
+                 native listbox that ignores option padding, so the CSS indent never
+                 shows. Inject leading NBSPs (U+00A0) from data-indent to restore the
+                 hierarchy there. Modern browsers skip this entirely — they indent via
+                 CSS padding and keep clean, typeahead-friendly option text. The cost
+                 in the fallback is that native typeahead then matches the NBSP-prefixed
+                 text for indented rows (same trade-off as the old label= approach). */
+              . "if(!CSS.supports('appearance','base-select')){"
+              .   "for(const o of s.options){"
+              .     "const n=+o.dataset.indent||0;"
+              .     "if(n)o.textContent='\\u00A0'.repeat(n)+o.textContent;"
+              .   "}"
+              . "}"
               . "const K='aa_current_site_id',r=localStorage.getItem(K);"
               . "if(r&&s.selectedOptions[0]){"
               .   "const v=s.selectedOptions[0].value;"
@@ -423,11 +455,6 @@ function GetModuleSelection(): string {
               .   "if(o?.dataset?.siteId){localStorage.setItem(K,o.dataset.siteId);}"
               .   "else{localStorage.removeItem(K);}"
               . "});"
-              /* Native prefix typeahead is sufficient — keyboard chars move the popup
-                 cursor (browser-internal), and the label attribute on each <option>
-                 above carries the bare slice name so matches ignore the NBSP indent.
-                 Substring search would need to move the popup cursor too (JS can't
-                 reach it for native <select>), so we don't override default behavior. */
               . "})();";
         $ret .= getFrmJavascriptCached($js, 'modules');
     } else {
