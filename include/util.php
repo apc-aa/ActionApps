@@ -445,7 +445,7 @@ function now($step=false): int {
     return (($step!=='step') ? time() : ((int)(time()/QUERY_DATE_STEP)+1)*QUERY_DATE_STEP);     // round up
 }
 
-/** get current time in nanoseconds from 1970 
+/** get current time in nanoseconds from 1970
  *  PHP int should be enough to year > 2200
  *  the microtime is not precise enough, but we can update the function later to be more accurate
  */
@@ -1838,7 +1838,7 @@ function arrval(array|ArrayAccess $arr, string|int $key, mixed $default = null):
  */
 function aa_version($format='full'): string
 {
-    $version = '2025.6';
+    $version = '2026.5';
     $full    = 'ActionApps '.$version.' ($Date$, $Revision$), PHP '.PHP_VERSION.', REMOTE_ADDR: '.$_SERVER['REMOTE_ADDR'];
     return match ($format) {
         'svn'  => (int)substr($full, strpos($full, 'Revision') + 10),              // svn version of util.php (which is +/- similar to svn version of AA)

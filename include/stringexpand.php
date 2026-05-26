@@ -6016,7 +6016,7 @@ class AA_Stringexpand_Debug extends AA_Stringexpand_Nevercache {
     }
 }
 
-/** Writes message to AA Log 
+/** Writes message to AA Log
  */
 class AA_Stringexpand_Debuglog extends AA_Stringexpand_Nevercache {
 
@@ -6847,7 +6847,7 @@ class AA_Stringexpander implements LaterInterface {
      * @return string
      */
     function unalias($text, $remove='', $item=null, $dequote=true, $itemview=null ): string {
-        
+
         $text = (string)$text;
 
         if (++$this->recursion_count > 5000) {
@@ -7198,7 +7198,7 @@ class AA_Req_Lib extends AA_Req {
         return "<script".$defer.$type ." src=\"{$this->url}\"" .$this->getIntegrity(). "></script>";
     }
 
-    
+
     /**  getExternal and getScript is counterpart to getCode, but used in AJAX calls - external for libs to load before the script is called
      * @return string
      */
@@ -8548,10 +8548,10 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
         $ret .= "\n  <source srcset=\"$webp_src\" type=\"image/$format\">";
         $ret .= "\n  <img src=\"$src\" width=$w height=$h $add loading=lazy $alt_title>";  // lazy is enough on img for <picture> element
         $ret .= "\n</picture>";
-        
+
         return $ret;
     }
-    
+
     /**
      * Get array of ideal widths for srcset
      * - efective width = min(original, desired)  // WITHOUT rounding
@@ -8563,7 +8563,7 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
         define("ROUND_STEP", 64);
         define("MIN_USEFUL_WIDTH", 320);
         define("MIN_DELTA_PCT", 0.15); // 15 %
-        
+
         if ($originalWidth <= 0 || $desiredCssWidth <= 0) {
             return [];
         }
@@ -10602,7 +10602,7 @@ class AA_Stringexpand_Manager extends AA_Stringexpand_Nevercache {
     {
         $hash       = get_short_hash('manager', $slices, $field, $item_id, $code, $conds, $sort, $mode, $edit_code);
         $cmdvar     = 'aamng_'.$hash;
-        
+
         $slices_arr = explode_ids($slices);
 
         $mode = $mode ?: 'ND'.($edit_code ? 'EB' : ''); // add here all possible options, which is ND currently
@@ -10668,7 +10668,7 @@ class AA_Stringexpand_Manager extends AA_Stringexpand_Nevercache {
             $inner_code = StrExp('item', [$_GET[$cmdvar], $edit_code]);
             $footer     = '';
             if ( $mode_arr['B'] ) {
-                $footer .= $mode_arr['X'] ? '<footer><article><i class="ico back" onclick="history.back();">' . $mode_arr['B'] . '</i></article></footer>' 
+                $footer .= $mode_arr['X'] ? '<footer><article><i class="ico back" onclick="history.back();">' . $mode_arr['B'] . '</i></article></footer>'
                                           : '<footer><article><i class="ico back" onclick="AA_SiteEdit(\'\',\''.$cmdvar.'\');">' . $mode_arr['B'] . '</i></article></footer>';
             }
         } else {
@@ -10690,7 +10690,7 @@ class AA_Stringexpand_Manager extends AA_Stringexpand_Nevercache {
                 // @todo check $slices to be from current site module
                 $zids = (new AA_Set($slices_arr, $conds, $sort))->query();
             }
-                
+
             // load all mentioned items in one step
             AA_Items::preload($zids);
 
@@ -11024,7 +11024,7 @@ class AA_Stringexpand_Tableexport extends AA_Stringexpand {
 class AA_Stringexpand_Datatable extends AA_Stringexpand {
     /** expand function
      * @param $selector
-     * @param $options string JSON - see  
+     * @param $options string JSON - see
      * @return string
      */
     function expand($selector='', $options=''): string

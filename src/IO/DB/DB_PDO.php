@@ -203,7 +203,7 @@ class DB_PDO
                             $options[PDO::ATTR_PERSISTENT] = true;
                         }
                         if ($this->collation && $this->charset) {
-                            $options[PDO::MYSQL_ATTR_INIT_COMMAND] = "SET NAMES '$this->charset' COLLATE '$this->collation'";
+                            $options[Pdo\Mysql::ATTR_INIT_COMMAND] = "SET NAMES '$this->charset' COLLATE '$this->collation'";
                         }
                         //huhl($dsn, $User, $Password, $options);
                         $this->dbh = new PDO($dsn, $User, $Password, $options);
@@ -213,6 +213,8 @@ class DB_PDO
             }
             if (!$this->dbh) {
                 $this->halt("connect($Host$Port, $User, \$Password) failed.");
+
+                
                 return 0;
             }
 
