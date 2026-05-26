@@ -67,11 +67,26 @@ class ComposerStaticInit43e15006db6c3041e7b8c7c57cf04d54
     );
 
     public static $prefixesPsr0 = array (
+        'N' =>
+        array (
+            'Net' =>
+            array (
+                0 => __DIR__ . '/..' . '/pear/net_smtp',
+                1 => __DIR__ . '/..' . '/pear/net_socket',
+            ),
+        ),
         'D' =>
         array (
             'Detection' =>
             array (
                 0 => __DIR__ . '/..' . '/mobiledetect/mobiledetectlib/namespaced',
+            ),
+        ),
+        'C' =>
+        array (
+            'Console' =>
+            array (
+                0 => __DIR__ . '/..' . '/pear/console_getopt',
             ),
         ),
     );
@@ -129,6 +144,10 @@ class ComposerStaticInit43e15006db6c3041e7b8c7c57cf04d54
         'AA\\Later\\TableCleaner' => __DIR__ . '/../..' . '/src/Later/TableCleaner.php',
         'AA\\Later\\Toexecute' => __DIR__ . '/../..' . '/src/Later/Toexecute.php',
         'AA\\Later\\ToexecuteCleanup' => __DIR__ . '/../..' . '/src/Later/ToexecuteCleanup.php',
+        'AA\\Mail\\PermanentSmtpException' => __DIR__ . '/../..' . '/src/Mail/PermanentSmtpException.php',
+        'AA\\Mail\\SmtpException' => __DIR__ . '/../..' . '/src/Mail/SmtpException.php',
+        'AA\\Mail\\SmtpTransport' => __DIR__ . '/../..' . '/src/Mail/SmtpTransport.php',
+        'AA\\Mail\\TransientSmtpException' => __DIR__ . '/../..' . '/src/Mail/TransientSmtpException.php',
         'AA\\Managed' => __DIR__ . '/../..' . '/src/Manager.php',
         'AA\\Managed_Object' => __DIR__ . '/../..' . '/src/Manager.php',
         'AA\\Managed_Table' => __DIR__ . '/../..' . '/src/Manager.php',
@@ -824,6 +843,7 @@ class ComposerStaticInit43e15006db6c3041e7b8c7c57cf04d54
         'BaconQrCode\\Renderer\\RendererStyle\\RendererStyle' => __DIR__ . '/..' . '/honzito/bacon-qr-code-basis/src/Renderer/RendererStyle/RendererStyle.php',
         'BaconQrCode\\Writer' => __DIR__ . '/..' . '/honzito/bacon-qr-code-basis/src/Writer.php',
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
+        'Console_Getopt' => __DIR__ . '/..' . '/pear/console_getopt/Console/Getopt.php',
         'ConvertCharset' => __DIR__ . '/../..' . '/include/convert_charset.class.php',
         'CookieManager' => __DIR__ . '/../..' . '/include/util.php',
         'Cvariable' => __DIR__ . '/../..' . '/include/varset.php',
@@ -919,7 +939,14 @@ class ComposerStaticInit43e15006db6c3041e7b8c7c57cf04d54
         'MLXView' => __DIR__ . '/../..' . '/include/mlx.php',
         'Mail_mimePart' => __DIR__ . '/../..' . '/include/htmlMimeMail/mimePart.php',
         'Mobile_Detect' => __DIR__ . '/..' . '/mobiledetect/mobiledetectlib/Mobile_Detect.php',
+        'Net_SMTP' => __DIR__ . '/..' . '/pear/net_smtp/Net/SMTP.php',
+        'Net_Socket' => __DIR__ . '/..' . '/pear/net_socket/Net/Socket.php',
         'NewDiscussionCommentEvent' => __DIR__ . '/../..' . '/include/event.class.php',
+        'OS_Guess' => __DIR__ . '/..' . '/pear/pear-core-minimal/src/OS/Guess.php',
+        'PEAR' => __DIR__ . '/..' . '/pear/pear-core-minimal/src/PEAR.php',
+        'PEAR_Error' => __DIR__ . '/..' . '/pear/pear-core-minimal/src/PEAR.php',
+        'PEAR_ErrorStack' => __DIR__ . '/..' . '/pear/pear-core-minimal/src/PEAR/ErrorStack.php',
+        'PEAR_Exception' => __DIR__ . '/..' . '/pear/pear_exception/PEAR/Exception.php',
         'PHPGangsta_GoogleAuthenticator' => __DIR__ . '/..' . '/phpgangsta/googleauthenticator/PHPGangsta/GoogleAuthenticator.php',
         'PhpConsole' => __DIR__ . '/../..' . '/include/debug.class.php',
         'PhpConsoleEvent' => __DIR__ . '/../..' . '/include/debug.class.php',
@@ -928,6 +955,7 @@ class ComposerStaticInit43e15006db6c3041e7b8c7c57cf04d54
         'SQL_Parser_Constants' => __DIR__ . '/../..' . '/include/sql_parser.php',
         'Session' => __DIR__ . '/../..' . '/include/phplib.php',
         'Syntax' => __DIR__ . '/../..' . '/include/sql_parser.php',
+        'System' => __DIR__ . '/..' . '/pear/pear-core-minimal/src/System.php',
         'TokenList' => __DIR__ . '/../..' . '/include/sql_parser.php',
         'ViewCommand' => __DIR__ . '/../..' . '/include/view.php',
         'aaevent' => __DIR__ . '/../..' . '/include/event.class.php',
