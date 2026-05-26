@@ -2065,12 +2065,13 @@ details[open] .aa-ui-searchbar-block div {
     padding-top: 4px;
     padding-bottom: 3px;
 }
-.aa-save-filters .aa-formgroup-inline {
-    white-space:nowrap;
-    justify-content: end;
+/* Manage filters opens with the same fade-in as Advanced search */
+.aa-save-filters .aa-manage-filter {
+    opacity: 0;
+    transition: opacity 0.7s ease;
 }
-.aa-manage-filter .aa-form-label {
-    padding-top: 5px;
+.aa-save-filters[open] .aa-manage-filter {
+    opacity: 1;
 }
 .aa-ui-searches .aa-sb-bkmrks {
     margin-right:0;
@@ -2085,6 +2086,90 @@ details[open] .aa-ui-searchbar-block div {
     min-width: 26px;
     height: 25px;
     background-position: center;
+}
+/* Saved-filter rows: name link (applies the filter) fills the row so the action
+   icons line up in a right-hand column; a person / people SVG (same style as the
+   header user icon) marks personal vs shared filters at one consistent size. */
+.aa-manage-filter .aa-ui-searches {
+    width: 290px;
+    padding-right: 0;
+}
+.aa-save-filters .aa-formgroup-inline {
+    justify-content: flex-start;
+    flex-wrap: nowrap;
+    white-space: nowrap;
+}
+.aa-bm-name {
+    flex: 1 1 auto;
+    min-width: 0;
+    cursor: pointer;
+    padding: 3px 6px 3px 24px;
+    background: no-repeat 2px center / 16px;
+    color: var(--clr-text-accent);
+    text-decoration: none;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.aa-bm-name:hover {
+    text-decoration: underline;
+}
+.aa-bm-name.aa-fiter-user {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none" stroke="%236a5e22" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="5.5" r="2.3"/><path d="M3 14c.7-2.5 2.8-3.8 5-3.8s4.3 1.3 5 3.8"/></svg>');
+}
+.aa-bm-name.aa-fiter-users {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none" stroke="%236a5e22" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6.2" cy="5.8" r="2.1"/><path d="M1.8 13.6c.6-2.3 2.5-3.5 4.4-3.5s3.8 1.2 4.4 3.5"/><path d="M10.6 4.3a2 2 0 0 1 .1 3.6"/><path d="M11.2 9.5c1.5.3 2.8 1.4 3.2 3.1"/></svg>');
+}
+.aa-sb-bkmrks-btns {
+    flex: 0 0 auto;
+}
+
+/* === AA_Dialog — reusable modal built on native <dialog> (see javascript/manager.js) === */
+.aa-dialog {
+    padding: 0;
+    border: 1px solid var(--clr-border);
+    border-radius: 8px;
+    min-width: 320px;
+    max-width: 92vw;
+    background: var(--clr-surface-popup);
+    color: var(--clr-dark);
+}
+.aa-dialog::backdrop {
+    background: rgba(0, 0, 0, 0.4);
+}
+.aa-dialog-form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 18px 20px;
+}
+.aa-dialog-title {
+    margin: 0;
+    font-size: var(--sz-m);
+    font-weight: 600;
+}
+.aa-dialog-row {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.aa-dialog-row > span {
+    font-size: var(--sz-s);
+}
+.aa-dialog-row input[type="text"] {
+    width: 100%;
+    box-sizing: border-box;
+}
+.aa-dialog-check {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.aa-dialog-btns {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 4px;
 }
 
 /* === Module selector (top-right dropdown, emitted by include/menu_util.php) ===

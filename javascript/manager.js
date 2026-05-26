@@ -155,6 +155,141 @@ function SearchBarActionConfirm( formname, srchbr_akce, confirmtxt ) {
     }
 }
 
+/* ─────────────────────────────────────────────────────────────────────────
+ * AA_Dialog — reusable modal dialog built on the native <dialog> element.
+ * Renders a small form (text / checkbox fields) with Save + Cancel buttons.
+ *
+ *   AA_Dialog.show({
+ *       title:       'Save filter',
+ *       fields:      [ {name:'name',   type:'text',     label:'Name', value:'', required:true, autofocus:true},
+ *                      {name:'global', type:'checkbox', label:'Share', checked:false} ],
+ *       submitLabel: 'Save',
+ *       cancelLabel: 'Cancel',
+ *       onSubmit:    values => { ... }   // keyed by field name; text→string, checkbox→bool
+ *   });
+ *
+ * A single <dialog> is created lazily and reused. ESC, backdrop click and
+ * Enter behave natively. Required text fields block submit when empty.
+ * ───────────────────────────────────────────────────────────────────────── */
+const AA_Dialog = {
+    _el: null,
+
+    show(opts) {
+        const dlg    = AA_Dialog._dialog();
+        const fields = opts.fields || [];
+
+        const rows = fields.map((f, i) => {
+            const id = 'aa-dlg-f' + i;
+            if (f.type === 'checkbox') {
+                return `<label class="aa-dialog-check"><input type="checkbox" id="${id}"${f.checked ? ' checked' : ''}> ${AA_Dialog._esc(f.label)}</label>`;
+            }
+            return `<label class="aa-dialog-row"><span>${AA_Dialog._esc(f.label)}</span>`
+                 + `<input type="text" id="${id}" value="${AA_Dialog._esc(f.value ?? '')}"${f.required ? ' required' : ''}${f.autofocus ? ' autofocus' : ''}></label>`;
+        }).join('');
+
+        dlg.innerHTML =
+            '<form class="aa-dialog-form">'
+          +   (opts.title ? `<h2 class="aa-dialog-title">${AA_Dialog._esc(opts.title)}</h2>` : '')
+          +   rows
+          +   '<div class="aa-dialog-btns">'
+          +     `<button type="button" class="btn btn-l btn-secondary" data-aa-cancel>${AA_Dialog._esc(opts.cancelLabel || 'Cancel')}</button>`
+          +     `<button type="submit" class="btn btn-l btn-primary">${AA_Dialog._esc(opts.submitLabel || 'OK')}</button>`
+          +   '</div>'
+          + '</form>';
+
+        const form = dlg.querySelector('form');
+        form.querySelector('[data-aa-cancel]').onclick = () => dlg.close();
+        form.onsubmit = (e) => {
+            e.preventDefault();
+            const values = {};
+            let invalid  = null;
+            fields.forEach((f, i) => {
+                const inp = dlg.querySelector('#aa-dlg-f' + i);
+                if (f.type === 'checkbox') {
+                    values[f.name] = inp.checked;
+                } else {
+                    values[f.name] = inp.value;
+                    if (f.required && !inp.value.trim() && !invalid) { invalid = inp; }
+                }
+            });
+            if (invalid) { invalid.focus(); return; }
+            dlg.close();
+            if (opts.onSubmit) { opts.onSubmit(values); }
+        };
+
+        dlg.showModal();
+    },
+
+    _dialog() {
+        if (!AA_Dialog._el) {
+            AA_Dialog._el = document.createElement('dialog');
+            AA_Dialog._el.className = 'aa-dialog';
+            document.body.appendChild(AA_Dialog._el);
+        }
+        return AA_Dialog._el;
+    },
+
+    _esc(s) {
+        return String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+};
+
+/* Saved-filter (bookmark) dialogs — thin wrappers over AA_Dialog. They read
+ * their data from the clicked control's data-* attributes (set in PHP, so a
+ * bookmark name never enters a JS string and cannot break out of an attribute).
+ * Localized labels come from the global AA_BM_L10N object emitted by the page. */
+function AA_FilterSaveDialog(btn) {
+    const d = btn.dataset;
+    const fields = [{ name: 'name', type: 'text', label: AA_BM_L10N.name, value: '', required: true, autofocus: true }];
+    if (d.canglobal === '1') {
+        fields.push({ name: 'global', type: 'checkbox', label: AA_BM_L10N.share, checked: false });
+    }
+    AA_Dialog.show({
+        title:       AA_BM_L10N.saveTitle,
+        fields,
+        submitLabel: AA_BM_L10N.save,
+        cancelLabel: AA_BM_L10N.cancel,
+        onSubmit:    v => AA_FilterBookmarkSubmit(d.form, 'bookmark', null, v.name, v.global)
+    });
+}
+
+function AA_FilterRenameDialog(btn) {
+    const d = btn.dataset;
+    AA_Dialog.show({
+        title:       AA_BM_L10N.renameTitle,
+        fields:      [{ name: 'name', type: 'text', label: AA_BM_L10N.name, value: d.name, required: true, autofocus: true }],
+        submitLabel: AA_BM_L10N.save,
+        cancelLabel: AA_BM_L10N.cancel,
+        onSubmit:    v => AA_FilterBookmarkSubmit(d.form, 'bookmarkrename', d.key, v.name, false)
+    });
+}
+
+/* applies a saved filter (clicking its name) */
+function AA_FilterApply(el) {
+    AA_FilterBookmarkSubmit(el.dataset.form, 'bookmarkgo', el.dataset.key, null, false);
+}
+
+/* deletes a saved filter, after confirmation */
+function AA_FilterDelete(btn) {
+    if (confirm(AA_BM_L10N.delConfirm)) {
+        AA_FilterBookmarkSubmit(btn.dataset.form, 'bookmarkdelete', btn.dataset.key, null, false);
+    }
+}
+
+/* points srchbr_bookmark at the target row, builds srchbr_akce (mirroring
+ * SearchBarAction's ':' / '#:' encoding) and submits the search form */
+function AA_FilterBookmarkSubmit(formName, akce, key, name, global) {
+    const f = document[formName];
+    if (key != null && key !== '') {
+        f.elements['srchbr_bookmark'].value = key;
+    }
+    let action = akce;
+    if (name != null) { action += ':' + String(name).replace(/:/g, '#:'); }
+    if (global)       { action += ':y'; }
+    f.elements['srchbr_akce'].value = action;
+    f.submit();
+}
+
 function OpenWindowIfRequest(formname, bar, admin_url) {
     const doc = document[formname];
     const idx = doc.elements['srchbr_field[' + bar + ']'].selectedIndex;

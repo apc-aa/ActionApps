@@ -28,7 +28,7 @@
  * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
  * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
  * @link      https://www.apc.org/ APC
-*/
+ */
 
 require_once __DIR__ . "/formutil.php";
 
@@ -343,18 +343,18 @@ class AA_Searchbar extends AA_Storable {
                            [value] =>
                            [oper] => RLIKE
                            [readonly] => )) */
-            $new_search_row = [];
-            foreach ($state['search_row'] as $k => $row) {
-                $new_search_row[$k] = [
-                    'condition' => [
-                                                 'fields'   => [$row['field']],
-                                                 'operator' => $row['oper'],
-                                                 'value'    => $row['value'],
-                    ],
-                                             'readonly' => $row['readonly'],
-                ];
-            }
-            $state['search_row'] = $new_search_row;
+                $new_search_row = [];
+                foreach ($state['search_row'] as $k => $row) {
+                    $new_search_row[$k] = [
+                        'condition' => [
+                            'fields'   => [$row['field']],
+                            'operator' => $row['oper'],
+                            'value'    => $row['value'],
+                        ],
+                        'readonly' => $row['readonly'],
+                    ];
+                }
+                $state['search_row'] = $new_search_row;
         }
         return $state;
     }
@@ -371,19 +371,20 @@ class AA_Searchbar extends AA_Storable {
 
     /** addOrder function
      * Adds new Order bar(s)
-     * @param  array $sort[] = array( <field> => <a|d> )
+     *
+     * @param  array  $sort  [] = array( <field> => <a|d> )
      *               value other than 'a' means DESCENDING
      */
-    function addOrder( $sort ): void
+    public function addOrder( $sort ): void
     {
         // fill order_row variable
         if (isset($sort) && is_array($sort)) {
             foreach ( $sort as $s ) {
                 $this->order_row[] =
-                     [
-                         'field' => key($s),
-                            'dir' => (current($s) && current($s)!=='a') ? 'd' : 'a',
-                     ];
+                    [
+                        'field' => key($s),
+                        'dir' => (current($s) && current($s)!=='a') ? 'd' : 'a',
+                    ];
             }
         }
     }
@@ -395,7 +396,7 @@ class AA_Searchbar extends AA_Storable {
      *                                  'value'    => <search_string> )
      * @param $readonly
      */
-    function addSearch($conds, $readonly=false): void
+    public function addSearch($conds, $readonly=false): void
     {
         // fill search_row variable
         if (isset($conds) && is_array($conds)) {
@@ -417,8 +418,8 @@ class AA_Searchbar extends AA_Storable {
     }
 
     /** setDefaultOrder function
-    */
-    function setDefaultOrder(): void
+     */
+    private function setDefaultOrder(): void
     {
         // global $auth, $slice_id;  // @todo - tried to set right order after searchbox is cleaned, but it shows some errors. I have to look on it later. Honza 6.9.2012
         // $profile = AA_Profile::getProfile(AuthGetUid(), $slice_id); // current user settings
@@ -430,9 +431,10 @@ class AA_Searchbar extends AA_Storable {
     }
 
     /** setFromProfile function
-     * @param AA_Profile $profile
+     *
+     * @param AA_Profile  $profile
      */
-    function setFromProfile($profile): void
+    public function setFromProfile($profile): void
     {
         // admin_order is in 'publish_date....+' format
         $set        = new AA_Set;
@@ -466,7 +468,7 @@ class AA_Searchbar extends AA_Storable {
 
     /** @return AA_Set object - should be used instead of getConds and getSort
      */
-    function getSet(): AA_Set
+    public function getSet(): AA_Set
     {
         $set = new AA_Set;
         foreach ($this->search_row as $row) {
@@ -480,10 +482,10 @@ class AA_Searchbar extends AA_Storable {
         return $set;
     }
 
-     /** getBookmarkNames function
-      *  @return array of bookmark names '<key>' => '<name>'
-      */
-    function getBookmarkNames(): array
+    /** getBookmarkNames function
+     *  @return array of bookmark names '<key>' => '<name>'
+     */
+    public function getBookmarkNames(): array
     {
         return isset($this->bookmarks) ? $this->bookmarks->getKeyName() : [];
     }
@@ -512,7 +514,7 @@ class AA_Searchbar extends AA_Storable {
      *
      * @return string true, if the printed searchrow is not empty
      */
-    function get_search_bar($bar): string {
+    private function get_search_bar(int $bar): string {
 
         $search_arr = $this->fields->getSearchArray($this->show & MGR_SB_ALLTEXT, $this->show & MGR_SB_ALLNUM);
 
@@ -528,10 +530,11 @@ class AA_Searchbar extends AA_Storable {
             $readonly = $this->search_row[$bar]->isReadonly();
         }
 
-        $searchtext = ($bar == 0) ?  _m('Search') :  _m('And');   // first bar is described as 'SEARCH' others 'AND'
+        $searchtext = ($bar === 0) ?  _m('Search') :  _m('And');   // first bar is described as 'SEARCH' others 'AND'
+        $button     = ($bar === 0) ? '<button type="submit" class="btn btn-filter-search">'._m('Search').'</button>' : '';
 
         // filter
-        $ret = "<div class=\"aa-formgroup-inline".($readonly ? " aa-readonly" : '')."\"><div class='aa-sbrow-and'>$searchtext</div>";
+        $ret = "<div class=\"aa-formgroup-inline".($readonly ? " aa-readonly" : '')."\"><div class='aa-sbrow-and'><b>$searchtext</b></div>";
         if ($readonly) {
             $ret .= "<div class=\"aa-sbrow-fld\">".$this->fields[$fld]['name']."</div>";
             $ret .= "<div class=\"aa-sbrow-op\">";
@@ -540,10 +543,10 @@ class AA_Searchbar extends AA_Storable {
                 case "CONTAIN":  $ret .= _m('contains');    break;
                 case "RLIKE":
                 case "BEGIN":
-                                 $ret .= _m('begins with'); break;
+                    $ret .= _m('begins with'); break;
                 case "=":
                 case "==":
-                                 $ret .= _m('is');          break;
+                    $ret .= _m('is');          break;
             }
             $ret .= "</div>";
             $ret .= "<div class=\"aa-sbrow-val\">".$val."</div>";
@@ -553,22 +556,22 @@ class AA_Searchbar extends AA_Storable {
             $ret .= '</div><div class="aa-sbrow-op">';
             $ret .= getFrmSelectEasy("srchbr_oper[$bar]", [' ' => ' '], null, ['onchange' => "OpenWindowIfRequest('" . $this->form_name . "','$bar','" . get_admin_url('constants_sel.php',['module_id'=>$this->module_id], false) . "')"]);
             $ret .= '</div><div class="aa-sbrow-val">';
-            $ret .= "<input type=\"text\" name=\"srchbr_value[$bar]\" size=\"20\" onkeydown=\"if (event.key === 'Enter') document.".$this->form_name. ".submit();\" value=\"$val\"></div>";
+            $ret .= "<input type=\"search\" name=\"srchbr_value[$bar]\" size=\"20\" onkeydown=\"if (event.key === 'Enter') document.".$this->form_name. ".submit();\" value=\"$val\"></div>";
         }
-        $ret .= '</div>';
+        $ret .= $button.'</div>';
         return $ret;
     }
 
     /** get_bar_actions function
      *
      */
-    function get_bar_actions(): string {
+    private function get_bar_actions(): string {
         $ret  = '<div class="aa-sb-btns">';
         $ret .=  '<button type="submit" class="btn">'._m('Search').'</button>';
         $ret .=  '<button type="button" class="btn btn-secondary" onclick="SearchBarAction(\''.$this->form_name. "', 'clearsearch', false, false)\">". _m('Clear') ."</button>";
         if ($this->show & MGR_SB_BOOKMARKS) {
-            $ret .= '<button type="button" class="btn btn-secondary" onclick="SearchBarAction(\'' . $this->form_name . "', 'bookmark', '" . _m('Stored search name') . "'," .
-                (IfSlPerm(PS_BOOKMARK) ? "'" . _m('You have the permission to add stored search globally. Do you want to add this query as global (common to all slice users)?') . "'" : "false") . ")\">" . _m('Store search') . "</button>";
+            // one-step save: opens the AA_Dialog (name + optional "share" checkbox)
+            $ret .= '<button type="button" class="btn btn-secondary" data-form="'.safe($this->form_name).'" data-canglobal="'.(IfSlPerm(PS_BOOKMARK) ? '1' : '0').'" onclick="AA_FilterSaveDialog(this)">'._m('Store search').'</button>';
         }
 
         if ($this->hint != "") {
@@ -582,15 +585,16 @@ class AA_Searchbar extends AA_Storable {
 
     /** get_order_bar function
      * Prints one order bar (one row)
-     * @param int $bar which bar to print (index)
+     *
+     * @param  int  $bar  which bar to print (index)
      */
-    function get_order_bar($bar): string {
+    private function get_order_bar($bar): string {
         $order_fields = $this->fields->getOrderArray();
         [$dir, $fld] = ( isset($this->order_row[$bar]) && is_array($this->order_row[$bar]) ) ?  [safe($this->order_row[$bar]['dir']), $this->order_row[$bar]['field']] :  ["a", $order_fields[0]];
 
         $searchtext  = _m('Order');
         $ret =  '<div class="aa-formgroup-inline">';
-        $ret .=  "<div class=\"aa-orderrow-label\">$searchtext</div>";
+        $ret .=  "<div class=\"aa-orderrow-label\"><b>$searchtext</b></div>";
         $ret .=  "<div class=\"aa-orderrow-fld\">". getFrmSelectEasy("srchbr_order[$bar]", $order_fields, $fld).'</div>';
         $ret .=  "<div class=\"aa-orderrow-dir\"><label>". getFrmChBoxEasy("srchbr_order_dir[$bar]", $dir==='d').' '. _m('Descending'). "</label></div>";
         $ret .= "</div>";
@@ -600,38 +604,65 @@ class AA_Searchbar extends AA_Storable {
     /** get_bar_bookmarks function
      *
      */
-    function get_bar_bookmarks(): string {
-        $ret  = '<div class=aa-ui-searches>';
-        $ret .=  '<div class="aa-formgroup-inline">';
-        $ret .=   '<span class=aa-form-label>'._m('Stored searches').'</span>';
-        $ret .=   '<div class="aa-sb-bkmrks">'. $this->bookmarks->getSelectbox() .'</div>';
+    private function get_bar_bookmarks(): string {
+        $ret  = '<div>';
+        $ret .=  '<div class=aa-ui-searches>';
+        $ret .=   '<div class="aa-formgroup-inline">';
+        $ret .=    '<strong class="aa-form-label mr-1">'._m('Stored searches').'</strong>';
+        $ret .=    $this->bookmarks->getSelectbox();
+        $ret .=    '<button type=button onclick="SearchBarAction(\''.$this->form_name ."', 'bookmarkgo', false, false)\">". _m('Filter') .'</button>';
+        $ret .=   '</div>';
         $ret .=  '</div>';
-        $ret .=  '<div class="aa-sb-bkmrks-btns">';
-        $ret .=   '<button type=button onclick="SearchBarAction(\''.$this->form_name ."', 'bookmarkgo', false, false)\">". _m('View') .'</button>';
-        $ret .=   '<button type=button class="btn-secondary" onclick="SearchBarActionConfirm(\''.$this->form_name ."', 'bookmarkupdate', '". _m("Are you sure to refine current search?") ."')\">". _m('Update') ."</button>";
-        $ret .=   '<button type=button class="btn-secondary" onclick="SearchBarAction(\''.$this->form_name ."', 'bookmarkrename', '". _m("Enter new name") ."', false)\">". _m('Rename') ."</button>";
-        $ret .=   '<button type=button class="btn-secondary" onclick="SearchBarActionConfirm(\''.$this->form_name ."', 'bookmarkdelete', '"._m("Are you sure to delete selected search?")."')\">". _m('Delete') ."</button>";
-        $ret .=  '</div>';
+        $ret .=  $this->bookmarks->getManageList($this->form_name);
         $ret .= '</div>';
         return $ret;
+    }
+
+    /** hasActiveSearch function
+     *  True when a user search/filter is in effect, so the bar should open
+     *  expanded. A non-empty search row or an applied bookmark counts; the
+     *  default sort order alone does not.
+     */
+    private function hasActiveSearch(): bool {
+        foreach ($this->search_row as $row) {
+            if (strlen($row->getValue())) {
+                return true;
+            }
+        }
+        return $this->bookmarks->getLastUsed() !== 'none';
     }
 
     /** getBar function
      * Get searchbar (search rows and order rows - based on current settings)
      */
-    function getBar(): string {
+    public function getBar(): string {
         if ( !($this->show & (MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS))) {
             return '';
         }
 
-        $ret  = '<div class="aa-ui-searchbar flex"><input type="hidden" name="srchbr_akce" value="1">';
-        $ret .= '<div>';
+        // when a search/filter is active, the bar opens expanded (showing the
+        // full set of fields); otherwise it stays compact - a single field
+        $expanded = $this->hasActiveSearch();
+
+        $ret  = '<div class="flex f-between"><input type="hidden" name="srchbr_akce" value="1">';
+        $ret .= '<div class="aa-filter relative'.($expanded ? ' expanded' : '').'">';
 
         // print searchbars
         $count_sb = 0;
-        $empty = false;   // flag - true if the last printed searchrow is empty
+        $details  = false;   // true once the collapsible "Advanced search" block is open
 
         if ($this->show & MGR_SB_SEARCHROWS) {
+            // first search row - always visible (compact mode shows only this)
+            $ret .= $this->get_search_bar($count_sb++);
+
+            // the rest (further "And" rows, ordering, action buttons) lives in a
+            // collapsible block - revealed by the summary toggle or when expanded
+            $ret .= '<details class="aa-ui-searchbar"'.($expanded ? ' open' : '').'>'
+                  . '<summary class="aa-ad-filter" onclick="document.querySelector(\'.aa-filter\').classList.toggle(\'expanded\')">'. _m('Advanced search') .'</summary>'
+                  . '<div class="aa-ui-searchbar-block">';
+            $details = true;
+
+            $empty = false;   // flag - true if the last printed searchrow is empty
             while ( ($count_sb < $this->search_row_count_min) || ($this->add_empty_search_row && !$empty) || !$this->isEmpty($count_sb) ) {
                 $empty = $this->isEmpty($count_sb);
                 $ret  .= $this->get_search_bar($count_sb++);
@@ -648,12 +679,13 @@ class AA_Searchbar extends AA_Storable {
         if ($this->show & (MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS)) {
             $ret .= $this->get_bar_actions();
         }
+        if ($details) {
+            $ret .= '</div></details>';
+        }
         $ret .= '</div>';
 
-        if ($this->show & MGR_SB_BOOKMARKS) {
-            if ( $this->bookmarks->count() ) {
+        if (($this->show & MGR_SB_BOOKMARKS) && $this->bookmarks->count()) {
             $ret .= $this->get_bar_bookmarks();
-        }
         }
 
         $ret .= '</div>
@@ -680,6 +712,28 @@ class AA_Searchbar extends AA_Storable {
                 $ret .= "   ChangeOperators('".$this->form_name."','$i','".$row->getOperator()."');\n";
             }
         }
+        if ($this->show & MGR_SB_BOOKMARKS) {
+            // localized labels for the save / rename filter dialogs (AA_Dialog)
+            $ret .= "\n   window.AA_BM_L10N = ".json_encode([
+                'save'        => _m('Save'),
+                'cancel'      => _m('Cancel'),
+                'name'        => _m('Name'),
+                'share'       => _m('Share with all slice users'),
+                'saveTitle'   => _m('Save filter'),
+                'renameTitle' => _m('Rename filter'),
+                'delConfirm'  => _m('Are you sure to delete selected filter?'),
+            ], JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT).";\n";
+        }
+        // PRG-lite: a mutating bookmark action is a one-shot, but the search form
+        // submits via GET so it lingers in the URL and a reload would repeat it
+        // (deleting/duplicating the next bookmark). The resulting state is already
+        // kept in the session, so drop the action from the URL after it ran.
+        if ( !empty($_GET['srchbr_akce']) ) {
+            [ $done_akce ] = ParamExplode((string)$_GET['srchbr_akce']);
+            if ( in_array($done_akce, ['bookmark', 'bookmarkrename', 'bookmarkdelete', 'bookmarkupdate'], true) ) {
+                $ret .= "\n   if (window.history.replaceState) { const u = new URL(location.href); u.searchParams.delete('srchbr_akce'); u.searchParams.delete('srchbr_bookmark'); window.history.replaceState(null, '', u); }\n";
+            }
+        }
         $ret .= '
             </script>';
         return $ret;
@@ -691,7 +745,7 @@ class AA_Searchbar extends AA_Storable {
  */
 class AA_Bookmarks {
     protected array $bookmarks = []; // array of stored bookmarks  [<int> => ['name' => <name>, 'state'=> <searchbar_state>, ...]]
-                                     // bookmarks[] = array('name' => <name>, 'state'=> <searchbar_state>)
+    // bookmarks[] = array('name' => <name>, 'state'=> <searchbar_state>)
     protected ?AA_Profile $profile;  // profile, where to store bookmarks
     protected $active_bookmark;      // last used bookmark
 
@@ -809,7 +863,7 @@ class AA_Bookmarks {
         if ( $to_global && !IfSlPerm(PS_BOOKMARK) ) {
             return false;
         }
-          // store to database
+        // store to database
         $last_id = $this->profile->insertProperty('bookmark', $name, serialize($state), $to_global);
         AA_Log::write("BM_CREATE", $last_id, $name);
 
@@ -839,7 +893,7 @@ class AA_Bookmarks {
         if ( $to_global && !IfSlPerm(PS_BOOKMARK) ) {
             return false;
         }
-          // store to database
+        // store to database
         $this->profile->updateProperty('bookmark', $name, serialize($state), $id);
 
         $this->profile->loadprofile(true);    // reread profile from database
@@ -855,9 +909,10 @@ class AA_Bookmarks {
 
     /**
      * @param $key
+     *
      * @return bool
      */
-    function is_global($key): bool
+    private function is_global($key): bool
     {
         return $this->bookmarks[$key]['type'] === '*';
     }
@@ -866,18 +921,18 @@ class AA_Bookmarks {
      * @param $key
      * @return bool
      */
-    function delete($key): bool
+    public function delete($key): bool
     {
         if ( !is_object($this->profile) ) {
             return false;
         }
         // is it global bookmark?
         $global = $this->is_global($key);
-          // and have we permisson to delete it?
+        // and have we permisson to delete it?
         if ( $global && !IfSlPerm(PS_BOOKMARK) ) {
             return false;
         }
-          // store to database
+        // store to database
         $this->profile->deleteProperty('bookmark', $this->bookmarks[$key]['name'], $global);
         AA_Log::write("BM_DELETE", $this->bookmarks[$key]['id'], $this->bookmarks[$key]['name']);
         $this->profile->loadprofile(true);    // reread profile from database
@@ -890,7 +945,7 @@ class AA_Bookmarks {
      * @param $state
      * @return bool
      */
-    function updateBookmark($key, $state): bool {
+    public function updateBookmark($key, $state): bool {
         $old = $this->bookmarks[$key];
         $ret = $this->update( $old['name'], $state, $old['type']==='*', $old['id']);
         if ($ret) {
@@ -916,25 +971,94 @@ class AA_Bookmarks {
     }
 
     /** bookmark of key $key is currently selected? */
-    function isSelected($key): bool
+    private function isSelected($key): bool
     {
         return ctype_digit((string)$this->getLastUsed()) && ($this->getLastUsed() == $key);
     }
 
-    /** Return HTML selectbox from bookmarks
+    /** Return HTML select-box from bookmarks
      */
-    function getSelectbox(): string
+    public function getSelectbox(): string
     {
+        $ret_my   = '';
+        $ret_glob = '';
         $ret = '
           <select name="srchbr_bookmark">
              <option value="none" '. (($this->getLastUsed() === "none") ? 'selected' : '') .'>'. _m('Select one...') .'</option>';
         foreach ($this->bookmarks as $k => $book) {
             $class = $this->is_global($k)  ? 'class="sel_title"' : '';
             $sel   = $this->isSelected($k) ? 'selected' : '';
-            $ret  .= "\n<option value=\"$k\" $sel $class>".safe($book['name'])."</option>";
+            $opt   = "\n<option value=\"$k\" $sel $class>".safe($book['name'])."</option>";
+            if ($this->is_global($k)) {
+                $ret_glob .= $opt;
+            } else {
+                $ret_my   .= $opt;
+            }
+        }
+        if ($ret_my) {
+            $ret .= '<optgroup label="'._m('My filters').'">'.$ret_my.'</optgroup>';
+        }
+        if ($ret_glob) {
+            $ret .= '<optgroup label="'._m('Global filters').'">'.$ret_glob.'</optgroup>';
         }
         $ret .= '</select>';
         return $ret;
+    }
+
+    /** getManageList function
+     *  Renders the collapsible "Manage filters" panel - one row per stored
+     *  search, with rename / delete / apply controls. Global (shared) filters
+     *  can be renamed or deleted only with the PS_BOOKMARK permission; without
+     *  it they are shown read-only (apply only).
+     *
+     * @param  string  $form_name  name of the search form (for submit)
+     */
+    public function getManageList(string $form_name): string {
+        if ( !$this->bookmarks ) {
+            return '';
+        }
+        $can_global = IfSlPerm(PS_BOOKMARK);
+        $form       = safe($form_name);
+
+        // keep the panel open right after a rename / delete so the user sees the
+        // result and can carry on managing
+        $open = '';
+        if ( !empty($_GET['srchbr_akce']) ) {
+            [ $akce ] = ParamExplode((string)$_GET['srchbr_akce']);
+            if ( in_array($akce, ['bookmarkrename', 'bookmarkdelete'], true) ) {
+                $open = ' open';
+            }
+        }
+
+        $rows = '';
+        foreach ($this->bookmarks as $k => $book) {
+            $global   = $this->is_global($k);
+            $may_edit = !$global || $can_global;   // global filters need PS_BOOKMARK to edit
+            $icon     = $global ? 'aa-fiter-users' : 'aa-fiter-user';
+            $name     = safe($book['name']);       // safe for both link text and data-name attr
+
+            // the name is a link that applies the filter; edit/delete open the
+            // AA_Dialog / confirm via data-* (so the name never enters a JS string)
+            $row = '<a class="aa-bm-name '.$icon.'" data-form="'.$form.'" data-key="'.(int)$k.'" '
+                 . 'onclick="AA_FilterApply(this)" title="'.safe(_m('Apply filter')).'">'.$name.'</a>';
+
+            $buttons = '';
+            if ($may_edit) {
+                $buttons .= '<button type="button" class="aa-button-edit" data-form="'.$form.'" data-key="'.(int)$k.'" data-name="'.$name.'" '
+                         .  'onclick="AA_FilterRenameDialog(this)" title="'.safe(_m('Rename')).'" aria-label="'.safe(_m('Rename')).'"></button>';
+                $buttons .= '<button type="button" class="aa-button-delete" data-form="'.$form.'" data-key="'.(int)$k.'" '
+                         .  'onclick="AA_FilterDelete(this)" title="'.safe(_m('Delete')).'" aria-label="'.safe(_m('Delete')).'"></button>';
+            }
+
+            $rows .= '<div class="aa-formgroup-inline">'.$row
+                  .  '<div class="aa-sb-bkmrks-btns">'.$buttons.'</div>'
+                  .  '</div>';
+        }
+
+        return '<details class="aa-save-filters relative pr-3"'.$open.'>'
+             . '<summary>'._m('Manage filters').'</summary>'
+             . '<div class="aa-manage-filter pt-1"><div class="aa-ui-searches">'.$rows.'</div></div>'
+             . '</details>';
     }
 }
 
