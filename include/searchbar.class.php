@@ -608,9 +608,10 @@ class AA_Searchbar extends AA_Storable {
         $ret  = '<div>';
         $ret .=  '<div class=aa-ui-searches>';
         $ret .=   '<div class="aa-formgroup-inline">';
-        $ret .=    '<strong class="aa-form-label mr-1">'._m('Stored searches').'</strong>';
+        // selecting a stored filter applies it immediately (AA_FilterSelectApply),
+        // so the separate apply button is gone; the label is now a verb prompt
+        $ret .=    '<strong class="aa-form-label mr-1">'._m('Filter').':</strong>';
         $ret .=    $this->bookmarks->getSelectbox();
-        $ret .=    '<button type=button onclick="SearchBarAction(\''.$this->form_name ."', 'bookmarkgo', false, false)\">". _m('Filter') .'</button>';
         $ret .=   '</div>';
         $ret .=  '</div>';
         $ret .=  $this->bookmarks->getManageList($this->form_name);
@@ -716,6 +717,7 @@ class AA_Searchbar extends AA_Storable {
             // localized labels for the save / rename filter dialogs (AA_Dialog)
             $ret .= "\n   window.AA_BM_L10N = ".json_encode([
                 'save'        => _m('Save'),
+                'refine'      => _m('Refine'),
                 'cancel'      => _m('Cancel'),
                 'name'        => _m('Name'),
                 'share'       => _m('Share with all slice users'),
@@ -723,6 +725,9 @@ class AA_Searchbar extends AA_Storable {
                 'renameTitle' => _m('Rename filter'),
                 'delConfirm'  => _m('Are you sure to delete selected filter?'),
             ], JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT).";\n";
+            // existing filter names keyed by bookmark key — lets the client prefill
+            // the Save dialog from the last-used filter and flip Save<->Refine live
+            $ret .= "   window.AA_BM_NAMES = ".json_encode($this->bookmarks->getNameList(), JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT).";\n";
         }
         // PRG-lite: a mutating bookmark action is a one-shot, but the search form
         // submits via GET so it lingers in the URL and a reload would repeat it
@@ -976,6 +981,22 @@ class AA_Bookmarks {
         return ctype_digit((string)$this->getLastUsed()) && ($this->getLastUsed() == $key);
     }
 
+    /** Bookmark names keyed by bookmark key, each with its scope flag.
+     *  Consumed client-side (window.AA_BM_NAMES) to prefill the Save dialog from
+     *  the last-used filter and to toggle the submit button between Save and
+     *  Refine as the user types a name that matches an existing filter.
+     *
+     * @return array<string,array{name:string,global:bool}>
+     */
+    public function getNameList(): array
+    {
+        $ret = [];
+        foreach ($this->bookmarks as $key => $book) {
+            $ret[(string)$key] = ['name' => (string)$book['name'], 'global' => $this->is_global($key)];
+        }
+        return $ret;
+    }
+
     /** Return HTML select-box from bookmarks
      */
     public function getSelectbox(): string
@@ -983,23 +1004,26 @@ class AA_Bookmarks {
         $ret_my   = '';
         $ret_glob = '';
         $ret = '
-          <select name="srchbr_bookmark">
+          <select name="srchbr_bookmark" onchange="AA_FilterSelectApply(this)">
              <option value="none" '. (($this->getLastUsed() === "none") ? 'selected' : '') .'>'. _m('Select one...') .'</option>';
         foreach ($this->bookmarks as $k => $book) {
-            $class = $this->is_global($k)  ? 'class="sel_title"' : '';
+            $global = $this->is_global($k);
+            // aa-ic-user / aa-ic-users paint the scope icon in capable browsers
+            // (appearance: base-select); the optgroups carry it everywhere else
+            $class = $global ? 'sel_title aa-ic-users' : 'aa-ic-user';
             $sel   = $this->isSelected($k) ? 'selected' : '';
-            $opt   = "\n<option value=\"$k\" $sel $class>".safe($book['name'])."</option>";
-            if ($this->is_global($k)) {
+            $opt   = "\n<option value=\"$k\" $sel class=\"$class\">".safe($book['name'])."</option>";
+            if ($global) {
                 $ret_glob .= $opt;
             } else {
                 $ret_my   .= $opt;
             }
         }
         if ($ret_my) {
-            $ret .= '<optgroup label="'._m('My filters').'">'.$ret_my.'</optgroup>';
+            $ret .= '<optgroup label="'.safe(_m('My filters')).'">'.$ret_my.'</optgroup>';
         }
         if ($ret_glob) {
-            $ret .= '<optgroup label="'._m('Global filters').'">'.$ret_glob.'</optgroup>';
+            $ret .= '<optgroup label="'.safe(_m('Global filters')).'">'.$ret_glob.'</optgroup>';
         }
         $ret .= '</select>';
         return $ret;
