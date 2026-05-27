@@ -173,7 +173,7 @@ function GetModuleSelection(): string {
         $modules_cond = ($permitted_slices==='all') ? [] : [['module.id', array_keys($permitted_slices), 'l']];
 
         $mymodules = DB_AA::select([],
-            'SELECT LOWER(HEX(module.id)) AS unpackid, module.type, module.deleted, module.name, slice.type AS slice_type FROM `module` LEFT JOIN `slice` ON module.id=slice.id',
+            'SELECT LOWER(HEX(module.id)) AS unpackid, module.type, module.priority, module.deleted, module.name, slice.type AS slice_type FROM `module` LEFT JOIN `slice` ON module.id=slice.id',
             $modules_cond,
             ['module.deleted','module.priority','module.name']);
 
@@ -226,9 +226,17 @@ function GetModuleSelection(): string {
         }
 
         // Pre-bucket modules under each site. Iterate $mymodules (not $non_sites_by_id)
-        // to preserve the query order (deleted asc, priority asc, name asc) across the
-        // combined pool — so a site's children stay alphabetised regardless of which
-        // type-specific bucket they came from.
+        // to inherit the query order (deleted asc, priority asc, name asc) across the
+        // combined pool, then refine each site's children with a module-type tier
+        // (see the uasort below): regular slices first, then RM/Alerts/Jump/Links/Auth/Polls
+        // — the same order as the unassigned sections ($other_type_labels) further down.
+        $type_rank = ['S' => 0, 'RM' => 1, 'Alerts' => 2, 'J' => 3, 'Links' => 4, 'A' => 5, 'P' => 6];
+        $rankOf = static function (array $row) use ($type_rank): int {
+            $bucket = ($row['type'] === 'S')
+                ? ((($row['slice_type'] ?? '') === 'ReaderManagement') ? 'RM' : 'S')
+                : $row['type'];
+            return $type_rank[$bucket] ?? 99;
+        };
         $slices_under_site = [];
         foreach ($mymodules as $row) {
             if ($row['type'] === 'W') {
@@ -238,6 +246,15 @@ function GetModuleSelection(): string {
             foreach (array_keys($slice2sites[$mod_id] ?? []) as $site_id) {
                 $slices_under_site[$site_id][$mod_id] = $row;
             }
+        }
+        // Order each site's children: (un)deleted, then priority, then the module-type
+        // tier, then name. uasort is stable (PHP 8.0+), so rows tied on the first three
+        // keys keep the query's name order; it preserves the $mod_id keys used below.
+        foreach ($slices_under_site as $site_id => $kids) {
+            uasort($kids, static fn(array $a, array $b): int =>
+                [(int)$a['deleted'], (int)$a['priority'], $rankOf($a)]
+                <=> [(int)$b['deleted'], (int)$b['priority'], $rankOf($b)]);
+            $slices_under_site[$site_id] = $kids;
         }
 
         $mydir = AA_Module::getModuleInfo('url', AA::$module_id);
