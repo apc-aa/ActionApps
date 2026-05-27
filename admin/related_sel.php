@@ -105,15 +105,6 @@ if (!$slice) {
     echo "<Error - no slice found<br>";
     echo "<hr>sid<br><pre>";
     print_r($sid);
-    echo "<hr>r_state<br>";
-    print_r($r_state);
-    echo "<hr>GET<br>";
-    print_r($_GET);
-    echo "<hr>SESSION<br>";
-    print_r($_SESSION);
-    echo "<hr>POST<br>";
-    print_r($_POST);
-    echo "</pre>";
     exit;
 }
 
