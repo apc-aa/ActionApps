@@ -1102,12 +1102,12 @@ function ParseFnc($s): array
  */
 function safe( $var='' ): string
 {
-    return htmlspecialchars($var ?? '', ENT_QUOTES | ENT_HTML5, 'ISO-8859-1');
+    return \AA\Util\Txt::safe($var);
 }
 
 /** quotes utf string for use in xml attributes and content */
 function safexml( $var='' ): string {
-    return htmlspecialchars( $var, ENT_QUOTES | ENT_SUBSTITUTE | ENT_XML1, 'UTF-8');
+    return \AA\Util\Txt::safexml($var);
 }
 
 /** replaces all the &apos;, ... html entities */
@@ -1991,24 +1991,24 @@ function RestoreVariables(array $r_state_vars): void
 
 /** susbstr with utf in mind */
 function aa_substr($text, $start, $len=null): string {
-    return mb_substr((string)$text, (int)$start, $len);
+    return \AA\Util\Txt::substr($text, $start, $len);
 }
 
 /** strlen with utf in mind */
 function aa_strlen($text) {
-    return grapheme_strlen((string)$text);   // mb_ functions do not work well - see https://tonsky.me/blog/unicode/
+    return \AA\Util\Txt::strlen($text);
 }
 
 /** strpos with utf in mind */
 function aa_strpos($haystack , $needle , $offset = 0): false|int
 {
-    return mb_strpos((string)$haystack , (string)$needle , (int)$offset);
+    return \AA\Util\Txt::strpos($haystack, $needle, $offset);
 }
 
 /** strrpos with utf in mind */
 function aa_strrpos($haystack , $needle , $offset = 0): false|int
 {
-    return mb_strrpos((string)$haystack , (string)$needle , (int)$offset);
+    return \AA\Util\Txt::strrpos($haystack, $needle, $offset);
 }
 
 /** trim  with utf in mind */

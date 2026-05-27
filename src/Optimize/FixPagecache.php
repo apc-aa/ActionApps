@@ -3,6 +3,7 @@
 namespace AA\Optimize;
 
 use AA\IO\DB\DB_AA;
+use AA\Util\Txt;
 
 /** Fix inconsistency in pagecache
  *  Delete non-existent keys in pagecache_str2find table
@@ -44,7 +45,7 @@ class FixPagecache extends AbstractOptimizeById
         $pagecaches = DB_AA::select(['id' => []], "SELECT pagecache.* FROM pagecache LEFT JOIN pagecache_str2find ON pagecache.id = pagecache_str2find.pagecache_id", [['pagecache_str2find.id', '', 'ISNULL']]);
         foreach ($pagecaches as $id => $row) {
             if (isset($row['content'])) {
-                $row['content'] = aa_substr($row['content'], 0, 200) . '...';
+                $row['content'] = Txt::substr($row['content'], 0, 200) . '...';
             }
             $bad_ids["p:$id"] = ['table' => 'pagecache', ...$row];
         }

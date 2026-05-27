@@ -14,7 +14,46 @@ class Txt
     /** shorten with possible ellipsis character */
     public static function shorten(string $str, int $len = 20, string $ellipsis = "…"): string
     {
-        return (aa_strlen($str) > $len) ? aa_substr($str, 0, $len - strlen($ellipsis)) . $ellipsis : $str;
+        return (self::strlen($str) > $len) ? self::substr($str, 0, $len - strlen($ellipsis)) . $ellipsis : $str;
+    }
+
+    // --- UTF-aware string primitives (canonical home; the global aa_*() in
+    //     include/util.php now delegate here). grapheme_/mb_ per tonsky.me/blog/unicode. ---
+
+    /** UTF-aware strlen (grapheme count). */
+    public static function strlen($text): int|false
+    {
+        return grapheme_strlen((string) $text);
+    }
+
+    /** UTF-aware substr. */
+    public static function substr($text, $start, ?int $len = null): string
+    {
+        return mb_substr((string) $text, (int) $start, $len);
+    }
+
+    /** UTF-aware strpos. */
+    public static function strpos($haystack, $needle, $offset = 0): int|false
+    {
+        return mb_strpos((string) $haystack, (string) $needle, (int) $offset);
+    }
+
+    /** UTF-aware strrpos. */
+    public static function strrpos($haystack, $needle, $offset = 0): int|false
+    {
+        return mb_strrpos((string) $haystack, (string) $needle, (int) $offset);
+    }
+
+    /** HTML-escape for output. ENT_QUOTES|ENT_HTML5; legacy charset ISO-8859-1. */
+    public static function safe($var = ''): string
+    {
+        return htmlspecialchars((string) ($var ?? ''), ENT_QUOTES | ENT_HTML5, 'ISO-8859-1');
+    }
+
+    /** Escape for XML attribute/content contexts (UTF-8). */
+    public static function safexml($var = ''): string
+    {
+        return htmlspecialchars((string) ($var ?? ''), ENT_QUOTES | ENT_SUBSTITUTE | ENT_XML1, 'UTF-8');
     }
 
     private const KEY_VAL_TABLE_CSS = <<<CSS
