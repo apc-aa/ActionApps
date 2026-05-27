@@ -203,7 +203,8 @@ class DB_PDO
                             $options[PDO::ATTR_PERSISTENT] = true;
                         }
                         if ($this->collation && $this->charset) {
-                            $options[Pdo\Mysql::ATTR_INIT_COMMAND] = "SET NAMES '$this->charset' COLLATE '$this->collation'";
+                            $key = (int) (defined('Pdo\Mysql::ATTR_INIT_COMMAND') ? constant('Pdo\Mysql::ATTR_INIT_COMMAND') : constant('PDO::MYSQL_ATTR_INIT_COMMAND'));
+                            $options[$key] = "SET NAMES '$this->charset' COLLATE '$this->collation'";
                         }
                         //huhl($dsn, $User, $Password, $options);
                         $this->dbh = new PDO($dsn, $User, $Password, $options);
@@ -214,7 +215,7 @@ class DB_PDO
             if (!$this->dbh) {
                 $this->halt("connect($Host$Port, $User, \$Password) failed.");
 
-                
+
                 return 0;
             }
 
@@ -569,12 +570,12 @@ class DB_PDO
         } else {
             $this->connect();
             $q = match ($this->Server) {
-                "pgsql" => "SELECT a.attname AS name, t.typname AS type, a.attlen AS len, a.atttypmod, a.attnotnull AS notnull, a.atthasdef, a.attnum 
-                              FROM pg_class c,  pg_attribute a, pg_type t 
+                "pgsql" => "SELECT a.attname AS name, t.typname AS type, a.attlen AS len, a.atttypmod, a.attnotnull AS notnull, a.atthasdef, a.attnum
+                              FROM pg_class c,  pg_attribute a, pg_type t
                               WHERE relkind in ('r', 'v') AND (c.relname='$table' or c.relname = lower('$table')) AND a.attname not like '....%' AND a.attnum > 0 AND a.atttypid = t.oid AND a.attrelid = c.oid ORDER BY a.attnum",
                 "sqlite" => "PRAGMA table_info($table)",
-                "mssql" => "SELECT COLUMN_NAME, DATA_TYPE, CHARACTER_MAXIMUM_LENGTH, COLLATION_NAME, CHARACTER_SET_NAME, IS_NULLABLE, COLUMN_DEFAULT  
-                              FROM INFORMATION_SCHEMA.COLUMNS             
+                "mssql" => "SELECT COLUMN_NAME, DATA_TYPE, CHARACTER_MAXIMUM_LENGTH, COLLATION_NAME, CHARACTER_SET_NAME, IS_NULLABLE, COLUMN_DEFAULT
+                              FROM INFORMATION_SCHEMA.COLUMNS
                               WHERE TABLE_SCHEMA=" . $this->quote($this->Database) . " AND TABLE_NAME=" . $this->quote($table),
                 "mysql" => "SELECT COLUMN_NAME, DATA_TYPE, CHARACTER_MAXIMUM_LENGTH, COLLATION_NAME, EXTRA, COLUMN_COMMENT, COLUMN_KEY, PRIVILEGES, COLUMN_TYPE, CHARACTER_SET_NAME, IS_NULLABLE, COLUMN_DEFAULT
                               FROM INFORMATION_SCHEMA.COLUMNS
