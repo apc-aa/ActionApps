@@ -1036,11 +1036,13 @@ class AA_Bookmarks {
             $may_edit = !$global || $can_global;   // global filters need PS_BOOKMARK to edit
             $icon     = $global ? 'aa-fiter-users' : 'aa-fiter-user';
             $name     = safe($book['name']);       // safe for both link text and data-name attr
+            // the title also explains the person/people icon (personal vs shared)
+            $scope    = $global ? _m('Shared filter (click to apply)') : _m('Personal filter (click to apply)');
 
-            // the name is a link that applies the filter; edit/delete open the
+            // the name is a button that applies the filter; edit/delete open the
             // AA_Dialog / confirm via data-* (so the name never enters a JS string)
-            $row = '<a class="aa-bm-name '.$icon.'" data-form="'.$form.'" data-key="'.(int)$k.'" '
-                 . 'onclick="AA_FilterApply(this)" title="'.safe(_m('Apply filter')).'">'.$name.'</a>';
+            $row = '<button type="button" class="btn btn-secondary aa-bm-name '.$icon.'" data-form="'.$form.'" data-key="'.(int)$k.'" '
+                 . 'onclick="AA_FilterApply(this)" title="'.safe($scope).'">'.$name.'</button>';
 
             $buttons = '';
             if ($may_edit) {
