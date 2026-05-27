@@ -503,6 +503,15 @@ class HitcounterDisplay
                     'b3_cnt' => $b3_cnt, 'b3_dur' => $b3_dur,
                 ];
                 $cols[$sid]['avgMs'][] = is_null($avg_ms) ? 0 : $avg_ms;
+
+                // Per-bucket average duration (already decoded to ms above), kept as four
+                // separate series so each cache-state cohort gets its own chart. Blending
+                // C+M with C+NM (or NC+M with NC+NM) would hide the very differences we want
+                // to benchmark. 0 means "no hits in this bucket on this day".
+                $cols[$sid]['avgMsB2'][] = (float) $b2_dur;   // C+M   — cached, 200
+                $cols[$sid]['avgMsB3'][] = (float) $b3_dur;   // C+NM  — cached, 304
+                $cols[$sid]['avgMsB0'][] = (float) $b0_dur;   // NC+M  — uncached, 200
+                $cols[$sid]['avgMsB1'][] = (float) $b1_dur;   // NC+NM — uncached, 304
                 if ((int) $hits > $row_max_hits) {
                     $row_max_hits = (int) $hits;
                 }
@@ -534,6 +543,12 @@ class HitcounterDisplay
         $ret .= self::renderHitsChart($cols, $labels, $item_labels);
         $ret .= self::renderCacheStateCharts($cols, $s_ids, $labels, $item_labels);
         $ret .= self::renderAvgMsChart($cols, $labels, $item_labels);
+        // Per-bucket duration benchmarks (cached pair first, then uncached) — each only
+        // shows up once it has at least two data points to draw a trend line.
+        $ret .= self::renderAvgMsChart($cols, $labels, $item_labels, 'avgMsB2', \_m('Average duration, cached + 200 (C+M, ms)'), 2);
+        $ret .= self::renderAvgMsChart($cols, $labels, $item_labels, 'avgMsB3', \_m('Average duration, cached + 304 (C+NM, ms)'), 2);
+        $ret .= self::renderAvgMsChart($cols, $labels, $item_labels, 'avgMsB0', \_m('Average duration, uncached + 200 (NC+M, ms)'), 2);
+        $ret .= self::renderAvgMsChart($cols, $labels, $item_labels, 'avgMsB1', \_m('Average duration, uncached + 304 (NC+NM, ms)'), 2);
 
         \AA::Stringexpander()->addRequire('chartjs@4');
         return $ret;
@@ -931,22 +946,33 @@ class HitcounterDisplay
         return $ret;
     }
 
-    private static function renderAvgMsChart(array $cols, array $labels, array $item_labels): string
+    /**
+     * Average page-render duration over time. $col_key picks which series to plot:
+     * 'avgMs' (blended over all requests, default), or one of the four per-bucket
+     * cohorts 'avgMsB0'..'avgMsB3' (NC+M / NC+NM / C+M / C+NM). A per-item line is
+     * drawn only when it has at least $min_points non-zero values — a single point
+     * is no trend — and the whole chart (heading included) is skipped when no line
+     * qualifies. The colour index advances per item across all charts so the same
+     * item keeps the same colour everywhere.
+     */
+    private static function renderAvgMsChart(array $cols, array $labels, array $item_labels, string $col_key = 'avgMs', ?string $title = null, int $min_points = 1): string
     {
-        $ret = '<h3>' . \_m('Average duration (ms)') . '</h3>';
         $datasets = [];
         $i = 0;
         foreach ($cols as $sid => $sidcols) {
-            if (empty($sidcols['avgMs'])) {
+            if (empty($sidcols[$col_key])) {
                 continue;
             }
             $hue   = self::generateSaturatedColor($i++);
             $color = $sid === 'all' ? '#222' : self::hslToHex($hue, 70, 45);
-            if (array_filter($sidcols['avgMs'], static fn($v) => $v !== 0)) {
-                $datasets[] = ['label' => $item_labels[$sid] ?? $sid, 'data' => $sidcols['avgMs'], 'color' => $color, 'dash' => [], 'width' => $sid === 'all' ? 3 : 2];
+            if (count(array_filter($sidcols[$col_key], static fn($v) => $v != 0)) >= $min_points) {
+                $datasets[] = ['label' => $item_labels[$sid] ?? $sid, 'data' => $sidcols[$col_key], 'color' => $color, 'dash' => [], 'width' => $sid === 'all' ? 3 : 2];
             }
         }
-        return $ret . self::getGraph($datasets, $labels);
+        if (empty($datasets)) {
+            return '';
+        }
+        return '<h3>' . ($title ?? \_m('Average duration (ms)')) . '</h3>' . self::getGraph($datasets, $labels);
     }
 
     /**

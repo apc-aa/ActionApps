@@ -35,10 +35,15 @@ require_once __DIR__ . "/../include/mgettext.php";
 try {
     $items_code = InputVars::stringGETPOST('items_code');  // could be posted as url parameter as well
     $item_count = InputVars::intPOST('item_count');
-    $item_set   = InputVars::stringPOST('item_set');
-    $date_from  = InputVars::stringPOST('date_from');
+    // item_set / date_from / show read GET too so the per-item "Statistics" link
+    // (Adminlink::itemLink) can deep-link straight to a rendered table. The admin
+    // form's action carries only module_id (StateUrl), so a normal POST submit has
+    // no stale GET values to shadow the posted ones.
+    $item_set   = InputVars::stringGETPOST('item_set');
+    $date_from  = InputVars::stringGETPOST('date_from');
     $for_module = InputVars::stringPOST('for_module');
-    $show       = InputVars::boolPOST('show');
+    $show       = InputVars::boolGETPOST('show');
+    $stats_code = InputVars::stringGETPOST('stats');       // deep-link granularity, e.g. 'days' or 'days,weeks'
 } catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
 
 if (!IfSlPerm(PS_EDIT_ALL_ITEMS)) {
@@ -111,6 +116,20 @@ if (is_array($_POST['aa'] ?? null)) {
     // huhl($grabber->getAllItems());
 } else {
     $content = (new AA_Content())->setId('admin_statistics');
+}
+
+// Deep link (the per-item "Statistics" link in Adminlink::itemLink) arrives as a GET
+// with show=1 but no aa[] form data. Pre-select the granularity checkboxes from ?stats=
+// (falling back to 'days') so the mch widget reflects the choice and the table/charts
+// below render — a plain GET can't express the aa[...][stats] form structure otherwise.
+if ($show && !is_array($_POST['aa'] ?? null)) {
+    $codes = array_values(array_intersect(
+        $stats_code ? preg_split('/[,\-]/', $stats_code) : ['days'],
+        array_keys(HITCOUNTER_OPTIONS),
+    )) ?: ['days'];
+    foreach ($codes as $idx => $code) {
+        $content->setValue('stats', $code, $idx);
+    }
 }
 
 echo $w->getHtml(new AA_Property( 'stats', _m('Stats to show'), 'string', true), $content);

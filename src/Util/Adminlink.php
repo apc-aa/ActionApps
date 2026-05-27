@@ -109,7 +109,14 @@ class Adminlink
             $info[] = AA_Slice::getModuleName($slice_id, true);
         }
         $info[] = ChangesMonitor::getHistoryLink($item_id);
-        $info[] = a_href(get_admin_url('se_statistics.php', ['change_id' => $slice_id, 'items' => $item_id]), _m('Statistics'));
+        $info[] = a_href(get_admin_url('se_statistics.php', [
+            'change_id'  => $slice_id,
+            'items_code' => $item_id,
+            'item_set'   => 'exact',
+            'stats'      => 'days',
+            'date_from'  => date('Y-m-d H:i', strtotime('-50 days')),
+            'show'       => 1,
+        ]), _m('Statistics'));
         return $item_id . Txt::additionalInfo($info);
     }
 
