@@ -2343,6 +2343,75 @@ select[name="sel_module"] option.aa-section-header {
     }
 }
 
+/* === Stored-filter selector ("Filter:" dropdown, searchbar.class.php) ===
+   Progressive enhancement: capable browsers (Chromium 130+) get a styled popup
+   showing the same person/people scope icons as the Manage-filters list. Every
+   other browser keeps the plain native <select> with its My/Global optgroups,
+   which already convey scope. Mirrors the module-selector block above; the icon
+   stroke (#6a5e22) is hard-coded because data: URIs cannot read CSS variables. */
+@supports (appearance: base-select) {
+    select[name="srchbr_bookmark"] {
+        appearance: base-select;
+        font-size: var(--sz-m);
+        background: var(--clr-surface-popup) url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 12" fill="none" stroke="%236a5e22" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4.5l3 3 3-3"/></svg>') no-repeat right 8px center / 11px;
+        border: 1px solid var(--clr-gold);
+        border-radius: 4px;
+        padding: 3px 30px 3px 6px;
+        color: var(--clr-dark);
+        cursor: pointer;
+        transition: border-color .12s ease, box-shadow .12s ease;
+    }
+    select[name="srchbr_bookmark"]:hover { border-color: var(--clr-border-hover); }
+    select[name="srchbr_bookmark"]:focus {
+        outline: none;
+        border-color: var(--clr-text-accent);
+        box-shadow: 0 0 0 3px rgba(184, 162, 70, .20);
+    }
+    select[name="srchbr_bookmark"]::picker-icon { display: none; }
+    select[name="srchbr_bookmark"]::picker(select) {
+        appearance: base-select;
+        background: var(--clr-surface-popup);
+        border: 1px solid var(--clr-gold);
+        border-radius: 6px;
+        padding: 4px 0;
+        box-shadow: 0 14px 36px rgba(60, 50, 20, .20);
+        min-width: 220px;
+    }
+    select[name="srchbr_bookmark"] optgroup {
+        font-style: italic;
+        font-weight: 600;
+        color: var(--clr-text-accent);
+        padding: 6px 8px 2px;
+    }
+    select[name="srchbr_bookmark"] option {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 3px 10px;
+        background: transparent;
+        transition: background .08s ease;
+    }
+    select[name="srchbr_bookmark"] option:hover   { background: var(--clr-basic); }
+    select[name="srchbr_bookmark"] option:checked { background: var(--clr-surface-selected); font-weight: 500; }
+    /* scope icon leads the name (matches the Manage-filters list) */
+    select[name="srchbr_bookmark"] option[class*="aa-ic-"]::before {
+        content: '';
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        flex-shrink: 0;
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: contain;
+    }
+    select[name="srchbr_bookmark"] option.aa-ic-user::before {
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none" stroke="%236a5e22" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="5.5" r="2.3"/><path d="M3 14c.7-2.5 2.8-3.8 5-3.8s4.3 1.3 5 3.8"/></svg>');
+    }
+    select[name="srchbr_bookmark"] option.aa-ic-users::before {
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none" stroke="%236a5e22" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6.2" cy="5.8" r="2.1"/><path d="M1.8 13.6c.6-2.3 2.5-3.5 4.4-3.5s3.8 1.2 4.4 3.5"/><path d="M10.6 4.3a2 2 0 0 1 .1 3.6"/><path d="M11.2 9.5c1.5.3 2.8 1.4 3.2 3.1"/></svg>');
+    }
+}
+
 /* ============================================================
  * Promoted from admin-gold.css (2026 redesign). Each rule keeps
  * structural properties (layout, spacing, sizes, pseudo-element
