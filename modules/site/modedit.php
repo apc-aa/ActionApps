@@ -131,7 +131,7 @@ if ($add || $update) {
         // now validate all module specific fields
         ValidateInput("state_file",   _m("State file"),  $state_file,   $err, false, "text");
         ValidateInput("router",       _m("Router"),      $router,       $err, false, "number");
-        ValidateInput("uses_modules", _m("Uses Slices"), $uses_modules, $err, false, "id");
+        ValidateInput("uses_modules", _m("Uses modules"), $uses_modules, $err, false, "id");
 
         if (count($err)) {
             break;
@@ -278,15 +278,18 @@ $apage->printHead($err, $Msg);
     FrmInputSelect("router",   _m("Router"), [1 => 'AA_Router_Seo'], $router, false, _m("Use AA_Router_Seo. Otherwise you will use old sitemodule approach with 'control file', which we can't recommend."));
     FrmInputText("state_file", _m("Home or State file"), $state_file, 99, 25, false, _m("For AA_Router_Seo fill the <b>default url</b> (home) - like <em>/en/home</em> or left it empty<br><br>For older sites without AA_Router_Seo fill in the name of <b>Site control file</b> - will be placed in /modules/site/sites/ directory. The name you specify will be prefixed by 'site_' prefix, so if you for example name the file as 'apc.php', the site control file will be /modules/site/sites/site_apc.php."), '', 'false', '/en/home');
 
-    foreach ($g_modules as  $k => $v) {
-        if (str_contains('SP', $v['type'])) {
-            $slice_selection[$k] = $v['name'];
+    // Offer every module type except sites (W): a site can attach any other
+    // module - slice, polls, alerts, links, jump, ... - via REL_FLAG_MODULE_DEPEND.
+    $module_selection = [];
+    foreach ($g_modules as $k => $v) {
+        if ($v['type'] !== 'W') {
+            $module_selection[$k] = $v['name'];
         }
     }
 
     //    $uses_modules = GetTable2Array("SELECT source_id, destination_id FROM relation WHERE source_id='".q_pack_id($module_id)."' AND flag='".REL_FLAG_MODULE_DEPEND."'", "", 'unpack:destination_id');
     $uses_modules = AA_Module_Site::getRelatedModules([$module_id]);
-    FrmTwoBox('uses_modules[]', _m('Uses slices') , $slice_selection, $uses_modules, 8, false, '', '', "Select all slices which you are using for the site. It is used for caching as well as for seo string search.");
+    FrmTwoBox('uses_modules[]', _m('Uses modules'), $module_selection, $uses_modules, 8, false, '', '', "Select all modules which you are using for the site. It is used for caching as well as for seo string search.");
     if ($module_id) {
         FrmTabSeparator(_m("Additional setting"));
         echo $object_frm;
