@@ -217,6 +217,23 @@ const AA_Dialog = {
             if (opts.onSubmit) { opts.onSubmit(values); }
         };
 
+        // optional live hook: called on every keystroke with the current values
+        // and a small ui ({setSubmitLabel}) so callers can relabel the submit
+        // button (e.g. Save <-> Refine when the typed name matches an existing one)
+        if (opts.onInput) {
+            const submitBtn = form.querySelector('button[type=submit]');
+            const fire = () => {
+                const values = {};
+                fields.forEach((f, i) => {
+                    const inp = dlg.querySelector('#aa-dlg-f' + i);
+                    values[f.name] = (f.type === 'checkbox') ? inp.checked : inp.value;
+                });
+                opts.onInput(values, { setSubmitLabel: (t) => { submitBtn.textContent = t; } });
+            };
+            form.addEventListener('input', fire);
+            fire();   // set the initial label (a prefilled name may already match)
+        }
+
         dlg.showModal();
     },
 
@@ -238,18 +255,72 @@ const AA_Dialog = {
  * their data from the clicked control's data-* attributes (set in PHP, so a
  * bookmark name never enters a JS string and cannot break out of an attribute).
  * Localized labels come from the global AA_BM_L10N object emitted by the page. */
+/* The filter most recently applied is remembered per module in localStorage so
+ * the Save dialog can prefill its name + scope (within the last hour, same
+ * module). window.AA_BM_NAMES (emitted by the page, keyed by bookmark key)
+ * supplies the names for that lookup and for the Save<->Refine label toggle. */
+const AA_BM_LAST_TTL    = 3600000;        // remember the last-used filter for 1 hour
+const AA_BM_KEY_PREFIX  = 'aa_bm_last_';  // one key per module: aa_bm_last_<module_id>
+
+function AA_BM_moduleId() {
+    return new URLSearchParams(location.search).get('module_id') || '';
+}
+
+/* Drop stale (or corrupt) aa_bm_last_* entries so the store can't accumulate a
+ * dead key per module ever visited — keeps it bounded to the last hour's use.
+ * Runs on every save (an infrequent, user-initiated action). */
+function AA_BM_prune() {
+    const now = Date.now();
+    for (let i = localStorage.length - 1; i >= 0; i--) {   // backwards: removeItem reindexes
+        const k = localStorage.key(i);
+        if (!k || !k.startsWith(AA_BM_KEY_PREFIX)) { continue; }
+        let stale = true;
+        try {
+            const v = JSON.parse(localStorage.getItem(k));
+            stale = !v || (now - v.ts) >= AA_BM_LAST_TTL;
+        } catch (e) { stale = true; }   // unparseable → drop
+        if (stale) { localStorage.removeItem(k); }
+    }
+}
+
+function AA_BM_saveLast(name, global) {
+    const mod = AA_BM_moduleId();
+    if (!mod || name == null) { return; }
+    try {
+        AA_BM_prune();   // sweep stale entries first so the store stays bounded
+        localStorage.setItem(AA_BM_KEY_PREFIX + mod, JSON.stringify({ name, global: !!global, ts: Date.now() }));
+    } catch (e) { /* private mode / quota — prefill is a nicety, not required */ }
+}
+
+function AA_BM_readLast() {
+    const mod = AA_BM_moduleId();
+    if (!mod) { return null; }
+    try {
+        const v = JSON.parse(localStorage.getItem(AA_BM_KEY_PREFIX + mod));
+        return (v && (Date.now() - v.ts) < AA_BM_LAST_TTL) ? v : null;
+    } catch (e) { return null; }
+}
+
+/* does a (trimmed) name already name a stored filter? drives Save <-> Refine */
+function AA_BM_isExistingName(name) {
+    const n = String(name ?? '').trim();
+    return n !== '' && Object.values(window.AA_BM_NAMES || {}).some(b => b.name.trim() === n);
+}
+
 function AA_FilterSaveDialog(btn) {
-    const d = btn.dataset;
-    const fields = [{ name: 'name', type: 'text', label: AA_BM_L10N.name, value: '', required: true, autofocus: true }];
+    const d    = btn.dataset;
+    const last = AA_BM_readLast();   // prefill from the last filter used here, if recent
+    const fields = [{ name: 'name', type: 'text', label: AA_BM_L10N.name, value: last ? last.name : '', required: true, autofocus: true }];
     if (d.canglobal === '1') {
-        fields.push({ name: 'global', type: 'checkbox', label: AA_BM_L10N.share, checked: false });
+        fields.push({ name: 'global', type: 'checkbox', label: AA_BM_L10N.share, checked: last ? last.global : false });
     }
     AA_Dialog.show({
         title:       AA_BM_L10N.saveTitle,
         fields,
         submitLabel: AA_BM_L10N.save,
         cancelLabel: AA_BM_L10N.cancel,
-        onSubmit:    v => AA_FilterBookmarkSubmit(d.form, 'bookmark', null, v.name, v.global)
+        onInput:     (v, ui) => ui.setSubmitLabel(AA_BM_isExistingName(v.name) ? AA_BM_L10N.refine : AA_BM_L10N.save),
+        onSubmit:    v => { AA_BM_saveLast(v.name, v.global); AA_FilterBookmarkSubmit(d.form, 'bookmark', null, v.name, v.global); }
     });
 }
 
@@ -264,8 +335,19 @@ function AA_FilterRenameDialog(btn) {
     });
 }
 
-/* applies a saved filter (clicking its name) */
+/* applies the filter chosen in the "Filter:" dropdown (its onchange handler) */
+function AA_FilterSelectApply(sel) {
+    const key = sel.value;
+    if (key === 'none' || key === '') { return; }   // the "Select one..." placeholder
+    const b = (window.AA_BM_NAMES || {})[key];
+    if (b) { AA_BM_saveLast(b.name, b.global); }
+    AA_FilterBookmarkSubmit(sel.form.name, 'bookmarkgo', key, null, false);
+}
+
+/* applies a saved filter (clicking its name in the Manage-filters list) */
 function AA_FilterApply(el) {
+    const b = (window.AA_BM_NAMES || {})[el.dataset.key];
+    if (b) { AA_BM_saveLast(b.name, b.global); }
     AA_FilterBookmarkSubmit(el.dataset.form, 'bookmarkgo', el.dataset.key, null, false);
 }
 
