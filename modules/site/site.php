@@ -63,7 +63,26 @@ if ($_COOKIE['AA_Session'] && !isset($_REQUEST['username'])) {   // do not authe
 //  28Apr05  - Honza - added also $all_ids, $add_disc, $disc_type, $sh_itm,
 //                     $parent_id, $ids, $sel_ids, $disc_ids - for discussions
 //                      - it is in fact all global variables used in view.php
-$cache_key = get_hash('site', PageCache::globalKeyArray(), $_SERVER['REQUEST_URI'], $_SERVER['REQUEST_METHOD'], $_SERVER['REDIRECT_URL'],  $_SERVER['REDIRECT_QUERY_STRING_UNESCAPED'],$_SERVER['QUERY_STRING_UNESCAPED'], get_authorization_header(), $_POST, $_GET, $auth4cache);  // $_GET because $_SERVER['REQUEST_URI'] do not contain variables from Rewrite (site_id); *_STRING_UNESCAPED is for old sitemodule - see shtml_query_string(); AA\Cache\PageCache::globalKeyArray - now only for _COOKIES and HTTP_HOST
+// Tracker params (utm_*, gclid, fbclid, ...) and analytics cookies (IDE,
+// NID, ...) are stripped from every key source so identical content does
+// not get cached under thousands of campaign-tagged URLs. See
+// PageCache::IGNORED_PARAMS_EXACT / IGNORED_PARAMS_PREFIX for the list.
+// $_GET is kept (in addition to REQUEST_URI) because URL-rewrite variables
+// (site_id) only show up in $_GET; *_STRING_UNESCAPED is for the old
+// sitemodule shtml_query_string() path.
+$cache_key = get_hash(
+    'site',
+    PageCache::globalKeyArray(),
+    PageCache::normalizeRequestUri($_SERVER['REQUEST_URI'] ?? ''),
+    $_SERVER['REQUEST_METHOD'] ?? '',
+    $_SERVER['REDIRECT_URL'] ?? '',
+    PageCache::normalizeQueryString($_SERVER['REDIRECT_QUERY_STRING_UNESCAPED'] ?? ''),
+    PageCache::normalizeQueryString($_SERVER['QUERY_STRING_UNESCAPED'] ?? ''),
+    get_authorization_header(),
+    PageCache::filterIgnoredParams($_POST),
+    PageCache::filterIgnoredParams($_GET),
+    $auth4cache
+);
 
 
 // store nocache to the variable (since it should be set for some view and we

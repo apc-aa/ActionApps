@@ -57,6 +57,37 @@ class PageCache
 
     private bool $cache_nostore = false; // if true, the cache is not stored (used for {user:xxxx} alias)
 
+    /**
+     * Exact-match tracker/analytics parameter and cookie names that must NOT
+     * fragment the page-cache key. Hash-keyed so isset() lookup is O(1).
+     *
+     * Canonical casing only (case-sensitive match). Tracker names have a
+     * well-known canonical form in the wild (lowercase URL params, uppercase
+     * DoubleClick cookies); we intentionally do not lower-case to avoid both
+     * the strtolower() cost per key and the risk of filtering custom
+     * site-specific parameters that happen to share spelling under a
+     * different casing.
+     *
+     * Only universally recognized third-party trackers belong here.
+     * Ambiguous names like 'ref', 'source', 'referrer' are deliberately
+     * excluded so custom site code that uses them keeps working.
+     */
+    private const IGNORED_PARAMS_EXACT = [
+        // Click identifiers
+        'gclid' => 1, 'gbraid' => 1, 'wbraid' => 1, 'dclid' => 1,
+        'fbclid' => 1, 'msclkid' => 1, 'yclid' => 1, 'ttclid' => 1,
+        'twclid' => 1, 'li_fat_id' => 1, 'igshid' => 1,
+        // Email-campaign ids
+        'mc_cid' => 1, 'mc_eid' => 1,
+        // HubSpot URL trackers (HubSpot cookies start with __h and are caught by the `_`-prefix rule below)
+        '_hsenc' => 1, '_hsmi' => 1,
+        // Google DoubleClick cookies — no `_` prefix, missed by the cookie filter
+        'IDE' => 1, 'NID' => 1, '1P_JAR' => 1, 'DSID' => 1,
+    ];
+
+    /** Prefix patterns for ignored params. Only utm_* is in widespread use. */
+    private const IGNORED_PARAMS_PREFIX = ['utm_'];
+
     /** AA\Cache\PageCache function
      *  AA\Cache\PageCache class constructor
      * @param $ct
@@ -64,6 +95,122 @@ class PageCache
     public function __construct($ct = 600)
     {
         $this->cacheTime = (int) $ct;
+    }
+
+    /**
+     * Returns true when $name is a known third-party tracker that must not
+     * be part of the page-cache key. Case-sensitive.
+     */
+    public static function isIgnoredParam(string $name): bool
+    {
+        if (isset(self::IGNORED_PARAMS_EXACT[$name])) {
+            return true;
+        }
+        foreach (self::IGNORED_PARAMS_PREFIX as $prefix) {
+            if (str_starts_with($name, $prefix)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Returns $params with all tracker keys removed. Hot-path optimized:
+     * empty input short-circuits; if no tracker key is present, returns
+     * the input array unchanged (no allocation, no copy).
+     */
+    public static function filterIgnoredParams(array $params): array
+    {
+        if (!$params) {
+            return $params;
+        }
+        foreach ($params as $k => $v) {
+            if (is_string($k) && self::isIgnoredParam($k)) {
+                $out = [];
+                foreach ($params as $k2 => $v2) {
+                    if (!is_string($k2) || !self::isIgnoredParam($k2)) {
+                        $out[$k2] = $v2;
+                    }
+                }
+                return $out;
+            }
+        }
+        return $params;
+    }
+
+    /**
+     * Returns $qs (a raw URL query string without leading '?') with tracker
+     * params removed. Returns the input unchanged when no tracker is found.
+     * Tracker names are pure ASCII, so we skip urldecode of the key.
+     *
+     * When trackers ARE stripped, any empty pairs created by the strip
+     * (e.g. the dangling '&' from "utm_source=a&vid=1&") are dropped too so
+     * "utm_source=a&vid=1&" and "vid=1" do not produce different keys.
+     */
+    public static function normalizeQueryString(string $qs): string
+    {
+        if ($qs === '') {
+            return $qs;
+        }
+        // Fast path: single-pair query (most slice URLs look like ?vid=12).
+        // Skips the explode() allocation entirely.
+        if (!str_contains($qs, '&')) {
+            $eq   = strpos($qs, '=');
+            $name = ($eq === false) ? $qs : substr($qs, 0, $eq);
+            return self::isIgnoredParam($name) ? '' : $qs;
+        }
+
+        $kept    = [];
+        $changed = false;
+        foreach (explode('&', $qs) as $pair) {
+            $eq   = strpos($pair, '=');
+            $name = ($eq === false) ? $pair : substr($pair, 0, $eq);
+            if (self::isIgnoredParam($name)) {
+                $changed = true;
+            } else {
+                $kept[] = $pair;
+            }
+        }
+        if (!$changed) {
+            return $qs;                                         // identity — preserves no-op fast path
+        }
+        // We're rebuilding anyway — also drop empty pairs that the strip
+        // (or `&&` / trailing `&` in the original) leaves behind, so the
+        // resulting string is canonical. Inline foreach beats array_filter+
+        // closure (closure call overhead).
+        $clean = [];
+        foreach ($kept as $p) {
+            if ($p !== '') {
+                $clean[] = $p;
+            }
+        }
+        return implode('&', $clean);
+    }
+
+    /**
+     * Returns a request URI ("/path?query") with tracker params stripped
+     * from the query portion. A bare trailing '?' (or one whose query
+     * becomes empty after stripping) is dropped so "/x?" and "/x" map to
+     * the same cache key. Returns the input unchanged when no tracker is
+     * found and the query is non-empty.
+     */
+    public static function normalizeRequestUri(string $uri): string
+    {
+        $qpos = strpos($uri, '?');
+        if ($qpos === false) {
+            return $uri;
+        }
+        $qs = substr($uri, $qpos + 1);
+        if ($qs === '') {
+            return substr($uri, 0, $qpos);                     // bare "?" — drop it
+        }
+        $normalized = self::normalizeQueryString($qs);
+        if ($normalized === $qs) {
+            return $uri;
+        }
+        return $normalized === ''
+            ? substr($uri, 0, $qpos)
+            : substr($uri, 0, $qpos + 1) . $normalized;
     }
 
     /** static getKeystring function
@@ -85,12 +232,19 @@ class PageCache
         }
 
         if (isset($_COOKIE)) {
-            // do not count with cookie names starting with underscore
-            // (Google urchin uses cookies like __utmz which varies very often)
+            // Skip:
+            //   - cookies starting with `_` (Google urchin, GA, FB pixel, HubSpot __h*, …)
+            //   - the AA session cookie (must not segment public cache)
+            //   - tracker cookies without underscore prefix (DoubleClick IDE/NID/1P_JAR/DSID)
+            // Direct const isset() instead of isIgnoredParam(): no cookie name uses
+            // the utm_ prefix family, so we save a function call per cookie.
             foreach ($_COOKIE as $key => $val) {
-                if ($key[0] !== '_' && $key !== 'AA_Session') {
-                    $ks["C$key"] = $val;
+                // Empty-string keys are possible from malformed Cookie headers
+                // ("Cookie: =v"); guard $key[0] from emitting an offset warning.
+                if ($key === '' || $key[0] === '_' || $key === 'AA_Session' || isset(self::IGNORED_PARAMS_EXACT[$key])) {
+                    continue;
                 }
+                $ks["C$key"] = $val;
             }
         }
 
