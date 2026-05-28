@@ -15,6 +15,12 @@ Local URL picker field tyupe - a tool for picking a URL from site - frames used
 _Now implemented by LupWidget_
 
 
+/misc/**forgotten_pwd.php**
+/misc/**forgotten_pwd.php3**
+Standalone "forgot your password" page - emailed an MD5 reset link.
+_Orphan: nothing linked to it, and it relied on register_globals so it was already non-functional under PHP 8.2. The live forgotten-password flow is implemented as a template expansion in include/stringexpand.php (AA_Stringexpand\_\*::askForMail). Removed 2026-05-28 - honzam (see older apc-aa branches to get the code)_
+
+
 /admin/**sumarize.php3**  
 Generates a human readable output page that summarizes the slices on a system, compare slices and sync its settings  
 _No longer maintained. Removed 2022-02-25 - honzam (see older apc-aa branches to get the code)_
