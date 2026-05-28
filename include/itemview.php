@@ -71,6 +71,13 @@ class itemview {
                            // - filed by parameter() method
   private array $_content = [];       // stores item contents to be used for display
 
+  /**
+   * Cache state of the LAST get_output_cached() call: true=cache hit,
+   * false=rendered fresh, null=not yet called. Read via wasCached() so
+   * Hitcounter::hit() records the correct `cached` flag.
+   */
+  private ?bool $_was_cached = null;
+
     /** itemview function
      * @param        $slice_info
      * @param        $aliases
@@ -167,6 +174,16 @@ class itemview {
       return (str_starts_with($this->from_record, 'random'));
   }
 
+    /**
+     * Returns whether the LAST call to get_output_cached() served the response
+     * from the page cache. Returns null when get_output_cached() hasn't been
+     * called on this instance yet. Used by slice.php to pass the correct
+     * `cached` flag to Hitcounter::hit().
+     */
+    public function wasCached(): ?bool {
+        return $this->_was_cached;
+    }
+
     /** get_output_cached function
      * @param $view_type
      */
@@ -174,6 +191,7 @@ class itemview {
         //create keystring from values, which exactly identifies resulting content
 
         if ( $this->is_random() ) {                         // don't cache random item
+            $this->_was_cached = false;
             return $this->get_output($view_type);
         }
 
@@ -187,6 +205,7 @@ class itemview {
 
         global $str2find_passon;
         if ( !$GLOBALS['nocache'] && ($res = AA::Pagecache()->get($key)) ) {
+            $this->_was_cached = true;
             return $res;
         }
 
@@ -197,6 +216,7 @@ class itemview {
         AA::Pagecache()->store($key, $res, $str2find_passon);
         $str2find_passon->add_str2find($str2find_save); // and append saved for above
 
+        $this->_was_cached = false;
         return $res;
     }
 

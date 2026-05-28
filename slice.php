@@ -23,52 +23,52 @@ https://www.apc.org/
 //expected  encap     // determines wheather this file is ssi included or called directly
 //optionally sh_itm    // if specified - selected item is shown in full text
 //optionally x         // the same as sh_itm, but short_id is used instead
-                     // implemented for shorter item url (see _#SITEM_ID alias)
+// implemented for shorter item url (see _#SITEM_ID alias)
 //optionally o         // the same as x but the hit is not counted
-                     // implemented for shorter item url (see _#SITEM_ID alias)
+// implemented for shorter item url (see _#SITEM_ID alias)
 //optionally seo      // the same as x, but instead of it of item you provide seo
-                     // string (the one on seo............. field)
+// string (the one on seo............. field)
 //optionally srch      // true if this script have to show search results
 //optionally highlight // when true, shows only highlighted items in compact view
 //optionally bigsrch   // NOT SUPPORTED IN AA v 1.5+
 //optionally cat_id    // select only items in category with id cat_id
 //optionally cat_name  // select only items in category with name cat_name
 //optionally inc       // for dispalying another file instead of slice data
-                     // (like static html file - inc=/contact.html)
+// (like static html file - inc=/contact.html)
 //optionally listlen   // change number of listed items in compact view
-                     // (aplicable in compact viewe only)
+// (aplicable in compact viewe only)
 //optionally items[x]  // array of items to show one after one as fulltext
-                     // the array format is
+// the array format is
 //easy_query          // for easiest form of query
 //order               // order field id - if other than publish date
-                     // add minus sign for descending order (like "headline.......1-");
+// add minus sign for descending order (like "headline.......1-");
 //timeorder           // rev - reverse publish date order
-                     // (less priority than "order")
+// (less priority than "order")
 //no_scr              // if true, no scroller is displayed
 //all_scr             // if true, scroller shows also 'All'
 //scr_go              // sets scroller to specified page
 //scr_url             // redefines the page where the scroller should go (it is
-                     // useful if you include slice.php from another php script)
+// useful if you include slice.php from another php script)
 //restrict            // field id used with "res_val" and "exact" for restricted
-                     // output (display only items with
-                     //       "restrict" field = "res_val"
+// output (display only items with
+//       "restrict" field = "res_val"
 //res_val             // see restrict
 //exact               // = 1: "restrict" field must match res_val exactly (=)
-                     // undefined: substring is sufficient (LIKE '%res_val%')
-                     // = 2: the same as 1, but the res_val is taken as
-                     // expression (like: "environment or (toxic and not fuel)")
+// undefined: substring is sufficient (LIKE '%res_val%')
+// = 2: the same as 1, but the res_val is taken as
+// expression (like: "environment or (toxic and not fuel)")
 //als[]               // user alias definition. Parameter 'als[MY_ALIAS]=Summary'
-                     // defines alias _#MY_ALIAS. If used, it prints 'Summary'.
+// defines alias _#MY_ALIAS. If used, it prints 'Summary'.
 //lock                // used in join with "key" for multiple slices on one page
-                     // display. each slice have to have its lock, so commands
-                     // (like sh_itm, scr_go, ...) will be executed only if key
-                     // is the same as lock. key is send automatically with all
-                     // links generated in slice (at this time just prepared)
+// display. each slice have to have its lock, so commands
+// (like sh_itm, scr_go, ...) will be executed only if key
+// is the same as lock. key is send automatically with all
+// links generated in slice (at this time just prepared)
 //key                 // see lock (at this time just prepared)
 //slicetext           // displays just the text instead of any output
-                     // can be used for hiding the output of slice.hp3
+// can be used for hiding the output of slice.hp3
 
-                      //Discussion parameters
+//Discussion parameters
 //optionally add_disc   // if set, discussion comment will be added
 //optionally parent_id  // parent id of added disc. comment
 //optionally sel_ids    // if set, show only discussion comments in $ids[] array
@@ -78,16 +78,16 @@ https://www.apc.org/
 //optionally neverAllItems // if set, don't show anything when everything would be shown (if no conds[] are set)
 //optionally defaultCondsOperator // replaces LIKE for conds with not specified operator
 //optionally group_n   // displays only the n-th group (in listings where items
-                      // are grouped by some field (category, for example))
-                      // good for display all the items of last magazine issue
-                      // ( group_n=1 )
-              //
+// are grouped by some field (category, for example))
+// good for display all the items of last magazine issue
+// ( group_n=1 )
+//
 //optionally mlx       // set language extension options (needs MLX field filled in Slice Settings)
-                      // mlx=EN sets English as default language
-              // mlx=EN-FR-DE first looks for EN, then FR, then DE
-              //              and then displays the first one found
-              // mlx=EN-ONLY  displays only EN items (like conds)
-              // mlx=ALL      turns of language extension
+// mlx=EN sets English as default language
+// mlx=EN-FR-DE first looks for EN, then FR, then DE
+//              and then displays the first one found
+// mlx=EN-ONLY  displays only EN items (like conds)
+// mlx=ALL      turns of language extension
 
 
 use AA\Util\Hitcounter;
@@ -113,14 +113,17 @@ function add2sort(&$sort, $sarr): void
 //  1) in $_POST,$_GET,$_COOKIE,$_REQUEST variables the values are not quoted
 //  2) the variables are imported in global scope and is quoted
 // We are trying to remove any dependecy on the point 2) and use only $_* superglobals
-function AddslashesDeep($value): array|string { return is_array($value) ? array_map('AddslashesDeep',   $value) : addslashes($value);   }
+function AddslashesDeep($value): array|string
+{
+    return is_array($value) ? array_map('AddslashesDeep', $value) : addslashes($value);
+}
 
 foreach ($_REQUEST as $k => $v) {
     $$k = AddslashesDeep($v);
 }
 // ----- input variables normalization - end ----------------------------------
 
-$encap = ( array_key_exists('encap', $_REQUEST) && ($_REQUEST['encap']==="false") ) ? false : true ;
+$encap = (array_key_exists('encap', $_REQUEST) && ($_REQUEST['encap']==="false")) ? false : true ;
 
 require_once __DIR__."/./include/config.php";
 require_once __DIR__ . "/include/util.php";
@@ -212,7 +215,7 @@ if ($encap) {                    // adds values from QUERY_STRING_UNESCAPED
     }
 }
 
-if ( (($key != $lock) || $scrl) && is_array($r_state_vars) ) {  // command is for other slice on page
+if ((($key != $lock) || $scrl) && is_array($r_state_vars)) {  // command is for other slice on page
     RestoreVariables($r_state_vars);          // or scroller
 }
 
@@ -223,9 +226,9 @@ if ($slicetext) {
 }
 
 // url posted command to display another file ----------------------------------
-if ( $inc ) {                   // this section must be after add_vars()
+if ($inc) {                   // this section must be after add_vars()
     //  StoreVariables(array("inc")); // store in session
-    if ( !preg_match("/^([0-9a-z_])+(\.[0-9a-z]*)?$/i", $inc) ) {
+    if (!preg_match("/^([0-9a-z_])+(\.[0-9a-z]*)?$/i", $inc)) {
         echo _m("Bad inc parameter - included file must contain only alphanumeric characters"). safe(" $inc");
     } else {
         $fp = @fopen(shtml_base().$inc, 'rb');    //   if encapsulated
@@ -240,7 +243,7 @@ if ( $inc ) {                   // this section must be after add_vars()
 
 // Take any slice to work with
 if (!$slice_id && is_array($slices)) {
-    reset ($slices);
+    reset($slices);
     $slice_id = current($slices);
 }
 
@@ -249,7 +252,7 @@ if (!$slice_id && is_array($slices)) {
 // We will do it during rewrite AA to $_GET[] variable handling (probably)
 $slice_id   = trim($slice_id);
 
-if (!is_object( $db )) {
+if (!is_object($db)) {
     $db = getDB();
 }
 
@@ -315,10 +318,10 @@ $add_aliases = $aliases    = AA_View::getAliasesFromUrl($als);
 // cached. The better way is below
 // $add_aliases['_#SESSION_'] = GetAliasDef( 'f_s:'. $sess->id(), '', _m('session id'));
 
-$add_aliases['_#SESSION_'] = GetAliasDef( 'f_e:session', 'id..............', _m('session id'));
+$add_aliases['_#SESSION_'] = GetAliasDef('f_e:session', 'id..............', _m('session id'));
 
 // if banner parameter supplied => set format
-$slice_info = array_merge( $slice_info, AA_View::parseBannerParam($banner));
+$slice_info = array_merge($slice_info, AA_View::parseBannerParam($banner));
 
 $multi_aliases = [];
 // get alias list from database and possibly from url
@@ -345,36 +348,42 @@ if (!is_array($slices)) {
 }
 
 // fulltext view ---------------------------------------------------------------
-if ( $sh_itm || $x || $o || $seo ) {
+if ($sh_itm || $x || $o || $seo) {
     //  $r_state_vars = StoreVariables(array("sh_itm")); // store in session
-    if ( $x ) {
+    if ($x) {
         $zid = new zids((int)$x, 's');
-        Hitcounter::hit($zid);
-    }
-    elseif ( $seo ) {
+    } elseif ($seo) {
         $zid = new zids(explode_ids(StrExp('seo2ids', [$slice_id, $seo])), 'l');
-        Hitcounter::hit($zid);
-    }
-    elseif ( $o ) {
+    } elseif ($o) {
         $zid = new zids((int)$o, 's');
     } else {
         $zid = new zids($sh_itm, 'l');
-        Hitcounter::hit($zid);
-    }
-    
-    if ( !is_object($item = AA_Items::getItem($zid)) || ($item->getStatusCode()<>1) ) {
-       ExitPage();
     }
 
+    if (!is_object($item = AA_Items::getItem($zid)) || ($item->getStatusCode()!==1)) {
+        ExitPage();
+    }
+
+    // Build itemview only when actually rendering — its constructor mutates
+    // the shared $aliases object (adds _#SELECTED, _#ID_COUNT), which on the
+    // $hideFulltext path would be a wasteful side effect. $was_cached carries
+    // the real cache state into Hitcounter::hit() below; false when no render
+    // means no cache was consulted.
+    $was_cached = false;
     if (!isset($hideFulltext)) {
-        echo (new itemview($slice_info, $aliases, $zid))->setMultiAliases($multi_aliases)->get_output_cached("fulltext");
+        $itemview   = (new itemview($slice_info, $aliases, $zid))->setMultiAliases($multi_aliases);
+        echo $itemview->get_output_cached("fulltext");
+        $was_cached = (bool)$itemview->wasCached();
+    }
+    if (!$o) {                                          // $o preserves the "same as x but no hit" semantic
+        Hitcounter::hit($zid, $was_cached);
     }
 
     // show discussion if assigned
     $discussion_vid = ($dview ?? $slice_info['vid']);
     // you can set dview=0 to not show discussion
     if ($discussion_vid > 0) {
-        $db->query("SELECT view.*, slice.flag FROM view, slice WHERE slice.id=".xpack_id($slice_id)." AND view.id=$discussion_vid");
+        $db->query("SELECT view.*, slice.flag FROM view, slice WHERE slice.id=".xpack_id($slice_id)." AND view.id=".(int)$discussion_vid);
         if ($db->next_record()) {
             $view_info = $db->record();
 
@@ -405,13 +414,13 @@ if ( $sh_itm || $x || $o || $seo ) {
 }
 
 // multiple items fulltext view ------------------------------------------------
-if ( $items && is_array($items) ) {   // shows all $items[] as fulltext one after one
+if ($items && is_array($items)) {   // shows all $items[] as fulltext one after one
     //  $r_state_vars = StoreVariables(array("items")); // store in session
     $ids = [];
-    foreach( $items as $k => $foo) {
-        $ids[] = substr($k,1);    //delete starting character ('x') - used for interpretation of index as string, not number (by PHP)
+    foreach ($items as $k => $foo) {
+        $ids[] = substr($k, 1);    //delete starting character ('x') - used for interpretation of index as string, not number (by PHP)
     }
-    ExitPage((new itemview($slice_info, $aliases, new zids($ids,"l")))->setMultiAliases($multi_aliases)->get_output_cached("itemlist"));
+    ExitPage((new itemview($slice_info, $aliases, new zids($ids, "l")))->setMultiAliases($multi_aliases)->get_output_cached("itemlist"));
 }
 
 // compact view ----------------------------------------------------------------
@@ -428,14 +437,14 @@ if ($cat_id && ($flds = $slice->getFields()) && ($cat_field = $flds->firstOfType
     $cat_group = $flds->getCategoryGroup();
     $SQL = "SELECT value FROM constant WHERE group_id = '$cat_group' AND id=". xpack_id($cat_id);
     $db->query($SQL);
-    if ( $db->next_record() ) {
+    if ($db->next_record()) {
         $conds[] = [
             $cat_field => 1,
             'value'    => $db->f('value'),
             'operator' => ($exact ? '=' : 'LIKE')
         ];
     }
-} elseif ($cat_name && ($tmpobj = $slice->getFields()) && ($cat_field = $tmpobj->firstOfTypeFieldId()))  {  // optional parameter cat_name -------
+} elseif ($cat_name && ($tmpobj = $slice->getFields()) && ($cat_field = $tmpobj->firstOfTypeFieldId())) {  // optional parameter cat_name -------
     $conds[]     = [
         $cat_field => 1,
         'value'    => $cat_name,
@@ -446,7 +455,7 @@ if ($cat_id && ($flds = $slice->getFields()) && ($cat_field = $flds->firstOfType
 if ($restrict) {
     $conds[]     = [
         $restrict  => 1,
-        'value'    => ((($res_val[0] === '"' || $res_val[0] === "'") && $exact != 2 ) ? $res_val : "\"$res_val\""),
+        'value'    => ((($res_val[0] === '"' || $res_val[0] === "'") && $exact != 2) ? $res_val : "\"$res_val\""),
         'operator' => ($exact ? '=' : 'LIKE')
     ];
 }
@@ -461,12 +470,12 @@ if (!isset($defaultCondsOperator)) {
 if (is_array($conds)) {
     ParseEasyConds($conds, $defaultCondsOperator);
     if (is_array($als)) {
-        foreach ( $conds as $k => $v ) {
+        foreach ($conds as $k => $v) {
             // SubstituteAliases( $als, $conds[$k]['value'] );
             $conds[$k]['value'] = strtr($v['value'], $als);
         }
     }
-} elseif ( is_string($conds) && strlen($conds) ) {
+} elseif (is_string($conds) && strlen($conds)) {
     // we can use also conds=d-switch..........-=-1
     $tmp_set = new AA_Set(null, $conds);
     $conds   = $tmp_set->getConds();
@@ -500,12 +509,10 @@ if ($group_by) {
     $set->addSortFromString($group_by);
     $sort_tmp = $set->getSort();
     $slice_info["group_by"] = key($sort_tmp[0]);
-}
-elseif ($slice_info['category_sort'] && ($tmpobj = $slice->getFields()) && ($group_field = $tmpobj->firstOfTypeFieldId())) {
+} elseif ($slice_info['category_sort'] && ($tmpobj = $slice->getFields()) && ($group_field = $tmpobj->firstOfTypeFieldId())) {
     $grp_odir    = (($order==$group_field) && ($orderdirection!=='d')) ? 'a' : 'd';
     $sort_tmp[]  = [$group_field => $grp_odir];
-}
-elseif ($slice_info['group_by']) {
+} elseif ($slice_info['group_by']) {
     $gbd = match ((string)$slice_info['gb_direction']) {  // gb_direction is number
         '1'      => '1',    // 1 (1)- ascending by priority
         'd', '8' => 'd',    // d (8)- descending - 'd' goes from view (iview) settings
@@ -532,13 +539,13 @@ if ($mlxslice = MLXSlice($slice)) {
     if (!$mlxView) {
         $mlxView = new MLXView($mlx);
     }
-    $mlxView->preQueryZIDs($mlxslice,$conds);
+    $mlxView->preQueryZIDs($mlxslice, $conds);
 }
 
 $zids = QueryZids(($slices ?: [$slice_id]), $conds, $sort, "ACTIVE", $neverAllItems, 0, $defaultCondsOperator);
 
 if ($mlxslice) {
-    $mlxView->postQueryZIDs($zids,$mlxslice,$slice_id);
+    $mlxView->postQueryZIDs($zids, $mlxslice, $slice_id);
 }
 
 
@@ -550,20 +557,28 @@ if (!is_object($scr)) {
 }
 
 // display 'All' option in scroller
-if ($all_scr) { $scr->setShowAll($all_scr); }
+if ($all_scr) {
+    $scr->setShowAll($all_scr);
+}
 
 // change number of listed items
-if ($listlen) { $scr->setListlen($listlen); }
+if ($listlen) {
+    $scr->setListlen($listlen);
+}
 
 // default start page = 1
-if (!$scr_go) { $scr_go = 1; }
+if (!$scr_go) {
+    $scr_go = 1;
+}
 
 // $scrl comes from easy_scroller
-if ($scrl)    { $scr->update(); }
+if ($scrl) {
+    $scr->update();
+}
 
 /** Add scroller aliases - page number, listlen */
-$scr_aliases['_#PAGE_NO_'] = GetAliasDef( 'f_s:'. $scr->getCurrent(),  '', _m('number of current page (on pagescroller)'));
-$scr_aliases['_#PAGE_LEN'] = GetAliasDef( 'f_s:'. $scr->getListlen(), '', _m('page length (number of items)'));
+$scr_aliases['_#PAGE_NO_'] = GetAliasDef('f_s:'. $scr->getCurrent(), '', _m('number of current page (on pagescroller)'));
+$scr_aliases['_#PAGE_LEN'] = GetAliasDef('f_s:'. $scr->getListlen(), '', _m('page length (number of items)'));
 // aliases array have two form (quite stupid - will be changed in future - TODO)
 // depending on listing for one slice or many slices
 if (!is_array($slices)) {
@@ -577,11 +592,11 @@ if (!is_array($slices)) {
     }
 }
 
-if ( !$scrl ) {
+if (!$scrl) {
     $scr->go2page($scr_go);
 }
 
-if ( !$srch && !$encap && !$easy_query ) {
+if (!$srch && !$encap && !$easy_query) {
     pCatSelector(MyUrl($encap, $scr_url), $slice_id);
 }
 
@@ -598,7 +613,7 @@ if (!$zids->isEmpty()) {
 } else {
     // test if the noitem_msg is filled (be careful - "0" should be considered as filled)
     echo (isset($slice_info['noitem_msg']) && strlen($slice_info['noitem_msg'])) ?               // <!--Vacuum--> is keyword for removing 'no item message'
-          str_replace( '<!--Vacuum-->', '', AA::Un($slice_info['noitem_msg'])) : ("<div>"._m("No item found") ."</div>");
+          str_replace('<!--Vacuum-->', '', AA::Un($slice_info['noitem_msg'])) : ("<div>"._m("No item found") ."</div>");
 }
 
 if ($searchlog) {
@@ -610,4 +625,3 @@ if ($debug) {
 }
 
 ExitPage();
-

@@ -76,8 +76,8 @@ final class DB_AA
      *
      * @param              $column
      * @param              $query
-     * @param  null        $where
-     * @param  null        $order
+     * @param  array|null  $where
+     * @param  array|null  $order
      * @param  array|null  $group
      * @param  int         $rows
      *
