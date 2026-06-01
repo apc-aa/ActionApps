@@ -324,27 +324,7 @@ class ChangesMonitor
         return $ret;
     }
 
-    /** CSS for better table look */
-    private function getCSS(): string
-    {
-        return <<<HTML
-               <style>
-                 table.aa-history {
-                   td {
-                     vertical-align: top;
-                     .aa-hist-content {
-                         width: 32%;
-                     }
-                   }
-                   pre {
-                     white-space: break-spaces;
-                   }
-                 }
-               </style>
-               HTML;
-    }
-
-    /** experimental display function - prints the table with all changes  */
+    /** Render the change history for one or more resources as a flat timeline of expandable events. */
     public function display($resource_ids, $type = 'h'): void
     {
         if (!is_array($resource_ids) || count($resource_ids) < 1) {
@@ -353,70 +333,97 @@ class ChangesMonitor
 
         if ($arr = DB_AA::select([], "SELECT `change`.time, `change`.user, `change_record`.selector, `change_record`.value, `change_record`.priority, `change_record`.type as chtype, `change_record`.change_id, `change`.resource_id, `change`.type
                                 FROM `change`, `change_record`", [['change.id', 'change_record.change_id' , 'j'], ["`change`.resource_id", $resource_ids], ['change.type',$type]], ['change.resource_id', 'change.time-', 'change_record.change_id', 'change_record.selector', 'change_record.priority'])) {
-            //            echo "<div class='aa-table'><table class='aa-history'><tr><th>&nbsp;</th><th>field</th><th>value</th><th>diff".Difftext::renderHtml(_m("newer\neee<br>www"), _m("older\neee<br>wqqq"))."</th><th>priority</th><th>type</th><th>resource</th></tr>";
-            echo $this->getCSS();
-            echo <<<HTML
-                  <div class='aa-table'>
-                    <table class='aa-history'>
-                      <tr class=aa-tbl-header>
-                        <th>&nbsp;</th>
-                        <th>field</th>
-                        <th class='aa-hist-content'>value</th>
-                        <th class='aa-hist-content'>restore</th>
-                        <th class='aa-hist-content'>diff versions  <span class='difftext'><del>older</del> <ins>newer</ins></span></th>
-                        <th class='aa-hist-content'>diff to current <span class='difftext'><del>version</del> <ins>current</ins></span></th>
-                        <th>priority</th>
-                        <th>type</th>
-                        <th>resource</th>
-                        </tr>
-                  HTML;
-            $chid = '';
+            // Flat timeline: one expandable event per change (newest first), replacing the dense
+            // 9-column table. Markup + styling (.aa-history-*) live in admin-ecn.css so this page and
+            // the AA finder's ?showhistory improve together and the CSS is not re-emitted per call.
+
+            // Group consecutive rows by change_id (the query orders rows of one change together).
+            $groups = [];
+            foreach ($arr as $key => $row) {
+                $groups[$row['change_id']]['meta'] ??= $row;
+                $groups[$row['change_id']]['rows'][] = ['key' => $key, 'row' => $row];
+            }
+            $total = count($groups);
 
             $forms = [];
+            $idx   = 0;
+            foreach ($groups as $cid => $g) {
+                $rev      = $total - $idx++;            // newest first -> highest revision number on top
+                $meta     = $g['meta'];
+                $iid      = $meta['resource_id'];
+                $item     = AA_Items::getItem(new zids($iid, 'l'));
+                $slice_id = $item?->getSliceID();
+                $flds     = $slice_id ? AA_Fields::factoryFor($slice_id) : null;
+                $forms[]  = ($form = "frm$cid");
+                $s_chid   = safe((string) $cid);       // also the anchor the Item-info history box links to
+                $nfld     = count($g['rows']);
+                $count    = $nfld === 1 ? _m('1 field changed') : _m('%1 fields changed', [$nfld]);
 
-            foreach ($arr as $key => $change) {
-                if ($chid !== $change['change_id']) {
-                    $forms[] = ($form = "frm$chid");
-                    $chid = $change['change_id'];
-                    $iid = $change['resource_id'];
-                    $item = AA_Items::getItem(new zids($iid, 'l'));
-                    $flds = ($slice_id = $item?->getSliceID()) ? AA_Fields::factoryFor($slice_id) : null;
-                    echo sprintf(
-                        "<tr><th colspan=9>
-                               [r%d] %s - %s <small>($change[type], uid:$change[user], res:$iid, change:$chid, time:$change[time])</small> 
-                               <button type=submit form=$form>Restore</button>
-                               <input type=hidden name=slice_id form=$form value='$slice_id'>
-                             </th></tr>",
-                        $key + 1,
-                        date('Y-m-d H:i:s', self::toTimestamp((int) $change['time'])),
-                        safe(perm_username($change['user'])),
-                    );
+                echo "<details class='aa-page-section aa-history-event' id='aa-ch-$s_chid'>"
+                   . "<summary><span class='aa-tab-title aa-history-summary'>"
+                   .   "<span class='aa-h-rev'>r$rev</span>"
+                   .   "<span class='aa-h-time'>". safe(date('Y-m-d H:i:s', self::toTimestamp((int) $meta['time']))) ."</span>"
+                   .   "<span class='aa-h-who'>". safe(perm_username($meta['user'])) ."</span>"
+                   .   "<span class='aa-h-type'>". safe((string) $meta['type']) ."</span>"
+                   .   "<span class='aa-h-count'>$count</span>"
+                   .   "<span class='aa-h-restore'>"
+                   .     "<button type=submit form=$form class='btn btn-s btn-secondary' onclick='event.stopPropagation()'>". _m('Restore') ."</button>"
+                   .     "<input type=hidden name=slice_id form=$form value='". safe((string) $slice_id) ."'>"
+                   .   "</span>"
+                   . "</span></summary><div class='aa-history-body'>";
+
+                // event-level raw ids, one click down (dimmed)
+                echo "<div class='tabhlp aa-history-meta'>"
+                   . _m('change %1 | uid %2 | %3 ns | resource %4', [$s_chid, safe((string) $meta['user']), safe((string) $meta['time']), safe((string) $iid)])
+                   . "</div>";
+
+                echo "<table class='aa-history-fields'><thead><tr>"
+                   . "<th scope=col>". _m('Field') ."</th><th scope=col>". _m('Change') ."</th>"
+                   . "<th scope=col>". _m('vs current') ."</th><th scope=col>". _m('Restore') ."</th>"
+                   . "</tr></thead><tbody>";
+
+                foreach ($g['rows'] as $r) {
+                    $key    = $r['key'];
+                    $change = $r['row'];
+                    $fid    = $change['selector'];
+                    $fname  = ($flds && ($n = (string) $flds->getProperty($change['selector'], 'name')) !== '') ? $n : (string) $change['selector'];
+                    // field chip + dimmed selector / seq / php-type (every raw byte stays reachable)
+                    $sub    = safe((string) $change['selector']) .' &middot; '. _m('seq %1', [safe((string) $change['priority'])]) .' &middot; '. safe((string) $change['chtype']);
+                    $chip   = "<span class='aa-h-field-chip'>". safe($fname) ."</span><span class='tabhlp aa-h-field-sel'>$sub</span>";
+
+                    // "Change" cell: the before->after diff; or the raw (rich-rendered) value when the
+                    // field had no previous version (first set).
+                    $prev_value   = $this->findPrevValue($change['selector'], $change['priority'], $arr, $key);
+                    $diff_version = is_null($prev_value) ? '' : Difftext::renderHtml($prev_value, $change['value']);
+                    $change_cell  = $diff_version !== '' ? $diff_version : '<pre>'. Txt::richValue($change['value']) .'</pre>';
+
+                    // "vs current": compare the historical value to the field's live value. Nullsafe the
+                    // whole chain (the item may have been purged) and compare explicitly, so a field
+                    // cleared to "" or 0 is not mislabelled "same as current".
+                    $current = $item?->getAaValue($change['selector'])?->getValue($change['priority']);
+                    if ($current === null) {
+                        $vs_cell = "<span class='aa-h-nochange'>". _m('no current value') ."</span>";
+                    } elseif ((string) $current === (string) $change['value']) {
+                        $vs_cell = "<span class='aa-h-nochange'>". _m('same as current') ."</span>";
+                    } else {
+                        $vs_cell = Difftext::renderHtml((string) $change['value'], (string) $current);
+                    }
+                    // restore checkbox enables the (adjacent) hidden input that feeds the per-change form
+                    $restore     = "<input form=$form type=hidden name='aa[u$iid][$fid]' value=\"". safe($change['value']) ."\" disabled>"
+                                 . "<input type=checkbox onchange=\"this.previousElementSibling.disabled = !this.checked\"> ". safe($fname);
+
+                    echo "<tr><td>$chip</td><td>$change_cell</td><td>$vs_cell</td><td><label class='aa-h-restore-field'>$restore</label></td></tr>";
                 }
-                $fid = $change['selector'];
-                $value = Txt::richValue($change['value']);
-                $field = $change['selector'] . ($flds ? Txt::additionalInfo([$flds->getProperty($change['selector'], 'name')]) : '');
-                // document.querySelector(\'article[data-aa-part=&quot;' . $hash . '&quot;]\').classList.add(\'aa-updating\');
-                // $restore =  '<span class="btn" onclick="if (confirm(\'' . _m('really restore this value') . '\')) { AA_SiteUpdate(\''.$change['resource_id'].'\',\''.$change['selector'].'\',\''.escape4js($value).'\');}">' . _m('Restore') . '</span>';
-                $restore =  "<input form=$form type=hidden name='aa[u$iid][$fid]' value=\"" . safe($change['value']) . "\" disabled><input type=checkbox onchange=\"this.previousElementSibling.disabled = !this.checked\">";
-
-                $prev_value = $this->findPrevValue($change['selector'], $change['priority'], $arr, $key);
-                $diff_version = is_null($prev_value) ? '' : Difftext::renderHtml($prev_value, $change['value']);
-                $current = $item?->getAaValue($change['selector'])->getValue($change['priority']);
-                $diff_current = $current ? Difftext::renderHtml((string) $change['value'], (string) $current) : '';
-                echo sprintf(
-                    "<tr><td>&nbsp;</td><td>$field</td><td class='aa-hist-content'><pre>%s</pre></td><td>%s</td><td>%s</td><td>%s</td><td>$change[priority]</td><td>$change[chtype]</td><td>%s</td></tr>",
-                    $value,
-                    $restore,
-                    $diff_version,
-                    $diff_current,
-                    safe($change['resource_id']),
-                );
+                echo "</tbody></table></div></details>";
             }
-            echo "</table></div>";
+
             foreach ($forms as $form) {
                 echo "\n<form id=$form action='" . get_aa_url('filler.php') . "' method='POST'></form>";
             }
-            // AA::Stringexpander()->addRequire('aa-jslib');  // for AA_SiteUpdate, ...
+            // open + scroll to the change a history-box deep link (#aa-ch-<id>) targets - CSS cannot force <details> open
+            echo "<script>(()=>{const o=()=>{if(!location.hash)return;const e=document.getElementById(location.hash.slice(1));if(e&&e.classList.contains('aa-history-event')){e.open=true;e.scrollIntoView();}};addEventListener('hashchange',o);o();})();</script>";
+        } else {
+            echo "<p class='aa-empty-note'>". _m('No recorded changes for this item.') ."</p>";
         }
 
         //    print_r(array_keys(reset($arr)));

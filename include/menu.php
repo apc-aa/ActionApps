@@ -153,8 +153,8 @@ function get_aamenus(): array
             "export"        => ["cond"=>IfSlPerm(PS_FEEDING),    "href"=>"admin/se_export.php",                 "label"=>_m("Export to file")],
 
             "header5"       => ["cond"=>$slice && IfSlPerm(PS_EDIT), 'label'=>_m("Misc"), 'ico'=>'ico-misc.png'],
-            "history"       => ["cond"=>IfSlPerm(PS_HISTORY),    "href"=>"admin/se_history.php",              "label"=>_m("History")],
-            "statistics"    => ["cond"=>IfSlPerm(PS_EDIT_ALL_ITEMS), "href"=>"admin/se_statistics.php",       "label"=>_m("Statistics")],
+            "history"       => ["cond"=>IfSlPerm(PS_HISTORY),    "href"=>"admin/se_history.php",   'ico'=>'ico-history.png',    "label"=>_m("History")],
+            "statistics"    => ["cond"=>IfSlPerm(PS_EDIT_ALL_ITEMS), "href"=>"admin/se_statistics.php", 'ico'=>'ico-statistics.png', "label"=>_m("Statistics")],
             "field_ids"     => ["cond"=>IfSlPerm(PS_FIELDS),     "href"=>"admin/se_fieldid.php",               "label"=>_m("Change field IDs")],
             "javascript"    => ["cond"=>IfSlPerm(PS_FIELDS),     "href"=>"admin/se_javascript.php",            "label"=>_m("Field Triggers")],
             "fileman"       => ["cond"=>FilemanPerms(AA::$module_id), "href"=>"admin/fileman.php",                "label"=>_m("File Manager")],
@@ -179,12 +179,23 @@ function get_aamenus(): array
         "items"     => [
             "header1"     => GetLabel($profile,'ui_manager', 'itemmanager_submenu_header1', _m("Folders")),
             "additem"     => ["cond"=> $profile->getProperty('ui_manager', 'itemmanager_submenu_additem'),        'hide' => !$profile->getProperty('ui_manager', 'itemmanager_submenu_additem'),                                                                          "label"=>$profile->getProperty('ui_manager', 'itemmanager_submenu_additem'), "href"  => "admin/itemedit.php?add=1$input_view"],
-            "app"         => ["cond"=> ($profile->getProperty('ui_manager', 'itemmanager_submenu_app')   !== ''), 'hide' => ($profile->getProperty('ui_manager', 'itemmanager_submenu_app')   === ''), "href"=>"admin/index.php?Tab1a=1", 'ico'=>'ico-items.png',      "label"=>GetLabel($profile,'ui_manager', 'itemmanager_submenu_app'  , _m("Active")." <span class='aa-bin-cnt'>". $r_state['bin_cnt']['app'] ."</span>")],
-            "appb"        => ["cond"=> ($profile->getProperty('ui_manager', 'itemmanager_submenu_appb') !== '' && (!$slice || !$slice->noPendingBin())), 'hide' => ($profile->getProperty('ui_manager', 'itemmanager_submenu_appb')  === ''), "href"=>"admin/index.php?Tab1b=1", "label"=>GetLabel($profile,'ui_manager', 'itemmanager_submenu_appb' , _m("... pending")." <span class='aa-bin-cnt'>". $r_state['bin_cnt']['pending'] ."</span>"), "show"=>true],
-            "appc"        => ["cond"=> ($profile->getProperty('ui_manager', 'itemmanager_submenu_appc') !== '' && (!$slice || !$slice->noExpiredBin())), 'hide' => ($profile->getProperty('ui_manager', 'itemmanager_submenu_appc')  === ''), "href"=>"admin/index.php?Tab1c=1", "label"=>GetLabel($profile,'ui_manager', 'itemmanager_submenu_appc' , _m("... expired")." <span class='aa-bin-cnt'>". $r_state['bin_cnt']['expired'] ."</span>"), "show"=>true],
-            "hold"        => ["cond"=> ($profile->getProperty('ui_manager', 'itemmanager_submenu_hold')  !== ''), 'hide' => ($profile->getProperty('ui_manager', 'itemmanager_submenu_hold')  === ''), "href"=>"admin/index.php?Tab2=1",  'ico'=>'ico-holdbin.png',    "label"=>GetLabel($profile,'ui_manager', 'itemmanager_submenu_hold' , _m("Hold bin")." <span class='aa-bin-cnt'>". $r_state['bin_cnt']['folder2'] ."</span>")],
-            "trash"       => ["cond"=> ($profile->getProperty('ui_manager', 'itemmanager_submenu_trash') !== ''), 'hide' => ($profile->getProperty('ui_manager', 'itemmanager_submenu_trash') === ''), "href"=>"admin/index.php?Tab3=1",  'ico'=>'ico-trashbin.png',   "label"=>GetLabel($profile,'ui_manager', 'itemmanager_submenu_trash', _m("Trash bin")." <span class='aa-bin-cnt'>". $r_state['bin_cnt']['folder3'] ."</span>")]
+            "app"         => ["cond"=> ($profile->getProperty('ui_manager', 'itemmanager_submenu_app')   !== ''), 'hide' => ($profile->getProperty('ui_manager', 'itemmanager_submenu_app')   === ''), "href"=>"admin/index.php?Tab1a=1", 'ico'=>'ico-items.png',      "label"=>GetLabel($profile,'ui_manager', 'itemmanager_submenu_app'  , _m("Active")." <span class='aa-bin-cnt'>". ($r_state['bin_cnt']['app'] ?? 0) ."</span>")],
+            "appb"        => ["cond"=> ($profile->getProperty('ui_manager', 'itemmanager_submenu_appb') !== '' && (!$slice || !$slice->noPendingBin())), 'hide' => ($profile->getProperty('ui_manager', 'itemmanager_submenu_appb')  === ''), "href"=>"admin/index.php?Tab1b=1", "label"=>GetLabel($profile,'ui_manager', 'itemmanager_submenu_appb' , _m("... pending")." <span class='aa-bin-cnt'>". ($r_state['bin_cnt']['pending'] ?? 0) ."</span>"), "show"=>true],
+            "appc"        => ["cond"=> ($profile->getProperty('ui_manager', 'itemmanager_submenu_appc') !== '' && (!$slice || !$slice->noExpiredBin())), 'hide' => ($profile->getProperty('ui_manager', 'itemmanager_submenu_appc')  === ''), "href"=>"admin/index.php?Tab1c=1", "label"=>GetLabel($profile,'ui_manager', 'itemmanager_submenu_appc' , _m("... expired")." <span class='aa-bin-cnt'>". ($r_state['bin_cnt']['expired'] ?? 0) ."</span>"), "show"=>true],
+            "hold"        => ["cond"=> ($profile->getProperty('ui_manager', 'itemmanager_submenu_hold')  !== ''), 'hide' => ($profile->getProperty('ui_manager', 'itemmanager_submenu_hold')  === ''), "href"=>"admin/index.php?Tab2=1",  'ico'=>'ico-holdbin.png',    "label"=>GetLabel($profile,'ui_manager', 'itemmanager_submenu_hold' , _m("Hold bin")." <span class='aa-bin-cnt'>". ($r_state['bin_cnt']['folder2'] ?? 0) ."</span>")],
+            "trash"       => ["cond"=> ($profile->getProperty('ui_manager', 'itemmanager_submenu_trash') !== ''), 'hide' => ($profile->getProperty('ui_manager', 'itemmanager_submenu_trash') === ''), "href"=>"admin/index.php?Tab3=1",  'ico'=>'ico-trashbin.png',   "label"=>GetLabel($profile,'ui_manager', 'itemmanager_submenu_trash', _m("Trash bin")." <span class='aa-bin-cnt'>". ($r_state['bin_cnt']['folder3'] ?? 0) ."</span>")]
         ]
+    ];
+
+    // Item-context rail (Edit / Item info / History / Statistics for the current item), shown on
+    // the item editor and its info pages. Built dynamically from the current item via a function
+    // entry - GetItemContextMenuItems() in include/itemfunc.php. Pages keep the 'itemmanager' top
+    // highlight and select this submenu via getMenu()'s $submenuOverride / setSubmenuKey().
+    $aamenus["itemcontext_submenu"] = [
+        "level" => "submenu",
+        "items" => [
+            "itemcontext" => ["function" => "GetItemContextMenuItems"],
+        ],
     ];
 
     if ( $profile->getProperty('ui_manager', 'itemmanager_submenu_bookmarks') !== false ) {

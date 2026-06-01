@@ -37,6 +37,8 @@ $require_default_lang = true;      // do not use module specific language file
 // const  AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/formutil.php";
+require_once __DIR__ . "/../include/feeding.php";   // WhereFed/FromFed used by GetItemInfoHtml (item info)
+require_once __DIR__ . "/../include/itemfunc.php";  // GetItemInfoHtml - shared item-info renderer
 require_once __DIR__ . "/../include/date.php";
 require_once __DIR__ . "/../include/varset.php";
 require_once __DIR__ . "/../include/tabledit.php";
@@ -142,94 +144,14 @@ function PrintIdsInfo($l_or_s_id): void
 
 function PrintItemInfo($item_id): void
 {
-    $zid = new zids($item_id);
-    $item = AA_Items::getItem($zid);
+    $item = AA_Items::getItem(new zids($item_id));
     PrintIdsInfo($item_id);
     if (!$item) {
         return;
     }
-    $long_id = $item->getItemID();
-    $sid     = $item->getSliceID();
-    echo "<br>Item ID: ".Adminlink::itemLink($long_id, $sid);
-    if ($arr = WhereFed($item->getItemID())) { echo "<br>Fed to: ".   implode(', ', $arr); }
-    if ($arr = FromFed($item->getItemID()))  { echo "<br>Fed from: ". implode(', ', $arr); }
-
-    $long_id = $zid->longids(0);
-    if ($long_id) {
-        if ($res = DB_AA::select([], 'SELECT * FROM `item`', [['id',$long_id, 'l']])) {
-            $res[0]['id']            = unpack_id($res[0]['id']);
-            $res[0]['slice_id']      = unpack_id($res[0]['slice_id']);
-            $res[0]['post_date']    .= Txt::additionalInfo([date('j.n.Y H:i:s', (int)$res[0]['post_date'])]);
-            $res[0]['publish_date'] .= Txt::additionalInfo([date('j.n.Y H:i:s', (int)$res[0]['publish_date'])]);
-            $res[0]['expiry_date']  .= Txt::additionalInfo([date('j.n.Y H:i:s', (int)$res[0]['expiry_date'])]);
-            $res[0]['last_edit']    .= Txt::additionalInfo([date('j.n.Y H:i:s', (int)$res[0]['last_edit'])]);
-            $res[0]['moved2active'] .= Txt::additionalInfo([date('j.n.Y H:i:s', (int)$res[0]['moved2active'])]);
-            $res[0]['posted_by']    .= Txt::additionalInfo([perm_username($res[0]['posted_by'])]);
-            $res[0]['edited_by']    .= Txt::additionalInfo([perm_username($res[0]['edited_by'])]);
-            echo GetHtmlTable($res, 'key', _m('Item table record for the item'));
-        }
-
-        $slice = AA_Slice::getModule($sid);
-
-        if ($res = DB_AA::select([], "SELECT '' as FieldName, `field_id`, `number`,`text`, `flag` FROM `content`", [['item_id',$long_id, 'l']], ['field_id','number'])) {              // empty FieldName - will be filled later
-            array_walk($res, static function (&$v, $k) use ($slice) {
-                $v['FieldName'] =  ($f=$slice->getField($v['field_id'])) ? $f->getName() : '-- invalid --';
-                if (is_long_id($v['text']) && ($hdln = StrExp('item', [$v['text'], '_#HEADLINE']))) {
-                    $v['text'] .= Txt::additionalInfo([$hdln]);
-                }
-                $flags = '';
-                if ($v['flag'] & FLAG_HTML) { $flags .= '<span  title="">HTML '; }
-                if ($v['flag'] & FLAG_FEED) { $flags .= '<span title="item is fed">FEED</span> '; }
-                if ($v['flag'] & FLAG_FREEZE) { $flags .= '<span  title="content can\'t be changed">FREEZE</span> '; }
-                if ($v['flag'] & 8) { $flags .= '<span  title="offline filled - no more used flag">OFFLINE</span> '; }   // no more used
-                if ($v['flag'] & FLAG_UPDATE) { $flags .= '<span  title="content should be updated if source is changed (after feeding)">UPDATE</span> '; }
-                if ($v['flag'] & FLAG_TEXT_STORED) { $flags .= '<span  title="value is stored in the text field (and not number field of content table)">TEXT</span> '; }
-                if ($v['flag'] & ITEM_FLAG_ANONYMOUS_EDITABLE ) { $flags .= '<span  title="anonymously added and thus anonymously editable (reset on every use of itemedit.php)">ANONYMEDITABLE</span> '; }
-                $v['flag'] .= Txt::additionalInfo([$flags]);
-
-            });
-            echo GetHtmlTable($res, 'key', _m('Content table records for the item'));
-        }
-
-        echo '<h3>'. _m('History') .'</h3>';
-
-        echo 'show '. ChangesMonitor::getHistoryLink($item_id);
-
-        if ($res = DB_AA::select([], "SELECT LOWER(HEX(`item_id`)) as Item, '' as Status, '' as PubDate, '' as ExpDate, '' as LastEdit, '' as FieldName, `field_id`, `number`,`text`, `flag` FROM `content`", [['text',$long_id]])) {
-            array_walk($res, static function (&$v, $k) {
-                if (is_long_id($iid = $v['Item']) AND ($item = AA_Items::getItem(new zids($iid, 'l')))) {
-                    $v['Item'] = Adminlink::itemLink($iid, $item->getSliceID());
-                    $v['Status'] = $item->getStatusCode();
-                    $v['PubDate']  .= ($tmp = (int)$item->getval('publish_date....')). Txt::additionalInfo([date('j.n.Y H:i:s', $tmp)]);
-                    $v['ExpDate']  .= ($tmp = (int)$item->getval('expiry_date.....')). Txt::additionalInfo([date('j.n.Y H:i:s', $tmp)]);
-                    $v['LastEdit'] .= ($tmp = (int)$item->getval('last_edit.......')). Txt::additionalInfo([date('j.n.Y H:i:s', $tmp), $item->getval('edited_by.......').' - '.perm_username($item->getval('edited_by.......'))]);
-
-                    $islice = AA_Slice::getModule($item->getSliceID());
-                    $v['FieldName'] = ($f=$islice?->getField($v['field_id'])) ? $f->getName() : '-- invalid --';
-                }
-            });
-            echo GetHtmlTable($res, 'key', _m('Referenced items'));
-        }
-
-        if ($res = DB_AA::select([], 'SELECT `id`, FROM_UNIXTIME(`time`) as Date, `user`, `type`, `selector`, `params` FROM `log`', [['selector',$long_id,'RLIKE']])) {
-            echo GetHtmlTable(array_map([AA_Log::class, 'renderLogentryCells'], $res), 'key', _m('Log'));
-        }
-
-
-        //echo "<pre>";
-        //print_r($changes->getHistory(array($long_id)));
-        //echo "</pre>";
-
-        //ChangesMonitor::singleton()->display(array($long_id));
-      //  echo '<h3>'. _m('Proposals') .'</h3><pre>';
-      //  print_r($changes->getProposals(array($long_id)));
-      //  echo "</pre>";
-    }
-
-    echo '<h3>'. _m('AA_Item structure') .'</h3><pre>';
-    print_r($item->getItemContent());
-    echo "</pre>";
-
+    // Reuse the shared item renderer (friendly overview + full technical detail) so the finder
+    // and the Item info page show identical data from one place. See include/itemfunc.php.
+    echo GetItemInfoHtml($item, $item_id, true);
     echo '<br><br>';
 }
 

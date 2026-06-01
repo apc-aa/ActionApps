@@ -78,8 +78,8 @@ function GetCommonMenu(AA_Profile $profile): array {
         "searchlog"   => ["label"=>_m("View SearchLog"),  "cond"=>IsSuperadmin(),        "href"=>"admin/aa_searchlog.php"],
         "aafinder"    => ["label"=>_m("AA finder"),       "cond"=>IsSuperadmin(),        "href"=>"admin/aafinder.php"],
         'optimize'    => ["label"=>_m("Optimize"),        "cond"=>IsSuperadmin(),        "href"=>"admin/aa_optimize.php"],
-        "statistics"  => ["label"=>_m("Statistics"),      "cond"=>IsSuperadmin(),        "href"=>"admin/aa_statistics.php"],
-        "history"     => ["label"=>_m("History"),         "cond"=>IfSlPerm(PS_HISTORY),  "href"=>"admin/se_history.php"],
+        "statistics"  => ["label"=>_m("Statistics"),      "cond"=>IsSuperadmin(),        'ico'=>'ico-statistics.png', "href"=>"admin/aa_statistics.php"],
+        "history"     => ["label"=>_m("History"),         "cond"=>IfSlPerm(PS_HISTORY),  'ico'=>'ico-history.png',    "href"=>"admin/se_history.php"],
         "xmgettext"   => ["label"=>_m("Mgettext"),        "cond"=>IsSuperadmin(),        "exact_href"=>"../misc/mgettext/index.php"],
         "console"     => ["label" =>_m("Console"),        "cond" =>IsSuperadmin(),       "href" =>"admin/console.php"],
 
@@ -257,8 +257,6 @@ function GetModuleSelection(): string {
             $slices_under_site[$site_id] = $kids;
         }
 
-        $mydir = AA_Module::getModuleInfo('url', AA::$module_id);
-
         /* Single indent depth for every sub-row (site-child slices, orphan slices,
            and non-slice modules under a header), expressed as a leading-space count.
            Modern browsers (`appearance: base-select`) indent via CSS padding keyed
@@ -315,9 +313,13 @@ function GetModuleSelection(): string {
         $emitOption = static function (string $id, string $name, bool $deleted,
                                        string $site_id = '', int $indent = 0,
                                        string $class = '', string $aria_desc = '',
-                                       bool $disabled = false, string $icon = '') use ($mydir, &$selected_emitted): string {
+                                       bool $disabled = false, string $icon = '') use (&$selected_emitted): string {
             $mod_dir = AA_Module::getModuleInfo('url', $id);
-            $val     = (($mydir === $mod_dir) ? '' : AA_INSTAL_PATH.$mod_dir) . "?module_id=$id";
+            // Always link to the target module's manager (index) page. A bare "?module_id=$id"
+            // would resolve against the *current* page, so switching slice from a non-index admin
+            // page (item editor, Item info / History / Statistics) landed on that page with a
+            // foreign id - the "strange page" bug. The full path always opens the slice manager.
+            $val     = AA_INSTAL_PATH.$mod_dir . "?module_id=$id";
             $label   = safe($name);
             if ($deleted) {
                 $label = "&times;&times;&times; $label &times;&times;&times;";
@@ -484,12 +486,16 @@ function GetModuleSelection(): string {
 //                                SHOW MENU
 
 /**
- * @param  string  $activeMain     -- selected item in main (top) menu
- * @param  string  $activeSubmenu  -- selected item in sub (left) menu
+ * @param  string  $activeMain       -- selected item in main (top) menu
+ * @param  string  $activeSubmenu    -- selected item in sub (left) menu
+ * @param  string  $submenuOverride  -- render this named submenu (from menu.php) instead of the
+ *                                       one the main menu defaults to. Lets a page keep its top
+ *                                       highlight (e.g. 'itemmanager') while showing a different
+ *                                       left rail (e.g. the dynamic 'itemcontext_submenu').
  *
  * @return string
  */
-function getMenu(string $activeMain, string $activeSubmenu = ''): string {
+function getMenu(string $activeMain, string $activeSubmenu = '', string $submenuOverride = ''): string {
     global $slice_id;
     $ret = '';
 
@@ -550,7 +556,7 @@ function getMenu(string $activeMain, string $activeSubmenu = ''): string {
         // @todo change it to method=get (+ hidden fields or so) in order the Back button in browser works there better
         $search_out = IsSuperadmin() ? "<form name=aasearchform action=\"".get_admin_url('aafinder.php')."\">".StateHidden()."<input type=search name=search value=\"".safe($_REQUEST['findtext'])."\" placeholder=\"". _m('Search..') ."\"><input type=hidden name=searchinview value=1><input type=hidden name=searchinslice value=1><input type=hidden name=searchinfield value=1><input type=hidden name=searchinspot value=1><input type=hidden name=searchinobject value=1><input type=hidden name=searchincodeitems value=1><input type=hidden name=go_search value=1></form>"  : '';
 
-        $submenu = $smmenus[$activeMain]["submenu"];
+        $submenu      = $submenuOverride !== '' ? $submenuOverride : ($smmenus[$activeMain]["submenu"] ?? '');
         $submenu_code = $submenu ? getSubmenu($smmenus[$submenu], $activeSubmenu) : '';
         $logout_url = get_admin_url('logout.php');
 
@@ -673,25 +679,25 @@ function getSubMenuRows(array $aamenuitems, $active ): string {
     $ret = '';
 
     foreach ($aamenuitems as $itemshow => $item) {
-        $ico = ((is_array($item) && $item['ico']) ? GetAAImage($item['ico'], $item['title'], 23,23) : '');
+        $ico = ((is_array($item) && ($item['ico'] ?? '')) ? GetAAImage($item['ico'], $item['title'] ?? '', 23,23) : '');
 
         if (str_starts_with($itemshow, "text")) {
             $ret .= "<li class='aa-leftmenu-text aa-menuname-$itemshow'>$item</li>\n";
         } elseif (str_starts_with($itemshow, "header")) {
             if (is_array($item)) {
                 if (!isset($item["cond"]) || $item["cond"]) {
-                    $ret .= "<li class='aa-leftmenu-header aa-menuname-$itemshow' title='" . $item['title'] . "'>" . $item['label'] . "</li>\n";  // $ico not shown for design reasons
+                    $ret .= "<li class='aa-leftmenu-header aa-menuname-$itemshow' title='" . ($item['title'] ?? '') . "'>" . $item['label'] . "</li>\n";  // $ico not shown for design reasons
                 }
             } elseif ($item !== '') {
                 $ret .= "<li class='aa-leftmenu-header aa-menuname-$itemshow'>$item</li>\n";
             }
-        } elseif ( $item["function"] ) {
+        } elseif ( $item["function"] ?? null ) {
             // call some function to get menu items
             // it is better mainly for left submenus for which we need
             // database access - if we use function, it is called only if
             // submenu should be displayed.
             $function = $item["function"];
-            $ret .= getSubMenuRows( $function($item["func_param"] ), $active );
+            $ret .= getSubMenuRows( $function($item["func_param"] ?? null), $active );
         } else {
             if (!isset($item["cond"])) {
                 $item["cond"] = 1;
@@ -703,15 +709,21 @@ function getSubMenuRows(array $aamenuitems, $active ): string {
 //            if ($itemshow == $active) {
 //                $ret .= "<span class=\"leftmenua\">".$item["label"]."</span>\n";
 //            } elseif (($slice_id || $item["show_always"]) && $item["cond"]) {
-            if (($slice_id || $item["show_always"]) && $item["cond"]) {
-                $href = ($item["exact_href"] ?: get_aa_url($item["href"],[],!$item["no_slice_id"]));
-                if ($item['js']) {
+            if (($slice_id || ($item["show_always"] ?? false)) && $item["cond"]) {
+                $href = (($item["exact_href"] ?? '') ?: get_aa_url($item["href"] ?? '', [], !($item["no_slice_id"] ?? false)));
+                $is_js = false;
+                if ($item['js'] ?? '') {
                     $item['js'] = str_replace("{href}",$href,$item['js']);
                     $item['js'] = str_replace("{exact_href}",$href,$item['js']);
                     $href       = "javascript:".$item['js'];
+                    $is_js      = true;
                 }
-                $ret .= "<li class='aa-menuname-$itemshow'><a href=\"".$href.'" class='.$cssclass.'>'.$ico. $item["label"]."</a></li>\n";
-            } elseif ( !$item["hide"] ) {
+                $class_attr = $cssclass ? " class=\"$cssclass\"" : '';
+                // safe() the URL href (it can carry a user-derived id, e.g. the item-context rail);
+                // leave a javascript: href raw so escaping & inside inline JS does not break it.
+                $safe_href = $is_js ? $href : safe($href);
+                $ret .= "<li class='aa-menuname-$itemshow'><a href=\"$safe_href\"$class_attr>".$ico. $item["label"]."</a></li>\n";
+            } elseif ( !($item["hide"] ?? false) ) {
                 // no need to show not active menu items 2023-02-15 HM
                 // $ret .= '<li><span class="leftmenun">'.$ico.$item["label"]."</span></li>\n";
             }

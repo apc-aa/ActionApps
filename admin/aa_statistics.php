@@ -144,6 +144,15 @@ if ($for_module !== 'all') {
 // Quick diagnostics panel — rendered ABOVE the form. Independent of the form's
 // item-selection choices: shows AA-wide (or per-slice) ranked top-N over the
 // tip_period window. Card click-throughs land in the form below.
+//
+// Wrapped in <details class="aa-page-section"> with $show-driven open state: when
+// the operator submits the form (show=1) and the per-day table renders below, the
+// diagnostics auto-collapse so the answer sits above the fold. On first load
+// (show=0) the diagnostics stay open as the quick orientation surface. The
+// section <h2> lives in <summary>; the panel itself no longer emits its own <h3>.
+$diag_open = !$show ? ' open' : '';
+echo "<details class=\"aa-page-section\"$diag_open>";
+echo '<summary><h2 class="aa-tab-title">' . _m('Quick diagnostics') . '</h2></summary>';
 echo HitcounterDisplay::renderDiagnosticsPanel(
     $slices,
     $tip_period,
@@ -153,6 +162,30 @@ echo HitcounterDisplay::renderDiagnosticsPanel(
         'date_from'  => $date_from,
     ]
 );
+echo '</details>';
+
+// Slice comparison — same scope expansion, uses item_period as the window so all
+// three sections (diagnostics, comparison, per-item table below) stay aligned.
+// for_module='all' (the default) expands to every slice the operator can edit;
+// a Site or Slice scope is used verbatim. Only renders when there is more than
+// one slice to compare — a single-row table tells the operator nothing.
+$compare_slices = $slices;
+if (empty($compare_slices)) {
+    $perm_slices    = GetUserSlices(PS_EDIT_ALL_ITEMS);
+    $compare_slices = $perm_slices === 'all'
+        ? array_keys(AA_Module::getModules('S', true))
+        : $perm_slices;
+}
+if (count($compare_slices) > 1) {
+    [$compare_from, $compare_to] = HitcounterDisplay::periodToRange($item_period, time());
+    // Same $show-driven open state as Quick Diagnostics: open on first paint, collapses when the
+    // per-day table becomes the hero below. Section <h2> in <summary>.
+    $cmp_open = !$show ? ' open' : '';
+    echo "<details class=\"aa-page-section\"$cmp_open>";
+    echo '<summary><h2 class="aa-tab-title">' . _m('Slice comparison') . '</h2></summary>';
+    echo HitcounterDisplay::renderSliceComparison($compare_slices, $compare_from, $compare_to, $item_period);
+    echo '</details>';
+}
 
 // Granularity widget (mch multi-checkbox) needs $content prepared up-front so it
 // can render with the right pre-checked values.
@@ -192,7 +225,11 @@ FrmTabEnd($form_buttons);
 
 if ($show) {
 
-    echo '<br><br><div class=aa-tab-title>'._m('Display Statistics for Item').'</div>';
+    // Per-day detail wrapped in <details class="aa-page-section" open>: the operator just submitted
+    // the form to see these results, so this section is always expanded on render. The matching
+    // </details> closes at the end of this block (after the table or the "no items" message).
+    echo '<br><br><details class="aa-page-section" open>';
+    echo '<summary><h2 class="aa-tab-title">'._m('Display Statistics for Item').'</h2></summary>';
 
     // ranking time window from $item_period
     $now = time();
@@ -275,6 +312,7 @@ if ($show) {
     } else {
         echo MsgOk(_m('No items found'));
     }
+    echo '</details>';
 }
 // echo getFrmTabEnd($form_buttons);
 

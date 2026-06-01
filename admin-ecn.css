@@ -383,6 +383,77 @@ details[open] summary:after, .aa-ui-searchbar[open] .btn.aa-ad-filter:after  {
     border-top: 0;
     margin-bottom: 1px;
 }
+/* Section disclosure: full-width collapsible page section. Distinct from the
+   inline `details summary` chip above by being block-level and letting the
+   inner .aa-tab-title band carry the look. Caret sits at the right of the band
+   and rotates on open. Reusable beyond stats (the same primitive will host the
+   left-menu submenu pattern when that lands).
+
+   Together with `[data-aa-class="clasic"]` (the wrapper FrmTabCaption emits via
+   getTabStart), every top-level page section gets the same Bond Paper inset:
+   warm-tinted background, hairline border, H2 tan band as the header. Per
+   DESIGN.md Cards & Containers rule: "a flat surface with background
+   var(--clr-basic-light) and a single full-width hairline border 1px solid
+   var(--clr-border). Never use box-shadow decoratively." Same chrome on
+   collapsibles and static form tabs, so the page reads as one component family. */
+.aa-page-section,
+[data-aa-class="clasic"] {
+    background: var(--clr-basic-light);
+    border: 1px solid var(--clr-border);
+    margin: 1em 0;
+}
+.aa-page-section > :not(summary),
+[data-aa-class="clasic"] > :not(.aa-tab-title) {
+    padding: 0 1em 1em;
+}
+[data-aa-class="clasic"] > .aa-table {
+    background: transparent;
+    margin: 0;
+}
+.aa-page-section > summary {
+    display: block;
+    padding: 0;
+    margin: 0;
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    list-style: none;
+}
+.aa-page-section > summary::-webkit-details-marker { display: none; }
+.aa-page-section > summary::after { display: none; }      /* suppress the inherited chip caret */
+.aa-page-section > summary > .aa-tab-title {
+    position: relative;
+    padding-right: 36px;
+    cursor: pointer;
+}
+.aa-page-section > summary > .aa-tab-title::after {
+    content: "";
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    margin-top: -2px;
+    width: 0;
+    height: 0;
+    border: solid 5px transparent;
+    border-top-color: rgba(0, 0, 0, 0.45);
+    transition: transform 0.15s cubic-bezier(0.5, 1, 0.89, 1), border-top-color 0.15s cubic-bezier(0.5, 1, 0.89, 1);
+}
+.aa-page-section[open] > summary > .aa-tab-title::after {
+    transform: rotate(180deg);
+}
+/* Hover: only the chevron darkens. No color swap on the header band itself, so
+   clickable section H2s match the static FrmTabCaption H2s at rest, and the
+   chevron is the only differentiator (rotation confirms the click). Resolves the
+   "tab header color is different" complaint. */
+.aa-page-section > summary:hover > .aa-tab-title::after {
+    border-top-color: rgba(0, 0, 0, 0.75);
+}
+.aa-page-section > summary:focus-visible {
+    outline: none;
+}
+.aa-page-section > summary:focus-visible > .aa-tab-title {
+    box-shadow: 0 0 0 3px rgba(184, 162, 70, 0.20);
+}
 .sz-xs, .x-small {
     font-size: var(--sz-xs);
 }
@@ -584,6 +655,104 @@ input[type="radio"] {
 .aa-ui-content > h1 {
     margin: 1em 0 1em 0;
 }
+/* Item-info digest boxes (History / Statistics) shown side by side under the Overview.
+   align-items:stretch + the table filling its box keeps both boxes the same height
+   whatever each holds (the spare height is shared across that box's rows). */
+.aa-item-boxes {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5em;
+    align-items: stretch;
+    margin: 1.5em 0;
+}
+.aa-item-boxes > div { min-width: 0; display: flex; flex-direction: column; }
+.aa-item-boxes > div > .top { flex: 1 1 auto; display: flex; flex-direction: column; }
+.aa-item-boxes > div > .top > .aa-table { flex: 1 1 auto; }
+.aa-item-boxes .aa-item-followups { margin: 0.5em 0 0 0; }
+
+/* ============================================================
+   Item inspection pages (Info / History / Statistics) redesign.
+   All values are tokens so the rules re-skin under admin-gold.css.
+   ============================================================ */
+
+/* tabular figures on the Item-info data tables (Tabular-Numerics Rule) */
+.aa-iteminfo .aa-table td { font-variant-numeric: tabular-nums; }
+
+/* Item info: identity + status lede (leads the page; deliberately no gold caption band) */
+.aa-item-lede {
+    background: var(--clr-basic-light);
+    border: 1px solid var(--clr-border);
+    padding: 0.9em 1.1em 1em;
+    margin: 0.5em 0 1.2em;
+}
+.aa-item-lede .aa-item-name { margin: 0 0 0.45em; font-size: 1.23rem; font-weight: 600; line-height: 1.4; }
+.aa-item-status { margin: 0 0 0.25em; font-size: 1.1rem; line-height: 1.4; }
+.aa-status-dot {
+    display: inline-block; width: 0.62em; height: 0.62em; border-radius: 50%;
+    margin-right: 0.45em; vertical-align: 0.02em;
+    background: var(--clr-basic-darker);
+    box-shadow: 0 0 0 1px var(--clr-text-accent);   /* ring lifts the dot boundary to >=3:1 (WCAG 1.4.11) */
+}
+.aa-status-dot.is-live { background: var(--clr-green); }   /* the one saturated voice: "live" = publish state */
+.aa-item-meta { margin: 0; }
+.aa-id { color: var(--clr-text-accent); font-size: var(--sz-s); font-variant-numeric: tabular-nums; }
+
+/* a flat surface notice used for the empty History / Statistics state (language, not red) */
+.aa-empty-note {
+    background: var(--clr-basic-light); border: 1px solid var(--clr-border);
+    padding: 0.9em 1.1em; color: var(--clr-text-accent); margin: 0.6em 0;
+}
+
+/* Item statistics: KPI summary strip (flat figures strip, not a card grid, not hero numbers) */
+.aa-item-kpis {
+    display: flex; flex-wrap: wrap; gap: 0.5em 2em;
+    background: var(--clr-basic-light); border: 1px solid var(--clr-border);
+    padding: 0.7em 1.3em 0.8em 1.1em; margin: 0.6em 0 0.4em;
+}
+.aa-kpi { display: flex; flex-direction: column; min-width: 6.5em; }
+.aa-kpi-label { font-size: var(--sz-xs); color: var(--clr-text-accent); }
+.aa-kpi-val { font-size: 1.23rem; line-height: 1.4; font-variant-numeric: tabular-nums; }
+.aa-kpi-val .u { color: var(--clr-text-accent); }   /* unit dimmed by colour, not size */
+
+/* Item history: flat timeline of expandable change events (replaces the 9-column table).
+   Every selector is scoped to .aa-history-event/.aa-history-* so it cannot leak into the
+   aa finder's other tables, which share ChangesMonitor::display(). */
+.aa-history-event { margin: 0.6em 0; }
+.aa-history-event > summary { list-style: none; cursor: pointer; }
+.aa-history-event > summary::-webkit-details-marker { display: none; }
+.aa-history-event:target { background: var(--clr-surface-selected); }   /* the change a digest row deep-links to */
+.aa-history-summary {
+    display: grid;
+    grid-template-columns: 2.4rem minmax(9.5rem, auto) minmax(5rem, auto) auto 1fr auto;
+    align-items: baseline; gap: 0.2em 0.9em;
+}
+.aa-history-summary .aa-h-rev   { font-variant-numeric: tabular-nums; color: var(--clr-text-accent); }
+.aa-history-summary .aa-h-time  { font-variant-numeric: tabular-nums; font-weight: 600; }
+.aa-history-summary .aa-h-who   { color: var(--clr-dark); }
+.aa-history-summary .aa-h-count { color: var(--clr-text-accent); }
+.aa-h-type {
+    display: inline-block; border-radius: 13px; padding: 1px 10px;
+    font-size: var(--sz-xs); border: 1px solid rgba(26,4,4,0.3);
+    background: rgba(255,255,255,0.25); color: #61454A;
+}
+.aa-history-body { padding: 0.3em 1em 0.9em 1.1em; }
+.aa-history-meta { margin: 0 0 0.4em 0; }   /* hugs the summary */
+table.aa-history-fields { width: 100%; border-collapse: collapse; }
+table.aa-history-fields th, table.aa-history-fields td {
+    text-align: left; vertical-align: top; padding: 6px 10px; border-top: 1px solid var(--clr-border);
+}
+table.aa-history-fields thead th {
+    font-size: var(--sz-xs); color: var(--clr-text-accent); font-weight: 600; border-top: 0; padding-bottom: 2px;
+}
+.aa-h-field-chip {
+    display: inline-block; border-radius: 13px; padding: 2px 11px;
+    background: rgba(255,255,255,0.3); border: 1px solid rgba(26,4,4,0.3); color: #61454A; white-space: nowrap;
+}
+.aa-h-field-sel { display: block; margin-top: 3px; }   /* dimmed selector under the chip (.tabhlp) */
+.aa-h-restore-field { font-size: var(--sz-s); white-space: nowrap; }
+.aa-h-rowmeta { font-variant-numeric: tabular-nums; }
+.aa-h-nochange { color: var(--clr-text-accent); }
+
 /* HEADER */
 #aa_top {
     display: flex;
@@ -1225,6 +1394,7 @@ div[data-aa-class="clasic"] {
 }
 .aa-tab-title, .aa-tab-title td  {
     text-align: left;
+    margin: 0;                                 /* zero browser-default h2 margin so the tab bar reads as chrome, not text */
     padding: 13px 10px 7px 25px;
     background-color: var(--clr-basic-dark);
     font-weight: 600;

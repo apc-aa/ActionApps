@@ -26,9 +26,12 @@
 */
 
 use AA\IO\DB\DB_AA;
+use AA\Util\Adminlink;
+use AA\Util\ChangesMonitor;
 use AA\Util\Imgfunc;
 use AA\Util\Langs;
 use AA\Util\NamedInterface;
+use AA\Util\Txt;
 
 require_once __DIR__ . "/varset.php";
 require_once __DIR__ . "/notify.php";
@@ -37,6 +40,440 @@ require_once __DIR__ . "/date.php";
 require_once __DIR__ . "/item_content.php";
 require_once __DIR__ . "/event.class.php";
 
+
+/** Item-context left rail items, shared by the item editor and its Info / History / Statistics
+ *  pages. Used as the `function` entry of 'itemcontext_submenu' (see include/menu.php), so it is
+ *  rendered by the standard AA submenu renderer and the current page's $activeSubmenu drives the
+ *  highlight. Reads the current item from the request (the AA dynamic-menu idiom).
+ *
+ *  "Edit/Add item" + "Item info" are shown to anyone who may edit the item (the hosting page
+ *  enforces that); History and Statistics are superadmin tools.
+ *
+ * @param mixed $func_param  unused (menu.php function-entry contract)
+ * @return array submenu items array for getSubMenuRows()
+ */
+function GetItemContextMenuItems($func_param = null): array
+{
+    $id    = (string)($_REQUEST['id'] ?? '');
+    $slice = AA_Slice::getModule(AA::$module_id);
+    $items = [];   // no slice-name header row - the top bar already shows the current slice
+
+    // a saved item has a real (long) id - not "add", not the slice id of a slice-setting edit
+    $item_hex = (is_long_id($id) && $slice && $id !== $slice->getId()) ? $id : '';
+
+    if ($item_hex === '') {
+        $items['edit'] = ['exact_href' => get_admin_url('itemedit.php', ['add' => 1]), 'ico' => 'ico-form.png',
+                          'show_always' => 1, 'title' => _m("Add item"), 'label' => _m("Add item")];
+        return $items;
+    }
+
+    $items['edit'] = ['exact_href' => get_admin_url('itemedit.php', ['id' => $item_hex, 'edit' => 1]),
+                      'ico' => 'ico-form.png', 'show_always' => 1, 'title' => _m("Edit item"), 'label' => _m("Edit item")];
+    $items['info'] = ['exact_href' => get_admin_url('iteminfo.php', ['id' => $item_hex]),
+                      'ico' => 'ico-guide.png', 'show_always' => 1, 'title' => _m("Item info"), 'label' => _m("Item info")];
+
+    // History and Statistics are superadmin tools - and only worth a menu row when they have data.
+    if (IsSuperadmin()) {
+        $item     = AA_Items::getItem(new zids($item_hex));
+        $hist_cnt = count(ChangesMonitor::getChangeList($item_hex));
+        if ($hist_cnt > 0) {
+            $items['history'] = ['exact_href' => get_admin_url('itemhistory.php', ['id' => $item_hex]),
+                                 'ico' => 'ico-history.png', 'show_always' => 1, 'title' => _m("History"),
+                                 'label' => _m("History"). " <span class='aa-bin-cnt'>".(int)$hist_cnt."</span>"];
+        }
+        if ($item && (int)$item->getval('display_count...') > 0) {
+            $items['stats'] = ['exact_href' => get_admin_url('itemstats.php', ['id' => $item_hex]),
+                               'ico' => 'ico-statistics.png', 'show_always' => 1, 'title' => _m("Statistics"), 'label' => _m("Statistics")];
+        }
+    }
+
+    return $items;
+}
+
+/** Item display name via the standard _#HEADLINE idiom. Returns '' (not the literal "_#HEADLINE")
+ *  when the slice has no headline alias or it is blank. Mirrors Adminlink::itemLink().
+ *
+ * @param AA_Item $item
+ * @return string
+ */
+function GetItemDisplayName($item): string
+{
+    $hdln = current(AA_Items::getFormatted(new zids($item->getItemID(), 'l'), '_#HEADLINE', AA_BIN_ALL));
+    return ($hdln && $hdln !== '_#HEADLINE') ? trim((string)$hdln) : '';
+}
+
+/** Friendly, non-technical overview of an item - headline + the key facts an editor cares about.
+ *  Safe for any user who may edit the item (no internal ids, flags, or raw structures).
+ *
+ * @param AA_Item $item
+ * @return string
+ */
+function GetItemSummaryHtml($item, bool $full = false): string
+{
+    $long_id  = $item->getItemID();
+    $sid      = $item->getSliceID();
+    $slice    = AA_Slice::getModule($sid);
+    $headline = GetItemDisplayName($item);
+    $short_id = (string)$item->getval('short_id........');
+
+    $status = $item->getStatusCode();
+    $pub    = (int)$item->getval('publish_date....');
+    $exp    = (int)$item->getval('expiry_date.....');
+    $post   = (int)$item->getval('post_date.......');
+    $ledit  = (int)$item->getval('last_edit.......');
+    $hits   = (int)$item->getval('display_count...');
+    $now    = time();
+
+    $d    = static fn(int $t): string => $t ? safe(date('j.n.Y', $t)) : '-';        // date only, for the status sentence
+    $dt   = static fn(int $t): string => $t ? safe(date('j.n.Y H:i', $t)) : '-';    // date + time, for Details / meta strip
+    $int  = static fn($v): string => safe(number_format((int)$v, 0, '.', ' '));
+    $user = static fn($u): string => trim((string)$u) !== '' ? ' '._m('by %1', [safe(perm_username($u))]) : '';
+
+    // --- Status lede: a one-glance "is it live?" answer, built from whole localized clauses so the
+    //     word order survives translation (Czech/German). The green dot is the only saturated pixel. ---
+    $is_live = false;
+    if ($status === 1 && $pub > $now) {
+        $word = _m('Scheduled');
+        $rest = $pub ? ', '._m('goes live %1.', [$d($pub)]) : '.';
+    } elseif ($status === 1 && $exp && $exp < $now) {
+        $word = _m('Expired');
+        $rest = ' '._m('on %1.', [$d($exp)]);
+    } elseif ($status === 1) {
+        $is_live = true;
+        $word = _m('Published');
+        $rest = $pub ? ' '.(($exp && $exp > $now) ? _m('since %1, until %2.', [$d($pub), $d($exp)]) : _m('since %1.', [$d($pub)])) : '.';
+    } elseif ($status === 2) {
+        $word = _m('Holding bin');
+        $rest = ' <span class="tabhlp">'. safe(_m('not on the public site')) .'</span>';
+    } elseif ($status === 3) {
+        $word = _m('Trash');
+        $rest = ' <span class="tabhlp">'. safe(_m('not on the public site')) .'</span>';
+    } else {
+        $word = (string)$status;
+        $rest = '';
+    }
+
+    // headline, or (no _#HEADLINE) a slice-name + short-id fallback, never a literal "_#HEADLINE"
+    $name = $headline !== '' ? safe($headline)
+          : trim(($slice ? safe($slice->getName()) : '').' <span class="aa-id">'. safe($short_id) .'</span>');
+
+    $meta = [];
+    if ($pub)   { $meta[] = _m('Published').' '.$dt($pub); }
+    if ($exp)   { $meta[] = _m('Expires').' '.$dt($exp); }
+    if ($ledit) { $meta[] = _m('Last edited').' '.$dt($ledit).$user($item->getval('edited_by.......')); }
+
+    $lede = '<div class="aa-item-lede">'
+          . '<h2 class="aa-item-name">'.$name.'</h2>'
+          . '<p class="aa-item-status"><span class="aa-status-dot'.($is_live ? ' is-live' : '').'"></span><strong>'. safe($word) .'</strong>'.$rest.'</p>'
+          . ($meta ? '<div class="tabhlp aa-item-meta">'. implode(' | ', $meta) .'</div>' : '')
+          . '</div>';
+
+    // --- Details: the reference facts, demoted below the lede. Short ID stays for editors (handy for
+    //     view templates); the long hex Item ID and the slice's internal id are superadmin-only. ---
+    $rows = [
+        [_m('Created'),     $dt($post). $user($item->getval('posted_by.......'))],
+        [_m('Last edited'), $dt($ledit).$user($item->getval('edited_by.......'))],
+        [_m('Views'),       $int($hits)],
+        [_m('Revisions'),   $int(count(ChangesMonitor::getChangeList($long_id)))],
+        [_m('Slice'),       ($slice ? safe($slice->getName()) : '').($full ? ' <span class="aa-id">'. safe($sid) .'</span>' : '')],
+        [_m('Short ID'),    '<span class="aa-id">'. safe($short_id) .'</span>'],
+    ];
+    if ($full) {
+        $rows[] = [_m('Item ID'), '<span class="aa-id">'. safe($long_id) .'</span>'];
+    }
+
+    return $lede. GetHtmlTable($rows, 'td', _m('Details'));
+}
+
+/** Technical/raw item data - DB records, content rows, referenced items, log and the raw
+ *  object dump. Superadmin-only content (callers must gate). Extracted from the AA finder so
+ *  the finder and the Item info page render identical data from one place.
+ *
+ * @param AA_Item $item
+ * @param string  $item_id
+ * @return string
+ */
+function GetItemTechnicalHtml($item, $item_id): string
+{
+    ob_start();
+    $zid     = new zids($item_id);
+    $long_id = $item->getItemID();
+    $sid     = $item->getSliceID();
+    echo "Item ID: ".Adminlink::itemLink($long_id, $sid);
+    if ($arr = WhereFed($item->getItemID())) { echo "<br>Fed to: ".   implode(', ', $arr); }
+    if ($arr = FromFed($item->getItemID()))  { echo "<br>Fed from: ". implode(', ', $arr); }
+
+    $long_id = $zid->longids(0);
+    if ($long_id) {
+        if ($raw = DB_AA::select([], 'SELECT * FROM `item`', [['id',$long_id, 'l']])) {
+            $rec = $raw[0];
+            $rec['id']       = unpack_id($rec['id']);
+            $rec['slice_id'] = unpack_id($rec['slice_id']);
+            foreach ($rec as $rk => $rv) { $rec[$rk] = safe((string)$rv); }   // escape every raw column value (incl. legacy text columns)
+            $rec['post_date']    .= Txt::additionalInfo([date('j.n.Y H:i:s', (int)$raw[0]['post_date'])]);
+            $rec['publish_date'] .= Txt::additionalInfo([date('j.n.Y H:i:s', (int)$raw[0]['publish_date'])]);
+            $rec['expiry_date']  .= Txt::additionalInfo([date('j.n.Y H:i:s', (int)$raw[0]['expiry_date'])]);
+            $rec['last_edit']    .= Txt::additionalInfo([date('j.n.Y H:i:s', (int)$raw[0]['last_edit'])]);
+            $rec['moved2active'] .= Txt::additionalInfo([date('j.n.Y H:i:s', (int)$raw[0]['moved2active'])]);
+            $rec['posted_by']    .= Txt::additionalInfo([safe(perm_username($raw[0]['posted_by']))]);
+            $rec['edited_by']    .= Txt::additionalInfo([safe(perm_username($raw[0]['edited_by']))]);
+            echo GetHtmlTable([$rec], 'key', _m('Item table record for the item'));
+        }
+
+        $slice = AA_Slice::getModule($sid);
+
+        if ($res = DB_AA::select([], "SELECT '' as FieldName, `field_id`, `number`,`text`, `flag` FROM `content`", [['item_id',$long_id, 'l']], ['field_id','number'])) {              // empty FieldName - will be filled later
+            array_walk($res, static function (&$v, $k) use ($slice) {
+                $v['FieldName'] =  ($f=$slice->getField($v['field_id'])) ? safe($f->getName()) : '-- invalid --';
+                $raw_text  = (string)$v['text'];
+                $v['text'] = safe($raw_text);   // content value may hold author-submitted HTML
+                if (is_long_id($raw_text) && ($hdln = StrExp('item', [$raw_text, '_#HEADLINE']))) {
+                    $v['text'] .= Txt::additionalInfo([safe($hdln)]);
+                }
+                $flags = '';
+                if ($v['flag'] & FLAG_HTML) { $flags .= '<span  title="">HTML '; }
+                if ($v['flag'] & FLAG_FEED) { $flags .= '<span title="item is fed">FEED</span> '; }
+                if ($v['flag'] & FLAG_FREEZE) { $flags .= '<span  title="content can\'t be changed">FREEZE</span> '; }
+                if ($v['flag'] & 8) { $flags .= '<span  title="offline filled - no more used flag">OFFLINE</span> '; }   // no more used
+                if ($v['flag'] & FLAG_UPDATE) { $flags .= '<span  title="content should be updated if source is changed (after feeding)">UPDATE</span> '; }
+                if ($v['flag'] & FLAG_TEXT_STORED) { $flags .= '<span  title="value is stored in the text field (and not number field of content table)">TEXT</span> '; }
+                if ($v['flag'] & ITEM_FLAG_ANONYMOUS_EDITABLE ) { $flags .= '<span  title="anonymously added and thus anonymously editable (reset on every use of itemedit.php)">ANONYMEDITABLE</span> '; }
+                $v['flag'] .= Txt::additionalInfo([$flags]);
+
+            });
+            echo GetHtmlTable($res, 'key', _m('Content table records for the item'));
+        }
+
+        echo '<h3>'. _m('History') .'</h3>';
+        echo 'show '. ChangesMonitor::getHistoryLink($item_id);
+
+        if ($res = DB_AA::select([], "SELECT LOWER(HEX(`item_id`)) as Item, '' as Status, '' as PubDate, '' as ExpDate, '' as LastEdit, '' as FieldName, `field_id`, `number`,`text`, `flag` FROM `content`", [['text',$long_id]])) {
+            array_walk($res, static function (&$v, $k) {
+                if (is_long_id($iid = $v['Item']) AND ($refitem = AA_Items::getItem(new zids($iid, 'l')))) {
+                    $v['Item'] = Adminlink::itemLink($iid, $refitem->getSliceID());
+                    $v['Status'] = $refitem->getStatusCode();
+                    $v['PubDate']  .= ($tmp = (int)$refitem->getval('publish_date....')). Txt::additionalInfo([date('j.n.Y H:i:s', $tmp)]);
+                    $v['ExpDate']  .= ($tmp = (int)$refitem->getval('expiry_date.....')). Txt::additionalInfo([date('j.n.Y H:i:s', $tmp)]);
+                    $v['LastEdit'] .= ($tmp = (int)$refitem->getval('last_edit.......')). Txt::additionalInfo([date('j.n.Y H:i:s', $tmp), safe($refitem->getval('edited_by.......').' - '.perm_username($refitem->getval('edited_by.......')))]);
+
+                    $islice = AA_Slice::getModule($refitem->getSliceID());
+                    $v['FieldName'] = ($f=$islice?->getField($v['field_id'])) ? safe($f->getName()) : '-- invalid --';
+                }
+            });
+            echo GetHtmlTable($res, 'key', _m('Referenced items'));
+        }
+
+        if ($res = DB_AA::select([], 'SELECT `id`, FROM_UNIXTIME(`time`) as Date, `user`, `type`, `selector`, `params` FROM `log`', [['selector',$long_id,'RLIKE']])) {
+            echo GetHtmlTable(array_map([AA_Log::class, 'renderLogentryCells'], $res), 'key', _m('Log'));
+        }
+    }
+
+    // Raw object dump - kept for debugging but collapsed so it doesn't drown the tables above.
+    echo '<details class="aa-finder-raw"><summary><h3 style="display:inline">'. _m('AA_Item structure') .'</h3></summary><pre>';
+    echo safe(print_r($item->getItemContent(), true));   // escape - item content may contain HTML/JS
+    echo "</pre></details>";
+
+    return (string)ob_get_clean();
+}
+
+/** Item info page body: friendly overview always; the technical block (collapsed) only when
+ *  $full is true (superadmin). Single source for both the Item info page and the AA finder.
+ *
+ * @param AA_Item $item
+ * @param string  $item_id
+ * @param bool    $full   include the technical/raw section (superadmin)
+ * @return string
+ */
+function GetItemInfoHtml($item, $item_id, bool $full): string
+{
+    $html  = GetItemSummaryHtml($item, $full);
+
+    // Two compact digests side by side under the lede - the headline figures from the
+    // History and Statistics pages, each linking on to its full page (for users who may open it).
+    $history = GetItemHistoryBox($item, $item_id, $full);
+    $stats   = GetItemStatsBox($item, $item_id, $full);
+    if ($history !== '' || $stats !== '') {
+        $html .= '<div class="aa-item-boxes">'
+              .  ($history !== '' ? '<div>'.$history.'</div>' : '')
+              .  ($stats   !== '' ? '<div>'.$stats.'</div>'   : '')
+              .  '</div>';
+    }
+
+    if ($full) {
+        $html .= '<details class="aa-item-technical"><summary><h3 style="display:inline">'. _m('Technical details') .'</h3></summary>'
+              .  GetItemTechnicalHtml($item, $item_id)
+              .  '</details>';
+    }
+    return '<div class="aa-iteminfo">'. $html .'</div>';
+}
+
+/** History digest box: the few most recent recorded changes (when / who / which fields). Each row
+ *  links to that change on the full history page when the user may open it ($full). Renders nothing
+ *  when the item has no recorded changes (no empty header).
+ *
+ * @param AA_Item $item
+ * @param string  $item_id
+ * @param bool    $full   user may open the dedicated history page (link the rows + footer)
+ * @return string
+ */
+function GetItemHistoryBox($item, $item_id, bool $full): string
+{
+    $changes = ChangesMonitor::getChangeList($item_id);   // [change_id => ['time','user']], newest first
+    if (!$changes) {
+        return '';
+    }
+    $total  = count($changes);
+    $recent = array_slice($changes, 0, 6, true);          // a few rows - enough to visually balance the Statistics box
+
+    // selector => field name per recent change, one query for all of them. Audit columns AA stamps
+    // on every save are kept apart so "Fields" shows the real edits, and only falls back to them
+    // when a change touched nothing else (so the row is never blank).
+    $audit_selectors = ['edited_by.......', 'last_edit.......'];
+    $by_change       = [];
+    if ($cids = array_keys($recent)) {
+        $slice = AA_Slice::getModule($item->getSliceID());
+        foreach (DB_AA::select([], 'SELECT `change_id`, `selector` FROM `change_record`', [['change_id', $cids]]) as $cr) {
+            $sel  = (string)$cr['selector'];
+            $name = ($slice && ($f = $slice->getField($sel))) ? $f->getName() : $sel;
+            $bag  = in_array($sel, $audit_selectors, true) ? 'audit' : 'content';
+            $by_change[$cr['change_id']][$bag][$sel] = $name;   // selector => name, dedup by selector
+        }
+    }
+
+    $hist_url = get_admin_url('itemhistory.php', ['id' => $item_id]);
+    $rows     = [[_m('When'), _m('Changed by'), _m('Fields')]];
+    foreach ($recent as $cid => $c) {
+        $bags  = $by_change[$cid] ?? [];
+        $pairs = $bags['content'] ?? $bags['audit'] ?? [];   // selector=>name; audit only when nothing else
+        $sels  = array_keys($pairs);
+        $shown = array_slice($sels, 0, 3);
+        $more  = count($sels) - count($shown);
+        // same selector + field-name-hint formatting the Technical details / history pages use
+        $flds  = $shown
+            ? safe(implode(', ', $shown)) . ($more > 0 ? ' <span class="aa-stat-item-sid">+'.(int)$more.'</span>' : '')
+              . Txt::additionalInfo([safe(implode(', ', array_map(static fn($s) => $pairs[$s], $shown)))])
+            : '<span class="aa-stat-zero">&ndash;</span>';
+        $when  = safe(date('j.n.Y H:i', (int)$c['time']));
+        // link the row to its entry on the full history page (anchor emitted by ChangesMonitor::display)
+        $when  = $full ? a_href($hist_url.'#aa-ch-'.rawurlencode((string)$cid), $when) : $when;
+        $rows[] = [$when, safe(perm_username($c['user'])), $flds];
+    }
+
+    $html = GetHtmlTable($rows, 'th', _m('History'));
+    if ($full) {
+        $html .= '<p class="aa-item-followups">'. a_href($hist_url,
+                     _m('Full history').' ('.(int)$total.') &raquo;', ['class' => 'btn btn-l btn-secondary']) .'</p>';
+    }
+    return $html;
+}
+
+/** The reach figures a content editor cares about - total views, average per day, recent reach -
+ *  plus, when the duration log is on, average response time and cache hit ratio. Returned as
+ *  [label, value] pairs so the Item-info "Statistics" digest and the Statistics page KPI strip render
+ *  identical numbers and labels (one source of truth). Empty array when the item has no recorded views.
+ *
+ * @param AA_Item $item
+ * @return array<int, array{0:string,1:string}>
+ */
+function GetItemStatsRows($item): array
+{
+    $views = (int)$item->getval('display_count...');
+    if ($views <= 0) {
+        return [];
+    }
+
+    $pub = (int)$item->getval('publish_date....');
+    $now = time();
+
+    $int  = static fn($v): string => safe(number_format((int)$v, 0, '.', ' '));
+    $sum  = \AA\Util\HitcounterDisplay::summaryForItem((int)$item->getval('short_id........'));
+    $rows = [[_m('Total views'), $int($views)]];
+
+    // Average / day over the span we actually have hit data for (so an item published years ago
+    // isn't averaged down to ~0); falls back to "since published" when there is no measured span.
+    $avg = null;
+    if ($sum && $sum['first_t'] && $sum['last_t'] >= $sum['first_t']) {
+        $span = max(1, (int)round(($sum['last_t'] - $sum['first_t']) / 86400));
+        $avg  = $sum['total_hits'] / $span;
+    } elseif ($pub > 0 && $pub < $now) {
+        $avg = $views / max(1, ($now - $pub) / 86400);
+    }
+    if ($avg !== null) {
+        if ($avg < 1) {
+            $dec = 2;
+        } elseif ($avg < 10) {
+            $dec = 1;
+        } else {
+            $dec = 0;
+        }
+        $rows[] = [_m('Average / day'), safe(number_format($avg, $dec, '.', ' '))];
+    }
+
+    if ($sum) {
+        $rows[] = [_m('Last 7 days'),  $int($sum['hits_7d'])];
+        $rows[] = [_m('Last 30 days'), $int($sum['hits_30d'])];
+        if ($sum['last_t']) {
+            $rows[] = [_m('Last viewed'), safe(date('j.n.Y', $sum['last_t']))];
+        }
+        if ($sum['avg_ms'] !== null) {
+            $ms     = (float)$sum['avg_ms'];
+            $rows[] = [_m('Avg response'), safe(number_format($ms, $ms < 10 ? 1 : 0, '.', ' ')).' ms'];
+        }
+        if ($sum['cache_pct'] !== null) {
+            $rows[] = [_m('Served from cache'), safe(number_format((float)$sum['cache_pct'], 0)).'%'];
+        }
+    }
+    return $rows;
+}
+
+/** Reach (statistics) digest box for the Item info page. "Full statistics" follow-up for users who may
+ *  open the stats page ($full). Renders nothing when the item has no recorded views (no empty header).
+ *
+ * @param AA_Item $item
+ * @param string  $item_id
+ * @param bool    $full   show the follow-up link to the dedicated statistics page
+ * @return string
+ */
+function GetItemStatsBox($item, $item_id, bool $full): string
+{
+    $rows = GetItemStatsRows($item);
+    if (!$rows) {
+        return '';
+    }
+    $html = GetHtmlTable($rows, 'td', _m('Statistics'));
+    if ($full) {
+        $html .= '<p class="aa-item-followups">'. a_href(get_admin_url('itemstats.php', ['id' => $item_id]),
+                                                         _m('Full statistics').' &raquo;', ['class' => 'btn btn-l btn-secondary']) .'</p>';
+    }
+    return $html;
+}
+
+/** Item statistics page body: total views plus a per-day hit table (reusing HitcounterDisplay),
+ *  and a link to the full statistics dashboard scoped to this item.
+ *
+ * @param AA_Item $item
+ * @param string  $item_id
+ * @return string
+ */
+function GetItemStatsHtml($item, $item_id): string
+{
+    // KPI summary strip first (data-first): the headline figures, same numbers and labels as the
+    // Item-info "Statistics" digest. The page <h1> already says "Statistics".
+    $kpis = '';
+    foreach (GetItemStatsRows($item) as $r) {
+        $kpis .= '<div class="aa-kpi"><span class="aa-kpi-label">'. safe($r[0]) .'</span><span class="aa-kpi-val">'. $r[1] .'</span></div>';
+    }
+    $html = $kpis !== '' ? '<div class="aa-item-kpis">'. $kpis .'</div>' : '';
+
+    // then the trend + per-day detail table + cache diagnostics (renderTable orders the hits chart
+    // above the per-day table for a single item).
+    $table = \AA\Util\HitcounterDisplay::renderTable(new zids($item_id), 'days');
+    $html .= $table !== '' ? $table : '<p class="aa-empty-note">'. _m('No detailed view statistics have been recorded for this item yet.') .'</p>';
+
+    $html .= '<p>'. a_href(get_admin_url('aa_statistics.php', ['items_code' => $item_id, 'for_module' => $item->getSliceID(), 'show' => 1]),
+                           _m('Open full statistics').' &raquo;', ['class' => 'btn btn-l btn-secondary']) .'</p>';
+    return $html;
+}
 
 /** classes for default values of the fields
  *  derived from  AA_Serializable in order to be able to factory from string

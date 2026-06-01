@@ -85,6 +85,10 @@ function varname4form($fid, $type='normal'): string
  */
 class inputform {
     private bool $display_aa_begin_end;
+    private string $active_main;       // top-menu key for the global header ('' = no header, e.g. popup/anonymous)
+    private string $submenu_override;  // named submenu to render as the left rail (e.g. 'itemcontext_submenu')
+    private string $active_submenu;    // highlighted left-rail entry (e.g. 'edit')
+    private string $page_h1;           // <h1> heading; falls back to page_title when empty (lets <title> keep the slice name while the heading stays short)
     private string $page_title;
     private string $form_action;
     private bool $form4update;
@@ -106,6 +110,10 @@ class inputform {
      */
     function __construct($settings= []) {
         $this->display_aa_begin_end = (bool)$settings['display_aa_begin_end'];
+        $this->active_main          = (string)($settings['active_main'] ?? '');
+        $this->submenu_override     = (string)($settings['submenu_override'] ?? '');
+        $this->active_submenu       = (string)($settings['active_submenu'] ?? '');
+        $this->page_h1              = (string)($settings['page_h1'] ?? '');
         $this->page_title           = (string)$settings['page_title'];
         $this->form_action          = (string)$settings['form_action'];
         $this->form4update          = (bool)$settings['form4update'];
@@ -212,9 +220,13 @@ class inputform {
               </head>
               <body class="aa-ui">';   // <body '. $jstriggers->get('body') .' class="aa-ui">    - removed - we call onLoad in FOOT
 
-            $html_start .= getMenu(''); // opens two divs - in all cases
-            if ($page_title) {
-                $html_start .= "\n<h1>$page_title</h1>";
+            // opens two divs - in all cases. With active_main set (admin full-page edit) the global
+            // top header is shown; submenu_override picks the left rail (e.g. itemcontext_submenu).
+            $html_start .= getMenu($this->active_main, $this->active_submenu, $this->submenu_override);
+            // page_h1 is plain (translated) text; page_title may already be safe()-escaped by the caller
+            $h1 = $this->page_h1 !== '' ? $this->page_h1 : $page_title;
+            if ($h1) {
+                $html_start .= "\n<h1>$h1</h1>";
             }
 
             // you can add some html code by user profiles, above the form
@@ -227,6 +239,18 @@ class inputform {
 
         AA::Stringexpander()->addRequire("document.querySelectorAll('form').forEach(function(f) { f.addEventListener('submit', function() {sessionStorage.setItem('aa_pgtop', window.pageYOffset);});})", 'AA_Req_Load');
         AA::Stringexpander()->addRequire("if (sessionStorage.getItem('aa_pgtop')>0) { window.scrollTo(0,sessionStorage.getItem('aa_pgtop')); sessionStorage.setItem('aa_pgtop', 0); }", 'AA_Req_Load');
+
+        // Now that the top header lets the editor navigate away mid-edit, warn before
+        // leaving a full-page admin form with unsaved changes (submitting clears the flag).
+        if ($this->active_main !== '') {
+            AA::Stringexpander()->addRequire(
+                "(function(){var f=document.forms['inputform'];if(!f)return;var d=false;".
+                "f.addEventListener('input',function(){d=true;});".
+                "f.addEventListener('change',function(){d=true;});".
+                "f.addEventListener('submit',function(){d=false;});".
+                "window.addEventListener('beforeunload',function(e){if(d){e.preventDefault();e.returnValue='';}});})();",
+                'AA_Req_Load');
+        }
 
         // print the inputform
         $out        = AA::Un($form, $remove_string, GetItemFromContent($content4id));
@@ -2738,7 +2762,10 @@ function getFrmTabCaption(string $caption = '', array $buttons = [], array $oute
         $ret .= getFrmInputButtons($buttons, true, 'top');
     }
     if ($caption !== "") {
-        $ret .= "\n <div class=\"aa-tab-title\">$caption</div>";
+        // <h2> (not <div>) so admin form sections carry semantic heading weight for screen readers and
+        // the document outline. CSS still binds via .aa-tab-title; margin is zeroed in admin-ecn.css so
+        // the new browser-default h2 margin does not shift layout.
+        $ret .= "\n <h2 class=\"aa-tab-title\">$caption</h2>";
     }
     $table_add_class = $simple ? ' aa-table-simple' : '';
     $ret .= "\n<table class=\"aa-table$table_add_class\">";
@@ -2817,9 +2844,14 @@ function getFrmInputButtons($buttons, $print_hidden = true, $prefix = ''): strin
         return '';
     }
 
+    $sticky = false;   // read again at the closing </div>; only the top buttons row is sticky
     if ($prefix === 'top') {
         $sticky = true;
-        $ret = '<div class="aa-tab-buttons-wrap"> <div class=aa-tab-buttons style="position: sticky; top: 0; z-index: 5;">';  //z-index - CodeMirror goes over if not > 2
+        // The sticky element must be the *wrap*, not the inner buttons row: a sticky box can only
+        // travel inside its containing block, and the inner row's block is the wrap (button-height),
+        // so it never stuck. The wrap's containing block is the full-height tab table, so the wrap
+        // pins to the top while the form scrolls. (z-index > 2 so CodeMirror stays underneath.)
+        $ret = '<div class="aa-tab-buttons-wrap" style="position: sticky; top: 0; z-index: 5;"> <div class="aa-tab-buttons">';
     } else {
         $ret = '<div class="aa-tab-buttons">';
     }

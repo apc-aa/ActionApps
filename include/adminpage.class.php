@@ -39,6 +39,7 @@ class AA_Adminpageutil {
     private string $modulemenu = 'include';
     private string $menu       = '';
     private string $submenu    = '';
+    private string $submenu_override = '';   // render this named submenu instead of the main menu's default
     private string $title      = '';
     private string $subtitle   = '';
     private array $require     = [];
@@ -96,6 +97,16 @@ class AA_Adminpageutil {
     public function setModuleMenu(string $modulemenu): void
     {
         $this->modulemenu = $modulemenu;
+    }
+
+    /** Render a named submenu (from menu.php) instead of the one the main menu defaults to.
+     *  Lets a page keep its top-menu highlight while showing a different left rail
+     *  (e.g. main 'itemmanager' + submenu 'itemcontext_submenu').
+     * @param string $submenu_key
+     */
+    public function setSubmenuKey(string $submenu_key): void
+    {
+        $this->submenu_override = $submenu_key;
     }
 
     /**
@@ -226,7 +237,7 @@ class AA_Adminpageutil {
 
         // this is old code used everywhere, so it is copied here. It should be rewritten - without globals...
 
-        echo getMenu($this->menu, $this->submenu); // opens two divs - in all cases
+        echo getMenu($this->menu, $this->submenu, $this->submenu_override); // opens two divs - in all cases
 
         if ($this->title) {
             echo "<h1>" . $this->title . "</h1>";

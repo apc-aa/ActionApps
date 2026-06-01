@@ -373,8 +373,18 @@ if ($lang_control) {
 
 // print begin ---------------------------------------------------------------
 if ( !$encap ) {
+    // Show the global top header (so the editor can navigate to another slice/page mid-edit)
+    // only on a real admin full-page edit - never in a popup/dialog or anonymous form.
+    $is_popup     = ($return_url === 'close_dialog') || ($openervar !== '');
+    $is_anonymous = $anonymous || $free;
+    $show_header  = !$is_popup && !$is_anonymous;
+
     $inputform_settings = [
         'display_aa_begin_end' => true,
+        'active_main'          => $show_header ? 'itemmanager' : '',          // keeps "Item Manager" highlighted in the top bar
+        'submenu_override'     => $show_header ? 'itemcontext_submenu' : '',  // item-context left rail
+        'active_submenu'       => 'edit',
+        'page_h1'              => ($edit ? _m("Edit Item") : _m("Add Item")),  // slice name lives in the header + left rail now
         'page_title'           => (($edit=="") ? _m("Add Item") : _m("Edit Item")). " (". trim(safe($slice->getName())).")",
         'formheading'          => $mlx_formheading
     ]; //added MLX
