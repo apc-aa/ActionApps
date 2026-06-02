@@ -703,6 +703,25 @@ input[type="radio"] {
     padding: 0.9em 1.1em; color: var(--clr-text-accent); margin: 0.6em 0;
 }
 
+/* Compact item dump (AA finder / Item info "AA_Item structure"): a long or multiline value is
+   wrapped in <details class="aa-cpr-long">. It sits inline after "[value] => " so its wrapped
+   lines hang-indent under the value (aligned to the array hierarchy); the summary is clamped to
+   exactly 4 rows via max-height, and a +/- glyph (native marker hidden) is the expand toggle. */
+.aa-finder-raw .aa-cpr-long {
+    display: inline-block; vertical-align: top; max-width: 80ch;
+    margin: 0.1em 0; padding-left: 0.6ch;
+    border-left: 2px solid var(--clr-border);
+}
+.aa-finder-raw .aa-cpr-long > summary {
+    display: block; box-sizing: border-box; margin: 0; padding: 0;
+    line-height: 1.4; max-height: 5.6em;                   /* exactly 4 rows * 1.4 line-height */
+    overflow: hidden; white-space: pre-wrap; cursor: pointer; list-style: none;
+}
+.aa-finder-raw .aa-cpr-long > summary::-webkit-details-marker { display: none; }
+.aa-finder-raw .aa-cpr-long > summary::before { content: '\229E  '; color: var(--clr-text-accent); }   /* ⊞ */
+.aa-finder-raw .aa-cpr-long[open] > summary { max-height: none; }
+.aa-finder-raw .aa-cpr-long[open] > summary::before { content: '\229F  '; }                            /* ⊟ */
+
 /* Item statistics: KPI summary strip (flat figures strip, not a card grid, not hero numbers) */
 .aa-item-kpis {
     display: flex; flex-wrap: wrap; gap: 0.5em 2em;

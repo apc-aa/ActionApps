@@ -270,7 +270,7 @@ function GetItemTechnicalHtml($item, $item_id): string
 
     // Raw object dump - kept for debugging but collapsed so it doesn't drown the tables above.
     echo '<details class="aa-finder-raw"><summary><h3 style="display:inline">'. _m('AA_Item structure') .'</h3></summary><pre>';
-    echo safe(print_r($item->getItemContent(), true));   // escape - item content may contain HTML/JS
+    echo compact_print_r($item->getItemContent(), 0, true);   // compact HTML dump (self-escaping; long values collapsible)
     echo "</pre></details>";
 
     return (string)ob_get_clean();

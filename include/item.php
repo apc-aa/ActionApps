@@ -1870,7 +1870,7 @@ class AA_Items {
      * @param  $renew bool  - regenerate the item form database
      *
      */
-    static function getItem($zid, $crypted_additional_slice_pwd=null, $renew = false): ?AA_Item {
+    static function getItem($zid, $crypted_additional_slice_pwd=null, $renew = false, $ignore_reading_password = false): ?AA_Item {
         if (empty($zid)) {
             return null;
         }
@@ -1886,7 +1886,7 @@ class AA_Items {
             return $item;
         }
 
-        $content = GetItemContent($zid, false, false, false, $crypted_additional_slice_pwd);
+        $content = GetItemContent($zid, false, $ignore_reading_password, false, $crypted_additional_slice_pwd);
         return $content ? $items->_store(GetItemFromContent(new ItemContent(reset($content)))) : null;
     }
 

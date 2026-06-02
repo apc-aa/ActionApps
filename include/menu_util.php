@@ -306,6 +306,19 @@ function GetModuleSelection(): string {
          *    render reliably inside <option> in Chromium's base-select popup and keep
          *    the option markup free of presentational child nodes.
          */
+        // Switching to a slice of the *same module type* keeps the user on the page they are
+        // on: a bare "?module_id=$id" href resolves against the current document URL, so e.g.
+        // se_fields.php stays se_fields.php for the new slice (the long-standing convenience).
+        // The exception is the per-item pages (item editor / info / history / statistics): they
+        // need an item id on top of module_id, so staying would land on a foreign, item-less
+        // page (the "strange page" bug). For those - and for a switch to a different module type
+        // - we open the target module's manager (index) instead.
+        $cur_url      = AA::$module_id ? AA_Module::getModuleInfo('url', AA::$module_id) : '';
+        // SCRIPT_NAME only feeds the closed in_array() whitelist below - a spoofed value just
+        // falls through to the (safe) full-index branch, so no sanitisation beyond basename is needed.
+        $cur_script   = basename(parse_url($_SERVER['SCRIPT_NAME'] ?? '', PHP_URL_PATH) ?: '');
+        $on_item_page = in_array($cur_script, ['itemedit.php', 'iteminfo.php', 'itemhistory.php', 'itemstats.php'], true);
+
         // Track whether the HTML 'selected' attribute has already been emitted: a slice
         // that lives under multiple sites would otherwise get 'selected' on every row,
         // causing a wrong-row flash before the localStorage JS reconciles.
@@ -313,13 +326,13 @@ function GetModuleSelection(): string {
         $emitOption = static function (string $id, string $name, bool $deleted,
                                        string $site_id = '', int $indent = 0,
                                        string $class = '', string $aria_desc = '',
-                                       bool $disabled = false, string $icon = '') use (&$selected_emitted): string {
+                                       bool $disabled = false, string $icon = '') use (&$selected_emitted, $cur_url, $on_item_page): string {
             $mod_dir = AA_Module::getModuleInfo('url', $id);
-            // Always link to the target module's manager (index) page. A bare "?module_id=$id"
-            // would resolve against the *current* page, so switching slice from a non-index admin
-            // page (item editor, Item info / History / Statistics) landed on that page with a
-            // foreign id - the "strange page" bug. The full path always opens the slice manager.
-            $val     = AA_INSTAL_PATH.$mod_dir . "?module_id=$id";
+            // Same module type as the current page (and a page that lives on module_id alone):
+            // keep the user where they are. Otherwise open the target module's manager.
+            $val = ($cur_url !== '' && $mod_dir === $cur_url && !$on_item_page)
+                 ? "?module_id=$id"
+                 : AA_INSTAL_PATH.$mod_dir . "?module_id=$id";
             $label   = safe($name);
             if ($deleted) {
                 $label = "&times;&times;&times; $label &times;&times;&times;";

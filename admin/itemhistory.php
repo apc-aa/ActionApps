@@ -25,7 +25,9 @@ if (!IsSuperadmin()) {
     exit;
 }
 
-$item = $id ? AA_Items::getItem(new zids($id)) : null;
+// Admin context: bypass the slice reading password so a password-protected item still resolves its
+// name and history (see iteminfo.php for the rationale). renew=true overwrites any gated cache entry.
+$item = $id ? AA_Items::getItem(new zids($id), null, true, true) : null;
 if (!$item) {
     AA_Adminpageutil::MsgPageMenu(get_admin_url('index.php'), _m("Item not found."), 'admin');
     exit;

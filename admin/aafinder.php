@@ -144,7 +144,9 @@ function PrintIdsInfo($l_or_s_id): void
 
 function PrintItemInfo($item_id): void
 {
-    $item = AA_Items::getItem(new zids($item_id));
+    // Superadmin debug tool: ignore the slice reading password so a protected item still resolves
+    // its content here (mirrors admin/iteminfo.php).
+    $item = AA_Items::getItem(new zids($item_id), null, false, true);
     PrintIdsInfo($item_id);
     if (!$item) {
         return;

@@ -37,6 +37,11 @@ class HitcounterDisplay
         if ($from === 0 && $to === 0) {
             return [];
         }
+        // This aggregate is entirely about the optional 'duration' column (AddDurationLog); without
+        // it there are no measured rows to rank, so skip rather than reference a missing column.
+        if (!DB_AA::exists_column('hit_archive', 'duration')) {
+            return [];
+        }
         $conds = [['hit_archive.duration', 0, '<>']];
         if ($from) {
             $conds[] = ['hit_archive.time', $from, '>='];
@@ -113,13 +118,11 @@ class HitcounterDisplay
         $now = time();
         $wk  = $now - 7 * 86400;
         $mo  = $now - 30 * 86400;
-        // $wk/$mo are ints computed here; inlined into the SELECT (no user input).
-        $sql = "SELECT
-            SUM(`hits`)                                                       AS total_hits,
-            SUM(CASE WHEN `time` >= $wk THEN `hits` ELSE 0 END)               AS hits_7d,
-            SUM(CASE WHEN `time` >= $mo THEN `hits` ELSE 0 END)               AS hits_30d,
-            MIN(`time`)                                                       AS first_t,
-            MAX(`time`)                                                       AS last_t,
+        // The 'duration' column is an optional optimisation (AddDurationLog); on installs without
+        // it we must not reference it or the query fails. Query the cache/latency buckets only when
+        // the column exists - otherwise the cache % and avg-ms figures stay null.
+        $do_duration = DB_AA::exists_column('hit_archive', 'duration');
+        $dur_cols = $do_duration ? ",
             SUM(CASE WHEN `duration` <> 0 AND `duration` & 3 = 0 THEN `hits` ELSE 0 END) AS h0,
             SUM(CASE WHEN `duration` <> 0 AND `duration` & 3 = 1 THEN `hits` ELSE 0 END) AS h1,
             SUM(CASE WHEN `duration` <> 0 AND `duration` & 3 = 2 THEN `hits` ELSE 0 END) AS h2,
@@ -127,7 +130,14 @@ class HitcounterDisplay
             SUM(CASE WHEN `duration` <> 0 AND `duration` & 3 = 0 THEN (`duration` >> 2) * `hits` ELSE 0 END) AS w0,
             SUM(CASE WHEN `duration` <> 0 AND `duration` & 3 = 1 THEN (`duration` >> 2) * `hits` ELSE 0 END) AS w1,
             SUM(CASE WHEN `duration` <> 0 AND `duration` & 3 = 2 THEN (`duration` >> 2) * `hits` ELSE 0 END) AS w2,
-            SUM(CASE WHEN `duration` <> 0 AND `duration` & 3 = 3 THEN (`duration` >> 2) * `hits` ELSE 0 END) AS w3
+            SUM(CASE WHEN `duration` <> 0 AND `duration` & 3 = 3 THEN (`duration` >> 2) * `hits` ELSE 0 END) AS w3" : '';
+        // $wk/$mo are ints computed here; inlined into the SELECT (no user input).
+        $sql = "SELECT
+            SUM(`hits`)                                                       AS total_hits,
+            SUM(CASE WHEN `time` >= $wk THEN `hits` ELSE 0 END)               AS hits_7d,
+            SUM(CASE WHEN `time` >= $mo THEN `hits` ELSE 0 END)               AS hits_30d,
+            MIN(`time`)                                                       AS first_t,
+            MAX(`time`)                                                       AS last_t$dur_cols
             FROM `hit_archive`";
         $rows = DB_AA::select([], $sql, [['id', $short_id, 'i']]);
         $r    = $rows[0] ?? null;
@@ -135,19 +145,21 @@ class HitcounterDisplay
             return [];
         }
 
-        $timex      = new LogarithmIndex(.002, 80, 63);
         $bucket_sum = 0;
         $cache_hits = 0;
         $ms_x_hits  = 0.0;
-        for ($b = 0; $b < 4; $b++) {
-            $bh = (int) $r["h$b"];
-            $bw = (int) $r["w$b"];
-            $bucket_sum += $bh;
-            if ($b >= 2) {
-                $cache_hits += $bh;   // buckets 2,3 = served from PageCache
-            }
-            if ($bh > 0) {
-                $ms_x_hits += $timex->index2float($bw / $bh) * 1000 * $bh;
+        if ($do_duration) {
+            $timex = new LogarithmIndex(.002, 80, 63);
+            for ($b = 0; $b < 4; $b++) {
+                $bh = (int) $r["h$b"];
+                $bw = (int) $r["w$b"];
+                $bucket_sum += $bh;
+                if ($b >= 2) {
+                    $cache_hits += $bh;   // buckets 2,3 = served from PageCache
+                }
+                if ($bh > 0) {
+                    $ms_x_hits += $timex->index2float($bw / $bh) * 1000 * $bh;
+                }
             }
         }
 

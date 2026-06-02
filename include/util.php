@@ -543,6 +543,99 @@ function GetPrintArray($a): string
     return $ret;
 }
 
+/** Whether a scalar dump value is long enough to warrant the collapsible, clamped block in
+ *  compact_print_r()'s HTML mode (more than ~120 chars, or any line break).
+ * @param string $s
+ * @return bool
+ */
+function _isLongDumpValue(string $s): bool
+{
+    return strlen($s) > 120 || str_contains($s, "\n");
+}
+
+/** Render one scalar for compact_print_r(). Unlike print_r() (which prints null and false both as
+ *  ''), this labels them explicitly - NULL / true / false - so a debug dump never confuses null,
+ *  false and the empty string. Everything else casts to string.
+ * @param mixed $v
+ * @return string
+ */
+function _dumpScalar($v): string
+{
+    if ($v === null) {
+        return 'NULL';
+    }
+    if (is_bool($v)) {
+        return $v ? 'true' : 'false';
+    }
+    return (string)$v;
+}
+
+/** Compact counterpart to print_r(): same "[key] => value" structure (array indexes kept),
+ *  but any array/object whose members are all scalar collapses onto one bracketed line, and
+ *  "Array (...)" / "Object (...)" become "[...]" - so deep data dumps stay readable. Objects
+ *  print their class then their properties (incl. protected/private, like print_r). Returns
+ *  the string (never echoes); recursion is depth-capped so it is safe on circular data.
+ *
+ *  With $html=true the result is HTML (meant to sit inside a <pre>): every key/value is
+ *  safe()-escaped internally, and a long or multiline scalar value is wrapped in a collapsible
+ *  <details class="aa-cpr-long"> clamped to ~4 rows (CSS in admin-ecn.css) so big text bodies
+ *  don't swamp the dump. In that mode the output is already escaped - do NOT wrap it in safe().
+ *
+ * @param mixed $var
+ * @param int   $indent  current indent depth (internal, for recursion)
+ * @param bool  $html    emit HTML (escaped, with collapsible long values) instead of plain text
+ * @return string  plain-text mode: raw, HTML-unsafe (wrap in safe() before emitting). HTML mode: already safe.
+ */
+function compact_print_r($var, int $indent = 0, bool $html = false): string
+{
+    if (is_object($var)) {
+        $clean = [];
+        foreach ((array)$var as $k => $v) {                                  // (array) exposes protected/private props...
+            $clean[preg_replace('/^\x00.*?\x00/', '', (string)$k)] = $v;      // ...behind null-byte prefixes - strip them
+        }
+        $class = $html ? safe(get_class($var)) : get_class($var);
+        return $class . ' ' . compact_print_r($clean, $indent, $html);
+    }
+    if (!is_array($var)) {                                                    // scalar
+        $s = _dumpScalar($var);
+        if (!$html) {
+            return $s;
+        }
+        return _isLongDumpValue($s)                                          // long/multiline -> collapsible, clamped to 4 rows
+             ? '<details class="aa-cpr-long"><summary>' . safe($s) . '</summary></details>'
+             : safe($s);
+    }
+    if ($var === []) {
+        return '[]';
+    }
+    if ($indent > 12) {                                                       // runaway / circular-reference guard
+        return '[...]';
+    }
+    $key = static fn($k): string => '[' . ($html ? safe((string)$k) : (string)$k) . ']';
+    // A leaf array (all-scalar members) prints on one line - UNLESS (HTML mode) one of its values
+    // is long/multiline: then break it onto indented lines so the clamped block aligns with the tree.
+    $nested = false;
+    foreach ($var as $v) {
+        if (is_array($v) || is_object($v) || ($html && is_string($v) && _isLongDumpValue($v))) {
+            $nested = true;
+            break;
+        }
+    }
+    if (!$nested) {                                                           // leaf array - one line: [[k] => v, [k] => v]
+        $parts = [];
+        foreach ($var as $k => $v) {
+            $parts[] = $key($k) . ' => ' . ($html ? safe(_dumpScalar($v)) : _dumpScalar($v));
+        }
+        return '[' . implode(', ', $parts) . ']';
+    }
+    $pad = str_repeat('    ', $indent + 1);                                   // nested - keep structure, one member per line
+    $out = "[\n";
+    foreach ($var as $k => $v) {
+        $out .= $pad . $key($k) . ' => ' . compact_print_r($v, $indent + 1, $html) . "\n";
+    }
+    return $out . str_repeat('    ', $indent) . ']';
+}
+
 /** Prepare OK Message
  * @param  string  $txt
  * @return string

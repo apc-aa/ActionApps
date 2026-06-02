@@ -62,8 +62,8 @@ function email_notify($slice_id, $event, $item_id): void
 
     if ($notify_body = $slice->getProperty($prefix . '_b')) {
         if ($emails = DB_AA::select('uid','SELECT `uid` FROM `email_notify`',[['slice_id',$slice_id,'l'],['function',$event, 'i']])) {
-        // ignore reading password
-        $item = AA_Items::getItem(new zids($item_id), $slice->getProperty('reading_password'));
+        // ignore reading password - system context (notification email), not a visitor read
+        $item = AA_Items::getItem(new zids($item_id), null, false, true);
         if ($item) {
             $body = $item->unalias($notify_body);
                 if (trim($body)) {

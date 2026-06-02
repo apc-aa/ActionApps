@@ -29,8 +29,9 @@ class HitcounterGroup implements LaterInterface
             $duration_helper = new AddDurationLog();
             if ($duration_helper->test()) {
                 self::$duration_log_feature_from = $duration_helper->getFromTime();
-                // reload table structure from the database - in standard metabase we do not have an extended hit_archive table
-                AA::Metabase()->loadFromDb(true, ['hit_archive']);  // it is not a standard table - we have to read it
+                // refresh the cached structure from the DB so a just-added 'duration' column is
+                // picked up (it is part of the standard metabase now, but may post-date this process)
+                AA::Metabase()->loadFromDb(true, ['hit_archive']);
             } else {
                 // duration isn't used
                 self::$duration_log_feature_from = 0;

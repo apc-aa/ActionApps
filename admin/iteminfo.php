@@ -21,7 +21,10 @@ try {
     $id = InputVars::idGETPOST('id');
 } catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
 
-$item = $id ? AA_Items::getItem(new zids($id)) : null;
+// Admin context: the viewer already passed the edit-rights gate below, so bypass the slice's
+// reading password (otherwise the content - incl. posted_by used by that gate - reads as the
+// "missing reading password" placeholder). renew=true overwrites any password-gated cache entry.
+$item = $id ? AA_Items::getItem(new zids($id), null, true, true) : null;
 if (!$item) {
     AA_Adminpageutil::MsgPageMenu(get_admin_url('index.php'), _m("Item not found."), 'admin');
     exit;

@@ -1384,8 +1384,10 @@ class ItemContent extends AA_Content {
             //AA_Items::invalidate();      // this deletes also cached items in Saver, which you do not want - that's why it is commented out
             AA::Contentcache()->clear_soft();  // do not delete {define:..} used by {var:..} - sometimes used by {newitem}
         }
-        // renew content if the item in the cache - we will use it in Planned tasks, ... where we do not know slice password...
-        AA_Items::getItem($zid, $slice->getProperty('reading_password'), true);
+        // renew the cached copy of the just-saved item. This is the system re-caching after a write
+        // (e.g. Planned tasks), so ignore the slice reading password rather than pulling it from the
+        // slice - mirrors the setByItemID($id, true) calls above.
+        AA_Items::getItem($zid, null, true, true);   // renew + ignore reading password
 
         if ($feed) {
             FeedItem($itemContent);
