@@ -174,7 +174,10 @@ class FilWidget extends Widget
         if (!$widget && $display_url === 0) {
             $input_name = $base_name . "[fil][url][0]";
             $input_id = FormArray::formName2Id($input_name);
-            $widget = "\n<input type=\"text\" size=\"$width\" maxlength=\"$max_characters\" name=\"$input_name\" id=\"$input_id\" value=\"\"$widget_add>";
+            $widget   = "\n<div class=aa-fil-file>";
+            $widget  .= "\n<input type=\"text\" class=aa-w-full maxlength=\"$max_characters\" name=\"$input_name\" id=\"$input_id\" value=\"\"$widget_add>";
+            $widget  .= '</div>';
+
         }
 
         $input_name = $base_name . "[fil][var][]";
@@ -184,7 +187,7 @@ class FilWidget extends Widget
 
         if ($type === 'normal') {
             $required = ($aa_property->isRequired() && !$value->count() && $display_url > 0) ? 'required' : '';   // @todo - improve required handling for display_url = 0 - file or! url must be present
-            $widget .= "    <br><input type=file class=filepond size=\"$width\"$multiple maxlength=\"$max_characters\" name=\"$input_name\" id=\"$input_id\" $required $accept><!--$type -->";
+            $widget .= "    <input type=file class=filepond size=\"$width\"$multiple maxlength=\"$max_characters\" name=\"$input_name\" id=\"$input_id\" $required $accept><!--$type -->";
         } else {
             $url_params = [
                 'inline' => 1,
