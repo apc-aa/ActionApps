@@ -465,15 +465,44 @@ function GetModuleSelection(): string {
               /* Browsers without `appearance: base-select` (Firefox, Safari) render a
                  native listbox that ignores option padding, so the CSS indent never
                  shows. Inject leading NBSPs (U+00A0) from data-indent to restore the
-                 hierarchy there. Modern browsers skip this entirely — they indent via
-                 CSS padding and keep clean, typeahead-friendly option text. The cost
-                 in the fallback is that native typeahead then matches the NBSP-prefixed
-                 text for indented rows (same trade-off as the old label= approach). */
+                 hierarchy there. Their native typeahead still cycles, so they need no
+                 keyboard help. Chromium's base-select popup gets clean text (CSS-padding
+                 indent) plus a JS typeahead handler below — its built-in type-to-search
+                 only ever jumps to the *first* match and never cycles, which the handler
+                 replaces with begins-with-then-substring matching that also cycles. */
               . "if(!CSS.supports('appearance','base-select')){"
               .   "for(const o of s.options){"
               .     "const n=+o.dataset.indent||0;"
               .     "if(n)o.textContent='\\u00A0'.repeat(n)+o.textContent;"
               .   "}"
+              . "}else{"
+                  /* base-select options are real focusable DOM nodes, so focus() moves
+                     the popup cursor (legacy <select> can't). We intercept printable keys
+                     while the popup is open, suppress the native first-match search, and
+                     focus our own match; Enter then commits the focused option as usual.
+                     Match rule: a single repeated character cycles through every option
+                     starting with it; a multi-char buffer (fast typing, 700ms window)
+                     matches begins-with first and falls back to a substring search.
+                     Leading whitespace in option text is ignored (trim). */
+              .   "let buf='',t=null;"
+              .   "const nm=o=>o.textContent.trim().toLowerCase();"
+              .   "s.addEventListener('keydown',e=>{"
+              .     "if(!s.matches(':open'))return;"
+              .     "if(e.key.length!==1||e.ctrlKey||e.metaKey||e.altKey)return;"
+              .     "e.preventDefault();"
+              .     "clearTimeout(t);t=setTimeout(()=>{buf='';},700);"
+              .     "buf+=e.key.toLowerCase();"
+              .     "const same=[...buf].every(c=>c===buf[0]),q=same?buf[0]:buf;"
+              .     "const opts=[...s.options].filter(o=>!o.disabled);"
+              .     "let pool=opts.filter(o=>nm(o).startsWith(q));"
+              .     "if(!pool.length)pool=opts.filter(o=>nm(o).includes(q));"
+              .     "if(!pool.length)return;"
+              .     "const cur=document.activeElement;"
+              .     "let nx;"
+              .     "if(same){const i=pool.indexOf(cur);nx=pool[(i+1)%pool.length];}"
+              .     "else{nx=pool.includes(cur)?cur:pool[0];}"
+              .     "nx.focus();"
+              .   "});"
               . "}"
               . "const K='aa_current_site_id',r=localStorage.getItem(K);"
               . "if(r&&s.selectedOptions[0]){"
@@ -635,8 +664,38 @@ function getMenu(string $activeMain, string $activeSubmenu = '', string $submenu
     // showSub menu -----
         if ($submenu) {
             $copyright = _m("Copyright (C) 2001 the <a href=\"https://www.apc.org\">Association for Progressive Communications (APC)</a>");
-            $ret .= <<<HTML
-                      <div class="aa-ui-leftmenu"><div class="leftmenu noprint">{$submenu_code}</div>
+
+            // The item-context rail (Edit item / Item info / History / Statistics) can be
+            // collapsed to an icons-only strip — every row there carries an icon. Other
+            // submenus don't, so the toggle + collapse CSS are gated to this one submenu key.
+            $collapsible    = ($submenu === 'itemcontext_submenu');
+            $rail_class     = $collapsible ? 'aa-ui-leftmenu aa-leftmenu-collapsible' : 'aa-ui-leftmenu';
+            $rail_prescript = '';
+            $rail_toggle    = '';
+            if ($collapsible) {
+                $toggle_label = safe(_m('Collapse / expand menu'));
+                // Apply the saved state on <html> BEFORE the rail paints, so a collapsed
+                // rail never flashes at full width (mirrors the aa_current_site_id idiom above).
+                // NB: this HTML is later run through AA::Un() (unalias). The Stringexpander
+                // dispatches a "{cmd...}" only when the brace content STARTS with an AA command
+                // token immediately followed by ':' or '(' (stringexpand.php ~6592: strspn picks
+                // the leading [a-z0-9_] token). So "{if(...)}" is read as {if(...} and eaten; a
+                // single leading space ("{ if(...}") already defeats it (strspn → 0, no command).
+                // Here we sidestep the issue entirely: classList.toggle(name, force) has no such
+                // leading token, so unalias leaves the script intact.
+                $rail_prescript = "<script>try{document.documentElement.classList.toggle('aa-itemrail-collapsed',"
+                    ."localStorage.getItem('aa_itemrail_collapsed')==='1')}catch(e){}</script>";
+                $rail_toggle = "<button type=\"button\" class=\"aa-rail-toggle\" id=\"aa-rail-toggle\""
+                    ." title=\"$toggle_label\" aria-label=\"$toggle_label\" aria-expanded=\"true\">"
+                    ."<span class=\"aa-rail-toggle-ico\" aria-hidden=\"true\"></span></button>"
+                    ."<script>(()=>{const h=document.documentElement,b=document.getElementById('aa-rail-toggle');"
+                    ."if(!b)return;const s=()=>b.setAttribute('aria-expanded',h.classList.contains('aa-itemrail-collapsed')?'false':'true');"
+                    ."s();b.addEventListener('click',()=>{const c=h.classList.toggle('aa-itemrail-collapsed');"
+                    ."try{localStorage.setItem('aa_itemrail_collapsed',c?'1':'0');}catch(e){}s();});})();</script>";
+            }
+
+            $ret .= $rail_prescript . <<<HTML
+                      <div class="{$rail_class}"><div class="leftmenu noprint">{$rail_toggle}{$submenu_code}</div>
                         <div class='aa-ui-copyright'>{$copyright}</div>
                       </div>
                     HTML;
@@ -699,7 +758,7 @@ function getSubMenuRows(array $aamenuitems, $active ): string {
         } elseif (str_starts_with($itemshow, "header")) {
             if (is_array($item)) {
                 if (!isset($item["cond"]) || $item["cond"]) {
-                    $ret .= "<li class='aa-leftmenu-header aa-menuname-$itemshow' title='" . ($item['title'] ?? '') . "'>" . $item['label'] . "</li>\n";  // $ico not shown for design reasons
+                    $ret .= "<li class='aa-leftmenu-header aa-menuname-$itemshow' title='" . safe($item['title'] ?? '') . "'>" . $item['label'] . "</li>\n";  // $ico not shown for design reasons
                 }
             } elseif ($item !== '') {
                 $ret .= "<li class='aa-leftmenu-header aa-menuname-$itemshow'>$item</li>\n";
@@ -732,10 +791,12 @@ function getSubMenuRows(array $aamenuitems, $active ): string {
                     $is_js      = true;
                 }
                 $class_attr = $cssclass ? " class=\"$cssclass\"" : '';
+                // title surfaces the label as a tooltip when the rail is collapsed to icons only.
+                $title_attr = (($item['title'] ?? '') !== '') ? ' title="'.safe($item['title']).'"' : '';
                 // safe() the URL href (it can carry a user-derived id, e.g. the item-context rail);
                 // leave a javascript: href raw so escaping & inside inline JS does not break it.
                 $safe_href = $is_js ? $href : safe($href);
-                $ret .= "<li class='aa-menuname-$itemshow'><a href=\"$safe_href\"$class_attr>".$ico. $item["label"]."</a></li>\n";
+                $ret .= "<li class='aa-menuname-$itemshow'><a href=\"$safe_href\"$class_attr$title_attr>".$ico. $item["label"]."</a></li>\n";
             } elseif ( !($item["hide"] ?? false) ) {
                 // no need to show not active menu items 2023-02-15 HM
                 // $ret .= '<li><span class="leftmenun">'.$ico.$item["label"]."</span></li>\n";

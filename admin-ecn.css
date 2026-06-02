@@ -1034,6 +1034,88 @@ li.aa-leftmenu-header {
     font-weight: 600;;
     color: #000000;
 }
+/* Collapsible item rail (item pages only — gated by .aa-leftmenu-collapsible).
+   Colours follow the neighbouring rail rules (alpha black/white over the skin bg),
+   so this re-skins automatically under the gold overlay. */
+.aa-leftmenu-collapsible {
+    /* user-initiated one-shot collapse; width is layout, so it's guarded by
+       prefers-reduced-motion below. ease-out-quint, no bounce. */
+    transition: max-width 0.18s cubic-bezier(0.22, 1, 0.36, 1),
+                flex-basis 0.18s cubic-bezier(0.22, 1, 0.36, 1);
+}
+/* Quiet, flat chevron — borderless, native to the rail (echoes .leftmenu a:hover),
+   not a floating app button. Colour tints toward press-black, never #000. */
+.aa-rail-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    margin: 8px 12px 8px auto;        /* push-left; bottom gap separates control from nav */
+    padding: 0;
+    border: 0;
+    border-radius: 4px;               /* sm — barely there */
+    background: transparent;
+    color: rgb(31 31 31 / 72%);       /* press-black, tinted; quiet but findable */
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+.aa-rail-toggle:hover {
+    background: rgb(255 255 255 / 28%);
+    color: rgb(31 31 31 / 95%);
+}
+.aa-rail-toggle:focus-visible {
+    outline: none;
+    background: rgb(255 255 255 / 28%);
+    box-shadow: 0 0 0 2px rgb(31 31 31 / 30%);
+    color: rgb(31 31 31 / 95%);
+}
+.aa-rail-toggle-ico {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-left: 2px solid currentColor;
+    border-bottom: 2px solid currentColor;
+    transform: rotate(45deg);         /* points left = collapse */
+    transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1);
+}
+html.aa-itemrail-collapsed .aa-leftmenu-collapsible {
+    flex: 0 0 52px;
+    max-width: 52px;
+}
+html.aa-itemrail-collapsed .aa-leftmenu-collapsible .aa-rail-toggle {
+    margin-right: auto;
+    margin-left: auto;
+}
+html.aa-itemrail-collapsed .aa-leftmenu-collapsible .aa-rail-toggle-ico {
+    transform: rotate(-135deg);       /* points right = expand */
+}
+html.aa-itemrail-collapsed .aa-leftmenu-collapsible .leftmenu a {
+    padding-left: 0;
+    padding-right: 0;
+    margin-left: 6px;
+    margin-right: 6px;
+    text-align: center;
+    font-size: 0;                     /* hide the label, keep the icon */
+    white-space: nowrap;
+}
+html.aa-itemrail-collapsed .aa-leftmenu-collapsible .leftmenu li img {
+    margin: -3px 0 -2px 0;            /* re-centre icon (was tucked under left padding) */
+}
+html.aa-itemrail-collapsed .aa-leftmenu-collapsible .aa-bin-cnt {
+    font-size: 9px;                   /* badge text was zeroed by the parent font-size:0 */
+    padding: 1px 4px;
+}
+html.aa-itemrail-collapsed .aa-leftmenu-collapsible .aa-ui-copyright {
+    display: none;
+}
+@media (prefers-reduced-motion: reduce) {
+    .aa-leftmenu-collapsible,
+    .aa-rail-toggle,
+    .aa-rail-toggle-ico {
+        transition: none;
+    }
+}
 .aa-rim .item {
     background-color: var(--clr-basic-light)
 }
