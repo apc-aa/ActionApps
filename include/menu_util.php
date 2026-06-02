@@ -480,9 +480,11 @@ function GetModuleSelection(): string {
                      the popup cursor (legacy <select> can't). We intercept printable keys
                      while the popup is open, suppress the native first-match search, and
                      focus our own match; Enter then commits the focused option as usual.
-                     Match rule: a single repeated character cycles through every option
-                     starting with it; a multi-char buffer (fast typing, 700ms window)
-                     matches begins-with first and falls back to a substring search.
+                     Match rule: a single-character buffer cycles through every option
+                     starting with that char (repeated keypresses land here because the
+                     700ms reset keeps the buffer one char long); a multi-char buffer
+                     (fast typing) matches begins-with first and falls back to a substring
+                     search — so 'oo' finds 'Links root' rather than cycling 'o' options.
                      Leading whitespace in option text is ignored (trim). */
               .   "let buf='',t=null;"
               .   "const nm=o=>o.textContent.trim().toLowerCase();"
@@ -492,14 +494,14 @@ function GetModuleSelection(): string {
               .     "e.preventDefault();"
               .     "clearTimeout(t);t=setTimeout(()=>{buf='';},700);"
               .     "buf+=e.key.toLowerCase();"
-              .     "const same=[...buf].every(c=>c===buf[0]),q=same?buf[0]:buf;"
+              .     "const cyc=buf.length===1;"
               .     "const opts=[...s.options].filter(o=>!o.disabled);"
-              .     "let pool=opts.filter(o=>nm(o).startsWith(q));"
-              .     "if(!pool.length)pool=opts.filter(o=>nm(o).includes(q));"
+              .     "let pool=opts.filter(o=>nm(o).startsWith(buf));"
+              .     "if(!pool.length)pool=opts.filter(o=>nm(o).includes(buf));"
               .     "if(!pool.length)return;"
               .     "const cur=document.activeElement;"
               .     "let nx;"
-              .     "if(same){const i=pool.indexOf(cur);nx=pool[(i+1)%pool.length];}"
+              .     "if(cyc){const i=pool.indexOf(cur);nx=pool[(i+1)%pool.length];}"
               .     "else{nx=pool.includes(cur)?cur:pool[0];}"
               .     "nx.focus();"
               .   "});"
