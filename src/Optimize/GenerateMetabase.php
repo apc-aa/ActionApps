@@ -31,12 +31,6 @@ namespace AA\Optimize;
 use AA\IO\DB\DB_AA;
 use AA_Metabase;
 
-// this is wrong! it deletes the priority field! Disabled for now.
-/*
-$SQL_update_modules[] = "REPLACE INTO module (id, name, deleted, type, slice_url, lang_file, created_at, created_by, owner, flag) SELECT id, name, deleted, 'S', slice_url, lang_file, created_at, created_by, owner, 0 FROM slice";
-*/
-
-
 /** Generate metabase definition row */
 class GenerateMetabase extends \AA\Optimize\AbstractOptimize
 {
@@ -53,7 +47,7 @@ class GenerateMetabase extends \AA\Optimize\AbstractOptimize
      */
     public static function description(): string
     {
-        return _m("For programmers only - Generate metabace definition row from current database bo be placed in /service/metabase.class.php and /include/metabase.class.php scripts");
+        return _m("For programmers only - prints the include/metabase_schema.php content (the expected DB schema, as a readable PHP array) generated from the current database; copy it into the file and commit.");
     }
 
     /** implemented actions within this class */
@@ -68,8 +62,9 @@ class GenerateMetabase extends \AA\Optimize\AbstractOptimize
     public function repair(): bool
     {
         $metabase = new AA_Metabase();
-        $metabase->loadFromDb();
-        echo '$instance = unserialize(\'' . str_replace("'", '\\\'', serialize($metabase)) . '\');';
+        $metabase->loadFromDb(true);
+        echo '<p>Copy the following into <code>include/metabase_schema.php</code> and commit it:</p>';
+        echo '<textarea readonly rows="30" cols="120">' . safe($metabase->renderSchemaPhp()) . '</textarea>';
         exit;
     }
 }
