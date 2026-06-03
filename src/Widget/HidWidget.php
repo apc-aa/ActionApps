@@ -47,7 +47,7 @@ class HidWidget extends Widget
         $ret .= "\n<tr class=\"formrow{formpart} fieldstart cont-" . varname4form($aa_property->getId()) . "\" style=\"visibility:collapse;\">";
         $ret .= "\n <th>" . $aa_property->getName();
         if ($aa_property->isRequired()) {
-            $ret .= "&nbsp;*";
+            $ret .= '&nbsp;<span class="aa-required">*</span>';
         }
         $ret .= "</th>\n <td>";
         return $ret;

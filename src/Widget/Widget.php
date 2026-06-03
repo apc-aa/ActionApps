@@ -470,7 +470,7 @@ class Widget extends AA_Object implements NamedInterface
         $ret = "\n<tr class=\"formrow{formpart} fieldstart cont-" . varname4form($aa_property->getId()) . "\">";
         $ret .= "\n <th><div>" . $aa_property->getName() ;   // div for min / max width css - HM/SV 2023-11-24
         if ($aa_property->isRequired()) {
-            $ret .= "&nbsp;*";
+            $ret .= '&nbsp;<span class="aa-required">*</span>';
         }
         $ret .= "</div></th>\n <td>";
         return $ret;

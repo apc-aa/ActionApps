@@ -1096,7 +1096,7 @@ class AA_Inputfield {
     private function needed(): void
     {
         if ( $this->required ) {
-            $this->echoo( "&nbsp;*" );
+            $this->echoo( '&nbsp;<span class="aa-required">*</span>' );
         }
     }
 
@@ -1156,9 +1156,9 @@ class AA_Inputfield {
                 break;
             case 'secrow':  $this->field_tr(false);
         }
-        $this->echoo("\n <th ". (($colspan==1) ? '': "colspan=\"$colspan\""). "><div>$name</div>" );  // div for min max width styling HM/SV 2023-11-23
+        $this->echoo("\n <th ". (($colspan==1) ? '': "colspan=\"$colspan\""). "><div>$name" );  // div for min max width styling HM/SV 2023-11-23
         $this->needed();
-        $this->echoo("</th>\n");
+        $this->echoo("</div></th>\n");
         if ( $plus === 'plus' || $plus === 'secrow' ) {
             $this->echoo(' <td>');
         }
@@ -2941,7 +2941,7 @@ function getFrmInputButtons($buttons, $print_hidden = true, $prefix = ''): strin
         }
         $ret .= "\n";
     }
-    
+
     if ($save_btn_id || $esc_btn_id) {
         $shotcuts_js =  <<<JS
                         document.addEventListener('keydown', e => {
@@ -2954,7 +2954,7 @@ function getFrmInputButtons($buttons, $print_hidden = true, $prefix = ''): strin
                         JS;
         AA::Stringexpander()->addRequire( $shotcuts_js, 'AA_Req_Load');
      }
- 
+
     if ($save_btn_id || $esc_btn_id) {
         $shotcuts_js =  <<<JS
                         document.addEventListener('keydown', e => {

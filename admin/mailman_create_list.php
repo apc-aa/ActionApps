@@ -54,7 +54,7 @@ try {
     $create_list = InputVars::stringPOST('create_list');
     $list_name = InputVars::stringPOST('list_name'); // alpha
     $cancel = InputVars::boolPOST('cancel');
-    
+
     $Msg = InputVars::stringGETPOST('Msg');
 } catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
 
@@ -144,7 +144,7 @@ if (! $admin_email) {
  * @return string - $s in <b> and spaces are replaced by "&nbsp;"
  */
 function caption($s): string {
-    return "<b>".str_replace (" ","&nbsp;",$s)."&nbsp;*</b>";
+    return str_replace (" ","&nbsp;",$s).'&nbsp;<span class="aa-required">*</span>';
 }
 
 echo '
@@ -157,11 +157,11 @@ echo '
 <tr><td colspan="2">'._m("The list will be added to mailman and also
     to the constant group for the field %1 selected as Mailman Lists Field in Slice Settings.", [$field_name]).'<br><br>'
 ._m("All the fields are required.").'</td></tr>
-<tr><td>'.caption(_m("List name")).'</td>
+<tr><th>'.caption(_m("List name")).'</th>
 <td><input type="text" name="list_name" size="20" value="'.$list_name.'"></td></tr>
-<tr><td>'.caption(_m("Admin email")).'</td>
+<tr><th>'.caption(_m("Admin email")).'</th>
 <td><input type="text" name="admin_email" value="'.str_replace('"','&quot;',$admin_email).'" size="50"></td></tr>
-<tr><td>'.caption(_m("Admin password")).'</td>
+<tr><th>'.caption(_m("Admin password")).'</th>
 <td><input type="password" name="admin_password" size="20"></td></tr>';
 echo '
 <tr><td colspan="2">

@@ -34,7 +34,7 @@ try {
     $getOldV = InputVars::boolGETPOST('getOldV');
     $lid = InputVars::intGET('lid');
     $cancel = InputVars::boolGETPOST('cancel');
-    
+
     $Msg = InputVars::stringGETPOST('Msg');
 } catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
 
@@ -432,7 +432,7 @@ if ( $id ) {
 
 echo '
     <tr>
-      <td><b>'. _m('Url') .'</b>&nbsp;*</td>
+      <th>'. _m('Url') .'&nbsp;<span class="aa-required">*</span></th>
       <td>
         <input type="text" name="url" size=50 value="'.$url.'">&nbsp;<a href="'.get_help_url(AA_LINKS_HELP_LINK,"url").'" target="_blank">?</a>&nbsp;&nbsp;
         <input type="button" value="'. _m('Check url') .'" onclick="CheckURL()">&nbsp;<a href="'.get_help_url(AA_LINKS_HELP_LINK,"hledej-url").'" target="_blank">?</a>&nbsp;&nbsp;
