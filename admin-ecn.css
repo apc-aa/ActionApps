@@ -2507,6 +2507,14 @@ select[name="sel_module"] option.aa-section-header {
        selected option, :checked above would otherwise drop it back to 500 — keep
        it at 700 so the "you are inside this site" cue stays consistent. */
     select[name="sel_module"] option.aa-site:checked { font-weight: 700; }
+    /* Keyboard-search highlight: the JS typeahead handler in menu_util.php wraps
+       the matched run of every pooled option in <span class="aa-hl">. A low-alpha
+       tint of the skin accent (#6a5e22) reads as "this is what you typed" without
+       fighting the :checked / :hover backgrounds. */
+    select[name="sel_module"] option .aa-hl {
+        background: rgba(106, 94, 34, .22);
+        border-radius: 2px;
+    }
     /* Per-type icon painted via ::after pseudo-element rather than a real child
        element: Chromium's base-select popup renders pseudo-elements reliably,
        and keeping the icon in CSS leaves the <option> text clean for native

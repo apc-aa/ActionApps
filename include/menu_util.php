@@ -485,24 +485,42 @@ function GetModuleSelection(): string {
                      700ms reset keeps the buffer one char long); a multi-char buffer
                      (fast typing) matches begins-with first and falls back to a substring
                      search — so 'oo' finds 'Links root' rather than cycling 'o' options.
-                     Leading whitespace in option text is ignored (trim). */
-              .   "let buf='',t=null;"
+                     Leading whitespace in option text is ignored (trim). The matched run
+                     in every pooled option is wrapped in <span class="aa-hl"> (built via
+                     DOM, never innerHTML — option names may contain & or <) so the user
+                     sees what they typed; unmark() collapses each highlighted option back
+                     to a plain text node (setting textContent to itself drops the span),
+                     run on every keystroke and on the 700ms idle reset. */
+              .   "let buf='',t=null,marked=[];"
               .   "const nm=o=>o.textContent.trim().toLowerCase();"
+              .   "const unmark=()=>{for(const o of marked)o.textContent=o.textContent;marked=[];};"
+              .   "const mark=(o,q)=>{const x=o.textContent,i=x.toLowerCase().indexOf(q);if(i<0)return;"
+                    /* Wrap the whole label in ONE span: the <option> is display:flex with
+                       gap:8px (to right-align the ::after icon), so appending bare text+span+text
+                       as separate children would make three flex items and the 8px gap would
+                       show up around the highlight. A single wrapper keeps one label flex item
+                       with normal inline flow inside. */
+              .     "const w=document.createElement('span');w.append(document.createTextNode(x.slice(0,i)));"
+              .     "const sp=document.createElement('span');sp.className='aa-hl';sp.textContent=x.slice(i,i+q.length);"
+              .     "w.append(sp,document.createTextNode(x.slice(i+q.length)));"
+              .     "o.textContent='';o.append(w);marked.push(o);};"
               .   "s.addEventListener('keydown',e=>{"
               .     "if(!s.matches(':open'))return;"
               .     "if(e.key.length!==1||e.ctrlKey||e.metaKey||e.altKey)return;"
               .     "e.preventDefault();"
-              .     "clearTimeout(t);t=setTimeout(()=>{buf='';},700);"
+              .     "clearTimeout(t);t=setTimeout(()=>{buf='';unmark();},700);"
               .     "buf+=e.key.toLowerCase();"
               .     "const cyc=buf.length===1;"
               .     "const opts=[...s.options].filter(o=>!o.disabled);"
               .     "let pool=opts.filter(o=>nm(o).startsWith(buf));"
               .     "if(!pool.length)pool=opts.filter(o=>nm(o).includes(buf));"
+              .     "unmark();"
               .     "if(!pool.length)return;"
               .     "const cur=document.activeElement;"
               .     "let nx;"
               .     "if(cyc){const i=pool.indexOf(cur);nx=pool[(i+1)%pool.length];}"
               .     "else{nx=pool.includes(cur)?cur:pool[0];}"
+              .     "for(const o of pool)mark(o,buf);"
               .     "nx.focus();"
               .   "});"
               . "}"
