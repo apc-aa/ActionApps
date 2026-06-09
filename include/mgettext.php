@@ -56,13 +56,13 @@ function bind_mgettext_domain($filename, $cache = false, $lang = ""): void
     }
 
     // store strings into backup and look for new strings in backup
-    if ($mgettext_domain && !$_m_backup[$mgettext_domain] && $cache) {
+    if ($mgettext_domain && empty($_m_backup[$mgettext_domain]) && $cache) {
         $_m_backup[$mgettext_domain] = $_m;
     }
 
     $mgettext_domain = $filename;
     if ($cache) {
-        $_m = $_m_backup[$mgettext_domain];
+        $_m = $_m_backup[$mgettext_domain] ?? null;
         if ($_m) {
             return;
         }
@@ -104,7 +104,7 @@ function _m($id, $params=[]): string {
     //$arr = ['<hr>', ++$count, $id, $_m[$id], $GLOBALS['mgettext_domain']];
     //array_walk($arr, function ($v) { echo "<br>".$v;});
 
-    $retval = $_m ? (string)$_m[$id] : '';
+    $retval = $_m ? (string)($_m[$id] ?? '') : '';
     if (!$retval) {
         $retval = (string)$id;
     }
