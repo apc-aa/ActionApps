@@ -45,7 +45,7 @@ try {
     // array ( 'hejny' => 4, 'Hořící K…' => 4, '🦆' => 4, 'he' => 1, '' => 2, )
     $user_name = InputVars::stringSlashedPOST('user_name'); // empty
     $cancel = InputVars::boolPOST('cancel');
-    
+
     $Msg = InputVars::stringGETPOST('Msg');
 } catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
 
@@ -97,7 +97,7 @@ $headcode = '<script>
         const sel = SelectValue(\'document.f.perms\')
         if (sel == null) {
             alert(\''. _m("No selected export") .'\')
-            return 
+            return
         }
         if (!confirm(\''. _m("Are you sure you want to delete the export?") .'\')) {
             return
@@ -120,8 +120,8 @@ FrmTabCaption(_m("Inter node export settings"));
          <?php
            if ($perms && is_array($perms)) {
                foreach ($perms as $perm) {
-                   $n = ($perm['node']) ? $perm['node'] : "All Nodes";
-                   $u = ($perm['user']) ? $perm['user'] : "All Users";
+                   $n = ($perm['node']) ?: "All Nodes";
+                   $u = ($perm['user']) ?: "All Users";
                    $str = str_replace(" ","&nbsp;",substr($n."                              ",0,30)."  ");
                    echo "<option value=\"".$perm['node']."~".$perm['user']."\">".
                      $str.$u."</option>";

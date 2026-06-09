@@ -340,7 +340,7 @@ class MLX {
                 }
                 $GLOBALS['v'. unpack_id(MLX_CTRLIDFIELD)]= q_pack_id($mlxid);
                 //check if lang is set, set to default from MLX
-                $GLOBALS['v'. unpack_id('lang_code.......')] = $lang ? $lang : $mlxCtrl->getDefLangName();
+                $GLOBALS['v'. unpack_id('lang_code.......')] = $lang ?: $mlxCtrl->getDefLangName();
                 break;
         }
         if (!$GLOBALS['g_const_Lang']) {

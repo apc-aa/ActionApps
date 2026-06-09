@@ -261,7 +261,7 @@ switch ($phase) {
       $super["userpassword"] = $password1;
       $super["givenname"] = $fname;
       $super["sn"] = $lname;
-      $super["mail"][] = $email ? $email : "";
+      $super["mail"][] = $email ?: "";
 
       // Try to create the account
 

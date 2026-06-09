@@ -66,7 +66,7 @@ try {
     // array ( 'd' => 1, 'a' => 3, )-array ( 'a' => 14, )
     $sort_order = InputVars::stringGETPOST('sort_order'); // alpha-alpha
     $cancel = InputVars::boolPOST('cancel');
-    
+
     $Msg = InputVars::stringGETPOST('Msg');
 } catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
 
@@ -186,7 +186,7 @@ if (!$sortable_columns[$sort_key]) {
 }
 foreach ($sortable_columns as $sortk => $col) {
     if ($sort_key == $sortk) {
-        $so = $sort_order ? $sort_order : $col["sort"];
+        $so = $sort_order ?: $col["sort"];
         $img = "&nbsp;<img src='../images/".($so === 'd' ? 'up' : 'down').".gif'>";
         $so  = $so === 'a' ? 'd' : 'a';
         $so  = "&sort_order=$so";
