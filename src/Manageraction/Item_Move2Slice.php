@@ -84,7 +84,7 @@ class Item_Move2Slice extends AbstractManageraction
         }
 
         if (!IfSlPerm(PS_DELETE_ITEMS, $this->slice_id) || !IfSlPerm(PS_ITEMS2ACT, $dest_slice_id)) {    // permission to delete items and add items in destination slice?
-            return _m("You have not permissions to move items");
+            return _m("You do not have permissions to move items");
         }
 
         if ($item_zids->isEmpty()) {

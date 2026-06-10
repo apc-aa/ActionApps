@@ -142,12 +142,12 @@ function SliceEditProcess($slice_id, $user_firstname, $user_surname, $err, $add_
     if ($slice_id) {
         // edit slice
         if (!IfSlPerm(PS_EDIT)) {
-            MsgPage(_m("You have not permissions to edit this slice"));
+            MsgPage(_m("You do not have permissions to edit this slice"));
             exit;
         }
     } elseif (!CheckPerms(AuthGetUid(), "aa", AA_ID, PS_ADD)) {
         // add slice
-        MsgPage(_m("You have not permissions to add slice"));
+        MsgPage(_m("You do not have permissions to add slice"));
         exit;
     }
 

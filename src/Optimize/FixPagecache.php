@@ -24,7 +24,7 @@ class FixPagecache extends AbstractOptimizeById
      */
     public static function description(): string
     {
-        return _m("Delete not existent keys in pagecache_str2find table and vice versa");
+        return _m("Delete non-existent keys in pagecache_str2find table and vice versa");
     }
 
     /** Find bad record and return their ids with the description

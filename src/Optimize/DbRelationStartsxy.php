@@ -19,7 +19,7 @@ class DbRelationStartsxy extends AbstractOptimize
      */
     public static function description(): string
     {
-        return _m("Testing if relation between slices are OK (without x or y chars on the begining)");
+        return _m("Testing if relations between slices are OK (without x or y chars on the beginning)");
     }
 
     /** Test function

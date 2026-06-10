@@ -34,7 +34,7 @@ require_once __DIR__ . "/../include/item.php";
 require_once __DIR__ . "/../include/actions.php";
 
 if ( !IsSuperadmin() ) {
-    MsgPage(_m("You have not permissions to manage nodes"));
+    MsgPage(_m("You do not have permissions to manage nodes"));
     exit;
 }
 

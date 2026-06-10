@@ -20,7 +20,7 @@ class FixContentColumn extends AbstractOptimize
      */
     public static function description(): string
     {
-        return _m("Set flag FLAG_TEXT_STORED for all content, where field is marked as text field, and reset it for numer fields");
+        return _m("Set flag FLAG_TEXT_STORED for all content, where field is marked as text field, and reset it for number fields");
     }
 
     /** implemented actions within this class */

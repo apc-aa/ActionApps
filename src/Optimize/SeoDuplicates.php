@@ -51,7 +51,7 @@ class SeoDuplicates extends AbstractOptimize
                 'LIKE',
             ],
         ])) {
-            $this->message(_m('We found required checkbox %1 fields:', [count($fields)]));
+            $this->message(_m("We found %1 required checkbox fields:", [count($fields)]));
             foreach ($fields as $field) {
                 $this->message(_m('%1 - %2 (%3) Show: %4', [
                     $field['id'],

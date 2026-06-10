@@ -40,7 +40,7 @@ try {
 } catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
 
 if (!IsSuperadmin()) {
-    MsgPage(_m("You have not permissions to access Console"));
+    MsgPage(_m("You do not have permissions to access Console"));
     exit;
 }
 

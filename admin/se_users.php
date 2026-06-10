@@ -57,7 +57,7 @@ try {
 } catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
 
 if (!IfSlPerm(PS_USERS)) {
-    AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php", _m("You have not permissions to manage users"), "admin");
+    AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php", _m("You do not have permissions to manage users"), "admin");
     exit;
 }
 
@@ -151,7 +151,7 @@ if ( $show_adduser ) {
 }
 
 if ( $continue ) {
-    FrmTabCaption(_m("Change current permisions"));
+    FrmTabCaption(_m("Change current permissions"));
 
     $slice_users   = AA::$perm->getObjectsPerms(AA::$module_id, "slice");
     $aa_users      = AA::$perm->getObjectsPerms(AA_ID, "aa");   // higher than slice

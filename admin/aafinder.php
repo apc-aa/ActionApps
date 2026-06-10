@@ -159,7 +159,7 @@ function PrintItemInfo($item_id): void
 
 
 if (!IsSuperadmin()) {
-    MsgPage(_m("You have not permissions to add slice"));
+    MsgPage(_m("You do not have permissions to add slice"));
     exit;
 }
 
@@ -519,8 +519,8 @@ echo '<b>'._m('Search and Replace in').'</b>
       <label><input type="checkbox" name="searchinhistory"   value="1" '. ((                    $searchinhistory)? 'checked':'').'>'._m("History").'</label>&nbsp;&nbsp;
       <label><input type="checkbox" name="searchindiscus"    value="1" '. ((                    $searchindiscus)? 'checked':'').'>'._m("Discussion comments").'</label>&nbsp;&nbsp;
     <br>
-    <textarea name="search" placeholder="'._m('minimum 2 chracters for replace function').'" rows=6 style="width:40%">'.safe($search).'</textarea>&nbsp;&nbsp;
-    <textarea name="replace" placeholder="'._m('minimum 6 chracters for replace function (or use {#AAA} value which will be replaced by empty string)').'" rows=6 style="width:40%">'.safe($replace).'</textarea>&nbsp;&nbsp;
+    <textarea name="search" placeholder="'._m("minimum 2 characters for replace function").'" rows=6 style="width:40%">'.safe($search).'</textarea>&nbsp;&nbsp;
+    <textarea name="replace" placeholder="'._m("minimum 6 characters for replace function (or use {#AAA} value which will be replaced by empty string)").'" rows=6 style="width:40%">'.safe($replace).'</textarea>&nbsp;&nbsp;
     <input type="submit" name="go_search" value="'._m("Search").'">
     <input type="submit" name="go_replace" value="'._m("Replace!").'">'.StateHidden();
 
@@ -536,7 +536,7 @@ echo '</form>';
 echo '</td></tr><tr><td>';
 
 echo '<form name="f_finditem_edit">';
-echo '<b>'._m("Shorcut to edit ITEM").'</b><br>
+echo '<b>'._m("Shortcut to edit ITEM").'</b><br>
     <input type="text" name="finditem_edit" value="'.safe($finditem_edit).'" size=120>&nbsp;&nbsp;
     <select name="finditem_edit_op">
     <option value="LIKE">'._m('contains').'</option>

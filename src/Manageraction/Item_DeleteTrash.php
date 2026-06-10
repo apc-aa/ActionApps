@@ -40,7 +40,7 @@ class Item_DeleteTrash extends AbstractManageraction
         global $slice_id;
 
         if (!IfSlPerm(PS_DELETE_ITEMS)) {    // permission to delete items?
-            return _m("You have not permissions to remove items");
+            return _m("You do not have permissions to remove items");
         }
 
         // restrict the deletion only to selected items

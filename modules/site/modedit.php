@@ -101,12 +101,12 @@ $module_id   = $slice_id;
 
 if ($template['W']) {        // add module
     if (!CheckPerms( AuthGetUid(), "aa", AA_ID, PS_ADD)) {
-        MsgPage(_m("You have not permissions to add slice"));
+        MsgPage(_m("You do not have permissions to add slice"));
         exit;
     }
 } elseif (!CheckPerms( AuthGetUid(), "slice", $module_id, PS_MODW_SETTINGS)) {
     // edit module
-    MsgPage(_m("You have not permissions to edit this slice"));
+    MsgPage(_m("You do not have permissions to edit this slice"));
     exit;
 }
 
@@ -276,7 +276,7 @@ $apage->printHead($err, $Msg);
 
     FrmInputSelect("lang_file", _m("Used Language File"), AA_Moduleregistry::info('W','langs'), $lang_file);
     FrmInputSelect("router",   _m("Router"), [1 => 'AA_Router_Seo'], $router, false, _m("Use AA_Router_Seo. Otherwise you will use old sitemodule approach with 'control file', which we can't recommend."));
-    FrmInputText("state_file", _m("Home or State file"), $state_file, 99, 25, false, _m("For AA_Router_Seo fill the <b>default url</b> (home) - like <em>/en/home</em> or left it empty<br><br>For older sites without AA_Router_Seo fill in the name of <b>Site control file</b> - will be placed in /modules/site/sites/ directory. The name you specify will be prefixed by 'site_' prefix, so if you for example name the file as 'apc.php', the site control file will be /modules/site/sites/site_apc.php."), '', 'false', '/en/home');
+    FrmInputText("state_file", _m("Home or State file"), $state_file, 99, 25, false, _m("For AA_Router_Seo fill the <b>default url</b> (home) - like <em>/en/home</em> or leave it empty<br><br>For older sites without AA_Router_Seo fill in the name of <b>Site control file</b> - will be placed in /modules/site/sites/ directory. The name you specify will be prefixed by 'site_' prefix, so if you for example name the file as 'apc.php', the site control file will be /modules/site/sites/site_apc.php."), '', 'false', '/en/home');
 
     // Offer every module type except sites (W): a site can attach any other
     // module - slice, polls, alerts, links, jump, ... - via REL_FLAG_MODULE_DEPEND.

@@ -55,7 +55,7 @@ class RedefineSliceNoticiasTemplates extends \AA\Optimize\AbstractOptimize
         $AA_IMG_URL = '/' . AA_BASE_DIR . 'images/';
         $AA_DOC_URL = '/' . AA_BASE_DIR . 'doc/';
 
-        $this->message(_m('Deleting all fields form "Noticas - ES" slice'));
+        $this->message(_m("Deleting all fields from \"Noticas - ES\" slice"));
         $this->query("DELETE FROM field WHERE slice_id='noticias-es.....'");
 
         $this->message(_m('Make sure "Noticas - ES" slice exists and reset to defaults'));

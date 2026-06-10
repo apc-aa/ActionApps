@@ -32,7 +32,7 @@ class Object_Move2slice extends \AA\Manageraction\Item_Move2Slice
         }
 
         if (!IfSlPerm(PS_FULLTEXT, $this->slice_id) || !IfSlPerm(PS_FULLTEXT, $dest_slice_id)) {    // permission to delete items and add items in destination slice?
-            return _m("You have not permissions to move it");
+            return _m("You do not have permissions to move it");
         }
 
         if ($item_zids->isEmpty()) {

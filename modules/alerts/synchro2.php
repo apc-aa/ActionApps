@@ -83,7 +83,7 @@ function get_alerts_specific_fields($collectionid): array
         ],
         "alias1" => "_#FILTERS_",
         "alias1_func" => "f_h:,",
-        "alias1_help" => _m("Selecetion IDs for {ALERNAME}"),
+        "alias1_help" => _m("Selection IDs for {ALERNAME}"),
     ]);
     return $retval;
 }

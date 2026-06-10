@@ -21,7 +21,7 @@ class DbFeedInconsistency extends AbstractOptimize
      */
     public static function description(): string
     {
-        return _m("Testing if feeds table do not contain relations to non-existent slices (after slice deletion)");
+        return _m("Testing if feeds table does not contain relations to non-existent slices (after slice deletion)");
     }
 
     /** Test function

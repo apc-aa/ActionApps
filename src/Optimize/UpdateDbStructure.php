@@ -28,7 +28,7 @@ class UpdateDbStructure extends \AA\Optimize\AbstractOptimize
      */
     public static function description(): string
     {
-        return _m("[experimental] ") . _m("Updates the database structure for AA. It checks all the tables in current system and compare it with the newest database structure. The new table is created as tmp_*, then the content from old table is copied and if everything is OK, then the old table is renamed to bck_* and tmp_* is renamed to new table. (new version based on the metabase structure)");
+        return _m("[experimental] ") . _m("Updates the database structure for AA. It checks all the tables in current system and compares them with the newest database structure. The new table is created as tmp_*, then the content from old table is copied and if everything is OK, then the old table is renamed to bck_* and tmp_* is renamed to new table. (new version based on the metabase structure)");
     }
 
     /** checks if this Optimize class belongs to specified type (like "sql_update") */
@@ -112,7 +112,7 @@ class UpdateDbStructure extends \AA\Optimize\AbstractOptimize
 
 
                 // create temporary table
-                $this->message(_m('Deleting temporary table tmp_%1, if exist.', [$tablename]));
+                $this->message(_m("Deleting temporary table tmp_%1, if it exists.", [$tablename]));
                 $this->query("DROP TABLE IF EXISTS `tmp_$tablename`");
                 $this->message(_m('Creating temporary table tmp_%1.', [$tablename]));
                 $this->query($template_metabase->getCreateSql($tablename, 'tmp_', $tablename));

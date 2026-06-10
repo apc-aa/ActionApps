@@ -723,7 +723,7 @@ class AA_Searchbar extends AA_Storable {
                 'share'       => _m('Share with all slice users'),
                 'saveTitle'   => _m('Save filter'),
                 'renameTitle' => _m('Rename filter'),
-                'delConfirm'  => _m('Are you sure to delete selected filter?'),
+                'delConfirm'  => _m("Are you sure you want to delete selected filter?"),
             ], JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT).";\n";
             // existing filter names keyed by bookmark key — lets the client prefill
             // the Save dialog from the last-used filter and flip Save<->Refine live

@@ -34,7 +34,7 @@ require_once __DIR__ . "/../include/item.php";
 require_once __DIR__ . "/../include/feeding.php";
 
 if (!IfSlPerm(PS_FEEDING)) {
-    MsgPage(_m("You have not permissions to change feeding setting"));
+    MsgPage(_m("You do not have permissions to change feeding setting"));
     exit;
 }
 

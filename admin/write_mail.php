@@ -161,7 +161,7 @@ if ( !$send ) {               // for the first time - directly from item manager
         $mail_id = $varset->doINSERT('email');  // get mail template id - last_insert_id
 
         if ( !ctype_digit((string)$mail_id) )  {
-            $err["mail"] = MsgErr( _m("No template set (which is strange - template was just written to the database") );
+            $err["mail"] = MsgErr( _m("No template set (which is strange - template was just written to the database)") );
             break;
         }
 
@@ -182,7 +182,7 @@ if ( !$send ) {               // for the first time - directly from item manager
 
         if ((string)$group === "sel_item") {
             $sel = "LIST";
-            $description .= ' - '. _m('Manualy selected');
+            $description .= ' - '. _m("Manually selected");
         } elseif ((string)$group === "testuser") {
             $sel = "TEST";
             $description .= " - ($testemail)";
@@ -248,9 +248,9 @@ FrmInputEmail(  'errors_to',   _m('Errors to (email)'), $_POST['errors_to'],   2
 FrmInputEmail(  'sender',      _m('Sender (email)'),    $_POST['sender'],      254, 80);
 FrmInputSelect('lang',        _m('Language (charset)'),  Langs::getNames(), $_POST['lang'] ?: $slice->getLang(), true);
 FrmInputSelect('html',        _m('Use HTML'),           [_m('no'), _m('yes')], $_POST['html'], true);
-FrmInputFile(  'attachment1',   _m('Attachement 1'), $attachment1, false, "*/*");
-FrmInputFile(  'attachment2',   _m('Attachement 2'), $attachment2, false, "*/*");
-FrmInputFile(  'attachment3',   _m('Attachement 3'), $attachment3, false, "*/*");
+FrmInputFile(  'attachment1',   _m("Attachment 1"), $attachment1, false, "*/*");
+FrmInputFile(  'attachment2',   _m("Attachment 2"), $attachment2, false, "*/*");
+FrmInputFile(  'attachment3',   _m("Attachment 3"), $attachment3, false, "*/*");
 
 
 FrmTabEnd([

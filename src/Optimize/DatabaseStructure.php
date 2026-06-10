@@ -18,7 +18,7 @@ class DatabaseStructure extends AbstractOptimize
      */
     public static function description(): string
     {
-        return _m("We are time to time add new table or column to existing table in order we can support new features. This option will update the datastructure to the last one. No data will be lost.");
+        return _m("From time to time we add a new table or column to an existing table so that we can support new features. This option will update the datastructure to the last one. No data will be lost.");
     }
 
     /** Name function

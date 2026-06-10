@@ -35,7 +35,7 @@ use AA\Util\InputVars;
 
 require_once __DIR__ . "/../include/init_page.php";
 if (!IfSlPerm(PS_FEEDING)) {
-    MsgPage(_m("You have not permissions to change feeding setting"));
+    MsgPage(_m("You do not have permissions to change feeding setting"));
     exit;
 }
 
@@ -65,7 +65,7 @@ if (!($data = FeedUtil::xml_fetch($server_url, ORG_NAME, $password, AuthGetUname
 if (!str_starts_with($data, "<")) {
     AA_Log::write("CSN", AA_Log::context(), "Establishing mode: $data");
     $err_msg = match ($data) {
-        FeedUtil::ERR_NO_SLICE => _m("No slices available. You have not permissions to import any data of that node. Contact the administrator of the remote slice and check, that he obtained your correct username."),
+        FeedUtil::ERR_NO_SLICE => _m("No slices available. You do not have permissions to import any data of that node. Contact the administrator of the remote slice and check, that he obtained your correct username."),
         FeedUtil::ERR_PASSWORD => _m("Invalid password for the node name:")." ".ORG_NAME.". "._m("Contact the administrator of the local node."),
         default                => _m("Remote server returns following error:")." $data",
     };
@@ -100,7 +100,7 @@ $form_buttons = [
 FrmTabCaption(_m("List of available slices from the node ")."<b>$rem_nodes</b>", $form_buttons);
 FrmInputMultiSelect('f_slices[]', _m('Slice to import'), $chan, '', 5, true);
 FrmInputChBox('exact_copy', _m("Exact copy"), $exact_copy, false, '', 1, false,
-           _m('The slice will be exact copy of the remote slice. All items will be copied including holdingbin and trash bin items. Also on anychange in the remote item, the content will be copied to local copy of the item. The items will have the same long ids (not the short ones!). It make no sence to change items in local copy - it will be overwriten from remote master.'));
+           _m("The slice will be an exact copy of the remote slice. All items will be copied including holdingbin and trash bin items. Also on any change in the remote item, the content will be copied to local copy of the item. The items will have the same long ids (not the short ones!). It makes no sense to change items in local copy - it will be overwritten from remote master."));
 
 FrmTabEnd($form_buttons);
 

@@ -448,8 +448,8 @@ class AA_Csv_Importer {
                  FrmSelectEasy("itemIdMappedFrom", $inFields, $this->itemIdMappedFrom ?: ($set_default ? $inFields[0] : ''));
                  echo '<br>';
                  $mapping_options = [
-                     'store'     => _m('unpacked long id (32 chracters)'),
-                                            'unpack_id' => _m('packed long id (16 chracters)'),
+                     'store'     => _m("unpacked long id (32 characters)"),
+                                            'unpack_id' => _m("packed long id (16 characters)"),
                                             'string2id' => _m('string to be converted (string2id) - with param:')
                  ];
 
@@ -463,8 +463,8 @@ class AA_Csv_Importer {
             'insert_if_new' => _m('Do not store the item'),
             'insert_new'    => _m('Store the item with new id'),
             'overwrite'     => _m('Update the item (overwrite)'),
-            'add'           => _m('Add the values in paralel to current values (the multivalues are stored, where possible)'),
-            'update'        => _m('Rewrite only the fields, for which the action is defined and compute all computed fileds, ...'),
+            'add'           => _m("Add the values in parallel to current values (the multivalues are stored, where possible)"),
+            'update'        => _m("Rewrite only the fields, for which the action is defined and compute all computed fields, ..."),
             'update_silent' => _m('Rewrite only the fields, for which the action is defined (do not update lastedit, computed, ... fields = Silent)'),
             'update_filled' => _m('Rewrite only the fields, for which the action is defined and its value is not empty (computed fields will be computed)')
         ];
@@ -485,7 +485,7 @@ class AA_Csv_Importer {
         FrmInputText('save_name', _m('Save setting as'), $this->save_name);
 
         if ( in_array(Files::sourceType($this->fileName), ['HTTP','HTTPS'])) {
-            FrmInputChBox('save_periodical', _m('Upload periodicaly'), $this->save_periodical);
+            FrmInputChBox('save_periodical', _m("Upload periodically"), $this->save_periodical);
         }
 
         FrmTabEnd($form_buttons);

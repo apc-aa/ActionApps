@@ -14,7 +14,7 @@ class AddMandatoryStatusCode extends \AA\Optimize\AbstractOptimize
     /**  {@inheritdoc} Implementation of \AA\Util\NamedInterface */
     public static function description(): string
     {
-        return _m("Adds fields definitions for slices, where missing");
+        return _m("Adds field definitions for slices, where missing");
     }
 
     public function _field(): string

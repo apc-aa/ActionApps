@@ -226,7 +226,7 @@ $FIELD_FUNCTIONS = [
 "items"=> [
 "f__"=> [
     "name"=>_m("just code"),
-    "desc"=>_m("prints the code in parameter - _#this could be used - easier than f_t (no aditional parameter)")
+    "desc"=>_m("prints the code in parameter - _#this could be used - easier than f_t (no additional parameter)")
 ],
 "f_0"=> [
     "name"=>_m("null function"),
@@ -258,7 +258,7 @@ $FIELD_FUNCTIONS = [
         ],
         [
             "name"=>_m("paragraph"),
-        "desc"=>_m("take first paragraph (text until \<BR\> or \<P\> or \</P\> or at least '.' (dot)) if shorter then <b>length</b>"),
+        "desc"=>_m("take first paragraph (text until \\<BR\\> or \\<P\\> or \\</P\\> or at least '.' (dot)) if shorter than <b>length</b>"),
         "type"=>"BOOL",
         "example"=>"1"
         ]
@@ -444,7 +444,7 @@ $FIELD_FUNCTIONS = [
 ],
 "i_s"=> [
     "name"=>_m("image size"),
-    "desc"=>_m("prints <i>the field</i> as image size (height='xxx' width='yyy') (or other image information) or empty string if cant work out, does not special case URLs from uploads directory, might do later! "),
+    "desc"=>_m("prints <i>the field</i> as image size (height='xxx' width='yyy') (or other image information) or empty string if can't work out, does not special case URLs from uploads directory, might do later! "),
     "params"=> [
         [
             "name"=>_m("information"),
@@ -478,7 +478,7 @@ $FIELD_FUNCTIONS = [
         ],
         [
             "name"=>_m("add string"),
-        "desc"=>_m("if string is shorted, <i>add string</i> is appended to the string (probably something like [...])"),
+        "desc"=>_m("if string is shortened, <i>add string</i> is appended to the string (probably something like [...])"),
         "type"=>"STR",
         "example"=>"..."
         ]
@@ -499,7 +499,7 @@ $FIELD_FUNCTIONS = [
 ],
 "f_m"=> [
     "name"=>_m("e-mail or link"),
-    "desc"=>_m("mailto link - prints: <br>\"<b>begin</b>\<a href=\"(mailto:)<i>the field</i>\" <b>tag adition</b>\><b>field/text</b>\</a\>. If <i>the field</i> is not filled, prints <b>else_field/text</b>."),
+    "desc"=>_m("mailto link - prints: <br>\"<b>begin</b>\\<a href=\"(mailto:)<i>the field</i>\" <b>tag addition</b>\\><b>field/text</b>\\</a\\>. If <i>the field</i> is not filled, prints <b>else_field/text</b>."),
     "params"=> [
         [
             "name"=>_m("begin"),
@@ -541,7 +541,7 @@ $FIELD_FUNCTIONS = [
 ],
 "f_n"=> [
     "name"=>_m("id"),
-    "desc"=>_m("prints unpacked id (use it, if you watn to show 'item id' or 'slice id')")
+    "desc"=>_m("prints unpacked id (use it, if you want to show 'item id' or 'slice id')")
 ],
 "f_o"=> [
     "name"=>_m("'New' sign"),
@@ -555,13 +555,13 @@ $FIELD_FUNCTIONS = [
         ],
         [
             "name"=>_m("newer text"),
-        "desc"=>_m("Text to be printed, if the date in <i>the filed</i> is newer than <i>current_time</i> - <b>time</b>."),
+        "desc"=>_m("Text to be printed, if the date in <i>the field</i> is newer than <i>current_time</i> - <b>time</b>."),
         "type"=>"STR",
         "example"=>_m("NEW")
         ],
         [
             "name"=>_m("older text"),
-        "desc"=>_m("Text to be printed, if the date in <i>the filed</i> is older than <i>current_time</i> - <b>time</b>"),
+        "desc"=>_m("Text to be printed, if the date in <i>the field</i> is older than <i>current_time</i> - <b>time</b>"),
         "type"=>"STR",
         "example"=>_m("")
         ]
@@ -569,7 +569,7 @@ $FIELD_FUNCTIONS = [
 ],
 "f_q"=> [
     "name"=>_m("text (blurb) from another slice"),
-    "desc"=>_m("prints 'blurb' (piece of text) from another slice, based on a simple condition.<br>If <i>the field</i> (or the field specifield by <b>stringToMatch</b>) in current slice matches the content of <b>fieldToMatch</b> in <b>blurbSliceId</b>, it returns the content of <b>fieldToReturn</b> in <b>blurbSliceId</b>."),
+    "desc"=>_m("prints 'blurb' (piece of text) from another slice, based on a simple condition.<br>If <i>the field</i> (or the field specified by <b>stringToMatch</b>) in current slice matches the content of <b>fieldToMatch</b> in <b>blurbSliceId</b>, it returns the content of <b>fieldToReturn</b> in <b>blurbSliceId</b>."),
     "params"=> [
         [
             "name"=>_m("stringToMatch"),
@@ -659,7 +659,7 @@ $FIELD_FUNCTIONS = [
 ],
 "f_v"=> [
     "name"=>_m("view"),
-    "desc"=>_m("allows to manipulate the views. This is a complicated and powerful function, described in <a href=\"../doc/FAQ.html#viewparam\" target=_blank>FAQ</a>, which allows to display any view in place of the alias. It can be used for 'related stories' table or for dislaying content of related slice."),
+    "desc"=>_m("allows you to manipulate the views. This is a complicated and powerful function, described in <a href=\"../doc/FAQ.html#viewparam\" target=_blank>FAQ</a>, which allows you to display any view in place of the alias. It can be used for 'related stories' table or for displaying content of related slice."),
     "params"=> [
         [
             "name"=>_m("complex parameter"),
@@ -675,7 +675,7 @@ $FIELD_FUNCTIONS = [
 ],
 "f_x"=> [
     "name"=>_m("transformation"),
-    "desc"=>_m("Allows to transform the field value to another value.<br>Usage: <b>content_1</b>:<b>return_value_1</b>:<b>content_1</b>:<b>return_value_1</b>:<b>default</b><br>If the content <i>the field</i> is equal to <b>content_1</b> the <b>return_value_1</b> is returned. If the content <i>the field</i> is equal to <b>content_2</b> the <b>return_value_2</b> is returned. If <i>the field is not equal to any <b>content_x</b>, <b>default</b> is returned</i>."),
+    "desc"=>_m("Allows to transform the field value to another value.<br>Usage: <b>content_1</b>:<b>return_value_1</b>:<b>content_2</b>:<b>return_value_2</b>:<b>default</b><br>If the content <i>the field</i> is equal to <b>content_1</b> the <b>return_value_1</b> is returned. If the content <i>the field</i> is equal to <b>content_2</b> the <b>return_value_2</b> is returned. If <i>the field is not equal to any <b>content_x</b>, <b>default</b> is returned</i>."),
     "params"=> [
         [
             "name"=>_m("content"),
@@ -858,7 +858,7 @@ $TRANS_ACTIONS["items"]["store"] = [
     "params"=> [
         [
             "name"=>_m("lang (optional)"),
-            "desc"=>_m("two letters - cz | en | es | de. If provided the value wil be stored to specified language (the field must use translations)"),
+            "desc"=>_m("two letters - cz | en | es | de. If provided the value will be stored to specified language (the field must use translations)"),
             "example"=>"es",
             "type"=>"STR"
         ]
@@ -867,7 +867,7 @@ $TRANS_ACTIONS["items"]["store"] = [
 
 $TRANS_ACTIONS["items"]["removestring"] = [
     "name"=>_m("Remove string"),
-    "desc"=>_m("Remove all occurences of a string from the input field.") ,
+    "desc"=>_m("Remove all occurrences of a string from the input field.") ,
     "params"=> [
         [
             "name"=>_m("string parameter"),
@@ -899,11 +899,11 @@ $TRANS_ACTIONS["items"]['value'] = [
 
 $TRANS_ACTIONS["items"]["string2id"] = [
     "name"=>_m("Store as long id"),
-    "desc"=>_m("Creates long id from the string. The string is combined with the parameter!! or with slice_id (if the parameter is not provided. From the same string (and the same parameter) we create always the same id."),
+    "desc"=>_m("Creates long id from the string. The string is combined with the parameter!! or with slice_id (if the parameter is not provided). From the same string (and the same parameter) we always create the same id."),
     "params"=> [
         [
             "name"=>_m("string to add"),
-              "desc"=>_m("this parameter will be added to the string before conversion (the reason is to avoid empty strings and also in order we do not generate always the same id for common strings (in different imports). If this param is not specified, slice_id is used istead."),
+              "desc"=>_m("this parameter will be added to the string before conversion (the reason is to avoid empty strings and also in order we do not generate always the same id for common strings (in different imports). If this param is not specified, slice_id is used instead."),
               "example"=>"This string is up to you (any length)",
               "type"=>"STR"
         ]

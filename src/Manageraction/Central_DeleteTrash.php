@@ -34,7 +34,7 @@ class Central_DeleteTrash extends AbstractManageraction
     public function perform(Manager $manager, zids $item_zids, $action_param): string|false
     {
         if (!IsSuperadmin()) {    // permission to delete items?
-            return _m("You have not permissions to remove items");
+            return _m("You do not have permissions to remove items");
         }
 
         $wherein         = '';

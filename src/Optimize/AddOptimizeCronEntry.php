@@ -10,13 +10,13 @@ class AddOptimizeCronEntry extends \AA\Optimize\AbstractOptimize
     /**  {@inheritdoc} Implementation of \AA\Util\NamedInterface */
     public static function name(): string
     {
-        return _m("Adds cron entry for Database Optimalization into AA cron");
+        return _m("Adds cron entry for Database Optimization into AA cron");
     }
 
     /**  {@inheritdoc} Implementation of \AA\Util\NamedInterface */
     public static function description(): string
     {
-        return _m("It however do not install the system cron for AA - you should do it by yourself (see /misc/aa-http-request script)");
+        return _m("It however does not install the system cron for AA - you should do it by yourself (see /misc/aa-http-request script)");
     }
 
     /** checks if this Optimize class belongs to specified type (like "sql_update") */
@@ -33,7 +33,7 @@ class AddOptimizeCronEntry extends \AA\Optimize\AbstractOptimize
 
         $row_count = DB_AA::count('cron', [['script', 'misc/optimize.php']]);
         if ($row_count < 1) {
-            $this->message(_m('Cron entry for Database Optimalization is not installed in AA Cron'));
+            $this->message(_m("Cron entry for Database Optimization is not installed in AA Cron"));
             $ret = false;
         }
         return $ret;
@@ -43,13 +43,13 @@ class AddOptimizeCronEntry extends \AA\Optimize\AbstractOptimize
     public function repair(): bool
     {
 
-        $this->message(_m('Deleting AA Cron entry for Database Optimalization'));
+        $this->message(_m("Deleting AA Cron entry for Database Optimization"));
         $this->query("DELETE FROM cron WHERE script='misc/optimize.php'");
 
-        $this->message(_m('Adding AA cron entry for Database Optimalization'));
+        $this->message(_m("Adding AA cron entry for Database Optimization"));
         $this->query("INSERT INTO cron (minutes, hours, mday, mon, wday, script, params, last_run) VALUES ('38',     '2', '*', '*', '2', 'misc/optimize.php', 'key=" . substr(DB_PASSWORD, 0, 5) . "', NULL)");
 
-        $this->message(_m('AA cron entry for Database Optimalization - done.'));
+        $this->message(_m("AA cron entry for Database Optimization - done."));
         return true;
     }
 }

@@ -361,15 +361,15 @@ class ChangesMonitor
 
                 echo "<details class='aa-page-section aa-history-event' id='aa-ch-$s_chid'>"
                    . "<summary><span class='aa-tab-title aa-history-summary'>"
-                   .   "<span class='aa-h-rev'>r$rev</span>"
-                   .   "<span class='aa-h-time'>". safe(date('Y-m-d H:i:s', self::toTimestamp((int) $meta['time']))) ."</span>"
-                   .   "<span class='aa-h-who'>". safe(perm_username($meta['user'])) ."</span>"
-                   .   "<span class='aa-h-type'>". safe((string) $meta['type']) ."</span>"
-                   .   "<span class='aa-h-count'>$count</span>"
-                   .   "<span class='aa-h-restore'>"
-                   .     "<button type=submit form=$form class='btn btn-s btn-secondary' onclick='event.stopPropagation()'>". _m('Restore') ."</button>"
-                   .     "<input type=hidden name=slice_id form=$form value='". safe((string) $slice_id) ."'>"
-                   .   "</span>"
+                   . "<span class='aa-h-rev'>r$rev</span>"
+                   . "<span class='aa-h-time'>" . safe(date('Y-m-d H:i:s', self::toTimestamp((int) $meta['time']))) . "</span>"
+                   . "<span class='aa-h-who'>" . safe(perm_username($meta['user'])) . "</span>"
+                   . "<span class='aa-h-type'>" . safe((string) $meta['type']) . "</span>"
+                   . "<span class='aa-h-count'>$count</span>"
+                   . "<span class='aa-h-restore'>"
+                   . "<button type=submit form=$form class='btn btn-s btn-secondary' onclick='event.stopPropagation()'>" . _m('Restore') . "</button>"
+                   . "<input type=hidden name=slice_id form=$form value='" . safe((string) $slice_id) . "'>"
+                   . "</span>"
                    . "</span></summary><div class='aa-history-body'>";
 
                 // event-level raw ids, one click down (dimmed)
@@ -378,8 +378,8 @@ class ChangesMonitor
                    . "</div>";
 
                 echo "<table class='aa-history-fields'><thead><tr>"
-                   . "<th scope=col>". _m('Field') ."</th><th scope=col>". _m('Change') ."</th>"
-                   . "<th scope=col>". _m('vs current') ."</th><th scope=col>". _m('Restore') ."</th>"
+                   . "<th scope=col>" . _m('Field') . "</th><th scope=col>" . _m('Change') . "</th>"
+                   . "<th scope=col>" . _m('vs current') . "</th><th scope=col>" . _m('Restore') . "</th>"
                    . "</tr></thead><tbody>";
 
                 foreach ($g['rows'] as $r) {
@@ -388,29 +388,29 @@ class ChangesMonitor
                     $fid    = $change['selector'];
                     $fname  = ($flds && ($n = (string) $flds->getProperty($change['selector'], 'name')) !== '') ? $n : (string) $change['selector'];
                     // field chip + dimmed selector / seq / php-type (every raw byte stays reachable)
-                    $sub    = safe((string) $change['selector']) .' &middot; '. _m('seq %1', [safe((string) $change['priority'])]) .' &middot; '. safe((string) $change['chtype']);
-                    $chip   = "<span class='aa-h-field-chip'>". safe($fname) ."</span><span class='tabhlp aa-h-field-sel'>$sub</span>";
+                    $sub    = safe((string) $change['selector']) . ' &middot; ' . _m('seq %1', [safe((string) $change['priority'])]) . ' &middot; ' . safe((string) $change['chtype']);
+                    $chip   = "<span class='aa-h-field-chip'>" . safe($fname) . "</span><span class='tabhlp aa-h-field-sel'>$sub</span>";
 
                     // "Change" cell: the before->after diff; or the raw (rich-rendered) value when the
                     // field had no previous version (first set).
                     $prev_value   = $this->findPrevValue($change['selector'], $change['priority'], $arr, $key);
                     $diff_version = is_null($prev_value) ? '' : Difftext::renderHtml($prev_value, $change['value']);
-                    $change_cell  = $diff_version !== '' ? $diff_version : '<pre>'. Txt::richValue($change['value']) .'</pre>';
+                    $change_cell  = $diff_version !== '' ? $diff_version : '<pre>' . Txt::richValue($change['value']) . '</pre>';
 
                     // "vs current": compare the historical value to the field's live value. Nullsafe the
                     // whole chain (the item may have been purged) and compare explicitly, so a field
                     // cleared to "" or 0 is not mislabelled "same as current".
                     $current = $item?->getAaValue($change['selector'])?->getValue($change['priority']);
                     if ($current === null) {
-                        $vs_cell = "<span class='aa-h-nochange'>". _m('no current value') ."</span>";
+                        $vs_cell = "<span class='aa-h-nochange'>" . _m('no current value') . "</span>";
                     } elseif ((string) $current === (string) $change['value']) {
-                        $vs_cell = "<span class='aa-h-nochange'>". _m('same as current') ."</span>";
+                        $vs_cell = "<span class='aa-h-nochange'>" . _m('same as current') . "</span>";
                     } else {
                         $vs_cell = Difftext::renderHtml((string) $change['value'], (string) $current);
                     }
                     // restore checkbox enables the (adjacent) hidden input that feeds the per-change form
-                    $restore     = "<input form=$form type=hidden name='aa[u$iid][$fid]' value=\"". safe($change['value']) ."\" disabled>"
-                                 . "<input type=checkbox onchange=\"this.previousElementSibling.disabled = !this.checked\"> ". safe($fname);
+                    $restore     = "<input form=$form type=hidden name='aa[u$iid][$fid]' value=\"" . safe($change['value']) . "\" disabled>"
+                                 . "<input type=checkbox onchange=\"this.previousElementSibling.disabled = !this.checked\"> " . safe($fname);
 
                     echo "<tr><td>$chip</td><td>$change_cell</td><td>$vs_cell</td><td><label class='aa-h-restore-field'>$restore</label></td></tr>";
                 }
@@ -423,7 +423,7 @@ class ChangesMonitor
             // open + scroll to the change a history-box deep link (#aa-ch-<id>) targets - CSS cannot force <details> open
             echo "<script>(()=>{const o=()=>{if(!location.hash)return;const e=document.getElementById(location.hash.slice(1));if(e&&e.classList.contains('aa-history-event')){e.open=true;e.scrollIntoView();}};addEventListener('hashchange',o);o();})();</script>";
         } else {
-            echo "<p class='aa-empty-note'>". _m('No recorded changes for this item.') ."</p>";
+            echo "<p class='aa-empty-note'>" . _m('No recorded changes for this item.') . "</p>";
         }
 
         //    print_r(array_keys(reset($arr)));

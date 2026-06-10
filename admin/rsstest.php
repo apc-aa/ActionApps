@@ -127,7 +127,7 @@ function GetRSS_tv() {
 $rss_tv = GetRSS_tv();
 
 if (!$rss_tv["cond"]) {
-    MsgPage(_m("You have not permissions to this page"));
+    MsgPage(_m("You do not have permissions to access this page"));
     exit;
 }
 

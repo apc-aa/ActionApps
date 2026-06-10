@@ -80,6 +80,6 @@ class ComputedfieldsUpdater implements LaterInterface
         foreach ($chunks as $k => $ids) {
             $toexecute->laterOnce($item_updater, [$sid, $ids], "AA_ComputedfieldsItem_Updater_" . $sid . '_' . $k, 40, time() + 10);
         }
-        return _m("Planed %1 chunks with %2 items", [count($chunks), count($long_ids)]);
+        return _m("Planned %1 chunks with %2 items", [count($chunks), count($long_ids)]);
     }
 }

@@ -56,7 +56,7 @@ if ($cancel) {
 }
 
 if (!IfSlPerm(PS_EDIT_SELF_USER_DATA) || !AA::$perm->isUserEditable(AuthGetUid())) {
-    AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php", _m("You have not permissions to change user data"), "admin");
+    AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php", _m("You do not have permissions to change user data"), "admin");
     exit;
 }
 
@@ -68,7 +68,7 @@ if ($update) {
     // Procces user data -------------------------------------------------------
     ValidateInput("user_password_old", _m("Current password"), $user_password_old, $err, true, "password");
     if ( !AA::$perm->authenticateUsername(AuthGetUname(), $user_password_old, '') ) {
-        $err['Password'] = MsgErr(_m("Error in current password - pasword is not changed"));
+        $err['Password'] = MsgErr(_m("Error in current password - password is not changed"));
     }
     $userrecord = FillUserRecord($err, 'nOnEwlOgiN', $user_surname, $user_firstname, $user_password1, $user_password2,  $user_mail1);
 

@@ -61,7 +61,7 @@ if ($cancel) {
 }
 
 if (!IfSlPerm(PS_FULLTEXT)) {
-    AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php", _m("You have not permissions to change sets"), "admin");
+    AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php", _m("You do not have permissions to change sets"), "admin");
     exit;
 }
 
@@ -76,11 +76,11 @@ if ( $update ) {
             $sort  = $_POST['sort'][$k];
             $objid = $_POST['objid'][$k];
 
-            ValidateInput("name$k",  _m("Name $k"),      $name,  $err, false, "text");
-            ValidateInput("sli$k",   _m("Slice $k"),     $sli,   $err, false, "text");
-            ValidateInput("cond$k",  _m("Condition $k"), $cond,  $err, false, "text");
-            ValidateInput("sort$k",  _m("Sort $k"),      $sort,  $err, false, "text");
-            ValidateInput("objid$k", _m("Object ID $k"), $objid, $err, false, "text");
+            ValidateInput("name$k",  _m("Name %1", [$k]),      $name,  $err, false, "text");
+            ValidateInput("sli$k",   _m("Slice %1", [$k]),     $sli,   $err, false, "text");
+            ValidateInput("cond$k",  _m("Condition %1", [$k]), $cond,  $err, false, "text");
+            ValidateInput("sort$k",  _m("Sort %1", [$k]),      $sort,  $err, false, "text");
+            ValidateInput("objid$k", _m("Object ID %1", [$k]), $objid, $err, false, "text");
 
             if ( count($err)) {
                 break;

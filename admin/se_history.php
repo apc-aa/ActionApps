@@ -52,7 +52,7 @@ if ($cancel) {
 }
 
 if (!IfSlPerm(PS_HISTORY)) {
-    AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php", _m("You have not permissions to view history"), "admin");
+    AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php", _m("You do not have permissions to view history"), "admin");
     exit;
 }
 
@@ -75,7 +75,7 @@ class Manageraction_History_Apply extends AbstractManageraction {
 
         if ( !IfSlPerm(PS_EDIT) ) {    // permission to delete items?
             /** @todo Should be changed to different permission */
-            return _m("You have not permissions to change items");
+            return _m("You do not have permissions to change items");
         }
 
         if ($change_ids->isEmpty()) {

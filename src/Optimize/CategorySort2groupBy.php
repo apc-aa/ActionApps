@@ -20,7 +20,7 @@ class CategorySort2groupBy extends AbstractOptimize
      */
     public static function description(): string
     {
-        return _m("In older version of AA we used just category fields for grouping items. Now it is universal, so boolean category_sort is not enough. We use newer group_by field for quite long time s most probably all your slices are already conevrted.");
+        return _m("In older version of AA we used just category fields for grouping items. Now it is universal, so boolean category_sort is not enough. We have used the newer group_by field for quite a long time so most probably all your slices are already converted.");
     }
 
     /** Test function

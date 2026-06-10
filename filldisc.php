@@ -194,7 +194,7 @@ if ($ip_banned_slice_id) {
 $SQL         = 'SELECT status_code FROM item WHERE id = '.xpack_id($d_item_id);
 $item_status = GetTable2Array($SQL, "aa_first", 'status_code');
 if ($item_status <> 1) {
-    echo _m("Not accepted, item is not published or do not exist.");
+    echo _m("Not accepted, item is not published or does not exist.");
     exit;
 }
 

@@ -74,7 +74,7 @@ class Polls_DeleteTrash extends AbstractManageraction
     public function perform(Manager $manager, zids $item_zids, $action_param): string|false
     {
         if (!IfSlPerm(PS_DELETE_ITEMS)) {    // permission to delete items?
-            return _m("You have not permissions to remove polls");
+            return _m("You do not have permissions to remove polls");
         }
 
         $wherein = '';

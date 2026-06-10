@@ -13,7 +13,7 @@ class ItemDiscussion extends AbstractOptimize
      */
     public static function name(): string
     {
-        return _m("Delete discussion comments for not existing items");
+        return _m("Delete discussion comments for non-existent items");
     }
 
     /** Description function

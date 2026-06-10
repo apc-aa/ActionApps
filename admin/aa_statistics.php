@@ -47,7 +47,7 @@ try {
 } catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
 
 if (!IfSlPerm(PS_EDIT_ALL_ITEMS)) {
-    AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php", _m("You have not permissions to see statistics"), "admin");
+    AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php", _m("You do not have permissions to see statistics"), "admin");
     exit;
 }
 

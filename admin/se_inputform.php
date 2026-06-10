@@ -125,7 +125,7 @@ if ($cancel) {
 }
 
 if (!IfSlPerm(PS_FIELDS)) {
-    AA_Adminpageutil::MsgPageMenu(get_admin_url("index.php"), _m("You have not permissions to change fields settings"), "admin");
+    AA_Adminpageutil::MsgPageMenu(get_admin_url("index.php"), _m("You do not have permissions to change fields settings"), "admin");
     exit;
 }
 
@@ -434,7 +434,7 @@ echo "
       </td>
       </tr>";
 
-FrmInputChBox("translation", _m("Allow translation"), $translation, false, '', 1, false, _m('Only Text Area and Text Field widgets allows translation. Languages should be set on Slice Setting page.'));
+FrmInputChBox("translation", _m("Allow translation"), $translation, false, '', 1, false, _m("Only Text Area and Text Field widgets allow translation. Languages should be set on Slice Setting page."));
 
 echo "<tr><th>". _m("Default") ."</th>
       <td>";

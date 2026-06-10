@@ -45,7 +45,7 @@ if ($cancel) {
 }
 
 if (!IfSlPerm(PS_FEEDING)) {
-    MsgPage(_m("You have not permissions to change feeding setting"));
+    MsgPage(_m("You do not have permissions to change feeding setting"));
     exit;
 }
 

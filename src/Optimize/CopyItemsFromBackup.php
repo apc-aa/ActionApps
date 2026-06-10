@@ -21,7 +21,7 @@ class CopyItemsFromBackup extends AbstractOptimize
      */
     public static function description(): string
     {
-        return _m("Copy data from content2 and item2 tables for slice XY which was deleted in item and content table. Used for recovery content table on Ecn server. Not useful for any other users, I think.");
+        return _m("Copy data from content2 and item2 tables for slice XY which was deleted in item and content table. Used for recovery of content table on Ecn server. Not useful for any other users, I think.");
     }
 
     /** implemented actions within this class */

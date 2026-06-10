@@ -922,7 +922,7 @@ class AA_Inserter_Flo extends AA_Inserter {
 /** AA_Inserter_Dec */
 class AA_Inserter_Dec extends AA_Inserter {
     public static function name(): string        { return _m("Decimal");  }             // see NamedInterface
-    public static function description(): string { return _m('The same as Float, but do not convert big numbers to  scientific notation (1.23E+29)');  }      // see NamedInterface
+    public static function description(): string { return _m("The same as Float, but does not convert big numbers to  scientific notation (1.23E+29)");  }      // see NamedInterface
 
     public function execute(AA_Field_Writer $fieldwriter, $item_id, $value, int $order = 0, int $flag = 0): void
     {
@@ -933,7 +933,7 @@ class AA_Inserter_Dec extends AA_Inserter {
 /** AA_Inserter_Trm - trim and normalize */
 class AA_Inserter_Trm extends AA_Inserter {
     public static function name(): string        { return _m("Trim");  }             // see NamedInterface
-    public static function description(): string { return _m('Remove whitespaces from begin and end and also normalize UTF (NFC)');  }      // see NamedInterface
+    public static function description(): string { return _m("Remove whitespaces from beginning and end and also normalize UTF (NFC)");  }      // see NamedInterface
 
     public function execute(AA_Field_Writer $fieldwriter, $item_id, $value, int $order = 0, int $flag = 0): void
     {
@@ -1085,7 +1085,7 @@ class AA_Inserter_Co2 extends AA_Inserter {
     protected $recompute;              // see getClassProperties
 
     public static function name(): string        { return _m("Computed field for INSERT/UPDATE");  }             // see NamedInterface
-    public static function description(): string { return _m('The field is the result of expression written in "Code for unaliasing". It is good solution for all values, which could be precomputed, since its computation on item-show-time would be slow. Yes, you can use {view...}, {include...}, {switch...} here');  }      // see NamedInterface
+    public static function description(): string { return _m("The field is the result of expression written in \"Code for unaliasing\". It is a good solution for all values, which could be precomputed, since its computation on item-show-time would be slow. Yes, you can use {view...}, {include...}, {switch...} here");  }      // see NamedInterface
 
     /** getClassProperties function of AA_Serializable
      * @return array
@@ -1121,7 +1121,7 @@ class AA_Inserter_Com extends AA_Inserter {
      */
     public static function getClassProperties():array {
         return [             //           id         name                       type      multi  persist validator, required, help, morehelp, example
-            'code'   => new AA_Property( 'code',        _m("Code for unaliasing (INSERT+UPDATE"),    'text', false, true, 'text', false, _m("There you can write any string. The string will be unaliased on item store, so you can use any {...} construct as well as field aliases here"), '', '({publish_date....}) {headline........}'),
+            'code'   => new AA_Property( 'code',        _m("Code for unaliasing (INSERT+UPDATE)"),    'text', false, true, 'text', false, _m("There you can write any string. The string will be unaliased on item store, so you can use any {...} construct as well as field aliases here"), '', '({publish_date....}) {headline........}'),
         ];
     }
 
@@ -1142,7 +1142,7 @@ class AA_Inserter_Seo extends AA_Inserter {
     protected $code;                   // see getClassProperties
 
     public static function name(): string        { return _m("SEO Name");  }             // see NamedInterface
-    public static function description(): string { return _m('If the field is not filled, compute seoname from _#HEADLINE alias (or another if specified) unique to all slices in sitemodules, where the slice is mentioned in "Uses slices" settings. Basically the SEO Name alias is shortcut for comuted field with {ifset:{seo.............}:_#1:{seoname:{_#HEADLINE}:all:CHARSET}}');  }      // see NamedInterface
+    public static function description(): string { return _m("If the field is not filled, compute seoname from _#HEADLINE alias (or another if specified) unique to all slices in sitemodules, where the slice is mentioned in \"Uses slices\" settings. Basically the SEO Name alias is shortcut for computed field with {ifset:{seo.............}:_#1:{seoname:{_#HEADLINE}:all:CHARSET}}");  }      // see NamedInterface
 
     /** getClassProperties function of AA_Serializable
      * @return array
@@ -1198,10 +1198,10 @@ class AA_Inserter_Fil extends AA_Inserter {
             'type'          => new AA_Property( 'type',         _m("Mime types accepted"), 'text', false, true, 'text', false, _m('Only files of matching mime types will be accepted'), '', 'image/*'),
             'width'         => new AA_Property( 'width',        _m("Maximum image width"), 'int',  false, true, 'int',  false, '', '', '800'),
             'height'        => new AA_Property( 'height',       _m("Maximum image height"),'int',  false, true, 'int',  false, _m("The image will be resampled to be within these limits, while retaining aspect ratio."), '', '600'),
-            'otherfield'    => new AA_Property( 'otherfield',   _m("Other fields"),        'text', false, true, 'text', false, _m("List of other fields to receive this image, separated by ##. Do not work well for multi uploads."), '', 'image..........2'),
+            'otherfield'    => new AA_Property( 'otherfield',   _m("Other fields"),        'text', false, true, 'text', false, _m("List of other fields to receive this image, separated by ##. Does not work well for multi uploads."), '', 'image..........2'),
             'replacemethod' => new AA_Property( 'replacemethod',_m("Upload policy"),       'text', false, true, 'text', false, _m("new | overwrite | backup<br>This parameter controls what to do if uploaded file alredy exists:<br>new - AA creates new filename (by adding _x postfix) and store it with this new name (default)<br>overwrite - the old file of the same name is overwritten<br>backup - the old file is copied to new (non-existing) file and current file is stored with current name.<br>In all cases the filename is escaped, so any non-word characters will be replaced by an underscore."), '', 'new'),
-            'exact'         => new AA_Property( 'exact',        _m("Exact dimensions"),    'bool', false, true, 'bool', false, _m("If set to 1 the image will be downsized exactly to the specified dimensions (and croped if needed). Default is 0 or empty: Maintain aspect ratio while resizing the image."), '', '1'),
-            'nametemplate'  => new AA_Property( 'nametemplate', _m("Filename template"),   'text', false, true, 'text', false, _m("Renames file according to template. You can use AA expressions as well as special alias _#name and _#ext or _#full (file name, extension and fullname). The item aliases in AA expressions do not work on INSERT (item is not exist in time of file write). They will work on UPDATE."), '', 'file-_#SITEM_ID-_#name._#ext'),
+            'exact'         => new AA_Property( 'exact',        _m("Exact dimensions"),    'bool', false, true, 'bool', false, _m("If set to 1 the image will be downsized exactly to the specified dimensions (and cropped if needed). Default is 0 or empty: Maintain aspect ratio while resizing the image."), '', '1'),
+            'nametemplate'  => new AA_Property( 'nametemplate', _m("Filename template"),   'text', false, true, 'text', false, _m("Renames file according to template. You can use AA expressions as well as special alias _#name and _#ext or _#full (file name, extension and fullname). The item aliases in AA expressions do not work on INSERT (item does not exist at time of file write). They will work on UPDATE."), '', 'file-_#SITEM_ID-_#name._#ext'),
         ];
     }
 
@@ -1366,8 +1366,8 @@ class AA_Inserter_Pwd extends AA_Inserter {
      */
     public static function getClassProperties():array {
         return [             //           id         name                       type      multi  persist validator, required, help, morehelp, example
-            'bck_field'    => new AA_Property( 'bck_field',    _m("Copy of password"), 'text', false, true, 'field', false, _m('Field_id, where you want to store the copy of the password. Some times useful if you want to allow people to get hir/her old password. It is strongly recommended to not store it in plaintext and encrypt it. See second parameter.'), '', 'password.......1'),
-            'crypt_phrase' => new AA_Property( 'crypt_phrase', _m("Encrypt phrase"),   'text',  false, true, 'text', false, _m('If you specify the "Copy of password" field, it is recommended to ecrypt the password in the database. Fill there any string. If you then need the password, you can decrypt it from the field by using the same phrase - {decrypt:{password.......1}:Some Phrase}'), '', 'Some Phrase'),
+            'bck_field'    => new AA_Property( 'bck_field',    _m("Copy of password"), 'text', false, true, 'field', false, _m("Field_id, where you want to store the copy of the password. Sometimes useful if you want to allow people to get his/her old password. It is strongly recommended to not store it in plaintext and encrypt it. See second parameter."), '', 'password.......1'),
+            'crypt_phrase' => new AA_Property( 'crypt_phrase', _m("Encrypt phrase"),   'text',  false, true, 'text', false, _m("If you specify the \"Copy of password\" field, it is recommended to encrypt the password in the database. Fill there any string. If you then need the password, you can decrypt it from the field by using the same phrase - {decrypt:{password.......1}:Some Phrase}"), '', 'Some Phrase'),
         ];
     }
 

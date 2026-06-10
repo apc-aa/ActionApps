@@ -98,7 +98,7 @@ if (!$tableview) {  // empty array?
     exit;
 }
 if (! $tableview["cond"] )  {
-    MsgPage(_m("You have not permissions to add slice"));
+    MsgPage(_m("You do not have permissions to add slice"));
     exit;
 }
 

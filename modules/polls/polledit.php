@@ -116,7 +116,7 @@ if ($insert  || $update ) {
     } elseif ($update ) {
         $data['id'] = $poll_id;
         if (false === AA::Metabase()->doUpdate('polls', $data)) {
-            $err["DB"] = MsgErr(_m("Can't update poll with id ".$poll_id));
+            $err["DB"] = MsgErr(_m("Can't update poll with id %1", [$poll_id]));
             exit;
         }
     }

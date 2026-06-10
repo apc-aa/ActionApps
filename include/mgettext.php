@@ -1,8 +1,8 @@
 <?php
 /**
  * Usage of the mini-gettext system.
- * See include/lang/readme.html for more info, and misc/mgettext for scripts
- * used to maintain the language files.
+ * See include/lang/readme.html for more info; lang files are maintained
+ * by the misc/mgettext/cli.php generator.
  *
  * PHP version 7.2+
  *
@@ -49,7 +49,7 @@ function bind_mgettext_domain($filename, $cache = false, $lang = ""): void
 
     static $_m_backup = [];
 
-    $filename = __DIR__.'/lang/'.str_replace('.php3','.php',$filename); // old config could contain old php3 file extension
+    $filename = __DIR__.'/lang/'.basename(str_replace('.php3','.php',$filename)); // basename: the name may come from DB (module.lang_file) - prevent path traversal; .php3 from old configs
 
     if ( $mgettext_domain == $filename ) {
         return;                             // allready loaded
@@ -74,7 +74,13 @@ function bind_mgettext_domain($filename, $cache = false, $lang = ""): void
         if ($lang != Langs::currentLang()) {
             $_m = [];
         }
-        include $filename;
+        $ret = include $filename;
+        if (is_array($ret)) {
+            // generated `return [...]` format (OPcache-shared constant array);
+            // same-language section files accumulate, the newest one wins on duplicates
+            $_m = (is_array($_m) && $_m) ? ($ret + $_m) : $ret;
+        }
+        // legacy format files assign $_m[...] themselves and return 1
     }
 }
 

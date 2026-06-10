@@ -8,9 +8,17 @@ use AA_Value;
 class Langs
 {
     protected static $LANGS = [
+        'bg-utf8' => ['utf-8', 'Bulgarian (Unicode)'],
         'cz-utf8' => ['utf-8', 'Cestina (Unicode)'],
+        'de-utf8' => ['utf-8', 'Deutsch (Unicode)'],
         'en-utf8' => ['utf-8', 'English (Unicode)'],
         'es-utf8' => ['utf-8', 'Espanol (Unicode)'],
+        'fr-utf8' => ['utf-8', 'Francais (Unicode)'],
+        'hr-utf8' => ['utf-8', 'Hrvatski (Unicode)'],
+        'hu-utf8' => ['utf-8', 'Magyar (Unicode)'],
+        'ja-utf8' => ['utf-8', 'Japanese (Unicode)'],
+        'ro-utf8' => ['utf-8', 'Romanian (Unicode)'],
+        'ru-utf8' => ['utf-8', 'Russian (Unicode)'],
         'sk-utf8' => ['utf-8', 'Slovencina (Unicode)'],
         'vn'      => ['utf-8', 'Vietnamese (Unicode)'],
         'bg'      => ['windows-1251', 'Bulgarian (windows-1251)'],
@@ -18,9 +26,9 @@ class Langs
         'de'      => ['iso-8859-1', 'Deutsch (iso-8859-1)'],
         'en'      => ['iso-8859-1', 'English (iso-8859-1)'],
         'es'      => ['iso-8859-1', 'Espanol (iso-8859-1)'],
-        'fr'      => ['iso-8859-1', 'Fran�ais (iso-8859-1)'],
+        'fr'      => ['iso-8859-1', 'Francais (iso-8859-1)'],
         'hr'      => ['windows-1250', 'Hrvatski (windows-1250)'],
-        'ja'      => ['EUC-JP', 'Japanian (EUC-JP)'],
+        'ja'      => ['EUC-JP', 'Japanese (EUC-JP)'],
         'hu'      => ['iso-8859-2', 'Magyar (iso-8859-2)'],
         'ro'      => ['iso-8859-2', 'Romanian (iso-8859-2)'],
         'ru'      => ['windows-1251', 'Russian (windows-1251)'],    // cyrillic

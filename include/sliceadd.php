@@ -33,7 +33,7 @@ use AA\IO\DB\DB_AA;
  */
 function SliceAddForm(bool $wizard=false, bool $display_views_constants=false): void {
     if (!CheckPerms(AuthGetUid(), "aa", AA_ID, PS_ADD)) {
-        MsgPage(_m("You have not permissions to add slice"));
+        MsgPage(_m("You do not have permissions to add slice"));
         exit;
     }
 

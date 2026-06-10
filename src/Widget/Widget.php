@@ -742,7 +742,7 @@ class Widget extends AA_Object implements NamedInterface
                     $ret[$pid] = new AA_Property($pid, _m("Row count"), 'int', false, true, 'int', false, '', '', 10);
                     break;
                 case 'slice_field':
-                    $ret[$pid] = new AA_Property($pid, _m("Slice field"), 'string', false, true, 'string', false, _m("field (or format string) that will be displayed in select box. if not specified, in select box are displayed headlines or constant name for constants. you can use also any AA formatstring here (like: _#HEADLINE, _#PUB_DATE (for slices) or _#NAME###_, _#TR_NAME_, _#VALUE##_, _#PRIORITY, _#GROUP##_, _#CLASS##_, _#COUNTER_, _#CONST_ID, _#SHORT_ID (for constants))."), '', 'category........');
+                    $ret[$pid] = new AA_Property($pid, _m("Slice field"), 'string', false, true, 'string', false, _m("field (or format string) that will be displayed in select box. if not specified, headlines or constant name for constants are displayed in select box. you can use also any AA formatstring here (like: _#HEADLINE, _#PUB_DATE (for slices) or _#NAME###_, _#TR_NAME_, _#VALUE##_, _#PRIORITY, _#GROUP##_, _#CLASS##_, _#COUNTER_, _#CONST_ID, _#SHORT_ID (for constants))."), '', 'category........');
                     break;
                 case 'use_name':
                     $ret[$pid] = new AA_Property($pid, _m("Use name"), 'bool', false, true, 'bool', false, _m("if set (=1), then the name of selected constant is used, instead of the value. Default is 0"), '', '0');
@@ -751,13 +751,13 @@ class Widget extends AA_Object implements NamedInterface
                     $ret[$pid] = new AA_Property($pid, _m("Adding"), 'bool', false, true, 'bool', false, _m("adding the selected items to input field comma separated"), '', '0');
                     break;
                 case 'second_field':
-                    $ret[$pid] = new AA_Property($pid, _m("Second Field"), 'string', false, true, 'string', false, _m("field_id of another text field, where value of this selectbox will be propagated too (in main text are will be text and there will be value)"), '', "source_href.....");
+                    $ret[$pid] = new AA_Property($pid, _m("Second Field"), 'string', false, true, 'string', false, _m("field_id of another text field, where value of this selectbox will be propagated too (in main text area will be text and there will be value)"), '', "source_href.....");
                     break;
                 case 'add2constant':
-                    $ret[$pid] = new AA_Property($pid, _m("Add to Constant"), 'bool', false, true, 'bool', false, _m("if set to 1, user typped value in inputform is stored into constants (only if the value is not already there)"), '', "0");
+                    $ret[$pid] = new AA_Property($pid, _m("Add to Constant"), 'bool', false, true, 'bool', false, _m("if set to 1, user typed value in inputform is stored into constants (only if the value is not already there)"), '', "0");
                     break;
                 case 'bin_filter':
-                    $ret[$pid] = new AA_Property($pid, _m("Show items from bins"), 'int', false, true, 'int', false, _m("(for slices only) To show items from selected bins, use following values:<br>Active bin - '%1'<br>Pending bin - '%2'<br>Expired bin - '%3'<br>Holding bin - '%4'<br>Trash bin - '%5'<br>Value is created as follows: eg. You want show headlines from Active, Expired and Holding bins. Value for this combination is counted like %1+%3+%4&nbsp;=&nbsp;13", [
+                    $ret[$pid] = new AA_Property($pid, _m("Show items from bins"), 'int', false, true, 'int', false, _m("(for slices only) To show items from selected bins, use following values:<br>Active bin - '%1'<br>Pending bin - '%2'<br>Expired bin - '%3'<br>Holding bin - '%4'<br>Trash bin - '%5'<br>Value is created as follows: eg. You want to show headlines from Active, Expired and Holding bins. Value for this combination is counted like %1+%3+%4&nbsp;=&nbsp;13", [
                         AA_BIN_ACTIVE,
                         AA_BIN_PENDING,
                         AA_BIN_EXPIRED,
@@ -908,7 +908,7 @@ class Widget extends AA_Object implements NamedInterface
                     $ret[$pid] = new AA_Property($pid, _m("Disable new tags"), 'bool', false, true, 'bool', false, _m("Disallow creation of new tags - new items in related slice"), '', '0');
                     break;
                 case 'max_values':
-                    $ret[$pid] = new AA_Property($pid, _m("Max values"), 'int', false, true, 'int', false, _m("Limit the number of values entered. If 0 or empty, the number is unlimitted"), '', '0');
+                    $ret[$pid] = new AA_Property($pid, _m("Max values"), 'int', false, true, 'int', false, _m("Limit the number of values entered. If 0 or empty, the number is unlimited"), '', '0');
                     break;
                 case 'related_field':
                     $ret[$pid] = new AA_Property($pid, _m("Related field"), 'string', false, true, 'string', false, _m("Field to use for related items (relation........ is default)"), '', 'relation........');
@@ -917,13 +917,13 @@ class Widget extends AA_Object implements NamedInterface
                     $ret[$pid] = new AA_Property($pid, _m("Row Code"), 'string', false, true, 'string', false, _m("Alias in constant slice or HTML code to use for each related item (_#ROW_CODE is default)"), '', '_#ROW_CODE');
                     break;
                 case 'row_edit':
-                    $ret[$pid] = new AA_Property($pid, _m("Row Edit Code"), 'string', false, true, 'string', false, _m("Alias in constant slice or HTML code to use for editing relateded item (_#ROW_EDIT is default)"), '', '_#ROW_EDIT');
+                    $ret[$pid] = new AA_Property($pid, _m("Row Edit Code"), 'string', false, true, 'string', false, _m("Alias in constant slice or HTML code to use for editing related item (_#ROW_EDIT is default)"), '', '_#ROW_EDIT');
                     break;
                 case 'mng_buttons':
                     $ret[$pid] = new AA_Property($pid, _m("Buttons to Show"), 'string', false, true, 'string', false, _m("N - new<br>D - delete (with json you can specify also Dconfirm:&lt;question&gt;<br>S - setting (edit item in Toolbox)<br>E - edit - used with \"Row Edit Code\" parameter<br>B - back - used with \"Row Edit Code\" parameter<br>F - file upload to first file...........x or img_upload.....x or img_src........x field<br>- - no manage (just view)<br>Could be also defined as JSON asoc array - {\"N\":\"Add item\",\"D\":\"Delete item\",\"Dconfirm\":\"Are you sure to delete item?\"}"), '', 'ND');
                     break;
                 case 'class_type':
-                    $ret[$pid] = new AA_Property($pid, _m("Class prefix"), 'string', false, true, 'string', false, _m("Component idetifier to select from"), '', 'Widget');
+                    $ret[$pid] = new AA_Property($pid, _m("Class prefix"), 'string', false, true, 'string', false, _m("Component identifier to select from"), '', 'Widget');
                     break;
                 case 'load_from_fld':
                     $ret[$pid] = new AA_Property($pid, _m("Address field"), 'string', false, true, 'string', false, _m("field_id of another text field, from which user can grab address search"), '', "location........");
@@ -932,13 +932,13 @@ class Widget extends AA_Object implements NamedInterface
                     $ret[$pid] = new AA_Property($pid, _m("Allowed shapes"), 'string', false, true, 'string', false, _m("M - Marker (point) - default<br>L - Line<br>P - Polygon<br>R - Rectangle"), '', "MLP");
                     break;
                 case 'multi_shape':
-                    $ret[$pid] = new AA_Property($pid, _m("Multiple shapes"), 'bool', false, true, 'bool', false, _m("Allow multiple shapes at time"), '', "0");
+                    $ret[$pid] = new AA_Property($pid, _m("Multiple shapes"), 'bool', false, true, 'bool', false, _m("Allow multiple shapes at a time"), '', "0");
                     break;
                 case 'other_option':
                     $ret[$pid] = new AA_Property($pid, _m("Text option for Other"), 'bool', false, true, 'bool', false, _m("Last option is considered as \"Other\" with the possibility to write text value"), '', "0");
                     break;
                 case 'select_plus':  // maybe later we change it to number to add more options
-                    $ret[$pid] = new AA_Property($pid, _m("Searchable"), 'bool', false, true, 'bool', false, _m("Uses special selectbox widget, which is searchable as substring.<br>Do not relly on current implementation in your possible scripts."), '', "1");
+                    $ret[$pid] = new AA_Property($pid, _m("Searchable"), 'bool', false, true, 'bool', false, _m("Uses special selectbox widget, which is searchable as substring.<br>Do not rely on current implementation in your possible scripts."), '', "1");
                     break;
                 case 'placeholder':
                     $ret[$pid] = new AA_Property($pid, _m("Placeholder"), 'string', false, true, 'string', false, _m("Placeholder for input"), '', "fill in the format ...");

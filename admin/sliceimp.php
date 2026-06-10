@@ -388,7 +388,7 @@ foreach ($conflicts_ID as $c_id => $name) {
     if ($view_IDconflict) { ?>
         <tr>
             <td>
-                <b><?php echo _m("<p>Views with some of the same IDs exist already. Please edit on the right hands side of the arrow</p>") ?></b></p>
+                <b><?php echo _m("<p>Views with some of the same IDs exist already. Please edit on the right-hand side of the arrow</p>") ?></b></p>
                 <p>
 <textarea name="view_conflicts_list" rows=<?php echo count($view_conflicts_ID) ?> cols="90">
 <?php
@@ -416,7 +416,7 @@ foreach ($data_conflicts_ID as $c_id => $name) {
     }
     if ($IDconflict || $data_IDconflict) { ?>
         </p>
-        <?php echo _m("<p>If you choose OVERWRITE, the slices and data with unchanged ID will be overwritten and the new ones added. <br>If you choose INSERT, the slices and data with ID conflict will be ignored and the new ones added.<br>And finally, if you choose \"Insert with new ids\", slice structures gets new ids and it's content too.</p>") ?>
+        <?php echo _m("<p>If you choose OVERWRITE, the slices and data with unchanged ID will be overwritten and the new ones added. <br>If you choose INSERT, the slices and data with ID conflict will be ignored and the new ones added.<br>And finally, if you choose \"Insert with new ids\", slice structures get new ids and their content too.</p>") ?>
         <p>
             <?php if ($only_slice) { ?>
                 <input type="hidden" name="only_slice" value="1">
@@ -436,7 +436,7 @@ foreach ($data_conflicts_ID as $c_id => $name) {
         <tr>
             <td>
                 <br>
-                <?php echo _m("1) If you have exported data in file, insert it's name here (eg. D:\data\apc_aa_slice.aaxml):") ?>
+                <?php echo _m("1) If you have exported data in file, insert its name here (eg. D:\\data\\apc_aa_slice.aaxml):") ?>
                 <p>
                     <input type="file" name="slice_def_file" size="60">
                     <!--		<p><input type="submit" name="file_submit" value="<?php echo _m("Send file with slice structure and data"); ?>">  -->

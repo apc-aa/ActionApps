@@ -115,7 +115,7 @@ if ($_POST['b_export_type']) {
     <tr><td colspan="2">
     <table>
         <tr><td>
-        <b><?php echo _m("Choose, if you want export slices structure, data or both.") ?></b><br>
+        <b><?php echo _m("Choose, if you want to export slices structure, data or both.") ?></b><br>
         <input type="checkbox" name="b_export_struct" value="1" checked><?php echo _m("Export structure") ?><br>
         <input type="checkbox" name="b_export_data" value="1"><?php echo _m("Export data") ?><br>
         <input type="checkbox" name="b_export_views" value="1"><?php echo _m("Export views") ?><br>
@@ -159,8 +159,8 @@ if ($_POST['b_export_type']) {
         </table>
         </td>
         <td width="50%">
-            <b><?php echo _m("When exporting \"to another ActionApps\" only the current slice will be exported and you choose its new identificator.") ?></b><br>
-            <b><?php echo _m("Choose a new slice identificator exactly 16 characters long: ") ?></b>
+            <b><?php echo _m("When exporting \"to another ActionApps\" only the current slice will be exported and you choose its new identifier.") ?></b><br>
+            <b><?php echo _m("Choose a new slice identifier exactly 16 characters long: ") ?></b>
             <input type="text" name="SliceID" value="template" size="16" maxlength="16"><br>
             <input type="hidden" name="b_export_type" id="b_export_type" value="export">
         </td>
@@ -182,7 +182,7 @@ if ($_POST['b_export_type']) {
     function validate () {
         const form = document.forms["f"];
         if (form.SliceID.value.length != 16) {
-            alert (<?php echo '"'._m("The identificator should be 16 characters long, not ").'"' ?>
+            alert (<?php echo '"'._m("The identifier should be 16 characters long, not ").'"' ?>
                 + form.SliceID.value.length);
             form.SliceID.focus();
         } else {

@@ -23,7 +23,7 @@ class FixDatewidget extends AbstractOptimize
      */
     public static function description(): string
     {
-        return _m("AA used to use ' as parameter delimiter in some early stages instead of : - like date widget 1'10'1. This fixes it to current 1:10:1. Functionaly it is equal.");
+        return _m("AA used to use ' as parameter delimiter in some early stages instead of : - like date widget 1'10'1. This fixes it to current 1:10:1. Functionally it is equal.");
     }
 
     /** Test function
@@ -43,7 +43,7 @@ class FixDatewidget extends AbstractOptimize
                 ]));
             }
         } else {
-            $this->message(_m('OK - There is no old delimiters'));
+            $this->message(_m("OK - There are no old delimiters"));
         }
         return true;
     }

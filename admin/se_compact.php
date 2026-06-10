@@ -81,7 +81,7 @@ if ($cancel) {
 }
 
 if (!IfSlPerm(PS_COMPACT)) {
-    AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php", _m("You have not permissions to change compact view formatting"), "admin");
+    AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php", _m("You do not have permissions to change compact view formatting"), "admin");
     exit;
 }
 
@@ -243,7 +243,7 @@ FrmTextarea("odd_row_format", _m("Odd Rows"), $odd_row_format, 6, 50, false,
     . '<br>' . AA_View::getViewJumpLinks($odd_row_format), '', 1);
 FrmInputChBox("even_odd_differ", _m("Use different HTML code for even rows"), $even_odd_differ, true, "onclick=\"InitPage()\"");
 FrmTextarea("even_row_format", _m("Even Rows"), $even_row_format, 6, 50, false,
-    _m("You can define different code for odd and ever rows\n                         <br>first red, second black, for example")
+    _m("You can define different code for odd and even rows\n                         <br>first red, second black, for example")
     . '<br>' . AA_View::getViewJumpLinks($even_row_format), '', 1);
 FrmTextarea("compact_bottom", _m("Bottom HTML"), $compact_bottom, 4, 50, false,
     _m("HTML code which appears at the bottom of slice area")

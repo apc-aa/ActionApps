@@ -48,7 +48,7 @@ class RedefineFieldTemplates extends \AA\Optimize\AbstractOptimize
      */
     public static function description(): string
     {
-        return _m("Updates field templates (in ActionApps Core slice), which is used when you adding new field to slice");
+        return _m("Updates field templates (in ActionApps Core slice), which is used when you are adding new field to slice");
     }
 
     /** checks if this Optimize class belongs to specified type (like "sql_update") */
@@ -67,7 +67,7 @@ class RedefineFieldTemplates extends \AA\Optimize\AbstractOptimize
 
         $row_count = DB_AA::count('field', [['id', 'headline'], ['slice_id', 'AA_Core_Fields..']]);
         if ($row_count !== 1) {
-            $this->message(_m('teplate fields are not prenent'));
+            $this->message(_m("template fields are not present"));
             $ret = false;
         }
 
@@ -85,10 +85,10 @@ class RedefineFieldTemplates extends \AA\Optimize\AbstractOptimize
         $AA_IMG_URL = '/' . AA_BASE_DIR . 'images/';
         $AA_DOC_URL = '/' . AA_BASE_DIR . 'doc/';
 
-        $this->message(_m('Deleting all fields form "ActionApps Core" slice'));
+        $this->message(_m("Deleting all fields from \"ActionApps Core\" slice"));
         $this->query("DELETE FROM field WHERE slice_id='AA_Core_Fields..'");
 
-        $this->message(_m('Make sure slice owner Action Aplications System exist and reset to defaults'));
+        $this->message(_m("Make sure slice owner Action Applications System exists and reset to defaults"));
         $this->query("REPLACE INTO slice_owner (id, name, email) VALUES ('AA_Core.........', 'Action Aplications System', '" . ERROR_REPORTING_EMAIL . "')");
 
         $this->message(_m('Make sure "ActionApps Core" slice exists and reset to defaults'));

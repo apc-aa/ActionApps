@@ -77,7 +77,7 @@ function UserTypeLabel(array $usrinfo, string $usr_id): string {
     if (($usrinfo['type'] ?? '') === 'ReaderGroup') {
         return _m('ReaderGroup') .' - '. safe($usrinfo['name']);
     }
-    return _m($usrinfo['type'] ?? '');
+    return _mdelayed($usrinfo['type'] ?? '');
 }
 
 // variable $editor_perms should be set

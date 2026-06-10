@@ -20,7 +20,7 @@ class RedefineCoreConstants extends \AA\Optimize\AbstractOptimize
      */
     public static function description(): string
     {
-        return _m("Updates core constants - like Code-pages, Languge Constants and AA Bins");
+        return _m("Updates core constants - like Code-pages, Language Constants and AA Bins");
     }
 
     /** checks if this Optimize class belongs to specified type (like "sql_update") */
@@ -75,7 +75,7 @@ class RedefineCoreConstants extends \AA\Optimize\AbstractOptimize
     {
 
 
-        $this->message(_m('Deleting Code-pages, Languge Constants, AA Bins constants and APC-wide categories'));
+        $this->message(_m("Deleting Code-pages, Language Constants, AA Bins constants and APC-wide categories"));
         $this->query("DELETE FROM constant WHERE group_id IN ('lt_codepages', 'lt_languages', 'AA_Core_Bins....', 'lt_apcCategories')");
 
         $this->message(_m('Recreate Code-pages'));

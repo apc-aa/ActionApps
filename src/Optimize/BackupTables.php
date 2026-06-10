@@ -46,7 +46,7 @@ class BackupTables extends \AA\Optimize\AbstractOptimize
             }
 
             // create backup table
-            $this->message(_m('Deleting old backup table bck_%1, if exist.', [$tablename]));
+            $this->message(_m("Deleting old backup table bck_%1, if it exists.", [$tablename]));
             $this->query("DROP TABLE IF EXISTS `bck_$tablename`");
 
             $this->message(_m('Creating empty backup table bck_%1.', [$tablename]));

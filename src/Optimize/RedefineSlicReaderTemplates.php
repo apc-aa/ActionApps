@@ -55,7 +55,7 @@ class RedefineSlicReaderTemplates extends \AA\Optimize\AbstractOptimize
         $AA_IMG_URL = '/' . AA_BASE_DIR . 'images/';
         $AA_DOC_URL = '/' . AA_BASE_DIR . 'doc/';
 
-        $this->message(_m('Deleting all fields form "Reader Management" slice'));
+        $this->message(_m("Deleting all fields from \"Reader Management\" slice"));
         $this->query("DELETE FROM field WHERE slice_id='ReaderManagement'");
 
         $this->message(_m('Make sure "Reader Management" slice exists and reset to defaults'));

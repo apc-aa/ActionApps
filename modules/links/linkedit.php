@@ -99,7 +99,7 @@ if ( $lid > 0 ) {
 
 if ( $r_state['link_id'] ) {
     if ( !($db_link = GetLinkInfo( $r_state['link_id']))) {
-        MsgPage(_m('Link do not exist or the base category is not set'));
+        MsgPage(_m("Link does not exist or the base category is not set"));
         exit;
     }
 
@@ -549,7 +549,7 @@ if ( !Links_IsPublic() || ($r_state['link_id'] && $type) ) {
        FrmTabSeparator(_m('Regions and languages') .getFrmMoreHelp(get_help_url(AA_LINKS_HELP_LINK, "region-jazyk")));
    echo '
       <tr><td width="50%"><b>'. _m('Region') .'</b><div class="tabhlp"><i>'. _m('select up to 4 regions') .'</i></div></td>
-          <td><b>'. _m('Language') .'</b><div class="tabhlp"><i>'. _m('select pege\'s languages') .'</i></div></td></tr>
+          <td><b>'. _m('Language') .'</b><div class="tabhlp"><i>'. _m("select page's languages") .'</i></div></td></tr>
       <tr><td>';
     if ( isset($regId) && is_array($regId) ) {
         foreach ($regId as $i => $singleRegId) {

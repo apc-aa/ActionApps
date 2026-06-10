@@ -41,7 +41,7 @@ class Convert2innodb extends AbstractOptimize
             $this->message(_m('engine for %1 table is %2', [$tablename, $engine]));
             $count++;
         }
-        $this->message(_m('We found %1 tables which needs to be converted', [$count]));
+        $this->message(_m("We found %1 tables which need to be converted", [$count]));
         return !$count;
     }
 

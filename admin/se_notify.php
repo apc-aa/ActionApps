@@ -117,7 +117,7 @@ if (! AA::$module_id){
 }
 
 if (!IfSlPerm(PS_EDIT)) {
-    MsgPage(_m("You have not permissions to edit this slice"));
+    MsgPage(_m("You do not have permissions to edit this slice"));
     exit;
 }
 

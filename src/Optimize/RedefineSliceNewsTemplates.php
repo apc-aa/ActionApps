@@ -54,7 +54,7 @@ class RedefineSliceNewsTemplates extends \AA\Optimize\AbstractOptimize
         $AA_IMG_URL = '/' . AA_BASE_DIR . 'images/';
         $AA_DOC_URL = '/' . AA_BASE_DIR . 'doc/';
 
-        $this->message(_m('Deleting all fields form "ActionApps Core" slice'));
+        $this->message(_m("Deleting all fields from \"ActionApps Core\" slice"));
         $this->query("DELETE FROM field WHERE slice_id='News_EN_tmpl....'");
 
         $this->message(_m('Make sure "News EN" slice exists and reset to defaults'));

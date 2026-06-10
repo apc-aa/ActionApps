@@ -75,7 +75,7 @@ if (!is_array($tableview)) {
     exit;
 }
 if (! $tableview["cond"] ) {
-    MsgPage(_m("You have not permissions to this page"));
+    MsgPage(_m("You do not have permissions to access this page"));
     exit;
 }
 

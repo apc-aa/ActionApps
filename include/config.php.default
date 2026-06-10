@@ -349,10 +349,6 @@ define("FILEMAN_BASE_URL",AA_HTTP_DOMAIN."apc-aa-files/");
 /** time in seconds to allow to upload big files */
 define("FILEMAN_UPLOAD_TIME_LIMIT", 600);
 
-/** XMGETTEXT language files - this setting is needed only for AA developers
- *  who want to run xmgettext (see misc/mgettext/index.php). */
-$XMGETTEXT_DESTINATION_DIR = "/www/php_rw/lang/";
-
 /** MAILMAN synchronization dir. In this directory are placed the
  * files with lists of email addresses which processes mailman.
  * The dir must exist, it is not created by the mailman.php script.

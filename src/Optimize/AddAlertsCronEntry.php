@@ -16,7 +16,7 @@ class AddAlertsCronEntry extends \AA\Optimize\AbstractOptimize
     /**  {@inheritdoc} Implementation of \AA\Util\NamedInterface */
     public static function description(): string
     {
-        return _m("It however do not install the system cron for AA - you should do it by yourself (see /misc/aa-http-request script)");
+        return _m("It however does not install the system cron for AA - you should do it by yourself (see /misc/aa-http-request script)");
     }
 
     /** checks if this Optimize class belongs to specified type (like "sql_update") */

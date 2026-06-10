@@ -72,7 +72,7 @@ try {
 } catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
 
 if (!IfSlPerm(PS_FEEDING)) {
-    MsgPage(_m("You have not permissions to export"));
+    MsgPage(_m("You do not have permissions to export"));
     exit;
 }
 

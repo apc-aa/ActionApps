@@ -23,7 +23,7 @@ class Taskmanager_Execute extends AbstractManageraction
 
         if (!IfSlPerm(PS_EDIT)) {    // permission to delete items?
             /** @todo Should be changed to different permission */
-            return _m("You have not permissions to remove items");
+            return _m("You do not have permissions to remove items");
         }
 
         if ($item_zids->isEmpty()) {

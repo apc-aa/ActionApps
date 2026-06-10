@@ -23,7 +23,7 @@ class RequiredChecboxes extends AbstractOptimize
      */
     public static function description(): string
     {
-        return _m("AA are now more strict about Required field, so checkboxes marked as Required must be filled (=checked). This could be problem if you acidentaly have it set in history. This test just list all of such fields, in order you can check it.");
+        return _m("AA is now more strict about Required field, so checkboxes marked as Required must be filled (=checked). This could be a problem if you accidentally have it set in history. This test just lists all of such fields, in order you can check it.");
     }
 
     /** implemented actions within this class */
@@ -50,7 +50,7 @@ class RequiredChecboxes extends AbstractOptimize
                 'LIKE',
             ],
         ])) {
-            $this->message(_m('We found required checkbox %1 fields:', [count($fields)]));
+            $this->message(_m("We found %1 required checkbox fields:", [count($fields)]));
             foreach ($fields as $field) {
                 $this->message(_m('%1 - %2 (%3) Show: %4', [
                     $field['id'],

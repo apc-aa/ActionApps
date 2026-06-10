@@ -85,7 +85,7 @@ if ($cancel) {
 }
 
 if (!IfSlPerm(PS_FIELDS)) {
-    AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php", _m("You have not permissions to change fields settings"), "admin");
+    AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php", _m("You do not have permissions to change fields settings"), "admin");
     exit;
 }
 
@@ -107,7 +107,7 @@ $varset      = new Cvarset();
 if ( $group_id ) {
     $constant_info = DB_AA::select1('', 'SELECT  LOWER(HEX(`slice_id`)) AS owner_id, name, propagate FROM constant_slice, slice', [['constant_slice.slice_id', 'slice.id', 'j'], ['group_id', $group_id]]);
     if ($constant_info && !CheckPerms( AuthGetUid(), "slice", $constant_info["owner_id"], PS_FIELDS)) {
-        AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php", _m("You have not permissions to change fields settings for the slice owning this group") . " (" . $constant_info['name'] . ")", "admin");
+        AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php", _m("You do not have permissions to change fields settings for the slice owning this group") . " (" . $constant_info['name'] . ")", "admin");
         exit;
     }
 }

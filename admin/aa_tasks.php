@@ -31,7 +31,7 @@ use AA\Manageraction\Manageractions;
 require_once __DIR__ . "/../include/init_page.php";
 
 if (!IfSlPerm(PS_FORMS)) {
-    AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php", _m("You have not permissions to manage tasks"), "admin");
+    AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php", _m("You do not have permissions to manage tasks"), "admin");
     exit;
 }
 
@@ -41,7 +41,7 @@ $actions->addAction(new  AA\Manageraction\Object_Move2slice('Move2slice', AA::$m
 
 $apage = new AA_Adminpageutil('aaadmin', 'tasks');
 $apage->setTitle(_m('Manage %1', [AA_Plannedtask::name()]));
-$apage->setSubtitle( _m('You can plan the a task for specified time, or as the reaction to some event. The task will be probably sending e-mails using {mail...} expression, or recounting some fields after update by {recount...}') );
+$apage->setSubtitle( _m("You can plan a task for specified time, or as the reaction to some event. The task will probably be sending e-mails using {mail...} expression, or recounting some fields after update by {recount...}") );
 $apage->printWithManager((new Manager('task', AA_Plannedtask::getManagerConf($actions)))->setAllModules());
 
 

@@ -95,7 +95,7 @@ const FILE_PREFIX = 'importdata';
 
 
 if (!IfSlPerm(PS_EDIT_ALL_ITEMS)) {
-    MsgPage(_m("You have not permissions to import files"));
+    MsgPage(_m("You do not have permissions to import files"));
     exit;
 }
 

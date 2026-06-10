@@ -563,7 +563,7 @@ function GetKey($primary, $columns, $varset): string
  */
 function GetKeyFromRecord($primary, $columns, $record) {
     if ( !isset($primary) || !is_array($primary)) {
-        echo _m('Table do not have set primary key on single column. You can specify primary key by primary => array (field1, field2, ...) parameter for tableedit').'<br>';
+        echo _m("Table does not have a primary key set on a single column. You can specify primary key by primary => array (field1, field2, ...) parameter for tableedit").'<br>';
         return;
     }
     $key = [];

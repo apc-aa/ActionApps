@@ -21,7 +21,7 @@ class Taskmanager_Delete extends AbstractManageraction
 
         if (!IfSlPerm(PS_EDIT)) {    // permission to delete items?
             /** @todo Should be changed to different permission */
-            return _m("You have not permissions to remove tasks");
+            return _m("You do not have permissions to remove tasks");
         }
 
         if ($item_zids->isEmpty()) {

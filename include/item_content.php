@@ -1220,7 +1220,7 @@ class ItemContent extends AA_Content {
                                       return false;
                                   }
                                   if (itemIsDuplicate($this->getItemID())) {
-                                      self::lastErr(ITEMCONTENT_ERROR_DUPLICATE, _m("Duplicated ID - skiped (%1 - %2)", [$this->getItemID(), $this->getValue('headline........')]));  // set error code
+                                      self::lastErr(ITEMCONTENT_ERROR_DUPLICATE, _m("Duplicated ID - skipped (%1 - %2)", [$this->getItemID(), $this->getValue('headline........')]));  // set error code
                                       if ($GLOBALS['errcheck']) {
                                           huhl(self::lastErrMsg());
                                       }

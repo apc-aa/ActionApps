@@ -50,7 +50,7 @@ class RemoveUndefineAlias extends AbstractOptimize
      */
     public static function description(): string
     {
-        return _m("AA used to use _#UNDEFINE alias and some preset help text for field, which make little sense for real fields in real project. The help text and alias weill be removed.");
+        return _m("AA used to use _#UNDEFINE alias and some preset help text for field, which make little sense for real fields in real project. The help text and alias will be removed.");
     }
 
     /** Test function

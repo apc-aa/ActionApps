@@ -263,7 +263,7 @@ if (!$slice_info || $slice_info['deleted']>0) {
     ExitPage(_m("Invalid slice number or slice was deleted") . " (ID: $slice_id)");
 }
 if ($slice_info['d_listlen']==0) {
-    ExitPage(_m("slice.php output forbiden for this slice"));
+    ExitPage(_m("slice.php output forbidden for this slice"));
 }
 
 // Use right language (from slice settings) - languages are used for scroller (Next, ...)

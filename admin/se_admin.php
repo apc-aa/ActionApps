@@ -182,7 +182,7 @@ FrmTextarea("admin_format_bottom", _m("Bottom HTML"), $admin_format_bottom,
 FrmInputText("admin_remove", _m("Remove strings"), $admin_remove, 254, 50, false,
     _m("Removes empty brackets etc. Use ## as delimiter."));
 FrmTextarea("admin_noitem_msg", _m("HTML code for \"No item found\" message"), $admin_noitem_msg,
-    4, 60, false, _m("Code to be printed when no item is filled (or user have no permission to any item in the slice)")
+    4, 60, false, _m("Code to be printed when no item is filled (or user has no permission to any item in the slice)")
     . '<br>' . AA_View::getViewJumpLinks($admin_noitem_msg), '', 1);
 FrmInputSelect("inputform_sel", _m("Use special view"), $inputform_vids, $inputform_vid, false,
     _m("You can set special view - template for the Inputform on \"Design\" -> \"View\" page (inputform view)")

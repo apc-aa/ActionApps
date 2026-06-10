@@ -227,7 +227,7 @@ for ($i = 0; $i < $ino; ++$i) {
                         echo $desc['name'] . ": " . processSlashes($desc['desc']);
                     } else {
                         $what = $$list;
-                        printf(_m("This is an undocumented %s. We don't recommend to use it."), $what['name']);
+                        printf(_m("This is an undocumented %s. We don't recommend using it."), $what['name']);
                         echo "<p><input type=\"submit\" value=\"" . _m("Close the wizard") . "\">";
                         echo "</th></tr></table></body></html>";
                         exit;

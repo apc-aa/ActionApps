@@ -138,7 +138,7 @@ if ($filetype == _m("Text file") || $filetype == _m("Web file") || $filetype == 
 } elseif ($filetype == _m("Image file")) {
     echo "<img src='$fe_wwwpath$fe_filename'>";
 } else {
-    echo _m("This is a file of type")." $filetype. "._m("I can't view it. If you want to view or edit it, change it's extension.");
+    echo _m("This is a file of type")." $filetype. "._m("I can't view it. If you want to view or edit it, change its extension.");
 }
 //echo "</td></tr></table>";
 echo "</form>";

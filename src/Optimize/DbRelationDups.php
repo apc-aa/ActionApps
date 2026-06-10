@@ -20,7 +20,7 @@ class DbRelationDups extends AbstractOptimize
      */
     public static function description(): string
     {
-        return _m("Testing if relation table contain records, where values in both columns are identical (which was bug fixed in Jan 2006)");
+        return _m("Testing if relation table contains records, where values in both columns are identical (which was a bug fixed in Jan 2006)");
     }
 
     /** Test function

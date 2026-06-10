@@ -52,7 +52,7 @@ if (!$group_id) {
 ?>
 <input type="hidden" name='hcalldata' value=''>
 <table class="aa-table">
-<tr class="aa-tbl-header"><th><?php echo _m("Constants - Hiearchical editor")?></th></tr>
+<tr class="aa-tbl-header"><th><?php echo _m("Constants - Hierarchical editor")?></th></tr>
 <tr><td>
 <table><tr><td>
 <?php echo _m("Changes are not saved into database until you click on the button at the bottom of this page.<br>Constants are sorted first by Priority, second by Name.")."<br>"; ?>

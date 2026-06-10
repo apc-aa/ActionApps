@@ -18,7 +18,7 @@ class CopyContent extends AbstractOptimize
      */
     public static function description(): string
     {
-        return _m("Copy data for all items newer than short_id=1941629 from content table to content2 table. Used for recovery content table on Ecn server. Not useful for any other users, I think.");
+        return _m("Copy data for all items newer than short_id=1941629 from content table to content2 table. Used for recovery of content table on Ecn server. Not useful for any other users, I think.");
     }
 
     /** implemented actions within this class */
@@ -64,7 +64,7 @@ class CopyContent extends AbstractOptimize
          *
          *  $db->query($SQL);
          */
-        $this->message(_m('Coppied'));
+        $this->message(_m("Copied"));
 
         freeDb($db);
         return true;

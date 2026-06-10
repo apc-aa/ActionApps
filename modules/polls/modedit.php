@@ -90,12 +90,12 @@ $module_id   = AA::$module_id;
 
 if ($template['P']) {        // add module
     if (!CheckPerms( AuthGetUid(), "aa", AA_ID, PS_ADD)) {
-        MsgPage(_m("You have not permissions to add polls"));
+        MsgPage(_m("You do not have permissions to add polls"));
         exit;
     }
 } elseif (!CheckPerms( AuthGetUid(), "slice", $module_id, PS_MODP_SETTINGS)) {
     // edit module
-    MsgPage(_m("You have not permissions to edit this polls"));
+    MsgPage(_m("You do not have permissions to edit this poll"));
     exit;
 }
 

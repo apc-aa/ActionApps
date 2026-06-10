@@ -85,7 +85,7 @@ if ($cancel) {
 
 
 if (!IfSlPerm(PS_FIELDS)) {
-    AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php", _m("You have not permissions to change fields settings"), "admin");
+    AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php", _m("You do not have permissions to change fields settings"), "admin");
     exit;
 }
 

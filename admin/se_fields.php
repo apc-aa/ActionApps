@@ -84,7 +84,7 @@ if ($cancel) {
 $slice = AA_Slice::getModule(AA::$module_id);
 
 if (!IfSlPerm(PS_FIELDS) || !$slice) {
-    AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php", _m("You have not permissions to change fields settings"), "admin");
+    AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php", _m("You do not have permissions to change fields settings"), "admin");
     exit;
 }
 

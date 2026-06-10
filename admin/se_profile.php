@@ -58,7 +58,7 @@ if ($cancel) {
 }
 
 if (!IfSlPerm(PS_USERS)) {
-    AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php", _m("You have not permissions to manage users"), "admin");
+    AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php", _m("You do not have permissions to manage users"), "admin");
     exit;
 }
 
@@ -185,7 +185,7 @@ $manager_hide = [
     'mgr_actions'                     => _m('Manager Actions'),
                       'mgr_sb_searchrows'               => _m('Searchbar - Search Rows'),
                       'mgr_sb_orderrows'                => _m('Searchbar - Order Rows'),
-                      'mgr_sb_bookmarks'                => _m('Searchbar - Boomarks')
+                      'mgr_sb_bookmarks'                => _m("Searchbar - Bookmarks")
 ];
 
 $inputform_entries = [
@@ -209,7 +209,7 @@ $inputform_entries = [
 $permission_roles = [
                       'perm_author'                     => _m('Author Role'),
                       'perm_editor'                     => _m('Editor Role'),
-                      'perm_admin'                      => _m('Adminostrator Role'),
+                      'perm_admin'                      => _m("Administrator Role"),
                       'perm_super'                      => _m('Superadmin Role')
 ];
 

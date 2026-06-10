@@ -35,7 +35,7 @@ function CompareSliceDefs($template_slice_defs, $comp_slice_defs, $mapping): arr
             $cmp_slice_name = $mapping[$tmp_slice_name];
             $differences[$tmp_slice_name] = [];
             if ( empty($comp_slice_defs[$cmp_slice_name]) ) {
-                $differences[$tmp_slice_name][] = new AA_Difference('INFO', _m('Comparation slice (%1) does not exist', [$tmp_slice_name]));
+                $differences[$tmp_slice_name][] = new AA_Difference('INFO', _m("Comparison slice (%1) does not exist", [$tmp_slice_name]));
             }
             $differences[$tmp_slice_name] = array_merge($differences[$tmp_slice_name], $slice_def->compareWith($comp_slice_defs[$cmp_slice_name]));
         }
@@ -90,7 +90,7 @@ if ($_POST['synchronize']) {
             }
         }
     }
-    echo _m("%1 synchronization actions planed. See", [$no_sync_tasks]). ' ';
+    echo _m("%1 synchronization actions planned. See", [$no_sync_tasks]). ' ';
     echo a_href(get_admin_url('se_taskmanager.php'), _m('Task Manager'));
 }
 

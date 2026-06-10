@@ -519,7 +519,7 @@ class AA_Exportsetings extends AA_Object {
             'format'       => $format,
             'type'         => $type,
             'bins'         => $bins,
-            'fields'       => new AA_Property( 'fields',   _m("Fields"),        'string', true,  true, '', false, _m('you can put there field id (like headline........) or any AA expression (like _#HEADLINE)<br>for export all the fields, letf this field blank')),
+            'fields'       => new AA_Property( 'fields',   _m("Fields"),        'string', true,  true, '', false, _m("you can put there field id (like headline........) or any AA expression (like _#HEADLINE)<br>to export all the fields, leave this field blank")),
             'expressions'  => new AA_Property( 'expressions', _m("Custom columns"), 'string', true, true, '', false, _m('Add any AA expression as extra column. Each row = one column.')),
             'filename'     => new AA_Property( 'filename', _m("Filename"),      'string', false, true, '', false, _m('save as...')),
             'conds'        => new AA_Property( 'conds',    _m("Conditions"),    'text'  , false, true, '', false, _m('conditions are in "d-..." or "conds[]" form - just like:<br> &nbsp; d-headline........,category.......1-BEGIN-Bio (d-&lt;fields&gt;-&lt;operator&gt;-&lt;value&gt;-&lt;fields&gt;-&lt;op...)<br> &nbsp; conds[0][category........]=first&conds[1][switch.........1]=1 (default operator is RLIKE, here!)')),  // it is not absolutet necessary to use alphanum only, but it is easier to use, then
