@@ -100,6 +100,38 @@ final class HtmlMimeMailBuildTest extends TestCase
         $this->assertMatchesRegularExpression('/^Subject: Real subject Bcc: attacker@evil\.com/mi', $rfc);
     }
 
+    public function test_smtp_payload_synthesizes_from_when_header_missing(): void
+    {
+        // email_notify() historically set only the envelope sender (Return-Path),
+        // never a From: header. The mail() transport's MTA silently added one;
+        // SMTP submission has no such safety net, and RFC 5322 requires From:.
+        $mail = new \htmlMimeMail();
+        $mail->setReturnPath('alerts@example.org');
+        $mail->setSubject('s');
+        $mail->setText('b');
+        $mail->buildMessage();
+
+        $rfc = $this->invoke($mail, 'assembleRfc822', [['to@example.org']]);
+
+        $this->assertMatchesRegularExpression('/^From: alerts@example\.org\r?$/mi', $rfc);
+    }
+
+    public function test_smtp_payload_keeps_explicit_from_unchanged(): void
+    {
+        $mail = new \htmlMimeMail();
+        $mail->setReturnPath('bounces@example.org');
+        $mail->setFrom('Sender <sender@example.org>');
+        $mail->setSubject('s');
+        $mail->setText('b');
+        $mail->buildMessage();
+
+        $rfc = $this->invoke($mail, 'assembleRfc822', [['to@example.org']]);
+
+        $this->assertMatchesRegularExpression('/^From: Sender <sender@example\.org>\r?$/mi', $rfc);
+        $this->assertSame(1, preg_match_all('/^From:/mi', $rfc), 'exactly one From: header');
+        $this->assertStringNotContainsString('From: bounces@example.org', $rfc);
+    }
+
     public function test_collect_rcpts_merges_to_cc_bcc_deduplicated(): void
     {
         $mail = new \htmlMimeMail();

@@ -812,6 +812,13 @@ class htmlMimeMail {
          * the wire if a future caller ever sets $this->headers['To']. */
         unset($headersForData['Bcc'], $headersForData['To']);
 
+        /* RFC 5322 requires From:. Some callers (email_notify) set only the
+         * envelope sender; the mail() transport's MTA used to synthesize the
+         * missing From: header, SMTP submission has no such safety net. */
+        if (empty($headersForData['From']) && !empty($this->return_path)) {
+            $headersForData['From'] = $this->return_path;
+        }
+
         $lines   = [];
         $lines[] = 'To: ' . $this->_encodeHeader(implode(', ', $recipients), $charset);
         if (!empty($headersForData['Subject'])) {

@@ -302,15 +302,15 @@ class AA_Mail extends htmlMimeMail implements LaterInterface {
             "Errors-To"   => "errors_to"
         ];
         foreach ( $headers as $header => $field) {
-            if ($record[$field]) {
+            if ($record[$field] ?? null) {
                 $this->setHeader($header, $record[$field]);
             }
-            elseif ($default[$field]) {
+            elseif ($default[$field] ?? null) {
                 $this->setHeader($header, $default[$field]);
             }
         }
         // bounces are going to errors_to (if defined) or ...
-        $return_path = $record['sender'] ?: ( $record['header_from'] ?: ERROR_REPORTING_EMAIL );
+        $return_path = ($record['sender'] ?? null) ?: ( ($record['header_from'] ?? null) ?: ERROR_REPORTING_EMAIL );
         $extracted_return_path = $this->extractEmails($return_path);
         if (isset($extracted_return_path[0])) {
             $this->setReturnPath($extracted_return_path[0]);
