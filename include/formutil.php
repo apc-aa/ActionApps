@@ -169,6 +169,18 @@ class inputform {
         $slice_id = $slice->getId();
         $profile  = AA_Profile::getProfile(AuthGetUid(), $slice_id); // current user settings
 
+        // Profile rules "UI - inputform - hide": menu_top / menu_left hide the admin top bar
+        // and/or the left item rail independently (both hidden = the headerless pre-2026 form).
+        // With the top bar gone, page_h1 falls back to page_title, so the heading carries the
+        // slice name again - nothing else on the page shows it.
+        if ($this->active_main !== '' && $profile->getProperty('ui_inputform_hide', 'menu_top')) {
+            $this->active_main = '';
+            $this->page_h1     = '';
+        }
+        if ($this->submenu_override !== '' && $profile->getProperty('ui_inputform_hide', 'menu_left')) {
+            $this->submenu_override = 'none';   // getMenu(): 'none' = render no left rail
+        }
+
         // create buttons array for top (and lately for bottom of the form) ------------------
         $buttons = [];
         if ( $this->form4update ) {
@@ -240,9 +252,9 @@ class inputform {
         AA::Stringexpander()->addRequire("document.querySelectorAll('form').forEach(function(f) { f.addEventListener('submit', function() {sessionStorage.setItem('aa_pgtop', window.pageYOffset);});})", 'AA_Req_Load');
         AA::Stringexpander()->addRequire("if (sessionStorage.getItem('aa_pgtop')>0) { window.scrollTo(0,sessionStorage.getItem('aa_pgtop')); sessionStorage.setItem('aa_pgtop', 0); }", 'AA_Req_Load');
 
-        // Now that the top header lets the editor navigate away mid-edit, warn before
+        // Now that the top header / left rail let the editor navigate away mid-edit, warn before
         // leaving a full-page admin form with unsaved changes (submitting clears the flag).
-        if ($this->active_main !== '') {
+        if ($this->active_main !== '' || !in_array($this->submenu_override, ['', 'none'], true)) {
             AA::Stringexpander()->addRequire(
                 "(function(){var f=document.forms['inputform'];if(!f)return;var d=false;".
                 "f.addEventListener('input',function(){d=true;});".

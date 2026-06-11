@@ -114,42 +114,6 @@ $PROPERTY_TYPES = [
 
 $SORTORDER_TYPES = ['+'=>_m("Ascending"), '-' => _m("Descending")];
 
-$apage = new AA_Adminpageutil('sliceadmin','users');
-$apage->setTitle(_m("Admin - user Profiles"));
-$apage->setForm();
-$apage->printHead($err, $Msg);
-
-echo "
- <table class=\"aa-table\">
-  <tr class=\"aa-tbl-header\">
-   <th colspan='6'>&nbsp;". _m("Rules") ." - $uid - ". perm_username($uid). "</th>
-  </tr>";
-
-if ( count($rules) ) {
-    foreach ($rules as $v) {
-        PrintRule($v, $lookup_fields);
-    }
-} else {
-    echo "<tr><td colspan='6'>"._m("No rule is set")."</td></tr>";
-}
-echo "</table>
-<br>
-<form name=\"fr\">
- <table class=\"aa-table\">
-  <tr class=\"aa-tbl-header\">
-   <th colspan='6'>&nbsp;". _m("Add Rule") ."</th>
-  </tr>
-  <tr>
-       <td><b>". _m("Rule") . "</b></td>
-       <td><b>". _m("Field") . "</b></td>
-       <td><b>". _m("Function") . "</b></td>
-       <td><b>". _m("Value") . "</b></td>
-       <td><b>". _m("HTML") . "</b></td>
-       <td>&nbsp;</td>
-  </tr>";
-
-$inputDefaultTypes =  AA_Components::getClassArray('AA_Generator_');
-
 $menu_entries = [
     'top_logo'                        => _m('Logo (top)'),
                       'top_view'                        => _m('View site (top)'),
@@ -188,6 +152,11 @@ $manager_hide = [
                       'mgr_sb_bookmarks'                => _m("Searchbar - Bookmarks")
 ];
 
+$inputform_hide = [
+                      'menu_top'                        => _m('Top menu (admin header)'),
+                      'menu_left'                       => _m('Left menu (item context)')
+];
+
 $inputform_entries = [
                       'add_title'                       => _m('Title (add form)'),
                       'add_tophtml'                     => _m('Top HTML code (add form)'),
@@ -205,6 +174,45 @@ $inputform_entries = [
                       'edit_btn_reset'                  => _m('Button "Reset form" (edit form)'),
                       'edit_btn_cancel'                 => _m('Button "Cancel" (edit form)')
 ];
+
+// selector code => human label, for displaying stored rules in the table below
+$selector_names = $menu_entries + $manager_hide + $inputform_hide + $inputform_entries;
+
+$apage = new AA_Adminpageutil('sliceadmin','users');
+$apage->setTitle(_m("Admin - user Profiles"));
+$apage->setForm();
+$apage->printHead($err, $Msg);
+
+echo "
+ <table class=\"aa-table\">
+  <tr class=\"aa-tbl-header\">
+   <th colspan='6'>&nbsp;". _m("Rules") ." - ". safe($uid) ." - ". safe(perm_username($uid)). "</th>
+  </tr>";
+
+if ( count($rules) ) {
+    foreach ($rules as $v) {
+        PrintRule($v, $lookup_fields, $selector_names);
+    }
+} else {
+    echo "<tr><td colspan='6'>"._m("No rule is set")."</td></tr>";
+}
+echo "</table>
+<br>
+<form name=\"fr\">
+ <table class=\"aa-table\">
+  <tr class=\"aa-tbl-header\">
+   <th colspan='6'>&nbsp;". _m("Add Rule") ."</th>
+  </tr>
+  <tr>
+       <td><b>". _m("Rule") . "</b></td>
+       <td><b>". _m("Field") . "</b></td>
+       <td><b>". _m("Function") . "</b></td>
+       <td><b>". _m("Value") . "</b></td>
+       <td><b>". _m("HTML") . "</b></td>
+       <td>&nbsp;</td>
+  </tr>";
+
+$inputDefaultTypes =  AA_Components::getClassArray('AA_Generator_');
 
 $permission_roles = [
                       'perm_author'                     => _m('Author Role'),
@@ -228,6 +236,7 @@ PrintSetRule( 8,'predefine',      1,                   $inputDefaultTypes,1,    
 PrintSetRule( 9,'ui_manager',     $menu_entries,       [],                1,                 0,                 _m('redefine manager UI - (empty values = do not show)'));
 PrintSetRule(10,'ui_manager_hide',$manager_hide,       [],                0,                 0,                 _m('hide this UI element'));
 PrintSetRule(11,'ui_inputform',   $inputform_entries,  [],                1,                 0,                 _m('redefine inputform UI - (empty values = do not show)'));
+PrintSetRule(14,'ui_inputform_hide',$inputform_hide,   [],                0,                 0,                 _m('hide this UI element in the inputform'));
 
 echo "</table>
     </form>

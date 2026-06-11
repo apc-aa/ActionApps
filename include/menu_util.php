@@ -548,12 +548,15 @@ function GetModuleSelection(): string {
 //                                SHOW MENU
 
 /**
- * @param  string  $activeMain       -- selected item in main (top) menu
+ * @param  string  $activeMain       -- selected item in main (top) menu; '' = no top bar
  * @param  string  $activeSubmenu    -- selected item in sub (left) menu
  * @param  string  $submenuOverride  -- render this named submenu (from menu.php) instead of the
  *                                       one the main menu defaults to. Lets a page keep its top
  *                                       highlight (e.g. 'itemmanager') while showing a different
  *                                       left rail (e.g. the dynamic 'itemcontext_submenu').
+ *                                       'none' = no left rail at all (top bar only).
+ *                                       The two axes are independent: $activeMain='' with a named
+ *                                       $submenuOverride renders the left rail without the top bar.
  *
  * @return string
  */
@@ -561,12 +564,17 @@ function getMenu(string $activeMain, string $activeSubmenu = '', string $submenu
     global $slice_id;
     $ret = '';
 
-    if ($activeMain) {
+    $show_rail = ($submenuOverride !== 'none');
+    if (!$show_rail) {
+        $submenuOverride = '';
+    }
 
-        $profile = AA_Profile::getProfile(AuthGetUid(), $slice_id); // current user settings
-
-        // load the main AA menu (see menu.php)
-
+    // load the main AA menu (see menu.php) and resolve the left rail - needed for the top bar
+    // and/or the rail, so load whenever either is requested
+    $smmenus      = [];
+    $submenu      = '';
+    $submenu_code = '';
+    if ($activeMain !== '' || $submenuOverride !== '') {
         if ($menu_require = AA_Module::getModuleInfo('menu', AA::$module_id)) {
 
             if (!function_exists('get_aamenus')) {
@@ -579,6 +587,15 @@ function getMenu(string $activeMain, string $activeSubmenu = '', string $submenu
             // redeclaration error. We probably change menus to object in the future
             $smmenus = get_aamenus();
         }
+        if ($show_rail) {
+            $submenu      = $submenuOverride !== '' ? $submenuOverride : ($smmenus[$activeMain]["submenu"] ?? '');
+            $submenu_code = $submenu ? getSubmenu($smmenus[$submenu], $activeSubmenu) : '';
+        }
+    }
+
+    if ($activeMain) {
+
+        $profile = AA_Profile::getProfile(AuthGetUid(), $slice_id); // current user settings
 
         // HACKISH: aaadmin menu needs always the _news_ lang file, even in other than slice modules
         if ($activeMain === "aaadmin") {
@@ -618,8 +635,6 @@ function getMenu(string $activeMain, string $activeSubmenu = '', string $submenu
         // @todo change it to method=get (+ hidden fields or so) in order the Back button in browser works there better
         $search_out = IsSuperadmin() ? "<form name=aasearchform action=\"".get_admin_url('aafinder.php')."\">".StateHidden()."<input type=search name=search value=\"".safe($_REQUEST['findtext'])."\" placeholder=\"". _m('Search..') ."\"><input type=hidden name=searchinview value=1><input type=hidden name=searchinslice value=1><input type=hidden name=searchinfield value=1><input type=hidden name=searchinspot value=1><input type=hidden name=searchinobject value=1><input type=hidden name=searchincodeitems value=1><input type=hidden name=go_search value=1></form>"  : '';
 
-        $submenu      = $submenuOverride !== '' ? $submenuOverride : ($smmenus[$activeMain]["submenu"] ?? '');
-        $submenu_code = $submenu ? getSubmenu($smmenus[$submenu], $activeSubmenu) : '';
         $logout_url = get_admin_url('logout.php');
 
         $links = [];
@@ -678,50 +693,48 @@ function getMenu(string $activeMain, string $activeSubmenu = '', string $submenu
           ';
 
         // showMain menu end -----
+    }
 
-        $ret .= "\n<div class='aa-ui-main'>";
+    $ret .= "\n<div class='aa-ui-main'>";
 
-    // showSub menu -----
-        if ($submenu) {
-            $copyright = _m("Copyright (C) 2001 the <a href=\"https://www.apc.org\">Association for Progressive Communications (APC)</a>");
+    // showSub menu (rendered with or without the top bar) -----
+    if ($submenu) {
+        $copyright = _m("Copyright (C) 2001 the <a href=\"https://www.apc.org\">Association for Progressive Communications (APC)</a>");
 
-            // The item-context rail (Edit item / Item info / History / Statistics) can be
-            // collapsed to an icons-only strip — every row there carries an icon. Other
-            // submenus don't, so the toggle + collapse CSS are gated to this one submenu key.
-            $collapsible    = ($submenu === 'itemcontext_submenu');
-            $rail_class     = $collapsible ? 'aa-ui-leftmenu aa-leftmenu-collapsible' : 'aa-ui-leftmenu';
-            $rail_prescript = '';
-            $rail_toggle    = '';
-            if ($collapsible) {
-                $toggle_label = safe(_m('Collapse / expand menu'));
-                // Apply the saved state on <html> BEFORE the rail paints, so a collapsed
-                // rail never flashes at full width (mirrors the aa_current_site_id idiom above).
-                // NB: this HTML is later run through AA::Un() (unalias). The Stringexpander
-                // dispatches a "{cmd...}" only when the brace content STARTS with an AA command
-                // token immediately followed by ':' or '(' (stringexpand.php ~6592: strspn picks
-                // the leading [a-z0-9_] token). So "{if(...)}" is read as {if(...} and eaten; a
-                // single leading space ("{ if(...}") already defeats it (strspn → 0, no command).
-                // Here we sidestep the issue entirely: classList.toggle(name, force) has no such
-                // leading token, so unalias leaves the script intact.
-                $rail_prescript = "<script>try{document.documentElement.classList.toggle('aa-itemrail-collapsed',"
-                    ."localStorage.getItem('aa_itemrail_collapsed')==='1')}catch(e){}</script>";
-                $rail_toggle = "<button type=\"button\" class=\"aa-rail-toggle\" id=\"aa-rail-toggle\""
-                    ." title=\"$toggle_label\" aria-label=\"$toggle_label\" aria-expanded=\"true\">"
-                    ."<span class=\"aa-rail-toggle-ico\" aria-hidden=\"true\"></span></button>"
-                    ."<script>(()=>{const h=document.documentElement,b=document.getElementById('aa-rail-toggle');"
-                    ."if(!b)return;const s=()=>b.setAttribute('aria-expanded',h.classList.contains('aa-itemrail-collapsed')?'false':'true');"
-                    ."s();b.addEventListener('click',()=>{const c=h.classList.toggle('aa-itemrail-collapsed');"
-                    ."try{localStorage.setItem('aa_itemrail_collapsed',c?'1':'0');}catch(e){}s();});})();</script>";
-            }
-
-            $ret .= $rail_prescript . <<<HTML
-                      <div class="{$rail_class}"><div class="leftmenu noprint">{$rail_toggle}{$submenu_code}</div>
-                        <div class='aa-ui-copyright'>{$copyright}</div>
-                      </div>
-                    HTML;
+        // The item-context rail (Edit item / Item info / History / Statistics) can be
+        // collapsed to an icons-only strip — every row there carries an icon. Other
+        // submenus don't, so the toggle + collapse CSS are gated to this one submenu key.
+        $collapsible    = ($submenu === 'itemcontext_submenu');
+        $rail_class     = $collapsible ? 'aa-ui-leftmenu aa-leftmenu-collapsible' : 'aa-ui-leftmenu';
+        $rail_prescript = '';
+        $rail_toggle    = '';
+        if ($collapsible) {
+            $toggle_label = safe(_m('Collapse / expand menu'));
+            // Apply the saved state on <html> BEFORE the rail paints, so a collapsed
+            // rail never flashes at full width (mirrors the aa_current_site_id idiom above).
+            // NB: this HTML is later run through AA::Un() (unalias). The Stringexpander
+            // dispatches a "{cmd...}" only when the brace content STARTS with an AA command
+            // token immediately followed by ':' or '(' (stringexpand.php ~6592: strspn picks
+            // the leading [a-z0-9_] token). So "{if(...)}" is read as {if(...} and eaten; a
+            // single leading space ("{ if(...}") already defeats it (strspn → 0, no command).
+            // Here we sidestep the issue entirely: classList.toggle(name, force) has no such
+            // leading token, so unalias leaves the script intact.
+            $rail_prescript = "<script>try{document.documentElement.classList.toggle('aa-itemrail-collapsed',"
+                ."localStorage.getItem('aa_itemrail_collapsed')==='1')}catch(e){}</script>";
+            $rail_toggle = "<button type=\"button\" class=\"aa-rail-toggle\" id=\"aa-rail-toggle\""
+                ." title=\"$toggle_label\" aria-label=\"$toggle_label\" aria-expanded=\"true\">"
+                ."<span class=\"aa-rail-toggle-ico\" aria-hidden=\"true\"></span></button>"
+                ."<script>(()=>{const h=document.documentElement,b=document.getElementById('aa-rail-toggle');"
+                ."if(!b)return;const s=()=>b.setAttribute('aria-expanded',h.classList.contains('aa-itemrail-collapsed')?'false':'true');"
+                ."s();b.addEventListener('click',()=>{const c=h.classList.toggle('aa-itemrail-collapsed');"
+                ."try{localStorage.setItem('aa_itemrail_collapsed',c?'1':'0');}catch(e){}s();});})();</script>";
         }
-    } else {
-        $ret .= "\n<div class='aa-ui-main'>";
+
+        $ret .= $rail_prescript . <<<HTML
+                  <div class="{$rail_class}"><div class="leftmenu noprint">{$rail_toggle}{$submenu_code}</div>
+                    <div class='aa-ui-copyright'>{$copyright}</div>
+                  </div>
+                HTML;
     }
 
     $ret .= "\n <div class=\"aa-ui-content\">";

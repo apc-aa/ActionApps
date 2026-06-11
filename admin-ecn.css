@@ -694,7 +694,6 @@ input[type="radio"] {
     box-shadow: 0 0 0 1px var(--clr-text-accent);   /* ring lifts the dot boundary to >=3:1 (WCAG 1.4.11) */
 }
 .aa-status-dot.is-live { background: var(--clr-green); }   /* the one saturated voice: "live" = publish state */
-.aa-item-meta { margin: 0; }
 .aa-id { color: var(--clr-text-accent); font-size: var(--sz-s); font-variant-numeric: tabular-nums; }
 
 /* a flat surface notice used for the empty History / Statistics state (language, not red) */

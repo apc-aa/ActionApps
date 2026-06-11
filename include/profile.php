@@ -70,9 +70,11 @@ function PrintRuleRow($rid, $prop, $col1="", $col2="", $col3="", $col4=""): void
 
 
 /** PrintRule function
- * @param $rule
+ * @param array $rule
+ * @param array $fields          field_id => field name (for field-based rules)
+ * @param array $selector_names  selector code => human label (for UI rules); unknown codes print raw
  */
-function PrintRule($rule, $fields): void
+function PrintRule($rule, $fields, $selector_names = []): void
 {
     global $PROPERTY_TYPES, $SORTORDER_TYPES;
     $INPUT_DEFAULT_TYPES = AA_Components::getClassArray('AA_Generator_');
@@ -114,12 +116,14 @@ function PrintRule($rule, $fields): void
             break;
         case 'ui_manager':
         case 'ui_inputform':
-            PrintRuleRow($rid, $PROPERTY_TYPES[$prop], $rule['selector'], $rule['value']);
+            PrintRuleRow($rid, $PROPERTY_TYPES[$prop], $selector_names[$rule['selector']] ?? safe($rule['selector']), $rule['value']);
             break;
         case 'ui_manager_hide':
         case 'ui_inputform_hide':
+            PrintRuleRow($rid, $PROPERTY_TYPES[$prop], $selector_names[$rule['selector']] ?? safe($rule['selector']));
+            break;
         case 'bookmark':
-            PrintRuleRow($rid, $PROPERTY_TYPES[$prop], $rule['selector']);
+            PrintRuleRow($rid, $PROPERTY_TYPES[$prop], safe($rule['selector']));
             break;
     }
 }
