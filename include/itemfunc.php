@@ -124,30 +124,36 @@ function GetItemSummaryHtml($item, bool $full = false): string
     $hits   = (int)$item->getval('display_count...');
     $now    = time();
 
-    $d    = static fn(int $t): string => $t ? safe(date('j.n.Y', $t)) : '-';        // date only, for the status sentence
-    $dt   = static fn(int $t): string => $t ? safe(date('j.n.Y H:i', $t)) : '-';    // date + time, for Details / meta strip
+    $dt   = static fn(int $t): string => $t ? safe(date('j.n.Y H:i', $t)) : '-';    // date + time for the Details table
     $int  = static fn($v): string => safe(number_format((int)$v, 0, '.', ' '));
     $user = static fn($u): string => trim((string)$u) !== '' ? ' '._m('by %1', [safe(perm_username($u))]) : '';
 
-    // --- Status lede: a one-glance "is it live?" answer, built from whole localized clauses so the
-    //     word order survives translation (Czech/German). The green dot is the only saturated pixel. ---
+    // Slices can switch pending/expired handling off entirely - then publish/expiry dates act as
+    // plain data fields and must not drive the status (the item is live despite a "future" publish
+    // or "past" expiry date). Mirrors the Item Manager menu gating (menu.php appb/appc).
+    $no_pending = $slice && $slice->noPendingBin();
+    $no_expired = $slice && $slice->noExpiredBin();
+
+    // --- Status lede: a one-glance "is it live?" answer. The dates themselves live in the
+    //     Details table below; the green dot is the only saturated pixel. ---
     $is_live = false;
-    if ($status === 1 && $pub > $now) {
+    $hint    = static fn(string $txt): string => ' <span class="tabhlp">'. safe($txt) .'</span>';
+    if ($status === 1 && !$no_pending && $pub > $now) {
         $word = _m('Scheduled');
-        $rest = $pub ? ', '._m('goes live %1.', [$d($pub)]) : '.';
-    } elseif ($status === 1 && $exp && $exp < $now) {
+        $rest = $hint(_m('not yet on the public site'));
+    } elseif ($status === 1 && !$no_expired && $exp && $exp < $now) {
         $word = _m('Expired');
-        $rest = ' '._m('on %1.', [$d($exp)]);
+        $rest = $hint(_m('not on the public site'));
     } elseif ($status === 1) {
         $is_live = true;
         $word = _m('Published');
-        $rest = $pub ? ' '.(($exp && $exp > $now) ? _m('since %1, until %2.', [$d($pub), $d($exp)]) : _m('since %1.', [$d($pub)])) : '.';
+        $rest = '';
     } elseif ($status === 2) {
         $word = _m('Holding bin');
-        $rest = ' <span class="tabhlp">'. safe(_m('not on the public site')) .'</span>';
+        $rest = $hint(_m('not on the public site'));
     } elseif ($status === 3) {
         $word = _m('Trash');
-        $rest = ' <span class="tabhlp">'. safe(_m('not on the public site')) .'</span>';
+        $rest = $hint(_m('not on the public site'));
     } else {
         $word = (string)$status;
         $rest = '';
@@ -157,20 +163,20 @@ function GetItemSummaryHtml($item, bool $full = false): string
     $name = $headline !== '' ? safe($headline)
           : trim(($slice ? safe($slice->getName()) : '').' <span class="aa-id">'. safe($short_id) .'</span>');
 
-    $meta = [];
-    if ($pub)   { $meta[] = _m('Published').' '.$dt($pub); }
-    if ($exp)   { $meta[] = _m('Expires').' '.$dt($exp); }
-    if ($ledit) { $meta[] = _m('Last edited').' '.$dt($ledit).$user($item->getval('edited_by.......')); }
-
     $lede = '<div class="aa-item-lede">'
           . '<h2 class="aa-item-name">'.$name.'</h2>'
           . '<p class="aa-item-status"><span class="aa-status-dot'.($is_live ? ' is-live' : '').'"></span><strong>'. safe($word) .'</strong>'.$rest.'</p>'
-          . ($meta ? '<div class="tabhlp aa-item-meta">'. implode(' | ', $meta) .'</div>' : '')
           . '</div>';
 
     // --- Details: the reference facts, demoted below the lede. Short ID stays for editors (handy for
     //     view templates); the long hex Item ID and the slice's internal id are superadmin-only. ---
+    // expiry set to the "maximum date" sentinel reads as Never; a disabled pending/expired check
+    // greys the date out with a note (the value is kept - it still acts as a plain data field)
+    $exp_val = ($exp >= MAX_TIME_NEVER) ? safe(_m('Never')) : $dt($exp);
+    $unused  = static fn(string $val): string => '<span class="tabhlp">'. $val .' &ndash; '. safe(_m('not used on this site')) .'</span>';
     $rows = [
+        [_m('Published'),   $no_pending ? $unused($dt($pub)) : $dt($pub)],
+        [_m('Expires'),     $no_expired ? $unused($exp_val)  : $exp_val],
         [_m('Created'),     $dt($post). $user($item->getval('posted_by.......'))],
         [_m('Last edited'), $dt($ledit).$user($item->getval('edited_by.......'))],
         [_m('Views'),       $int($hits)],
@@ -348,11 +354,18 @@ function GetItemHistoryBox($item, $item_id, bool $full): string
         $sels  = array_keys($pairs);
         $shown = array_slice($sels, 0, 3);
         $more  = count($sels) - count($shown);
-        // same selector + field-name-hint formatting the Technical details / history pages use
-        $flds  = $shown
-            ? safe(implode(', ', $shown)) . ($more > 0 ? ' <span class="aa-stat-item-sid">+'.(int)$more.'</span>' : '')
-              . Txt::additionalInfo([safe(implode(', ', array_map(static fn($s) => $pairs[$s], $shown)))])
-            : '<span class="aa-stat-zero">&ndash;</span>';
+        $names = array_map(static fn($s) => $pairs[$s], $shown);
+        $more_html = $more > 0 ? ' <span class="aa-stat-item-sid">+'.(int)$more.'</span>' : '';
+        if (!$shown) {
+            $flds = '<span class="aa-stat-zero">&ndash;</span>';
+        } elseif ($full) {
+            // superadmins get the raw field ids with names as the hint (same formatting as the
+            // Technical details / history pages)
+            $flds = safe(implode(', ', $shown)) . $more_html . Txt::additionalInfo([safe(implode(', ', $names))]);
+        } else {
+            // editors see just the friendly field names
+            $flds = safe(implode(', ', $names)) . $more_html;
+        }
         $when  = safe(date('j.n.Y H:i', (int)$c['time']));
         // link the row to its entry on the full history page (anchor emitted by ChangesMonitor::display)
         $when  = $full ? a_href($hist_url.'#aa-ch-'.rawurlencode((string)$cid), $when) : $when;
