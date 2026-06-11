@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace AA\Lang;
 
+use AA\Util\Langs;
+
 /**
  * Reads and writes include/lang/ translation files.
  *
@@ -13,7 +15,10 @@ namespace AA\Lang;
  * format (one `$_m[...] = ...;` assignment per message) is still readable.
  *
  * One-byte-charset variants (cz, sk, …) are GENERATED from their xx-utf8 masters
- * by charset conversion — translators edit only the utf8 files.
+ * by charset conversion — translators edit only the utf8 files. Their non-ASCII
+ * bytes are written as \xNN escapes, so the file itself is pure ASCII and cannot
+ * be corrupted by an editor resaving it in a wrong encoding (which is how the
+ * cz/sk files got broken in SVN r4602).
  */
 class LangFile
 {
@@ -117,10 +122,101 @@ class LangFile
                 // @phpstan-ignore function.impossibleType (the include above fills $_m as its side effect)
                 return is_array($_m) ? $_m : [];
             };
-            return $loader($path);
+            // commented-out unused pairs are invisible to include() but must survive
+            // regenerations (the generator revives them when their message returns)
+            return $loader($path) + self::readCommentedUnused($path);
         } finally {
             restore_error_handler();
         }
+    }
+
+    /**
+     * Parses the commented-out "Unused messages" block of a generated file back
+     * into message => translation pairs (active entries win on conflict).
+     *
+     * @return array<string,string>
+     */
+    private static function readCommentedUnused(string $path): array
+    {
+        return self::parsePairs(self::unusedBlock((string) file_get_contents($path)));
+    }
+
+    /** the "Unused messages" block with the leading `// ` stripped (or '' if absent) */
+    private static function unusedBlock(string $code): string
+    {
+        if (!preg_match('~^// Unused messages.*?$(.*?)^// End of unused messages~ms', $code, $m)) {
+            return '';
+        }
+        return (string) preg_replace('~^// ?~m', '', $m[1]);
+    }
+
+    /**
+     * Reads per-message AI-translation markers — the trailing `// ai …` comments
+     * emitted by write()'s $marks parameter — from active, runtime and
+     * commented-unused pairs alike. The marker text is kept verbatim (so a date
+     * like "ai 2026-06" survives regenerations); deleting the comment in the
+     * file removes the mark permanently.
+     *
+     * @return array<string,string> message => marker text (e.g. 'ai 2026-06')
+     */
+    public static function readMarks(string $path): array
+    {
+        if (!is_file($path)) {
+            return [];
+        }
+        $code = (string) file_get_contents($path);
+        $marks = [];
+        self::parsePairs($code, $marks);                       // active + runtime pairs
+        self::parsePairs(self::unusedBlock($code), $marks);    // commented-out pairs
+        return $marks;
+    }
+
+    /**
+     * Tokenizes `"message" => "translation",` pairs (values may be "." concatenations).
+     * Lines that are not such a pair are ignored.
+     * With $marks, a `// ai …` comment trailing a pair's comma is recorded
+     * there as message => marker text (the AI-translation marker of write()).
+     *
+     * @param array<string,string>|null $marks
+     * @return array<string,string>
+     */
+    private static function parsePairs(string $body, ?array &$marks = null): array
+    {
+        $pairs = [];
+        $key = null;
+        $cur = [];
+        $last_key = null;
+        $last_comma_line = -1;
+        foreach (\PhpToken::tokenize("<?php\n" . $body) as $t) {
+            if ($marks !== null && $last_key !== null && $t->line === $last_comma_line
+                && $t->is(T_COMMENT) && preg_match('~^//\s*(ai\b.*?)\s*$~', $t->text, $m)) {
+                $marks[$last_key] = $m[1];
+                continue;
+            }
+            if ($t->isIgnorable() || $t->is(T_OPEN_TAG)) {
+                continue;
+            }
+            if ($t->is(T_CONSTANT_ENCAPSED_STRING)) {
+                $cur[] = MsgExtractor::decodeStringLiteral($t->text);
+            } elseif ($t->text === '.') {
+                continue;
+            } elseif ($t->is(T_DOUBLE_ARROW)) {
+                $key = implode('', $cur);
+                $cur = [];
+            } elseif ($t->text === ',') {
+                if ($key !== null && $cur) {
+                    $pairs[$key] = implode('', $cur);
+                    $last_key = $key;
+                    $last_comma_line = $t->line;
+                }
+                $key = null;
+                $cur = [];
+            } else {
+                $key = null;   // explanation text or other non-pair content — skip
+                $cur = [];
+            }
+        }
+        return $pairs;
     }
 
     /**
@@ -129,13 +225,26 @@ class LangFile
      * @param string $lang_code     e.g. 'cz-utf8'
      * @param array  $entries       list of ['message' => string, 'translation' => string, 'comments' => string[]]
      * @param array  $unused        message => translation kept from previous file but no longer in sources
+     *                              (written commented-out; revived when the message returns)
      * @param string $derived_from  master lang code when this is a generated 1B variant
+     * @param array  $runtime       message => translation for runtime-translated messages — _mdelayed($var)
+     *                              values listed in misc/mgettext/cli.php $RUNTIME_MESSAGES (written active)
+     * @param array  $marks         message => marker text for AI-produced translations (e.g. 'ai 2026-06');
+     *                              emitted as a trailing `// ai …` comment, read back by readMarks()
      */
-    public function write(string $path, string $lang_code, array $entries, array $unused = [], string $derived_from = ''): void
+    public function write(string $path, string $lang_code, array $entries, array $unused = [], string $derived_from = '', array $runtime = [], array $marks = []): void
     {
-        $out = "<?php\n";
+        $charset = array_key_exists($lang_code, Langs::getNames()) ? strtolower(Langs::getCharset($lang_code)) : 'utf-8';
+        // one-byte files are written as pure ASCII (\xNN escapes) — immune to editors
+        // resaving them in a wrong encoding, which is what corrupted them in r4602
+        $ascii = ($charset !== 'utf-8');
+
+        $out = $ascii ? "<?php\n" : "<?php // -*- coding: utf-8 -*-\n";
         $out .= '// $' . "Id\$\n";   // svn keyword
         $out .= '// Language: ' . strtoupper($lang_code) . "\n";
+        $out .= $ascii
+            ? "// Encoding: pure ASCII in this file; values decode to $charset bytes (\\xNN escapes).\n"
+            : "// Encoding: utf-8 — never resave this file in another encoding.\n";
         $out .= "// This file is GENERATED by misc/mgettext/cli.php — do not edit its structure.\n";
         if ($derived_from !== '') {
             $out .= "// DERIVED from the {$derived_from} files by charset conversion — DO NOT EDIT,\n";
@@ -150,10 +259,21 @@ class LangFile
         }
         $out .= "\nreturn [\n";
 
+        if ($runtime) {
+            $out .= "// Runtime-translated messages — used via _mdelayed(\$variable), so they never appear\n";
+            $out .= "// in _m('...') literals; their domains are listed in misc/mgettext/cli.php \$RUNTIME_MESSAGES.\n";
+            foreach ($runtime as $message => $translation) {
+                $out .= self::pair((string) $message, (string) $translation, $ascii, $marks[$message] ?? null);
+            }
+            $out .= "// End of runtime-translated messages\n\n";
+        }
         if ($unused) {
-            $out .= "// Unused messages\n";
+            // commented out: not loaded at runtime, but read() parses the block back,
+            // so the generator revives a translation when its message returns
+            $out .= "// Unused messages — no longer found in the sources; kept commented for reference.\n";
             foreach ($unused as $message => $translation) {
-                $out .= self::pair((string) $message, (string) $translation);
+                $pair = rtrim(self::pair((string) $message, (string) $translation, $ascii, $marks[$message] ?? null), "\n");
+                $out .= '// ' . str_replace("\n", "\n// ", $pair) . "\n";
             }
             $out .= "// End of unused messages\n";
         }
@@ -163,9 +283,16 @@ class LangFile
                 // a newline inside a comment would escape the // and inject code into the included file
                 $out .= '// ' . str_replace(["\r", "\n"], ' ', (string) $comment) . "\n";
             }
-            $out .= self::pair((string) $entry['message'], (string) $entry['translation']);
+            $out .= self::pair((string) $entry['message'], (string) $entry['translation'], $ascii, $marks[$entry['message']] ?? null);
         }
         $out .= "];\n";
+
+        if ($ascii) {
+            $out = str_replace('—', '-', $out);   // em dashes in the fixed comment texts
+            if (preg_match('/[\x80-\xFF]/', $out)) {
+                throw new \RuntimeException("$path: non-ASCII byte would leak into a one-byte lang file");
+            }
+        }
 
         if (file_put_contents($path, $out) === false) {
             throw new \RuntimeException("cannot write $path");
@@ -215,25 +342,36 @@ class LangFile
         );
     }
 
-    /** one "message" => "translation", pair (multiline values use constant concatenation) */
-    private static function pair(string $message, string $translation): string
+    /** one "message" => "translation", pair (multiline values use constant concatenation),
+     *  optionally tagged with a trailing AI-translation marker comment */
+    private static function pair(string $message, string $translation, bool $ascii = false, ?string $mark = null): string
     {
-        $key = self::phpStringLiteral($message);
-        $val = self::phpStringLiteral($translation);
+        $key = self::phpStringLiteral($message, $ascii);
+        $val = self::phpStringLiteral($translation, $ascii);
+        // a newline in the marker would escape the trailing comment and inject code
+        $end = $mark === null ? ",\n" : ', // ' . str_replace(["\r", "\n"], ' ', $mark) . "\n";
         if (str_contains($message, "\n") || str_contains($translation, "\n")) {
-            return "$key\n => $val,\n";
+            return "$key\n => $val$end";
         }
-        return "$key => $val,\n";
+        return "$key => $val$end";
     }
 
     /**
      * Double-quoted PHP string literal; embedded newlines become "\n" with the
      * remainder continued via constant "." concatenation (compile-time folded,
      * so the surrounding array stays an OPcache-shared constant).
+     * With $ascii, bytes >0x7F become \xNN escapes (encoding-proof one-byte files).
      */
-    public static function phpStringLiteral(string $str): string
+    public static function phpStringLiteral(string $str, bool $ascii = false): string
     {
         $str = str_replace(['\\', '"', '$'], ['\\\\', '\\"', '\\$'], $str);
+        if ($ascii) {
+            $str = preg_replace_callback(
+                '/[\x80-\xFF]/',
+                static fn(array $m): string => sprintf('\x%02X', ord($m[0])),
+                $str,
+            );
+        }
         $parts = explode("\n", $str);
         $last = array_pop($parts);
         $lit = '';
