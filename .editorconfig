@@ -1,5 +1,9 @@
 root = true
 
+# NOTE: the one-byte include/lang/ files (cz_*, sk_*, ...) are deliberately generated
+# as pure ASCII (\xNN escapes), so "charset = utf-8" cannot corrupt them. Translation
+# masters (xx-utf8_*) are real UTF-8. See include/lang/readme.html.
+
 [*]
 charset = utf-8
 end_of_line = lf

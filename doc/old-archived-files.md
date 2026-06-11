@@ -80,3 +80,11 @@ _No longer maintained. Removed 2022-02-25 - honzam (see older apc-aa branches to
   .../DB_OCI8.php
   PHPLib based database drivers for different databases - now replaced by PDO, which suppoerts prepared statements, transactions...
   _No longer maintained. Removed 2026-03-11 - honzam (see older apc-aa branches to get the code)_     
+
+/misc/**mgettext**
+  .../index.php                    - mgettext web UI (2003) for extracting _m() messages and generating lang files
+  .../xmgettext.php                - extraction engine of the web UI
+  .../translate.php                - web translation form
+  .../createlogs.php               - helper of the web UI
+  Replaced by misc/mgettext/cli.php + src/Lang/MsgExtractor.php + src/Lang/LangFile.php (UTF-8 masters, derived one-byte variants, "// ai" markers);
+  _No longer maintained. Removed 2026-06-10 - honzam (see older apc-aa branches to get the code)_
