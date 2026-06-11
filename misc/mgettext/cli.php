@@ -1,8 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 die(); // uncomment in case you want to run it
 
-declare(strict_types=1);
 
 /**
  * Mini-gettext maintenance CLI — extracts _m() messages from sources and
