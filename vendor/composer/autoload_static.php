@@ -12,6 +12,10 @@ class ComposerStaticInit43e15006db6c3041e7b8c7c57cf04d54
     );
 
     public static $prefixLengthsPsr4 = array (
+        'M' =>
+        array (
+            'MissCache\\' => 10,
+        ),
         'J' =>
         array (
             'Jfcherng\\Utility\\' => 17,
@@ -34,6 +38,10 @@ class ComposerStaticInit43e15006db6c3041e7b8c7c57cf04d54
     );
 
     public static $prefixDirsPsr4 = array (
+        'MissCache\\' =>
+        array (
+            0 => __DIR__ . '/..' . '/honzito/misscache/src',
+        ),
         'Jfcherng\\Utility\\' =>
         array (
             0 => __DIR__ . '/..' . '/jfcherng/php-mb-string/src',
@@ -128,6 +136,8 @@ class ComposerStaticInit43e15006db6c3041e7b8c7c57cf04d54
         'AA\\IO\\LastEditList' => __DIR__ . '/../..' . '/src/IO/Feed.php',
         'AA\\IO\\OnPageChanger' => __DIR__ . '/../..' . '/src/IO/OnPageChanger.php',
         'AA\\IO\\Saver' => __DIR__ . '/../..' . '/src/IO/Saver.php',
+        'AA\\Lang\\LangFile' => __DIR__ . '/../..' . '/src/Lang/LangFile.php',
+        'AA\\Lang\\MsgExtractor' => __DIR__ . '/../..' . '/src/Lang/MsgExtractor.php',
         'AA\\Later\\ComputedfieldsItemUpdater' => __DIR__ . '/../..' . '/src/Later/ComputedfieldsItemUpdater.php',
         'AA\\Later\\ComputedfieldsUpdater' => __DIR__ . '/../..' . '/src/Later/ComputedfieldsUpdater.php',
         'AA\\Later\\CronFallback' => __DIR__ . '/../..' . '/src/Later/CronFallback.php',
@@ -137,6 +147,7 @@ class ComposerStaticInit43e15006db6c3041e7b8c7c57cf04d54
         'AA\\Later\\LaterInterface' => __DIR__ . '/../..' . '/src/Later/LaterInterface.php',
         'AA\\Later\\LogCleanup' => __DIR__ . '/../..' . '/src/Later/LogCleanup.php',
         'AA\\Later\\LogSystemstatus' => __DIR__ . '/../..' . '/src/Later/LogSystemstatus.php',
+        'AA\\Later\\MissCachePurge' => __DIR__ . '/../..' . '/src/Later/MissCachePurge.php',
         'AA\\Later\\PagecachePurge' => __DIR__ . '/../..' . '/src/Later/PagecachePurge.php',
         'AA\\Later\\PlannedtaskSchedule' => __DIR__ . '/../..' . '/src/Later/PlannedtaskSchedule.php',
         'AA\\Later\\Post2shtmlCleanup' => __DIR__ . '/../..' . '/src/Later/Post2shtmlCleanup.php',
@@ -263,7 +274,6 @@ class ComposerStaticInit43e15006db6c3041e7b8c7c57cf04d54
         'AA\\Optimize\\FixPagecache' => __DIR__ . '/../..' . '/src/Optimize/FixPagecache.php',
         'AA\\Optimize\\GenerateJslibsArray' => __DIR__ . '/../..' . '/src/Optimize/GenerateJslibsArray.php',
         'AA\\Optimize\\GenerateMetabase' => __DIR__ . '/../..' . '/src/Optimize/GenerateMetabase.php',
-        'AA\\Optimize\\GenerateMetabaseRow' => __DIR__ . '/../..' . '/src/Optimize/GenerateMetabaseRow.php',
         'AA\\Optimize\\ItemDiscussion' => __DIR__ . '/../..' . '/src/Optimize/ItemDiscussion.php',
         'AA\\Optimize\\LdapPermsToSql' => __DIR__ . '/../..' . '/src/Optimize/LdapPermsToSql.php',
         'AA\\Optimize\\MultivalueDuplicates' => __DIR__ . '/../..' . '/src/Optimize/MultivalueDuplicates.php',
@@ -938,6 +948,11 @@ class ComposerStaticInit43e15006db6c3041e7b8c7c57cf04d54
         'MLXGetText' => __DIR__ . '/../..' . '/include/mlx.php',
         'MLXView' => __DIR__ . '/../..' . '/include/mlx.php',
         'Mail_mimePart' => __DIR__ . '/../..' . '/include/htmlMimeMail/mimePart.php',
+        'MissCache\\MissCache' => __DIR__ . '/..' . '/honzito/misscache/src/MissCache.php',
+        'MissCache\\Plugins\\PhpThumbPlugin' => __DIR__ . '/..' . '/honzito/misscache/src/Plugins/PhpThumbPlugin.php',
+        'MissCache\\Util\\CachePurger' => __DIR__ . '/..' . '/honzito/misscache/src/Util/CachePurger.php',
+        'MissCache\\Util\\CacheRequest' => __DIR__ . '/..' . '/honzito/misscache/src/Util/CacheRequest.php',
+        'MissCache\\Util\\PluginInterface' => __DIR__ . '/..' . '/honzito/misscache/src/Util/PluginInterface.php',
         'Mobile_Detect' => __DIR__ . '/..' . '/mobiledetect/mobiledetectlib/Mobile_Detect.php',
         'Net_SMTP' => __DIR__ . '/..' . '/pear/net_smtp/Net/SMTP.php',
         'Net_Socket' => __DIR__ . '/..' . '/pear/net_socket/Net/Socket.php',

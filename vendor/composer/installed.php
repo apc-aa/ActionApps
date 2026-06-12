@@ -29,9 +29,9 @@
             'dev_requirement' => false,
         ),
         'firebase/php-jwt' => array(
-            'pretty_version' => 'v7.0.5',
-            'version' => '7.0.5.0',
-            'reference' => '47ad26bab5e7c70ae8a6f08ed25ff83631121380',
+            'pretty_version' => 'v7.1.0',
+            'version' => '7.1.0.0',
+            'reference' => 'b374a5d1a4f1f67fadc2165cdb284645945e2fc0',
             'type' => 'library',
             'install_path' => __DIR__ . '/../firebase/php-jwt',
             'aliases' => array(),
@@ -61,6 +61,15 @@
             'aliases' => array(
                 0 => '2.x-dev',
             ),
+            'dev_requirement' => false,
+        ),
+        'honzito/misscache' => array(
+            'pretty_version' => 'dev-main',
+            'version' => 'dev-main',
+            'reference' => 'f7ec070af9d882839a41e1925b3c736c2172aca7',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../honzito/misscache',
+            'aliases' => array(),
             'dev_requirement' => false,
         ),
         'honzito/phpthumb' => array(
