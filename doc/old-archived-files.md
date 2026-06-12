@@ -88,3 +88,9 @@ _No longer maintained. Removed 2022-02-25 - honzam (see older apc-aa branches to
   .../createlogs.php               - helper of the web UI
   Replaced by misc/mgettext/cli.php + src/Lang/MsgExtractor.php + src/Lang/LangFile.php (UTF-8 masters, derived one-byte variants, "// ai" markers);
   _No longer maintained. Removed 2026-06-10 - honzam (see older apc-aa branches to get the code)_
+
+/include/**lang**
+  .../ru-utf8_*_lang.php (7 files)  - Russian UTF-8 language masters (alerts, links, news, output, param_wizard, polls, site)
+  .../ru_*_lang.php (7 files)       - Russian windows-1251 one-byte variants
+  Russian UI translation dropped (was 99% untranslated, no known install uses it); 'ru'/'ru-utf8' removed from AA\Util\Langs registry and AA\Lang\LangFile::HEADERS. Ukrainian (uk-utf8), Portuguese (pt-utf8) and Polish (pl-utf8) masters added instead.
+  _No longer maintained. Removed 2026-06-12 - honzam (see older apc-aa branches to get the code)_

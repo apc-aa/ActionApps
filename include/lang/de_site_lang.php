@@ -11,78 +11,78 @@ $mgettext_lang = "de";
 return [
 
 // modules/site/aliases.php, row 36
-"You do not have permissions to manage tasks" => "",
+"You do not have permissions to manage tasks" => "Sie haben keine Berechtigung, Aufgaben zu verwalten", // ai 2026-06
 
 // modules/site/aliases.php, row 41
-"Manage %1" => "",
+"Manage %1" => "%1 verwalten", // ai 2026-06
 
 // modules/site/index.php, row 57
-"Site module not found" => "",
+"Site module not found" => "Site-Modul nicht gefunden", // ai 2026-06
 
 // modules/site/index.php, row 63
 "You do not have permission to edit items in this slice" => "Sie haben keine Berechtigung, Artikel in dieser Rubrik zu bearbeiten.",
 
 // modules/site/index.php, row 68
-"Starting spot not found" => "",
+"Starting spot not found" => "Start-Spot nicht gefunden", // ai 2026-06
 
 // modules/site/index.php, row 149
-"Editor window - site code manager" => "",
+"Editor window - site code manager" => "Editorfenster - Site-Code-Verwaltung", // ai 2026-06
 
 // modules/site/index.php, row 169
-"Add&nbsp;spot" => "",
+"Add&nbsp;spot" => "Spot&nbsp;hinzuf\xFCgen", // ai 2026-06
 
 // modules/site/index.php, row 170
-"Add&nbsp;choice" => "",
+"Add&nbsp;choice" => "Option&nbsp;hinzuf\xFCgen", // ai 2026-06
 
 // modules/site/index.php, row 173
-"Move&nbsp;up" => "",
+"Move&nbsp;up" => "Nach&nbsp;oben", // ai 2026-06
 
 // modules/site/index.php, row 174
-"Move&nbsp;down" => "",
+"Move&nbsp;down" => "Nach&nbsp;unten", // ai 2026-06
 
 // modules/site/index.php, row 177
-"Move&nbsp;left" => "",
+"Move&nbsp;left" => "Nach&nbsp;links", // ai 2026-06
 
 // modules/site/index.php, row 178
-"Move&nbsp;right" => "",
+"Move&nbsp;right" => "Nach&nbsp;rechts", // ai 2026-06
 
 // modules/site/index.php, row 181
 // modules/site/sitetree.php, row 785, 806
 "Delete" => "L\xF6schen",
 
 // modules/site/index.php, row 181
-"Are you sure you want to delete the spot?" => "",
+"Are you sure you want to delete the spot?" => "M\xF6chten Sie den Spot wirklich l\xF6schen?", // ai 2026-06
 
 // modules/site/index.php, row 184
-"Enable" => "",
+"Enable" => "Aktivieren", // ai 2026-06
 
 // modules/site/index.php, row 185
-"Disable" => "",
+"Disable" => "Deaktivieren", // ai 2026-06
 
 // modules/site/index.php, row 206
-"Possible system requires - &lcub;require:...&rcub; or &lcub;require:[\"...\",\"...\"]&rcub;" => "",
+"Possible system requires - &lcub;require:...&rcub; or &lcub;require:[\"...\",\"...\"]&rcub;" => "M\xF6gliche System-Requires - &lcub;require:...&rcub; oder &lcub;require:[\"...\",\"...\"]&rcub;", // ai 2026-06
 
 // modules/site/menu.php, row 46
 "View site" => "Vorschau",
 
 // modules/site/menu.php, row 53
 // modules/site/modedit.php, row 270
-"Site" => "",
+"Site" => "Website", // ai 2026-06
 
 // modules/site/menu.php, row 78
-"Module Settings" => "",
+"Module Settings" => "Modul-Einstellungen", // ai 2026-06
 
 // modules/site/menu.php, row 79
-"Code Manager" => "",
+"Code Manager" => "Code-Verwaltung", // ai 2026-06
 
 // modules/site/menu.php, row 80
-"Aliases" => "",
+"Aliases" => "Aliase", // ai 2026-06
 
 // modules/site/moddelete.php, row 45
-"You don't have permissions to delete a site." => "",
+"You don't have permissions to delete a site." => "Sie haben keine Berechtigung, eine Site zu l\xF6schen.", // ai 2026-06
 
 // modules/site/moddelete.php, row 49
-"Module not found." => "",
+"Module not found." => "Modul nicht gefunden.", // ai 2026-06
 
 // modules/site/moddelete.php, row 69
 "Slice successfully deleted, tables are optimized" => "Rubrik erfolgreich gel\xF6scht.",
@@ -94,50 +94,50 @@ return [
 "You do not have permissions to edit this slice" => "Sie haben keine Berechtigung zum Bearbeiten dieser Rubrik",
 
 // modules/site/modedit.php, row 132
-"State file" => "",
+"State file" => "Statusdatei", // ai 2026-06
 
 // modules/site/modedit.php, row 133, 278
 "Router" => "",
 
 // modules/site/modedit.php, row 134, 292
-"Uses modules" => "",
+"Uses modules" => "Verwendet Module", // ai 2026-06
 
 // modules/site/modedit.php, row 257
-"Add Site" => "",
+"Add Site" => "Site hinzuf\xFCgen", // ai 2026-06
 
 // modules/site/modedit.php, row 257
-"Edit Site" => "",
+"Edit Site" => "Site bearbeiten", // ai 2026-06
 
 // modules/site/modedit.php, row 277
 "Used Language File" => "Sprach-Datei",
 
 // modules/site/modedit.php, row 278
-"Use AA_Router_Seo. Otherwise you will use old sitemodule approach with 'control file', which we can't recommend." => "",
+"Use AA_Router_Seo. Otherwise you will use old sitemodule approach with 'control file', which we can't recommend." => "Verwenden Sie AA_Router_Seo. Andernfalls nutzen Sie den alten Site-Modul-Ansatz mit 'Control file', den wir nicht empfehlen k\xF6nnen.", // ai 2026-06
 
 // modules/site/modedit.php, row 279
-"Home or State file" => "",
+"Home or State file" => "Startseite oder Statusdatei", // ai 2026-06
 
 // modules/site/modedit.php, row 279
-"For AA_Router_Seo fill the <b>default url</b> (home) - like <em>/en/home</em> or leave it empty<br><br>For older sites without AA_Router_Seo fill in the name of <b>Site control file</b> - will be placed in /modules/site/sites/ directory. The name you specify will be prefixed by 'site_' prefix, so if you for example name the file as 'apc.php', the site control file will be /modules/site/sites/site_apc.php." => "",
+"For AA_Router_Seo fill the <b>default url</b> (home) - like <em>/en/home</em> or leave it empty<br><br>For older sites without AA_Router_Seo fill in the name of <b>Site control file</b> - will be placed in /modules/site/sites/ directory. The name you specify will be prefixed by 'site_' prefix, so if you for example name the file as 'apc.php', the site control file will be /modules/site/sites/site_apc.php." => "F\xFCr AA_Router_Seo geben Sie die <b>Standard-URL</b> (Startseite) an - z.B. <em>/en/home</em> - oder lassen Sie das Feld leer<br><br>F\xFCr \xE4ltere Sites ohne AA_Router_Seo geben Sie den Namen der <b>Site-Steuerdatei</b> an - sie wird im Verzeichnis /modules/site/sites/ abgelegt. Dem angegebenen Namen wird das Pr\xE4fix 'site_' vorangestellt; wenn Sie die Datei also z.B. 'apc.php' nennen, lautet die Site-Steuerdatei /modules/site/sites/site_apc.php.", // ai 2026-06
 
 // modules/site/modedit.php, row 294
-"Additional setting" => "",
+"Additional setting" => "Zus\xE4tzliche Einstellung", // ai 2026-06
 
 // modules/site/sitetree.php, row 782
-"Spot&nbsp;variables" => "",
+"Spot&nbsp;variables" => "Spot-Variablen", // ai 2026-06
 
 // modules/site/sitetree.php, row 788, 817
 "Add" => "Hinzuf\xFCgen",
 
 // modules/site/sitetree.php, row 796
-"Spot&nbsp;conditions" => "",
+"Spot&nbsp;conditions" => "Spot-Bedingungen", // ai 2026-06
 
 // modules/site/sitetree.php, row 805
-"Warning: the condition starts or ends with whitespace character. Please check, if it is OK in your expression." => "",
+"Warning: the condition starts or ends with whitespace character. Please check, if it is OK in your expression." => "Warnung: Die Bedingung beginnt oder endet mit einem Leerzeichen. Bitte pr\xFCfen Sie, ob das in Ihrem Ausdruck beabsichtigt ist.", // ai 2026-06
 
 // modules/site/sitetree.php, row 812
-"contains" => "",
+"contains" => "enth\xE4lt", // ai 2026-06
 
 // modules/site/sitetree.php, row 813
-"Regular Expression" => "",
+"Regular Expression" => "Regul\xE4rer Ausdruck", // ai 2026-06
 ];

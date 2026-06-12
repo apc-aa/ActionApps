@@ -70,10 +70,10 @@ return [
 "slice wizard welcome" => "Dobro došli na čarobnjak stranica",
 
 // modules/alerts/alerts_sending.php, row 421
-"user template" => "",
+"user template" => "predložak korisnika", // ai 2026-06
 
 // modules/alerts/alerts_sending.php, row 422
-"password change" => "",
+"password change" => "promjena lozinke", // ai 2026-06
 
 // modules/alerts/alerts_sending.php, row 423
 "other" => "Drugi",
@@ -124,16 +124,16 @@ return [
 "My email" => "Moja e-mail adresa",
 
 // modules/alerts/alerts_sending.php, row 465
-"Aliases for User Templates (you can use also all aliases of the user)" => "",
+"Aliases for User Templates (you can use also all aliases of the user)" => "Aliasi za predloške korisnika (možete koristiti i sve aliase korisnika)", // ai 2026-06
 
 // modules/alerts/alerts_sending.php, row 473
-"Aliases for Password Change email (you can use also all aliases of the user)" => "",
+"Aliases for Password Change email (you can use also all aliases of the user)" => "Aliasi za e-mail promjene lozinke (možete koristiti i sve aliase korisnika)", // ai 2026-06
 
 // modules/alerts/alerts_sending.php, row 475
-"HTML link to the password change page for current user" => "",
+"HTML link to the password change page for current user" => "HTML poveznica na stranicu za promjenu lozinke trenutnog korisnika", // ai 2026-06
 
 // modules/alerts/alerts_sending.php, row 476
-"URL parameter used for password change link in _#PWD_LINK (you can use it, if you want to use your own url for it)" => "",
+"URL parameter used for password change link in _#PWD_LINK (you can use it, if you want to use your own url for it)" => "URL parametar koji se koristi za poveznicu promjene lozinke u _#PWD_LINK (možete ga koristiti ako želite vlastiti url)", // ai 2026-06
 
 // modules/alerts/cf_common.php, row 41
 "Language" => "Jezik",
@@ -196,7 +196,7 @@ return [
 "You do not have permissions to add slice" => "Nemate dozvolu za dodati stranicu",
 
 // modules/alerts/send_emails.php, row 55
-"Send now an example alert email to email" => "",
+"Send now an example alert email to email" => "Pošaljite sada probni e-mail upozorenja na e-mail adresu", // ai 2026-06
 
 // modules/alerts/send_emails.php, row 65, 76
 "as if" => "kao ako",
@@ -205,10 +205,10 @@ return [
 "Go!" => "Krenite!",
 
 // modules/alerts/send_emails.php, row 74
-"Send now an example alert email to Reader" => "",
+"Send now an example alert email to Reader" => "Pošaljite sada probni e-mail upozorenja čitatelju", // ai 2026-06
 
 // modules/alerts/send_emails.php, row 75
-"Reader" => "",
+"Reader" => "Čitatelj", // ai 2026-06
 
 // modules/alerts/send_emails.php, row 84
 "Send alerts" => "Pošaljite upozorenja",
@@ -234,7 +234,8 @@ return [
 // modules/alerts/send_emails.php, row 140
 "Define selections in slices from which you want to send Alerts,\n"
    ."        in views of type Alerts Selection Set"
- => "",
+ => "Definirajte odabire na stranicama s kojih želite slati upozorenja,\n"
+   ."        u pogledima tipa Alerts Selection Set", // ai 2026-06
 
 // modules/alerts/synchro.php, row 63
 "Synchronization with Reader Management Slice" => "Sinkronizacija sa stranicom za uređivanje podataka o čitateljima/icama",
@@ -365,13 +366,13 @@ return [
 "weekly" => "tjedno",
 
 // modules/alerts/util.php, row 61
-"twoweeks" => "",
+"twoweeks" => "svaka dva tjedna", // ai 2026-06
 
 // modules/alerts/util.php, row 62
 "monthly" => "mjesečno",
 
 // modules/alerts/util.php, row 63
-"irregular" => "",
+"irregular" => "neredovito", // ai 2026-06
 
 // modules/alerts/util.php, row 70
 "Active" => "Aktivno",

@@ -14,133 +14,133 @@ setlocale(LC_NUMERIC, 'en_US');            // keep float format with dot (see AA
 return [
 
 // modules/site/aliases.php, row 36
-"You do not have permissions to manage tasks" => "",
+"You do not have permissions to manage tasks" => "Nincs jogosultsága a feladatok kezeléséhez", // ai 2026-06
 
 // modules/site/aliases.php, row 41
-"Manage %1" => "",
+"Manage %1" => "%1 kezelése", // ai 2026-06
 
 // modules/site/index.php, row 57
-"Site module not found" => "",
+"Site module not found" => "A Site modul nem található", // ai 2026-06
 
 // modules/site/index.php, row 63
-"You do not have permission to edit items in this slice" => "",
+"You do not have permission to edit items in this slice" => "Nincs jogosultsága a cikkek szerkesztéséhez ebben a rovatban", // ai 2026-06
 
 // modules/site/index.php, row 68
-"Starting spot not found" => "",
+"Starting spot not found" => "A kezdő spot nem található", // ai 2026-06
 
 // modules/site/index.php, row 149
-"Editor window - site code manager" => "",
+"Editor window - site code manager" => "Szerkesztőablak - webhelykód-kezelő", // ai 2026-06
 
 // modules/site/index.php, row 169
-"Add&nbsp;spot" => "",
+"Add&nbsp;spot" => "Spot&nbsp;hozzáadása", // ai 2026-06
 
 // modules/site/index.php, row 170
-"Add&nbsp;choice" => "",
+"Add&nbsp;choice" => "Választás&nbsp;hozzáadása", // ai 2026-06
 
 // modules/site/index.php, row 173
-"Move&nbsp;up" => "",
+"Move&nbsp;up" => "Mozgatás&nbsp;fel", // ai 2026-06
 
 // modules/site/index.php, row 174
-"Move&nbsp;down" => "",
+"Move&nbsp;down" => "Mozgatás&nbsp;le", // ai 2026-06
 
 // modules/site/index.php, row 177
-"Move&nbsp;left" => "",
+"Move&nbsp;left" => "Mozgatás&nbsp;balra", // ai 2026-06
 
 // modules/site/index.php, row 178
-"Move&nbsp;right" => "",
+"Move&nbsp;right" => "Mozgatás&nbsp;jobbra", // ai 2026-06
 
 // modules/site/index.php, row 181
 // modules/site/sitetree.php, row 785, 806
-"Delete" => "",
+"Delete" => "Törlés", // ai 2026-06
 
 // modules/site/index.php, row 181
-"Are you sure you want to delete the spot?" => "",
+"Are you sure you want to delete the spot?" => "Biztosan törölni szeretné a spotot?", // ai 2026-06
 
 // modules/site/index.php, row 184
-"Enable" => "",
+"Enable" => "Engedélyezés", // ai 2026-06
 
 // modules/site/index.php, row 185
-"Disable" => "",
+"Disable" => "Letiltás", // ai 2026-06
 
 // modules/site/index.php, row 206
-"Possible system requires - &lcub;require:...&rcub; or &lcub;require:[\"...\",\"...\"]&rcub;" => "",
+"Possible system requires - &lcub;require:...&rcub; or &lcub;require:[\"...\",\"...\"]&rcub;" => "Lehetséges rendszer require-ok - &lcub;require:...&rcub; vagy &lcub;require:[\"...\",\"...\"]&rcub;", // ai 2026-06
 
 // modules/site/menu.php, row 46
-"View site" => "",
+"View site" => "Webhely megtekintése", // ai 2026-06
 
 // modules/site/menu.php, row 53
 // modules/site/modedit.php, row 270
-"Site" => "",
+"Site" => "Webhely", // ai 2026-06
 
 // modules/site/menu.php, row 78
-"Module Settings" => "",
+"Module Settings" => "Modulbeállítások", // ai 2026-06
 
 // modules/site/menu.php, row 79
-"Code Manager" => "",
+"Code Manager" => "Kódkezelő", // ai 2026-06
 
 // modules/site/menu.php, row 80
-"Aliases" => "",
+"Aliases" => "Aliasok", // ai 2026-06
 
 // modules/site/moddelete.php, row 45
-"You don't have permissions to delete a site." => "",
+"You don't have permissions to delete a site." => "Nincs jogosultsága webhely törléséhez.", // ai 2026-06
 
 // modules/site/moddelete.php, row 49
-"Module not found." => "",
+"Module not found." => "A modul nem található.", // ai 2026-06
 
 // modules/site/moddelete.php, row 69
-"Slice successfully deleted, tables are optimized" => "",
+"Slice successfully deleted, tables are optimized" => "A rovat sikeresen törölve, a táblák optimalizálva", // ai 2026-06
 
 // modules/site/modedit.php, row 104
-"You do not have permissions to add slice" => "",
+"You do not have permissions to add slice" => "Nincs jogosultsága rovat hozzáadásához", // ai 2026-06
 
 // modules/site/modedit.php, row 109
-"You do not have permissions to edit this slice" => "",
+"You do not have permissions to edit this slice" => "Nincs jogosultsága szerkeszteni ezt a rovatot", // ai 2026-06
 
 // modules/site/modedit.php, row 132
-"State file" => "",
+"State file" => "Állapotfájl", // ai 2026-06
 
 // modules/site/modedit.php, row 133, 278
 "Router" => "",
 
 // modules/site/modedit.php, row 134, 292
-"Uses modules" => "",
+"Uses modules" => "Használt modulok", // ai 2026-06
 
 // modules/site/modedit.php, row 257
-"Add Site" => "",
+"Add Site" => "Webhely hozzáadása", // ai 2026-06
 
 // modules/site/modedit.php, row 257
-"Edit Site" => "",
+"Edit Site" => "Webhely szerkesztése", // ai 2026-06
 
 // modules/site/modedit.php, row 277
-"Used Language File" => "",
+"Used Language File" => "Használt nyelvi fájl", // ai 2026-06
 
 // modules/site/modedit.php, row 278
-"Use AA_Router_Seo. Otherwise you will use old sitemodule approach with 'control file', which we can't recommend." => "",
+"Use AA_Router_Seo. Otherwise you will use old sitemodule approach with 'control file', which we can't recommend." => "Használja az AA_Router_Seo-t. Ellenkező esetben a site modul régi, 'vezérlőfájlos' megközelítését fogja használni, amit nem ajánlunk.", // ai 2026-06
 
 // modules/site/modedit.php, row 279
-"Home or State file" => "",
+"Home or State file" => "Kezdőlap vagy állapotfájl", // ai 2026-06
 
 // modules/site/modedit.php, row 279
-"For AA_Router_Seo fill the <b>default url</b> (home) - like <em>/en/home</em> or leave it empty<br><br>For older sites without AA_Router_Seo fill in the name of <b>Site control file</b> - will be placed in /modules/site/sites/ directory. The name you specify will be prefixed by 'site_' prefix, so if you for example name the file as 'apc.php', the site control file will be /modules/site/sites/site_apc.php." => "",
+"For AA_Router_Seo fill the <b>default url</b> (home) - like <em>/en/home</em> or leave it empty<br><br>For older sites without AA_Router_Seo fill in the name of <b>Site control file</b> - will be placed in /modules/site/sites/ directory. The name you specify will be prefixed by 'site_' prefix, so if you for example name the file as 'apc.php', the site control file will be /modules/site/sites/site_apc.php." => "Az AA_Router_Seo használatához adja meg az <b>alapértelmezett url</b>-t (kezdőlapot) - pl. <em>/en/home</em> -, vagy hagyja üresen<br><br>Az AA_Router_Seo nélküli régebbi webhelyeknél adja meg a <b>webhely vezérlőfájljának</b> nevét - ez a /modules/site/sites/ könyvtárba kerül. A megadott név 'site_' előtagot kap, így ha a fájlt például 'apc.php'-nak nevezi el, a webhely vezérlőfájlja /modules/site/sites/site_apc.php lesz.", // ai 2026-06
 
 // modules/site/modedit.php, row 294
-"Additional setting" => "",
+"Additional setting" => "További beállítások", // ai 2026-06
 
 // modules/site/sitetree.php, row 782
-"Spot&nbsp;variables" => "",
+"Spot&nbsp;variables" => "Spot&nbsp;változói", // ai 2026-06
 
 // modules/site/sitetree.php, row 788, 817
-"Add" => "",
+"Add" => "Hozzáadás", // ai 2026-06
 
 // modules/site/sitetree.php, row 796
-"Spot&nbsp;conditions" => "",
+"Spot&nbsp;conditions" => "Spot&nbsp;feltételei", // ai 2026-06
 
 // modules/site/sitetree.php, row 805
-"Warning: the condition starts or ends with whitespace character. Please check, if it is OK in your expression." => "",
+"Warning: the condition starts or ends with whitespace character. Please check, if it is OK in your expression." => "Figyelem: a feltétel szóközzel (üres karakterrel) kezdődik vagy végződik. Kérjük, ellenőrizze, hogy ez rendben van-e a kifejezésében.", // ai 2026-06
 
 // modules/site/sitetree.php, row 812
-"contains" => "",
+"contains" => "tartalmazza", // ai 2026-06
 
 // modules/site/sitetree.php, row 813
-"Regular Expression" => "",
+"Regular Expression" => "Reguláris kifejezés", // ai 2026-06
 ];

@@ -14,13 +14,13 @@ return [
 "Condition" => "",
 
 // include/searchbar.class.php, row 52
-"Readonly" => "",
+"Readonly" => "Lecture seule", // ai 2026-06
 
 // include/searchbar.class.php, row 142
-"Search row" => "",
+"Search row" => "Ligne de recherche", // ai 2026-06
 
 // include/searchbar.class.php, row 143
-"Order row" => "",
+"Order row" => "Ligne de tri", // ai 2026-06
 
 // include/searchbar.class.php, row 533, 534, 570
 "Search" => "Rechercher",
@@ -50,16 +50,16 @@ return [
 "Descending" => "D\xEF\xBF\xBDcroissant",
 
 // include/searchbar.class.php, row 613
-"Filter" => "",
+"Filter" => "Filtre", // ai 2026-06
 
 // include/searchbar.class.php, row 662
-"Advanced search" => "",
+"Advanced search" => "Recherche avanc\xE9e", // ai 2026-06
 
 // include/searchbar.class.php, row 719
-"Save" => "",
+"Save" => "Enregistrer", // ai 2026-06
 
 // include/searchbar.class.php, row 720
-"Refine" => "",
+"Refine" => "Affiner", // ai 2026-06
 
 // include/searchbar.class.php, row 721
 "Cancel" => "Abandonner",
@@ -69,31 +69,31 @@ return [
 "Name" => "Nom",
 
 // include/searchbar.class.php, row 723
-"Share with all slice users" => "",
+"Share with all slice users" => "Partager avec tous les utilisateurs de la section", // ai 2026-06
 
 // include/searchbar.class.php, row 724
-"Save filter" => "",
+"Save filter" => "Enregistrer le filtre", // ai 2026-06
 
 // include/searchbar.class.php, row 725
-"Rename filter" => "",
+"Rename filter" => "Renommer le filtre", // ai 2026-06
 
 // include/searchbar.class.php, row 726
-"Are you sure you want to delete selected filter?" => "",
+"Are you sure you want to delete selected filter?" => "Voulez-vous vraiment supprimer le filtre s\xE9lectionn\xE9 ?", // ai 2026-06
 
 // include/searchbar.class.php, row 1008
 "Select one..." => "S\xEF\xBF\xBDlectionner un",
 
 // include/searchbar.class.php, row 1023
-"My filters" => "",
+"My filters" => "Mes filtres", // ai 2026-06
 
 // include/searchbar.class.php, row 1026
-"Global filters" => "",
+"Global filters" => "Filtres globaux", // ai 2026-06
 
 // include/searchbar.class.php, row 1064
-"Shared filter (click to apply)" => "",
+"Shared filter (click to apply)" => "Filtre partag\xE9 (cliquez pour appliquer)", // ai 2026-06
 
 // include/searchbar.class.php, row 1064
-"Personal filter (click to apply)" => "",
+"Personal filter (click to apply)" => "Filtre personnel (cliquez pour appliquer)", // ai 2026-06
 
 // include/searchbar.class.php, row 1074
 "Rename" => "Renommer",
@@ -102,7 +102,7 @@ return [
 "Delete" => "Supprimer",
 
 // include/searchbar.class.php, row 1085
-"Manage filters" => "",
+"Manage filters" => "G\xE9rer les filtres", // ai 2026-06
 
 // include/util.php, row 950
 "Error: Missing Reading Password" => "Erreur: mot de passe de lecture manquant",
@@ -115,32 +115,32 @@ return [
 "Back" => "Retour",
 
 // include/util.php, row 1314
-"Relogin" => "",
+"Relogin" => "Se reconnecter", // ai 2026-06
 
 // modules/links/actions.php, row 47, 91, 112
-"Can't find link in given category" => "",
+"Can't find link in given category" => "Impossible de trouver le lien dans la cat\xE9gorie indiqu\xE9e", // ai 2026-06
 
 // modules/links/actions.php, row 52, 117
-"No permission to delete link from the category - link set as PROPOSAL to DELETE from given category" => "",
+"No permission to delete link from the category - link set as PROPOSAL to DELETE from given category" => "Vous n'avez pas la permission de retirer le lien de la cat\xE9gorie - le lien a \xE9t\xE9 marqu\xE9 comme PROPOSITION de SUPPRESSION de cette cat\xE9gorie", // ai 2026-06
 
 // modules/links/actions.php, row 61, 126
-"Can't get association information" => "",
+"Can't get association information" => "Impossible d'obtenir les informations d'association", // ai 2026-06
 
 // modules/links/actions.php, row 95
-"No permission to approve link to given category" => "",
+"No permission to approve link to given category" => "Vous n'avez pas la permission d'approuver le lien dans cette cat\xE9gorie", // ai 2026-06
 
 // modules/links/actions.php, row 162, 165
-"No permission to move link" => "",
+"No permission to move link" => "Vous n'avez pas la permission de d\xE9placer le lien", // ai 2026-06
 
 // modules/links/catedit.php, row 51
 // modules/links/catedit2.php, row 208
-"No permission to edit category" => "",
+"No permission to edit category" => "Vous n'avez pas la permission de modifier la cat\xE9gorie", // ai 2026-06
 
 // modules/links/catedit.php, row 74
-"ActionApps - Category Edit" => "",
+"ActionApps - Category Edit" => "ActionApps - Modification de cat\xE9gorie", // ai 2026-06
 
 // modules/links/catedit.php, row 97
-"Category Edit" => "",
+"Category Edit" => "Modification de cat\xE9gorie", // ai 2026-06
 
 // modules/links/catedit.php, row 103
 "Category" => "Cat\xEF\xBF\xBDgorie",
@@ -151,112 +151,112 @@ return [
 "Id" => "Identit\xEF\xBF\xBD",
 
 // modules/links/catedit.php, row 104
-"Links in subtree" => "",
+"Links in subtree" => "Liens dans la sous-arborescence", // ai 2026-06
 
 // modules/links/catedit.php, row 105
 // modules/links/catedit2.php, row 217
 // modules/links/constants.php, row 93, 191
-"Category name" => "",
+"Category name" => "Nom de la cat\xE9gorie", // ai 2026-06
 
 // modules/links/catedit.php, row 106
 // modules/links/catedit2.php, row 218
 // modules/links/constants.php, row 97, 193
-"Category description" => "",
+"Category description" => "Description de la cat\xE9gorie", // ai 2026-06
 
 // modules/links/catedit.php, row 107
-"No links" => "",
+"No links" => "Aucun lien", // ai 2026-06
 
 // modules/links/catedit.php, row 107
-"Disallow storing of the links to this category?" => "",
+"Disallow storing of the links to this category?" => "Interdire l'enregistrement de liens dans cette cat\xE9gorie ?", // ai 2026-06
 
 // modules/links/catedit.php, row 108
 // modules/links/catedit2.php, row 222
 // modules/links/constants.php, row 75
 // modules/links/link.class.php, row 674
 // modules/links/linkedit.php, row 473
-"Editor's note" => "",
+"Editor's note" => "Note de l'\xE9diteur", // ai 2026-06
 
 // modules/links/catedit.php, row 110
-"Subcategories" => "",
+"Subcategories" => "Sous-cat\xE9gories", // ai 2026-06
 
 // modules/links/catedit.php, row 113
 // modules/links/linkedit.php, row 494
-"Category tree" => "",
+"Category tree" => "Arborescence des cat\xE9gories", // ai 2026-06
 
 // modules/links/catedit.php, row 113
-"select the category for crossreference" => "",
+"select the category for crossreference" => "s\xE9lectionnez la cat\xE9gorie pour la r\xE9f\xE9rence crois\xE9e", // ai 2026-06
 
 // modules/links/catedit.php, row 115
-"Selected subcategories" => "",
+"Selected subcategories" => "Sous-cat\xE9gories s\xE9lectionn\xE9es", // ai 2026-06
 
 // modules/links/catedit.php, row 115
-"subcategories of this category" => "",
+"subcategories of this category" => "sous-cat\xE9gories de cette cat\xE9gorie", // ai 2026-06
 
 // modules/links/catedit.php, row 132
-"New subcategory" => "",
+"New subcategory" => "Nouvelle sous-cat\xE9gorie", // ai 2026-06
 
 // modules/links/catedit.php, row 132
 "Add" => "Ajouter",
 
 // modules/links/catedit.php, row 135
-"Remove selected subcategory?" => "",
+"Remove selected subcategory?" => "Supprimer la sous-cat\xE9gorie s\xE9lectionn\xE9e ?", // ai 2026-06
 
 // modules/links/catedit.php, row 135
-"Del" => "",
+"Del" => "Suppr.", // ai 2026-06
 
 // modules/links/catedit.php, row 137
-"Change state" => "",
+"Change state" => "Changer l'\xE9tat", // ai 2026-06
 
 // modules/links/catedit.php, row 142
 "OK" => "Confirmer",
 
 // modules/links/catedit2.php, row 153
-"Category reassigned" => "",
+"Category reassigned" => "Cat\xE9gorie r\xE9affect\xE9e", // ai 2026-06
 
 // modules/links/catedit2.php, row 165
-"Subcategory deleted" => "",
+"Subcategory deleted" => "Sous-cat\xE9gorie supprim\xE9e", // ai 2026-06
 
 // modules/links/catedit2.php, row 167
-"Can't delete category which contains links" => "",
+"Can't delete category which contains links" => "Impossible de supprimer une cat\xE9gorie contenant des liens", // ai 2026-06
 
 // modules/links/catedit2.php, row 221
-"Additional information" => "",
+"Additional information" => "Informations compl\xE9mentaires", // ai 2026-06
 
 // modules/links/catedit2.php, row 231
-"Category data changed" => "",
+"Category data changed" => "Donn\xE9es de la cat\xE9gorie modifi\xE9es", // ai 2026-06
 
 // modules/links/catedit2.php, row 291
-"New category created" => "",
+"New category created" => "Nouvelle cat\xE9gorie cr\xE9\xE9e", // ai 2026-06
 
 // modules/links/catedit2.php, row 297
-"Foreign category assigned" => "",
+"Foreign category assigned" => "Cat\xE9gorie en r\xE9f\xE9rence crois\xE9e affect\xE9e", // ai 2026-06
 
 // modules/links/cattree.php, row 436
-"Switch to category" => "",
+"Switch to category" => "Aller \xE0 la cat\xE9gorie", // ai 2026-06
 
 // modules/links/check_url.php, row 30
-"ActionApps - URL Check" => "",
+"ActionApps - URL Check" => "ActionApps - V\xE9rification d'URL", // ai 2026-06
 
 // modules/links/check_url.php, row 42
 "URL" => "",
 
 // modules/links/check_url.php, row 43
-"In category" => "",
+"In category" => "Dans la cat\xE9gorie", // ai 2026-06
 
 // modules/links/check_url.php, row 43
-"Link is not assigned to any category" => "",
+"Link is not assigned to any category" => "Le lien n'est affect\xE9 \xE0 aucune cat\xE9gorie", // ai 2026-06
 
 // modules/links/check_url.php, row 43
 "Edit" => "Modifier",
 
 // modules/links/check_url.php, row 43
-"Rewrites link in bottom form" => "",
+"Rewrites link in bottom form" => "R\xE9\xE9crit le lien dans le formulaire ci-dessous", // ai 2026-06
 
 // modules/links/check_url.php, row 48
-"Page with the specified Url is not in database, yet" => "",
+"Page with the specified Url is not in database, yet" => "La page avec l'URL indiqu\xE9e n'est pas encore dans la base de donn\xE9es", // ai 2026-06
 
 // modules/links/constants.php, row 60
-"Original name" => "",
+"Original name" => "Nom d'origine", // ai 2026-06
 
 // modules/links/constants.php, row 61, 174
 // modules/links/link.class.php, row 663
@@ -266,10 +266,10 @@ return [
 // modules/links/constants.php, row 62, 122
 // modules/links/link.class.php, row 667
 // modules/links/linkedit.php, row 463
-"Link type" => "",
+"Link type" => "Type de lien", // ai 2026-06
 
 // modules/links/constants.php, row 63
-"Rate" => "",
+"Rate" => "\xC9valuation", // ai 2026-06
 
 // modules/links/constants.php, row 64
 "Votes" => "",
@@ -279,19 +279,19 @@ return [
 "Author" => "Auteur",
 
 // modules/links/constants.php, row 66
-"Insert date" => "",
+"Insert date" => "Date d'insertion", // ai 2026-06
 
 // modules/links/constants.php, row 67
 "Editor" => "Editeur",
 
 // modules/links/constants.php, row 68
-"Last edit date" => "",
+"Last edit date" => "Date de derni\xE8re modification", // ai 2026-06
 
 // modules/links/constants.php, row 69
-"Revised by" => "",
+"Revised by" => "R\xE9vis\xE9 par", // ai 2026-06
 
 // modules/links/constants.php, row 70
-"Revision date" => "",
+"Revision date" => "Date de r\xE9vision", // ai 2026-06
 
 // modules/links/constants.php, row 71
 // modules/links/link.class.php, row 673
@@ -301,90 +301,90 @@ return [
 // modules/links/constants.php, row 72
 // modules/links/link.class.php, row 665
 // modules/links/linkedit.php, row 435
-"Url" => "",
+"Url" => "URL", // ai 2026-06
 
 // modules/links/constants.php, row 73
-"Last vote time" => "",
+"Last vote time" => "Date du dernier vote", // ai 2026-06
 
 // modules/links/constants.php, row 74
-"Flag" => "",
+"Flag" => "Indicateur", // ai 2026-06
 
 // modules/links/constants.php, row 76
-"Organization city" => "",
+"Organization city" => "Ville de l'organisation", // ai 2026-06
 
 // modules/links/constants.php, row 77
-"Organization street" => "",
+"Organization street" => "Rue de l'organisation", // ai 2026-06
 
 // modules/links/constants.php, row 78
-"Organization post code" => "",
+"Organization post code" => "Code postal de l'organisation", // ai 2026-06
 
 // modules/links/constants.php, row 79
-"Organization phone" => "",
+"Organization phone" => "T\xE9l\xE9phone de l'organisation", // ai 2026-06
 
 // modules/links/constants.php, row 80
-"Organization fax" => "",
+"Organization fax" => "Fax de l'organisation", // ai 2026-06
 
 // modules/links/constants.php, row 81
-"Organization e-mail" => "",
+"Organization e-mail" => "Courriel de l'organisation", // ai 2026-06
 
 // modules/links/constants.php, row 82
 // modules/links/linkedit.php, row 484
-"Folder" => "",
+"Folder" => "Casier", // ai 2026-06
 
 // modules/links/constants.php, row 83
-"Last validation date" => "",
+"Last validation date" => "Date de derni\xE8re validation", // ai 2026-06
 
 // modules/links/constants.php, row 84
-"Validation codes" => "",
+"Validation codes" => "Codes de validation", // ai 2026-06
 
 // modules/links/constants.php, row 85
-"Validity Rank" => "",
+"Validity Rank" => "Disponibilit\xE9 de la page", // ai 2026-06
 
 // modules/links/constants.php, row 86
-"Region id" => "",
+"Region id" => "Id de la r\xE9gion", // ai 2026-06
 
 // modules/links/constants.php, row 87
-"Region name" => "",
+"Region name" => "Nom de la r\xE9gion", // ai 2026-06
 
 // modules/links/constants.php, row 88
-"Region level" => "",
+"Region level" => "Niveau de la r\xE9gion", // ai 2026-06
 
 // modules/links/constants.php, row 89
-"Language id" => "",
+"Language id" => "Id de la langue", // ai 2026-06
 
 // modules/links/constants.php, row 90
 // modules/links/linkedit.php, row 552
 "Language" => "Langue",
 
 // modules/links/constants.php, row 91
-"Language short name" => "",
+"Language short name" => "Nom court de la langue", // ai 2026-06
 
 // modules/links/constants.php, row 92, 190
-"Category id" => "",
+"Category id" => "Id de la cat\xE9gorie", // ai 2026-06
 
 // modules/links/constants.php, row 94
-"Category deleted" => "",
+"Category deleted" => "Cat\xE9gorie supprim\xE9e", // ai 2026-06
 
 // modules/links/constants.php, row 95
-"Category path" => "",
+"Category path" => "Chemin de la cat\xE9gorie", // ai 2026-06
 
 // modules/links/constants.php, row 96
-"Category link count" => "",
+"Category link count" => "Nombre de liens de la cat\xE9gorie", // ai 2026-06
 
 // modules/links/constants.php, row 98, 194
-"Category editor's note" => "",
+"Category editor's note" => "Note de l'\xE9diteur de la cat\xE9gorie", // ai 2026-06
 
 // modules/links/constants.php, row 99
-"Base" => "",
+"Base" => "Primaire", // ai 2026-06
 
 // modules/links/constants.php, row 100, 177
-"State" => "",
+"State" => "\xC9tat", // ai 2026-06
 
 // modules/links/constants.php, row 101
-"Change proposal" => "",
+"Change proposal" => "Proposition de modification", // ai 2026-06
 
 // modules/links/constants.php, row 102
-"To be deleted" => "",
+"To be deleted" => "\xC0 supprimer", // ai 2026-06
 
 // modules/links/constants.php, row 103, 176
 "Priority" => "Priorit\xEF\xBF\xBD",
@@ -394,241 +394,241 @@ return [
 "Change" => "Changer",
 
 // modules/links/constants.php, row 118
-"Link id" => "",
+"Link id" => "Id du lien", // ai 2026-06
 
 // modules/links/constants.php, row 119
-"Link name" => "",
+"Link name" => "Nom du lien", // ai 2026-06
 
 // modules/links/constants.php, row 120
-"Link original name" => "",
+"Link original name" => "Nom original du lien", // ai 2026-06
 
 // modules/links/constants.php, row 121
-"Link description" => "",
+"Link description" => "Description du lien", // ai 2026-06
 
 // modules/links/constants.php, row 123
-"Link rate" => "",
+"Link rate" => "\xC9valuation du lien", // ai 2026-06
 
 // modules/links/constants.php, row 124
-"Link votes" => "",
+"Link votes" => "Votes du lien", // ai 2026-06
 
 // modules/links/constants.php, row 125
-"Link - last vote date" => "",
+"Link - last vote date" => "Lien - date du dernier vote", // ai 2026-06
 
 // modules/links/constants.php, row 126
-"Link - created by" => "",
+"Link - created by" => "Lien - cr\xE9\xE9 par", // ai 2026-06
 
 // modules/links/constants.php, row 127
-"Link creation date" => "",
+"Link creation date" => "Date de cr\xE9ation du lien", // ai 2026-06
 
 // modules/links/constants.php, row 128
-"Link - last edited by" => "",
+"Link - last edited by" => "Lien - derni\xE8re modification par", // ai 2026-06
 
 // modules/links/constants.php, row 129
-"Link - last edit date" => "",
+"Link - last edit date" => "Lien - date de derni\xE8re modification", // ai 2026-06
 
 // modules/links/constants.php, row 130
-"Link - checked by" => "",
+"Link - checked by" => "Lien - v\xE9rifi\xE9 par", // ai 2026-06
 
 // modules/links/constants.php, row 131
-"Link - last checked date" => "",
+"Link - last checked date" => "Lien - date de derni\xE8re v\xE9rification", // ai 2026-06
 
 // modules/links/constants.php, row 132
-"Link author's e-mail" => "",
+"Link author's e-mail" => "Courriel de l'auteur du lien", // ai 2026-06
 
 // modules/links/constants.php, row 133
-"Link url" => "",
+"Link url" => "URL du lien", // ai 2026-06
 
 // modules/links/constants.php, row 134
-"Link link" => "",
+"Link link" => "Lien - hyperlien", // ai 2026-06
 
 // modules/links/constants.php, row 135
-"Link flag" => "",
+"Link flag" => "Indicateur du lien", // ai 2026-06
 
 // modules/links/constants.php, row 136
-"Link - validity rank" => "",
+"Link - validity rank" => "Lien - rang de validit\xE9", // ai 2026-06
 
 // modules/links/constants.php, row 137
-"Link - last validation date" => "",
+"Link - last validation date" => "Lien - date de derni\xE8re validation", // ai 2026-06
 
 // modules/links/constants.php, row 138
-"Link editor's note" => "",
+"Link editor's note" => "Note de l'\xE9diteur du lien", // ai 2026-06
 
 // modules/links/constants.php, row 139
-"Link organization city" => "",
+"Link organization city" => "Ville de l'organisation du lien", // ai 2026-06
 
 // modules/links/constants.php, row 140
-"Link organization street" => "",
+"Link organization street" => "Rue de l'organisation du lien", // ai 2026-06
 
 // modules/links/constants.php, row 141
-"Link organization post code" => "",
+"Link organization post code" => "Code postal de l'organisation du lien", // ai 2026-06
 
 // modules/links/constants.php, row 142
-"Link organization phone" => "",
+"Link organization phone" => "T\xE9l\xE9phone de l'organisation du lien", // ai 2026-06
 
 // modules/links/constants.php, row 143
-"Link organization fax" => "",
+"Link organization fax" => "Fax de l'organisation du lien", // ai 2026-06
 
 // modules/links/constants.php, row 144
-"Link organization e-mail" => "",
+"Link organization e-mail" => "Courriel de l'organisation du lien", // ai 2026-06
 
 // modules/links/constants.php, row 145
-"Link folder (status code) - 1~Active, 2~Holding, 3~Trash" => "",
+"Link folder (status code) - 1~Active, 2~Holding, 3~Trash" => "Dossier du lien (code d'\xE9tat) - 1~Casier actif, 2~Casier de stockage, 3~Corbeille", // ai 2026-06
 
 // modules/links/constants.php, row 146
-"Link - ids of regions (comma separated)" => "",
+"Link - ids of regions (comma separated)" => "Lien - ids des r\xE9gions (s\xE9par\xE9s par des virgules)", // ai 2026-06
 
 // modules/links/constants.php, row 147
-"Link - names of regions (comma separated)" => "",
+"Link - names of regions (comma separated)" => "Lien - noms des r\xE9gions (s\xE9par\xE9s par des virgules)", // ai 2026-06
 
 // modules/links/constants.php, row 148
-"Link - ids of languages (comma separated)" => "",
+"Link - ids of languages (comma separated)" => "Lien - ids des langues (s\xE9par\xE9s par des virgules)", // ai 2026-06
 
 // modules/links/constants.php, row 149
-"Link - names of languages (comma separated)" => "",
+"Link - names of languages (comma separated)" => "Lien - noms des langues (s\xE9par\xE9s par des virgules)", // ai 2026-06
 
 // modules/links/constants.php, row 150
-"Link - short names of languages (comma separated)" => "",
+"Link - short names of languages (comma separated)" => "Lien - noms courts des langues (s\xE9par\xE9s par des virgules)", // ai 2026-06
 
 // modules/links/constants.php, row 151
-"Category ids (comma separated)" => "",
+"Category ids (comma separated)" => "Ids des cat\xE9gories (s\xE9par\xE9s par des virgules)", // ai 2026-06
 
 // modules/links/constants.php, row 152
-"Category names (comma separated)" => "",
+"Category names (comma separated)" => "Noms des cat\xE9gories (s\xE9par\xE9s par des virgules)", // ai 2026-06
 
 // modules/links/constants.php, row 153
-"State of link in this category (visible/highlighted)" => "",
+"State of link in this category (visible/highlighted)" => "\xC9tat du lien dans cette cat\xE9gorie (visible/mis en \xE9vidence)", // ai 2026-06
 
 // modules/links/constants.php, row 154
-"Link - validity color" => "",
+"Link - validity color" => "Lien - couleur de validit\xE9", // ai 2026-06
 
 // modules/links/constants.php, row 155
-"Paths to the categories" => "",
+"Paths to the categories" => "Chemins vers les cat\xE9gories", // ai 2026-06
 
 // modules/links/constants.php, row 156
-"Number of found Links" => "",
+"Number of found Links" => "Nombre de liens trouv\xE9s", // ai 2026-06
 
 // modules/links/constants.php, row 157
-"Link to link editing page (for admin interface only)" => "",
+"Link to link editing page (for admin interface only)" => "Lien vers la page de modification du lien (interface d'administration uniquement)", // ai 2026-06
 
 // modules/links/constants.php, row 158
-"Category listing with links (for admin interface only)" => "",
+"Category listing with links (for admin interface only)" => "Liste des cat\xE9gories avec liens (interface d'administration uniquement)", // ai 2026-06
 
 // modules/links/constants.php, row 172
-"Path" => "",
+"Path" => "Chemin", // ai 2026-06
 
 // modules/links/constants.php, row 173
-"Link Count" => "",
+"Link Count" => "Nombre de liens", // ai 2026-06
 
 // modules/links/constants.php, row 175
 "Note" => "",
 
 // modules/links/constants.php, row 192
-"Number of links in category" => "",
+"Number of links in category" => "Nombre de liens dans la cat\xE9gorie", // ai 2026-06
 
 // modules/links/constants.php, row 195
-"Crossreferenced category" => "",
+"Crossreferenced category" => "Cat\xE9gorie en r\xE9f\xE9rence crois\xE9e", // ai 2026-06
 
 // modules/links/constants.php, row 196
-"Path to current category" => "",
+"Path to current category" => "Chemin vers la cat\xE9gorie courante", // ai 2026-06
 
 // modules/links/constants.php, row 197
-"Is this category general one? (1/0)" => "",
+"Is this category general one? (1/0)" => "Cette cat\xE9gorie est-elle g\xE9n\xE9rale ? (1/0)", // ai 2026-06
 
 // modules/links/constants.php, row 198
-"Print category priority, if category is general one." => "",
+"Print category priority, if category is general one." => "Affiche la priorit\xE9 de la cat\xE9gorie, si la cat\xE9gorie est g\xE9n\xE9rale.", // ai 2026-06
 
 // modules/links/getcat.php, row 51
-"Category Tree" => "",
+"Category Tree" => "Arborescence des cat\xE9gories", // ai 2026-06
 
 // modules/links/getcat.php, row 56
-"Select category" => "",
+"Select category" => "S\xE9lectionner une cat\xE9gorie", // ai 2026-06
 
 // modules/links/index.php, row 84
-"No permissions to edit links" => "",
+"No permissions to edit links" => "Vous n'avez pas la permission de modifier les liens", // ai 2026-06
 
 // modules/links/index.php, row 207
-"HINT: \"social ecology\" AND environment" => "",
+"HINT: \"social ecology\" AND environment" => "ASTUCE: \"\xE9cologie sociale\" AND environnement", // ai 2026-06
 
 // modules/links/index.php, row 234
-"Perform action on selected items" => "",
+"Perform action on selected items" => "Ex\xE9cuter l'action sur les items s\xE9lectionn\xE9s", // ai 2026-06
 
 // modules/links/index.php, row 257
-"ActionApps - Links Manager" => "",
+"ActionApps - Links Manager" => "ActionApps - Gestionnaire de liens", // ai 2026-06
 
 // modules/links/index.php, row 287
-"All my links" => "",
+"All my links" => "Tous mes liens", // ai 2026-06
 
 // modules/links/index.php, row 288
-"Links to check" => "",
+"Links to check" => "Liens \xE0 v\xE9rifier", // ai 2026-06
 
 // modules/links/index.php, row 289
-"Last edited" => "",
+"Last edited" => "Derni\xE8re modification", // ai 2026-06
 
 // modules/links/index.php, row 311
-"Show Links" => "",
+"Show Links" => "Montrer les liens", // ai 2026-06
 
 // modules/links/index.php, row 314
-"Edit Category" => "",
+"Edit Category" => "Modifier la cat\xE9gorie", // ai 2026-06
 
 // modules/links/index.php, row 318
-"Show subtree links" => "",
+"Show subtree links" => "Montrer les liens du sous-arbre", // ai 2026-06
 
 // modules/links/link.class.php, row 661
 // modules/links/linkedit.php, row 450
-"Page name" => "",
+"Page name" => "Nom de la page", // ai 2026-06
 
 // modules/links/link.class.php, row 662
 // modules/links/linkedit.php, row 453
-"Original page name" => "",
+"Original page name" => "Nom original de la page", // ai 2026-06
 
 // modules/links/link.class.php, row 668
 // modules/links/linkedit.php, row 534
-"City" => "",
+"City" => "Ville", // ai 2026-06
 
 // modules/links/link.class.php, row 669
 // modules/links/linkedit.php, row 536
-"Street" => "",
+"Street" => "Rue", // ai 2026-06
 
 // modules/links/link.class.php, row 670
 // modules/links/linkedit.php, row 538
-"Post code" => "",
+"Post code" => "Code postal", // ai 2026-06
 
 // modules/links/link.class.php, row 671
 // modules/links/linkedit.php, row 540
-"Phone" => "",
+"Phone" => "T\xE9l\xE9phone", // ai 2026-06
 
 // modules/links/link.class.php, row 672
 // modules/links/linkedit.php, row 542
 "Fax" => "",
 
 // modules/links/linkedit.php, row 51
-"Accept" => "",
+"Accept" => "Accepter", // ai 2026-06
 
 // modules/links/linkedit.php, row 53
-"unfilled" => "",
+"unfilled" => "non renseign\xE9", // ai 2026-06
 
 // modules/links/linkedit.php, row 90
 // modules/links/menu.php, row 72, 73
-"Edit Link" => "",
+"Edit Link" => "Modifier le lien", // ai 2026-06
 
 // modules/links/linkedit.php, row 97
 // modules/links/menu.php, row 72
-"Add Link" => "",
+"Add Link" => "Ajouter un lien", // ai 2026-06
 
 // modules/links/linkedit.php, row 102
-"Link does not exist or the base category is not set" => "",
+"Link does not exist or the base category is not set" => "Le lien n'existe pas ou la cat\xE9gorie de base n'est pas d\xE9finie", // ai 2026-06
 
 // modules/links/linkedit.php, row 266, 285
-"Proposal to uncheck" => "",
+"Proposal to uncheck" => "Proposition d'exclusion", // ai 2026-06
 
 // modules/links/linkedit.php, row 267, 286
-"Proposal to check" => "",
+"Proposal to check" => "Proposition d'inclusion", // ai 2026-06
 
 // modules/links/linkedit.php, row 317
-"Proposal to add" => "",
+"Proposal to add" => "Proposition d'ajout", // ai 2026-06
 
 // modules/links/linkedit.php, row 319
-"Proposal to del" => "",
+"Proposal to del" => "Proposition de suppression", // ai 2026-06
 
 // modules/links/linkedit.php, row 385
 "ActionApps" => "",
@@ -637,127 +637,127 @@ return [
 "<!--NewPublicLinkText-->" => "",
 
 // modules/links/linkedit.php, row 425
-"Link" => "",
+"Link" => "Lien", // ai 2026-06
 
 // modules/links/linkedit.php, row 438
-"Check url" => "",
+"Check url" => "V\xE9rifier l'URL", // ai 2026-06
 
 // modules/links/linkedit.php, row 439
 "View" => "Vues",
 
 // modules/links/linkedit.php, row 440
-"You can check, if the page is not in database already" => "",
+"You can check, if the page is not in database already" => "Vous pouvez v\xE9rifier si la page n'est pas d\xE9j\xE0 dans la base de donn\xE9es", // ai 2026-06
 
 // modules/links/linkedit.php, row 445
-"Do not fill, please:" => "",
+"Do not fill, please:" => "Ne pas remplir, merci:", // ai 2026-06
 
 // modules/links/linkedit.php, row 451
-"English name of the page" => "",
+"English name of the page" => "Nom anglais de la page", // ai 2026-06
 
 // modules/links/linkedit.php, row 454
-"Name of the page in original language" => "",
+"Name of the page in original language" => "Nom de la page dans la langue d'origine", // ai 2026-06
 
 // modules/links/linkedit.php, row 457
-"Do not use HTML tags and do not write words like \"best page\", ... The maximum length of the description should be about 250 characters." => "",
+"Do not use HTML tags and do not write words like \"best page\", ... The maximum length of the description should be about 250 characters." => "N'utilisez pas de balises HTML et n'\xE9crivez pas de mots comme \"meilleure page\", ... La longueur maximale de la description devrait \xEAtre d'environ 250 caract\xE8res.", // ai 2026-06
 
 // modules/links/linkedit.php, row 463
-"Select the type, if the link belongs to some special category" => "",
+"Select the type, if the link belongs to some special category" => "S\xE9lectionnez le type si le lien appartient \xE0 une cat\xE9gorie sp\xE9ciale", // ai 2026-06
 
 // modules/links/linkedit.php, row 471
-"Author's e-mail" => "",
+"Author's e-mail" => "Courriel de l'auteur", // ai 2026-06
 
 // modules/links/linkedit.php, row 474
-"You can type any message here - it is never shown on the website" => "",
+"You can type any message here - it is never shown on the website" => "Vous pouvez saisir n'importe quel message ici - il n'est jamais affich\xE9 sur le site web", // ai 2026-06
 
 // modules/links/linkedit.php, row 479
-"Last checked" => "",
+"Last checked" => "Derni\xE8re v\xE9rification", // ai 2026-06
 
 // modules/links/linkedit.php, row 479, 480, 481
-"n/j/Y" => "",
+"n/j/Y" => "j/n/Y", // ai 2026-06
 
 // modules/links/linkedit.php, row 480
-"Last changed" => "",
+"Last changed" => "Derni\xE8re modification", // ai 2026-06
 
 // modules/links/linkedit.php, row 481
-"Inserted" => "",
+"Inserted" => "Ins\xE9r\xE9", // ai 2026-06
 
 // modules/links/linkedit.php, row 488
-"Show in category" => "",
+"Show in category" => "Afficher dans la cat\xE9gorie", // ai 2026-06
 
 // modules/links/linkedit.php, row 494
-"select the category" => "",
+"select the category" => "s\xE9lectionnez la cat\xE9gorie", // ai 2026-06
 
 // modules/links/linkedit.php, row 497
-"Selected categories" => "",
+"Selected categories" => "Cat\xE9gories s\xE9lectionn\xE9es", // ai 2026-06
 
 // modules/links/linkedit.php, row 497
-"go to the category you want to select and click on the right arrow button to select" => "",
+"go to the category you want to select and click on the right arrow button to select" => "allez \xE0 la cat\xE9gorie que vous voulez s\xE9lectionner et cliquez sur le bouton fl\xE8che droite pour la s\xE9lectionner", // ai 2026-06
 
 // modules/links/linkedit.php, row 533
-"Organization" => "",
+"Organization" => "Organisation", // ai 2026-06
 
 // modules/links/linkedit.php, row 549
-"Regions and languages" => "",
+"Regions and languages" => "R\xE9gions et langues", // ai 2026-06
 
 // modules/links/linkedit.php, row 551
-"Region" => "",
+"Region" => "R\xE9gion", // ai 2026-06
 
 // modules/links/linkedit.php, row 551
-"select up to 4 regions" => "",
+"select up to 4 regions" => "s\xE9lectionnez jusqu'\xE0 4 r\xE9gions", // ai 2026-06
 
 // modules/links/linkedit.php, row 552
-"select page's languages" => "",
+"select page's languages" => "s\xE9lectionnez les langues de la page", // ai 2026-06
 
 // modules/links/linkedit2.php, row 112
-"Not accepted, sorry. Looks like spam." => "",
+"Not accepted, sorry. Looks like spam." => "Refus\xE9, d\xE9sol\xE9. Cela ressemble \xE0 du spam.", // ai 2026-06
 
 // modules/links/linkedit2.php, row 141
-"Link change proposal inserted" => "",
+"Link change proposal inserted" => "Proposition de modification du lien ins\xE9r\xE9e", // ai 2026-06
 
 // modules/links/linkedit2.php, row 141, 145
-"Link inserted" => "",
+"Link inserted" => "Lien ins\xE9r\xE9", // ai 2026-06
 
 // modules/links/linkedit2.php, row 151
-"Continue" => "",
+"Continue" => "Continuer", // ai 2026-06
 
 // modules/links/menu.php, row 64
 "View site" => "Voir le site",
 
 // modules/links/menu.php, row 73
-"Add new link" => "",
+"Add new link" => "Ajouter un nouveau lien", // ai 2026-06
 
 // modules/links/menu.php, row 80, 81
-"Link Manager" => "",
+"Link Manager" => "Gestionnaire de liens", // ai 2026-06
 
 // modules/links/menu.php, row 88, 89
-"Link Admin" => "",
+"Link Admin" => "Administration des liens", // ai 2026-06
 
 // modules/links/menu.php, row 100
 "Folders" => "Dossiers",
 
 // modules/links/menu.php, row 100
-"Folders with links, sorted by their status (active, changed, new, ...)" => "",
+"Folders with links, sorted by their status (active, changed, new, ...)" => "Dossiers de liens, class\xE9s par leur \xE9tat (actif, modifi\xE9, nouveau, ...)", // ai 2026-06
 
 // modules/links/menu.php, row 103
 "Active" => "Activer",
 
 // modules/links/menu.php, row 106
-"Changed Links" => "",
+"Changed Links" => "Liens modifi\xE9s", // ai 2026-06
 
 // modules/links/menu.php, row 109
-"New Links" => "",
+"New Links" => "Nouveaux liens", // ai 2026-06
 
 // modules/links/menu.php, row 112
 "Holding bin" => "Casier de stockage",
 
 // modules/links/menu.php, row 115
-"Trash" => "",
+"Trash" => "Corbeille", // ai 2026-06
 
 // modules/links/menu.php, row 118
-"Unassigned" => "",
+"Unassigned" => "Non class\xE9s", // ai 2026-06
 
 // modules/links/menu.php, row 121
-"Unassigned - Trash" => "",
+"Unassigned - Trash" => "Non class\xE9s - Corbeille", // ai 2026-06
 
 // modules/links/menu.php, row 122
 "Misc" => "Divers",
@@ -769,16 +769,16 @@ return [
 "Are you sure you want to empty trash?" => "\xEF\xBF\xBDtes vous sur de vouloir supprimer les d\xEF\xBF\xBDtritus",
 
 // modules/links/menu.php, row 131
-"Set Debug OFF" => "",
+"Set Debug OFF" => "D\xE9sactiver le d\xE9bogage", // ai 2026-06
 
 // modules/links/menu.php, row 131
-"Set Debug ON" => "",
+"Set Debug ON" => "Activer le d\xE9bogage", // ai 2026-06
 
 // modules/links/menu.php, row 132
-"Bookmarks" => "",
+"Bookmarks" => "Signets", // ai 2026-06
 
 // modules/links/menu.php, row 132
-"My own links" => "",
+"My own links" => "Mes liens", // ai 2026-06
 
 // modules/links/menu.php, row 158
 "Main settings" => "Configuration principales",
@@ -790,34 +790,34 @@ return [
 "Design" => "Concevoir",
 
 // modules/links/menu.php, row 170
-"New Category View" => "",
+"New Category View" => "Nouvelle vue de cat\xE9gories", // ai 2026-06
 
 // modules/links/menu.php, row 175
-"New Link View" => "",
+"New Link View" => "Nouvelle vue de liens", // ai 2026-06
 
 // modules/links/modedit.php, row 97
-"No permission to add module" => "",
+"No permission to add module" => "Pas de permission pour ajouter un module", // ai 2026-06
 
 // modules/links/modedit.php, row 102
-"No permission to edit module" => "",
+"No permission to edit module" => "Pas de permission pour modifier le module", // ai 2026-06
 
 // modules/links/modedit.php, row 119, 229, 232
-"Start category id" => "",
+"Start category id" => "Id de la cat\xE9gorie de d\xE9part", // ai 2026-06
 
 // modules/links/modedit.php, row 120, 235, 238
-"Tree start id" => "",
+"Tree start id" => "Id de d\xE9part de l'arbre", // ai 2026-06
 
 // modules/links/modedit.php, row 121, 236, 239
-"Select start id" => "",
+"Select start id" => "S\xE9lectionnez l'id de d\xE9part", // ai 2026-06
 
 // modules/links/modedit.php, row 217
-"Add Links module" => "",
+"Add Links module" => "Ajouter un module Liens", // ai 2026-06
 
 // modules/links/modedit.php, row 217
-"Edit Links module" => "",
+"Edit Links module" => "Modifier le module Liens", // ai 2026-06
 
 // modules/links/modedit.php, row 220
-"Module Links data" => "",
+"Module Links data" => "Donn\xE9es du module Liens", // ai 2026-06
 
 // modules/links/modedit.php, row 225
 "Used Language File" => "Fichier de langue utilis\xEF\xBF\xBD",

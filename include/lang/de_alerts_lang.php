@@ -11,86 +11,86 @@ $mgettext_lang = "de";
 return [
 
 // modules/alerts/alerts_sending.php, row 418
-"alerts alert" => "",
+"alerts alert" => "Alerts - Nachricht", // ai 2026-06
 
 // modules/alerts/alerts_sending.php, row 419
-"alerts welcome" => "",
+"alerts welcome" => "Alerts - Begr\xFC\xDFung", // ai 2026-06
 
 // modules/alerts/alerts_sending.php, row 420
-"slice wizard welcome" => "",
+"slice wizard welcome" => "Rubrik-Assistent - Begr\xFC\xDFung", // ai 2026-06
 
 // modules/alerts/alerts_sending.php, row 421
-"user template" => "",
+"user template" => "Benutzervorlage", // ai 2026-06
 
 // modules/alerts/alerts_sending.php, row 422
-"password change" => "",
+"password change" => "Passwort\xE4nderung", // ai 2026-06
 
 // modules/alerts/alerts_sending.php, row 423
-"other" => "",
+"other" => "Sonstiges", // ai 2026-06
 
 // modules/alerts/alerts_sending.php, row 433
-"Aliases for Alerts Alert" => "",
+"Aliases for Alerts Alert" => "Aliase f\xFCr Alerts-Nachricht", // ai 2026-06
 
 // modules/alerts/alerts_sending.php, row 435
-"complete filter text" => "",
+"complete filter text" => "vollst\xE4ndiger Filtertext", // ai 2026-06
 
 // modules/alerts/alerts_sending.php, row 436, 445
-"howoften" => "",
+"howoften" => "wie oft", // ai 2026-06
 
 // modules/alerts/alerts_sending.php, row 437
-"Anonym Form URL (set in Alerts Admin - Settings)" => "",
+"Anonym Form URL (set in Alerts Admin - Settings)" => "URL des anonymen Formulars (festgelegt in Alerts-Verwaltung - Einstellungen)", // ai 2026-06
 
 // modules/alerts/alerts_sending.php, row 438
-"Unsubscribe Form URL" => "",
+"Unsubscribe Form URL" => "URL des Abmeldeformulars", // ai 2026-06
 
 // modules/alerts/alerts_sending.php, row 443
-"Aliases for Alerts Welcome" => "",
+"Aliases for Alerts Welcome" => "Aliase f\xFCr Alerts-Begr\xFC\xDFung", // ai 2026-06
 
 // modules/alerts/alerts_sending.php, row 446
-"Collection Form URL (set in Alerts Admin - Settings)" => "",
+"Collection Form URL (set in Alerts Admin - Settings)" => "URL des Kollektionsformulars (festgelegt in Alerts-Verwaltung - Einstellungen)", // ai 2026-06
 
 // modules/alerts/alerts_sending.php, row 447
-"email confirmed" => "",
+"email confirmed" => "E-Mail best\xE4tigt", // ai 2026-06
 
 // modules/alerts/alerts_sending.php, row 453
-"Aliases for Slice Wizard Welcome" => "",
+"Aliases for Slice Wizard Welcome" => "Aliase f\xFCr Rubrik-Assistent-Begr\xFC\xDFung", // ai 2026-06
 
 // modules/alerts/alerts_sending.php, row 455, 467
-"Slice name" => "",
+"Slice name" => "Rubrikname", // ai 2026-06
 
 // modules/alerts/alerts_sending.php, row 456, 468
-"New user name" => "",
+"New user name" => "Name des neuen Benutzers", // ai 2026-06
 
 // modules/alerts/alerts_sending.php, row 457
-"New user login name" => "",
+"New user login name" => "Loginname des neuen Benutzers", // ai 2026-06
 
 // modules/alerts/alerts_sending.php, row 458
-"New user role (editor / admin)" => "",
+"New user role (editor / admin)" => "Rolle des neuen Benutzers (Editor / Admin)", // ai 2026-06
 
 // modules/alerts/alerts_sending.php, row 459
-"My name" => "",
+"My name" => "Mein Name", // ai 2026-06
 
 // modules/alerts/alerts_sending.php, row 460
-"My email" => "",
+"My email" => "Meine E-Mail", // ai 2026-06
 
 // modules/alerts/alerts_sending.php, row 465
-"Aliases for User Templates (you can use also all aliases of the user)" => "",
+"Aliases for User Templates (you can use also all aliases of the user)" => "Aliase f\xFCr Benutzervorlagen (Sie k\xF6nnen auch alle Aliase des Benutzers verwenden)", // ai 2026-06
 
 // modules/alerts/alerts_sending.php, row 473
-"Aliases for Password Change email (you can use also all aliases of the user)" => "",
+"Aliases for Password Change email (you can use also all aliases of the user)" => "Aliase f\xFCr die Passwort\xE4nderungs-E-Mail (Sie k\xF6nnen auch alle Aliase des Benutzers verwenden)", // ai 2026-06
 
 // modules/alerts/alerts_sending.php, row 475
-"HTML link to the password change page for current user" => "",
+"HTML link to the password change page for current user" => "HTML-Link zur Passwort\xE4nderungsseite des aktuellen Benutzers", // ai 2026-06
 
 // modules/alerts/alerts_sending.php, row 476
-"URL parameter used for password change link in _#PWD_LINK (you can use it, if you want to use your own url for it)" => "",
+"URL parameter used for password change link in _#PWD_LINK (you can use it, if you want to use your own url for it)" => "URL-Parameter f\xFCr den Passwort\xE4nderungs-Link in _#PWD_LINK (verwendbar, wenn Sie daf\xFCr eine eigene URL nutzen m\xF6chten)", // ai 2026-06
 
 // modules/alerts/cf_common.php, row 41
-"Language" => "",
+"Language" => "Sprache", // ai 2026-06
 
 // modules/alerts/cf_common.php, row 47
 // modules/alerts/send_emails.php, row 64
-"Email" => "",
+"Email" => "E-Mail", // ai 2026-06
 
 // modules/alerts/cf_common.php, row 53
 "Password" => "Passwort",
@@ -99,235 +99,237 @@ return [
 "First name" => "Vorname",
 
 // modules/alerts/cf_common.php, row 63
-"Last name" => "",
+"Last name" => "Nachname", // ai 2026-06
 
 // modules/alerts/cf_common.php, row 71
 // modules/alerts/synchro2.php, row 65
-"How often" => "",
+"How often" => "Wie oft", // ai 2026-06
 
 // modules/alerts/cf_common.php, row 78
-"Change password" => "",
+"Change password" => "Passwort \xE4ndern", // ai 2026-06
 
 // modules/alerts/cf_common.php, row 84
-"Retype new password" => "",
+"Retype new password" => "Neues Passwort wiederholen", // ai 2026-06
 
 // modules/alerts/menu.php, row 49, 50
 // modules/alerts/tableviews.php, row 158, 159
-"Alerts Settings" => "",
+"Alerts Settings" => "Alerts-Einstellungen", // ai 2026-06
 
 // modules/alerts/menu.php, row 87
-"Alerts Admin" => "",
+"Alerts Admin" => "Alerts-Verwaltung", // ai 2026-06
 
 // modules/alerts/menu.php, row 91
-"Settings" => "",
+"Settings" => "Einstellungen", // ai 2026-06
 
 // modules/alerts/menu.php, row 95
 // modules/alerts/send_emails.php, row 136
 // modules/alerts/synchro2.php, row 77
 // modules/alerts/tableviews.php, row 103
-"Selections" => "",
+"Selections" => "Auswahlen", // ai 2026-06
 
 // modules/alerts/menu.php, row 99
-"Send emails" => "",
+"Send emails" => "E-Mails senden", // ai 2026-06
 
 // modules/alerts/menu.php, row 104
-"Reader management" => "",
+"Reader management" => "Leserverwaltung", // ai 2026-06
 
 // modules/alerts/menu.php, row 107
-"Documentation" => "",
+"Documentation" => "Dokumentation", // ai 2026-06
 
 // modules/alerts/menu.php, row 109
-"Common" => "",
+"Common" => "Allgemein", // ai 2026-06
 
 // modules/alerts/menu.php, row 111
-"Email templates" => "",
+"Email templates" => "E-Mail-Vorlagen", // ai 2026-06
 
 // modules/alerts/modedit.php, row 101
 "You do not have permissions to add slice" => "Sie haben keine Berechtigung, Rubriken hinzuzuf\xFCgen",
 
 // modules/alerts/send_emails.php, row 55
-"Send now an example alert email to email" => "",
+"Send now an example alert email to email" => "Beispiel-Alert-E-Mail jetzt an E-Mail-Adresse senden", // ai 2026-06
 
 // modules/alerts/send_emails.php, row 65, 76
-"as if" => "",
+"as if" => "als ob", // ai 2026-06
 
 // modules/alerts/send_emails.php, row 66, 77, 92
-"Go!" => "",
+"Go!" => "Los!", // ai 2026-06
 
 // modules/alerts/send_emails.php, row 74
-"Send now an example alert email to Reader" => "",
+"Send now an example alert email to Reader" => "Beispiel-Alert-E-Mail jetzt an einen Leser senden", // ai 2026-06
 
 // modules/alerts/send_emails.php, row 75
-"Reader" => "",
+"Reader" => "Leser", // ai 2026-06
 
 // modules/alerts/send_emails.php, row 84
-"Send alerts" => "",
+"Send alerts" => "Alerts senden", // ai 2026-06
 
 // modules/alerts/send_emails.php, row 91
-"Send now alerts to all users subscribed to " => "",
+"Send now alerts to all users subscribed to " => "Alerts jetzt an alle Benutzer senden mit Abonnement f\xFCr ", // ai 2026-06
 
 // modules/alerts/send_emails.php, row 91
-"Warning: This is a real command!" => "",
+"Warning: This is a real command!" => "Achtung: Dies ist ein echter Befehl!", // ai 2026-06
 
 // modules/alerts/send_emails.php, row 95
-"Last time the alerts were sent on:" => "",
+"Last time the alerts were sent on:" => "Alerts wurden zuletzt gesendet am:", // ai 2026-06
 
 // modules/alerts/send_emails.php, row 106
-"%1 email(s) sent" => "",
+"%1 email(s) sent" => "%1 E-Mail(s) gesendet", // ai 2026-06
 
 // modules/alerts/send_emails.php, row 134
 "Slice" => "Rubrik",
 
 // modules/alerts/send_emails.php, row 135
-"View (Selection set)" => "",
+"View (Selection set)" => "Ansicht (Auswahl-Set)", // ai 2026-06
 
 // modules/alerts/send_emails.php, row 140
 "Define selections in slices from which you want to send Alerts,\n"
    ."        in views of type Alerts Selection Set"
- => "",
+ => "Definieren Sie Auswahlen in den Rubriken, aus denen Sie Alerts versenden m\xF6chten,\n"
+   ."        in Ansichten vom Typ Alerts Selection Set", // ai 2026-06
 
 // modules/alerts/synchro.php, row 63
-"Synchronization with Reader Management Slice" => "",
+"Synchronization with Reader Management Slice" => "Synchronisation mit der Leserverwaltungs-Rubrik", // ai 2026-06
 
 // modules/alerts/synchro.php, row 93
-"Not Yet Set" => "",
+"Not Yet Set" => "Noch nicht festgelegt", // ai 2026-06
 
 // modules/alerts/synchro.php, row 102
-"Choose Reader Management Slice" => "",
+"Choose Reader Management Slice" => "Leserverwaltungs-Rubrik w\xE4hlen", // ai 2026-06
 
 // modules/alerts/synchro.php, row 103
-"This Alerts Collection takes user data from the slice" => "",
+"This Alerts Collection takes user data from the slice" => "Diese Alerts-Sammlung \xFCbernimmt Benutzerdaten aus der Rubrik", // ai 2026-06
 
 // modules/alerts/synchro.php, row 110
-"Change to: " => "",
+"Change to: " => "\xC4ndern in:", // ai 2026-06
 
 // modules/alerts/synchro.php, row 116
-"and delete the %1-specific fields from %2" => "",
+"and delete the %1-specific fields from %2" => "und die %1-spezifischen Felder aus %2 l\xF6schen", // ai 2026-06
 
 // modules/alerts/synchro.php, row 120
 "Change" => "\xC4ndern",
 
 // modules/alerts/synchro.php, row 130
-"Add %1-specific fields to %2" => "",
+"Add %1-specific fields to %2" => "%1-spezifische Felder zu %2 hinzuf\xFCgen", // ai 2026-06
 
 // modules/alerts/synchro.php, row 132
 "Adds only fields the IDs of which don't yet exist in the slice.\n"
    ."    Refreshes the constant group containing selections if it already exists."
- => "",
+ => "F\xFCgt nur Felder hinzu, deren IDs in der Rubrik noch nicht existieren.\n"
+   ."    Aktualisiert die Konstantengruppe mit den Auswahlen, falls sie bereits existiert.", // ai 2026-06
 
 // modules/alerts/synchro.php, row 138
-"Field Name" => "",
+"Field Name" => "Feldname", // ai 2026-06
 
 // modules/alerts/synchro.php, row 139
-"Field ID" => "",
+"Field ID" => "Feld-ID", // ai 2026-06
 
 // modules/alerts/synchro.php, row 148
-"Add or refresh fields" => "",
+"Add or refresh fields" => "Felder hinzuf\xFCgen oder aktualisieren", // ai 2026-06
 
 // modules/alerts/synchro.php, row 150
-"This command can not be used until you choose the Reader Management Slice." => "",
+"This command can not be used until you choose the Reader Management Slice." => "Dieser Befehl kann erst verwendet werden, wenn Sie die Leserverwaltungs-Rubrik gew\xE4hlt haben.", // ai 2026-06
 
 // modules/alerts/synchro2.php, row 66, 74
-"How often for {ALERNAME}" => "",
+"How often for {ALERNAME}" => "Wie oft f\xFCr {ALERNAME}", // ai 2026-06
 
 // modules/alerts/synchro2.php, row 70
-"not subscribed" => "",
+"not subscribed" => "nicht abonniert", // ai 2026-06
 
 // modules/alerts/synchro2.php, row 78
-"Selections for {ALERNAME}" => "",
+"Selections for {ALERNAME}" => "Auswahlen f\xFCr {ALERNAME}", // ai 2026-06
 
 // modules/alerts/synchro2.php, row 86
-"Selection IDs for {ALERNAME}" => "",
+"Selection IDs for {ALERNAME}" => "Auswahl-IDs f\xFCr {ALERNAME}", // ai 2026-06
 
 // modules/alerts/synchro2.php, row 171
-"%1 field(s) added" => "",
+"%1 field(s) added" => "%1 Feld(er) hinzugef\xFCgt", // ai 2026-06
 
 // modules/alerts/synchro2.php, row 200
-"%1 field(s) and %2 constant group(s) deleted" => "",
+"%1 field(s) and %2 constant group(s) deleted" => "%1 Feld(er) und %2 Konstantengruppe(n) gel\xF6scht", // ai 2026-06
 
 // modules/alerts/synchro2.php, row 228
-"not set" => "",
+"not set" => "nicht gesetzt", // ai 2026-06
 
 // modules/alerts/tableviews.php, row 65
-"No selections defined. You must define some." => "",
+"No selections defined. You must define some." => "Keine Auswahlen definiert. Sie m\xFCssen welche definieren.", // ai 2026-06
 
 // modules/alerts/tableviews.php, row 102
-"Alerts Selections" => "",
+"Alerts Selections" => "Alerts-Auswahlen", // ai 2026-06
 
 // modules/alerts/tableviews.php, row 106
-"Choose selections which form the Alert email." => "",
+"Choose selections which form the Alert email." => "W\xE4hlen Sie die Auswahlen, die die Alert-E-Mail bilden.", // ai 2026-06
 
 // modules/alerts/tableviews.php, row 114
-"selection" => "",
+"selection" => "Auswahl", // ai 2026-06
 
 // modules/alerts/tableviews.php, row 127
-"order" => "",
+"order" => "Reihenfolge", // ai 2026-06
 
 // modules/alerts/tableviews.php, row 162
-"Core settings for the Alerts." => "",
+"Core settings for the Alerts." => "Grundeinstellungen f\xFCr die Alerts.", // ai 2026-06
 
 // modules/alerts/tableviews.php, row 172
-"alerts ID" => "",
+"alerts ID" => "Alerts-ID", // ai 2026-06
 
 // modules/alerts/tableviews.php, row 180
-"name" => "",
+"name" => "Name", // ai 2026-06
 
 // modules/alerts/tableviews.php, row 183
-"form URL" => "",
+"form URL" => "Formular-URL", // ai 2026-06
 
 // modules/alerts/tableviews.php, row 185
-"language" => "",
+"language" => "Sprache", // ai 2026-06
 
 // modules/alerts/tableviews.php, row 189
-"deleted" => "",
+"deleted" => "gel\xF6scht", // ai 2026-06
 
 // modules/alerts/tableviews.php, row 190
-"Use AA Admin / Delete<br>to delete permanently" => "",
+"Use AA Admin / Delete<br>to delete permanently" => "AA Admin / L\xF6schen verwenden,<br>um endg\xFCltig zu l\xF6schen", // ai 2026-06
 
 // modules/alerts/tableviews.php, row 195
-"welcome email" => "",
+"welcome email" => "Begr\xFC\xDFungs-E-Mail", // ai 2026-06
 
 // modules/alerts/tableviews.php, row 204, 267
-"alert email" => "",
+"alert email" => "Alert-E-Mail", // ai 2026-06
 
 // modules/alerts/tableviews.php, row 223
-"created at" => "",
+"created at" => "erstellt am", // ai 2026-06
 
 // modules/alerts/tableviews.php, row 231
-"created by" => "",
+"created by" => "erstellt von", // ai 2026-06
 
 // modules/alerts/tableviews.php, row 241, 261
-"You don't have permissions to edit any collection or no collection exists." => "",
+"You don't have permissions to edit any collection or no collection exists." => "Sie haben keine Berechtigung, eine Sammlung zu bearbeiten, oder es existiert keine Sammlung.", // ai 2026-06
 
 // modules/alerts/tableviews.php, row 255, 256
-"Send Emails" => "",
+"Send Emails" => "E-Mails senden", // ai 2026-06
 
 // modules/alerts/tableviews.php, row 263
-"Here you send the Alert emails manually." => "",
+"Here you send the Alert emails manually." => "Hier versenden Sie die Alert-E-Mails manuell.", // ai 2026-06
 
 // modules/alerts/util.php, row 58
-"instant" => "",
+"instant" => "sofort", // ai 2026-06
 
 // modules/alerts/util.php, row 59
-"daily" => "",
+"daily" => "t\xE4glich", // ai 2026-06
 
 // modules/alerts/util.php, row 60
-"weekly" => "",
+"weekly" => "w\xF6chentlich", // ai 2026-06
 
 // modules/alerts/util.php, row 61
-"twoweeks" => "",
+"twoweeks" => "alle zwei Wochen", // ai 2026-06
 
 // modules/alerts/util.php, row 62
-"monthly" => "",
+"monthly" => "monatlich", // ai 2026-06
 
 // modules/alerts/util.php, row 63
-"irregular" => "",
+"irregular" => "unregelm\xE4\xDFig", // ai 2026-06
 
 // modules/alerts/util.php, row 70
 "Active" => "Aktiv",
 
 // modules/alerts/util.php, row 71
-"Holding bin" => "",
+"Holding bin" => "Wartebereich", // ai 2026-06
 
 // modules/alerts/util.php, row 72
 "Trash bin" => "Papierkorb",

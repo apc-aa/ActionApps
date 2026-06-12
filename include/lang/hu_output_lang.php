@@ -11,166 +11,179 @@ $mgettext_lang = "hu";
 return [
 
 // ./slice.php, row 232
-"Bad inc parameter - included file must contain only alphanumeric characters" => "",
+"Bad inc parameter - included file must contain only alphanumeric characters" => "Hib\xE1s inc param\xE9ter - a beillesztend\xF5 f\xE1jl neve csak alfanumerikus karaktereket tartalmazhat", // ai 2026-06
 
 // ./slice.php, row 236
-"No such file" => "",
+"No such file" => "A f\xE1jl nem tal\xE1lhat\xF3", // ai 2026-06
 
 // ./slice.php, row 263
-"Invalid slice number or slice was deleted" => "",
+"Invalid slice number or slice was deleted" => "\xC9rv\xE9nytelen rovatsz\xE1m, vagy a rovatot t\xF6r\xF6lt\xE9k", // ai 2026-06
 
 // ./slice.php, row 266
-"slice.php output forbidden for this slice" => "",
+"slice.php output forbidden for this slice" => "A slice.php kimenet enn\xE9l a rovatn\xE1l tiltott", // ai 2026-06
 
 // ./slice.php, row 321
-"session id" => "",
+"session id" => "munkamenet-azonos\xEDt\xF3", // ai 2026-06
 
 // ./slice.php, row 580
-"number of current page (on pagescroller)" => "",
+"number of current page (on pagescroller)" => "az aktu\xE1lis oldal sz\xE1ma (a lapoz\xF3ban)", // ai 2026-06
 
 // ./slice.php, row 581
-"page length (number of items)" => "",
+"page length (number of items)" => "oldalhossz (cikkek sz\xE1ma)", // ai 2026-06
 
 // ./slice.php, row 616
 // include/view.php, row 346
-"No item found" => "",
+"No item found" => "Nem tal\xE1lhat\xF3 cikk", // ai 2026-06
 
 // include/discussion.php, row 220
-"Show selected" => "",
+"Show selected" => "Kijel\xF6ltek megjelen\xEDt\xE9se", // ai 2026-06
 
 // include/discussion.php, row 221
-"Show all" => "",
+"Show all" => "\xD6sszes megjelen\xEDt\xE9se", // ai 2026-06
 
 // include/discussion.php, row 222
-"Add new" => "",
+"Add new" => "\xDAj hozz\xE1ad\xE1sa", // ai 2026-06
 
 // include/item.php, row 104
-"Alias for %1" => "",
+"Alias for %1" => "Alias ehhez: %1", // ai 2026-06
 
 // include/item.php, row 358
-"Alias for subject of the discussion comment" => "",
+"Alias for subject of the discussion comment" => "Alias a hozz\xE1sz\xF3l\xE1s t\xE1rgy\xE1hoz", // ai 2026-06
 
 // include/item.php, row 359
-"Alias for text of the discussion comment" => "",
+"Alias for text of the discussion comment" => "Alias a hozz\xE1sz\xF3l\xE1s sz\xF6veg\xE9hez", // ai 2026-06
 
 // include/item.php, row 360
-"Alias for written by" => "",
+"Alias for written by" => "Alias a szerz\xF5h\xF6z", // ai 2026-06
 
 // include/item.php, row 361
-"Alias for author's e-mail" => "",
+"Alias for author's e-mail" => "Alias a szerz\xF5 e-mail c\xEDm\xE9hez", // ai 2026-06
 
 // include/item.php, row 362
-"Alias for url address of author's www site" => "",
+"Alias for url address of author's www site" => "Alias a szerz\xF5 webhely\xE9nek URL-c\xEDm\xE9hez", // ai 2026-06
 
 // include/item.php, row 363
-"Alias for description of author's www site" => "",
+"Alias for description of author's www site" => "Alias a szerz\xF5 webhely\xE9nek le\xEDr\xE1s\xE1hoz", // ai 2026-06
 
 // include/item.php, row 364
-"Alias for publish date" => "",
+"Alias for publish date" => "Alias a k\xF6zz\xE9t\xE9tel d\xE1tum\xE1hoz", // ai 2026-06
 
 // include/item.php, row 365
-"Alias for IP address of author's computer" => "",
+"Alias for IP address of author's computer" => "Alias a szerz\xF5 sz\xE1m\xEDt\xF3g\xE9p\xE9nek IP-c\xEDm\xE9hez", // ai 2026-06
 
 // include/item.php, row 366
-"Alias for checkbox used for choosing discussion comment" => "",
+"Alias for checkbox used for choosing discussion comment" => "Alias a hozz\xE1sz\xF3l\xE1s kiv\xE1laszt\xE1s\xE1ra szolg\xE1l\xF3 jel\xF6l\xF5n\xE9gyzethez", // ai 2026-06
 
 // include/item.php, row 367
-"Alias for images" => "",
+"Alias for images" => "Alias a k\xE9pekhez", // ai 2026-06
 
 // include/item.php, row 368
 "Alias for comment ID<br>\n"
    ."                             <i>Usage: </i>in form code<br>\n"
    ."                             <i>Example: </i>&lt;input type=hidden name=d_item_id value=\"_#DITEM_ID\">"
- => "",
+ => "Alias a hozz\xE1sz\xF3l\xE1s azonos\xEDt\xF3j\xE1hoz<br>\n"
+   ."                             <i>Haszn\xE1lat: </i>az \xFBrlap k\xF3dj\xE1ban<br>\n"
+   ."                             <i>P\xE9lda: </i>&lt;input type=hidden name=d_item_id value=\"_#DITEM_ID\">", // ai 2026-06
 
 // include/item.php, row 369
 "Alias for comment ID (the same as _#DITEM_ID<br>)\n"
    ."                             <i>Usage: </i>in form code<br>\n"
    ."                             <i>Example: </i>&lt;input type=hidden name=d_item_id value=\"_#ITEM_ID#\">"
- => "",
+ => "Alias a hozz\xE1sz\xF3l\xE1s azonos\xEDt\xF3j\xE1hoz (megegyezik ezzel: _#DITEM_ID<br>)\n"
+   ."                             <i>Haszn\xE1lat: </i>az \xFBrlap k\xF3dj\xE1ban<br>\n"
+   ."                             <i>P\xE9lda: </i>&lt;input type=hidden name=d_item_id value=\"_#ITEM_ID#\">", // ai 2026-06
 
 // include/item.php, row 370
 "Alias for item ID<br>\n"
    ."                             <i>Usage: </i>in form code<br>\n"
    ."                             <i>Example: </i>&lt;input type=hidden name=d_parent value=\"_#DISC_ID#\">"
- => "",
+ => "Alias a cikk azonos\xEDt\xF3j\xE1hoz<br>\n"
+   ."                             <i>Haszn\xE1lat: </i>az \xFBrlap k\xF3dj\xE1ban<br>\n"
+   ."                             <i>P\xE9lda: </i>&lt;input type=hidden name=d_parent value=\"_#DISC_ID#\">", // ai 2026-06
 
 // include/item.php, row 371
 "Alias for link to text of the discussion comment<br>\n"
    ."                             <i>Usage: </i>in HTML code for index view of the comment<br>\n"
    ."                             <i>Example: </i>&lt;a href=_#URL_BODY>_#SUBJECT#&lt;/a>"
- => "",
+ => "Alias a hozz\xE1sz\xF3l\xE1s sz\xF6veg\xE9re mutat\xF3 hivatkoz\xE1shoz<br>\n"
+   ."                             <i>Haszn\xE1lat: </i>a hozz\xE1sz\xF3l\xE1s \xE1ttekint\xF5 n\xE9zet\xE9nek HTML-k\xF3dj\xE1ban<br>\n"
+   ."                             <i>P\xE9lda: </i>&lt;a href=_#URL_BODY>_#SUBJECT#&lt;/a>", // ai 2026-06
 
 // include/item.php, row 372
 "Alias for link to a form<br>\n"
    ."                             <i>Usage: </i>in HTML code for fulltext view of the comment<br>\n"
    ."                             <i>Example: </i>&lt;a href=_#URLREPLY&gt;Reply&lt;/a&gt;"
- => "",
+ => "Alias az \xFBrlapra mutat\xF3 hivatkoz\xE1shoz<br>\n"
+   ."                             <i>Haszn\xE1lat: </i>a hozz\xE1sz\xF3l\xE1s teljes sz\xF6veg\xFB n\xE9zet\xE9nek HTML-k\xF3dj\xE1ban<br>\n"
+   ."                             <i>P\xE9lda: </i>&lt;a href=_#URLREPLY&gt;V\xE1lasz&lt;/a&gt;", // ai 2026-06
 
 // include/item.php, row 373
 "Alias for link to discussion<br>\n"
    ."                             <i>Usage: </i>in form code<br>\n"
    ."                             <i>Example: </i>&lt;input type=hidden name=url value=\"_#DISC_URL\">"
- => "",
+ => "Alias a hozz\xE1sz\xF3l\xE1sokra mutat\xF3 hivatkoz\xE1shoz<br>\n"
+   ."                             <i>Haszn\xE1lat: </i>az \xFBrlap k\xF3dj\xE1ban<br>\n"
+   ."                             <i>P\xE9lda: </i>&lt;input type=hidden name=url value=\"_#DISC_URL\">", // ai 2026-06
 
 // include/item.php, row 374
 "Alias for buttons Show all, Show selected, Add new<br>\n"
    ."                             <i>Usage: </i> in the Bottom HTML code"
- => "",
+ => "Alias az \xD6sszes megjelen\xEDt\xE9se, Kijel\xF6ltek megjelen\xEDt\xE9se, \xDAj hozz\xE1ad\xE1sa gombokhoz<br>\n"
+   ."                             <i>Haszn\xE1lat: </i> az als\xF3 HTML-k\xF3dban", // ai 2026-06
 
 // include/item.php, row 389
-"3rd parameter filled in DiscussionMailList field" => "",
+"3rd parameter filled in DiscussionMailList field" => "A DiscussionMailList mez\xF5ben kit\xF6lt\xF6tt 3. param\xE9ter", // ai 2026-06
 
 // include/item.php, row 391
-"%1th parameter filled in DiscussionMailList field" => "",
+"%1th parameter filled in DiscussionMailList field" => "A DiscussionMailList mez\xF5ben kit\xF6lt\xF6tt %1. param\xE9ter", // ai 2026-06
 
 // include/item.php, row 406
-"Constant name" => "",
+"Constant name" => "Konstans neve", // ai 2026-06
 
 // include/item.php, row 407
-"Translated constant name" => "",
+"Translated constant name" => "Konstans leford\xEDtott neve", // ai 2026-06
 
 // include/item.php, row 408
-"Constant value" => "",
+"Constant value" => "Konstans \xE9rt\xE9ke", // ai 2026-06
 
 // include/item.php, row 409
-"Constant priority" => "",
+"Constant priority" => "Konstans priorit\xE1sa", // ai 2026-06
 
 // include/item.php, row 410
-"Constant group id" => "",
+"Constant group id" => "Konstanscsoport azonos\xEDt\xF3ja", // ai 2026-06
 
 // include/item.php, row 411
-"Category class (for categories only)" => "",
+"Category class (for categories only)" => "Kateg\xF3riaoszt\xE1ly (csak kateg\xF3ri\xE1khoz)", // ai 2026-06
 
 // include/item.php, row 412
-"Constant number" => "",
+"Constant number" => "Konstans sorsz\xE1ma", // ai 2026-06
 
 // include/item.php, row 413
-"Constant unique id (32-hexadecimal characters)" => "",
+"Constant unique id (32-hexadecimal characters)" => "Konstans egyedi azonos\xEDt\xF3ja (32 hexadecim\xE1lis karakter)", // ai 2026-06
 
 // include/item.php, row 414
-"Constant unique short id (autoincremented from '1' for each constant in the system)" => "",
+"Constant unique short id (autoincremented from '1' for each constant in the system)" => "Konstans egyedi r\xF6vid azonos\xEDt\xF3ja (automatikusan n\xF6vekszik '1'-t\xF5l a rendszer minden konstans\xE1n\xE1l)", // ai 2026-06
 
 // include/item.php, row 415
-"Constant description" => "",
+"Constant description" => "Konstans le\xEDr\xE1sa", // ai 2026-06
 
 // include/item.php, row 416
-"Constant level (used for hierarchical constants)" => "",
+"Constant level (used for hierarchical constants)" => "Konstans szintje (hierarchikus konstansokn\xE1l haszn\xE1latos)", // ai 2026-06
 
 // include/item.php, row 787
-"Error: wrong alias function %1 for %2" => "",
+"Error: wrong alias function %1 for %2" => "Hiba: hib\xE1s %1 aliasf\xFCggv\xE9ny ehhez: %2", // ai 2026-06
 
 // include/itemview.php, row 117
-"Selected item" => "",
+"Selected item" => "Kijel\xF6lt cikk", // ai 2026-06
 
 // include/itemview.php, row 124
-"number of found items" => "",
+"number of found items" => "a megtal\xE1lt cikkek sz\xE1ma", // ai 2026-06
 
 // include/itemview.php, row 359
-"No comment was selected" => "",
+"No comment was selected" => "Nincs kijel\xF6lt hozz\xE1sz\xF3l\xE1s", // ai 2026-06
 
 // include/itemview.php, row 680, 688
-"exact group name" => "",
+"exact group name" => "pontos csoportn\xE9v", // ai 2026-06
 
 // include/scroller.php, row 86
 "Next" => "K\xF6vetkez\xF5",
@@ -179,10 +192,10 @@ return [
 "Previous" => "El\xF5z\xF5",
 
 // include/scroller.php, row 88
-"All" => "",
+"All" => "\xD6sszes", // ai 2026-06
 
 // include/scroller.php, row 296
-"found" => "",
+"found" => "tal\xE1lat", // ai 2026-06
 
 // include/scroller.php, row 452
 "&raquo;" => "",
@@ -191,26 +204,26 @@ return [
 "&laquo;" => "",
 
 // include/slice.php, row 68
-"Select Category " => "",
+"Select Category " => "V\xE1lasszon kateg\xF3ri\xE1t", // ai 2026-06
 
 // include/slice.php, row 70
-"All categories" => "",
+"All categories" => "Minden kateg\xF3ria", // ai 2026-06
 
 // include/util.php, row 950
-"Error: Missing Reading Password" => "",
+"Error: Missing Reading Password" => "Hiba: hi\xE1nyzik az olvas\xE1si jelsz\xF3", // ai 2026-06
 
 // include/util.php, row 1300
-"Toolkit news message" => "",
+"Toolkit news message" => "Toolkit h\xEDr\xFCzenet", // ai 2026-06
 
 // include/util.php, row 1314
-"Back" => "",
+"Back" => "Vissza", // ai 2026-06
 
 // include/util.php, row 1314
-"Relogin" => "",
+"Relogin" => "\xDAjra bejelentkez\xE9s", // ai 2026-06
 
 // misc/proposefieldchange.php, row 71
-"Assignment form" => "",
+"Assignment form" => "Hozz\xE1rendel\xE9si \xFBrlap", // ai 2026-06
 
 // misc/proposefieldchange.php, row 76
-"Grabs item relations data POSTed by form" => "",
+"Grabs item relations data POSTed by form" => "Feldolgozza az \xFBrlap \xE1ltal POST-tal k\xFCld\xF6tt cikk-kapcsolati adatokat", // ai 2026-06
 ];

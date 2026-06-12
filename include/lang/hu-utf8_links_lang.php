@@ -14,287 +14,287 @@ setlocale(LC_NUMERIC, 'en_US');            // keep float format with dot (see AA
 return [
 
 // include/searchbar.class.php, row 51
-"Condition" => "",
+"Condition" => "Feltétel", // ai 2026-06
 
 // include/searchbar.class.php, row 52
-"Readonly" => "",
+"Readonly" => "Csak olvasható", // ai 2026-06
 
 // include/searchbar.class.php, row 142
-"Search row" => "",
+"Search row" => "Keresési sor", // ai 2026-06
 
 // include/searchbar.class.php, row 143
-"Order row" => "",
+"Order row" => "Rendezési sor", // ai 2026-06
 
 // include/searchbar.class.php, row 533, 534, 570
-"Search" => "",
+"Search" => "Keresés", // ai 2026-06
 
 // include/searchbar.class.php, row 533
-"And" => "",
+"And" => "és", // ai 2026-06
 
 // include/searchbar.class.php, row 543
-"contains" => "",
+"contains" => "tartalmazza", // ai 2026-06
 
 // include/searchbar.class.php, row 546
-"begins with" => "",
+"begins with" => "ezzel kezdődik", // ai 2026-06
 
 // include/searchbar.class.php, row 549
-"is" => "",
+"is" => "megegyezik", // ai 2026-06
 
 // include/searchbar.class.php, row 571
-"Clear" => "",
+"Clear" => "Törlés", // ai 2026-06
 
 // include/searchbar.class.php, row 574
-"Store search" => "",
+"Store search" => "Keresés mentése", // ai 2026-06
 
 // include/searchbar.class.php, row 595
-"Order" => "",
+"Order" => "Rendezés", // ai 2026-06
 
 // include/searchbar.class.php, row 599
-"Descending" => "",
+"Descending" => "Csökkenő", // ai 2026-06
 
 // include/searchbar.class.php, row 613
-"Filter" => "",
+"Filter" => "Szűrő", // ai 2026-06
 
 // include/searchbar.class.php, row 662
-"Advanced search" => "",
+"Advanced search" => "Részletes keresés", // ai 2026-06
 
 // include/searchbar.class.php, row 719
-"Save" => "",
+"Save" => "Mentés", // ai 2026-06
 
 // include/searchbar.class.php, row 720
-"Refine" => "",
+"Refine" => "Pontosítás", // ai 2026-06
 
 // include/searchbar.class.php, row 721
-"Cancel" => "",
+"Cancel" => "Mégse", // ai 2026-06
 
 // include/searchbar.class.php, row 722
 // modules/links/constants.php, row 59, 171
-"Name" => "",
+"Name" => "Név", // ai 2026-06
 
 // include/searchbar.class.php, row 723
-"Share with all slice users" => "",
+"Share with all slice users" => "Megosztás a rovat összes felhasználójával", // ai 2026-06
 
 // include/searchbar.class.php, row 724
-"Save filter" => "",
+"Save filter" => "Szűrő mentése", // ai 2026-06
 
 // include/searchbar.class.php, row 725
-"Rename filter" => "",
+"Rename filter" => "Szűrő átnevezése", // ai 2026-06
 
 // include/searchbar.class.php, row 726
-"Are you sure you want to delete selected filter?" => "",
+"Are you sure you want to delete selected filter?" => "Biztosan törli a kijelölt szűrőt?", // ai 2026-06
 
 // include/searchbar.class.php, row 1008
-"Select one..." => "",
+"Select one..." => "Válasszon...", // ai 2026-06
 
 // include/searchbar.class.php, row 1023
-"My filters" => "",
+"My filters" => "Saját szűrők", // ai 2026-06
 
 // include/searchbar.class.php, row 1026
-"Global filters" => "",
+"Global filters" => "Globális szűrők", // ai 2026-06
 
 // include/searchbar.class.php, row 1064
-"Shared filter (click to apply)" => "",
+"Shared filter (click to apply)" => "Megosztott szűrő (kattintson az alkalmazáshoz)", // ai 2026-06
 
 // include/searchbar.class.php, row 1064
-"Personal filter (click to apply)" => "",
+"Personal filter (click to apply)" => "Személyes szűrő (kattintson az alkalmazáshoz)", // ai 2026-06
 
 // include/searchbar.class.php, row 1074
-"Rename" => "",
+"Rename" => "Átnevezés", // ai 2026-06
 
 // include/searchbar.class.php, row 1076
-"Delete" => "",
+"Delete" => "Törlés", // ai 2026-06
 
 // include/searchbar.class.php, row 1085
-"Manage filters" => "",
+"Manage filters" => "Szűrők kezelése", // ai 2026-06
 
 // include/util.php, row 950
-"Error: Missing Reading Password" => "",
+"Error: Missing Reading Password" => "Hiba: hiányzik az olvasási jelszó", // ai 2026-06
 
 // include/util.php, row 1300
-"Toolkit news message" => "",
+"Toolkit news message" => "Üzenet a Toolkitből", // ai 2026-06
 
 // include/util.php, row 1314
 // modules/links/check_url.php, row 52
-"Back" => "",
+"Back" => "Vissza", // ai 2026-06
 
 // include/util.php, row 1314
-"Relogin" => "",
+"Relogin" => "Újrabejelentkezés", // ai 2026-06
 
 // modules/links/actions.php, row 47, 91, 112
-"Can't find link in given category" => "",
+"Can't find link in given category" => "A hivatkozás nem található a megadott kategóriában", // ai 2026-06
 
 // modules/links/actions.php, row 52, 117
-"No permission to delete link from the category - link set as PROPOSAL to DELETE from given category" => "",
+"No permission to delete link from the category - link set as PROPOSAL to DELETE from given category" => "Nincs jogosultsága törölni a hivatkozást a kategóriából – a hivatkozás törlésre JAVASOLT állapotba került az adott kategóriában", // ai 2026-06
 
 // modules/links/actions.php, row 61, 126
-"Can't get association information" => "",
+"Can't get association information" => "Nem sikerült lekérni a hozzárendelési adatokat", // ai 2026-06
 
 // modules/links/actions.php, row 95
-"No permission to approve link to given category" => "",
+"No permission to approve link to given category" => "Nincs jogosultsága jóváhagyni a hivatkozást az adott kategóriában", // ai 2026-06
 
 // modules/links/actions.php, row 162, 165
-"No permission to move link" => "",
+"No permission to move link" => "Nincs jogosultsága a hivatkozás áthelyezéséhez", // ai 2026-06
 
 // modules/links/catedit.php, row 51
 // modules/links/catedit2.php, row 208
-"No permission to edit category" => "",
+"No permission to edit category" => "Nincs jogosultsága a kategória szerkesztéséhez", // ai 2026-06
 
 // modules/links/catedit.php, row 74
-"ActionApps - Category Edit" => "",
+"ActionApps - Category Edit" => "ActionApps - Kategória szerkesztése", // ai 2026-06
 
 // modules/links/catedit.php, row 97
-"Category Edit" => "",
+"Category Edit" => "Kategória szerkesztése", // ai 2026-06
 
 // modules/links/catedit.php, row 103
-"Category" => "",
+"Category" => "Kategória", // ai 2026-06
 
 // modules/links/catedit.php, row 104
 // modules/links/constants.php, row 58, 170
 // modules/links/linkedit.php, row 430
-"Id" => "",
+"Id" => "ID", // ai 2026-06
 
 // modules/links/catedit.php, row 104
-"Links in subtree" => "",
+"Links in subtree" => "Hivatkozások a részfában", // ai 2026-06
 
 // modules/links/catedit.php, row 105
 // modules/links/catedit2.php, row 217
 // modules/links/constants.php, row 93, 191
-"Category name" => "",
+"Category name" => "Kategória neve", // ai 2026-06
 
 // modules/links/catedit.php, row 106
 // modules/links/catedit2.php, row 218
 // modules/links/constants.php, row 97, 193
-"Category description" => "",
+"Category description" => "Kategória leírása", // ai 2026-06
 
 // modules/links/catedit.php, row 107
-"No links" => "",
+"No links" => "Hivatkozások nélkül", // ai 2026-06
 
 // modules/links/catedit.php, row 107
-"Disallow storing of the links to this category?" => "",
+"Disallow storing of the links to this category?" => "Hivatkozások tárolásának tiltása ebben a kategóriában?", // ai 2026-06
 
 // modules/links/catedit.php, row 108
 // modules/links/catedit2.php, row 222
 // modules/links/constants.php, row 75
 // modules/links/link.class.php, row 674
 // modules/links/linkedit.php, row 473
-"Editor's note" => "",
+"Editor's note" => "Szerkesztői megjegyzés", // ai 2026-06
 
 // modules/links/catedit.php, row 110
-"Subcategories" => "",
+"Subcategories" => "Alkategóriák", // ai 2026-06
 
 // modules/links/catedit.php, row 113
 // modules/links/linkedit.php, row 494
-"Category tree" => "",
+"Category tree" => "Kategóriafa", // ai 2026-06
 
 // modules/links/catedit.php, row 113
-"select the category for crossreference" => "",
+"select the category for crossreference" => "válassza ki a kategóriát a kereszthivatkozáshoz", // ai 2026-06
 
 // modules/links/catedit.php, row 115
-"Selected subcategories" => "",
+"Selected subcategories" => "Kijelölt alkategóriák", // ai 2026-06
 
 // modules/links/catedit.php, row 115
-"subcategories of this category" => "",
+"subcategories of this category" => "ennek a kategóriának az alkategóriái", // ai 2026-06
 
 // modules/links/catedit.php, row 132
-"New subcategory" => "",
+"New subcategory" => "Új alkategória", // ai 2026-06
 
 // modules/links/catedit.php, row 132
-"Add" => "",
+"Add" => "Hozzáadás", // ai 2026-06
 
 // modules/links/catedit.php, row 135
-"Remove selected subcategory?" => "",
+"Remove selected subcategory?" => "Eltávolítja a kijelölt alkategóriát?", // ai 2026-06
 
 // modules/links/catedit.php, row 135
-"Del" => "",
+"Del" => "Törlés", // ai 2026-06
 
 // modules/links/catedit.php, row 137
-"Change state" => "",
+"Change state" => "Állapot módosítása", // ai 2026-06
 
 // modules/links/catedit.php, row 142
 "OK" => "",
 
 // modules/links/catedit2.php, row 153
-"Category reassigned" => "",
+"Category reassigned" => "Kategória áthelyezve", // ai 2026-06
 
 // modules/links/catedit2.php, row 165
-"Subcategory deleted" => "",
+"Subcategory deleted" => "Alkategória törölve", // ai 2026-06
 
 // modules/links/catedit2.php, row 167
-"Can't delete category which contains links" => "",
+"Can't delete category which contains links" => "Hivatkozásokat tartalmazó kategória nem törölhető", // ai 2026-06
 
 // modules/links/catedit2.php, row 221
-"Additional information" => "",
+"Additional information" => "További információ", // ai 2026-06
 
 // modules/links/catedit2.php, row 231
-"Category data changed" => "",
+"Category data changed" => "A kategória adatai módosultak", // ai 2026-06
 
 // modules/links/catedit2.php, row 291
-"New category created" => "",
+"New category created" => "Új kategória létrehozva", // ai 2026-06
 
 // modules/links/catedit2.php, row 297
-"Foreign category assigned" => "",
+"Foreign category assigned" => "Kereszthivatkozott kategória hozzárendelve", // ai 2026-06
 
 // modules/links/cattree.php, row 436
-"Switch to category" => "",
+"Switch to category" => "Ugrás a kategóriába", // ai 2026-06
 
 // modules/links/check_url.php, row 30
-"ActionApps - URL Check" => "",
+"ActionApps - URL Check" => "ActionApps - URL-ellenőrzés", // ai 2026-06
 
 // modules/links/check_url.php, row 42
 "URL" => "",
 
 // modules/links/check_url.php, row 43
-"In category" => "",
+"In category" => "Kategóriában", // ai 2026-06
 
 // modules/links/check_url.php, row 43
-"Link is not assigned to any category" => "",
+"Link is not assigned to any category" => "A hivatkozás nincs kategóriához rendelve", // ai 2026-06
 
 // modules/links/check_url.php, row 43
-"Edit" => "",
+"Edit" => "Szerkesztés", // ai 2026-06
 
 // modules/links/check_url.php, row 43
-"Rewrites link in bottom form" => "",
+"Rewrites link in bottom form" => "Felülírja a hivatkozást az alsó űrlapon", // ai 2026-06
 
 // modules/links/check_url.php, row 48
-"Page with the specified Url is not in database, yet" => "",
+"Page with the specified Url is not in database, yet" => "A megadott URL-című oldal még nincs az adatbázisban", // ai 2026-06
 
 // modules/links/constants.php, row 60
-"Original name" => "",
+"Original name" => "Eredeti név", // ai 2026-06
 
 // modules/links/constants.php, row 61, 174
 // modules/links/link.class.php, row 663
 // modules/links/linkedit.php, row 456
-"Description" => "",
+"Description" => "Leírás", // ai 2026-06
 
 // modules/links/constants.php, row 62, 122
 // modules/links/link.class.php, row 667
 // modules/links/linkedit.php, row 463
-"Link type" => "",
+"Link type" => "Hivatkozás típusa", // ai 2026-06
 
 // modules/links/constants.php, row 63
-"Rate" => "",
+"Rate" => "Értékelés", // ai 2026-06
 
 // modules/links/constants.php, row 64
-"Votes" => "",
+"Votes" => "Szavazatok", // ai 2026-06
 
 // modules/links/constants.php, row 65
 // modules/links/link.class.php, row 664
-"Author" => "",
+"Author" => "Szerző", // ai 2026-06
 
 // modules/links/constants.php, row 66
-"Insert date" => "",
+"Insert date" => "Hozzáadás dátuma", // ai 2026-06
 
 // modules/links/constants.php, row 67
-"Editor" => "",
+"Editor" => "Utoljára szerkesztette", // ai 2026-06
 
 // modules/links/constants.php, row 68
-"Last edit date" => "",
+"Last edit date" => "Utolsó szerkesztés dátuma", // ai 2026-06
 
 // modules/links/constants.php, row 69
-"Revised by" => "",
+"Revised by" => "Ellenőrizte", // ai 2026-06
 
 // modules/links/constants.php, row 70
-"Revision date" => "",
+"Revision date" => "Ellenőrzés dátuma", // ai 2026-06
 
 // modules/links/constants.php, row 71
 // modules/links/link.class.php, row 673
@@ -304,524 +304,524 @@ return [
 // modules/links/constants.php, row 72
 // modules/links/link.class.php, row 665
 // modules/links/linkedit.php, row 435
-"Url" => "",
+"Url" => "URL", // ai 2026-06
 
 // modules/links/constants.php, row 73
-"Last vote time" => "",
+"Last vote time" => "Utolsó szavazás ideje", // ai 2026-06
 
 // modules/links/constants.php, row 74
-"Flag" => "",
+"Flag" => "Jelző", // ai 2026-06
 
 // modules/links/constants.php, row 76
-"Organization city" => "",
+"Organization city" => "Szervezet - város", // ai 2026-06
 
 // modules/links/constants.php, row 77
-"Organization street" => "",
+"Organization street" => "Szervezet - utca", // ai 2026-06
 
 // modules/links/constants.php, row 78
-"Organization post code" => "",
+"Organization post code" => "Szervezet - irányítószám", // ai 2026-06
 
 // modules/links/constants.php, row 79
-"Organization phone" => "",
+"Organization phone" => "Szervezet - telefon", // ai 2026-06
 
 // modules/links/constants.php, row 80
-"Organization fax" => "",
+"Organization fax" => "Szervezet - fax", // ai 2026-06
 
 // modules/links/constants.php, row 81
-"Organization e-mail" => "",
+"Organization e-mail" => "Szervezet - e-mail", // ai 2026-06
 
 // modules/links/constants.php, row 82
 // modules/links/linkedit.php, row 484
-"Folder" => "",
+"Folder" => "Mappa", // ai 2026-06
 
 // modules/links/constants.php, row 83
-"Last validation date" => "",
+"Last validation date" => "Utolsó elérhetőség-ellenőrzés dátuma", // ai 2026-06
 
 // modules/links/constants.php, row 84
-"Validation codes" => "",
+"Validation codes" => "Ellenőrzési kódok", // ai 2026-06
 
 // modules/links/constants.php, row 85
-"Validity Rank" => "",
+"Validity Rank" => "Oldal elérhetősége", // ai 2026-06
 
 // modules/links/constants.php, row 86
-"Region id" => "",
+"Region id" => "Régióazonosító", // ai 2026-06
 
 // modules/links/constants.php, row 87
-"Region name" => "",
+"Region name" => "Régió neve", // ai 2026-06
 
 // modules/links/constants.php, row 88
-"Region level" => "",
+"Region level" => "Régió szintje", // ai 2026-06
 
 // modules/links/constants.php, row 89
-"Language id" => "",
+"Language id" => "Nyelvazonosító", // ai 2026-06
 
 // modules/links/constants.php, row 90
 // modules/links/linkedit.php, row 552
-"Language" => "",
+"Language" => "Nyelv", // ai 2026-06
 
 // modules/links/constants.php, row 91
-"Language short name" => "",
+"Language short name" => "Nyelv rövid neve", // ai 2026-06
 
 // modules/links/constants.php, row 92, 190
-"Category id" => "",
+"Category id" => "Kategória-azonosító", // ai 2026-06
 
 // modules/links/constants.php, row 94
-"Category deleted" => "",
+"Category deleted" => "Kategória törölve", // ai 2026-06
 
 // modules/links/constants.php, row 95
-"Category path" => "",
+"Category path" => "Kategória útvonala", // ai 2026-06
 
 // modules/links/constants.php, row 96
-"Category link count" => "",
+"Category link count" => "Hivatkozások száma a kategóriában", // ai 2026-06
 
 // modules/links/constants.php, row 98, 194
-"Category editor's note" => "",
+"Category editor's note" => "Kategória szerkesztői megjegyzése", // ai 2026-06
 
 // modules/links/constants.php, row 99
-"Base" => "",
+"Base" => "Elsődleges", // ai 2026-06
 
 // modules/links/constants.php, row 100, 177
-"State" => "",
+"State" => "Állapot", // ai 2026-06
 
 // modules/links/constants.php, row 101
-"Change proposal" => "",
+"Change proposal" => "Módosítási javaslat", // ai 2026-06
 
 // modules/links/constants.php, row 102
-"To be deleted" => "",
+"To be deleted" => "Törlendő", // ai 2026-06
 
 // modules/links/constants.php, row 103, 176
-"Priority" => "",
+"Priority" => "Prioritás", // ai 2026-06
 
 // modules/links/constants.php, row 104
 // modules/links/linkedit.php, row 54
-"Change" => "",
+"Change" => "Módosítás", // ai 2026-06
 
 // modules/links/constants.php, row 118
-"Link id" => "",
+"Link id" => "Hivatkozás-azonosító", // ai 2026-06
 
 // modules/links/constants.php, row 119
-"Link name" => "",
+"Link name" => "Hivatkozás neve", // ai 2026-06
 
 // modules/links/constants.php, row 120
-"Link original name" => "",
+"Link original name" => "Hivatkozás eredeti neve", // ai 2026-06
 
 // modules/links/constants.php, row 121
-"Link description" => "",
+"Link description" => "Hivatkozás leírása", // ai 2026-06
 
 // modules/links/constants.php, row 123
-"Link rate" => "",
+"Link rate" => "Hivatkozás értékelése", // ai 2026-06
 
 // modules/links/constants.php, row 124
-"Link votes" => "",
+"Link votes" => "Hivatkozás szavazatai", // ai 2026-06
 
 // modules/links/constants.php, row 125
-"Link - last vote date" => "",
+"Link - last vote date" => "Hivatkozás - utolsó szavazás dátuma", // ai 2026-06
 
 // modules/links/constants.php, row 126
-"Link - created by" => "",
+"Link - created by" => "Hivatkozás - létrehozta", // ai 2026-06
 
 // modules/links/constants.php, row 127
-"Link creation date" => "",
+"Link creation date" => "Hivatkozás létrehozásának dátuma", // ai 2026-06
 
 // modules/links/constants.php, row 128
-"Link - last edited by" => "",
+"Link - last edited by" => "Hivatkozás - utoljára szerkesztette", // ai 2026-06
 
 // modules/links/constants.php, row 129
-"Link - last edit date" => "",
+"Link - last edit date" => "Hivatkozás - utolsó szerkesztés dátuma", // ai 2026-06
 
 // modules/links/constants.php, row 130
-"Link - checked by" => "",
+"Link - checked by" => "Hivatkozás - ellenőrizte", // ai 2026-06
 
 // modules/links/constants.php, row 131
-"Link - last checked date" => "",
+"Link - last checked date" => "Hivatkozás - utolsó ellenőrzés dátuma", // ai 2026-06
 
 // modules/links/constants.php, row 132
-"Link author's e-mail" => "",
+"Link author's e-mail" => "Hivatkozás szerzőjének e-mail címe", // ai 2026-06
 
 // modules/links/constants.php, row 133
-"Link url" => "",
+"Link url" => "Hivatkozás URL-je", // ai 2026-06
 
 // modules/links/constants.php, row 134
-"Link link" => "",
+"Link link" => "Hivatkozás", // ai 2026-06
 
 // modules/links/constants.php, row 135
-"Link flag" => "",
+"Link flag" => "Hivatkozás jelzője", // ai 2026-06
 
 // modules/links/constants.php, row 136
-"Link - validity rank" => "",
+"Link - validity rank" => "Hivatkozás elérhetősége", // ai 2026-06
 
 // modules/links/constants.php, row 137
-"Link - last validation date" => "",
+"Link - last validation date" => "Hivatkozás - utolsó elérhetőség-ellenőrzés dátuma", // ai 2026-06
 
 // modules/links/constants.php, row 138
-"Link editor's note" => "",
+"Link editor's note" => "Hivatkozás szerkesztői megjegyzése", // ai 2026-06
 
 // modules/links/constants.php, row 139
-"Link organization city" => "",
+"Link organization city" => "Hivatkozás - szervezet városa", // ai 2026-06
 
 // modules/links/constants.php, row 140
-"Link organization street" => "",
+"Link organization street" => "Hivatkozás - szervezet utcája", // ai 2026-06
 
 // modules/links/constants.php, row 141
-"Link organization post code" => "",
+"Link organization post code" => "Hivatkozás - szervezet irányítószáma", // ai 2026-06
 
 // modules/links/constants.php, row 142
-"Link organization phone" => "",
+"Link organization phone" => "Hivatkozás - szervezet telefonja", // ai 2026-06
 
 // modules/links/constants.php, row 143
-"Link organization fax" => "",
+"Link organization fax" => "Hivatkozás - szervezet faxa", // ai 2026-06
 
 // modules/links/constants.php, row 144
-"Link organization e-mail" => "",
+"Link organization e-mail" => "Hivatkozás - szervezet e-mailje", // ai 2026-06
 
 // modules/links/constants.php, row 145
-"Link folder (status code) - 1~Active, 2~Holding, 3~Trash" => "",
+"Link folder (status code) - 1~Active, 2~Holding, 3~Trash" => "Hivatkozás mappája (állapotkód) - 1~Aktív, 2~Várólista, 3~Lomtár", // ai 2026-06
 
 // modules/links/constants.php, row 146
-"Link - ids of regions (comma separated)" => "",
+"Link - ids of regions (comma separated)" => "Hivatkozás - régiók azonosítói (vesszővel elválasztva)", // ai 2026-06
 
 // modules/links/constants.php, row 147
-"Link - names of regions (comma separated)" => "",
+"Link - names of regions (comma separated)" => "Hivatkozás - régiók nevei (vesszővel elválasztva)", // ai 2026-06
 
 // modules/links/constants.php, row 148
-"Link - ids of languages (comma separated)" => "",
+"Link - ids of languages (comma separated)" => "Hivatkozás - nyelvek azonosítói (vesszővel elválasztva)", // ai 2026-06
 
 // modules/links/constants.php, row 149
-"Link - names of languages (comma separated)" => "",
+"Link - names of languages (comma separated)" => "Hivatkozás - nyelvek nevei (vesszővel elválasztva)", // ai 2026-06
 
 // modules/links/constants.php, row 150
-"Link - short names of languages (comma separated)" => "",
+"Link - short names of languages (comma separated)" => "Hivatkozás - nyelvek rövid nevei (vesszővel elválasztva)", // ai 2026-06
 
 // modules/links/constants.php, row 151
-"Category ids (comma separated)" => "",
+"Category ids (comma separated)" => "Kategória-azonosítók (vesszővel elválasztva)", // ai 2026-06
 
 // modules/links/constants.php, row 152
-"Category names (comma separated)" => "",
+"Category names (comma separated)" => "Kategórianevek (vesszővel elválasztva)", // ai 2026-06
 
 // modules/links/constants.php, row 153
-"State of link in this category (visible/highlighted)" => "",
+"State of link in this category (visible/highlighted)" => "Hivatkozás állapota ebben a kategóriában (látható/kiemelt)", // ai 2026-06
 
 // modules/links/constants.php, row 154
-"Link - validity color" => "",
+"Link - validity color" => "Hivatkozás - érvényesség színe", // ai 2026-06
 
 // modules/links/constants.php, row 155
-"Paths to the categories" => "",
+"Paths to the categories" => "Útvonalak a kategóriákhoz", // ai 2026-06
 
 // modules/links/constants.php, row 156
-"Number of found Links" => "",
+"Number of found Links" => "Talált hivatkozások száma", // ai 2026-06
 
 // modules/links/constants.php, row 157
-"Link to link editing page (for admin interface only)" => "",
+"Link to link editing page (for admin interface only)" => "Hivatkozás a hivatkozásszerkesztő oldalra (csak az admin felülethez)", // ai 2026-06
 
 // modules/links/constants.php, row 158
-"Category listing with links (for admin interface only)" => "",
+"Category listing with links (for admin interface only)" => "Kategórialista hivatkozásokkal (csak az admin felülethez)", // ai 2026-06
 
 // modules/links/constants.php, row 172
-"Path" => "",
+"Path" => "Útvonal", // ai 2026-06
 
 // modules/links/constants.php, row 173
-"Link Count" => "",
+"Link Count" => "Hivatkozások száma", // ai 2026-06
 
 // modules/links/constants.php, row 175
-"Note" => "",
+"Note" => "Megjegyzés", // ai 2026-06
 
 // modules/links/constants.php, row 192
-"Number of links in category" => "",
+"Number of links in category" => "Hivatkozások száma a kategóriában", // ai 2026-06
 
 // modules/links/constants.php, row 195
-"Crossreferenced category" => "",
+"Crossreferenced category" => "Kereszthivatkozott kategória", // ai 2026-06
 
 // modules/links/constants.php, row 196
-"Path to current category" => "",
+"Path to current category" => "Útvonal az aktuális kategóriához", // ai 2026-06
 
 // modules/links/constants.php, row 197
-"Is this category general one? (1/0)" => "",
+"Is this category general one? (1/0)" => "Általános-e ez a kategória? (1/0)", // ai 2026-06
 
 // modules/links/constants.php, row 198
-"Print category priority, if category is general one." => "",
+"Print category priority, if category is general one." => "Kiírja a kategória prioritását, ha a kategória általános.", // ai 2026-06
 
 // modules/links/getcat.php, row 51
-"Category Tree" => "",
+"Category Tree" => "Kategóriafa", // ai 2026-06
 
 // modules/links/getcat.php, row 56
-"Select category" => "",
+"Select category" => "Kategória kiválasztása", // ai 2026-06
 
 // modules/links/index.php, row 84
-"No permissions to edit links" => "",
+"No permissions to edit links" => "Nincs jogosultsága a hivatkozások szerkesztéséhez", // ai 2026-06
 
 // modules/links/index.php, row 207
-"HINT: \"social ecology\" AND environment" => "",
+"HINT: \"social ecology\" AND environment" => "TIPP: \"szociális ökológia\" AND környezet", // ai 2026-06
 
 // modules/links/index.php, row 234
-"Perform action on selected items" => "",
+"Perform action on selected items" => "Művelet végrehajtása a kijelölt hivatkozásokon", // ai 2026-06
 
 // modules/links/index.php, row 257
-"ActionApps - Links Manager" => "",
+"ActionApps - Links Manager" => "ActionApps - Hivatkozáskezelő", // ai 2026-06
 
 // modules/links/index.php, row 287
-"All my links" => "",
+"All my links" => "Minden hivatkozásom", // ai 2026-06
 
 // modules/links/index.php, row 288
-"Links to check" => "",
+"Links to check" => "Ellenőrizendő hivatkozások", // ai 2026-06
 
 // modules/links/index.php, row 289
-"Last edited" => "",
+"Last edited" => "Utoljára szerkesztett", // ai 2026-06
 
 // modules/links/index.php, row 311
-"Show Links" => "",
+"Show Links" => "Hivatkozások megjelenítése", // ai 2026-06
 
 // modules/links/index.php, row 314
-"Edit Category" => "",
+"Edit Category" => "Kategória szerkesztése", // ai 2026-06
 
 // modules/links/index.php, row 318
-"Show subtree links" => "",
+"Show subtree links" => "Részfa hivatkozásainak megjelenítése", // ai 2026-06
 
 // modules/links/link.class.php, row 661
 // modules/links/linkedit.php, row 450
-"Page name" => "",
+"Page name" => "Oldal neve", // ai 2026-06
 
 // modules/links/link.class.php, row 662
 // modules/links/linkedit.php, row 453
-"Original page name" => "",
+"Original page name" => "Oldal eredeti neve", // ai 2026-06
 
 // modules/links/link.class.php, row 668
 // modules/links/linkedit.php, row 534
-"City" => "",
+"City" => "Város", // ai 2026-06
 
 // modules/links/link.class.php, row 669
 // modules/links/linkedit.php, row 536
-"Street" => "",
+"Street" => "Utca", // ai 2026-06
 
 // modules/links/link.class.php, row 670
 // modules/links/linkedit.php, row 538
-"Post code" => "",
+"Post code" => "Irányítószám", // ai 2026-06
 
 // modules/links/link.class.php, row 671
 // modules/links/linkedit.php, row 540
-"Phone" => "",
+"Phone" => "Telefon", // ai 2026-06
 
 // modules/links/link.class.php, row 672
 // modules/links/linkedit.php, row 542
 "Fax" => "",
 
 // modules/links/linkedit.php, row 51
-"Accept" => "",
+"Accept" => "Elfogadás", // ai 2026-06
 
 // modules/links/linkedit.php, row 53
-"unfilled" => "",
+"unfilled" => "kitöltetlen", // ai 2026-06
 
 // modules/links/linkedit.php, row 90
 // modules/links/menu.php, row 72, 73
-"Edit Link" => "",
+"Edit Link" => "Hivatkozás szerkesztése", // ai 2026-06
 
 // modules/links/linkedit.php, row 97
 // modules/links/menu.php, row 72
-"Add Link" => "",
+"Add Link" => "Hivatkozás hozzáadása", // ai 2026-06
 
 // modules/links/linkedit.php, row 102
-"Link does not exist or the base category is not set" => "",
+"Link does not exist or the base category is not set" => "A hivatkozás nem létezik, vagy nincs beállítva az alapkategória", // ai 2026-06
 
 // modules/links/linkedit.php, row 266, 285
-"Proposal to uncheck" => "",
+"Proposal to uncheck" => "Javaslat kivételre", // ai 2026-06
 
 // modules/links/linkedit.php, row 267, 286
-"Proposal to check" => "",
+"Proposal to check" => "Javaslat felvételre", // ai 2026-06
 
 // modules/links/linkedit.php, row 317
-"Proposal to add" => "",
+"Proposal to add" => "Javaslat hozzáadásra", // ai 2026-06
 
 // modules/links/linkedit.php, row 319
-"Proposal to del" => "",
+"Proposal to del" => "Javaslat törlésre", // ai 2026-06
 
 // modules/links/linkedit.php, row 385
 "ActionApps" => "",
 
 // modules/links/linkedit.php, row 407
-"<!--NewPublicLinkText-->" => "",
+"<!--NewPublicLinkText-->" => "Ebben az űrlapban új hivatkozást vehet fel a katalógusba; nem kötelező\\nminden mezőt kitölteni. A hivatkozás könnyű besorolásához azonban kérjük,\\ntöltse ki legalább a hivatkozás <b>URL</b>-jét, <b>NEVÉT</b>, és\\nsorolja be a hivatkozást valamelyik <b>KATEGÓRIÁBA</b>. Ha van tapasztalata a weboldalakkal,\\nkitöltheti a hivatkozás leírását is.<br>\\n<b>Kérjük, ne vegyen fel \"kereskedelmi\" hivatkozásokat a katalógusba.</b> Ezek a hivatkozások nem jelennek meg a katalógusban.<br>\\n Köszönjük.", // ai 2026-06
 
 // modules/links/linkedit.php, row 425
-"Link" => "",
+"Link" => "Hivatkozás", // ai 2026-06
 
 // modules/links/linkedit.php, row 438
-"Check url" => "",
+"Check url" => "URL ellenőrzése", // ai 2026-06
 
 // modules/links/linkedit.php, row 439
-"View" => "",
+"View" => "Megtekintés", // ai 2026-06
 
 // modules/links/linkedit.php, row 440
-"You can check, if the page is not in database already" => "",
+"You can check, if the page is not in database already" => "Ellenőrizheti, hogy az oldal nincs-e már az adatbázisban", // ai 2026-06
 
 // modules/links/linkedit.php, row 445
-"Do not fill, please:" => "",
+"Do not fill, please:" => "Kérjük, ne töltse ki:", // ai 2026-06
 
 // modules/links/linkedit.php, row 451
-"English name of the page" => "",
+"English name of the page" => "Az oldal angol neve", // ai 2026-06
 
 // modules/links/linkedit.php, row 454
-"Name of the page in original language" => "",
+"Name of the page in original language" => "Az oldal neve az eredeti nyelven", // ai 2026-06
 
 // modules/links/linkedit.php, row 457
-"Do not use HTML tags and do not write words like \"best page\", ... The maximum length of the description should be about 250 characters." => "",
+"Do not use HTML tags and do not write words like \"best page\", ... The maximum length of the description should be about 250 characters." => "Ne használjon HTML-címkéket, és ne írjon olyan szavakat, mint \"legjobb oldal\", ... A leírás hossza legfeljebb kb. 250 karakter legyen.", // ai 2026-06
 
 // modules/links/linkedit.php, row 463
-"Select the type, if the link belongs to some special category" => "",
+"Select the type, if the link belongs to some special category" => "Válassza ki a típust, ha a hivatkozás valamilyen speciális kategóriába tartozik", // ai 2026-06
 
 // modules/links/linkedit.php, row 471
-"Author's e-mail" => "",
+"Author's e-mail" => "A szerző e-mail-címe", // ai 2026-06
 
 // modules/links/linkedit.php, row 474
-"You can type any message here - it is never shown on the website" => "",
+"You can type any message here - it is never shown on the website" => "Ide bármilyen megjegyzést írhat - a weboldalon soha nem jelenik meg", // ai 2026-06
 
 // modules/links/linkedit.php, row 479
-"Last checked" => "",
+"Last checked" => "Utolsó ellenőrzés", // ai 2026-06
 
 // modules/links/linkedit.php, row 479, 480, 481
-"n/j/Y" => "",
+"n/j/Y" => "Y.n.j.", // ai 2026-06
 
 // modules/links/linkedit.php, row 480
-"Last changed" => "",
+"Last changed" => "Utolsó módosítás", // ai 2026-06
 
 // modules/links/linkedit.php, row 481
-"Inserted" => "",
+"Inserted" => "Felvéve", // ai 2026-06
 
 // modules/links/linkedit.php, row 488
-"Show in category" => "",
+"Show in category" => "Megjelenítés kategóriában", // ai 2026-06
 
 // modules/links/linkedit.php, row 494
-"select the category" => "",
+"select the category" => "válassza ki a kategóriát", // ai 2026-06
 
 // modules/links/linkedit.php, row 497
-"Selected categories" => "",
+"Selected categories" => "Kiválasztott kategóriák", // ai 2026-06
 
 // modules/links/linkedit.php, row 497
-"go to the category you want to select and click on the right arrow button to select" => "",
+"go to the category you want to select and click on the right arrow button to select" => "lépjen a kiválasztani kívánt kategóriába, és kattintson a jobb oldali nyílgombra a kiválasztáshoz", // ai 2026-06
 
 // modules/links/linkedit.php, row 533
-"Organization" => "",
+"Organization" => "Szervezet", // ai 2026-06
 
 // modules/links/linkedit.php, row 549
-"Regions and languages" => "",
+"Regions and languages" => "Régiók és nyelvek", // ai 2026-06
 
 // modules/links/linkedit.php, row 551
-"Region" => "",
+"Region" => "Régió", // ai 2026-06
 
 // modules/links/linkedit.php, row 551
-"select up to 4 regions" => "",
+"select up to 4 regions" => "legfeljebb 4 régiót válasszon", // ai 2026-06
 
 // modules/links/linkedit.php, row 552
-"select page's languages" => "",
+"select page's languages" => "válassza ki az oldal nyelveit", // ai 2026-06
 
 // modules/links/linkedit2.php, row 112
-"Not accepted, sorry. Looks like spam." => "",
+"Not accepted, sorry. Looks like spam." => "Sajnáljuk, nem fogadtuk el. Spamnek tűnik.", // ai 2026-06
 
 // modules/links/linkedit2.php, row 141
-"Link change proposal inserted" => "",
+"Link change proposal inserted" => "Módosítási javaslat felvéve", // ai 2026-06
 
 // modules/links/linkedit2.php, row 141, 145
-"Link inserted" => "",
+"Link inserted" => "Hivatkozás felvéve", // ai 2026-06
 
 // modules/links/linkedit2.php, row 151
-"Continue" => "",
+"Continue" => "Folytatás", // ai 2026-06
 
 // modules/links/menu.php, row 64
-"View site" => "",
+"View site" => "Webhely megtekintése", // ai 2026-06
 
 // modules/links/menu.php, row 73
-"Add new link" => "",
+"Add new link" => "Új hivatkozás hozzáadása", // ai 2026-06
 
 // modules/links/menu.php, row 80, 81
-"Link Manager" => "",
+"Link Manager" => "Hivatkozáskezelő", // ai 2026-06
 
 // modules/links/menu.php, row 88, 89
-"Link Admin" => "",
+"Link Admin" => "Beállítások", // ai 2026-06
 
 // modules/links/menu.php, row 100
-"Folders" => "",
+"Folders" => "Mappák", // ai 2026-06
 
 // modules/links/menu.php, row 100
-"Folders with links, sorted by their status (active, changed, new, ...)" => "",
+"Folders with links, sorted by their status (active, changed, new, ...)" => "Hivatkozásokat tartalmazó mappák, állapotuk szerint rendezve (aktív, módosított, új, ...)", // ai 2026-06
 
 // modules/links/menu.php, row 103
-"Active" => "",
+"Active" => "Aktív", // ai 2026-06
 
 // modules/links/menu.php, row 106
-"Changed Links" => "",
+"Changed Links" => "Módosított hivatkozások", // ai 2026-06
 
 // modules/links/menu.php, row 109
-"New Links" => "",
+"New Links" => "Új hivatkozások", // ai 2026-06
 
 // modules/links/menu.php, row 112
-"Holding bin" => "",
+"Holding bin" => "Várólista", // ai 2026-06
 
 // modules/links/menu.php, row 115
-"Trash" => "",
+"Trash" => "Lomtár", // ai 2026-06
 
 // modules/links/menu.php, row 118
-"Unassigned" => "",
+"Unassigned" => "Besorolatlan", // ai 2026-06
 
 // modules/links/menu.php, row 121
-"Unassigned - Trash" => "",
+"Unassigned - Trash" => "Besorolatlan - lomtár", // ai 2026-06
 
 // modules/links/menu.php, row 122
-"Misc" => "",
+"Misc" => "Egyéb", // ai 2026-06
 
 // modules/links/menu.php, row 126
-"Empty trash" => "",
+"Empty trash" => "Lomtár ürítése", // ai 2026-06
 
 // modules/links/menu.php, row 127
-"Are you sure you want to empty trash?" => "",
+"Are you sure you want to empty trash?" => "Biztosan ki szeretné üríteni a lomtárat?", // ai 2026-06
 
 // modules/links/menu.php, row 131
-"Set Debug OFF" => "",
+"Set Debug OFF" => "Hibakeresés kikapcsolása (Debug OFF)", // ai 2026-06
 
 // modules/links/menu.php, row 131
-"Set Debug ON" => "",
+"Set Debug ON" => "Hibakeresés bekapcsolása (Debug ON)", // ai 2026-06
 
 // modules/links/menu.php, row 132
-"Bookmarks" => "",
+"Bookmarks" => "Könyvjelzők", // ai 2026-06
 
 // modules/links/menu.php, row 132
-"My own links" => "",
+"My own links" => "Saját hivatkozásaim", // ai 2026-06
 
 // modules/links/menu.php, row 158
-"Main settings" => "",
+"Main settings" => "Fő beállítások", // ai 2026-06
 
 // modules/links/menu.php, row 161
-"Links" => "",
+"Links" => "Hivatkozások", // ai 2026-06
 
 // modules/links/menu.php, row 162
-"Design" => "",
+"Design" => "Megjelenés", // ai 2026-06
 
 // modules/links/menu.php, row 170
-"New Category View" => "",
+"New Category View" => "Új kategórianézet", // ai 2026-06
 
 // modules/links/menu.php, row 175
-"New Link View" => "",
+"New Link View" => "Új hivatkozásnézet", // ai 2026-06
 
 // modules/links/modedit.php, row 97
-"No permission to add module" => "",
+"No permission to add module" => "Nincs jogosultsága modul hozzáadásához", // ai 2026-06
 
 // modules/links/modedit.php, row 102
-"No permission to edit module" => "",
+"No permission to edit module" => "Nincs jogosultsága a modul szerkesztéséhez", // ai 2026-06
 
 // modules/links/modedit.php, row 119, 229, 232
-"Start category id" => "",
+"Start category id" => "Kezdő kategória azonosítója", // ai 2026-06
 
 // modules/links/modedit.php, row 120, 235, 238
-"Tree start id" => "",
+"Tree start id" => "Fa kezdő azonosítója", // ai 2026-06
 
 // modules/links/modedit.php, row 121, 236, 239
-"Select start id" => "",
+"Select start id" => "Válassza ki a kezdő azonosítót", // ai 2026-06
 
 // modules/links/modedit.php, row 217
-"Add Links module" => "",
+"Add Links module" => "Hivatkozások modul hozzáadása", // ai 2026-06
 
 // modules/links/modedit.php, row 217
-"Edit Links module" => "",
+"Edit Links module" => "Hivatkozások modul szerkesztése", // ai 2026-06
 
 // modules/links/modedit.php, row 220
-"Module Links data" => "",
+"Module Links data" => "A Hivatkozások modul adatai", // ai 2026-06
 
 // modules/links/modedit.php, row 225
-"Used Language File" => "",
+"Used Language File" => "Használt nyelvi fájl", // ai 2026-06
 ];

@@ -11,40 +11,40 @@ $mgettext_lang = "ro";
 return [
 
 // admin/param_wizard.php, row 114
-"field&nbsp;id" => "",
+"field&nbsp;id" => "id&nbsp;c\xE2mp", // ai 2026-06
 
 // admin/param_wizard.php, row 117
-"boolean:&nbsp;0=false,1=true" => "",
+"boolean:&nbsp;0=false,1=true" => "boolean:&nbsp;0=fals,1=adev\xE3rat", // ai 2026-06
 
 // admin/param_wizard.php, row 141
 "Wizard" => "Vr\xE3jitor",
 
 // admin/param_wizard.php, row 230
-"This is an undocumented %s. We don't recommend using it." => "",
+"This is an undocumented %s. We don't recommend using it." => "Acesta este un %s nedocumentat. Nu recomand\xE3m utilizarea lui.", // ai 2026-06
 
 // admin/param_wizard.php, row 231
-"Close the wizard" => "",
+"Close the wizard" => "\xCEnchide asistentul", // ai 2026-06
 
 // admin/param_wizard.php, row 245
-"Available parameters: " => "",
+"Available parameters: " => "Parametri disponibili: ", // ai 2026-06
 
 // admin/param_wizard.php, row 265
-"This %s has no parameters." => "",
+"This %s has no parameters." => "Acest %s nu are parametri.", // ai 2026-06
 
 // admin/param_wizard.php, row 275
-"Have a look at these examples of parameters sets:" => "",
+"Have a look at these examples of parameters sets:" => "Priviti aceste exemple de seturi de parametri:", // ai 2026-06
 
 // admin/param_wizard.php, row 282
 "Show" => "Arat\xE3",
 
 // admin/param_wizard.php, row 293
-"OK - Save" => "",
+"OK - Save" => "OK - Salveaz\xE3", // ai 2026-06
 
 // admin/param_wizard.php, row 294
 "Cancel" => "Anulare",
 
 // admin/param_wizard.php, row 295
-"Show example params" => "",
+"Show example params" => "Arat\xE3 exemple de parametri", // ai 2026-06
 
 // admin/param_wizard.php, row 299
 "OK" => "Bine",
@@ -53,13 +53,13 @@ return [
 "Parameters" => "Parametrii",
 
 // include/constants_param_wizard.php, row 68
-"Help: Parameter Wizard" => "",
+"Help: Parameter Wizard" => "Ajutor: Asistent parametri", // ai 2026-06
 
 // include/constants_param_wizard.php, row 75
-"Input Validate Type" => "",
+"Input Validate Type" => "Tip validare intrare", // ai 2026-06
 
 // include/constants_param_wizard.php, row 77
-"No validation" => "",
+"No validation" => "F\xE3r\xE3 validare", // ai 2026-06
 
 // include/constants_param_wizard.php, row 80
 "URL" => "",
@@ -68,508 +68,516 @@ return [
 "E-mail" => "",
 
 // include/constants_param_wizard.php, row 86
-"Number = positive integer number" => "",
+"Number = positive integer number" => "Number = num\xE3r \xEEntreg pozitiv", // ai 2026-06
 
 // include/constants_param_wizard.php, row 89, 111
 "Min" => "",
 
 // include/constants_param_wizard.php, row 90, 112
-"Allowed minimum value" => "",
+"Allowed minimum value" => "Valoarea minim\xE3 permis\xE3", // ai 2026-06
 
 // include/constants_param_wizard.php, row 95, 117
 "Max" => "",
 
 // include/constants_param_wizard.php, row 96, 118
-"Allowed maximum value" => "",
+"Allowed maximum value" => "Valoarea maxim\xE3 permis\xE3", // ai 2026-06
 
 // include/constants_param_wizard.php, row 101, 123
-"Step" => "",
+"Step" => "Pas", // ai 2026-06
 
 // include/constants_param_wizard.php, row 108
-"Number = (signed) integer number" => "",
+"Number = (signed) integer number" => "Number = num\xE3r \xEEntreg (cu semn)", // ai 2026-06
 
 // include/constants_param_wizard.php, row 130
-"Float - including scientific notation 1.2E+9" => "",
+"Float - including scientific notation 1.2E+9" => "Float - inclusiv notatia stiintific\xE3 1.2E+9", // ai 2026-06
 
 // include/constants_param_wizard.php, row 133
-"Decimal" => "",
+"Decimal" => "Zecimal", // ai 2026-06
 
 // include/constants_param_wizard.php, row 136
-"Id = 1-32 hexadecimal digits [0-9a-f]" => "",
+"Id = 1-32 hexadecimal digits [0-9a-f]" => "Id = 1-32 cifre hexazecimale [0-9a-f]", // ai 2026-06
 
 // include/constants_param_wizard.php, row 139
-"Date = store as date" => "",
+"Date = store as date" => "Date = se stocheaz\xE3 ca dat\xE3", // ai 2026-06
 
 // include/constants_param_wizard.php, row 142
-"Bool = store as bool" => "",
+"Bool = store as bool" => "Bool = se stocheaz\xE3 ca valoare logic\xE3", // ai 2026-06
 
 // include/constants_param_wizard.php, row 145
-"User = does nothing ???" => "",
+"User = does nothing ???" => "User = nu face nimic ???", // ai 2026-06
 
 // include/constants_param_wizard.php, row 148
-"Unique = prove uniqueness" => "",
+"Unique = prove uniqueness" => "Unique = verific\xE3 unicitatea", // ai 2026-06
 
 // include/constants_param_wizard.php, row 149
 "Validates only if the value is not yet used. Useful e.g.\n"
    ."        for emails or user names."
- => "",
+ => "Valideaz\xE3 doar dac\xE3 valoarea nu este \xEEnc\xE3 folosit\xE3. Util de ex.\n"
+   ."        pentru adrese de e-mail sau nume de utilizator.", // ai 2026-06
 
 // include/constants_param_wizard.php, row 153, 193
-"Field ID" => "",
+"Field ID" => "ID c\xE2mp", // ai 2026-06
 
 // include/constants_param_wizard.php, row 154, 194
-"Field in which to look for matching values (default is current field)." => "",
+"Field in which to look for matching values (default is current field)." => "C\xE2mpul \xEEn care se caut\xE3 valorile potrivite (implicit c\xE2mpul curent).", // ai 2026-06
 
 // include/constants_param_wizard.php, row 159
-"Scope" => "",
+"Scope" => "Domeniu", // ai 2026-06
 
 // include/constants_param_wizard.php, row 160
 "<b>1</b> = This slice only.\n"
    ."                <b>2</b> = All slices.<br>\n"
    ."                <b>0</b> = (default) Username, special: Checks uniqueness in reader management\n"
    ."                slices and in the permission system. Always uses field ID %1"
- => "",
+ => "<b>1</b> = Doar aceast\xE3 sectiune.\n"
+   ."                <b>2</b> = Toate sectiunile.<br>\n"
+   ."                <b>0</b> = (implicit) Nume de utilizator, special: verific\xE3 unicitatea \xEEn sectiunile\n"
+   ."                de administrare a cititorilor si \xEEn sistemul de permisiuni. Foloseste \xEEntotdeauna c\xE2mpul cu ID %1", // ai 2026-06
 
 // include/constants_param_wizard.php, row 171
-"Regular Expression" => "",
+"Regular Expression" => "Expresie regulat\xE3", // ai 2026-06
 
 // include/constants_param_wizard.php, row 172
-"Validation based on Regular Expressions" => "",
+"Validation based on Regular Expressions" => "Validare bazat\xE3 pe expresii regulate", // ai 2026-06
 
 // include/constants_param_wizard.php, row 175
-"Regular Expressions" => "",
+"Regular Expressions" => "Expresii regulate", // ai 2026-06
 
 // include/constants_param_wizard.php, row 176
-"use something like: /^[0-9]*\$/ - see \"Regular Expressions\" manual." => "",
+"use something like: /^[0-9]*\$/ - see \"Regular Expressions\" manual." => "folositi ceva de genul: /^[0-9]*\$/ - vezi manualul \"Expresii regulate\".", // ai 2026-06
 
 // include/constants_param_wizard.php, row 181
-"Error text" => "",
+"Error text" => "Text eroare", // ai 2026-06
 
 // include/constants_param_wizard.php, row 182
-"error message" => "",
+"error message" => "mesaj de eroare", // ai 2026-06
 
 // include/constants_param_wizard.php, row 184
-"Wrong value" => "",
+"Wrong value" => "Valoare gresit\xE3", // ai 2026-06
 
 // include/constants_param_wizard.php, row 189
-"Unique e-mail" => "",
+"Unique e-mail" => "E-mail unic", // ai 2026-06
 
 // include/constants_param_wizard.php, row 190
-"Combines the e-mail and unique validations. Validates only if the value is a valid email address and not yet used." => "",
+"Combines the e-mail and unique validations. Validates only if the value is a valid email address and not yet used." => "Combin\xE3 valid\xE3rile e-mail si unicitate. Valideaz\xE3 doar dac\xE3 valoarea este o adres\xE3 de e-mail valid\xE3 si nu este \xEEnc\xE3 folosit\xE3.", // ai 2026-06
 
 // include/constants_param_wizard.php, row 199
-"Slice only" => "",
+"Slice only" => "Doar aceast\xE3 sectiune", // ai 2026-06
 
 // include/constants_param_wizard.php, row 200
 "Do you want to check for uniqueness this slice only\n"
    ."                  or all slices?"
- => "",
+ => "Doriti s\xE3 verificati unicitatea doar \xEEn aceast\xE3 sectiune\n"
+   ."                  sau \xEEn toate sectiunile?", // ai 2026-06
 
 // include/constants_param_wizard.php, row 208
-"Password and Change Password" => "",
+"Password and Change Password" => "Parol\xE3 si schimbare parol\xE3", // ai 2026-06
 
 // include/constants_param_wizard.php, row 209
 "Validates the passwords do not differ when changing password.\n"
    ."        <i>The validation is provided only by JavaScript and not by ValidateInput()\n"
    ."        because the insert\n"
    ."        function does the validation again before inserting the new password.</i>"
- => "",
+ => "Valideaz\xE3 c\xE3 parolele nu difer\xE3 la schimbarea parolei.\n"
+   ."        <i>Validarea este realizat\xE3 doar de JavaScript, nu de ValidateInput(),\n"
+   ."        pentru c\xE3 functia de inserare\n"
+   ."        face din nou validarea \xEEnainte de a insera noua parol\xE3.</i>", // ai 2026-06
 
 // include/constants_param_wizard.php, row 224
 "Function" => "Func\xFEie",
 
 // include/constants_param_wizard.php, row 225
-"How the formatting in the text on this page is used:<br><i>the field</i> in italics stands for the field edited in the \"configure Fields\" window,<br><b>parameter name</b> in bold stands for a parameter on this screen." => "",
+"How the formatting in the text on this page is used:<br><i>the field</i> in italics stands for the field edited in the \"configure Fields\" window,<br><b>parameter name</b> in bold stands for a parameter on this screen." => "Cum este folosit\xE3 formatarea \xEEn textul de pe aceast\xE3 pagin\xE3:<br><i>c\xE2mpul</i> cu italice reprezint\xE3 c\xE2mpul editat \xEEn fereastra \"configurare C\xE2mpuri\",<br><b>numele parametrului</b> cu aldine reprezint\xE3 un parametru de pe acest ecran.", // ai 2026-06
 
 // include/constants_param_wizard.php, row 228
-"just code" => "",
+"just code" => "doar cod", // ai 2026-06
 
 // include/constants_param_wizard.php, row 229
-"prints the code in parameter - _#this could be used - easier than f_t (no additional parameter)" => "",
+"prints the code in parameter - _#this could be used - easier than f_t (no additional parameter)" => "afiseaz\xE3 codul din parametru - se poate folosi _#this - mai simplu dec\xE2t f_t (f\xE3r\xE3 parametru suplimentar)", // ai 2026-06
 
 // include/constants_param_wizard.php, row 232
-"null function" => "",
+"null function" => "functie nul\xE3", // ai 2026-06
 
 // include/constants_param_wizard.php, row 233
-"prints nothing" => "",
+"prints nothing" => "nu afiseaz\xE3 nimic", // ai 2026-06
 
 // include/constants_param_wizard.php, row 236
-"first value" => "",
+"first value" => "prima valoare", // ai 2026-06
 
 // include/constants_param_wizard.php, row 237
-"prints first value, even if the field is multivalue" => "",
+"prints first value, even if the field is multivalue" => "afiseaz\xE3 prima valoare, chiar dac\xE3 c\xE2mpul are valori multiple", // ai 2026-06
 
 // include/constants_param_wizard.php, row 240
-"translated" => "",
+"translated" => "tradus", // ai 2026-06
 
 // include/constants_param_wizard.php, row 241
-"prints translated field based on currently selected language" => "",
+"prints translated field based on currently selected language" => "afiseaz\xE3 traducerea c\xE2mpului conform limbii selectate curent", // ai 2026-06
 
 // include/constants_param_wizard.php, row 244
-"abstract" => "",
+"abstract" => "rezumat", // ai 2026-06
 
 // include/constants_param_wizard.php, row 245
-"prints abstract (if exists) or the beginning of the <b>fulltext</b>" => "",
+"prints abstract (if exists) or the beginning of the <b>fulltext</b>" => "afiseaz\xE3 rezumatul (dac\xE3 exist\xE3) sau \xEEnceputul c\xE2mpului <b>text complet</b>", // ai 2026-06
 
 // include/constants_param_wizard.php, row 248
-"length" => "",
+"length" => "lungime", // ai 2026-06
 
 // include/constants_param_wizard.php, row 249
-"max number of characters grabbed from the <b>fulltext</b> field" => "",
+"max number of characters grabbed from the <b>fulltext</b> field" => "num\xE3rul maxim de caractere preluate din c\xE2mpul <b>text complet</b>", // ai 2026-06
 
 // include/constants_param_wizard.php, row 254
-"fulltext" => "",
+"fulltext" => "text complet", // ai 2026-06
 
 // include/constants_param_wizard.php, row 255
-"field id of fulltext field (like full_text.......), from which the text is grabbed. If empty, the text is grabbed from <i>the field</i> itself." => "",
+"field id of fulltext field (like full_text.......), from which the text is grabbed. If empty, the text is grabbed from <i>the field</i> itself." => "id-ul c\xE2mpului cu text complet (de ex. full_text.......), din care se preia textul. Dac\xE3 este gol, textul se preia direct din <i>c\xE2mpul</i> respectiv.", // ai 2026-06
 
 // include/constants_param_wizard.php, row 257, 299, 596
 "full_text......." => "",
 
 // include/constants_param_wizard.php, row 260
-"paragraph" => "",
+"paragraph" => "paragraf", // ai 2026-06
 
 // include/constants_param_wizard.php, row 261
-"take first paragraph (text until \\<BR\\> or \\<P\\> or \\</P\\> or at least '.' (dot)) if shorter than <b>length</b>" => "",
+"take first paragraph (text until \\<BR\\> or \\<P\\> or \\</P\\> or at least '.' (dot)) if shorter than <b>length</b>" => "ia primul paragraf (textul p\xE2n\xE3 la \\<BR\\> sau \\<P\\> sau \\</P\\>, sau cel putin p\xE2n\xE3 la '.' (punct)), dac\xE3 este mai scurt dec\xE2t <b>lungime</b>", // ai 2026-06
 
 // include/constants_param_wizard.php, row 268
-"extended fulltext link" => "",
+"extended fulltext link" => "leg\xE3tur\xE3 extins\xE3 la textul complet", // ai 2026-06
 
 // include/constants_param_wizard.php, row 269
-"Prints some <b>text</b> (or field content) with a link to the fulltext. A more general version of the f_f function. This function doesn't use <i>the field</i>." => "",
+"Prints some <b>text</b> (or field content) with a link to the fulltext. A more general version of the f_f function. This function doesn't use <i>the field</i>." => "Afiseaz\xE3 un <b>text</b> (sau continutul unui c\xE2mp) cu o leg\xE3tur\xE3 c\xE3tre textul complet. O versiune mai general\xE3 a functiei f_f. Aceast\xE3 functie nu foloseste <i>c\xE2mpul</i>.", // ai 2026-06
 
 // include/constants_param_wizard.php, row 272, 406
-"link only" => "",
+"link only" => "doar leg\xE3tur\xE3", // ai 2026-06
 
 // include/constants_param_wizard.php, row 273
-"field id (like 'link_only.......') where switch between external and internal item is stored.  (That page should contain SSI include ../slice.php.). If unfilled, the same page as for item index is used for fulltext (which is obvious behavior)." => "",
+"field id (like 'link_only.......') where switch between external and internal item is stored.  (That page should contain SSI include ../slice.php.). If unfilled, the same page as for item index is used for fulltext (which is obvious behavior)." => "id-ul c\xE2mpului (de ex. 'link_only.......') \xEEn care este stocat comutatorul \xEEntre articol extern si intern. (Pagina respectiv\xE3 trebuie s\xE3 contin\xE3 include-ul SSI ../slice.php.). Dac\xE3 nu este completat, pentru textul complet se foloseste aceeasi pagin\xE3 ca pentru lista articolelor (ceea ce este comportamentul firesc).", // ai 2026-06
 
 // include/constants_param_wizard.php, row 275, 409
 "link_only......." => "",
 
 // include/constants_param_wizard.php, row 278
-"url_field" => "",
+"url_field" => "c\xE2mp URL", // ai 2026-06
 
 // include/constants_param_wizard.php, row 279
-"field id if field, where external URL is stored (like hl_href.........)" => "",
+"field id if field, where external URL is stored (like hl_href.........)" => "id-ul c\xE2mpului \xEEn care este stocat URL-ul extern (de ex. hl_href.........)", // ai 2026-06
 
 // include/constants_param_wizard.php, row 281
 "hl_href........." => "",
 
 // include/constants_param_wizard.php, row 284, 412
-"redirect" => "",
+"redirect" => "redirectionare", // ai 2026-06
 
 // include/constants_param_wizard.php, row 285, 413
-"The URL of another page which shows the content of the item. (That page should contain SSI include ../slice.php.). If unfilled, the same page as for item index is used for fulltext (which is obvious behavior)." => "",
+"The URL of another page which shows the content of the item. (That page should contain SSI include ../slice.php.). If unfilled, the same page as for item index is used for fulltext (which is obvious behavior)." => "URL-ul altei pagini care afiseaz\xE3 continutul articolului. (Pagina respectiv\xE3 trebuie s\xE3 contin\xE3 include-ul SSI ../slice.php.). Dac\xE3 nu este completat, pentru textul complet se foloseste aceeasi pagin\xE3 ca pentru lista articolelor (ceea ce este comportamentul firesc).", // ai 2026-06
 
 // include/constants_param_wizard.php, row 287, 415
-"http#://www.ecn.cz/articles/solar.shtml" => "",
+"http#://www.ecn.cz/articles/solar.shtml" => "http#://www.siteulmeu.ro/stiri.shtml", // ai 2026-06
 
 // include/constants_param_wizard.php, row 290
 "text" => "",
 
 // include/constants_param_wizard.php, row 291
-"The text to be surrounded by the link. If this parameter is a field id, the field's content is used, else it is used verbatim" => "",
+"The text to be surrounded by the link. If this parameter is a field id, the field's content is used, else it is used verbatim" => "Textul care va fi \xEEncadrat de leg\xE3tur\xE3. Dac\xE3 acest parametru este un id de c\xE2mp, se foloseste continutul c\xE2mpului, altfel se foloseste ca atare", // ai 2026-06
 
 // include/constants_param_wizard.php, row 296
-"condition field" => "",
+"condition field" => "c\xE2mp conditie", // ai 2026-06
 
 // include/constants_param_wizard.php, row 297
-"when the specified field hasn't any content, no link is printed, but only the <b>text</b>" => "",
+"when the specified field hasn't any content, no link is printed, but only the <b>text</b>" => "c\xE2nd c\xE2mpul specificat nu are continut, nu se afiseaz\xE3 leg\xE3tura, ci doar <b>textul</b>", // ai 2026-06
 
 // include/constants_param_wizard.php, row 302, 529
-"tag addition" => "",
+"tag addition" => "ad\xE3ugare la tag", // ai 2026-06
 
 // include/constants_param_wizard.php, row 303, 530
-"additional text to the \"\\<a\\>\" tag" => "",
+"additional text to the \"\\<a\\>\" tag" => "text aditional pentru tagul \"\\<a\\>\"", // ai 2026-06
 
 // include/constants_param_wizard.php, row 305, 532
 "target=_blank" => "",
 
 // include/constants_param_wizard.php, row 308, 418
-"no session id" => "",
+"no session id" => "f\xE3r\xE3 session id", // ai 2026-06
 
 // include/constants_param_wizard.php, row 309, 419
-"If 1, the session id (AA_Session=...) is not added to url" => "",
+"If 1, the session id (AA_Session=...) is not added to url" => "Dac\xE3 este 1, session id-ul (AA_Session=...) nu se adaug\xE3 la url", // ai 2026-06
 
 // include/constants_param_wizard.php, row 316, 320
-"condition" => "",
+"condition" => "conditie", // ai 2026-06
 
 // include/constants_param_wizard.php, row 317
-"This is a very powerful function. It may be used as a better replace of some previous functions. If <b>cond_field</b> = <b>condition</b>, prints <b>begin</b> <i>field</i> <b>end</b>, else prints <b>else</b>. If <b>cond_field</b> is not specified, <i>the field</i> is used. Condition may be reversed (negated) by the \"!\" character at the beginning of it." => "",
+"This is a very powerful function. It may be used as a better replace of some previous functions. If <b>cond_field</b> = <b>condition</b>, prints <b>begin</b> <i>field</i> <b>end</b>, else prints <b>else</b>. If <b>cond_field</b> is not specified, <i>the field</i> is used. Condition may be reversed (negated) by the \"!\" character at the beginning of it." => "Aceasta este o functie foarte puternic\xE3. Poate fi folosit\xE3 ca un \xEEnlocuitor mai bun al unor functii anterioare. Dac\xE3 <b>c\xE2mp conditie</b> = <b>conditie</b>, afiseaz\xE3 <b>\xEEnceput</b> <i>c\xE2mpul</i> <b>sf\xE2rsit</b>, altfel afiseaz\xE3 <b>altfel</b>. Dac\xE3 <b>c\xE2mp conditie</b> nu este specificat, se foloseste <i>c\xE2mpul</i>. Conditia poate fi inversat\xE3 (negat\xE3) cu caracterul \"!\" la \xEEnceputul ei.", // ai 2026-06
 
 // include/constants_param_wizard.php, row 321
-"you may use \"!\" to reverse (negate) the condition" => "",
+"you may use \"!\" to reverse (negate) the condition" => "puteti folosi \"!\" pentru a inversa (nega) conditia", // ai 2026-06
 
 // include/constants_param_wizard.php, row 326, 505
-"begin" => "",
+"begin" => "\xEEnceput", // ai 2026-06
 
 // include/constants_param_wizard.php, row 327
-"text to print before <i>field</i>, if condition is true" => "",
+"text to print before <i>field</i>, if condition is true" => "text de afisat \xEEnainte de <i>c\xE2mp</i>, dac\xE3 conditia este adev\xE3rat\xE3", // ai 2026-06
 
 // include/constants_param_wizard.php, row 329
-"Yes" => "",
+"Yes" => "Da", // ai 2026-06
 
 // include/constants_param_wizard.php, row 332
-"end" => "",
+"end" => "sf\xE2rsit", // ai 2026-06
 
 // include/constants_param_wizard.php, row 333
-"text to print after <i>field</i>, if condition is true" => "",
+"text to print after <i>field</i>, if condition is true" => "text de afisat dup\xE3 <i>c\xE2mp</i>, dac\xE3 conditia este adev\xE3rat\xE3", // ai 2026-06
 
 // include/constants_param_wizard.php, row 338
-"else" => "",
+"else" => "altfel", // ai 2026-06
 
 // include/constants_param_wizard.php, row 339
-"text to print when condition is not satisfied" => "",
+"text to print when condition is not satisfied" => "text de afisat c\xE2nd conditia nu este \xEEndeplinit\xE3", // ai 2026-06
 
 // include/constants_param_wizard.php, row 341
-"No" => "",
+"No" => "Nu", // ai 2026-06
 
 // include/constants_param_wizard.php, row 344
-"cond_field" => "",
+"cond_field" => "c\xE2mp_conditie", // ai 2026-06
 
 // include/constants_param_wizard.php, row 345
-"field to compare with the <b>condition</b> - if not filled, <i>field</i> is used" => "",
+"field to compare with the <b>condition</b> - if not filled, <i>field</i> is used" => "c\xE2mpul de comparat cu <b>conditia</b> - dac\xE3 nu este completat, se foloseste <i>c\xE2mpul</i>", // ai 2026-06
 
 // include/constants_param_wizard.php, row 350
-"skip_the_field" => "",
+"skip_the_field" => "omite_c\xE2mpul", // ai 2026-06
 
 // include/constants_param_wizard.php, row 351
-"if set to 1, skip <i>the field</i> (print only <b>begin end</b> or <b>else</b>)" => "",
+"if set to 1, skip <i>the field</i> (print only <b>begin end</b> or <b>else</b>)" => "dac\xE3 este setat la 1, omite <i>c\xE2mpul</i> (afiseaz\xE3 doar <b>\xEEnceput sf\xE2rsit</b> sau <b>altfel</b>)", // ai 2026-06
 
 // include/constants_param_wizard.php, row 358
-"This example is usable e.g. for Highlight field - it shows Yes or No depending on the field content" => "",
+"This example is usable e.g. for Highlight field - it shows Yes or No depending on the field content" => "Acest exemplu este util de ex. pentru c\xE2mpul Highlight - afiseaz\xE3 Da sau Nu \xEEn functie de continutul c\xE2mpului", // ai 2026-06
 
 // include/constants_param_wizard.php, row 359
-"1:Yes::No::1" => "",
+"1:Yes::No::1" => "1:Da::Nu::1", // ai 2026-06
 
 // include/constants_param_wizard.php, row 362
-"When e-mail field is filled, prints something like \"Email: email@apc.org\", when it is empty, prints nothing" => "",
+"When e-mail field is filled, prints something like \"Email: email@apc.org\", when it is empty, prints nothing" => "C\xE2nd c\xE2mpul e-mail este completat, afiseaz\xE3 ceva de genul \"Email: email@apc.org\", c\xE2nd este gol, nu afiseaz\xE3 nimic", // ai 2026-06
 
 // include/constants_param_wizard.php, row 363
 "!:Email#:&nbsp;" => "",
 
 // include/constants_param_wizard.php, row 366
-"Print image height attribute, if <i>the field</i> is filled, nothing otherwise." => "",
+"Print image height attribute, if <i>the field</i> is filled, nothing otherwise." => "Afiseaz\xE3 atributul height al imaginii dac\xE3 <i>c\xE2mpul</i> este completat, altfel nimic.", // ai 2026-06
 
 // include/constants_param_wizard.php, row 367
 "!:height=" => "",
 
 // include/constants_param_wizard.php, row 372
-"date" => "",
+"date" => "dat\xE3", // ai 2026-06
 
 // include/constants_param_wizard.php, row 373
-"prints date in a user defined format" => "",
+"prints date in a user defined format" => "afiseaz\xE3 data \xEEntr-un format definit de utilizator", // ai 2026-06
 
 // include/constants_param_wizard.php, row 376
 "format" => "",
 
 // include/constants_param_wizard.php, row 377
-"PHP-like format - see <a href=\"https://php.net/manual/en/function.date.php\" target=_blank>PHP manual</a>" => "",
+"PHP-like format - see <a href=\"https://php.net/manual/en/function.date.php\" target=_blank>PHP manual</a>" => "format de tip PHP - vezi <a href=\"https://php.net/manual/en/function.date.php\" target=_blank>manualul PHP</a>", // ai 2026-06
 
 // include/constants_param_wizard.php, row 379
-"m-d-Y" => "",
+"m-d-Y" => "d-m-Y", // ai 2026-06
 
 // include/constants_param_wizard.php, row 384
-"edit item" => "",
+"edit item" => "editare articol", // ai 2026-06
 
 // include/constants_param_wizard.php, row 385
-"_#EDITITEM used on admin page index.php for itemedit url" => "",
+"_#EDITITEM used on admin page index.php for itemedit url" => "_#EDITITEM se foloseste pe pagina de administrare index.php pentru url-ul itemedit", // ai 2026-06
 
 // include/constants_param_wizard.php, row 388
-"type" => "",
+"type" => "tip", // ai 2026-06
 
 // include/constants_param_wizard.php, row 389
-"disc - for editing a discussion<br>itemcount - to output an item count<br>safe - for safe html<br>slice_info - select a field from the slice info<br>edit - URL to edit the item<br>add - URL to add a new item" => "",
+"disc - for editing a discussion<br>itemcount - to output an item count<br>safe - for safe html<br>slice_info - select a field from the slice info<br>edit - URL to edit the item<br>add - URL to add a new item" => "disc - pentru editarea unei discutii<br>itemcount - pentru afisarea num\xE3rului de articole<br>safe - pentru html sigur<br>slice_info - selecteaz\xE3 un c\xE2mp din informatiile sectiunii<br>edit - URL pentru editarea articolului<br>add - URL pentru ad\xE3ugarea unui articol nou", // ai 2026-06
 
 // include/constants_param_wizard.php, row 391
 "edit" => "editare",
 
 // include/constants_param_wizard.php, row 394
-"return url" => "",
+"return url" => "url de retur", // ai 2026-06
 
 // include/constants_param_wizard.php, row 395
-"Return url being called from, usually leave blank and allow default" => "",
+"Return url being called from, usually leave blank and allow default" => "Url-ul de retur de la care se apeleaz\xE3; de obicei l\xE3sati gol si se foloseste cel implicit", // ai 2026-06
 
 // include/constants_param_wizard.php, row 397
-"/mysite.shtml" => "",
+"/mysite.shtml" => "/siteulmeu.shtml", // ai 2026-06
 
 // include/constants_param_wizard.php, row 402
-"fulltext link" => "",
+"fulltext link" => "leg\xE3tur\xE3 fulltext", // ai 2026-06
 
 // include/constants_param_wizard.php, row 403
-"Prints the URL name inside a link to the fulltext - enables using external items. To be used immediately after \"\\<a href=\"" => "",
+"Prints the URL name inside a link to the fulltext - enables using external items. To be used immediately after \"\\<a href=\"" => "Afiseaz\xE3 numele URL \xEEn interiorul unei leg\xE3turi c\xE3tre fulltext - permite folosirea articolelor externe. De folosit imediat dup\xE3 \"\\<a href=\"", // ai 2026-06
 
 // include/constants_param_wizard.php, row 407
-"field id (like 'link_only.......') where switch between external and internal item is stored. Usually this field is represented as checkbox. If the checkbox is checked, <i>the field</i> is printed, if unchecked, link to fulltext is printed (it depends on <b>redirect</b> parameter, too)." => "",
+"field id (like 'link_only.......') where switch between external and internal item is stored. Usually this field is represented as checkbox. If the checkbox is checked, <i>the field</i> is printed, if unchecked, link to fulltext is printed (it depends on <b>redirect</b> parameter, too)." => "id-ul c\xE2mpului (de ex. 'link_only.......') \xEEn care se stocheaz\xE3 comutarea \xEEntre articol extern si intern. De obicei acest c\xE2mp este reprezentat ca o c\xE3sut\xE3 de bifare. Dac\xE3 este bifat\xE3, se afiseaz\xE3 <i>c\xE2mpul</i>, dac\xE3 nu, se afiseaz\xE3 leg\xE3tura c\xE3tre fulltext (depinde si de parametrul <b>redirect</b>).", // ai 2026-06
 
 // include/constants_param_wizard.php, row 426
-"image height" => "",
+"image height" => "\xEEn\xE3ltime imagine", // ai 2026-06
 
 // include/constants_param_wizard.php, row 427
-"An old-style function. Prints <i>the field</i> as image height value (\\<img height=...\\>) or erases the height tag. To be used immediately after \"height=\".The f_c function provides a better way of doing this with parameters \":height=\". " => "",
+"An old-style function. Prints <i>the field</i> as image height value (\\<img height=...\\>) or erases the height tag. To be used immediately after \"height=\".The f_c function provides a better way of doing this with parameters \":height=\". " => "O functie de stil vechi. Afiseaz\xE3 <i>c\xE2mpul</i> ca valoare a \xEEn\xE3ltimii imaginii (\\<img height=...\\>) sau elimin\xE3 atributul height. De folosit imediat dup\xE3 \"height=\". Functia f_c ofer\xE3 un mod mai bun de a face acest lucru, cu parametrii \":height=\".", // ai 2026-06
 
 // include/constants_param_wizard.php, row 430
-"print HTML multiple" => "",
+"print HTML multiple" => "afisare HTML multipl\xE3", // ai 2026-06
 
 // include/constants_param_wizard.php, row 431
-"prints <i>the field</i> content depending on the html flag (escape html special characters or just print)" => "",
+"prints <i>the field</i> content depending on the html flag (escape html special characters or just print)" => "afiseaz\xE3 continutul <i>c\xE2mpului</i> \xEEn functie de indicatorul html (escapeaz\xE3 caracterele speciale html sau doar afiseaz\xE3)", // ai 2026-06
 
 // include/constants_param_wizard.php, row 434
-"delimiter" => "",
+"delimiter" => "delimitator", // ai 2026-06
 
 // include/constants_param_wizard.php, row 435
-"if specified, a field with multiple values is displayed with the values delimited by it" => "",
+"if specified, a field with multiple values is displayed with the values delimited by it" => "dac\xE3 este specificat, un c\xE2mp cu valori multiple este afisat cu valorile separate de acesta", // ai 2026-06
 
 // include/constants_param_wizard.php, row 442
-"image src" => "",
+"image src" => "surs\xE3 imagine", // ai 2026-06
 
 // include/constants_param_wizard.php, row 443
-"prints <i>the field</i> as image source (\\<img src=...\\>) - NO_PICTURE for none. The same could be done by the f_c function with parameters :::NO_PICTURE. " => "",
+"prints <i>the field</i> as image source (\\<img src=...\\>) - NO_PICTURE for none. The same could be done by the f_c function with parameters :::NO_PICTURE. " => "afiseaz\xE3 <i>c\xE2mpul</i> ca surs\xE3 a imaginii (\\<img src=...\\>) - NO_PICTURE pentru niciuna. Acelasi lucru se poate face cu functia f_c cu parametrii :::NO_PICTURE.", // ai 2026-06
 
 // include/constants_param_wizard.php, row 446
-"image size" => "",
+"image size" => "dimensiune imagine", // ai 2026-06
 
 // include/constants_param_wizard.php, row 447
-"prints <i>the field</i> as image size (height='xxx' width='yyy') (or other image information) or empty string if can't work out, does not special case URLs from uploads directory, might do later! " => "",
+"prints <i>the field</i> as image size (height='xxx' width='yyy') (or other image information) or empty string if can't work out, does not special case URLs from uploads directory, might do later! " => "afiseaz\xE3 <i>c\xE2mpul</i> ca dimensiune a imaginii (height='xxx' width='yyy') (sau alte informatii despre imagine) sau sir gol dac\xE3 nu o poate determina; nu trateaz\xE3 special URL-urile din directorul uploads, poate o va face mai t\xE2rziu!", // ai 2026-06
 
 // include/constants_param_wizard.php, row 450, 826
-"information" => "",
+"information" => "informatie", // ai 2026-06
 
 // include/constants_param_wizard.php, row 451
-"specifies returned information: <br> - <i>html</i> - (default) - returns image size as HTML attributes (height='xxx' width='yyy')<br> - <i>width</i> - returns width of image in pixels<br> - <i>height</i> - returns height of image in pixels<br> - <i>imgtype</i> - returns flag indicating the type of the image: 1 = GIF, 2 = JPG, 3 = PNG, 4 = SWF, 5 = PSD, 6 = BMP, 7 = TIFF(intel byte order), 8 = TIFF(motorola byte order), 9 = JPC, 10 = JP2, 11 = JPX, 12 = JB2, 13 = SWC, 14 = IFF, 15 = WBMP, 16 = XBM<br> - <i>mime</i> - returns mimetype of the image (like 'image/gif', 'application/x-shockwave-flash', ...)" => "",
+"specifies returned information: <br> - <i>html</i> - (default) - returns image size as HTML attributes (height='xxx' width='yyy')<br> - <i>width</i> - returns width of image in pixels<br> - <i>height</i> - returns height of image in pixels<br> - <i>imgtype</i> - returns flag indicating the type of the image: 1 = GIF, 2 = JPG, 3 = PNG, 4 = SWF, 5 = PSD, 6 = BMP, 7 = TIFF(intel byte order), 8 = TIFF(motorola byte order), 9 = JPC, 10 = JP2, 11 = JPX, 12 = JB2, 13 = SWC, 14 = IFF, 15 = WBMP, 16 = XBM<br> - <i>mime</i> - returns mimetype of the image (like 'image/gif', 'application/x-shockwave-flash', ...)" => "specific\xE3 informatia returnat\xE3: <br> - <i>html</i> - (implicit) - returneaz\xE3 dimensiunea imaginii ca atribute HTML (height='xxx' width='yyy')<br> - <i>width</i> - returneaz\xE3 l\xE3timea imaginii \xEEn pixeli<br> - <i>height</i> - returneaz\xE3 \xEEn\xE3ltimea imaginii \xEEn pixeli<br> - <i>imgtype</i> - returneaz\xE3 un indicator al tipului imaginii: 1 = GIF, 2 = JPG, 3 = PNG, 4 = SWF, 5 = PSD, 6 = BMP, 7 = TIFF(ordine de octeti intel), 8 = TIFF(ordine de octeti motorola), 9 = JPC, 10 = JP2, 11 = JPX, 12 = JB2, 13 = SWC, 14 = IFF, 15 = WBMP, 16 = XBM<br> - <i>mime</i> - returneaz\xE3 tipul MIME al imaginii (precum 'image/gif', 'application/x-shockwave-flash', ...)", // ai 2026-06
 
 // include/constants_param_wizard.php, row 458
-"substring with case change" => "",
+"substring with case change" => "subsir cu schimbare majuscule/minuscule", // ai 2026-06
 
 // include/constants_param_wizard.php, row 459
-"prints a part of <i>the field</i>" => "",
+"prints a part of <i>the field</i>" => "afiseaz\xE3 o parte din <i>c\xE2mp</i>", // ai 2026-06
 
 // include/constants_param_wizard.php, row 462
-"start" => "",
+"start" => "\xEEnceput", // ai 2026-06
 
 // include/constants_param_wizard.php, row 463
-"position of substring start (0=first, 1=second, -1=last,-2=two from end)" => "",
+"position of substring start (0=first, 1=second, -1=last,-2=two from end)" => "pozitia de \xEEnceput a subsirului (0=primul, 1=al doilea, -1=ultimul, -2=al doilea de la sf\xE2rsit)", // ai 2026-06
 
 // include/constants_param_wizard.php, row 468
-"count" => "",
+"count" => "num\xE3r", // ai 2026-06
 
 // include/constants_param_wizard.php, row 469
-"count of characters (0=until the end)" => "",
+"count of characters (0=until the end)" => "num\xE3rul de caractere (0=p\xE2n\xE3 la sf\xE2rsit)", // ai 2026-06
 
 // include/constants_param_wizard.php, row 474
-"case" => "",
+"case" => "majuscule/minuscule", // ai 2026-06
 
 // include/constants_param_wizard.php, row 475
-"upper - convert to UPPERCASE, lower - convert to lowercase, first - convert to First Upper; default is don't change" => "",
+"upper - convert to UPPERCASE, lower - convert to lowercase, first - convert to First Upper; default is don't change" => "upper - converteste \xEEn MAJUSCULE, lower - converteste \xEEn minuscule, first - converteste \xEEn Prima Liter\xE3 Mare; implicit nu se schimb\xE3", // ai 2026-06
 
 // include/constants_param_wizard.php, row 480
-"add string" => "",
+"add string" => "sir ad\xE3ugat", // ai 2026-06
 
 // include/constants_param_wizard.php, row 481
-"if string is shortened, <i>add string</i> is appended to the string (probably something like [...])" => "",
+"if string is shortened, <i>add string</i> is appended to the string (probably something like [...])" => "dac\xE3 sirul este scurtat, <i>sirul ad\xE3ugat</i> este atasat la sf\xE2rsitul lui (probabil ceva de genul [...])", // ai 2026-06
 
 // include/constants_param_wizard.php, row 487
-"Auto Update Checkbox" => "",
+"Auto Update Checkbox" => "C\xE3sut\xE3 de bifare cu actualizare automat\xE3", // ai 2026-06
 
 // include/constants_param_wizard.php, row 489
-"linked field" => "",
+"linked field" => "c\xE2mp cu leg\xE3tur\xE3", // ai 2026-06
 
 // include/constants_param_wizard.php, row 490
-"prints <i>the field</i> as a link if the <b>link URL</b> is not NULL, otherwise prints just <i>the field</i>" => "",
+"prints <i>the field</i> as a link if the <b>link URL</b> is not NULL, otherwise prints just <i>the field</i>" => "afiseaz\xE3 <i>c\xE2mpul</i> ca leg\xE3tur\xE3 dac\xE3 <b>URL leg\xE3tur\xE3</b> nu este NULL, altfel afiseaz\xE3 doar <i>c\xE2mpul</i>", // ai 2026-06
 
 // include/constants_param_wizard.php, row 493
-"link URL" => "",
+"link URL" => "URL leg\xE3tur\xE3", // ai 2026-06
 
 // include/constants_param_wizard.php, row 496
 "source_href....." => "",
 
 // include/constants_param_wizard.php, row 501
-"e-mail or link" => "",
+"e-mail or link" => "e-mail sau leg\xE3tur\xE3", // ai 2026-06
 
 // include/constants_param_wizard.php, row 502
-"mailto link - prints: <br>\"<b>begin</b>\\<a href=\"(mailto:)<i>the field</i>\" <b>tag addition</b>\\><b>field/text</b>\\</a\\>. If <i>the field</i> is not filled, prints <b>else_field/text</b>." => "",
+"mailto link - prints: <br>\"<b>begin</b>\\<a href=\"(mailto:)<i>the field</i>\" <b>tag addition</b>\\><b>field/text</b>\\</a\\>. If <i>the field</i> is not filled, prints <b>else_field/text</b>." => "leg\xE3tur\xE3 mailto - afiseaz\xE3: <br>\"<b>\xEEnceput</b>\\<a href=\"(mailto:)<i>c\xE2mpul</i>\" <b>ad\xE3ugare la tag</b>\\><b>c\xE2mp/text</b>\\</a\\>. Dac\xE3 <i>c\xE2mpul</i> nu este completat, afiseaz\xE3 <b>c\xE2mp_altfel/text</b>.", // ai 2026-06
 
 // include/constants_param_wizard.php, row 506
-"text before the link" => "",
+"text before the link" => "text \xEEnaintea leg\xE3turii", // ai 2026-06
 
 // include/constants_param_wizard.php, row 508
 "e-mail" => "",
 
 // include/constants_param_wizard.php, row 511
-"field/text" => "",
+"field/text" => "c\xE2mp/text", // ai 2026-06
 
 // include/constants_param_wizard.php, row 512
-"if this parameter is a field id, the field's content is used, else it is used verbatim" => "",
+"if this parameter is a field id, the field's content is used, else it is used verbatim" => "dac\xE3 acest parametru este un id de c\xE2mp, se foloseste continutul c\xE2mpului, altfel se foloseste ca atare", // ai 2026-06
 
 // include/constants_param_wizard.php, row 517
-"else_field/text" => "",
+"else_field/text" => "c\xE2mp_altfel/text", // ai 2026-06
 
 // include/constants_param_wizard.php, row 518
-"if <i>the field</i> is empty, only this text (or field content) is printed" => "",
+"if <i>the field</i> is empty, only this text (or field content) is printed" => "dac\xE3 <i>c\xE2mpul</i> este gol, se afiseaz\xE3 doar acest text (sau continutul c\xE2mpului)", // ai 2026-06
 
 // include/constants_param_wizard.php, row 523
-"linktype" => "",
+"linktype" => "tip leg\xE3tur\xE3", // ai 2026-06
 
 // include/constants_param_wizard.php, row 524
-"mailto / href (default is mailto) - it is possible to use f_m function for links, too - just type 'href' as this parameter" => "",
+"mailto / href (default is mailto) - it is possible to use f_m function for links, too - just type 'href' as this parameter" => "mailto / href (implicit este mailto) - functia f_m poate fi folosit\xE3 si pentru leg\xE3turi - este suficient s\xE3 introduceti 'href' la acest parametru", // ai 2026-06
 
 // include/constants_param_wizard.php, row 526
 "href" => "",
 
 // include/constants_param_wizard.php, row 535
-"hide email" => "",
+"hide email" => "ascunde e-mail", // ai 2026-06
 
 // include/constants_param_wizard.php, row 536
-"if 1 then hide email from spam robots. Default is 0." => "",
+"if 1 then hide email from spam robots. Default is 0." => "dac\xE3 este 1, ascunde e-mailul de robotii de spam. Implicit este 0.", // ai 2026-06
 
 // include/constants_param_wizard.php, row 543
 "id" => "",
 
 // include/constants_param_wizard.php, row 544
-"prints unpacked id (use it, if you want to show 'item id' or 'slice id')" => "",
+"prints unpacked id (use it, if you want to show 'item id' or 'slice id')" => "afiseaz\xE3 id-ul desf\xE3cut (unpacked) (folositi-l dac\xE3 doriti s\xE3 afisati 'item id' sau 'slice id')", // ai 2026-06
 
 // include/constants_param_wizard.php, row 547
-"'New' sign" => "",
+"'New' sign" => "Semnul 'Nou'", // ai 2026-06
 
 // include/constants_param_wizard.php, row 548
-"prints 'New' or 'Old' or any other text in <b>newer text</b> or <b>older text</b> depending on <b>time</b>. Time is specified in minutes from current time." => "",
+"prints 'New' or 'Old' or any other text in <b>newer text</b> or <b>older text</b> depending on <b>time</b>. Time is specified in minutes from current time." => "afiseaz\xE3 'Nou' sau 'Vechi' sau orice alt text din <b>text mai nou</b> sau <b>text mai vechi</b>, \xEEn functie de <b>timp</b>. Timpul se specific\xE3 \xEEn minute fat\xE3 de momentul curent.", // ai 2026-06
 
 // include/constants_param_wizard.php, row 551
-"time" => "",
+"time" => "timp", // ai 2026-06
 
 // include/constants_param_wizard.php, row 552
-"Time in minutes from current time." => "",
+"Time in minutes from current time." => "Timpul \xEEn minute fat\xE3 de momentul curent.", // ai 2026-06
 
 // include/constants_param_wizard.php, row 554
 "1440" => "",
 
 // include/constants_param_wizard.php, row 557
-"newer text" => "",
+"newer text" => "text mai nou", // ai 2026-06
 
 // include/constants_param_wizard.php, row 558
-"Text to be printed, if the date in <i>the field</i> is newer than <i>current_time</i> - <b>time</b>." => "",
+"Text to be printed, if the date in <i>the field</i> is newer than <i>current_time</i> - <b>time</b>." => "Textul afisat dac\xE3 data din <i>c\xE2mp</i> este mai nou\xE3 dec\xE2t <i>current_time</i> - <b>timp</b>.", // ai 2026-06
 
 // include/constants_param_wizard.php, row 560
-"NEW" => "",
+"NEW" => "NOU", // ai 2026-06
 
 // include/constants_param_wizard.php, row 563
-"older text" => "",
+"older text" => "text mai vechi", // ai 2026-06
 
 // include/constants_param_wizard.php, row 564
-"Text to be printed, if the date in <i>the field</i> is older than <i>current_time</i> - <b>time</b>" => "",
+"Text to be printed, if the date in <i>the field</i> is older than <i>current_time</i> - <b>time</b>" => "Textul care se va afisa dac\xE3 data din <i>c\xE2mp</i> este mai veche dec\xE2t <i>current_time</i> - <b>time</b>", // ai 2026-06
 
 // include/constants_param_wizard.php, row 571
-"text (blurb) from another slice" => "",
+"text (blurb) from another slice" => "text (blurb) din alt\xE3 sectiune", // ai 2026-06
 
 // include/constants_param_wizard.php, row 572
-"prints 'blurb' (piece of text) from another slice, based on a simple condition.<br>If <i>the field</i> (or the field specified by <b>stringToMatch</b>) in current slice matches the content of <b>fieldToMatch</b> in <b>blurbSliceId</b>, it returns the content of <b>fieldToReturn</b> in <b>blurbSliceId</b>." => "",
+"prints 'blurb' (piece of text) from another slice, based on a simple condition.<br>If <i>the field</i> (or the field specified by <b>stringToMatch</b>) in current slice matches the content of <b>fieldToMatch</b> in <b>blurbSliceId</b>, it returns the content of <b>fieldToReturn</b> in <b>blurbSliceId</b>." => "afiseaz\xE3 un 'blurb' (fragment de text) din alt\xE3 sectiune, pe baza unei conditii simple.<br>Dac\xE3 <i>c\xE2mpul</i> (sau c\xE2mpul specificat prin <b>stringToMatch</b>) din sectiunea curent\xE3 se potriveste cu continutul <b>fieldToMatch</b> din <b>blurbSliceId</b>, returneaz\xE3 continutul <b>fieldToReturn</b> din <b>blurbSliceId</b>.", // ai 2026-06
 
 // include/constants_param_wizard.php, row 575
 "stringToMatch" => "",
 
 // include/constants_param_wizard.php, row 576
-"By default it is <i>the field</i>.  It can be formatted either as the id of a field (headline........) OR as static text." => "",
+"By default it is <i>the field</i>.  It can be formatted either as the id of a field (headline........) OR as static text." => "Implicit este <i>c\xE2mpul</i>. Poate fi formatat fie ca id-ul unui c\xE2mp (headline........), fie ca text static.", // ai 2026-06
 
 // include/constants_param_wizard.php, row 578
 "category........" => "",
@@ -578,7 +586,7 @@ return [
 "blurbSliceId" => "",
 
 // include/constants_param_wizard.php, row 582
-"unpacked slice id of the slice where the blurb text is stored" => "",
+"unpacked slice id of the slice where the blurb text is stored" => "id-ul ne\xEEmpachetat al sectiunii \xEEn care este stocat textul blurb", // ai 2026-06
 
 // include/constants_param_wizard.php, row 584
 "41415f436f72655f4669656c64732e2e" => "",
@@ -587,7 +595,7 @@ return [
 "fieldToMatch" => "",
 
 // include/constants_param_wizard.php, row 588
-"field id of the field in <b>blurbSliceId</b> where to search for <b>stringToMatch</b>" => "",
+"field id of the field in <b>blurbSliceId</b> where to search for <b>stringToMatch</b>" => "id-ul c\xE2mpului din <b>blurbSliceId</b> \xEEn care se caut\xE3 <b>stringToMatch</b>", // ai 2026-06
 
 // include/constants_param_wizard.php, row 590
 "headline........" => "",
@@ -596,43 +604,43 @@ return [
 "fieldToReturn" => "",
 
 // include/constants_param_wizard.php, row 594
-"field id of the field in <b>blurbSliceId</b> where the blurb text is stored (what to print)" => "",
+"field id of the field in <b>blurbSliceId</b> where the blurb text is stored (what to print)" => "id-ul c\xE2mpului din <b>blurbSliceId</b> \xEEn care este stocat textul blurb (ce se afiseaz\xE3)", // ai 2026-06
 
 // include/constants_param_wizard.php, row 601
-"RSS tag" => "",
+"RSS tag" => "tag RSS", // ai 2026-06
 
 // include/constants_param_wizard.php, row 602
-"serves for internal purposes of the predefined RSS aliases (e.g. _#RSS_TITL). Adds the RSS 0.91 compliant tags." => "",
+"serves for internal purposes of the predefined RSS aliases (e.g. _#RSS_TITL). Adds the RSS 0.91 compliant tags." => "serveste scopurilor interne ale aliasurilor RSS predefinite (de ex. _#RSS_TITL). Adaug\xE3 tagurile conforme cu RSS 0.91.", // ai 2026-06
 
 // include/constants_param_wizard.php, row 605, 609, 801
-"default" => "",
+"default" => "implicit", // ai 2026-06
 
 // include/constants_param_wizard.php, row 606
-"prints <i>the field</i> or a default value if <i>the field</i> is empty. The same could be done by the f_c function with parameters :::<b>default</b>." => "",
+"prints <i>the field</i> or a default value if <i>the field</i> is empty. The same could be done by the f_c function with parameters :::<b>default</b>." => "afiseaz\xE3 <i>c\xE2mpul</i> sau o valoare implicit\xE3 dac\xE3 <i>c\xE2mpul</i> este gol. Acelasi lucru se poate face cu functia f_c cu parametrii :::<b>default</b>.", // ai 2026-06
 
 // include/constants_param_wizard.php, row 610
-"default value" => "",
+"default value" => "valoare implicit\xE3", // ai 2026-06
 
 // include/constants_param_wizard.php, row 612
-"javascript: window.alert('No source url specified')" => "",
+"javascript: window.alert('No source url specified')" => "javascript: window.alert('Nu a fost specificat URL-ul sursei')", // ai 2026-06
 
 // include/constants_param_wizard.php, row 617
-"print field" => "",
+"print field" => "afisare c\xE2mp", // ai 2026-06
 
 // include/constants_param_wizard.php, row 618
-"prints <i>the field</i> content (or <i>unalias string</i>) depending on the html flag (if html flag is not set, it converts the content to html. In difference to f_h function, it converts to html line-breaks, too (in its basic variant)" => "",
+"prints <i>the field</i> content (or <i>unalias string</i>) depending on the html flag (if html flag is not set, it converts the content to html. In difference to f_h function, it converts to html line-breaks, too (in its basic variant)" => "afiseaz\xE3 continutul <i>c\xE2mpului</i> (sau <i>unalias string</i>) \xEEn functie de indicatorul html (dac\xE3 indicatorul html nu este setat, converteste continutul \xEEn html. Spre deosebire de functia f_h, converteste \xEEn html si sf\xE2rsiturile de linie (\xEEn varianta sa de baz\xE3)", // ai 2026-06
 
 // include/constants_param_wizard.php, row 621
 "unalias string" => "",
 
 // include/constants_param_wizard.php, row 622
-"if the <i>unalias string</i> is defined, then the function ignores <i>the field</i> and it rather prints the <i>unalias string</i>. You can of course use any aliases (or fields like {headline.........}) in this string" => "",
+"if the <i>unalias string</i> is defined, then the function ignores <i>the field</i> and it rather prints the <i>unalias string</i>. You can of course use any aliases (or fields like {headline.........}) in this string" => "dac\xE3 <i>unalias string</i> este definit, functia ignor\xE3 <i>c\xE2mpul</i> si afiseaz\xE3 \xEEn schimb <i>unalias string</i>. Puteti folosi, desigur, orice aliasuri (sau c\xE2mpuri precum {headline.........}) \xEEn acest sir", // ai 2026-06
 
 // include/constants_param_wizard.php, row 624
 "<img src={img_src.........1} _#IMG_WDTH _#IMG_HGHT>" => "",
 
 // include/constants_param_wizard.php, row 627
-"output modify" => "",
+"output modify" => "modificare iesire", // ai 2026-06
 
 // include/constants_param_wizard.php, row 628
 "You can use some output modifications:<br>\n"
@@ -644,175 +652,182 @@ return [
    ."                   &nbsp; - <i>striptags</i>  - strip HTML and PHP tags from the string<br>\n"
    ."                   &nbsp; - <i>asis</i>  - prints field content 'as is' - it do not add &lt;br&gt; at line ends even if field is marked as 'Plain text'. 'asis' parameter is good for Item Manager's 'Modify content...' feature, for example<br>\n"
    ."                   "
- => "",
+ => "Puteti folosi unele modific\xE3ri ale iesirii:<br>\n"
+   ."                   &nbsp; - [<i>empty</i>] - f\xE3r\xE3 modificare<br>\n"
+   ."                   &nbsp; - <i>csv</i>  - afiseaz\xE3 c\xE2mpul pentru export \xEEn fisier CSV (Comma Separated Values)<br>\n"
+   ."                   &nbsp; - <i>urlencode</i> - codific\xE3 sirul pentru URL (vezi functia PHP <a href=\"https://www.php.net/urlencode\">urlencode<a>)<br>\n"
+   ."                   &nbsp; - <i>safe</i> - converteste caracterele speciale \xEEn entit\xE3ti HTML (vezi functia PHP <a href=\"https://www.php.net/htmlspecialchars\">htmlspecialchars<a>)<br>\n"
+   ."                   &nbsp; - <i>javascript</i> - escapeaz\xE3 ' (\xEEnlocuieste ' cu \\')<br>\n"
+   ."                   &nbsp; - <i>striptags</i>  - elimin\xE3 tagurile HTML si PHP din sir<br>\n"
+   ."                   &nbsp; - <i>asis</i>  - afiseaz\xE3 continutul c\xE2mpului 'asa cum este' - nu adaug\xE3 &lt;br&gt; la sf\xE2rsitul liniilor, chiar dac\xE3 c\xE2mpul este marcat ca 'Plain text'. Parametrul 'asis' este util, de exemplu, pentru functia 'Modify content...' din Managerul de articole<br>", // ai 2026-06
 
 // include/constants_param_wizard.php, row 643
-"user function" => "",
+"user function" => "functie utilizator", // ai 2026-06
 
 // include/constants_param_wizard.php, row 644
-"calls a user defined function (see How to create new aliases in <a href='https://actionapps.org/faq/#aliases'>FAQ</a>)" => "",
+"calls a user defined function (see How to create new aliases in <a href='https://actionapps.org/faq/#aliases'>FAQ</a>)" => "apeleaz\xE3 o functie definit\xE3 de utilizator (vezi Cum se creeaz\xE3 aliasuri noi \xEEn <a href='https://actionapps.org/faq/#aliases'>FAQ</a>)", // ai 2026-06
 
 // include/constants_param_wizard.php, row 647
-"function" => "",
+"function" => "functie", // ai 2026-06
 
 // include/constants_param_wizard.php, row 648
-"name of the function in the include/usr_aliasfnc.php file" => "",
+"name of the function in the include/usr_aliasfnc.php file" => "numele functiei din fisierul include/usr_aliasfnc.php", // ai 2026-06
 
 // include/constants_param_wizard.php, row 650
-"usr_start_end_date_cz" => "",
+"usr_start_end_date_cz" => "usr_data_inceput_sfarsit_ro", // ai 2026-06
 
 // include/constants_param_wizard.php, row 653
-"parameter" => "",
+"parameter" => "parametru", // ai 2026-06
 
 // include/constants_param_wizard.php, row 654
-"a parameter passed to the function" => "",
+"a parameter passed to the function" => "un parametru transmis functiei", // ai 2026-06
 
 // include/constants_param_wizard.php, row 661
-"view" => "",
+"view" => "vedere", // ai 2026-06
 
 // include/constants_param_wizard.php, row 662
-"allows you to manipulate the views. This is a complicated and powerful function, described in <a href=\"../doc/FAQ.html#viewparam\" target=_blank>FAQ</a>, which allows you to display any view in place of the alias. It can be used for 'related stories' table or for displaying content of related slice." => "",
+"allows you to manipulate the views. This is a complicated and powerful function, described in <a href=\"../doc/FAQ.html#viewparam\" target=_blank>FAQ</a>, which allows you to display any view in place of the alias. It can be used for 'related stories' table or for displaying content of related slice." => "v\xE3 permite s\xE3 manipulati vederile. Aceasta este o functie complicat\xE3 si puternic\xE3, descris\xE3 \xEEn <a href=\"../doc/FAQ.html#viewparam\" target=_blank>FAQ</a>, care v\xE3 permite s\xE3 afisati orice vedere \xEEn locul aliasului. Poate fi folosit\xE3 pentru un tabel de 'articole asociate' sau pentru afisarea continutului unei sectiuni asociate.", // ai 2026-06
 
 // include/constants_param_wizard.php, row 665
-"complex parameter" => "",
+"complex parameter" => "parametru complex", // ai 2026-06
 
 // include/constants_param_wizard.php, row 666
-"this parameter is the same as we use in view.php url parameter - see the FAQ" => "",
+"this parameter is the same as we use in view.php url parameter - see the FAQ" => "acest parametru este acelasi pe care \xEEl folosim \xEEn parametrul url al view.php - vezi FAQ", // ai 2026-06
 
 // include/constants_param_wizard.php, row 668
 "vid=4&amp;cmd[23]=v-25" => "",
 
 // include/constants_param_wizard.php, row 673
-"image width" => "",
+"image width" => "l\xE3time imagine", // ai 2026-06
 
 // include/constants_param_wizard.php, row 674
-"An old-style function. Prints <i>the field</i> as image width value (\\<img width=...\\>) or erases the width tag. To be used immediately after \"width=\".The f_c function provides a better way of doing this with parameters \":width=\". " => "",
+"An old-style function. Prints <i>the field</i> as image width value (\\<img width=...\\>) or erases the width tag. To be used immediately after \"width=\".The f_c function provides a better way of doing this with parameters \":width=\". " => "O functie de stil vechi. Afiseaz\xE3 <i>c\xE2mpul</i> ca valoare a l\xE3timii imaginii (\\<img width=...\\>) sau elimin\xE3 tagul width. Se foloseste imediat dup\xE3 \"width=\". Functia f_c ofer\xE3 o modalitate mai bun\xE3 de a face acest lucru, cu parametrii \":width=\".", // ai 2026-06
 
 // include/constants_param_wizard.php, row 677
-"transformation" => "",
+"transformation" => "transformare", // ai 2026-06
 
 // include/constants_param_wizard.php, row 678
-"Allows to transform the field value to another value.<br>Usage: <b>content_1</b>:<b>return_value_1</b>:<b>content_2</b>:<b>return_value_2</b>:<b>default</b><br>If the content <i>the field</i> is equal to <b>content_1</b> the <b>return_value_1</b> is returned. If the content <i>the field</i> is equal to <b>content_2</b> the <b>return_value_2</b> is returned. If <i>the field is not equal to any <b>content_x</b>, <b>default</b> is returned</i>." => "",
+"Allows to transform the field value to another value.<br>Usage: <b>content_1</b>:<b>return_value_1</b>:<b>content_2</b>:<b>return_value_2</b>:<b>default</b><br>If the content <i>the field</i> is equal to <b>content_1</b> the <b>return_value_1</b> is returned. If the content <i>the field</i> is equal to <b>content_2</b> the <b>return_value_2</b> is returned. If <i>the field is not equal to any <b>content_x</b>, <b>default</b> is returned</i>." => "Permite transformarea valorii c\xE2mpului \xEEn alt\xE3 valoare.<br>Utilizare: <b>content_1</b>:<b>return_value_1</b>:<b>content_2</b>:<b>return_value_2</b>:<b>default</b><br>Dac\xE3 continutul <i>c\xE2mpului</i> este egal cu <b>content_1</b>, se returneaz\xE3 <b>return_value_1</b>. Dac\xE3 continutul <i>c\xE2mpului</i> este egal cu <b>content_2</b>, se returneaz\xE3 <b>return_value_2</b>. Dac\xE3 <i>c\xE2mpul nu este egal cu niciun <b>content_x</b>, se returneaz\xE3 <b>default</b></i>.", // ai 2026-06
 
 // include/constants_param_wizard.php, row 681, 693, 705, 717, 729, 741, 753, 765, 777, 789
-"content" => "",
+"content" => "continut", // ai 2026-06
 
 // include/constants_param_wizard.php, row 682, 694, 706, 718, 730, 742, 754, 766, 778, 790
-"string for comparison with <i>the field</i> for following return value" => "",
+"string for comparison with <i>the field</i> for following return value" => "sir de comparat cu <i>c\xE2mpul</i> pentru valoarea returnat\xE3 urm\xE3toare", // ai 2026-06
 
 // include/constants_param_wizard.php, row 687, 699, 711, 723, 735, 747, 759, 771, 783, 795
-"return value" => "",
+"return value" => "valoare returnat\xE3", // ai 2026-06
 
 // include/constants_param_wizard.php, row 688, 700, 712, 724, 736, 748, 760, 772, 784, 796
-"string to return if previous content matches - You can use field_id too" => "",
+"string to return if previous content matches - You can use field_id too" => "sirul returnat dac\xE3 continutul precedent se potriveste - puteti folosi si field_id", // ai 2026-06
 
 // include/constants_param_wizard.php, row 690, 702, 714, 726, 738, 750, 762, 774, 786, 798, 804
-"Environment" => "",
+"Environment" => "Mediu", // ai 2026-06
 
 // include/constants_param_wizard.php, row 802
-"if no content matches, use this string as return value" => "",
+"if no content matches, use this string as return value" => "dac\xE3 niciun continut nu se potriveste, acest sir este folosit ca valoare returnat\xE3", // ai 2026-06
 
 // include/constants_param_wizard.php, row 809
-"expanded string" => "",
+"expanded string" => "sir expandat", // ai 2026-06
 
 // include/constants_param_wizard.php, row 810
-"expands the string in the parameter" => "",
+"expands the string in the parameter" => "expandeaz\xE3 sirul din parametru", // ai 2026-06
 
 // include/constants_param_wizard.php, row 813
-"string to expand" => "",
+"string to expand" => "sir de expandat", // ai 2026-06
 
 // include/constants_param_wizard.php, row 814
-"if specified then this string is expanded, if not specified then expands the contents of the field" => "",
+"if specified then this string is expanded, if not specified then expands the contents of the field" => "dac\xE3 este specificat, se expandeaz\xE3 acest sir; dac\xE3 nu este specificat, se expandeaz\xE3 continutul c\xE2mpului", // ai 2026-06
 
 // include/constants_param_wizard.php, row 822
-"file information" => "",
+"file information" => "informatii fisier", // ai 2026-06
 
 // include/constants_param_wizard.php, row 823
-"prints <i>the field</i> as file information, its size or type" => "",
+"prints <i>the field</i> as file information, its size or type" => "afiseaz\xE3 <i>c\xE2mpul</i> ca informatii despre fisier, dimensiunea sau tipul acestuia", // ai 2026-06
 
 // include/constants_param_wizard.php, row 827
-"specifies returned information: <br> - <i>name</i> - filename<br> - <i>type</i> - returns type of file (like TXT)<br> - <i>size</i> - returns size of file in kB or MB (like 12.1 kB)<br> - <i>bytesize</i> - (like 12128)<br> - <i>link</i><br> - <i>typesize</i> - [type - size] in span<br> - <i>crc</i><br> - <i>time</i>" => "",
+"specifies returned information: <br> - <i>name</i> - filename<br> - <i>type</i> - returns type of file (like TXT)<br> - <i>size</i> - returns size of file in kB or MB (like 12.1 kB)<br> - <i>bytesize</i> - (like 12128)<br> - <i>link</i><br> - <i>typesize</i> - [type - size] in span<br> - <i>crc</i><br> - <i>time</i>" => "specific\xE3 informatia returnat\xE3: <br> - <i>name</i> - numele fisierului<br> - <i>type</i> - returneaz\xE3 tipul fisierului (de ex. TXT)<br> - <i>size</i> - returneaz\xE3 dimensiunea fisierului \xEEn kB sau MB (de ex. 12.1 kB)<br> - <i>bytesize</i> - (de ex. 12128)<br> - <i>link</i><br> - <i>typesize</i> - [tip - dimensiune] \xEEn span<br> - <i>crc</i><br> - <i>time</i>", // ai 2026-06
 
 // include/constants_param_wizard.php, row 841
-"Transformation action" => "",
+"Transformation action" => "Actiune de transformare", // ai 2026-06
 
 // include/constants_param_wizard.php, row 843
-"AA Expression" => "",
+"AA Expression" => "Expresie AA", // ai 2026-06
 
 // include/constants_param_wizard.php, row 844
-"AA expression where we can use any AA {expressions}" => "",
+"AA expression where we can use any AA {expressions}" => "expresie AA \xEEn care se poate folosi orice {expressions} AA", // ai 2026-06
 
 // include/constants_param_wizard.php, row 847
-"expression" => "",
+"expression" => "expresie", // ai 2026-06
 
 // include/constants_param_wizard.php, row 856
-"Store" => "",
+"Store" => "Stocare", // ai 2026-06
 
 // include/constants_param_wizard.php, row 857
-"Simply store a value from the input field" => "",
+"Simply store a value from the input field" => "Stocheaz\xE3 pur si simplu valoarea din c\xE2mpul de intrare", // ai 2026-06
 
 // include/constants_param_wizard.php, row 860
-"lang (optional)" => "",
+"lang (optional)" => "limb\xE3 (optional)", // ai 2026-06
 
 // include/constants_param_wizard.php, row 861
-"two letters - cz | en | es | de. If provided the value will be stored to specified language (the field must use translations)" => "",
+"two letters - cz | en | es | de. If provided the value will be stored to specified language (the field must use translations)" => "dou\xE3 litere - cz | en | es | de. Dac\xE3 este specificat\xE3, valoarea va fi stocat\xE3 \xEEn limba indicat\xE3 (c\xE2mpul trebuie s\xE3 foloseasc\xE3 traduceri)", // ai 2026-06
 
 // include/constants_param_wizard.php, row 869
-"Remove string" => "",
+"Remove string" => "Eliminare sir", // ai 2026-06
 
 // include/constants_param_wizard.php, row 870
-"Remove all occurrences of a string from the input field." => "",
+"Remove all occurrences of a string from the input field." => "Elimin\xE3 toate aparitiile unui sir din c\xE2mpul de intrare.", // ai 2026-06
 
 // include/constants_param_wizard.php, row 873, 894
-"string parameter" => "",
+"string parameter" => "parametru sir", // ai 2026-06
 
 // include/constants_param_wizard.php, row 874
-"Removed string" => "",
+"Removed string" => "Sirul de eliminat", // ai 2026-06
 
 // include/constants_param_wizard.php, row 880
-"Format date" => "",
+"Format date" => "Formatare dat\xE3", // ai 2026-06
 
 // include/constants_param_wizard.php, row 881
-"Parse the date in the input field expected to be in English date format. In case of error, the transformation fails" => "",
+"Parse the date in the input field expected to be in English date format. In case of error, the transformation fails" => "Analizeaz\xE3 data din c\xE2mpul de intrare, asteptat\xE3 \xEEn format de dat\xE3 englezesc. \xCEn caz de eroare, transformarea esueaz\xE3", // ai 2026-06
 
 // include/constants_param_wizard.php, row 885
-"Add http prefix" => "",
+"Add http prefix" => "Ad\xE3ugare prefix http", // ai 2026-06
 
 // include/constants_param_wizard.php, row 886
-"Adds 'https://' prefix to the field if not beginning with 'https://' and not empty." => "",
+"Adds 'https://' prefix to the field if not beginning with 'https://' and not empty." => "Adaug\xE3 prefixul 'https://' c\xE2mpului dac\xE3 acesta nu \xEEncepe cu 'https://' si nu este gol.", // ai 2026-06
 
 // include/constants_param_wizard.php, row 890
-"Store parameter" => "",
+"Store parameter" => "Stocare parametru", // ai 2026-06
 
 // include/constants_param_wizard.php, row 891
-"Store parameter instead of the input field" => "",
+"Store parameter instead of the input field" => "Stocheaz\xE3 parametrul \xEEn locul c\xE2mpului de intrare", // ai 2026-06
 
 // include/constants_param_wizard.php, row 901
-"Store as long id" => "",
+"Store as long id" => "Stocare ca id lung", // ai 2026-06
 
 // include/constants_param_wizard.php, row 902
-"Creates long id from the string. The string is combined with the parameter!! or with slice_id (if the parameter is not provided). From the same string (and the same parameter) we always create the same id." => "",
+"Creates long id from the string. The string is combined with the parameter!! or with slice_id (if the parameter is not provided). From the same string (and the same parameter) we always create the same id." => "Creeaz\xE3 un id lung din sir. Sirul este combinat cu parametrul!! sau cu slice_id (dac\xE3 parametrul nu este specificat). Din acelasi sir (si acelasi parametru) se creeaz\xE3 \xEEntotdeauna acelasi id.", // ai 2026-06
 
 // include/constants_param_wizard.php, row 905
-"string to add" => "",
+"string to add" => "sir de ad\xE3ugat", // ai 2026-06
 
 // include/constants_param_wizard.php, row 906
-"this parameter will be added to the string before conversion (the reason is to avoid empty strings and also in order we do not generate always the same id for common strings (in different imports). If this param is not specified, slice_id is used instead." => "",
+"this parameter will be added to the string before conversion (the reason is to avoid empty strings and also in order we do not generate always the same id for common strings (in different imports). If this param is not specified, slice_id is used instead." => "acest parametru va fi ad\xE3ugat la sir \xEEnainte de conversie (motivul este evitarea sirurilor goale si, de asemenea, ca s\xE3 nu se genereze mereu acelasi id pentru siruri comune (\xEEn importuri diferite). Dac\xE3 acest parametru nu este specificat, se foloseste slice_id.", // ai 2026-06
 
 // include/constants_param_wizard.php, row 914
-"Split input field by string" => "",
+"Split input field by string" => "\xCEmp\xE3rtire c\xE2mp de intrare dup\xE3 sir", // ai 2026-06
 
 // include/constants_param_wizard.php, row 915
-"Split input field by string parameter and store the result as multi-value." => "",
+"Split input field by string parameter and store the result as multi-value." => "\xCEmparte c\xE2mpul de intrare dup\xE3 parametrul sir si stocheaz\xE3 rezultatul ca valoare multipl\xE3.", // ai 2026-06
 
 // include/constants_param_wizard.php, row 918
-"delimiter (+ possible languages)" => "",
+"delimiter (+ possible languages)" => "delimitator (+ eventuale limbi)", // ai 2026-06
 
 // include/constants_param_wizard.php, row 919
-"string delimiter which separates the values of the input field (like \"|\"). Another option is to add also languages separated by \"##\" in the form <delimiter>##<lang1>##<lang2> (\"|##cz##en\" for \"Ahoj|Hi\") - this will fill translated fields" => "",
+"string delimiter which separates the values of the input field (like \"|\"). Another option is to add also languages separated by \"##\" in the form <delimiter>##<lang1>##<lang2> (\"|##cz##en\" for \"Ahoj|Hi\") - this will fill translated fields" => "delimitator sir care separ\xE3 valorile c\xE2mpului de intrare (de ex. \"|\"). O alt\xE3 optiune este ad\xE3ugarea limbilor separate prin \"##\" \xEEn forma <delimiter>##<lang1>##<lang2> (\"|##cz##en\" pentru \"Ahoj|Hi\") - aceasta va completa c\xE2mpurile traduse", // ai 2026-06
 
 // include/constants_param_wizard.php, row 926
-"Store default value" => "",
+"Store default value" => "Stocare valoare implicit\xE3", // ai 2026-06
 
 // include/constants_param_wizard.php, row 927
 "Store these default values for the following output fields. The other output fields will filled form <i>From</i> field (if specified). Else it is filled by <i>Action parameters</i> string.\n"
@@ -828,5 +843,17 @@ return [
    ."    <tr><td>Edited by</td><td>Active user</td><td></td></tr>\n"
    ."      </table>\n"
    ."    "
- => "",
+ => "Pentru urm\xE3toarele c\xE2mpuri de iesire se stocheaz\xE3 aceste valori implicite. Celelalte c\xE2mpuri de iesire se completeaz\xE3 din c\xE2mpul <i>From</i> (dac\xE3 este specificat). Altfel se completeaz\xE3 din sirul <i>Action parameters</i>.\n"
+   ."    <table>\n"
+   ."        <tr><td><b>C\xE2mp de iesire</b></td><td><b>Valoare</b></td><td><b>Descriere</b></td></tr></b>\n"
+   ."    <tr><td>Cod de stare</td><td>1</td><td>Articolul va fi stocat \xEEn compartimentul Active (sugestie: setati 2 pentru \xCEn asteptare)</td></tr>\n"
+   ."    <tr><td>Num\xE3r de afis\xE3ri</td><td>0</td><td></td></tr>\n"
+   ."        <tr><td>Data public\xE3rii</td><td>Data curent\xE3</td><td></td></tr>\n"
+   ."    <tr><td>Data ad\xE3ug\xE3rii</td><td>Data curent\xE3</td><td></td></tr>\n"
+   ."    <tr><td>Ultima modificare</td><td>Data curent\xE3</td><td></td></tr>\n"
+   ."    <tr><td>Data expir\xE3rii</td><td>Data curent\xE3 + 10 ani</td><td></td></tr>\n"
+   ."    <tr><td>Ad\xE3ugat de</td><td>Utilizatorul conectat</td><td></td></tr>\n"
+   ."    <tr><td>Modificat de</td><td>Utilizatorul conectat</td><td></td></tr>\n"
+   ."      </table>\n"
+   ."    ", // ai 2026-06
 ];

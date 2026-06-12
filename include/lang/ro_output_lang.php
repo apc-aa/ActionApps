@@ -33,25 +33,25 @@ return [
 // End of unused messages
 
 // ./slice.php, row 232
-"Bad inc parameter - included file must contain only alphanumeric characters" => "",
+"Bad inc parameter - included file must contain only alphanumeric characters" => "Parametru inc gresit - fisierul inclus trebuie s\xE3 contin\xE3 doar caractere alfanumerice", // ai 2026-06
 
 // ./slice.php, row 236
-"No such file" => "",
+"No such file" => "Fisierul nu exist\xE3", // ai 2026-06
 
 // ./slice.php, row 263
-"Invalid slice number or slice was deleted" => "",
+"Invalid slice number or slice was deleted" => "Num\xE3r de sectiune invalid sau sectiunea a fost stears\xE3", // ai 2026-06
 
 // ./slice.php, row 266
-"slice.php output forbidden for this slice" => "",
+"slice.php output forbidden for this slice" => "Afisarea prin slice.php este interzis\xE3 pentru aceast\xE3 sectiune", // ai 2026-06
 
 // ./slice.php, row 321
-"session id" => "",
+"session id" => "id sesiune", // ai 2026-06
 
 // ./slice.php, row 580
-"number of current page (on pagescroller)" => "",
+"number of current page (on pagescroller)" => "num\xE3rul paginii curente (\xEEn pagescroller)", // ai 2026-06
 
 // ./slice.php, row 581
-"page length (number of items)" => "",
+"page length (number of items)" => "lungimea paginii (num\xE3r de articole)", // ai 2026-06
 
 // ./slice.php, row 616
 // include/view.php, row 346
@@ -67,16 +67,16 @@ return [
 "Add new" => "Adaug\xE3 nou",
 
 // include/item.php, row 104
-"Alias for %1" => "",
+"Alias for %1" => "Alias pentru %1", // ai 2026-06
 
 // include/item.php, row 358
 "Alias for subject of the discussion comment" => "Pseudonim pentru subiectul la comentariu discu\xFEie",
 
 // include/item.php, row 359
-"Alias for text of the discussion comment" => "",
+"Alias for text of the discussion comment" => "Alias pentru textul comentariului la discu\xFEie", // ai 2026-06
 
 // include/item.php, row 360
-"Alias for written by" => "",
+"Alias for written by" => "Alias pentru scris de", // ai 2026-06
 
 // include/item.php, row 361
 "Alias for author's e-mail" => "Pseudonim pentru adresa e-mail al autorului",
@@ -91,7 +91,7 @@ return [
 "Alias for publish date" => "Pseudonim pentru data public\xE3rii",
 
 // include/item.php, row 365
-"Alias for IP address of author's computer" => "",
+"Alias for IP address of author's computer" => "Alias pentru adresa IP a calculatorului autorului", // ai 2026-06
 
 // include/item.php, row 366
 "Alias for checkbox used for choosing discussion comment" => "Pseudonim pentru c\xE3su\xFEa folosit\xE3 la alegerea comentariului discu\xFEiei",
@@ -103,19 +103,25 @@ return [
 "Alias for comment ID<br>\n"
    ."                             <i>Usage: </i>in form code<br>\n"
    ."                             <i>Example: </i>&lt;input type=hidden name=d_item_id value=\"_#DITEM_ID\">"
- => "",
+ => "Alias pentru ID-ul comentariului<br>\n"
+   ."                             <i>Utilizare: </i>\xEEn codul formularului<br>\n"
+   ."                             <i>Exemplu: </i>&lt;input type=hidden name=d_item_id value=\"_#DITEM_ID\">", // ai 2026-06
 
 // include/item.php, row 369
 "Alias for comment ID (the same as _#DITEM_ID<br>)\n"
    ."                             <i>Usage: </i>in form code<br>\n"
    ."                             <i>Example: </i>&lt;input type=hidden name=d_item_id value=\"_#ITEM_ID#\">"
- => "",
+ => "Alias pentru ID-ul comentariului (la fel ca _#DITEM_ID<br>)\n"
+   ."                             <i>Utilizare: </i>\xEEn codul formularului<br>\n"
+   ."                             <i>Exemplu: </i>&lt;input type=hidden name=d_item_id value=\"_#ITEM_ID#\">", // ai 2026-06
 
 // include/item.php, row 370
 "Alias for item ID<br>\n"
    ."                             <i>Usage: </i>in form code<br>\n"
    ."                             <i>Example: </i>&lt;input type=hidden name=d_parent value=\"_#DISC_ID#\">"
- => "",
+ => "Alias pentru ID articol<br>\n"
+   ."                             <i>Utilizare: </i>\xEEn codul formularului<br>\n"
+   ."                             <i>Exemplu: </i>&lt;input type=hidden name=d_parent value=\"_#DISC_ID#\">", // ai 2026-06
 
 // include/item.php, row 371
 "Alias for link to text of the discussion comment<br>\n"
@@ -157,7 +163,7 @@ return [
 "Constant name" => "Nume constant\xE3",
 
 // include/item.php, row 407
-"Translated constant name" => "",
+"Translated constant name" => "Numele tradus al constantei", // ai 2026-06
 
 // include/item.php, row 408
 "Constant value" => "Valoare constant\xE3",
@@ -175,22 +181,22 @@ return [
 "Constant number" => "Num\xE3r constante",
 
 // include/item.php, row 413
-"Constant unique id (32-hexadecimal characters)" => "",
+"Constant unique id (32-hexadecimal characters)" => "ID unic al constantei (32 de caractere hexazecimale)", // ai 2026-06
 
 // include/item.php, row 414
-"Constant unique short id (autoincremented from '1' for each constant in the system)" => "",
+"Constant unique short id (autoincremented from '1' for each constant in the system)" => "ID scurt unic al constantei (autoincrementat de la '1' pentru fiecare constant\xE3 din sistem)", // ai 2026-06
 
 // include/item.php, row 415
-"Constant description" => "",
+"Constant description" => "Descrierea constantei", // ai 2026-06
 
 // include/item.php, row 416
-"Constant level (used for hierarchical constants)" => "",
+"Constant level (used for hierarchical constants)" => "Nivelul constantei (folosit pentru constante ierarhice)", // ai 2026-06
 
 // include/item.php, row 787
-"Error: wrong alias function %1 for %2" => "",
+"Error: wrong alias function %1 for %2" => "Eroare: functie de alias %1 gresit\xE3 pentru %2", // ai 2026-06
 
 // include/itemview.php, row 117
-"Selected item" => "",
+"Selected item" => "Articol selectat", // ai 2026-06
 
 // include/itemview.php, row 124
 "number of found items" => "num\xE3rul articolelor g\xE3site",
@@ -199,7 +205,7 @@ return [
 "No comment was selected" => "Nu a fost selectat nici un comentariu",
 
 // include/itemview.php, row 680, 688
-"exact group name" => "",
+"exact group name" => "numele exact al grupului", // ai 2026-06
 
 // include/scroller.php, row 86
 "Next" => "Urm\xE3tor",
@@ -211,7 +217,7 @@ return [
 "All" => "Toate",
 
 // include/scroller.php, row 296
-"found" => "",
+"found" => "g\xE3site", // ai 2026-06
 
 // include/scroller.php, row 452
 "&raquo;" => "",
@@ -226,7 +232,7 @@ return [
 "All categories" => "Toate categoriile",
 
 // include/util.php, row 950
-"Error: Missing Reading Password" => "",
+"Error: Missing Reading Password" => "Eroare: Lipseste parola de citire", // ai 2026-06
 
 // include/util.php, row 1300
 "Toolkit news message" => "Mesaj stiri toolkit",
@@ -235,11 +241,11 @@ return [
 "Back" => "\xCEnapoi",
 
 // include/util.php, row 1314
-"Relogin" => "",
+"Relogin" => "Reautentificare", // ai 2026-06
 
 // misc/proposefieldchange.php, row 71
-"Assignment form" => "",
+"Assignment form" => "Formular de atribuire", // ai 2026-06
 
 // misc/proposefieldchange.php, row 76
-"Grabs item relations data POSTed by form" => "",
+"Grabs item relations data POSTed by form" => "Preia datele despre relatiile articolului trimise de formular (POST)", // ai 2026-06
 ];

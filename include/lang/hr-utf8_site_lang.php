@@ -30,13 +30,13 @@ return [
 // End of unused messages
 
 // modules/site/aliases.php, row 36
-"You do not have permissions to manage tasks" => "",
+"You do not have permissions to manage tasks" => "Nemate dozvolu za upravljanje zadacima", // ai 2026-06
 
 // modules/site/aliases.php, row 41
-"Manage %1" => "",
+"Manage %1" => "Upravljanje %1", // ai 2026-06
 
 // modules/site/index.php, row 57
-"Site module not found" => "",
+"Site module not found" => "Site modul nije pronađen", // ai 2026-06
 
 // modules/site/index.php, row 63
 "You do not have permission to edit items in this slice" => "Nemate dozvolu za uređivanje ovog odsječka",
@@ -60,26 +60,26 @@ return [
 "Move&nbsp;down" => "Pomaknite dolje",
 
 // modules/site/index.php, row 177
-"Move&nbsp;left" => "",
+"Move&nbsp;left" => "Pomaknite&nbsp;ulijevo", // ai 2026-06
 
 // modules/site/index.php, row 178
-"Move&nbsp;right" => "",
+"Move&nbsp;right" => "Pomaknite&nbsp;udesno", // ai 2026-06
 
 // modules/site/index.php, row 181
 // modules/site/sitetree.php, row 785, 806
 "Delete" => "Obrišite",
 
 // modules/site/index.php, row 181
-"Are you sure you want to delete the spot?" => "",
+"Are you sure you want to delete the spot?" => "Jeste li sigurni da želite obrisati ovaj spot?", // ai 2026-06
 
 // modules/site/index.php, row 184
-"Enable" => "",
+"Enable" => "Omogućite", // ai 2026-06
 
 // modules/site/index.php, row 185
-"Disable" => "",
+"Disable" => "Onemogućite", // ai 2026-06
 
 // modules/site/index.php, row 206
-"Possible system requires - &lcub;require:...&rcub; or &lcub;require:[\"...\",\"...\"]&rcub;" => "",
+"Possible system requires - &lcub;require:...&rcub; or &lcub;require:[\"...\",\"...\"]&rcub;" => "Mogući sustavski require - &lcub;require:...&rcub; ili &lcub;require:[\"...\",\"...\"]&rcub;", // ai 2026-06
 
 // modules/site/menu.php, row 46
 "View site" => "Pogledajte stranicu",
@@ -92,7 +92,7 @@ return [
 "Module Settings" => "Postavke modula",
 
 // modules/site/menu.php, row 79
-"Code Manager" => "",
+"Code Manager" => "Upravitelj koda", // ai 2026-06
 
 // modules/site/menu.php, row 80
 "Aliases" => "Sinonimi",
@@ -119,7 +119,7 @@ return [
 "Router" => "",
 
 // modules/site/modedit.php, row 134, 292
-"Uses modules" => "",
+"Uses modules" => "Koristi module", // ai 2026-06
 
 // modules/site/modedit.php, row 257
 "Add Site" => "Dodajte stranicu",
@@ -131,16 +131,16 @@ return [
 "Used Language File" => "Korištena jezična datoteka",
 
 // modules/site/modedit.php, row 278
-"Use AA_Router_Seo. Otherwise you will use old sitemodule approach with 'control file', which we can't recommend." => "",
+"Use AA_Router_Seo. Otherwise you will use old sitemodule approach with 'control file', which we can't recommend." => "Koristite AA_Router_Seo. U suprotnom ćete koristiti stari pristup site modula s 'kontrolnom datotekom', što ne preporučujemo.", // ai 2026-06
 
 // modules/site/modedit.php, row 279
-"Home or State file" => "",
+"Home or State file" => "Početna stranica ili datoteka stanja", // ai 2026-06
 
 // modules/site/modedit.php, row 279
-"For AA_Router_Seo fill the <b>default url</b> (home) - like <em>/en/home</em> or leave it empty<br><br>For older sites without AA_Router_Seo fill in the name of <b>Site control file</b> - will be placed in /modules/site/sites/ directory. The name you specify will be prefixed by 'site_' prefix, so if you for example name the file as 'apc.php', the site control file will be /modules/site/sites/site_apc.php." => "",
+"For AA_Router_Seo fill the <b>default url</b> (home) - like <em>/en/home</em> or leave it empty<br><br>For older sites without AA_Router_Seo fill in the name of <b>Site control file</b> - will be placed in /modules/site/sites/ directory. The name you specify will be prefixed by 'site_' prefix, so if you for example name the file as 'apc.php', the site control file will be /modules/site/sites/site_apc.php." => "Za AA_Router_Seo upišite <b>zadani url</b> (početnu stranicu) - npr. <em>/en/home</em> - ili ostavite prazno<br><br>Za starije web stranice bez AA_Router_Seo upišite naziv <b>kontrolne datoteke (Site control file)</b> - bit će smještena u direktorij /modules/site/sites/. Navedenom nazivu dodaje se prefiks 'site_', pa ako datoteku nazovete npr. 'apc.php', kontrolna datoteka bit će /modules/site/sites/site_apc.php.", // ai 2026-06
 
 // modules/site/modedit.php, row 294
-"Additional setting" => "",
+"Additional setting" => "Dodatne postavke", // ai 2026-06
 
 // modules/site/sitetree.php, row 782
 "Spot&nbsp;variables" => "Varijable točke",
@@ -152,11 +152,11 @@ return [
 "Spot&nbsp;conditions" => "Uvjeti točke",
 
 // modules/site/sitetree.php, row 805
-"Warning: the condition starts or ends with whitespace character. Please check, if it is OK in your expression." => "",
+"Warning: the condition starts or ends with whitespace character. Please check, if it is OK in your expression." => "Upozorenje: uvjet počinje ili završava razmakom (bjelinom). Provjerite je li to u redu u vašem izrazu.", // ai 2026-06
 
 // modules/site/sitetree.php, row 812
 "contains" => "Sadrži",
 
 // modules/site/sitetree.php, row 813
-"Regular Expression" => "",
+"Regular Expression" => "Regularni izraz", // ai 2026-06
 ];

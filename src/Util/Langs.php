@@ -17,9 +17,11 @@ class Langs
         'hr-utf8' => ['utf-8', 'Hrvatski (Unicode)'],
         'hu-utf8' => ['utf-8', 'Magyar (Unicode)'],
         'ja-utf8' => ['utf-8', 'Japanese (Unicode)'],
+        'pl-utf8' => ['utf-8', 'Polski (Unicode)'],
+        'pt-utf8' => ['utf-8', 'Portugues (Unicode)'],
         'ro-utf8' => ['utf-8', 'Romanian (Unicode)'],
-        'ru-utf8' => ['utf-8', 'Russian (Unicode)'],
         'sk-utf8' => ['utf-8', 'Slovencina (Unicode)'],
+        'uk-utf8' => ['utf-8', 'Ukrainian (Unicode)'],
         'vn'      => ['utf-8', 'Vietnamese (Unicode)'],
         'bg'      => ['windows-1251', 'Bulgarian (windows-1251)'],
         'cz'      => ['windows-1250', 'Cestina (windows-1250)'],
@@ -31,7 +33,6 @@ class Langs
         'ja'      => ['EUC-JP', 'Japanese (EUC-JP)'],
         'hu'      => ['iso-8859-2', 'Magyar (iso-8859-2)'],
         'ro'      => ['iso-8859-2', 'Romanian (iso-8859-2)'],
-        'ru'      => ['windows-1251', 'Russian (windows-1251)'],    // cyrillic
         'sk'      => ['windows-1250', 'Slovencina (windows-1250)'],
     ];
 

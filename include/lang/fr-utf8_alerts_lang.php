@@ -23,10 +23,10 @@ return [
 "slice wizard welcome" => "Bienvenue assistant de section",
 
 // modules/alerts/alerts_sending.php, row 421
-"user template" => "",
+"user template" => "modèle d'utilisateur", // ai 2026-06
 
 // modules/alerts/alerts_sending.php, row 422
-"password change" => "",
+"password change" => "changement de mot de passe", // ai 2026-06
 
 // modules/alerts/alerts_sending.php, row 423
 "other" => "autre",
@@ -77,23 +77,23 @@ return [
 "My email" => "Mon courriel",
 
 // modules/alerts/alerts_sending.php, row 465
-"Aliases for User Templates (you can use also all aliases of the user)" => "",
+"Aliases for User Templates (you can use also all aliases of the user)" => "Alias pour les modèles d'utilisateur (vous pouvez aussi utiliser tous les alias de l'utilisateur)", // ai 2026-06
 
 // modules/alerts/alerts_sending.php, row 473
-"Aliases for Password Change email (you can use also all aliases of the user)" => "",
+"Aliases for Password Change email (you can use also all aliases of the user)" => "Alias pour le courriel de changement de mot de passe (vous pouvez aussi utiliser tous les alias de l'utilisateur)", // ai 2026-06
 
 // modules/alerts/alerts_sending.php, row 475
-"HTML link to the password change page for current user" => "",
+"HTML link to the password change page for current user" => "Lien HTML vers la page de changement de mot de passe pour l'utilisateur actuel", // ai 2026-06
 
 // modules/alerts/alerts_sending.php, row 476
-"URL parameter used for password change link in _#PWD_LINK (you can use it, if you want to use your own url for it)" => "",
+"URL parameter used for password change link in _#PWD_LINK (you can use it, if you want to use your own url for it)" => "Paramètre d'URL utilisé pour le lien de changement de mot de passe dans _#PWD_LINK (vous pouvez l'utiliser si vous voulez utiliser votre propre URL)", // ai 2026-06
 
 // modules/alerts/cf_common.php, row 41
 "Language" => "Langue",
 
 // modules/alerts/cf_common.php, row 47
 // modules/alerts/send_emails.php, row 64
-"Email" => "",
+"Email" => "Courriel", // ai 2026-06
 
 // modules/alerts/cf_common.php, row 53
 "Password" => "Mot de passe",
@@ -106,17 +106,17 @@ return [
 
 // modules/alerts/cf_common.php, row 71
 // modules/alerts/synchro2.php, row 65
-"How often" => "",
+"How often" => "Fréquence", // ai 2026-06
 
 // modules/alerts/cf_common.php, row 78
-"Change password" => "",
+"Change password" => "Changer le mot de passe", // ai 2026-06
 
 // modules/alerts/cf_common.php, row 84
-"Retype new password" => "",
+"Retype new password" => "Retapez le nouveau mot de passe", // ai 2026-06
 
 // modules/alerts/menu.php, row 49, 50
 // modules/alerts/tableviews.php, row 158, 159
-"Alerts Settings" => "",
+"Alerts Settings" => "Configuration des alertes", // ai 2026-06
 
 // modules/alerts/menu.php, row 87
 "Alerts Admin" => "Administration Alerte",
@@ -128,7 +128,7 @@ return [
 // modules/alerts/send_emails.php, row 136
 // modules/alerts/synchro2.php, row 77
 // modules/alerts/tableviews.php, row 103
-"Selections" => "",
+"Selections" => "Sélections", // ai 2026-06
 
 // modules/alerts/menu.php, row 99
 "Send emails" => "Envoyer courriels",
@@ -140,7 +140,7 @@ return [
 "Documentation" => "",
 
 // modules/alerts/menu.php, row 109
-"Common" => "",
+"Common" => "Commun", // ai 2026-06
 
 // modules/alerts/menu.php, row 111
 "Email templates" => "Modï¿½les de courriel",
@@ -149,182 +149,184 @@ return [
 "You do not have permissions to add slice" => "Vous n'avez pas la permission d'ajouter des sections",
 
 // modules/alerts/send_emails.php, row 55
-"Send now an example alert email to email" => "",
+"Send now an example alert email to email" => "Envoyer maintenant un exemple de courriel d'alerte à une adresse de courriel", // ai 2026-06
 
 // modules/alerts/send_emails.php, row 65, 76
-"as if" => "",
+"as if" => "comme si", // ai 2026-06
 
 // modules/alerts/send_emails.php, row 66, 77, 92
 "Go!" => "Allez",
 
 // modules/alerts/send_emails.php, row 74
-"Send now an example alert email to Reader" => "",
+"Send now an example alert email to Reader" => "Envoyer maintenant un exemple de courriel d'alerte à un lecteur", // ai 2026-06
 
 // modules/alerts/send_emails.php, row 75
-"Reader" => "",
+"Reader" => "Lecteur", // ai 2026-06
 
 // modules/alerts/send_emails.php, row 84
-"Send alerts" => "",
+"Send alerts" => "Envoyer les alertes", // ai 2026-06
 
 // modules/alerts/send_emails.php, row 91
-"Send now alerts to all users subscribed to " => "",
+"Send now alerts to all users subscribed to " => "Envoyer maintenant les alertes à tous les utilisateurs abonnés à ", // ai 2026-06
 
 // modules/alerts/send_emails.php, row 91
-"Warning: This is a real command!" => "",
+"Warning: This is a real command!" => "Attention : ceci est une commande réelle !", // ai 2026-06
 
 // modules/alerts/send_emails.php, row 95
-"Last time the alerts were sent on:" => "",
+"Last time the alerts were sent on:" => "Dernier envoi des alertes le :", // ai 2026-06
 
 // modules/alerts/send_emails.php, row 106
-"%1 email(s) sent" => "",
+"%1 email(s) sent" => "%1 courriel(s) envoyé(s)", // ai 2026-06
 
 // modules/alerts/send_emails.php, row 134
 "Slice" => "Section",
 
 // modules/alerts/send_emails.php, row 135
-"View (Selection set)" => "",
+"View (Selection set)" => "Vue (ensemble de sélections)", // ai 2026-06
 
 // modules/alerts/send_emails.php, row 140
 "Define selections in slices from which you want to send Alerts,\n"
    ."        in views of type Alerts Selection Set"
- => "",
+ => "Définissez les sélections dans les sections depuis lesquelles vous voulez envoyer des alertes,\n"
+   ."        dans des vues de type Ensemble de sélections d'alertes", // ai 2026-06
 
 // modules/alerts/synchro.php, row 63
-"Synchronization with Reader Management Slice" => "",
+"Synchronization with Reader Management Slice" => "Synchronisation avec la section de gestion des lecteurs", // ai 2026-06
 
 // modules/alerts/synchro.php, row 93
-"Not Yet Set" => "",
+"Not Yet Set" => "Pas encore défini", // ai 2026-06
 
 // modules/alerts/synchro.php, row 102
-"Choose Reader Management Slice" => "",
+"Choose Reader Management Slice" => "Choisir la section de gestion des lecteurs", // ai 2026-06
 
 // modules/alerts/synchro.php, row 103
-"This Alerts Collection takes user data from the slice" => "",
+"This Alerts Collection takes user data from the slice" => "Cette collection d'alertes prend les données des utilisateurs dans la section", // ai 2026-06
 
 // modules/alerts/synchro.php, row 110
-"Change to: " => "",
+"Change to: " => "Changer en : ", // ai 2026-06
 
 // modules/alerts/synchro.php, row 116
-"and delete the %1-specific fields from %2" => "",
+"and delete the %1-specific fields from %2" => "et supprimer les champs spécifiques à %1 de %2", // ai 2026-06
 
 // modules/alerts/synchro.php, row 120
 "Change" => "Changer",
 
 // modules/alerts/synchro.php, row 130
-"Add %1-specific fields to %2" => "",
+"Add %1-specific fields to %2" => "Ajouter les champs spécifiques à %1 dans %2", // ai 2026-06
 
 // modules/alerts/synchro.php, row 132
 "Adds only fields the IDs of which don't yet exist in the slice.\n"
    ."    Refreshes the constant group containing selections if it already exists."
- => "",
+ => "N'ajoute que les champs dont les identifiants n'existent pas encore dans la section.\n"
+   ."    Actualise le groupe de constantes contenant les sélections s'il existe déjà.", // ai 2026-06
 
 // modules/alerts/synchro.php, row 138
-"Field Name" => "",
+"Field Name" => "Nom du champ", // ai 2026-06
 
 // modules/alerts/synchro.php, row 139
-"Field ID" => "",
+"Field ID" => "ID du champ", // ai 2026-06
 
 // modules/alerts/synchro.php, row 148
-"Add or refresh fields" => "",
+"Add or refresh fields" => "Ajouter ou actualiser les champs", // ai 2026-06
 
 // modules/alerts/synchro.php, row 150
-"This command can not be used until you choose the Reader Management Slice." => "",
+"This command can not be used until you choose the Reader Management Slice." => "Cette commande ne peut pas être utilisée tant que vous n'avez pas choisi la section de gestion des lecteurs.", // ai 2026-06
 
 // modules/alerts/synchro2.php, row 66, 74
-"How often for {ALERNAME}" => "",
+"How often for {ALERNAME}" => "Fréquence pour {ALERNAME}", // ai 2026-06
 
 // modules/alerts/synchro2.php, row 70
-"not subscribed" => "",
+"not subscribed" => "non abonné", // ai 2026-06
 
 // modules/alerts/synchro2.php, row 78
-"Selections for {ALERNAME}" => "",
+"Selections for {ALERNAME}" => "Sélections pour {ALERNAME}", // ai 2026-06
 
 // modules/alerts/synchro2.php, row 86
-"Selection IDs for {ALERNAME}" => "",
+"Selection IDs for {ALERNAME}" => "ID des sélections pour {ALERNAME}", // ai 2026-06
 
 // modules/alerts/synchro2.php, row 171
-"%1 field(s) added" => "",
+"%1 field(s) added" => "%1 champ(s) ajouté(s)", // ai 2026-06
 
 // modules/alerts/synchro2.php, row 200
-"%1 field(s) and %2 constant group(s) deleted" => "",
+"%1 field(s) and %2 constant group(s) deleted" => "%1 champ(s) et %2 groupe(s) de constantes supprimés", // ai 2026-06
 
 // modules/alerts/synchro2.php, row 228
 "not set" => "non-dï¿½signï¿½",
 
 // modules/alerts/tableviews.php, row 65
-"No selections defined. You must define some." => "",
+"No selections defined. You must define some." => "Aucune sélection définie. Vous devez en définir.", // ai 2026-06
 
 // modules/alerts/tableviews.php, row 102
-"Alerts Selections" => "",
+"Alerts Selections" => "Sélections des alertes", // ai 2026-06
 
 // modules/alerts/tableviews.php, row 106
-"Choose selections which form the Alert email." => "",
+"Choose selections which form the Alert email." => "Choisissez les sélections qui composent le courriel d'alerte.", // ai 2026-06
 
 // modules/alerts/tableviews.php, row 114
-"selection" => "",
+"selection" => "sélection", // ai 2026-06
 
 // modules/alerts/tableviews.php, row 127
-"order" => "",
+"order" => "ordre", // ai 2026-06
 
 // modules/alerts/tableviews.php, row 162
-"Core settings for the Alerts." => "",
+"Core settings for the Alerts." => "Paramètres principaux des alertes.", // ai 2026-06
 
 // modules/alerts/tableviews.php, row 172
-"alerts ID" => "",
+"alerts ID" => "ID des alertes", // ai 2026-06
 
 // modules/alerts/tableviews.php, row 180
-"name" => "",
+"name" => "nom", // ai 2026-06
 
 // modules/alerts/tableviews.php, row 183
-"form URL" => "",
+"form URL" => "URL du formulaire", // ai 2026-06
 
 // modules/alerts/tableviews.php, row 185
-"language" => "",
+"language" => "langue", // ai 2026-06
 
 // modules/alerts/tableviews.php, row 189
-"deleted" => "",
+"deleted" => "supprimé", // ai 2026-06
 
 // modules/alerts/tableviews.php, row 190
-"Use AA Admin / Delete<br>to delete permanently" => "",
+"Use AA Admin / Delete<br>to delete permanently" => "Utilisez AA Admin / Supprimer<br>pour supprimer définitivement", // ai 2026-06
 
 // modules/alerts/tableviews.php, row 195
-"welcome email" => "",
+"welcome email" => "courriel de bienvenue", // ai 2026-06
 
 // modules/alerts/tableviews.php, row 204, 267
-"alert email" => "",
+"alert email" => "courriel d'alerte", // ai 2026-06
 
 // modules/alerts/tableviews.php, row 223
-"created at" => "",
+"created at" => "créé le", // ai 2026-06
 
 // modules/alerts/tableviews.php, row 231
-"created by" => "",
+"created by" => "créé par", // ai 2026-06
 
 // modules/alerts/tableviews.php, row 241, 261
-"You don't have permissions to edit any collection or no collection exists." => "",
+"You don't have permissions to edit any collection or no collection exists." => "Vous n'avez pas la permission de modifier une collection ou aucune collection n'existe.", // ai 2026-06
 
 // modules/alerts/tableviews.php, row 255, 256
-"Send Emails" => "",
+"Send Emails" => "Envoyer les courriels", // ai 2026-06
 
 // modules/alerts/tableviews.php, row 263
-"Here you send the Alert emails manually." => "",
+"Here you send the Alert emails manually." => "Ici, vous envoyez manuellement les courriels d'alerte.", // ai 2026-06
 
 // modules/alerts/util.php, row 58
-"instant" => "",
+"instant" => "immédiat", // ai 2026-06
 
 // modules/alerts/util.php, row 59
-"daily" => "",
+"daily" => "quotidien", // ai 2026-06
 
 // modules/alerts/util.php, row 60
-"weekly" => "",
+"weekly" => "hebdomadaire", // ai 2026-06
 
 // modules/alerts/util.php, row 61
-"twoweeks" => "",
+"twoweeks" => "toutes les deux semaines", // ai 2026-06
 
 // modules/alerts/util.php, row 62
-"monthly" => "",
+"monthly" => "mensuel", // ai 2026-06
 
 // modules/alerts/util.php, row 63
-"irregular" => "",
+"irregular" => "irrégulier", // ai 2026-06
 
 // modules/alerts/util.php, row 70
 "Active" => "Activer",

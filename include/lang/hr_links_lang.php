@@ -40,16 +40,16 @@ return [
 // End of unused messages
 
 // include/searchbar.class.php, row 51
-"Condition" => "",
+"Condition" => "Uvjet", // ai 2026-06
 
 // include/searchbar.class.php, row 52
-"Readonly" => "",
+"Readonly" => "Samo za \xE8itanje", // ai 2026-06
 
 // include/searchbar.class.php, row 142
-"Search row" => "",
+"Search row" => "Redak pretra\x9Eivanja", // ai 2026-06
 
 // include/searchbar.class.php, row 143
-"Order row" => "",
+"Order row" => "Redak sortiranja", // ai 2026-06
 
 // include/searchbar.class.php, row 533, 534, 570
 "Search" => "Pretra\x9Eite",
@@ -67,10 +67,10 @@ return [
 "is" => "je",
 
 // include/searchbar.class.php, row 571
-"Clear" => "",
+"Clear" => "O\xE8istite", // ai 2026-06
 
 // include/searchbar.class.php, row 574
-"Store search" => "",
+"Store search" => "Spremite pretragu", // ai 2026-06
 
 // include/searchbar.class.php, row 595
 "Order" => "Redoslijed",
@@ -79,16 +79,16 @@ return [
 "Descending" => "Silazno",
 
 // include/searchbar.class.php, row 613
-"Filter" => "",
+"Filter" => "Filtar", // ai 2026-06
 
 // include/searchbar.class.php, row 662
-"Advanced search" => "",
+"Advanced search" => "Napredna pretraga", // ai 2026-06
 
 // include/searchbar.class.php, row 719
-"Save" => "",
+"Save" => "Spremi", // ai 2026-06
 
 // include/searchbar.class.php, row 720
-"Refine" => "",
+"Refine" => "Suzite", // ai 2026-06
 
 // include/searchbar.class.php, row 721
 "Cancel" => "Poni\x9Ati",
@@ -98,40 +98,40 @@ return [
 "Name" => "Ime",
 
 // include/searchbar.class.php, row 723
-"Share with all slice users" => "",
+"Share with all slice users" => "Podijelite sa svim korisnicima stranice", // ai 2026-06
 
 // include/searchbar.class.php, row 724
-"Save filter" => "",
+"Save filter" => "Spremite filtar", // ai 2026-06
 
 // include/searchbar.class.php, row 725
-"Rename filter" => "",
+"Rename filter" => "Preimenujte filtar", // ai 2026-06
 
 // include/searchbar.class.php, row 726
-"Are you sure you want to delete selected filter?" => "",
+"Are you sure you want to delete selected filter?" => "Jeste li sigurni da \x9Eelite obrisati odabrani filtar?", // ai 2026-06
 
 // include/searchbar.class.php, row 1008
-"Select one..." => "",
+"Select one..." => "Odaberite...", // ai 2026-06
 
 // include/searchbar.class.php, row 1023
-"My filters" => "",
+"My filters" => "Moji filtri", // ai 2026-06
 
 // include/searchbar.class.php, row 1026
-"Global filters" => "",
+"Global filters" => "Globalni filtri", // ai 2026-06
 
 // include/searchbar.class.php, row 1064
-"Shared filter (click to apply)" => "",
+"Shared filter (click to apply)" => "Zajedni\xE8ki filtar (kliknite za primjenu)", // ai 2026-06
 
 // include/searchbar.class.php, row 1064
-"Personal filter (click to apply)" => "",
+"Personal filter (click to apply)" => "Osobni filtar (kliknite za primjenu)", // ai 2026-06
 
 // include/searchbar.class.php, row 1074
-"Rename" => "",
+"Rename" => "Preimenujte", // ai 2026-06
 
 // include/searchbar.class.php, row 1076
 "Delete" => "Obri\x9Aite",
 
 // include/searchbar.class.php, row 1085
-"Manage filters" => "",
+"Manage filters" => "Upravljanje filtrima", // ai 2026-06
 
 // include/util.php, row 950
 "Error: Missing Reading Password" => "Gre\x9Aka: nedostaje lozinka za \xE8itanje",
@@ -144,7 +144,7 @@ return [
 "Back" => "Povratak",
 
 // include/util.php, row 1314
-"Relogin" => "",
+"Relogin" => "Ponovna prijava", // ai 2026-06
 
 // modules/links/actions.php, row 47, 91, 112
 "Can't find link in given category" => "Ne mogu prona\xE6i vezu u datoj kategoriji",
@@ -153,7 +153,7 @@ return [
 "No permission to delete link from the category - link set as PROPOSAL to DELETE from given category" => "Nemate dozvolu za obristai vezu iz kategorije - veza je potavljena kao PONUDA za BRISANJE sa date kategorije",
 
 // modules/links/actions.php, row 61, 126
-"Can't get association information" => "",
+"Can't get association information" => "Nije mogu\xE6e dohvatiti podatke o pridru\x9Eivanju kategoriji", // ai 2026-06
 
 // modules/links/actions.php, row 95
 "No permission to approve link to given category" => "Neamte dozvolu za potvrdu veze u datoj kategoriji",
@@ -193,10 +193,10 @@ return [
 "Category description" => "Opis kategorije",
 
 // modules/links/catedit.php, row 107
-"No links" => "",
+"No links" => "Nema poveznica", // ai 2026-06
 
 // modules/links/catedit.php, row 107
-"Disallow storing of the links to this category?" => "",
+"Disallow storing of the links to this category?" => "Zabraniti spremanje poveznica u ovu kategoriju?", // ai 2026-06
 
 // modules/links/catedit.php, row 108
 // modules/links/catedit2.php, row 222
@@ -486,7 +486,7 @@ return [
 "Link organization city" => "Veza na grad organizatora",
 
 // modules/links/constants.php, row 140
-"Link organization street" => "",
+"Link organization street" => "Poveznica - ulica organizacije", // ai 2026-06
 
 // modules/links/constants.php, row 141
 "Link organization post code" => "Veza na po\x9Atanski broj organizacije",
@@ -576,10 +576,10 @@ return [
 "No permissions to edit links" => "Nemate dozvolu za ure\xF0ivanje veza",
 
 // modules/links/index.php, row 207
-"HINT: \"social ecology\" AND environment" => "",
+"HINT: \"social ecology\" AND environment" => "SAVJET: \"socijalna ekologija\" AND okoli\x9A", // ai 2026-06
 
 // modules/links/index.php, row 234
-"Perform action on selected items" => "",
+"Perform action on selected items" => "Izvr\x9Aite akciju na odabranim stavkama", // ai 2026-06
 
 // modules/links/index.php, row 257
 "ActionApps - Links Manager" => "APC - AA - Ure\xF0ivanje veza",
@@ -631,10 +631,10 @@ return [
 "Fax" => "",
 
 // modules/links/linkedit.php, row 51
-"Accept" => "",
+"Accept" => "Prihvatite", // ai 2026-06
 
 // modules/links/linkedit.php, row 53
-"unfilled" => "",
+"unfilled" => "neispunjeno", // ai 2026-06
 
 // modules/links/linkedit.php, row 90
 // modules/links/menu.php, row 72, 73
@@ -663,7 +663,14 @@ return [
 "ActionApps" => "APC AA",
 
 // modules/links/linkedit.php, row 407
-"<!--NewPublicLinkText-->" => "",
+"<!--NewPublicLinkText-->"
+ => "U ovoj formi za dodavanje nove poveznice u katalog mo\x9Eete,\n"
+   ."ali ne morate ispuniti sva polja. Radi lak\x9Aeg uvr\x9Atavanja poveznice\n"
+   ."u katalog molimo vas da prije svega ispunite <b>URL</b> poveznice, <b>NASLOV</b> i\n"
+   ."odaberete neku <b>KATEGORIJU</b>. Ako imate iskustva sa stranicama,\n"
+   ."mo\x9Eete ispuniti i opis poveznice.<br>\n"
+   ."<b>Molimo, ne dodavajte u katalog \"komercijalne\" poveznice.</b> Takve poveznice ne\xE6e biti objavljene u katalogu.<br>\n"
+   ." Hvala.", // ai 2026-06
 
 // modules/links/linkedit.php, row 425
 "Link" => "Veza",
@@ -678,7 +685,7 @@ return [
 "You can check, if the page is not in database already" => "Mo\x9Eete provjeriti da li stranica ve\xE6 postoji u bazi",
 
 // modules/links/linkedit.php, row 445
-"Do not fill, please:" => "",
+"Do not fill, please:" => "Molimo, ne ispunjavajte:", // ai 2026-06
 
 // modules/links/linkedit.php, row 451
 "English name of the page" => "Ime stranice na engleskom jeziku",
@@ -702,7 +709,7 @@ return [
 "Last checked" => "Datum zadnje provjere",
 
 // modules/links/linkedit.php, row 479, 480, 481
-"n/j/Y" => "",
+"n/j/Y" => "j.n.Y", // ai 2026-06
 
 // modules/links/linkedit.php, row 480
 "Last changed" => "Datum zadnje provjere",
@@ -738,7 +745,7 @@ return [
 "select page's languages" => "Odaberite jezik stranica",
 
 // modules/links/linkedit2.php, row 112
-"Not accepted, sorry. Looks like spam." => "",
+"Not accepted, sorry. Looks like spam." => "Nije prihva\xE6eno, \x9Eao nam je. Izgleda kao spam.", // ai 2026-06
 
 // modules/links/linkedit2.php, row 141
 "Link change proposal inserted" => "Umetnuta veza na promjenu ponude",
@@ -747,7 +754,7 @@ return [
 "Link inserted" => "Veza je umetnuta",
 
 // modules/links/linkedit2.php, row 151
-"Continue" => "",
+"Continue" => "Nastavite", // ai 2026-06
 
 // modules/links/menu.php, row 64
 "View site" => "Pogledajte site",
@@ -765,7 +772,7 @@ return [
 "Folders" => "Mape",
 
 // modules/links/menu.php, row 100
-"Folders with links, sorted by their status (active, changed, new, ...)" => "",
+"Folders with links, sorted by their status (active, changed, new, ...)" => "Mape s poveznicama, razvrstane prema statusu (aktivne, izmijenjene, nove, ...)", // ai 2026-06
 
 // modules/links/menu.php, row 103
 "Active" => "Aktivno",
@@ -786,7 +793,7 @@ return [
 "Unassigned" => "Nedodijeljeno",
 
 // modules/links/menu.php, row 121
-"Unassigned - Trash" => "",
+"Unassigned - Trash" => "Nerazvrstano - sme\xE6e", // ai 2026-06
 
 // modules/links/menu.php, row 122
 "Misc" => "Razno",
@@ -795,19 +802,19 @@ return [
 "Empty trash" => "Ispraznite sme\xE6e",
 
 // modules/links/menu.php, row 127
-"Are you sure you want to empty trash?" => "",
+"Are you sure you want to empty trash?" => "Jeste li sigurni da \x9Eelite isprazniti sme\xE6e?", // ai 2026-06
 
 // modules/links/menu.php, row 131
-"Set Debug OFF" => "",
+"Set Debug OFF" => "Isklju\xE8ite debug", // ai 2026-06
 
 // modules/links/menu.php, row 131
-"Set Debug ON" => "",
+"Set Debug ON" => "Uklju\xE8ite debug", // ai 2026-06
 
 // modules/links/menu.php, row 132
 "Bookmarks" => "Spisak veza",
 
 // modules/links/menu.php, row 132
-"My own links" => "",
+"My own links" => "Moje vlastite poveznice", // ai 2026-06
 
 // modules/links/menu.php, row 158
 "Main settings" => "Osnovne postavke",

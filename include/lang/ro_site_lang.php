@@ -11,56 +11,56 @@ $mgettext_lang = "ro";
 return [
 
 // modules/site/aliases.php, row 36
-"You do not have permissions to manage tasks" => "",
+"You do not have permissions to manage tasks" => "Nu aveti dreptul s\xE3 administrati sarcini", // ai 2026-06
 
 // modules/site/aliases.php, row 41
-"Manage %1" => "",
+"Manage %1" => "Administrare %1", // ai 2026-06
 
 // modules/site/index.php, row 57
-"Site module not found" => "",
+"Site module not found" => "Modulul site nu a fost g\xE3sit", // ai 2026-06
 
 // modules/site/index.php, row 63
 "You do not have permission to edit items in this slice" => "Nu ave\xFEi dreptul s\xE3 edita\xFEi articole \xEEn aceast\xE3 sec\xFEiune",
 
 // modules/site/index.php, row 68
-"Starting spot not found" => "",
+"Starting spot not found" => "Spotul de pornire nu a fost g\xE3sit", // ai 2026-06
 
 // modules/site/index.php, row 149
-"Editor window - site code manager" => "",
+"Editor window - site code manager" => "Fereastr\xE3 editor - administrare cod site", // ai 2026-06
 
 // modules/site/index.php, row 169
-"Add&nbsp;spot" => "",
+"Add&nbsp;spot" => "Adaug\xE3&nbsp;spot", // ai 2026-06
 
 // modules/site/index.php, row 170
-"Add&nbsp;choice" => "",
+"Add&nbsp;choice" => "Adaug\xE3&nbsp;optiune", // ai 2026-06
 
 // modules/site/index.php, row 173
-"Move&nbsp;up" => "",
+"Move&nbsp;up" => "Mut\xE3&nbsp;sus", // ai 2026-06
 
 // modules/site/index.php, row 174
-"Move&nbsp;down" => "",
+"Move&nbsp;down" => "Mut\xE3&nbsp;jos", // ai 2026-06
 
 // modules/site/index.php, row 177
-"Move&nbsp;left" => "",
+"Move&nbsp;left" => "Mut\xE3&nbsp;la&nbsp;st\xE2nga", // ai 2026-06
 
 // modules/site/index.php, row 178
-"Move&nbsp;right" => "",
+"Move&nbsp;right" => "Mut\xE3&nbsp;la&nbsp;dreapta", // ai 2026-06
 
 // modules/site/index.php, row 181
 // modules/site/sitetree.php, row 785, 806
 "Delete" => "\xAAterge",
 
 // modules/site/index.php, row 181
-"Are you sure you want to delete the spot?" => "",
+"Are you sure you want to delete the spot?" => "Sigur doriti s\xE3 stergeti spotul?", // ai 2026-06
 
 // modules/site/index.php, row 184
-"Enable" => "",
+"Enable" => "Activeaz\xE3", // ai 2026-06
 
 // modules/site/index.php, row 185
-"Disable" => "",
+"Disable" => "Dezactiveaz\xE3", // ai 2026-06
 
 // modules/site/index.php, row 206
-"Possible system requires - &lcub;require:...&rcub; or &lcub;require:[\"...\",\"...\"]&rcub;" => "",
+"Possible system requires - &lcub;require:...&rcub; or &lcub;require:[\"...\",\"...\"]&rcub;" => "Posibile require de sistem - &lcub;require:...&rcub; sau &lcub;require:[\"...\",\"...\"]&rcub;", // ai 2026-06
 
 // modules/site/menu.php, row 46
 "View site" => "Vizualizare sit",
@@ -70,19 +70,19 @@ return [
 "Site" => "",
 
 // modules/site/menu.php, row 78
-"Module Settings" => "",
+"Module Settings" => "Set\xE3ri modul", // ai 2026-06
 
 // modules/site/menu.php, row 79
-"Code Manager" => "",
+"Code Manager" => "Administrator cod", // ai 2026-06
 
 // modules/site/menu.php, row 80
-"Aliases" => "",
+"Aliases" => "Aliasuri", // ai 2026-06
 
 // modules/site/moddelete.php, row 45
-"You don't have permissions to delete a site." => "",
+"You don't have permissions to delete a site." => "Nu aveti dreptul s\xE3 stergeti un site.", // ai 2026-06
 
 // modules/site/moddelete.php, row 49
-"Module not found." => "",
+"Module not found." => "Modulul nu a fost g\xE3sit.", // ai 2026-06
 
 // modules/site/moddelete.php, row 69
 "Slice successfully deleted, tables are optimized" => "Sec\xFEiune \xBAtears\xE3 cu succes, tabelele sunt optimizate",
@@ -94,50 +94,50 @@ return [
 "You do not have permissions to edit this slice" => "Nu ave\xFEi dreptul s\xE3 edita\xFEi aceast\xE3 sec\xFEiune",
 
 // modules/site/modedit.php, row 132
-"State file" => "",
+"State file" => "Fisier de stare", // ai 2026-06
 
 // modules/site/modedit.php, row 133, 278
 "Router" => "",
 
 // modules/site/modedit.php, row 134, 292
-"Uses modules" => "",
+"Uses modules" => "Utilizeaz\xE3 module", // ai 2026-06
 
 // modules/site/modedit.php, row 257
-"Add Site" => "",
+"Add Site" => "Ad\xE3ugare site", // ai 2026-06
 
 // modules/site/modedit.php, row 257
-"Edit Site" => "",
+"Edit Site" => "Editare site", // ai 2026-06
 
 // modules/site/modedit.php, row 277
 "Used Language File" => "Fi\xBAier limb\xE3 utilizat\xE3",
 
 // modules/site/modedit.php, row 278
-"Use AA_Router_Seo. Otherwise you will use old sitemodule approach with 'control file', which we can't recommend." => "",
+"Use AA_Router_Seo. Otherwise you will use old sitemodule approach with 'control file', which we can't recommend." => "Folositi AA_Router_Seo. Altfel veti folosi vechea abordare a modulului site cu 'fisier de control', pe care nu o putem recomanda.", // ai 2026-06
 
 // modules/site/modedit.php, row 279
-"Home or State file" => "",
+"Home or State file" => "Pagin\xE3 de start sau fisier de stare", // ai 2026-06
 
 // modules/site/modedit.php, row 279
-"For AA_Router_Seo fill the <b>default url</b> (home) - like <em>/en/home</em> or leave it empty<br><br>For older sites without AA_Router_Seo fill in the name of <b>Site control file</b> - will be placed in /modules/site/sites/ directory. The name you specify will be prefixed by 'site_' prefix, so if you for example name the file as 'apc.php', the site control file will be /modules/site/sites/site_apc.php." => "",
+"For AA_Router_Seo fill the <b>default url</b> (home) - like <em>/en/home</em> or leave it empty<br><br>For older sites without AA_Router_Seo fill in the name of <b>Site control file</b> - will be placed in /modules/site/sites/ directory. The name you specify will be prefixed by 'site_' prefix, so if you for example name the file as 'apc.php', the site control file will be /modules/site/sites/site_apc.php." => "Pentru AA_Router_Seo completati <b>URL-ul implicit</b> (pagina de start) - de exemplu <em>/en/home</em> sau l\xE3sati-l gol<br><br>Pentru site-urile mai vechi f\xE3r\xE3 AA_Router_Seo completati numele <b>fisierului de control al site-ului</b> - va fi plasat \xEEn directorul /modules/site/sites/. Numelui specificat i se va ad\xE3uga prefixul 'site_', deci dac\xE3 de exemplu numiti fisierul 'apc.php', fisierul de control al site-ului va fi /modules/site/sites/site_apc.php.", // ai 2026-06
 
 // modules/site/modedit.php, row 294
-"Additional setting" => "",
+"Additional setting" => "Set\xE3ri suplimentare", // ai 2026-06
 
 // modules/site/sitetree.php, row 782
-"Spot&nbsp;variables" => "",
+"Spot&nbsp;variables" => "Variabile&nbsp;spot", // ai 2026-06
 
 // modules/site/sitetree.php, row 788, 817
 "Add" => "Adaug\xE3",
 
 // modules/site/sitetree.php, row 796
-"Spot&nbsp;conditions" => "",
+"Spot&nbsp;conditions" => "Conditii&nbsp;spot", // ai 2026-06
 
 // modules/site/sitetree.php, row 805
-"Warning: the condition starts or ends with whitespace character. Please check, if it is OK in your expression." => "",
+"Warning: the condition starts or ends with whitespace character. Please check, if it is OK in your expression." => "Atentie: conditia \xEEncepe sau se termin\xE3 cu un spatiu. Verificati dac\xE3 este corect \xEEn expresia dumneavoastr\xE3.", // ai 2026-06
 
 // modules/site/sitetree.php, row 812
-"contains" => "",
+"contains" => "contine", // ai 2026-06
 
 // modules/site/sitetree.php, row 813
-"Regular Expression" => "",
+"Regular Expression" => "Expresie regulat\xE3", // ai 2026-06
 ];

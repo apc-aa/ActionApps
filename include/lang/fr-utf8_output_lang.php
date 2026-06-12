@@ -19,25 +19,25 @@ return [
 // End of unused messages
 
 // ./slice.php, row 232
-"Bad inc parameter - included file must contain only alphanumeric characters" => "",
+"Bad inc parameter - included file must contain only alphanumeric characters" => "Paramètre inc incorrect - le fichier inclus ne doit contenir que des caractères alphanumériques", // ai 2026-06
 
 // ./slice.php, row 236
-"No such file" => "",
+"No such file" => "Fichier introuvable", // ai 2026-06
 
 // ./slice.php, row 263
-"Invalid slice number or slice was deleted" => "",
+"Invalid slice number or slice was deleted" => "Numéro de section invalide ou section supprimée", // ai 2026-06
 
 // ./slice.php, row 266
-"slice.php output forbidden for this slice" => "",
+"slice.php output forbidden for this slice" => "La sortie via slice.php est interdite pour cette section", // ai 2026-06
 
 // ./slice.php, row 321
-"session id" => "",
+"session id" => "id de session", // ai 2026-06
 
 // ./slice.php, row 580
-"number of current page (on pagescroller)" => "",
+"number of current page (on pagescroller)" => "numéro de la page actuelle (dans la pagination)", // ai 2026-06
 
 // ./slice.php, row 581
-"page length (number of items)" => "",
+"page length (number of items)" => "longueur de page (nombre d'items)", // ai 2026-06
 
 // ./slice.php, row 616
 // include/view.php, row 346
@@ -89,13 +89,17 @@ return [
 "Alias for comment ID<br>\n"
    ."                             <i>Usage: </i>in form code<br>\n"
    ."                             <i>Example: </i>&lt;input type=hidden name=d_item_id value=\"_#DITEM_ID\">"
- => "",
+ => "Alias pour l'ID du commentaire<br>\n"
+   ."                             <i>Usage : </i>dans le code du formulaire<br>\n"
+   ."                             <i>Exemple : </i>&lt;input type=hidden name=d_item_id value=\"_#DITEM_ID\">", // ai 2026-06
 
 // include/item.php, row 369
 "Alias for comment ID (the same as _#DITEM_ID<br>)\n"
    ."                             <i>Usage: </i>in form code<br>\n"
    ."                             <i>Example: </i>&lt;input type=hidden name=d_item_id value=\"_#ITEM_ID#\">"
- => "",
+ => "Alias pour l'ID du commentaire (identique à _#DITEM_ID<br>)\n"
+   ."                             <i>Usage : </i>dans le code du formulaire<br>\n"
+   ."                             <i>Exemple : </i>&lt;input type=hidden name=d_item_id value=\"_#ITEM_ID#\">", // ai 2026-06
 
 // include/item.php, row 370
 "Alias for item ID<br>\n"
@@ -145,7 +149,7 @@ return [
 "Constant name" => "Nom constant",
 
 // include/item.php, row 407
-"Translated constant name" => "",
+"Translated constant name" => "Nom traduit de la constante", // ai 2026-06
 
 // include/item.php, row 408
 "Constant value" => "Valeur constante",
@@ -175,10 +179,10 @@ return [
 "Constant level (used for hierarchical constants)" => "Niveau constant (utilisï¿½ pour les constantes hierarchiques)",
 
 // include/item.php, row 787
-"Error: wrong alias function %1 for %2" => "",
+"Error: wrong alias function %1 for %2" => "Erreur : fonction d'alias %1 incorrecte pour %2", // ai 2026-06
 
 // include/itemview.php, row 117
-"Selected item" => "",
+"Selected item" => "Item sélectionné", // ai 2026-06
 
 // include/itemview.php, row 124
 "number of found items" => "Nombre d'items trouvï¿½s",
@@ -187,7 +191,7 @@ return [
 "No comment was selected" => "Aucun commentaire sï¿½lectionnï¿½",
 
 // include/itemview.php, row 680, 688
-"exact group name" => "",
+"exact group name" => "nom exact du groupe", // ai 2026-06
 
 // include/scroller.php, row 86
 "Next" => "Suivant",
@@ -199,7 +203,7 @@ return [
 "All" => "Tout",
 
 // include/scroller.php, row 296
-"found" => "",
+"found" => "trouvés", // ai 2026-06
 
 // include/scroller.php, row 452
 "&raquo;" => "",
@@ -223,11 +227,11 @@ return [
 "Back" => "Retour",
 
 // include/util.php, row 1314
-"Relogin" => "",
+"Relogin" => "Se reconnecter", // ai 2026-06
 
 // misc/proposefieldchange.php, row 71
-"Assignment form" => "",
+"Assignment form" => "Formulaire d'assignation", // ai 2026-06
 
 // misc/proposefieldchange.php, row 76
-"Grabs item relations data POSTed by form" => "",
+"Grabs item relations data POSTed by form" => "Récupère les données de relations d'items envoyées par le formulaire (POST)", // ai 2026-06
 ];

@@ -15,16 +15,16 @@ return [
 
 // modules/polls/designs.php, row 38
 // modules/polls/index.php, row 55
-"You do not have permission to manage Polls" => "",
+"You do not have permission to manage Polls" => "アンケートを管理する許可がありません", // ai 2026-06
 
 // modules/polls/designs.php, row 47
-"Owner" => "",
+"Owner" => "所有者", // ai 2026-06
 
 // modules/polls/designs.php, row 48
 "ID" => "",
 
 // modules/polls/designs.php, row 49
-"Comment" => "",
+"Comment" => "コメント", // ai 2026-06
 
 // modules/polls/designs.php, row 50
 "Name" => "名前",
@@ -33,89 +33,89 @@ return [
 "Top HTML" => "先頭のHTML",
 
 // modules/polls/designs.php, row 53
-"Answer HTML" => "",
+"Answer HTML" => "回答のHTML", // ai 2026-06
 
 // modules/polls/designs.php, row 54
 "Bottom HTML" => "最後のHTML",
 
 // modules/polls/designs.php, row 57
-"Polls Design" => "",
+"Polls Design" => "アンケートのデザイン", // ai 2026-06
 
 // modules/polls/include/util.php, row 44
-"Poll ID" => "",
+"Poll ID" => "アンケートID", // ai 2026-06
 
 // modules/polls/include/util.php, row 45, 68
-"Module ID" => "",
+"Module ID" => "モジュールID", // ai 2026-06
 
 // modules/polls/include/util.php, row 46, 63, 64
-"Prints poll question" => "",
+"Prints poll question" => "アンケートの質問を表示", // ai 2026-06
 
 // modules/polls/include/util.php, row 47
 // modules/polls/polledit.php, row 233, 240
-"Publish Date" => "",
+"Publish Date" => "公開日", // ai 2026-06
 
 // modules/polls/include/util.php, row 48
 // modules/polls/polledit.php, row 234, 241
-"Expiry Date" => "",
+"Expiry Date" => "有効期限", // ai 2026-06
 
 // modules/polls/include/util.php, row 49
-"Prints poll params" => "",
+"Prints poll params" => "アンケートのパラメータを表示", // ai 2026-06
 
 // modules/polls/include/util.php, row 50
-"Link to poll editing page (for admin interface only)" => "",
+"Link to poll editing page (for admin interface only)" => "アンケート編集ページへのリンク（管理画面のみ）", // ai 2026-06
 
 // modules/polls/include/util.php, row 65
-"Poll publish date" => "",
+"Poll publish date" => "アンケートの公開日", // ai 2026-06
 
 // modules/polls/include/util.php, row 66
-"Poll expiry date" => "",
+"Poll expiry date" => "アンケートの有効期限", // ai 2026-06
 
 // modules/polls/include/util.php, row 67
-"Poll params" => "",
+"Poll params" => "アンケートのパラメータ", // ai 2026-06
 
 // modules/polls/include/util.php, row 70
-"Poll id (32 characters hexadecimal number - the same for all answers)" => "",
+"Poll id (32 characters hexadecimal number - the same for all answers)" => "アンケートID（32文字の16進数 - 全ての回答で同じ）", // ai 2026-06
 
 // modules/polls/include/util.php, row 72
-"Number of answer" => "",
+"Number of answer" => "回答番号", // ai 2026-06
 
 // modules/polls/include/util.php, row 73
-"Number of votes for this answer" => "",
+"Number of votes for this answer" => "この回答の投票数", // ai 2026-06
 
 // modules/polls/include/util.php, row 74
-"Text of answer" => "",
+"Text of answer" => "回答のテキスト", // ai 2026-06
 
 // modules/polls/include/util.php, row 75
-"ID of answer (32 characters hexadecimal number)" => "",
+"ID of answer (32 characters hexadecimal number)" => "回答のID（32文字の16進数）", // ai 2026-06
 
 // modules/polls/include/util.php, row 76
-"Votes for this answer in percent. You can use also {poll_share}." => "",
+"Votes for this answer in percent. You can use also {poll_share}." => "この回答への投票の割合（％）。{poll_share} も使用できます。", // ai 2026-06
 
 // modules/polls/include/util.php, row 77
-"Sum of all votes. You can use also {poll_sum}." => "",
+"Sum of all votes. You can use also {poll_sum}." => "全投票の合計。{poll_sum} も使用できます。", // ai 2026-06
 
 // modules/polls/menu.php, row 58
-"View poll" => "",
+"View poll" => "アンケートを表示", // ai 2026-06
 
 // modules/polls/menu.php, row 65, 66
 // modules/polls/polledit.php, row 188
-"Edit poll" => "",
+"Edit poll" => "アンケートの編集", // ai 2026-06
 
 // modules/polls/menu.php, row 65
 // modules/polls/polledit.php, row 188
-"Add poll" => "",
+"Add poll" => "アンケートの追加", // ai 2026-06
 
 // modules/polls/menu.php, row 66
-"Add new poll" => "",
+"Add new poll" => "新規アンケートを追加", // ai 2026-06
 
 // modules/polls/menu.php, row 73, 74
-"Polls manager" => "",
+"Polls manager" => "アンケート管理", // ai 2026-06
 
 // modules/polls/menu.php, row 81, 82
-"Polls admin" => "",
+"Polls admin" => "アンケート設定", // ai 2026-06
 
 // modules/polls/menu.php, row 93
-"Folders" => "",
+"Folders" => "フォルダ", // ai 2026-06
 
 // modules/polls/menu.php, row 94
 "Active" => "活動中",
@@ -133,105 +133,105 @@ return [
 "Trash bin" => "ゴミ箱",
 
 // modules/polls/menu.php, row 100
-"Misc" => "",
+"Misc" => "その他", // ai 2026-06
 
 // modules/polls/menu.php, row 101
 "Empty trash" => "ゴミ箱を空にする",
 
 // modules/polls/menu.php, row 101
-"Are you sure you want to empty trash?" => "",
+"Are you sure you want to empty trash?" => "本当にゴミ箱を空にしますか？", // ai 2026-06
 
 // modules/polls/menu.php, row 115
 "Main settings" => "主な設定",
 
 // modules/polls/menu.php, row 116
-"Polls" => "",
+"Polls" => "アンケート", // ai 2026-06
 
 // modules/polls/menu.php, row 117
-"Designs" => "",
+"Designs" => "デザイン", // ai 2026-06
 
 // modules/polls/modedit.php, row 93
-"You do not have permissions to add polls" => "",
+"You do not have permissions to add polls" => "アンケートを追加する許可がありません", // ai 2026-06
 
 // modules/polls/modedit.php, row 98
-"You do not have permissions to edit this poll" => "",
+"You do not have permissions to edit this poll" => "このアンケートを編集する許可がありません", // ai 2026-06
 
 // modules/polls/modedit.php, row 115, 240
 // modules/polls/polledit.php, row 249
-"IP Locking timeout" => "",
+"IP Locking timeout" => "IPロックのタイムアウト", // ai 2026-06
 
 // modules/polls/modedit.php, row 116, 242
-"Cookies prefix" => "",
+"Cookies prefix" => "Cookieのプレフィックス", // ai 2026-06
 
 // modules/polls/modedit.php, row 225
-"Add Polls" => "",
+"Add Polls" => "アンケートの追加", // ai 2026-06
 
 // modules/polls/modedit.php, row 225
-"Edit Polls" => "",
+"Edit Polls" => "アンケートの編集", // ai 2026-06
 
 // modules/polls/modedit.php, row 228
-"Polls Module general data" => "",
+"Polls Module general data" => "アンケートモジュールの基本設定", // ai 2026-06
 
 // modules/polls/modedit.php, row 233
-"Used Language File" => "",
+"Used Language File" => "使用する言語ファイル", // ai 2026-06
 
 // modules/polls/modedit.php, row 237
-"Defaults for polls in this module" => "",
+"Defaults for polls in this module" => "このモジュールのアンケートの省略値", // ai 2026-06
 
 // modules/polls/modedit.php, row 238
 // modules/polls/polledit.php, row 247
-"Use logging" => "",
+"Use logging" => "ログを記録", // ai 2026-06
 
 // modules/polls/modedit.php, row 239
 // modules/polls/polledit.php, row 248
-"Use IP locking" => "",
+"Use IP locking" => "IPロックを使用", // ai 2026-06
 
 // modules/polls/modedit.php, row 241
 // modules/polls/polledit.php, row 250
-"Use cookies" => "",
+"Use cookies" => "Cookieを使用", // ai 2026-06
 
 // modules/polls/polledit.php, row 74
-"No permission to add/edit poll." => "",
+"No permission to add/edit poll." => "アンケートを追加/編集する許可がありません。", // ai 2026-06
 
 // modules/polls/polledit.php, row 113
-"Can't insert new poll" => "",
+"Can't insert new poll" => "新規アンケートを挿入できません", // ai 2026-06
 
 // modules/polls/polledit.php, row 119
-"Can't update poll with id %1" => "",
+"Can't update poll with id %1" => "ID %1 のアンケートを更新できません", // ai 2026-06
 
 // modules/polls/polledit.php, row 209
-"Insert question and answers" => "",
+"Insert question and answers" => "質問と回答を入力してください", // ai 2026-06
 
 // modules/polls/polledit.php, row 231, 238
-"Headline" => "",
+"Headline" => "見出し", // ai 2026-06
 
 // modules/polls/polledit.php, row 231, 238
-"Question" => "",
+"Question" => "質問", // ai 2026-06
 
 // modules/polls/polledit.php, row 232, 239
-"Insert new answers and choose their order" => "",
+"Insert new answers and choose their order" => "新しい回答を入力し、順序を選択してください", // ai 2026-06
 
 // modules/polls/polledit.php, row 244
-"Polls settings" => "",
+"Polls settings" => "アンケートの設定", // ai 2026-06
 
 // modules/polls/polledit.php, row 246
-"Poll is locked" => "",
+"Poll is locked" => "アンケートはロックされています", // ai 2026-06
 
 // modules/polls/polledit.php, row 249
-"time in seconds" => "",
+"time in seconds" => "秒単位の時間", // ai 2026-06
 
 // modules/polls/polledit.php, row 252
-"Parameters" => "",
+"Parameters" => "パラメータ", // ai 2026-06
 
 // modules/polls/polledit.php, row 254
-"Polls design templates" => "",
+"Polls design templates" => "アンケートのデザインテンプレート", // ai 2026-06
 
 // modules/polls/polledit.php, row 262
-"Select design type - before vote" => "",
+"Select design type - before vote" => "デザインの選択 - 投票前", // ai 2026-06
 
 // modules/polls/polledit.php, row 263
-"Select design type - after vote" => "",
+"Select design type - after vote" => "デザインの選択 - 投票後", // ai 2026-06
 
 // modules/polls/polledit.php, row 263
-"If the design after vote should look differently, then specify it here." => "",
+"If the design after vote should look differently, then specify it here." => "投票後に異なるデザインにしたい場合は、ここで指定してください。", // ai 2026-06
 ];

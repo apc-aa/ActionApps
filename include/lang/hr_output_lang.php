@@ -29,7 +29,7 @@ return [
 // End of unused messages
 
 // ./slice.php, row 232
-"Bad inc parameter - included file must contain only alphanumeric characters" => "",
+"Bad inc parameter - included file must contain only alphanumeric characters" => "Neispravan parametar inc - uklju\xE8ena datoteka smije sadr\x9Eavati samo alfanumeri\xE8ke znakove", // ai 2026-06
 
 // ./slice.php, row 236
 "No such file" => "Ne postoji datoteka",
@@ -38,16 +38,16 @@ return [
 "Invalid slice number or slice was deleted" => "Krivi broj stranice ili je stranica obrisana",
 
 // ./slice.php, row 266
-"slice.php output forbidden for this slice" => "",
+"slice.php output forbidden for this slice" => "Izlaz preko slice.php zabranjen je za ovu stranicu", // ai 2026-06
 
 // ./slice.php, row 321
-"session id" => "",
+"session id" => "ID sesije", // ai 2026-06
 
 // ./slice.php, row 580
-"number of current page (on pagescroller)" => "",
+"number of current page (on pagescroller)" => "broj trenutne stranice (u strani\xE8enju)", // ai 2026-06
 
 // ./slice.php, row 581
-"page length (number of items)" => "",
+"page length (number of items)" => "duljina stranice (broj stavki)", // ai 2026-06
 
 // ./slice.php, row 616
 // include/view.php, row 346
@@ -99,13 +99,17 @@ return [
 "Alias for comment ID<br>\n"
    ."                             <i>Usage: </i>in form code<br>\n"
    ."                             <i>Example: </i>&lt;input type=hidden name=d_item_id value=\"_#DITEM_ID\">"
- => "",
+ => "Sinonim za ID komentara<br>\n"
+   ."                             <i>Upotreba: </i>u kodu forme<br>\n"
+   ."                             <i>Primjer: </i>&lt;input type=hidden name=d_item_id value=\"_#DITEM_ID\">", // ai 2026-06
 
 // include/item.php, row 369
 "Alias for comment ID (the same as _#DITEM_ID<br>)\n"
    ."                             <i>Usage: </i>in form code<br>\n"
    ."                             <i>Example: </i>&lt;input type=hidden name=d_item_id value=\"_#ITEM_ID#\">"
- => "",
+ => "Sinonim za ID komentara (isti kao _#DITEM_ID<br>)\n"
+   ."                             <i>Upotreba: </i>u kodu forme<br>\n"
+   ."                             <i>Primjer: </i>&lt;input type=hidden name=d_item_id value=\"_#ITEM_ID#\">", // ai 2026-06
 
 // include/item.php, row 370
 "Alias for item ID<br>\n"
@@ -146,7 +150,7 @@ return [
 "Constant name" => "Ime konstante",
 
 // include/item.php, row 407
-"Translated constant name" => "",
+"Translated constant name" => "Prevedeni naziv konstante", // ai 2026-06
 
 // include/item.php, row 408
 "Constant value" => "Vrijednost konstante",
@@ -164,7 +168,7 @@ return [
 "Constant number" => "Broj konstante",
 
 // include/item.php, row 413
-"Constant unique id (32-hexadecimal characters)" => "",
+"Constant unique id (32-hexadecimal characters)" => "Jedinstveni ID konstante (32 heksadecimalna znaka)", // ai 2026-06
 
 // include/item.php, row 414
 "Constant unique short id (autoincremented from '1' for each constant in the system)" => "Jedinstvena oznaka konstante (samorastu\xE8a od '1' za svaku konstantu na sistemu",
@@ -173,13 +177,13 @@ return [
 "Constant description" => "Opis konstanti",
 
 // include/item.php, row 416
-"Constant level (used for hierarchical constants)" => "",
+"Constant level (used for hierarchical constants)" => "Razina konstante (koristi se za hijerarhijske konstante)", // ai 2026-06
 
 // include/item.php, row 787
-"Error: wrong alias function %1 for %2" => "",
+"Error: wrong alias function %1 for %2" => "Gre\x9Aka: pogre\x9Ana funkcija sinonima %1 za %2", // ai 2026-06
 
 // include/itemview.php, row 117
-"Selected item" => "",
+"Selected item" => "Odabrana stavka", // ai 2026-06
 
 // include/itemview.php, row 124
 "number of found items" => "broj prona\xF0enih stavki",
@@ -188,7 +192,7 @@ return [
 "No comment was selected" => "Nije odabran nijedan komentar",
 
 // include/itemview.php, row 680, 688
-"exact group name" => "",
+"exact group name" => "to\xE8an naziv grupe", // ai 2026-06
 
 // include/scroller.php, row 86
 "Next" => "Slijede\xE6e",
@@ -200,7 +204,7 @@ return [
 "All" => "Sve",
 
 // include/scroller.php, row 296
-"found" => "",
+"found" => "prona\xF0eno", // ai 2026-06
 
 // include/scroller.php, row 452
 "&raquo;" => "",
@@ -224,11 +228,11 @@ return [
 "Back" => "Ntrag",
 
 // include/util.php, row 1314
-"Relogin" => "",
+"Relogin" => "Ponovna prijava", // ai 2026-06
 
 // misc/proposefieldchange.php, row 71
-"Assignment form" => "",
+"Assignment form" => "Forma za pridru\x9Eivanje", // ai 2026-06
 
 // misc/proposefieldchange.php, row 76
-"Grabs item relations data POSTed by form" => "",
+"Grabs item relations data POSTed by form" => "Preuzima podatke o vezama stavki poslane formom (POST)", // ai 2026-06
 ];

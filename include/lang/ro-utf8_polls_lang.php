@@ -15,7 +15,7 @@ return [
 
 // modules/polls/designs.php, row 38
 // modules/polls/index.php, row 55
-"You do not have permission to manage Polls" => "",
+"You do not have permission to manage Polls" => "Nu aveți dreptul să administrați sondajele", // ai 2026-06
 
 // modules/polls/designs.php, row 47
 "Owner" => "Proprietar",
@@ -24,7 +24,7 @@ return [
 "ID" => "",
 
 // modules/polls/designs.php, row 49
-"Comment" => "",
+"Comment" => "Comentariu", // ai 2026-06
 
 // modules/polls/designs.php, row 50
 "Name" => "Nume",
@@ -33,86 +33,86 @@ return [
 "Top HTML" => "Cap HTML",
 
 // modules/polls/designs.php, row 53
-"Answer HTML" => "",
+"Answer HTML" => "HTML răspuns", // ai 2026-06
 
 // modules/polls/designs.php, row 54
 "Bottom HTML" => "Sfîrşit HTML",
 
 // modules/polls/designs.php, row 57
-"Polls Design" => "",
+"Polls Design" => "Design sondaje", // ai 2026-06
 
 // modules/polls/include/util.php, row 44
-"Poll ID" => "",
+"Poll ID" => "ID sondaj", // ai 2026-06
 
 // modules/polls/include/util.php, row 45, 68
-"Module ID" => "",
+"Module ID" => "ID modul", // ai 2026-06
 
 // modules/polls/include/util.php, row 46, 63, 64
-"Prints poll question" => "",
+"Prints poll question" => "Afișează întrebarea sondajului", // ai 2026-06
 
 // modules/polls/include/util.php, row 47
 // modules/polls/polledit.php, row 233, 240
-"Publish Date" => "",
+"Publish Date" => "Data publicării", // ai 2026-06
 
 // modules/polls/include/util.php, row 48
 // modules/polls/polledit.php, row 234, 241
-"Expiry Date" => "",
+"Expiry Date" => "Data expirării", // ai 2026-06
 
 // modules/polls/include/util.php, row 49
-"Prints poll params" => "",
+"Prints poll params" => "Afișează parametrii sondajului", // ai 2026-06
 
 // modules/polls/include/util.php, row 50
-"Link to poll editing page (for admin interface only)" => "",
+"Link to poll editing page (for admin interface only)" => "Legătură către pagina de editare a sondajului (doar pentru interfața de administrare)", // ai 2026-06
 
 // modules/polls/include/util.php, row 65
-"Poll publish date" => "",
+"Poll publish date" => "Data publicării sondajului", // ai 2026-06
 
 // modules/polls/include/util.php, row 66
-"Poll expiry date" => "",
+"Poll expiry date" => "Data expirării sondajului", // ai 2026-06
 
 // modules/polls/include/util.php, row 67
-"Poll params" => "",
+"Poll params" => "Parametrii sondajului", // ai 2026-06
 
 // modules/polls/include/util.php, row 70
-"Poll id (32 characters hexadecimal number - the same for all answers)" => "",
+"Poll id (32 characters hexadecimal number - the same for all answers)" => "ID sondaj (număr hexazecimal de 32 de caractere - același pentru toate răspunsurile)", // ai 2026-06
 
 // modules/polls/include/util.php, row 72
-"Number of answer" => "",
+"Number of answer" => "Numărul răspunsului", // ai 2026-06
 
 // modules/polls/include/util.php, row 73
-"Number of votes for this answer" => "",
+"Number of votes for this answer" => "Numărul de voturi pentru acest răspuns", // ai 2026-06
 
 // modules/polls/include/util.php, row 74
-"Text of answer" => "",
+"Text of answer" => "Textul răspunsului", // ai 2026-06
 
 // modules/polls/include/util.php, row 75
-"ID of answer (32 characters hexadecimal number)" => "",
+"ID of answer (32 characters hexadecimal number)" => "ID răspuns (număr hexazecimal de 32 de caractere)", // ai 2026-06
 
 // modules/polls/include/util.php, row 76
-"Votes for this answer in percent. You can use also {poll_share}." => "",
+"Votes for this answer in percent. You can use also {poll_share}." => "Voturi pentru acest răspuns în procente. Puteți folosi și {poll_share}.", // ai 2026-06
 
 // modules/polls/include/util.php, row 77
-"Sum of all votes. You can use also {poll_sum}." => "",
+"Sum of all votes. You can use also {poll_sum}." => "Suma tuturor voturilor. Puteți folosi și {poll_sum}.", // ai 2026-06
 
 // modules/polls/menu.php, row 58
-"View poll" => "",
+"View poll" => "Vezi sondajul", // ai 2026-06
 
 // modules/polls/menu.php, row 65, 66
 // modules/polls/polledit.php, row 188
-"Edit poll" => "",
+"Edit poll" => "Editare sondaj", // ai 2026-06
 
 // modules/polls/menu.php, row 65
 // modules/polls/polledit.php, row 188
-"Add poll" => "",
+"Add poll" => "Adăugare sondaj", // ai 2026-06
 
 // modules/polls/menu.php, row 66
-"Add new poll" => "",
+"Add new poll" => "Adăugare sondaj nou", // ai 2026-06
 
 // modules/polls/menu.php, row 73, 74
-"Polls manager" => "",
+"Polls manager" => "Administrare sondaje", // ai 2026-06
 
 // modules/polls/menu.php, row 81, 82
-"Polls admin" => "",
+"Polls admin" => "Admin sondaje", // ai 2026-06
 
 // modules/polls/menu.php, row 93
 "Folders" => "Dosare",
@@ -139,99 +139,99 @@ return [
 "Empty trash" => "Goleşte coş",
 
 // modules/polls/menu.php, row 101
-"Are you sure you want to empty trash?" => "",
+"Are you sure you want to empty trash?" => "Sigur doriți să goliți coșul de gunoi?", // ai 2026-06
 
 // modules/polls/menu.php, row 115
 "Main settings" => "Setări principale",
 
 // modules/polls/menu.php, row 116
-"Polls" => "",
+"Polls" => "Sondaje", // ai 2026-06
 
 // modules/polls/menu.php, row 117
-"Designs" => "",
+"Designs" => "Designuri", // ai 2026-06
 
 // modules/polls/modedit.php, row 93
-"You do not have permissions to add polls" => "",
+"You do not have permissions to add polls" => "Nu aveți dreptul să adăugați sondaje", // ai 2026-06
 
 // modules/polls/modedit.php, row 98
-"You do not have permissions to edit this poll" => "",
+"You do not have permissions to edit this poll" => "Nu aveți dreptul să editați acest sondaj", // ai 2026-06
 
 // modules/polls/modedit.php, row 115, 240
 // modules/polls/polledit.php, row 249
-"IP Locking timeout" => "",
+"IP Locking timeout" => "Durată blocare IP", // ai 2026-06
 
 // modules/polls/modedit.php, row 116, 242
-"Cookies prefix" => "",
+"Cookies prefix" => "Prefix cookies", // ai 2026-06
 
 // modules/polls/modedit.php, row 225
-"Add Polls" => "",
+"Add Polls" => "Adăugare sondaje", // ai 2026-06
 
 // modules/polls/modedit.php, row 225
-"Edit Polls" => "",
+"Edit Polls" => "Editare sondaje", // ai 2026-06
 
 // modules/polls/modedit.php, row 228
-"Polls Module general data" => "",
+"Polls Module general data" => "Date generale modul sondaje", // ai 2026-06
 
 // modules/polls/modedit.php, row 233
 "Used Language File" => "Fişier limbă utilizată",
 
 // modules/polls/modedit.php, row 237
-"Defaults for polls in this module" => "",
+"Defaults for polls in this module" => "Valori implicite pentru sondajele din acest modul", // ai 2026-06
 
 // modules/polls/modedit.php, row 238
 // modules/polls/polledit.php, row 247
-"Use logging" => "",
+"Use logging" => "Folosește jurnalizarea", // ai 2026-06
 
 // modules/polls/modedit.php, row 239
 // modules/polls/polledit.php, row 248
-"Use IP locking" => "",
+"Use IP locking" => "Folosește blocarea IP", // ai 2026-06
 
 // modules/polls/modedit.php, row 241
 // modules/polls/polledit.php, row 250
-"Use cookies" => "",
+"Use cookies" => "Folosește cookie-uri", // ai 2026-06
 
 // modules/polls/polledit.php, row 74
-"No permission to add/edit poll." => "",
+"No permission to add/edit poll." => "Nu aveți dreptul să adăugați/editați sondajul.", // ai 2026-06
 
 // modules/polls/polledit.php, row 113
-"Can't insert new poll" => "",
+"Can't insert new poll" => "Nu pot insera sondaj nou", // ai 2026-06
 
 // modules/polls/polledit.php, row 119
-"Can't update poll with id %1" => "",
+"Can't update poll with id %1" => "Nu pot actualiza sondajul cu id %1", // ai 2026-06
 
 // modules/polls/polledit.php, row 209
-"Insert question and answers" => "",
+"Insert question and answers" => "Introduceți întrebarea și răspunsurile", // ai 2026-06
 
 // modules/polls/polledit.php, row 231, 238
-"Headline" => "",
+"Headline" => "Titlu", // ai 2026-06
 
 // modules/polls/polledit.php, row 231, 238
-"Question" => "",
+"Question" => "Întrebare", // ai 2026-06
 
 // modules/polls/polledit.php, row 232, 239
-"Insert new answers and choose their order" => "",
+"Insert new answers and choose their order" => "Introduceți răspunsuri noi și alegeți ordinea lor", // ai 2026-06
 
 // modules/polls/polledit.php, row 244
-"Polls settings" => "",
+"Polls settings" => "Setări sondaje", // ai 2026-06
 
 // modules/polls/polledit.php, row 246
-"Poll is locked" => "",
+"Poll is locked" => "Sondajul este blocat", // ai 2026-06
 
 // modules/polls/polledit.php, row 249
-"time in seconds" => "",
+"time in seconds" => "timp în secunde", // ai 2026-06
 
 // modules/polls/polledit.php, row 252
 "Parameters" => "Parametrii",
 
 // modules/polls/polledit.php, row 254
-"Polls design templates" => "",
+"Polls design templates" => "Șabloane de design pentru sondaje", // ai 2026-06
 
 // modules/polls/polledit.php, row 262
-"Select design type - before vote" => "",
+"Select design type - before vote" => "Selectați tipul de design - înainte de vot", // ai 2026-06
 
 // modules/polls/polledit.php, row 263
-"Select design type - after vote" => "",
+"Select design type - after vote" => "Selectați tipul de design - după vot", // ai 2026-06
 
 // modules/polls/polledit.php, row 263
-"If the design after vote should look differently, then specify it here." => "",
+"If the design after vote should look differently, then specify it here." => "Dacă designul de după vot trebuie să arate diferit, specificați-l aici.", // ai 2026-06
 ];

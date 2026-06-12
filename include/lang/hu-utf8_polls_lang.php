@@ -15,223 +15,223 @@ return [
 
 // modules/polls/designs.php, row 38
 // modules/polls/index.php, row 55
-"You do not have permission to manage Polls" => "",
+"You do not have permission to manage Polls" => "Nincs jogosultsága a szavazások kezeléséhez", // ai 2026-06
 
 // modules/polls/designs.php, row 47
-"Owner" => "",
+"Owner" => "Tulajdonos", // ai 2026-06
 
 // modules/polls/designs.php, row 48
 "ID" => "",
 
 // modules/polls/designs.php, row 49
-"Comment" => "",
+"Comment" => "Megjegyzés", // ai 2026-06
 
 // modules/polls/designs.php, row 50
-"Name" => "",
+"Name" => "Név", // ai 2026-06
 
 // modules/polls/designs.php, row 52
-"Top HTML" => "",
+"Top HTML" => "Felső HTML", // ai 2026-06
 
 // modules/polls/designs.php, row 53
-"Answer HTML" => "",
+"Answer HTML" => "Válasz HTML", // ai 2026-06
 
 // modules/polls/designs.php, row 54
-"Bottom HTML" => "",
+"Bottom HTML" => "Alsó HTML", // ai 2026-06
 
 // modules/polls/designs.php, row 57
-"Polls Design" => "",
+"Polls Design" => "Szavazások megjelenése", // ai 2026-06
 
 // modules/polls/include/util.php, row 44
-"Poll ID" => "",
+"Poll ID" => "Szavazás azonosítója", // ai 2026-06
 
 // modules/polls/include/util.php, row 45, 68
-"Module ID" => "",
+"Module ID" => "Modul azonosítója", // ai 2026-06
 
 // modules/polls/include/util.php, row 46, 63, 64
-"Prints poll question" => "",
+"Prints poll question" => "Kiírja a szavazás kérdését", // ai 2026-06
 
 // modules/polls/include/util.php, row 47
 // modules/polls/polledit.php, row 233, 240
-"Publish Date" => "",
+"Publish Date" => "Közzététel dátuma", // ai 2026-06
 
 // modules/polls/include/util.php, row 48
 // modules/polls/polledit.php, row 234, 241
-"Expiry Date" => "",
+"Expiry Date" => "Lejárat dátuma", // ai 2026-06
 
 // modules/polls/include/util.php, row 49
-"Prints poll params" => "",
+"Prints poll params" => "Kiírja a szavazás paramétereit", // ai 2026-06
 
 // modules/polls/include/util.php, row 50
-"Link to poll editing page (for admin interface only)" => "",
+"Link to poll editing page (for admin interface only)" => "Hivatkozás a szavazás szerkesztőoldalára (csak az adminisztrációs felülethez)", // ai 2026-06
 
 // modules/polls/include/util.php, row 65
-"Poll publish date" => "",
+"Poll publish date" => "A szavazás közzétételi dátuma", // ai 2026-06
 
 // modules/polls/include/util.php, row 66
-"Poll expiry date" => "",
+"Poll expiry date" => "A szavazás lejárati dátuma", // ai 2026-06
 
 // modules/polls/include/util.php, row 67
-"Poll params" => "",
+"Poll params" => "A szavazás paraméterei", // ai 2026-06
 
 // modules/polls/include/util.php, row 70
-"Poll id (32 characters hexadecimal number - the same for all answers)" => "",
+"Poll id (32 characters hexadecimal number - the same for all answers)" => "A szavazás azonosítója (32 karakteres hexadecimális szám – minden válasznál azonos)", // ai 2026-06
 
 // modules/polls/include/util.php, row 72
-"Number of answer" => "",
+"Number of answer" => "A válasz sorszáma", // ai 2026-06
 
 // modules/polls/include/util.php, row 73
-"Number of votes for this answer" => "",
+"Number of votes for this answer" => "A válaszra leadott szavazatok száma", // ai 2026-06
 
 // modules/polls/include/util.php, row 74
-"Text of answer" => "",
+"Text of answer" => "A válasz szövege", // ai 2026-06
 
 // modules/polls/include/util.php, row 75
-"ID of answer (32 characters hexadecimal number)" => "",
+"ID of answer (32 characters hexadecimal number)" => "A válasz azonosítója (32 karakteres hexadecimális szám)", // ai 2026-06
 
 // modules/polls/include/util.php, row 76
-"Votes for this answer in percent. You can use also {poll_share}." => "",
+"Votes for this answer in percent. You can use also {poll_share}." => "A válaszra leadott szavazatok százalékban. Használható a {poll_share} is.", // ai 2026-06
 
 // modules/polls/include/util.php, row 77
-"Sum of all votes. You can use also {poll_sum}." => "",
+"Sum of all votes. You can use also {poll_sum}." => "Az összes szavazat száma. Használható a {poll_sum} is.", // ai 2026-06
 
 // modules/polls/menu.php, row 58
-"View poll" => "",
+"View poll" => "Szavazás megtekintése", // ai 2026-06
 
 // modules/polls/menu.php, row 65, 66
 // modules/polls/polledit.php, row 188
-"Edit poll" => "",
+"Edit poll" => "Szavazás szerkesztése", // ai 2026-06
 
 // modules/polls/menu.php, row 65
 // modules/polls/polledit.php, row 188
-"Add poll" => "",
+"Add poll" => "Szavazás hozzáadása", // ai 2026-06
 
 // modules/polls/menu.php, row 66
-"Add new poll" => "",
+"Add new poll" => "Új szavazás hozzáadása", // ai 2026-06
 
 // modules/polls/menu.php, row 73, 74
-"Polls manager" => "",
+"Polls manager" => "Szavazáskezelő", // ai 2026-06
 
 // modules/polls/menu.php, row 81, 82
-"Polls admin" => "",
+"Polls admin" => "Szavazások adminisztrációja", // ai 2026-06
 
 // modules/polls/menu.php, row 93
-"Folders" => "",
+"Folders" => "Mappák", // ai 2026-06
 
 // modules/polls/menu.php, row 94
-"Active" => "",
+"Active" => "Aktív", // ai 2026-06
 
 // modules/polls/menu.php, row 95
-"... pending" => "",
+"... pending" => "... várakozó", // ai 2026-06
 
 // modules/polls/menu.php, row 96
-"... expired" => "",
+"... expired" => "... lejárt", // ai 2026-06
 
 // modules/polls/menu.php, row 97
-"Hold bin" => "",
+"Hold bin" => "Várólista", // ai 2026-06
 
 // modules/polls/menu.php, row 98
-"Trash bin" => "",
+"Trash bin" => "Kuka", // ai 2026-06
 
 // modules/polls/menu.php, row 100
-"Misc" => "",
+"Misc" => "Egyéb", // ai 2026-06
 
 // modules/polls/menu.php, row 101
-"Empty trash" => "",
+"Empty trash" => "Kuka ürítése", // ai 2026-06
 
 // modules/polls/menu.php, row 101
-"Are you sure you want to empty trash?" => "",
+"Are you sure you want to empty trash?" => "Biztosan üríti a kukát?", // ai 2026-06
 
 // modules/polls/menu.php, row 115
-"Main settings" => "",
+"Main settings" => "Fő beállítások", // ai 2026-06
 
 // modules/polls/menu.php, row 116
-"Polls" => "",
+"Polls" => "Szavazások", // ai 2026-06
 
 // modules/polls/menu.php, row 117
-"Designs" => "",
+"Designs" => "Megjelenések", // ai 2026-06
 
 // modules/polls/modedit.php, row 93
-"You do not have permissions to add polls" => "",
+"You do not have permissions to add polls" => "Nincs jogosultsága szavazások hozzáadásához", // ai 2026-06
 
 // modules/polls/modedit.php, row 98
-"You do not have permissions to edit this poll" => "",
+"You do not have permissions to edit this poll" => "Nincs jogosultsága a szavazás szerkesztéséhez", // ai 2026-06
 
 // modules/polls/modedit.php, row 115, 240
 // modules/polls/polledit.php, row 249
-"IP Locking timeout" => "",
+"IP Locking timeout" => "IP-zárolás időkorlátja", // ai 2026-06
 
 // modules/polls/modedit.php, row 116, 242
-"Cookies prefix" => "",
+"Cookies prefix" => "Cookie-előtag", // ai 2026-06
 
 // modules/polls/modedit.php, row 225
-"Add Polls" => "",
+"Add Polls" => "Szavazások hozzáadása", // ai 2026-06
 
 // modules/polls/modedit.php, row 225
-"Edit Polls" => "",
+"Edit Polls" => "Szavazások szerkesztése", // ai 2026-06
 
 // modules/polls/modedit.php, row 228
-"Polls Module general data" => "",
+"Polls Module general data" => "Szavazások modul – általános adatok", // ai 2026-06
 
 // modules/polls/modedit.php, row 233
-"Used Language File" => "",
+"Used Language File" => "Használt nyelvi fájl", // ai 2026-06
 
 // modules/polls/modedit.php, row 237
-"Defaults for polls in this module" => "",
+"Defaults for polls in this module" => "Alapértelmezések a modul szavazásaihoz", // ai 2026-06
 
 // modules/polls/modedit.php, row 238
 // modules/polls/polledit.php, row 247
-"Use logging" => "",
+"Use logging" => "Naplózás használata", // ai 2026-06
 
 // modules/polls/modedit.php, row 239
 // modules/polls/polledit.php, row 248
-"Use IP locking" => "",
+"Use IP locking" => "IP-zárolás használata", // ai 2026-06
 
 // modules/polls/modedit.php, row 241
 // modules/polls/polledit.php, row 250
-"Use cookies" => "",
+"Use cookies" => "Cookie-k használata", // ai 2026-06
 
 // modules/polls/polledit.php, row 74
-"No permission to add/edit poll." => "",
+"No permission to add/edit poll." => "Nincs jogosultsága szavazás hozzáadásához/szerkesztéséhez.", // ai 2026-06
 
 // modules/polls/polledit.php, row 113
-"Can't insert new poll" => "",
+"Can't insert new poll" => "Nem sikerült beszúrni az új szavazást", // ai 2026-06
 
 // modules/polls/polledit.php, row 119
-"Can't update poll with id %1" => "",
+"Can't update poll with id %1" => "Nem sikerült frissíteni a(z) %1 azonosítójú szavazást", // ai 2026-06
 
 // modules/polls/polledit.php, row 209
-"Insert question and answers" => "",
+"Insert question and answers" => "Adja meg a kérdést és a válaszokat", // ai 2026-06
 
 // modules/polls/polledit.php, row 231, 238
-"Headline" => "",
+"Headline" => "Cím", // ai 2026-06
 
 // modules/polls/polledit.php, row 231, 238
-"Question" => "",
+"Question" => "Kérdés", // ai 2026-06
 
 // modules/polls/polledit.php, row 232, 239
-"Insert new answers and choose their order" => "",
+"Insert new answers and choose their order" => "Adja meg az új válaszokat, és válassza ki sorrendjüket", // ai 2026-06
 
 // modules/polls/polledit.php, row 244
-"Polls settings" => "",
+"Polls settings" => "Szavazások beállításai", // ai 2026-06
 
 // modules/polls/polledit.php, row 246
-"Poll is locked" => "",
+"Poll is locked" => "A szavazás zárolva van", // ai 2026-06
 
 // modules/polls/polledit.php, row 249
-"time in seconds" => "",
+"time in seconds" => "idő másodpercben", // ai 2026-06
 
 // modules/polls/polledit.php, row 252
-"Parameters" => "",
+"Parameters" => "Paraméterek", // ai 2026-06
 
 // modules/polls/polledit.php, row 254
-"Polls design templates" => "",
+"Polls design templates" => "Szavazások megjelenési sablonjai", // ai 2026-06
 
 // modules/polls/polledit.php, row 262
-"Select design type - before vote" => "",
+"Select design type - before vote" => "Megjelenés szavazás előtt", // ai 2026-06
 
 // modules/polls/polledit.php, row 263
-"Select design type - after vote" => "",
+"Select design type - after vote" => "Megjelenés szavazás után", // ai 2026-06
 
 // modules/polls/polledit.php, row 263
-"If the design after vote should look differently, then specify it here." => "",
+"If the design after vote should look differently, then specify it here." => "Ha a szavazás utáni megjelenésnek másnak kell lennie, itt adja meg.", // ai 2026-06
 ];

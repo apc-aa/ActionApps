@@ -11,37 +11,37 @@ $mgettext_lang = "ro";
 return [
 
 // include/searchbar.class.php, row 51
-"Condition" => "",
+"Condition" => "Conditie", // ai 2026-06
 
 // include/searchbar.class.php, row 52
-"Readonly" => "",
+"Readonly" => "Doar citire", // ai 2026-06
 
 // include/searchbar.class.php, row 142
-"Search row" => "",
+"Search row" => "R\xE2nd de c\xE3utare", // ai 2026-06
 
 // include/searchbar.class.php, row 143
-"Order row" => "",
+"Order row" => "R\xE2nd de ordonare", // ai 2026-06
 
 // include/searchbar.class.php, row 533, 534, 570
 "Search" => "C\xE3utare",
 
 // include/searchbar.class.php, row 533
-"And" => "",
+"And" => "Si", // ai 2026-06
 
 // include/searchbar.class.php, row 543
-"contains" => "",
+"contains" => "contine", // ai 2026-06
 
 // include/searchbar.class.php, row 546
-"begins with" => "",
+"begins with" => "\xEEncepe cu", // ai 2026-06
 
 // include/searchbar.class.php, row 549
-"is" => "",
+"is" => "este", // ai 2026-06
 
 // include/searchbar.class.php, row 571
-"Clear" => "",
+"Clear" => "Goleste", // ai 2026-06
 
 // include/searchbar.class.php, row 574
-"Store search" => "",
+"Store search" => "Salveaz\xE3 c\xE3utarea", // ai 2026-06
 
 // include/searchbar.class.php, row 595
 "Order" => "Ordine",
@@ -53,13 +53,13 @@ return [
 "Filter" => "Filtru",
 
 // include/searchbar.class.php, row 662
-"Advanced search" => "",
+"Advanced search" => "C\xE3utare avansat\xE3", // ai 2026-06
 
 // include/searchbar.class.php, row 719
-"Save" => "",
+"Save" => "Salveaz\xE3", // ai 2026-06
 
 // include/searchbar.class.php, row 720
-"Refine" => "",
+"Refine" => "Rafineaz\xE3", // ai 2026-06
 
 // include/searchbar.class.php, row 721
 "Cancel" => "Anulare",
@@ -69,43 +69,43 @@ return [
 "Name" => "Nume",
 
 // include/searchbar.class.php, row 723
-"Share with all slice users" => "",
+"Share with all slice users" => "Partajeaz\xE3 cu toti utilizatorii sectiunii", // ai 2026-06
 
 // include/searchbar.class.php, row 724
-"Save filter" => "",
+"Save filter" => "Salveaz\xE3 filtrul", // ai 2026-06
 
 // include/searchbar.class.php, row 725
-"Rename filter" => "",
+"Rename filter" => "Redenumeste filtrul", // ai 2026-06
 
 // include/searchbar.class.php, row 726
-"Are you sure you want to delete selected filter?" => "",
+"Are you sure you want to delete selected filter?" => "Sigur doriti s\xE3 stergeti filtrul selectat?", // ai 2026-06
 
 // include/searchbar.class.php, row 1008
-"Select one..." => "",
+"Select one..." => "Selectati unul...", // ai 2026-06
 
 // include/searchbar.class.php, row 1023
-"My filters" => "",
+"My filters" => "Filtrele mele", // ai 2026-06
 
 // include/searchbar.class.php, row 1026
-"Global filters" => "",
+"Global filters" => "Filtre globale", // ai 2026-06
 
 // include/searchbar.class.php, row 1064
-"Shared filter (click to apply)" => "",
+"Shared filter (click to apply)" => "Filtru partajat (clic pentru aplicare)", // ai 2026-06
 
 // include/searchbar.class.php, row 1064
-"Personal filter (click to apply)" => "",
+"Personal filter (click to apply)" => "Filtru personal (clic pentru aplicare)", // ai 2026-06
 
 // include/searchbar.class.php, row 1074
-"Rename" => "",
+"Rename" => "Redenumeste", // ai 2026-06
 
 // include/searchbar.class.php, row 1076
 "Delete" => "\xAAterge",
 
 // include/searchbar.class.php, row 1085
-"Manage filters" => "",
+"Manage filters" => "Administrare filtre", // ai 2026-06
 
 // include/util.php, row 950
-"Error: Missing Reading Password" => "",
+"Error: Missing Reading Password" => "Eroare: Lipseste parola de citire", // ai 2026-06
 
 // include/util.php, row 1300
 "Toolkit news message" => "Mesaj stiri toolkit",
@@ -115,32 +115,32 @@ return [
 "Back" => "\xCEnapoi",
 
 // include/util.php, row 1314
-"Relogin" => "",
+"Relogin" => "Reautentificare", // ai 2026-06
 
 // modules/links/actions.php, row 47, 91, 112
-"Can't find link in given category" => "",
+"Can't find link in given category" => "Leg\xE3tura nu a fost g\xE3sit\xE3 \xEEn categoria dat\xE3", // ai 2026-06
 
 // modules/links/actions.php, row 52, 117
-"No permission to delete link from the category - link set as PROPOSAL to DELETE from given category" => "",
+"No permission to delete link from the category - link set as PROPOSAL to DELETE from given category" => "Nu aveti dreptul s\xE3 stergeti leg\xE3tura din categorie - leg\xE3tura a fost marcat\xE3 ca PROPUNERE de STERGERE din categoria dat\xE3", // ai 2026-06
 
 // modules/links/actions.php, row 61, 126
-"Can't get association information" => "",
+"Can't get association information" => "Nu se pot obtine informatiile de asociere", // ai 2026-06
 
 // modules/links/actions.php, row 95
-"No permission to approve link to given category" => "",
+"No permission to approve link to given category" => "Nu aveti dreptul s\xE3 aprobati leg\xE3tura \xEEn categoria dat\xE3", // ai 2026-06
 
 // modules/links/actions.php, row 162, 165
-"No permission to move link" => "",
+"No permission to move link" => "Nu aveti dreptul s\xE3 mutati leg\xE3tura", // ai 2026-06
 
 // modules/links/catedit.php, row 51
 // modules/links/catedit2.php, row 208
-"No permission to edit category" => "",
+"No permission to edit category" => "Nu aveti dreptul s\xE3 editati categoria", // ai 2026-06
 
 // modules/links/catedit.php, row 74
-"ActionApps - Category Edit" => "",
+"ActionApps - Category Edit" => "ActionApps - Editare categorie", // ai 2026-06
 
 // modules/links/catedit.php, row 97
-"Category Edit" => "",
+"Category Edit" => "Editare categorie", // ai 2026-06
 
 // modules/links/catedit.php, row 103
 "Category" => "Categorie",
@@ -148,115 +148,115 @@ return [
 // modules/links/catedit.php, row 104
 // modules/links/constants.php, row 58, 170
 // modules/links/linkedit.php, row 430
-"Id" => "",
+"Id" => "ID", // ai 2026-06
 
 // modules/links/catedit.php, row 104
-"Links in subtree" => "",
+"Links in subtree" => "Leg\xE3turi \xEEn subarbore", // ai 2026-06
 
 // modules/links/catedit.php, row 105
 // modules/links/catedit2.php, row 217
 // modules/links/constants.php, row 93, 191
-"Category name" => "",
+"Category name" => "Nume categorie", // ai 2026-06
 
 // modules/links/catedit.php, row 106
 // modules/links/catedit2.php, row 218
 // modules/links/constants.php, row 97, 193
-"Category description" => "",
+"Category description" => "Descriere categorie", // ai 2026-06
 
 // modules/links/catedit.php, row 107
-"No links" => "",
+"No links" => "F\xE3r\xE3 leg\xE3turi", // ai 2026-06
 
 // modules/links/catedit.php, row 107
-"Disallow storing of the links to this category?" => "",
+"Disallow storing of the links to this category?" => "Interziceti stocarea leg\xE3turilor \xEEn aceast\xE3 categorie?", // ai 2026-06
 
 // modules/links/catedit.php, row 108
 // modules/links/catedit2.php, row 222
 // modules/links/constants.php, row 75
 // modules/links/link.class.php, row 674
 // modules/links/linkedit.php, row 473
-"Editor's note" => "",
+"Editor's note" => "Nota editorului", // ai 2026-06
 
 // modules/links/catedit.php, row 110
-"Subcategories" => "",
+"Subcategories" => "Subcategorii", // ai 2026-06
 
 // modules/links/catedit.php, row 113
 // modules/links/linkedit.php, row 494
-"Category tree" => "",
+"Category tree" => "Arbore de categorii", // ai 2026-06
 
 // modules/links/catedit.php, row 113
-"select the category for crossreference" => "",
+"select the category for crossreference" => "selectati categoria pentru referint\xE3 \xEEncrucisat\xE3", // ai 2026-06
 
 // modules/links/catedit.php, row 115
-"Selected subcategories" => "",
+"Selected subcategories" => "Subcategorii selectate", // ai 2026-06
 
 // modules/links/catedit.php, row 115
-"subcategories of this category" => "",
+"subcategories of this category" => "subcategoriile acestei categorii", // ai 2026-06
 
 // modules/links/catedit.php, row 132
-"New subcategory" => "",
+"New subcategory" => "Subcategorie nou\xE3", // ai 2026-06
 
 // modules/links/catedit.php, row 132
 "Add" => "Adaug\xE3",
 
 // modules/links/catedit.php, row 135
-"Remove selected subcategory?" => "",
+"Remove selected subcategory?" => "Eliminati subcategoria selectat\xE3?", // ai 2026-06
 
 // modules/links/catedit.php, row 135
-"Del" => "",
+"Del" => "Sterge", // ai 2026-06
 
 // modules/links/catedit.php, row 137
-"Change state" => "",
+"Change state" => "Schimb\xE3 starea", // ai 2026-06
 
 // modules/links/catedit.php, row 142
 "OK" => "Bine",
 
 // modules/links/catedit2.php, row 153
-"Category reassigned" => "",
+"Category reassigned" => "Categorie reatribuit\xE3", // ai 2026-06
 
 // modules/links/catedit2.php, row 165
-"Subcategory deleted" => "",
+"Subcategory deleted" => "Subcategorie stears\xE3", // ai 2026-06
 
 // modules/links/catedit2.php, row 167
-"Can't delete category which contains links" => "",
+"Can't delete category which contains links" => "Nu se poate sterge o categorie care contine leg\xE3turi", // ai 2026-06
 
 // modules/links/catedit2.php, row 221
-"Additional information" => "",
+"Additional information" => "Informatii suplimentare", // ai 2026-06
 
 // modules/links/catedit2.php, row 231
-"Category data changed" => "",
+"Category data changed" => "Datele categoriei au fost modificate", // ai 2026-06
 
 // modules/links/catedit2.php, row 291
-"New category created" => "",
+"New category created" => "Categorie nou\xE3 creat\xE3", // ai 2026-06
 
 // modules/links/catedit2.php, row 297
-"Foreign category assigned" => "",
+"Foreign category assigned" => "Categorie str\xE3in\xE3 atribuit\xE3", // ai 2026-06
 
 // modules/links/cattree.php, row 436
-"Switch to category" => "",
+"Switch to category" => "Comut\xE3 la categorie", // ai 2026-06
 
 // modules/links/check_url.php, row 30
-"ActionApps - URL Check" => "",
+"ActionApps - URL Check" => "ActionApps - Verificare URL", // ai 2026-06
 
 // modules/links/check_url.php, row 42
 "URL" => "",
 
 // modules/links/check_url.php, row 43
-"In category" => "",
+"In category" => "\xCEn categoria", // ai 2026-06
 
 // modules/links/check_url.php, row 43
-"Link is not assigned to any category" => "",
+"Link is not assigned to any category" => "Leg\xE3tura nu este atribuit\xE3 niciunei categorii", // ai 2026-06
 
 // modules/links/check_url.php, row 43
 "Edit" => "Editare",
 
 // modules/links/check_url.php, row 43
-"Rewrites link in bottom form" => "",
+"Rewrites link in bottom form" => "Rescrie leg\xE3tura \xEEn formularul de jos", // ai 2026-06
 
 // modules/links/check_url.php, row 48
-"Page with the specified Url is not in database, yet" => "",
+"Page with the specified Url is not in database, yet" => "Pagina cu URL-ul specificat nu este \xEEnc\xE3 \xEEn baza de date", // ai 2026-06
 
 // modules/links/constants.php, row 60
-"Original name" => "",
+"Original name" => "Nume original", // ai 2026-06
 
 // modules/links/constants.php, row 61, 174
 // modules/links/link.class.php, row 663
@@ -266,32 +266,32 @@ return [
 // modules/links/constants.php, row 62, 122
 // modules/links/link.class.php, row 667
 // modules/links/linkedit.php, row 463
-"Link type" => "",
+"Link type" => "Tip leg\xE3tur\xE3", // ai 2026-06
 
 // modules/links/constants.php, row 63
-"Rate" => "",
+"Rate" => "Evaluare", // ai 2026-06
 
 // modules/links/constants.php, row 64
-"Votes" => "",
+"Votes" => "Voturi", // ai 2026-06
 
 // modules/links/constants.php, row 65
 // modules/links/link.class.php, row 664
 "Author" => "Autor",
 
 // modules/links/constants.php, row 66
-"Insert date" => "",
+"Insert date" => "Data ad\xE3ug\xE3rii", // ai 2026-06
 
 // modules/links/constants.php, row 67
 "Editor" => "",
 
 // modules/links/constants.php, row 68
-"Last edit date" => "",
+"Last edit date" => "Data ultimei edit\xE3ri", // ai 2026-06
 
 // modules/links/constants.php, row 69
-"Revised by" => "",
+"Revised by" => "Revizuit de", // ai 2026-06
 
 // modules/links/constants.php, row 70
-"Revision date" => "",
+"Revision date" => "Data reviziei", // ai 2026-06
 
 // modules/links/constants.php, row 71
 // modules/links/link.class.php, row 673
@@ -304,87 +304,87 @@ return [
 "Url" => "",
 
 // modules/links/constants.php, row 73
-"Last vote time" => "",
+"Last vote time" => "Ora ultimului vot", // ai 2026-06
 
 // modules/links/constants.php, row 74
-"Flag" => "",
+"Flag" => "Indicator", // ai 2026-06
 
 // modules/links/constants.php, row 76
-"Organization city" => "",
+"Organization city" => "Orasul organizatiei", // ai 2026-06
 
 // modules/links/constants.php, row 77
-"Organization street" => "",
+"Organization street" => "Strada organizatiei", // ai 2026-06
 
 // modules/links/constants.php, row 78
-"Organization post code" => "",
+"Organization post code" => "Codul postal al organizatiei", // ai 2026-06
 
 // modules/links/constants.php, row 79
-"Organization phone" => "",
+"Organization phone" => "Telefonul organizatiei", // ai 2026-06
 
 // modules/links/constants.php, row 80
-"Organization fax" => "",
+"Organization fax" => "Faxul organizatiei", // ai 2026-06
 
 // modules/links/constants.php, row 81
-"Organization e-mail" => "",
+"Organization e-mail" => "E-mailul organizatiei", // ai 2026-06
 
 // modules/links/constants.php, row 82
 // modules/links/linkedit.php, row 484
-"Folder" => "",
+"Folder" => "Dosar", // ai 2026-06
 
 // modules/links/constants.php, row 83
-"Last validation date" => "",
+"Last validation date" => "Data ultimei valid\xE3ri", // ai 2026-06
 
 // modules/links/constants.php, row 84
-"Validation codes" => "",
+"Validation codes" => "Coduri de validare", // ai 2026-06
 
 // modules/links/constants.php, row 85
-"Validity Rank" => "",
+"Validity Rank" => "Disponibilitatea paginii", // ai 2026-06
 
 // modules/links/constants.php, row 86
-"Region id" => "",
+"Region id" => "ID regiune", // ai 2026-06
 
 // modules/links/constants.php, row 87
-"Region name" => "",
+"Region name" => "Nume regiune", // ai 2026-06
 
 // modules/links/constants.php, row 88
-"Region level" => "",
+"Region level" => "Nivel regiune", // ai 2026-06
 
 // modules/links/constants.php, row 89
-"Language id" => "",
+"Language id" => "ID limb\xE3", // ai 2026-06
 
 // modules/links/constants.php, row 90
 // modules/links/linkedit.php, row 552
-"Language" => "",
+"Language" => "Limb\xE3", // ai 2026-06
 
 // modules/links/constants.php, row 91
-"Language short name" => "",
+"Language short name" => "Nume scurt limb\xE3", // ai 2026-06
 
 // modules/links/constants.php, row 92, 190
-"Category id" => "",
+"Category id" => "ID categorie", // ai 2026-06
 
 // modules/links/constants.php, row 94
-"Category deleted" => "",
+"Category deleted" => "Categorie stears\xE3", // ai 2026-06
 
 // modules/links/constants.php, row 95
-"Category path" => "",
+"Category path" => "Cale categorie", // ai 2026-06
 
 // modules/links/constants.php, row 96
-"Category link count" => "",
+"Category link count" => "Num\xE3r leg\xE3turi \xEEn categorie", // ai 2026-06
 
 // modules/links/constants.php, row 98, 194
-"Category editor's note" => "",
+"Category editor's note" => "Nota editorului categoriei", // ai 2026-06
 
 // modules/links/constants.php, row 99
-"Base" => "",
+"Base" => "Primar\xE3", // ai 2026-06
 
 // modules/links/constants.php, row 100, 177
-"State" => "",
+"State" => "Stare", // ai 2026-06
 
 // modules/links/constants.php, row 101
-"Change proposal" => "",
+"Change proposal" => "Propunere de modificare", // ai 2026-06
 
 // modules/links/constants.php, row 102
-"To be deleted" => "",
+"To be deleted" => "De sters", // ai 2026-06
 
 // modules/links/constants.php, row 103, 176
 "Priority" => "Prioritate",
@@ -394,370 +394,377 @@ return [
 "Change" => "Schimb\xE3",
 
 // modules/links/constants.php, row 118
-"Link id" => "",
+"Link id" => "ID leg\xE3tur\xE3", // ai 2026-06
 
 // modules/links/constants.php, row 119
-"Link name" => "",
+"Link name" => "Nume leg\xE3tur\xE3", // ai 2026-06
 
 // modules/links/constants.php, row 120
-"Link original name" => "",
+"Link original name" => "Nume original leg\xE3tur\xE3", // ai 2026-06
 
 // modules/links/constants.php, row 121
-"Link description" => "",
+"Link description" => "Descriere leg\xE3tur\xE3", // ai 2026-06
 
 // modules/links/constants.php, row 123
-"Link rate" => "",
+"Link rate" => "Evaluare leg\xE3tur\xE3", // ai 2026-06
 
 // modules/links/constants.php, row 124
-"Link votes" => "",
+"Link votes" => "Voturi leg\xE3tur\xE3", // ai 2026-06
 
 // modules/links/constants.php, row 125
-"Link - last vote date" => "",
+"Link - last vote date" => "Leg\xE3tur\xE3 - data ultimului vot", // ai 2026-06
 
 // modules/links/constants.php, row 126
-"Link - created by" => "",
+"Link - created by" => "Leg\xE3tur\xE3 - creat\xE3 de", // ai 2026-06
 
 // modules/links/constants.php, row 127
-"Link creation date" => "",
+"Link creation date" => "Data cre\xE3rii leg\xE3turii", // ai 2026-06
 
 // modules/links/constants.php, row 128
-"Link - last edited by" => "",
+"Link - last edited by" => "Leg\xE3tur\xE3 - ultima editare de", // ai 2026-06
 
 // modules/links/constants.php, row 129
-"Link - last edit date" => "",
+"Link - last edit date" => "Leg\xE3tur\xE3 - data ultimei edit\xE3ri", // ai 2026-06
 
 // modules/links/constants.php, row 130
-"Link - checked by" => "",
+"Link - checked by" => "Leg\xE3tur\xE3 - verificat\xE3 de", // ai 2026-06
 
 // modules/links/constants.php, row 131
-"Link - last checked date" => "",
+"Link - last checked date" => "Leg\xE3tur\xE3 - data ultimei verific\xE3ri", // ai 2026-06
 
 // modules/links/constants.php, row 132
-"Link author's e-mail" => "",
+"Link author's e-mail" => "E-mailul autorului leg\xE3turii", // ai 2026-06
 
 // modules/links/constants.php, row 133
-"Link url" => "",
+"Link url" => "URL-ul leg\xE3turii", // ai 2026-06
 
 // modules/links/constants.php, row 134
-"Link link" => "",
+"Link link" => "Leg\xE3tur\xE3", // ai 2026-06
 
 // modules/links/constants.php, row 135
-"Link flag" => "",
+"Link flag" => "Indicator leg\xE3tur\xE3", // ai 2026-06
 
 // modules/links/constants.php, row 136
-"Link - validity rank" => "",
+"Link - validity rank" => "Leg\xE3tur\xE3 - rang de validitate", // ai 2026-06
 
 // modules/links/constants.php, row 137
-"Link - last validation date" => "",
+"Link - last validation date" => "Leg\xE3tur\xE3 - data ultimei valid\xE3ri", // ai 2026-06
 
 // modules/links/constants.php, row 138
-"Link editor's note" => "",
+"Link editor's note" => "Nota editorului leg\xE3turii", // ai 2026-06
 
 // modules/links/constants.php, row 139
-"Link organization city" => "",
+"Link organization city" => "Orasul organizatiei leg\xE3turii", // ai 2026-06
 
 // modules/links/constants.php, row 140
-"Link organization street" => "",
+"Link organization street" => "Strada organizatiei leg\xE3turii", // ai 2026-06
 
 // modules/links/constants.php, row 141
-"Link organization post code" => "",
+"Link organization post code" => "Codul postal al organizatiei leg\xE3turii", // ai 2026-06
 
 // modules/links/constants.php, row 142
-"Link organization phone" => "",
+"Link organization phone" => "Telefonul organizatiei leg\xE3turii", // ai 2026-06
 
 // modules/links/constants.php, row 143
-"Link organization fax" => "",
+"Link organization fax" => "Faxul organizatiei leg\xE3turii", // ai 2026-06
 
 // modules/links/constants.php, row 144
-"Link organization e-mail" => "",
+"Link organization e-mail" => "E-mailul organizatiei leg\xE3turii", // ai 2026-06
 
 // modules/links/constants.php, row 145
-"Link folder (status code) - 1~Active, 2~Holding, 3~Trash" => "",
+"Link folder (status code) - 1~Active, 2~Holding, 3~Trash" => "Dosarul leg\xE3turii (cod de stare) - 1~Activ, 2~Asteptare, 3~Gunoi", // ai 2026-06
 
 // modules/links/constants.php, row 146
-"Link - ids of regions (comma separated)" => "",
+"Link - ids of regions (comma separated)" => "Leg\xE3tur\xE3 - id-urile regiunilor (separate prin virgul\xE3)", // ai 2026-06
 
 // modules/links/constants.php, row 147
-"Link - names of regions (comma separated)" => "",
+"Link - names of regions (comma separated)" => "Leg\xE3tur\xE3 - numele regiunilor (separate prin virgul\xE3)", // ai 2026-06
 
 // modules/links/constants.php, row 148
-"Link - ids of languages (comma separated)" => "",
+"Link - ids of languages (comma separated)" => "Leg\xE3tur\xE3 - id-urile limbilor (separate prin virgul\xE3)", // ai 2026-06
 
 // modules/links/constants.php, row 149
-"Link - names of languages (comma separated)" => "",
+"Link - names of languages (comma separated)" => "Leg\xE3tur\xE3 - numele limbilor (separate prin virgul\xE3)", // ai 2026-06
 
 // modules/links/constants.php, row 150
-"Link - short names of languages (comma separated)" => "",
+"Link - short names of languages (comma separated)" => "Leg\xE3tur\xE3 - numele scurte ale limbilor (separate prin virgul\xE3)", // ai 2026-06
 
 // modules/links/constants.php, row 151
-"Category ids (comma separated)" => "",
+"Category ids (comma separated)" => "Id-urile categoriilor (separate prin virgul\xE3)", // ai 2026-06
 
 // modules/links/constants.php, row 152
-"Category names (comma separated)" => "",
+"Category names (comma separated)" => "Numele categoriilor (separate prin virgul\xE3)", // ai 2026-06
 
 // modules/links/constants.php, row 153
-"State of link in this category (visible/highlighted)" => "",
+"State of link in this category (visible/highlighted)" => "Starea leg\xE3turii \xEEn aceast\xE3 categorie (vizibil\xE3/evidentiat\xE3)", // ai 2026-06
 
 // modules/links/constants.php, row 154
-"Link - validity color" => "",
+"Link - validity color" => "Leg\xE3tur\xE3 - culoarea validit\xE3tii", // ai 2026-06
 
 // modules/links/constants.php, row 155
-"Paths to the categories" => "",
+"Paths to the categories" => "C\xE3ile c\xE3tre categorii", // ai 2026-06
 
 // modules/links/constants.php, row 156
-"Number of found Links" => "",
+"Number of found Links" => "Num\xE3rul leg\xE3turilor g\xE3site", // ai 2026-06
 
 // modules/links/constants.php, row 157
-"Link to link editing page (for admin interface only)" => "",
+"Link to link editing page (for admin interface only)" => "Leg\xE3tur\xE3 c\xE3tre pagina de editare a leg\xE3turii (doar pentru interfata de administrare)", // ai 2026-06
 
 // modules/links/constants.php, row 158
-"Category listing with links (for admin interface only)" => "",
+"Category listing with links (for admin interface only)" => "Lista categoriilor cu leg\xE3turi (doar pentru interfata de administrare)", // ai 2026-06
 
 // modules/links/constants.php, row 172
-"Path" => "",
+"Path" => "Cale", // ai 2026-06
 
 // modules/links/constants.php, row 173
-"Link Count" => "",
+"Link Count" => "Num\xE3r de leg\xE3turi", // ai 2026-06
 
 // modules/links/constants.php, row 175
-"Note" => "",
+"Note" => "Not\xE3", // ai 2026-06
 
 // modules/links/constants.php, row 192
-"Number of links in category" => "",
+"Number of links in category" => "Num\xE3rul leg\xE3turilor din categorie", // ai 2026-06
 
 // modules/links/constants.php, row 195
-"Crossreferenced category" => "",
+"Crossreferenced category" => "Categorie cu referinte \xEEncrucisate", // ai 2026-06
 
 // modules/links/constants.php, row 196
-"Path to current category" => "",
+"Path to current category" => "Calea c\xE3tre categoria curent\xE3", // ai 2026-06
 
 // modules/links/constants.php, row 197
-"Is this category general one? (1/0)" => "",
+"Is this category general one? (1/0)" => "Este aceast\xE3 categorie general\xE3? (1/0)", // ai 2026-06
 
 // modules/links/constants.php, row 198
-"Print category priority, if category is general one." => "",
+"Print category priority, if category is general one." => "Afiseaz\xE3 prioritatea categoriei, dac\xE3 categoria este una general\xE3.", // ai 2026-06
 
 // modules/links/getcat.php, row 51
-"Category Tree" => "",
+"Category Tree" => "Arbore de categorii", // ai 2026-06
 
 // modules/links/getcat.php, row 56
-"Select category" => "",
+"Select category" => "Selectati categoria", // ai 2026-06
 
 // modules/links/index.php, row 84
-"No permissions to edit links" => "",
+"No permissions to edit links" => "Nu aveti dreptul s\xE3 editati leg\xE3turi", // ai 2026-06
 
 // modules/links/index.php, row 207
-"HINT: \"social ecology\" AND environment" => "",
+"HINT: \"social ecology\" AND environment" => "SUGESTIE: \"ecologie social\xE3\" AND mediu", // ai 2026-06
 
 // modules/links/index.php, row 234
-"Perform action on selected items" => "",
+"Perform action on selected items" => "Execut\xE3 actiunea asupra articolelor selectate", // ai 2026-06
 
 // modules/links/index.php, row 257
-"ActionApps - Links Manager" => "",
+"ActionApps - Links Manager" => "ActionApps - Administrator leg\xE3turi", // ai 2026-06
 
 // modules/links/index.php, row 287
-"All my links" => "",
+"All my links" => "Toate leg\xE3turile mele", // ai 2026-06
 
 // modules/links/index.php, row 288
-"Links to check" => "",
+"Links to check" => "Leg\xE3turi de verificat", // ai 2026-06
 
 // modules/links/index.php, row 289
-"Last edited" => "",
+"Last edited" => "Ultima editare", // ai 2026-06
 
 // modules/links/index.php, row 311
-"Show Links" => "",
+"Show Links" => "Arat\xE3 leg\xE3turile", // ai 2026-06
 
 // modules/links/index.php, row 314
-"Edit Category" => "",
+"Edit Category" => "Editare categorie", // ai 2026-06
 
 // modules/links/index.php, row 318
-"Show subtree links" => "",
+"Show subtree links" => "Arat\xE3 leg\xE3turile din subarbore", // ai 2026-06
 
 // modules/links/link.class.php, row 661
 // modules/links/linkedit.php, row 450
-"Page name" => "",
+"Page name" => "Numele paginii", // ai 2026-06
 
 // modules/links/link.class.php, row 662
 // modules/links/linkedit.php, row 453
-"Original page name" => "",
+"Original page name" => "Numele original al paginii", // ai 2026-06
 
 // modules/links/link.class.php, row 668
 // modules/links/linkedit.php, row 534
-"City" => "",
+"City" => "Oras", // ai 2026-06
 
 // modules/links/link.class.php, row 669
 // modules/links/linkedit.php, row 536
-"Street" => "",
+"Street" => "Strad\xE3", // ai 2026-06
 
 // modules/links/link.class.php, row 670
 // modules/links/linkedit.php, row 538
-"Post code" => "",
+"Post code" => "Cod postal", // ai 2026-06
 
 // modules/links/link.class.php, row 671
 // modules/links/linkedit.php, row 540
-"Phone" => "",
+"Phone" => "Telefon", // ai 2026-06
 
 // modules/links/link.class.php, row 672
 // modules/links/linkedit.php, row 542
 "Fax" => "",
 
 // modules/links/linkedit.php, row 51
-"Accept" => "",
+"Accept" => "Accept\xE3", // ai 2026-06
 
 // modules/links/linkedit.php, row 53
-"unfilled" => "",
+"unfilled" => "necompletat", // ai 2026-06
 
 // modules/links/linkedit.php, row 90
 // modules/links/menu.php, row 72, 73
-"Edit Link" => "",
+"Edit Link" => "Editare leg\xE3tur\xE3", // ai 2026-06
 
 // modules/links/linkedit.php, row 97
 // modules/links/menu.php, row 72
-"Add Link" => "",
+"Add Link" => "Ad\xE3ugare leg\xE3tur\xE3", // ai 2026-06
 
 // modules/links/linkedit.php, row 102
-"Link does not exist or the base category is not set" => "",
+"Link does not exist or the base category is not set" => "Leg\xE3tura nu exist\xE3 sau categoria de baz\xE3 nu este setat\xE3", // ai 2026-06
 
 // modules/links/linkedit.php, row 266, 285
-"Proposal to uncheck" => "",
+"Proposal to uncheck" => "Propunere de excludere", // ai 2026-06
 
 // modules/links/linkedit.php, row 267, 286
-"Proposal to check" => "",
+"Proposal to check" => "Propunere de includere", // ai 2026-06
 
 // modules/links/linkedit.php, row 317
-"Proposal to add" => "",
+"Proposal to add" => "Propunere de ad\xE3ugare", // ai 2026-06
 
 // modules/links/linkedit.php, row 319
-"Proposal to del" => "",
+"Proposal to del" => "Propunere de stergere", // ai 2026-06
 
 // modules/links/linkedit.php, row 385
 "ActionApps" => "",
 
 // modules/links/linkedit.php, row 407
-"<!--NewPublicLinkText-->" => "",
+"<!--NewPublicLinkText-->"
+ => "\xCEn acest formular pentru ad\xE3ugarea unei leg\xE3turi noi \xEEn catalog puteti,\n"
+   ."dar nu este obligatoriu, s\xE3 completati toate c\xE2mpurile. Pentru includerea usoar\xE3 a leg\xE3turii\n"
+   ."\xEEn catalog v\xE3 rug\xE3m s\xE3 completati mai ales <b>URL</b>-ul leg\xE3turii, <b>NUMELE</b> si\n"
+   ."s\xE3 \xEEncadrati leg\xE3tura \xEEntr-o <b>CATEGORIE</b>. Dac\xE3 aveti experient\xE3 cu paginile,\n"
+   ."puteti completa si descrierea leg\xE3turii.<br>\n"
+   ."<b>V\xE3 rug\xE3m s\xE3 nu ad\xE3ugati \xEEn catalog leg\xE3turi \"comerciale\".</b> Aceste leg\xE3turi nu vor fi publicate \xEEn catalog.<br>\n"
+   ." Multumim.", // ai 2026-06
 
 // modules/links/linkedit.php, row 425
-"Link" => "",
+"Link" => "Leg\xE3tur\xE3", // ai 2026-06
 
 // modules/links/linkedit.php, row 438
-"Check url" => "",
+"Check url" => "Caut\xE3 URL \xEEn catalog", // ai 2026-06
 
 // modules/links/linkedit.php, row 439
-"View" => "",
+"View" => "Vezi", // ai 2026-06
 
 // modules/links/linkedit.php, row 440
-"You can check, if the page is not in database already" => "",
+"You can check, if the page is not in database already" => "Puteti verifica dac\xE3 pagina nu este deja \xEEn baza de date", // ai 2026-06
 
 // modules/links/linkedit.php, row 445
-"Do not fill, please:" => "",
+"Do not fill, please:" => "V\xE3 rug\xE3m s\xE3 nu completati:", // ai 2026-06
 
 // modules/links/linkedit.php, row 451
-"English name of the page" => "",
+"English name of the page" => "Numele paginii \xEEn englez\xE3", // ai 2026-06
 
 // modules/links/linkedit.php, row 454
-"Name of the page in original language" => "",
+"Name of the page in original language" => "Numele paginii \xEEn limba original\xE3", // ai 2026-06
 
 // modules/links/linkedit.php, row 457
-"Do not use HTML tags and do not write words like \"best page\", ... The maximum length of the description should be about 250 characters." => "",
+"Do not use HTML tags and do not write words like \"best page\", ... The maximum length of the description should be about 250 characters." => "Nu folositi etichete HTML si nu scrieti cuvinte ca \"cea mai bun\xE3 pagin\xE3\", ... Lungimea maxim\xE3 a descrierii ar trebui s\xE3 fie de aproximativ 250 de caractere.", // ai 2026-06
 
 // modules/links/linkedit.php, row 463
-"Select the type, if the link belongs to some special category" => "",
+"Select the type, if the link belongs to some special category" => "Selectati tipul, dac\xE3 leg\xE3tura apartine unei categorii speciale", // ai 2026-06
 
 // modules/links/linkedit.php, row 471
-"Author's e-mail" => "",
+"Author's e-mail" => "E-mailul autorului", // ai 2026-06
 
 // modules/links/linkedit.php, row 474
-"You can type any message here - it is never shown on the website" => "",
+"You can type any message here - it is never shown on the website" => "Puteti scrie aici orice mesaj - nu este afisat niciodat\xE3 pe site", // ai 2026-06
 
 // modules/links/linkedit.php, row 479
-"Last checked" => "",
+"Last checked" => "Ultima verificare", // ai 2026-06
 
 // modules/links/linkedit.php, row 479, 480, 481
-"n/j/Y" => "",
+"n/j/Y" => "j.n.Y", // ai 2026-06
 
 // modules/links/linkedit.php, row 480
-"Last changed" => "",
+"Last changed" => "Ultima modificare", // ai 2026-06
 
 // modules/links/linkedit.php, row 481
-"Inserted" => "",
+"Inserted" => "Introdus", // ai 2026-06
 
 // modules/links/linkedit.php, row 488
-"Show in category" => "",
+"Show in category" => "Arat\xE3 \xEEn categoria", // ai 2026-06
 
 // modules/links/linkedit.php, row 494
-"select the category" => "",
+"select the category" => "selectati categoria", // ai 2026-06
 
 // modules/links/linkedit.php, row 497
-"Selected categories" => "",
+"Selected categories" => "Categorii selectate", // ai 2026-06
 
 // modules/links/linkedit.php, row 497
-"go to the category you want to select and click on the right arrow button to select" => "",
+"go to the category you want to select and click on the right arrow button to select" => "mergeti la categoria dorit\xE3 si ap\xE3sati butonul cu s\xE3geat\xE3 dreapta pentru a o selecta", // ai 2026-06
 
 // modules/links/linkedit.php, row 533
-"Organization" => "",
+"Organization" => "Organizatie", // ai 2026-06
 
 // modules/links/linkedit.php, row 549
-"Regions and languages" => "",
+"Regions and languages" => "Regiuni si limbi", // ai 2026-06
 
 // modules/links/linkedit.php, row 551
-"Region" => "",
+"Region" => "Regiune", // ai 2026-06
 
 // modules/links/linkedit.php, row 551
-"select up to 4 regions" => "",
+"select up to 4 regions" => "selectati cel mult 4 regiuni", // ai 2026-06
 
 // modules/links/linkedit.php, row 552
-"select page's languages" => "",
+"select page's languages" => "selectati limbile paginii", // ai 2026-06
 
 // modules/links/linkedit2.php, row 112
-"Not accepted, sorry. Looks like spam." => "",
+"Not accepted, sorry. Looks like spam." => "Neacceptat, ne pare r\xE3u. Pare a fi spam.", // ai 2026-06
 
 // modules/links/linkedit2.php, row 141
-"Link change proposal inserted" => "",
+"Link change proposal inserted" => "Propunere de modificare a leg\xE3turii introdus\xE3", // ai 2026-06
 
 // modules/links/linkedit2.php, row 141, 145
-"Link inserted" => "",
+"Link inserted" => "Leg\xE3tur\xE3 introdus\xE3", // ai 2026-06
 
 // modules/links/linkedit2.php, row 151
-"Continue" => "",
+"Continue" => "Continu\xE3", // ai 2026-06
 
 // modules/links/menu.php, row 64
 "View site" => "Vizualizare sit",
 
 // modules/links/menu.php, row 73
-"Add new link" => "",
+"Add new link" => "Adaug\xE3 leg\xE3tur\xE3 nou\xE3", // ai 2026-06
 
 // modules/links/menu.php, row 80, 81
-"Link Manager" => "",
+"Link Manager" => "Administrator leg\xE3turi", // ai 2026-06
 
 // modules/links/menu.php, row 88, 89
-"Link Admin" => "",
+"Link Admin" => "Administrare leg\xE3turi", // ai 2026-06
 
 // modules/links/menu.php, row 100
 "Folders" => "Dosare",
 
 // modules/links/menu.php, row 100
-"Folders with links, sorted by their status (active, changed, new, ...)" => "",
+"Folders with links, sorted by their status (active, changed, new, ...)" => "Dosare cu leg\xE3turi, sortate dup\xE3 stare (active, modificate, noi, ...)", // ai 2026-06
 
 // modules/links/menu.php, row 103
 "Active" => "Activ",
 
 // modules/links/menu.php, row 106
-"Changed Links" => "",
+"Changed Links" => "Leg\xE3turi modificate", // ai 2026-06
 
 // modules/links/menu.php, row 109
-"New Links" => "",
+"New Links" => "Leg\xE3turi noi", // ai 2026-06
 
 // modules/links/menu.php, row 112
-"Holding bin" => "",
+"Holding bin" => "\xCEn asteptare", // ai 2026-06
 
 // modules/links/menu.php, row 115
-"Trash" => "",
+"Trash" => "Cos de gunoi", // ai 2026-06
 
 // modules/links/menu.php, row 118
-"Unassigned" => "",
+"Unassigned" => "Neatribuite", // ai 2026-06
 
 // modules/links/menu.php, row 121
-"Unassigned - Trash" => "",
+"Unassigned - Trash" => "Neatribuite - Cos", // ai 2026-06
 
 // modules/links/menu.php, row 122
 "Misc" => "Altele",
@@ -766,58 +773,58 @@ return [
 "Empty trash" => "Gole\xBAte co\xBA",
 
 // modules/links/menu.php, row 127
-"Are you sure you want to empty trash?" => "",
+"Are you sure you want to empty trash?" => "Sigur doriti s\xE3 goliti cosul de gunoi?", // ai 2026-06
 
 // modules/links/menu.php, row 131
-"Set Debug OFF" => "",
+"Set Debug OFF" => "Dezactiveaz\xE3 Debug", // ai 2026-06
 
 // modules/links/menu.php, row 131
-"Set Debug ON" => "",
+"Set Debug ON" => "Activeaz\xE3 Debug", // ai 2026-06
 
 // modules/links/menu.php, row 132
-"Bookmarks" => "",
+"Bookmarks" => "Marcaje", // ai 2026-06
 
 // modules/links/menu.php, row 132
-"My own links" => "",
+"My own links" => "Leg\xE3turile mele", // ai 2026-06
 
 // modules/links/menu.php, row 158
 "Main settings" => "Set\xE3ri principale",
 
 // modules/links/menu.php, row 161
-"Links" => "",
+"Links" => "Leg\xE3turi", // ai 2026-06
 
 // modules/links/menu.php, row 162
-"Design" => "",
+"Design" => "Aspect", // ai 2026-06
 
 // modules/links/menu.php, row 170
-"New Category View" => "",
+"New Category View" => "Vedere nou\xE3 de categorii", // ai 2026-06
 
 // modules/links/menu.php, row 175
-"New Link View" => "",
+"New Link View" => "Vedere nou\xE3 de leg\xE3turi", // ai 2026-06
 
 // modules/links/modedit.php, row 97
-"No permission to add module" => "",
+"No permission to add module" => "Nu aveti dreptul s\xE3 ad\xE3ugati modul", // ai 2026-06
 
 // modules/links/modedit.php, row 102
-"No permission to edit module" => "",
+"No permission to edit module" => "Nu aveti dreptul s\xE3 editati modulul", // ai 2026-06
 
 // modules/links/modedit.php, row 119, 229, 232
-"Start category id" => "",
+"Start category id" => "Id categorie initial\xE3", // ai 2026-06
 
 // modules/links/modedit.php, row 120, 235, 238
-"Tree start id" => "",
+"Tree start id" => "Id \xEEnceput arbore", // ai 2026-06
 
 // modules/links/modedit.php, row 121, 236, 239
-"Select start id" => "",
+"Select start id" => "Selectati id-ul initial", // ai 2026-06
 
 // modules/links/modedit.php, row 217
-"Add Links module" => "",
+"Add Links module" => "Ad\xE3ugare modul Leg\xE3turi", // ai 2026-06
 
 // modules/links/modedit.php, row 217
-"Edit Links module" => "",
+"Edit Links module" => "Editare modul Leg\xE3turi", // ai 2026-06
 
 // modules/links/modedit.php, row 220
-"Module Links data" => "",
+"Module Links data" => "Date modul Leg\xE3turi", // ai 2026-06
 
 // modules/links/modedit.php, row 225
 "Used Language File" => "Fi\xBAier limb\xE3 utilizat\xE3",

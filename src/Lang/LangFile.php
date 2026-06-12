@@ -82,9 +82,19 @@ class LangFile
             "setlocale(LC_ALL, 'ro_RO.utf8', 'ro_RO');  // sort, date, uppercase, ..",
             "setlocale(LC_NUMERIC, 'en_US');            // keep float format with dot (see AA_Stringexpand_If)",
         ],
-        'ru-utf8' => [
+        'pl-utf8' => [
+            "defined('DB_COLLATION') || define('DB_COLLATION', 'utf8mb4_polish_ci');",
+            "setlocale(LC_ALL, 'pl_PL.utf8', 'pl_PL');  // sort, date, uppercase, ..",
+            "setlocale(LC_NUMERIC, 'en_US');            // keep float format with dot (see AA_Stringexpand_If)",
+        ],
+        'pt-utf8' => [
             "defined('DB_COLLATION') || define('DB_COLLATION', 'utf8mb4_unicode_ci');",
-            "setlocale(LC_ALL, 'ru_RU.utf8', 'ru_RU');  // sort, date, uppercase, ..",
+            "setlocale(LC_ALL, 'pt_PT.utf8', 'pt_PT');  // sort, date, uppercase, ..",
+            "setlocale(LC_NUMERIC, 'en_US');            // keep float format with dot (see AA_Stringexpand_If)",
+        ],
+        'uk-utf8' => [
+            "defined('DB_COLLATION') || define('DB_COLLATION', 'utf8mb4_unicode_ci');",
+            "setlocale(LC_ALL, 'uk_UA.utf8', 'uk_UA');  // sort, date, uppercase, ..",
             "setlocale(LC_NUMERIC, 'en_US');            // keep float format with dot (see AA_Stringexpand_If)",
         ],
         'vn' => [
