@@ -692,6 +692,18 @@ function getMenu(string $activeMain, string $activeSubmenu = '', string $submenu
           </div>
           ';
 
+        // Publish the top bar height as --aa-topbar-h for the sticky chrome offsets
+        // (admin-ecn.css): the bar wraps to >50px on mid widths and the search input
+        // rewraps the nav on focus (no resize event) — hence ResizeObserver, not
+        // load+resize. Below 768px the bar is tall but NOT sticky, so the var is 0px
+        // there. Inline (not AA_Req_Load) so the rail pins before first paint; kept
+        // unalias-safe like $rail_prescript below — no "{token(" / "{token:" inside.
+        $ret .= "<script>(()=>{const t=document.getElementById('aa_top');if(!t)return;"
+            ."const m=window.matchMedia('(min-width: 768px)');"
+            ."const s=()=>document.documentElement.style.setProperty('--aa-topbar-h',"
+            ."m.matches?Math.ceil(t.getBoundingClientRect().height)+'px':'0px');"
+            ."s();m.addEventListener('change',s);new ResizeObserver(s).observe(t);})();</script>";
+
         // showMain menu end -----
     }
 

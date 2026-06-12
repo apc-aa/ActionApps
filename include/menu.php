@@ -72,12 +72,18 @@ function get_aamenus(): array
 
     $input_view = $profile->getProperty('input_view') ? '&vid='.$profile->getProperty('input_view') : '';
 
+    // On the per-item pages "+ Add Item" only confuses — ghost it (invisible but
+    // space-preserving, see admin-ecn.css .aa-ui-ghost). Same item-page whitelist
+    // idiom as $on_item_page in menu_util.php.
+    $cur_script = basename(parse_url($_SERVER['SCRIPT_NAME'] ?? '', PHP_URL_PATH) ?: '');
+    $ghost = in_array($cur_script, ['itemedit.php', 'iteminfo.php', 'itemhistory.php', 'itemstats.php'], true) ? ' aa-ui-ghost' : '';
+
     $aamenus["additem"] = [
         "label" => GetLabel($profile,'ui_manager','top_additem', '+ '. _m("Add Item")),
         "href"  => "admin/itemedit.php?add=1$input_view",
         "cond"  => ($profile->getProperty('ui_manager', 'top_additem') !== ''),
         "level" => "main",
-        "class" => "aa-ui-btn-additem",
+        "class" => "aa-ui-btn-additem$ghost",
     ];
 
     $aamenus["itemmanager"] = [

@@ -2863,7 +2863,9 @@ function getFrmInputButtons($buttons, $print_hidden = true, $prefix = ''): strin
         // travel inside its containing block, and the inner row's block is the wrap (button-height),
         // so it never stuck. The wrap's containing block is the full-height tab table, so the wrap
         // pins to the top while the form scrolls. (z-index > 2 so CodeMirror stays underneath.)
-        $ret = '<div class="aa-tab-buttons-wrap" style="position: sticky; top: 0; z-index: 5;"> <div class="aa-tab-buttons">';
+        // top offset = sticky top bar height (--aa-topbar-h, set next to #aa_top);
+        // 0px fallback keeps pages without the top bar (discedit2, popups) unchanged
+        $ret = '<div class="aa-tab-buttons-wrap" style="position: sticky; top: var(--aa-topbar-h, 0px); z-index: 5;"> <div class="aa-tab-buttons">';
     } else {
         $ret = '<div class="aa-tab-buttons">';
     }

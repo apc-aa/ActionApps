@@ -2890,3 +2890,48 @@ h1:has(+form[name="inputform"]) {
 .aa-overflow-item:empty {
     display: none;
 }
+
+/* ============================================================
+   Sticky admin chrome (desktop only — the mobile header is tall,
+   wraps, and is not worth pinning; the rail is hidden there).
+   --aa-topbar-h is measured by an inline script next to #aa_top
+   (menu_util.php): the bar can wrap to >50px at 768–1100px, and
+   some pages render the rail WITHOUT the top bar (discedit2,
+   popups) — hence every fallback is 0px, never 50px.
+   ============================================================ */
+@media screen and (min-width: 768px) {
+    /* anchor jumps / error-field focus must land below the pinned bar */
+    html {
+        scroll-padding-top: calc(var(--aa-topbar-h, 0px) + 8px);
+    }
+    #aa_top {
+        position: sticky;
+        top: 0;
+        z-index: 50; /* < 100: #aa-message-box and suggesters must overlay the bar */
+    }
+    .aa-ui-leftmenu {
+        position: sticky;
+        top: var(--aa-topbar-h, 0px);
+        align-self: flex-start; /* default stretch leaves sticky no travel room */
+        height: calc(100vh - var(--aa-topbar-h, 0px)); /* full height keeps the copyright at the visible bottom (space-between) */
+        min-height: 0;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+    #sitetree {
+        position: sticky;
+        top: calc(var(--aa-topbar-h, 0px) + 10px); /* small gap so Add spot isn't glued to the pinned bar */
+        align-self: flex-start;
+        max-height: calc(100vh - var(--aa-topbar-h, 0px) - 10px);
+        overflow-y: auto;
+    }
+    /* On item pages "+ Add Item" is pointless — hide it but keep its
+       flex space so the neighboring menu entries don't shift. */
+    .aa-ui-nav a.aa-ui-btn-additem.aa-ui-ghost {
+        visibility: hidden;
+        pointer-events: none;
+    }
+}
+.mobilmenu .aa-ui-ghost {
+    display: none !important; /* .mainmenu a sets display !important on mobile */
+}
