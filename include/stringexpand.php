@@ -8621,7 +8621,8 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
             return str_replace('&amp;', '&', AA_INSTAL_URL. "img.php?src=/$image&$phpthumb_params");
         }
         if ($type === 'cache') {
-            return (new \MissCache\MissCache(IMG_UPLOAD_URL, IMG_UPLOAD_PATH, 'mC', IMG_UPLOAD_DIR_MODE, [new \MissCache\Plugins\PhpThumbPlugin()]))->getCachedUrl('pT', "$image?$phpthumb_params");
+            $misscache = new \MissCache\MissCache(IMG_UPLOAD_URL, IMG_UPLOAD_PATH, 'mC', IMG_UPLOAD_DIR_MODE, [new \MissCache\Plugins\PhpThumbPlugin(AA_INSTAL_URL."img.php")]);
+            return $misscache->getCachedUrl('pT', "$image?$phpthumb_params");
         }
         return '';  // not an option - we must call it with correct type
     }

@@ -65,6 +65,9 @@ class ScheduleAaTasks implements LaterInterface
         $toexecute->laterOnce(new Post2shtmlCleanup(now() - (60 * 60 * 24 * 40)), [], "Post2shtmlCleanup", 10, now() + (60 * 60 * 24));
 
         $toexecute->laterOnce(new ToexecuteCleanup(), [], "ToexecuteCleanup", 10, now() + (60 * 60 * 24));
+
+        // purge MissCache forge-on-miss image cache: files unused > 30 days, plus a 2 GB size cap
+        $toexecute->laterOnce(new MissCachePurge(), [], "MissCachePurge", 10, now() + (60 * 60 * 24));
     }
 
     /** Not used - we call it directly from toxecute.php

@@ -351,4 +351,15 @@ function phpThumbURL($ParameterString, $path_to_phpThumb = 'phpThumb.php'): stri
 }
 // ---------- vendor/james-heinrich/phpthumb/phpThumb.config.php v2023-05-03 - end ---------
 
+// MissCache forge subrequest: when the forge-on-miss client signals via this
+// header, make phpThumb answer ANY generation failure (missing/corrupt/unsupported
+// source) with an HTTP redirect instead of a 200 error image, so the client can
+// negative-cache a placeholder instead of caching the error image forever. The
+// signal is a request header, not a GET parameter (phpThumb rejects unknown GET
+// parameters). The redirect target is only a non-empty sentinel — the client
+// detects the non-2xx status, it never follows the Location.
+if (!empty($_SERVER['HTTP_X_MISSCACHE_FORGE'])) {
+    $PHPTHUMB_CONFIG['error_message_image_default'] = '/aa-misscache-noimage';
+}
+
 require_once AA_PHPTHUMB__DIR__."/phpThumb.php";

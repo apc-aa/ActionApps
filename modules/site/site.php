@@ -26,8 +26,8 @@ use AA\Cache\PageCache;
 use AA\IO\DB\DB_AA;
 use AA\IO\OnPageChanger;
 use AA\Util\Langs;
-///use MissCache\MissCache;
-///use MissCache\Plugins\PhpThumbPlugin;
+use MissCache\MissCache;
+use MissCache\Plugins\PhpThumbPlugin;
 
 require_once __DIR__."/../../include/config.php";
 require_once __DIR__."/../../include/locsess.php";
@@ -35,15 +35,16 @@ require_once __DIR__."/../../include/zids.php";
 require_once __DIR__."/../../include/locauth.php";
 require_once __DIR__."/../../include/locauth.php";
 
-///$mc_dir = parse_url(IMG_UPLOAD_URL, PHP_URL_PATH).'mC';  // e.g. /upload/mC
-///
-///// if ( (defined('MISSCACHE_DIR') && $dir = MISSCACHE_DIR) || (str_starts_with(IMG_UPLOAD_PATH, $_SERVER['DOCUMENT_ROOT']) && ($dir = substr(IMG_UPLOAD_PATH, strlen($_SERVER['DOCUMENT_ROOT'])))) ) {
-///if (str_starts_with($_SERVER['REQUEST_URI'], $mc_dir)) {
-///    huhl($mc_dir);
-///    $mC = new MissCache(IMG_UPLOAD_URL, IMG_UPLOAD_PATH, 'mC', IMG_UPLOAD_DIR_MODE, [new PhpThumbPlugin()]);
-///    $mC->handleRequest($_SERVER['REQUEST_URI']);
-///    exit;
-///}
+// MissCache forge-on-miss: requests for a missing cached file under IMG_UPLOAD/mC/
+// are routed here by the web server (try_files / RewriteCond !-f — see
+// misc/missCache/README). Generate the artifact once and serve it; every later
+// request is served statically by the web server, never reaching PHP.
+$mc_dir = parse_url(IMG_UPLOAD_URL, PHP_URL_PATH).'mC/';  // e.g. /img_upload/mC/
+if (str_starts_with($_SERVER['REQUEST_URI'], $mc_dir)) {
+    $mC = new MissCache(IMG_UPLOAD_URL, IMG_UPLOAD_PATH, 'mC', IMG_UPLOAD_DIR_MODE, [new PhpThumbPlugin(AA_INSTAL_URL."img.php")]);
+    $mC->handleRequest($_SERVER['REQUEST_URI']);
+    exit;
+}
 
 $auth4cache = '';
 if ($_COOKIE['AA_Session'] && !isset($_REQUEST['username'])) {   // do not authenticate new user - we could restrict reader slices later
