@@ -476,6 +476,13 @@ function GetModuleSelection(): string {
               .     "if(n)o.textContent='\\u00A0'.repeat(n)+o.textContent;"
               .   "}"
               . "}else{"
+                  /* Chromium renders the CLOSED base-select via an auto-generated button we
+                     cannot target from CSS, so a long site name overflows the box into the
+                     user info. Supply the explicit <button><selectedcontent> authoring pattern
+                     — that IS styleable, and admin-ecn.css ellipsizes it. Added only here
+                     (base-select supported); native browsers keep the plain clipping <select>. */
+              .   "const b=document.createElement('button');b.type='button';"
+              .   "b.append(document.createElement('selectedcontent'));s.insertBefore(b,s.firstChild);"
                   /* base-select options are real focusable DOM nodes, so focus() moves
                      the popup cursor (legacy <select> can't). We intercept printable keys
                      while the popup is open, suppress the native first-match search, and

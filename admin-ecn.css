@@ -2297,6 +2297,14 @@ details[open] .aa-ui-searchbar-block div {
     margin-left: 0;
     height: 26px;
 }
+/* Long option labels (e.g. "Approved Comments Count") must not bleed past the
+   native select's arrow — clip with an ellipsis. (Ignored by base-select's own
+   button; that path is handled in the @supports block below.) */
+.aa-filter select {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
 .expanded .aa-ui-searchbar {
     width: auto;
 }
@@ -2470,6 +2478,27 @@ select[name="sel_module"] option.aa-section-header {
         color: var(--clr-dark);
         cursor: pointer;
         transition: border-color .12s ease, box-shadow .12s ease;
+    }
+    /* The explicit closed-state button (injected in menu_util.php) carries the selected
+       label; strip its native chrome so only our <select> frame shows, and ellipsize the
+       label so a long site name no longer bleeds into the user info beside it. */
+    select[name="sel_module"] > button {
+        all: unset;
+        display: flex;
+        align-items: center;
+        width: 100%;
+        min-width: 0;
+        box-sizing: border-box;
+        font: inherit;
+        color: inherit;
+        cursor: pointer;
+    }
+    select[name="sel_module"] selectedcontent {
+        display: block;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
     select[name="sel_module"]:hover { border-color: var(--clr-border-hover); }
     select[name="sel_module"]:focus {
