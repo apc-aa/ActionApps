@@ -333,6 +333,22 @@ class AA_Logentry_X extends AA_Logentry {
      }
 }
 
+/** Toexecute run summary log entry - one row per cron/queue run, written at the
+ *  end of AA\Later\Toexecute::execute() / executeTask(). Replaces the old free
+ *  text "finished {done}/{started} in {duration}/{allowed}".
+ *  Serialized: Xrun:{done}:{started}:{duration}:{allowed}
+ */
+class AA_Logentry_Xrun extends AA_Logentry {
+    public static function getClassProperties(): array {
+        return [
+            'done'     => new AA_Property('done',     _m('Tasks done'),    'int'),
+            'started'  => new AA_Property('started',  _m('Tasks started'), 'int'),
+            'duration' => new AA_Property('duration', _m('Duration [s]'),  'string'),
+            'allowed'  => new AA_Property('allowed',  _m('Allowed [s]'),   'string'),
+        ];
+    }
+}
+
 /** Hitcounter entry
  *
  *  @WARNING positional contract — the order of these properties is part of an

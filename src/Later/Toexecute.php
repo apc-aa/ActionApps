@@ -37,6 +37,7 @@ use AA\IO\DB\DB_AA;
 use AA\Util\ReportTrait;
 use AA_Log;
 use AA_Logentry_X;
+use AA_Logentry_Xrun;
 use Cvarset;
 
 /** AA\Later\Toexecute class - used for many short tasks, such as sending an e-mail for
@@ -197,7 +198,7 @@ class Toexecute
                 break;
             }
         }
-        AA_Log::write('TOEXECUTE', 'AA\Later\Toexecute', "finished $count/$started in " . sprintf('%.3g', microtime(true) - $execute_start) . "/$allowed_time");
+        AA_Log::write('TOEXECUTE', 'AA\Later\Toexecute', new AA_Logentry_Xrun(['done' => $count, 'started' => $started, 'duration' => sprintf('%.3g', microtime(true) - $execute_start), 'allowed' => $allowed_time]));
     }
 
     /** Executes as many tasks from the $tasks array as time allows
@@ -230,7 +231,7 @@ class Toexecute
                 break;
             }
         }
-        AA_Log::write('TOEXECUTE', 'AA\Later\Toexecute', "finished $count/$started in " . sprintf('%.3g', microtime(true) - $execute_start) . "/$allowed_time");
+        AA_Log::write('TOEXECUTE', 'AA\Later\Toexecute', new AA_Logentry_Xrun(['done' => $count, 'started' => $started, 'duration' => sprintf('%.3g', microtime(true) - $execute_start), 'allowed' => $allowed_time]));
     }
 
     public function _exeOne($task, &$execute_times, $execute_start, $allowed_time): int

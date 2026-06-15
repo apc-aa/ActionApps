@@ -37,7 +37,7 @@ class LogSystemstatus implements LaterInterface
 {
     public function __construct() {}
 
-    /** special function called from AA\Later\Toexecute class - used for queued tasks (run form cron)
+    /** a special function called from AA\Later\Toexecute class - used for queued tasks (run form cron)
      * @param array $params - numeric array of additional parameters for the execution passed in time of call
      * @return string - message about execution to be logged
      * @see \AA\Later\LaterInterface

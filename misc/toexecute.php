@@ -58,7 +58,11 @@ require_once __DIR__ . "/../modules/links/cattree.php";
  * The command above could be used from cron.
  */
 
-AA_Log::write('TOEXECUTE:start', 'toexecute.php', "finished $count/$started in " . sprintf('%.3g', microtime(true) - $execute_start) . "/$allowed_time");
+// Heartbeat marking the runner fired (nothing executed yet — the real per-run
+// counts are logged by Toexecute::execute() below). Reuses AA_Logentry_Xrun so
+// the row renders as a structured table instead of the previous garbage string
+// built from undefined $count/$started/$execute_start/$allowed_time at this point.
+AA_Log::write('TOEXECUTE', 'toexecute.php', 'start');
 
 // first of all - make sure all AA maintenance tasks are scheduled
 (new ScheduleAaTasks())->planAaTasks();
