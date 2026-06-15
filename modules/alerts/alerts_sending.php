@@ -144,7 +144,7 @@ class AA_Collection {
 
             // get all confirmed users for this collection and frequency
             $zids = is_null($reader_id) ? $this->getReaders($ho) : new zids($reader_id, 'l');
-            AA_Log::write("ALERTS", $ho, "Users for collection " . $this->id . ": " . ((int)$zids->count()));
+            AA_Log::write("ALERTS", $ho, new AA_Logentry_Alerts(['phase' => 'users', 'collection' => $this->id, 'count' => (int)$zids->count()]));
 
             $readerContent = new ItemContent();
 
@@ -168,7 +168,7 @@ class AA_Collection {
                     $item         = new AA_Item($readerContent, $aliases);
 
                     if (AA_Mail::sendTemplate($this->getProp('email_id_alert'), $readerContent->getValue(FIELDID_EMAIL), $item)) {
-                        AA_Log::write("ALERTS", $ho, $this->id . ": " . $readerContent->getValue(FIELDID_EMAIL). ' queued');
+                        AA_Log::write("ALERTS", $ho, new AA_Logentry_Alerts(['phase' => 'queued', 'collection' => $this->id, 'detail' => $readerContent->getValue(FIELDID_EMAIL)]));
                         $email_count++;
                     }
                 }
@@ -176,7 +176,7 @@ class AA_Collection {
 
         // Use the emails sent as param
         } else {
-            AA_Log::write("ALERTS", $ho, "Emails for collection " . $this->id . ": " .count($emails));
+            AA_Log::write("ALERTS", $ho, new AA_Logentry_Alerts(['phase' => 'emails', 'collection' => $this->id, 'count' => count($emails)]));
             $als = new AA_Aliases();
 //          $als->addAlias(new AA_Alias("_#FILTERS_", "id..............", 'f_t', array(get_filter_text_4_reader(null, $filters, $this->id))));
             $als->addTextAlias("_#FILTERS_", $this->getFilterText4Reader(null, $filters));
@@ -191,13 +191,12 @@ class AA_Collection {
             }
             $aliases = $als->getArray();
         }
-        AA_Log::write("ALERTS", $ho, "Sent for collection " . $this->id . ": " .$email_count);
-        AA_Log::write("ALERTS", $ho, implode('; ', [
-            "Debug collection " . $this->id,
+        AA_Log::write("ALERTS", $ho, new AA_Logentry_Alerts(['phase' => 'sent', 'collection' => $this->id, 'count' => $email_count]));
+        AA_Log::write("ALERTS", $ho, new AA_Logentry_Alerts(['phase' => 'debug', 'collection' => $this->id, 'detail' => implode('; ', [
             $this->getProp('email_id_alert'),
             implode(',', (array)$emails),
             implode(',', $aliases)
-        ]));
+        ])]));
         return $email_count;
     }
 

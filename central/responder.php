@@ -216,9 +216,9 @@ class AA_Responder_Do_Import_Module_Chunk extends AA_Responder {
 
     function run(): AA_Response
     {
-        AA_Log::write('IMPORT', AA_Log::context(), 'start: '. serialize($this->definition_chunk));
+        AA_Log::write('IMPORT', AA_Log::context(), new AA_Logentry_Import(['phase' => 'start', 'detail' => serialize($this->definition_chunk)]));
         $ret = $this->definition_chunk->importModuleChunk();
-        AA_Log::write('IMPORT', AA_Log::context(), 'result: '. $ret);
+        AA_Log::write('IMPORT', AA_Log::context(), new AA_Logentry_Import(['phase' => 'result', 'detail' => $ret]));
         return new AA_Response($ret);
     }
 }

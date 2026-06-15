@@ -969,7 +969,7 @@ class AA_Bookmarks {
         $old = $this->bookmarks[$key];
         $ret = $this->update( $newname, $old['state'], $old['type']==='*', $old['id']);
         if ($ret) {
-            AA_Log::write("BM_RENAME", $old['id'], [$newname, $old['name']]);
+            AA_Log::write("BM_RENAME", $old['id'], new AA_Logentry_Bmr(['newname' => $newname, 'oldname' => $old['name']]));
             return true;
         }
         return false;

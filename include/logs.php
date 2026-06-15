@@ -415,3 +415,103 @@ public static function getClassProperties(): array {
     }
 }
 
+/** EMAIL_SENT log entry (admin/write_mail.php) */
+class AA_Logentry_Em extends AA_Logentry {
+    public static function getClassProperties(): array {
+        return [
+            'mail_id' => new AA_Property('mail_id', _m('Template id'), 'string'),
+            'users'   => new AA_Property('users',   _m('Users'), 'int'),
+            'sent'    => new AA_Property('sent',    _m('Emails sent'), 'int'),
+        ];
+    }
+}
+
+/** ITEM_FIELD_FILLED log entry (admin/search_replace.php) */
+class AA_Logentry_Iff extends AA_Logentry {
+    public static function getClassProperties(): array {
+        return [
+            'selected' => new AA_Property('selected', _m('Items selected'), 'int'),
+            'updated'  => new AA_Property('updated',  _m('Items updated'), 'int'),
+            'planned'  => new AA_Property('planned',  _m('Items planned'), 'int'),
+        ];
+    }
+}
+
+/** M_FLDI_VLD log entry - insert-form field validation (include/item_content.php) */
+class AA_Logentry_Mfv extends AA_Logentry {
+    public static function getClassProperties(): array {
+        return [
+            'msg'     => new AA_Property('msg',     _m('Message'), 'string'),
+            'uri'     => new AA_Property('uri',     _m('Url'), 'string'),
+            'referer' => new AA_Property('referer', _m('Referer'), 'string'),
+        ];
+    }
+}
+
+/** BM_RENAME log entry - bookmark rename (include/searchbar.class.php) */
+class AA_Logentry_Bmr extends AA_Logentry {
+    public static function getClassProperties(): array {
+        return [
+            'newname' => new AA_Property('newname', _m('New name'), 'string'),
+            'oldname' => new AA_Property('oldname', _m('Old name'), 'string'),
+        ];
+    }
+}
+
+/** ALERTS log entry - alert mailing progress (modules/alerts/*) */
+class AA_Logentry_Alerts extends AA_Logentry {
+    public static function getClassProperties(): array {
+        return [
+            'phase'      => new AA_Property('phase',      _m('Phase'), 'string'),       // start | sent | users | queued | emails | debug
+            'collection' => new AA_Property('collection', _m('Collection'), 'string'),
+            'count'      => new AA_Property('count',      _m('Count'), 'string'),
+            'detail'     => new AA_Property('detail',     _m('Detail'), 'string'),
+        ];
+    }
+}
+
+/** CSN log entry - content syndication feed status (src/IO/Grabber/AARSS.php) */
+class AA_Logentry_Csn extends AA_Logentry {
+    public static function getClassProperties(): array {
+        return [
+            'feed'   => new AA_Property('feed',   _m('Feed'), 'string'),
+            'status' => new AA_Property('status', _m('Status'), 'string'),
+            'detail' => new AA_Property('detail', _m('Detail'), 'string'),
+        ];
+    }
+}
+
+/** IMPORT log entry - module-chunk import (central/responder.php) */
+class AA_Logentry_Import extends AA_Logentry {
+    public static function getClassProperties(): array {
+        return [
+            'phase'  => new AA_Property('phase',  _m('Phase'), 'string'),    // start | result
+            'detail' => new AA_Property('detail', _m('Detail'), 'string'),
+        ];
+    }
+}
+
+/** CSV_IMPORT summary log entry (admin/se_csv_import2.php) */
+class AA_Logentry_Csv extends AA_Logentry {
+    public static function getClassProperties(): array {
+        return [
+            'slice'     => new AA_Property('slice',     _m('Slice'), 'string'),
+            'processed' => new AA_Property('processed', _m('Processed'), 'int'),
+            'stored'    => new AA_Property('stored',    _m('Stored'), 'int'),
+            'error'     => new AA_Property('error',     _m('Errors'), 'int'),
+        ];
+    }
+}
+
+/** File-operation outcome log entry - shared by CSV_IMPORT / FILE IMP file deletes
+ *  (admin/se_csv_import2.php, include/files.class.php)
+ */
+class AA_Logentry_File extends AA_Logentry {
+    public static function getClassProperties(): array {
+        return [
+            'outcome' => new AA_Property('outcome', _m('Outcome'), 'string'),   // deleted | delete failed | invalid directory
+            'file'    => new AA_Property('file',    _m('File'), 'string'),
+        ];
+    }
+}
+

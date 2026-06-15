@@ -295,15 +295,15 @@ class Files {
                 $fileName = self::makeFile($upload_dir, $file);
                 if ($filedate < $date) {
                     if (self::delFile($fileName)) {
-                        AA_Log::write("FILE IMP.", '', _m("Ok : file deleted ") . $fileName);
+                        AA_Log::write("FILE IMP.", '', new AA_Logentry_File(['outcome' => 'deleted', 'file' => $fileName]));
                     } else {
-                        AA_Log::write("FILE IMP.", '', _m("Error: Cannot delete file") . $fileName);
+                        AA_Log::write("FILE IMP.", '', new AA_Logentry_File(['outcome' => 'delete failed', 'file' => $fileName]));
                     }
                 }
             }
             closedir($handle);
         } else {
-            AA_Log::write("FILE IMP:", '', _m("Error: Invalid directory") . $upload_dir);
+            AA_Log::write("FILE IMP:", '', new AA_Logentry_File(['outcome' => 'invalid directory', 'file' => $upload_dir]));
         }
     }
 

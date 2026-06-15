@@ -15,6 +15,7 @@ use AA_Content;
 use AA_Fields;
 use AA_Item;
 use AA_Log;
+use AA_Logentry_Csn;
 use AA_Slice;
 use ItemContent;
 use AA\IO\LastEditList;
@@ -321,7 +322,7 @@ class AARSS extends AbstractGrabber
         }
 
         if (!$xml_data) {
-            AA_Log::write("CSN", $this->getLogSelector(), "No data returned for $feed_debug_name");
+            AA_Log::write("CSN", $this->getLogSelector(), new AA_Logentry_Csn(['feed' => $feed_debug_name, 'status' => 'No data returned']));
             if ($debugfeed >= 1) {
                 print("\n<br>$feed_debug_name: no data returned");
             }
@@ -333,7 +334,7 @@ class AARSS extends AbstractGrabber
 
         // if an error occured, write it to the LOG
         if (($first_char = $xml_data[0]) !== "<") {
-            AA_Log::write("CSN", $this->getLogSelector(), "Feeding mode ($feed_debug_name): $xml_data");
+            AA_Log::write("CSN", $this->getLogSelector(), new AA_Logentry_Csn(['feed' => $feed_debug_name, 'status' => 'Bad data (not XML)', 'detail' => $xml_data]));
             if ($debugfeed >= 1) {
                 print("\n<br>$feed_debug_name:bad data returned (first character &quot;$first_char&quot; (ord=" . ord($first_char) . ") is not &quot;&lt;&quot;):$xml_data");
             }
@@ -346,7 +347,7 @@ class AARSS extends AbstractGrabber
         // huhl($xml_data);
 
         if (!($this->aa_rss = aa_rss_parse($xml_data, "{$this->feed_id} ({$this->feed['server_url']})"))) {
-            AA_Log::write("CSN", $this->getLogSelector(), "Feeding mode ($feed_debug_name): Unable to parse XML data");
+            AA_Log::write("CSN", $this->getLogSelector(), new AA_Logentry_Csn(['feed' => $feed_debug_name, 'status' => 'Unable to parse XML']));
             if ($debugfeed >= 1) {
                 print("\n<br>$feed_debug_name:" . $this->feed['server_url'] . ":unparsable: <hr>" . safe($xml_data) . "<hr>");
             }

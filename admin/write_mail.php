@@ -190,7 +190,7 @@ if ( !$send ) {               // for the first time - directly from item manager
             $sel = get_if($group,"0");  // bookmarks groups are identified by numbers
             $description .= ' - '. _m('Filter'). " $sel";
         }
-        AA_Log::write("EMAIL_SENT", $sel, [$mail_id, $users_count, $mails_sent]);
+        AA_Log::write("EMAIL_SENT", $sel, new AA_Logentry_Em(['mail_id' => $mail_id, 'users' => $users_count, 'sent' => $mails_sent]));
         // remove temporary email template from database
         $SQL = "UPDATE email SET description='".quote($description. " - $mails_sent/$users_count" )."' WHERE id='$mail_id'";
         if ( !$db->query($SQL)) {

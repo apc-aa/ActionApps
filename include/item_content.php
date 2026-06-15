@@ -1032,7 +1032,7 @@ class ItemContent extends AA_Content {
                     return false;
                 case 'LOG':
                     foreach ($invalid as $fld => $msg) {
-                        AA_Log::write('M_FLDI_VLD', ParamImplode([$slice_id,$fld]), ParamImplode([$msg[0] . ' - ' . $msg[1], document_uri(), $_SERVER['HTTP_REFERER']]));
+                        AA_Log::write('M_FLDI_VLD', ParamImplode([$slice_id,$fld]), new AA_Logentry_Mfv(['msg' => $msg[0] . ' - ' . $msg[1], 'uri' => document_uri(), 'referer' => $_SERVER['HTTP_REFERER'] ?? '']));
                     }
                     // drop to next case 'QUIET'
                 case 'QUIET':
