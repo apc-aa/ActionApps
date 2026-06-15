@@ -169,7 +169,10 @@ if ($show) {
         //FrmStaticText(_m('Display Statistics for Item'), AA::Un($template), '', '', false);
         echo AA::Un($template);
 
-        if ($tab = AA_Log::getLogTable('SYS_STAT', 'basic', $from, 0, IsSuperadmin())) {
+        // Most recent server-config snapshots (newest first, capped at 20). SYS_STAT
+        // rows are written only on change, so a period filter would hide everything on
+        // a stable install. Cheap: type_time index + LIMIT.
+        if ($tab = AA_Log::getLogTable('SYS_STAT', 'basic', 0, 0, IsSuperadmin())) {
             $apage->addHelpbox(_m('Server configuration changes'), $tab);
         }
     } else {

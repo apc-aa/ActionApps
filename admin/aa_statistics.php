@@ -316,7 +316,11 @@ if ($show) {
 }
 // echo getFrmTabEnd($form_buttons);
 
-if ($tab = AA_Log::getLogTable('SYS_STAT', 'basic', $from ?: time()-60*60*24*7 , 0, IsSuperadmin())) {
+// Always show the most recent server-config snapshots (newest first, capped at
+// 20 by getLogTable). SYS_STAT rows are written only on change, so filtering by
+// the stats period would hide everything on a stable install. Cheap: the
+// type_time index + LIMIT keep this off the page-load critical path.
+if ($tab = AA_Log::getLogTable('SYS_STAT', 'basic', 0, 0, IsSuperadmin())) {
     echo '<br><br><br>';
     $apage->addHelpbox(_m('Server configuration changes'), $tab);
 }
