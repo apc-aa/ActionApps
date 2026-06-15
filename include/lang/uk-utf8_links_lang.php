@@ -14,292 +14,292 @@ setlocale(LC_NUMERIC, 'en_US');            // keep float format with dot (see AA
 return [
 
 // include/searchbar.class.php, row 51
-"Condition" => "",
+"Condition" => "Умова", // ai 2026-06
 
 // include/searchbar.class.php, row 52
-"Readonly" => "",
+"Readonly" => "Лише для читання", // ai 2026-06
 
 // include/searchbar.class.php, row 142
-"Search row" => "",
+"Search row" => "Рядок пошуку", // ai 2026-06
 
 // include/searchbar.class.php, row 143
-"Order row" => "",
+"Order row" => "Рядок упорядкування", // ai 2026-06
 
 // include/searchbar.class.php, row 533, 534, 570
-"Search" => "",
+"Search" => "Пошук", // ai 2026-06
 
 // include/searchbar.class.php, row 533
-"And" => "",
+"And" => "і водночас", // ai 2026-06
 
 // include/searchbar.class.php, row 543
-"contains" => "",
+"contains" => "містить", // ai 2026-06
 
 // include/searchbar.class.php, row 546
-"begins with" => "",
+"begins with" => "починається з", // ai 2026-06
 
 // include/searchbar.class.php, row 549
-"is" => "",
+"is" => "дорівнює", // ai 2026-06
 
 // include/searchbar.class.php, row 571
-"Clear" => "",
+"Clear" => "Очистити", // ai 2026-06
 
 // include/searchbar.class.php, row 574
-"Store search" => "",
+"Store search" => "Зберегти пошук", // ai 2026-06
 
 // include/searchbar.class.php, row 595
-"Order" => "",
+"Order" => "Упорядкувати", // ai 2026-06
 
 // include/searchbar.class.php, row 599
-"Descending" => "",
+"Descending" => "За спаданням", // ai 2026-06
 
 // include/searchbar.class.php, row 613
-"Filter" => "",
+"Filter" => "Фільтр", // ai 2026-06
 
 // include/searchbar.class.php, row 662
-"Advanced search" => "",
+"Advanced search" => "Розширений пошук", // ai 2026-06
 
 // include/searchbar.class.php, row 719
-"Save" => "",
+"Save" => "Зберегти", // ai 2026-06
 
 // include/searchbar.class.php, row 720
-"Refine" => "",
+"Refine" => "Уточнити", // ai 2026-06
 
 // include/searchbar.class.php, row 721
-"Cancel" => "",
+"Cancel" => "Скасувати", // ai 2026-06
 
 // include/searchbar.class.php, row 722
 // modules/links/constants.php, row 59, 171
-"Name" => "",
+"Name" => "Назва", // ai 2026-06
 
 // include/searchbar.class.php, row 723
-"Share with all slice users" => "",
+"Share with all slice users" => "Поділитися з усіма користувачами рубрики", // ai 2026-06
 
 // include/searchbar.class.php, row 724
-"Save filter" => "",
+"Save filter" => "Зберегти фільтр", // ai 2026-06
 
 // include/searchbar.class.php, row 725
-"Rename filter" => "",
+"Rename filter" => "Перейменувати фільтр", // ai 2026-06
 
 // include/searchbar.class.php, row 726
-"Are you sure you want to delete selected filter?" => "",
+"Are you sure you want to delete selected filter?" => "Ви справді хочете видалити вибраний фільтр?", // ai 2026-06
 
 // include/searchbar.class.php, row 1008
-"Select one..." => "",
+"Select one..." => "виберіть...", // ai 2026-06
 
 // include/searchbar.class.php, row 1023
-"My filters" => "",
+"My filters" => "Мої фільтри", // ai 2026-06
 
 // include/searchbar.class.php, row 1026
-"Global filters" => "",
+"Global filters" => "Глобальні фільтри", // ai 2026-06
 
 // include/searchbar.class.php, row 1064
-"Shared filter (click to apply)" => "",
+"Shared filter (click to apply)" => "Спільний фільтр (натисніть, щоб застосувати)", // ai 2026-06
 
 // include/searchbar.class.php, row 1064
-"Personal filter (click to apply)" => "",
+"Personal filter (click to apply)" => "Особистий фільтр (натисніть, щоб застосувати)", // ai 2026-06
 
 // include/searchbar.class.php, row 1074
-"Rename" => "",
+"Rename" => "Перейменувати", // ai 2026-06
 
 // include/searchbar.class.php, row 1076
-"Delete" => "",
+"Delete" => "Видалити", // ai 2026-06
 
 // include/searchbar.class.php, row 1085
-"Manage filters" => "",
+"Manage filters" => "Керування фільтрами", // ai 2026-06
 
 // include/util.php, row 950
-"Error: Missing Reading Password" => "",
+"Error: Missing Reading Password" => "Помилка: відсутній пароль для читання", // ai 2026-06
 
 // include/util.php, row 1300
-"Toolkit news message" => "",
+"Toolkit news message" => "Повідомлення застосунку", // ai 2026-06
 
 // include/util.php, row 1314
 // modules/links/check_url.php, row 52
-"Back" => "",
+"Back" => "Назад", // ai 2026-06
 
 // include/util.php, row 1314
-"Relogin" => "",
+"Relogin" => "Увійти знову", // ai 2026-06
 
 // modules/links/actions.php, row 47, 91, 112
-"Can't find link in given category" => "",
+"Can't find link in given category" => "Не вдалося знайти посилання в указаній категорії", // ai 2026-06
 
 // modules/links/actions.php, row 52, 117
-"No permission to delete link from the category - link set as PROPOSAL to DELETE from given category" => "",
+"No permission to delete link from the category - link set as PROPOSAL to DELETE from given category" => "Немає права видалити посилання з категорії - посилання позначено як ПРОПОЗИЦІЯ до ВИДАЛЕННЯ з указаної категорії", // ai 2026-06
 
 // modules/links/actions.php, row 61, 126
-"Can't get association information" => "",
+"Can't get association information" => "Не вдалося отримати інформацію про зарахування", // ai 2026-06
 
 // modules/links/actions.php, row 95
-"No permission to approve link to given category" => "",
+"No permission to approve link to given category" => "Немає права схвалити посилання до указаної категорії", // ai 2026-06
 
 // modules/links/actions.php, row 162, 165
-"No permission to move link" => "",
+"No permission to move link" => "Немає права перемістити посилання", // ai 2026-06
 
 // modules/links/catedit.php, row 51
 // modules/links/catedit2.php, row 208
-"No permission to edit category" => "",
+"No permission to edit category" => "Немає права редагувати категорію", // ai 2026-06
 
 // modules/links/catedit.php, row 74
-"ActionApps - Category Edit" => "",
+"ActionApps - Category Edit" => "ActionApps - Редагування категорії", // ai 2026-06
 
 // modules/links/catedit.php, row 97
-"Category Edit" => "",
+"Category Edit" => "Редагування категорії", // ai 2026-06
 
 // modules/links/catedit.php, row 103
-"Category" => "",
+"Category" => "Категорія", // ai 2026-06
 
 // modules/links/catedit.php, row 104
 // modules/links/constants.php, row 58, 170
 // modules/links/linkedit.php, row 430
-"Id" => "",
+"Id" => "ID", // ai 2026-06
 
 // modules/links/catedit.php, row 104
-"Links in subtree" => "",
+"Links in subtree" => "Посилань у піддереві", // ai 2026-06
 
 // modules/links/catedit.php, row 105
 // modules/links/catedit2.php, row 217
 // modules/links/constants.php, row 93, 191
-"Category name" => "",
+"Category name" => "Назва категорії", // ai 2026-06
 
 // modules/links/catedit.php, row 106
 // modules/links/catedit2.php, row 218
 // modules/links/constants.php, row 97, 193
-"Category description" => "",
+"Category description" => "Опис категорії", // ai 2026-06
 
 // modules/links/catedit.php, row 107
-"No links" => "",
+"No links" => "Без посилань", // ai 2026-06
 
 // modules/links/catedit.php, row 107
-"Disallow storing of the links to this category?" => "",
+"Disallow storing of the links to this category?" => "Заборонити збереження посилань у цій категорії?", // ai 2026-06
 
 // modules/links/catedit.php, row 108
 // modules/links/catedit2.php, row 222
 // modules/links/constants.php, row 75
 // modules/links/link.class.php, row 674
 // modules/links/linkedit.php, row 473
-"Editor's note" => "",
+"Editor's note" => "Примітка редактора", // ai 2026-06
 
 // modules/links/catedit.php, row 110
-"Subcategories" => "",
+"Subcategories" => "Підкатегорії", // ai 2026-06
 
 // modules/links/catedit.php, row 113
 // modules/links/linkedit.php, row 494
-"Category tree" => "",
+"Category tree" => "Дерево категорій", // ai 2026-06
 
 // modules/links/catedit.php, row 113
-"select the category for crossreference" => "",
+"select the category for crossreference" => "виберіть категорію для перехресного посилання", // ai 2026-06
 
 // modules/links/catedit.php, row 115
-"Selected subcategories" => "",
+"Selected subcategories" => "Вибрані підкатегорії", // ai 2026-06
 
 // modules/links/catedit.php, row 115
-"subcategories of this category" => "",
+"subcategories of this category" => "підкатегорії цієї категорії", // ai 2026-06
 
 // modules/links/catedit.php, row 132
-"New subcategory" => "",
+"New subcategory" => "Нова підкатегорія", // ai 2026-06
 
 // modules/links/catedit.php, row 132
-"Add" => "",
+"Add" => "Додати", // ai 2026-06
 
 // modules/links/catedit.php, row 135
-"Remove selected subcategory?" => "",
+"Remove selected subcategory?" => "Вилучити вибрану підкатегорію?", // ai 2026-06
 
 // modules/links/catedit.php, row 135
-"Del" => "",
+"Del" => "Видал.", // ai 2026-06
 
 // modules/links/catedit.php, row 137
-"Change state" => "",
+"Change state" => "Змінити стан", // ai 2026-06
 
 // modules/links/catedit.php, row 142
 "OK" => "",
 
 // modules/links/catedit2.php, row 153
-"Category reassigned" => "",
+"Category reassigned" => "Категорію переміщено", // ai 2026-06
 
 // modules/links/catedit2.php, row 165
-"Subcategory deleted" => "",
+"Subcategory deleted" => "Підкатегорію видалено", // ai 2026-06
 
 // modules/links/catedit2.php, row 167
-"Can't delete category which contains links" => "",
+"Can't delete category which contains links" => "Неможливо видалити категорію, яка містить посилання", // ai 2026-06
 
 // modules/links/catedit2.php, row 221
-"Additional information" => "",
+"Additional information" => "Додаткова інформація", // ai 2026-06
 
 // modules/links/catedit2.php, row 231
-"Category data changed" => "",
+"Category data changed" => "Дані категорії змінено", // ai 2026-06
 
 // modules/links/catedit2.php, row 291
-"New category created" => "",
+"New category created" => "Створено нову категорію", // ai 2026-06
 
 // modules/links/catedit2.php, row 297
-"Foreign category assigned" => "",
+"Foreign category assigned" => "Призначено зовнішню категорію", // ai 2026-06
 
 // modules/links/cattree.php, row 436
-"Switch to category" => "",
+"Switch to category" => "Перейти до категорії", // ai 2026-06
 
 // modules/links/check_url.php, row 30
-"ActionApps - URL Check" => "",
+"ActionApps - URL Check" => "ActionApps - Перевірка URL", // ai 2026-06
 
 // modules/links/check_url.php, row 42
 "URL" => "",
 
 // modules/links/check_url.php, row 43
-"In category" => "",
+"In category" => "У категорії", // ai 2026-06
 
 // modules/links/check_url.php, row 43
-"Link is not assigned to any category" => "",
+"Link is not assigned to any category" => "Посилання не зараховано до жодної категорії", // ai 2026-06
 
 // modules/links/check_url.php, row 43
-"Edit" => "",
+"Edit" => "Редагувати", // ai 2026-06
 
 // modules/links/check_url.php, row 43
-"Rewrites link in bottom form" => "",
+"Rewrites link in bottom form" => "Перезаписує посилання у формі нижче", // ai 2026-06
 
 // modules/links/check_url.php, row 48
-"Page with the specified Url is not in database, yet" => "",
+"Page with the specified Url is not in database, yet" => "Сторінки з указаною URL ще немає в базі даних", // ai 2026-06
 
 // modules/links/constants.php, row 60
-"Original name" => "",
+"Original name" => "Оригінальна назва", // ai 2026-06
 
 // modules/links/constants.php, row 61, 174
 // modules/links/link.class.php, row 663
 // modules/links/linkedit.php, row 456
-"Description" => "",
+"Description" => "Опис", // ai 2026-06
 
 // modules/links/constants.php, row 62, 122
 // modules/links/link.class.php, row 667
 // modules/links/linkedit.php, row 463
-"Link type" => "",
+"Link type" => "Тип посилання", // ai 2026-06
 
 // modules/links/constants.php, row 63
-"Rate" => "",
+"Rate" => "Оцінка", // ai 2026-06
 
 // modules/links/constants.php, row 64
-"Votes" => "",
+"Votes" => "Голоси", // ai 2026-06
 
 // modules/links/constants.php, row 65
 // modules/links/link.class.php, row 664
-"Author" => "",
+"Author" => "Автор", // ai 2026-06
 
 // modules/links/constants.php, row 66
-"Insert date" => "",
+"Insert date" => "Дата вставлення", // ai 2026-06
 
 // modules/links/constants.php, row 67
-"Editor" => "",
+"Editor" => "Редактор", // ai 2026-06
 
 // modules/links/constants.php, row 68
-"Last edit date" => "",
+"Last edit date" => "Дата останньої зміни", // ai 2026-06
 
 // modules/links/constants.php, row 69
-"Revised by" => "",
+"Revised by" => "Перевірив", // ai 2026-06
 
 // modules/links/constants.php, row 70
-"Revision date" => "",
+"Revision date" => "Дата перевірки", // ai 2026-06
 
 // modules/links/constants.php, row 71
 // modules/links/link.class.php, row 673
 // modules/links/linkedit.php, row 544
-"E-mail" => "",
+"E-mail" => "Електронна пошта", // ai 2026-06
 
 // modules/links/constants.php, row 72
 // modules/links/link.class.php, row 665
@@ -307,521 +307,521 @@ return [
 "Url" => "",
 
 // modules/links/constants.php, row 73
-"Last vote time" => "",
+"Last vote time" => "Час останнього голосування", // ai 2026-06
 
 // modules/links/constants.php, row 74
-"Flag" => "",
+"Flag" => "Прапорець", // ai 2026-06
 
 // modules/links/constants.php, row 76
-"Organization city" => "",
+"Organization city" => "Місто організації", // ai 2026-06
 
 // modules/links/constants.php, row 77
-"Organization street" => "",
+"Organization street" => "Вулиця організації", // ai 2026-06
 
 // modules/links/constants.php, row 78
-"Organization post code" => "",
+"Organization post code" => "Поштовий індекс організації", // ai 2026-06
 
 // modules/links/constants.php, row 79
-"Organization phone" => "",
+"Organization phone" => "Телефон організації", // ai 2026-06
 
 // modules/links/constants.php, row 80
-"Organization fax" => "",
+"Organization fax" => "Факс організації", // ai 2026-06
 
 // modules/links/constants.php, row 81
-"Organization e-mail" => "",
+"Organization e-mail" => "Ел. пошта організації", // ai 2026-06
 
 // modules/links/constants.php, row 82
 // modules/links/linkedit.php, row 484
-"Folder" => "",
+"Folder" => "Тека", // ai 2026-06
 
 // modules/links/constants.php, row 83
-"Last validation date" => "",
+"Last validation date" => "Дата останньої перевірки доступності", // ai 2026-06
 
 // modules/links/constants.php, row 84
-"Validation codes" => "",
+"Validation codes" => "Коди валідації", // ai 2026-06
 
 // modules/links/constants.php, row 85
-"Validity Rank" => "",
+"Validity Rank" => "Доступність сторінки", // ai 2026-06
 
 // modules/links/constants.php, row 86
-"Region id" => "",
+"Region id" => "Id регіону", // ai 2026-06
 
 // modules/links/constants.php, row 87
-"Region name" => "",
+"Region name" => "Назва регіону", // ai 2026-06
 
 // modules/links/constants.php, row 88
-"Region level" => "",
+"Region level" => "Рівень регіону", // ai 2026-06
 
 // modules/links/constants.php, row 89
-"Language id" => "",
+"Language id" => "Id мови", // ai 2026-06
 
 // modules/links/constants.php, row 90
 // modules/links/linkedit.php, row 552
-"Language" => "",
+"Language" => "Мова", // ai 2026-06
 
 // modules/links/constants.php, row 91
-"Language short name" => "",
+"Language short name" => "Скорочення мови", // ai 2026-06
 
 // modules/links/constants.php, row 92, 190
-"Category id" => "",
+"Category id" => "Id категорії", // ai 2026-06
 
 // modules/links/constants.php, row 94
-"Category deleted" => "",
+"Category deleted" => "Категорію видалено", // ai 2026-06
 
 // modules/links/constants.php, row 95
-"Category path" => "",
+"Category path" => "Шлях категорії", // ai 2026-06
 
 // modules/links/constants.php, row 96
-"Category link count" => "",
+"Category link count" => "Кількість посилань у категорії", // ai 2026-06
 
 // modules/links/constants.php, row 98, 194
-"Category editor's note" => "",
+"Category editor's note" => "Примітка редактора категорії", // ai 2026-06
 
 // modules/links/constants.php, row 99
-"Base" => "",
+"Base" => "Первинна", // ai 2026-06
 
 // modules/links/constants.php, row 100, 177
-"State" => "",
+"State" => "Стан", // ai 2026-06
 
 // modules/links/constants.php, row 101
-"Change proposal" => "",
+"Change proposal" => "Пропозиція зміни", // ai 2026-06
 
 // modules/links/constants.php, row 102
-"To be deleted" => "",
+"To be deleted" => "До видалення", // ai 2026-06
 
 // modules/links/constants.php, row 103, 176
-"Priority" => "",
+"Priority" => "Пріоритет", // ai 2026-06
 
 // modules/links/constants.php, row 104
 // modules/links/linkedit.php, row 54
-"Change" => "",
+"Change" => "Змінити", // ai 2026-06
 
 // modules/links/constants.php, row 118
-"Link id" => "",
+"Link id" => "Id посилання", // ai 2026-06
 
 // modules/links/constants.php, row 119
-"Link name" => "",
+"Link name" => "Назва посилання", // ai 2026-06
 
 // modules/links/constants.php, row 120
-"Link original name" => "",
+"Link original name" => "Оригінальна назва посилання", // ai 2026-06
 
 // modules/links/constants.php, row 121
-"Link description" => "",
+"Link description" => "Опис посилання", // ai 2026-06
 
 // modules/links/constants.php, row 123
-"Link rate" => "",
+"Link rate" => "Оцінка посилання", // ai 2026-06
 
 // modules/links/constants.php, row 124
-"Link votes" => "",
+"Link votes" => "Голоси за посилання", // ai 2026-06
 
 // modules/links/constants.php, row 125
-"Link - last vote date" => "",
+"Link - last vote date" => "Посилання - дата останнього голосування", // ai 2026-06
 
 // modules/links/constants.php, row 126
-"Link - created by" => "",
+"Link - created by" => "Посилання - створив", // ai 2026-06
 
 // modules/links/constants.php, row 127
-"Link creation date" => "",
+"Link creation date" => "Дата створення посилання", // ai 2026-06
 
 // modules/links/constants.php, row 128
-"Link - last edited by" => "",
+"Link - last edited by" => "Посилання - востаннє редагував", // ai 2026-06
 
 // modules/links/constants.php, row 129
-"Link - last edit date" => "",
+"Link - last edit date" => "Посилання - дата останнього редагування", // ai 2026-06
 
 // modules/links/constants.php, row 130
-"Link - checked by" => "",
+"Link - checked by" => "Посилання - перевірив", // ai 2026-06
 
 // modules/links/constants.php, row 131
-"Link - last checked date" => "",
+"Link - last checked date" => "Посилання - дата останньої перевірки", // ai 2026-06
 
 // modules/links/constants.php, row 132
-"Link author's e-mail" => "",
+"Link author's e-mail" => "E-mail автора посилання", // ai 2026-06
 
 // modules/links/constants.php, row 133
-"Link url" => "",
+"Link url" => "URL посилання", // ai 2026-06
 
 // modules/links/constants.php, row 134
-"Link link" => "",
+"Link link" => "Посилання", // ai 2026-06
 
 // modules/links/constants.php, row 135
-"Link flag" => "",
+"Link flag" => "Прапорець посилання", // ai 2026-06
 
 // modules/links/constants.php, row 136
-"Link - validity rank" => "",
+"Link - validity rank" => "Посилання - доступність", // ai 2026-06
 
 // modules/links/constants.php, row 137
-"Link - last validation date" => "",
+"Link - last validation date" => "Посилання - дата останньої перевірки доступності", // ai 2026-06
 
 // modules/links/constants.php, row 138
-"Link editor's note" => "",
+"Link editor's note" => "Посилання - примітка редактора", // ai 2026-06
 
 // modules/links/constants.php, row 139
-"Link organization city" => "",
+"Link organization city" => "Посилання - місто організації", // ai 2026-06
 
 // modules/links/constants.php, row 140
-"Link organization street" => "",
+"Link organization street" => "Посилання - вулиця організації", // ai 2026-06
 
 // modules/links/constants.php, row 141
-"Link organization post code" => "",
+"Link organization post code" => "Посилання - поштовий індекс організації", // ai 2026-06
 
 // modules/links/constants.php, row 142
-"Link organization phone" => "",
+"Link organization phone" => "Посилання - телефон організації", // ai 2026-06
 
 // modules/links/constants.php, row 143
-"Link organization fax" => "",
+"Link organization fax" => "Посилання - факс організації", // ai 2026-06
 
 // modules/links/constants.php, row 144
-"Link organization e-mail" => "",
+"Link organization e-mail" => "Посилання - e-mail організації", // ai 2026-06
 
 // modules/links/constants.php, row 145
-"Link folder (status code) - 1~Active, 2~Holding, 3~Trash" => "",
+"Link folder (status code) - 1~Active, 2~Holding, 3~Trash" => "Посилання - скринька (код стану) - 1~Активне, 2~Резерв, 3~Кошик", // ai 2026-06
 
 // modules/links/constants.php, row 146
-"Link - ids of regions (comma separated)" => "",
+"Link - ids of regions (comma separated)" => "Посилання - id регіонів (через кому)", // ai 2026-06
 
 // modules/links/constants.php, row 147
-"Link - names of regions (comma separated)" => "",
+"Link - names of regions (comma separated)" => "Посилання - назви регіонів (через кому)", // ai 2026-06
 
 // modules/links/constants.php, row 148
-"Link - ids of languages (comma separated)" => "",
+"Link - ids of languages (comma separated)" => "Посилання - id мов (через кому)", // ai 2026-06
 
 // modules/links/constants.php, row 149
-"Link - names of languages (comma separated)" => "",
+"Link - names of languages (comma separated)" => "Посилання - назви мов (через кому)", // ai 2026-06
 
 // modules/links/constants.php, row 150
-"Link - short names of languages (comma separated)" => "",
+"Link - short names of languages (comma separated)" => "Посилання - короткі назви мов (через кому)", // ai 2026-06
 
 // modules/links/constants.php, row 151
-"Category ids (comma separated)" => "",
+"Category ids (comma separated)" => "Id категорій (через кому)", // ai 2026-06
 
 // modules/links/constants.php, row 152
-"Category names (comma separated)" => "",
+"Category names (comma separated)" => "Назви категорій (через кому)", // ai 2026-06
 
 // modules/links/constants.php, row 153
-"State of link in this category (visible/highlighted)" => "",
+"State of link in this category (visible/highlighted)" => "Стан посилання в цій категорії (видиме/виділене)", // ai 2026-06
 
 // modules/links/constants.php, row 154
-"Link - validity color" => "",
+"Link - validity color" => "Посилання - колір доступності", // ai 2026-06
 
 // modules/links/constants.php, row 155
-"Paths to the categories" => "",
+"Paths to the categories" => "Шляхи до категорій", // ai 2026-06
 
 // modules/links/constants.php, row 156
-"Number of found Links" => "",
+"Number of found Links" => "Кількість знайдених посилань", // ai 2026-06
 
 // modules/links/constants.php, row 157
-"Link to link editing page (for admin interface only)" => "",
+"Link to link editing page (for admin interface only)" => "Посилання на сторінку редагування посилання (лише для адмін-інтерфейсу)", // ai 2026-06
 
 // modules/links/constants.php, row 158
-"Category listing with links (for admin interface only)" => "",
+"Category listing with links (for admin interface only)" => "Перелік категорій з посиланнями (лише для адмін-інтерфейсу)", // ai 2026-06
 
 // modules/links/constants.php, row 172
-"Path" => "",
+"Path" => "Шлях", // ai 2026-06
 
 // modules/links/constants.php, row 173
-"Link Count" => "",
+"Link Count" => "Кількість посилань", // ai 2026-06
 
 // modules/links/constants.php, row 175
-"Note" => "",
+"Note" => "Примітка", // ai 2026-06
 
 // modules/links/constants.php, row 192
-"Number of links in category" => "",
+"Number of links in category" => "Кількість посилань у категорії", // ai 2026-06
 
 // modules/links/constants.php, row 195
-"Crossreferenced category" => "",
+"Crossreferenced category" => "Категорія з перехресними посиланнями", // ai 2026-06
 
 // modules/links/constants.php, row 196
-"Path to current category" => "",
+"Path to current category" => "Шлях до поточної категорії", // ai 2026-06
 
 // modules/links/constants.php, row 197
-"Is this category general one? (1/0)" => "",
+"Is this category general one? (1/0)" => "Чи є ця категорія загальною? (1/0)", // ai 2026-06
 
 // modules/links/constants.php, row 198
-"Print category priority, if category is general one." => "",
+"Print category priority, if category is general one." => "Виводить пріоритет категорії, якщо категорія загальна.", // ai 2026-06
 
 // modules/links/getcat.php, row 51
-"Category Tree" => "",
+"Category Tree" => "Дерево категорій", // ai 2026-06
 
 // modules/links/getcat.php, row 56
-"Select category" => "",
+"Select category" => "Вибрати категорію", // ai 2026-06
 
 // modules/links/index.php, row 84
-"No permissions to edit links" => "",
+"No permissions to edit links" => "Немає прав редагувати посилання", // ai 2026-06
 
 // modules/links/index.php, row 207
-"HINT: \"social ecology\" AND environment" => "",
+"HINT: \"social ecology\" AND environment" => "ПІДКАЗКА: \"соціальна екологія\" AND довкілля", // ai 2026-06
 
 // modules/links/index.php, row 234
-"Perform action on selected items" => "",
+"Perform action on selected items" => "Виконати дію над вибраними статтями", // ai 2026-06
 
 // modules/links/index.php, row 257
-"ActionApps - Links Manager" => "",
+"ActionApps - Links Manager" => "ActionApps - Менеджер посилань", // ai 2026-06
 
 // modules/links/index.php, row 287
-"All my links" => "",
+"All my links" => "Усі мої посилання", // ai 2026-06
 
 // modules/links/index.php, row 288
-"Links to check" => "",
+"Links to check" => "Посилання на перевірку", // ai 2026-06
 
 // modules/links/index.php, row 289
-"Last edited" => "",
+"Last edited" => "Останнє редагування", // ai 2026-06
 
 // modules/links/index.php, row 311
-"Show Links" => "",
+"Show Links" => "Показати посилання", // ai 2026-06
 
 // modules/links/index.php, row 314
-"Edit Category" => "",
+"Edit Category" => "Редагувати категорію", // ai 2026-06
 
 // modules/links/index.php, row 318
-"Show subtree links" => "",
+"Show subtree links" => "Показати посилання з підкатегорій", // ai 2026-06
 
 // modules/links/link.class.php, row 661
 // modules/links/linkedit.php, row 450
-"Page name" => "",
+"Page name" => "Назва сторінки", // ai 2026-06
 
 // modules/links/link.class.php, row 662
 // modules/links/linkedit.php, row 453
-"Original page name" => "",
+"Original page name" => "Оригінальна назва сторінки", // ai 2026-06
 
 // modules/links/link.class.php, row 668
 // modules/links/linkedit.php, row 534
-"City" => "",
+"City" => "Місто", // ai 2026-06
 
 // modules/links/link.class.php, row 669
 // modules/links/linkedit.php, row 536
-"Street" => "",
+"Street" => "Вулиця", // ai 2026-06
 
 // modules/links/link.class.php, row 670
 // modules/links/linkedit.php, row 538
-"Post code" => "",
+"Post code" => "Поштовий індекс", // ai 2026-06
 
 // modules/links/link.class.php, row 671
 // modules/links/linkedit.php, row 540
-"Phone" => "",
+"Phone" => "Телефон", // ai 2026-06
 
 // modules/links/link.class.php, row 672
 // modules/links/linkedit.php, row 542
 "Fax" => "",
 
 // modules/links/linkedit.php, row 51
-"Accept" => "",
+"Accept" => "Прийняти", // ai 2026-06
 
 // modules/links/linkedit.php, row 53
-"unfilled" => "",
+"unfilled" => "не заповнено", // ai 2026-06
 
 // modules/links/linkedit.php, row 90
 // modules/links/menu.php, row 72, 73
-"Edit Link" => "",
+"Edit Link" => "Редагувати посилання", // ai 2026-06
 
 // modules/links/linkedit.php, row 97
 // modules/links/menu.php, row 72
-"Add Link" => "",
+"Add Link" => "Додати посилання", // ai 2026-06
 
 // modules/links/linkedit.php, row 102
-"Link does not exist or the base category is not set" => "",
+"Link does not exist or the base category is not set" => "Посилання не існує або не задано базову категорію", // ai 2026-06
 
 // modules/links/linkedit.php, row 266, 285
-"Proposal to uncheck" => "",
+"Proposal to uncheck" => "Пропозиція виключити", // ai 2026-06
 
 // modules/links/linkedit.php, row 267, 286
-"Proposal to check" => "",
+"Proposal to check" => "Пропозиція включити", // ai 2026-06
 
 // modules/links/linkedit.php, row 317
-"Proposal to add" => "",
+"Proposal to add" => "Пропозиція додати", // ai 2026-06
 
 // modules/links/linkedit.php, row 319
-"Proposal to del" => "",
+"Proposal to del" => "Пропозиція видалити", // ai 2026-06
 
 // modules/links/linkedit.php, row 385
 "ActionApps" => "",
 
 // modules/links/linkedit.php, row 407
-"<!--NewPublicLinkText-->" => "",
+"<!--NewPublicLinkText-->" => "У цій формі для додавання нового посилання до каталогу Ви можете, але не зобов'язані заповнювати всі поля. Для зручного включення посилання до каталогу просимо заповнити насамперед <b>URL</b> посилання, <b>НАЗВУ</b> та віднести посилання до однієї з <b>КАТЕГОРІЙ</b>. Якщо Ви маєте досвід зі сторінками, можете заповнити також опис посилання.<br>\\n<b>Не додавайте, будь ласка, до каталогу \"комерційні\" посилання.</b> Такі посилання не будуть розміщені в каталозі.<br>\\n Дякуємо.", // ai 2026-06
 
 // modules/links/linkedit.php, row 425
-"Link" => "",
+"Link" => "Посилання", // ai 2026-06
 
 // modules/links/linkedit.php, row 438
-"Check url" => "",
+"Check url" => "Перевірити URL", // ai 2026-06
 
 // modules/links/linkedit.php, row 439
-"View" => "",
+"View" => "Переглянути", // ai 2026-06
 
 // modules/links/linkedit.php, row 440
-"You can check, if the page is not in database already" => "",
+"You can check, if the page is not in database already" => "Ви можете перевірити, чи сторінки ще немає в базі даних", // ai 2026-06
 
 // modules/links/linkedit.php, row 445
-"Do not fill, please:" => "",
+"Do not fill, please:" => "Будь ласка, не заповнюйте:", // ai 2026-06
 
 // modules/links/linkedit.php, row 451
-"English name of the page" => "",
+"English name of the page" => "Англійська назва сторінки", // ai 2026-06
 
 // modules/links/linkedit.php, row 454
-"Name of the page in original language" => "",
+"Name of the page in original language" => "Назва сторінки мовою оригіналу", // ai 2026-06
 
 // modules/links/linkedit.php, row 457
-"Do not use HTML tags and do not write words like \"best page\", ... The maximum length of the description should be about 250 characters." => "",
+"Do not use HTML tags and do not write words like \"best page\", ... The maximum length of the description should be about 250 characters." => "Не використовуйте HTML-теги та не пишіть слова на кшталт \"найкраща сторінка\", ... Максимальна довжина опису має бути близько 250 символів.", // ai 2026-06
 
 // modules/links/linkedit.php, row 463
-"Select the type, if the link belongs to some special category" => "",
+"Select the type, if the link belongs to some special category" => "Виберіть тип, якщо посилання належить до якоїсь спеціальної категорії", // ai 2026-06
 
 // modules/links/linkedit.php, row 471
-"Author's e-mail" => "",
+"Author's e-mail" => "E-mail автора", // ai 2026-06
 
 // modules/links/linkedit.php, row 474
-"You can type any message here - it is never shown on the website" => "",
+"You can type any message here - it is never shown on the website" => "Тут Ви можете написати будь-яке повідомлення - воно ніколи не показується на сайті", // ai 2026-06
 
 // modules/links/linkedit.php, row 479
-"Last checked" => "",
+"Last checked" => "Остання перевірка:", // ai 2026-06
 
 // modules/links/linkedit.php, row 479, 480, 481
-"n/j/Y" => "",
+"n/j/Y" => "j.n.Y", // ai 2026-06
 
 // modules/links/linkedit.php, row 480
-"Last changed" => "",
+"Last changed" => "Остання зміна:", // ai 2026-06
 
 // modules/links/linkedit.php, row 481
-"Inserted" => "",
+"Inserted" => "Додано:", // ai 2026-06
 
 // modules/links/linkedit.php, row 488
-"Show in category" => "",
+"Show in category" => "Показати в категорії", // ai 2026-06
 
 // modules/links/linkedit.php, row 494
-"select the category" => "",
+"select the category" => "виберіть категорію", // ai 2026-06
 
 // modules/links/linkedit.php, row 497
-"Selected categories" => "",
+"Selected categories" => "Вибрані категорії", // ai 2026-06
 
 // modules/links/linkedit.php, row 497
-"go to the category you want to select and click on the right arrow button to select" => "",
+"go to the category you want to select and click on the right arrow button to select" => "перейдіть до категорії, яку хочете вибрати, і натисніть кнопку зі стрілкою вправо", // ai 2026-06
 
 // modules/links/linkedit.php, row 533
-"Organization" => "",
+"Organization" => "Організація", // ai 2026-06
 
 // modules/links/linkedit.php, row 549
-"Regions and languages" => "",
+"Regions and languages" => "Регіони та мови", // ai 2026-06
 
 // modules/links/linkedit.php, row 551
-"Region" => "",
+"Region" => "Регіон", // ai 2026-06
 
 // modules/links/linkedit.php, row 551
-"select up to 4 regions" => "",
+"select up to 4 regions" => "виберіть не більше 4 регіонів", // ai 2026-06
 
 // modules/links/linkedit.php, row 552
-"select page's languages" => "",
+"select page's languages" => "виберіть мови сторінки", // ai 2026-06
 
 // modules/links/linkedit2.php, row 112
-"Not accepted, sorry. Looks like spam." => "",
+"Not accepted, sorry. Looks like spam." => "Не прийнято, перепрошуємо. Схоже на спам.", // ai 2026-06
 
 // modules/links/linkedit2.php, row 141
-"Link change proposal inserted" => "",
+"Link change proposal inserted" => "Пропозицію щодо зміни посилання додано", // ai 2026-06
 
 // modules/links/linkedit2.php, row 141, 145
-"Link inserted" => "",
+"Link inserted" => "Посилання додано", // ai 2026-06
 
 // modules/links/linkedit2.php, row 151
-"Continue" => "",
+"Continue" => "Продовжити", // ai 2026-06
 
 // modules/links/menu.php, row 64
-"View site" => "",
+"View site" => "Переглянути сайт", // ai 2026-06
 
 // modules/links/menu.php, row 73
-"Add new link" => "",
+"Add new link" => "Додати нове посилання", // ai 2026-06
 
 // modules/links/menu.php, row 80, 81
-"Link Manager" => "",
+"Link Manager" => "Керування посиланнями", // ai 2026-06
 
 // modules/links/menu.php, row 88, 89
-"Link Admin" => "",
+"Link Admin" => "Налаштування", // ai 2026-06
 
 // modules/links/menu.php, row 100
-"Folders" => "",
+"Folders" => "Теки", // ai 2026-06
 
 // modules/links/menu.php, row 100
-"Folders with links, sorted by their status (active, changed, new, ...)" => "",
+"Folders with links, sorted by their status (active, changed, new, ...)" => "Теки з посиланнями, упорядковані за їх станом (активні, змінені, нові, ...)", // ai 2026-06
 
 // modules/links/menu.php, row 103
-"Active" => "",
+"Active" => "Активні", // ai 2026-06
 
 // modules/links/menu.php, row 106
-"Changed Links" => "",
+"Changed Links" => "Змінені посилання", // ai 2026-06
 
 // modules/links/menu.php, row 109
-"New Links" => "",
+"New Links" => "Нові посилання", // ai 2026-06
 
 // modules/links/menu.php, row 112
-"Holding bin" => "",
+"Holding bin" => "Резерв", // ai 2026-06
 
 // modules/links/menu.php, row 115
-"Trash" => "",
+"Trash" => "Кошик", // ai 2026-06
 
 // modules/links/menu.php, row 118
-"Unassigned" => "",
+"Unassigned" => "Нерозподілені", // ai 2026-06
 
 // modules/links/menu.php, row 121
-"Unassigned - Trash" => "",
+"Unassigned - Trash" => "Нерозподілені — Кошик", // ai 2026-06
 
 // modules/links/menu.php, row 122
-"Misc" => "",
+"Misc" => "Різне", // ai 2026-06
 
 // modules/links/menu.php, row 126
-"Empty trash" => "",
+"Empty trash" => "Очистити кошик", // ai 2026-06
 
 // modules/links/menu.php, row 127
-"Are you sure you want to empty trash?" => "",
+"Are you sure you want to empty trash?" => "Ви впевнені, що хочете очистити кошик?", // ai 2026-06
 
 // modules/links/menu.php, row 131
-"Set Debug OFF" => "",
+"Set Debug OFF" => "Вимкнути debug", // ai 2026-06
 
 // modules/links/menu.php, row 131
-"Set Debug ON" => "",
+"Set Debug ON" => "Увімкнути debug", // ai 2026-06
 
 // modules/links/menu.php, row 132
-"Bookmarks" => "",
+"Bookmarks" => "Закладки", // ai 2026-06
 
 // modules/links/menu.php, row 132
-"My own links" => "",
+"My own links" => "Мої власні посилання", // ai 2026-06
 
 // modules/links/menu.php, row 158
-"Main settings" => "",
+"Main settings" => "Основні налаштування", // ai 2026-06
 
 // modules/links/menu.php, row 161
-"Links" => "",
+"Links" => "Посилання", // ai 2026-06
 
 // modules/links/menu.php, row 162
-"Design" => "",
+"Design" => "Вигляд", // ai 2026-06
 
 // modules/links/menu.php, row 170
-"New Category View" => "",
+"New Category View" => "Новий огляд категорій", // ai 2026-06
 
 // modules/links/menu.php, row 175
-"New Link View" => "",
+"New Link View" => "Новий огляд посилань", // ai 2026-06
 
 // modules/links/modedit.php, row 97
-"No permission to add module" => "",
+"No permission to add module" => "Немає права додати модуль", // ai 2026-06
 
 // modules/links/modedit.php, row 102
-"No permission to edit module" => "",
+"No permission to edit module" => "Немає права редагувати модуль", // ai 2026-06
 
 // modules/links/modedit.php, row 119, 229, 232
-"Start category id" => "",
+"Start category id" => "Id початкової категорії", // ai 2026-06
 
 // modules/links/modedit.php, row 120, 235, 238
-"Tree start id" => "",
+"Tree start id" => "Id початку дерева", // ai 2026-06
 
 // modules/links/modedit.php, row 121, 236, 239
-"Select start id" => "",
+"Select start id" => "Виберіть початковий id", // ai 2026-06
 
 // modules/links/modedit.php, row 217
-"Add Links module" => "",
+"Add Links module" => "Додати модуль Посилання", // ai 2026-06
 
 // modules/links/modedit.php, row 217
-"Edit Links module" => "",
+"Edit Links module" => "Редагувати модуль Посилання", // ai 2026-06
 
 // modules/links/modedit.php, row 220
-"Module Links data" => "",
+"Module Links data" => "Дані модуля Посилання", // ai 2026-06
 
 // modules/links/modedit.php, row 225
-"Used Language File" => "",
+"Used Language File" => "Використовуваний мовний файл", // ai 2026-06
 ];

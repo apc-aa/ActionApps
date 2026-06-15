@@ -14,178 +14,191 @@ setlocale(LC_NUMERIC, 'en_US');            // keep float format with dot (see AA
 return [
 
 // ./slice.php, row 232
-"Bad inc parameter - included file must contain only alphanumeric characters" => "",
+"Bad inc parameter - included file must contain only alphanumeric characters" => "Parâmetro inc incorreto - o ficheiro incluído só pode conter caracteres alfanuméricos", // ai 2026-06
 
 // ./slice.php, row 236
-"No such file" => "",
+"No such file" => "O ficheiro não existe", // ai 2026-06
 
 // ./slice.php, row 263
-"Invalid slice number or slice was deleted" => "",
+"Invalid slice number or slice was deleted" => "Número de secção inválido ou a secção foi eliminada", // ai 2026-06
 
 // ./slice.php, row 266
-"slice.php output forbidden for this slice" => "",
+"slice.php output forbidden for this slice" => "A saída por slice.php está proibida para esta secção", // ai 2026-06
 
 // ./slice.php, row 321
-"session id" => "",
+"session id" => "id da sessão", // ai 2026-06
 
 // ./slice.php, row 580
-"number of current page (on pagescroller)" => "",
+"number of current page (on pagescroller)" => "número da página atual (na paginação)", // ai 2026-06
 
 // ./slice.php, row 581
-"page length (number of items)" => "",
+"page length (number of items)" => "comprimento da página (número de artigos)", // ai 2026-06
 
 // ./slice.php, row 616
 // include/view.php, row 346
-"No item found" => "",
+"No item found" => "Nenhum artigo encontrado", // ai 2026-06
 
 // include/discussion.php, row 220
-"Show selected" => "",
+"Show selected" => "Mostrar selecionados", // ai 2026-06
 
 // include/discussion.php, row 221
-"Show all" => "",
+"Show all" => "Mostrar todos", // ai 2026-06
 
 // include/discussion.php, row 222
-"Add new" => "",
+"Add new" => "Adicionar novo", // ai 2026-06
 
 // include/item.php, row 104
-"Alias for %1" => "",
+"Alias for %1" => "Alias para %1", // ai 2026-06
 
 // include/item.php, row 358
-"Alias for subject of the discussion comment" => "",
+"Alias for subject of the discussion comment" => "Alias para o assunto do comentário de discussão", // ai 2026-06
 
 // include/item.php, row 359
-"Alias for text of the discussion comment" => "",
+"Alias for text of the discussion comment" => "Alias para o texto do comentário de discussão", // ai 2026-06
 
 // include/item.php, row 360
-"Alias for written by" => "",
+"Alias for written by" => "Alias para o autor", // ai 2026-06
 
 // include/item.php, row 361
-"Alias for author's e-mail" => "",
+"Alias for author's e-mail" => "Alias para o e-mail do autor", // ai 2026-06
 
 // include/item.php, row 362
-"Alias for url address of author's www site" => "",
+"Alias for url address of author's www site" => "Alias para o URL do sítio web do autor", // ai 2026-06
 
 // include/item.php, row 363
-"Alias for description of author's www site" => "",
+"Alias for description of author's www site" => "Alias para a descrição do sítio web do autor", // ai 2026-06
 
 // include/item.php, row 364
-"Alias for publish date" => "",
+"Alias for publish date" => "Alias para a data de publicação", // ai 2026-06
 
 // include/item.php, row 365
-"Alias for IP address of author's computer" => "",
+"Alias for IP address of author's computer" => "Alias para o endereço IP do computador do autor", // ai 2026-06
 
 // include/item.php, row 366
-"Alias for checkbox used for choosing discussion comment" => "",
+"Alias for checkbox used for choosing discussion comment" => "Alias para a caixa de seleção usada para escolher o comentário de discussão", // ai 2026-06
 
 // include/item.php, row 367
-"Alias for images" => "",
+"Alias for images" => "Alias para as imagens", // ai 2026-06
 
 // include/item.php, row 368
 "Alias for comment ID<br>\n"
    ."                             <i>Usage: </i>in form code<br>\n"
    ."                             <i>Example: </i>&lt;input type=hidden name=d_item_id value=\"_#DITEM_ID\">"
- => "",
+ => "Alias para o ID do comentário<br>\n"
+   ."                             <i>Utilização: </i>no código do formulário<br>\n"
+   ."                             <i>Exemplo: </i>&lt;input type=hidden name=d_item_id value=\"_#DITEM_ID\">", // ai 2026-06
 
 // include/item.php, row 369
 "Alias for comment ID (the same as _#DITEM_ID<br>)\n"
    ."                             <i>Usage: </i>in form code<br>\n"
    ."                             <i>Example: </i>&lt;input type=hidden name=d_item_id value=\"_#ITEM_ID#\">"
- => "",
+ => "Alias para o ID do comentário (igual a _#DITEM_ID<br>)\n"
+   ."                             <i>Utilização: </i>no código do formulário<br>\n"
+   ."                             <i>Exemplo: </i>&lt;input type=hidden name=d_item_id value=\"_#ITEM_ID#\">", // ai 2026-06
 
 // include/item.php, row 370
 "Alias for item ID<br>\n"
    ."                             <i>Usage: </i>in form code<br>\n"
    ."                             <i>Example: </i>&lt;input type=hidden name=d_parent value=\"_#DISC_ID#\">"
- => "",
+ => "Alias para o ID do artigo<br>\n"
+   ."                             <i>Utilização: </i>no código do formulário<br>\n"
+   ."                             <i>Exemplo: </i>&lt;input type=hidden name=d_parent value=\"_#DISC_ID#\">", // ai 2026-06
 
 // include/item.php, row 371
 "Alias for link to text of the discussion comment<br>\n"
    ."                             <i>Usage: </i>in HTML code for index view of the comment<br>\n"
    ."                             <i>Example: </i>&lt;a href=_#URL_BODY>_#SUBJECT#&lt;/a>"
- => "",
+ => "Alias para a ligação ao texto do comentário de discussão<br>\n"
+   ."                             <i>Utilização: </i>no código HTML da vista de índice do comentário<br>\n"
+   ."                             <i>Exemplo: </i>&lt;a href=_#URL_BODY>_#SUBJECT#&lt;/a>", // ai 2026-06
 
 // include/item.php, row 372
 "Alias for link to a form<br>\n"
    ."                             <i>Usage: </i>in HTML code for fulltext view of the comment<br>\n"
    ."                             <i>Example: </i>&lt;a href=_#URLREPLY&gt;Reply&lt;/a&gt;"
- => "",
+ => "Alias para a ligação a um formulário<br>\n"
+   ."                             <i>Utilização: </i>no código HTML da vista de texto completo do comentário<br>\n"
+   ."                             <i>Exemplo: </i>&lt;a href=_#URLREPLY&gt;Reply&lt;/a&gt;", // ai 2026-06
 
 // include/item.php, row 373
 "Alias for link to discussion<br>\n"
    ."                             <i>Usage: </i>in form code<br>\n"
    ."                             <i>Example: </i>&lt;input type=hidden name=url value=\"_#DISC_URL\">"
- => "",
+ => "Alias para a ligação à discussão<br>\n"
+   ."                             <i>Utilização: </i>no código do formulário<br>\n"
+   ."                             <i>Exemplo: </i>&lt;input type=hidden name=url value=\"_#DISC_URL\">", // ai 2026-06
 
 // include/item.php, row 374
 "Alias for buttons Show all, Show selected, Add new<br>\n"
    ."                             <i>Usage: </i> in the Bottom HTML code"
- => "",
+ => "Alias para os botões Mostrar todos, Mostrar selecionados, Adicionar novo<br>\n"
+   ."                             <i>Utilização: </i> no código HTML inferior", // ai 2026-06
 
 // include/item.php, row 389
-"3rd parameter filled in DiscussionMailList field" => "",
+"3rd parameter filled in DiscussionMailList field" => "3.º parâmetro preenchido no campo DiscussionMailList", // ai 2026-06
 
 // include/item.php, row 391
-"%1th parameter filled in DiscussionMailList field" => "",
+"%1th parameter filled in DiscussionMailList field" => "%1.º parâmetro preenchido no campo DiscussionMailList", // ai 2026-06
 
 // include/item.php, row 406
-"Constant name" => "",
+"Constant name" => "Nome da constante", // ai 2026-06
 
 // include/item.php, row 407
-"Translated constant name" => "",
+"Translated constant name" => "Nome traduzido da constante", // ai 2026-06
 
 // include/item.php, row 408
-"Constant value" => "",
+"Constant value" => "Valor da constante", // ai 2026-06
 
 // include/item.php, row 409
-"Constant priority" => "",
+"Constant priority" => "Prioridade da constante", // ai 2026-06
 
 // include/item.php, row 410
-"Constant group id" => "",
+"Constant group id" => "ID do grupo da constante", // ai 2026-06
 
 // include/item.php, row 411
-"Category class (for categories only)" => "",
+"Category class (for categories only)" => "Classe de categoria (apenas para categorias)", // ai 2026-06
 
 // include/item.php, row 412
-"Constant number" => "",
+"Constant number" => "Número da constante", // ai 2026-06
 
 // include/item.php, row 413
-"Constant unique id (32-hexadecimal characters)" => "",
+"Constant unique id (32-hexadecimal characters)" => "ID único da constante (32 caracteres hexadecimais)", // ai 2026-06
 
 // include/item.php, row 414
-"Constant unique short id (autoincremented from '1' for each constant in the system)" => "",
+"Constant unique short id (autoincremented from '1' for each constant in the system)" => "ID curto único da constante (autoincrementado a partir de '1' para cada constante do sistema)", // ai 2026-06
 
 // include/item.php, row 415
-"Constant description" => "",
+"Constant description" => "Descrição da constante", // ai 2026-06
 
 // include/item.php, row 416
-"Constant level (used for hierarchical constants)" => "",
+"Constant level (used for hierarchical constants)" => "Nível da constante (usado em constantes hierárquicas)", // ai 2026-06
 
 // include/item.php, row 787
-"Error: wrong alias function %1 for %2" => "",
+"Error: wrong alias function %1 for %2" => "Erro: função de alias %1 incorreta para %2", // ai 2026-06
 
 // include/itemview.php, row 117
-"Selected item" => "",
+"Selected item" => "Artigo selecionado", // ai 2026-06
 
 // include/itemview.php, row 124
-"number of found items" => "",
+"number of found items" => "número de artigos encontrados", // ai 2026-06
 
 // include/itemview.php, row 359
-"No comment was selected" => "",
+"No comment was selected" => "Não foi selecionado nenhum comentário", // ai 2026-06
 
 // include/itemview.php, row 680, 688
-"exact group name" => "",
+"exact group name" => "nome exato do grupo", // ai 2026-06
 
 // include/scroller.php, row 86
-"Next" => "",
+"Next" => "Seguinte", // ai 2026-06
 
 // include/scroller.php, row 87
-"Previous" => "",
+"Previous" => "Anterior", // ai 2026-06
 
 // include/scroller.php, row 88
-"All" => "",
+"All" => "Todos", // ai 2026-06
 
 // include/scroller.php, row 296
-"found" => "",
+"found" => "encontrados", // ai 2026-06
 
 // include/scroller.php, row 452
 "&raquo;" => "",
@@ -194,26 +207,26 @@ return [
 "&laquo;" => "",
 
 // include/slice.php, row 68
-"Select Category " => "",
+"Select Category " => "Selecionar categoria", // ai 2026-06
 
 // include/slice.php, row 70
-"All categories" => "",
+"All categories" => "Todas as categorias", // ai 2026-06
 
 // include/util.php, row 950
-"Error: Missing Reading Password" => "",
+"Error: Missing Reading Password" => "Erro: Falta a palavra-passe de leitura", // ai 2026-06
 
 // include/util.php, row 1300
-"Toolkit news message" => "",
+"Toolkit news message" => "Mensagem das aplicações", // ai 2026-06
 
 // include/util.php, row 1314
-"Back" => "",
+"Back" => "Voltar", // ai 2026-06
 
 // include/util.php, row 1314
-"Relogin" => "",
+"Relogin" => "Voltar a iniciar sessão", // ai 2026-06
 
 // misc/proposefieldchange.php, row 71
-"Assignment form" => "",
+"Assignment form" => "Formulário de atribuição", // ai 2026-06
 
 // misc/proposefieldchange.php, row 76
-"Grabs item relations data POSTed by form" => "",
+"Grabs item relations data POSTed by form" => "Obtém os dados de relações do item enviados pelo formulário (POST)", // ai 2026-06
 ];

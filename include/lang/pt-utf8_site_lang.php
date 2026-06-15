@@ -14,133 +14,133 @@ setlocale(LC_NUMERIC, 'en_US');            // keep float format with dot (see AA
 return [
 
 // modules/site/aliases.php, row 36
-"You do not have permissions to manage tasks" => "",
+"You do not have permissions to manage tasks" => "Não tem permissão para gerir tarefas", // ai 2026-06
 
 // modules/site/aliases.php, row 41
-"Manage %1" => "",
+"Manage %1" => "Gerir %1", // ai 2026-06
 
 // modules/site/index.php, row 57
-"Site module not found" => "",
+"Site module not found" => "Módulo Site não encontrado", // ai 2026-06
 
 // modules/site/index.php, row 63
-"You do not have permission to edit items in this slice" => "",
+"You do not have permission to edit items in this slice" => "Não tem permissão para editar artigos nesta secção", // ai 2026-06
 
 // modules/site/index.php, row 68
-"Starting spot not found" => "",
+"Starting spot not found" => "Spot inicial não encontrado", // ai 2026-06
 
 // modules/site/index.php, row 149
-"Editor window - site code manager" => "",
+"Editor window - site code manager" => "Janela de edição - gestor de código do site", // ai 2026-06
 
 // modules/site/index.php, row 169
-"Add&nbsp;spot" => "",
+"Add&nbsp;spot" => "Adicionar&nbsp;spot", // ai 2026-06
 
 // modules/site/index.php, row 170
-"Add&nbsp;choice" => "",
+"Add&nbsp;choice" => "Adicionar&nbsp;opção", // ai 2026-06
 
 // modules/site/index.php, row 173
-"Move&nbsp;up" => "",
+"Move&nbsp;up" => "Mover&nbsp;para&nbsp;cima", // ai 2026-06
 
 // modules/site/index.php, row 174
-"Move&nbsp;down" => "",
+"Move&nbsp;down" => "Mover&nbsp;para&nbsp;baixo", // ai 2026-06
 
 // modules/site/index.php, row 177
-"Move&nbsp;left" => "",
+"Move&nbsp;left" => "Mover&nbsp;para&nbsp;a&nbsp;esquerda", // ai 2026-06
 
 // modules/site/index.php, row 178
-"Move&nbsp;right" => "",
+"Move&nbsp;right" => "Mover&nbsp;para&nbsp;a&nbsp;direita", // ai 2026-06
 
 // modules/site/index.php, row 181
 // modules/site/sitetree.php, row 785, 806
-"Delete" => "",
+"Delete" => "Eliminar", // ai 2026-06
 
 // modules/site/index.php, row 181
-"Are you sure you want to delete the spot?" => "",
+"Are you sure you want to delete the spot?" => "Tem a certeza de que pretende eliminar o spot?", // ai 2026-06
 
 // modules/site/index.php, row 184
-"Enable" => "",
+"Enable" => "Ativar", // ai 2026-06
 
 // modules/site/index.php, row 185
-"Disable" => "",
+"Disable" => "Desativar", // ai 2026-06
 
 // modules/site/index.php, row 206
-"Possible system requires - &lcub;require:...&rcub; or &lcub;require:[\"...\",\"...\"]&rcub;" => "",
+"Possible system requires - &lcub;require:...&rcub; or &lcub;require:[\"...\",\"...\"]&rcub;" => "Possíveis requires do sistema - &lcub;require:...&rcub; ou &lcub;require:[\"...\",\"...\"]&rcub;", // ai 2026-06
 
 // modules/site/menu.php, row 46
-"View site" => "",
+"View site" => "Ver site", // ai 2026-06
 
 // modules/site/menu.php, row 53
 // modules/site/modedit.php, row 270
-"Site" => "",
+"Site" => "Sítio", // ai 2026-06
 
 // modules/site/menu.php, row 78
-"Module Settings" => "",
+"Module Settings" => "Definições do módulo", // ai 2026-06
 
 // modules/site/menu.php, row 79
-"Code Manager" => "",
+"Code Manager" => "Gestor de código", // ai 2026-06
 
 // modules/site/menu.php, row 80
 "Aliases" => "",
 
 // modules/site/moddelete.php, row 45
-"You don't have permissions to delete a site." => "",
+"You don't have permissions to delete a site." => "Não tem permissões para eliminar um site.", // ai 2026-06
 
 // modules/site/moddelete.php, row 49
-"Module not found." => "",
+"Module not found." => "Módulo não encontrado.", // ai 2026-06
 
 // modules/site/moddelete.php, row 69
-"Slice successfully deleted, tables are optimized" => "",
+"Slice successfully deleted, tables are optimized" => "Secção eliminada com sucesso, as tabelas foram otimizadas", // ai 2026-06
 
 // modules/site/modedit.php, row 104
-"You do not have permissions to add slice" => "",
+"You do not have permissions to add slice" => "Não tem permissão para adicionar secções", // ai 2026-06
 
 // modules/site/modedit.php, row 109
-"You do not have permissions to edit this slice" => "",
+"You do not have permissions to edit this slice" => "Não tem permissão para editar esta secção", // ai 2026-06
 
 // modules/site/modedit.php, row 132
-"State file" => "",
+"State file" => "Ficheiro de estado", // ai 2026-06
 
 // modules/site/modedit.php, row 133, 278
 "Router" => "",
 
 // modules/site/modedit.php, row 134, 292
-"Uses modules" => "",
+"Uses modules" => "Utiliza módulos", // ai 2026-06
 
 // modules/site/modedit.php, row 257
-"Add Site" => "",
+"Add Site" => "Adicionar site", // ai 2026-06
 
 // modules/site/modedit.php, row 257
-"Edit Site" => "",
+"Edit Site" => "Editar site", // ai 2026-06
 
 // modules/site/modedit.php, row 277
-"Used Language File" => "",
+"Used Language File" => "Ficheiro de idioma utilizado", // ai 2026-06
 
 // modules/site/modedit.php, row 278
-"Use AA_Router_Seo. Otherwise you will use old sitemodule approach with 'control file', which we can't recommend." => "",
+"Use AA_Router_Seo. Otherwise you will use old sitemodule approach with 'control file', which we can't recommend." => "Utilize o AA_Router_Seo. Caso contrário, utilizará a antiga abordagem do módulo site com 'ficheiro de controlo', o que não recomendamos.", // ai 2026-06
 
 // modules/site/modedit.php, row 279
-"Home or State file" => "",
+"Home or State file" => "Página inicial ou ficheiro de estado", // ai 2026-06
 
 // modules/site/modedit.php, row 279
-"For AA_Router_Seo fill the <b>default url</b> (home) - like <em>/en/home</em> or leave it empty<br><br>For older sites without AA_Router_Seo fill in the name of <b>Site control file</b> - will be placed in /modules/site/sites/ directory. The name you specify will be prefixed by 'site_' prefix, so if you for example name the file as 'apc.php', the site control file will be /modules/site/sites/site_apc.php." => "",
+"For AA_Router_Seo fill the <b>default url</b> (home) - like <em>/en/home</em> or leave it empty<br><br>For older sites without AA_Router_Seo fill in the name of <b>Site control file</b> - will be placed in /modules/site/sites/ directory. The name you specify will be prefixed by 'site_' prefix, so if you for example name the file as 'apc.php', the site control file will be /modules/site/sites/site_apc.php." => "Para o AA_Router_Seo, preencha o <b>url predefinido</b> (página inicial) - como <em>/en/home</em> - ou deixe vazio<br><br>Para sites mais antigos sem AA_Router_Seo, preencha o nome do <b>ficheiro de controlo do site</b> - será colocado no diretório /modules/site/sites/. Ao nome que indicar será acrescentado o prefixo 'site_', pelo que, se por exemplo nomear o ficheiro como 'apc.php', o ficheiro de controlo do site será /modules/site/sites/site_apc.php.", // ai 2026-06
 
 // modules/site/modedit.php, row 294
-"Additional setting" => "",
+"Additional setting" => "Definição adicional", // ai 2026-06
 
 // modules/site/sitetree.php, row 782
-"Spot&nbsp;variables" => "",
+"Spot&nbsp;variables" => "Variáveis&nbsp;do&nbsp;spot", // ai 2026-06
 
 // modules/site/sitetree.php, row 788, 817
-"Add" => "",
+"Add" => "Adicionar", // ai 2026-06
 
 // modules/site/sitetree.php, row 796
-"Spot&nbsp;conditions" => "",
+"Spot&nbsp;conditions" => "Condições&nbsp;do&nbsp;spot", // ai 2026-06
 
 // modules/site/sitetree.php, row 805
-"Warning: the condition starts or ends with whitespace character. Please check, if it is OK in your expression." => "",
+"Warning: the condition starts or ends with whitespace character. Please check, if it is OK in your expression." => "Aviso: a condição começa ou termina com um espaço em branco. Verifique se está correto na sua expressão.", // ai 2026-06
 
 // modules/site/sitetree.php, row 812
-"contains" => "",
+"contains" => "contém", // ai 2026-06
 
 // modules/site/sitetree.php, row 813
-"Regular Expression" => "",
+"Regular Expression" => "Expressão regular", // ai 2026-06
 ];

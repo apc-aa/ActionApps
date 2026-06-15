@@ -15,223 +15,223 @@ return [
 
 // modules/polls/designs.php, row 38
 // modules/polls/index.php, row 55
-"You do not have permission to manage Polls" => "",
+"You do not have permission to manage Polls" => "Nie masz uprawnień do zarządzania ankietami", // ai 2026-06
 
 // modules/polls/designs.php, row 47
-"Owner" => "",
+"Owner" => "Właściciel", // ai 2026-06
 
 // modules/polls/designs.php, row 48
 "ID" => "",
 
 // modules/polls/designs.php, row 49
-"Comment" => "",
+"Comment" => "Komentarz", // ai 2026-06
 
 // modules/polls/designs.php, row 50
-"Name" => "",
+"Name" => "Nazwa", // ai 2026-06
 
 // modules/polls/designs.php, row 52
-"Top HTML" => "",
+"Top HTML" => "Górny kod HTML", // ai 2026-06
 
 // modules/polls/designs.php, row 53
-"Answer HTML" => "",
+"Answer HTML" => "Kod HTML odpowiedzi", // ai 2026-06
 
 // modules/polls/designs.php, row 54
-"Bottom HTML" => "",
+"Bottom HTML" => "Dolny kod HTML", // ai 2026-06
 
 // modules/polls/designs.php, row 57
-"Polls Design" => "",
+"Polls Design" => "Wygląd ankiet", // ai 2026-06
 
 // modules/polls/include/util.php, row 44
-"Poll ID" => "",
+"Poll ID" => "ID ankiety", // ai 2026-06
 
 // modules/polls/include/util.php, row 45, 68
-"Module ID" => "",
+"Module ID" => "ID modułu", // ai 2026-06
 
 // modules/polls/include/util.php, row 46, 63, 64
-"Prints poll question" => "",
+"Prints poll question" => "Wyświetla pytanie ankiety", // ai 2026-06
 
 // modules/polls/include/util.php, row 47
 // modules/polls/polledit.php, row 233, 240
-"Publish Date" => "",
+"Publish Date" => "Data publikacji", // ai 2026-06
 
 // modules/polls/include/util.php, row 48
 // modules/polls/polledit.php, row 234, 241
-"Expiry Date" => "",
+"Expiry Date" => "Data wygaśnięcia", // ai 2026-06
 
 // modules/polls/include/util.php, row 49
-"Prints poll params" => "",
+"Prints poll params" => "Wyświetla parametry ankiety", // ai 2026-06
 
 // modules/polls/include/util.php, row 50
-"Link to poll editing page (for admin interface only)" => "",
+"Link to poll editing page (for admin interface only)" => "Odnośnik do strony edycji ankiety (tylko dla interfejsu administracyjnego)", // ai 2026-06
 
 // modules/polls/include/util.php, row 65
-"Poll publish date" => "",
+"Poll publish date" => "Data publikacji ankiety", // ai 2026-06
 
 // modules/polls/include/util.php, row 66
-"Poll expiry date" => "",
+"Poll expiry date" => "Data wygaśnięcia ankiety", // ai 2026-06
 
 // modules/polls/include/util.php, row 67
-"Poll params" => "",
+"Poll params" => "Parametry ankiety", // ai 2026-06
 
 // modules/polls/include/util.php, row 70
-"Poll id (32 characters hexadecimal number - the same for all answers)" => "",
+"Poll id (32 characters hexadecimal number - the same for all answers)" => "ID ankiety (32-znakowa liczba szesnastkowa - taka sama dla wszystkich odpowiedzi)", // ai 2026-06
 
 // modules/polls/include/util.php, row 72
-"Number of answer" => "",
+"Number of answer" => "Numer odpowiedzi", // ai 2026-06
 
 // modules/polls/include/util.php, row 73
-"Number of votes for this answer" => "",
+"Number of votes for this answer" => "Liczba głosów na tę odpowiedź", // ai 2026-06
 
 // modules/polls/include/util.php, row 74
-"Text of answer" => "",
+"Text of answer" => "Tekst odpowiedzi", // ai 2026-06
 
 // modules/polls/include/util.php, row 75
-"ID of answer (32 characters hexadecimal number)" => "",
+"ID of answer (32 characters hexadecimal number)" => "ID odpowiedzi (32-znakowa liczba szesnastkowa)", // ai 2026-06
 
 // modules/polls/include/util.php, row 76
-"Votes for this answer in percent. You can use also {poll_share}." => "",
+"Votes for this answer in percent. You can use also {poll_share}." => "Głosy na tę odpowiedź w procentach. Można też użyć {poll_share}.", // ai 2026-06
 
 // modules/polls/include/util.php, row 77
-"Sum of all votes. You can use also {poll_sum}." => "",
+"Sum of all votes. You can use also {poll_sum}." => "Suma wszystkich głosów. Można też użyć {poll_sum}.", // ai 2026-06
 
 // modules/polls/menu.php, row 58
-"View poll" => "",
+"View poll" => "Pokaż ankietę", // ai 2026-06
 
 // modules/polls/menu.php, row 65, 66
 // modules/polls/polledit.php, row 188
-"Edit poll" => "",
+"Edit poll" => "Edytuj ankietę", // ai 2026-06
 
 // modules/polls/menu.php, row 65
 // modules/polls/polledit.php, row 188
-"Add poll" => "",
+"Add poll" => "Dodaj ankietę", // ai 2026-06
 
 // modules/polls/menu.php, row 66
-"Add new poll" => "",
+"Add new poll" => "Dodaj nową ankietę", // ai 2026-06
 
 // modules/polls/menu.php, row 73, 74
-"Polls manager" => "",
+"Polls manager" => "Menedżer ankiet", // ai 2026-06
 
 // modules/polls/menu.php, row 81, 82
-"Polls admin" => "",
+"Polls admin" => "Administracja ankiet", // ai 2026-06
 
 // modules/polls/menu.php, row 93
-"Folders" => "",
+"Folders" => "Foldery", // ai 2026-06
 
 // modules/polls/menu.php, row 94
-"Active" => "",
+"Active" => "Aktywne", // ai 2026-06
 
 // modules/polls/menu.php, row 95
-"... pending" => "",
+"... pending" => "... oczekujące", // ai 2026-06
 
 // modules/polls/menu.php, row 96
-"... expired" => "",
+"... expired" => "... wygasłe", // ai 2026-06
 
 // modules/polls/menu.php, row 97
-"Hold bin" => "",
+"Hold bin" => "Zasobnik", // ai 2026-06
 
 // modules/polls/menu.php, row 98
-"Trash bin" => "",
+"Trash bin" => "Kosz", // ai 2026-06
 
 // modules/polls/menu.php, row 100
-"Misc" => "",
+"Misc" => "Różne", // ai 2026-06
 
 // modules/polls/menu.php, row 101
-"Empty trash" => "",
+"Empty trash" => "Opróżnij kosz", // ai 2026-06
 
 // modules/polls/menu.php, row 101
-"Are you sure you want to empty trash?" => "",
+"Are you sure you want to empty trash?" => "Czy na pewno chcesz opróżnić kosz?", // ai 2026-06
 
 // modules/polls/menu.php, row 115
-"Main settings" => "",
+"Main settings" => "Ustawienia główne", // ai 2026-06
 
 // modules/polls/menu.php, row 116
-"Polls" => "",
+"Polls" => "Ankiety", // ai 2026-06
 
 // modules/polls/menu.php, row 117
-"Designs" => "",
+"Designs" => "Wyglądy", // ai 2026-06
 
 // modules/polls/modedit.php, row 93
-"You do not have permissions to add polls" => "",
+"You do not have permissions to add polls" => "Nie masz uprawnień do dodawania ankiet", // ai 2026-06
 
 // modules/polls/modedit.php, row 98
-"You do not have permissions to edit this poll" => "",
+"You do not have permissions to edit this poll" => "Nie masz uprawnień do edycji tej ankiety", // ai 2026-06
 
 // modules/polls/modedit.php, row 115, 240
 // modules/polls/polledit.php, row 249
-"IP Locking timeout" => "",
+"IP Locking timeout" => "Czas blokowania IP", // ai 2026-06
 
 // modules/polls/modedit.php, row 116, 242
-"Cookies prefix" => "",
+"Cookies prefix" => "Prefiks plików cookie", // ai 2026-06
 
 // modules/polls/modedit.php, row 225
-"Add Polls" => "",
+"Add Polls" => "Dodaj ankietę", // ai 2026-06
 
 // modules/polls/modedit.php, row 225
-"Edit Polls" => "",
+"Edit Polls" => "Edytuj ankietę", // ai 2026-06
 
 // modules/polls/modedit.php, row 228
-"Polls Module general data" => "",
+"Polls Module general data" => "Moduł ankiet - dane ogólne", // ai 2026-06
 
 // modules/polls/modedit.php, row 233
-"Used Language File" => "",
+"Used Language File" => "Używany plik językowy", // ai 2026-06
 
 // modules/polls/modedit.php, row 237
-"Defaults for polls in this module" => "",
+"Defaults for polls in this module" => "Wartości domyślne dla ankiet w tym module", // ai 2026-06
 
 // modules/polls/modedit.php, row 238
 // modules/polls/polledit.php, row 247
-"Use logging" => "",
+"Use logging" => "Zapisuj do dziennika", // ai 2026-06
 
 // modules/polls/modedit.php, row 239
 // modules/polls/polledit.php, row 248
-"Use IP locking" => "",
+"Use IP locking" => "Blokuj według IP", // ai 2026-06
 
 // modules/polls/modedit.php, row 241
 // modules/polls/polledit.php, row 250
-"Use cookies" => "",
+"Use cookies" => "Używaj plików cookie", // ai 2026-06
 
 // modules/polls/polledit.php, row 74
-"No permission to add/edit poll." => "",
+"No permission to add/edit poll." => "Brak uprawnień do dodawania lub edycji ankiety.", // ai 2026-06
 
 // modules/polls/polledit.php, row 113
-"Can't insert new poll" => "",
+"Can't insert new poll" => "Nie można wstawić nowej ankiety", // ai 2026-06
 
 // modules/polls/polledit.php, row 119
-"Can't update poll with id %1" => "",
+"Can't update poll with id %1" => "Nie można zaktualizować ankiety o id %1", // ai 2026-06
 
 // modules/polls/polledit.php, row 209
-"Insert question and answers" => "",
+"Insert question and answers" => "Wpisz pytanie i odpowiedzi", // ai 2026-06
 
 // modules/polls/polledit.php, row 231, 238
-"Headline" => "",
+"Headline" => "Nagłówek", // ai 2026-06
 
 // modules/polls/polledit.php, row 231, 238
-"Question" => "",
+"Question" => "Pytanie", // ai 2026-06
 
 // modules/polls/polledit.php, row 232, 239
-"Insert new answers and choose their order" => "",
+"Insert new answers and choose their order" => "Wpisz nowe odpowiedzi i wybierz ich kolejność", // ai 2026-06
 
 // modules/polls/polledit.php, row 244
-"Polls settings" => "",
+"Polls settings" => "Ustawienia ankiety", // ai 2026-06
 
 // modules/polls/polledit.php, row 246
-"Poll is locked" => "",
+"Poll is locked" => "Ankieta jest zablokowana", // ai 2026-06
 
 // modules/polls/polledit.php, row 249
-"time in seconds" => "",
+"time in seconds" => "czas w sekundach", // ai 2026-06
 
 // modules/polls/polledit.php, row 252
-"Parameters" => "",
+"Parameters" => "Parametry", // ai 2026-06
 
 // modules/polls/polledit.php, row 254
-"Polls design templates" => "",
+"Polls design templates" => "Szablony wyglądu ankiet", // ai 2026-06
 
 // modules/polls/polledit.php, row 262
-"Select design type - before vote" => "",
+"Select design type - before vote" => "Wybierz typ wyglądu - przed głosowaniem", // ai 2026-06
 
 // modules/polls/polledit.php, row 263
-"Select design type - after vote" => "",
+"Select design type - after vote" => "Wybierz typ wyglądu - po głosowaniu", // ai 2026-06
 
 // modules/polls/polledit.php, row 263
-"If the design after vote should look differently, then specify it here." => "",
+"If the design after vote should look differently, then specify it here." => "Jeśli wygląd po głosowaniu ma być inny, określ go tutaj.", // ai 2026-06
 ];

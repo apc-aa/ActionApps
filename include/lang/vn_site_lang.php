@@ -14,133 +14,133 @@ setlocale(LC_NUMERIC, 'en_US');            // keep float format with dot (see AA
 return [
 
 // modules/site/aliases.php, row 36
-"You do not have permissions to manage tasks" => "",
+"You do not have permissions to manage tasks" => "Bạn không có quyền quản lý tác vụ", // ai 2026-06
 
 // modules/site/aliases.php, row 41
-"Manage %1" => "",
+"Manage %1" => "Quản lý %1", // ai 2026-06
 
 // modules/site/index.php, row 57
-"Site module not found" => "",
+"Site module not found" => "Không tìm thấy mô-đun Site", // ai 2026-06
 
 // modules/site/index.php, row 63
-"You do not have permission to edit items in this slice" => "",
+"You do not have permission to edit items in this slice" => "Bạn không có quyền chỉnh sửa bài viết trong chuyên mục này", // ai 2026-06
 
 // modules/site/index.php, row 68
-"Starting spot not found" => "",
+"Starting spot not found" => "Không tìm thấy spot khởi đầu", // ai 2026-06
 
 // modules/site/index.php, row 149
-"Editor window - site code manager" => "",
+"Editor window - site code manager" => "Cửa sổ soạn thảo - trình quản lý mã website", // ai 2026-06
 
 // modules/site/index.php, row 169
-"Add&nbsp;spot" => "",
+"Add&nbsp;spot" => "Thêm&nbsp;spot", // ai 2026-06
 
 // modules/site/index.php, row 170
-"Add&nbsp;choice" => "",
+"Add&nbsp;choice" => "Thêm&nbsp;lựa chọn", // ai 2026-06
 
 // modules/site/index.php, row 173
-"Move&nbsp;up" => "",
+"Move&nbsp;up" => "Di chuyển&nbsp;lên", // ai 2026-06
 
 // modules/site/index.php, row 174
-"Move&nbsp;down" => "",
+"Move&nbsp;down" => "Di chuyển&nbsp;xuống", // ai 2026-06
 
 // modules/site/index.php, row 177
-"Move&nbsp;left" => "",
+"Move&nbsp;left" => "Di chuyển&nbsp;sang trái", // ai 2026-06
 
 // modules/site/index.php, row 178
-"Move&nbsp;right" => "",
+"Move&nbsp;right" => "Di chuyển&nbsp;sang phải", // ai 2026-06
 
 // modules/site/index.php, row 181
 // modules/site/sitetree.php, row 785, 806
-"Delete" => "",
+"Delete" => "Xóa", // ai 2026-06
 
 // modules/site/index.php, row 181
-"Are you sure you want to delete the spot?" => "",
+"Are you sure you want to delete the spot?" => "Bạn có chắc muốn xóa spot này không?", // ai 2026-06
 
 // modules/site/index.php, row 184
-"Enable" => "",
+"Enable" => "Bật", // ai 2026-06
 
 // modules/site/index.php, row 185
-"Disable" => "",
+"Disable" => "Tắt", // ai 2026-06
 
 // modules/site/index.php, row 206
-"Possible system requires - &lcub;require:...&rcub; or &lcub;require:[\"...\",\"...\"]&rcub;" => "",
+"Possible system requires - &lcub;require:...&rcub; or &lcub;require:[\"...\",\"...\"]&rcub;" => "Các system require khả dụng - &lcub;require:...&rcub; hoặc &lcub;require:[\"...\",\"...\"]&rcub;", // ai 2026-06
 
 // modules/site/menu.php, row 46
-"View site" => "",
+"View site" => "Xem trang", // ai 2026-06
 
 // modules/site/menu.php, row 53
 // modules/site/modedit.php, row 270
-"Site" => "",
+"Site" => "Trang web", // ai 2026-06
 
 // modules/site/menu.php, row 78
-"Module Settings" => "",
+"Module Settings" => "Cài đặt mô-đun", // ai 2026-06
 
 // modules/site/menu.php, row 79
-"Code Manager" => "",
+"Code Manager" => "Trình quản lý mã", // ai 2026-06
 
 // modules/site/menu.php, row 80
-"Aliases" => "",
+"Aliases" => "Bí danh", // ai 2026-06
 
 // modules/site/moddelete.php, row 45
-"You don't have permissions to delete a site." => "",
+"You don't have permissions to delete a site." => "Bạn không có quyền xóa website.", // ai 2026-06
 
 // modules/site/moddelete.php, row 49
-"Module not found." => "",
+"Module not found." => "Không tìm thấy mô-đun.", // ai 2026-06
 
 // modules/site/moddelete.php, row 69
-"Slice successfully deleted, tables are optimized" => "",
+"Slice successfully deleted, tables are optimized" => "Chuyên mục đã được xóa thành công, các bảng đã được tối ưu hóa", // ai 2026-06
 
 // modules/site/modedit.php, row 104
-"You do not have permissions to add slice" => "",
+"You do not have permissions to add slice" => "Bạn không có quyền thêm chuyên mục", // ai 2026-06
 
 // modules/site/modedit.php, row 109
-"You do not have permissions to edit this slice" => "",
+"You do not have permissions to edit this slice" => "Bạn không có quyền chỉnh sửa chuyên mục này", // ai 2026-06
 
 // modules/site/modedit.php, row 132
-"State file" => "",
+"State file" => "Tệp trạng thái", // ai 2026-06
 
 // modules/site/modedit.php, row 133, 278
 "Router" => "",
 
 // modules/site/modedit.php, row 134, 292
-"Uses modules" => "",
+"Uses modules" => "Mô-đun được sử dụng", // ai 2026-06
 
 // modules/site/modedit.php, row 257
-"Add Site" => "",
+"Add Site" => "Thêm website", // ai 2026-06
 
 // modules/site/modedit.php, row 257
-"Edit Site" => "",
+"Edit Site" => "Sửa website", // ai 2026-06
 
 // modules/site/modedit.php, row 277
-"Used Language File" => "",
+"Used Language File" => "Tệp ngôn ngữ được dùng", // ai 2026-06
 
 // modules/site/modedit.php, row 278
-"Use AA_Router_Seo. Otherwise you will use old sitemodule approach with 'control file', which we can't recommend." => "",
+"Use AA_Router_Seo. Otherwise you will use old sitemodule approach with 'control file', which we can't recommend." => "Hãy dùng AA_Router_Seo. Nếu không, bạn sẽ dùng cách tiếp cận cũ của mô-đun site với 'tệp điều khiển', điều mà chúng tôi không khuyến nghị.", // ai 2026-06
 
 // modules/site/modedit.php, row 279
-"Home or State file" => "",
+"Home or State file" => "Trang chủ hoặc tệp trạng thái", // ai 2026-06
 
 // modules/site/modedit.php, row 279
-"For AA_Router_Seo fill the <b>default url</b> (home) - like <em>/en/home</em> or leave it empty<br><br>For older sites without AA_Router_Seo fill in the name of <b>Site control file</b> - will be placed in /modules/site/sites/ directory. The name you specify will be prefixed by 'site_' prefix, so if you for example name the file as 'apc.php', the site control file will be /modules/site/sites/site_apc.php." => "",
+"For AA_Router_Seo fill the <b>default url</b> (home) - like <em>/en/home</em> or leave it empty<br><br>For older sites without AA_Router_Seo fill in the name of <b>Site control file</b> - will be placed in /modules/site/sites/ directory. The name you specify will be prefixed by 'site_' prefix, so if you for example name the file as 'apc.php', the site control file will be /modules/site/sites/site_apc.php." => "Đối với AA_Router_Seo, hãy điền <b>url mặc định</b> (trang chủ) - như <em>/en/home</em> hoặc để trống<br><br>Đối với các website cũ không dùng AA_Router_Seo, hãy điền tên <b>Tệp điều khiển website</b> - sẽ được đặt trong thư mục /modules/site/sites/. Tên bạn chỉ định sẽ được thêm tiền tố 'site_', vì vậy nếu bạn đặt tên tệp là 'apc.php', tệp điều khiển website sẽ là /modules/site/sites/site_apc.php.", // ai 2026-06
 
 // modules/site/modedit.php, row 294
-"Additional setting" => "",
+"Additional setting" => "Cài đặt bổ sung", // ai 2026-06
 
 // modules/site/sitetree.php, row 782
-"Spot&nbsp;variables" => "",
+"Spot&nbsp;variables" => "Biến&nbsp;của spot", // ai 2026-06
 
 // modules/site/sitetree.php, row 788, 817
-"Add" => "",
+"Add" => "Thêm", // ai 2026-06
 
 // modules/site/sitetree.php, row 796
-"Spot&nbsp;conditions" => "",
+"Spot&nbsp;conditions" => "Điều kiện&nbsp;của spot", // ai 2026-06
 
 // modules/site/sitetree.php, row 805
-"Warning: the condition starts or ends with whitespace character. Please check, if it is OK in your expression." => "",
+"Warning: the condition starts or ends with whitespace character. Please check, if it is OK in your expression." => "Cảnh báo: điều kiện bắt đầu hoặc kết thúc bằng ký tự khoảng trắng. Vui lòng kiểm tra xem có đúng trong biểu thức của bạn không.", // ai 2026-06
 
 // modules/site/sitetree.php, row 812
-"contains" => "",
+"contains" => "chứa", // ai 2026-06
 
 // modules/site/sitetree.php, row 813
-"Regular Expression" => "",
+"Regular Expression" => "Biểu thức chính quy", // ai 2026-06
 ];

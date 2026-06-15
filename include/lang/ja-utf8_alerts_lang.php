@@ -14,86 +14,86 @@ setlocale(LC_NUMERIC, 'en_US');            // keep float format with dot (see AA
 return [
 
 // modules/alerts/alerts_sending.php, row 418
-"alerts alert" => "",
+"alerts alert" => "アラートメール", // ai 2026-06
 
 // modules/alerts/alerts_sending.php, row 419
-"alerts welcome" => "",
+"alerts welcome" => "アラート歓迎メール", // ai 2026-06
 
 // modules/alerts/alerts_sending.php, row 420
-"slice wizard welcome" => "",
+"slice wizard welcome" => "スライスウィザード歓迎メール", // ai 2026-06
 
 // modules/alerts/alerts_sending.php, row 421
-"user template" => "",
+"user template" => "利用者テンプレート", // ai 2026-06
 
 // modules/alerts/alerts_sending.php, row 422
-"password change" => "",
+"password change" => "パスワード変更", // ai 2026-06
 
 // modules/alerts/alerts_sending.php, row 423
-"other" => "",
+"other" => "その他", // ai 2026-06
 
 // modules/alerts/alerts_sending.php, row 433
-"Aliases for Alerts Alert" => "",
+"Aliases for Alerts Alert" => "アラートメール用の別名", // ai 2026-06
 
 // modules/alerts/alerts_sending.php, row 435
-"complete filter text" => "",
+"complete filter text" => "フィルタの完全なテキスト", // ai 2026-06
 
 // modules/alerts/alerts_sending.php, row 436, 445
-"howoften" => "",
+"howoften" => "頻度", // ai 2026-06
 
 // modules/alerts/alerts_sending.php, row 437
-"Anonym Form URL (set in Alerts Admin - Settings)" => "",
+"Anonym Form URL (set in Alerts Admin - Settings)" => "匿名フォームのURL（アラート管理 - 設定で設定）", // ai 2026-06
 
 // modules/alerts/alerts_sending.php, row 438
-"Unsubscribe Form URL" => "",
+"Unsubscribe Form URL" => "配信解除フォームのURL", // ai 2026-06
 
 // modules/alerts/alerts_sending.php, row 443
-"Aliases for Alerts Welcome" => "",
+"Aliases for Alerts Welcome" => "アラート歓迎メール用の別名", // ai 2026-06
 
 // modules/alerts/alerts_sending.php, row 446
-"Collection Form URL (set in Alerts Admin - Settings)" => "",
+"Collection Form URL (set in Alerts Admin - Settings)" => "コレクションフォームのURL（アラート管理 - 設定で設定）", // ai 2026-06
 
 // modules/alerts/alerts_sending.php, row 447
-"email confirmed" => "",
+"email confirmed" => "メール確認済み", // ai 2026-06
 
 // modules/alerts/alerts_sending.php, row 453
-"Aliases for Slice Wizard Welcome" => "",
+"Aliases for Slice Wizard Welcome" => "スライスウィザード歓迎メール用の別名", // ai 2026-06
 
 // modules/alerts/alerts_sending.php, row 455, 467
-"Slice name" => "",
+"Slice name" => "スライス名", // ai 2026-06
 
 // modules/alerts/alerts_sending.php, row 456, 468
-"New user name" => "",
+"New user name" => "新規利用者の名前", // ai 2026-06
 
 // modules/alerts/alerts_sending.php, row 457
-"New user login name" => "",
+"New user login name" => "新規利用者のログイン名", // ai 2026-06
 
 // modules/alerts/alerts_sending.php, row 458
-"New user role (editor / admin)" => "",
+"New user role (editor / admin)" => "新規利用者の役割（editor / admin）", // ai 2026-06
 
 // modules/alerts/alerts_sending.php, row 459
-"My name" => "",
+"My name" => "自分の名前", // ai 2026-06
 
 // modules/alerts/alerts_sending.php, row 460
-"My email" => "",
+"My email" => "自分のE-メール", // ai 2026-06
 
 // modules/alerts/alerts_sending.php, row 465
-"Aliases for User Templates (you can use also all aliases of the user)" => "",
+"Aliases for User Templates (you can use also all aliases of the user)" => "利用者テンプレート用の別名（利用者のすべての別名も使用できます）", // ai 2026-06
 
 // modules/alerts/alerts_sending.php, row 473
-"Aliases for Password Change email (you can use also all aliases of the user)" => "",
+"Aliases for Password Change email (you can use also all aliases of the user)" => "パスワード変更メール用の別名（利用者のすべての別名も使用できます）", // ai 2026-06
 
 // modules/alerts/alerts_sending.php, row 475
-"HTML link to the password change page for current user" => "",
+"HTML link to the password change page for current user" => "現在の利用者のパスワード変更ページへのHTMLリンク", // ai 2026-06
 
 // modules/alerts/alerts_sending.php, row 476
-"URL parameter used for password change link in _#PWD_LINK (you can use it, if you want to use your own url for it)" => "",
+"URL parameter used for password change link in _#PWD_LINK (you can use it, if you want to use your own url for it)" => "_#PWD_LINK のパスワード変更リンクに使われるURLパラメータ（独自のURLを使いたい場合に利用できます）", // ai 2026-06
 
 // modules/alerts/cf_common.php, row 41
-"Language" => "",
+"Language" => "言語", // ai 2026-06
 
 // modules/alerts/cf_common.php, row 47
 // modules/alerts/send_emails.php, row 64
-"Email" => "",
+"Email" => "E-メール", // ai 2026-06
 
 // modules/alerts/cf_common.php, row 53
 "Password" => "パスワード",
@@ -102,235 +102,237 @@ return [
 "First name" => "名前",
 
 // modules/alerts/cf_common.php, row 63
-"Last name" => "",
+"Last name" => "姓", // ai 2026-06
 
 // modules/alerts/cf_common.php, row 71
 // modules/alerts/synchro2.php, row 65
-"How often" => "",
+"How often" => "頻度", // ai 2026-06
 
 // modules/alerts/cf_common.php, row 78
-"Change password" => "",
+"Change password" => "パスワードの変更", // ai 2026-06
 
 // modules/alerts/cf_common.php, row 84
-"Retype new password" => "",
+"Retype new password" => "新しいパスワードを繰り返す", // ai 2026-06
 
 // modules/alerts/menu.php, row 49, 50
 // modules/alerts/tableviews.php, row 158, 159
-"Alerts Settings" => "",
+"Alerts Settings" => "アラート設定", // ai 2026-06
 
 // modules/alerts/menu.php, row 87
-"Alerts Admin" => "",
+"Alerts Admin" => "アラート管理", // ai 2026-06
 
 // modules/alerts/menu.php, row 91
-"Settings" => "",
+"Settings" => "設定", // ai 2026-06
 
 // modules/alerts/menu.php, row 95
 // modules/alerts/send_emails.php, row 136
 // modules/alerts/synchro2.php, row 77
 // modules/alerts/tableviews.php, row 103
-"Selections" => "",
+"Selections" => "選択", // ai 2026-06
 
 // modules/alerts/menu.php, row 99
-"Send emails" => "",
+"Send emails" => "メール送信", // ai 2026-06
 
 // modules/alerts/menu.php, row 104
-"Reader management" => "",
+"Reader management" => "読者管理", // ai 2026-06
 
 // modules/alerts/menu.php, row 107
-"Documentation" => "",
+"Documentation" => "ドキュメント", // ai 2026-06
 
 // modules/alerts/menu.php, row 109
-"Common" => "",
+"Common" => "共通", // ai 2026-06
 
 // modules/alerts/menu.php, row 111
-"Email templates" => "",
+"Email templates" => "メールテンプレート", // ai 2026-06
 
 // modules/alerts/modedit.php, row 101
 "You do not have permissions to add slice" => "スライスを追加する許可がありません",
 
 // modules/alerts/send_emails.php, row 55
-"Send now an example alert email to email" => "",
+"Send now an example alert email to email" => "テスト用アラートメールをメールアドレスへ今すぐ送信", // ai 2026-06
 
 // modules/alerts/send_emails.php, row 65, 76
-"as if" => "",
+"as if" => "想定する頻度", // ai 2026-06
 
 // modules/alerts/send_emails.php, row 66, 77, 92
-"Go!" => "",
+"Go!" => "実行！", // ai 2026-06
 
 // modules/alerts/send_emails.php, row 74
-"Send now an example alert email to Reader" => "",
+"Send now an example alert email to Reader" => "テスト用アラートメールを読者へ今すぐ送信", // ai 2026-06
 
 // modules/alerts/send_emails.php, row 75
-"Reader" => "",
+"Reader" => "読者", // ai 2026-06
 
 // modules/alerts/send_emails.php, row 84
-"Send alerts" => "",
+"Send alerts" => "アラートを送信", // ai 2026-06
 
 // modules/alerts/send_emails.php, row 91
-"Send now alerts to all users subscribed to " => "",
+"Send now alerts to all users subscribed to " => "次の対象に登録しているすべての利用者へ今すぐアラートを送信:", // ai 2026-06
 
 // modules/alerts/send_emails.php, row 91
-"Warning: This is a real command!" => "",
+"Warning: This is a real command!" => "警告: これは実際に実行されるコマンドです！", // ai 2026-06
 
 // modules/alerts/send_emails.php, row 95
-"Last time the alerts were sent on:" => "",
+"Last time the alerts were sent on:" => "アラートの前回送信日時:", // ai 2026-06
 
 // modules/alerts/send_emails.php, row 106
-"%1 email(s) sent" => "",
+"%1 email(s) sent" => "%1 件のメールを送信しました", // ai 2026-06
 
 // modules/alerts/send_emails.php, row 134
 "Slice" => "スライス",
 
 // modules/alerts/send_emails.php, row 135
-"View (Selection set)" => "",
+"View (Selection set)" => "ビュー（選択セット）", // ai 2026-06
 
 // modules/alerts/send_emails.php, row 140
 "Define selections in slices from which you want to send Alerts,\n"
    ."        in views of type Alerts Selection Set"
- => "",
+ => "アラートを送信したいスライスでの選択を、\n"
+   ."        Alerts Selection Set タイプのビューで定義してください", // ai 2026-06
 
 // modules/alerts/synchro.php, row 63
-"Synchronization with Reader Management Slice" => "",
+"Synchronization with Reader Management Slice" => "読者管理スライスとの同期", // ai 2026-06
 
 // modules/alerts/synchro.php, row 93
-"Not Yet Set" => "",
+"Not Yet Set" => "未設定", // ai 2026-06
 
 // modules/alerts/synchro.php, row 102
-"Choose Reader Management Slice" => "",
+"Choose Reader Management Slice" => "読者管理スライスを選択", // ai 2026-06
 
 // modules/alerts/synchro.php, row 103
-"This Alerts Collection takes user data from the slice" => "",
+"This Alerts Collection takes user data from the slice" => "このアラートコレクションは次のスライスから利用者データを取得します", // ai 2026-06
 
 // modules/alerts/synchro.php, row 110
-"Change to: " => "",
+"Change to: " => "変更先:", // ai 2026-06
 
 // modules/alerts/synchro.php, row 116
-"and delete the %1-specific fields from %2" => "",
+"and delete the %1-specific fields from %2" => "さらに %1 専用のフィールドを %2 から削除する", // ai 2026-06
 
 // modules/alerts/synchro.php, row 120
 "Change" => "変更",
 
 // modules/alerts/synchro.php, row 130
-"Add %1-specific fields to %2" => "",
+"Add %1-specific fields to %2" => "%1 専用のフィールドを %2 に追加", // ai 2026-06
 
 // modules/alerts/synchro.php, row 132
 "Adds only fields the IDs of which don't yet exist in the slice.\n"
    ."    Refreshes the constant group containing selections if it already exists."
- => "",
+ => "IDがまだスライスに存在しないフィールドのみを追加します。\n"
+   ."    選択を含む定数グループが既に存在する場合は更新します。", // ai 2026-06
 
 // modules/alerts/synchro.php, row 138
-"Field Name" => "",
+"Field Name" => "フィールド名", // ai 2026-06
 
 // modules/alerts/synchro.php, row 139
-"Field ID" => "",
+"Field ID" => "フィールドID", // ai 2026-06
 
 // modules/alerts/synchro.php, row 148
-"Add or refresh fields" => "",
+"Add or refresh fields" => "フィールドの追加・更新", // ai 2026-06
 
 // modules/alerts/synchro.php, row 150
-"This command can not be used until you choose the Reader Management Slice." => "",
+"This command can not be used until you choose the Reader Management Slice." => "このコマンドは読者管理スライスを選択するまで使用できません。", // ai 2026-06
 
 // modules/alerts/synchro2.php, row 66, 74
-"How often for {ALERNAME}" => "",
+"How often for {ALERNAME}" => "{ALERNAME} の頻度", // ai 2026-06
 
 // modules/alerts/synchro2.php, row 70
-"not subscribed" => "",
+"not subscribed" => "未登録", // ai 2026-06
 
 // modules/alerts/synchro2.php, row 78
-"Selections for {ALERNAME}" => "",
+"Selections for {ALERNAME}" => "{ALERNAME} の選択", // ai 2026-06
 
 // modules/alerts/synchro2.php, row 86
-"Selection IDs for {ALERNAME}" => "",
+"Selection IDs for {ALERNAME}" => "{ALERNAME} の選択ID", // ai 2026-06
 
 // modules/alerts/synchro2.php, row 171
-"%1 field(s) added" => "",
+"%1 field(s) added" => "%1 件のフィールドを追加しました", // ai 2026-06
 
 // modules/alerts/synchro2.php, row 200
-"%1 field(s) and %2 constant group(s) deleted" => "",
+"%1 field(s) and %2 constant group(s) deleted" => "%1 件のフィールドと %2 件の定数グループを削除しました", // ai 2026-06
 
 // modules/alerts/synchro2.php, row 228
-"not set" => "",
+"not set" => "未設定", // ai 2026-06
 
 // modules/alerts/tableviews.php, row 65
-"No selections defined. You must define some." => "",
+"No selections defined. You must define some." => "選択が定義されていません。定義してください。", // ai 2026-06
 
 // modules/alerts/tableviews.php, row 102
-"Alerts Selections" => "",
+"Alerts Selections" => "アラートの選択", // ai 2026-06
 
 // modules/alerts/tableviews.php, row 106
-"Choose selections which form the Alert email." => "",
+"Choose selections which form the Alert email." => "アラートメールを構成する選択を選んでください。", // ai 2026-06
 
 // modules/alerts/tableviews.php, row 114
-"selection" => "",
+"selection" => "選択", // ai 2026-06
 
 // modules/alerts/tableviews.php, row 127
-"order" => "",
+"order" => "順序", // ai 2026-06
 
 // modules/alerts/tableviews.php, row 162
-"Core settings for the Alerts." => "",
+"Core settings for the Alerts." => "アラートの基本設定。", // ai 2026-06
 
 // modules/alerts/tableviews.php, row 172
-"alerts ID" => "",
+"alerts ID" => "アラートID", // ai 2026-06
 
 // modules/alerts/tableviews.php, row 180
-"name" => "",
+"name" => "名前", // ai 2026-06
 
 // modules/alerts/tableviews.php, row 183
-"form URL" => "",
+"form URL" => "フォームURL", // ai 2026-06
 
 // modules/alerts/tableviews.php, row 185
-"language" => "",
+"language" => "言語", // ai 2026-06
 
 // modules/alerts/tableviews.php, row 189
-"deleted" => "",
+"deleted" => "削除済み", // ai 2026-06
 
 // modules/alerts/tableviews.php, row 190
-"Use AA Admin / Delete<br>to delete permanently" => "",
+"Use AA Admin / Delete<br>to delete permanently" => "完全に削除するには<br>AA管理 / 削除 を使用してください", // ai 2026-06
 
 // modules/alerts/tableviews.php, row 195
-"welcome email" => "",
+"welcome email" => "歓迎メール", // ai 2026-06
 
 // modules/alerts/tableviews.php, row 204, 267
-"alert email" => "",
+"alert email" => "アラートメール", // ai 2026-06
 
 // modules/alerts/tableviews.php, row 223
-"created at" => "",
+"created at" => "作成日時", // ai 2026-06
 
 // modules/alerts/tableviews.php, row 231
-"created by" => "",
+"created by" => "作成者", // ai 2026-06
 
 // modules/alerts/tableviews.php, row 241, 261
-"You don't have permissions to edit any collection or no collection exists." => "",
+"You don't have permissions to edit any collection or no collection exists." => "コレクションを編集する許可がないか、コレクションが存在しません。", // ai 2026-06
 
 // modules/alerts/tableviews.php, row 255, 256
-"Send Emails" => "",
+"Send Emails" => "メール送信", // ai 2026-06
 
 // modules/alerts/tableviews.php, row 263
-"Here you send the Alert emails manually." => "",
+"Here you send the Alert emails manually." => "ここでアラートメールを手動で送信できます。", // ai 2026-06
 
 // modules/alerts/util.php, row 58
-"instant" => "",
+"instant" => "即時", // ai 2026-06
 
 // modules/alerts/util.php, row 59
-"daily" => "",
+"daily" => "毎日", // ai 2026-06
 
 // modules/alerts/util.php, row 60
-"weekly" => "",
+"weekly" => "毎週", // ai 2026-06
 
 // modules/alerts/util.php, row 61
-"twoweeks" => "",
+"twoweeks" => "隔週", // ai 2026-06
 
 // modules/alerts/util.php, row 62
-"monthly" => "",
+"monthly" => "毎月", // ai 2026-06
 
 // modules/alerts/util.php, row 63
-"irregular" => "",
+"irregular" => "不定期", // ai 2026-06
 
 // modules/alerts/util.php, row 70
 "Active" => "活動中",
 
 // modules/alerts/util.php, row 71
-"Holding bin" => "",
+"Holding bin" => "保留箱", // ai 2026-06
 
 // modules/alerts/util.php, row 72
 "Trash bin" => "ゴミ箱",

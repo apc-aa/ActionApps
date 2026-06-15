@@ -15,223 +15,223 @@ return [
 
 // modules/polls/designs.php, row 38
 // modules/polls/index.php, row 55
-"You do not have permission to manage Polls" => "",
+"You do not have permission to manage Polls" => "Ви не маєте права керувати опитуваннями", // ai 2026-06
 
 // modules/polls/designs.php, row 47
-"Owner" => "",
+"Owner" => "Власник", // ai 2026-06
 
 // modules/polls/designs.php, row 48
 "ID" => "",
 
 // modules/polls/designs.php, row 49
-"Comment" => "",
+"Comment" => "Коментар", // ai 2026-06
 
 // modules/polls/designs.php, row 50
-"Name" => "",
+"Name" => "Назва", // ai 2026-06
 
 // modules/polls/designs.php, row 52
-"Top HTML" => "",
+"Top HTML" => "Верхній HTML", // ai 2026-06
 
 // modules/polls/designs.php, row 53
-"Answer HTML" => "",
+"Answer HTML" => "HTML відповіді", // ai 2026-06
 
 // modules/polls/designs.php, row 54
-"Bottom HTML" => "",
+"Bottom HTML" => "Нижній HTML", // ai 2026-06
 
 // modules/polls/designs.php, row 57
-"Polls Design" => "",
+"Polls Design" => "Вигляд опитувань", // ai 2026-06
 
 // modules/polls/include/util.php, row 44
-"Poll ID" => "",
+"Poll ID" => "ID опитування", // ai 2026-06
 
 // modules/polls/include/util.php, row 45, 68
-"Module ID" => "",
+"Module ID" => "ID модуля", // ai 2026-06
 
 // modules/polls/include/util.php, row 46, 63, 64
-"Prints poll question" => "",
+"Prints poll question" => "Виводить запитання опитування", // ai 2026-06
 
 // modules/polls/include/util.php, row 47
 // modules/polls/polledit.php, row 233, 240
-"Publish Date" => "",
+"Publish Date" => "Дата публікації", // ai 2026-06
 
 // modules/polls/include/util.php, row 48
 // modules/polls/polledit.php, row 234, 241
-"Expiry Date" => "",
+"Expiry Date" => "Дата завершення", // ai 2026-06
 
 // modules/polls/include/util.php, row 49
-"Prints poll params" => "",
+"Prints poll params" => "Виводить параметри опитування", // ai 2026-06
 
 // modules/polls/include/util.php, row 50
-"Link to poll editing page (for admin interface only)" => "",
+"Link to poll editing page (for admin interface only)" => "Посилання на сторінку редагування опитування (лише для адміністративного інтерфейсу)", // ai 2026-06
 
 // modules/polls/include/util.php, row 65
-"Poll publish date" => "",
+"Poll publish date" => "Дата публікації опитування", // ai 2026-06
 
 // modules/polls/include/util.php, row 66
-"Poll expiry date" => "",
+"Poll expiry date" => "Дата завершення опитування", // ai 2026-06
 
 // modules/polls/include/util.php, row 67
-"Poll params" => "",
+"Poll params" => "Параметри опитування", // ai 2026-06
 
 // modules/polls/include/util.php, row 70
-"Poll id (32 characters hexadecimal number - the same for all answers)" => "",
+"Poll id (32 characters hexadecimal number - the same for all answers)" => "ID опитування (32-значне шістнадцяткове число — однакове для всіх відповідей)", // ai 2026-06
 
 // modules/polls/include/util.php, row 72
-"Number of answer" => "",
+"Number of answer" => "Номер відповіді", // ai 2026-06
 
 // modules/polls/include/util.php, row 73
-"Number of votes for this answer" => "",
+"Number of votes for this answer" => "Кількість голосів за цю відповідь", // ai 2026-06
 
 // modules/polls/include/util.php, row 74
-"Text of answer" => "",
+"Text of answer" => "Текст відповіді", // ai 2026-06
 
 // modules/polls/include/util.php, row 75
-"ID of answer (32 characters hexadecimal number)" => "",
+"ID of answer (32 characters hexadecimal number)" => "ID відповіді (32-значне шістнадцяткове число)", // ai 2026-06
 
 // modules/polls/include/util.php, row 76
-"Votes for this answer in percent. You can use also {poll_share}." => "",
+"Votes for this answer in percent. You can use also {poll_share}." => "Голоси за цю відповідь у відсотках. Можна також використати {poll_share}.", // ai 2026-06
 
 // modules/polls/include/util.php, row 77
-"Sum of all votes. You can use also {poll_sum}." => "",
+"Sum of all votes. You can use also {poll_sum}." => "Сума всіх голосів. Можна також використати {poll_sum}.", // ai 2026-06
 
 // modules/polls/menu.php, row 58
-"View poll" => "",
+"View poll" => "Переглянути опитування", // ai 2026-06
 
 // modules/polls/menu.php, row 65, 66
 // modules/polls/polledit.php, row 188
-"Edit poll" => "",
+"Edit poll" => "Редагувати опитування", // ai 2026-06
 
 // modules/polls/menu.php, row 65
 // modules/polls/polledit.php, row 188
-"Add poll" => "",
+"Add poll" => "Додати опитування", // ai 2026-06
 
 // modules/polls/menu.php, row 66
-"Add new poll" => "",
+"Add new poll" => "Додати нове опитування", // ai 2026-06
 
 // modules/polls/menu.php, row 73, 74
-"Polls manager" => "",
+"Polls manager" => "Менеджер опитувань", // ai 2026-06
 
 // modules/polls/menu.php, row 81, 82
-"Polls admin" => "",
+"Polls admin" => "Адміністрування опитувань", // ai 2026-06
 
 // modules/polls/menu.php, row 93
-"Folders" => "",
+"Folders" => "Теки", // ai 2026-06
 
 // modules/polls/menu.php, row 94
-"Active" => "",
+"Active" => "Активні", // ai 2026-06
 
 // modules/polls/menu.php, row 95
-"... pending" => "",
+"... pending" => "... очікують", // ai 2026-06
 
 // modules/polls/menu.php, row 96
-"... expired" => "",
+"... expired" => "... завершені", // ai 2026-06
 
 // modules/polls/menu.php, row 97
-"Hold bin" => "",
+"Hold bin" => "Резерв", // ai 2026-06
 
 // modules/polls/menu.php, row 98
-"Trash bin" => "",
+"Trash bin" => "Кошик", // ai 2026-06
 
 // modules/polls/menu.php, row 100
-"Misc" => "",
+"Misc" => "Різне", // ai 2026-06
 
 // modules/polls/menu.php, row 101
-"Empty trash" => "",
+"Empty trash" => "Очистити кошик", // ai 2026-06
 
 // modules/polls/menu.php, row 101
-"Are you sure you want to empty trash?" => "",
+"Are you sure you want to empty trash?" => "Ви впевнені, що хочете очистити кошик?", // ai 2026-06
 
 // modules/polls/menu.php, row 115
-"Main settings" => "",
+"Main settings" => "Основні налаштування", // ai 2026-06
 
 // modules/polls/menu.php, row 116
-"Polls" => "",
+"Polls" => "Опитування", // ai 2026-06
 
 // modules/polls/menu.php, row 117
-"Designs" => "",
+"Designs" => "Вигляди", // ai 2026-06
 
 // modules/polls/modedit.php, row 93
-"You do not have permissions to add polls" => "",
+"You do not have permissions to add polls" => "Ви не маєте права додавати опитування", // ai 2026-06
 
 // modules/polls/modedit.php, row 98
-"You do not have permissions to edit this poll" => "",
+"You do not have permissions to edit this poll" => "Ви не маєте права редагувати це опитування", // ai 2026-06
 
 // modules/polls/modedit.php, row 115, 240
 // modules/polls/polledit.php, row 249
-"IP Locking timeout" => "",
+"IP Locking timeout" => "Час блокування IP", // ai 2026-06
 
 // modules/polls/modedit.php, row 116, 242
-"Cookies prefix" => "",
+"Cookies prefix" => "Префікс cookies", // ai 2026-06
 
 // modules/polls/modedit.php, row 225
-"Add Polls" => "",
+"Add Polls" => "Додати опитування", // ai 2026-06
 
 // modules/polls/modedit.php, row 225
-"Edit Polls" => "",
+"Edit Polls" => "Редагувати опитування", // ai 2026-06
 
 // modules/polls/modedit.php, row 228
-"Polls Module general data" => "",
+"Polls Module general data" => "Модуль опитувань — загальні дані", // ai 2026-06
 
 // modules/polls/modedit.php, row 233
-"Used Language File" => "",
+"Used Language File" => "Використовуваний мовний файл", // ai 2026-06
 
 // modules/polls/modedit.php, row 237
-"Defaults for polls in this module" => "",
+"Defaults for polls in this module" => "Типові значення для опитувань у цьому модулі", // ai 2026-06
 
 // modules/polls/modedit.php, row 238
 // modules/polls/polledit.php, row 247
-"Use logging" => "",
+"Use logging" => "Записувати в журнал", // ai 2026-06
 
 // modules/polls/modedit.php, row 239
 // modules/polls/polledit.php, row 248
-"Use IP locking" => "",
+"Use IP locking" => "Використовувати блокування IP", // ai 2026-06
 
 // modules/polls/modedit.php, row 241
 // modules/polls/polledit.php, row 250
-"Use cookies" => "",
+"Use cookies" => "Використовувати cookies", // ai 2026-06
 
 // modules/polls/polledit.php, row 74
-"No permission to add/edit poll." => "",
+"No permission to add/edit poll." => "Немає права додавати чи редагувати опитування.", // ai 2026-06
 
 // modules/polls/polledit.php, row 113
-"Can't insert new poll" => "",
+"Can't insert new poll" => "Не вдалося вставити нове опитування", // ai 2026-06
 
 // modules/polls/polledit.php, row 119
-"Can't update poll with id %1" => "",
+"Can't update poll with id %1" => "Не вдалося оновити опитування з id %1", // ai 2026-06
 
 // modules/polls/polledit.php, row 209
-"Insert question and answers" => "",
+"Insert question and answers" => "Вставте запитання та відповіді", // ai 2026-06
 
 // modules/polls/polledit.php, row 231, 238
-"Headline" => "",
+"Headline" => "Заголовок", // ai 2026-06
 
 // modules/polls/polledit.php, row 231, 238
-"Question" => "",
+"Question" => "Запитання", // ai 2026-06
 
 // modules/polls/polledit.php, row 232, 239
-"Insert new answers and choose their order" => "",
+"Insert new answers and choose their order" => "Вставте нові відповіді та виберіть їхній порядок", // ai 2026-06
 
 // modules/polls/polledit.php, row 244
-"Polls settings" => "",
+"Polls settings" => "Налаштування опитування", // ai 2026-06
 
 // modules/polls/polledit.php, row 246
-"Poll is locked" => "",
+"Poll is locked" => "Опитування заблоковано", // ai 2026-06
 
 // modules/polls/polledit.php, row 249
-"time in seconds" => "",
+"time in seconds" => "час у секундах", // ai 2026-06
 
 // modules/polls/polledit.php, row 252
-"Parameters" => "",
+"Parameters" => "Параметри", // ai 2026-06
 
 // modules/polls/polledit.php, row 254
-"Polls design templates" => "",
+"Polls design templates" => "Шаблони вигляду опитувань", // ai 2026-06
 
 // modules/polls/polledit.php, row 262
-"Select design type - before vote" => "",
+"Select design type - before vote" => "Виберіть тип вигляду — до голосування", // ai 2026-06
 
 // modules/polls/polledit.php, row 263
-"Select design type - after vote" => "",
+"Select design type - after vote" => "Виберіть тип вигляду — після голосування", // ai 2026-06
 
 // modules/polls/polledit.php, row 263
-"If the design after vote should look differently, then specify it here." => "",
+"If the design after vote should look differently, then specify it here." => "Якщо вигляд після голосування має бути іншим, вкажіть його тут.", // ai 2026-06
 ];

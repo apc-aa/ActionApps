@@ -14,178 +14,191 @@ setlocale(LC_NUMERIC, 'en_US');            // keep float format with dot (see AA
 return [
 
 // ./slice.php, row 232
-"Bad inc parameter - included file must contain only alphanumeric characters" => "",
+"Bad inc parameter - included file must contain only alphanumeric characters" => "Tham số inc không hợp lệ - tệp được chèn chỉ được chứa các ký tự chữ và số", // ai 2026-06
 
 // ./slice.php, row 236
-"No such file" => "",
+"No such file" => "Không có tệp như vậy", // ai 2026-06
 
 // ./slice.php, row 263
-"Invalid slice number or slice was deleted" => "",
+"Invalid slice number or slice was deleted" => "Số chuyên mục không hợp lệ hoặc chuyên mục đã bị xóa", // ai 2026-06
 
 // ./slice.php, row 266
-"slice.php output forbidden for this slice" => "",
+"slice.php output forbidden for this slice" => "Đầu ra qua slice.php bị cấm đối với chuyên mục này", // ai 2026-06
 
 // ./slice.php, row 321
-"session id" => "",
+"session id" => "id phiên", // ai 2026-06
 
 // ./slice.php, row 580
-"number of current page (on pagescroller)" => "",
+"number of current page (on pagescroller)" => "số trang hiện tại (trong phân trang)", // ai 2026-06
 
 // ./slice.php, row 581
-"page length (number of items)" => "",
+"page length (number of items)" => "độ dài trang (số bài viết)", // ai 2026-06
 
 // ./slice.php, row 616
 // include/view.php, row 346
-"No item found" => "",
+"No item found" => "Không tìm thấy bài viết nào", // ai 2026-06
 
 // include/discussion.php, row 220
-"Show selected" => "",
+"Show selected" => "Hiển thị mục đã chọn", // ai 2026-06
 
 // include/discussion.php, row 221
-"Show all" => "",
+"Show all" => "Hiển thị tất cả", // ai 2026-06
 
 // include/discussion.php, row 222
-"Add new" => "",
+"Add new" => "Thêm mới", // ai 2026-06
 
 // include/item.php, row 104
-"Alias for %1" => "",
+"Alias for %1" => "Bí danh cho %1", // ai 2026-06
 
 // include/item.php, row 358
-"Alias for subject of the discussion comment" => "",
+"Alias for subject of the discussion comment" => "Bí danh cho chủ đề của bình luận thảo luận", // ai 2026-06
 
 // include/item.php, row 359
-"Alias for text of the discussion comment" => "",
+"Alias for text of the discussion comment" => "Bí danh cho nội dung của bình luận thảo luận", // ai 2026-06
 
 // include/item.php, row 360
-"Alias for written by" => "",
+"Alias for written by" => "Bí danh cho người viết", // ai 2026-06
 
 // include/item.php, row 361
-"Alias for author's e-mail" => "",
+"Alias for author's e-mail" => "Bí danh cho e-mail của tác giả", // ai 2026-06
 
 // include/item.php, row 362
-"Alias for url address of author's www site" => "",
+"Alias for url address of author's www site" => "Bí danh cho địa chỉ url trang web của tác giả", // ai 2026-06
 
 // include/item.php, row 363
-"Alias for description of author's www site" => "",
+"Alias for description of author's www site" => "Bí danh cho mô tả trang web của tác giả", // ai 2026-06
 
 // include/item.php, row 364
-"Alias for publish date" => "",
+"Alias for publish date" => "Bí danh cho ngày xuất bản", // ai 2026-06
 
 // include/item.php, row 365
-"Alias for IP address of author's computer" => "",
+"Alias for IP address of author's computer" => "Bí danh cho địa chỉ IP máy tính của tác giả", // ai 2026-06
 
 // include/item.php, row 366
-"Alias for checkbox used for choosing discussion comment" => "",
+"Alias for checkbox used for choosing discussion comment" => "Bí danh cho ô đánh dấu dùng để chọn bình luận thảo luận", // ai 2026-06
 
 // include/item.php, row 367
-"Alias for images" => "",
+"Alias for images" => "Bí danh cho hình ảnh", // ai 2026-06
 
 // include/item.php, row 368
 "Alias for comment ID<br>\n"
    ."                             <i>Usage: </i>in form code<br>\n"
    ."                             <i>Example: </i>&lt;input type=hidden name=d_item_id value=\"_#DITEM_ID\">"
- => "",
+ => "Bí danh cho ID bình luận<br>\n"
+   ."                             <i>Cách dùng: </i>trong mã biểu mẫu<br>\n"
+   ."                             <i>Ví dụ: </i>&lt;input type=hidden name=d_item_id value=\"_#DITEM_ID\">", // ai 2026-06
 
 // include/item.php, row 369
 "Alias for comment ID (the same as _#DITEM_ID<br>)\n"
    ."                             <i>Usage: </i>in form code<br>\n"
    ."                             <i>Example: </i>&lt;input type=hidden name=d_item_id value=\"_#ITEM_ID#\">"
- => "",
+ => "Bí danh cho ID bình luận (giống như _#DITEM_ID<br>)\n"
+   ."                             <i>Cách dùng: </i>trong mã biểu mẫu<br>\n"
+   ."                             <i>Ví dụ: </i>&lt;input type=hidden name=d_item_id value=\"_#ITEM_ID#\">", // ai 2026-06
 
 // include/item.php, row 370
 "Alias for item ID<br>\n"
    ."                             <i>Usage: </i>in form code<br>\n"
    ."                             <i>Example: </i>&lt;input type=hidden name=d_parent value=\"_#DISC_ID#\">"
- => "",
+ => "Bí danh cho ID bài viết<br>\n"
+   ."                             <i>Cách dùng: </i>trong mã biểu mẫu<br>\n"
+   ."                             <i>Ví dụ: </i>&lt;input type=hidden name=d_parent value=\"_#DISC_ID#\">", // ai 2026-06
 
 // include/item.php, row 371
 "Alias for link to text of the discussion comment<br>\n"
    ."                             <i>Usage: </i>in HTML code for index view of the comment<br>\n"
    ."                             <i>Example: </i>&lt;a href=_#URL_BODY>_#SUBJECT#&lt;/a>"
- => "",
+ => "Bí danh cho liên kết đến nội dung của bình luận thảo luận<br>\n"
+   ."                             <i>Cách dùng: </i>trong mã HTML cho khung hiển thị danh mục của bình luận<br>\n"
+   ."                             <i>Ví dụ: </i>&lt;a href=_#URL_BODY>_#SUBJECT#&lt;/a>", // ai 2026-06
 
 // include/item.php, row 372
 "Alias for link to a form<br>\n"
    ."                             <i>Usage: </i>in HTML code for fulltext view of the comment<br>\n"
    ."                             <i>Example: </i>&lt;a href=_#URLREPLY&gt;Reply&lt;/a&gt;"
- => "",
+ => "Bí danh cho liên kết đến biểu mẫu<br>\n"
+   ."                             <i>Cách dùng: </i>trong mã HTML cho khung hiển thị toàn văn của bình luận<br>\n"
+   ."                             <i>Ví dụ: </i>&lt;a href=_#URLREPLY&gt;Reply&lt;/a&gt;", // ai 2026-06
 
 // include/item.php, row 373
 "Alias for link to discussion<br>\n"
    ."                             <i>Usage: </i>in form code<br>\n"
    ."                             <i>Example: </i>&lt;input type=hidden name=url value=\"_#DISC_URL\">"
- => "",
+ => "Bí danh cho liên kết đến thảo luận<br>\n"
+   ."                             <i>Cách dùng: </i>trong mã biểu mẫu<br>\n"
+   ."                             <i>Ví dụ: </i>&lt;input type=hidden name=url value=\"_#DISC_URL\">", // ai 2026-06
 
 // include/item.php, row 374
 "Alias for buttons Show all, Show selected, Add new<br>\n"
    ."                             <i>Usage: </i> in the Bottom HTML code"
- => "",
+ => "Bí danh cho các nút Hiện tất cả, Hiện đã chọn, Thêm mới<br>\n"
+   ."                             <i>Cách dùng: </i>trong mã HTML phần dưới", // ai 2026-06
 
 // include/item.php, row 389
-"3rd parameter filled in DiscussionMailList field" => "",
+"3rd parameter filled in DiscussionMailList field" => "Tham số thứ 3 điền trong trường DiscussionMailList", // ai 2026-06
 
 // include/item.php, row 391
-"%1th parameter filled in DiscussionMailList field" => "",
+"%1th parameter filled in DiscussionMailList field" => "Tham số thứ %1 điền trong trường DiscussionMailList", // ai 2026-06
 
 // include/item.php, row 406
-"Constant name" => "",
+"Constant name" => "Tên hằng số", // ai 2026-06
 
 // include/item.php, row 407
-"Translated constant name" => "",
+"Translated constant name" => "Tên hằng số đã dịch", // ai 2026-06
 
 // include/item.php, row 408
-"Constant value" => "",
+"Constant value" => "Giá trị hằng số", // ai 2026-06
 
 // include/item.php, row 409
-"Constant priority" => "",
+"Constant priority" => "Thứ tự hằng số", // ai 2026-06
 
 // include/item.php, row 410
-"Constant group id" => "",
+"Constant group id" => "ID nhóm hằng số", // ai 2026-06
 
 // include/item.php, row 411
-"Category class (for categories only)" => "",
+"Category class (for categories only)" => "Lớp danh mục (chỉ cho danh mục)", // ai 2026-06
 
 // include/item.php, row 412
-"Constant number" => "",
+"Constant number" => "Số hằng số", // ai 2026-06
 
 // include/item.php, row 413
-"Constant unique id (32-hexadecimal characters)" => "",
+"Constant unique id (32-hexadecimal characters)" => "ID duy nhất của hằng số (32 ký tự thập lục phân)", // ai 2026-06
 
 // include/item.php, row 414
-"Constant unique short id (autoincremented from '1' for each constant in the system)" => "",
+"Constant unique short id (autoincremented from '1' for each constant in the system)" => "ID ngắn duy nhất của hằng số (tự tăng từ '1' cho mỗi hằng số trong hệ thống)", // ai 2026-06
 
 // include/item.php, row 415
-"Constant description" => "",
+"Constant description" => "Mô tả hằng số", // ai 2026-06
 
 // include/item.php, row 416
-"Constant level (used for hierarchical constants)" => "",
+"Constant level (used for hierarchical constants)" => "Cấp của hằng số (dùng cho các hằng số phân cấp)", // ai 2026-06
 
 // include/item.php, row 787
-"Error: wrong alias function %1 for %2" => "",
+"Error: wrong alias function %1 for %2" => "Lỗi: hàm bí danh %1 không đúng cho %2", // ai 2026-06
 
 // include/itemview.php, row 117
-"Selected item" => "",
+"Selected item" => "Bài viết đã chọn", // ai 2026-06
 
 // include/itemview.php, row 124
-"number of found items" => "",
+"number of found items" => "số bài viết tìm thấy", // ai 2026-06
 
 // include/itemview.php, row 359
-"No comment was selected" => "",
+"No comment was selected" => "Không có bình luận nào được chọn", // ai 2026-06
 
 // include/itemview.php, row 680, 688
-"exact group name" => "",
+"exact group name" => "tên nhóm chính xác", // ai 2026-06
 
 // include/scroller.php, row 86
-"Next" => "",
+"Next" => "Tiếp", // ai 2026-06
 
 // include/scroller.php, row 87
-"Previous" => "",
+"Previous" => "Trước", // ai 2026-06
 
 // include/scroller.php, row 88
-"All" => "",
+"All" => "Tất cả", // ai 2026-06
 
 // include/scroller.php, row 296
-"found" => "",
+"found" => "tìm thấy", // ai 2026-06
 
 // include/scroller.php, row 452
 "&raquo;" => "",
@@ -194,26 +207,26 @@ return [
 "&laquo;" => "",
 
 // include/slice.php, row 68
-"Select Category " => "",
+"Select Category " => "Chọn danh mục", // ai 2026-06
 
 // include/slice.php, row 70
-"All categories" => "",
+"All categories" => "Tất cả danh mục", // ai 2026-06
 
 // include/util.php, row 950
-"Error: Missing Reading Password" => "",
+"Error: Missing Reading Password" => "Lỗi: Thiếu mật khẩu đọc", // ai 2026-06
 
 // include/util.php, row 1300
-"Toolkit news message" => "",
+"Toolkit news message" => "Thông báo tin tức Toolkit", // ai 2026-06
 
 // include/util.php, row 1314
-"Back" => "",
+"Back" => "Quay lại", // ai 2026-06
 
 // include/util.php, row 1314
-"Relogin" => "",
+"Relogin" => "Đăng nhập lại", // ai 2026-06
 
 // misc/proposefieldchange.php, row 71
-"Assignment form" => "",
+"Assignment form" => "Biểu mẫu gán", // ai 2026-06
 
 // misc/proposefieldchange.php, row 76
-"Grabs item relations data POSTed by form" => "",
+"Grabs item relations data POSTed by form" => "Lấy dữ liệu quan hệ bài viết được gửi bằng POST từ biểu mẫu", // ai 2026-06
 ];

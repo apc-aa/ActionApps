@@ -15,223 +15,223 @@ return [
 
 // modules/polls/designs.php, row 38
 // modules/polls/index.php, row 55
-"You do not have permission to manage Polls" => "",
+"You do not have permission to manage Polls" => "Bạn không có quyền quản lý cuộc bình chọn", // ai 2026-06
 
 // modules/polls/designs.php, row 47
-"Owner" => "",
+"Owner" => "Chủ sở hữu", // ai 2026-06
 
 // modules/polls/designs.php, row 48
 "ID" => "",
 
 // modules/polls/designs.php, row 49
-"Comment" => "",
+"Comment" => "Bình luận", // ai 2026-06
 
 // modules/polls/designs.php, row 50
-"Name" => "",
+"Name" => "Tên", // ai 2026-06
 
 // modules/polls/designs.php, row 52
-"Top HTML" => "",
+"Top HTML" => "HTML phía trên", // ai 2026-06
 
 // modules/polls/designs.php, row 53
-"Answer HTML" => "",
+"Answer HTML" => "HTML câu trả lời", // ai 2026-06
 
 // modules/polls/designs.php, row 54
-"Bottom HTML" => "",
+"Bottom HTML" => "HTML phía dưới", // ai 2026-06
 
 // modules/polls/designs.php, row 57
-"Polls Design" => "",
+"Polls Design" => "Giao diện cuộc bình chọn", // ai 2026-06
 
 // modules/polls/include/util.php, row 44
-"Poll ID" => "",
+"Poll ID" => "ID cuộc bình chọn", // ai 2026-06
 
 // modules/polls/include/util.php, row 45, 68
-"Module ID" => "",
+"Module ID" => "ID mô-đun", // ai 2026-06
 
 // modules/polls/include/util.php, row 46, 63, 64
-"Prints poll question" => "",
+"Prints poll question" => "In câu hỏi của cuộc bình chọn", // ai 2026-06
 
 // modules/polls/include/util.php, row 47
 // modules/polls/polledit.php, row 233, 240
-"Publish Date" => "",
+"Publish Date" => "Ngày xuất bản", // ai 2026-06
 
 // modules/polls/include/util.php, row 48
 // modules/polls/polledit.php, row 234, 241
-"Expiry Date" => "",
+"Expiry Date" => "Ngày hết hạn", // ai 2026-06
 
 // modules/polls/include/util.php, row 49
-"Prints poll params" => "",
+"Prints poll params" => "In tham số của cuộc bình chọn", // ai 2026-06
 
 // modules/polls/include/util.php, row 50
-"Link to poll editing page (for admin interface only)" => "",
+"Link to poll editing page (for admin interface only)" => "Liên kết tới trang chỉnh sửa cuộc bình chọn (chỉ dành cho giao diện quản trị)", // ai 2026-06
 
 // modules/polls/include/util.php, row 65
-"Poll publish date" => "",
+"Poll publish date" => "Ngày xuất bản cuộc bình chọn", // ai 2026-06
 
 // modules/polls/include/util.php, row 66
-"Poll expiry date" => "",
+"Poll expiry date" => "Ngày hết hạn cuộc bình chọn", // ai 2026-06
 
 // modules/polls/include/util.php, row 67
-"Poll params" => "",
+"Poll params" => "Tham số cuộc bình chọn", // ai 2026-06
 
 // modules/polls/include/util.php, row 70
-"Poll id (32 characters hexadecimal number - the same for all answers)" => "",
+"Poll id (32 characters hexadecimal number - the same for all answers)" => "ID cuộc bình chọn (số thập lục phân 32 ký tự - giống nhau cho mọi câu trả lời)", // ai 2026-06
 
 // modules/polls/include/util.php, row 72
-"Number of answer" => "",
+"Number of answer" => "Số thứ tự câu trả lời", // ai 2026-06
 
 // modules/polls/include/util.php, row 73
-"Number of votes for this answer" => "",
+"Number of votes for this answer" => "Số phiếu bầu cho câu trả lời này", // ai 2026-06
 
 // modules/polls/include/util.php, row 74
-"Text of answer" => "",
+"Text of answer" => "Nội dung câu trả lời", // ai 2026-06
 
 // modules/polls/include/util.php, row 75
-"ID of answer (32 characters hexadecimal number)" => "",
+"ID of answer (32 characters hexadecimal number)" => "ID câu trả lời (số thập lục phân 32 ký tự)", // ai 2026-06
 
 // modules/polls/include/util.php, row 76
-"Votes for this answer in percent. You can use also {poll_share}." => "",
+"Votes for this answer in percent. You can use also {poll_share}." => "Số phiếu cho câu trả lời này tính theo phần trăm. Bạn cũng có thể dùng {poll_share}.", // ai 2026-06
 
 // modules/polls/include/util.php, row 77
-"Sum of all votes. You can use also {poll_sum}." => "",
+"Sum of all votes. You can use also {poll_sum}." => "Tổng số phiếu bầu. Bạn cũng có thể dùng {poll_sum}.", // ai 2026-06
 
 // modules/polls/menu.php, row 58
-"View poll" => "",
+"View poll" => "Xem cuộc bình chọn", // ai 2026-06
 
 // modules/polls/menu.php, row 65, 66
 // modules/polls/polledit.php, row 188
-"Edit poll" => "",
+"Edit poll" => "Sửa cuộc bình chọn", // ai 2026-06
 
 // modules/polls/menu.php, row 65
 // modules/polls/polledit.php, row 188
-"Add poll" => "",
+"Add poll" => "Thêm cuộc bình chọn", // ai 2026-06
 
 // modules/polls/menu.php, row 66
-"Add new poll" => "",
+"Add new poll" => "Thêm cuộc bình chọn mới", // ai 2026-06
 
 // modules/polls/menu.php, row 73, 74
-"Polls manager" => "",
+"Polls manager" => "Trình quản lý cuộc bình chọn", // ai 2026-06
 
 // modules/polls/menu.php, row 81, 82
-"Polls admin" => "",
+"Polls admin" => "Quản trị cuộc bình chọn", // ai 2026-06
 
 // modules/polls/menu.php, row 93
-"Folders" => "",
+"Folders" => "Thư mục", // ai 2026-06
 
 // modules/polls/menu.php, row 94
-"Active" => "",
+"Active" => "Đang hoạt động", // ai 2026-06
 
 // modules/polls/menu.php, row 95
-"... pending" => "",
+"... pending" => "... chờ xử lý", // ai 2026-06
 
 // modules/polls/menu.php, row 96
-"... expired" => "",
+"... expired" => "... đã hết hạn", // ai 2026-06
 
 // modules/polls/menu.php, row 97
-"Hold bin" => "",
+"Hold bin" => "Khu chờ duyệt", // ai 2026-06
 
 // modules/polls/menu.php, row 98
-"Trash bin" => "",
+"Trash bin" => "Thùng rác", // ai 2026-06
 
 // modules/polls/menu.php, row 100
-"Misc" => "",
+"Misc" => "Khác", // ai 2026-06
 
 // modules/polls/menu.php, row 101
-"Empty trash" => "",
+"Empty trash" => "Dọn thùng rác", // ai 2026-06
 
 // modules/polls/menu.php, row 101
-"Are you sure you want to empty trash?" => "",
+"Are you sure you want to empty trash?" => "Bạn có chắc muốn dọn thùng rác không?", // ai 2026-06
 
 // modules/polls/menu.php, row 115
-"Main settings" => "",
+"Main settings" => "Cài đặt chính", // ai 2026-06
 
 // modules/polls/menu.php, row 116
-"Polls" => "",
+"Polls" => "Cuộc bình chọn", // ai 2026-06
 
 // modules/polls/menu.php, row 117
-"Designs" => "",
+"Designs" => "Giao diện", // ai 2026-06
 
 // modules/polls/modedit.php, row 93
-"You do not have permissions to add polls" => "",
+"You do not have permissions to add polls" => "Bạn không có quyền thêm cuộc bình chọn", // ai 2026-06
 
 // modules/polls/modedit.php, row 98
-"You do not have permissions to edit this poll" => "",
+"You do not have permissions to edit this poll" => "Bạn không có quyền sửa cuộc bình chọn này", // ai 2026-06
 
 // modules/polls/modedit.php, row 115, 240
 // modules/polls/polledit.php, row 249
-"IP Locking timeout" => "",
+"IP Locking timeout" => "Thời gian khóa IP", // ai 2026-06
 
 // modules/polls/modedit.php, row 116, 242
-"Cookies prefix" => "",
+"Cookies prefix" => "Tiền tố cookie", // ai 2026-06
 
 // modules/polls/modedit.php, row 225
-"Add Polls" => "",
+"Add Polls" => "Thêm cuộc bình chọn", // ai 2026-06
 
 // modules/polls/modedit.php, row 225
-"Edit Polls" => "",
+"Edit Polls" => "Sửa cuộc bình chọn", // ai 2026-06
 
 // modules/polls/modedit.php, row 228
-"Polls Module general data" => "",
+"Polls Module general data" => "Dữ liệu chung của mô-đun Cuộc bình chọn", // ai 2026-06
 
 // modules/polls/modedit.php, row 233
-"Used Language File" => "",
+"Used Language File" => "Tệp ngôn ngữ được dùng", // ai 2026-06
 
 // modules/polls/modedit.php, row 237
-"Defaults for polls in this module" => "",
+"Defaults for polls in this module" => "Giá trị mặc định cho cuộc bình chọn trong mô-đun này", // ai 2026-06
 
 // modules/polls/modedit.php, row 238
 // modules/polls/polledit.php, row 247
-"Use logging" => "",
+"Use logging" => "Ghi nhật ký", // ai 2026-06
 
 // modules/polls/modedit.php, row 239
 // modules/polls/polledit.php, row 248
-"Use IP locking" => "",
+"Use IP locking" => "Dùng khóa IP", // ai 2026-06
 
 // modules/polls/modedit.php, row 241
 // modules/polls/polledit.php, row 250
-"Use cookies" => "",
+"Use cookies" => "Dùng cookie", // ai 2026-06
 
 // modules/polls/polledit.php, row 74
-"No permission to add/edit poll." => "",
+"No permission to add/edit poll." => "Không có quyền thêm/sửa cuộc bình chọn.", // ai 2026-06
 
 // modules/polls/polledit.php, row 113
-"Can't insert new poll" => "",
+"Can't insert new poll" => "Không thể chèn cuộc bình chọn mới", // ai 2026-06
 
 // modules/polls/polledit.php, row 119
-"Can't update poll with id %1" => "",
+"Can't update poll with id %1" => "Không thể cập nhật cuộc bình chọn có id %1", // ai 2026-06
 
 // modules/polls/polledit.php, row 209
-"Insert question and answers" => "",
+"Insert question and answers" => "Nhập câu hỏi và các câu trả lời", // ai 2026-06
 
 // modules/polls/polledit.php, row 231, 238
-"Headline" => "",
+"Headline" => "Tiêu đề", // ai 2026-06
 
 // modules/polls/polledit.php, row 231, 238
-"Question" => "",
+"Question" => "Câu hỏi", // ai 2026-06
 
 // modules/polls/polledit.php, row 232, 239
-"Insert new answers and choose their order" => "",
+"Insert new answers and choose their order" => "Nhập các câu trả lời mới và chọn thứ tự của chúng", // ai 2026-06
 
 // modules/polls/polledit.php, row 244
-"Polls settings" => "",
+"Polls settings" => "Cài đặt cuộc bình chọn", // ai 2026-06
 
 // modules/polls/polledit.php, row 246
-"Poll is locked" => "",
+"Poll is locked" => "Cuộc bình chọn đã bị khóa", // ai 2026-06
 
 // modules/polls/polledit.php, row 249
-"time in seconds" => "",
+"time in seconds" => "thời gian tính bằng giây", // ai 2026-06
 
 // modules/polls/polledit.php, row 252
-"Parameters" => "",
+"Parameters" => "Tham số", // ai 2026-06
 
 // modules/polls/polledit.php, row 254
-"Polls design templates" => "",
+"Polls design templates" => "Mẫu giao diện cuộc bình chọn", // ai 2026-06
 
 // modules/polls/polledit.php, row 262
-"Select design type - before vote" => "",
+"Select design type - before vote" => "Chọn kiểu giao diện - trước khi bỏ phiếu", // ai 2026-06
 
 // modules/polls/polledit.php, row 263
-"Select design type - after vote" => "",
+"Select design type - after vote" => "Chọn kiểu giao diện - sau khi bỏ phiếu", // ai 2026-06
 
 // modules/polls/polledit.php, row 263
-"If the design after vote should look differently, then specify it here." => "",
+"If the design after vote should look differently, then specify it here." => "Nếu giao diện sau khi bỏ phiếu cần hiển thị khác đi, hãy chỉ định tại đây.", // ai 2026-06
 ];

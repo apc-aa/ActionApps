@@ -11,55 +11,55 @@ $mgettext_lang = "ja";
 return [
 
 // include/searchbar.class.php, row 51
-"Condition" => "",
+"Condition" => "\xBE\xF2\xB7\xEF", // ai 2026-06
 
 // include/searchbar.class.php, row 52
-"Readonly" => "",
+"Readonly" => "\xC6\xC9\xA4\xDF\xBC\xE8\xA4\xEA\xC0\xEC\xCD\xD1", // ai 2026-06
 
 // include/searchbar.class.php, row 142
-"Search row" => "",
+"Search row" => "\xB8\xA1\xBA\xF7\xB9\xD4", // ai 2026-06
 
 // include/searchbar.class.php, row 143
-"Order row" => "",
+"Order row" => "\xCA\xC2\xA4\xD9\xC2\xD8\xA4\xA8\xB9\xD4", // ai 2026-06
 
 // include/searchbar.class.php, row 533, 534, 570
 "Search" => "\xB8\xA1\xBA\xF7",
 
 // include/searchbar.class.php, row 533
-"And" => "",
+"And" => "\xA4\xAB\xA4\xC4", // ai 2026-06
 
 // include/searchbar.class.php, row 543
-"contains" => "",
+"contains" => "\xB4\xDE\xA4\xE0", // ai 2026-06
 
 // include/searchbar.class.php, row 546
-"begins with" => "",
+"begins with" => "\xA4\xC7\xBB\xCF\xA4\xDE\xA4\xEB", // ai 2026-06
 
 // include/searchbar.class.php, row 549
-"is" => "",
+"is" => "\xB0\xEC\xC3\xD7", // ai 2026-06
 
 // include/searchbar.class.php, row 571
-"Clear" => "",
+"Clear" => "\xA5\xAF\xA5\xEA\xA5\xA2", // ai 2026-06
 
 // include/searchbar.class.php, row 574
-"Store search" => "",
+"Store search" => "\xB8\xA1\xBA\xF7\xA4\xF2\xCA\xDD\xC2\xB8", // ai 2026-06
 
 // include/searchbar.class.php, row 595
-"Order" => "",
+"Order" => "\xCA\xC2\xA4\xD9\xC2\xD8\xA4\xA8", // ai 2026-06
 
 // include/searchbar.class.php, row 599
-"Descending" => "",
+"Descending" => "\xB9\xDF\xBD\xE7", // ai 2026-06
 
 // include/searchbar.class.php, row 613
-"Filter" => "",
+"Filter" => "\xA5\xD5\xA5\xA3\xA5\xEB\xA5\xBF\xA1\xBC", // ai 2026-06
 
 // include/searchbar.class.php, row 662
-"Advanced search" => "",
+"Advanced search" => "\xB9\xE2\xC5\xD9\xA4\xCA\xB8\xA1\xBA\xF7", // ai 2026-06
 
 // include/searchbar.class.php, row 719
-"Save" => "",
+"Save" => "\xCA\xDD\xC2\xB8", // ai 2026-06
 
 // include/searchbar.class.php, row 720
-"Refine" => "",
+"Refine" => "\xB9\xCA\xA4\xEA\xB9\xFE\xA4\xDF", // ai 2026-06
 
 // include/searchbar.class.php, row 721
 "Cancel" => "\xC3\xE6\xC3\xC7",
@@ -69,78 +69,78 @@ return [
 "Name" => "\xCC\xBE\xC1\xB0",
 
 // include/searchbar.class.php, row 723
-"Share with all slice users" => "",
+"Share with all slice users" => "\xA5\xB9\xA5\xE9\xA5\xA4\xA5\xB9\xA4\xCE\xC1\xB4\xCD\xF8\xCD\xD1\xBC\xD4\xA4\xC8\xB6\xA6\xCD\xAD", // ai 2026-06
 
 // include/searchbar.class.php, row 724
-"Save filter" => "",
+"Save filter" => "\xA5\xD5\xA5\xA3\xA5\xEB\xA5\xBF\xA4\xF2\xCA\xDD\xC2\xB8", // ai 2026-06
 
 // include/searchbar.class.php, row 725
-"Rename filter" => "",
+"Rename filter" => "\xA5\xD5\xA5\xA3\xA5\xEB\xA5\xBF\xCC\xBE\xA4\xF2\xCA\xD1\xB9\xB9", // ai 2026-06
 
 // include/searchbar.class.php, row 726
-"Are you sure you want to delete selected filter?" => "",
+"Are you sure you want to delete selected filter?" => "\xC1\xAA\xC2\xF2\xA4\xB7\xA4\xBF\xA5\xD5\xA5\xA3\xA5\xEB\xA5\xBF\xA4\xF2\xBA\xEF\xBD\xFC\xA4\xB7\xA4\xC6\xA4\xE2\xA4\xE8\xA4\xED\xA4\xB7\xA4\xA4\xA4\xC7\xA4\xB9\xA4\xAB\xA1\xA9", // ai 2026-06
 
 // include/searchbar.class.php, row 1008
-"Select one..." => "",
+"Select one..." => "\xC1\xAA\xC2\xF2\xA4\xB7\xA4\xC6\xA4\xAF\xA4\xC0\xA4\xB5\xA4\xA4...", // ai 2026-06
 
 // include/searchbar.class.php, row 1023
-"My filters" => "",
+"My filters" => "\xBC\xAB\xCA\xAC\xA4\xCE\xA5\xD5\xA5\xA3\xA5\xEB\xA5\xBF", // ai 2026-06
 
 // include/searchbar.class.php, row 1026
-"Global filters" => "",
+"Global filters" => "\xA5\xB0\xA5\xED\xA1\xBC\xA5\xD0\xA5\xEB\xA5\xD5\xA5\xA3\xA5\xEB\xA5\xBF", // ai 2026-06
 
 // include/searchbar.class.php, row 1064
-"Shared filter (click to apply)" => "",
+"Shared filter (click to apply)" => "\xB6\xA6\xCD\xAD\xA5\xD5\xA5\xA3\xA5\xEB\xA5\xBF (\xA5\xAF\xA5\xEA\xA5\xC3\xA5\xAF\xA4\xC7\xC5\xAC\xCD\xD1)", // ai 2026-06
 
 // include/searchbar.class.php, row 1064
-"Personal filter (click to apply)" => "",
+"Personal filter (click to apply)" => "\xB8\xC4\xBF\xCD\xA5\xD5\xA5\xA3\xA5\xEB\xA5\xBF (\xA5\xAF\xA5\xEA\xA5\xC3\xA5\xAF\xA4\xC7\xC5\xAC\xCD\xD1)", // ai 2026-06
 
 // include/searchbar.class.php, row 1074
-"Rename" => "",
+"Rename" => "\xCC\xBE\xC1\xB0\xA4\xF2\xCA\xD1\xB9\xB9", // ai 2026-06
 
 // include/searchbar.class.php, row 1076
-"Delete" => "",
+"Delete" => "\xBA\xEF\xBD\xFC", // ai 2026-06
 
 // include/searchbar.class.php, row 1085
-"Manage filters" => "",
+"Manage filters" => "\xA5\xD5\xA5\xA3\xA5\xEB\xA5\xBF\xA4\xCE\xB4\xC9\xCD\xFD", // ai 2026-06
 
 // include/util.php, row 950
-"Error: Missing Reading Password" => "",
+"Error: Missing Reading Password" => "\xA5\xA8\xA5\xE9\xA1\xBC: \xC6\xC9\xA4\xDF\xBC\xE8\xA4\xEA\xA5\xD1\xA5\xB9\xA5\xEF\xA1\xBC\xA5\xC9\xA4\xAC\xA4\xA2\xA4\xEA\xA4\xDE\xA4\xBB\xA4\xF3", // ai 2026-06
 
 // include/util.php, row 1300
-"Toolkit news message" => "",
+"Toolkit news message" => "\xA5\xA2\xA5\xD7\xA5\xEA\xA5\xB1\xA1\xBC\xA5\xB7\xA5\xE7\xA5\xF3\xA4\xCE\xA4\xAA\xC3\xCE\xA4\xE9\xA4\xBB", // ai 2026-06
 
 // include/util.php, row 1314
 // modules/links/check_url.php, row 52
-"Back" => "",
+"Back" => "\xCC\xE1\xA4\xEB", // ai 2026-06
 
 // include/util.php, row 1314
-"Relogin" => "",
+"Relogin" => "\xBA\xC6\xA5\xED\xA5\xB0\xA5\xA4\xA5\xF3", // ai 2026-06
 
 // modules/links/actions.php, row 47, 91, 112
-"Can't find link in given category" => "",
+"Can't find link in given category" => "\xBB\xD8\xC4\xEA\xA4\xB5\xA4\xEC\xA4\xBF\xA5\xAB\xA5\xC6\xA5\xB4\xA5\xEA\xA4\xCB\xA5\xEA\xA5\xF3\xA5\xAF\xA4\xAC\xB8\xAB\xA4\xC4\xA4\xAB\xA4\xEA\xA4\xDE\xA4\xBB\xA4\xF3", // ai 2026-06
 
 // modules/links/actions.php, row 52, 117
-"No permission to delete link from the category - link set as PROPOSAL to DELETE from given category" => "",
+"No permission to delete link from the category - link set as PROPOSAL to DELETE from given category" => "\xA5\xAB\xA5\xC6\xA5\xB4\xA5\xEA\xA4\xAB\xA4\xE9\xA5\xEA\xA5\xF3\xA5\xAF\xA4\xF2\xBA\xEF\xBD\xFC\xA4\xB9\xA4\xEB\xB5\xF6\xB2\xC4\xA4\xAC\xA4\xA2\xA4\xEA\xA4\xDE\xA4\xBB\xA4\xF3 - \xA5\xEA\xA5\xF3\xA5\xAF\xA4\xCF\xA4\xB3\xA4\xCE\xA5\xAB\xA5\xC6\xA5\xB4\xA5\xEA\xA4\xAB\xA4\xE9\xA4\xCE\xBA\xEF\xBD\xFC\xC4\xF3\xB0\xC6\xA4\xC8\xA4\xB7\xA4\xC6\xC0\xDF\xC4\xEA\xA4\xB5\xA4\xEC\xA4\xDE\xA4\xB7\xA4\xBF", // ai 2026-06
 
 // modules/links/actions.php, row 61, 126
-"Can't get association information" => "",
+"Can't get association information" => "\xB4\xD8\xCF\xA2\xC9\xD5\xA4\xB1\xBE\xF0\xCA\xF3\xA4\xF2\xBC\xE8\xC6\xC0\xA4\xC7\xA4\xAD\xA4\xDE\xA4\xBB\xA4\xF3", // ai 2026-06
 
 // modules/links/actions.php, row 95
-"No permission to approve link to given category" => "",
+"No permission to approve link to given category" => "\xA4\xB3\xA4\xCE\xA5\xAB\xA5\xC6\xA5\xB4\xA5\xEA\xA4\xD8\xA4\xCE\xA5\xEA\xA5\xF3\xA5\xAF\xA4\xF2\xBE\xB5\xC7\xA7\xA4\xB9\xA4\xEB\xB5\xF6\xB2\xC4\xA4\xAC\xA4\xA2\xA4\xEA\xA4\xDE\xA4\xBB\xA4\xF3", // ai 2026-06
 
 // modules/links/actions.php, row 162, 165
-"No permission to move link" => "",
+"No permission to move link" => "\xA5\xEA\xA5\xF3\xA5\xAF\xA4\xF2\xB0\xDC\xC6\xB0\xA4\xB9\xA4\xEB\xB5\xF6\xB2\xC4\xA4\xAC\xA4\xA2\xA4\xEA\xA4\xDE\xA4\xBB\xA4\xF3", // ai 2026-06
 
 // modules/links/catedit.php, row 51
 // modules/links/catedit2.php, row 208
-"No permission to edit category" => "",
+"No permission to edit category" => "\xA5\xAB\xA5\xC6\xA5\xB4\xA5\xEA\xA4\xF2\xCA\xD4\xBD\xB8\xA4\xB9\xA4\xEB\xB5\xF6\xB2\xC4\xA4\xAC\xA4\xA2\xA4\xEA\xA4\xDE\xA4\xBB\xA4\xF3", // ai 2026-06
 
 // modules/links/catedit.php, row 74
-"ActionApps - Category Edit" => "",
+"ActionApps - Category Edit" => "ActionApps - \xA5\xAB\xA5\xC6\xA5\xB4\xA5\xEA\xCA\xD4\xBD\xB8", // ai 2026-06
 
 // modules/links/catedit.php, row 97
-"Category Edit" => "",
+"Category Edit" => "\xA5\xAB\xA5\xC6\xA5\xB4\xA5\xEA\xCA\xD4\xBD\xB8", // ai 2026-06
 
 // modules/links/catedit.php, row 103
 "Category" => "\xCA\xAC\xCE\xE0",
@@ -148,115 +148,115 @@ return [
 // modules/links/catedit.php, row 104
 // modules/links/constants.php, row 58, 170
 // modules/links/linkedit.php, row 430
-"Id" => "",
+"Id" => "ID", // ai 2026-06
 
 // modules/links/catedit.php, row 104
-"Links in subtree" => "",
+"Links in subtree" => "\xA5\xB5\xA5\xD6\xA5\xC4\xA5\xEA\xA1\xBC\xC6\xE2\xA4\xCE\xA5\xEA\xA5\xF3\xA5\xAF\xBF\xF4", // ai 2026-06
 
 // modules/links/catedit.php, row 105
 // modules/links/catedit2.php, row 217
 // modules/links/constants.php, row 93, 191
-"Category name" => "",
+"Category name" => "\xA5\xAB\xA5\xC6\xA5\xB4\xA5\xEA\xCC\xBE", // ai 2026-06
 
 // modules/links/catedit.php, row 106
 // modules/links/catedit2.php, row 218
 // modules/links/constants.php, row 97, 193
-"Category description" => "",
+"Category description" => "\xA5\xAB\xA5\xC6\xA5\xB4\xA5\xEA\xA4\xCE\xC0\xE2\xCC\xC0", // ai 2026-06
 
 // modules/links/catedit.php, row 107
-"No links" => "",
+"No links" => "\xA5\xEA\xA5\xF3\xA5\xAF\xA4\xCA\xA4\xB7", // ai 2026-06
 
 // modules/links/catedit.php, row 107
-"Disallow storing of the links to this category?" => "",
+"Disallow storing of the links to this category?" => "\xA4\xB3\xA4\xCE\xA5\xAB\xA5\xC6\xA5\xB4\xA5\xEA\xA4\xD8\xA4\xCE\xA5\xEA\xA5\xF3\xA5\xAF\xA4\xCE\xCA\xDD\xC2\xB8\xA4\xF2\xB6\xD8\xBB\xDF\xA4\xB7\xA4\xDE\xA4\xB9\xA4\xAB\xA1\xA9", // ai 2026-06
 
 // modules/links/catedit.php, row 108
 // modules/links/catedit2.php, row 222
 // modules/links/constants.php, row 75
 // modules/links/link.class.php, row 674
 // modules/links/linkedit.php, row 473
-"Editor's note" => "",
+"Editor's note" => "\xCA\xD4\xBD\xB8\xBC\xD4\xA5\xE1\xA5\xE2", // ai 2026-06
 
 // modules/links/catedit.php, row 110
-"Subcategories" => "",
+"Subcategories" => "\xA5\xB5\xA5\xD6\xA5\xAB\xA5\xC6\xA5\xB4\xA5\xEA", // ai 2026-06
 
 // modules/links/catedit.php, row 113
 // modules/links/linkedit.php, row 494
-"Category tree" => "",
+"Category tree" => "\xA5\xAB\xA5\xC6\xA5\xB4\xA5\xEA\xA5\xC4\xA5\xEA\xA1\xBC", // ai 2026-06
 
 // modules/links/catedit.php, row 113
-"select the category for crossreference" => "",
+"select the category for crossreference" => "\xA5\xAF\xA5\xED\xA5\xB9\xBB\xB2\xBE\xC8\xA4\xB9\xA4\xEB\xA5\xAB\xA5\xC6\xA5\xB4\xA5\xEA\xA4\xF2\xC1\xAA\xC2\xF2\xA4\xB7\xA4\xC6\xA4\xAF\xA4\xC0\xA4\xB5\xA4\xA4", // ai 2026-06
 
 // modules/links/catedit.php, row 115
-"Selected subcategories" => "",
+"Selected subcategories" => "\xC1\xAA\xC2\xF2\xA4\xB5\xA4\xEC\xA4\xBF\xA5\xB5\xA5\xD6\xA5\xAB\xA5\xC6\xA5\xB4\xA5\xEA", // ai 2026-06
 
 // modules/links/catedit.php, row 115
-"subcategories of this category" => "",
+"subcategories of this category" => "\xA4\xB3\xA4\xCE\xA5\xAB\xA5\xC6\xA5\xB4\xA5\xEA\xA4\xCE\xA5\xB5\xA5\xD6\xA5\xAB\xA5\xC6\xA5\xB4\xA5\xEA", // ai 2026-06
 
 // modules/links/catedit.php, row 132
-"New subcategory" => "",
+"New subcategory" => "\xBF\xB7\xB5\xAC\xA5\xB5\xA5\xD6\xA5\xAB\xA5\xC6\xA5\xB4\xA5\xEA", // ai 2026-06
 
 // modules/links/catedit.php, row 132
 "Add" => "\xC4\xC9\xB2\xC3",
 
 // modules/links/catedit.php, row 135
-"Remove selected subcategory?" => "",
+"Remove selected subcategory?" => "\xC1\xAA\xC2\xF2\xA4\xB5\xA4\xEC\xA4\xBF\xA5\xB5\xA5\xD6\xA5\xAB\xA5\xC6\xA5\xB4\xA5\xEA\xA4\xF2\xBA\xEF\xBD\xFC\xA4\xB7\xA4\xDE\xA4\xB9\xA4\xAB\xA1\xA9", // ai 2026-06
 
 // modules/links/catedit.php, row 135
-"Del" => "",
+"Del" => "\xBA\xEF\xBD\xFC", // ai 2026-06
 
 // modules/links/catedit.php, row 137
-"Change state" => "",
+"Change state" => "\xBE\xF5\xC2\xD6\xA4\xF2\xCA\xD1\xB9\xB9", // ai 2026-06
 
 // modules/links/catedit.php, row 142
 "OK" => "",
 
 // modules/links/catedit2.php, row 153
-"Category reassigned" => "",
+"Category reassigned" => "\xA5\xAB\xA5\xC6\xA5\xB4\xA5\xEA\xA4\xAC\xBA\xC6\xB3\xE4\xA4\xEA\xC5\xF6\xA4\xC6\xA4\xB5\xA4\xEC\xA4\xDE\xA4\xB7\xA4\xBF", // ai 2026-06
 
 // modules/links/catedit2.php, row 165
-"Subcategory deleted" => "",
+"Subcategory deleted" => "\xA5\xB5\xA5\xD6\xA5\xAB\xA5\xC6\xA5\xB4\xA5\xEA\xA4\xAC\xBA\xEF\xBD\xFC\xA4\xB5\xA4\xEC\xA4\xDE\xA4\xB7\xA4\xBF", // ai 2026-06
 
 // modules/links/catedit2.php, row 167
-"Can't delete category which contains links" => "",
+"Can't delete category which contains links" => "\xA5\xEA\xA5\xF3\xA5\xAF\xA4\xF2\xB4\xDE\xA4\xE0\xA5\xAB\xA5\xC6\xA5\xB4\xA5\xEA\xA4\xCF\xBA\xEF\xBD\xFC\xA4\xC7\xA4\xAD\xA4\xDE\xA4\xBB\xA4\xF3", // ai 2026-06
 
 // modules/links/catedit2.php, row 221
-"Additional information" => "",
+"Additional information" => "\xC4\xC9\xB2\xC3\xBE\xF0\xCA\xF3", // ai 2026-06
 
 // modules/links/catedit2.php, row 231
-"Category data changed" => "",
+"Category data changed" => "\xA5\xAB\xA5\xC6\xA5\xB4\xA5\xEA\xA4\xCE\xA5\xC7\xA1\xBC\xA5\xBF\xA4\xAC\xCA\xD1\xB9\xB9\xA4\xB5\xA4\xEC\xA4\xDE\xA4\xB7\xA4\xBF", // ai 2026-06
 
 // modules/links/catedit2.php, row 291
-"New category created" => "",
+"New category created" => "\xBF\xB7\xA4\xB7\xA4\xA4\xA5\xAB\xA5\xC6\xA5\xB4\xA5\xEA\xA4\xAC\xBA\xEE\xC0\xAE\xA4\xB5\xA4\xEC\xA4\xDE\xA4\xB7\xA4\xBF", // ai 2026-06
 
 // modules/links/catedit2.php, row 297
-"Foreign category assigned" => "",
+"Foreign category assigned" => "\xA5\xAF\xA5\xED\xA5\xB9\xBB\xB2\xBE\xC8\xA5\xAB\xA5\xC6\xA5\xB4\xA5\xEA\xA4\xAC\xB3\xE4\xA4\xEA\xC5\xF6\xA4\xC6\xA4\xE9\xA4\xEC\xA4\xDE\xA4\xB7\xA4\xBF", // ai 2026-06
 
 // modules/links/cattree.php, row 436
-"Switch to category" => "",
+"Switch to category" => "\xA5\xAB\xA5\xC6\xA5\xB4\xA5\xEA\xA4\xD8\xB0\xDC\xC6\xB0", // ai 2026-06
 
 // modules/links/check_url.php, row 30
-"ActionApps - URL Check" => "",
+"ActionApps - URL Check" => "ActionApps - URL\xA5\xC1\xA5\xA7\xA5\xC3\xA5\xAF", // ai 2026-06
 
 // modules/links/check_url.php, row 42
 "URL" => "",
 
 // modules/links/check_url.php, row 43
-"In category" => "",
+"In category" => "\xBD\xEA\xC2\xB0\xA5\xAB\xA5\xC6\xA5\xB4\xA5\xEA", // ai 2026-06
 
 // modules/links/check_url.php, row 43
-"Link is not assigned to any category" => "",
+"Link is not assigned to any category" => "\xA5\xEA\xA5\xF3\xA5\xAF\xA4\xCF\xA4\xC9\xA4\xCE\xA5\xAB\xA5\xC6\xA5\xB4\xA5\xEA\xA4\xCB\xA4\xE2\xB3\xE4\xA4\xEA\xC5\xF6\xA4\xC6\xA4\xE9\xA4\xEC\xA4\xC6\xA4\xA4\xA4\xDE\xA4\xBB\xA4\xF3", // ai 2026-06
 
 // modules/links/check_url.php, row 43
-"Edit" => "",
+"Edit" => "\xCA\xD4\xBD\xB8", // ai 2026-06
 
 // modules/links/check_url.php, row 43
-"Rewrites link in bottom form" => "",
+"Rewrites link in bottom form" => "\xB2\xBC\xA4\xCE\xA5\xD5\xA5\xA9\xA1\xBC\xA5\xE0\xA4\xCE\xA5\xEA\xA5\xF3\xA5\xAF\xA4\xF2\xBD\xF1\xA4\xAD\xB4\xB9\xA4\xA8\xA4\xDE\xA4\xB9", // ai 2026-06
 
 // modules/links/check_url.php, row 48
-"Page with the specified Url is not in database, yet" => "",
+"Page with the specified Url is not in database, yet" => "\xBB\xD8\xC4\xEA\xA4\xB5\xA4\xEC\xA4\xBFURL\xA4\xCE\xA5\xDA\xA1\xBC\xA5\xB8\xA4\xCF\xA4\xDE\xA4\xC0\xA5\xC7\xA1\xBC\xA5\xBF\xA5\xD9\xA1\xBC\xA5\xB9\xA4\xCB\xA4\xA2\xA4\xEA\xA4\xDE\xA4\xBB\xA4\xF3", // ai 2026-06
 
 // modules/links/constants.php, row 60
-"Original name" => "",
+"Original name" => "\xB8\xB5\xA4\xCE\xCC\xBE\xC1\xB0", // ai 2026-06
 
 // modules/links/constants.php, row 61, 174
 // modules/links/link.class.php, row 663
@@ -266,32 +266,32 @@ return [
 // modules/links/constants.php, row 62, 122
 // modules/links/link.class.php, row 667
 // modules/links/linkedit.php, row 463
-"Link type" => "",
+"Link type" => "\xA5\xEA\xA5\xF3\xA5\xAF\xA4\xCE\xBC\xEF\xCE\xE0", // ai 2026-06
 
 // modules/links/constants.php, row 63
-"Rate" => "",
+"Rate" => "\xC9\xBE\xB2\xC1", // ai 2026-06
 
 // modules/links/constants.php, row 64
-"Votes" => "",
+"Votes" => "\xC5\xEA\xC9\xBC\xBF\xF4", // ai 2026-06
 
 // modules/links/constants.php, row 65
 // modules/links/link.class.php, row 664
 "Author" => "\xBA\xEE\xBC\xD4",
 
 // modules/links/constants.php, row 66
-"Insert date" => "",
+"Insert date" => "\xC5\xD0\xCF\xBF\xC6\xFC", // ai 2026-06
 
 // modules/links/constants.php, row 67
 "Editor" => "\xCA\xD4\xBD\xB8\xBC\xD4",
 
 // modules/links/constants.php, row 68
-"Last edit date" => "",
+"Last edit date" => "\xBA\xC7\xBD\xAA\xCA\xD4\xBD\xB8\xC6\xFC", // ai 2026-06
 
 // modules/links/constants.php, row 69
-"Revised by" => "",
+"Revised by" => "\xB9\xBB\xB1\xDC\xBC\xD4", // ai 2026-06
 
 // modules/links/constants.php, row 70
-"Revision date" => "",
+"Revision date" => "\xB9\xBB\xB1\xDC\xC6\xFC", // ai 2026-06
 
 // modules/links/constants.php, row 71
 // modules/links/link.class.php, row 673
@@ -301,524 +301,524 @@ return [
 // modules/links/constants.php, row 72
 // modules/links/link.class.php, row 665
 // modules/links/linkedit.php, row 435
-"Url" => "",
+"Url" => "URL", // ai 2026-06
 
 // modules/links/constants.php, row 73
-"Last vote time" => "",
+"Last vote time" => "\xBA\xC7\xBD\xAA\xC5\xEA\xC9\xBC\xC6\xFC\xBB\xFE", // ai 2026-06
 
 // modules/links/constants.php, row 74
-"Flag" => "",
+"Flag" => "\xA5\xD5\xA5\xE9\xA5\xB0", // ai 2026-06
 
 // modules/links/constants.php, row 76
-"Organization city" => "",
+"Organization city" => "\xC1\xC8\xBF\xA5\xA4\xCE\xBB\xD4\xB6\xE8\xC4\xAE\xC2\xBC", // ai 2026-06
 
 // modules/links/constants.php, row 77
-"Organization street" => "",
+"Organization street" => "\xC1\xC8\xBF\xA5\xA4\xCE\xC8\xD6\xC3\xCF", // ai 2026-06
 
 // modules/links/constants.php, row 78
-"Organization post code" => "",
+"Organization post code" => "\xC1\xC8\xBF\xA5\xA4\xCE\xCD\xB9\xCA\xD8\xC8\xD6\xB9\xE6", // ai 2026-06
 
 // modules/links/constants.php, row 79
-"Organization phone" => "",
+"Organization phone" => "\xC1\xC8\xBF\xA5\xA4\xCE\xC5\xC5\xCF\xC3\xC8\xD6\xB9\xE6", // ai 2026-06
 
 // modules/links/constants.php, row 80
-"Organization fax" => "",
+"Organization fax" => "\xC1\xC8\xBF\xA5\xA4\xCEFAX", // ai 2026-06
 
 // modules/links/constants.php, row 81
-"Organization e-mail" => "",
+"Organization e-mail" => "\xC1\xC8\xBF\xA5\xA4\xCEE-\xA5\xE1\xA1\xBC\xA5\xEB", // ai 2026-06
 
 // modules/links/constants.php, row 82
 // modules/links/linkedit.php, row 484
-"Folder" => "",
+"Folder" => "\xA5\xD5\xA5\xA9\xA5\xEB\xA5\xC0", // ai 2026-06
 
 // modules/links/constants.php, row 83
-"Last validation date" => "",
+"Last validation date" => "\xBA\xC7\xBD\xAA\xB8\xA1\xBE\xDA\xC6\xFC", // ai 2026-06
 
 // modules/links/constants.php, row 84
-"Validation codes" => "",
+"Validation codes" => "\xB8\xA1\xBE\xDA\xA5\xB3\xA1\xBC\xA5\xC9", // ai 2026-06
 
 // modules/links/constants.php, row 85
-"Validity Rank" => "",
+"Validity Rank" => "\xCD\xAD\xB8\xFA\xC0\xAD\xA5\xE9\xA5\xF3\xA5\xAF", // ai 2026-06
 
 // modules/links/constants.php, row 86
-"Region id" => "",
+"Region id" => "\xC3\xCF\xB0\xE8ID", // ai 2026-06
 
 // modules/links/constants.php, row 87
-"Region name" => "",
+"Region name" => "\xC3\xCF\xB0\xE8\xCC\xBE", // ai 2026-06
 
 // modules/links/constants.php, row 88
-"Region level" => "",
+"Region level" => "\xC3\xCF\xB0\xE8\xA5\xEC\xA5\xD9\xA5\xEB", // ai 2026-06
 
 // modules/links/constants.php, row 89
-"Language id" => "",
+"Language id" => "\xB8\xC0\xB8\xECID", // ai 2026-06
 
 // modules/links/constants.php, row 90
 // modules/links/linkedit.php, row 552
-"Language" => "",
+"Language" => "\xB8\xC0\xB8\xEC", // ai 2026-06
 
 // modules/links/constants.php, row 91
-"Language short name" => "",
+"Language short name" => "\xB8\xC0\xB8\xEC\xA4\xCE\xCE\xAC\xBE\xCE", // ai 2026-06
 
 // modules/links/constants.php, row 92, 190
-"Category id" => "",
+"Category id" => "\xA5\xAB\xA5\xC6\xA5\xB4\xA5\xEAID", // ai 2026-06
 
 // modules/links/constants.php, row 94
-"Category deleted" => "",
+"Category deleted" => "\xA5\xAB\xA5\xC6\xA5\xB4\xA5\xEA\xBA\xEF\xBD\xFC\xBA\xD1\xA4\xDF", // ai 2026-06
 
 // modules/links/constants.php, row 95
-"Category path" => "",
+"Category path" => "\xA5\xAB\xA5\xC6\xA5\xB4\xA5\xEA\xA5\xD1\xA5\xB9", // ai 2026-06
 
 // modules/links/constants.php, row 96
-"Category link count" => "",
+"Category link count" => "\xA5\xAB\xA5\xC6\xA5\xB4\xA5\xEA\xC6\xE2\xA5\xEA\xA5\xF3\xA5\xAF\xBF\xF4", // ai 2026-06
 
 // modules/links/constants.php, row 98, 194
-"Category editor's note" => "",
+"Category editor's note" => "\xA5\xAB\xA5\xC6\xA5\xB4\xA5\xEA\xCA\xD4\xBD\xB8\xBC\xD4\xA5\xE1\xA5\xE2", // ai 2026-06
 
 // modules/links/constants.php, row 99
-"Base" => "",
+"Base" => "\xB4\xF0\xCB\xDC", // ai 2026-06
 
 // modules/links/constants.php, row 100, 177
-"State" => "",
+"State" => "\xBE\xF5\xC2\xD6", // ai 2026-06
 
 // modules/links/constants.php, row 101
-"Change proposal" => "",
+"Change proposal" => "\xCA\xD1\xB9\xB9\xC4\xF3\xB0\xC6", // ai 2026-06
 
 // modules/links/constants.php, row 102
-"To be deleted" => "",
+"To be deleted" => "\xBA\xEF\xBD\xFC\xCD\xBD\xC4\xEA", // ai 2026-06
 
 // modules/links/constants.php, row 103, 176
-"Priority" => "",
+"Priority" => "\xCD\xA5\xC0\xE8\xC5\xD9", // ai 2026-06
 
 // modules/links/constants.php, row 104
 // modules/links/linkedit.php, row 54
 "Change" => "\xCA\xD1\xB9\xB9",
 
 // modules/links/constants.php, row 118
-"Link id" => "",
+"Link id" => "\xA5\xEA\xA5\xF3\xA5\xAFID", // ai 2026-06
 
 // modules/links/constants.php, row 119
-"Link name" => "",
+"Link name" => "\xA5\xEA\xA5\xF3\xA5\xAF\xCC\xBE", // ai 2026-06
 
 // modules/links/constants.php, row 120
-"Link original name" => "",
+"Link original name" => "\xA5\xEA\xA5\xF3\xA5\xAF\xA4\xCE\xB8\xB5\xA4\xCE\xCC\xBE\xC1\xB0", // ai 2026-06
 
 // modules/links/constants.php, row 121
-"Link description" => "",
+"Link description" => "\xA5\xEA\xA5\xF3\xA5\xAF\xA4\xCE\xC0\xE2\xCC\xC0", // ai 2026-06
 
 // modules/links/constants.php, row 123
-"Link rate" => "",
+"Link rate" => "\xA5\xEA\xA5\xF3\xA5\xAF\xA4\xCE\xC9\xBE\xB2\xC1", // ai 2026-06
 
 // modules/links/constants.php, row 124
-"Link votes" => "",
+"Link votes" => "\xA5\xEA\xA5\xF3\xA5\xAF\xA4\xCE\xC5\xEA\xC9\xBC\xBF\xF4", // ai 2026-06
 
 // modules/links/constants.php, row 125
-"Link - last vote date" => "",
+"Link - last vote date" => "\xA5\xEA\xA5\xF3\xA5\xAF - \xBA\xC7\xBD\xAA\xC5\xEA\xC9\xBC\xC6\xFC", // ai 2026-06
 
 // modules/links/constants.php, row 126
-"Link - created by" => "",
+"Link - created by" => "\xA5\xEA\xA5\xF3\xA5\xAF - \xBA\xEE\xC0\xAE\xBC\xD4", // ai 2026-06
 
 // modules/links/constants.php, row 127
-"Link creation date" => "",
+"Link creation date" => "\xA5\xEA\xA5\xF3\xA5\xAF\xBA\xEE\xC0\xAE\xC6\xFC", // ai 2026-06
 
 // modules/links/constants.php, row 128
-"Link - last edited by" => "",
+"Link - last edited by" => "\xA5\xEA\xA5\xF3\xA5\xAF - \xBA\xC7\xBD\xAA\xCA\xD4\xBD\xB8\xBC\xD4", // ai 2026-06
 
 // modules/links/constants.php, row 129
-"Link - last edit date" => "",
+"Link - last edit date" => "\xA5\xEA\xA5\xF3\xA5\xAF - \xBA\xC7\xBD\xAA\xCA\xD4\xBD\xB8\xC6\xFC", // ai 2026-06
 
 // modules/links/constants.php, row 130
-"Link - checked by" => "",
+"Link - checked by" => "\xA5\xEA\xA5\xF3\xA5\xAF - \xB3\xCE\xC7\xA7\xBC\xD4", // ai 2026-06
 
 // modules/links/constants.php, row 131
-"Link - last checked date" => "",
+"Link - last checked date" => "\xA5\xEA\xA5\xF3\xA5\xAF - \xBA\xC7\xBD\xAA\xB3\xCE\xC7\xA7\xC6\xFC", // ai 2026-06
 
 // modules/links/constants.php, row 132
-"Link author's e-mail" => "",
+"Link author's e-mail" => "\xA5\xEA\xA5\xF3\xA5\xAF\xC5\xEA\xB9\xC6\xBC\xD4\xA4\xCEE-\xA5\xE1\xA1\xBC\xA5\xEB", // ai 2026-06
 
 // modules/links/constants.php, row 133
-"Link url" => "",
+"Link url" => "\xA5\xEA\xA5\xF3\xA5\xAF\xA4\xCEURL", // ai 2026-06
 
 // modules/links/constants.php, row 134
-"Link link" => "",
+"Link link" => "\xA5\xEA\xA5\xF3\xA5\xAF", // ai 2026-06
 
 // modules/links/constants.php, row 135
-"Link flag" => "",
+"Link flag" => "\xA5\xEA\xA5\xF3\xA5\xAF\xA4\xCE\xA5\xD5\xA5\xE9\xA5\xB0", // ai 2026-06
 
 // modules/links/constants.php, row 136
-"Link - validity rank" => "",
+"Link - validity rank" => "\xA5\xEA\xA5\xF3\xA5\xAF - \xCD\xAD\xB8\xFA\xC0\xAD\xA5\xE9\xA5\xF3\xA5\xAF", // ai 2026-06
 
 // modules/links/constants.php, row 137
-"Link - last validation date" => "",
+"Link - last validation date" => "\xA5\xEA\xA5\xF3\xA5\xAF - \xBA\xC7\xBD\xAA\xB8\xA1\xBE\xDA\xC6\xFC", // ai 2026-06
 
 // modules/links/constants.php, row 138
-"Link editor's note" => "",
+"Link editor's note" => "\xA5\xEA\xA5\xF3\xA5\xAF - \xCA\xD4\xBD\xB8\xBC\xD4\xA5\xE1\xA5\xE2", // ai 2026-06
 
 // modules/links/constants.php, row 139
-"Link organization city" => "",
+"Link organization city" => "\xA5\xEA\xA5\xF3\xA5\xAF - \xC1\xC8\xBF\xA5\xA4\xCE\xBB\xD4\xB6\xE8\xC4\xAE\xC2\xBC", // ai 2026-06
 
 // modules/links/constants.php, row 140
-"Link organization street" => "",
+"Link organization street" => "\xA5\xEA\xA5\xF3\xA5\xAF - \xC1\xC8\xBF\xA5\xA4\xCE\xC8\xD6\xC3\xCF", // ai 2026-06
 
 // modules/links/constants.php, row 141
-"Link organization post code" => "",
+"Link organization post code" => "\xA5\xEA\xA5\xF3\xA5\xAF - \xC1\xC8\xBF\xA5\xA4\xCE\xCD\xB9\xCA\xD8\xC8\xD6\xB9\xE6", // ai 2026-06
 
 // modules/links/constants.php, row 142
-"Link organization phone" => "",
+"Link organization phone" => "\xA5\xEA\xA5\xF3\xA5\xAF - \xC1\xC8\xBF\xA5\xA4\xCE\xC5\xC5\xCF\xC3\xC8\xD6\xB9\xE6", // ai 2026-06
 
 // modules/links/constants.php, row 143
-"Link organization fax" => "",
+"Link organization fax" => "\xA5\xEA\xA5\xF3\xA5\xAF - \xC1\xC8\xBF\xA5\xA4\xCEFAX", // ai 2026-06
 
 // modules/links/constants.php, row 144
-"Link organization e-mail" => "",
+"Link organization e-mail" => "\xA5\xEA\xA5\xF3\xA5\xAF - \xC1\xC8\xBF\xA5\xA4\xCEE-\xA5\xE1\xA1\xBC\xA5\xEB", // ai 2026-06
 
 // modules/links/constants.php, row 145
-"Link folder (status code) - 1~Active, 2~Holding, 3~Trash" => "",
+"Link folder (status code) - 1~Active, 2~Holding, 3~Trash" => "\xA5\xEA\xA5\xF3\xA5\xAF\xA4\xCE\xA5\xD5\xA5\xA9\xA5\xEB\xA5\xC0\xA1\xCA\xBE\xF5\xC2\xD6\xA5\xB3\xA1\xBC\xA5\xC9\xA1\xCB - 1~\xA5\xA2\xA5\xAF\xA5\xC6\xA5\xA3\xA5\xD6, 2~\xCA\xDD\xCE\xB1\xC8\xA2, 3~\xA4\xB4\xA4\xDF\xC8\xA2", // ai 2026-06
 
 // modules/links/constants.php, row 146
-"Link - ids of regions (comma separated)" => "",
+"Link - ids of regions (comma separated)" => "\xA5\xEA\xA5\xF3\xA5\xAF - \xC3\xCF\xB0\xE8ID\xA1\xCA\xA5\xAB\xA5\xF3\xA5\xDE\xB6\xE8\xC0\xDA\xA4\xEA\xA1\xCB", // ai 2026-06
 
 // modules/links/constants.php, row 147
-"Link - names of regions (comma separated)" => "",
+"Link - names of regions (comma separated)" => "\xA5\xEA\xA5\xF3\xA5\xAF - \xC3\xCF\xB0\xE8\xCC\xBE\xA1\xCA\xA5\xAB\xA5\xF3\xA5\xDE\xB6\xE8\xC0\xDA\xA4\xEA\xA1\xCB", // ai 2026-06
 
 // modules/links/constants.php, row 148
-"Link - ids of languages (comma separated)" => "",
+"Link - ids of languages (comma separated)" => "\xA5\xEA\xA5\xF3\xA5\xAF - \xB8\xC0\xB8\xECID\xA1\xCA\xA5\xAB\xA5\xF3\xA5\xDE\xB6\xE8\xC0\xDA\xA4\xEA\xA1\xCB", // ai 2026-06
 
 // modules/links/constants.php, row 149
-"Link - names of languages (comma separated)" => "",
+"Link - names of languages (comma separated)" => "\xA5\xEA\xA5\xF3\xA5\xAF - \xB8\xC0\xB8\xEC\xCC\xBE\xA1\xCA\xA5\xAB\xA5\xF3\xA5\xDE\xB6\xE8\xC0\xDA\xA4\xEA\xA1\xCB", // ai 2026-06
 
 // modules/links/constants.php, row 150
-"Link - short names of languages (comma separated)" => "",
+"Link - short names of languages (comma separated)" => "\xA5\xEA\xA5\xF3\xA5\xAF - \xB8\xC0\xB8\xEC\xA4\xCE\xC3\xBB\xBD\xCC\xCC\xBE\xA1\xCA\xA5\xAB\xA5\xF3\xA5\xDE\xB6\xE8\xC0\xDA\xA4\xEA\xA1\xCB", // ai 2026-06
 
 // modules/links/constants.php, row 151
-"Category ids (comma separated)" => "",
+"Category ids (comma separated)" => "\xA5\xAB\xA5\xC6\xA5\xB4\xA5\xEAID\xA1\xCA\xA5\xAB\xA5\xF3\xA5\xDE\xB6\xE8\xC0\xDA\xA4\xEA\xA1\xCB", // ai 2026-06
 
 // modules/links/constants.php, row 152
-"Category names (comma separated)" => "",
+"Category names (comma separated)" => "\xA5\xAB\xA5\xC6\xA5\xB4\xA5\xEA\xCC\xBE\xA1\xCA\xA5\xAB\xA5\xF3\xA5\xDE\xB6\xE8\xC0\xDA\xA4\xEA\xA1\xCB", // ai 2026-06
 
 // modules/links/constants.php, row 153
-"State of link in this category (visible/highlighted)" => "",
+"State of link in this category (visible/highlighted)" => "\xA4\xB3\xA4\xCE\xA5\xAB\xA5\xC6\xA5\xB4\xA5\xEA\xA4\xC7\xA4\xCE\xA5\xEA\xA5\xF3\xA5\xAF\xA4\xCE\xBE\xF5\xC2\xD6\xA1\xCA\xC9\xBD\xBC\xA8/\xB6\xAF\xC4\xB4\xA1\xCB", // ai 2026-06
 
 // modules/links/constants.php, row 154
-"Link - validity color" => "",
+"Link - validity color" => "\xA5\xEA\xA5\xF3\xA5\xAF - \xCD\xAD\xB8\xFA\xC0\xAD\xA4\xCE\xBF\xA7", // ai 2026-06
 
 // modules/links/constants.php, row 155
-"Paths to the categories" => "",
+"Paths to the categories" => "\xA5\xAB\xA5\xC6\xA5\xB4\xA5\xEA\xA4\xD8\xA4\xCE\xA5\xD1\xA5\xB9", // ai 2026-06
 
 // modules/links/constants.php, row 156
-"Number of found Links" => "",
+"Number of found Links" => "\xB8\xAB\xA4\xC4\xA4\xAB\xA4\xC3\xA4\xBF\xA5\xEA\xA5\xF3\xA5\xAF\xA4\xCE\xBF\xF4", // ai 2026-06
 
 // modules/links/constants.php, row 157
-"Link to link editing page (for admin interface only)" => "",
+"Link to link editing page (for admin interface only)" => "\xA5\xEA\xA5\xF3\xA5\xAF\xCA\xD4\xBD\xB8\xA5\xDA\xA1\xBC\xA5\xB8\xA4\xD8\xA4\xCE\xA5\xEA\xA5\xF3\xA5\xAF\xA1\xCA\xB4\xC9\xCD\xFD\xB2\xE8\xCC\xCC\xC0\xEC\xCD\xD1\xA1\xCB", // ai 2026-06
 
 // modules/links/constants.php, row 158
-"Category listing with links (for admin interface only)" => "",
+"Category listing with links (for admin interface only)" => "\xA5\xEA\xA5\xF3\xA5\xAF\xC9\xD5\xA4\xAD\xA5\xAB\xA5\xC6\xA5\xB4\xA5\xEA\xB0\xEC\xCD\xF7\xA1\xCA\xB4\xC9\xCD\xFD\xB2\xE8\xCC\xCC\xC0\xEC\xCD\xD1\xA1\xCB", // ai 2026-06
 
 // modules/links/constants.php, row 172
-"Path" => "",
+"Path" => "\xA5\xD1\xA5\xB9", // ai 2026-06
 
 // modules/links/constants.php, row 173
-"Link Count" => "",
+"Link Count" => "\xA5\xEA\xA5\xF3\xA5\xAF\xBF\xF4", // ai 2026-06
 
 // modules/links/constants.php, row 175
-"Note" => "",
+"Note" => "\xA5\xE1\xA5\xE2", // ai 2026-06
 
 // modules/links/constants.php, row 192
-"Number of links in category" => "",
+"Number of links in category" => "\xA5\xAB\xA5\xC6\xA5\xB4\xA5\xEA\xC6\xE2\xA4\xCE\xA5\xEA\xA5\xF3\xA5\xAF\xBF\xF4", // ai 2026-06
 
 // modules/links/constants.php, row 195
-"Crossreferenced category" => "",
+"Crossreferenced category" => "\xC1\xEA\xB8\xDF\xBB\xB2\xBE\xC8\xA5\xAB\xA5\xC6\xA5\xB4\xA5\xEA", // ai 2026-06
 
 // modules/links/constants.php, row 196
-"Path to current category" => "",
+"Path to current category" => "\xB8\xBD\xBA\xDF\xA4\xCE\xA5\xAB\xA5\xC6\xA5\xB4\xA5\xEA\xA4\xD8\xA4\xCE\xA5\xD1\xA5\xB9", // ai 2026-06
 
 // modules/links/constants.php, row 197
-"Is this category general one? (1/0)" => "",
+"Is this category general one? (1/0)" => "\xA4\xB3\xA4\xCE\xA5\xAB\xA5\xC6\xA5\xB4\xA5\xEA\xA4\xCF\xB0\xEC\xC8\xCC\xA5\xAB\xA5\xC6\xA5\xB4\xA5\xEA\xA4\xC7\xA4\xB9\xA4\xAB\xA1\xA9 (1/0)", // ai 2026-06
 
 // modules/links/constants.php, row 198
-"Print category priority, if category is general one." => "",
+"Print category priority, if category is general one." => "\xA5\xAB\xA5\xC6\xA5\xB4\xA5\xEA\xA4\xAC\xB0\xEC\xC8\xCC\xA5\xAB\xA5\xC6\xA5\xB4\xA5\xEA\xA4\xCE\xBE\xEC\xB9\xE7\xA1\xA2\xA4\xBD\xA4\xCE\xCD\xA5\xC0\xE8\xC5\xD9\xA4\xF2\xBD\xD0\xCE\xCF\xA4\xB7\xA4\xDE\xA4\xB9\xA1\xA3", // ai 2026-06
 
 // modules/links/getcat.php, row 51
-"Category Tree" => "",
+"Category Tree" => "\xA5\xAB\xA5\xC6\xA5\xB4\xA5\xEA\xA5\xC4\xA5\xEA\xA1\xBC", // ai 2026-06
 
 // modules/links/getcat.php, row 56
-"Select category" => "",
+"Select category" => "\xA5\xAB\xA5\xC6\xA5\xB4\xA5\xEA\xA4\xF2\xC1\xAA\xC2\xF2", // ai 2026-06
 
 // modules/links/index.php, row 84
-"No permissions to edit links" => "",
+"No permissions to edit links" => "\xA5\xEA\xA5\xF3\xA5\xAF\xA4\xF2\xCA\xD4\xBD\xB8\xA4\xB9\xA4\xEB\xB5\xF6\xB2\xC4\xA4\xAC\xA4\xA2\xA4\xEA\xA4\xDE\xA4\xBB\xA4\xF3", // ai 2026-06
 
 // modules/links/index.php, row 207
-"HINT: \"social ecology\" AND environment" => "",
+"HINT: \"social ecology\" AND environment" => "\xA5\xD2\xA5\xF3\xA5\xC8: \"\xBC\xD2\xB2\xF1\xC0\xB8\xC2\xD6\xB3\xD8\" AND \xB4\xC4\xB6\xAD", // ai 2026-06
 
 // modules/links/index.php, row 234
-"Perform action on selected items" => "",
+"Perform action on selected items" => "\xC1\xAA\xC2\xF2\xA4\xB7\xA4\xBF\xB9\xE0\xCC\xDC\xA4\xCB\xC2\xD0\xA4\xB7\xA4\xC6\xC1\xE0\xBA\xEE\xA4\xF2\xBC\xC2\xB9\xD4", // ai 2026-06
 
 // modules/links/index.php, row 257
-"ActionApps - Links Manager" => "",
+"ActionApps - Links Manager" => "ActionApps - \xA5\xEA\xA5\xF3\xA5\xAF\xB4\xC9\xCD\xFD", // ai 2026-06
 
 // modules/links/index.php, row 287
-"All my links" => "",
+"All my links" => "\xBC\xAB\xCA\xAC\xA4\xCE\xA4\xB9\xA4\xD9\xA4\xC6\xA4\xCE\xA5\xEA\xA5\xF3\xA5\xAF", // ai 2026-06
 
 // modules/links/index.php, row 288
-"Links to check" => "",
+"Links to check" => "\xCD\xD7\xB3\xCE\xC7\xA7\xA4\xCE\xA5\xEA\xA5\xF3\xA5\xAF", // ai 2026-06
 
 // modules/links/index.php, row 289
-"Last edited" => "",
+"Last edited" => "\xBA\xC7\xBD\xAA\xCA\xD4\xBD\xB8", // ai 2026-06
 
 // modules/links/index.php, row 311
-"Show Links" => "",
+"Show Links" => "\xA5\xEA\xA5\xF3\xA5\xAF\xA4\xF2\xC9\xBD\xBC\xA8", // ai 2026-06
 
 // modules/links/index.php, row 314
-"Edit Category" => "",
+"Edit Category" => "\xA5\xAB\xA5\xC6\xA5\xB4\xA5\xEA\xA4\xF2\xCA\xD4\xBD\xB8", // ai 2026-06
 
 // modules/links/index.php, row 318
-"Show subtree links" => "",
+"Show subtree links" => "\xA5\xB5\xA5\xD6\xA5\xC4\xA5\xEA\xA1\xBC\xA4\xCE\xA5\xEA\xA5\xF3\xA5\xAF\xA4\xE2\xC9\xBD\xBC\xA8", // ai 2026-06
 
 // modules/links/link.class.php, row 661
 // modules/links/linkedit.php, row 450
-"Page name" => "",
+"Page name" => "\xA5\xDA\xA1\xBC\xA5\xB8\xCC\xBE", // ai 2026-06
 
 // modules/links/link.class.php, row 662
 // modules/links/linkedit.php, row 453
-"Original page name" => "",
+"Original page name" => "\xB8\xB5\xA4\xCE\xA5\xDA\xA1\xBC\xA5\xB8\xCC\xBE", // ai 2026-06
 
 // modules/links/link.class.php, row 668
 // modules/links/linkedit.php, row 534
-"City" => "",
+"City" => "\xBB\xD4\xB6\xE8\xC4\xAE\xC2\xBC", // ai 2026-06
 
 // modules/links/link.class.php, row 669
 // modules/links/linkedit.php, row 536
-"Street" => "",
+"Street" => "\xC8\xD6\xC3\xCF", // ai 2026-06
 
 // modules/links/link.class.php, row 670
 // modules/links/linkedit.php, row 538
-"Post code" => "",
+"Post code" => "\xCD\xB9\xCA\xD8\xC8\xD6\xB9\xE6", // ai 2026-06
 
 // modules/links/link.class.php, row 671
 // modules/links/linkedit.php, row 540
-"Phone" => "",
+"Phone" => "\xC5\xC5\xCF\xC3\xC8\xD6\xB9\xE6", // ai 2026-06
 
 // modules/links/link.class.php, row 672
 // modules/links/linkedit.php, row 542
 "Fax" => "",
 
 // modules/links/linkedit.php, row 51
-"Accept" => "",
+"Accept" => "\xBE\xB5\xC7\xA7", // ai 2026-06
 
 // modules/links/linkedit.php, row 53
-"unfilled" => "",
+"unfilled" => "\xCC\xA4\xC6\xFE\xCE\xCF", // ai 2026-06
 
 // modules/links/linkedit.php, row 90
 // modules/links/menu.php, row 72, 73
-"Edit Link" => "",
+"Edit Link" => "\xA5\xEA\xA5\xF3\xA5\xAF\xA4\xCE\xCA\xD4\xBD\xB8", // ai 2026-06
 
 // modules/links/linkedit.php, row 97
 // modules/links/menu.php, row 72
-"Add Link" => "",
+"Add Link" => "\xA5\xEA\xA5\xF3\xA5\xAF\xA4\xCE\xC4\xC9\xB2\xC3", // ai 2026-06
 
 // modules/links/linkedit.php, row 102
-"Link does not exist or the base category is not set" => "",
+"Link does not exist or the base category is not set" => "\xA5\xEA\xA5\xF3\xA5\xAF\xA4\xAC\xC2\xB8\xBA\xDF\xA4\xB7\xA4\xCA\xA4\xA4\xA4\xAB\xA1\xA2\xB4\xF0\xCB\xDC\xA5\xAB\xA5\xC6\xA5\xB4\xA5\xEA\xA4\xAC\xC0\xDF\xC4\xEA\xA4\xB5\xA4\xEC\xA4\xC6\xA4\xA4\xA4\xDE\xA4\xBB\xA4\xF3", // ai 2026-06
 
 // modules/links/linkedit.php, row 266, 285
-"Proposal to uncheck" => "",
+"Proposal to uncheck" => "\xBD\xFC\xB3\xB0\xA4\xCE\xC4\xF3\xB0\xC6", // ai 2026-06
 
 // modules/links/linkedit.php, row 267, 286
-"Proposal to check" => "",
+"Proposal to check" => "\xB7\xC7\xBA\xDC\xA4\xCE\xC4\xF3\xB0\xC6", // ai 2026-06
 
 // modules/links/linkedit.php, row 317
-"Proposal to add" => "",
+"Proposal to add" => "\xC4\xC9\xB2\xC3\xA4\xCE\xC4\xF3\xB0\xC6", // ai 2026-06
 
 // modules/links/linkedit.php, row 319
-"Proposal to del" => "",
+"Proposal to del" => "\xBA\xEF\xBD\xFC\xA4\xCE\xC4\xF3\xB0\xC6", // ai 2026-06
 
 // modules/links/linkedit.php, row 385
 "ActionApps" => "APC \xA5\xA2\xA5\xAF\xA5\xB7\xA5\xE7\xA5\xF3 \xA5\xA2\xA5\xD7\xA5\xEA",
 
 // modules/links/linkedit.php, row 407
-"<!--NewPublicLinkText-->" => "",
+"<!--NewPublicLinkText-->" => "\xA4\xB3\xA4\xCE\xA5\xD5\xA5\xA9\xA1\xBC\xA5\xE0\xA4\xC7\xA5\xAB\xA5\xBF\xA5\xED\xA5\xB0\xA4\xCB\xBF\xB7\xA4\xB7\xA4\xA4\xA5\xEA\xA5\xF3\xA5\xAF\xA4\xF2\xC5\xD0\xCF\xBF\xA4\xC7\xA4\xAD\xA4\xDE\xA4\xB9\xA1\xA3\xA4\xB9\xA4\xD9\xA4\xC6\xA4\xCE\xCD\xF3\xA4\xF2\xC6\xFE\xCE\xCF\xA4\xB9\xA4\xEB\xC9\xAC\xCD\xD7\xA4\xCF\xA4\xA2\xA4\xEA\xA4\xDE\xA4\xBB\xA4\xF3\xA4\xAC\xA1\xA2\xA5\xEA\xA5\xF3\xA5\xAF\xA4\xF2\xA5\xAB\xA5\xBF\xA5\xED\xA5\xB0\xA4\xCB\xC5\xD0\xCF\xBF\xA4\xB7\xA4\xE4\xA4\xB9\xA4\xAF\xA4\xB9\xA4\xEB\xA4\xBF\xA4\xE1\xA1\xA2\xC6\xC3\xA4\xCB\xA5\xEA\xA5\xF3\xA5\xAF\xA4\xCE<b>URL</b>\xA1\xA2<b>\xCC\xBE\xC1\xB0</b>\xA1\xA2\xA4\xAA\xA4\xE8\xA4\xD3<b>\xA5\xAB\xA5\xC6\xA5\xB4\xA5\xEA</b>\xA4\xD8\xA4\xCE\xCA\xAC\xCE\xE0\xA4\xCE\xA4\xB4\xB5\xAD\xC6\xFE\xA4\xF2\xA4\xAA\xB4\xEA\xA4\xA4\xA4\xB7\xA4\xDE\xA4\xB9\xA1\xA3\xB2\xC4\xC7\xBD\xA4\xC7\xA4\xA2\xA4\xEC\xA4\xD0\xA5\xEA\xA5\xF3\xA5\xAF\xA4\xCE\xC0\xE2\xCC\xC0\xA4\xE2\xA4\xB4\xB5\xAD\xC6\xFE\xA4\xAF\xA4\xC0\xA4\xB5\xA4\xA4\xA1\xA3<br><b>\xA1\xD6\xBE\xA6\xCD\xD1\xA1\xD7\xA5\xEA\xA5\xF3\xA5\xAF\xA4\xCF\xC5\xD0\xCF\xBF\xA4\xB7\xA4\xCA\xA4\xA4\xA4\xC7\xA4\xAF\xA4\xC0\xA4\xB5\xA4\xA4\xA1\xA3</b>\xA4\xB3\xA4\xEC\xA4\xE9\xA4\xCE\xA5\xEA\xA5\xF3\xA5\xAF\xA4\xCF\xA5\xAB\xA5\xBF\xA5\xED\xA5\xB0\xA4\xCB\xB7\xC7\xBA\xDC\xA4\xB5\xA4\xEC\xA4\xDE\xA4\xBB\xA4\xF3\xA1\xA3<br>\xA4\xB4\xB6\xA8\xCE\xCF\xA4\xA2\xA4\xEA\xA4\xAC\xA4\xC8\xA4\xA6\xA4\xB4\xA4\xB6\xA4\xA4\xA4\xDE\xA4\xB9\xA1\xA3", // ai 2026-06
 
 // modules/links/linkedit.php, row 425
-"Link" => "",
+"Link" => "\xA5\xEA\xA5\xF3\xA5\xAF", // ai 2026-06
 
 // modules/links/linkedit.php, row 438
-"Check url" => "",
+"Check url" => "URL\xA4\xF2\xB3\xCE\xC7\xA7", // ai 2026-06
 
 // modules/links/linkedit.php, row 439
-"View" => "",
+"View" => "\xC9\xBD\xBC\xA8", // ai 2026-06
 
 // modules/links/linkedit.php, row 440
-"You can check, if the page is not in database already" => "",
+"You can check, if the page is not in database already" => "\xA5\xDA\xA1\xBC\xA5\xB8\xA4\xAC\xB4\xFB\xA4\xCB\xA5\xC7\xA1\xBC\xA5\xBF\xA5\xD9\xA1\xBC\xA5\xB9\xA4\xCB\xC5\xD0\xCF\xBF\xA4\xB5\xA4\xEC\xA4\xC6\xA4\xA4\xA4\xCA\xA4\xA4\xA4\xAB\xB3\xCE\xC7\xA7\xA4\xC7\xA4\xAD\xA4\xDE\xA4\xB9", // ai 2026-06
 
 // modules/links/linkedit.php, row 445
-"Do not fill, please:" => "",
+"Do not fill, please:" => "\xB5\xAD\xC6\xFE\xA4\xB7\xA4\xCA\xA4\xA4\xA4\xC7\xA4\xAF\xA4\xC0\xA4\xB5\xA4\xA4\xA1\xA7", // ai 2026-06
 
 // modules/links/linkedit.php, row 451
-"English name of the page" => "",
+"English name of the page" => "\xA5\xDA\xA1\xBC\xA5\xB8\xA4\xCE\xB1\xD1\xB8\xEC\xCC\xBE", // ai 2026-06
 
 // modules/links/linkedit.php, row 454
-"Name of the page in original language" => "",
+"Name of the page in original language" => "\xB8\xB6\xB8\xEC\xA4\xC7\xA4\xCE\xA5\xDA\xA1\xBC\xA5\xB8\xCC\xBE", // ai 2026-06
 
 // modules/links/linkedit.php, row 457
-"Do not use HTML tags and do not write words like \"best page\", ... The maximum length of the description should be about 250 characters." => "",
+"Do not use HTML tags and do not write words like \"best page\", ... The maximum length of the description should be about 250 characters." => "HTML\xA5\xBF\xA5\xB0\xA4\xF2\xBB\xC8\xCD\xD1\xA4\xBB\xA4\xBA\xA1\xA2\xA1\xD6\xBA\xC7\xB9\xE2\xA4\xCE\xA5\xDA\xA1\xBC\xA5\xB8\xA1\xD7\xA4\xCA\xA4\xC9\xA4\xCE\xB8\xC0\xCD\xD5\xA4\xCF\xBD\xF1\xA4\xAB\xA4\xCA\xA4\xA4\xA4\xC7\xA4\xAF\xA4\xC0\xA4\xB5\xA4\xA4\xA1\xA3\xC0\xE2\xCC\xC0\xA4\xCE\xBA\xC7\xC2\xE7\xC4\xB9\xA4\xCF\xCC\xF3250\xCA\xB8\xBB\xFA\xA4\xC7\xA4\xB9\xA1\xA3", // ai 2026-06
 
 // modules/links/linkedit.php, row 463
-"Select the type, if the link belongs to some special category" => "",
+"Select the type, if the link belongs to some special category" => "\xA5\xEA\xA5\xF3\xA5\xAF\xA4\xAC\xC6\xC3\xCA\xCC\xA4\xCA\xA5\xAB\xA5\xC6\xA5\xB4\xA5\xEA\xA4\xCB\xC2\xB0\xA4\xB9\xA4\xEB\xBE\xEC\xB9\xE7\xA4\xCF\xA1\xA2\xA4\xBD\xA4\xCE\xBC\xEF\xCE\xE0\xA4\xF2\xC1\xAA\xC2\xF2\xA4\xB7\xA4\xC6\xA4\xAF\xA4\xC0\xA4\xB5\xA4\xA4", // ai 2026-06
 
 // modules/links/linkedit.php, row 471
-"Author's e-mail" => "",
+"Author's e-mail" => "\xC5\xEA\xB9\xC6\xBC\xD4\xA4\xCEE-\xA5\xE1\xA1\xBC\xA5\xEB", // ai 2026-06
 
 // modules/links/linkedit.php, row 474
-"You can type any message here - it is never shown on the website" => "",
+"You can type any message here - it is never shown on the website" => "\xA4\xB3\xA4\xB3\xA4\xCB\xA4\xCF\xC7\xA4\xB0\xD5\xA4\xCE\xA5\xE1\xA5\xE2\xA4\xF2\xB5\xAD\xC6\xFE\xA4\xC7\xA4\xAD\xA4\xDE\xA4\xB9\xA1\xA3\xA5\xA6\xA5\xA7\xA5\xD6\xA5\xB5\xA5\xA4\xA5\xC8\xA4\xCB\xA4\xCF\xC9\xBD\xBC\xA8\xA4\xB5\xA4\xEC\xA4\xDE\xA4\xBB\xA4\xF3", // ai 2026-06
 
 // modules/links/linkedit.php, row 479
-"Last checked" => "",
+"Last checked" => "\xBA\xC7\xBD\xAA\xB3\xCE\xC7\xA7", // ai 2026-06
 
 // modules/links/linkedit.php, row 479, 480, 481
-"n/j/Y" => "",
+"n/j/Y" => "Y/n/j", // ai 2026-06
 
 // modules/links/linkedit.php, row 480
-"Last changed" => "",
+"Last changed" => "\xBA\xC7\xBD\xAA\xCA\xD1\xB9\xB9", // ai 2026-06
 
 // modules/links/linkedit.php, row 481
-"Inserted" => "",
+"Inserted" => "\xC1\xDE\xC6\xFE\xA4\xB5\xA4\xEC\xA4\xDE\xA4\xB7\xA4\xBF", // ai 2026-06
 
 // modules/links/linkedit.php, row 488
-"Show in category" => "",
+"Show in category" => "\xA5\xAB\xA5\xC6\xA5\xB4\xA5\xEA\xA4\xCB\xC9\xBD\xBC\xA8", // ai 2026-06
 
 // modules/links/linkedit.php, row 494
-"select the category" => "",
+"select the category" => "\xA5\xAB\xA5\xC6\xA5\xB4\xA5\xEA\xA4\xF2\xC1\xAA\xC2\xF2\xA4\xB7\xA4\xC6\xA4\xAF\xA4\xC0\xA4\xB5\xA4\xA4", // ai 2026-06
 
 // modules/links/linkedit.php, row 497
-"Selected categories" => "",
+"Selected categories" => "\xC1\xAA\xC2\xF2\xA4\xB5\xA4\xEC\xA4\xBF\xA5\xAB\xA5\xC6\xA5\xB4\xA5\xEA", // ai 2026-06
 
 // modules/links/linkedit.php, row 497
-"go to the category you want to select and click on the right arrow button to select" => "",
+"go to the category you want to select and click on the right arrow button to select" => "\xC1\xAA\xC2\xF2\xA4\xB7\xA4\xBF\xA4\xA4\xA5\xAB\xA5\xC6\xA5\xB4\xA5\xEA\xA4\xCB\xB0\xDC\xC6\xB0\xA4\xB7\xA1\xA2\xB1\xA6\xCC\xF0\xB0\xF5\xA5\xDC\xA5\xBF\xA5\xF3\xA4\xF2\xA5\xAF\xA5\xEA\xA5\xC3\xA5\xAF\xA4\xB7\xA4\xC6\xC1\xAA\xC2\xF2\xA4\xB7\xA4\xC6\xA4\xAF\xA4\xC0\xA4\xB5\xA4\xA4", // ai 2026-06
 
 // modules/links/linkedit.php, row 533
-"Organization" => "",
+"Organization" => "\xC1\xC8\xBF\xA5", // ai 2026-06
 
 // modules/links/linkedit.php, row 549
-"Regions and languages" => "",
+"Regions and languages" => "\xC3\xCF\xB0\xE8\xA4\xC8\xB8\xC0\xB8\xEC", // ai 2026-06
 
 // modules/links/linkedit.php, row 551
-"Region" => "",
+"Region" => "\xC3\xCF\xB0\xE8", // ai 2026-06
 
 // modules/links/linkedit.php, row 551
-"select up to 4 regions" => "",
+"select up to 4 regions" => "\xC3\xCF\xB0\xE8\xA4\xF24\xA4\xC4\xA4\xDE\xA4\xC7\xC1\xAA\xC2\xF2\xA4\xB7\xA4\xC6\xA4\xAF\xA4\xC0\xA4\xB5\xA4\xA4", // ai 2026-06
 
 // modules/links/linkedit.php, row 552
-"select page's languages" => "",
+"select page's languages" => "\xA5\xDA\xA1\xBC\xA5\xB8\xA4\xCE\xB8\xC0\xB8\xEC\xA4\xF2\xC1\xAA\xC2\xF2\xA4\xB7\xA4\xC6\xA4\xAF\xA4\xC0\xA4\xB5\xA4\xA4", // ai 2026-06
 
 // modules/links/linkedit2.php, row 112
-"Not accepted, sorry. Looks like spam." => "",
+"Not accepted, sorry. Looks like spam." => "\xBC\xF5\xA4\xB1\xC9\xD5\xA4\xB1\xA4\xE9\xA4\xEC\xA4\xDE\xA4\xBB\xA4\xF3\xA1\xA3\xA5\xB9\xA5\xD1\xA5\xE0\xA4\xCE\xA4\xE8\xA4\xA6\xA4\xC7\xA4\xB9\xA1\xA3", // ai 2026-06
 
 // modules/links/linkedit2.php, row 141
-"Link change proposal inserted" => "",
+"Link change proposal inserted" => "\xA5\xEA\xA5\xF3\xA5\xAF\xCA\xD1\xB9\xB9\xA4\xCE\xC4\xF3\xB0\xC6\xA4\xAC\xC1\xDE\xC6\xFE\xA4\xB5\xA4\xEC\xA4\xDE\xA4\xB7\xA4\xBF", // ai 2026-06
 
 // modules/links/linkedit2.php, row 141, 145
-"Link inserted" => "",
+"Link inserted" => "\xA5\xEA\xA5\xF3\xA5\xAF\xA4\xAC\xC1\xDE\xC6\xFE\xA4\xB5\xA4\xEC\xA4\xDE\xA4\xB7\xA4\xBF", // ai 2026-06
 
 // modules/links/linkedit2.php, row 151
-"Continue" => "",
+"Continue" => "\xC2\xB3\xB9\xD4", // ai 2026-06
 
 // modules/links/menu.php, row 64
 "View site" => "\xA5\xB5\xA5\xA4\xA5\xC8\xA4\xF2\xB8\xAB\xA4\xEB",
 
 // modules/links/menu.php, row 73
-"Add new link" => "",
+"Add new link" => "\xBF\xB7\xA4\xB7\xA4\xA4\xA5\xEA\xA5\xF3\xA5\xAF\xA4\xF2\xC4\xC9\xB2\xC3", // ai 2026-06
 
 // modules/links/menu.php, row 80, 81
-"Link Manager" => "",
+"Link Manager" => "\xA5\xEA\xA5\xF3\xA5\xAF\xB4\xC9\xCD\xFD", // ai 2026-06
 
 // modules/links/menu.php, row 88, 89
-"Link Admin" => "",
+"Link Admin" => "\xA5\xEA\xA5\xF3\xA5\xAF\xC0\xDF\xC4\xEA", // ai 2026-06
 
 // modules/links/menu.php, row 100
-"Folders" => "",
+"Folders" => "\xA5\xD5\xA5\xA9\xA5\xEB\xA5\xC0", // ai 2026-06
 
 // modules/links/menu.php, row 100
-"Folders with links, sorted by their status (active, changed, new, ...)" => "",
+"Folders with links, sorted by their status (active, changed, new, ...)" => "\xBE\xF5\xC2\xD6\xCA\xCC\xA1\xCA\xB3\xE8\xC6\xB0\xC3\xE6\xA1\xA2\xCA\xD1\xB9\xB9\xBA\xD1\xA4\xDF\xA1\xA2\xBF\xB7\xB5\xAC\xA4\xCA\xA4\xC9\xA1\xCB\xA4\xCB\xCA\xAC\xA4\xB1\xA4\xE9\xA4\xEC\xA4\xBF\xA5\xEA\xA5\xF3\xA5\xAF\xA5\xD5\xA5\xA9\xA5\xEB\xA5\xC0", // ai 2026-06
 
 // modules/links/menu.php, row 103
 "Active" => "\xB3\xE8\xC6\xB0\xC3\xE6",
 
 // modules/links/menu.php, row 106
-"Changed Links" => "",
+"Changed Links" => "\xCA\xD1\xB9\xB9\xA4\xB5\xA4\xEC\xA4\xBF\xA5\xEA\xA5\xF3\xA5\xAF", // ai 2026-06
 
 // modules/links/menu.php, row 109
-"New Links" => "",
+"New Links" => "\xBF\xB7\xA4\xB7\xA4\xA4\xA5\xEA\xA5\xF3\xA5\xAF", // ai 2026-06
 
 // modules/links/menu.php, row 112
-"Holding bin" => "",
+"Holding bin" => "\xCA\xDD\xCE\xB1\xC8\xA2", // ai 2026-06
 
 // modules/links/menu.php, row 115
-"Trash" => "",
+"Trash" => "\xA4\xB4\xA4\xDF\xC8\xA2", // ai 2026-06
 
 // modules/links/menu.php, row 118
-"Unassigned" => "",
+"Unassigned" => "\xCC\xA4\xCA\xAC\xCE\xE0", // ai 2026-06
 
 // modules/links/menu.php, row 121
-"Unassigned - Trash" => "",
+"Unassigned - Trash" => "\xCC\xA4\xCA\xAC\xCE\xE0 - \xA4\xB4\xA4\xDF\xC8\xA2", // ai 2026-06
 
 // modules/links/menu.php, row 122
-"Misc" => "",
+"Misc" => "\xA4\xBD\xA4\xCE\xC2\xBE", // ai 2026-06
 
 // modules/links/menu.php, row 126
 "Empty trash" => "\xA5\xB4\xA5\xDF\xC8\xA2\xA4\xF2\xB6\xF5\xA4\xCB\xA4\xB9\xA4\xEB",
 
 // modules/links/menu.php, row 127
-"Are you sure you want to empty trash?" => "",
+"Are you sure you want to empty trash?" => "\xCB\xDC\xC5\xF6\xA4\xCB\xA5\xB4\xA5\xDF\xC8\xA2\xA4\xF2\xB6\xF5\xA4\xCB\xA4\xB7\xA4\xDE\xA4\xB9\xA4\xAB\xA1\xA9", // ai 2026-06
 
 // modules/links/menu.php, row 131
-"Set Debug OFF" => "",
+"Set Debug OFF" => "\xA5\xC7\xA5\xD0\xA5\xC3\xA5\xB0\xA4\xF2\xA5\xAA\xA5\xD5", // ai 2026-06
 
 // modules/links/menu.php, row 131
-"Set Debug ON" => "",
+"Set Debug ON" => "\xA5\xC7\xA5\xD0\xA5\xC3\xA5\xB0\xA4\xF2\xA5\xAA\xA5\xF3", // ai 2026-06
 
 // modules/links/menu.php, row 132
-"Bookmarks" => "",
+"Bookmarks" => "\xA5\xD6\xA5\xC3\xA5\xAF\xA5\xDE\xA1\xBC\xA5\xAF", // ai 2026-06
 
 // modules/links/menu.php, row 132
-"My own links" => "",
+"My own links" => "\xBC\xAB\xCA\xAC\xA4\xCE\xA5\xEA\xA5\xF3\xA5\xAF", // ai 2026-06
 
 // modules/links/menu.php, row 158
 "Main settings" => "\xBC\xE7\xA4\xCA\xC0\xDF\xC4\xEA",
 
 // modules/links/menu.php, row 161
-"Links" => "",
+"Links" => "\xA5\xEA\xA5\xF3\xA5\xAF", // ai 2026-06
 
 // modules/links/menu.php, row 162
 "Design" => "\xA5\xC7\xA5\xB6\xA5\xA4\xA5\xF3",
 
 // modules/links/menu.php, row 170
-"New Category View" => "",
+"New Category View" => "\xBF\xB7\xB5\xAC\xA5\xAB\xA5\xC6\xA5\xB4\xA5\xEA\xA5\xD3\xA5\xE5\xA1\xBC", // ai 2026-06
 
 // modules/links/menu.php, row 175
-"New Link View" => "",
+"New Link View" => "\xBF\xB7\xB5\xAC\xA5\xEA\xA5\xF3\xA5\xAF\xA5\xD3\xA5\xE5\xA1\xBC", // ai 2026-06
 
 // modules/links/modedit.php, row 97
-"No permission to add module" => "",
+"No permission to add module" => "\xA5\xE2\xA5\xB8\xA5\xE5\xA1\xBC\xA5\xEB\xA4\xF2\xC4\xC9\xB2\xC3\xA4\xB9\xA4\xEB\xB5\xF6\xB2\xC4\xA4\xAC\xA4\xA2\xA4\xEA\xA4\xDE\xA4\xBB\xA4\xF3", // ai 2026-06
 
 // modules/links/modedit.php, row 102
-"No permission to edit module" => "",
+"No permission to edit module" => "\xA5\xE2\xA5\xB8\xA5\xE5\xA1\xBC\xA5\xEB\xA4\xF2\xCA\xD4\xBD\xB8\xA4\xB9\xA4\xEB\xB5\xF6\xB2\xC4\xA4\xAC\xA4\xA2\xA4\xEA\xA4\xDE\xA4\xBB\xA4\xF3", // ai 2026-06
 
 // modules/links/modedit.php, row 119, 229, 232
-"Start category id" => "",
+"Start category id" => "\xB3\xAB\xBB\xCF\xA5\xAB\xA5\xC6\xA5\xB4\xA5\xEA ID", // ai 2026-06
 
 // modules/links/modedit.php, row 120, 235, 238
-"Tree start id" => "",
+"Tree start id" => "\xA5\xC4\xA5\xEA\xA1\xBC\xB3\xAB\xBB\xCF ID", // ai 2026-06
 
 // modules/links/modedit.php, row 121, 236, 239
-"Select start id" => "",
+"Select start id" => "\xB3\xAB\xBB\xCF ID \xA4\xF2\xC1\xAA\xC2\xF2", // ai 2026-06
 
 // modules/links/modedit.php, row 217
-"Add Links module" => "",
+"Add Links module" => "\xA5\xEA\xA5\xF3\xA5\xAF\xA5\xE2\xA5\xB8\xA5\xE5\xA1\xBC\xA5\xEB\xA4\xF2\xC4\xC9\xB2\xC3", // ai 2026-06
 
 // modules/links/modedit.php, row 217
-"Edit Links module" => "",
+"Edit Links module" => "\xA5\xEA\xA5\xF3\xA5\xAF\xA5\xE2\xA5\xB8\xA5\xE5\xA1\xBC\xA5\xEB\xA4\xF2\xCA\xD4\xBD\xB8", // ai 2026-06
 
 // modules/links/modedit.php, row 220
-"Module Links data" => "",
+"Module Links data" => "\xA5\xEA\xA5\xF3\xA5\xAF\xA5\xE2\xA5\xB8\xA5\xE5\xA1\xBC\xA5\xEB\xA4\xCE\xA5\xC7\xA1\xBC\xA5\xBF", // ai 2026-06
 
 // modules/links/modedit.php, row 225
-"Used Language File" => "",
+"Used Language File" => "\xBB\xC8\xCD\xD1\xA4\xB9\xA4\xEB\xB8\xC0\xB8\xEC\xA5\xD5\xA5\xA1\xA5\xA4\xA5\xEB", // ai 2026-06
 ];

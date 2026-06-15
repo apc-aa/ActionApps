@@ -14,33 +14,33 @@ setlocale(LC_NUMERIC, 'en_US');            // keep float format with dot (see AA
 return [
 
 // admin/aa_cron.php, row 41
-"You do not have permission to manage Cron" => "",
+"You do not have permission to manage Cron" => "Ви не маєте права керувати Cron", // ai 2026-06
 
 // admin/aa_cron.php, row 46
-"Last run" => "",
+"Last run" => "Останній запуск", // ai 2026-06
 
 // admin/aa_cron.php, row 98
-"never" => "",
+"never" => "ніколи", // ai 2026-06
 
 // admin/aa_cron.php, row 99
 // include/field.class.php, row 615
 // src/Util/Adminlink.php, row 30
-"disabled" => "",
+"disabled" => "вимкнено", // ai 2026-06
 
 // admin/aa_cron.php, row 99
-"enabled" => "",
+"enabled" => "увімкнено", // ai 2026-06
 
 // admin/aa_cron.php, row 102
-"For help see FAQ: " => "",
+"For help see FAQ: " => "Довідку дивіться у FAQ:", // ai 2026-06
 
 // admin/aa_cron.php, row 103
-"To run cron manually now: " => "",
+"To run cron manually now: " => "Запустити cron вручну зараз:", // ai 2026-06
 
 // admin/aa_cron.php, row 104
-"Post-response cron fallback" => "",
+"Post-response cron fallback" => "Резервний запуск cron після відповіді", // ai 2026-06
 
 // admin/aa_cron.php, row 104
-"last run" => "",
+"last run" => "останній запуск", // ai 2026-06
 
 // admin/aa_cron.php, row 108
 // include/menu_util.php, row 76
@@ -48,59 +48,59 @@ return [
 
 // admin/aa_emails.php, row 41
 // admin/se_emails.php, row 41
-"You do not have permission to manage Emails" => "",
+"You do not have permission to manage Emails" => "Ви не маєте права керувати e-mail", // ai 2026-06
 
 // admin/aa_emails.php, row 48
 // admin/se_emails.php, row 48
-"Manage Emails" => "",
+"Manage Emails" => "Керування e-mail", // ai 2026-06
 
 // admin/aa_log.php, row 40
 // admin/aa_searchlog.php, row 36
-"You do not have permission to manage ActionApps logs" => "",
+"You do not have permission to manage ActionApps logs" => "Ви не маєте права керувати логами ActionApps", // ai 2026-06
 
 // admin/aa_log.php, row 57
 // include/menu_util.php, row 77
-"View Log" => "",
+"View Log" => "Переглянути лог", // ai 2026-06
 
 // admin/aa_optimize.php, row 47
 // include/feeding.php, row 455, 487
-"Test" => "",
+"Test" => "Тест", // ai 2026-06
 
 // admin/aa_optimize.php, row 61
-"No %1 action in %2." => "",
+"No %1 action in %2." => "Дія %1 у %2 відсутня.", // ai 2026-06
 
 // admin/aa_optimize.php, row 64
-"No optimize class found (%1)." => "",
+"No optimize class found (%1)." => "Клас оптимізації не знайдено (%1).", // ai 2026-06
 
 // admin/aa_optimize.php, row 101
-"Test current" => "",
+"Test current" => "Протестувати поточний", // ai 2026-06
 
 // admin/aa_optimize.php, row 110
-"Repair" => "",
+"Repair" => "Виправити", // ai 2026-06
 
 // admin/aa_optimize.php, row 119
-"Repair current" => "",
+"Repair current" => "Виправити поточний", // ai 2026-06
 
 // admin/aa_optimize.php, row 128
-"Revert" => "",
+"Revert" => "Повернути назад", // ai 2026-06
 
 // admin/aa_optimize.php, row 133
-"You don't have permissions to do optimize tests." => "",
+"You don't have permissions to do optimize tests." => "Ви не маєте права запускати тести оптимізації.", // ai 2026-06
 
 // admin/aa_optimize.php, row 140
-"Admin - Optimize a Repair ActionApps" => "",
+"Admin - Optimize a Repair ActionApps" => "Адмін - Оптимізація та виправлення ActionApps", // ai 2026-06
 
 // admin/aa_searchlog.php, row 68
 // include/menu_util.php, row 78
-"View SearchLog" => "",
+"View SearchLog" => "Переглянути SearchLog", // ai 2026-06
 
 // admin/aa_statistics.php, row 50
 // admin/se_statistics.php, row 50
-"You do not have permissions to see statistics" => "",
+"You do not have permissions to see statistics" => "Ви не маєте права переглядати статистику", // ai 2026-06
 
 // admin/aa_statistics.php, row 78
 // admin/se_statistics.php, row 61
-"Admin - Statistics" => "",
+"Admin - Statistics" => "Адмін - Статистика", // ai 2026-06
 
 // admin/aa_statistics.php, row 83
 // admin/anonym_wizard.php, row 222
@@ -111,173 +111,173 @@ return [
 // include/formutil.php, row 1413, 1416, 1998
 // src/Widget/FilWidget.php, row 153, 232
 // src/Widget/FldWidget.php, row 156
-"Show" => "",
+"Show" => "Показати", // ai 2026-06
 
 // admin/aa_statistics.php, row 86
 // admin/se_statistics.php, row 69
-"years" => "",
+"years" => "роки", // ai 2026-06
 
 // admin/aa_statistics.php, row 87
 // admin/se_statistics.php, row 70
-"months" => "",
+"months" => "місяці", // ai 2026-06
 
 // admin/aa_statistics.php, row 88
 // admin/se_statistics.php, row 71
-"weeks" => "",
+"weeks" => "тижні", // ai 2026-06
 
 // admin/aa_statistics.php, row 89
 // admin/se_statistics.php, row 72
-"days" => "",
+"days" => "дні", // ai 2026-06
 
 // admin/aa_statistics.php, row 90
 // admin/se_statistics.php, row 73
-"hours" => "",
+"hours" => "години", // ai 2026-06
 
 // admin/aa_statistics.php, row 91
 // admin/se_statistics.php, row 74
-"minutes" => "",
+"minutes" => "хвилини", // ai 2026-06
 
 // admin/aa_statistics.php, row 92
 // admin/se_statistics.php, row 75
-"day-hours" => "",
+"day-hours" => "години доби", // ai 2026-06
 
 // admin/aa_statistics.php, row 93
 // admin/se_statistics.php, row 76
-"week-days" => "",
+"week-days" => "дні тижня", // ai 2026-06
 
 // admin/aa_statistics.php, row 97
-"Most hits" => "",
+"Most hits" => "Найбільше звернень", // ai 2026-06
 
 // admin/aa_statistics.php, row 98
-"Most server time" => "",
+"Most server time" => "Найбільше часу сервера", // ai 2026-06
 
 // admin/aa_statistics.php, row 99
-"Slowest (avg ms)" => "",
+"Slowest (avg ms)" => "Найповільніші (сер. мс)", // ai 2026-06
 
 // admin/aa_statistics.php, row 100
-"Fastest (avg ms)" => "",
+"Fastest (avg ms)" => "Найшвидші (сер. мс)", // ai 2026-06
 
 // admin/aa_statistics.php, row 101
-"Worst cached" => "",
+"Worst cached" => "Найгірше кешовані", // ai 2026-06
 
 // admin/aa_statistics.php, row 102
-"Best cached" => "",
+"Best cached" => "Найкраще кешовані", // ai 2026-06
 
 // admin/aa_statistics.php, row 103
-"Most wasted (NC+NM)" => "",
+"Most wasted (NC+NM)" => "Найбільше витрачено (NC+NM)", // ai 2026-06
 
 // admin/aa_statistics.php, row 104
-"Slowed down vs prior period" => "",
+"Slowed down vs prior period" => "Уповільнення проти попереднього періоду", // ai 2026-06
 
 // admin/aa_statistics.php, row 105
-"Sped up vs prior period" => "",
+"Sped up vs prior period" => "Прискорення проти попереднього періоду", // ai 2026-06
 
 // admin/aa_statistics.php, row 106
 // admin/se_statistics.php, row 80
-"Specified below" => "",
+"Specified below" => "Зазначено нижче", // ai 2026-06
 
 // admin/aa_statistics.php, row 110
-"Last day" => "",
+"Last day" => "Останній день", // ai 2026-06
 
 // admin/aa_statistics.php, row 111
-"Last week" => "",
+"Last week" => "Останній тиждень", // ai 2026-06
 
 // admin/aa_statistics.php, row 112
-"Last month" => "",
+"Last month" => "Останній місяць", // ai 2026-06
 
 // admin/aa_statistics.php, row 113
-"Last year" => "",
+"Last year" => "Останній рік", // ai 2026-06
 
 // admin/aa_statistics.php, row 114
-"This day" => "",
+"This day" => "Цей день", // ai 2026-06
 
 // admin/aa_statistics.php, row 115
-"This week" => "",
+"This week" => "Цей тиждень", // ai 2026-06
 
 // admin/aa_statistics.php, row 116
-"This month" => "",
+"This month" => "Цей місяць", // ai 2026-06
 
 // admin/aa_statistics.php, row 117
-"This year" => "",
+"This year" => "Цей рік", // ai 2026-06
 
 // admin/aa_statistics.php, row 118
-"All time" => "",
+"All time" => "За весь час", // ai 2026-06
 
 // admin/aa_statistics.php, row 122
-"All AA" => "",
+"All AA" => "Усе AA", // ai 2026-06
 
 // admin/aa_statistics.php, row 123
-"Sites" => "",
+"Sites" => "Сайти", // ai 2026-06
 
 // admin/aa_statistics.php, row 127
 // admin/aafinder.php, row 500, 513
 // admin/se_inputform.php, row 291
 // include/searchlib.php, row 970
-"Slices" => "",
+"Slices" => "Рубрики", // ai 2026-06
 
 // admin/aa_statistics.php, row 155
-"Quick diagnostics" => "",
+"Quick diagnostics" => "Швидка діагностика", // ai 2026-06
 
 // admin/aa_statistics.php, row 185
-"Slice comparison" => "",
+"Slice comparison" => "Порівняння рубрик", // ai 2026-06
 
 // admin/aa_statistics.php, row 208
 // admin/se_statistics.php, row 135
-"Stats to show" => "",
+"Stats to show" => "Статистика для показу", // ai 2026-06
 
 // admin/aa_statistics.php, row 209
-"Granularity" => "",
+"Granularity" => "Деталізація", // ai 2026-06
 
 // admin/aa_statistics.php, row 213
-"Items to show" => "",
+"Items to show" => "Статті для показу", // ai 2026-06
 
 // admin/aa_statistics.php, row 214
-"Display for module" => "",
+"Display for module" => "Показати для модуля", // ai 2026-06
 
 // admin/aa_statistics.php, row 215
-"Sort items by" => "",
+"Sort items by" => "Сортувати статті за", // ai 2026-06
 
 // admin/aa_statistics.php, row 216
-"Period (item ranking)" => "",
+"Period (item ranking)" => "Період (рейтинг статей)", // ai 2026-06
 
 // admin/aa_statistics.php, row 217
 // admin/se_statistics.php, row 95
-"Exact items to show" => "",
+"Exact items to show" => "Конкретні статті для показу", // ai 2026-06
 
 // admin/aa_statistics.php, row 217
 // admin/se_statistics.php, row 95
-"dash-separated list of item ids/short_ids or AA expression like {ids:{_#SLICE_ID}:d-publish_date....-gt-{timestamp:2023-08-22}}}" => "",
+"dash-separated list of item ids/short_ids or AA expression like {ids:{_#SLICE_ID}:d-publish_date....-gt-{timestamp:2023-08-22}}}" => "список id/short_id статей, розділених дефісами, або AA-вираз на кшталт {ids:{_#SLICE_ID}:d-publish_date....-gt-{timestamp:2023-08-22}}}", // ai 2026-06
 
 // admin/aa_statistics.php, row 218
 // admin/se_statistics.php, row 96
-"Number of items to show" => "",
+"Number of items to show" => "Кількість статей для показу", // ai 2026-06
 
 // admin/aa_statistics.php, row 222
-"Show for period" => "",
+"Show for period" => "Показати за період", // ai 2026-06
 
 // admin/aa_statistics.php, row 223
 // admin/se_statistics.php, row 97
-"From date" => "",
+"From date" => "Від дати", // ai 2026-06
 
 // admin/aa_statistics.php, row 232
 // admin/se_statistics.php, row 141
-"Display Statistics for Item" => "",
+"Display Statistics for Item" => "Показати статистику статті", // ai 2026-06
 
 // admin/aa_statistics.php, row 309
 // admin/se_statistics.php, row 168
-"Items found" => "",
+"Items found" => "Знайдені статті", // ai 2026-06
 
 // admin/aa_statistics.php, row 313
 // admin/se_statistics.php, row 176
-"No items found" => "",
+"No items found" => "Статей не знайдено", // ai 2026-06
 
 // admin/aa_statistics.php, row 321
 // admin/se_statistics.php, row 173
-"Server configuration changes" => "",
+"Server configuration changes" => "Зміни конфігурації сервера", // ai 2026-06
 
 // admin/aa_tasks.php, row 34
 // admin/se_tasks.php, row 47
-"You do not have permissions to manage tasks" => "",
+"You do not have permissions to manage tasks" => "Ви не маєте права керувати завданнями", // ai 2026-06
 
 // admin/aa_tasks.php, row 43
 // admin/aa_toexecute.php, row 42
@@ -285,88 +285,88 @@ return [
 // admin/se_taskmanager.php, row 76
 // admin/se_tasks.php, row 52
 // include/metabase.class.php, row 1610
-"Manage %1" => "",
+"Manage %1" => "Керування %1", // ai 2026-06
 
 // admin/aa_tasks.php, row 44
 // admin/se_tasks.php, row 53
-"You can plan a task for specified time, or as the reaction to some event. The task will probably be sending e-mails using {mail...} expression, or recounting some fields after update by {recount...}" => "",
+"You can plan a task for specified time, or as the reaction to some event. The task will probably be sending e-mails using {mail...} expression, or recounting some fields after update by {recount...}" => "Ви можете запланувати завдання на визначений час або як реакцію на певну подію. Завданням, найімовірніше, буде надсилання e-mail виразом {mail...} або перерахунок деяких полів після оновлення за допомогою {recount...}", // ai 2026-06
 
 // admin/aa_toexecute.php, row 37
-"You do not have permission to see currently scheduled tasks" => "",
+"You do not have permission to see currently scheduled tasks" => "Ви не маєте права переглядати поточні заплановані завдання", // ai 2026-06
 
 // admin/aa_toexecute.php, row 42
-"Scheduled Tasks" => "",
+"Scheduled Tasks" => "Заплановані завдання", // ai 2026-06
 
 // admin/aa_wizardtemplate.php, row 41
-"You do not have permission to manage Wizard Templates" => "",
+"You do not have permission to manage Wizard Templates" => "Ви не маєте права керувати шаблонами майстрів", // ai 2026-06
 
 // admin/aa_wizardtemplate.php, row 75
 // include/tv_misc.php, row 70, 71
-"Wizard Templates" => "",
+"Wizard Templates" => "Шаблони Майстра", // ai 2026-06
 
 // admin/aafinder.php, row 87
-"You don't have permissions to do search." => "",
+"You don't have permissions to do search." => "Ви не маєте права виконувати пошук.", // ai 2026-06
 
 // admin/aafinder.php, row 99
-"Show results with string" => "",
+"Show results with string" => "Показати результати з рядком", // ai 2026-06
 
 // admin/aafinder.php, row 101
-"Item" => "",
+"Item" => "Стаття", // ai 2026-06
 
 // admin/aafinder.php, row 125
 // admin/feed_to.php, row 66
 // admin/se_fields.php, row 112
 // admin/slicedit.php, row 244
 // include/itemfunc.php, row 184
-// include/menu.php, row 126
+// include/menu.php, row 132
 // include/slice.class.php, row 468
 // include/sliceadd.php, row 52, 77
-"Slice" => "",
+"Slice" => "Рубрика", // ai 2026-06
 
 // admin/aafinder.php, row 129
 // src/AA_Plannedtask.php, row 102
-"Module" => "",
+"Module" => "Модуль", // ai 2026-06
 
 // admin/aafinder.php, row 134, 135, 136, 137
 // include/um_util.php, row 102
-"Object" => "",
+"Object" => "Об'єкт", // ai 2026-06
 
 // admin/aafinder.php, row 140
 // include/itemfunc.php, row 273
 // include/logs.php, row 204
 // src/AA_Plannedtask.php, row 117
-"Log" => "",
+"Log" => "Журнал", // ai 2026-06
 
 // admin/aafinder.php, row 162
 // include/sliceadd.php, row 36
 // include/slicedit.php, row 150
-"You do not have permissions to add slice" => "",
+"You do not have permissions to add slice" => "Ви не маєте права додавати рубрику", // ai 2026-06
 
 // admin/aafinder.php, row 168
 // include/menu_util.php, row 79
-"AA finder" => "",
+"AA finder" => "Пошук AA", // ai 2026-06
 
 // admin/aafinder.php, row 248
-"Jump" => "",
+"Jump" => "Перейти", // ai 2026-06
 
 // admin/aafinder.php, row 467, 519
 // admin/itemhistory.php, row 39
 // include/itemfunc.php, row 81, 82, 253, 375
-// include/menu.php, row 156
+// include/menu.php, row 162
 // include/menu_util.php, row 82
-"History" => "",
+"History" => "Історія", // ai 2026-06
 
 // admin/aafinder.php, row 479
-"Manage" => "",
+"Manage" => "Керувати", // ai 2026-06
 
 // admin/aafinder.php, row 482
-"Manage User:" => "",
+"Manage User:" => "Керування користувачем:", // ai 2026-06
 
 // admin/aafinder.php, row 484, 490, 506, 534, 547
-"Go!" => "",
+"Go!" => "Вперед!", // ai 2026-06
 
 // admin/aafinder.php, row 488
-"Manage Group:" => "",
+"Manage Group:" => "Керування групою:", // ai 2026-06
 
 // admin/aafinder.php, row 494, 524
 // admin/um_gedit.php, row 208, 325
@@ -377,76 +377,76 @@ return [
 // include/transformation.class.php, row 760, 837
 // include/um_gsrch.php, row 47
 // src/Widget/GpsWidget.php, row 434
-"Search" => "",
+"Search" => "Пошук", // ai 2026-06
 
 // admin/aafinder.php, row 497
-"Find in" => "",
+"Find in" => "Шукати в", // ai 2026-06
 
 // admin/aafinder.php, row 498
-"ID & SEO" => "",
+"ID & SEO" => "ID і SEO", // ai 2026-06
 
 // admin/aafinder.php, row 499, 512
 // include/itemfunc.php, row 182
-// include/menu.php, row 138
-"Views" => "",
+// include/menu.php, row 144
+"Views" => "Вигляди", // ai 2026-06
 
 // admin/aafinder.php, row 501, 514
 // admin/anonym_wizard.php, row 216
 // include/exporter.class.php, row 522
 // include/itemfunc.php, row 350
-// include/menu.php, row 127
+// include/menu.php, row 133
 // include/searchlib.php, row 167
-"Fields" => "",
+"Fields" => "Поля", // ai 2026-06
 
 // admin/aafinder.php, row 502, 515
-"Site spots" => "",
+"Site spots" => "Місця на сайті", // ai 2026-06
 
 // admin/aafinder.php, row 503, 520
-"Discussion comments" => "",
+"Discussion comments" => "Коментарі обговорення", // ai 2026-06
 
 // admin/aafinder.php, row 511
-"Search and Replace in" => "",
+"Search and Replace in" => "Знайти та замінити в", // ai 2026-06
 
 // admin/aafinder.php, row 516
-"Objects" => "",
+"Objects" => "Об'єкти", // ai 2026-06
 
 // admin/aafinder.php, row 517
-"Items from slices with 'Slice Type' like Code... " => "",
+"Items from slices with 'Slice Type' like Code... " => "Статті з рубрик, чий 'Slice Type' містить Code...", // ai 2026-06
 
 // admin/aafinder.php, row 517
-"Code Items" => "",
+"Code Items" => "Кодові статті", // ai 2026-06
 
 // admin/aafinder.php, row 518
-"All Items" => "",
+"All Items" => "Усі статті", // ai 2026-06
 
 // admin/aafinder.php, row 522
-"minimum 2 characters for replace function" => "",
+"minimum 2 characters for replace function" => "мінімум 2 символи для функції заміни", // ai 2026-06
 
 // admin/aafinder.php, row 523
-"minimum 6 characters for replace function (or use {#AAA} value which will be replaced by empty string)" => "",
+"minimum 6 characters for replace function (or use {#AAA} value which will be replaced by empty string)" => "мінімум 6 символів для функції заміни (або скористайтеся значенням {#AAA}, яке буде замінено порожнім рядком)", // ai 2026-06
 
 // admin/aafinder.php, row 525
-"Replace!" => "",
+"Replace!" => "Замінити!", // ai 2026-06
 
 // admin/aafinder.php, row 532
-"Get all information about the ITEM" => "",
+"Get all information about the ITEM" => "Отримати всю інформацію про СТАТТЮ", // ai 2026-06
 
 // admin/aafinder.php, row 539
-"Shortcut to edit ITEM" => "",
+"Shortcut to edit ITEM" => "Швидке посилання для редагування СТАТТІ", // ai 2026-06
 
 // admin/aafinder.php, row 542
 // include/searchbar.class.php, row 543
 // include/searchlib.php, row 47, 48, 124, 133
-"contains" => "",
+"contains" => "містить", // ai 2026-06
 
 // admin/aafinder.php, row 543
 // include/searchbar.class.php, row 549
 // include/searchlib.php, row 124, 133
-"is" => "",
+"is" => "дорівнює", // ai 2026-06
 
 // admin/aafinder.php, row 544
 // admin/se_profile.php, row 98
-"Item number" => "",
+"Item number" => "Номер статті", // ai 2026-06
 
 // admin/aafinder.php, row 545
 "seo............. =" => "",
@@ -463,19 +463,19 @@ return [
 // admin/se_mapping.php, row 49
 // admin/se_mapping2.php, row 55
 // admin/se_rssfeeds.php, row 37
-"You do not have permissions to change feeding setting" => "",
+"You do not have permissions to change feeding setting" => "Ви не маєте права змінювати налаштування обміну", // ai 2026-06
 
 // admin/aarsstest.php, row 46
 // admin/se_rssfeeds.php, row 46
-"Remote RSS Feed administration" => "",
+"Remote RSS Feed administration" => "Керування віддаленими RSS-каналами", // ai 2026-06
 
 // admin/anonym_wizard.php, row 85
-"ActionApps Anonymous form" => "",
+"ActionApps Anonymous form" => "Анонімна форма ActionApps", // ai 2026-06
 
 // admin/anonym_wizard.php, row 127
 // admin/write_mail.php, row 257
 // include/stringexpand.php, row 9646, 9726
-"Send" => "",
+"Send" => "Надіслати", // ai 2026-06
 
 // admin/anonym_wizard.php, row 149
 // admin/mailman_create_list.php, row 66
@@ -485,40 +485,40 @@ return [
 // admin/se_fields.php, row 87
 // admin/se_inputform.php, row 128
 // admin/se_javascript.php, row 48
-"You do not have permissions to change fields settings" => "",
+"You do not have permissions to change fields settings" => "Ви не маєте права змінювати налаштування полів", // ai 2026-06
 
 // admin/anonym_wizard.php, row 164
-"WARNING: You did not permit anonymous posting in slice settings." => "",
+"WARNING: You did not permit anonymous posting in slice settings." => "УВАГА: Ви не дозволили анонімне надсилання в налаштуваннях рубрики.", // ai 2026-06
 
 // admin/anonym_wizard.php, row 167
-"WARNING: You did not permit anonymous editing in slice settings. A form allowing only anonymous posting will be shown." => "",
+"WARNING: You did not permit anonymous editing in slice settings. A form allowing only anonymous posting will be shown." => "УВАГА: Ви не дозволили анонімне редагування в налаштуваннях рубрики. Буде показано форму, що дозволяє лише анонімне надсилання.", // ai 2026-06
 
 // admin/anonym_wizard.php, row 175
-"WARNING: You want to show password, but you did not set 'Authorized by a password field' in Settings - Anonymous editing." => "",
+"WARNING: You want to show password, but you did not set 'Authorized by a password field' in Settings - Anonymous editing." => "УВАГА: Ви бажаєте показати пароль, але не встановили 'Авторизовано полем з паролем' у Налаштуваннях - Анонімне редагування.", // ai 2026-06
 
 // admin/anonym_wizard.php, row 199
-"Admin - Anonymous Form Wizard" => "",
+"Admin - Anonymous Form Wizard" => "Адміністрування - Майстер анонімної форми", // ai 2026-06
 
 // admin/anonym_wizard.php, row 204
-"Show Form" => "",
+"Show Form" => "Показати форму", // ai 2026-06
 
 // admin/anonym_wizard.php, row 210
-"Help" => "",
+"Help" => "Довідка", // ai 2026-06
 
 // admin/anonym_wizard.php, row 210
-"Help - Documentation" => "",
+"Help - Documentation" => "Довідка - Документація", // ai 2026-06
 
 // admin/anonym_wizard.php, row 211
-"URLs shown after the form was sent" => "",
+"URLs shown after the form was sent" => "URL-адреси, що показуються після надсилання форми", // ai 2026-06
 
 // admin/anonym_wizard.php, row 212
-"OK page" => "",
+"OK page" => "Сторінка OK", // ai 2026-06
 
 // admin/anonym_wizard.php, row 213
-"Error page" => "",
+"Error page" => "Сторінка помилки", // ai 2026-06
 
 // admin/anonym_wizard.php, row 214
-"Use a PHP script to show the result on the OK and Error pages:" => "",
+"Use a PHP script to show the result on the OK and Error pages:" => "Використати PHP-скрипт для показу результату на сторінках OK та помилки:", // ai 2026-06
 
 // admin/anonym_wizard.php, row 220
 // admin/se_fieldid.php, row 308
@@ -530,7 +530,7 @@ return [
 // include/form.class.php, row 183
 // include/searchlib.php, row 357
 // src/Util/ChangesMonitor.php, row 381
-"Field" => "",
+"Field" => "Поле", // ai 2026-06
 
 // admin/anonym_wizard.php, row 221
 // admin/se_fieldid.php, row 308
@@ -540,88 +540,88 @@ return [
 // admin/slicedit.php, row 277
 // include/constants.php, row 409
 // include/tableviews.php, row 64, 80
-"Id" => "",
+"Id" => "ID", // ai 2026-06
 
 // admin/anonym_wizard.php, row 223
-"Field Id in Form" => "",
+"Field Id in Form" => "ID поля у формі", // ai 2026-06
 
 // admin/anonym_wizard.php, row 246
 "Only fields marked as \"Show\" on the \"Fields\" page\n"
    ."         are offered on this page."
- => "",
+ => "На цій сторінці пропонуються лише поля, позначені як \"Показати\"\\n         на сторінці \"Поля\".", // ai 2026-06
 
 // admin/console.php, row 43
-"You do not have permissions to access Console" => "",
+"You do not have permissions to access Console" => "Ви не маєте права доступу до Консолі", // ai 2026-06
 
 // admin/console.php, row 52
-"ActionApps Console" => "",
+"ActionApps Console" => "Консоль ActionApps", // ai 2026-06
 
 // admin/console.php, row 60
 // include/menu_util.php, row 84
-"Console" => "",
+"Console" => "Консоль", // ai 2026-06
 
 // admin/console.php, row 61
 // admin/se_javascript.php, row 79
 // include/stringexpand.php, row 91
-"Code" => "",
+"Code" => "Код", // ai 2026-06
 
 // admin/console.php, row 62
-"HTML output" => "",
+"HTML output" => "Вивід HTML", // ai 2026-06
 
 // admin/console.php, row 64
 // src/Optimize/AbstractOptimize.php, row 130
-"Result" => "",
+"Result" => "Результат", // ai 2026-06
 
 // admin/constants_sel.php, row 63
-"Editor window - item manager" => "",
+"Editor window - item manager" => "Вікно редактора - менеджер статей", // ai 2026-06
 
 // admin/constants_sel.php, row 63
-"select constants window" => "",
+"select constants window" => "вікно вибору констант", // ai 2026-06
 
 // admin/constants_sel.php, row 103
-"Select constants" => "",
+"Select constants" => "Вибрати константи", // ai 2026-06
 
 // admin/constants_sel.php, row 111
 // admin/prev_navigation.php, row 58
 "OK" => "",
 
 // admin/discedit.php, row 56
-"You don't have permissions to edit all items." => "",
+"You don't have permissions to edit all items." => "Ви не маєте права редагувати всі статті.", // ai 2026-06
 
 // admin/discedit.php, row 101
-"Are you sure you want to delete selected comment?" => "",
+"Are you sure you want to delete selected comment?" => "Ви впевнені, що хочете видалити вибраний коментар?", // ai 2026-06
 
 // admin/discedit.php, row 107
-"Are you sure you want to delete ALL comments? There is no way back!" => "",
+"Are you sure you want to delete ALL comments? There is no way back!" => "Ви впевнені, що хочете видалити ВСІ коментарі? Назад дороги немає!", // ai 2026-06
 
 // admin/discedit.php, row 113
-"Are you sure you want to delete ALL unhidden comments (the comments, which are NOT HIDDEN)? There is no way back!" => "",
+"Are you sure you want to delete ALL unhidden comments (the comments, which are NOT HIDDEN)? There is no way back!" => "Ви впевнені, що хочете видалити ВСІ нехованні коментарі (коментарі, які НЕ ПРИХОВАНІ)? Назад дороги немає!", // ai 2026-06
 
 // admin/discedit.php, row 121
-"Admin - Discussion comments management" => "",
+"Admin - Discussion comments management" => "Адміністрування - Керування коментарями обговорення", // ai 2026-06
 
 // admin/discedit.php, row 126
-"Item: " => "",
+"Item: " => "Стаття:", // ai 2026-06
 
 // admin/discedit.php, row 128
 // include/modutils.php, row 77, 178
 // include/slicedit.php, row 190
-"Title" => "",
+"Title" => "Заголовок", // ai 2026-06
 
 // admin/discedit.php, row 129
 // admin/discedit2.php, row 91, 148
 // admin/se_users.php, row 121, 181
 // include/se_users.php, row 102, 173
-"Author" => "",
+"Author" => "Автор", // ai 2026-06
 
 // admin/discedit.php, row 130
 // include/logs.php, row 396
-"IP Address" => "",
+"IP Address" => "IP-адреса", // ai 2026-06
 
 // admin/discedit.php, row 131
 // admin/discedit2.php, row 151
 // src/Widget/DteWidget.php, row 36
-"Date" => "",
+"Date" => "Дата", // ai 2026-06
 
 // admin/discedit.php, row 132
 // admin/related_sel.php, row 148
@@ -629,10 +629,10 @@ return [
 // admin/se_views.php, row 132
 // src/Manager.php, row 201
 // src/Optimize/AbstractOptimize.php, row 127
-"Actions" => "",
+"Actions" => "Дії", // ai 2026-06
 
 // admin/discedit.php, row 138
-"No discussion comments" => "",
+"No discussion comments" => "Немає коментарів обговорення", // ai 2026-06
 
 // admin/discedit.php, row 161
 // admin/prev_navigation.php, row 48
@@ -641,19 +641,19 @@ return [
 // admin/um_uedit.php, row 266
 // include/field.class.php, row 597
 // include/filedit.php, row 114
-// include/formutil.php, row 1755, 3344
+// include/formutil.php, row 1755, 3346
 // include/metabase.class.php, row 1552
 // include/mlx.php, row 367
 // include/statestore.php, row 1025
 // include/um_gsrch.php, row 52
 // modules/jump/modedit.php, row 144
-"Edit" => "",
+"Edit" => "Редагувати", // ai 2026-06
 
 // admin/discedit.php, row 162
-"Hide" => "",
+"Hide" => "Приховати", // ai 2026-06
 
 // admin/discedit.php, row 162
-"Approve" => "",
+"Approve" => "Схвалити", // ai 2026-06
 
 // admin/discedit.php, row 163
 // admin/se_inter_export.php, row 134
@@ -672,28 +672,28 @@ return [
 // src/Manageraction/Object_Delete.php, row 24
 // src/Manageraction/Table_Row_Delete.php, row 23
 // src/Widget/FilWidget.php, row 200
-"Delete" => "",
+"Delete" => "Видалити", // ai 2026-06
 
 // admin/discedit.php, row 169
 // include/adminpage.class.php, row 330
 // include/se_users.php, row 121
 // include/util.php, row 1314
-"Back" => "",
+"Back" => "Назад", // ai 2026-06
 
 // admin/discedit.php, row 170
-"Delete All" => "",
+"Delete All" => "Видалити всі", // ai 2026-06
 
 // admin/discedit.php, row 171
-"Delete All Unhidden" => "",
+"Delete All Unhidden" => "Видалити всі несховані", // ai 2026-06
 
 // admin/discedit2.php, row 77
-"You do not have permission to edit items in this slice" => "",
+"You do not have permission to edit items in this slice" => "Ви не маєте права редагувати статті в цій рубриці", // ai 2026-06
 
 // admin/discedit2.php, row 90, 147
 // admin/write_mail.php, row 119, 237
 // include/mail.php, row 567
 // include/tv_email.php, row 82, 148
-"Subject" => "",
+"Subject" => "Тема", // ai 2026-06
 
 // admin/discedit2.php, row 92, 149
 // admin/setup.php, row 103, 246
@@ -701,425 +701,427 @@ return [
 // admin/um_passwd.php, row 116
 // admin/um_uedit.php, row 326
 // include/um_util.php, row 308, 309, 310
-"E-mail" => "",
+"E-mail" => "Електронна пошта", // ai 2026-06
 
 // admin/discedit2.php, row 93, 150
-"Text of discussion comment" => "",
+"Text of discussion comment" => "Текст коментаря до обговорення", // ai 2026-06
 
 // admin/discedit2.php, row 94, 152
-"Author's WWW  - URL" => "",
+"Author's WWW  - URL" => "WWW автора - URL", // ai 2026-06
 
 // admin/discedit2.php, row 95, 153
-"Author's WWW - description" => "",
+"Author's WWW - description" => "WWW автора - опис", // ai 2026-06
 
 // admin/discedit2.php, row 96, 154
-"Remote address" => "",
+"Remote address" => "Віддалена адреса", // ai 2026-06
 
 // admin/discedit2.php, row 97
-"Free1" => "",
+"Free1" => "Вільне1", // ai 2026-06
 
 // admin/discedit2.php, row 98, 156
-"Tracking" => "",
+"Tracking" => "Відстеження", // ai 2026-06
 
 // admin/discedit2.php, row 134
-"Items management - Discussion comments management - Edit comment" => "",
+"Items management - Discussion comments management - Edit comment" => "Керування статтями - Керування коментарями обговорення - Редагувати коментар", // ai 2026-06
 
 // admin/discedit2.php, row 145
-"Edit comment" => "",
+"Edit comment" => "Редагувати коментар", // ai 2026-06
 
 // admin/discedit2.php, row 155
-"Free 1" => "",
+"Free 1" => "Вільне 1", // ai 2026-06
 
 // admin/feed_to.php, row 58
-"Export Item to Selected Slice" => "",
+"Export Item to Selected Slice" => "Передати статтю до вибраної рубрики", // ai 2026-06
 
 // admin/feed_to.php, row 67
 // include/itemfunc.php, row 152
-"Holding bin" => "",
+"Holding bin" => "Резерв", // ai 2026-06
 
 // admin/feed_to.php, row 68
 // admin/se_export.php, row 120
 // admin/se_filters.php, row 191
 // admin/slicedit.php, row 139, 145
 // include/exporter.class.php, row 483
-// include/menu.php, row 182
+// include/menu.php, row 188
 // include/menu_util.php, row 120
 // src/Module/Poll/Menu.php, row 61
-"Active" => "",
+"Active" => "Активні", // ai 2026-06
 
 // admin/feed_to.php, row 69
-"Do not export to this slice" => "",
+"Do not export to this slice" => "Не передавати до цієї рубрики", // ai 2026-06
 
 // admin/feed_to.php, row 86
-"No permission to set feeding for any slice" => "",
+"No permission to set feeding for any slice" => "Немає права налаштувати передавання для жодної рубрики", // ai 2026-06
 
 // admin/feed_to.php, row 89
 // admin/se_export.php, row 112
 // include/exporter.class.php, row 626
 // include/menu_util.php, row 92
-"Export" => "",
+"Export" => "Передавання", // ai 2026-06
 
 // admin/fileman.php, row 76
-"No permissions for file manager." => "",
+"No permissions for file manager." => "Немає прав для файлового менеджера.", // ai 2026-06
 
 // admin/fileman.php, row 81
-"Unable to run File Manager" => "",
+"Unable to run File Manager" => "Не вдалося запустити файловий менеджер", // ai 2026-06
 
 // admin/fileman.php, row 81
-"doesn't exist" => "",
+"doesn't exist" => "не існує", // ai 2026-06
 
 // admin/fileman.php, row 87
-"Unable to mkdir" => "",
+"Unable to mkdir" => "Не вдалося створити каталог", // ai 2026-06
 
 // admin/fileman.php, row 114
 // include/filedit.php, row 66
-// include/menu.php, row 160
-"File Manager" => "",
+// include/menu.php, row 166
+"File Manager" => "Файловий менеджер", // ai 2026-06
 
 // admin/fileman.php, row 116
 // include/fileman.php, row 131, 149
-"Directory" => "",
+"Directory" => "Каталог", // ai 2026-06
 
 // admin/fileman.php, row 176
-"Unselect all" => "",
+"Unselect all" => "Скасувати вибір", // ai 2026-06
 
 // admin/fileman.php, row 177
 // admin/slicedel.php, row 90
-"Delete selected" => "",
+"Delete selected" => "Видалити вибрані", // ai 2026-06
 
 // admin/fileman.php, row 214
-"Create new file" => "",
+"Create new file" => "Створити новий файл", // ai 2026-06
 
 // admin/fileman.php, row 217
-"Upload file" => "",
+"Upload file" => "Завантажити файл", // ai 2026-06
 
 // admin/fileman.php, row 227
-"Copy template dir" => "",
+"Copy template dir" => "Скопіювати каталог шаблону", // ai 2026-06
 
 // admin/fileman.php, row 230
-"Create new directory" => "",
+"Create new directory" => "Створити новий каталог", // ai 2026-06
 
 // admin/index.php, row 99
 // include/init_page.php, row 127
-"You do not have permission to edit items in the slice:" => "",
+"You do not have permission to edit items in the slice:" => "Ви не маєте права редагувати статті в рубриці:", // ai 2026-06
 
 // admin/index.php, row 181
-"ActionApps - Reader Manager" => "",
+"ActionApps - Reader Manager" => "ActionApps - Менеджер читачів", // ai 2026-06
 
 // admin/index.php, row 181
-"ActionApps - Item Manager" => "",
+"ActionApps - Item Manager" => "ActionApps - Менеджер статей", // ai 2026-06
 
 // admin/itemedit.php, row 287
 // include/date.php, row 185
 // include/validate.php, row 52, 56
-"Error in" => "",
+"Error in" => "Помилка в", // ai 2026-06
 
 // admin/itemedit.php, row 333
 // admin/slicefieldsedit.php, row 106
-"Error: no fields." => "",
+"Error: no fields." => "Помилка: немає полів.", // ai 2026-06
 
 // admin/itemedit.php, row 341
 // admin/slicefieldsedit.php, row 114
-"Bad item ID id=%1" => "",
+"Bad item ID id=%1" => "Хибний ID статті id=%1", // ai 2026-06
 
 // admin/itemedit.php, row 353
-"Error: You have no rights to edit item." => "",
+"Error: You have no rights to edit item." => "Помилка: Ви не маєте права редагувати статтю.", // ai 2026-06
 
 // admin/itemedit.php, row 387, 388
-"Edit Item" => "",
+"Edit Item" => "Редагувати статтю", // ai 2026-06
 
 // admin/itemedit.php, row 387, 388
-// include/menu.php, row 76
-"Add Item" => "",
+// include/menu.php, row 82
+"Add Item" => "Додати статтю", // ai 2026-06
 
 // admin/itemhistory.php, row 24
-"You don't have permissions to view item history." => "",
+"You don't have permissions to view item history." => "Ви не маєте права переглядати історію статті.", // ai 2026-06
 
 // admin/itemhistory.php, row 32
 // admin/iteminfo.php, row 29
 // admin/itemstats.php, row 31
-"Item not found." => "",
+"Item not found." => "Статтю не знайдено.", // ai 2026-06
 
 // admin/iteminfo.php, row 36
-"You have no rights to this item." => "",
+"You have no rights to this item." => "Ви не маєте прав на цю статтю.", // ai 2026-06
 
 // admin/iteminfo.php, row 43
 // include/itemfunc.php, row 73
-"Item info" => "",
+"Item info" => "Інформація про статтю", // ai 2026-06
 
 // admin/itemstats.php, row 23
-"You don't have permissions to view item statistics." => "",
+"You don't have permissions to view item statistics." => "Ви не маєте права переглядати статистику статті.", // ai 2026-06
 
 // admin/itemstats.php, row 38
 // include/itemfunc.php, row 86, 456
-// include/menu.php, row 157
+// include/menu.php, row 163
 // include/menu_util.php, row 81
 // src/Util/Adminlink.php, row 119
-"Statistics" => "",
+"Statistics" => "Статистика", // ai 2026-06
 
 // admin/mailman_create_list.php, row 71
-"Admin - Create Mailman List" => "",
+"Admin - Create Mailman List" => "Адміністрування - Створити список Mailman", // ai 2026-06
 
 // admin/mailman_create_list.php, row 76
-"First set Mailman Lists Field in Slice Settings." => "",
+"First set Mailman Lists Field in Slice Settings." => "Спершу налаштуйте поле списків Mailman у налаштуваннях рубрики.", // ai 2026-06
 
 // admin/mailman_create_list.php, row 102
-"Error: This list name is already used." => "",
+"Error: This list name is already used." => "Помилка: Ця назва списку вже використовується.", // ai 2026-06
 
 // admin/mailman_create_list.php, row 135
-"The list was successfully created." => "",
+"The list was successfully created." => "Список успішно створено.", // ai 2026-06
 
 // admin/mailman_create_list.php, row 156
-"List Settings" => "",
+"List Settings" => "Налаштування списку", // ai 2026-06
 
 // admin/mailman_create_list.php, row 157
 "The list will be added to mailman and also\n"
    ."    to the constant group for the field %1 selected as Mailman Lists Field in Slice Settings."
- => "",
+ => "Список буде додано до mailman, а також\\n    до групи значень для поля %1, вибраного як поле списків Mailman у налаштуваннях рубрики.", // ai 2026-06
 
 // admin/mailman_create_list.php, row 159
-"All the fields are required." => "",
+"All the fields are required." => "Усі поля є обов'язковими.", // ai 2026-06
 
 // admin/mailman_create_list.php, row 160
-"List name" => "",
+"List name" => "Назва списку", // ai 2026-06
 
 // admin/mailman_create_list.php, row 162
-"Admin email" => "",
+"Admin email" => "Email адміністратора", // ai 2026-06
 
 // admin/mailman_create_list.php, row 164
-"Admin password" => "",
+"Admin password" => "Пароль адміністратора", // ai 2026-06
 
 // admin/mailman_create_list.php, row 168
 // admin/setup.php, row 108, 232
 // modules/jump/modedit.php, row 182
-"Create" => "",
+"Create" => "Створити", // ai 2026-06
 
 // admin/preview.php, row 49
-"Wrong slice_id." => "",
+"Wrong slice_id." => "Хибний slice_id.", // ai 2026-06
 
 // admin/related_sel.php, row 148
 // src/Manager.php, row 201
-"Publish date" => "",
+"Publish date" => "Дата публікації", // ai 2026-06
 
 // admin/related_sel.php, row 148
 // src/Manager.php, row 201
-"Headline" => "",
+"Headline" => "Заголовок", // ai 2026-06
 
 // admin/related_sel.php, row 176
-"Editor window - item manager, related selection window" => "",
+"Editor window - item manager, related selection window" => "Вікно редактора - менеджер статей, вікно вибору пов'язаних статей", // ai 2026-06
 
 // admin/rsstest.php, row 50
-"feed" => "",
+"feed" => "завантажити", // ai 2026-06
 
 // admin/rsstest.php, row 51
-"validate" => "",
+"validate" => "перевірити", // ai 2026-06
 
 // admin/rsstest.php, row 52
 // include/stringexpand.php, row 7900
-"show" => "",
+"show" => "показати", // ai 2026-06
 
 // admin/rsstest.php, row 85, 86, 136
-"RSS Feed import test" => "",
+"RSS Feed import test" => "Тест імпорту RSS-каналу", // ai 2026-06
 
 // admin/rsstest.php, row 87
-"RSS feeds testing page." => "",
+"RSS feeds testing page." => "Сторінка для тестування RSS-каналів.", // ai 2026-06
 
 // admin/rsstest.php, row 89
-"No RSS Feeds set." => "",
+"No RSS Feeds set." => "Не налаштовано жодного RSS-каналу.", // ai 2026-06
 
 // admin/rsstest.php, row 100
-"Messages" => "",
+"Messages" => "Повідомлення", // ai 2026-06
 
 // admin/rsstest.php, row 106
-"Write" => "",
+"Write" => "Записати", // ai 2026-06
 
 // admin/rsstest.php, row 107
-"update database" => "",
+"update database" => "оновити базу даних", // ai 2026-06
 
 // admin/rsstest.php, row 113
-"Feed url" => "",
+"Feed url" => "URL каналу", // ai 2026-06
 
 // admin/rsstest.php, row 117
 // admin/se_inter_import.php, row 98
-"Node" => "",
+"Node" => "Вузол", // ai 2026-06
 
 // admin/rsstest.php, row 121
 // include/feeding.php, row 464, 470, 527
-"Local slice" => "",
+"Local slice" => "Локальна рубрика", // ai 2026-06
 
 // admin/rsstest.php, row 130
 // admin/tabledit.php, row 78
-"You do not have permissions to access this page" => "",
+"You do not have permissions to access this page" => "Ви не маєте права доступу до цієї сторінки", // ai 2026-06
 
 // admin/se_admin.php, row 72
-"You have no permission to set configuration parameters of this slice" => "",
+"You have no permission to set configuration parameters of this slice" => "Ви не маєте права налаштовувати конфігураційні параметри цієї рубрики", // ai 2026-06
 
 // admin/se_admin.php, row 81, 173
 // admin/se_compact.php, row 94, 238
 // include/constants.php, row 605, 655, 675, 729, 764, 795, 819, 862, 891, 917, 951
 // include/tableviews.php, row 107
-"Top HTML" => "",
+"Top HTML" => "Верхній HTML", // ai 2026-06
 
 // admin/se_admin.php, row 82, 176
-"Item format" => "",
+"Item format" => "Формат статті", // ai 2026-06
 
 // admin/se_admin.php, row 83, 179
 // admin/se_compact.php, row 95, 248
 // include/constants.php, row 610, 657, 677, 733, 766, 797, 822, 867, 893, 922, 956
 // include/tableviews.php, row 115
-"Bottom HTML" => "",
+"Bottom HTML" => "Нижній HTML", // ai 2026-06
 
 // admin/se_admin.php, row 84, 182
 // admin/se_compact.php, row 96, 276
 // admin/se_fulltext.php, row 69, 168
 // include/constants.php, row 611, 658, 734, 823, 868, 894, 923, 957, 989
-"Remove strings" => "",
+"Remove strings" => "Рядки для видалення", // ai 2026-06
 
 // admin/se_admin.php, row 85, 184
 // include/constants.php, row 645, 668, 755, 781, 812, 845, 879, 909, 943, 977
-"HTML code for \"No item found\" message" => "",
+"HTML code for \"No item found\" message" => "HTML-код для повідомлення \"Статтю не знайдено\"", // ai 2026-06
 
 // admin/se_admin.php, row 86
 // admin/se_fulltext.php, row 70, 171, 175
-"Show discussion" => "",
+"Show discussion" => "Показати обговорення", // ai 2026-06
 
 // admin/se_admin.php, row 98
 // admin/se_compact.php, row 128
 // admin/se_fulltext.php, row 91
 // admin/se_view.php, row 198, 203, 375
-"Can't change slice settings" => "",
+"Can't change slice settings" => "Не вдалося змінити налаштування рубрики", // ai 2026-06
 
 // admin/se_admin.php, row 110
-"Admin fields update successful" => "",
+"Admin fields update successful" => "Поля адміністрування успішно оновлено", // ai 2026-06
 
 // admin/se_admin.php, row 159
-"Admin - design Item Manager view" => "",
+"Admin - design Item Manager view" => "Адміністрування - вигляд Менеджера статей", // ai 2026-06
 
 // admin/se_admin.php, row 168
 // admin/se_compact.php, row 228
 // admin/se_fulltext.php, row 153
 // admin/se_inputform.php, row 187, 439
-"Default" => "",
+"Default" => "За замовчуванням", // ai 2026-06
 
 // admin/se_admin.php, row 171
-"Listing of items in Admin interface" => "",
+"Listing of items in Admin interface" => "Перелік статей в інтерфейсі адміністрування", // ai 2026-06
 
 // admin/se_admin.php, row 174
 // admin/se_compact.php, row 239, 268
 // admin/se_fulltext.php, row 160
-"HTML code which appears at the top of slice area" => "",
+"HTML code which appears at the top of slice area" => "HTML-код, який з'являється над областю рубрики", // ai 2026-06
 
 // admin/se_admin.php, row 177
 // admin/se_compact.php, row 242, 271
 // admin/se_fulltext.php, row 163
 "Put here the HTML code combined with aliases form bottom of this page\n"
    ."                     <br>The aliases will be substituted by real values from database when it will be posted to page"
- => "",
+ => "Розмістіть тут HTML-код у поєднанні з аліасами, наведеними внизу сторінки\n"
+   ."                     <br>Аліаси під час публікації на сторінку будуть замінені реальними значеннями з бази даних", // ai 2026-06
 
 // admin/se_admin.php, row 180
 // admin/se_compact.php, row 249, 274
 // admin/se_fulltext.php, row 166
-"HTML code which appears at the bottom of slice area" => "",
+"HTML code which appears at the bottom of slice area" => "HTML-код, який з'являється під областю рубрики", // ai 2026-06
 
 // admin/se_admin.php, row 183
 // admin/se_compact.php, row 277
 // admin/se_fulltext.php, row 169
-"Removes empty brackets etc. Use ## as delimiter." => "",
+"Removes empty brackets etc. Use ## as delimiter." => "Видаляє порожні дужки тощо. Використовуйте ## як роздільник.", // ai 2026-06
 
 // admin/se_admin.php, row 185
-"Code to be printed when no item is filled (or user has no permission to any item in the slice)" => "",
+"Code to be printed when no item is filled (or user has no permission to any item in the slice)" => "Код, який виводиться, коли не заповнено жодної статті (або користувач не має права на жодну статтю в рубриці)", // ai 2026-06
 
 // admin/se_admin.php, row 187
-"Use special view" => "",
+"Use special view" => "Використати спеціальний вигляд", // ai 2026-06
 
 // admin/se_admin.php, row 188
-"You can set special view - template for the Inputform on \"Design\" -> \"View\" page (inputform view)" => "",
+"You can set special view - template for the Inputform on \"Design\" -> \"View\" page (inputform view)" => "Спеціальний вигляд - шаблон для вхідної форми - можна задати на сторінці \"Дизайн\" -> \"Вигляд\" (вигляд типу inputform)", // ai 2026-06
 
 // admin/se_admin.php, row 193
 // admin/se_compact.php, row 285
 // admin/se_fulltext.php, row 180
 // admin/se_view.php, row 616
-"Use these aliases for database fields" => "",
+"Use these aliases for database fields" => "Використовуйте ці аліаси для полів бази даних", // ai 2026-06
 
 // admin/se_compact.php, row 84
-"You do not have permissions to change compact view formatting" => "",
+"You do not have permissions to change compact view formatting" => "Ви не маєте права змінювати форматування компактного вигляду", // ai 2026-06
 
 // admin/se_compact.php, row 93, 241
 // include/constants.php, row 606, 656, 730, 765, 796, 863, 918, 952
-"Odd Rows" => "",
+"Odd Rows" => "Непарні рядки", // ai 2026-06
 
 // admin/se_compact.php, row 97, 278
-"'No item found' message" => "",
+"'No item found' message" => "Повідомлення 'Не знайдено жодної статті'", // ai 2026-06
 
 // admin/se_compact.php, row 99, 245
 // include/constants.php, row 608, 731, 865, 920, 954
-"Even Rows" => "",
+"Even Rows" => "Парні рядки", // ai 2026-06
 
 // admin/se_compact.php, row 102, 267
-"Category top HTML" => "",
+"Category top HTML" => "Верхній HTML-код для рубрики", // ai 2026-06
 
 // admin/se_compact.php, row 103, 270
-"Category Headline" => "",
+"Category Headline" => "Заголовок рубрики", // ai 2026-06
 
 // admin/se_compact.php, row 104, 273
-"Category bottom HTML" => "",
+"Category bottom HTML" => "Нижній HTML-код для рубрики", // ai 2026-06
 
 // admin/se_compact.php, row 135
-"Design of compact design successfully changed" => "",
+"Design of compact design successfully changed" => "Дизайн компактного вигляду успішно змінено", // ai 2026-06
 
 // admin/se_compact.php, row 215
-"Admin - design Index view" => "",
+"Admin - design Index view" => "Адміністрування - вигляд переліку", // ai 2026-06
 
 // admin/se_compact.php, row 216
-"Use these boxes ( and the tags listed below ) to control what appears on summary page" => "",
+"Use these boxes ( and the tags listed below ) to control what appears on summary page" => "Використовуйте ці поля ( та теги, наведені нижче ) для керування тим, що з'являється на сторінці переліку", // ai 2026-06
 
 // admin/se_compact.php, row 233
-"HTML code for index view" => "",
+"HTML code for index view" => "HTML-код для вигляду переліку", // ai 2026-06
 
 // admin/se_compact.php, row 244
 // include/constants.php, row 607, 756, 864, 919, 953
-"Use different HTML code for even rows" => "",
+"Use different HTML code for even rows" => "Використати інший HTML-код для парних рядків", // ai 2026-06
 
 // admin/se_compact.php, row 246
 "You can define different code for odd and even rows\n"
    ."                         <br>first red, second black, for example"
- => "",
+ => "Ви можете задати різний код для непарних і парних рядків\n"
+   ."                         <br>наприклад, перший червоний, другий чорний", // ai 2026-06
 
 // admin/se_compact.php, row 251
 // include/constants.php, row 624, 740, 873, 928, 962
-"Group by" => "",
+"Group by" => "Згрупувати за", // ai 2026-06
 
 // admin/se_compact.php, row 258
 // admin/se_profile.php, row 115
 // admin/se_view.php, row 225, 226, 250
-"Ascending" => "",
+"Ascending" => "За зростанням", // ai 2026-06
 
 // admin/se_compact.php, row 259
 // admin/se_profile.php, row 115
 // admin/se_view.php, row 225, 226, 250
 // include/searchbar.class.php, row 599
 // include/searchlib.php, row 358
-"Descending" => "",
+"Descending" => "За спаданням", // ai 2026-06
 
 // admin/se_compact.php, row 260
 // admin/se_view.php, row 226
-"Ascending by Priority" => "",
+"Ascending by Priority" => "За зростанням пріоритету", // ai 2026-06
 
 // admin/se_compact.php, row 261
 // admin/se_view.php, row 226
-"Descending by Priority" => "",
+"Descending by Priority" => "За спаданням пріоритету", // ai 2026-06
 
 // admin/se_compact.php, row 264
-"'by Priority' is usable just for fields using constants (like category)" => "",
+"'by Priority' is usable just for fields using constants (like category)" => "'за пріоритетом' можна використати лише для полів, що використовують константи (як-от рубрика)", // ai 2026-06
 
 // admin/se_compact.php, row 279
-"message to show in place of slice.php, if no item matches the query" => "",
+"message to show in place of slice.php, if no item matches the query" => "повідомлення, яке показується замість slice.php, якщо жодна стаття не відповідає запиту", // ai 2026-06
 
 // admin/se_constant.php, row 110
-"You do not have permissions to change fields settings for the slice owning this group" => "",
+"You do not have permissions to change fields settings for the slice owning this group" => "Ви не маєте права змінювати налаштування полів для рубрики, що володіє цією групою", // ai 2026-06
 
 // admin/se_constant.php, row 199
-" items changed to new value " => "",
+" items changed to new value " => " статей змінено на нове значення", // ai 2026-06
 
 // admin/se_constant.php, row 219, 401
 // admin/se_users.php, row 181
@@ -1134,7 +1136,7 @@ return [
 // include/um_gedit.php, row 31
 // src/AA_Plannedtask.php, row 102
 // src/Optimize/AbstractOptimize.php, row 125
-"Name" => "",
+"Name" => "Назва", // ai 2026-06
 
 // admin/se_constant.php, row 220, 402
 // admin/se_mapping.php, row 183
@@ -1142,7 +1144,7 @@ return [
 // include/constants.php, row 404
 // include/constedit.php, row 76
 // include/searchlib.php, row 171
-"Value" => "",
+"Value" => "Значення", // ai 2026-06
 
 // admin/se_constant.php, row 221, 403
 // admin/se_inputform.php, row 528
@@ -1155,128 +1157,128 @@ return [
 // include/um_gedit.php, row 32
 // src/Manageraction/Central_Linkcheck.php, row 30
 // src/Optimize/AbstractOptimize.php, row 126
-"Description" => "",
+"Description" => "Опис", // ai 2026-06
 
 // admin/se_constant.php, row 222, 404
 // admin/se_fields.php, row 194, 380
 // include/constants.php, row 405
 // include/constedit.php, row 82
 // src/Optimize/AbstractOptimize.php, row 129
-"Priority" => "",
+"Priority" => "Пріоритет", // ai 2026-06
 
 // admin/se_constant.php, row 228, 351
 // admin/se_constant_import.php, row 72, 118
 // admin/se_inputform.php, row 281
 // include/constants.php, row 735
-"Constant Group" => "",
+"Constant Group" => "Група констант", // ai 2026-06
 
 // admin/se_constant.php, row 233
 // include/constedit_util.php, row 624
-"This constant group already exists" => "",
+"This constant group already exists" => "Така група констант вже існує", // ai 2026-06
 
 // admin/se_constant.php, row 307
 // admin/se_constant_import.php, row 100
-"Constants update successful" => "",
+"Constants update successful" => "Константи успішно оновлено", // ai 2026-06
 
 // admin/se_constant.php, row 316
-"Admin - Constants Setting" => "",
+"Admin - Constants Setting" => "Адміністрування - Налаштування констант", // ai 2026-06
 
 // admin/se_constant.php, row 324
-"Delete whole group" => "",
+"Delete whole group" => "Видалити цілу групу", // ai 2026-06
 
 // admin/se_constant.php, row 328
-"Edit in Hierarchical editor" => "",
+"Edit in Hierarchical editor" => "Редагувати в ієрархічному редакторі", // ai 2026-06
 
 // admin/se_constant.php, row 330
-"Edit in Hierarchical editor (allows to create constant hierarchy)" => "",
+"Edit in Hierarchical editor (allows to create constant hierarchy)" => "Редагувати в ієрархічному редакторі (дозволяє створювати ієрархію констант)", // ai 2026-06
 
 // admin/se_constant.php, row 343
 // admin/se_constant_import.php, row 73, 117, 128
 // admin/se_inputform.php, row 418
-"Constants" => "",
+"Constants" => "Константи", // ai 2026-06
 
 // admin/se_constant.php, row 357
-"alphanumeric 5-16 character long identifier" => "",
+"alphanumeric 5-16 character long identifier" => "алфавітно-цифровий ідентифікатор завдовжки 5-16 символів", // ai 2026-06
 
 // admin/se_constant.php, row 359
-"Import Constants..." => "",
+"Import Constants..." => "Імпортувати константи...", // ai 2026-06
 
 // admin/se_constant.php, row 367
-"Constants used in slice" => "",
+"Constants used in slice" => "Константи, використані в рубриці", // ai 2026-06
 
 // admin/se_constant.php, row 379
-"Constant group owner - slice" => "",
+"Constant group owner - slice" => "Власник групи констант - рубрика", // ai 2026-06
 
 // admin/se_constant.php, row 383
-"Whoever first updates values becomes owner." => "",
+"Whoever first updates values becomes owner." => "Власником стає той, хто першим оновить значення.", // ai 2026-06
 
 // admin/se_constant.php, row 393
-"Change owner" => "",
+"Change owner" => "Змінити власника", // ai 2026-06
 
 // admin/se_constant.php, row 399
-"Propagate changes into current items" => "",
+"Propagate changes into current items" => "Поширити зміни на наявні статті", // ai 2026-06
 
 // admin/se_constant.php, row 401
 // include/constedit.php, row 73
-"shown&nbsp;on&nbsp;inputpage" => "",
+"shown&nbsp;on&nbsp;inputpage" => "показано&nbsp;на&nbsp;вхідній&nbsp;сторінці", // ai 2026-06
 
 // admin/se_constant.php, row 402
 // include/constedit.php, row 76
-"stored&nbsp;in&nbsp;database" => "",
+"stored&nbsp;in&nbsp;database" => "збережено&nbsp;в&nbsp;базі&nbsp;даних", // ai 2026-06
 
 // admin/se_constant.php, row 403
-"can be viewed by {constant:&lt;group&gt;:&lt;value&gt;:description}" => "",
+"can be viewed by {constant:&lt;group&gt;:&lt;value&gt;:description}" => "можна переглянути за допомогою {constant:&lt;group&gt;:&lt;value&gt;:description}", // ai 2026-06
 
 // admin/se_constant.php, row 404
 // include/constedit.php, row 82
-"constant&nbsp;order" => "",
+"constant&nbsp;order" => "порядок&nbsp;констант", // ai 2026-06
 
 // admin/se_constant.php, row 405
-"Used" => "",
+"Used" => "Використано", // ai 2026-06
 
 // admin/se_constant.php, row 405
-"times" => "",
+"times" => "разів", // ai 2026-06
 
 // admin/se_constant.php, row 441
-"Are you sure you want to PERMANENTLY DELETE this group?" => "",
+"Are you sure you want to PERMANENTLY DELETE this group?" => "Ви впевнені, що хочете НЕЗВОРОТНО ВИДАЛИТИ цю групу?", // ai 2026-06
 
 // admin/se_constant_import.php, row 80
 // include/constedit_util.php, row 628
-"No constants specified" => "",
+"No constants specified" => "Не вказано констант", // ai 2026-06
 
 // admin/se_constant_import.php, row 107
-"Admin - Constants Import" => "",
+"Admin - Constants Import" => "Адміністрування - Імпорт констант", // ai 2026-06
 
 // admin/se_constant_import.php, row 127
-"Name - Value delimiter" => "",
+"Name - Value delimiter" => "Роздільник назва - значення", // ai 2026-06
 
 // admin/se_constant_import.php, row 128
-"write each constant to new row in form <name><delimiter><value> (or just <name> if the values should be the same as names)" => "",
+"write each constant to new row in form <name><delimiter><value> (or just <name> if the values should be the same as names)" => "запишіть кожну константу в новий рядок у форматі <name><delimiter><value> (або лише <name>, якщо значення мають збігатися з назвами)", // ai 2026-06
 
 // admin/se_csv_import.php, row 98
-"You do not have permissions to import files" => "",
+"You do not have permissions to import files" => "Ви не маєте права імпортувати файли", // ai 2026-06
 
 // admin/se_csv_import.php, row 103
-"Missing slice" => "",
+"Missing slice" => "Рубрику не знайдено", // ai 2026-06
 
 // admin/se_csv_import.php, row 137
-"Cannot read input url" => "",
+"Cannot read input url" => "Не вдалося прочитати вхідне URL", // ai 2026-06
 
 // admin/se_csv_import.php, row 171
-"Admin - Import CSV (1/2) - Source data" => "",
+"Admin - Import CSV (1/2) - Source data" => "Адміністрування - Імпорт CSV (1/2) - Вихідні дані", // ai 2026-06
 
 // admin/se_csv_import.php, row 177
-"Cannot open a file for preview" => "",
+"Cannot open a file for preview" => "Не вдалося відкрити файл для перегляду", // ai 2026-06
 
 // admin/se_csv_import.php, row 179
-"File preview" => "",
+"File preview" => "Перегляд файлу", // ai 2026-06
 
 // admin/se_csv_import.php, row 212
-"CSV format settings" => "",
+"CSV format settings" => "Налаштування формату CSV", // ai 2026-06
 
 // admin/se_csv_import.php, row 236, 241
 // include/filedit.php, row 66
-"File" => "",
+"File" => "Файл", // ai 2026-06
 
 // admin/se_csv_import.php, row 237, 242
 // src/Manageraction/Central_Linkcheck.php, row 28
@@ -1286,54 +1288,54 @@ return [
 // admin/se_csv_import.php, row 238, 243
 // admin/se_inputform.php, row 471, 472
 // include/itemfunc.php, row 589, 678, 702
-"Text" => "",
+"Text" => "Текст", // ai 2026-06
 
 // admin/se_csv_import.php, row 251
-"Source of CSV data" => "",
+"Source of CSV data" => "Джерело даних CSV", // ai 2026-06
 
 // admin/se_csv_import.php, row 275
 // admin/se_csv_import2.php, row 374
 // src/Manageraction/Item_Preview.php, row 11
-"Preview" => "",
+"Preview" => "Перегляд", // ai 2026-06
 
 // admin/se_csv_import.php, row 276
 // include/scroller.php, row 86
-"Next" => "",
+"Next" => "Далі", // ai 2026-06
 
 // admin/se_csv_import2.php, row 193
-"You have not permissions to setting " => "",
+"You have not permissions to setting " => "Ви не маєте права на налаштування", // ai 2026-06
 
 // admin/se_csv_import2.php, row 204
-"Invalid additional parameters for import" => "",
+"Invalid additional parameters for import" => "Неправильні додаткові параметри для імпорту", // ai 2026-06
 
 // admin/se_csv_import2.php, row 269
-"Item:" => "",
+"Item:" => "Стаття:", // ai 2026-06
 
 // admin/se_csv_import2.php, row 277
-"Cannot store item to DB" => "",
+"Cannot store item to DB" => "Не вдалося зберегти статтю в БД", // ai 2026-06
 
 // admin/se_csv_import2.php, row 282
-"Transformation error:" => "",
+"Transformation error:" => "Помилка перетворення:", // ai 2026-06
 
 // admin/se_csv_import2.php, row 284
-"Ok: Item %1 stored" => "",
+"Ok: Item %1 stored" => "Ok: статтю %1 збережено", // ai 2026-06
 
 // admin/se_csv_import2.php, row 300
 // include/files.class.php, row 298
-"Ok : file deleted " => "",
+"Ok : file deleted " => "Ok: файл видалено", // ai 2026-06
 
 // admin/se_csv_import2.php, row 302
 // include/files.class.php, row 300
-"Error: Cannot delete file" => "",
+"Error: Cannot delete file" => "Помилка: не вдалося видалити файл", // ai 2026-06
 
 // admin/se_csv_import2.php, row 306
-"Added to slice" => "",
+"Added to slice" => "Додано до рубрики", // ai 2026-06
 
 // admin/se_csv_import2.php, row 328
-"Mapping preview" => "",
+"Mapping preview" => "Перегляд зіставлення", // ai 2026-06
 
 // admin/se_csv_import2.php, row 379
-"Finish" => "",
+"Finish" => "Завершити", // ai 2026-06
 
 // admin/se_csv_import2.php, row 384
 // include/searchbar.class.php, row 719
@@ -1341,169 +1343,169 @@ return [
 // src/Widget/RioWidget.php, row 124
 // src/Widget/TxtWidget.php, row 109
 // src/Widget/Widget.php, row 416
-"Save" => "",
+"Save" => "Зберегти", // ai 2026-06
 
 // admin/se_csv_import2.php, row 389
-"Load" => "",
+"Load" => "Завантажити", // ai 2026-06
 
 // admin/se_csv_import2.php, row 399
-"Mapping settings" => "",
+"Mapping settings" => "Налаштування зіставлення", // ai 2026-06
 
 // admin/se_csv_import2.php, row 402
 // admin/se_filters.php, row 190
 // admin/se_mapping.php, row 181
-"To" => "",
+"To" => "До", // ai 2026-06
 
 // admin/se_csv_import2.php, row 403
 // admin/se_filters.php, row 189
 // admin/se_mapping.php, row 182
 // include/tv_email.php, row 159
-"From" => "",
+"From" => "З", // ai 2026-06
 
 // admin/se_csv_import2.php, row 404
 // admin/search_replace.php, row 178
 // include/metabase.class.php, row 1577
 // include/statestore.php, row 975, 1289
 // src/AA_Plannedtask.php, row 102
-"Action" => "",
+"Action" => "Дія", // ai 2026-06
 
 // admin/se_csv_import2.php, row 405
 "Html" => "",
 
 // admin/se_csv_import2.php, row 406
-"Action parameters" => "",
+"Action parameters" => "Параметри дії", // ai 2026-06
 
 // admin/se_csv_import2.php, row 407
-"Parameter wizard" => "",
+"Parameter wizard" => "Майстер параметрів", // ai 2026-06
 
 // admin/se_csv_import2.php, row 432
-"Import options" => "",
+"Import options" => "Параметри імпорту", // ai 2026-06
 
 // admin/se_csv_import2.php, row 447
-"Map item id from" => "",
+"Map item id from" => "Зіставити id статті з", // ai 2026-06
 
 // admin/se_csv_import2.php, row 451
-"unpacked long id (32 characters)" => "",
+"unpacked long id (32 characters)" => "розпакований довгий id (32 символи)", // ai 2026-06
 
 // admin/se_csv_import2.php, row 452
-"packed long id (16 characters)" => "",
+"packed long id (16 characters)" => "запакований довгий id (16 символів)", // ai 2026-06
 
 // admin/se_csv_import2.php, row 453
-"string to be converted (string2id) - with param:" => "",
+"string to be converted (string2id) - with param:" => "рядок для перетворення (string2id) - з параметром:", // ai 2026-06
 
 // admin/se_csv_import2.php, row 461
-"Select, how to store the items" => "",
+"Select, how to store the items" => "Виберіть, як зберігати статті", // ai 2026-06
 
 // admin/se_csv_import2.php, row 463
-"Do not store the item" => "",
+"Do not store the item" => "Не зберігати статтю", // ai 2026-06
 
 // admin/se_csv_import2.php, row 464
-"Store the item with new id" => "",
+"Store the item with new id" => "Зберегти статтю з новим id", // ai 2026-06
 
 // admin/se_csv_import2.php, row 465
-"Update the item (overwrite)" => "",
+"Update the item (overwrite)" => "Оновити статтю (перезаписати)", // ai 2026-06
 
 // admin/se_csv_import2.php, row 466
-"Add the values in parallel to current values (the multivalues are stored, where possible)" => "",
+"Add the values in parallel to current values (the multivalues are stored, where possible)" => "Додати значення паралельно до поточних значень (багатозначні значення зберігаються, де це можливо)", // ai 2026-06
 
 // admin/se_csv_import2.php, row 467
-"Rewrite only the fields, for which the action is defined and compute all computed fields, ..." => "",
+"Rewrite only the fields, for which the action is defined and compute all computed fields, ..." => "Перезаписати лише поля, для яких визначено дію, та обчислити всі обчислювані поля, ...", // ai 2026-06
 
 // admin/se_csv_import2.php, row 468
-"Rewrite only the fields, for which the action is defined (do not update lastedit, computed, ... fields = Silent)" => "",
+"Rewrite only the fields, for which the action is defined (do not update lastedit, computed, ... fields = Silent)" => "Перезаписати лише поля, для яких визначено дію (не оновлювати lastedit, обчислювані, ... поля = Тихий режим)", // ai 2026-06
 
 // admin/se_csv_import2.php, row 469
-"Rewrite only the fields, for which the action is defined and its value is not empty (computed fields will be computed)" => "",
+"Rewrite only the fields, for which the action is defined and its value is not empty (computed fields will be computed)" => "Перезаписати лише поля, для яких визначено дію та значення яких не порожнє (обчислювані поля буде обчислено)", // ai 2026-06
 
 // admin/se_csv_import2.php, row 472
-"If the item id is already in the slice" => "",
+"If the item id is already in the slice" => "Якщо id статті вже є в рубриці", // ai 2026-06
 
 // admin/se_csv_import2.php, row 473
 // admin/search_replace.php, row 176
-"Silent" => "",
+"Silent" => "Тихий режим", // ai 2026-06
 
 // admin/se_csv_import2.php, row 473
-"Do not perform any other operations like evaluate-computed-field, feed, send e-mail to Readers of Alerts..." => "",
+"Do not perform any other operations like evaluate-computed-field, feed, send e-mail to Readers of Alerts..." => "Не виконувати жодних інших операцій, як-от обчислення обчислюваних полів, передавання, надсилання e-mail читачам сповіщень...", // ai 2026-06
 
 // admin/se_csv_import2.php, row 474
-"Data source" => "",
+"Data source" => "Джерело даних", // ai 2026-06
 
 // admin/se_csv_import2.php, row 475
 // include/feeding.php, row 456, 488
-"Source" => "",
+"Source" => "Джерело", // ai 2026-06
 
 // admin/se_csv_import2.php, row 477
-"Store settings..." => "",
+"Store settings..." => "Зберегти налаштування...", // ai 2026-06
 
 // admin/se_csv_import2.php, row 483
-"Load setting" => "",
+"Load setting" => "Завантажити налаштування", // ai 2026-06
 
 // admin/se_csv_import2.php, row 485
-"Save setting as" => "",
+"Save setting as" => "Зберегти налаштування як", // ai 2026-06
 
 // admin/se_csv_import2.php, row 488
-"Upload periodically" => "",
+"Upload periodically" => "Завантажувати періодично", // ai 2026-06
 
 // admin/se_csv_import2.php, row 539
-"Admin - Import CSV (2/2) - Mapping and Actions" => "",
+"Admin - Import CSV (2/2) - Mapping and Actions" => "Адміністрування - Імпорт CSV (2/2) - Зіставлення та дії", // ai 2026-06
 
 // admin/se_export.php, row 75
-"You do not have permissions to export" => "",
+"You do not have permissions to export" => "Ви не маєте права експортувати", // ai 2026-06
 
 // admin/se_export.php, row 101
-"Admin - Export Items" => "",
+"Admin - Export Items" => "Адміністрування - Експорт статей", // ai 2026-06
 
 // admin/se_export.php, row 114
 // include/exporter.class.php, row 503
-"Item Contents" => "",
+"Item Contents" => "Вміст статей", // ai 2026-06
 
 // admin/se_export.php, row 115
 // include/constants.php, row 674
 // include/exporter.class.php, row 504
-"Discussion" => "",
+"Discussion" => "Обговорення", // ai 2026-06
 
 // admin/se_export.php, row 119
 // include/exporter.class.php, row 482
 // include/scroller.php, row 88
-"All" => "",
+"All" => "Усі", // ai 2026-06
 
 // admin/se_export.php, row 121
 // include/exporter.class.php, row 484
-"Pending" => "",
+"Pending" => "Підготовлені", // ai 2026-06
 
 // admin/se_export.php, row 122
 // include/exporter.class.php, row 485
 // include/itemfunc.php, row 145
-"Expired" => "",
+"Expired" => "Прострочені", // ai 2026-06
 
 // admin/se_export.php, row 123
 // include/exporter.class.php, row 486
-"Approved" => "",
+"Approved" => "Затверджені", // ai 2026-06
 
 // admin/se_export.php, row 124
 // include/exporter.class.php, row 487
-"Holding" => "",
+"Holding" => "Резерв", // ai 2026-06
 
 // admin/se_export.php, row 125
 // include/exporter.class.php, row 488
 // include/itemfunc.php, row 155
 // src/Manageraction/Central_MoveItem.php, row 43
-"Trash" => "",
+"Trash" => "Кошик", // ai 2026-06
 
 // admin/se_export.php, row 135
 // include/exporter.class.php, row 492
-"Database backup (as stored in DB)" => "",
+"Database backup (as stored in DB)" => "Резервна копія бази даних (як зберігається в БД)", // ai 2026-06
 
 // admin/se_export.php, row 136
 // include/exporter.class.php, row 493
-"Human - dates converted to Y-m-d format, ..." => "",
+"Human - dates converted to Y-m-d format, ..." => "Зрозуміле для людини - дати перетворено у формат Y-m-d, ...", // ai 2026-06
 
 // admin/se_export.php, row 149
-"Export Items" => "",
+"Export Items" => "Експортувати статті", // ai 2026-06
 
 // admin/se_export.php, row 151
 // include/exporter.class.php, row 508
-"Output Format" => "",
+"Output Format" => "Вихідний формат", // ai 2026-06
 
 // admin/se_export.php, row 152
 // admin/se_history.php, row 138
@@ -1515,140 +1517,143 @@ return [
 // include/logs.php, row 316
 // include/se_users.php, row 173
 // src/Widget/Widget.php, row 724
-"Type" => "",
+"Type" => "Тип", // ai 2026-06
 
 // admin/se_export.php, row 153
 // include/exporter.class.php, row 510
-"Bins" => "",
+"Bins" => "Скриньки", // ai 2026-06
 
 // admin/se_export.php, row 154
 // include/exporter.class.php, row 524
-"Filename" => "",
+"Filename" => "Назва файлу", // ai 2026-06
 
 // admin/se_export.php, row 154
 // include/exporter.class.php, row 524
-"save as..." => "",
+"save as..." => "зберегти як...", // ai 2026-06
 
 // admin/se_export.php, row 155
 // include/exporter.class.php, row 525
 // include/searchlib.php, row 966
-"Conditions" => "",
+"Conditions" => "Умови", // ai 2026-06
 
 // admin/se_export.php, row 155
 // include/exporter.class.php, row 525
-"conditions are in \"d-...\" or \"conds[]\" form - just like:<br> &nbsp; d-headline........,category.......1-BEGIN-Bio (d-&lt;fields&gt;-&lt;operator&gt;-&lt;value&gt;-&lt;fields&gt;-&lt;op...)<br> &nbsp; conds[0][category........]=first&conds[1][switch.........1]=1 (default operator is RLIKE, here!)" => "",
+"conditions are in \"d-...\" or \"conds[]\" form - just like:<br> &nbsp; d-headline........,category.......1-BEGIN-Bio (d-&lt;fields&gt;-&lt;operator&gt;-&lt;value&gt;-&lt;fields&gt;-&lt;op...)<br> &nbsp; conds[0][category........]=first&conds[1][switch.........1]=1 (default operator is RLIKE, here!)" => "умови мають вигляд \"d-...\" або \"conds[]\" - наприклад:<br> &nbsp; d-headline........,category.......1-BEGIN-Bio (d-&lt;fields&gt;-&lt;operator&gt;-&lt;value&gt;-&lt;fields&gt;-&lt;op...)<br> &nbsp; conds[0][category........]=first&conds[1][switch.........1]=1 (типовий оператор тут RLIKE!)", // ai 2026-06
 
 // admin/se_export.php, row 156
 // include/exporter.class.php, row 526
 // include/searchlib.php, row 968
-"Sort" => "",
+"Sort" => "Сортування", // ai 2026-06
 
 // admin/se_export.php, row 156
 // include/exporter.class.php, row 526
-"like: publish_date....-" => "",
+"like: publish_date....-" => "наприклад: publish_date....-", // ai 2026-06
 
 // admin/se_export.php, row 157
 // include/exporter.class.php, row 523
-"Custom columns" => "",
+"Custom columns" => "Власні стовпці", // ai 2026-06
 
 // admin/se_export.php, row 157
-"Add any AA {expression} as extra column - each row = one column" => "",
+"Add any AA {expression} as extra column - each row = one column" => "Додайте будь-який AA {expression} як додатковий стовпець - кожен рядок = один стовпець", // ai 2026-06
 
 // admin/se_fieldid.php, row 222
-"The new ID is the same as the old one" => "",
+"The new ID is the same as the old one" => "Новий ID такий самий, як старий", // ai 2026-06
 
 // admin/se_fieldid.php, row 224
-"The old ID is not valid" => "",
+"The old ID is not valid" => "Старий ID недійсний", // ai 2026-06
 
 // admin/se_fieldid.php, row 226
-"The new ID is not valid" => "",
+"The new ID is not valid" => "Новий ID недійсний", // ai 2026-06
 
 // admin/se_fieldid.php, row 228
-"This ID is reserved" => "",
+"This ID is reserved" => "Цей ID зарезервовано", // ai 2026-06
 
 // admin/se_fieldid.php, row 230
-"This ID is already used" => "",
+"This ID is already used" => "Цей ID вже використовується", // ai 2026-06
 
 // admin/se_fieldid.php, row 257
-"Admin - change Field IDs" => "",
+"Admin - change Field IDs" => "Адміністрування - зміна ID полів", // ai 2026-06
 
 // admin/se_fieldid.php, row 261
-"field IDs were changed" => "",
+"field IDs were changed" => "ID полів змінено", // ai 2026-06
 
 // admin/se_fieldid.php, row 266
-"Change Field IDs" => "",
+"Change Field IDs" => "Змінити ID полів", // ai 2026-06
 
 // admin/se_fieldid.php, row 268
 "This page allows to change field IDs. It is a bit dangerous operation and may last long.\n"
    ."    You need to do it only in special cases, like using search form for multiple slices. <br><br>\n"
    ."    Choose a field ID to be changed and the new name and number, the dots ..... will be\n"
    ."    added automatically.<br>"
- => "",
+ => "Ця сторінка дозволяє змінити ID полів. Це доволі небезпечна операція, яка може тривати довго.\n"
+   ."    Вона потрібна лише в особливих випадках, як-от використання форми пошуку для кількох рубрик. <br><br>\n"
+   ."    Виберіть ID поля для зміни та нову назву й номер, крапки ..... буде\n"
+   ."    додано автоматично.<br>", // ai 2026-06
 
 // admin/se_fieldid.php, row 269
-"Change from" => "",
+"Change from" => "Змінити з", // ai 2026-06
 
 // admin/se_fieldid.php, row 281
 // admin/sliceexp.php, row 133
-"to" => "",
+"to" => "до", // ai 2026-06
 
 // admin/se_fields.php, row 110
-"Add new field from template" => "",
+"Add new field from template" => "Додати нове поле із шаблону", // ai 2026-06
 
 // admin/se_fields.php, row 118
-" (this)" => "",
+" (this)" => " (це)", // ai 2026-06
 
 // admin/se_fields.php, row 144
-"Field delete OK" => "",
+"Field delete OK" => "Поле видалено", // ai 2026-06
 
 // admin/se_fields.php, row 152
-"Invalid move alias parameters" => "",
+"Invalid move alias parameters" => "Неприпустимі параметри переміщення аліаса", // ai 2026-06
 
 // admin/se_fields.php, row 164
-"No free space for alias in this field" => "",
+"No free space for alias in this field" => "У цьому полі немає вільного місця для аліаса", // ai 2026-06
 
 // admin/se_fields.php, row 175
-"Alias moved OK" => "",
+"Alias moved OK" => "Аліас успішно переміщено", // ai 2026-06
 
 // admin/se_fields.php, row 265
 // admin/se_inputform.php, row 274
-"Fields update successful" => "",
+"Fields update successful" => "Налаштування полів успішно змінено", // ai 2026-06
 
 // admin/se_fields.php, row 287
-"Alias <b>%1</b> is duplicated" => "",
+"Alias <b>%1</b> is duplicated" => "Аліас <b>%1</b> дубльовано", // ai 2026-06
 
 // admin/se_fields.php, row 294
-"Do you really want to move alias to another field?" => "",
+"Do you really want to move alias to another field?" => "Ви дійсно бажаєте перемістити аліас до іншого поля?", // ai 2026-06
 
 // admin/se_fields.php, row 317
-"Do you really want to delete this field from this slice?" => "",
+"Do you really want to delete this field from this slice?" => "Ви дійсно бажаєте видалити це поле з цієї рубрики?", // ai 2026-06
 
 // admin/se_fields.php, row 332
 // admin/se_inputform.php, row 386
-"Admin - configure Fields" => "",
+"Admin - configure Fields" => "Адміністрування - налаштування полів", // ai 2026-06
 
 // admin/se_fields.php, row 359
-"change all" => "",
+"change all" => "змінити все", // ai 2026-06
 
 // admin/se_fields.php, row 373
-"Analyze" => "",
+"Analyze" => "Аналізувати", // ai 2026-06
 
 // admin/se_fields.php, row 381
-"Required" => "",
+"Required" => "Обов'язкове", // ai 2026-06
 
 // admin/se_fields.php, row 384
 // include/stringexpand.php, row 105
-"Aliases" => "",
+"Aliases" => "Аліаси", // ai 2026-06
 
 // admin/se_filters.php, row 86
 // admin/se_mapping.php, row 107
-"There are no imported slices" => "",
+"There are no imported slices" => "Немає імпортованих рубрик", // ai 2026-06
 
 // admin/se_filters.php, row 108
-"-- The same --" => "",
+"-- The same --" => "-- Та сама --", // ai 2026-06
 
 // admin/se_filters.php, row 163
-"Admin - Content Pooling - Filters" => "",
+"Admin - Content Pooling - Filters" => "Адміністрування - обмін вмістом - фільтри", // ai 2026-06
 
 // admin/se_filters.php, row 170
 // admin/se_import.php, row 130
@@ -1656,692 +1661,692 @@ return [
 // admin/um_gedit.php, row 281
 // admin/um_uedit.php, row 389
 // central/include/actionapps.class.php, row 781
-// include/formutil.php, row 188, 2892
+// include/formutil.php, row 188, 2894
 // modules/jump/modedit.php, row 182
-"Update" => "",
+"Update" => "Змінити", // ai 2026-06
 
 // admin/se_filters.php, row 177
-"Content Pooling - Configure Filters" => "",
+"Content Pooling - Configure Filters" => "Обмін вмістом - налаштування фільтрів", // ai 2026-06
 
 // admin/se_filters.php, row 180
-"Filter for imported slice" => "",
+"Filter for imported slice" => "Фільтр для імпортованої рубрики", // ai 2026-06
 
 // admin/se_filters.php, row 184
-"Categories" => "",
+"Categories" => "Рубрики", // ai 2026-06
 
 // admin/se_filters.php, row 202
-"All Categories" => "",
+"All Categories" => "Усі рубрики", // ai 2026-06
 
 // admin/se_filters.php, row 209, 233
-"No category defined" => "",
+"No category defined" => "Рубрику не визначено", // ai 2026-06
 
 // admin/se_filters.php, row 269
 // src/Manager.php, row 1108
-"Select all" => "",
+"Select all" => "Вибрати все", // ai 2026-06
 
 // admin/se_filters.php, row 331
-"No From category selected!" => "",
+"No From category selected!" => "Не вибрано вихідну рубрику!", // ai 2026-06
 
 // admin/se_filters2.php, row 109
 // src/IO/Feed.php, row 568
-"Other categories" => "",
+"Other categories" => "Інші рубрики", // ai 2026-06
 
 // admin/se_filters2.php, row 178
 // admin/se_import2.php, row 144, 146
-"Content Pooling update successful" => "",
+"Content Pooling update successful" => "Налаштування обміну вмістом успішно змінено", // ai 2026-06
 
 // admin/se_forms.php, row 36
-"You do not have permissions to manage forms" => "",
+"You do not have permissions to manage forms" => "Ви не маєте права керувати формами", // ai 2026-06
 
 // admin/se_fulltext.php, row 66, 159
-"Top HTML code" => "",
+"Top HTML code" => "Верхній HTML-код", // ai 2026-06
 
 // admin/se_fulltext.php, row 67, 162
-"Fulltext HTML code" => "",
+"Fulltext HTML code" => "HTML-код повного тексту", // ai 2026-06
 
 // admin/se_fulltext.php, row 68, 165
-"Bottom HTML code" => "",
+"Bottom HTML code" => "Нижній HTML-код", // ai 2026-06
 
 // admin/se_fulltext.php, row 99
-"Fulltext format update successful" => "",
+"Fulltext format update successful" => "Формат повного тексту успішно змінено", // ai 2026-06
 
 // admin/se_fulltext.php, row 133
-"Admin - design Fulltext view" => "",
+"Admin - design Fulltext view" => "Адміністрування - оформлення вигляду повного тексту", // ai 2026-06
 
 // admin/se_fulltext.php, row 134
-"Use these boxes ( with the tags listed below ) to control what appears on full text view of each item" => "",
+"Use these boxes ( with the tags listed below ) to control what appears on full text view of each item" => "Використовуйте ці поля ( з наведеними нижче тегами ) для керування тим, що з'являється у вигляді повного тексту кожної статті", // ai 2026-06
 
 // admin/se_fulltext.php, row 158
-"HTML code for fulltext view" => "",
+"HTML code for fulltext view" => "HTML-код для вигляду повного тексту", // ai 2026-06
 
 // admin/se_fulltext.php, row 171, 175
-"The template for discussion you can set on \"Design\" -> \"View\" page" => "",
+"The template for discussion you can set on \"Design\" -> \"View\" page" => "Шаблон для обговорення можна налаштувати на сторінці \"Оформлення\" -> \"Вигляд\"", // ai 2026-06
 
 // admin/se_fulltext.php, row 172
-"Use HTML tags" => "",
+"Use HTML tags" => "Використовувати HTML-теги", // ai 2026-06
 
 // admin/se_fulltext.php, row 173
-"New comments disabled" => "",
+"New comments disabled" => "Нові коментарі вимкнено", // ai 2026-06
 
 // admin/se_history.php, row 55
-"You do not have permissions to view history" => "",
+"You do not have permissions to view history" => "Ви не маєте права переглядати історію", // ai 2026-06
 
 // admin/se_history.php, row 68
-"Set again this old values" => "",
+"Set again this old values" => "Знову встановити ці старі значення", // ai 2026-06
 
 // admin/se_history.php, row 78
-"You do not have permissions to change items" => "",
+"You do not have permissions to change items" => "Ви не маєте права змінювати статті", // ai 2026-06
 
 // admin/se_history.php, row 137
-"Resource ID" => "",
+"Resource ID" => "ID ресурсу", // ai 2026-06
 
 // admin/se_history.php, row 139, 160, 161
 // admin/um_uedit.php, row 263
 // admin/usershow.php, row 87
 // include/perm_sql.php, row 354, 395
-"User" => "",
+"User" => "Користувач", // ai 2026-06
 
 // admin/se_history.php, row 140
 // src/AA_Plannedtask.php, row 102
-"Time" => "",
+"Time" => "Час", // ai 2026-06
 
 // admin/se_history.php, row 155
-"Change ID" => "",
+"Change ID" => "ID зміни", // ai 2026-06
 
 // admin/se_history.php, row 159
-"Time of change" => "",
+"Time of change" => "Час зміни", // ai 2026-06
 
 // admin/se_history.php, row 162
 // include/itemfunc.php, row 188
 // src/AA_Plannedtask.php, row 63
-"Item ID" => "",
+"Item ID" => "ID статті", // ai 2026-06
 
 // admin/se_history.php, row 211, 212
-"ActionApps - History Manager" => "",
+"ActionApps - History Manager" => "ActionApps - Керування історією", // ai 2026-06
 
 // admin/se_import.php, row 121
-"Admin - configure Content Pooling" => "",
+"Admin - configure Content Pooling" => "Адміністрування - налаштування обміну вмістом", // ai 2026-06
 
 // admin/se_import.php, row 136
-"Enable export to slice:" => "",
+"Enable export to slice:" => "Дозволити експорт до рубрики:", // ai 2026-06
 
 // admin/se_import.php, row 139
-"Export disable" => "",
+"Export disable" => "Експорт вимкнено", // ai 2026-06
 
 // admin/se_import.php, row 141
-"Export enable" => "",
+"Export enable" => "Експорт увімкнено", // ai 2026-06
 
 // admin/se_import.php, row 175
-"Enable export to any slice" => "",
+"Enable export to any slice" => "Дозволити експорт до будь-якої рубрики", // ai 2026-06
 
 // admin/se_import.php, row 177
-"Currently exported to" => "",
+"Currently exported to" => "Наразі експортується до", // ai 2026-06
 
 // admin/se_import.php, row 180
-"Wrong export (non-existent slice!):" => "",
+"Wrong export (non-existent slice!):" => "Хибний експорт (неіснуюча рубрика!):", // ai 2026-06
 
 // admin/se_import.php, row 185
-"Import from slice:" => "",
+"Import from slice:" => "Імпорт з рубрики:", // ai 2026-06
 
 // admin/se_import.php, row 194
-"Do not import" => "",
+"Do not import" => "Не імпортувати", // ai 2026-06
 
 // admin/se_import.php, row 196
 // include/menu_util.php, row 93
-"Import" => "",
+"Import" => "Імпортувати", // ai 2026-06
 
 // admin/se_inputform.php, row 184, 494
-"Before HTML code" => "",
+"Before HTML code" => "HTML-код перед полем", // ai 2026-06
 
 // admin/se_inputform.php, row 185, 492
-"Help for this field" => "",
+"Help for this field" => "Довідка для цього поля", // ai 2026-06
 
 // admin/se_inputform.php, row 186, 493
-"More help" => "",
+"More help" => "Більше довідки", // ai 2026-06
 
 // admin/se_inputform.php, row 188
-"Input show function" => "",
+"Input show function" => "Функція показу введення", // ai 2026-06
 
 // admin/se_inputform.php, row 190
-"Alias must be always _# + 8 UPPERCASE letters, e.g. _#<b>SOMTHING</b>." => "",
+"Alias must be always _# + 8 UPPERCASE letters, e.g. _#<b>SOMTHING</b>." => "Аліас завжди має бути _# + 8 ВЕЛИКИХ літер, напр. _#<b>SOMTHING</b>.", // ai 2026-06
 
 // admin/se_inputform.php, row 195, 525
 // include/stringexpand.php, row 90
-"Alias" => "",
+"Alias" => "Аліас", // ai 2026-06
 
 // admin/se_inputform.php, row 199, 526
 // admin/se_profile.php, row 209
-"Function" => "",
+"Function" => "Функція", // ai 2026-06
 
 // admin/se_inputform.php, row 303
-"No field found" => "",
+"No field found" => "Поле не знайдено", // ai 2026-06
 
 // admin/se_inputform.php, row 362
-"You selected slice and not constant group. It is impossible to create slice from here." => "",
+"You selected slice and not constant group. It is impossible to create slice from here." => "Ви вибрали рубрику, а не групу констант. Звідси неможливо створити рубрику.", // ai 2026-06
 
 // admin/se_inputform.php, row 387
-"WARNING: Do not change this setting if you are not sure what you're doing!" => "",
+"WARNING: Do not change this setting if you are not sure what you're doing!" => "УВАГА: Не змінюйте це налаштування, якщо не впевнені, що робите!", // ai 2026-06
 
 // admin/se_inputform.php, row 401
 // include/formutil.php, row 189
-"Update & Edit" => "",
+"Update & Edit" => "Змінити та редагувати", // ai 2026-06
 
 // admin/se_inputform.php, row 402
 // admin/se_view.php, row 529
 // include/slice.class.php, row 1112
-"Show History" => "",
+"Show History" => "Показати історію", // ai 2026-06
 
 // admin/se_inputform.php, row 406
-"Field properties" => "",
+"Field properties" => "Властивості поля", // ai 2026-06
 
 // admin/se_inputform.php, row 414
 // src/Widget/Widget.php, row 736
-"Input type" => "",
+"Input type" => "Тип введення", // ai 2026-06
 
 // admin/se_inputform.php, row 417
-"Input field type in Add / Edit item." => "",
+"Input field type in Add / Edit item." => "Тип поля введення при додаванні / редагуванні статті.", // ai 2026-06
 
 // admin/se_inputform.php, row 421
-"Edit|Use as new|New" => "",
+"Edit|Use as new|New" => "Редагувати|Використати як нову|Нова", // ai 2026-06
 
 // admin/se_inputform.php, row 423
-"Choose a Constant Group or a Slice." => "",
+"Choose a Constant Group or a Slice." => "Виберіть групу констант або рубрику.", // ai 2026-06
 
 // admin/se_inputform.php, row 437
-"Allow translation" => "",
+"Allow translation" => "Дозволити переклад", // ai 2026-06
 
 // admin/se_inputform.php, row 437
-"Only Text Area and Text Field widgets allow translation. Languages should be set on Slice Setting page." => "",
+"Only Text Area and Text Field widgets allow translation. Languages should be set on Slice Setting page." => "Переклад дозволяють лише віджети Text Area та Text Field. Мови слід задати на сторінці налаштувань рубрики.", // ai 2026-06
 
 // admin/se_inputform.php, row 446
-"How to generate the default value" => "",
+"How to generate the default value" => "Як генерувати типове значення", // ai 2026-06
 
 // admin/se_inputform.php, row 453
 // include/feeding.php, row 457, 489
-"Validate" => "",
+"Validate" => "Перевірити", // ai 2026-06
 
 // admin/se_inputform.php, row 464
-"Stored as" => "",
+"Stored as" => "Зберігається як", // ai 2026-06
 
 // admin/se_inputform.php, row 467
-"Stored in <em>item</em> table - it is not possible to change store method" => "",
+"Stored in <em>item</em> table - it is not possible to change store method" => "Зберігається в таблиці <em>item</em> - спосіб зберігання змінити неможливо", // ai 2026-06
 
 // admin/se_inputform.php, row 471, 472
-"Number" => "",
+"Number" => "Число", // ai 2026-06
 
 // admin/se_inputform.php, row 480
 // admin/sliceimp.php, row 428
 // include/form.class.php, row 409, 411
-// include/formutil.php, row 207, 2903
-"Insert" => "",
+// include/formutil.php, row 207, 2905
+"Insert" => "Вставити", // ai 2026-06
 
 // admin/se_inputform.php, row 483
-"Defines how value is stored in database." => "",
+"Defines how value is stored in database." => "Визначає, як значення зберігається в базі даних.", // ai 2026-06
 
 // admin/se_inputform.php, row 490
-"Show 'HTML' / 'plain text' option" => "",
+"Show 'HTML' / 'plain text' option" => "Показувати опцію 'HTML' / 'звичайний текст'", // ai 2026-06
 
 // admin/se_inputform.php, row 491
-"'HTML' as default" => "",
+"'HTML' as default" => "'HTML' за замовчуванням", // ai 2026-06
 
 // admin/se_inputform.php, row 491
-"HTML option means, that the field is printed as filled using {field...........} alias. Plain text means the newlines are converted to &lt;br&gt; etc. HTML is good option for any nontextual data, at least." => "",
+"HTML option means, that the field is printed as filled using {field...........} alias. Plain text means the newlines are converted to &lt;br&gt; etc. HTML is good option for any nontextual data, at least." => "Опція HTML означає, що поле виводиться точно так, як заповнено, за допомогою аліаса {field...........}. Звичайний текст означає, що нові рядки перетворюються на &lt;br&gt; тощо. HTML — принаймні хороший вибір для будь-яких нетекстових даних.", // ai 2026-06
 
 // admin/se_inputform.php, row 492
-"Shown help for this field" => "",
+"Shown help for this field" => "Довідка, що показується для цього поля", // ai 2026-06
 
 // admin/se_inputform.php, row 493
-"Text shown after user click on '?' in input form" => "",
+"Text shown after user click on '?' in input form" => "Текст, який показується після натискання '?' у вхідній формі", // ai 2026-06
 
 // admin/se_inputform.php, row 494
-"Code shown in input form before this field" => "",
+"Code shown in input form before this field" => "Код, що показується у вхідній формі перед цим полем", // ai 2026-06
 
 // admin/se_inputform.php, row 496
-"Searchable in AA Item Manager" => "",
+"Searchable in AA Item Manager" => "Можливість пошуку в Менеджері статей AA", // ai 2026-06
 
 // admin/se_inputform.php, row 496
-"The field is shown in Search box in Item Manager." => "",
+"The field is shown in Search box in Item Manager." => "Поле показується в полі пошуку Менеджера статей.", // ai 2026-06
 
 // admin/se_inputform.php, row 497
-"Feeding mode" => "",
+"Feeding mode" => "Режим передавання", // ai 2026-06
 
 // admin/se_inputform.php, row 497
-"Should the content of this field be copied to another slice if it is fed?" => "",
+"Should the content of this field be copied to another slice if it is fed?" => "Чи має вміст цього поля копіюватися до іншої рубрики при передаванні?", // ai 2026-06
 
 // admin/se_inputform.php, row 499
-"ALIASES used in views to print field content (%1)" => "",
+"ALIASES used in views to print field content (%1)" => "АЛІАСИ, що використовуються у виглядах для виводу вмісту поля (%1)", // ai 2026-06
 
 // admin/se_inputform.php, row 519
-"8 CHARS" => "",
+"8 CHARS" => "8 ЗНАКІВ", // ai 2026-06
 
 // admin/se_inputform.php, row 519
-"8 UPPERCASE letters or _" => "",
+"8 UPPERCASE letters or _" => "8 ВЕЛИКИХ літер або _", // ai 2026-06
 
 // admin/se_inputform.php, row 520
-"Disabled" => "",
+"Disabled" => "Вимкнено", // ai 2026-06
 
 // admin/se_inputform.php, row 521
-"Copy to clipboard" => "",
+"Copy to clipboard" => "Копіювати до буфера обміну", // ai 2026-06
 
 // admin/se_inputform.php, row 522
-"Reset" => "",
+"Reset" => "Скинути", // ai 2026-06
 
 // admin/se_inputform.php, row 527
 // include/logs.php, row 331
-"Parameters" => "",
+"Parameters" => "Параметри", // ai 2026-06
 
 // admin/se_inter_export.php, row 99
-"No selected export" => "",
+"No selected export" => "Не вибрано жодного експорту", // ai 2026-06
 
 // admin/se_inter_export.php, row 102
-"Are you sure you want to delete the export?" => "",
+"Are you sure you want to delete the export?" => "Ви впевнені, що хочете видалити експорт?", // ai 2026-06
 
 // admin/se_inter_export.php, row 111, 115
-"Inter node export settings" => "",
+"Inter node export settings" => "Налаштування експорту між вузлами", // ai 2026-06
 
 // admin/se_inter_export.php, row 117
-"Existing exports of the slice " => "",
+"Existing exports of the slice " => "Наявні експорти рубрики", // ai 2026-06
 
 // admin/se_inter_export.php, row 137
-"Insert new item" => "",
+"Insert new item" => "Додати новий запис", // ai 2026-06
 
 // admin/se_inter_export.php, row 139
-"Remote Nodes" => "",
+"Remote Nodes" => "Віддалені вузли", // ai 2026-06
 
 // admin/se_inter_export.php, row 150
-"User name" => "",
+"User name" => "Ім'я користувача", // ai 2026-06
 
 // admin/se_inter_import.php, row 76, 98
 // admin/se_inter_import2.php, row 102
-"Exact copy" => "",
+"Exact copy" => "Точна копія", // ai 2026-06
 
 // admin/se_inter_import.php, row 77
-"Missing!!!" => "",
+"Missing!!!" => "Відсутнє!!!", // ai 2026-06
 
 // admin/se_inter_import.php, row 88
 // admin/se_inter_import2.php, row 89
-"Inter node import settings" => "",
+"Inter node import settings" => "Налаштування імпорту між вузлами", // ai 2026-06
 
 // admin/se_inter_import.php, row 93
-"Create new feed from node" => "",
+"Create new feed from node" => "Створити нове передавання з вузла", // ai 2026-06
 
 // admin/se_inter_import.php, row 98
 // include/feeding.php, row 528
-"Remote slice" => "",
+"Remote slice" => "Віддалена рубрика", // ai 2026-06
 
 // admin/se_inter_import.php, row 98
 // misc/datovka/datovka.php, row 114
-"State" => "",
+"State" => "Стан", // ai 2026-06
 
 // admin/se_inter_import.php, row 99
-"Existing remote imports into the slice" => "",
+"Existing remote imports into the slice" => "Наявні віддалені імпорти до рубрики", // ai 2026-06
 
 // admin/se_inter_import.php, row 101
-"No remote imports into the slice" => "",
+"No remote imports into the slice" => "Немає віддалених імпортів до рубрики", // ai 2026-06
 
 // admin/se_inter_import.php, row 106
-// include/menu.php, row 147
-"Inter Node Import" => "",
+// include/menu.php, row 153
+"Inter Node Import" => "Імпорт між вузлами", // ai 2026-06
 
 // admin/se_inter_import.php, row 107
-"Add from remote node" => "",
+"Add from remote node" => "Додати з віддаленого вузла", // ai 2026-06
 
 // admin/se_inter_import.php, row 117
-"Are you sure you want to delete the import?" => "",
+"Are you sure you want to delete the import?" => "Ви впевнені, що хочете видалити імпорт?", // ai 2026-06
 
 // admin/se_inter_import.php, row 126
-"No selected node" => "",
+"No selected node" => "Не вибрано жодного вузла", // ai 2026-06
 
 // admin/se_inter_import2.php, row 61, 78
-"Unable to connect and/or retrieve data from the remote node. Contact the administrator of the local node." => "",
+"Unable to connect and/or retrieve data from the remote node. Contact the administrator of the local node." => "Не вдалося з'єднатися та/або отримати дані з віддаленого вузла. Зверніться до адміністратора локального вузла.", // ai 2026-06
 
 // admin/se_inter_import2.php, row 68
-"No slices available. You do not have permissions to import any data of that node. Contact the administrator of the remote slice and check, that he obtained your correct username." => "",
+"No slices available. You do not have permissions to import any data of that node. Contact the administrator of the remote slice and check, that he obtained your correct username." => "Немає доступних рубрик. Ви не маєте прав на імпорт жодних даних цього вузла. Зверніться до адміністратора віддаленої рубрики та перевірте, що він отримав ваше правильне ім'я користувача.", // ai 2026-06
 
 // admin/se_inter_import2.php, row 69
-"Invalid password for the node name:" => "",
+"Invalid password for the node name:" => "Неправильний пароль для вузла:", // ai 2026-06
 
 // admin/se_inter_import2.php, row 69
-"Contact the administrator of the local node." => "",
+"Contact the administrator of the local node." => "Зверніться до адміністратора локального вузла.", // ai 2026-06
 
 // admin/se_inter_import2.php, row 70
-"Remote server returns following error:" => "",
+"Remote server returns following error:" => "Віддалений сервер повертає таку помилку:", // ai 2026-06
 
 // admin/se_inter_import2.php, row 94
-"Choose slice" => "",
+"Choose slice" => "Виберіть рубрику", // ai 2026-06
 
 // admin/se_inter_import2.php, row 100
-"List of available slices from the node " => "",
+"List of available slices from the node " => "Список доступних рубрик з вузла", // ai 2026-06
 
 // admin/se_inter_import2.php, row 101
-"Slice to import" => "",
+"Slice to import" => "Рубрика для імпорту", // ai 2026-06
 
 // admin/se_inter_import2.php, row 103
-"The slice will be an exact copy of the remote slice. All items will be copied including holdingbin and trash bin items. Also on any change in the remote item, the content will be copied to local copy of the item. The items will have the same long ids (not the short ones!). It makes no sense to change items in local copy - it will be overwritten from remote master." => "",
+"The slice will be an exact copy of the remote slice. All items will be copied including holdingbin and trash bin items. Also on any change in the remote item, the content will be copied to local copy of the item. The items will have the same long ids (not the short ones!). It makes no sense to change items in local copy - it will be overwritten from remote master." => "Рубрика буде точною копією віддаленої рубрики. Усі статті будуть скопійовані, включно зі статтями в Резерві та кошику. Також при будь-якій зміні віддаленої статті її вміст буде скопійовано до локальної копії статті. Статті матимуть однакові довгі id (не короткі!). Немає сенсу змінювати статті в локальній копії — їх буде перезаписано з віддаленого джерела.", // ai 2026-06
 
 // admin/se_inter_import3.php, row 63
-"The import was already created" => "",
+"The import was already created" => "Імпорт вже було створено", // ai 2026-06
 
 // admin/se_inter_import3.php, row 113
-"The import was successfully created" => "",
+"The import was successfully created" => "Імпорт успішно створено", // ai 2026-06
 
 // admin/se_javascript.php, row 71
-// include/menu.php, row 159
-"Field Triggers" => "",
+// include/menu.php, row 165
+"Field Triggers" => "Тригери полів", // ai 2026-06
 
 // admin/se_javascript.php, row 78
-"JavaScript for fields" => "",
+"JavaScript for fields" => "JavaScript для полів", // ai 2026-06
 
 // admin/se_javascript.php, row 79
-"Enter code in the JavaScript language. It will be included in the Add / Edit item page (itemedit.php)." => "",
+"Enter code in the JavaScript language. It will be included in the Add / Edit item page (itemedit.php)." => "Введіть код мовою JavaScript. Він буде включений на сторінку Додати / Редагувати статтю (itemedit.php).", // ai 2026-06
 
 // admin/se_javascript.php, row 94
-"Field IDs" => "",
+"Field IDs" => "ID полів", // ai 2026-06
 
 // admin/se_javascript.php, row 96
-"Write trigger functions like" => "",
+"Write trigger functions like" => "Пишіть функції-тригери, наприклад", // ai 2026-06
 
 // admin/se_javascript.php, row 96
-"see FAQ</a> for more details and examples" => "",
+"see FAQ</a> for more details and examples" => "докладніше та приклади див. у FAQ</a>", // ai 2026-06
 
 // admin/se_javascript.php, row 97
-"You can place {require:...} anywhere in the code to load any js library. If you do not use any {require:...}, AA will use default {require:aa-fillform@1} {require:aa-jslib@1}. Feel free to use just {require:aa-fillform} if you do not need old {require:aa-jslib@1}." => "",
+"You can place {require:...} anywhere in the code to load any js library. If you do not use any {require:...}, AA will use default {require:aa-fillform@1} {require:aa-jslib@1}. Feel free to use just {require:aa-fillform} if you do not need old {require:aa-jslib@1}." => "Ви можете розмістити {require:...} будь-де в коді, щоб завантажити будь-яку js-бібліотеку. Якщо ви не використовуєте жодного {require:...}, AA використає типове {require:aa-fillform@1} {require:aa-jslib@1}. Можете спокійно використати лише {require:aa-fillform}, якщо вам не потрібне старе {require:aa-jslib@1}.", // ai 2026-06
 
 // admin/se_javascript.php, row 98
-"If you want to use javascript without any library, use {require:} or // {require:}." => "",
+"If you want to use javascript without any library, use {require:} or // {require:}." => "Якщо ви хочете використати javascript без жодної бібліотеки, використайте {require:} або // {require:}.", // ai 2026-06
 
 // admin/se_javascript.php, row 99
-"Field Type" => "",
+"Field Type" => "Тип поля", // ai 2026-06
 
 // admin/se_javascript.php, row 99
-"Triggers Available -- see some JavaScript help for when a trigger is run" => "",
+"Triggers Available -- see some JavaScript help for when a trigger is run" => "Доступні тригери -- у довідці JavaScript дізнаєтеся, коли який тригер запускається", // ai 2026-06
 
 // admin/se_javascript.php, row 103
-"Triggers" => "",
+"Triggers" => "Тригери", // ai 2026-06
 
 // admin/se_mapping.php, row 128, 200
 // admin/se_mapping2.php, row 80
-"-- Not map --" => "",
+"-- Not map --" => "-- Не зіставляти --", // ai 2026-06
 
 // admin/se_mapping.php, row 129, 194
 // admin/se_mapping2.php, row 83
-"-- Value --" => "",
+"-- Value --" => "-- Значення --", // ai 2026-06
 
 // admin/se_mapping.php, row 130, 197
 // admin/se_mapping2.php, row 86
-"-- Joined fields --" => "",
+"-- Joined fields --" => "-- Поєднані поля --", // ai 2026-06
 
 // admin/se_mapping.php, row 131, 208
 // admin/se_mapping2.php, row 89
-"-- RSS field or expr --" => "",
+"-- RSS field or expr --" => "-- Поле або вираз RSS --", // ai 2026-06
 
 // admin/se_mapping.php, row 151
-"Admin - Content Pooling - Fields' Mapping" => "",
+"Admin - Content Pooling - Fields' Mapping" => "Адміністрування - Обмін вмістом - Зіставлення полів", // ai 2026-06
 
 // admin/se_mapping.php, row 169
-"Content Pooling - Fields' mapping" => "",
+"Content Pooling - Fields' mapping" => "Обмін вмістом - Зіставлення полів", // ai 2026-06
 
 // admin/se_mapping.php, row 172
-"Mapping from slice" => "",
+"Mapping from slice" => "Зіставлення з рубрики", // ai 2026-06
 
 // admin/se_mapping.php, row 176
-"Fields' mapping" => "",
+"Fields' mapping" => "Зіставлення полів", // ai 2026-06
 
 // admin/se_mapping2.php, row 126
-"Fields' mapping update successful" => "",
+"Fields' mapping update successful" => "Зіставлення полів успішно оновлено", // ai 2026-06
 
 // admin/se_nodes.php, row 37
-"You do not have permissions to manage nodes" => "",
+"You do not have permissions to manage nodes" => "Ви не маєте прав на керування вузлами", // ai 2026-06
 
 // admin/se_nodes.php, row 45
-"Remote node administration" => "",
+"Remote node administration" => "Адміністрування віддалених вузлів", // ai 2026-06
 
 // admin/se_notify.php, row 120
 // include/slicedit.php, row 145
-"You do not have permissions to edit this slice" => "",
+"You do not have permissions to edit this slice" => "Ви не маєте прав на редагування цієї рубрики", // ai 2026-06
 
 // admin/se_notify.php, row 227, 239
-"Email Notifications of Events" => "",
+"Email Notifications of Events" => "Email-сповіщення про події", // ai 2026-06
 
 // admin/se_notify.php, row 241
-"E-mail is sent only if body is not empty.<br>You can use this for selective e-mails. For example: {ifset:{category........}:e-mail text}" => "",
+"E-mail is sent only if body is not empty.<br>You can use this for selective e-mails. For example: {ifset:{category........}:e-mail text}" => "E-mail надсилається, лише якщо тіло не порожнє.<br>Це можна використати для вибіркових e-mailів. Наприклад: {ifset:{category........}:текст e-mail}", // ai 2026-06
 
 // admin/se_notify.php, row 243
-"<h4>New Item in Holding Bin</h4> People can be notified by email when an item is created and put into the Holding Bin.  If you want to make use of this feature, enter the recipients email address below.  In the following fields, you can customize the format of the email they will receive." => "",
+"<h4>New Item in Holding Bin</h4> People can be notified by email when an item is created and put into the Holding Bin.  If you want to make use of this feature, enter the recipients email address below.  In the following fields, you can customize the format of the email they will receive." => "<h4>Нова стаття в Резерві</h4> Користувачів можна сповіщати електронною поштою, коли стаття створена та поміщена до Резерву. Якщо ви хочете скористатися цією можливістю, введіть нижче адреси отримувачів. У наступних полях ви можете налаштувати формат листа, який вони отримають.", // ai 2026-06
 
 // admin/se_notify.php, row 244, 249, 254, 259
-"Email addresses, one per line" => "",
+"Email addresses, one per line" => "Адреси email, по одній на рядок", // ai 2026-06
 
 // admin/se_notify.php, row 245, 250, 255, 260
-"Subject of the Email message" => "",
+"Subject of the Email message" => "Тема email-повідомлення", // ai 2026-06
 
 // admin/se_notify.php, row 246, 251, 256, 261
-"Body of the Email message" => "",
+"Body of the Email message" => "Тіло email-повідомлення", // ai 2026-06
 
 // admin/se_notify.php, row 248
-"<h4>Item Changed in Holding Bin</h4>  People can be notified by email when an item in the Holding Bin is modified.  If you want to make use of this feature, enter the recipients email address below.  In the following fields, you can customize the format of the email they will receive." => "",
+"<h4>Item Changed in Holding Bin</h4>  People can be notified by email when an item in the Holding Bin is modified.  If you want to make use of this feature, enter the recipients email address below.  In the following fields, you can customize the format of the email they will receive." => "<h4>Стаття змінена в Резерві</h4> Користувачів можна сповіщати електронною поштою, коли стаття в Резерві змінюється. Якщо ви хочете скористатися цією можливістю, введіть нижче адреси отримувачів. У наступних полях ви можете налаштувати формат листа, який вони отримають.", // ai 2026-06
 
 // admin/se_notify.php, row 253
-"<h4>New Item in Approved Bin</h4>  People can be notified by email when an item is created and put into the Approved Bin.  If you want to make use of this feature, enter the recipients email address below.  In the following fields, you can customize the format of the email they will receive." => "",
+"<h4>New Item in Approved Bin</h4>  People can be notified by email when an item is created and put into the Approved Bin.  If you want to make use of this feature, enter the recipients email address below.  In the following fields, you can customize the format of the email they will receive." => "<h4>Нова стаття серед Затверджених</h4> Користувачів можна сповіщати електронною поштою, коли стаття створена та поміщена до Затверджених. Якщо ви хочете скористатися цією можливістю, введіть нижче адреси отримувачів. У наступних полях ви можете налаштувати формат листа, який вони отримають.", // ai 2026-06
 
 // admin/se_notify.php, row 258
-"<h4>Item Changed in Approved Bin</h4>  People can be notified by email when an item in the Approved Bin is modified.  If you want to make use of this feature, enter the recipients email address below.  In the following fields, you can customize the format of the email they will receive." => "",
+"<h4>Item Changed in Approved Bin</h4>  People can be notified by email when an item in the Approved Bin is modified.  If you want to make use of this feature, enter the recipients email address below.  In the following fields, you can customize the format of the email they will receive." => "<h4>Стаття змінена серед Затверджених</h4> Користувачів можна сповіщати електронною поштою, коли стаття серед Затверджених змінюється. Якщо ви хочете скористатися цією можливістю, введіть нижче адреси отримувачів. У наступних полях ви можете налаштувати формат листа, який вони отримають.", // ai 2026-06
 
 // admin/se_profile.php, row 61
 // admin/se_users.php, row 60
-"You do not have permissions to manage users" => "",
+"You do not have permissions to manage users" => "Ви не маєте прав на керування користувачами", // ai 2026-06
 
 // admin/se_profile.php, row 77
 // include/profile.class.php, row 346
-"Rule deleted" => "",
+"Rule deleted" => "Правило видалено", // ai 2026-06
 
 // admin/se_profile.php, row 81
-"Error: Can't add rule" => "",
+"Error: Can't add rule" => "Помилка: не вдалося додати правило", // ai 2026-06
 
 // admin/se_profile.php, row 99
-"Input view ID" => "",
+"Input view ID" => "Вигляд для вводу", // ai 2026-06
 
 // admin/se_profile.php, row 100
-"Item filter" => "",
+"Item filter" => "Фільтр статей", // ai 2026-06
 
 // admin/se_profile.php, row 101
-"Item order" => "",
+"Item order" => "Порядок статей", // ai 2026-06
 
 // admin/se_profile.php, row 102
-"Item permissions" => "",
+"Item permissions" => "Права до статті", // ai 2026-06
 
 // admin/se_profile.php, row 103
-"Hide field" => "",
+"Hide field" => "Сховати поле", // ai 2026-06
 
 // admin/se_profile.php, row 104
-"Show field" => "",
+"Show field" => "Показати поле", // ai 2026-06
 
 // admin/se_profile.php, row 105
-"Hide and Fill" => "",
+"Hide and Fill" => "Сховати та заповнити", // ai 2026-06
 
 // admin/se_profile.php, row 106
 // admin/search_replace.php, row 172
-"Fill field" => "",
+"Fill field" => "Заповнити поле", // ai 2026-06
 
 // admin/se_profile.php, row 107
-"Predefine field" => "",
+"Predefine field" => "Попередньо задати поле", // ai 2026-06
 
 // admin/se_profile.php, row 108
-"Stored query" => "",
+"Stored query" => "Збережений запит", // ai 2026-06
 
 // admin/se_profile.php, row 109
-"UI - manager" => "",
+"UI - manager" => "UI - менеджер", // ai 2026-06
 
 // admin/se_profile.php, row 110
-"UI - manager - hide" => "",
+"UI - manager - hide" => "UI - менеджер - сховати", // ai 2026-06
 
 // admin/se_profile.php, row 111
-"UI - inputform" => "",
+"UI - inputform" => "UI - форма вводу", // ai 2026-06
 
 // admin/se_profile.php, row 112
-"UI - inputform - hide" => "",
+"UI - inputform - hide" => "UI - форма вводу - сховати", // ai 2026-06
 
 // admin/se_profile.php, row 118
-"Logo (top)" => "",
+"Logo (top)" => "Логотип (вгорі)", // ai 2026-06
 
 // admin/se_profile.php, row 119
-"View site (top)" => "",
+"View site (top)" => "Переглянути сайт (вгорі)", // ai 2026-06
 
 // admin/se_profile.php, row 120
-"Add Item link (top)" => "",
+"Add Item link (top)" => "Посилання Додати статтю (вгорі)", // ai 2026-06
 
 // admin/se_profile.php, row 121
-"Item Manager link (top)" => "",
+"Item Manager link (top)" => "Посилання Менеджер статей (вгорі)", // ai 2026-06
 
 // admin/se_profile.php, row 122
-"Slice Admin link (top)" => "",
+"Slice Admin link (top)" => "Посилання Адміністрування рубрики (вгорі)", // ai 2026-06
 
 // admin/se_profile.php, row 123
-"AA link (top)" => "",
+"AA link (top)" => "Посилання AA (вгорі)", // ai 2026-06
 
 // admin/se_profile.php, row 124
-"Central link (top)" => "",
+"Central link (top)" => "Посилання Central (вгорі)", // ai 2026-06
 
 // admin/se_profile.php, row 125
-"Title (top)" => "",
+"Title (top)" => "Заголовок (вгорі)", // ai 2026-06
 
 // admin/se_profile.php, row 126
-"Logout link (top)" => "",
+"Logout link (top)" => "Посилання Вийти (вгорі)", // ai 2026-06
 
 // admin/se_profile.php, row 127
-"User Info link (top)" => "",
+"User Info link (top)" => "Посилання Інформація про користувача (вгорі)", // ai 2026-06
 
 // admin/se_profile.php, row 128
-"Module Selectbox (top)" => "",
+"Module Selectbox (top)" => "Вибір модуля (вгорі)", // ai 2026-06
 
 // admin/se_profile.php, row 129
-"Module Switch text (top)" => "",
+"Module Switch text (top)" => "Текст перемикання модуля (вгорі)", // ai 2026-06
 
 // admin/se_profile.php, row 130
-"Item Manager Menu: Header (left)" => "",
+"Item Manager Menu: Header (left)" => "Меню Менеджера статей: Шапка (ліворуч)", // ai 2026-06
 
 // admin/se_profile.php, row 131
-"Item Manager Menu: Add Item (left)" => "",
+"Item Manager Menu: Add Item (left)" => "Меню Менеджера статей: Додати статтю (ліворуч)", // ai 2026-06
 
 // admin/se_profile.php, row 132
-"Item Manager Menu: Active (left)" => "",
+"Item Manager Menu: Active (left)" => "Меню Менеджера статей: Активні (ліворуч)", // ai 2026-06
 
 // admin/se_profile.php, row 133
-"Item Manager Menu: Pending (left)" => "",
+"Item Manager Menu: Pending (left)" => "Меню Менеджера статей: Очікувані (ліворуч)", // ai 2026-06
 
 // admin/se_profile.php, row 134
-"Item Manager Menu: Expired (left)" => "",
+"Item Manager Menu: Expired (left)" => "Меню Менеджера статей: Прострочені (ліворуч)", // ai 2026-06
 
 // admin/se_profile.php, row 135
-"Item Manager Menu: Holding (left)" => "",
+"Item Manager Menu: Holding (left)" => "Меню Менеджера статей: Резерв (ліворуч)", // ai 2026-06
 
 // admin/se_profile.php, row 136
-"Item Manager Menu: Trash (left)" => "",
+"Item Manager Menu: Trash (left)" => "Меню Менеджера статей: Кошик (ліворуч)", // ai 2026-06
 
 // admin/se_profile.php, row 137
-"Item Manager Menu: Bookmarks show (left)" => "",
+"Item Manager Menu: Bookmarks show (left)" => "Меню Менеджера статей: Показати закладки (ліворуч)", // ai 2026-06
 
 // admin/se_profile.php, row 138
-"Item Manager Menu: Additional 1 (left)" => "",
+"Item Manager Menu: Additional 1 (left)" => "Меню Менеджера статей: Додаткове 1 (ліворуч)", // ai 2026-06
 
 // admin/se_profile.php, row 139
-"Item Manager Menu: Header 2 (left)" => "",
+"Item Manager Menu: Header 2 (left)" => "Меню Менеджера статей: Шапка 2 (ліворуч)", // ai 2026-06
 
 // admin/se_profile.php, row 140
-"Item Manager Menu: Slice Setting (left)" => "",
+"Item Manager Menu: Slice Setting (left)" => "Меню Менеджера статей: Налаштування рубрики (ліворуч)", // ai 2026-06
 
 // admin/se_profile.php, row 141
-"Item Manager Menu: Empty Trash (left)" => "",
+"Item Manager Menu: Empty Trash (left)" => "Меню Менеджера статей: Очистити кошик (ліворуч)", // ai 2026-06
 
 // admin/se_profile.php, row 142
-"Item Manager Menu: CSV Import (left)" => "",
+"Item Manager Menu: CSV Import (left)" => "Меню Менеджера статей: Імпорт CSV (ліворуч)", // ai 2026-06
 
 // admin/se_profile.php, row 143
-"Item Manager Menu: Debug (left)" => "",
+"Item Manager Menu: Debug (left)" => "Меню Менеджера статей: Зневадження (ліворуч)", // ai 2026-06
 
 // admin/se_profile.php, row 144
-"Item Manager Menu: Additional 2 (left)" => "",
+"Item Manager Menu: Additional 2 (left)" => "Меню Менеджера статей: Додаткове 2 (ліворуч)", // ai 2026-06
 
 // admin/se_profile.php, row 145
-"Add CSS file" => "",
+"Add CSS file" => "Додати файл CSS", // ai 2026-06
 
 // admin/se_profile.php, row 149
-"Manager Actions" => "",
+"Manager Actions" => "Дії менеджера", // ai 2026-06
 
 // admin/se_profile.php, row 150
-"Searchbar - Search Rows" => "",
+"Searchbar - Search Rows" => "Панель пошуку - рядки пошуку", // ai 2026-06
 
 // admin/se_profile.php, row 151
-"Searchbar - Order Rows" => "",
+"Searchbar - Order Rows" => "Панель пошуку - рядки сортування", // ai 2026-06
 
 // admin/se_profile.php, row 152
-"Searchbar - Bookmarks" => "",
+"Searchbar - Bookmarks" => "Панель пошуку - закладки", // ai 2026-06
 
 // admin/se_profile.php, row 156
-"Top menu (admin header)" => "",
+"Top menu (admin header)" => "Верхнє меню (шапка адміністрування)", // ai 2026-06
 
 // admin/se_profile.php, row 157
-"Left menu (item context)" => "",
+"Left menu (item context)" => "Ліве меню (контекст статті)", // ai 2026-06
 
 // admin/se_profile.php, row 161
-"Title (add form)" => "",
+"Title (add form)" => "Заголовок (форма додавання)", // ai 2026-06
 
 // admin/se_profile.php, row 162
-"Top HTML code (add form)" => "",
+"Top HTML code (add form)" => "Верхній HTML-код (форма додавання)", // ai 2026-06
 
 // admin/se_profile.php, row 163
-"Bottom HTML code (add form)" => "",
+"Bottom HTML code (add form)" => "Нижній HTML-код (форма додавання)", // ai 2026-06
 
 // admin/se_profile.php, row 164
-"Button \"Insert\" / \"Insert as new\" (add form)" => "",
+"Button \"Insert\" / \"Insert as new\" (add form)" => "Кнопка \"Вставити\" / \"Вставити як нову\" (форма додавання)", // ai 2026-06
 
 // admin/se_profile.php, row 165
-"Button \"Insert & Edit\" (add form)" => "",
+"Button \"Insert & Edit\" (add form)" => "Кнопка \"Вставити та редагувати\" (форма додавання)", // ai 2026-06
 
 // admin/se_profile.php, row 166
-"Button \"Insert & View\" (add form)" => "",
+"Button \"Insert & View\" (add form)" => "Кнопка \"Вставити та переглянути\" (форма додавання)", // ai 2026-06
 
 // admin/se_profile.php, row 167
-"Button \"Cancel\" (add form)" => "",
+"Button \"Cancel\" (add form)" => "Кнопка \"Скасувати\" (форма додавання)", // ai 2026-06
 
 // admin/se_profile.php, row 168
-"Title (edit form)" => "",
+"Title (edit form)" => "Заголовок (форма редагування)", // ai 2026-06
 
 // admin/se_profile.php, row 169
-"Top HTML code (edit form)" => "",
+"Top HTML code (edit form)" => "Верхній HTML-код (форма редагування)", // ai 2026-06
 
 // admin/se_profile.php, row 170
-"Bottom HTML code (edit form)" => "",
+"Bottom HTML code (edit form)" => "Нижній HTML-код (форма редагування)", // ai 2026-06
 
 // admin/se_profile.php, row 171
-"Button \"Update\" (edit form)" => "",
+"Button \"Update\" (edit form)" => "Кнопка \"Оновити\" (форма редагування)", // ai 2026-06
 
 // admin/se_profile.php, row 172
-"Button \"Update & Edit\" (edit form)" => "",
+"Button \"Update & Edit\" (edit form)" => "Кнопка \"Оновити та редагувати\" (форма редагування)", // ai 2026-06
 
 // admin/se_profile.php, row 173
-"Button \"Update & View\" (edit form)" => "",
+"Button \"Update & View\" (edit form)" => "Кнопка \"Оновити та переглянути\" (форма редагування)", // ai 2026-06
 
 // admin/se_profile.php, row 174
-"Button \"Reset form\" (edit form)" => "",
+"Button \"Reset form\" (edit form)" => "Кнопка \"Скинути форму\" (форма редагування)", // ai 2026-06
 
 // admin/se_profile.php, row 175
-"Button \"Cancel\" (edit form)" => "",
+"Button \"Cancel\" (edit form)" => "Кнопка \"Скасувати\" (форма редагування)", // ai 2026-06
 
 // admin/se_profile.php, row 182
-"Admin - user Profiles" => "",
+"Admin - user Profiles" => "Адміністрування - профілі користувачів", // ai 2026-06
 
 // admin/se_profile.php, row 189
-"Rules" => "",
+"Rules" => "Правила", // ai 2026-06
 
 // admin/se_profile.php, row 197
-"No rule is set" => "",
+"No rule is set" => "Жодного правила не задано", // ai 2026-06
 
 // admin/se_profile.php, row 204
-"Add Rule" => "",
+"Add Rule" => "Додати правило", // ai 2026-06
 
 // admin/se_profile.php, row 207
-"Rule" => "",
+"Rule" => "Правило", // ai 2026-06
 
 // admin/se_profile.php, row 211
 // include/formutil.php, row 1211
@@ -2350,95 +2355,95 @@ return [
 "HTML" => "",
 
 // admin/se_profile.php, row 218
-"Author Role" => "",
+"Author Role" => "Роль Автор", // ai 2026-06
 
 // admin/se_profile.php, row 219
-"Editor Role" => "",
+"Editor Role" => "Роль Редактор", // ai 2026-06
 
 // admin/se_profile.php, row 220
-"Administrator Role" => "",
+"Administrator Role" => "Роль Адміністратор", // ai 2026-06
 
 // admin/se_profile.php, row 221
-"Superadmin Role" => "",
+"Superadmin Role" => "Роль Суперадмін", // ai 2026-06
 
 // admin/se_profile.php, row 226
-"number of item displayed in Item Manager" => "",
+"number of item displayed in Item Manager" => "кількість статей, що відображаються в Менеджері статей", // ai 2026-06
 
 // admin/se_profile.php, row 227
-"id of view used for item input" => "",
+"id of view used for item input" => "id вигляду, що використовується для вводу статті", // ai 2026-06
 
 // admin/se_profile.php, row 228
-"preset \"Search\" in Item Manager" => "",
+"preset \"Search\" in Item Manager" => "попередньо задане \"Пошук\" у Менеджері статей", // ai 2026-06
 
 // admin/se_profile.php, row 229
-"preset \"Order\" in Item Manager" => "",
+"preset \"Order\" in Item Manager" => "попередньо задане \"Сортування\" у Менеджері статей", // ai 2026-06
 
 // admin/se_profile.php, row 230
-"ID of \"Item Set\" which defines the permissions for item - see \"Admin - Item Set\"" => "",
+"ID of \"Item Set\" which defines the permissions for item - see \"Admin - Item Set\"" => "ID \"Набору статей\", який визначає права до статті - див. \"Адмін - Набір статей\"", // ai 2026-06
 
 // admin/se_profile.php, row 231
-"hide the field in inputform" => "",
+"hide the field in inputform" => "сховати поле у формі вводу", // ai 2026-06
 
 // admin/se_profile.php, row 232
-"show (= unhide) the field in inputform (reverts hide made by group profile,...)" => "",
+"show (= unhide) the field in inputform (reverts hide made by group profile,...)" => "показувати (= відкрити) поле у формі вводу (скасовує приховання, зроблене профілем групи,...)", // ai 2026-06
 
 // admin/se_profile.php, row 233
-"hide the field in inputform and fill it by the value" => "",
+"hide the field in inputform and fill it by the value" => "приховати поле у формі вводу та заповнити його значенням", // ai 2026-06
 
 // admin/se_profile.php, row 234
-"fill the field in inputform by the value" => "",
+"fill the field in inputform by the value" => "заповнювати поле у формі вводу значенням", // ai 2026-06
 
 // admin/se_profile.php, row 235
-"predefine value of the field in inputform" => "",
+"predefine value of the field in inputform" => "визначити наперед значення поля у формі вводу", // ai 2026-06
 
 // admin/se_profile.php, row 236
-"redefine manager UI - (empty values = do not show)" => "",
+"redefine manager UI - (empty values = do not show)" => "перевизначити UI менеджера - (порожні значення = не показувати)", // ai 2026-06
 
 // admin/se_profile.php, row 237
-"hide this UI element" => "",
+"hide this UI element" => "приховати цей елемент UI", // ai 2026-06
 
 // admin/se_profile.php, row 238
-"redefine inputform UI - (empty values = do not show)" => "",
+"redefine inputform UI - (empty values = do not show)" => "перевизначити UI форми вводу - (порожні значення = не показувати)", // ai 2026-06
 
 // admin/se_profile.php, row 239
-"hide this UI element in the inputform" => "",
+"hide this UI element in the inputform" => "приховати цей елемент UI у формі вводу", // ai 2026-06
 
 // admin/se_profile.php, row 266
-"Copy Profile from" => "",
+"Copy Profile from" => "Копіювати профіль з", // ai 2026-06
 
 // admin/se_profile.php, row 268
 // central/copyslice2.php, row 116
-"Copy" => "",
+"Copy" => "Копіювати", // ai 2026-06
 
 // admin/se_sets.php, row 64
-"You do not have permissions to change sets" => "",
+"You do not have permissions to change sets" => "Ви не маєте права змінювати набори", // ai 2026-06
 
 // admin/se_sets.php, row 79
-"Name %1" => "",
+"Name %1" => "Назва %1", // ai 2026-06
 
 // admin/se_sets.php, row 80
-"Slice %1" => "",
+"Slice %1" => "Рубрика %1", // ai 2026-06
 
 // admin/se_sets.php, row 81
-"Condition %1" => "",
+"Condition %1" => "Умова %1", // ai 2026-06
 
 // admin/se_sets.php, row 82, 133, 140
-"Sort %1" => "",
+"Sort %1" => "Сортування %1", // ai 2026-06
 
 // admin/se_sets.php, row 83
-"Object ID %1" => "",
+"Object ID %1" => "ID об'єкта %1", // ai 2026-06
 
 // admin/se_sets.php, row 104
-"Sets stored successfully" => "",
+"Sets stored successfully" => "Набори успішно збережено", // ai 2026-06
 
 // admin/se_sets.php, row 110
-"Admin - Item Sets" => "",
+"Admin - Item Sets" => "Адмін - Набори статей", // ai 2026-06
 
 // admin/se_sets.php, row 117
-"Sets" => "",
+"Sets" => "Набори", // ai 2026-06
 
 // admin/se_sets.php, row 118
-"Conditions are in \"d-...\" or \"conds[]\" form - just like:<br> &nbsp; d-headline........,category.......1-BEGIN-Bio (d-&lt;fields&gt;-&lt;operator&gt;-&lt;value&gt;-&lt;fields&gt;-&lt;op...)<br> &nbsp; conds[0][category........]=first&conds[1][switch.........1]=1 (default operator is RLIKE, here!)" => "",
+"Conditions are in \"d-...\" or \"conds[]\" form - just like:<br> &nbsp; d-headline........,category.......1-BEGIN-Bio (d-&lt;fields&gt;-&lt;operator&gt;-&lt;value&gt;-&lt;fields&gt;-&lt;op...)<br> &nbsp; conds[0][category........]=first&conds[1][switch.........1]=1 (default operator is RLIKE, here!)" => "Умови записуються у формі \"d-...\" або \"conds[]\" - наприклад:<br> &nbsp; d-headline........,category.......1-BEGIN-Bio (d-&lt;fields&gt;-&lt;operator&gt;-&lt;value&gt;-&lt;fields&gt;-&lt;op...)<br> &nbsp; conds[0][category........]=first&conds[1][switch.........1]=1 (типовий оператор тут - RLIKE!)", // ai 2026-06
 
 // admin/se_sets.php, row 129
 // admin/sliceexp_text.php, row 364
@@ -2449,250 +2454,250 @@ return [
 "ID" => "",
 
 // admin/se_sets.php, row 130, 137
-"Set name %1" => "",
+"Set name %1" => "Назва набору %1", // ai 2026-06
 
 // admin/se_sets.php, row 130, 137
-"use alphanumeric characters only" => "",
+"use alphanumeric characters only" => "використовуйте лише алфавітно-цифрові символи", // ai 2026-06
 
 // admin/se_sets.php, row 131, 138
-"Slices %1" => "",
+"Slices %1" => "Рубрики %1", // ai 2026-06
 
 // admin/se_sets.php, row 131, 138
-"possibly dash separated" => "",
+"possibly dash separated" => "за потреби розділені дефісом", // ai 2026-06
 
 // admin/se_sets.php, row 132, 139
-"Conditions %1" => "",
+"Conditions %1" => "Умови %1", // ai 2026-06
 
 // admin/se_sets.php, row 132, 139
-"Use \"d-...\" or \"conds[]\" conditions" => "",
+"Use \"d-...\" or \"conds[]\" conditions" => "Використовуйте умови \"d-...\" або \"conds[]\"", // ai 2026-06
 
 // admin/se_sets.php, row 133
-"Use \"headline.......,publish_date....-\" or \"sort[]\" conditions" => "",
+"Use \"headline.......,publish_date....-\" or \"sort[]\" conditions" => "Використовуйте умови \"headline.......,publish_date....-\" або \"sort[]\"", // ai 2026-06
 
 // admin/se_sets.php, row 140
-"Use \"headline........,publish_date....-\" or \"sort[]\" conditions" => "",
+"Use \"headline........,publish_date....-\" or \"sort[]\" conditions" => "Використовуйте умови \"headline........,publish_date....-\" або \"sort[]\"", // ai 2026-06
 
 // admin/se_statistics.php, row 81
-"Top all time" => "",
+"Top all time" => "Топ за весь час", // ai 2026-06
 
 // admin/se_statistics.php, row 82
-"Top this year" => "",
+"Top this year" => "Топ цього року", // ai 2026-06
 
 // admin/se_statistics.php, row 83
-"Top this month" => "",
+"Top this month" => "Топ цього місяця", // ai 2026-06
 
 // admin/se_statistics.php, row 84
-"Top this week" => "",
+"Top this week" => "Топ цього тижня", // ai 2026-06
 
 // admin/se_statistics.php, row 85
-"Top this day" => "",
+"Top this day" => "Топ сьогодні", // ai 2026-06
 
 // admin/se_statistics.php, row 86
-"Top last year" => "",
+"Top last year" => "Топ минулого року", // ai 2026-06
 
 // admin/se_statistics.php, row 87
-"Top last month" => "",
+"Top last month" => "Топ минулого місяця", // ai 2026-06
 
 // admin/se_statistics.php, row 88
-"Top last week" => "",
+"Top last week" => "Топ минулого тижня", // ai 2026-06
 
 // admin/se_statistics.php, row 89
-"Top last day" => "",
+"Top last day" => "Топ учора", // ai 2026-06
 
 // admin/se_statistics.php, row 93
-"Item Statistics" => "",
+"Item Statistics" => "Статистика статей", // ai 2026-06
 
 // admin/se_statistics.php, row 94
-"Show items" => "",
+"Show items" => "Показати статті", // ai 2026-06
 
 // admin/se_taskmanager.php, row 38
-"You do not have permission to manage ActionApps tasks" => "",
+"You do not have permission to manage ActionApps tasks" => "Ви не маєте права керувати завданнями ActionApps", // ai 2026-06
 
 // admin/se_taskmanager.php, row 76
-"User Tasks" => "",
+"User Tasks" => "Завдання користувача", // ai 2026-06
 
 // admin/se_users.php, row 122, 181
 // admin/slicewiz.php, row 78
 // include/se_users.php, row 103, 173
-"Editor" => "",
+"Editor" => "Редактор", // ai 2026-06
 
 // admin/se_users.php, row 123, 181
 // include/se_users.php, row 104, 173
-"Administrator" => "",
+"Administrator" => "Адміністратор", // ai 2026-06
 
 // admin/se_users.php, row 124, 181
 // include/um_util.php, row 104, 155
-"Revoke" => "",
+"Revoke" => "Відкликати", // ai 2026-06
 
 // admin/se_users.php, row 132, 181, 193
-"Profile" => "",
+"Profile" => "Профіль", // ai 2026-06
 
 // admin/se_users.php, row 140
-"Admin - Permissions" => "",
+"Admin - Permissions" => "Адмін - Права доступу", // ai 2026-06
 
 // admin/se_users.php, row 154
-"Change current permissions" => "",
+"Change current permissions" => "Змінити поточні права", // ai 2026-06
 
 // admin/se_users.php, row 181
 // central/index.php, row 154
 // include/se_users.php, row 173
 // src/Widget/TfaWidget.php, row 71
-"Username" => "",
+"Username" => "Ім'я користувача", // ai 2026-06
 
 // admin/se_users.php, row 181
 // admin/usershow.php, row 87
 // include/se_users.php, row 173
-"Email" => "",
+"Email" => "E-mail", // ai 2026-06
 
 // admin/se_users.php, row 192
-"Default user profile" => "",
+"Default user profile" => "Типовий профіль користувача", // ai 2026-06
 
 // admin/se_view.php, row 135
-"Group by selections" => "",
+"Group by selections" => "Групувати за виборами", // ai 2026-06
 
 // admin/se_view.php, row 138
-"Yes. Write sort[] to the conds[] field for each Selection." => "",
+"Yes. Write sort[] to the conds[] field for each Selection." => "Так. Запишіть sort[] до поля conds[] для кожного вибору.", // ai 2026-06
 
 // admin/se_view.php, row 141
-"No. Use this sort[]:" => "",
+"No. Use this sort[]:" => "Ні. Використайте цей sort[]:", // ai 2026-06
 
 // admin/se_view.php, row 154
-"Alerts Selection" => "",
+"Alerts Selection" => "Сповіщення - вибір", // ai 2026-06
 
 // admin/se_view.php, row 157
-"If you need more selections, use 'Update' and on next Edit two empty boxes appear." => "",
+"If you need more selections, use 'Update' and on next Edit two empty boxes appear." => "Якщо потрібно більше виборів, скористайтеся 'Оновити' і при наступному редагуванні з'являться два порожні поля.", // ai 2026-06
 
 // admin/se_view.php, row 250
-"Ascending (numeric)" => "",
+"Ascending (numeric)" => "За зростанням (числове)", // ai 2026-06
 
 // admin/se_view.php, row 250
-"Descending (numeric)" => "",
+"Descending (numeric)" => "За спаданням (числове)", // ai 2026-06
 
 // admin/se_view.php, row 255
-"you can sort items by alias instead of fields, but it is very slow (computed for all the items)" => "",
+"you can sort items by alias instead of fields, but it is very slow (computed for all the items)" => "статті можна сортувати за аліасом замість полів, але це дуже повільно (обчислюється для всіх статей)", // ai 2026-06
 
 // admin/se_view.php, row 319
 // admin/se_views.php, row 54
-"You do not have permission to change views" => "",
+"You do not have permission to change views" => "Ви не маєте права змінювати вигляди", // ai 2026-06
 
 // admin/se_view.php, row 379
 // admin/sliceimp_xml.php, row 297
-"Can't insert into view." => "",
+"Can't insert into view." => "Не вдалося вставити у вигляд.", // ai 2026-06
 
 // admin/se_view.php, row 394
-"View successfully changed" => "",
+"View successfully changed" => "Вигляд успішно змінено", // ai 2026-06
 
 // admin/se_view.php, row 517
 // admin/se_views.php, row 100
-"Admin - design View" => "",
+"Admin - design View" => "Адмін - оформлення вигляду", // ai 2026-06
 
 // admin/se_view.php, row 530
-"Save as new" => "",
+"Save as new" => "Зберегти як новий", // ai 2026-06
 
 // admin/se_view.php, row 538
-"Defined Views" => "",
+"Defined Views" => "Визначені вигляди", // ai 2026-06
 
 // admin/se_view.php, row 574
 // admin/se_views.php, row 144
-"show this view" => "",
+"show this view" => "показати цей вигляд", // ai 2026-06
 
 // admin/se_view.php, row 589
 // include/stringexpand.php, row 1864
-"No" => "",
+"No" => "Ні", // ai 2026-06
 
 // admin/se_view.php, row 589
-"Accept {xpage}" => "",
+"Accept {xpage}" => "Приймати {xpage}", // ai 2026-06
 
 // admin/se_view.php, row 589
-"Use infinite scrolling" => "",
+"Use infinite scrolling" => "Використовувати нескінченне прокручування", // ai 2026-06
 
 // admin/se_view.php, row 632
-"To include view in your sitemodule webpage use" => "",
+"To include view in your sitemodule webpage use" => "Щоб включити вигляд до сторінки модуля сайту, використайте", // ai 2026-06
 
 // admin/se_view.php, row 638
-"See documentation" => "",
+"See documentation" => "Див. документацію", // ai 2026-06
 
 // admin/se_view.php, row 642
-"Last from log" => "",
+"Last from log" => "Останнє з журналу", // ai 2026-06
 
 // admin/se_views.php, row 70
-"View successfully deleted" => "",
+"View successfully deleted" => "Вигляд успішно видалено", // ai 2026-06
 
 // admin/se_views.php, row 145, 218
-"Create new view from this one" => "",
+"Create new view from this one" => "Створити новий вигляд з цього", // ai 2026-06
 
 // admin/se_views.php, row 145, 198, 218
 // include/formutil.php, row 1752, 1759
-"New" => "",
+"New" => "Новий", // ai 2026-06
 
 // admin/se_views.php, row 146
-"Are you sure you want to delete selected view?" => "",
+"Are you sure you want to delete selected view?" => "Ви впевнені, що хочете видалити вибраний вигляд?", // ai 2026-06
 
 // admin/se_views.php, row 188
-"Create new view" => "",
+"Create new view" => "Створити новий вигляд", // ai 2026-06
 
 // admin/se_views.php, row 191
-"by&nbsp;type:" => "",
+"by&nbsp;type:" => "за&nbsp;типом:", // ai 2026-06
 
 // admin/se_views.php, row 203
-"by&nbsp;template:" => "",
+"by&nbsp;template:" => "за&nbsp;шаблоном:", // ai 2026-06
 
 // admin/search_replace.php, row 75
-"You do not have permission to edit items this way in this slice" => "",
+"You do not have permission to edit items this way in this slice" => "Ви не маєте права так редагувати статті в цій рубриці", // ai 2026-06
 
 // admin/search_replace.php, row 111
-"Items selected: %1, Items successfully updated: %2, Items planned: %3" => "",
+"Items selected: %1, Items successfully updated: %2, Items planned: %3" => "Вибрано статей: %1, успішно оновлено статей: %2, заплановано статей: %3", // ai 2026-06
 
 // admin/search_replace.php, row 126, 132
-"Modify items" => "",
+"Modify items" => "Змінити статті", // ai 2026-06
 
 // admin/search_replace.php, row 151
-"Select field..." => "",
+"Select field..." => "Виберіть поле...", // ai 2026-06
 
 // admin/search_replace.php, row 166
 // include/slice.class.php, row 553
-"Items" => "",
+"Items" => "Статті", // ai 2026-06
 
 // admin/search_replace.php, row 166
 // admin/write_mail.php, row 225
-"Stored searches for " => "",
+"Stored searches for " => "Збережені пошуки для", // ai 2026-06
 
 // admin/search_replace.php, row 168
-"View items" => "",
+"View items" => "Переглянути статті", // ai 2026-06
 
 // admin/search_replace.php, row 169
 // src/Manager.php, row 1113
-"Selected items" => "",
+"Selected items" => "Вибрані статті", // ai 2026-06
 
 // admin/search_replace.php, row 174
-"Be very careful with this. Changes in some fields (Status Code, Publish Date, Slice ID, ...) could be very crucial for your item's data. There is no data validity check - what you will type will be written to the database.<br>You should also know there is no UNDO operation (at least now)." => "",
+"Be very careful with this. Changes in some fields (Status Code, Publish Date, Slice ID, ...) could be very crucial for your item's data. There is no data validity check - what you will type will be written to the database.<br>You should also know there is no UNDO operation (at least now)." => "Будьте дуже обережні. Зміни в деяких полях (Status Code, Publish Date, Slice ID, ...) можуть бути дуже критичними для даних вашої статті. Перевірка коректності даних не виконується - те, що ви введете, буде записано до бази даних.<br>Вам також слід знати, що операції скасування (UNDO) не існує (принаймні поки що).", // ai 2026-06
 
 // admin/search_replace.php, row 176
-"Just update the field and do not perform any other operations like set-last-edit, evaluate-computed-field, feed, ..." => "",
+"Just update the field and do not perform any other operations like set-last-edit, evaluate-computed-field, feed, ..." => "Лише оновити поле і не виконувати жодних інших операцій, як-от set-last-edit, evaluate-computed-field, feed, ...", // ai 2026-06
 
 // admin/search_replace.php, row 180
-"Run as Tasks - fill number of items in one task" => "",
+"Run as Tasks - fill number of items in one task" => "Запустити як завдання - вкажіть кількість статей в одному завданні", // ai 2026-06
 
 // admin/search_replace.php, row 180
-"If you want to run this operation as tasks, enter the number of items in one task here. The operation will be split into tasks. The tasks will be run in the background. You can check the status of the tasks in the task manager." => "",
+"If you want to run this operation as tasks, enter the number of items in one task here. The operation will be split into tasks. The tasks will be run in the background. You can check the status of the tasks in the task manager." => "Якщо ви хочете запустити цю операцію як завдання, вкажіть тут кількість статей в одному завданні. Операцію буде розділено на завдання. Завдання виконуватимуться у фоновому режимі. Стан завдань можна перевірити в менеджері завдань.", // ai 2026-06
 
 // admin/search_replace.php, row 183
-"Fill" => "",
+"Fill" => "Змінити", // ai 2026-06
 
 // admin/search_replace.php, row 184
 // admin/usershow.php, row 176
 // admin/write_mail.php, row 258
-"Close" => "",
+"Close" => "Закрити", // ai 2026-06
 
 // admin/setup.php, row 60, 63
-"ActionApps Setup" => "",
+"ActionApps Setup" => "Налаштування ActionApps", // ai 2026-06
 
 // admin/setup.php, row 71
-"This script can't be used on a configured system." => "",
+"This script can't be used on a configured system." => "Цей скрипт не можна використовувати на вже налаштованій системі.", // ai 2026-06
 
 // admin/setup.php, row 94
 // admin/um_uedit.php, row 331
-"Superadmin account" => "",
+"Superadmin account" => "Обліковий запис суперадміністратора", // ai 2026-06
 
 // admin/setup.php, row 98, 239
 // admin/slicewiz.php, row 79
@@ -2700,7 +2705,7 @@ return [
 // admin/um_uedit.php, row 314, 318
 // include/itemfunc.php, row 547, 1048
 // include/um_util.php, row 296
-"Login name" => "",
+"Login name" => "Ім'я користувача", // ai 2026-06
 
 // admin/setup.php, row 99, 240
 // admin/slicewiz.php, row 80
@@ -2710,76 +2715,76 @@ return [
 // include/um_util.php, row 301
 // src/Widget/PwdWidget.php, row 71
 // src/Widget/TfaWidget.php, row 75
-"Password" => "",
+"Password" => "Пароль", // ai 2026-06
 
 // admin/setup.php, row 100, 242
 // include/formutil.php, row 2178
-"Retype Password" => "",
+"Retype Password" => "Повторіть пароль", // ai 2026-06
 
 // admin/setup.php, row 101, 244
 // admin/slicewiz.php, row 82
 // admin/um_passwd.php, row 114
 // admin/um_uedit.php, row 324
 // include/um_util.php, row 298
-"First name" => "",
+"First name" => "Ім'я", // ai 2026-06
 
 // admin/setup.php, row 102, 245
-"Last name" => "",
+"Last name" => "Прізвище", // ai 2026-06
 
 // admin/setup.php, row 119
-"Welcome! Use this script to create the superadmin account.<p>If you are installing a new copy of AA, press <b>Init</b>.<br>" => "",
+"Welcome! Use this script to create the superadmin account.<p>If you are installing a new copy of AA, press <b>Init</b>.<br>" => "Ласкаво просимо! Використовуйте цей скрипт для створення облікового запису суперадміністратора.<p>Якщо ви встановлюєте нову копію AA, натисніть <b>Init</b>.<br>", // ai 2026-06
 
 // admin/setup.php, row 120
-"If you deleted your superadmin account by mistake, press <b>Recover</b>.<br>" => "",
+"If you deleted your superadmin account by mistake, press <b>Recover</b>.<br>" => "Якщо ви помилково видалили свій обліковий запис суперадміністратора, натисніть <b>Recover</b>.<br>", // ai 2026-06
 
 // admin/setup.php, row 124, 193
-" Init " => "",
+" Init " => " Init", // ai 2026-06
 
 // admin/setup.php, row 125, 207
-"Recover" => "",
+"Recover" => "Відновити", // ai 2026-06
 
 // admin/setup.php, row 148
 "Database is not configured correctly or the database is empty.<br>\n"
    ."             Check please the database credentials in <b>include/config.php</b>\n"
    ."             file <br>or run <a href=\"../service/sql_update.php\">/service/sql_update.php</a> script,\n"
    ."             which creates AA tables for you."
- => "",
+ => "База даних налаштована неправильно або база даних порожня.<br>\\n             Перевірте, будь ласка, дані доступу до бази даних у файлі <b>include/config.php</b>\\n             <br>або запустіть скрипт <a href=\"../service/sql_update.php\">/service/sql_update.php</a>,\\n             який створить таблиці AA за вас.", // ai 2026-06
 
 // admin/setup.php, row 202
-"Can't add primary permission object.<br>Please check the access settings to your permission system.<br>If you just deleted your superadmin account, use <b>Recover</b>" => "",
+"Can't add primary permission object.<br>Please check the access settings to your permission system.<br>If you just deleted your superadmin account, use <b>Recover</b>" => "Не вдалося додати первинний об'єкт прав.<br>Перевірте, будь ласка, налаштування доступу до вашої системи прав.<br>Якщо ви щойно видалили свій обліковий запис суперадміністратора, скористайтеся <b>Recover</b>", // ai 2026-06
 
 // admin/setup.php, row 217
-"Can't delete invalid permission." => "",
+"Can't delete invalid permission." => "Не вдалося видалити некоректне право.", // ai 2026-06
 
 // admin/setup.php, row 219
-"Invalid permission deleted (no such user/group): " => "",
+"Invalid permission deleted (no such user/group): " => "Некоректне право видалено (такого користувача/групи не існує):", // ai 2026-06
 
 // admin/setup.php, row 249
 // include/um_util.php, row 304
-"Retyped password is not the same as the first one" => "",
+"Retyped password is not the same as the first one" => "Повторно введений пароль не збігається з першим", // ai 2026-06
 
 // admin/setup.php, row 271
 // include/um_util.php, row 337
-"It is impossible to add user to permission system" => "",
+"It is impossible to add user to permission system" => "Неможливо додати користувача до системи прав", // ai 2026-06
 
 // admin/setup.php, row 284
-"Congratulations! The account was created." => "",
+"Congratulations! The account was created." => "Вітаємо! Обліковий запис створено.", // ai 2026-06
 
 // admin/setup.php, row 286
-"Use this account to login and add your first slice:" => "",
+"Use this account to login and add your first slice:" => "Використайте цей обліковий запис для входу та додайте свою першу рубрику:", // ai 2026-06
 
 // admin/setup.php, row 287
 // admin/slicedit.php, row 235
-"Add Slice" => "",
+"Add Slice" => "Додати рубрику", // ai 2026-06
 
 // admin/setup.php, row 290
-"Can't assign super access permission." => "",
+"Can't assign super access permission." => "Не вдалося надати право суперадміністратора.", // ai 2026-06
 
 // admin/sliceadd.php, row 73
-"Create New Slice / Module" => "",
+"Create New Slice / Module" => "Створити нову рубрику / модуль", // ai 2026-06
 
 // admin/sliceadd.php, row 79
-"Modules" => "",
+"Modules" => "Модулі", // ai 2026-06
 
 // admin/sliceadd.php, row 93
 // admin/um_gedit.php, row 274
@@ -2789,1016 +2794,1017 @@ return [
 // include/profile.php, row 163
 // include/sliceadd.php, row 69, 83
 // src/Manager.php, row 210
-"Add" => "",
+"Add" => "Додати", // ai 2026-06
 
 // admin/slicedel.php, row 46
-"You don't have permissions to delete module." => "",
+"You don't have permissions to delete module." => "Ви не маєте прав на видалення модуля.", // ai 2026-06
 
 // admin/slicedel.php, row 73
-"Do you really want to delete this module and all its fields and all its items?" => "",
+"Do you really want to delete this module and all its fields and all its items?" => "Ви справді хочете видалити цей модуль з усіма його полями та всіма його статтями?", // ai 2026-06
 
 // admin/slicedel.php, row 83
-"Admin - Delete Module" => "",
+"Admin - Delete Module" => "Адмін - Видалення модуля", // ai 2026-06
 
 // admin/slicedel.php, row 98
-"Select module to delete" => "",
+"Select module to delete" => "Виберіть модуль для видалення", // ai 2026-06
 
 // admin/slicedel.php, row 99
-"Modules to show" => "",
+"Modules to show" => "Модулі для показу", // ai 2026-06
 
 // admin/slicedel.php, row 99
-"Marked as \"Deleted\"" => "",
+"Marked as \"Deleted\"" => "Позначені як \"Видалені\"", // ai 2026-06
 
 // admin/slicedel.php, row 100
-"This option allows you to display all the slices and delete them, so be careful!" => "",
+"This option allows you to display all the slices and delete them, so be careful!" => "Ця опція дозволяє показати всі рубрики та видалити їх, тому будьте обережні!", // ai 2026-06
 
 // admin/slicedel.php, row 102
-"Modules to delete" => "",
+"Modules to delete" => "Модулі для видалення", // ai 2026-06
 
 // admin/slicedel.php, row 116
-"No module marked for deletion" => "",
+"No module marked for deletion" => "Жоден модуль не позначено для видалення", // ai 2026-06
 
 // admin/slicedel2.php, row 57, 62
-"You don't have permissions to delete slice." => "",
+"You don't have permissions to delete slice." => "Ви не маєте прав на видалення рубрики.", // ai 2026-06
 
 // admin/slicedel2.php, row 70
 // include/modutils.php, row 273
-"No such module." => "",
+"No such module." => "Такого модуля не існує.", // ai 2026-06
 
 // admin/slicedel2.php, row 79
-"Slice successfully deleted, tables are optimized" => "",
+"Slice successfully deleted, tables are optimized" => "Рубрику успішно видалено, таблиці оптимізовано", // ai 2026-06
 
 // admin/slicedit.php, row 137, 144, 151
-"Not allowed" => "",
+"Not allowed" => "Заборонено", // ai 2026-06
 
 // admin/slicedit.php, row 138
-"Active with antiSPAM tokens" => "",
+"Active with antiSPAM tokens" => "Активні з antiSPAM токенами", // ai 2026-06
 
 // admin/slicedit.php, row 140, 146
-// include/menu.php, row 185
+// include/menu.php, row 191
 // include/menu_util.php, row 121
 // src/Module/Poll/Menu.php, row 64
-"Hold bin" => "",
+"Hold bin" => "Резерв", // ai 2026-06
 
 // admin/slicedit.php, row 152
-// include/formutil.php, row 3258
-"All items" => "",
+// include/formutil.php, row 3260
+"All items" => "Усі статті", // ai 2026-06
 
 // admin/slicedit.php, row 153
-"Only items posted anonymously" => "",
+"Only items posted anonymously" => "Лише статті, надіслані анонімно", // ai 2026-06
 
 // admin/slicedit.php, row 154
-"-\"- and not edited in AA" => "",
+"-\"- and not edited in AA" => "-\"- і не редаговані в AA", // ai 2026-06
 
 // admin/slicedit.php, row 155
-"Authorized by a password field" => "",
+"Authorized by a password field" => "Авторизовано полем пароля", // ai 2026-06
 
 // admin/slicedit.php, row 156
-"Readers, authorized by HTTP auth" => "",
+"Readers, authorized by HTTP auth" => "Читачі, авторизовані через HTTP", // ai 2026-06
 
 // admin/slicedit.php, row 157
-"Only by Planned tasks (cron-toexecute)" => "",
+"Only by Planned tasks (cron-toexecute)" => "Лише запланованими завданнями (cron-toexecute)", // ai 2026-06
 
 // admin/slicedit.php, row 235
-"Admin - Slice settings" => "",
+"Admin - Slice settings" => "Адмін - Налаштування рубрики", // ai 2026-06
 
 // admin/slicedit.php, row 253
-"Language" => "",
+"Language" => "Мова", // ai 2026-06
 
 // admin/slicedit.php, row 255
 // include/slicedit.php, row 193
-"Slice Type" => "",
+"Slice Type" => "Тип рубрики", // ai 2026-06
 
 // admin/slicedit.php, row 259
 // central/include/actionapps.class.php, row 674
 // include/sliceadd.php, row 62
-"Template" => "",
+"Template" => "Шаблон", // ai 2026-06
 
 // admin/slicedit.php, row 262
-"Show content of expired items" => "",
+"Show content of expired items" => "Показувати вміст статей, термін яких минув", // ai 2026-06
 
 // admin/slicedit.php, row 263
-"Show content of pending items" => "",
+"Show content of pending items" => "Показувати вміст статей, що очікують публікації", // ai 2026-06
 
 // admin/slicedit.php, row 264
 // include/slicedit.php, row 196
-"Allow anonymous posting of items" => "",
+"Allow anonymous posting of items" => "Дозволити анонімне додавання статей", // ai 2026-06
 
 // admin/slicedit.php, row 265
 // include/slicedit.php, row 197
-"Allow anonymous editing of items" => "",
+"Allow anonymous editing of items" => "Дозволити анонімне редагування статей", // ai 2026-06
 
 // admin/slicedit.php, row 266
 // include/slicedit.php, row 198
-"Allow off-line item filling" => "",
+"Allow off-line item filling" => "Дозволити офлайн-наповнення статей", // ai 2026-06
 
 // admin/slicedit.php, row 272
-"Auth Group Field" => "",
+"Auth Group Field" => "Поле з Auth-групами", // ai 2026-06
 
 // admin/slicedit.php, row 273
-"Mailman Lists Field" => "",
+"Mailman Lists Field" => "Поле зі списками Mailman", // ai 2026-06
 
 // admin/slicedit.php, row 275
-"Password for Reading" => "",
+"Password for Reading" => "Пароль для читання", // ai 2026-06
 
 // admin/slicedit.php, row 281
 // include/itemfunc.php, row 180
-"Created" => "",
+"Created" => "Створено", // ai 2026-06
 
 // admin/slicedit.php, row 281
-"by" => "",
+"by" => "користувачем", // ai 2026-06
 
 // admin/slicedit.php, row 284
-"Additional setting" => "",
+"Additional setting" => "Додаткове налаштування", // ai 2026-06
 
 // admin/slicedit.php, row 288
-"Settings for older AA - you will probably not use it for new slices" => "",
+"Settings for older AA - you will probably not use it for new slices" => "Налаштування для старіших AA - для нових рубрик ви їх, імовірно, не використаєте", // ai 2026-06
 
 // admin/slicedit.php, row 289
 // include/constants.php, row 639, 754, 780, 811, 844, 908, 942, 976
 // include/slicedit.php, row 201
 // src/Widget/Widget.php, row 781
-"Listing length" => "",
+"Listing length" => "Кількість статей у списку", // ai 2026-06
 
 // admin/slicedit.php, row 289
-"Used by slice.php. Fill 0 to disable slice.php output for this slice (recommended for all newer slices - they are presented by Site Module)." => "",
+"Used by slice.php. Fill 0 to disable slice.php output for this slice (recommended for all newer slices - they are presented by Site Module)." => "Використовується slice.php. Вкажіть 0, щоб вимкнути виведення slice.php для цієї рубрики (рекомендовано для всіх новіших рубрик - вони відображаються через модуль Site).", // ai 2026-06
 
 // admin/slicedit.php, row 293
-"MLX Control Slice for" => "",
+"MLX Control Slice for" => "MLX-керівна рубрика для", // ai 2026-06
 
 // admin/slicedit.php, row 296
-"MLX: Language Control Slice" => "",
+"MLX: Language Control Slice" => "MLX: Рубрика для керування перекладами", // ai 2026-06
 
 // admin/slicedit.php, row 300
 // include/slicedit.php, row 205
-"File Manager Access" => "",
+"File Manager Access" => "Доступ до Менеджера файлів", // ai 2026-06
 
 // admin/slicedit.php, row 301
 // include/slicedit.php, row 206
-"File Manager Directory" => "",
+"File Manager Directory" => "Каталог Менеджера файлів", // ai 2026-06
 
 // admin/sliceexp.php, row 79
 // admin/sliceimp.php, row 64
-"You are not allowed to export / import slices" => "",
+"You are not allowed to export / import slices" => "Ви не маєте права експортувати / імпортувати рубрики", // ai 2026-06
 
 // admin/sliceexp.php, row 103, 108
-"Export slice structure" => "",
+"Export slice structure" => "Експорт структури рубрики", // ai 2026-06
 
 // admin/sliceexp.php, row 118
-"Choose, if you want to export slices structure, data or both." => "",
+"Choose, if you want to export slices structure, data or both." => "Виберіть, чи бажаєте експортувати структуру рубрики, дані або те й інше.", // ai 2026-06
 
 // admin/sliceexp.php, row 119
-"Export structure" => "",
+"Export structure" => "Експорт структури", // ai 2026-06
 
 // admin/sliceexp.php, row 120
-"Export data" => "",
+"Export data" => "Експорт даних", // ai 2026-06
 
 // admin/sliceexp.php, row 121
-"Export views" => "",
+"Export views" => "Експорт виглядів", // ai 2026-06
 
 // admin/sliceexp.php, row 124
-"Use compression" => "",
+"Use compression" => "Використати стиснення", // ai 2026-06
 
 // admin/sliceexp.php, row 126
-"HEX output" => "",
+"HEX output" => "HEX-вивід", // ai 2026-06
 
 // admin/sliceexp.php, row 127
-"Store exported data in file" => "",
+"Store exported data in file" => "Зберегти експортовані дані у файл", // ai 2026-06
 
 // admin/sliceexp.php, row 128
-"Convert to UTF" => "",
+"Convert to UTF" => "Перетворити в UTF", // ai 2026-06
 
 // admin/sliceexp.php, row 131
-"Export data from specified dates: " => "",
+"Export data from specified dates: " => "Експортувати дані за вказані дати:", // ai 2026-06
 
 // admin/sliceexp.php, row 132
-"From " => "",
+"From " => "Від", // ai 2026-06
 
 // admin/sliceexp.php, row 139
-"Choose one of two export kinds:" => "",
+"Choose one of two export kinds:" => "Виберіть один із двох способів експорту:", // ai 2026-06
 
 // admin/sliceexp.php, row 145
-"When exporting \"to Backup\" you may choose more slices at once." => "",
+"When exporting \"to Backup\" you may choose more slices at once." => "Під час експорту \"до резервної копії\" можна вибрати кілька рубрик одночасно.", // ai 2026-06
 
 // admin/sliceexp.php, row 146
-"Select slices which you WANT to export:" => "",
+"Select slices which you WANT to export:" => "Позначте рубрики, які ХОЧЕТЕ експортувати:", // ai 2026-06
 
 // admin/sliceexp.php, row 162
-"When exporting \"to another ActionApps\" only the current slice will be exported and you choose its new identifier." => "",
+"When exporting \"to another ActionApps\" only the current slice will be exported and you choose its new identifier." => "Під час експорту \"до іншого ActionApps\" буде експортовано лише поточну рубрику, і Ви оберете для неї новий ідентифікатор.", // ai 2026-06
 
 // admin/sliceexp.php, row 163
-"Choose a new slice identifier exactly 16 characters long: " => "",
+"Choose a new slice identifier exactly 16 characters long: " => "Виберіть новий ідентифікатор рубрики завдовжки рівно 16 символів:", // ai 2026-06
 
 // admin/sliceexp.php, row 170
-"Export to Backup" => "",
+"Export to Backup" => "Експорт до резервної копії", // ai 2026-06
 
 // admin/sliceexp.php, row 171
-"Show Datastructure Documentation" => "",
+"Show Datastructure Documentation" => "Показати документацію структури даних", // ai 2026-06
 
 // admin/sliceexp.php, row 173
-"Export to another ActionApps" => "",
+"Export to another ActionApps" => "Експортувати до іншого ActionApps", // ai 2026-06
 
 // admin/sliceexp.php, row 185
-"The identifier should be 16 characters long, not " => "",
+"The identifier should be 16 characters long, not " => "Ідентифікатор має бути завдовжки 16 символів, а не", // ai 2026-06
 
 // admin/sliceexp.php, row 200
-"You must select one or more slices to backup" => "",
+"You must select one or more slices to backup" => "Потрібно вибрати одну або більше рубрик для резервної копії", // ai 2026-06
 
 // admin/sliceexp_text.php, row 78
-"Wrong slice ID length: " => "",
+"Wrong slice ID length: " => "Неправильна довжина ID рубрики:", // ai 2026-06
 
 // admin/sliceexp_text.php, row 171, 408
 // include/exporter.class.php, row 77, 130
-"Can't create temporary file." => "",
+"Can't create temporary file." => "Не вдалося створити тимчасовий файл.", // ai 2026-06
 
 // admin/sliceexp_text.php, row 202
-"Wrong slice ID length:" => "",
+"Wrong slice ID length:" => "Неправильна довжина ID рубрики:", // ai 2026-06
 
 // admin/sliceexp_text.php, row 281
-"Save this text. You may use it to import the slices into any ActionApps:" => "",
+"Save this text. You may use it to import the slices into any ActionApps:" => "Збережіть цей текст. Ви можете використати його для імпорту рубрик у будь-який ActionApps:", // ai 2026-06
 
 // admin/sliceexp_text.php, row 364, 368
-"Hidden" => "",
+"Hidden" => "Приховане", // ai 2026-06
 
 // admin/slicefieldsedit.php, row 126
-"Slice Setting" => "",
+"Slice Setting" => "Налаштування рубрики", // ai 2026-06
 
 // admin/sliceimp.php, row 80
-"Slice_ID (%1) has wrong length (%2, should be 32)" => "",
+"Slice_ID (%1) has wrong length (%2, should be 32)" => "Slice_ID (%1) має неправильну довжину (%2, має бути 32)", // ai 2026-06
 
 // admin/sliceimp.php, row 105, 147, 427
 // admin/sliceimp_xml.php, row 284
-"Overwrite" => "",
+"Overwrite" => "Перезаписати", // ai 2026-06
 
 // admin/sliceimp.php, row 178, 184, 243, 249, 429
-"Insert with new ids" => "",
+"Insert with new ids" => "Вставити з новими ID", // ai 2026-06
 
 // admin/sliceimp.php, row 318
-"Import exported data (slice structure and content)" => "",
+"Import exported data (slice structure and content)" => "Імпортувати експортовані дані (структуру та вміст рубрики)", // ai 2026-06
 
 // admin/sliceimp.php, row 322
-"Import exported data" => "",
+"Import exported data" => "Імпортувати експортовані дані", // ai 2026-06
 
 // admin/sliceimp.php, row 327
-"Count of imported slices: %d." => "",
+"Count of imported slices: %d." => "Кількість імпортованих рубрик: %d.", // ai 2026-06
 
 // admin/sliceimp.php, row 329, 344
-"Added were:" => "",
+"Added were:" => "Додано:", // ai 2026-06
 
 // admin/sliceimp.php, row 335, 350
-"Overwritten were:" => "",
+"Overwritten were:" => "Перезаписано:", // ai 2026-06
 
 // admin/sliceimp.php, row 341
-"Count of imported stories: %d." => "",
+"Count of imported stories: %d." => "Кількість імпортованих статей: %d.", // ai 2026-06
 
 // admin/sliceimp.php, row 356
-"Failed were:" => "",
+"Failed were:" => "Невдалі:", // ai 2026-06
 
 // admin/sliceimp.php, row 367
-"Here you can import exported data to ActionApps. You can use two types of import:" => "",
+"Here you can import exported data to ActionApps. You can use two types of import:" => "Тут можна імпортувати експортовані дані в ActionApps. Ви можете використати два типи імпорту:", // ai 2026-06
 
 // admin/sliceimp.php, row 373
-"Slices with some of the IDs exist already. Change the IDs on the right side of the arrow.<br> Use only hexadecimal characters 0-9,a-f. If you do something wrong (wrong characters count, wrong characters, or if you change the ID on the arrow's left side), that ID will be considered unchanged.</p>" => "",
+"Slices with some of the IDs exist already. Change the IDs on the right side of the arrow.<br> Use only hexadecimal characters 0-9,a-f. If you do something wrong (wrong characters count, wrong characters, or if you change the ID on the arrow's left side), that ID will be considered unchanged.</p>" => "Рубрики з деякими з цих ID вже існують. Змініть ID праворуч від стрілки.<br> Використовуйте лише шістнадцяткові символи 0-9,a-f. Якщо Ви зробите щось неправильно (хибна кількість символів, хибні символи або якщо зміните ID ліворуч від стрілки), такий ID вважатиметься незміненим.</p>", // ai 2026-06
 
 // admin/sliceimp.php, row 391
-"<p>Views with some of the same IDs exist already. Please edit on the right-hand side of the arrow</p>" => "",
+"<p>Views with some of the same IDs exist already. Please edit on the right-hand side of the arrow</p>" => "<p>Вигляди з деякими однаковими ID вже існують. Будь ласка, відредагуйте праворуч від стрілки</p>", // ai 2026-06
 
 // admin/sliceimp.php, row 406
-"<p>Slice content with some of the IDs exist already. Change the IDs on the right side of the arrow.<br> Use only hexadecimal characters 0-9,a-f. </p>" => "",
+"<p>Slice content with some of the IDs exist already. Change the IDs on the right side of the arrow.<br> Use only hexadecimal characters 0-9,a-f. </p>" => "<p>Вміст рубрики з деякими з цих ID вже існує. Змініть ID праворуч від стрілки.<br> Використовуйте лише шістнадцяткові символи 0-9,a-f. </p>", // ai 2026-06
 
 // admin/sliceimp.php, row 419
-"<p>If you choose OVERWRITE, the slices and data with unchanged ID will be overwritten and the new ones added. <br>If you choose INSERT, the slices and data with ID conflict will be ignored and the new ones added.<br>And finally, if you choose \"Insert with new ids\", slice structures get new ids and their content too.</p>" => "",
+"<p>If you choose OVERWRITE, the slices and data with unchanged ID will be overwritten and the new ones added. <br>If you choose INSERT, the slices and data with ID conflict will be ignored and the new ones added.<br>And finally, if you choose \"Insert with new ids\", slice structures get new ids and their content too.</p>" => "<p>Якщо Ви виберете OVERWRITE, рубрики та дані з незміненим ID будуть перезаписані, а нові додані. <br>Якщо виберете INSERT, рубрики та дані з конфліктом ID буде проігноровано, а нові додано.<br>І нарешті, якщо виберете \"Insert with new ids\", структури рубрик отримають нові ID, як і їхній вміст.</p>", // ai 2026-06
 
 // admin/sliceimp.php, row 430, 476
-"cancel" => "",
+"cancel" => "скасувати", // ai 2026-06
 
 // admin/sliceimp.php, row 439
-"1) If you have exported data in file, insert its name here (eg. D:\\data\\apc_aa_slice.aaxml):" => "",
+"1) If you have exported data in file, insert its name here (eg. D:\\data\\apc_aa_slice.aaxml):" => "1) Якщо Ви маєте експортовані дані у файлі, вставте тут його ім'я (напр. D:\\data\\apc_aa_slice.aaxml):", // ai 2026-06
 
 // admin/sliceimp.php, row 442
-"Send file with slice structure and data" => "",
+"Send file with slice structure and data" => "Надіслати файл зі структурою та даними рубрики", // ai 2026-06
 
 // admin/sliceimp.php, row 449
-"2) If you have exported data in browser's window, insert the exported text into the textarea below:" => "",
+"2) If you have exported data in browser's window, insert the exported text into the textarea below:" => "2) Якщо Ви маєте експортовані дані у вікні браузера, вставте експортований текст у поле нижче:", // ai 2026-06
 
 // admin/sliceimp.php, row 466
-"Here specify, what do you want to import:" => "",
+"Here specify, what do you want to import:" => "Тут вкажіть, що саме бажаєте імпортувати:", // ai 2026-06
 
 // admin/sliceimp.php, row 467
-"Import slice definition" => "",
+"Import slice definition" => "Імпортувати визначення рубрики", // ai 2026-06
 
 // admin/sliceimp.php, row 468
-"Import slice items" => "",
+"Import slice items" => "Імпортувати статті рубрики", // ai 2026-06
 
 // admin/sliceimp.php, row 469
-"Import into this slice - whatever file says" => "",
+"Import into this slice - whatever file says" => "Імпортувати в цю рубрику — незалежно від того, що каже файл", // ai 2026-06
 
 // admin/sliceimp.php, row 470
-"Dry run" => "",
+"Dry run" => "Пробний запуск", // ai 2026-06
 
 // admin/sliceimp.php, row 472
-"Send the slice structure and data" => "",
+"Send the slice structure and data" => "Надіслати структуру та дані рубрики", // ai 2026-06
 
 // admin/sliceimp_xml.php, row 130
 "\n"
    ."ERROR: File doesn't contain SLICEEXPORT"
- => "",
+ => "\n"
+   ."ПОМИЛКА: Файл не містить SLICEEXPORT", // ai 2026-06
 
 // admin/sliceimp_xml.php, row 145, 170, 208
-"ERROR: Text is not OK. Check whether you copied it well from the Export." => "",
+"ERROR: Text is not OK. Check whether you copied it well from the Export." => "ПОМИЛКА: Текст некоректний. Перевірте, чи правильно Ви скопіювали його з Експорту.", // ai 2026-06
 
 // admin/sliceimp_xml.php, row 220
-"ERROR: Unsupported version for import" => "",
+"ERROR: Unsupported version for import" => "ПОМИЛКА: Непідтримувана версія для імпорту", // ai 2026-06
 
 // admin/sliceimp_xml.php, row 287
-"<br>Overwriting view %1" => "",
+"<br>Overwriting view %1" => "<br>Перезаписується вигляд %1", // ai 2026-06
 
 // admin/slicewiz.php, row 67
-"Add Slice Wizard" => "",
+"Add Slice Wizard" => "Помічник додавання рубрики", // ai 2026-06
 
 // admin/slicewiz.php, row 74
-"[Optional] Create New User" => "",
+"[Optional] Create New User" => "[Необов'язково] Створити нового користувача", // ai 2026-06
 
 // admin/slicewiz.php, row 77
-"Level of Access" => "",
+"Level of Access" => "Рівень доступу", // ai 2026-06
 
 // admin/slicewiz.php, row 78
 // include/constants.php, row 1145
-"Slice Administrator" => "",
+"Slice Administrator" => "Адміністратор рубрики", // ai 2026-06
 
 // admin/slicewiz.php, row 81
 // admin/um_passwd.php, row 113
 // admin/um_uedit.php, row 323
 // include/um_util.php, row 302
-"Retype password" => "",
+"Retype password" => "Повторіть пароль", // ai 2026-06
 
 // admin/slicewiz.php, row 83
 // admin/um_passwd.php, row 115
 // admin/um_uedit.php, row 325
 // include/um_util.php, row 297
-"Surname" => "",
+"Surname" => "Прізвище", // ai 2026-06
 
 // admin/slicewiz.php, row 89
-"Do Not Email Welcome" => "",
+"Do Not Email Welcome" => "Не надсилати вітальний лист", // ai 2026-06
 
 // admin/slicewiz.php, row 91
-"Email Welcome" => "",
+"Email Welcome" => "Надіслати вітальний лист", // ai 2026-06
 
 // admin/slicewiz.php, row 100
-"Go: Add Slice" => "",
+"Go: Add Slice" => "Виконати: Додати рубрику", // ai 2026-06
 
 // admin/um_gedit.php, row 96
 // admin/um_uedit.php, row 111
-"No permission to create new user" => "",
+"No permission to create new user" => "Немає права створювати нового користувача", // ai 2026-06
 
 // admin/um_gedit.php, row 114
 // admin/um_uedit.php, row 135, 138, 155
-"Too many groups found." => "",
+"Too many groups found." => "Знайдено забагато груп.", // ai 2026-06
 
 // admin/um_gedit.php, row 114
 // admin/um_uedit.php, row 135, 138
-"No groups found" => "",
+"No groups found" => "Груп не знайдено", // ai 2026-06
 
 // admin/um_gedit.php, row 121, 129
 // admin/um_uedit.php, row 129, 144, 168
 // include/se_users.php, row 168
 // include/um_gsrch.php, row 31
-"Too many users or groups found." => "",
+"Too many users or groups found." => "Знайдено забагато користувачів або груп.", // ai 2026-06
 
 // admin/um_gedit.php, row 121
 // admin/um_uedit.php, row 129, 144
 // include/se_users.php, row 170
 // include/um_gsrch.php, row 34
-"No user (group) found" => "",
+"No user (group) found" => "Користувача (групу) не знайдено", // ai 2026-06
 
 // admin/um_gedit.php, row 144
 // include/um_gedit.php, row 49
-"Group successfully added to permission system" => "",
+"Group successfully added to permission system" => "Групу успішно додано до системи прав", // ai 2026-06
 
 // admin/um_gedit.php, row 144
-"Group successfully updated" => "",
+"Group successfully updated" => "Групу успішно оновлено", // ai 2026-06
 
 // admin/um_gedit.php, row 158
-"Are you sure you want to delete selected group from whole permission system?" => "",
+"Are you sure you want to delete selected group from whole permission system?" => "Ви справді бажаєте видалити вибрану групу з усієї системи прав?", // ai 2026-06
 
 // admin/um_gedit.php, row 190, 200
 // admin/um_uedit.php, row 337, 343
 // include/menu_util.php, row 71
 // include/se_users.php, row 134
 // include/um_gsrch.php, row 41
-"Groups" => "",
+"Groups" => "Групи", // ai 2026-06
 
 // admin/um_gedit.php, row 190
-"Add new group" => "",
+"Add new group" => "Додати нову групу", // ai 2026-06
 
 // admin/um_gedit.php, row 197
-"Add group" => "",
+"Add group" => "Додати групу", // ai 2026-06
 
 // admin/um_gedit.php, row 207
-"Find group" => "",
+"Find group" => "Знайти групу", // ai 2026-06
 
 // admin/um_gedit.php, row 221
 // include/constants.php, row 406
 // include/perm_sql.php, row 372
 // include/um_gsrch.php, row 50
-"Group" => "",
+"Group" => "Група", // ai 2026-06
 
 // admin/um_gedit.php, row 257
-"Edit group" => "",
+"Edit group" => "Редагувати групу", // ai 2026-06
 
 // admin/um_gedit.php, row 259
-"New group" => "",
+"New group" => "Нова група", // ai 2026-06
 
 // admin/um_gedit.php, row 295
-"Group Id" => "",
+"Group Id" => "ID групи", // ai 2026-06
 
 // admin/um_gedit.php, row 306
-"Superadmin group" => "",
+"Superadmin group" => "Адміністративна група", // ai 2026-06
 
 // admin/um_gedit.php, row 313
 // admin/um_uedit.php, row 231, 242
 // include/menu_util.php, row 70
 // include/se_users.php, row 129
-"Users" => "",
+"Users" => "Користувачі", // ai 2026-06
 
 // admin/um_gedit.php, row 321
-"All Users" => "",
+"All Users" => "Усі користувачі", // ai 2026-06
 
 // admin/um_gedit.php, row 323
-"Group's Users" => "",
+"Group's Users" => "Користувачі групи", // ai 2026-06
 
 // admin/um_passwd.php, row 59
-"You do not have permissions to change user data" => "",
+"You do not have permissions to change user data" => "Ви не маєте права змінювати дані користувача", // ai 2026-06
 
 // admin/um_passwd.php, row 69, 111
 // src/Widget/PwdWidget.php, row 66
-"Current password" => "",
+"Current password" => "Поточний пароль", // ai 2026-06
 
 // admin/um_passwd.php, row 71
-"Error in current password - password is not changed" => "",
+"Error in current password - password is not changed" => "Помилка в поточному паролі — пароль не змінено", // ai 2026-06
 
 // admin/um_passwd.php, row 80
 // admin/um_uedit.php, row 184
-"User data modified" => "",
+"User data modified" => "Дані користувача змінено", // ai 2026-06
 
 // admin/um_passwd.php, row 99
-"Change user data" => "",
+"Change user data" => "Змінити дані користувача", // ai 2026-06
 
 // admin/um_passwd.php, row 108
 // admin/um_uedit.php, row 313
-"Edit User" => "",
+"Edit User" => "Редагувати користувача", // ai 2026-06
 
 // admin/um_passwd.php, row 110
 // admin/um_uedit.php, row 315
-"User Id" => "",
+"User Id" => "ID користувача", // ai 2026-06
 
 // admin/um_uedit.php, row 184
 // include/um_util.php, row 344
-"User successfully added to permission system" => "",
+"User successfully added to permission system" => "Користувача успішно додано до системи прав", // ai 2026-06
 
 // admin/um_uedit.php, row 199
-"Are you sure you want to delete selected user from whole permission system?" => "",
+"Are you sure you want to delete selected user from whole permission system?" => "Ви впевнені, що хочете видалити вибраного користувача з усієї системи прав?", // ai 2026-06
 
 // admin/um_uedit.php, row 231
-"Add new user" => "",
+"Add new user" => "Додати нового користувача", // ai 2026-06
 
 // admin/um_uedit.php, row 239
-"Add user" => "",
+"Add user" => "Додати користувача", // ai 2026-06
 
 // admin/um_uedit.php, row 248
-"Find user" => "",
+"Find user" => "Знайти користувача", // ai 2026-06
 
 // admin/um_uedit.php, row 317
-"New user" => "",
+"New user" => "Новий користувач", // ai 2026-06
 
 // admin/um_uedit.php, row 343
-"All Writable Groups" => "",
+"All Writable Groups" => "Усі групи з правом запису", // ai 2026-06
 
 // admin/um_uedit.php, row 343
-"User's Groups" => "",
+"User's Groups" => "Групи користувача", // ai 2026-06
 
 // admin/um_uedit.php, row 348
-"Member of Unwritable Groups" => "",
+"Member of Unwritable Groups" => "Член груп без права запису", // ai 2026-06
 
 // admin/usershow.php, row 74
-"You do not have permission to see the users in this slice:" => "",
+"You do not have permission to see the users in this slice:" => "Ви не маєте права бачити користувачів у цій рубриці:", // ai 2026-06
 
 // admin/usershow.php, row 119
-"Show selected users" => "",
+"Show selected users" => "Показати вибраних користувачів", // ai 2026-06
 
 // admin/write_mail.php, row 120, 244
 // include/mail.php, row 568
 // include/tv_email.php, row 87, 151
-"Body" => "",
+"Body" => "Текст", // ai 2026-06
 
 // admin/write_mail.php, row 121, 245
 // include/tv_email.php, row 92
-"From (email)" => "",
+"From (email)" => "Від (e-mail)", // ai 2026-06
 
 // admin/write_mail.php, row 122, 246
 // include/mail.php, row 570
 // include/tv_email.php, row 95
-"Reply to (email)" => "",
+"Reply to (email)" => "Відповідати на (e-mail)", // ai 2026-06
 
 // admin/write_mail.php, row 123, 247
 // include/mail.php, row 571
 // include/tv_email.php, row 98
-"Errors to (email)" => "",
+"Errors to (email)" => "Помилки на (e-mail)", // ai 2026-06
 
 // admin/write_mail.php, row 124, 248
-"Sender (email)" => "",
+"Sender (email)" => "Відправник (e-mail)", // ai 2026-06
 
 // admin/write_mail.php, row 125, 249
 // include/mail.php, row 564
 // include/tv_email.php, row 104
-"Language (charset)" => "",
+"Language (charset)" => "Мова (кодування)", // ai 2026-06
 
 // admin/write_mail.php, row 126, 250
 // include/mail.php, row 562
 // include/tv_email.php, row 109
-"Use HTML" => "",
+"Use HTML" => "Використати HTML", // ai 2026-06
 
 // admin/write_mail.php, row 127, 241
 // include/tv_email.php, row 63
-"Email template" => "",
+"Email template" => "Шаблон e-mail", // ai 2026-06
 
 // admin/write_mail.php, row 164
-"No template set (which is strange - template was just written to the database)" => "",
+"No template set (which is strange - template was just written to the database)" => "Шаблон не встановлено (що дивно — шаблон щойно було записано в базу даних)", // ai 2026-06
 
 // admin/write_mail.php, row 181
-"Email successfully sent (Users: %1, Emails sent (valid e-mails...): %2, template id: %3)" => "",
+"Email successfully sent (Users: %1, Emails sent (valid e-mails...): %2, template id: %3)" => "E-mail успішно надіслано (Користувачі: %1, Надіслано e-mail (дійсні адреси...): %2, ID шаблону: %3)", // ai 2026-06
 
 // admin/write_mail.php, row 185
-"Manually selected" => "",
+"Manually selected" => "Вибрано вручну", // ai 2026-06
 
 // admin/write_mail.php, row 191
 // include/searchbar.class.php, row 613
-"Filter" => "",
+"Filter" => "Фільтр", // ai 2026-06
 
 // admin/write_mail.php, row 197
-"Can't update email template" => "",
+"Can't update email template" => "Не вдалося оновити шаблон e-mail", // ai 2026-06
 
 // admin/write_mail.php, row 204
-"Bulk Email Wizard" => "",
+"Bulk Email Wizard" => "Майстер масової розсилки", // ai 2026-06
 
 // admin/write_mail.php, row 205
-"Write email to users" => "",
+"Write email to users" => "Написати e-mail користувачам", // ai 2026-06
 
 // admin/write_mail.php, row 225
-"Recipients" => "",
+"Recipients" => "Одержувачі", // ai 2026-06
 
 // admin/write_mail.php, row 227
-"View Recipients" => "",
+"View Recipients" => "Показати одержувачів", // ai 2026-06
 
 // admin/write_mail.php, row 228
-"Selected users" => "",
+"Selected users" => "Вибрані користувачі", // ai 2026-06
 
 // admin/write_mail.php, row 229
-"Test email address(es)" => "",
+"Test email address(es)" => "Тестова e-mail адреса (адреси)", // ai 2026-06
 
 // admin/write_mail.php, row 235
-"Write the email" => "",
+"Write the email" => "Написати e-mail", // ai 2026-06
 
 // admin/write_mail.php, row 250
 // include/sliceadd.php, row 91
 // include/tabledit_column.php, row 270, 273
-"no" => "",
+"no" => "ні", // ai 2026-06
 
 // admin/write_mail.php, row 250
 // include/sliceadd.php, row 91
 // include/tabledit_column.php, row 270, 273
-"yes" => "",
+"yes" => "так", // ai 2026-06
 
 // admin/write_mail.php, row 251
-"Attachment 1" => "",
+"Attachment 1" => "Вкладення 1", // ai 2026-06
 
 // admin/write_mail.php, row 252
-"Attachment 2" => "",
+"Attachment 2" => "Вкладення 2", // ai 2026-06
 
 // admin/write_mail.php, row 253
-"Attachment 3" => "",
+"Attachment 3" => "Вкладення 3", // ai 2026-06
 
 // central/copyslice.php, row 30
 // central/copyslice2.php, row 31
 // central/synchronize.php, row 30
 // central/synchronize2.php, row 29
 // central/synchronize3.php, row 49
-"You don't have permissions to synchronize slices." => "",
+"You don't have permissions to synchronize slices." => "Ви не маєте права синхронізувати рубрики.", // ai 2026-06
 
 // central/copyslice.php, row 38
-"Central - Copy Slice (1/2) - Select Source ActionApps" => "",
+"Central - Copy Slice (1/2) - Select Source ActionApps" => "Central — Копіювання рубрики (1/2) — Вибір вихідного ActionApps", // ai 2026-06
 
 // central/copyslice.php, row 50
 // central/copyslice2.php, row 128
 // central/synchronize.php, row 50
 // central/synchronize2.php, row 68
 // central/synchronize3.php, row 164
-"Template ActionApps" => "",
+"Template ActionApps" => "Шаблонний ActionApps", // ai 2026-06
 
 // central/copyslice.php, row 50
 // central/synchronize.php, row 50
-"ActionApps installation used as template" => "",
+"ActionApps installation used as template" => "Інсталяція ActionApps, що використовується як шаблон", // ai 2026-06
 
 // central/copyslice2.php, row 87
-"%1 import actions planned. See" => "",
+"%1 import actions planned. See" => "Заплановано %1 дій імпорту. Див.", // ai 2026-06
 
 // central/copyslice2.php, row 88
 // central/synchronize3.php, row 94
-// include/menu.php, row 163
+// include/menu.php, row 169
 // include/menu_util.php, row 74
-"Task Manager" => "",
+"Task Manager" => "Менеджер завдань", // ai 2026-06
 
 // central/copyslice2.php, row 96
-"Central - Copy Slice (2/2) - Slices to Copy" => "",
+"Central - Copy Slice (2/2) - Slices to Copy" => "Central — Копіювання рубрики (2/2) — Рубрики для копіювання", // ai 2026-06
 
 // central/copyslice2.php, row 100
-"* this ActionApps" => "",
+"* this ActionApps" => "* цей ActionApps", // ai 2026-06
 
 // central/copyslice2.php, row 129
-"Modules to Copy from %1" => "",
+"Modules to Copy from %1" => "Модулі для копіювання з %1", // ai 2026-06
 
 // central/copyslice2.php, row 130
-"Slices to copy" => "",
+"Slices to copy" => "Рубрики для копіювання", // ai 2026-06
 
 // central/copyslice2.php, row 131
-"Copy definitions" => "",
+"Copy definitions" => "Копіювати визначення", // ai 2026-06
 
 // central/copyslice2.php, row 131
-"Copy slice, fields, views, .... of selected slices above" => "",
+"Copy slice, fields, views, .... of selected slices above" => "Копіювати рубрику, поля, вигляди, .... вибраних вище рубрик", // ai 2026-06
 
 // central/copyslice2.php, row 132
-"Copy also items" => "",
+"Copy also items" => "Копіювати також статті", // ai 2026-06
 
 // central/copyslice2.php, row 132
-"Copy also item data (items, content, discussions tables) of selected slices above - You can also check only this checkbox to copy the content of the slice into previously prepared (and empty) slice" => "",
+"Copy also item data (items, content, discussions tables) of selected slices above - You can also check only this checkbox to copy the content of the slice into previously prepared (and empty) slice" => "Копіювати також дані статей (таблиці items, content, discussions) вибраних вище рубрик — Ви також можете позначити лише цей прапорець, щоб скопіювати вміст рубрики до заздалегідь підготовленої (і порожньої) рубрики", // ai 2026-06
 
 // central/copyslice2.php, row 133
-"Site modules to copy" => "",
+"Site modules to copy" => "Site модулі для копіювання", // ai 2026-06
 
 // central/copyslice2.php, row 134
-"Alerts modules to copy" => "",
+"Alerts modules to copy" => "Модулі сповіщень для копіювання", // ai 2026-06
 
 // central/copyslice2.php, row 135
-"Destination AAs" => "",
+"Destination AAs" => "Цільові AA", // ai 2026-06
 
 // central/copyslice2.php, row 135
-"ActionApps installation to update" => "",
+"ActionApps installation to update" => "Інсталяція ActionApps для оновлення", // ai 2026-06
 
 // central/import_csv.php, row 30
-"You don't have permissions to import sites from CSV." => "",
+"You don't have permissions to import sites from CSV." => "Ви не маєте права імпортувати сайти з CSV.", // ai 2026-06
 
 // central/import_csv.php, row 52
-"inserted" => "",
+"inserted" => "вставлено", // ai 2026-06
 
 // central/import_csv.php, row 55
-"Done" => "",
+"Done" => "Готово", // ai 2026-06
 
 // central/import_csv.php, row 61
-"Central - Import Sites from CSV" => "",
+"Central - Import Sites from CSV" => "Central — Імпорт сайтів з CSV", // ai 2026-06
 
 // central/import_csv.php, row 70
-"CSV file" => "",
+"CSV file" => "CSV файл", // ai 2026-06
 
 // central/import_csv.php, row 70
-"CSV file for upload. Each AA on its own row, fields separated by comma, the fields must be in following order (just like in central_conf table):<br>dns_conf, dns_serial, dns_web, dns_mx, dns_db, dns_prim, dns_sec, web_conf, web_path, db_server, db_name, db_user, db_pwd, AA_SITE_PATH, AA_BASE_DIR, AA_HTTP_DOMAIN, AA_ID, ORG_NAME, ERROR_REPORTING_EMAIL, ALERTS_EMAIL, IMG_UPLOAD_MAX_SIZE, IMG_UPLOAD_URL, IMG_UPLOAD_PATH, SCROLLER_LENGTH, FILEMAN_BASE_DIR, FILEMAN_BASE_URL, FILEMAN_UPLOAD_TIME_LIMIT, AA_ADMIN_USER, AA_ADMIN_PWD" => "",
+"CSV file for upload. Each AA on its own row, fields separated by comma, the fields must be in following order (just like in central_conf table):<br>dns_conf, dns_serial, dns_web, dns_mx, dns_db, dns_prim, dns_sec, web_conf, web_path, db_server, db_name, db_user, db_pwd, AA_SITE_PATH, AA_BASE_DIR, AA_HTTP_DOMAIN, AA_ID, ORG_NAME, ERROR_REPORTING_EMAIL, ALERTS_EMAIL, IMG_UPLOAD_MAX_SIZE, IMG_UPLOAD_URL, IMG_UPLOAD_PATH, SCROLLER_LENGTH, FILEMAN_BASE_DIR, FILEMAN_BASE_URL, FILEMAN_UPLOAD_TIME_LIMIT, AA_ADMIN_USER, AA_ADMIN_PWD" => "CSV файл для завантаження. Кожне AA на власному рядку, поля розділені комою, поля мають бути в такому порядку (так само, як у таблиці central_conf):<br>dns_conf, dns_serial, dns_web, dns_mx, dns_db, dns_prim, dns_sec, web_conf, web_path, db_server, db_name, db_user, db_pwd, AA_SITE_PATH, AA_BASE_DIR, AA_HTTP_DOMAIN, AA_ID, ORG_NAME, ERROR_REPORTING_EMAIL, ALERTS_EMAIL, IMG_UPLOAD_MAX_SIZE, IMG_UPLOAD_URL, IMG_UPLOAD_PATH, SCROLLER_LENGTH, FILEMAN_BASE_DIR, FILEMAN_BASE_URL, FILEMAN_UPLOAD_TIME_LIMIT, AA_ADMIN_USER, AA_ADMIN_PWD", // ai 2026-06
 
 // central/include/actionapps.class.php, row 177
-"Can't get org_name - " => "",
+"Can't get org_name - " => "Не вдалося отримати org_name —", // ai 2026-06
 
 // central/include/actionapps.class.php, row 636
-"%1 is not array in template slice" => "",
+"%1 is not array in template slice" => "%1 не є масивом у шаблонній рубриці", // ai 2026-06
 
 // central/include/actionapps.class.php, row 639
-"%1 is not array in destination slice" => "",
+"%1 is not array in destination slice" => "%1 не є масивом у цільовій рубриці", // ai 2026-06
 
 // central/include/actionapps.class.php, row 642
-"%1 is not defined for both AAs" => "",
+"%1 is not defined for both AAs" => "%1 не визначено для обох AA", // ai 2026-06
 
 // central/include/actionapps.class.php, row 665
-"There is no such key (%1) in destination slice for %2" => "",
+"There is no such key (%1) in destination slice for %2" => "У цільовій рубриці немає такого ключа (%1) для %2", // ai 2026-06
 
 // central/include/actionapps.class.php, row 672
-"Destination" => "",
+"Destination" => "Призначення", // ai 2026-06
 
 // central/include/actionapps.class.php, row 675
-"The value for key %1 in %2 array is different %3" => "",
+"The value for key %1 in %2 array is different %3" => "Значення ключа %1 у масиві %2 відрізняється %3", // ai 2026-06
 
 // central/include/actionapps.class.php, row 684
-"The record for %1 is different" => "",
+"The record for %1 is different" => "Запис для %1 відрізняється", // ai 2026-06
 
 // central/include/actionapps.class.php, row 696
-"There is no such key (%1) in template slice for %2" => "",
+"There is no such key (%1) in template slice for %2" => "У шаблонній рубриці немає такого ключа (%1) для %2", // ai 2026-06
 
 // central/include/actionapps.class.php, row 700
-"%1 are identical" => "",
+"%1 are identical" => "%1 ідентичні", // ai 2026-06
 
 // central/include/actionapps.class.php, row 779
 // include/menu_util.php, row 59
-"Create new" => "",
+"Create new" => "Створити новий", // ai 2026-06
 
 // central/include/actionapps.class.php, row 810
-"Wrong command - row is not defined - %1" => "",
+"Wrong command - row is not defined - %1" => "Хибна команда - рядок не визначено - %1", // ai 2026-06
 
 // central/include/actionapps.class.php, row 816
-"%1 %2 in slice %3 updated" => "",
+"%1 %2 in slice %3 updated" => "%1 %2 у рубриці %3 оновлено", // ai 2026-06
 
 // central/include/actionapps.class.php, row 822
-"%1 %2 inserted into slice %3" => "",
+"%1 %2 inserted into slice %3" => "%1 %2 вставлено до рубрики %3", // ai 2026-06
 
 // central/include/actionapps.class.php, row 828
-"%1 %2 deleted from slice %3" => "",
+"%1 %2 deleted from slice %3" => "%1 %2 видалено з рубрики %3", // ai 2026-06
 
 // central/include/actionapps.class.php, row 830
-"Unknown action (%1) for field %2 in slice %3" => "",
+"Unknown action (%1) for field %2 in slice %3" => "Невідома дія (%1) для поля %2 у рубриці %3", // ai 2026-06
 
 // central/index.php, row 66
-"You do not have permission to manage ActionApps installations" => "",
+"You do not have permission to manage ActionApps installations" => "Ви не маєте права керувати інсталяціями ActionApps", // ai 2026-06
 
 // central/index.php, row 81
-"Successfully authenticated to %1" => "",
+"Successfully authenticated to %1" => "Успішна автентифікація до %1", // ai 2026-06
 
 // central/index.php, row 83
-"Authentication failed for %1: %2" => "",
+"Authentication failed for %1: %2" => "Автентифікація до %1 не вдалася: %2", // ai 2026-06
 
 // central/index.php, row 131
 "ActionApps Central" => "",
 
 // central/index.php, row 134
-"Admin Link" => "",
+"Admin Link" => "Посилання на адміністрацію", // ai 2026-06
 
 // central/index.php, row 145
-"Authenticated" => "",
+"Authenticated" => "Автентифіковано", // ai 2026-06
 
 // central/index.php, row 147
-"Legacy password" => "",
+"Legacy password" => "Застаріле гасло", // ai 2026-06
 
 // central/index.php, row 149
-"Not configured" => "",
+"Not configured" => "Не налаштовано", // ai 2026-06
 
 // central/index.php, row 152
-"Authenticate" => "",
+"Authenticate" => "Автентифікувати", // ai 2026-06
 
 // central/index.php, row 156
-"Get Token" => "",
+"Get Token" => "Отримати токен", // ai 2026-06
 
 // central/index.php, row 160
 // src/Manageraction/Central_Linkcheck.php, row 31
-"Auth" => "",
+"Auth" => "Автентифікація", // ai 2026-06
 
 // central/responder.php, row 567
-"No request sent for responder.php" => "",
+"No request sent for responder.php" => "Для responder.php не надіслано жодного запиту", // ai 2026-06
 
 // central/responder.php, row 573
-"Bad request sent for responder.php - %1" => "",
+"Bad request sent for responder.php - %1" => "Для responder.php надіслано хибний запит - %1", // ai 2026-06
 
 // central/responder.php, row 578
-"You (%2) don't have permissions to run %1" => "",
+"You (%2) don't have permissions to run %1" => "Ви (%2) не маєте прав запускати %1", // ai 2026-06
 
 // central/synchronize.php, row 35
-"Central - Synchronize ActionApps (1/3) - Select ActionApps for Comparison" => "",
+"Central - Synchronize ActionApps (1/3) - Select ActionApps for Comparison" => "Central - Синхронізація ActionApps (1/3) - Вибір ActionApps для порівняння", // ai 2026-06
 
 // central/synchronize.php, row 51
-"AA to compare" => "",
+"AA to compare" => "AA для порівняння", // ai 2026-06
 
 // central/synchronize.php, row 51
-"ActionApps installation to check for differences (just checking right now - noting is changed by this step)" => "",
+"ActionApps installation to check for differences (just checking right now - noting is changed by this step)" => "Інсталяція ActionApps, у якій перевірити відмінності (наразі лише перевірка - цей крок нічого не змінює)", // ai 2026-06
 
 // central/synchronize2.php, row 34
-"Central - Synchronize ActionApps (2/3) - Slices to Compare" => "",
+"Central - Synchronize ActionApps (2/3) - Slices to Compare" => "Central - Синхронізація ActionApps (2/3) - Рубрики для порівняння", // ai 2026-06
 
 // central/synchronize2.php, row 51
-"do not compare" => "",
+"do not compare" => "не порівнювати", // ai 2026-06
 
 // central/synchronize2.php, row 56
-"Compare" => "",
+"Compare" => "Порівняти", // ai 2026-06
 
 // central/synchronize2.php, row 69
-"Slice Mapping" => "",
+"Slice Mapping" => "Зіставлення рубрик", // ai 2026-06
 
 // central/synchronize3.php, row 38
-"Comparison slice (%1) does not exist" => "",
+"Comparison slice (%1) does not exist" => "Порівнювана рубрика (%1) не існує", // ai 2026-06
 
 // central/synchronize3.php, row 93
-"%1 synchronization actions planned. See" => "",
+"%1 synchronization actions planned. See" => "Заплановано %1 дій синхронізації. Див.", // ai 2026-06
 
 // central/synchronize3.php, row 98
-"Central - Synchronize ActionApps (3/3) - Synchronize Slices" => "",
+"Central - Synchronize ActionApps (3/3) - Synchronize Slices" => "Central - Синхронізація ActionApps (3/3) - Синхронізація рубрик", // ai 2026-06
 
 // central/synchronize3.php, row 114, 163
-"Synchronize" => "",
+"Synchronize" => "Синхронізувати", // ai 2026-06
 
 // central/synchronize3.php, row 121
-"Slice Comparison - %1 x %2" => "",
+"Slice Comparison - %1 x %2" => "Порівняння рубрик - %1 x %2", // ai 2026-06
 
 // central/synchronize3.php, row 154
-"Hide/show info values" => "",
+"Hide/show info values" => "Сховати/показати інформативні значення", // ai 2026-06
 
 // central/synchronize3.php, row 155
-"Check/Uncheck" => "",
+"Check/Uncheck" => "Позначити/зняти позначку", // ai 2026-06
 
 // central/synchronize3.php, row 165
-"Compared and Updated ActionApps" => "",
+"Compared and Updated ActionApps" => "Порівняні та оновлені ActionApps", // ai 2026-06
 
 // filldisc.php, row 104, 145
 // filler.php, row 399
-"Not accepted, sorry. Looks like spam." => "",
+"Not accepted, sorry. Looks like spam." => "Не прийнято, перепрошуємо. Схоже на спам.", // ai 2026-06
 
 // filldisc.php, row 111
 // filler.php, row 289
-"Wrong result, not possible to post comments." => "",
+"Wrong result, not possible to post comments." => "Хибний результат, додавати коментарі неможливо.", // ai 2026-06
 
 // filldisc.php, row 120
-"Comment to wrong item - item's slice not found." => "",
+"Comment to wrong item - item's slice not found." => "Коментар до хибної статті - рубрику статті не знайдено.", // ai 2026-06
 
 // filldisc.php, row 124
-"New comments disabled." => "",
+"New comments disabled." => "Нові коментарі вимкнено.", // ai 2026-06
 
 // filldisc.php, row 186
-"Not accepted, your IP address is banned." => "",
+"Not accepted, your IP address is banned." => "Не прийнято, вашу IP-адресу заблоковано.", // ai 2026-06
 
 // filldisc.php, row 197
-"Not accepted, item is not published or does not exist." => "",
+"Not accepted, item is not published or does not exist." => "Не прийнято, статтю не опубліковано або вона не існує.", // ai 2026-06
 
 // filler.php, row 283
-"Not allowed to post comments" => "",
+"Not allowed to post comments" => "Додавання коментарів не дозволено", // ai 2026-06
 
 // filler.php, row 324, 361
-"Bad Token. Not allowed to post comments" => "",
+"Bad Token. Not allowed to post comments" => "Хибний токен. Додавання коментарів не дозволено", // ai 2026-06
 
 // filler.php, row 348
-"Slice ID not defined" => "",
+"Slice ID not defined" => "ID рубрики не визначено", // ai 2026-06
 
 // filler.php, row 354
-"Bad slice ID" => "",
+"Bad slice ID" => "Хибне ID рубрики", // ai 2026-06
 
 // filler.php, row 420
-"Anonymous posting not admitted." => "",
+"Anonymous posting not admitted." => "Анонімне додавання не дозволено.", // ai 2026-06
 
 // filler.php, row 462
-"You are not allowed to update this item." => "",
+"You are not allowed to update this item." => "Ви не маєте права редагувати цю статтю.", // ai 2026-06
 
 // filler.php, row 473
-"Some error in store item." => "",
+"Some error in store item." => "Помилка під час збереження статті.", // ai 2026-06
 
 // include/adminpage.class.php, row 68
-"Error in page parameter: %1" => "",
+"Error in page parameter: %1" => "Помилка в параметрі сторінки: %1", // ai 2026-06
 
 // include/constants.php, row 402
-"Short Id" => "",
+"Short Id" => "Коротке ID", // ai 2026-06
 
 // include/constants.php, row 407
-"Class" => "",
+"Class" => "Клас", // ai 2026-06
 
 // include/constants.php, row 411
 // include/constedit_util.php, row 139
-"Level" => "",
+"Level" => "Рівень", // ai 2026-06
 
 // include/constants.php, row 460
-"Feed" => "",
+"Feed" => "Копіювати вміст", // ai 2026-06
 
 // include/constants.php, row 461
-"Do not feed" => "",
+"Do not feed" => "Не копіювати", // ai 2026-06
 
 // include/constants.php, row 462
-"Feed locked" => "",
+"Feed locked" => "Копіювати незмінно", // ai 2026-06
 
 // include/constants.php, row 463
-"Feed & update" => "",
+"Feed & update" => "Копіювати вміст і зміни", // ai 2026-06
 
 // include/constants.php, row 464
-"Feed & update & lock" => "",
+"Feed & update & lock" => "Копіювати вміст і зміни незмінно", // ai 2026-06
 
 // include/constants.php, row 550
-"Month List" => "",
+"Month List" => "Місяць - список", // ai 2026-06
 
 // include/constants.php, row 551
-"Month Table" => "",
+"Month Table" => "Місяць - таблиця", // ai 2026-06
 
 // include/constants.php, row 559
-"Whole text" => "",
+"Whole text" => "Весь текст", // ai 2026-06
 
 // include/constants.php, row 560
-"1st letter" => "",
+"1st letter" => "1-ша літера", // ai 2026-06
 
 // include/constants.php, row 561, 562, 563, 564, 565, 566, 567, 568
-"letters" => "",
+"letters" => "літери", // ai 2026-06
 
 // include/constants.php, row 569
-"all before " => "",
+"all before " => "усе перед", // ai 2026-06
 
 // include/constants.php, row 590
 "vid" => "",
 
 // include/constants.php, row 591
-"now possible to use non numeric vid - like: photo_list and usage as {view:photo_list:...} or ..?vid=photo_list... Use only smallcaps - [a-z_]." => "",
+"now possible to use non numeric vid - like: photo_list and usage as {view:photo_list:...} or ..?vid=photo_list... Use only smallcaps - [a-z_]." => "тепер можна використовувати нечислові vid - наприклад: photo_list і застосування як {view:photo_list:...} або ..?vid=photo_list... Використовуйте лише малі літери - [a-z_].", // ai 2026-06
 
 // include/constants.php, row 595
-"Disabled view" => "",
+"Disabled view" => "Вимкнений вигляд", // ai 2026-06
 
 // include/constants.php, row 597
-"Log view usage" => "",
+"Log view usage" => "Журналювати використання вигляду", // ai 2026-06
 
 // include/constants.php, row 598
-"Be careful with this. It really logs every view use! Good for debugging and checking, if disabled view is not used anymore..." => "",
+"Be careful with this. It really logs every view use! Good for debugging and checking, if disabled view is not used anymore..." => "Будьте з цим обережні. Дійсно журналюється кожне використання вигляду! Корисно для налагодження та перевірки, чи вимкнений вигляд уже не використовується...", // ai 2026-06
 
 // include/constants.php, row 604
-"Item listing" => "",
+"Item listing" => "Перелік статей", // ai 2026-06
 
 // include/constants.php, row 609, 732, 866, 921, 955
-"Row Delimiter" => "",
+"Row Delimiter" => "Роздільник рядків", // ai 2026-06
 
 // include/constants.php, row 618, 736, 767, 798, 824, 869, 895, 924, 958
-"Sort primary" => "",
+"Sort primary" => "Сортувати", // ai 2026-06
 
 // include/constants.php, row 620, 738, 769, 800, 826, 871, 897, 926, 960
-"Sort secondary" => "",
+"Sort secondary" => "Сортувати вдруге", // ai 2026-06
 
 // include/constants.php, row 622
-"Sort alias" => "",
+"Sort alias" => "Аліас для сортування", // ai 2026-06
 
 // include/constants.php, row 627, 743, 876, 931, 965
-"Group title format" => "",
+"Group title format" => "Заголовок групи", // ai 2026-06
 
 // include/constants.php, row 628, 744, 877, 932, 966
-"Group bottom format" => "",
+"Group bottom format" => "Нижній код групи", // ai 2026-06
 
 // include/constants.php, row 630, 659, 745, 771, 802, 835, 899, 933, 967
-"Condition 1" => "",
+"Condition 1" => "Умова 1", // ai 2026-06
 
 // include/constants.php, row 633, 662, 748, 774, 805, 838, 902, 936, 970
-"Condition 2" => "",
+"Condition 2" => "Умова 2", // ai 2026-06
 
 // include/constants.php, row 636, 665, 751, 777, 808, 841, 905, 939, 973
-"Condition 3" => "",
+"Condition 3" => "Умова 3", // ai 2026-06
 
 // include/constants.php, row 641
-"Accept site module paging - {xpage}" => "",
+"Accept site module paging - {xpage}" => "Приймати сторінкування модуля site - {xpage}", // ai 2026-06
 
 // include/constants.php, row 642
-"if 'Accept {xpage}', no need to pass page-{xpage} param to the view<br>if 'Use infinite...' the invisible scroller is added to the view and the content is loaded by AJAX by observing the scroll position" => "",
+"if 'Accept {xpage}', no need to pass page-{xpage} param to the view<br>if 'Use infinite...' the invisible scroller is added to the view and the content is loaded by AJAX by observing the scroll position" => "при 'Приймати {xpage}' не потрібно передавати вигляду параметр page-{xpage}<br>при 'Використати нескінченне...' до вигляду додається невидимий скролер і вміст завантажується через AJAX залежно від позиції прокручування", // ai 2026-06
 
 // include/constants.php, row 646
-"use {#} if you do not want print anything" => "",
+"use {#} if you do not want print anything" => "використайте {#}, якщо не бажаєте нічого виводити", // ai 2026-06
 
 // include/constants.php, row 648, 669, 757, 788, 846, 880, 910, 944, 978, 991
-"Add view ID as HTML comment" => "",
+"Add view ID as HTML comment" => "Додати ID вигляду як HTML-коментар", // ai 2026-06
 
 // include/constants.php, row 654
-"Fulltext view" => "",
+"Fulltext view" => "Повний текст", // ai 2026-06
 
 // include/constants.php, row 676
-"HTML code for index view of the comment" => "",
+"HTML code for index view of the comment" => "HTML-код для оглядового вигляду коментаря", // ai 2026-06
 
 // include/constants.php, row 678
-"HTML code for \"Show selected\" button" => "",
+"HTML code for \"Show selected\" button" => "HTML-код для кнопки \"Show selected\"", // ai 2026-06
 
 // include/constants.php, row 679
-"HTML code for \"Show all\" button" => "",
+"HTML code for \"Show all\" button" => "HTML-код для кнопки \"Show all\"", // ai 2026-06
 
 // include/constants.php, row 680
-"HTML code for \"Add\" button" => "",
+"HTML code for \"Add\" button" => "HTML-код для кнопки \"Add\"", // ai 2026-06
 
 // include/constants.php, row 681
-"Show images" => "",
+"Show images" => "Показати зображення", // ai 2026-06
 
 // include/constants.php, row 682
-"Order by" => "",
+"Order by" => "Упорядкувати за", // ai 2026-06
 
 // include/constants.php, row 683
-"View image 1" => "",
+"View image 1" => "Зображення 1", // ai 2026-06
 
 // include/constants.php, row 684
-"View image 2" => "",
+"View image 2" => "Зображення 2", // ai 2026-06
 
 // include/constants.php, row 685
-"View image 3" => "",
+"View image 3" => "Зображення 3", // ai 2026-06
 
 // include/constants.php, row 686
-"View image 4" => "",
+"View image 4" => "Зображення 4", // ai 2026-06
 
 // include/constants.php, row 687
-"HTML code for fulltext view of the comment" => "",
+"HTML code for fulltext view of the comment" => "HTML-код для повного вигляду коментаря", // ai 2026-06
 
 // include/constants.php, row 688
-"HTML code for space before comment" => "",
+"HTML code for space before comment" => "HTML-код для відступу перед коментарем", // ai 2026-06
 
 // include/constants.php, row 689
-"HTML code of the form for posting comment" => "",
+"HTML code of the form for posting comment" => "HTML-код форми для надсилання коментаря", // ai 2026-06
 
 // include/constants.php, row 691
-"E-mail template" => "",
+"E-mail template" => "Шаблон e-mail", // ai 2026-06
 
 // include/constants.php, row 693
-"Number of e-mail template used for posting new comments to users" => "",
+"Number of e-mail template used for posting new comments to users" => "Номер шаблону e-mail для надсилання нових коментарів користувачам", // ai 2026-06
 
 // include/constants.php, row 695
-"Allow HTML tags in the comments" => "",
+"Allow HTML tags in the comments" => "Дозволити HTML-теги в коментарях", // ai 2026-06
 
 // include/constants.php, row 701
-"Discussion To Mail" => "",
+"Discussion To Mail" => "Дискусія e-mailом", // ai 2026-06
 
 // include/constants.php, row 702
-"From: (email header)" => "",
+"From: (email header)" => "From: (заголовок e-mail)", // ai 2026-06
 
 // include/constants.php, row 703
 "Reply-To:" => "",
@@ -3807,1116 +3813,1129 @@ return [
 "Errors-To:" => "",
 
 // include/constants.php, row 705
-"Sender:" => "",
+"Sender:" => "Відправник:", // ai 2026-06
 
 // include/constants.php, row 706
-"Mail Subject:" => "",
+"Mail Subject:" => "Тема листа:", // ai 2026-06
 
 // include/constants.php, row 707
-"Mail Body:" => "",
+"Mail Body:" => "Тіло листа:", // ai 2026-06
 
 // include/constants.php, row 728
-"View of Constants" => "",
+"View of Constants" => "Перегляд констант", // ai 2026-06
 
 // include/constants.php, row 763
-"RSS exchange" => "",
+"RSS exchange" => "Обмін RSS", // ai 2026-06
 
 // include/constants.php, row 786
-"Static page" => "",
+"Static page" => "Статична сторінка", // ai 2026-06
 
 // include/constants.php, row 787
-"HTML code" => "",
+"HTML code" => "HTML-код", // ai 2026-06
 
 // include/constants.php, row 794
-"Javascript item exchange" => "",
+"Javascript item exchange" => "Обмін статтями через JavaScript", // ai 2026-06
 
 // include/constants.php, row 817
-"Calendar" => "",
+"Calendar" => "Календар", // ai 2026-06
 
 // include/constants.php, row 818
-"Calendar Type" => "",
+"Calendar Type" => "Тип календаря", // ai 2026-06
 
 // include/constants.php, row 820
-"Additional attribs to the TD event tag" => "",
+"Additional attribs to the TD event tag" => "Додаткові атрибути до тегу TD події", // ai 2026-06
 
 // include/constants.php, row 821
-"Event format" => "",
+"Event format" => "Формат події", // ai 2026-06
 
 // include/constants.php, row 828
-"Start date field" => "",
+"Start date field" => "Поле дати початку", // ai 2026-06
 
 // include/constants.php, row 829
-"End date field" => "",
+"End date field" => "Поле дати завершення", // ai 2026-06
 
 // include/constants.php, row 830
-"Day cell top format" => "",
+"Day cell top format" => "Формат верхньої частини комірки дня", // ai 2026-06
 
 // include/constants.php, row 831
-"Day cell bottom format" => "",
+"Day cell bottom format" => "Формат нижньої частини комірки дня", // ai 2026-06
 
 // include/constants.php, row 832
-"Use other header for empty cells" => "",
+"Use other header for empty cells" => "Використати інший заголовок для порожніх комірок", // ai 2026-06
 
 // include/constants.php, row 833
-"Empty day cell top format" => "",
+"Empty day cell top format" => "Формат верхньої частини порожньої комірки дня", // ai 2026-06
 
 // include/constants.php, row 834
-"Empty day cell bottom format" => "",
+"Empty day cell bottom format" => "Формат нижньої частини порожньої комірки дня", // ai 2026-06
 
 // include/constants.php, row 854
-"Alerts Selection Set" => "",
+"Alerts Selection Set" => "Сповіщення - набори вибірок", // ai 2026-06
 
 // include/constants.php, row 857
-"Fulltext URL" => "",
+"Fulltext URL" => "URL повного тексту", // ai 2026-06
 
 // include/constants.php, row 859
 "Link to the .shtml page used\n"
    ."                                 to create headline links."
- => "",
+ => "Посилання на сторінку .shtml, що використовується\\n                                 для створення посилань на заголовки.", // ai 2026-06
 
 // include/constants.php, row 878
-"Max number of items" => "",
+"Max number of items" => "Макс. кількість статей", // ai 2026-06
 
 // include/constants.php, row 890
-"URL listing" => "",
+"URL listing" => "Перелік URL", // ai 2026-06
 
 // include/constants.php, row 892
-"Row HTML" => "",
+"Row HTML" => "HTML рядка", // ai 2026-06
 
 // include/constants.php, row 916
-"Link listing" => "",
+"Link listing" => "Перелік посилань", // ai 2026-06
 
 // include/constants.php, row 950
-"Category listing" => "",
+"Category listing" => "Перелік рубрик", // ai 2026-06
 
 // include/constants.php, row 984
-"Input Form" => "",
+"Input Form" => "Вхідна форма", // ai 2026-06
 
 // include/constants.php, row 986
-"New item form template" => "",
+"New item form template" => "Шаблон форми для нової статті", // ai 2026-06
 
 // include/constants.php, row 987
-"Use different template for editing" => "",
+"Use different template for editing" => "Використати інший шаблон для редагування", // ai 2026-06
 
 // include/constants.php, row 988
-"Edit item form template" => "",
+"Edit item form template" => "Шаблон форми для редагування статті", // ai 2026-06
 
 // include/constants.php, row 1037
 // include/discussion.php, row 220
-"Show selected" => "",
+"Show selected" => "Показати вибрані", // ai 2026-06
 
 // include/constants.php, row 1038
 // include/discussion.php, row 221
-"Show all" => "",
+"Show all" => "Показати всі", // ai 2026-06
 
 // include/constants.php, row 1039
 // include/constedit_util.php, row 132
 // include/discussion.php, row 222
-"Add new" => "",
+"Add new" => "Додати нову", // ai 2026-06
 
 // include/constants.php, row 1074
-"Calendar: Time stamp at 0:00 of processed cell" => "",
+"Calendar: Time stamp at 0:00 of processed cell" => "Календар: Time stamp о 0:00 опрацьовуваної комірки", // ai 2026-06
 
 // include/constants.php, row 1075
-"Calendar: Time stamp at 24:00 of processed cell" => "",
+"Calendar: Time stamp at 24:00 of processed cell" => "Календар: Time stamp о 24:00 опрацьовуваної комірки", // ai 2026-06
 
 // include/constants.php, row 1076
-"Calendar: Day in month of processed cell" => "",
+"Calendar: Day in month of processed cell" => "Календар: День місяця опрацьовуваної комірки", // ai 2026-06
 
 // include/constants.php, row 1077
-"Calendar: Month number of processed cell" => "",
+"Calendar: Month number of processed cell" => "Календар: Номер місяця опрацьовуваної комірки", // ai 2026-06
 
 // include/constants.php, row 1078
-"Calendar: Year number of processed cell" => "",
+"Calendar: Year number of processed cell" => "Календар: Рік опрацьовуваної комірки", // ai 2026-06
 
 // include/constants.php, row 1143
-"Superadmin" => "",
+"Superadmin" => "Суперадміністратор", // ai 2026-06
 
 // include/constedit.php, row 55
-"Constants - Hierarchical editor" => "",
+"Constants - Hierarchical editor" => "Константи - Ієрархічний редактор", // ai 2026-06
 
 // include/constedit.php, row 58
-"Changes are not saved into database until you click on the button at the bottom of this page.<br>Constants are sorted first by Priority, second by Name." => "",
+"Changes are not saved into database until you click on the button at the bottom of this page.<br>Constants are sorted first by Priority, second by Name." => "Зміни не зберігаються в базі даних, доки Ви не натиснете кнопку внизу цієї сторінки.<br>Константи впорядковано спершу за Пріоритетом, потім за Назвою.", // ai 2026-06
 
 // include/constedit.php, row 79
-"Copy value from name" => "",
+"Copy value from name" => "Скопіювати значення з назви", // ai 2026-06
 
 // include/constedit.php, row 92
-"Check to confirm deleting" => "",
+"Check to confirm deleting" => "Позначте для підтвердження видалення", // ai 2026-06
 
 // include/constedit.php, row 95
-"Save all changes to database" => "",
+"Save all changes to database" => "Зберегти всі зміни в базі даних", // ai 2026-06
 
 // include/constedit.php, row 96
-"View settings" => "",
+"View settings" => "Перегляд", // ai 2026-06
 
 // include/constedit.php, row 96
-"Hierarchical" => "",
+"Hierarchical" => "Ієрархічний", // ai 2026-06
 
 // include/constedit.php, row 97
-"Hide value" => "",
+"Hide value" => "Сховати значення", // ai 2026-06
 
 // include/constedit.php, row 101
-"Levels horizontal" => "",
+"Levels horizontal" => "Рівні горизонтально", // ai 2026-06
 
 // include/constedit.php, row 102
 // src/Widget/Widget.php, row 841
-"Level count" => "",
+"Level count" => "Кількість рівнів", // ai 2026-06
 
 // include/constedit_util.php, row 133, 136
-"Select" => "",
+"Select" => "Вибрати", // ai 2026-06
 
 // include/constedit_util.php, row 618
-"No group id specified" => "",
+"No group id specified" => "Не вказано ID групи", // ai 2026-06
 
 // include/date.php, row 35
-"January" => "",
+"January" => "Січень", // ai 2026-06
 
 // include/date.php, row 35
-"February" => "",
+"February" => "Лютий", // ai 2026-06
 
 // include/date.php, row 35
-"March" => "",
+"March" => "Березень", // ai 2026-06
 
 // include/date.php, row 35
-"April" => "",
+"April" => "Квітень", // ai 2026-06
 
 // include/date.php, row 35
-"May" => "",
+"May" => "Травень", // ai 2026-06
 
 // include/date.php, row 35
-"June" => "",
+"June" => "Червень", // ai 2026-06
 
 // include/date.php, row 35
-"July" => "",
+"July" => "Липень", // ai 2026-06
 
 // include/date.php, row 35
-"August" => "",
+"August" => "Серпень", // ai 2026-06
 
 // include/date.php, row 35
-"September" => "",
+"September" => "Вересень", // ai 2026-06
 
 // include/date.php, row 35
-"October" => "",
+"October" => "Жовтень", // ai 2026-06
 
 // include/date.php, row 35
-"November" => "",
+"November" => "Листопад", // ai 2026-06
 
 // include/date.php, row 35
-"December" => "",
+"December" => "Грудень", // ai 2026-06
 
 // include/exporter.class.php, row 507
-"What to export" => "",
+"What to export" => "Що експортувати", // ai 2026-06
 
 // include/exporter.class.php, row 522
-"you can put there field id (like headline........) or any AA expression (like _#HEADLINE)<br>to export all the fields, leave this field blank" => "",
+"you can put there field id (like headline........) or any AA expression (like _#HEADLINE)<br>to export all the fields, leave this field blank" => "сюди можна вказати id поля (наприклад headline........) або будь-який вираз AA (наприклад _#HEADLINE)<br>щоб експортувати всі поля, залиште це поле порожнім", // ai 2026-06
 
 // include/exporter.class.php, row 523
-"Add any AA expression as extra column. Each row = one column." => "",
+"Add any AA expression as extra column. Each row = one column." => "Додайте будь-який вираз AA як додатковий стовпець. Кожен рядок = один стовпець.", // ai 2026-06
 
 // include/exporter.class.php, row 536
-"No slice specified" => "",
+"No slice specified" => "Не вказано рубрику", // ai 2026-06
 
 // include/exporter.class.php, row 604
-"Bad file format - specify format" => "",
+"Bad file format - specify format" => "Невірний формат файлу — вкажіть формат", // ai 2026-06
 
 // include/feeding.php, row 453, 491
-"Map" => "",
+"Map" => "Зіставити", // ai 2026-06
 
 // include/feeding.php, row 454, 490
-"Run (queue)" => "",
+"Run (queue)" => "Запустити (черга)", // ai 2026-06
 
 // include/feeding.php, row 473
-"URL of the feed" => "",
+"URL of the feed" => "URL передавання", // ai 2026-06
 
 // include/feeding.php, row 473
-"e.g. https://www.someplace.com/rss/index.xml" => "",
+"e.g. https://www.someplace.com/rss/index.xml" => "напр. https://www.someplace.com/rss/index.xml", // ai 2026-06
 
 // include/feeding.php, row 473
-"Do NOT change this URL if you already set the Mapping (or update mapping after the change). The mapping is tied to this url!" => "",
+"Do NOT change this URL if you already set the Mapping (or update mapping after the change). The mapping is tied to this url!" => "НЕ змінюйте цей URL, якщо ви вже налаштували зіставлення (або після зміни оновіть зіставлення). Зіставлення прив’язане до цього url!", // ai 2026-06
 
 // include/feeding.php, row 474
-"RSS Feed name" => "",
+"RSS Feed name" => "Назва RSS-передавання", // ai 2026-06
 
 // include/feeding.php, row 475, 531
-"warnings last hour" => "",
+"warnings last hour" => "попереджень за останню годину", // ai 2026-06
 
 // include/feeding.php, row 475, 531
-"warnings last day" => "",
+"warnings last day" => "попереджень за останній день", // ai 2026-06
 
 // include/feeding.php, row 475, 531
-"warnings last month" => "",
+"warnings last month" => "попереджень за останній місяць", // ai 2026-06
 
 // include/feeding.php, row 480, 535
-"Warnings in log [hour/day/month]" => "",
+"Warnings in log [hour/day/month]" => "Попередження у журналі [година/день/місяць]", // ai 2026-06
 
 // include/feeding.php, row 526
-"Remote node" => "",
+"Remote node" => "Віддалений вузол", // ai 2026-06
 
 // include/field.class.php, row 610
-"Move to another field" => "",
+"Move to another field" => "Перемістити в інше поле", // ai 2026-06
 
 // include/field.class.php, row 957
 // include/itemview.php, row 124
-"number of found items" => "",
+"number of found items" => "кількість знайдених статей", // ai 2026-06
 
 // include/field.class.php, row 958
-"index of item within whole listing (begins with 0)" => "",
+"index of item within whole listing (begins with 0)" => "порядок статті в усьому списку (нумерація з 0)", // ai 2026-06
 
 // include/field.class.php, row 959
-"index of item within a page (it begins from 0 on each page listed by pagescroller)" => "",
+"index of item within a page (it begins from 0 on each page listed by pagescroller)" => "порядок статті на сторінці (на кожній сторінці, виведеній pagescroller-ом, починається з 0)", // ai 2026-06
 
 // include/field.class.php, row 960
-"index of a group on page (it begins from 0 on each page)" => "",
+"index of a group on page (it begins from 0 on each page)" => "індекс групи на сторінці (на кожній сторінці починається з 0)", // ai 2026-06
 
 // include/field.class.php, row 961
-"index of item within a group on page (it begins from 0 on each group)" => "",
+"index of item within a group on page (it begins from 0 on each group)" => "індекс статті в групі на сторінці (у кожній групі починається з 0)", // ai 2026-06
 
 // include/field.class.php, row 962
-"alias for Item ID" => "",
+"alias for Item ID" => "аліас для ID статті", // ai 2026-06
 
 // include/field.class.php, row 963
-"alias for Short Item ID" => "",
+"alias for Short Item ID" => "аліас для скороченого ID статті", // ai 2026-06
 
 // include/field.class.php, row 971, 972
-"alias used on admin page index.php for itemedit url" => "",
+"alias used on admin page index.php for itemedit url" => "аліас, що використовується на адмін-сторінці index.php для URL itemedit", // ai 2026-06
 
 // include/field.class.php, row 973
-"Alias used on admin page index.php for edit discussion url" => "",
+"Alias used on admin page index.php for edit discussion url" => "Аліас, що використовується на адмін-сторінці index.php для URL редагування обговорення", // ai 2026-06
 
 // include/field.class.php, row 974
-"Title of Slice for RSS" => "",
+"Title of Slice for RSS" => "Назва рубрики для RSS", // ai 2026-06
 
 // include/field.class.php, row 975
-"Link to the Slice for RSS" => "",
+"Link to the Slice for RSS" => "Посилання на рубрику для RSS", // ai 2026-06
 
 // include/field.class.php, row 976
-"Short description (owner and name) of slice for RSS" => "",
+"Short description (owner and name) of slice for RSS" => "Короткий опис (власник і назва) рубрики для RSS", // ai 2026-06
 
 // include/field.class.php, row 977
-"Date RSS information is generated, in RSS date format" => "",
+"Date RSS information is generated, in RSS date format" => "Дата генерації RSS-інформації у форматі дати RSS", // ai 2026-06
 
 // include/field.class.php, row 978
-"Slice name" => "",
+"Slice name" => "Назва рубрики", // ai 2026-06
 
 // include/field.class.php, row 980
-"Current MLX language" => "",
+"Current MLX language" => "Поточна мова MLX", // ai 2026-06
 
 // include/field.class.php, row 981
-"HTML markup direction tag (e.g. DIR=RTL)" => "",
+"HTML markup direction tag (e.g. DIR=RTL)" => "HTML-тег напрямку розмітки (напр. DIR=RTL)", // ai 2026-06
 
 // include/field.class.php, row 1063, 1245
 // src/Util/Searchfields.php, row 179
-"-- any text field --" => "",
+"-- any text field --" => "-- будь-яке текстове поле --", // ai 2026-06
 
 // include/filedit.php, row 81
-"Back to file list" => "",
+"Back to file list" => "Назад до списку файлів", // ai 2026-06
 
 // include/filedit.php, row 82
-"Download (right-click)" => "",
+"Download (right-click)" => "Завантажити (права кнопка миші)", // ai 2026-06
 
 // include/filedit.php, row 83
-"Rename to" => "",
+"Rename to" => "Перейменувати на", // ai 2026-06
 
 // include/filedit.php, row 88
 // include/fileman.php, row 130, 500
-"Text file" => "",
+"Text file" => "Текстовий файл", // ai 2026-06
 
 // include/filedit.php, row 88
 // include/fileman.php, row 128
-"Web file" => "",
+"Web file" => "Веб-файл", // ai 2026-06
 
 // include/filedit.php, row 88
 // include/fileman.php, row 127, 500
-"HTML file" => "",
+"HTML file" => "HTML-файл", // ai 2026-06
 
 // include/filedit.php, row 123
-"Save changes" => "",
+"Save changes" => "Зберегти зміни", // ai 2026-06
 
 // include/filedit.php, row 124
-"Reset content" => "",
+"Reset content" => "Скинути вміст", // ai 2026-06
 
 // include/filedit.php, row 130
-"File content" => "",
+"File content" => "Вміст файлу", // ai 2026-06
 
 // include/filedit.php, row 138
 // include/fileman.php, row 129
-"Image file" => "",
+"Image file" => "Файл зображення", // ai 2026-06
 
 // include/filedit.php, row 141
-"This is a file of type" => "",
+"This is a file of type" => "Це файл типу", // ai 2026-06
 
 // include/filedit.php, row 141
-"I can't view it. If you want to view or edit it, change its extension." => "",
+"I can't view it. If you want to view or edit it, change its extension." => "Його не можна показати. Якщо ви хочете переглянути або відредагувати його, змініть його розширення.", // ai 2026-06
 
 // include/fileman.php, row 32
-"Size" => "",
+"Size" => "Розмір", // ai 2026-06
 
 // include/fileman.php, row 34
-"Last modified" => "",
+"Last modified" => "Востаннє змінено", // ai 2026-06
 
 // include/fileman.php, row 132, 145
-"Parent" => "",
+"Parent" => "Батьківський", // ai 2026-06
 
 // include/fileman.php, row 133, 161
-"Other" => "",
+"Other" => "Інше", // ai 2026-06
 
 // include/fileman.php, row 335
-"Wrong file name." => "",
+"Wrong file name." => "Невірна назва файлу.", // ai 2026-06
 
 // include/fileman.php, row 343
-"File already exists" => "",
+"File already exists" => "Файл уже існує", // ai 2026-06
 
 // include/fileman.php, row 347, 503
-"Unable to create file" => "",
+"Unable to create file" => "Не вдалося створити файл", // ai 2026-06
 
 // include/fileman.php, row 358
-"Wrong directory name." => "",
+"Wrong directory name." => "Невірна назва каталогу.", // ai 2026-06
 
 // include/fileman.php, row 364
-"Unable to create directory" => "",
+"Unable to create directory" => "Не вдалося створити каталог", // ai 2026-06
 
 // include/fileman.php, row 374
-"First delete all files from directory" => "",
+"First delete all files from directory" => "Спочатку видаліть усі файли з каталогу", // ai 2026-06
 
 // include/fileman.php, row 376
-"Unable to delete directory" => "",
+"Unable to delete directory" => "Не вдалося видалити каталог", // ai 2026-06
 
 // include/fileman.php, row 379
-"Unable to delete file" => "",
+"Unable to delete file" => "Не вдалося видалити файл", // ai 2026-06
 
 // include/fileman.php, row 399
-"Error: " => "",
+"Error: " => "Помилка:", // ai 2026-06
 
 // include/fileman.php, row 411
-"Unable to open file for writing" => "",
+"Unable to open file for writing" => "Не вдалося відкрити файл для запису", // ai 2026-06
 
 // include/fileman.php, row 416
-"Error writing to file" => "",
+"Error writing to file" => "Помилка запису у файл", // ai 2026-06
 
 // include/fileman.php, row 425
-"File with this name already exists" => "",
+"File with this name already exists" => "Файл із такою назвою вже існує", // ai 2026-06
 
 // include/fileman.php, row 428
-"Unable to rename" => "",
+"Unable to rename" => "Не вдалося перейменувати", // ai 2026-06
 
 // include/fileman.php, row 487
-"Wrong directory name" => "",
+"Wrong directory name" => "Невірна назва каталогу", // ai 2026-06
 
 // include/fileman.php, row 496
-"Files with the same names as some in the template already exist. Please change the file names first." => "",
+"Files with the same names as some in the template already exist. Please change the file names first." => "Файли з такими ж назвами, як деякі в шаблоні, вже існують. Спершу змініть назви файлів.", // ai 2026-06
 
 // include/fileman.php, row 546
-"Are you sure you want to delete the selected files and folders?" => "",
+"Are you sure you want to delete the selected files and folders?" => "Ви впевнені, що хочете видалити вибрані файли та теки?", // ai 2026-06
 
 // include/files.class.php, row 87
-"No destination directory for image uploads specified" => "",
+"No destination directory for image uploads specified" => "Не вказано цільовий каталог для завантаження зображень", // ai 2026-06
 
 // include/files.class.php, row 91
-"Can't create directory for image uploads" => "",
+"Can't create directory for image uploads" => "Не вдалося створити каталог для завантаження зображень", // ai 2026-06
 
 // include/files.class.php, row 144
-"Can't read the file %1" => "",
+"Can't read the file %1" => "Не вдалося прочитати файл %1", // ai 2026-06
 
 // include/files.class.php, row 177
-"No destination file specified" => "",
+"No destination file specified" => "Не вказано цільовий файл", // ai 2026-06
 
 // include/files.class.php, row 193
-"type of uploaded file not allowed" => "",
+"type of uploaded file not allowed" => "тип завантаженого файлу не дозволено", // ai 2026-06
 
 // include/files.class.php, row 217
-"Can't move image  %1 to %2 (%3)" => "",
+"Can't move image  %1 to %2 (%3)" => "Не вдалося перемістити зображення %1 до %2 (%3)", // ai 2026-06
 
 // include/files.class.php, row 224
-"Can't change permissions on uploaded file: %1 - %2. See IMG_UPLOAD_FILE_MODE in your config.php" => "",
+"Can't change permissions on uploaded file: %1 - %2. See IMG_UPLOAD_FILE_MODE in your config.php" => "Не вдалося змінити права доступу до завантаженого файлу: %1 - %2. Перегляньте IMG_UPLOAD_FILE_MODE у вашому config.php", // ai 2026-06
 
 // include/files.class.php, row 249
-"Can't open file for writing: %1" => "",
+"Can't open file for writing: %1" => "Не вдалося відкрити файл для запису: %1", // ai 2026-06
 
 // include/files.class.php, row 255
-"Can't write to file: %1" => "",
+"Can't write to file: %1" => "Не вдалося записати у файл: %1", // ai 2026-06
 
 // include/files.class.php, row 306
-"Error: Invalid directory" => "",
+"Error: Invalid directory" => "Помилка: Недійсний каталог", // ai 2026-06
 
 // include/files.class.php, row 328
-"can't create backup of the file" => "",
+"can't create backup of the file" => "не вдалося створити резервну копію файлу", // ai 2026-06
 
 // include/files.class.php, row 1302
-": No such directory" => "",
+": No such directory" => ": Такого каталогу немає", // ai 2026-06
 
 // include/form.class.php, row 96
-"Fields to show" => "",
+"Fields to show" => "Поля для показу", // ai 2026-06
 
 // include/form.class.php, row 147
-"Property" => "",
+"Property" => "Властивість", // ai 2026-06
 
 // include/form.class.php, row 148
 "Widget" => "",
 
 // include/form.class.php, row 184
 // src/Manageraction/Item_Move2Slice.php, row 51
-"Slice ID" => "",
+"Slice ID" => "ID рубрики", // ai 2026-06
 
 // include/form.class.php, row 203
-"Form Row - special widget for form setting" => "",
+"Form Row - special widget for form setting" => "Рядок форми — спеціальний віджет для налаштування форми", // ai 2026-06
 
 // include/form.class.php, row 217
 // src/Widget/Widget.php, row 721
-"Values array" => "",
+"Values array" => "Масив значень", // ai 2026-06
 
 // include/form.class.php, row 217
-"Directly specified array of values (do not use Constants, if filled)" => "",
+"Directly specified array of values (do not use Constants, if filled)" => "Безпосередньо задане поле значень (якщо заповнено, не використовуйте константи)", // ai 2026-06
 
 // include/form.class.php, row 291
 // src/Widget/Widget.php, row 709
-"Rows" => "",
+"Rows" => "Рядки", // ai 2026-06
 
 // include/form.class.php, row 301
-// include/menu.php, row 141
-"Forms" => "",
+// include/menu.php, row 147
+"Forms" => "Форми", // ai 2026-06
 
 // include/formutil.php, row 191
-"Update & View" => "",
+"Update & View" => "Змінити та переглянути", // ai 2026-06
 
 // include/formutil.php, row 198
-"Insert as new" => "",
+"Insert as new" => "Вставити як нову", // ai 2026-06
 
-// include/formutil.php, row 202, 2924
-"Reset form" => "",
+// include/formutil.php, row 202, 2926
+"Reset form" => "Очистити форму", // ai 2026-06
 
-// include/formutil.php, row 205, 210, 2916, 2920
+// include/formutil.php, row 205, 210, 2918, 2922
 // include/searchbar.class.php, row 721
 // src/Widget/LupWidget.php, row 118
-"Cancel" => "",
+"Cancel" => "Скасувати", // ai 2026-06
 
 // include/formutil.php, row 208
-"Insert & Edit" => "",
+"Insert & Edit" => "Вставити та редагувати", // ai 2026-06
 
 // include/formutil.php, row 209
-"Insert & View" => "",
+"Insert & View" => "Вставити та переглянути", // ai 2026-06
 
 // include/formutil.php, row 289
-"Part" => "",
+"Part" => "Частина", // ai 2026-06
 
 // include/formutil.php, row 353
-"No fields defined for this slice" => "",
+"No fields defined for this slice" => "Для цієї рубрики не визначено жодного поля", // ai 2026-06
 
 // include/formutil.php, row 904
-"set" => "",
+"set" => "увімкнено", // ai 2026-06
 
 // include/formutil.php, row 904
-"unset" => "",
+"unset" => "вимкнено", // ai 2026-06
 
 // include/formutil.php, row 1034
-"Unable to find tagprefix table %1" => "",
+"Unable to find tagprefix table %1" => "Не вдалося знайти таблицю tagprefix %1", // ai 2026-06
 
 // include/formutil.php, row 1186
-"import" => "",
+"import" => "імпортувати", // ai 2026-06
 
 // include/formutil.php, row 1201
 // src/Widget/TxtWidget.php, row 250
-"Edit in Editor" => "",
+"Edit in Editor" => "Редагувати в редакторі", // ai 2026-06
 
 // include/formutil.php, row 1214
 // include/transformation.class.php, row 182, 357, 427, 511, 681
 // include/widget.class.php, row 570
-"Plain text" => "",
+"Plain text" => "Звичайний текст", // ai 2026-06
 
 // include/formutil.php, row 1256
 // include/transformation.class.php, row 604
-"Translate" => "",
+"Translate" => "Перекласти", // ai 2026-06
 
 // include/formutil.php, row 1759, 1763
-"Enter the value" => "",
+"Enter the value" => "Введіть значення", // ai 2026-06
 
 // include/formutil.php, row 1763
-// include/menu.php, row 134
+// include/menu.php, row 140
 // src/Util/ChangesMonitor.php, row 381
-"Change" => "",
+"Change" => "Змінити", // ai 2026-06
 
 // include/formutil.php, row 1906, 2093
 // src/Widget/MchWidget.php, row 134
 // src/Widget/Widget.php, row 808
-"Selected" => "",
+"Selected" => "Вибрані", // ai 2026-06
 
 // include/formutil.php, row 2092
-"Offer" => "",
+"Offer" => "Пропоновані", // ai 2026-06
 
 // include/formutil.php, row 2157
 // include/stringexpand.php, row 10624, 10647
 // src/Widget/MflWidget.php, row 166
 // src/Widget/RimWidget.php, row 240
-"new" => "",
+"new" => "нова", // ai 2026-06
 
 // include/formutil.php, row 2177
-"Change Password" => "",
+"Change Password" => "Зміна пароля", // ai 2026-06
 
 // include/formutil.php, row 2179
-"Delete Password" => "",
+"Delete Password" => "Видалити пароль", // ai 2026-06
 
 // include/formutil.php, row 2188
 // include/searchlib.php, row 58, 124, 127, 130, 133, 136
-"not set" => "",
+"not set" => "не задано", // ai 2026-06
 
-// include/formutil.php, row 2927
-"Submit" => "",
-
-// include/formutil.php, row 3244
-"Group Name" => "",
-
-// include/formutil.php, row 3245
-"Count" => "",
+// include/formutil.php, row 2929
+"Submit" => "Надіслати", // ai 2026-06
 
 // include/formutil.php, row 3246
-"Created on" => "",
+"Group Name" => "Назва групи", // ai 2026-06
 
 // include/formutil.php, row 3247
-"Created by" => "",
+"Count" => "Кількість", // ai 2026-06
 
 // include/formutil.php, row 3248
-"Last updated" => "",
+"Created on" => "Створено", // ai 2026-06
 
 // include/formutil.php, row 3249
-"Updated by" => "",
+"Created by" => "Створив", // ai 2026-06
 
 // include/formutil.php, row 3250
-"Last used" => "",
+"Last updated" => "Востаннє оновлено", // ai 2026-06
 
-// include/formutil.php, row 3257
-"All active items" => "",
+// include/formutil.php, row 3251
+"Updated by" => "Оновив", // ai 2026-06
+
+// include/formutil.php, row 3252
+"Last used" => "Востаннє використано", // ai 2026-06
 
 // include/formutil.php, row 3259
-"All pending items" => "",
-
-// include/formutil.php, row 3260
-"All expired items" => "",
+"All active items" => "Усі активні статті", // ai 2026-06
 
 // include/formutil.php, row 3261
-"All items in holding bin" => "",
+"All pending items" => "Усі підготовлювані статті", // ai 2026-06
 
 // include/formutil.php, row 3262
-"All items in trash bin" => "",
+"All expired items" => "Усі застарілі статті", // ai 2026-06
+
+// include/formutil.php, row 3263
+"All items in holding bin" => "Усі статті в Резерві", // ai 2026-06
+
+// include/formutil.php, row 3264
+"All items in trash bin" => "Усі статті в кошику", // ai 2026-06
 
 // include/init_page.php, row 94
 // include/locauth.php, row 85
-"Either your username or your password is not valid" => "",
+"Either your username or your password is not valid" => "Ім'я користувача або пароль недійсні", // ai 2026-06
 
 // include/init_page.php, row 151
-"No slice found for you" => "",
+"No slice found for you" => "Для вас не знайдено жодної рубрики", // ai 2026-06
 
 // include/item.php, row 104
-"Alias for %1" => "",
+"Alias for %1" => "Аліас для %1", // ai 2026-06
 
 // include/item.php, row 358
-"Alias for subject of the discussion comment" => "",
+"Alias for subject of the discussion comment" => "Аліас для теми коментаря обговорення", // ai 2026-06
 
 // include/item.php, row 359
-"Alias for text of the discussion comment" => "",
+"Alias for text of the discussion comment" => "Аліас для тексту коментаря обговорення", // ai 2026-06
 
 // include/item.php, row 360
-"Alias for written by" => "",
+"Alias for written by" => "Аліас для автора", // ai 2026-06
 
 // include/item.php, row 361
-"Alias for author's e-mail" => "",
+"Alias for author's e-mail" => "Аліас для e-mail автора", // ai 2026-06
 
 // include/item.php, row 362
-"Alias for url address of author's www site" => "",
+"Alias for url address of author's www site" => "Аліас для URL-адреси веб-сайту автора", // ai 2026-06
 
 // include/item.php, row 363
-"Alias for description of author's www site" => "",
+"Alias for description of author's www site" => "Аліас для опису веб-сайту автора", // ai 2026-06
 
 // include/item.php, row 364
-"Alias for publish date" => "",
+"Alias for publish date" => "Аліас для дати публікації", // ai 2026-06
 
 // include/item.php, row 365
-"Alias for IP address of author's computer" => "",
+"Alias for IP address of author's computer" => "Аліас для IP-адреси комп'ютера автора", // ai 2026-06
 
 // include/item.php, row 366
-"Alias for checkbox used for choosing discussion comment" => "",
+"Alias for checkbox used for choosing discussion comment" => "Аліас для прапорця, що використовується для вибору коментаря обговорення", // ai 2026-06
 
 // include/item.php, row 367
-"Alias for images" => "",
+"Alias for images" => "Аліас для зображень", // ai 2026-06
 
 // include/item.php, row 368
 "Alias for comment ID<br>\n"
    ."                             <i>Usage: </i>in form code<br>\n"
    ."                             <i>Example: </i>&lt;input type=hidden name=d_item_id value=\"_#DITEM_ID\">"
- => "",
+ => "Аліас для ID коментаря<br>\n"
+   ."                             <i>Використання: </i>у коді форми<br>\n"
+   ."                             <i>Приклад: </i>&lt;input type=hidden name=d_item_id value=\"_#DITEM_ID\">", // ai 2026-06
 
 // include/item.php, row 369
 "Alias for comment ID (the same as _#DITEM_ID<br>)\n"
    ."                             <i>Usage: </i>in form code<br>\n"
    ."                             <i>Example: </i>&lt;input type=hidden name=d_item_id value=\"_#ITEM_ID#\">"
- => "",
+ => "Аліас для ID коментаря (те саме, що _#DITEM_ID<br>)\n"
+   ."                             <i>Використання: </i>у коді форми<br>\n"
+   ."                             <i>Приклад: </i>&lt;input type=hidden name=d_item_id value=\"_#ITEM_ID#\">", // ai 2026-06
 
 // include/item.php, row 370
 "Alias for item ID<br>\n"
    ."                             <i>Usage: </i>in form code<br>\n"
    ."                             <i>Example: </i>&lt;input type=hidden name=d_parent value=\"_#DISC_ID#\">"
- => "",
+ => "Аліас для ID статті<br>\n"
+   ."                             <i>Використання: </i>у коді форми<br>\n"
+   ."                             <i>Приклад: </i>&lt;input type=hidden name=d_parent value=\"_#DISC_ID#\">", // ai 2026-06
 
 // include/item.php, row 371
 "Alias for link to text of the discussion comment<br>\n"
    ."                             <i>Usage: </i>in HTML code for index view of the comment<br>\n"
    ."                             <i>Example: </i>&lt;a href=_#URL_BODY>_#SUBJECT#&lt;/a>"
- => "",
+ => "Аліас для посилання на текст коментаря обговорення<br>\n"
+   ."                             <i>Використання: </i>у HTML-коді для оглядового вигляду коментаря<br>\n"
+   ."                             <i>Приклад: </i>&lt;a href=_#URL_BODY>_#SUBJECT#&lt;/a>", // ai 2026-06
 
 // include/item.php, row 372
 "Alias for link to a form<br>\n"
    ."                             <i>Usage: </i>in HTML code for fulltext view of the comment<br>\n"
    ."                             <i>Example: </i>&lt;a href=_#URLREPLY&gt;Reply&lt;/a&gt;"
- => "",
+ => "Аліас для посилання на форму<br>\n"
+   ."                             <i>Використання: </i>у HTML-коді для повнотекстового вигляду коментаря<br>\n"
+   ."                             <i>Приклад: </i>&lt;a href=_#URLREPLY&gt;Reply&lt;/a&gt;", // ai 2026-06
 
 // include/item.php, row 373
 "Alias for link to discussion<br>\n"
    ."                             <i>Usage: </i>in form code<br>\n"
    ."                             <i>Example: </i>&lt;input type=hidden name=url value=\"_#DISC_URL\">"
- => "",
+ => "Аліас для посилання на обговорення<br>\n"
+   ."                             <i>Використання: </i>у коді форми<br>\n"
+   ."                             <i>Приклад: </i>&lt;input type=hidden name=url value=\"_#DISC_URL\">", // ai 2026-06
 
 // include/item.php, row 374
 "Alias for buttons Show all, Show selected, Add new<br>\n"
    ."                             <i>Usage: </i> in the Bottom HTML code"
- => "",
+ => "Аліас для кнопок Показати все, Показати вибране, Додати нову<br>\n"
+   ."                             <i>Використання: </i> у нижньому HTML-коді", // ai 2026-06
 
 // include/item.php, row 389
-"3rd parameter filled in DiscussionMailList field" => "",
+"3rd parameter filled in DiscussionMailList field" => "3-й параметр, заповнений у полі DiscussionMailList", // ai 2026-06
 
 // include/item.php, row 391
-"%1th parameter filled in DiscussionMailList field" => "",
+"%1th parameter filled in DiscussionMailList field" => "%1-й параметр, заповнений у полі DiscussionMailList", // ai 2026-06
 
 // include/item.php, row 406
-"Constant name" => "",
+"Constant name" => "Назва константи", // ai 2026-06
 
 // include/item.php, row 407
-"Translated constant name" => "",
+"Translated constant name" => "Перекладена назва константи", // ai 2026-06
 
 // include/item.php, row 408
-"Constant value" => "",
+"Constant value" => "Значення константи", // ai 2026-06
 
 // include/item.php, row 409
-"Constant priority" => "",
+"Constant priority" => "Пріоритет константи", // ai 2026-06
 
 // include/item.php, row 410
-"Constant group id" => "",
+"Constant group id" => "ID групи констант", // ai 2026-06
 
 // include/item.php, row 411
-"Category class (for categories only)" => "",
+"Category class (for categories only)" => "Клас рубрики (лише для рубрик)", // ai 2026-06
 
 // include/item.php, row 412
-"Constant number" => "",
+"Constant number" => "Номер константи", // ai 2026-06
 
 // include/item.php, row 413
-"Constant unique id (32-hexadecimal characters)" => "",
+"Constant unique id (32-hexadecimal characters)" => "Унікальний ID константи (32 шістнадцяткові символи)", // ai 2026-06
 
 // include/item.php, row 414
-"Constant unique short id (autoincremented from '1' for each constant in the system)" => "",
+"Constant unique short id (autoincremented from '1' for each constant in the system)" => "Унікальний короткий id константи (автоматично збільшується від '1' для кожної константи в системі)", // ai 2026-06
 
 // include/item.php, row 415
-"Constant description" => "",
+"Constant description" => "Опис константи", // ai 2026-06
 
 // include/item.php, row 416
-"Constant level (used for hierarchical constants)" => "",
+"Constant level (used for hierarchical constants)" => "Рівень константи (використовується для ієрархічних констант)", // ai 2026-06
 
 // include/item.php, row 787
-"Error: wrong alias function %1 for %2" => "",
+"Error: wrong alias function %1 for %2" => "Помилка: неправильна функція аліасу %1 для %2", // ai 2026-06
 
 // include/item_content.php, row 1023, 1079
-"No Slice Id specified" => "",
+"No Slice Id specified" => "Не вказано Id рубрики", // ai 2026-06
 
 // include/item_content.php, row 1068
-"No Permission to insert Item for user %1" => "",
+"No Permission to insert Item for user %1" => "Користувач %1 не має права додавати статтю", // ai 2026-06
 
 // include/item_content.php, row 1083
-"Bad Item Id" => "",
+"Bad Item Id" => "Неправильний Id статті", // ai 2026-06
 
 // include/item_content.php, row 1218
-"No Id specified (%1 - %2)" => "",
+"No Id specified (%1 - %2)" => "Не вказано Id (%1 - %2)", // ai 2026-06
 
 // include/item_content.php, row 1223
-"Duplicated ID - skipped (%1 - %2)" => "",
+"Duplicated ID - skipped (%1 - %2)" => "Дубльований Id - пропущено (%1 - %2)", // ai 2026-06
 
 // include/item_content.php, row 1248
-"StoreItem for slice %1 - failed parameter check for id = '%2'" => "",
+"StoreItem for slice %1 - failed parameter check for id = '%2'" => "StoreItem для рубрики %1 - не пройшла перевірка параметра для id = '%2'", // ai 2026-06
 
 // include/item_content.php, row 1258
-"No Status code" => "",
+"No Status code" => "Відсутній код стану", // ai 2026-06
 
 // include/itemfunc.php, row 66
-"Add item" => "",
+"Add item" => "Додати статтю", // ai 2026-06
 
 // include/itemfunc.php, row 71
-"Edit item" => "",
+"Edit item" => "Редагувати статтю", // ai 2026-06
 
 // include/itemfunc.php, row 129
-"by %1" => "",
+"by %1" => "користувачем %1", // ai 2026-06
 
 // include/itemfunc.php, row 142
-"Scheduled" => "",
+"Scheduled" => "Заплановано", // ai 2026-06
 
 // include/itemfunc.php, row 143
-"not yet on the public site" => "",
+"not yet on the public site" => "ще не на публічному сайті", // ai 2026-06
 
 // include/itemfunc.php, row 146, 153, 156
-"not on the public site" => "",
+"not on the public site" => "не на публічному сайті", // ai 2026-06
 
 // include/itemfunc.php, row 149, 178
-"Published" => "",
+"Published" => "Опубліковано", // ai 2026-06
 
 // include/itemfunc.php, row 175
-"Never" => "",
+"Never" => "Ніколи", // ai 2026-06
 
 // include/itemfunc.php, row 176
-"not used on this site" => "",
+"not used on this site" => "на цьому сайті не використовується", // ai 2026-06
 
 // include/itemfunc.php, row 179
-"Expires" => "",
+"Expires" => "Закінчується", // ai 2026-06
 
 // include/itemfunc.php, row 181
-"Last edited" => "",
+"Last edited" => "Останнє редагування", // ai 2026-06
 
 // include/itemfunc.php, row 183
-"Revisions" => "",
+"Revisions" => "Ревізії", // ai 2026-06
 
 // include/itemfunc.php, row 185
-"Short ID" => "",
+"Short ID" => "Короткий Id", // ai 2026-06
 
 // include/itemfunc.php, row 191
-"Details" => "",
+"Details" => "Подробиці", // ai 2026-06
 
 // include/itemfunc.php, row 226
-"Item table record for the item" => "",
+"Item table record for the item" => "Запис статті в таблиці item", // ai 2026-06
 
 // include/itemfunc.php, row 250
-"Content table records for the item" => "",
+"Content table records for the item" => "Записи статті в таблиці content", // ai 2026-06
 
 // include/itemfunc.php, row 269
-"Referenced items" => "",
+"Referenced items" => "Пов'язані статті", // ai 2026-06
 
 // include/itemfunc.php, row 278
-"AA_Item structure" => "",
+"AA_Item structure" => "Структура AA_Item", // ai 2026-06
 
 // include/itemfunc.php, row 309
-"Technical details" => "",
+"Technical details" => "Технічні подробиці", // ai 2026-06
 
 // include/itemfunc.php, row 350
-"When" => "",
+"When" => "Коли", // ai 2026-06
 
 // include/itemfunc.php, row 350
-"Changed by" => "",
+"Changed by" => "Змінив", // ai 2026-06
 
 // include/itemfunc.php, row 378
-"Full history" => "",
+"Full history" => "Повна історія", // ai 2026-06
 
 // include/itemfunc.php, row 403
-"Total views" => "",
+"Total views" => "Всього переглядів", // ai 2026-06
 
 // include/itemfunc.php, row 422
-"Average / day" => "",
+"Average / day" => "Середньо / день", // ai 2026-06
 
 // include/itemfunc.php, row 426
-"Last 7 days" => "",
+"Last 7 days" => "Останні 7 днів", // ai 2026-06
 
 // include/itemfunc.php, row 427
-"Last 30 days" => "",
+"Last 30 days" => "Останні 30 днів", // ai 2026-06
 
 // include/itemfunc.php, row 429
-"Last viewed" => "",
+"Last viewed" => "Останній перегляд", // ai 2026-06
 
 // include/itemfunc.php, row 433
-"Avg response" => "",
+"Avg response" => "Середній відгук", // ai 2026-06
 
 // include/itemfunc.php, row 436
-"Served from cache" => "",
+"Served from cache" => "Обслужено з кешу", // ai 2026-06
 
 // include/itemfunc.php, row 459
-"Full statistics" => "",
+"Full statistics" => "Повна статистика", // ai 2026-06
 
 // include/itemfunc.php, row 484
-"No detailed view statistics have been recorded for this item yet." => "",
+"No detailed view statistics have been recorded for this item yet." => "Для цієї статті ще не зафіксовано жодної детальної статистики переглядів.", // ai 2026-06
 
 // include/itemfunc.php, row 487
-"Open full statistics" => "",
+"Open full statistics" => "Відкрити повну статистику", // ai 2026-06
 
 // include/itemfunc.php, row 514
-"Now, i.e. current date" => "",
+"Now, i.e. current date" => "Зараз, тобто поточна дата", // ai 2026-06
 
 // include/itemfunc.php, row 524
-"Never, i.e. maximum date" => "",
+"Never, i.e. maximum date" => "Ніколи, тобто максимальна дата", // ai 2026-06
 
 // include/itemfunc.php, row 535
-"User ID" => "",
+"User ID" => "Id користувача", // ai 2026-06
 
 // include/itemfunc.php, row 561
-"Date + 'Parameter' days" => "",
+"Date + 'Parameter' days" => "Дата + 'Параметр' днів", // ai 2026-06
 
 // include/itemfunc.php, row 568
-"Number of days" => "",
+"Number of days" => "Кількість днів", // ai 2026-06
 
 // include/itemfunc.php, row 582
-"Text from 'Parameter'" => "",
+"Text from 'Parameter'" => "Текст із 'Параметра'", // ai 2026-06
 
 // include/itemfunc.php, row 616
-"Random string" => "",
+"Random string" => "Випадковий рядок", // ai 2026-06
 
 // include/itemfunc.php, row 618
-"Random alphanumeric [A-Z0-9] string." => "",
+"Random alphanumeric [A-Z0-9] string." => "Випадковий буквено-цифровий рядок [A-Z0-9].", // ai 2026-06
 
 // include/itemfunc.php, row 625
-"String length" => "",
+"String length" => "Довжина рядка", // ai 2026-06
 
 // include/itemfunc.php, row 626
-"Field to check" => "",
+"Field to check" => "Поле для перевірки", // ai 2026-06
 
 // include/itemfunc.php, row 626
-"If you need a unique code, you must send the field ID, the function will then look into this field to ensure uniqueness." => "",
+"If you need a unique code, you must send the field ID, the function will then look into this field to ensure uniqueness." => "Якщо вам потрібен унікальний код, ви маєте вказати Id поля; функція потім переглядає це поле, щоб забезпечити унікальність.", // ai 2026-06
 
 // include/itemfunc.php, row 627
-"Slice only" => "",
+"Slice only" => "Лише ця рубрика", // ai 2026-06
 
 // include/itemfunc.php, row 627
-"Do you want to check for uniqueness this slice only or all slices?" => "",
+"Do you want to check for uniqueness this slice only or all slices?" => "Перевіряти унікальність лише в цій рубриці чи в усіх рубриках?", // ai 2026-06
 
 // include/itemfunc.php, row 669
-"AA Expression" => "",
+"AA Expression" => "AA-вираз", // ai 2026-06
 
 // include/itemfunc.php, row 671
-"any text with possible {AA expressions} like: {date:Y}" => "",
+"any text with possible {AA expressions} like: {date:Y}" => "будь-який текст із можливими {AA expressions}, напр.: {date:Y}", // ai 2026-06
 
 // include/itemfunc.php, row 695
-"Multivalue" => "",
+"Multivalue" => "Багатозначне", // ai 2026-06
 
 // include/itemfunc.php, row 703
 // include/transformation.class.php, row 525
-"Delimiter" => "",
+"Delimiter" => "Роздільник", // ai 2026-06
 
 // include/itemfunc.php, row 794
-"Slice with id '%1' is not valid." => "",
+"Slice with id '%1' is not valid." => "Рубрика з id '%1' не є дійсною.", // ai 2026-06
 
 // include/itemfunc.php, row 894
-"Text = don't modify" => "",
+"Text = don't modify" => "Текст = не змінювати", // ai 2026-06
 
 // include/itemfunc.php, row 895
-"Does not modify the value." => "",
+"Does not modify the value." => "Не змінює значення.", // ai 2026-06
 
 // include/itemfunc.php, row 900
-"Date = don't modify" => "",
+"Date = don't modify" => "Дата = не змінювати", // ai 2026-06
 
 // include/itemfunc.php, row 901, 910
-"Does not modify the value (just like Text), but it is better to separate it for future usage." => "",
+"Does not modify the value (just like Text), but it is better to separate it for future usage." => "Не змінює значення (так само як Текст), але краще відокремити його для майбутнього використання.", // ai 2026-06
 
 // include/itemfunc.php, row 909
-"Number = don't modify" => "",
+"Number = don't modify" => "Число = не змінювати", // ai 2026-06
 
 // include/itemfunc.php, row 915
-"Boolean = store 0 or 1" => "",
+"Boolean = store 0 or 1" => "Boolean = зберегти 0 або 1", // ai 2026-06
 
 // include/itemfunc.php, row 926
 "Float" => "",
 
 // include/itemfunc.php, row 927
-"Real float - could convert big numbers to scientific notation (1.23E+29)" => "",
+"Real float - could convert big numbers to scientific notation (1.23E+29)" => "Справжній float - великі числа може перетворити на науковий запис (1.23E+29)", // ai 2026-06
 
 // include/itemfunc.php, row 937
-"Decimal" => "",
+"Decimal" => "Десяткове число", // ai 2026-06
 
 // include/itemfunc.php, row 938
-"The same as Float, but does not convert big numbers to  scientific notation (1.23E+29)" => "",
+"The same as Float, but does not convert big numbers to  scientific notation (1.23E+29)" => "Те саме, що Float, але не перетворює великі числа на науковий запис (1.23E+29)", // ai 2026-06
 
 // include/itemfunc.php, row 948
-"Trim" => "",
+"Trim" => "Обрізати", // ai 2026-06
 
 // include/itemfunc.php, row 949
-"Remove whitespaces from beginning and end and also normalize UTF (NFC)" => "",
+"Remove whitespaces from beginning and end and also normalize UTF (NFC)" => "Видаляє пробіли на початку й у кінці, а також нормалізує UTF (NFC)", // ai 2026-06
 
 // include/itemfunc.php, row 960
-"Item IDs" => "",
+"Item IDs" => "Id статей", // ai 2026-06
 
 // include/itemfunc.php, row 1027
-"User ID = always store current user ID" => "",
+"User ID = always store current user ID" => "Id користувача = завжди зберігати Id поточного користувача", // ai 2026-06
 
 // include/itemfunc.php, row 1028
-"Inserts the identity of the current user, no matter what the user sets." => "",
+"Inserts the identity of the current user, no matter what the user sets." => "Вставляє ідентичність поточного користувача незалежно від того, що задає користувач.", // ai 2026-06
 
 // include/itemfunc.php, row 1069
-"Now = always store current time" => "",
+"Now = always store current time" => "Зараз = завжди зберігати поточний час", // ai 2026-06
 
 // include/itemfunc.php, row 1070
-"Inserts the current time, no matter what the user sets." => "",
+"Inserts the current time, no matter what the user sets." => "Вставляє поточний час незалежно від того, що задає користувач.", // ai 2026-06
 
 // include/itemfunc.php, row 1100
-"Computed field for INSERT/UPDATE" => "",
+"Computed field for INSERT/UPDATE" => "Обчислюване поле для INSERT/UPDATE", // ai 2026-06
 
 // include/itemfunc.php, row 1101
-"The field is the result of expression written in \"Code for unaliasing\". It is a good solution for all values, which could be precomputed, since its computation on item-show-time would be slow. Yes, you can use {view...}, {include...}, {switch...} here" => "",
+"The field is the result of expression written in \"Code for unaliasing\". It is a good solution for all values, which could be precomputed, since its computation on item-show-time would be slow. Yes, you can use {view...}, {include...}, {switch...} here" => "Поле є результатом виразу, записаного в \"Код для відаліасування\". Це гарне рішення для всіх значень, які можна попередньо обчислити, оскільки їх обчислення під час показу статті було б повільним. Так, тут можна використовувати {view...}, {include...}, {switch...}", // ai 2026-06
 
 // include/itemfunc.php, row 1108
-"Code for unaliasing (INSERT)" => "",
+"Code for unaliasing (INSERT)" => "Код для розкриття аліасів (INSERT)", // ai 2026-06
 
 // include/itemfunc.php, row 1108, 1137
-"There you can write any string. The string will be unaliased on item store, so you can use any {...} construct as well as field aliases here" => "",
+"There you can write any string. The string will be unaliased on item store, so you can use any {...} construct as well as field aliases here" => "Сюди можна записати будь-який рядок. Рядок буде розкрито (unaliased) під час збереження статті, тож тут можна використовувати будь-яку конструкцію {...} а також аліаси полів", // ai 2026-06
 
 // include/itemfunc.php, row 1109
-"Code for unaliasing (UPDATE)" => "",
+"Code for unaliasing (UPDATE)" => "Код для розкриття аліасів (UPDATE)", // ai 2026-06
 
 // include/itemfunc.php, row 1109
-"The same as above, but just for UPDATE operation. If unfilled, the value of the field stays unchanged" => "",
+"The same as above, but just for UPDATE operation. If unfilled, the value of the field stays unchanged" => "Те саме, що вище, але лише для операції UPDATE. Якщо не заповнено, значення поля залишається незмінним", // ai 2026-06
 
 // include/itemfunc.php, row 1110
-"Multivalue delimiter" => "",
+"Multivalue delimiter" => "Роздільник кількох значень", // ai 2026-06
 
 // include/itemfunc.php, row 1110
-"Character or string, which will split the computed string into multiple values (the same field)" => "",
+"Character or string, which will split the computed string into multiple values (the same field)" => "Символ або рядок, який розділить обчислений рядок на кілька значень (того самого поля)", // ai 2026-06
 
 // include/itemfunc.php, row 1111
-"Recompute every" => "",
+"Recompute every" => "Інтервал перерахунку", // ai 2026-06
 
 // include/itemfunc.php, row 1111
-"The field will be recomputed every minute, hour, ... (using UPDATE code above). The times are not exact - the minute means something 1-10 minutes. If not filled, the field will be recomputed only on insert/update of the item." => "",
+"The field will be recomputed every minute, hour, ... (using UPDATE code above). The times are not exact - the minute means something 1-10 minutes. If not filled, the field will be recomputed only on insert/update of the item." => "Поле буде перераховуватися щохвилини, щогодини, ... (за допомогою коду UPDATE вище). Час не є точним — хвилина означає приблизно 1–10 хвилин. Якщо не заповнено, поле перераховуватиметься лише при вставленні/оновленні статті.", // ai 2026-06
 
 // include/itemfunc.php, row 1129
-"Computed field" => "",
+"Computed field" => "Обчислюване поле", // ai 2026-06
 
 // include/itemfunc.php, row 1130
-"The field is the result of expression written in \\\"Code for unaliasing\\\". It is good solution for all values, which could be precomputed, since its computation on item-show-time would be slow. Yes, you can use {view...}, {include...}, {switch...} here" => "",
+"The field is the result of expression written in \\\"Code for unaliasing\\\". It is good solution for all values, which could be precomputed, since its computation on item-show-time would be slow. Yes, you can use {view...}, {include...}, {switch...} here" => "Значення поля є результатом виразу, записаного в \\\"Коді для розкриття аліасів\\\". Це гарне рішення для всіх значень, які можна попередньо обчислити, оскільки їх обчислення під час показу статті було б повільним. Так, тут можна використовувати {view...}, {include...}, {switch...}", // ai 2026-06
 
 // include/itemfunc.php, row 1137
-"Code for unaliasing (INSERT+UPDATE)" => "",
+"Code for unaliasing (INSERT+UPDATE)" => "Код для розкриття аліасів (INSERT+UPDATE)", // ai 2026-06
 
 // include/itemfunc.php, row 1157
-"SEO Name" => "",
+"SEO Name" => "SEO назва", // ai 2026-06
 
 // include/itemfunc.php, row 1158
-"If the field is not filled, compute seoname from _#HEADLINE alias (or another if specified) unique to all slices in sitemodules, where the slice is mentioned in \"Uses slices\" settings. Basically the SEO Name alias is shortcut for computed field with {ifset:{seo.............}:_#1:{seoname:{_#HEADLINE}:all:CHARSET}}" => "",
+"If the field is not filled, compute seoname from _#HEADLINE alias (or another if specified) unique to all slices in sitemodules, where the slice is mentioned in \"Uses slices\" settings. Basically the SEO Name alias is shortcut for computed field with {ifset:{seo.............}:_#1:{seoname:{_#HEADLINE}:all:CHARSET}}" => "Якщо поле не заповнене, обчислити seoname з аліасу _#HEADLINE (або іншого, якщо вказано), унікальний для всіх рубрик у sitemodules, де рубрика зазначена в налаштуванні \"Uses slices\". По суті, аліас SEO назва є скороченням для обчислюваного поля з {ifset:{seo.............}:_#1:{seoname:{_#HEADLINE}:all:CHARSET}}", // ai 2026-06
 
 // include/itemfunc.php, row 1165
-"Alias to compute from" => "",
+"Alias to compute from" => "Аліас, з якого обчислювати", // ai 2026-06
 
 // include/itemfunc.php, row 1165
-"if not specified, the _#HEADLINE is used" => "",
+"if not specified, the _#HEADLINE is used" => "якщо не вказано, використовується _#HEADLINE", // ai 2026-06
 
 // include/itemfunc.php, row 1180
-"Unique number for this field (from 1,..)" => "",
+"Unique number for this field (from 1,..)" => "Унікальне число для цього поля (від 1,..)", // ai 2026-06
 
 // include/itemfunc.php, row 1181
-"Unique number in sequence 1,2,3,..." => "",
+"Unique number in sequence 1,2,3,..." => "Унікальне число в послідовності 1,2,3,...", // ai 2026-06
 
 // include/itemfunc.php, row 1203
-"File = uploaded file" => "",
+"File = uploaded file" => "Файл = завантажений файл", // ai 2026-06
 
 // include/itemfunc.php, row 1204
-"Stores the uploaded file and a link to it, parameters only apply if type is image/something." => "",
+"Stores the uploaded file and a link to it, parameters only apply if type is image/something." => "Зберігає завантажений файл і посилання на нього; параметри застосовуються, лише якщо тип image/something.", // ai 2026-06
 
 // include/itemfunc.php, row 1211
-"Mime types accepted" => "",
+"Mime types accepted" => "Дозволені mime типи", // ai 2026-06
 
 // include/itemfunc.php, row 1211
-"Only files of matching mime types will be accepted" => "",
+"Only files of matching mime types will be accepted" => "Прийматимуться лише файли відповідних mime типів", // ai 2026-06
 
 // include/itemfunc.php, row 1212
-"Maximum image width" => "",
+"Maximum image width" => "Максимальна ширина зображення", // ai 2026-06
 
 // include/itemfunc.php, row 1213
-"Maximum image height" => "",
+"Maximum image height" => "Максимальна висота зображення", // ai 2026-06
 
 // include/itemfunc.php, row 1213
-"The image will be resampled to be within these limits, while retaining aspect ratio." => "",
+"The image will be resampled to be within these limits, while retaining aspect ratio." => "Зображення буде передискретизовано так, щоб вкластися в ці межі, зі збереженням співвідношення сторін.", // ai 2026-06
 
 // include/itemfunc.php, row 1214
-"Other fields" => "",
+"Other fields" => "Інші поля", // ai 2026-06
 
 // include/itemfunc.php, row 1214
-"List of other fields to receive this image, separated by ##. Does not work well for multi uploads." => "",
+"List of other fields to receive this image, separated by ##. Does not work well for multi uploads." => "Список інших полів, які отримають це зображення, розділених ##. Погано працює для множинних завантажень.", // ai 2026-06
 
 // include/itemfunc.php, row 1215
-"Upload policy" => "",
+"Upload policy" => "Спосіб завантаження", // ai 2026-06
 
 // include/itemfunc.php, row 1215
-"new | overwrite | backup<br>This parameter controls what to do if uploaded file alredy exists:<br>new - AA creates new filename (by adding _x postfix) and store it with this new name (default)<br>overwrite - the old file of the same name is overwritten<br>backup - the old file is copied to new (non-existing) file and current file is stored with current name.<br>In all cases the filename is escaped, so any non-word characters will be replaced by an underscore." => "",
+"new | overwrite | backup<br>This parameter controls what to do if uploaded file alredy exists:<br>new - AA creates new filename (by adding _x postfix) and store it with this new name (default)<br>overwrite - the old file of the same name is overwritten<br>backup - the old file is copied to new (non-existing) file and current file is stored with current name.<br>In all cases the filename is escaped, so any non-word characters will be replaced by an underscore." => "new | overwrite | backup<br>Цей параметр визначає, що робити, якщо завантажуваний файл уже існує:<br>new - AA створює нову назву файлу (додаючи суфікс _x) і зберігає його під цією новою назвою (за замовчуванням)<br>overwrite - старий файл з тією самою назвою перезаписується<br>backup - старий файл копіюється в новий (неіснуючий) файл, а поточний файл зберігається під поточною назвою.<br>У всіх випадках назва файлу екранується, тож усі несловесні символи буде замінено на підкреслення.", // ai 2026-06
 
 // include/itemfunc.php, row 1216
-"Exact dimensions" => "",
+"Exact dimensions" => "Точні розміри", // ai 2026-06
 
 // include/itemfunc.php, row 1216
-"If set to 1 the image will be downsized exactly to the specified dimensions (and cropped if needed). Default is 0 or empty: Maintain aspect ratio while resizing the image." => "",
+"If set to 1 the image will be downsized exactly to the specified dimensions (and cropped if needed). Default is 0 or empty: Maintain aspect ratio while resizing the image." => "Якщо встановлено 1, зображення буде зменшено точно до вказаних розмірів (і за потреби обрізано). За замовчуванням 0 або порожнє: зберігати співвідношення сторін під час зміни розміру зображення.", // ai 2026-06
 
 // include/itemfunc.php, row 1217
-"Filename template" => "",
+"Filename template" => "Шаблон назви файлу", // ai 2026-06
 
 // include/itemfunc.php, row 1217
-"Renames file according to template. You can use AA expressions as well as special alias _#name and _#ext or _#full (file name, extension and fullname). The item aliases in AA expressions do not work on INSERT (item does not exist at time of file write). They will work on UPDATE." => "",
+"Renames file according to template. You can use AA expressions as well as special alias _#name and _#ext or _#full (file name, extension and fullname). The item aliases in AA expressions do not work on INSERT (item does not exist at time of file write). They will work on UPDATE." => "Перейменовує файл згідно з шаблоном. Можна використовувати вирази AA, а також спеціальні аліаси _#name і _#ext або _#full (назва файлу, розширення та повна назва). Аліаси статті у виразах AA не працюють при INSERT (статті ще не існує в момент запису файлу). При UPDATE працюватимуть.", // ai 2026-06
 
 // include/itemfunc.php, row 1374
-"Password and Change Password" => "",
+"Password and Change Password" => "Пароль і зміна пароля", // ai 2026-06
 
 // include/itemfunc.php, row 1375
-"Stores value from a \"Password and Change Password\" field type. First proves the new password matches the retyped new password, and if so, encrypts the new password and stores it." => "",
+"Stores value from a \"Password and Change Password\" field type. First proves the new password matches the retyped new password, and if so, encrypts the new password and stores it." => "Зберігає значення з поля типу \"Пароль і зміна пароля\". Спочатку перевіряє, чи новий пароль збігається з повторно введеним новим паролем, і якщо так, шифрує новий пароль і зберігає його.", // ai 2026-06
 
 // include/itemfunc.php, row 1382
-"Copy of password" => "",
+"Copy of password" => "Копія пароля", // ai 2026-06
 
 // include/itemfunc.php, row 1382
-"Field_id, where you want to store the copy of the password. Sometimes useful if you want to allow people to get his/her old password. It is strongly recommended to not store it in plaintext and encrypt it. See second parameter." => "",
+"Field_id, where you want to store the copy of the password. Sometimes useful if you want to allow people to get his/her old password. It is strongly recommended to not store it in plaintext and encrypt it. See second parameter." => "Field_id, куди ви хочете зберегти копію пароля. Іноді корисно, якщо ви хочете дозволити людям отримати їхній старий пароль. Наполегливо рекомендуємо не зберігати його у відкритому вигляді, а зашифрувати. Див. другий параметр.", // ai 2026-06
 
 // include/itemfunc.php, row 1383, 1422
-"Encrypt phrase" => "",
+"Encrypt phrase" => "Фраза для шифрування", // ai 2026-06
 
 // include/itemfunc.php, row 1383
-"If you specify the \"Copy of password\" field, it is recommended to encrypt the password in the database. Fill there any string. If you then need the password, you can decrypt it from the field by using the same phrase - {decrypt:{password.......1}:Some Phrase}" => "",
+"If you specify the \"Copy of password\" field, it is recommended to encrypt the password in the database. Fill there any string. If you then need the password, you can decrypt it from the field by using the same phrase - {decrypt:{password.......1}:Some Phrase}" => "Якщо ви вказуєте поле \"Копія пароля\", рекомендуємо зашифрувати пароль у базі даних. Впишіть сюди будь-який рядок. Якщо потім вам знадобиться пароль, ви зможете розшифрувати його з поля за допомогою тієї самої фрази - {decrypt:{password.......1}:Some Phrase}", // ai 2026-06
 
 // include/itemfunc.php, row 1414
-"2FA Secret" => "",
+"2FA Secret" => "Секрет 2FA", // ai 2026-06
 
 // include/itemfunc.php, row 1415
-"Generates and stores secret for Two-factor authentication, possibly encrypted by password" => "",
+"Generates and stores secret for Two-factor authentication, possibly encrypted by password" => "Генерує та зберігає секрет для двофакторної автентифікації, можливо зашифрований паролем", // ai 2026-06
 
 // include/itemfunc.php, row 1422
-"Password to be applied for encrypting this field value. Could contain AA expressions or aliases (for user item in Reader Management slice)" => "",
+"Password to be applied for encrypting this field value. Could contain AA expressions or aliases (for user item in Reader Management slice)" => "Пароль, який буде застосовано для шифрування значення цього поля. Може містити вирази AA або аліаси (для статті користувача в рубриці Управління читачами)", // ai 2026-06
 
 // include/itemview.php, row 117
-"Selected item" => "",
+"Selected item" => "Вибрана стаття", // ai 2026-06
 
 // include/itemview.php, row 359
-"No comment was selected" => "",
+"No comment was selected" => "Не вибрано жодного коментаря", // ai 2026-06
 
 // include/itemview.php, row 680, 688
-"exact group name" => "",
+"exact group name" => "точна назва групи", // ai 2026-06
 
 // include/locauth.php, row 86
-"Please try again!" => "",
+"Please try again!" => "Спробуйте ще раз!", // ai 2026-06
 
 // include/locauth.php, row 87
-"If you are sure you have typed the correct password, please e-mail <a href=mailto:%1>%1</a>" => "",
+"If you are sure you have typed the correct password, please e-mail <a href=mailto:%1>%1</a>" => "Якщо ви впевнені, що ввели правильний пароль, напишіть, будь ласка, на <a href=mailto:%1>%1</a>", // ai 2026-06
 
 // include/logs.php, row 306
-"Created time" => "",
+"Created time" => "Час створення", // ai 2026-06
 
 // include/logs.php, row 307
-"Readers to be emailed" => "",
+"Readers to be emailed" => "Читачі, яким слід надіслати e-mail", // ai 2026-06
 
 // include/logs.php, row 317
-"Page" => "",
+"Page" => "Сторінка", // ai 2026-06
 
 // include/logs.php, row 327, 351, 364
-"Time [s]" => "",
+"Time [s]" => "Час [с]", // ai 2026-06
 
 // include/logs.php, row 328, 353
-"Memory usage [MB]" => "",
+"Memory usage [MB]" => "Використання пам'яті [МБ]", // ai 2026-06
 
 // include/logs.php, row 329
-"Memory peak [MB]" => "",
+"Memory peak [MB]" => "Пік пам'яті [МБ]", // ai 2026-06
 
 // include/logs.php, row 330
-"Return code" => "",
+"Return code" => "Код повернення", // ai 2026-06
 
 // include/logs.php, row 349
-"Cached" => "",
+"Cached" => "З кешу", // ai 2026-06
 
 // include/logs.php, row 350
-"Not Modified (304)" => "",
+"Not Modified (304)" => "Не змінено (304)", // ai 2026-06
 
 // include/logs.php, row 352
-"Time + Cached + 304" => "",
+"Time + Cached + 304" => "Час + кеш + 304", // ai 2026-06
 
 // include/logs.php, row 354, 365, 397
 "Url" => "",
@@ -4935,243 +4954,243 @@ return [
 "DB" => "",
 
 // include/logs.php, row 379
-"Memory" => "",
+"Memory" => "Пам'ять", // ai 2026-06
 
 // include/logs.php, row 380
 "CPU" => "",
 
 // include/logs.php, row 394
-"Identifier" => "",
+"Identifier" => "Ідентифікатор", // ai 2026-06
 
 // include/logs.php, row 395
 // modules/jump/modedit.php, row 180
 // src/Manager.php, row 584
-"Module ID" => "",
+"Module ID" => "ID модуля", // ai 2026-06
 
 // include/mail.php, row 563
 // include/tv_email.php, row 77, 145
-"Email type" => "",
+"Email type" => "Тип e-mailу", // ai 2026-06
 
 // include/mail.php, row 565
 // include/modutils.php, row 90, 179
 // include/slicedit.php, row 191
 // include/statestore.php, row 975
 // include/tv_email.php, row 114
-"Owner" => "",
+"Owner" => "Власник", // ai 2026-06
 
 // include/mail.php, row 566
-"Description/Result" => "",
+"Description/Result" => "Опис/Результат", // ai 2026-06
 
 // include/mail.php, row 569
-"From (email) " => "",
+"From (email) " => "Від (e-mail)", // ai 2026-06
 
 // include/mail.php, row 572
 // include/tv_email.php, row 101
-"Envelop sender (email)" => "",
+"Envelop sender (email)" => "Відправник конверта (e-mail)", // ai 2026-06
 
 // include/mail.php, row 573
 // misc/datovka/datovka.php, row 112
-"Attachments" => "",
+"Attachments" => "Вкладення", // ai 2026-06
 
 // include/menu.php, row 65
-"View site" => "",
+"View site" => "Переглянути сайт", // ai 2026-06
 
-// include/menu.php, row 84, 85, 137
-"Item Manager" => "",
+// include/menu.php, row 90, 91, 143
+"Item Manager" => "Менеджер статей", // ai 2026-06
 
-// include/menu.php, row 93
-"Slice Admin" => "",
+// include/menu.php, row 99
+"Slice Admin" => "Налаштування рубрики", // ai 2026-06
 
-// include/menu.php, row 94
-"Slice Administration" => "",
+// include/menu.php, row 100
+"Slice Administration" => "Адміністрування рубрики", // ai 2026-06
 
-// include/menu.php, row 125
+// include/menu.php, row 131
 // src/Module/Poll/Menu.php, row 82
-"Main settings" => "",
+"Main settings" => "Основні налаштування", // ai 2026-06
 
-// include/menu.php, row 128
-"Slice Fields" => "",
+// include/menu.php, row 134
+"Slice Fields" => "Поля рубрики", // ai 2026-06
 
-// include/menu.php, row 129
-"Email Notification" => "",
+// include/menu.php, row 135
+"Email Notification" => "Сповіщення e-mailом", // ai 2026-06
 
-// include/menu.php, row 132
+// include/menu.php, row 138
 // include/menu_util.php, row 69
 // include/um_util.php, row 100, 103
-"Permissions" => "",
-
-// include/menu.php, row 133
-"Assign" => "",
-
-// include/menu.php, row 136
-"Design" => "",
+"Permissions" => "Права", // ai 2026-06
 
 // include/menu.php, row 139
-"Fulltext" => "",
-
-// include/menu.php, row 140
-"Index" => "",
+"Assign" => "Призначити", // ai 2026-06
 
 // include/menu.php, row 142
-"Sets of Items" => "",
-
-// include/menu.php, row 144
-"Content Pooling" => "",
+"Design" => "Вигляд", // ai 2026-06
 
 // include/menu.php, row 145
-"Nodes" => "",
+"Fulltext" => "Повний текст", // ai 2026-06
 
 // include/menu.php, row 146
-"Inner Node Feeding" => "",
+"Index" => "Перелік статей", // ai 2026-06
 
 // include/menu.php, row 148
-"Inter Node Export" => "",
-
-// include/menu.php, row 149
-"RSS Feeds" => "",
+"Sets of Items" => "Набори статей", // ai 2026-06
 
 // include/menu.php, row 150
-"Filters" => "",
+"Content Pooling" => "Обмін вмістом", // ai 2026-06
 
 // include/menu.php, row 151
-"Mapping" => "",
+"Nodes" => "Вузли", // ai 2026-06
 
-// include/menu.php, row 152, 214
-"Import CSV" => "",
+// include/menu.php, row 152
+"Inner Node Feeding" => "Внутрішнє передавання вузлів", // ai 2026-06
 
-// include/menu.php, row 153
+// include/menu.php, row 154
+"Inter Node Export" => "Експорт між вузлами", // ai 2026-06
+
+// include/menu.php, row 155
+"RSS Feeds" => "RSS-канали", // ai 2026-06
+
+// include/menu.php, row 156
+"Filters" => "Фільтри", // ai 2026-06
+
+// include/menu.php, row 157
+"Mapping" => "Зіставлення", // ai 2026-06
+
+// include/menu.php, row 158, 220
+"Import CSV" => "Імпорт CSV", // ai 2026-06
+
+// include/menu.php, row 159
 // src/Manageraction/Item_Export.php, row 20
-"Export to file" => "",
+"Export to file" => "Експорт до файлу", // ai 2026-06
 
-// include/menu.php, row 155, 211
+// include/menu.php, row 161, 217
 // include/menu_util.php, row 73, 124
 // src/Module/Poll/Menu.php, row 67
-"Misc" => "",
-
-// include/menu.php, row 158
-"Change field IDs" => "",
-
-// include/menu.php, row 161
-"Anonymous Form Wizard" => "",
-
-// include/menu.php, row 162
-// include/tv_email.php, row 134
-"Email templates" => "",
+"Misc" => "Різне", // ai 2026-06
 
 // include/menu.php, row 164
+"Change field IDs" => "Зміна ID полів", // ai 2026-06
+
+// include/menu.php, row 167
+"Anonymous Form Wizard" => "Майстер анонімної форми", // ai 2026-06
+
+// include/menu.php, row 168
+// include/tv_email.php, row 134
+"Email templates" => "Шаблони e-mail", // ai 2026-06
+
+// include/menu.php, row 170
 // include/menu_util.php, row 75
-"Planned Tasks" => "",
+"Planned Tasks" => "Заплановані завдання", // ai 2026-06
 
-// include/menu.php, row 172
-"Mailman: create list" => "",
-
-// include/menu.php, row 180
-// include/menu_util.php, row 119
-// src/Module/Poll/Menu.php, row 60
-"Folders" => "",
-
-// include/menu.php, row 183
-// src/Module/Poll/Menu.php, row 62
-"... pending" => "",
-
-// include/menu.php, row 184
-// src/Module/Poll/Menu.php, row 63
-"... expired" => "",
+// include/menu.php, row 178
+"Mailman: create list" => "Mailman: створити список", // ai 2026-06
 
 // include/menu.php, row 186
+// include/menu_util.php, row 119
+// src/Module/Poll/Menu.php, row 60
+"Folders" => "Теки", // ai 2026-06
+
+// include/menu.php, row 189
+// src/Module/Poll/Menu.php, row 62
+"... pending" => "... очікують", // ai 2026-06
+
+// include/menu.php, row 190
+// src/Module/Poll/Menu.php, row 63
+"... expired" => "... завершені", // ai 2026-06
+
+// include/menu.php, row 192
 // include/menu_util.php, row 122
 // src/Module/Poll/Menu.php, row 65
-"Trash bin" => "",
+"Trash bin" => "Кошик", // ai 2026-06
 
-// include/menu.php, row 202
-"Bookmarks" => "",
+// include/menu.php, row 208
+"Bookmarks" => "Закладки", // ai 2026-06
 
-// include/menu.php, row 212
-"Setting" => "",
+// include/menu.php, row 218
+"Setting" => "Налаштування", // ai 2026-06
 
-// include/menu.php, row 213
+// include/menu.php, row 219
 // include/menu_util.php, row 127
 // src/Module/Poll/Menu.php, row 68
-"Empty trash" => "",
+"Empty trash" => "Очистити кошик", // ai 2026-06
 
-// include/menu.php, row 213
+// include/menu.php, row 219
 // include/menu_util.php, row 127
 // src/Module/Poll/Menu.php, row 68
-"Are you sure you want to empty trash?" => "",
+"Are you sure you want to empty trash?" => "Ви впевнені, що хочете очистити кошик?", // ai 2026-06
 
-// include/menu.php, row 215
-"Set Debug OFF" => "",
+// include/menu.php, row 221
+"Set Debug OFF" => "Вимкнути debug", // ai 2026-06
 
-// include/menu.php, row 215
-"Set Debug ON" => "",
-
-// include/menu.php, row 225
-// include/menu_util.php, row 420, 612
-// include/slice.class.php, row 1194
-"Alerts" => "",
-
-// include/menu.php, row 225
-"List of Alerts modules using this slice as Reader Management." => "",
-
-// include/menu.php, row 227
-"Bulk Emails" => "",
-
-// include/menu.php, row 227
-"Send bulk email to selected users or to users in Stored searches" => "",
+// include/menu.php, row 221
+"Set Debug ON" => "Увімкнути debug", // ai 2026-06
 
 // include/menu.php, row 231
-"Send emails" => "",
+// include/menu_util.php, row 420, 612
+// include/slice.class.php, row 1194
+"Alerts" => "Сповіщення", // ai 2026-06
 
-// include/menu.php, row 240
-"Alerts Sent" => "",
+// include/menu.php, row 231
+"List of Alerts modules using this slice as Reader Management." => "Список модулів Сповіщення, які використовують цю рубрику для керування читачами.", // ai 2026-06
 
-// include/menu.php, row 240
-"List of Alerts modules sending items from this slice." => "",
+// include/menu.php, row 233
+"Bulk Emails" => "Масові e-mail", // ai 2026-06
+
+// include/menu.php, row 233
+"Send bulk email to selected users or to users in Stored searches" => "Надіслати масовий e-mail вибраним користувачам або користувачам зі збережених пошуків", // ai 2026-06
+
+// include/menu.php, row 237
+"Send emails" => "Надіслати e-mail", // ai 2026-06
+
+// include/menu.php, row 246
+"Alerts Sent" => "Надіслано через сповіщення", // ai 2026-06
+
+// include/menu.php, row 246
+"List of Alerts modules sending items from this slice." => "Список модулів Сповіщення, які надсилають статті з цієї рубрики.", // ai 2026-06
 
 // include/menu_util.php, row 46
-"AA Administration" => "",
+"AA Administration" => "Адміністрування AA", // ai 2026-06
 
 // include/menu_util.php, row 58
-"Slices / Modules" => "",
+"Slices / Modules" => "Рубрики / Модулі", // ai 2026-06
 
 // include/menu_util.php, row 64
-"Edit Jump" => "",
+"Edit Jump" => "Редагувати Jump", // ai 2026-06
 
 // include/menu_util.php, row 80
-"Optimize" => "",
+"Optimize" => "Оптимізувати", // ai 2026-06
 
 // include/menu_util.php, row 83
 "Mgettext" => "",
 
 // include/menu_util.php, row 86
-"Feeds" => "",
+"Feeds" => "Передавання", // ai 2026-06
 
 // include/menu_util.php, row 87
-"RSS test" => "",
+"RSS test" => "Тест RSS", // ai 2026-06
 
 // include/menu_util.php, row 88
-"AA RSS test" => "",
+"AA RSS test" => "Тест AA RSS", // ai 2026-06
 
 // include/menu_util.php, row 89
-"Run feeding" => "",
+"Run feeding" => "Запустити передавання", // ai 2026-06
 
 // include/menu_util.php, row 91
-"Slice structure" => "",
+"Slice structure" => "Структура рубрики", // ai 2026-06
 
 // include/menu_util.php, row 95
-"Wizard" => "",
+"Wizard" => "Майстер", // ai 2026-06
 
 // include/menu_util.php, row 97
-"Welcomes" => "",
+"Welcomes" => "Вітальні листи", // ai 2026-06
 
 // include/menu_util.php, row 98
-"Templates" => "",
+"Templates" => "Шаблони", // ai 2026-06
 
 // include/menu_util.php, row 100
-"Documentation" => "",
+"Documentation" => "Документація", // ai 2026-06
 
 // include/menu_util.php, row 101
-"Style Guide" => "",
+"Style Guide" => "Посібник зі стилю", // ai 2026-06
 
 // include/menu_util.php, row 107
 "Central" => "",
@@ -5180,123 +5199,123 @@ return [
 "AA Central" => "",
 
 // include/menu_util.php, row 125
-"Synchronize..." => "",
+"Synchronize..." => "Синхронізувати...", // ai 2026-06
 
 // include/menu_util.php, row 126
-"Copy Slice..." => "",
+"Copy Slice..." => "Копіювати рубрику...", // ai 2026-06
 
 // include/menu_util.php, row 128
-"Import conf from CSV..." => "",
+"Import conf from CSV..." => "Імпорт конфігурації з CSV...", // ai 2026-06
 
 // include/menu_util.php, row 398
-"Part of %s" => "",
+"Part of %s" => "Частина %s", // ai 2026-06
 
 // include/menu_util.php, row 415
-"Other slices" => "",
+"Other slices" => "Інші рубрики", // ai 2026-06
 
 // include/menu_util.php, row 419
-"Reader Management Slice" => "",
+"Reader Management Slice" => "Рубрика керування читачами", // ai 2026-06
 
 // include/menu_util.php, row 421
-"Jump inside control panel" => "",
+"Jump inside control panel" => "Перехід у панелі керування", // ai 2026-06
 
 // include/menu_util.php, row 422
 // include/slice.class.php, row 1226
-"Links" => "",
+"Links" => "Посилання", // ai 2026-06
 
 // include/menu_util.php, row 423
-"MySQL Auth (old version)" => "",
+"MySQL Auth (old version)" => "Автентифікація MySQL (стара версія)", // ai 2026-06
 
 // include/menu_util.php, row 424
 // src/Module/Poll/Menu.php, row 83
-"Polls" => "",
+"Polls" => "Опитування", // ai 2026-06
 
 // include/menu_util.php, row 445
-"New slice" => "",
+"New slice" => "Нова рубрика", // ai 2026-06
 
 // include/menu_util.php, row 449
-"Switch module" => "",
+"Switch module" => "Перемкнути модуль", // ai 2026-06
 
 // include/menu_util.php, row 616
 // include/slice.class.php, row 554
-"Reader management" => "",
+"Reader management" => "Керування читачами", // ai 2026-06
 
 // include/menu_util.php, row 628
-"logout" => "",
+"logout" => "вийти", // ai 2026-06
 
 // include/menu_util.php, row 636
-"Search.." => "",
+"Search.." => "Пошук..", // ai 2026-06
 
-// include/menu_util.php, row 702
-"Copyright (C) 2001 the <a href=\"https://www.apc.org\">Association for Progressive Communications (APC)</a>" => "",
+// include/menu_util.php, row 714
+"Copyright (C) 2001 the <a href=\"https://www.apc.org\">Association for Progressive Communications (APC)</a>" => "Copyright (C) 2001 <a href=\"https://www.apc.org\">Association for Progressive Communications (APC)</a>", // ai 2026-06
 
-// include/menu_util.php, row 712
-"Collapse / expand menu" => "",
+// include/menu_util.php, row 724
+"Collapse / expand menu" => "Згорнути / розгорнути меню", // ai 2026-06
 
 // include/metabase.class.php, row 1572
-"More" => "",
+"More" => "Більше", // ai 2026-06
 
 // include/mlx.php, row 381
-"view" => "",
+"view" => "перегляд", // ai 2026-06
 
 // include/mlx.php, row 421
-"Bad item ID %1" => "",
+"Bad item ID %1" => "Хибний ID статті %1", // ai 2026-06
 
 // include/mlx.php, row 426
-"No ID for MLX" => "",
+"No ID for MLX" => "Немає ID для MLX", // ai 2026-06
 
 // include/modutils.php, row 43, 95
 // include/slicedit.php, row 170
-"New Owner" => "",
+"New Owner" => "Новий власник", // ai 2026-06
 
 // include/modutils.php, row 44, 96
 // include/slicedit.php, row 171
-"New Owner's E-mail" => "",
+"New Owner's E-mail" => "E-mail нового власника", // ai 2026-06
 
 // include/modutils.php, row 78, 180
 // include/slicedit.php, row 192
-"URL of .shtml page (often leave blank)" => "",
+"URL of .shtml page (often leave blank)" => "URL сторінки .shtml (зазвичай залиште порожнім)", // ai 2026-06
 
 // include/modutils.php, row 79, 181
 // include/slicedit.php, row 195
-"Priority (order in slice-menu)" => "",
+"Priority (order in slice-menu)" => "Пріоритет (порядок у меню рубрик)", // ai 2026-06
 
 // include/modutils.php, row 84
-"+ Add new owner" => "",
+"+ Add new owner" => "+ Додати нового власника", // ai 2026-06
 
 // include/modutils.php, row 85
-"× Cancel" => "",
+"× Cancel" => "× Скасувати", // ai 2026-06
 
 // include/modutils.php, row 135
-"Deleted" => "",
+"Deleted" => "Видалено", // ai 2026-06
 
 // include/modutils.php, row 182
 // include/slicedit.php, row 199
-"Used Language File" => "",
+"Used Language File" => "Використовуваний мовний файл", // ai 2026-06
 
 // include/modutils.php, row 257
-"Select owner" => "",
+"Select owner" => "Вибрати власника", // ai 2026-06
 
 // include/perm_core.php, row 1124, 1147
-"Reader Slice" => "",
+"Reader Slice" => "Рубрика читачів", // ai 2026-06
 
 // include/perm_core.php, row 1132, 1149
-"Reader Set" => "",
+"Reader Set" => "Набір читачів", // ai 2026-06
 
 // include/profile.class.php, row 343, 353, 362, 371, 380, 389, 397
-"Rule added" => "",
+"Rule added" => "Правило додано", // ai 2026-06
 
 // include/profile.php, row 109
-"--disabled-- (added by \"Show field\" rule)" => "",
+"--disabled-- (added by \"Show field\" rule)" => "--вимкнено-- (додано правилом \"Show field\")", // ai 2026-06
 
 // include/request.class.php, row 213
-"Array returned" => "",
+"Array returned" => "Повернено масив", // ai 2026-06
 
 // include/scroller.php, row 87
-"Previous" => "",
+"Previous" => "Попередні", // ai 2026-06
 
 // include/scroller.php, row 296
-"found" => "",
+"found" => "знайдено", // ai 2026-06
 
 // include/scroller.php, row 452
 "&raquo;" => "",
@@ -5305,91 +5324,91 @@ return [
 "&laquo;" => "",
 
 // include/se_users.php, row 75
-"Reader" => "",
+"Reader" => "Читач", // ai 2026-06
 
 // include/se_users.php, row 78
-"ReaderGroup" => "",
+"ReaderGroup" => "Група читачів", // ai 2026-06
 
 // include/se_users.php, row 126
-"Search user or group" => "",
+"Search user or group" => "Шукати користувача чи групу", // ai 2026-06
 
 // include/se_users.php, row 141
 // include/um_util.php, row 108
-"Assign new permissions" => "",
+"Assign new permissions" => "Призначити нові права", // ai 2026-06
 
 // include/se_users.php, row 168
-"Try to be more specific." => "",
+"Try to be more specific." => "Спробуйте задати точніші дані.", // ai 2026-06
 
 // include/se_users.php, row 185
-"More users found. Refine your search." => "",
+"More users found. Refine your search." => "Знайдено більше користувачів. Уточніть пошук.", // ai 2026-06
 
 // include/searchbar.class.php, row 51
 // src/AA_Plannedtask.php, row 56, 102
-"Condition" => "",
+"Condition" => "Умова", // ai 2026-06
 
 // include/searchbar.class.php, row 52
-"Readonly" => "",
+"Readonly" => "Лише для читання", // ai 2026-06
 
 // include/searchbar.class.php, row 142
-"Search row" => "",
+"Search row" => "Рядок пошуку", // ai 2026-06
 
 // include/searchbar.class.php, row 143
-"Order row" => "",
+"Order row" => "Рядок упорядкування", // ai 2026-06
 
 // include/searchbar.class.php, row 533
-"And" => "",
+"And" => "і водночас", // ai 2026-06
 
 // include/searchbar.class.php, row 546
 // include/searchlib.php, row 50, 53, 124, 133
-"begins with" => "",
+"begins with" => "починається з", // ai 2026-06
 
 // include/searchbar.class.php, row 571
-"Clear" => "",
+"Clear" => "Очистити", // ai 2026-06
 
 // include/searchbar.class.php, row 574
-"Store search" => "",
+"Store search" => "Зберегти пошук", // ai 2026-06
 
 // include/searchbar.class.php, row 595
-"Order" => "",
+"Order" => "Упорядкувати", // ai 2026-06
 
 // include/searchbar.class.php, row 662
-"Advanced search" => "",
+"Advanced search" => "Розширений пошук", // ai 2026-06
 
 // include/searchbar.class.php, row 720
-"Refine" => "",
+"Refine" => "Уточнити", // ai 2026-06
 
 // include/searchbar.class.php, row 723
-"Share with all slice users" => "",
+"Share with all slice users" => "Поділитися з усіма користувачами рубрики", // ai 2026-06
 
 // include/searchbar.class.php, row 724
-"Save filter" => "",
+"Save filter" => "Зберегти фільтр", // ai 2026-06
 
 // include/searchbar.class.php, row 725
-"Rename filter" => "",
+"Rename filter" => "Перейменувати фільтр", // ai 2026-06
 
 // include/searchbar.class.php, row 726
-"Are you sure you want to delete selected filter?" => "",
+"Are you sure you want to delete selected filter?" => "Ви справді хочете видалити вибраний фільтр?", // ai 2026-06
 
 // include/searchbar.class.php, row 1008
-"Select one..." => "",
+"Select one..." => "виберіть...", // ai 2026-06
 
 // include/searchbar.class.php, row 1023
-"My filters" => "",
+"My filters" => "Мої фільтри", // ai 2026-06
 
 // include/searchbar.class.php, row 1026
-"Global filters" => "",
+"Global filters" => "Глобальні фільтри", // ai 2026-06
 
 // include/searchbar.class.php, row 1064
-"Shared filter (click to apply)" => "",
+"Shared filter (click to apply)" => "Спільний фільтр (натисніть, щоб застосувати)", // ai 2026-06
 
 // include/searchbar.class.php, row 1064
-"Personal filter (click to apply)" => "",
+"Personal filter (click to apply)" => "Особистий фільтр (натисніть, щоб застосувати)", // ai 2026-06
 
 // include/searchbar.class.php, row 1074
-"Rename" => "",
+"Rename" => "Перейменувати", // ai 2026-06
 
 // include/searchbar.class.php, row 1085
-"Manage filters" => "",
+"Manage filters" => "Керування фільтрами", // ai 2026-06
 
 // include/searchlib.php, row 54
 "LLIKE" => "",
@@ -5401,738 +5420,741 @@ return [
 "BETWEEN" => "",
 
 // include/searchlib.php, row 57
-"bit is set" => "",
+"bit is set" => "біт встановлено", // ai 2026-06
 
 // include/searchlib.php, row 59, 124, 127, 130, 133, 136
-"is set" => "",
+"is set" => "заповнено", // ai 2026-06
 
 // include/searchlib.php, row 60, 124
-"is e-mail" => "",
+"is e-mail" => "є e-mail", // ai 2026-06
 
 // include/searchlib.php, row 61, 124
-"not e-mail" => "",
+"not e-mail" => "не є e-mail", // ai 2026-06
 
 // include/searchlib.php, row 62, 124, 133
-"match (RegExp)" => "",
+"match (RegExp)" => "відповідає (RegExp)", // ai 2026-06
 
 // include/searchlib.php, row 63, 124, 133
-"not match (RegExp)" => "",
+"not match (RegExp)" => "не відповідає (RegExp)", // ai 2026-06
 
 // include/searchlib.php, row 124, 133
-"is not" => "",
+"is not" => "не є", // ai 2026-06
 
 // include/searchlib.php, row 133, 136
 // include/statestore.php, row 1239
-"select ..." => "",
+"select ..." => "виберіть...", // ai 2026-06
 
 // include/searchlib.php, row 169
-"Operator" => "",
+"Operator" => "Оператор", // ai 2026-06
 
 // include/searchlib.php, row 359
-"Limit" => "",
+"Limit" => "Ліміт", // ai 2026-06
 
 // include/slice.class.php, row 333
-"Error while loading module settings form:" => "",
+"Error while loading module settings form:" => "Помилка під час завантаження форми налаштувань модуля:", // ai 2026-06
 
 // include/slice.class.php, row 555
-"Code - Pages" => "",
+"Code - Pages" => "Код - Сторінки", // ai 2026-06
 
 // include/slice.class.php, row 556
-"Code - Views / Snippets" => "",
+"Code - Views / Snippets" => "Код - Вигляди / Сніпети", // ai 2026-06
 
 // include/slice.class.php, row 557
-"Constant" => "",
+"Constant" => "Константа", // ai 2026-06
 
 // include/slice.class.php, row 558
 // include/transformation.class.php, row 692
-"Translations" => "",
+"Translations" => "Переклади", // ai 2026-06
 
 // include/slice.class.php, row 559
-"Field definitions" => "",
+"Field definitions" => "Визначення полів", // ai 2026-06
 
 // include/slice.class.php, row 764
 // include/util.php, row 950
-"Error: Missing Reading Password" => "",
+"Error: Missing Reading Password" => "Помилка: відсутній пароль для читання", // ai 2026-06
 
 // include/slice.class.php, row 980
-"Site" => "",
+"Site" => "Сайт", // ai 2026-06
 
 // include/slice.class.php, row 1102
-"Spot ID" => "",
+"Spot ID" => "ID споту", // ai 2026-06
 
 // include/slice.class.php, row 1102
-"You can include this spot code in another spot by using {sitespot:%1}" => "",
+"You can include this spot code in another spot by using {sitespot:%1}" => "Код цього споту можна вставити в інший спот за допомогою {sitespot:%1}", // ai 2026-06
 
 // include/slice.class.php, row 1120
-"Spot name" => "",
+"Spot name" => "Назва споту", // ai 2026-06
 
 // include/slice.class.php, row 1251
-"Jump inside AA control panel" => "",
+"Jump inside AA control panel" => "Перехід усередині панелі керування AA", // ai 2026-06
 
 // include/slice.class.php, row 1273
-"Polls for AA" => "",
+"Polls for AA" => "Опитування для AA", // ai 2026-06
 
 // include/slice.class.php, row 1336
-"Languages for translation" => "",
+"Languages for translation" => "Мови для перекладу", // ai 2026-06
 
 // include/slice.class.php, row 1336
-"specify language codes in which you want to translate content - small caps, two letters - like: en, es, de, ..." => "",
+"specify language codes in which you want to translate content - small caps, two letters - like: en, es, de, ..." => "вкажіть коди мов, якими ви хочете перекладати вміст - малими літерами, дві літери - наприклад: en, es, de, ...", // ai 2026-06
 
 // include/slice.class.php, row 1337
-"Automatic field creation" => "",
+"Automatic field creation" => "Автоматичне створення полів", // ai 2026-06
 
 // include/slice.class.php, row 1337
-"If checked, slice allows storing values to text....* field, even if the appropriate text....* is not defined in the slice. The field will be created using field text............ as template." => "",
+"If checked, slice allows storing values to text....* field, even if the appropriate text....* is not defined in the slice. The field will be created using field text............ as template." => "Якщо позначено, рубрика дозволяє зберігати значення в поле text....*, навіть якщо відповідне text....* не визначене в рубриці. Поле буде створене з використанням поля text............ як шаблону.", // ai 2026-06
 
 // include/slice.class.php, row 1338
-"Fields defined by another slice" => "",
+"Fields defined by another slice" => "Поля, визначені іншою рубрикою", // ai 2026-06
 
 // include/slice.class.php, row 1338
-"You can use special slice for additional fields definition. There you can write slice ID, which defines the fields.<br>Could be used for data slice, which stores values for user created forms." => "",
+"You can use special slice for additional fields definition. There you can write slice ID, which defines the fields.<br>Could be used for data slice, which stores values for user created forms." => "Для визначення додаткових полів можна використати спеціальну рубрику. Сюди впишіть ID рубрики, яка визначає поля.<br>Можна використати для рубрики даних, яка зберігає значення створених користувачами форм.", // ai 2026-06
 
 // include/slice.class.php, row 1339
-"Store item history for N days" => "",
+"Store item history for N days" => "Зберігати історію статей N днів", // ai 2026-06
 
 // include/slice.class.php, row 1339
-"ALL - do not delete history log (default)<br>0 - do not store item history (nor ITEM_UPD/ITEM_NEW events in Log)<br><em>number</em> - days after which the history of items will be deleted" => "",
+"ALL - do not delete history log (default)<br>0 - do not store item history (nor ITEM_UPD/ITEM_NEW events in Log)<br><em>number</em> - days after which the history of items will be deleted" => "ALL - не видаляти журнал історії (за замовчуванням)<br>0 - не зберігати історію статей (ані подій ITEM_UPD/ITEM_NEW у Журналі)<br><em>число</em> - кількість днів, після яких історію статей буде видалено", // ai 2026-06
 
 // include/slice.class.php, row 1340
-"No pending items" => "",
+"No pending items" => "Без підготовлюваних статей", // ai 2026-06
 
 // include/slice.class.php, row 1340
-"1 - disable pending bin completely in this slice (act publish_date field as normal one)<br>{aa-expression} - if evaluated as 1, disable pending check (for view, slice, {ids...}) (use {if:{qss:..}, {var:..}, {server:..} expression here)" => "",
+"1 - disable pending bin completely in this slice (act publish_date field as normal one)<br>{aa-expression} - if evaluated as 1, disable pending check (for view, slice, {ids...}) (use {if:{qss:..}, {var:..}, {server:..} expression here)" => "1 - повністю вимкнути резерв підготовлюваних у цій рубриці (поле publish_date працює як звичайне)<br>{aa-expression} - якщо обчислюється як 1, вимикає перевірку підготовлюваних (для вигляду, рубрики, {ids...}) (використайте тут вирази {if:{qss:..}, {var:..}, {server:..})", // ai 2026-06
 
 // include/slice.class.php, row 1341
-"No expired items" => "",
+"No expired items" => "Без застарілих статей", // ai 2026-06
 
 // include/slice.class.php, row 1341
-"1 - disable expired bin completely in this slice (act expiry_date field as normal one)<br>{aa-expression} - if evaluated as 1, disable expiry date check (for view, slice, {ids...}) (use {if:{qss:..}, {var:..}, {server:..} expression here)" => "",
+"1 - disable expired bin completely in this slice (act expiry_date field as normal one)<br>{aa-expression} - if evaluated as 1, disable expiry date check (for view, slice, {ids...}) (use {if:{qss:..}, {var:..}, {server:..} expression here)" => "1 - повністю вимкнути резерв застарілих у цій рубриці (поле expiry_date працює як звичайне)<br>{aa-expression} - якщо обчислюється як 1, вимикає перевірку дати застарівання (для вигляду, рубрики, {ids...}) (використайте тут вирази {if:{qss:..}, {var:..}, {server:..})", // ai 2026-06
 
 // include/slice.class.php, row 1386
-"Slice with translations" => "",
+"Slice with translations" => "Рубрика з перекладами", // ai 2026-06
 
 // include/slice.class.php, row 1386
-"the slice used for {tr:text...} translations (the slice needs to have just headline........ field set as 'Allow translation')" => "",
+"the slice used for {tr:text...} translations (the slice needs to have just headline........ field set as 'Allow translation')" => "рубрика, що використовується для перекладів {tr:text...} (рубрика повинна мати лише поле headline........ з налаштуванням 'Allow translation')", // ai 2026-06
 
 // include/slice.class.php, row 1387
-"Additional aliases" => "",
+"Additional aliases" => "Додаткові аліаси", // ai 2026-06
 
 // include/slice.class.php, row 1387
-"Select sitemodule, where we have to look for additional {_:...} aliases" => "",
+"Select sitemodule, where we have to look for additional {_:...} aliases" => "Виберіть sitemodule, у якому треба шукати додаткові аліаси {_:...}", // ai 2026-06
 
 // include/slice.class.php, row 1388
-"Languages on website" => "",
+"Languages on website" => "Мови на вебсайті", // ai 2026-06
 
 // include/slice.class.php, row 1388
-"List all languages for which you want to use sitemodule - en, es, cz, ..<br>Please <b>do it</b>, even if you are using 1 language. <br>It is quite necessary if you want to call sitemodule newer way from Apache:<br> RewriteEngine on<br> RewriteRule ^\$ /apc-aa/modules/site/site.php [L,QSA]<br> RewriteCond %{REQUEST_FILENAME} !-f<br> RewriteCond %{REQUEST_FILENAME} !-d<br> RewriteRule ^ /apc-aa/modules/site/site.php [L,QSA]<br>" => "",
+"List all languages for which you want to use sitemodule - en, es, cz, ..<br>Please <b>do it</b>, even if you are using 1 language. <br>It is quite necessary if you want to call sitemodule newer way from Apache:<br> RewriteEngine on<br> RewriteRule ^\$ /apc-aa/modules/site/site.php [L,QSA]<br> RewriteCond %{REQUEST_FILENAME} !-f<br> RewriteCond %{REQUEST_FILENAME} !-d<br> RewriteRule ^ /apc-aa/modules/site/site.php [L,QSA]<br>" => "Перелічіть усі мови, для яких ви хочете використовувати sitemodule - en, es, cz, ..<br>Будь ласка, <b>зробіть це</b>, навіть якщо ви використовуєте 1 мову. <br>Це конче потрібно, якщо ви хочете викликати sitemodule новішим способом з Apache:<br> RewriteEngine on<br> RewriteRule ^\$ /apc-aa/modules/site/site.php [L,QSA]<br> RewriteCond %{REQUEST_FILENAME} !-f<br> RewriteCond %{REQUEST_FILENAME} !-d<br> RewriteRule ^ /apc-aa/modules/site/site.php [L,QSA]<br>", // ai 2026-06
 
 // include/slice.class.php, row 1389
-"Page not Found (404)" => "",
+"Page not Found (404)" => "Сторінку не знайдено (404)", // ai 2026-06
 
 // include/slice.class.php, row 1389
-"Do not care" => "",
+"Do not care" => "Не зважати", // ai 2026-06
 
 // include/slice.class.php, row 1389
-"Send standard 404 page, when {xid} is empty" => "",
+"Send standard 404 page, when {xid} is empty" => "Надсилати стандартну сторінку 404, коли {xid} порожній", // ai 2026-06
 
 // include/slice.class.php, row 1389
-"Send code below" => "",
+"Send code below" => "Надсилати код нижче", // ai 2026-06
 
 // include/slice.class.php, row 1389
-"When first option \"Do not care\" is selected (old behavior), you should test unfilled {xid} in your sitemodule yourself" => "",
+"When first option \"Do not care\" is selected (old behavior), you should test unfilled {xid} in your sitemodule yourself" => "Якщо вибрано першу опцію \"Не зважати\" (стара поведінка), ви маєте самостійно перевіряти незаповнений {xid} у своєму sitemodule", // ai 2026-06
 
 // include/slice.class.php, row 1390
-"HTML code for \"Page not Found\" (404)" => "",
+"HTML code for \"Page not Found\" (404)" => "HTML код для \"Сторінку не знайдено\" (404)", // ai 2026-06
 
 // include/slice.class.php, row 1391
-"sitemap.xml alias" => "",
+"sitemap.xml alias" => "Аліас для sitemap.xml", // ai 2026-06
 
 // include/slice.class.php, row 1391
-"The sitemap.xml will be generated from all slices (in order above) where the specified alias (say _#SMAP_URL) exists. The alias should generate full url of the item in each slice. For private/hidden items it should generate empty string in order the URL is not shown." => "",
+"The sitemap.xml will be generated from all slices (in order above) where the specified alias (say _#SMAP_URL) exists. The alias should generate full url of the item in each slice. For private/hidden items it should generate empty string in order the URL is not shown." => "Файл sitemap.xml буде згенеровано з усіх рубрик (у порядку вище), у яких існує вказаний аліас (наприклад _#SMAP_URL). Аліас має генерувати повний URL статті в кожній рубриці. Для приватних/прихованих статей він має генерувати порожній рядок, щоб URL не показувався.", // ai 2026-06
 
 // include/slice.class.php, row 1392
-"Permission alias" => "",
+"Permission alias" => "Аліас для прав", // ai 2026-06
 
 // include/slice.class.php, row 1392
-"You can define the alias, which will be checked for all the displayed {xid} (=pages). If the value will be word \"Valid\", then the page will be shown. Otherwise the loginform (see below) will be shown. Of course, you do not need to use this feature and do it older way - directly in the tree of sitemodule." => "",
+"You can define the alias, which will be checked for all the displayed {xid} (=pages). If the value will be word \"Valid\", then the page will be shown. Otherwise the loginform (see below) will be shown. Of course, you do not need to use this feature and do it older way - directly in the tree of sitemodule." => "Ви можете визначити аліас, який буде перевірятися для всіх показуваних {xid} (=сторінок). Якщо значенням буде слово \"Valid\", сторінка буде показана. Інакше буде показано форму входу (див. нижче). Звичайно, ви не зобов'язані використовувати цю функцію і можете зробити це старим способом - прямо в дереві sitemodule.", // ai 2026-06
 
 // include/slice.class.php, row 1393
-"HTML code for \"Login page\"" => "",
+"HTML code for \"Login page\"" => "HTML код для \"Сторінки входу\"", // ai 2026-06
 
 // include/slice.class.php, row 1394
-"User login databases" => "",
+"User login databases" => "Бази даних для входу користувачів", // ai 2026-06
 
 // include/slice.class.php, row 1394
-"first Reader Management slice listed in Uses slices" => "",
+"first Reader Management slice listed in Uses slices" => "перша рубрика Керування читачами, наведена в Використовує рубрики", // ai 2026-06
 
 // include/slice.class.php, row 1394
-"all Reader Management slices listed in Uses slices" => "",
+"all Reader Management slices listed in Uses slices" => "усі рубрики Керування читачами, наведені в Використовує рубрики", // ai 2026-06
 
 // include/slice.class.php, row 1394
-"AA + all Reader Management slices in AA (old behavior)" => "",
+"AA + all Reader Management slices in AA (old behavior)" => "AA + усі рубрики Керування читачами в AA (стара поведінка)", // ai 2026-06
 
 // include/slice.class.php, row 1394
-"First Reader Management slice is encouraged option - only the people from this slice are allowed to login to public pages. If not selected, \"AA + all Reader Management slices\" option is used." => "",
+"First Reader Management slice is encouraged option - only the people from this slice are allowed to login to public pages. If not selected, \"AA + all Reader Management slices\" option is used." => "Рекомендованою опцією є перша рубрика Керування читачами - тоді на публічні сторінки можуть входити лише люди з цієї рубрики. Якщо не вибрано, використовується опція \"AA + усі рубрики Керування читачами\".", // ai 2026-06
 
 // include/slice.class.php, row 1395
-"Google analytics tracking id" => "",
+"Google analytics tracking id" => "Ідентифікатор відстеження Google Analytics", // ai 2026-06
 
 // include/slice.class.php, row 1395
-"If you are using {generate:HEAD} and {generate:FOOT} in your sitemodule code, then the Google Analytics code is generated with this tracking ID. The generated code could be changed in the future when Google changes the snippet.<br>To use user Consent bar, add {eucookies} or {eucookies:OK to use cookies?:OK:more://www.example.cz/cz/cookies-strategy::No:top} in the site." => "",
+"If you are using {generate:HEAD} and {generate:FOOT} in your sitemodule code, then the Google Analytics code is generated with this tracking ID. The generated code could be changed in the future when Google changes the snippet.<br>To use user Consent bar, add {eucookies} or {eucookies:OK to use cookies?:OK:more://www.example.cz/cz/cookies-strategy::No:top} in the site." => "Якщо у коді sitemodule ви використовуєте {generate:HEAD} і {generate:FOOT}, то код Google Analytics генерується з цим ідентифікатором відстеження. Згенерований код може в майбутньому змінитися, коли Google змінить свій сніпет.<br>Щоб використати панель згоди користувача, додайте на сторінку {eucookies} або {eucookies:OK to use cookies?:OK:more://www.example.cz/cz/cookies-strategy::No:top}.", // ai 2026-06
 
 // include/slice.class.php, row 1396
-"Alternate URL" => "",
+"Alternate URL" => "Альтернативний URL", // ai 2026-06
 
 // include/slice.class.php, row 1396
-"Another domain(s) for which the web should be visible. However, consider using server-side redirect to use single domain, which is more SEO friendly." => "",
+"Another domain(s) for which the web should be visible. However, consider using server-side redirect to use single domain, which is more SEO friendly." => "Інший домен (домени), на якому має бути видимий вебсайт. Однак радше розгляньте можливість використання серверного перенаправлення на єдиний домен, що краще для SEO.", // ai 2026-06
 
 // include/slice.php, row 68
-"Select Category " => "",
+"Select Category " => "Виберіть рубрику", // ai 2026-06
 
 // include/slice.php, row 70
-"All categories" => "",
+"All categories" => "Усі рубрики", // ai 2026-06
 
 // include/sliceadd.php, row 55
 "To create the new Slice, please choose a template.\n"
    ."        The new slice will inherit the template's default fields.  \n"
    ."        You can also choose a non-template slice to base the new slice on, \n"
    ."        if it has the fields you want."
- => "",
+ => "Щоб створити нову рубрику, виберіть шаблон.\n"
+   ."        Нова рубрика успадкує типові поля шаблону.\n"
+   ."        Можна також вибрати нешаблонну рубрику як основу нової,\n"
+   ."        якщо вона має потрібні вам поля.", // ai 2026-06
 
 // include/sliceadd.php, row 73
-"No templates" => "",
+"No templates" => "Немає шаблонів", // ai 2026-06
 
 // include/sliceadd.php, row 87
-"No slices" => "",
+"No slices" => "Немає рубрик", // ai 2026-06
 
 // include/sliceadd.php, row 91
-"Copy Views" => "",
+"Copy Views" => "Копіювати вигляди", // ai 2026-06
 
 // include/sliceadd.php, row 92
-"Categories/Constants" => "",
+"Categories/Constants" => "Рубрики/Константи", // ai 2026-06
 
 // include/sliceadd.php, row 93
-"Share with Template" => "",
+"Share with Template" => "Спільне з шаблоном", // ai 2026-06
 
 // include/sliceadd.php, row 94
-"Copy from Template" => "",
+"Copy from Template" => "Копіювати з шаблону", // ai 2026-06
 
 // include/slicedit.php, row 56
-"User not found" => "",
+"User not found" => "Користувача не знайдено", // ai 2026-06
 
 // include/slicedit.php, row 71
-"Slice not found." => "",
+"Slice not found." => "Рубрику не знайдено.", // ai 2026-06
 
 // include/slicedit.php, row 85
-"Error mailing" => "",
+"Error mailing" => "Помилка надсилання пошти", // ai 2026-06
 
 // include/slicedit.php, row 194
-"Upload URL" => "",
+"Upload URL" => "URL завантаження", // ai 2026-06
 
 // include/slicedit.php, row 203
-"Language Control Slice" => "",
+"Language Control Slice" => "Рубрика керування перекладами", // ai 2026-06
 
 // include/slicedit.php, row 209
-"This File Manager Directory is already used by another slice." => "",
+"This File Manager Directory is already used by another slice." => "Цей каталог Менеджера файлів уже використовує інша рубрика.", // ai 2026-06
 
 // include/slicedit.php, row 352
-"Error when copying constants." => "",
+"Error when copying constants." => "Помилка під час копіювання констант.", // ai 2026-06
 
 // include/slicedit.php, row 361
-"Error when copying views." => "",
+"Error when copying views." => "Помилка під час копіювання виглядів.", // ai 2026-06
 
 // include/slicedit.php, row 369
-"Internal error when changing user role." => "",
+"Internal error when changing user role." => "Внутрішня помилка під час зміни ролі користувача.", // ai 2026-06
 
 // include/statestore.php, row 975
-"Owner ID" => "",
+"Owner ID" => "ID власника", // ai 2026-06
 
 // include/statestore.php, row 1057
-"No object found" => "",
+"No object found" => "Об'єкт не знайдено", // ai 2026-06
 
 // include/statestore.php, row 1320
-"Manage components" => "",
+"Manage components" => "Керування компонентами", // ai 2026-06
 
 // include/stringexpand.php, row 90
-"Alias will be called as {_:&lt;Alias_name&gt;[:&lt;Possible parameters - colon separated&gt;]}" => "",
+"Alias will be called as {_:&lt;Alias_name&gt;[:&lt;Possible parameters - colon separated&gt;]}" => "Аліас викликається як {_:&lt;Alias_name&gt;[:&lt;Possible parameters - colon separated&gt;]}", // ai 2026-06
 
 // include/stringexpand.php, row 91
-"Code printed by the alias. Alias could have parameters and you can use it by _#P1, _#P2, ... variables" => "",
+"Code printed by the alias. Alias could have parameters and you can use it by _#P1, _#P2, ... variables" => "Код, що виводиться аліасом. Аліас може мати параметри, доступні через змінні _#P1, _#P2, ...", // ai 2026-06
 
 // include/stringexpand.php, row 93
-"Usage example" => "",
+"Usage example" => "Приклад використання", // ai 2026-06
 
 // include/stringexpand.php, row 907
-"Jabber Online Status Indicator" => "",
+"Jabber Online Status Indicator" => "Індикатор онлайн-статусу Jabber", // ai 2026-06
 
 // include/stringexpand.php, row 1864
-"Yes" => "",
+"Yes" => "Так", // ai 2026-06
 
 // include/stringexpand.php, row 5437
-"save changes" => "",
+"save changes" => "зберегти зміни", // ai 2026-06
 
 // include/stringexpand.php, row 5655
-"No item ID" => "",
+"No item ID" => "Немає ID статті", // ai 2026-06
 
 // include/stringexpand.php, row 5662
-"No transformations" => "",
+"No transformations" => "Немає перетворень", // ai 2026-06
 
 // include/stringexpand.php, row 5676
-"No slice for item" => "",
+"No slice for item" => "Немає рубрики для статті", // ai 2026-06
 
 // include/stringexpand.php, row 5677
-"No current slice(s)" => "",
+"No current slice(s)" => "Немає поточної рубрики (рубрик)", // ai 2026-06
 
 // include/stringexpand.php, row 5678
-"Item slice is not in list of allowed slices" => "",
+"Item slice is not in list of allowed slices" => "Рубрика статті не входить до списку дозволених рубрик", // ai 2026-06
 
 // include/stringexpand.php, row 5683
-"No permit_anonymous_edit permission for the slice" => "",
+"No permit_anonymous_edit permission for the slice" => "Рубрика не має права permit_anonymous_edit", // ai 2026-06
 
 // include/stringexpand.php, row 6065
-"No dictionaries specified for {dictionary}" => "",
+"No dictionaries specified for {dictionary}" => "Для {dictionary} не вказано жодного словника", // ai 2026-06
 
 // include/stringexpand.php, row 6148
-"No module for dictionary slice" => "",
+"No module for dictionary slice" => "Немає модуля для словникової рубрики", // ai 2026-06
 
 // include/stringexpand.php, row 7716
-"version" => "",
+"version" => "версія", // ai 2026-06
 
 // include/stringexpand.php, row 7901
-"hide" => "",
+"hide" => "сховати", // ai 2026-06
 
 // include/stringexpand.php, row 7902
-"loading" => "",
+"loading" => "завантаження", // ai 2026-06
 
 // include/stringexpand.php, row 8889
-"E-mail confirmed." => "",
+"E-mail confirmed." => "E-mail підтверджено.", // ai 2026-06
 
 // include/stringexpand.php, row 8893
-"E-mail unsubscribed" => "",
+"E-mail unsubscribed" => "E-mail відписано", // ai 2026-06
 
 // include/stringexpand.php, row 9641
-"Forgot your password? Fill in your email." => "",
+"Forgot your password? Fill in your email." => "Забули пароль? Вкажіть свою електронну пошту.", // ai 2026-06
 
 // include/stringexpand.php, row 9643
-"e-mail" => "",
+"e-mail" => "е-пошта", // ai 2026-06
 
 // include/stringexpand.php, row 9661, 9665
-"Unable to find user - please check if it has been misspelled." => "",
+"Unable to find user - please check if it has been misspelled." => "Не вдалося знайти користувача — перевірте, чи немає помилки в написанні.", // ai 2026-06
 
 // include/stringexpand.php, row 9680
-"Password link" => "",
+"Password link" => "Посилання для пароля", // ai 2026-06
 
 // include/stringexpand.php, row 9681
-"Password change url parameter" => "",
+"Password change url parameter" => "URL-параметр зміни пароля", // ai 2026-06
 
 // include/stringexpand.php, row 9693
-"Password change" => "",
+"Password change" => "Зміна пароля", // ai 2026-06
 
 // include/stringexpand.php, row 9694
-"To change the password, please visit the following address:<br>%1<br>Change will be possible for two hours - otherwise the key will expire and you will need to request a new one." => "",
+"To change the password, please visit the following address:<br>%1<br>Change will be possible for two hours - otherwise the key will expire and you will need to request a new one." => "Щоб змінити пароль, відвідайте таку адресу:<br>%1<br>Зміна буде можлива протягом двох годин — інакше ключ втратить чинність і вам доведеться запросити новий.", // ai 2026-06
 
 // include/stringexpand.php, row 9703
-"E-mail with a key to change the password has just been sent to the e-mail address: %1" => "",
+"E-mail with a key to change the password has just been sent to the e-mail address: %1" => "E-mail із ключем для зміни пароля щойно надіслано на адресу: %1", // ai 2026-06
 
 // include/stringexpand.php, row 9714, 9743
-"Bad or expired key." => "",
+"Bad or expired key." => "Хибний або застарілий ключ.", // ai 2026-06
 
 // include/stringexpand.php, row 9719
-"Fill in the new password" => "",
+"Fill in the new password" => "Введіть новий пароль", // ai 2026-06
 
 // include/stringexpand.php, row 9721
-"New password" => "",
+"New password" => "Новий пароль", // ai 2026-06
 
 // include/stringexpand.php, row 9722
-"Retype New Password" => "",
+"Retype New Password" => "Повторіть новий пароль", // ai 2026-06
 
 // include/stringexpand.php, row 9746
-"Passwords do not match - please try again." => "",
+"Passwords do not match - please try again." => "Паролі не збігаються — спробуйте ще раз.", // ai 2026-06
 
 // include/stringexpand.php, row 9749
-"The password must be at least 6 characters long." => "",
+"The password must be at least 6 characters long." => "Пароль повинен містити щонайменше 6 символів.", // ai 2026-06
 
 // include/stringexpand.php, row 9755
-"Password changed." => "",
+"Password changed." => "Пароль змінено.", // ai 2026-06
 
 // include/stringexpand.php, row 9757
-"An error occurred during password change - please contact: %1." => "",
+"An error occurred during password change - please contact: %1." => "Під час зміни пароля сталася помилка — зверніться до: %1.", // ai 2026-06
 
 // include/stringexpand.php, row 10621, 10644
 // include/tabledit_util.php, row 680
-"Are you sure you want to permanently DELETE this record?" => "",
+"Are you sure you want to permanently DELETE this record?" => "Ви справді хочете назавжди ВИДАЛИТИ цей запис?", // ai 2026-06
 
 // include/stringexpand.php, row 10627, 10630, 10650, 10653
 // include/tabledit.php, row 708, 808
 // src/Widget/RimWidget.php, row 224
-"edit" => "",
+"edit" => "редагувати", // ai 2026-06
 
 // include/stringexpand.php, row 10633, 10656
-"back" => "",
+"back" => "назад", // ai 2026-06
 
 // include/stringexpand.php, row 10636, 10659
 // src/Widget/RimWidget.php, row 249
-"drop files here or click to upload" => "",
+"drop files here or click to upload" => "перетягніть файли сюди або клацніть, щоб завантажити", // ai 2026-06
 
 // include/tabledit.php, row 260
-"No record matches your search condition." => "",
+"No record matches your search condition." => "Жоден запис не відповідає умові пошуку.", // ai 2026-06
 
 // include/tabledit.php, row 395
-"order ascending" => "",
+"order ascending" => "за зростанням", // ai 2026-06
 
 // include/tabledit.php, row 397
-"order descending" => "",
+"order descending" => "за спаданням", // ai 2026-06
 
 // include/tabledit.php, row 486
-"Nothing to be shown." => "",
+"Nothing to be shown." => "Немає чого показати.", // ai 2026-06
 
 // include/tabledit.php, row 590
-"search" => "",
+"search" => "шукати", // ai 2026-06
 
 // include/tabledit.php, row 815
-"add" => "",
+"add" => "додати", // ai 2026-06
 
 // include/tabledit.php, row 822, 831
-"delete" => "",
+"delete" => "видалити", // ai 2026-06
 
 // include/tabledit.php, row 831, 846
-"insert" => "",
+"insert" => "вставити", // ai 2026-06
 
 // include/tabledit.php, row 839
-"delete checked" => "",
+"delete checked" => "видалити позначені", // ai 2026-06
 
 // include/tabledit.php, row 846
-"update" => "",
+"update" => "оновити", // ai 2026-06
 
 // include/tabledit.php, row 853
-"update all" => "",
+"update all" => "оновити все", // ai 2026-06
 
 // include/tabledit.php, row 860
-"browse" => "",
+"browse" => "переглянути", // ai 2026-06
 
 // include/tabledit.php, row 927
-"Are you sure you want to permanently DELETE all the checked records?" => "",
+"Are you sure you want to permanently DELETE all the checked records?" => "Ви справді хочете назавжди ВИДАЛИТИ всі позначені записи?", // ai 2026-06
 
 // include/tabledit_util.php, row 67, 449
-"Insert was successful." => "",
+"Insert was successful." => "Вставлення виконано успішно.", // ai 2026-06
 
 // include/tabledit_util.php, row 73, 96, 362
-"Update was successful." => "",
+"Update was successful." => "Оновлення виконано успішно.", // ai 2026-06
 
 // include/tabledit_util.php, row 110, 115
-"Delete was successful." => "",
+"Delete was successful." => "Видалення виконано успішно.", // ai 2026-06
 
 // include/tabledit_util.php, row 531
-"Value of %1 should be between %2 and %3." => "",
+"Value of %1 should be between %2 and %3." => "Значення %1 має бути між %2 і %3.", // ai 2026-06
 
 // include/tabledit_util.php, row 566
-"Table does not have a primary key set on a single column. You can specify primary key by primary => array (field1, field2, ...) parameter for tableedit" => "",
+"Table does not have a primary key set on a single column. You can specify primary key by primary => array (field1, field2, ...) parameter for tableedit" => "Таблиця не має первинного ключа на одному стовпці. Первинний ключ можна вказати для tableedit параметром primary => array (field1, field2, ...)", // ai 2026-06
 
 // include/tabledit_util.php, row 670
-"Wrong value: a number between %1 and %2 is expected." => "",
+"Wrong value: a number between %1 and %2 is expected." => "Хибне значення: очікується число між %1 і %2.", // ai 2026-06
 
 // include/tableviews.php, row 59, 60
-"Polls Design" => "",
+"Polls Design" => "Вигляд опитувань", // ai 2026-06
 
 // include/tableviews.php, row 66, 102
-"Comment" => "",
+"Comment" => "Коментар", // ai 2026-06
 
 // include/tableviews.php, row 88
-"Module Id" => "",
+"Module Id" => "ID модуля", // ai 2026-06
 
 // include/tableviews.php, row 104
-"design description (for administrators only)" => "",
+"design description (for administrators only)" => "опис дизайну (лише для адміністраторів)", // ai 2026-06
 
 // include/tableviews.php, row 111
-"Answer HTML" => "",
+"Answer HTML" => "HTML відповіді", // ai 2026-06
 
 // include/transformation.class.php, row 149
-"Fill by value" => "",
+"Fill by value" => "Заповнити значенням", // ai 2026-06
 
 // include/transformation.class.php, row 156
-"Returns single value (not multivalue) which is created as result of AA expression specified in Expression. You can use any AA expressions like {ifset:{_#HEADLINE}:...}, ..." => "",
+"Returns single value (not multivalue) which is created as result of AA expression specified in Expression. You can use any AA expressions like {ifset:{_#HEADLINE}:...}, ..." => "Повертає одне значення (не мультизначення), яке створюється як результат AA-виразу, заданого в полі Вираз. Можна використовувати будь-які AA-вирази, наприклад {ifset:{_#HEADLINE}:...}, ...", // ai 2026-06
 
 // include/transformation.class.php, row 183, 428, 512
-"As for other values of this field" => "",
+"As for other values of this field" => "Так само, як для інших значень цього поля", // ai 2026-06
 
 // include/transformation.class.php, row 192, 364, 437, 522, 691
-"Mark as" => "",
+"Mark as" => "Позначити як", // ai 2026-06
 
 // include/transformation.class.php, row 193, 253, 438
-"New content" => "",
+"New content" => "Новий вміст", // ai 2026-06
 
 // include/transformation.class.php, row 194, 439, 524
-"You can use also aliases, so the content \"&lt;i&gt;{abstract........}&lt;/i&gt;&lt;br&gt;{full_text......1}\" is perfectly OK" => "",
+"You can use also aliases, so the content \"&lt;i&gt;{abstract........}&lt;/i&gt;&lt;br&gt;{full_text......1}\" is perfectly OK" => "Можна використовувати також аліаси, тож вміст \"&lt;i&gt;{abstract........}&lt;/i&gt;&lt;br&gt;{full_text......1}\" цілком допустимий", // ai 2026-06
 
 // include/transformation.class.php, row 217
-"Fill by exact values" => "",
+"Fill by exact values" => "Заповнити точними значеннями", // ai 2026-06
 
 // include/transformation.class.php, row 224
-"Returns values exactly as specified (no evaluation, ...)" => "",
+"Returns values exactly as specified (no evaluation, ...)" => "Повертає значення точно так, як задано (без обчислення, ...)", // ai 2026-06
 
 // include/transformation.class.php, row 253
-"Exact value only - no AA expressions" => "",
+"Exact value only - no AA expressions" => "Лише точне значення - без AA-виразів", // ai 2026-06
 
 // include/transformation.class.php, row 274
-"Recompute field" => "",
+"Recompute field" => "Перерахувати поле", // ai 2026-06
 
 // include/transformation.class.php, row 281
-"Just recomputes field as specified in the field setting. Works just for Computed fields, of course. No parameters needed. If the Silent is not checked, all the computed fields are recomputed (just like with other transformations)" => "",
+"Just recomputes field as specified in the field setting. Works just for Computed fields, of course. No parameters needed. If the Silent is not checked, all the computed fields are recomputed (just like with other transformations)" => "Лише перераховує поле згідно з його налаштуванням. Працює, звісно, лише для обчислюваних полів. Не потребує жодних параметрів. Якщо не позначено Silent, перераховуються всі обчислювані поля (так само, як при інших трансформаціях)", // ai 2026-06
 
 // include/transformation.class.php, row 326
-"Set HTML/Plain-text flag" => "",
+"Set HTML/Plain-text flag" => "Установити прапорець HTML/Простий текст", // ai 2026-06
 
 // include/transformation.class.php, row 333
-"Changes the HTML or Plain-text flag for the field." => "",
+"Changes the HTML or Plain-text flag for the field." => "Змінює прапорець HTML або Простий текст для поля.", // ai 2026-06
 
 // include/transformation.class.php, row 393
-"Add value to field" => "",
+"Add value to field" => "Додати значення до поля", // ai 2026-06
 
 // include/transformation.class.php, row 400
-"Add new value to current content of field, so the field becomes multivalue.<br>You can use any AA expressions like {ifset:{_#HEADLINE}:...}, ... for new value." => "",
+"Add new value to current content of field, so the field becomes multivalue.<br>You can use any AA expressions like {ifset:{_#HEADLINE}:...}, ... for new value." => "Додає нове значення до поточного вмісту поля, тож поле стає мультизначним.<br>Для нового значення можна використовувати будь-які AA-вирази, наприклад {ifset:{_#HEADLINE}:...}, ...", // ai 2026-06
 
 // include/transformation.class.php, row 468
-"Divide the text to multiple values (also for multilingual values)" => "",
+"Divide the text to multiple values (also for multilingual values)" => "Розділити текст на кілька значень (також для багатомовних значень)", // ai 2026-06
 
 // include/transformation.class.php, row 475
-"Parses the input text and looks for the delimiter. Separates the parts and stores them as multiple values to destination field" => "",
+"Parses the input text and looks for the delimiter. Separates the parts and stores them as multiple values to destination field" => "Проходить вхідний текст і шукає роздільник. Розділяє частини й зберігає їх як кілька значень у цільове поле", // ai 2026-06
 
 // include/transformation.class.php, row 523
-"Source text" => "",
+"Source text" => "Вихідний текст", // ai 2026-06
 
 // include/transformation.class.php, row 526
-"use simple delimiter like | or longer like ---ENDTEXT---<br>use AA_LANG constant in delimiter to parse multilingual values like:   delimiter: |AA_LANG|   for Source text: |cz|text jedna|de|Ein text|en|text one" => "",
+"use simple delimiter like | or longer like ---ENDTEXT---<br>use AA_LANG constant in delimiter to parse multilingual values like:   delimiter: |AA_LANG|   for Source text: |cz|text jedna|de|Ein text|en|text one" => "використовуйте простий роздільник, наприклад | або довший, наприклад ---ENDTEXT---<br>для розділення багатомовних значень використовуйте в роздільнику константу AA_LANG, наприклад:   роздільник: |AA_LANG|   для Вихідного тексту: |cz|text jedna|de|Ein text|en|text one", // ai 2026-06
 
 // include/transformation.class.php, row 611
-"Translates one value after other according to translation table. The result is multivalue, since each value of multivalue field is translated separately." => "",
+"Translates one value after other according to translation table. The result is multivalue, since each value of multivalue field is translated separately." => "Перекладає значення за значенням згідно з таблицею перекладу. Результатом є мультизначення, оскільки кожне значення мультизначного поля перекладається окремо.", // ai 2026-06
 
 // include/transformation.class.php, row 623
-"No translations specified." => "",
+"No translations specified." => "Не задано жодних перекладів.", // ai 2026-06
 
 // include/transformation.class.php, row 682
-"Unchanged" => "",
+"Unchanged" => "Без змін", // ai 2026-06
 
 // include/transformation.class.php, row 693
-"Each translation on new line, translations separated by colon : (escape character for colon is #:).<br>You can use also aliases in the translation. There is also special alias _#0, which contain matching text - following translation is perfectly OK:<br><code> Bio:&lt;img src=\"_#0.jpg\"&gt; ({publish_date....})</code><br>You can also use Regular Expressions - in such case the line would be \"<code>:regexp:<regular expression>:<output></code>\". You can use _#0 alias in <output>, which contains whole matching text.<br>Sometimes you want to remove specific value. In such case use <code>AA_NULL</code> text as translated text:<br> <code>Bio:AA_NULL</code><br>You may want also create more than one value from a value. Then separate the values by colon:<br> <code>Bio:Environment:Ecology</code> (\"Bio\" is replaced by two values). You can use any number of values here." => "",
+"Each translation on new line, translations separated by colon : (escape character for colon is #:).<br>You can use also aliases in the translation. There is also special alias _#0, which contain matching text - following translation is perfectly OK:<br><code> Bio:&lt;img src=\"_#0.jpg\"&gt; ({publish_date....})</code><br>You can also use Regular Expressions - in such case the line would be \"<code>:regexp:<regular expression>:<output></code>\". You can use _#0 alias in <output>, which contains whole matching text.<br>Sometimes you want to remove specific value. In such case use <code>AA_NULL</code> text as translated text:<br> <code>Bio:AA_NULL</code><br>You may want also create more than one value from a value. Then separate the values by colon:<br> <code>Bio:Environment:Ecology</code> (\"Bio\" is replaced by two values). You can use any number of values here." => "Кожен переклад на новому рядку, переклади розділені двокрапкою : (escape-символ для двокрапки - #:).<br>У перекладі можна використовувати й аліаси. Існує також спеціальний аліас _#0, який містить знайдений текст - тож наступний переклад цілком допустимий:<br><code> Bio:&lt;img src=\"_#0.jpg\"&gt; ({publish_date....})</code><br>Можна використовувати також регулярні вирази - у такому разі рядок має вигляд \"<code>:regexp:<regular expression>:<output></code>\". В <output> можна використати аліас _#0, який містить весь знайдений текст.<br>Іноді потрібно видалити певне значення. У такому разі використайте як перекладений текст <code>AA_NULL</code>:<br> <code>Bio:AA_NULL</code><br>Можна також створити з одного значення кілька значень. Тоді розділіть значення двокрапкою:<br> <code>Bio:Environment:Ecology</code> (\"Bio\" замінюється двома значеннями). Кількість значень не обмежена.", // ai 2026-06
 
 // include/transformation.class.php, row 716
-"Search and Replace" => "",
+"Search and Replace" => "Знайти й замінити", // ai 2026-06
 
 // include/transformation.class.php, row 723
-"Search the content of text and replaces it with another text. No other transformations/unaliasing are applied - just basic search and replace." => "",
+"Search the content of text and replaces it with another text. No other transformations/unaliasing are applied - just basic search and replace." => "Шукає текст у вмісті й замінює його іншим текстом. Жодні інші трансформації/обчислення аліасів не виконуються - лише просте знайти й замінити.", // ai 2026-06
 
 // include/transformation.class.php, row 734, 803
-"No searchstring specified." => "",
+"No searchstring specified." => "Не задано рядок для пошуку.", // ai 2026-06
 
 // include/transformation.class.php, row 761, 838
-"Replace" => "",
+"Replace" => "Замінити", // ai 2026-06
 
 // include/transformation.class.php, row 785
-"Regular Expressions Search and Replace" => "",
+"Regular Expressions Search and Replace" => "Знайти й замінити за допомогою регулярних виразів", // ai 2026-06
 
 // include/transformation.class.php, row 792
-"Search the content of text and replaces it with another text using regular expressions. The aliases are unaliased in resulting string.<br>Example:<br> - Search: ^.*x=([0-9]*)\$<br> - Replace: {item:\$1:_#SEO_URL_}<br> - Unalias: Yes<br>Result: replaces all old-form links in the URL field from the new ones <br>(https://biom.cz/item.shtml?x=2344 --&gt; https://biom.cz/cz/about-biom)" => "",
+"Search the content of text and replaces it with another text using regular expressions. The aliases are unaliased in resulting string.<br>Example:<br> - Search: ^.*x=([0-9]*)\$<br> - Replace: {item:\$1:_#SEO_URL_}<br> - Unalias: Yes<br>Result: replaces all old-form links in the URL field from the new ones <br>(https://biom.cz/item.shtml?x=2344 --&gt; https://biom.cz/cz/about-biom)" => "Шукає текст у вмісті й замінює його іншим текстом за допомогою регулярних виразів. У результуючому рядку обчислюються аліаси (unalias).<br>Приклад:<br> - Знайти: ^.*x=([0-9]*)\$<br> - Замінити: {item:\$1:_#SEO_URL_}<br> - Unalias: Так<br>Результат: замінює всі посилання у старому форматі в полі URL новими <br>(https://biom.cz/item.shtml?x=2344 --&gt; https://biom.cz/cz/about-biom)", // ai 2026-06
 
 // include/transformation.class.php, row 839
-"Unalias" => "",
+"Unalias" => "Обчислення аліасів", // ai 2026-06
 
 // include/transformation.class.php, row 839
-"perform unaliasing on result strings" => "",
+"perform unaliasing on result strings" => "виконати обчислення аліасів (unalias) на результуючих рядках", // ai 2026-06
 
 // include/transformation.class.php, row 860, 898
-"Copy field" => "",
+"Copy field" => "Скопіювати поле", // ai 2026-06
 
 // include/transformation.class.php, row 867, 899
-"Selected field will be copied to the \"Field\" (including multivalues)" => "",
+"Selected field will be copied to the \"Field\" (including multivalues)" => "Вибране поле буде скопійовано до \"Поля\" (включно з мультизначеннями)", // ai 2026-06
 
 // include/transformation.class.php, row 879
-"Source or destination field is not specified." => "",
+"Source or destination field is not specified." => "Не задано вихідне або цільове поле.", // ai 2026-06
 
 // include/tv_email.php, row 162
-"Reply to" => "",
+"Reply to" => "Адреса для відповідей (Reply-To)", // ai 2026-06
 
 // include/tv_email.php, row 165
-"Errors to" => "",
+"Errors to" => "Адреса для помилок (Errors-To)", // ai 2026-06
 
 // include/tv_email.php, row 168
-"Sender" => "",
+"Sender" => "Відправник", // ai 2026-06
 
 // include/tv_misc.php, row 131
-"COUNT_HIT events will be used for counting item hits. After a while it will be automatically deleted." => "",
+"COUNT_HIT events will be used for counting item hits. After a while it will be automatically deleted." => "Події COUNT_HIT використовуються для підрахунку переглядів статей. Через деякий час вони автоматично видаляються.", // ai 2026-06
 
 // include/tv_misc.php, row 139, 140
-"Log view" => "",
+"Log view" => "Вигляд Log", // ai 2026-06
 
 // include/tv_misc.php, row 162
-"See searchlog=1 parameter for slice.php in FAQ: " => "",
+"See searchlog=1 parameter for slice.php in FAQ: " => "Див. параметр searchlog=1 для slice.php у FAQ:", // ai 2026-06
 
 // include/tv_misc.php, row 170, 171
-"SearchLog view" => "",
+"SearchLog view" => "Вигляд SearchLog", // ai 2026-06
 
 // include/tv_misc.php, row 175
-"items found" => "",
+"items found" => "знайдено статей", // ai 2026-06
 
 // include/tv_misc.php, row 176
-"search time" => "",
+"search time" => "час пошуку", // ai 2026-06
 
 // include/tv_misc.php, row 177
-"addition" => "",
+"addition" => "додавання", // ai 2026-06
 
 // include/tv_misc.php, row 198, 199
-"Configure Fields" => "",
+"Configure Fields" => "Налаштування полів", // ai 2026-06
 
 // include/um_gedit.php, row 43
-"It is impossible to add group to permission system" => "",
+"It is impossible to add group to permission system" => "Неможливо додати групу до системи прав", // ai 2026-06
 
 // include/um_gedit.php, row 54
-"Can't change group" => "",
+"Can't change group" => "Неможливо змінити групу", // ai 2026-06
 
 // include/um_util.php, row 151, 175
-"ADMINISTRATOR" => "",
+"ADMINISTRATOR" => "АДМІНІСТРАТОР", // ai 2026-06
 
 // include/um_util.php, row 173
-"AUTHOR" => "",
+"AUTHOR" => "АВТОР", // ai 2026-06
 
 // include/um_util.php, row 174
-"EDITOR" => "",
+"EDITOR" => "РЕДАКТОР", // ai 2026-06
 
 // include/um_util.php, row 358
-"Can't change user" => "",
+"Can't change user" => "Неможливо змінити дані користувача", // ai 2026-06
 
 // include/util.php, row 1300
-"Toolkit news message" => "",
+"Toolkit news message" => "Повідомлення застосунку", // ai 2026-06
 
 // include/util.php, row 1314
-"Relogin" => "",
+"Relogin" => "Увійти знову", // ai 2026-06
 
 // include/validate.php, row 52
-"it must be filled" => "",
+"it must be filled" => "має бути заповнене", // ai 2026-06
 
 // include/validate.php, row 151
-"Bad validator type: %1" => "",
+"Bad validator type: %1" => "Хибний тип валідатора: %1", // ai 2026-06
 
 // include/validate.php, row 237, 517, 566
-"Allowed minimum value" => "",
+"Allowed minimum value" => "Дозволене мінімальне значення", // ai 2026-06
 
 // include/validate.php, row 238, 518, 567
-"Allowed maximum value" => "",
+"Allowed maximum value" => "Дозволене максимальне значення", // ai 2026-06
 
 // include/validate.php, row 239
-"Step" => "",
+"Step" => "Крок", // ai 2026-06
 
 // include/validate.php, row 240, 368, 822
-"Maximum length" => "",
+"Maximum length" => "Максимальна довжина", // ai 2026-06
 
 // include/validate.php, row 252
-"No integer value" => "",
+"No integer value" => "Не ціле число", // ai 2026-06
 
 // include/validate.php, row 256, 534, 583
-"Out of range - too big" => "",
+"Out of range - too big" => "Поза діапазоном - надто велике", // ai 2026-06
 
 // include/validate.php, row 259, 537, 586
-"Out of range - too small" => "",
+"Out of range - too small" => "Поза діапазоном - надто мале", // ai 2026-06
 
 // include/validate.php, row 366
-"Regular expression" => "",
+"Regular expression" => "Регулярний вираз", // ai 2026-06
 
 // include/validate.php, row 367
-"Empty expression" => "",
+"Empty expression" => "Порожній вираз", // ai 2026-06
 
 // include/validate.php, row 380, 638, 667, 834
-"Too long" => "",
+"Too long" => "Надто довге", // ai 2026-06
 
 // include/validate.php, row 385
-"Do not match the pattern" => "",
+"Do not match the pattern" => "Не відповідає шаблону", // ai 2026-06
 
 // include/validate.php, row 466, 497
-"No ID value" => "",
+"No ID value" => "Значення не є ID", // ai 2026-06
 
 // include/validate.php, row 482
-"No packed ID value" => "",
+"No packed ID value" => "Значення не є packed ID", // ai 2026-06
 
 // include/validate.php, row 530
-"No float value" => "",
+"No float value" => "Значення не є числом з плаваючою комою (float)", // ai 2026-06
 
 // include/validate.php, row 579
-"No decimal value" => "",
+"No decimal value" => "Значення не є десятковим числом (decimal)", // ai 2026-06
 
 // include/validate.php, row 608
-"Possible values" => "",
+"Possible values" => "Можливі значення", // ai 2026-06
 
 // include/validate.php, row 619
-"Out of range - not in the list" => "",
+"Out of range - not in the list" => "Поза діапазоном - немає у списку", // ai 2026-06
 
 // include/validate.php, row 635, 664
-"Too short" => "",
+"Too short" => "Надто коротке", // ai 2026-06
 
 // include/validate.php, row 640
-"Wrong characters - you should use a-z, A-Z and 0-9 characters" => "",
+"Wrong characters - you should use a-z, A-Z and 0-9 characters" => "Неприпустимі символи - використовуйте лише символи a-z, A-Z та 0-9", // ai 2026-06
 
 // include/validate.php, row 703, 783
-"Field id" => "",
+"Field id" => "ID поля", // ai 2026-06
 
 // include/validate.php, row 704, 784
-"Scope" => "",
+"Scope" => "Область дії", // ai 2026-06
 
 // include/validate.php, row 704
 "username | slice | allslices" => "",
 
 // include/validate.php, row 705, 785
-"Item id which we do not count" => "",
+"Item id which we do not count" => "ID статті, яку не рахуємо", // ai 2026-06
 
 // include/validate.php, row 727
-"Username is not unique" => "",
+"Username is not unique" => "Ім'я користувача не унікальне", // ai 2026-06
 
 // include/validate.php, row 734, 742
-"Wrong parameter field_id for unique check" => "",
+"Wrong parameter field_id for unique check" => "Хибний параметр field_id для перевірки унікальності", // ai 2026-06
 
 // include/validate.php, row 754
-"Not unique - value already used" => "",
+"Not unique - value already used" => "Не унікальне - значення вже використовується", // ai 2026-06
 
 // include/validate.php, row 784
 "username | slice | <b>allslices</b>" => "",
 
 // include/validate.php, row 881
-"This field is required." => "",
+"This field is required." => "Це поле є обовʼязковим.", // ai 2026-06
 
 // include/validate.php, row 881
-"This field is required (marked by *)." => "",
+"This field is required (marked by *)." => "Це поле є обовʼязковим (позначене *).", // ai 2026-06
 
 // include/validate.php, row 888
-"Not a valid integer number." => "",
+"Not a valid integer number." => "Недійсне ціле число.", // ai 2026-06
 
 // include/validate.php, row 891
-"Not a valid file name." => "",
+"Not a valid file name." => "Недійсна назва файлу.", // ai 2026-06
 
 // include/validate.php, row 895
-"Not a valid email address." => "",
+"Not a valid email address." => "Недійсна адреса електронної пошти.", // ai 2026-06
 
 // include/validate.php, row 898
-"The two password copies differ." => "",
+"The two password copies differ." => "Дві копії пароля відрізняються.", // ai 2026-06
 
 // include/view.class.php, row 314
-"Jump to view:" => "",
+"Jump to view:" => "Перейти до вигляду:", // ai 2026-06
 
 // include/widget.class.php, row 168
 "id" => "",
 
 // include/widget.class.php, row 169
-"name" => "",
+"name" => "назва", // ai 2026-06
 
 // include/widget.class.php, row 170
-"type" => "",
+"type" => "тип", // ai 2026-06
 
 // include/widget.class.php, row 171
-"multi" => "",
+"multi" => "багатозначне", // ai 2026-06
 
 // include/widget.class.php, row 172
 "persistent" => "",
 
 // include/widget.class.php, row 173
-"validator" => "",
+"validator" => "валідатор", // ai 2026-06
 
 // include/widget.class.php, row 174
-"required" => "",
+"required" => "обовʼязкове", // ai 2026-06
 
 // include/widget.class.php, row 175
 "input_help" => "",
@@ -6141,7 +6163,7 @@ return [
 "input_morehlp" => "",
 
 // include/widget.class.php, row 177
-"example" => "",
+"example" => "приклад", // ai 2026-06
 
 // include/widget.class.php, row 178
 "show_content_type_switch" => "",
@@ -6156,727 +6178,727 @@ return [
 "const_arr" => "",
 
 // include/widget.class.php, row 182
-"default" => "",
+"default" => "типове", // ai 2026-06
 
 // include/widget.class.php, row 381
-"Not filled (%1)" => "",
+"Not filled (%1)" => "Не заповнено (%1)", // ai 2026-06
 
 // misc/datovka/datovka.php, row 110
-"Datovka ID" => "",
+"Datovka ID" => "ID Datovka", // ai 2026-06
 
 // misc/datovka/datovka.php, row 111
-"Return URL" => "",
+"Return URL" => "URL повернення", // ai 2026-06
 
 // misc/datovka/datovka.php, row 113
-"Configuration" => "",
+"Configuration" => "Конфігурація", // ai 2026-06
 
 // misc/datovka/datovka.php, row 113
 "standard|test" => "",
 
 // misc/datovka/datovka.php, row 115
-"State text" => "",
+"State text" => "Текст стану", // ai 2026-06
 
 // misc/datovka/datovka.php, row 116
-"State time" => "",
+"State time" => "Час стану", // ai 2026-06
 
 // misc/datovka/datovka.php, row 117
-"Related to" => "",
+"Related to" => "Стосується", // ai 2026-06
 
 // misc/datovka/datovka.php, row 119
-"Recipient ID" => "",
+"Recipient ID" => "ID отримувача", // ai 2026-06
 
 // misc/datovka/datovka.php, row 120
-"Annotation" => "",
+"Annotation" => "Анотація", // ai 2026-06
 
 // misc/datovka/datovka.php, row 121
-"To hands" => "",
+"To hands" => "До рук", // ai 2026-06
 
 // misc/datovka/datovka.php, row 122
-"Recipient reference number" => "",
+"Recipient reference number" => "Реєстраційний номер отримувача", // ai 2026-06
 
 // misc/datovka/datovka.php, row 123
-"Recipient identifier" => "",
+"Recipient identifier" => "Ідентифікатор отримувача", // ai 2026-06
 
 // misc/datovka/datovka.php, row 124
-"Recipient org unit" => "",
+"Recipient org unit" => "Організаційний підрозділ отримувача", // ai 2026-06
 
 // misc/datovka/datovka.php, row 125
-"Recipient org unit number" => "",
+"Recipient org unit number" => "Номер організаційного підрозділу отримувача", // ai 2026-06
 
 // misc/datovka/datovka.php, row 126
-"Sender reference number" => "",
+"Sender reference number" => "Реєстраційний номер відправника", // ai 2026-06
 
 // misc/datovka/datovka.php, row 127
-"Sender identifier" => "",
+"Sender identifier" => "Ідентифікатор відправника", // ai 2026-06
 
 // misc/datovka/datovka.php, row 128
-"Sender org unit" => "",
+"Sender org unit" => "Організаційний підрозділ відправника", // ai 2026-06
 
 // misc/datovka/datovka.php, row 129
-"Sender org unit number" => "",
+"Sender org unit number" => "Номер організаційного підрозділу відправника", // ai 2026-06
 
 // misc/datovka/datovka.php, row 130
-"Legal title law" => "",
+"Legal title law" => "Правова підстава - закон", // ai 2026-06
 
 // misc/datovka/datovka.php, row 131
-"Legal title year" => "",
+"Legal title year" => "Правова підстава - рік", // ai 2026-06
 
 // misc/datovka/datovka.php, row 132
-"Legal title section" => "",
+"Legal title section" => "Правова підстава - розділ", // ai 2026-06
 
 // misc/datovka/datovka.php, row 133
-"Legal title paragraph" => "",
+"Legal title paragraph" => "Правова підстава - параграф", // ai 2026-06
 
 // misc/datovka/datovka.php, row 134
-"Legal title point" => "",
+"Legal title point" => "Правова підстава - пункт", // ai 2026-06
 
 // misc/datovka/datovka.php, row 135
-"Personal delivery" => "",
+"Personal delivery" => "Особисте вручення", // ai 2026-06
 
 // misc/datovka/datovka.php, row 136
-"Allow substitute delivery" => "",
+"Allow substitute delivery" => "Дозволити вручення заміннику", // ai 2026-06
 
 // misc/msconvert/index.php, row 20
-"Foreign Formats Convertor" => "",
+"Foreign Formats Convertor" => "Конвертор зовнішніх форматів", // ai 2026-06
 
 // misc/msconvert/index.php, row 32
-"Action Apps PDF/DOC Convertor" => "",
+"Action Apps PDF/DOC Convertor" => "Конвертор PDF/DOC для Action Apps", // ai 2026-06
 
 // misc/msconvert/index.php, row 33
-"Experimental feature" => "",
+"Experimental feature" => "Експериментальна функція", // ai 2026-06
 
 // modules/jump/modedit.php, row 71
-"Edit Jump module" => "",
+"Edit Jump module" => "Редагувати модуль Jump", // ai 2026-06
 
 // modules/jump/modedit.php, row 71
-"Create new Jump module" => "",
+"Create new Jump module" => "Створити новий модуль Jump", // ai 2026-06
 
 // modules/jump/modedit.php, row 134
-"Choose module to be edited" => "",
+"Choose module to be edited" => "Виберіть модуль для редагування", // ai 2026-06
 
 // modules/jump/modedit.php, row 157
-"Edit module" => "",
+"Edit module" => "Редагувати модуль", // ai 2026-06
 
 // modules/jump/modedit.php, row 159
-"Module name" => "",
+"Module name" => "Назва модуля", // ai 2026-06
 
 // modules/jump/modedit.php, row 161
-"Jump to" => "",
+"Jump to" => "Перейти до", // ai 2026-06
 
 // modules/jump/modedit.php, row 163
-"Type in an AA-relative path, e.g." => "",
+"Type in an AA-relative path, e.g." => "Введіть шлях відносно AA, напр.", // ai 2026-06
 
 // modules/jump/modedit.php, row 164
-"Jump to slice" => "",
+"Jump to slice" => "Перейти до рубрики", // ai 2026-06
 
 // slice.php, row 232
-"Bad inc parameter - included file must contain only alphanumeric characters" => "",
+"Bad inc parameter - included file must contain only alphanumeric characters" => "Хибний параметр inc - включений файл може містити лише буквено-цифрові символи", // ai 2026-06
 
 // slice.php, row 236
-"No such file" => "",
+"No such file" => "Такого файлу немає", // ai 2026-06
 
 // slice.php, row 263
-"Invalid slice number or slice was deleted" => "",
+"Invalid slice number or slice was deleted" => "Недійсний номер рубрики або рубрику видалено", // ai 2026-06
 
 // slice.php, row 266
-"slice.php output forbidden for this slice" => "",
+"slice.php output forbidden for this slice" => "Вивід через slice.php для цієї рубрики заборонено", // ai 2026-06
 
 // slice.php, row 321
-"session id" => "",
+"session id" => "id сесії", // ai 2026-06
 
 // slice.php, row 580
-"number of current page (on pagescroller)" => "",
+"number of current page (on pagescroller)" => "номер поточної сторінки (у посторінковому перегляді)", // ai 2026-06
 
 // slice.php, row 581
-"page length (number of items)" => "",
+"page length (number of items)" => "довжина сторінки (кількість статей)", // ai 2026-06
 
 // slice.php, row 616
 // src/Manager.php, row 649
-"No item found" => "",
+"No item found" => "Жодної статті не знайдено", // ai 2026-06
 
 // src/AA_Plannedtask.php, row 55, 102
-"Task" => "",
+"Task" => "Завдання", // ai 2026-06
 
 // src/AA_Plannedtask.php, row 56
-"If specified, the task is performed only if Condition is evaluated to value different from zero or empty value" => "",
+"If specified, the task is performed only if Condition is evaluated to value different from zero or empty value" => "Якщо вказано, завдання виконується лише тоді, коли Умова обчислюється у значення, відмінне від нуля чи порожнього значення", // ai 2026-06
 
 // src/AA_Plannedtask.php, row 57
-"Event to run" => "",
+"Event to run" => "Подія для запуску", // ai 2026-06
 
 // src/AA_Plannedtask.php, row 59
-"New Item" => "",
+"New Item" => "Нова стаття", // ai 2026-06
 
 // src/AA_Plannedtask.php, row 59
-"Item Updated" => "",
+"Item Updated" => "Статтю оновлено", // ai 2026-06
 
 // src/AA_Plannedtask.php, row 60
-"Event, when the task should be executed. It is independent on Time setting below (so you can run the task when Event occures and also on specific time). If you do not specify \"+ seconds\" parameter or set it to 0, then the task is executed directly. If the \"+ seconds\" offset is set, then the task is planed to execute once after x seconds." => "",
+"Event, when the task should be executed. It is independent on Time setting below (so you can run the task when Event occures and also on specific time). If you do not specify \"+ seconds\" parameter or set it to 0, then the task is executed directly. If the \"+ seconds\" offset is set, then the task is planed to execute once after x seconds." => "Подія, за якої має виконатися завдання. Вона не залежить від налаштування Часу нижче (отже, ви можете запускати завдання як при настанні Події, так і в певний час). Якщо ви не вкажете параметр \"+ секунди\" або встановите його на 0, завдання виконується безпосередньо. Якщо зміщення \"+ секунди\" встановлено, завдання планується до одноразового виконання через x секунд.", // ai 2026-06
 
 // src/AA_Plannedtask.php, row 61
-"Time to run" => "",
+"Time to run" => "Час запуску", // ai 2026-06
 
 // src/AA_Plannedtask.php, row 61
-"Specify the time, when the task should be executed. It will be then processed periodically at this time. The specification of the time should be in \"<a href=\"https://www.php.net/manual/en/datetime.formats.relative.php\">Relative Format</a>\", so the time like:<br>\"midnight\" - runs every midnight <br>\"+1 hour\" - runs every hour, <br>\"+30 min\" - runs every 30 minutes, <br>\"16:00\" - runs every day at 16:00<br>\"Monday 10:00\" - runs every Monday at 16:00<br>\"first day of this month 10:00\"<br>The times are not exact, the tasks are performed one after another by the script, which runs every 5 minutes, or so." => "",
+"Specify the time, when the task should be executed. It will be then processed periodically at this time. The specification of the time should be in \"<a href=\"https://www.php.net/manual/en/datetime.formats.relative.php\">Relative Format</a>\", so the time like:<br>\"midnight\" - runs every midnight <br>\"+1 hour\" - runs every hour, <br>\"+30 min\" - runs every 30 minutes, <br>\"16:00\" - runs every day at 16:00<br>\"Monday 10:00\" - runs every Monday at 16:00<br>\"first day of this month 10:00\"<br>The times are not exact, the tasks are performed one after another by the script, which runs every 5 minutes, or so." => "Вкажіть час, коли має виконатися завдання. Воно буде потім періодично виконуватися в цей час. Час слід задавати у \"<a href=\"https://www.php.net/manual/en/datetime.formats.relative.php\">відносному форматі</a>\", наприклад:<br>\"midnight\" - запускається щопівночі <br>\"+1 hour\" - запускається щогодини, <br>\"+30 min\" - запускається кожні 30 хвилин, <br>\"16:00\" - запускається щодня о 16:00<br>\"Monday 10:00\" - запускається щопонеділка о 16:00<br>\"first day of this month 10:00\"<br>Час не є точним - завдання виконуються одне за одним скриптом, який запускається приблизно кожні 5 хвилин.", // ai 2026-06
 
 // src/AA_Plannedtask.php, row 62, 102
-"+ seconds" => "",
+"+ seconds" => "+ секунди", // ai 2026-06
 
 // src/AA_Plannedtask.php, row 62
-"Optionally specify the extra time offset added to previous time (in seconds).<br>It is hard to specify the \"15-th in the month\" by previous row, so you can combine both:<br> - \"time\" = \"first day of this month 10:00\"<br> - \"+ seconds\" = \"1209600\"<br> (60 seconds * 60 minutes * 24 hours * 14 days) - mention the 14 (1st + 14 = 15th)" => "",
+"Optionally specify the extra time offset added to previous time (in seconds).<br>It is hard to specify the \"15-th in the month\" by previous row, so you can combine both:<br> - \"time\" = \"first day of this month 10:00\"<br> - \"+ seconds\" = \"1209600\"<br> (60 seconds * 60 minutes * 24 hours * 14 days) - mention the 14 (1st + 14 = 15th)" => "За бажанням вкажіть додаткове зміщення часу, додане до попереднього часу (у секундах).<br>Попереднім рядком важко задати \"15-те число місяця\", тож ви можете скомбінувати обидва:<br> - \"час\" = \"first day of this month 10:00\"<br> - \"+ секунди\" = \"1209600\"<br> (60 секунд * 60 хвилин * 24 години * 14 днів) - зверніть увагу на 14 (1-ше + 14 = 15-те)", // ai 2026-06
 
 // src/AA_Plannedtask.php, row 63
-"Optionally specify the context - the long Item Id for which the task will be executed. You can then use {id..............} and other aliases of the item in the task. The id of item could be also obtained in variable {var:aa_event_for}. For \"event\" tasks (Item updated/new) it is always filled with id of modified item." => "",
+"Optionally specify the context - the long Item Id for which the task will be executed. You can then use {id..............} and other aliases of the item in the task. The id of item could be also obtained in variable {var:aa_event_for}. For \"event\" tasks (Item updated/new) it is always filled with id of modified item." => "За бажанням вкажіть контекст - довге Id статті, для якої виконуватиметься завдання. У завданні ви потім можете використати {id..............} та інші аліаси статті. Id статті можна також отримати у змінній {var:aa_event_for}. Для \"подієвих\" завдань (Статтю оновлено/нову) воно завжди заповнене id зміненої статті.", // ai 2026-06
 
 // src/AA_Plannedtask.php, row 77
-"Planned tasks" => "",
+"Planned tasks" => "Заплановані завдання", // ai 2026-06
 
 // src/AA_Plannedtask.php, row 97
-"Current time on server" => "",
+"Current time on server" => "Поточний час на сервері", // ai 2026-06
 
 // src/AA_Plannedtask.php, row 102
-"Event" => "",
+"Event" => "Подія", // ai 2026-06
 
 // src/AA_Plannedtask.php, row 102
-"Computed time" => "",
+"Computed time" => "Обчислений час", // ai 2026-06
 
 // src/AA_Plannedtask.php, row 102
-"Scheduled to" => "",
+"Scheduled to" => "Заплановано на", // ai 2026-06
 
 // src/AA_Plannedtask.php, row 220
-"not scheduled, yet" => "",
+"not scheduled, yet" => "ще не заплановано", // ai 2026-06
 
 // src/AA_Plannedtask.php, row 224
-"next run" => "",
+"next run" => "наступний запуск", // ai 2026-06
 
 // src/IO/Grabber/AARSS.php, row 116
 "AA RSS" => "",
 
 // src/IO/Grabber/AARSS.php, row 124
-"Grabs data from generic RSS or AA RSS (used for item exchange between different AA installations)" => "",
+"Grabs data from generic RSS or AA RSS (used for item exchange between different AA installations)" => "Отримує дані із загального RSS або AA RSS (використовується для обміну статтями між різними інсталяціями AA)", // ai 2026-06
 
 // src/IO/Grabber/CSV.php, row 66
 "CSV" => "",
 
 // src/IO/Grabber/CSV.php, row 75
-"Import data from CSV (Comma Separated Values) format" => "",
+"Import data from CSV (Comma Separated Values) format" => "Імпорт даних із формату CSV (Comma Separated Values - значення, розділені комами)", // ai 2026-06
 
 // src/IO/Grabber/CSV.php, row 93
 // src/IO/Grabber/JsonLD.php, row 103
 // src/IO/Grabber/XML.php, row 107
-"URL of the file" => "",
+"URL of the file" => "URL файлу", // ai 2026-06
 
 // src/IO/Grabber/CSV.php, row 94
 // src/IO/Grabber/XML.php, row 109
-"use direct text instead of file" => "",
+"use direct text instead of file" => "використати прямий текст замість файлу", // ai 2026-06
 
 // src/IO/Grabber/CSV.php, row 95
-"Delimiter of fields" => "",
+"Delimiter of fields" => "Роздільник полів", // ai 2026-06
 
 // src/IO/Grabber/CSV.php, row 106
-"Enclosure" => "",
+"Enclosure" => "Обрамлення (enclosure)", // ai 2026-06
 
 // src/IO/Grabber/CSV.php, row 110
-"Use first row as field names" => "",
+"Use first row as field names" => "Використати перший рядок як назви полів", // ai 2026-06
 
 // src/IO/Grabber/CTK.php, row 51
-"CTK - xml import" => "",
+"CTK - xml import" => "ČTK - імпорт xml", // ai 2026-06
 
 // src/IO/Grabber/CTK.php, row 59
-"Process import xml file exported from CTK" => "",
+"Process import xml file exported from CTK" => "Обробляє імпортний xml-файл, експортований із ČTK", // ai 2026-06
 
 // src/IO/Grabber/Discussion.php, row 39
-"Discussion from slice" => "",
+"Discussion from slice" => "Обговорення з рубрики", // ai 2026-06
 
 // src/IO/Grabber/Discussion.php, row 47
-"grabs discussion comments for items from some slice" => "",
+"grabs discussion comments for items from some slice" => "збирає коментарі обговорення для статей із певної рубрики", // ai 2026-06
 
 // src/IO/Grabber/FilesFTP.php, row 72
-"FTP files recursive" => "",
+"FTP files recursive" => "FTP-файли рекурсивно", // ai 2026-06
 
 // src/IO/Grabber/FilesFTP.php, row 81
-"Import data from FTP directories" => "",
+"Import data from FTP directories" => "Імпорт даних з FTP-каталогів", // ai 2026-06
 
 // src/IO/Grabber/FilesFTP.php, row 99
-"FTP server" => "",
+"FTP server" => "FTP-сервер", // ai 2026-06
 
 // src/IO/Grabber/FilesFTP.php, row 100
-"FTP Username" => "",
+"FTP Username" => "Ім'я користувача FTP", // ai 2026-06
 
 // src/IO/Grabber/FilesFTP.php, row 101
-"FTP Password" => "",
+"FTP Password" => "Пароль FTP", // ai 2026-06
 
 // src/IO/Grabber/FilesFTP.php, row 102
-"FTP directory" => "",
+"FTP directory" => "FTP-каталог", // ai 2026-06
 
 // src/IO/Grabber/FilesFTP.php, row 103
-"Include files regexp" => "",
+"Include files regexp" => "Regexp для включених файлів", // ai 2026-06
 
 // src/IO/Grabber/FilesFTP.php, row 104
-"Exclude files regexp" => "",
+"Exclude files regexp" => "Regexp для виключених файлів", // ai 2026-06
 
 // src/IO/Grabber/FilesFTP.php, row 105
-"Max files to process" => "",
+"Max files to process" => "Макс. кількість оброблених файлів", // ai 2026-06
 
 // src/IO/Grabber/FilesFTP.php, row 106
-"Info to get" => "",
+"Info to get" => "Яку інформацію отримати", // ai 2026-06
 
 // src/IO/Grabber/Form.php, row 68
 // src/IO/Grabber/ObjectForm.php, row 61
-"Form" => "",
+"Form" => "Форма", // ai 2026-06
 
 // src/IO/Grabber/Form.php, row 76
 // src/IO/Grabber/ObjectForm.php, row 69
-"Grabs data POSTed by AA form" => "",
+"Grabs data POSTed by AA form" => "Збирає дані, надіслані (POST) формою AA", // ai 2026-06
 
 // src/IO/Grabber/Form.php, row 161
-"No slice found: %1" => "",
+"No slice found: %1" => "Рубрику не знайдено: %1", // ai 2026-06
 
 // src/IO/Grabber/Form.php, row 164
-"No file, img_upload, or img_src field type found in slice %1" => "",
+"No file, img_upload, or img_src field type found in slice %1" => "У рубриці %1 не знайдено поля типу file, img_upload чи img_src", // ai 2026-06
 
 // src/IO/Grabber/Form.php, row 197
-"no POST nor FILES sent" => "",
+"no POST nor FILES sent" => "не надіслано ні POST, ні FILES", // ai 2026-06
 
 // src/IO/Grabber/Ical.php, row 43
 "iCal" => "",
 
 // src/IO/Grabber/Ical.php, row 51
-"Import data from iCal (.ics) format" => "",
+"Import data from iCal (.ics) format" => "Імпорт даних з формату iCal (.ics)", // ai 2026-06
 
 // src/IO/Grabber/JsonLD.php, row 77
 "JSON-LD" => "",
 
 // src/IO/Grabber/JsonLD.php, row 85
-"General JSON-LD file" => "",
+"General JSON-LD file" => "Загальний файл JSON-LD", // ai 2026-06
 
 // src/IO/Grabber/PohodaOrdersResult.php, row 32
-"Pohoda (www.stormware.cz) - Orders import result" => "",
+"Pohoda (www.stormware.cz) - Orders import result" => "Pohoda (www.stormware.cz) - результат імпорту замовлень", // ai 2026-06
 
 // src/IO/Grabber/PohodaOrdersResult.php, row 40
-"Process Order import results from POHODA accounting system" => "",
+"Process Order import results from POHODA accounting system" => "Обробляє результати імпорту замовлень з облікової системи POHODA", // ai 2026-06
 
 // src/IO/Grabber/PohodaStocks.php, row 34
-"Pohoda (www.stormware.cz) - Stocks" => "",
+"Pohoda (www.stormware.cz) - Stocks" => "Pohoda (www.stormware.cz) - запаси", // ai 2026-06
 
 // src/IO/Grabber/PohodaStocks.php, row 42
-"Imports stock from POHODA accounting system" => "",
+"Imports stock from POHODA accounting system" => "Імпортує запаси з облікової системи POHODA", // ai 2026-06
 
 // src/IO/Grabber/SOAP.php, row 60
 "SOAP" => "",
 
 // src/IO/Grabber/SOAP.php, row 68
-"General SOAP request" => "",
+"General SOAP request" => "Загальний SOAP-запит", // ai 2026-06
 
 // src/IO/Grabber/SOAP.php, row 78
-"SOAP body request" => "",
+"SOAP body request" => "Тіло SOAP-запиту", // ai 2026-06
 
 // src/IO/Grabber/SQL.php, row 82
 "SQL" => "",
 
 // src/IO/Grabber/SQL.php, row 91
-"Import data from SQL database" => "",
+"Import data from SQL database" => "Імпорт даних з SQL-бази даних", // ai 2026-06
 
 // src/IO/Grabber/SQL.php, row 109
-"SQL query" => "",
+"SQL query" => "SQL-запит", // ai 2026-06
 
 // src/IO/Grabber/SQL.php, row 110
-"Database name" => "",
+"Database name" => "Назва бази даних", // ai 2026-06
 
 // src/IO/Grabber/SQL.php, row 111
-"Database Username" => "",
+"Database Username" => "Ім'я користувача бази даних", // ai 2026-06
 
 // src/IO/Grabber/SQL.php, row 112
-"Database Password" => "",
+"Database Password" => "Пароль бази даних", // ai 2026-06
 
 // src/IO/Grabber/SQL.php, row 113
-"Database type (mysql, ...)" => "",
+"Database type (mysql, ...)" => "Тип бази даних (mysql, ...)", // ai 2026-06
 
 // src/IO/Grabber/SQL.php, row 114
-"Host IP address" => "",
+"Host IP address" => "IP-адреса сервера", // ai 2026-06
 
 // src/IO/Grabber/SQL.php, row 115
-"Port" => "",
+"Port" => "Порт", // ai 2026-06
 
 // src/IO/Grabber/SQL.php, row 116
-"Charset (utf8mb4,...)" => "",
+"Charset (utf8mb4,...)" => "Кодування (utf8mb4,...)", // ai 2026-06
 
 // src/IO/Grabber/Slice.php, row 51
-"Items from slice" => "",
+"Items from slice" => "Статті з рубрики", // ai 2026-06
 
 // src/IO/Grabber/Slice.php, row 59
-"grabs items from some slice" => "",
+"grabs items from some slice" => "збирає статті з певної рубрики", // ai 2026-06
 
 // src/IO/Grabber/XML.php, row 81
 "XML" => "",
 
 // src/IO/Grabber/XML.php, row 89
-"General XML file" => "",
+"General XML file" => "Загальний файл XML", // ai 2026-06
 
 // src/IO/Grabber/XML.php, row 108
-"POST request body" => "",
+"POST request body" => "Тіло POST-запиту", // ai 2026-06
 
 // src/IO/Grabber/XML.php, row 110
-"XPath to one item" => "",
+"XPath to one item" => "XPath до однієї статті", // ai 2026-06
 
 // src/IO/Grabber/XML.php, row 110
-"Specify, how to grab one item from the file using XPath expression" => "",
+"Specify, how to grab one item from the file using XPath expression" => "Вкажіть, як отримати з файлу одну статтю за допомогою виразу XPath", // ai 2026-06
 
 // src/IO/Grabber/XML.php, row 110
 "//item" => "",
 
 // src/IO/Grabber/XMLIekis.php, row 33
-"iEKIS XML files" => "",
+"iEKIS XML files" => "XML-файли iEKIS", // ai 2026-06
 
 // src/IO/Grabber/XMLIekis.php, row 41
-"special iEKIS XML files in one directory" => "",
+"special iEKIS XML files in one directory" => "спеціальні XML-файли iEKIS в одному каталозі", // ai 2026-06
 
 // src/IO/OnPageChanger.php, row 52
-"No permission for current user." => "",
+"No permission for current user." => "Поточний користувач не має прав.", // ai 2026-06
 
 // src/IO/OnPageChanger.php, row 55
-"No permission - no user is authenticated. Try to relogin, please." => "",
+"No permission - no user is authenticated. Try to relogin, please." => "Немає прав - жоден користувач не автентифікований. Спробуйте, будь ласка, увійти знову.", // ai 2026-06
 
 // src/Later/ComputedfieldsUpdater.php, row 83
-"Planned %1 chunks with %2 items" => "",
+"Planned %1 chunks with %2 items" => "Заплановано %1 партій з %2 статтями", // ai 2026-06
 
 // src/Manager.php, row 463
-"Optional" => "",
+"Optional" => "Необов'язкове", // ai 2026-06
 
 // src/Manager.php, row 580
-"Searchbar" => "",
+"Searchbar" => "Панель пошуку", // ai 2026-06
 
 // src/Manager.php, row 581
-"Scroller" => "",
+"Scroller" => "Посторінкування", // ai 2026-06
 
 // src/Manager.php, row 582
-"Msg" => "",
+"Msg" => "Повідомлення", // ai 2026-06
 
 // src/Manager.php, row 583
-"Bin" => "",
+"Bin" => "Кошик", // ai 2026-06
 
 // src/Manager.php, row 585
-"Manager ID" => "",
+"Manager ID" => "ID менеджера", // ai 2026-06
 
 // src/Manager.php, row 979
-"Edit id" => "",
+"Edit id" => "Id для редагування", // ai 2026-06
 
 // src/Manager.php, row 992
-"Hold Shift and click to select multiple rows" => "",
+"Hold Shift and click to select multiple rows" => "Утримуйте Shift і клацайте, щоб вибрати кілька рядків", // ai 2026-06
 
 // src/Manager.php, row 1119
-"Go" => "",
+"Go" => "Виконати", // ai 2026-06
 
 // src/Manager.php, row 1132
-"No item selected. Perform action for all filtered items? " => "",
+"No item selected. Perform action for all filtered items? " => "Не вибрано жодної статті. Виконати дію для всіх відфільтрованих статей?", // ai 2026-06
 
 // src/Manager.php, row 1132
-"Run for %1 items" => "",
+"Run for %1 items" => "Виконати для %1 статей", // ai 2026-06
 
 // src/Manageraction/AbstractManageraction.php, row 46
-"Action ID" => "",
+"Action ID" => "ID дії", // ai 2026-06
 
 // src/Manageraction/AbstractManageraction.php, row 47
-"URL to open" => "",
+"URL to open" => "URL для відкриття", // ai 2026-06
 
 // src/Manageraction/AbstractManageraction.php, row 48
-"Additional URL parameters" => "",
+"Additional URL parameters" => "Додаткові параметри URL", // ai 2026-06
 
 // src/Manageraction/Central_DeleteTrash.php, row 30
 // src/Manageraction/Item_DeleteTrash.php, row 34
 // src/Manageraction/Polls_DeleteTrash.php, row 70
-"Remove (delete from database)" => "",
+"Remove (delete from database)" => "Видалити (з бази даних)", // ai 2026-06
 
 // src/Manageraction/Central_DeleteTrash.php, row 37
 // src/Manageraction/Item_DeleteTrash.php, row 43
 // src/Manageraction/Taskmanager_Execute.php, row 26
-"You do not have permissions to remove items" => "",
+"You do not have permissions to remove items" => "Ви не маєте права видаляти статті", // ai 2026-06
 
 // src/Manageraction/Central_Linkcheck.php, row 16
-"Check the AA availability" => "",
+"Check the AA availability" => "Перевірити доступність AA", // ai 2026-06
 
 // src/Manageraction/Central_Linkcheck.php, row 27
-"AA (Organization)" => "",
+"AA (Organization)" => "AA (організація)", // ai 2026-06
 
 // src/Manageraction/Central_Linkcheck.php, row 29
-"Status code" => "",
+"Status code" => "Код стану", // ai 2026-06
 
 // src/Manageraction/Central_MoveItem.php, row 26
 // src/Manageraction/Item_MoveItem.php, row 29
 // src/Manageraction/Links_Move.php, row 26
 // src/Manageraction/Polls_MoveItem.php, row 28
-"Move to Active" => "",
+"Move to Active" => "Вивісити", // ai 2026-06
 
 // src/Manageraction/Central_MoveItem.php, row 27
 // src/Manageraction/Item_MoveItem.php, row 30
 // src/Manageraction/Links_Move.php, row 27
 // src/Manageraction/Polls_MoveItem.php, row 29
-"Move to Holding bin" => "",
+"Move to Holding bin" => "Надіслати до Резерву", // ai 2026-06
 
 // src/Manageraction/Central_MoveItem.php, row 28
 // src/Manageraction/Item_MoveItem.php, row 31
 // src/Manageraction/Links_Move.php, row 28
 // src/Manageraction/Polls_MoveItem.php, row 30
-"Move to Trash" => "",
+"Move to Trash" => "Надіслати до Кошика", // ai 2026-06
 
 // src/Manageraction/Central_MoveItem.php, row 41
-"Activate" => "",
+"Activate" => "Активувати", // ai 2026-06
 
 // src/Manageraction/Central_MoveItem.php, row 42
-"Hold" => "",
+"Hold" => "До Резерву", // ai 2026-06
 
 // src/Manageraction/Central_Sqlupdate.php, row 27
-"Update DB (sql_update)" => "",
+"Update DB (sql_update)" => "Оновити БД (sql_update)", // ai 2026-06
 
 // src/Manageraction/Item_Duplicate.php, row 23
-"Duplicate Item" => "",
+"Duplicate Item" => "Дублювати статтю", // ai 2026-06
 
 // src/Manageraction/Item_Email.php, row 13
-"Send email" => "",
+"Send email" => "Надіслати e-mail", // ai 2026-06
 
 // src/Manageraction/Item_Feed.php, row 32
-"Export to slice" => "",
+"Export to slice" => "Передати до рубрики", // ai 2026-06
 
 // src/Manageraction/Item_Feed.php, row 39
 // src/Manageraction/Item_Move2Slice.php, row 83
 // src/Manageraction/Object_Move2slice.php, row 31
 // src/Manageraction/View_Move2slice.php, row 29
-"No slice selected" => "",
+"No slice selected" => "Не вибрано жодної рубрики", // ai 2026-06
 
 // src/Manageraction/Item_Modifycontent.php, row 13
-"Modify content" => "",
+"Modify content" => "Змінити вміст", // ai 2026-06
 
 // src/Manageraction/Item_Move2Slice.php, row 36
 // src/Manageraction/Object_Move2slice.php, row 24
-"Move to another slice" => "",
+"Move to another slice" => "Перемістити до іншої рубрики", // ai 2026-06
 
 // src/Manageraction/Item_Move2Slice.php, row 74
-"Move to slice" => "",
+"Move to slice" => "Перемістити до рубрики", // ai 2026-06
 
 // src/Manageraction/Item_Move2Slice.php, row 87
-"You do not have permissions to move items" => "",
+"You do not have permissions to move items" => "Ви не маєте прав переміщувати статті", // ai 2026-06
 
 // src/Manageraction/Links_Add2Cat.php, row 21
-"Add to category" => "",
+"Add to category" => "Додати до рубрики", // ai 2026-06
 
 // src/Manageraction/Links_Check.php, row 25
-"Check Link" => "",
+"Check Link" => "Перевірити посилання", // ai 2026-06
 
 // src/Manageraction/Links_Delete.php, row 20
-"Remove from category" => "",
+"Remove from category" => "Вилучити з рубрики", // ai 2026-06
 
 // src/Manageraction/Links_Highlight.php, row 24
-"Highlight Link" => "",
+"Highlight Link" => "Виділити посилання", // ai 2026-06
 
 // src/Manageraction/Links_Highlight.php, row 24
-"Dehighlight Link" => "",
+"Dehighlight Link" => "Скасувати виділення посилання", // ai 2026-06
 
 // src/Manageraction/Links_Move2Cat.php, row 21
-"Move to category" => "",
+"Move to category" => "Перемістити до рубрики", // ai 2026-06
 
 // src/Manageraction/Object_Delete.php, row 17
 // src/Manageraction/Table_Row_Delete.php, row 16
-"Delete row" => "",
+"Delete row" => "Видалити рядок", // ai 2026-06
 
 // src/Manageraction/Object_Delete.php, row 26
 // src/Manageraction/Table_Row_Delete.php, row 25
-"Do you really want to delete this row?" => "",
+"Do you really want to delete this row?" => "Ви справді хочете видалити цей рядок?", // ai 2026-06
 
 // src/Manageraction/Object_Move2slice.php, row 35
-"You do not have permissions to move it" => "",
+"You do not have permissions to move it" => "Ви не маєте прав на переміщення", // ai 2026-06
 
 // src/Manageraction/Polls_DeleteTrash.php, row 77
-"You do not have permissions to remove polls" => "",
+"You do not have permissions to remove polls" => "Ви не маєте прав видаляти опитування", // ai 2026-06
 
 // src/Manageraction/Taskmanager_Delete.php, row 15
-"Remove (cancel task)" => "",
+"Remove (cancel task)" => "Видалити (скасувати завдання)", // ai 2026-06
 
 // src/Manageraction/Taskmanager_Delete.php, row 24
-"You do not have permissions to remove tasks" => "",
+"You do not have permissions to remove tasks" => "Ви не маєте прав видаляти завдання", // ai 2026-06
 
 // src/Manageraction/Taskmanager_Execute.php, row 17
-"Execute" => "",
+"Execute" => "Виконати", // ai 2026-06
 
 // src/Manageraction/View_Move2slice.php, row 22
-"Move view to another slice" => "",
+"Move view to another slice" => "Перемістити вигляд до іншої рубрики", // ai 2026-06
 
 // src/Manageraction/View_Move2slice.php, row 35
-"You do not have permissions to move views" => "",
+"You do not have permissions to move views" => "Ви не маєте прав переміщувати вигляди", // ai 2026-06
 
 // src/Module/Poll/Menu.php, row 25
-"View poll" => "",
+"View poll" => "Переглянути опитування", // ai 2026-06
 
 // src/Module/Poll/Menu.php, row 32, 33
-"Edit poll" => "",
+"Edit poll" => "Редагувати опитування", // ai 2026-06
 
 // src/Module/Poll/Menu.php, row 32
-"Add poll" => "",
+"Add poll" => "Додати опитування", // ai 2026-06
 
 // src/Module/Poll/Menu.php, row 33
-"Add new poll" => "",
+"Add new poll" => "Додати нове опитування", // ai 2026-06
 
 // src/Module/Poll/Menu.php, row 40, 41
-"Polls manager" => "",
+"Polls manager" => "Менеджер опитувань", // ai 2026-06
 
 // src/Module/Poll/Menu.php, row 48, 49
-"Polls admin" => "",
+"Polls admin" => "Адміністрування опитувань", // ai 2026-06
 
 // src/Module/Poll/Menu.php, row 84
-"Designs" => "",
+"Designs" => "Вигляди", // ai 2026-06
 
 // src/Optimize/AbstractOptimize.php, row 128
-"Types" => "",
+"Types" => "Типи", // ai 2026-06
 
 // src/Optimize/AbstractOptimize.php, row 131
-"Result text" => "",
+"Result text" => "Текст результату", // ai 2026-06
 
 // src/Optimize/AbstractOptimizeById.php, row 42
-"We found %1 problems" => "",
+"We found %1 problems" => "Знайдено %1 проблем", // ai 2026-06
 
 // src/Optimize/AddAddressFieldTemplate.php, row 10
-"Add address field template" => "",
+"Add address field template" => "Додати шаблон поля address", // ai 2026-06
 
 // src/Optimize/AddAlertsCronEntry.php, row 13
-"Adds cron entry for Alerts Sending into AA cron" => "",
+"Adds cron entry for Alerts Sending into AA cron" => "Додає до AA cron запис для надсилання сповіщень (Alerts)", // ai 2026-06
 
 // src/Optimize/AddAlertsCronEntry.php, row 19
 // src/Optimize/AddFeedingCronEntry.php, row 19
 // src/Optimize/AddLinkcheckCronEntry.php, row 19
 // src/Optimize/AddOptimizeCronEntry.php, row 19
 // src/Optimize/AddToexecuteCronEntry.php, row 19
-"It however does not install the system cron for AA - you should do it by yourself (see /misc/aa-http-request script)" => "",
+"It however does not install the system cron for AA - you should do it by yourself (see /misc/aa-http-request script)" => "Проте не встановлює системний cron для AA - це маєте зробити самі (див. скрипт /misc/aa-http-request)", // ai 2026-06
 
 // src/Optimize/AddAlertsCronEntry.php, row 36
-"Cron entry for Alerts Sending is not installed in AA Cron" => "",
+"Cron entry for Alerts Sending is not installed in AA Cron" => "Запис для надсилання сповіщень (Alerts) не встановлено в AA Cron", // ai 2026-06
 
 // src/Optimize/AddAlertsCronEntry.php, row 46
-"Deleting AA Cron entry for Alerts Sending" => "",
+"Deleting AA Cron entry for Alerts Sending" => "Видалення запису AA Cron для надсилання сповіщень (Alerts)", // ai 2026-06
 
 // src/Optimize/AddAlertsCronEntry.php, row 49
-"Adding AA cron entry for Alerts Sending" => "",
+"Adding AA cron entry for Alerts Sending" => "Додавання запису AA cron для надсилання сповіщень (Alerts)", // ai 2026-06
 
 // src/Optimize/AddAlertsCronEntry.php, row 52
-"AA cron entry for Alerts Sending - done." => "",
+"AA cron entry for Alerts Sending - done." => "Запис AA cron для надсилання сповіщень (Alerts) - готово.", // ai 2026-06
 
 // src/Optimize/AddAuthGroupFieldTemplate.php, row 10
-"Add auth_group...... field template" => "",
+"Add auth_group...... field template" => "Додати шаблон поля auth_group......", // ai 2026-06
 
 // src/Optimize/AddBitsetFieldTemplate.php, row 10
-"Add bitset (flags, bitfield) field template" => "",
+"Add bitset (flags, bitfield) field template" => "Додати шаблон поля bitset (прапорці, бітове поле)", // ai 2026-06
 
 // src/Optimize/AddCityFieldTemplate.php, row 10
-"Add city field template" => "",
+"Add city field template" => "Додати шаблон поля city", // ai 2026-06
 
 // src/Optimize/AddCodeFieldTemplate.php, row 10
-"Add code field template" => "",
+"Add code field template" => "Додати шаблон поля code", // ai 2026-06
 
 // src/Optimize/AddComputedNumFieldTemplate.php, row 10
-"Add computed_num field template" => "",
+"Add computed_num field template" => "Додати шаблон поля computed_num", // ai 2026-06
 
 // src/Optimize/AddComputedTxtFieldTemplate.php, row 10
-"Add computed_txt field template" => "",
+"Add computed_txt field template" => "Додати шаблон поля computed_txt", // ai 2026-06
 
 // src/Optimize/AddCountryFieldTemplate.php, row 10
-"Add country field template" => "",
+"Add country field template" => "Додати шаблон поля country", // ai 2026-06
 
 // src/Optimize/AddDateFieldTemplate.php, row 10
-"Add date field template" => "",
+"Add date field template" => "Додати шаблон поля date", // ai 2026-06
 
 // src/Optimize/AddDurationLog.php, row 18
-"Add hit duration log feature" => "",
+"Add hit duration log feature" => "Додати функцію журналювання тривалості обробки звернення", // ai 2026-06
 
 // src/Optimize/AddDurationLog.php, row 26
-"Add column 'duration' to hit_archive table which will store duration/cache/not_modified records for the hit" => "",
+"Add column 'duration' to hit_archive table which will store duration/cache/not_modified records for the hit" => "Додає до таблиці hit_archive стовпець 'duration', у якому зберігатимуться записи duration/cache/not_modified для звернення", // ai 2026-06
 
 // src/Optimize/AddDurationLog.php, row 47
-"The \"duration\" column missing in hit_archive table" => "",
+"The \"duration\" column missing in hit_archive table" => "У таблиці hit_archive відсутній стовпець \"duration\"", // ai 2026-06
 
 // src/Optimize/AddDurationLog.php, row 50
-"OK - The \"duration\" column found in hit_archive table. Duration evaluated from %1" => "",
+"OK - The \"duration\" column found in hit_archive table. Duration evaluated from %1" => "OK - Стовпець \"duration\" знайдено в таблиці hit_archive. Тривалість обчислюється від %1", // ai 2026-06
 
 // src/Optimize/AddDurationLog.php, row 60
-"Table already has the column \"duration\"" => "",
+"Table already has the column \"duration\"" => "Таблиця вже має стовпець \"duration\"", // ai 2026-06
 
 // src/Optimize/AddDurationLog.php, row 63
-"Do alter table hit_archive to add duration column" => "",
+"Do alter table hit_archive to add duration column" => "Виконати alter table hit_archive - додати стовпець duration", // ai 2026-06
 
 // src/Optimize/AddDurationLog.php, row 65
-"Column added" => "",
+"Column added" => "Стовпець додано", // ai 2026-06
 
 // src/Optimize/AddDurationLog.php, row 72
-"Do alter table hit_archive to remove duration column - it disables the feature" => "",
+"Do alter table hit_archive to remove duration column - it disables the feature" => "Виконати alter table hit_archive - видалити стовпець duration, що вимкне функцію", // ai 2026-06
 
 // src/Optimize/AddDurationLog.php, row 74
-"Column deleted" => "",
+"Column deleted" => "Стовпець видалено", // ai 2026-06
 
 // src/Optimize/AddEmailTemplatesCronEntry.php, row 14
-"Adds email templates for Alerts module" => "",
+"Adds email templates for Alerts module" => "Додає шаблони e-mail для модуля Сповіщення (Alerts)", // ai 2026-06
 
 // src/Optimize/AddEmailTemplatesCronEntry.php, row 38
-"The e-mail templates are not complete" => "",
+"The e-mail templates are not complete" => "Шаблони e-mail неповні", // ai 2026-06
 
 // src/Optimize/AddEmailTemplatesCronEntry.php, row 55
 // src/Optimize/RedefineLinksTemplates.php, row 58
-"Replacing the e-mail templates" => "",
+"Replacing the e-mail templates" => "Заміна шаблонів e-mail", // ai 2026-06
 
 // src/Optimize/AddEmailTemplatesCronEntry.php, row 77
-"The e-mail templates updated" => "",
+"The e-mail templates updated" => "Шаблони e-mail оновлено", // ai 2026-06
 
 // src/Optimize/AddFaxFieldTemplate.php, row 10
-"Add fax field template" => "",
+"Add fax field template" => "Додати шаблон поля fax", // ai 2026-06
 
 // src/Optimize/AddFeedingCronEntry.php, row 13
-"Adds cron entry for Feeding into AA cron" => "",
+"Adds cron entry for Feeding into AA cron" => "Додає до AA cron запис для передавання (Feeding)", // ai 2026-06
 
 // src/Optimize/AddFeedingCronEntry.php, row 36
-"Cron entry for Feeding is not installed in AA Cron" => "",
+"Cron entry for Feeding is not installed in AA Cron" => "Запис для передавання (Feeding) не встановлено в AA Cron", // ai 2026-06
 
 // src/Optimize/AddFeedingCronEntry.php, row 46
-"Deleting AA Cron entry for Feeding" => "",
+"Deleting AA Cron entry for Feeding" => "Видалення запису AA Cron для передавання (Feeding)", // ai 2026-06
 
 // src/Optimize/AddFeedingCronEntry.php, row 50
-"Adding AA cron entry for Feeding" => "",
+"Adding AA cron entry for Feeding" => "Додавання запису AA cron для передавання (Feeding)", // ai 2026-06
 
 // src/Optimize/AddFeedingCronEntry.php, row 53
-"AA cron entry for Feeding - done." => "",
+"AA cron entry for Feeding - done." => "Запис AA cron для передавання (Feeding) - готово.", // ai 2026-06
 
 // src/Optimize/AddHit1FieldTemplate.php, row 10
-"Add hit_1 field template" => "",
+"Add hit_1 field template" => "Додати шаблон поля hit_1", // ai 2026-06
 
 // src/Optimize/AddHit30FieldTemplate.php, row 10
-"Add hit_30 field template" => "",
+"Add hit_30 field template" => "Додати шаблон поля hit_30", // ai 2026-06
 
 // src/Optimize/AddHit7FieldTemplate.php, row 10
-"Add hit_7 field template" => "",
+"Add hit_7 field template" => "Додати шаблон поля hit_7", // ai 2026-06
 
 // src/Optimize/AddIntegerFieldTemplate.php, row 10
-"Add integer field template" => "",
+"Add integer field template" => "Додати шаблон поля integer", // ai 2026-06
 
 // src/Optimize/AddIpBannedFieldTemplate.php, row 10
-"Add _ip_banned field template" => "",
+"Add _ip_banned field template" => "Додати шаблон поля _ip_banned", // ai 2026-06
 
 // src/Optimize/AddIpFieldTemplate.php, row 10
-"Add ip field template" => "",
+"Add ip field template" => "Додати шаблон поля ip", // ai 2026-06
 
 // src/Optimize/AddLinkcheckCronEntry.php, row 13
-"Adds cron entry for Link checking in Links Module into AA cron" => "",
+"Adds cron entry for Link checking in Links Module into AA cron" => "Додає до AA cron запис для перевірки посилань у модулі Links", // ai 2026-06
 
 // src/Optimize/AddLinkcheckCronEntry.php, row 36
-"Cron entry for \"Checking link status in Links module\" is not installed in AA Cron" => "",
+"Cron entry for \"Checking link status in Links module\" is not installed in AA Cron" => "Запис для \"перевірки стану посилань у модулі Links\" не встановлено в AA Cron", // ai 2026-06
 
 // src/Optimize/AddLinkcheckCronEntry.php, row 46
-"Deleting AA Cron entry for Checking link status in Links module" => "",
+"Deleting AA Cron entry for Checking link status in Links module" => "Видалення запису AA Cron для перевірки стану посилань у модулі Links", // ai 2026-06
 
 // src/Optimize/AddLinkcheckCronEntry.php, row 49
-"Adding AA cron entry for Checking link status in Links module" => "",
+"Adding AA cron entry for Checking link status in Links module" => "Додавання запису AA cron для перевірки стану посилань у модулі Links", // ai 2026-06
 
 // src/Optimize/AddLinkcheckCronEntry.php, row 52
-"AA cron entry for \"Checking link status in Links module\" - done." => "",
+"AA cron entry for \"Checking link status in Links module\" - done." => "Запис AA cron для \"перевірки стану посилань у модулі Links\" - готово.", // ai 2026-06
 
 // src/Optimize/AddLocationFieldTemplate.php, row 10
-"Add location field template" => "",
+"Add location field template" => "Додати шаблон поля location", // ai 2026-06
 
 // src/Optimize/AddMailListsFieldTemplate.php, row 10
-"Add mail_lists field template" => "",
+"Add mail_lists field template" => "Додати шаблон поля mail_lists", // ai 2026-06
 
 // src/Optimize/AddMandatoryDiscApp.php, row 10
 // src/Optimize/AddMandatoryDiscCount.php, row 10
@@ -6884,1421 +6906,1421 @@ return [
 // src/Optimize/AddMandatoryId.php, row 10
 // src/Optimize/AddMandatoryShortId.php, row 10
 // src/Optimize/AddMandatoryStatusCode.php, row 11
-"Fixing missing %1 field definitions in slices" => "",
+"Fixing missing %1 field definitions in slices" => "Виправлення відсутніх визначень поля %1 у рубриках", // ai 2026-06
 
 // src/Optimize/AddMandatoryStatusCode.php, row 17
-"Adds field definitions for slices, where missing" => "",
+"Adds field definitions for slices, where missing" => "Додає визначення полів до рубрик, де вони відсутні", // ai 2026-06
 
 // src/Optimize/AddMandatoryStatusCode.php, row 43
-"Missing %1 field definition in some slices - need to repair" => "",
+"Missing %1 field definition in some slices - need to repair" => "У деяких рубриках відсутнє визначення поля %1 - потрібно виправити", // ai 2026-06
 
 // src/Optimize/AddMandatoryStatusCode.php, row 52
-"Fixing missing %1 fields in slices" => "",
+"Fixing missing %1 fields in slices" => "Виправлення відсутніх полів %1 у рубриках", // ai 2026-06
 
 // src/Optimize/AddMandatoryStatusCode.php, row 65
-"Mandatory field %1 added to all slices" => "",
+"Mandatory field %1 added to all slices" => "Обов'язкове поле %1 додано до всіх рубрик", // ai 2026-06
 
 // src/Optimize/AddMlxctrlFieldTemplate.php, row 10
-"Add mlxctrl field template" => "",
+"Add mlxctrl field template" => "Додати шаблон поля mlxctrl", // ai 2026-06
 
 // src/Optimize/AddMsgBannedFieldTemplate.php, row 10
-"Add _msg_banned field template" => "",
+"Add _msg_banned field template" => "Додати шаблон поля _msg_banned", // ai 2026-06
 
 // src/Optimize/AddMsgSpamFieldTemplate.php, row 10
-"Add _msg_spam field template" => "",
+"Add _msg_spam field template" => "Додати шаблон поля _msg_spam", // ai 2026-06
 
 // src/Optimize/AddNameFieldTemplate.php, row 10
-"Add name field template" => "",
+"Add name field template" => "Додати шаблон поля name", // ai 2026-06
 
 // src/Optimize/AddOptimizeCronEntry.php, row 13
-"Adds cron entry for Database Optimization into AA cron" => "",
+"Adds cron entry for Database Optimization into AA cron" => "Додає до AA cron запис для оптимізації бази даних", // ai 2026-06
 
 // src/Optimize/AddOptimizeCronEntry.php, row 36
-"Cron entry for Database Optimization is not installed in AA Cron" => "",
+"Cron entry for Database Optimization is not installed in AA Cron" => "Запис для оптимізації бази даних не встановлено в AA cron", // ai 2026-06
 
 // src/Optimize/AddOptimizeCronEntry.php, row 46
-"Deleting AA Cron entry for Database Optimization" => "",
+"Deleting AA Cron entry for Database Optimization" => "Видалення запису AA cron для оптимізації бази даних", // ai 2026-06
 
 // src/Optimize/AddOptimizeCronEntry.php, row 49
-"Adding AA cron entry for Database Optimization" => "",
+"Adding AA cron entry for Database Optimization" => "Додавання запису AA cron для оптимізації бази даних", // ai 2026-06
 
 // src/Optimize/AddOptimizeCronEntry.php, row 52
-"AA cron entry for Database Optimization - done." => "",
+"AA cron entry for Database Optimization - done." => "Запис AA cron для оптимізації бази даних - готово.", // ai 2026-06
 
 // src/Optimize/AddPhoneFieldTemplate.php, row 10
-"Add phone field template" => "",
+"Add phone field template" => "Додати шаблон поля phone", // ai 2026-06
 
 // src/Optimize/AddPolls.php, row 29
-"Add Polls tables" => "",
+"Add Polls tables" => "Додати таблиці опитувань", // ai 2026-06
 
 // src/Optimize/AddPolls.php, row 37
-"Create tables for new Polls module and adds first - template polls. It removes all current polls!" => "",
+"Create tables for new Polls module and adds first - template polls. It removes all current polls!" => "Створює таблиці для нового модуля опитувань і додає перші - зразкові опитування. Видаляє всі поточні опитування!", // ai 2026-06
 
 // src/Optimize/AddPolls.php, row 60
-"Poll module is not installed" => "",
+"Poll module is not installed" => "Модуль опитувань не встановлено", // ai 2026-06
 
 // src/Optimize/AddPolls.php, row 94
-"Polls module created" => "",
+"Polls module created" => "Модуль опитувань створено", // ai 2026-06
 
 // src/Optimize/AddRangeFieldTemplate.php, row 10
-"Add range field template" => "",
+"Add range field template" => "Додати шаблон поля range", // ai 2026-06
 
 // src/Optimize/AddRealFieldTemplate.php, row 10
-"Add real field template" => "",
+"Add real field template" => "Додати шаблон поля real", // ai 2026-06
 
 // src/Optimize/AddSecretFieldTemplate.php, row 10
-"Add secret field template" => "",
+"Add secret field template" => "Додати шаблон поля secret", // ai 2026-06
 
 // src/Optimize/AddSeoFieldTemplate.php, row 16
-"Add seo fields template" => "",
+"Add seo fields template" => "Додати шаблон полів seo", // ai 2026-06
 
 // src/Optimize/AddSeoFieldTemplate.php, row 24
-"Updates field templates (in ActionApps Core slice) - redefine the field template" => "",
+"Updates field templates (in ActionApps Core slice) - redefine the field template" => "Оновлює шаблони полів (у рубриці ActionApps Core) - перевизначає шаблон поля", // ai 2026-06
 
 // src/Optimize/AddSeoFieldTemplate.php, row 100
-"The \"%1\" field template missing" => "",
+"The \"%1\" field template missing" => "Шаблон поля \"%1\" відсутній", // ai 2026-06
 
 // src/Optimize/AddSeoFieldTemplate.php, row 103
-"OK - The \"%1\" field template found" => "",
+"OK - The \"%1\" field template found" => "OK - Шаблон поля \"%1\" знайдено", // ai 2026-06
 
 // src/Optimize/AddSeoFieldTemplate.php, row 114
-"Recreate \"%1\" field definition" => "",
+"Recreate \"%1\" field definition" => "Повторно створити визначення поля \"%1\"", // ai 2026-06
 
 // src/Optimize/AddSeoFieldTemplate.php, row 116
-"New \"%1\" field template added" => "",
+"New \"%1\" field template added" => "Новий шаблон поля \"%1\" додано", // ai 2026-06
 
 // src/Optimize/AddToexecuteCronEntry.php, row 13
-"Adds cron entry for Toexecute queue execution into AA cron" => "",
+"Adds cron entry for Toexecute queue execution into AA cron" => "Додає до AA cron запис для виконання черги toexecute", // ai 2026-06
 
 // src/Optimize/AddToexecuteCronEntry.php, row 35
-"Cron entry for \"Toexecute queue execution\" is not installed in AA Cron" => "",
+"Cron entry for \"Toexecute queue execution\" is not installed in AA Cron" => "Запис для \"виконання черги toexecute\" не встановлено в AA cron", // ai 2026-06
 
 // src/Optimize/AddToexecuteCronEntry.php, row 45
-"Deleting AA Cron entry for Toexecute queue execution" => "",
+"Deleting AA Cron entry for Toexecute queue execution" => "Видалення запису AA cron для виконання черги toexecute", // ai 2026-06
 
 // src/Optimize/AddToexecuteCronEntry.php, row 48
-"Adding AA cron entry for Toexecute queue execution" => "",
+"Adding AA cron entry for Toexecute queue execution" => "Додавання запису AA cron для виконання черги toexecute", // ai 2026-06
 
 // src/Optimize/AddToexecuteCronEntry.php, row 51
-"AA cron entry for Toexecute queue execution - done." => "",
+"AA cron entry for Toexecute queue execution - done." => "Запис AA cron для виконання черги toexecute - готово.", // ai 2026-06
 
 // src/Optimize/AddUploadUrlFieldTemplate.php, row 10
-"Add _upload_url field template" => "",
+"Add _upload_url field template" => "Додати шаблон поля _upload_url", // ai 2026-06
 
 // src/Optimize/AddUrlPreviewFieldTemplate.php, row 10
-"Add _url_preview field template" => "",
+"Add _url_preview field template" => "Додати шаблон поля _url_preview", // ai 2026-06
 
 // src/Optimize/BackupTables.php, row 19
-"Backup tables" => "",
+"Backup tables" => "Резервна копія таблиць", // ai 2026-06
 
 // src/Optimize/BackupTables.php, row 27
 // src/Optimize/RestoreBckTables.php, row 27
 // src/Optimize/UpdateDbStructure.php, row 31
-"[experimental] " => "",
+"[experimental] " => "[експериментальне]", // ai 2026-06
 
 // src/Optimize/BackupTables.php, row 27
-"Deletes all the current backup tables (bck_slice, bck_item, ...) and copies there live tables (slice, item, ...)." => "",
+"Deletes all the current backup tables (bck_slice, bck_item, ...) and copies there live tables (slice, item, ...)." => "Видаляє всі поточні резервні таблиці (bck_slice, bck_item, ...) і копіює в них живі таблиці (slice, item, ...).", // ai 2026-06
 
 // src/Optimize/BackupTables.php, row 49
 // src/Optimize/DropBackupTables.php, row 51
-"Deleting old backup table bck_%1, if it exists." => "",
+"Deleting old backup table bck_%1, if it exists." => "Видалення старої резервної таблиці bck_%1, якщо вона існує.", // ai 2026-06
 
 // src/Optimize/BackupTables.php, row 52
-"Creating empty backup table bck_%1." => "",
+"Creating empty backup table bck_%1." => "Створення порожньої резервної таблиці bck_%1.", // ai 2026-06
 
 // src/Optimize/BackupTables.php, row 57
-"Copy data from %1 to bck_%1." => "",
+"Copy data from %1 to bck_%1." => "Копіювання даних з %1 до bck_%1.", // ai 2026-06
 
 // src/Optimize/BackupTables.php, row 60
 // src/Optimize/DropBackupTables.php, row 54
 // src/Optimize/UpdateDbStructure.php, row 147
-"%1 done." => "",
+"%1 done." => "%1 готово.", // ai 2026-06
 
 // src/Optimize/CategorySort2groupBy.php, row 15
-"Convert slice.category_sort to slice.group_by" => "",
+"Convert slice.category_sort to slice.group_by" => "Перетворити slice.category_sort на slice.group_by", // ai 2026-06
 
 // src/Optimize/CategorySort2groupBy.php, row 23
-"In older version of AA we used just category fields for grouping items. Now it is universal, so boolean category_sort is not enough. We have used the newer group_by field for quite a long time so most probably all your slices are already converted." => "",
+"In older version of AA we used just category fields for grouping items. Now it is universal, so boolean category_sort is not enough. We have used the newer group_by field for quite a long time so most probably all your slices are already converted." => "У старіших версіях AA для групування статей використовувалися лише поля рубрик. Тепер це універсально, тож булеве category_sort вже недостатнє. Новіше поле group_by ми використовуємо вже досить довго, тож найімовірніше всі ваші рубрики вже перетворено.", // ai 2026-06
 
 // src/Optimize/CategorySort2groupBy.php, row 34
-"%1 slices are not converted" => "",
+"%1 slices are not converted" => "%1 рубрик не перетворено", // ai 2026-06
 
 // src/Optimize/CategorySort2groupBy.php, row 37
-"All slices are already converted" => "",
+"All slices are already converted" => "Усі рубрики вже перетворено", // ai 2026-06
 
 // src/Optimize/ChangeF_h2F_1.php, row 20
-"Optimize f_h alias to f_1" => "",
+"Optimize f_h alias to f_1" => "Оптимізувати аліас f_h на f_1", // ai 2026-06
 
 // src/Optimize/ChangeF_h2F_1.php, row 28
-"Replaces f_h alias for field marked as non multiple and html by quicker f_1 function for direct content print" => "",
+"Replaces f_h alias for field marked as non multiple and html by quicker f_1 function for direct content print" => "Замінює аліас f_h для поля, позначеного як немультизначне та html, швидшою функцією f_1 для прямого виведення вмісту", // ai 2026-06
 
 // src/Optimize/ChangeF_t2F_1.php, row 18
-"Optimize f_t alias to f_1" => "",
+"Optimize f_t alias to f_1" => "Оптимізувати аліас f_t на f_1", // ai 2026-06
 
 // src/Optimize/ChangeF_t2F_1.php, row 26
-"Replaces f_t alias for field marked as non multiple and html by quicker f_1 function for direct content print" => "",
+"Replaces f_t alias for field marked as non multiple and html by quicker f_1 function for direct content print" => "Замінює аліас f_t для поля, позначеного як немультизначне та html, швидшою функцією f_1 для прямого виведення вмісту", // ai 2026-06
 
 // src/Optimize/ChangeF_t2F__.php, row 19
-"Optimize f_t alias to f__" => "",
+"Optimize f_t alias to f__" => "Оптимізувати аліас f_t на f__", // ai 2026-06
 
 // src/Optimize/ChangeF_t2F__.php, row 27
-"Replaces f_t alias used for code by quicker f__ function" => "",
+"Replaces f_t alias used for code by quicker f__ function" => "Замінює аліас f_t, що використовується для коду, швидшою функцією f__", // ai 2026-06
 
 // src/Optimize/ChangeModuleId.php, row 19
-"Change current module ID to new one" => "",
+"Change current module ID to new one" => "Змінити ID поточного модуля на новий", // ai 2026-06
 
 // src/Optimize/ChangeModuleId.php, row 27
-"Used sometimes if you clone database or copy slices to another database for another client and do not want to use the same slice/site ids. You probably need to do it for all slices and site module.<br>IT CHANGES CURRENT SLICE ID!" => "",
+"Used sometimes if you clone database or copy slices to another database for another client and do not want to use the same slice/site ids. You probably need to do it for all slices and site module.<br>IT CHANGES CURRENT SLICE ID!" => "Іноді використовується, коли ви клонуєте базу даних або копіюєте рубрики до іншої бази даних для іншого клієнта і не хочете використовувати ті самі id рубрик/вузлів. Імовірно, потрібно зробити це для всіх рубрик і модуля site.<br>ЗМІНЮЄ ID ПОТОЧНОЇ РУБРИКИ!", // ai 2026-06
 
 // src/Optimize/ChangeModuleId.php, row 41
-"Nothing to test here. Just be careful - IT CHANGES CURRENT SLICE ID without asking!" => "",
+"Nothing to test here. Just be careful - IT CHANGES CURRENT SLICE ID without asking!" => "Тут нема чого тестувати. Лише будьте обережні - ЗМІНЮЄ ID ПОТОЧНОЇ РУБРИКИ без запиту!", // ai 2026-06
 
 // src/Optimize/ChangeModuleId.php, row 62
-"Going to change module_id %1 -> %2 (%3 -> %4)" => "",
+"Going to change module_id %1 -> %2 (%3 -> %4)" => "Буде змінено module_id %1 -> %2 (%3 -> %4)", // ai 2026-06
 
 // src/Optimize/ChangeModuleId.php, row 75
-"Changing ID for table %1 (%2)" => "",
+"Changing ID for table %1 (%2)" => "Зміна ID для таблиці %1 (%2)", // ai 2026-06
 
 // src/Optimize/ChangeModuleId.php, row 84
 // src/Optimize/Convert2innodb.php, row 62
-"Converted %1 tables" => "",
+"Converted %1 tables" => "Перетворено %1 таблиць", // ai 2026-06
 
 // src/Optimize/ClearPagecache.php, row 13
-"Clear Pagecache" => "",
+"Clear Pagecache" => "Очистити pagecache", // ai 2026-06
 
 // src/Optimize/ClearPagecache.php, row 21
-"Whole pagecache will be invalidated and deleted" => "",
+"Whole pagecache will be invalidated and deleted" => "Уся pagecache буде визнана недійсною та видалена", // ai 2026-06
 
 // src/Optimize/ClearPagecache.php, row 35
 // src/Optimize/CopyContent.php, row 35
 // src/Optimize/CreateUploadDir.php, row 38
-"There is nothing to test." => "",
+"There is nothing to test." => "Тут нема чого тестувати.", // ai 2026-06
 
 // src/Optimize/ClearPagecache.php, row 47
-"Table pagecache_new created" => "",
+"Table pagecache_new created" => "Таблицю pagecache_new створено", // ai 2026-06
 
 // src/Optimize/ClearPagecache.php, row 49
-"Table pagecache_str2find_new created" => "",
+"Table pagecache_str2find_new created" => "Таблицю pagecache_str2find_new створено", // ai 2026-06
 
 // src/Optimize/ClearPagecache.php, row 51
-"Renamed tables pagecache_* to pagecache_*_bak" => "",
+"Renamed tables pagecache_* to pagecache_*_bak" => "Таблиці pagecache_* перейменовано на pagecache_*_bak", // ai 2026-06
 
 // src/Optimize/ClearPagecache.php, row 53
-"Renamed tables pagecache_*_new to pagecache_*" => "",
+"Renamed tables pagecache_*_new to pagecache_*" => "Таблиці pagecache_*_new перейменовано на pagecache_*", // ai 2026-06
 
 // src/Optimize/ClearPagecache.php, row 55
-"Old pagecache_*_bak tables dropped" => "",
+"Old pagecache_*_bak tables dropped" => "Старі таблиці pagecache_*_bak видалено", // ai 2026-06
 
 // src/Optimize/Convert2innodb.php, row 17
-"Convert database engine to InnoDB" => "",
+"Convert database engine to InnoDB" => "Перетворити движок бази даних на InnoDB", // ai 2026-06
 
 // src/Optimize/Convert2innodb.php, row 25
-"Converts older MyISAM database storage engine to InnoDB for all tables" => "",
+"Converts older MyISAM database storage engine to InnoDB for all tables" => "Перетворює старіший движок зберігання MyISAM на InnoDB для всіх таблиць", // ai 2026-06
 
 // src/Optimize/Convert2innodb.php, row 41
-"engine for %1 table is %2" => "",
+"engine for %1 table is %2" => "движок таблиці %1 - %2", // ai 2026-06
 
 // src/Optimize/Convert2innodb.php, row 44
 // src/Optimize/Convert2utf8mb4.php, row 43
 // src/Optimize/Convertlatin2Utf8Mb4.php, row 42
-"We found %1 tables which need to be converted" => "",
+"We found %1 tables which need to be converted" => "Знайдено %1 таблиць, які потрібно перетворити", // ai 2026-06
 
 // src/Optimize/Convert2innodb.php, row 58
-"Convert table %1 (%2) to InnoDB" => "",
+"Convert table %1 (%2) to InnoDB" => "Перетворити таблицю %1 (%2) на InnoDB", // ai 2026-06
 
 // src/Optimize/Convert2utf8mb4.php, row 17
-"Convert old database collation utf8 to utf8mb4" => "",
+"Convert old database collation utf8 to utf8mb4" => "Перетворити старе collation бази даних utf8 на utf8mb4", // ai 2026-06
 
 // src/Optimize/Convert2utf8mb4.php, row 25
-"Convert old database collation utf8 (or utf8mb3) to utf8mb4 for all tables and set database default to utf8mb4" => "",
+"Convert old database collation utf8 (or utf8mb3) to utf8mb4 for all tables and set database default to utf8mb4" => "Перетворює старе collation бази даних utf8 (або utf8mb3) на utf8mb4 для всіх таблиць і встановлює utf8mb4 як типове для бази даних", // ai 2026-06
 
 // src/Optimize/Convert2utf8mb4.php, row 40
 // src/Optimize/Convertlatin2Utf8Mb4.php, row 39
-"collation for %1 table is %2" => "",
+"collation for %1 table is %2" => "collation таблиці %1 - %2", // ai 2026-06
 
 // src/Optimize/Convert2utf8mb4.php, row 56
 // src/Optimize/Convertlatin2Utf8Mb4.php, row 64
-"Database default set to %1" => "",
+"Database default set to %1" => "Типове значення бази даних встановлено на %1", // ai 2026-06
 
 // src/Optimize/Convert2utf8mb4.php, row 57
-"Please do not forget to change DB_CHARACTER_SET to \"utf8mb4\" and DB_COLLATION_CONNECTION to \"%1\" in your config.php" => "",
+"Please do not forget to change DB_CHARACTER_SET to \"utf8mb4\" and DB_COLLATION_CONNECTION to \"%1\" in your config.php" => "Будь ласка, не забудьте змінити DB_CHARACTER_SET на \"utf8mb4\" та DB_COLLATION_CONNECTION на \"%1\" у вашому config.php", // ai 2026-06
 
 // src/Optimize/Convert2utf8mb4.php, row 71
-"Convert table %1 (%2) to %3" => "",
+"Convert table %1 (%2) to %3" => "Перетворити таблицю %1 (%2) на %3", // ai 2026-06
 
 // src/Optimize/ConvertSliceEncoding.php, row 18
-"Convert Slice Encoding to UTF" => "",
+"Convert Slice Encoding to UTF" => "Перетворити кодування рубрики на UTF", // ai 2026-06
 
 // src/Optimize/ConvertSliceEncoding.php, row 26
-"[experimental] probably useless for most AA installs - good only for AA where you mix 1B (cp1250) encoded and UTF encoded slices, use 1B database and want to convert data to (fake) UTF in order you can then switch it to real UTF on database level" => "",
+"[experimental] probably useless for most AA installs - good only for AA where you mix 1B (cp1250) encoded and UTF encoded slices, use 1B database and want to convert data to (fake) UTF in order you can then switch it to real UTF on database level" => "[експериментальне] імовірно непотрібне для більшості інсталяцій AA - корисне лише для AA, де ви змішуєте рубрики в 1B (cp1250) та UTF кодуванні, використовуєте 1B базу даних і хочете перетворити дані на (фальшиве) UTF, щоб потім перемкнути його на справжнє UTF на рівні бази даних", // ai 2026-06
 
 // src/Optimize/ConvertSliceEncoding.php, row 373, 419
-"Database (DB_CHARACTER_SET) is not in latin1 encoding. Skipping." => "",
+"Database (DB_CHARACTER_SET) is not in latin1 encoding. Skipping." => "База даних (DB_CHARACTER_SET) не в кодуванні latin1. Пропускаю.", // ai 2026-06
 
 // src/Optimize/ConvertSliceEncoding.php, row 407, 436
-"SQL commands to be performed: <br>%1." => "",
+"SQL commands to be performed: <br>%1." => "SQL команди, які будуть виконані: <br>%1.", // ai 2026-06
 
 // src/Optimize/ConvertSliceEncoding.php, row 442, 453
-"changed %1 rows" => "",
+"changed %1 rows" => "змінено %1 рядків", // ai 2026-06
 
 // src/Optimize/ConvertSliceEncoding.php, row 445
-"Done 1/2 - COMMIT (without change_record)" => "",
+"Done 1/2 - COMMIT (without change_record)" => "Готово 1/2 - COMMIT (без change_record)", // ai 2026-06
 
 // src/Optimize/ConvertSliceEncoding.php, row 457
-"Done 2/2 - COMMIT all" => "",
+"Done 2/2 - COMMIT all" => "Готово 2/2 - COMMIT все", // ai 2026-06
 
 // src/Optimize/ConvertSliceEncoding.php, row 578
-"\"<b>%1</b>\" module <b>could</b> be converted." => "",
+"\"<b>%1</b>\" module <b>could</b> be converted." => "Модуль \"<b>%1</b>\" <b>може</b> бути перетворений.", // ai 2026-06
 
 // src/Optimize/ConvertSliceEncoding.php, row 581
-"\"%1\" module is not in %2 encoding. Skipping." => "",
+"\"%1\" module is not in %2 encoding. Skipping." => "Модуль \"%1\" не в кодуванні %2. Пропускаю.", // ai 2026-06
 
 // src/Optimize/Convertlatin2Utf8Mb4.php, row 17
-"Convert database from 1Byte latin1 encoding to utf8mb4 collation" => "",
+"Convert database from 1Byte latin1 encoding to utf8mb4 collation" => "Перетворити базу даних з 1-байтового кодування latin1 на collation utf8mb4", // ai 2026-06
 
 // src/Optimize/Convertlatin2Utf8Mb4.php, row 25
-"Convert database from 1Byte latin1 encoding to utf8mb4 for all tables and set database default to utf8mb4" => "",
+"Convert database from 1Byte latin1 encoding to utf8mb4 for all tables and set database default to utf8mb4" => "Перетворити базу даних з 1-байтового кодування latin1 на utf8mb4 для всіх таблиць і встановити utf8mb4 як типове для бази даних", // ai 2026-06
 
 // src/Optimize/CopyContent.php, row 13
-"Copy Content Table" => "",
+"Copy Content Table" => "Копіювати таблицю content", // ai 2026-06
 
 // src/Optimize/CopyContent.php, row 21
-"Copy data for all items newer than short_id=1941629 from content table to content2 table. Used for recovery of content table on Ecn server. Not useful for any other users, I think." => "",
+"Copy data for all items newer than short_id=1941629 from content table to content2 table. Used for recovery of content table on Ecn server. Not useful for any other users, I think." => "Копіює дані всіх статей новіших за short_id=1941629 з таблиці content до таблиці content2. Використано для відновлення таблиці content на сервері Ecn. Для інших користувачів, гадаю, непридатне.", // ai 2026-06
 
 // src/Optimize/CopyContent.php, row 67
-"Copied" => "",
+"Copied" => "Скопійовано", // ai 2026-06
 
 // src/Optimize/CopyItemsFromBackup.php, row 16
-"Undelete items from backup tables" => "",
+"Undelete items from backup tables" => "Відновити видалені статті із резервних таблиць", // ai 2026-06
 
 // src/Optimize/CopyItemsFromBackup.php, row 24
-"Copy data from content2 and item2 tables for slice XY which was deleted in item and content table. Used for recovery of content table on Ecn server. Not useful for any other users, I think." => "",
+"Copy data from content2 and item2 tables for slice XY which was deleted in item and content table. Used for recovery of content table on Ecn server. Not useful for any other users, I think." => "Копіює дані з таблиць content2 та item2 для рубрики XY, яку було видалено з таблиць item та content. Використовується для відновлення таблиці content на сервері Ecn. Для інших користувачів, гадаю, не придатне.", // ai 2026-06
 
 // src/Optimize/CopyItemsFromBackup.php, row 67
-"<br>Deleted items: %1, <br>Deleted content: %2, <br>Inserted items: %3, <br>Inserted content: %4" => "",
+"<br>Deleted items: %1, <br>Deleted content: %2, <br>Inserted items: %3, <br>Inserted content: %4" => "<br>Видалені статті: %1, <br>Видалений вміст: %2, <br>Вставлені статті: %3, <br>Вставлений вміст: %4", // ai 2026-06
 
 // src/Optimize/CopyItemsFromBackup.php, row 77
-"Deleted items to be recreated: %1." => "",
+"Deleted items to be recreated: %1." => "Видалені статті для відновлення: %1.", // ai 2026-06
 
 // src/Optimize/CreateUploadDir.php, row 16
-"Create upload directory for current slice" => "",
+"Create upload directory for current slice" => "Створити каталог для завантаження файлів для поточної рубрики", // ai 2026-06
 
 // src/Optimize/CreateUploadDir.php, row 24
-"see IMG_UPLOAD_PATH parameter in config.php file" => "",
+"see IMG_UPLOAD_PATH parameter in config.php file" => "див. параметр IMG_UPLOAD_PATH у файлі config.php", // ai 2026-06
 
 // src/Optimize/CreateUploadDir.php, row 48
-"OK, %1 created" => "",
+"OK, %1 created" => "OK, %1 створено", // ai 2026-06
 
 // src/Optimize/DatabaseStructure.php, row 13
-"Checks if all tables have right columns and indexes" => "",
+"Checks if all tables have right columns and indexes" => "Перевіряє, чи всі таблиці мають правильні стовпці та індекси", // ai 2026-06
 
 // src/Optimize/DatabaseStructure.php, row 21
-"From time to time we add a new table or column to an existing table so that we can support new features. This option will update the datastructure to the last one. No data will be lost." => "",
+"From time to time we add a new table or column to an existing table so that we can support new features. This option will update the datastructure to the last one. No data will be lost." => "Час від часу ми додаємо нову таблицю або стовпець до наявної таблиці, щоб підтримати нові функції. Ця опція оновить структуру даних до останньої версії. Жодні дані не буде втрачено.", // ai 2026-06
 
 // src/Optimize/DbBinaryTrailingZeros.php, row 21
-"Fix user login problem, constants editing problem, ..." => "",
+"Fix user login problem, constants editing problem, ..." => "Виправлення проблеми з входом користувачів, проблеми з редагуванням констант, ...", // ai 2026-06
 
 // src/Optimize/DbBinaryTrailingZeros.php, row 29
-"Replaces binary fields by varbinary and removes trailing zeros. Needed for MySQL > 5.0.17" => "",
+"Replaces binary fields by varbinary and removes trailing zeros. Needed for MySQL > 5.0.17" => "Замінює поля типу binary типом varbinary та видаляє кінцеві нулі. Потрібне для MySQL > 5.0.17", // ai 2026-06
 
 // src/Optimize/DbFeedInconsistency.php, row 16
-"Feeds table inconsistent records" => "",
+"Feeds table inconsistent records" => "Неузгоджені записи в таблиці feeds", // ai 2026-06
 
 // src/Optimize/DbFeedInconsistency.php, row 24
-"Testing if feeds table does not contain relations to non-existent slices (after slice deletion)" => "",
+"Testing if feeds table does not contain relations to non-existent slices (after slice deletion)" => "Перевіряє, чи таблиця feeds не містить зв'язків з неіснуючими рубриками (після видалення рубрики)", // ai 2026-06
 
 // src/Optimize/DbFeedInconsistency.php, row 41
-"Wrong destination slice id: %1 -> %2" => "",
+"Wrong destination slice id: %1 -> %2" => "Помилкове id цільової рубрики: %1 -> %2", // ai 2026-06
 
 // src/Optimize/DbFeedInconsistency.php, row 52
-"Wrong source slice id: %1 -> %2" => "",
+"Wrong source slice id: %1 -> %2" => "Помилкове id вихідної рубрики: %1 -> %2", // ai 2026-06
 
 // src/Optimize/DbFeedInconsistency.php, row 57
 // src/Optimize/DbInconsistency.php, row 64
-"No wrong references found, hurray!" => "",
+"No wrong references found, hurray!" => "Помилкових посилань не знайдено, ура!", // ai 2026-06
 
 // src/Optimize/DbInconsistency.php, row 14
-"Check database consistency" => "",
+"Check database consistency" => "Перевірка узгодженості бази даних", // ai 2026-06
 
 // src/Optimize/DbInconsistency.php, row 22
-"Test content table for records without item table reference, test discussion for the same, ..." => "",
+"Test content table for records without item table reference, test discussion for the same, ..." => "Перевіряє таблицю content на записи без посилання на таблицю item, те саме для таблиці discussion, ...", // ai 2026-06
 
 // src/Optimize/DbInconsistency.php, row 39
-"Wrong slice id in item table: %1" => "",
+"Wrong slice id in item table: %1" => "Помилкове id рубрики в таблиці item: %1", // ai 2026-06
 
 // src/Optimize/DbInconsistency.php, row 49
-"Wrong item id in content table: %1 -> %2" => "",
+"Wrong item id in content table: %1 -> %2" => "Помилкове id статті в таблиці content: %1 -> %2", // ai 2026-06
 
 // src/Optimize/DbInconsistency.php, row 59
-"Wrong item id in discussion table: %1 -> %2" => "",
+"Wrong item id in discussion table: %1 -> %2" => "Помилкове id статті в таблиці discussion: %1 -> %2", // ai 2026-06
 
 // src/Optimize/DbInconsistency.php, row 83
-"Data for slice id %1 in item table deleted" => "",
+"Data for slice id %1 in item table deleted" => "Дані для рубрики з id %1 в таблиці item видалено", // ai 2026-06
 
 // src/Optimize/DbInconsistency.php, row 94
-"Data for item id %1 in content table deleted" => "",
+"Data for item id %1 in content table deleted" => "Дані для статті з id %1 в таблиці content видалено", // ai 2026-06
 
 // src/Optimize/DbInconsistency.php, row 105
-"Data for item id %1 in discussion table deleted" => "",
+"Data for item id %1 in discussion table deleted" => "Дані для статті з id %1 в таблиці discussion видалено", // ai 2026-06
 
 // src/Optimize/DbInconsistencyConstants.php, row 17
-"Check for unused constants" => "",
+"Check for unused constants" => "Перевірка невикористовуваних констант", // ai 2026-06
 
 // src/Optimize/DbInconsistencyConstants.php, row 25
-"Test constant table for never used constants groups" => "",
+"Test constant table for never used constants groups" => "Перевіряє таблицю constant на ніколи не використані групи констант", // ai 2026-06
 
 // src/Optimize/DbInconsistencyConstants.php, row 82
-"Non ASCII chars in group_id" => "",
+"Non ASCII chars in group_id" => "Не-ASCII символи в group_id", // ai 2026-06
 
 // src/Optimize/DbInconsistencyConstants.php, row 87
-"Found %1 Non ASCII" => "",
+"Found %1 Non ASCII" => "Знайдено %1 не-ASCII", // ai 2026-06
 
 // src/Optimize/DbInconsistencyConstants.php, row 92
-"Not used constant group" => "",
+"Not used constant group" => "Невикористана група констант", // ai 2026-06
 
 // src/Optimize/DbInconsistencyConstants.php, row 97
-"Found %1 unused constant groups" => "",
+"Found %1 unused constant groups" => "Знайдено %1 невикористаних груп констант", // ai 2026-06
 
 // src/Optimize/DbInconsistencyConstants.php, row 110
-"Deleted %1 constants in %2 (%3) unused constant groups" => "",
+"Deleted %1 constants in %2 (%3) unused constant groups" => "Видалено %1 констант у %2 (%3) невикористаних групах констант", // ai 2026-06
 
 // src/Optimize/DbRelationDups.php, row 15
-"Relation table duplicate records" => "",
+"Relation table duplicate records" => "Дубльовані записи в таблиці relation", // ai 2026-06
 
 // src/Optimize/DbRelationDups.php, row 23
-"Testing if relation table contains records, where values in both columns are identical (which was a bug fixed in Jan 2006)" => "",
+"Testing if relation table contains records, where values in both columns are identical (which was a bug fixed in Jan 2006)" => "Перевіряє, чи таблиця relation містить записи, де значення в обох стовпцях однакові (помилку виправлено в січні 2006)", // ai 2026-06
 
 // src/Optimize/DbRelationDups.php, row 35
-"%1 duplicates found" => "",
+"%1 duplicates found" => "Знайдено %1 дублікатів", // ai 2026-06
 
 // src/Optimize/DbRelationDups.php, row 38
 // src/Optimize/FieldDuplicates.php, row 50, 66
-"No duplicates found" => "",
+"No duplicates found" => "Дублікатів не знайдено", // ai 2026-06
 
 // src/Optimize/DbRelationStartsxy.php, row 14
-"Slices relation started by x or y records" => "",
+"Slices relation started by x or y records" => "Зв'язки рубрик, що починаються записами x або y", // ai 2026-06
 
 // src/Optimize/DbRelationStartsxy.php, row 22
-"Testing if relations between slices are OK (without x or y chars on the beginning)" => "",
+"Testing if relations between slices are OK (without x or y chars on the beginning)" => "Перевіряє, чи зв'язки між рубриками правильні (без символів x або y на початку)", // ai 2026-06
 
 // src/Optimize/DbRelationStartsxy.php, row 34, 50
-"%1 bad relation records found" => "",
+"%1 bad relation records found" => "Знайдено %1 помилкових записів зв'язків", // ai 2026-06
 
 // src/Optimize/DbRelationStartsxy.php, row 37
-"No bad relation records found" => "",
+"No bad relation records found" => "Помилкових записів зв'язків не знайдено", // ai 2026-06
 
 // src/Optimize/DbRelationStartsxy.php, row 52
-"repair value: %1 with item_id: %2" => "",
+"repair value: %1 with item_id: %2" => "виправлення значення: %1 з item_id: %2", // ai 2026-06
 
 // src/Optimize/DropBackupTables.php, row 20
-"Delete backup tables" => "",
+"Delete backup tables" => "Видалити резервні таблиці", // ai 2026-06
 
 // src/Optimize/DropBackupTables.php, row 28
-"Deletes all the current backup tables (bck_slice, bck_item, ...)." => "",
+"Deletes all the current backup tables (bck_slice, bck_item, ...)." => "Видаляє всі поточні резервні таблиці (bck_slice, bck_item, ...).", // ai 2026-06
 
 // src/Optimize/FieldDuplicates.php, row 15
-"Fix field definitions duplicates" => "",
+"Fix field definitions duplicates" => "Виправити дублікати визначень полів", // ai 2026-06
 
 // src/Optimize/FieldDuplicates.php, row 23
-"There should be only one slice_id - field_id pair in all slices, but sometimes there are more than one (mainly because of error in former sql_update.php script, where more than one display_count... fields were added)." => "",
+"There should be only one slice_id - field_id pair in all slices, but sometimes there are more than one (mainly because of error in former sql_update.php script, where more than one display_count... fields were added)." => "У всіх рубриках кожна пара slice_id - field_id повинна існувати лише один раз, але іноді їх більше (головним чином через помилку в попередньому скрипті sql_update.php, який додавав більше одного поля display_count...).", // ai 2026-06
 
 // src/Optimize/FieldDuplicates.php, row 54
-"Duplicate in slice - field: %1 - %2" => "",
+"Duplicate in slice - field: %1 - %2" => "Дублікат у рубриці - поле: %1 - %2", // ai 2026-06
 
 // src/Optimize/FieldDuplicates.php, row 80
-"Field %2 in slice %1 fixed" => "",
+"Field %2 in slice %1 fixed" => "Поле %2 в рубриці %1 виправлено", // ai 2026-06
 
 // src/Optimize/FixContentColumn.php, row 15
-"Set right content column for field" => "",
+"Set right content column for field" => "Встановити правильний стовпець вмісту для поля", // ai 2026-06
 
 // src/Optimize/FixContentColumn.php, row 23
-"Set flag FLAG_TEXT_STORED for all content, where field is marked as text field, and reset it for number fields" => "",
+"Set flag FLAG_TEXT_STORED for all content, where field is marked as text field, and reset it for number fields" => "Встановлює прапорець FLAG_TEXT_STORED для всього вмісту, де поле позначено як текстове, та скидає його для числових полів", // ai 2026-06
 
 // src/Optimize/FixContentColumn.php, row 39
-"No problem found, hurray" => "",
+"No problem found, hurray" => "Проблем не знайдено, ура", // ai 2026-06
 
 // src/Optimize/FixContentColumn.php, row 47
-"slice %1: field_id: %2 item_id: %3" => "",
+"slice %1: field_id: %2 item_id: %3" => "рубрика %1: field_id: %2 item_id: %3", // ai 2026-06
 
 // src/Optimize/FixContentColumn.php, row 50, 73
-"and more..." => "",
+"and more..." => "та інші...", // ai 2026-06
 
 // src/Optimize/FixContentColumn.php, row 53
-"We found %1 inconsistent rows in content table" => "",
+"We found %1 inconsistent rows in content table" => "Знайдено %1 неузгоджених рядків у таблиці content", // ai 2026-06
 
 // src/Optimize/FixContentColumn.php, row 71
-"fixed (id-field): %1 - %2 (%3)" => "",
+"fixed (id-field): %1 - %2 (%3)" => "виправлено (id-поле): %1 - %2 (%3)", // ai 2026-06
 
 // src/Optimize/FixContentColumn.php, row 76
-"We fixed %1 inconsistent rows in content table" => "",
+"We fixed %1 inconsistent rows in content table" => "Виправлено %1 неузгоджених рядків у таблиці content", // ai 2026-06
 
 // src/Optimize/FixDatewidget.php, row 18
-"Fix older format of date widget parameters" => "",
+"Fix older format of date widget parameters" => "Виправити старіший формат параметрів віджета дати", // ai 2026-06
 
 // src/Optimize/FixDatewidget.php, row 26
-"AA used to use ' as parameter delimiter in some early stages instead of : - like date widget 1'10'1. This fixes it to current 1:10:1. Functionally it is equal." => "",
+"AA used to use ' as parameter delimiter in some early stages instead of : - like date widget 1'10'1. This fixes it to current 1:10:1. Functionally it is equal." => "AA в ранніх версіях використовувало як роздільник параметрів ' замість : - наприклад віджет дати 1'10'1. Це виправляє його на сучасний 1:10:1. Функціонально це рівноцінно.", // ai 2026-06
 
 // src/Optimize/FixDatewidget.php, row 36
-"We found %1 old delimiters:" => "",
+"We found %1 old delimiters:" => "Знайдено %1 старих роздільників:", // ai 2026-06
 
 // src/Optimize/FixDatewidget.php, row 38
 // src/Optimize/RemoveUndefineAlias.php, row 71, 92
-"%1 - %2 (%3) Params: %4" => "",
+"%1 - %2 (%3) Params: %4" => "%1 - %2 (%3) Параметри: %4", // ai 2026-06
 
 // src/Optimize/FixDatewidget.php, row 46
-"OK - There are no old delimiters" => "",
+"OK - There are no old delimiters" => "OK - Старих роздільників немає", // ai 2026-06
 
 // src/Optimize/FixDatewidget.php, row 58
-"Fixed %1 fields" => "",
+"Fixed %1 fields" => "Виправлено %1 полів", // ai 2026-06
 
 // src/Optimize/FixPagecache.php, row 19
-"Fix inconsistency in pagecache" => "",
+"Fix inconsistency in pagecache" => "Виправити неузгодженість у pagecache", // ai 2026-06
 
 // src/Optimize/FixPagecache.php, row 27
-"Delete non-existent keys in pagecache_str2find table and vice versa" => "",
+"Delete non-existent keys in pagecache_str2find table and vice versa" => "Видалити неіснуючі ключі в таблиці pagecache_str2find і навпаки", // ai 2026-06
 
 // src/Optimize/FixPagecache.php, row 76
-"%1 inconsistent rows in pagecache_str2find removed" => "",
+"%1 inconsistent rows in pagecache_str2find removed" => "Видалено %1 неузгоджених рядків у pagecache_str2find", // ai 2026-06
 
 // src/Optimize/FixPagecache.php, row 80
-"%1 inconsistent rows in pagecache removed" => "",
+"%1 inconsistent rows in pagecache removed" => "Видалено %1 неузгоджених рядків у pagecache", // ai 2026-06
 
 // src/Optimize/GenerateJslibsArray.php, row 17
-"Generate JS Library definition array" => "",
+"Generate JS Library definition array" => "Згенерувати масив визначень JS-бібліотек", // ai 2026-06
 
 // src/Optimize/GenerateJslibsArray.php, row 25
-"Prints out the JS library definition array used in include/stringexpand.php for update to last version of libs on jsDeliver CDN (used by AA developers to update js libs in AA)" => "",
+"Prints out the JS library definition array used in include/stringexpand.php for update to last version of libs on jsDeliver CDN (used by AA developers to update js libs in AA)" => "Виводить масив визначень JS-бібліотек, що використовується в include/stringexpand.php для оновлення до останніх версій бібліотек на CDN jsDeliver (використовується розробниками AA для оновлення js-бібліотек в AA)", // ai 2026-06
 
 // src/Optimize/GenerateMetabase.php, row 42
-"Generate metabase definition row" => "",
+"Generate metabase definition row" => "Згенерувати рядок визначення метабази", // ai 2026-06
 
 // src/Optimize/GenerateMetabase.php, row 50
-"For programmers only - prints the include/metabase_schema.php content (the expected DB schema, as a readable PHP array) generated from the current database; copy it into the file and commit." => "",
+"For programmers only - prints the include/metabase_schema.php content (the expected DB schema, as a readable PHP array) generated from the current database; copy it into the file and commit." => "Лише для програмістів - виводить вміст include/metabase_schema.php (очікувану схему БД як читабельний PHP-масив), згенерований з поточної бази даних; скопіюйте його до файлу та зробіть commit.", // ai 2026-06
 
 // src/Optimize/ItemDiscussion.php, row 16
-"Delete discussion comments for non-existent items" => "",
+"Delete discussion comments for non-existent items" => "Видалити коментарі обговорення для неіснуючих статей", // ai 2026-06
 
 // src/Optimize/ItemDiscussion.php, row 36, 54
-"No problems found" => "",
+"No problems found" => "Проблем не знайдено", // ai 2026-06
 
 // src/Optimize/ItemDiscussion.php, row 40
-"Problem for item %1 - %2 comments found" => "",
+"Problem for item %1 - %2 comments found" => "Проблема зі статтею %1 - знайдено %2 коментарів", // ai 2026-06
 
 // src/Optimize/ItemDiscussion.php, row 61
-"%1 problems solved" => "",
+"%1 problems solved" => "Вирішено %1 проблем", // ai 2026-06
 
 // src/Optimize/LdapPermsToSql.php, row 48
-"Migrate LDAP perms to SQL perms" => "",
+"Migrate LDAP perms to SQL perms" => "Перенести права з LDAP до SQL", // ai 2026-06
 
 // src/Optimize/LdapPermsToSql.php, row 54
-"Copies all users, groups, memberships and permissions from the LDAP backend into the SQL backend tables (users, membership, perms), and rewrites item.posted_by / item.edited_by from LDAP DN form (uid=...,ou=...) to the new SQL numeric ids. Run once per install, then switch PERM_LIB to 'sql' in config. 'Test' is a read-only dry run. 'Repair' performs the migration and is re-runnable. 'Revert' uses the mapping table to undo everything." => "",
+"Copies all users, groups, memberships and permissions from the LDAP backend into the SQL backend tables (users, membership, perms), and rewrites item.posted_by / item.edited_by from LDAP DN form (uid=...,ou=...) to the new SQL numeric ids. Run once per install, then switch PERM_LIB to 'sql' in config. 'Test' is a read-only dry run. 'Repair' performs the migration and is re-runnable. 'Revert' uses the mapping table to undo everything." => "Копіює всіх користувачів, групи, членства та права з LDAP-бекенду до таблиць SQL-бекенду (users, membership, perms) та переписує item.posted_by / item.edited_by з форми LDAP DN (uid=...,ou=...) на нові числові id SQL. Запустіть один раз на кожній інсталяції, потім перемкніть PERM_LIB на 'sql' у конфігурації. 'Test' — це пробний запуск лише для читання. 'Repair' виконує перенесення і його можна запускати повторно. 'Revert' використовує таблицю зіставлення, щоб скасувати все.", // ai 2026-06
 
 // src/Optimize/LdapPermsToSql.php, row 71
-"This optimizer only runs when PERM_LIB='ldap'. Current PERM_LIB='%1'." => "",
+"This optimizer only runs when PERM_LIB='ldap'. Current PERM_LIB='%1'." => "Цей оптимізатор виконується лише при PERM_LIB='ldap'. Поточне PERM_LIB='%1'.", // ai 2026-06
 
 // src/Optimize/LdapPermsToSql.php, row 86
-"Would create mapping table `%1`" => "",
+"Would create mapping table `%1`" => "Було б створено таблицю зіставлення `%1`", // ai 2026-06
 
 // src/Optimize/LdapPermsToSql.php, row 115
-"Test failed: %1" => "",
+"Test failed: %1" => "Тест не пройдено: %1", // ai 2026-06
 
 // src/Optimize/LdapPermsToSql.php, row 118
-"Test finished (dry run - no changes made)." => "",
+"Test finished (dry run - no changes made)." => "Тест завершено (пробний запуск - жодних змін не зроблено).", // ai 2026-06
 
 // src/Optimize/LdapPermsToSql.php, row 134
-"Repair failed: %1" => "",
+"Repair failed: %1" => "Виправлення не вдалося: %1", // ai 2026-06
 
 // src/Optimize/LdapPermsToSql.php, row 137
-"Repair finished." => "",
+"Repair finished." => "Ремонт завершено.", // ai 2026-06
 
 // src/Optimize/LdapPermsToSql.php, row 153
-"Revert failed: %1" => "",
+"Revert failed: %1" => "Не вдалося повернути: %1", // ai 2026-06
 
 // src/Optimize/LdapPermsToSql.php, row 156
-"Revert finished." => "",
+"Revert finished." => "Повернення завершено.", // ai 2026-06
 
 // src/Optimize/LdapPermsToSql.php, row 177
-"LDAP findUsernames failed or returned: %1" => "",
+"LDAP findUsernames failed or returned: %1" => "LDAP findUsernames завершилося помилкою або повернуло: %1", // ai 2026-06
 
 // src/Optimize/LdapPermsToSql.php, row 180
-"LDAP users found: %1" => "",
+"LDAP users found: %1" => "Знайдено користувачів LDAP: %1", // ai 2026-06
 
 // src/Optimize/LdapPermsToSql.php, row 196
-"Skipping user %1 - cannot determine login" => "",
+"Skipping user %1 - cannot determine login" => "Користувача %1 пропущено - не вдається визначити логін", // ai 2026-06
 
 // src/Optimize/LdapPermsToSql.php, row 205
-"User %1 already exists in SQL (id %2), reusing" => "",
+"User %1 already exists in SQL (id %2), reusing" => "Користувач %1 вже існує в SQL (id %2), використовується наявний", // ai 2026-06
 
 // src/Optimize/LdapPermsToSql.php, row 219
-"Would create SQL user: %1 (from %2)" => "",
+"Would create SQL user: %1 (from %2)" => "Було б створено користувача SQL: %1 (з %2)", // ai 2026-06
 
 // src/Optimize/LdapPermsToSql.php, row 227
-"Failed to create SQL user %1" => "",
+"Failed to create SQL user %1" => "Не вдалося створити користувача SQL %1", // ai 2026-06
 
 // src/Optimize/LdapPermsToSql.php, row 234
-"Users: created=%1 reused=%2 failed=%3" => "",
+"Users: created=%1 reused=%2 failed=%3" => "Користувачі: створено=%1 повторно використано=%2 помилок=%3", // ai 2026-06
 
 // src/Optimize/LdapPermsToSql.php, row 242
-"LDAP groups found: %1" => "",
+"LDAP groups found: %1" => "Знайдено груп LDAP: %1", // ai 2026-06
 
 // src/Optimize/LdapPermsToSql.php, row 263
-"Group %1 already exists in SQL (id %2), reusing" => "",
+"Group %1 already exists in SQL (id %2), reusing" => "Група %1 вже існує в SQL (id %2), використовується наявна", // ai 2026-06
 
 // src/Optimize/LdapPermsToSql.php, row 272
-"Would create SQL group: %1 (from %2)" => "",
+"Would create SQL group: %1 (from %2)" => "Було б створено групу SQL: %1 (з %2)", // ai 2026-06
 
 // src/Optimize/LdapPermsToSql.php, row 279
-"Failed to create SQL group %1" => "",
+"Failed to create SQL group %1" => "Не вдалося створити групу SQL %1", // ai 2026-06
 
 // src/Optimize/LdapPermsToSql.php, row 286
-"Groups: created=%1 reused=%2 failed=%3" => "",
+"Groups: created=%1 reused=%2 failed=%3" => "Групи: створено=%1 повторно використано=%2 помилок=%3", // ai 2026-06
 
 // src/Optimize/LdapPermsToSql.php, row 324
-"Memberships: added=%1 skipped_unmapped=%2" => "",
+"Memberships: added=%1 skipped_unmapped=%2" => "Членства: додано=%1 пропущено_без_зіставлення=%2", // ai 2026-06
 
 // src/Optimize/LdapPermsToSql.php, row 365
-"Permission rows migrated: %1" => "",
+"Permission rows migrated: %1" => "Перенесено рядків прав: %1", // ai 2026-06
 
 // src/Optimize/LdapPermsToSql.php, row 387
-"No mapping entries - nothing to rewrite." => "",
+"No mapping entries - nothing to rewrite." => "Немає записів зіставлення - нічого переписувати.", // ai 2026-06
 
 // src/Optimize/LdapPermsToSql.php, row 406
-"Rewrite %1.%2: %3 rows" => "",
+"Rewrite %1.%2: %3 rows" => "Перезапис %1.%2: %3 рядків", // ai 2026-06
 
 // src/Optimize/LdapPermsToSql.php, row 416
-"Mapping table is empty - nothing to revert." => "",
+"Mapping table is empty - nothing to revert." => "Таблиця зіставлення порожня - нічого повертати.", // ai 2026-06
 
 // src/Optimize/LdapPermsToSql.php, row 432
-"Revert %1.%2: %3 rows" => "",
+"Revert %1.%2: %3 rows" => "Повернення %1.%2: %3 рядків", // ai 2026-06
 
 // src/Optimize/LdapPermsToSql.php, row 449
-"Deleted SQL users=%1 groups=%2" => "",
+"Deleted SQL users=%1 groups=%2" => "Видалено користувачів SQL=%1 груп=%2", // ai 2026-06
 
 // src/Optimize/MultivalueDuplicates.php, row 14
-"Multivalue Duplicates" => "",
+"Multivalue Duplicates" => "Дублікати в багатозначних полях", // ai 2026-06
 
 // src/Optimize/MultivalueDuplicates.php, row 22
-"Removes duplicate values in multivalue text fields" => "",
+"Removes duplicate values in multivalue text fields" => "Видаляє дублікати значень у багатозначних текстових полях", // ai 2026-06
 
 // src/Optimize/MultivalueDuplicates.php, row 37, 84
-"%1 duplicates found in text fields" => "",
+"%1 duplicates found in text fields" => "Знайдено %1 дублікатів у текстових полях", // ai 2026-06
 
 // src/Optimize/MultivalueDuplicates.php, row 39
-"Duplicates (%4) in item %1 - field %2 - value %3" => "",
+"Duplicates (%4) in item %1 - field %2 - value %3" => "Дублікати (%4) у статті %1 - поле %2 - значення %3", // ai 2026-06
 
 // src/Optimize/MultivalueDuplicates.php, row 53, 96
-"%1 duplicates found in numeric fields" => "",
+"%1 duplicates found in numeric fields" => "Знайдено %1 дублікатів у числових полях", // ai 2026-06
 
 // src/Optimize/MultivalueDuplicates.php, row 55
-"Duplicates (%4) in item %1 - field %2 - value %3 - numeric" => "",
+"Duplicates (%4) in item %1 - field %2 - value %3 - numeric" => "Дублікати (%4) у статті %1 - поле %2 - значення %3 - числове", // ai 2026-06
 
 // src/Optimize/MultivalueDuplicates.php, row 66, 105
-"No duplicates found, hurray!" => "",
+"No duplicates found, hurray!" => "Дублікатів не знайдено, ура!", // ai 2026-06
 
 // src/Optimize/ReadersLogin2id.php, row 15
-"Convert Readers login to reader id" => "",
+"Convert Readers login to reader id" => "Перетворення логінів читачів на id читача", // ai 2026-06
 
 // src/Optimize/ReadersLogin2id.php, row 23
-"There was a change in Reader management functionality in AA v2.8.1, so readers are not internally identified by their login, but by reader ID (item ID of reader in Reader slice). This is much more powerful - you can create relations just as in normal slice. It works well without any change. The only problem is, if you set any slice to be editable by users from Reader slice. In that case the fields edited_by........ and posted_by........ are filled by reader's login instead of reader id. You can fix it by \"Repair\"." => "",
+"There was a change in Reader management functionality in AA v2.8.1, so readers are not internally identified by their login, but by reader ID (item ID of reader in Reader slice). This is much more powerful - you can create relations just as in normal slice. It works well without any change. The only problem is, if you set any slice to be editable by users from Reader slice. In that case the fields edited_by........ and posted_by........ are filled by reader's login instead of reader id. You can fix it by \"Repair\"." => "У версії AA v2.8.1 змінилася робота керування читачами, тож читачі тепер ідентифікуються внутрішньо не за логіном, а за ID читача (ID статті читача в рубриці читачів). Це набагато потужніше - можна створювати зв'язки так само, як у звичайній рубриці. Усе працює без жодних змін. Єдина проблема виникає, якщо ви налаштували якусь рубрику як редаговану користувачами з рубрики читачів. У такому разі поля edited_by........ і posted_by........ заповнюються логіном читача замість id читача. Виправити це можна командою \"Repair\".", // ai 2026-06
 
 // src/Optimize/ReadersLogin2id.php, row 37, 81
-"Can't test - list of all usernames is not allowed by your permission system (LDAP?)" => "",
+"Can't test - list of all usernames is not allowed by your permission system (LDAP?)" => "Неможливо перевірити - перелік усіх імен користувачів не дозволяє ваша система прав (LDAP?)", // ai 2026-06
 
 // src/Optimize/ReadersLogin2id.php, row 42
-"%1 login names from reader slice found as records in item.posted_by which is wrong (There should be reader ID from AA v2.8.1). \"Repair\" will correct it." => "",
+"%1 login names from reader slice found as records in item.posted_by which is wrong (There should be reader ID from AA v2.8.1). \"Repair\" will correct it." => "Знайдено %1 логінів з рубрики читачів як записи в item.posted_by, що є помилкою (від AA v2.8.1 там має бути ID читача). \"Repair\" це виправить.", // ai 2026-06
 
 // src/Optimize/ReadersLogin2id.php, row 47
-"%1 login names from reader slice found as records in item.edited_by which is wrong (There should be reader ID from AA v2.8.1). \"Repair\" will correct it." => "",
+"%1 login names from reader slice found as records in item.edited_by which is wrong (There should be reader ID from AA v2.8.1). \"Repair\" will correct it." => "Знайдено %1 логінів з рубрики читачів як записи в item.edited_by, що є помилкою (від AA v2.8.1 там має бути ID читача). \"Repair\" це виправить.", // ai 2026-06
 
 // src/Optimize/ReadersLogin2id.php, row 91
-"Column item.posted_by updated for %1 (id: %2)." => "",
+"Column item.posted_by updated for %1 (id: %2)." => "Стовпець item.posted_by оновлено для %1 (id: %2).", // ai 2026-06
 
 // src/Optimize/ReadersLogin2id.php, row 98
-"Column item.edited_by updated for %1 (id: %2)." => "",
+"Column item.edited_by updated for %1 (id: %2)." => "Стовпець item.edited_by оновлено для %1 (id: %2).", // ai 2026-06
 
 // src/Optimize/RedefineCoreConstants.php, row 15
-"Redefine core constants" => "",
+"Redefine core constants" => "Перевизначити основні константи", // ai 2026-06
 
 // src/Optimize/RedefineCoreConstants.php, row 23
-"Updates core constants - like Code-pages, Language Constants and AA Bins" => "",
+"Updates core constants - like Code-pages, Language Constants and AA Bins" => "Оновлює основні константи - як-от кодові сторінки (Code-pages), мовні константи та AA Bins", // ai 2026-06
 
 // src/Optimize/RedefineCoreConstants.php, row 43
-"Code-pages constants (lt_codepages) are not up-to-date - found: %1 from 9" => "",
+"Code-pages constants (lt_codepages) are not up-to-date - found: %1 from 9" => "Константи кодових сторінок (lt_codepages) не актуальні - знайдено: %1 з 9", // ai 2026-06
 
 // src/Optimize/RedefineCoreConstants.php, row 50
-"Language constants (lt_languages) are not up-to-date - found: %1 from 46" => "",
+"Language constants (lt_languages) are not up-to-date - found: %1 from 46" => "Мовні константи (lt_languages) не актуальні - знайдено: %1 з 46", // ai 2026-06
 
 // src/Optimize/RedefineCoreConstants.php, row 57
-"AA Bins constants (AA_Core_Bins....) are not up-to-date - found: %1 from 3" => "",
+"AA Bins constants (AA_Core_Bins....) are not up-to-date - found: %1 from 3" => "Константи AA Bins (AA_Core_Bins....) не актуальні - знайдено: %1 з 3", // ai 2026-06
 
 // src/Optimize/RedefineCoreConstants.php, row 64
-"APC-wide categories (lt_apcCategories) are not up-to-date - found: %1 from 82" => "",
+"APC-wide categories (lt_apcCategories) are not up-to-date - found: %1 from 82" => "Категорії, спільні для APC (lt_apcCategories), не актуальні - знайдено: %1 з 82", // ai 2026-06
 
 // src/Optimize/RedefineCoreConstants.php, row 78
-"Deleting Code-pages, Language Constants, AA Bins constants and APC-wide categories" => "",
+"Deleting Code-pages, Language Constants, AA Bins constants and APC-wide categories" => "Видалення кодових сторінок, мовних констант, констант AA Bins та категорій, спільних для APC", // ai 2026-06
 
 // src/Optimize/RedefineCoreConstants.php, row 81
-"Recreate Code-pages" => "",
+"Recreate Code-pages" => "Знову створити кодові сторінки (Code-pages)", // ai 2026-06
 
 // src/Optimize/RedefineCoreConstants.php, row 92
-"Recreate Languages" => "",
+"Recreate Languages" => "Знову створити мови", // ai 2026-06
 
 // src/Optimize/RedefineCoreConstants.php, row 140
-"Recreate AA Bins" => "",
+"Recreate AA Bins" => "Знову створити AA Bins", // ai 2026-06
 
 // src/Optimize/RedefineCoreConstants.php, row 145
-"APC wide categories" => "",
+"APC wide categories" => "Категорії, спільні для APC", // ai 2026-06
 
 // src/Optimize/RedefineCoreConstants.php, row 229
-"Make sure, the constants are registered" => "",
+"Make sure, the constants are registered" => "Переконатися, що константи зареєстровано", // ai 2026-06
 
 // src/Optimize/RedefineCoreConstants.php, row 235
-"Redefine core constants - done." => "",
+"Redefine core constants - done." => "Перевизначення основних констант - готово.", // ai 2026-06
 
 // src/Optimize/RedefineFieldTemplates.php, row 43
-"Redefine field templates" => "",
+"Redefine field templates" => "Перевизначити шаблони полів", // ai 2026-06
 
 // src/Optimize/RedefineFieldTemplates.php, row 51
-"Updates field templates (in ActionApps Core slice), which is used when you are adding new field to slice" => "",
+"Updates field templates (in ActionApps Core slice), which is used when you are adding new field to slice" => "Оновлює шаблони полів (у рубриці ActionApps Core), які використовуються при додаванні нового поля до рубрики", // ai 2026-06
 
 // src/Optimize/RedefineFieldTemplates.php, row 70
-"template fields are not present" => "",
+"template fields are not present" => "шаблонні поля відсутні", // ai 2026-06
 
 // src/Optimize/RedefineFieldTemplates.php, row 88
 // src/Optimize/RedefineSliceNewsTemplates.php, row 57
-"Deleting all fields from \"ActionApps Core\" slice" => "",
+"Deleting all fields from \"ActionApps Core\" slice" => "Видалення всіх полів з рубрики \"ActionApps Core\"", // ai 2026-06
 
 // src/Optimize/RedefineFieldTemplates.php, row 91
-"Make sure slice owner Action Applications System exists and reset to defaults" => "",
+"Make sure slice owner Action Applications System exists and reset to defaults" => "Переконатися, що власник рубрики Action Applications System існує, і скинути до типових значень", // ai 2026-06
 
 // src/Optimize/RedefineFieldTemplates.php, row 94
-"Make sure \"ActionApps Core\" slice exists and reset to defaults" => "",
+"Make sure \"ActionApps Core\" slice exists and reset to defaults" => "Переконатися, що рубрика \"ActionApps Core\" існує, і скинути до типових значень", // ai 2026-06
 
 // src/Optimize/RedefineFieldTemplates.php, row 98
-"Recreate field definitions" => "",
+"Recreate field definitions" => "Знову створити визначення полів", // ai 2026-06
 
 // src/Optimize/RedefineFieldTemplates.php, row 188
-"Redefine field defaults - done." => "",
+"Redefine field defaults - done." => "Перевизначення типових значень полів - готово.", // ai 2026-06
 
 // src/Optimize/RedefineLinksTemplates.php, row 14
-"Recreate Links module template" => "",
+"Recreate Links module template" => "Знову створити шаблон модуля Links", // ai 2026-06
 
 // src/Optimize/RedefineLinksTemplates.php, row 20
-"Deletes and recreates the default settings for Links module" => "",
+"Deletes and recreates the default settings for Links module" => "Видаляє та знову створює типові налаштування модуля Links", // ai 2026-06
 
 // src/Optimize/RedefineLinksTemplates.php, row 37
-"There is no root Link Module category - Links module should be recreated" => "",
+"There is no root Link Module category - Links module should be recreated" => "Немає кореневої категорії модуля Links - модуль Links слід створити знову", // ai 2026-06
 
 // src/Optimize/RedefineLinksTemplates.php, row 49
 // src/Optimize/RedefineSiteTemplates.php, row 47
-"Replacing module definition" => "",
+"Replacing module definition" => "Заміна визначення модуля", // ai 2026-06
 
 // src/Optimize/RedefineLinksTemplates.php, row 126
-"Links Module template recreation - done." => "",
+"Links Module template recreation - done." => "Повторне створення шаблону модуля Links - готово.", // ai 2026-06
 
 // src/Optimize/RedefineSiteTemplates.php, row 13
-"Recreate Site module template" => "",
+"Recreate Site module template" => "Знову створити шаблон модуля Site", // ai 2026-06
 
 // src/Optimize/RedefineSiteTemplates.php, row 19
-"Deletes and recreates the default template for Site module" => "",
+"Deletes and recreates the default template for Site module" => "Видаляє та знову створює типовий шаблон модуля Site", // ai 2026-06
 
 // src/Optimize/RedefineSiteTemplates.php, row 36
-"Site Module template should be recreated" => "",
+"Site Module template should be recreated" => "Шаблон модуля Site слід створити знову", // ai 2026-06
 
 // src/Optimize/RedefineSiteTemplates.php, row 51
-"Site Module template recreation - done." => "",
+"Site Module template recreation - done." => "Повторне створення шаблону модуля Site - готово.", // ai 2026-06
 
 // src/Optimize/RedefineSlicReaderTemplates.php, row 15
-"Redefine Reader Management template slice" => "",
+"Redefine Reader Management template slice" => "Перевизначити шаблонну рубрику Reader Management", // ai 2026-06
 
 // src/Optimize/RedefineSlicReaderTemplates.php, row 23
-"Deletes and recreates the Reader Management slice, used as template or example slice" => "",
+"Deletes and recreates the Reader Management slice, used as template or example slice" => "Видаляє та знову створює рубрику Reader Management, що використовується як шаблонна чи приклад рубрики", // ai 2026-06
 
 // src/Optimize/RedefineSlicReaderTemplates.php, row 42
-"\"Reader Management\" template slice is not defined" => "",
+"\"Reader Management\" template slice is not defined" => "Шаблонну рубрику \"Reader Management\" не визначено", // ai 2026-06
 
 // src/Optimize/RedefineSlicReaderTemplates.php, row 58
-"Deleting all fields from \"Reader Management\" slice" => "",
+"Deleting all fields from \"Reader Management\" slice" => "Видалення всіх полів з рубрики \"Reader Management\"", // ai 2026-06
 
 // src/Optimize/RedefineSlicReaderTemplates.php, row 61
-"Make sure \"Reader Management\" slice exists and reset to defaults" => "",
+"Make sure \"Reader Management\" slice exists and reset to defaults" => "Переконатися, що рубрика \"Reader Management\" існує, і скинути до типових значень", // ai 2026-06
 
 // src/Optimize/RedefineSlicReaderTemplates.php, row 65
-"Recreate field definitions for \"Reader Management\"" => "",
+"Recreate field definitions for \"Reader Management\"" => "Знову створити визначення полів для \"Reader Management\"", // ai 2026-06
 
 // src/Optimize/RedefineSlicReaderTemplates.php, row 90
-"Reader Management template slice creation - done." => "",
+"Reader Management template slice creation - done." => "Створення шаблонної рубрики Reader Management - готово.", // ai 2026-06
 
 // src/Optimize/RedefineSliceNewsTemplates.php, row 15
-"Redefine News EN template slice" => "",
+"Redefine News EN template slice" => "Перевизначити шаблонну рубрику News EN", // ai 2026-06
 
 // src/Optimize/RedefineSliceNewsTemplates.php, row 23
-"Deletes and recreates the News EN slice, used as template or example slice" => "",
+"Deletes and recreates the News EN slice, used as template or example slice" => "Видаляє та знову створює рубрику News EN, що використовується як шаблонна чи приклад рубрики", // ai 2026-06
 
 // src/Optimize/RedefineSliceNewsTemplates.php, row 41
-"News EN template slice is not defined" => "",
+"News EN template slice is not defined" => "Шаблонну рубрику News EN не визначено", // ai 2026-06
 
 // src/Optimize/RedefineSliceNewsTemplates.php, row 60
-"Make sure \"News EN\" slice exists and reset to defaults" => "",
+"Make sure \"News EN\" slice exists and reset to defaults" => "Переконатися, що рубрика \"News EN\" існує, і скинути до типових значень", // ai 2026-06
 
 // src/Optimize/RedefineSliceNewsTemplates.php, row 64
-"Recreate field definitions for \"News EN\"" => "",
+"Recreate field definitions for \"News EN\"" => "Знову створити визначення полів для \"News EN\"", // ai 2026-06
 
 // src/Optimize/RedefineSliceNewsTemplates.php, row 97
-"News EN template slice creation - done." => "",
+"News EN template slice creation - done." => "Створення шаблонної рубрики News EN - готово.", // ai 2026-06
 
 // src/Optimize/RedefineSliceNoticiasTemplates.php, row 15
-"Redefine Noticas - ES template slice" => "",
+"Redefine Noticas - ES template slice" => "Перевизначити шаблонну рубрику Noticas - ES", // ai 2026-06
 
 // src/Optimize/RedefineSliceNoticiasTemplates.php, row 23
-"Deletes and recreates the Noticas - ES slice, used as template or example slice" => "",
+"Deletes and recreates the Noticas - ES slice, used as template or example slice" => "Видаляє та повторно створює рубрику Noticas - ES, що використовується як шаблонна або зразкова рубрика", // ai 2026-06
 
 // src/Optimize/RedefineSliceNoticiasTemplates.php, row 42
-"\"Noticas - ES\" template slice is not defined" => "",
+"\"Noticas - ES\" template slice is not defined" => "Шаблонну рубрику \"Noticas - ES\" не визначено", // ai 2026-06
 
 // src/Optimize/RedefineSliceNoticiasTemplates.php, row 58
-"Deleting all fields from \"Noticas - ES\" slice" => "",
+"Deleting all fields from \"Noticas - ES\" slice" => "Видалення всіх полів з рубрики \"Noticas - ES\"", // ai 2026-06
 
 // src/Optimize/RedefineSliceNoticiasTemplates.php, row 61
-"Make sure \"Noticas - ES\" slice exists and reset to defaults" => "",
+"Make sure \"Noticas - ES\" slice exists and reset to defaults" => "Переконатися, що рубрика \"Noticas - ES\" існує, і відновити типові налаштування", // ai 2026-06
 
 // src/Optimize/RedefineSliceNoticiasTemplates.php, row 65
-"Recreate field definitions for \"Noticas - ES\"" => "",
+"Recreate field definitions for \"Noticas - ES\"" => "Повторно створити визначення полів для \"Noticas - ES\"", // ai 2026-06
 
 // src/Optimize/RedefineSliceNoticiasTemplates.php, row 98
-"Noticas - ES template slice creation - done." => "",
+"Noticas - ES template slice creation - done." => "Створення шаблонної рубрики Noticas - ES - готово.", // ai 2026-06
 
 // src/Optimize/RedefineViewCalendarTemplates.php, row 10
-"Redefine calendar template view" => "",
+"Redefine calendar template view" => "Перевизначити шаблонний вигляд calendar", // ai 2026-06
 
 // src/Optimize/RedefineViewCategoriesTemplates.php, row 10
-"Redefine categories template view" => "",
+"Redefine categories template view" => "Перевизначити шаблонний вигляд categories", // ai 2026-06
 
 // src/Optimize/RedefineViewConstTemplates.php, row 10
-"Redefine const template view" => "",
+"Redefine const template view" => "Перевизначити шаблонний вигляд const", // ai 2026-06
 
 // src/Optimize/RedefineViewDiscusTemplates.php, row 13
-"Redefine discus template view" => "",
+"Redefine discus template view" => "Перевизначити шаблонний вигляд discus", // ai 2026-06
 
 // src/Optimize/RedefineViewDiscusTemplates.php, row 19
-"Deletes and recreates that view, which is used as template view of that type" => "",
+"Deletes and recreates that view, which is used as template view of that type" => "Видаляє та повторно створює вигляд, що використовується як шаблонний вигляд цього типу", // ai 2026-06
 
 // src/Optimize/RedefineViewDiscusTemplates.php, row 47
-"\"%1\" template view is not defined" => "",
+"\"%1\" template view is not defined" => "Шаблонний вигляд \"%1\" не визначено", // ai 2026-06
 
 // src/Optimize/RedefineViewDiscusTemplates.php, row 58
-"Deleting the view template \"%1\"" => "",
+"Deleting the view template \"%1\"" => "Видалення шаблону вигляду \"%1\"", // ai 2026-06
 
 // src/Optimize/RedefineViewDiscusTemplates.php, row 61
-"Inserting the view \"discus\" template" => "",
+"Inserting the view \"discus\" template" => "Вставлення шаблону вигляду \"discus\"", // ai 2026-06
 
 // src/Optimize/RedefineViewDiscusTemplates.php, row 64
-"view \"%1\" redefinition - done." => "",
+"view \"%1\" redefinition - done." => "перевизначення вигляду \"%1\" - готово.", // ai 2026-06
 
 // src/Optimize/RedefineViewFullTemplates.php, row 10
-"Redefine full template view" => "",
+"Redefine full template view" => "Перевизначити шаблонний вигляд full", // ai 2026-06
 
 // src/Optimize/RedefineViewJavascriptTemplates.php, row 10
-"Redefine javascript template view" => "",
+"Redefine javascript template view" => "Перевизначити шаблонний вигляд javascript", // ai 2026-06
 
 // src/Optimize/RedefineViewLinksTemplates.php, row 10
-"Redefine links template view" => "",
+"Redefine links template view" => "Перевизначити шаблонний вигляд links", // ai 2026-06
 
 // src/Optimize/RedefineViewRssTemplates.php, row 10
-"Redefine rss template view" => "",
+"Redefine rss template view" => "Перевизначити шаблонний вигляд rss", // ai 2026-06
 
 // src/Optimize/RedefineViewStaticTemplates.php, row 10
-"Redefine static template view" => "",
+"Redefine static template view" => "Перевизначити шаблонний вигляд static", // ai 2026-06
 
 // src/Optimize/RedefineViewUrlsTemplates.php, row 10
-"Redefine urls template view" => "",
+"Redefine urls template view" => "Перевизначити шаблонний вигляд urls", // ai 2026-06
 
 // src/Optimize/RemoveUndefineAlias.php, row 45
-"Remove _#UNDEFINE alias and default help.html for more help text in field" => "",
+"Remove _#UNDEFINE alias and default help.html for more help text in field" => "Видалити аліас _#UNDEFINE і типовий help.html з розширеного тексту довідки поля", // ai 2026-06
 
 // src/Optimize/RemoveUndefineAlias.php, row 53
-"AA used to use _#UNDEFINE alias and some preset help text for field, which make little sense for real fields in real project. The help text and alias will be removed." => "",
+"AA used to use _#UNDEFINE alias and some preset help text for field, which make little sense for real fields in real project. The help text and alias will be removed." => "У старіших версіях AA використовувався аліас _#UNDEFINE і попередньо заданий текст довідки поля, що для реальних полів у реальному проєкті має мало сенсу. Текст довідки та аліас буде видалено.", // ai 2026-06
 
 // src/Optimize/RemoveUndefineAlias.php, row 69
-"We found %1 old _#UNDEFINE aliases:" => "",
+"We found %1 old _#UNDEFINE aliases:" => "Знайдено %1 старих аліасів _#UNDEFINE:", // ai 2026-06
 
 // src/Optimize/RemoveUndefineAlias.php, row 79
-"OK - There is no _#UNDEFINE alias" => "",
+"OK - There is no _#UNDEFINE alias" => "OK - аліас _#UNDEFINE відсутній", // ai 2026-06
 
 // src/Optimize/RemoveUndefineAlias.php, row 90
-"We found %1 old help.html help link:" => "",
+"We found %1 old help.html help link:" => "Знайдено %1 старих посилань на довідку help.html:", // ai 2026-06
 
 // src/Optimize/RemoveUndefineAlias.php, row 101
-"OK - There is no old help.html help link" => "",
+"OK - There is no old help.html help link" => "OK - старе посилання на довідку help.html відсутнє", // ai 2026-06
 
 // src/Optimize/RemoveUndefineAlias.php, row 114
-"Removed %1 _#UNDEFINE aliases" => "",
+"Removed %1 _#UNDEFINE aliases" => "Видалено %1 аліасів _#UNDEFINE", // ai 2026-06
 
 // src/Optimize/RemoveUndefineAlias.php, row 117
-"Removed %1 old help links" => "",
+"Removed %1 old help links" => "Видалено %1 старих посилань на довідку", // ai 2026-06
 
 // src/Optimize/RequiredChecboxes.php, row 18
-"List Checkbox fields marked as required" => "",
+"List Checkbox fields marked as required" => "Вивести поля типу прапорець, позначені як обов'язкові", // ai 2026-06
 
 // src/Optimize/RequiredChecboxes.php, row 26
-"AA is now more strict about Required field, so checkboxes marked as Required must be filled (=checked). This could be a problem if you accidentally have it set in history. This test just lists all of such fields, in order you can check it." => "",
+"AA is now more strict about Required field, so checkboxes marked as Required must be filled (=checked). This could be a problem if you accidentally have it set in history. This test just lists all of such fields, in order you can check it." => "AA тепер суворіше ставиться до обов'язкових полів, тож прапорці, позначені як обов'язкові, мають бути заповнені (=позначені). Це може бути проблемою, якщо ви випадково встановили це налаштування в минулому. Цей тест лише виводить усі такі поля, щоб ви могли їх перевірити.", // ai 2026-06
 
 // src/Optimize/RequiredChecboxes.php, row 53
 // src/Optimize/SeoDuplicates.php, row 54
-"We found %1 required checkbox fields:" => "",
+"We found %1 required checkbox fields:" => "Знайдено %1 обов'язкових полів типу прапорець:", // ai 2026-06
 
 // src/Optimize/RequiredChecboxes.php, row 55
 // src/Optimize/SeoDuplicates.php, row 56
-"%1 - %2 (%3) Show: %4" => "",
+"%1 - %2 (%3) Show: %4" => "%1 - %2 (%3) Показати: %4", // ai 2026-06
 
 // src/Optimize/RequiredChecboxes.php, row 63
 // src/Optimize/SeoDuplicates.php, row 64
-"OK - There is no required checkbox field" => "",
+"OK - There is no required checkbox field" => "OK - обов'язкове поле типу прапорець відсутнє", // ai 2026-06
 
 // src/Optimize/RestoreBckTables.php, row 19
-"Restore data from backup tables" => "",
+"Restore data from backup tables" => "Відновити дані з резервних таблиць", // ai 2026-06
 
 // src/Optimize/RestoreBckTables.php, row 27
-"Deletes all the current tables (slice, item, ...) where we have bck_table and renames all backup tables (bck_slice, bck_item, ...) to right names (slice, item, ...)." => "",
+"Deletes all the current tables (slice, item, ...) where we have bck_table and renames all backup tables (bck_slice, bck_item, ...) to right names (slice, item, ...)." => "Видаляє всі поточні таблиці (slice, item, ...), для яких існує таблиця bck_, і перейменовує всі резервні таблиці (bck_slice, bck_item, ...) на правильні назви (slice, item, ...).", // ai 2026-06
 
 // src/Optimize/RestoreBckTables.php, row 39
-"The bck_ tables do not exist (or at least bck_content table)" => "",
+"The bck_ tables do not exist (or at least bck_content table)" => "Таблиці bck_ не існують (або принаймні таблиця bck_content)", // ai 2026-06
 
 // src/Optimize/RestoreBckTables.php, row 58
-"There is no bck_%1 table - %1 not restored." => "",
+"There is no bck_%1 table - %1 not restored." => "Таблиці bck_%1 не існує - %1 не відновлено.", // ai 2026-06
 
 // src/Optimize/RestoreBckTables.php, row 61
-"Replace table bck_%1 -> %1" => "",
+"Replace table bck_%1 -> %1" => "Заміна таблиці bck_%1 -> %1", // ai 2026-06
 
 // src/Optimize/SeoDuplicates.php, row 19
-"SEO name duplicates" => "",
+"SEO name duplicates" => "Дублікати SEO-назв", // ai 2026-06
 
 // src/Optimize/SeoDuplicates.php, row 27
-"Check items for duplicate SEO name inside sitemodule" => "",
+"Check items for duplicate SEO name inside sitemodule" => "Перевірити статті на дублікати SEO-назв у межах модуля Site", // ai 2026-06
 
 // src/Optimize/SetExpirydate.php, row 18
-"Set Expiry date to maximum value" => "",
+"Set Expiry date to maximum value" => "Встановити дату завершення на максимальне значення", // ai 2026-06
 
 // src/Optimize/SetExpirydate.php, row 26
-"Set Expiry date to maximum value for items in slices, where expiry_date..... field is not shown. It also sets the field's default to that value.<br><b>Is it really what you want?</b>" => "",
+"Set Expiry date to maximum value for items in slices, where expiry_date..... field is not shown. It also sets the field's default to that value.<br><b>Is it really what you want?</b>" => "Встановлює дату завершення на максимальне значення для статей у рубриках, де поле expiry_date..... не відображається. Також встановлює типове значення поля на це значення.<br><b>Ви справді цього хочете?</b>", // ai 2026-06
 
 // src/Optimize/SetExpirydate.php, row 57
-"items changed: %1 / %2 slices: %3" => "",
+"items changed: %1 / %2 slices: %3" => "змінено статей: %1 / %2 рубрик: %3", // ai 2026-06
 
 // src/Optimize/SetExpirydate.php, row 60
-"field default changed for expiry_date..... in %1 /%2 slices: %3)" => "",
+"field default changed for expiry_date..... in %1 /%2 slices: %3)" => "типове значення поля expiry_date..... змінено в %1 /%2 рубрик: %3)", // ai 2026-06
 
 // src/Optimize/UpdateDbStructure.php, row 23
-"Update database structure" => "",
+"Update database structure" => "Оновити структуру бази даних", // ai 2026-06
 
 // src/Optimize/UpdateDbStructure.php, row 31
-"Updates the database structure for AA. It checks all the tables in current system and compares them with the newest database structure. The new table is created as tmp_*, then the content from old table is copied and if everything is OK, then the old table is renamed to bck_* and tmp_* is renamed to new table. (new version based on the metabase structure)" => "",
+"Updates the database structure for AA. It checks all the tables in current system and compares them with the newest database structure. The new table is created as tmp_*, then the content from old table is copied and if everything is OK, then the old table is renamed to bck_* and tmp_* is renamed to new table. (new version based on the metabase structure)" => "Оновлює структуру бази даних AA. Перевіряє всі таблиці в поточній системі та порівнює їх із найновішою структурою бази даних. Нова таблиця створюється як tmp_*, потім копіюється вміст зі старої таблиці, і якщо все гаразд, стара таблиця перейменовується на bck_*, а tmp_* перейменовується на нову таблицю. (нова версія на основі структури metabase)", // ai 2026-06
 
 // src/Optimize/UpdateDbStructure.php, row 66
-"<em>Tables %1 are identical.</em><br>" => "",
+"<em>Tables %1 are identical.</em><br>" => "<em>Таблиці %1 ідентичні.</em><br>", // ai 2026-06
 
 // src/Optimize/UpdateDbStructure.php, row 68
-"<em>Table <b>%1</b> is <b>not needed</b>. You can <b>manually</b> delete it.</em><br>" => "",
+"<em>Table <b>%1</b> is <b>not needed</b>. You can <b>manually</b> delete it.</em><br>" => "<em>Таблиця <b>%1</b> <b>не потрібна</b>. Ви можете видалити її <b>вручну</b>.</em><br>", // ai 2026-06
 
 // src/Optimize/UpdateDbStructure.php, row 72, 104
-"<em>Table <b>%1</b> is <b>new</b>.</em><br>" => "",
+"<em>Table <b>%1</b> is <b>new</b>.</em><br>" => "<em>Таблиця <b>%1</b> є <b>новою</b>.</em><br>", // ai 2026-06
 
 // src/Optimize/UpdateDbStructure.php, row 94
-"Tables %1 are identical. Skipping." => "",
+"Tables %1 are identical. Skipping." => "Таблиці %1 ідентичні. Пропускаю.", // ai 2026-06
 
 // src/Optimize/UpdateDbStructure.php, row 99
-"Table <b>%1</b> is <b>not needed</b>. You can <b>manually</b> delete it. Skipping.</em><br>" => "",
+"Table <b>%1</b> is <b>not needed</b>. You can <b>manually</b> delete it. Skipping.</em><br>" => "Таблиця <b>%1</b> <b>не потрібна</b>. Ви можете видалити її <b>вручну</b>. Пропускаю.</em><br>", // ai 2026-06
 
 // src/Optimize/UpdateDbStructure.php, row 106
-"<em>Updating table <b>%1</b>.</em><br>" => "",
+"<em>Updating table <b>%1</b>.</em><br>" => "<em>Оновлення таблиці <b>%1</b>.</em><br>", // ai 2026-06
 
 // src/Optimize/UpdateDbStructure.php, row 115
-"Deleting temporary table tmp_%1, if it exists." => "",
+"Deleting temporary table tmp_%1, if it exists." => "Видалення тимчасової таблиці tmp_%1, якщо вона існує.", // ai 2026-06
 
 // src/Optimize/UpdateDbStructure.php, row 117
-"Creating temporary table tmp_%1." => "",
+"Creating temporary table tmp_%1." => "Створення тимчасової таблиці tmp_%1.", // ai 2026-06
 
 // src/Optimize/UpdateDbStructure.php, row 122
-"Creating \"old\" data table %1 if not exists." => "",
+"Creating \"old\" data table %1 if not exists." => "Створення \"старої\" таблиці даних %1, якщо вона не існує.", // ai 2026-06
 
 // src/Optimize/UpdateDbStructure.php, row 127
-"copying old values to new table %1 -> tmp_%1" => "",
+"copying old values to new table %1 -> tmp_%1" => "копіювання старих значень до нової таблиці %1 -> tmp_%1", // ai 2026-06
 
 // src/Optimize/UpdateDbStructure.php, row 141
-"backup old table %1 -> bck_%1 and use new tables instead tmp_%1 -> %1" => "",
+"backup old table %1 -> bck_%1 and use new tables instead tmp_%1 -> %1" => "резервування старої таблиці %1 -> bck_%1 і використання нових таблиць замість неї tmp_%1 -> %1", // ai 2026-06
 
 // src/Util/ChangesMonitor.php, row 93
-"history (%1)" => "",
+"history (%1)" => "історія (%1)", // ai 2026-06
 
 // src/Util/ChangesMonitor.php, row 360
-"1 field changed" => "",
+"1 field changed" => "змінено 1 поле", // ai 2026-06
 
 // src/Util/ChangesMonitor.php, row 360
-"%1 fields changed" => "",
+"%1 fields changed" => "змінено полів: %1", // ai 2026-06
 
 // src/Util/ChangesMonitor.php, row 370, 382
-"Restore" => "",
+"Restore" => "Відновити", // ai 2026-06
 
 // src/Util/ChangesMonitor.php, row 377
-"change %1 | uid %2 | %3 ns | resource %4" => "",
+"change %1 | uid %2 | %3 ns | resource %4" => "зміна %1 | uid %2 | %3 нс | ресурс %4", // ai 2026-06
 
 // src/Util/ChangesMonitor.php, row 382
-"vs current" => "",
+"vs current" => "проти поточного", // ai 2026-06
 
 // src/Util/ChangesMonitor.php, row 391
-"seq %1" => "",
+"seq %1" => "послідовність %1", // ai 2026-06
 
 // src/Util/ChangesMonitor.php, row 405
-"no current value" => "",
+"no current value" => "без поточного значення", // ai 2026-06
 
 // src/Util/ChangesMonitor.php, row 407
-"same as current" => "",
+"same as current" => "збігається з поточним", // ai 2026-06
 
 // src/Util/ChangesMonitor.php, row 426
-"No recorded changes for this item." => "",
+"No recorded changes for this item." => "Для цієї статті немає записаних змін.", // ai 2026-06
 
 // src/Util/Imgfunc.php, row 80
-"Cannot copy %1 to %2" => "",
+"Cannot copy %1 to %2" => "Не вдається скопіювати %1 до %2", // ai 2026-06
 
 // src/Util/Imgfunc.php, row 119
-"Type not supported for resize" => "",
+"Type not supported for resize" => "Тип не підтримується для зміни розміру", // ai 2026-06
 
 // src/Util/Imgfunc.php, row 178
-"ResampleImage unable to %1" => "",
+"ResampleImage unable to %1" => "ResampleImage: не вдалося викликати %1", // ai 2026-06
 
 // src/Util/Searchfields.php, row 183
-"-- any numeric field --" => "",
+"-- any numeric field --" => "-- будь-яке числове поле --", // ai 2026-06
 
 // src/Widget/ChbWidget.php, row 80
-"Check Box" => "",
+"Check Box" => "Прапорець", // ai 2026-06
 
 // src/Widget/CodWidget.php, row 21
-"Code editor" => "",
+"Code editor" => "Редактор коду", // ai 2026-06
 
 // src/Widget/EdtWidget.php, row 21
-"Rich Edit Text Area" => "",
+"Rich Edit Text Area" => "Текстова область із форматуванням (Rich Edit)", // ai 2026-06
 
 // src/Widget/FilWidget.php, row 37
-"File Upload" => "",
+"File Upload" => "Завантаження файлу", // ai 2026-06
 
 // src/Widget/FilWidget.php, row 205, 235
-"Upload" => "",
+"Upload" => "Завантажити", // ai 2026-06
 
 // src/Widget/FilWidget.php, row 249
 // src/Widget/Widget.php, row 575
-"EXIT WITHOUT CHANGE" => "",
+"EXIT WITHOUT CHANGE" => "ВИЙТИ БЕЗ ЗМІН", // ai 2026-06
 
 // src/Widget/FldWidget.php, row 34
-"Text Field" => "",
+"Text Field" => "Текстове поле", // ai 2026-06
 
 // src/Widget/FldWidget.php, row 160
 // src/Widget/TxtWidget.php, row 269, 271, 273
-"translate from" => "",
+"translate from" => "перекласти з", // ai 2026-06
 
 // src/Widget/GpsWidget.php, row 34
-"GPS coordinates" => "",
+"GPS coordinates" => "GPS координати", // ai 2026-06
 
 // src/Widget/GpsWidget.php, row 436
-"Load from address" => "",
+"Load from address" => "Завантажити з адреси", // ai 2026-06
 
 // src/Widget/GpsWidget.php, row 438
-"Use" => "",
+"Use" => "Застосувати", // ai 2026-06
 
 // src/Widget/HcoWidget.php, row 34
-"hierarchical constants" => "",
+"hierarchical constants" => "ієрархічні константи", // ai 2026-06
 
 // src/Widget/HidWidget.php, row 28
-"Hidden field" => "",
+"Hidden field" => "Приховане поле", // ai 2026-06
 
 // src/Widget/InfWidget.php, row 31
-"Info text - output" => "",
+"Info text - output" => "Інформаційний текст - вивід", // ai 2026-06
 
 // src/Widget/IsoWidget.php, row 35
-"Related Item Window" => "",
+"Related Item Window" => "Вікно пов'язаних статей", // ai 2026-06
 
 // src/Widget/IsoWidget.php, row 60
-"Conditions for filtering items in related items window. These conds the user can change." => "",
+"Conditions for filtering items in related items window. These conds the user can change." => "Умови фільтрування статей у вікні пов'язаних статей. Ці умови може змінювати користувач.", // ai 2026-06
 
 // src/Widget/LupWidget.php, row 17
-"Local URL Picker" => "",
+"Local URL Picker" => "Вибір локального URL", // ai 2026-06
 
 // src/Widget/LupWidget.php, row 22
-"Browse a local website and pick a URL" => "",
+"Browse a local website and pick a URL" => "Перегляньте локальний веб-сайт і виберіть URL", // ai 2026-06
 
 // src/Widget/LupWidget.php, row 113
-"Browse" => "",
+"Browse" => "Огляд", // ai 2026-06
 
 // src/Widget/LupWidget.php, row 117
-"Pick this URL" => "",
+"Pick this URL" => "Вибрати цей URL", // ai 2026-06
 
 // src/Widget/MchWidget.php, row 41
-"Multiple Checkboxes" => "",
+"Multiple Checkboxes" => "Кілька прапорців", // ai 2026-06
 
 // src/Widget/MflWidget.php, row 40
-"Multiple Text Field" => "",
+"Multiple Text Field" => "Кілька текстових полів", // ai 2026-06
 
 // src/Widget/MflWidget.php, row 82
-"if 1 (default), textfield used. for rows>1 textareas are used" => "",
+"if 1 (default), textfield used. for rows>1 textareas are used" => "якщо 1 (за замовчуванням), використовується textfield. для rows>1 використовуються textarea", // ai 2026-06
 
 // src/Widget/MflWidget.php, row 120
 // src/Widget/RioWidget.php, row 124
 // src/Widget/TxtWidget.php, row 109
 // src/Widget/Widget.php, row 416
-"To save changes click here or outside the field." => "",
+"To save changes click here or outside the field." => "Щоб зберегти зміни, клацніть тут або поза полем.", // ai 2026-06
 
 // src/Widget/MngWidget.php, row 32
-"Manager" => "",
+"Manager" => "Менеджер", // ai 2026-06
 
 // src/Widget/MngWidget.php, row 38
-"Best for galleries and other tabular data which is multivalue and different for each item" => "",
+"Best for galleries and other tabular data which is multivalue and different for each item" => "Найкраще для галерей та інших табличних даних, які є багатозначними й різними для кожної статті", // ai 2026-06
 
 // src/Widget/MseWidget.php, row 25
-"Multiple Selectbox" => "",
+"Multiple Selectbox" => "Багатозначний selectbox", // ai 2026-06
 
 // src/Widget/NulWidget.php, row 23
-"Do not show" => "",
+"Do not show" => "Не показувати", // ai 2026-06
 
 // src/Widget/PreWidget.php, row 36
-"Text Field with Presets" => "",
+"Text Field with Presets" => "Текстове поле з передустановками", // ai 2026-06
 
 // src/Widget/PwdWidget.php, row 37
-"Password and Change password" => "",
+"Password and Change password" => "Пароль і Змінити пароль", // ai 2026-06
 
 // src/Widget/RimWidget.php, row 43
-"Related Item Manager" => "",
+"Related Item Manager" => "Менеджер пов'язаних статей", // ai 2026-06
 
 // src/Widget/RimWidget.php, row 237
-"search in existing" => "",
+"search in existing" => "шукати в існуючих", // ai 2026-06
 
 // src/Widget/RioWidget.php, row 40
-"Radio Button" => "",
+"Radio Button" => "Перемикач (radio button)", // ai 2026-06
 
 // src/Widget/SelWidget.php, row 43
 "Select Box" => "",
 
 // src/Widget/TagWidget.php, row 44
-"Tags" => "",
+"Tags" => "Мітки (tags)", // ai 2026-06
 
 // src/Widget/TfaWidget.php, row 43
-"2FA Secret generator" => "",
+"2FA Secret generator" => "Генератор 2FA-секрету", // ai 2026-06
 
 // src/Widget/TfaWidget.php, row 79
-"One time Code" => "",
+"One time Code" => "Одноразовий код", // ai 2026-06
 
 // src/Widget/TfaWidget.php, row 89
-"Generate New Secret" => "",
+"Generate New Secret" => "Згенерувати новий секрет", // ai 2026-06
 
 // src/Widget/TfaWidget.php, row 90
-"Get Secret" => "",
+"Get Secret" => "Отримати секрет", // ai 2026-06
 
 // src/Widget/TprWidget.php, row 27
-"Textarea with Presets" => "",
+"Textarea with Presets" => "Текстова область з передустановками", // ai 2026-06
 
 // src/Widget/TxtWidget.php, row 43
-"Text Area" => "",
+"Text Area" => "Текстова область", // ai 2026-06
 
 // src/Widget/Wi2Widget.php, row 32
-"Two Boxes" => "",
+"Two Boxes" => "Два списки", // ai 2026-06
 
 // src/Widget/Widget.php, row 574
-"SAVE CHANGE" => "",
+"SAVE CHANGE" => "ЗБЕРЕГТИ ЗМІНУ", // ai 2026-06
 
 // src/Widget/Widget.php, row 712
-"Max characters" => "",
+"Max characters" => "Макс. кількість символів", // ai 2026-06
 
 // src/Widget/Widget.php, row 712
-"max count of characters entered (maxlength parameter)" => "",
+"max count of characters entered (maxlength parameter)" => "максимальна кількість введених символів (параметр maxlength)", // ai 2026-06
 
 // src/Widget/Widget.php, row 715, 784
-"Columns" => "",
+"Columns" => "Стовпці", // ai 2026-06
 
 // src/Widget/Widget.php, row 718
-"Constants or slice" => "",
+"Constants or slice" => "Константи або рубрика", // ai 2026-06
 
 // src/Widget/Widget.php, row 718
-"Constants (or slice) which is used for value selection" => "",
+"Constants (or slice) which is used for value selection" => "Константи (або рубрика), з яких вибираються значення", // ai 2026-06
 
 // src/Widget/Widget.php, row 721
-"Directly specified array of values like [\"1\",\"2\",\"3\"] or {\"1\":\"Yes\",\"0\":\"No\"}. (do not use Constants, if filled)" => "",
+"Directly specified array of values like [\"1\",\"2\",\"3\"] or {\"1\":\"Yes\",\"0\":\"No\"}. (do not use Constants, if filled)" => "Безпосередньо задане поле значень на кшталт [\"1\",\"2\",\"3\"] або {\"1\":\"Yes\",\"0\":\"No\"}. (якщо заповнено, не використовуйте Константи)", // ai 2026-06
 
 // src/Widget/Widget.php, row 730
-"type: class (default) / iframe" => "",
+"type: class (default) / iframe" => "тип: class (за замовчуванням) / iframe", // ai 2026-06
 
 // src/Widget/Widget.php, row 733, 947
-"Width" => "",
+"Width" => "Ширина", // ai 2026-06
 
 // src/Widget/Widget.php, row 733
-"width of the field in characters (size parameter)" => "",
+"width of the field in characters (size parameter)" => "ширина поля в символах (параметр size)", // ai 2026-06
 
 // src/Widget/Widget.php, row 736
-"type of input - email|tel|url|number. Can be used for other types (time), but in most cases it will be better to create new Widget type - like checkbox, password, color" => "",
+"type of input - email|tel|url|number. Can be used for other types (time), but in most cases it will be better to create new Widget type - like checkbox, password, color" => "тип вводу - email|tel|url|number. Можна використати й для інших типів (time), але в більшості випадків краще створити новий тип віджета - як checkbox, password, color", // ai 2026-06
 
 // src/Widget/Widget.php, row 739, 838
-"Buttons to show" => "",
+"Buttons to show" => "Показувані кнопки", // ai 2026-06
 
 // src/Widget/Widget.php, row 739
-"Which action buttons to show:<br>M - Move (up and down)<br>D - Delete value,<br>A - Add new value<br>C - Change the value<br>Use 'MDAC' (default), 'DAC', just 'M' or any other combination. The order of letters M,D,A,C is not important." => "",
+"Which action buttons to show:<br>M - Move (up and down)<br>D - Delete value,<br>A - Add new value<br>C - Change the value<br>Use 'MDAC' (default), 'DAC', just 'M' or any other combination. The order of letters M,D,A,C is not important." => "Які кнопки дій показувати:<br>M - Move (вгору й вниз)<br>D - Delete (видалити значення),<br>A - Add (додати нове значення)<br>C - Change (змінити значення)<br>Використовуйте 'MDAC' (за замовчуванням), 'DAC', лише 'M' чи будь-яку іншу комбінацію. Порядок літер M,D,A,C не має значення.", // ai 2026-06
 
 // src/Widget/Widget.php, row 742
-"Row count" => "",
+"Row count" => "Кількість рядків", // ai 2026-06
 
 // src/Widget/Widget.php, row 745
-"Slice field" => "",
+"Slice field" => "Поле рубрики", // ai 2026-06
 
 // src/Widget/Widget.php, row 745
-"field (or format string) that will be displayed in select box. if not specified, headlines or constant name for constants are displayed in select box. you can use also any AA formatstring here (like: _#HEADLINE, _#PUB_DATE (for slices) or _#NAME###_, _#TR_NAME_, _#VALUE##_, _#PRIORITY, _#GROUP##_, _#CLASS##_, _#COUNTER_, _#CONST_ID, _#SHORT_ID (for constants))." => "",
+"field (or format string) that will be displayed in select box. if not specified, headlines or constant name for constants are displayed in select box. you can use also any AA formatstring here (like: _#HEADLINE, _#PUB_DATE (for slices) or _#NAME###_, _#TR_NAME_, _#VALUE##_, _#PRIORITY, _#GROUP##_, _#CLASS##_, _#COUNTER_, _#CONST_ID, _#SHORT_ID (for constants))." => "поле (або форматувальний рядок), що відображатиметься в selectbox. якщо не задано, у selectbox відображаються заголовки, а для констант - назва константи. можна використати й будь-який AA форматувальний рядок (як-от: _#HEADLINE, _#PUB_DATE (для рубрик) або _#NAME###_, _#TR_NAME_, _#VALUE##_, _#PRIORITY, _#GROUP##_, _#CLASS##_, _#COUNTER_, _#CONST_ID, _#SHORT_ID (для констант)).", // ai 2026-06
 
 // src/Widget/Widget.php, row 748
-"Use name" => "",
+"Use name" => "Використати назву", // ai 2026-06
 
 // src/Widget/Widget.php, row 748
-"if set (=1), then the name of selected constant is used, instead of the value. Default is 0" => "",
+"if set (=1), then the name of selected constant is used, instead of the value. Default is 0" => "якщо задано (=1), використовується назва вибраної константи замість значення. За замовчуванням 0", // ai 2026-06
 
 // src/Widget/Widget.php, row 751
-"Adding" => "",
+"Adding" => "Додавання", // ai 2026-06
 
 // src/Widget/Widget.php, row 751
-"adding the selected items to input field comma separated" => "",
+"adding the selected items to input field comma separated" => "додавання вибраних статей до поля вводу через кому", // ai 2026-06
 
 // src/Widget/Widget.php, row 754
-"Second Field" => "",
+"Second Field" => "Друге поле", // ai 2026-06
 
 // src/Widget/Widget.php, row 754
-"field_id of another text field, where value of this selectbox will be propagated too (in main text area will be text and there will be value)" => "",
+"field_id of another text field, where value of this selectbox will be propagated too (in main text area will be text and there will be value)" => "field_id іншого текстового поля, куди також буде передано значення цього selectbox (у головній текстовій області буде текст, а там буде значення)", // ai 2026-06
 
 // src/Widget/Widget.php, row 757
-"Add to Constant" => "",
+"Add to Constant" => "Додати до константи", // ai 2026-06
 
 // src/Widget/Widget.php, row 757
-"if set to 1, user typed value in inputform is stored into constants (only if the value is not already there)" => "",
+"if set to 1, user typed value in inputform is stored into constants (only if the value is not already there)" => "якщо встановлено 1, значення, введене користувачем у формі, зберігається до констант (лише якщо такого значення там ще немає)", // ai 2026-06
 
 // src/Widget/Widget.php, row 760
-"Show items from bins" => "",
+"Show items from bins" => "Показати статті зі схованок", // ai 2026-06
 
 // src/Widget/Widget.php, row 760
-"(for slices only) To show items from selected bins, use following values:<br>Active bin - '%1'<br>Pending bin - '%2'<br>Expired bin - '%3'<br>Holding bin - '%4'<br>Trash bin - '%5'<br>Value is created as follows: eg. You want to show headlines from Active, Expired and Holding bins. Value for this combination is counted like %1+%3+%4&nbsp;=&nbsp;13" => "",
+"(for slices only) To show items from selected bins, use following values:<br>Active bin - '%1'<br>Pending bin - '%2'<br>Expired bin - '%3'<br>Holding bin - '%4'<br>Trash bin - '%5'<br>Value is created as follows: eg. You want to show headlines from Active, Expired and Holding bins. Value for this combination is counted like %1+%3+%4&nbsp;=&nbsp;13" => "(лише для рубрик) Щоб показати статті з вибраних схованок, використовуйте такі значення:<br>Активна схованка - '%1'<br>Очікувана схованка - '%2'<br>Прострочена схованка - '%3'<br>Резерв - '%4'<br>Кошик - '%5'<br>Значення створюється так: напр. ви хочете показати заголовки зі схованок Активна, Прострочена й Резерв. Значення для цієї комбінації обчислюється як %1+%3+%4&nbsp;=&nbsp;13", // ai 2026-06
 
 // src/Widget/Widget.php, row 769
-"Filtering conditions" => "",
+"Filtering conditions" => "Умови фільтрування", // ai 2026-06
 
 // src/Widget/Widget.php, row 769
-"(for slices only) Conditions for filtering items in selection. Use d-.. condition or conds[] array." => "",
+"(for slices only) Conditions for filtering items in selection. Use d-.. condition or conds[] array." => "(лише для рубрик) Умови для фільтрування статей у виборі. Використайте умову d-.. або масив conds[].", // ai 2026-06
 
 // src/Widget/Widget.php, row 772
-"Sort by" => "",
+"Sort by" => "Сортувати за", // ai 2026-06
 
 // src/Widget/Widget.php, row 772
-"(for slices only) Sort the items in specified order. Use <fld>[+-]<fld>[+-]... or even any alias _#SOME_ALS." => "",
+"(for slices only) Sort the items in specified order. Use <fld>[+-]<fld>[+-]... or even any alias _#SOME_ALS." => "(лише для рубрик) Сортує статті в заданому порядку. Використайте <fld>[+-]<fld>[+-]... або навіть будь-який аліас _#SOME_ALS.", // ai 2026-06
 
 // src/Widget/Widget.php, row 775
-"Slice password" => "",
+"Slice password" => "Пароль рубрики", // ai 2026-06
 
 // src/Widget/Widget.php, row 775
-"(for slices only) If the related slice is protected by 'Slice Password', fill it here" => "",
+"(for slices only) If the related slice is protected by 'Slice Password', fill it here" => "(лише для рубрик) Якщо пов'язана рубрика захищена паролем ('Slice Password'), введіть його тут", // ai 2026-06
 
 // src/Widget/Widget.php, row 778
-"Filtering conditions - changeable" => "",
+"Filtering conditions - changeable" => "Умови фільтрування - змінювані", // ai 2026-06
 
 // src/Widget/Widget.php, row 778
-"Conditions for filtering items. This conds site admin change through widget_property parameter." => "",
+"Conditions for filtering items. This conds site admin change through widget_property parameter." => "Умови для фільтрування статей. Ці умови адміністратор сайту змінює через параметр widget_property.", // ai 2026-06
 
 // src/Widget/Widget.php, row 781
-"Items per page. Default is 20." => "",
+"Items per page. Default is 20." => "Статей на сторінку. За замовчуванням 20.", // ai 2026-06
 
 // src/Widget/Widget.php, row 784
-"Number of columns. If unfilled, the checkboxes are all on one line. If filled, they are formatted in a table." => "",
+"Number of columns. If unfilled, the checkboxes are all on one line. If filled, they are formatted in a table." => "Кількість стовпців. Якщо не заповнено, усі прапорці в одному рядку. Якщо заповнено, форматуються в таблицю.", // ai 2026-06
 
 // src/Widget/Widget.php, row 787
-"Move right" => "",
+"Move right" => "Зсув праворуч", // ai 2026-06
 
 // src/Widget/Widget.php, row 787
-"Should the function move right or down to the next value?" => "",
+"Should the function move right or down to the next value?" => "Має функція переходити до наступного значення праворуч чи вниз?", // ai 2026-06
 
 // src/Widget/Widget.php, row 790
-"Starting Year" => "",
+"Starting Year" => "Початковий рік", // ai 2026-06
 
 // src/Widget/Widget.php, row 790
-"The (relative) start of the year interval" => "",
+"The (relative) start of the year interval" => "(Відносний) початок інтервалу років", // ai 2026-06
 
 // src/Widget/Widget.php, row 793
-"Ending Year" => "",
+"Ending Year" => "Кінцевий рік", // ai 2026-06
 
 // src/Widget/Widget.php, row 793
-"The (relative) end of the year interval" => "",
+"The (relative) end of the year interval" => "(Відносний) кінець інтервалу років", // ai 2026-06
 
 // src/Widget/Widget.php, row 796
-"Relative" => "",
+"Relative" => "Відносний", // ai 2026-06
 
 // src/Widget/Widget.php, row 796
-"If this is 1, the starting and ending year will be taken as relative - the interval will start at (this year - starting year) and end at (this year + ending year). If this is 0, the starting and ending years will be taken as absolute." => "",
+"If this is 1, the starting and ending year will be taken as relative - the interval will start at (this year - starting year) and end at (this year + ending year). If this is 0, the starting and ending years will be taken as absolute." => "Якщо це 1, початковий і кінцевий роки беруться як відносні - інтервал почнеться на (цей рік - початковий рік) і завершиться на (цей рік + кінцевий рік). Якщо це 0, початковий і кінцевий роки беруться як абсолютні.", // ai 2026-06
 
 // src/Widget/Widget.php, row 799
-"Date-time input type" => "",
+"Date-time input type" => "Тип введення дати й часу", // ai 2026-06
 
 // src/Widget/Widget.php, row 799
-"0 - three selects for <b>date</b><br>1 - three selects for date + the <b>time</b> input<br>2 - HTML5 <b>input type=date</b>" => "",
+"0 - three selects for <b>date</b><br>1 - three selects for date + the <b>time</b> input<br>2 - HTML5 <b>input type=date</b>" => "0 - три селекти для <b>дати</b><br>1 - три селекти для дати + поле введення <b>часу</b><br>2 - HTML5 <b>input type=date</b>", // ai 2026-06
 
 // src/Widget/Widget.php, row 802
-"Height" => "",
+"Height" => "Висота", // ai 2026-06
 
 // src/Widget/Widget.php, row 802
-"Max height of the widget in pixels" => "",
+"Max height of the widget in pixels" => "Максимальна висота віджета в пікселях", // ai 2026-06
 
 // src/Widget/Widget.php, row 805
-"Title of \"Offer\" selectbox" => "",
+"Title of \"Offer\" selectbox" => "Заголовок селектбоксу \"Пропозиція\"", // ai 2026-06
 
 // src/Widget/Widget.php, row 805
-"Our offer" => "",
+"Our offer" => "Наша пропозиція", // ai 2026-06
 
 // src/Widget/Widget.php, row 808
-"Title of \"Selected\" selectbox" => "",
+"Title of \"Selected\" selectbox" => "Заголовок селектбоксу \"Вибрані\"", // ai 2026-06
 
 // src/Widget/Widget.php, row 811
-"Add Form" => "",
+"Add Form" => "Форма для додавання", // ai 2026-06
 
 // src/Widget/Widget.php, row 811
-"(for slices only) ID of the form for adding items into related slice" => "",
+"(for slices only) ID of the form for adding items into related slice" => "(лише для рубрик) ID форми для додавання статей до пов'язаної рубрики", // ai 2026-06
 
 // src/Widget/Widget.php, row 814
-"Allowed file types" => "",
+"Allowed file types" => "Дозволені типи файлів", // ai 2026-06
 
 // src/Widget/Widget.php, row 814
-"Used for accept attribute - image/*,.doc,.docx,.pdf" => "",
+"Used for accept attribute - image/*,.doc,.docx,.pdf" => "Використовується для атрибута accept - image/*,.doc,.docx,.pdf", // ai 2026-06
 
 // src/Widget/Widget.php, row 817
-"Label" => "",
+"Label" => "Підпис", // ai 2026-06
 
 // src/Widget/Widget.php, row 817
-"To be printed before the file upload field" => "",
+"To be printed before the file upload field" => "Виводиться перед полем для завантаження файлу", // ai 2026-06
 
 // src/Widget/Widget.php, row 817
-"File: " => "",
+"File: " => "Файл:", // ai 2026-06
 
 // src/Widget/Widget.php, row 820
-"Hint" => "",
+"Hint" => "Підказка", // ai 2026-06
 
 // src/Widget/Widget.php, row 820
-"appears beneath the file upload field" => "",
+"appears beneath the file upload field" => "з'являється під полем для завантаження файлу", // ai 2026-06
 
 // src/Widget/Widget.php, row 820
-"You can select a file ..." => "",
+"You can select a file ..." => "Ви можете вибрати файл ...", // ai 2026-06
 
 // src/Widget/Widget.php, row 823
-"Display URL" => "",
+"Display URL" => "Показати URL", // ai 2026-06
 
 // src/Widget/Widget.php, row 823
-"0 - show, 1 - show if not empty, 2 - do not show" => "",
+"0 - show, 1 - show if not empty, 2 - do not show" => "0 - показувати, 1 - показувати, якщо не порожнє, 2 - не показувати", // ai 2026-06
 
 // src/Widget/Widget.php, row 826
-"Multiple" => "",
+"Multiple" => "Множинний", // ai 2026-06
 
 // src/Widget/Widget.php, row 826
-"Allows to upload multiple files in the field" => "",
+"Allows to upload multiple files in the field" => "Дозволяє завантажити до поля декілька файлів", // ai 2026-06
 
 // src/Widget/Widget.php, row 829
-"Actions to show" => "",
+"Actions to show" => "Показувані дії", // ai 2026-06
 
 // src/Widget/Widget.php, row 829
-"Defines, which buttons to show in item selection:<br>A - Add<br>M - add Mutual<br>B - Backward<br> Use 'AMB' (default), 'MA', just 'A' or any other combination. The order of letters A,M,B is important." => "",
+"Defines, which buttons to show in item selection:<br>A - Add<br>M - add Mutual<br>B - Backward<br> Use 'AMB' (default), 'MA', just 'A' or any other combination. The order of letters A,M,B is important." => "Визначає, які кнопки показувати при виборі статей:<br>A - Add (додати)<br>M - add Mutual (додати взаємно)<br>B - Backward (назад)<br> Використайте 'AMB' (за замовчуванням), 'MA', лише 'A' або будь-яку іншу комбінацію. Порядок літер A,M,B важливий.", // ai 2026-06
 
 // src/Widget/Widget.php, row 832
-"Admin design" => "",
+"Admin design" => "Вигляд адміністрації", // ai 2026-06
 
 // src/Widget/Widget.php, row 832
-"If set (=1), the items in related selection window will be listed in the same design as in the Item manager - 'Design - Item Manager' settings will be used. Only the checkbox will be replaced by the buttons (see above). It is important that the checkbox must be defined as:<br> <i>&lt;input type=checkbox name=\"chb[x_#ITEM_ID#]\" value=\"1\"&gt;</i> (which is default).<br> If unset (=0), just headline is shown (default)." => "",
+"If set (=1), the items in related selection window will be listed in the same design as in the Item manager - 'Design - Item Manager' settings will be used. Only the checkbox will be replaced by the buttons (see above). It is important that the checkbox must be defined as:<br> <i>&lt;input type=checkbox name=\"chb[x_#ITEM_ID#]\" value=\"1\"&gt;</i> (which is default).<br> If unset (=0), just headline is shown (default)." => "Якщо встановлено (=1), статті у вікні вибору пов'язаних будуть виведені в тому самому вигляді, що й у Менеджері статей - використаються налаштування 'Вигляд - Менеджер статей'. Лише прапорець буде замінено кнопками (див. вище). Важливо, щоб прапорець був визначений як:<br> <i>&lt;input type=checkbox name=\"chb[x_#ITEM_ID#]\" value=\"1\"&gt;</i> (що є типовим).<br> Якщо не встановлено (=0), показується лише заголовок (за замовчуванням).", // ai 2026-06
 
 // src/Widget/Widget.php, row 835
-"Tag Prefix" => "",
+"Tag Prefix" => "Префікс тегів", // ai 2026-06
 
 // src/Widget/Widget.php, row 835
-"Deprecated: selects tag set ('AMB' / 'GYR'). Ask Mitra for more details." => "",
+"Deprecated: selects tag set ('AMB' / 'GYR'). Ask Mitra for more details." => "Застаріле: вибирає набір тегів ('AMB' / 'GYR'). Подробиці запитайте у Mitra.", // ai 2026-06
 
 // src/Widget/Widget.php, row 838
-"Which action to show:<br>M - Move (change order)<br>D - Delete relation,<br>R - add Relation to existing item<br>N - insert New item in related slice and make it related<br>E - Edit related item<br>F - File upload to related slice (just for Related Item Manager Widget)<br><br>Use 'DR' (default), 'MDRNEF', just 'N' or any other combination. The order of letters M,D,R,N,E,F is not important." => "",
+"Which action to show:<br>M - Move (change order)<br>D - Delete relation,<br>R - add Relation to existing item<br>N - insert New item in related slice and make it related<br>E - Edit related item<br>F - File upload to related slice (just for Related Item Manager Widget)<br><br>Use 'DR' (default), 'MDRNEF', just 'N' or any other combination. The order of letters M,D,R,N,E,F is not important." => "Які дії показувати:<br>M - Move (переміщення, зміна порядку)<br>D - Delete (видалення зв'язку),<br>R - add Relation (додавання зв'язку до наявної статті)<br>N - insert New (вставлення нової статті до пов'язаної рубрики та її прив'язка)<br>E - Edit (редагування пов'язаної статті)<br>F - File upload (завантаження файлу до пов'язаної рубрики - лише для віджета Related Item Manager)<br><br>Використайте 'DR' (за замовчуванням), 'MDRNEF', лише 'N' або будь-яку іншу комбінацію. Порядок літер M,D,R,N,E,F не важливий.", // ai 2026-06
 
 // src/Widget/Widget.php, row 841
-"Count of level boxes" => "",
+"Count of level boxes" => "Кількість боксів рівнів", // ai 2026-06
 
 // src/Widget/Widget.php, row 844
-"Box width" => "",
+"Box width" => "Ширина боксу", // ai 2026-06
 
 // src/Widget/Widget.php, row 844
-"Width in characters" => "",
+"Width in characters" => "Ширина у символах", // ai 2026-06
 
 // src/Widget/Widget.php, row 847
-"Size of target" => "",
+"Size of target" => "Розмір цільового боксу", // ai 2026-06
 
 // src/Widget/Widget.php, row 847
-"Lines in the target select box" => "",
+"Lines in the target select box" => "Кількість рядків у цільовому виборному боксі", // ai 2026-06
 
 // src/Widget/Widget.php, row 850
-"Horizontal" => "",
+"Horizontal" => "Горизонтально", // ai 2026-06
 
 // src/Widget/Widget.php, row 850
-"Show levels horizontally" => "",
+"Show levels horizontally" => "Показувати рівні горизонтально", // ai 2026-06
 
 // src/Widget/Widget.php, row 853
-"First selectable" => "",
+"First selectable" => "Перший вибірний", // ai 2026-06
 
 // src/Widget/Widget.php, row 853
-"First level which will have a Select button" => "",
+"First level which will have a Select button" => "Перший рівень, який матиме кнопку Вибрати", // ai 2026-06
 
 // src/Widget/Widget.php, row 856
-"Level names" => "",
+"Level names" => "Назви рівнів", // ai 2026-06
 
 // src/Widget/Widget.php, row 856
-"Names of level boxes, separated by tilde (~). Replace the default Level 0, Level 1, ..." => "",
+"Names of level boxes, separated by tilde (~). Replace the default Level 0, Level 1, ..." => "Назви боксів рівнів, розділені тильдою (~). Замінюють типові Level 0, Level 1, ...", // ai 2026-06
 
 // src/Widget/Widget.php, row 856
-"Top level~Second level~Keyword" => "",
+"Top level~Second level~Keyword" => "Найвищий рівень~Другий рівень~Ключове слово", // ai 2026-06
 
 // src/Widget/Widget.php, row 859
-"Label for Change Password" => "",
+"Label for Change Password" => "Підпис для Зміни пароля", // ai 2026-06
 
 // src/Widget/Widget.php, row 859
-"Replaces the default 'Change Password'" => "",
+"Replaces the default 'Change Password'" => "Замінює типовий текст 'Change Password'", // ai 2026-06
 
 // src/Widget/Widget.php, row 859
-"Change your password" => "",
+"Change your password" => "Змініть свій пароль", // ai 2026-06
 
 // src/Widget/Widget.php, row 862
-"Label for Retype New Password" => "",
+"Label for Retype New Password" => "Підпис для Повторного введення нового пароля", // ai 2026-06
 
 // src/Widget/Widget.php, row 862
-"Replaces the default \"Retype New Password\"" => "",
+"Replaces the default \"Retype New Password\"" => "Замінює типовий текст \"Retype New Password\"", // ai 2026-06
 
 // src/Widget/Widget.php, row 862
-"Retype the new password" => "",
+"Retype the new password" => "Введіть новий пароль ще раз", // ai 2026-06
 
 // src/Widget/Widget.php, row 865
-"Label for Delete Password" => "",
+"Label for Delete Password" => "Підпис для Видалення пароля", // ai 2026-06
 
 // src/Widget/Widget.php, row 865
-"Replaces the default \"Delete Password\"" => "",
+"Replaces the default \"Delete Password\"" => "Замінює типовий текст \"Delete Password\"", // ai 2026-06
 
 // src/Widget/Widget.php, row 865
-"Delete password (set to empty)" => "",
+"Delete password (set to empty)" => "Видалити пароль (встановити порожнім)", // ai 2026-06
 
 // src/Widget/Widget.php, row 868
-"Help for Change Password" => "",
+"Help for Change Password" => "Підказка для Зміни пароля", // ai 2026-06
 
 // src/Widget/Widget.php, row 868
-"Help text under the Change Password box (default: no text)" => "",
+"Help text under the Change Password box (default: no text)" => "Текст підказки під боксом Зміна пароля (за замовчуванням: без тексту)", // ai 2026-06
 
 // src/Widget/Widget.php, row 868
-"To change password, enter the new password here and below" => "",
+"To change password, enter the new password here and below" => "Щоб змінити пароль, введіть новий пароль тут і нижче", // ai 2026-06
 
 // src/Widget/Widget.php, row 871
-"Help for Retype New Password" => "",
+"Help for Retype New Password" => "Підказка для Повторного введення нового пароля", // ai 2026-06
 
 // src/Widget/Widget.php, row 871
-"Help text under the Retype New Password box (default: no text)" => "",
+"Help text under the Retype New Password box (default: no text)" => "Текст підказки під боксом Повторне введення нового пароля (за замовчуванням: без тексту)", // ai 2026-06
 
 // src/Widget/Widget.php, row 871
-"Retype the new password exactly the same as you entered into \"Change Password\"." => "",
+"Retype the new password exactly the same as you entered into \"Change Password\"." => "Введіть новий пароль ще раз, точно так само, як ви ввели його в полі \"Зміна пароля\".", // ai 2026-06
 
 // src/Widget/Widget.php, row 874
-"The URL of your local web server from where you want to start browsing for a particular URL." => "",
+"The URL of your local web server from where you want to start browsing for a particular URL." => "URL вашого локального веб-сервера, з якого ви хочете почати перегляд для вибору конкретного URL.", // ai 2026-06
 
 // src/Widget/Widget.php, row 874
 "http#://www.ecn.cz/articles/solar.shtml" => "",
@@ -8307,137 +8329,137 @@ return [
 "Ajax inline" => "",
 
 // src/Widget/Widget.php, row 877
-"If called as {ajax...} it modifies the visual - inline: old-way (not in window, but inline)" => "",
+"If called as {ajax...} it modifies the visual - inline: old-way (not in window, but inline)" => "При виклику як {ajax...} змінює вигляд - inline: по-старому (не у вікні, а безпосередньо в тексті)", // ai 2026-06
 
 // src/Widget/Widget.php, row 880
-"Enable voice dictation" => "",
+"Enable voice dictation" => "Увімкнути голосове диктування", // ai 2026-06
 
 // src/Widget/Widget.php, row 880
-"Show a microphone button next to the textarea. Uses the browser's Web Speech API when available, otherwise falls back to server-side OpenAI transcription (requires AA_APIKEY_OPENAI define)." => "",
+"Show a microphone button next to the textarea. Uses the browser's Web Speech API when available, otherwise falls back to server-side OpenAI transcription (requires AA_APIKEY_OPENAI define)." => "Показує кнопку мікрофона поряд із текстовим полем. Використовує Web Speech API браузера, якщо доступне, інакше переходить на транскрипцію через OpenAI на сервері (потребує define AA_APIKEY_OPENAI).", // ai 2026-06
 
 // src/Widget/Widget.php, row 883
-"Max dictation seconds" => "",
+"Max dictation seconds" => "Макс. тривалість диктування (с)", // ai 2026-06
 
 // src/Widget/Widget.php, row 883
-"Upper bound for a single dictation recording. Overrides the AA_SPEECH_MAX_SECONDS define. Enforced client-side (auto-stop) and server-side (reject oversized uploads)." => "",
+"Upper bound for a single dictation recording. Overrides the AA_SPEECH_MAX_SECONDS define. Enforced client-side (auto-stop) and server-side (reject oversized uploads)." => "Верхня межа тривалості одного диктованого запису. Має пріоритет над define AA_SPEECH_MAX_SECONDS. Примусово застосовується на стороні клієнта (автоматична зупинка) та сервера (відхилення завеликих завантажень).", // ai 2026-06
 
 // src/Widget/Widget.php, row 886
-"Dictation language" => "",
+"Dictation language" => "Мова диктування", // ai 2026-06
 
 // src/Widget/Widget.php, row 886
-"BCP-47 locale code for voice recognition (e.g. cs-CZ, en-US, sk-SK, de-DE). Leave blank to auto-infer from the page's &lt;html lang&gt; attribute — which is usually the admin UI language, not the content language, so setting this explicitly is recommended." => "",
+"BCP-47 locale code for voice recognition (e.g. cs-CZ, en-US, sk-SK, de-DE). Leave blank to auto-infer from the page's &lt;html lang&gt; attribute — which is usually the admin UI language, not the content language, so setting this explicitly is recommended." => "Код мови у форматі BCP-47 для розпізнавання мовлення (напр. cs-CZ, en-US, sk-SK, de-DE). Якщо залишити порожнім, він буде автоматично визначений з атрибута &lt;html lang&gt; сторінки — який зазвичай відповідає мові адміністрації, а не мові вмісту, тому рекомендуємо встановити його явно.", // ai 2026-06
 
 // src/Widget/Widget.php, row 889
-"Dictation engine" => "",
+"Dictation engine" => "Рушій диктування", // ai 2026-06
 
 // src/Widget/Widget.php, row 892
-"Auto — browser Web Speech when available, server OpenAI as fallback" => "",
+"Auto — browser Web Speech when available, server OpenAI as fallback" => "Авто — Web Speech у браузері, якщо доступне, інакше OpenAI на сервері", // ai 2026-06
 
 // src/Widget/Widget.php, row 893
-"Browser Web Speech API only (free, no server key, Chromium-based browsers)" => "",
+"Browser Web Speech API only (free, no server key, Chromium-based browsers)" => "Лише Web Speech API браузера (безкоштовно, без серверного ключа, браузери на основі Chromium)", // ai 2026-06
 
 // src/Widget/Widget.php, row 894
-"Server-side OpenAI gpt-4o-transcribe only (requires AA_APIKEY_OPENAI, better accuracy)" => "",
+"Server-side OpenAI gpt-4o-transcribe only (requires AA_APIKEY_OPENAI, better accuracy)" => "Лише OpenAI gpt-4o-transcribe на сервері (потребує AA_APIKEY_OPENAI, вища точність)", // ai 2026-06
 
 // src/Widget/Widget.php, row 896
-"Which speech-to-text engine to use." => "",
+"Which speech-to-text engine to use." => "Який рушій перетворення мовлення на текст використовувати.", // ai 2026-06
 
 // src/Widget/Widget.php, row 899
-"Store audio recording" => "",
+"Store audio recording" => "Зберігати звуковий запис", // ai 2026-06
 
 // src/Widget/Widget.php, row 899
-"Save the uploaded audio to the slice's upload directory (img_upload/&lt;slice_id&gt;/) as audio-&lt;item_id&gt;-&lt;field_id&gt;-&lt;YYYYMMDD-HHMMSS&gt;.&lt;ext&gt;. Server enforces this flag from the field config — clients cannot opt in by themselves." => "",
+"Save the uploaded audio to the slice's upload directory (img_upload/&lt;slice_id&gt;/) as audio-&lt;item_id&gt;-&lt;field_id&gt;-&lt;YYYYMMDD-HHMMSS&gt;.&lt;ext&gt;. Server enforces this flag from the field config — clients cannot opt in by themselves." => "Зберігає завантажений звук до каталогу завантажень рубрики (img_upload/&lt;slice_id&gt;/) як audio-&lt;item_id&gt;-&lt;field_id&gt;-&lt;YYYYMMDD-HHMMSS&gt;.&lt;ext&gt;. Сервер примусово застосовує цей прапорець з налаштувань поля — клієнт не може увімкнути його самостійно.", // ai 2026-06
 
 // src/Widget/Widget.php, row 902
-"New item template ID" => "",
+"New item template ID" => "ID шаблону нової статті", // ai 2026-06
 
 // src/Widget/Widget.php, row 902
-"The ID of item in destination slice used as Template for new items (probably in Holding bin)" => "",
+"The ID of item in destination slice used as Template for new items (probably in Holding bin)" => "ID статті в цільовій рубриці, що використовується як шаблон для нових статей (ймовірно в Резерві)", // ai 2026-06
 
 // src/Widget/Widget.php, row 905
-"Code to show" => "",
+"Code to show" => "Показуваний код", // ai 2026-06
 
 // src/Widget/Widget.php, row 905
-"HTML code with possible AA expressions to show. If not filled, the {_#this} will be displayed" => "",
+"HTML code with possible AA expressions to show. If not filled, the {_#this} will be displayed" => "HTML-код (можливо з AA-виразами), який буде показано. Якщо не заповнено, відобразиться {_#this}", // ai 2026-06
 
 // src/Widget/Widget.php, row 908
-"Disable new tags" => "",
+"Disable new tags" => "Заборонити нові теги", // ai 2026-06
 
 // src/Widget/Widget.php, row 908
-"Disallow creation of new tags - new items in related slice" => "",
+"Disallow creation of new tags - new items in related slice" => "Забороняє створення нових тегів - нових статей у пов'язаній рубриці", // ai 2026-06
 
 // src/Widget/Widget.php, row 911
-"Max values" => "",
+"Max values" => "Макс. кількість значень", // ai 2026-06
 
 // src/Widget/Widget.php, row 911
-"Limit the number of values entered. If 0 or empty, the number is unlimited" => "",
+"Limit the number of values entered. If 0 or empty, the number is unlimited" => "Обмежує кількість введених значень. Якщо 0 або порожнє, кількість необмежена", // ai 2026-06
 
 // src/Widget/Widget.php, row 914
-"Related field" => "",
+"Related field" => "Поле для пов'язаних", // ai 2026-06
 
 // src/Widget/Widget.php, row 914
-"Field to use for related items (relation........ is default)" => "",
+"Field to use for related items (relation........ is default)" => "Поле, що використовується для пов'язаних статей (типове - relation........)", // ai 2026-06
 
 // src/Widget/Widget.php, row 917
-"Row Code" => "",
+"Row Code" => "Код рядка", // ai 2026-06
 
 // src/Widget/Widget.php, row 917
-"Alias in constant slice or HTML code to use for each related item (_#ROW_CODE is default)" => "",
+"Alias in constant slice or HTML code to use for each related item (_#ROW_CODE is default)" => "Аліас у константній рубриці або HTML-код для кожної пов'язаної статті (типово _#ROW_CODE)", // ai 2026-06
 
 // src/Widget/Widget.php, row 920
-"Row Edit Code" => "",
+"Row Edit Code" => "Код редагування рядка", // ai 2026-06
 
 // src/Widget/Widget.php, row 920
-"Alias in constant slice or HTML code to use for editing related item (_#ROW_EDIT is default)" => "",
+"Alias in constant slice or HTML code to use for editing related item (_#ROW_EDIT is default)" => "Аліас у константній рубриці або HTML-код для редагування пов'язаної статті (типово _#ROW_EDIT)", // ai 2026-06
 
 // src/Widget/Widget.php, row 923
-"Buttons to Show" => "",
+"Buttons to Show" => "Кнопки для показу", // ai 2026-06
 
 // src/Widget/Widget.php, row 923
-"N - new<br>D - delete (with json you can specify also Dconfirm:&lt;question&gt;<br>S - setting (edit item in Toolbox)<br>E - edit - used with \"Row Edit Code\" parameter<br>B - back - used with \"Row Edit Code\" parameter<br>F - file upload to first file...........x or img_upload.....x or img_src........x field<br>- - no manage (just view)<br>Could be also defined as JSON asoc array - {\"N\":\"Add item\",\"D\":\"Delete item\",\"Dconfirm\":\"Are you sure to delete item?\"}" => "",
+"N - new<br>D - delete (with json you can specify also Dconfirm:&lt;question&gt;<br>S - setting (edit item in Toolbox)<br>E - edit - used with \"Row Edit Code\" parameter<br>B - back - used with \"Row Edit Code\" parameter<br>F - file upload to first file...........x or img_upload.....x or img_src........x field<br>- - no manage (just view)<br>Could be also defined as JSON asoc array - {\"N\":\"Add item\",\"D\":\"Delete item\",\"Dconfirm\":\"Are you sure to delete item?\"}" => "N - нова<br>D - видалити (в json можна задати також Dconfirm:&lt;питання&gt;<br>S - налаштування (редагування статті в Toolbox)<br>E - редагувати - використовується з параметром \"Код редагування рядка\"<br>B - назад - використовується з параметром \"Код редагування рядка\"<br>F - завантаження файлу до першого поля file...........x, img_upload.....x або img_src........x<br>- - без керування (лише перегляд)<br>Можна задати також як асоціативний масив JSON - {\"N\":\"Add item\",\"D\":\"Delete item\",\"Dconfirm\":\"Are you sure to delete item?\"}", // ai 2026-06
 
 // src/Widget/Widget.php, row 926
-"Class prefix" => "",
+"Class prefix" => "Префікс класу", // ai 2026-06
 
 // src/Widget/Widget.php, row 926
-"Component identifier to select from" => "",
+"Component identifier to select from" => "Ідентифікатор компонента, з якого здійснюється вибір", // ai 2026-06
 
 // src/Widget/Widget.php, row 929
-"Address field" => "",
+"Address field" => "Поле з адресою", // ai 2026-06
 
 // src/Widget/Widget.php, row 929
-"field_id of another text field, from which user can grab address search" => "",
+"field_id of another text field, from which user can grab address search" => "field_id іншого текстового поля, з якого користувач може взяти адресу для пошуку", // ai 2026-06
 
 // src/Widget/Widget.php, row 932
-"Allowed shapes" => "",
+"Allowed shapes" => "Дозволені фігури", // ai 2026-06
 
 // src/Widget/Widget.php, row 932
-"M - Marker (point) - default<br>L - Line<br>P - Polygon<br>R - Rectangle" => "",
+"M - Marker (point) - default<br>L - Line<br>P - Polygon<br>R - Rectangle" => "M - Marker - маркер (точка) - типово<br>L - Line - лінія<br>P - Polygon - багатокутник<br>R - Rectangle - прямокутник", // ai 2026-06
 
 // src/Widget/Widget.php, row 935
-"Multiple shapes" => "",
+"Multiple shapes" => "Кілька фігур", // ai 2026-06
 
 // src/Widget/Widget.php, row 935
-"Allow multiple shapes at a time" => "",
+"Allow multiple shapes at a time" => "Дозволити кілька фігур одночасно", // ai 2026-06
 
 // src/Widget/Widget.php, row 938
-"Text option for Other" => "",
+"Text option for Other" => "Текстовий варіант для «Інше»", // ai 2026-06
 
 // src/Widget/Widget.php, row 938
-"Last option is considered as \"Other\" with the possibility to write text value" => "",
+"Last option is considered as \"Other\" with the possibility to write text value" => "Останній варіант вважається за «Інше» з можливістю вписати текстове значення", // ai 2026-06
 
 // src/Widget/Widget.php, row 941
-"Searchable" => "",
+"Searchable" => "З пошуком", // ai 2026-06
 
 // src/Widget/Widget.php, row 941
-"Uses special selectbox widget, which is searchable as substring.<br>Do not rely on current implementation in your possible scripts." => "",
+"Uses special selectbox widget, which is searchable as substring.<br>Do not rely on current implementation in your possible scripts." => "Використовує спеціальний віджет списку вибору, у якому можна шукати за підрядком.<br>Не покладайтеся на поточну реалізацію у своїх можливих скриптах.", // ai 2026-06
 
 // src/Widget/Widget.php, row 944
-"Placeholder" => "",
+"Placeholder" => "Заповнювач", // ai 2026-06
 
 // src/Widget/Widget.php, row 944
-"Placeholder for input" => "",
+"Placeholder for input" => "Заповнювач для поля введення", // ai 2026-06
 
 // src/Widget/Widget.php, row 947
-"Width of one displayed item in pixels (300) or in % (50%)<br>Minimum is 150px, default is 250px.<br>For one item per row use 100%." => "",
+"Width of one displayed item in pixels (300) or in % (50%)<br>Minimum is 150px, default is 250px.<br>For one item per row use 100%." => "Ширина однієї показаної статті в пікселях (300) або у % (50%)<br>Мінімум 150px, типово 250px.<br>Для однієї статті на рядок використовуйте 100%.", // ai 2026-06
 ];

@@ -14,238 +14,246 @@ setlocale(LC_NUMERIC, 'en_US');            // keep float format with dot (see AA
 return [
 
 // admin/param_wizard.php, row 114
-"field&nbsp;id" => "",
+"field&nbsp;id" => "id&nbsp;на полето", // ai 2026-06
 
 // admin/param_wizard.php, row 117
-"boolean:&nbsp;0=false,1=true" => "",
+"boolean:&nbsp;0=false,1=true" => "булева стойност:&nbsp;0=невярно,1=вярно", // ai 2026-06
 
 // admin/param_wizard.php, row 141
-"Wizard" => "",
+"Wizard" => "Съветник", // ai 2026-06
 
 // admin/param_wizard.php, row 230
-"This is an undocumented %s. We don't recommend using it." => "",
+"This is an undocumented %s. We don't recommend using it." => "Това е недокументиран %s. Не препоръчваме да го използвате.", // ai 2026-06
 
 // admin/param_wizard.php, row 231
-"Close the wizard" => "",
+"Close the wizard" => "Затваряне на съветника", // ai 2026-06
 
 // admin/param_wizard.php, row 245
-"Available parameters: " => "",
+"Available parameters: " => "Налични параметри:", // ai 2026-06
 
 // admin/param_wizard.php, row 265
-"This %s has no parameters." => "",
+"This %s has no parameters." => "Този %s няма параметри.", // ai 2026-06
 
 // admin/param_wizard.php, row 275
-"Have a look at these examples of parameters sets:" => "",
+"Have a look at these examples of parameters sets:" => "Разгледайте тези примери за набори от параметри:", // ai 2026-06
 
 // admin/param_wizard.php, row 282
-"Show" => "",
+"Show" => "Покажи", // ai 2026-06
 
 // admin/param_wizard.php, row 293
-"OK - Save" => "",
+"OK - Save" => "OK - Запис", // ai 2026-06
 
 // admin/param_wizard.php, row 294
-"Cancel" => "",
+"Cancel" => "Отказ", // ai 2026-06
 
 // admin/param_wizard.php, row 295
-"Show example params" => "",
+"Show example params" => "Показване на примерни параметри", // ai 2026-06
 
 // admin/param_wizard.php, row 299
 "OK" => "",
 
 // include/constants_param_wizard.php, row 66
-"Parameters" => "",
+"Parameters" => "Параметри", // ai 2026-06
 
 // include/constants_param_wizard.php, row 68
-"Help: Parameter Wizard" => "",
+"Help: Parameter Wizard" => "Помощ: Съветник за параметри", // ai 2026-06
 
 // include/constants_param_wizard.php, row 75
-"Input Validate Type" => "",
+"Input Validate Type" => "Тип проверка на въведеното (валидация)", // ai 2026-06
 
 // include/constants_param_wizard.php, row 77
-"No validation" => "",
+"No validation" => "Без валидация", // ai 2026-06
 
 // include/constants_param_wizard.php, row 80
 "URL" => "",
 
 // include/constants_param_wizard.php, row 83
-"E-mail" => "",
+"E-mail" => "Имейл", // ai 2026-06
 
 // include/constants_param_wizard.php, row 86
-"Number = positive integer number" => "",
+"Number = positive integer number" => "Number = положително цяло число", // ai 2026-06
 
 // include/constants_param_wizard.php, row 89, 111
-"Min" => "",
+"Min" => "Мин", // ai 2026-06
 
 // include/constants_param_wizard.php, row 90, 112
-"Allowed minimum value" => "",
+"Allowed minimum value" => "Минимална допустима стойност", // ai 2026-06
 
 // include/constants_param_wizard.php, row 95, 117
-"Max" => "",
+"Max" => "Макс", // ai 2026-06
 
 // include/constants_param_wizard.php, row 96, 118
-"Allowed maximum value" => "",
+"Allowed maximum value" => "Максимална допустима стойност", // ai 2026-06
 
 // include/constants_param_wizard.php, row 101, 123
-"Step" => "",
+"Step" => "Стъпка", // ai 2026-06
 
 // include/constants_param_wizard.php, row 108
-"Number = (signed) integer number" => "",
+"Number = (signed) integer number" => "Number = (със знак) цяло число", // ai 2026-06
 
 // include/constants_param_wizard.php, row 130
-"Float - including scientific notation 1.2E+9" => "",
+"Float - including scientific notation 1.2E+9" => "Float - включително научен запис 1.2E+9", // ai 2026-06
 
 // include/constants_param_wizard.php, row 133
-"Decimal" => "",
+"Decimal" => "Десетично число", // ai 2026-06
 
 // include/constants_param_wizard.php, row 136
-"Id = 1-32 hexadecimal digits [0-9a-f]" => "",
+"Id = 1-32 hexadecimal digits [0-9a-f]" => "Id = 1-32 шестнайсетични цифри [0-9a-f]", // ai 2026-06
 
 // include/constants_param_wizard.php, row 139
-"Date = store as date" => "",
+"Date = store as date" => "Date = съхранява се като дата", // ai 2026-06
 
 // include/constants_param_wizard.php, row 142
-"Bool = store as bool" => "",
+"Bool = store as bool" => "Bool = съхранява се като булева стойност", // ai 2026-06
 
 // include/constants_param_wizard.php, row 145
-"User = does nothing ???" => "",
+"User = does nothing ???" => "User = не прави нищо ???", // ai 2026-06
 
 // include/constants_param_wizard.php, row 148
-"Unique = prove uniqueness" => "",
+"Unique = prove uniqueness" => "Unique = проверка за уникалност", // ai 2026-06
 
 // include/constants_param_wizard.php, row 149
 "Validates only if the value is not yet used. Useful e.g.\n"
    ."        for emails or user names."
- => "",
+ => "Валидира само ако стойността още не е използвана. Полезно напр.\n"
+   ."        за имейли или потребителски имена.", // ai 2026-06
 
 // include/constants_param_wizard.php, row 153, 193
-"Field ID" => "",
+"Field ID" => "ID на полето", // ai 2026-06
 
 // include/constants_param_wizard.php, row 154, 194
-"Field in which to look for matching values (default is current field)." => "",
+"Field in which to look for matching values (default is current field)." => "Поле, в което да се търсят съвпадащи стойности (по подразбиране е текущото поле).", // ai 2026-06
 
 // include/constants_param_wizard.php, row 159
-"Scope" => "",
+"Scope" => "Обхват", // ai 2026-06
 
 // include/constants_param_wizard.php, row 160
 "<b>1</b> = This slice only.\n"
    ."                <b>2</b> = All slices.<br>\n"
    ."                <b>0</b> = (default) Username, special: Checks uniqueness in reader management\n"
    ."                slices and in the permission system. Always uses field ID %1"
- => "",
+ => "<b>1</b> = Само тази рубрика.\n"
+   ."                <b>2</b> = Всички рубрики.<br>\n"
+   ."                <b>0</b> = (по подразбиране) Потребителско име, специално: Проверява уникалността в рубриките за управление на читатели\n"
+   ."                и в системата за права. Винаги използва поле с ID %1", // ai 2026-06
 
 // include/constants_param_wizard.php, row 171
-"Regular Expression" => "",
+"Regular Expression" => "Регулярен израз", // ai 2026-06
 
 // include/constants_param_wizard.php, row 172
-"Validation based on Regular Expressions" => "",
+"Validation based on Regular Expressions" => "Валидация на базата на регулярни изрази", // ai 2026-06
 
 // include/constants_param_wizard.php, row 175
-"Regular Expressions" => "",
+"Regular Expressions" => "Регулярни изрази", // ai 2026-06
 
 // include/constants_param_wizard.php, row 176
-"use something like: /^[0-9]*\$/ - see \"Regular Expressions\" manual." => "",
+"use something like: /^[0-9]*\$/ - see \"Regular Expressions\" manual." => "използвайте нещо като: /^[0-9]*\$/ - вижте ръководството \"Regular Expressions\".", // ai 2026-06
 
 // include/constants_param_wizard.php, row 181
-"Error text" => "",
+"Error text" => "Текст на грешката", // ai 2026-06
 
 // include/constants_param_wizard.php, row 182
-"error message" => "",
+"error message" => "съобщение за грешка", // ai 2026-06
 
 // include/constants_param_wizard.php, row 184
-"Wrong value" => "",
+"Wrong value" => "Грешна стойност", // ai 2026-06
 
 // include/constants_param_wizard.php, row 189
-"Unique e-mail" => "",
+"Unique e-mail" => "Уникален имейл", // ai 2026-06
 
 // include/constants_param_wizard.php, row 190
-"Combines the e-mail and unique validations. Validates only if the value is a valid email address and not yet used." => "",
+"Combines the e-mail and unique validations. Validates only if the value is a valid email address and not yet used." => "Комбинира валидациите за имейл и уникалност. Валидира само ако стойността е валиден имейл адрес и още не е използвана.", // ai 2026-06
 
 // include/constants_param_wizard.php, row 199
-"Slice only" => "",
+"Slice only" => "Само тази рубрика", // ai 2026-06
 
 // include/constants_param_wizard.php, row 200
 "Do you want to check for uniqueness this slice only\n"
    ."                  or all slices?"
- => "",
+ => "Искате ли да проверявате уникалността само в тази рубрика,\n"
+   ."                  или във всички рубрики?", // ai 2026-06
 
 // include/constants_param_wizard.php, row 208
-"Password and Change Password" => "",
+"Password and Change Password" => "Парола и Смяна на парола", // ai 2026-06
 
 // include/constants_param_wizard.php, row 209
 "Validates the passwords do not differ when changing password.\n"
    ."        <i>The validation is provided only by JavaScript and not by ValidateInput()\n"
    ."        because the insert\n"
    ."        function does the validation again before inserting the new password.</i>"
- => "",
+ => "Проверява, че паролите не се различават при смяна на паролата.\n"
+   ."        <i>Валидацията се извършва само от JavaScript, а не от ValidateInput(),\n"
+   ."        защото вмъкващата\n"
+   ."        функция извършва валидацията отново преди вмъкването на новата парола.</i>", // ai 2026-06
 
 // include/constants_param_wizard.php, row 224
-"Function" => "",
+"Function" => "Функция", // ai 2026-06
 
 // include/constants_param_wizard.php, row 225
-"How the formatting in the text on this page is used:<br><i>the field</i> in italics stands for the field edited in the \"configure Fields\" window,<br><b>parameter name</b> in bold stands for a parameter on this screen." => "",
+"How the formatting in the text on this page is used:<br><i>the field</i> in italics stands for the field edited in the \"configure Fields\" window,<br><b>parameter name</b> in bold stands for a parameter on this screen." => "Как се използва форматирането на текста на тази страница:<br><i>полето</i> в курсив означава полето, редактирано в прозореца \"Настройка на полета\",<br><b>име на параметър</b> с получер шрифт означава параметър на този екран.", // ai 2026-06
 
 // include/constants_param_wizard.php, row 228
-"just code" => "",
+"just code" => "само код", // ai 2026-06
 
 // include/constants_param_wizard.php, row 229
-"prints the code in parameter - _#this could be used - easier than f_t (no additional parameter)" => "",
+"prints the code in parameter - _#this could be used - easier than f_t (no additional parameter)" => "извежда кода в параметъра - може да се използва _#this - по-лесно от f_t (без допълнителен параметър)", // ai 2026-06
 
 // include/constants_param_wizard.php, row 232
-"null function" => "",
+"null function" => "празна функция", // ai 2026-06
 
 // include/constants_param_wizard.php, row 233
-"prints nothing" => "",
+"prints nothing" => "не извежда нищо", // ai 2026-06
 
 // include/constants_param_wizard.php, row 236
-"first value" => "",
+"first value" => "първа стойност", // ai 2026-06
 
 // include/constants_param_wizard.php, row 237
-"prints first value, even if the field is multivalue" => "",
+"prints first value, even if the field is multivalue" => "извежда първата стойност, дори ако полето е многозначно", // ai 2026-06
 
 // include/constants_param_wizard.php, row 240
-"translated" => "",
+"translated" => "преведено", // ai 2026-06
 
 // include/constants_param_wizard.php, row 241
-"prints translated field based on currently selected language" => "",
+"prints translated field based on currently selected language" => "извежда преведеното поле според текущо избрания език", // ai 2026-06
 
 // include/constants_param_wizard.php, row 244
-"abstract" => "",
+"abstract" => "резюме", // ai 2026-06
 
 // include/constants_param_wizard.php, row 245
-"prints abstract (if exists) or the beginning of the <b>fulltext</b>" => "",
+"prints abstract (if exists) or the beginning of the <b>fulltext</b>" => "извежда резюмето (ако съществува) или началото на <b>пълния текст</b>", // ai 2026-06
 
 // include/constants_param_wizard.php, row 248
-"length" => "",
+"length" => "дължина", // ai 2026-06
 
 // include/constants_param_wizard.php, row 249
-"max number of characters grabbed from the <b>fulltext</b> field" => "",
+"max number of characters grabbed from the <b>fulltext</b> field" => "максимален брой знаци, взети от полето <b>пълен текст</b>", // ai 2026-06
 
 // include/constants_param_wizard.php, row 254
-"fulltext" => "",
+"fulltext" => "пълен текст", // ai 2026-06
 
 // include/constants_param_wizard.php, row 255
-"field id of fulltext field (like full_text.......), from which the text is grabbed. If empty, the text is grabbed from <i>the field</i> itself." => "",
+"field id of fulltext field (like full_text.......), from which the text is grabbed. If empty, the text is grabbed from <i>the field</i> itself." => "id на полето с пълен текст (като full_text.......), от което се взема текстът. Ако е празно, текстът се взема от <i>самото поле</i>.", // ai 2026-06
 
 // include/constants_param_wizard.php, row 257, 299, 596
 "full_text......." => "",
 
 // include/constants_param_wizard.php, row 260
-"paragraph" => "",
+"paragraph" => "абзац", // ai 2026-06
 
 // include/constants_param_wizard.php, row 261
-"take first paragraph (text until \\<BR\\> or \\<P\\> or \\</P\\> or at least '.' (dot)) if shorter than <b>length</b>" => "",
+"take first paragraph (text until \\<BR\\> or \\<P\\> or \\</P\\> or at least '.' (dot)) if shorter than <b>length</b>" => "взема първия абзац (текст до \\<BR\\> или \\<P\\> или \\</P\\> или поне до '.' (точка)), ако е по-кратък от <b>length</b>", // ai 2026-06
 
 // include/constants_param_wizard.php, row 268
-"extended fulltext link" => "",
+"extended fulltext link" => "разширена връзка към пълния текст", // ai 2026-06
 
 // include/constants_param_wizard.php, row 269
-"Prints some <b>text</b> (or field content) with a link to the fulltext. A more general version of the f_f function. This function doesn't use <i>the field</i>." => "",
+"Prints some <b>text</b> (or field content) with a link to the fulltext. A more general version of the f_f function. This function doesn't use <i>the field</i>." => "Извежда някакъв <b>текст</b> (или съдържание на поле) с връзка към пълния текст. По-обща версия на функцията f_f. Тази функция не използва <i>полето</i>.", // ai 2026-06
 
 // include/constants_param_wizard.php, row 272, 406
-"link only" => "",
+"link only" => "само връзка", // ai 2026-06
 
 // include/constants_param_wizard.php, row 273
-"field id (like 'link_only.......') where switch between external and internal item is stored.  (That page should contain SSI include ../slice.php.). If unfilled, the same page as for item index is used for fulltext (which is obvious behavior)." => "",
+"field id (like 'link_only.......') where switch between external and internal item is stored.  (That page should contain SSI include ../slice.php.). If unfilled, the same page as for item index is used for fulltext (which is obvious behavior)." => "id на полето (като 'link_only.......'), в което се съхранява превключвателят между външна и вътрешна статия. (Тази страница трябва да съдържа SSI include ../slice.php.). Ако не е попълнено, за пълния текст се използва същата страница като за прегледа на статиите (което е обичайното поведение).", // ai 2026-06
 
 // include/constants_param_wizard.php, row 275, 409
 "link_only......." => "",
@@ -254,325 +262,325 @@ return [
 "url_field" => "",
 
 // include/constants_param_wizard.php, row 279
-"field id if field, where external URL is stored (like hl_href.........)" => "",
+"field id if field, where external URL is stored (like hl_href.........)" => "id на полето, в което се съхранява външният URL (като hl_href.........)", // ai 2026-06
 
 // include/constants_param_wizard.php, row 281
 "hl_href........." => "",
 
 // include/constants_param_wizard.php, row 284, 412
-"redirect" => "",
+"redirect" => "пренасочване", // ai 2026-06
 
 // include/constants_param_wizard.php, row 285, 413
-"The URL of another page which shows the content of the item. (That page should contain SSI include ../slice.php.). If unfilled, the same page as for item index is used for fulltext (which is obvious behavior)." => "",
+"The URL of another page which shows the content of the item. (That page should contain SSI include ../slice.php.). If unfilled, the same page as for item index is used for fulltext (which is obvious behavior)." => "URL на друга страница, която показва съдържанието на статията. (Тази страница трябва да съдържа SSI include ../slice.php.). Ако не е попълнено, за пълния текст се използва същата страница като за прегледа на статиите (което е обичайното поведение).", // ai 2026-06
 
 // include/constants_param_wizard.php, row 287, 415
 "http#://www.ecn.cz/articles/solar.shtml" => "",
 
 // include/constants_param_wizard.php, row 290
-"text" => "",
+"text" => "текст", // ai 2026-06
 
 // include/constants_param_wizard.php, row 291
-"The text to be surrounded by the link. If this parameter is a field id, the field's content is used, else it is used verbatim" => "",
+"The text to be surrounded by the link. If this parameter is a field id, the field's content is used, else it is used verbatim" => "Текстът, който да бъде обграден от връзката. Ако този параметър е id на поле, се използва съдържанието на полето, иначе се използва дословно", // ai 2026-06
 
 // include/constants_param_wizard.php, row 296
-"condition field" => "",
+"condition field" => "поле на условие", // ai 2026-06
 
 // include/constants_param_wizard.php, row 297
-"when the specified field hasn't any content, no link is printed, but only the <b>text</b>" => "",
+"when the specified field hasn't any content, no link is printed, but only the <b>text</b>" => "когато зададеното поле няма съдържание, не се извежда връзка, а само <b>текстът</b>", // ai 2026-06
 
 // include/constants_param_wizard.php, row 302, 529
-"tag addition" => "",
+"tag addition" => "добавяне към тага", // ai 2026-06
 
 // include/constants_param_wizard.php, row 303, 530
-"additional text to the \"\\<a\\>\" tag" => "",
+"additional text to the \"\\<a\\>\" tag" => "допълнителен текст към тага \"\\<a\\>\"", // ai 2026-06
 
 // include/constants_param_wizard.php, row 305, 532
 "target=_blank" => "",
 
 // include/constants_param_wizard.php, row 308, 418
-"no session id" => "",
+"no session id" => "без session id", // ai 2026-06
 
 // include/constants_param_wizard.php, row 309, 419
-"If 1, the session id (AA_Session=...) is not added to url" => "",
+"If 1, the session id (AA_Session=...) is not added to url" => "Ако е 1, session id (AA_Session=...) не се добавя към url", // ai 2026-06
 
 // include/constants_param_wizard.php, row 316, 320
-"condition" => "",
+"condition" => "условие", // ai 2026-06
 
 // include/constants_param_wizard.php, row 317
-"This is a very powerful function. It may be used as a better replace of some previous functions. If <b>cond_field</b> = <b>condition</b>, prints <b>begin</b> <i>field</i> <b>end</b>, else prints <b>else</b>. If <b>cond_field</b> is not specified, <i>the field</i> is used. Condition may be reversed (negated) by the \"!\" character at the beginning of it." => "",
+"This is a very powerful function. It may be used as a better replace of some previous functions. If <b>cond_field</b> = <b>condition</b>, prints <b>begin</b> <i>field</i> <b>end</b>, else prints <b>else</b>. If <b>cond_field</b> is not specified, <i>the field</i> is used. Condition may be reversed (negated) by the \"!\" character at the beginning of it." => "Това е много мощна функция. Може да се използва като по-добра замяна на някои предишни функции. Ако <b>cond_field</b> = <b>condition</b>, извежда <b>begin</b> <i>поле</i> <b>end</b>, иначе извежда <b>else</b>. Ако <b>cond_field</b> не е зададено, се използва <i>полето</i>. Условието може да бъде обърнато (отречено) със знака \"!\" в началото му.", // ai 2026-06
 
 // include/constants_param_wizard.php, row 321
-"you may use \"!\" to reverse (negate) the condition" => "",
+"you may use \"!\" to reverse (negate) the condition" => "със знака \"!\" можете да обърнете (отречете) условието", // ai 2026-06
 
 // include/constants_param_wizard.php, row 326, 505
-"begin" => "",
+"begin" => "начало", // ai 2026-06
 
 // include/constants_param_wizard.php, row 327
-"text to print before <i>field</i>, if condition is true" => "",
+"text to print before <i>field</i>, if condition is true" => "текст, който се изписва преди <i>полето</i>, ако условието е изпълнено", // ai 2026-06
 
 // include/constants_param_wizard.php, row 329
-"Yes" => "",
+"Yes" => "Да", // ai 2026-06
 
 // include/constants_param_wizard.php, row 332
-"end" => "",
+"end" => "край", // ai 2026-06
 
 // include/constants_param_wizard.php, row 333
-"text to print after <i>field</i>, if condition is true" => "",
+"text to print after <i>field</i>, if condition is true" => "текст, който се изписва след <i>полето</i>, ако условието е изпълнено", // ai 2026-06
 
 // include/constants_param_wizard.php, row 338
-"else" => "",
+"else" => "иначе", // ai 2026-06
 
 // include/constants_param_wizard.php, row 339
-"text to print when condition is not satisfied" => "",
+"text to print when condition is not satisfied" => "текст, който се изписва, когато условието не е изпълнено", // ai 2026-06
 
 // include/constants_param_wizard.php, row 341
-"No" => "",
+"No" => "Не", // ai 2026-06
 
 // include/constants_param_wizard.php, row 344
 "cond_field" => "",
 
 // include/constants_param_wizard.php, row 345
-"field to compare with the <b>condition</b> - if not filled, <i>field</i> is used" => "",
+"field to compare with the <b>condition</b> - if not filled, <i>field</i> is used" => "поле, което се сравнява с <b>condition</b> - ако не е попълнено, се използва <i>полето</i>", // ai 2026-06
 
 // include/constants_param_wizard.php, row 350
 "skip_the_field" => "",
 
 // include/constants_param_wizard.php, row 351
-"if set to 1, skip <i>the field</i> (print only <b>begin end</b> or <b>else</b>)" => "",
+"if set to 1, skip <i>the field</i> (print only <b>begin end</b> or <b>else</b>)" => "ако е зададено на 1, прескача <i>полето</i> (изписва само <b>begin end</b> или <b>else</b>)", // ai 2026-06
 
 // include/constants_param_wizard.php, row 358
-"This example is usable e.g. for Highlight field - it shows Yes or No depending on the field content" => "",
+"This example is usable e.g. for Highlight field - it shows Yes or No depending on the field content" => "Този пример може да се използва напр. за поле Highlight - изписва Yes или No според съдържанието на полето", // ai 2026-06
 
 // include/constants_param_wizard.php, row 359
-"1:Yes::No::1" => "",
+"1:Yes::No::1" => "1:Да::Не::1", // ai 2026-06
 
 // include/constants_param_wizard.php, row 362
-"When e-mail field is filled, prints something like \"Email: email@apc.org\", when it is empty, prints nothing" => "",
+"When e-mail field is filled, prints something like \"Email: email@apc.org\", when it is empty, prints nothing" => "Когато полето за e-mail е попълнено, изписва нещо като \"Email: email@apc.org\", когато е празно, не изписва нищо", // ai 2026-06
 
 // include/constants_param_wizard.php, row 363
 "!:Email#:&nbsp;" => "",
 
 // include/constants_param_wizard.php, row 366
-"Print image height attribute, if <i>the field</i> is filled, nothing otherwise." => "",
+"Print image height attribute, if <i>the field</i> is filled, nothing otherwise." => "Изписва атрибута за височина на изображението, ако <i>полето</i> е попълнено, иначе нищо.", // ai 2026-06
 
 // include/constants_param_wizard.php, row 367
 "!:height=" => "",
 
 // include/constants_param_wizard.php, row 372
-"date" => "",
+"date" => "дата", // ai 2026-06
 
 // include/constants_param_wizard.php, row 373
-"prints date in a user defined format" => "",
+"prints date in a user defined format" => "изписва датата във формат, зададен от потребителя", // ai 2026-06
 
 // include/constants_param_wizard.php, row 376
-"format" => "",
+"format" => "формат", // ai 2026-06
 
 // include/constants_param_wizard.php, row 377
-"PHP-like format - see <a href=\"https://php.net/manual/en/function.date.php\" target=_blank>PHP manual</a>" => "",
+"PHP-like format - see <a href=\"https://php.net/manual/en/function.date.php\" target=_blank>PHP manual</a>" => "формат като в PHP - вижте <a href=\"https://php.net/manual/en/function.date.php\" target=_blank>ръководството на PHP</a>", // ai 2026-06
 
 // include/constants_param_wizard.php, row 379
-"m-d-Y" => "",
+"m-d-Y" => "d-m-Y", // ai 2026-06
 
 // include/constants_param_wizard.php, row 384
-"edit item" => "",
+"edit item" => "редактиране на статия", // ai 2026-06
 
 // include/constants_param_wizard.php, row 385
-"_#EDITITEM used on admin page index.php for itemedit url" => "",
+"_#EDITITEM used on admin page index.php for itemedit url" => "_#EDITITEM се използва на административната страница index.php за url на itemedit", // ai 2026-06
 
 // include/constants_param_wizard.php, row 388
-"type" => "",
+"type" => "тип", // ai 2026-06
 
 // include/constants_param_wizard.php, row 389
-"disc - for editing a discussion<br>itemcount - to output an item count<br>safe - for safe html<br>slice_info - select a field from the slice info<br>edit - URL to edit the item<br>add - URL to add a new item" => "",
+"disc - for editing a discussion<br>itemcount - to output an item count<br>safe - for safe html<br>slice_info - select a field from the slice info<br>edit - URL to edit the item<br>add - URL to add a new item" => "disc - за редактиране на дискусия<br>itemcount - за извеждане на брой статии<br>safe - за безопасен html<br>slice_info - избира поле от информацията за рубриката<br>edit - URL за редактиране на статията<br>add - URL за добавяне на нова статия", // ai 2026-06
 
 // include/constants_param_wizard.php, row 391
-"edit" => "",
+"edit" => "редактирай", // ai 2026-06
 
 // include/constants_param_wizard.php, row 394
-"return url" => "",
+"return url" => "върнат url", // ai 2026-06
 
 // include/constants_param_wizard.php, row 395
-"Return url being called from, usually leave blank and allow default" => "",
+"Return url being called from, usually leave blank and allow default" => "Върнат url, от който е извикано; обикновено оставете празно и ще се използва стойността по подразбиране", // ai 2026-06
 
 // include/constants_param_wizard.php, row 397
-"/mysite.shtml" => "",
+"/mysite.shtml" => "/mojsajt.shtml", // ai 2026-06
 
 // include/constants_param_wizard.php, row 402
-"fulltext link" => "",
+"fulltext link" => "връзка към пълния текст", // ai 2026-06
 
 // include/constants_param_wizard.php, row 403
-"Prints the URL name inside a link to the fulltext - enables using external items. To be used immediately after \"\\<a href=\"" => "",
+"Prints the URL name inside a link to the fulltext - enables using external items. To be used immediately after \"\\<a href=\"" => "Изписва URL името вътре във връзка към пълния текст - позволява използване на външни статии. Да се използва непосредствено след \"\\<a href=\"", // ai 2026-06
 
 // include/constants_param_wizard.php, row 407
-"field id (like 'link_only.......') where switch between external and internal item is stored. Usually this field is represented as checkbox. If the checkbox is checked, <i>the field</i> is printed, if unchecked, link to fulltext is printed (it depends on <b>redirect</b> parameter, too)." => "",
+"field id (like 'link_only.......') where switch between external and internal item is stored. Usually this field is represented as checkbox. If the checkbox is checked, <i>the field</i> is printed, if unchecked, link to fulltext is printed (it depends on <b>redirect</b> parameter, too)." => "id на полето (напр. 'link_only.......'), в което е съхранен превключвателят между външна и вътрешна статия. Обикновено това поле е представено като отметка. Ако отметката е поставена, се изписва <i>полето</i>, ако не е поставена, се изписва връзка към пълния текст (зависи също и от параметъра <b>redirect</b>).", // ai 2026-06
 
 // include/constants_param_wizard.php, row 426
-"image height" => "",
+"image height" => "височина на изображението", // ai 2026-06
 
 // include/constants_param_wizard.php, row 427
-"An old-style function. Prints <i>the field</i> as image height value (\\<img height=...\\>) or erases the height tag. To be used immediately after \"height=\".The f_c function provides a better way of doing this with parameters \":height=\". " => "",
+"An old-style function. Prints <i>the field</i> as image height value (\\<img height=...\\>) or erases the height tag. To be used immediately after \"height=\".The f_c function provides a better way of doing this with parameters \":height=\". " => "Функция от стар тип. Изписва <i>полето</i> като стойност за височина на изображението (\\<img height=...\\>) или премахва тага за височина. Да се използва непосредствено след \"height=\". Функцията f_c предлага по-добър начин за това с параметри \":height=\".", // ai 2026-06
 
 // include/constants_param_wizard.php, row 430
-"print HTML multiple" => "",
+"print HTML multiple" => "изписване на HTML (многозначно)", // ai 2026-06
 
 // include/constants_param_wizard.php, row 431
-"prints <i>the field</i> content depending on the html flag (escape html special characters or just print)" => "",
+"prints <i>the field</i> content depending on the html flag (escape html special characters or just print)" => "изписва съдържанието на <i>полето</i> в зависимост от флага html (екранира специалните html знаци или само изписва)", // ai 2026-06
 
 // include/constants_param_wizard.php, row 434
-"delimiter" => "",
+"delimiter" => "разделител", // ai 2026-06
 
 // include/constants_param_wizard.php, row 435
-"if specified, a field with multiple values is displayed with the values delimited by it" => "",
+"if specified, a field with multiple values is displayed with the values delimited by it" => "ако е зададен, поле с няколко стойности се показва със стойности, разделени с него", // ai 2026-06
 
 // include/constants_param_wizard.php, row 442
-"image src" => "",
+"image src" => "източник на изображението", // ai 2026-06
 
 // include/constants_param_wizard.php, row 443
-"prints <i>the field</i> as image source (\\<img src=...\\>) - NO_PICTURE for none. The same could be done by the f_c function with parameters :::NO_PICTURE. " => "",
+"prints <i>the field</i> as image source (\\<img src=...\\>) - NO_PICTURE for none. The same could be done by the f_c function with parameters :::NO_PICTURE. " => "изписва <i>полето</i> като източник на изображение (\\<img src=...\\>) - NO_PICTURE за никакъв. Същото може да се постигне с функцията f_c с параметри :::NO_PICTURE.", // ai 2026-06
 
 // include/constants_param_wizard.php, row 446
-"image size" => "",
+"image size" => "размер на изображението", // ai 2026-06
 
 // include/constants_param_wizard.php, row 447
-"prints <i>the field</i> as image size (height='xxx' width='yyy') (or other image information) or empty string if can't work out, does not special case URLs from uploads directory, might do later! " => "",
+"prints <i>the field</i> as image size (height='xxx' width='yyy') (or other image information) or empty string if can't work out, does not special case URLs from uploads directory, might do later! " => "изписва <i>полето</i> като размер на изображението (height='xxx' width='yyy') (или друга информация за изображението) или празен низ, ако не може да го определи; не обработва специално URL от директорията uploads, може би по-късно!", // ai 2026-06
 
 // include/constants_param_wizard.php, row 450, 826
-"information" => "",
+"information" => "информация", // ai 2026-06
 
 // include/constants_param_wizard.php, row 451
-"specifies returned information: <br> - <i>html</i> - (default) - returns image size as HTML attributes (height='xxx' width='yyy')<br> - <i>width</i> - returns width of image in pixels<br> - <i>height</i> - returns height of image in pixels<br> - <i>imgtype</i> - returns flag indicating the type of the image: 1 = GIF, 2 = JPG, 3 = PNG, 4 = SWF, 5 = PSD, 6 = BMP, 7 = TIFF(intel byte order), 8 = TIFF(motorola byte order), 9 = JPC, 10 = JP2, 11 = JPX, 12 = JB2, 13 = SWC, 14 = IFF, 15 = WBMP, 16 = XBM<br> - <i>mime</i> - returns mimetype of the image (like 'image/gif', 'application/x-shockwave-flash', ...)" => "",
+"specifies returned information: <br> - <i>html</i> - (default) - returns image size as HTML attributes (height='xxx' width='yyy')<br> - <i>width</i> - returns width of image in pixels<br> - <i>height</i> - returns height of image in pixels<br> - <i>imgtype</i> - returns flag indicating the type of the image: 1 = GIF, 2 = JPG, 3 = PNG, 4 = SWF, 5 = PSD, 6 = BMP, 7 = TIFF(intel byte order), 8 = TIFF(motorola byte order), 9 = JPC, 10 = JP2, 11 = JPX, 12 = JB2, 13 = SWC, 14 = IFF, 15 = WBMP, 16 = XBM<br> - <i>mime</i> - returns mimetype of the image (like 'image/gif', 'application/x-shockwave-flash', ...)" => "определя върнатата информация: <br> - <i>html</i> - (по подразбиране) - връща размера на изображението като HTML атрибути (height='xxx' width='yyy')<br> - <i>width</i> - връща ширината на изображението в пиксели<br> - <i>height</i> - връща височината на изображението в пиксели<br> - <i>imgtype</i> - връща флаг, указващ типа на изображението: 1 = GIF, 2 = JPG, 3 = PNG, 4 = SWF, 5 = PSD, 6 = BMP, 7 = TIFF(intel byte order), 8 = TIFF(motorola byte order), 9 = JPC, 10 = JP2, 11 = JPX, 12 = JB2, 13 = SWC, 14 = IFF, 15 = WBMP, 16 = XBM<br> - <i>mime</i> - връща mimetype на изображението (напр. 'image/gif', 'application/x-shockwave-flash', ...)", // ai 2026-06
 
 // include/constants_param_wizard.php, row 458
-"substring with case change" => "",
+"substring with case change" => "подниз с промяна на регистъра", // ai 2026-06
 
 // include/constants_param_wizard.php, row 459
-"prints a part of <i>the field</i>" => "",
+"prints a part of <i>the field</i>" => "изписва част от <i>полето</i>", // ai 2026-06
 
 // include/constants_param_wizard.php, row 462
-"start" => "",
+"start" => "начало", // ai 2026-06
 
 // include/constants_param_wizard.php, row 463
-"position of substring start (0=first, 1=second, -1=last,-2=two from end)" => "",
+"position of substring start (0=first, 1=second, -1=last,-2=two from end)" => "позиция на началото на подниза (0=първи, 1=втори, -1=последен, -2=втори от края)", // ai 2026-06
 
 // include/constants_param_wizard.php, row 468
-"count" => "",
+"count" => "брой", // ai 2026-06
 
 // include/constants_param_wizard.php, row 469
-"count of characters (0=until the end)" => "",
+"count of characters (0=until the end)" => "брой знаци (0=до края)", // ai 2026-06
 
 // include/constants_param_wizard.php, row 474
-"case" => "",
+"case" => "регистър", // ai 2026-06
 
 // include/constants_param_wizard.php, row 475
-"upper - convert to UPPERCASE, lower - convert to lowercase, first - convert to First Upper; default is don't change" => "",
+"upper - convert to UPPERCASE, lower - convert to lowercase, first - convert to First Upper; default is don't change" => "upper - преобразува в ГЛАВНИ БУКВИ, lower - преобразува в малки букви, first - преобразува в Първа Главна; по подразбиране не се променя", // ai 2026-06
 
 // include/constants_param_wizard.php, row 480
-"add string" => "",
+"add string" => "добавен низ", // ai 2026-06
 
 // include/constants_param_wizard.php, row 481
-"if string is shortened, <i>add string</i> is appended to the string (probably something like [...])" => "",
+"if string is shortened, <i>add string</i> is appended to the string (probably something like [...])" => "ако низът е съкратен, <i>добавеният низ</i> се добавя към него (вероятно нещо като [...])", // ai 2026-06
 
 // include/constants_param_wizard.php, row 487
-"Auto Update Checkbox" => "",
+"Auto Update Checkbox" => "Отметка с автоматично обновяване", // ai 2026-06
 
 // include/constants_param_wizard.php, row 489
-"linked field" => "",
+"linked field" => "поле с връзка", // ai 2026-06
 
 // include/constants_param_wizard.php, row 490
-"prints <i>the field</i> as a link if the <b>link URL</b> is not NULL, otherwise prints just <i>the field</i>" => "",
+"prints <i>the field</i> as a link if the <b>link URL</b> is not NULL, otherwise prints just <i>the field</i>" => "изписва <i>полето</i> като връзка, ако <b>link URL</b> не е NULL, иначе изписва само <i>полето</i>", // ai 2026-06
 
 // include/constants_param_wizard.php, row 493
-"link URL" => "",
+"link URL" => "URL на връзката", // ai 2026-06
 
 // include/constants_param_wizard.php, row 496
 "source_href....." => "",
 
 // include/constants_param_wizard.php, row 501
-"e-mail or link" => "",
+"e-mail or link" => "e-mail или връзка", // ai 2026-06
 
 // include/constants_param_wizard.php, row 502
-"mailto link - prints: <br>\"<b>begin</b>\\<a href=\"(mailto:)<i>the field</i>\" <b>tag addition</b>\\><b>field/text</b>\\</a\\>. If <i>the field</i> is not filled, prints <b>else_field/text</b>." => "",
+"mailto link - prints: <br>\"<b>begin</b>\\<a href=\"(mailto:)<i>the field</i>\" <b>tag addition</b>\\><b>field/text</b>\\</a\\>. If <i>the field</i> is not filled, prints <b>else_field/text</b>." => "mailto връзка - изписва: <br>\"<b>begin</b>\\<a href=\"(mailto:)<i>полето</i>\" <b>tag addition</b>\\><b>field/text</b>\\</a\\>. Ако <i>полето</i> не е попълнено, изписва <b>else_field/text</b>.", // ai 2026-06
 
 // include/constants_param_wizard.php, row 506
-"text before the link" => "",
+"text before the link" => "текст преди връзката", // ai 2026-06
 
 // include/constants_param_wizard.php, row 508
-"e-mail" => "",
+"e-mail" => "имейл", // ai 2026-06
 
 // include/constants_param_wizard.php, row 511
 "field/text" => "",
 
 // include/constants_param_wizard.php, row 512
-"if this parameter is a field id, the field's content is used, else it is used verbatim" => "",
+"if this parameter is a field id, the field's content is used, else it is used verbatim" => "ако този параметър е id на поле, се използва съдържанието на полето, иначе се използва дословно", // ai 2026-06
 
 // include/constants_param_wizard.php, row 517
 "else_field/text" => "",
 
 // include/constants_param_wizard.php, row 518
-"if <i>the field</i> is empty, only this text (or field content) is printed" => "",
+"if <i>the field</i> is empty, only this text (or field content) is printed" => "ако <i>полето</i> е празно, се изписва само този текст (или съдържанието на полето)", // ai 2026-06
 
 // include/constants_param_wizard.php, row 523
-"linktype" => "",
+"linktype" => "тип на връзката", // ai 2026-06
 
 // include/constants_param_wizard.php, row 524
-"mailto / href (default is mailto) - it is possible to use f_m function for links, too - just type 'href' as this parameter" => "",
+"mailto / href (default is mailto) - it is possible to use f_m function for links, too - just type 'href' as this parameter" => "mailto / href (по подразбиране е mailto) - функцията f_m може да се използва и за връзки - просто задайте 'href' като този параметър", // ai 2026-06
 
 // include/constants_param_wizard.php, row 526
 "href" => "",
 
 // include/constants_param_wizard.php, row 535
-"hide email" => "",
+"hide email" => "скриване на e-mail", // ai 2026-06
 
 // include/constants_param_wizard.php, row 536
-"if 1 then hide email from spam robots. Default is 0." => "",
+"if 1 then hide email from spam robots. Default is 0." => "ако е 1, скрива e-mail от спам роботи. По подразбиране е 0.", // ai 2026-06
 
 // include/constants_param_wizard.php, row 543
 "id" => "",
 
 // include/constants_param_wizard.php, row 544
-"prints unpacked id (use it, if you want to show 'item id' or 'slice id')" => "",
+"prints unpacked id (use it, if you want to show 'item id' or 'slice id')" => "изписва разопакованото (unpacked) id (използвайте го, ако искате да покажете 'item id' или 'slice id')", // ai 2026-06
 
 // include/constants_param_wizard.php, row 547
-"'New' sign" => "",
+"'New' sign" => "знак 'New'", // ai 2026-06
 
 // include/constants_param_wizard.php, row 548
-"prints 'New' or 'Old' or any other text in <b>newer text</b> or <b>older text</b> depending on <b>time</b>. Time is specified in minutes from current time." => "",
+"prints 'New' or 'Old' or any other text in <b>newer text</b> or <b>older text</b> depending on <b>time</b>. Time is specified in minutes from current time." => "изписва 'New' или 'Old' или какъвто и да е друг текст от <b>newer text</b> или <b>older text</b> в зависимост от <b>time</b>. Времето се задава в минути от текущото време.", // ai 2026-06
 
 // include/constants_param_wizard.php, row 551
-"time" => "",
+"time" => "време", // ai 2026-06
 
 // include/constants_param_wizard.php, row 552
-"Time in minutes from current time." => "",
+"Time in minutes from current time." => "Време в минути от текущото време.", // ai 2026-06
 
 // include/constants_param_wizard.php, row 554
 "1440" => "",
 
 // include/constants_param_wizard.php, row 557
-"newer text" => "",
+"newer text" => "по-нов текст", // ai 2026-06
 
 // include/constants_param_wizard.php, row 558
-"Text to be printed, if the date in <i>the field</i> is newer than <i>current_time</i> - <b>time</b>." => "",
+"Text to be printed, if the date in <i>the field</i> is newer than <i>current_time</i> - <b>time</b>." => "Текст, който се изписва, ако датата в <i>полето</i> е по-нова от <i>current_time</i> - <b>time</b>.", // ai 2026-06
 
 // include/constants_param_wizard.php, row 560
-"NEW" => "",
+"NEW" => "НОВО", // ai 2026-06
 
 // include/constants_param_wizard.php, row 563
-"older text" => "",
+"older text" => "по-стар текст", // ai 2026-06
 
 // include/constants_param_wizard.php, row 564
-"Text to be printed, if the date in <i>the field</i> is older than <i>current_time</i> - <b>time</b>" => "",
+"Text to be printed, if the date in <i>the field</i> is older than <i>current_time</i> - <b>time</b>" => "Текст, който се изписва, ако датата в <i>полето</i> е по-стара от <i>current_time</i> - <b>time</b>", // ai 2026-06
 
 // include/constants_param_wizard.php, row 571
-"text (blurb) from another slice" => "",
+"text (blurb) from another slice" => "текст (откъс) от друга рубрика", // ai 2026-06
 
 // include/constants_param_wizard.php, row 572
-"prints 'blurb' (piece of text) from another slice, based on a simple condition.<br>If <i>the field</i> (or the field specified by <b>stringToMatch</b>) in current slice matches the content of <b>fieldToMatch</b> in <b>blurbSliceId</b>, it returns the content of <b>fieldToReturn</b> in <b>blurbSliceId</b>." => "",
+"prints 'blurb' (piece of text) from another slice, based on a simple condition.<br>If <i>the field</i> (or the field specified by <b>stringToMatch</b>) in current slice matches the content of <b>fieldToMatch</b> in <b>blurbSliceId</b>, it returns the content of <b>fieldToReturn</b> in <b>blurbSliceId</b>." => "извежда 'откъс' (част от текст) от друга рубрика въз основа на просто условие.<br>Ако <i>полето</i> (или полето зададено в <b>stringToMatch</b>) в текущата рубрика съвпада със съдържанието на <b>fieldToMatch</b> в <b>blurbSliceId</b>, връща съдържанието на <b>fieldToReturn</b> в <b>blurbSliceId</b>.", // ai 2026-06
 
 // include/constants_param_wizard.php, row 575
 "stringToMatch" => "",
 
 // include/constants_param_wizard.php, row 576
-"By default it is <i>the field</i>.  It can be formatted either as the id of a field (headline........) OR as static text." => "",
+"By default it is <i>the field</i>.  It can be formatted either as the id of a field (headline........) OR as static text." => "По подразбиране е <i>полето</i>.  Може да се зададе или като id на поле (headline........), ИЛИ като статичен текст.", // ai 2026-06
 
 // include/constants_param_wizard.php, row 578
 "category........" => "",
@@ -581,7 +589,7 @@ return [
 "blurbSliceId" => "",
 
 // include/constants_param_wizard.php, row 582
-"unpacked slice id of the slice where the blurb text is stored" => "",
+"unpacked slice id of the slice where the blurb text is stored" => "дълго (unpacked) id на рубриката, в която е съхранен текстът на откъса", // ai 2026-06
 
 // include/constants_param_wizard.php, row 584
 "41415f436f72655f4669656c64732e2e" => "",
@@ -590,7 +598,7 @@ return [
 "fieldToMatch" => "",
 
 // include/constants_param_wizard.php, row 588
-"field id of the field in <b>blurbSliceId</b> where to search for <b>stringToMatch</b>" => "",
+"field id of the field in <b>blurbSliceId</b> where to search for <b>stringToMatch</b>" => "id на полето в <b>blurbSliceId</b>, в което се търси <b>stringToMatch</b>", // ai 2026-06
 
 // include/constants_param_wizard.php, row 590
 "headline........" => "",
@@ -599,43 +607,43 @@ return [
 "fieldToReturn" => "",
 
 // include/constants_param_wizard.php, row 594
-"field id of the field in <b>blurbSliceId</b> where the blurb text is stored (what to print)" => "",
+"field id of the field in <b>blurbSliceId</b> where the blurb text is stored (what to print)" => "id на полето в <b>blurbSliceId</b>, в което е съхранен текстът на откъса (какво да се изведе)", // ai 2026-06
 
 // include/constants_param_wizard.php, row 601
 "RSS tag" => "",
 
 // include/constants_param_wizard.php, row 602
-"serves for internal purposes of the predefined RSS aliases (e.g. _#RSS_TITL). Adds the RSS 0.91 compliant tags." => "",
+"serves for internal purposes of the predefined RSS aliases (e.g. _#RSS_TITL). Adds the RSS 0.91 compliant tags." => "служи за вътрешни нужди на предефинираните RSS алиаси (напр. _#RSS_TITL). Добавя тагове съвместими с RSS 0.91.", // ai 2026-06
 
 // include/constants_param_wizard.php, row 605, 609, 801
-"default" => "",
+"default" => "по подразбиране", // ai 2026-06
 
 // include/constants_param_wizard.php, row 606
-"prints <i>the field</i> or a default value if <i>the field</i> is empty. The same could be done by the f_c function with parameters :::<b>default</b>." => "",
+"prints <i>the field</i> or a default value if <i>the field</i> is empty. The same could be done by the f_c function with parameters :::<b>default</b>." => "извежда <i>полето</i> или стойност по подразбиране, ако <i>полето</i> е празно. Същото може да се постигне с функцията f_c с параметри :::<b>default</b>.", // ai 2026-06
 
 // include/constants_param_wizard.php, row 610
-"default value" => "",
+"default value" => "стойност по подразбиране", // ai 2026-06
 
 // include/constants_param_wizard.php, row 612
-"javascript: window.alert('No source url specified')" => "",
+"javascript: window.alert('No source url specified')" => "javascript: window.alert('Не е зададен адрес на източника')", // ai 2026-06
 
 // include/constants_param_wizard.php, row 617
-"print field" => "",
+"print field" => "извеждане на поле", // ai 2026-06
 
 // include/constants_param_wizard.php, row 618
-"prints <i>the field</i> content (or <i>unalias string</i>) depending on the html flag (if html flag is not set, it converts the content to html. In difference to f_h function, it converts to html line-breaks, too (in its basic variant)" => "",
+"prints <i>the field</i> content (or <i>unalias string</i>) depending on the html flag (if html flag is not set, it converts the content to html. In difference to f_h function, it converts to html line-breaks, too (in its basic variant)" => "извежда съдържанието на <i>полето</i> (или <i>unalias string</i>) в зависимост от флага html (ако флагът html не е зададен, преобразува съдържанието в html. За разлика от функцията f_h преобразува в html и краищата на редовете (в основния си вариант)", // ai 2026-06
 
 // include/constants_param_wizard.php, row 621
 "unalias string" => "",
 
 // include/constants_param_wizard.php, row 622
-"if the <i>unalias string</i> is defined, then the function ignores <i>the field</i> and it rather prints the <i>unalias string</i>. You can of course use any aliases (or fields like {headline.........}) in this string" => "",
+"if the <i>unalias string</i> is defined, then the function ignores <i>the field</i> and it rather prints the <i>unalias string</i>. You can of course use any aliases (or fields like {headline.........}) in this string" => "ако <i>unalias string</i> е дефиниран, функцията игнорира <i>полето</i> и извежда вместо това <i>unalias string</i>. В този низ разбира се можете да използвате произволни алиаси (или полета като {headline.........})", // ai 2026-06
 
 // include/constants_param_wizard.php, row 624
 "<img src={img_src.........1} _#IMG_WDTH _#IMG_HGHT>" => "",
 
 // include/constants_param_wizard.php, row 627
-"output modify" => "",
+"output modify" => "промяна на изхода", // ai 2026-06
 
 // include/constants_param_wizard.php, row 628
 "You can use some output modifications:<br>\n"
@@ -647,175 +655,182 @@ return [
    ."                   &nbsp; - <i>striptags</i>  - strip HTML and PHP tags from the string<br>\n"
    ."                   &nbsp; - <i>asis</i>  - prints field content 'as is' - it do not add &lt;br&gt; at line ends even if field is marked as 'Plain text'. 'asis' parameter is good for Item Manager's 'Modify content...' feature, for example<br>\n"
    ."                   "
- => "",
+ => "Можете да използвате някои промени на изхода:<br>\n"
+   ."                   &nbsp; - [<i>empty</i>] - без промяна<br>\n"
+   ."                   &nbsp; - <i>csv</i>  - извежда полето за експорт в CSV файл (Comma Separated Values)<br>\n"
+   ."                   &nbsp; - <i>urlencode</i> - кодира низа за URL (вижте PHP функцията <a href=\"https://www.php.net/urlencode\">urlencode<a>)<br>\n"
+   ."                   &nbsp; - <i>safe</i> - преобразува специалните знаци в HTML entities (вижте PHP функцията <a href=\"https://www.php.net/htmlspecialchars\">htmlspecialchars<a>)<br>\n"
+   ."                   &nbsp; - <i>javascript</i> - екранира ' (замества ' с \\')<br>\n"
+   ."                   &nbsp; - <i>striptags</i>  - премахва HTML и PHP таговете от низа<br>\n"
+   ."                   &nbsp; - <i>asis</i>  - извежда съдържанието на полето 'както е' - не добавя &lt;br&gt; в краищата на редовете, дори когато полето е маркирано като 'Plain text'. Параметърът 'asis' е полезен например за функцията 'Modify content...' в Управлението на статии<br>", // ai 2026-06
 
 // include/constants_param_wizard.php, row 643
-"user function" => "",
+"user function" => "потребителска функция", // ai 2026-06
 
 // include/constants_param_wizard.php, row 644
-"calls a user defined function (see How to create new aliases in <a href='https://actionapps.org/faq/#aliases'>FAQ</a>)" => "",
+"calls a user defined function (see How to create new aliases in <a href='https://actionapps.org/faq/#aliases'>FAQ</a>)" => "извиква дефинирана от потребителя функция (вижте How to create new aliases в <a href='https://actionapps.org/faq/#aliases'>FAQ</a>)", // ai 2026-06
 
 // include/constants_param_wizard.php, row 647
-"function" => "",
+"function" => "функция", // ai 2026-06
 
 // include/constants_param_wizard.php, row 648
-"name of the function in the include/usr_aliasfnc.php file" => "",
+"name of the function in the include/usr_aliasfnc.php file" => "име на функцията във файла include/usr_aliasfnc.php", // ai 2026-06
 
 // include/constants_param_wizard.php, row 650
 "usr_start_end_date_cz" => "",
 
 // include/constants_param_wizard.php, row 653
-"parameter" => "",
+"parameter" => "параметър", // ai 2026-06
 
 // include/constants_param_wizard.php, row 654
-"a parameter passed to the function" => "",
+"a parameter passed to the function" => "параметър, предаден на функцията", // ai 2026-06
 
 // include/constants_param_wizard.php, row 661
-"view" => "",
+"view" => "преглед", // ai 2026-06
 
 // include/constants_param_wizard.php, row 662
-"allows you to manipulate the views. This is a complicated and powerful function, described in <a href=\"../doc/FAQ.html#viewparam\" target=_blank>FAQ</a>, which allows you to display any view in place of the alias. It can be used for 'related stories' table or for displaying content of related slice." => "",
+"allows you to manipulate the views. This is a complicated and powerful function, described in <a href=\"../doc/FAQ.html#viewparam\" target=_blank>FAQ</a>, which allows you to display any view in place of the alias. It can be used for 'related stories' table or for displaying content of related slice." => "позволява да манипулирате изгледите. Това е сложна и мощна функция, описана в <a href=\"../doc/FAQ.html#viewparam\" target=_blank>FAQ</a>, която позволява да изведете произволен изглед на мястото на алиаса. Може да се използва за таблица със 'свързани статии' или за извеждане на съдържанието на свързана рубрика.", // ai 2026-06
 
 // include/constants_param_wizard.php, row 665
-"complex parameter" => "",
+"complex parameter" => "комплексен параметър", // ai 2026-06
 
 // include/constants_param_wizard.php, row 666
-"this parameter is the same as we use in view.php url parameter - see the FAQ" => "",
+"this parameter is the same as we use in view.php url parameter - see the FAQ" => "този параметър е същият като този, който използваме в url параметъра на view.php - вижте FAQ", // ai 2026-06
 
 // include/constants_param_wizard.php, row 668
 "vid=4&amp;cmd[23]=v-25" => "",
 
 // include/constants_param_wizard.php, row 673
-"image width" => "",
+"image width" => "ширина на изображението", // ai 2026-06
 
 // include/constants_param_wizard.php, row 674
-"An old-style function. Prints <i>the field</i> as image width value (\\<img width=...\\>) or erases the width tag. To be used immediately after \"width=\".The f_c function provides a better way of doing this with parameters \":width=\". " => "",
+"An old-style function. Prints <i>the field</i> as image width value (\\<img width=...\\>) or erases the width tag. To be used immediately after \"width=\".The f_c function provides a better way of doing this with parameters \":width=\". " => "Функция от стар тип. Извежда <i>полето</i> като стойност за ширина на изображението (\\<img width=...\\>) или изтрива тага за ширина. Използва се непосредствено след \"width=\". Функцията f_c предлага по-добър начин да направите това с параметри \":width=\".", // ai 2026-06
 
 // include/constants_param_wizard.php, row 677
-"transformation" => "",
+"transformation" => "трансформация", // ai 2026-06
 
 // include/constants_param_wizard.php, row 678
-"Allows to transform the field value to another value.<br>Usage: <b>content_1</b>:<b>return_value_1</b>:<b>content_2</b>:<b>return_value_2</b>:<b>default</b><br>If the content <i>the field</i> is equal to <b>content_1</b> the <b>return_value_1</b> is returned. If the content <i>the field</i> is equal to <b>content_2</b> the <b>return_value_2</b> is returned. If <i>the field is not equal to any <b>content_x</b>, <b>default</b> is returned</i>." => "",
+"Allows to transform the field value to another value.<br>Usage: <b>content_1</b>:<b>return_value_1</b>:<b>content_2</b>:<b>return_value_2</b>:<b>default</b><br>If the content <i>the field</i> is equal to <b>content_1</b> the <b>return_value_1</b> is returned. If the content <i>the field</i> is equal to <b>content_2</b> the <b>return_value_2</b> is returned. If <i>the field is not equal to any <b>content_x</b>, <b>default</b> is returned</i>." => "Позволява да трансформирате стойността на полето в друга стойност.<br>Употреба: <b>content_1</b>:<b>return_value_1</b>:<b>content_2</b>:<b>return_value_2</b>:<b>default</b><br>Ако съдържанието на <i>полето</i> е равно на <b>content_1</b>, се връща <b>return_value_1</b>. Ако съдържанието на <i>полето</i> е равно на <b>content_2</b>, се връща <b>return_value_2</b>. Ако <i>полето не е равно на нито един <b>content_x</b>, се връща <b>default</b></i>.", // ai 2026-06
 
 // include/constants_param_wizard.php, row 681, 693, 705, 717, 729, 741, 753, 765, 777, 789
-"content" => "",
+"content" => "съдържание", // ai 2026-06
 
 // include/constants_param_wizard.php, row 682, 694, 706, 718, 730, 742, 754, 766, 778, 790
-"string for comparison with <i>the field</i> for following return value" => "",
+"string for comparison with <i>the field</i> for following return value" => "низ за сравнение с <i>полето</i> за следващата връщана стойност", // ai 2026-06
 
 // include/constants_param_wizard.php, row 687, 699, 711, 723, 735, 747, 759, 771, 783, 795
-"return value" => "",
+"return value" => "връщана стойност", // ai 2026-06
 
 // include/constants_param_wizard.php, row 688, 700, 712, 724, 736, 748, 760, 772, 784, 796
-"string to return if previous content matches - You can use field_id too" => "",
+"string to return if previous content matches - You can use field_id too" => "низ, който се връща, ако предходното съдържание съвпада - можете да използвате и field_id", // ai 2026-06
 
 // include/constants_param_wizard.php, row 690, 702, 714, 726, 738, 750, 762, 774, 786, 798, 804
-"Environment" => "",
+"Environment" => "Околна среда", // ai 2026-06
 
 // include/constants_param_wizard.php, row 802
-"if no content matches, use this string as return value" => "",
+"if no content matches, use this string as return value" => "ако никое съдържание не съвпада, използвай този низ като връщана стойност", // ai 2026-06
 
 // include/constants_param_wizard.php, row 809
-"expanded string" => "",
+"expanded string" => "разгънат низ", // ai 2026-06
 
 // include/constants_param_wizard.php, row 810
-"expands the string in the parameter" => "",
+"expands the string in the parameter" => "разгъва низа в параметъра", // ai 2026-06
 
 // include/constants_param_wizard.php, row 813
-"string to expand" => "",
+"string to expand" => "низ за разгъване", // ai 2026-06
 
 // include/constants_param_wizard.php, row 814
-"if specified then this string is expanded, if not specified then expands the contents of the field" => "",
+"if specified then this string is expanded, if not specified then expands the contents of the field" => "ако е зададен, се разгъва този низ; ако не е зададен, се разгъва съдържанието на полето", // ai 2026-06
 
 // include/constants_param_wizard.php, row 822
-"file information" => "",
+"file information" => "информация за файла", // ai 2026-06
 
 // include/constants_param_wizard.php, row 823
-"prints <i>the field</i> as file information, its size or type" => "",
+"prints <i>the field</i> as file information, its size or type" => "извежда <i>полето</i> като информация за файла, неговия размер или тип", // ai 2026-06
 
 // include/constants_param_wizard.php, row 827
-"specifies returned information: <br> - <i>name</i> - filename<br> - <i>type</i> - returns type of file (like TXT)<br> - <i>size</i> - returns size of file in kB or MB (like 12.1 kB)<br> - <i>bytesize</i> - (like 12128)<br> - <i>link</i><br> - <i>typesize</i> - [type - size] in span<br> - <i>crc</i><br> - <i>time</i>" => "",
+"specifies returned information: <br> - <i>name</i> - filename<br> - <i>type</i> - returns type of file (like TXT)<br> - <i>size</i> - returns size of file in kB or MB (like 12.1 kB)<br> - <i>bytesize</i> - (like 12128)<br> - <i>link</i><br> - <i>typesize</i> - [type - size] in span<br> - <i>crc</i><br> - <i>time</i>" => "указва връщаната информация: <br> - <i>name</i> - име на файла<br> - <i>type</i> - връща типа на файла (като TXT)<br> - <i>size</i> - връща размера на файла в kB или MB (като 12.1 kB)<br> - <i>bytesize</i> - (като 12128)<br> - <i>link</i><br> - <i>typesize</i> - [тип - размер] в span<br> - <i>crc</i><br> - <i>time</i>", // ai 2026-06
 
 // include/constants_param_wizard.php, row 841
-"Transformation action" => "",
+"Transformation action" => "Трансформационно действие", // ai 2026-06
 
 // include/constants_param_wizard.php, row 843
-"AA Expression" => "",
+"AA Expression" => "AA израз", // ai 2026-06
 
 // include/constants_param_wizard.php, row 844
-"AA expression where we can use any AA {expressions}" => "",
+"AA expression where we can use any AA {expressions}" => "AA израз, в който можем да използваме произволни AA {expressions}", // ai 2026-06
 
 // include/constants_param_wizard.php, row 847
-"expression" => "",
+"expression" => "израз", // ai 2026-06
 
 // include/constants_param_wizard.php, row 856
-"Store" => "",
+"Store" => "Съхрани", // ai 2026-06
 
 // include/constants_param_wizard.php, row 857
-"Simply store a value from the input field" => "",
+"Simply store a value from the input field" => "Просто съхранява стойност от входното поле", // ai 2026-06
 
 // include/constants_param_wizard.php, row 860
-"lang (optional)" => "",
+"lang (optional)" => "lang (по избор)", // ai 2026-06
 
 // include/constants_param_wizard.php, row 861
-"two letters - cz | en | es | de. If provided the value will be stored to specified language (the field must use translations)" => "",
+"two letters - cz | en | es | de. If provided the value will be stored to specified language (the field must use translations)" => "две букви - cz | en | es | de. Ако е зададено, стойността ще се съхрани в указания език (полето трябва да използва преводи)", // ai 2026-06
 
 // include/constants_param_wizard.php, row 869
-"Remove string" => "",
+"Remove string" => "Премахни низ", // ai 2026-06
 
 // include/constants_param_wizard.php, row 870
-"Remove all occurrences of a string from the input field." => "",
+"Remove all occurrences of a string from the input field." => "Премахва всички срещания на низ от входното поле.", // ai 2026-06
 
 // include/constants_param_wizard.php, row 873, 894
-"string parameter" => "",
+"string parameter" => "низов параметър", // ai 2026-06
 
 // include/constants_param_wizard.php, row 874
-"Removed string" => "",
+"Removed string" => "Премахван низ", // ai 2026-06
 
 // include/constants_param_wizard.php, row 880
-"Format date" => "",
+"Format date" => "Форматирай дата", // ai 2026-06
 
 // include/constants_param_wizard.php, row 881
-"Parse the date in the input field expected to be in English date format. In case of error, the transformation fails" => "",
+"Parse the date in the input field expected to be in English date format. In case of error, the transformation fails" => "Обработва датата във входното поле, която се очаква да е в английски формат на дата. При грешка трансформацията се проваля", // ai 2026-06
 
 // include/constants_param_wizard.php, row 885
-"Add http prefix" => "",
+"Add http prefix" => "Добави http префикс", // ai 2026-06
 
 // include/constants_param_wizard.php, row 886
-"Adds 'https://' prefix to the field if not beginning with 'https://' and not empty." => "",
+"Adds 'https://' prefix to the field if not beginning with 'https://' and not empty." => "Добавя префикс 'https://' към полето, ако то не започва с 'https://' и не е празно.", // ai 2026-06
 
 // include/constants_param_wizard.php, row 890
-"Store parameter" => "",
+"Store parameter" => "Съхрани параметър", // ai 2026-06
 
 // include/constants_param_wizard.php, row 891
-"Store parameter instead of the input field" => "",
+"Store parameter instead of the input field" => "Съхранява параметър вместо входното поле", // ai 2026-06
 
 // include/constants_param_wizard.php, row 901
-"Store as long id" => "",
+"Store as long id" => "Съхрани като дълго id", // ai 2026-06
 
 // include/constants_param_wizard.php, row 902
-"Creates long id from the string. The string is combined with the parameter!! or with slice_id (if the parameter is not provided). From the same string (and the same parameter) we always create the same id." => "",
+"Creates long id from the string. The string is combined with the parameter!! or with slice_id (if the parameter is not provided). From the same string (and the same parameter) we always create the same id." => "Създава дълго id от низа. Низът се комбинира с параметъра!! или със slice_id (ако параметърът не е зададен). От един и същ низ (и един и същ параметър) винаги създаваме едно и също id.", // ai 2026-06
 
 // include/constants_param_wizard.php, row 905
-"string to add" => "",
+"string to add" => "низ за добавяне", // ai 2026-06
 
 // include/constants_param_wizard.php, row 906
-"this parameter will be added to the string before conversion (the reason is to avoid empty strings and also in order we do not generate always the same id for common strings (in different imports). If this param is not specified, slice_id is used instead." => "",
+"this parameter will be added to the string before conversion (the reason is to avoid empty strings and also in order we do not generate always the same id for common strings (in different imports). If this param is not specified, slice_id is used instead." => "този параметър се добавя към низа преди преобразуването (целта е да се избегнат празни низове, а също и за да не генерираме винаги едно и също id за често срещани низове (в различни импорти). Ако този параметър не е зададен, вместо него се използва slice_id.", // ai 2026-06
 
 // include/constants_param_wizard.php, row 914
-"Split input field by string" => "",
+"Split input field by string" => "Раздели входното поле по низ", // ai 2026-06
 
 // include/constants_param_wizard.php, row 915
-"Split input field by string parameter and store the result as multi-value." => "",
+"Split input field by string parameter and store the result as multi-value." => "Разделя входното поле по низов параметър и съхранява резултата като многозначен.", // ai 2026-06
 
 // include/constants_param_wizard.php, row 918
-"delimiter (+ possible languages)" => "",
+"delimiter (+ possible languages)" => "разделител (+ евентуално езици)", // ai 2026-06
 
 // include/constants_param_wizard.php, row 919
-"string delimiter which separates the values of the input field (like \"|\"). Another option is to add also languages separated by \"##\" in the form <delimiter>##<lang1>##<lang2> (\"|##cz##en\" for \"Ahoj|Hi\") - this will fill translated fields" => "",
+"string delimiter which separates the values of the input field (like \"|\"). Another option is to add also languages separated by \"##\" in the form <delimiter>##<lang1>##<lang2> (\"|##cz##en\" for \"Ahoj|Hi\") - this will fill translated fields" => "низов разделител, който отделя стойностите на входното поле (като \"|\"). Друга възможност е да се добавят и езици, разделени с \"##\" във вида <delimiter>##<lang1>##<lang2> (\"|##cz##en\" за \"Ahoj|Hi\") - това ще попълни преведените полета", // ai 2026-06
 
 // include/constants_param_wizard.php, row 926
-"Store default value" => "",
+"Store default value" => "Съхрани стойност по подразбиране", // ai 2026-06
 
 // include/constants_param_wizard.php, row 927
 "Store these default values for the following output fields. The other output fields will filled form <i>From</i> field (if specified). Else it is filled by <i>Action parameters</i> string.\n"
@@ -831,5 +846,16 @@ return [
    ."    <tr><td>Edited by</td><td>Active user</td><td></td></tr>\n"
    ."      </table>\n"
    ."    "
- => "",
+ => "За следните изходни полета се съхраняват тези стойности по подразбиране. Останалите изходни полета ще се попълнят от полето <i>From</i> (ако е зададено). Иначе се попълват от низа <i>Action parameters</i>.\n"
+   ."    <table>\n"
+   ."        <tr><td><b>Изходно поле</b></td><td><b>Стойност</b></td><td><b>Описание</b></td></tr></b>\n"
+   ."    <tr><td>Код на състоянието</td><td>1</td><td>Статията ще се съхрани в кошницата Активни (Съвет: задайте 2 за кошницата Изчакващи)</td></tr>\n"
+   ."    <tr><td>Брой показвания</td><td>0</td><td></td></tr>\n"
+   ."        <tr><td>Дата на публикуване</td><td>Текуща дата</td><td></td></tr>\n"
+   ."    <tr><td>Дата на въвеждане</td><td>Текуща дата</td><td></td></tr>\n"
+   ."    <tr><td>Последна редакция</td><td>Текуща дата</td><td></td></tr>\n"
+   ."    <tr><td>Дата на изтичане</td><td>Текуща дата + 10 години</td><td></td></tr>\n"
+   ."    <tr><td>Въведено от</td><td>Активен потребител</td><td></td></tr>\n"
+   ."    <tr><td>Редактирано от</td><td>Активен потребител</td><td></td></tr>\n"
+   ."      </table>", // ai 2026-06
 ];

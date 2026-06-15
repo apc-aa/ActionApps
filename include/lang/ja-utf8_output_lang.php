@@ -14,178 +14,191 @@ setlocale(LC_NUMERIC, 'en_US');            // keep float format with dot (see AA
 return [
 
 // ./slice.php, row 232
-"Bad inc parameter - included file must contain only alphanumeric characters" => "",
+"Bad inc parameter - included file must contain only alphanumeric characters" => "inc パラメータが不正です - 挿入ファイル名には英数字のみ使用できます", // ai 2026-06
 
 // ./slice.php, row 236
-"No such file" => "",
+"No such file" => "ファイルが存在しません", // ai 2026-06
 
 // ./slice.php, row 263
-"Invalid slice number or slice was deleted" => "",
+"Invalid slice number or slice was deleted" => "スライス番号が無効か、スライスが削除されています", // ai 2026-06
 
 // ./slice.php, row 266
-"slice.php output forbidden for this slice" => "",
+"slice.php output forbidden for this slice" => "このスライスでは slice.php による出力は禁止されています", // ai 2026-06
 
 // ./slice.php, row 321
-"session id" => "",
+"session id" => "セッションID", // ai 2026-06
 
 // ./slice.php, row 580
-"number of current page (on pagescroller)" => "",
+"number of current page (on pagescroller)" => "現在のページ番号（ページ送り）", // ai 2026-06
 
 // ./slice.php, row 581
-"page length (number of items)" => "",
+"page length (number of items)" => "ページの長さ（項目数）", // ai 2026-06
 
 // ./slice.php, row 616
 // include/view.php, row 346
 "No item found" => "項目が見付かりません",
 
 // include/discussion.php, row 220
-"Show selected" => "",
+"Show selected" => "選択したものを表示", // ai 2026-06
 
 // include/discussion.php, row 221
-"Show all" => "",
+"Show all" => "すべて表示", // ai 2026-06
 
 // include/discussion.php, row 222
-"Add new" => "",
+"Add new" => "新規追加", // ai 2026-06
 
 // include/item.php, row 104
-"Alias for %1" => "",
+"Alias for %1" => "%1 の別名", // ai 2026-06
 
 // include/item.php, row 358
-"Alias for subject of the discussion comment" => "",
+"Alias for subject of the discussion comment" => "ディスカッションコメントの件名の別名", // ai 2026-06
 
 // include/item.php, row 359
-"Alias for text of the discussion comment" => "",
+"Alias for text of the discussion comment" => "ディスカッションコメントの本文の別名", // ai 2026-06
 
 // include/item.php, row 360
-"Alias for written by" => "",
+"Alias for written by" => "投稿者の別名", // ai 2026-06
 
 // include/item.php, row 361
-"Alias for author's e-mail" => "",
+"Alias for author's e-mail" => "作者のE-メールの別名", // ai 2026-06
 
 // include/item.php, row 362
-"Alias for url address of author's www site" => "",
+"Alias for url address of author's www site" => "作者のWWWサイトのURLの別名", // ai 2026-06
 
 // include/item.php, row 363
-"Alias for description of author's www site" => "",
+"Alias for description of author's www site" => "作者のWWWサイトの説明の別名", // ai 2026-06
 
 // include/item.php, row 364
-"Alias for publish date" => "",
+"Alias for publish date" => "公開日時の別名", // ai 2026-06
 
 // include/item.php, row 365
-"Alias for IP address of author's computer" => "",
+"Alias for IP address of author's computer" => "作者のコンピュータのIPアドレスの別名", // ai 2026-06
 
 // include/item.php, row 366
-"Alias for checkbox used for choosing discussion comment" => "",
+"Alias for checkbox used for choosing discussion comment" => "ディスカッションのコメントを選択するチェックボックスの別名", // ai 2026-06
 
 // include/item.php, row 367
-"Alias for images" => "",
+"Alias for images" => "画像の別名", // ai 2026-06
 
 // include/item.php, row 368
 "Alias for comment ID<br>\n"
    ."                             <i>Usage: </i>in form code<br>\n"
    ."                             <i>Example: </i>&lt;input type=hidden name=d_item_id value=\"_#DITEM_ID\">"
- => "",
+ => "コメントIDの別名<br>\n"
+   ."                             <i>使用法: </i>フォームのコード内<br>\n"
+   ."                             <i>例: </i>&lt;input type=hidden name=d_item_id value=\"_#DITEM_ID\">", // ai 2026-06
 
 // include/item.php, row 369
 "Alias for comment ID (the same as _#DITEM_ID<br>)\n"
    ."                             <i>Usage: </i>in form code<br>\n"
    ."                             <i>Example: </i>&lt;input type=hidden name=d_item_id value=\"_#ITEM_ID#\">"
- => "",
+ => "コメントIDの別名（_#DITEM_IDと同じ<br>）\n"
+   ."                             <i>使用法: </i>フォームのコード内<br>\n"
+   ."                             <i>例: </i>&lt;input type=hidden name=d_item_id value=\"_#ITEM_ID#\">", // ai 2026-06
 
 // include/item.php, row 370
 "Alias for item ID<br>\n"
    ."                             <i>Usage: </i>in form code<br>\n"
    ."                             <i>Example: </i>&lt;input type=hidden name=d_parent value=\"_#DISC_ID#\">"
- => "",
+ => "項目IDの別名<br>\n"
+   ."                             <i>使用法: </i>フォームのコード内<br>\n"
+   ."                             <i>例: </i>&lt;input type=hidden name=d_parent value=\"_#DISC_ID#\">", // ai 2026-06
 
 // include/item.php, row 371
 "Alias for link to text of the discussion comment<br>\n"
    ."                             <i>Usage: </i>in HTML code for index view of the comment<br>\n"
    ."                             <i>Example: </i>&lt;a href=_#URL_BODY>_#SUBJECT#&lt;/a>"
- => "",
+ => "ディスカッションコメントの本文へのリンクの別名<br>\n"
+   ."                             <i>使用法: </i>コメントの一覧表示用HTMLコード内<br>\n"
+   ."                             <i>例: </i>&lt;a href=_#URL_BODY>_#SUBJECT#&lt;/a>", // ai 2026-06
 
 // include/item.php, row 372
 "Alias for link to a form<br>\n"
    ."                             <i>Usage: </i>in HTML code for fulltext view of the comment<br>\n"
    ."                             <i>Example: </i>&lt;a href=_#URLREPLY&gt;Reply&lt;/a&gt;"
- => "",
+ => "フォームへのリンクの別名<br>\n"
+   ."                             <i>使用法: </i>コメントの全文表示用HTMLコード内<br>\n"
+   ."                             <i>例: </i>&lt;a href=_#URLREPLY&gt;返信&lt;/a&gt;", // ai 2026-06
 
 // include/item.php, row 373
 "Alias for link to discussion<br>\n"
    ."                             <i>Usage: </i>in form code<br>\n"
    ."                             <i>Example: </i>&lt;input type=hidden name=url value=\"_#DISC_URL\">"
- => "",
+ => "ディスカッションへのリンクの別名<br>\n"
+   ."                             <i>使用法: </i>フォームのコード内<br>\n"
+   ."                             <i>例: </i>&lt;input type=hidden name=url value=\"_#DISC_URL\">", // ai 2026-06
 
 // include/item.php, row 374
 "Alias for buttons Show all, Show selected, Add new<br>\n"
    ."                             <i>Usage: </i> in the Bottom HTML code"
- => "",
+ => "「全て表示」「選択を表示」「新規追加」ボタンの別名<br>\n"
+   ."                             <i>使用法: </i>最後のHTMLコード内", // ai 2026-06
 
 // include/item.php, row 389
-"3rd parameter filled in DiscussionMailList field" => "",
+"3rd parameter filled in DiscussionMailList field" => "DiscussionMailListフィールドに入力された3番目のパラメータ", // ai 2026-06
 
 // include/item.php, row 391
-"%1th parameter filled in DiscussionMailList field" => "",
+"%1th parameter filled in DiscussionMailList field" => "DiscussionMailListフィールドに入力された%1番目のパラメータ", // ai 2026-06
 
 // include/item.php, row 406
-"Constant name" => "",
+"Constant name" => "定数名", // ai 2026-06
 
 // include/item.php, row 407
-"Translated constant name" => "",
+"Translated constant name" => "翻訳された定数名", // ai 2026-06
 
 // include/item.php, row 408
-"Constant value" => "",
+"Constant value" => "定数の値", // ai 2026-06
 
 // include/item.php, row 409
-"Constant priority" => "",
+"Constant priority" => "定数の優先度", // ai 2026-06
 
 // include/item.php, row 410
-"Constant group id" => "",
+"Constant group id" => "定数グループID", // ai 2026-06
 
 // include/item.php, row 411
-"Category class (for categories only)" => "",
+"Category class (for categories only)" => "分類クラス（分類のみ）", // ai 2026-06
 
 // include/item.php, row 412
-"Constant number" => "",
+"Constant number" => "定数番号", // ai 2026-06
 
 // include/item.php, row 413
-"Constant unique id (32-hexadecimal characters)" => "",
+"Constant unique id (32-hexadecimal characters)" => "定数の一意なID（16進数32文字）", // ai 2026-06
 
 // include/item.php, row 414
-"Constant unique short id (autoincremented from '1' for each constant in the system)" => "",
+"Constant unique short id (autoincremented from '1' for each constant in the system)" => "定数の一意な短縮ID（システム内の各定数で '1' から自動増加）", // ai 2026-06
 
 // include/item.php, row 415
-"Constant description" => "",
+"Constant description" => "定数の記述", // ai 2026-06
 
 // include/item.php, row 416
-"Constant level (used for hierarchical constants)" => "",
+"Constant level (used for hierarchical constants)" => "定数のレベル（階層定数で使用）", // ai 2026-06
 
 // include/item.php, row 787
-"Error: wrong alias function %1 for %2" => "",
+"Error: wrong alias function %1 for %2" => "エラー: %2 に対する別名関数 %1 が不正です", // ai 2026-06
 
 // include/itemview.php, row 117
-"Selected item" => "",
+"Selected item" => "選択された項目", // ai 2026-06
 
 // include/itemview.php, row 124
-"number of found items" => "",
+"number of found items" => "見付かった項目数", // ai 2026-06
 
 // include/itemview.php, row 359
-"No comment was selected" => "",
+"No comment was selected" => "コメントが選択されていません", // ai 2026-06
 
 // include/itemview.php, row 680, 688
-"exact group name" => "",
+"exact group name" => "正確なグループ名", // ai 2026-06
 
 // include/scroller.php, row 86
-"Next" => "",
+"Next" => "次へ", // ai 2026-06
 
 // include/scroller.php, row 87
-"Previous" => "",
+"Previous" => "前へ", // ai 2026-06
 
 // include/scroller.php, row 88
-"All" => "",
+"All" => "全て", // ai 2026-06
 
 // include/scroller.php, row 296
-"found" => "",
+"found" => "該当", // ai 2026-06
 
 // include/scroller.php, row 452
 "&raquo;" => "",
@@ -194,26 +207,26 @@ return [
 "&laquo;" => "",
 
 // include/slice.php, row 68
-"Select Category " => "",
+"Select Category " => "分類を選択", // ai 2026-06
 
 // include/slice.php, row 70
-"All categories" => "",
+"All categories" => "全ての分類", // ai 2026-06
 
 // include/util.php, row 950
-"Error: Missing Reading Password" => "",
+"Error: Missing Reading Password" => "エラー: 読み取りパスワードがありません", // ai 2026-06
 
 // include/util.php, row 1300
-"Toolkit news message" => "",
+"Toolkit news message" => "アプリケーションのお知らせ", // ai 2026-06
 
 // include/util.php, row 1314
-"Back" => "",
+"Back" => "戻る", // ai 2026-06
 
 // include/util.php, row 1314
-"Relogin" => "",
+"Relogin" => "再ログイン", // ai 2026-06
 
 // misc/proposefieldchange.php, row 71
-"Assignment form" => "",
+"Assignment form" => "割り当てフォーム", // ai 2026-06
 
 // misc/proposefieldchange.php, row 76
-"Grabs item relations data POSTed by form" => "",
+"Grabs item relations data POSTed by form" => "フォームからPOSTされた項目の関連データを取得します", // ai 2026-06
 ];

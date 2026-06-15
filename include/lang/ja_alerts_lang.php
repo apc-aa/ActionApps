@@ -11,86 +11,86 @@ $mgettext_lang = "ja";
 return [
 
 // modules/alerts/alerts_sending.php, row 418
-"alerts alert" => "",
+"alerts alert" => "\xA5\xA2\xA5\xE9\xA1\xBC\xA5\xC8\xA5\xE1\xA1\xBC\xA5\xEB", // ai 2026-06
 
 // modules/alerts/alerts_sending.php, row 419
-"alerts welcome" => "",
+"alerts welcome" => "\xA5\xA2\xA5\xE9\xA1\xBC\xA5\xC8\xB4\xBF\xB7\xDE\xA5\xE1\xA1\xBC\xA5\xEB", // ai 2026-06
 
 // modules/alerts/alerts_sending.php, row 420
-"slice wizard welcome" => "",
+"slice wizard welcome" => "\xA5\xB9\xA5\xE9\xA5\xA4\xA5\xB9\xA5\xA6\xA5\xA3\xA5\xB6\xA1\xBC\xA5\xC9\xB4\xBF\xB7\xDE\xA5\xE1\xA1\xBC\xA5\xEB", // ai 2026-06
 
 // modules/alerts/alerts_sending.php, row 421
-"user template" => "",
+"user template" => "\xCD\xF8\xCD\xD1\xBC\xD4\xA5\xC6\xA5\xF3\xA5\xD7\xA5\xEC\xA1\xBC\xA5\xC8", // ai 2026-06
 
 // modules/alerts/alerts_sending.php, row 422
-"password change" => "",
+"password change" => "\xA5\xD1\xA5\xB9\xA5\xEF\xA1\xBC\xA5\xC9\xCA\xD1\xB9\xB9", // ai 2026-06
 
 // modules/alerts/alerts_sending.php, row 423
-"other" => "",
+"other" => "\xA4\xBD\xA4\xCE\xC2\xBE", // ai 2026-06
 
 // modules/alerts/alerts_sending.php, row 433
-"Aliases for Alerts Alert" => "",
+"Aliases for Alerts Alert" => "\xA5\xA2\xA5\xE9\xA1\xBC\xA5\xC8\xA5\xE1\xA1\xBC\xA5\xEB\xCD\xD1\xA4\xCE\xCA\xCC\xCC\xBE", // ai 2026-06
 
 // modules/alerts/alerts_sending.php, row 435
-"complete filter text" => "",
+"complete filter text" => "\xA5\xD5\xA5\xA3\xA5\xEB\xA5\xBF\xA4\xCE\xB4\xB0\xC1\xB4\xA4\xCA\xA5\xC6\xA5\xAD\xA5\xB9\xA5\xC8", // ai 2026-06
 
 // modules/alerts/alerts_sending.php, row 436, 445
-"howoften" => "",
+"howoften" => "\xC9\xD1\xC5\xD9", // ai 2026-06
 
 // modules/alerts/alerts_sending.php, row 437
-"Anonym Form URL (set in Alerts Admin - Settings)" => "",
+"Anonym Form URL (set in Alerts Admin - Settings)" => "\xC6\xBF\xCC\xBE\xA5\xD5\xA5\xA9\xA1\xBC\xA5\xE0\xA4\xCEURL\xA1\xCA\xA5\xA2\xA5\xE9\xA1\xBC\xA5\xC8\xB4\xC9\xCD\xFD - \xC0\xDF\xC4\xEA\xA4\xC7\xC0\xDF\xC4\xEA\xA1\xCB", // ai 2026-06
 
 // modules/alerts/alerts_sending.php, row 438
-"Unsubscribe Form URL" => "",
+"Unsubscribe Form URL" => "\xC7\xDB\xBF\xAE\xB2\xF2\xBD\xFC\xA5\xD5\xA5\xA9\xA1\xBC\xA5\xE0\xA4\xCEURL", // ai 2026-06
 
 // modules/alerts/alerts_sending.php, row 443
-"Aliases for Alerts Welcome" => "",
+"Aliases for Alerts Welcome" => "\xA5\xA2\xA5\xE9\xA1\xBC\xA5\xC8\xB4\xBF\xB7\xDE\xA5\xE1\xA1\xBC\xA5\xEB\xCD\xD1\xA4\xCE\xCA\xCC\xCC\xBE", // ai 2026-06
 
 // modules/alerts/alerts_sending.php, row 446
-"Collection Form URL (set in Alerts Admin - Settings)" => "",
+"Collection Form URL (set in Alerts Admin - Settings)" => "\xA5\xB3\xA5\xEC\xA5\xAF\xA5\xB7\xA5\xE7\xA5\xF3\xA5\xD5\xA5\xA9\xA1\xBC\xA5\xE0\xA4\xCEURL\xA1\xCA\xA5\xA2\xA5\xE9\xA1\xBC\xA5\xC8\xB4\xC9\xCD\xFD - \xC0\xDF\xC4\xEA\xA4\xC7\xC0\xDF\xC4\xEA\xA1\xCB", // ai 2026-06
 
 // modules/alerts/alerts_sending.php, row 447
-"email confirmed" => "",
+"email confirmed" => "\xA5\xE1\xA1\xBC\xA5\xEB\xB3\xCE\xC7\xA7\xBA\xD1\xA4\xDF", // ai 2026-06
 
 // modules/alerts/alerts_sending.php, row 453
-"Aliases for Slice Wizard Welcome" => "",
+"Aliases for Slice Wizard Welcome" => "\xA5\xB9\xA5\xE9\xA5\xA4\xA5\xB9\xA5\xA6\xA5\xA3\xA5\xB6\xA1\xBC\xA5\xC9\xB4\xBF\xB7\xDE\xA5\xE1\xA1\xBC\xA5\xEB\xCD\xD1\xA4\xCE\xCA\xCC\xCC\xBE", // ai 2026-06
 
 // modules/alerts/alerts_sending.php, row 455, 467
-"Slice name" => "",
+"Slice name" => "\xA5\xB9\xA5\xE9\xA5\xA4\xA5\xB9\xCC\xBE", // ai 2026-06
 
 // modules/alerts/alerts_sending.php, row 456, 468
-"New user name" => "",
+"New user name" => "\xBF\xB7\xB5\xAC\xCD\xF8\xCD\xD1\xBC\xD4\xA4\xCE\xCC\xBE\xC1\xB0", // ai 2026-06
 
 // modules/alerts/alerts_sending.php, row 457
-"New user login name" => "",
+"New user login name" => "\xBF\xB7\xB5\xAC\xCD\xF8\xCD\xD1\xBC\xD4\xA4\xCE\xA5\xED\xA5\xB0\xA5\xA4\xA5\xF3\xCC\xBE", // ai 2026-06
 
 // modules/alerts/alerts_sending.php, row 458
-"New user role (editor / admin)" => "",
+"New user role (editor / admin)" => "\xBF\xB7\xB5\xAC\xCD\xF8\xCD\xD1\xBC\xD4\xA4\xCE\xCC\xF2\xB3\xE4\xA1\xCAeditor / admin\xA1\xCB", // ai 2026-06
 
 // modules/alerts/alerts_sending.php, row 459
-"My name" => "",
+"My name" => "\xBC\xAB\xCA\xAC\xA4\xCE\xCC\xBE\xC1\xB0", // ai 2026-06
 
 // modules/alerts/alerts_sending.php, row 460
-"My email" => "",
+"My email" => "\xBC\xAB\xCA\xAC\xA4\xCEE-\xA5\xE1\xA1\xBC\xA5\xEB", // ai 2026-06
 
 // modules/alerts/alerts_sending.php, row 465
-"Aliases for User Templates (you can use also all aliases of the user)" => "",
+"Aliases for User Templates (you can use also all aliases of the user)" => "\xCD\xF8\xCD\xD1\xBC\xD4\xA5\xC6\xA5\xF3\xA5\xD7\xA5\xEC\xA1\xBC\xA5\xC8\xCD\xD1\xA4\xCE\xCA\xCC\xCC\xBE\xA1\xCA\xCD\xF8\xCD\xD1\xBC\xD4\xA4\xCE\xA4\xB9\xA4\xD9\xA4\xC6\xA4\xCE\xCA\xCC\xCC\xBE\xA4\xE2\xBB\xC8\xCD\xD1\xA4\xC7\xA4\xAD\xA4\xDE\xA4\xB9\xA1\xCB", // ai 2026-06
 
 // modules/alerts/alerts_sending.php, row 473
-"Aliases for Password Change email (you can use also all aliases of the user)" => "",
+"Aliases for Password Change email (you can use also all aliases of the user)" => "\xA5\xD1\xA5\xB9\xA5\xEF\xA1\xBC\xA5\xC9\xCA\xD1\xB9\xB9\xA5\xE1\xA1\xBC\xA5\xEB\xCD\xD1\xA4\xCE\xCA\xCC\xCC\xBE\xA1\xCA\xCD\xF8\xCD\xD1\xBC\xD4\xA4\xCE\xA4\xB9\xA4\xD9\xA4\xC6\xA4\xCE\xCA\xCC\xCC\xBE\xA4\xE2\xBB\xC8\xCD\xD1\xA4\xC7\xA4\xAD\xA4\xDE\xA4\xB9\xA1\xCB", // ai 2026-06
 
 // modules/alerts/alerts_sending.php, row 475
-"HTML link to the password change page for current user" => "",
+"HTML link to the password change page for current user" => "\xB8\xBD\xBA\xDF\xA4\xCE\xCD\xF8\xCD\xD1\xBC\xD4\xA4\xCE\xA5\xD1\xA5\xB9\xA5\xEF\xA1\xBC\xA5\xC9\xCA\xD1\xB9\xB9\xA5\xDA\xA1\xBC\xA5\xB8\xA4\xD8\xA4\xCEHTML\xA5\xEA\xA5\xF3\xA5\xAF", // ai 2026-06
 
 // modules/alerts/alerts_sending.php, row 476
-"URL parameter used for password change link in _#PWD_LINK (you can use it, if you want to use your own url for it)" => "",
+"URL parameter used for password change link in _#PWD_LINK (you can use it, if you want to use your own url for it)" => "_#PWD_LINK \xA4\xCE\xA5\xD1\xA5\xB9\xA5\xEF\xA1\xBC\xA5\xC9\xCA\xD1\xB9\xB9\xA5\xEA\xA5\xF3\xA5\xAF\xA4\xCB\xBB\xC8\xA4\xEF\xA4\xEC\xA4\xEBURL\xA5\xD1\xA5\xE9\xA5\xE1\xA1\xBC\xA5\xBF\xA1\xCA\xC6\xC8\xBC\xAB\xA4\xCEURL\xA4\xF2\xBB\xC8\xA4\xA4\xA4\xBF\xA4\xA4\xBE\xEC\xB9\xE7\xA4\xCB\xCD\xF8\xCD\xD1\xA4\xC7\xA4\xAD\xA4\xDE\xA4\xB9\xA1\xCB", // ai 2026-06
 
 // modules/alerts/cf_common.php, row 41
-"Language" => "",
+"Language" => "\xB8\xC0\xB8\xEC", // ai 2026-06
 
 // modules/alerts/cf_common.php, row 47
 // modules/alerts/send_emails.php, row 64
-"Email" => "",
+"Email" => "E-\xA5\xE1\xA1\xBC\xA5\xEB", // ai 2026-06
 
 // modules/alerts/cf_common.php, row 53
 "Password" => "\xA5\xD1\xA5\xB9\xA5\xEF\xA1\xBC\xA5\xC9",
@@ -99,235 +99,237 @@ return [
 "First name" => "\xCC\xBE\xC1\xB0",
 
 // modules/alerts/cf_common.php, row 63
-"Last name" => "",
+"Last name" => "\xC0\xAB", // ai 2026-06
 
 // modules/alerts/cf_common.php, row 71
 // modules/alerts/synchro2.php, row 65
-"How often" => "",
+"How often" => "\xC9\xD1\xC5\xD9", // ai 2026-06
 
 // modules/alerts/cf_common.php, row 78
-"Change password" => "",
+"Change password" => "\xA5\xD1\xA5\xB9\xA5\xEF\xA1\xBC\xA5\xC9\xA4\xCE\xCA\xD1\xB9\xB9", // ai 2026-06
 
 // modules/alerts/cf_common.php, row 84
-"Retype new password" => "",
+"Retype new password" => "\xBF\xB7\xA4\xB7\xA4\xA4\xA5\xD1\xA5\xB9\xA5\xEF\xA1\xBC\xA5\xC9\xA4\xF2\xB7\xAB\xA4\xEA\xCA\xD6\xA4\xB9", // ai 2026-06
 
 // modules/alerts/menu.php, row 49, 50
 // modules/alerts/tableviews.php, row 158, 159
-"Alerts Settings" => "",
+"Alerts Settings" => "\xA5\xA2\xA5\xE9\xA1\xBC\xA5\xC8\xC0\xDF\xC4\xEA", // ai 2026-06
 
 // modules/alerts/menu.php, row 87
-"Alerts Admin" => "",
+"Alerts Admin" => "\xA5\xA2\xA5\xE9\xA1\xBC\xA5\xC8\xB4\xC9\xCD\xFD", // ai 2026-06
 
 // modules/alerts/menu.php, row 91
-"Settings" => "",
+"Settings" => "\xC0\xDF\xC4\xEA", // ai 2026-06
 
 // modules/alerts/menu.php, row 95
 // modules/alerts/send_emails.php, row 136
 // modules/alerts/synchro2.php, row 77
 // modules/alerts/tableviews.php, row 103
-"Selections" => "",
+"Selections" => "\xC1\xAA\xC2\xF2", // ai 2026-06
 
 // modules/alerts/menu.php, row 99
-"Send emails" => "",
+"Send emails" => "\xA5\xE1\xA1\xBC\xA5\xEB\xC1\xF7\xBF\xAE", // ai 2026-06
 
 // modules/alerts/menu.php, row 104
-"Reader management" => "",
+"Reader management" => "\xC6\xC9\xBC\xD4\xB4\xC9\xCD\xFD", // ai 2026-06
 
 // modules/alerts/menu.php, row 107
-"Documentation" => "",
+"Documentation" => "\xA5\xC9\xA5\xAD\xA5\xE5\xA5\xE1\xA5\xF3\xA5\xC8", // ai 2026-06
 
 // modules/alerts/menu.php, row 109
-"Common" => "",
+"Common" => "\xB6\xA6\xC4\xCC", // ai 2026-06
 
 // modules/alerts/menu.php, row 111
-"Email templates" => "",
+"Email templates" => "\xA5\xE1\xA1\xBC\xA5\xEB\xA5\xC6\xA5\xF3\xA5\xD7\xA5\xEC\xA1\xBC\xA5\xC8", // ai 2026-06
 
 // modules/alerts/modedit.php, row 101
 "You do not have permissions to add slice" => "\xA5\xB9\xA5\xE9\xA5\xA4\xA5\xB9\xA4\xF2\xC4\xC9\xB2\xC3\xA4\xB9\xA4\xEB\xB5\xF6\xB2\xC4\xA4\xAC\xA4\xA2\xA4\xEA\xA4\xDE\xA4\xBB\xA4\xF3",
 
 // modules/alerts/send_emails.php, row 55
-"Send now an example alert email to email" => "",
+"Send now an example alert email to email" => "\xA5\xC6\xA5\xB9\xA5\xC8\xCD\xD1\xA5\xA2\xA5\xE9\xA1\xBC\xA5\xC8\xA5\xE1\xA1\xBC\xA5\xEB\xA4\xF2\xA5\xE1\xA1\xBC\xA5\xEB\xA5\xA2\xA5\xC9\xA5\xEC\xA5\xB9\xA4\xD8\xBA\xA3\xA4\xB9\xA4\xB0\xC1\xF7\xBF\xAE", // ai 2026-06
 
 // modules/alerts/send_emails.php, row 65, 76
-"as if" => "",
+"as if" => "\xC1\xDB\xC4\xEA\xA4\xB9\xA4\xEB\xC9\xD1\xC5\xD9", // ai 2026-06
 
 // modules/alerts/send_emails.php, row 66, 77, 92
-"Go!" => "",
+"Go!" => "\xBC\xC2\xB9\xD4\xA1\xAA", // ai 2026-06
 
 // modules/alerts/send_emails.php, row 74
-"Send now an example alert email to Reader" => "",
+"Send now an example alert email to Reader" => "\xA5\xC6\xA5\xB9\xA5\xC8\xCD\xD1\xA5\xA2\xA5\xE9\xA1\xBC\xA5\xC8\xA5\xE1\xA1\xBC\xA5\xEB\xA4\xF2\xC6\xC9\xBC\xD4\xA4\xD8\xBA\xA3\xA4\xB9\xA4\xB0\xC1\xF7\xBF\xAE", // ai 2026-06
 
 // modules/alerts/send_emails.php, row 75
-"Reader" => "",
+"Reader" => "\xC6\xC9\xBC\xD4", // ai 2026-06
 
 // modules/alerts/send_emails.php, row 84
-"Send alerts" => "",
+"Send alerts" => "\xA5\xA2\xA5\xE9\xA1\xBC\xA5\xC8\xA4\xF2\xC1\xF7\xBF\xAE", // ai 2026-06
 
 // modules/alerts/send_emails.php, row 91
-"Send now alerts to all users subscribed to " => "",
+"Send now alerts to all users subscribed to " => "\xBC\xA1\xA4\xCE\xC2\xD0\xBE\xDD\xA4\xCB\xC5\xD0\xCF\xBF\xA4\xB7\xA4\xC6\xA4\xA4\xA4\xEB\xA4\xB9\xA4\xD9\xA4\xC6\xA4\xCE\xCD\xF8\xCD\xD1\xBC\xD4\xA4\xD8\xBA\xA3\xA4\xB9\xA4\xB0\xA5\xA2\xA5\xE9\xA1\xBC\xA5\xC8\xA4\xF2\xC1\xF7\xBF\xAE:", // ai 2026-06
 
 // modules/alerts/send_emails.php, row 91
-"Warning: This is a real command!" => "",
+"Warning: This is a real command!" => "\xB7\xD9\xB9\xF0: \xA4\xB3\xA4\xEC\xA4\xCF\xBC\xC2\xBA\xDD\xA4\xCB\xBC\xC2\xB9\xD4\xA4\xB5\xA4\xEC\xA4\xEB\xA5\xB3\xA5\xDE\xA5\xF3\xA5\xC9\xA4\xC7\xA4\xB9\xA1\xAA", // ai 2026-06
 
 // modules/alerts/send_emails.php, row 95
-"Last time the alerts were sent on:" => "",
+"Last time the alerts were sent on:" => "\xA5\xA2\xA5\xE9\xA1\xBC\xA5\xC8\xA4\xCE\xC1\xB0\xB2\xF3\xC1\xF7\xBF\xAE\xC6\xFC\xBB\xFE:", // ai 2026-06
 
 // modules/alerts/send_emails.php, row 106
-"%1 email(s) sent" => "",
+"%1 email(s) sent" => "%1 \xB7\xEF\xA4\xCE\xA5\xE1\xA1\xBC\xA5\xEB\xA4\xF2\xC1\xF7\xBF\xAE\xA4\xB7\xA4\xDE\xA4\xB7\xA4\xBF", // ai 2026-06
 
 // modules/alerts/send_emails.php, row 134
 "Slice" => "\xA5\xB9\xA5\xE9\xA5\xA4\xA5\xB9",
 
 // modules/alerts/send_emails.php, row 135
-"View (Selection set)" => "",
+"View (Selection set)" => "\xA5\xD3\xA5\xE5\xA1\xBC\xA1\xCA\xC1\xAA\xC2\xF2\xA5\xBB\xA5\xC3\xA5\xC8\xA1\xCB", // ai 2026-06
 
 // modules/alerts/send_emails.php, row 140
 "Define selections in slices from which you want to send Alerts,\n"
    ."        in views of type Alerts Selection Set"
- => "",
+ => "\xA5\xA2\xA5\xE9\xA1\xBC\xA5\xC8\xA4\xF2\xC1\xF7\xBF\xAE\xA4\xB7\xA4\xBF\xA4\xA4\xA5\xB9\xA5\xE9\xA5\xA4\xA5\xB9\xA4\xC7\xA4\xCE\xC1\xAA\xC2\xF2\xA4\xF2\xA1\xA2\n"
+   ."        Alerts Selection Set \xA5\xBF\xA5\xA4\xA5\xD7\xA4\xCE\xA5\xD3\xA5\xE5\xA1\xBC\xA4\xC7\xC4\xEA\xB5\xC1\xA4\xB7\xA4\xC6\xA4\xAF\xA4\xC0\xA4\xB5\xA4\xA4", // ai 2026-06
 
 // modules/alerts/synchro.php, row 63
-"Synchronization with Reader Management Slice" => "",
+"Synchronization with Reader Management Slice" => "\xC6\xC9\xBC\xD4\xB4\xC9\xCD\xFD\xA5\xB9\xA5\xE9\xA5\xA4\xA5\xB9\xA4\xC8\xA4\xCE\xC6\xB1\xB4\xFC", // ai 2026-06
 
 // modules/alerts/synchro.php, row 93
-"Not Yet Set" => "",
+"Not Yet Set" => "\xCC\xA4\xC0\xDF\xC4\xEA", // ai 2026-06
 
 // modules/alerts/synchro.php, row 102
-"Choose Reader Management Slice" => "",
+"Choose Reader Management Slice" => "\xC6\xC9\xBC\xD4\xB4\xC9\xCD\xFD\xA5\xB9\xA5\xE9\xA5\xA4\xA5\xB9\xA4\xF2\xC1\xAA\xC2\xF2", // ai 2026-06
 
 // modules/alerts/synchro.php, row 103
-"This Alerts Collection takes user data from the slice" => "",
+"This Alerts Collection takes user data from the slice" => "\xA4\xB3\xA4\xCE\xA5\xA2\xA5\xE9\xA1\xBC\xA5\xC8\xA5\xB3\xA5\xEC\xA5\xAF\xA5\xB7\xA5\xE7\xA5\xF3\xA4\xCF\xBC\xA1\xA4\xCE\xA5\xB9\xA5\xE9\xA5\xA4\xA5\xB9\xA4\xAB\xA4\xE9\xCD\xF8\xCD\xD1\xBC\xD4\xA5\xC7\xA1\xBC\xA5\xBF\xA4\xF2\xBC\xE8\xC6\xC0\xA4\xB7\xA4\xDE\xA4\xB9", // ai 2026-06
 
 // modules/alerts/synchro.php, row 110
-"Change to: " => "",
+"Change to: " => "\xCA\xD1\xB9\xB9\xC0\xE8:", // ai 2026-06
 
 // modules/alerts/synchro.php, row 116
-"and delete the %1-specific fields from %2" => "",
+"and delete the %1-specific fields from %2" => "\xA4\xB5\xA4\xE9\xA4\xCB %1 \xC0\xEC\xCD\xD1\xA4\xCE\xA5\xD5\xA5\xA3\xA1\xBC\xA5\xEB\xA5\xC9\xA4\xF2 %2 \xA4\xAB\xA4\xE9\xBA\xEF\xBD\xFC\xA4\xB9\xA4\xEB", // ai 2026-06
 
 // modules/alerts/synchro.php, row 120
 "Change" => "\xCA\xD1\xB9\xB9",
 
 // modules/alerts/synchro.php, row 130
-"Add %1-specific fields to %2" => "",
+"Add %1-specific fields to %2" => "%1 \xC0\xEC\xCD\xD1\xA4\xCE\xA5\xD5\xA5\xA3\xA1\xBC\xA5\xEB\xA5\xC9\xA4\xF2 %2 \xA4\xCB\xC4\xC9\xB2\xC3", // ai 2026-06
 
 // modules/alerts/synchro.php, row 132
 "Adds only fields the IDs of which don't yet exist in the slice.\n"
    ."    Refreshes the constant group containing selections if it already exists."
- => "",
+ => "ID\xA4\xAC\xA4\xDE\xA4\xC0\xA5\xB9\xA5\xE9\xA5\xA4\xA5\xB9\xA4\xCB\xC2\xB8\xBA\xDF\xA4\xB7\xA4\xCA\xA4\xA4\xA5\xD5\xA5\xA3\xA1\xBC\xA5\xEB\xA5\xC9\xA4\xCE\xA4\xDF\xA4\xF2\xC4\xC9\xB2\xC3\xA4\xB7\xA4\xDE\xA4\xB9\xA1\xA3\n"
+   ."    \xC1\xAA\xC2\xF2\xA4\xF2\xB4\xDE\xA4\xE0\xC4\xEA\xBF\xF4\xA5\xB0\xA5\xEB\xA1\xBC\xA5\xD7\xA4\xAC\xB4\xFB\xA4\xCB\xC2\xB8\xBA\xDF\xA4\xB9\xA4\xEB\xBE\xEC\xB9\xE7\xA4\xCF\xB9\xB9\xBF\xB7\xA4\xB7\xA4\xDE\xA4\xB9\xA1\xA3", // ai 2026-06
 
 // modules/alerts/synchro.php, row 138
-"Field Name" => "",
+"Field Name" => "\xA5\xD5\xA5\xA3\xA1\xBC\xA5\xEB\xA5\xC9\xCC\xBE", // ai 2026-06
 
 // modules/alerts/synchro.php, row 139
-"Field ID" => "",
+"Field ID" => "\xA5\xD5\xA5\xA3\xA1\xBC\xA5\xEB\xA5\xC9ID", // ai 2026-06
 
 // modules/alerts/synchro.php, row 148
-"Add or refresh fields" => "",
+"Add or refresh fields" => "\xA5\xD5\xA5\xA3\xA1\xBC\xA5\xEB\xA5\xC9\xA4\xCE\xC4\xC9\xB2\xC3\xA1\xA6\xB9\xB9\xBF\xB7", // ai 2026-06
 
 // modules/alerts/synchro.php, row 150
-"This command can not be used until you choose the Reader Management Slice." => "",
+"This command can not be used until you choose the Reader Management Slice." => "\xA4\xB3\xA4\xCE\xA5\xB3\xA5\xDE\xA5\xF3\xA5\xC9\xA4\xCF\xC6\xC9\xBC\xD4\xB4\xC9\xCD\xFD\xA5\xB9\xA5\xE9\xA5\xA4\xA5\xB9\xA4\xF2\xC1\xAA\xC2\xF2\xA4\xB9\xA4\xEB\xA4\xDE\xA4\xC7\xBB\xC8\xCD\xD1\xA4\xC7\xA4\xAD\xA4\xDE\xA4\xBB\xA4\xF3\xA1\xA3", // ai 2026-06
 
 // modules/alerts/synchro2.php, row 66, 74
-"How often for {ALERNAME}" => "",
+"How often for {ALERNAME}" => "{ALERNAME} \xA4\xCE\xC9\xD1\xC5\xD9", // ai 2026-06
 
 // modules/alerts/synchro2.php, row 70
-"not subscribed" => "",
+"not subscribed" => "\xCC\xA4\xC5\xD0\xCF\xBF", // ai 2026-06
 
 // modules/alerts/synchro2.php, row 78
-"Selections for {ALERNAME}" => "",
+"Selections for {ALERNAME}" => "{ALERNAME} \xA4\xCE\xC1\xAA\xC2\xF2", // ai 2026-06
 
 // modules/alerts/synchro2.php, row 86
-"Selection IDs for {ALERNAME}" => "",
+"Selection IDs for {ALERNAME}" => "{ALERNAME} \xA4\xCE\xC1\xAA\xC2\xF2ID", // ai 2026-06
 
 // modules/alerts/synchro2.php, row 171
-"%1 field(s) added" => "",
+"%1 field(s) added" => "%1 \xB7\xEF\xA4\xCE\xA5\xD5\xA5\xA3\xA1\xBC\xA5\xEB\xA5\xC9\xA4\xF2\xC4\xC9\xB2\xC3\xA4\xB7\xA4\xDE\xA4\xB7\xA4\xBF", // ai 2026-06
 
 // modules/alerts/synchro2.php, row 200
-"%1 field(s) and %2 constant group(s) deleted" => "",
+"%1 field(s) and %2 constant group(s) deleted" => "%1 \xB7\xEF\xA4\xCE\xA5\xD5\xA5\xA3\xA1\xBC\xA5\xEB\xA5\xC9\xA4\xC8 %2 \xB7\xEF\xA4\xCE\xC4\xEA\xBF\xF4\xA5\xB0\xA5\xEB\xA1\xBC\xA5\xD7\xA4\xF2\xBA\xEF\xBD\xFC\xA4\xB7\xA4\xDE\xA4\xB7\xA4\xBF", // ai 2026-06
 
 // modules/alerts/synchro2.php, row 228
-"not set" => "",
+"not set" => "\xCC\xA4\xC0\xDF\xC4\xEA", // ai 2026-06
 
 // modules/alerts/tableviews.php, row 65
-"No selections defined. You must define some." => "",
+"No selections defined. You must define some." => "\xC1\xAA\xC2\xF2\xA4\xAC\xC4\xEA\xB5\xC1\xA4\xB5\xA4\xEC\xA4\xC6\xA4\xA4\xA4\xDE\xA4\xBB\xA4\xF3\xA1\xA3\xC4\xEA\xB5\xC1\xA4\xB7\xA4\xC6\xA4\xAF\xA4\xC0\xA4\xB5\xA4\xA4\xA1\xA3", // ai 2026-06
 
 // modules/alerts/tableviews.php, row 102
-"Alerts Selections" => "",
+"Alerts Selections" => "\xA5\xA2\xA5\xE9\xA1\xBC\xA5\xC8\xA4\xCE\xC1\xAA\xC2\xF2", // ai 2026-06
 
 // modules/alerts/tableviews.php, row 106
-"Choose selections which form the Alert email." => "",
+"Choose selections which form the Alert email." => "\xA5\xA2\xA5\xE9\xA1\xBC\xA5\xC8\xA5\xE1\xA1\xBC\xA5\xEB\xA4\xF2\xB9\xBD\xC0\xAE\xA4\xB9\xA4\xEB\xC1\xAA\xC2\xF2\xA4\xF2\xC1\xAA\xA4\xF3\xA4\xC7\xA4\xAF\xA4\xC0\xA4\xB5\xA4\xA4\xA1\xA3", // ai 2026-06
 
 // modules/alerts/tableviews.php, row 114
-"selection" => "",
+"selection" => "\xC1\xAA\xC2\xF2", // ai 2026-06
 
 // modules/alerts/tableviews.php, row 127
-"order" => "",
+"order" => "\xBD\xE7\xBD\xF8", // ai 2026-06
 
 // modules/alerts/tableviews.php, row 162
-"Core settings for the Alerts." => "",
+"Core settings for the Alerts." => "\xA5\xA2\xA5\xE9\xA1\xBC\xA5\xC8\xA4\xCE\xB4\xF0\xCB\xDC\xC0\xDF\xC4\xEA\xA1\xA3", // ai 2026-06
 
 // modules/alerts/tableviews.php, row 172
-"alerts ID" => "",
+"alerts ID" => "\xA5\xA2\xA5\xE9\xA1\xBC\xA5\xC8ID", // ai 2026-06
 
 // modules/alerts/tableviews.php, row 180
-"name" => "",
+"name" => "\xCC\xBE\xC1\xB0", // ai 2026-06
 
 // modules/alerts/tableviews.php, row 183
-"form URL" => "",
+"form URL" => "\xA5\xD5\xA5\xA9\xA1\xBC\xA5\xE0URL", // ai 2026-06
 
 // modules/alerts/tableviews.php, row 185
-"language" => "",
+"language" => "\xB8\xC0\xB8\xEC", // ai 2026-06
 
 // modules/alerts/tableviews.php, row 189
-"deleted" => "",
+"deleted" => "\xBA\xEF\xBD\xFC\xBA\xD1\xA4\xDF", // ai 2026-06
 
 // modules/alerts/tableviews.php, row 190
-"Use AA Admin / Delete<br>to delete permanently" => "",
+"Use AA Admin / Delete<br>to delete permanently" => "\xB4\xB0\xC1\xB4\xA4\xCB\xBA\xEF\xBD\xFC\xA4\xB9\xA4\xEB\xA4\xCB\xA4\xCF<br>AA\xB4\xC9\xCD\xFD / \xBA\xEF\xBD\xFC \xA4\xF2\xBB\xC8\xCD\xD1\xA4\xB7\xA4\xC6\xA4\xAF\xA4\xC0\xA4\xB5\xA4\xA4", // ai 2026-06
 
 // modules/alerts/tableviews.php, row 195
-"welcome email" => "",
+"welcome email" => "\xB4\xBF\xB7\xDE\xA5\xE1\xA1\xBC\xA5\xEB", // ai 2026-06
 
 // modules/alerts/tableviews.php, row 204, 267
-"alert email" => "",
+"alert email" => "\xA5\xA2\xA5\xE9\xA1\xBC\xA5\xC8\xA5\xE1\xA1\xBC\xA5\xEB", // ai 2026-06
 
 // modules/alerts/tableviews.php, row 223
-"created at" => "",
+"created at" => "\xBA\xEE\xC0\xAE\xC6\xFC\xBB\xFE", // ai 2026-06
 
 // modules/alerts/tableviews.php, row 231
-"created by" => "",
+"created by" => "\xBA\xEE\xC0\xAE\xBC\xD4", // ai 2026-06
 
 // modules/alerts/tableviews.php, row 241, 261
-"You don't have permissions to edit any collection or no collection exists." => "",
+"You don't have permissions to edit any collection or no collection exists." => "\xA5\xB3\xA5\xEC\xA5\xAF\xA5\xB7\xA5\xE7\xA5\xF3\xA4\xF2\xCA\xD4\xBD\xB8\xA4\xB9\xA4\xEB\xB5\xF6\xB2\xC4\xA4\xAC\xA4\xCA\xA4\xA4\xA4\xAB\xA1\xA2\xA5\xB3\xA5\xEC\xA5\xAF\xA5\xB7\xA5\xE7\xA5\xF3\xA4\xAC\xC2\xB8\xBA\xDF\xA4\xB7\xA4\xDE\xA4\xBB\xA4\xF3\xA1\xA3", // ai 2026-06
 
 // modules/alerts/tableviews.php, row 255, 256
-"Send Emails" => "",
+"Send Emails" => "\xA5\xE1\xA1\xBC\xA5\xEB\xC1\xF7\xBF\xAE", // ai 2026-06
 
 // modules/alerts/tableviews.php, row 263
-"Here you send the Alert emails manually." => "",
+"Here you send the Alert emails manually." => "\xA4\xB3\xA4\xB3\xA4\xC7\xA5\xA2\xA5\xE9\xA1\xBC\xA5\xC8\xA5\xE1\xA1\xBC\xA5\xEB\xA4\xF2\xBC\xEA\xC6\xB0\xA4\xC7\xC1\xF7\xBF\xAE\xA4\xC7\xA4\xAD\xA4\xDE\xA4\xB9\xA1\xA3", // ai 2026-06
 
 // modules/alerts/util.php, row 58
-"instant" => "",
+"instant" => "\xC2\xA8\xBB\xFE", // ai 2026-06
 
 // modules/alerts/util.php, row 59
-"daily" => "",
+"daily" => "\xCB\xE8\xC6\xFC", // ai 2026-06
 
 // modules/alerts/util.php, row 60
-"weekly" => "",
+"weekly" => "\xCB\xE8\xBD\xB5", // ai 2026-06
 
 // modules/alerts/util.php, row 61
-"twoweeks" => "",
+"twoweeks" => "\xB3\xD6\xBD\xB5", // ai 2026-06
 
 // modules/alerts/util.php, row 62
-"monthly" => "",
+"monthly" => "\xCB\xE8\xB7\xEE", // ai 2026-06
 
 // modules/alerts/util.php, row 63
-"irregular" => "",
+"irregular" => "\xC9\xD4\xC4\xEA\xB4\xFC", // ai 2026-06
 
 // modules/alerts/util.php, row 70
 "Active" => "\xB3\xE8\xC6\xB0\xC3\xE6",
 
 // modules/alerts/util.php, row 71
-"Holding bin" => "",
+"Holding bin" => "\xCA\xDD\xCE\xB1\xC8\xA2", // ai 2026-06
 
 // modules/alerts/util.php, row 72
 "Trash bin" => "\xA5\xB4\xA5\xDF\xC8\xA2",
