@@ -12,6 +12,37 @@ setlocale(LC_ALL, 'pt_PT.utf8', 'pt_PT');  // sort, date, uppercase, ..
 setlocale(LC_NUMERIC, 'en_US');            // keep float format with dot (see AA_Stringexpand_If)
 
 return [
+// Runtime-translated messages — used via _mdelayed($variable), so they never appear
+// in _m('...') literals; their domains are listed in misc/mgettext/cli.php $RUNTIME_MESSAGES.
+"feed" => "alimentar", // ai 2026-06
+// End of runtime-translated messages
+
+// Unused messages — no longer found in the sources; kept commented for reference.
+// "You don't have permissions to view item history." => "Não tem permissões para ver o histórico do artigo.", // ai 2026-06
+// "validate" => "validar", // ai 2026-06
+// "RSS feeds testing page." => "Página de teste de canais RSS.", // ai 2026-06
+// "No RSS Feeds set." => "Nenhum canal RSS configurado.", // ai 2026-06
+// "Messages" => "Mensagens", // ai 2026-06
+// "Write" => "Escrever", // ai 2026-06
+// "update database" => "actualizar base de dados", // ai 2026-06
+// "Feed url" => "Url do canal", // ai 2026-06
+// "Ok : file deleted " => "Ok: ficheiro eliminado", // ai 2026-06
+// "Error: Cannot delete file" => "Erro: não é possível eliminar o ficheiro", // ai 2026-06
+// "Error: Invalid directory" => "Erro: Diretório inválido", // ai 2026-06
+// "Module Id" => "ID do módulo", // ai 2026-06
+// "design description (for administrators only)" => "descrição do design (apenas para administradores)", // ai 2026-06
+// "COUNT_HIT events will be used for counting item hits. After a while it will be automatically deleted." => "Os eventos COUNT_HIT serão usados para contar consultas a artigos. Após algum tempo serão eliminados automaticamente.", // ai 2026-06
+// "Log view" => "Vista do registo", // ai 2026-06
+// "See searchlog=1 parameter for slice.php in FAQ: " => "Ver o parâmetro searchlog=1 para slice.php nas FAQ:", // ai 2026-06
+// "SearchLog view" => "Vista do registo de pesquisas", // ai 2026-06
+// "items found" => "artigos encontrados", // ai 2026-06
+// "search time" => "tempo de pesquisa", // ai 2026-06
+// "addition" => "adição", // ai 2026-06
+// "Configure Fields" => "Configurar campos", // ai 2026-06
+// "vs current" => "vs atual", // ai 2026-06
+// "no current value" => "sem valor atual", // ai 2026-06
+// "same as current" => "igual ao atual", // ai 2026-06
+// End of unused messages
 
 // admin/aa_cron.php, row 41
 "You do not have permission to manage Cron" => "Não tem permissão para gerir o Cron", // ai 2026-06
@@ -207,10 +238,10 @@ return [
 "All AA" => "Todo o AA", // ai 2026-06
 
 // admin/aa_statistics.php, row 123
-"Sites" => "",
+"Sites" => "Sítios", // ai 2026-06
 
 // admin/aa_statistics.php, row 127
-// admin/aafinder.php, row 500, 513
+// admin/aafinder.php, row 499, 512
 // admin/se_inputform.php, row 291
 // include/searchlib.php, row 970
 "Slices" => "Secções", // ai 2026-06
@@ -268,11 +299,11 @@ return [
 "Items found" => "Artigos encontrados", // ai 2026-06
 
 // admin/aa_statistics.php, row 313
-// admin/se_statistics.php, row 176
+// admin/se_statistics.php, row 179
 "No items found" => "Nenhum artigo encontrado", // ai 2026-06
 
-// admin/aa_statistics.php, row 321
-// admin/se_statistics.php, row 173
+// admin/aa_statistics.php, row 325
+// admin/se_statistics.php, row 176
 "Server configuration changes" => "Alterações na configuração do servidor", // ai 2026-06
 
 // admin/aa_tasks.php, row 34
@@ -297,78 +328,87 @@ return [
 // admin/aa_toexecute.php, row 42
 "Scheduled Tasks" => "Tarefas agendadas", // ai 2026-06
 
+// admin/aa_uiprefs.php, row 30
+"You must be logged in." => "Tem de iniciar sessão.", // ai 2026-06
+
+// admin/aa_uiprefs.php, row 115
+"Thanks — your note reached the AA team." => "Obrigado — a sua nota chegou à equipa do AA.", // ai 2026-06
+
+// admin/aa_uiprefs.php, row 117
+"Couldn't send right now. Please email us directly: %1" => "Não foi possível enviar agora. Envie-nos um e-mail diretamente: %1", // ai 2026-06
+
 // admin/aa_wizardtemplate.php, row 41
 "You do not have permission to manage Wizard Templates" => "Não tem permissão para gerir modelos de assistente", // ai 2026-06
 
 // admin/aa_wizardtemplate.php, row 75
-// include/tv_misc.php, row 70, 71
 "Wizard Templates" => "Modelos do Assistente", // ai 2026-06
 
-// admin/aafinder.php, row 87
+// admin/aafinder.php, row 86
 "You don't have permissions to do search." => "Não tem permissão para pesquisar.", // ai 2026-06
 
-// admin/aafinder.php, row 99
+// admin/aafinder.php, row 98
 "Show results with string" => "Mostrar resultados com a cadeia", // ai 2026-06
 
-// admin/aafinder.php, row 101
+// admin/aafinder.php, row 100
 "Item" => "Artigo", // ai 2026-06
 
-// admin/aafinder.php, row 125
+// admin/aafinder.php, row 124
 // admin/feed_to.php, row 66
 // admin/se_fields.php, row 112
 // admin/slicedit.php, row 244
-// include/itemfunc.php, row 184
+// include/itemfunc.php, row 185
+// include/logs.php, row 528
 // include/menu.php, row 132
 // include/slice.class.php, row 468
 // include/sliceadd.php, row 52, 77
 "Slice" => "Secção", // ai 2026-06
 
-// admin/aafinder.php, row 129
+// admin/aafinder.php, row 128
 // src/AA_Plannedtask.php, row 102
 "Module" => "Módulo", // ai 2026-06
 
-// admin/aafinder.php, row 134, 135, 136, 137
+// admin/aafinder.php, row 133, 134, 135, 136
 // include/um_util.php, row 102
 "Object" => "Objeto", // ai 2026-06
 
-// admin/aafinder.php, row 140
-// include/itemfunc.php, row 273
-// include/logs.php, row 204
+// admin/aafinder.php, row 139
+// include/itemfunc.php, row 274
+// include/logs.php, row 234
 // src/AA_Plannedtask.php, row 117
 "Log" => "Registo", // ai 2026-06
 
-// admin/aafinder.php, row 162
+// admin/aafinder.php, row 161
 // include/sliceadd.php, row 36
 // include/slicedit.php, row 150
 "You do not have permissions to add slice" => "Não tem permissão para adicionar secções", // ai 2026-06
 
-// admin/aafinder.php, row 168
+// admin/aafinder.php, row 167
 // include/menu_util.php, row 79
 "AA finder" => "Localizador AA", // ai 2026-06
 
-// admin/aafinder.php, row 248
+// admin/aafinder.php, row 247
 "Jump" => "Saltar", // ai 2026-06
 
-// admin/aafinder.php, row 467, 519
-// admin/itemhistory.php, row 39
-// include/itemfunc.php, row 81, 82, 253, 375
-// include/menu.php, row 162
+// admin/aafinder.php, row 466, 518
+// admin/itemhistory.php, row 43
+// include/itemfunc.php, row 83, 84, 254, 376
+// include/menu.php, row 161
 // include/menu_util.php, row 82
 "History" => "Histórico", // ai 2026-06
 
-// admin/aafinder.php, row 479
+// admin/aafinder.php, row 478
 "Manage" => "Gerir", // ai 2026-06
 
-// admin/aafinder.php, row 482
+// admin/aafinder.php, row 481
 "Manage User:" => "Gerir utilizador:", // ai 2026-06
 
-// admin/aafinder.php, row 484, 490, 506, 534, 547
+// admin/aafinder.php, row 483, 489, 505, 533, 546
 "Go!" => "Ir!", // ai 2026-06
 
-// admin/aafinder.php, row 488
+// admin/aafinder.php, row 487
 "Manage Group:" => "Gerir grupo:", // ai 2026-06
 
-// admin/aafinder.php, row 494, 524
+// admin/aafinder.php, row 493, 523
 // admin/um_gedit.php, row 208, 325
 // admin/um_uedit.php, row 249
 // include/se_users.php, row 131, 136
@@ -379,76 +419,76 @@ return [
 // src/Widget/GpsWidget.php, row 434
 "Search" => "Pesquisar", // ai 2026-06
 
-// admin/aafinder.php, row 497
+// admin/aafinder.php, row 496
 "Find in" => "Procurar em", // ai 2026-06
 
-// admin/aafinder.php, row 498
+// admin/aafinder.php, row 497
 "ID & SEO" => "ID e SEO", // ai 2026-06
 
-// admin/aafinder.php, row 499, 512
-// include/itemfunc.php, row 182
-// include/menu.php, row 144
+// admin/aafinder.php, row 498, 511
+// include/itemfunc.php, row 183
+// include/menu.php, row 143
 "Views" => "Vistas", // ai 2026-06
 
-// admin/aafinder.php, row 501, 514
+// admin/aafinder.php, row 500, 513
 // admin/anonym_wizard.php, row 216
 // include/exporter.class.php, row 522
-// include/itemfunc.php, row 350
+// include/itemfunc.php, row 351
 // include/menu.php, row 133
 // include/searchlib.php, row 167
 "Fields" => "Campos", // ai 2026-06
 
-// admin/aafinder.php, row 502, 515
+// admin/aafinder.php, row 501, 514
 "Site spots" => "Locais no sítio", // ai 2026-06
 
-// admin/aafinder.php, row 503, 520
+// admin/aafinder.php, row 502, 519
 "Discussion comments" => "Comentários de discussão", // ai 2026-06
 
-// admin/aafinder.php, row 511
+// admin/aafinder.php, row 510
 "Search and Replace in" => "Procurar e substituir em", // ai 2026-06
 
-// admin/aafinder.php, row 516
+// admin/aafinder.php, row 515
 "Objects" => "Objetos", // ai 2026-06
 
-// admin/aafinder.php, row 517
+// admin/aafinder.php, row 516
 "Items from slices with 'Slice Type' like Code... " => "Artigos de secções cujo 'Tipo de secção' é Code...", // ai 2026-06
 
-// admin/aafinder.php, row 517
+// admin/aafinder.php, row 516
 "Code Items" => "Artigos de código", // ai 2026-06
 
-// admin/aafinder.php, row 518
+// admin/aafinder.php, row 517
 "All Items" => "Todos os artigos", // ai 2026-06
 
-// admin/aafinder.php, row 522
+// admin/aafinder.php, row 521
 "minimum 2 characters for replace function" => "mínimo de 2 caracteres para a função de substituição", // ai 2026-06
 
-// admin/aafinder.php, row 523
+// admin/aafinder.php, row 522
 "minimum 6 characters for replace function (or use {#AAA} value which will be replaced by empty string)" => "mínimo de 6 caracteres para a função de substituição (ou use o valor {#AAA}, que será substituído por uma cadeia vazia)", // ai 2026-06
 
-// admin/aafinder.php, row 525
+// admin/aafinder.php, row 524
 "Replace!" => "Substituir!", // ai 2026-06
 
-// admin/aafinder.php, row 532
+// admin/aafinder.php, row 531
 "Get all information about the ITEM" => "Obter todas as informações sobre o ARTIGO", // ai 2026-06
 
-// admin/aafinder.php, row 539
+// admin/aafinder.php, row 538
 "Shortcut to edit ITEM" => "Atalho para editar o ARTIGO", // ai 2026-06
 
-// admin/aafinder.php, row 542
+// admin/aafinder.php, row 541
 // include/searchbar.class.php, row 543
 // include/searchlib.php, row 47, 48, 124, 133
 "contains" => "contém", // ai 2026-06
 
-// admin/aafinder.php, row 543
+// admin/aafinder.php, row 542
 // include/searchbar.class.php, row 549
 // include/searchlib.php, row 124, 133
 "is" => "é", // ai 2026-06
 
-// admin/aafinder.php, row 544
+// admin/aafinder.php, row 543
 // admin/se_profile.php, row 98
 "Item number" => "Número do artigo", // ai 2026-06
 
-// admin/aafinder.php, row 545
+// admin/aafinder.php, row 544
 "seo............. =" => "",
 
 // admin/aarsstest.php, row 37
@@ -474,6 +514,7 @@ return [
 
 // admin/anonym_wizard.php, row 127
 // admin/write_mail.php, row 257
+// include/menu_util.php, row 599
 // include/stringexpand.php, row 9646, 9726
 "Send" => "Enviar", // ai 2026-06
 
@@ -529,7 +570,7 @@ return [
 // admin/sliceexp_text.php, row 364
 // include/form.class.php, row 183
 // include/searchlib.php, row 357
-// src/Util/ChangesMonitor.php, row 381
+// src/Util/ChangesMonitor.php, row 455
 "Field" => "Campo", // ai 2026-06
 
 // admin/anonym_wizard.php, row 221
@@ -539,8 +580,7 @@ return [
 // admin/se_javascript.php, row 90
 // admin/slicedit.php, row 277
 // include/constants.php, row 409
-// include/tableviews.php, row 64, 80
-"Id" => "",
+"Id" => "ID", // ai 2026-06
 
 // admin/anonym_wizard.php, row 223
 "Field Id in Form" => "Id do campo no formulário", // ai 2026-06
@@ -616,7 +656,7 @@ return [
 "Author" => "Autor", // ai 2026-06
 
 // admin/discedit.php, row 130
-// include/logs.php, row 396
+// include/logs.php, row 442
 "IP Address" => "Endereço IP", // ai 2026-06
 
 // admin/discedit.php, row 131
@@ -626,7 +666,6 @@ return [
 
 // admin/discedit.php, row 132
 // admin/related_sel.php, row 148
-// admin/rsstest.php, row 96
 // admin/se_views.php, row 132
 // src/Manager.php, row 201
 // src/Optimize/AbstractOptimize.php, row 127
@@ -668,7 +707,7 @@ return [
 // include/formutil.php, row 1766, 1903
 // include/menu_util.php, row 61
 // include/profile.php, row 67
-// include/searchbar.class.php, row 1076
+// include/searchbar.class.php, row 1085
 // include/um_gsrch.php, row 53
 // src/Manageraction/Object_Delete.php, row 24
 // src/Manageraction/Table_Row_Delete.php, row 23
@@ -676,9 +715,9 @@ return [
 "Delete" => "Eliminar", // ai 2026-06
 
 // admin/discedit.php, row 169
-// include/adminpage.class.php, row 330
+// include/adminpage.class.php, row 331
 // include/se_users.php, row 121
-// include/util.php, row 1314
+// include/util.php, row 1318
 "Back" => "Voltar", // ai 2026-06
 
 // admin/discedit.php, row 170
@@ -735,7 +774,7 @@ return [
 "Export Item to Selected Slice" => "Exportar artigo para a secção seleccionada", // ai 2026-06
 
 // admin/feed_to.php, row 67
-// include/itemfunc.php, row 152
+// include/itemfunc.php, row 153
 "Holding bin" => "Por aprovar", // ai 2026-06
 
 // admin/feed_to.php, row 68
@@ -743,8 +782,8 @@ return [
 // admin/se_filters.php, row 191
 // admin/slicedit.php, row 139, 145
 // include/exporter.class.php, row 483
-// include/menu.php, row 188
-// include/menu_util.php, row 120
+// include/menu.php, row 187
+// include/menu_util.php, row 119
 // src/Module/Poll/Menu.php, row 61
 "Active" => "Ativas", // ai 2026-06
 
@@ -774,7 +813,7 @@ return [
 
 // admin/fileman.php, row 114
 // include/filedit.php, row 66
-// include/menu.php, row 166
+// include/menu.php, row 165
 "File Manager" => "Gestor de Ficheiros", // ai 2026-06
 
 // admin/fileman.php, row 116
@@ -833,14 +872,12 @@ return [
 // include/menu.php, row 82
 "Add Item" => "Adicionar artigo", // ai 2026-06
 
-// admin/itemhistory.php, row 24
-"You don't have permissions to view item history." => "Não tem permissões para ver o histórico do artigo.", // ai 2026-06
-
-// admin/itemhistory.php, row 32
+// admin/itemhistory.php, row 28
 // admin/iteminfo.php, row 29
 // admin/itemstats.php, row 31
 "Item not found." => "Artigo não encontrado.", // ai 2026-06
 
+// admin/itemhistory.php, row 36
 // admin/iteminfo.php, row 36
 "You have no rights to this item." => "Não tem permissões sobre este artigo.", // ai 2026-06
 
@@ -852,8 +889,8 @@ return [
 "You don't have permissions to view item statistics." => "Não tem permissões para ver as estatísticas do artigo.", // ai 2026-06
 
 // admin/itemstats.php, row 38
-// include/itemfunc.php, row 86, 456
-// include/menu.php, row 163
+// include/itemfunc.php, row 88, 457
+// include/menu.php, row 162
 // include/menu_util.php, row 81
 // src/Util/Adminlink.php, row 119
 "Statistics" => "Estatísticas", // ai 2026-06
@@ -909,48 +946,11 @@ return [
 // admin/related_sel.php, row 176
 "Editor window - item manager, related selection window" => "Janela de edição - gestor de artigos, janela de selecção de relacionados", // ai 2026-06
 
-// admin/rsstest.php, row 50
-"feed" => "alimentar", // ai 2026-06
-
-// admin/rsstest.php, row 51
-"validate" => "validar", // ai 2026-06
-
-// admin/rsstest.php, row 52
-// include/stringexpand.php, row 7900
-"show" => "mostrar", // ai 2026-06
-
-// admin/rsstest.php, row 85, 86, 136
-"RSS Feed import test" => "Teste de importação de canal RSS", // ai 2026-06
-
-// admin/rsstest.php, row 87
-"RSS feeds testing page." => "Página de teste de canais RSS.", // ai 2026-06
-
-// admin/rsstest.php, row 89
-"No RSS Feeds set." => "Nenhum canal RSS configurado.", // ai 2026-06
-
-// admin/rsstest.php, row 100
-"Messages" => "Mensagens", // ai 2026-06
-
-// admin/rsstest.php, row 106
-"Write" => "Escrever", // ai 2026-06
-
-// admin/rsstest.php, row 107
-"update database" => "actualizar base de dados", // ai 2026-06
-
-// admin/rsstest.php, row 113
-"Feed url" => "Url do canal", // ai 2026-06
-
-// admin/rsstest.php, row 117
-// admin/se_inter_import.php, row 98
-"Node" => "Nó", // ai 2026-06
-
-// admin/rsstest.php, row 121
-// include/feeding.php, row 464, 470, 527
-"Local slice" => "Secção local", // ai 2026-06
-
-// admin/rsstest.php, row 130
-// admin/tabledit.php, row 78
+// admin/rsstest.php, row 36
 "You do not have permissions to access this page" => "Não tem permissões para aceder a esta página", // ai 2026-06
+
+// admin/rsstest.php, row 46
+"RSS Feed import test" => "Teste de importação de canal RSS", // ai 2026-06
 
 // admin/se_admin.php, row 72
 "You have no permission to set configuration parameters of this slice" => "Não tem permissão para configurar os parâmetros desta secção", // ai 2026-06
@@ -958,7 +958,6 @@ return [
 // admin/se_admin.php, row 81, 173
 // admin/se_compact.php, row 94, 238
 // include/constants.php, row 605, 655, 675, 729, 764, 795, 819, 862, 891, 917, 951
-// include/tableviews.php, row 107
 "Top HTML" => "HTML superior", // ai 2026-06
 
 // admin/se_admin.php, row 82, 176
@@ -967,7 +966,6 @@ return [
 // admin/se_admin.php, row 83, 179
 // admin/se_compact.php, row 95, 248
 // include/constants.php, row 610, 657, 677, 733, 766, 797, 822, 867, 893, 922, 956
-// include/tableviews.php, row 115
 "Bottom HTML" => "HTML inferior", // ai 2026-06
 
 // admin/se_admin.php, row 84, 182
@@ -1000,6 +998,7 @@ return [
 // admin/se_compact.php, row 228
 // admin/se_fulltext.php, row 153
 // admin/se_inputform.php, row 187, 439
+// src/Util/UiPrefs.php, row 56
 "Default" => "Predefinido", // ai 2026-06
 
 // admin/se_admin.php, row 171
@@ -1132,8 +1131,7 @@ return [
 // include/constedit.php, row 73
 // include/fileman.php, row 31
 // include/se_users.php, row 173
-// include/searchbar.class.php, row 722
-// include/tableviews.php, row 65, 97
+// include/searchbar.class.php, row 731
 // include/um_gedit.php, row 31
 // src/AA_Plannedtask.php, row 102
 // src/Optimize/AbstractOptimize.php, row 125
@@ -1279,6 +1277,7 @@ return [
 
 // admin/se_csv_import.php, row 236, 241
 // include/filedit.php, row 66
+// include/logs.php, row 543
 "File" => "Ficheiro", // ai 2026-06
 
 // admin/se_csv_import.php, row 237, 242
@@ -1288,14 +1287,14 @@ return [
 
 // admin/se_csv_import.php, row 238, 243
 // admin/se_inputform.php, row 471, 472
-// include/itemfunc.php, row 589, 678, 702
+// include/itemfunc.php, row 590, 679, 703
 "Text" => "Texto", // ai 2026-06
 
 // admin/se_csv_import.php, row 251
 "Source of CSV data" => "Origem dos dados CSV", // ai 2026-06
 
 // admin/se_csv_import.php, row 275
-// admin/se_csv_import2.php, row 374
+// admin/se_csv_import2.php, row 373
 // src/Manageraction/Item_Preview.php, row 11
 "Preview" => "Pré-visualização", // ai 2026-06
 
@@ -1321,133 +1320,125 @@ return [
 // admin/se_csv_import2.php, row 284
 "Ok: Item %1 stored" => "Ok: Artigo %1 guardado", // ai 2026-06
 
-// admin/se_csv_import2.php, row 300
-// include/files.class.php, row 298
-"Ok : file deleted " => "Ok: ficheiro eliminado", // ai 2026-06
-
-// admin/se_csv_import2.php, row 302
-// include/files.class.php, row 300
-"Error: Cannot delete file" => "Erro: não é possível eliminar o ficheiro", // ai 2026-06
-
-// admin/se_csv_import2.php, row 306
+// admin/se_csv_import2.php, row 305
 "Added to slice" => "Adicionado à secção", // ai 2026-06
 
-// admin/se_csv_import2.php, row 328
+// admin/se_csv_import2.php, row 327
 "Mapping preview" => "Pré-visualização do mapeamento", // ai 2026-06
 
-// admin/se_csv_import2.php, row 379
+// admin/se_csv_import2.php, row 378
 "Finish" => "Concluir", // ai 2026-06
 
-// admin/se_csv_import2.php, row 384
-// include/searchbar.class.php, row 719
+// admin/se_csv_import2.php, row 383
+// include/searchbar.class.php, row 728
 // src/Widget/MflWidget.php, row 120
 // src/Widget/RioWidget.php, row 124
 // src/Widget/TxtWidget.php, row 109
 // src/Widget/Widget.php, row 416
 "Save" => "Guardar", // ai 2026-06
 
-// admin/se_csv_import2.php, row 389
+// admin/se_csv_import2.php, row 388
 "Load" => "Carregar", // ai 2026-06
 
-// admin/se_csv_import2.php, row 399
+// admin/se_csv_import2.php, row 398
 "Mapping settings" => "Definições de mapeamento", // ai 2026-06
 
-// admin/se_csv_import2.php, row 402
+// admin/se_csv_import2.php, row 401
 // admin/se_filters.php, row 190
 // admin/se_mapping.php, row 181
 "To" => "Para", // ai 2026-06
 
-// admin/se_csv_import2.php, row 403
+// admin/se_csv_import2.php, row 402
 // admin/se_filters.php, row 189
 // admin/se_mapping.php, row 182
 // include/tv_email.php, row 159
 "From" => "De", // ai 2026-06
 
-// admin/se_csv_import2.php, row 404
+// admin/se_csv_import2.php, row 403
 // admin/search_replace.php, row 178
 // include/metabase.class.php, row 1577
 // include/statestore.php, row 975, 1289
 // src/AA_Plannedtask.php, row 102
 "Action" => "Acção", // ai 2026-06
 
-// admin/se_csv_import2.php, row 405
+// admin/se_csv_import2.php, row 404
 "Html" => "",
 
-// admin/se_csv_import2.php, row 406
+// admin/se_csv_import2.php, row 405
 "Action parameters" => "Parâmetros da acção", // ai 2026-06
 
-// admin/se_csv_import2.php, row 407
+// admin/se_csv_import2.php, row 406
 "Parameter wizard" => "Assistente de parâmetros", // ai 2026-06
 
-// admin/se_csv_import2.php, row 432
+// admin/se_csv_import2.php, row 431
 "Import options" => "Opções de importação", // ai 2026-06
 
-// admin/se_csv_import2.php, row 447
+// admin/se_csv_import2.php, row 446
 "Map item id from" => "Mapear id do artigo a partir de", // ai 2026-06
 
-// admin/se_csv_import2.php, row 451
+// admin/se_csv_import2.php, row 450
 "unpacked long id (32 characters)" => "id longo descompactado (32 caracteres)", // ai 2026-06
 
-// admin/se_csv_import2.php, row 452
+// admin/se_csv_import2.php, row 451
 "packed long id (16 characters)" => "id longo compactado (16 caracteres)", // ai 2026-06
 
-// admin/se_csv_import2.php, row 453
+// admin/se_csv_import2.php, row 452
 "string to be converted (string2id) - with param:" => "cadeia a converter (string2id) - com parâmetro:", // ai 2026-06
 
-// admin/se_csv_import2.php, row 461
+// admin/se_csv_import2.php, row 460
 "Select, how to store the items" => "Seleccione como guardar os artigos", // ai 2026-06
 
-// admin/se_csv_import2.php, row 463
+// admin/se_csv_import2.php, row 462
 "Do not store the item" => "Não guardar o artigo", // ai 2026-06
 
-// admin/se_csv_import2.php, row 464
+// admin/se_csv_import2.php, row 463
 "Store the item with new id" => "Guardar o artigo com novo id", // ai 2026-06
 
-// admin/se_csv_import2.php, row 465
+// admin/se_csv_import2.php, row 464
 "Update the item (overwrite)" => "Actualizar o artigo (sobrescrever)", // ai 2026-06
 
-// admin/se_csv_import2.php, row 466
+// admin/se_csv_import2.php, row 465
 "Add the values in parallel to current values (the multivalues are stored, where possible)" => "Adicionar os valores em paralelo aos valores actuais (os multivalores são guardados, quando possível)", // ai 2026-06
 
-// admin/se_csv_import2.php, row 467
+// admin/se_csv_import2.php, row 466
 "Rewrite only the fields, for which the action is defined and compute all computed fields, ..." => "Reescrever apenas os campos para os quais a acção está definida e calcular todos os campos calculados, ...", // ai 2026-06
 
-// admin/se_csv_import2.php, row 468
+// admin/se_csv_import2.php, row 467
 "Rewrite only the fields, for which the action is defined (do not update lastedit, computed, ... fields = Silent)" => "Reescrever apenas os campos para os quais a acção está definida (não actualizar lastedit, campos calculados, ... = Silencioso)", // ai 2026-06
 
-// admin/se_csv_import2.php, row 469
+// admin/se_csv_import2.php, row 468
 "Rewrite only the fields, for which the action is defined and its value is not empty (computed fields will be computed)" => "Reescrever apenas os campos para os quais a acção está definida e cujo valor não esteja vazio (os campos calculados serão calculados)", // ai 2026-06
 
-// admin/se_csv_import2.php, row 472
+// admin/se_csv_import2.php, row 471
 "If the item id is already in the slice" => "Se o id do artigo já estiver na secção", // ai 2026-06
 
-// admin/se_csv_import2.php, row 473
+// admin/se_csv_import2.php, row 472
 // admin/search_replace.php, row 176
 "Silent" => "Silencioso", // ai 2026-06
 
-// admin/se_csv_import2.php, row 473
+// admin/se_csv_import2.php, row 472
 "Do not perform any other operations like evaluate-computed-field, feed, send e-mail to Readers of Alerts..." => "Não realizar quaisquer outras operações como evaluate-computed-field, alimentação, envio de e-mail aos Leitores de Alertas...", // ai 2026-06
 
-// admin/se_csv_import2.php, row 474
+// admin/se_csv_import2.php, row 473
 "Data source" => "Fonte de dados", // ai 2026-06
 
-// admin/se_csv_import2.php, row 475
+// admin/se_csv_import2.php, row 474
 // include/feeding.php, row 456, 488
 "Source" => "Fonte", // ai 2026-06
 
-// admin/se_csv_import2.php, row 477
+// admin/se_csv_import2.php, row 476
 "Store settings..." => "Guardar definições...", // ai 2026-06
 
-// admin/se_csv_import2.php, row 483
+// admin/se_csv_import2.php, row 482
 "Load setting" => "Carregar definição", // ai 2026-06
 
-// admin/se_csv_import2.php, row 485
+// admin/se_csv_import2.php, row 484
 "Save setting as" => "Guardar definição como", // ai 2026-06
 
-// admin/se_csv_import2.php, row 488
+// admin/se_csv_import2.php, row 487
 "Upload periodically" => "Carregar periodicamente", // ai 2026-06
 
-// admin/se_csv_import2.php, row 539
+// admin/se_csv_import2.php, row 538
 "Admin - Import CSV (2/2) - Mapping and Actions" => "Admin - Importar CSV (2/2) - Mapeamento e Acções", // ai 2026-06
 
 // admin/se_export.php, row 75
@@ -1476,7 +1467,7 @@ return [
 
 // admin/se_export.php, row 122
 // include/exporter.class.php, row 485
-// include/itemfunc.php, row 145
+// include/itemfunc.php, row 146
 "Expired" => "Expirados", // ai 2026-06
 
 // admin/se_export.php, row 123
@@ -1489,7 +1480,7 @@ return [
 
 // admin/se_export.php, row 125
 // include/exporter.class.php, row 488
-// include/itemfunc.php, row 155
+// include/itemfunc.php, row 156
 // src/Manageraction/Central_MoveItem.php, row 43
 "Trash" => "Reciclagem", // ai 2026-06
 
@@ -1515,7 +1506,7 @@ return [
 // admin/sliceexp_text.php, row 364
 // include/exporter.class.php, row 509
 // include/fileman.php, row 33
-// include/logs.php, row 316
+// include/logs.php, row 346
 // include/se_users.php, row 173
 // src/Widget/Widget.php, row 724
 "Type" => "Tipo", // ai 2026-06
@@ -1758,7 +1749,7 @@ return [
 "Time of change" => "Hora da alteração", // ai 2026-06
 
 // admin/se_history.php, row 162
-// include/itemfunc.php, row 188
+// include/itemfunc.php, row 189
 // src/AA_Plannedtask.php, row 63
 "Item ID" => "ID do artigo", // ai 2026-06
 
@@ -1927,13 +1918,14 @@ return [
 "Disabled" => "Desativado", // ai 2026-06
 
 // admin/se_inputform.php, row 521
+// src/Util/ChangesMonitor.php, row 514
 "Copy to clipboard" => "Copiar para a área de transferência", // ai 2026-06
 
 // admin/se_inputform.php, row 522
 "Reset" => "Repor", // ai 2026-06
 
 // admin/se_inputform.php, row 527
-// include/logs.php, row 331
+// include/logs.php, row 361
 "Parameters" => "Parâmetros", // ai 2026-06
 
 // admin/se_inter_export.php, row 99
@@ -1976,6 +1968,9 @@ return [
 "Remote slice" => "Secção remota", // ai 2026-06
 
 // admin/se_inter_import.php, row 98
+"Node" => "Nó", // ai 2026-06
+
+// admin/se_inter_import.php, row 98
 // misc/datovka/datovka.php, row 114
 "State" => "Estado", // ai 2026-06
 
@@ -1986,7 +1981,7 @@ return [
 "No remote imports into the slice" => "Sem importações remotas para a secção", // ai 2026-06
 
 // admin/se_inter_import.php, row 106
-// include/menu.php, row 153
+// include/menu.php, row 152
 "Inter Node Import" => "Importação entre nós", // ai 2026-06
 
 // admin/se_inter_import.php, row 107
@@ -2032,7 +2027,7 @@ return [
 "The import was successfully created" => "A importação foi criada com êxito", // ai 2026-06
 
 // admin/se_javascript.php, row 71
-// include/menu.php, row 165
+// include/menu.php, row 164
 "Field Triggers" => "Triggers de campo", // ai 2026-06
 
 // admin/se_javascript.php, row 78
@@ -2414,6 +2409,7 @@ return [
 
 // admin/se_profile.php, row 268
 // central/copyslice2.php, row 116
+// src/Util/ChangesMonitor.php, row 514
 "Copy" => "Copiar", // ai 2026-06
 
 // admin/se_sets.php, row 64
@@ -2520,7 +2516,7 @@ return [
 // admin/se_users.php, row 122, 181
 // admin/slicewiz.php, row 78
 // include/se_users.php, row 103, 173
-"Editor" => "",
+"Editor" => "Editado por", // ai 2026-06
 
 // admin/se_users.php, row 123, 181
 // include/se_users.php, row 104, 173
@@ -2704,7 +2700,7 @@ return [
 // admin/slicewiz.php, row 79
 // admin/um_passwd.php, row 109
 // admin/um_uedit.php, row 314, 318
-// include/itemfunc.php, row 547, 1048
+// include/itemfunc.php, row 548, 1049
 // include/um_util.php, row 296
 "Login name" => "Nome de utilizador", // ai 2026-06
 
@@ -2841,8 +2837,8 @@ return [
 "Active with antiSPAM tokens" => "Ativos com tokens antiSPAM", // ai 2026-06
 
 // admin/slicedit.php, row 140, 146
-// include/menu.php, row 191
-// include/menu_util.php, row 121
+// include/menu.php, row 190
+// include/menu_util.php, row 120
 // src/Module/Poll/Menu.php, row 64
 "Hold bin" => "Por aprovar", // ai 2026-06
 
@@ -2869,6 +2865,7 @@ return [
 "Admin - Slice settings" => "Administração - Definições da secção", // ai 2026-06
 
 // admin/slicedit.php, row 253
+// include/menu_util.php, row 605
 "Language" => "Idioma", // ai 2026-06
 
 // admin/slicedit.php, row 255
@@ -2908,7 +2905,7 @@ return [
 "Password for Reading" => "Palavra-passe para leitura", // ai 2026-06
 
 // admin/slicedit.php, row 281
-// include/itemfunc.php, row 180
+// include/itemfunc.php, row 181
 "Created" => "Criado", // ai 2026-06
 
 // admin/slicedit.php, row 281
@@ -3224,6 +3221,7 @@ return [
 
 // admin/um_gedit.php, row 313
 // admin/um_uedit.php, row 231, 242
+// include/logs.php, row 453
 // include/menu_util.php, row 70
 // include/se_users.php, row 129
 "Users" => "Utilizadores", // ai 2026-06
@@ -3411,7 +3409,7 @@ return [
 
 // central/copyslice2.php, row 88
 // central/synchronize3.php, row 94
-// include/menu.php, row 169
+// include/menu.php, row 168
 // include/menu_util.php, row 74
 "Task Manager" => "Gestor de tarefas", // ai 2026-06
 
@@ -3552,13 +3550,13 @@ return [
 // src/Manageraction/Central_Linkcheck.php, row 31
 "Auth" => "Autenticação", // ai 2026-06
 
-// central/responder.php, row 567
+// central/responder.php, row 597
 "No request sent for responder.php" => "Nenhum pedido enviado para responder.php", // ai 2026-06
 
-// central/responder.php, row 573
+// central/responder.php, row 603
 "Bad request sent for responder.php - %1" => "Pedido incorreto enviado para responder.php - %1", // ai 2026-06
 
-// central/responder.php, row 578
+// central/responder.php, row 608
 "You (%2) don't have permissions to run %1" => "Não tem (%2) permissão para executar %1", // ai 2026-06
 
 // central/synchronize.php, row 35
@@ -3661,6 +3659,7 @@ return [
 "Level" => "Nível", // ai 2026-06
 
 // include/constants.php, row 460
+// include/logs.php, row 507
 "Feed" => "Distribuir conteúdo", // ai 2026-06
 
 // include/constants.php, row 461
@@ -3808,13 +3807,13 @@ return [
 "From: (email header)" => "From: (cabeçalho do e-mail)", // ai 2026-06
 
 // include/constants.php, row 703
-"Reply-To:" => "",
+"Reply-To:" => "Responder-A:", // ai 2026-06
 
 // include/constants.php, row 704
-"Errors-To:" => "",
+"Errors-To:" => "Erros-Para:", // ai 2026-06
 
 // include/constants.php, row 705
-"Sender:" => "",
+"Sender:" => "Remetente:", // ai 2026-06
 
 // include/constants.php, row 706
 "Mail Subject:" => "Assunto do e-mail:", // ai 2026-06
@@ -4034,6 +4033,9 @@ return [
 // include/feeding.php, row 454, 490
 "Run (queue)" => "Executar (fila)", // ai 2026-06
 
+// include/feeding.php, row 464, 470, 527
+"Local slice" => "Secção local", // ai 2026-06
+
 // include/feeding.php, row 473
 "URL of the feed" => "URL do canal", // ai 2026-06
 
@@ -4244,9 +4246,6 @@ return [
 // include/files.class.php, row 255
 "Can't write to file: %1" => "Não é possível escrever no ficheiro: %1", // ai 2026-06
 
-// include/files.class.php, row 306
-"Error: Invalid directory" => "Erro: Diretório inválido", // ai 2026-06
-
 // include/files.class.php, row 328
 "can't create backup of the file" => "não é possível criar a cópia de segurança do ficheiro", // ai 2026-06
 
@@ -4281,7 +4280,7 @@ return [
 "Rows" => "Linhas", // ai 2026-06
 
 // include/form.class.php, row 301
-// include/menu.php, row 147
+// include/menu.php, row 146
 "Forms" => "Formulários", // ai 2026-06
 
 // include/formutil.php, row 191
@@ -4294,7 +4293,7 @@ return [
 "Reset form" => "Limpar formulário", // ai 2026-06
 
 // include/formutil.php, row 205, 210, 2918, 2922
-// include/searchbar.class.php, row 721
+// include/searchbar.class.php, row 730
 // src/Widget/LupWidget.php, row 118
 "Cancel" => "Cancelar", // ai 2026-06
 
@@ -4339,8 +4338,8 @@ return [
 "Enter the value" => "Introduza o valor", // ai 2026-06
 
 // include/formutil.php, row 1763
-// include/menu.php, row 140
-// src/Util/ChangesMonitor.php, row 381
+// include/menu.php, row 139
+// src/Util/ChangesMonitor.php, row 455
 "Change" => "Alterar", // ai 2026-06
 
 // include/formutil.php, row 1906, 2093
@@ -4374,6 +4373,7 @@ return [
 "Group Name" => "Nome do grupo", // ai 2026-06
 
 // include/formutil.php, row 3247
+// include/logs.php, row 497
 "Count" => "Contagem", // ai 2026-06
 
 // include/formutil.php, row 3248
@@ -4569,329 +4569,329 @@ return [
 // include/itemfunc.php, row 71
 "Edit item" => "Editar artigo", // ai 2026-06
 
-// include/itemfunc.php, row 129
+// include/itemfunc.php, row 130
 "by %1" => "por %1", // ai 2026-06
 
-// include/itemfunc.php, row 142
+// include/itemfunc.php, row 143
 "Scheduled" => "Agendado", // ai 2026-06
 
-// include/itemfunc.php, row 143
+// include/itemfunc.php, row 144
 "not yet on the public site" => "ainda não está no site público", // ai 2026-06
 
-// include/itemfunc.php, row 146, 153, 156
+// include/itemfunc.php, row 147, 154, 157
 "not on the public site" => "não está no site público", // ai 2026-06
 
-// include/itemfunc.php, row 149, 178
+// include/itemfunc.php, row 150, 179
 "Published" => "Publicado", // ai 2026-06
 
-// include/itemfunc.php, row 175
+// include/itemfunc.php, row 176
 "Never" => "Nunca", // ai 2026-06
 
-// include/itemfunc.php, row 176
+// include/itemfunc.php, row 177
 "not used on this site" => "não é usado neste site", // ai 2026-06
 
-// include/itemfunc.php, row 179
+// include/itemfunc.php, row 180
 "Expires" => "Expira", // ai 2026-06
 
-// include/itemfunc.php, row 181
+// include/itemfunc.php, row 182
 "Last edited" => "Última edição", // ai 2026-06
 
-// include/itemfunc.php, row 183
+// include/itemfunc.php, row 184
 "Revisions" => "Revisões", // ai 2026-06
 
-// include/itemfunc.php, row 185
+// include/itemfunc.php, row 186
 "Short ID" => "ID curto", // ai 2026-06
 
-// include/itemfunc.php, row 191
+// include/itemfunc.php, row 192
 "Details" => "Detalhes", // ai 2026-06
 
-// include/itemfunc.php, row 226
+// include/itemfunc.php, row 227
 "Item table record for the item" => "Registo do artigo na tabela item", // ai 2026-06
 
-// include/itemfunc.php, row 250
+// include/itemfunc.php, row 251
 "Content table records for the item" => "Registos do artigo na tabela content", // ai 2026-06
 
-// include/itemfunc.php, row 269
+// include/itemfunc.php, row 270
 "Referenced items" => "Artigos referenciados", // ai 2026-06
 
-// include/itemfunc.php, row 278
+// include/itemfunc.php, row 279
 "AA_Item structure" => "Estrutura AA_Item", // ai 2026-06
 
-// include/itemfunc.php, row 309
+// include/itemfunc.php, row 310
 "Technical details" => "Detalhes técnicos", // ai 2026-06
 
-// include/itemfunc.php, row 350
+// include/itemfunc.php, row 351
 "When" => "Quando", // ai 2026-06
 
-// include/itemfunc.php, row 350
+// include/itemfunc.php, row 351
 "Changed by" => "Alterado por", // ai 2026-06
 
-// include/itemfunc.php, row 378
+// include/itemfunc.php, row 379
 "Full history" => "Histórico completo", // ai 2026-06
 
-// include/itemfunc.php, row 403
+// include/itemfunc.php, row 404
 "Total views" => "Total de visualizações", // ai 2026-06
 
-// include/itemfunc.php, row 422
+// include/itemfunc.php, row 423
 "Average / day" => "Média / dia", // ai 2026-06
 
-// include/itemfunc.php, row 426
+// include/itemfunc.php, row 427
 "Last 7 days" => "Últimos 7 dias", // ai 2026-06
 
-// include/itemfunc.php, row 427
+// include/itemfunc.php, row 428
 "Last 30 days" => "Últimos 30 dias", // ai 2026-06
 
-// include/itemfunc.php, row 429
+// include/itemfunc.php, row 430
 "Last viewed" => "Última visualização", // ai 2026-06
 
-// include/itemfunc.php, row 433
+// include/itemfunc.php, row 434
 "Avg response" => "Resposta média", // ai 2026-06
 
-// include/itemfunc.php, row 436
+// include/itemfunc.php, row 437
 "Served from cache" => "Servido a partir da cache", // ai 2026-06
 
-// include/itemfunc.php, row 459
+// include/itemfunc.php, row 460
 "Full statistics" => "Estatísticas completas", // ai 2026-06
 
-// include/itemfunc.php, row 484
+// include/itemfunc.php, row 485
 "No detailed view statistics have been recorded for this item yet." => "Ainda não foram registadas estatísticas detalhadas de visualização para este artigo.", // ai 2026-06
 
-// include/itemfunc.php, row 487
+// include/itemfunc.php, row 488
 "Open full statistics" => "Abrir estatísticas completas", // ai 2026-06
 
-// include/itemfunc.php, row 514
+// include/itemfunc.php, row 515
 "Now, i.e. current date" => "Agora, ou seja, a data atual", // ai 2026-06
 
-// include/itemfunc.php, row 524
+// include/itemfunc.php, row 525
 "Never, i.e. maximum date" => "Nunca, ou seja, a data máxima", // ai 2026-06
 
-// include/itemfunc.php, row 535
+// include/itemfunc.php, row 536
 "User ID" => "ID do utilizador", // ai 2026-06
 
-// include/itemfunc.php, row 561
+// include/itemfunc.php, row 562
 "Date + 'Parameter' days" => "Data + 'Parâmetro' dias", // ai 2026-06
 
-// include/itemfunc.php, row 568
+// include/itemfunc.php, row 569
 "Number of days" => "Número de dias", // ai 2026-06
 
-// include/itemfunc.php, row 582
+// include/itemfunc.php, row 583
 "Text from 'Parameter'" => "Texto de 'Parâmetro'", // ai 2026-06
 
-// include/itemfunc.php, row 616
+// include/itemfunc.php, row 617
 "Random string" => "Cadeia aleatória", // ai 2026-06
 
-// include/itemfunc.php, row 618
+// include/itemfunc.php, row 619
 "Random alphanumeric [A-Z0-9] string." => "Cadeia alfanumérica aleatória [A-Z0-9].", // ai 2026-06
 
-// include/itemfunc.php, row 625
+// include/itemfunc.php, row 626
 "String length" => "Comprimento da cadeia", // ai 2026-06
 
-// include/itemfunc.php, row 626
+// include/itemfunc.php, row 627
 "Field to check" => "Campo a verificar", // ai 2026-06
 
-// include/itemfunc.php, row 626
+// include/itemfunc.php, row 627
 "If you need a unique code, you must send the field ID, the function will then look into this field to ensure uniqueness." => "Se precisar de um código único, tem de enviar o ID do campo; a função consultará então esse campo para garantir a unicidade.", // ai 2026-06
 
-// include/itemfunc.php, row 627
+// include/itemfunc.php, row 628
 "Slice only" => "Apenas esta secção", // ai 2026-06
 
-// include/itemfunc.php, row 627
+// include/itemfunc.php, row 628
 "Do you want to check for uniqueness this slice only or all slices?" => "Pretende verificar a unicidade apenas nesta secção ou em todas as secções?", // ai 2026-06
 
-// include/itemfunc.php, row 669
+// include/itemfunc.php, row 670
 "AA Expression" => "Expressão AA", // ai 2026-06
 
-// include/itemfunc.php, row 671
+// include/itemfunc.php, row 672
 "any text with possible {AA expressions} like: {date:Y}" => "qualquer texto com possíveis {AA expressions} como: {date:Y}", // ai 2026-06
 
-// include/itemfunc.php, row 695
+// include/itemfunc.php, row 696
 "Multivalue" => "Multivalor", // ai 2026-06
 
-// include/itemfunc.php, row 703
+// include/itemfunc.php, row 704
 // include/transformation.class.php, row 525
 "Delimiter" => "Delimitador", // ai 2026-06
 
-// include/itemfunc.php, row 794
+// include/itemfunc.php, row 795
 "Slice with id '%1' is not valid." => "A secção com id '%1' não é válida.", // ai 2026-06
 
-// include/itemfunc.php, row 894
+// include/itemfunc.php, row 895
 "Text = don't modify" => "Texto = não modificar", // ai 2026-06
 
-// include/itemfunc.php, row 895
+// include/itemfunc.php, row 896
 "Does not modify the value." => "Não modifica o valor.", // ai 2026-06
 
-// include/itemfunc.php, row 900
+// include/itemfunc.php, row 901
 "Date = don't modify" => "Data = não modificar", // ai 2026-06
 
-// include/itemfunc.php, row 901, 910
+// include/itemfunc.php, row 902, 911
 "Does not modify the value (just like Text), but it is better to separate it for future usage." => "Não modifica o valor (tal como Texto), mas é melhor separá-lo para uso futuro.", // ai 2026-06
 
-// include/itemfunc.php, row 909
+// include/itemfunc.php, row 910
 "Number = don't modify" => "Número = não modificar", // ai 2026-06
 
-// include/itemfunc.php, row 915
+// include/itemfunc.php, row 916
 "Boolean = store 0 or 1" => "Booleano = guardar 0 ou 1", // ai 2026-06
 
-// include/itemfunc.php, row 926
+// include/itemfunc.php, row 927
 "Float" => "",
 
-// include/itemfunc.php, row 927
+// include/itemfunc.php, row 928
 "Real float - could convert big numbers to scientific notation (1.23E+29)" => "Float real - pode converter números grandes para notação científica (1.23E+29)", // ai 2026-06
 
-// include/itemfunc.php, row 937
+// include/itemfunc.php, row 938
 "Decimal" => "",
 
-// include/itemfunc.php, row 938
+// include/itemfunc.php, row 939
 "The same as Float, but does not convert big numbers to  scientific notation (1.23E+29)" => "Igual a Float, mas não converte números grandes para notação científica (1.23E+29)", // ai 2026-06
 
-// include/itemfunc.php, row 948
+// include/itemfunc.php, row 949
 "Trim" => "Cortar", // ai 2026-06
 
-// include/itemfunc.php, row 949
+// include/itemfunc.php, row 950
 "Remove whitespaces from beginning and end and also normalize UTF (NFC)" => "Remove os espaços do início e do fim e também normaliza UTF (NFC)", // ai 2026-06
 
-// include/itemfunc.php, row 960
+// include/itemfunc.php, row 961
 "Item IDs" => "IDs de artigos", // ai 2026-06
 
-// include/itemfunc.php, row 1027
+// include/itemfunc.php, row 1028
 "User ID = always store current user ID" => "ID do utilizador = guardar sempre o ID do utilizador atual", // ai 2026-06
 
-// include/itemfunc.php, row 1028
+// include/itemfunc.php, row 1029
 "Inserts the identity of the current user, no matter what the user sets." => "Insere a identidade do utilizador atual, independentemente do que o utilizador definir.", // ai 2026-06
 
-// include/itemfunc.php, row 1069
+// include/itemfunc.php, row 1070
 "Now = always store current time" => "Agora = guardar sempre a hora atual", // ai 2026-06
 
-// include/itemfunc.php, row 1070
+// include/itemfunc.php, row 1071
 "Inserts the current time, no matter what the user sets." => "Insere a hora atual, independentemente do que o utilizador definir.", // ai 2026-06
 
-// include/itemfunc.php, row 1100
+// include/itemfunc.php, row 1101
 "Computed field for INSERT/UPDATE" => "Campo calculado para INSERT/UPDATE", // ai 2026-06
 
-// include/itemfunc.php, row 1101
+// include/itemfunc.php, row 1102
 "The field is the result of expression written in \"Code for unaliasing\". It is a good solution for all values, which could be precomputed, since its computation on item-show-time would be slow. Yes, you can use {view...}, {include...}, {switch...} here" => "O campo é o resultado da expressão escrita em \"Código para resolver alias\". É uma boa solução para todos os valores que podem ser pré-calculados, uma vez que o seu cálculo no momento de mostrar o artigo seria lento. Sim, aqui pode usar {view...}, {include...}, {switch...}", // ai 2026-06
 
-// include/itemfunc.php, row 1108
+// include/itemfunc.php, row 1109
 "Code for unaliasing (INSERT)" => "Código para resolver alias (INSERT)", // ai 2026-06
 
-// include/itemfunc.php, row 1108, 1137
+// include/itemfunc.php, row 1109, 1138
 "There you can write any string. The string will be unaliased on item store, so you can use any {...} construct as well as field aliases here" => "Aqui pode escrever qualquer cadeia. A cadeia será resolvida ao guardar o artigo, por isso pode usar qualquer construção {...} bem como aliases de campos", // ai 2026-06
 
-// include/itemfunc.php, row 1109
+// include/itemfunc.php, row 1110
 "Code for unaliasing (UPDATE)" => "Código para resolver alias (UPDATE)", // ai 2026-06
 
-// include/itemfunc.php, row 1109
+// include/itemfunc.php, row 1110
 "The same as above, but just for UPDATE operation. If unfilled, the value of the field stays unchanged" => "O mesmo que acima, mas apenas para a operação UPDATE. Se não for preenchido, o valor do campo permanece inalterado", // ai 2026-06
 
-// include/itemfunc.php, row 1110
+// include/itemfunc.php, row 1111
 "Multivalue delimiter" => "Delimitador de valores múltiplos", // ai 2026-06
 
-// include/itemfunc.php, row 1110
+// include/itemfunc.php, row 1111
 "Character or string, which will split the computed string into multiple values (the same field)" => "Carácter ou cadeia que dividirá a cadeia calculada em vários valores (do mesmo campo)", // ai 2026-06
 
-// include/itemfunc.php, row 1111
+// include/itemfunc.php, row 1112
 "Recompute every" => "Recalcular a cada", // ai 2026-06
 
-// include/itemfunc.php, row 1111
+// include/itemfunc.php, row 1112
 "The field will be recomputed every minute, hour, ... (using UPDATE code above). The times are not exact - the minute means something 1-10 minutes. If not filled, the field will be recomputed only on insert/update of the item." => "O campo será recalculado a cada minuto, hora, ... (usando o código UPDATE acima). Os tempos não são exatos - o minuto significa cerca de 1 a 10 minutos. Se não for preenchido, o campo só será recalculado ao inserir/atualizar o artigo.", // ai 2026-06
 
-// include/itemfunc.php, row 1129
+// include/itemfunc.php, row 1130
 "Computed field" => "Campo calculado", // ai 2026-06
 
-// include/itemfunc.php, row 1130
+// include/itemfunc.php, row 1131
 "The field is the result of expression written in \\\"Code for unaliasing\\\". It is good solution for all values, which could be precomputed, since its computation on item-show-time would be slow. Yes, you can use {view...}, {include...}, {switch...} here" => "O campo é o resultado da expressão escrita em \\\"Código para resolver alias\\\". É uma boa solução para todos os valores que podem ser pré-calculados, já que calculá-los ao mostrar o artigo seria lento. Sim, aqui pode usar {view...}, {include...}, {switch...}", // ai 2026-06
 
-// include/itemfunc.php, row 1137
+// include/itemfunc.php, row 1138
 "Code for unaliasing (INSERT+UPDATE)" => "Código para resolver alias (INSERT+UPDATE)", // ai 2026-06
 
-// include/itemfunc.php, row 1157
+// include/itemfunc.php, row 1158
 "SEO Name" => "Nome SEO", // ai 2026-06
 
-// include/itemfunc.php, row 1158
+// include/itemfunc.php, row 1159
 "If the field is not filled, compute seoname from _#HEADLINE alias (or another if specified) unique to all slices in sitemodules, where the slice is mentioned in \"Uses slices\" settings. Basically the SEO Name alias is shortcut for computed field with {ifset:{seo.............}:_#1:{seoname:{_#HEADLINE}:all:CHARSET}}" => "Se o campo não estiver preenchido, calcula o seoname a partir do alias _#HEADLINE (ou outro, se especificado), único entre todas as secções dos módulos de site onde a secção é indicada na configuração \"Uses slices\". No fundo, o alias Nome SEO é um atalho para um campo calculado com {ifset:{seo.............}:_#1:{seoname:{_#HEADLINE}:all:CHARSET}}", // ai 2026-06
 
-// include/itemfunc.php, row 1165
+// include/itemfunc.php, row 1166
 "Alias to compute from" => "Alias a partir do qual calcular", // ai 2026-06
 
-// include/itemfunc.php, row 1165
+// include/itemfunc.php, row 1166
 "if not specified, the _#HEADLINE is used" => "se não for especificado, é usado _#HEADLINE", // ai 2026-06
 
-// include/itemfunc.php, row 1180
+// include/itemfunc.php, row 1181
 "Unique number for this field (from 1,..)" => "Número único para este campo (de 1,..)", // ai 2026-06
 
-// include/itemfunc.php, row 1181
+// include/itemfunc.php, row 1182
 "Unique number in sequence 1,2,3,..." => "Número único na sequência 1,2,3,...", // ai 2026-06
 
-// include/itemfunc.php, row 1203
+// include/itemfunc.php, row 1204
 "File = uploaded file" => "Ficheiro = ficheiro carregado", // ai 2026-06
 
-// include/itemfunc.php, row 1204
+// include/itemfunc.php, row 1205
 "Stores the uploaded file and a link to it, parameters only apply if type is image/something." => "Guarda o ficheiro carregado e uma ligação para ele; os parâmetros só se aplicam se o tipo for image/algo.", // ai 2026-06
 
-// include/itemfunc.php, row 1211
+// include/itemfunc.php, row 1212
 "Mime types accepted" => "Tipos MIME aceites", // ai 2026-06
 
-// include/itemfunc.php, row 1211
+// include/itemfunc.php, row 1212
 "Only files of matching mime types will be accepted" => "Só serão aceites ficheiros cujo tipo MIME corresponda", // ai 2026-06
 
-// include/itemfunc.php, row 1212
+// include/itemfunc.php, row 1213
 "Maximum image width" => "Largura máxima da imagem", // ai 2026-06
 
-// include/itemfunc.php, row 1213
+// include/itemfunc.php, row 1214
 "Maximum image height" => "Altura máxima da imagem", // ai 2026-06
 
-// include/itemfunc.php, row 1213
+// include/itemfunc.php, row 1214
 "The image will be resampled to be within these limits, while retaining aspect ratio." => "A imagem será reamostrada para se ajustar a estes limites, mantendo a proporção.", // ai 2026-06
 
-// include/itemfunc.php, row 1214
+// include/itemfunc.php, row 1215
 "Other fields" => "Outros campos", // ai 2026-06
 
-// include/itemfunc.php, row 1214
+// include/itemfunc.php, row 1215
 "List of other fields to receive this image, separated by ##. Does not work well for multi uploads." => "Lista de outros campos que receberão esta imagem, separados por ##. Não funciona bem com carregamentos múltiplos.", // ai 2026-06
 
-// include/itemfunc.php, row 1215
+// include/itemfunc.php, row 1216
 "Upload policy" => "Política de carregamento", // ai 2026-06
 
-// include/itemfunc.php, row 1215
+// include/itemfunc.php, row 1216
 "new | overwrite | backup<br>This parameter controls what to do if uploaded file alredy exists:<br>new - AA creates new filename (by adding _x postfix) and store it with this new name (default)<br>overwrite - the old file of the same name is overwritten<br>backup - the old file is copied to new (non-existing) file and current file is stored with current name.<br>In all cases the filename is escaped, so any non-word characters will be replaced by an underscore." => "new | overwrite | backup<br>Este parâmetro controla o que fazer se o ficheiro carregado já existir:<br>new - o AA cria um novo nome de ficheiro (adicionando o sufixo _x) e guarda-o com esse novo nome (predefinição)<br>overwrite - o ficheiro antigo com o mesmo nome é substituído<br>backup - o ficheiro antigo é copiado para um ficheiro novo (inexistente) e o ficheiro atual é guardado com o nome atual.<br>Em todos os casos o nome do ficheiro é escapado, pelo que quaisquer caracteres não alfanuméricos serão substituídos por um sublinhado.", // ai 2026-06
 
-// include/itemfunc.php, row 1216
+// include/itemfunc.php, row 1217
 "Exact dimensions" => "Dimensões exatas", // ai 2026-06
 
-// include/itemfunc.php, row 1216
+// include/itemfunc.php, row 1217
 "If set to 1 the image will be downsized exactly to the specified dimensions (and cropped if needed). Default is 0 or empty: Maintain aspect ratio while resizing the image." => "Se definido como 1, a imagem será reduzida exatamente para as dimensões especificadas (e recortada se necessário). A predefinição é 0 ou vazio: manter a proporção ao redimensionar a imagem.", // ai 2026-06
 
-// include/itemfunc.php, row 1217
+// include/itemfunc.php, row 1218
 "Filename template" => "Modelo do nome do ficheiro", // ai 2026-06
 
-// include/itemfunc.php, row 1217
+// include/itemfunc.php, row 1218
 "Renames file according to template. You can use AA expressions as well as special alias _#name and _#ext or _#full (file name, extension and fullname). The item aliases in AA expressions do not work on INSERT (item does not exist at time of file write). They will work on UPDATE." => "Renomeia o ficheiro de acordo com o modelo. Pode usar expressões AA bem como os aliases especiais _#name e _#ext ou _#full (nome do ficheiro, extensão e nome completo). Os aliases do artigo nas expressões AA não funcionam no INSERT (o artigo não existe no momento da escrita do ficheiro). Funcionarão no UPDATE.", // ai 2026-06
 
-// include/itemfunc.php, row 1374
+// include/itemfunc.php, row 1375
 "Password and Change Password" => "Palavra-passe e Alterar palavra-passe", // ai 2026-06
 
-// include/itemfunc.php, row 1375
+// include/itemfunc.php, row 1376
 "Stores value from a \"Password and Change Password\" field type. First proves the new password matches the retyped new password, and if so, encrypts the new password and stores it." => "Guarda o valor de um campo do tipo \"Palavra-passe e Alterar palavra-passe\". Primeiro verifica se a nova palavra-passe coincide com a nova palavra-passe reintroduzida e, em caso afirmativo, cifra a nova palavra-passe e guarda-a.", // ai 2026-06
 
-// include/itemfunc.php, row 1382
+// include/itemfunc.php, row 1383
 "Copy of password" => "Cópia da palavra-passe", // ai 2026-06
 
-// include/itemfunc.php, row 1382
+// include/itemfunc.php, row 1383
 "Field_id, where you want to store the copy of the password. Sometimes useful if you want to allow people to get his/her old password. It is strongly recommended to not store it in plaintext and encrypt it. See second parameter." => "Field_id onde pretende guardar a cópia da palavra-passe. Por vezes é útil se quiser permitir que as pessoas obtenham a sua palavra-passe antiga. Recomenda-se vivamente não a guardar em texto simples e cifrá-la. Veja o segundo parâmetro.", // ai 2026-06
 
-// include/itemfunc.php, row 1383, 1422
+// include/itemfunc.php, row 1384, 1423
 "Encrypt phrase" => "Frase de cifragem", // ai 2026-06
 
-// include/itemfunc.php, row 1383
+// include/itemfunc.php, row 1384
 "If you specify the \"Copy of password\" field, it is recommended to encrypt the password in the database. Fill there any string. If you then need the password, you can decrypt it from the field by using the same phrase - {decrypt:{password.......1}:Some Phrase}" => "Se especificar o campo \"Cópia da palavra-passe\", recomenda-se cifrar a palavra-passe na base de dados. Preencha aqui qualquer cadeia. Se depois precisar da palavra-passe, pode decifrá-la do campo usando a mesma frase - {decrypt:{password.......1}:Some Phrase}", // ai 2026-06
 
-// include/itemfunc.php, row 1414
+// include/itemfunc.php, row 1415
 "2FA Secret" => "Segredo 2FA", // ai 2026-06
 
-// include/itemfunc.php, row 1415
+// include/itemfunc.php, row 1416
 "Generates and stores secret for Two-factor authentication, possibly encrypted by password" => "Gera e guarda o segredo para a autenticação de dois fatores, opcionalmente cifrado com palavra-passe", // ai 2026-06
 
-// include/itemfunc.php, row 1422
+// include/itemfunc.php, row 1423
 "Password to be applied for encrypting this field value. Could contain AA expressions or aliases (for user item in Reader Management slice)" => "Palavra-passe a aplicar para cifrar o valor deste campo. Pode conter expressões AA ou aliases (do artigo do utilizador na secção de Gestão de leitores)", // ai 2026-06
 
 // include/itemview.php, row 117
@@ -4909,65 +4909,143 @@ return [
 // include/locauth.php, row 87
 "If you are sure you have typed the correct password, please e-mail <a href=mailto:%1>%1</a>" => "Se tem a certeza de que introduziu a palavra-passe correta, envie um e-mail para <a href=mailto:%1>%1</a>", // ai 2026-06
 
-// include/logs.php, row 306
+// include/logs.php, row 336
 "Created time" => "Hora de criação", // ai 2026-06
 
-// include/logs.php, row 307
+// include/logs.php, row 337
 "Readers to be emailed" => "Leitores a quem enviar e-mail", // ai 2026-06
 
-// include/logs.php, row 317
+// include/logs.php, row 347
 "Page" => "Página", // ai 2026-06
 
-// include/logs.php, row 327, 351, 364
+// include/logs.php, row 357, 397, 410
 "Time [s]" => "Tempo [s]", // ai 2026-06
 
-// include/logs.php, row 328, 353
+// include/logs.php, row 358, 399
 "Memory usage [MB]" => "Utilização de memória [MB]", // ai 2026-06
 
-// include/logs.php, row 329
+// include/logs.php, row 359
 "Memory peak [MB]" => "Pico de memória [MB]", // ai 2026-06
 
-// include/logs.php, row 330
+// include/logs.php, row 360
 "Return code" => "Código de retorno", // ai 2026-06
 
-// include/logs.php, row 349
-"Cached" => "Em cache", // ai 2026-06
-
-// include/logs.php, row 350
-"Not Modified (304)" => "Não modificado (304)", // ai 2026-06
-
-// include/logs.php, row 352
-"Time + Cached + 304" => "Tempo + Em cache + 304", // ai 2026-06
-
-// include/logs.php, row 354, 365, 397
-"Url" => "",
+// include/logs.php, row 374
+"Tasks done" => "Tarefas concluídas", // ai 2026-06
 
 // include/logs.php, row 375
+"Tasks started" => "Tarefas iniciadas", // ai 2026-06
+
+// include/logs.php, row 376
+"Duration [s]" => "Duração [s]", // ai 2026-06
+
+// include/logs.php, row 377
+"Allowed [s]" => "Permitido [s]", // ai 2026-06
+
+// include/logs.php, row 395
+"Cached" => "Em cache", // ai 2026-06
+
+// include/logs.php, row 396
+"Not Modified (304)" => "Não modificado (304)", // ai 2026-06
+
+// include/logs.php, row 398
+"Time + Cached + 304" => "Tempo + Em cache + 304", // ai 2026-06
+
+// include/logs.php, row 400, 411, 443, 475
+"Url" => "URL", // ai 2026-06
+
+// include/logs.php, row 421
 // include/menu_util.php, row 45
 "AA" => "",
 
-// include/logs.php, row 376
+// include/logs.php, row 422
 "SVN AA (util.php)" => "",
 
-// include/logs.php, row 377
+// include/logs.php, row 423
 "PHP" => "",
 
-// include/logs.php, row 378
-"DB" => "",
+// include/logs.php, row 424
+"DB" => "BD", // ai 2026-06
 
-// include/logs.php, row 379
+// include/logs.php, row 425
 "Memory" => "Memória", // ai 2026-06
 
-// include/logs.php, row 380
+// include/logs.php, row 426
 "CPU" => "",
 
-// include/logs.php, row 394
+// include/logs.php, row 440
 "Identifier" => "Identificador", // ai 2026-06
 
-// include/logs.php, row 395
+// include/logs.php, row 441, 570, 583
 // modules/jump/modedit.php, row 180
 // src/Manager.php, row 584
 "Module ID" => "ID do módulo", // ai 2026-06
+
+// include/logs.php, row 452
+"Template id" => "Id do modelo", // ai 2026-06
+
+// include/logs.php, row 454
+"Emails sent" => "E-mails enviados", // ai 2026-06
+
+// include/logs.php, row 463
+"Items selected" => "Artigos selecionados", // ai 2026-06
+
+// include/logs.php, row 464
+"Items updated" => "Artigos atualizados", // ai 2026-06
+
+// include/logs.php, row 465
+"Items planned" => "Artigos planeados", // ai 2026-06
+
+// include/logs.php, row 474
+"Message" => "Mensagem", // ai 2026-06
+
+// include/logs.php, row 476
+"Referer" => "",
+
+// include/logs.php, row 485
+"New name" => "Novo nome", // ai 2026-06
+
+// include/logs.php, row 486
+"Old name" => "Nome antigo", // ai 2026-06
+
+// include/logs.php, row 495, 518
+"Phase" => "Fase", // ai 2026-06
+
+// include/logs.php, row 496
+"Collection" => "Coleção", // ai 2026-06
+
+// include/logs.php, row 498, 509, 519
+"Detail" => "Detalhe", // ai 2026-06
+
+// include/logs.php, row 508
+"Status" => "Estado", // ai 2026-06
+
+// include/logs.php, row 529
+"Processed" => "Processados", // ai 2026-06
+
+// include/logs.php, row 530
+"Stored" => "Armazenados", // ai 2026-06
+
+// include/logs.php, row 531
+"Errors" => "Erros", // ai 2026-06
+
+// include/logs.php, row 542
+"Outcome" => "Resultado", // ai 2026-06
+
+// include/logs.php, row 555
+"Mode" => "Modo", // ai 2026-06
+
+// include/logs.php, row 556
+"Flags" => "Sinalizadores", // ai 2026-06
+
+// include/logs.php, row 557
+"Context" => "",
+
+// include/logs.php, row 571
+"Feed counterpart" => "Contraparte do canal", // ai 2026-06
+
+// include/logs.php, row 584
+"Field ID" => "ID do Campo", // ai 2026-06
 
 // include/mail.php, row 563
 // include/tv_email.php, row 77, 145
@@ -4997,7 +5075,7 @@ return [
 // include/menu.php, row 65
 "View site" => "Ver site", // ai 2026-06
 
-// include/menu.php, row 90, 91, 143
+// include/menu.php, row 90, 91, 142
 "Item Manager" => "Gestão de artigos", // ai 2026-06
 
 // include/menu.php, row 99
@@ -5016,137 +5094,137 @@ return [
 // include/menu.php, row 135
 "Email Notification" => "Notificação por e-mail", // ai 2026-06
 
-// include/menu.php, row 138
+// include/menu.php, row 137
 // include/menu_util.php, row 69
 // include/um_util.php, row 100, 103
 "Permissions" => "Permissões", // ai 2026-06
 
-// include/menu.php, row 139
+// include/menu.php, row 138
 "Assign" => "Atribuir", // ai 2026-06
 
-// include/menu.php, row 142
+// include/menu.php, row 141
 "Design" => "Aspeto", // ai 2026-06
 
-// include/menu.php, row 145
+// include/menu.php, row 144
 "Fulltext" => "Texto completo", // ai 2026-06
 
-// include/menu.php, row 146
+// include/menu.php, row 145
 "Index" => "Índice", // ai 2026-06
 
-// include/menu.php, row 148
+// include/menu.php, row 147
 "Sets of Items" => "Conjuntos de artigos", // ai 2026-06
 
-// include/menu.php, row 150
+// include/menu.php, row 149
 "Content Pooling" => "Partilha de conteúdos", // ai 2026-06
 
-// include/menu.php, row 151
+// include/menu.php, row 150
 "Nodes" => "Nós", // ai 2026-06
 
-// include/menu.php, row 152
+// include/menu.php, row 151
 "Inner Node Feeding" => "Alimentação de nós internos", // ai 2026-06
 
-// include/menu.php, row 154
+// include/menu.php, row 153
 "Inter Node Export" => "Exportação entre nós", // ai 2026-06
 
-// include/menu.php, row 155
+// include/menu.php, row 154
 "RSS Feeds" => "Canais RSS", // ai 2026-06
 
-// include/menu.php, row 156
+// include/menu.php, row 155
 "Filters" => "Filtros", // ai 2026-06
 
-// include/menu.php, row 157
+// include/menu.php, row 156
 "Mapping" => "Correspondência", // ai 2026-06
 
-// include/menu.php, row 158, 220
+// include/menu.php, row 157, 219
 "Import CSV" => "Importar CSV", // ai 2026-06
 
-// include/menu.php, row 159
+// include/menu.php, row 158
 // src/Manageraction/Item_Export.php, row 20
 "Export to file" => "Exportar para ficheiro", // ai 2026-06
 
-// include/menu.php, row 161, 217
-// include/menu_util.php, row 73, 124
+// include/menu.php, row 160, 216
+// include/menu_util.php, row 73, 123
 // src/Module/Poll/Menu.php, row 67
 "Misc" => "Vários", // ai 2026-06
 
-// include/menu.php, row 164
+// include/menu.php, row 163
 "Change field IDs" => "Alterar IDs de campos", // ai 2026-06
 
-// include/menu.php, row 167
+// include/menu.php, row 166
 "Anonymous Form Wizard" => "Assistente de formulário anónimo", // ai 2026-06
 
-// include/menu.php, row 168
+// include/menu.php, row 167
 // include/tv_email.php, row 134
 "Email templates" => "Modelos de e-mail", // ai 2026-06
 
-// include/menu.php, row 170
+// include/menu.php, row 169
 // include/menu_util.php, row 75
 "Planned Tasks" => "Tarefas planeadas", // ai 2026-06
 
-// include/menu.php, row 178
+// include/menu.php, row 177
 "Mailman: create list" => "Mailman: criar lista", // ai 2026-06
 
-// include/menu.php, row 186
-// include/menu_util.php, row 119
+// include/menu.php, row 185
+// include/menu_util.php, row 118
 // src/Module/Poll/Menu.php, row 60
 "Folders" => "Pastas", // ai 2026-06
 
-// include/menu.php, row 189
+// include/menu.php, row 188
 // src/Module/Poll/Menu.php, row 62
 "... pending" => "... pendentes", // ai 2026-06
 
-// include/menu.php, row 190
+// include/menu.php, row 189
 // src/Module/Poll/Menu.php, row 63
 "... expired" => "... expiradas", // ai 2026-06
 
-// include/menu.php, row 192
-// include/menu_util.php, row 122
+// include/menu.php, row 191
+// include/menu_util.php, row 121
 // src/Module/Poll/Menu.php, row 65
 "Trash bin" => "Reciclagem", // ai 2026-06
 
-// include/menu.php, row 208
+// include/menu.php, row 207
 "Bookmarks" => "Marcadores", // ai 2026-06
 
-// include/menu.php, row 218
+// include/menu.php, row 217
 "Setting" => "Definições", // ai 2026-06
 
-// include/menu.php, row 219
-// include/menu_util.php, row 127
+// include/menu.php, row 218
+// include/menu_util.php, row 126
 // src/Module/Poll/Menu.php, row 68
 "Empty trash" => "Esvaziar reciclagem", // ai 2026-06
 
-// include/menu.php, row 219
-// include/menu_util.php, row 127
+// include/menu.php, row 218
+// include/menu_util.php, row 126
 // src/Module/Poll/Menu.php, row 68
 "Are you sure you want to empty trash?" => "Tem a certeza de que pretende esvaziar a reciclagem?", // ai 2026-06
 
-// include/menu.php, row 221
+// include/menu.php, row 220
 "Set Debug OFF" => "Desligar depuração", // ai 2026-06
 
-// include/menu.php, row 221
+// include/menu.php, row 220
 "Set Debug ON" => "Ligar depuração", // ai 2026-06
 
-// include/menu.php, row 231
-// include/menu_util.php, row 420, 612
+// include/menu.php, row 230
+// include/menu_util.php, row 419, 726
 // include/slice.class.php, row 1194
 "Alerts" => "Alertas", // ai 2026-06
 
-// include/menu.php, row 231
+// include/menu.php, row 230
 "List of Alerts modules using this slice as Reader Management." => "Lista de módulos de Alertas que usam esta secção como Gestão de leitores.", // ai 2026-06
 
-// include/menu.php, row 233
+// include/menu.php, row 232
 "Bulk Emails" => "E-mails em massa", // ai 2026-06
 
-// include/menu.php, row 233
+// include/menu.php, row 232
 "Send bulk email to selected users or to users in Stored searches" => "Enviar e-mail em massa aos utilizadores selecionados ou aos utilizadores em pesquisas guardadas", // ai 2026-06
 
-// include/menu.php, row 237
+// include/menu.php, row 236
 "Send emails" => "Enviar e-mails", // ai 2026-06
 
-// include/menu.php, row 246
+// include/menu.php, row 245
 "Alerts Sent" => "Alertas enviados", // ai 2026-06
 
-// include/menu.php, row 246
+// include/menu.php, row 245
 "List of Alerts modules sending items from this slice." => "Lista de módulos de Alertas que enviam artigos desta secção.", // ai 2026-06
 
 // include/menu_util.php, row 46
@@ -5182,76 +5260,97 @@ return [
 // include/menu_util.php, row 95
 "Wizard" => "Assistente", // ai 2026-06
 
-// include/menu_util.php, row 97
+// include/menu_util.php, row 96
 "Welcomes" => "Mensagens de boas-vindas", // ai 2026-06
 
-// include/menu_util.php, row 98
+// include/menu_util.php, row 97
 "Templates" => "Modelos", // ai 2026-06
 
-// include/menu_util.php, row 100
+// include/menu_util.php, row 99
 "Documentation" => "Documentação", // ai 2026-06
 
-// include/menu_util.php, row 101
+// include/menu_util.php, row 100
 "Style Guide" => "Guia de estilo", // ai 2026-06
 
-// include/menu_util.php, row 107
+// include/menu_util.php, row 106
 "Central" => "",
 
-// include/menu_util.php, row 108
+// include/menu_util.php, row 107
 "AA Central" => "",
 
-// include/menu_util.php, row 125
+// include/menu_util.php, row 124
 "Synchronize..." => "Sincronizar...", // ai 2026-06
 
-// include/menu_util.php, row 126
+// include/menu_util.php, row 125
 "Copy Slice..." => "Copiar secção...", // ai 2026-06
 
-// include/menu_util.php, row 128
+// include/menu_util.php, row 127
 "Import conf from CSV..." => "Importar configuração de CSV...", // ai 2026-06
 
-// include/menu_util.php, row 398
+// include/menu_util.php, row 397
 "Part of %s" => "Parte de %s", // ai 2026-06
 
-// include/menu_util.php, row 415
+// include/menu_util.php, row 414
 "Other slices" => "Outras secções", // ai 2026-06
 
-// include/menu_util.php, row 419
+// include/menu_util.php, row 418
 "Reader Management Slice" => "Secção de gestão de leitores", // ai 2026-06
 
-// include/menu_util.php, row 421
+// include/menu_util.php, row 420
 "Jump inside control panel" => "Saltar dentro do painel de controlo", // ai 2026-06
 
-// include/menu_util.php, row 422
+// include/menu_util.php, row 421
 // include/slice.class.php, row 1226
 "Links" => "Ligações", // ai 2026-06
 
-// include/menu_util.php, row 423
+// include/menu_util.php, row 422
 "MySQL Auth (old version)" => "Autenticação MySQL (versão antiga)", // ai 2026-06
 
-// include/menu_util.php, row 424
+// include/menu_util.php, row 423
 // src/Module/Poll/Menu.php, row 83
 "Polls" => "Sondagens", // ai 2026-06
 
-// include/menu_util.php, row 445
+// include/menu_util.php, row 444
 "New slice" => "Nova secção", // ai 2026-06
 
-// include/menu_util.php, row 449
+// include/menu_util.php, row 448
 "Switch module" => "Mudar de módulo", // ai 2026-06
 
-// include/menu_util.php, row 616
+// include/menu_util.php, row 578, 589
+"Apply" => "Aplicar", // ai 2026-06
+
+// include/menu_util.php, row 582
+"-- Default for module --" => "-- Predefinição do módulo --", // ai 2026-06
+
+// include/menu_util.php, row 590
+"Switches the admin interface language; the page reloads." => "Muda o idioma da interface de administração; a página é recarregada.", // ai 2026-06
+
+// include/menu_util.php, row 598
+"What's working, what isn't — tell the AA team." => "O que funciona, o que não funciona — diga à equipa do AA.", // ai 2026-06
+
+// include/menu_util.php, row 601
+"Settings" => "Definições", // ai 2026-06
+
+// include/menu_util.php, row 604
+"Theme" => "Tema", // ai 2026-06
+
+// include/menu_util.php, row 606
+"Feedback" => "Comentários", // ai 2026-06
+
+// include/menu_util.php, row 730
 // include/slice.class.php, row 554
 "Reader management" => "Gestão de leitores", // ai 2026-06
 
-// include/menu_util.php, row 628
+// include/menu_util.php, row 742
 "logout" => "sair", // ai 2026-06
 
-// include/menu_util.php, row 636
+// include/menu_util.php, row 750
 "Search.." => "Pesquisar..", // ai 2026-06
 
-// include/menu_util.php, row 714
-"Copyright (C) 2001 the <a href=\"https://www.apc.org\">Association for Progressive Communications (APC)</a>" => "",
+// include/menu_util.php, row 829
+"Copyright (C) 2001 the <a href=\"https://www.apc.org\">Association for Progressive Communications (APC)</a>" => "Copyright (C) 2001 a <a href=\"https://www.apc.org\">Association for Progressive Communications (APC)</a>", // ai 2026-06
 
-// include/menu_util.php, row 724
+// include/menu_util.php, row 839
 "Collapse / expand menu" => "Recolher / expandir menu", // ai 2026-06
 
 // include/metabase.class.php, row 1572
@@ -5373,43 +5472,43 @@ return [
 // include/searchbar.class.php, row 595
 "Order" => "Ordenar", // ai 2026-06
 
-// include/searchbar.class.php, row 662
+// include/searchbar.class.php, row 664
 "Advanced search" => "Pesquisa avançada", // ai 2026-06
 
-// include/searchbar.class.php, row 720
+// include/searchbar.class.php, row 729
 "Refine" => "Refinar", // ai 2026-06
 
-// include/searchbar.class.php, row 723
+// include/searchbar.class.php, row 732
 "Share with all slice users" => "Partilhar com todos os utilizadores da secção", // ai 2026-06
 
-// include/searchbar.class.php, row 724
+// include/searchbar.class.php, row 733
 "Save filter" => "Guardar filtro", // ai 2026-06
 
-// include/searchbar.class.php, row 725
+// include/searchbar.class.php, row 734
 "Rename filter" => "Mudar nome do filtro", // ai 2026-06
 
-// include/searchbar.class.php, row 726
+// include/searchbar.class.php, row 735
 "Are you sure you want to delete selected filter?" => "Tem a certeza de que pretende eliminar o filtro selecionado?", // ai 2026-06
 
-// include/searchbar.class.php, row 1008
+// include/searchbar.class.php, row 1017
 "Select one..." => "Selecionar...", // ai 2026-06
 
-// include/searchbar.class.php, row 1023
+// include/searchbar.class.php, row 1032
 "My filters" => "Os meus filtros", // ai 2026-06
 
-// include/searchbar.class.php, row 1026
+// include/searchbar.class.php, row 1035
 "Global filters" => "Filtros globais", // ai 2026-06
 
-// include/searchbar.class.php, row 1064
+// include/searchbar.class.php, row 1073
 "Shared filter (click to apply)" => "Filtro partilhado (clique para aplicar)", // ai 2026-06
 
-// include/searchbar.class.php, row 1064
+// include/searchbar.class.php, row 1073
 "Personal filter (click to apply)" => "Filtro pessoal (clique para aplicar)", // ai 2026-06
 
-// include/searchbar.class.php, row 1074
+// include/searchbar.class.php, row 1083
 "Rename" => "Mudar nome", // ai 2026-06
 
-// include/searchbar.class.php, row 1085
+// include/searchbar.class.php, row 1094
 "Manage filters" => "Gerir filtros", // ai 2026-06
 
 // include/searchlib.php, row 54
@@ -5722,6 +5821,9 @@ return [
 // include/stringexpand.php, row 7716
 "version" => "versão", // ai 2026-06
 
+// include/stringexpand.php, row 7900
+"show" => "mostrar", // ai 2026-06
+
 // include/stringexpand.php, row 7901
 "hide" => "ocultar", // ai 2026-06
 
@@ -5855,21 +5957,6 @@ return [
 // include/tabledit_util.php, row 670
 "Wrong value: a number between %1 and %2 is expected." => "Valor incorreto: é esperado um número entre %1 e %2.", // ai 2026-06
 
-// include/tableviews.php, row 59, 60
-"Polls Design" => "Aspeto das sondagens", // ai 2026-06
-
-// include/tableviews.php, row 66, 102
-"Comment" => "Comentário", // ai 2026-06
-
-// include/tableviews.php, row 88
-"Module Id" => "ID do módulo", // ai 2026-06
-
-// include/tableviews.php, row 104
-"design description (for administrators only)" => "descrição do design (apenas para administradores)", // ai 2026-06
-
-// include/tableviews.php, row 111
-"Answer HTML" => "HTML da resposta", // ai 2026-06
-
 // include/transformation.class.php, row 149
 "Fill by value" => "Preencher com valor", // ai 2026-06
 
@@ -5981,30 +6068,6 @@ return [
 // include/tv_email.php, row 168
 "Sender" => "Remetente", // ai 2026-06
 
-// include/tv_misc.php, row 131
-"COUNT_HIT events will be used for counting item hits. After a while it will be automatically deleted." => "Os eventos COUNT_HIT serão usados para contar consultas a artigos. Após algum tempo serão eliminados automaticamente.", // ai 2026-06
-
-// include/tv_misc.php, row 139, 140
-"Log view" => "Vista do registo", // ai 2026-06
-
-// include/tv_misc.php, row 162
-"See searchlog=1 parameter for slice.php in FAQ: " => "Ver o parâmetro searchlog=1 para slice.php nas FAQ:", // ai 2026-06
-
-// include/tv_misc.php, row 170, 171
-"SearchLog view" => "Vista do registo de pesquisas", // ai 2026-06
-
-// include/tv_misc.php, row 175
-"items found" => "artigos encontrados", // ai 2026-06
-
-// include/tv_misc.php, row 176
-"search time" => "tempo de pesquisa", // ai 2026-06
-
-// include/tv_misc.php, row 177
-"addition" => "adição", // ai 2026-06
-
-// include/tv_misc.php, row 198, 199
-"Configure Fields" => "Configurar campos", // ai 2026-06
-
 // include/um_gedit.php, row 43
 "It is impossible to add group to permission system" => "Não é possível adicionar o grupo ao sistema de permissões", // ai 2026-06
 
@@ -6023,10 +6086,10 @@ return [
 // include/um_util.php, row 358
 "Can't change user" => "Não é possível alterar o utilizador", // ai 2026-06
 
-// include/util.php, row 1300
+// include/util.php, row 1304
 "Toolkit news message" => "Mensagem das aplicações", // ai 2026-06
 
-// include/util.php, row 1314
+// include/util.php, row 1318
 "Relogin" => "Voltar a iniciar sessão", // ai 2026-06
 
 // include/validate.php, row 52
@@ -6372,10 +6435,10 @@ return [
 // src/AA_Plannedtask.php, row 224
 "next run" => "próxima execução", // ai 2026-06
 
-// src/IO/Grabber/AARSS.php, row 116
+// src/IO/Grabber/AARSS.php, row 117
 "AA RSS" => "",
 
-// src/IO/Grabber/AARSS.php, row 124
+// src/IO/Grabber/AARSS.php, row 125
 "Grabs data from generic RSS or AA RSS (used for item exchange between different AA installations)" => "Obtém dados de um RSS genérico ou de AA RSS (usado para a troca de artigos entre diferentes instalações de AA)", // ai 2026-06
 
 // src/IO/Grabber/CSV.php, row 66
@@ -7854,32 +7917,47 @@ return [
 // src/Util/ChangesMonitor.php, row 93
 "history (%1)" => "histórico (%1)", // ai 2026-06
 
+// src/Util/ChangesMonitor.php, row 336
+"No recorded changes for this item." => "Não há alterações registadas para este artigo.", // ai 2026-06
+
 // src/Util/ChangesMonitor.php, row 360
 "1 field changed" => "1 campo alterado", // ai 2026-06
 
 // src/Util/ChangesMonitor.php, row 360
 "%1 fields changed" => "%1 campos alterados", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 370, 382
+// src/Util/ChangesMonitor.php, row 369, 456
 "Restore" => "Restaurar", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 377
+// src/Util/ChangesMonitor.php, row 383
+"(this change)" => "(esta alteração)", // ai 2026-06
+
+// src/Util/ChangesMonitor.php, row 387, 573, 577
+"Current (live)" => "Atual (em direto)", // ai 2026-06
+
+// src/Util/ChangesMonitor.php, row 388
+"Compare to" => "Comparar com", // ai 2026-06
+
+// src/Util/ChangesMonitor.php, row 397
 "change %1 | uid %2 | %3 ns | resource %4" => "alteração %1 | uid %2 | %3 ns | recurso %4", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 382
-"vs current" => "vs atual", // ai 2026-06
+// src/Util/ChangesMonitor.php, row 449
+"View" => "Ver", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 391
+// src/Util/ChangesMonitor.php, row 450
+"Diff" => "",
+
+// src/Util/ChangesMonitor.php, row 481
 "seq %1" => "",
 
-// src/Util/ChangesMonitor.php, row 405
-"no current value" => "sem valor atual", // ai 2026-06
+// src/Util/ChangesMonitor.php, row 488
+"No change between these versions." => "Sem alterações entre estas versões.", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 407
-"same as current" => "igual ao atual", // ai 2026-06
+// src/Util/ChangesMonitor.php, row 511
+"(empty)" => "(vazio)", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 426
-"No recorded changes for this item." => "Não há alterações registadas para este artigo.", // ai 2026-06
+// src/Util/ChangesMonitor.php, row 571
+"Original" => "",
 
 // src/Util/Imgfunc.php, row 80
 "Cannot copy %1 to %2" => "Não é possível copiar %1 para %2", // ai 2026-06
@@ -7892,6 +7970,9 @@ return [
 
 // src/Util/Searchfields.php, row 183
 "-- any numeric field --" => "-- qualquer campo numérico --", // ai 2026-06
+
+// src/Util/UiPrefs.php, row 55
+"Gold" => "Ouro", // ai 2026-06
 
 // src/Widget/ChbWidget.php, row 80
 "Check Box" => "Caixa de seleção", // ai 2026-06

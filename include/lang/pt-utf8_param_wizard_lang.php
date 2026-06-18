@@ -626,7 +626,7 @@ return [
 "prints <i>the field</i> content (or <i>unalias string</i>) depending on the html flag (if html flag is not set, it converts the content to html. In difference to f_h function, it converts to html line-breaks, too (in its basic variant)" => "apresenta o conteúdo de <i>o campo</i> (ou <i>unalias string</i>) consoante a flag html (se a flag html não estiver definida, converte o conteúdo em html. Ao contrário da função f_h, converte também as quebras de linha em html (na sua variante básica)", // ai 2026-06
 
 // include/constants_param_wizard.php, row 621
-"unalias string" => "",
+"unalias string" => "texto sem alias", // ai 2026-06
 
 // include/constants_param_wizard.php, row 622
 "if the <i>unalias string</i> is defined, then the function ignores <i>the field</i> and it rather prints the <i>unalias string</i>. You can of course use any aliases (or fields like {headline.........}) in this string" => "se a <i>unalias string</i> estiver definida, a função ignora <i>o campo</i> e apresenta antes a <i>unalias string</i>. Pode, claro, utilizar quaisquer alias (ou campos como {headline.........}) nesta cadeia", // ai 2026-06

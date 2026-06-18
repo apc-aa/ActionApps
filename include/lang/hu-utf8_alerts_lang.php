@@ -13,79 +13,79 @@ setlocale(LC_NUMERIC, 'en_US');            // keep float format with dot (see AA
 
 return [
 
-// modules/alerts/alerts_sending.php, row 418
+// modules/alerts/alerts_sending.php, row 417
 "alerts alert" => "értesítő e-mail", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 419
+// modules/alerts/alerts_sending.php, row 418
 "alerts welcome" => "üdvözlő e-mail", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 420
+// modules/alerts/alerts_sending.php, row 419
 "slice wizard welcome" => "rovatvarázsló üdvözlője", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 421
+// modules/alerts/alerts_sending.php, row 420
 "user template" => "felhasználói sablon", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 422
+// modules/alerts/alerts_sending.php, row 421
 "password change" => "jelszómódosítás", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 423
+// modules/alerts/alerts_sending.php, row 422
 "other" => "egyéb", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 433
+// modules/alerts/alerts_sending.php, row 432
 "Aliases for Alerts Alert" => "Aliasok az értesítő e-mailhez", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 435
+// modules/alerts/alerts_sending.php, row 434
 "complete filter text" => "a szűrő teljes szövege", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 436, 445
+// modules/alerts/alerts_sending.php, row 435, 444
 "howoften" => "milyen gyakran", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 437
+// modules/alerts/alerts_sending.php, row 436
 "Anonym Form URL (set in Alerts Admin - Settings)" => "Anonim űrlap URL-je (az Értesítések adminisztrációja – Beállítások alatt állítható be)", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 438
+// modules/alerts/alerts_sending.php, row 437
 "Unsubscribe Form URL" => "Leiratkozási űrlap URL-je", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 443
+// modules/alerts/alerts_sending.php, row 442
 "Aliases for Alerts Welcome" => "Aliasok az üdvözlő e-mailhez", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 446
+// modules/alerts/alerts_sending.php, row 445
 "Collection Form URL (set in Alerts Admin - Settings)" => "Gyűjteményűrlap URL-je (az Értesítések adminisztrációja – Beállítások alatt állítható be)", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 447
+// modules/alerts/alerts_sending.php, row 446
 "email confirmed" => "e-mail megerősítve", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 453
+// modules/alerts/alerts_sending.php, row 452
 "Aliases for Slice Wizard Welcome" => "Aliasok a rovatvarázsló üdvözlőjéhez", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 455, 467
+// modules/alerts/alerts_sending.php, row 454, 466
 "Slice name" => "Rovat neve", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 456, 468
+// modules/alerts/alerts_sending.php, row 455, 467
 "New user name" => "Új felhasználó neve", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 457
+// modules/alerts/alerts_sending.php, row 456
 "New user login name" => "Új felhasználó bejelentkezési neve", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 458
+// modules/alerts/alerts_sending.php, row 457
 "New user role (editor / admin)" => "Új felhasználó szerepköre (editor / admin)", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 459
+// modules/alerts/alerts_sending.php, row 458
 "My name" => "Nevem", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 460
+// modules/alerts/alerts_sending.php, row 459
 "My email" => "E-mail-címem", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 465
+// modules/alerts/alerts_sending.php, row 464
 "Aliases for User Templates (you can use also all aliases of the user)" => "Aliasok a felhasználói sablonokhoz (a felhasználó összes aliasa is használható)", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 473
+// modules/alerts/alerts_sending.php, row 472
 "Aliases for Password Change email (you can use also all aliases of the user)" => "Aliasok a jelszómódosítási e-mailhez (a felhasználó összes aliasa is használható)", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 475
+// modules/alerts/alerts_sending.php, row 474
 "HTML link to the password change page for current user" => "HTML-hivatkozás az aktuális felhasználó jelszómódosítási oldalára", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 476
+// modules/alerts/alerts_sending.php, row 475
 "URL parameter used for password change link in _#PWD_LINK (you can use it, if you want to use your own url for it)" => "A _#PWD_LINK jelszómódosítási hivatkozásában használt URL-paraméter (használhatja, ha saját URL-t szeretne használni hozzá)", // ai 2026-06
 
 // modules/alerts/cf_common.php, row 41

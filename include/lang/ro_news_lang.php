@@ -13,9 +13,34 @@ return [
 // in _m('...') literals; their domains are listed in misc/mgettext/cli.php $RUNTIME_MESSAGES.
 "Backward" => "\xCEnapoi",
 "howoften" => "c\xEEt de des",
+"feed" => "alimenteaz\xE3", // ai 2026-06
 // End of runtime-translated messages
 
 // Unused messages - no longer found in the sources; kept commented for reference.
+// "You don't have permissions to view item history." => "Nu aveti dreptul s\xE3 vizualizati istoricul articolului.", // ai 2026-06
+// "validate" => "valideaz\xE3", // ai 2026-06
+// "RSS feeds testing page." => "Pagin\xE3 de testare a aliment\xE3rilor RSS.", // ai 2026-06
+// "No RSS Feeds set." => "Nicio alimentare RSS setat\xE3.", // ai 2026-06
+// "Messages" => "Mesaje", // ai 2026-06
+// "Write" => "Scrie", // ai 2026-06
+// "update database" => "actualizeaz\xE3 baza de date", // ai 2026-06
+// "Feed url" => "URL alimentare", // ai 2026-06
+// "Ok : file deleted " => "Ok: fisier sters", // ai 2026-06
+// "Error: Cannot delete file" => "Eroare: Nu se poate sterge fisierul", // ai 2026-06
+// "Error: Invalid directory" => "Eroare: Director invalid", // ai 2026-06
+// "Module Id" => "Id modul", // ai 2026-06
+// "design description (for administrators only)" => "descrierea designului (doar pentru administratori)", // ai 2026-06
+// "COUNT_HIT events will be used for counting item hits. After a while it will be automatically deleted." => "Evenimentele COUNT_HIT vor fi folosite pentru num\xE3rarea acces\xE3rilor articolelor. Dup\xE3 un timp vor fi sterse automat.", // ai 2026-06
+// "Log view" => "Vedere Log", // ai 2026-06
+// "See searchlog=1 parameter for slice.php in FAQ: " => "Vezi parametrul searchlog=1 pentru slice.php \xEEn FAQ: ", // ai 2026-06
+// "SearchLog view" => "Vedere SearchLog", // ai 2026-06
+// "items found" => "articole g\xE3site", // ai 2026-06
+// "search time" => "timp de c\xE3utare", // ai 2026-06
+// "addition" => "ad\xE3ugare", // ai 2026-06
+// "Configure Fields" => "Configurare c\xE2mpuri", // ai 2026-06
+// "vs current" => "vs. actual", // ai 2026-06
+// "no current value" => "nicio valoare actual\xE3", // ai 2026-06
+// "same as current" => "identic cu valoarea actual\xE3", // ai 2026-06
 // "Add&nbsp;mutual" => "Adaug\xE3&nbsp;mutual",
 // "Must begin with _#.<br>Alias must be exactly ten characters long including \"_#\".<br>Alias should be in upper case letters." => "Trebuie sa \xEEnceap\xE3 cu _#.<br>Aliasul trebuie s\xE3 fie exact de zece caractere incluz\xEEnd \"_#\".<br>Aliasul va con\xFEine litere mari.",
 // "Wizard with help" => "Vr\xE3jitor cu ajutor",
@@ -346,7 +371,7 @@ return [
 "Sites" => "Site-uri", // ai 2026-06
 
 // admin/aa_statistics.php, row 127
-// admin/aafinder.php, row 500, 513
+// admin/aafinder.php, row 499, 512
 // admin/se_inputform.php, row 291
 // include/searchlib.php, row 970
 "Slices" => "Sectiuni", // ai 2026-06
@@ -404,11 +429,11 @@ return [
 "Items found" => "Articole g\xE3site", // ai 2026-06
 
 // admin/aa_statistics.php, row 313
-// admin/se_statistics.php, row 176
+// admin/se_statistics.php, row 179
 "No items found" => "Nu am g\xE3sit articole", // ai 2026-06
 
-// admin/aa_statistics.php, row 321
-// admin/se_statistics.php, row 173
+// admin/aa_statistics.php, row 325
+// admin/se_statistics.php, row 176
 "Server configuration changes" => "Modific\xE3ri de configurare a serverului", // ai 2026-06
 
 // admin/aa_tasks.php, row 34
@@ -433,78 +458,87 @@ return [
 // admin/aa_toexecute.php, row 42
 "Scheduled Tasks" => "Sarcini programate", // ai 2026-06
 
+// admin/aa_uiprefs.php, row 30
+"You must be logged in." => "Trebuie s\xE3 fi\xFEi autentificat.", // ai 2026-06
+
+// admin/aa_uiprefs.php, row 115
+"Thanks \xE2\x80\x94 your note reached the AA team." => "Mul\xFEumim -- nota dvs. a ajuns la echipa AA.", // ai 2026-06
+
+// admin/aa_uiprefs.php, row 117
+"Couldn't send right now. Please email us directly: %1" => "Nu am putut trimite acum. V\xE3 rug\xE3m s\xE3 ne scrie\xFEi direct: %1", // ai 2026-06
+
 // admin/aa_wizardtemplate.php, row 41
 "You do not have permission to manage Wizard Templates" => "Nu aveti dreptul s\xE3 administrati sabloanele de asistent", // ai 2026-06
 
 // admin/aa_wizardtemplate.php, row 75
-// include/tv_misc.php, row 70, 71
 "Wizard Templates" => "Sabloane asistent", // ai 2026-06
 
-// admin/aafinder.php, row 87
+// admin/aafinder.php, row 86
 "You don't have permissions to do search." => "Nu aveti dreptul s\xE3 c\xE3utati.", // ai 2026-06
 
-// admin/aafinder.php, row 99
+// admin/aafinder.php, row 98
 "Show results with string" => "Arat\xE3 rezultatele cu sirul", // ai 2026-06
 
-// admin/aafinder.php, row 101
+// admin/aafinder.php, row 100
 "Item" => "Articol", // ai 2026-06
 
-// admin/aafinder.php, row 125
+// admin/aafinder.php, row 124
 // admin/feed_to.php, row 66
 // admin/se_fields.php, row 112
 // admin/slicedit.php, row 244
-// include/itemfunc.php, row 184
-// include/menu.php, row 126
+// include/itemfunc.php, row 185
+// include/logs.php, row 528
+// include/menu.php, row 132
 // include/slice.class.php, row 468
 // include/sliceadd.php, row 52, 77
 "Slice" => "Sectiune",
 
-// admin/aafinder.php, row 129
+// admin/aafinder.php, row 128
 // src/AA_Plannedtask.php, row 102
 "Module" => "Modul",
 
-// admin/aafinder.php, row 134, 135, 136, 137
+// admin/aafinder.php, row 133, 134, 135, 136
 // include/um_util.php, row 102
 "Object" => "Obiect",
 
-// admin/aafinder.php, row 140
-// include/itemfunc.php, row 273
-// include/logs.php, row 204
+// admin/aafinder.php, row 139
+// include/itemfunc.php, row 274
+// include/logs.php, row 234
 // src/AA_Plannedtask.php, row 117
 "Log" => "Jurnal", // ai 2026-06
 
-// admin/aafinder.php, row 162
+// admin/aafinder.php, row 161
 // include/sliceadd.php, row 36
 // include/slicedit.php, row 150
 "You do not have permissions to add slice" => "Nu ave\xFEi dreptul s\xE3 ad\xE3uga\xFEi sec\xFEiune",
 
-// admin/aafinder.php, row 168
+// admin/aafinder.php, row 167
 // include/menu_util.php, row 79
 "AA finder" => "C\xE3ut\xE3tor AA", // ai 2026-06
 
-// admin/aafinder.php, row 248
+// admin/aafinder.php, row 247
 "Jump" => "Salt", // ai 2026-06
 
-// admin/aafinder.php, row 467, 519
-// admin/itemhistory.php, row 39
-// include/itemfunc.php, row 81, 82, 253, 375
-// include/menu.php, row 156
+// admin/aafinder.php, row 466, 518
+// admin/itemhistory.php, row 43
+// include/itemfunc.php, row 83, 84, 254, 376
+// include/menu.php, row 161
 // include/menu_util.php, row 82
 "History" => "Istoric", // ai 2026-06
 
-// admin/aafinder.php, row 479
+// admin/aafinder.php, row 478
 "Manage" => "Administrare", // ai 2026-06
 
-// admin/aafinder.php, row 482
+// admin/aafinder.php, row 481
 "Manage User:" => "Administrare utilizator:", // ai 2026-06
 
-// admin/aafinder.php, row 484, 490, 506, 534, 547
+// admin/aafinder.php, row 483, 489, 505, 533, 546
 "Go!" => "Du-te!",
 
-// admin/aafinder.php, row 488
+// admin/aafinder.php, row 487
 "Manage Group:" => "Administrare grup:", // ai 2026-06
 
-// admin/aafinder.php, row 494, 524
+// admin/aafinder.php, row 493, 523
 // admin/um_gedit.php, row 208, 325
 // admin/um_uedit.php, row 249
 // include/se_users.php, row 131, 136
@@ -515,76 +549,76 @@ return [
 // src/Widget/GpsWidget.php, row 434
 "Search" => "C\xE3utare",
 
-// admin/aafinder.php, row 497
+// admin/aafinder.php, row 496
 "Find in" => "Caut\xE3 \xEEn", // ai 2026-06
 
-// admin/aafinder.php, row 498
+// admin/aafinder.php, row 497
 "ID & SEO" => "ID si SEO", // ai 2026-06
 
-// admin/aafinder.php, row 499, 512
-// include/itemfunc.php, row 182
-// include/menu.php, row 138
+// admin/aafinder.php, row 498, 511
+// include/itemfunc.php, row 183
+// include/menu.php, row 143
 "Views" => "Vederi",
 
-// admin/aafinder.php, row 501, 514
+// admin/aafinder.php, row 500, 513
 // admin/anonym_wizard.php, row 216
 // include/exporter.class.php, row 522
-// include/itemfunc.php, row 350
-// include/menu.php, row 127
+// include/itemfunc.php, row 351
+// include/menu.php, row 133
 // include/searchlib.php, row 167
 "Fields" => "C\xEEmpuri",
 
-// admin/aafinder.php, row 502, 515
+// admin/aafinder.php, row 501, 514
 "Site spots" => "Locuri pe site", // ai 2026-06
 
-// admin/aafinder.php, row 503, 520
+// admin/aafinder.php, row 502, 519
 "Discussion comments" => "Comentarii discutie", // ai 2026-06
 
-// admin/aafinder.php, row 511
+// admin/aafinder.php, row 510
 "Search and Replace in" => "Caut\xE3 si \xEEnlocuieste \xEEn", // ai 2026-06
 
-// admin/aafinder.php, row 516
+// admin/aafinder.php, row 515
 "Objects" => "Obiecte", // ai 2026-06
 
-// admin/aafinder.php, row 517
+// admin/aafinder.php, row 516
 "Items from slices with 'Slice Type' like Code... " => "Articole din sectiunile cu 'Tip sectiune' de genul Code...", // ai 2026-06
 
-// admin/aafinder.php, row 517
+// admin/aafinder.php, row 516
 "Code Items" => "Articole cod", // ai 2026-06
 
-// admin/aafinder.php, row 518
+// admin/aafinder.php, row 517
 "All Items" => "Toate articolele", // ai 2026-06
 
-// admin/aafinder.php, row 522
+// admin/aafinder.php, row 521
 "minimum 2 characters for replace function" => "minimum 2 caractere pentru functia de \xEEnlocuire", // ai 2026-06
 
-// admin/aafinder.php, row 523
+// admin/aafinder.php, row 522
 "minimum 6 characters for replace function (or use {#AAA} value which will be replaced by empty string)" => "minimum 6 caractere pentru functia de \xEEnlocuire (sau folositi valoarea {#AAA}, care va fi \xEEnlocuit\xE3 cu sir gol)", // ai 2026-06
 
-// admin/aafinder.php, row 525
+// admin/aafinder.php, row 524
 "Replace!" => "\xCEnlocuieste!", // ai 2026-06
 
-// admin/aafinder.php, row 532
+// admin/aafinder.php, row 531
 "Get all information about the ITEM" => "Obtine toate informatiile despre ARTICOL", // ai 2026-06
 
-// admin/aafinder.php, row 539
+// admin/aafinder.php, row 538
 "Shortcut to edit ITEM" => "Scurt\xE3tur\xE3 pentru editarea ARTICOLULUI", // ai 2026-06
 
-// admin/aafinder.php, row 542
+// admin/aafinder.php, row 541
 // include/searchbar.class.php, row 543
 // include/searchlib.php, row 47, 48, 124, 133
 "contains" => "contine", // ai 2026-06
 
-// admin/aafinder.php, row 543
+// admin/aafinder.php, row 542
 // include/searchbar.class.php, row 549
 // include/searchlib.php, row 124, 133
 "is" => "este", // ai 2026-06
 
-// admin/aafinder.php, row 544
+// admin/aafinder.php, row 543
 // admin/se_profile.php, row 98
 "Item number" => "Num\xE3r articol",
 
-// admin/aafinder.php, row 545
+// admin/aafinder.php, row 544
 "seo............. =" => "",
 
 // admin/aarsstest.php, row 37
@@ -610,6 +644,7 @@ return [
 
 // admin/anonym_wizard.php, row 127
 // admin/write_mail.php, row 257
+// include/menu_util.php, row 599
 // include/stringexpand.php, row 9646, 9726
 "Send" => "Trimite", // ai 2026-06
 
@@ -665,7 +700,7 @@ return [
 // admin/sliceexp_text.php, row 364
 // include/form.class.php, row 183
 // include/searchlib.php, row 357
-// src/Util/ChangesMonitor.php, row 381
+// src/Util/ChangesMonitor.php, row 455
 "Field" => "C\xEEmp",
 
 // admin/anonym_wizard.php, row 221
@@ -675,7 +710,6 @@ return [
 // admin/se_javascript.php, row 90
 // admin/slicedit.php, row 277
 // include/constants.php, row 409
-// include/tableviews.php, row 64, 80
 "Id" => "ID", // ai 2026-06
 
 // admin/anonym_wizard.php, row 223
@@ -752,7 +786,7 @@ return [
 "Author" => "Autor",
 
 // admin/discedit.php, row 130
-// include/logs.php, row 396
+// include/logs.php, row 442
 "IP Address" => "Adres\xE3 IP", // ai 2026-06
 
 // admin/discedit.php, row 131
@@ -762,7 +796,6 @@ return [
 
 // admin/discedit.php, row 132
 // admin/related_sel.php, row 148
-// admin/rsstest.php, row 96
 // admin/se_views.php, row 132
 // src/Manager.php, row 201
 // src/Optimize/AbstractOptimize.php, row 127
@@ -778,7 +811,7 @@ return [
 // admin/um_uedit.php, row 266
 // include/field.class.php, row 597
 // include/filedit.php, row 114
-// include/formutil.php, row 1755, 3344
+// include/formutil.php, row 1755, 3346
 // include/metabase.class.php, row 1552
 // include/mlx.php, row 367
 // include/statestore.php, row 1025
@@ -804,7 +837,7 @@ return [
 // include/formutil.php, row 1766, 1903
 // include/menu_util.php, row 61
 // include/profile.php, row 67
-// include/searchbar.class.php, row 1076
+// include/searchbar.class.php, row 1085
 // include/um_gsrch.php, row 53
 // src/Manageraction/Object_Delete.php, row 24
 // src/Manageraction/Table_Row_Delete.php, row 23
@@ -812,9 +845,9 @@ return [
 "Delete" => "\xAAterge",
 
 // admin/discedit.php, row 169
-// include/adminpage.class.php, row 330
+// include/adminpage.class.php, row 331
 // include/se_users.php, row 121
-// include/util.php, row 1314
+// include/util.php, row 1318
 "Back" => "\xCEnapoi",
 
 // admin/discedit.php, row 170
@@ -871,7 +904,7 @@ return [
 "Export Item to Selected Slice" => "Export\xE3 articol c\xE3tre sec\xFEiunea selectat\xE3",
 
 // admin/feed_to.php, row 67
-// include/itemfunc.php, row 152
+// include/itemfunc.php, row 153
 "Holding bin" => "\xCEn asteptare", // ai 2026-06
 
 // admin/feed_to.php, row 68
@@ -879,8 +912,8 @@ return [
 // admin/se_filters.php, row 191
 // admin/slicedit.php, row 139, 145
 // include/exporter.class.php, row 483
-// include/menu.php, row 182
-// include/menu_util.php, row 120
+// include/menu.php, row 187
+// include/menu_util.php, row 119
 // src/Module/Poll/Menu.php, row 61
 "Active" => "Activ",
 
@@ -910,7 +943,7 @@ return [
 
 // admin/fileman.php, row 114
 // include/filedit.php, row 66
-// include/menu.php, row 160
+// include/menu.php, row 165
 "File Manager" => "Administrator fi\xBAiere",
 
 // admin/fileman.php, row 116
@@ -966,17 +999,15 @@ return [
 "Edit Item" => "Editare articol",
 
 // admin/itemedit.php, row 387, 388
-// include/menu.php, row 76
+// include/menu.php, row 82
 "Add Item" => "Ad\xE3ugare articol",
 
-// admin/itemhistory.php, row 24
-"You don't have permissions to view item history." => "Nu aveti dreptul s\xE3 vizualizati istoricul articolului.", // ai 2026-06
-
-// admin/itemhistory.php, row 32
+// admin/itemhistory.php, row 28
 // admin/iteminfo.php, row 29
 // admin/itemstats.php, row 31
 "Item not found." => "Articolul nu a fost g\xE3sit.", // ai 2026-06
 
+// admin/itemhistory.php, row 36
 // admin/iteminfo.php, row 36
 "You have no rights to this item." => "Nu aveti drepturi asupra acestui articol.", // ai 2026-06
 
@@ -988,8 +1019,8 @@ return [
 "You don't have permissions to view item statistics." => "Nu aveti dreptul s\xE3 vedeti statisticile articolelor.", // ai 2026-06
 
 // admin/itemstats.php, row 38
-// include/itemfunc.php, row 86, 456
-// include/menu.php, row 157
+// include/itemfunc.php, row 88, 457
+// include/menu.php, row 162
 // include/menu_util.php, row 81
 // src/Util/Adminlink.php, row 119
 "Statistics" => "Statistici", // ai 2026-06
@@ -1046,48 +1077,11 @@ return [
 // admin/related_sel.php, row 176
 "Editor window - item manager, related selection window" => "Fereastr\xE3 editor - administrare articole, fereastr\xE3 de selectare articole asociate", // ai 2026-06
 
-// admin/rsstest.php, row 50
-"feed" => "alimenteaz\xE3", // ai 2026-06
-
-// admin/rsstest.php, row 51
-"validate" => "valideaz\xE3", // ai 2026-06
-
-// admin/rsstest.php, row 52
-// include/stringexpand.php, row 7900
-"show" => "arat\xE3", // ai 2026-06
-
-// admin/rsstest.php, row 85, 86, 136
-"RSS Feed import test" => "Test import alimentare RSS", // ai 2026-06
-
-// admin/rsstest.php, row 87
-"RSS feeds testing page." => "Pagin\xE3 de testare a aliment\xE3rilor RSS.", // ai 2026-06
-
-// admin/rsstest.php, row 89
-"No RSS Feeds set." => "Nicio alimentare RSS setat\xE3.", // ai 2026-06
-
-// admin/rsstest.php, row 100
-"Messages" => "Mesaje", // ai 2026-06
-
-// admin/rsstest.php, row 106
-"Write" => "Scrie", // ai 2026-06
-
-// admin/rsstest.php, row 107
-"update database" => "actualizeaz\xE3 baza de date", // ai 2026-06
-
-// admin/rsstest.php, row 113
-"Feed url" => "URL alimentare", // ai 2026-06
-
-// admin/rsstest.php, row 117
-// admin/se_inter_import.php, row 98
-"Node" => "Nod", // ai 2026-06
-
-// admin/rsstest.php, row 121
-// include/feeding.php, row 464, 470, 527
-"Local slice" => "Sectiune local\xE3", // ai 2026-06
-
-// admin/rsstest.php, row 130
-// admin/tabledit.php, row 78
+// admin/rsstest.php, row 36
 "You do not have permissions to access this page" => "Nu aveti dreptul s\xE3 accesati aceast\xE3 pagin\xE3", // ai 2026-06
+
+// admin/rsstest.php, row 46
+"RSS Feed import test" => "Test import alimentare RSS", // ai 2026-06
 
 // admin/se_admin.php, row 72
 "You have no permission to set configuration parameters of this slice" => "Nu ave\xFEi dreptul s\xE3 seta\xFEi parametrii de configura\xFEie pentru aceast\xE3 sec\xFEiune",
@@ -1095,7 +1089,6 @@ return [
 // admin/se_admin.php, row 81, 173
 // admin/se_compact.php, row 94, 238
 // include/constants.php, row 605, 655, 675, 729, 764, 795, 819, 862, 891, 917, 951
-// include/tableviews.php, row 107
 "Top HTML" => "Cap HTML",
 
 // admin/se_admin.php, row 82, 176
@@ -1104,7 +1097,6 @@ return [
 // admin/se_admin.php, row 83, 179
 // admin/se_compact.php, row 95, 248
 // include/constants.php, row 610, 657, 677, 733, 766, 797, 822, 867, 893, 922, 956
-// include/tableviews.php, row 115
 "Bottom HTML" => "Sf\xEEr\xBAit HTML",
 
 // admin/se_admin.php, row 84, 182
@@ -1137,6 +1129,7 @@ return [
 // admin/se_compact.php, row 228
 // admin/se_fulltext.php, row 153
 // admin/se_inputform.php, row 187, 439
+// src/Util/UiPrefs.php, row 56
 "Default" => "Implicit",
 
 // admin/se_admin.php, row 171
@@ -1269,8 +1262,7 @@ return [
 // include/constedit.php, row 73
 // include/fileman.php, row 31
 // include/se_users.php, row 173
-// include/searchbar.class.php, row 722
-// include/tableviews.php, row 65, 97
+// include/searchbar.class.php, row 731
 // include/um_gedit.php, row 31
 // src/AA_Plannedtask.php, row 102
 // src/Optimize/AbstractOptimize.php, row 125
@@ -1416,6 +1408,7 @@ return [
 
 // admin/se_csv_import.php, row 236, 241
 // include/filedit.php, row 66
+// include/logs.php, row 543
 "File" => "Fi\xBAier",
 
 // admin/se_csv_import.php, row 237, 242
@@ -1425,14 +1418,14 @@ return [
 
 // admin/se_csv_import.php, row 238, 243
 // admin/se_inputform.php, row 471, 472
-// include/itemfunc.php, row 589, 678, 702
+// include/itemfunc.php, row 590, 679, 703
 "Text" => "",
 
 // admin/se_csv_import.php, row 251
 "Source of CSV data" => "Sursa datelor CSV", // ai 2026-06
 
 // admin/se_csv_import.php, row 275
-// admin/se_csv_import2.php, row 374
+// admin/se_csv_import2.php, row 373
 // src/Manageraction/Item_Preview.php, row 11
 "Preview" => "Vizualizare",
 
@@ -1458,133 +1451,125 @@ return [
 // admin/se_csv_import2.php, row 284
 "Ok: Item %1 stored" => "Ok: Articolul %1 a fost salvat", // ai 2026-06
 
-// admin/se_csv_import2.php, row 300
-// include/files.class.php, row 298
-"Ok : file deleted " => "Ok: fisier sters", // ai 2026-06
-
-// admin/se_csv_import2.php, row 302
-// include/files.class.php, row 300
-"Error: Cannot delete file" => "Eroare: Nu se poate sterge fisierul", // ai 2026-06
-
-// admin/se_csv_import2.php, row 306
+// admin/se_csv_import2.php, row 305
 "Added to slice" => "Ad\xE3ugat \xEEn sectiune", // ai 2026-06
 
-// admin/se_csv_import2.php, row 328
+// admin/se_csv_import2.php, row 327
 "Mapping preview" => "Previzualizare mapare", // ai 2026-06
 
-// admin/se_csv_import2.php, row 379
+// admin/se_csv_import2.php, row 378
 "Finish" => "Finalizare", // ai 2026-06
 
-// admin/se_csv_import2.php, row 384
-// include/searchbar.class.php, row 719
+// admin/se_csv_import2.php, row 383
+// include/searchbar.class.php, row 728
 // src/Widget/MflWidget.php, row 120
 // src/Widget/RioWidget.php, row 124
 // src/Widget/TxtWidget.php, row 109
 // src/Widget/Widget.php, row 416
 "Save" => "Salveaz\xE3", // ai 2026-06
 
-// admin/se_csv_import2.php, row 389
+// admin/se_csv_import2.php, row 388
 "Load" => "\xCEncarc\xE3", // ai 2026-06
 
-// admin/se_csv_import2.php, row 399
+// admin/se_csv_import2.php, row 398
 "Mapping settings" => "Set\xE3ri mapare", // ai 2026-06
 
-// admin/se_csv_import2.php, row 402
+// admin/se_csv_import2.php, row 401
 // admin/se_filters.php, row 190
 // admin/se_mapping.php, row 181
 "To" => "C\xE3tre",
 
-// admin/se_csv_import2.php, row 403
+// admin/se_csv_import2.php, row 402
 // admin/se_filters.php, row 189
 // admin/se_mapping.php, row 182
 // include/tv_email.php, row 159
 "From" => "De la",
 
-// admin/se_csv_import2.php, row 404
+// admin/se_csv_import2.php, row 403
 // admin/search_replace.php, row 178
 // include/metabase.class.php, row 1577
 // include/statestore.php, row 975, 1289
 // src/AA_Plannedtask.php, row 102
 "Action" => "Actiune", // ai 2026-06
 
-// admin/se_csv_import2.php, row 405
+// admin/se_csv_import2.php, row 404
 "Html" => "HTML", // ai 2026-06
 
-// admin/se_csv_import2.php, row 406
+// admin/se_csv_import2.php, row 405
 "Action parameters" => "Parametri actiune", // ai 2026-06
 
-// admin/se_csv_import2.php, row 407
+// admin/se_csv_import2.php, row 406
 "Parameter wizard" => "Asistent parametri", // ai 2026-06
 
-// admin/se_csv_import2.php, row 432
+// admin/se_csv_import2.php, row 431
 "Import options" => "Optiuni import", // ai 2026-06
 
-// admin/se_csv_import2.php, row 447
+// admin/se_csv_import2.php, row 446
 "Map item id from" => "Mapeaz\xE3 ID-ul articolului din", // ai 2026-06
 
-// admin/se_csv_import2.php, row 451
+// admin/se_csv_import2.php, row 450
 "unpacked long id (32 characters)" => "ID lung despachetat (32 de caractere)", // ai 2026-06
 
-// admin/se_csv_import2.php, row 452
+// admin/se_csv_import2.php, row 451
 "packed long id (16 characters)" => "ID lung \xEEmpachetat (16 caractere)", // ai 2026-06
 
-// admin/se_csv_import2.php, row 453
+// admin/se_csv_import2.php, row 452
 "string to be converted (string2id) - with param:" => "sir de convertit (string2id) - cu parametrul:", // ai 2026-06
 
-// admin/se_csv_import2.php, row 461
+// admin/se_csv_import2.php, row 460
 "Select, how to store the items" => "Selectati cum se salveaz\xE3 articolele", // ai 2026-06
 
-// admin/se_csv_import2.php, row 463
+// admin/se_csv_import2.php, row 462
 "Do not store the item" => "Nu salva articolul", // ai 2026-06
 
-// admin/se_csv_import2.php, row 464
+// admin/se_csv_import2.php, row 463
 "Store the item with new id" => "Salveaz\xE3 articolul cu ID nou", // ai 2026-06
 
-// admin/se_csv_import2.php, row 465
+// admin/se_csv_import2.php, row 464
 "Update the item (overwrite)" => "Actualizeaz\xE3 articolul (suprascrie)", // ai 2026-06
 
-// admin/se_csv_import2.php, row 466
+// admin/se_csv_import2.php, row 465
 "Add the values in parallel to current values (the multivalues are stored, where possible)" => "Adaug\xE3 valorile \xEEn paralel cu valorile curente (valorile multiple sunt stocate, unde este posibil)", // ai 2026-06
 
-// admin/se_csv_import2.php, row 467
+// admin/se_csv_import2.php, row 466
 "Rewrite only the fields, for which the action is defined and compute all computed fields, ..." => "Rescrie doar c\xE2mpurile pentru care este definit\xE3 actiunea si calculeaz\xE3 toate c\xE2mpurile calculate, ...", // ai 2026-06
 
-// admin/se_csv_import2.php, row 468
+// admin/se_csv_import2.php, row 467
 "Rewrite only the fields, for which the action is defined (do not update lastedit, computed, ... fields = Silent)" => "Rescrie doar c\xE2mpurile pentru care este definit\xE3 actiunea (nu actualizeaz\xE3 c\xE2mpurile lastedit, calculate, ... = Silentios)", // ai 2026-06
 
-// admin/se_csv_import2.php, row 469
+// admin/se_csv_import2.php, row 468
 "Rewrite only the fields, for which the action is defined and its value is not empty (computed fields will be computed)" => "Rescrie doar c\xE2mpurile pentru care este definit\xE3 actiunea si a c\xE3ror valoare nu este goal\xE3 (c\xE2mpurile calculate vor fi calculate)", // ai 2026-06
 
-// admin/se_csv_import2.php, row 472
+// admin/se_csv_import2.php, row 471
 "If the item id is already in the slice" => "Dac\xE3 id-ul articolului este deja \xEEn sectiune", // ai 2026-06
 
-// admin/se_csv_import2.php, row 473
+// admin/se_csv_import2.php, row 472
 // admin/search_replace.php, row 176
 "Silent" => "Silentios", // ai 2026-06
 
-// admin/se_csv_import2.php, row 473
+// admin/se_csv_import2.php, row 472
 "Do not perform any other operations like evaluate-computed-field, feed, send e-mail to Readers of Alerts..." => "Nu efectua alte operatii precum calcularea c\xE2mpurilor calculate, alimentare, trimitere de e-mail cititorilor de alerte...", // ai 2026-06
 
-// admin/se_csv_import2.php, row 474
+// admin/se_csv_import2.php, row 473
 "Data source" => "Surs\xE3 de date", // ai 2026-06
 
-// admin/se_csv_import2.php, row 475
+// admin/se_csv_import2.php, row 474
 // include/feeding.php, row 456, 488
 "Source" => "Surs\xE3", // ai 2026-06
 
-// admin/se_csv_import2.php, row 477
+// admin/se_csv_import2.php, row 476
 "Store settings..." => "Salveaz\xE3 set\xE3rile...", // ai 2026-06
 
-// admin/se_csv_import2.php, row 483
+// admin/se_csv_import2.php, row 482
 "Load setting" => "\xCEncarc\xE3 setarea", // ai 2026-06
 
-// admin/se_csv_import2.php, row 485
+// admin/se_csv_import2.php, row 484
 "Save setting as" => "Salveaz\xE3 setarea ca", // ai 2026-06
 
-// admin/se_csv_import2.php, row 488
+// admin/se_csv_import2.php, row 487
 "Upload periodically" => "\xCEncarc\xE3 periodic", // ai 2026-06
 
-// admin/se_csv_import2.php, row 539
+// admin/se_csv_import2.php, row 538
 "Admin - Import CSV (2/2) - Mapping and Actions" => "Admin - Import CSV (2/2) - Mapare si actiuni", // ai 2026-06
 
 // admin/se_export.php, row 75
@@ -1613,7 +1598,7 @@ return [
 
 // admin/se_export.php, row 122
 // include/exporter.class.php, row 485
-// include/itemfunc.php, row 145
+// include/itemfunc.php, row 146
 "Expired" => "Expirat",
 
 // admin/se_export.php, row 123
@@ -1626,7 +1611,7 @@ return [
 
 // admin/se_export.php, row 125
 // include/exporter.class.php, row 488
-// include/itemfunc.php, row 155
+// include/itemfunc.php, row 156
 // src/Manageraction/Central_MoveItem.php, row 43
 "Trash" => "Cos de gunoi", // ai 2026-06
 
@@ -1652,7 +1637,7 @@ return [
 // admin/sliceexp_text.php, row 364
 // include/exporter.class.php, row 509
 // include/fileman.php, row 33
-// include/logs.php, row 316
+// include/logs.php, row 346
 // include/se_users.php, row 173
 // src/Widget/Widget.php, row 724
 "Type" => "Tip",
@@ -1799,7 +1784,7 @@ return [
 // admin/um_gedit.php, row 281
 // admin/um_uedit.php, row 389
 // central/include/actionapps.class.php, row 781
-// include/formutil.php, row 188, 2892
+// include/formutil.php, row 188, 2894
 // modules/jump/modedit.php, row 182
 "Update" => "Actualizare",
 
@@ -1895,7 +1880,7 @@ return [
 "Time of change" => "Timpul modific\xE3rii", // ai 2026-06
 
 // admin/se_history.php, row 162
-// include/itemfunc.php, row 188
+// include/itemfunc.php, row 189
 // src/AA_Plannedtask.php, row 63
 "Item ID" => "ID articol", // ai 2026-06
 
@@ -2015,7 +2000,7 @@ return [
 // admin/se_inputform.php, row 480
 // admin/sliceimp.php, row 428
 // include/form.class.php, row 409, 411
-// include/formutil.php, row 207, 2903
+// include/formutil.php, row 207, 2905
 "Insert" => "Inserare",
 
 // admin/se_inputform.php, row 483
@@ -2064,13 +2049,14 @@ return [
 "Disabled" => "Dezactivat", // ai 2026-06
 
 // admin/se_inputform.php, row 521
+// src/Util/ChangesMonitor.php, row 514
 "Copy to clipboard" => "Copiaz\xE3 \xEEn clipboard", // ai 2026-06
 
 // admin/se_inputform.php, row 522
 "Reset" => "Reseteaz\xE3", // ai 2026-06
 
 // admin/se_inputform.php, row 527
-// include/logs.php, row 331
+// include/logs.php, row 361
 "Parameters" => "Parametrii",
 
 // admin/se_inter_export.php, row 99
@@ -2113,6 +2099,9 @@ return [
 "Remote slice" => "Sectiune distant\xE3", // ai 2026-06
 
 // admin/se_inter_import.php, row 98
+"Node" => "Nod", // ai 2026-06
+
+// admin/se_inter_import.php, row 98
 // misc/datovka/datovka.php, row 114
 "State" => "Stare", // ai 2026-06
 
@@ -2123,7 +2112,7 @@ return [
 "No remote imports into the slice" => "Niciun import distant \xEEn sectiune", // ai 2026-06
 
 // admin/se_inter_import.php, row 106
-// include/menu.php, row 147
+// include/menu.php, row 152
 "Inter Node Import" => "Import \xEEntre noduri",
 
 // admin/se_inter_import.php, row 107
@@ -2169,7 +2158,7 @@ return [
 "The import was successfully created" => "Importul a fost creat cu succes",
 
 // admin/se_javascript.php, row 71
-// include/menu.php, row 159
+// include/menu.php, row 164
 "Field Triggers" => "Trigger c\xEEmp",
 
 // admin/se_javascript.php, row 78
@@ -2551,6 +2540,7 @@ return [
 
 // admin/se_profile.php, row 268
 // central/copyslice2.php, row 116
+// src/Util/ChangesMonitor.php, row 514
 "Copy" => "Copiaz\xE3", // ai 2026-06
 
 // admin/se_sets.php, row 64
@@ -2841,7 +2831,7 @@ return [
 // admin/slicewiz.php, row 79
 // admin/um_passwd.php, row 109
 // admin/um_uedit.php, row 314, 318
-// include/itemfunc.php, row 547, 1048
+// include/itemfunc.php, row 548, 1049
 // include/um_util.php, row 296
 "Login name" => "Nume utilizator",
 
@@ -2981,13 +2971,13 @@ return [
 "Active with antiSPAM tokens" => "Activ cu tokenuri antiSPAM", // ai 2026-06
 
 // admin/slicedit.php, row 140, 146
-// include/menu.php, row 185
-// include/menu_util.php, row 121
+// include/menu.php, row 190
+// include/menu_util.php, row 120
 // src/Module/Poll/Menu.php, row 64
 "Hold bin" => "Re\xFEinut",
 
 // admin/slicedit.php, row 152
-// include/formutil.php, row 3258
+// include/formutil.php, row 3260
 "All items" => "Toate articolele", // ai 2026-06
 
 // admin/slicedit.php, row 153
@@ -3009,6 +2999,7 @@ return [
 "Admin - Slice settings" => "Admin - Set\xE3ri sec\xFEiune",
 
 // admin/slicedit.php, row 253
+// include/menu_util.php, row 605
 "Language" => "Limb\xE3", // ai 2026-06
 
 // admin/slicedit.php, row 255
@@ -3048,7 +3039,7 @@ return [
 "Password for Reading" => "Parol\xE3 pentru citire", // ai 2026-06
 
 // admin/slicedit.php, row 281
-// include/itemfunc.php, row 180
+// include/itemfunc.php, row 181
 "Created" => "Creat", // ai 2026-06
 
 // admin/slicedit.php, row 281
@@ -3364,6 +3355,7 @@ return [
 
 // admin/um_gedit.php, row 313
 // admin/um_uedit.php, row 231, 242
+// include/logs.php, row 453
 // include/menu_util.php, row 70
 // include/se_users.php, row 129
 "Users" => "Utilizatori",
@@ -3551,7 +3543,7 @@ return [
 
 // central/copyslice2.php, row 88
 // central/synchronize3.php, row 94
-// include/menu.php, row 163
+// include/menu.php, row 168
 // include/menu_util.php, row 74
 "Task Manager" => "Administrator sarcini", // ai 2026-06
 
@@ -3692,13 +3684,13 @@ return [
 // src/Manageraction/Central_Linkcheck.php, row 31
 "Auth" => "Autentificare", // ai 2026-06
 
-// central/responder.php, row 567
+// central/responder.php, row 597
 "No request sent for responder.php" => "Nicio cerere trimis\xE3 pentru responder.php", // ai 2026-06
 
-// central/responder.php, row 573
+// central/responder.php, row 603
 "Bad request sent for responder.php - %1" => "Cerere gresit\xE3 trimis\xE3 pentru responder.php - %1", // ai 2026-06
 
-// central/responder.php, row 578
+// central/responder.php, row 608
 "You (%2) don't have permissions to run %1" => "Dvs. (%2) nu aveti dreptul s\xE3 rulati %1", // ai 2026-06
 
 // central/synchronize.php, row 35
@@ -3801,6 +3793,7 @@ return [
 "Level" => "Nivel",
 
 // include/constants.php, row 460
+// include/logs.php, row 507
 "Feed" => "Alimenteaz\xE3",
 
 // include/constants.php, row 461
@@ -3948,10 +3941,10 @@ return [
 "From: (email header)" => "From: (antet e-mail)", // ai 2026-06
 
 // include/constants.php, row 703
-"Reply-To:" => "",
+"Reply-To:" => "R\xE3spuns-La:", // ai 2026-06
 
 // include/constants.php, row 704
-"Errors-To:" => "",
+"Errors-To:" => "Erori-La:", // ai 2026-06
 
 // include/constants.php, row 705
 "Sender:" => "Expeditor:", // ai 2026-06
@@ -4174,6 +4167,9 @@ return [
 // include/feeding.php, row 454, 490
 "Run (queue)" => "Ruleaz\xE3 (coad\xE3)", // ai 2026-06
 
+// include/feeding.php, row 464, 470, 527
+"Local slice" => "Sectiune local\xE3", // ai 2026-06
+
 // include/feeding.php, row 473
 "URL of the feed" => "URL alimentare rss",
 
@@ -4384,9 +4380,6 @@ return [
 // include/files.class.php, row 255
 "Can't write to file: %1" => "Nu pot scrie \xEEn fisierul: %1", // ai 2026-06
 
-// include/files.class.php, row 306
-"Error: Invalid directory" => "Eroare: Director invalid", // ai 2026-06
-
 // include/files.class.php, row 328
 "can't create backup of the file" => "nu pot crea copia de sigurant\xE3 a fisierului", // ai 2026-06
 
@@ -4421,7 +4414,7 @@ return [
 "Rows" => "R\xE2nduri", // ai 2026-06
 
 // include/form.class.php, row 301
-// include/menu.php, row 141
+// include/menu.php, row 146
 "Forms" => "Formulare", // ai 2026-06
 
 // include/formutil.php, row 191
@@ -4430,11 +4423,11 @@ return [
 // include/formutil.php, row 198
 "Insert as new" => "Insereaz\xE3 ca nou", // ai 2026-06
 
-// include/formutil.php, row 202, 2924
+// include/formutil.php, row 202, 2926
 "Reset form" => "Resetare formular",
 
-// include/formutil.php, row 205, 210, 2916, 2920
-// include/searchbar.class.php, row 721
+// include/formutil.php, row 205, 210, 2918, 2922
+// include/searchbar.class.php, row 730
 // src/Widget/LupWidget.php, row 118
 "Cancel" => "Anulare",
 
@@ -4479,8 +4472,8 @@ return [
 "Enter the value" => "Introduceti valoarea", // ai 2026-06
 
 // include/formutil.php, row 1763
-// include/menu.php, row 134
-// src/Util/ChangesMonitor.php, row 381
+// include/menu.php, row 139
+// src/Util/ChangesMonitor.php, row 455
 "Change" => "Schimb\xE3",
 
 // include/formutil.php, row 1906, 2093
@@ -4507,43 +4500,44 @@ return [
 // include/searchlib.php, row 58, 124, 127, 130, 133, 136
 "not set" => "nesetat", // ai 2026-06
 
-// include/formutil.php, row 2927
+// include/formutil.php, row 2929
 "Submit" => "Trimite",
 
-// include/formutil.php, row 3244
+// include/formutil.php, row 3246
 "Group Name" => "Nume grup", // ai 2026-06
 
-// include/formutil.php, row 3245
+// include/formutil.php, row 3247
+// include/logs.php, row 497
 "Count" => "Num\xE3r", // ai 2026-06
 
-// include/formutil.php, row 3246
+// include/formutil.php, row 3248
 "Created on" => "Creat la", // ai 2026-06
 
-// include/formutil.php, row 3247
+// include/formutil.php, row 3249
 "Created by" => "Creat de", // ai 2026-06
 
-// include/formutil.php, row 3248
+// include/formutil.php, row 3250
 "Last updated" => "Ultima actualizare", // ai 2026-06
 
-// include/formutil.php, row 3249
+// include/formutil.php, row 3251
 "Updated by" => "Actualizat de", // ai 2026-06
 
-// include/formutil.php, row 3250
+// include/formutil.php, row 3252
 "Last used" => "Ultima utilizare", // ai 2026-06
 
-// include/formutil.php, row 3257
+// include/formutil.php, row 3259
 "All active items" => "Toate articolele active", // ai 2026-06
 
-// include/formutil.php, row 3259
+// include/formutil.php, row 3261
 "All pending items" => "Toate articolele programate", // ai 2026-06
 
-// include/formutil.php, row 3260
+// include/formutil.php, row 3262
 "All expired items" => "Toate articolele expirate", // ai 2026-06
 
-// include/formutil.php, row 3261
+// include/formutil.php, row 3263
 "All items in holding bin" => "Toate articolele \xEEn asteptare", // ai 2026-06
 
-// include/formutil.php, row 3262
+// include/formutil.php, row 3264
 "All items in trash bin" => "Toate articolele din cos", // ai 2026-06
 
 // include/init_page.php, row 94
@@ -4709,329 +4703,329 @@ return [
 // include/itemfunc.php, row 71
 "Edit item" => "Editare articol", // ai 2026-06
 
-// include/itemfunc.php, row 129
+// include/itemfunc.php, row 130
 "by %1" => "de %1", // ai 2026-06
 
-// include/itemfunc.php, row 142
+// include/itemfunc.php, row 143
 "Scheduled" => "Programat", // ai 2026-06
 
-// include/itemfunc.php, row 143
+// include/itemfunc.php, row 144
 "not yet on the public site" => "\xEEnc\xE3 nu este pe site-ul public", // ai 2026-06
 
-// include/itemfunc.php, row 146, 153, 156
+// include/itemfunc.php, row 147, 154, 157
 "not on the public site" => "nu este pe site-ul public", // ai 2026-06
 
-// include/itemfunc.php, row 149, 178
+// include/itemfunc.php, row 150, 179
 "Published" => "Publicat", // ai 2026-06
 
-// include/itemfunc.php, row 175
+// include/itemfunc.php, row 176
 "Never" => "Niciodat\xE3", // ai 2026-06
 
-// include/itemfunc.php, row 176
+// include/itemfunc.php, row 177
 "not used on this site" => "nu este folosit pe acest site", // ai 2026-06
 
-// include/itemfunc.php, row 179
+// include/itemfunc.php, row 180
 "Expires" => "Expir\xE3", // ai 2026-06
 
-// include/itemfunc.php, row 181
+// include/itemfunc.php, row 182
 "Last edited" => "Ultima editare", // ai 2026-06
 
-// include/itemfunc.php, row 183
+// include/itemfunc.php, row 184
 "Revisions" => "Revizii", // ai 2026-06
 
-// include/itemfunc.php, row 185
+// include/itemfunc.php, row 186
 "Short ID" => "ID scurt", // ai 2026-06
 
-// include/itemfunc.php, row 191
+// include/itemfunc.php, row 192
 "Details" => "Detalii", // ai 2026-06
 
-// include/itemfunc.php, row 226
+// include/itemfunc.php, row 227
 "Item table record for the item" => "\xCEnregistrarea articolului \xEEn tabelul item", // ai 2026-06
 
-// include/itemfunc.php, row 250
+// include/itemfunc.php, row 251
 "Content table records for the item" => "\xCEnregistr\xE3rile articolului \xEEn tabelul content", // ai 2026-06
 
-// include/itemfunc.php, row 269
+// include/itemfunc.php, row 270
 "Referenced items" => "Articole referentiate", // ai 2026-06
 
-// include/itemfunc.php, row 278
+// include/itemfunc.php, row 279
 "AA_Item structure" => "Structura AA_Item", // ai 2026-06
 
-// include/itemfunc.php, row 309
+// include/itemfunc.php, row 310
 "Technical details" => "Detalii tehnice", // ai 2026-06
 
-// include/itemfunc.php, row 350
+// include/itemfunc.php, row 351
 "When" => "C\xE2nd", // ai 2026-06
 
-// include/itemfunc.php, row 350
+// include/itemfunc.php, row 351
 "Changed by" => "Modificat de", // ai 2026-06
 
-// include/itemfunc.php, row 378
+// include/itemfunc.php, row 379
 "Full history" => "Istoric complet", // ai 2026-06
 
-// include/itemfunc.php, row 403
+// include/itemfunc.php, row 404
 "Total views" => "Total vizualiz\xE3ri", // ai 2026-06
 
-// include/itemfunc.php, row 422
+// include/itemfunc.php, row 423
 "Average / day" => "Medie / zi", // ai 2026-06
 
-// include/itemfunc.php, row 426
+// include/itemfunc.php, row 427
 "Last 7 days" => "Ultimele 7 zile", // ai 2026-06
 
-// include/itemfunc.php, row 427
+// include/itemfunc.php, row 428
 "Last 30 days" => "Ultimele 30 de zile", // ai 2026-06
 
-// include/itemfunc.php, row 429
+// include/itemfunc.php, row 430
 "Last viewed" => "Ultima vizualizare", // ai 2026-06
 
-// include/itemfunc.php, row 433
+// include/itemfunc.php, row 434
 "Avg response" => "R\xE3spuns mediu", // ai 2026-06
 
-// include/itemfunc.php, row 436
+// include/itemfunc.php, row 437
 "Served from cache" => "Servit din cache", // ai 2026-06
 
-// include/itemfunc.php, row 459
+// include/itemfunc.php, row 460
 "Full statistics" => "Statistici complete", // ai 2026-06
 
-// include/itemfunc.php, row 484
+// include/itemfunc.php, row 485
 "No detailed view statistics have been recorded for this item yet." => "Nu au fost \xEEnc\xE3 \xEEnregistrate statistici detaliate de vizualizare pentru acest articol.", // ai 2026-06
 
-// include/itemfunc.php, row 487
+// include/itemfunc.php, row 488
 "Open full statistics" => "Deschide statisticile complete", // ai 2026-06
 
-// include/itemfunc.php, row 514
+// include/itemfunc.php, row 515
 "Now, i.e. current date" => "Acum, adic\xE3 data curent\xE3", // ai 2026-06
 
-// include/itemfunc.php, row 524
+// include/itemfunc.php, row 525
 "Never, i.e. maximum date" => "Niciodat\xE3, adic\xE3 data maxim\xE3", // ai 2026-06
 
-// include/itemfunc.php, row 535
+// include/itemfunc.php, row 536
 "User ID" => "ID utilizator",
 
-// include/itemfunc.php, row 561
+// include/itemfunc.php, row 562
 "Date + 'Parameter' days" => "Dat\xE3 + 'Parametru' zile", // ai 2026-06
 
-// include/itemfunc.php, row 568
+// include/itemfunc.php, row 569
 "Number of days" => "Num\xE3r de zile", // ai 2026-06
 
-// include/itemfunc.php, row 582
+// include/itemfunc.php, row 583
 "Text from 'Parameter'" => "Text din 'Parametru'", // ai 2026-06
 
-// include/itemfunc.php, row 616
+// include/itemfunc.php, row 617
 "Random string" => "Sir aleatoriu", // ai 2026-06
 
-// include/itemfunc.php, row 618
+// include/itemfunc.php, row 619
 "Random alphanumeric [A-Z0-9] string." => "Sir alfanumeric aleatoriu [A-Z0-9].", // ai 2026-06
 
-// include/itemfunc.php, row 625
+// include/itemfunc.php, row 626
 "String length" => "Lungimea sirului", // ai 2026-06
 
-// include/itemfunc.php, row 626
+// include/itemfunc.php, row 627
 "Field to check" => "C\xE2mp de verificat", // ai 2026-06
 
-// include/itemfunc.php, row 626
+// include/itemfunc.php, row 627
 "If you need a unique code, you must send the field ID, the function will then look into this field to ensure uniqueness." => "Dac\xE3 aveti nevoie de un cod unic, trebuie s\xE3 trimiteti ID-ul c\xE2mpului; functia va verifica apoi acest c\xE2mp pentru a asigura unicitatea.", // ai 2026-06
 
-// include/itemfunc.php, row 627
+// include/itemfunc.php, row 628
 "Slice only" => "Doar aceast\xE3 sectiune", // ai 2026-06
 
-// include/itemfunc.php, row 627
+// include/itemfunc.php, row 628
 "Do you want to check for uniqueness this slice only or all slices?" => "Doriti s\xE3 verificati unicitatea doar \xEEn aceast\xE3 sectiune sau \xEEn toate sectiunile?", // ai 2026-06
 
-// include/itemfunc.php, row 669
+// include/itemfunc.php, row 670
 "AA Expression" => "Expresie AA", // ai 2026-06
 
-// include/itemfunc.php, row 671
+// include/itemfunc.php, row 672
 "any text with possible {AA expressions} like: {date:Y}" => "orice text cu posibile {expresii AA}, de ex.: {date:Y}", // ai 2026-06
 
-// include/itemfunc.php, row 695
+// include/itemfunc.php, row 696
 "Multivalue" => "Multivaloare", // ai 2026-06
 
-// include/itemfunc.php, row 703
+// include/itemfunc.php, row 704
 // include/transformation.class.php, row 525
 "Delimiter" => "Delimitator", // ai 2026-06
 
-// include/itemfunc.php, row 794
+// include/itemfunc.php, row 795
 "Slice with id '%1' is not valid." => "Sectiunea cu id '%1' nu este valid\xE3.", // ai 2026-06
 
-// include/itemfunc.php, row 894
+// include/itemfunc.php, row 895
 "Text = don't modify" => "Text = nu modifica", // ai 2026-06
 
-// include/itemfunc.php, row 895
+// include/itemfunc.php, row 896
 "Does not modify the value." => "Nu modific\xE3 valoarea.", // ai 2026-06
 
-// include/itemfunc.php, row 900
+// include/itemfunc.php, row 901
 "Date = don't modify" => "Dat\xE3 = nu modifica", // ai 2026-06
 
-// include/itemfunc.php, row 901, 910
+// include/itemfunc.php, row 902, 911
 "Does not modify the value (just like Text), but it is better to separate it for future usage." => "Nu modific\xE3 valoarea (la fel ca Text), dar este mai bine s\xE3 fie separat pentru utilizare viitoare.", // ai 2026-06
 
-// include/itemfunc.php, row 909
+// include/itemfunc.php, row 910
 "Number = don't modify" => "Num\xE3r = nu modifica", // ai 2026-06
 
-// include/itemfunc.php, row 915
+// include/itemfunc.php, row 916
 "Boolean = store 0 or 1" => "Boolean = stocheaz\xE3 0 sau 1", // ai 2026-06
 
-// include/itemfunc.php, row 926
+// include/itemfunc.php, row 927
 "Float" => "",
 
-// include/itemfunc.php, row 927
+// include/itemfunc.php, row 928
 "Real float - could convert big numbers to scientific notation (1.23E+29)" => "Float real - poate converti numerele mari \xEEn notatie stiintific\xE3 (1.23E+29)", // ai 2026-06
 
-// include/itemfunc.php, row 937
+// include/itemfunc.php, row 938
 "Decimal" => "Zecimal", // ai 2026-06
 
-// include/itemfunc.php, row 938
+// include/itemfunc.php, row 939
 "The same as Float, but does not convert big numbers to  scientific notation (1.23E+29)" => "La fel ca Float, dar nu converteste numerele mari \xEEn notatie stiintific\xE3 (1.23E+29)", // ai 2026-06
 
-// include/itemfunc.php, row 948
+// include/itemfunc.php, row 949
 "Trim" => "Elimin\xE3 spatiile", // ai 2026-06
 
-// include/itemfunc.php, row 949
+// include/itemfunc.php, row 950
 "Remove whitespaces from beginning and end and also normalize UTF (NFC)" => "Elimin\xE3 spatiile de la \xEEnceput si de la sf\xE2rsit si normalizeaz\xE3 UTF (NFC)", // ai 2026-06
 
-// include/itemfunc.php, row 960
+// include/itemfunc.php, row 961
 "Item IDs" => "ID articole",
 
-// include/itemfunc.php, row 1027
+// include/itemfunc.php, row 1028
 "User ID = always store current user ID" => "ID utilizator = stocheaz\xE3 \xEEntotdeauna ID-ul utilizatorului curent", // ai 2026-06
 
-// include/itemfunc.php, row 1028
+// include/itemfunc.php, row 1029
 "Inserts the identity of the current user, no matter what the user sets." => "Insereaz\xE3 identitatea utilizatorului curent, indiferent ce seteaz\xE3 utilizatorul.", // ai 2026-06
 
-// include/itemfunc.php, row 1069
+// include/itemfunc.php, row 1070
 "Now = always store current time" => "Acum = stocheaz\xE3 \xEEntotdeauna ora curent\xE3", // ai 2026-06
 
-// include/itemfunc.php, row 1070
+// include/itemfunc.php, row 1071
 "Inserts the current time, no matter what the user sets." => "Insereaz\xE3 ora curent\xE3, indiferent ce seteaz\xE3 utilizatorul.", // ai 2026-06
 
-// include/itemfunc.php, row 1100
+// include/itemfunc.php, row 1101
 "Computed field for INSERT/UPDATE" => "C\xE2mp calculat pentru INSERT/UPDATE", // ai 2026-06
 
-// include/itemfunc.php, row 1101
+// include/itemfunc.php, row 1102
 "The field is the result of expression written in \"Code for unaliasing\". It is a good solution for all values, which could be precomputed, since its computation on item-show-time would be slow. Yes, you can use {view...}, {include...}, {switch...} here" => "C\xE2mpul este rezultatul expresiei scrise \xEEn \"Cod pentru rezolvarea aliasurilor\". Este o solutie bun\xE3 pentru toate valorile care pot fi precalculate, deoarece calcularea lor la afisarea articolului ar fi lent\xE3. Da, puteti folosi aici {view...}, {include...}, {switch...}", // ai 2026-06
 
-// include/itemfunc.php, row 1108
+// include/itemfunc.php, row 1109
 "Code for unaliasing (INSERT)" => "Cod pentru rezolvarea aliasurilor (INSERT)", // ai 2026-06
 
-// include/itemfunc.php, row 1108, 1137
+// include/itemfunc.php, row 1109, 1138
 "There you can write any string. The string will be unaliased on item store, so you can use any {...} construct as well as field aliases here" => "Aici puteti scrie orice sir. La salvarea articolului, aliasurile din sir vor fi rezolvate, deci puteti folosi orice constructie {...}, precum si aliasuri de c\xE2mp", // ai 2026-06
 
-// include/itemfunc.php, row 1109
+// include/itemfunc.php, row 1110
 "Code for unaliasing (UPDATE)" => "Cod pentru rezolvarea aliasurilor (UPDATE)", // ai 2026-06
 
-// include/itemfunc.php, row 1109
+// include/itemfunc.php, row 1110
 "The same as above, but just for UPDATE operation. If unfilled, the value of the field stays unchanged" => "La fel ca mai sus, dar doar pentru operatia UPDATE. Dac\xE3 nu este completat, valoarea c\xE2mpului r\xE3m\xE2ne neschimbat\xE3", // ai 2026-06
 
-// include/itemfunc.php, row 1110
+// include/itemfunc.php, row 1111
 "Multivalue delimiter" => "Delimitator multivaloare", // ai 2026-06
 
-// include/itemfunc.php, row 1110
+// include/itemfunc.php, row 1111
 "Character or string, which will split the computed string into multiple values (the same field)" => "Caracter sau sir care va \xEEmp\xE3rti sirul calculat \xEEn mai multe valori (acelasi c\xE2mp)", // ai 2026-06
 
-// include/itemfunc.php, row 1111
+// include/itemfunc.php, row 1112
 "Recompute every" => "Recalculeaz\xE3 la fiecare", // ai 2026-06
 
-// include/itemfunc.php, row 1111
+// include/itemfunc.php, row 1112
 "The field will be recomputed every minute, hour, ... (using UPDATE code above). The times are not exact - the minute means something 1-10 minutes. If not filled, the field will be recomputed only on insert/update of the item." => "C\xE2mpul va fi recalculat la fiecare minut, or\xE3, ... (folosind codul UPDATE de mai sus). Timpii nu sunt exacti - minutul \xEEnseamn\xE3 ceva \xEEntre 1-10 minute. Dac\xE3 nu este completat, c\xE2mpul va fi recalculat doar la inserarea/actualizarea articolului.", // ai 2026-06
 
-// include/itemfunc.php, row 1129
+// include/itemfunc.php, row 1130
 "Computed field" => "C\xE2mp calculat", // ai 2026-06
 
-// include/itemfunc.php, row 1130
+// include/itemfunc.php, row 1131
 "The field is the result of expression written in \\\"Code for unaliasing\\\". It is good solution for all values, which could be precomputed, since its computation on item-show-time would be slow. Yes, you can use {view...}, {include...}, {switch...} here" => "C\xE2mpul este rezultatul expresiei scrise \xEEn \\\"Cod pentru expandarea aliasurilor\\\". Este o solutie bun\xE3 pentru toate valorile care pot fi precalculate, deoarece calcularea lor la momentul afis\xE3rii articolului ar fi lent\xE3. Da, puteti folosi {view...}, {include...}, {switch...} aici", // ai 2026-06
 
-// include/itemfunc.php, row 1137
+// include/itemfunc.php, row 1138
 "Code for unaliasing (INSERT+UPDATE)" => "Cod pentru expandarea aliasurilor (INSERT+UPDATE)", // ai 2026-06
 
-// include/itemfunc.php, row 1157
+// include/itemfunc.php, row 1158
 "SEO Name" => "Nume SEO", // ai 2026-06
 
-// include/itemfunc.php, row 1158
+// include/itemfunc.php, row 1159
 "If the field is not filled, compute seoname from _#HEADLINE alias (or another if specified) unique to all slices in sitemodules, where the slice is mentioned in \"Uses slices\" settings. Basically the SEO Name alias is shortcut for computed field with {ifset:{seo.............}:_#1:{seoname:{_#HEADLINE}:all:CHARSET}}" => "Dac\xE3 c\xE2mpul nu este completat, calculeaz\xE3 seoname din aliasul _#HEADLINE (sau altul, dac\xE3 este specificat), unic pentru toate sectiunile din modulele site unde sectiunea este mentionat\xE3 \xEEn set\xE3rile \"Uses slices\". Practic, aliasul Nume SEO este o prescurtare pentru un c\xE2mp calculat cu {ifset:{seo.............}:_#1:{seoname:{_#HEADLINE}:all:CHARSET}}", // ai 2026-06
 
-// include/itemfunc.php, row 1165
+// include/itemfunc.php, row 1166
 "Alias to compute from" => "Alias din care se calculeaz\xE3", // ai 2026-06
 
-// include/itemfunc.php, row 1165
+// include/itemfunc.php, row 1166
 "if not specified, the _#HEADLINE is used" => "dac\xE3 nu este specificat, se foloseste _#HEADLINE", // ai 2026-06
 
-// include/itemfunc.php, row 1180
+// include/itemfunc.php, row 1181
 "Unique number for this field (from 1,..)" => "Num\xE3r unic pentru acest c\xE2mp (de la 1,..)", // ai 2026-06
 
-// include/itemfunc.php, row 1181
+// include/itemfunc.php, row 1182
 "Unique number in sequence 1,2,3,..." => "Num\xE3r unic \xEEn secventa 1,2,3,...", // ai 2026-06
 
-// include/itemfunc.php, row 1203
+// include/itemfunc.php, row 1204
 "File = uploaded file" => "Fisier = fisier \xEEnc\xE3rcat", // ai 2026-06
 
-// include/itemfunc.php, row 1204
+// include/itemfunc.php, row 1205
 "Stores the uploaded file and a link to it, parameters only apply if type is image/something." => "Stocheaz\xE3 fisierul \xEEnc\xE3rcat si un link c\xE3tre acesta; parametrii se aplic\xE3 doar dac\xE3 tipul este image/ceva.", // ai 2026-06
 
-// include/itemfunc.php, row 1211
+// include/itemfunc.php, row 1212
 "Mime types accepted" => "Tipuri MIME acceptate", // ai 2026-06
 
-// include/itemfunc.php, row 1211
+// include/itemfunc.php, row 1212
 "Only files of matching mime types will be accepted" => "Vor fi acceptate doar fisierele cu tipuri MIME corespunz\xE3toare", // ai 2026-06
 
-// include/itemfunc.php, row 1212
+// include/itemfunc.php, row 1213
 "Maximum image width" => "L\xE3time maxim\xE3 imagine", // ai 2026-06
 
-// include/itemfunc.php, row 1213
+// include/itemfunc.php, row 1214
 "Maximum image height" => "\xCEn\xE3ltime maxim\xE3 imagine", // ai 2026-06
 
-// include/itemfunc.php, row 1213
+// include/itemfunc.php, row 1214
 "The image will be resampled to be within these limits, while retaining aspect ratio." => "Imaginea va fi redimensionat\xE3 pentru a se \xEEncadra \xEEn aceste limite, p\xE3str\xE2nd raportul de aspect.", // ai 2026-06
 
-// include/itemfunc.php, row 1214
+// include/itemfunc.php, row 1215
 "Other fields" => "Alte c\xE2mpuri", // ai 2026-06
 
-// include/itemfunc.php, row 1214
+// include/itemfunc.php, row 1215
 "List of other fields to receive this image, separated by ##. Does not work well for multi uploads." => "Lista altor c\xE2mpuri care vor primi aceast\xE3 imagine, separate prin ##. Nu functioneaz\xE3 bine la \xEEnc\xE3rc\xE3ri multiple.", // ai 2026-06
 
-// include/itemfunc.php, row 1215
+// include/itemfunc.php, row 1216
 "Upload policy" => "Politica de \xEEnc\xE3rcare", // ai 2026-06
 
-// include/itemfunc.php, row 1215
+// include/itemfunc.php, row 1216
 "new | overwrite | backup<br>This parameter controls what to do if uploaded file alredy exists:<br>new - AA creates new filename (by adding _x postfix) and store it with this new name (default)<br>overwrite - the old file of the same name is overwritten<br>backup - the old file is copied to new (non-existing) file and current file is stored with current name.<br>In all cases the filename is escaped, so any non-word characters will be replaced by an underscore." => "new | overwrite | backup<br>Acest parametru controleaz\xE3 ce se \xEEnt\xE2mpl\xE3 dac\xE3 fisierul \xEEnc\xE3rcat exist\xE3 deja:<br>new - AA creeaz\xE3 un nume de fisier nou (ad\xE3ug\xE2nd sufixul _x) si \xEEl stocheaz\xE3 cu acest nume nou (implicit)<br>overwrite - fisierul vechi cu acelasi nume este suprascris<br>backup - fisierul vechi este copiat \xEEntr-un fisier nou (inexistent), iar fisierul curent este stocat cu numele curent.<br>\xCEn toate cazurile numele fisierului este escapat, astfel orice caracter care nu este liter\xE3 sau cifr\xE3 va fi \xEEnlocuit cu o liniut\xE3 de subliniere.", // ai 2026-06
 
-// include/itemfunc.php, row 1216
+// include/itemfunc.php, row 1217
 "Exact dimensions" => "Dimensiuni exacte", // ai 2026-06
 
-// include/itemfunc.php, row 1216
+// include/itemfunc.php, row 1217
 "If set to 1 the image will be downsized exactly to the specified dimensions (and cropped if needed). Default is 0 or empty: Maintain aspect ratio while resizing the image." => "Dac\xE3 este setat la 1, imaginea va fi micsorat\xE3 exact la dimensiunile specificate (si decupat\xE3 dac\xE3 este necesar). Implicit este 0 sau gol: raportul de aspect este p\xE3strat la redimensionarea imaginii.", // ai 2026-06
 
-// include/itemfunc.php, row 1217
+// include/itemfunc.php, row 1218
 "Filename template" => "Sablon nume fisier", // ai 2026-06
 
-// include/itemfunc.php, row 1217
+// include/itemfunc.php, row 1218
 "Renames file according to template. You can use AA expressions as well as special alias _#name and _#ext or _#full (file name, extension and fullname). The item aliases in AA expressions do not work on INSERT (item does not exist at time of file write). They will work on UPDATE." => "Redenumeste fisierul conform sablonului. Puteti folosi expresii AA, precum si aliasurile speciale _#name si _#ext sau _#full (numele fisierului, extensia si numele complet). Aliasurile articolului din expresiile AA nu functioneaz\xE3 la INSERT (articolul nu exist\xE3 \xEEn momentul scrierii fisierului). Vor functiona la UPDATE.", // ai 2026-06
 
-// include/itemfunc.php, row 1374
+// include/itemfunc.php, row 1375
 "Password and Change Password" => "Parol\xE3 si schimbare parol\xE3", // ai 2026-06
 
-// include/itemfunc.php, row 1375
+// include/itemfunc.php, row 1376
 "Stores value from a \"Password and Change Password\" field type. First proves the new password matches the retyped new password, and if so, encrypts the new password and stores it." => "Stocheaz\xE3 valoarea dintr-un c\xE2mp de tip \"Parol\xE3 si schimbare parol\xE3\". Mai \xEEnt\xE2i verific\xE3 dac\xE3 parola nou\xE3 corespunde cu parola nou\xE3 retastat\xE3 si, dac\xE3 da, cripteaz\xE3 parola nou\xE3 si o stocheaz\xE3.", // ai 2026-06
 
-// include/itemfunc.php, row 1382
+// include/itemfunc.php, row 1383
 "Copy of password" => "Copie a parolei", // ai 2026-06
 
-// include/itemfunc.php, row 1382
+// include/itemfunc.php, row 1383
 "Field_id, where you want to store the copy of the password. Sometimes useful if you want to allow people to get his/her old password. It is strongly recommended to not store it in plaintext and encrypt it. See second parameter." => "Field_id \xEEn care doriti s\xE3 stocati copia parolei. Uneori util dac\xE3 vreti s\xE3 permiteti utilizatorilor s\xE3-si recupereze parola veche. Se recomand\xE3 insistent s\xE3 nu o stocati \xEEn text simplu, ci criptat\xE3. Vedeti al doilea parametru.", // ai 2026-06
 
-// include/itemfunc.php, row 1383, 1422
+// include/itemfunc.php, row 1384, 1423
 "Encrypt phrase" => "Fraz\xE3 de criptare", // ai 2026-06
 
-// include/itemfunc.php, row 1383
+// include/itemfunc.php, row 1384
 "If you specify the \"Copy of password\" field, it is recommended to encrypt the password in the database. Fill there any string. If you then need the password, you can decrypt it from the field by using the same phrase - {decrypt:{password.......1}:Some Phrase}" => "Dac\xE3 specificati c\xE2mpul \"Copie a parolei\", se recomand\xE3 criptarea parolei \xEEn baza de date. Introduceti aici orice sir. Dac\xE3 apoi aveti nevoie de parol\xE3, o puteti decripta din c\xE2mp folosind aceeasi fraz\xE3 - {decrypt:{password.......1}:Some Phrase}", // ai 2026-06
 
-// include/itemfunc.php, row 1414
+// include/itemfunc.php, row 1415
 "2FA Secret" => "Secret 2FA", // ai 2026-06
 
-// include/itemfunc.php, row 1415
+// include/itemfunc.php, row 1416
 "Generates and stores secret for Two-factor authentication, possibly encrypted by password" => "Genereaz\xE3 si stocheaz\xE3 secretul pentru autentificarea cu doi factori, eventual criptat cu parol\xE3", // ai 2026-06
 
-// include/itemfunc.php, row 1422
+// include/itemfunc.php, row 1423
 "Password to be applied for encrypting this field value. Could contain AA expressions or aliases (for user item in Reader Management slice)" => "Parola folosit\xE3 pentru criptarea valorii acestui c\xE2mp. Poate contine expresii AA sau aliasuri (pentru articolul utilizatorului din sectiunea Administrare cititori)", // ai 2026-06
 
 // include/itemview.php, row 117
@@ -5049,65 +5043,143 @@ return [
 // include/locauth.php, row 87
 "If you are sure you have typed the correct password, please e-mail <a href=mailto:%1>%1</a>" => "Dac\xE3 sunteti sigur c\xE3 ati tastat parola corect\xE3, v\xE3 rug\xE3m s\xE3 trimiteti un e-mail la <a href=mailto:%1>%1</a>", // ai 2026-06
 
-// include/logs.php, row 306
+// include/logs.php, row 336
 "Created time" => "Data cre\xE3rii", // ai 2026-06
 
-// include/logs.php, row 307
+// include/logs.php, row 337
 "Readers to be emailed" => "Cititorii c\xE3rora li se trimite e-mail", // ai 2026-06
 
-// include/logs.php, row 317
+// include/logs.php, row 347
 "Page" => "Pagin\xE3", // ai 2026-06
 
-// include/logs.php, row 327, 351, 364
+// include/logs.php, row 357, 397, 410
 "Time [s]" => "Timp [s]", // ai 2026-06
 
-// include/logs.php, row 328, 353
+// include/logs.php, row 358, 399
 "Memory usage [MB]" => "Memorie utilizat\xE3 [MB]", // ai 2026-06
 
-// include/logs.php, row 329
+// include/logs.php, row 359
 "Memory peak [MB]" => "V\xE2rf memorie [MB]", // ai 2026-06
 
-// include/logs.php, row 330
+// include/logs.php, row 360
 "Return code" => "Cod returnat", // ai 2026-06
 
-// include/logs.php, row 349
-"Cached" => "Din cache", // ai 2026-06
-
-// include/logs.php, row 350
-"Not Modified (304)" => "Nemodificat (304)", // ai 2026-06
-
-// include/logs.php, row 352
-"Time + Cached + 304" => "Timp + cache + 304", // ai 2026-06
-
-// include/logs.php, row 354, 365, 397
-"Url" => "",
+// include/logs.php, row 374
+"Tasks done" => "Sarcini finalizate", // ai 2026-06
 
 // include/logs.php, row 375
+"Tasks started" => "Sarcini \xEEncepute", // ai 2026-06
+
+// include/logs.php, row 376
+"Duration [s]" => "Durat\xE3 [s]", // ai 2026-06
+
+// include/logs.php, row 377
+"Allowed [s]" => "Permis [s]", // ai 2026-06
+
+// include/logs.php, row 395
+"Cached" => "Din cache", // ai 2026-06
+
+// include/logs.php, row 396
+"Not Modified (304)" => "Nemodificat (304)", // ai 2026-06
+
+// include/logs.php, row 398
+"Time + Cached + 304" => "Timp + cache + 304", // ai 2026-06
+
+// include/logs.php, row 400, 411, 443, 475
+"Url" => "URL", // ai 2026-06
+
+// include/logs.php, row 421
 // include/menu_util.php, row 45
 "AA" => "",
 
-// include/logs.php, row 376
+// include/logs.php, row 422
 "SVN AA (util.php)" => "",
 
-// include/logs.php, row 377
+// include/logs.php, row 423
 "PHP" => "",
 
-// include/logs.php, row 378
-"DB" => "",
+// include/logs.php, row 424
+"DB" => "BD", // ai 2026-06
 
-// include/logs.php, row 379
+// include/logs.php, row 425
 "Memory" => "Memorie", // ai 2026-06
 
-// include/logs.php, row 380
+// include/logs.php, row 426
 "CPU" => "",
 
-// include/logs.php, row 394
+// include/logs.php, row 440
 "Identifier" => "Identificator", // ai 2026-06
 
-// include/logs.php, row 395
+// include/logs.php, row 441, 570, 583
 // modules/jump/modedit.php, row 180
 // src/Manager.php, row 584
 "Module ID" => "ID modul", // ai 2026-06
+
+// include/logs.php, row 452
+"Template id" => "ID \xBAablon", // ai 2026-06
+
+// include/logs.php, row 454
+"Emails sent" => "E-mailuri trimise", // ai 2026-06
+
+// include/logs.php, row 463
+"Items selected" => "Articole selectate", // ai 2026-06
+
+// include/logs.php, row 464
+"Items updated" => "Articole actualizate", // ai 2026-06
+
+// include/logs.php, row 465
+"Items planned" => "Articole planificate", // ai 2026-06
+
+// include/logs.php, row 474
+"Message" => "Mesaj", // ai 2026-06
+
+// include/logs.php, row 476
+"Referer" => "Referent", // ai 2026-06
+
+// include/logs.php, row 485
+"New name" => "Nume nou", // ai 2026-06
+
+// include/logs.php, row 486
+"Old name" => "Nume vechi", // ai 2026-06
+
+// include/logs.php, row 495, 518
+"Phase" => "Faz\xE3", // ai 2026-06
+
+// include/logs.php, row 496
+"Collection" => "Colec\xFEie", // ai 2026-06
+
+// include/logs.php, row 498, 509, 519
+"Detail" => "Detaliu", // ai 2026-06
+
+// include/logs.php, row 508
+"Status" => "Stare", // ai 2026-06
+
+// include/logs.php, row 529
+"Processed" => "Procesate", // ai 2026-06
+
+// include/logs.php, row 530
+"Stored" => "Stocate", // ai 2026-06
+
+// include/logs.php, row 531
+"Errors" => "Erori", // ai 2026-06
+
+// include/logs.php, row 542
+"Outcome" => "Rezultat", // ai 2026-06
+
+// include/logs.php, row 555
+"Mode" => "Mod", // ai 2026-06
+
+// include/logs.php, row 556
+"Flags" => "Indicatori", // ai 2026-06
+
+// include/logs.php, row 557
+"Context" => "",
+
+// include/logs.php, row 571
+"Feed counterpart" => "Corespondent alimentare", // ai 2026-06
+
+// include/logs.php, row 584
+"Field ID" => "ID c\xE2mp", // ai 2026-06
 
 // include/mail.php, row 563
 // include/tv_email.php, row 77, 145
@@ -5137,156 +5209,156 @@ return [
 // include/menu.php, row 65
 "View site" => "Vizualizare sit",
 
-// include/menu.php, row 84, 85, 137
+// include/menu.php, row 90, 91, 142
 "Item Manager" => "Admin articole",
 
-// include/menu.php, row 93
+// include/menu.php, row 99
 "Slice Admin" => "Admin sec\xFEiune",
 
-// include/menu.php, row 94
+// include/menu.php, row 100
 "Slice Administration" => "Administrare sec\xFEiune",
 
-// include/menu.php, row 125
+// include/menu.php, row 131
 // src/Module/Poll/Menu.php, row 82
 "Main settings" => "Set\xE3ri principale",
 
-// include/menu.php, row 128
+// include/menu.php, row 134
 "Slice Fields" => "C\xE2mpuri sectiune", // ai 2026-06
 
-// include/menu.php, row 129
+// include/menu.php, row 135
 "Email Notification" => "Notificare e-mail",
 
-// include/menu.php, row 132
+// include/menu.php, row 137
 // include/menu_util.php, row 69
 // include/um_util.php, row 100, 103
 "Permissions" => "Drepturi",
 
-// include/menu.php, row 133
+// include/menu.php, row 138
 "Assign" => "Asigneaz\xE3",
 
-// include/menu.php, row 136
+// include/menu.php, row 141
 "Design" => "Aspect", // ai 2026-06
 
-// include/menu.php, row 139
+// include/menu.php, row 144
 "Fulltext" => "Text \xEEntreg",
 
-// include/menu.php, row 140
+// include/menu.php, row 145
 "Index" => "",
 
-// include/menu.php, row 142
+// include/menu.php, row 147
 "Sets of Items" => "Seturi de articole", // ai 2026-06
 
-// include/menu.php, row 144
+// include/menu.php, row 149
 "Content Pooling" => "Transfer con\xFEinut",
 
-// include/menu.php, row 145
+// include/menu.php, row 150
 "Nodes" => "Noduri",
 
-// include/menu.php, row 146
+// include/menu.php, row 151
 "Inner Node Feeding" => "Alimentare \xEEn nod",
 
-// include/menu.php, row 148
+// include/menu.php, row 153
 "Inter Node Export" => "Export \xEEntre noduri",
 
-// include/menu.php, row 149
+// include/menu.php, row 154
 "RSS Feeds" => "Alimentare RSS",
 
-// include/menu.php, row 150
+// include/menu.php, row 155
 "Filters" => "Filtre",
 
-// include/menu.php, row 151
+// include/menu.php, row 156
 "Mapping" => "Mapare",
 
-// include/menu.php, row 152, 214
-"Import CSV" => "",
+// include/menu.php, row 157, 219
+"Import CSV" => "Import\xE3 CSV", // ai 2026-06
 
-// include/menu.php, row 153
+// include/menu.php, row 158
 // src/Manageraction/Item_Export.php, row 20
 "Export to file" => "Export \xEEn fisier", // ai 2026-06
 
-// include/menu.php, row 155, 211
-// include/menu_util.php, row 73, 124
+// include/menu.php, row 160, 216
+// include/menu_util.php, row 73, 123
 // src/Module/Poll/Menu.php, row 67
 "Misc" => "Altele",
 
-// include/menu.php, row 158
+// include/menu.php, row 163
 "Change field IDs" => "Schimbare ID c\xEEmpuri",
 
-// include/menu.php, row 161
+// include/menu.php, row 166
 "Anonymous Form Wizard" => "Asistent formular anonim", // ai 2026-06
 
-// include/menu.php, row 162
+// include/menu.php, row 167
 // include/tv_email.php, row 134
 "Email templates" => "Sabloane email", // ai 2026-06
 
-// include/menu.php, row 164
+// include/menu.php, row 169
 // include/menu_util.php, row 75
 "Planned Tasks" => "Sarcini planificate", // ai 2026-06
 
-// include/menu.php, row 172
+// include/menu.php, row 177
 "Mailman: create list" => "Mailman: creare list\xE3", // ai 2026-06
 
-// include/menu.php, row 180
-// include/menu_util.php, row 119
+// include/menu.php, row 185
+// include/menu_util.php, row 118
 // src/Module/Poll/Menu.php, row 60
 "Folders" => "Dosare",
 
-// include/menu.php, row 183
+// include/menu.php, row 188
 // src/Module/Poll/Menu.php, row 62
 "... pending" => "De rezolvat",
 
-// include/menu.php, row 184
+// include/menu.php, row 189
 // src/Module/Poll/Menu.php, row 63
 "... expired" => "Expirat",
 
-// include/menu.php, row 186
-// include/menu_util.php, row 122
+// include/menu.php, row 191
+// include/menu_util.php, row 121
 // src/Module/Poll/Menu.php, row 65
 "Trash bin" => "Co\xBA",
 
-// include/menu.php, row 202
+// include/menu.php, row 207
 "Bookmarks" => "Marcaje", // ai 2026-06
 
-// include/menu.php, row 212
+// include/menu.php, row 217
 "Setting" => "Set\xE3ri", // ai 2026-06
 
-// include/menu.php, row 213
-// include/menu_util.php, row 127
+// include/menu.php, row 218
+// include/menu_util.php, row 126
 // src/Module/Poll/Menu.php, row 68
 "Empty trash" => "Gole\xBAte co\xBA",
 
-// include/menu.php, row 213
-// include/menu_util.php, row 127
+// include/menu.php, row 218
+// include/menu_util.php, row 126
 // src/Module/Poll/Menu.php, row 68
 "Are you sure you want to empty trash?" => "Sigur doriti s\xE3 goliti cosul de gunoi?", // ai 2026-06
 
-// include/menu.php, row 215
+// include/menu.php, row 220
 "Set Debug OFF" => "Dezactiveaz\xE3 Debug", // ai 2026-06
 
-// include/menu.php, row 215
+// include/menu.php, row 220
 "Set Debug ON" => "Activeaz\xE3 Debug", // ai 2026-06
 
-// include/menu.php, row 225
-// include/menu_util.php, row 420, 612
+// include/menu.php, row 230
+// include/menu_util.php, row 419, 726
 // include/slice.class.php, row 1194
 "Alerts" => "Alerte", // ai 2026-06
 
-// include/menu.php, row 225
+// include/menu.php, row 230
 "List of Alerts modules using this slice as Reader Management." => "Lista modulelor Alerte care folosesc aceast\xE3 sectiune pentru gestionarea cititorilor.", // ai 2026-06
 
-// include/menu.php, row 227
+// include/menu.php, row 232
 "Bulk Emails" => "Emailuri \xEEn mas\xE3", // ai 2026-06
 
-// include/menu.php, row 227
+// include/menu.php, row 232
 "Send bulk email to selected users or to users in Stored searches" => "Trimite email \xEEn mas\xE3 utilizatorilor selectati sau utilizatorilor din c\xE3ut\xE3rile salvate", // ai 2026-06
 
-// include/menu.php, row 231
+// include/menu.php, row 236
 "Send emails" => "Trimite emailuri", // ai 2026-06
 
-// include/menu.php, row 240
+// include/menu.php, row 245
 "Alerts Sent" => "Alerte trimise", // ai 2026-06
 
-// include/menu.php, row 240
+// include/menu.php, row 245
 "List of Alerts modules sending items from this slice." => "Lista modulelor de alerte care trimit articole din aceast\xE3 sectiune.", // ai 2026-06
 
 // include/menu_util.php, row 46
@@ -5322,76 +5394,97 @@ return [
 // include/menu_util.php, row 95
 "Wizard" => "Vr\xE3jitor",
 
-// include/menu_util.php, row 97
+// include/menu_util.php, row 96
 "Welcomes" => "\xCEnt\xEEmpin\xE3ri",
 
-// include/menu_util.php, row 98
+// include/menu_util.php, row 97
 "Templates" => "\xAAabloane",
 
-// include/menu_util.php, row 100
+// include/menu_util.php, row 99
 "Documentation" => "Documentatie", // ai 2026-06
 
-// include/menu_util.php, row 101
+// include/menu_util.php, row 100
 "Style Guide" => "Ghid de stil", // ai 2026-06
 
-// include/menu_util.php, row 107
+// include/menu_util.php, row 106
 "Central" => "",
 
-// include/menu_util.php, row 108
+// include/menu_util.php, row 107
 "AA Central" => "",
 
-// include/menu_util.php, row 125
+// include/menu_util.php, row 124
 "Synchronize..." => "Sincronizare...", // ai 2026-06
 
-// include/menu_util.php, row 126
+// include/menu_util.php, row 125
 "Copy Slice..." => "Copiere sectiune...", // ai 2026-06
 
-// include/menu_util.php, row 128
+// include/menu_util.php, row 127
 "Import conf from CSV..." => "Import conf din CSV...", // ai 2026-06
 
-// include/menu_util.php, row 398
+// include/menu_util.php, row 397
 "Part of %s" => "Parte din %s", // ai 2026-06
 
-// include/menu_util.php, row 415
+// include/menu_util.php, row 414
 "Other slices" => "Alte sectiuni", // ai 2026-06
 
-// include/menu_util.php, row 419
+// include/menu_util.php, row 418
 "Reader Management Slice" => "Sectiune administrare cititori", // ai 2026-06
 
-// include/menu_util.php, row 421
+// include/menu_util.php, row 420
 "Jump inside control panel" => "Salt \xEEn panoul de control", // ai 2026-06
 
-// include/menu_util.php, row 422
+// include/menu_util.php, row 421
 // include/slice.class.php, row 1226
 "Links" => "Leg\xE3turi", // ai 2026-06
 
-// include/menu_util.php, row 423
+// include/menu_util.php, row 422
 "MySQL Auth (old version)" => "Autentificare MySQL (versiune veche)", // ai 2026-06
 
-// include/menu_util.php, row 424
+// include/menu_util.php, row 423
 // src/Module/Poll/Menu.php, row 83
 "Polls" => "Sondaje", // ai 2026-06
 
-// include/menu_util.php, row 445
+// include/menu_util.php, row 444
 "New slice" => "Sec\xFEiune nou\xE3",
 
-// include/menu_util.php, row 449
+// include/menu_util.php, row 448
 "Switch module" => "Schimb\xE3 modulul", // ai 2026-06
 
-// include/menu_util.php, row 616
+// include/menu_util.php, row 578, 589
+"Apply" => "Aplic\xE3", // ai 2026-06
+
+// include/menu_util.php, row 582
+"-- Default for module --" => "-- Implicit pentru modul --", // ai 2026-06
+
+// include/menu_util.php, row 590
+"Switches the admin interface language; the page reloads." => "Schimb\xE3 limba interfe\xFEei de administrare; pagina se re\xEEncarc\xE3.", // ai 2026-06
+
+// include/menu_util.php, row 598
+"What's working, what isn't \xE2\x80\x94 tell the AA team." => "Ce func\xFEioneaz\xE3, ce nu -- spune\xFEi echipei AA.", // ai 2026-06
+
+// include/menu_util.php, row 601
+"Settings" => "Set\xE3ri", // ai 2026-06
+
+// include/menu_util.php, row 604
+"Theme" => "Tem\xE3", // ai 2026-06
+
+// include/menu_util.php, row 606
+"Feedback" => "",
+
+// include/menu_util.php, row 730
 // include/slice.class.php, row 554
 "Reader management" => "Administrare cititori", // ai 2026-06
 
-// include/menu_util.php, row 628
+// include/menu_util.php, row 742
 "logout" => "deconectare", // ai 2026-06
 
-// include/menu_util.php, row 636
+// include/menu_util.php, row 750
 "Search.." => "C\xE3utare..", // ai 2026-06
 
-// include/menu_util.php, row 702
+// include/menu_util.php, row 829
 "Copyright (C) 2001 the <a href=\"https://www.apc.org\">Association for Progressive Communications (APC)</a>" => "Copyright (C) 2001 <a href=\"https://www.apc.org\">Association for Progressive Communications (APC)</a>", // ai 2026-06
 
-// include/menu_util.php, row 712
+// include/menu_util.php, row 839
 "Collapse / expand menu" => "Restr\xE2nge / extinde meniul", // ai 2026-06
 
 // include/metabase.class.php, row 1572
@@ -5513,43 +5606,43 @@ return [
 // include/searchbar.class.php, row 595
 "Order" => "Ordine",
 
-// include/searchbar.class.php, row 662
+// include/searchbar.class.php, row 664
 "Advanced search" => "C\xE3utare avansat\xE3", // ai 2026-06
 
-// include/searchbar.class.php, row 720
+// include/searchbar.class.php, row 729
 "Refine" => "Rafineaz\xE3", // ai 2026-06
 
-// include/searchbar.class.php, row 723
+// include/searchbar.class.php, row 732
 "Share with all slice users" => "Partajeaz\xE3 cu toti utilizatorii sectiunii", // ai 2026-06
 
-// include/searchbar.class.php, row 724
+// include/searchbar.class.php, row 733
 "Save filter" => "Salveaz\xE3 filtrul", // ai 2026-06
 
-// include/searchbar.class.php, row 725
+// include/searchbar.class.php, row 734
 "Rename filter" => "Redenumeste filtrul", // ai 2026-06
 
-// include/searchbar.class.php, row 726
+// include/searchbar.class.php, row 735
 "Are you sure you want to delete selected filter?" => "Sigur doriti s\xE3 stergeti filtrul selectat?", // ai 2026-06
 
-// include/searchbar.class.php, row 1008
+// include/searchbar.class.php, row 1017
 "Select one..." => "Selectati unul...", // ai 2026-06
 
-// include/searchbar.class.php, row 1023
+// include/searchbar.class.php, row 1032
 "My filters" => "Filtrele mele", // ai 2026-06
 
-// include/searchbar.class.php, row 1026
+// include/searchbar.class.php, row 1035
 "Global filters" => "Filtre globale", // ai 2026-06
 
-// include/searchbar.class.php, row 1064
+// include/searchbar.class.php, row 1073
 "Shared filter (click to apply)" => "Filtru partajat (clic pentru aplicare)", // ai 2026-06
 
-// include/searchbar.class.php, row 1064
+// include/searchbar.class.php, row 1073
 "Personal filter (click to apply)" => "Filtru personal (clic pentru aplicare)", // ai 2026-06
 
-// include/searchbar.class.php, row 1074
+// include/searchbar.class.php, row 1083
 "Rename" => "Redenumeste", // ai 2026-06
 
-// include/searchbar.class.php, row 1085
+// include/searchbar.class.php, row 1094
 "Manage filters" => "Administrare filtre", // ai 2026-06
 
 // include/searchlib.php, row 54
@@ -5616,7 +5709,7 @@ return [
 "Error: Missing Reading Password" => "Eroare: Lipseste parola de citire", // ai 2026-06
 
 // include/slice.class.php, row 980
-"Site" => "",
+"Site" => "Sit", // ai 2026-06
 
 // include/slice.class.php, row 1102
 "Spot ID" => "ID spot", // ai 2026-06
@@ -5862,6 +5955,9 @@ return [
 // include/stringexpand.php, row 7716
 "version" => "versiune", // ai 2026-06
 
+// include/stringexpand.php, row 7900
+"show" => "arat\xE3", // ai 2026-06
+
 // include/stringexpand.php, row 7901
 "hide" => "ascunde", // ai 2026-06
 
@@ -5995,21 +6091,6 @@ return [
 // include/tabledit_util.php, row 670
 "Wrong value: a number between %1 and %2 is expected." => "Valoare eronat\xE3: se a\xBAteapt\xE3 un num\xE3r \xEEntre %1 \xBAi %2.",
 
-// include/tableviews.php, row 59, 60
-"Polls Design" => "Design sondaje", // ai 2026-06
-
-// include/tableviews.php, row 66, 102
-"Comment" => "Comentariu", // ai 2026-06
-
-// include/tableviews.php, row 88
-"Module Id" => "Id modul", // ai 2026-06
-
-// include/tableviews.php, row 104
-"design description (for administrators only)" => "descrierea designului (doar pentru administratori)", // ai 2026-06
-
-// include/tableviews.php, row 111
-"Answer HTML" => "HTML r\xE3spuns", // ai 2026-06
-
 // include/transformation.class.php, row 149
 "Fill by value" => "Completare cu valoare", // ai 2026-06
 
@@ -6121,30 +6202,6 @@ return [
 // include/tv_email.php, row 168
 "Sender" => "Expeditor", // ai 2026-06
 
-// include/tv_misc.php, row 131
-"COUNT_HIT events will be used for counting item hits. After a while it will be automatically deleted." => "Evenimentele COUNT_HIT vor fi folosite pentru num\xE3rarea acces\xE3rilor articolelor. Dup\xE3 un timp vor fi sterse automat.", // ai 2026-06
-
-// include/tv_misc.php, row 139, 140
-"Log view" => "Vedere Log", // ai 2026-06
-
-// include/tv_misc.php, row 162
-"See searchlog=1 parameter for slice.php in FAQ: " => "Vezi parametrul searchlog=1 pentru slice.php \xEEn FAQ: ", // ai 2026-06
-
-// include/tv_misc.php, row 170, 171
-"SearchLog view" => "Vedere SearchLog", // ai 2026-06
-
-// include/tv_misc.php, row 175
-"items found" => "articole g\xE3site", // ai 2026-06
-
-// include/tv_misc.php, row 176
-"search time" => "timp de c\xE3utare", // ai 2026-06
-
-// include/tv_misc.php, row 177
-"addition" => "ad\xE3ugare", // ai 2026-06
-
-// include/tv_misc.php, row 198, 199
-"Configure Fields" => "Configurare c\xE2mpuri", // ai 2026-06
-
 // include/um_gedit.php, row 43
 "It is impossible to add group to permission system" => "Este imposibil de ad\xE3ugat grupul la sistemul de permisiuni",
 
@@ -6163,10 +6220,10 @@ return [
 // include/um_util.php, row 358
 "Can't change user" => "Nu pot schimba utilizatorul",
 
-// include/util.php, row 1300
+// include/util.php, row 1304
 "Toolkit news message" => "Mesaj stiri toolkit",
 
-// include/util.php, row 1314
+// include/util.php, row 1318
 "Relogin" => "Reautentificare", // ai 2026-06
 
 // include/validate.php, row 52
@@ -6512,10 +6569,10 @@ return [
 // src/AA_Plannedtask.php, row 224
 "next run" => "urm\xE3toarea rulare", // ai 2026-06
 
-// src/IO/Grabber/AARSS.php, row 116
+// src/IO/Grabber/AARSS.php, row 117
 "AA RSS" => "",
 
-// src/IO/Grabber/AARSS.php, row 124
+// src/IO/Grabber/AARSS.php, row 125
 "Grabs data from generic RSS or AA RSS (used for item exchange between different AA installations)" => "Preia date din RSS generic sau AA RSS (folosit pentru schimbul de articole \xEEntre instal\xE3ri AA diferite)", // ai 2026-06
 
 // src/IO/Grabber/CSV.php, row 66
@@ -7158,7 +7215,7 @@ return [
 // src/Optimize/BackupTables.php, row 27
 // src/Optimize/RestoreBckTables.php, row 27
 // src/Optimize/UpdateDbStructure.php, row 31
-"[experimental] " => "",
+"[experimental] " => "[experimental]", // ai 2026-06
 
 // src/Optimize/BackupTables.php, row 27
 "Deletes all the current backup tables (bck_slice, bck_item, ...) and copies there live tables (slice, item, ...)." => "Sterge toate tabelele de rezerv\xE3 actuale (bck_slice, bck_item, ...) si copiaz\xE3 acolo tabelele live (slice, item, ...).", // ai 2026-06
@@ -7994,32 +8051,47 @@ return [
 // src/Util/ChangesMonitor.php, row 93
 "history (%1)" => "istoric (%1)", // ai 2026-06
 
+// src/Util/ChangesMonitor.php, row 336
+"No recorded changes for this item." => "Nu exist\xE3 modific\xE3ri \xEEnregistrate pentru acest articol.", // ai 2026-06
+
 // src/Util/ChangesMonitor.php, row 360
 "1 field changed" => "1 c\xE2mp modificat", // ai 2026-06
 
 // src/Util/ChangesMonitor.php, row 360
 "%1 fields changed" => "%1 c\xE2mpuri modificate", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 370, 382
+// src/Util/ChangesMonitor.php, row 369, 456
 "Restore" => "Restaureaz\xE3", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 377
+// src/Util/ChangesMonitor.php, row 383
+"(this change)" => "(aceast\xE3 modificare)", // ai 2026-06
+
+// src/Util/ChangesMonitor.php, row 387, 573, 577
+"Current (live)" => "Curent (live)", // ai 2026-06
+
+// src/Util/ChangesMonitor.php, row 388
+"Compare to" => "Compar\xE3 cu", // ai 2026-06
+
+// src/Util/ChangesMonitor.php, row 397
 "change %1 | uid %2 | %3 ns | resource %4" => "modificare %1 | uid %2 | %3 ns | resurs\xE3 %4", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 382
-"vs current" => "vs. actual", // ai 2026-06
+// src/Util/ChangesMonitor.php, row 449
+"View" => "Vezi", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 391
+// src/Util/ChangesMonitor.php, row 450
+"Diff" => "Diferen\xFEe", // ai 2026-06
+
+// src/Util/ChangesMonitor.php, row 481
 "seq %1" => "secv. %1", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 405
-"no current value" => "nicio valoare actual\xE3", // ai 2026-06
+// src/Util/ChangesMonitor.php, row 488
+"No change between these versions." => "Nicio diferen\xFE\xE3 \xEEntre aceste versiuni.", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 407
-"same as current" => "identic cu valoarea actual\xE3", // ai 2026-06
+// src/Util/ChangesMonitor.php, row 511
+"(empty)" => "(gol)", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 426
-"No recorded changes for this item." => "Nu exist\xE3 modific\xE3ri \xEEnregistrate pentru acest articol.", // ai 2026-06
+// src/Util/ChangesMonitor.php, row 571
+"Original" => "",
 
 // src/Util/Imgfunc.php, row 80
 "Cannot copy %1 to %2" => "Nu se poate copia %1 \xEEn %2", // ai 2026-06
@@ -8032,6 +8104,9 @@ return [
 
 // src/Util/Searchfields.php, row 183
 "-- any numeric field --" => "-- orice c\xE2mp numeric --", // ai 2026-06
+
+// src/Util/UiPrefs.php, row 55
+"Gold" => "Auriu", // ai 2026-06
 
 // src/Widget/ChbWidget.php, row 80
 "Check Box" => "C\xE3su\xFE\xE3",
@@ -8597,7 +8672,7 @@ return [
 "Uses special selectbox widget, which is searchable as substring.<br>Do not rely on current implementation in your possible scripts." => "Foloseste un widget selectbox special, cu c\xE3utare dup\xE3 subsir.<br>Nu v\xE3 bazati pe implementarea actual\xE3 \xEEn eventualele scripturi proprii.", // ai 2026-06
 
 // src/Widget/Widget.php, row 944
-"Placeholder" => "",
+"Placeholder" => "Substituent", // ai 2026-06
 
 // src/Widget/Widget.php, row 944
 "Placeholder for input" => "Placeholder (text indicativ) pentru c\xE2mpul de introducere", // ai 2026-06

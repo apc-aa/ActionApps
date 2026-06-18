@@ -100,69 +100,69 @@ return [
 // include/searchbar.class.php, row 613
 "Filter" => "Filtro",
 
-// include/searchbar.class.php, row 662
+// include/searchbar.class.php, row 664
 "Advanced search" => "B\xFAsqueda avanzada",
 
-// include/searchbar.class.php, row 719
+// include/searchbar.class.php, row 728
 "Save" => "Guardar",
 
-// include/searchbar.class.php, row 720
+// include/searchbar.class.php, row 729
 "Refine" => "Refinar",
 
-// include/searchbar.class.php, row 721
+// include/searchbar.class.php, row 730
 "Cancel" => "Cancelar",
 
-// include/searchbar.class.php, row 722
+// include/searchbar.class.php, row 731
 // modules/links/constants.php, row 59, 171
 "Name" => "Nombre",
 
-// include/searchbar.class.php, row 723
+// include/searchbar.class.php, row 732
 "Share with all slice users" => "Compartir con todos los usuarios del canal",
 
-// include/searchbar.class.php, row 724
+// include/searchbar.class.php, row 733
 "Save filter" => "Guardar filtro",
 
-// include/searchbar.class.php, row 725
+// include/searchbar.class.php, row 734
 "Rename filter" => "Renombrar filtro",
 
-// include/searchbar.class.php, row 726
+// include/searchbar.class.php, row 735
 "Are you sure you want to delete selected filter?" => "\xBFEst\xE1 seguro de que desea eliminar el filtro seleccionado?",
 
-// include/searchbar.class.php, row 1008
+// include/searchbar.class.php, row 1017
 "Select one..." => "Seleccione uno...",
 
-// include/searchbar.class.php, row 1023
+// include/searchbar.class.php, row 1032
 "My filters" => "Mis filtros",
 
-// include/searchbar.class.php, row 1026
+// include/searchbar.class.php, row 1035
 "Global filters" => "Filtros globales",
 
-// include/searchbar.class.php, row 1064
+// include/searchbar.class.php, row 1073
 "Shared filter (click to apply)" => "Filtro compartido (haga clic para aplicar)",
 
-// include/searchbar.class.php, row 1064
+// include/searchbar.class.php, row 1073
 "Personal filter (click to apply)" => "Filtro personal (haga clic para aplicar)",
 
-// include/searchbar.class.php, row 1074
+// include/searchbar.class.php, row 1083
 "Rename" => "Renombrar",
 
-// include/searchbar.class.php, row 1076
+// include/searchbar.class.php, row 1085
 "Delete" => "Borrar",
 
-// include/searchbar.class.php, row 1085
+// include/searchbar.class.php, row 1094
 "Manage filters" => "Administrar filtros",
 
 // include/util.php, row 950
 "Error: Missing Reading Password" => "Error: Clave de lectura no se encuentra",
 
-// include/util.php, row 1300
+// include/util.php, row 1304
 "Toolkit news message" => "Mensaje de noticias de la caja de herramientas",
 
-// include/util.php, row 1314
+// include/util.php, row 1318
 // modules/links/check_url.php, row 52
 "Back" => "Regresar",
 
-// include/util.php, row 1314
+// include/util.php, row 1318
 "Relogin" => "Volver a iniciar sesi\xF3n",
 
 // modules/links/actions.php, row 47, 91, 112
@@ -330,7 +330,7 @@ return [
 "Insert date" => "Insertar fecha",
 
 // modules/links/constants.php, row 67
-"Editor" => "",
+"Editor" => "Modificado por", // ai 2026-06
 
 // modules/links/constants.php, row 68
 "Last edit date" => "Fecha de \xFAltima edici\xF3n",
@@ -349,7 +349,7 @@ return [
 // modules/links/constants.php, row 72
 // modules/links/link.class.php, row 665
 // modules/links/linkedit.php, row 435
-"Url" => "",
+"Url" => "URL", // ai 2026-06
 
 // modules/links/constants.php, row 73
 "Last vote time" => "Ultima fecha de votaci\xF3n",
@@ -423,7 +423,7 @@ return [
 "Category editor's note" => "Nota del editor de la categoria",
 
 // modules/links/constants.php, row 99
-"Base" => "",
+"Base" => "Principal", // ai 2026-06
 
 // modules/links/constants.php, row 100, 177
 "State" => "Estado",
@@ -682,7 +682,7 @@ return [
 "ActionApps" => "Aplicaciones de Acci\xF3n de APC",
 
 // modules/links/linkedit.php, row 407
-"<!--NewPublicLinkText-->" => "",
+"<!--NewPublicLinkText-->" => "En este formulario para a\xF1adir un nuevo enlace al cat\xE1logo puede, pero no es obligatorio, rellenar todos los campos. Sin embargo, para clasificar f\xE1cilmente el enlace en el cat\xE1logo, le rogamos que rellene sobre todo la <b>URL</b> del enlace, el <b>NOMBRE</b> y la clasificaci\xF3n del enlace en alguna <b>CATEGOR\xCDA</b>. Si tiene experiencia con las p\xE1ginas, tambi\xE9n puede rellenar la descripci\xF3n del enlace.<br>\\n<b>Por favor, no a\xF1ada enlaces \"comerciales\" al cat\xE1logo.</b> Estos enlaces no se publicar\xE1n en el cat\xE1logo.<br>\\n Gracias.", // ai 2026-06
 
 // modules/links/linkedit.php, row 425
 "Link" => "Enlace",

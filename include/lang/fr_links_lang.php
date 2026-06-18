@@ -52,69 +52,69 @@ return [
 // include/searchbar.class.php, row 613
 "Filter" => "Filtre", // ai 2026-06
 
-// include/searchbar.class.php, row 662
+// include/searchbar.class.php, row 664
 "Advanced search" => "Recherche avanc\xE9e", // ai 2026-06
 
-// include/searchbar.class.php, row 719
+// include/searchbar.class.php, row 728
 "Save" => "Enregistrer", // ai 2026-06
 
-// include/searchbar.class.php, row 720
+// include/searchbar.class.php, row 729
 "Refine" => "Affiner", // ai 2026-06
 
-// include/searchbar.class.php, row 721
+// include/searchbar.class.php, row 730
 "Cancel" => "Abandonner",
 
-// include/searchbar.class.php, row 722
+// include/searchbar.class.php, row 731
 // modules/links/constants.php, row 59, 171
 "Name" => "Nom",
 
-// include/searchbar.class.php, row 723
+// include/searchbar.class.php, row 732
 "Share with all slice users" => "Partager avec tous les utilisateurs de la section", // ai 2026-06
 
-// include/searchbar.class.php, row 724
+// include/searchbar.class.php, row 733
 "Save filter" => "Enregistrer le filtre", // ai 2026-06
 
-// include/searchbar.class.php, row 725
+// include/searchbar.class.php, row 734
 "Rename filter" => "Renommer le filtre", // ai 2026-06
 
-// include/searchbar.class.php, row 726
+// include/searchbar.class.php, row 735
 "Are you sure you want to delete selected filter?" => "Voulez-vous vraiment supprimer le filtre s\xE9lectionn\xE9 ?", // ai 2026-06
 
-// include/searchbar.class.php, row 1008
+// include/searchbar.class.php, row 1017
 "Select one..." => "S\xEF\xBF\xBDlectionner un",
 
-// include/searchbar.class.php, row 1023
+// include/searchbar.class.php, row 1032
 "My filters" => "Mes filtres", // ai 2026-06
 
-// include/searchbar.class.php, row 1026
+// include/searchbar.class.php, row 1035
 "Global filters" => "Filtres globaux", // ai 2026-06
 
-// include/searchbar.class.php, row 1064
+// include/searchbar.class.php, row 1073
 "Shared filter (click to apply)" => "Filtre partag\xE9 (cliquez pour appliquer)", // ai 2026-06
 
-// include/searchbar.class.php, row 1064
+// include/searchbar.class.php, row 1073
 "Personal filter (click to apply)" => "Filtre personnel (cliquez pour appliquer)", // ai 2026-06
 
-// include/searchbar.class.php, row 1074
+// include/searchbar.class.php, row 1083
 "Rename" => "Renommer",
 
-// include/searchbar.class.php, row 1076
+// include/searchbar.class.php, row 1085
 "Delete" => "Supprimer",
 
-// include/searchbar.class.php, row 1085
+// include/searchbar.class.php, row 1094
 "Manage filters" => "G\xE9rer les filtres", // ai 2026-06
 
 // include/util.php, row 950
 "Error: Missing Reading Password" => "Erreur: mot de passe de lecture manquant",
 
-// include/util.php, row 1300
+// include/util.php, row 1304
 "Toolkit news message" => "message de Kit d'outils de nouvelles",
 
-// include/util.php, row 1314
+// include/util.php, row 1318
 // modules/links/check_url.php, row 52
 "Back" => "Retour",
 
-// include/util.php, row 1314
+// include/util.php, row 1318
 "Relogin" => "Se reconnecter", // ai 2026-06
 
 // modules/links/actions.php, row 47, 91, 112
@@ -634,7 +634,7 @@ return [
 "ActionApps" => "",
 
 // modules/links/linkedit.php, row 407
-"<!--NewPublicLinkText-->" => "",
+"<!--NewPublicLinkText-->" => "Dans ce formulaire d'ajout d'un nouveau lien au catalogue, vous pouvez,\\nmais n'\xEAtes pas oblig\xE9, de remplir tous les champs. Pour faciliter le classement\\ndu lien dans le catalogue, nous vous prions toutefois de renseigner avant tout l'<b>URL</b> du lien, son <b>TITRE</b> et\\nde classer le lien dans une <b>CAT\xC9GORIE</b>. Si vous avez de l'exp\xE9rience avec ces pages,\\nvous pouvez aussi remplir la description du lien.<br>\\n<b>Merci de ne pas ajouter de liens \xAB commerciaux \xBB au catalogue.</b> Ces liens ne seront pas affich\xE9s dans le catalogue.<br>\\n Merci.", // ai 2026-06
 
 // modules/links/linkedit.php, row 425
 "Link" => "Lien", // ai 2026-06

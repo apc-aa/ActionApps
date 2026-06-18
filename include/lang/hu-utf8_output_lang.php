@@ -215,13 +215,13 @@ return [
 // include/util.php, row 950
 "Error: Missing Reading Password" => "Hiba: hiányzik az olvasási jelszó", // ai 2026-06
 
-// include/util.php, row 1300
+// include/util.php, row 1304
 "Toolkit news message" => "Toolkit hírüzenet", // ai 2026-06
 
-// include/util.php, row 1314
+// include/util.php, row 1318
 "Back" => "Vissza", // ai 2026-06
 
-// include/util.php, row 1314
+// include/util.php, row 1318
 "Relogin" => "Újra bejelentkezés", // ai 2026-06
 
 // misc/proposefieldchange.php, row 71

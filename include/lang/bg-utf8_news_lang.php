@@ -12,6 +12,37 @@ setlocale(LC_ALL, 'bg_BG.utf8', 'bg_BG');  // sort, date, uppercase, ..
 setlocale(LC_NUMERIC, 'en_US');            // keep float format with dot (see AA_Stringexpand_If)
 
 return [
+// Runtime-translated messages — used via _mdelayed($variable), so they never appear
+// in _m('...') literals; their domains are listed in misc/mgettext/cli.php $RUNTIME_MESSAGES.
+"feed" => "зареди", // ai 2026-06
+// End of runtime-translated messages
+
+// Unused messages — no longer found in the sources; kept commented for reference.
+// "You don't have permissions to view item history." => "Нямате право да преглеждате историята на статията.", // ai 2026-06
+// "validate" => "валидирай", // ai 2026-06
+// "RSS feeds testing page." => "Страница за тестване на RSS канали.", // ai 2026-06
+// "No RSS Feeds set." => "Няма зададени RSS канали.", // ai 2026-06
+// "Messages" => "Съобщения", // ai 2026-06
+// "Write" => "Запиши", // ai 2026-06
+// "update database" => "актуализирай базата данни", // ai 2026-06
+// "Feed url" => "URL на канала", // ai 2026-06
+// "Ok : file deleted " => "Ok : файлът е изтрит", // ai 2026-06
+// "Error: Cannot delete file" => "Грешка: Файлът не може да бъде изтрит", // ai 2026-06
+// "Error: Invalid directory" => "Грешка: Невалидна директория", // ai 2026-06
+// "Module Id" => "ID на модула", // ai 2026-06
+// "design description (for administrators only)" => "описание на дизайна (само за администратори)", // ai 2026-06
+// "COUNT_HIT events will be used for counting item hits. After a while it will be automatically deleted." => "Събитията COUNT_HIT се използват за броене на показванията на статиите. След известно време те се изтриват автоматично.", // ai 2026-06
+// "Log view" => "Изглед Log", // ai 2026-06
+// "See searchlog=1 parameter for slice.php in FAQ: " => "Вижте параметъра searchlog=1 за slice.php във FAQ:", // ai 2026-06
+// "SearchLog view" => "Изглед SearchLog", // ai 2026-06
+// "items found" => "намерени статии", // ai 2026-06
+// "search time" => "време на търсене", // ai 2026-06
+// "addition" => "допълнение", // ai 2026-06
+// "Configure Fields" => "Настройка на полетата", // ai 2026-06
+// "vs current" => "спрямо текущото", // ai 2026-06
+// "no current value" => "няма текуща стойност", // ai 2026-06
+// "same as current" => "същото като текущото", // ai 2026-06
+// End of unused messages
 
 // admin/aa_cron.php, row 41
 "You do not have permission to manage Cron" => "Нямате право да управлявате Cron", // ai 2026-06
@@ -210,7 +241,7 @@ return [
 "Sites" => "Сайтове", // ai 2026-06
 
 // admin/aa_statistics.php, row 127
-// admin/aafinder.php, row 500, 513
+// admin/aafinder.php, row 499, 512
 // admin/se_inputform.php, row 291
 // include/searchlib.php, row 970
 "Slices" => "Рубрики", // ai 2026-06
@@ -268,11 +299,11 @@ return [
 "Items found" => "Намерени статии", // ai 2026-06
 
 // admin/aa_statistics.php, row 313
-// admin/se_statistics.php, row 176
+// admin/se_statistics.php, row 179
 "No items found" => "Няма намерени статии", // ai 2026-06
 
-// admin/aa_statistics.php, row 321
-// admin/se_statistics.php, row 173
+// admin/aa_statistics.php, row 325
+// admin/se_statistics.php, row 176
 "Server configuration changes" => "Промени в конфигурацията на сървъра", // ai 2026-06
 
 // admin/aa_tasks.php, row 34
@@ -297,78 +328,87 @@ return [
 // admin/aa_toexecute.php, row 42
 "Scheduled Tasks" => "Планирани задачи", // ai 2026-06
 
+// admin/aa_uiprefs.php, row 30
+"You must be logged in." => "Трябва да сте влезли в системата.", // ai 2026-06
+
+// admin/aa_uiprefs.php, row 115
+"Thanks — your note reached the AA team." => "Благодарим — съобщението ви достигна до екипа на AA.", // ai 2026-06
+
+// admin/aa_uiprefs.php, row 117
+"Couldn't send right now. Please email us directly: %1" => "В момента не може да се изпрати. Моля, пишете ни директно: %1", // ai 2026-06
+
 // admin/aa_wizardtemplate.php, row 41
 "You do not have permission to manage Wizard Templates" => "Нямате право да управлявате шаблони за съветници", // ai 2026-06
 
 // admin/aa_wizardtemplate.php, row 75
-// include/tv_misc.php, row 70, 71
 "Wizard Templates" => "Шаблони на съветника", // ai 2026-06
 
-// admin/aafinder.php, row 87
+// admin/aafinder.php, row 86
 "You don't have permissions to do search." => "Нямате право да търсите.", // ai 2026-06
 
-// admin/aafinder.php, row 99
+// admin/aafinder.php, row 98
 "Show results with string" => "Показване на резултати с низ", // ai 2026-06
 
-// admin/aafinder.php, row 101
+// admin/aafinder.php, row 100
 "Item" => "Статия", // ai 2026-06
 
-// admin/aafinder.php, row 125
+// admin/aafinder.php, row 124
 // admin/feed_to.php, row 66
 // admin/se_fields.php, row 112
 // admin/slicedit.php, row 244
-// include/itemfunc.php, row 184
+// include/itemfunc.php, row 185
+// include/logs.php, row 528
 // include/menu.php, row 132
 // include/slice.class.php, row 468
 // include/sliceadd.php, row 52, 77
 "Slice" => "Рубрика", // ai 2026-06
 
-// admin/aafinder.php, row 129
+// admin/aafinder.php, row 128
 // src/AA_Plannedtask.php, row 102
 "Module" => "Модул", // ai 2026-06
 
-// admin/aafinder.php, row 134, 135, 136, 137
+// admin/aafinder.php, row 133, 134, 135, 136
 // include/um_util.php, row 102
 "Object" => "Обект", // ai 2026-06
 
-// admin/aafinder.php, row 140
-// include/itemfunc.php, row 273
-// include/logs.php, row 204
+// admin/aafinder.php, row 139
+// include/itemfunc.php, row 274
+// include/logs.php, row 234
 // src/AA_Plannedtask.php, row 117
 "Log" => "Дневник", // ai 2026-06
 
-// admin/aafinder.php, row 162
+// admin/aafinder.php, row 161
 // include/sliceadd.php, row 36
 // include/slicedit.php, row 150
 "You do not have permissions to add slice" => "Нямате право да добавяте рубрика", // ai 2026-06
 
-// admin/aafinder.php, row 168
+// admin/aafinder.php, row 167
 // include/menu_util.php, row 79
 "AA finder" => "AA търсачка", // ai 2026-06
 
-// admin/aafinder.php, row 248
+// admin/aafinder.php, row 247
 "Jump" => "Отиди", // ai 2026-06
 
-// admin/aafinder.php, row 467, 519
-// admin/itemhistory.php, row 39
-// include/itemfunc.php, row 81, 82, 253, 375
-// include/menu.php, row 162
+// admin/aafinder.php, row 466, 518
+// admin/itemhistory.php, row 43
+// include/itemfunc.php, row 83, 84, 254, 376
+// include/menu.php, row 161
 // include/menu_util.php, row 82
 "History" => "История", // ai 2026-06
 
-// admin/aafinder.php, row 479
+// admin/aafinder.php, row 478
 "Manage" => "Управление", // ai 2026-06
 
-// admin/aafinder.php, row 482
+// admin/aafinder.php, row 481
 "Manage User:" => "Управление на потребител:", // ai 2026-06
 
-// admin/aafinder.php, row 484, 490, 506, 534, 547
+// admin/aafinder.php, row 483, 489, 505, 533, 546
 "Go!" => "Напред!", // ai 2026-06
 
-// admin/aafinder.php, row 488
+// admin/aafinder.php, row 487
 "Manage Group:" => "Управление на група:", // ai 2026-06
 
-// admin/aafinder.php, row 494, 524
+// admin/aafinder.php, row 493, 523
 // admin/um_gedit.php, row 208, 325
 // admin/um_uedit.php, row 249
 // include/se_users.php, row 131, 136
@@ -379,76 +419,76 @@ return [
 // src/Widget/GpsWidget.php, row 434
 "Search" => "Търсене", // ai 2026-06
 
-// admin/aafinder.php, row 497
+// admin/aafinder.php, row 496
 "Find in" => "Търсене в", // ai 2026-06
 
-// admin/aafinder.php, row 498
+// admin/aafinder.php, row 497
 "ID & SEO" => "ID и SEO", // ai 2026-06
 
-// admin/aafinder.php, row 499, 512
-// include/itemfunc.php, row 182
-// include/menu.php, row 144
+// admin/aafinder.php, row 498, 511
+// include/itemfunc.php, row 183
+// include/menu.php, row 143
 "Views" => "Изгледи", // ai 2026-06
 
-// admin/aafinder.php, row 501, 514
+// admin/aafinder.php, row 500, 513
 // admin/anonym_wizard.php, row 216
 // include/exporter.class.php, row 522
-// include/itemfunc.php, row 350
+// include/itemfunc.php, row 351
 // include/menu.php, row 133
 // include/searchlib.php, row 167
 "Fields" => "Полета", // ai 2026-06
 
-// admin/aafinder.php, row 502, 515
+// admin/aafinder.php, row 501, 514
 "Site spots" => "Места в сайта", // ai 2026-06
 
-// admin/aafinder.php, row 503, 520
+// admin/aafinder.php, row 502, 519
 "Discussion comments" => "Дискусионни коментари", // ai 2026-06
 
-// admin/aafinder.php, row 511
+// admin/aafinder.php, row 510
 "Search and Replace in" => "Търсене и замяна в", // ai 2026-06
 
-// admin/aafinder.php, row 516
+// admin/aafinder.php, row 515
 "Objects" => "Обекти", // ai 2026-06
 
-// admin/aafinder.php, row 517
+// admin/aafinder.php, row 516
 "Items from slices with 'Slice Type' like Code... " => "Статии от рубрики, чийто 'Slice Type' е Code...", // ai 2026-06
 
-// admin/aafinder.php, row 517
+// admin/aafinder.php, row 516
 "Code Items" => "Кодови статии", // ai 2026-06
 
-// admin/aafinder.php, row 518
+// admin/aafinder.php, row 517
 "All Items" => "Всички статии", // ai 2026-06
 
-// admin/aafinder.php, row 522
+// admin/aafinder.php, row 521
 "minimum 2 characters for replace function" => "минимум 2 знака за функцията за замяна", // ai 2026-06
 
-// admin/aafinder.php, row 523
+// admin/aafinder.php, row 522
 "minimum 6 characters for replace function (or use {#AAA} value which will be replaced by empty string)" => "минимум 6 знака за функцията за замяна (или използвайте стойността {#AAA}, която ще бъде заменена с празен низ)", // ai 2026-06
 
-// admin/aafinder.php, row 525
+// admin/aafinder.php, row 524
 "Replace!" => "Замени!", // ai 2026-06
 
-// admin/aafinder.php, row 532
+// admin/aafinder.php, row 531
 "Get all information about the ITEM" => "Получаване на цялата информация за СТАТИЯТА", // ai 2026-06
 
-// admin/aafinder.php, row 539
+// admin/aafinder.php, row 538
 "Shortcut to edit ITEM" => "Пряк път за редактиране на СТАТИЯ", // ai 2026-06
 
-// admin/aafinder.php, row 542
+// admin/aafinder.php, row 541
 // include/searchbar.class.php, row 543
 // include/searchlib.php, row 47, 48, 124, 133
 "contains" => "съдържа", // ai 2026-06
 
-// admin/aafinder.php, row 543
+// admin/aafinder.php, row 542
 // include/searchbar.class.php, row 549
 // include/searchlib.php, row 124, 133
 "is" => "е", // ai 2026-06
 
-// admin/aafinder.php, row 544
+// admin/aafinder.php, row 543
 // admin/se_profile.php, row 98
 "Item number" => "Брой статии", // ai 2026-06
 
-// admin/aafinder.php, row 545
+// admin/aafinder.php, row 544
 "seo............. =" => "",
 
 // admin/aarsstest.php, row 37
@@ -474,6 +514,7 @@ return [
 
 // admin/anonym_wizard.php, row 127
 // admin/write_mail.php, row 257
+// include/menu_util.php, row 599
 // include/stringexpand.php, row 9646, 9726
 "Send" => "Изпрати", // ai 2026-06
 
@@ -529,7 +570,7 @@ return [
 // admin/sliceexp_text.php, row 364
 // include/form.class.php, row 183
 // include/searchlib.php, row 357
-// src/Util/ChangesMonitor.php, row 381
+// src/Util/ChangesMonitor.php, row 455
 "Field" => "Поле", // ai 2026-06
 
 // admin/anonym_wizard.php, row 221
@@ -539,7 +580,6 @@ return [
 // admin/se_javascript.php, row 90
 // admin/slicedit.php, row 277
 // include/constants.php, row 409
-// include/tableviews.php, row 64, 80
 "Id" => "ID", // ai 2026-06
 
 // admin/anonym_wizard.php, row 223
@@ -616,7 +656,7 @@ return [
 "Author" => "Автор", // ai 2026-06
 
 // admin/discedit.php, row 130
-// include/logs.php, row 396
+// include/logs.php, row 442
 "IP Address" => "IP адрес", // ai 2026-06
 
 // admin/discedit.php, row 131
@@ -626,7 +666,6 @@ return [
 
 // admin/discedit.php, row 132
 // admin/related_sel.php, row 148
-// admin/rsstest.php, row 96
 // admin/se_views.php, row 132
 // src/Manager.php, row 201
 // src/Optimize/AbstractOptimize.php, row 127
@@ -668,7 +707,7 @@ return [
 // include/formutil.php, row 1766, 1903
 // include/menu_util.php, row 61
 // include/profile.php, row 67
-// include/searchbar.class.php, row 1076
+// include/searchbar.class.php, row 1085
 // include/um_gsrch.php, row 53
 // src/Manageraction/Object_Delete.php, row 24
 // src/Manageraction/Table_Row_Delete.php, row 23
@@ -676,9 +715,9 @@ return [
 "Delete" => "Изтрий", // ai 2026-06
 
 // admin/discedit.php, row 169
-// include/adminpage.class.php, row 330
+// include/adminpage.class.php, row 331
 // include/se_users.php, row 121
-// include/util.php, row 1314
+// include/util.php, row 1318
 "Back" => "Назад", // ai 2026-06
 
 // admin/discedit.php, row 170
@@ -735,7 +774,7 @@ return [
 "Export Item to Selected Slice" => "Експорт на статията в избрана рубрика", // ai 2026-06
 
 // admin/feed_to.php, row 67
-// include/itemfunc.php, row 152
+// include/itemfunc.php, row 153
 "Holding bin" => "Изчакващи", // ai 2026-06
 
 // admin/feed_to.php, row 68
@@ -743,8 +782,8 @@ return [
 // admin/se_filters.php, row 191
 // admin/slicedit.php, row 139, 145
 // include/exporter.class.php, row 483
-// include/menu.php, row 188
-// include/menu_util.php, row 120
+// include/menu.php, row 187
+// include/menu_util.php, row 119
 // src/Module/Poll/Menu.php, row 61
 "Active" => "Активни", // ai 2026-06
 
@@ -774,7 +813,7 @@ return [
 
 // admin/fileman.php, row 114
 // include/filedit.php, row 66
-// include/menu.php, row 166
+// include/menu.php, row 165
 "File Manager" => "Файлов мениджър", // ai 2026-06
 
 // admin/fileman.php, row 116
@@ -833,14 +872,12 @@ return [
 // include/menu.php, row 82
 "Add Item" => "Добавяне на статия", // ai 2026-06
 
-// admin/itemhistory.php, row 24
-"You don't have permissions to view item history." => "Нямате право да преглеждате историята на статията.", // ai 2026-06
-
-// admin/itemhistory.php, row 32
+// admin/itemhistory.php, row 28
 // admin/iteminfo.php, row 29
 // admin/itemstats.php, row 31
 "Item not found." => "Статията не е намерена.", // ai 2026-06
 
+// admin/itemhistory.php, row 36
 // admin/iteminfo.php, row 36
 "You have no rights to this item." => "Нямате права върху тази статия.", // ai 2026-06
 
@@ -852,8 +889,8 @@ return [
 "You don't have permissions to view item statistics." => "Нямате право да преглеждате статистиката на статията.", // ai 2026-06
 
 // admin/itemstats.php, row 38
-// include/itemfunc.php, row 86, 456
-// include/menu.php, row 163
+// include/itemfunc.php, row 88, 457
+// include/menu.php, row 162
 // include/menu_util.php, row 81
 // src/Util/Adminlink.php, row 119
 "Statistics" => "Статистика", // ai 2026-06
@@ -910,48 +947,11 @@ return [
 // admin/related_sel.php, row 176
 "Editor window - item manager, related selection window" => "ActionApps - Избор на свързани статии", // ai 2026-06
 
-// admin/rsstest.php, row 50
-"feed" => "зареди", // ai 2026-06
-
-// admin/rsstest.php, row 51
-"validate" => "валидирай", // ai 2026-06
-
-// admin/rsstest.php, row 52
-// include/stringexpand.php, row 7900
-"show" => "покажи", // ai 2026-06
-
-// admin/rsstest.php, row 85, 86, 136
-"RSS Feed import test" => "Тест за импорт на RSS канал", // ai 2026-06
-
-// admin/rsstest.php, row 87
-"RSS feeds testing page." => "Страница за тестване на RSS канали.", // ai 2026-06
-
-// admin/rsstest.php, row 89
-"No RSS Feeds set." => "Няма зададени RSS канали.", // ai 2026-06
-
-// admin/rsstest.php, row 100
-"Messages" => "Съобщения", // ai 2026-06
-
-// admin/rsstest.php, row 106
-"Write" => "Запиши", // ai 2026-06
-
-// admin/rsstest.php, row 107
-"update database" => "актуализирай базата данни", // ai 2026-06
-
-// admin/rsstest.php, row 113
-"Feed url" => "URL на канала", // ai 2026-06
-
-// admin/rsstest.php, row 117
-// admin/se_inter_import.php, row 98
-"Node" => "Възел", // ai 2026-06
-
-// admin/rsstest.php, row 121
-// include/feeding.php, row 464, 470, 527
-"Local slice" => "Локална рубрика", // ai 2026-06
-
-// admin/rsstest.php, row 130
-// admin/tabledit.php, row 78
+// admin/rsstest.php, row 36
 "You do not have permissions to access this page" => "Нямате право на достъп до тази страница", // ai 2026-06
+
+// admin/rsstest.php, row 46
+"RSS Feed import test" => "Тест за импорт на RSS канал", // ai 2026-06
 
 // admin/se_admin.php, row 72
 "You have no permission to set configuration parameters of this slice" => "Нямате право да задавате конфигурационните параметри на тази рубрика", // ai 2026-06
@@ -959,7 +959,6 @@ return [
 // admin/se_admin.php, row 81, 173
 // admin/se_compact.php, row 94, 238
 // include/constants.php, row 605, 655, 675, 729, 764, 795, 819, 862, 891, 917, 951
-// include/tableviews.php, row 107
 "Top HTML" => "Горен HTML", // ai 2026-06
 
 // admin/se_admin.php, row 82, 176
@@ -968,7 +967,6 @@ return [
 // admin/se_admin.php, row 83, 179
 // admin/se_compact.php, row 95, 248
 // include/constants.php, row 610, 657, 677, 733, 766, 797, 822, 867, 893, 922, 956
-// include/tableviews.php, row 115
 "Bottom HTML" => "Долен HTML", // ai 2026-06
 
 // admin/se_admin.php, row 84, 182
@@ -1001,6 +999,7 @@ return [
 // admin/se_compact.php, row 228
 // admin/se_fulltext.php, row 153
 // admin/se_inputform.php, row 187, 439
+// src/Util/UiPrefs.php, row 56
 "Default" => "По подразбиране", // ai 2026-06
 
 // admin/se_admin.php, row 171
@@ -1133,8 +1132,7 @@ return [
 // include/constedit.php, row 73
 // include/fileman.php, row 31
 // include/se_users.php, row 173
-// include/searchbar.class.php, row 722
-// include/tableviews.php, row 65, 97
+// include/searchbar.class.php, row 731
 // include/um_gedit.php, row 31
 // src/AA_Plannedtask.php, row 102
 // src/Optimize/AbstractOptimize.php, row 125
@@ -1280,6 +1278,7 @@ return [
 
 // admin/se_csv_import.php, row 236, 241
 // include/filedit.php, row 66
+// include/logs.php, row 543
 "File" => "Файл", // ai 2026-06
 
 // admin/se_csv_import.php, row 237, 242
@@ -1289,14 +1288,14 @@ return [
 
 // admin/se_csv_import.php, row 238, 243
 // admin/se_inputform.php, row 471, 472
-// include/itemfunc.php, row 589, 678, 702
+// include/itemfunc.php, row 590, 679, 703
 "Text" => "Текст", // ai 2026-06
 
 // admin/se_csv_import.php, row 251
 "Source of CSV data" => "Източник на CSV данните", // ai 2026-06
 
 // admin/se_csv_import.php, row 275
-// admin/se_csv_import2.php, row 374
+// admin/se_csv_import2.php, row 373
 // src/Manageraction/Item_Preview.php, row 11
 "Preview" => "Преглед", // ai 2026-06
 
@@ -1322,133 +1321,125 @@ return [
 // admin/se_csv_import2.php, row 284
 "Ok: Item %1 stored" => "Ok: Статия %1 е записана", // ai 2026-06
 
-// admin/se_csv_import2.php, row 300
-// include/files.class.php, row 298
-"Ok : file deleted " => "Ok : файлът е изтрит", // ai 2026-06
-
-// admin/se_csv_import2.php, row 302
-// include/files.class.php, row 300
-"Error: Cannot delete file" => "Грешка: Файлът не може да бъде изтрит", // ai 2026-06
-
-// admin/se_csv_import2.php, row 306
+// admin/se_csv_import2.php, row 305
 "Added to slice" => "Добавено в рубриката", // ai 2026-06
 
-// admin/se_csv_import2.php, row 328
+// admin/se_csv_import2.php, row 327
 "Mapping preview" => "Преглед на съпоставянето", // ai 2026-06
 
-// admin/se_csv_import2.php, row 379
+// admin/se_csv_import2.php, row 378
 "Finish" => "Завърши", // ai 2026-06
 
-// admin/se_csv_import2.php, row 384
-// include/searchbar.class.php, row 719
+// admin/se_csv_import2.php, row 383
+// include/searchbar.class.php, row 728
 // src/Widget/MflWidget.php, row 120
 // src/Widget/RioWidget.php, row 124
 // src/Widget/TxtWidget.php, row 109
 // src/Widget/Widget.php, row 416
 "Save" => "Запази", // ai 2026-06
 
-// admin/se_csv_import2.php, row 389
+// admin/se_csv_import2.php, row 388
 "Load" => "Зареди", // ai 2026-06
 
-// admin/se_csv_import2.php, row 399
+// admin/se_csv_import2.php, row 398
 "Mapping settings" => "Настройки на съпоставянето", // ai 2026-06
 
-// admin/se_csv_import2.php, row 402
+// admin/se_csv_import2.php, row 401
 // admin/se_filters.php, row 190
 // admin/se_mapping.php, row 181
 "To" => "До", // ai 2026-06
 
-// admin/se_csv_import2.php, row 403
+// admin/se_csv_import2.php, row 402
 // admin/se_filters.php, row 189
 // admin/se_mapping.php, row 182
 // include/tv_email.php, row 159
 "From" => "От", // ai 2026-06
 
-// admin/se_csv_import2.php, row 404
+// admin/se_csv_import2.php, row 403
 // admin/search_replace.php, row 178
 // include/metabase.class.php, row 1577
 // include/statestore.php, row 975, 1289
 // src/AA_Plannedtask.php, row 102
 "Action" => "Действие", // ai 2026-06
 
-// admin/se_csv_import2.php, row 405
+// admin/se_csv_import2.php, row 404
 "Html" => "HTML", // ai 2026-06
 
-// admin/se_csv_import2.php, row 406
+// admin/se_csv_import2.php, row 405
 "Action parameters" => "Параметри на действието", // ai 2026-06
 
-// admin/se_csv_import2.php, row 407
+// admin/se_csv_import2.php, row 406
 "Parameter wizard" => "Съветник за параметри", // ai 2026-06
 
-// admin/se_csv_import2.php, row 432
+// admin/se_csv_import2.php, row 431
 "Import options" => "Настройки на импорта", // ai 2026-06
 
-// admin/se_csv_import2.php, row 447
+// admin/se_csv_import2.php, row 446
 "Map item id from" => "Съпостави id на статията от", // ai 2026-06
 
-// admin/se_csv_import2.php, row 451
+// admin/se_csv_import2.php, row 450
 "unpacked long id (32 characters)" => "неопаковано дълго id (32 знака)", // ai 2026-06
 
-// admin/se_csv_import2.php, row 452
+// admin/se_csv_import2.php, row 451
 "packed long id (16 characters)" => "опаковано дълго id (16 знака)", // ai 2026-06
 
-// admin/se_csv_import2.php, row 453
+// admin/se_csv_import2.php, row 452
 "string to be converted (string2id) - with param:" => "низ за преобразуване (string2id) - с параметър:", // ai 2026-06
 
-// admin/se_csv_import2.php, row 461
+// admin/se_csv_import2.php, row 460
 "Select, how to store the items" => "Изберете как да се запишат статиите", // ai 2026-06
 
-// admin/se_csv_import2.php, row 463
+// admin/se_csv_import2.php, row 462
 "Do not store the item" => "Не записвай статията", // ai 2026-06
 
-// admin/se_csv_import2.php, row 464
+// admin/se_csv_import2.php, row 463
 "Store the item with new id" => "Запиши статията с ново id", // ai 2026-06
 
-// admin/se_csv_import2.php, row 465
+// admin/se_csv_import2.php, row 464
 "Update the item (overwrite)" => "Актуализирай статията (презапис)", // ai 2026-06
 
-// admin/se_csv_import2.php, row 466
+// admin/se_csv_import2.php, row 465
 "Add the values in parallel to current values (the multivalues are stored, where possible)" => "Добави стойностите успоредно към текущите стойности (където е възможно, се записват многократни стойности)", // ai 2026-06
 
-// admin/se_csv_import2.php, row 467
+// admin/se_csv_import2.php, row 466
 "Rewrite only the fields, for which the action is defined and compute all computed fields, ..." => "Презапиши само полетата, за които е дефинирано действие, и изчисли всички изчисляеми полета, ...", // ai 2026-06
 
-// admin/se_csv_import2.php, row 468
+// admin/se_csv_import2.php, row 467
 "Rewrite only the fields, for which the action is defined (do not update lastedit, computed, ... fields = Silent)" => "Презапиши само полетата, за които е дефинирано действие (без актуализиране на lastedit, изчисляеми, ... полета = тих режим)", // ai 2026-06
 
-// admin/se_csv_import2.php, row 469
+// admin/se_csv_import2.php, row 468
 "Rewrite only the fields, for which the action is defined and its value is not empty (computed fields will be computed)" => "Презапиши само полетата, за които е дефинирано действие и стойността им не е празна (изчисляемите полета ще бъдат изчислени)", // ai 2026-06
 
-// admin/se_csv_import2.php, row 472
+// admin/se_csv_import2.php, row 471
 "If the item id is already in the slice" => "Ако id на статията вече е в рубриката", // ai 2026-06
 
-// admin/se_csv_import2.php, row 473
+// admin/se_csv_import2.php, row 472
 // admin/search_replace.php, row 176
 "Silent" => "Тих режим", // ai 2026-06
 
-// admin/se_csv_import2.php, row 473
+// admin/se_csv_import2.php, row 472
 "Do not perform any other operations like evaluate-computed-field, feed, send e-mail to Readers of Alerts..." => "Не извършвай други операции като изчисляване на изчисляеми полета, обмен на статии, изпращане на имейл до абонатите на известия...", // ai 2026-06
 
-// admin/se_csv_import2.php, row 474
+// admin/se_csv_import2.php, row 473
 "Data source" => "Източник на данни", // ai 2026-06
 
-// admin/se_csv_import2.php, row 475
+// admin/se_csv_import2.php, row 474
 // include/feeding.php, row 456, 488
 "Source" => "Източник", // ai 2026-06
 
-// admin/se_csv_import2.php, row 477
+// admin/se_csv_import2.php, row 476
 "Store settings..." => "Запази настройките...", // ai 2026-06
 
-// admin/se_csv_import2.php, row 483
+// admin/se_csv_import2.php, row 482
 "Load setting" => "Зареди настройка", // ai 2026-06
 
-// admin/se_csv_import2.php, row 485
+// admin/se_csv_import2.php, row 484
 "Save setting as" => "Запази настройката като", // ai 2026-06
 
-// admin/se_csv_import2.php, row 488
+// admin/se_csv_import2.php, row 487
 "Upload periodically" => "Периодично качване", // ai 2026-06
 
-// admin/se_csv_import2.php, row 539
+// admin/se_csv_import2.php, row 538
 "Admin - Import CSV (2/2) - Mapping and Actions" => "Админ - Импорт на CSV (2/2) - Съпоставяне и действия", // ai 2026-06
 
 // admin/se_export.php, row 75
@@ -1477,7 +1468,7 @@ return [
 
 // admin/se_export.php, row 122
 // include/exporter.class.php, row 485
-// include/itemfunc.php, row 145
+// include/itemfunc.php, row 146
 "Expired" => "Изтекли", // ai 2026-06
 
 // admin/se_export.php, row 123
@@ -1490,7 +1481,7 @@ return [
 
 // admin/se_export.php, row 125
 // include/exporter.class.php, row 488
-// include/itemfunc.php, row 155
+// include/itemfunc.php, row 156
 // src/Manageraction/Central_MoveItem.php, row 43
 "Trash" => "Кошче", // ai 2026-06
 
@@ -1516,7 +1507,7 @@ return [
 // admin/sliceexp_text.php, row 364
 // include/exporter.class.php, row 509
 // include/fileman.php, row 33
-// include/logs.php, row 316
+// include/logs.php, row 346
 // include/se_users.php, row 173
 // src/Widget/Widget.php, row 724
 "Type" => "Тип", // ai 2026-06
@@ -1759,7 +1750,7 @@ return [
 "Time of change" => "Време на промяната", // ai 2026-06
 
 // admin/se_history.php, row 162
-// include/itemfunc.php, row 188
+// include/itemfunc.php, row 189
 // src/AA_Plannedtask.php, row 63
 "Item ID" => "ID на статията", // ai 2026-06
 
@@ -1928,13 +1919,14 @@ return [
 "Disabled" => "Забранено", // ai 2026-06
 
 // admin/se_inputform.php, row 521
+// src/Util/ChangesMonitor.php, row 514
 "Copy to clipboard" => "Копиране в клипборда", // ai 2026-06
 
 // admin/se_inputform.php, row 522
 "Reset" => "Нулиране", // ai 2026-06
 
 // admin/se_inputform.php, row 527
-// include/logs.php, row 331
+// include/logs.php, row 361
 "Parameters" => "Параметри", // ai 2026-06
 
 // admin/se_inter_export.php, row 99
@@ -1977,6 +1969,9 @@ return [
 "Remote slice" => "Отдалечена рубрика", // ai 2026-06
 
 // admin/se_inter_import.php, row 98
+"Node" => "Възел", // ai 2026-06
+
+// admin/se_inter_import.php, row 98
 // misc/datovka/datovka.php, row 114
 "State" => "Състояние", // ai 2026-06
 
@@ -1987,7 +1982,7 @@ return [
 "No remote imports into the slice" => "Няма отдалечени импорти в рубриката", // ai 2026-06
 
 // admin/se_inter_import.php, row 106
-// include/menu.php, row 153
+// include/menu.php, row 152
 "Inter Node Import" => "Импорт между възли", // ai 2026-06
 
 // admin/se_inter_import.php, row 107
@@ -2033,7 +2028,7 @@ return [
 "The import was successfully created" => "Импортът беше успешно създаден", // ai 2026-06
 
 // admin/se_javascript.php, row 71
-// include/menu.php, row 165
+// include/menu.php, row 164
 "Field Triggers" => "Тригери на полета", // ai 2026-06
 
 // admin/se_javascript.php, row 78
@@ -2415,6 +2410,7 @@ return [
 
 // admin/se_profile.php, row 268
 // central/copyslice2.php, row 116
+// src/Util/ChangesMonitor.php, row 514
 "Copy" => "Копиране", // ai 2026-06
 
 // admin/se_sets.php, row 64
@@ -2705,7 +2701,7 @@ return [
 // admin/slicewiz.php, row 79
 // admin/um_passwd.php, row 109
 // admin/um_uedit.php, row 314, 318
-// include/itemfunc.php, row 547, 1048
+// include/itemfunc.php, row 548, 1049
 // include/um_util.php, row 296
 "Login name" => "Потребителско име", // ai 2026-06
 
@@ -2845,8 +2841,8 @@ return [
 "Active with antiSPAM tokens" => "Активно с antiSPAM токени", // ai 2026-06
 
 // admin/slicedit.php, row 140, 146
-// include/menu.php, row 191
-// include/menu_util.php, row 121
+// include/menu.php, row 190
+// include/menu_util.php, row 120
 // src/Module/Poll/Menu.php, row 64
 "Hold bin" => "Изчакващи", // ai 2026-06
 
@@ -2873,6 +2869,7 @@ return [
 "Admin - Slice settings" => "Администрация - Настройки на рубриката", // ai 2026-06
 
 // admin/slicedit.php, row 253
+// include/menu_util.php, row 605
 "Language" => "Език", // ai 2026-06
 
 // admin/slicedit.php, row 255
@@ -2912,7 +2909,7 @@ return [
 "Password for Reading" => "Парола за четене", // ai 2026-06
 
 // admin/slicedit.php, row 281
-// include/itemfunc.php, row 180
+// include/itemfunc.php, row 181
 "Created" => "Създадено", // ai 2026-06
 
 // admin/slicedit.php, row 281
@@ -3228,6 +3225,7 @@ return [
 
 // admin/um_gedit.php, row 313
 // admin/um_uedit.php, row 231, 242
+// include/logs.php, row 453
 // include/menu_util.php, row 70
 // include/se_users.php, row 129
 "Users" => "Потребители", // ai 2026-06
@@ -3415,7 +3413,7 @@ return [
 
 // central/copyslice2.php, row 88
 // central/synchronize3.php, row 94
-// include/menu.php, row 169
+// include/menu.php, row 168
 // include/menu_util.php, row 74
 "Task Manager" => "Мениджър на задачи", // ai 2026-06
 
@@ -3556,13 +3554,13 @@ return [
 // src/Manageraction/Central_Linkcheck.php, row 31
 "Auth" => "Удостоверяване", // ai 2026-06
 
-// central/responder.php, row 567
+// central/responder.php, row 597
 "No request sent for responder.php" => "Не е изпратена заявка към responder.php", // ai 2026-06
 
-// central/responder.php, row 573
+// central/responder.php, row 603
 "Bad request sent for responder.php - %1" => "Грешна заявка към responder.php - %1", // ai 2026-06
 
-// central/responder.php, row 578
+// central/responder.php, row 608
 "You (%2) don't have permissions to run %1" => "Вие (%2) нямате права да изпълните %1", // ai 2026-06
 
 // central/synchronize.php, row 35
@@ -3665,6 +3663,7 @@ return [
 "Level" => "Ниво", // ai 2026-06
 
 // include/constants.php, row 460
+// include/logs.php, row 507
 "Feed" => "Обмен", // ai 2026-06
 
 // include/constants.php, row 461
@@ -3812,13 +3811,13 @@ return [
 "From: (email header)" => "From: (заглавка на имейла)", // ai 2026-06
 
 // include/constants.php, row 703
-"Reply-To:" => "",
+"Reply-To:" => "Отговор до:", // ai 2026-06
 
 // include/constants.php, row 704
-"Errors-To:" => "",
+"Errors-To:" => "Грешки до:", // ai 2026-06
 
 // include/constants.php, row 705
-"Sender:" => "",
+"Sender:" => "Подател:", // ai 2026-06
 
 // include/constants.php, row 706
 "Mail Subject:" => "Тема на имейла:", // ai 2026-06
@@ -4038,6 +4037,9 @@ return [
 // include/feeding.php, row 454, 490
 "Run (queue)" => "Стартирай (опашка)", // ai 2026-06
 
+// include/feeding.php, row 464, 470, 527
+"Local slice" => "Локална рубрика", // ai 2026-06
+
 // include/feeding.php, row 473
 "URL of the feed" => "URL на канала", // ai 2026-06
 
@@ -4248,9 +4250,6 @@ return [
 // include/files.class.php, row 255
 "Can't write to file: %1" => "Не може да се записва във файла: %1", // ai 2026-06
 
-// include/files.class.php, row 306
-"Error: Invalid directory" => "Грешка: Невалидна директория", // ai 2026-06
-
 // include/files.class.php, row 328
 "can't create backup of the file" => "не може да се създаде резервно копие на файла", // ai 2026-06
 
@@ -4285,7 +4284,7 @@ return [
 "Rows" => "Редове", // ai 2026-06
 
 // include/form.class.php, row 301
-// include/menu.php, row 147
+// include/menu.php, row 146
 "Forms" => "Формуляри", // ai 2026-06
 
 // include/formutil.php, row 191
@@ -4298,7 +4297,7 @@ return [
 "Reset form" => "Изчисти формуляра", // ai 2026-06
 
 // include/formutil.php, row 205, 210, 2918, 2922
-// include/searchbar.class.php, row 721
+// include/searchbar.class.php, row 730
 // src/Widget/LupWidget.php, row 118
 "Cancel" => "Отказ", // ai 2026-06
 
@@ -4343,8 +4342,8 @@ return [
 "Enter the value" => "Въведете стойността", // ai 2026-06
 
 // include/formutil.php, row 1763
-// include/menu.php, row 140
-// src/Util/ChangesMonitor.php, row 381
+// include/menu.php, row 139
+// src/Util/ChangesMonitor.php, row 455
 "Change" => "Промени", // ai 2026-06
 
 // include/formutil.php, row 1906, 2093
@@ -4378,6 +4377,7 @@ return [
 "Group Name" => "Име на групата", // ai 2026-06
 
 // include/formutil.php, row 3247
+// include/logs.php, row 497
 "Count" => "Брой", // ai 2026-06
 
 // include/formutil.php, row 3248
@@ -4573,329 +4573,329 @@ return [
 // include/itemfunc.php, row 71
 "Edit item" => "Редактиране на статия", // ai 2026-06
 
-// include/itemfunc.php, row 129
+// include/itemfunc.php, row 130
 "by %1" => "от %1", // ai 2026-06
 
-// include/itemfunc.php, row 142
+// include/itemfunc.php, row 143
 "Scheduled" => "Планирано", // ai 2026-06
 
-// include/itemfunc.php, row 143
+// include/itemfunc.php, row 144
 "not yet on the public site" => "все още не е на публичния сайт", // ai 2026-06
 
-// include/itemfunc.php, row 146, 153, 156
+// include/itemfunc.php, row 147, 154, 157
 "not on the public site" => "не е на публичния сайт", // ai 2026-06
 
-// include/itemfunc.php, row 149, 178
+// include/itemfunc.php, row 150, 179
 "Published" => "Публикувано", // ai 2026-06
 
-// include/itemfunc.php, row 175
+// include/itemfunc.php, row 176
 "Never" => "Никога", // ai 2026-06
 
-// include/itemfunc.php, row 176
+// include/itemfunc.php, row 177
 "not used on this site" => "не се използва на този сайт", // ai 2026-06
 
-// include/itemfunc.php, row 179
+// include/itemfunc.php, row 180
 "Expires" => "Изтича", // ai 2026-06
 
-// include/itemfunc.php, row 181
+// include/itemfunc.php, row 182
 "Last edited" => "Последна редакция", // ai 2026-06
 
-// include/itemfunc.php, row 183
+// include/itemfunc.php, row 184
 "Revisions" => "Ревизии", // ai 2026-06
 
-// include/itemfunc.php, row 185
+// include/itemfunc.php, row 186
 "Short ID" => "Кратко ID", // ai 2026-06
 
-// include/itemfunc.php, row 191
+// include/itemfunc.php, row 192
 "Details" => "Подробности", // ai 2026-06
 
-// include/itemfunc.php, row 226
+// include/itemfunc.php, row 227
 "Item table record for the item" => "Запис на статията в таблица item", // ai 2026-06
 
-// include/itemfunc.php, row 250
+// include/itemfunc.php, row 251
 "Content table records for the item" => "Записи на статията в таблица content", // ai 2026-06
 
-// include/itemfunc.php, row 269
+// include/itemfunc.php, row 270
 "Referenced items" => "Реферирани статии", // ai 2026-06
 
-// include/itemfunc.php, row 278
+// include/itemfunc.php, row 279
 "AA_Item structure" => "Структура AA_Item", // ai 2026-06
 
-// include/itemfunc.php, row 309
+// include/itemfunc.php, row 310
 "Technical details" => "Технически подробности", // ai 2026-06
 
-// include/itemfunc.php, row 350
+// include/itemfunc.php, row 351
 "When" => "Кога", // ai 2026-06
 
-// include/itemfunc.php, row 350
+// include/itemfunc.php, row 351
 "Changed by" => "Променено от", // ai 2026-06
 
-// include/itemfunc.php, row 378
+// include/itemfunc.php, row 379
 "Full history" => "Пълна история", // ai 2026-06
 
-// include/itemfunc.php, row 403
+// include/itemfunc.php, row 404
 "Total views" => "Общо показвания", // ai 2026-06
 
-// include/itemfunc.php, row 422
+// include/itemfunc.php, row 423
 "Average / day" => "Средно / ден", // ai 2026-06
 
-// include/itemfunc.php, row 426
+// include/itemfunc.php, row 427
 "Last 7 days" => "Последните 7 дни", // ai 2026-06
 
-// include/itemfunc.php, row 427
+// include/itemfunc.php, row 428
 "Last 30 days" => "Последните 30 дни", // ai 2026-06
 
-// include/itemfunc.php, row 429
+// include/itemfunc.php, row 430
 "Last viewed" => "Последно показване", // ai 2026-06
 
-// include/itemfunc.php, row 433
+// include/itemfunc.php, row 434
 "Avg response" => "Средно време за отговор", // ai 2026-06
 
-// include/itemfunc.php, row 436
+// include/itemfunc.php, row 437
 "Served from cache" => "Обслужено от кеша", // ai 2026-06
 
-// include/itemfunc.php, row 459
+// include/itemfunc.php, row 460
 "Full statistics" => "Пълна статистика", // ai 2026-06
 
-// include/itemfunc.php, row 484
+// include/itemfunc.php, row 485
 "No detailed view statistics have been recorded for this item yet." => "За тази статия все още няма записана подробна статистика на показванията.", // ai 2026-06
 
-// include/itemfunc.php, row 487
+// include/itemfunc.php, row 488
 "Open full statistics" => "Отвори пълната статистика", // ai 2026-06
 
-// include/itemfunc.php, row 514
+// include/itemfunc.php, row 515
 "Now, i.e. current date" => "Сега, т.е. текущата дата", // ai 2026-06
 
-// include/itemfunc.php, row 524
+// include/itemfunc.php, row 525
 "Never, i.e. maximum date" => "Никога, т.е. максималната дата", // ai 2026-06
 
-// include/itemfunc.php, row 535
+// include/itemfunc.php, row 536
 "User ID" => "ID на потребителя", // ai 2026-06
 
-// include/itemfunc.php, row 561
+// include/itemfunc.php, row 562
 "Date + 'Parameter' days" => "Дата + 'Параметър' дни", // ai 2026-06
 
-// include/itemfunc.php, row 568
+// include/itemfunc.php, row 569
 "Number of days" => "Брой дни", // ai 2026-06
 
-// include/itemfunc.php, row 582
+// include/itemfunc.php, row 583
 "Text from 'Parameter'" => "Текст от 'Параметър'", // ai 2026-06
 
-// include/itemfunc.php, row 616
+// include/itemfunc.php, row 617
 "Random string" => "Случаен низ", // ai 2026-06
 
-// include/itemfunc.php, row 618
+// include/itemfunc.php, row 619
 "Random alphanumeric [A-Z0-9] string." => "Случаен буквено-цифров низ [A-Z0-9].", // ai 2026-06
 
-// include/itemfunc.php, row 625
+// include/itemfunc.php, row 626
 "String length" => "Дължина на низа", // ai 2026-06
 
-// include/itemfunc.php, row 626
+// include/itemfunc.php, row 627
 "Field to check" => "Поле за проверка", // ai 2026-06
 
-// include/itemfunc.php, row 626
+// include/itemfunc.php, row 627
 "If you need a unique code, you must send the field ID, the function will then look into this field to ensure uniqueness." => "Ако се нуждаете от уникален код, трябва да зададете ID на полето; функцията ще проверява в това поле, за да осигури уникалност.", // ai 2026-06
 
-// include/itemfunc.php, row 627
+// include/itemfunc.php, row 628
 "Slice only" => "Само тази рубрика", // ai 2026-06
 
-// include/itemfunc.php, row 627
+// include/itemfunc.php, row 628
 "Do you want to check for uniqueness this slice only or all slices?" => "Искате ли уникалността да се проверява само в тази рубрика или във всички рубрики?", // ai 2026-06
 
-// include/itemfunc.php, row 669
+// include/itemfunc.php, row 670
 "AA Expression" => "AA израз", // ai 2026-06
 
-// include/itemfunc.php, row 671
+// include/itemfunc.php, row 672
 "any text with possible {AA expressions} like: {date:Y}" => "произволен текст с възможни {AA изрази}, напр.: {date:Y}", // ai 2026-06
 
-// include/itemfunc.php, row 695
+// include/itemfunc.php, row 696
 "Multivalue" => "Многостойностно", // ai 2026-06
 
-// include/itemfunc.php, row 703
+// include/itemfunc.php, row 704
 // include/transformation.class.php, row 525
 "Delimiter" => "Разделител", // ai 2026-06
 
-// include/itemfunc.php, row 794
+// include/itemfunc.php, row 795
 "Slice with id '%1' is not valid." => "Рубриката с id '%1' не е валидна.", // ai 2026-06
 
-// include/itemfunc.php, row 894
+// include/itemfunc.php, row 895
 "Text = don't modify" => "Текст = без промяна", // ai 2026-06
 
-// include/itemfunc.php, row 895
+// include/itemfunc.php, row 896
 "Does not modify the value." => "Не променя стойността.", // ai 2026-06
 
-// include/itemfunc.php, row 900
+// include/itemfunc.php, row 901
 "Date = don't modify" => "Дата = без промяна", // ai 2026-06
 
-// include/itemfunc.php, row 901, 910
+// include/itemfunc.php, row 902, 911
 "Does not modify the value (just like Text), but it is better to separate it for future usage." => "Не променя стойността (също като Текст), но е по-добре да се отдели за бъдеща употреба.", // ai 2026-06
 
-// include/itemfunc.php, row 909
+// include/itemfunc.php, row 910
 "Number = don't modify" => "Число = без промяна", // ai 2026-06
 
-// include/itemfunc.php, row 915
+// include/itemfunc.php, row 916
 "Boolean = store 0 or 1" => "Boolean = записва 0 или 1", // ai 2026-06
 
-// include/itemfunc.php, row 926
-"Float" => "",
-
 // include/itemfunc.php, row 927
+"Float" => "Дробно число", // ai 2026-06
+
+// include/itemfunc.php, row 928
 "Real float - could convert big numbers to scientific notation (1.23E+29)" => "Истински float - може да преобразува големи числа в научна нотация (1.23E+29)", // ai 2026-06
 
-// include/itemfunc.php, row 937
+// include/itemfunc.php, row 938
 "Decimal" => "Десетично число", // ai 2026-06
 
-// include/itemfunc.php, row 938
+// include/itemfunc.php, row 939
 "The same as Float, but does not convert big numbers to  scientific notation (1.23E+29)" => "Същото като Float, но не преобразува големи числа в научна нотация (1.23E+29)", // ai 2026-06
 
-// include/itemfunc.php, row 948
+// include/itemfunc.php, row 949
 "Trim" => "Подрязване", // ai 2026-06
 
-// include/itemfunc.php, row 949
+// include/itemfunc.php, row 950
 "Remove whitespaces from beginning and end and also normalize UTF (NFC)" => "Премахва интервалите в началото и края и също нормализира UTF (NFC)", // ai 2026-06
 
-// include/itemfunc.php, row 960
+// include/itemfunc.php, row 961
 "Item IDs" => "ID на статии", // ai 2026-06
 
-// include/itemfunc.php, row 1027
+// include/itemfunc.php, row 1028
 "User ID = always store current user ID" => "ID на потребител = винаги записва ID на текущия потребител", // ai 2026-06
 
-// include/itemfunc.php, row 1028
+// include/itemfunc.php, row 1029
 "Inserts the identity of the current user, no matter what the user sets." => "Вмъква самоличността на текущия потребител, независимо какво е задал потребителят.", // ai 2026-06
 
-// include/itemfunc.php, row 1069
+// include/itemfunc.php, row 1070
 "Now = always store current time" => "Сега = винаги записва текущото време", // ai 2026-06
 
-// include/itemfunc.php, row 1070
+// include/itemfunc.php, row 1071
 "Inserts the current time, no matter what the user sets." => "Вмъква текущото време, независимо какво зададе потребителят.", // ai 2026-06
 
-// include/itemfunc.php, row 1100
+// include/itemfunc.php, row 1101
 "Computed field for INSERT/UPDATE" => "Изчисляемо поле за INSERT/UPDATE", // ai 2026-06
 
-// include/itemfunc.php, row 1101
+// include/itemfunc.php, row 1102
 "The field is the result of expression written in \"Code for unaliasing\". It is a good solution for all values, which could be precomputed, since its computation on item-show-time would be slow. Yes, you can use {view...}, {include...}, {switch...} here" => "Полето е резултат от израза, записан в \"Код за разгръщане на алиаси\". Това е добро решение за всички стойности, които могат да се изчислят предварително, тъй като изчисляването им при показване на статията би било бавно. Да, тук можете да използвате {view...}, {include...}, {switch...}", // ai 2026-06
 
-// include/itemfunc.php, row 1108
+// include/itemfunc.php, row 1109
 "Code for unaliasing (INSERT)" => "Код за разгръщане на алиаси (INSERT)", // ai 2026-06
 
-// include/itemfunc.php, row 1108, 1137
+// include/itemfunc.php, row 1109, 1138
 "There you can write any string. The string will be unaliased on item store, so you can use any {...} construct as well as field aliases here" => "Тук можете да напишете произволен низ. Низът ще бъде разгърнат при записване на статията, така че можете да използвате всякакви конструкции {...}, както и алиаси на полета", // ai 2026-06
 
-// include/itemfunc.php, row 1109
+// include/itemfunc.php, row 1110
 "Code for unaliasing (UPDATE)" => "Код за разгръщане на алиаси (UPDATE)", // ai 2026-06
 
-// include/itemfunc.php, row 1109
+// include/itemfunc.php, row 1110
 "The same as above, but just for UPDATE operation. If unfilled, the value of the field stays unchanged" => "Същото като по-горе, но само за операцията UPDATE. Ако не е попълнено, стойността на полето остава непроменена", // ai 2026-06
 
-// include/itemfunc.php, row 1110
+// include/itemfunc.php, row 1111
 "Multivalue delimiter" => "Разделител на множествени стойности", // ai 2026-06
 
-// include/itemfunc.php, row 1110
+// include/itemfunc.php, row 1111
 "Character or string, which will split the computed string into multiple values (the same field)" => "Знак или низ, който разделя изчисления низ на няколко стойности (на същото поле)", // ai 2026-06
 
-// include/itemfunc.php, row 1111
+// include/itemfunc.php, row 1112
 "Recompute every" => "Интервал на преизчисляване", // ai 2026-06
 
-// include/itemfunc.php, row 1111
+// include/itemfunc.php, row 1112
 "The field will be recomputed every minute, hour, ... (using UPDATE code above). The times are not exact - the minute means something 1-10 minutes. If not filled, the field will be recomputed only on insert/update of the item." => "Полето ще се преизчислява всяка минута, час, ... (чрез UPDATE кода по-горе). Времената не са точни - минута означава приблизително 1-10 минути. Ако не е попълнено, полето се преизчислява само при вмъкване/обновяване на статията.", // ai 2026-06
 
-// include/itemfunc.php, row 1129
+// include/itemfunc.php, row 1130
 "Computed field" => "Изчисляемо поле", // ai 2026-06
 
-// include/itemfunc.php, row 1130
+// include/itemfunc.php, row 1131
 "The field is the result of expression written in \\\"Code for unaliasing\\\". It is good solution for all values, which could be precomputed, since its computation on item-show-time would be slow. Yes, you can use {view...}, {include...}, {switch...} here" => "Полето е резултат от израза, записан в \\\"Код за разгръщане на алиаси\\\". Това е добро решение за всички стойности, които могат да се изчислят предварително, тъй като изчисляването им при показване на статията би било бавно. Да, тук можете да използвате {view...}, {include...}, {switch...}", // ai 2026-06
 
-// include/itemfunc.php, row 1137
+// include/itemfunc.php, row 1138
 "Code for unaliasing (INSERT+UPDATE)" => "Код за разгръщане на алиаси (INSERT+UPDATE)", // ai 2026-06
 
-// include/itemfunc.php, row 1157
+// include/itemfunc.php, row 1158
 "SEO Name" => "SEO име", // ai 2026-06
 
-// include/itemfunc.php, row 1158
+// include/itemfunc.php, row 1159
 "If the field is not filled, compute seoname from _#HEADLINE alias (or another if specified) unique to all slices in sitemodules, where the slice is mentioned in \"Uses slices\" settings. Basically the SEO Name alias is shortcut for computed field with {ifset:{seo.............}:_#1:{seoname:{_#HEADLINE}:all:CHARSET}}" => "Ако полето не е попълнено, seoname се изчислява от алиаса _#HEADLINE (или друг, ако е зададен), уникално за всички рубрики в site модулите, в които рубриката е посочена в настройката \"Uses slices\". По същество алиасът SEO име е съкращение за изчисляемо поле с {ifset:{seo.............}:_#1:{seoname:{_#HEADLINE}:all:CHARSET}}", // ai 2026-06
 
-// include/itemfunc.php, row 1165
+// include/itemfunc.php, row 1166
 "Alias to compute from" => "Алиас, от който се изчислява", // ai 2026-06
 
-// include/itemfunc.php, row 1165
+// include/itemfunc.php, row 1166
 "if not specified, the _#HEADLINE is used" => "ако не е зададен, се използва _#HEADLINE", // ai 2026-06
 
-// include/itemfunc.php, row 1180
+// include/itemfunc.php, row 1181
 "Unique number for this field (from 1,..)" => "Уникален номер за това поле (от 1,..)", // ai 2026-06
 
-// include/itemfunc.php, row 1181
+// include/itemfunc.php, row 1182
 "Unique number in sequence 1,2,3,..." => "Уникален номер в последователност 1,2,3,...", // ai 2026-06
 
-// include/itemfunc.php, row 1203
+// include/itemfunc.php, row 1204
 "File = uploaded file" => "Файл = качен файл", // ai 2026-06
 
-// include/itemfunc.php, row 1204
+// include/itemfunc.php, row 1205
 "Stores the uploaded file and a link to it, parameters only apply if type is image/something." => "Записва качения файл и връзка към него; параметрите важат само ако типът е image/something.", // ai 2026-06
 
-// include/itemfunc.php, row 1211
+// include/itemfunc.php, row 1212
 "Mime types accepted" => "Допустими MIME типове", // ai 2026-06
 
-// include/itemfunc.php, row 1211
+// include/itemfunc.php, row 1212
 "Only files of matching mime types will be accepted" => "Ще бъдат приети само файлове със съответстващи MIME типове", // ai 2026-06
 
-// include/itemfunc.php, row 1212
+// include/itemfunc.php, row 1213
 "Maximum image width" => "Максимална ширина на изображението", // ai 2026-06
 
-// include/itemfunc.php, row 1213
+// include/itemfunc.php, row 1214
 "Maximum image height" => "Максимална височина на изображението", // ai 2026-06
 
-// include/itemfunc.php, row 1213
+// include/itemfunc.php, row 1214
 "The image will be resampled to be within these limits, while retaining aspect ratio." => "Изображението ще бъде преоразмерено в рамките на тези граници, при запазване на съотношението на страните.", // ai 2026-06
 
-// include/itemfunc.php, row 1214
+// include/itemfunc.php, row 1215
 "Other fields" => "Други полета", // ai 2026-06
 
-// include/itemfunc.php, row 1214
+// include/itemfunc.php, row 1215
 "List of other fields to receive this image, separated by ##. Does not work well for multi uploads." => "Списък с други полета, които да получат това изображение, разделени с ##. Не работи добре при множествено качване.", // ai 2026-06
 
-// include/itemfunc.php, row 1215
+// include/itemfunc.php, row 1216
 "Upload policy" => "Поведение при качване", // ai 2026-06
 
-// include/itemfunc.php, row 1215
+// include/itemfunc.php, row 1216
 "new | overwrite | backup<br>This parameter controls what to do if uploaded file alredy exists:<br>new - AA creates new filename (by adding _x postfix) and store it with this new name (default)<br>overwrite - the old file of the same name is overwritten<br>backup - the old file is copied to new (non-existing) file and current file is stored with current name.<br>In all cases the filename is escaped, so any non-word characters will be replaced by an underscore." => "new | overwrite | backup<br>Този параметър определя какво да се направи, ако каченият файл вече съществува:<br>new - AA създава ново име на файла (като добавя наставка _x) и го записва с това ново име (по подразбиране)<br>overwrite - старият файл със същото име се презаписва<br>backup - старият файл се копира в нов (несъществуващ) файл, а текущият файл се записва с текущото име.<br>Във всички случаи името на файла се обработва, така че всички небуквено-цифрови знаци ще бъдат заменени с долна черта.", // ai 2026-06
 
-// include/itemfunc.php, row 1216
+// include/itemfunc.php, row 1217
 "Exact dimensions" => "Точни размери", // ai 2026-06
 
-// include/itemfunc.php, row 1216
+// include/itemfunc.php, row 1217
 "If set to 1 the image will be downsized exactly to the specified dimensions (and cropped if needed). Default is 0 or empty: Maintain aspect ratio while resizing the image." => "Ако е зададено 1, изображението ще бъде намалено точно до зададените размери (и изрязано при нужда). По подразбиране е 0 или празно: при преоразмеряване се запазва съотношението на страните.", // ai 2026-06
 
-// include/itemfunc.php, row 1217
+// include/itemfunc.php, row 1218
 "Filename template" => "Шаблон за име на файла", // ai 2026-06
 
-// include/itemfunc.php, row 1217
+// include/itemfunc.php, row 1218
 "Renames file according to template. You can use AA expressions as well as special alias _#name and _#ext or _#full (file name, extension and fullname). The item aliases in AA expressions do not work on INSERT (item does not exist at time of file write). They will work on UPDATE." => "Преименува файла според шаблона. Можете да използвате AA изрази, както и специалните алиаси _#name и _#ext или _#full (име на файла, разширение и пълно име). Алиасите на статията в AA изразите не работят при INSERT (статията не съществува в момента на записване на файла). При UPDATE ще работят.", // ai 2026-06
 
-// include/itemfunc.php, row 1374
+// include/itemfunc.php, row 1375
 "Password and Change Password" => "Парола и Смяна на парола", // ai 2026-06
 
-// include/itemfunc.php, row 1375
+// include/itemfunc.php, row 1376
 "Stores value from a \"Password and Change Password\" field type. First proves the new password matches the retyped new password, and if so, encrypts the new password and stores it." => "Записва стойност от поле тип \"Парола и Смяна на парола\". Първо проверява дали новата парола съвпада с повторно въведената нова парола и ако да, шифрова новата парола и я записва.", // ai 2026-06
 
-// include/itemfunc.php, row 1382
+// include/itemfunc.php, row 1383
 "Copy of password" => "Копие на паролата", // ai 2026-06
 
-// include/itemfunc.php, row 1382
+// include/itemfunc.php, row 1383
 "Field_id, where you want to store the copy of the password. Sometimes useful if you want to allow people to get his/her old password. It is strongly recommended to not store it in plaintext and encrypt it. See second parameter." => "Field_id, в което искате да запишете копие на паролата. Понякога е полезно, ако искате да позволите на хората да получат старата си парола. Силно препоръчваме да не я съхранявате като обикновен текст, а да я шифровате. Вижте втория параметър.", // ai 2026-06
 
-// include/itemfunc.php, row 1383, 1422
+// include/itemfunc.php, row 1384, 1423
 "Encrypt phrase" => "Фраза за шифроване", // ai 2026-06
 
-// include/itemfunc.php, row 1383
+// include/itemfunc.php, row 1384
 "If you specify the \"Copy of password\" field, it is recommended to encrypt the password in the database. Fill there any string. If you then need the password, you can decrypt it from the field by using the same phrase - {decrypt:{password.......1}:Some Phrase}" => "Ако зададете полето \"Копие на паролата\", препоръчително е паролата да се шифрова в базата данни. Въведете произволен низ. Ако после паролата ви потрябва, можете да я дешифрирате от полето със същата фраза - {decrypt:{password.......1}:Some Phrase}", // ai 2026-06
 
-// include/itemfunc.php, row 1414
+// include/itemfunc.php, row 1415
 "2FA Secret" => "Таен ключ 2FA", // ai 2026-06
 
-// include/itemfunc.php, row 1415
+// include/itemfunc.php, row 1416
 "Generates and stores secret for Two-factor authentication, possibly encrypted by password" => "Генерира и записва таен ключ за двуфакторно удостоверяване, евентуално шифрован с парола", // ai 2026-06
 
-// include/itemfunc.php, row 1422
+// include/itemfunc.php, row 1423
 "Password to be applied for encrypting this field value. Could contain AA expressions or aliases (for user item in Reader Management slice)" => "Парола, която ще се използва за шифроване на стойността на това поле. Може да съдържа AA изрази или алиаси (за статията на потребителя в рубриката Управление на читатели)", // ai 2026-06
 
 // include/itemview.php, row 117
@@ -4913,65 +4913,143 @@ return [
 // include/locauth.php, row 87
 "If you are sure you have typed the correct password, please e-mail <a href=mailto:%1>%1</a>" => "Ако сте сигурни, че сте въвели правилната парола, моля, пишете на <a href=mailto:%1>%1</a>", // ai 2026-06
 
-// include/logs.php, row 306
+// include/logs.php, row 336
 "Created time" => "Време на създаване", // ai 2026-06
 
-// include/logs.php, row 307
+// include/logs.php, row 337
 "Readers to be emailed" => "Читатели, на които да се изпрати имейл", // ai 2026-06
 
-// include/logs.php, row 317
+// include/logs.php, row 347
 "Page" => "Страница", // ai 2026-06
 
-// include/logs.php, row 327, 351, 364
+// include/logs.php, row 357, 397, 410
 "Time [s]" => "Време [s]", // ai 2026-06
 
-// include/logs.php, row 328, 353
+// include/logs.php, row 358, 399
 "Memory usage [MB]" => "Използвана памет [MB]", // ai 2026-06
 
-// include/logs.php, row 329
+// include/logs.php, row 359
 "Memory peak [MB]" => "Пик на паметта [MB]", // ai 2026-06
 
-// include/logs.php, row 330
+// include/logs.php, row 360
 "Return code" => "Върнат код", // ai 2026-06
 
-// include/logs.php, row 349
-"Cached" => "От кеша", // ai 2026-06
-
-// include/logs.php, row 350
-"Not Modified (304)" => "Непроменено (304)", // ai 2026-06
-
-// include/logs.php, row 352
-"Time + Cached + 304" => "Време + кеш + 304", // ai 2026-06
-
-// include/logs.php, row 354, 365, 397
-"Url" => "URL", // ai 2026-06
+// include/logs.php, row 374
+"Tasks done" => "Завършени задачи", // ai 2026-06
 
 // include/logs.php, row 375
+"Tasks started" => "Стартирани задачи", // ai 2026-06
+
+// include/logs.php, row 376
+"Duration [s]" => "Продължителност [с]", // ai 2026-06
+
+// include/logs.php, row 377
+"Allowed [s]" => "Позволено [с]", // ai 2026-06
+
+// include/logs.php, row 395
+"Cached" => "От кеша", // ai 2026-06
+
+// include/logs.php, row 396
+"Not Modified (304)" => "Непроменено (304)", // ai 2026-06
+
+// include/logs.php, row 398
+"Time + Cached + 304" => "Време + кеш + 304", // ai 2026-06
+
+// include/logs.php, row 400, 411, 443, 475
+"Url" => "URL", // ai 2026-06
+
+// include/logs.php, row 421
 // include/menu_util.php, row 45
 "AA" => "",
 
-// include/logs.php, row 376
+// include/logs.php, row 422
 "SVN AA (util.php)" => "",
 
-// include/logs.php, row 377
+// include/logs.php, row 423
 "PHP" => "",
 
-// include/logs.php, row 378
+// include/logs.php, row 424
 "DB" => "БД", // ai 2026-06
 
-// include/logs.php, row 379
+// include/logs.php, row 425
 "Memory" => "Памет", // ai 2026-06
 
-// include/logs.php, row 380
+// include/logs.php, row 426
 "CPU" => "",
 
-// include/logs.php, row 394
+// include/logs.php, row 440
 "Identifier" => "Идентификатор", // ai 2026-06
 
-// include/logs.php, row 395
+// include/logs.php, row 441, 570, 583
 // modules/jump/modedit.php, row 180
 // src/Manager.php, row 584
 "Module ID" => "ID на модула", // ai 2026-06
+
+// include/logs.php, row 452
+"Template id" => "Id на шаблон", // ai 2026-06
+
+// include/logs.php, row 454
+"Emails sent" => "Изпратени имейли", // ai 2026-06
+
+// include/logs.php, row 463
+"Items selected" => "Избрани елементи", // ai 2026-06
+
+// include/logs.php, row 464
+"Items updated" => "Обновени елементи", // ai 2026-06
+
+// include/logs.php, row 465
+"Items planned" => "Планирани елементи", // ai 2026-06
+
+// include/logs.php, row 474
+"Message" => "Съобщение", // ai 2026-06
+
+// include/logs.php, row 476
+"Referer" => "Препращащ адрес", // ai 2026-06
+
+// include/logs.php, row 485
+"New name" => "Ново име", // ai 2026-06
+
+// include/logs.php, row 486
+"Old name" => "Старо име", // ai 2026-06
+
+// include/logs.php, row 495, 518
+"Phase" => "Фаза", // ai 2026-06
+
+// include/logs.php, row 496
+"Collection" => "Колекция", // ai 2026-06
+
+// include/logs.php, row 498, 509, 519
+"Detail" => "Детайл", // ai 2026-06
+
+// include/logs.php, row 508
+"Status" => "Статус", // ai 2026-06
+
+// include/logs.php, row 529
+"Processed" => "Обработени", // ai 2026-06
+
+// include/logs.php, row 530
+"Stored" => "Запазени", // ai 2026-06
+
+// include/logs.php, row 531
+"Errors" => "Грешки", // ai 2026-06
+
+// include/logs.php, row 542
+"Outcome" => "Резултат", // ai 2026-06
+
+// include/logs.php, row 555
+"Mode" => "Режим", // ai 2026-06
+
+// include/logs.php, row 556
+"Flags" => "Флагове", // ai 2026-06
+
+// include/logs.php, row 557
+"Context" => "Контекст", // ai 2026-06
+
+// include/logs.php, row 571
+"Feed counterpart" => "Съответствие при зареждане", // ai 2026-06
+
+// include/logs.php, row 584
+"Field ID" => "ID на полето", // ai 2026-06
 
 // include/mail.php, row 563
 // include/tv_email.php, row 77, 145
@@ -5001,7 +5079,7 @@ return [
 // include/menu.php, row 65
 "View site" => "Преглед на сайта", // ai 2026-06
 
-// include/menu.php, row 90, 91, 143
+// include/menu.php, row 90, 91, 142
 "Item Manager" => "Мениджър на статии", // ai 2026-06
 
 // include/menu.php, row 99
@@ -5020,137 +5098,137 @@ return [
 // include/menu.php, row 135
 "Email Notification" => "Известяване по имейл", // ai 2026-06
 
-// include/menu.php, row 138
+// include/menu.php, row 137
 // include/menu_util.php, row 69
 // include/um_util.php, row 100, 103
 "Permissions" => "Права", // ai 2026-06
 
-// include/menu.php, row 139
+// include/menu.php, row 138
 "Assign" => "Добавяне", // ai 2026-06
 
-// include/menu.php, row 142
+// include/menu.php, row 141
 "Design" => "Дизайн", // ai 2026-06
 
-// include/menu.php, row 145
+// include/menu.php, row 144
 "Fulltext" => "Пълен текст", // ai 2026-06
 
-// include/menu.php, row 146
+// include/menu.php, row 145
 "Index" => "Списък", // ai 2026-06
 
-// include/menu.php, row 148
+// include/menu.php, row 147
 "Sets of Items" => "Набори от статии", // ai 2026-06
 
-// include/menu.php, row 150
+// include/menu.php, row 149
 "Content Pooling" => "Обмен на съдържание", // ai 2026-06
 
-// include/menu.php, row 151
+// include/menu.php, row 150
 "Nodes" => "Възли", // ai 2026-06
 
-// include/menu.php, row 152
+// include/menu.php, row 151
 "Inner Node Feeding" => "Вътрешен обмен", // ai 2026-06
 
-// include/menu.php, row 154
+// include/menu.php, row 153
 "Inter Node Export" => "Експорт към възли", // ai 2026-06
 
-// include/menu.php, row 155
+// include/menu.php, row 154
 "RSS Feeds" => "RSS канали", // ai 2026-06
 
-// include/menu.php, row 156
+// include/menu.php, row 155
 "Filters" => "Филтри", // ai 2026-06
 
-// include/menu.php, row 157
+// include/menu.php, row 156
 "Mapping" => "Съпоставяне", // ai 2026-06
 
-// include/menu.php, row 158, 220
+// include/menu.php, row 157, 219
 "Import CSV" => "Импорт на CSV", // ai 2026-06
 
-// include/menu.php, row 159
+// include/menu.php, row 158
 // src/Manageraction/Item_Export.php, row 20
 "Export to file" => "Експорт във файл", // ai 2026-06
 
-// include/menu.php, row 161, 217
-// include/menu_util.php, row 73, 124
+// include/menu.php, row 160, 216
+// include/menu_util.php, row 73, 123
 // src/Module/Poll/Menu.php, row 67
 "Misc" => "Разни", // ai 2026-06
 
-// include/menu.php, row 164
+// include/menu.php, row 163
 "Change field IDs" => "Промяна на ID на полета", // ai 2026-06
 
-// include/menu.php, row 167
+// include/menu.php, row 166
 "Anonymous Form Wizard" => "Съветник за анонимен формуляр", // ai 2026-06
 
-// include/menu.php, row 168
+// include/menu.php, row 167
 // include/tv_email.php, row 134
 "Email templates" => "Шаблони за имейли", // ai 2026-06
 
-// include/menu.php, row 170
+// include/menu.php, row 169
 // include/menu_util.php, row 75
 "Planned Tasks" => "Планирани задачи", // ai 2026-06
 
-// include/menu.php, row 178
+// include/menu.php, row 177
 "Mailman: create list" => "Mailman: създаване на списък", // ai 2026-06
 
-// include/menu.php, row 186
-// include/menu_util.php, row 119
+// include/menu.php, row 185
+// include/menu_util.php, row 118
 // src/Module/Poll/Menu.php, row 60
 "Folders" => "Папки", // ai 2026-06
 
-// include/menu.php, row 189
+// include/menu.php, row 188
 // src/Module/Poll/Menu.php, row 62
 "... pending" => "... чакащи", // ai 2026-06
 
-// include/menu.php, row 190
+// include/menu.php, row 189
 // src/Module/Poll/Menu.php, row 63
 "... expired" => "... изтекли", // ai 2026-06
 
-// include/menu.php, row 192
-// include/menu_util.php, row 122
+// include/menu.php, row 191
+// include/menu_util.php, row 121
 // src/Module/Poll/Menu.php, row 65
 "Trash bin" => "Кошче", // ai 2026-06
 
-// include/menu.php, row 208
+// include/menu.php, row 207
 "Bookmarks" => "Отметки", // ai 2026-06
 
-// include/menu.php, row 218
+// include/menu.php, row 217
 "Setting" => "Настройка", // ai 2026-06
 
-// include/menu.php, row 219
-// include/menu_util.php, row 127
+// include/menu.php, row 218
+// include/menu_util.php, row 126
 // src/Module/Poll/Menu.php, row 68
 "Empty trash" => "Изпразване на кошчето", // ai 2026-06
 
-// include/menu.php, row 219
-// include/menu_util.php, row 127
+// include/menu.php, row 218
+// include/menu_util.php, row 126
 // src/Module/Poll/Menu.php, row 68
 "Are you sure you want to empty trash?" => "Наистина ли искате да изпразните кошчето?", // ai 2026-06
 
-// include/menu.php, row 221
+// include/menu.php, row 220
 "Set Debug OFF" => "Изключване на Debug", // ai 2026-06
 
-// include/menu.php, row 221
+// include/menu.php, row 220
 "Set Debug ON" => "Включване на Debug", // ai 2026-06
 
-// include/menu.php, row 231
-// include/menu_util.php, row 420, 612
+// include/menu.php, row 230
+// include/menu_util.php, row 419, 726
 // include/slice.class.php, row 1194
 "Alerts" => "Известия", // ai 2026-06
 
-// include/menu.php, row 231
+// include/menu.php, row 230
 "List of Alerts modules using this slice as Reader Management." => "Списък на модулите Известия, които използват тази рубрика за Управление на читатели.", // ai 2026-06
 
-// include/menu.php, row 233
+// include/menu.php, row 232
 "Bulk Emails" => "Масови имейли", // ai 2026-06
 
-// include/menu.php, row 233
+// include/menu.php, row 232
 "Send bulk email to selected users or to users in Stored searches" => "Изпращане на масов имейл до избрани потребители или до потребители от запазени търсения", // ai 2026-06
 
-// include/menu.php, row 237
+// include/menu.php, row 236
 "Send emails" => "Изпращане на имейли", // ai 2026-06
 
-// include/menu.php, row 246
+// include/menu.php, row 245
 "Alerts Sent" => "Изпращани известия", // ai 2026-06
 
-// include/menu.php, row 246
+// include/menu.php, row 245
 "List of Alerts modules sending items from this slice." => "Списък на модулите Известия, които изпращат статии от тази рубрика.", // ai 2026-06
 
 // include/menu_util.php, row 46
@@ -5186,76 +5264,97 @@ return [
 // include/menu_util.php, row 95
 "Wizard" => "Съветник", // ai 2026-06
 
-// include/menu_util.php, row 97
+// include/menu_util.php, row 96
 "Welcomes" => "Приветствени имейли", // ai 2026-06
 
-// include/menu_util.php, row 98
+// include/menu_util.php, row 97
 "Templates" => "Шаблони", // ai 2026-06
 
-// include/menu_util.php, row 100
+// include/menu_util.php, row 99
 "Documentation" => "Документация", // ai 2026-06
 
-// include/menu_util.php, row 101
+// include/menu_util.php, row 100
 "Style Guide" => "Ръководство за стил", // ai 2026-06
 
-// include/menu_util.php, row 107
+// include/menu_util.php, row 106
 "Central" => "",
 
-// include/menu_util.php, row 108
+// include/menu_util.php, row 107
 "AA Central" => "",
 
-// include/menu_util.php, row 125
+// include/menu_util.php, row 124
 "Synchronize..." => "Синхронизиране...", // ai 2026-06
 
-// include/menu_util.php, row 126
+// include/menu_util.php, row 125
 "Copy Slice..." => "Копиране на рубрика...", // ai 2026-06
 
-// include/menu_util.php, row 128
+// include/menu_util.php, row 127
 "Import conf from CSV..." => "Импорт на конфигурация от CSV...", // ai 2026-06
 
-// include/menu_util.php, row 398
+// include/menu_util.php, row 397
 "Part of %s" => "Част от %s", // ai 2026-06
 
-// include/menu_util.php, row 415
+// include/menu_util.php, row 414
 "Other slices" => "Други рубрики", // ai 2026-06
 
-// include/menu_util.php, row 419
+// include/menu_util.php, row 418
 "Reader Management Slice" => "Рубрика за управление на читатели", // ai 2026-06
 
-// include/menu_util.php, row 421
+// include/menu_util.php, row 420
 "Jump inside control panel" => "Преход в контролния панел", // ai 2026-06
 
-// include/menu_util.php, row 422
+// include/menu_util.php, row 421
 // include/slice.class.php, row 1226
 "Links" => "Връзки", // ai 2026-06
 
-// include/menu_util.php, row 423
+// include/menu_util.php, row 422
 "MySQL Auth (old version)" => "MySQL автентикация (стара версия)", // ai 2026-06
 
-// include/menu_util.php, row 424
+// include/menu_util.php, row 423
 // src/Module/Poll/Menu.php, row 83
 "Polls" => "Анкети", // ai 2026-06
 
-// include/menu_util.php, row 445
+// include/menu_util.php, row 444
 "New slice" => "Нова рубрика", // ai 2026-06
 
-// include/menu_util.php, row 449
+// include/menu_util.php, row 448
 "Switch module" => "Смяна на модул", // ai 2026-06
 
-// include/menu_util.php, row 616
+// include/menu_util.php, row 578, 589
+"Apply" => "Приложи", // ai 2026-06
+
+// include/menu_util.php, row 582
+"-- Default for module --" => "-- По подразбиране за модула --", // ai 2026-06
+
+// include/menu_util.php, row 590
+"Switches the admin interface language; the page reloads." => "Сменя езика на административния интерфейс; страницата се презарежда.", // ai 2026-06
+
+// include/menu_util.php, row 598
+"What's working, what isn't — tell the AA team." => "Какво работи и какво не — кажете на екипа на AA.", // ai 2026-06
+
+// include/menu_util.php, row 601
+"Settings" => "Настройки", // ai 2026-06
+
+// include/menu_util.php, row 604
+"Theme" => "Тема", // ai 2026-06
+
+// include/menu_util.php, row 606
+"Feedback" => "Обратна връзка", // ai 2026-06
+
+// include/menu_util.php, row 730
 // include/slice.class.php, row 554
 "Reader management" => "Управление на читатели", // ai 2026-06
 
-// include/menu_util.php, row 628
+// include/menu_util.php, row 742
 "logout" => "изход", // ai 2026-06
 
-// include/menu_util.php, row 636
+// include/menu_util.php, row 750
 "Search.." => "Търсене..", // ai 2026-06
 
-// include/menu_util.php, row 714
+// include/menu_util.php, row 829
 "Copyright (C) 2001 the <a href=\"https://www.apc.org\">Association for Progressive Communications (APC)</a>" => "Copyright (C) 2001 <a href=\"https://www.apc.org\">Асоциация за прогресивни комуникации (APC)</a>", // ai 2026-06
 
-// include/menu_util.php, row 724
+// include/menu_util.php, row 839
 "Collapse / expand menu" => "Свиване / разгъване на менюто", // ai 2026-06
 
 // include/metabase.class.php, row 1572
@@ -5377,43 +5476,43 @@ return [
 // include/searchbar.class.php, row 595
 "Order" => "Подреди", // ai 2026-06
 
-// include/searchbar.class.php, row 662
+// include/searchbar.class.php, row 664
 "Advanced search" => "Разширено търсене", // ai 2026-06
 
-// include/searchbar.class.php, row 720
+// include/searchbar.class.php, row 729
 "Refine" => "Уточни", // ai 2026-06
 
-// include/searchbar.class.php, row 723
+// include/searchbar.class.php, row 732
 "Share with all slice users" => "Сподели с всички потребители на рубриката", // ai 2026-06
 
-// include/searchbar.class.php, row 724
+// include/searchbar.class.php, row 733
 "Save filter" => "Запази филтъра", // ai 2026-06
 
-// include/searchbar.class.php, row 725
+// include/searchbar.class.php, row 734
 "Rename filter" => "Преименувай филтъра", // ai 2026-06
 
-// include/searchbar.class.php, row 726
+// include/searchbar.class.php, row 735
 "Are you sure you want to delete selected filter?" => "Наистина ли искате да изтриете избрания филтър?", // ai 2026-06
 
-// include/searchbar.class.php, row 1008
+// include/searchbar.class.php, row 1017
 "Select one..." => "Изберете...", // ai 2026-06
 
-// include/searchbar.class.php, row 1023
+// include/searchbar.class.php, row 1032
 "My filters" => "Моите филтри", // ai 2026-06
 
-// include/searchbar.class.php, row 1026
+// include/searchbar.class.php, row 1035
 "Global filters" => "Глобални филтри", // ai 2026-06
 
-// include/searchbar.class.php, row 1064
+// include/searchbar.class.php, row 1073
 "Shared filter (click to apply)" => "Споделен филтър (щракнете за прилагане)", // ai 2026-06
 
-// include/searchbar.class.php, row 1064
+// include/searchbar.class.php, row 1073
 "Personal filter (click to apply)" => "Личен филтър (щракнете за прилагане)", // ai 2026-06
 
-// include/searchbar.class.php, row 1074
+// include/searchbar.class.php, row 1083
 "Rename" => "Преименувай", // ai 2026-06
 
-// include/searchbar.class.php, row 1085
+// include/searchbar.class.php, row 1094
 "Manage filters" => "Управление на филтрите", // ai 2026-06
 
 // include/searchlib.php, row 54
@@ -5726,6 +5825,9 @@ return [
 // include/stringexpand.php, row 7716
 "version" => "версия", // ai 2026-06
 
+// include/stringexpand.php, row 7900
+"show" => "покажи", // ai 2026-06
+
 // include/stringexpand.php, row 7901
 "hide" => "скрий", // ai 2026-06
 
@@ -5859,21 +5961,6 @@ return [
 // include/tabledit_util.php, row 670
 "Wrong value: a number between %1 and %2 is expected." => "Грешна стойност: очаква се число между %1 и %2.", // ai 2026-06
 
-// include/tableviews.php, row 59, 60
-"Polls Design" => "Дизайн на анкетите", // ai 2026-06
-
-// include/tableviews.php, row 66, 102
-"Comment" => "Коментар", // ai 2026-06
-
-// include/tableviews.php, row 88
-"Module Id" => "ID на модула", // ai 2026-06
-
-// include/tableviews.php, row 104
-"design description (for administrators only)" => "описание на дизайна (само за администратори)", // ai 2026-06
-
-// include/tableviews.php, row 111
-"Answer HTML" => "HTML на отговора", // ai 2026-06
-
 // include/transformation.class.php, row 149
 "Fill by value" => "Запълване със стойност", // ai 2026-06
 
@@ -5962,7 +6049,7 @@ return [
 "Search the content of text and replaces it with another text using regular expressions. The aliases are unaliased in resulting string.<br>Example:<br> - Search: ^.*x=([0-9]*)\$<br> - Replace: {item:\$1:_#SEO_URL_}<br> - Unalias: Yes<br>Result: replaces all old-form links in the URL field from the new ones <br>(https://biom.cz/item.shtml?x=2344 --&gt; https://biom.cz/cz/about-biom)" => "Търси в съдържанието на текста и го заменя с друг текст чрез регулярни изрази. В резултатния низ алиасите се заместват (unalias).<br>Пример:<br> - Търсене: ^.*x=([0-9]*)\$<br> - Замяна: {item:\$1:_#SEO_URL_}<br> - Unalias: Да<br>Резултат: заменя всички препратки в стар формат в полето URL с нови <br>(https://biom.cz/item.shtml?x=2344 --&gt; https://biom.cz/cz/about-biom)", // ai 2026-06
 
 // include/transformation.class.php, row 839
-"Unalias" => "",
+"Unalias" => "Премахни псевдоними", // ai 2026-06
 
 // include/transformation.class.php, row 839
 "perform unaliasing on result strings" => "извършва заместване на алиасите (unalias) в резултатните низове", // ai 2026-06
@@ -5985,30 +6072,6 @@ return [
 // include/tv_email.php, row 168
 "Sender" => "Подател", // ai 2026-06
 
-// include/tv_misc.php, row 131
-"COUNT_HIT events will be used for counting item hits. After a while it will be automatically deleted." => "Събитията COUNT_HIT се използват за броене на показванията на статиите. След известно време те се изтриват автоматично.", // ai 2026-06
-
-// include/tv_misc.php, row 139, 140
-"Log view" => "Изглед Log", // ai 2026-06
-
-// include/tv_misc.php, row 162
-"See searchlog=1 parameter for slice.php in FAQ: " => "Вижте параметъра searchlog=1 за slice.php във FAQ:", // ai 2026-06
-
-// include/tv_misc.php, row 170, 171
-"SearchLog view" => "Изглед SearchLog", // ai 2026-06
-
-// include/tv_misc.php, row 175
-"items found" => "намерени статии", // ai 2026-06
-
-// include/tv_misc.php, row 176
-"search time" => "време на търсене", // ai 2026-06
-
-// include/tv_misc.php, row 177
-"addition" => "допълнение", // ai 2026-06
-
-// include/tv_misc.php, row 198, 199
-"Configure Fields" => "Настройка на полетата", // ai 2026-06
-
 // include/um_gedit.php, row 43
 "It is impossible to add group to permission system" => "Не може да се добави група към системата за права", // ai 2026-06
 
@@ -6027,10 +6090,10 @@ return [
 // include/um_util.php, row 358
 "Can't change user" => "Не може да се променят данните на потребителя", // ai 2026-06
 
-// include/util.php, row 1300
+// include/util.php, row 1304
 "Toolkit news message" => "Съобщение от приложението", // ai 2026-06
 
-// include/util.php, row 1314
+// include/util.php, row 1318
 "Relogin" => "Повторно влизане", // ai 2026-06
 
 // include/validate.php, row 52
@@ -6151,7 +6214,7 @@ return [
 "type" => "тип", // ai 2026-06
 
 // include/widget.class.php, row 171
-"multi" => "",
+"multi" => "множествено", // ai 2026-06
 
 // include/widget.class.php, row 172
 "persistent" => "",
@@ -6376,10 +6439,10 @@ return [
 // src/AA_Plannedtask.php, row 224
 "next run" => "следващо стартиране", // ai 2026-06
 
-// src/IO/Grabber/AARSS.php, row 116
+// src/IO/Grabber/AARSS.php, row 117
 "AA RSS" => "",
 
-// src/IO/Grabber/AARSS.php, row 124
+// src/IO/Grabber/AARSS.php, row 125
 "Grabs data from generic RSS or AA RSS (used for item exchange between different AA installations)" => "Изтегля данни от общ RSS или AA RSS (използва се за обмен на статии между различни инсталации на AA)", // ai 2026-06
 
 // src/IO/Grabber/CSV.php, row 66
@@ -7858,32 +7921,47 @@ return [
 // src/Util/ChangesMonitor.php, row 93
 "history (%1)" => "история (%1)", // ai 2026-06
 
+// src/Util/ChangesMonitor.php, row 336
+"No recorded changes for this item." => "Няма записани промени за тази статия.", // ai 2026-06
+
 // src/Util/ChangesMonitor.php, row 360
 "1 field changed" => "променено е 1 поле", // ai 2026-06
 
 // src/Util/ChangesMonitor.php, row 360
 "%1 fields changed" => "променени полета: %1", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 370, 382
+// src/Util/ChangesMonitor.php, row 369, 456
 "Restore" => "Възстановяване", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 377
+// src/Util/ChangesMonitor.php, row 383
+"(this change)" => "(тази промяна)", // ai 2026-06
+
+// src/Util/ChangesMonitor.php, row 387, 573, 577
+"Current (live)" => "Текуща (на живо)", // ai 2026-06
+
+// src/Util/ChangesMonitor.php, row 388
+"Compare to" => "Сравни с", // ai 2026-06
+
+// src/Util/ChangesMonitor.php, row 397
 "change %1 | uid %2 | %3 ns | resource %4" => "промяна %1 | uid %2 | %3 ns | ресурс %4", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 382
-"vs current" => "спрямо текущото", // ai 2026-06
+// src/Util/ChangesMonitor.php, row 449
+"View" => "Преглед", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 391
+// src/Util/ChangesMonitor.php, row 450
+"Diff" => "Разлика", // ai 2026-06
+
+// src/Util/ChangesMonitor.php, row 481
 "seq %1" => "посл. %1", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 405
-"no current value" => "няма текуща стойност", // ai 2026-06
+// src/Util/ChangesMonitor.php, row 488
+"No change between these versions." => "Няма разлика между тези версии.", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 407
-"same as current" => "същото като текущото", // ai 2026-06
+// src/Util/ChangesMonitor.php, row 511
+"(empty)" => "(празно)", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 426
-"No recorded changes for this item." => "Няма записани промени за тази статия.", // ai 2026-06
+// src/Util/ChangesMonitor.php, row 571
+"Original" => "Оригинал", // ai 2026-06
 
 // src/Util/Imgfunc.php, row 80
 "Cannot copy %1 to %2" => "Не може да се копира %1 в %2", // ai 2026-06
@@ -7896,6 +7974,9 @@ return [
 
 // src/Util/Searchfields.php, row 183
 "-- any numeric field --" => "-- произволно числово поле --", // ai 2026-06
+
+// src/Util/UiPrefs.php, row 55
+"Gold" => "Златна", // ai 2026-06
 
 // src/Widget/ChbWidget.php, row 80
 "Check Box" => "Отметка", // ai 2026-06
@@ -8332,7 +8413,7 @@ return [
 "http#://www.ecn.cz/articles/solar.shtml" => "",
 
 // src/Widget/Widget.php, row 877
-"Ajax inline" => "",
+"Ajax inline" => "Ajax на място", // ai 2026-06
 
 // src/Widget/Widget.php, row 877
 "If called as {ajax...} it modifies the visual - inline: old-way (not in window, but inline)" => "Ако се извика като {ajax...}, променя външния вид - inline: по стария начин (не в прозорец, а директно в текста)", // ai 2026-06

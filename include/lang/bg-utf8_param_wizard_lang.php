@@ -259,7 +259,7 @@ return [
 "link_only......." => "",
 
 // include/constants_param_wizard.php, row 278
-"url_field" => "",
+"url_field" => "поле с URL", // ai 2026-06
 
 // include/constants_param_wizard.php, row 279
 "field id if field, where external URL is stored (like hl_href.........)" => "id на полето, в което се съхранява външният URL (като hl_href.........)", // ai 2026-06
@@ -337,13 +337,13 @@ return [
 "No" => "Не", // ai 2026-06
 
 // include/constants_param_wizard.php, row 344
-"cond_field" => "",
+"cond_field" => "поле_условие", // ai 2026-06
 
 // include/constants_param_wizard.php, row 345
 "field to compare with the <b>condition</b> - if not filled, <i>field</i> is used" => "поле, което се сравнява с <b>condition</b> - ако не е попълнено, се използва <i>полето</i>", // ai 2026-06
 
 // include/constants_param_wizard.php, row 350
-"skip_the_field" => "",
+"skip_the_field" => "пропусни_полето", // ai 2026-06
 
 // include/constants_param_wizard.php, row 351
 "if set to 1, skip <i>the field</i> (print only <b>begin end</b> or <b>else</b>)" => "ако е зададено на 1, прескача <i>полето</i> (изписва само <b>begin end</b> или <b>else</b>)", // ai 2026-06

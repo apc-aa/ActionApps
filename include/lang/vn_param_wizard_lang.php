@@ -17,7 +17,7 @@ return [
 "field&nbsp;id" => "id&nbsp;trường", // ai 2026-06
 
 // admin/param_wizard.php, row 117
-"boolean:&nbsp;0=false,1=true" => "",
+"boolean:&nbsp;0=false,1=true" => "boolean:&nbsp;0=sai,1=đúng", // ai 2026-06
 
 // admin/param_wizard.php, row 141
 "Wizard" => "Trình hướng dẫn", // ai 2026-06
@@ -229,7 +229,7 @@ return [
 "max number of characters grabbed from the <b>fulltext</b> field" => "số ký tự tối đa lấy từ trường <b>fulltext</b>", // ai 2026-06
 
 // include/constants_param_wizard.php, row 254
-"fulltext" => "",
+"fulltext" => "toàn văn", // ai 2026-06
 
 // include/constants_param_wizard.php, row 255
 "field id of fulltext field (like full_text.......), from which the text is grabbed. If empty, the text is grabbed from <i>the field</i> itself." => "id trường của trường fulltext (như full_text.......), nơi lấy văn bản. Nếu để trống, văn bản được lấy từ chính <i>trường</i> đó.", // ai 2026-06
@@ -352,7 +352,7 @@ return [
 "This example is usable e.g. for Highlight field - it shows Yes or No depending on the field content" => "Ví dụ này có thể dùng ví dụ cho trường Highlight - nó hiển thị Yes hoặc No tùy theo nội dung của trường", // ai 2026-06
 
 // include/constants_param_wizard.php, row 359
-"1:Yes::No::1" => "",
+"1:Yes::No::1" => "1:Có::Không::1", // ai 2026-06
 
 // include/constants_param_wizard.php, row 362
 "When e-mail field is filled, prints something like \"Email: email@apc.org\", when it is empty, prints nothing" => "Khi trường e-mail được điền, hiển thị dạng \"Email: email@apc.org\", khi trống thì không hiển thị gì", // ai 2026-06
@@ -610,7 +610,7 @@ return [
 "field id of the field in <b>blurbSliceId</b> where the blurb text is stored (what to print)" => "id trường của trường trong <b>blurbSliceId</b> nơi lưu văn bản blurb (nội dung cần in)", // ai 2026-06
 
 // include/constants_param_wizard.php, row 601
-"RSS tag" => "",
+"RSS tag" => "thẻ RSS", // ai 2026-06
 
 // include/constants_param_wizard.php, row 602
 "serves for internal purposes of the predefined RSS aliases (e.g. _#RSS_TITL). Adds the RSS 0.91 compliant tags." => "phục vụ mục đích nội bộ của các bí danh RSS định nghĩa sẵn (ví dụ _#RSS_TITL). Thêm các thẻ tuân theo RSS 0.91.", // ai 2026-06
@@ -634,7 +634,7 @@ return [
 "prints <i>the field</i> content (or <i>unalias string</i>) depending on the html flag (if html flag is not set, it converts the content to html. In difference to f_h function, it converts to html line-breaks, too (in its basic variant)" => "in ra nội dung <i>trường</i> (hoặc <i>unalias string</i>) tùy theo cờ html (nếu cờ html không được đặt, nó chuyển nội dung sang html. Khác với hàm f_h, nó còn chuyển các ngắt dòng sang html (trong biến thể cơ bản)", // ai 2026-06
 
 // include/constants_param_wizard.php, row 621
-"unalias string" => "",
+"unalias string" => "chuỗi unalias", // ai 2026-06
 
 // include/constants_param_wizard.php, row 622
 "if the <i>unalias string</i> is defined, then the function ignores <i>the field</i> and it rather prints the <i>unalias string</i>. You can of course use any aliases (or fields like {headline.........}) in this string" => "nếu <i>unalias string</i> được định nghĩa, hàm sẽ bỏ qua <i>trường</i> và in ra <i>unalias string</i> thay thế. Tất nhiên bạn có thể dùng bất kỳ bí danh nào (hoặc các trường như {headline.........}) trong chuỗi này", // ai 2026-06

@@ -10,79 +10,79 @@ $mgettext_lang = "ro";
 
 return [
 
-// modules/alerts/alerts_sending.php, row 418
+// modules/alerts/alerts_sending.php, row 417
 "alerts alert" => "alerte - mesaj", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 419
+// modules/alerts/alerts_sending.php, row 418
 "alerts welcome" => "alerte - bun venit", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 420
+// modules/alerts/alerts_sending.php, row 419
 "slice wizard welcome" => "asistent sectiune - bun venit", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 421
+// modules/alerts/alerts_sending.php, row 420
 "user template" => "sablon utilizator", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 422
+// modules/alerts/alerts_sending.php, row 421
 "password change" => "schimbare parol\xE3", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 423
+// modules/alerts/alerts_sending.php, row 422
 "other" => "altele", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 433
+// modules/alerts/alerts_sending.php, row 432
 "Aliases for Alerts Alert" => "Aliasuri pentru Alerts Alert",
 
-// modules/alerts/alerts_sending.php, row 435
+// modules/alerts/alerts_sending.php, row 434
 "complete filter text" => "text filtru complet",
 
-// modules/alerts/alerts_sending.php, row 436, 445
+// modules/alerts/alerts_sending.php, row 435, 444
 "howoften" => "c\xEEt de des",
 
-// modules/alerts/alerts_sending.php, row 437
+// modules/alerts/alerts_sending.php, row 436
 "Anonym Form URL (set in Alerts Admin - Settings)" => "URL formular anonim (se seteaz\xE3 \xEEn Administrare alerte - Set\xE3ri)", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 438
+// modules/alerts/alerts_sending.php, row 437
 "Unsubscribe Form URL" => "URL formular de dezabonare", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 443
+// modules/alerts/alerts_sending.php, row 442
 "Aliases for Alerts Welcome" => "Aliasuri pentru mesajul de bun venit al alertelor", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 446
+// modules/alerts/alerts_sending.php, row 445
 "Collection Form URL (set in Alerts Admin - Settings)" => "URL formular colectie (se seteaz\xE3 \xEEn Administrare alerte - Set\xE3ri)", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 447
+// modules/alerts/alerts_sending.php, row 446
 "email confirmed" => "e-mail confirmat", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 453
+// modules/alerts/alerts_sending.php, row 452
 "Aliases for Slice Wizard Welcome" => "Aliasuri pentru mesajul de bun venit al asistentului de sectiune", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 455, 467
+// modules/alerts/alerts_sending.php, row 454, 466
 "Slice name" => "Denumire sec\xFEiune",
 
-// modules/alerts/alerts_sending.php, row 456, 468
+// modules/alerts/alerts_sending.php, row 455, 467
 "New user name" => "Numele noului utilizator", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 457
+// modules/alerts/alerts_sending.php, row 456
 "New user login name" => "Numele de autentificare al noului utilizator", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 458
+// modules/alerts/alerts_sending.php, row 457
 "New user role (editor / admin)" => "Rolul noului utilizator (editor / admin)", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 459
+// modules/alerts/alerts_sending.php, row 458
 "My name" => "Numele meu", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 460
+// modules/alerts/alerts_sending.php, row 459
 "My email" => "E-mailul meu", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 465
+// modules/alerts/alerts_sending.php, row 464
 "Aliases for User Templates (you can use also all aliases of the user)" => "Aliasuri pentru sabloanele utilizatorului (puteti folosi si toate aliasurile utilizatorului)", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 473
+// modules/alerts/alerts_sending.php, row 472
 "Aliases for Password Change email (you can use also all aliases of the user)" => "Aliasuri pentru e-mailul de schimbare a parolei (puteti folosi si toate aliasurile utilizatorului)", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 475
+// modules/alerts/alerts_sending.php, row 474
 "HTML link to the password change page for current user" => "Link HTML c\xE3tre pagina de schimbare a parolei pentru utilizatorul curent", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 476
+// modules/alerts/alerts_sending.php, row 475
 "URL parameter used for password change link in _#PWD_LINK (you can use it, if you want to use your own url for it)" => "Parametru URL folosit pentru linkul de schimbare a parolei \xEEn _#PWD_LINK (\xEEl puteti folosi dac\xE3 doriti s\xE3 utilizati propriul URL)", // ai 2026-06
 
 // modules/alerts/cf_common.php, row 41

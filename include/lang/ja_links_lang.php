@@ -52,69 +52,69 @@ return [
 // include/searchbar.class.php, row 613
 "Filter" => "\xA5\xD5\xA5\xA3\xA5\xEB\xA5\xBF\xA1\xBC", // ai 2026-06
 
-// include/searchbar.class.php, row 662
+// include/searchbar.class.php, row 664
 "Advanced search" => "\xB9\xE2\xC5\xD9\xA4\xCA\xB8\xA1\xBA\xF7", // ai 2026-06
 
-// include/searchbar.class.php, row 719
+// include/searchbar.class.php, row 728
 "Save" => "\xCA\xDD\xC2\xB8", // ai 2026-06
 
-// include/searchbar.class.php, row 720
+// include/searchbar.class.php, row 729
 "Refine" => "\xB9\xCA\xA4\xEA\xB9\xFE\xA4\xDF", // ai 2026-06
 
-// include/searchbar.class.php, row 721
+// include/searchbar.class.php, row 730
 "Cancel" => "\xC3\xE6\xC3\xC7",
 
-// include/searchbar.class.php, row 722
+// include/searchbar.class.php, row 731
 // modules/links/constants.php, row 59, 171
 "Name" => "\xCC\xBE\xC1\xB0",
 
-// include/searchbar.class.php, row 723
+// include/searchbar.class.php, row 732
 "Share with all slice users" => "\xA5\xB9\xA5\xE9\xA5\xA4\xA5\xB9\xA4\xCE\xC1\xB4\xCD\xF8\xCD\xD1\xBC\xD4\xA4\xC8\xB6\xA6\xCD\xAD", // ai 2026-06
 
-// include/searchbar.class.php, row 724
+// include/searchbar.class.php, row 733
 "Save filter" => "\xA5\xD5\xA5\xA3\xA5\xEB\xA5\xBF\xA4\xF2\xCA\xDD\xC2\xB8", // ai 2026-06
 
-// include/searchbar.class.php, row 725
+// include/searchbar.class.php, row 734
 "Rename filter" => "\xA5\xD5\xA5\xA3\xA5\xEB\xA5\xBF\xCC\xBE\xA4\xF2\xCA\xD1\xB9\xB9", // ai 2026-06
 
-// include/searchbar.class.php, row 726
+// include/searchbar.class.php, row 735
 "Are you sure you want to delete selected filter?" => "\xC1\xAA\xC2\xF2\xA4\xB7\xA4\xBF\xA5\xD5\xA5\xA3\xA5\xEB\xA5\xBF\xA4\xF2\xBA\xEF\xBD\xFC\xA4\xB7\xA4\xC6\xA4\xE2\xA4\xE8\xA4\xED\xA4\xB7\xA4\xA4\xA4\xC7\xA4\xB9\xA4\xAB\xA1\xA9", // ai 2026-06
 
-// include/searchbar.class.php, row 1008
+// include/searchbar.class.php, row 1017
 "Select one..." => "\xC1\xAA\xC2\xF2\xA4\xB7\xA4\xC6\xA4\xAF\xA4\xC0\xA4\xB5\xA4\xA4...", // ai 2026-06
 
-// include/searchbar.class.php, row 1023
+// include/searchbar.class.php, row 1032
 "My filters" => "\xBC\xAB\xCA\xAC\xA4\xCE\xA5\xD5\xA5\xA3\xA5\xEB\xA5\xBF", // ai 2026-06
 
-// include/searchbar.class.php, row 1026
+// include/searchbar.class.php, row 1035
 "Global filters" => "\xA5\xB0\xA5\xED\xA1\xBC\xA5\xD0\xA5\xEB\xA5\xD5\xA5\xA3\xA5\xEB\xA5\xBF", // ai 2026-06
 
-// include/searchbar.class.php, row 1064
+// include/searchbar.class.php, row 1073
 "Shared filter (click to apply)" => "\xB6\xA6\xCD\xAD\xA5\xD5\xA5\xA3\xA5\xEB\xA5\xBF (\xA5\xAF\xA5\xEA\xA5\xC3\xA5\xAF\xA4\xC7\xC5\xAC\xCD\xD1)", // ai 2026-06
 
-// include/searchbar.class.php, row 1064
+// include/searchbar.class.php, row 1073
 "Personal filter (click to apply)" => "\xB8\xC4\xBF\xCD\xA5\xD5\xA5\xA3\xA5\xEB\xA5\xBF (\xA5\xAF\xA5\xEA\xA5\xC3\xA5\xAF\xA4\xC7\xC5\xAC\xCD\xD1)", // ai 2026-06
 
-// include/searchbar.class.php, row 1074
+// include/searchbar.class.php, row 1083
 "Rename" => "\xCC\xBE\xC1\xB0\xA4\xF2\xCA\xD1\xB9\xB9", // ai 2026-06
 
-// include/searchbar.class.php, row 1076
+// include/searchbar.class.php, row 1085
 "Delete" => "\xBA\xEF\xBD\xFC", // ai 2026-06
 
-// include/searchbar.class.php, row 1085
+// include/searchbar.class.php, row 1094
 "Manage filters" => "\xA5\xD5\xA5\xA3\xA5\xEB\xA5\xBF\xA4\xCE\xB4\xC9\xCD\xFD", // ai 2026-06
 
 // include/util.php, row 950
 "Error: Missing Reading Password" => "\xA5\xA8\xA5\xE9\xA1\xBC: \xC6\xC9\xA4\xDF\xBC\xE8\xA4\xEA\xA5\xD1\xA5\xB9\xA5\xEF\xA1\xBC\xA5\xC9\xA4\xAC\xA4\xA2\xA4\xEA\xA4\xDE\xA4\xBB\xA4\xF3", // ai 2026-06
 
-// include/util.php, row 1300
+// include/util.php, row 1304
 "Toolkit news message" => "\xA5\xA2\xA5\xD7\xA5\xEA\xA5\xB1\xA1\xBC\xA5\xB7\xA5\xE7\xA5\xF3\xA4\xCE\xA4\xAA\xC3\xCE\xA4\xE9\xA4\xBB", // ai 2026-06
 
-// include/util.php, row 1314
+// include/util.php, row 1318
 // modules/links/check_url.php, row 52
 "Back" => "\xCC\xE1\xA4\xEB", // ai 2026-06
 
-// include/util.php, row 1314
+// include/util.php, row 1318
 "Relogin" => "\xBA\xC6\xA5\xED\xA5\xB0\xA5\xA4\xA5\xF3", // ai 2026-06
 
 // modules/links/actions.php, row 47, 91, 112

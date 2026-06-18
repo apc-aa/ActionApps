@@ -13,79 +13,79 @@ setlocale(LC_NUMERIC, 'en_US');            // keep float format with dot (see AA
 
 return [
 
-// modules/alerts/alerts_sending.php, row 418
+// modules/alerts/alerts_sending.php, row 417
 "alerts alert" => "сповіщення - повідомлення", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 419
+// modules/alerts/alerts_sending.php, row 418
 "alerts welcome" => "сповіщення - вітання", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 420
+// modules/alerts/alerts_sending.php, row 419
 "slice wizard welcome" => "помічник рубрики - вітання", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 421
+// modules/alerts/alerts_sending.php, row 420
 "user template" => "шаблон користувача", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 422
+// modules/alerts/alerts_sending.php, row 421
 "password change" => "зміна пароля", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 423
+// modules/alerts/alerts_sending.php, row 422
 "other" => "інше", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 433
+// modules/alerts/alerts_sending.php, row 432
 "Aliases for Alerts Alert" => "Аліаси для повідомлення сповіщень", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 435
+// modules/alerts/alerts_sending.php, row 434
 "complete filter text" => "повний текст фільтра", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 436, 445
+// modules/alerts/alerts_sending.php, row 435, 444
 "howoften" => "як часто", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 437
+// modules/alerts/alerts_sending.php, row 436
 "Anonym Form URL (set in Alerts Admin - Settings)" => "URL анонімної форми (налаштовується в Адміністрації сповіщень - Налаштування)", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 438
+// modules/alerts/alerts_sending.php, row 437
 "Unsubscribe Form URL" => "URL форми відписки", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 443
+// modules/alerts/alerts_sending.php, row 442
 "Aliases for Alerts Welcome" => "Аліаси для вітання сповіщень", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 446
+// modules/alerts/alerts_sending.php, row 445
 "Collection Form URL (set in Alerts Admin - Settings)" => "URL форми збору (налаштовується в Адміністрації сповіщень - Налаштування)", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 447
+// modules/alerts/alerts_sending.php, row 446
 "email confirmed" => "e-mail підтверджено", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 453
+// modules/alerts/alerts_sending.php, row 452
 "Aliases for Slice Wizard Welcome" => "Аліаси для вітання помічника рубрики", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 455, 467
+// modules/alerts/alerts_sending.php, row 454, 466
 "Slice name" => "Назва рубрики", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 456, 468
+// modules/alerts/alerts_sending.php, row 455, 467
 "New user name" => "Ім'я нового користувача", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 457
+// modules/alerts/alerts_sending.php, row 456
 "New user login name" => "Логін нового користувача", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 458
+// modules/alerts/alerts_sending.php, row 457
 "New user role (editor / admin)" => "Роль нового користувача (редактор / адмін)", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 459
+// modules/alerts/alerts_sending.php, row 458
 "My name" => "Моє ім'я", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 460
+// modules/alerts/alerts_sending.php, row 459
 "My email" => "Мій e-mail", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 465
+// modules/alerts/alerts_sending.php, row 464
 "Aliases for User Templates (you can use also all aliases of the user)" => "Аліаси для шаблонів користувача (можна використовувати також усі аліаси користувача)", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 473
+// modules/alerts/alerts_sending.php, row 472
 "Aliases for Password Change email (you can use also all aliases of the user)" => "Аліаси для e-mailу про зміну пароля (можна використовувати також усі аліаси користувача)", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 475
+// modules/alerts/alerts_sending.php, row 474
 "HTML link to the password change page for current user" => "HTML-посилання на сторінку зміни пароля для поточного користувача", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 476
+// modules/alerts/alerts_sending.php, row 475
 "URL parameter used for password change link in _#PWD_LINK (you can use it, if you want to use your own url for it)" => "Параметр URL, що використовується для посилання на зміну пароля в _#PWD_LINK (можна його використати, якщо хочете застосувати власну URL)", // ai 2026-06
 
 // modules/alerts/cf_common.php, row 41

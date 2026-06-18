@@ -212,13 +212,13 @@ return [
 // include/util.php, row 950
 "Error: Missing Reading Password" => "Hiba: hi\xE1nyzik az olvas\xE1si jelsz\xF3", // ai 2026-06
 
-// include/util.php, row 1300
+// include/util.php, row 1304
 "Toolkit news message" => "Toolkit h\xEDr\xFCzenet", // ai 2026-06
 
-// include/util.php, row 1314
+// include/util.php, row 1318
 "Back" => "Vissza", // ai 2026-06
 
-// include/util.php, row 1314
+// include/util.php, row 1318
 "Relogin" => "\xDAjra bejelentkez\xE9s", // ai 2026-06
 
 // misc/proposefieldchange.php, row 71

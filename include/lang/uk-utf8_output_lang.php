@@ -215,13 +215,13 @@ return [
 // include/util.php, row 950
 "Error: Missing Reading Password" => "Помилка: відсутній пароль для читання", // ai 2026-06
 
-// include/util.php, row 1300
+// include/util.php, row 1304
 "Toolkit news message" => "Повідомлення застосунку", // ai 2026-06
 
-// include/util.php, row 1314
+// include/util.php, row 1318
 "Back" => "Назад", // ai 2026-06
 
-// include/util.php, row 1314
+// include/util.php, row 1318
 "Relogin" => "Увійти знову", // ai 2026-06
 
 // misc/proposefieldchange.php, row 71

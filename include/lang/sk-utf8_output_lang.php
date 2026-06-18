@@ -235,13 +235,13 @@ return [
 // include/util.php, row 950
 "Error: Missing Reading Password" => "Chyba: chýba heslo pre čítanie", // ai 2026-06
 
-// include/util.php, row 1300
+// include/util.php, row 1304
 "Toolkit news message" => "Nastavenia",
 
-// include/util.php, row 1314
+// include/util.php, row 1318
 "Back" => "Spät",
 
-// include/util.php, row 1314
+// include/util.php, row 1318
 "Relogin" => "Znovu prihlásiť", // ai 2026-06
 
 // misc/proposefieldchange.php, row 71

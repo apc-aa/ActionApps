@@ -215,13 +215,13 @@ return [
 // include/util.php, row 950
 "Error: Missing Reading Password" => "Erro: Falta a palavra-passe de leitura", // ai 2026-06
 
-// include/util.php, row 1300
+// include/util.php, row 1304
 "Toolkit news message" => "Mensagem das aplicações", // ai 2026-06
 
-// include/util.php, row 1314
+// include/util.php, row 1318
 "Back" => "Voltar", // ai 2026-06
 
-// include/util.php, row 1314
+// include/util.php, row 1318
 "Relogin" => "Voltar a iniciar sessão", // ai 2026-06
 
 // misc/proposefieldchange.php, row 71

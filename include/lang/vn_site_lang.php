@@ -100,7 +100,7 @@ return [
 "State file" => "Tệp trạng thái", // ai 2026-06
 
 // modules/site/modedit.php, row 133, 278
-"Router" => "",
+"Router" => "Bộ định tuyến", // ai 2026-06
 
 // modules/site/modedit.php, row 134, 292
 "Uses modules" => "Mô-đun được sử dụng", // ai 2026-06

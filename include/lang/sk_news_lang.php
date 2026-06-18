@@ -9,7 +9,36 @@
 $mgettext_lang = "sk";
 
 return [
+// Runtime-translated messages - used via _mdelayed($variable), so they never appear
+// in _m('...') literals; their domains are listed in misc/mgettext/cli.php $RUNTIME_MESSAGES.
+"feed" => "na\xE8\xEDta\x9D", // ai 2026-06
+// End of runtime-translated messages
+
 // Unused messages - no longer found in the sources; kept commented for reference.
+// "You don't have permissions to view item history." => "Nem\xE1te pr\xE1vo zobrazi\x9D hist\xF3riu spr\xE1vy.", // ai 2026-06
+// "validate" => "validova\x9D", // ai 2026-06
+// "RSS feeds testing page." => "Str\xE1nka na testovanie RSS kan\xE1lov.", // ai 2026-06
+// "No RSS Feeds set." => "Nie s\xFA nastaven\xE9 \x9Eiadne RSS kan\xE1ly.", // ai 2026-06
+// "Messages" => "Hl\xE1senia", // ai 2026-06
+// "Write" => "Zap\xEDsa\x9D", // ai 2026-06
+// "update database" => "aktualizova\x9D datab\xE1zu", // ai 2026-06
+// "Feed url" => "URL kan\xE1lu", // ai 2026-06
+// "Ok : file deleted " => "Ok: s\xFAbor vymazan\xFD", // ai 2026-06
+// "Error: Cannot delete file" => "Chyba: Nepodarilo sa vymaza\x9D s\xFAbor", // ai 2026-06
+// "Error: Invalid directory" => "Chyba: Neplatn\xFD adres\xE1r", // ai 2026-06
+// "Module Id" => "ID modulu", // ai 2026-06
+// "design description (for administrators only)" => "popis dizajnu (len pre administr\xE1torov)", // ai 2026-06
+// "COUNT_HIT events will be used for counting item hits. After a while it will be automatically deleted." => "Udalosti COUNT_HIT sa pou\x9E\xEDvaj\xFA na po\xE8\xEDtanie zobrazen\xED spr\xE1v. Po \xE8ase sa automaticky zma\x9E\xFA.", // ai 2026-06
+// "Log view" => "Poh\xBEad Log", // ai 2026-06
+// "See searchlog=1 parameter for slice.php in FAQ: " => "Pozrite parameter searchlog=1 pre slice.php vo FAQ: ", // ai 2026-06
+// "SearchLog view" => "Poh\xBEad SearchLog", // ai 2026-06
+// "items found" => "n\xE1jden\xFDch spr\xE1v", // ai 2026-06
+// "search time" => "\xE8as h\xBEadania", // ai 2026-06
+// "addition" => "pridanie", // ai 2026-06
+// "Configure Fields" => "Nastavenie polo\x9Eiek", // ai 2026-06
+// "vs current" => "vs. aktu\xE1lne", // ai 2026-06
+// "no current value" => "\x9Eiadna aktu\xE1lna hodnota", // ai 2026-06
+// "same as current" => "rovnak\xE9 ako aktu\xE1lne", // ai 2026-06
 // "Add&nbsp;mutual" => "Vz\xE1jomne",
 // "Must begin with _#.<br>Alias must be exactly ten characters long including \"_#\".<br>Alias should be in upper case letters." => "Mus\xED za\xE8\xEDna\x9D znakmi \"_#\".<br>Alias mus\xED by\x9D presne 10 znakov dlh\xFD vr\xE1tane \"_#\".<br>Mal by by\x9D kapit\xE1lkami.",
 // "Wizard with help" => "Sprievodca s n\xE1povedou",
@@ -295,7 +324,7 @@ return [
 "Sites" => "Weby", // ai 2026-06
 
 // admin/aa_statistics.php, row 127
-// admin/aafinder.php, row 500, 513
+// admin/aafinder.php, row 499, 512
 // admin/se_inputform.php, row 291
 // include/searchlib.php, row 970
 "Slices" => "Moduly", // ai 2026-06
@@ -353,11 +382,11 @@ return [
 "Items found" => "N\xE1jden\xE9 spr\xE1vy", // ai 2026-06
 
 // admin/aa_statistics.php, row 313
-// admin/se_statistics.php, row 176
+// admin/se_statistics.php, row 179
 "No items found" => "Neboli n\xE1jden\xE9 \x9Eiadne spr\xE1vy", // ai 2026-06
 
-// admin/aa_statistics.php, row 321
-// admin/se_statistics.php, row 173
+// admin/aa_statistics.php, row 325
+// admin/se_statistics.php, row 176
 "Server configuration changes" => "Zmeny konfigur\xE1cie servera", // ai 2026-06
 
 // admin/aa_tasks.php, row 34
@@ -382,78 +411,87 @@ return [
 // admin/aa_toexecute.php, row 42
 "Scheduled Tasks" => "Napl\xE1novan\xE9 \xFAlohy", // ai 2026-06
 
+// admin/aa_uiprefs.php, row 30
+"You must be logged in." => "Mus\xEDte by\x9D prihl\xE1sen\xFD.", // ai 2026-06
+
+// admin/aa_uiprefs.php, row 115
+"Thanks \xE2\x80\x94 your note reached the AA team." => "\xCFakujeme \x97 va\x9Aa spr\xE1va sa dostala k t\xEDmu AA.", // ai 2026-06
+
+// admin/aa_uiprefs.php, row 117
+"Couldn't send right now. Please email us directly: %1" => "Teraz sa nepodarilo odosla\x9D. Nap\xED\x9Ate n\xE1m priamo: %1", // ai 2026-06
+
 // admin/aa_wizardtemplate.php, row 41
 "You do not have permission to manage Wizard Templates" => "Nem\xE1te pr\xE1vo spravova\x9D \x9Aabl\xF3ny sprievodcov", // ai 2026-06
 
 // admin/aa_wizardtemplate.php, row 75
-// include/tv_misc.php, row 70, 71
 "Wizard Templates" => "\x8Aabl\xF3ny sprievodcov", // ai 2026-06
 
-// admin/aafinder.php, row 87
+// admin/aafinder.php, row 86
 "You don't have permissions to do search." => "Nem\xE1te pr\xE1vo vyh\xBEad\xE1va\x9D.", // ai 2026-06
 
-// admin/aafinder.php, row 99
+// admin/aafinder.php, row 98
 "Show results with string" => "Zobrazi\x9D v\xFDsledky s re\x9Dazcom", // ai 2026-06
 
-// admin/aafinder.php, row 101
+// admin/aafinder.php, row 100
 "Item" => "Cl\xE1nok", // ai 2026-06
 
-// admin/aafinder.php, row 125
+// admin/aafinder.php, row 124
 // admin/feed_to.php, row 66
 // admin/se_fields.php, row 112
 // admin/slicedit.php, row 244
-// include/itemfunc.php, row 184
-// include/menu.php, row 126
+// include/itemfunc.php, row 185
+// include/logs.php, row 528
+// include/menu.php, row 132
 // include/slice.class.php, row 468
 // include/sliceadd.php, row 52, 77
 "Slice" => "Modul",
 
-// admin/aafinder.php, row 129
+// admin/aafinder.php, row 128
 // src/AA_Plannedtask.php, row 102
 "Module" => "Modul", // ai 2026-06
 
-// admin/aafinder.php, row 134, 135, 136, 137
+// admin/aafinder.php, row 133, 134, 135, 136
 // include/um_util.php, row 102
 "Object" => "Objekt", // ai 2026-06
 
-// admin/aafinder.php, row 140
-// include/itemfunc.php, row 273
-// include/logs.php, row 204
+// admin/aafinder.php, row 139
+// include/itemfunc.php, row 274
+// include/logs.php, row 234
 // src/AA_Plannedtask.php, row 117
 "Log" => "",
 
-// admin/aafinder.php, row 162
+// admin/aafinder.php, row 161
 // include/sliceadd.php, row 36
 // include/slicedit.php, row 150
 "You do not have permissions to add slice" => "Nem\xE1te pr\xE1vo prid\xE1va\x9D modul",
 
-// admin/aafinder.php, row 168
+// admin/aafinder.php, row 167
 // include/menu_util.php, row 79
 "AA finder" => "AA vyh\xBEad\xE1va\xE8", // ai 2026-06
 
-// admin/aafinder.php, row 248
+// admin/aafinder.php, row 247
 "Jump" => "Prejs\x9D", // ai 2026-06
 
-// admin/aafinder.php, row 467, 519
-// admin/itemhistory.php, row 39
-// include/itemfunc.php, row 81, 82, 253, 375
-// include/menu.php, row 156
+// admin/aafinder.php, row 466, 518
+// admin/itemhistory.php, row 43
+// include/itemfunc.php, row 83, 84, 254, 376
+// include/menu.php, row 161
 // include/menu_util.php, row 82
 "History" => "Hist\xF3ria", // ai 2026-06
 
-// admin/aafinder.php, row 479
+// admin/aafinder.php, row 478
 "Manage" => "Spravova\x9D", // ai 2026-06
 
-// admin/aafinder.php, row 482
+// admin/aafinder.php, row 481
 "Manage User:" => "Spravova\x9D u\x9E\xEDvate\xBEa:", // ai 2026-06
 
-// admin/aafinder.php, row 484, 490, 506, 534, 547
+// admin/aafinder.php, row 483, 489, 505, 533, 546
 "Go!" => "Cho\xEF!", // ai 2026-06
 
-// admin/aafinder.php, row 488
+// admin/aafinder.php, row 487
 "Manage Group:" => "Spravova\x9D skupinu:", // ai 2026-06
 
-// admin/aafinder.php, row 494, 524
+// admin/aafinder.php, row 493, 523
 // admin/um_gedit.php, row 208, 325
 // admin/um_uedit.php, row 249
 // include/se_users.php, row 131, 136
@@ -464,76 +502,76 @@ return [
 // src/Widget/GpsWidget.php, row 434
 "Search" => "H\xBEadanie",
 
-// admin/aafinder.php, row 497
+// admin/aafinder.php, row 496
 "Find in" => "H\xBEada\x9D v", // ai 2026-06
 
-// admin/aafinder.php, row 498
+// admin/aafinder.php, row 497
 "ID & SEO" => "ID a SEO", // ai 2026-06
 
-// admin/aafinder.php, row 499, 512
-// include/itemfunc.php, row 182
-// include/menu.php, row 138
+// admin/aafinder.php, row 498, 511
+// include/itemfunc.php, row 183
+// include/menu.php, row 143
 "Views" => "Poh\xBEady",
 
-// admin/aafinder.php, row 501, 514
+// admin/aafinder.php, row 500, 513
 // admin/anonym_wizard.php, row 216
 // include/exporter.class.php, row 522
-// include/itemfunc.php, row 350
-// include/menu.php, row 127
+// include/itemfunc.php, row 351
+// include/menu.php, row 133
 // include/searchlib.php, row 167
 "Fields" => "Pole spr\xE1v",
 
-// admin/aafinder.php, row 502, 515
+// admin/aafinder.php, row 501, 514
 "Site spots" => "Miesta na webe", // ai 2026-06
 
-// admin/aafinder.php, row 503, 520
+// admin/aafinder.php, row 502, 519
 "Discussion comments" => "Diskusn\xE9 pr\xEDspevky", // ai 2026-06
 
-// admin/aafinder.php, row 511
+// admin/aafinder.php, row 510
 "Search and Replace in" => "H\xBEada\x9D a nahradi\x9D v", // ai 2026-06
 
-// admin/aafinder.php, row 516
+// admin/aafinder.php, row 515
 "Objects" => "Objekty", // ai 2026-06
 
-// admin/aafinder.php, row 517
+// admin/aafinder.php, row 516
 "Items from slices with 'Slice Type' like Code... " => "Spr\xE1vy z modulov, ktor\xFDch 'Typ modulu' obsahuje Code...", // ai 2026-06
 
-// admin/aafinder.php, row 517
+// admin/aafinder.php, row 516
 "Code Items" => "K\xF3dov\xE9 spr\xE1vy", // ai 2026-06
 
-// admin/aafinder.php, row 518
+// admin/aafinder.php, row 517
 "All Items" => "V\x9Aetky spr\xE1vy", // ai 2026-06
 
-// admin/aafinder.php, row 522
+// admin/aafinder.php, row 521
 "minimum 2 characters for replace function" => "minim\xE1lne 2 znaky pre funkciu nahradenia", // ai 2026-06
 
-// admin/aafinder.php, row 523
+// admin/aafinder.php, row 522
 "minimum 6 characters for replace function (or use {#AAA} value which will be replaced by empty string)" => "minim\xE1lne 6 znakov pre funkciu nahradenia (alebo pou\x9Eite hodnotu {#AAA}, ktor\xE1 bude nahraden\xE1 pr\xE1zdnym re\x9Dazcom)", // ai 2026-06
 
-// admin/aafinder.php, row 525
+// admin/aafinder.php, row 524
 "Replace!" => "Nahradi\x9D!", // ai 2026-06
 
-// admin/aafinder.php, row 532
+// admin/aafinder.php, row 531
 "Get all information about the ITEM" => "Z\xEDska\x9D v\x9Aetky inform\xE1cie o SPR\xC1VE", // ai 2026-06
 
-// admin/aafinder.php, row 539
+// admin/aafinder.php, row 538
 "Shortcut to edit ITEM" => "Skratka na \xFApravu SPR\xC1VY", // ai 2026-06
 
-// admin/aafinder.php, row 542
+// admin/aafinder.php, row 541
 // include/searchbar.class.php, row 543
 // include/searchlib.php, row 47, 48, 124, 133
 "contains" => "obsahuje", // ai 2026-06
 
-// admin/aafinder.php, row 543
+// admin/aafinder.php, row 542
 // include/searchbar.class.php, row 549
 // include/searchlib.php, row 124, 133
 "is" => "je", // ai 2026-06
 
-// admin/aafinder.php, row 544
+// admin/aafinder.php, row 543
 // admin/se_profile.php, row 98
 "Item number" => "Po\xE8et spr\xE1v",
 
-// admin/aafinder.php, row 545
+// admin/aafinder.php, row 544
 "seo............. =" => "",
 
 // admin/aarsstest.php, row 37
@@ -559,6 +597,7 @@ return [
 
 // admin/anonym_wizard.php, row 127
 // admin/write_mail.php, row 257
+// include/menu_util.php, row 599
 // include/stringexpand.php, row 9646, 9726
 "Send" => "Odosla\x9D", // ai 2026-06
 
@@ -609,12 +648,12 @@ return [
 // admin/se_fieldid.php, row 308
 // admin/se_fields.php, row 193, 378
 // admin/se_javascript.php, row 90
-// admin/se_profile.php, row 144
+// admin/se_profile.php, row 208
 // admin/search_replace.php, row 173
 // admin/sliceexp_text.php, row 364
 // include/form.class.php, row 183
 // include/searchlib.php, row 357
-// src/Util/ChangesMonitor.php, row 381
+// src/Util/ChangesMonitor.php, row 455
 "Field" => "Polo\x9Eka",
 
 // admin/anonym_wizard.php, row 221
@@ -624,8 +663,7 @@ return [
 // admin/se_javascript.php, row 90
 // admin/slicedit.php, row 277
 // include/constants.php, row 409
-// include/tableviews.php, row 64, 80
-"Id" => "",
+"Id" => "ID", // ai 2026-06
 
 // admin/anonym_wizard.php, row 223
 "Field Id in Form" => "Id pol\xED\xE8ka vo formul\xE1ri", // ai 2026-06
@@ -701,7 +739,7 @@ return [
 "Author" => "Autor",
 
 // admin/discedit.php, row 130
-// include/logs.php, row 396
+// include/logs.php, row 442
 "IP Address" => "IP adresa", // ai 2026-06
 
 // admin/discedit.php, row 131
@@ -711,7 +749,6 @@ return [
 
 // admin/discedit.php, row 132
 // admin/related_sel.php, row 148
-// admin/rsstest.php, row 96
 // admin/se_views.php, row 132
 // src/Manager.php, row 201
 // src/Optimize/AbstractOptimize.php, row 127
@@ -727,7 +764,7 @@ return [
 // admin/um_uedit.php, row 266
 // include/field.class.php, row 597
 // include/filedit.php, row 114
-// include/formutil.php, row 1755, 3344
+// include/formutil.php, row 1755, 3346
 // include/metabase.class.php, row 1552
 // include/mlx.php, row 367
 // include/statestore.php, row 1025
@@ -753,7 +790,7 @@ return [
 // include/formutil.php, row 1766, 1903
 // include/menu_util.php, row 61
 // include/profile.php, row 67
-// include/searchbar.class.php, row 1076
+// include/searchbar.class.php, row 1085
 // include/um_gsrch.php, row 53
 // src/Manageraction/Object_Delete.php, row 24
 // src/Manageraction/Table_Row_Delete.php, row 23
@@ -761,9 +798,9 @@ return [
 "Delete" => "Vymaza\x9D",
 
 // admin/discedit.php, row 169
-// include/adminpage.class.php, row 330
+// include/adminpage.class.php, row 331
 // include/se_users.php, row 121
-// include/util.php, row 1314
+// include/util.php, row 1318
 "Back" => "Sp\xE4t",
 
 // admin/discedit.php, row 170
@@ -820,7 +857,7 @@ return [
 "Export Item to Selected Slice" => "Poskytn\xFA\x9D spr\xE1vu do modulu",
 
 // admin/feed_to.php, row 67
-// include/itemfunc.php, row 152
+// include/itemfunc.php, row 153
 "Holding bin" => "Z\xE1sobn\xEDk", // ai 2026-06
 
 // admin/feed_to.php, row 68
@@ -828,8 +865,8 @@ return [
 // admin/se_filters.php, row 191
 // admin/slicedit.php, row 139, 145
 // include/exporter.class.php, row 483
-// include/menu.php, row 182
-// include/menu_util.php, row 120
+// include/menu.php, row 187
+// include/menu_util.php, row 119
 // src/Module/Poll/Menu.php, row 61
 "Active" => "Aktu\xE1lne",
 
@@ -859,7 +896,7 @@ return [
 
 // admin/fileman.php, row 114
 // include/filedit.php, row 66
-// include/menu.php, row 160
+// include/menu.php, row 165
 "File Manager" => "Spr\xE1vca s\xFAborov", // ai 2026-06
 
 // admin/fileman.php, row 116
@@ -915,17 +952,15 @@ return [
 "Edit Item" => "Upravi\x9D spr\xE1vu",
 
 // admin/itemedit.php, row 387, 388
-// include/menu.php, row 76
+// include/menu.php, row 82
 "Add Item" => "Prida\x9D spr\xE1vu",
 
-// admin/itemhistory.php, row 24
-"You don't have permissions to view item history." => "Nem\xE1te pr\xE1vo zobrazi\x9D hist\xF3riu spr\xE1vy.", // ai 2026-06
-
-// admin/itemhistory.php, row 32
+// admin/itemhistory.php, row 28
 // admin/iteminfo.php, row 29
 // admin/itemstats.php, row 31
 "Item not found." => "Spr\xE1va nen\xE1jden\xE1.", // ai 2026-06
 
+// admin/itemhistory.php, row 36
 // admin/iteminfo.php, row 36
 "You have no rights to this item." => "Nem\xE1te pr\xE1vo na t\xFAto spr\xE1vu.", // ai 2026-06
 
@@ -937,8 +972,8 @@ return [
 "You don't have permissions to view item statistics." => "Nem\xE1te pr\xE1vo zobrazi\x9D \x9Atatistiku spr\xE1vy.", // ai 2026-06
 
 // admin/itemstats.php, row 38
-// include/itemfunc.php, row 86, 456
-// include/menu.php, row 157
+// include/itemfunc.php, row 88, 457
+// include/menu.php, row 162
 // include/menu_util.php, row 81
 // src/Util/Adminlink.php, row 119
 "Statistics" => "\x8Atatistika", // ai 2026-06
@@ -995,48 +1030,11 @@ return [
 // admin/related_sel.php, row 176
 "Editor window - item manager, related selection window" => "ActionApps - V\xFDber s\xFAvisiacich spr\xE1v", // ai 2026-06
 
-// admin/rsstest.php, row 50
-"feed" => "na\xE8\xEDta\x9D", // ai 2026-06
-
-// admin/rsstest.php, row 51
-"validate" => "validova\x9D", // ai 2026-06
-
-// admin/rsstest.php, row 52
-// include/stringexpand.php, row 7900
-"show" => "zobrazi\x9D", // ai 2026-06
-
-// admin/rsstest.php, row 85, 86, 136
-"RSS Feed import test" => "Test importu RSS kan\xE1lov", // ai 2026-06
-
-// admin/rsstest.php, row 87
-"RSS feeds testing page." => "Str\xE1nka na testovanie RSS kan\xE1lov.", // ai 2026-06
-
-// admin/rsstest.php, row 89
-"No RSS Feeds set." => "Nie s\xFA nastaven\xE9 \x9Eiadne RSS kan\xE1ly.", // ai 2026-06
-
-// admin/rsstest.php, row 100
-"Messages" => "Hl\xE1senia", // ai 2026-06
-
-// admin/rsstest.php, row 106
-"Write" => "Zap\xEDsa\x9D", // ai 2026-06
-
-// admin/rsstest.php, row 107
-"update database" => "aktualizova\x9D datab\xE1zu", // ai 2026-06
-
-// admin/rsstest.php, row 113
-"Feed url" => "URL kan\xE1lu", // ai 2026-06
-
-// admin/rsstest.php, row 117
-// admin/se_inter_import.php, row 98
-"Node" => "Uzol", // ai 2026-06
-
-// admin/rsstest.php, row 121
-// include/feeding.php, row 464, 470, 527
-"Local slice" => "Lok\xE1lny modul", // ai 2026-06
-
-// admin/rsstest.php, row 130
-// admin/tabledit.php, row 78
+// admin/rsstest.php, row 36
 "You do not have permissions to access this page" => "Nem\xE1te pr\xE1vo na pr\xEDstup k tejto str\xE1nke", // ai 2026-06
+
+// admin/rsstest.php, row 46
+"RSS Feed import test" => "Test importu RSS kan\xE1lov", // ai 2026-06
 
 // admin/se_admin.php, row 72
 "You have no permission to set configuration parameters of this slice" => "Nem\xE1te pr\xE1vo nastavova\x9D konfigura\xE8n\xE9 parametre tohoto modulu",
@@ -1044,7 +1042,6 @@ return [
 // admin/se_admin.php, row 81, 173
 // admin/se_compact.php, row 94, 238
 // include/constants.php, row 605, 655, 675, 729, 764, 795, 819, 862, 891, 917, 951
-// include/tableviews.php, row 107
 "Top HTML" => "Horn\xFD HTML k\xF3d",
 
 // admin/se_admin.php, row 82, 176
@@ -1053,7 +1050,6 @@ return [
 // admin/se_admin.php, row 83, 179
 // admin/se_compact.php, row 95, 248
 // include/constants.php, row 610, 657, 677, 733, 766, 797, 822, 867, 893, 922, 956
-// include/tableviews.php, row 115
 "Bottom HTML" => "Spodn\xFD HTML k\xF3d",
 
 // admin/se_admin.php, row 84, 182
@@ -1086,6 +1082,7 @@ return [
 // admin/se_compact.php, row 228
 // admin/se_fulltext.php, row 153
 // admin/se_inputform.php, row 187, 439
+// src/Util/UiPrefs.php, row 56
 "Default" => "Predvolen\xE9", // ai 2026-06
 
 // admin/se_admin.php, row 171
@@ -1217,8 +1214,7 @@ return [
 // include/constedit.php, row 73
 // include/fileman.php, row 31
 // include/se_users.php, row 173
-// include/searchbar.class.php, row 722
-// include/tableviews.php, row 65, 97
+// include/searchbar.class.php, row 731
 // include/um_gedit.php, row 31
 // src/AA_Plannedtask.php, row 102
 // src/Optimize/AbstractOptimize.php, row 125
@@ -1226,7 +1222,7 @@ return [
 
 // admin/se_constant.php, row 220, 402
 // admin/se_mapping.php, row 183
-// admin/se_profile.php, row 146
+// admin/se_profile.php, row 210
 // include/constants.php, row 404
 // include/constedit.php, row 76
 // include/searchlib.php, row 171
@@ -1364,6 +1360,7 @@ return [
 
 // admin/se_csv_import.php, row 236, 241
 // include/filedit.php, row 66
+// include/logs.php, row 543
 "File" => "S\xFAbor",
 
 // admin/se_csv_import.php, row 237, 242
@@ -1373,14 +1370,14 @@ return [
 
 // admin/se_csv_import.php, row 238, 243
 // admin/se_inputform.php, row 471, 472
-// include/itemfunc.php, row 589, 678, 702
+// include/itemfunc.php, row 590, 679, 703
 "Text" => "",
 
 // admin/se_csv_import.php, row 251
 "Source of CSV data" => "Zdroj CSV d\xE1t", // ai 2026-06
 
 // admin/se_csv_import.php, row 275
-// admin/se_csv_import2.php, row 374
+// admin/se_csv_import2.php, row 373
 // src/Manageraction/Item_Preview.php, row 11
 "Preview" => "Zobrazi\x9D spr\xE1vu",
 
@@ -1406,133 +1403,125 @@ return [
 // admin/se_csv_import2.php, row 284
 "Ok: Item %1 stored" => "Ok: Spr\xE1va %1 ulo\x9Een\xE1", // ai 2026-06
 
-// admin/se_csv_import2.php, row 300
-// include/files.class.php, row 298
-"Ok : file deleted " => "Ok: s\xFAbor vymazan\xFD", // ai 2026-06
-
-// admin/se_csv_import2.php, row 302
-// include/files.class.php, row 300
-"Error: Cannot delete file" => "Chyba: Nepodarilo sa vymaza\x9D s\xFAbor", // ai 2026-06
-
-// admin/se_csv_import2.php, row 306
+// admin/se_csv_import2.php, row 305
 "Added to slice" => "Pridan\xE9 do modulu", // ai 2026-06
 
-// admin/se_csv_import2.php, row 328
+// admin/se_csv_import2.php, row 327
 "Mapping preview" => "N\xE1h\xBEad mapovania", // ai 2026-06
 
-// admin/se_csv_import2.php, row 379
+// admin/se_csv_import2.php, row 378
 "Finish" => "Dokon\xE8i\x9D", // ai 2026-06
 
-// admin/se_csv_import2.php, row 384
-// include/searchbar.class.php, row 719
+// admin/se_csv_import2.php, row 383
+// include/searchbar.class.php, row 728
 // src/Widget/MflWidget.php, row 120
 // src/Widget/RioWidget.php, row 124
 // src/Widget/TxtWidget.php, row 109
 // src/Widget/Widget.php, row 416
 "Save" => "Ulo\x9Ei\x9D", // ai 2026-06
 
-// admin/se_csv_import2.php, row 389
+// admin/se_csv_import2.php, row 388
 "Load" => "Na\xE8\xEDta\x9D", // ai 2026-06
 
-// admin/se_csv_import2.php, row 399
+// admin/se_csv_import2.php, row 398
 "Mapping settings" => "Nastavenie mapovania", // ai 2026-06
 
-// admin/se_csv_import2.php, row 402
+// admin/se_csv_import2.php, row 401
 // admin/se_filters.php, row 190
 // admin/se_mapping.php, row 181
 "To" => "Do",
 
-// admin/se_csv_import2.php, row 403
+// admin/se_csv_import2.php, row 402
 // admin/se_filters.php, row 189
 // admin/se_mapping.php, row 182
 // include/tv_email.php, row 159
 "From" => "Z",
 
-// admin/se_csv_import2.php, row 404
+// admin/se_csv_import2.php, row 403
 // admin/search_replace.php, row 178
 // include/metabase.class.php, row 1577
 // include/statestore.php, row 975, 1289
 // src/AA_Plannedtask.php, row 102
 "Action" => "Akcia", // ai 2026-06
 
-// admin/se_csv_import2.php, row 405
+// admin/se_csv_import2.php, row 404
 "Html" => "HTML", // ai 2026-06
 
-// admin/se_csv_import2.php, row 406
+// admin/se_csv_import2.php, row 405
 "Action parameters" => "Parametre akcie", // ai 2026-06
 
-// admin/se_csv_import2.php, row 407
+// admin/se_csv_import2.php, row 406
 "Parameter wizard" => "Sprievodca parametrami", // ai 2026-06
 
-// admin/se_csv_import2.php, row 432
+// admin/se_csv_import2.php, row 431
 "Import options" => "Mo\x9Enosti importu", // ai 2026-06
 
-// admin/se_csv_import2.php, row 447
+// admin/se_csv_import2.php, row 446
 "Map item id from" => "Mapova\x9D ID spr\xE1vy z", // ai 2026-06
 
-// admin/se_csv_import2.php, row 451
+// admin/se_csv_import2.php, row 450
 "unpacked long id (32 characters)" => "nezabalen\xE9 dlh\xE9 id (32 znakov)", // ai 2026-06
 
-// admin/se_csv_import2.php, row 452
+// admin/se_csv_import2.php, row 451
 "packed long id (16 characters)" => "zabalen\xE9 dlh\xE9 id (16 znakov)", // ai 2026-06
 
-// admin/se_csv_import2.php, row 453
+// admin/se_csv_import2.php, row 452
 "string to be converted (string2id) - with param:" => "re\x9Dazec na konverziu (string2id) - s parametrom:", // ai 2026-06
 
-// admin/se_csv_import2.php, row 461
+// admin/se_csv_import2.php, row 460
 "Select, how to store the items" => "Vyberte, ako ulo\x9Ei\x9D spr\xE1vy", // ai 2026-06
 
-// admin/se_csv_import2.php, row 463
+// admin/se_csv_import2.php, row 462
 "Do not store the item" => "Neuklada\x9D spr\xE1vu", // ai 2026-06
 
-// admin/se_csv_import2.php, row 464
+// admin/se_csv_import2.php, row 463
 "Store the item with new id" => "Ulo\x9Ei\x9D spr\xE1vu s nov\xFDm id", // ai 2026-06
 
-// admin/se_csv_import2.php, row 465
+// admin/se_csv_import2.php, row 464
 "Update the item (overwrite)" => "Aktualizova\x9D spr\xE1vu (prep\xEDsa\x9D)", // ai 2026-06
 
-// admin/se_csv_import2.php, row 466
+// admin/se_csv_import2.php, row 465
 "Add the values in parallel to current values (the multivalues are stored, where possible)" => "Prida\x9D hodnoty s\xFAbe\x9Ene k aktu\xE1lnym hodnot\xE1m (kde je to mo\x9En\xE9, ulo\x9Eia sa viacn\xE1sobn\xE9 hodnoty)", // ai 2026-06
 
-// admin/se_csv_import2.php, row 467
+// admin/se_csv_import2.php, row 466
 "Rewrite only the fields, for which the action is defined and compute all computed fields, ..." => "Prep\xEDsa\x9D iba polo\x9Eky, pre ktor\xE9 je definovan\xE1 akcia, a vypo\xE8\xEDta\x9D v\x9Aetky po\xE8\xEDtan\xE9 polo\x9Eky, ...", // ai 2026-06
 
-// admin/se_csv_import2.php, row 468
+// admin/se_csv_import2.php, row 467
 "Rewrite only the fields, for which the action is defined (do not update lastedit, computed, ... fields = Silent)" => "Prep\xEDsa\x9D iba polo\x9Eky, pre ktor\xE9 je definovan\xE1 akcia (neaktualizova\x9D lastedit, po\xE8\xEDtan\xE9, ... polo\x9Eky = tich\xFD re\x9Eim)", // ai 2026-06
 
-// admin/se_csv_import2.php, row 469
+// admin/se_csv_import2.php, row 468
 "Rewrite only the fields, for which the action is defined and its value is not empty (computed fields will be computed)" => "Prep\xEDsa\x9D iba polo\x9Eky, pre ktor\xE9 je definovan\xE1 akcia a ich hodnota nie je pr\xE1zdna (po\xE8\xEDtan\xE9 polo\x9Eky bud\xFA vypo\xE8\xEDtan\xE9)", // ai 2026-06
 
-// admin/se_csv_import2.php, row 472
+// admin/se_csv_import2.php, row 471
 "If the item id is already in the slice" => "Ak je id spr\xE1vy u\x9E v module", // ai 2026-06
 
-// admin/se_csv_import2.php, row 473
+// admin/se_csv_import2.php, row 472
 // admin/search_replace.php, row 176
 "Silent" => "Tich\xFD re\x9Eim", // ai 2026-06
 
-// admin/se_csv_import2.php, row 473
+// admin/se_csv_import2.php, row 472
 "Do not perform any other operations like evaluate-computed-field, feed, send e-mail to Readers of Alerts..." => "Nevykon\xE1va\x9D \x9Eiadne \xEFal\x9Aie oper\xE1cie ako vyhodnotenie po\xE8\xEDtan\xFDch polo\x9Eiek, v\xFDmena spr\xE1v, posielanie e-mailov odberate\xBEom upozornen\xED...", // ai 2026-06
 
-// admin/se_csv_import2.php, row 474
+// admin/se_csv_import2.php, row 473
 "Data source" => "Zdroj d\xE1t", // ai 2026-06
 
-// admin/se_csv_import2.php, row 475
+// admin/se_csv_import2.php, row 474
 // include/feeding.php, row 456, 488
 "Source" => "Zdroj", // ai 2026-06
 
-// admin/se_csv_import2.php, row 477
+// admin/se_csv_import2.php, row 476
 "Store settings..." => "Ulo\x9Ei\x9D nastavenia...", // ai 2026-06
 
-// admin/se_csv_import2.php, row 483
+// admin/se_csv_import2.php, row 482
 "Load setting" => "Na\xE8\xEDta\x9D nastavenie", // ai 2026-06
 
-// admin/se_csv_import2.php, row 485
+// admin/se_csv_import2.php, row 484
 "Save setting as" => "Ulo\x9Ei\x9D nastavenie ako", // ai 2026-06
 
-// admin/se_csv_import2.php, row 488
+// admin/se_csv_import2.php, row 487
 "Upload periodically" => "Nahr\xE1va\x9D pravidelne", // ai 2026-06
 
-// admin/se_csv_import2.php, row 539
+// admin/se_csv_import2.php, row 538
 "Admin - Import CSV (2/2) - Mapping and Actions" => "Nastavenia modulu - Import CSV (2/2) - Mapovanie a akcie", // ai 2026-06
 
 // admin/se_export.php, row 75
@@ -1561,7 +1550,7 @@ return [
 
 // admin/se_export.php, row 122
 // include/exporter.class.php, row 485
-// include/itemfunc.php, row 145
+// include/itemfunc.php, row 146
 "Expired" => "Expirovan\xE9",
 
 // admin/se_export.php, row 123
@@ -1574,7 +1563,7 @@ return [
 
 // admin/se_export.php, row 125
 // include/exporter.class.php, row 488
-// include/itemfunc.php, row 155
+// include/itemfunc.php, row 156
 // src/Manageraction/Central_MoveItem.php, row 43
 "Trash" => "K\xF4\x9A", // ai 2026-06
 
@@ -1600,7 +1589,7 @@ return [
 // admin/sliceexp_text.php, row 364
 // include/exporter.class.php, row 509
 // include/fileman.php, row 33
-// include/logs.php, row 316
+// include/logs.php, row 346
 // include/se_users.php, row 173
 // src/Widget/Widget.php, row 724
 "Type" => "Typ",
@@ -1747,7 +1736,7 @@ return [
 // admin/um_gedit.php, row 281
 // admin/um_uedit.php, row 389
 // central/include/actionapps.class.php, row 781
-// include/formutil.php, row 188, 2892
+// include/formutil.php, row 188, 2894
 // modules/jump/modedit.php, row 182
 "Update" => "Zmeni\x9D",
 
@@ -1843,7 +1832,7 @@ return [
 "Time of change" => "\xC8as zmeny", // ai 2026-06
 
 // admin/se_history.php, row 162
-// include/itemfunc.php, row 188
+// include/itemfunc.php, row 189
 // src/AA_Plannedtask.php, row 63
 "Item ID" => "ID spr\xE1vy", // ai 2026-06
 
@@ -1901,7 +1890,7 @@ return [
 "Alias" => "",
 
 // admin/se_inputform.php, row 199, 526
-// admin/se_profile.php, row 145
+// admin/se_profile.php, row 209
 "Function" => "Funkcia",
 
 // admin/se_inputform.php, row 303
@@ -1963,7 +1952,7 @@ return [
 // admin/se_inputform.php, row 480
 // admin/sliceimp.php, row 428
 // include/form.class.php, row 409, 411
-// include/formutil.php, row 207, 2903
+// include/formutil.php, row 207, 2905
 "Insert" => "Vlo\x9Ei\x9D",
 
 // admin/se_inputform.php, row 483
@@ -2012,13 +2001,14 @@ return [
 "Disabled" => "Zak\xE1zan\xE9", // ai 2026-06
 
 // admin/se_inputform.php, row 521
+// src/Util/ChangesMonitor.php, row 514
 "Copy to clipboard" => "Kop\xEDrova\x9D do schr\xE1nky", // ai 2026-06
 
 // admin/se_inputform.php, row 522
 "Reset" => "Obnovi\x9D", // ai 2026-06
 
 // admin/se_inputform.php, row 527
-// include/logs.php, row 331
+// include/logs.php, row 361
 "Parameters" => "Parametre",
 
 // admin/se_inter_export.php, row 99
@@ -2061,6 +2051,9 @@ return [
 "Remote slice" => "Vzdialen\xFD modul", // ai 2026-06
 
 // admin/se_inter_import.php, row 98
+"Node" => "Uzol", // ai 2026-06
+
+// admin/se_inter_import.php, row 98
 // misc/datovka/datovka.php, row 114
 "State" => "Stav", // ai 2026-06
 
@@ -2071,7 +2064,7 @@ return [
 "No remote imports into the slice" => "\x8Eiadne vzdialen\xE9 importy do modulu", // ai 2026-06
 
 // admin/se_inter_import.php, row 106
-// include/menu.php, row 147
+// include/menu.php, row 152
 "Inter Node Import" => "Pr\xEDjem z uzlov",
 
 // admin/se_inter_import.php, row 107
@@ -2117,7 +2110,7 @@ return [
 "The import was successfully created" => "Pr\xEDjem z modulu \xFAspe\x9Ane vytvoren\xFD",
 
 // admin/se_javascript.php, row 71
-// include/menu.php, row 159
+// include/menu.php, row 164
 "Field Triggers" => "Triggery polo\x9Eiek", // ai 2026-06
 
 // admin/se_javascript.php, row 78
@@ -2273,232 +2266,233 @@ return [
 "UI - inputform - hide" => "UI - vstupn\xFD formul\xE1r - skry\x9D", // ai 2026-06
 
 // admin/se_profile.php, row 118
-"Admin - user Profiles" => "Spr\xE1va modulu - U\x9Eivatelsk\xE9 profily",
+"Logo (top)" => "Logo (hore)", // ai 2026-06
+
+// admin/se_profile.php, row 119
+"View site (top)" => "Zobrazi\x9D web (hore)", // ai 2026-06
+
+// admin/se_profile.php, row 120
+"Add Item link (top)" => "Odkaz Prida\x9D spr\xE1vu (hore)", // ai 2026-06
+
+// admin/se_profile.php, row 121
+"Item Manager link (top)" => "Odkaz Spr\xE1vy (hore)", // ai 2026-06
+
+// admin/se_profile.php, row 122
+"Slice Admin link (top)" => "Odkaz Nastavenia modulu (hore)", // ai 2026-06
+
+// admin/se_profile.php, row 123
+"AA link (top)" => "Odkaz AA (hore)", // ai 2026-06
+
+// admin/se_profile.php, row 124
+"Central link (top)" => "Odkaz Central (hore)", // ai 2026-06
 
 // admin/se_profile.php, row 125
-"Rules" => "Nastaven\xE9 pravidl\xE1",
+"Title (top)" => "Titulok (hore)", // ai 2026-06
+
+// admin/se_profile.php, row 126
+"Logout link (top)" => "Odkaz Odhl\xE1si\x9D (hore)", // ai 2026-06
+
+// admin/se_profile.php, row 127
+"User Info link (top)" => "Odkaz Inform\xE1cie o u\x9E\xEDvate\xBEovi (hore)", // ai 2026-06
+
+// admin/se_profile.php, row 128
+"Module Selectbox (top)" => "V\xFDber modulu (hore)", // ai 2026-06
+
+// admin/se_profile.php, row 129
+"Module Switch text (top)" => "Text prep\xEDnania modulu (hore)", // ai 2026-06
+
+// admin/se_profile.php, row 130
+"Item Manager Menu: Header (left)" => "Menu Spr\xE1vy: Hlavi\xE8ka (v\xBEavo)", // ai 2026-06
+
+// admin/se_profile.php, row 131
+"Item Manager Menu: Add Item (left)" => "Menu Spr\xE1vy: Prida\x9D spr\xE1vu (v\xBEavo)", // ai 2026-06
+
+// admin/se_profile.php, row 132
+"Item Manager Menu: Active (left)" => "Menu Spr\xE1vy: Aktu\xE1lne (v\xBEavo)", // ai 2026-06
 
 // admin/se_profile.php, row 133
-"No rule is set" => "\x8Eiadne pravidlo nebolo definovan\xE9",
+"Item Manager Menu: Pending (left)" => "Menu Spr\xE1vy: Pripravovan\xE9 (v\xBEavo)", // ai 2026-06
+
+// admin/se_profile.php, row 134
+"Item Manager Menu: Expired (left)" => "Menu Spr\xE1vy: Expirovan\xE9 (v\xBEavo)", // ai 2026-06
+
+// admin/se_profile.php, row 135
+"Item Manager Menu: Holding (left)" => "Menu Spr\xE1vy: Z\xE1sobn\xEDk (v\xBEavo)", // ai 2026-06
+
+// admin/se_profile.php, row 136
+"Item Manager Menu: Trash (left)" => "Menu Spr\xE1vy: K\xF4\x9A (v\xBEavo)", // ai 2026-06
+
+// admin/se_profile.php, row 137
+"Item Manager Menu: Bookmarks show (left)" => "Menu Spr\xE1vy: Zobrazi\x9D z\xE1lo\x9Eky (v\xBEavo)", // ai 2026-06
+
+// admin/se_profile.php, row 138
+"Item Manager Menu: Additional 1 (left)" => "Menu Spr\xE1vy: Doplnkov\xE9 1 (v\xBEavo)", // ai 2026-06
+
+// admin/se_profile.php, row 139
+"Item Manager Menu: Header 2 (left)" => "Menu Spr\xE1vy: Hlavi\xE8ka 2 (v\xBEavo)", // ai 2026-06
 
 // admin/se_profile.php, row 140
-"Add Rule" => "Pridat pravidlo",
+"Item Manager Menu: Slice Setting (left)" => "Menu Spr\xE1vy: Nastavenia modulu (v\xBEavo)", // ai 2026-06
+
+// admin/se_profile.php, row 141
+"Item Manager Menu: Empty Trash (left)" => "Menu Spr\xE1vy: Vypr\xE1zdni\x9D k\xF4\x9A (v\xBEavo)", // ai 2026-06
+
+// admin/se_profile.php, row 142
+"Item Manager Menu: CSV Import (left)" => "Menu Spr\xE1vy: Import CSV (v\xBEavo)", // ai 2026-06
 
 // admin/se_profile.php, row 143
+"Item Manager Menu: Debug (left)" => "Menu Spr\xE1vy: Ladenie (v\xBEavo)", // ai 2026-06
+
+// admin/se_profile.php, row 144
+"Item Manager Menu: Additional 2 (left)" => "Menu Spr\xE1vy: Doplnkov\xE9 2 (v\xBEavo)", // ai 2026-06
+
+// admin/se_profile.php, row 145
+"Add CSS file" => "Prida\x9D CSS s\xFAbor", // ai 2026-06
+
+// admin/se_profile.php, row 149
+"Manager Actions" => "Akcie spr\xE1vcu", // ai 2026-06
+
+// admin/se_profile.php, row 150
+"Searchbar - Search Rows" => "Vyh\xBEad\xE1vacia li\x9Ata - riadky h\xBEadania", // ai 2026-06
+
+// admin/se_profile.php, row 151
+"Searchbar - Order Rows" => "Vyh\xBEad\xE1vacia li\x9Ata - riadky zora\xEFovania", // ai 2026-06
+
+// admin/se_profile.php, row 152
+"Searchbar - Bookmarks" => "Vyh\xBEad\xE1vacia li\x9Ata - z\xE1lo\x9Eky", // ai 2026-06
+
+// admin/se_profile.php, row 156
+"Top menu (admin header)" => "Horn\xE9 menu (hlavi\xE8ka administr\xE1cie)", // ai 2026-06
+
+// admin/se_profile.php, row 157
+"Left menu (item context)" => "\xBCav\xE9 menu (kontext spr\xE1vy)", // ai 2026-06
+
+// admin/se_profile.php, row 161
+"Title (add form)" => "Titulok (formul\xE1r pridania)", // ai 2026-06
+
+// admin/se_profile.php, row 162
+"Top HTML code (add form)" => "Horn\xFD HTML k\xF3d (formul\xE1r pridania)", // ai 2026-06
+
+// admin/se_profile.php, row 163
+"Bottom HTML code (add form)" => "Spodn\xFD HTML k\xF3d (formul\xE1r pridania)", // ai 2026-06
+
+// admin/se_profile.php, row 164
+"Button \"Insert\" / \"Insert as new\" (add form)" => "Tla\xE8idlo \"Vlo\x9Ei\x9D\" / \"Vlo\x9Ei\x9D ako nov\xFA\" (formul\xE1r pridania)", // ai 2026-06
+
+// admin/se_profile.php, row 165
+"Button \"Insert & Edit\" (add form)" => "Tla\xE8idlo \"Vlo\x9Ei\x9D a \xEFalej upravova\x9D\" (formul\xE1r pridania)", // ai 2026-06
+
+// admin/se_profile.php, row 166
+"Button \"Insert & View\" (add form)" => "Tla\xE8idlo \"Vlo\x9Ei\x9D a pozrie\x9D\" (formul\xE1r pridania)", // ai 2026-06
+
+// admin/se_profile.php, row 167
+"Button \"Cancel\" (add form)" => "Tla\xE8idlo \"Zru\x9Ai\x9D\" (formul\xE1r pridania)", // ai 2026-06
+
+// admin/se_profile.php, row 168
+"Title (edit form)" => "Titulok (formul\xE1r \xFApravy)", // ai 2026-06
+
+// admin/se_profile.php, row 169
+"Top HTML code (edit form)" => "Horn\xFD HTML k\xF3d (formul\xE1r \xFApravy)", // ai 2026-06
+
+// admin/se_profile.php, row 170
+"Bottom HTML code (edit form)" => "Spodn\xFD HTML k\xF3d (formul\xE1r \xFApravy)", // ai 2026-06
+
+// admin/se_profile.php, row 171
+"Button \"Update\" (edit form)" => "Tla\xE8idlo \"Zmeni\x9D\" (formul\xE1r \xFApravy)", // ai 2026-06
+
+// admin/se_profile.php, row 172
+"Button \"Update & Edit\" (edit form)" => "Tla\xE8idlo \"Zmeni\x9D a \xEFalej upravova\x9D\" (formul\xE1r \xFApravy)", // ai 2026-06
+
+// admin/se_profile.php, row 173
+"Button \"Update & View\" (edit form)" => "Tla\xE8idlo \"Posla\x9D a pozrie\x9D\" (formul\xE1r \xFApravy)", // ai 2026-06
+
+// admin/se_profile.php, row 174
+"Button \"Reset form\" (edit form)" => "Tla\xE8idlo \"Vymaza\x9D formul\xE1r\" (formul\xE1r \xFApravy)", // ai 2026-06
+
+// admin/se_profile.php, row 175
+"Button \"Cancel\" (edit form)" => "Tla\xE8idlo \"Zru\x9Ai\x9D\" (formul\xE1r \xFApravy)", // ai 2026-06
+
+// admin/se_profile.php, row 182
+"Admin - user Profiles" => "Spr\xE1va modulu - U\x9Eivatelsk\xE9 profily",
+
+// admin/se_profile.php, row 189
+"Rules" => "Nastaven\xE9 pravidl\xE1",
+
+// admin/se_profile.php, row 197
+"No rule is set" => "\x8Eiadne pravidlo nebolo definovan\xE9",
+
+// admin/se_profile.php, row 204
+"Add Rule" => "Pridat pravidlo",
+
+// admin/se_profile.php, row 207
 "Rule" => "Pravidlo",
 
-// admin/se_profile.php, row 147
+// admin/se_profile.php, row 211
 // include/formutil.php, row 1211
 // include/transformation.class.php, row 181, 356, 426, 510, 680
 // include/widget.class.php, row 569
 "HTML" => "",
 
-// admin/se_profile.php, row 154
-"Logo (top)" => "Logo (hore)", // ai 2026-06
-
-// admin/se_profile.php, row 155
-"View site (top)" => "Zobrazi\x9D web (hore)", // ai 2026-06
-
-// admin/se_profile.php, row 156
-"Add Item link (top)" => "Odkaz Prida\x9D spr\xE1vu (hore)", // ai 2026-06
-
-// admin/se_profile.php, row 157
-"Item Manager link (top)" => "Odkaz Spr\xE1vy (hore)", // ai 2026-06
-
-// admin/se_profile.php, row 158
-"Slice Admin link (top)" => "Odkaz Nastavenia modulu (hore)", // ai 2026-06
-
-// admin/se_profile.php, row 159
-"AA link (top)" => "Odkaz AA (hore)", // ai 2026-06
-
-// admin/se_profile.php, row 160
-"Central link (top)" => "Odkaz Central (hore)", // ai 2026-06
-
-// admin/se_profile.php, row 161
-"Title (top)" => "Titulok (hore)", // ai 2026-06
-
-// admin/se_profile.php, row 162
-"Logout link (top)" => "Odkaz Odhl\xE1si\x9D (hore)", // ai 2026-06
-
-// admin/se_profile.php, row 163
-"User Info link (top)" => "Odkaz Inform\xE1cie o u\x9E\xEDvate\xBEovi (hore)", // ai 2026-06
-
-// admin/se_profile.php, row 164
-"Module Selectbox (top)" => "V\xFDber modulu (hore)", // ai 2026-06
-
-// admin/se_profile.php, row 165
-"Module Switch text (top)" => "Text prep\xEDnania modulu (hore)", // ai 2026-06
-
-// admin/se_profile.php, row 166
-"Item Manager Menu: Header (left)" => "Menu Spr\xE1vy: Hlavi\xE8ka (v\xBEavo)", // ai 2026-06
-
-// admin/se_profile.php, row 167
-"Item Manager Menu: Add Item (left)" => "Menu Spr\xE1vy: Prida\x9D spr\xE1vu (v\xBEavo)", // ai 2026-06
-
-// admin/se_profile.php, row 168
-"Item Manager Menu: Active (left)" => "Menu Spr\xE1vy: Aktu\xE1lne (v\xBEavo)", // ai 2026-06
-
-// admin/se_profile.php, row 169
-"Item Manager Menu: Pending (left)" => "Menu Spr\xE1vy: Pripravovan\xE9 (v\xBEavo)", // ai 2026-06
-
-// admin/se_profile.php, row 170
-"Item Manager Menu: Expired (left)" => "Menu Spr\xE1vy: Expirovan\xE9 (v\xBEavo)", // ai 2026-06
-
-// admin/se_profile.php, row 171
-"Item Manager Menu: Holding (left)" => "Menu Spr\xE1vy: Z\xE1sobn\xEDk (v\xBEavo)", // ai 2026-06
-
-// admin/se_profile.php, row 172
-"Item Manager Menu: Trash (left)" => "Menu Spr\xE1vy: K\xF4\x9A (v\xBEavo)", // ai 2026-06
-
-// admin/se_profile.php, row 173
-"Item Manager Menu: Bookmarks show (left)" => "Menu Spr\xE1vy: Zobrazi\x9D z\xE1lo\x9Eky (v\xBEavo)", // ai 2026-06
-
-// admin/se_profile.php, row 174
-"Item Manager Menu: Additional 1 (left)" => "Menu Spr\xE1vy: Doplnkov\xE9 1 (v\xBEavo)", // ai 2026-06
-
-// admin/se_profile.php, row 175
-"Item Manager Menu: Header 2 (left)" => "Menu Spr\xE1vy: Hlavi\xE8ka 2 (v\xBEavo)", // ai 2026-06
-
-// admin/se_profile.php, row 176
-"Item Manager Menu: Slice Setting (left)" => "Menu Spr\xE1vy: Nastavenia modulu (v\xBEavo)", // ai 2026-06
-
-// admin/se_profile.php, row 177
-"Item Manager Menu: Empty Trash (left)" => "Menu Spr\xE1vy: Vypr\xE1zdni\x9D k\xF4\x9A (v\xBEavo)", // ai 2026-06
-
-// admin/se_profile.php, row 178
-"Item Manager Menu: CSV Import (left)" => "Menu Spr\xE1vy: Import CSV (v\xBEavo)", // ai 2026-06
-
-// admin/se_profile.php, row 179
-"Item Manager Menu: Debug (left)" => "Menu Spr\xE1vy: Ladenie (v\xBEavo)", // ai 2026-06
-
-// admin/se_profile.php, row 180
-"Item Manager Menu: Additional 2 (left)" => "Menu Spr\xE1vy: Doplnkov\xE9 2 (v\xBEavo)", // ai 2026-06
-
-// admin/se_profile.php, row 181
-"Add CSS file" => "Prida\x9D CSS s\xFAbor", // ai 2026-06
-
-// admin/se_profile.php, row 185
-"Manager Actions" => "Akcie spr\xE1vcu", // ai 2026-06
-
-// admin/se_profile.php, row 186
-"Searchbar - Search Rows" => "Vyh\xBEad\xE1vacia li\x9Ata - riadky h\xBEadania", // ai 2026-06
-
-// admin/se_profile.php, row 187
-"Searchbar - Order Rows" => "Vyh\xBEad\xE1vacia li\x9Ata - riadky zora\xEFovania", // ai 2026-06
-
-// admin/se_profile.php, row 188
-"Searchbar - Bookmarks" => "Vyh\xBEad\xE1vacia li\x9Ata - z\xE1lo\x9Eky", // ai 2026-06
-
-// admin/se_profile.php, row 192
-"Top menu (admin header)" => "Horn\xE9 menu (hlavi\xE8ka administr\xE1cie)", // ai 2026-06
-
-// admin/se_profile.php, row 193
-"Left menu (item context)" => "\xBCav\xE9 menu (kontext spr\xE1vy)", // ai 2026-06
-
-// admin/se_profile.php, row 197
-"Title (add form)" => "Titulok (formul\xE1r pridania)", // ai 2026-06
-
-// admin/se_profile.php, row 198
-"Top HTML code (add form)" => "Horn\xFD HTML k\xF3d (formul\xE1r pridania)", // ai 2026-06
-
-// admin/se_profile.php, row 199
-"Bottom HTML code (add form)" => "Spodn\xFD HTML k\xF3d (formul\xE1r pridania)", // ai 2026-06
-
-// admin/se_profile.php, row 200
-"Button \"Insert\" / \"Insert as new\" (add form)" => "Tla\xE8idlo \"Vlo\x9Ei\x9D\" / \"Vlo\x9Ei\x9D ako nov\xFA\" (formul\xE1r pridania)", // ai 2026-06
-
-// admin/se_profile.php, row 201
-"Button \"Insert & Edit\" (add form)" => "Tla\xE8idlo \"Vlo\x9Ei\x9D a \xEFalej upravova\x9D\" (formul\xE1r pridania)", // ai 2026-06
-
-// admin/se_profile.php, row 202
-"Button \"Insert & View\" (add form)" => "Tla\xE8idlo \"Vlo\x9Ei\x9D a pozrie\x9D\" (formul\xE1r pridania)", // ai 2026-06
-
-// admin/se_profile.php, row 203
-"Button \"Cancel\" (add form)" => "Tla\xE8idlo \"Zru\x9Ai\x9D\" (formul\xE1r pridania)", // ai 2026-06
-
-// admin/se_profile.php, row 204
-"Title (edit form)" => "Titulok (formul\xE1r \xFApravy)", // ai 2026-06
-
-// admin/se_profile.php, row 205
-"Top HTML code (edit form)" => "Horn\xFD HTML k\xF3d (formul\xE1r \xFApravy)", // ai 2026-06
-
-// admin/se_profile.php, row 206
-"Bottom HTML code (edit form)" => "Spodn\xFD HTML k\xF3d (formul\xE1r \xFApravy)", // ai 2026-06
-
-// admin/se_profile.php, row 207
-"Button \"Update\" (edit form)" => "Tla\xE8idlo \"Zmeni\x9D\" (formul\xE1r \xFApravy)", // ai 2026-06
-
-// admin/se_profile.php, row 208
-"Button \"Update & Edit\" (edit form)" => "Tla\xE8idlo \"Zmeni\x9D a \xEFalej upravova\x9D\" (formul\xE1r \xFApravy)", // ai 2026-06
-
-// admin/se_profile.php, row 209
-"Button \"Update & View\" (edit form)" => "Tla\xE8idlo \"Posla\x9D a pozrie\x9D\" (formul\xE1r \xFApravy)", // ai 2026-06
-
-// admin/se_profile.php, row 210
-"Button \"Reset form\" (edit form)" => "Tla\xE8idlo \"Vymaza\x9D formul\xE1r\" (formul\xE1r \xFApravy)", // ai 2026-06
-
-// admin/se_profile.php, row 211
-"Button \"Cancel\" (edit form)" => "Tla\xE8idlo \"Zru\x9Ai\x9D\" (formul\xE1r \xFApravy)", // ai 2026-06
-
-// admin/se_profile.php, row 215
+// admin/se_profile.php, row 218
 "Author Role" => "Rola Autor", // ai 2026-06
 
-// admin/se_profile.php, row 216
+// admin/se_profile.php, row 219
 "Editor Role" => "Rola Editor", // ai 2026-06
 
-// admin/se_profile.php, row 217
+// admin/se_profile.php, row 220
 "Administrator Role" => "Rola Administr\xE1tor", // ai 2026-06
 
-// admin/se_profile.php, row 218
+// admin/se_profile.php, row 221
 "Superadmin Role" => "Rola Superadmin", // ai 2026-06
 
-// admin/se_profile.php, row 223
+// admin/se_profile.php, row 226
 "number of item displayed in Item Manager" => "po\xE8et spr\xE1v zobrazen\xFDch v administr\xE1cii",
 
-// admin/se_profile.php, row 224
+// admin/se_profile.php, row 227
 "id of view used for item input" => "id poh\xBEadu pou\x9Eit\xE9ho pre vstupn\xFD formul\xE1r", // ai 2026-06
 
-// admin/se_profile.php, row 225
+// admin/se_profile.php, row 228
 "preset \"Search\" in Item Manager" => "prednastaven\xE9 \"H\xBEadanie\" v Spr\xE1vcovi spr\xE1v", // ai 2026-06
 
-// admin/se_profile.php, row 226
+// admin/se_profile.php, row 229
 "preset \"Order\" in Item Manager" => "prednastaven\xE9 \"Zoradenie\" v Spr\xE1vcovi spr\xE1v", // ai 2026-06
 
-// admin/se_profile.php, row 227
+// admin/se_profile.php, row 230
 "ID of \"Item Set\" which defines the permissions for item - see \"Admin - Item Set\"" => "ID \"sady spr\xE1v\", ktor\xE1 ur\xE8uje pr\xE1va k spr\xE1ve - pozri \"Admin - Sady spr\xE1v\"", // ai 2026-06
 
-// admin/se_profile.php, row 228
+// admin/se_profile.php, row 231
 "hide the field in inputform" => "skryt pole vo vstupnom formul\xE1ri",
 
-// admin/se_profile.php, row 229
+// admin/se_profile.php, row 232
 "show (= unhide) the field in inputform (reverts hide made by group profile,...)" => "zobrazi\x9D (= odkry\x9D) polo\x9Eku vo vstupnom formul\xE1ri (ru\x9A\xED skrytie vykonan\xE9 profilom skupiny,...)", // ai 2026-06
 
-// admin/se_profile.php, row 230
+// admin/se_profile.php, row 233
 "hide the field in inputform and fill it by the value" => "skryt pole vo vstupnom formul\xE1ri a vyplnit ho danou hodnotou",
 
-// admin/se_profile.php, row 231
+// admin/se_profile.php, row 234
 "fill the field in inputform by the value" => "vyplnit pole vo vstupnom formul\xE1ri v\x9Edy danou hodnotou",
 
-// admin/se_profile.php, row 232
+// admin/se_profile.php, row 235
 "predefine value of the field in inputform" => "prednastavit hodnotu do pola vo vstupnom formul\xE1ri",
 
-// admin/se_profile.php, row 233
+// admin/se_profile.php, row 236
 "redefine manager UI - (empty values = do not show)" => "predefinova\x9D UI spr\xE1vcu - (pr\xE1zdne hodnoty = nezobrazova\x9D)", // ai 2026-06
 
-// admin/se_profile.php, row 234
+// admin/se_profile.php, row 237
 "hide this UI element" => "skry\x9D tento prvok UI", // ai 2026-06
 
-// admin/se_profile.php, row 235
+// admin/se_profile.php, row 238
 "redefine inputform UI - (empty values = do not show)" => "predefinova\x9D UI vstupn\xE9ho formul\xE1ra - (pr\xE1zdne hodnoty = nezobrazova\x9D)", // ai 2026-06
 
-// admin/se_profile.php, row 236
+// admin/se_profile.php, row 239
 "hide this UI element in the inputform" => "skry\x9D tento prvok UI vo vstupnom formul\xE1ri", // ai 2026-06
 
-// admin/se_profile.php, row 263
+// admin/se_profile.php, row 266
 "Copy Profile from" => "Kop\xEDrova\x9D profil z", // ai 2026-06
 
-// admin/se_profile.php, row 265
+// admin/se_profile.php, row 268
 // central/copyslice2.php, row 116
+// src/Util/ChangesMonitor.php, row 514
 "Copy" => "Kop\xEDrova\x9D", // ai 2026-06
 
 // admin/se_sets.php, row 64
@@ -2605,7 +2599,7 @@ return [
 // admin/se_users.php, row 122, 181
 // admin/slicewiz.php, row 78
 // include/se_users.php, row 103, 173
-"Editor" => "",
+"Editor" => "Naposledy upravil", // ai 2026-06
 
 // admin/se_users.php, row 123, 181
 // include/se_users.php, row 104, 173
@@ -2789,7 +2783,7 @@ return [
 // admin/slicewiz.php, row 79
 // admin/um_passwd.php, row 109
 // admin/um_uedit.php, row 314, 318
-// include/itemfunc.php, row 547, 1048
+// include/itemfunc.php, row 548, 1049
 // include/um_util.php, row 296
 "Login name" => "U\x9Eivate\xBEsk\xE9 meno",
 
@@ -2880,7 +2874,7 @@ return [
 // admin/um_uedit.php, row 379
 // include/formutil.php, row 1749
 // include/mlx.php, row 371
-// include/profile.php, row 159
+// include/profile.php, row 163
 // include/sliceadd.php, row 69, 83
 // src/Manager.php, row 210
 "Add" => "Prida\x9D",
@@ -2929,13 +2923,13 @@ return [
 "Active with antiSPAM tokens" => "Akt\xEDvne s antiSPAM tokenmi", // ai 2026-06
 
 // admin/slicedit.php, row 140, 146
-// include/menu.php, row 185
-// include/menu_util.php, row 121
+// include/menu.php, row 190
+// include/menu_util.php, row 120
 // src/Module/Poll/Menu.php, row 64
 "Hold bin" => "Z\xE1sobn\xEDk",
 
 // admin/slicedit.php, row 152
-// include/formutil.php, row 3258
+// include/formutil.php, row 3260
 "All items" => "V\x9Aetky spr\xE1vy", // ai 2026-06
 
 // admin/slicedit.php, row 153
@@ -2957,6 +2951,7 @@ return [
 "Admin - Slice settings" => "Spr\xE1va modulu - \xDAprava modulu",
 
 // admin/slicedit.php, row 253
+// include/menu_util.php, row 605
 "Language" => "Jazyk", // ai 2026-06
 
 // admin/slicedit.php, row 255
@@ -2996,7 +2991,7 @@ return [
 "Password for Reading" => "Heslo na \xE8\xEDtanie", // ai 2026-06
 
 // admin/slicedit.php, row 281
-// include/itemfunc.php, row 180
+// include/itemfunc.php, row 181
 "Created" => "Vytvoren\xE9", // ai 2026-06
 
 // admin/slicedit.php, row 281
@@ -3312,6 +3307,7 @@ return [
 
 // admin/um_gedit.php, row 313
 // admin/um_uedit.php, row 231, 242
+// include/logs.php, row 453
 // include/menu_util.php, row 70
 // include/se_users.php, row 129
 "Users" => "U\x9Eivatelia",
@@ -3499,7 +3495,7 @@ return [
 
 // central/copyslice2.php, row 88
 // central/synchronize3.php, row 94
-// include/menu.php, row 163
+// include/menu.php, row 168
 // include/menu_util.php, row 74
 "Task Manager" => "Spr\xE1vca \xFAloh", // ai 2026-06
 
@@ -3640,13 +3636,13 @@ return [
 // src/Manageraction/Central_Linkcheck.php, row 31
 "Auth" => "Autentifik\xE1cia", // ai 2026-06
 
-// central/responder.php, row 567
+// central/responder.php, row 597
 "No request sent for responder.php" => "Pre responder.php nebola odoslan\xE1 \x9Eiadna po\x9Eiadavka", // ai 2026-06
 
-// central/responder.php, row 573
+// central/responder.php, row 603
 "Bad request sent for responder.php - %1" => "Chybn\xE1 po\x9Eiadavka pre responder.php - %1", // ai 2026-06
 
-// central/responder.php, row 578
+// central/responder.php, row 608
 "You (%2) don't have permissions to run %1" => "Nem\xE1te (%2) pr\xE1vo spusti\x9D %1", // ai 2026-06
 
 // central/synchronize.php, row 35
@@ -3749,6 +3745,7 @@ return [
 "Level" => "\xDArove\xF2", // ai 2026-06
 
 // include/constants.php, row 460
+// include/logs.php, row 507
 "Feed" => "Kop\xEDrova\x9D obsah",
 
 // include/constants.php, row 461
@@ -3896,13 +3893,13 @@ return [
 "From: (email header)" => "From: (hlavi\xE8ka e-mailu)", // ai 2026-06
 
 // include/constants.php, row 703
-"Reply-To:" => "",
+"Reply-To:" => "Komu odpoveda\x9D:", // ai 2026-06
 
 // include/constants.php, row 704
-"Errors-To:" => "",
+"Errors-To:" => "Chyby na:", // ai 2026-06
 
 // include/constants.php, row 705
-"Sender:" => "",
+"Sender:" => "Odosielate\xBE:", // ai 2026-06
 
 // include/constants.php, row 706
 "Mail Subject:" => "Predmet e-mailu:", // ai 2026-06
@@ -4122,6 +4119,9 @@ return [
 // include/feeding.php, row 454, 490
 "Run (queue)" => "Spusti\x9D (fronta)", // ai 2026-06
 
+// include/feeding.php, row 464, 470, 527
+"Local slice" => "Lok\xE1lny modul", // ai 2026-06
+
 // include/feeding.php, row 473
 "URL of the feed" => "URL kan\xE1la", // ai 2026-06
 
@@ -4332,9 +4332,6 @@ return [
 // include/files.class.php, row 255
 "Can't write to file: %1" => "Nepodarilo sa zap\xEDsa\x9D do s\xFAboru: %1", // ai 2026-06
 
-// include/files.class.php, row 306
-"Error: Invalid directory" => "Chyba: Neplatn\xFD adres\xE1r", // ai 2026-06
-
 // include/files.class.php, row 328
 "can't create backup of the file" => "nepodarilo sa vytvori\x9D z\xE1lo\x9En\xFA k\xF3piu s\xFAboru", // ai 2026-06
 
@@ -4369,7 +4366,7 @@ return [
 "Rows" => "Riadky", // ai 2026-06
 
 // include/form.class.php, row 301
-// include/menu.php, row 141
+// include/menu.php, row 146
 "Forms" => "Formul\xE1re", // ai 2026-06
 
 // include/formutil.php, row 191
@@ -4378,11 +4375,11 @@ return [
 // include/formutil.php, row 198
 "Insert as new" => "Vlo\x9Ei\x9D ako nov\xFA spr\xE1vu", // ai 2026-06
 
-// include/formutil.php, row 202, 2924
+// include/formutil.php, row 202, 2926
 "Reset form" => "Vymaza\x9D formul\xE1r",
 
-// include/formutil.php, row 205, 210, 2916, 2920
-// include/searchbar.class.php, row 721
+// include/formutil.php, row 205, 210, 2918, 2922
+// include/searchbar.class.php, row 730
 // src/Widget/LupWidget.php, row 118
 "Cancel" => "Zru\x9Ai\x9D",
 
@@ -4408,7 +4405,7 @@ return [
 "Unable to find tagprefix table %1" => "Nepodarilo sa n\xE1js\x9D tabu\xBEku tagprefix %1", // ai 2026-06
 
 // include/formutil.php, row 1186
-"import" => "",
+"import" => "importova\x9D", // ai 2026-06
 
 // include/formutil.php, row 1201
 // src/Widget/TxtWidget.php, row 250
@@ -4427,8 +4424,8 @@ return [
 "Enter the value" => "Zadajte hodnotu", // ai 2026-06
 
 // include/formutil.php, row 1763
-// include/menu.php, row 134
-// src/Util/ChangesMonitor.php, row 381
+// include/menu.php, row 139
+// src/Util/ChangesMonitor.php, row 455
 "Change" => "Zmena s\xFA\xE8asn\xFDch pr\xE1v",
 
 // include/formutil.php, row 1906, 2093
@@ -4455,43 +4452,44 @@ return [
 // include/searchlib.php, row 58, 124, 127, 130, 133, 136
 "not set" => "nenastaven\xE9", // ai 2026-06
 
-// include/formutil.php, row 2927
+// include/formutil.php, row 2929
 "Submit" => "Poslat",
 
-// include/formutil.php, row 3244
+// include/formutil.php, row 3246
 "Group Name" => "N\xE1zov skupiny", // ai 2026-06
 
-// include/formutil.php, row 3245
+// include/formutil.php, row 3247
+// include/logs.php, row 497
 "Count" => "Po\xE8et", // ai 2026-06
 
-// include/formutil.php, row 3246
+// include/formutil.php, row 3248
 "Created on" => "Vytvoren\xE9", // ai 2026-06
 
-// include/formutil.php, row 3247
+// include/formutil.php, row 3249
 "Created by" => "Vytvoril", // ai 2026-06
 
-// include/formutil.php, row 3248
+// include/formutil.php, row 3250
 "Last updated" => "Naposledy zmenen\xE9", // ai 2026-06
 
-// include/formutil.php, row 3249
+// include/formutil.php, row 3251
 "Updated by" => "Zmenil", // ai 2026-06
 
-// include/formutil.php, row 3250
+// include/formutil.php, row 3252
 "Last used" => "Naposledy pou\x9Eit\xE9", // ai 2026-06
 
-// include/formutil.php, row 3257
+// include/formutil.php, row 3259
 "All active items" => "V\x9Aetky aktu\xE1lne spr\xE1vy", // ai 2026-06
 
-// include/formutil.php, row 3259
+// include/formutil.php, row 3261
 "All pending items" => "V\x9Aetky pripravovan\xE9 spr\xE1vy", // ai 2026-06
 
-// include/formutil.php, row 3260
+// include/formutil.php, row 3262
 "All expired items" => "V\x9Aetky expirovan\xE9 spr\xE1vy", // ai 2026-06
 
-// include/formutil.php, row 3261
+// include/formutil.php, row 3263
 "All items in holding bin" => "V\x9Aetky spr\xE1vy v z\xE1sobn\xEDku", // ai 2026-06
 
-// include/formutil.php, row 3262
+// include/formutil.php, row 3264
 "All items in trash bin" => "V\x9Aetky spr\xE1vy v ko\x9Ai", // ai 2026-06
 
 // include/init_page.php, row 94
@@ -4657,329 +4655,329 @@ return [
 // include/itemfunc.php, row 71
 "Edit item" => "Upravi\x9D spr\xE1vu", // ai 2026-06
 
-// include/itemfunc.php, row 129
+// include/itemfunc.php, row 130
 "by %1" => "u\x9E\xEDvate\xBEom %1", // ai 2026-06
 
-// include/itemfunc.php, row 142
+// include/itemfunc.php, row 143
 "Scheduled" => "Napl\xE1novan\xE9", // ai 2026-06
 
-// include/itemfunc.php, row 143
+// include/itemfunc.php, row 144
 "not yet on the public site" => "zatia\xBE nie je na verejnom webe", // ai 2026-06
 
-// include/itemfunc.php, row 146, 153, 156
+// include/itemfunc.php, row 147, 154, 157
 "not on the public site" => "nie je na verejnom webe", // ai 2026-06
 
-// include/itemfunc.php, row 149, 178
+// include/itemfunc.php, row 150, 179
 "Published" => "Zverejnen\xE9", // ai 2026-06
 
-// include/itemfunc.php, row 175
+// include/itemfunc.php, row 176
 "Never" => "Nikdy", // ai 2026-06
 
-// include/itemfunc.php, row 176
+// include/itemfunc.php, row 177
 "not used on this site" => "na tomto webe sa nepou\x9E\xEDva", // ai 2026-06
 
-// include/itemfunc.php, row 179
+// include/itemfunc.php, row 180
 "Expires" => "Expiruje", // ai 2026-06
 
-// include/itemfunc.php, row 181
+// include/itemfunc.php, row 182
 "Last edited" => "Naposledy upraven\xE9", // ai 2026-06
 
-// include/itemfunc.php, row 183
+// include/itemfunc.php, row 184
 "Revisions" => "Rev\xEDzie", // ai 2026-06
 
-// include/itemfunc.php, row 185
+// include/itemfunc.php, row 186
 "Short ID" => "Kr\xE1tke ID", // ai 2026-06
 
-// include/itemfunc.php, row 191
+// include/itemfunc.php, row 192
 "Details" => "Podrobnosti", // ai 2026-06
 
-// include/itemfunc.php, row 226
+// include/itemfunc.php, row 227
 "Item table record for the item" => "Z\xE1znam spr\xE1vy v tabu\xBEke item", // ai 2026-06
 
-// include/itemfunc.php, row 250
+// include/itemfunc.php, row 251
 "Content table records for the item" => "Z\xE1znamy spr\xE1vy v tabu\xBEke content", // ai 2026-06
 
-// include/itemfunc.php, row 269
+// include/itemfunc.php, row 270
 "Referenced items" => "Odkazovan\xE9 spr\xE1vy", // ai 2026-06
 
-// include/itemfunc.php, row 278
+// include/itemfunc.php, row 279
 "AA_Item structure" => "\x8Atrukt\xFAra AA_Item", // ai 2026-06
 
-// include/itemfunc.php, row 309
+// include/itemfunc.php, row 310
 "Technical details" => "Technick\xE9 podrobnosti", // ai 2026-06
 
-// include/itemfunc.php, row 350
+// include/itemfunc.php, row 351
 "When" => "Kedy", // ai 2026-06
 
-// include/itemfunc.php, row 350
+// include/itemfunc.php, row 351
 "Changed by" => "Zmenil", // ai 2026-06
 
-// include/itemfunc.php, row 378
+// include/itemfunc.php, row 379
 "Full history" => "Cel\xE1 hist\xF3ria", // ai 2026-06
 
-// include/itemfunc.php, row 403
+// include/itemfunc.php, row 404
 "Total views" => "Celkov\xFD po\xE8et zobrazen\xED", // ai 2026-06
 
-// include/itemfunc.php, row 422
+// include/itemfunc.php, row 423
 "Average / day" => "Priemer / de\xF2", // ai 2026-06
 
-// include/itemfunc.php, row 426
+// include/itemfunc.php, row 427
 "Last 7 days" => "Posledn\xFDch 7 dn\xED", // ai 2026-06
 
-// include/itemfunc.php, row 427
+// include/itemfunc.php, row 428
 "Last 30 days" => "Posledn\xFDch 30 dn\xED", // ai 2026-06
 
-// include/itemfunc.php, row 429
+// include/itemfunc.php, row 430
 "Last viewed" => "Naposledy zobrazen\xE9", // ai 2026-06
 
-// include/itemfunc.php, row 433
+// include/itemfunc.php, row 434
 "Avg response" => "Priemern\xE1 odozva", // ai 2026-06
 
-// include/itemfunc.php, row 436
+// include/itemfunc.php, row 437
 "Served from cache" => "Obsl\xFA\x9Een\xE9 z cache", // ai 2026-06
 
-// include/itemfunc.php, row 459
+// include/itemfunc.php, row 460
 "Full statistics" => "\xDApln\xE9 \x9Atatistiky", // ai 2026-06
 
-// include/itemfunc.php, row 484
+// include/itemfunc.php, row 485
 "No detailed view statistics have been recorded for this item yet." => "Pre t\xFAto spr\xE1vu zatia\xBE neboli zaznamenan\xE9 \x9Eiadne podrobn\xE9 \x9Atatistiky zobrazen\xED.", // ai 2026-06
 
-// include/itemfunc.php, row 487
+// include/itemfunc.php, row 488
 "Open full statistics" => "Otvori\x9D \xFApln\xE9 \x9Atatistiky", // ai 2026-06
 
-// include/itemfunc.php, row 514
+// include/itemfunc.php, row 515
 "Now, i.e. current date" => "Teraz, t.j. aktu\xE1lny d\xE1tum", // ai 2026-06
 
-// include/itemfunc.php, row 524
+// include/itemfunc.php, row 525
 "Never, i.e. maximum date" => "Nikdy, t.j. maxim\xE1lny d\xE1tum", // ai 2026-06
 
-// include/itemfunc.php, row 535
+// include/itemfunc.php, row 536
 "User ID" => "ID u\x9E\xEDvate\xBEa",
 
-// include/itemfunc.php, row 561
+// include/itemfunc.php, row 562
 "Date + 'Parameter' days" => "D\xE1tum + 'Parameter' dn\xED", // ai 2026-06
 
-// include/itemfunc.php, row 568
+// include/itemfunc.php, row 569
 "Number of days" => "Po\xE8et dn\xED", // ai 2026-06
 
-// include/itemfunc.php, row 582
+// include/itemfunc.php, row 583
 "Text from 'Parameter'" => "Text z 'Parametra'", // ai 2026-06
 
-// include/itemfunc.php, row 616
+// include/itemfunc.php, row 617
 "Random string" => "N\xE1hodn\xFD re\x9Dazec", // ai 2026-06
 
-// include/itemfunc.php, row 618
+// include/itemfunc.php, row 619
 "Random alphanumeric [A-Z0-9] string." => "N\xE1hodn\xFD alfanumerick\xFD re\x9Dazec [A-Z0-9].", // ai 2026-06
 
-// include/itemfunc.php, row 625
+// include/itemfunc.php, row 626
 "String length" => "D\xE5\x9Eka re\x9Dazca", // ai 2026-06
 
-// include/itemfunc.php, row 626
+// include/itemfunc.php, row 627
 "Field to check" => "Kontrolovan\xE1 polo\x9Eka", // ai 2026-06
 
-// include/itemfunc.php, row 626
+// include/itemfunc.php, row 627
 "If you need a unique code, you must send the field ID, the function will then look into this field to ensure uniqueness." => "Ak potrebujete unik\xE1tny k\xF3d, mus\xEDte zada\x9D ID polo\x9Eky; funkcia potom do tejto polo\x9Eky nahliada, aby zaistila unik\xE1tnos\x9D.", // ai 2026-06
 
-// include/itemfunc.php, row 627
+// include/itemfunc.php, row 628
 "Slice only" => "Len tento modul", // ai 2026-06
 
-// include/itemfunc.php, row 627
+// include/itemfunc.php, row 628
 "Do you want to check for uniqueness this slice only or all slices?" => "Chcete unik\xE1tnos\x9D kontrolova\x9D iba v tomto module, alebo vo v\x9Aetk\xFDch moduloch?", // ai 2026-06
 
-// include/itemfunc.php, row 669
+// include/itemfunc.php, row 670
 "AA Expression" => "AA v\xFDraz", // ai 2026-06
 
-// include/itemfunc.php, row 671
+// include/itemfunc.php, row 672
 "any text with possible {AA expressions} like: {date:Y}" => "\xBEubovo\xBEn\xFD text s pr\xEDpadn\xFDmi {AA v\xFDrazmi}, napr.: {date:Y}", // ai 2026-06
 
-// include/itemfunc.php, row 695
+// include/itemfunc.php, row 696
 "Multivalue" => "Viachodnotov\xE9", // ai 2026-06
 
-// include/itemfunc.php, row 703
+// include/itemfunc.php, row 704
 // include/transformation.class.php, row 525
 "Delimiter" => "Odde\xBEova\xE8", // ai 2026-06
 
-// include/itemfunc.php, row 794
+// include/itemfunc.php, row 795
 "Slice with id '%1' is not valid." => "Modul s id '%1' nie je platn\xFD.", // ai 2026-06
 
-// include/itemfunc.php, row 894
+// include/itemfunc.php, row 895
 "Text = don't modify" => "Text = nemeni\x9D", // ai 2026-06
 
-// include/itemfunc.php, row 895
+// include/itemfunc.php, row 896
 "Does not modify the value." => "Nemen\xED hodnotu.", // ai 2026-06
 
-// include/itemfunc.php, row 900
+// include/itemfunc.php, row 901
 "Date = don't modify" => "D\xE1tum = nemeni\x9D", // ai 2026-06
 
-// include/itemfunc.php, row 901, 910
+// include/itemfunc.php, row 902, 911
 "Does not modify the value (just like Text), but it is better to separate it for future usage." => "Nemen\xED hodnotu (rovnako ako Text), ale je lep\x9Aie ich oddeli\x9D pre bud\xFAce pou\x9Eitie.", // ai 2026-06
 
-// include/itemfunc.php, row 909
+// include/itemfunc.php, row 910
 "Number = don't modify" => "\xC8\xEDslo = nemeni\x9D", // ai 2026-06
 
-// include/itemfunc.php, row 915
+// include/itemfunc.php, row 916
 "Boolean = store 0 or 1" => "Boolean = ulo\x9E\xED 0 alebo 1", // ai 2026-06
 
-// include/itemfunc.php, row 926
+// include/itemfunc.php, row 927
 "Float" => "",
 
-// include/itemfunc.php, row 927
+// include/itemfunc.php, row 928
 "Real float - could convert big numbers to scientific notation (1.23E+29)" => "Skuto\xE8n\xFD float - ve\xBEk\xE9 \xE8\xEDsla m\xF4\x9Ee previes\x9D do vedeck\xE9ho z\xE1pisu (1.23E+29)", // ai 2026-06
 
-// include/itemfunc.php, row 937
+// include/itemfunc.php, row 938
 "Decimal" => "Desatinn\xE9 \xE8\xEDslo", // ai 2026-06
 
-// include/itemfunc.php, row 938
+// include/itemfunc.php, row 939
 "The same as Float, but does not convert big numbers to  scientific notation (1.23E+29)" => "Rovnak\xE9 ako Float, ale neprev\xE1dza ve\xBEk\xE9 \xE8\xEDsla do vedeck\xE9ho z\xE1pisu (1.23E+29)", // ai 2026-06
 
-// include/itemfunc.php, row 948
+// include/itemfunc.php, row 949
 "Trim" => "Oreza\x9D", // ai 2026-06
 
-// include/itemfunc.php, row 949
+// include/itemfunc.php, row 950
 "Remove whitespaces from beginning and end and also normalize UTF (NFC)" => "Odstr\xE1ni medzery zo za\xE8iatku a konca a tie\x9E normalizuje UTF (NFC)", // ai 2026-06
 
-// include/itemfunc.php, row 960
+// include/itemfunc.php, row 961
 "Item IDs" => "ID \xE8l\xE1nku",
 
-// include/itemfunc.php, row 1027
+// include/itemfunc.php, row 1028
 "User ID = always store current user ID" => "ID u\x9E\xEDvate\xBEa = v\x9Edy ulo\x9E\xED ID aktu\xE1lneho u\x9E\xEDvate\xBEa", // ai 2026-06
 
-// include/itemfunc.php, row 1028
+// include/itemfunc.php, row 1029
 "Inserts the identity of the current user, no matter what the user sets." => "Vlo\x9E\xED identitu aktu\xE1lneho u\x9E\xEDvate\xBEa bez oh\xBEadu na to, \xE8o u\x9E\xEDvate\xBE zad\xE1.", // ai 2026-06
 
-// include/itemfunc.php, row 1069
+// include/itemfunc.php, row 1070
 "Now = always store current time" => "Teraz = v\x9Edy ulo\x9E\xED aktu\xE1lny \xE8as", // ai 2026-06
 
-// include/itemfunc.php, row 1070
+// include/itemfunc.php, row 1071
 "Inserts the current time, no matter what the user sets." => "Vlo\x9E\xED aktu\xE1lny \xE8as bez oh\xBEadu na to, \xE8o u\x9E\xEDvate\xBE zad\xE1.", // ai 2026-06
 
-// include/itemfunc.php, row 1100
+// include/itemfunc.php, row 1101
 "Computed field for INSERT/UPDATE" => "Po\xE8\xEDtan\xE1 polo\x9Eka pre INSERT/UPDATE", // ai 2026-06
 
-// include/itemfunc.php, row 1101
+// include/itemfunc.php, row 1102
 "The field is the result of expression written in \"Code for unaliasing\". It is a good solution for all values, which could be precomputed, since its computation on item-show-time would be slow. Yes, you can use {view...}, {include...}, {switch...} here" => "Polo\x9Eka je v\xFDsledkom v\xFDrazu zap\xEDsan\xE9ho v \"K\xF3d pre odaliasovanie\". Je to dobr\xE9 rie\x9Aenie pre v\x9Aetky hodnoty, ktor\xE9 mo\x9Eno predpo\xE8\xEDta\x9D, preto\x9Ee ich v\xFDpo\xE8et v \xE8ase zobrazenia spr\xE1vy by bol pomal\xFD. \xC1no, m\xF4\x9Eete tu pou\x9Ei\x9D {view...}, {include...}, {switch...}", // ai 2026-06
 
-// include/itemfunc.php, row 1108
+// include/itemfunc.php, row 1109
 "Code for unaliasing (INSERT)" => "K\xF3d pre odaliasovanie (INSERT)", // ai 2026-06
 
-// include/itemfunc.php, row 1108, 1137
+// include/itemfunc.php, row 1109, 1138
 "There you can write any string. The string will be unaliased on item store, so you can use any {...} construct as well as field aliases here" => "Sem m\xF4\x9Eete nap\xEDsa\x9D \xBEubovo\xBEn\xFD re\x9Dazec. Re\x9Dazec sa odaliasuje pri ulo\x9Een\xED spr\xE1vy, tak\x9Ee tu m\xF4\x9Eete pou\x9Ei\x9D ak\xFDko\xBEvek {...} kon\x9Atrukt aj aliasy polo\x9Eiek", // ai 2026-06
 
-// include/itemfunc.php, row 1109
+// include/itemfunc.php, row 1110
 "Code for unaliasing (UPDATE)" => "K\xF3d pre odaliasovanie (UPDATE)", // ai 2026-06
 
-// include/itemfunc.php, row 1109
+// include/itemfunc.php, row 1110
 "The same as above, but just for UPDATE operation. If unfilled, the value of the field stays unchanged" => "Rovnak\xE9 ako vy\x9A\x9Aie, ale len pre oper\xE1ciu UPDATE. Ak nie je vyplnen\xE9, hodnota polo\x9Eky zost\xE1va nezmenen\xE1", // ai 2026-06
 
-// include/itemfunc.php, row 1110
+// include/itemfunc.php, row 1111
 "Multivalue delimiter" => "Odde\xBEova\xE8 viacn\xE1sobn\xFDch hodn\xF4t", // ai 2026-06
 
-// include/itemfunc.php, row 1110
+// include/itemfunc.php, row 1111
 "Character or string, which will split the computed string into multiple values (the same field)" => "Znak alebo re\x9Dazec, ktor\xFD rozdel\xED vypo\xE8\xEDtan\xFD re\x9Dazec na viac hodn\xF4t (tej istej polo\x9Eky)", // ai 2026-06
 
-// include/itemfunc.php, row 1111
+// include/itemfunc.php, row 1112
 "Recompute every" => "Interval prepo\xE8tu", // ai 2026-06
 
-// include/itemfunc.php, row 1111
+// include/itemfunc.php, row 1112
 "The field will be recomputed every minute, hour, ... (using UPDATE code above). The times are not exact - the minute means something 1-10 minutes. If not filled, the field will be recomputed only on insert/update of the item." => "Polo\x9Eka sa prepo\xE8\xEDta ka\x9Ed\xFA min\xFAtu, hodinu, ... (pomocou UPDATE k\xF3du vy\x9A\x9Aie). \xC8asy nie s\xFA presn\xE9 - min\xFAta znamen\xE1 pribli\x9Ene 1-10 min\xFAt. Ak nie je vyplnen\xE9, polo\x9Eka sa prepo\xE8\xEDta len pri vlo\x9Een\xED/zmene spr\xE1vy.", // ai 2026-06
 
-// include/itemfunc.php, row 1129
+// include/itemfunc.php, row 1130
 "Computed field" => "Po\xE8\xEDtan\xE1 polo\x9Eka", // ai 2026-06
 
-// include/itemfunc.php, row 1130
+// include/itemfunc.php, row 1131
 "The field is the result of expression written in \\\"Code for unaliasing\\\". It is good solution for all values, which could be precomputed, since its computation on item-show-time would be slow. Yes, you can use {view...}, {include...}, {switch...} here" => "Polo\x9Eka je v\xFDsledkom v\xFDrazu zap\xEDsan\xE9ho v \\\"K\xF3d pre odaliasovanie\\\". Je to dobr\xE9 rie\x9Aenie pre v\x9Aetky hodnoty, ktor\xE9 mo\x9Eno predpo\xE8\xEDta\x9D, preto\x9Ee ich v\xFDpo\xE8et v \xE8ase zobrazenia spr\xE1vy by bol pomal\xFD. \xC1no, m\xF4\x9Eete tu pou\x9Ei\x9D {view...}, {include...}, {switch...}", // ai 2026-06
 
-// include/itemfunc.php, row 1137
+// include/itemfunc.php, row 1138
 "Code for unaliasing (INSERT+UPDATE)" => "K\xF3d pre odaliasovanie (INSERT+UPDATE)", // ai 2026-06
 
-// include/itemfunc.php, row 1157
+// include/itemfunc.php, row 1158
 "SEO Name" => "SEO n\xE1zov", // ai 2026-06
 
-// include/itemfunc.php, row 1158
+// include/itemfunc.php, row 1159
 "If the field is not filled, compute seoname from _#HEADLINE alias (or another if specified) unique to all slices in sitemodules, where the slice is mentioned in \"Uses slices\" settings. Basically the SEO Name alias is shortcut for computed field with {ifset:{seo.............}:_#1:{seoname:{_#HEADLINE}:all:CHARSET}}" => "Ak polo\x9Eka nie je vyplnen\xE1, vypo\xE8\xEDta sa seoname z aliasu _#HEADLINE (alebo in\xE9ho, ak je zadan\xFD), unik\xE1tne pre v\x9Aetky moduly v site moduloch, kde je modul uveden\xFD v nastaven\xED \"Uses slices\". V podstate je alias SEO n\xE1zvu skratkou pre po\xE8\xEDtan\xFA polo\x9Eku s {ifset:{seo.............}:_#1:{seoname:{_#HEADLINE}:all:CHARSET}}", // ai 2026-06
 
-// include/itemfunc.php, row 1165
+// include/itemfunc.php, row 1166
 "Alias to compute from" => "Alias, z ktor\xE9ho sa po\xE8\xEDta", // ai 2026-06
 
-// include/itemfunc.php, row 1165
+// include/itemfunc.php, row 1166
 "if not specified, the _#HEADLINE is used" => "ak nie je zadan\xFD, pou\x9Eije sa _#HEADLINE", // ai 2026-06
 
-// include/itemfunc.php, row 1180
+// include/itemfunc.php, row 1181
 "Unique number for this field (from 1,..)" => "Unik\xE1tne \xE8\xEDslo pre t\xFAto polo\x9Eku (od 1,..)", // ai 2026-06
 
-// include/itemfunc.php, row 1181
+// include/itemfunc.php, row 1182
 "Unique number in sequence 1,2,3,..." => "Unik\xE1tne \xE8\xEDslo v porad\xED 1,2,3,...", // ai 2026-06
 
-// include/itemfunc.php, row 1203
+// include/itemfunc.php, row 1204
 "File = uploaded file" => "S\xFAbor = nahran\xFD s\xFAbor", // ai 2026-06
 
-// include/itemfunc.php, row 1204
+// include/itemfunc.php, row 1205
 "Stores the uploaded file and a link to it, parameters only apply if type is image/something." => "Ulo\x9E\xED nahran\xFD s\xFAbor a odkaz na\xF2, parametre sa pou\x9Eij\xFA, len ak je typ image/something.", // ai 2026-06
 
-// include/itemfunc.php, row 1211
+// include/itemfunc.php, row 1212
 "Mime types accepted" => "Akceptovan\xE9 MIME typy", // ai 2026-06
 
-// include/itemfunc.php, row 1211
+// include/itemfunc.php, row 1212
 "Only files of matching mime types will be accepted" => "Akceptovan\xE9 bud\xFA len s\xFAbory zodpovedaj\xFAcich mime typov", // ai 2026-06
 
-// include/itemfunc.php, row 1212
+// include/itemfunc.php, row 1213
 "Maximum image width" => "Maxim\xE1lna \x9A\xEDrka obr\xE1zka", // ai 2026-06
 
-// include/itemfunc.php, row 1213
+// include/itemfunc.php, row 1214
 "Maximum image height" => "Maxim\xE1lna v\xFD\x9Aka obr\xE1zka", // ai 2026-06
 
-// include/itemfunc.php, row 1213
+// include/itemfunc.php, row 1214
 "The image will be resampled to be within these limits, while retaining aspect ratio." => "Obr\xE1zok bude prevzorkovan\xFD tak, aby sa zmestil do t\xFDchto limitov, pri zachovan\xED pomeru str\xE1n.", // ai 2026-06
 
-// include/itemfunc.php, row 1214
+// include/itemfunc.php, row 1215
 "Other fields" => "\xCFal\x9Aie polo\x9Eky", // ai 2026-06
 
-// include/itemfunc.php, row 1214
+// include/itemfunc.php, row 1215
 "List of other fields to receive this image, separated by ##. Does not work well for multi uploads." => "Zoznam \xEFal\x9A\xEDch polo\x9Eiek, do ktor\xFDch sa m\xE1 ulo\x9Ei\x9D tento obr\xE1zok, oddelen\xFD ##. Nefunguje dobre pri viacn\xE1sobnom nahr\xE1van\xED s\xFAborov.", // ai 2026-06
 
-// include/itemfunc.php, row 1215
+// include/itemfunc.php, row 1216
 "Upload policy" => "Sp\xF4sob nahr\xE1vania", // ai 2026-06
 
-// include/itemfunc.php, row 1215
+// include/itemfunc.php, row 1216
 "new | overwrite | backup<br>This parameter controls what to do if uploaded file alredy exists:<br>new - AA creates new filename (by adding _x postfix) and store it with this new name (default)<br>overwrite - the old file of the same name is overwritten<br>backup - the old file is copied to new (non-existing) file and current file is stored with current name.<br>In all cases the filename is escaped, so any non-word characters will be replaced by an underscore." => "new | overwrite | backup<br>Tento parameter ur\xE8uje, \xE8o sa stane, ak nahr\xE1van\xFD s\xFAbor u\x9E existuje:<br>new - AA vytvor\xED nov\xFD n\xE1zov s\xFAboru (pridan\xEDm _x na koniec) a ulo\x9E\xED ho pod t\xFDmto nov\xFDm n\xE1zvom (predvolen\xE9)<br>overwrite - star\xFD s\xFAbor s rovnak\xFDm n\xE1zvom sa prep\xED\x9Ae<br>backup - star\xFD s\xFAbor sa skop\xEDruje do nov\xE9ho (neexistuj\xFAceho) s\xFAboru a aktu\xE1lny s\xFAbor sa ulo\x9E\xED pod p\xF4vodn\xFDm n\xE1zvom.<br>Vo v\x9Aetk\xFDch pr\xEDpadoch sa n\xE1zov s\xFAboru o\x9Aetr\xED, tak\x9Ee v\x9Aetky neslovn\xE9 znaky bud\xFA nahraden\xE9 pod\xE8iarkovn\xEDkom.", // ai 2026-06
 
-// include/itemfunc.php, row 1216
+// include/itemfunc.php, row 1217
 "Exact dimensions" => "Presn\xE9 rozmery", // ai 2026-06
 
-// include/itemfunc.php, row 1216
+// include/itemfunc.php, row 1217
 "If set to 1 the image will be downsized exactly to the specified dimensions (and cropped if needed). Default is 0 or empty: Maintain aspect ratio while resizing the image." => "Ak je nastaven\xE9 na 1, obr\xE1zok sa zmen\x9A\xED presne na zadan\xE9 rozmery (a v pr\xEDpade potreby sa ore\x9Ee). Predvolen\xE9 je 0 alebo pr\xE1zdne: pri zmene ve\xBEkosti obr\xE1zka sa zachov\xE1 pomer str\xE1n.", // ai 2026-06
 
-// include/itemfunc.php, row 1217
+// include/itemfunc.php, row 1218
 "Filename template" => "\x8Aabl\xF3na n\xE1zvu s\xFAboru", // ai 2026-06
 
-// include/itemfunc.php, row 1217
+// include/itemfunc.php, row 1218
 "Renames file according to template. You can use AA expressions as well as special alias _#name and _#ext or _#full (file name, extension and fullname). The item aliases in AA expressions do not work on INSERT (item does not exist at time of file write). They will work on UPDATE." => "Premenuje s\xFAbor pod\xBEa \x9Aabl\xF3ny. M\xF4\x9Eete pou\x9Ei\x9D AA v\xFDrazy aj \x9Apeci\xE1lne aliasy _#name a _#ext alebo _#full (n\xE1zov s\xFAboru, pr\xEDpona a cel\xFD n\xE1zov). Aliasy spr\xE1vy v AA v\xFDrazoch nefunguj\xFA pri INSERT (spr\xE1va v \xE8ase z\xE1pisu s\xFAboru e\x9Ate neexistuje). Pri UPDATE fungova\x9D bud\xFA.", // ai 2026-06
 
-// include/itemfunc.php, row 1374
+// include/itemfunc.php, row 1375
 "Password and Change Password" => "Heslo a Zmena hesla", // ai 2026-06
 
-// include/itemfunc.php, row 1375
+// include/itemfunc.php, row 1376
 "Stores value from a \"Password and Change Password\" field type. First proves the new password matches the retyped new password, and if so, encrypts the new password and stores it." => "Ulo\x9E\xED hodnotu z typu polo\x9Eky \"Heslo a zmena hesla\". Najprv over\xED, \xE8i sa nov\xE9 heslo zhoduje so znovu zadan\xFDm nov\xFDm heslom, a ak \xE1no, nov\xE9 heslo za\x9Aifruje a ulo\x9E\xED.", // ai 2026-06
 
-// include/itemfunc.php, row 1382
+// include/itemfunc.php, row 1383
 "Copy of password" => "K\xF3pia hesla", // ai 2026-06
 
-// include/itemfunc.php, row 1382
+// include/itemfunc.php, row 1383
 "Field_id, where you want to store the copy of the password. Sometimes useful if you want to allow people to get his/her old password. It is strongly recommended to not store it in plaintext and encrypt it. See second parameter." => "Field_id (id polo\x9Eky), do ktorej chcete ulo\x9Ei\x9D k\xF3piu hesla. Niekedy u\x9Eito\xE8n\xE9, ak chcete umo\x9Eni\x9D \xBEu\xEFom z\xEDska\x9D ich star\xE9 heslo. D\xF4razne odpor\xFA\xE8ame neuklada\x9D ho ako \xE8ist\xFD text, ale za\x9Aifrova\x9D ho. Pozrite druh\xFD parameter.", // ai 2026-06
 
-// include/itemfunc.php, row 1383, 1422
+// include/itemfunc.php, row 1384, 1423
 "Encrypt phrase" => "\x8Aifrovacia fr\xE1za", // ai 2026-06
 
-// include/itemfunc.php, row 1383
+// include/itemfunc.php, row 1384
 "If you specify the \"Copy of password\" field, it is recommended to encrypt the password in the database. Fill there any string. If you then need the password, you can decrypt it from the field by using the same phrase - {decrypt:{password.......1}:Some Phrase}" => "Ak zad\xE1te polo\x9Eku \"K\xF3pia hesla\", odpor\xFA\xE8ame heslo v datab\xE1ze za\x9Aifrova\x9D. Vypl\xF2te sem \xBEubovo\xBEn\xFD re\x9Dazec. Ak potom heslo potrebujete, m\xF4\x9Eete ho z polo\x9Eky de\x9Aifrova\x9D pomocou rovnakej fr\xE1zy - {decrypt:{password.......1}:Some Phrase}", // ai 2026-06
 
-// include/itemfunc.php, row 1414
+// include/itemfunc.php, row 1415
 "2FA Secret" => "Tajn\xFD k\xBE\xFA\xE8 2FA", // ai 2026-06
 
-// include/itemfunc.php, row 1415
+// include/itemfunc.php, row 1416
 "Generates and stores secret for Two-factor authentication, possibly encrypted by password" => "Vygeneruje a ulo\x9E\xED tajn\xFD k\xBE\xFA\xE8 pre dvojfaktorov\xFA autentifik\xE1ciu, pr\xEDpadne za\x9Aifrovan\xFD heslom", // ai 2026-06
 
-// include/itemfunc.php, row 1422
+// include/itemfunc.php, row 1423
 "Password to be applied for encrypting this field value. Could contain AA expressions or aliases (for user item in Reader Management slice)" => "Heslo, ktor\xE9 sa pou\x9Eije na za\x9Aifrovanie hodnoty tejto polo\x9Eky. M\xF4\x9Ee obsahova\x9D AA v\xFDrazy alebo aliasy (pre spr\xE1vu u\x9E\xEDvate\xBEa v module Spr\xE1va \xE8itate\xBEov)", // ai 2026-06
 
 // include/itemview.php, row 117
@@ -4997,65 +4995,143 @@ return [
 // include/locauth.php, row 87
 "If you are sure you have typed the correct password, please e-mail <a href=mailto:%1>%1</a>" => "Ak ste si ist\xED, \x9Ee ste zadali spr\xE1vne heslo, nap\xED\x9Ate pros\xEDm e-mail na <a href=mailto:%1>%1</a>", // ai 2026-06
 
-// include/logs.php, row 306
+// include/logs.php, row 336
 "Created time" => "\xC8as vytvorenia", // ai 2026-06
 
-// include/logs.php, row 307
+// include/logs.php, row 337
 "Readers to be emailed" => "\xC8itatelia, ktor\xFDm sa m\xE1 posla\x9D e-mail", // ai 2026-06
 
-// include/logs.php, row 317
+// include/logs.php, row 347
 "Page" => "Str\xE1nka", // ai 2026-06
 
-// include/logs.php, row 327, 351, 364
+// include/logs.php, row 357, 397, 410
 "Time [s]" => "\xC8as [s]", // ai 2026-06
 
-// include/logs.php, row 328, 353
+// include/logs.php, row 358, 399
 "Memory usage [MB]" => "Pou\x9Eit\xE1 pam\xE4\x9D [MB]", // ai 2026-06
 
-// include/logs.php, row 329
+// include/logs.php, row 359
 "Memory peak [MB]" => "Maximum pam\xE4te [MB]", // ai 2026-06
 
-// include/logs.php, row 330
+// include/logs.php, row 360
 "Return code" => "N\xE1vratov\xFD k\xF3d", // ai 2026-06
 
-// include/logs.php, row 349
-"Cached" => "Z cache", // ai 2026-06
-
-// include/logs.php, row 350
-"Not Modified (304)" => "Nezmenen\xE9 (304)", // ai 2026-06
-
-// include/logs.php, row 352
-"Time + Cached + 304" => "\xC8as + cache + 304", // ai 2026-06
-
-// include/logs.php, row 354, 365, 397
-"Url" => "URL", // ai 2026-06
+// include/logs.php, row 374
+"Tasks done" => "Dokon\xE8en\xE9 \xFAlohy", // ai 2026-06
 
 // include/logs.php, row 375
+"Tasks started" => "Spusten\xE9 \xFAlohy", // ai 2026-06
+
+// include/logs.php, row 376
+"Duration [s]" => "Trvanie [s]", // ai 2026-06
+
+// include/logs.php, row 377
+"Allowed [s]" => "Povolen\xE9 [s]", // ai 2026-06
+
+// include/logs.php, row 395
+"Cached" => "Z cache", // ai 2026-06
+
+// include/logs.php, row 396
+"Not Modified (304)" => "Nezmenen\xE9 (304)", // ai 2026-06
+
+// include/logs.php, row 398
+"Time + Cached + 304" => "\xC8as + cache + 304", // ai 2026-06
+
+// include/logs.php, row 400, 411, 443, 475
+"Url" => "URL", // ai 2026-06
+
+// include/logs.php, row 421
 // include/menu_util.php, row 45
 "AA" => "",
 
-// include/logs.php, row 376
+// include/logs.php, row 422
 "SVN AA (util.php)" => "",
 
-// include/logs.php, row 377
+// include/logs.php, row 423
 "PHP" => "",
 
-// include/logs.php, row 378
+// include/logs.php, row 424
 "DB" => "",
 
-// include/logs.php, row 379
+// include/logs.php, row 425
 "Memory" => "Pam\xE4\x9D", // ai 2026-06
 
-// include/logs.php, row 380
+// include/logs.php, row 426
 "CPU" => "",
 
-// include/logs.php, row 394
+// include/logs.php, row 440
 "Identifier" => "Identifik\xE1tor", // ai 2026-06
 
-// include/logs.php, row 395
+// include/logs.php, row 441, 570, 583
 // modules/jump/modedit.php, row 180
 // src/Manager.php, row 584
 "Module ID" => "ID modulu", // ai 2026-06
+
+// include/logs.php, row 452
+"Template id" => "Id \x9Aabl\xF3ny", // ai 2026-06
+
+// include/logs.php, row 454
+"Emails sent" => "Odoslan\xE9 e-maily", // ai 2026-06
+
+// include/logs.php, row 463
+"Items selected" => "Vybran\xE9 spr\xE1vy", // ai 2026-06
+
+// include/logs.php, row 464
+"Items updated" => "Aktualizovan\xE9 spr\xE1vy", // ai 2026-06
+
+// include/logs.php, row 465
+"Items planned" => "Pl\xE1novan\xE9 spr\xE1vy", // ai 2026-06
+
+// include/logs.php, row 474
+"Message" => "Spr\xE1va", // ai 2026-06
+
+// include/logs.php, row 476
+"Referer" => "",
+
+// include/logs.php, row 485
+"New name" => "Nov\xFD n\xE1zov", // ai 2026-06
+
+// include/logs.php, row 486
+"Old name" => "Star\xFD n\xE1zov", // ai 2026-06
+
+// include/logs.php, row 495, 518
+"Phase" => "F\xE1za", // ai 2026-06
+
+// include/logs.php, row 496
+"Collection" => "Kolekcia", // ai 2026-06
+
+// include/logs.php, row 498, 509, 519
+"Detail" => "",
+
+// include/logs.php, row 508
+"Status" => "Stav", // ai 2026-06
+
+// include/logs.php, row 529
+"Processed" => "Spracovan\xE9", // ai 2026-06
+
+// include/logs.php, row 530
+"Stored" => "Ulo\x9Een\xE9", // ai 2026-06
+
+// include/logs.php, row 531
+"Errors" => "Chyby", // ai 2026-06
+
+// include/logs.php, row 542
+"Outcome" => "V\xFDsledok", // ai 2026-06
+
+// include/logs.php, row 555
+"Mode" => "Re\x9Eim", // ai 2026-06
+
+// include/logs.php, row 556
+"Flags" => "Pr\xEDznaky", // ai 2026-06
+
+// include/logs.php, row 557
+"Context" => "Kontext", // ai 2026-06
+
+// include/logs.php, row 571
+"Feed counterpart" => "N\xE1protivok v\xFDmeny", // ai 2026-06
+
+// include/logs.php, row 584
+"Field ID" => "ID polo\x9Eky", // ai 2026-06
 
 // include/mail.php, row 563
 // include/tv_email.php, row 77, 145
@@ -5085,156 +5161,156 @@ return [
 // include/menu.php, row 65
 "View site" => "Zobraz modul",
 
-// include/menu.php, row 84, 85, 137
+// include/menu.php, row 90, 91, 142
 "Item Manager" => "Administr\xE1cia",
 
-// include/menu.php, row 93
+// include/menu.php, row 99
 "Slice Admin" => "Nastavenia modulu", // ai 2026-06
 
-// include/menu.php, row 94
+// include/menu.php, row 100
 "Slice Administration" => "Administr\xE1cia modulu - Menu",
 
-// include/menu.php, row 125
+// include/menu.php, row 131
 // src/Module/Poll/Menu.php, row 82
 "Main settings" => "Hlavn\xE9 nastavenia",
 
-// include/menu.php, row 128
+// include/menu.php, row 134
 "Slice Fields" => "Polo\x9Eky modulu", // ai 2026-06
 
-// include/menu.php, row 129
+// include/menu.php, row 135
 "Email Notification" => "Upozornenie e-mailom",
 
-// include/menu.php, row 132
+// include/menu.php, row 137
 // include/menu_util.php, row 69
 // include/um_util.php, row 100, 103
 "Permissions" => "Nastavenia pr\xE1v",
 
-// include/menu.php, row 133
+// include/menu.php, row 138
 "Assign" => "Pridelenie nov\xFDch pr\xE1v",
 
-// include/menu.php, row 136
+// include/menu.php, row 141
 "Design" => "Vzh\xBEad",
 
-// include/menu.php, row 139
+// include/menu.php, row 144
 "Fulltext" => "Cel\xE1 spr\xE1va",
 
-// include/menu.php, row 140
+// include/menu.php, row 145
 "Index" => "Preh\xBEad spr\xE1v",
 
-// include/menu.php, row 142
+// include/menu.php, row 147
 "Sets of Items" => "Sady spr\xE1v", // ai 2026-06
 
-// include/menu.php, row 144
+// include/menu.php, row 149
 "Content Pooling" => "V\xFDmena spr\xE1v",
 
-// include/menu.php, row 145
+// include/menu.php, row 150
 "Nodes" => "Uzly",
 
-// include/menu.php, row 146
+// include/menu.php, row 151
 "Inner Node Feeding" => "Lok\xE1lna v\xFDmena",
 
-// include/menu.php, row 148
+// include/menu.php, row 153
 "Inter Node Export" => "Zasielanie do uzlov",
 
-// include/menu.php, row 149
+// include/menu.php, row 154
 "RSS Feeds" => "RSS kan\xE1ly", // ai 2026-06
 
-// include/menu.php, row 150
+// include/menu.php, row 155
 "Filters" => "Filtre",
 
-// include/menu.php, row 151
+// include/menu.php, row 156
 "Mapping" => "Mapovanie",
 
-// include/menu.php, row 152, 214
-"Import CSV" => "",
+// include/menu.php, row 157, 219
+"Import CSV" => "Importova\x9D CSV", // ai 2026-06
 
-// include/menu.php, row 153
+// include/menu.php, row 158
 // src/Manageraction/Item_Export.php, row 20
 "Export to file" => "Export do s\xFAboru", // ai 2026-06
 
-// include/menu.php, row 155, 211
-// include/menu_util.php, row 73, 124
+// include/menu.php, row 160, 216
+// include/menu_util.php, row 73, 123
 // src/Module/Poll/Menu.php, row 67
 "Misc" => "Pr\xEDkazy",
 
-// include/menu.php, row 158
+// include/menu.php, row 163
 "Change field IDs" => "Zmeni\x9D ID polo\x9Eiek", // ai 2026-06
 
-// include/menu.php, row 161
+// include/menu.php, row 166
 "Anonymous Form Wizard" => "Sprievodca anonymn\xFDm formul\xE1rom", // ai 2026-06
 
-// include/menu.php, row 162
+// include/menu.php, row 167
 // include/tv_email.php, row 134
 "Email templates" => "\x8Aabl\xF3ny e-mailov", // ai 2026-06
 
-// include/menu.php, row 164
+// include/menu.php, row 169
 // include/menu_util.php, row 75
 "Planned Tasks" => "Pl\xE1novan\xE9 \xFAlohy", // ai 2026-06
 
-// include/menu.php, row 172
+// include/menu.php, row 177
 "Mailman: create list" => "Mailman: vytvori\x9D zoznam", // ai 2026-06
 
-// include/menu.php, row 180
-// include/menu_util.php, row 119
+// include/menu.php, row 185
+// include/menu_util.php, row 118
 // src/Module/Poll/Menu.php, row 60
 "Folders" => "Ostatn\xE9 spr\xE1vy",
 
-// include/menu.php, row 183
+// include/menu.php, row 188
 // src/Module/Poll/Menu.php, row 62
 "... pending" => "... pripraven\xE9",
 
-// include/menu.php, row 184
+// include/menu.php, row 189
 // src/Module/Poll/Menu.php, row 63
 "... expired" => "... expirovan\xE9",
 
-// include/menu.php, row 186
-// include/menu_util.php, row 122
+// include/menu.php, row 191
+// include/menu_util.php, row 121
 // src/Module/Poll/Menu.php, row 65
 "Trash bin" => "K\xF4\x9A",
 
-// include/menu.php, row 202
+// include/menu.php, row 207
 "Bookmarks" => "Z\xE1lo\x9Eky", // ai 2026-06
 
-// include/menu.php, row 212
+// include/menu.php, row 217
 "Setting" => "Nastavenie", // ai 2026-06
 
-// include/menu.php, row 213
-// include/menu_util.php, row 127
+// include/menu.php, row 218
+// include/menu_util.php, row 126
 // src/Module/Poll/Menu.php, row 68
 "Empty trash" => "Vysypa\x9D k\xF4\x9A",
 
-// include/menu.php, row 213
-// include/menu_util.php, row 127
+// include/menu.php, row 218
+// include/menu_util.php, row 126
 // src/Module/Poll/Menu.php, row 68
 "Are you sure you want to empty trash?" => "Naozaj chcete vypr\xE1zdni\x9D k\xF4\x9A?", // ai 2026-06
 
-// include/menu.php, row 215
+// include/menu.php, row 220
 "Set Debug OFF" => "Vypn\xFA\x9D ladenie (Debug OFF)", // ai 2026-06
 
-// include/menu.php, row 215
+// include/menu.php, row 220
 "Set Debug ON" => "Zapn\xFA\x9D ladenie (Debug ON)", // ai 2026-06
 
-// include/menu.php, row 225
-// include/menu_util.php, row 420, 612
+// include/menu.php, row 230
+// include/menu_util.php, row 419, 726
 // include/slice.class.php, row 1194
 "Alerts" => "Zasielanie", // ai 2026-06
 
-// include/menu.php, row 225
+// include/menu.php, row 230
 "List of Alerts modules using this slice as Reader Management." => "Zoznam modulov Zasielanie (Alerts), ktor\xE9 pou\x9E\xEDvaj\xFA tento modul ako Spr\xE1vu \xE8itate\xBEov.", // ai 2026-06
 
-// include/menu.php, row 227
+// include/menu.php, row 232
 "Bulk Emails" => "Hromadn\xE9 e-maily", // ai 2026-06
 
-// include/menu.php, row 227
+// include/menu.php, row 232
 "Send bulk email to selected users or to users in Stored searches" => "Posla\x9D hromadn\xFD e-mail vybran\xFDm u\x9E\xEDvate\xBEom alebo u\x9E\xEDvate\xBEom z ulo\x9Een\xFDch vyh\xBEad\xE1van\xED", // ai 2026-06
 
-// include/menu.php, row 231
+// include/menu.php, row 236
 "Send emails" => "Posla\x9D e-maily", // ai 2026-06
 
-// include/menu.php, row 240
+// include/menu.php, row 245
 "Alerts Sent" => "Zasielan\xE9 cez", // ai 2026-06
 
-// include/menu.php, row 240
+// include/menu.php, row 245
 "List of Alerts modules sending items from this slice." => "Zoznam modulov Zasielanie (Alerts), ktor\xE9 posielaj\xFA spr\xE1vy z tohto modulu.", // ai 2026-06
 
 // include/menu_util.php, row 46
@@ -5270,76 +5346,97 @@ return [
 // include/menu_util.php, row 95
 "Wizard" => "Sprievodca", // ai 2026-06
 
-// include/menu_util.php, row 97
+// include/menu_util.php, row 96
 "Welcomes" => "Uv\xEDtacie e-maily", // ai 2026-06
 
-// include/menu_util.php, row 98
+// include/menu_util.php, row 97
 "Templates" => "\x8Aabl\xF3ny", // ai 2026-06
 
-// include/menu_util.php, row 100
+// include/menu_util.php, row 99
 "Documentation" => "Dokument\xE1cia", // ai 2026-06
 
-// include/menu_util.php, row 101
+// include/menu_util.php, row 100
 "Style Guide" => "Sprievodca \x9At\xFDlom", // ai 2026-06
 
-// include/menu_util.php, row 107
+// include/menu_util.php, row 106
 "Central" => "",
 
-// include/menu_util.php, row 108
+// include/menu_util.php, row 107
 "AA Central" => "",
 
-// include/menu_util.php, row 125
+// include/menu_util.php, row 124
 "Synchronize..." => "Synchronizova\x9D...", // ai 2026-06
 
-// include/menu_util.php, row 126
+// include/menu_util.php, row 125
 "Copy Slice..." => "Kop\xEDrova\x9D modul...", // ai 2026-06
 
-// include/menu_util.php, row 128
+// include/menu_util.php, row 127
 "Import conf from CSV..." => "Import konfigur\xE1cie z CSV...", // ai 2026-06
 
-// include/menu_util.php, row 398
+// include/menu_util.php, row 397
 "Part of %s" => "S\xFA\xE8as\x9D %s", // ai 2026-06
 
-// include/menu_util.php, row 415
+// include/menu_util.php, row 414
 "Other slices" => "Ostatn\xE9 moduly", // ai 2026-06
 
-// include/menu_util.php, row 419
+// include/menu_util.php, row 418
 "Reader Management Slice" => "Modul spr\xE1vy \xE8itate\xBEov", // ai 2026-06
 
-// include/menu_util.php, row 421
+// include/menu_util.php, row 420
 "Jump inside control panel" => "Skok v r\xE1mci administr\xE1cie", // ai 2026-06
 
-// include/menu_util.php, row 422
+// include/menu_util.php, row 421
 // include/slice.class.php, row 1226
 "Links" => "Odkazy", // ai 2026-06
 
-// include/menu_util.php, row 423
+// include/menu_util.php, row 422
 "MySQL Auth (old version)" => "MySQL autentifik\xE1cia (star\xE1 verzia)", // ai 2026-06
 
-// include/menu_util.php, row 424
+// include/menu_util.php, row 423
 // src/Module/Poll/Menu.php, row 83
 "Polls" => "Ankety", // ai 2026-06
 
-// include/menu_util.php, row 445
+// include/menu_util.php, row 444
 "New slice" => "Nov\xFD modul",
 
-// include/menu_util.php, row 449
+// include/menu_util.php, row 448
 "Switch module" => "Prepn\xFA\x9D modul", // ai 2026-06
 
-// include/menu_util.php, row 616
+// include/menu_util.php, row 578, 589
+"Apply" => "Pou\x9Ei\x9D", // ai 2026-06
+
+// include/menu_util.php, row 582
+"-- Default for module --" => "-- Predvolen\xE9 pre modul --", // ai 2026-06
+
+// include/menu_util.php, row 590
+"Switches the admin interface language; the page reloads." => "Prepne jazyk administra\xE8n\xE9ho rozhrania; str\xE1nka sa znovu na\xE8\xEDta.", // ai 2026-06
+
+// include/menu_util.php, row 598
+"What's working, what isn't \xE2\x80\x94 tell the AA team." => "\xC8o funguje a \xE8o nie \x97 nap\xED\x9Ate t\xEDmu AA.", // ai 2026-06
+
+// include/menu_util.php, row 601
+"Settings" => "Nastavenia", // ai 2026-06
+
+// include/menu_util.php, row 604
+"Theme" => "T\xE9ma", // ai 2026-06
+
+// include/menu_util.php, row 606
+"Feedback" => "Sp\xE4tn\xE1 v\xE4zba", // ai 2026-06
+
+// include/menu_util.php, row 730
 // include/slice.class.php, row 554
 "Reader management" => "Spr\xE1va \xE8itate\xBEov", // ai 2026-06
 
-// include/menu_util.php, row 628
+// include/menu_util.php, row 742
 "logout" => "odhl\xE1si\x9D", // ai 2026-06
 
-// include/menu_util.php, row 636
+// include/menu_util.php, row 750
 "Search.." => "H\xBEada\x9D..", // ai 2026-06
 
-// include/menu_util.php, row 702
+// include/menu_util.php, row 829
 "Copyright (C) 2001 the <a href=\"https://www.apc.org\">Association for Progressive Communications (APC)</a>" => "Copyright (C) 2001 <a href=\"https://www.apc.org\">Association for Progressive Communications (APC)</a>", // ai 2026-06
 
-// include/menu_util.php, row 712
+// include/menu_util.php, row 839
 "Collapse / expand menu" => "Zbali\x9D / rozbali\x9D menu", // ai 2026-06
 
 // include/metabase.class.php, row 1572
@@ -5395,7 +5492,7 @@ return [
 // include/profile.class.php, row 343, 353, 362, 371, 380, 389, 397
 "Rule added" => "Pravidlo pridan\xE9",
 
-// include/profile.php, row 107
+// include/profile.php, row 109
 "--disabled-- (added by \"Show field\" rule)" => "--vypnut\xE9-- (pridan\xE9 pravidlom \"Show field\")", // ai 2026-06
 
 // include/request.class.php, row 213
@@ -5461,43 +5558,43 @@ return [
 // include/searchbar.class.php, row 595
 "Order" => "Zoradit",
 
-// include/searchbar.class.php, row 662
+// include/searchbar.class.php, row 664
 "Advanced search" => "Roz\x9A\xEDren\xE9 vyh\xBEad\xE1vanie", // ai 2026-06
 
-// include/searchbar.class.php, row 720
+// include/searchbar.class.php, row 729
 "Refine" => "Spresni\x9D", // ai 2026-06
 
-// include/searchbar.class.php, row 723
+// include/searchbar.class.php, row 732
 "Share with all slice users" => "Zdie\xBEa\x9D so v\x9Aetk\xFDmi u\x9E\xEDvate\xBEmi modulu", // ai 2026-06
 
-// include/searchbar.class.php, row 724
+// include/searchbar.class.php, row 733
 "Save filter" => "Ulo\x9Ei\x9D filter", // ai 2026-06
 
-// include/searchbar.class.php, row 725
+// include/searchbar.class.php, row 734
 "Rename filter" => "Premenova\x9D filter", // ai 2026-06
 
-// include/searchbar.class.php, row 726
+// include/searchbar.class.php, row 735
 "Are you sure you want to delete selected filter?" => "Naozaj chcete vymaza\x9D vybran\xFD filter?", // ai 2026-06
 
-// include/searchbar.class.php, row 1008
+// include/searchbar.class.php, row 1017
 "Select one..." => "Vyberte...", // ai 2026-06
 
-// include/searchbar.class.php, row 1023
+// include/searchbar.class.php, row 1032
 "My filters" => "Moje filtre", // ai 2026-06
 
-// include/searchbar.class.php, row 1026
+// include/searchbar.class.php, row 1035
 "Global filters" => "Glob\xE1lne filtre", // ai 2026-06
 
-// include/searchbar.class.php, row 1064
+// include/searchbar.class.php, row 1073
 "Shared filter (click to apply)" => "Zdie\xBEan\xFD filter (kliknut\xEDm pou\x9Eijete)", // ai 2026-06
 
-// include/searchbar.class.php, row 1064
+// include/searchbar.class.php, row 1073
 "Personal filter (click to apply)" => "Osobn\xFD filter (kliknut\xEDm pou\x9Eijete)", // ai 2026-06
 
-// include/searchbar.class.php, row 1074
+// include/searchbar.class.php, row 1083
 "Rename" => "Premenova\x9D", // ai 2026-06
 
-// include/searchbar.class.php, row 1085
+// include/searchbar.class.php, row 1094
 "Manage filters" => "Spr\xE1va filtrov", // ai 2026-06
 
 // include/searchlib.php, row 54
@@ -5807,6 +5904,9 @@ return [
 // include/stringexpand.php, row 7716
 "version" => "verzia", // ai 2026-06
 
+// include/stringexpand.php, row 7900
+"show" => "zobrazi\x9D", // ai 2026-06
+
 // include/stringexpand.php, row 7901
 "hide" => "skry\x9D", // ai 2026-06
 
@@ -5940,21 +6040,6 @@ return [
 // include/tabledit_util.php, row 670
 "Wrong value: a number between %1 and %2 is expected." => "Chybn\xE1 hodnota: o\xE8ak\xE1va sa \xE8\xEDslo medzi %1 a %2.", // ai 2026-06
 
-// include/tableviews.php, row 59, 60
-"Polls Design" => "Vzh\xBEad ankiet", // ai 2026-06
-
-// include/tableviews.php, row 66, 102
-"Comment" => "Koment\xE1r", // ai 2026-06
-
-// include/tableviews.php, row 88
-"Module Id" => "ID modulu", // ai 2026-06
-
-// include/tableviews.php, row 104
-"design description (for administrators only)" => "popis dizajnu (len pre administr\xE1torov)", // ai 2026-06
-
-// include/tableviews.php, row 111
-"Answer HTML" => "HTML odpovede", // ai 2026-06
-
 // include/transformation.class.php, row 149
 "Fill by value" => "Naplni\x9D hodnotou", // ai 2026-06
 
@@ -6043,7 +6128,7 @@ return [
 "Search the content of text and replaces it with another text using regular expressions. The aliases are unaliased in resulting string.<br>Example:<br> - Search: ^.*x=([0-9]*)\$<br> - Replace: {item:\$1:_#SEO_URL_}<br> - Unalias: Yes<br>Result: replaces all old-form links in the URL field from the new ones <br>(https://biom.cz/item.shtml?x=2344 --&gt; https://biom.cz/cz/about-biom)" => "Vyh\xBEad\xE1 text v obsahu a nahrad\xED ho in\xFDm textom pomocou regul\xE1rnych v\xFDrazov. Vo v\xFDslednom re\x9Dazci sa vyhodnotia aliasy (unalias).<br>Pr\xEDklad:<br> - N\xE1js\x9D: ^.*x=([0-9]*)\$<br> - Nahradi\x9D: {item:\$1:_#SEO_URL_}<br> - Unalias: \xC1no<br>V\xFDsledok: nahrad\xED v\x9Aetky odkazy v starom tvare v polo\x9Eke URL nov\xFDmi <br>(https://biom.cz/item.shtml?x=2344 --&gt; https://biom.cz/cz/about-biom)", // ai 2026-06
 
 // include/transformation.class.php, row 839
-"Unalias" => "",
+"Unalias" => "Zru\x9Ai\x9D alias", // ai 2026-06
 
 // include/transformation.class.php, row 839
 "perform unaliasing on result strings" => "vykona\x9D vyhodnotenie aliasov (unalias) na v\xFDsledn\xFDch re\x9Dazcoch", // ai 2026-06
@@ -6066,30 +6151,6 @@ return [
 // include/tv_email.php, row 168
 "Sender" => "Odosielate\xBE", // ai 2026-06
 
-// include/tv_misc.php, row 131
-"COUNT_HIT events will be used for counting item hits. After a while it will be automatically deleted." => "Udalosti COUNT_HIT sa pou\x9E\xEDvaj\xFA na po\xE8\xEDtanie zobrazen\xED spr\xE1v. Po \xE8ase sa automaticky zma\x9E\xFA.", // ai 2026-06
-
-// include/tv_misc.php, row 139, 140
-"Log view" => "Poh\xBEad Log", // ai 2026-06
-
-// include/tv_misc.php, row 162
-"See searchlog=1 parameter for slice.php in FAQ: " => "Pozrite parameter searchlog=1 pre slice.php vo FAQ: ", // ai 2026-06
-
-// include/tv_misc.php, row 170, 171
-"SearchLog view" => "Poh\xBEad SearchLog", // ai 2026-06
-
-// include/tv_misc.php, row 175
-"items found" => "n\xE1jden\xFDch spr\xE1v", // ai 2026-06
-
-// include/tv_misc.php, row 176
-"search time" => "\xE8as h\xBEadania", // ai 2026-06
-
-// include/tv_misc.php, row 177
-"addition" => "pridanie", // ai 2026-06
-
-// include/tv_misc.php, row 198, 199
-"Configure Fields" => "Nastavenie polo\x9Eiek", // ai 2026-06
-
 // include/um_gedit.php, row 43
 "It is impossible to add group to permission system" => "Nie je mo\x9En\xE9 prida\x9D skupinu do syst\xE9mu",
 
@@ -6108,10 +6169,10 @@ return [
 // include/um_util.php, row 358
 "Can't change user" => "Nie je mo\x9En\xE9 zmeni\x9D \xFAdaje u\x9Eivate\xBEa - LDAP Error",
 
-// include/util.php, row 1300
+// include/util.php, row 1304
 "Toolkit news message" => "Nastavenia",
 
-// include/util.php, row 1314
+// include/util.php, row 1318
 "Relogin" => "Znovu sa prihl\xE1si\x9D", // ai 2026-06
 
 // include/validate.php, row 52
@@ -6238,10 +6299,10 @@ return [
 "persistent" => "",
 
 // include/widget.class.php, row 173
-"validator" => "",
+"validator" => "valid\xE1tor", // ai 2026-06
 
 // include/widget.class.php, row 174
-"required" => "",
+"required" => "povinn\xE9", // ai 2026-06
 
 // include/widget.class.php, row 175
 "input_help" => "",
@@ -6250,7 +6311,7 @@ return [
 "input_morehlp" => "",
 
 // include/widget.class.php, row 177
-"example" => "",
+"example" => "pr\xEDklad", // ai 2026-06
 
 // include/widget.class.php, row 178
 "show_content_type_switch" => "",
@@ -6457,10 +6518,10 @@ return [
 // src/AA_Plannedtask.php, row 224
 "next run" => "najbli\x9E\x9Aie spustenie", // ai 2026-06
 
-// src/IO/Grabber/AARSS.php, row 116
+// src/IO/Grabber/AARSS.php, row 117
 "AA RSS" => "",
 
-// src/IO/Grabber/AARSS.php, row 124
+// src/IO/Grabber/AARSS.php, row 125
 "Grabs data from generic RSS or AA RSS (used for item exchange between different AA installations)" => "Preber\xE1 d\xE1ta z oby\xE8ajn\xE9ho RSS alebo AA RSS (pou\x9E\xEDva sa na v\xFDmenu spr\xE1v medzi r\xF4znymi in\x9Atal\xE1ciami AA)", // ai 2026-06
 
 // src/IO/Grabber/CSV.php, row 66
@@ -7939,32 +8000,47 @@ return [
 // src/Util/ChangesMonitor.php, row 93
 "history (%1)" => "hist\xF3ria (%1)", // ai 2026-06
 
+// src/Util/ChangesMonitor.php, row 336
+"No recorded changes for this item." => "Pre t\xFAto spr\xE1vu nie s\xFA zaznamenan\xE9 \x9Eiadne zmeny.", // ai 2026-06
+
 // src/Util/ChangesMonitor.php, row 360
 "1 field changed" => "zmenen\xE1 1 polo\x9Eka", // ai 2026-06
 
 // src/Util/ChangesMonitor.php, row 360
 "%1 fields changed" => "zmenen\xFDch polo\x9Eiek: %1", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 370, 382
+// src/Util/ChangesMonitor.php, row 369, 456
 "Restore" => "Obnovi\x9D", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 377
+// src/Util/ChangesMonitor.php, row 383
+"(this change)" => "(t\xE1to zmena)", // ai 2026-06
+
+// src/Util/ChangesMonitor.php, row 387, 573, 577
+"Current (live)" => "Aktu\xE1lne (na\x9Eivo)", // ai 2026-06
+
+// src/Util/ChangesMonitor.php, row 388
+"Compare to" => "Porovna\x9D s", // ai 2026-06
+
+// src/Util/ChangesMonitor.php, row 397
 "change %1 | uid %2 | %3 ns | resource %4" => "zmena %1 | uid %2 | %3 ns | zdroj %4", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 382
-"vs current" => "vs. aktu\xE1lne", // ai 2026-06
+// src/Util/ChangesMonitor.php, row 449
+"View" => "Zobrazi\x9D", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 391
+// src/Util/ChangesMonitor.php, row 450
+"Diff" => "Rozdiel", // ai 2026-06
+
+// src/Util/ChangesMonitor.php, row 481
 "seq %1" => "poradie %1", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 405
-"no current value" => "\x9Eiadna aktu\xE1lna hodnota", // ai 2026-06
+// src/Util/ChangesMonitor.php, row 488
+"No change between these versions." => "Medzi t\xFDmito verziami nie je rozdiel.", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 407
-"same as current" => "rovnak\xE9 ako aktu\xE1lne", // ai 2026-06
+// src/Util/ChangesMonitor.php, row 511
+"(empty)" => "(pr\xE1zdne)", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 426
-"No recorded changes for this item." => "Pre t\xFAto spr\xE1vu nie s\xFA zaznamenan\xE9 \x9Eiadne zmeny.", // ai 2026-06
+// src/Util/ChangesMonitor.php, row 571
+"Original" => "Origin\xE1l", // ai 2026-06
 
 // src/Util/Imgfunc.php, row 80
 "Cannot copy %1 to %2" => "Nemo\x9Eno skop\xEDrova\x9D %1 do %2", // ai 2026-06
@@ -7977,6 +8053,9 @@ return [
 
 // src/Util/Searchfields.php, row 183
 "-- any numeric field --" => "-- \xBEubovo\xBEn\xE1 \xE8\xEDseln\xE1 polo\x9Eka --", // ai 2026-06
+
+// src/Util/UiPrefs.php, row 55
+"Gold" => "Zlat\xE1", // ai 2026-06
 
 // src/Widget/ChbWidget.php, row 80
 "Check Box" => "Za\x9Akrt\xE1vacie pol\xED\xE8ko", // ai 2026-06

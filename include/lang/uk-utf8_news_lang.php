@@ -12,6 +12,37 @@ setlocale(LC_ALL, 'uk_UA.utf8', 'uk_UA');  // sort, date, uppercase, ..
 setlocale(LC_NUMERIC, 'en_US');            // keep float format with dot (see AA_Stringexpand_If)
 
 return [
+// Runtime-translated messages — used via _mdelayed($variable), so they never appear
+// in _m('...') literals; their domains are listed in misc/mgettext/cli.php $RUNTIME_MESSAGES.
+"feed" => "завантажити", // ai 2026-06
+// End of runtime-translated messages
+
+// Unused messages — no longer found in the sources; kept commented for reference.
+// "You don't have permissions to view item history." => "Ви не маєте права переглядати історію статті.", // ai 2026-06
+// "validate" => "перевірити", // ai 2026-06
+// "RSS feeds testing page." => "Сторінка для тестування RSS-каналів.", // ai 2026-06
+// "No RSS Feeds set." => "Не налаштовано жодного RSS-каналу.", // ai 2026-06
+// "Messages" => "Повідомлення", // ai 2026-06
+// "Write" => "Записати", // ai 2026-06
+// "update database" => "оновити базу даних", // ai 2026-06
+// "Feed url" => "URL каналу", // ai 2026-06
+// "Ok : file deleted " => "Ok: файл видалено", // ai 2026-06
+// "Error: Cannot delete file" => "Помилка: не вдалося видалити файл", // ai 2026-06
+// "Error: Invalid directory" => "Помилка: Недійсний каталог", // ai 2026-06
+// "Module Id" => "ID модуля", // ai 2026-06
+// "design description (for administrators only)" => "опис дизайну (лише для адміністраторів)", // ai 2026-06
+// "COUNT_HIT events will be used for counting item hits. After a while it will be automatically deleted." => "Події COUNT_HIT використовуються для підрахунку переглядів статей. Через деякий час вони автоматично видаляються.", // ai 2026-06
+// "Log view" => "Вигляд Log", // ai 2026-06
+// "See searchlog=1 parameter for slice.php in FAQ: " => "Див. параметр searchlog=1 для slice.php у FAQ:", // ai 2026-06
+// "SearchLog view" => "Вигляд SearchLog", // ai 2026-06
+// "items found" => "знайдено статей", // ai 2026-06
+// "search time" => "час пошуку", // ai 2026-06
+// "addition" => "додавання", // ai 2026-06
+// "Configure Fields" => "Налаштування полів", // ai 2026-06
+// "vs current" => "проти поточного", // ai 2026-06
+// "no current value" => "без поточного значення", // ai 2026-06
+// "same as current" => "збігається з поточним", // ai 2026-06
+// End of unused messages
 
 // admin/aa_cron.php, row 41
 "You do not have permission to manage Cron" => "Ви не маєте права керувати Cron", // ai 2026-06
@@ -210,7 +241,7 @@ return [
 "Sites" => "Сайти", // ai 2026-06
 
 // admin/aa_statistics.php, row 127
-// admin/aafinder.php, row 500, 513
+// admin/aafinder.php, row 499, 512
 // admin/se_inputform.php, row 291
 // include/searchlib.php, row 970
 "Slices" => "Рубрики", // ai 2026-06
@@ -268,11 +299,11 @@ return [
 "Items found" => "Знайдені статті", // ai 2026-06
 
 // admin/aa_statistics.php, row 313
-// admin/se_statistics.php, row 176
+// admin/se_statistics.php, row 179
 "No items found" => "Статей не знайдено", // ai 2026-06
 
-// admin/aa_statistics.php, row 321
-// admin/se_statistics.php, row 173
+// admin/aa_statistics.php, row 325
+// admin/se_statistics.php, row 176
 "Server configuration changes" => "Зміни конфігурації сервера", // ai 2026-06
 
 // admin/aa_tasks.php, row 34
@@ -297,78 +328,87 @@ return [
 // admin/aa_toexecute.php, row 42
 "Scheduled Tasks" => "Заплановані завдання", // ai 2026-06
 
+// admin/aa_uiprefs.php, row 30
+"You must be logged in." => "Ви маєте увійти до системи.", // ai 2026-06
+
+// admin/aa_uiprefs.php, row 115
+"Thanks — your note reached the AA team." => "Дякуємо — ваше повідомлення дійшло до команди AA.", // ai 2026-06
+
+// admin/aa_uiprefs.php, row 117
+"Couldn't send right now. Please email us directly: %1" => "Зараз не вдалося надіслати. Напишіть нам безпосередньо: %1", // ai 2026-06
+
 // admin/aa_wizardtemplate.php, row 41
 "You do not have permission to manage Wizard Templates" => "Ви не маєте права керувати шаблонами майстрів", // ai 2026-06
 
 // admin/aa_wizardtemplate.php, row 75
-// include/tv_misc.php, row 70, 71
 "Wizard Templates" => "Шаблони Майстра", // ai 2026-06
 
-// admin/aafinder.php, row 87
+// admin/aafinder.php, row 86
 "You don't have permissions to do search." => "Ви не маєте права виконувати пошук.", // ai 2026-06
 
-// admin/aafinder.php, row 99
+// admin/aafinder.php, row 98
 "Show results with string" => "Показати результати з рядком", // ai 2026-06
 
-// admin/aafinder.php, row 101
+// admin/aafinder.php, row 100
 "Item" => "Стаття", // ai 2026-06
 
-// admin/aafinder.php, row 125
+// admin/aafinder.php, row 124
 // admin/feed_to.php, row 66
 // admin/se_fields.php, row 112
 // admin/slicedit.php, row 244
-// include/itemfunc.php, row 184
+// include/itemfunc.php, row 185
+// include/logs.php, row 528
 // include/menu.php, row 132
 // include/slice.class.php, row 468
 // include/sliceadd.php, row 52, 77
 "Slice" => "Рубрика", // ai 2026-06
 
-// admin/aafinder.php, row 129
+// admin/aafinder.php, row 128
 // src/AA_Plannedtask.php, row 102
 "Module" => "Модуль", // ai 2026-06
 
-// admin/aafinder.php, row 134, 135, 136, 137
+// admin/aafinder.php, row 133, 134, 135, 136
 // include/um_util.php, row 102
 "Object" => "Об'єкт", // ai 2026-06
 
-// admin/aafinder.php, row 140
-// include/itemfunc.php, row 273
-// include/logs.php, row 204
+// admin/aafinder.php, row 139
+// include/itemfunc.php, row 274
+// include/logs.php, row 234
 // src/AA_Plannedtask.php, row 117
 "Log" => "Журнал", // ai 2026-06
 
-// admin/aafinder.php, row 162
+// admin/aafinder.php, row 161
 // include/sliceadd.php, row 36
 // include/slicedit.php, row 150
 "You do not have permissions to add slice" => "Ви не маєте права додавати рубрику", // ai 2026-06
 
-// admin/aafinder.php, row 168
+// admin/aafinder.php, row 167
 // include/menu_util.php, row 79
 "AA finder" => "Пошук AA", // ai 2026-06
 
-// admin/aafinder.php, row 248
+// admin/aafinder.php, row 247
 "Jump" => "Перейти", // ai 2026-06
 
-// admin/aafinder.php, row 467, 519
-// admin/itemhistory.php, row 39
-// include/itemfunc.php, row 81, 82, 253, 375
-// include/menu.php, row 162
+// admin/aafinder.php, row 466, 518
+// admin/itemhistory.php, row 43
+// include/itemfunc.php, row 83, 84, 254, 376
+// include/menu.php, row 161
 // include/menu_util.php, row 82
 "History" => "Історія", // ai 2026-06
 
-// admin/aafinder.php, row 479
+// admin/aafinder.php, row 478
 "Manage" => "Керувати", // ai 2026-06
 
-// admin/aafinder.php, row 482
+// admin/aafinder.php, row 481
 "Manage User:" => "Керування користувачем:", // ai 2026-06
 
-// admin/aafinder.php, row 484, 490, 506, 534, 547
+// admin/aafinder.php, row 483, 489, 505, 533, 546
 "Go!" => "Вперед!", // ai 2026-06
 
-// admin/aafinder.php, row 488
+// admin/aafinder.php, row 487
 "Manage Group:" => "Керування групою:", // ai 2026-06
 
-// admin/aafinder.php, row 494, 524
+// admin/aafinder.php, row 493, 523
 // admin/um_gedit.php, row 208, 325
 // admin/um_uedit.php, row 249
 // include/se_users.php, row 131, 136
@@ -379,76 +419,76 @@ return [
 // src/Widget/GpsWidget.php, row 434
 "Search" => "Пошук", // ai 2026-06
 
-// admin/aafinder.php, row 497
+// admin/aafinder.php, row 496
 "Find in" => "Шукати в", // ai 2026-06
 
-// admin/aafinder.php, row 498
+// admin/aafinder.php, row 497
 "ID & SEO" => "ID і SEO", // ai 2026-06
 
-// admin/aafinder.php, row 499, 512
-// include/itemfunc.php, row 182
-// include/menu.php, row 144
+// admin/aafinder.php, row 498, 511
+// include/itemfunc.php, row 183
+// include/menu.php, row 143
 "Views" => "Вигляди", // ai 2026-06
 
-// admin/aafinder.php, row 501, 514
+// admin/aafinder.php, row 500, 513
 // admin/anonym_wizard.php, row 216
 // include/exporter.class.php, row 522
-// include/itemfunc.php, row 350
+// include/itemfunc.php, row 351
 // include/menu.php, row 133
 // include/searchlib.php, row 167
 "Fields" => "Поля", // ai 2026-06
 
-// admin/aafinder.php, row 502, 515
+// admin/aafinder.php, row 501, 514
 "Site spots" => "Місця на сайті", // ai 2026-06
 
-// admin/aafinder.php, row 503, 520
+// admin/aafinder.php, row 502, 519
 "Discussion comments" => "Коментарі обговорення", // ai 2026-06
 
-// admin/aafinder.php, row 511
+// admin/aafinder.php, row 510
 "Search and Replace in" => "Знайти та замінити в", // ai 2026-06
 
-// admin/aafinder.php, row 516
+// admin/aafinder.php, row 515
 "Objects" => "Об'єкти", // ai 2026-06
 
-// admin/aafinder.php, row 517
+// admin/aafinder.php, row 516
 "Items from slices with 'Slice Type' like Code... " => "Статті з рубрик, чий 'Slice Type' містить Code...", // ai 2026-06
 
-// admin/aafinder.php, row 517
+// admin/aafinder.php, row 516
 "Code Items" => "Кодові статті", // ai 2026-06
 
-// admin/aafinder.php, row 518
+// admin/aafinder.php, row 517
 "All Items" => "Усі статті", // ai 2026-06
 
-// admin/aafinder.php, row 522
+// admin/aafinder.php, row 521
 "minimum 2 characters for replace function" => "мінімум 2 символи для функції заміни", // ai 2026-06
 
-// admin/aafinder.php, row 523
+// admin/aafinder.php, row 522
 "minimum 6 characters for replace function (or use {#AAA} value which will be replaced by empty string)" => "мінімум 6 символів для функції заміни (або скористайтеся значенням {#AAA}, яке буде замінено порожнім рядком)", // ai 2026-06
 
-// admin/aafinder.php, row 525
+// admin/aafinder.php, row 524
 "Replace!" => "Замінити!", // ai 2026-06
 
-// admin/aafinder.php, row 532
+// admin/aafinder.php, row 531
 "Get all information about the ITEM" => "Отримати всю інформацію про СТАТТЮ", // ai 2026-06
 
-// admin/aafinder.php, row 539
+// admin/aafinder.php, row 538
 "Shortcut to edit ITEM" => "Швидке посилання для редагування СТАТТІ", // ai 2026-06
 
-// admin/aafinder.php, row 542
+// admin/aafinder.php, row 541
 // include/searchbar.class.php, row 543
 // include/searchlib.php, row 47, 48, 124, 133
 "contains" => "містить", // ai 2026-06
 
-// admin/aafinder.php, row 543
+// admin/aafinder.php, row 542
 // include/searchbar.class.php, row 549
 // include/searchlib.php, row 124, 133
 "is" => "дорівнює", // ai 2026-06
 
-// admin/aafinder.php, row 544
+// admin/aafinder.php, row 543
 // admin/se_profile.php, row 98
 "Item number" => "Номер статті", // ai 2026-06
 
-// admin/aafinder.php, row 545
+// admin/aafinder.php, row 544
 "seo............. =" => "",
 
 // admin/aarsstest.php, row 37
@@ -474,6 +514,7 @@ return [
 
 // admin/anonym_wizard.php, row 127
 // admin/write_mail.php, row 257
+// include/menu_util.php, row 599
 // include/stringexpand.php, row 9646, 9726
 "Send" => "Надіслати", // ai 2026-06
 
@@ -529,7 +570,7 @@ return [
 // admin/sliceexp_text.php, row 364
 // include/form.class.php, row 183
 // include/searchlib.php, row 357
-// src/Util/ChangesMonitor.php, row 381
+// src/Util/ChangesMonitor.php, row 455
 "Field" => "Поле", // ai 2026-06
 
 // admin/anonym_wizard.php, row 221
@@ -539,7 +580,6 @@ return [
 // admin/se_javascript.php, row 90
 // admin/slicedit.php, row 277
 // include/constants.php, row 409
-// include/tableviews.php, row 64, 80
 "Id" => "ID", // ai 2026-06
 
 // admin/anonym_wizard.php, row 223
@@ -615,7 +655,7 @@ return [
 "Author" => "Автор", // ai 2026-06
 
 // admin/discedit.php, row 130
-// include/logs.php, row 396
+// include/logs.php, row 442
 "IP Address" => "IP-адреса", // ai 2026-06
 
 // admin/discedit.php, row 131
@@ -625,7 +665,6 @@ return [
 
 // admin/discedit.php, row 132
 // admin/related_sel.php, row 148
-// admin/rsstest.php, row 96
 // admin/se_views.php, row 132
 // src/Manager.php, row 201
 // src/Optimize/AbstractOptimize.php, row 127
@@ -667,7 +706,7 @@ return [
 // include/formutil.php, row 1766, 1903
 // include/menu_util.php, row 61
 // include/profile.php, row 67
-// include/searchbar.class.php, row 1076
+// include/searchbar.class.php, row 1085
 // include/um_gsrch.php, row 53
 // src/Manageraction/Object_Delete.php, row 24
 // src/Manageraction/Table_Row_Delete.php, row 23
@@ -675,9 +714,9 @@ return [
 "Delete" => "Видалити", // ai 2026-06
 
 // admin/discedit.php, row 169
-// include/adminpage.class.php, row 330
+// include/adminpage.class.php, row 331
 // include/se_users.php, row 121
-// include/util.php, row 1314
+// include/util.php, row 1318
 "Back" => "Назад", // ai 2026-06
 
 // admin/discedit.php, row 170
@@ -734,7 +773,7 @@ return [
 "Export Item to Selected Slice" => "Передати статтю до вибраної рубрики", // ai 2026-06
 
 // admin/feed_to.php, row 67
-// include/itemfunc.php, row 152
+// include/itemfunc.php, row 153
 "Holding bin" => "Резерв", // ai 2026-06
 
 // admin/feed_to.php, row 68
@@ -742,8 +781,8 @@ return [
 // admin/se_filters.php, row 191
 // admin/slicedit.php, row 139, 145
 // include/exporter.class.php, row 483
-// include/menu.php, row 188
-// include/menu_util.php, row 120
+// include/menu.php, row 187
+// include/menu_util.php, row 119
 // src/Module/Poll/Menu.php, row 61
 "Active" => "Активні", // ai 2026-06
 
@@ -773,7 +812,7 @@ return [
 
 // admin/fileman.php, row 114
 // include/filedit.php, row 66
-// include/menu.php, row 166
+// include/menu.php, row 165
 "File Manager" => "Файловий менеджер", // ai 2026-06
 
 // admin/fileman.php, row 116
@@ -832,14 +871,12 @@ return [
 // include/menu.php, row 82
 "Add Item" => "Додати статтю", // ai 2026-06
 
-// admin/itemhistory.php, row 24
-"You don't have permissions to view item history." => "Ви не маєте права переглядати історію статті.", // ai 2026-06
-
-// admin/itemhistory.php, row 32
+// admin/itemhistory.php, row 28
 // admin/iteminfo.php, row 29
 // admin/itemstats.php, row 31
 "Item not found." => "Статтю не знайдено.", // ai 2026-06
 
+// admin/itemhistory.php, row 36
 // admin/iteminfo.php, row 36
 "You have no rights to this item." => "Ви не маєте прав на цю статтю.", // ai 2026-06
 
@@ -851,8 +888,8 @@ return [
 "You don't have permissions to view item statistics." => "Ви не маєте права переглядати статистику статті.", // ai 2026-06
 
 // admin/itemstats.php, row 38
-// include/itemfunc.php, row 86, 456
-// include/menu.php, row 163
+// include/itemfunc.php, row 88, 457
+// include/menu.php, row 162
 // include/menu_util.php, row 81
 // src/Util/Adminlink.php, row 119
 "Statistics" => "Статистика", // ai 2026-06
@@ -908,48 +945,11 @@ return [
 // admin/related_sel.php, row 176
 "Editor window - item manager, related selection window" => "Вікно редактора - менеджер статей, вікно вибору пов'язаних статей", // ai 2026-06
 
-// admin/rsstest.php, row 50
-"feed" => "завантажити", // ai 2026-06
-
-// admin/rsstest.php, row 51
-"validate" => "перевірити", // ai 2026-06
-
-// admin/rsstest.php, row 52
-// include/stringexpand.php, row 7900
-"show" => "показати", // ai 2026-06
-
-// admin/rsstest.php, row 85, 86, 136
-"RSS Feed import test" => "Тест імпорту RSS-каналу", // ai 2026-06
-
-// admin/rsstest.php, row 87
-"RSS feeds testing page." => "Сторінка для тестування RSS-каналів.", // ai 2026-06
-
-// admin/rsstest.php, row 89
-"No RSS Feeds set." => "Не налаштовано жодного RSS-каналу.", // ai 2026-06
-
-// admin/rsstest.php, row 100
-"Messages" => "Повідомлення", // ai 2026-06
-
-// admin/rsstest.php, row 106
-"Write" => "Записати", // ai 2026-06
-
-// admin/rsstest.php, row 107
-"update database" => "оновити базу даних", // ai 2026-06
-
-// admin/rsstest.php, row 113
-"Feed url" => "URL каналу", // ai 2026-06
-
-// admin/rsstest.php, row 117
-// admin/se_inter_import.php, row 98
-"Node" => "Вузол", // ai 2026-06
-
-// admin/rsstest.php, row 121
-// include/feeding.php, row 464, 470, 527
-"Local slice" => "Локальна рубрика", // ai 2026-06
-
-// admin/rsstest.php, row 130
-// admin/tabledit.php, row 78
+// admin/rsstest.php, row 36
 "You do not have permissions to access this page" => "Ви не маєте права доступу до цієї сторінки", // ai 2026-06
+
+// admin/rsstest.php, row 46
+"RSS Feed import test" => "Тест імпорту RSS-каналу", // ai 2026-06
 
 // admin/se_admin.php, row 72
 "You have no permission to set configuration parameters of this slice" => "Ви не маєте права налаштовувати конфігураційні параметри цієї рубрики", // ai 2026-06
@@ -957,7 +957,6 @@ return [
 // admin/se_admin.php, row 81, 173
 // admin/se_compact.php, row 94, 238
 // include/constants.php, row 605, 655, 675, 729, 764, 795, 819, 862, 891, 917, 951
-// include/tableviews.php, row 107
 "Top HTML" => "Верхній HTML", // ai 2026-06
 
 // admin/se_admin.php, row 82, 176
@@ -966,7 +965,6 @@ return [
 // admin/se_admin.php, row 83, 179
 // admin/se_compact.php, row 95, 248
 // include/constants.php, row 610, 657, 677, 733, 766, 797, 822, 867, 893, 922, 956
-// include/tableviews.php, row 115
 "Bottom HTML" => "Нижній HTML", // ai 2026-06
 
 // admin/se_admin.php, row 84, 182
@@ -999,6 +997,7 @@ return [
 // admin/se_compact.php, row 228
 // admin/se_fulltext.php, row 153
 // admin/se_inputform.php, row 187, 439
+// src/Util/UiPrefs.php, row 56
 "Default" => "За замовчуванням", // ai 2026-06
 
 // admin/se_admin.php, row 171
@@ -1131,8 +1130,7 @@ return [
 // include/constedit.php, row 73
 // include/fileman.php, row 31
 // include/se_users.php, row 173
-// include/searchbar.class.php, row 722
-// include/tableviews.php, row 65, 97
+// include/searchbar.class.php, row 731
 // include/um_gedit.php, row 31
 // src/AA_Plannedtask.php, row 102
 // src/Optimize/AbstractOptimize.php, row 125
@@ -1278,6 +1276,7 @@ return [
 
 // admin/se_csv_import.php, row 236, 241
 // include/filedit.php, row 66
+// include/logs.php, row 543
 "File" => "Файл", // ai 2026-06
 
 // admin/se_csv_import.php, row 237, 242
@@ -1287,14 +1286,14 @@ return [
 
 // admin/se_csv_import.php, row 238, 243
 // admin/se_inputform.php, row 471, 472
-// include/itemfunc.php, row 589, 678, 702
+// include/itemfunc.php, row 590, 679, 703
 "Text" => "Текст", // ai 2026-06
 
 // admin/se_csv_import.php, row 251
 "Source of CSV data" => "Джерело даних CSV", // ai 2026-06
 
 // admin/se_csv_import.php, row 275
-// admin/se_csv_import2.php, row 374
+// admin/se_csv_import2.php, row 373
 // src/Manageraction/Item_Preview.php, row 11
 "Preview" => "Перегляд", // ai 2026-06
 
@@ -1320,133 +1319,125 @@ return [
 // admin/se_csv_import2.php, row 284
 "Ok: Item %1 stored" => "Ok: статтю %1 збережено", // ai 2026-06
 
-// admin/se_csv_import2.php, row 300
-// include/files.class.php, row 298
-"Ok : file deleted " => "Ok: файл видалено", // ai 2026-06
-
-// admin/se_csv_import2.php, row 302
-// include/files.class.php, row 300
-"Error: Cannot delete file" => "Помилка: не вдалося видалити файл", // ai 2026-06
-
-// admin/se_csv_import2.php, row 306
+// admin/se_csv_import2.php, row 305
 "Added to slice" => "Додано до рубрики", // ai 2026-06
 
-// admin/se_csv_import2.php, row 328
+// admin/se_csv_import2.php, row 327
 "Mapping preview" => "Перегляд зіставлення", // ai 2026-06
 
-// admin/se_csv_import2.php, row 379
+// admin/se_csv_import2.php, row 378
 "Finish" => "Завершити", // ai 2026-06
 
-// admin/se_csv_import2.php, row 384
-// include/searchbar.class.php, row 719
+// admin/se_csv_import2.php, row 383
+// include/searchbar.class.php, row 728
 // src/Widget/MflWidget.php, row 120
 // src/Widget/RioWidget.php, row 124
 // src/Widget/TxtWidget.php, row 109
 // src/Widget/Widget.php, row 416
 "Save" => "Зберегти", // ai 2026-06
 
-// admin/se_csv_import2.php, row 389
+// admin/se_csv_import2.php, row 388
 "Load" => "Завантажити", // ai 2026-06
 
-// admin/se_csv_import2.php, row 399
+// admin/se_csv_import2.php, row 398
 "Mapping settings" => "Налаштування зіставлення", // ai 2026-06
 
-// admin/se_csv_import2.php, row 402
+// admin/se_csv_import2.php, row 401
 // admin/se_filters.php, row 190
 // admin/se_mapping.php, row 181
 "To" => "До", // ai 2026-06
 
-// admin/se_csv_import2.php, row 403
+// admin/se_csv_import2.php, row 402
 // admin/se_filters.php, row 189
 // admin/se_mapping.php, row 182
 // include/tv_email.php, row 159
 "From" => "З", // ai 2026-06
 
-// admin/se_csv_import2.php, row 404
+// admin/se_csv_import2.php, row 403
 // admin/search_replace.php, row 178
 // include/metabase.class.php, row 1577
 // include/statestore.php, row 975, 1289
 // src/AA_Plannedtask.php, row 102
 "Action" => "Дія", // ai 2026-06
 
-// admin/se_csv_import2.php, row 405
+// admin/se_csv_import2.php, row 404
 "Html" => "",
 
-// admin/se_csv_import2.php, row 406
+// admin/se_csv_import2.php, row 405
 "Action parameters" => "Параметри дії", // ai 2026-06
 
-// admin/se_csv_import2.php, row 407
+// admin/se_csv_import2.php, row 406
 "Parameter wizard" => "Майстер параметрів", // ai 2026-06
 
-// admin/se_csv_import2.php, row 432
+// admin/se_csv_import2.php, row 431
 "Import options" => "Параметри імпорту", // ai 2026-06
 
-// admin/se_csv_import2.php, row 447
+// admin/se_csv_import2.php, row 446
 "Map item id from" => "Зіставити id статті з", // ai 2026-06
 
-// admin/se_csv_import2.php, row 451
+// admin/se_csv_import2.php, row 450
 "unpacked long id (32 characters)" => "розпакований довгий id (32 символи)", // ai 2026-06
 
-// admin/se_csv_import2.php, row 452
+// admin/se_csv_import2.php, row 451
 "packed long id (16 characters)" => "запакований довгий id (16 символів)", // ai 2026-06
 
-// admin/se_csv_import2.php, row 453
+// admin/se_csv_import2.php, row 452
 "string to be converted (string2id) - with param:" => "рядок для перетворення (string2id) - з параметром:", // ai 2026-06
 
-// admin/se_csv_import2.php, row 461
+// admin/se_csv_import2.php, row 460
 "Select, how to store the items" => "Виберіть, як зберігати статті", // ai 2026-06
 
-// admin/se_csv_import2.php, row 463
+// admin/se_csv_import2.php, row 462
 "Do not store the item" => "Не зберігати статтю", // ai 2026-06
 
-// admin/se_csv_import2.php, row 464
+// admin/se_csv_import2.php, row 463
 "Store the item with new id" => "Зберегти статтю з новим id", // ai 2026-06
 
-// admin/se_csv_import2.php, row 465
+// admin/se_csv_import2.php, row 464
 "Update the item (overwrite)" => "Оновити статтю (перезаписати)", // ai 2026-06
 
-// admin/se_csv_import2.php, row 466
+// admin/se_csv_import2.php, row 465
 "Add the values in parallel to current values (the multivalues are stored, where possible)" => "Додати значення паралельно до поточних значень (багатозначні значення зберігаються, де це можливо)", // ai 2026-06
 
-// admin/se_csv_import2.php, row 467
+// admin/se_csv_import2.php, row 466
 "Rewrite only the fields, for which the action is defined and compute all computed fields, ..." => "Перезаписати лише поля, для яких визначено дію, та обчислити всі обчислювані поля, ...", // ai 2026-06
 
-// admin/se_csv_import2.php, row 468
+// admin/se_csv_import2.php, row 467
 "Rewrite only the fields, for which the action is defined (do not update lastedit, computed, ... fields = Silent)" => "Перезаписати лише поля, для яких визначено дію (не оновлювати lastedit, обчислювані, ... поля = Тихий режим)", // ai 2026-06
 
-// admin/se_csv_import2.php, row 469
+// admin/se_csv_import2.php, row 468
 "Rewrite only the fields, for which the action is defined and its value is not empty (computed fields will be computed)" => "Перезаписати лише поля, для яких визначено дію та значення яких не порожнє (обчислювані поля буде обчислено)", // ai 2026-06
 
-// admin/se_csv_import2.php, row 472
+// admin/se_csv_import2.php, row 471
 "If the item id is already in the slice" => "Якщо id статті вже є в рубриці", // ai 2026-06
 
-// admin/se_csv_import2.php, row 473
+// admin/se_csv_import2.php, row 472
 // admin/search_replace.php, row 176
 "Silent" => "Тихий режим", // ai 2026-06
 
-// admin/se_csv_import2.php, row 473
+// admin/se_csv_import2.php, row 472
 "Do not perform any other operations like evaluate-computed-field, feed, send e-mail to Readers of Alerts..." => "Не виконувати жодних інших операцій, як-от обчислення обчислюваних полів, передавання, надсилання e-mail читачам сповіщень...", // ai 2026-06
 
-// admin/se_csv_import2.php, row 474
+// admin/se_csv_import2.php, row 473
 "Data source" => "Джерело даних", // ai 2026-06
 
-// admin/se_csv_import2.php, row 475
+// admin/se_csv_import2.php, row 474
 // include/feeding.php, row 456, 488
 "Source" => "Джерело", // ai 2026-06
 
-// admin/se_csv_import2.php, row 477
+// admin/se_csv_import2.php, row 476
 "Store settings..." => "Зберегти налаштування...", // ai 2026-06
 
-// admin/se_csv_import2.php, row 483
+// admin/se_csv_import2.php, row 482
 "Load setting" => "Завантажити налаштування", // ai 2026-06
 
-// admin/se_csv_import2.php, row 485
+// admin/se_csv_import2.php, row 484
 "Save setting as" => "Зберегти налаштування як", // ai 2026-06
 
-// admin/se_csv_import2.php, row 488
+// admin/se_csv_import2.php, row 487
 "Upload periodically" => "Завантажувати періодично", // ai 2026-06
 
-// admin/se_csv_import2.php, row 539
+// admin/se_csv_import2.php, row 538
 "Admin - Import CSV (2/2) - Mapping and Actions" => "Адміністрування - Імпорт CSV (2/2) - Зіставлення та дії", // ai 2026-06
 
 // admin/se_export.php, row 75
@@ -1475,7 +1466,7 @@ return [
 
 // admin/se_export.php, row 122
 // include/exporter.class.php, row 485
-// include/itemfunc.php, row 145
+// include/itemfunc.php, row 146
 "Expired" => "Прострочені", // ai 2026-06
 
 // admin/se_export.php, row 123
@@ -1488,7 +1479,7 @@ return [
 
 // admin/se_export.php, row 125
 // include/exporter.class.php, row 488
-// include/itemfunc.php, row 155
+// include/itemfunc.php, row 156
 // src/Manageraction/Central_MoveItem.php, row 43
 "Trash" => "Кошик", // ai 2026-06
 
@@ -1514,7 +1505,7 @@ return [
 // admin/sliceexp_text.php, row 364
 // include/exporter.class.php, row 509
 // include/fileman.php, row 33
-// include/logs.php, row 316
+// include/logs.php, row 346
 // include/se_users.php, row 173
 // src/Widget/Widget.php, row 724
 "Type" => "Тип", // ai 2026-06
@@ -1757,7 +1748,7 @@ return [
 "Time of change" => "Час зміни", // ai 2026-06
 
 // admin/se_history.php, row 162
-// include/itemfunc.php, row 188
+// include/itemfunc.php, row 189
 // src/AA_Plannedtask.php, row 63
 "Item ID" => "ID статті", // ai 2026-06
 
@@ -1926,13 +1917,14 @@ return [
 "Disabled" => "Вимкнено", // ai 2026-06
 
 // admin/se_inputform.php, row 521
+// src/Util/ChangesMonitor.php, row 514
 "Copy to clipboard" => "Копіювати до буфера обміну", // ai 2026-06
 
 // admin/se_inputform.php, row 522
 "Reset" => "Скинути", // ai 2026-06
 
 // admin/se_inputform.php, row 527
-// include/logs.php, row 331
+// include/logs.php, row 361
 "Parameters" => "Параметри", // ai 2026-06
 
 // admin/se_inter_export.php, row 99
@@ -1975,6 +1967,9 @@ return [
 "Remote slice" => "Віддалена рубрика", // ai 2026-06
 
 // admin/se_inter_import.php, row 98
+"Node" => "Вузол", // ai 2026-06
+
+// admin/se_inter_import.php, row 98
 // misc/datovka/datovka.php, row 114
 "State" => "Стан", // ai 2026-06
 
@@ -1985,7 +1980,7 @@ return [
 "No remote imports into the slice" => "Немає віддалених імпортів до рубрики", // ai 2026-06
 
 // admin/se_inter_import.php, row 106
-// include/menu.php, row 153
+// include/menu.php, row 152
 "Inter Node Import" => "Імпорт між вузлами", // ai 2026-06
 
 // admin/se_inter_import.php, row 107
@@ -2031,7 +2026,7 @@ return [
 "The import was successfully created" => "Імпорт успішно створено", // ai 2026-06
 
 // admin/se_javascript.php, row 71
-// include/menu.php, row 165
+// include/menu.php, row 164
 "Field Triggers" => "Тригери полів", // ai 2026-06
 
 // admin/se_javascript.php, row 78
@@ -2413,6 +2408,7 @@ return [
 
 // admin/se_profile.php, row 268
 // central/copyslice2.php, row 116
+// src/Util/ChangesMonitor.php, row 514
 "Copy" => "Копіювати", // ai 2026-06
 
 // admin/se_sets.php, row 64
@@ -2703,7 +2699,7 @@ return [
 // admin/slicewiz.php, row 79
 // admin/um_passwd.php, row 109
 // admin/um_uedit.php, row 314, 318
-// include/itemfunc.php, row 547, 1048
+// include/itemfunc.php, row 548, 1049
 // include/um_util.php, row 296
 "Login name" => "Ім'я користувача", // ai 2026-06
 
@@ -2840,8 +2836,8 @@ return [
 "Active with antiSPAM tokens" => "Активні з antiSPAM токенами", // ai 2026-06
 
 // admin/slicedit.php, row 140, 146
-// include/menu.php, row 191
-// include/menu_util.php, row 121
+// include/menu.php, row 190
+// include/menu_util.php, row 120
 // src/Module/Poll/Menu.php, row 64
 "Hold bin" => "Резерв", // ai 2026-06
 
@@ -2868,6 +2864,7 @@ return [
 "Admin - Slice settings" => "Адмін - Налаштування рубрики", // ai 2026-06
 
 // admin/slicedit.php, row 253
+// include/menu_util.php, row 605
 "Language" => "Мова", // ai 2026-06
 
 // admin/slicedit.php, row 255
@@ -2907,7 +2904,7 @@ return [
 "Password for Reading" => "Пароль для читання", // ai 2026-06
 
 // admin/slicedit.php, row 281
-// include/itemfunc.php, row 180
+// include/itemfunc.php, row 181
 "Created" => "Створено", // ai 2026-06
 
 // admin/slicedit.php, row 281
@@ -3223,6 +3220,7 @@ return [
 
 // admin/um_gedit.php, row 313
 // admin/um_uedit.php, row 231, 242
+// include/logs.php, row 453
 // include/menu_util.php, row 70
 // include/se_users.php, row 129
 "Users" => "Користувачі", // ai 2026-06
@@ -3410,7 +3408,7 @@ return [
 
 // central/copyslice2.php, row 88
 // central/synchronize3.php, row 94
-// include/menu.php, row 169
+// include/menu.php, row 168
 // include/menu_util.php, row 74
 "Task Manager" => "Менеджер завдань", // ai 2026-06
 
@@ -3551,13 +3549,13 @@ return [
 // src/Manageraction/Central_Linkcheck.php, row 31
 "Auth" => "Автентифікація", // ai 2026-06
 
-// central/responder.php, row 567
+// central/responder.php, row 597
 "No request sent for responder.php" => "Для responder.php не надіслано жодного запиту", // ai 2026-06
 
-// central/responder.php, row 573
+// central/responder.php, row 603
 "Bad request sent for responder.php - %1" => "Для responder.php надіслано хибний запит - %1", // ai 2026-06
 
-// central/responder.php, row 578
+// central/responder.php, row 608
 "You (%2) don't have permissions to run %1" => "Ви (%2) не маєте прав запускати %1", // ai 2026-06
 
 // central/synchronize.php, row 35
@@ -3660,6 +3658,7 @@ return [
 "Level" => "Рівень", // ai 2026-06
 
 // include/constants.php, row 460
+// include/logs.php, row 507
 "Feed" => "Копіювати вміст", // ai 2026-06
 
 // include/constants.php, row 461
@@ -3807,10 +3806,10 @@ return [
 "From: (email header)" => "From: (заголовок e-mail)", // ai 2026-06
 
 // include/constants.php, row 703
-"Reply-To:" => "",
+"Reply-To:" => "Відповісти:", // ai 2026-06
 
 // include/constants.php, row 704
-"Errors-To:" => "",
+"Errors-To:" => "Помилки надсилати:", // ai 2026-06
 
 // include/constants.php, row 705
 "Sender:" => "Відправник:", // ai 2026-06
@@ -4032,6 +4031,9 @@ return [
 // include/feeding.php, row 454, 490
 "Run (queue)" => "Запустити (черга)", // ai 2026-06
 
+// include/feeding.php, row 464, 470, 527
+"Local slice" => "Локальна рубрика", // ai 2026-06
+
 // include/feeding.php, row 473
 "URL of the feed" => "URL передавання", // ai 2026-06
 
@@ -4242,9 +4244,6 @@ return [
 // include/files.class.php, row 255
 "Can't write to file: %1" => "Не вдалося записати у файл: %1", // ai 2026-06
 
-// include/files.class.php, row 306
-"Error: Invalid directory" => "Помилка: Недійсний каталог", // ai 2026-06
-
 // include/files.class.php, row 328
 "can't create backup of the file" => "не вдалося створити резервну копію файлу", // ai 2026-06
 
@@ -4279,7 +4278,7 @@ return [
 "Rows" => "Рядки", // ai 2026-06
 
 // include/form.class.php, row 301
-// include/menu.php, row 147
+// include/menu.php, row 146
 "Forms" => "Форми", // ai 2026-06
 
 // include/formutil.php, row 191
@@ -4292,7 +4291,7 @@ return [
 "Reset form" => "Очистити форму", // ai 2026-06
 
 // include/formutil.php, row 205, 210, 2918, 2922
-// include/searchbar.class.php, row 721
+// include/searchbar.class.php, row 730
 // src/Widget/LupWidget.php, row 118
 "Cancel" => "Скасувати", // ai 2026-06
 
@@ -4337,8 +4336,8 @@ return [
 "Enter the value" => "Введіть значення", // ai 2026-06
 
 // include/formutil.php, row 1763
-// include/menu.php, row 140
-// src/Util/ChangesMonitor.php, row 381
+// include/menu.php, row 139
+// src/Util/ChangesMonitor.php, row 455
 "Change" => "Змінити", // ai 2026-06
 
 // include/formutil.php, row 1906, 2093
@@ -4372,6 +4371,7 @@ return [
 "Group Name" => "Назва групи", // ai 2026-06
 
 // include/formutil.php, row 3247
+// include/logs.php, row 497
 "Count" => "Кількість", // ai 2026-06
 
 // include/formutil.php, row 3248
@@ -4567,329 +4567,329 @@ return [
 // include/itemfunc.php, row 71
 "Edit item" => "Редагувати статтю", // ai 2026-06
 
-// include/itemfunc.php, row 129
+// include/itemfunc.php, row 130
 "by %1" => "користувачем %1", // ai 2026-06
 
-// include/itemfunc.php, row 142
+// include/itemfunc.php, row 143
 "Scheduled" => "Заплановано", // ai 2026-06
 
-// include/itemfunc.php, row 143
+// include/itemfunc.php, row 144
 "not yet on the public site" => "ще не на публічному сайті", // ai 2026-06
 
-// include/itemfunc.php, row 146, 153, 156
+// include/itemfunc.php, row 147, 154, 157
 "not on the public site" => "не на публічному сайті", // ai 2026-06
 
-// include/itemfunc.php, row 149, 178
+// include/itemfunc.php, row 150, 179
 "Published" => "Опубліковано", // ai 2026-06
 
-// include/itemfunc.php, row 175
+// include/itemfunc.php, row 176
 "Never" => "Ніколи", // ai 2026-06
 
-// include/itemfunc.php, row 176
+// include/itemfunc.php, row 177
 "not used on this site" => "на цьому сайті не використовується", // ai 2026-06
 
-// include/itemfunc.php, row 179
+// include/itemfunc.php, row 180
 "Expires" => "Закінчується", // ai 2026-06
 
-// include/itemfunc.php, row 181
+// include/itemfunc.php, row 182
 "Last edited" => "Останнє редагування", // ai 2026-06
 
-// include/itemfunc.php, row 183
+// include/itemfunc.php, row 184
 "Revisions" => "Ревізії", // ai 2026-06
 
-// include/itemfunc.php, row 185
+// include/itemfunc.php, row 186
 "Short ID" => "Короткий Id", // ai 2026-06
 
-// include/itemfunc.php, row 191
+// include/itemfunc.php, row 192
 "Details" => "Подробиці", // ai 2026-06
 
-// include/itemfunc.php, row 226
+// include/itemfunc.php, row 227
 "Item table record for the item" => "Запис статті в таблиці item", // ai 2026-06
 
-// include/itemfunc.php, row 250
+// include/itemfunc.php, row 251
 "Content table records for the item" => "Записи статті в таблиці content", // ai 2026-06
 
-// include/itemfunc.php, row 269
+// include/itemfunc.php, row 270
 "Referenced items" => "Пов'язані статті", // ai 2026-06
 
-// include/itemfunc.php, row 278
+// include/itemfunc.php, row 279
 "AA_Item structure" => "Структура AA_Item", // ai 2026-06
 
-// include/itemfunc.php, row 309
+// include/itemfunc.php, row 310
 "Technical details" => "Технічні подробиці", // ai 2026-06
 
-// include/itemfunc.php, row 350
+// include/itemfunc.php, row 351
 "When" => "Коли", // ai 2026-06
 
-// include/itemfunc.php, row 350
+// include/itemfunc.php, row 351
 "Changed by" => "Змінив", // ai 2026-06
 
-// include/itemfunc.php, row 378
+// include/itemfunc.php, row 379
 "Full history" => "Повна історія", // ai 2026-06
 
-// include/itemfunc.php, row 403
+// include/itemfunc.php, row 404
 "Total views" => "Всього переглядів", // ai 2026-06
 
-// include/itemfunc.php, row 422
+// include/itemfunc.php, row 423
 "Average / day" => "Середньо / день", // ai 2026-06
 
-// include/itemfunc.php, row 426
+// include/itemfunc.php, row 427
 "Last 7 days" => "Останні 7 днів", // ai 2026-06
 
-// include/itemfunc.php, row 427
+// include/itemfunc.php, row 428
 "Last 30 days" => "Останні 30 днів", // ai 2026-06
 
-// include/itemfunc.php, row 429
+// include/itemfunc.php, row 430
 "Last viewed" => "Останній перегляд", // ai 2026-06
 
-// include/itemfunc.php, row 433
+// include/itemfunc.php, row 434
 "Avg response" => "Середній відгук", // ai 2026-06
 
-// include/itemfunc.php, row 436
+// include/itemfunc.php, row 437
 "Served from cache" => "Обслужено з кешу", // ai 2026-06
 
-// include/itemfunc.php, row 459
+// include/itemfunc.php, row 460
 "Full statistics" => "Повна статистика", // ai 2026-06
 
-// include/itemfunc.php, row 484
+// include/itemfunc.php, row 485
 "No detailed view statistics have been recorded for this item yet." => "Для цієї статті ще не зафіксовано жодної детальної статистики переглядів.", // ai 2026-06
 
-// include/itemfunc.php, row 487
+// include/itemfunc.php, row 488
 "Open full statistics" => "Відкрити повну статистику", // ai 2026-06
 
-// include/itemfunc.php, row 514
+// include/itemfunc.php, row 515
 "Now, i.e. current date" => "Зараз, тобто поточна дата", // ai 2026-06
 
-// include/itemfunc.php, row 524
+// include/itemfunc.php, row 525
 "Never, i.e. maximum date" => "Ніколи, тобто максимальна дата", // ai 2026-06
 
-// include/itemfunc.php, row 535
+// include/itemfunc.php, row 536
 "User ID" => "Id користувача", // ai 2026-06
 
-// include/itemfunc.php, row 561
+// include/itemfunc.php, row 562
 "Date + 'Parameter' days" => "Дата + 'Параметр' днів", // ai 2026-06
 
-// include/itemfunc.php, row 568
+// include/itemfunc.php, row 569
 "Number of days" => "Кількість днів", // ai 2026-06
 
-// include/itemfunc.php, row 582
+// include/itemfunc.php, row 583
 "Text from 'Parameter'" => "Текст із 'Параметра'", // ai 2026-06
 
-// include/itemfunc.php, row 616
+// include/itemfunc.php, row 617
 "Random string" => "Випадковий рядок", // ai 2026-06
 
-// include/itemfunc.php, row 618
+// include/itemfunc.php, row 619
 "Random alphanumeric [A-Z0-9] string." => "Випадковий буквено-цифровий рядок [A-Z0-9].", // ai 2026-06
 
-// include/itemfunc.php, row 625
+// include/itemfunc.php, row 626
 "String length" => "Довжина рядка", // ai 2026-06
 
-// include/itemfunc.php, row 626
+// include/itemfunc.php, row 627
 "Field to check" => "Поле для перевірки", // ai 2026-06
 
-// include/itemfunc.php, row 626
+// include/itemfunc.php, row 627
 "If you need a unique code, you must send the field ID, the function will then look into this field to ensure uniqueness." => "Якщо вам потрібен унікальний код, ви маєте вказати Id поля; функція потім переглядає це поле, щоб забезпечити унікальність.", // ai 2026-06
 
-// include/itemfunc.php, row 627
+// include/itemfunc.php, row 628
 "Slice only" => "Лише ця рубрика", // ai 2026-06
 
-// include/itemfunc.php, row 627
+// include/itemfunc.php, row 628
 "Do you want to check for uniqueness this slice only or all slices?" => "Перевіряти унікальність лише в цій рубриці чи в усіх рубриках?", // ai 2026-06
 
-// include/itemfunc.php, row 669
+// include/itemfunc.php, row 670
 "AA Expression" => "AA-вираз", // ai 2026-06
 
-// include/itemfunc.php, row 671
+// include/itemfunc.php, row 672
 "any text with possible {AA expressions} like: {date:Y}" => "будь-який текст із можливими {AA expressions}, напр.: {date:Y}", // ai 2026-06
 
-// include/itemfunc.php, row 695
+// include/itemfunc.php, row 696
 "Multivalue" => "Багатозначне", // ai 2026-06
 
-// include/itemfunc.php, row 703
+// include/itemfunc.php, row 704
 // include/transformation.class.php, row 525
 "Delimiter" => "Роздільник", // ai 2026-06
 
-// include/itemfunc.php, row 794
+// include/itemfunc.php, row 795
 "Slice with id '%1' is not valid." => "Рубрика з id '%1' не є дійсною.", // ai 2026-06
 
-// include/itemfunc.php, row 894
+// include/itemfunc.php, row 895
 "Text = don't modify" => "Текст = не змінювати", // ai 2026-06
 
-// include/itemfunc.php, row 895
+// include/itemfunc.php, row 896
 "Does not modify the value." => "Не змінює значення.", // ai 2026-06
 
-// include/itemfunc.php, row 900
+// include/itemfunc.php, row 901
 "Date = don't modify" => "Дата = не змінювати", // ai 2026-06
 
-// include/itemfunc.php, row 901, 910
+// include/itemfunc.php, row 902, 911
 "Does not modify the value (just like Text), but it is better to separate it for future usage." => "Не змінює значення (так само як Текст), але краще відокремити його для майбутнього використання.", // ai 2026-06
 
-// include/itemfunc.php, row 909
+// include/itemfunc.php, row 910
 "Number = don't modify" => "Число = не змінювати", // ai 2026-06
 
-// include/itemfunc.php, row 915
+// include/itemfunc.php, row 916
 "Boolean = store 0 or 1" => "Boolean = зберегти 0 або 1", // ai 2026-06
 
-// include/itemfunc.php, row 926
+// include/itemfunc.php, row 927
 "Float" => "",
 
-// include/itemfunc.php, row 927
+// include/itemfunc.php, row 928
 "Real float - could convert big numbers to scientific notation (1.23E+29)" => "Справжній float - великі числа може перетворити на науковий запис (1.23E+29)", // ai 2026-06
 
-// include/itemfunc.php, row 937
+// include/itemfunc.php, row 938
 "Decimal" => "Десяткове число", // ai 2026-06
 
-// include/itemfunc.php, row 938
+// include/itemfunc.php, row 939
 "The same as Float, but does not convert big numbers to  scientific notation (1.23E+29)" => "Те саме, що Float, але не перетворює великі числа на науковий запис (1.23E+29)", // ai 2026-06
 
-// include/itemfunc.php, row 948
+// include/itemfunc.php, row 949
 "Trim" => "Обрізати", // ai 2026-06
 
-// include/itemfunc.php, row 949
+// include/itemfunc.php, row 950
 "Remove whitespaces from beginning and end and also normalize UTF (NFC)" => "Видаляє пробіли на початку й у кінці, а також нормалізує UTF (NFC)", // ai 2026-06
 
-// include/itemfunc.php, row 960
+// include/itemfunc.php, row 961
 "Item IDs" => "Id статей", // ai 2026-06
 
-// include/itemfunc.php, row 1027
+// include/itemfunc.php, row 1028
 "User ID = always store current user ID" => "Id користувача = завжди зберігати Id поточного користувача", // ai 2026-06
 
-// include/itemfunc.php, row 1028
+// include/itemfunc.php, row 1029
 "Inserts the identity of the current user, no matter what the user sets." => "Вставляє ідентичність поточного користувача незалежно від того, що задає користувач.", // ai 2026-06
 
-// include/itemfunc.php, row 1069
+// include/itemfunc.php, row 1070
 "Now = always store current time" => "Зараз = завжди зберігати поточний час", // ai 2026-06
 
-// include/itemfunc.php, row 1070
+// include/itemfunc.php, row 1071
 "Inserts the current time, no matter what the user sets." => "Вставляє поточний час незалежно від того, що задає користувач.", // ai 2026-06
 
-// include/itemfunc.php, row 1100
+// include/itemfunc.php, row 1101
 "Computed field for INSERT/UPDATE" => "Обчислюване поле для INSERT/UPDATE", // ai 2026-06
 
-// include/itemfunc.php, row 1101
+// include/itemfunc.php, row 1102
 "The field is the result of expression written in \"Code for unaliasing\". It is a good solution for all values, which could be precomputed, since its computation on item-show-time would be slow. Yes, you can use {view...}, {include...}, {switch...} here" => "Поле є результатом виразу, записаного в \"Код для відаліасування\". Це гарне рішення для всіх значень, які можна попередньо обчислити, оскільки їх обчислення під час показу статті було б повільним. Так, тут можна використовувати {view...}, {include...}, {switch...}", // ai 2026-06
 
-// include/itemfunc.php, row 1108
+// include/itemfunc.php, row 1109
 "Code for unaliasing (INSERT)" => "Код для розкриття аліасів (INSERT)", // ai 2026-06
 
-// include/itemfunc.php, row 1108, 1137
+// include/itemfunc.php, row 1109, 1138
 "There you can write any string. The string will be unaliased on item store, so you can use any {...} construct as well as field aliases here" => "Сюди можна записати будь-який рядок. Рядок буде розкрито (unaliased) під час збереження статті, тож тут можна використовувати будь-яку конструкцію {...} а також аліаси полів", // ai 2026-06
 
-// include/itemfunc.php, row 1109
+// include/itemfunc.php, row 1110
 "Code for unaliasing (UPDATE)" => "Код для розкриття аліасів (UPDATE)", // ai 2026-06
 
-// include/itemfunc.php, row 1109
+// include/itemfunc.php, row 1110
 "The same as above, but just for UPDATE operation. If unfilled, the value of the field stays unchanged" => "Те саме, що вище, але лише для операції UPDATE. Якщо не заповнено, значення поля залишається незмінним", // ai 2026-06
 
-// include/itemfunc.php, row 1110
+// include/itemfunc.php, row 1111
 "Multivalue delimiter" => "Роздільник кількох значень", // ai 2026-06
 
-// include/itemfunc.php, row 1110
+// include/itemfunc.php, row 1111
 "Character or string, which will split the computed string into multiple values (the same field)" => "Символ або рядок, який розділить обчислений рядок на кілька значень (того самого поля)", // ai 2026-06
 
-// include/itemfunc.php, row 1111
+// include/itemfunc.php, row 1112
 "Recompute every" => "Інтервал перерахунку", // ai 2026-06
 
-// include/itemfunc.php, row 1111
+// include/itemfunc.php, row 1112
 "The field will be recomputed every minute, hour, ... (using UPDATE code above). The times are not exact - the minute means something 1-10 minutes. If not filled, the field will be recomputed only on insert/update of the item." => "Поле буде перераховуватися щохвилини, щогодини, ... (за допомогою коду UPDATE вище). Час не є точним — хвилина означає приблизно 1–10 хвилин. Якщо не заповнено, поле перераховуватиметься лише при вставленні/оновленні статті.", // ai 2026-06
 
-// include/itemfunc.php, row 1129
+// include/itemfunc.php, row 1130
 "Computed field" => "Обчислюване поле", // ai 2026-06
 
-// include/itemfunc.php, row 1130
+// include/itemfunc.php, row 1131
 "The field is the result of expression written in \\\"Code for unaliasing\\\". It is good solution for all values, which could be precomputed, since its computation on item-show-time would be slow. Yes, you can use {view...}, {include...}, {switch...} here" => "Значення поля є результатом виразу, записаного в \\\"Коді для розкриття аліасів\\\". Це гарне рішення для всіх значень, які можна попередньо обчислити, оскільки їх обчислення під час показу статті було б повільним. Так, тут можна використовувати {view...}, {include...}, {switch...}", // ai 2026-06
 
-// include/itemfunc.php, row 1137
+// include/itemfunc.php, row 1138
 "Code for unaliasing (INSERT+UPDATE)" => "Код для розкриття аліасів (INSERT+UPDATE)", // ai 2026-06
 
-// include/itemfunc.php, row 1157
+// include/itemfunc.php, row 1158
 "SEO Name" => "SEO назва", // ai 2026-06
 
-// include/itemfunc.php, row 1158
+// include/itemfunc.php, row 1159
 "If the field is not filled, compute seoname from _#HEADLINE alias (or another if specified) unique to all slices in sitemodules, where the slice is mentioned in \"Uses slices\" settings. Basically the SEO Name alias is shortcut for computed field with {ifset:{seo.............}:_#1:{seoname:{_#HEADLINE}:all:CHARSET}}" => "Якщо поле не заповнене, обчислити seoname з аліасу _#HEADLINE (або іншого, якщо вказано), унікальний для всіх рубрик у sitemodules, де рубрика зазначена в налаштуванні \"Uses slices\". По суті, аліас SEO назва є скороченням для обчислюваного поля з {ifset:{seo.............}:_#1:{seoname:{_#HEADLINE}:all:CHARSET}}", // ai 2026-06
 
-// include/itemfunc.php, row 1165
+// include/itemfunc.php, row 1166
 "Alias to compute from" => "Аліас, з якого обчислювати", // ai 2026-06
 
-// include/itemfunc.php, row 1165
+// include/itemfunc.php, row 1166
 "if not specified, the _#HEADLINE is used" => "якщо не вказано, використовується _#HEADLINE", // ai 2026-06
 
-// include/itemfunc.php, row 1180
+// include/itemfunc.php, row 1181
 "Unique number for this field (from 1,..)" => "Унікальне число для цього поля (від 1,..)", // ai 2026-06
 
-// include/itemfunc.php, row 1181
+// include/itemfunc.php, row 1182
 "Unique number in sequence 1,2,3,..." => "Унікальне число в послідовності 1,2,3,...", // ai 2026-06
 
-// include/itemfunc.php, row 1203
+// include/itemfunc.php, row 1204
 "File = uploaded file" => "Файл = завантажений файл", // ai 2026-06
 
-// include/itemfunc.php, row 1204
+// include/itemfunc.php, row 1205
 "Stores the uploaded file and a link to it, parameters only apply if type is image/something." => "Зберігає завантажений файл і посилання на нього; параметри застосовуються, лише якщо тип image/something.", // ai 2026-06
 
-// include/itemfunc.php, row 1211
+// include/itemfunc.php, row 1212
 "Mime types accepted" => "Дозволені mime типи", // ai 2026-06
 
-// include/itemfunc.php, row 1211
+// include/itemfunc.php, row 1212
 "Only files of matching mime types will be accepted" => "Прийматимуться лише файли відповідних mime типів", // ai 2026-06
 
-// include/itemfunc.php, row 1212
+// include/itemfunc.php, row 1213
 "Maximum image width" => "Максимальна ширина зображення", // ai 2026-06
 
-// include/itemfunc.php, row 1213
+// include/itemfunc.php, row 1214
 "Maximum image height" => "Максимальна висота зображення", // ai 2026-06
 
-// include/itemfunc.php, row 1213
+// include/itemfunc.php, row 1214
 "The image will be resampled to be within these limits, while retaining aspect ratio." => "Зображення буде передискретизовано так, щоб вкластися в ці межі, зі збереженням співвідношення сторін.", // ai 2026-06
 
-// include/itemfunc.php, row 1214
+// include/itemfunc.php, row 1215
 "Other fields" => "Інші поля", // ai 2026-06
 
-// include/itemfunc.php, row 1214
+// include/itemfunc.php, row 1215
 "List of other fields to receive this image, separated by ##. Does not work well for multi uploads." => "Список інших полів, які отримають це зображення, розділених ##. Погано працює для множинних завантажень.", // ai 2026-06
 
-// include/itemfunc.php, row 1215
+// include/itemfunc.php, row 1216
 "Upload policy" => "Спосіб завантаження", // ai 2026-06
 
-// include/itemfunc.php, row 1215
+// include/itemfunc.php, row 1216
 "new | overwrite | backup<br>This parameter controls what to do if uploaded file alredy exists:<br>new - AA creates new filename (by adding _x postfix) and store it with this new name (default)<br>overwrite - the old file of the same name is overwritten<br>backup - the old file is copied to new (non-existing) file and current file is stored with current name.<br>In all cases the filename is escaped, so any non-word characters will be replaced by an underscore." => "new | overwrite | backup<br>Цей параметр визначає, що робити, якщо завантажуваний файл уже існує:<br>new - AA створює нову назву файлу (додаючи суфікс _x) і зберігає його під цією новою назвою (за замовчуванням)<br>overwrite - старий файл з тією самою назвою перезаписується<br>backup - старий файл копіюється в новий (неіснуючий) файл, а поточний файл зберігається під поточною назвою.<br>У всіх випадках назва файлу екранується, тож усі несловесні символи буде замінено на підкреслення.", // ai 2026-06
 
-// include/itemfunc.php, row 1216
+// include/itemfunc.php, row 1217
 "Exact dimensions" => "Точні розміри", // ai 2026-06
 
-// include/itemfunc.php, row 1216
+// include/itemfunc.php, row 1217
 "If set to 1 the image will be downsized exactly to the specified dimensions (and cropped if needed). Default is 0 or empty: Maintain aspect ratio while resizing the image." => "Якщо встановлено 1, зображення буде зменшено точно до вказаних розмірів (і за потреби обрізано). За замовчуванням 0 або порожнє: зберігати співвідношення сторін під час зміни розміру зображення.", // ai 2026-06
 
-// include/itemfunc.php, row 1217
+// include/itemfunc.php, row 1218
 "Filename template" => "Шаблон назви файлу", // ai 2026-06
 
-// include/itemfunc.php, row 1217
+// include/itemfunc.php, row 1218
 "Renames file according to template. You can use AA expressions as well as special alias _#name and _#ext or _#full (file name, extension and fullname). The item aliases in AA expressions do not work on INSERT (item does not exist at time of file write). They will work on UPDATE." => "Перейменовує файл згідно з шаблоном. Можна використовувати вирази AA, а також спеціальні аліаси _#name і _#ext або _#full (назва файлу, розширення та повна назва). Аліаси статті у виразах AA не працюють при INSERT (статті ще не існує в момент запису файлу). При UPDATE працюватимуть.", // ai 2026-06
 
-// include/itemfunc.php, row 1374
+// include/itemfunc.php, row 1375
 "Password and Change Password" => "Пароль і зміна пароля", // ai 2026-06
 
-// include/itemfunc.php, row 1375
+// include/itemfunc.php, row 1376
 "Stores value from a \"Password and Change Password\" field type. First proves the new password matches the retyped new password, and if so, encrypts the new password and stores it." => "Зберігає значення з поля типу \"Пароль і зміна пароля\". Спочатку перевіряє, чи новий пароль збігається з повторно введеним новим паролем, і якщо так, шифрує новий пароль і зберігає його.", // ai 2026-06
 
-// include/itemfunc.php, row 1382
+// include/itemfunc.php, row 1383
 "Copy of password" => "Копія пароля", // ai 2026-06
 
-// include/itemfunc.php, row 1382
+// include/itemfunc.php, row 1383
 "Field_id, where you want to store the copy of the password. Sometimes useful if you want to allow people to get his/her old password. It is strongly recommended to not store it in plaintext and encrypt it. See second parameter." => "Field_id, куди ви хочете зберегти копію пароля. Іноді корисно, якщо ви хочете дозволити людям отримати їхній старий пароль. Наполегливо рекомендуємо не зберігати його у відкритому вигляді, а зашифрувати. Див. другий параметр.", // ai 2026-06
 
-// include/itemfunc.php, row 1383, 1422
+// include/itemfunc.php, row 1384, 1423
 "Encrypt phrase" => "Фраза для шифрування", // ai 2026-06
 
-// include/itemfunc.php, row 1383
+// include/itemfunc.php, row 1384
 "If you specify the \"Copy of password\" field, it is recommended to encrypt the password in the database. Fill there any string. If you then need the password, you can decrypt it from the field by using the same phrase - {decrypt:{password.......1}:Some Phrase}" => "Якщо ви вказуєте поле \"Копія пароля\", рекомендуємо зашифрувати пароль у базі даних. Впишіть сюди будь-який рядок. Якщо потім вам знадобиться пароль, ви зможете розшифрувати його з поля за допомогою тієї самої фрази - {decrypt:{password.......1}:Some Phrase}", // ai 2026-06
 
-// include/itemfunc.php, row 1414
+// include/itemfunc.php, row 1415
 "2FA Secret" => "Секрет 2FA", // ai 2026-06
 
-// include/itemfunc.php, row 1415
+// include/itemfunc.php, row 1416
 "Generates and stores secret for Two-factor authentication, possibly encrypted by password" => "Генерує та зберігає секрет для двофакторної автентифікації, можливо зашифрований паролем", // ai 2026-06
 
-// include/itemfunc.php, row 1422
+// include/itemfunc.php, row 1423
 "Password to be applied for encrypting this field value. Could contain AA expressions or aliases (for user item in Reader Management slice)" => "Пароль, який буде застосовано для шифрування значення цього поля. Може містити вирази AA або аліаси (для статті користувача в рубриці Управління читачами)", // ai 2026-06
 
 // include/itemview.php, row 117
@@ -4907,65 +4907,143 @@ return [
 // include/locauth.php, row 87
 "If you are sure you have typed the correct password, please e-mail <a href=mailto:%1>%1</a>" => "Якщо ви впевнені, що ввели правильний пароль, напишіть, будь ласка, на <a href=mailto:%1>%1</a>", // ai 2026-06
 
-// include/logs.php, row 306
+// include/logs.php, row 336
 "Created time" => "Час створення", // ai 2026-06
 
-// include/logs.php, row 307
+// include/logs.php, row 337
 "Readers to be emailed" => "Читачі, яким слід надіслати e-mail", // ai 2026-06
 
-// include/logs.php, row 317
+// include/logs.php, row 347
 "Page" => "Сторінка", // ai 2026-06
 
-// include/logs.php, row 327, 351, 364
+// include/logs.php, row 357, 397, 410
 "Time [s]" => "Час [с]", // ai 2026-06
 
-// include/logs.php, row 328, 353
+// include/logs.php, row 358, 399
 "Memory usage [MB]" => "Використання пам'яті [МБ]", // ai 2026-06
 
-// include/logs.php, row 329
+// include/logs.php, row 359
 "Memory peak [MB]" => "Пік пам'яті [МБ]", // ai 2026-06
 
-// include/logs.php, row 330
+// include/logs.php, row 360
 "Return code" => "Код повернення", // ai 2026-06
 
-// include/logs.php, row 349
-"Cached" => "З кешу", // ai 2026-06
-
-// include/logs.php, row 350
-"Not Modified (304)" => "Не змінено (304)", // ai 2026-06
-
-// include/logs.php, row 352
-"Time + Cached + 304" => "Час + кеш + 304", // ai 2026-06
-
-// include/logs.php, row 354, 365, 397
-"Url" => "",
+// include/logs.php, row 374
+"Tasks done" => "Завдань виконано", // ai 2026-06
 
 // include/logs.php, row 375
+"Tasks started" => "Завдань розпочато", // ai 2026-06
+
+// include/logs.php, row 376
+"Duration [s]" => "Тривалість [с]", // ai 2026-06
+
+// include/logs.php, row 377
+"Allowed [s]" => "Дозволено [с]", // ai 2026-06
+
+// include/logs.php, row 395
+"Cached" => "З кешу", // ai 2026-06
+
+// include/logs.php, row 396
+"Not Modified (304)" => "Не змінено (304)", // ai 2026-06
+
+// include/logs.php, row 398
+"Time + Cached + 304" => "Час + кеш + 304", // ai 2026-06
+
+// include/logs.php, row 400, 411, 443, 475
+"Url" => "",
+
+// include/logs.php, row 421
 // include/menu_util.php, row 45
 "AA" => "",
 
-// include/logs.php, row 376
+// include/logs.php, row 422
 "SVN AA (util.php)" => "",
 
-// include/logs.php, row 377
+// include/logs.php, row 423
 "PHP" => "",
 
-// include/logs.php, row 378
+// include/logs.php, row 424
 "DB" => "",
 
-// include/logs.php, row 379
+// include/logs.php, row 425
 "Memory" => "Пам'ять", // ai 2026-06
 
-// include/logs.php, row 380
+// include/logs.php, row 426
 "CPU" => "",
 
-// include/logs.php, row 394
+// include/logs.php, row 440
 "Identifier" => "Ідентифікатор", // ai 2026-06
 
-// include/logs.php, row 395
+// include/logs.php, row 441, 570, 583
 // modules/jump/modedit.php, row 180
 // src/Manager.php, row 584
 "Module ID" => "ID модуля", // ai 2026-06
+
+// include/logs.php, row 452
+"Template id" => "ID шаблону", // ai 2026-06
+
+// include/logs.php, row 454
+"Emails sent" => "Надіслано e-mail", // ai 2026-06
+
+// include/logs.php, row 463
+"Items selected" => "Вибрано записів", // ai 2026-06
+
+// include/logs.php, row 464
+"Items updated" => "Оновлено записів", // ai 2026-06
+
+// include/logs.php, row 465
+"Items planned" => "Заплановано записів", // ai 2026-06
+
+// include/logs.php, row 474
+"Message" => "Повідомлення", // ai 2026-06
+
+// include/logs.php, row 476
+"Referer" => "",
+
+// include/logs.php, row 485
+"New name" => "Нова назва", // ai 2026-06
+
+// include/logs.php, row 486
+"Old name" => "Стара назва", // ai 2026-06
+
+// include/logs.php, row 495, 518
+"Phase" => "Фаза", // ai 2026-06
+
+// include/logs.php, row 496
+"Collection" => "Колекція", // ai 2026-06
+
+// include/logs.php, row 498, 509, 519
+"Detail" => "Деталі", // ai 2026-06
+
+// include/logs.php, row 508
+"Status" => "Стан", // ai 2026-06
+
+// include/logs.php, row 529
+"Processed" => "Оброблено", // ai 2026-06
+
+// include/logs.php, row 530
+"Stored" => "Збережено", // ai 2026-06
+
+// include/logs.php, row 531
+"Errors" => "Помилки", // ai 2026-06
+
+// include/logs.php, row 542
+"Outcome" => "Результат", // ai 2026-06
+
+// include/logs.php, row 555
+"Mode" => "Режим", // ai 2026-06
+
+// include/logs.php, row 556
+"Flags" => "Прапорці", // ai 2026-06
+
+// include/logs.php, row 557
+"Context" => "Контекст", // ai 2026-06
+
+// include/logs.php, row 571
+"Feed counterpart" => "Відповідник подачі", // ai 2026-06
+
+// include/logs.php, row 584
+"Field ID" => "ID поля", // ai 2026-06
 
 // include/mail.php, row 563
 // include/tv_email.php, row 77, 145
@@ -4995,7 +5073,7 @@ return [
 // include/menu.php, row 65
 "View site" => "Переглянути сайт", // ai 2026-06
 
-// include/menu.php, row 90, 91, 143
+// include/menu.php, row 90, 91, 142
 "Item Manager" => "Менеджер статей", // ai 2026-06
 
 // include/menu.php, row 99
@@ -5014,137 +5092,137 @@ return [
 // include/menu.php, row 135
 "Email Notification" => "Сповіщення e-mailом", // ai 2026-06
 
-// include/menu.php, row 138
+// include/menu.php, row 137
 // include/menu_util.php, row 69
 // include/um_util.php, row 100, 103
 "Permissions" => "Права", // ai 2026-06
 
-// include/menu.php, row 139
+// include/menu.php, row 138
 "Assign" => "Призначити", // ai 2026-06
 
-// include/menu.php, row 142
+// include/menu.php, row 141
 "Design" => "Вигляд", // ai 2026-06
 
-// include/menu.php, row 145
+// include/menu.php, row 144
 "Fulltext" => "Повний текст", // ai 2026-06
 
-// include/menu.php, row 146
+// include/menu.php, row 145
 "Index" => "Перелік статей", // ai 2026-06
 
-// include/menu.php, row 148
+// include/menu.php, row 147
 "Sets of Items" => "Набори статей", // ai 2026-06
 
-// include/menu.php, row 150
+// include/menu.php, row 149
 "Content Pooling" => "Обмін вмістом", // ai 2026-06
 
-// include/menu.php, row 151
+// include/menu.php, row 150
 "Nodes" => "Вузли", // ai 2026-06
 
-// include/menu.php, row 152
+// include/menu.php, row 151
 "Inner Node Feeding" => "Внутрішнє передавання вузлів", // ai 2026-06
 
-// include/menu.php, row 154
+// include/menu.php, row 153
 "Inter Node Export" => "Експорт між вузлами", // ai 2026-06
 
-// include/menu.php, row 155
+// include/menu.php, row 154
 "RSS Feeds" => "RSS-канали", // ai 2026-06
 
-// include/menu.php, row 156
+// include/menu.php, row 155
 "Filters" => "Фільтри", // ai 2026-06
 
-// include/menu.php, row 157
+// include/menu.php, row 156
 "Mapping" => "Зіставлення", // ai 2026-06
 
-// include/menu.php, row 158, 220
+// include/menu.php, row 157, 219
 "Import CSV" => "Імпорт CSV", // ai 2026-06
 
-// include/menu.php, row 159
+// include/menu.php, row 158
 // src/Manageraction/Item_Export.php, row 20
 "Export to file" => "Експорт до файлу", // ai 2026-06
 
-// include/menu.php, row 161, 217
-// include/menu_util.php, row 73, 124
+// include/menu.php, row 160, 216
+// include/menu_util.php, row 73, 123
 // src/Module/Poll/Menu.php, row 67
 "Misc" => "Різне", // ai 2026-06
 
-// include/menu.php, row 164
+// include/menu.php, row 163
 "Change field IDs" => "Зміна ID полів", // ai 2026-06
 
-// include/menu.php, row 167
+// include/menu.php, row 166
 "Anonymous Form Wizard" => "Майстер анонімної форми", // ai 2026-06
 
-// include/menu.php, row 168
+// include/menu.php, row 167
 // include/tv_email.php, row 134
 "Email templates" => "Шаблони e-mail", // ai 2026-06
 
-// include/menu.php, row 170
+// include/menu.php, row 169
 // include/menu_util.php, row 75
 "Planned Tasks" => "Заплановані завдання", // ai 2026-06
 
-// include/menu.php, row 178
+// include/menu.php, row 177
 "Mailman: create list" => "Mailman: створити список", // ai 2026-06
 
-// include/menu.php, row 186
-// include/menu_util.php, row 119
+// include/menu.php, row 185
+// include/menu_util.php, row 118
 // src/Module/Poll/Menu.php, row 60
 "Folders" => "Теки", // ai 2026-06
 
-// include/menu.php, row 189
+// include/menu.php, row 188
 // src/Module/Poll/Menu.php, row 62
 "... pending" => "... очікують", // ai 2026-06
 
-// include/menu.php, row 190
+// include/menu.php, row 189
 // src/Module/Poll/Menu.php, row 63
 "... expired" => "... завершені", // ai 2026-06
 
-// include/menu.php, row 192
-// include/menu_util.php, row 122
+// include/menu.php, row 191
+// include/menu_util.php, row 121
 // src/Module/Poll/Menu.php, row 65
 "Trash bin" => "Кошик", // ai 2026-06
 
-// include/menu.php, row 208
+// include/menu.php, row 207
 "Bookmarks" => "Закладки", // ai 2026-06
 
-// include/menu.php, row 218
+// include/menu.php, row 217
 "Setting" => "Налаштування", // ai 2026-06
 
-// include/menu.php, row 219
-// include/menu_util.php, row 127
+// include/menu.php, row 218
+// include/menu_util.php, row 126
 // src/Module/Poll/Menu.php, row 68
 "Empty trash" => "Очистити кошик", // ai 2026-06
 
-// include/menu.php, row 219
-// include/menu_util.php, row 127
+// include/menu.php, row 218
+// include/menu_util.php, row 126
 // src/Module/Poll/Menu.php, row 68
 "Are you sure you want to empty trash?" => "Ви впевнені, що хочете очистити кошик?", // ai 2026-06
 
-// include/menu.php, row 221
+// include/menu.php, row 220
 "Set Debug OFF" => "Вимкнути debug", // ai 2026-06
 
-// include/menu.php, row 221
+// include/menu.php, row 220
 "Set Debug ON" => "Увімкнути debug", // ai 2026-06
 
-// include/menu.php, row 231
-// include/menu_util.php, row 420, 612
+// include/menu.php, row 230
+// include/menu_util.php, row 419, 726
 // include/slice.class.php, row 1194
 "Alerts" => "Сповіщення", // ai 2026-06
 
-// include/menu.php, row 231
+// include/menu.php, row 230
 "List of Alerts modules using this slice as Reader Management." => "Список модулів Сповіщення, які використовують цю рубрику для керування читачами.", // ai 2026-06
 
-// include/menu.php, row 233
+// include/menu.php, row 232
 "Bulk Emails" => "Масові e-mail", // ai 2026-06
 
-// include/menu.php, row 233
+// include/menu.php, row 232
 "Send bulk email to selected users or to users in Stored searches" => "Надіслати масовий e-mail вибраним користувачам або користувачам зі збережених пошуків", // ai 2026-06
 
-// include/menu.php, row 237
+// include/menu.php, row 236
 "Send emails" => "Надіслати e-mail", // ai 2026-06
 
-// include/menu.php, row 246
+// include/menu.php, row 245
 "Alerts Sent" => "Надіслано через сповіщення", // ai 2026-06
 
-// include/menu.php, row 246
+// include/menu.php, row 245
 "List of Alerts modules sending items from this slice." => "Список модулів Сповіщення, які надсилають статті з цієї рубрики.", // ai 2026-06
 
 // include/menu_util.php, row 46
@@ -5180,76 +5258,97 @@ return [
 // include/menu_util.php, row 95
 "Wizard" => "Майстер", // ai 2026-06
 
-// include/menu_util.php, row 97
+// include/menu_util.php, row 96
 "Welcomes" => "Вітальні листи", // ai 2026-06
 
-// include/menu_util.php, row 98
+// include/menu_util.php, row 97
 "Templates" => "Шаблони", // ai 2026-06
 
-// include/menu_util.php, row 100
+// include/menu_util.php, row 99
 "Documentation" => "Документація", // ai 2026-06
 
-// include/menu_util.php, row 101
+// include/menu_util.php, row 100
 "Style Guide" => "Посібник зі стилю", // ai 2026-06
 
-// include/menu_util.php, row 107
+// include/menu_util.php, row 106
 "Central" => "",
 
-// include/menu_util.php, row 108
+// include/menu_util.php, row 107
 "AA Central" => "",
 
-// include/menu_util.php, row 125
+// include/menu_util.php, row 124
 "Synchronize..." => "Синхронізувати...", // ai 2026-06
 
-// include/menu_util.php, row 126
+// include/menu_util.php, row 125
 "Copy Slice..." => "Копіювати рубрику...", // ai 2026-06
 
-// include/menu_util.php, row 128
+// include/menu_util.php, row 127
 "Import conf from CSV..." => "Імпорт конфігурації з CSV...", // ai 2026-06
 
-// include/menu_util.php, row 398
+// include/menu_util.php, row 397
 "Part of %s" => "Частина %s", // ai 2026-06
 
-// include/menu_util.php, row 415
+// include/menu_util.php, row 414
 "Other slices" => "Інші рубрики", // ai 2026-06
 
-// include/menu_util.php, row 419
+// include/menu_util.php, row 418
 "Reader Management Slice" => "Рубрика керування читачами", // ai 2026-06
 
-// include/menu_util.php, row 421
+// include/menu_util.php, row 420
 "Jump inside control panel" => "Перехід у панелі керування", // ai 2026-06
 
-// include/menu_util.php, row 422
+// include/menu_util.php, row 421
 // include/slice.class.php, row 1226
 "Links" => "Посилання", // ai 2026-06
 
-// include/menu_util.php, row 423
+// include/menu_util.php, row 422
 "MySQL Auth (old version)" => "Автентифікація MySQL (стара версія)", // ai 2026-06
 
-// include/menu_util.php, row 424
+// include/menu_util.php, row 423
 // src/Module/Poll/Menu.php, row 83
 "Polls" => "Опитування", // ai 2026-06
 
-// include/menu_util.php, row 445
+// include/menu_util.php, row 444
 "New slice" => "Нова рубрика", // ai 2026-06
 
-// include/menu_util.php, row 449
+// include/menu_util.php, row 448
 "Switch module" => "Перемкнути модуль", // ai 2026-06
 
-// include/menu_util.php, row 616
+// include/menu_util.php, row 578, 589
+"Apply" => "Застосувати", // ai 2026-06
+
+// include/menu_util.php, row 582
+"-- Default for module --" => "-- Типове для модуля --", // ai 2026-06
+
+// include/menu_util.php, row 590
+"Switches the admin interface language; the page reloads." => "Перемикає мову адмін-інтерфейсу; сторінка перезавантажиться.", // ai 2026-06
+
+// include/menu_util.php, row 598
+"What's working, what isn't — tell the AA team." => "Що працює, а що ні — повідомте команду AA.", // ai 2026-06
+
+// include/menu_util.php, row 601
+"Settings" => "Налаштування", // ai 2026-06
+
+// include/menu_util.php, row 604
+"Theme" => "Тема", // ai 2026-06
+
+// include/menu_util.php, row 606
+"Feedback" => "Відгук", // ai 2026-06
+
+// include/menu_util.php, row 730
 // include/slice.class.php, row 554
 "Reader management" => "Керування читачами", // ai 2026-06
 
-// include/menu_util.php, row 628
+// include/menu_util.php, row 742
 "logout" => "вийти", // ai 2026-06
 
-// include/menu_util.php, row 636
+// include/menu_util.php, row 750
 "Search.." => "Пошук..", // ai 2026-06
 
-// include/menu_util.php, row 714
+// include/menu_util.php, row 829
 "Copyright (C) 2001 the <a href=\"https://www.apc.org\">Association for Progressive Communications (APC)</a>" => "Copyright (C) 2001 <a href=\"https://www.apc.org\">Association for Progressive Communications (APC)</a>", // ai 2026-06
 
-// include/menu_util.php, row 724
+// include/menu_util.php, row 839
 "Collapse / expand menu" => "Згорнути / розгорнути меню", // ai 2026-06
 
 // include/metabase.class.php, row 1572
@@ -5371,43 +5470,43 @@ return [
 // include/searchbar.class.php, row 595
 "Order" => "Упорядкувати", // ai 2026-06
 
-// include/searchbar.class.php, row 662
+// include/searchbar.class.php, row 664
 "Advanced search" => "Розширений пошук", // ai 2026-06
 
-// include/searchbar.class.php, row 720
+// include/searchbar.class.php, row 729
 "Refine" => "Уточнити", // ai 2026-06
 
-// include/searchbar.class.php, row 723
+// include/searchbar.class.php, row 732
 "Share with all slice users" => "Поділитися з усіма користувачами рубрики", // ai 2026-06
 
-// include/searchbar.class.php, row 724
+// include/searchbar.class.php, row 733
 "Save filter" => "Зберегти фільтр", // ai 2026-06
 
-// include/searchbar.class.php, row 725
+// include/searchbar.class.php, row 734
 "Rename filter" => "Перейменувати фільтр", // ai 2026-06
 
-// include/searchbar.class.php, row 726
+// include/searchbar.class.php, row 735
 "Are you sure you want to delete selected filter?" => "Ви справді хочете видалити вибраний фільтр?", // ai 2026-06
 
-// include/searchbar.class.php, row 1008
+// include/searchbar.class.php, row 1017
 "Select one..." => "виберіть...", // ai 2026-06
 
-// include/searchbar.class.php, row 1023
+// include/searchbar.class.php, row 1032
 "My filters" => "Мої фільтри", // ai 2026-06
 
-// include/searchbar.class.php, row 1026
+// include/searchbar.class.php, row 1035
 "Global filters" => "Глобальні фільтри", // ai 2026-06
 
-// include/searchbar.class.php, row 1064
+// include/searchbar.class.php, row 1073
 "Shared filter (click to apply)" => "Спільний фільтр (натисніть, щоб застосувати)", // ai 2026-06
 
-// include/searchbar.class.php, row 1064
+// include/searchbar.class.php, row 1073
 "Personal filter (click to apply)" => "Особистий фільтр (натисніть, щоб застосувати)", // ai 2026-06
 
-// include/searchbar.class.php, row 1074
+// include/searchbar.class.php, row 1083
 "Rename" => "Перейменувати", // ai 2026-06
 
-// include/searchbar.class.php, row 1085
+// include/searchbar.class.php, row 1094
 "Manage filters" => "Керування фільтрами", // ai 2026-06
 
 // include/searchlib.php, row 54
@@ -5720,6 +5819,9 @@ return [
 // include/stringexpand.php, row 7716
 "version" => "версія", // ai 2026-06
 
+// include/stringexpand.php, row 7900
+"show" => "показати", // ai 2026-06
+
 // include/stringexpand.php, row 7901
 "hide" => "сховати", // ai 2026-06
 
@@ -5853,21 +5955,6 @@ return [
 // include/tabledit_util.php, row 670
 "Wrong value: a number between %1 and %2 is expected." => "Хибне значення: очікується число між %1 і %2.", // ai 2026-06
 
-// include/tableviews.php, row 59, 60
-"Polls Design" => "Вигляд опитувань", // ai 2026-06
-
-// include/tableviews.php, row 66, 102
-"Comment" => "Коментар", // ai 2026-06
-
-// include/tableviews.php, row 88
-"Module Id" => "ID модуля", // ai 2026-06
-
-// include/tableviews.php, row 104
-"design description (for administrators only)" => "опис дизайну (лише для адміністраторів)", // ai 2026-06
-
-// include/tableviews.php, row 111
-"Answer HTML" => "HTML відповіді", // ai 2026-06
-
 // include/transformation.class.php, row 149
 "Fill by value" => "Заповнити значенням", // ai 2026-06
 
@@ -5979,30 +6066,6 @@ return [
 // include/tv_email.php, row 168
 "Sender" => "Відправник", // ai 2026-06
 
-// include/tv_misc.php, row 131
-"COUNT_HIT events will be used for counting item hits. After a while it will be automatically deleted." => "Події COUNT_HIT використовуються для підрахунку переглядів статей. Через деякий час вони автоматично видаляються.", // ai 2026-06
-
-// include/tv_misc.php, row 139, 140
-"Log view" => "Вигляд Log", // ai 2026-06
-
-// include/tv_misc.php, row 162
-"See searchlog=1 parameter for slice.php in FAQ: " => "Див. параметр searchlog=1 для slice.php у FAQ:", // ai 2026-06
-
-// include/tv_misc.php, row 170, 171
-"SearchLog view" => "Вигляд SearchLog", // ai 2026-06
-
-// include/tv_misc.php, row 175
-"items found" => "знайдено статей", // ai 2026-06
-
-// include/tv_misc.php, row 176
-"search time" => "час пошуку", // ai 2026-06
-
-// include/tv_misc.php, row 177
-"addition" => "додавання", // ai 2026-06
-
-// include/tv_misc.php, row 198, 199
-"Configure Fields" => "Налаштування полів", // ai 2026-06
-
 // include/um_gedit.php, row 43
 "It is impossible to add group to permission system" => "Неможливо додати групу до системи прав", // ai 2026-06
 
@@ -6021,10 +6084,10 @@ return [
 // include/um_util.php, row 358
 "Can't change user" => "Неможливо змінити дані користувача", // ai 2026-06
 
-// include/util.php, row 1300
+// include/util.php, row 1304
 "Toolkit news message" => "Повідомлення застосунку", // ai 2026-06
 
-// include/util.php, row 1314
+// include/util.php, row 1318
 "Relogin" => "Увійти знову", // ai 2026-06
 
 // include/validate.php, row 52
@@ -6370,10 +6433,10 @@ return [
 // src/AA_Plannedtask.php, row 224
 "next run" => "наступний запуск", // ai 2026-06
 
-// src/IO/Grabber/AARSS.php, row 116
+// src/IO/Grabber/AARSS.php, row 117
 "AA RSS" => "",
 
-// src/IO/Grabber/AARSS.php, row 124
+// src/IO/Grabber/AARSS.php, row 125
 "Grabs data from generic RSS or AA RSS (used for item exchange between different AA installations)" => "Отримує дані із загального RSS або AA RSS (використовується для обміну статтями між різними інсталяціями AA)", // ai 2026-06
 
 // src/IO/Grabber/CSV.php, row 66
@@ -7852,32 +7915,47 @@ return [
 // src/Util/ChangesMonitor.php, row 93
 "history (%1)" => "історія (%1)", // ai 2026-06
 
+// src/Util/ChangesMonitor.php, row 336
+"No recorded changes for this item." => "Для цієї статті немає записаних змін.", // ai 2026-06
+
 // src/Util/ChangesMonitor.php, row 360
 "1 field changed" => "змінено 1 поле", // ai 2026-06
 
 // src/Util/ChangesMonitor.php, row 360
 "%1 fields changed" => "змінено полів: %1", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 370, 382
+// src/Util/ChangesMonitor.php, row 369, 456
 "Restore" => "Відновити", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 377
+// src/Util/ChangesMonitor.php, row 383
+"(this change)" => "(ця зміна)", // ai 2026-06
+
+// src/Util/ChangesMonitor.php, row 387, 573, 577
+"Current (live)" => "Поточна (актуальна)", // ai 2026-06
+
+// src/Util/ChangesMonitor.php, row 388
+"Compare to" => "Порівняти з", // ai 2026-06
+
+// src/Util/ChangesMonitor.php, row 397
 "change %1 | uid %2 | %3 ns | resource %4" => "зміна %1 | uid %2 | %3 нс | ресурс %4", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 382
-"vs current" => "проти поточного", // ai 2026-06
+// src/Util/ChangesMonitor.php, row 449
+"View" => "Переглянути", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 391
+// src/Util/ChangesMonitor.php, row 450
+"Diff" => "Відмінності", // ai 2026-06
+
+// src/Util/ChangesMonitor.php, row 481
 "seq %1" => "послідовність %1", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 405
-"no current value" => "без поточного значення", // ai 2026-06
+// src/Util/ChangesMonitor.php, row 488
+"No change between these versions." => "Між цими версіями немає змін.", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 407
-"same as current" => "збігається з поточним", // ai 2026-06
+// src/Util/ChangesMonitor.php, row 511
+"(empty)" => "(порожньо)", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 426
-"No recorded changes for this item." => "Для цієї статті немає записаних змін.", // ai 2026-06
+// src/Util/ChangesMonitor.php, row 571
+"Original" => "Оригінал", // ai 2026-06
 
 // src/Util/Imgfunc.php, row 80
 "Cannot copy %1 to %2" => "Не вдається скопіювати %1 до %2", // ai 2026-06
@@ -7890,6 +7968,9 @@ return [
 
 // src/Util/Searchfields.php, row 183
 "-- any numeric field --" => "-- будь-яке числове поле --", // ai 2026-06
+
+// src/Util/UiPrefs.php, row 55
+"Gold" => "",
 
 // src/Widget/ChbWidget.php, row 80
 "Check Box" => "Прапорець", // ai 2026-06
@@ -7996,7 +8077,7 @@ return [
 "Radio Button" => "Перемикач (radio button)", // ai 2026-06
 
 // src/Widget/SelWidget.php, row 43
-"Select Box" => "",
+"Select Box" => "Список вибору", // ai 2026-06
 
 // src/Widget/TagWidget.php, row 44
 "Tags" => "Мітки (tags)", // ai 2026-06

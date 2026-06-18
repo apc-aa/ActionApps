@@ -256,7 +256,7 @@ return [
 "link_only......." => "",
 
 // include/constants_param_wizard.php, row 278
-"url_field" => "",
+"url_field" => "\xEF\xEE\xEB\xE5 \xF1 URL", // ai 2026-06
 
 // include/constants_param_wizard.php, row 279
 "field id if field, where external URL is stored (like hl_href.........)" => "id \xED\xE0 \xEF\xEE\xEB\xE5\xF2\xEE, \xE2 \xEA\xEE\xE5\xF2\xEE \xF1\xE5 \xF1\xFA\xF5\xF0\xE0\xED\xFF\xE2\xE0 \xE2\xFA\xED\xF8\xED\xE8\xFF\xF2 URL (\xEA\xE0\xF2\xEE hl_href.........)", // ai 2026-06
@@ -334,13 +334,13 @@ return [
 "No" => "\xCD\xE5", // ai 2026-06
 
 // include/constants_param_wizard.php, row 344
-"cond_field" => "",
+"cond_field" => "\xEF\xEE\xEB\xE5_\xF3\xF1\xEB\xEE\xE2\xE8\xE5", // ai 2026-06
 
 // include/constants_param_wizard.php, row 345
 "field to compare with the <b>condition</b> - if not filled, <i>field</i> is used" => "\xEF\xEE\xEB\xE5, \xEA\xEE\xE5\xF2\xEE \xF1\xE5 \xF1\xF0\xE0\xE2\xED\xFF\xE2\xE0 \xF1 <b>condition</b> - \xE0\xEA\xEE \xED\xE5 \xE5 \xEF\xEE\xEF\xFA\xEB\xED\xE5\xED\xEE, \xF1\xE5 \xE8\xE7\xEF\xEE\xEB\xE7\xE2\xE0 <i>\xEF\xEE\xEB\xE5\xF2\xEE</i>", // ai 2026-06
 
 // include/constants_param_wizard.php, row 350
-"skip_the_field" => "",
+"skip_the_field" => "\xEF\xF0\xEE\xEF\xF3\xF1\xED\xE8_\xEF\xEE\xEB\xE5\xF2\xEE", // ai 2026-06
 
 // include/constants_param_wizard.php, row 351
 "if set to 1, skip <i>the field</i> (print only <b>begin end</b> or <b>else</b>)" => "\xE0\xEA\xEE \xE5 \xE7\xE0\xE4\xE0\xE4\xE5\xED\xEE \xED\xE0 1, \xEF\xF0\xE5\xF1\xEA\xE0\xF7\xE0 <i>\xEF\xEE\xEB\xE5\xF2\xEE</i> (\xE8\xE7\xEF\xE8\xF1\xE2\xE0 \xF1\xE0\xEC\xEE <b>begin end</b> \xE8\xEB\xE8 <b>else</b>)", // ai 2026-06

@@ -13,79 +13,79 @@ setlocale(LC_NUMERIC, 'en_US');            // keep float format with dot (see AA
 
 return [
 
-// modules/alerts/alerts_sending.php, row 418
+// modules/alerts/alerts_sending.php, row 417
 "alerts alert" => "известия - съобщения", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 419
+// modules/alerts/alerts_sending.php, row 418
 "alerts welcome" => "известия - приветствие", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 420
+// modules/alerts/alerts_sending.php, row 419
 "slice wizard welcome" => "съветник за рубрика - приветствие", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 421
+// modules/alerts/alerts_sending.php, row 420
 "user template" => "шаблон на потребител", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 422
+// modules/alerts/alerts_sending.php, row 421
 "password change" => "смяна на парола", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 423
+// modules/alerts/alerts_sending.php, row 422
 "other" => "друго", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 433
+// modules/alerts/alerts_sending.php, row 432
 "Aliases for Alerts Alert" => "Алиаси за имейл с известия - съобщения", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 435
+// modules/alerts/alerts_sending.php, row 434
 "complete filter text" => "пълен текст на филтъра", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 436, 445
+// modules/alerts/alerts_sending.php, row 435, 444
 "howoften" => "колко често", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 437
+// modules/alerts/alerts_sending.php, row 436
 "Anonym Form URL (set in Alerts Admin - Settings)" => "URL на анонимния формуляр (задава се в Администрация на известията - Настройки)", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 438
+// modules/alerts/alerts_sending.php, row 437
 "Unsubscribe Form URL" => "URL на формуляра за отписване", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 443
+// modules/alerts/alerts_sending.php, row 442
 "Aliases for Alerts Welcome" => "Алиаси за имейл с известия - приветствие", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 446
+// modules/alerts/alerts_sending.php, row 445
 "Collection Form URL (set in Alerts Admin - Settings)" => "URL на формуляра за колекция (задава се в Администрация на известията - Настройки)", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 447
+// modules/alerts/alerts_sending.php, row 446
 "email confirmed" => "имейлът е потвърден", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 453
+// modules/alerts/alerts_sending.php, row 452
 "Aliases for Slice Wizard Welcome" => "Алиаси за приветствие на съветника за рубрика", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 455, 467
+// modules/alerts/alerts_sending.php, row 454, 466
 "Slice name" => "Име на рубриката", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 456, 468
+// modules/alerts/alerts_sending.php, row 455, 467
 "New user name" => "Име на новия потребител", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 457
+// modules/alerts/alerts_sending.php, row 456
 "New user login name" => "Потребителско име за вход на новия потребител", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 458
+// modules/alerts/alerts_sending.php, row 457
 "New user role (editor / admin)" => "Роля на новия потребител (editor / admin)", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 459
+// modules/alerts/alerts_sending.php, row 458
 "My name" => "Моето име", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 460
+// modules/alerts/alerts_sending.php, row 459
 "My email" => "Моят имейл", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 465
+// modules/alerts/alerts_sending.php, row 464
 "Aliases for User Templates (you can use also all aliases of the user)" => "Алиаси за шаблони на потребител (можете да използвате и всички алиаси на потребителя)", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 473
+// modules/alerts/alerts_sending.php, row 472
 "Aliases for Password Change email (you can use also all aliases of the user)" => "Алиаси за имейл за смяна на парола (можете да използвате и всички алиаси на потребителя)", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 475
+// modules/alerts/alerts_sending.php, row 474
 "HTML link to the password change page for current user" => "HTML връзка към страницата за смяна на парола за текущия потребител", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 476
+// modules/alerts/alerts_sending.php, row 475
 "URL parameter used for password change link in _#PWD_LINK (you can use it, if you want to use your own url for it)" => "URL параметър, използван за връзката за смяна на парола в _#PWD_LINK (можете да го използвате, ако искате да зададете собствен URL)", // ai 2026-06
 
 // modules/alerts/cf_common.php, row 41

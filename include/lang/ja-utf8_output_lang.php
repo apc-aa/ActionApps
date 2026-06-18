@@ -215,13 +215,13 @@ return [
 // include/util.php, row 950
 "Error: Missing Reading Password" => "エラー: 読み取りパスワードがありません", // ai 2026-06
 
-// include/util.php, row 1300
+// include/util.php, row 1304
 "Toolkit news message" => "アプリケーションのお知らせ", // ai 2026-06
 
-// include/util.php, row 1314
+// include/util.php, row 1318
 "Back" => "戻る", // ai 2026-06
 
-// include/util.php, row 1314
+// include/util.php, row 1318
 "Relogin" => "再ログイン", // ai 2026-06
 
 // misc/proposefieldchange.php, row 71

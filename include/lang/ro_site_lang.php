@@ -67,7 +67,7 @@ return [
 
 // modules/site/menu.php, row 53
 // modules/site/modedit.php, row 270
-"Site" => "",
+"Site" => "Sit", // ai 2026-06
 
 // modules/site/menu.php, row 78
 "Module Settings" => "Set\xE3ri modul", // ai 2026-06

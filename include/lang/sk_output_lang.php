@@ -232,13 +232,13 @@ return [
 // include/util.php, row 950
 "Error: Missing Reading Password" => "Chyba: ch\xFDba heslo pre \xE8\xEDtanie", // ai 2026-06
 
-// include/util.php, row 1300
+// include/util.php, row 1304
 "Toolkit news message" => "Nastavenia",
 
-// include/util.php, row 1314
+// include/util.php, row 1318
 "Back" => "Sp\xE4t",
 
-// include/util.php, row 1314
+// include/util.php, row 1318
 "Relogin" => "Znovu prihl\xE1si\x9D", // ai 2026-06
 
 // misc/proposefieldchange.php, row 71

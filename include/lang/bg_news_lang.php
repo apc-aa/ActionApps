@@ -9,6 +9,37 @@
 $mgettext_lang = "bg";
 
 return [
+// Runtime-translated messages - used via _mdelayed($variable), so they never appear
+// in _m('...') literals; their domains are listed in misc/mgettext/cli.php $RUNTIME_MESSAGES.
+"feed" => "\xE7\xE0\xF0\xE5\xE4\xE8", // ai 2026-06
+// End of runtime-translated messages
+
+// Unused messages - no longer found in the sources; kept commented for reference.
+// "You don't have permissions to view item history." => "\xCD\xFF\xEC\xE0\xF2\xE5 \xEF\xF0\xE0\xE2\xEE \xE4\xE0 \xEF\xF0\xE5\xE3\xEB\xE5\xE6\xE4\xE0\xF2\xE5 \xE8\xF1\xF2\xEE\xF0\xE8\xFF\xF2\xE0 \xED\xE0 \xF1\xF2\xE0\xF2\xE8\xFF\xF2\xE0.", // ai 2026-06
+// "validate" => "\xE2\xE0\xEB\xE8\xE4\xE8\xF0\xE0\xE9", // ai 2026-06
+// "RSS feeds testing page." => "\xD1\xF2\xF0\xE0\xED\xE8\xF6\xE0 \xE7\xE0 \xF2\xE5\xF1\xF2\xE2\xE0\xED\xE5 \xED\xE0 RSS \xEA\xE0\xED\xE0\xEB\xE8.", // ai 2026-06
+// "No RSS Feeds set." => "\xCD\xFF\xEC\xE0 \xE7\xE0\xE4\xE0\xE4\xE5\xED\xE8 RSS \xEA\xE0\xED\xE0\xEB\xE8.", // ai 2026-06
+// "Messages" => "\xD1\xFA\xEE\xE1\xF9\xE5\xED\xE8\xFF", // ai 2026-06
+// "Write" => "\xC7\xE0\xEF\xE8\xF8\xE8", // ai 2026-06
+// "update database" => "\xE0\xEA\xF2\xF3\xE0\xEB\xE8\xE7\xE8\xF0\xE0\xE9 \xE1\xE0\xE7\xE0\xF2\xE0 \xE4\xE0\xED\xED\xE8", // ai 2026-06
+// "Feed url" => "URL \xED\xE0 \xEA\xE0\xED\xE0\xEB\xE0", // ai 2026-06
+// "Ok : file deleted " => "Ok : \xF4\xE0\xE9\xEB\xFA\xF2 \xE5 \xE8\xE7\xF2\xF0\xE8\xF2", // ai 2026-06
+// "Error: Cannot delete file" => "\xC3\xF0\xE5\xF8\xEA\xE0: \xD4\xE0\xE9\xEB\xFA\xF2 \xED\xE5 \xEC\xEE\xE6\xE5 \xE4\xE0 \xE1\xFA\xE4\xE5 \xE8\xE7\xF2\xF0\xE8\xF2", // ai 2026-06
+// "Error: Invalid directory" => "\xC3\xF0\xE5\xF8\xEA\xE0: \xCD\xE5\xE2\xE0\xEB\xE8\xE4\xED\xE0 \xE4\xE8\xF0\xE5\xEA\xF2\xEE\xF0\xE8\xFF", // ai 2026-06
+// "Module Id" => "ID \xED\xE0 \xEC\xEE\xE4\xF3\xEB\xE0", // ai 2026-06
+// "design description (for administrators only)" => "\xEE\xEF\xE8\xF1\xE0\xED\xE8\xE5 \xED\xE0 \xE4\xE8\xE7\xE0\xE9\xED\xE0 (\xF1\xE0\xEC\xEE \xE7\xE0 \xE0\xE4\xEC\xE8\xED\xE8\xF1\xF2\xF0\xE0\xF2\xEE\xF0\xE8)", // ai 2026-06
+// "COUNT_HIT events will be used for counting item hits. After a while it will be automatically deleted." => "\xD1\xFA\xE1\xE8\xF2\xE8\xFF\xF2\xE0 COUNT_HIT \xF1\xE5 \xE8\xE7\xEF\xEE\xEB\xE7\xE2\xE0\xF2 \xE7\xE0 \xE1\xF0\xEE\xE5\xED\xE5 \xED\xE0 \xEF\xEE\xEA\xE0\xE7\xE2\xE0\xED\xE8\xFF\xF2\xE0 \xED\xE0 \xF1\xF2\xE0\xF2\xE8\xE8\xF2\xE5. \xD1\xEB\xE5\xE4 \xE8\xE7\xE2\xE5\xF1\xF2\xED\xEE \xE2\xF0\xE5\xEC\xE5 \xF2\xE5 \xF1\xE5 \xE8\xE7\xF2\xF0\xE8\xE2\xE0\xF2 \xE0\xE2\xF2\xEE\xEC\xE0\xF2\xE8\xF7\xED\xEE.", // ai 2026-06
+// "Log view" => "\xC8\xE7\xE3\xEB\xE5\xE4 Log", // ai 2026-06
+// "See searchlog=1 parameter for slice.php in FAQ: " => "\xC2\xE8\xE6\xF2\xE5 \xEF\xE0\xF0\xE0\xEC\xE5\xF2\xFA\xF0\xE0 searchlog=1 \xE7\xE0 slice.php \xE2\xFA\xE2 FAQ:", // ai 2026-06
+// "SearchLog view" => "\xC8\xE7\xE3\xEB\xE5\xE4 SearchLog", // ai 2026-06
+// "items found" => "\xED\xE0\xEC\xE5\xF0\xE5\xED\xE8 \xF1\xF2\xE0\xF2\xE8\xE8", // ai 2026-06
+// "search time" => "\xE2\xF0\xE5\xEC\xE5 \xED\xE0 \xF2\xFA\xF0\xF1\xE5\xED\xE5", // ai 2026-06
+// "addition" => "\xE4\xEE\xEF\xFA\xEB\xED\xE5\xED\xE8\xE5", // ai 2026-06
+// "Configure Fields" => "\xCD\xE0\xF1\xF2\xF0\xEE\xE9\xEA\xE0 \xED\xE0 \xEF\xEE\xEB\xE5\xF2\xE0\xF2\xE0", // ai 2026-06
+// "vs current" => "\xF1\xEF\xF0\xFF\xEC\xEE \xF2\xE5\xEA\xF3\xF9\xEE\xF2\xEE", // ai 2026-06
+// "no current value" => "\xED\xFF\xEC\xE0 \xF2\xE5\xEA\xF3\xF9\xE0 \xF1\xF2\xEE\xE9\xED\xEE\xF1\xF2", // ai 2026-06
+// "same as current" => "\xF1\xFA\xF9\xEE\xF2\xEE \xEA\xE0\xF2\xEE \xF2\xE5\xEA\xF3\xF9\xEE\xF2\xEE", // ai 2026-06
+// End of unused messages
 
 // admin/aa_cron.php, row 41
 "You do not have permission to manage Cron" => "\xCD\xFF\xEC\xE0\xF2\xE5 \xEF\xF0\xE0\xE2\xEE \xE4\xE0 \xF3\xEF\xF0\xE0\xE2\xEB\xFF\xE2\xE0\xF2\xE5 Cron", // ai 2026-06
@@ -207,7 +238,7 @@ return [
 "Sites" => "\xD1\xE0\xE9\xF2\xEE\xE2\xE5", // ai 2026-06
 
 // admin/aa_statistics.php, row 127
-// admin/aafinder.php, row 500, 513
+// admin/aafinder.php, row 499, 512
 // admin/se_inputform.php, row 291
 // include/searchlib.php, row 970
 "Slices" => "\xD0\xF3\xE1\xF0\xE8\xEA\xE8", // ai 2026-06
@@ -265,11 +296,11 @@ return [
 "Items found" => "\xCD\xE0\xEC\xE5\xF0\xE5\xED\xE8 \xF1\xF2\xE0\xF2\xE8\xE8", // ai 2026-06
 
 // admin/aa_statistics.php, row 313
-// admin/se_statistics.php, row 176
+// admin/se_statistics.php, row 179
 "No items found" => "\xCD\xFF\xEC\xE0 \xED\xE0\xEC\xE5\xF0\xE5\xED\xE8 \xF1\xF2\xE0\xF2\xE8\xE8", // ai 2026-06
 
-// admin/aa_statistics.php, row 321
-// admin/se_statistics.php, row 173
+// admin/aa_statistics.php, row 325
+// admin/se_statistics.php, row 176
 "Server configuration changes" => "\xCF\xF0\xEE\xEC\xE5\xED\xE8 \xE2 \xEA\xEE\xED\xF4\xE8\xE3\xF3\xF0\xE0\xF6\xE8\xFF\xF2\xE0 \xED\xE0 \xF1\xFA\xF0\xE2\xFA\xF0\xE0", // ai 2026-06
 
 // admin/aa_tasks.php, row 34
@@ -294,78 +325,87 @@ return [
 // admin/aa_toexecute.php, row 42
 "Scheduled Tasks" => "\xCF\xEB\xE0\xED\xE8\xF0\xE0\xED\xE8 \xE7\xE0\xE4\xE0\xF7\xE8", // ai 2026-06
 
+// admin/aa_uiprefs.php, row 30
+"You must be logged in." => "\xD2\xF0\xFF\xE1\xE2\xE0 \xE4\xE0 \xF1\xF2\xE5 \xE2\xEB\xE5\xE7\xEB\xE8 \xE2 \xF1\xE8\xF1\xF2\xE5\xEC\xE0\xF2\xE0.", // ai 2026-06
+
+// admin/aa_uiprefs.php, row 115
+"Thanks \xE2\x80\x94 your note reached the AA team." => "\xC1\xEB\xE0\xE3\xEE\xE4\xE0\xF0\xE8\xEC \x97 \xF1\xFA\xEE\xE1\xF9\xE5\xED\xE8\xE5\xF2\xEE \xE2\xE8 \xE4\xEE\xF1\xF2\xE8\xE3\xED\xE0 \xE4\xEE \xE5\xEA\xE8\xEF\xE0 \xED\xE0 AA.", // ai 2026-06
+
+// admin/aa_uiprefs.php, row 117
+"Couldn't send right now. Please email us directly: %1" => "\xC2 \xEC\xEE\xEC\xE5\xED\xF2\xE0 \xED\xE5 \xEC\xEE\xE6\xE5 \xE4\xE0 \xF1\xE5 \xE8\xE7\xEF\xF0\xE0\xF2\xE8. \xCC\xEE\xEB\xFF, \xEF\xE8\xF8\xE5\xF2\xE5 \xED\xE8 \xE4\xE8\xF0\xE5\xEA\xF2\xED\xEE: %1", // ai 2026-06
+
 // admin/aa_wizardtemplate.php, row 41
 "You do not have permission to manage Wizard Templates" => "\xCD\xFF\xEC\xE0\xF2\xE5 \xEF\xF0\xE0\xE2\xEE \xE4\xE0 \xF3\xEF\xF0\xE0\xE2\xEB\xFF\xE2\xE0\xF2\xE5 \xF8\xE0\xE1\xEB\xEE\xED\xE8 \xE7\xE0 \xF1\xFA\xE2\xE5\xF2\xED\xE8\xF6\xE8", // ai 2026-06
 
 // admin/aa_wizardtemplate.php, row 75
-// include/tv_misc.php, row 70, 71
 "Wizard Templates" => "\xD8\xE0\xE1\xEB\xEE\xED\xE8 \xED\xE0 \xF1\xFA\xE2\xE5\xF2\xED\xE8\xEA\xE0", // ai 2026-06
 
-// admin/aafinder.php, row 87
+// admin/aafinder.php, row 86
 "You don't have permissions to do search." => "\xCD\xFF\xEC\xE0\xF2\xE5 \xEF\xF0\xE0\xE2\xEE \xE4\xE0 \xF2\xFA\xF0\xF1\xE8\xF2\xE5.", // ai 2026-06
 
-// admin/aafinder.php, row 99
+// admin/aafinder.php, row 98
 "Show results with string" => "\xCF\xEE\xEA\xE0\xE7\xE2\xE0\xED\xE5 \xED\xE0 \xF0\xE5\xE7\xF3\xEB\xF2\xE0\xF2\xE8 \xF1 \xED\xE8\xE7", // ai 2026-06
 
-// admin/aafinder.php, row 101
+// admin/aafinder.php, row 100
 "Item" => "\xD1\xF2\xE0\xF2\xE8\xFF", // ai 2026-06
 
-// admin/aafinder.php, row 125
+// admin/aafinder.php, row 124
 // admin/feed_to.php, row 66
 // admin/se_fields.php, row 112
 // admin/slicedit.php, row 244
-// include/itemfunc.php, row 184
+// include/itemfunc.php, row 185
+// include/logs.php, row 528
 // include/menu.php, row 132
 // include/slice.class.php, row 468
 // include/sliceadd.php, row 52, 77
 "Slice" => "\xD0\xF3\xE1\xF0\xE8\xEA\xE0", // ai 2026-06
 
-// admin/aafinder.php, row 129
+// admin/aafinder.php, row 128
 // src/AA_Plannedtask.php, row 102
 "Module" => "\xCC\xEE\xE4\xF3\xEB", // ai 2026-06
 
-// admin/aafinder.php, row 134, 135, 136, 137
+// admin/aafinder.php, row 133, 134, 135, 136
 // include/um_util.php, row 102
 "Object" => "\xCE\xE1\xE5\xEA\xF2", // ai 2026-06
 
-// admin/aafinder.php, row 140
-// include/itemfunc.php, row 273
-// include/logs.php, row 204
+// admin/aafinder.php, row 139
+// include/itemfunc.php, row 274
+// include/logs.php, row 234
 // src/AA_Plannedtask.php, row 117
 "Log" => "\xC4\xED\xE5\xE2\xED\xE8\xEA", // ai 2026-06
 
-// admin/aafinder.php, row 162
+// admin/aafinder.php, row 161
 // include/sliceadd.php, row 36
 // include/slicedit.php, row 150
 "You do not have permissions to add slice" => "\xCD\xFF\xEC\xE0\xF2\xE5 \xEF\xF0\xE0\xE2\xEE \xE4\xE0 \xE4\xEE\xE1\xE0\xE2\xFF\xF2\xE5 \xF0\xF3\xE1\xF0\xE8\xEA\xE0", // ai 2026-06
 
-// admin/aafinder.php, row 168
+// admin/aafinder.php, row 167
 // include/menu_util.php, row 79
 "AA finder" => "AA \xF2\xFA\xF0\xF1\xE0\xF7\xEA\xE0", // ai 2026-06
 
-// admin/aafinder.php, row 248
+// admin/aafinder.php, row 247
 "Jump" => "\xCE\xF2\xE8\xE4\xE8", // ai 2026-06
 
-// admin/aafinder.php, row 467, 519
-// admin/itemhistory.php, row 39
-// include/itemfunc.php, row 81, 82, 253, 375
-// include/menu.php, row 162
+// admin/aafinder.php, row 466, 518
+// admin/itemhistory.php, row 43
+// include/itemfunc.php, row 83, 84, 254, 376
+// include/menu.php, row 161
 // include/menu_util.php, row 82
 "History" => "\xC8\xF1\xF2\xEE\xF0\xE8\xFF", // ai 2026-06
 
-// admin/aafinder.php, row 479
+// admin/aafinder.php, row 478
 "Manage" => "\xD3\xEF\xF0\xE0\xE2\xEB\xE5\xED\xE8\xE5", // ai 2026-06
 
-// admin/aafinder.php, row 482
+// admin/aafinder.php, row 481
 "Manage User:" => "\xD3\xEF\xF0\xE0\xE2\xEB\xE5\xED\xE8\xE5 \xED\xE0 \xEF\xEE\xF2\xF0\xE5\xE1\xE8\xF2\xE5\xEB:", // ai 2026-06
 
-// admin/aafinder.php, row 484, 490, 506, 534, 547
+// admin/aafinder.php, row 483, 489, 505, 533, 546
 "Go!" => "\xCD\xE0\xEF\xF0\xE5\xE4!", // ai 2026-06
 
-// admin/aafinder.php, row 488
+// admin/aafinder.php, row 487
 "Manage Group:" => "\xD3\xEF\xF0\xE0\xE2\xEB\xE5\xED\xE8\xE5 \xED\xE0 \xE3\xF0\xF3\xEF\xE0:", // ai 2026-06
 
-// admin/aafinder.php, row 494, 524
+// admin/aafinder.php, row 493, 523
 // admin/um_gedit.php, row 208, 325
 // admin/um_uedit.php, row 249
 // include/se_users.php, row 131, 136
@@ -376,76 +416,76 @@ return [
 // src/Widget/GpsWidget.php, row 434
 "Search" => "\xD2\xFA\xF0\xF1\xE5\xED\xE5", // ai 2026-06
 
-// admin/aafinder.php, row 497
+// admin/aafinder.php, row 496
 "Find in" => "\xD2\xFA\xF0\xF1\xE5\xED\xE5 \xE2", // ai 2026-06
 
-// admin/aafinder.php, row 498
+// admin/aafinder.php, row 497
 "ID & SEO" => "ID \xE8 SEO", // ai 2026-06
 
-// admin/aafinder.php, row 499, 512
-// include/itemfunc.php, row 182
-// include/menu.php, row 144
+// admin/aafinder.php, row 498, 511
+// include/itemfunc.php, row 183
+// include/menu.php, row 143
 "Views" => "\xC8\xE7\xE3\xEB\xE5\xE4\xE8", // ai 2026-06
 
-// admin/aafinder.php, row 501, 514
+// admin/aafinder.php, row 500, 513
 // admin/anonym_wizard.php, row 216
 // include/exporter.class.php, row 522
-// include/itemfunc.php, row 350
+// include/itemfunc.php, row 351
 // include/menu.php, row 133
 // include/searchlib.php, row 167
 "Fields" => "\xCF\xEE\xEB\xE5\xF2\xE0", // ai 2026-06
 
-// admin/aafinder.php, row 502, 515
+// admin/aafinder.php, row 501, 514
 "Site spots" => "\xCC\xE5\xF1\xF2\xE0 \xE2 \xF1\xE0\xE9\xF2\xE0", // ai 2026-06
 
-// admin/aafinder.php, row 503, 520
+// admin/aafinder.php, row 502, 519
 "Discussion comments" => "\xC4\xE8\xF1\xEA\xF3\xF1\xE8\xEE\xED\xED\xE8 \xEA\xEE\xEC\xE5\xED\xF2\xE0\xF0\xE8", // ai 2026-06
 
-// admin/aafinder.php, row 511
+// admin/aafinder.php, row 510
 "Search and Replace in" => "\xD2\xFA\xF0\xF1\xE5\xED\xE5 \xE8 \xE7\xE0\xEC\xFF\xED\xE0 \xE2", // ai 2026-06
 
-// admin/aafinder.php, row 516
+// admin/aafinder.php, row 515
 "Objects" => "\xCE\xE1\xE5\xEA\xF2\xE8", // ai 2026-06
 
-// admin/aafinder.php, row 517
+// admin/aafinder.php, row 516
 "Items from slices with 'Slice Type' like Code... " => "\xD1\xF2\xE0\xF2\xE8\xE8 \xEE\xF2 \xF0\xF3\xE1\xF0\xE8\xEA\xE8, \xF7\xE8\xE9\xF2\xEE 'Slice Type' \xE5 Code...", // ai 2026-06
 
-// admin/aafinder.php, row 517
+// admin/aafinder.php, row 516
 "Code Items" => "\xCA\xEE\xE4\xEE\xE2\xE8 \xF1\xF2\xE0\xF2\xE8\xE8", // ai 2026-06
 
-// admin/aafinder.php, row 518
+// admin/aafinder.php, row 517
 "All Items" => "\xC2\xF1\xE8\xF7\xEA\xE8 \xF1\xF2\xE0\xF2\xE8\xE8", // ai 2026-06
 
-// admin/aafinder.php, row 522
+// admin/aafinder.php, row 521
 "minimum 2 characters for replace function" => "\xEC\xE8\xED\xE8\xEC\xF3\xEC 2 \xE7\xED\xE0\xEA\xE0 \xE7\xE0 \xF4\xF3\xED\xEA\xF6\xE8\xFF\xF2\xE0 \xE7\xE0 \xE7\xE0\xEC\xFF\xED\xE0", // ai 2026-06
 
-// admin/aafinder.php, row 523
+// admin/aafinder.php, row 522
 "minimum 6 characters for replace function (or use {#AAA} value which will be replaced by empty string)" => "\xEC\xE8\xED\xE8\xEC\xF3\xEC 6 \xE7\xED\xE0\xEA\xE0 \xE7\xE0 \xF4\xF3\xED\xEA\xF6\xE8\xFF\xF2\xE0 \xE7\xE0 \xE7\xE0\xEC\xFF\xED\xE0 (\xE8\xEB\xE8 \xE8\xE7\xEF\xEE\xEB\xE7\xE2\xE0\xE9\xF2\xE5 \xF1\xF2\xEE\xE9\xED\xEE\xF1\xF2\xF2\xE0 {#AAA}, \xEA\xEE\xFF\xF2\xEE \xF9\xE5 \xE1\xFA\xE4\xE5 \xE7\xE0\xEC\xE5\xED\xE5\xED\xE0 \xF1 \xEF\xF0\xE0\xE7\xE5\xED \xED\xE8\xE7)", // ai 2026-06
 
-// admin/aafinder.php, row 525
+// admin/aafinder.php, row 524
 "Replace!" => "\xC7\xE0\xEC\xE5\xED\xE8!", // ai 2026-06
 
-// admin/aafinder.php, row 532
+// admin/aafinder.php, row 531
 "Get all information about the ITEM" => "\xCF\xEE\xEB\xF3\xF7\xE0\xE2\xE0\xED\xE5 \xED\xE0 \xF6\xFF\xEB\xE0\xF2\xE0 \xE8\xED\xF4\xEE\xF0\xEC\xE0\xF6\xE8\xFF \xE7\xE0 \xD1\xD2\xC0\xD2\xC8\xDF\xD2\xC0", // ai 2026-06
 
-// admin/aafinder.php, row 539
+// admin/aafinder.php, row 538
 "Shortcut to edit ITEM" => "\xCF\xF0\xFF\xEA \xEF\xFA\xF2 \xE7\xE0 \xF0\xE5\xE4\xE0\xEA\xF2\xE8\xF0\xE0\xED\xE5 \xED\xE0 \xD1\xD2\xC0\xD2\xC8\xDF", // ai 2026-06
 
-// admin/aafinder.php, row 542
+// admin/aafinder.php, row 541
 // include/searchbar.class.php, row 543
 // include/searchlib.php, row 47, 48, 124, 133
 "contains" => "\xF1\xFA\xE4\xFA\xF0\xE6\xE0", // ai 2026-06
 
-// admin/aafinder.php, row 543
+// admin/aafinder.php, row 542
 // include/searchbar.class.php, row 549
 // include/searchlib.php, row 124, 133
 "is" => "\xE5", // ai 2026-06
 
-// admin/aafinder.php, row 544
+// admin/aafinder.php, row 543
 // admin/se_profile.php, row 98
 "Item number" => "\xC1\xF0\xEE\xE9 \xF1\xF2\xE0\xF2\xE8\xE8", // ai 2026-06
 
-// admin/aafinder.php, row 545
+// admin/aafinder.php, row 544
 "seo............. =" => "",
 
 // admin/aarsstest.php, row 37
@@ -471,6 +511,7 @@ return [
 
 // admin/anonym_wizard.php, row 127
 // admin/write_mail.php, row 257
+// include/menu_util.php, row 599
 // include/stringexpand.php, row 9646, 9726
 "Send" => "\xC8\xE7\xEF\xF0\xE0\xF2\xE8", // ai 2026-06
 
@@ -526,7 +567,7 @@ return [
 // admin/sliceexp_text.php, row 364
 // include/form.class.php, row 183
 // include/searchlib.php, row 357
-// src/Util/ChangesMonitor.php, row 381
+// src/Util/ChangesMonitor.php, row 455
 "Field" => "\xCF\xEE\xEB\xE5", // ai 2026-06
 
 // admin/anonym_wizard.php, row 221
@@ -536,7 +577,6 @@ return [
 // admin/se_javascript.php, row 90
 // admin/slicedit.php, row 277
 // include/constants.php, row 409
-// include/tableviews.php, row 64, 80
 "Id" => "ID", // ai 2026-06
 
 // admin/anonym_wizard.php, row 223
@@ -613,7 +653,7 @@ return [
 "Author" => "\xC0\xE2\xF2\xEE\xF0", // ai 2026-06
 
 // admin/discedit.php, row 130
-// include/logs.php, row 396
+// include/logs.php, row 442
 "IP Address" => "IP \xE0\xE4\xF0\xE5\xF1", // ai 2026-06
 
 // admin/discedit.php, row 131
@@ -623,7 +663,6 @@ return [
 
 // admin/discedit.php, row 132
 // admin/related_sel.php, row 148
-// admin/rsstest.php, row 96
 // admin/se_views.php, row 132
 // src/Manager.php, row 201
 // src/Optimize/AbstractOptimize.php, row 127
@@ -665,7 +704,7 @@ return [
 // include/formutil.php, row 1766, 1903
 // include/menu_util.php, row 61
 // include/profile.php, row 67
-// include/searchbar.class.php, row 1076
+// include/searchbar.class.php, row 1085
 // include/um_gsrch.php, row 53
 // src/Manageraction/Object_Delete.php, row 24
 // src/Manageraction/Table_Row_Delete.php, row 23
@@ -673,9 +712,9 @@ return [
 "Delete" => "\xC8\xE7\xF2\xF0\xE8\xE9", // ai 2026-06
 
 // admin/discedit.php, row 169
-// include/adminpage.class.php, row 330
+// include/adminpage.class.php, row 331
 // include/se_users.php, row 121
-// include/util.php, row 1314
+// include/util.php, row 1318
 "Back" => "\xCD\xE0\xE7\xE0\xE4", // ai 2026-06
 
 // admin/discedit.php, row 170
@@ -732,7 +771,7 @@ return [
 "Export Item to Selected Slice" => "\xC5\xEA\xF1\xEF\xEE\xF0\xF2 \xED\xE0 \xF1\xF2\xE0\xF2\xE8\xFF\xF2\xE0 \xE2 \xE8\xE7\xE1\xF0\xE0\xED\xE0 \xF0\xF3\xE1\xF0\xE8\xEA\xE0", // ai 2026-06
 
 // admin/feed_to.php, row 67
-// include/itemfunc.php, row 152
+// include/itemfunc.php, row 153
 "Holding bin" => "\xC8\xE7\xF7\xE0\xEA\xE2\xE0\xF9\xE8", // ai 2026-06
 
 // admin/feed_to.php, row 68
@@ -740,8 +779,8 @@ return [
 // admin/se_filters.php, row 191
 // admin/slicedit.php, row 139, 145
 // include/exporter.class.php, row 483
-// include/menu.php, row 188
-// include/menu_util.php, row 120
+// include/menu.php, row 187
+// include/menu_util.php, row 119
 // src/Module/Poll/Menu.php, row 61
 "Active" => "\xC0\xEA\xF2\xE8\xE2\xED\xE8", // ai 2026-06
 
@@ -771,7 +810,7 @@ return [
 
 // admin/fileman.php, row 114
 // include/filedit.php, row 66
-// include/menu.php, row 166
+// include/menu.php, row 165
 "File Manager" => "\xD4\xE0\xE9\xEB\xEE\xE2 \xEC\xE5\xED\xE8\xE4\xE6\xFA\xF0", // ai 2026-06
 
 // admin/fileman.php, row 116
@@ -830,14 +869,12 @@ return [
 // include/menu.php, row 82
 "Add Item" => "\xC4\xEE\xE1\xE0\xE2\xFF\xED\xE5 \xED\xE0 \xF1\xF2\xE0\xF2\xE8\xFF", // ai 2026-06
 
-// admin/itemhistory.php, row 24
-"You don't have permissions to view item history." => "\xCD\xFF\xEC\xE0\xF2\xE5 \xEF\xF0\xE0\xE2\xEE \xE4\xE0 \xEF\xF0\xE5\xE3\xEB\xE5\xE6\xE4\xE0\xF2\xE5 \xE8\xF1\xF2\xEE\xF0\xE8\xFF\xF2\xE0 \xED\xE0 \xF1\xF2\xE0\xF2\xE8\xFF\xF2\xE0.", // ai 2026-06
-
-// admin/itemhistory.php, row 32
+// admin/itemhistory.php, row 28
 // admin/iteminfo.php, row 29
 // admin/itemstats.php, row 31
 "Item not found." => "\xD1\xF2\xE0\xF2\xE8\xFF\xF2\xE0 \xED\xE5 \xE5 \xED\xE0\xEC\xE5\xF0\xE5\xED\xE0.", // ai 2026-06
 
+// admin/itemhistory.php, row 36
 // admin/iteminfo.php, row 36
 "You have no rights to this item." => "\xCD\xFF\xEC\xE0\xF2\xE5 \xEF\xF0\xE0\xE2\xE0 \xE2\xFA\xF0\xF5\xF3 \xF2\xE0\xE7\xE8 \xF1\xF2\xE0\xF2\xE8\xFF.", // ai 2026-06
 
@@ -849,8 +886,8 @@ return [
 "You don't have permissions to view item statistics." => "\xCD\xFF\xEC\xE0\xF2\xE5 \xEF\xF0\xE0\xE2\xEE \xE4\xE0 \xEF\xF0\xE5\xE3\xEB\xE5\xE6\xE4\xE0\xF2\xE5 \xF1\xF2\xE0\xF2\xE8\xF1\xF2\xE8\xEA\xE0\xF2\xE0 \xED\xE0 \xF1\xF2\xE0\xF2\xE8\xFF\xF2\xE0.", // ai 2026-06
 
 // admin/itemstats.php, row 38
-// include/itemfunc.php, row 86, 456
-// include/menu.php, row 163
+// include/itemfunc.php, row 88, 457
+// include/menu.php, row 162
 // include/menu_util.php, row 81
 // src/Util/Adminlink.php, row 119
 "Statistics" => "\xD1\xF2\xE0\xF2\xE8\xF1\xF2\xE8\xEA\xE0", // ai 2026-06
@@ -907,48 +944,11 @@ return [
 // admin/related_sel.php, row 176
 "Editor window - item manager, related selection window" => "ActionApps - \xC8\xE7\xE1\xEE\xF0 \xED\xE0 \xF1\xE2\xFA\xF0\xE7\xE0\xED\xE8 \xF1\xF2\xE0\xF2\xE8\xE8", // ai 2026-06
 
-// admin/rsstest.php, row 50
-"feed" => "\xE7\xE0\xF0\xE5\xE4\xE8", // ai 2026-06
-
-// admin/rsstest.php, row 51
-"validate" => "\xE2\xE0\xEB\xE8\xE4\xE8\xF0\xE0\xE9", // ai 2026-06
-
-// admin/rsstest.php, row 52
-// include/stringexpand.php, row 7900
-"show" => "\xEF\xEE\xEA\xE0\xE6\xE8", // ai 2026-06
-
-// admin/rsstest.php, row 85, 86, 136
-"RSS Feed import test" => "\xD2\xE5\xF1\xF2 \xE7\xE0 \xE8\xEC\xEF\xEE\xF0\xF2 \xED\xE0 RSS \xEA\xE0\xED\xE0\xEB", // ai 2026-06
-
-// admin/rsstest.php, row 87
-"RSS feeds testing page." => "\xD1\xF2\xF0\xE0\xED\xE8\xF6\xE0 \xE7\xE0 \xF2\xE5\xF1\xF2\xE2\xE0\xED\xE5 \xED\xE0 RSS \xEA\xE0\xED\xE0\xEB\xE8.", // ai 2026-06
-
-// admin/rsstest.php, row 89
-"No RSS Feeds set." => "\xCD\xFF\xEC\xE0 \xE7\xE0\xE4\xE0\xE4\xE5\xED\xE8 RSS \xEA\xE0\xED\xE0\xEB\xE8.", // ai 2026-06
-
-// admin/rsstest.php, row 100
-"Messages" => "\xD1\xFA\xEE\xE1\xF9\xE5\xED\xE8\xFF", // ai 2026-06
-
-// admin/rsstest.php, row 106
-"Write" => "\xC7\xE0\xEF\xE8\xF8\xE8", // ai 2026-06
-
-// admin/rsstest.php, row 107
-"update database" => "\xE0\xEA\xF2\xF3\xE0\xEB\xE8\xE7\xE8\xF0\xE0\xE9 \xE1\xE0\xE7\xE0\xF2\xE0 \xE4\xE0\xED\xED\xE8", // ai 2026-06
-
-// admin/rsstest.php, row 113
-"Feed url" => "URL \xED\xE0 \xEA\xE0\xED\xE0\xEB\xE0", // ai 2026-06
-
-// admin/rsstest.php, row 117
-// admin/se_inter_import.php, row 98
-"Node" => "\xC2\xFA\xE7\xE5\xEB", // ai 2026-06
-
-// admin/rsstest.php, row 121
-// include/feeding.php, row 464, 470, 527
-"Local slice" => "\xCB\xEE\xEA\xE0\xEB\xED\xE0 \xF0\xF3\xE1\xF0\xE8\xEA\xE0", // ai 2026-06
-
-// admin/rsstest.php, row 130
-// admin/tabledit.php, row 78
+// admin/rsstest.php, row 36
 "You do not have permissions to access this page" => "\xCD\xFF\xEC\xE0\xF2\xE5 \xEF\xF0\xE0\xE2\xEE \xED\xE0 \xE4\xEE\xF1\xF2\xFA\xEF \xE4\xEE \xF2\xE0\xE7\xE8 \xF1\xF2\xF0\xE0\xED\xE8\xF6\xE0", // ai 2026-06
+
+// admin/rsstest.php, row 46
+"RSS Feed import test" => "\xD2\xE5\xF1\xF2 \xE7\xE0 \xE8\xEC\xEF\xEE\xF0\xF2 \xED\xE0 RSS \xEA\xE0\xED\xE0\xEB", // ai 2026-06
 
 // admin/se_admin.php, row 72
 "You have no permission to set configuration parameters of this slice" => "\xCD\xFF\xEC\xE0\xF2\xE5 \xEF\xF0\xE0\xE2\xEE \xE4\xE0 \xE7\xE0\xE4\xE0\xE2\xE0\xF2\xE5 \xEA\xEE\xED\xF4\xE8\xE3\xF3\xF0\xE0\xF6\xE8\xEE\xED\xED\xE8\xF2\xE5 \xEF\xE0\xF0\xE0\xEC\xE5\xF2\xF0\xE8 \xED\xE0 \xF2\xE0\xE7\xE8 \xF0\xF3\xE1\xF0\xE8\xEA\xE0", // ai 2026-06
@@ -956,7 +956,6 @@ return [
 // admin/se_admin.php, row 81, 173
 // admin/se_compact.php, row 94, 238
 // include/constants.php, row 605, 655, 675, 729, 764, 795, 819, 862, 891, 917, 951
-// include/tableviews.php, row 107
 "Top HTML" => "\xC3\xEE\xF0\xE5\xED HTML", // ai 2026-06
 
 // admin/se_admin.php, row 82, 176
@@ -965,7 +964,6 @@ return [
 // admin/se_admin.php, row 83, 179
 // admin/se_compact.php, row 95, 248
 // include/constants.php, row 610, 657, 677, 733, 766, 797, 822, 867, 893, 922, 956
-// include/tableviews.php, row 115
 "Bottom HTML" => "\xC4\xEE\xEB\xE5\xED HTML", // ai 2026-06
 
 // admin/se_admin.php, row 84, 182
@@ -998,6 +996,7 @@ return [
 // admin/se_compact.php, row 228
 // admin/se_fulltext.php, row 153
 // admin/se_inputform.php, row 187, 439
+// src/Util/UiPrefs.php, row 56
 "Default" => "\xCF\xEE \xEF\xEE\xE4\xF0\xE0\xE7\xE1\xE8\xF0\xE0\xED\xE5", // ai 2026-06
 
 // admin/se_admin.php, row 171
@@ -1130,8 +1129,7 @@ return [
 // include/constedit.php, row 73
 // include/fileman.php, row 31
 // include/se_users.php, row 173
-// include/searchbar.class.php, row 722
-// include/tableviews.php, row 65, 97
+// include/searchbar.class.php, row 731
 // include/um_gedit.php, row 31
 // src/AA_Plannedtask.php, row 102
 // src/Optimize/AbstractOptimize.php, row 125
@@ -1277,6 +1275,7 @@ return [
 
 // admin/se_csv_import.php, row 236, 241
 // include/filedit.php, row 66
+// include/logs.php, row 543
 "File" => "\xD4\xE0\xE9\xEB", // ai 2026-06
 
 // admin/se_csv_import.php, row 237, 242
@@ -1286,14 +1285,14 @@ return [
 
 // admin/se_csv_import.php, row 238, 243
 // admin/se_inputform.php, row 471, 472
-// include/itemfunc.php, row 589, 678, 702
+// include/itemfunc.php, row 590, 679, 703
 "Text" => "\xD2\xE5\xEA\xF1\xF2", // ai 2026-06
 
 // admin/se_csv_import.php, row 251
 "Source of CSV data" => "\xC8\xE7\xF2\xEE\xF7\xED\xE8\xEA \xED\xE0 CSV \xE4\xE0\xED\xED\xE8\xF2\xE5", // ai 2026-06
 
 // admin/se_csv_import.php, row 275
-// admin/se_csv_import2.php, row 374
+// admin/se_csv_import2.php, row 373
 // src/Manageraction/Item_Preview.php, row 11
 "Preview" => "\xCF\xF0\xE5\xE3\xEB\xE5\xE4", // ai 2026-06
 
@@ -1319,133 +1318,125 @@ return [
 // admin/se_csv_import2.php, row 284
 "Ok: Item %1 stored" => "Ok: \xD1\xF2\xE0\xF2\xE8\xFF %1 \xE5 \xE7\xE0\xEF\xE8\xF1\xE0\xED\xE0", // ai 2026-06
 
-// admin/se_csv_import2.php, row 300
-// include/files.class.php, row 298
-"Ok : file deleted " => "Ok : \xF4\xE0\xE9\xEB\xFA\xF2 \xE5 \xE8\xE7\xF2\xF0\xE8\xF2", // ai 2026-06
-
-// admin/se_csv_import2.php, row 302
-// include/files.class.php, row 300
-"Error: Cannot delete file" => "\xC3\xF0\xE5\xF8\xEA\xE0: \xD4\xE0\xE9\xEB\xFA\xF2 \xED\xE5 \xEC\xEE\xE6\xE5 \xE4\xE0 \xE1\xFA\xE4\xE5 \xE8\xE7\xF2\xF0\xE8\xF2", // ai 2026-06
-
-// admin/se_csv_import2.php, row 306
+// admin/se_csv_import2.php, row 305
 "Added to slice" => "\xC4\xEE\xE1\xE0\xE2\xE5\xED\xEE \xE2 \xF0\xF3\xE1\xF0\xE8\xEA\xE0\xF2\xE0", // ai 2026-06
 
-// admin/se_csv_import2.php, row 328
+// admin/se_csv_import2.php, row 327
 "Mapping preview" => "\xCF\xF0\xE5\xE3\xEB\xE5\xE4 \xED\xE0 \xF1\xFA\xEF\xEE\xF1\xF2\xE0\xE2\xFF\xED\xE5\xF2\xEE", // ai 2026-06
 
-// admin/se_csv_import2.php, row 379
+// admin/se_csv_import2.php, row 378
 "Finish" => "\xC7\xE0\xE2\xFA\xF0\xF8\xE8", // ai 2026-06
 
-// admin/se_csv_import2.php, row 384
-// include/searchbar.class.php, row 719
+// admin/se_csv_import2.php, row 383
+// include/searchbar.class.php, row 728
 // src/Widget/MflWidget.php, row 120
 // src/Widget/RioWidget.php, row 124
 // src/Widget/TxtWidget.php, row 109
 // src/Widget/Widget.php, row 416
 "Save" => "\xC7\xE0\xEF\xE0\xE7\xE8", // ai 2026-06
 
-// admin/se_csv_import2.php, row 389
+// admin/se_csv_import2.php, row 388
 "Load" => "\xC7\xE0\xF0\xE5\xE4\xE8", // ai 2026-06
 
-// admin/se_csv_import2.php, row 399
+// admin/se_csv_import2.php, row 398
 "Mapping settings" => "\xCD\xE0\xF1\xF2\xF0\xEE\xE9\xEA\xE8 \xED\xE0 \xF1\xFA\xEF\xEE\xF1\xF2\xE0\xE2\xFF\xED\xE5\xF2\xEE", // ai 2026-06
 
-// admin/se_csv_import2.php, row 402
+// admin/se_csv_import2.php, row 401
 // admin/se_filters.php, row 190
 // admin/se_mapping.php, row 181
 "To" => "\xC4\xEE", // ai 2026-06
 
-// admin/se_csv_import2.php, row 403
+// admin/se_csv_import2.php, row 402
 // admin/se_filters.php, row 189
 // admin/se_mapping.php, row 182
 // include/tv_email.php, row 159
 "From" => "\xCE\xF2", // ai 2026-06
 
-// admin/se_csv_import2.php, row 404
+// admin/se_csv_import2.php, row 403
 // admin/search_replace.php, row 178
 // include/metabase.class.php, row 1577
 // include/statestore.php, row 975, 1289
 // src/AA_Plannedtask.php, row 102
 "Action" => "\xC4\xE5\xE9\xF1\xF2\xE2\xE8\xE5", // ai 2026-06
 
-// admin/se_csv_import2.php, row 405
+// admin/se_csv_import2.php, row 404
 "Html" => "HTML", // ai 2026-06
 
-// admin/se_csv_import2.php, row 406
+// admin/se_csv_import2.php, row 405
 "Action parameters" => "\xCF\xE0\xF0\xE0\xEC\xE5\xF2\xF0\xE8 \xED\xE0 \xE4\xE5\xE9\xF1\xF2\xE2\xE8\xE5\xF2\xEE", // ai 2026-06
 
-// admin/se_csv_import2.php, row 407
+// admin/se_csv_import2.php, row 406
 "Parameter wizard" => "\xD1\xFA\xE2\xE5\xF2\xED\xE8\xEA \xE7\xE0 \xEF\xE0\xF0\xE0\xEC\xE5\xF2\xF0\xE8", // ai 2026-06
 
-// admin/se_csv_import2.php, row 432
+// admin/se_csv_import2.php, row 431
 "Import options" => "\xCD\xE0\xF1\xF2\xF0\xEE\xE9\xEA\xE8 \xED\xE0 \xE8\xEC\xEF\xEE\xF0\xF2\xE0", // ai 2026-06
 
-// admin/se_csv_import2.php, row 447
+// admin/se_csv_import2.php, row 446
 "Map item id from" => "\xD1\xFA\xEF\xEE\xF1\xF2\xE0\xE2\xE8 id \xED\xE0 \xF1\xF2\xE0\xF2\xE8\xFF\xF2\xE0 \xEE\xF2", // ai 2026-06
 
-// admin/se_csv_import2.php, row 451
+// admin/se_csv_import2.php, row 450
 "unpacked long id (32 characters)" => "\xED\xE5\xEE\xEF\xE0\xEA\xEE\xE2\xE0\xED\xEE \xE4\xFA\xEB\xE3\xEE id (32 \xE7\xED\xE0\xEA\xE0)", // ai 2026-06
 
-// admin/se_csv_import2.php, row 452
+// admin/se_csv_import2.php, row 451
 "packed long id (16 characters)" => "\xEE\xEF\xE0\xEA\xEE\xE2\xE0\xED\xEE \xE4\xFA\xEB\xE3\xEE id (16 \xE7\xED\xE0\xEA\xE0)", // ai 2026-06
 
-// admin/se_csv_import2.php, row 453
+// admin/se_csv_import2.php, row 452
 "string to be converted (string2id) - with param:" => "\xED\xE8\xE7 \xE7\xE0 \xEF\xF0\xE5\xEE\xE1\xF0\xE0\xE7\xF3\xE2\xE0\xED\xE5 (string2id) - \xF1 \xEF\xE0\xF0\xE0\xEC\xE5\xF2\xFA\xF0:", // ai 2026-06
 
-// admin/se_csv_import2.php, row 461
+// admin/se_csv_import2.php, row 460
 "Select, how to store the items" => "\xC8\xE7\xE1\xE5\xF0\xE5\xF2\xE5 \xEA\xE0\xEA \xE4\xE0 \xF1\xE5 \xE7\xE0\xEF\xE8\xF8\xE0\xF2 \xF1\xF2\xE0\xF2\xE8\xE8\xF2\xE5", // ai 2026-06
 
-// admin/se_csv_import2.php, row 463
+// admin/se_csv_import2.php, row 462
 "Do not store the item" => "\xCD\xE5 \xE7\xE0\xEF\xE8\xF1\xE2\xE0\xE9 \xF1\xF2\xE0\xF2\xE8\xFF\xF2\xE0", // ai 2026-06
 
-// admin/se_csv_import2.php, row 464
+// admin/se_csv_import2.php, row 463
 "Store the item with new id" => "\xC7\xE0\xEF\xE8\xF8\xE8 \xF1\xF2\xE0\xF2\xE8\xFF\xF2\xE0 \xF1 \xED\xEE\xE2\xEE id", // ai 2026-06
 
-// admin/se_csv_import2.php, row 465
+// admin/se_csv_import2.php, row 464
 "Update the item (overwrite)" => "\xC0\xEA\xF2\xF3\xE0\xEB\xE8\xE7\xE8\xF0\xE0\xE9 \xF1\xF2\xE0\xF2\xE8\xFF\xF2\xE0 (\xEF\xF0\xE5\xE7\xE0\xEF\xE8\xF1)", // ai 2026-06
 
-// admin/se_csv_import2.php, row 466
+// admin/se_csv_import2.php, row 465
 "Add the values in parallel to current values (the multivalues are stored, where possible)" => "\xC4\xEE\xE1\xE0\xE2\xE8 \xF1\xF2\xEE\xE9\xED\xEE\xF1\xF2\xE8\xF2\xE5 \xF3\xF1\xEF\xEE\xF0\xE5\xE4\xED\xEE \xEA\xFA\xEC \xF2\xE5\xEA\xF3\xF9\xE8\xF2\xE5 \xF1\xF2\xEE\xE9\xED\xEE\xF1\xF2\xE8 (\xEA\xFA\xE4\xE5\xF2\xEE \xE5 \xE2\xFA\xE7\xEC\xEE\xE6\xED\xEE, \xF1\xE5 \xE7\xE0\xEF\xE8\xF1\xE2\xE0\xF2 \xEC\xED\xEE\xE3\xEE\xEA\xF0\xE0\xF2\xED\xE8 \xF1\xF2\xEE\xE9\xED\xEE\xF1\xF2\xE8)", // ai 2026-06
 
-// admin/se_csv_import2.php, row 467
+// admin/se_csv_import2.php, row 466
 "Rewrite only the fields, for which the action is defined and compute all computed fields, ..." => "\xCF\xF0\xE5\xE7\xE0\xEF\xE8\xF8\xE8 \xF1\xE0\xEC\xEE \xEF\xEE\xEB\xE5\xF2\xE0\xF2\xE0, \xE7\xE0 \xEA\xEE\xE8\xF2\xEE \xE5 \xE4\xE5\xF4\xE8\xED\xE8\xF0\xE0\xED\xEE \xE4\xE5\xE9\xF1\xF2\xE2\xE8\xE5, \xE8 \xE8\xE7\xF7\xE8\xF1\xEB\xE8 \xE2\xF1\xE8\xF7\xEA\xE8 \xE8\xE7\xF7\xE8\xF1\xEB\xFF\xE5\xEC\xE8 \xEF\xEE\xEB\xE5\xF2\xE0, ...", // ai 2026-06
 
-// admin/se_csv_import2.php, row 468
+// admin/se_csv_import2.php, row 467
 "Rewrite only the fields, for which the action is defined (do not update lastedit, computed, ... fields = Silent)" => "\xCF\xF0\xE5\xE7\xE0\xEF\xE8\xF8\xE8 \xF1\xE0\xEC\xEE \xEF\xEE\xEB\xE5\xF2\xE0\xF2\xE0, \xE7\xE0 \xEA\xEE\xE8\xF2\xEE \xE5 \xE4\xE5\xF4\xE8\xED\xE8\xF0\xE0\xED\xEE \xE4\xE5\xE9\xF1\xF2\xE2\xE8\xE5 (\xE1\xE5\xE7 \xE0\xEA\xF2\xF3\xE0\xEB\xE8\xE7\xE8\xF0\xE0\xED\xE5 \xED\xE0 lastedit, \xE8\xE7\xF7\xE8\xF1\xEB\xFF\xE5\xEC\xE8, ... \xEF\xEE\xEB\xE5\xF2\xE0 = \xF2\xE8\xF5 \xF0\xE5\xE6\xE8\xEC)", // ai 2026-06
 
-// admin/se_csv_import2.php, row 469
+// admin/se_csv_import2.php, row 468
 "Rewrite only the fields, for which the action is defined and its value is not empty (computed fields will be computed)" => "\xCF\xF0\xE5\xE7\xE0\xEF\xE8\xF8\xE8 \xF1\xE0\xEC\xEE \xEF\xEE\xEB\xE5\xF2\xE0\xF2\xE0, \xE7\xE0 \xEA\xEE\xE8\xF2\xEE \xE5 \xE4\xE5\xF4\xE8\xED\xE8\xF0\xE0\xED\xEE \xE4\xE5\xE9\xF1\xF2\xE2\xE8\xE5 \xE8 \xF1\xF2\xEE\xE9\xED\xEE\xF1\xF2\xF2\xE0 \xE8\xEC \xED\xE5 \xE5 \xEF\xF0\xE0\xE7\xED\xE0 (\xE8\xE7\xF7\xE8\xF1\xEB\xFF\xE5\xEC\xE8\xF2\xE5 \xEF\xEE\xEB\xE5\xF2\xE0 \xF9\xE5 \xE1\xFA\xE4\xE0\xF2 \xE8\xE7\xF7\xE8\xF1\xEB\xE5\xED\xE8)", // ai 2026-06
 
-// admin/se_csv_import2.php, row 472
+// admin/se_csv_import2.php, row 471
 "If the item id is already in the slice" => "\xC0\xEA\xEE id \xED\xE0 \xF1\xF2\xE0\xF2\xE8\xFF\xF2\xE0 \xE2\xE5\xF7\xE5 \xE5 \xE2 \xF0\xF3\xE1\xF0\xE8\xEA\xE0\xF2\xE0", // ai 2026-06
 
-// admin/se_csv_import2.php, row 473
+// admin/se_csv_import2.php, row 472
 // admin/search_replace.php, row 176
 "Silent" => "\xD2\xE8\xF5 \xF0\xE5\xE6\xE8\xEC", // ai 2026-06
 
-// admin/se_csv_import2.php, row 473
+// admin/se_csv_import2.php, row 472
 "Do not perform any other operations like evaluate-computed-field, feed, send e-mail to Readers of Alerts..." => "\xCD\xE5 \xE8\xE7\xE2\xFA\xF0\xF8\xE2\xE0\xE9 \xE4\xF0\xF3\xE3\xE8 \xEE\xEF\xE5\xF0\xE0\xF6\xE8\xE8 \xEA\xE0\xF2\xEE \xE8\xE7\xF7\xE8\xF1\xEB\xFF\xE2\xE0\xED\xE5 \xED\xE0 \xE8\xE7\xF7\xE8\xF1\xEB\xFF\xE5\xEC\xE8 \xEF\xEE\xEB\xE5\xF2\xE0, \xEE\xE1\xEC\xE5\xED \xED\xE0 \xF1\xF2\xE0\xF2\xE8\xE8, \xE8\xE7\xEF\xF0\xE0\xF9\xE0\xED\xE5 \xED\xE0 \xE8\xEC\xE5\xE9\xEB \xE4\xEE \xE0\xE1\xEE\xED\xE0\xF2\xE8\xF2\xE5 \xED\xE0 \xE8\xE7\xE2\xE5\xF1\xF2\xE8\xFF...", // ai 2026-06
 
-// admin/se_csv_import2.php, row 474
+// admin/se_csv_import2.php, row 473
 "Data source" => "\xC8\xE7\xF2\xEE\xF7\xED\xE8\xEA \xED\xE0 \xE4\xE0\xED\xED\xE8", // ai 2026-06
 
-// admin/se_csv_import2.php, row 475
+// admin/se_csv_import2.php, row 474
 // include/feeding.php, row 456, 488
 "Source" => "\xC8\xE7\xF2\xEE\xF7\xED\xE8\xEA", // ai 2026-06
 
-// admin/se_csv_import2.php, row 477
+// admin/se_csv_import2.php, row 476
 "Store settings..." => "\xC7\xE0\xEF\xE0\xE7\xE8 \xED\xE0\xF1\xF2\xF0\xEE\xE9\xEA\xE8\xF2\xE5...", // ai 2026-06
 
-// admin/se_csv_import2.php, row 483
+// admin/se_csv_import2.php, row 482
 "Load setting" => "\xC7\xE0\xF0\xE5\xE4\xE8 \xED\xE0\xF1\xF2\xF0\xEE\xE9\xEA\xE0", // ai 2026-06
 
-// admin/se_csv_import2.php, row 485
+// admin/se_csv_import2.php, row 484
 "Save setting as" => "\xC7\xE0\xEF\xE0\xE7\xE8 \xED\xE0\xF1\xF2\xF0\xEE\xE9\xEA\xE0\xF2\xE0 \xEA\xE0\xF2\xEE", // ai 2026-06
 
-// admin/se_csv_import2.php, row 488
+// admin/se_csv_import2.php, row 487
 "Upload periodically" => "\xCF\xE5\xF0\xE8\xEE\xE4\xE8\xF7\xED\xEE \xEA\xE0\xF7\xE2\xE0\xED\xE5", // ai 2026-06
 
-// admin/se_csv_import2.php, row 539
+// admin/se_csv_import2.php, row 538
 "Admin - Import CSV (2/2) - Mapping and Actions" => "\xC0\xE4\xEC\xE8\xED - \xC8\xEC\xEF\xEE\xF0\xF2 \xED\xE0 CSV (2/2) - \xD1\xFA\xEF\xEE\xF1\xF2\xE0\xE2\xFF\xED\xE5 \xE8 \xE4\xE5\xE9\xF1\xF2\xE2\xE8\xFF", // ai 2026-06
 
 // admin/se_export.php, row 75
@@ -1474,7 +1465,7 @@ return [
 
 // admin/se_export.php, row 122
 // include/exporter.class.php, row 485
-// include/itemfunc.php, row 145
+// include/itemfunc.php, row 146
 "Expired" => "\xC8\xE7\xF2\xE5\xEA\xEB\xE8", // ai 2026-06
 
 // admin/se_export.php, row 123
@@ -1487,7 +1478,7 @@ return [
 
 // admin/se_export.php, row 125
 // include/exporter.class.php, row 488
-// include/itemfunc.php, row 155
+// include/itemfunc.php, row 156
 // src/Manageraction/Central_MoveItem.php, row 43
 "Trash" => "\xCA\xEE\xF8\xF7\xE5", // ai 2026-06
 
@@ -1513,7 +1504,7 @@ return [
 // admin/sliceexp_text.php, row 364
 // include/exporter.class.php, row 509
 // include/fileman.php, row 33
-// include/logs.php, row 316
+// include/logs.php, row 346
 // include/se_users.php, row 173
 // src/Widget/Widget.php, row 724
 "Type" => "\xD2\xE8\xEF", // ai 2026-06
@@ -1756,7 +1747,7 @@ return [
 "Time of change" => "\xC2\xF0\xE5\xEC\xE5 \xED\xE0 \xEF\xF0\xEE\xEC\xFF\xED\xE0\xF2\xE0", // ai 2026-06
 
 // admin/se_history.php, row 162
-// include/itemfunc.php, row 188
+// include/itemfunc.php, row 189
 // src/AA_Plannedtask.php, row 63
 "Item ID" => "ID \xED\xE0 \xF1\xF2\xE0\xF2\xE8\xFF\xF2\xE0", // ai 2026-06
 
@@ -1925,13 +1916,14 @@ return [
 "Disabled" => "\xC7\xE0\xE1\xF0\xE0\xED\xE5\xED\xEE", // ai 2026-06
 
 // admin/se_inputform.php, row 521
+// src/Util/ChangesMonitor.php, row 514
 "Copy to clipboard" => "\xCA\xEE\xEF\xE8\xF0\xE0\xED\xE5 \xE2 \xEA\xEB\xE8\xEF\xE1\xEE\xF0\xE4\xE0", // ai 2026-06
 
 // admin/se_inputform.php, row 522
 "Reset" => "\xCD\xF3\xEB\xE8\xF0\xE0\xED\xE5", // ai 2026-06
 
 // admin/se_inputform.php, row 527
-// include/logs.php, row 331
+// include/logs.php, row 361
 "Parameters" => "\xCF\xE0\xF0\xE0\xEC\xE5\xF2\xF0\xE8", // ai 2026-06
 
 // admin/se_inter_export.php, row 99
@@ -1974,6 +1966,9 @@ return [
 "Remote slice" => "\xCE\xF2\xE4\xE0\xEB\xE5\xF7\xE5\xED\xE0 \xF0\xF3\xE1\xF0\xE8\xEA\xE0", // ai 2026-06
 
 // admin/se_inter_import.php, row 98
+"Node" => "\xC2\xFA\xE7\xE5\xEB", // ai 2026-06
+
+// admin/se_inter_import.php, row 98
 // misc/datovka/datovka.php, row 114
 "State" => "\xD1\xFA\xF1\xF2\xEE\xFF\xED\xE8\xE5", // ai 2026-06
 
@@ -1984,7 +1979,7 @@ return [
 "No remote imports into the slice" => "\xCD\xFF\xEC\xE0 \xEE\xF2\xE4\xE0\xEB\xE5\xF7\xE5\xED\xE8 \xE8\xEC\xEF\xEE\xF0\xF2\xE8 \xE2 \xF0\xF3\xE1\xF0\xE8\xEA\xE0\xF2\xE0", // ai 2026-06
 
 // admin/se_inter_import.php, row 106
-// include/menu.php, row 153
+// include/menu.php, row 152
 "Inter Node Import" => "\xC8\xEC\xEF\xEE\xF0\xF2 \xEC\xE5\xE6\xE4\xF3 \xE2\xFA\xE7\xEB\xE8", // ai 2026-06
 
 // admin/se_inter_import.php, row 107
@@ -2030,7 +2025,7 @@ return [
 "The import was successfully created" => "\xC8\xEC\xEF\xEE\xF0\xF2\xFA\xF2 \xE1\xE5\xF8\xE5 \xF3\xF1\xEF\xE5\xF8\xED\xEE \xF1\xFA\xE7\xE4\xE0\xE4\xE5\xED", // ai 2026-06
 
 // admin/se_javascript.php, row 71
-// include/menu.php, row 165
+// include/menu.php, row 164
 "Field Triggers" => "\xD2\xF0\xE8\xE3\xE5\xF0\xE8 \xED\xE0 \xEF\xEE\xEB\xE5\xF2\xE0", // ai 2026-06
 
 // admin/se_javascript.php, row 78
@@ -2412,6 +2407,7 @@ return [
 
 // admin/se_profile.php, row 268
 // central/copyslice2.php, row 116
+// src/Util/ChangesMonitor.php, row 514
 "Copy" => "\xCA\xEE\xEF\xE8\xF0\xE0\xED\xE5", // ai 2026-06
 
 // admin/se_sets.php, row 64
@@ -2702,7 +2698,7 @@ return [
 // admin/slicewiz.php, row 79
 // admin/um_passwd.php, row 109
 // admin/um_uedit.php, row 314, 318
-// include/itemfunc.php, row 547, 1048
+// include/itemfunc.php, row 548, 1049
 // include/um_util.php, row 296
 "Login name" => "\xCF\xEE\xF2\xF0\xE5\xE1\xE8\xF2\xE5\xEB\xF1\xEA\xEE \xE8\xEC\xE5", // ai 2026-06
 
@@ -2842,8 +2838,8 @@ return [
 "Active with antiSPAM tokens" => "\xC0\xEA\xF2\xE8\xE2\xED\xEE \xF1 antiSPAM \xF2\xEE\xEA\xE5\xED\xE8", // ai 2026-06
 
 // admin/slicedit.php, row 140, 146
-// include/menu.php, row 191
-// include/menu_util.php, row 121
+// include/menu.php, row 190
+// include/menu_util.php, row 120
 // src/Module/Poll/Menu.php, row 64
 "Hold bin" => "\xC8\xE7\xF7\xE0\xEA\xE2\xE0\xF9\xE8", // ai 2026-06
 
@@ -2870,6 +2866,7 @@ return [
 "Admin - Slice settings" => "\xC0\xE4\xEC\xE8\xED\xE8\xF1\xF2\xF0\xE0\xF6\xE8\xFF - \xCD\xE0\xF1\xF2\xF0\xEE\xE9\xEA\xE8 \xED\xE0 \xF0\xF3\xE1\xF0\xE8\xEA\xE0\xF2\xE0", // ai 2026-06
 
 // admin/slicedit.php, row 253
+// include/menu_util.php, row 605
 "Language" => "\xC5\xE7\xE8\xEA", // ai 2026-06
 
 // admin/slicedit.php, row 255
@@ -2909,7 +2906,7 @@ return [
 "Password for Reading" => "\xCF\xE0\xF0\xEE\xEB\xE0 \xE7\xE0 \xF7\xE5\xF2\xE5\xED\xE5", // ai 2026-06
 
 // admin/slicedit.php, row 281
-// include/itemfunc.php, row 180
+// include/itemfunc.php, row 181
 "Created" => "\xD1\xFA\xE7\xE4\xE0\xE4\xE5\xED\xEE", // ai 2026-06
 
 // admin/slicedit.php, row 281
@@ -3225,6 +3222,7 @@ return [
 
 // admin/um_gedit.php, row 313
 // admin/um_uedit.php, row 231, 242
+// include/logs.php, row 453
 // include/menu_util.php, row 70
 // include/se_users.php, row 129
 "Users" => "\xCF\xEE\xF2\xF0\xE5\xE1\xE8\xF2\xE5\xEB\xE8", // ai 2026-06
@@ -3412,7 +3410,7 @@ return [
 
 // central/copyslice2.php, row 88
 // central/synchronize3.php, row 94
-// include/menu.php, row 169
+// include/menu.php, row 168
 // include/menu_util.php, row 74
 "Task Manager" => "\xCC\xE5\xED\xE8\xE4\xE6\xFA\xF0 \xED\xE0 \xE7\xE0\xE4\xE0\xF7\xE8", // ai 2026-06
 
@@ -3553,13 +3551,13 @@ return [
 // src/Manageraction/Central_Linkcheck.php, row 31
 "Auth" => "\xD3\xE4\xEE\xF1\xF2\xEE\xE2\xE5\xF0\xFF\xE2\xE0\xED\xE5", // ai 2026-06
 
-// central/responder.php, row 567
+// central/responder.php, row 597
 "No request sent for responder.php" => "\xCD\xE5 \xE5 \xE8\xE7\xEF\xF0\xE0\xF2\xE5\xED\xE0 \xE7\xE0\xFF\xE2\xEA\xE0 \xEA\xFA\xEC responder.php", // ai 2026-06
 
-// central/responder.php, row 573
+// central/responder.php, row 603
 "Bad request sent for responder.php - %1" => "\xC3\xF0\xE5\xF8\xED\xE0 \xE7\xE0\xFF\xE2\xEA\xE0 \xEA\xFA\xEC responder.php - %1", // ai 2026-06
 
-// central/responder.php, row 578
+// central/responder.php, row 608
 "You (%2) don't have permissions to run %1" => "\xC2\xE8\xE5 (%2) \xED\xFF\xEC\xE0\xF2\xE5 \xEF\xF0\xE0\xE2\xE0 \xE4\xE0 \xE8\xE7\xEF\xFA\xEB\xED\xE8\xF2\xE5 %1", // ai 2026-06
 
 // central/synchronize.php, row 35
@@ -3662,6 +3660,7 @@ return [
 "Level" => "\xCD\xE8\xE2\xEE", // ai 2026-06
 
 // include/constants.php, row 460
+// include/logs.php, row 507
 "Feed" => "\xCE\xE1\xEC\xE5\xED", // ai 2026-06
 
 // include/constants.php, row 461
@@ -3809,13 +3808,13 @@ return [
 "From: (email header)" => "From: (\xE7\xE0\xE3\xEB\xE0\xE2\xEA\xE0 \xED\xE0 \xE8\xEC\xE5\xE9\xEB\xE0)", // ai 2026-06
 
 // include/constants.php, row 703
-"Reply-To:" => "",
+"Reply-To:" => "\xCE\xF2\xE3\xEE\xE2\xEE\xF0 \xE4\xEE:", // ai 2026-06
 
 // include/constants.php, row 704
-"Errors-To:" => "",
+"Errors-To:" => "\xC3\xF0\xE5\xF8\xEA\xE8 \xE4\xEE:", // ai 2026-06
 
 // include/constants.php, row 705
-"Sender:" => "",
+"Sender:" => "\xCF\xEE\xE4\xE0\xF2\xE5\xEB:", // ai 2026-06
 
 // include/constants.php, row 706
 "Mail Subject:" => "\xD2\xE5\xEC\xE0 \xED\xE0 \xE8\xEC\xE5\xE9\xEB\xE0:", // ai 2026-06
@@ -4035,6 +4034,9 @@ return [
 // include/feeding.php, row 454, 490
 "Run (queue)" => "\xD1\xF2\xE0\xF0\xF2\xE8\xF0\xE0\xE9 (\xEE\xEF\xE0\xF8\xEA\xE0)", // ai 2026-06
 
+// include/feeding.php, row 464, 470, 527
+"Local slice" => "\xCB\xEE\xEA\xE0\xEB\xED\xE0 \xF0\xF3\xE1\xF0\xE8\xEA\xE0", // ai 2026-06
+
 // include/feeding.php, row 473
 "URL of the feed" => "URL \xED\xE0 \xEA\xE0\xED\xE0\xEB\xE0", // ai 2026-06
 
@@ -4245,9 +4247,6 @@ return [
 // include/files.class.php, row 255
 "Can't write to file: %1" => "\xCD\xE5 \xEC\xEE\xE6\xE5 \xE4\xE0 \xF1\xE5 \xE7\xE0\xEF\xE8\xF1\xE2\xE0 \xE2\xFA\xE2 \xF4\xE0\xE9\xEB\xE0: %1", // ai 2026-06
 
-// include/files.class.php, row 306
-"Error: Invalid directory" => "\xC3\xF0\xE5\xF8\xEA\xE0: \xCD\xE5\xE2\xE0\xEB\xE8\xE4\xED\xE0 \xE4\xE8\xF0\xE5\xEA\xF2\xEE\xF0\xE8\xFF", // ai 2026-06
-
 // include/files.class.php, row 328
 "can't create backup of the file" => "\xED\xE5 \xEC\xEE\xE6\xE5 \xE4\xE0 \xF1\xE5 \xF1\xFA\xE7\xE4\xE0\xE4\xE5 \xF0\xE5\xE7\xE5\xF0\xE2\xED\xEE \xEA\xEE\xEF\xE8\xE5 \xED\xE0 \xF4\xE0\xE9\xEB\xE0", // ai 2026-06
 
@@ -4282,7 +4281,7 @@ return [
 "Rows" => "\xD0\xE5\xE4\xEE\xE2\xE5", // ai 2026-06
 
 // include/form.class.php, row 301
-// include/menu.php, row 147
+// include/menu.php, row 146
 "Forms" => "\xD4\xEE\xF0\xEC\xF3\xEB\xFF\xF0\xE8", // ai 2026-06
 
 // include/formutil.php, row 191
@@ -4295,7 +4294,7 @@ return [
 "Reset form" => "\xC8\xE7\xF7\xE8\xF1\xF2\xE8 \xF4\xEE\xF0\xEC\xF3\xEB\xFF\xF0\xE0", // ai 2026-06
 
 // include/formutil.php, row 205, 210, 2918, 2922
-// include/searchbar.class.php, row 721
+// include/searchbar.class.php, row 730
 // src/Widget/LupWidget.php, row 118
 "Cancel" => "\xCE\xF2\xEA\xE0\xE7", // ai 2026-06
 
@@ -4340,8 +4339,8 @@ return [
 "Enter the value" => "\xC2\xFA\xE2\xE5\xE4\xE5\xF2\xE5 \xF1\xF2\xEE\xE9\xED\xEE\xF1\xF2\xF2\xE0", // ai 2026-06
 
 // include/formutil.php, row 1763
-// include/menu.php, row 140
-// src/Util/ChangesMonitor.php, row 381
+// include/menu.php, row 139
+// src/Util/ChangesMonitor.php, row 455
 "Change" => "\xCF\xF0\xEE\xEC\xE5\xED\xE8", // ai 2026-06
 
 // include/formutil.php, row 1906, 2093
@@ -4375,6 +4374,7 @@ return [
 "Group Name" => "\xC8\xEC\xE5 \xED\xE0 \xE3\xF0\xF3\xEF\xE0\xF2\xE0", // ai 2026-06
 
 // include/formutil.php, row 3247
+// include/logs.php, row 497
 "Count" => "\xC1\xF0\xEE\xE9", // ai 2026-06
 
 // include/formutil.php, row 3248
@@ -4570,329 +4570,329 @@ return [
 // include/itemfunc.php, row 71
 "Edit item" => "\xD0\xE5\xE4\xE0\xEA\xF2\xE8\xF0\xE0\xED\xE5 \xED\xE0 \xF1\xF2\xE0\xF2\xE8\xFF", // ai 2026-06
 
-// include/itemfunc.php, row 129
+// include/itemfunc.php, row 130
 "by %1" => "\xEE\xF2 %1", // ai 2026-06
 
-// include/itemfunc.php, row 142
+// include/itemfunc.php, row 143
 "Scheduled" => "\xCF\xEB\xE0\xED\xE8\xF0\xE0\xED\xEE", // ai 2026-06
 
-// include/itemfunc.php, row 143
+// include/itemfunc.php, row 144
 "not yet on the public site" => "\xE2\xF1\xE5 \xEE\xF9\xE5 \xED\xE5 \xE5 \xED\xE0 \xEF\xF3\xE1\xEB\xE8\xF7\xED\xE8\xFF \xF1\xE0\xE9\xF2", // ai 2026-06
 
-// include/itemfunc.php, row 146, 153, 156
+// include/itemfunc.php, row 147, 154, 157
 "not on the public site" => "\xED\xE5 \xE5 \xED\xE0 \xEF\xF3\xE1\xEB\xE8\xF7\xED\xE8\xFF \xF1\xE0\xE9\xF2", // ai 2026-06
 
-// include/itemfunc.php, row 149, 178
+// include/itemfunc.php, row 150, 179
 "Published" => "\xCF\xF3\xE1\xEB\xE8\xEA\xF3\xE2\xE0\xED\xEE", // ai 2026-06
 
-// include/itemfunc.php, row 175
+// include/itemfunc.php, row 176
 "Never" => "\xCD\xE8\xEA\xEE\xE3\xE0", // ai 2026-06
 
-// include/itemfunc.php, row 176
+// include/itemfunc.php, row 177
 "not used on this site" => "\xED\xE5 \xF1\xE5 \xE8\xE7\xEF\xEE\xEB\xE7\xE2\xE0 \xED\xE0 \xF2\xEE\xE7\xE8 \xF1\xE0\xE9\xF2", // ai 2026-06
 
-// include/itemfunc.php, row 179
+// include/itemfunc.php, row 180
 "Expires" => "\xC8\xE7\xF2\xE8\xF7\xE0", // ai 2026-06
 
-// include/itemfunc.php, row 181
+// include/itemfunc.php, row 182
 "Last edited" => "\xCF\xEE\xF1\xEB\xE5\xE4\xED\xE0 \xF0\xE5\xE4\xE0\xEA\xF6\xE8\xFF", // ai 2026-06
 
-// include/itemfunc.php, row 183
+// include/itemfunc.php, row 184
 "Revisions" => "\xD0\xE5\xE2\xE8\xE7\xE8\xE8", // ai 2026-06
 
-// include/itemfunc.php, row 185
+// include/itemfunc.php, row 186
 "Short ID" => "\xCA\xF0\xE0\xF2\xEA\xEE ID", // ai 2026-06
 
-// include/itemfunc.php, row 191
+// include/itemfunc.php, row 192
 "Details" => "\xCF\xEE\xE4\xF0\xEE\xE1\xED\xEE\xF1\xF2\xE8", // ai 2026-06
 
-// include/itemfunc.php, row 226
+// include/itemfunc.php, row 227
 "Item table record for the item" => "\xC7\xE0\xEF\xE8\xF1 \xED\xE0 \xF1\xF2\xE0\xF2\xE8\xFF\xF2\xE0 \xE2 \xF2\xE0\xE1\xEB\xE8\xF6\xE0 item", // ai 2026-06
 
-// include/itemfunc.php, row 250
+// include/itemfunc.php, row 251
 "Content table records for the item" => "\xC7\xE0\xEF\xE8\xF1\xE8 \xED\xE0 \xF1\xF2\xE0\xF2\xE8\xFF\xF2\xE0 \xE2 \xF2\xE0\xE1\xEB\xE8\xF6\xE0 content", // ai 2026-06
 
-// include/itemfunc.php, row 269
+// include/itemfunc.php, row 270
 "Referenced items" => "\xD0\xE5\xF4\xE5\xF0\xE8\xF0\xE0\xED\xE8 \xF1\xF2\xE0\xF2\xE8\xE8", // ai 2026-06
 
-// include/itemfunc.php, row 278
+// include/itemfunc.php, row 279
 "AA_Item structure" => "\xD1\xF2\xF0\xF3\xEA\xF2\xF3\xF0\xE0 AA_Item", // ai 2026-06
 
-// include/itemfunc.php, row 309
+// include/itemfunc.php, row 310
 "Technical details" => "\xD2\xE5\xF5\xED\xE8\xF7\xE5\xF1\xEA\xE8 \xEF\xEE\xE4\xF0\xEE\xE1\xED\xEE\xF1\xF2\xE8", // ai 2026-06
 
-// include/itemfunc.php, row 350
+// include/itemfunc.php, row 351
 "When" => "\xCA\xEE\xE3\xE0", // ai 2026-06
 
-// include/itemfunc.php, row 350
+// include/itemfunc.php, row 351
 "Changed by" => "\xCF\xF0\xEE\xEC\xE5\xED\xE5\xED\xEE \xEE\xF2", // ai 2026-06
 
-// include/itemfunc.php, row 378
+// include/itemfunc.php, row 379
 "Full history" => "\xCF\xFA\xEB\xED\xE0 \xE8\xF1\xF2\xEE\xF0\xE8\xFF", // ai 2026-06
 
-// include/itemfunc.php, row 403
+// include/itemfunc.php, row 404
 "Total views" => "\xCE\xE1\xF9\xEE \xEF\xEE\xEA\xE0\xE7\xE2\xE0\xED\xE8\xFF", // ai 2026-06
 
-// include/itemfunc.php, row 422
+// include/itemfunc.php, row 423
 "Average / day" => "\xD1\xF0\xE5\xE4\xED\xEE / \xE4\xE5\xED", // ai 2026-06
 
-// include/itemfunc.php, row 426
+// include/itemfunc.php, row 427
 "Last 7 days" => "\xCF\xEE\xF1\xEB\xE5\xE4\xED\xE8\xF2\xE5 7 \xE4\xED\xE8", // ai 2026-06
 
-// include/itemfunc.php, row 427
+// include/itemfunc.php, row 428
 "Last 30 days" => "\xCF\xEE\xF1\xEB\xE5\xE4\xED\xE8\xF2\xE5 30 \xE4\xED\xE8", // ai 2026-06
 
-// include/itemfunc.php, row 429
+// include/itemfunc.php, row 430
 "Last viewed" => "\xCF\xEE\xF1\xEB\xE5\xE4\xED\xEE \xEF\xEE\xEA\xE0\xE7\xE2\xE0\xED\xE5", // ai 2026-06
 
-// include/itemfunc.php, row 433
+// include/itemfunc.php, row 434
 "Avg response" => "\xD1\xF0\xE5\xE4\xED\xEE \xE2\xF0\xE5\xEC\xE5 \xE7\xE0 \xEE\xF2\xE3\xEE\xE2\xEE\xF0", // ai 2026-06
 
-// include/itemfunc.php, row 436
+// include/itemfunc.php, row 437
 "Served from cache" => "\xCE\xE1\xF1\xEB\xF3\xE6\xE5\xED\xEE \xEE\xF2 \xEA\xE5\xF8\xE0", // ai 2026-06
 
-// include/itemfunc.php, row 459
+// include/itemfunc.php, row 460
 "Full statistics" => "\xCF\xFA\xEB\xED\xE0 \xF1\xF2\xE0\xF2\xE8\xF1\xF2\xE8\xEA\xE0", // ai 2026-06
 
-// include/itemfunc.php, row 484
+// include/itemfunc.php, row 485
 "No detailed view statistics have been recorded for this item yet." => "\xC7\xE0 \xF2\xE0\xE7\xE8 \xF1\xF2\xE0\xF2\xE8\xFF \xE2\xF1\xE5 \xEE\xF9\xE5 \xED\xFF\xEC\xE0 \xE7\xE0\xEF\xE8\xF1\xE0\xED\xE0 \xEF\xEE\xE4\xF0\xEE\xE1\xED\xE0 \xF1\xF2\xE0\xF2\xE8\xF1\xF2\xE8\xEA\xE0 \xED\xE0 \xEF\xEE\xEA\xE0\xE7\xE2\xE0\xED\xE8\xFF\xF2\xE0.", // ai 2026-06
 
-// include/itemfunc.php, row 487
+// include/itemfunc.php, row 488
 "Open full statistics" => "\xCE\xF2\xE2\xEE\xF0\xE8 \xEF\xFA\xEB\xED\xE0\xF2\xE0 \xF1\xF2\xE0\xF2\xE8\xF1\xF2\xE8\xEA\xE0", // ai 2026-06
 
-// include/itemfunc.php, row 514
+// include/itemfunc.php, row 515
 "Now, i.e. current date" => "\xD1\xE5\xE3\xE0, \xF2.\xE5. \xF2\xE5\xEA\xF3\xF9\xE0\xF2\xE0 \xE4\xE0\xF2\xE0", // ai 2026-06
 
-// include/itemfunc.php, row 524
+// include/itemfunc.php, row 525
 "Never, i.e. maximum date" => "\xCD\xE8\xEA\xEE\xE3\xE0, \xF2.\xE5. \xEC\xE0\xEA\xF1\xE8\xEC\xE0\xEB\xED\xE0\xF2\xE0 \xE4\xE0\xF2\xE0", // ai 2026-06
 
-// include/itemfunc.php, row 535
+// include/itemfunc.php, row 536
 "User ID" => "ID \xED\xE0 \xEF\xEE\xF2\xF0\xE5\xE1\xE8\xF2\xE5\xEB\xFF", // ai 2026-06
 
-// include/itemfunc.php, row 561
+// include/itemfunc.php, row 562
 "Date + 'Parameter' days" => "\xC4\xE0\xF2\xE0 + '\xCF\xE0\xF0\xE0\xEC\xE5\xF2\xFA\xF0' \xE4\xED\xE8", // ai 2026-06
 
-// include/itemfunc.php, row 568
+// include/itemfunc.php, row 569
 "Number of days" => "\xC1\xF0\xEE\xE9 \xE4\xED\xE8", // ai 2026-06
 
-// include/itemfunc.php, row 582
+// include/itemfunc.php, row 583
 "Text from 'Parameter'" => "\xD2\xE5\xEA\xF1\xF2 \xEE\xF2 '\xCF\xE0\xF0\xE0\xEC\xE5\xF2\xFA\xF0'", // ai 2026-06
 
-// include/itemfunc.php, row 616
+// include/itemfunc.php, row 617
 "Random string" => "\xD1\xEB\xF3\xF7\xE0\xE5\xED \xED\xE8\xE7", // ai 2026-06
 
-// include/itemfunc.php, row 618
+// include/itemfunc.php, row 619
 "Random alphanumeric [A-Z0-9] string." => "\xD1\xEB\xF3\xF7\xE0\xE5\xED \xE1\xF3\xEA\xE2\xE5\xED\xEE-\xF6\xE8\xF4\xF0\xEE\xE2 \xED\xE8\xE7 [A-Z0-9].", // ai 2026-06
 
-// include/itemfunc.php, row 625
+// include/itemfunc.php, row 626
 "String length" => "\xC4\xFA\xEB\xE6\xE8\xED\xE0 \xED\xE0 \xED\xE8\xE7\xE0", // ai 2026-06
 
-// include/itemfunc.php, row 626
+// include/itemfunc.php, row 627
 "Field to check" => "\xCF\xEE\xEB\xE5 \xE7\xE0 \xEF\xF0\xEE\xE2\xE5\xF0\xEA\xE0", // ai 2026-06
 
-// include/itemfunc.php, row 626
+// include/itemfunc.php, row 627
 "If you need a unique code, you must send the field ID, the function will then look into this field to ensure uniqueness." => "\xC0\xEA\xEE \xF1\xE5 \xED\xF3\xE6\xE4\xE0\xE5\xF2\xE5 \xEE\xF2 \xF3\xED\xE8\xEA\xE0\xEB\xE5\xED \xEA\xEE\xE4, \xF2\xF0\xFF\xE1\xE2\xE0 \xE4\xE0 \xE7\xE0\xE4\xE0\xE4\xE5\xF2\xE5 ID \xED\xE0 \xEF\xEE\xEB\xE5\xF2\xEE; \xF4\xF3\xED\xEA\xF6\xE8\xFF\xF2\xE0 \xF9\xE5 \xEF\xF0\xEE\xE2\xE5\xF0\xFF\xE2\xE0 \xE2 \xF2\xEE\xE2\xE0 \xEF\xEE\xEB\xE5, \xE7\xE0 \xE4\xE0 \xEE\xF1\xE8\xE3\xF3\xF0\xE8 \xF3\xED\xE8\xEA\xE0\xEB\xED\xEE\xF1\xF2.", // ai 2026-06
 
-// include/itemfunc.php, row 627
+// include/itemfunc.php, row 628
 "Slice only" => "\xD1\xE0\xEC\xEE \xF2\xE0\xE7\xE8 \xF0\xF3\xE1\xF0\xE8\xEA\xE0", // ai 2026-06
 
-// include/itemfunc.php, row 627
+// include/itemfunc.php, row 628
 "Do you want to check for uniqueness this slice only or all slices?" => "\xC8\xF1\xEA\xE0\xF2\xE5 \xEB\xE8 \xF3\xED\xE8\xEA\xE0\xEB\xED\xEE\xF1\xF2\xF2\xE0 \xE4\xE0 \xF1\xE5 \xEF\xF0\xEE\xE2\xE5\xF0\xFF\xE2\xE0 \xF1\xE0\xEC\xEE \xE2 \xF2\xE0\xE7\xE8 \xF0\xF3\xE1\xF0\xE8\xEA\xE0 \xE8\xEB\xE8 \xE2\xFA\xE2 \xE2\xF1\xE8\xF7\xEA\xE8 \xF0\xF3\xE1\xF0\xE8\xEA\xE8?", // ai 2026-06
 
-// include/itemfunc.php, row 669
+// include/itemfunc.php, row 670
 "AA Expression" => "AA \xE8\xE7\xF0\xE0\xE7", // ai 2026-06
 
-// include/itemfunc.php, row 671
+// include/itemfunc.php, row 672
 "any text with possible {AA expressions} like: {date:Y}" => "\xEF\xF0\xEE\xE8\xE7\xE2\xEE\xEB\xE5\xED \xF2\xE5\xEA\xF1\xF2 \xF1 \xE2\xFA\xE7\xEC\xEE\xE6\xED\xE8 {AA \xE8\xE7\xF0\xE0\xE7\xE8}, \xED\xE0\xEF\xF0.: {date:Y}", // ai 2026-06
 
-// include/itemfunc.php, row 695
+// include/itemfunc.php, row 696
 "Multivalue" => "\xCC\xED\xEE\xE3\xEE\xF1\xF2\xEE\xE9\xED\xEE\xF1\xF2\xED\xEE", // ai 2026-06
 
-// include/itemfunc.php, row 703
+// include/itemfunc.php, row 704
 // include/transformation.class.php, row 525
 "Delimiter" => "\xD0\xE0\xE7\xE4\xE5\xEB\xE8\xF2\xE5\xEB", // ai 2026-06
 
-// include/itemfunc.php, row 794
+// include/itemfunc.php, row 795
 "Slice with id '%1' is not valid." => "\xD0\xF3\xE1\xF0\xE8\xEA\xE0\xF2\xE0 \xF1 id '%1' \xED\xE5 \xE5 \xE2\xE0\xEB\xE8\xE4\xED\xE0.", // ai 2026-06
 
-// include/itemfunc.php, row 894
+// include/itemfunc.php, row 895
 "Text = don't modify" => "\xD2\xE5\xEA\xF1\xF2 = \xE1\xE5\xE7 \xEF\xF0\xEE\xEC\xFF\xED\xE0", // ai 2026-06
 
-// include/itemfunc.php, row 895
+// include/itemfunc.php, row 896
 "Does not modify the value." => "\xCD\xE5 \xEF\xF0\xEE\xEC\xE5\xED\xFF \xF1\xF2\xEE\xE9\xED\xEE\xF1\xF2\xF2\xE0.", // ai 2026-06
 
-// include/itemfunc.php, row 900
+// include/itemfunc.php, row 901
 "Date = don't modify" => "\xC4\xE0\xF2\xE0 = \xE1\xE5\xE7 \xEF\xF0\xEE\xEC\xFF\xED\xE0", // ai 2026-06
 
-// include/itemfunc.php, row 901, 910
+// include/itemfunc.php, row 902, 911
 "Does not modify the value (just like Text), but it is better to separate it for future usage." => "\xCD\xE5 \xEF\xF0\xEE\xEC\xE5\xED\xFF \xF1\xF2\xEE\xE9\xED\xEE\xF1\xF2\xF2\xE0 (\xF1\xFA\xF9\xEE \xEA\xE0\xF2\xEE \xD2\xE5\xEA\xF1\xF2), \xED\xEE \xE5 \xEF\xEE-\xE4\xEE\xE1\xF0\xE5 \xE4\xE0 \xF1\xE5 \xEE\xF2\xE4\xE5\xEB\xE8 \xE7\xE0 \xE1\xFA\xE4\xE5\xF9\xE0 \xF3\xEF\xEE\xF2\xF0\xE5\xE1\xE0.", // ai 2026-06
 
-// include/itemfunc.php, row 909
+// include/itemfunc.php, row 910
 "Number = don't modify" => "\xD7\xE8\xF1\xEB\xEE = \xE1\xE5\xE7 \xEF\xF0\xEE\xEC\xFF\xED\xE0", // ai 2026-06
 
-// include/itemfunc.php, row 915
+// include/itemfunc.php, row 916
 "Boolean = store 0 or 1" => "Boolean = \xE7\xE0\xEF\xE8\xF1\xE2\xE0 0 \xE8\xEB\xE8 1", // ai 2026-06
 
-// include/itemfunc.php, row 926
-"Float" => "",
-
 // include/itemfunc.php, row 927
+"Float" => "\xC4\xF0\xEE\xE1\xED\xEE \xF7\xE8\xF1\xEB\xEE", // ai 2026-06
+
+// include/itemfunc.php, row 928
 "Real float - could convert big numbers to scientific notation (1.23E+29)" => "\xC8\xF1\xF2\xE8\xED\xF1\xEA\xE8 float - \xEC\xEE\xE6\xE5 \xE4\xE0 \xEF\xF0\xE5\xEE\xE1\xF0\xE0\xE7\xF3\xE2\xE0 \xE3\xEE\xEB\xE5\xEC\xE8 \xF7\xE8\xF1\xEB\xE0 \xE2 \xED\xE0\xF3\xF7\xED\xE0 \xED\xEE\xF2\xE0\xF6\xE8\xFF (1.23E+29)", // ai 2026-06
 
-// include/itemfunc.php, row 937
+// include/itemfunc.php, row 938
 "Decimal" => "\xC4\xE5\xF1\xE5\xF2\xE8\xF7\xED\xEE \xF7\xE8\xF1\xEB\xEE", // ai 2026-06
 
-// include/itemfunc.php, row 938
+// include/itemfunc.php, row 939
 "The same as Float, but does not convert big numbers to  scientific notation (1.23E+29)" => "\xD1\xFA\xF9\xEE\xF2\xEE \xEA\xE0\xF2\xEE Float, \xED\xEE \xED\xE5 \xEF\xF0\xE5\xEE\xE1\xF0\xE0\xE7\xF3\xE2\xE0 \xE3\xEE\xEB\xE5\xEC\xE8 \xF7\xE8\xF1\xEB\xE0 \xE2 \xED\xE0\xF3\xF7\xED\xE0 \xED\xEE\xF2\xE0\xF6\xE8\xFF (1.23E+29)", // ai 2026-06
 
-// include/itemfunc.php, row 948
+// include/itemfunc.php, row 949
 "Trim" => "\xCF\xEE\xE4\xF0\xFF\xE7\xE2\xE0\xED\xE5", // ai 2026-06
 
-// include/itemfunc.php, row 949
+// include/itemfunc.php, row 950
 "Remove whitespaces from beginning and end and also normalize UTF (NFC)" => "\xCF\xF0\xE5\xEC\xE0\xF5\xE2\xE0 \xE8\xED\xF2\xE5\xF0\xE2\xE0\xEB\xE8\xF2\xE5 \xE2 \xED\xE0\xF7\xE0\xEB\xEE\xF2\xEE \xE8 \xEA\xF0\xE0\xFF \xE8 \xF1\xFA\xF9\xEE \xED\xEE\xF0\xEC\xE0\xEB\xE8\xE7\xE8\xF0\xE0 UTF (NFC)", // ai 2026-06
 
-// include/itemfunc.php, row 960
+// include/itemfunc.php, row 961
 "Item IDs" => "ID \xED\xE0 \xF1\xF2\xE0\xF2\xE8\xE8", // ai 2026-06
 
-// include/itemfunc.php, row 1027
+// include/itemfunc.php, row 1028
 "User ID = always store current user ID" => "ID \xED\xE0 \xEF\xEE\xF2\xF0\xE5\xE1\xE8\xF2\xE5\xEB = \xE2\xE8\xED\xE0\xE3\xE8 \xE7\xE0\xEF\xE8\xF1\xE2\xE0 ID \xED\xE0 \xF2\xE5\xEA\xF3\xF9\xE8\xFF \xEF\xEE\xF2\xF0\xE5\xE1\xE8\xF2\xE5\xEB", // ai 2026-06
 
-// include/itemfunc.php, row 1028
+// include/itemfunc.php, row 1029
 "Inserts the identity of the current user, no matter what the user sets." => "\xC2\xEC\xFA\xEA\xE2\xE0 \xF1\xE0\xEC\xEE\xEB\xE8\xF7\xED\xEE\xF1\xF2\xF2\xE0 \xED\xE0 \xF2\xE5\xEA\xF3\xF9\xE8\xFF \xEF\xEE\xF2\xF0\xE5\xE1\xE8\xF2\xE5\xEB, \xED\xE5\xE7\xE0\xE2\xE8\xF1\xE8\xEC\xEE \xEA\xE0\xEA\xE2\xEE \xE5 \xE7\xE0\xE4\xE0\xEB \xEF\xEE\xF2\xF0\xE5\xE1\xE8\xF2\xE5\xEB\xFF\xF2.", // ai 2026-06
 
-// include/itemfunc.php, row 1069
+// include/itemfunc.php, row 1070
 "Now = always store current time" => "\xD1\xE5\xE3\xE0 = \xE2\xE8\xED\xE0\xE3\xE8 \xE7\xE0\xEF\xE8\xF1\xE2\xE0 \xF2\xE5\xEA\xF3\xF9\xEE\xF2\xEE \xE2\xF0\xE5\xEC\xE5", // ai 2026-06
 
-// include/itemfunc.php, row 1070
+// include/itemfunc.php, row 1071
 "Inserts the current time, no matter what the user sets." => "\xC2\xEC\xFA\xEA\xE2\xE0 \xF2\xE5\xEA\xF3\xF9\xEE\xF2\xEE \xE2\xF0\xE5\xEC\xE5, \xED\xE5\xE7\xE0\xE2\xE8\xF1\xE8\xEC\xEE \xEA\xE0\xEA\xE2\xEE \xE7\xE0\xE4\xE0\xE4\xE5 \xEF\xEE\xF2\xF0\xE5\xE1\xE8\xF2\xE5\xEB\xFF\xF2.", // ai 2026-06
 
-// include/itemfunc.php, row 1100
+// include/itemfunc.php, row 1101
 "Computed field for INSERT/UPDATE" => "\xC8\xE7\xF7\xE8\xF1\xEB\xFF\xE5\xEC\xEE \xEF\xEE\xEB\xE5 \xE7\xE0 INSERT/UPDATE", // ai 2026-06
 
-// include/itemfunc.php, row 1101
+// include/itemfunc.php, row 1102
 "The field is the result of expression written in \"Code for unaliasing\". It is a good solution for all values, which could be precomputed, since its computation on item-show-time would be slow. Yes, you can use {view...}, {include...}, {switch...} here" => "\xCF\xEE\xEB\xE5\xF2\xEE \xE5 \xF0\xE5\xE7\xF3\xEB\xF2\xE0\xF2 \xEE\xF2 \xE8\xE7\xF0\xE0\xE7\xE0, \xE7\xE0\xEF\xE8\xF1\xE0\xED \xE2 \"\xCA\xEE\xE4 \xE7\xE0 \xF0\xE0\xE7\xE3\xF0\xFA\xF9\xE0\xED\xE5 \xED\xE0 \xE0\xEB\xE8\xE0\xF1\xE8\". \xD2\xEE\xE2\xE0 \xE5 \xE4\xEE\xE1\xF0\xEE \xF0\xE5\xF8\xE5\xED\xE8\xE5 \xE7\xE0 \xE2\xF1\xE8\xF7\xEA\xE8 \xF1\xF2\xEE\xE9\xED\xEE\xF1\xF2\xE8, \xEA\xEE\xE8\xF2\xEE \xEC\xEE\xE3\xE0\xF2 \xE4\xE0 \xF1\xE5 \xE8\xE7\xF7\xE8\xF1\xEB\xFF\xF2 \xEF\xF0\xE5\xE4\xE2\xE0\xF0\xE8\xF2\xE5\xEB\xED\xEE, \xF2\xFA\xE9 \xEA\xE0\xF2\xEE \xE8\xE7\xF7\xE8\xF1\xEB\xFF\xE2\xE0\xED\xE5\xF2\xEE \xE8\xEC \xEF\xF0\xE8 \xEF\xEE\xEA\xE0\xE7\xE2\xE0\xED\xE5 \xED\xE0 \xF1\xF2\xE0\xF2\xE8\xFF\xF2\xE0 \xE1\xE8 \xE1\xE8\xEB\xEE \xE1\xE0\xE2\xED\xEE. \xC4\xE0, \xF2\xF3\xEA \xEC\xEE\xE6\xE5\xF2\xE5 \xE4\xE0 \xE8\xE7\xEF\xEE\xEB\xE7\xE2\xE0\xF2\xE5 {view...}, {include...}, {switch...}", // ai 2026-06
 
-// include/itemfunc.php, row 1108
+// include/itemfunc.php, row 1109
 "Code for unaliasing (INSERT)" => "\xCA\xEE\xE4 \xE7\xE0 \xF0\xE0\xE7\xE3\xF0\xFA\xF9\xE0\xED\xE5 \xED\xE0 \xE0\xEB\xE8\xE0\xF1\xE8 (INSERT)", // ai 2026-06
 
-// include/itemfunc.php, row 1108, 1137
+// include/itemfunc.php, row 1109, 1138
 "There you can write any string. The string will be unaliased on item store, so you can use any {...} construct as well as field aliases here" => "\xD2\xF3\xEA \xEC\xEE\xE6\xE5\xF2\xE5 \xE4\xE0 \xED\xE0\xEF\xE8\xF8\xE5\xF2\xE5 \xEF\xF0\xEE\xE8\xE7\xE2\xEE\xEB\xE5\xED \xED\xE8\xE7. \xCD\xE8\xE7\xFA\xF2 \xF9\xE5 \xE1\xFA\xE4\xE5 \xF0\xE0\xE7\xE3\xFA\xF0\xED\xE0\xF2 \xEF\xF0\xE8 \xE7\xE0\xEF\xE8\xF1\xE2\xE0\xED\xE5 \xED\xE0 \xF1\xF2\xE0\xF2\xE8\xFF\xF2\xE0, \xF2\xE0\xEA\xE0 \xF7\xE5 \xEC\xEE\xE6\xE5\xF2\xE5 \xE4\xE0 \xE8\xE7\xEF\xEE\xEB\xE7\xE2\xE0\xF2\xE5 \xE2\xF1\xFF\xEA\xE0\xEA\xE2\xE8 \xEA\xEE\xED\xF1\xF2\xF0\xF3\xEA\xF6\xE8\xE8 {...}, \xEA\xE0\xEA\xF2\xEE \xE8 \xE0\xEB\xE8\xE0\xF1\xE8 \xED\xE0 \xEF\xEE\xEB\xE5\xF2\xE0", // ai 2026-06
 
-// include/itemfunc.php, row 1109
+// include/itemfunc.php, row 1110
 "Code for unaliasing (UPDATE)" => "\xCA\xEE\xE4 \xE7\xE0 \xF0\xE0\xE7\xE3\xF0\xFA\xF9\xE0\xED\xE5 \xED\xE0 \xE0\xEB\xE8\xE0\xF1\xE8 (UPDATE)", // ai 2026-06
 
-// include/itemfunc.php, row 1109
+// include/itemfunc.php, row 1110
 "The same as above, but just for UPDATE operation. If unfilled, the value of the field stays unchanged" => "\xD1\xFA\xF9\xEE\xF2\xEE \xEA\xE0\xF2\xEE \xEF\xEE-\xE3\xEE\xF0\xE5, \xED\xEE \xF1\xE0\xEC\xEE \xE7\xE0 \xEE\xEF\xE5\xF0\xE0\xF6\xE8\xFF\xF2\xE0 UPDATE. \xC0\xEA\xEE \xED\xE5 \xE5 \xEF\xEE\xEF\xFA\xEB\xED\xE5\xED\xEE, \xF1\xF2\xEE\xE9\xED\xEE\xF1\xF2\xF2\xE0 \xED\xE0 \xEF\xEE\xEB\xE5\xF2\xEE \xEE\xF1\xF2\xE0\xE2\xE0 \xED\xE5\xEF\xF0\xEE\xEC\xE5\xED\xE5\xED\xE0", // ai 2026-06
 
-// include/itemfunc.php, row 1110
+// include/itemfunc.php, row 1111
 "Multivalue delimiter" => "\xD0\xE0\xE7\xE4\xE5\xEB\xE8\xF2\xE5\xEB \xED\xE0 \xEC\xED\xEE\xE6\xE5\xF1\xF2\xE2\xE5\xED\xE8 \xF1\xF2\xEE\xE9\xED\xEE\xF1\xF2\xE8", // ai 2026-06
 
-// include/itemfunc.php, row 1110
+// include/itemfunc.php, row 1111
 "Character or string, which will split the computed string into multiple values (the same field)" => "\xC7\xED\xE0\xEA \xE8\xEB\xE8 \xED\xE8\xE7, \xEA\xEE\xE9\xF2\xEE \xF0\xE0\xE7\xE4\xE5\xEB\xFF \xE8\xE7\xF7\xE8\xF1\xEB\xE5\xED\xE8\xFF \xED\xE8\xE7 \xED\xE0 \xED\xFF\xEA\xEE\xEB\xEA\xEE \xF1\xF2\xEE\xE9\xED\xEE\xF1\xF2\xE8 (\xED\xE0 \xF1\xFA\xF9\xEE\xF2\xEE \xEF\xEE\xEB\xE5)", // ai 2026-06
 
-// include/itemfunc.php, row 1111
+// include/itemfunc.php, row 1112
 "Recompute every" => "\xC8\xED\xF2\xE5\xF0\xE2\xE0\xEB \xED\xE0 \xEF\xF0\xE5\xE8\xE7\xF7\xE8\xF1\xEB\xFF\xE2\xE0\xED\xE5", // ai 2026-06
 
-// include/itemfunc.php, row 1111
+// include/itemfunc.php, row 1112
 "The field will be recomputed every minute, hour, ... (using UPDATE code above). The times are not exact - the minute means something 1-10 minutes. If not filled, the field will be recomputed only on insert/update of the item." => "\xCF\xEE\xEB\xE5\xF2\xEE \xF9\xE5 \xF1\xE5 \xEF\xF0\xE5\xE8\xE7\xF7\xE8\xF1\xEB\xFF\xE2\xE0 \xE2\xF1\xFF\xEA\xE0 \xEC\xE8\xED\xF3\xF2\xE0, \xF7\xE0\xF1, ... (\xF7\xF0\xE5\xE7 UPDATE \xEA\xEE\xE4\xE0 \xEF\xEE-\xE3\xEE\xF0\xE5). \xC2\xF0\xE5\xEC\xE5\xED\xE0\xF2\xE0 \xED\xE5 \xF1\xE0 \xF2\xEE\xF7\xED\xE8 - \xEC\xE8\xED\xF3\xF2\xE0 \xEE\xE7\xED\xE0\xF7\xE0\xE2\xE0 \xEF\xF0\xE8\xE1\xEB\xE8\xE7\xE8\xF2\xE5\xEB\xED\xEE 1-10 \xEC\xE8\xED\xF3\xF2\xE8. \xC0\xEA\xEE \xED\xE5 \xE5 \xEF\xEE\xEF\xFA\xEB\xED\xE5\xED\xEE, \xEF\xEE\xEB\xE5\xF2\xEE \xF1\xE5 \xEF\xF0\xE5\xE8\xE7\xF7\xE8\xF1\xEB\xFF\xE2\xE0 \xF1\xE0\xEC\xEE \xEF\xF0\xE8 \xE2\xEC\xFA\xEA\xE2\xE0\xED\xE5/\xEE\xE1\xED\xEE\xE2\xFF\xE2\xE0\xED\xE5 \xED\xE0 \xF1\xF2\xE0\xF2\xE8\xFF\xF2\xE0.", // ai 2026-06
 
-// include/itemfunc.php, row 1129
+// include/itemfunc.php, row 1130
 "Computed field" => "\xC8\xE7\xF7\xE8\xF1\xEB\xFF\xE5\xEC\xEE \xEF\xEE\xEB\xE5", // ai 2026-06
 
-// include/itemfunc.php, row 1130
+// include/itemfunc.php, row 1131
 "The field is the result of expression written in \\\"Code for unaliasing\\\". It is good solution for all values, which could be precomputed, since its computation on item-show-time would be slow. Yes, you can use {view...}, {include...}, {switch...} here" => "\xCF\xEE\xEB\xE5\xF2\xEE \xE5 \xF0\xE5\xE7\xF3\xEB\xF2\xE0\xF2 \xEE\xF2 \xE8\xE7\xF0\xE0\xE7\xE0, \xE7\xE0\xEF\xE8\xF1\xE0\xED \xE2 \\\"\xCA\xEE\xE4 \xE7\xE0 \xF0\xE0\xE7\xE3\xF0\xFA\xF9\xE0\xED\xE5 \xED\xE0 \xE0\xEB\xE8\xE0\xF1\xE8\\\". \xD2\xEE\xE2\xE0 \xE5 \xE4\xEE\xE1\xF0\xEE \xF0\xE5\xF8\xE5\xED\xE8\xE5 \xE7\xE0 \xE2\xF1\xE8\xF7\xEA\xE8 \xF1\xF2\xEE\xE9\xED\xEE\xF1\xF2\xE8, \xEA\xEE\xE8\xF2\xEE \xEC\xEE\xE3\xE0\xF2 \xE4\xE0 \xF1\xE5 \xE8\xE7\xF7\xE8\xF1\xEB\xFF\xF2 \xEF\xF0\xE5\xE4\xE2\xE0\xF0\xE8\xF2\xE5\xEB\xED\xEE, \xF2\xFA\xE9 \xEA\xE0\xF2\xEE \xE8\xE7\xF7\xE8\xF1\xEB\xFF\xE2\xE0\xED\xE5\xF2\xEE \xE8\xEC \xEF\xF0\xE8 \xEF\xEE\xEA\xE0\xE7\xE2\xE0\xED\xE5 \xED\xE0 \xF1\xF2\xE0\xF2\xE8\xFF\xF2\xE0 \xE1\xE8 \xE1\xE8\xEB\xEE \xE1\xE0\xE2\xED\xEE. \xC4\xE0, \xF2\xF3\xEA \xEC\xEE\xE6\xE5\xF2\xE5 \xE4\xE0 \xE8\xE7\xEF\xEE\xEB\xE7\xE2\xE0\xF2\xE5 {view...}, {include...}, {switch...}", // ai 2026-06
 
-// include/itemfunc.php, row 1137
+// include/itemfunc.php, row 1138
 "Code for unaliasing (INSERT+UPDATE)" => "\xCA\xEE\xE4 \xE7\xE0 \xF0\xE0\xE7\xE3\xF0\xFA\xF9\xE0\xED\xE5 \xED\xE0 \xE0\xEB\xE8\xE0\xF1\xE8 (INSERT+UPDATE)", // ai 2026-06
 
-// include/itemfunc.php, row 1157
+// include/itemfunc.php, row 1158
 "SEO Name" => "SEO \xE8\xEC\xE5", // ai 2026-06
 
-// include/itemfunc.php, row 1158
+// include/itemfunc.php, row 1159
 "If the field is not filled, compute seoname from _#HEADLINE alias (or another if specified) unique to all slices in sitemodules, where the slice is mentioned in \"Uses slices\" settings. Basically the SEO Name alias is shortcut for computed field with {ifset:{seo.............}:_#1:{seoname:{_#HEADLINE}:all:CHARSET}}" => "\xC0\xEA\xEE \xEF\xEE\xEB\xE5\xF2\xEE \xED\xE5 \xE5 \xEF\xEE\xEF\xFA\xEB\xED\xE5\xED\xEE, seoname \xF1\xE5 \xE8\xE7\xF7\xE8\xF1\xEB\xFF\xE2\xE0 \xEE\xF2 \xE0\xEB\xE8\xE0\xF1\xE0 _#HEADLINE (\xE8\xEB\xE8 \xE4\xF0\xF3\xE3, \xE0\xEA\xEE \xE5 \xE7\xE0\xE4\xE0\xE4\xE5\xED), \xF3\xED\xE8\xEA\xE0\xEB\xED\xEE \xE7\xE0 \xE2\xF1\xE8\xF7\xEA\xE8 \xF0\xF3\xE1\xF0\xE8\xEA\xE8 \xE2 site \xEC\xEE\xE4\xF3\xEB\xE8\xF2\xE5, \xE2 \xEA\xEE\xE8\xF2\xEE \xF0\xF3\xE1\xF0\xE8\xEA\xE0\xF2\xE0 \xE5 \xEF\xEE\xF1\xEE\xF7\xE5\xED\xE0 \xE2 \xED\xE0\xF1\xF2\xF0\xEE\xE9\xEA\xE0\xF2\xE0 \"Uses slices\". \xCF\xEE \xF1\xFA\xF9\xE5\xF1\xF2\xE2\xEE \xE0\xEB\xE8\xE0\xF1\xFA\xF2 SEO \xE8\xEC\xE5 \xE5 \xF1\xFA\xEA\xF0\xE0\xF9\xE5\xED\xE8\xE5 \xE7\xE0 \xE8\xE7\xF7\xE8\xF1\xEB\xFF\xE5\xEC\xEE \xEF\xEE\xEB\xE5 \xF1 {ifset:{seo.............}:_#1:{seoname:{_#HEADLINE}:all:CHARSET}}", // ai 2026-06
 
-// include/itemfunc.php, row 1165
+// include/itemfunc.php, row 1166
 "Alias to compute from" => "\xC0\xEB\xE8\xE0\xF1, \xEE\xF2 \xEA\xEE\xE9\xF2\xEE \xF1\xE5 \xE8\xE7\xF7\xE8\xF1\xEB\xFF\xE2\xE0", // ai 2026-06
 
-// include/itemfunc.php, row 1165
+// include/itemfunc.php, row 1166
 "if not specified, the _#HEADLINE is used" => "\xE0\xEA\xEE \xED\xE5 \xE5 \xE7\xE0\xE4\xE0\xE4\xE5\xED, \xF1\xE5 \xE8\xE7\xEF\xEE\xEB\xE7\xE2\xE0 _#HEADLINE", // ai 2026-06
 
-// include/itemfunc.php, row 1180
+// include/itemfunc.php, row 1181
 "Unique number for this field (from 1,..)" => "\xD3\xED\xE8\xEA\xE0\xEB\xE5\xED \xED\xEE\xEC\xE5\xF0 \xE7\xE0 \xF2\xEE\xE2\xE0 \xEF\xEE\xEB\xE5 (\xEE\xF2 1,..)", // ai 2026-06
 
-// include/itemfunc.php, row 1181
+// include/itemfunc.php, row 1182
 "Unique number in sequence 1,2,3,..." => "\xD3\xED\xE8\xEA\xE0\xEB\xE5\xED \xED\xEE\xEC\xE5\xF0 \xE2 \xEF\xEE\xF1\xEB\xE5\xE4\xEE\xE2\xE0\xF2\xE5\xEB\xED\xEE\xF1\xF2 1,2,3,...", // ai 2026-06
 
-// include/itemfunc.php, row 1203
+// include/itemfunc.php, row 1204
 "File = uploaded file" => "\xD4\xE0\xE9\xEB = \xEA\xE0\xF7\xE5\xED \xF4\xE0\xE9\xEB", // ai 2026-06
 
-// include/itemfunc.php, row 1204
+// include/itemfunc.php, row 1205
 "Stores the uploaded file and a link to it, parameters only apply if type is image/something." => "\xC7\xE0\xEF\xE8\xF1\xE2\xE0 \xEA\xE0\xF7\xE5\xED\xE8\xFF \xF4\xE0\xE9\xEB \xE8 \xE2\xF0\xFA\xE7\xEA\xE0 \xEA\xFA\xEC \xED\xE5\xE3\xEE; \xEF\xE0\xF0\xE0\xEC\xE5\xF2\xF0\xE8\xF2\xE5 \xE2\xE0\xE6\xE0\xF2 \xF1\xE0\xEC\xEE \xE0\xEA\xEE \xF2\xE8\xEF\xFA\xF2 \xE5 image/something.", // ai 2026-06
 
-// include/itemfunc.php, row 1211
+// include/itemfunc.php, row 1212
 "Mime types accepted" => "\xC4\xEE\xEF\xF3\xF1\xF2\xE8\xEC\xE8 MIME \xF2\xE8\xEF\xEE\xE2\xE5", // ai 2026-06
 
-// include/itemfunc.php, row 1211
+// include/itemfunc.php, row 1212
 "Only files of matching mime types will be accepted" => "\xD9\xE5 \xE1\xFA\xE4\xE0\xF2 \xEF\xF0\xE8\xE5\xF2\xE8 \xF1\xE0\xEC\xEE \xF4\xE0\xE9\xEB\xEE\xE2\xE5 \xF1\xFA\xF1 \xF1\xFA\xEE\xF2\xE2\xE5\xF2\xF1\xF2\xE2\xE0\xF9\xE8 MIME \xF2\xE8\xEF\xEE\xE2\xE5", // ai 2026-06
 
-// include/itemfunc.php, row 1212
+// include/itemfunc.php, row 1213
 "Maximum image width" => "\xCC\xE0\xEA\xF1\xE8\xEC\xE0\xEB\xED\xE0 \xF8\xE8\xF0\xE8\xED\xE0 \xED\xE0 \xE8\xE7\xEE\xE1\xF0\xE0\xE6\xE5\xED\xE8\xE5\xF2\xEE", // ai 2026-06
 
-// include/itemfunc.php, row 1213
+// include/itemfunc.php, row 1214
 "Maximum image height" => "\xCC\xE0\xEA\xF1\xE8\xEC\xE0\xEB\xED\xE0 \xE2\xE8\xF1\xEE\xF7\xE8\xED\xE0 \xED\xE0 \xE8\xE7\xEE\xE1\xF0\xE0\xE6\xE5\xED\xE8\xE5\xF2\xEE", // ai 2026-06
 
-// include/itemfunc.php, row 1213
+// include/itemfunc.php, row 1214
 "The image will be resampled to be within these limits, while retaining aspect ratio." => "\xC8\xE7\xEE\xE1\xF0\xE0\xE6\xE5\xED\xE8\xE5\xF2\xEE \xF9\xE5 \xE1\xFA\xE4\xE5 \xEF\xF0\xE5\xEE\xF0\xE0\xE7\xEC\xE5\xF0\xE5\xED\xEE \xE2 \xF0\xE0\xEC\xEA\xE8\xF2\xE5 \xED\xE0 \xF2\xE5\xE7\xE8 \xE3\xF0\xE0\xED\xE8\xF6\xE8, \xEF\xF0\xE8 \xE7\xE0\xEF\xE0\xE7\xE2\xE0\xED\xE5 \xED\xE0 \xF1\xFA\xEE\xF2\xED\xEE\xF8\xE5\xED\xE8\xE5\xF2\xEE \xED\xE0 \xF1\xF2\xF0\xE0\xED\xE8\xF2\xE5.", // ai 2026-06
 
-// include/itemfunc.php, row 1214
+// include/itemfunc.php, row 1215
 "Other fields" => "\xC4\xF0\xF3\xE3\xE8 \xEF\xEE\xEB\xE5\xF2\xE0", // ai 2026-06
 
-// include/itemfunc.php, row 1214
+// include/itemfunc.php, row 1215
 "List of other fields to receive this image, separated by ##. Does not work well for multi uploads." => "\xD1\xEF\xE8\xF1\xFA\xEA \xF1 \xE4\xF0\xF3\xE3\xE8 \xEF\xEE\xEB\xE5\xF2\xE0, \xEA\xEE\xE8\xF2\xEE \xE4\xE0 \xEF\xEE\xEB\xF3\xF7\xE0\xF2 \xF2\xEE\xE2\xE0 \xE8\xE7\xEE\xE1\xF0\xE0\xE6\xE5\xED\xE8\xE5, \xF0\xE0\xE7\xE4\xE5\xEB\xE5\xED\xE8 \xF1 ##. \xCD\xE5 \xF0\xE0\xE1\xEE\xF2\xE8 \xE4\xEE\xE1\xF0\xE5 \xEF\xF0\xE8 \xEC\xED\xEE\xE6\xE5\xF1\xF2\xE2\xE5\xED\xEE \xEA\xE0\xF7\xE2\xE0\xED\xE5.", // ai 2026-06
 
-// include/itemfunc.php, row 1215
+// include/itemfunc.php, row 1216
 "Upload policy" => "\xCF\xEE\xE2\xE5\xE4\xE5\xED\xE8\xE5 \xEF\xF0\xE8 \xEA\xE0\xF7\xE2\xE0\xED\xE5", // ai 2026-06
 
-// include/itemfunc.php, row 1215
+// include/itemfunc.php, row 1216
 "new | overwrite | backup<br>This parameter controls what to do if uploaded file alredy exists:<br>new - AA creates new filename (by adding _x postfix) and store it with this new name (default)<br>overwrite - the old file of the same name is overwritten<br>backup - the old file is copied to new (non-existing) file and current file is stored with current name.<br>In all cases the filename is escaped, so any non-word characters will be replaced by an underscore." => "new | overwrite | backup<br>\xD2\xEE\xE7\xE8 \xEF\xE0\xF0\xE0\xEC\xE5\xF2\xFA\xF0 \xEE\xEF\xF0\xE5\xE4\xE5\xEB\xFF \xEA\xE0\xEA\xE2\xEE \xE4\xE0 \xF1\xE5 \xED\xE0\xEF\xF0\xE0\xE2\xE8, \xE0\xEA\xEE \xEA\xE0\xF7\xE5\xED\xE8\xFF\xF2 \xF4\xE0\xE9\xEB \xE2\xE5\xF7\xE5 \xF1\xFA\xF9\xE5\xF1\xF2\xE2\xF3\xE2\xE0:<br>new - AA \xF1\xFA\xE7\xE4\xE0\xE2\xE0 \xED\xEE\xE2\xEE \xE8\xEC\xE5 \xED\xE0 \xF4\xE0\xE9\xEB\xE0 (\xEA\xE0\xF2\xEE \xE4\xEE\xE1\xE0\xE2\xFF \xED\xE0\xF1\xF2\xE0\xE2\xEA\xE0 _x) \xE8 \xE3\xEE \xE7\xE0\xEF\xE8\xF1\xE2\xE0 \xF1 \xF2\xEE\xE2\xE0 \xED\xEE\xE2\xEE \xE8\xEC\xE5 (\xEF\xEE \xEF\xEE\xE4\xF0\xE0\xE7\xE1\xE8\xF0\xE0\xED\xE5)<br>overwrite - \xF1\xF2\xE0\xF0\xE8\xFF\xF2 \xF4\xE0\xE9\xEB \xF1\xFA\xF1 \xF1\xFA\xF9\xEE\xF2\xEE \xE8\xEC\xE5 \xF1\xE5 \xEF\xF0\xE5\xE7\xE0\xEF\xE8\xF1\xE2\xE0<br>backup - \xF1\xF2\xE0\xF0\xE8\xFF\xF2 \xF4\xE0\xE9\xEB \xF1\xE5 \xEA\xEE\xEF\xE8\xF0\xE0 \xE2 \xED\xEE\xE2 (\xED\xE5\xF1\xFA\xF9\xE5\xF1\xF2\xE2\xF3\xE2\xE0\xF9) \xF4\xE0\xE9\xEB, \xE0 \xF2\xE5\xEA\xF3\xF9\xE8\xFF\xF2 \xF4\xE0\xE9\xEB \xF1\xE5 \xE7\xE0\xEF\xE8\xF1\xE2\xE0 \xF1 \xF2\xE5\xEA\xF3\xF9\xEE\xF2\xEE \xE8\xEC\xE5.<br>\xC2\xFA\xE2 \xE2\xF1\xE8\xF7\xEA\xE8 \xF1\xEB\xF3\xF7\xE0\xE8 \xE8\xEC\xE5\xF2\xEE \xED\xE0 \xF4\xE0\xE9\xEB\xE0 \xF1\xE5 \xEE\xE1\xF0\xE0\xE1\xEE\xF2\xE2\xE0, \xF2\xE0\xEA\xE0 \xF7\xE5 \xE2\xF1\xE8\xF7\xEA\xE8 \xED\xE5\xE1\xF3\xEA\xE2\xE5\xED\xEE-\xF6\xE8\xF4\xF0\xEE\xE2\xE8 \xE7\xED\xE0\xF6\xE8 \xF9\xE5 \xE1\xFA\xE4\xE0\xF2 \xE7\xE0\xEC\xE5\xED\xE5\xED\xE8 \xF1 \xE4\xEE\xEB\xED\xE0 \xF7\xE5\xF0\xF2\xE0.", // ai 2026-06
 
-// include/itemfunc.php, row 1216
+// include/itemfunc.php, row 1217
 "Exact dimensions" => "\xD2\xEE\xF7\xED\xE8 \xF0\xE0\xE7\xEC\xE5\xF0\xE8", // ai 2026-06
 
-// include/itemfunc.php, row 1216
+// include/itemfunc.php, row 1217
 "If set to 1 the image will be downsized exactly to the specified dimensions (and cropped if needed). Default is 0 or empty: Maintain aspect ratio while resizing the image." => "\xC0\xEA\xEE \xE5 \xE7\xE0\xE4\xE0\xE4\xE5\xED\xEE 1, \xE8\xE7\xEE\xE1\xF0\xE0\xE6\xE5\xED\xE8\xE5\xF2\xEE \xF9\xE5 \xE1\xFA\xE4\xE5 \xED\xE0\xEC\xE0\xEB\xE5\xED\xEE \xF2\xEE\xF7\xED\xEE \xE4\xEE \xE7\xE0\xE4\xE0\xE4\xE5\xED\xE8\xF2\xE5 \xF0\xE0\xE7\xEC\xE5\xF0\xE8 (\xE8 \xE8\xE7\xF0\xFF\xE7\xE0\xED\xEE \xEF\xF0\xE8 \xED\xF3\xE6\xE4\xE0). \xCF\xEE \xEF\xEE\xE4\xF0\xE0\xE7\xE1\xE8\xF0\xE0\xED\xE5 \xE5 0 \xE8\xEB\xE8 \xEF\xF0\xE0\xE7\xED\xEE: \xEF\xF0\xE8 \xEF\xF0\xE5\xEE\xF0\xE0\xE7\xEC\xE5\xF0\xFF\xE2\xE0\xED\xE5 \xF1\xE5 \xE7\xE0\xEF\xE0\xE7\xE2\xE0 \xF1\xFA\xEE\xF2\xED\xEE\xF8\xE5\xED\xE8\xE5\xF2\xEE \xED\xE0 \xF1\xF2\xF0\xE0\xED\xE8\xF2\xE5.", // ai 2026-06
 
-// include/itemfunc.php, row 1217
+// include/itemfunc.php, row 1218
 "Filename template" => "\xD8\xE0\xE1\xEB\xEE\xED \xE7\xE0 \xE8\xEC\xE5 \xED\xE0 \xF4\xE0\xE9\xEB\xE0", // ai 2026-06
 
-// include/itemfunc.php, row 1217
+// include/itemfunc.php, row 1218
 "Renames file according to template. You can use AA expressions as well as special alias _#name and _#ext or _#full (file name, extension and fullname). The item aliases in AA expressions do not work on INSERT (item does not exist at time of file write). They will work on UPDATE." => "\xCF\xF0\xE5\xE8\xEC\xE5\xED\xF3\xE2\xE0 \xF4\xE0\xE9\xEB\xE0 \xF1\xEF\xEE\xF0\xE5\xE4 \xF8\xE0\xE1\xEB\xEE\xED\xE0. \xCC\xEE\xE6\xE5\xF2\xE5 \xE4\xE0 \xE8\xE7\xEF\xEE\xEB\xE7\xE2\xE0\xF2\xE5 AA \xE8\xE7\xF0\xE0\xE7\xE8, \xEA\xE0\xEA\xF2\xEE \xE8 \xF1\xEF\xE5\xF6\xE8\xE0\xEB\xED\xE8\xF2\xE5 \xE0\xEB\xE8\xE0\xF1\xE8 _#name \xE8 _#ext \xE8\xEB\xE8 _#full (\xE8\xEC\xE5 \xED\xE0 \xF4\xE0\xE9\xEB\xE0, \xF0\xE0\xE7\xF8\xE8\xF0\xE5\xED\xE8\xE5 \xE8 \xEF\xFA\xEB\xED\xEE \xE8\xEC\xE5). \xC0\xEB\xE8\xE0\xF1\xE8\xF2\xE5 \xED\xE0 \xF1\xF2\xE0\xF2\xE8\xFF\xF2\xE0 \xE2 AA \xE8\xE7\xF0\xE0\xE7\xE8\xF2\xE5 \xED\xE5 \xF0\xE0\xE1\xEE\xF2\xFF\xF2 \xEF\xF0\xE8 INSERT (\xF1\xF2\xE0\xF2\xE8\xFF\xF2\xE0 \xED\xE5 \xF1\xFA\xF9\xE5\xF1\xF2\xE2\xF3\xE2\xE0 \xE2 \xEC\xEE\xEC\xE5\xED\xF2\xE0 \xED\xE0 \xE7\xE0\xEF\xE8\xF1\xE2\xE0\xED\xE5 \xED\xE0 \xF4\xE0\xE9\xEB\xE0). \xCF\xF0\xE8 UPDATE \xF9\xE5 \xF0\xE0\xE1\xEE\xF2\xFF\xF2.", // ai 2026-06
 
-// include/itemfunc.php, row 1374
+// include/itemfunc.php, row 1375
 "Password and Change Password" => "\xCF\xE0\xF0\xEE\xEB\xE0 \xE8 \xD1\xEC\xFF\xED\xE0 \xED\xE0 \xEF\xE0\xF0\xEE\xEB\xE0", // ai 2026-06
 
-// include/itemfunc.php, row 1375
+// include/itemfunc.php, row 1376
 "Stores value from a \"Password and Change Password\" field type. First proves the new password matches the retyped new password, and if so, encrypts the new password and stores it." => "\xC7\xE0\xEF\xE8\xF1\xE2\xE0 \xF1\xF2\xEE\xE9\xED\xEE\xF1\xF2 \xEE\xF2 \xEF\xEE\xEB\xE5 \xF2\xE8\xEF \"\xCF\xE0\xF0\xEE\xEB\xE0 \xE8 \xD1\xEC\xFF\xED\xE0 \xED\xE0 \xEF\xE0\xF0\xEE\xEB\xE0\". \xCF\xFA\xF0\xE2\xEE \xEF\xF0\xEE\xE2\xE5\xF0\xFF\xE2\xE0 \xE4\xE0\xEB\xE8 \xED\xEE\xE2\xE0\xF2\xE0 \xEF\xE0\xF0\xEE\xEB\xE0 \xF1\xFA\xE2\xEF\xE0\xE4\xE0 \xF1 \xEF\xEE\xE2\xF2\xEE\xF0\xED\xEE \xE2\xFA\xE2\xE5\xE4\xE5\xED\xE0\xF2\xE0 \xED\xEE\xE2\xE0 \xEF\xE0\xF0\xEE\xEB\xE0 \xE8 \xE0\xEA\xEE \xE4\xE0, \xF8\xE8\xF4\xF0\xEE\xE2\xE0 \xED\xEE\xE2\xE0\xF2\xE0 \xEF\xE0\xF0\xEE\xEB\xE0 \xE8 \xFF \xE7\xE0\xEF\xE8\xF1\xE2\xE0.", // ai 2026-06
 
-// include/itemfunc.php, row 1382
+// include/itemfunc.php, row 1383
 "Copy of password" => "\xCA\xEE\xEF\xE8\xE5 \xED\xE0 \xEF\xE0\xF0\xEE\xEB\xE0\xF2\xE0", // ai 2026-06
 
-// include/itemfunc.php, row 1382
+// include/itemfunc.php, row 1383
 "Field_id, where you want to store the copy of the password. Sometimes useful if you want to allow people to get his/her old password. It is strongly recommended to not store it in plaintext and encrypt it. See second parameter." => "Field_id, \xE2 \xEA\xEE\xE5\xF2\xEE \xE8\xF1\xEA\xE0\xF2\xE5 \xE4\xE0 \xE7\xE0\xEF\xE8\xF8\xE5\xF2\xE5 \xEA\xEE\xEF\xE8\xE5 \xED\xE0 \xEF\xE0\xF0\xEE\xEB\xE0\xF2\xE0. \xCF\xEE\xED\xFF\xEA\xEE\xE3\xE0 \xE5 \xEF\xEE\xEB\xE5\xE7\xED\xEE, \xE0\xEA\xEE \xE8\xF1\xEA\xE0\xF2\xE5 \xE4\xE0 \xEF\xEE\xE7\xE2\xEE\xEB\xE8\xF2\xE5 \xED\xE0 \xF5\xEE\xF0\xE0\xF2\xE0 \xE4\xE0 \xEF\xEE\xEB\xF3\xF7\xE0\xF2 \xF1\xF2\xE0\xF0\xE0\xF2\xE0 \xF1\xE8 \xEF\xE0\xF0\xEE\xEB\xE0. \xD1\xE8\xEB\xED\xEE \xEF\xF0\xE5\xEF\xEE\xF0\xFA\xF7\xE2\xE0\xEC\xE5 \xE4\xE0 \xED\xE5 \xFF \xF1\xFA\xF5\xF0\xE0\xED\xFF\xE2\xE0\xF2\xE5 \xEA\xE0\xF2\xEE \xEE\xE1\xE8\xEA\xED\xEE\xE2\xE5\xED \xF2\xE5\xEA\xF1\xF2, \xE0 \xE4\xE0 \xFF \xF8\xE8\xF4\xF0\xEE\xE2\xE0\xF2\xE5. \xC2\xE8\xE6\xF2\xE5 \xE2\xF2\xEE\xF0\xE8\xFF \xEF\xE0\xF0\xE0\xEC\xE5\xF2\xFA\xF0.", // ai 2026-06
 
-// include/itemfunc.php, row 1383, 1422
+// include/itemfunc.php, row 1384, 1423
 "Encrypt phrase" => "\xD4\xF0\xE0\xE7\xE0 \xE7\xE0 \xF8\xE8\xF4\xF0\xEE\xE2\xE0\xED\xE5", // ai 2026-06
 
-// include/itemfunc.php, row 1383
+// include/itemfunc.php, row 1384
 "If you specify the \"Copy of password\" field, it is recommended to encrypt the password in the database. Fill there any string. If you then need the password, you can decrypt it from the field by using the same phrase - {decrypt:{password.......1}:Some Phrase}" => "\xC0\xEA\xEE \xE7\xE0\xE4\xE0\xE4\xE5\xF2\xE5 \xEF\xEE\xEB\xE5\xF2\xEE \"\xCA\xEE\xEF\xE8\xE5 \xED\xE0 \xEF\xE0\xF0\xEE\xEB\xE0\xF2\xE0\", \xEF\xF0\xE5\xEF\xEE\xF0\xFA\xF7\xE8\xF2\xE5\xEB\xED\xEE \xE5 \xEF\xE0\xF0\xEE\xEB\xE0\xF2\xE0 \xE4\xE0 \xF1\xE5 \xF8\xE8\xF4\xF0\xEE\xE2\xE0 \xE2 \xE1\xE0\xE7\xE0\xF2\xE0 \xE4\xE0\xED\xED\xE8. \xC2\xFA\xE2\xE5\xE4\xE5\xF2\xE5 \xEF\xF0\xEE\xE8\xE7\xE2\xEE\xEB\xE5\xED \xED\xE8\xE7. \xC0\xEA\xEE \xEF\xEE\xF1\xEB\xE5 \xEF\xE0\xF0\xEE\xEB\xE0\xF2\xE0 \xE2\xE8 \xEF\xEE\xF2\xF0\xFF\xE1\xE2\xE0, \xEC\xEE\xE6\xE5\xF2\xE5 \xE4\xE0 \xFF \xE4\xE5\xF8\xE8\xF4\xF0\xE8\xF0\xE0\xF2\xE5 \xEE\xF2 \xEF\xEE\xEB\xE5\xF2\xEE \xF1\xFA\xF1 \xF1\xFA\xF9\xE0\xF2\xE0 \xF4\xF0\xE0\xE7\xE0 - {decrypt:{password.......1}:Some Phrase}", // ai 2026-06
 
-// include/itemfunc.php, row 1414
+// include/itemfunc.php, row 1415
 "2FA Secret" => "\xD2\xE0\xE5\xED \xEA\xEB\xFE\xF7 2FA", // ai 2026-06
 
-// include/itemfunc.php, row 1415
+// include/itemfunc.php, row 1416
 "Generates and stores secret for Two-factor authentication, possibly encrypted by password" => "\xC3\xE5\xED\xE5\xF0\xE8\xF0\xE0 \xE8 \xE7\xE0\xEF\xE8\xF1\xE2\xE0 \xF2\xE0\xE5\xED \xEA\xEB\xFE\xF7 \xE7\xE0 \xE4\xE2\xF3\xF4\xE0\xEA\xF2\xEE\xF0\xED\xEE \xF3\xE4\xEE\xF1\xF2\xEE\xE2\xE5\xF0\xFF\xE2\xE0\xED\xE5, \xE5\xE2\xE5\xED\xF2\xF3\xE0\xEB\xED\xEE \xF8\xE8\xF4\xF0\xEE\xE2\xE0\xED \xF1 \xEF\xE0\xF0\xEE\xEB\xE0", // ai 2026-06
 
-// include/itemfunc.php, row 1422
+// include/itemfunc.php, row 1423
 "Password to be applied for encrypting this field value. Could contain AA expressions or aliases (for user item in Reader Management slice)" => "\xCF\xE0\xF0\xEE\xEB\xE0, \xEA\xEE\xFF\xF2\xEE \xF9\xE5 \xF1\xE5 \xE8\xE7\xEF\xEE\xEB\xE7\xE2\xE0 \xE7\xE0 \xF8\xE8\xF4\xF0\xEE\xE2\xE0\xED\xE5 \xED\xE0 \xF1\xF2\xEE\xE9\xED\xEE\xF1\xF2\xF2\xE0 \xED\xE0 \xF2\xEE\xE2\xE0 \xEF\xEE\xEB\xE5. \xCC\xEE\xE6\xE5 \xE4\xE0 \xF1\xFA\xE4\xFA\xF0\xE6\xE0 AA \xE8\xE7\xF0\xE0\xE7\xE8 \xE8\xEB\xE8 \xE0\xEB\xE8\xE0\xF1\xE8 (\xE7\xE0 \xF1\xF2\xE0\xF2\xE8\xFF\xF2\xE0 \xED\xE0 \xEF\xEE\xF2\xF0\xE5\xE1\xE8\xF2\xE5\xEB\xFF \xE2 \xF0\xF3\xE1\xF0\xE8\xEA\xE0\xF2\xE0 \xD3\xEF\xF0\xE0\xE2\xEB\xE5\xED\xE8\xE5 \xED\xE0 \xF7\xE8\xF2\xE0\xF2\xE5\xEB\xE8)", // ai 2026-06
 
 // include/itemview.php, row 117
@@ -4910,65 +4910,143 @@ return [
 // include/locauth.php, row 87
 "If you are sure you have typed the correct password, please e-mail <a href=mailto:%1>%1</a>" => "\xC0\xEA\xEE \xF1\xF2\xE5 \xF1\xE8\xE3\xF3\xF0\xED\xE8, \xF7\xE5 \xF1\xF2\xE5 \xE2\xFA\xE2\xE5\xEB\xE8 \xEF\xF0\xE0\xE2\xE8\xEB\xED\xE0\xF2\xE0 \xEF\xE0\xF0\xEE\xEB\xE0, \xEC\xEE\xEB\xFF, \xEF\xE8\xF8\xE5\xF2\xE5 \xED\xE0 <a href=mailto:%1>%1</a>", // ai 2026-06
 
-// include/logs.php, row 306
+// include/logs.php, row 336
 "Created time" => "\xC2\xF0\xE5\xEC\xE5 \xED\xE0 \xF1\xFA\xE7\xE4\xE0\xE2\xE0\xED\xE5", // ai 2026-06
 
-// include/logs.php, row 307
+// include/logs.php, row 337
 "Readers to be emailed" => "\xD7\xE8\xF2\xE0\xF2\xE5\xEB\xE8, \xED\xE0 \xEA\xEE\xE8\xF2\xEE \xE4\xE0 \xF1\xE5 \xE8\xE7\xEF\xF0\xE0\xF2\xE8 \xE8\xEC\xE5\xE9\xEB", // ai 2026-06
 
-// include/logs.php, row 317
+// include/logs.php, row 347
 "Page" => "\xD1\xF2\xF0\xE0\xED\xE8\xF6\xE0", // ai 2026-06
 
-// include/logs.php, row 327, 351, 364
+// include/logs.php, row 357, 397, 410
 "Time [s]" => "\xC2\xF0\xE5\xEC\xE5 [s]", // ai 2026-06
 
-// include/logs.php, row 328, 353
+// include/logs.php, row 358, 399
 "Memory usage [MB]" => "\xC8\xE7\xEF\xEE\xEB\xE7\xE2\xE0\xED\xE0 \xEF\xE0\xEC\xE5\xF2 [MB]", // ai 2026-06
 
-// include/logs.php, row 329
+// include/logs.php, row 359
 "Memory peak [MB]" => "\xCF\xE8\xEA \xED\xE0 \xEF\xE0\xEC\xE5\xF2\xF2\xE0 [MB]", // ai 2026-06
 
-// include/logs.php, row 330
+// include/logs.php, row 360
 "Return code" => "\xC2\xFA\xF0\xED\xE0\xF2 \xEA\xEE\xE4", // ai 2026-06
 
-// include/logs.php, row 349
-"Cached" => "\xCE\xF2 \xEA\xE5\xF8\xE0", // ai 2026-06
-
-// include/logs.php, row 350
-"Not Modified (304)" => "\xCD\xE5\xEF\xF0\xEE\xEC\xE5\xED\xE5\xED\xEE (304)", // ai 2026-06
-
-// include/logs.php, row 352
-"Time + Cached + 304" => "\xC2\xF0\xE5\xEC\xE5 + \xEA\xE5\xF8 + 304", // ai 2026-06
-
-// include/logs.php, row 354, 365, 397
-"Url" => "URL", // ai 2026-06
+// include/logs.php, row 374
+"Tasks done" => "\xC7\xE0\xE2\xFA\xF0\xF8\xE5\xED\xE8 \xE7\xE0\xE4\xE0\xF7\xE8", // ai 2026-06
 
 // include/logs.php, row 375
+"Tasks started" => "\xD1\xF2\xE0\xF0\xF2\xE8\xF0\xE0\xED\xE8 \xE7\xE0\xE4\xE0\xF7\xE8", // ai 2026-06
+
+// include/logs.php, row 376
+"Duration [s]" => "\xCF\xF0\xEE\xE4\xFA\xEB\xE6\xE8\xF2\xE5\xEB\xED\xEE\xF1\xF2 [\xF1]", // ai 2026-06
+
+// include/logs.php, row 377
+"Allowed [s]" => "\xCF\xEE\xE7\xE2\xEE\xEB\xE5\xED\xEE [\xF1]", // ai 2026-06
+
+// include/logs.php, row 395
+"Cached" => "\xCE\xF2 \xEA\xE5\xF8\xE0", // ai 2026-06
+
+// include/logs.php, row 396
+"Not Modified (304)" => "\xCD\xE5\xEF\xF0\xEE\xEC\xE5\xED\xE5\xED\xEE (304)", // ai 2026-06
+
+// include/logs.php, row 398
+"Time + Cached + 304" => "\xC2\xF0\xE5\xEC\xE5 + \xEA\xE5\xF8 + 304", // ai 2026-06
+
+// include/logs.php, row 400, 411, 443, 475
+"Url" => "URL", // ai 2026-06
+
+// include/logs.php, row 421
 // include/menu_util.php, row 45
 "AA" => "",
 
-// include/logs.php, row 376
+// include/logs.php, row 422
 "SVN AA (util.php)" => "",
 
-// include/logs.php, row 377
+// include/logs.php, row 423
 "PHP" => "",
 
-// include/logs.php, row 378
+// include/logs.php, row 424
 "DB" => "\xC1\xC4", // ai 2026-06
 
-// include/logs.php, row 379
+// include/logs.php, row 425
 "Memory" => "\xCF\xE0\xEC\xE5\xF2", // ai 2026-06
 
-// include/logs.php, row 380
+// include/logs.php, row 426
 "CPU" => "",
 
-// include/logs.php, row 394
+// include/logs.php, row 440
 "Identifier" => "\xC8\xE4\xE5\xED\xF2\xE8\xF4\xE8\xEA\xE0\xF2\xEE\xF0", // ai 2026-06
 
-// include/logs.php, row 395
+// include/logs.php, row 441, 570, 583
 // modules/jump/modedit.php, row 180
 // src/Manager.php, row 584
 "Module ID" => "ID \xED\xE0 \xEC\xEE\xE4\xF3\xEB\xE0", // ai 2026-06
+
+// include/logs.php, row 452
+"Template id" => "Id \xED\xE0 \xF8\xE0\xE1\xEB\xEE\xED", // ai 2026-06
+
+// include/logs.php, row 454
+"Emails sent" => "\xC8\xE7\xEF\xF0\xE0\xF2\xE5\xED\xE8 \xE8\xEC\xE5\xE9\xEB\xE8", // ai 2026-06
+
+// include/logs.php, row 463
+"Items selected" => "\xC8\xE7\xE1\xF0\xE0\xED\xE8 \xE5\xEB\xE5\xEC\xE5\xED\xF2\xE8", // ai 2026-06
+
+// include/logs.php, row 464
+"Items updated" => "\xCE\xE1\xED\xEE\xE2\xE5\xED\xE8 \xE5\xEB\xE5\xEC\xE5\xED\xF2\xE8", // ai 2026-06
+
+// include/logs.php, row 465
+"Items planned" => "\xCF\xEB\xE0\xED\xE8\xF0\xE0\xED\xE8 \xE5\xEB\xE5\xEC\xE5\xED\xF2\xE8", // ai 2026-06
+
+// include/logs.php, row 474
+"Message" => "\xD1\xFA\xEE\xE1\xF9\xE5\xED\xE8\xE5", // ai 2026-06
+
+// include/logs.php, row 476
+"Referer" => "\xCF\xF0\xE5\xEF\xF0\xE0\xF9\xE0\xF9 \xE0\xE4\xF0\xE5\xF1", // ai 2026-06
+
+// include/logs.php, row 485
+"New name" => "\xCD\xEE\xE2\xEE \xE8\xEC\xE5", // ai 2026-06
+
+// include/logs.php, row 486
+"Old name" => "\xD1\xF2\xE0\xF0\xEE \xE8\xEC\xE5", // ai 2026-06
+
+// include/logs.php, row 495, 518
+"Phase" => "\xD4\xE0\xE7\xE0", // ai 2026-06
+
+// include/logs.php, row 496
+"Collection" => "\xCA\xEE\xEB\xE5\xEA\xF6\xE8\xFF", // ai 2026-06
+
+// include/logs.php, row 498, 509, 519
+"Detail" => "\xC4\xE5\xF2\xE0\xE9\xEB", // ai 2026-06
+
+// include/logs.php, row 508
+"Status" => "\xD1\xF2\xE0\xF2\xF3\xF1", // ai 2026-06
+
+// include/logs.php, row 529
+"Processed" => "\xCE\xE1\xF0\xE0\xE1\xEE\xF2\xE5\xED\xE8", // ai 2026-06
+
+// include/logs.php, row 530
+"Stored" => "\xC7\xE0\xEF\xE0\xE7\xE5\xED\xE8", // ai 2026-06
+
+// include/logs.php, row 531
+"Errors" => "\xC3\xF0\xE5\xF8\xEA\xE8", // ai 2026-06
+
+// include/logs.php, row 542
+"Outcome" => "\xD0\xE5\xE7\xF3\xEB\xF2\xE0\xF2", // ai 2026-06
+
+// include/logs.php, row 555
+"Mode" => "\xD0\xE5\xE6\xE8\xEC", // ai 2026-06
+
+// include/logs.php, row 556
+"Flags" => "\xD4\xEB\xE0\xE3\xEE\xE2\xE5", // ai 2026-06
+
+// include/logs.php, row 557
+"Context" => "\xCA\xEE\xED\xF2\xE5\xEA\xF1\xF2", // ai 2026-06
+
+// include/logs.php, row 571
+"Feed counterpart" => "\xD1\xFA\xEE\xF2\xE2\xE5\xF2\xF1\xF2\xE2\xE8\xE5 \xEF\xF0\xE8 \xE7\xE0\xF0\xE5\xE6\xE4\xE0\xED\xE5", // ai 2026-06
+
+// include/logs.php, row 584
+"Field ID" => "ID \xED\xE0 \xEF\xEE\xEB\xE5\xF2\xEE", // ai 2026-06
 
 // include/mail.php, row 563
 // include/tv_email.php, row 77, 145
@@ -4998,7 +5076,7 @@ return [
 // include/menu.php, row 65
 "View site" => "\xCF\xF0\xE5\xE3\xEB\xE5\xE4 \xED\xE0 \xF1\xE0\xE9\xF2\xE0", // ai 2026-06
 
-// include/menu.php, row 90, 91, 143
+// include/menu.php, row 90, 91, 142
 "Item Manager" => "\xCC\xE5\xED\xE8\xE4\xE6\xFA\xF0 \xED\xE0 \xF1\xF2\xE0\xF2\xE8\xE8", // ai 2026-06
 
 // include/menu.php, row 99
@@ -5017,137 +5095,137 @@ return [
 // include/menu.php, row 135
 "Email Notification" => "\xC8\xE7\xE2\xE5\xF1\xF2\xFF\xE2\xE0\xED\xE5 \xEF\xEE \xE8\xEC\xE5\xE9\xEB", // ai 2026-06
 
-// include/menu.php, row 138
+// include/menu.php, row 137
 // include/menu_util.php, row 69
 // include/um_util.php, row 100, 103
 "Permissions" => "\xCF\xF0\xE0\xE2\xE0", // ai 2026-06
 
-// include/menu.php, row 139
+// include/menu.php, row 138
 "Assign" => "\xC4\xEE\xE1\xE0\xE2\xFF\xED\xE5", // ai 2026-06
 
-// include/menu.php, row 142
+// include/menu.php, row 141
 "Design" => "\xC4\xE8\xE7\xE0\xE9\xED", // ai 2026-06
 
-// include/menu.php, row 145
+// include/menu.php, row 144
 "Fulltext" => "\xCF\xFA\xEB\xE5\xED \xF2\xE5\xEA\xF1\xF2", // ai 2026-06
 
-// include/menu.php, row 146
+// include/menu.php, row 145
 "Index" => "\xD1\xEF\xE8\xF1\xFA\xEA", // ai 2026-06
 
-// include/menu.php, row 148
+// include/menu.php, row 147
 "Sets of Items" => "\xCD\xE0\xE1\xEE\xF0\xE8 \xEE\xF2 \xF1\xF2\xE0\xF2\xE8\xE8", // ai 2026-06
 
-// include/menu.php, row 150
+// include/menu.php, row 149
 "Content Pooling" => "\xCE\xE1\xEC\xE5\xED \xED\xE0 \xF1\xFA\xE4\xFA\xF0\xE6\xE0\xED\xE8\xE5", // ai 2026-06
 
-// include/menu.php, row 151
+// include/menu.php, row 150
 "Nodes" => "\xC2\xFA\xE7\xEB\xE8", // ai 2026-06
 
-// include/menu.php, row 152
+// include/menu.php, row 151
 "Inner Node Feeding" => "\xC2\xFA\xF2\xF0\xE5\xF8\xE5\xED \xEE\xE1\xEC\xE5\xED", // ai 2026-06
 
-// include/menu.php, row 154
+// include/menu.php, row 153
 "Inter Node Export" => "\xC5\xEA\xF1\xEF\xEE\xF0\xF2 \xEA\xFA\xEC \xE2\xFA\xE7\xEB\xE8", // ai 2026-06
 
-// include/menu.php, row 155
+// include/menu.php, row 154
 "RSS Feeds" => "RSS \xEA\xE0\xED\xE0\xEB\xE8", // ai 2026-06
 
-// include/menu.php, row 156
+// include/menu.php, row 155
 "Filters" => "\xD4\xE8\xEB\xF2\xF0\xE8", // ai 2026-06
 
-// include/menu.php, row 157
+// include/menu.php, row 156
 "Mapping" => "\xD1\xFA\xEF\xEE\xF1\xF2\xE0\xE2\xFF\xED\xE5", // ai 2026-06
 
-// include/menu.php, row 158, 220
+// include/menu.php, row 157, 219
 "Import CSV" => "\xC8\xEC\xEF\xEE\xF0\xF2 \xED\xE0 CSV", // ai 2026-06
 
-// include/menu.php, row 159
+// include/menu.php, row 158
 // src/Manageraction/Item_Export.php, row 20
 "Export to file" => "\xC5\xEA\xF1\xEF\xEE\xF0\xF2 \xE2\xFA\xE2 \xF4\xE0\xE9\xEB", // ai 2026-06
 
-// include/menu.php, row 161, 217
-// include/menu_util.php, row 73, 124
+// include/menu.php, row 160, 216
+// include/menu_util.php, row 73, 123
 // src/Module/Poll/Menu.php, row 67
 "Misc" => "\xD0\xE0\xE7\xED\xE8", // ai 2026-06
 
-// include/menu.php, row 164
+// include/menu.php, row 163
 "Change field IDs" => "\xCF\xF0\xEE\xEC\xFF\xED\xE0 \xED\xE0 ID \xED\xE0 \xEF\xEE\xEB\xE5\xF2\xE0", // ai 2026-06
 
-// include/menu.php, row 167
+// include/menu.php, row 166
 "Anonymous Form Wizard" => "\xD1\xFA\xE2\xE5\xF2\xED\xE8\xEA \xE7\xE0 \xE0\xED\xEE\xED\xE8\xEC\xE5\xED \xF4\xEE\xF0\xEC\xF3\xEB\xFF\xF0", // ai 2026-06
 
-// include/menu.php, row 168
+// include/menu.php, row 167
 // include/tv_email.php, row 134
 "Email templates" => "\xD8\xE0\xE1\xEB\xEE\xED\xE8 \xE7\xE0 \xE8\xEC\xE5\xE9\xEB\xE8", // ai 2026-06
 
-// include/menu.php, row 170
+// include/menu.php, row 169
 // include/menu_util.php, row 75
 "Planned Tasks" => "\xCF\xEB\xE0\xED\xE8\xF0\xE0\xED\xE8 \xE7\xE0\xE4\xE0\xF7\xE8", // ai 2026-06
 
-// include/menu.php, row 178
+// include/menu.php, row 177
 "Mailman: create list" => "Mailman: \xF1\xFA\xE7\xE4\xE0\xE2\xE0\xED\xE5 \xED\xE0 \xF1\xEF\xE8\xF1\xFA\xEA", // ai 2026-06
 
-// include/menu.php, row 186
-// include/menu_util.php, row 119
+// include/menu.php, row 185
+// include/menu_util.php, row 118
 // src/Module/Poll/Menu.php, row 60
 "Folders" => "\xCF\xE0\xEF\xEA\xE8", // ai 2026-06
 
-// include/menu.php, row 189
+// include/menu.php, row 188
 // src/Module/Poll/Menu.php, row 62
 "... pending" => "... \xF7\xE0\xEA\xE0\xF9\xE8", // ai 2026-06
 
-// include/menu.php, row 190
+// include/menu.php, row 189
 // src/Module/Poll/Menu.php, row 63
 "... expired" => "... \xE8\xE7\xF2\xE5\xEA\xEB\xE8", // ai 2026-06
 
-// include/menu.php, row 192
-// include/menu_util.php, row 122
+// include/menu.php, row 191
+// include/menu_util.php, row 121
 // src/Module/Poll/Menu.php, row 65
 "Trash bin" => "\xCA\xEE\xF8\xF7\xE5", // ai 2026-06
 
-// include/menu.php, row 208
+// include/menu.php, row 207
 "Bookmarks" => "\xCE\xF2\xEC\xE5\xF2\xEA\xE8", // ai 2026-06
 
-// include/menu.php, row 218
+// include/menu.php, row 217
 "Setting" => "\xCD\xE0\xF1\xF2\xF0\xEE\xE9\xEA\xE0", // ai 2026-06
 
-// include/menu.php, row 219
-// include/menu_util.php, row 127
+// include/menu.php, row 218
+// include/menu_util.php, row 126
 // src/Module/Poll/Menu.php, row 68
 "Empty trash" => "\xC8\xE7\xEF\xF0\xE0\xE7\xE2\xE0\xED\xE5 \xED\xE0 \xEA\xEE\xF8\xF7\xE5\xF2\xEE", // ai 2026-06
 
-// include/menu.php, row 219
-// include/menu_util.php, row 127
+// include/menu.php, row 218
+// include/menu_util.php, row 126
 // src/Module/Poll/Menu.php, row 68
 "Are you sure you want to empty trash?" => "\xCD\xE0\xE8\xF1\xF2\xE8\xED\xE0 \xEB\xE8 \xE8\xF1\xEA\xE0\xF2\xE5 \xE4\xE0 \xE8\xE7\xEF\xF0\xE0\xE7\xED\xE8\xF2\xE5 \xEA\xEE\xF8\xF7\xE5\xF2\xEE?", // ai 2026-06
 
-// include/menu.php, row 221
+// include/menu.php, row 220
 "Set Debug OFF" => "\xC8\xE7\xEA\xEB\xFE\xF7\xE2\xE0\xED\xE5 \xED\xE0 Debug", // ai 2026-06
 
-// include/menu.php, row 221
+// include/menu.php, row 220
 "Set Debug ON" => "\xC2\xEA\xEB\xFE\xF7\xE2\xE0\xED\xE5 \xED\xE0 Debug", // ai 2026-06
 
-// include/menu.php, row 231
-// include/menu_util.php, row 420, 612
+// include/menu.php, row 230
+// include/menu_util.php, row 419, 726
 // include/slice.class.php, row 1194
 "Alerts" => "\xC8\xE7\xE2\xE5\xF1\xF2\xE8\xFF", // ai 2026-06
 
-// include/menu.php, row 231
+// include/menu.php, row 230
 "List of Alerts modules using this slice as Reader Management." => "\xD1\xEF\xE8\xF1\xFA\xEA \xED\xE0 \xEC\xEE\xE4\xF3\xEB\xE8\xF2\xE5 \xC8\xE7\xE2\xE5\xF1\xF2\xE8\xFF, \xEA\xEE\xE8\xF2\xEE \xE8\xE7\xEF\xEE\xEB\xE7\xE2\xE0\xF2 \xF2\xE0\xE7\xE8 \xF0\xF3\xE1\xF0\xE8\xEA\xE0 \xE7\xE0 \xD3\xEF\xF0\xE0\xE2\xEB\xE5\xED\xE8\xE5 \xED\xE0 \xF7\xE8\xF2\xE0\xF2\xE5\xEB\xE8.", // ai 2026-06
 
-// include/menu.php, row 233
+// include/menu.php, row 232
 "Bulk Emails" => "\xCC\xE0\xF1\xEE\xE2\xE8 \xE8\xEC\xE5\xE9\xEB\xE8", // ai 2026-06
 
-// include/menu.php, row 233
+// include/menu.php, row 232
 "Send bulk email to selected users or to users in Stored searches" => "\xC8\xE7\xEF\xF0\xE0\xF9\xE0\xED\xE5 \xED\xE0 \xEC\xE0\xF1\xEE\xE2 \xE8\xEC\xE5\xE9\xEB \xE4\xEE \xE8\xE7\xE1\xF0\xE0\xED\xE8 \xEF\xEE\xF2\xF0\xE5\xE1\xE8\xF2\xE5\xEB\xE8 \xE8\xEB\xE8 \xE4\xEE \xEF\xEE\xF2\xF0\xE5\xE1\xE8\xF2\xE5\xEB\xE8 \xEE\xF2 \xE7\xE0\xEF\xE0\xE7\xE5\xED\xE8 \xF2\xFA\xF0\xF1\xE5\xED\xE8\xFF", // ai 2026-06
 
-// include/menu.php, row 237
+// include/menu.php, row 236
 "Send emails" => "\xC8\xE7\xEF\xF0\xE0\xF9\xE0\xED\xE5 \xED\xE0 \xE8\xEC\xE5\xE9\xEB\xE8", // ai 2026-06
 
-// include/menu.php, row 246
+// include/menu.php, row 245
 "Alerts Sent" => "\xC8\xE7\xEF\xF0\xE0\xF9\xE0\xED\xE8 \xE8\xE7\xE2\xE5\xF1\xF2\xE8\xFF", // ai 2026-06
 
-// include/menu.php, row 246
+// include/menu.php, row 245
 "List of Alerts modules sending items from this slice." => "\xD1\xEF\xE8\xF1\xFA\xEA \xED\xE0 \xEC\xEE\xE4\xF3\xEB\xE8\xF2\xE5 \xC8\xE7\xE2\xE5\xF1\xF2\xE8\xFF, \xEA\xEE\xE8\xF2\xEE \xE8\xE7\xEF\xF0\xE0\xF9\xE0\xF2 \xF1\xF2\xE0\xF2\xE8\xE8 \xEE\xF2 \xF2\xE0\xE7\xE8 \xF0\xF3\xE1\xF0\xE8\xEA\xE0.", // ai 2026-06
 
 // include/menu_util.php, row 46
@@ -5183,76 +5261,97 @@ return [
 // include/menu_util.php, row 95
 "Wizard" => "\xD1\xFA\xE2\xE5\xF2\xED\xE8\xEA", // ai 2026-06
 
-// include/menu_util.php, row 97
+// include/menu_util.php, row 96
 "Welcomes" => "\xCF\xF0\xE8\xE2\xE5\xF2\xF1\xF2\xE2\xE5\xED\xE8 \xE8\xEC\xE5\xE9\xEB\xE8", // ai 2026-06
 
-// include/menu_util.php, row 98
+// include/menu_util.php, row 97
 "Templates" => "\xD8\xE0\xE1\xEB\xEE\xED\xE8", // ai 2026-06
 
-// include/menu_util.php, row 100
+// include/menu_util.php, row 99
 "Documentation" => "\xC4\xEE\xEA\xF3\xEC\xE5\xED\xF2\xE0\xF6\xE8\xFF", // ai 2026-06
 
-// include/menu_util.php, row 101
+// include/menu_util.php, row 100
 "Style Guide" => "\xD0\xFA\xEA\xEE\xE2\xEE\xE4\xF1\xF2\xE2\xEE \xE7\xE0 \xF1\xF2\xE8\xEB", // ai 2026-06
 
-// include/menu_util.php, row 107
+// include/menu_util.php, row 106
 "Central" => "",
 
-// include/menu_util.php, row 108
+// include/menu_util.php, row 107
 "AA Central" => "",
 
-// include/menu_util.php, row 125
+// include/menu_util.php, row 124
 "Synchronize..." => "\xD1\xE8\xED\xF5\xF0\xEE\xED\xE8\xE7\xE8\xF0\xE0\xED\xE5...", // ai 2026-06
 
-// include/menu_util.php, row 126
+// include/menu_util.php, row 125
 "Copy Slice..." => "\xCA\xEE\xEF\xE8\xF0\xE0\xED\xE5 \xED\xE0 \xF0\xF3\xE1\xF0\xE8\xEA\xE0...", // ai 2026-06
 
-// include/menu_util.php, row 128
+// include/menu_util.php, row 127
 "Import conf from CSV..." => "\xC8\xEC\xEF\xEE\xF0\xF2 \xED\xE0 \xEA\xEE\xED\xF4\xE8\xE3\xF3\xF0\xE0\xF6\xE8\xFF \xEE\xF2 CSV...", // ai 2026-06
 
-// include/menu_util.php, row 398
+// include/menu_util.php, row 397
 "Part of %s" => "\xD7\xE0\xF1\xF2 \xEE\xF2 %s", // ai 2026-06
 
-// include/menu_util.php, row 415
+// include/menu_util.php, row 414
 "Other slices" => "\xC4\xF0\xF3\xE3\xE8 \xF0\xF3\xE1\xF0\xE8\xEA\xE8", // ai 2026-06
 
-// include/menu_util.php, row 419
+// include/menu_util.php, row 418
 "Reader Management Slice" => "\xD0\xF3\xE1\xF0\xE8\xEA\xE0 \xE7\xE0 \xF3\xEF\xF0\xE0\xE2\xEB\xE5\xED\xE8\xE5 \xED\xE0 \xF7\xE8\xF2\xE0\xF2\xE5\xEB\xE8", // ai 2026-06
 
-// include/menu_util.php, row 421
+// include/menu_util.php, row 420
 "Jump inside control panel" => "\xCF\xF0\xE5\xF5\xEE\xE4 \xE2 \xEA\xEE\xED\xF2\xF0\xEE\xEB\xED\xE8\xFF \xEF\xE0\xED\xE5\xEB", // ai 2026-06
 
-// include/menu_util.php, row 422
+// include/menu_util.php, row 421
 // include/slice.class.php, row 1226
 "Links" => "\xC2\xF0\xFA\xE7\xEA\xE8", // ai 2026-06
 
-// include/menu_util.php, row 423
+// include/menu_util.php, row 422
 "MySQL Auth (old version)" => "MySQL \xE0\xE2\xF2\xE5\xED\xF2\xE8\xEA\xE0\xF6\xE8\xFF (\xF1\xF2\xE0\xF0\xE0 \xE2\xE5\xF0\xF1\xE8\xFF)", // ai 2026-06
 
-// include/menu_util.php, row 424
+// include/menu_util.php, row 423
 // src/Module/Poll/Menu.php, row 83
 "Polls" => "\xC0\xED\xEA\xE5\xF2\xE8", // ai 2026-06
 
-// include/menu_util.php, row 445
+// include/menu_util.php, row 444
 "New slice" => "\xCD\xEE\xE2\xE0 \xF0\xF3\xE1\xF0\xE8\xEA\xE0", // ai 2026-06
 
-// include/menu_util.php, row 449
+// include/menu_util.php, row 448
 "Switch module" => "\xD1\xEC\xFF\xED\xE0 \xED\xE0 \xEC\xEE\xE4\xF3\xEB", // ai 2026-06
 
-// include/menu_util.php, row 616
+// include/menu_util.php, row 578, 589
+"Apply" => "\xCF\xF0\xE8\xEB\xEE\xE6\xE8", // ai 2026-06
+
+// include/menu_util.php, row 582
+"-- Default for module --" => "-- \xCF\xEE \xEF\xEE\xE4\xF0\xE0\xE7\xE1\xE8\xF0\xE0\xED\xE5 \xE7\xE0 \xEC\xEE\xE4\xF3\xEB\xE0 --", // ai 2026-06
+
+// include/menu_util.php, row 590
+"Switches the admin interface language; the page reloads." => "\xD1\xEC\xE5\xED\xFF \xE5\xE7\xE8\xEA\xE0 \xED\xE0 \xE0\xE4\xEC\xE8\xED\xE8\xF1\xF2\xF0\xE0\xF2\xE8\xE2\xED\xE8\xFF \xE8\xED\xF2\xE5\xF0\xF4\xE5\xE9\xF1; \xF1\xF2\xF0\xE0\xED\xE8\xF6\xE0\xF2\xE0 \xF1\xE5 \xEF\xF0\xE5\xE7\xE0\xF0\xE5\xE6\xE4\xE0.", // ai 2026-06
+
+// include/menu_util.php, row 598
+"What's working, what isn't \xE2\x80\x94 tell the AA team." => "\xCA\xE0\xEA\xE2\xEE \xF0\xE0\xE1\xEE\xF2\xE8 \xE8 \xEA\xE0\xEA\xE2\xEE \xED\xE5 \x97 \xEA\xE0\xE6\xE5\xF2\xE5 \xED\xE0 \xE5\xEA\xE8\xEF\xE0 \xED\xE0 AA.", // ai 2026-06
+
+// include/menu_util.php, row 601
+"Settings" => "\xCD\xE0\xF1\xF2\xF0\xEE\xE9\xEA\xE8", // ai 2026-06
+
+// include/menu_util.php, row 604
+"Theme" => "\xD2\xE5\xEC\xE0", // ai 2026-06
+
+// include/menu_util.php, row 606
+"Feedback" => "\xCE\xE1\xF0\xE0\xF2\xED\xE0 \xE2\xF0\xFA\xE7\xEA\xE0", // ai 2026-06
+
+// include/menu_util.php, row 730
 // include/slice.class.php, row 554
 "Reader management" => "\xD3\xEF\xF0\xE0\xE2\xEB\xE5\xED\xE8\xE5 \xED\xE0 \xF7\xE8\xF2\xE0\xF2\xE5\xEB\xE8", // ai 2026-06
 
-// include/menu_util.php, row 628
+// include/menu_util.php, row 742
 "logout" => "\xE8\xE7\xF5\xEE\xE4", // ai 2026-06
 
-// include/menu_util.php, row 636
+// include/menu_util.php, row 750
 "Search.." => "\xD2\xFA\xF0\xF1\xE5\xED\xE5..", // ai 2026-06
 
-// include/menu_util.php, row 714
+// include/menu_util.php, row 829
 "Copyright (C) 2001 the <a href=\"https://www.apc.org\">Association for Progressive Communications (APC)</a>" => "Copyright (C) 2001 <a href=\"https://www.apc.org\">\xC0\xF1\xEE\xF6\xE8\xE0\xF6\xE8\xFF \xE7\xE0 \xEF\xF0\xEE\xE3\xF0\xE5\xF1\xE8\xE2\xED\xE8 \xEA\xEE\xEC\xF3\xED\xE8\xEA\xE0\xF6\xE8\xE8 (APC)</a>", // ai 2026-06
 
-// include/menu_util.php, row 724
+// include/menu_util.php, row 839
 "Collapse / expand menu" => "\xD1\xE2\xE8\xE2\xE0\xED\xE5 / \xF0\xE0\xE7\xE3\xFA\xE2\xE0\xED\xE5 \xED\xE0 \xEC\xE5\xED\xFE\xF2\xEE", // ai 2026-06
 
 // include/metabase.class.php, row 1572
@@ -5374,43 +5473,43 @@ return [
 // include/searchbar.class.php, row 595
 "Order" => "\xCF\xEE\xE4\xF0\xE5\xE4\xE8", // ai 2026-06
 
-// include/searchbar.class.php, row 662
+// include/searchbar.class.php, row 664
 "Advanced search" => "\xD0\xE0\xE7\xF8\xE8\xF0\xE5\xED\xEE \xF2\xFA\xF0\xF1\xE5\xED\xE5", // ai 2026-06
 
-// include/searchbar.class.php, row 720
+// include/searchbar.class.php, row 729
 "Refine" => "\xD3\xF2\xEE\xF7\xED\xE8", // ai 2026-06
 
-// include/searchbar.class.php, row 723
+// include/searchbar.class.php, row 732
 "Share with all slice users" => "\xD1\xEF\xEE\xE4\xE5\xEB\xE8 \xF1 \xE2\xF1\xE8\xF7\xEA\xE8 \xEF\xEE\xF2\xF0\xE5\xE1\xE8\xF2\xE5\xEB\xE8 \xED\xE0 \xF0\xF3\xE1\xF0\xE8\xEA\xE0\xF2\xE0", // ai 2026-06
 
-// include/searchbar.class.php, row 724
+// include/searchbar.class.php, row 733
 "Save filter" => "\xC7\xE0\xEF\xE0\xE7\xE8 \xF4\xE8\xEB\xF2\xFA\xF0\xE0", // ai 2026-06
 
-// include/searchbar.class.php, row 725
+// include/searchbar.class.php, row 734
 "Rename filter" => "\xCF\xF0\xE5\xE8\xEC\xE5\xED\xF3\xE2\xE0\xE9 \xF4\xE8\xEB\xF2\xFA\xF0\xE0", // ai 2026-06
 
-// include/searchbar.class.php, row 726
+// include/searchbar.class.php, row 735
 "Are you sure you want to delete selected filter?" => "\xCD\xE0\xE8\xF1\xF2\xE8\xED\xE0 \xEB\xE8 \xE8\xF1\xEA\xE0\xF2\xE5 \xE4\xE0 \xE8\xE7\xF2\xF0\xE8\xE5\xF2\xE5 \xE8\xE7\xE1\xF0\xE0\xED\xE8\xFF \xF4\xE8\xEB\xF2\xFA\xF0?", // ai 2026-06
 
-// include/searchbar.class.php, row 1008
+// include/searchbar.class.php, row 1017
 "Select one..." => "\xC8\xE7\xE1\xE5\xF0\xE5\xF2\xE5...", // ai 2026-06
 
-// include/searchbar.class.php, row 1023
+// include/searchbar.class.php, row 1032
 "My filters" => "\xCC\xEE\xE8\xF2\xE5 \xF4\xE8\xEB\xF2\xF0\xE8", // ai 2026-06
 
-// include/searchbar.class.php, row 1026
+// include/searchbar.class.php, row 1035
 "Global filters" => "\xC3\xEB\xEE\xE1\xE0\xEB\xED\xE8 \xF4\xE8\xEB\xF2\xF0\xE8", // ai 2026-06
 
-// include/searchbar.class.php, row 1064
+// include/searchbar.class.php, row 1073
 "Shared filter (click to apply)" => "\xD1\xEF\xEE\xE4\xE5\xEB\xE5\xED \xF4\xE8\xEB\xF2\xFA\xF0 (\xF9\xF0\xE0\xEA\xED\xE5\xF2\xE5 \xE7\xE0 \xEF\xF0\xE8\xEB\xE0\xE3\xE0\xED\xE5)", // ai 2026-06
 
-// include/searchbar.class.php, row 1064
+// include/searchbar.class.php, row 1073
 "Personal filter (click to apply)" => "\xCB\xE8\xF7\xE5\xED \xF4\xE8\xEB\xF2\xFA\xF0 (\xF9\xF0\xE0\xEA\xED\xE5\xF2\xE5 \xE7\xE0 \xEF\xF0\xE8\xEB\xE0\xE3\xE0\xED\xE5)", // ai 2026-06
 
-// include/searchbar.class.php, row 1074
+// include/searchbar.class.php, row 1083
 "Rename" => "\xCF\xF0\xE5\xE8\xEC\xE5\xED\xF3\xE2\xE0\xE9", // ai 2026-06
 
-// include/searchbar.class.php, row 1085
+// include/searchbar.class.php, row 1094
 "Manage filters" => "\xD3\xEF\xF0\xE0\xE2\xEB\xE5\xED\xE8\xE5 \xED\xE0 \xF4\xE8\xEB\xF2\xF0\xE8\xF2\xE5", // ai 2026-06
 
 // include/searchlib.php, row 54
@@ -5723,6 +5822,9 @@ return [
 // include/stringexpand.php, row 7716
 "version" => "\xE2\xE5\xF0\xF1\xE8\xFF", // ai 2026-06
 
+// include/stringexpand.php, row 7900
+"show" => "\xEF\xEE\xEA\xE0\xE6\xE8", // ai 2026-06
+
 // include/stringexpand.php, row 7901
 "hide" => "\xF1\xEA\xF0\xE8\xE9", // ai 2026-06
 
@@ -5856,21 +5958,6 @@ return [
 // include/tabledit_util.php, row 670
 "Wrong value: a number between %1 and %2 is expected." => "\xC3\xF0\xE5\xF8\xED\xE0 \xF1\xF2\xEE\xE9\xED\xEE\xF1\xF2: \xEE\xF7\xE0\xEA\xE2\xE0 \xF1\xE5 \xF7\xE8\xF1\xEB\xEE \xEC\xE5\xE6\xE4\xF3 %1 \xE8 %2.", // ai 2026-06
 
-// include/tableviews.php, row 59, 60
-"Polls Design" => "\xC4\xE8\xE7\xE0\xE9\xED \xED\xE0 \xE0\xED\xEA\xE5\xF2\xE8\xF2\xE5", // ai 2026-06
-
-// include/tableviews.php, row 66, 102
-"Comment" => "\xCA\xEE\xEC\xE5\xED\xF2\xE0\xF0", // ai 2026-06
-
-// include/tableviews.php, row 88
-"Module Id" => "ID \xED\xE0 \xEC\xEE\xE4\xF3\xEB\xE0", // ai 2026-06
-
-// include/tableviews.php, row 104
-"design description (for administrators only)" => "\xEE\xEF\xE8\xF1\xE0\xED\xE8\xE5 \xED\xE0 \xE4\xE8\xE7\xE0\xE9\xED\xE0 (\xF1\xE0\xEC\xEE \xE7\xE0 \xE0\xE4\xEC\xE8\xED\xE8\xF1\xF2\xF0\xE0\xF2\xEE\xF0\xE8)", // ai 2026-06
-
-// include/tableviews.php, row 111
-"Answer HTML" => "HTML \xED\xE0 \xEE\xF2\xE3\xEE\xE2\xEE\xF0\xE0", // ai 2026-06
-
 // include/transformation.class.php, row 149
 "Fill by value" => "\xC7\xE0\xEF\xFA\xEB\xE2\xE0\xED\xE5 \xF1\xFA\xF1 \xF1\xF2\xEE\xE9\xED\xEE\xF1\xF2", // ai 2026-06
 
@@ -5959,7 +6046,7 @@ return [
 "Search the content of text and replaces it with another text using regular expressions. The aliases are unaliased in resulting string.<br>Example:<br> - Search: ^.*x=([0-9]*)\$<br> - Replace: {item:\$1:_#SEO_URL_}<br> - Unalias: Yes<br>Result: replaces all old-form links in the URL field from the new ones <br>(https://biom.cz/item.shtml?x=2344 --&gt; https://biom.cz/cz/about-biom)" => "\xD2\xFA\xF0\xF1\xE8 \xE2 \xF1\xFA\xE4\xFA\xF0\xE6\xE0\xED\xE8\xE5\xF2\xEE \xED\xE0 \xF2\xE5\xEA\xF1\xF2\xE0 \xE8 \xE3\xEE \xE7\xE0\xEC\xE5\xED\xFF \xF1 \xE4\xF0\xF3\xE3 \xF2\xE5\xEA\xF1\xF2 \xF7\xF0\xE5\xE7 \xF0\xE5\xE3\xF3\xEB\xFF\xF0\xED\xE8 \xE8\xE7\xF0\xE0\xE7\xE8. \xC2 \xF0\xE5\xE7\xF3\xEB\xF2\xE0\xF2\xED\xE8\xFF \xED\xE8\xE7 \xE0\xEB\xE8\xE0\xF1\xE8\xF2\xE5 \xF1\xE5 \xE7\xE0\xEC\xE5\xF1\xF2\xE2\xE0\xF2 (unalias).<br>\xCF\xF0\xE8\xEC\xE5\xF0:<br> - \xD2\xFA\xF0\xF1\xE5\xED\xE5: ^.*x=([0-9]*)\$<br> - \xC7\xE0\xEC\xFF\xED\xE0: {item:\$1:_#SEO_URL_}<br> - Unalias: \xC4\xE0<br>\xD0\xE5\xE7\xF3\xEB\xF2\xE0\xF2: \xE7\xE0\xEC\xE5\xED\xFF \xE2\xF1\xE8\xF7\xEA\xE8 \xEF\xF0\xE5\xEF\xF0\xE0\xF2\xEA\xE8 \xE2 \xF1\xF2\xE0\xF0 \xF4\xEE\xF0\xEC\xE0\xF2 \xE2 \xEF\xEE\xEB\xE5\xF2\xEE URL \xF1 \xED\xEE\xE2\xE8 <br>(https://biom.cz/item.shtml?x=2344 --&gt; https://biom.cz/cz/about-biom)", // ai 2026-06
 
 // include/transformation.class.php, row 839
-"Unalias" => "",
+"Unalias" => "\xCF\xF0\xE5\xEC\xE0\xF5\xED\xE8 \xEF\xF1\xE5\xE2\xE4\xEE\xED\xE8\xEC\xE8", // ai 2026-06
 
 // include/transformation.class.php, row 839
 "perform unaliasing on result strings" => "\xE8\xE7\xE2\xFA\xF0\xF8\xE2\xE0 \xE7\xE0\xEC\xE5\xF1\xF2\xE2\xE0\xED\xE5 \xED\xE0 \xE0\xEB\xE8\xE0\xF1\xE8\xF2\xE5 (unalias) \xE2 \xF0\xE5\xE7\xF3\xEB\xF2\xE0\xF2\xED\xE8\xF2\xE5 \xED\xE8\xE7\xEE\xE2\xE5", // ai 2026-06
@@ -5982,30 +6069,6 @@ return [
 // include/tv_email.php, row 168
 "Sender" => "\xCF\xEE\xE4\xE0\xF2\xE5\xEB", // ai 2026-06
 
-// include/tv_misc.php, row 131
-"COUNT_HIT events will be used for counting item hits. After a while it will be automatically deleted." => "\xD1\xFA\xE1\xE8\xF2\xE8\xFF\xF2\xE0 COUNT_HIT \xF1\xE5 \xE8\xE7\xEF\xEE\xEB\xE7\xE2\xE0\xF2 \xE7\xE0 \xE1\xF0\xEE\xE5\xED\xE5 \xED\xE0 \xEF\xEE\xEA\xE0\xE7\xE2\xE0\xED\xE8\xFF\xF2\xE0 \xED\xE0 \xF1\xF2\xE0\xF2\xE8\xE8\xF2\xE5. \xD1\xEB\xE5\xE4 \xE8\xE7\xE2\xE5\xF1\xF2\xED\xEE \xE2\xF0\xE5\xEC\xE5 \xF2\xE5 \xF1\xE5 \xE8\xE7\xF2\xF0\xE8\xE2\xE0\xF2 \xE0\xE2\xF2\xEE\xEC\xE0\xF2\xE8\xF7\xED\xEE.", // ai 2026-06
-
-// include/tv_misc.php, row 139, 140
-"Log view" => "\xC8\xE7\xE3\xEB\xE5\xE4 Log", // ai 2026-06
-
-// include/tv_misc.php, row 162
-"See searchlog=1 parameter for slice.php in FAQ: " => "\xC2\xE8\xE6\xF2\xE5 \xEF\xE0\xF0\xE0\xEC\xE5\xF2\xFA\xF0\xE0 searchlog=1 \xE7\xE0 slice.php \xE2\xFA\xE2 FAQ:", // ai 2026-06
-
-// include/tv_misc.php, row 170, 171
-"SearchLog view" => "\xC8\xE7\xE3\xEB\xE5\xE4 SearchLog", // ai 2026-06
-
-// include/tv_misc.php, row 175
-"items found" => "\xED\xE0\xEC\xE5\xF0\xE5\xED\xE8 \xF1\xF2\xE0\xF2\xE8\xE8", // ai 2026-06
-
-// include/tv_misc.php, row 176
-"search time" => "\xE2\xF0\xE5\xEC\xE5 \xED\xE0 \xF2\xFA\xF0\xF1\xE5\xED\xE5", // ai 2026-06
-
-// include/tv_misc.php, row 177
-"addition" => "\xE4\xEE\xEF\xFA\xEB\xED\xE5\xED\xE8\xE5", // ai 2026-06
-
-// include/tv_misc.php, row 198, 199
-"Configure Fields" => "\xCD\xE0\xF1\xF2\xF0\xEE\xE9\xEA\xE0 \xED\xE0 \xEF\xEE\xEB\xE5\xF2\xE0\xF2\xE0", // ai 2026-06
-
 // include/um_gedit.php, row 43
 "It is impossible to add group to permission system" => "\xCD\xE5 \xEC\xEE\xE6\xE5 \xE4\xE0 \xF1\xE5 \xE4\xEE\xE1\xE0\xE2\xE8 \xE3\xF0\xF3\xEF\xE0 \xEA\xFA\xEC \xF1\xE8\xF1\xF2\xE5\xEC\xE0\xF2\xE0 \xE7\xE0 \xEF\xF0\xE0\xE2\xE0", // ai 2026-06
 
@@ -6024,10 +6087,10 @@ return [
 // include/um_util.php, row 358
 "Can't change user" => "\xCD\xE5 \xEC\xEE\xE6\xE5 \xE4\xE0 \xF1\xE5 \xEF\xF0\xEE\xEC\xE5\xED\xFF\xF2 \xE4\xE0\xED\xED\xE8\xF2\xE5 \xED\xE0 \xEF\xEE\xF2\xF0\xE5\xE1\xE8\xF2\xE5\xEB\xFF", // ai 2026-06
 
-// include/util.php, row 1300
+// include/util.php, row 1304
 "Toolkit news message" => "\xD1\xFA\xEE\xE1\xF9\xE5\xED\xE8\xE5 \xEE\xF2 \xEF\xF0\xE8\xEB\xEE\xE6\xE5\xED\xE8\xE5\xF2\xEE", // ai 2026-06
 
-// include/util.php, row 1314
+// include/util.php, row 1318
 "Relogin" => "\xCF\xEE\xE2\xF2\xEE\xF0\xED\xEE \xE2\xEB\xE8\xE7\xE0\xED\xE5", // ai 2026-06
 
 // include/validate.php, row 52
@@ -6148,7 +6211,7 @@ return [
 "type" => "\xF2\xE8\xEF", // ai 2026-06
 
 // include/widget.class.php, row 171
-"multi" => "",
+"multi" => "\xEC\xED\xEE\xE6\xE5\xF1\xF2\xE2\xE5\xED\xEE", // ai 2026-06
 
 // include/widget.class.php, row 172
 "persistent" => "",
@@ -6373,10 +6436,10 @@ return [
 // src/AA_Plannedtask.php, row 224
 "next run" => "\xF1\xEB\xE5\xE4\xE2\xE0\xF9\xEE \xF1\xF2\xE0\xF0\xF2\xE8\xF0\xE0\xED\xE5", // ai 2026-06
 
-// src/IO/Grabber/AARSS.php, row 116
+// src/IO/Grabber/AARSS.php, row 117
 "AA RSS" => "",
 
-// src/IO/Grabber/AARSS.php, row 124
+// src/IO/Grabber/AARSS.php, row 125
 "Grabs data from generic RSS or AA RSS (used for item exchange between different AA installations)" => "\xC8\xE7\xF2\xE5\xE3\xEB\xFF \xE4\xE0\xED\xED\xE8 \xEE\xF2 \xEE\xE1\xF9 RSS \xE8\xEB\xE8 AA RSS (\xE8\xE7\xEF\xEE\xEB\xE7\xE2\xE0 \xF1\xE5 \xE7\xE0 \xEE\xE1\xEC\xE5\xED \xED\xE0 \xF1\xF2\xE0\xF2\xE8\xE8 \xEC\xE5\xE6\xE4\xF3 \xF0\xE0\xE7\xEB\xE8\xF7\xED\xE8 \xE8\xED\xF1\xF2\xE0\xEB\xE0\xF6\xE8\xE8 \xED\xE0 AA)", // ai 2026-06
 
 // src/IO/Grabber/CSV.php, row 66
@@ -7855,32 +7918,47 @@ return [
 // src/Util/ChangesMonitor.php, row 93
 "history (%1)" => "\xE8\xF1\xF2\xEE\xF0\xE8\xFF (%1)", // ai 2026-06
 
+// src/Util/ChangesMonitor.php, row 336
+"No recorded changes for this item." => "\xCD\xFF\xEC\xE0 \xE7\xE0\xEF\xE8\xF1\xE0\xED\xE8 \xEF\xF0\xEE\xEC\xE5\xED\xE8 \xE7\xE0 \xF2\xE0\xE7\xE8 \xF1\xF2\xE0\xF2\xE8\xFF.", // ai 2026-06
+
 // src/Util/ChangesMonitor.php, row 360
 "1 field changed" => "\xEF\xF0\xEE\xEC\xE5\xED\xE5\xED\xEE \xE5 1 \xEF\xEE\xEB\xE5", // ai 2026-06
 
 // src/Util/ChangesMonitor.php, row 360
 "%1 fields changed" => "\xEF\xF0\xEE\xEC\xE5\xED\xE5\xED\xE8 \xEF\xEE\xEB\xE5\xF2\xE0: %1", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 370, 382
+// src/Util/ChangesMonitor.php, row 369, 456
 "Restore" => "\xC2\xFA\xE7\xF1\xF2\xE0\xED\xEE\xE2\xFF\xE2\xE0\xED\xE5", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 377
+// src/Util/ChangesMonitor.php, row 383
+"(this change)" => "(\xF2\xE0\xE7\xE8 \xEF\xF0\xEE\xEC\xFF\xED\xE0)", // ai 2026-06
+
+// src/Util/ChangesMonitor.php, row 387, 573, 577
+"Current (live)" => "\xD2\xE5\xEA\xF3\xF9\xE0 (\xED\xE0 \xE6\xE8\xE2\xEE)", // ai 2026-06
+
+// src/Util/ChangesMonitor.php, row 388
+"Compare to" => "\xD1\xF0\xE0\xE2\xED\xE8 \xF1", // ai 2026-06
+
+// src/Util/ChangesMonitor.php, row 397
 "change %1 | uid %2 | %3 ns | resource %4" => "\xEF\xF0\xEE\xEC\xFF\xED\xE0 %1 | uid %2 | %3 ns | \xF0\xE5\xF1\xF3\xF0\xF1 %4", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 382
-"vs current" => "\xF1\xEF\xF0\xFF\xEC\xEE \xF2\xE5\xEA\xF3\xF9\xEE\xF2\xEE", // ai 2026-06
+// src/Util/ChangesMonitor.php, row 449
+"View" => "\xCF\xF0\xE5\xE3\xEB\xE5\xE4", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 391
+// src/Util/ChangesMonitor.php, row 450
+"Diff" => "\xD0\xE0\xE7\xEB\xE8\xEA\xE0", // ai 2026-06
+
+// src/Util/ChangesMonitor.php, row 481
 "seq %1" => "\xEF\xEE\xF1\xEB. %1", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 405
-"no current value" => "\xED\xFF\xEC\xE0 \xF2\xE5\xEA\xF3\xF9\xE0 \xF1\xF2\xEE\xE9\xED\xEE\xF1\xF2", // ai 2026-06
+// src/Util/ChangesMonitor.php, row 488
+"No change between these versions." => "\xCD\xFF\xEC\xE0 \xF0\xE0\xE7\xEB\xE8\xEA\xE0 \xEC\xE5\xE6\xE4\xF3 \xF2\xE5\xE7\xE8 \xE2\xE5\xF0\xF1\xE8\xE8.", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 407
-"same as current" => "\xF1\xFA\xF9\xEE\xF2\xEE \xEA\xE0\xF2\xEE \xF2\xE5\xEA\xF3\xF9\xEE\xF2\xEE", // ai 2026-06
+// src/Util/ChangesMonitor.php, row 511
+"(empty)" => "(\xEF\xF0\xE0\xE7\xED\xEE)", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 426
-"No recorded changes for this item." => "\xCD\xFF\xEC\xE0 \xE7\xE0\xEF\xE8\xF1\xE0\xED\xE8 \xEF\xF0\xEE\xEC\xE5\xED\xE8 \xE7\xE0 \xF2\xE0\xE7\xE8 \xF1\xF2\xE0\xF2\xE8\xFF.", // ai 2026-06
+// src/Util/ChangesMonitor.php, row 571
+"Original" => "\xCE\xF0\xE8\xE3\xE8\xED\xE0\xEB", // ai 2026-06
 
 // src/Util/Imgfunc.php, row 80
 "Cannot copy %1 to %2" => "\xCD\xE5 \xEC\xEE\xE6\xE5 \xE4\xE0 \xF1\xE5 \xEA\xEE\xEF\xE8\xF0\xE0 %1 \xE2 %2", // ai 2026-06
@@ -7893,6 +7971,9 @@ return [
 
 // src/Util/Searchfields.php, row 183
 "-- any numeric field --" => "-- \xEF\xF0\xEE\xE8\xE7\xE2\xEE\xEB\xED\xEE \xF7\xE8\xF1\xEB\xEE\xE2\xEE \xEF\xEE\xEB\xE5 --", // ai 2026-06
+
+// src/Util/UiPrefs.php, row 55
+"Gold" => "\xC7\xEB\xE0\xF2\xED\xE0", // ai 2026-06
 
 // src/Widget/ChbWidget.php, row 80
 "Check Box" => "\xCE\xF2\xEC\xE5\xF2\xEA\xE0", // ai 2026-06
@@ -8329,7 +8410,7 @@ return [
 "http#://www.ecn.cz/articles/solar.shtml" => "",
 
 // src/Widget/Widget.php, row 877
-"Ajax inline" => "",
+"Ajax inline" => "Ajax \xED\xE0 \xEC\xFF\xF1\xF2\xEE", // ai 2026-06
 
 // src/Widget/Widget.php, row 877
 "If called as {ajax...} it modifies the visual - inline: old-way (not in window, but inline)" => "\xC0\xEA\xEE \xF1\xE5 \xE8\xE7\xE2\xE8\xEA\xE0 \xEA\xE0\xF2\xEE {ajax...}, \xEF\xF0\xEE\xEC\xE5\xED\xFF \xE2\xFA\xED\xF8\xED\xE8\xFF \xE2\xE8\xE4 - inline: \xEF\xEE \xF1\xF2\xE0\xF0\xE8\xFF \xED\xE0\xF7\xE8\xED (\xED\xE5 \xE2 \xEF\xF0\xEE\xE7\xEE\xF0\xE5\xF6, \xE0 \xE4\xE8\xF0\xE5\xEA\xF2\xED\xEE \xE2 \xF2\xE5\xEA\xF1\xF2\xE0)", // ai 2026-06

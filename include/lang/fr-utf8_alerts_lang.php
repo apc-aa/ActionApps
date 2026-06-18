@@ -13,79 +13,79 @@ setlocale(LC_NUMERIC, 'en_US');            // keep float format with dot (see AA
 
 return [
 
-// modules/alerts/alerts_sending.php, row 418
+// modules/alerts/alerts_sending.php, row 417
 "alerts alert" => "Alertes Alerte",
 
-// modules/alerts/alerts_sending.php, row 419
+// modules/alerts/alerts_sending.php, row 418
 "alerts welcome" => "Alerte bienvenue",
 
-// modules/alerts/alerts_sending.php, row 420
+// modules/alerts/alerts_sending.php, row 419
 "slice wizard welcome" => "Bienvenue assistant de section",
 
-// modules/alerts/alerts_sending.php, row 421
+// modules/alerts/alerts_sending.php, row 420
 "user template" => "modèle d'utilisateur", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 422
+// modules/alerts/alerts_sending.php, row 421
 "password change" => "changement de mot de passe", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 423
+// modules/alerts/alerts_sending.php, row 422
 "other" => "autre",
 
-// modules/alerts/alerts_sending.php, row 433
+// modules/alerts/alerts_sending.php, row 432
 "Aliases for Alerts Alert" => "Alias pour Alertes Alerte",
 
-// modules/alerts/alerts_sending.php, row 435
+// modules/alerts/alerts_sending.php, row 434
 "complete filter text" => "Filtre de texte complet",
 
-// modules/alerts/alerts_sending.php, row 436, 445
+// modules/alerts/alerts_sending.php, row 435, 444
 "howoften" => "combien de fois",
 
-// modules/alerts/alerts_sending.php, row 437
+// modules/alerts/alerts_sending.php, row 436
 "Anonym Form URL (set in Alerts Admin - Settings)" => "Formulaire URL Anonyme (choisi dans administration des alertes - configurations)",
 
-// modules/alerts/alerts_sending.php, row 438
+// modules/alerts/alerts_sending.php, row 437
 "Unsubscribe Form URL" => "URL du formulaire de dï¿½sabonnment",
 
-// modules/alerts/alerts_sending.php, row 443
+// modules/alerts/alerts_sending.php, row 442
 "Aliases for Alerts Welcome" => "Alias pour alerte de bienvenue",
 
-// modules/alerts/alerts_sending.php, row 446
+// modules/alerts/alerts_sending.php, row 445
 "Collection Form URL (set in Alerts Admin - Settings)" => "Formulaire URL de collection (choisi dans administration des alertes - configurations)",
 
-// modules/alerts/alerts_sending.php, row 447
+// modules/alerts/alerts_sending.php, row 446
 "email confirmed" => "Courriel confirmï¿½",
 
-// modules/alerts/alerts_sending.php, row 453
+// modules/alerts/alerts_sending.php, row 452
 "Aliases for Slice Wizard Welcome" => "Alias pour l'assistant de bienvenue ï¿½ la section",
 
-// modules/alerts/alerts_sending.php, row 455, 467
+// modules/alerts/alerts_sending.php, row 454, 466
 "Slice name" => "Nom de la section",
 
-// modules/alerts/alerts_sending.php, row 456, 468
+// modules/alerts/alerts_sending.php, row 455, 467
 "New user name" => "Nouveau nom d'usager",
 
-// modules/alerts/alerts_sending.php, row 457
+// modules/alerts/alerts_sending.php, row 456
 "New user login name" => "Nouveau nom d'usager",
 
-// modules/alerts/alerts_sending.php, row 458
+// modules/alerts/alerts_sending.php, row 457
 "New user role (editor / admin)" => "Nouveau rï¿½le pour l'usager (ï¿½diteur / administrateur)",
 
-// modules/alerts/alerts_sending.php, row 459
+// modules/alerts/alerts_sending.php, row 458
 "My name" => "Mon nom",
 
-// modules/alerts/alerts_sending.php, row 460
+// modules/alerts/alerts_sending.php, row 459
 "My email" => "Mon courriel",
 
-// modules/alerts/alerts_sending.php, row 465
+// modules/alerts/alerts_sending.php, row 464
 "Aliases for User Templates (you can use also all aliases of the user)" => "Alias pour les modèles d'utilisateur (vous pouvez aussi utiliser tous les alias de l'utilisateur)", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 473
+// modules/alerts/alerts_sending.php, row 472
 "Aliases for Password Change email (you can use also all aliases of the user)" => "Alias pour le courriel de changement de mot de passe (vous pouvez aussi utiliser tous les alias de l'utilisateur)", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 475
+// modules/alerts/alerts_sending.php, row 474
 "HTML link to the password change page for current user" => "Lien HTML vers la page de changement de mot de passe pour l'utilisateur actuel", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 476
+// modules/alerts/alerts_sending.php, row 475
 "URL parameter used for password change link in _#PWD_LINK (you can use it, if you want to use your own url for it)" => "Paramètre d'URL utilisé pour le lien de changement de mot de passe dans _#PWD_LINK (vous pouvez l'utiliser si vous voulez utiliser votre propre URL)", // ai 2026-06
 
 // modules/alerts/cf_common.php, row 41

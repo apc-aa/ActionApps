@@ -55,69 +55,69 @@ return [
 // include/searchbar.class.php, row 613
 "Filter" => "Filtr", // ai 2026-06
 
-// include/searchbar.class.php, row 662
+// include/searchbar.class.php, row 664
 "Advanced search" => "Wyszukiwanie zaawansowane", // ai 2026-06
 
-// include/searchbar.class.php, row 719
+// include/searchbar.class.php, row 728
 "Save" => "Zapisz", // ai 2026-06
 
-// include/searchbar.class.php, row 720
+// include/searchbar.class.php, row 729
 "Refine" => "Uściślij", // ai 2026-06
 
-// include/searchbar.class.php, row 721
+// include/searchbar.class.php, row 730
 "Cancel" => "Anuluj", // ai 2026-06
 
-// include/searchbar.class.php, row 722
+// include/searchbar.class.php, row 731
 // modules/links/constants.php, row 59, 171
 "Name" => "Nazwa", // ai 2026-06
 
-// include/searchbar.class.php, row 723
+// include/searchbar.class.php, row 732
 "Share with all slice users" => "Udostępnij wszystkim użytkownikom rubryki", // ai 2026-06
 
-// include/searchbar.class.php, row 724
+// include/searchbar.class.php, row 733
 "Save filter" => "Zapisz filtr", // ai 2026-06
 
-// include/searchbar.class.php, row 725
+// include/searchbar.class.php, row 734
 "Rename filter" => "Zmień nazwę filtra", // ai 2026-06
 
-// include/searchbar.class.php, row 726
+// include/searchbar.class.php, row 735
 "Are you sure you want to delete selected filter?" => "Czy na pewno chcesz usunąć wybrany filtr?", // ai 2026-06
 
-// include/searchbar.class.php, row 1008
+// include/searchbar.class.php, row 1017
 "Select one..." => "Wybierz...", // ai 2026-06
 
-// include/searchbar.class.php, row 1023
+// include/searchbar.class.php, row 1032
 "My filters" => "Moje filtry", // ai 2026-06
 
-// include/searchbar.class.php, row 1026
+// include/searchbar.class.php, row 1035
 "Global filters" => "Filtry globalne", // ai 2026-06
 
-// include/searchbar.class.php, row 1064
+// include/searchbar.class.php, row 1073
 "Shared filter (click to apply)" => "Filtr współdzielony (kliknij, aby zastosować)", // ai 2026-06
 
-// include/searchbar.class.php, row 1064
+// include/searchbar.class.php, row 1073
 "Personal filter (click to apply)" => "Filtr osobisty (kliknij, aby zastosować)", // ai 2026-06
 
-// include/searchbar.class.php, row 1074
+// include/searchbar.class.php, row 1083
 "Rename" => "Zmień nazwę", // ai 2026-06
 
-// include/searchbar.class.php, row 1076
+// include/searchbar.class.php, row 1085
 "Delete" => "Usuń", // ai 2026-06
 
-// include/searchbar.class.php, row 1085
+// include/searchbar.class.php, row 1094
 "Manage filters" => "Zarządzaj filtrami", // ai 2026-06
 
 // include/util.php, row 950
 "Error: Missing Reading Password" => "Błąd: Brak hasła do odczytu", // ai 2026-06
 
-// include/util.php, row 1300
+// include/util.php, row 1304
 "Toolkit news message" => "Komunikat aplikacji", // ai 2026-06
 
-// include/util.php, row 1314
+// include/util.php, row 1318
 // modules/links/check_url.php, row 52
 "Back" => "Wstecz", // ai 2026-06
 
-// include/util.php, row 1314
+// include/util.php, row 1318
 "Relogin" => "Zaloguj ponownie", // ai 2026-06
 
 // modules/links/actions.php, row 47, 91, 112
@@ -637,7 +637,10 @@ return [
 "ActionApps" => "",
 
 // modules/links/linkedit.php, row 407
-"<!--NewPublicLinkText-->" => "",
+"<!--NewPublicLinkText-->"
+ => "W tym formularzu do dodania nowego odnośnika do katalogu nie musisz wypełniać wszystkich pól. Dla łatwego zaklasyfikowania odnośnika prosimy jednak o wypełnienie przede wszystkim <b>URL</b> odnośnika, <b>NAZWY</b> oraz przypisania odnośnika do którejś z <b>KATEGORII</b>. Jeśli masz doświadczenie ze stronami, możesz wypełnić także opis odnośnika.<br>\n"
+   ."<b>Prosimy nie dodawać do katalogu odnośników \"komercyjnych\".</b> Takie odnośniki nie będą w katalogu publikowane.<br>\n"
+   ." Dziękujemy.", // ai 2026-06
 
 // modules/links/linkedit.php, row 425
 "Link" => "Odnośnik", // ai 2026-06

@@ -234,13 +234,13 @@ return [
 // include/util.php, row 950
 "Error: Missing Reading Password" => "Eroare: Lipseste parola de citire", // ai 2026-06
 
-// include/util.php, row 1300
+// include/util.php, row 1304
 "Toolkit news message" => "Mesaj stiri toolkit",
 
-// include/util.php, row 1314
+// include/util.php, row 1318
 "Back" => "\xCEnapoi",
 
-// include/util.php, row 1314
+// include/util.php, row 1318
 "Relogin" => "Reautentificare", // ai 2026-06
 
 // misc/proposefieldchange.php, row 71

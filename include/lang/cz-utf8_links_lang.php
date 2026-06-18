@@ -114,69 +114,69 @@ return [
 // include/searchbar.class.php, row 613
 "Filter" => "Filtr",
 
-// include/searchbar.class.php, row 662
+// include/searchbar.class.php, row 664
 "Advanced search" => "Rozšířené vyhledávání",
 
-// include/searchbar.class.php, row 719
+// include/searchbar.class.php, row 728
 "Save" => "Uložit",
 
-// include/searchbar.class.php, row 720
+// include/searchbar.class.php, row 729
 "Refine" => "Upřesnit",
 
-// include/searchbar.class.php, row 721
+// include/searchbar.class.php, row 730
 "Cancel" => "Storno",
 
-// include/searchbar.class.php, row 722
+// include/searchbar.class.php, row 731
 // modules/links/constants.php, row 59, 171
 "Name" => "Název odkazu",
 
-// include/searchbar.class.php, row 723
+// include/searchbar.class.php, row 732
 "Share with all slice users" => "Sdílet se všemi uživateli webíku",
 
-// include/searchbar.class.php, row 724
+// include/searchbar.class.php, row 733
 "Save filter" => "Uložit filtr",
 
-// include/searchbar.class.php, row 725
+// include/searchbar.class.php, row 734
 "Rename filter" => "Přejmenovat filtr",
 
-// include/searchbar.class.php, row 726
+// include/searchbar.class.php, row 735
 "Are you sure you want to delete selected filter?" => "Opravdu chcete vybraný filtr smazat?",
 
-// include/searchbar.class.php, row 1008
+// include/searchbar.class.php, row 1017
 "Select one..." => "vyber ...",
 
-// include/searchbar.class.php, row 1023
+// include/searchbar.class.php, row 1032
 "My filters" => "Moje filtry",
 
-// include/searchbar.class.php, row 1026
+// include/searchbar.class.php, row 1035
 "Global filters" => "Globální filtry",
 
-// include/searchbar.class.php, row 1064
+// include/searchbar.class.php, row 1073
 "Shared filter (click to apply)" => "Sdílený filtr (kliknutím použijete)",
 
-// include/searchbar.class.php, row 1064
+// include/searchbar.class.php, row 1073
 "Personal filter (click to apply)" => "Osobní filtr (kliknutím použijete)",
 
-// include/searchbar.class.php, row 1074
+// include/searchbar.class.php, row 1083
 "Rename" => "Přejmenovat",
 
-// include/searchbar.class.php, row 1076
+// include/searchbar.class.php, row 1085
 "Delete" => "Odstranit",
 
-// include/searchbar.class.php, row 1085
+// include/searchbar.class.php, row 1094
 "Manage filters" => "Správa filtrů",
 
 // include/util.php, row 950
 "Error: Missing Reading Password" => "Chyba: chybí heslo pro čtení",
 
-// include/util.php, row 1300
+// include/util.php, row 1304
 "Toolkit news message" => "Vzkaz z Toolkitu",
 
-// include/util.php, row 1314
+// include/util.php, row 1318
 // modules/links/check_url.php, row 52
 "Back" => "Zpět",
 
-// include/util.php, row 1314
+// include/util.php, row 1318
 "Relogin" => "Znovu přihlásit",
 
 // modules/links/actions.php, row 47, 91, 112
@@ -769,7 +769,7 @@ return [
 "Regions and languages" => "Regiony a jazyky",
 
 // modules/links/linkedit.php, row 551
-"Region" => "",
+"Region" => "Oblast", // ai 2026-06
 
 // modules/links/linkedit.php, row 551
 "select up to 4 regions" => "Region, kterého se stránky týkají. <br> Vyberte nejvýše 4 regiony. V případě, že pokrývá více, zařaďte odkaz do nadřazené kategorie.",

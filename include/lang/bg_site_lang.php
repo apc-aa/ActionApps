@@ -97,7 +97,7 @@ return [
 "State file" => "\xD4\xE0\xE9\xEB \xE7\xE0 \xF1\xFA\xF1\xF2\xEE\xFF\xED\xE8\xE5\xF2\xEE", // ai 2026-06
 
 // modules/site/modedit.php, row 133, 278
-"Router" => "",
+"Router" => "\xD0\xF3\xF2\xE5\xF0", // ai 2026-06
 
 // modules/site/modedit.php, row 134, 292
 "Uses modules" => "\xC8\xE7\xEF\xEE\xEB\xE7\xE2\xE0 \xEC\xEE\xE4\xF3\xEB\xE8", // ai 2026-06

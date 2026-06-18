@@ -84,69 +84,69 @@ return [
 // include/searchbar.class.php, row 613
 "Filter" => "Filtar", // ai 2026-06
 
-// include/searchbar.class.php, row 662
+// include/searchbar.class.php, row 664
 "Advanced search" => "Napredna pretraga", // ai 2026-06
 
-// include/searchbar.class.php, row 719
+// include/searchbar.class.php, row 728
 "Save" => "Spremi", // ai 2026-06
 
-// include/searchbar.class.php, row 720
+// include/searchbar.class.php, row 729
 "Refine" => "Suzite", // ai 2026-06
 
-// include/searchbar.class.php, row 721
+// include/searchbar.class.php, row 730
 "Cancel" => "Poništi",
 
-// include/searchbar.class.php, row 722
+// include/searchbar.class.php, row 731
 // modules/links/constants.php, row 59, 171
 "Name" => "Ime",
 
-// include/searchbar.class.php, row 723
+// include/searchbar.class.php, row 732
 "Share with all slice users" => "Podijelite sa svim korisnicima stranice", // ai 2026-06
 
-// include/searchbar.class.php, row 724
+// include/searchbar.class.php, row 733
 "Save filter" => "Spremite filtar", // ai 2026-06
 
-// include/searchbar.class.php, row 725
+// include/searchbar.class.php, row 734
 "Rename filter" => "Preimenujte filtar", // ai 2026-06
 
-// include/searchbar.class.php, row 726
+// include/searchbar.class.php, row 735
 "Are you sure you want to delete selected filter?" => "Jeste li sigurni da želite obrisati odabrani filtar?", // ai 2026-06
 
-// include/searchbar.class.php, row 1008
+// include/searchbar.class.php, row 1017
 "Select one..." => "Odaberite...", // ai 2026-06
 
-// include/searchbar.class.php, row 1023
+// include/searchbar.class.php, row 1032
 "My filters" => "Moji filtri", // ai 2026-06
 
-// include/searchbar.class.php, row 1026
+// include/searchbar.class.php, row 1035
 "Global filters" => "Globalni filtri", // ai 2026-06
 
-// include/searchbar.class.php, row 1064
+// include/searchbar.class.php, row 1073
 "Shared filter (click to apply)" => "Zajednički filtar (kliknite za primjenu)", // ai 2026-06
 
-// include/searchbar.class.php, row 1064
+// include/searchbar.class.php, row 1073
 "Personal filter (click to apply)" => "Osobni filtar (kliknite za primjenu)", // ai 2026-06
 
-// include/searchbar.class.php, row 1074
+// include/searchbar.class.php, row 1083
 "Rename" => "Preimenujte", // ai 2026-06
 
-// include/searchbar.class.php, row 1076
+// include/searchbar.class.php, row 1085
 "Delete" => "Obrišite",
 
-// include/searchbar.class.php, row 1085
+// include/searchbar.class.php, row 1094
 "Manage filters" => "Upravljanje filtrima", // ai 2026-06
 
 // include/util.php, row 950
 "Error: Missing Reading Password" => "Greška: nedostaje lozinka za čitanje",
 
-// include/util.php, row 1300
+// include/util.php, row 1304
 "Toolkit news message" => "Alata za nove poruke",
 
-// include/util.php, row 1314
+// include/util.php, row 1318
 // modules/links/check_url.php, row 52
 "Back" => "Povratak",
 
-// include/util.php, row 1314
+// include/util.php, row 1318
 "Relogin" => "Ponovna prijava", // ai 2026-06
 
 // modules/links/actions.php, row 47, 91, 112

@@ -229,7 +229,7 @@ return [
 "max number of characters grabbed from the <b>fulltext</b> field" => "a <b>fulltext</b> mezőből átvett karakterek maximális száma", // ai 2026-06
 
 // include/constants_param_wizard.php, row 254
-"fulltext" => "",
+"fulltext" => "teljes szöveg", // ai 2026-06
 
 // include/constants_param_wizard.php, row 255
 "field id of fulltext field (like full_text.......), from which the text is grabbed. If empty, the text is grabbed from <i>the field</i> itself." => "a fulltext mező id-ja (pl. full_text.......), amelyből a szöveg átvételre kerül. Ha üres, a szöveg magából a <i>mezőből</i> származik.", // ai 2026-06
@@ -514,7 +514,7 @@ return [
 "if this parameter is a field id, the field's content is used, else it is used verbatim" => "ha ez a paraméter egy mező azonosítója, a mező tartalmát használja, különben változatlan formában jelenik meg", // ai 2026-06
 
 // include/constants_param_wizard.php, row 517
-"else_field/text" => "",
+"else_field/text" => "egyébként mező/szöveg", // ai 2026-06
 
 // include/constants_param_wizard.php, row 518
 "if <i>the field</i> is empty, only this text (or field content) is printed" => "ha a <i>mező</i> üres, csak ez a szöveg (vagy a mező tartalma) íródik ki", // ai 2026-06
@@ -535,7 +535,7 @@ return [
 "if 1 then hide email from spam robots. Default is 0." => "ha 1, elrejti az e-mailt a spamrobotok elől. Az alapértelmezés 0.", // ai 2026-06
 
 // include/constants_param_wizard.php, row 543
-"id" => "",
+"id" => "azonosító", // ai 2026-06
 
 // include/constants_param_wizard.php, row 544
 "prints unpacked id (use it, if you want to show 'item id' or 'slice id')" => "kiírja a kicsomagolt (unpacked) id-t (használja, ha a 'cikk id'-t vagy a 'rovat id'-t szeretné megjeleníteni)", // ai 2026-06
@@ -634,7 +634,7 @@ return [
 "prints <i>the field</i> content (or <i>unalias string</i>) depending on the html flag (if html flag is not set, it converts the content to html. In difference to f_h function, it converts to html line-breaks, too (in its basic variant)" => "kiírja a <i>mező</i> tartalmát (vagy az <i>unalias string</i>-et) a html jelzőtől függően (ha a html jelző nincs beállítva, a tartalmat html-re alakítja. Az f_h függvénytől eltérően a sortöréseket is html-re alakítja (alap változatában)", // ai 2026-06
 
 // include/constants_param_wizard.php, row 621
-"unalias string" => "",
+"unalias string" => "feloldandó szöveg", // ai 2026-06
 
 // include/constants_param_wizard.php, row 622
 "if the <i>unalias string</i> is defined, then the function ignores <i>the field</i> and it rather prints the <i>unalias string</i>. You can of course use any aliases (or fields like {headline.........}) in this string" => "ha az <i>unalias string</i> meg van adva, a függvény figyelmen kívül hagyja a <i>mezőt</i>, és inkább az <i>unalias string</i>-et írja ki. Ebben a sztringben természetesen használhat bármilyen aliast (vagy mezőt, mint pl. {headline.........})", // ai 2026-06

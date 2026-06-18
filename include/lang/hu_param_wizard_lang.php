@@ -226,7 +226,7 @@ return [
 "max number of characters grabbed from the <b>fulltext</b> field" => "a <b>fulltext</b> mez\xF5b\xF5l \xE1tvett karakterek maxim\xE1lis sz\xE1ma", // ai 2026-06
 
 // include/constants_param_wizard.php, row 254
-"fulltext" => "",
+"fulltext" => "teljes sz\xF6veg", // ai 2026-06
 
 // include/constants_param_wizard.php, row 255
 "field id of fulltext field (like full_text.......), from which the text is grabbed. If empty, the text is grabbed from <i>the field</i> itself." => "a fulltext mez\xF5 id-ja (pl. full_text.......), amelyb\xF5l a sz\xF6veg \xE1tv\xE9telre ker\xFCl. Ha \xFCres, a sz\xF6veg mag\xE1b\xF3l a <i>mez\xF5b\xF5l</i> sz\xE1rmazik.", // ai 2026-06
@@ -511,7 +511,7 @@ return [
 "if this parameter is a field id, the field's content is used, else it is used verbatim" => "ha ez a param\xE9ter egy mez\xF5 azonos\xEDt\xF3ja, a mez\xF5 tartalm\xE1t haszn\xE1lja, k\xFCl\xF6nben v\xE1ltozatlan form\xE1ban jelenik meg", // ai 2026-06
 
 // include/constants_param_wizard.php, row 517
-"else_field/text" => "",
+"else_field/text" => "egy\xE9bk\xE9nt mez\xF5/sz\xF6veg", // ai 2026-06
 
 // include/constants_param_wizard.php, row 518
 "if <i>the field</i> is empty, only this text (or field content) is printed" => "ha a <i>mez\xF5</i> \xFCres, csak ez a sz\xF6veg (vagy a mez\xF5 tartalma) \xEDr\xF3dik ki", // ai 2026-06
@@ -532,7 +532,7 @@ return [
 "if 1 then hide email from spam robots. Default is 0." => "ha 1, elrejti az e-mailt a spamrobotok el\xF5l. Az alap\xE9rtelmez\xE9s 0.", // ai 2026-06
 
 // include/constants_param_wizard.php, row 543
-"id" => "",
+"id" => "azonos\xEDt\xF3", // ai 2026-06
 
 // include/constants_param_wizard.php, row 544
 "prints unpacked id (use it, if you want to show 'item id' or 'slice id')" => "ki\xEDrja a kicsomagolt (unpacked) id-t (haszn\xE1lja, ha a 'cikk id'-t vagy a 'rovat id'-t szeretn\xE9 megjelen\xEDteni)", // ai 2026-06
@@ -631,7 +631,7 @@ return [
 "prints <i>the field</i> content (or <i>unalias string</i>) depending on the html flag (if html flag is not set, it converts the content to html. In difference to f_h function, it converts to html line-breaks, too (in its basic variant)" => "ki\xEDrja a <i>mez\xF5</i> tartalm\xE1t (vagy az <i>unalias string</i>-et) a html jelz\xF5t\xF5l f\xFCgg\xF5en (ha a html jelz\xF5 nincs be\xE1ll\xEDtva, a tartalmat html-re alak\xEDtja. Az f_h f\xFCggv\xE9nyt\xF5l elt\xE9r\xF5en a sort\xF6r\xE9seket is html-re alak\xEDtja (alap v\xE1ltozat\xE1ban)", // ai 2026-06
 
 // include/constants_param_wizard.php, row 621
-"unalias string" => "",
+"unalias string" => "feloldand\xF3 sz\xF6veg", // ai 2026-06
 
 // include/constants_param_wizard.php, row 622
 "if the <i>unalias string</i> is defined, then the function ignores <i>the field</i> and it rather prints the <i>unalias string</i>. You can of course use any aliases (or fields like {headline.........}) in this string" => "ha az <i>unalias string</i> meg van adva, a f\xFCggv\xE9ny figyelmen k\xEDv\xFCl hagyja a <i>mez\xF5t</i>, \xE9s ink\xE1bb az <i>unalias string</i>-et \xEDrja ki. Ebben a sztringben term\xE9szetesen haszn\xE1lhat b\xE1rmilyen aliast (vagy mez\xF5t, mint pl. {headline.........})", // ai 2026-06

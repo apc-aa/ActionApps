@@ -221,13 +221,13 @@ return [
 // include/util.php, row 950
 "Error: Missing Reading Password" => "GRE\x8AKA: Nema lozinke za \xE8itanje",
 
-// include/util.php, row 1300
+// include/util.php, row 1304
 "Toolkit news message" => "Alat za nove poruke",
 
-// include/util.php, row 1314
+// include/util.php, row 1318
 "Back" => "Ntrag",
 
-// include/util.php, row 1314
+// include/util.php, row 1318
 "Relogin" => "Ponovna prijava", // ai 2026-06
 
 // misc/proposefieldchange.php, row 71

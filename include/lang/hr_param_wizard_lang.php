@@ -628,7 +628,7 @@ return [
 "text before the link" => "tekst prije veze",
 
 // include/constants_param_wizard.php, row 508
-"e-mail" => "",
+"e-mail" => "e-po\x9Ata", // ai 2026-06
 
 // include/constants_param_wizard.php, row 511
 "field/text" => "polje/tekst",
@@ -757,7 +757,7 @@ return [
 "prints <i>the field</i> content (or <i>unalias string</i>) depending on the html flag (if html flag is not set, it converts the content to html. In difference to f_h function, it converts to html line-breaks, too (in its basic variant)" => "ispisuje sadr\x9Eaj <i>polja</i> (ili <i>unalias string</i>) ovisno o html oznaci (ako html oznaka nije postavljena, pretvara sadr\x9Eaj u html. Za razliku od funkcije f_h, u html pretvara i prijelome redaka (u osnovnoj varijanti)", // ai 2026-06
 
 // include/constants_param_wizard.php, row 621
-"unalias string" => "",
+"unalias string" => "unalias niz", // ai 2026-06
 
 // include/constants_param_wizard.php, row 622
 "if the <i>unalias string</i> is defined, then the function ignores <i>the field</i> and it rather prints the <i>unalias string</i>. You can of course use any aliases (or fields like {headline.........}) in this string" => "ako je <i>unalias string</i> definiran, funkcija ignorira <i>polje</i> i ispisuje <i>unalias string</i>. U tom nizu naravno mo\x9Eete koristiti bilo koje aliase (ili polja poput {headline.........})", // ai 2026-06

@@ -628,7 +628,7 @@ return [
 "default value" => "Standardwert", // ai 2026-06
 
 // include/constants_param_wizard.php, row 612
-"javascript: window.alert('No source url specified')" => "",
+"javascript: window.alert('No source url specified')" => "javascript: window.alert('Keine Quell-URL angegeben')", // ai 2026-06
 
 // include/constants_param_wizard.php, row 617
 "print field" => "Feld ausgeben", // ai 2026-06

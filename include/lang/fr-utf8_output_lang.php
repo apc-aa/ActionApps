@@ -220,13 +220,13 @@ return [
 // include/util.php, row 950
 "Error: Missing Reading Password" => "Erreur: mot de passe de lecture manquant",
 
-// include/util.php, row 1300
+// include/util.php, row 1304
 "Toolkit news message" => "message de Kit d'outils de nouvelles",
 
-// include/util.php, row 1314
+// include/util.php, row 1318
 "Back" => "Retour",
 
-// include/util.php, row 1314
+// include/util.php, row 1318
 "Relogin" => "Se reconnecter", // ai 2026-06
 
 // misc/proposefieldchange.php, row 71

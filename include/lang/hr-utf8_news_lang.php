@@ -31,9 +31,34 @@ return [
 "Good" => "Dobro",
 "Bad" => "Loše",
 "howoften" => "Kako često",
+"feed" => "preuzmi", // ai 2026-06
 // End of runtime-translated messages
 
 // Unused messages — no longer found in the sources; kept commented for reference.
+// "You don't have permissions to view item history." => "Nemate dozvolu za pregled povijesti stavke.", // ai 2026-06
+// "validate" => "validiraj", // ai 2026-06
+// "RSS feeds testing page." => "Stranica za testiranje RSS kanala.", // ai 2026-06
+// "No RSS Feeds set." => "Nema postavljenih RSS kanala.", // ai 2026-06
+// "Messages" => "Poruke", // ai 2026-06
+// "Write" => "Zapiši", // ai 2026-06
+// "update database" => "ažuriraj bazu podataka", // ai 2026-06
+// "Feed url" => "URL kanala", // ai 2026-06
+// "Ok : file deleted " => "Datoteka je obrisana",
+// "Error: Cannot delete file" => "GREŠKA: ne mogu obrisati datoteku",
+// "Error: Invalid directory" => "Neispravna mapa",
+// "Module Id" => "ID modula", // ai 2026-06
+// "design description (for administrators only)" => "Opis dizajna (samo za administratore/ice)",
+// "COUNT_HIT events will be used for counting item hits. After a while it will be automatically deleted." => "Događaji COUNT_HIT koriste se za brojanje posjeta stavki. Nakon nekog vremena automatski se brišu.", // ai 2026-06
+// "Log view" => "Pogled Log", // ai 2026-06
+// "See searchlog=1 parameter for slice.php in FAQ: " => "Pogledajte parametar searchlog=1 za slice.php u Često postavljanim pitanjima: ", // ai 2026-06
+// "SearchLog view" => "Pogled SearchLog", // ai 2026-06
+// "items found" => "pronađeno stavki", // ai 2026-06
+// "search time" => "vrijeme pretrage", // ai 2026-06
+// "addition" => "dodatak", // ai 2026-06
+// "Configure Fields" => "Postavke polja", // ai 2026-06
+// "vs current" => "vs. trenutno", // ai 2026-06
+// "no current value" => "nema trenutne vrijednosti", // ai 2026-06
+// "same as current" => "isto kao trenutno", // ai 2026-06
 // "No permission" => "Nemate dozvolu",
 // "Send Emails Wizard" => "Čarobnjak za slanje pošte",
 // "in" => "u",
@@ -96,7 +121,6 @@ return [
 //    ."                  the function will then look into this field to ensure uniqueness."
 //  => "Ako želite jedinstveni kod, morate poslati ID polja",
 // "Unique = proove uniqueness" => "Jedinstven = provjerite jedinstvenost zapisa",
-// "Field ID" => "ID polja",
 // "Field in which to look for matching values." => "Polje u kojem možete potražiti zadani vrijednost",
 // "<b>1</b> = This slice only.\n"
 //    ."                <b>2</b> = All slices.<br>\n"
@@ -182,7 +206,6 @@ return [
 // "Cannot open output file:" => "Ne mogu otvoriti izlaznu datoteku",
 // "Cannot open input file:" => "Ne mogu otvoriti ulaznu datoteku",
 // "Cannot write to file" => "Ne mogu pistai u datoteku",
-// "Settings" => "Podešavanje",
 // "You did not permit anonymous editing in slice settings. A form\n"
 //    ."        allowing only anonymous posting will be shown."
 //  => "Niste dozvolili anonimna editiranja",
@@ -516,7 +539,7 @@ return [
 "Sites" => "Web stranice", // ai 2026-06
 
 // admin/aa_statistics.php, row 127
-// admin/aafinder.php, row 500, 513
+// admin/aafinder.php, row 499, 512
 // admin/se_inputform.php, row 291
 // include/searchlib.php, row 970
 "Slices" => "Stranice", // ai 2026-06
@@ -574,11 +597,11 @@ return [
 "Items found" => "Pronađene stavke", // ai 2026-06
 
 // admin/aa_statistics.php, row 313
-// admin/se_statistics.php, row 176
+// admin/se_statistics.php, row 179
 "No items found" => "Nema pronađenih stavki", // ai 2026-06
 
-// admin/aa_statistics.php, row 321
-// admin/se_statistics.php, row 173
+// admin/aa_statistics.php, row 325
+// admin/se_statistics.php, row 176
 "Server configuration changes" => "Promjene konfiguracije poslužitelja", // ai 2026-06
 
 // admin/aa_tasks.php, row 34
@@ -603,78 +626,87 @@ return [
 // admin/aa_toexecute.php, row 42
 "Scheduled Tasks" => "Planirani zadaci", // ai 2026-06
 
+// admin/aa_uiprefs.php, row 30
+"You must be logged in." => "Morate biti prijavljeni.", // ai 2026-06
+
+// admin/aa_uiprefs.php, row 115
+"Thanks — your note reached the AA team." => "Hvala — vaša poruka stigla je AA timu.", // ai 2026-06
+
+// admin/aa_uiprefs.php, row 117
+"Couldn't send right now. Please email us directly: %1" => "Trenutno nije moguće poslati. Molimo pišite nam izravno: %1", // ai 2026-06
+
 // admin/aa_wizardtemplate.php, row 41
 "You do not have permission to manage Wizard Templates" => "Nemate dozvolu za upravljanje predlošcima čarobnjaka", // ai 2026-06
 
 // admin/aa_wizardtemplate.php, row 75
-// include/tv_misc.php, row 70, 71
 "Wizard Templates" => "Predlošci čarobnjaka",
 
-// admin/aafinder.php, row 87
+// admin/aafinder.php, row 86
 "You don't have permissions to do search." => "Nemate dozvolu za pretraživanje.", // ai 2026-06
 
-// admin/aafinder.php, row 99
+// admin/aafinder.php, row 98
 "Show results with string" => "Prikaži rezultate s nizom znakova", // ai 2026-06
 
-// admin/aafinder.php, row 101
+// admin/aafinder.php, row 100
 "Item" => "Stavka", // ai 2026-06
 
-// admin/aafinder.php, row 125
+// admin/aafinder.php, row 124
 // admin/feed_to.php, row 66
 // admin/se_fields.php, row 112
 // admin/slicedit.php, row 244
-// include/itemfunc.php, row 184
-// include/menu.php, row 126
+// include/itemfunc.php, row 185
+// include/logs.php, row 528
+// include/menu.php, row 132
 // include/slice.class.php, row 468
 // include/sliceadd.php, row 52, 77
 "Slice" => "Stranica",
 
-// admin/aafinder.php, row 129
+// admin/aafinder.php, row 128
 // src/AA_Plannedtask.php, row 102
 "Module" => "Modul",
 
-// admin/aafinder.php, row 134, 135, 136, 137
+// admin/aafinder.php, row 133, 134, 135, 136
 // include/um_util.php, row 102
 "Object" => "Objekt",
 
-// admin/aafinder.php, row 140
-// include/itemfunc.php, row 273
-// include/logs.php, row 204
+// admin/aafinder.php, row 139
+// include/itemfunc.php, row 274
+// include/logs.php, row 234
 // src/AA_Plannedtask.php, row 117
 "Log" => "Zapisnik", // ai 2026-06
 
-// admin/aafinder.php, row 162
+// admin/aafinder.php, row 161
 // include/sliceadd.php, row 36
 // include/slicedit.php, row 150
 "You do not have permissions to add slice" => "Nemate dozvolu za dodati stranicu",
 
-// admin/aafinder.php, row 168
+// admin/aafinder.php, row 167
 // include/menu_util.php, row 79
 "AA finder" => "AA tražilica",
 
-// admin/aafinder.php, row 248
+// admin/aafinder.php, row 247
 "Jump" => "Skoči",
 
-// admin/aafinder.php, row 467, 519
-// admin/itemhistory.php, row 39
-// include/itemfunc.php, row 81, 82, 253, 375
-// include/menu.php, row 156
+// admin/aafinder.php, row 466, 518
+// admin/itemhistory.php, row 43
+// include/itemfunc.php, row 83, 84, 254, 376
+// include/menu.php, row 161
 // include/menu_util.php, row 82
 "History" => "Povijest", // ai 2026-06
 
-// admin/aafinder.php, row 479
+// admin/aafinder.php, row 478
 "Manage" => "Upravljanje", // ai 2026-06
 
-// admin/aafinder.php, row 482
+// admin/aafinder.php, row 481
 "Manage User:" => "Upravljanje korisnikom:", // ai 2026-06
 
-// admin/aafinder.php, row 484, 490, 506, 534, 547
+// admin/aafinder.php, row 483, 489, 505, 533, 546
 "Go!" => "Kreni!",
 
-// admin/aafinder.php, row 488
+// admin/aafinder.php, row 487
 "Manage Group:" => "Upravljanje grupom:", // ai 2026-06
 
-// admin/aafinder.php, row 494, 524
+// admin/aafinder.php, row 493, 523
 // admin/um_gedit.php, row 208, 325
 // admin/um_uedit.php, row 249
 // include/se_users.php, row 131, 136
@@ -685,76 +717,76 @@ return [
 // src/Widget/GpsWidget.php, row 434
 "Search" => "Traži",
 
-// admin/aafinder.php, row 497
+// admin/aafinder.php, row 496
 "Find in" => "Traži u", // ai 2026-06
 
-// admin/aafinder.php, row 498
+// admin/aafinder.php, row 497
 "ID & SEO" => "ID i SEO", // ai 2026-06
 
-// admin/aafinder.php, row 499, 512
-// include/itemfunc.php, row 182
-// include/menu.php, row 138
+// admin/aafinder.php, row 498, 511
+// include/itemfunc.php, row 183
+// include/menu.php, row 143
 "Views" => "Pogledi",
 
-// admin/aafinder.php, row 501, 514
+// admin/aafinder.php, row 500, 513
 // admin/anonym_wizard.php, row 216
 // include/exporter.class.php, row 522
-// include/itemfunc.php, row 350
-// include/menu.php, row 127
+// include/itemfunc.php, row 351
+// include/menu.php, row 133
 // include/searchlib.php, row 167
 "Fields" => "Polja",
 
-// admin/aafinder.php, row 502, 515
+// admin/aafinder.php, row 501, 514
 "Site spots" => "Mjesta na webu", // ai 2026-06
 
-// admin/aafinder.php, row 503, 520
+// admin/aafinder.php, row 502, 519
 "Discussion comments" => "Komentari diskusije", // ai 2026-06
 
-// admin/aafinder.php, row 511
+// admin/aafinder.php, row 510
 "Search and Replace in" => "Traži i zamijeni u", // ai 2026-06
 
-// admin/aafinder.php, row 516
+// admin/aafinder.php, row 515
 "Objects" => "Objekti", // ai 2026-06
 
-// admin/aafinder.php, row 517
+// admin/aafinder.php, row 516
 "Items from slices with 'Slice Type' like Code... " => "Stavke sa stranica čiji 'Slice Type' sadrži Code...", // ai 2026-06
 
-// admin/aafinder.php, row 517
+// admin/aafinder.php, row 516
 "Code Items" => "Kodne stavke", // ai 2026-06
 
-// admin/aafinder.php, row 518
+// admin/aafinder.php, row 517
 "All Items" => "Sve stavke", // ai 2026-06
 
-// admin/aafinder.php, row 522
+// admin/aafinder.php, row 521
 "minimum 2 characters for replace function" => "najmanje 2 znaka za funkciju zamjene", // ai 2026-06
 
-// admin/aafinder.php, row 523
+// admin/aafinder.php, row 522
 "minimum 6 characters for replace function (or use {#AAA} value which will be replaced by empty string)" => "najmanje 6 znakova za funkciju zamjene (ili koristite vrijednost {#AAA} koja će biti zamijenjena praznim nizom)", // ai 2026-06
 
-// admin/aafinder.php, row 525
+// admin/aafinder.php, row 524
 "Replace!" => "Zamijeni!", // ai 2026-06
 
-// admin/aafinder.php, row 532
+// admin/aafinder.php, row 531
 "Get all information about the ITEM" => "Dohvati sve informacije o STAVCI", // ai 2026-06
 
-// admin/aafinder.php, row 539
+// admin/aafinder.php, row 538
 "Shortcut to edit ITEM" => "Prečac za uređivanje STAVKE", // ai 2026-06
 
-// admin/aafinder.php, row 542
+// admin/aafinder.php, row 541
 // include/searchbar.class.php, row 543
 // include/searchlib.php, row 47, 48, 124, 133
 "contains" => "Sadrži",
 
-// admin/aafinder.php, row 543
+// admin/aafinder.php, row 542
 // include/searchbar.class.php, row 549
 // include/searchlib.php, row 124, 133
 "is" => "je",
 
-// admin/aafinder.php, row 544
+// admin/aafinder.php, row 543
 // admin/se_profile.php, row 98
 "Item number" => "Broj stavke",
 
-// admin/aafinder.php, row 545
+// admin/aafinder.php, row 544
 "seo............. =" => "",
 
 // admin/aarsstest.php, row 37
@@ -780,6 +812,7 @@ return [
 
 // admin/anonym_wizard.php, row 127
 // admin/write_mail.php, row 257
+// include/menu_util.php, row 599
 // include/stringexpand.php, row 9646, 9726
 "Send" => "Pošaljite",
 
@@ -835,7 +868,7 @@ return [
 // admin/sliceexp_text.php, row 364
 // include/form.class.php, row 183
 // include/searchlib.php, row 357
-// src/Util/ChangesMonitor.php, row 381
+// src/Util/ChangesMonitor.php, row 455
 "Field" => "Polje",
 
 // admin/anonym_wizard.php, row 221
@@ -845,7 +878,6 @@ return [
 // admin/se_javascript.php, row 90
 // admin/slicedit.php, row 277
 // include/constants.php, row 409
-// include/tableviews.php, row 64, 80
 "Id" => "ID",
 
 // admin/anonym_wizard.php, row 223
@@ -921,7 +953,7 @@ return [
 "Author" => "Autor - autorica",
 
 // admin/discedit.php, row 130
-// include/logs.php, row 396
+// include/logs.php, row 442
 "IP Address" => "IP adresa", // ai 2026-06
 
 // admin/discedit.php, row 131
@@ -931,7 +963,6 @@ return [
 
 // admin/discedit.php, row 132
 // admin/related_sel.php, row 148
-// admin/rsstest.php, row 96
 // admin/se_views.php, row 132
 // src/Manager.php, row 201
 // src/Optimize/AbstractOptimize.php, row 127
@@ -947,7 +978,7 @@ return [
 // admin/um_uedit.php, row 266
 // include/field.class.php, row 597
 // include/filedit.php, row 114
-// include/formutil.php, row 1755, 3344
+// include/formutil.php, row 1755, 3346
 // include/metabase.class.php, row 1552
 // include/mlx.php, row 367
 // include/statestore.php, row 1025
@@ -973,7 +1004,7 @@ return [
 // include/formutil.php, row 1766, 1903
 // include/menu_util.php, row 61
 // include/profile.php, row 67
-// include/searchbar.class.php, row 1076
+// include/searchbar.class.php, row 1085
 // include/um_gsrch.php, row 53
 // src/Manageraction/Object_Delete.php, row 24
 // src/Manageraction/Table_Row_Delete.php, row 23
@@ -981,9 +1012,9 @@ return [
 "Delete" => "Obrišite",
 
 // admin/discedit.php, row 169
-// include/adminpage.class.php, row 330
+// include/adminpage.class.php, row 331
 // include/se_users.php, row 121
-// include/util.php, row 1314
+// include/util.php, row 1318
 "Back" => "Natrag",
 
 // admin/discedit.php, row 170
@@ -1040,7 +1071,7 @@ return [
 "Export Item to Selected Slice" => "Izvezite stavku u izabranu stranicu",
 
 // admin/feed_to.php, row 67
-// include/itemfunc.php, row 152
+// include/itemfunc.php, row 153
 "Holding bin" => "prostor za dokumente na čekanju",
 
 // admin/feed_to.php, row 68
@@ -1048,8 +1079,8 @@ return [
 // admin/se_filters.php, row 191
 // admin/slicedit.php, row 139, 145
 // include/exporter.class.php, row 483
-// include/menu.php, row 182
-// include/menu_util.php, row 120
+// include/menu.php, row 187
+// include/menu_util.php, row 119
 // src/Module/Poll/Menu.php, row 61
 "Active" => "Aktivan",
 
@@ -1079,7 +1110,7 @@ return [
 
 // admin/fileman.php, row 114
 // include/filedit.php, row 66
-// include/menu.php, row 160
+// include/menu.php, row 165
 "File Manager" => "Upravitelj datoteka", // ai 2026-06
 
 // admin/fileman.php, row 116
@@ -1135,17 +1166,15 @@ return [
 "Edit Item" => "Uredite stavku",
 
 // admin/itemedit.php, row 387, 388
-// include/menu.php, row 76
+// include/menu.php, row 82
 "Add Item" => "Dodajte stavku",
 
-// admin/itemhistory.php, row 24
-"You don't have permissions to view item history." => "Nemate dozvolu za pregled povijesti stavke.", // ai 2026-06
-
-// admin/itemhistory.php, row 32
+// admin/itemhistory.php, row 28
 // admin/iteminfo.php, row 29
 // admin/itemstats.php, row 31
 "Item not found." => "Stavka nije pronađena.", // ai 2026-06
 
+// admin/itemhistory.php, row 36
 // admin/iteminfo.php, row 36
 "You have no rights to this item." => "Nemate dozvolu za ovu stavku.", // ai 2026-06
 
@@ -1157,8 +1186,8 @@ return [
 "You don't have permissions to view item statistics." => "Nemate dozvolu za pregled statistike stavke.", // ai 2026-06
 
 // admin/itemstats.php, row 38
-// include/itemfunc.php, row 86, 456
-// include/menu.php, row 157
+// include/itemfunc.php, row 88, 457
+// include/menu.php, row 162
 // include/menu_util.php, row 81
 // src/Util/Adminlink.php, row 119
 "Statistics" => "Statistika", // ai 2026-06
@@ -1214,48 +1243,11 @@ return [
 // admin/related_sel.php, row 176
 "Editor window - item manager, related selection window" => "Uređivanje stavki - odabir povezanih stavki", // ai 2026-06
 
-// admin/rsstest.php, row 50
-"feed" => "preuzmi", // ai 2026-06
-
-// admin/rsstest.php, row 51
-"validate" => "validiraj", // ai 2026-06
-
-// admin/rsstest.php, row 52
-// include/stringexpand.php, row 7900
-"show" => "prikaži", // ai 2026-06
-
-// admin/rsstest.php, row 85, 86, 136
-"RSS Feed import test" => "Test uvoza RSS kanala", // ai 2026-06
-
-// admin/rsstest.php, row 87
-"RSS feeds testing page." => "Stranica za testiranje RSS kanala.", // ai 2026-06
-
-// admin/rsstest.php, row 89
-"No RSS Feeds set." => "Nema postavljenih RSS kanala.", // ai 2026-06
-
-// admin/rsstest.php, row 100
-"Messages" => "Poruke", // ai 2026-06
-
-// admin/rsstest.php, row 106
-"Write" => "Zapiši", // ai 2026-06
-
-// admin/rsstest.php, row 107
-"update database" => "ažuriraj bazu podataka", // ai 2026-06
-
-// admin/rsstest.php, row 113
-"Feed url" => "URL kanala", // ai 2026-06
-
-// admin/rsstest.php, row 117
-// admin/se_inter_import.php, row 98
-"Node" => "Čvor", // ai 2026-06
-
-// admin/rsstest.php, row 121
-// include/feeding.php, row 464, 470, 527
-"Local slice" => "Lokalna stranica", // ai 2026-06
-
-// admin/rsstest.php, row 130
-// admin/tabledit.php, row 78
+// admin/rsstest.php, row 36
 "You do not have permissions to access this page" => "Nemate dozvolu za pristup ovoj stranici", // ai 2026-06
+
+// admin/rsstest.php, row 46
+"RSS Feed import test" => "Test uvoza RSS kanala", // ai 2026-06
 
 // admin/se_admin.php, row 72
 "You have no permission to set configuration parameters of this slice" => "Nemate dozvolu za postavljanje konfiguracijskih postavki za ovu stranicu",
@@ -1263,7 +1255,6 @@ return [
 // admin/se_admin.php, row 81, 173
 // admin/se_compact.php, row 94, 238
 // include/constants.php, row 605, 655, 675, 729, 764, 795, 819, 862, 891, 917, 951
-// include/tableviews.php, row 107
 "Top HTML" => "Vrh HTML-a",
 
 // admin/se_admin.php, row 82, 176
@@ -1272,7 +1263,6 @@ return [
 // admin/se_admin.php, row 83, 179
 // admin/se_compact.php, row 95, 248
 // include/constants.php, row 610, 657, 677, 733, 766, 797, 822, 867, 893, 922, 956
-// include/tableviews.php, row 115
 "Bottom HTML" => "Dno HTML-a",
 
 // admin/se_admin.php, row 84, 182
@@ -1305,6 +1295,7 @@ return [
 // admin/se_compact.php, row 228
 // admin/se_fulltext.php, row 153
 // admin/se_inputform.php, row 187, 439
+// src/Util/UiPrefs.php, row 56
 "Default" => "Zadano",
 
 // admin/se_admin.php, row 171
@@ -1435,8 +1426,7 @@ return [
 // include/constedit.php, row 73
 // include/fileman.php, row 31
 // include/se_users.php, row 173
-// include/searchbar.class.php, row 722
-// include/tableviews.php, row 65, 97
+// include/searchbar.class.php, row 731
 // include/um_gedit.php, row 31
 // src/AA_Plannedtask.php, row 102
 // src/Optimize/AbstractOptimize.php, row 125
@@ -1582,6 +1572,7 @@ return [
 
 // admin/se_csv_import.php, row 236, 241
 // include/filedit.php, row 66
+// include/logs.php, row 543
 "File" => "Datoteka",
 
 // admin/se_csv_import.php, row 237, 242
@@ -1591,14 +1582,14 @@ return [
 
 // admin/se_csv_import.php, row 238, 243
 // admin/se_inputform.php, row 471, 472
-// include/itemfunc.php, row 589, 678, 702
+// include/itemfunc.php, row 590, 679, 703
 "Text" => "Tekst",
 
 // admin/se_csv_import.php, row 251
 "Source of CSV data" => "Izvor CSV podataka",
 
 // admin/se_csv_import.php, row 275
-// admin/se_csv_import2.php, row 374
+// admin/se_csv_import2.php, row 373
 // src/Manageraction/Item_Preview.php, row 11
 "Preview" => "Pregled",
 
@@ -1624,133 +1615,125 @@ return [
 // admin/se_csv_import2.php, row 284
 "Ok: Item %1 stored" => "Ok: stavka %1 je spremljena", // ai 2026-06
 
-// admin/se_csv_import2.php, row 300
-// include/files.class.php, row 298
-"Ok : file deleted " => "Datoteka je obrisana",
-
-// admin/se_csv_import2.php, row 302
-// include/files.class.php, row 300
-"Error: Cannot delete file" => "GREŠKA: ne mogu obrisati datoteku",
-
-// admin/se_csv_import2.php, row 306
+// admin/se_csv_import2.php, row 305
 "Added to slice" => "Dodano na stranicu",
 
-// admin/se_csv_import2.php, row 328
+// admin/se_csv_import2.php, row 327
 "Mapping preview" => "Pregled mapiranja",
 
-// admin/se_csv_import2.php, row 379
+// admin/se_csv_import2.php, row 378
 "Finish" => "Završi", // ai 2026-06
 
-// admin/se_csv_import2.php, row 384
-// include/searchbar.class.php, row 719
+// admin/se_csv_import2.php, row 383
+// include/searchbar.class.php, row 728
 // src/Widget/MflWidget.php, row 120
 // src/Widget/RioWidget.php, row 124
 // src/Widget/TxtWidget.php, row 109
 // src/Widget/Widget.php, row 416
 "Save" => "Spremi", // ai 2026-06
 
-// admin/se_csv_import2.php, row 389
+// admin/se_csv_import2.php, row 388
 "Load" => "Učitaj", // ai 2026-06
 
-// admin/se_csv_import2.php, row 399
+// admin/se_csv_import2.php, row 398
 "Mapping settings" => "Postavke mapiranja",
 
-// admin/se_csv_import2.php, row 402
+// admin/se_csv_import2.php, row 401
 // admin/se_filters.php, row 190
 // admin/se_mapping.php, row 181
 "To" => "Do",
 
-// admin/se_csv_import2.php, row 403
+// admin/se_csv_import2.php, row 402
 // admin/se_filters.php, row 189
 // admin/se_mapping.php, row 182
 // include/tv_email.php, row 159
 "From" => "Od",
 
-// admin/se_csv_import2.php, row 404
+// admin/se_csv_import2.php, row 403
 // admin/search_replace.php, row 178
 // include/metabase.class.php, row 1577
 // include/statestore.php, row 975, 1289
 // src/AA_Plannedtask.php, row 102
 "Action" => "Akcija",
 
-// admin/se_csv_import2.php, row 405
+// admin/se_csv_import2.php, row 404
 "Html" => "HTML", // ai 2026-06
 
-// admin/se_csv_import2.php, row 406
+// admin/se_csv_import2.php, row 405
 "Action parameters" => "Postavke akcije",
 
-// admin/se_csv_import2.php, row 407
+// admin/se_csv_import2.php, row 406
 "Parameter wizard" => "Čarobnjak za postavke",
 
-// admin/se_csv_import2.php, row 432
+// admin/se_csv_import2.php, row 431
 "Import options" => "Opcije uvoza", // ai 2026-06
 
-// admin/se_csv_import2.php, row 447
+// admin/se_csv_import2.php, row 446
 "Map item id from" => "Mapiranje ID-a stavki iz",
 
-// admin/se_csv_import2.php, row 451
+// admin/se_csv_import2.php, row 450
 "unpacked long id (32 characters)" => "raspakirani dugi ID (32 znaka)", // ai 2026-06
 
-// admin/se_csv_import2.php, row 452
+// admin/se_csv_import2.php, row 451
 "packed long id (16 characters)" => "pakirani dugi ID (16 znakova)", // ai 2026-06
 
-// admin/se_csv_import2.php, row 453
+// admin/se_csv_import2.php, row 452
 "string to be converted (string2id) - with param:" => "niz za pretvorbu (string2id) - s parametrom:", // ai 2026-06
 
-// admin/se_csv_import2.php, row 461
+// admin/se_csv_import2.php, row 460
 "Select, how to store the items" => "Odaberite kako spremiti stavke", // ai 2026-06
 
-// admin/se_csv_import2.php, row 463
+// admin/se_csv_import2.php, row 462
 "Do not store the item" => "Nemojte spremiti stavku",
 
-// admin/se_csv_import2.php, row 464
+// admin/se_csv_import2.php, row 463
 "Store the item with new id" => "Spremite stavku sa novim ID-em",
 
-// admin/se_csv_import2.php, row 465
+// admin/se_csv_import2.php, row 464
 "Update the item (overwrite)" => "Ažuriraj stavku (prepiši)", // ai 2026-06
 
-// admin/se_csv_import2.php, row 466
+// admin/se_csv_import2.php, row 465
 "Add the values in parallel to current values (the multivalues are stored, where possible)" => "Dodaj vrijednosti usporedno s trenutnim vrijednostima (višestruke vrijednosti se spremaju gdje je moguće)", // ai 2026-06
 
-// admin/se_csv_import2.php, row 467
+// admin/se_csv_import2.php, row 466
 "Rewrite only the fields, for which the action is defined and compute all computed fields, ..." => "Prepiši samo polja za koja je akcija definirana i izračunaj sva izračunata polja, ...", // ai 2026-06
 
-// admin/se_csv_import2.php, row 468
+// admin/se_csv_import2.php, row 467
 "Rewrite only the fields, for which the action is defined (do not update lastedit, computed, ... fields = Silent)" => "Prepiši samo polja za koja je akcija definirana (ne ažuriraj lastedit, izračunata, ... polja = tiho)", // ai 2026-06
 
-// admin/se_csv_import2.php, row 469
+// admin/se_csv_import2.php, row 468
 "Rewrite only the fields, for which the action is defined and its value is not empty (computed fields will be computed)" => "Prepiši samo polja za koja je akcija definirana i čija vrijednost nije prazna (izračunata polja će biti izračunata)", // ai 2026-06
 
-// admin/se_csv_import2.php, row 472
+// admin/se_csv_import2.php, row 471
 "If the item id is already in the slice" => "Ako je ID stavke već na stranici", // ai 2026-06
 
-// admin/se_csv_import2.php, row 473
+// admin/se_csv_import2.php, row 472
 // admin/search_replace.php, row 176
 "Silent" => "Tiho", // ai 2026-06
 
-// admin/se_csv_import2.php, row 473
+// admin/se_csv_import2.php, row 472
 "Do not perform any other operations like evaluate-computed-field, feed, send e-mail to Readers of Alerts..." => "Ne izvodi nikakve druge operacije poput izračuna izračunatih polja, prosljeđivanja, slanja e-pošte čitateljima obavijesti...", // ai 2026-06
 
-// admin/se_csv_import2.php, row 474
+// admin/se_csv_import2.php, row 473
 "Data source" => "Izvor podataka", // ai 2026-06
 
-// admin/se_csv_import2.php, row 475
+// admin/se_csv_import2.php, row 474
 // include/feeding.php, row 456, 488
 "Source" => "Izvor", // ai 2026-06
 
-// admin/se_csv_import2.php, row 477
+// admin/se_csv_import2.php, row 476
 "Store settings..." => "Spremi postavke...", // ai 2026-06
 
-// admin/se_csv_import2.php, row 483
+// admin/se_csv_import2.php, row 482
 "Load setting" => "Učitaj postavke", // ai 2026-06
 
-// admin/se_csv_import2.php, row 485
+// admin/se_csv_import2.php, row 484
 "Save setting as" => "Spremi postavke kao", // ai 2026-06
 
-// admin/se_csv_import2.php, row 488
+// admin/se_csv_import2.php, row 487
 "Upload periodically" => "Učitavaj periodično", // ai 2026-06
 
-// admin/se_csv_import2.php, row 539
+// admin/se_csv_import2.php, row 538
 "Admin - Import CSV (2/2) - Mapping and Actions" => "Admin - uvezite CSV - mapiranje i akcije",
 
 // admin/se_export.php, row 75
@@ -1779,7 +1762,7 @@ return [
 
 // admin/se_export.php, row 122
 // include/exporter.class.php, row 485
-// include/itemfunc.php, row 145
+// include/itemfunc.php, row 146
 "Expired" => "Isteklo",
 
 // admin/se_export.php, row 123
@@ -1792,7 +1775,7 @@ return [
 
 // admin/se_export.php, row 125
 // include/exporter.class.php, row 488
-// include/itemfunc.php, row 155
+// include/itemfunc.php, row 156
 // src/Manageraction/Central_MoveItem.php, row 43
 "Trash" => "Smeće",
 
@@ -1818,7 +1801,7 @@ return [
 // admin/sliceexp_text.php, row 364
 // include/exporter.class.php, row 509
 // include/fileman.php, row 33
-// include/logs.php, row 316
+// include/logs.php, row 346
 // include/se_users.php, row 173
 // src/Widget/Widget.php, row 724
 "Type" => "Tip",
@@ -1962,7 +1945,7 @@ return [
 // admin/um_gedit.php, row 281
 // admin/um_uedit.php, row 389
 // central/include/actionapps.class.php, row 781
-// include/formutil.php, row 188, 2892
+// include/formutil.php, row 188, 2894
 // modules/jump/modedit.php, row 182
 "Update" => "Obnovi",
 
@@ -2058,7 +2041,7 @@ return [
 "Time of change" => "Vrijeme promjene", // ai 2026-06
 
 // admin/se_history.php, row 162
-// include/itemfunc.php, row 188
+// include/itemfunc.php, row 189
 // src/AA_Plannedtask.php, row 63
 "Item ID" => "ID stavke", // ai 2026-06
 
@@ -2178,7 +2161,7 @@ return [
 // admin/se_inputform.php, row 480
 // admin/sliceimp.php, row 428
 // include/form.class.php, row 409, 411
-// include/formutil.php, row 207, 2903
+// include/formutil.php, row 207, 2905
 "Insert" => "Umetnite",
 
 // admin/se_inputform.php, row 483
@@ -2227,13 +2210,14 @@ return [
 "Disabled" => "Onemogućeno", // ai 2026-06
 
 // admin/se_inputform.php, row 521
+// src/Util/ChangesMonitor.php, row 514
 "Copy to clipboard" => "Kopiraj u međuspremnik", // ai 2026-06
 
 // admin/se_inputform.php, row 522
 "Reset" => "Poništi", // ai 2026-06
 
 // admin/se_inputform.php, row 527
-// include/logs.php, row 331
+// include/logs.php, row 361
 "Parameters" => "Postavke",
 
 // admin/se_inter_export.php, row 99
@@ -2276,6 +2260,9 @@ return [
 "Remote slice" => "Udaljena stranica", // ai 2026-06
 
 // admin/se_inter_import.php, row 98
+"Node" => "Čvor", // ai 2026-06
+
+// admin/se_inter_import.php, row 98
 // misc/datovka/datovka.php, row 114
 "State" => "Država",
 
@@ -2286,7 +2273,7 @@ return [
 "No remote imports into the slice" => "Nema udaljenih uvoza u stranicu", // ai 2026-06
 
 // admin/se_inter_import.php, row 106
-// include/menu.php, row 147
+// include/menu.php, row 152
 "Inter Node Import" => "Uvoz između čvorova", // ai 2026-06
 
 // admin/se_inter_import.php, row 107
@@ -2332,7 +2319,7 @@ return [
 "The import was successfully created" => "Uvoz je uspješno kreiran",
 
 // admin/se_javascript.php, row 71
-// include/menu.php, row 159
+// include/menu.php, row 164
 "Field Triggers" => "Okidači polja",
 
 // admin/se_javascript.php, row 78
@@ -2714,6 +2701,7 @@ return [
 
 // admin/se_profile.php, row 268
 // central/copyslice2.php, row 116
+// src/Util/ChangesMonitor.php, row 514
 "Copy" => "Kopirajte", // ai 2026-06
 
 // admin/se_sets.php, row 64
@@ -3004,7 +2992,7 @@ return [
 // admin/slicewiz.php, row 79
 // admin/um_passwd.php, row 109
 // admin/um_uedit.php, row 314, 318
-// include/itemfunc.php, row 547, 1048
+// include/itemfunc.php, row 548, 1049
 // include/um_util.php, row 296
 "Login name" => "Korisničko ime",
 
@@ -3144,13 +3132,13 @@ return [
 "Active with antiSPAM tokens" => "Aktivno s antiSPAM tokenima", // ai 2026-06
 
 // admin/slicedit.php, row 140, 146
-// include/menu.php, row 185
-// include/menu_util.php, row 121
+// include/menu.php, row 190
+// include/menu_util.php, row 120
 // src/Module/Poll/Menu.php, row 64
 "Hold bin" => "Zadržano",
 
 // admin/slicedit.php, row 152
-// include/formutil.php, row 3258
+// include/formutil.php, row 3260
 "All items" => "Sve stavke",
 
 // admin/slicedit.php, row 153
@@ -3172,6 +3160,7 @@ return [
 "Admin - Slice settings" => "Admin - postavke stranice",
 
 // admin/slicedit.php, row 253
+// include/menu_util.php, row 605
 "Language" => "Jezik",
 
 // admin/slicedit.php, row 255
@@ -3211,7 +3200,7 @@ return [
 "Password for Reading" => "Lozinka za čitanje",
 
 // admin/slicedit.php, row 281
-// include/itemfunc.php, row 180
+// include/itemfunc.php, row 181
 "Created" => "Stvoreno", // ai 2026-06
 
 // admin/slicedit.php, row 281
@@ -3526,6 +3515,7 @@ return [
 
 // admin/um_gedit.php, row 313
 // admin/um_uedit.php, row 231, 242
+// include/logs.php, row 453
 // include/menu_util.php, row 70
 // include/se_users.php, row 129
 "Users" => "Korisnici ice",
@@ -3713,7 +3703,7 @@ return [
 
 // central/copyslice2.php, row 88
 // central/synchronize3.php, row 94
-// include/menu.php, row 163
+// include/menu.php, row 168
 // include/menu_util.php, row 74
 "Task Manager" => "Upravitelj zadataka", // ai 2026-06
 
@@ -3854,13 +3844,13 @@ return [
 // src/Manageraction/Central_Linkcheck.php, row 31
 "Auth" => "Autentifikacija", // ai 2026-06
 
-// central/responder.php, row 567
+// central/responder.php, row 597
 "No request sent for responder.php" => "Nije poslan zahtjev za responder.php", // ai 2026-06
 
-// central/responder.php, row 573
+// central/responder.php, row 603
 "Bad request sent for responder.php - %1" => "Poslan je neispravan zahtjev za responder.php - %1", // ai 2026-06
 
-// central/responder.php, row 578
+// central/responder.php, row 608
 "You (%2) don't have permissions to run %1" => "Vi (%2) nemate dozvolu za pokretanje %1", // ai 2026-06
 
 // central/synchronize.php, row 35
@@ -3963,6 +3953,7 @@ return [
 "Level" => "Nivo",
 
 // include/constants.php, row 460
+// include/logs.php, row 507
 "Feed" => "Kopirati sadržaj", // ai 2026-06
 
 // include/constants.php, row 461
@@ -4239,7 +4230,7 @@ return [
 "Calendar: Year number of processed cell" => "Kalendar: Godina",
 
 // include/constants.php, row 1143
-"Superadmin" => "",
+"Superadmin" => "Superadministrator", // ai 2026-06
 
 // include/constedit.php, row 55
 "Constants - Hierarchical editor" => "Konstante - uređivanje po važnosti",
@@ -4334,6 +4325,9 @@ return [
 
 // include/feeding.php, row 454, 490
 "Run (queue)" => "Pokrenite (red čekanja)", // ai 2026-06
+
+// include/feeding.php, row 464, 470, 527
+"Local slice" => "Lokalna stranica", // ai 2026-06
 
 // include/feeding.php, row 473
 "URL of the feed" => "URL obrasca",
@@ -4545,9 +4539,6 @@ return [
 // include/files.class.php, row 255
 "Can't write to file: %1" => "Nije moguće pisati u datoteku: %1", // ai 2026-06
 
-// include/files.class.php, row 306
-"Error: Invalid directory" => "Neispravna mapa",
-
 // include/files.class.php, row 328
 "can't create backup of the file" => "nije moguće napraviti sigurnosnu kopiju datoteke", // ai 2026-06
 
@@ -4582,7 +4573,7 @@ return [
 "Rows" => "Retci", // ai 2026-06
 
 // include/form.class.php, row 301
-// include/menu.php, row 141
+// include/menu.php, row 146
 "Forms" => "Forme", // ai 2026-06
 
 // include/formutil.php, row 191
@@ -4591,11 +4582,11 @@ return [
 // include/formutil.php, row 198
 "Insert as new" => "Stavite kao novo",
 
-// include/formutil.php, row 202, 2924
+// include/formutil.php, row 202, 2926
 "Reset form" => "Resetiranje forme",
 
-// include/formutil.php, row 205, 210, 2916, 2920
-// include/searchbar.class.php, row 721
+// include/formutil.php, row 205, 210, 2918, 2922
+// include/searchbar.class.php, row 730
 // src/Widget/LupWidget.php, row 118
 "Cancel" => "Poništi",
 
@@ -4640,8 +4631,8 @@ return [
 "Enter the value" => "Unesite vrijednost", // ai 2026-06
 
 // include/formutil.php, row 1763
-// include/menu.php, row 134
-// src/Util/ChangesMonitor.php, row 381
+// include/menu.php, row 139
+// src/Util/ChangesMonitor.php, row 455
 "Change" => "Promijenite",
 
 // include/formutil.php, row 1906, 2093
@@ -4668,43 +4659,44 @@ return [
 // include/searchlib.php, row 58, 124, 127, 130, 133, 136
 "not set" => "Nije podešeno",
 
-// include/formutil.php, row 2927
+// include/formutil.php, row 2929
 "Submit" => "Pošaljite",
 
-// include/formutil.php, row 3244
+// include/formutil.php, row 3246
 "Group Name" => "Naziv grupe", // ai 2026-06
 
-// include/formutil.php, row 3245
+// include/formutil.php, row 3247
+// include/logs.php, row 497
 "Count" => "Broj", // ai 2026-06
 
-// include/formutil.php, row 3246
+// include/formutil.php, row 3248
 "Created on" => "Stvoreno", // ai 2026-06
 
-// include/formutil.php, row 3247
+// include/formutil.php, row 3249
 "Created by" => "Stvorio/la", // ai 2026-06
 
-// include/formutil.php, row 3248
+// include/formutil.php, row 3250
 "Last updated" => "Zadnja izmjena", // ai 2026-06
 
-// include/formutil.php, row 3249
+// include/formutil.php, row 3251
 "Updated by" => "Izmijenio/la", // ai 2026-06
 
-// include/formutil.php, row 3250
+// include/formutil.php, row 3252
 "Last used" => "Zadnje korišteno", // ai 2026-06
 
-// include/formutil.php, row 3257
+// include/formutil.php, row 3259
 "All active items" => "Sve aktivne stavke", // ai 2026-06
 
-// include/formutil.php, row 3259
+// include/formutil.php, row 3261
 "All pending items" => "Sve stavke na čekanju", // ai 2026-06
 
-// include/formutil.php, row 3260
+// include/formutil.php, row 3262
 "All expired items" => "Sve istekle stavke", // ai 2026-06
 
-// include/formutil.php, row 3261
+// include/formutil.php, row 3263
 "All items in holding bin" => "Sve stavke u spremniku", // ai 2026-06
 
-// include/formutil.php, row 3262
+// include/formutil.php, row 3264
 "All items in trash bin" => "Sve stavke u smeću", // ai 2026-06
 
 // include/init_page.php, row 94
@@ -4861,329 +4853,329 @@ return [
 // include/itemfunc.php, row 71
 "Edit item" => "Uredite stavku", // ai 2026-06
 
-// include/itemfunc.php, row 129
+// include/itemfunc.php, row 130
 "by %1" => "od korisnika %1", // ai 2026-06
 
-// include/itemfunc.php, row 142
+// include/itemfunc.php, row 143
 "Scheduled" => "Zakazano", // ai 2026-06
 
-// include/itemfunc.php, row 143
+// include/itemfunc.php, row 144
 "not yet on the public site" => "još nije na javnom webu", // ai 2026-06
 
-// include/itemfunc.php, row 146, 153, 156
+// include/itemfunc.php, row 147, 154, 157
 "not on the public site" => "nije na javnom webu", // ai 2026-06
 
-// include/itemfunc.php, row 149, 178
+// include/itemfunc.php, row 150, 179
 "Published" => "Objavljeno", // ai 2026-06
 
-// include/itemfunc.php, row 175
+// include/itemfunc.php, row 176
 "Never" => "Nikada", // ai 2026-06
 
-// include/itemfunc.php, row 176
+// include/itemfunc.php, row 177
 "not used on this site" => "ne koristi se na ovom webu", // ai 2026-06
 
-// include/itemfunc.php, row 179
+// include/itemfunc.php, row 180
 "Expires" => "Istječe", // ai 2026-06
 
-// include/itemfunc.php, row 181
+// include/itemfunc.php, row 182
 "Last edited" => "Zadnje uređeno",
 
-// include/itemfunc.php, row 183
+// include/itemfunc.php, row 184
 "Revisions" => "Revizije", // ai 2026-06
 
-// include/itemfunc.php, row 185
+// include/itemfunc.php, row 186
 "Short ID" => "Kratki ID", // ai 2026-06
 
-// include/itemfunc.php, row 191
+// include/itemfunc.php, row 192
 "Details" => "Detalji", // ai 2026-06
 
-// include/itemfunc.php, row 226
+// include/itemfunc.php, row 227
 "Item table record for the item" => "Zapis stavke u tablici item", // ai 2026-06
 
-// include/itemfunc.php, row 250
+// include/itemfunc.php, row 251
 "Content table records for the item" => "Zapisi stavke u tablici content", // ai 2026-06
 
-// include/itemfunc.php, row 269
+// include/itemfunc.php, row 270
 "Referenced items" => "Referencirane stavke", // ai 2026-06
 
-// include/itemfunc.php, row 278
+// include/itemfunc.php, row 279
 "AA_Item structure" => "Struktura AA_Item", // ai 2026-06
 
-// include/itemfunc.php, row 309
+// include/itemfunc.php, row 310
 "Technical details" => "Tehnički detalji", // ai 2026-06
 
-// include/itemfunc.php, row 350
+// include/itemfunc.php, row 351
 "When" => "Kada", // ai 2026-06
 
-// include/itemfunc.php, row 350
+// include/itemfunc.php, row 351
 "Changed by" => "Promijenio/la", // ai 2026-06
 
-// include/itemfunc.php, row 378
+// include/itemfunc.php, row 379
 "Full history" => "Cijela povijest", // ai 2026-06
 
-// include/itemfunc.php, row 403
+// include/itemfunc.php, row 404
 "Total views" => "Ukupno pregleda", // ai 2026-06
 
-// include/itemfunc.php, row 422
+// include/itemfunc.php, row 423
 "Average / day" => "Prosjek / dan", // ai 2026-06
 
-// include/itemfunc.php, row 426
+// include/itemfunc.php, row 427
 "Last 7 days" => "Zadnjih 7 dana", // ai 2026-06
 
-// include/itemfunc.php, row 427
+// include/itemfunc.php, row 428
 "Last 30 days" => "Zadnjih 30 dana", // ai 2026-06
 
-// include/itemfunc.php, row 429
+// include/itemfunc.php, row 430
 "Last viewed" => "Zadnji pregled", // ai 2026-06
 
-// include/itemfunc.php, row 433
+// include/itemfunc.php, row 434
 "Avg response" => "Prosječni odziv", // ai 2026-06
 
-// include/itemfunc.php, row 436
+// include/itemfunc.php, row 437
 "Served from cache" => "Posluženo iz predmemorije", // ai 2026-06
 
-// include/itemfunc.php, row 459
+// include/itemfunc.php, row 460
 "Full statistics" => "Potpuna statistika", // ai 2026-06
 
-// include/itemfunc.php, row 484
+// include/itemfunc.php, row 485
 "No detailed view statistics have been recorded for this item yet." => "Za ovu stavku još nije zabilježena detaljna statistika pregleda.", // ai 2026-06
 
-// include/itemfunc.php, row 487
+// include/itemfunc.php, row 488
 "Open full statistics" => "Otvori potpunu statistiku", // ai 2026-06
 
-// include/itemfunc.php, row 514
+// include/itemfunc.php, row 515
 "Now, i.e. current date" => "Sada, sadašnji datum",
 
-// include/itemfunc.php, row 524
+// include/itemfunc.php, row 525
 "Never, i.e. maximum date" => "Nikad, tj. maksimalni datum", // ai 2026-06
 
-// include/itemfunc.php, row 535
+// include/itemfunc.php, row 536
 "User ID" => "Korisnički ID",
 
-// include/itemfunc.php, row 561
+// include/itemfunc.php, row 562
 "Date + 'Parameter' days" => "Datum + 'Parameter' dani",
 
-// include/itemfunc.php, row 568
+// include/itemfunc.php, row 569
 "Number of days" => "Broj dana",
 
-// include/itemfunc.php, row 582
+// include/itemfunc.php, row 583
 "Text from 'Parameter'" => "Tekst iz 'Parameter'",
 
-// include/itemfunc.php, row 616
+// include/itemfunc.php, row 617
 "Random string" => "Slučajni odabir",
 
-// include/itemfunc.php, row 618
+// include/itemfunc.php, row 619
 "Random alphanumeric [A-Z0-9] string." => "Brojčano slovčani niz [A-Z0-9] slučajnog odabira",
 
-// include/itemfunc.php, row 625
+// include/itemfunc.php, row 626
 "String length" => "Duljina niza", // ai 2026-06
 
-// include/itemfunc.php, row 626
+// include/itemfunc.php, row 627
 "Field to check" => "Polje za provjeru",
 
-// include/itemfunc.php, row 626
+// include/itemfunc.php, row 627
 "If you need a unique code, you must send the field ID, the function will then look into this field to ensure uniqueness." => "Ako trebate jedinstveni kod, morate poslati ID polja; funkcija će tada gledati u to polje kako bi osigurala jedinstvenost.", // ai 2026-06
 
-// include/itemfunc.php, row 627
+// include/itemfunc.php, row 628
 "Slice only" => "Samo stranica",
 
-// include/itemfunc.php, row 627
+// include/itemfunc.php, row 628
 "Do you want to check for uniqueness this slice only or all slices?" => "Želite li jedinstvenost provjeravati samo na ovoj stranici ili na svim stranicama?", // ai 2026-06
 
-// include/itemfunc.php, row 669
+// include/itemfunc.php, row 670
 "AA Expression" => "AA izraz", // ai 2026-06
 
-// include/itemfunc.php, row 671
+// include/itemfunc.php, row 672
 "any text with possible {AA expressions} like: {date:Y}" => "bilo koji tekst s mogućim {AA izrazima}, npr.: {date:Y}", // ai 2026-06
 
-// include/itemfunc.php, row 695
+// include/itemfunc.php, row 696
 "Multivalue" => "Viševrijednosno", // ai 2026-06
 
-// include/itemfunc.php, row 703
+// include/itemfunc.php, row 704
 // include/transformation.class.php, row 525
 "Delimiter" => "Razdjelnik", // ai 2026-06
 
-// include/itemfunc.php, row 794
+// include/itemfunc.php, row 795
 "Slice with id '%1' is not valid." => "Stranica s ID-om '%1' nije valjana.", // ai 2026-06
 
-// include/itemfunc.php, row 894
+// include/itemfunc.php, row 895
 "Text = don't modify" => "Tekst  = nemojte mijenjati",
 
-// include/itemfunc.php, row 895
+// include/itemfunc.php, row 896
 "Does not modify the value." => "Nemojte mijenjati vrijednost",
 
-// include/itemfunc.php, row 900
+// include/itemfunc.php, row 901
 "Date = don't modify" => "Datum = ne mijenjati", // ai 2026-06
 
-// include/itemfunc.php, row 901, 910
+// include/itemfunc.php, row 902, 911
 "Does not modify the value (just like Text), but it is better to separate it for future usage." => "Ne mijenja vrijednost (kao i Tekst), ali ga je bolje izdvojiti za buduću upotrebu.", // ai 2026-06
 
-// include/itemfunc.php, row 909
+// include/itemfunc.php, row 910
 "Number = don't modify" => "Broj = ne mijenjati", // ai 2026-06
 
-// include/itemfunc.php, row 915
+// include/itemfunc.php, row 916
 "Boolean = store 0 or 1" => "Booleova algebra = spremite 0 ili 1",
 
-// include/itemfunc.php, row 926
-"Float" => "",
-
 // include/itemfunc.php, row 927
+"Float" => "Decimalni broj", // ai 2026-06
+
+// include/itemfunc.php, row 928
 "Real float - could convert big numbers to scientific notation (1.23E+29)" => "Pravi float - može pretvoriti velike brojeve u znanstveni zapis (1.23E+29)", // ai 2026-06
 
-// include/itemfunc.php, row 937
+// include/itemfunc.php, row 938
 "Decimal" => "Decimalni broj", // ai 2026-06
 
-// include/itemfunc.php, row 938
+// include/itemfunc.php, row 939
 "The same as Float, but does not convert big numbers to  scientific notation (1.23E+29)" => "Isto kao Float, ali ne pretvara velike brojeve u znanstveni zapis (1.23E+29)", // ai 2026-06
 
-// include/itemfunc.php, row 948
+// include/itemfunc.php, row 949
 "Trim" => "Obrezati", // ai 2026-06
 
-// include/itemfunc.php, row 949
+// include/itemfunc.php, row 950
 "Remove whitespaces from beginning and end and also normalize UTF (NFC)" => "Uklanja razmake s početka i kraja te normalizira UTF (NFC)", // ai 2026-06
 
-// include/itemfunc.php, row 960
+// include/itemfunc.php, row 961
 "Item IDs" => "ID stavki",
 
-// include/itemfunc.php, row 1027
+// include/itemfunc.php, row 1028
 "User ID = always store current user ID" => "Korisnički ID = uvijek sprema trenutni korisnički ID",
 
-// include/itemfunc.php, row 1028
+// include/itemfunc.php, row 1029
 "Inserts the identity of the current user, no matter what the user sets." => "Umeće identitet trenutnog korisnika bez obzira na to što korisnik unese.", // ai 2026-06
 
-// include/itemfunc.php, row 1069
+// include/itemfunc.php, row 1070
 "Now = always store current time" => "Sada = uvijek sprema trenutno vrijeme",
 
-// include/itemfunc.php, row 1070
+// include/itemfunc.php, row 1071
 "Inserts the current time, no matter what the user sets." => "Umeće stvarno trenutno vrijeme",
 
-// include/itemfunc.php, row 1100
+// include/itemfunc.php, row 1101
 "Computed field for INSERT/UPDATE" => "Izračunato polje za INSERT/UPDATE", // ai 2026-06
 
-// include/itemfunc.php, row 1101
+// include/itemfunc.php, row 1102
 "The field is the result of expression written in \"Code for unaliasing\". It is a good solution for all values, which could be precomputed, since its computation on item-show-time would be slow. Yes, you can use {view...}, {include...}, {switch...} here" => "Polje je rezultat izraza upisanog u \"Kod za razrješavanje aliasa\". Dobro je rješenje za sve vrijednosti koje se mogu unaprijed izračunati, jer bi njihovo izračunavanje pri prikazu stavke bilo sporo. Da, ovdje možete koristiti {view...}, {include...}, {switch...}", // ai 2026-06
 
-// include/itemfunc.php, row 1108
+// include/itemfunc.php, row 1109
 "Code for unaliasing (INSERT)" => "Kod za razrješavanje aliasa (INSERT)", // ai 2026-06
 
-// include/itemfunc.php, row 1108, 1137
+// include/itemfunc.php, row 1109, 1138
 "There you can write any string. The string will be unaliased on item store, so you can use any {...} construct as well as field aliases here" => "Ovdje možete upisati bilo koji niz znakova. Niz će se razriješiti pri spremanju stavke, pa ovdje možete koristiti bilo koji {...} konstrukt kao i aliase polja", // ai 2026-06
 
-// include/itemfunc.php, row 1109
+// include/itemfunc.php, row 1110
 "Code for unaliasing (UPDATE)" => "Kod za razrješavanje aliasa (UPDATE)", // ai 2026-06
 
-// include/itemfunc.php, row 1109
+// include/itemfunc.php, row 1110
 "The same as above, but just for UPDATE operation. If unfilled, the value of the field stays unchanged" => "Isto kao gore, ali samo za operaciju UPDATE. Ako nije ispunjeno, vrijednost polja ostaje nepromijenjena", // ai 2026-06
 
-// include/itemfunc.php, row 1110
+// include/itemfunc.php, row 1111
 "Multivalue delimiter" => "Razdjelnik višestrukih vrijednosti", // ai 2026-06
 
-// include/itemfunc.php, row 1110
+// include/itemfunc.php, row 1111
 "Character or string, which will split the computed string into multiple values (the same field)" => "Znak ili niz znakova koji će izračunati niz podijeliti na više vrijednosti (istog polja)", // ai 2026-06
 
-// include/itemfunc.php, row 1111
+// include/itemfunc.php, row 1112
 "Recompute every" => "Interval ponovnog izračuna", // ai 2026-06
 
-// include/itemfunc.php, row 1111
+// include/itemfunc.php, row 1112
 "The field will be recomputed every minute, hour, ... (using UPDATE code above). The times are not exact - the minute means something 1-10 minutes. If not filled, the field will be recomputed only on insert/update of the item." => "Polje će se ponovno izračunavati svake minute, sata, ... (pomoću UPDATE koda gore). Vremena nisu točna - minuta znači otprilike 1-10 minuta. Ako nije ispunjeno, polje će se ponovno izračunati samo pri unosu/izmjeni stavke.", // ai 2026-06
 
-// include/itemfunc.php, row 1129
+// include/itemfunc.php, row 1130
 "Computed field" => "Izračunato polje", // ai 2026-06
 
-// include/itemfunc.php, row 1130
+// include/itemfunc.php, row 1131
 "The field is the result of expression written in \\\"Code for unaliasing\\\". It is good solution for all values, which could be precomputed, since its computation on item-show-time would be slow. Yes, you can use {view...}, {include...}, {switch...} here" => "Polje je rezultat izraza upisanog u \\\"Kod za razrješavanje aliasa\\\". Dobro je rješenje za sve vrijednosti koje se mogu unaprijed izračunati, jer bi njihovo izračunavanje pri prikazu stavke bilo sporo. Da, ovdje možete koristiti {view...}, {include...}, {switch...}", // ai 2026-06
 
-// include/itemfunc.php, row 1137
+// include/itemfunc.php, row 1138
 "Code for unaliasing (INSERT+UPDATE)" => "Kod za razrješavanje aliasa (INSERT+UPDATE)", // ai 2026-06
 
-// include/itemfunc.php, row 1157
+// include/itemfunc.php, row 1158
 "SEO Name" => "SEO naziv", // ai 2026-06
 
-// include/itemfunc.php, row 1158
+// include/itemfunc.php, row 1159
 "If the field is not filled, compute seoname from _#HEADLINE alias (or another if specified) unique to all slices in sitemodules, where the slice is mentioned in \"Uses slices\" settings. Basically the SEO Name alias is shortcut for computed field with {ifset:{seo.............}:_#1:{seoname:{_#HEADLINE}:all:CHARSET}}" => "Ako polje nije ispunjeno, seoname se izračunava iz aliasa _#HEADLINE (ili drugog, ako je naveden), jedinstven za sve stranice u site modulima u kojima je stranica navedena u postavci \"Uses slices\". Alias SEO naziva u osnovi je kratica za izračunato polje s {ifset:{seo.............}:_#1:{seoname:{_#HEADLINE}:all:CHARSET}}", // ai 2026-06
 
-// include/itemfunc.php, row 1165
+// include/itemfunc.php, row 1166
 "Alias to compute from" => "Alias iz kojeg se izračunava", // ai 2026-06
 
-// include/itemfunc.php, row 1165
+// include/itemfunc.php, row 1166
 "if not specified, the _#HEADLINE is used" => "ako nije naveden, koristi se _#HEADLINE", // ai 2026-06
 
-// include/itemfunc.php, row 1180
+// include/itemfunc.php, row 1181
 "Unique number for this field (from 1,..)" => "Jedinstveni broj za ovo polje (od 1,..)", // ai 2026-06
 
-// include/itemfunc.php, row 1181
+// include/itemfunc.php, row 1182
 "Unique number in sequence 1,2,3,..." => "Jedinstveni broj u nizu 1,2,3,...", // ai 2026-06
 
-// include/itemfunc.php, row 1203
+// include/itemfunc.php, row 1204
 "File = uploaded file" => "Datoteka = poslana datoteka",
 
-// include/itemfunc.php, row 1204
+// include/itemfunc.php, row 1205
 "Stores the uploaded file and a link to it, parameters only apply if type is image/something." => "Sprema poslanu datoteku i vezu na nju, osobine datteke se primjenjuju samo ako je datoteka tipa slika/nešto",
 
-// include/itemfunc.php, row 1211
+// include/itemfunc.php, row 1212
 "Mime types accepted" => "Prihvaćen Mime tip",
 
-// include/itemfunc.php, row 1211
+// include/itemfunc.php, row 1212
 "Only files of matching mime types will be accepted" => "Samo datoteke odgovarajućeg Mime tipa će biti prihvaćene",
 
-// include/itemfunc.php, row 1212
+// include/itemfunc.php, row 1213
 "Maximum image width" => "Najveća dozvoljena širina slikovne datoteke",
 
-// include/itemfunc.php, row 1213
+// include/itemfunc.php, row 1214
 "Maximum image height" => "Najveća dozvoljena visina slikovne datoteke",
 
-// include/itemfunc.php, row 1213
+// include/itemfunc.php, row 1214
 "The image will be resampled to be within these limits, while retaining aspect ratio." => "Slika će biti promijenjena unutar tih granica zadržavajući razmjere",
 
-// include/itemfunc.php, row 1214
+// include/itemfunc.php, row 1215
 "Other fields" => "Ostala polja",
 
-// include/itemfunc.php, row 1214
+// include/itemfunc.php, row 1215
 "List of other fields to receive this image, separated by ##. Does not work well for multi uploads." => "Popis drugih polja koja će primiti ovu sliku, odvojenih s ##. Ne radi dobro za višestruke prijenose.", // ai 2026-06
 
-// include/itemfunc.php, row 1215
+// include/itemfunc.php, row 1216
 "Upload policy" => "Pravila prijenosa", // ai 2026-06
 
-// include/itemfunc.php, row 1215
+// include/itemfunc.php, row 1216
 "new | overwrite | backup<br>This parameter controls what to do if uploaded file alredy exists:<br>new - AA creates new filename (by adding _x postfix) and store it with this new name (default)<br>overwrite - the old file of the same name is overwritten<br>backup - the old file is copied to new (non-existing) file and current file is stored with current name.<br>In all cases the filename is escaped, so any non-word characters will be replaced by an underscore." => "new | overwrite | backup<br>Ovaj parametar određuje što učiniti ako prenesena datoteka već postoji:<br>new - AA stvara novi naziv datoteke (dodavanjem nastavka _x) i sprema je pod tim novim nazivom (zadano)<br>overwrite - stara datoteka istog naziva se prepisuje<br>backup - stara datoteka se kopira u novu (nepostojeću) datoteku, a trenutna datoteka se sprema pod trenutnim nazivom.<br>U svim slučajevima naziv datoteke se pročišćava, tako da će svi ne-slovni znakovi biti zamijenjeni donjom crtom.", // ai 2026-06
 
-// include/itemfunc.php, row 1216
+// include/itemfunc.php, row 1217
 "Exact dimensions" => "Točne dimenzije", // ai 2026-06
 
-// include/itemfunc.php, row 1216
+// include/itemfunc.php, row 1217
 "If set to 1 the image will be downsized exactly to the specified dimensions (and cropped if needed). Default is 0 or empty: Maintain aspect ratio while resizing the image." => "Ako je postavljeno na 1, slika će se smanjiti točno na navedene dimenzije (i obrezati po potrebi). Zadano je 0 ili prazno: pri smanjivanju slike zadržava se omjer širine i visine.", // ai 2026-06
 
-// include/itemfunc.php, row 1217
+// include/itemfunc.php, row 1218
 "Filename template" => "Predložak naziva datoteke", // ai 2026-06
 
-// include/itemfunc.php, row 1217
+// include/itemfunc.php, row 1218
 "Renames file according to template. You can use AA expressions as well as special alias _#name and _#ext or _#full (file name, extension and fullname). The item aliases in AA expressions do not work on INSERT (item does not exist at time of file write). They will work on UPDATE." => "Preimenuje datoteku prema predlošku. Možete koristiti AA izraze kao i posebne aliase _#name i _#ext ili _#full (naziv datoteke, ekstenzija i puni naziv). Aliasi stavke u AA izrazima ne rade pri INSERT (stavka ne postoji u trenutku zapisa datoteke). Radit će pri UPDATE.", // ai 2026-06
 
-// include/itemfunc.php, row 1374
+// include/itemfunc.php, row 1375
 "Password and Change Password" => "Lozinka i promjena lozinke",
 
-// include/itemfunc.php, row 1375
+// include/itemfunc.php, row 1376
 "Stores value from a \"Password and Change Password\" field type. First proves the new password matches the retyped new password, and if so, encrypts the new password and stores it." => "Sprema vrijednost iz polja tipa \"Lozinka i promjena lozinke\". Najprije provjerava podudara li se nova lozinka s ponovno upisanom novom lozinkom i, ako da, šifrira novu lozinku i sprema je.", // ai 2026-06
 
-// include/itemfunc.php, row 1382
+// include/itemfunc.php, row 1383
 "Copy of password" => "Kopija lozinke", // ai 2026-06
 
-// include/itemfunc.php, row 1382
+// include/itemfunc.php, row 1383
 "Field_id, where you want to store the copy of the password. Sometimes useful if you want to allow people to get his/her old password. It is strongly recommended to not store it in plaintext and encrypt it. See second parameter." => "Field_id u koji želite spremiti kopiju lozinke. Ponekad korisno ako želite omogućiti ljudima da dobiju svoju staru lozinku. Izričito se preporučuje da je ne spremate u čistom tekstu nego da je šifrirate. Vidi drugi parametar.", // ai 2026-06
 
-// include/itemfunc.php, row 1383, 1422
+// include/itemfunc.php, row 1384, 1423
 "Encrypt phrase" => "Fraza za šifriranje", // ai 2026-06
 
-// include/itemfunc.php, row 1383
+// include/itemfunc.php, row 1384
 "If you specify the \"Copy of password\" field, it is recommended to encrypt the password in the database. Fill there any string. If you then need the password, you can decrypt it from the field by using the same phrase - {decrypt:{password.......1}:Some Phrase}" => "Ako navedete polje \"Kopija lozinke\", preporučuje se šifrirati lozinku u bazi podataka. Upišite ovdje bilo koji niz znakova. Ako vam zatim zatreba lozinka, možete je dešifrirati iz polja koristeći istu frazu - {decrypt:{password.......1}:Some Phrase}", // ai 2026-06
 
-// include/itemfunc.php, row 1414
+// include/itemfunc.php, row 1415
 "2FA Secret" => "2FA tajni ključ", // ai 2026-06
 
-// include/itemfunc.php, row 1415
+// include/itemfunc.php, row 1416
 "Generates and stores secret for Two-factor authentication, possibly encrypted by password" => "Generira i sprema tajni ključ za dvofaktorsku autentifikaciju, po želji šifriran lozinkom", // ai 2026-06
 
-// include/itemfunc.php, row 1422
+// include/itemfunc.php, row 1423
 "Password to be applied for encrypting this field value. Could contain AA expressions or aliases (for user item in Reader Management slice)" => "Lozinka koja će se primijeniti za šifriranje vrijednosti ovog polja. Može sadržavati AA izraze ili aliase (za stavku korisnika u stranici Upravljanje čitateljima)", // ai 2026-06
 
 // include/itemview.php, row 117
@@ -5201,65 +5193,143 @@ return [
 // include/locauth.php, row 87
 "If you are sure you have typed the correct password, please e-mail <a href=mailto:%1>%1</a>" => "Ako ste sigurni da ste upisali ispravnu lozinku, molimo pošaljite e-mail na <a href=mailto:%1>%1</a>", // ai 2026-06
 
-// include/logs.php, row 306
+// include/logs.php, row 336
 "Created time" => "Vrijeme stvaranja", // ai 2026-06
 
-// include/logs.php, row 307
+// include/logs.php, row 337
 "Readers to be emailed" => "Čitatelji kojima se šalje e-mail", // ai 2026-06
 
-// include/logs.php, row 317
+// include/logs.php, row 347
 "Page" => "Stranica", // ai 2026-06
 
-// include/logs.php, row 327, 351, 364
+// include/logs.php, row 357, 397, 410
 "Time [s]" => "Vrijeme [s]", // ai 2026-06
 
-// include/logs.php, row 328, 353
+// include/logs.php, row 358, 399
 "Memory usage [MB]" => "Korištena memorija [MB]", // ai 2026-06
 
-// include/logs.php, row 329
+// include/logs.php, row 359
 "Memory peak [MB]" => "Vršna memorija [MB]", // ai 2026-06
 
-// include/logs.php, row 330
+// include/logs.php, row 360
 "Return code" => "Povratni kod", // ai 2026-06
 
-// include/logs.php, row 349
-"Cached" => "Iz predmemorije", // ai 2026-06
-
-// include/logs.php, row 350
-"Not Modified (304)" => "Nepromijenjeno (304)", // ai 2026-06
-
-// include/logs.php, row 352
-"Time + Cached + 304" => "Vrijeme + predmemorija + 304", // ai 2026-06
-
-// include/logs.php, row 354, 365, 397
-"Url" => "Web adresa",
+// include/logs.php, row 374
+"Tasks done" => "Završeni zadaci", // ai 2026-06
 
 // include/logs.php, row 375
+"Tasks started" => "Pokrenuti zadaci", // ai 2026-06
+
+// include/logs.php, row 376
+"Duration [s]" => "Trajanje [s]", // ai 2026-06
+
+// include/logs.php, row 377
+"Allowed [s]" => "Dopušteno [s]", // ai 2026-06
+
+// include/logs.php, row 395
+"Cached" => "Iz predmemorije", // ai 2026-06
+
+// include/logs.php, row 396
+"Not Modified (304)" => "Nepromijenjeno (304)", // ai 2026-06
+
+// include/logs.php, row 398
+"Time + Cached + 304" => "Vrijeme + predmemorija + 304", // ai 2026-06
+
+// include/logs.php, row 400, 411, 443, 475
+"Url" => "Web adresa",
+
+// include/logs.php, row 421
 // include/menu_util.php, row 45
 "AA" => "",
 
-// include/logs.php, row 376
+// include/logs.php, row 422
 "SVN AA (util.php)" => "",
 
-// include/logs.php, row 377
+// include/logs.php, row 423
 "PHP" => "",
 
-// include/logs.php, row 378
+// include/logs.php, row 424
 "DB" => "",
 
-// include/logs.php, row 379
+// include/logs.php, row 425
 "Memory" => "Memorija", // ai 2026-06
 
-// include/logs.php, row 380
+// include/logs.php, row 426
 "CPU" => "",
 
-// include/logs.php, row 394
+// include/logs.php, row 440
 "Identifier" => "Identifikator", // ai 2026-06
 
-// include/logs.php, row 395
+// include/logs.php, row 441, 570, 583
 // modules/jump/modedit.php, row 180
 // src/Manager.php, row 584
 "Module ID" => "ID modula", // ai 2026-06
+
+// include/logs.php, row 452
+"Template id" => "ID predloška", // ai 2026-06
+
+// include/logs.php, row 454
+"Emails sent" => "Poslane e-poruke", // ai 2026-06
+
+// include/logs.php, row 463
+"Items selected" => "Odabrane stavke", // ai 2026-06
+
+// include/logs.php, row 464
+"Items updated" => "Ažurirane stavke", // ai 2026-06
+
+// include/logs.php, row 465
+"Items planned" => "Planirane stavke", // ai 2026-06
+
+// include/logs.php, row 474
+"Message" => "Poruka", // ai 2026-06
+
+// include/logs.php, row 476
+"Referer" => "",
+
+// include/logs.php, row 485
+"New name" => "Novi naziv", // ai 2026-06
+
+// include/logs.php, row 486
+"Old name" => "Stari naziv", // ai 2026-06
+
+// include/logs.php, row 495, 518
+"Phase" => "Faza", // ai 2026-06
+
+// include/logs.php, row 496
+"Collection" => "Zbirka", // ai 2026-06
+
+// include/logs.php, row 498, 509, 519
+"Detail" => "Detalj", // ai 2026-06
+
+// include/logs.php, row 508
+"Status" => "",
+
+// include/logs.php, row 529
+"Processed" => "Obrađeno", // ai 2026-06
+
+// include/logs.php, row 530
+"Stored" => "Pohranjeno", // ai 2026-06
+
+// include/logs.php, row 531
+"Errors" => "Greške", // ai 2026-06
+
+// include/logs.php, row 542
+"Outcome" => "Ishod", // ai 2026-06
+
+// include/logs.php, row 555
+"Mode" => "Način", // ai 2026-06
+
+// include/logs.php, row 556
+"Flags" => "Zastavice", // ai 2026-06
+
+// include/logs.php, row 557
+"Context" => "Kontekst", // ai 2026-06
+
+// include/logs.php, row 571
+"Feed counterpart" => "Parnjak izvora", // ai 2026-06
+
+// include/logs.php, row 584
+"Field ID" => "ID polja",
 
 // include/mail.php, row 563
 // include/tv_email.php, row 77, 145
@@ -5289,156 +5359,156 @@ return [
 // include/menu.php, row 65
 "View site" => "Pogledajte site",
 
-// include/menu.php, row 84, 85, 137
+// include/menu.php, row 90, 91, 142
 "Item Manager" => "Uređivanje stavki",
 
-// include/menu.php, row 93
+// include/menu.php, row 99
 "Slice Admin" => "Administracija stranica",
 
-// include/menu.php, row 94
+// include/menu.php, row 100
 "Slice Administration" => "Administracija stranica",
 
-// include/menu.php, row 125
+// include/menu.php, row 131
 // src/Module/Poll/Menu.php, row 82
 "Main settings" => "Osnovne postavke",
 
-// include/menu.php, row 128
+// include/menu.php, row 134
 "Slice Fields" => "Polja stranice", // ai 2026-06
 
-// include/menu.php, row 129
+// include/menu.php, row 135
 "Email Notification" => "e-mail obavijest",
 
-// include/menu.php, row 132
+// include/menu.php, row 137
 // include/menu_util.php, row 69
 // include/um_util.php, row 100, 103
 "Permissions" => "Dozvole",
 
-// include/menu.php, row 133
+// include/menu.php, row 138
 "Assign" => "Doznačite",
 
-// include/menu.php, row 136
+// include/menu.php, row 141
 "Design" => "Duzajn",
 
-// include/menu.php, row 139
+// include/menu.php, row 144
 "Fulltext" => "Puni tekst",
 
-// include/menu.php, row 140
+// include/menu.php, row 145
 "Index" => "Indeks",
 
-// include/menu.php, row 142
+// include/menu.php, row 147
 "Sets of Items" => "Skupovi stavki", // ai 2026-06
 
-// include/menu.php, row 144
+// include/menu.php, row 149
 "Content Pooling" => "Sadržaj",
 
-// include/menu.php, row 145
+// include/menu.php, row 150
 "Nodes" => "Čvorovi", // ai 2026-06
 
-// include/menu.php, row 146
+// include/menu.php, row 151
 "Inner Node Feeding" => "Punjenje sadržaja",
 
-// include/menu.php, row 148
+// include/menu.php, row 153
 "Inter Node Export" => "Izvoz među čvorovima", // ai 2026-06
 
-// include/menu.php, row 149
+// include/menu.php, row 154
 "RSS Feeds" => "Rss punjenje",
 
-// include/menu.php, row 150
+// include/menu.php, row 155
 "Filters" => "Filteri",
 
-// include/menu.php, row 151
+// include/menu.php, row 156
 "Mapping" => "Mapiranje",
 
-// include/menu.php, row 152, 214
+// include/menu.php, row 157, 219
 "Import CSV" => "Uvoz CSV-a",
 
-// include/menu.php, row 153
+// include/menu.php, row 158
 // src/Manageraction/Item_Export.php, row 20
 "Export to file" => "Izvoz u datoteku", // ai 2026-06
 
-// include/menu.php, row 155, 211
-// include/menu_util.php, row 73, 124
+// include/menu.php, row 160, 216
+// include/menu_util.php, row 73, 123
 // src/Module/Poll/Menu.php, row 67
 "Misc" => "Razno",
 
-// include/menu.php, row 158
+// include/menu.php, row 163
 "Change field IDs" => "Promijenite ID polja",
 
-// include/menu.php, row 161
+// include/menu.php, row 166
 "Anonymous Form Wizard" => "Čarobnjak za anonimna polja",
 
-// include/menu.php, row 162
+// include/menu.php, row 167
 // include/tv_email.php, row 134
 "Email templates" => "e-mail predlošci",
 
-// include/menu.php, row 164
+// include/menu.php, row 169
 // include/menu_util.php, row 75
 "Planned Tasks" => "Planirani zadaci", // ai 2026-06
 
-// include/menu.php, row 172
+// include/menu.php, row 177
 "Mailman: create list" => "Mailman: napravite novu listu",
 
-// include/menu.php, row 180
-// include/menu_util.php, row 119
+// include/menu.php, row 185
+// include/menu_util.php, row 118
 // src/Module/Poll/Menu.php, row 60
 "Folders" => "Direktoriji",
 
-// include/menu.php, row 183
+// include/menu.php, row 188
 // src/Module/Poll/Menu.php, row 62
 "... pending" => "Na čekanju",
 
-// include/menu.php, row 184
+// include/menu.php, row 189
 // src/Module/Poll/Menu.php, row 63
 "... expired" => "Isteklo",
 
-// include/menu.php, row 186
-// include/menu_util.php, row 122
+// include/menu.php, row 191
+// include/menu_util.php, row 121
 // src/Module/Poll/Menu.php, row 65
 "Trash bin" => "Smeće",
 
-// include/menu.php, row 202
+// include/menu.php, row 207
 "Bookmarks" => "Spisak veza",
 
-// include/menu.php, row 212
+// include/menu.php, row 217
 "Setting" => "Postavke", // ai 2026-06
 
-// include/menu.php, row 213
-// include/menu_util.php, row 127
+// include/menu.php, row 218
+// include/menu_util.php, row 126
 // src/Module/Poll/Menu.php, row 68
 "Empty trash" => "Ispraznite smeće",
 
-// include/menu.php, row 213
-// include/menu_util.php, row 127
+// include/menu.php, row 218
+// include/menu_util.php, row 126
 // src/Module/Poll/Menu.php, row 68
 "Are you sure you want to empty trash?" => "Jeste li sigurni da želite isprazniti smeće?", // ai 2026-06
 
-// include/menu.php, row 215
+// include/menu.php, row 220
 "Set Debug OFF" => "Isključite debug", // ai 2026-06
 
-// include/menu.php, row 215
+// include/menu.php, row 220
 "Set Debug ON" => "Uključite debug", // ai 2026-06
 
-// include/menu.php, row 225
-// include/menu_util.php, row 420, 612
+// include/menu.php, row 230
+// include/menu_util.php, row 419, 726
 // include/slice.class.php, row 1194
 "Alerts" => "Upozorenja",
 
-// include/menu.php, row 225
+// include/menu.php, row 230
 "List of Alerts modules using this slice as Reader Management." => "Lista modula upozorenja koristeći ove stranice kao organizator",
 
-// include/menu.php, row 227
+// include/menu.php, row 232
 "Bulk Emails" => "Masovni e-mailovi", // ai 2026-06
 
-// include/menu.php, row 227
+// include/menu.php, row 232
 "Send bulk email to selected users or to users in Stored searches" => "Pošaljite masovni e-mail odabranim korisnicima ili korisnicima iz spremljenih pretraga", // ai 2026-06
 
-// include/menu.php, row 231
+// include/menu.php, row 236
 "Send emails" => "Pošaljite e-mailove",
 
-// include/menu.php, row 240
+// include/menu.php, row 245
 "Alerts Sent" => "Upozorenja poslana",
 
-// include/menu.php, row 240
+// include/menu.php, row 245
 "List of Alerts modules sending items from this slice." => "Lista modula upozorenja šaljući stavke sa ove stranice",
 
 // include/menu_util.php, row 46
@@ -5474,76 +5544,97 @@ return [
 // include/menu_util.php, row 95
 "Wizard" => "Čarobnjak",
 
-// include/menu_util.php, row 97
+// include/menu_util.php, row 96
 "Welcomes" => "Dobro došli!",
 
-// include/menu_util.php, row 98
+// include/menu_util.php, row 97
 "Templates" => "Predlošci",
 
-// include/menu_util.php, row 100
+// include/menu_util.php, row 99
 "Documentation" => "Dokumentacija",
 
-// include/menu_util.php, row 101
+// include/menu_util.php, row 100
 "Style Guide" => "Stilski vodič", // ai 2026-06
 
-// include/menu_util.php, row 107
+// include/menu_util.php, row 106
 "Central" => "",
 
-// include/menu_util.php, row 108
+// include/menu_util.php, row 107
 "AA Central" => "",
 
-// include/menu_util.php, row 125
+// include/menu_util.php, row 124
 "Synchronize..." => "Sinkronizirajte...", // ai 2026-06
 
-// include/menu_util.php, row 126
+// include/menu_util.php, row 125
 "Copy Slice..." => "Kopirajte stranicu...", // ai 2026-06
 
-// include/menu_util.php, row 128
+// include/menu_util.php, row 127
 "Import conf from CSV..." => "Uvezite postavke iz CSV-a...", // ai 2026-06
 
-// include/menu_util.php, row 398
+// include/menu_util.php, row 397
 "Part of %s" => "Dio %s", // ai 2026-06
 
-// include/menu_util.php, row 415
+// include/menu_util.php, row 414
 "Other slices" => "Ostale stranice", // ai 2026-06
 
-// include/menu_util.php, row 419
+// include/menu_util.php, row 418
 "Reader Management Slice" => "Stranica za uređivanje postavki za čitanje",
 
-// include/menu_util.php, row 421
+// include/menu_util.php, row 420
 "Jump inside control panel" => "Prebacite se u Kontrol panel",
 
-// include/menu_util.php, row 422
+// include/menu_util.php, row 421
 // include/slice.class.php, row 1226
 "Links" => "Veze",
 
-// include/menu_util.php, row 423
+// include/menu_util.php, row 422
 "MySQL Auth (old version)" => "MySQL autentifikacija",
 
-// include/menu_util.php, row 424
+// include/menu_util.php, row 423
 // src/Module/Poll/Menu.php, row 83
 "Polls" => "Glasanja",
 
-// include/menu_util.php, row 445
+// include/menu_util.php, row 444
 "New slice" => "Nova stranica",
 
-// include/menu_util.php, row 449
+// include/menu_util.php, row 448
 "Switch module" => "Promijenite modul", // ai 2026-06
 
-// include/menu_util.php, row 616
+// include/menu_util.php, row 578, 589
+"Apply" => "Primijeni", // ai 2026-06
+
+// include/menu_util.php, row 582
+"-- Default for module --" => "-- Zadano za modul --", // ai 2026-06
+
+// include/menu_util.php, row 590
+"Switches the admin interface language; the page reloads." => "Mijenja jezik administracijskog sučelja; stranica se ponovno učitava.", // ai 2026-06
+
+// include/menu_util.php, row 598
+"What's working, what isn't — tell the AA team." => "Što radi, a što ne — javite AA timu.", // ai 2026-06
+
+// include/menu_util.php, row 601
+"Settings" => "Podešavanje",
+
+// include/menu_util.php, row 604
+"Theme" => "Tema", // ai 2026-06
+
+// include/menu_util.php, row 606
+"Feedback" => "Povratne informacije", // ai 2026-06
+
+// include/menu_util.php, row 730
 // include/slice.class.php, row 554
 "Reader management" => "Podaci o alatu za čitanje",
 
-// include/menu_util.php, row 628
+// include/menu_util.php, row 742
 "logout" => "odjava", // ai 2026-06
 
-// include/menu_util.php, row 636
+// include/menu_util.php, row 750
 "Search.." => "Traži..", // ai 2026-06
 
-// include/menu_util.php, row 702
+// include/menu_util.php, row 829
 "Copyright (C) 2001 the <a href=\"https://www.apc.org\">Association for Progressive Communications (APC)</a>" => "Copyright (C) 2001 <a href=\"https://www.apc.org\">Association for Progressive Communications (APC)</a>", // ai 2026-06
 
-// include/menu_util.php, row 712
+// include/menu_util.php, row 839
 "Collapse / expand menu" => "Sažmite / proširite izbornik", // ai 2026-06
 
 // include/metabase.class.php, row 1572
@@ -5665,43 +5756,43 @@ return [
 // include/searchbar.class.php, row 595
 "Order" => "Red",
 
-// include/searchbar.class.php, row 662
+// include/searchbar.class.php, row 664
 "Advanced search" => "Napredna pretraga", // ai 2026-06
 
-// include/searchbar.class.php, row 720
+// include/searchbar.class.php, row 729
 "Refine" => "Suzite", // ai 2026-06
 
-// include/searchbar.class.php, row 723
+// include/searchbar.class.php, row 732
 "Share with all slice users" => "Podijelite sa svim korisnicima stranice", // ai 2026-06
 
-// include/searchbar.class.php, row 724
+// include/searchbar.class.php, row 733
 "Save filter" => "Spremite filtar", // ai 2026-06
 
-// include/searchbar.class.php, row 725
+// include/searchbar.class.php, row 734
 "Rename filter" => "Preimenujte filtar", // ai 2026-06
 
-// include/searchbar.class.php, row 726
+// include/searchbar.class.php, row 735
 "Are you sure you want to delete selected filter?" => "Jeste li sigurni da želite obrisati odabrani filtar?", // ai 2026-06
 
-// include/searchbar.class.php, row 1008
+// include/searchbar.class.php, row 1017
 "Select one..." => "Odaberite...", // ai 2026-06
 
-// include/searchbar.class.php, row 1023
+// include/searchbar.class.php, row 1032
 "My filters" => "Moji filtri", // ai 2026-06
 
-// include/searchbar.class.php, row 1026
+// include/searchbar.class.php, row 1035
 "Global filters" => "Globalni filtri", // ai 2026-06
 
-// include/searchbar.class.php, row 1064
+// include/searchbar.class.php, row 1073
 "Shared filter (click to apply)" => "Zajednički filtar (kliknite za primjenu)", // ai 2026-06
 
-// include/searchbar.class.php, row 1064
+// include/searchbar.class.php, row 1073
 "Personal filter (click to apply)" => "Osobni filtar (kliknite za primjenu)", // ai 2026-06
 
-// include/searchbar.class.php, row 1074
+// include/searchbar.class.php, row 1083
 "Rename" => "Preimenujte", // ai 2026-06
 
-// include/searchbar.class.php, row 1085
+// include/searchbar.class.php, row 1094
 "Manage filters" => "Upravljanje filtrima", // ai 2026-06
 
 // include/searchlib.php, row 54
@@ -5742,7 +5833,7 @@ return [
 "Operator" => "",
 
 // include/searchlib.php, row 359
-"Limit" => "",
+"Limit" => "Ograničenje", // ai 2026-06
 
 // include/slice.class.php, row 333
 "Error while loading module settings form:" => "Greška pri učitavanju forme postavki modula:", // ai 2026-06
@@ -6011,6 +6102,9 @@ return [
 // include/stringexpand.php, row 7716
 "version" => "verzija", // ai 2026-06
 
+// include/stringexpand.php, row 7900
+"show" => "prikaži", // ai 2026-06
+
 // include/stringexpand.php, row 7901
 "hide" => "sakrij", // ai 2026-06
 
@@ -6027,7 +6121,7 @@ return [
 "Forgot your password? Fill in your email." => "Zaboravili ste lozinku? Upišite svoju e-mail adresu.", // ai 2026-06
 
 // include/stringexpand.php, row 9643
-"e-mail" => "",
+"e-mail" => "e-pošta", // ai 2026-06
 
 // include/stringexpand.php, row 9661, 9665
 "Unable to find user - please check if it has been misspelled." => "Korisnik nije pronađen - provjerite je li ispravno napisan.", // ai 2026-06
@@ -6144,21 +6238,6 @@ return [
 // include/tabledit_util.php, row 670
 "Wrong value: a number between %1 and %2 is expected." => "Neispravna vrijednost: Očekivan je broj između %1 i %2 .",
 
-// include/tableviews.php, row 59, 60
-"Polls Design" => "Dizajn glasanja",
-
-// include/tableviews.php, row 66, 102
-"Comment" => "Komentar",
-
-// include/tableviews.php, row 88
-"Module Id" => "ID modula", // ai 2026-06
-
-// include/tableviews.php, row 104
-"design description (for administrators only)" => "Opis dizajna (samo za administratore/ice)",
-
-// include/tableviews.php, row 111
-"Answer HTML" => "Odgovor HTML",
-
 // include/transformation.class.php, row 149
 "Fill by value" => "Popuni vrijednošću", // ai 2026-06
 
@@ -6270,30 +6349,6 @@ return [
 // include/tv_email.php, row 168
 "Sender" => "Pošiljatelj", // ai 2026-06
 
-// include/tv_misc.php, row 131
-"COUNT_HIT events will be used for counting item hits. After a while it will be automatically deleted." => "Događaji COUNT_HIT koriste se za brojanje posjeta stavki. Nakon nekog vremena automatski se brišu.", // ai 2026-06
-
-// include/tv_misc.php, row 139, 140
-"Log view" => "Pogled Log", // ai 2026-06
-
-// include/tv_misc.php, row 162
-"See searchlog=1 parameter for slice.php in FAQ: " => "Pogledajte parametar searchlog=1 za slice.php u Često postavljanim pitanjima: ", // ai 2026-06
-
-// include/tv_misc.php, row 170, 171
-"SearchLog view" => "Pogled SearchLog", // ai 2026-06
-
-// include/tv_misc.php, row 175
-"items found" => "pronađeno stavki", // ai 2026-06
-
-// include/tv_misc.php, row 176
-"search time" => "vrijeme pretrage", // ai 2026-06
-
-// include/tv_misc.php, row 177
-"addition" => "dodatak", // ai 2026-06
-
-// include/tv_misc.php, row 198, 199
-"Configure Fields" => "Postavke polja", // ai 2026-06
-
 // include/um_gedit.php, row 43
 "It is impossible to add group to permission system" => "Ne mogu dodati grupu u sistem dozvola",
 
@@ -6312,10 +6367,10 @@ return [
 // include/um_util.php, row 358
 "Can't change user" => "Ne mogu promijeniti korisnika/icu",
 
-// include/util.php, row 1300
+// include/util.php, row 1304
 "Toolkit news message" => "Alat za nove poruke",
 
-// include/util.php, row 1314
+// include/util.php, row 1318
 "Relogin" => "Ponovna prijava", // ai 2026-06
 
 // include/validate.php, row 52
@@ -6436,7 +6491,7 @@ return [
 "type" => "Tip",
 
 // include/widget.class.php, row 171
-"multi" => "",
+"multi" => "više", // ai 2026-06
 
 // include/widget.class.php, row 172
 "persistent" => "",
@@ -6445,7 +6500,7 @@ return [
 "validator" => "",
 
 // include/widget.class.php, row 174
-"required" => "",
+"required" => "obavezno", // ai 2026-06
 
 // include/widget.class.php, row 175
 "input_help" => "",
@@ -6661,10 +6716,10 @@ return [
 // src/AA_Plannedtask.php, row 224
 "next run" => "sljedeće pokretanje", // ai 2026-06
 
-// src/IO/Grabber/AARSS.php, row 116
+// src/IO/Grabber/AARSS.php, row 117
 "AA RSS" => "",
 
-// src/IO/Grabber/AARSS.php, row 124
+// src/IO/Grabber/AARSS.php, row 125
 "Grabs data from generic RSS or AA RSS (used for item exchange between different AA installations)" => "Dohvaća podatke iz običnog RSS-a ili AA RSS-a (koristi se za razmjenu stavki između različitih AA instalacija)", // ai 2026-06
 
 // src/IO/Grabber/CSV.php, row 66
@@ -8143,32 +8198,47 @@ return [
 // src/Util/ChangesMonitor.php, row 93
 "history (%1)" => "povijest (%1)", // ai 2026-06
 
+// src/Util/ChangesMonitor.php, row 336
+"No recorded changes for this item." => "Za ovu stavku nema zabilježenih promjena.", // ai 2026-06
+
 // src/Util/ChangesMonitor.php, row 360
 "1 field changed" => "1 polje promijenjeno", // ai 2026-06
 
 // src/Util/ChangesMonitor.php, row 360
 "%1 fields changed" => "%1 polja promijenjeno", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 370, 382
+// src/Util/ChangesMonitor.php, row 369, 456
 "Restore" => "Vrati", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 377
+// src/Util/ChangesMonitor.php, row 383
+"(this change)" => "(ova promjena)", // ai 2026-06
+
+// src/Util/ChangesMonitor.php, row 387, 573, 577
+"Current (live)" => "Trenutno (uživo)", // ai 2026-06
+
+// src/Util/ChangesMonitor.php, row 388
+"Compare to" => "Usporedi s", // ai 2026-06
+
+// src/Util/ChangesMonitor.php, row 397
 "change %1 | uid %2 | %3 ns | resource %4" => "promjena %1 | uid %2 | %3 ns | resurs %4", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 382
-"vs current" => "vs. trenutno", // ai 2026-06
+// src/Util/ChangesMonitor.php, row 449
+"View" => "Pogled",
 
-// src/Util/ChangesMonitor.php, row 391
+// src/Util/ChangesMonitor.php, row 450
+"Diff" => "Razlike", // ai 2026-06
+
+// src/Util/ChangesMonitor.php, row 481
 "seq %1" => "redoslijed %1", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 405
-"no current value" => "nema trenutne vrijednosti", // ai 2026-06
+// src/Util/ChangesMonitor.php, row 488
+"No change between these versions." => "Nema razlike između ovih verzija.", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 407
-"same as current" => "isto kao trenutno", // ai 2026-06
+// src/Util/ChangesMonitor.php, row 511
+"(empty)" => "(prazno)", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 426
-"No recorded changes for this item." => "Za ovu stavku nema zabilježenih promjena.", // ai 2026-06
+// src/Util/ChangesMonitor.php, row 571
+"Original" => "Izvorno", // ai 2026-06
 
 // src/Util/Imgfunc.php, row 80
 "Cannot copy %1 to %2" => "Ne mogu kopirati %1 na %2",
@@ -8181,6 +8251,9 @@ return [
 
 // src/Util/Searchfields.php, row 183
 "-- any numeric field --" => "-- bilo koje numeričko polje --", // ai 2026-06
+
+// src/Util/UiPrefs.php, row 55
+"Gold" => "Zlatna", // ai 2026-06
 
 // src/Widget/ChbWidget.php, row 80
 "Check Box" => "Kućica za izbor",
@@ -8617,7 +8690,7 @@ return [
 "http#://www.ecn.cz/articles/solar.shtml" => "",
 
 // src/Widget/Widget.php, row 877
-"Ajax inline" => "",
+"Ajax inline" => "Ajax umetnuto", // ai 2026-06
 
 // src/Widget/Widget.php, row 877
 "If called as {ajax...} it modifies the visual - inline: old-way (not in window, but inline)" => "Ako se poziva kao {ajax...}, mijenja prikaz - inline: stari način (ne u prozoru, nego umetnuto)", // ai 2026-06

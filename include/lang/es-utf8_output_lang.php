@@ -252,13 +252,13 @@ return [
 // include/util.php, row 950
 "Error: Missing Reading Password" => "Error: falta la contraseña de lectura",
 
-// include/util.php, row 1300
+// include/util.php, row 1304
 "Toolkit news message" => "Mensaje de noticias del Toolkit",
 
-// include/util.php, row 1314
+// include/util.php, row 1318
 "Back" => "Atrás",
 
-// include/util.php, row 1314
+// include/util.php, row 1318
 "Relogin" => "Volver a iniciar sesión",
 
 // misc/proposefieldchange.php, row 71

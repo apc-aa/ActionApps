@@ -212,13 +212,13 @@ return [
 // include/util.php, row 950
 "Error: Missing Reading Password" => "Fehler: Lesepasswort fehlt", // ai 2026-06
 
-// include/util.php, row 1300
+// include/util.php, row 1304
 "Toolkit news message" => "Meldung der Anwendung", // ai 2026-06
 
-// include/util.php, row 1314
+// include/util.php, row 1318
 "Back" => "Zur\xFCck",
 
-// include/util.php, row 1314
+// include/util.php, row 1318
 "Relogin" => "Erneut anmelden", // ai 2026-06
 
 // misc/proposefieldchange.php, row 71

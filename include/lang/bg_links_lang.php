@@ -52,69 +52,69 @@ return [
 // include/searchbar.class.php, row 613
 "Filter" => "\xD4\xE8\xEB\xF2\xFA\xF0", // ai 2026-06
 
-// include/searchbar.class.php, row 662
+// include/searchbar.class.php, row 664
 "Advanced search" => "\xD0\xE0\xE7\xF8\xE8\xF0\xE5\xED\xEE \xF2\xFA\xF0\xF1\xE5\xED\xE5", // ai 2026-06
 
-// include/searchbar.class.php, row 719
+// include/searchbar.class.php, row 728
 "Save" => "\xC7\xE0\xEF\xE0\xE7\xE8", // ai 2026-06
 
-// include/searchbar.class.php, row 720
+// include/searchbar.class.php, row 729
 "Refine" => "\xD3\xF2\xEE\xF7\xED\xE8", // ai 2026-06
 
-// include/searchbar.class.php, row 721
+// include/searchbar.class.php, row 730
 "Cancel" => "\xCE\xF2\xEA\xE0\xE7", // ai 2026-06
 
-// include/searchbar.class.php, row 722
+// include/searchbar.class.php, row 731
 // modules/links/constants.php, row 59, 171
 "Name" => "\xC8\xEC\xE5", // ai 2026-06
 
-// include/searchbar.class.php, row 723
+// include/searchbar.class.php, row 732
 "Share with all slice users" => "\xD1\xEF\xEE\xE4\xE5\xEB\xE8 \xF1 \xE2\xF1\xE8\xF7\xEA\xE8 \xEF\xEE\xF2\xF0\xE5\xE1\xE8\xF2\xE5\xEB\xE8 \xED\xE0 \xF0\xF3\xE1\xF0\xE8\xEA\xE0\xF2\xE0", // ai 2026-06
 
-// include/searchbar.class.php, row 724
+// include/searchbar.class.php, row 733
 "Save filter" => "\xC7\xE0\xEF\xE0\xE7\xE8 \xF4\xE8\xEB\xF2\xFA\xF0\xE0", // ai 2026-06
 
-// include/searchbar.class.php, row 725
+// include/searchbar.class.php, row 734
 "Rename filter" => "\xCF\xF0\xE5\xE8\xEC\xE5\xED\xF3\xE2\xE0\xE9 \xF4\xE8\xEB\xF2\xFA\xF0\xE0", // ai 2026-06
 
-// include/searchbar.class.php, row 726
+// include/searchbar.class.php, row 735
 "Are you sure you want to delete selected filter?" => "\xCD\xE0\xE8\xF1\xF2\xE8\xED\xE0 \xEB\xE8 \xE8\xF1\xEA\xE0\xF2\xE5 \xE4\xE0 \xE8\xE7\xF2\xF0\xE8\xE5\xF2\xE5 \xE8\xE7\xE1\xF0\xE0\xED\xE8\xFF \xF4\xE8\xEB\xF2\xFA\xF0?", // ai 2026-06
 
-// include/searchbar.class.php, row 1008
+// include/searchbar.class.php, row 1017
 "Select one..." => "\xC8\xE7\xE1\xE5\xF0\xE5\xF2\xE5...", // ai 2026-06
 
-// include/searchbar.class.php, row 1023
+// include/searchbar.class.php, row 1032
 "My filters" => "\xCC\xEE\xE8\xF2\xE5 \xF4\xE8\xEB\xF2\xF0\xE8", // ai 2026-06
 
-// include/searchbar.class.php, row 1026
+// include/searchbar.class.php, row 1035
 "Global filters" => "\xC3\xEB\xEE\xE1\xE0\xEB\xED\xE8 \xF4\xE8\xEB\xF2\xF0\xE8", // ai 2026-06
 
-// include/searchbar.class.php, row 1064
+// include/searchbar.class.php, row 1073
 "Shared filter (click to apply)" => "\xD1\xEF\xEE\xE4\xE5\xEB\xE5\xED \xF4\xE8\xEB\xF2\xFA\xF0 (\xF9\xF0\xE0\xEA\xED\xE5\xF2\xE5 \xE7\xE0 \xEF\xF0\xE8\xEB\xE0\xE3\xE0\xED\xE5)", // ai 2026-06
 
-// include/searchbar.class.php, row 1064
+// include/searchbar.class.php, row 1073
 "Personal filter (click to apply)" => "\xCB\xE8\xF7\xE5\xED \xF4\xE8\xEB\xF2\xFA\xF0 (\xF9\xF0\xE0\xEA\xED\xE5\xF2\xE5 \xE7\xE0 \xEF\xF0\xE8\xEB\xE0\xE3\xE0\xED\xE5)", // ai 2026-06
 
-// include/searchbar.class.php, row 1074
+// include/searchbar.class.php, row 1083
 "Rename" => "\xCF\xF0\xE5\xE8\xEC\xE5\xED\xF3\xE2\xE0\xE9", // ai 2026-06
 
-// include/searchbar.class.php, row 1076
+// include/searchbar.class.php, row 1085
 "Delete" => "\xC8\xE7\xF2\xF0\xE8\xE9", // ai 2026-06
 
-// include/searchbar.class.php, row 1085
+// include/searchbar.class.php, row 1094
 "Manage filters" => "\xD3\xEF\xF0\xE0\xE2\xEB\xE5\xED\xE8\xE5 \xED\xE0 \xF4\xE8\xEB\xF2\xF0\xE8\xF2\xE5", // ai 2026-06
 
 // include/util.php, row 950
 "Error: Missing Reading Password" => "\xC3\xF0\xE5\xF8\xEA\xE0: \xCB\xE8\xEF\xF1\xE2\xE0 \xEF\xE0\xF0\xEE\xEB\xE0 \xE7\xE0 \xF7\xE5\xF2\xE5\xED\xE5", // ai 2026-06
 
-// include/util.php, row 1300
+// include/util.php, row 1304
 "Toolkit news message" => "\xD1\xFA\xEE\xE1\xF9\xE5\xED\xE8\xE5 \xEE\xF2 \xEF\xF0\xE8\xEB\xEE\xE6\xE5\xED\xE8\xE5\xF2\xEE", // ai 2026-06
 
-// include/util.php, row 1314
+// include/util.php, row 1318
 // modules/links/check_url.php, row 52
 "Back" => "\xCD\xE0\xE7\xE0\xE4", // ai 2026-06
 
-// include/util.php, row 1314
+// include/util.php, row 1318
 "Relogin" => "\xCF\xEE\xE2\xF2\xEE\xF0\xED\xEE \xE2\xEB\xE8\xE7\xE0\xED\xE5", // ai 2026-06
 
 // modules/links/actions.php, row 47, 91, 112

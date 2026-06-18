@@ -12,7 +12,36 @@ setlocale(LC_ALL, 'ja_JP.utf8', 'ja_JP');  // sort, date, uppercase, ..
 setlocale(LC_NUMERIC, 'en_US');            // keep float format with dot (see AA_Stringexpand_If)
 
 return [
+// Runtime-translated messages — used via _mdelayed($variable), so they never appear
+// in _m('...') literals; their domains are listed in misc/mgettext/cli.php $RUNTIME_MESSAGES.
+"feed" => "取り込み", // ai 2026-06
+// End of runtime-translated messages
+
 // Unused messages — no longer found in the sources; kept commented for reference.
+// "You don't have permissions to view item history." => "項目の履歴を表示する許可がありません。", // ai 2026-06
+// "validate" => "検証", // ai 2026-06
+// "RSS feeds testing page." => "RSSフィードのテストページです。", // ai 2026-06
+// "No RSS Feeds set." => "RSSフィードが設定されていません。", // ai 2026-06
+// "Messages" => "メッセージ", // ai 2026-06
+// "Write" => "書き込み", // ai 2026-06
+// "update database" => "データベースを更新", // ai 2026-06
+// "Feed url" => "フィードURL", // ai 2026-06
+// "Ok : file deleted " => "OK: ファイルを削除しました", // ai 2026-06
+// "Error: Cannot delete file" => "エラー: ファイルを削除できません", // ai 2026-06
+// "Error: Invalid directory" => "エラー: 無効なディレクトリ", // ai 2026-06
+// "Module Id" => "モジュールID", // ai 2026-06
+// "design description (for administrators only)" => "デザインの説明（管理者のみ）", // ai 2026-06
+// "COUNT_HIT events will be used for counting item hits. After a while it will be automatically deleted." => "COUNT_HITイベントは項目の表示回数の集計に使用されます。しばらくすると自動的に削除されます。", // ai 2026-06
+// "Log view" => "Logビュー", // ai 2026-06
+// "See searchlog=1 parameter for slice.php in FAQ: " => "FAQのslice.php用パラメータ searchlog=1 を参照:", // ai 2026-06
+// "SearchLog view" => "SearchLogビュー", // ai 2026-06
+// "items found" => "見付かった項目数", // ai 2026-06
+// "search time" => "検索時間", // ai 2026-06
+// "addition" => "追加情報", // ai 2026-06
+// "Configure Fields" => "フィールドの設定", // ai 2026-06
+// "vs current" => "現在と比較", // ai 2026-06
+// "no current value" => "現在の値なし", // ai 2026-06
+// "same as current" => "現在と同じ", // ai 2026-06
 // "No permission" => "許可がありません",
 // "Admin - User Management" => "管理 - 利用者管理",
 // "<p>You can delete only slices which are marked as &quot;<b>deleted</b>&quot; on &quot;<b>Slice</b>&quot; page.</p>" => "<p>You can delete only slices which are marked as &quot;<b>deleted</b>&quot; on &quot;<b>スライス</b>&quot; page.</p>",
@@ -225,7 +254,7 @@ return [
 "Sites" => "サイト", // ai 2026-06
 
 // admin/aa_statistics.php, row 127
-// admin/aafinder.php, row 500, 513
+// admin/aafinder.php, row 499, 512
 // admin/se_inputform.php, row 291
 // include/searchlib.php, row 970
 "Slices" => "スライス", // ai 2026-06
@@ -283,11 +312,11 @@ return [
 "Items found" => "見付かった項目", // ai 2026-06
 
 // admin/aa_statistics.php, row 313
-// admin/se_statistics.php, row 176
+// admin/se_statistics.php, row 179
 "No items found" => "項目が見付かりません", // ai 2026-06
 
-// admin/aa_statistics.php, row 321
-// admin/se_statistics.php, row 173
+// admin/aa_statistics.php, row 325
+// admin/se_statistics.php, row 176
 "Server configuration changes" => "サーバー設定の変更", // ai 2026-06
 
 // admin/aa_tasks.php, row 34
@@ -312,78 +341,87 @@ return [
 // admin/aa_toexecute.php, row 42
 "Scheduled Tasks" => "予定されたタスク", // ai 2026-06
 
+// admin/aa_uiprefs.php, row 30
+"You must be logged in." => "ログインが必要です。", // ai 2026-06
+
+// admin/aa_uiprefs.php, row 115
+"Thanks — your note reached the AA team." => "ありがとうございます — ご意見はAAチームに届きました。", // ai 2026-06
+
+// admin/aa_uiprefs.php, row 117
+"Couldn't send right now. Please email us directly: %1" => "ただ今送信できませんでした。直接メールでご連絡ください: %1", // ai 2026-06
+
 // admin/aa_wizardtemplate.php, row 41
 "You do not have permission to manage Wizard Templates" => "ウィザードテンプレートを管理する許可がありません", // ai 2026-06
 
 // admin/aa_wizardtemplate.php, row 75
-// include/tv_misc.php, row 70, 71
 "Wizard Templates" => "ウィザードテンプレート", // ai 2026-06
 
-// admin/aafinder.php, row 87
+// admin/aafinder.php, row 86
 "You don't have permissions to do search." => "検索する許可がありません。", // ai 2026-06
 
-// admin/aafinder.php, row 99
+// admin/aafinder.php, row 98
 "Show results with string" => "件の結果が次の文字列を含みます:", // ai 2026-06
 
-// admin/aafinder.php, row 101
+// admin/aafinder.php, row 100
 "Item" => "項目", // ai 2026-06
 
-// admin/aafinder.php, row 125
+// admin/aafinder.php, row 124
 // admin/feed_to.php, row 66
 // admin/se_fields.php, row 112
 // admin/slicedit.php, row 244
-// include/itemfunc.php, row 184
+// include/itemfunc.php, row 185
+// include/logs.php, row 528
 // include/menu.php, row 132
 // include/slice.class.php, row 468
 // include/sliceadd.php, row 52, 77
 "Slice" => "スライス",
 
-// admin/aafinder.php, row 129
+// admin/aafinder.php, row 128
 // src/AA_Plannedtask.php, row 102
 "Module" => "モジュール", // ai 2026-06
 
-// admin/aafinder.php, row 134, 135, 136, 137
+// admin/aafinder.php, row 133, 134, 135, 136
 // include/um_util.php, row 102
 "Object" => "オブジェクト", // ai 2026-06
 
-// admin/aafinder.php, row 140
-// include/itemfunc.php, row 273
-// include/logs.php, row 204
+// admin/aafinder.php, row 139
+// include/itemfunc.php, row 274
+// include/logs.php, row 234
 // src/AA_Plannedtask.php, row 117
 "Log" => "ログ", // ai 2026-06
 
-// admin/aafinder.php, row 162
+// admin/aafinder.php, row 161
 // include/sliceadd.php, row 36
 // include/slicedit.php, row 150
 "You do not have permissions to add slice" => "スライスを追加する許可がありません",
 
-// admin/aafinder.php, row 168
+// admin/aafinder.php, row 167
 // include/menu_util.php, row 79
 "AA finder" => "AA検索", // ai 2026-06
 
-// admin/aafinder.php, row 248
+// admin/aafinder.php, row 247
 "Jump" => "移動", // ai 2026-06
 
-// admin/aafinder.php, row 467, 519
-// admin/itemhistory.php, row 39
-// include/itemfunc.php, row 81, 82, 253, 375
-// include/menu.php, row 162
+// admin/aafinder.php, row 466, 518
+// admin/itemhistory.php, row 43
+// include/itemfunc.php, row 83, 84, 254, 376
+// include/menu.php, row 161
 // include/menu_util.php, row 82
 "History" => "履歴", // ai 2026-06
 
-// admin/aafinder.php, row 479
+// admin/aafinder.php, row 478
 "Manage" => "管理", // ai 2026-06
 
-// admin/aafinder.php, row 482
+// admin/aafinder.php, row 481
 "Manage User:" => "利用者の管理:", // ai 2026-06
 
-// admin/aafinder.php, row 484, 490, 506, 534, 547
+// admin/aafinder.php, row 483, 489, 505, 533, 546
 "Go!" => "実行！", // ai 2026-06
 
-// admin/aafinder.php, row 488
+// admin/aafinder.php, row 487
 "Manage Group:" => "グループの管理:", // ai 2026-06
 
-// admin/aafinder.php, row 494, 524
+// admin/aafinder.php, row 493, 523
 // admin/um_gedit.php, row 208, 325
 // admin/um_uedit.php, row 249
 // include/se_users.php, row 131, 136
@@ -394,76 +432,76 @@ return [
 // src/Widget/GpsWidget.php, row 434
 "Search" => "検索",
 
-// admin/aafinder.php, row 497
+// admin/aafinder.php, row 496
 "Find in" => "検索対象", // ai 2026-06
 
-// admin/aafinder.php, row 498
+// admin/aafinder.php, row 497
 "ID & SEO" => "ID・SEO", // ai 2026-06
 
-// admin/aafinder.php, row 499, 512
-// include/itemfunc.php, row 182
-// include/menu.php, row 144
+// admin/aafinder.php, row 498, 511
+// include/itemfunc.php, row 183
+// include/menu.php, row 143
 "Views" => "ビュー", // ai 2026-06
 
-// admin/aafinder.php, row 501, 514
+// admin/aafinder.php, row 500, 513
 // admin/anonym_wizard.php, row 216
 // include/exporter.class.php, row 522
-// include/itemfunc.php, row 350
+// include/itemfunc.php, row 351
 // include/menu.php, row 133
 // include/searchlib.php, row 167
 "Fields" => "フィールド", // ai 2026-06
 
-// admin/aafinder.php, row 502, 515
+// admin/aafinder.php, row 501, 514
 "Site spots" => "サイトスポット", // ai 2026-06
 
-// admin/aafinder.php, row 503, 520
+// admin/aafinder.php, row 502, 519
 "Discussion comments" => "ディスカッションコメント", // ai 2026-06
 
-// admin/aafinder.php, row 511
+// admin/aafinder.php, row 510
 "Search and Replace in" => "検索・置換の対象", // ai 2026-06
 
-// admin/aafinder.php, row 516
+// admin/aafinder.php, row 515
 "Objects" => "オブジェクト", // ai 2026-06
 
-// admin/aafinder.php, row 517
+// admin/aafinder.php, row 516
 "Items from slices with 'Slice Type' like Code... " => "「Slice Type」が Code... であるスライスの項目", // ai 2026-06
 
-// admin/aafinder.php, row 517
+// admin/aafinder.php, row 516
 "Code Items" => "コード項目", // ai 2026-06
 
-// admin/aafinder.php, row 518
+// admin/aafinder.php, row 517
 "All Items" => "全ての項目", // ai 2026-06
 
-// admin/aafinder.php, row 522
+// admin/aafinder.php, row 521
 "minimum 2 characters for replace function" => "置換機能には2文字以上必要です", // ai 2026-06
 
-// admin/aafinder.php, row 523
+// admin/aafinder.php, row 522
 "minimum 6 characters for replace function (or use {#AAA} value which will be replaced by empty string)" => "置換機能には6文字以上必要です（空文字列に置換するには {#AAA} を使用してください）", // ai 2026-06
 
-// admin/aafinder.php, row 525
+// admin/aafinder.php, row 524
 "Replace!" => "置換！", // ai 2026-06
 
-// admin/aafinder.php, row 532
+// admin/aafinder.php, row 531
 "Get all information about the ITEM" => "項目の全情報を取得", // ai 2026-06
 
-// admin/aafinder.php, row 539
+// admin/aafinder.php, row 538
 "Shortcut to edit ITEM" => "項目編集へのショートカット", // ai 2026-06
 
-// admin/aafinder.php, row 542
+// admin/aafinder.php, row 541
 // include/searchbar.class.php, row 543
 // include/searchlib.php, row 47, 48, 124, 133
 "contains" => "含む", // ai 2026-06
 
-// admin/aafinder.php, row 543
+// admin/aafinder.php, row 542
 // include/searchbar.class.php, row 549
 // include/searchlib.php, row 124, 133
 "is" => "一致", // ai 2026-06
 
-// admin/aafinder.php, row 544
+// admin/aafinder.php, row 543
 // admin/se_profile.php, row 98
 "Item number" => "項目数", // ai 2026-06
 
-// admin/aafinder.php, row 545
+// admin/aafinder.php, row 544
 "seo............. =" => "",
 
 // admin/aarsstest.php, row 37
@@ -489,6 +527,7 @@ return [
 
 // admin/anonym_wizard.php, row 127
 // admin/write_mail.php, row 257
+// include/menu_util.php, row 599
 // include/stringexpand.php, row 9646, 9726
 "Send" => "送信", // ai 2026-06
 
@@ -544,7 +583,7 @@ return [
 // admin/sliceexp_text.php, row 364
 // include/form.class.php, row 183
 // include/searchlib.php, row 357
-// src/Util/ChangesMonitor.php, row 381
+// src/Util/ChangesMonitor.php, row 455
 "Field" => "フィールド", // ai 2026-06
 
 // admin/anonym_wizard.php, row 221
@@ -554,7 +593,6 @@ return [
 // admin/se_javascript.php, row 90
 // admin/slicedit.php, row 277
 // include/constants.php, row 409
-// include/tableviews.php, row 64, 80
 "Id" => "ID", // ai 2026-06
 
 // admin/anonym_wizard.php, row 223
@@ -631,7 +669,7 @@ return [
 "Author" => "作者",
 
 // admin/discedit.php, row 130
-// include/logs.php, row 396
+// include/logs.php, row 442
 "IP Address" => "IPアドレス", // ai 2026-06
 
 // admin/discedit.php, row 131
@@ -641,7 +679,6 @@ return [
 
 // admin/discedit.php, row 132
 // admin/related_sel.php, row 148
-// admin/rsstest.php, row 96
 // admin/se_views.php, row 132
 // src/Manager.php, row 201
 // src/Optimize/AbstractOptimize.php, row 127
@@ -683,7 +720,7 @@ return [
 // include/formutil.php, row 1766, 1903
 // include/menu_util.php, row 61
 // include/profile.php, row 67
-// include/searchbar.class.php, row 1076
+// include/searchbar.class.php, row 1085
 // include/um_gsrch.php, row 53
 // src/Manageraction/Object_Delete.php, row 24
 // src/Manageraction/Table_Row_Delete.php, row 23
@@ -691,9 +728,9 @@ return [
 "Delete" => "削除", // ai 2026-06
 
 // admin/discedit.php, row 169
-// include/adminpage.class.php, row 330
+// include/adminpage.class.php, row 331
 // include/se_users.php, row 121
-// include/util.php, row 1314
+// include/util.php, row 1318
 "Back" => "戻る", // ai 2026-06
 
 // admin/discedit.php, row 170
@@ -750,7 +787,7 @@ return [
 "Export Item to Selected Slice" => "選択したスライスへ項目をエクスポート", // ai 2026-06
 
 // admin/feed_to.php, row 67
-// include/itemfunc.php, row 152
+// include/itemfunc.php, row 153
 "Holding bin" => "保留箱", // ai 2026-06
 
 // admin/feed_to.php, row 68
@@ -758,8 +795,8 @@ return [
 // admin/se_filters.php, row 191
 // admin/slicedit.php, row 139, 145
 // include/exporter.class.php, row 483
-// include/menu.php, row 188
-// include/menu_util.php, row 120
+// include/menu.php, row 187
+// include/menu_util.php, row 119
 // src/Module/Poll/Menu.php, row 61
 "Active" => "活動中",
 
@@ -789,7 +826,7 @@ return [
 
 // admin/fileman.php, row 114
 // include/filedit.php, row 66
-// include/menu.php, row 166
+// include/menu.php, row 165
 "File Manager" => "ファイルマネージャ", // ai 2026-06
 
 // admin/fileman.php, row 116
@@ -848,14 +885,12 @@ return [
 // include/menu.php, row 82
 "Add Item" => "項目の追加",
 
-// admin/itemhistory.php, row 24
-"You don't have permissions to view item history." => "項目の履歴を表示する許可がありません。", // ai 2026-06
-
-// admin/itemhistory.php, row 32
+// admin/itemhistory.php, row 28
 // admin/iteminfo.php, row 29
 // admin/itemstats.php, row 31
 "Item not found." => "項目が見付かりません。", // ai 2026-06
 
+// admin/itemhistory.php, row 36
 // admin/iteminfo.php, row 36
 "You have no rights to this item." => "この項目に対する許可がありません。", // ai 2026-06
 
@@ -867,8 +902,8 @@ return [
 "You don't have permissions to view item statistics." => "項目の統計を表示する許可がありません。", // ai 2026-06
 
 // admin/itemstats.php, row 38
-// include/itemfunc.php, row 86, 456
-// include/menu.php, row 163
+// include/itemfunc.php, row 88, 457
+// include/menu.php, row 162
 // include/menu_util.php, row 81
 // src/Util/Adminlink.php, row 119
 "Statistics" => "統計", // ai 2026-06
@@ -925,48 +960,11 @@ return [
 // admin/related_sel.php, row 176
 "Editor window - item manager, related selection window" => "編集ウィンドウ - 項目管理、関連項目の選択ウィンドウ", // ai 2026-06
 
-// admin/rsstest.php, row 50
-"feed" => "取り込み", // ai 2026-06
-
-// admin/rsstest.php, row 51
-"validate" => "検証", // ai 2026-06
-
-// admin/rsstest.php, row 52
-// include/stringexpand.php, row 7900
-"show" => "表示", // ai 2026-06
-
-// admin/rsstest.php, row 85, 86, 136
-"RSS Feed import test" => "RSSフィードのインポートテスト", // ai 2026-06
-
-// admin/rsstest.php, row 87
-"RSS feeds testing page." => "RSSフィードのテストページです。", // ai 2026-06
-
-// admin/rsstest.php, row 89
-"No RSS Feeds set." => "RSSフィードが設定されていません。", // ai 2026-06
-
-// admin/rsstest.php, row 100
-"Messages" => "メッセージ", // ai 2026-06
-
-// admin/rsstest.php, row 106
-"Write" => "書き込み", // ai 2026-06
-
-// admin/rsstest.php, row 107
-"update database" => "データベースを更新", // ai 2026-06
-
-// admin/rsstest.php, row 113
-"Feed url" => "フィードURL", // ai 2026-06
-
-// admin/rsstest.php, row 117
-// admin/se_inter_import.php, row 98
-"Node" => "ノード", // ai 2026-06
-
-// admin/rsstest.php, row 121
-// include/feeding.php, row 464, 470, 527
-"Local slice" => "ローカルスライス", // ai 2026-06
-
-// admin/rsstest.php, row 130
-// admin/tabledit.php, row 78
+// admin/rsstest.php, row 36
 "You do not have permissions to access this page" => "このページにアクセスする許可がありません", // ai 2026-06
+
+// admin/rsstest.php, row 46
+"RSS Feed import test" => "RSSフィードのインポートテスト", // ai 2026-06
 
 // admin/se_admin.php, row 72
 "You have no permission to set configuration parameters of this slice" => "このスライスの設定パラメータを設定する許可がありません", // ai 2026-06
@@ -974,7 +972,6 @@ return [
 // admin/se_admin.php, row 81, 173
 // admin/se_compact.php, row 94, 238
 // include/constants.php, row 605, 655, 675, 729, 764, 795, 819, 862, 891, 917, 951
-// include/tableviews.php, row 107
 "Top HTML" => "先頭のHTML",
 
 // admin/se_admin.php, row 82, 176
@@ -983,7 +980,6 @@ return [
 // admin/se_admin.php, row 83, 179
 // admin/se_compact.php, row 95, 248
 // include/constants.php, row 610, 657, 677, 733, 766, 797, 822, 867, 893, 922, 956
-// include/tableviews.php, row 115
 "Bottom HTML" => "最後のHTML",
 
 // admin/se_admin.php, row 84, 182
@@ -1016,6 +1012,7 @@ return [
 // admin/se_compact.php, row 228
 // admin/se_fulltext.php, row 153
 // admin/se_inputform.php, row 187, 439
+// src/Util/UiPrefs.php, row 56
 "Default" => "省略値",
 
 // admin/se_admin.php, row 171
@@ -1148,8 +1145,7 @@ return [
 // include/constedit.php, row 73
 // include/fileman.php, row 31
 // include/se_users.php, row 173
-// include/searchbar.class.php, row 722
-// include/tableviews.php, row 65, 97
+// include/searchbar.class.php, row 731
 // include/um_gedit.php, row 31
 // src/AA_Plannedtask.php, row 102
 // src/Optimize/AbstractOptimize.php, row 125
@@ -1295,6 +1291,7 @@ return [
 
 // admin/se_csv_import.php, row 236, 241
 // include/filedit.php, row 66
+// include/logs.php, row 543
 "File" => "ファイル", // ai 2026-06
 
 // admin/se_csv_import.php, row 237, 242
@@ -1304,14 +1301,14 @@ return [
 
 // admin/se_csv_import.php, row 238, 243
 // admin/se_inputform.php, row 471, 472
-// include/itemfunc.php, row 589, 678, 702
+// include/itemfunc.php, row 590, 679, 703
 "Text" => "テキスト", // ai 2026-06
 
 // admin/se_csv_import.php, row 251
 "Source of CSV data" => "CSVデータのソース", // ai 2026-06
 
 // admin/se_csv_import.php, row 275
-// admin/se_csv_import2.php, row 374
+// admin/se_csv_import2.php, row 373
 // src/Manageraction/Item_Preview.php, row 11
 "Preview" => "プレビュー", // ai 2026-06
 
@@ -1337,133 +1334,125 @@ return [
 // admin/se_csv_import2.php, row 284
 "Ok: Item %1 stored" => "OK: 項目 %1 を保存しました", // ai 2026-06
 
-// admin/se_csv_import2.php, row 300
-// include/files.class.php, row 298
-"Ok : file deleted " => "OK: ファイルを削除しました", // ai 2026-06
-
-// admin/se_csv_import2.php, row 302
-// include/files.class.php, row 300
-"Error: Cannot delete file" => "エラー: ファイルを削除できません", // ai 2026-06
-
-// admin/se_csv_import2.php, row 306
+// admin/se_csv_import2.php, row 305
 "Added to slice" => "スライスに追加しました", // ai 2026-06
 
-// admin/se_csv_import2.php, row 328
+// admin/se_csv_import2.php, row 327
 "Mapping preview" => "マッピングのプレビュー", // ai 2026-06
 
-// admin/se_csv_import2.php, row 379
+// admin/se_csv_import2.php, row 378
 "Finish" => "完了", // ai 2026-06
 
-// admin/se_csv_import2.php, row 384
-// include/searchbar.class.php, row 719
+// admin/se_csv_import2.php, row 383
+// include/searchbar.class.php, row 728
 // src/Widget/MflWidget.php, row 120
 // src/Widget/RioWidget.php, row 124
 // src/Widget/TxtWidget.php, row 109
 // src/Widget/Widget.php, row 416
 "Save" => "保存", // ai 2026-06
 
-// admin/se_csv_import2.php, row 389
+// admin/se_csv_import2.php, row 388
 "Load" => "読み込み", // ai 2026-06
 
-// admin/se_csv_import2.php, row 399
+// admin/se_csv_import2.php, row 398
 "Mapping settings" => "マッピングの設定", // ai 2026-06
 
-// admin/se_csv_import2.php, row 402
+// admin/se_csv_import2.php, row 401
 // admin/se_filters.php, row 190
 // admin/se_mapping.php, row 181
 "To" => "先", // ai 2026-06
 
-// admin/se_csv_import2.php, row 403
+// admin/se_csv_import2.php, row 402
 // admin/se_filters.php, row 189
 // admin/se_mapping.php, row 182
 // include/tv_email.php, row 159
 "From" => "元", // ai 2026-06
 
-// admin/se_csv_import2.php, row 404
+// admin/se_csv_import2.php, row 403
 // admin/search_replace.php, row 178
 // include/metabase.class.php, row 1577
 // include/statestore.php, row 975, 1289
 // src/AA_Plannedtask.php, row 102
 "Action" => "操作", // ai 2026-06
 
-// admin/se_csv_import2.php, row 405
+// admin/se_csv_import2.php, row 404
 "Html" => "HTML", // ai 2026-06
 
-// admin/se_csv_import2.php, row 406
+// admin/se_csv_import2.php, row 405
 "Action parameters" => "アクションのパラメータ", // ai 2026-06
 
-// admin/se_csv_import2.php, row 407
+// admin/se_csv_import2.php, row 406
 "Parameter wizard" => "パラメータウィザード", // ai 2026-06
 
-// admin/se_csv_import2.php, row 432
+// admin/se_csv_import2.php, row 431
 "Import options" => "インポートオプション", // ai 2026-06
 
-// admin/se_csv_import2.php, row 447
+// admin/se_csv_import2.php, row 446
 "Map item id from" => "項目IDのマッピング元", // ai 2026-06
 
-// admin/se_csv_import2.php, row 451
+// admin/se_csv_import2.php, row 450
 "unpacked long id (32 characters)" => "アンパックされたロングID（32文字）", // ai 2026-06
 
-// admin/se_csv_import2.php, row 452
+// admin/se_csv_import2.php, row 451
 "packed long id (16 characters)" => "パックされたロングID（16文字）", // ai 2026-06
 
-// admin/se_csv_import2.php, row 453
+// admin/se_csv_import2.php, row 452
 "string to be converted (string2id) - with param:" => "変換する文字列（string2id）- パラメータ付き:", // ai 2026-06
 
-// admin/se_csv_import2.php, row 461
+// admin/se_csv_import2.php, row 460
 "Select, how to store the items" => "項目の保存方法を選択してください", // ai 2026-06
 
-// admin/se_csv_import2.php, row 463
+// admin/se_csv_import2.php, row 462
 "Do not store the item" => "項目を保存しない", // ai 2026-06
 
-// admin/se_csv_import2.php, row 464
+// admin/se_csv_import2.php, row 463
 "Store the item with new id" => "新しいIDで項目を保存", // ai 2026-06
 
-// admin/se_csv_import2.php, row 465
+// admin/se_csv_import2.php, row 464
 "Update the item (overwrite)" => "項目を更新（上書き）", // ai 2026-06
 
-// admin/se_csv_import2.php, row 466
+// admin/se_csv_import2.php, row 465
 "Add the values in parallel to current values (the multivalues are stored, where possible)" => "現在の値に並行して値を追加（可能な場合は複数値として保存されます）", // ai 2026-06
 
-// admin/se_csv_import2.php, row 467
+// admin/se_csv_import2.php, row 466
 "Rewrite only the fields, for which the action is defined and compute all computed fields, ..." => "アクションが定義されているフィールドのみ書き換え、すべての計算フィールドを計算する、...", // ai 2026-06
 
-// admin/se_csv_import2.php, row 468
+// admin/se_csv_import2.php, row 467
 "Rewrite only the fields, for which the action is defined (do not update lastedit, computed, ... fields = Silent)" => "アクションが定義されているフィールドのみ書き換える（lastedit や計算フィールドなどは更新しない = サイレント）", // ai 2026-06
 
-// admin/se_csv_import2.php, row 469
+// admin/se_csv_import2.php, row 468
 "Rewrite only the fields, for which the action is defined and its value is not empty (computed fields will be computed)" => "アクションが定義され、値が空でないフィールドのみ書き換える（計算フィールドは計算されます）", // ai 2026-06
 
-// admin/se_csv_import2.php, row 472
+// admin/se_csv_import2.php, row 471
 "If the item id is already in the slice" => "項目IDが既にスライスにある場合", // ai 2026-06
 
-// admin/se_csv_import2.php, row 473
+// admin/se_csv_import2.php, row 472
 // admin/search_replace.php, row 176
 "Silent" => "サイレント", // ai 2026-06
 
-// admin/se_csv_import2.php, row 473
+// admin/se_csv_import2.php, row 472
 "Do not perform any other operations like evaluate-computed-field, feed, send e-mail to Readers of Alerts..." => "計算フィールドの評価、フィード、アラート読者へのメール送信などのその他の操作を行いません...", // ai 2026-06
 
-// admin/se_csv_import2.php, row 474
+// admin/se_csv_import2.php, row 473
 "Data source" => "データソース", // ai 2026-06
 
-// admin/se_csv_import2.php, row 475
+// admin/se_csv_import2.php, row 474
 // include/feeding.php, row 456, 488
 "Source" => "ソース", // ai 2026-06
 
-// admin/se_csv_import2.php, row 477
+// admin/se_csv_import2.php, row 476
 "Store settings..." => "設定を保存...", // ai 2026-06
 
-// admin/se_csv_import2.php, row 483
+// admin/se_csv_import2.php, row 482
 "Load setting" => "設定を読み込む", // ai 2026-06
 
-// admin/se_csv_import2.php, row 485
+// admin/se_csv_import2.php, row 484
 "Save setting as" => "名前を付けて設定を保存", // ai 2026-06
 
-// admin/se_csv_import2.php, row 488
+// admin/se_csv_import2.php, row 487
 "Upload periodically" => "定期的にアップロード", // ai 2026-06
 
-// admin/se_csv_import2.php, row 539
+// admin/se_csv_import2.php, row 538
 "Admin - Import CSV (2/2) - Mapping and Actions" => "管理 - CSVインポート (2/2) - マッピングとアクション", // ai 2026-06
 
 // admin/se_export.php, row 75
@@ -1492,7 +1481,7 @@ return [
 
 // admin/se_export.php, row 122
 // include/exporter.class.php, row 485
-// include/itemfunc.php, row 145
+// include/itemfunc.php, row 146
 "Expired" => "期限切れ", // ai 2026-06
 
 // admin/se_export.php, row 123
@@ -1505,7 +1494,7 @@ return [
 
 // admin/se_export.php, row 125
 // include/exporter.class.php, row 488
-// include/itemfunc.php, row 155
+// include/itemfunc.php, row 156
 // src/Manageraction/Central_MoveItem.php, row 43
 "Trash" => "ごみ箱", // ai 2026-06
 
@@ -1531,7 +1520,7 @@ return [
 // admin/sliceexp_text.php, row 364
 // include/exporter.class.php, row 509
 // include/fileman.php, row 33
-// include/logs.php, row 316
+// include/logs.php, row 346
 // include/se_users.php, row 173
 // src/Widget/Widget.php, row 724
 "Type" => "種類", // ai 2026-06
@@ -1774,7 +1763,7 @@ return [
 "Time of change" => "変更時刻", // ai 2026-06
 
 // admin/se_history.php, row 162
-// include/itemfunc.php, row 188
+// include/itemfunc.php, row 189
 // src/AA_Plannedtask.php, row 63
 "Item ID" => "項目ID", // ai 2026-06
 
@@ -1943,13 +1932,14 @@ return [
 "Disabled" => "無効", // ai 2026-06
 
 // admin/se_inputform.php, row 521
+// src/Util/ChangesMonitor.php, row 514
 "Copy to clipboard" => "クリップボードにコピー", // ai 2026-06
 
 // admin/se_inputform.php, row 522
 "Reset" => "リセット", // ai 2026-06
 
 // admin/se_inputform.php, row 527
-// include/logs.php, row 331
+// include/logs.php, row 361
 "Parameters" => "パラメータ", // ai 2026-06
 
 // admin/se_inter_export.php, row 99
@@ -1992,6 +1982,9 @@ return [
 "Remote slice" => "リモートスライス", // ai 2026-06
 
 // admin/se_inter_import.php, row 98
+"Node" => "ノード", // ai 2026-06
+
+// admin/se_inter_import.php, row 98
 // misc/datovka/datovka.php, row 114
 "State" => "状態", // ai 2026-06
 
@@ -2002,7 +1995,7 @@ return [
 "No remote imports into the slice" => "このスライスへのリモートインポートはありません", // ai 2026-06
 
 // admin/se_inter_import.php, row 106
-// include/menu.php, row 153
+// include/menu.php, row 152
 "Inter Node Import" => "ノード間インポート", // ai 2026-06
 
 // admin/se_inter_import.php, row 107
@@ -2048,7 +2041,7 @@ return [
 "The import was successfully created" => "インポートは正常に作成されました", // ai 2026-06
 
 // admin/se_javascript.php, row 71
-// include/menu.php, row 165
+// include/menu.php, row 164
 "Field Triggers" => "フィールドトリガー", // ai 2026-06
 
 // admin/se_javascript.php, row 78
@@ -2430,6 +2423,7 @@ return [
 
 // admin/se_profile.php, row 268
 // central/copyslice2.php, row 116
+// src/Util/ChangesMonitor.php, row 514
 "Copy" => "コピー", // ai 2026-06
 
 // admin/se_sets.php, row 64
@@ -2720,7 +2714,7 @@ return [
 // admin/slicewiz.php, row 79
 // admin/um_passwd.php, row 109
 // admin/um_uedit.php, row 314, 318
-// include/itemfunc.php, row 547, 1048
+// include/itemfunc.php, row 548, 1049
 // include/um_util.php, row 296
 "Login name" => "ログイン名",
 
@@ -2860,8 +2854,8 @@ return [
 "Active with antiSPAM tokens" => "antiSPAMトークン付きで有効", // ai 2026-06
 
 // admin/slicedit.php, row 140, 146
-// include/menu.php, row 191
-// include/menu_util.php, row 121
+// include/menu.php, row 190
+// include/menu_util.php, row 120
 // src/Module/Poll/Menu.php, row 64
 "Hold bin" => "保留箱",
 
@@ -2888,6 +2882,7 @@ return [
 "Admin - Slice settings" => "管理 - スライス設定", // ai 2026-06
 
 // admin/slicedit.php, row 253
+// include/menu_util.php, row 605
 "Language" => "言語", // ai 2026-06
 
 // admin/slicedit.php, row 255
@@ -2927,7 +2922,7 @@ return [
 "Password for Reading" => "閲覧用パスワード", // ai 2026-06
 
 // admin/slicedit.php, row 281
-// include/itemfunc.php, row 180
+// include/itemfunc.php, row 181
 "Created" => "作成", // ai 2026-06
 
 // admin/slicedit.php, row 281
@@ -3243,6 +3238,7 @@ return [
 
 // admin/um_gedit.php, row 313
 // admin/um_uedit.php, row 231, 242
+// include/logs.php, row 453
 // include/menu_util.php, row 70
 // include/se_users.php, row 129
 "Users" => "利用者群",
@@ -3430,7 +3426,7 @@ return [
 
 // central/copyslice2.php, row 88
 // central/synchronize3.php, row 94
-// include/menu.php, row 169
+// include/menu.php, row 168
 // include/menu_util.php, row 74
 "Task Manager" => "タスクマネージャー", // ai 2026-06
 
@@ -3571,13 +3567,13 @@ return [
 // src/Manageraction/Central_Linkcheck.php, row 31
 "Auth" => "認証", // ai 2026-06
 
-// central/responder.php, row 567
+// central/responder.php, row 597
 "No request sent for responder.php" => "responder.php へのリクエストが送信されていません", // ai 2026-06
 
-// central/responder.php, row 573
+// central/responder.php, row 603
 "Bad request sent for responder.php - %1" => "responder.php に不正なリクエストが送信されました - %1", // ai 2026-06
 
-// central/responder.php, row 578
+// central/responder.php, row 608
 "You (%2) don't have permissions to run %1" => "あなた (%2) には %1 を実行する許可がありません", // ai 2026-06
 
 // central/synchronize.php, row 35
@@ -3680,6 +3676,7 @@ return [
 "Level" => "レベル", // ai 2026-06
 
 // include/constants.php, row 460
+// include/logs.php, row 507
 "Feed" => "フィードする", // ai 2026-06
 
 // include/constants.php, row 461
@@ -3827,13 +3824,13 @@ return [
 "From: (email header)" => "From:(メールヘッダ)", // ai 2026-06
 
 // include/constants.php, row 703
-"Reply-To:" => "",
+"Reply-To:" => "返信先:", // ai 2026-06
 
 // include/constants.php, row 704
-"Errors-To:" => "",
+"Errors-To:" => "エラー送信先:", // ai 2026-06
 
 // include/constants.php, row 705
-"Sender:" => "",
+"Sender:" => "送信者:", // ai 2026-06
 
 // include/constants.php, row 706
 "Mail Subject:" => "メールの件名:", // ai 2026-06
@@ -4053,6 +4050,9 @@ return [
 // include/feeding.php, row 454, 490
 "Run (queue)" => "実行（キュー）", // ai 2026-06
 
+// include/feeding.php, row 464, 470, 527
+"Local slice" => "ローカルスライス", // ai 2026-06
+
 // include/feeding.php, row 473
 "URL of the feed" => "フィードのURL", // ai 2026-06
 
@@ -4263,9 +4263,6 @@ return [
 // include/files.class.php, row 255
 "Can't write to file: %1" => "ファイルに書き込めません: %1", // ai 2026-06
 
-// include/files.class.php, row 306
-"Error: Invalid directory" => "エラー: 無効なディレクトリ", // ai 2026-06
-
 // include/files.class.php, row 328
 "can't create backup of the file" => "ファイルのバックアップを作成できません", // ai 2026-06
 
@@ -4300,7 +4297,7 @@ return [
 "Rows" => "行", // ai 2026-06
 
 // include/form.class.php, row 301
-// include/menu.php, row 147
+// include/menu.php, row 146
 "Forms" => "フォーム", // ai 2026-06
 
 // include/formutil.php, row 191
@@ -4313,7 +4310,7 @@ return [
 "Reset form" => "フォームをリセット", // ai 2026-06
 
 // include/formutil.php, row 205, 210, 2918, 2922
-// include/searchbar.class.php, row 721
+// include/searchbar.class.php, row 730
 // src/Widget/LupWidget.php, row 118
 "Cancel" => "中断",
 
@@ -4358,8 +4355,8 @@ return [
 "Enter the value" => "値を入力してください", // ai 2026-06
 
 // include/formutil.php, row 1763
-// include/menu.php, row 140
-// src/Util/ChangesMonitor.php, row 381
+// include/menu.php, row 139
+// src/Util/ChangesMonitor.php, row 455
 "Change" => "変更",
 
 // include/formutil.php, row 1906, 2093
@@ -4393,6 +4390,7 @@ return [
 "Group Name" => "グループ名", // ai 2026-06
 
 // include/formutil.php, row 3247
+// include/logs.php, row 497
 "Count" => "件数", // ai 2026-06
 
 // include/formutil.php, row 3248
@@ -4588,329 +4586,329 @@ return [
 // include/itemfunc.php, row 71
 "Edit item" => "項目の編集", // ai 2026-06
 
-// include/itemfunc.php, row 129
+// include/itemfunc.php, row 130
 "by %1" => "%1 による", // ai 2026-06
 
-// include/itemfunc.php, row 142
+// include/itemfunc.php, row 143
 "Scheduled" => "公開予定", // ai 2026-06
 
-// include/itemfunc.php, row 143
+// include/itemfunc.php, row 144
 "not yet on the public site" => "まだ公開サイトにはありません", // ai 2026-06
 
-// include/itemfunc.php, row 146, 153, 156
+// include/itemfunc.php, row 147, 154, 157
 "not on the public site" => "公開サイトにはありません", // ai 2026-06
 
-// include/itemfunc.php, row 149, 178
+// include/itemfunc.php, row 150, 179
 "Published" => "公開済み", // ai 2026-06
 
-// include/itemfunc.php, row 175
+// include/itemfunc.php, row 176
 "Never" => "無期限", // ai 2026-06
 
-// include/itemfunc.php, row 176
+// include/itemfunc.php, row 177
 "not used on this site" => "このサイトでは使用されていません", // ai 2026-06
 
-// include/itemfunc.php, row 179
+// include/itemfunc.php, row 180
 "Expires" => "有効期限", // ai 2026-06
 
-// include/itemfunc.php, row 181
+// include/itemfunc.php, row 182
 "Last edited" => "最終編集", // ai 2026-06
 
-// include/itemfunc.php, row 183
+// include/itemfunc.php, row 184
 "Revisions" => "リビジョン", // ai 2026-06
 
-// include/itemfunc.php, row 185
+// include/itemfunc.php, row 186
 "Short ID" => "短縮ID", // ai 2026-06
 
-// include/itemfunc.php, row 191
+// include/itemfunc.php, row 192
 "Details" => "詳細", // ai 2026-06
 
-// include/itemfunc.php, row 226
+// include/itemfunc.php, row 227
 "Item table record for the item" => "この項目の item テーブルのレコード", // ai 2026-06
 
-// include/itemfunc.php, row 250
+// include/itemfunc.php, row 251
 "Content table records for the item" => "この項目の content テーブルのレコード", // ai 2026-06
 
-// include/itemfunc.php, row 269
+// include/itemfunc.php, row 270
 "Referenced items" => "参照されている項目", // ai 2026-06
 
-// include/itemfunc.php, row 278
+// include/itemfunc.php, row 279
 "AA_Item structure" => "AA_Item 構造", // ai 2026-06
 
-// include/itemfunc.php, row 309
+// include/itemfunc.php, row 310
 "Technical details" => "技術的な詳細", // ai 2026-06
 
-// include/itemfunc.php, row 350
+// include/itemfunc.php, row 351
 "When" => "日時", // ai 2026-06
 
-// include/itemfunc.php, row 350
+// include/itemfunc.php, row 351
 "Changed by" => "変更者", // ai 2026-06
 
-// include/itemfunc.php, row 378
+// include/itemfunc.php, row 379
 "Full history" => "全履歴", // ai 2026-06
 
-// include/itemfunc.php, row 403
+// include/itemfunc.php, row 404
 "Total views" => "合計表示回数", // ai 2026-06
 
-// include/itemfunc.php, row 422
+// include/itemfunc.php, row 423
 "Average / day" => "平均/日", // ai 2026-06
 
-// include/itemfunc.php, row 426
+// include/itemfunc.php, row 427
 "Last 7 days" => "過去7日間", // ai 2026-06
 
-// include/itemfunc.php, row 427
+// include/itemfunc.php, row 428
 "Last 30 days" => "過去30日間", // ai 2026-06
 
-// include/itemfunc.php, row 429
+// include/itemfunc.php, row 430
 "Last viewed" => "最終表示", // ai 2026-06
 
-// include/itemfunc.php, row 433
+// include/itemfunc.php, row 434
 "Avg response" => "平均応答", // ai 2026-06
 
-// include/itemfunc.php, row 436
+// include/itemfunc.php, row 437
 "Served from cache" => "キャッシュから配信", // ai 2026-06
 
-// include/itemfunc.php, row 459
+// include/itemfunc.php, row 460
 "Full statistics" => "全統計", // ai 2026-06
 
-// include/itemfunc.php, row 484
+// include/itemfunc.php, row 485
 "No detailed view statistics have been recorded for this item yet." => "この項目の詳細な表示統計はまだ記録されていません。", // ai 2026-06
 
-// include/itemfunc.php, row 487
+// include/itemfunc.php, row 488
 "Open full statistics" => "全統計を開く", // ai 2026-06
 
-// include/itemfunc.php, row 514
+// include/itemfunc.php, row 515
 "Now, i.e. current date" => "現在、すなわち現在の日付", // ai 2026-06
 
-// include/itemfunc.php, row 524
+// include/itemfunc.php, row 525
 "Never, i.e. maximum date" => "無期限、すなわち最大の日付", // ai 2026-06
 
-// include/itemfunc.php, row 535
+// include/itemfunc.php, row 536
 "User ID" => "利用者ID", // ai 2026-06
 
-// include/itemfunc.php, row 561
+// include/itemfunc.php, row 562
 "Date + 'Parameter' days" => "日付 + 'パラメータ' 日", // ai 2026-06
 
-// include/itemfunc.php, row 568
+// include/itemfunc.php, row 569
 "Number of days" => "日数", // ai 2026-06
 
-// include/itemfunc.php, row 582
+// include/itemfunc.php, row 583
 "Text from 'Parameter'" => "'パラメータ' のテキスト", // ai 2026-06
 
-// include/itemfunc.php, row 616
+// include/itemfunc.php, row 617
 "Random string" => "ランダム文字列", // ai 2026-06
 
-// include/itemfunc.php, row 618
+// include/itemfunc.php, row 619
 "Random alphanumeric [A-Z0-9] string." => "ランダムな英数字 [A-Z0-9] の文字列。", // ai 2026-06
 
-// include/itemfunc.php, row 625
+// include/itemfunc.php, row 626
 "String length" => "文字列の長さ", // ai 2026-06
 
-// include/itemfunc.php, row 626
+// include/itemfunc.php, row 627
 "Field to check" => "チェックするフィールド", // ai 2026-06
 
-// include/itemfunc.php, row 626
+// include/itemfunc.php, row 627
 "If you need a unique code, you must send the field ID, the function will then look into this field to ensure uniqueness." => "一意なコードが必要な場合はフィールドIDを指定してください。関数はそのフィールドを参照して一意性を保証します。", // ai 2026-06
 
-// include/itemfunc.php, row 627
+// include/itemfunc.php, row 628
 "Slice only" => "このスライスのみ", // ai 2026-06
 
-// include/itemfunc.php, row 627
+// include/itemfunc.php, row 628
 "Do you want to check for uniqueness this slice only or all slices?" => "一意性をこのスライスのみで確認しますか、それとも全スライスで確認しますか？", // ai 2026-06
 
-// include/itemfunc.php, row 669
+// include/itemfunc.php, row 670
 "AA Expression" => "AA式", // ai 2026-06
 
-// include/itemfunc.php, row 671
+// include/itemfunc.php, row 672
 "any text with possible {AA expressions} like: {date:Y}" => "{date:Y} のような {AA expressions} を含む任意のテキスト", // ai 2026-06
 
-// include/itemfunc.php, row 695
+// include/itemfunc.php, row 696
 "Multivalue" => "複数値", // ai 2026-06
 
-// include/itemfunc.php, row 703
+// include/itemfunc.php, row 704
 // include/transformation.class.php, row 525
 "Delimiter" => "区切り文字", // ai 2026-06
 
-// include/itemfunc.php, row 794
+// include/itemfunc.php, row 795
 "Slice with id '%1' is not valid." => "ID '%1' のスライスは無効です。", // ai 2026-06
 
-// include/itemfunc.php, row 894
+// include/itemfunc.php, row 895
 "Text = don't modify" => "テキスト = 変更しない", // ai 2026-06
 
-// include/itemfunc.php, row 895
+// include/itemfunc.php, row 896
 "Does not modify the value." => "値を変更しません。", // ai 2026-06
 
-// include/itemfunc.php, row 900
+// include/itemfunc.php, row 901
 "Date = don't modify" => "日付 = 変更しない", // ai 2026-06
 
-// include/itemfunc.php, row 901, 910
+// include/itemfunc.php, row 902, 911
 "Does not modify the value (just like Text), but it is better to separate it for future usage." => "値を変更しません(テキストと同じ)が、将来の利用のために分けておく方がよいでしょう。", // ai 2026-06
 
-// include/itemfunc.php, row 909
+// include/itemfunc.php, row 910
 "Number = don't modify" => "数値 = 変更しない", // ai 2026-06
 
-// include/itemfunc.php, row 915
+// include/itemfunc.php, row 916
 "Boolean = store 0 or 1" => "Boolean = 0か1を保存", // ai 2026-06
 
-// include/itemfunc.php, row 926
-"Float" => "",
-
 // include/itemfunc.php, row 927
+"Float" => "浮動小数点数", // ai 2026-06
+
+// include/itemfunc.php, row 928
 "Real float - could convert big numbers to scientific notation (1.23E+29)" => "本来のfloat - 大きな数値を指数表記 (1.23E+29) に変換することがあります", // ai 2026-06
 
-// include/itemfunc.php, row 937
+// include/itemfunc.php, row 938
 "Decimal" => "小数", // ai 2026-06
 
-// include/itemfunc.php, row 938
+// include/itemfunc.php, row 939
 "The same as Float, but does not convert big numbers to  scientific notation (1.23E+29)" => "Floatと同じですが、大きな数値を指数表記 (1.23E+29) に変換しません", // ai 2026-06
 
-// include/itemfunc.php, row 948
+// include/itemfunc.php, row 949
 "Trim" => "トリム", // ai 2026-06
 
-// include/itemfunc.php, row 949
+// include/itemfunc.php, row 950
 "Remove whitespaces from beginning and end and also normalize UTF (NFC)" => "先頭と末尾の空白を除去し、UTF (NFC) も正規化します", // ai 2026-06
 
-// include/itemfunc.php, row 960
+// include/itemfunc.php, row 961
 "Item IDs" => "項目ID", // ai 2026-06
 
-// include/itemfunc.php, row 1027
+// include/itemfunc.php, row 1028
 "User ID = always store current user ID" => "利用者ID = 常に現在の利用者IDを保存", // ai 2026-06
 
-// include/itemfunc.php, row 1028
+// include/itemfunc.php, row 1029
 "Inserts the identity of the current user, no matter what the user sets." => "利用者が何を入力しても、現在の利用者の識別情報を挿入します。", // ai 2026-06
 
-// include/itemfunc.php, row 1069
+// include/itemfunc.php, row 1070
 "Now = always store current time" => "現在 = 常に現在の時刻を保存", // ai 2026-06
 
-// include/itemfunc.php, row 1070
+// include/itemfunc.php, row 1071
 "Inserts the current time, no matter what the user sets." => "利用者が何を入力しても、現在の時刻を挿入します。", // ai 2026-06
 
-// include/itemfunc.php, row 1100
+// include/itemfunc.php, row 1101
 "Computed field for INSERT/UPDATE" => "INSERT/UPDATE用の計算フィールド", // ai 2026-06
 
-// include/itemfunc.php, row 1101
+// include/itemfunc.php, row 1102
 "The field is the result of expression written in \"Code for unaliasing\". It is a good solution for all values, which could be precomputed, since its computation on item-show-time would be slow. Yes, you can use {view...}, {include...}, {switch...} here" => "このフィールドは「別名解決用コード」に書かれた式の結果です。項目の表示時に計算すると遅くなるため、事前に計算できる値すべてに適した方法です。はい、ここでは {view...}、{include...}、{switch...} を使えます", // ai 2026-06
 
-// include/itemfunc.php, row 1108
+// include/itemfunc.php, row 1109
 "Code for unaliasing (INSERT)" => "別名解決用コード (INSERT)", // ai 2026-06
 
-// include/itemfunc.php, row 1108, 1137
+// include/itemfunc.php, row 1109, 1138
 "There you can write any string. The string will be unaliased on item store, so you can use any {...} construct as well as field aliases here" => "ここには任意の文字列を書けます。文字列は項目の保存時に別名解決されるため、任意の {...} 構文やフィールドの別名を使えます", // ai 2026-06
 
-// include/itemfunc.php, row 1109
+// include/itemfunc.php, row 1110
 "Code for unaliasing (UPDATE)" => "別名解決用コード (UPDATE)", // ai 2026-06
 
-// include/itemfunc.php, row 1109
+// include/itemfunc.php, row 1110
 "The same as above, but just for UPDATE operation. If unfilled, the value of the field stays unchanged" => "上と同じですが、UPDATE操作のみが対象です。未入力の場合、フィールドの値は変更されません", // ai 2026-06
 
-// include/itemfunc.php, row 1110
+// include/itemfunc.php, row 1111
 "Multivalue delimiter" => "複数値の区切り文字", // ai 2026-06
 
-// include/itemfunc.php, row 1110
+// include/itemfunc.php, row 1111
 "Character or string, which will split the computed string into multiple values (the same field)" => "計算された文字列を(同じフィールドの)複数の値に分割する文字または文字列", // ai 2026-06
 
-// include/itemfunc.php, row 1111
+// include/itemfunc.php, row 1112
 "Recompute every" => "再計算間隔", // ai 2026-06
 
-// include/itemfunc.php, row 1111
+// include/itemfunc.php, row 1112
 "The field will be recomputed every minute, hour, ... (using UPDATE code above). The times are not exact - the minute means something 1-10 minutes. If not filled, the field will be recomputed only on insert/update of the item." => "フィールドは毎分、毎時、…(上のUPDATEコードを使って)再計算されます。時間は正確ではなく、分は約1〜10分を意味します。未入力の場合、フィールドは項目の挿入/更新時にのみ再計算されます。", // ai 2026-06
 
-// include/itemfunc.php, row 1129
+// include/itemfunc.php, row 1130
 "Computed field" => "計算フィールド", // ai 2026-06
 
-// include/itemfunc.php, row 1130
+// include/itemfunc.php, row 1131
 "The field is the result of expression written in \\\"Code for unaliasing\\\". It is good solution for all values, which could be precomputed, since its computation on item-show-time would be slow. Yes, you can use {view...}, {include...}, {switch...} here" => "このフィールドは\\\"別名解決用コード\\\"に書かれた式の結果です。項目の表示時に計算すると遅くなるため、事前に計算できる値すべてに適した方法です。はい、ここでは {view...}、{include...}、{switch...} を使えます", // ai 2026-06
 
-// include/itemfunc.php, row 1137
+// include/itemfunc.php, row 1138
 "Code for unaliasing (INSERT+UPDATE)" => "別名解決用コード (INSERT+UPDATE)", // ai 2026-06
 
-// include/itemfunc.php, row 1157
+// include/itemfunc.php, row 1158
 "SEO Name" => "SEO名", // ai 2026-06
 
-// include/itemfunc.php, row 1158
+// include/itemfunc.php, row 1159
 "If the field is not filled, compute seoname from _#HEADLINE alias (or another if specified) unique to all slices in sitemodules, where the slice is mentioned in \"Uses slices\" settings. Basically the SEO Name alias is shortcut for computed field with {ifset:{seo.............}:_#1:{seoname:{_#HEADLINE}:all:CHARSET}}" => "フィールドが未入力の場合、_#HEADLINE別名(または指定されていれば別の別名)からseonameを計算します。これは、このスライスが「Uses slices」設定に記載されているサイトモジュール内のすべてのスライスにわたって一意です。基本的にSEO名の別名は、{ifset:{seo.............}:_#1:{seoname:{_#HEADLINE}:all:CHARSET}} を使った計算フィールドの省略形です", // ai 2026-06
 
-// include/itemfunc.php, row 1165
+// include/itemfunc.php, row 1166
 "Alias to compute from" => "計算元の別名", // ai 2026-06
 
-// include/itemfunc.php, row 1165
+// include/itemfunc.php, row 1166
 "if not specified, the _#HEADLINE is used" => "指定がなければ _#HEADLINE が使われます", // ai 2026-06
 
-// include/itemfunc.php, row 1180
+// include/itemfunc.php, row 1181
 "Unique number for this field (from 1,..)" => "このフィールドの一意な番号 (1から…)", // ai 2026-06
 
-// include/itemfunc.php, row 1181
+// include/itemfunc.php, row 1182
 "Unique number in sequence 1,2,3,..." => "1,2,3,... の連続した一意な番号", // ai 2026-06
 
-// include/itemfunc.php, row 1203
+// include/itemfunc.php, row 1204
 "File = uploaded file" => "ファイル = アップロードされたファイル", // ai 2026-06
 
-// include/itemfunc.php, row 1204
+// include/itemfunc.php, row 1205
 "Stores the uploaded file and a link to it, parameters only apply if type is image/something." => "アップロードされたファイルとそのリンクを保存します。パラメータはタイプが image/something の場合のみ適用されます。", // ai 2026-06
 
-// include/itemfunc.php, row 1211
+// include/itemfunc.php, row 1212
 "Mime types accepted" => "受け付けるMIMEタイプ", // ai 2026-06
 
-// include/itemfunc.php, row 1211
+// include/itemfunc.php, row 1212
 "Only files of matching mime types will be accepted" => "一致するMIMEタイプのファイルのみが受け付けられます", // ai 2026-06
 
-// include/itemfunc.php, row 1212
+// include/itemfunc.php, row 1213
 "Maximum image width" => "画像の最大幅", // ai 2026-06
 
-// include/itemfunc.php, row 1213
+// include/itemfunc.php, row 1214
 "Maximum image height" => "画像の最大高さ", // ai 2026-06
 
-// include/itemfunc.php, row 1213
+// include/itemfunc.php, row 1214
 "The image will be resampled to be within these limits, while retaining aspect ratio." => "画像は縦横比を保ったまま、これらの制限内に収まるようリサンプルされます。", // ai 2026-06
 
-// include/itemfunc.php, row 1214
+// include/itemfunc.php, row 1215
 "Other fields" => "他のフィールド", // ai 2026-06
 
-// include/itemfunc.php, row 1214
+// include/itemfunc.php, row 1215
 "List of other fields to receive this image, separated by ##. Does not work well for multi uploads." => "この画像を受け取る他のフィールドのリスト(## 区切り)。複数アップロードではうまく動作しません。", // ai 2026-06
 
-// include/itemfunc.php, row 1215
+// include/itemfunc.php, row 1216
 "Upload policy" => "アップロードポリシー", // ai 2026-06
 
-// include/itemfunc.php, row 1215
+// include/itemfunc.php, row 1216
 "new | overwrite | backup<br>This parameter controls what to do if uploaded file alredy exists:<br>new - AA creates new filename (by adding _x postfix) and store it with this new name (default)<br>overwrite - the old file of the same name is overwritten<br>backup - the old file is copied to new (non-existing) file and current file is stored with current name.<br>In all cases the filename is escaped, so any non-word characters will be replaced by an underscore." => "new | overwrite | backup<br>このパラメータは、アップロードしたファイルが既に存在する場合の動作を指定します:<br>new - AAは(_x を末尾に付けて)新しいファイル名を作成し、その新しい名前で保存します(省略値)<br>overwrite - 同じ名前の古いファイルは上書きされます<br>backup - 古いファイルは新しい(存在しない)ファイルにコピーされ、現在のファイルは現在の名前で保存されます。<br>いずれの場合もファイル名はエスケープされ、単語以外の文字はアンダースコアに置き換えられます。", // ai 2026-06
 
-// include/itemfunc.php, row 1216
+// include/itemfunc.php, row 1217
 "Exact dimensions" => "正確な寸法", // ai 2026-06
 
-// include/itemfunc.php, row 1216
+// include/itemfunc.php, row 1217
 "If set to 1 the image will be downsized exactly to the specified dimensions (and cropped if needed). Default is 0 or empty: Maintain aspect ratio while resizing the image." => "1に設定すると、画像は指定された寸法ちょうどに縮小されます(必要に応じて切り抜かれます)。省略値は0または空: 画像のリサイズ時に縦横比を保ちます。", // ai 2026-06
 
-// include/itemfunc.php, row 1217
+// include/itemfunc.php, row 1218
 "Filename template" => "ファイル名テンプレート", // ai 2026-06
 
-// include/itemfunc.php, row 1217
+// include/itemfunc.php, row 1218
 "Renames file according to template. You can use AA expressions as well as special alias _#name and _#ext or _#full (file name, extension and fullname). The item aliases in AA expressions do not work on INSERT (item does not exist at time of file write). They will work on UPDATE." => "テンプレートに従ってファイル名を変更します。AA式のほか、特別な別名 _#name、_#ext、_#full(ファイル名、拡張子、完全な名前)も使えます。AA式内の項目の別名はINSERTでは機能しません(ファイル書き込み時点では項目が存在しないため)。UPDATEでは機能します。", // ai 2026-06
 
-// include/itemfunc.php, row 1374
+// include/itemfunc.php, row 1375
 "Password and Change Password" => "パスワードとパスワード変更", // ai 2026-06
 
-// include/itemfunc.php, row 1375
+// include/itemfunc.php, row 1376
 "Stores value from a \"Password and Change Password\" field type. First proves the new password matches the retyped new password, and if so, encrypts the new password and stores it." => "「パスワードとパスワード変更」フィールドタイプの値を保存します。まず新しいパスワードが再入力されたものと一致することを確認し、一致すれば新しいパスワードを暗号化して保存します。", // ai 2026-06
 
-// include/itemfunc.php, row 1382
+// include/itemfunc.php, row 1383
 "Copy of password" => "パスワードのコピー", // ai 2026-06
 
-// include/itemfunc.php, row 1382
+// include/itemfunc.php, row 1383
 "Field_id, where you want to store the copy of the password. Sometimes useful if you want to allow people to get his/her old password. It is strongly recommended to not store it in plaintext and encrypt it. See second parameter." => "パスワードのコピーを保存したいField_id。利用者が自分の古いパスワードを取得できるようにしたい場合に役立つことがあります。平文で保存せず暗号化することを強くお勧めします。第2パラメータを参照してください。", // ai 2026-06
 
-// include/itemfunc.php, row 1383, 1422
+// include/itemfunc.php, row 1384, 1423
 "Encrypt phrase" => "暗号化フレーズ", // ai 2026-06
 
-// include/itemfunc.php, row 1383
+// include/itemfunc.php, row 1384
 "If you specify the \"Copy of password\" field, it is recommended to encrypt the password in the database. Fill there any string. If you then need the password, you can decrypt it from the field by using the same phrase - {decrypt:{password.......1}:Some Phrase}" => "「パスワードのコピー」フィールドを指定する場合は、データベース内のパスワードを暗号化することをお勧めします。任意の文字列を入力してください。後でパスワードが必要になったら、同じフレーズを使ってフィールドから復号できます - {decrypt:{password.......1}:Some Phrase}", // ai 2026-06
 
-// include/itemfunc.php, row 1414
+// include/itemfunc.php, row 1415
 "2FA Secret" => "2FAシークレット", // ai 2026-06
 
-// include/itemfunc.php, row 1415
+// include/itemfunc.php, row 1416
 "Generates and stores secret for Two-factor authentication, possibly encrypted by password" => "二要素認証用のシークレットを生成して保存します。パスワードで暗号化することもできます", // ai 2026-06
 
-// include/itemfunc.php, row 1422
+// include/itemfunc.php, row 1423
 "Password to be applied for encrypting this field value. Could contain AA expressions or aliases (for user item in Reader Management slice)" => "このフィールドの値の暗号化に適用されるパスワード。AA式や別名を含められます(読者管理スライスの利用者項目用)", // ai 2026-06
 
 // include/itemview.php, row 117
@@ -4928,65 +4926,143 @@ return [
 // include/locauth.php, row 87
 "If you are sure you have typed the correct password, please e-mail <a href=mailto:%1>%1</a>" => "パスワードを正しく入力したと確信される場合は、<a href=mailto:%1>%1</a> までメールでご連絡ください", // ai 2026-06
 
-// include/logs.php, row 306
+// include/logs.php, row 336
 "Created time" => "作成日時", // ai 2026-06
 
-// include/logs.php, row 307
+// include/logs.php, row 337
 "Readers to be emailed" => "メール送信対象の読者", // ai 2026-06
 
-// include/logs.php, row 317
+// include/logs.php, row 347
 "Page" => "ページ", // ai 2026-06
 
-// include/logs.php, row 327, 351, 364
+// include/logs.php, row 357, 397, 410
 "Time [s]" => "時間 [s]", // ai 2026-06
 
-// include/logs.php, row 328, 353
+// include/logs.php, row 358, 399
 "Memory usage [MB]" => "メモリ使用量 [MB]", // ai 2026-06
 
-// include/logs.php, row 329
+// include/logs.php, row 359
 "Memory peak [MB]" => "最大メモリ [MB]", // ai 2026-06
 
-// include/logs.php, row 330
+// include/logs.php, row 360
 "Return code" => "戻りコード", // ai 2026-06
 
-// include/logs.php, row 349
-"Cached" => "キャッシュ済み", // ai 2026-06
-
-// include/logs.php, row 350
-"Not Modified (304)" => "未変更 (304)", // ai 2026-06
-
-// include/logs.php, row 352
-"Time + Cached + 304" => "時間 + キャッシュ + 304", // ai 2026-06
-
-// include/logs.php, row 354, 365, 397
-"Url" => "URL", // ai 2026-06
+// include/logs.php, row 374
+"Tasks done" => "完了したタスク", // ai 2026-06
 
 // include/logs.php, row 375
+"Tasks started" => "開始したタスク", // ai 2026-06
+
+// include/logs.php, row 376
+"Duration [s]" => "所要時間 [秒]", // ai 2026-06
+
+// include/logs.php, row 377
+"Allowed [s]" => "許容時間 [秒]", // ai 2026-06
+
+// include/logs.php, row 395
+"Cached" => "キャッシュ済み", // ai 2026-06
+
+// include/logs.php, row 396
+"Not Modified (304)" => "未変更 (304)", // ai 2026-06
+
+// include/logs.php, row 398
+"Time + Cached + 304" => "時間 + キャッシュ + 304", // ai 2026-06
+
+// include/logs.php, row 400, 411, 443, 475
+"Url" => "URL", // ai 2026-06
+
+// include/logs.php, row 421
 // include/menu_util.php, row 45
 "AA" => "",
 
-// include/logs.php, row 376
+// include/logs.php, row 422
 "SVN AA (util.php)" => "",
 
-// include/logs.php, row 377
+// include/logs.php, row 423
 "PHP" => "",
 
-// include/logs.php, row 378
+// include/logs.php, row 424
 "DB" => "",
 
-// include/logs.php, row 379
+// include/logs.php, row 425
 "Memory" => "メモリ", // ai 2026-06
 
-// include/logs.php, row 380
+// include/logs.php, row 426
 "CPU" => "",
 
-// include/logs.php, row 394
+// include/logs.php, row 440
 "Identifier" => "識別子", // ai 2026-06
 
-// include/logs.php, row 395
+// include/logs.php, row 441, 570, 583
 // modules/jump/modedit.php, row 180
 // src/Manager.php, row 584
 "Module ID" => "モジュールID", // ai 2026-06
+
+// include/logs.php, row 452
+"Template id" => "テンプレート Id", // ai 2026-06
+
+// include/logs.php, row 454
+"Emails sent" => "送信したメール", // ai 2026-06
+
+// include/logs.php, row 463
+"Items selected" => "選択された項目", // ai 2026-06
+
+// include/logs.php, row 464
+"Items updated" => "更新された項目", // ai 2026-06
+
+// include/logs.php, row 465
+"Items planned" => "予定された項目", // ai 2026-06
+
+// include/logs.php, row 474
+"Message" => "メッセージ", // ai 2026-06
+
+// include/logs.php, row 476
+"Referer" => "参照元", // ai 2026-06
+
+// include/logs.php, row 485
+"New name" => "新しい名前", // ai 2026-06
+
+// include/logs.php, row 486
+"Old name" => "古い名前", // ai 2026-06
+
+// include/logs.php, row 495, 518
+"Phase" => "段階", // ai 2026-06
+
+// include/logs.php, row 496
+"Collection" => "コレクション", // ai 2026-06
+
+// include/logs.php, row 498, 509, 519
+"Detail" => "詳細", // ai 2026-06
+
+// include/logs.php, row 508
+"Status" => "状態", // ai 2026-06
+
+// include/logs.php, row 529
+"Processed" => "処理済み", // ai 2026-06
+
+// include/logs.php, row 530
+"Stored" => "保存済み", // ai 2026-06
+
+// include/logs.php, row 531
+"Errors" => "エラー", // ai 2026-06
+
+// include/logs.php, row 542
+"Outcome" => "結果", // ai 2026-06
+
+// include/logs.php, row 555
+"Mode" => "モード", // ai 2026-06
+
+// include/logs.php, row 556
+"Flags" => "フラグ", // ai 2026-06
+
+// include/logs.php, row 557
+"Context" => "コンテキスト", // ai 2026-06
+
+// include/logs.php, row 571
+"Feed counterpart" => "フィードの対応先", // ai 2026-06
+
+// include/logs.php, row 584
+"Field ID" => "フィールドID", // ai 2026-06
 
 // include/mail.php, row 563
 // include/tv_email.php, row 77, 145
@@ -5016,7 +5092,7 @@ return [
 // include/menu.php, row 65
 "View site" => "サイトを見る",
 
-// include/menu.php, row 90, 91, 143
+// include/menu.php, row 90, 91, 142
 "Item Manager" => "項目管理",
 
 // include/menu.php, row 99
@@ -5035,137 +5111,137 @@ return [
 // include/menu.php, row 135
 "Email Notification" => "メール通知", // ai 2026-06
 
-// include/menu.php, row 138
+// include/menu.php, row 137
 // include/menu_util.php, row 69
 // include/um_util.php, row 100, 103
 "Permissions" => "許可",
 
-// include/menu.php, row 139
+// include/menu.php, row 138
 "Assign" => "代入",
 
-// include/menu.php, row 142
+// include/menu.php, row 141
 "Design" => "デザイン",
 
-// include/menu.php, row 145
+// include/menu.php, row 144
 "Fulltext" => "全文",
 
-// include/menu.php, row 146
+// include/menu.php, row 145
 "Index" => "項目一覧", // ai 2026-06
 
-// include/menu.php, row 148
+// include/menu.php, row 147
 "Sets of Items" => "項目セット", // ai 2026-06
 
-// include/menu.php, row 150
-"Content Pooling" => "",
+// include/menu.php, row 149
+"Content Pooling" => "コンテンツ共有", // ai 2026-06
 
-// include/menu.php, row 151
+// include/menu.php, row 150
 "Nodes" => "ノード", // ai 2026-06
 
-// include/menu.php, row 152
+// include/menu.php, row 151
 "Inner Node Feeding" => "ノード内フィード", // ai 2026-06
 
-// include/menu.php, row 154
+// include/menu.php, row 153
 "Inter Node Export" => "ノード間エクスポート", // ai 2026-06
 
-// include/menu.php, row 155
+// include/menu.php, row 154
 "RSS Feeds" => "RSSフィード", // ai 2026-06
 
-// include/menu.php, row 156
+// include/menu.php, row 155
 "Filters" => "フィルター", // ai 2026-06
 
-// include/menu.php, row 157
+// include/menu.php, row 156
 "Mapping" => "マッピング", // ai 2026-06
 
-// include/menu.php, row 158, 220
+// include/menu.php, row 157, 219
 "Import CSV" => "CSVインポート", // ai 2026-06
 
-// include/menu.php, row 159
+// include/menu.php, row 158
 // src/Manageraction/Item_Export.php, row 20
 "Export to file" => "ファイルへエクスポート", // ai 2026-06
 
-// include/menu.php, row 161, 217
-// include/menu_util.php, row 73, 124
+// include/menu.php, row 160, 216
+// include/menu_util.php, row 73, 123
 // src/Module/Poll/Menu.php, row 67
 "Misc" => "その他", // ai 2026-06
 
-// include/menu.php, row 164
+// include/menu.php, row 163
 "Change field IDs" => "フィールドIDの変更", // ai 2026-06
 
-// include/menu.php, row 167
+// include/menu.php, row 166
 "Anonymous Form Wizard" => "匿名フォームウィザード", // ai 2026-06
 
-// include/menu.php, row 168
+// include/menu.php, row 167
 // include/tv_email.php, row 134
 "Email templates" => "メールテンプレート", // ai 2026-06
 
-// include/menu.php, row 170
+// include/menu.php, row 169
 // include/menu_util.php, row 75
 "Planned Tasks" => "予定されたタスク", // ai 2026-06
 
-// include/menu.php, row 178
+// include/menu.php, row 177
 "Mailman: create list" => "Mailman: リスト作成", // ai 2026-06
 
-// include/menu.php, row 186
-// include/menu_util.php, row 119
+// include/menu.php, row 185
+// include/menu_util.php, row 118
 // src/Module/Poll/Menu.php, row 60
 "Folders" => "フォルダ", // ai 2026-06
 
-// include/menu.php, row 189
+// include/menu.php, row 188
 // src/Module/Poll/Menu.php, row 62
 "... pending" => "待機中",
 
-// include/menu.php, row 190
+// include/menu.php, row 189
 // src/Module/Poll/Menu.php, row 63
 "... expired" => "期限切れ",
 
-// include/menu.php, row 192
-// include/menu_util.php, row 122
+// include/menu.php, row 191
+// include/menu_util.php, row 121
 // src/Module/Poll/Menu.php, row 65
 "Trash bin" => "ゴミ箱",
 
-// include/menu.php, row 208
+// include/menu.php, row 207
 "Bookmarks" => "ブックマーク", // ai 2026-06
 
-// include/menu.php, row 218
+// include/menu.php, row 217
 "Setting" => "設定", // ai 2026-06
 
-// include/menu.php, row 219
-// include/menu_util.php, row 127
+// include/menu.php, row 218
+// include/menu_util.php, row 126
 // src/Module/Poll/Menu.php, row 68
 "Empty trash" => "ゴミ箱を空にする",
 
-// include/menu.php, row 219
-// include/menu_util.php, row 127
+// include/menu.php, row 218
+// include/menu_util.php, row 126
 // src/Module/Poll/Menu.php, row 68
 "Are you sure you want to empty trash?" => "本当にゴミ箱を空にしますか？", // ai 2026-06
 
-// include/menu.php, row 221
+// include/menu.php, row 220
 "Set Debug OFF" => "デバッグをオフ", // ai 2026-06
 
-// include/menu.php, row 221
+// include/menu.php, row 220
 "Set Debug ON" => "デバッグをオン", // ai 2026-06
 
-// include/menu.php, row 231
-// include/menu_util.php, row 420, 612
+// include/menu.php, row 230
+// include/menu_util.php, row 419, 726
 // include/slice.class.php, row 1194
 "Alerts" => "アラート", // ai 2026-06
 
-// include/menu.php, row 231
+// include/menu.php, row 230
 "List of Alerts modules using this slice as Reader Management." => "このスライスを読者管理として使用しているアラートモジュールの一覧。", // ai 2026-06
 
-// include/menu.php, row 233
+// include/menu.php, row 232
 "Bulk Emails" => "一括メール", // ai 2026-06
 
-// include/menu.php, row 233
+// include/menu.php, row 232
 "Send bulk email to selected users or to users in Stored searches" => "選択した利用者または保存された検索の利用者に一括メールを送信", // ai 2026-06
 
-// include/menu.php, row 237
+// include/menu.php, row 236
 "Send emails" => "メール送信", // ai 2026-06
 
-// include/menu.php, row 246
+// include/menu.php, row 245
 "Alerts Sent" => "アラート送信", // ai 2026-06
 
-// include/menu.php, row 246
+// include/menu.php, row 245
 "List of Alerts modules sending items from this slice." => "このスライスから項目を送信しているアラートモジュールの一覧。", // ai 2026-06
 
 // include/menu_util.php, row 46
@@ -5201,76 +5277,97 @@ return [
 // include/menu_util.php, row 95
 "Wizard" => "ウィザード", // ai 2026-06
 
-// include/menu_util.php, row 97
+// include/menu_util.php, row 96
 "Welcomes" => "ウェルカムメール", // ai 2026-06
 
-// include/menu_util.php, row 98
+// include/menu_util.php, row 97
 "Templates" => "テンプレート", // ai 2026-06
 
-// include/menu_util.php, row 100
+// include/menu_util.php, row 99
 "Documentation" => "ドキュメント", // ai 2026-06
 
-// include/menu_util.php, row 101
+// include/menu_util.php, row 100
 "Style Guide" => "スタイルガイド", // ai 2026-06
 
-// include/menu_util.php, row 107
+// include/menu_util.php, row 106
 "Central" => "",
 
-// include/menu_util.php, row 108
+// include/menu_util.php, row 107
 "AA Central" => "",
 
-// include/menu_util.php, row 125
+// include/menu_util.php, row 124
 "Synchronize..." => "同期...", // ai 2026-06
 
-// include/menu_util.php, row 126
+// include/menu_util.php, row 125
 "Copy Slice..." => "スライスをコピー...", // ai 2026-06
 
-// include/menu_util.php, row 128
+// include/menu_util.php, row 127
 "Import conf from CSV..." => "CSVから設定をインポート...", // ai 2026-06
 
-// include/menu_util.php, row 398
+// include/menu_util.php, row 397
 "Part of %s" => "%s の一部", // ai 2026-06
 
-// include/menu_util.php, row 415
+// include/menu_util.php, row 414
 "Other slices" => "その他のスライス", // ai 2026-06
 
-// include/menu_util.php, row 419
+// include/menu_util.php, row 418
 "Reader Management Slice" => "読者管理スライス", // ai 2026-06
 
-// include/menu_util.php, row 421
+// include/menu_util.php, row 420
 "Jump inside control panel" => "管理画面内のジャンプ", // ai 2026-06
 
-// include/menu_util.php, row 422
+// include/menu_util.php, row 421
 // include/slice.class.php, row 1226
 "Links" => "リンク", // ai 2026-06
 
-// include/menu_util.php, row 423
+// include/menu_util.php, row 422
 "MySQL Auth (old version)" => "MySQL認証（旧バージョン）", // ai 2026-06
 
-// include/menu_util.php, row 424
+// include/menu_util.php, row 423
 // src/Module/Poll/Menu.php, row 83
 "Polls" => "アンケート", // ai 2026-06
 
-// include/menu_util.php, row 445
+// include/menu_util.php, row 444
 "New slice" => "新規スライス",
 
-// include/menu_util.php, row 449
+// include/menu_util.php, row 448
 "Switch module" => "モジュール切り替え", // ai 2026-06
 
-// include/menu_util.php, row 616
+// include/menu_util.php, row 578, 589
+"Apply" => "適用", // ai 2026-06
+
+// include/menu_util.php, row 582
+"-- Default for module --" => "-- モジュールの省略値 --", // ai 2026-06
+
+// include/menu_util.php, row 590
+"Switches the admin interface language; the page reloads." => "管理画面の言語を切り替えます。ページが再読み込みされます。", // ai 2026-06
+
+// include/menu_util.php, row 598
+"What's working, what isn't — tell the AA team." => "うまくいっていること、いないこと — AAチームにお知らせください。", // ai 2026-06
+
+// include/menu_util.php, row 601
+"Settings" => "設定", // ai 2026-06
+
+// include/menu_util.php, row 604
+"Theme" => "テーマ", // ai 2026-06
+
+// include/menu_util.php, row 606
+"Feedback" => "フィードバック", // ai 2026-06
+
+// include/menu_util.php, row 730
 // include/slice.class.php, row 554
 "Reader management" => "読者管理", // ai 2026-06
 
-// include/menu_util.php, row 628
+// include/menu_util.php, row 742
 "logout" => "ログアウト", // ai 2026-06
 
-// include/menu_util.php, row 636
+// include/menu_util.php, row 750
 "Search.." => "検索..", // ai 2026-06
 
-// include/menu_util.php, row 714
+// include/menu_util.php, row 829
 "Copyright (C) 2001 the <a href=\"https://www.apc.org\">Association for Progressive Communications (APC)</a>" => "Copyright (C) 2001 <a href=\"https://www.apc.org\">Association for Progressive Communications (APC)</a>", // ai 2026-06
 
-// include/menu_util.php, row 724
+// include/menu_util.php, row 839
 "Collapse / expand menu" => "メニューの折りたたみ / 展開", // ai 2026-06
 
 // include/metabase.class.php, row 1572
@@ -5392,43 +5489,43 @@ return [
 // include/searchbar.class.php, row 595
 "Order" => "並べ替え", // ai 2026-06
 
-// include/searchbar.class.php, row 662
+// include/searchbar.class.php, row 664
 "Advanced search" => "高度な検索", // ai 2026-06
 
-// include/searchbar.class.php, row 720
+// include/searchbar.class.php, row 729
 "Refine" => "絞り込み", // ai 2026-06
 
-// include/searchbar.class.php, row 723
+// include/searchbar.class.php, row 732
 "Share with all slice users" => "スライスの全利用者と共有", // ai 2026-06
 
-// include/searchbar.class.php, row 724
+// include/searchbar.class.php, row 733
 "Save filter" => "フィルタを保存", // ai 2026-06
 
-// include/searchbar.class.php, row 725
+// include/searchbar.class.php, row 734
 "Rename filter" => "フィルタ名を変更", // ai 2026-06
 
-// include/searchbar.class.php, row 726
+// include/searchbar.class.php, row 735
 "Are you sure you want to delete selected filter?" => "選択したフィルタを削除してもよろしいですか？", // ai 2026-06
 
-// include/searchbar.class.php, row 1008
+// include/searchbar.class.php, row 1017
 "Select one..." => "選択してください...", // ai 2026-06
 
-// include/searchbar.class.php, row 1023
+// include/searchbar.class.php, row 1032
 "My filters" => "自分のフィルタ", // ai 2026-06
 
-// include/searchbar.class.php, row 1026
+// include/searchbar.class.php, row 1035
 "Global filters" => "グローバルフィルタ", // ai 2026-06
 
-// include/searchbar.class.php, row 1064
+// include/searchbar.class.php, row 1073
 "Shared filter (click to apply)" => "共有フィルタ (クリックで適用)", // ai 2026-06
 
-// include/searchbar.class.php, row 1064
+// include/searchbar.class.php, row 1073
 "Personal filter (click to apply)" => "個人フィルタ (クリックで適用)", // ai 2026-06
 
-// include/searchbar.class.php, row 1074
+// include/searchbar.class.php, row 1083
 "Rename" => "名前を変更", // ai 2026-06
 
-// include/searchbar.class.php, row 1085
+// include/searchbar.class.php, row 1094
 "Manage filters" => "フィルタの管理", // ai 2026-06
 
 // include/searchlib.php, row 54
@@ -5741,6 +5838,9 @@ return [
 // include/stringexpand.php, row 7716
 "version" => "バージョン", // ai 2026-06
 
+// include/stringexpand.php, row 7900
+"show" => "表示", // ai 2026-06
+
 // include/stringexpand.php, row 7901
 "hide" => "隠す", // ai 2026-06
 
@@ -5874,21 +5974,6 @@ return [
 // include/tabledit_util.php, row 670
 "Wrong value: a number between %1 and %2 is expected." => "不正な値: %1から%2の間の数値が必要です。", // ai 2026-06
 
-// include/tableviews.php, row 59, 60
-"Polls Design" => "アンケートのデザイン", // ai 2026-06
-
-// include/tableviews.php, row 66, 102
-"Comment" => "コメント", // ai 2026-06
-
-// include/tableviews.php, row 88
-"Module Id" => "モジュールID", // ai 2026-06
-
-// include/tableviews.php, row 104
-"design description (for administrators only)" => "デザインの説明（管理者のみ）", // ai 2026-06
-
-// include/tableviews.php, row 111
-"Answer HTML" => "回答のHTML", // ai 2026-06
-
 // include/transformation.class.php, row 149
 "Fill by value" => "値で埋める", // ai 2026-06
 
@@ -6000,30 +6085,6 @@ return [
 // include/tv_email.php, row 168
 "Sender" => "送信者", // ai 2026-06
 
-// include/tv_misc.php, row 131
-"COUNT_HIT events will be used for counting item hits. After a while it will be automatically deleted." => "COUNT_HITイベントは項目の表示回数の集計に使用されます。しばらくすると自動的に削除されます。", // ai 2026-06
-
-// include/tv_misc.php, row 139, 140
-"Log view" => "Logビュー", // ai 2026-06
-
-// include/tv_misc.php, row 162
-"See searchlog=1 parameter for slice.php in FAQ: " => "FAQのslice.php用パラメータ searchlog=1 を参照:", // ai 2026-06
-
-// include/tv_misc.php, row 170, 171
-"SearchLog view" => "SearchLogビュー", // ai 2026-06
-
-// include/tv_misc.php, row 175
-"items found" => "見付かった項目数", // ai 2026-06
-
-// include/tv_misc.php, row 176
-"search time" => "検索時間", // ai 2026-06
-
-// include/tv_misc.php, row 177
-"addition" => "追加情報", // ai 2026-06
-
-// include/tv_misc.php, row 198, 199
-"Configure Fields" => "フィールドの設定", // ai 2026-06
-
 // include/um_gedit.php, row 43
 "It is impossible to add group to permission system" => "許可システムにグループを追加できません", // ai 2026-06
 
@@ -6042,10 +6103,10 @@ return [
 // include/um_util.php, row 358
 "Can't change user" => "利用者を変更できません", // ai 2026-06
 
-// include/util.php, row 1300
+// include/util.php, row 1304
 "Toolkit news message" => "アプリケーションのお知らせ", // ai 2026-06
 
-// include/util.php, row 1314
+// include/util.php, row 1318
 "Relogin" => "再ログイン", // ai 2026-06
 
 // include/validate.php, row 52
@@ -6391,10 +6452,10 @@ return [
 // src/AA_Plannedtask.php, row 224
 "next run" => "次回実行", // ai 2026-06
 
-// src/IO/Grabber/AARSS.php, row 116
+// src/IO/Grabber/AARSS.php, row 117
 "AA RSS" => "",
 
-// src/IO/Grabber/AARSS.php, row 124
+// src/IO/Grabber/AARSS.php, row 125
 "Grabs data from generic RSS or AA RSS (used for item exchange between different AA installations)" => "汎用RSSまたはAA RSSからデータを取得します(異なるAAインストール間の項目交換に使用)", // ai 2026-06
 
 // src/IO/Grabber/CSV.php, row 66
@@ -7873,32 +7934,47 @@ return [
 // src/Util/ChangesMonitor.php, row 93
 "history (%1)" => "履歴 (%1)", // ai 2026-06
 
+// src/Util/ChangesMonitor.php, row 336
+"No recorded changes for this item." => "この項目には記録された変更がありません。", // ai 2026-06
+
 // src/Util/ChangesMonitor.php, row 360
 "1 field changed" => "1 フィールドが変更されました", // ai 2026-06
 
 // src/Util/ChangesMonitor.php, row 360
 "%1 fields changed" => "%1 フィールドが変更されました", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 370, 382
+// src/Util/ChangesMonitor.php, row 369, 456
 "Restore" => "復元", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 377
+// src/Util/ChangesMonitor.php, row 383
+"(this change)" => "(この変更)", // ai 2026-06
+
+// src/Util/ChangesMonitor.php, row 387, 573, 577
+"Current (live)" => "現在 (ライブ)", // ai 2026-06
+
+// src/Util/ChangesMonitor.php, row 388
+"Compare to" => "比較対象", // ai 2026-06
+
+// src/Util/ChangesMonitor.php, row 397
 "change %1 | uid %2 | %3 ns | resource %4" => "変更 %1 | uid %2 | %3 ns | リソース %4", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 382
-"vs current" => "現在と比較", // ai 2026-06
+// src/Util/ChangesMonitor.php, row 449
+"View" => "表示", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 391
+// src/Util/ChangesMonitor.php, row 450
+"Diff" => "差分", // ai 2026-06
+
+// src/Util/ChangesMonitor.php, row 481
 "seq %1" => "順序 %1", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 405
-"no current value" => "現在の値なし", // ai 2026-06
+// src/Util/ChangesMonitor.php, row 488
+"No change between these versions." => "これらのバージョン間に変更はありません。", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 407
-"same as current" => "現在と同じ", // ai 2026-06
+// src/Util/ChangesMonitor.php, row 511
+"(empty)" => "(空)", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 426
-"No recorded changes for this item." => "この項目には記録された変更がありません。", // ai 2026-06
+// src/Util/ChangesMonitor.php, row 571
+"Original" => "オリジナル", // ai 2026-06
 
 // src/Util/Imgfunc.php, row 80
 "Cannot copy %1 to %2" => "%1 を %2 にコピーできません", // ai 2026-06
@@ -7911,6 +7987,9 @@ return [
 
 // src/Util/Searchfields.php, row 183
 "-- any numeric field --" => "-- 任意の数値フィールド --", // ai 2026-06
+
+// src/Util/UiPrefs.php, row 55
+"Gold" => "ゴールド", // ai 2026-06
 
 // src/Widget/ChbWidget.php, row 80
 "Check Box" => "チェックボックス", // ai 2026-06

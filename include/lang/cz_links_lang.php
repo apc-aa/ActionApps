@@ -113,69 +113,69 @@ return [
 // include/searchbar.class.php, row 613
 "Filter" => "Filtr",
 
-// include/searchbar.class.php, row 662
+// include/searchbar.class.php, row 664
 "Advanced search" => "Roz\x9A\xED\xF8en\xE9 vyhled\xE1v\xE1n\xED",
 
-// include/searchbar.class.php, row 719
+// include/searchbar.class.php, row 728
 "Save" => "Ulo\x9Eit",
 
-// include/searchbar.class.php, row 720
+// include/searchbar.class.php, row 729
 "Refine" => "Up\xF8esnit",
 
-// include/searchbar.class.php, row 721
+// include/searchbar.class.php, row 730
 "Cancel" => "Storno",
 
-// include/searchbar.class.php, row 722
+// include/searchbar.class.php, row 731
 // modules/links/constants.php, row 59, 171
 "Name" => "N\xE1zev odkazu",
 
-// include/searchbar.class.php, row 723
+// include/searchbar.class.php, row 732
 "Share with all slice users" => "Sd\xEDlet se v\x9Aemi u\x9Eivateli web\xEDku",
 
-// include/searchbar.class.php, row 724
+// include/searchbar.class.php, row 733
 "Save filter" => "Ulo\x9Eit filtr",
 
-// include/searchbar.class.php, row 725
+// include/searchbar.class.php, row 734
 "Rename filter" => "P\xF8ejmenovat filtr",
 
-// include/searchbar.class.php, row 726
+// include/searchbar.class.php, row 735
 "Are you sure you want to delete selected filter?" => "Opravdu chcete vybran\xFD filtr smazat?",
 
-// include/searchbar.class.php, row 1008
+// include/searchbar.class.php, row 1017
 "Select one..." => "vyber ...",
 
-// include/searchbar.class.php, row 1023
+// include/searchbar.class.php, row 1032
 "My filters" => "Moje filtry",
 
-// include/searchbar.class.php, row 1026
+// include/searchbar.class.php, row 1035
 "Global filters" => "Glob\xE1ln\xED filtry",
 
-// include/searchbar.class.php, row 1064
+// include/searchbar.class.php, row 1073
 "Shared filter (click to apply)" => "Sd\xEDlen\xFD filtr (kliknut\xEDm pou\x9Eijete)",
 
-// include/searchbar.class.php, row 1064
+// include/searchbar.class.php, row 1073
 "Personal filter (click to apply)" => "Osobn\xED filtr (kliknut\xEDm pou\x9Eijete)",
 
-// include/searchbar.class.php, row 1074
+// include/searchbar.class.php, row 1083
 "Rename" => "P\xF8ejmenovat",
 
-// include/searchbar.class.php, row 1076
+// include/searchbar.class.php, row 1085
 "Delete" => "Odstranit",
 
-// include/searchbar.class.php, row 1085
+// include/searchbar.class.php, row 1094
 "Manage filters" => "Spr\xE1va filtr\xF9",
 
 // include/util.php, row 950
 "Error: Missing Reading Password" => "Chyba: chyb\xED heslo pro \xE8ten\xED",
 
-// include/util.php, row 1300
+// include/util.php, row 1304
 "Toolkit news message" => "Vzkaz z Toolkitu",
 
-// include/util.php, row 1314
+// include/util.php, row 1318
 // modules/links/check_url.php, row 52
 "Back" => "Zp\xECt",
 
-// include/util.php, row 1314
+// include/util.php, row 1318
 "Relogin" => "Znovu p\xF8ihl\xE1sit",
 
 // modules/links/actions.php, row 47, 91, 112
@@ -768,7 +768,7 @@ return [
 "Regions and languages" => "Regiony a jazyky",
 
 // modules/links/linkedit.php, row 551
-"Region" => "",
+"Region" => "Oblast", // ai 2026-06
 
 // modules/links/linkedit.php, row 551
 "select up to 4 regions" => "Region, kter\xE9ho se str\xE1nky t\xFDkaj\xED. <br> Vyberte nejv\xFD\x9Ae 4 regiony. V p\xF8\xEDpad\xEC, \x9Ee pokr\xFDv\xE1 v\xEDce, za\xF8a\xEFte odkaz do nad\xF8azen\xE9 kategorie.",

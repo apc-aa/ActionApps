@@ -634,7 +634,7 @@ return [
 "prints <i>the field</i> content (or <i>unalias string</i>) depending on the html flag (if html flag is not set, it converts the content to html. In difference to f_h function, it converts to html line-breaks, too (in its basic variant)" => "html フラグに応じて<i>フィールド</i>の内容（または <i>unalias string</i>）を出力します（html フラグが設定されていない場合、内容を html に変換します。f_h 関数と異なり、（基本形では）改行も html に変換します", // ai 2026-06
 
 // include/constants_param_wizard.php, row 621
-"unalias string" => "",
+"unalias string" => "文字列", // ai 2026-06
 
 // include/constants_param_wizard.php, row 622
 "if the <i>unalias string</i> is defined, then the function ignores <i>the field</i> and it rather prints the <i>unalias string</i>. You can of course use any aliases (or fields like {headline.........}) in this string" => "<i>unalias string</i> が定義されている場合、関数は<i>フィールド</i>を無視して <i>unalias string</i> を出力します。この文字列の中ではもちろん任意の別名（や {headline.........} のようなフィールド）を使用できます", // ai 2026-06

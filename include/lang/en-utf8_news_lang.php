@@ -110,7 +110,7 @@ return [
 // admin/se_fields.php, row 382
 // admin/se_statistics.php, row 66
 // admin/se_views.php, row 144
-// include/formutil.php, row 1401, 1404, 1986
+// include/formutil.php, row 1413, 1416, 1998
 // src/Widget/FilWidget.php, row 153, 232
 // src/Widget/FldWidget.php, row 156
 "Show" => "",
@@ -212,7 +212,7 @@ return [
 "Sites" => "",
 
 // admin/aa_statistics.php, row 127
-// admin/aafinder.php, row 500, 513
+// admin/aafinder.php, row 499, 512
 // admin/se_inputform.php, row 291
 // include/searchlib.php, row 970
 "Slices" => "",
@@ -270,11 +270,11 @@ return [
 "Items found" => "",
 
 // admin/aa_statistics.php, row 313
-// admin/se_statistics.php, row 176
+// admin/se_statistics.php, row 179
 "No items found" => "",
 
-// admin/aa_statistics.php, row 321
-// admin/se_statistics.php, row 173
+// admin/aa_statistics.php, row 325
+// admin/se_statistics.php, row 176
 "Server configuration changes" => "",
 
 // admin/aa_tasks.php, row 34
@@ -299,78 +299,87 @@ return [
 // admin/aa_toexecute.php, row 42
 "Scheduled Tasks" => "",
 
+// admin/aa_uiprefs.php, row 30
+"You must be logged in." => "",
+
+// admin/aa_uiprefs.php, row 115
+"Thanks — your note reached the AA team." => "",
+
+// admin/aa_uiprefs.php, row 117
+"Couldn't send right now. Please email us directly: %1" => "",
+
 // admin/aa_wizardtemplate.php, row 41
 "You do not have permission to manage Wizard Templates" => "",
 
 // admin/aa_wizardtemplate.php, row 75
-// include/tv_misc.php, row 70, 71
 "Wizard Templates" => "",
 
-// admin/aafinder.php, row 87
+// admin/aafinder.php, row 86
 "You don't have permissions to do search." => "",
 
-// admin/aafinder.php, row 99
+// admin/aafinder.php, row 98
 "Show results with string" => "",
 
-// admin/aafinder.php, row 101
+// admin/aafinder.php, row 100
 "Item" => "",
 
-// admin/aafinder.php, row 125
+// admin/aafinder.php, row 124
 // admin/feed_to.php, row 66
 // admin/se_fields.php, row 112
 // admin/slicedit.php, row 244
-// include/itemfunc.php, row 178
-// include/menu.php, row 126
+// include/itemfunc.php, row 185
+// include/logs.php, row 528
+// include/menu.php, row 132
 // include/slice.class.php, row 468
 // include/sliceadd.php, row 52, 77
 "Slice" => "",
 
-// admin/aafinder.php, row 129
+// admin/aafinder.php, row 128
 // src/AA_Plannedtask.php, row 102
 "Module" => "",
 
-// admin/aafinder.php, row 134, 135, 136, 137
+// admin/aafinder.php, row 133, 134, 135, 136
 // include/um_util.php, row 102
 "Object" => "",
 
-// admin/aafinder.php, row 140
-// include/itemfunc.php, row 267
-// include/logs.php, row 204
+// admin/aafinder.php, row 139
+// include/itemfunc.php, row 274
+// include/logs.php, row 234
 // src/AA_Plannedtask.php, row 117
 "Log" => "",
 
-// admin/aafinder.php, row 162
+// admin/aafinder.php, row 161
 // include/sliceadd.php, row 36
 // include/slicedit.php, row 150
 "You do not have permissions to add slice" => "",
 
-// admin/aafinder.php, row 168
+// admin/aafinder.php, row 167
 // include/menu_util.php, row 79
 "AA finder" => "",
 
-// admin/aafinder.php, row 248
+// admin/aafinder.php, row 247
 "Jump" => "",
 
-// admin/aafinder.php, row 467, 519
-// admin/itemhistory.php, row 39
-// include/itemfunc.php, row 81, 82, 247, 362
-// include/menu.php, row 156
+// admin/aafinder.php, row 466, 518
+// admin/itemhistory.php, row 43
+// include/itemfunc.php, row 83, 84, 254, 376
+// include/menu.php, row 161
 // include/menu_util.php, row 82
 "History" => "",
 
-// admin/aafinder.php, row 479
+// admin/aafinder.php, row 478
 "Manage" => "",
 
-// admin/aafinder.php, row 482
+// admin/aafinder.php, row 481
 "Manage User:" => "",
 
-// admin/aafinder.php, row 484, 490, 506, 534, 547
+// admin/aafinder.php, row 483, 489, 505, 533, 546
 "Go!" => "",
 
-// admin/aafinder.php, row 488
+// admin/aafinder.php, row 487
 "Manage Group:" => "",
 
-// admin/aafinder.php, row 494, 524
+// admin/aafinder.php, row 493, 523
 // admin/um_gedit.php, row 208, 325
 // admin/um_uedit.php, row 249
 // include/se_users.php, row 131, 136
@@ -381,76 +390,76 @@ return [
 // src/Widget/GpsWidget.php, row 434
 "Search" => "",
 
-// admin/aafinder.php, row 497
+// admin/aafinder.php, row 496
 "Find in" => "",
 
-// admin/aafinder.php, row 498
+// admin/aafinder.php, row 497
 "ID & SEO" => "",
 
-// admin/aafinder.php, row 499, 512
-// include/itemfunc.php, row 176
-// include/menu.php, row 138
+// admin/aafinder.php, row 498, 511
+// include/itemfunc.php, row 183
+// include/menu.php, row 143
 "Views" => "",
 
-// admin/aafinder.php, row 501, 514
+// admin/aafinder.php, row 500, 513
 // admin/anonym_wizard.php, row 216
 // include/exporter.class.php, row 522
-// include/itemfunc.php, row 344
-// include/menu.php, row 127
+// include/itemfunc.php, row 351
+// include/menu.php, row 133
 // include/searchlib.php, row 167
 "Fields" => "",
 
-// admin/aafinder.php, row 502, 515
+// admin/aafinder.php, row 501, 514
 "Site spots" => "",
 
-// admin/aafinder.php, row 503, 520
+// admin/aafinder.php, row 502, 519
 "Discussion comments" => "",
 
-// admin/aafinder.php, row 511
+// admin/aafinder.php, row 510
 "Search and Replace in" => "",
 
-// admin/aafinder.php, row 516
+// admin/aafinder.php, row 515
 "Objects" => "",
 
-// admin/aafinder.php, row 517
+// admin/aafinder.php, row 516
 "Items from slices with 'Slice Type' like Code... " => "",
 
-// admin/aafinder.php, row 517
+// admin/aafinder.php, row 516
 "Code Items" => "",
 
-// admin/aafinder.php, row 518
+// admin/aafinder.php, row 517
 "All Items" => "",
 
-// admin/aafinder.php, row 522
+// admin/aafinder.php, row 521
 "minimum 2 characters for replace function" => "",
 
-// admin/aafinder.php, row 523
+// admin/aafinder.php, row 522
 "minimum 6 characters for replace function (or use {#AAA} value which will be replaced by empty string)" => "",
 
-// admin/aafinder.php, row 525
+// admin/aafinder.php, row 524
 "Replace!" => "",
 
-// admin/aafinder.php, row 532
+// admin/aafinder.php, row 531
 "Get all information about the ITEM" => "",
 
-// admin/aafinder.php, row 539
+// admin/aafinder.php, row 538
 "Shortcut to edit ITEM" => "",
 
-// admin/aafinder.php, row 542
+// admin/aafinder.php, row 541
 // include/searchbar.class.php, row 543
 // include/searchlib.php, row 47, 48, 124, 133
 "contains" => "",
 
-// admin/aafinder.php, row 543
+// admin/aafinder.php, row 542
 // include/searchbar.class.php, row 549
 // include/searchlib.php, row 124, 133
 "is" => "",
 
-// admin/aafinder.php, row 544
+// admin/aafinder.php, row 543
 // admin/se_profile.php, row 98
 "Item number" => "",
 
-// admin/aafinder.php, row 545
+// admin/aafinder.php, row 544
 "seo............. =" => "",
 
 // admin/aarsstest.php, row 37
@@ -476,6 +485,7 @@ return [
 
 // admin/anonym_wizard.php, row 127
 // admin/write_mail.php, row 257
+// include/menu_util.php, row 599
 // include/stringexpand.php, row 9646, 9726
 "Send" => "",
 
@@ -526,12 +536,12 @@ return [
 // admin/se_fieldid.php, row 308
 // admin/se_fields.php, row 193, 378
 // admin/se_javascript.php, row 90
-// admin/se_profile.php, row 144
+// admin/se_profile.php, row 208
 // admin/search_replace.php, row 173
 // admin/sliceexp_text.php, row 364
 // include/form.class.php, row 183
 // include/searchlib.php, row 357
-// src/Util/ChangesMonitor.php, row 381
+// src/Util/ChangesMonitor.php, row 455
 "Field" => "",
 
 // admin/anonym_wizard.php, row 221
@@ -541,7 +551,6 @@ return [
 // admin/se_javascript.php, row 90
 // admin/slicedit.php, row 277
 // include/constants.php, row 409
-// include/tableviews.php, row 64, 80
 "Id" => "",
 
 // admin/anonym_wizard.php, row 223
@@ -617,7 +626,7 @@ return [
 "Author" => "",
 
 // admin/discedit.php, row 130
-// include/logs.php, row 396
+// include/logs.php, row 442
 "IP Address" => "",
 
 // admin/discedit.php, row 131
@@ -627,7 +636,6 @@ return [
 
 // admin/discedit.php, row 132
 // admin/related_sel.php, row 148
-// admin/rsstest.php, row 96
 // admin/se_views.php, row 132
 // src/Manager.php, row 201
 // src/Optimize/AbstractOptimize.php, row 127
@@ -643,7 +651,7 @@ return [
 // admin/um_uedit.php, row 266
 // include/field.class.php, row 597
 // include/filedit.php, row 114
-// include/formutil.php, row 1743, 3332
+// include/formutil.php, row 1755, 3346
 // include/metabase.class.php, row 1552
 // include/mlx.php, row 367
 // include/statestore.php, row 1025
@@ -666,10 +674,10 @@ return [
 // admin/um_uedit.php, row 268
 // central/include/actionapps.class.php, row 778
 // include/field.class.php, row 601
-// include/formutil.php, row 1754, 1891
+// include/formutil.php, row 1766, 1903
 // include/menu_util.php, row 61
 // include/profile.php, row 67
-// include/searchbar.class.php, row 1076
+// include/searchbar.class.php, row 1085
 // include/um_gsrch.php, row 53
 // src/Manageraction/Object_Delete.php, row 24
 // src/Manageraction/Table_Row_Delete.php, row 23
@@ -677,9 +685,9 @@ return [
 "Delete" => "",
 
 // admin/discedit.php, row 169
-// include/adminpage.class.php, row 330
+// include/adminpage.class.php, row 331
 // include/se_users.php, row 121
-// include/util.php, row 1314
+// include/util.php, row 1318
 "Back" => "",
 
 // admin/discedit.php, row 170
@@ -736,7 +744,7 @@ return [
 "Export Item to Selected Slice" => "",
 
 // admin/feed_to.php, row 67
-// include/itemfunc.php, row 146
+// include/itemfunc.php, row 153
 "Holding bin" => "",
 
 // admin/feed_to.php, row 68
@@ -744,8 +752,8 @@ return [
 // admin/se_filters.php, row 191
 // admin/slicedit.php, row 139, 145
 // include/exporter.class.php, row 483
-// include/menu.php, row 182
-// include/menu_util.php, row 120
+// include/menu.php, row 187
+// include/menu_util.php, row 119
 // src/Module/Poll/Menu.php, row 61
 "Active" => "",
 
@@ -775,7 +783,7 @@ return [
 
 // admin/fileman.php, row 114
 // include/filedit.php, row 66
-// include/menu.php, row 160
+// include/menu.php, row 165
 "File Manager" => "",
 
 // admin/fileman.php, row 116
@@ -831,17 +839,15 @@ return [
 "Edit Item" => "",
 
 // admin/itemedit.php, row 387, 388
-// include/menu.php, row 76
+// include/menu.php, row 82
 "Add Item" => "",
 
-// admin/itemhistory.php, row 24
-"You don't have permissions to view item history." => "",
-
-// admin/itemhistory.php, row 32
+// admin/itemhistory.php, row 28
 // admin/iteminfo.php, row 29
 // admin/itemstats.php, row 31
 "Item not found." => "",
 
+// admin/itemhistory.php, row 36
 // admin/iteminfo.php, row 36
 "You have no rights to this item." => "",
 
@@ -853,8 +859,8 @@ return [
 "You don't have permissions to view item statistics." => "",
 
 // admin/itemstats.php, row 38
-// include/itemfunc.php, row 86, 443
-// include/menu.php, row 157
+// include/itemfunc.php, row 88, 457
+// include/menu.php, row 162
 // include/menu_util.php, row 81
 // src/Util/Adminlink.php, row 119
 "Statistics" => "",
@@ -910,48 +916,11 @@ return [
 // admin/related_sel.php, row 176
 "Editor window - item manager, related selection window" => "",
 
-// admin/rsstest.php, row 50
-"feed" => "",
-
-// admin/rsstest.php, row 51
-"validate" => "",
-
-// admin/rsstest.php, row 52
-// include/stringexpand.php, row 7900
-"show" => "",
-
-// admin/rsstest.php, row 85, 86, 136
-"RSS Feed import test" => "",
-
-// admin/rsstest.php, row 87
-"RSS feeds testing page." => "",
-
-// admin/rsstest.php, row 89
-"No RSS Feeds set." => "",
-
-// admin/rsstest.php, row 100
-"Messages" => "",
-
-// admin/rsstest.php, row 106
-"Write" => "",
-
-// admin/rsstest.php, row 107
-"update database" => "",
-
-// admin/rsstest.php, row 113
-"Feed url" => "",
-
-// admin/rsstest.php, row 117
-// admin/se_inter_import.php, row 98
-"Node" => "",
-
-// admin/rsstest.php, row 121
-// include/feeding.php, row 464, 470, 527
-"Local slice" => "",
-
-// admin/rsstest.php, row 130
-// admin/tabledit.php, row 78
+// admin/rsstest.php, row 36
 "You do not have permissions to access this page" => "",
+
+// admin/rsstest.php, row 46
+"RSS Feed import test" => "",
 
 // admin/se_admin.php, row 72
 "You have no permission to set configuration parameters of this slice" => "",
@@ -959,7 +928,6 @@ return [
 // admin/se_admin.php, row 81, 173
 // admin/se_compact.php, row 94, 238
 // include/constants.php, row 605, 655, 675, 729, 764, 795, 819, 862, 891, 917, 951
-// include/tableviews.php, row 107
 "Top HTML" => "",
 
 // admin/se_admin.php, row 82, 176
@@ -968,7 +936,6 @@ return [
 // admin/se_admin.php, row 83, 179
 // admin/se_compact.php, row 95, 248
 // include/constants.php, row 610, 657, 677, 733, 766, 797, 822, 867, 893, 922, 956
-// include/tableviews.php, row 115
 "Bottom HTML" => "",
 
 // admin/se_admin.php, row 84, 182
@@ -1001,6 +968,7 @@ return [
 // admin/se_compact.php, row 228
 // admin/se_fulltext.php, row 153
 // admin/se_inputform.php, row 187, 439
+// src/Util/UiPrefs.php, row 56
 "Default" => "",
 
 // admin/se_admin.php, row 171
@@ -1131,8 +1099,7 @@ return [
 // include/constedit.php, row 73
 // include/fileman.php, row 31
 // include/se_users.php, row 173
-// include/searchbar.class.php, row 722
-// include/tableviews.php, row 65, 97
+// include/searchbar.class.php, row 731
 // include/um_gedit.php, row 31
 // src/AA_Plannedtask.php, row 102
 // src/Optimize/AbstractOptimize.php, row 125
@@ -1140,7 +1107,7 @@ return [
 
 // admin/se_constant.php, row 220, 402
 // admin/se_mapping.php, row 183
-// admin/se_profile.php, row 146
+// admin/se_profile.php, row 210
 // include/constants.php, row 404
 // include/constedit.php, row 76
 // include/searchlib.php, row 171
@@ -1278,6 +1245,7 @@ return [
 
 // admin/se_csv_import.php, row 236, 241
 // include/filedit.php, row 66
+// include/logs.php, row 543
 "File" => "",
 
 // admin/se_csv_import.php, row 237, 242
@@ -1287,14 +1255,14 @@ return [
 
 // admin/se_csv_import.php, row 238, 243
 // admin/se_inputform.php, row 471, 472
-// include/itemfunc.php, row 576, 665, 689
+// include/itemfunc.php, row 590, 679, 703
 "Text" => "",
 
 // admin/se_csv_import.php, row 251
 "Source of CSV data" => "",
 
 // admin/se_csv_import.php, row 275
-// admin/se_csv_import2.php, row 374
+// admin/se_csv_import2.php, row 373
 // src/Manageraction/Item_Preview.php, row 11
 "Preview" => "",
 
@@ -1320,133 +1288,125 @@ return [
 // admin/se_csv_import2.php, row 284
 "Ok: Item %1 stored" => "",
 
-// admin/se_csv_import2.php, row 300
-// include/files.class.php, row 298
-"Ok : file deleted " => "",
-
-// admin/se_csv_import2.php, row 302
-// include/files.class.php, row 300
-"Error: Cannot delete file" => "",
-
-// admin/se_csv_import2.php, row 306
+// admin/se_csv_import2.php, row 305
 "Added to slice" => "",
 
-// admin/se_csv_import2.php, row 328
+// admin/se_csv_import2.php, row 327
 "Mapping preview" => "",
 
-// admin/se_csv_import2.php, row 379
+// admin/se_csv_import2.php, row 378
 "Finish" => "",
 
-// admin/se_csv_import2.php, row 384
-// include/searchbar.class.php, row 719
+// admin/se_csv_import2.php, row 383
+// include/searchbar.class.php, row 728
 // src/Widget/MflWidget.php, row 120
 // src/Widget/RioWidget.php, row 124
 // src/Widget/TxtWidget.php, row 109
 // src/Widget/Widget.php, row 416
 "Save" => "",
 
-// admin/se_csv_import2.php, row 389
+// admin/se_csv_import2.php, row 388
 "Load" => "",
 
-// admin/se_csv_import2.php, row 399
+// admin/se_csv_import2.php, row 398
 "Mapping settings" => "",
 
-// admin/se_csv_import2.php, row 402
+// admin/se_csv_import2.php, row 401
 // admin/se_filters.php, row 190
 // admin/se_mapping.php, row 181
 "To" => "",
 
-// admin/se_csv_import2.php, row 403
+// admin/se_csv_import2.php, row 402
 // admin/se_filters.php, row 189
 // admin/se_mapping.php, row 182
 // include/tv_email.php, row 159
 "From" => "",
 
-// admin/se_csv_import2.php, row 404
+// admin/se_csv_import2.php, row 403
 // admin/search_replace.php, row 178
 // include/metabase.class.php, row 1577
 // include/statestore.php, row 975, 1289
 // src/AA_Plannedtask.php, row 102
 "Action" => "",
 
-// admin/se_csv_import2.php, row 405
+// admin/se_csv_import2.php, row 404
 "Html" => "",
 
-// admin/se_csv_import2.php, row 406
+// admin/se_csv_import2.php, row 405
 "Action parameters" => "",
 
-// admin/se_csv_import2.php, row 407
+// admin/se_csv_import2.php, row 406
 "Parameter wizard" => "",
 
-// admin/se_csv_import2.php, row 432
+// admin/se_csv_import2.php, row 431
 "Import options" => "",
 
-// admin/se_csv_import2.php, row 447
+// admin/se_csv_import2.php, row 446
 "Map item id from" => "",
 
-// admin/se_csv_import2.php, row 451
+// admin/se_csv_import2.php, row 450
 "unpacked long id (32 characters)" => "",
 
-// admin/se_csv_import2.php, row 452
+// admin/se_csv_import2.php, row 451
 "packed long id (16 characters)" => "",
 
-// admin/se_csv_import2.php, row 453
+// admin/se_csv_import2.php, row 452
 "string to be converted (string2id) - with param:" => "",
 
-// admin/se_csv_import2.php, row 461
+// admin/se_csv_import2.php, row 460
 "Select, how to store the items" => "",
 
-// admin/se_csv_import2.php, row 463
+// admin/se_csv_import2.php, row 462
 "Do not store the item" => "",
 
-// admin/se_csv_import2.php, row 464
+// admin/se_csv_import2.php, row 463
 "Store the item with new id" => "",
 
-// admin/se_csv_import2.php, row 465
+// admin/se_csv_import2.php, row 464
 "Update the item (overwrite)" => "",
 
-// admin/se_csv_import2.php, row 466
+// admin/se_csv_import2.php, row 465
 "Add the values in parallel to current values (the multivalues are stored, where possible)" => "",
 
-// admin/se_csv_import2.php, row 467
+// admin/se_csv_import2.php, row 466
 "Rewrite only the fields, for which the action is defined and compute all computed fields, ..." => "",
 
-// admin/se_csv_import2.php, row 468
+// admin/se_csv_import2.php, row 467
 "Rewrite only the fields, for which the action is defined (do not update lastedit, computed, ... fields = Silent)" => "",
 
-// admin/se_csv_import2.php, row 469
+// admin/se_csv_import2.php, row 468
 "Rewrite only the fields, for which the action is defined and its value is not empty (computed fields will be computed)" => "",
 
-// admin/se_csv_import2.php, row 472
+// admin/se_csv_import2.php, row 471
 "If the item id is already in the slice" => "",
 
-// admin/se_csv_import2.php, row 473
+// admin/se_csv_import2.php, row 472
 // admin/search_replace.php, row 176
 "Silent" => "",
 
-// admin/se_csv_import2.php, row 473
+// admin/se_csv_import2.php, row 472
 "Do not perform any other operations like evaluate-computed-field, feed, send e-mail to Readers of Alerts..." => "",
 
-// admin/se_csv_import2.php, row 474
+// admin/se_csv_import2.php, row 473
 "Data source" => "",
 
-// admin/se_csv_import2.php, row 475
+// admin/se_csv_import2.php, row 474
 // include/feeding.php, row 456, 488
 "Source" => "",
 
-// admin/se_csv_import2.php, row 477
+// admin/se_csv_import2.php, row 476
 "Store settings..." => "",
 
-// admin/se_csv_import2.php, row 483
+// admin/se_csv_import2.php, row 482
 "Load setting" => "",
 
-// admin/se_csv_import2.php, row 485
+// admin/se_csv_import2.php, row 484
 "Save setting as" => "",
 
-// admin/se_csv_import2.php, row 488
+// admin/se_csv_import2.php, row 487
 "Upload periodically" => "",
 
-// admin/se_csv_import2.php, row 539
+// admin/se_csv_import2.php, row 538
 "Admin - Import CSV (2/2) - Mapping and Actions" => "",
 
 // admin/se_export.php, row 75
@@ -1475,7 +1435,7 @@ return [
 
 // admin/se_export.php, row 122
 // include/exporter.class.php, row 485
-// include/itemfunc.php, row 139
+// include/itemfunc.php, row 146
 "Expired" => "",
 
 // admin/se_export.php, row 123
@@ -1488,7 +1448,7 @@ return [
 
 // admin/se_export.php, row 125
 // include/exporter.class.php, row 488
-// include/itemfunc.php, row 149
+// include/itemfunc.php, row 156
 // src/Manageraction/Central_MoveItem.php, row 43
 "Trash" => "",
 
@@ -1514,7 +1474,7 @@ return [
 // admin/sliceexp_text.php, row 364
 // include/exporter.class.php, row 509
 // include/fileman.php, row 33
-// include/logs.php, row 316
+// include/logs.php, row 346
 // include/se_users.php, row 173
 // src/Widget/Widget.php, row 724
 "Type" => "",
@@ -1658,7 +1618,7 @@ return [
 // admin/um_gedit.php, row 281
 // admin/um_uedit.php, row 389
 // central/include/actionapps.class.php, row 781
-// include/formutil.php, row 176, 2880
+// include/formutil.php, row 188, 2894
 // modules/jump/modedit.php, row 182
 "Update" => "",
 
@@ -1754,7 +1714,7 @@ return [
 "Time of change" => "",
 
 // admin/se_history.php, row 162
-// include/itemfunc.php, row 182
+// include/itemfunc.php, row 189
 // src/AA_Plannedtask.php, row 63
 "Item ID" => "",
 
@@ -1812,7 +1772,7 @@ return [
 "Alias" => "",
 
 // admin/se_inputform.php, row 199, 526
-// admin/se_profile.php, row 145
+// admin/se_profile.php, row 209
 "Function" => "",
 
 // admin/se_inputform.php, row 303
@@ -1825,7 +1785,7 @@ return [
 "WARNING: Do not change this setting if you are not sure what you're doing!" => "",
 
 // admin/se_inputform.php, row 401
-// include/formutil.php, row 177
+// include/formutil.php, row 189
 "Update & Edit" => "",
 
 // admin/se_inputform.php, row 402
@@ -1874,7 +1834,7 @@ return [
 // admin/se_inputform.php, row 480
 // admin/sliceimp.php, row 428
 // include/form.class.php, row 409, 411
-// include/formutil.php, row 195, 2891
+// include/formutil.php, row 207, 2905
 "Insert" => "",
 
 // admin/se_inputform.php, row 483
@@ -1923,13 +1883,14 @@ return [
 "Disabled" => "",
 
 // admin/se_inputform.php, row 521
+// src/Util/ChangesMonitor.php, row 514
 "Copy to clipboard" => "",
 
 // admin/se_inputform.php, row 522
 "Reset" => "",
 
 // admin/se_inputform.php, row 527
-// include/logs.php, row 331
+// include/logs.php, row 361
 "Parameters" => "",
 
 // admin/se_inter_export.php, row 99
@@ -1972,6 +1933,9 @@ return [
 "Remote slice" => "",
 
 // admin/se_inter_import.php, row 98
+"Node" => "",
+
+// admin/se_inter_import.php, row 98
 // misc/datovka/datovka.php, row 114
 "State" => "",
 
@@ -1982,7 +1946,7 @@ return [
 "No remote imports into the slice" => "",
 
 // admin/se_inter_import.php, row 106
-// include/menu.php, row 147
+// include/menu.php, row 152
 "Inter Node Import" => "",
 
 // admin/se_inter_import.php, row 107
@@ -2028,7 +1992,7 @@ return [
 "The import was successfully created" => "",
 
 // admin/se_javascript.php, row 71
-// include/menu.php, row 159
+// include/menu.php, row 164
 "Field Triggers" => "",
 
 // admin/se_javascript.php, row 78
@@ -2184,223 +2148,233 @@ return [
 "UI - inputform - hide" => "",
 
 // admin/se_profile.php, row 118
-"Admin - user Profiles" => "",
+"Logo (top)" => "",
+
+// admin/se_profile.php, row 119
+"View site (top)" => "",
+
+// admin/se_profile.php, row 120
+"Add Item link (top)" => "",
+
+// admin/se_profile.php, row 121
+"Item Manager link (top)" => "",
+
+// admin/se_profile.php, row 122
+"Slice Admin link (top)" => "",
+
+// admin/se_profile.php, row 123
+"AA link (top)" => "",
+
+// admin/se_profile.php, row 124
+"Central link (top)" => "",
 
 // admin/se_profile.php, row 125
-"Rules" => "",
+"Title (top)" => "",
+
+// admin/se_profile.php, row 126
+"Logout link (top)" => "",
+
+// admin/se_profile.php, row 127
+"User Info link (top)" => "",
+
+// admin/se_profile.php, row 128
+"Module Selectbox (top)" => "",
+
+// admin/se_profile.php, row 129
+"Module Switch text (top)" => "",
+
+// admin/se_profile.php, row 130
+"Item Manager Menu: Header (left)" => "",
+
+// admin/se_profile.php, row 131
+"Item Manager Menu: Add Item (left)" => "",
+
+// admin/se_profile.php, row 132
+"Item Manager Menu: Active (left)" => "",
 
 // admin/se_profile.php, row 133
-"No rule is set" => "",
+"Item Manager Menu: Pending (left)" => "",
+
+// admin/se_profile.php, row 134
+"Item Manager Menu: Expired (left)" => "",
+
+// admin/se_profile.php, row 135
+"Item Manager Menu: Holding (left)" => "",
+
+// admin/se_profile.php, row 136
+"Item Manager Menu: Trash (left)" => "",
+
+// admin/se_profile.php, row 137
+"Item Manager Menu: Bookmarks show (left)" => "",
+
+// admin/se_profile.php, row 138
+"Item Manager Menu: Additional 1 (left)" => "",
+
+// admin/se_profile.php, row 139
+"Item Manager Menu: Header 2 (left)" => "",
 
 // admin/se_profile.php, row 140
-"Add Rule" => "",
+"Item Manager Menu: Slice Setting (left)" => "",
+
+// admin/se_profile.php, row 141
+"Item Manager Menu: Empty Trash (left)" => "",
+
+// admin/se_profile.php, row 142
+"Item Manager Menu: CSV Import (left)" => "",
 
 // admin/se_profile.php, row 143
+"Item Manager Menu: Debug (left)" => "",
+
+// admin/se_profile.php, row 144
+"Item Manager Menu: Additional 2 (left)" => "",
+
+// admin/se_profile.php, row 145
+"Add CSS file" => "",
+
+// admin/se_profile.php, row 149
+"Manager Actions" => "",
+
+// admin/se_profile.php, row 150
+"Searchbar - Search Rows" => "",
+
+// admin/se_profile.php, row 151
+"Searchbar - Order Rows" => "",
+
+// admin/se_profile.php, row 152
+"Searchbar - Bookmarks" => "",
+
+// admin/se_profile.php, row 156
+"Top menu (admin header)" => "",
+
+// admin/se_profile.php, row 157
+"Left menu (item context)" => "",
+
+// admin/se_profile.php, row 161
+"Title (add form)" => "",
+
+// admin/se_profile.php, row 162
+"Top HTML code (add form)" => "",
+
+// admin/se_profile.php, row 163
+"Bottom HTML code (add form)" => "",
+
+// admin/se_profile.php, row 164
+"Button \"Insert\" / \"Insert as new\" (add form)" => "",
+
+// admin/se_profile.php, row 165
+"Button \"Insert & Edit\" (add form)" => "",
+
+// admin/se_profile.php, row 166
+"Button \"Insert & View\" (add form)" => "",
+
+// admin/se_profile.php, row 167
+"Button \"Cancel\" (add form)" => "",
+
+// admin/se_profile.php, row 168
+"Title (edit form)" => "",
+
+// admin/se_profile.php, row 169
+"Top HTML code (edit form)" => "",
+
+// admin/se_profile.php, row 170
+"Bottom HTML code (edit form)" => "",
+
+// admin/se_profile.php, row 171
+"Button \"Update\" (edit form)" => "",
+
+// admin/se_profile.php, row 172
+"Button \"Update & Edit\" (edit form)" => "",
+
+// admin/se_profile.php, row 173
+"Button \"Update & View\" (edit form)" => "",
+
+// admin/se_profile.php, row 174
+"Button \"Reset form\" (edit form)" => "",
+
+// admin/se_profile.php, row 175
+"Button \"Cancel\" (edit form)" => "",
+
+// admin/se_profile.php, row 182
+"Admin - user Profiles" => "",
+
+// admin/se_profile.php, row 189
+"Rules" => "",
+
+// admin/se_profile.php, row 197
+"No rule is set" => "",
+
+// admin/se_profile.php, row 204
+"Add Rule" => "",
+
+// admin/se_profile.php, row 207
 "Rule" => "",
 
-// admin/se_profile.php, row 147
-// include/formutil.php, row 1199
+// admin/se_profile.php, row 211
+// include/formutil.php, row 1211
 // include/transformation.class.php, row 181, 356, 426, 510, 680
 // include/widget.class.php, row 569
 "HTML" => "",
 
-// admin/se_profile.php, row 154
-"Logo (top)" => "",
-
-// admin/se_profile.php, row 155
-"View site (top)" => "",
-
-// admin/se_profile.php, row 156
-"Add Item link (top)" => "",
-
-// admin/se_profile.php, row 157
-"Item Manager link (top)" => "",
-
-// admin/se_profile.php, row 158
-"Slice Admin link (top)" => "",
-
-// admin/se_profile.php, row 159
-"AA link (top)" => "",
-
-// admin/se_profile.php, row 160
-"Central link (top)" => "",
-
-// admin/se_profile.php, row 161
-"Title (top)" => "",
-
-// admin/se_profile.php, row 162
-"Logout link (top)" => "",
-
-// admin/se_profile.php, row 163
-"User Info link (top)" => "",
-
-// admin/se_profile.php, row 164
-"Module Selectbox (top)" => "",
-
-// admin/se_profile.php, row 165
-"Module Switch text (top)" => "",
-
-// admin/se_profile.php, row 166
-"Item Manager Menu: Header (left)" => "",
-
-// admin/se_profile.php, row 167
-"Item Manager Menu: Add Item (left)" => "",
-
-// admin/se_profile.php, row 168
-"Item Manager Menu: Active (left)" => "",
-
-// admin/se_profile.php, row 169
-"Item Manager Menu: Pending (left)" => "",
-
-// admin/se_profile.php, row 170
-"Item Manager Menu: Expired (left)" => "",
-
-// admin/se_profile.php, row 171
-"Item Manager Menu: Holding (left)" => "",
-
-// admin/se_profile.php, row 172
-"Item Manager Menu: Trash (left)" => "",
-
-// admin/se_profile.php, row 173
-"Item Manager Menu: Bookmarks show (left)" => "",
-
-// admin/se_profile.php, row 174
-"Item Manager Menu: Additional 1 (left)" => "",
-
-// admin/se_profile.php, row 175
-"Item Manager Menu: Header 2 (left)" => "",
-
-// admin/se_profile.php, row 176
-"Item Manager Menu: Slice Setting (left)" => "",
-
-// admin/se_profile.php, row 177
-"Item Manager Menu: Empty Trash (left)" => "",
-
-// admin/se_profile.php, row 178
-"Item Manager Menu: CSV Import (left)" => "",
-
-// admin/se_profile.php, row 179
-"Item Manager Menu: Debug (left)" => "",
-
-// admin/se_profile.php, row 180
-"Item Manager Menu: Additional 2 (left)" => "",
-
-// admin/se_profile.php, row 181
-"Add CSS file" => "",
-
-// admin/se_profile.php, row 185
-"Manager Actions" => "",
-
-// admin/se_profile.php, row 186
-"Searchbar - Search Rows" => "",
-
-// admin/se_profile.php, row 187
-"Searchbar - Order Rows" => "",
-
-// admin/se_profile.php, row 188
-"Searchbar - Bookmarks" => "",
-
-// admin/se_profile.php, row 192
-"Title (add form)" => "",
-
-// admin/se_profile.php, row 193
-"Top HTML code (add form)" => "",
-
-// admin/se_profile.php, row 194
-"Bottom HTML code (add form)" => "",
-
-// admin/se_profile.php, row 195
-"Button \"Insert\" / \"Insert as new\" (add form)" => "",
-
-// admin/se_profile.php, row 196
-"Button \"Insert & Edit\" (add form)" => "",
-
-// admin/se_profile.php, row 197
-"Button \"Insert & View\" (add form)" => "",
-
-// admin/se_profile.php, row 198
-"Button \"Cancel\" (add form)" => "",
-
-// admin/se_profile.php, row 199
-"Title (edit form)" => "",
-
-// admin/se_profile.php, row 200
-"Top HTML code (edit form)" => "",
-
-// admin/se_profile.php, row 201
-"Bottom HTML code (edit form)" => "",
-
-// admin/se_profile.php, row 202
-"Button \"Update\" (edit form)" => "",
-
-// admin/se_profile.php, row 203
-"Button \"Update & Edit\" (edit form)" => "",
-
-// admin/se_profile.php, row 204
-"Button \"Update & View\" (edit form)" => "",
-
-// admin/se_profile.php, row 205
-"Button \"Reset form\" (edit form)" => "",
-
-// admin/se_profile.php, row 206
-"Button \"Cancel\" (edit form)" => "",
-
-// admin/se_profile.php, row 210
+// admin/se_profile.php, row 218
 "Author Role" => "",
 
-// admin/se_profile.php, row 211
+// admin/se_profile.php, row 219
 "Editor Role" => "",
 
-// admin/se_profile.php, row 212
+// admin/se_profile.php, row 220
 "Administrator Role" => "",
 
-// admin/se_profile.php, row 213
+// admin/se_profile.php, row 221
 "Superadmin Role" => "",
 
-// admin/se_profile.php, row 218
+// admin/se_profile.php, row 226
 "number of item displayed in Item Manager" => "",
 
-// admin/se_profile.php, row 219
+// admin/se_profile.php, row 227
 "id of view used for item input" => "",
 
-// admin/se_profile.php, row 220
+// admin/se_profile.php, row 228
 "preset \"Search\" in Item Manager" => "",
 
-// admin/se_profile.php, row 221
+// admin/se_profile.php, row 229
 "preset \"Order\" in Item Manager" => "",
 
-// admin/se_profile.php, row 222
+// admin/se_profile.php, row 230
 "ID of \"Item Set\" which defines the permissions for item - see \"Admin - Item Set\"" => "",
 
-// admin/se_profile.php, row 223
+// admin/se_profile.php, row 231
 "hide the field in inputform" => "",
 
-// admin/se_profile.php, row 224
+// admin/se_profile.php, row 232
 "show (= unhide) the field in inputform (reverts hide made by group profile,...)" => "",
 
-// admin/se_profile.php, row 225
+// admin/se_profile.php, row 233
 "hide the field in inputform and fill it by the value" => "",
 
-// admin/se_profile.php, row 226
+// admin/se_profile.php, row 234
 "fill the field in inputform by the value" => "",
 
-// admin/se_profile.php, row 227
+// admin/se_profile.php, row 235
 "predefine value of the field in inputform" => "",
 
-// admin/se_profile.php, row 228
+// admin/se_profile.php, row 236
 "redefine manager UI - (empty values = do not show)" => "",
 
-// admin/se_profile.php, row 229
+// admin/se_profile.php, row 237
 "hide this UI element" => "",
 
-// admin/se_profile.php, row 230
+// admin/se_profile.php, row 238
 "redefine inputform UI - (empty values = do not show)" => "",
 
-// admin/se_profile.php, row 257
+// admin/se_profile.php, row 239
+"hide this UI element in the inputform" => "",
+
+// admin/se_profile.php, row 266
 "Copy Profile from" => "",
 
-// admin/se_profile.php, row 259
+// admin/se_profile.php, row 268
 // central/copyslice2.php, row 116
+// src/Util/ChangesMonitor.php, row 514
 "Copy" => "",
 
 // admin/se_sets.php, row 64
@@ -2615,7 +2589,7 @@ return [
 "Create new view from this one" => "",
 
 // admin/se_views.php, row 145, 198, 218
-// include/formutil.php, row 1740, 1747
+// include/formutil.php, row 1752, 1759
 "New" => "",
 
 // admin/se_views.php, row 146
@@ -2691,7 +2665,7 @@ return [
 // admin/slicewiz.php, row 79
 // admin/um_passwd.php, row 109
 // admin/um_uedit.php, row 314, 318
-// include/itemfunc.php, row 534, 1035
+// include/itemfunc.php, row 548, 1049
 // include/um_util.php, row 296
 "Login name" => "",
 
@@ -2706,7 +2680,7 @@ return [
 "Password" => "",
 
 // admin/setup.php, row 100, 242
-// include/formutil.php, row 2166
+// include/formutil.php, row 2178
 "Retype Password" => "",
 
 // admin/setup.php, row 101, 244
@@ -2777,9 +2751,9 @@ return [
 // admin/sliceadd.php, row 93
 // admin/um_gedit.php, row 274
 // admin/um_uedit.php, row 379
-// include/formutil.php, row 1737
+// include/formutil.php, row 1749
 // include/mlx.php, row 371
-// include/profile.php, row 159
+// include/profile.php, row 163
 // include/sliceadd.php, row 69, 83
 // src/Manager.php, row 210
 "Add" => "",
@@ -2828,13 +2802,13 @@ return [
 "Active with antiSPAM tokens" => "",
 
 // admin/slicedit.php, row 140, 146
-// include/menu.php, row 185
-// include/menu_util.php, row 121
+// include/menu.php, row 190
+// include/menu_util.php, row 120
 // src/Module/Poll/Menu.php, row 64
 "Hold bin" => "",
 
 // admin/slicedit.php, row 152
-// include/formutil.php, row 3246
+// include/formutil.php, row 3260
 "All items" => "",
 
 // admin/slicedit.php, row 153
@@ -2856,6 +2830,7 @@ return [
 "Admin - Slice settings" => "",
 
 // admin/slicedit.php, row 253
+// include/menu_util.php, row 605
 "Language" => "",
 
 // admin/slicedit.php, row 255
@@ -2895,7 +2870,7 @@ return [
 "Password for Reading" => "",
 
 // admin/slicedit.php, row 281
-// include/itemfunc.php, row 174
+// include/itemfunc.php, row 181
 "Created" => "",
 
 // admin/slicedit.php, row 281
@@ -3210,6 +3185,7 @@ return [
 
 // admin/um_gedit.php, row 313
 // admin/um_uedit.php, row 231, 242
+// include/logs.php, row 453
 // include/menu_util.php, row 70
 // include/se_users.php, row 129
 "Users" => "",
@@ -3397,7 +3373,7 @@ return [
 
 // central/copyslice2.php, row 88
 // central/synchronize3.php, row 94
-// include/menu.php, row 163
+// include/menu.php, row 168
 // include/menu_util.php, row 74
 "Task Manager" => "",
 
@@ -3538,13 +3514,13 @@ return [
 // src/Manageraction/Central_Linkcheck.php, row 31
 "Auth" => "",
 
-// central/responder.php, row 567
+// central/responder.php, row 597
 "No request sent for responder.php" => "",
 
-// central/responder.php, row 573
+// central/responder.php, row 603
 "Bad request sent for responder.php - %1" => "",
 
-// central/responder.php, row 578
+// central/responder.php, row 608
 "You (%2) don't have permissions to run %1" => "",
 
 // central/synchronize.php, row 35
@@ -3647,6 +3623,7 @@ return [
 "Level" => "",
 
 // include/constants.php, row 460
+// include/logs.php, row 507
 "Feed" => "",
 
 // include/constants.php, row 461
@@ -4019,6 +3996,9 @@ return [
 // include/feeding.php, row 454, 490
 "Run (queue)" => "",
 
+// include/feeding.php, row 464, 470, 527
+"Local slice" => "",
+
 // include/feeding.php, row 473
 "URL of the feed" => "",
 
@@ -4229,9 +4209,6 @@ return [
 // include/files.class.php, row 255
 "Can't write to file: %1" => "",
 
-// include/files.class.php, row 306
-"Error: Invalid directory" => "",
-
 // include/files.class.php, row 328
 "can't create backup of the file" => "",
 
@@ -4266,129 +4243,130 @@ return [
 "Rows" => "",
 
 // include/form.class.php, row 301
-// include/menu.php, row 141
+// include/menu.php, row 146
 "Forms" => "",
 
-// include/formutil.php, row 179
+// include/formutil.php, row 191
 "Update & View" => "",
 
-// include/formutil.php, row 186
+// include/formutil.php, row 198
 "Insert as new" => "",
 
-// include/formutil.php, row 190, 2912
+// include/formutil.php, row 202, 2926
 "Reset form" => "",
 
-// include/formutil.php, row 193, 198, 2904, 2908
-// include/searchbar.class.php, row 721
+// include/formutil.php, row 205, 210, 2918, 2922
+// include/searchbar.class.php, row 730
 // src/Widget/LupWidget.php, row 118
 "Cancel" => "",
 
-// include/formutil.php, row 196
+// include/formutil.php, row 208
 "Insert & Edit" => "",
 
-// include/formutil.php, row 197
+// include/formutil.php, row 209
 "Insert & View" => "",
 
-// include/formutil.php, row 277
+// include/formutil.php, row 289
 "Part" => "",
 
-// include/formutil.php, row 341
+// include/formutil.php, row 353
 "No fields defined for this slice" => "",
 
-// include/formutil.php, row 892
+// include/formutil.php, row 904
 "set" => "",
 
-// include/formutil.php, row 892
+// include/formutil.php, row 904
 "unset" => "",
 
-// include/formutil.php, row 1022
+// include/formutil.php, row 1034
 "Unable to find tagprefix table %1" => "",
 
-// include/formutil.php, row 1174
+// include/formutil.php, row 1186
 "import" => "",
 
-// include/formutil.php, row 1189
+// include/formutil.php, row 1201
 // src/Widget/TxtWidget.php, row 250
 "Edit in Editor" => "",
 
-// include/formutil.php, row 1202
+// include/formutil.php, row 1214
 // include/transformation.class.php, row 182, 357, 427, 511, 681
 // include/widget.class.php, row 570
 "Plain text" => "",
 
-// include/formutil.php, row 1244
+// include/formutil.php, row 1256
 // include/transformation.class.php, row 604
 "Translate" => "",
 
-// include/formutil.php, row 1747, 1751
+// include/formutil.php, row 1759, 1763
 "Enter the value" => "",
 
-// include/formutil.php, row 1751
-// include/menu.php, row 134
-// src/Util/ChangesMonitor.php, row 381
+// include/formutil.php, row 1763
+// include/menu.php, row 139
+// src/Util/ChangesMonitor.php, row 455
 "Change" => "",
 
-// include/formutil.php, row 1894, 2081
+// include/formutil.php, row 1906, 2093
 // src/Widget/MchWidget.php, row 134
 // src/Widget/Widget.php, row 808
 "Selected" => "",
 
-// include/formutil.php, row 2080
+// include/formutil.php, row 2092
 "Offer" => "",
 
-// include/formutil.php, row 2145
+// include/formutil.php, row 2157
 // include/stringexpand.php, row 10624, 10647
 // src/Widget/MflWidget.php, row 166
 // src/Widget/RimWidget.php, row 240
 "new" => "",
 
-// include/formutil.php, row 2165
+// include/formutil.php, row 2177
 "Change Password" => "",
 
-// include/formutil.php, row 2167
+// include/formutil.php, row 2179
 "Delete Password" => "",
 
-// include/formutil.php, row 2176
+// include/formutil.php, row 2188
 // include/searchlib.php, row 58, 124, 127, 130, 133, 136
 "not set" => "",
 
-// include/formutil.php, row 2915
+// include/formutil.php, row 2929
 "Submit" => "",
 
-// include/formutil.php, row 3232
+// include/formutil.php, row 3246
 "Group Name" => "",
 
-// include/formutil.php, row 3233
+// include/formutil.php, row 3247
+// include/logs.php, row 497
 "Count" => "",
 
-// include/formutil.php, row 3234
+// include/formutil.php, row 3248
 "Created on" => "",
 
-// include/formutil.php, row 3235
+// include/formutil.php, row 3249
 "Created by" => "",
 
-// include/formutil.php, row 3236
+// include/formutil.php, row 3250
 "Last updated" => "",
 
-// include/formutil.php, row 3237
+// include/formutil.php, row 3251
 "Updated by" => "",
 
-// include/formutil.php, row 3238
+// include/formutil.php, row 3252
 "Last used" => "",
 
-// include/formutil.php, row 3245
+// include/formutil.php, row 3259
 "All active items" => "",
 
-// include/formutil.php, row 3247
+// include/formutil.php, row 3261
 "All pending items" => "",
 
-// include/formutil.php, row 3248
+// include/formutil.php, row 3262
 "All expired items" => "",
 
-// include/formutil.php, row 3249
+// include/formutil.php, row 3263
 "All items in holding bin" => "",
 
-// include/formutil.php, row 3250
+// include/formutil.php, row 3264
 "All items in trash bin" => "",
 
 // include/init_page.php, row 94
@@ -4544,329 +4522,326 @@ return [
 // include/itemfunc.php, row 130
 "by %1" => "",
 
-// include/itemfunc.php, row 136
+// include/itemfunc.php, row 143
 "Scheduled" => "",
 
-// include/itemfunc.php, row 137
-"goes live %1." => "",
-
-// include/itemfunc.php, row 140
-"on %1." => "",
-
-// include/itemfunc.php, row 143, 161
-"Published" => "",
-
 // include/itemfunc.php, row 144
-"since %1, until %2." => "",
+"not yet on the public site" => "",
 
-// include/itemfunc.php, row 144
-"since %1." => "",
-
-// include/itemfunc.php, row 147, 150
+// include/itemfunc.php, row 147, 154, 157
 "not on the public site" => "",
 
-// include/itemfunc.php, row 162
-"Expires" => "",
+// include/itemfunc.php, row 150, 179
+"Published" => "",
 
-// include/itemfunc.php, row 163, 175
-"Last edited" => "",
+// include/itemfunc.php, row 176
+"Never" => "",
 
 // include/itemfunc.php, row 177
+"not used on this site" => "",
+
+// include/itemfunc.php, row 180
+"Expires" => "",
+
+// include/itemfunc.php, row 182
+"Last edited" => "",
+
+// include/itemfunc.php, row 184
 "Revisions" => "",
 
-// include/itemfunc.php, row 179
+// include/itemfunc.php, row 186
 "Short ID" => "",
 
-// include/itemfunc.php, row 185
+// include/itemfunc.php, row 192
 "Details" => "",
 
-// include/itemfunc.php, row 220
+// include/itemfunc.php, row 227
 "Item table record for the item" => "",
 
-// include/itemfunc.php, row 244
+// include/itemfunc.php, row 251
 "Content table records for the item" => "",
 
-// include/itemfunc.php, row 263
+// include/itemfunc.php, row 270
 "Referenced items" => "",
 
-// include/itemfunc.php, row 272
+// include/itemfunc.php, row 279
 "AA_Item structure" => "",
 
-// include/itemfunc.php, row 303
+// include/itemfunc.php, row 310
 "Technical details" => "",
 
-// include/itemfunc.php, row 344
+// include/itemfunc.php, row 351
 "When" => "",
 
-// include/itemfunc.php, row 344
+// include/itemfunc.php, row 351
 "Changed by" => "",
 
-// include/itemfunc.php, row 365
+// include/itemfunc.php, row 379
 "Full history" => "",
 
-// include/itemfunc.php, row 390
+// include/itemfunc.php, row 404
 "Total views" => "",
 
-// include/itemfunc.php, row 409
+// include/itemfunc.php, row 423
 "Average / day" => "",
 
-// include/itemfunc.php, row 413
+// include/itemfunc.php, row 427
 "Last 7 days" => "",
 
-// include/itemfunc.php, row 414
+// include/itemfunc.php, row 428
 "Last 30 days" => "",
 
-// include/itemfunc.php, row 416
+// include/itemfunc.php, row 430
 "Last viewed" => "",
 
-// include/itemfunc.php, row 420
+// include/itemfunc.php, row 434
 "Avg response" => "",
 
-// include/itemfunc.php, row 423
+// include/itemfunc.php, row 437
 "Served from cache" => "",
 
-// include/itemfunc.php, row 446
+// include/itemfunc.php, row 460
 "Full statistics" => "",
 
-// include/itemfunc.php, row 471
+// include/itemfunc.php, row 485
 "No detailed view statistics have been recorded for this item yet." => "",
 
-// include/itemfunc.php, row 474
+// include/itemfunc.php, row 488
 "Open full statistics" => "",
 
-// include/itemfunc.php, row 501
+// include/itemfunc.php, row 515
 "Now, i.e. current date" => "",
 
-// include/itemfunc.php, row 511
+// include/itemfunc.php, row 525
 "Never, i.e. maximum date" => "",
 
-// include/itemfunc.php, row 522
+// include/itemfunc.php, row 536
 "User ID" => "",
 
-// include/itemfunc.php, row 548
+// include/itemfunc.php, row 562
 "Date + 'Parameter' days" => "",
 
-// include/itemfunc.php, row 555
+// include/itemfunc.php, row 569
 "Number of days" => "",
 
-// include/itemfunc.php, row 569
+// include/itemfunc.php, row 583
 "Text from 'Parameter'" => "",
 
-// include/itemfunc.php, row 603
+// include/itemfunc.php, row 617
 "Random string" => "",
 
-// include/itemfunc.php, row 605
+// include/itemfunc.php, row 619
 "Random alphanumeric [A-Z0-9] string." => "",
 
-// include/itemfunc.php, row 612
+// include/itemfunc.php, row 626
 "String length" => "",
 
-// include/itemfunc.php, row 613
+// include/itemfunc.php, row 627
 "Field to check" => "",
 
-// include/itemfunc.php, row 613
+// include/itemfunc.php, row 627
 "If you need a unique code, you must send the field ID, the function will then look into this field to ensure uniqueness." => "",
 
-// include/itemfunc.php, row 614
+// include/itemfunc.php, row 628
 "Slice only" => "",
 
-// include/itemfunc.php, row 614
+// include/itemfunc.php, row 628
 "Do you want to check for uniqueness this slice only or all slices?" => "",
 
-// include/itemfunc.php, row 656
+// include/itemfunc.php, row 670
 "AA Expression" => "",
 
-// include/itemfunc.php, row 658
+// include/itemfunc.php, row 672
 "any text with possible {AA expressions} like: {date:Y}" => "",
 
-// include/itemfunc.php, row 682
+// include/itemfunc.php, row 696
 "Multivalue" => "",
 
-// include/itemfunc.php, row 690
+// include/itemfunc.php, row 704
 // include/transformation.class.php, row 525
 "Delimiter" => "",
 
-// include/itemfunc.php, row 781
+// include/itemfunc.php, row 795
 "Slice with id '%1' is not valid." => "",
 
-// include/itemfunc.php, row 881
+// include/itemfunc.php, row 895
 "Text = don't modify" => "",
 
-// include/itemfunc.php, row 882
+// include/itemfunc.php, row 896
 "Does not modify the value." => "",
 
-// include/itemfunc.php, row 887
+// include/itemfunc.php, row 901
 "Date = don't modify" => "",
 
-// include/itemfunc.php, row 888, 897
+// include/itemfunc.php, row 902, 911
 "Does not modify the value (just like Text), but it is better to separate it for future usage." => "",
 
-// include/itemfunc.php, row 896
+// include/itemfunc.php, row 910
 "Number = don't modify" => "",
 
-// include/itemfunc.php, row 902
+// include/itemfunc.php, row 916
 "Boolean = store 0 or 1" => "",
 
-// include/itemfunc.php, row 913
+// include/itemfunc.php, row 927
 "Float" => "",
 
-// include/itemfunc.php, row 914
+// include/itemfunc.php, row 928
 "Real float - could convert big numbers to scientific notation (1.23E+29)" => "",
 
-// include/itemfunc.php, row 924
+// include/itemfunc.php, row 938
 "Decimal" => "",
 
-// include/itemfunc.php, row 925
+// include/itemfunc.php, row 939
 "The same as Float, but does not convert big numbers to  scientific notation (1.23E+29)" => "",
 
-// include/itemfunc.php, row 935
+// include/itemfunc.php, row 949
 "Trim" => "",
 
-// include/itemfunc.php, row 936
+// include/itemfunc.php, row 950
 "Remove whitespaces from beginning and end and also normalize UTF (NFC)" => "",
 
-// include/itemfunc.php, row 947
+// include/itemfunc.php, row 961
 "Item IDs" => "",
 
-// include/itemfunc.php, row 1014
+// include/itemfunc.php, row 1028
 "User ID = always store current user ID" => "",
 
-// include/itemfunc.php, row 1015
+// include/itemfunc.php, row 1029
 "Inserts the identity of the current user, no matter what the user sets." => "",
 
-// include/itemfunc.php, row 1056
+// include/itemfunc.php, row 1070
 "Now = always store current time" => "",
 
-// include/itemfunc.php, row 1057
+// include/itemfunc.php, row 1071
 "Inserts the current time, no matter what the user sets." => "",
 
-// include/itemfunc.php, row 1087
+// include/itemfunc.php, row 1101
 "Computed field for INSERT/UPDATE" => "",
 
-// include/itemfunc.php, row 1088
+// include/itemfunc.php, row 1102
 "The field is the result of expression written in \"Code for unaliasing\". It is a good solution for all values, which could be precomputed, since its computation on item-show-time would be slow. Yes, you can use {view...}, {include...}, {switch...} here" => "",
 
-// include/itemfunc.php, row 1095
+// include/itemfunc.php, row 1109
 "Code for unaliasing (INSERT)" => "",
 
-// include/itemfunc.php, row 1095, 1124
+// include/itemfunc.php, row 1109, 1138
 "There you can write any string. The string will be unaliased on item store, so you can use any {...} construct as well as field aliases here" => "",
 
-// include/itemfunc.php, row 1096
+// include/itemfunc.php, row 1110
 "Code for unaliasing (UPDATE)" => "",
 
-// include/itemfunc.php, row 1096
+// include/itemfunc.php, row 1110
 "The same as above, but just for UPDATE operation. If unfilled, the value of the field stays unchanged" => "",
 
-// include/itemfunc.php, row 1097
+// include/itemfunc.php, row 1111
 "Multivalue delimiter" => "",
 
-// include/itemfunc.php, row 1097
+// include/itemfunc.php, row 1111
 "Character or string, which will split the computed string into multiple values (the same field)" => "",
 
-// include/itemfunc.php, row 1098
+// include/itemfunc.php, row 1112
 "Recompute every" => "",
 
-// include/itemfunc.php, row 1098
+// include/itemfunc.php, row 1112
 "The field will be recomputed every minute, hour, ... (using UPDATE code above). The times are not exact - the minute means something 1-10 minutes. If not filled, the field will be recomputed only on insert/update of the item." => "",
 
-// include/itemfunc.php, row 1116
+// include/itemfunc.php, row 1130
 "Computed field" => "",
 
-// include/itemfunc.php, row 1117
+// include/itemfunc.php, row 1131
 "The field is the result of expression written in \\\"Code for unaliasing\\\". It is good solution for all values, which could be precomputed, since its computation on item-show-time would be slow. Yes, you can use {view...}, {include...}, {switch...} here" => "",
 
-// include/itemfunc.php, row 1124
+// include/itemfunc.php, row 1138
 "Code for unaliasing (INSERT+UPDATE)" => "",
 
-// include/itemfunc.php, row 1144
+// include/itemfunc.php, row 1158
 "SEO Name" => "",
 
-// include/itemfunc.php, row 1145
+// include/itemfunc.php, row 1159
 "If the field is not filled, compute seoname from _#HEADLINE alias (or another if specified) unique to all slices in sitemodules, where the slice is mentioned in \"Uses slices\" settings. Basically the SEO Name alias is shortcut for computed field with {ifset:{seo.............}:_#1:{seoname:{_#HEADLINE}:all:CHARSET}}" => "",
 
-// include/itemfunc.php, row 1152
+// include/itemfunc.php, row 1166
 "Alias to compute from" => "",
 
-// include/itemfunc.php, row 1152
+// include/itemfunc.php, row 1166
 "if not specified, the _#HEADLINE is used" => "",
 
-// include/itemfunc.php, row 1167
+// include/itemfunc.php, row 1181
 "Unique number for this field (from 1,..)" => "",
 
-// include/itemfunc.php, row 1168
+// include/itemfunc.php, row 1182
 "Unique number in sequence 1,2,3,..." => "",
 
-// include/itemfunc.php, row 1190
+// include/itemfunc.php, row 1204
 "File = uploaded file" => "",
 
-// include/itemfunc.php, row 1191
+// include/itemfunc.php, row 1205
 "Stores the uploaded file and a link to it, parameters only apply if type is image/something." => "",
 
-// include/itemfunc.php, row 1198
+// include/itemfunc.php, row 1212
 "Mime types accepted" => "",
 
-// include/itemfunc.php, row 1198
+// include/itemfunc.php, row 1212
 "Only files of matching mime types will be accepted" => "",
 
-// include/itemfunc.php, row 1199
+// include/itemfunc.php, row 1213
 "Maximum image width" => "",
 
-// include/itemfunc.php, row 1200
+// include/itemfunc.php, row 1214
 "Maximum image height" => "",
 
-// include/itemfunc.php, row 1200
+// include/itemfunc.php, row 1214
 "The image will be resampled to be within these limits, while retaining aspect ratio." => "",
 
-// include/itemfunc.php, row 1201
+// include/itemfunc.php, row 1215
 "Other fields" => "",
 
-// include/itemfunc.php, row 1201
+// include/itemfunc.php, row 1215
 "List of other fields to receive this image, separated by ##. Does not work well for multi uploads." => "",
 
-// include/itemfunc.php, row 1202
+// include/itemfunc.php, row 1216
 "Upload policy" => "",
 
-// include/itemfunc.php, row 1202
+// include/itemfunc.php, row 1216
 "new | overwrite | backup<br>This parameter controls what to do if uploaded file alredy exists:<br>new - AA creates new filename (by adding _x postfix) and store it with this new name (default)<br>overwrite - the old file of the same name is overwritten<br>backup - the old file is copied to new (non-existing) file and current file is stored with current name.<br>In all cases the filename is escaped, so any non-word characters will be replaced by an underscore." => "",
 
-// include/itemfunc.php, row 1203
+// include/itemfunc.php, row 1217
 "Exact dimensions" => "",
 
-// include/itemfunc.php, row 1203
+// include/itemfunc.php, row 1217
 "If set to 1 the image will be downsized exactly to the specified dimensions (and cropped if needed). Default is 0 or empty: Maintain aspect ratio while resizing the image." => "",
 
-// include/itemfunc.php, row 1204
+// include/itemfunc.php, row 1218
 "Filename template" => "",
 
-// include/itemfunc.php, row 1204
+// include/itemfunc.php, row 1218
 "Renames file according to template. You can use AA expressions as well as special alias _#name and _#ext or _#full (file name, extension and fullname). The item aliases in AA expressions do not work on INSERT (item does not exist at time of file write). They will work on UPDATE." => "",
 
-// include/itemfunc.php, row 1361
+// include/itemfunc.php, row 1375
 "Password and Change Password" => "",
 
-// include/itemfunc.php, row 1362
+// include/itemfunc.php, row 1376
 "Stores value from a \"Password and Change Password\" field type. First proves the new password matches the retyped new password, and if so, encrypts the new password and stores it." => "",
 
-// include/itemfunc.php, row 1369
+// include/itemfunc.php, row 1383
 "Copy of password" => "",
 
-// include/itemfunc.php, row 1369
+// include/itemfunc.php, row 1383
 "Field_id, where you want to store the copy of the password. Sometimes useful if you want to allow people to get his/her old password. It is strongly recommended to not store it in plaintext and encrypt it. See second parameter." => "",
 
-// include/itemfunc.php, row 1370, 1409
+// include/itemfunc.php, row 1384, 1423
 "Encrypt phrase" => "",
 
-// include/itemfunc.php, row 1370
+// include/itemfunc.php, row 1384
 "If you specify the \"Copy of password\" field, it is recommended to encrypt the password in the database. Fill there any string. If you then need the password, you can decrypt it from the field by using the same phrase - {decrypt:{password.......1}:Some Phrase}" => "",
 
-// include/itemfunc.php, row 1401
+// include/itemfunc.php, row 1415
 "2FA Secret" => "",
 
-// include/itemfunc.php, row 1402
+// include/itemfunc.php, row 1416
 "Generates and stores secret for Two-factor authentication, possibly encrypted by password" => "",
 
-// include/itemfunc.php, row 1409
+// include/itemfunc.php, row 1423
 "Password to be applied for encrypting this field value. Could contain AA expressions or aliases (for user item in Reader Management slice)" => "",
 
 // include/itemview.php, row 117
@@ -4884,65 +4859,143 @@ return [
 // include/locauth.php, row 87
 "If you are sure you have typed the correct password, please e-mail <a href=mailto:%1>%1</a>" => "",
 
-// include/logs.php, row 306
+// include/logs.php, row 336
 "Created time" => "",
 
-// include/logs.php, row 307
+// include/logs.php, row 337
 "Readers to be emailed" => "",
 
-// include/logs.php, row 317
+// include/logs.php, row 347
 "Page" => "",
 
-// include/logs.php, row 327, 351, 364
+// include/logs.php, row 357, 397, 410
 "Time [s]" => "",
 
-// include/logs.php, row 328, 353
+// include/logs.php, row 358, 399
 "Memory usage [MB]" => "",
 
-// include/logs.php, row 329
+// include/logs.php, row 359
 "Memory peak [MB]" => "",
 
-// include/logs.php, row 330
+// include/logs.php, row 360
 "Return code" => "",
 
-// include/logs.php, row 349
-"Cached" => "",
-
-// include/logs.php, row 350
-"Not Modified (304)" => "",
-
-// include/logs.php, row 352
-"Time + Cached + 304" => "",
-
-// include/logs.php, row 354, 365, 397
-"Url" => "",
+// include/logs.php, row 374
+"Tasks done" => "",
 
 // include/logs.php, row 375
+"Tasks started" => "",
+
+// include/logs.php, row 376
+"Duration [s]" => "",
+
+// include/logs.php, row 377
+"Allowed [s]" => "",
+
+// include/logs.php, row 395
+"Cached" => "",
+
+// include/logs.php, row 396
+"Not Modified (304)" => "",
+
+// include/logs.php, row 398
+"Time + Cached + 304" => "",
+
+// include/logs.php, row 400, 411, 443, 475
+"Url" => "",
+
+// include/logs.php, row 421
 // include/menu_util.php, row 45
 "AA" => "",
 
-// include/logs.php, row 376
+// include/logs.php, row 422
 "SVN AA (util.php)" => "",
 
-// include/logs.php, row 377
+// include/logs.php, row 423
 "PHP" => "",
 
-// include/logs.php, row 378
+// include/logs.php, row 424
 "DB" => "",
 
-// include/logs.php, row 379
+// include/logs.php, row 425
 "Memory" => "",
 
-// include/logs.php, row 380
+// include/logs.php, row 426
 "CPU" => "",
 
-// include/logs.php, row 394
+// include/logs.php, row 440
 "Identifier" => "",
 
-// include/logs.php, row 395
+// include/logs.php, row 441, 570, 583
 // modules/jump/modedit.php, row 180
 // src/Manager.php, row 584
 "Module ID" => "",
+
+// include/logs.php, row 452
+"Template id" => "",
+
+// include/logs.php, row 454
+"Emails sent" => "",
+
+// include/logs.php, row 463
+"Items selected" => "",
+
+// include/logs.php, row 464
+"Items updated" => "",
+
+// include/logs.php, row 465
+"Items planned" => "",
+
+// include/logs.php, row 474
+"Message" => "",
+
+// include/logs.php, row 476
+"Referer" => "",
+
+// include/logs.php, row 485
+"New name" => "",
+
+// include/logs.php, row 486
+"Old name" => "",
+
+// include/logs.php, row 495, 518
+"Phase" => "",
+
+// include/logs.php, row 496
+"Collection" => "",
+
+// include/logs.php, row 498, 509, 519
+"Detail" => "",
+
+// include/logs.php, row 508
+"Status" => "",
+
+// include/logs.php, row 529
+"Processed" => "",
+
+// include/logs.php, row 530
+"Stored" => "",
+
+// include/logs.php, row 531
+"Errors" => "",
+
+// include/logs.php, row 542
+"Outcome" => "",
+
+// include/logs.php, row 555
+"Mode" => "",
+
+// include/logs.php, row 556
+"Flags" => "",
+
+// include/logs.php, row 557
+"Context" => "",
+
+// include/logs.php, row 571
+"Feed counterpart" => "",
+
+// include/logs.php, row 584
+"Field ID" => "",
 
 // include/mail.php, row 563
 // include/tv_email.php, row 77, 145
@@ -4972,156 +5025,156 @@ return [
 // include/menu.php, row 65
 "View site" => "",
 
-// include/menu.php, row 84, 85, 137
+// include/menu.php, row 90, 91, 142
 "Item Manager" => "",
 
-// include/menu.php, row 93
+// include/menu.php, row 99
 "Slice Admin" => "",
 
-// include/menu.php, row 94
+// include/menu.php, row 100
 "Slice Administration" => "",
 
-// include/menu.php, row 125
+// include/menu.php, row 131
 // src/Module/Poll/Menu.php, row 82
 "Main settings" => "",
 
-// include/menu.php, row 128
+// include/menu.php, row 134
 "Slice Fields" => "",
 
-// include/menu.php, row 129
+// include/menu.php, row 135
 "Email Notification" => "",
 
-// include/menu.php, row 132
+// include/menu.php, row 137
 // include/menu_util.php, row 69
 // include/um_util.php, row 100, 103
 "Permissions" => "",
 
-// include/menu.php, row 133
+// include/menu.php, row 138
 "Assign" => "",
 
-// include/menu.php, row 136
+// include/menu.php, row 141
 "Design" => "",
 
-// include/menu.php, row 139
+// include/menu.php, row 144
 "Fulltext" => "",
 
-// include/menu.php, row 140
+// include/menu.php, row 145
 "Index" => "",
 
-// include/menu.php, row 142
+// include/menu.php, row 147
 "Sets of Items" => "",
 
-// include/menu.php, row 144
+// include/menu.php, row 149
 "Content Pooling" => "",
 
-// include/menu.php, row 145
+// include/menu.php, row 150
 "Nodes" => "",
 
-// include/menu.php, row 146
+// include/menu.php, row 151
 "Inner Node Feeding" => "",
 
-// include/menu.php, row 148
+// include/menu.php, row 153
 "Inter Node Export" => "",
 
-// include/menu.php, row 149
+// include/menu.php, row 154
 "RSS Feeds" => "",
 
-// include/menu.php, row 150
+// include/menu.php, row 155
 "Filters" => "",
 
-// include/menu.php, row 151
+// include/menu.php, row 156
 "Mapping" => "",
 
-// include/menu.php, row 152, 214
+// include/menu.php, row 157, 219
 "Import CSV" => "",
 
-// include/menu.php, row 153
+// include/menu.php, row 158
 // src/Manageraction/Item_Export.php, row 20
 "Export to file" => "",
 
-// include/menu.php, row 155, 211
-// include/menu_util.php, row 73, 124
+// include/menu.php, row 160, 216
+// include/menu_util.php, row 73, 123
 // src/Module/Poll/Menu.php, row 67
 "Misc" => "",
 
-// include/menu.php, row 158
+// include/menu.php, row 163
 "Change field IDs" => "",
 
-// include/menu.php, row 161
+// include/menu.php, row 166
 "Anonymous Form Wizard" => "",
 
-// include/menu.php, row 162
+// include/menu.php, row 167
 // include/tv_email.php, row 134
 "Email templates" => "",
 
-// include/menu.php, row 164
+// include/menu.php, row 169
 // include/menu_util.php, row 75
 "Planned Tasks" => "",
 
-// include/menu.php, row 172
+// include/menu.php, row 177
 "Mailman: create list" => "",
 
-// include/menu.php, row 180
-// include/menu_util.php, row 119
+// include/menu.php, row 185
+// include/menu_util.php, row 118
 // src/Module/Poll/Menu.php, row 60
 "Folders" => "",
 
-// include/menu.php, row 183
+// include/menu.php, row 188
 // src/Module/Poll/Menu.php, row 62
 "... pending" => "",
 
-// include/menu.php, row 184
+// include/menu.php, row 189
 // src/Module/Poll/Menu.php, row 63
 "... expired" => "",
 
-// include/menu.php, row 186
-// include/menu_util.php, row 122
+// include/menu.php, row 191
+// include/menu_util.php, row 121
 // src/Module/Poll/Menu.php, row 65
 "Trash bin" => "",
 
-// include/menu.php, row 202
+// include/menu.php, row 207
 "Bookmarks" => "",
 
-// include/menu.php, row 212
+// include/menu.php, row 217
 "Setting" => "",
 
-// include/menu.php, row 213
-// include/menu_util.php, row 127
+// include/menu.php, row 218
+// include/menu_util.php, row 126
 // src/Module/Poll/Menu.php, row 68
 "Empty trash" => "",
 
-// include/menu.php, row 213
-// include/menu_util.php, row 127
+// include/menu.php, row 218
+// include/menu_util.php, row 126
 // src/Module/Poll/Menu.php, row 68
 "Are you sure you want to empty trash?" => "",
 
-// include/menu.php, row 215
+// include/menu.php, row 220
 "Set Debug OFF" => "",
 
-// include/menu.php, row 215
+// include/menu.php, row 220
 "Set Debug ON" => "",
 
-// include/menu.php, row 225
-// include/menu_util.php, row 420, 595
+// include/menu.php, row 230
+// include/menu_util.php, row 419, 726
 // include/slice.class.php, row 1194
 "Alerts" => "",
 
-// include/menu.php, row 225
+// include/menu.php, row 230
 "List of Alerts modules using this slice as Reader Management." => "",
 
-// include/menu.php, row 227
+// include/menu.php, row 232
 "Bulk Emails" => "",
 
-// include/menu.php, row 227
+// include/menu.php, row 232
 "Send bulk email to selected users or to users in Stored searches" => "",
 
-// include/menu.php, row 231
+// include/menu.php, row 236
 "Send emails" => "",
 
-// include/menu.php, row 240
+// include/menu.php, row 245
 "Alerts Sent" => "",
 
-// include/menu.php, row 240
+// include/menu.php, row 245
 "List of Alerts modules sending items from this slice." => "",
 
 // include/menu_util.php, row 46
@@ -5157,76 +5210,97 @@ return [
 // include/menu_util.php, row 95
 "Wizard" => "",
 
-// include/menu_util.php, row 97
+// include/menu_util.php, row 96
 "Welcomes" => "",
 
-// include/menu_util.php, row 98
+// include/menu_util.php, row 97
 "Templates" => "",
 
-// include/menu_util.php, row 100
+// include/menu_util.php, row 99
 "Documentation" => "",
 
-// include/menu_util.php, row 101
+// include/menu_util.php, row 100
 "Style Guide" => "",
 
-// include/menu_util.php, row 107
+// include/menu_util.php, row 106
 "Central" => "",
 
-// include/menu_util.php, row 108
+// include/menu_util.php, row 107
 "AA Central" => "",
 
-// include/menu_util.php, row 125
+// include/menu_util.php, row 124
 "Synchronize..." => "",
 
-// include/menu_util.php, row 126
+// include/menu_util.php, row 125
 "Copy Slice..." => "",
 
-// include/menu_util.php, row 128
+// include/menu_util.php, row 127
 "Import conf from CSV..." => "",
 
-// include/menu_util.php, row 398
+// include/menu_util.php, row 397
 "Part of %s" => "",
 
-// include/menu_util.php, row 415
+// include/menu_util.php, row 414
 "Other slices" => "",
 
-// include/menu_util.php, row 419
+// include/menu_util.php, row 418
 "Reader Management Slice" => "",
 
-// include/menu_util.php, row 421
+// include/menu_util.php, row 420
 "Jump inside control panel" => "",
 
-// include/menu_util.php, row 422
+// include/menu_util.php, row 421
 // include/slice.class.php, row 1226
 "Links" => "",
 
-// include/menu_util.php, row 423
+// include/menu_util.php, row 422
 "MySQL Auth (old version)" => "",
 
-// include/menu_util.php, row 424
+// include/menu_util.php, row 423
 // src/Module/Poll/Menu.php, row 83
 "Polls" => "",
 
-// include/menu_util.php, row 445
+// include/menu_util.php, row 444
 "New slice" => "",
 
-// include/menu_util.php, row 449
+// include/menu_util.php, row 448
 "Switch module" => "",
 
-// include/menu_util.php, row 599
+// include/menu_util.php, row 578, 589
+"Apply" => "",
+
+// include/menu_util.php, row 582
+"-- Default for module --" => "",
+
+// include/menu_util.php, row 590
+"Switches the admin interface language; the page reloads." => "",
+
+// include/menu_util.php, row 598
+"What's working, what isn't — tell the AA team." => "",
+
+// include/menu_util.php, row 601
+"Settings" => "",
+
+// include/menu_util.php, row 604
+"Theme" => "",
+
+// include/menu_util.php, row 606
+"Feedback" => "",
+
+// include/menu_util.php, row 730
 // include/slice.class.php, row 554
 "Reader management" => "",
 
-// include/menu_util.php, row 611
+// include/menu_util.php, row 742
 "logout" => "",
 
-// include/menu_util.php, row 619
+// include/menu_util.php, row 750
 "Search.." => "",
 
-// include/menu_util.php, row 686
+// include/menu_util.php, row 829
 "Copyright (C) 2001 the <a href=\"https://www.apc.org\">Association for Progressive Communications (APC)</a>" => "",
 
-// include/menu_util.php, row 696
+// include/menu_util.php, row 839
 "Collapse / expand menu" => "",
 
 // include/metabase.class.php, row 1572
@@ -5282,7 +5356,7 @@ return [
 // include/profile.class.php, row 343, 353, 362, 371, 380, 389, 397
 "Rule added" => "",
 
-// include/profile.php, row 107
+// include/profile.php, row 109
 "--disabled-- (added by \"Show field\" rule)" => "",
 
 // include/request.class.php, row 213
@@ -5348,43 +5422,43 @@ return [
 // include/searchbar.class.php, row 595
 "Order" => "",
 
-// include/searchbar.class.php, row 662
+// include/searchbar.class.php, row 664
 "Advanced search" => "",
 
-// include/searchbar.class.php, row 720
+// include/searchbar.class.php, row 729
 "Refine" => "",
 
-// include/searchbar.class.php, row 723
+// include/searchbar.class.php, row 732
 "Share with all slice users" => "",
 
-// include/searchbar.class.php, row 724
+// include/searchbar.class.php, row 733
 "Save filter" => "",
 
-// include/searchbar.class.php, row 725
+// include/searchbar.class.php, row 734
 "Rename filter" => "",
 
-// include/searchbar.class.php, row 726
+// include/searchbar.class.php, row 735
 "Are you sure you want to delete selected filter?" => "",
 
-// include/searchbar.class.php, row 1008
+// include/searchbar.class.php, row 1017
 "Select one..." => "",
 
-// include/searchbar.class.php, row 1023
+// include/searchbar.class.php, row 1032
 "My filters" => "",
 
-// include/searchbar.class.php, row 1026
+// include/searchbar.class.php, row 1035
 "Global filters" => "",
 
-// include/searchbar.class.php, row 1064
+// include/searchbar.class.php, row 1073
 "Shared filter (click to apply)" => "",
 
-// include/searchbar.class.php, row 1064
+// include/searchbar.class.php, row 1073
 "Personal filter (click to apply)" => "",
 
-// include/searchbar.class.php, row 1074
+// include/searchbar.class.php, row 1083
 "Rename" => "",
 
-// include/searchbar.class.php, row 1085
+// include/searchbar.class.php, row 1094
 "Manage filters" => "",
 
 // include/searchlib.php, row 54
@@ -5694,6 +5768,9 @@ return [
 // include/stringexpand.php, row 7716
 "version" => "",
 
+// include/stringexpand.php, row 7900
+"show" => "",
+
 // include/stringexpand.php, row 7901
 "hide" => "",
 
@@ -5827,21 +5904,6 @@ return [
 // include/tabledit_util.php, row 670
 "Wrong value: a number between %1 and %2 is expected." => "",
 
-// include/tableviews.php, row 59, 60
-"Polls Design" => "",
-
-// include/tableviews.php, row 66, 102
-"Comment" => "",
-
-// include/tableviews.php, row 88
-"Module Id" => "",
-
-// include/tableviews.php, row 104
-"design description (for administrators only)" => "",
-
-// include/tableviews.php, row 111
-"Answer HTML" => "",
-
 // include/transformation.class.php, row 149
 "Fill by value" => "",
 
@@ -5953,30 +6015,6 @@ return [
 // include/tv_email.php, row 168
 "Sender" => "",
 
-// include/tv_misc.php, row 131
-"COUNT_HIT events will be used for counting item hits. After a while it will be automatically deleted." => "",
-
-// include/tv_misc.php, row 139, 140
-"Log view" => "",
-
-// include/tv_misc.php, row 162
-"See searchlog=1 parameter for slice.php in FAQ: " => "",
-
-// include/tv_misc.php, row 170, 171
-"SearchLog view" => "",
-
-// include/tv_misc.php, row 175
-"items found" => "",
-
-// include/tv_misc.php, row 176
-"search time" => "",
-
-// include/tv_misc.php, row 177
-"addition" => "",
-
-// include/tv_misc.php, row 198, 199
-"Configure Fields" => "",
-
 // include/um_gedit.php, row 43
 "It is impossible to add group to permission system" => "",
 
@@ -5995,10 +6033,10 @@ return [
 // include/um_util.php, row 358
 "Can't change user" => "",
 
-// include/util.php, row 1300
+// include/util.php, row 1304
 "Toolkit news message" => "",
 
-// include/util.php, row 1314
+// include/util.php, row 1318
 "Relogin" => "",
 
 // include/validate.php, row 52
@@ -6344,10 +6382,10 @@ return [
 // src/AA_Plannedtask.php, row 224
 "next run" => "",
 
-// src/IO/Grabber/AARSS.php, row 116
+// src/IO/Grabber/AARSS.php, row 117
 "AA RSS" => "",
 
-// src/IO/Grabber/AARSS.php, row 124
+// src/IO/Grabber/AARSS.php, row 125
 "Grabs data from generic RSS or AA RSS (used for item exchange between different AA installations)" => "",
 
 // src/IO/Grabber/CSV.php, row 66
@@ -7826,32 +7864,47 @@ return [
 // src/Util/ChangesMonitor.php, row 93
 "history (%1)" => "",
 
+// src/Util/ChangesMonitor.php, row 336
+"No recorded changes for this item." => "",
+
 // src/Util/ChangesMonitor.php, row 360
 "1 field changed" => "",
 
 // src/Util/ChangesMonitor.php, row 360
 "%1 fields changed" => "",
 
-// src/Util/ChangesMonitor.php, row 370, 382
+// src/Util/ChangesMonitor.php, row 369, 456
 "Restore" => "",
 
-// src/Util/ChangesMonitor.php, row 377
+// src/Util/ChangesMonitor.php, row 383
+"(this change)" => "",
+
+// src/Util/ChangesMonitor.php, row 387, 573, 577
+"Current (live)" => "",
+
+// src/Util/ChangesMonitor.php, row 388
+"Compare to" => "",
+
+// src/Util/ChangesMonitor.php, row 397
 "change %1 | uid %2 | %3 ns | resource %4" => "",
 
-// src/Util/ChangesMonitor.php, row 382
-"vs current" => "",
+// src/Util/ChangesMonitor.php, row 449
+"View" => "",
 
-// src/Util/ChangesMonitor.php, row 391
+// src/Util/ChangesMonitor.php, row 450
+"Diff" => "",
+
+// src/Util/ChangesMonitor.php, row 481
 "seq %1" => "",
 
-// src/Util/ChangesMonitor.php, row 405
-"no current value" => "",
+// src/Util/ChangesMonitor.php, row 488
+"No change between these versions." => "",
 
-// src/Util/ChangesMonitor.php, row 407
-"same as current" => "",
+// src/Util/ChangesMonitor.php, row 511
+"(empty)" => "",
 
-// src/Util/ChangesMonitor.php, row 426
-"No recorded changes for this item." => "",
+// src/Util/ChangesMonitor.php, row 571
+"Original" => "",
 
 // src/Util/Imgfunc.php, row 80
 "Cannot copy %1 to %2" => "",
@@ -7864,6 +7917,9 @@ return [
 
 // src/Util/Searchfields.php, row 183
 "-- any numeric field --" => "",
+
+// src/Util/UiPrefs.php, row 55
+"Gold" => "",
 
 // src/Widget/ChbWidget.php, row 80
 "Check Box" => "",

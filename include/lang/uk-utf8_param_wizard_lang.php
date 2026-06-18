@@ -17,7 +17,7 @@ return [
 "field&nbsp;id" => "id&nbsp;поля", // ai 2026-06
 
 // admin/param_wizard.php, row 117
-"boolean:&nbsp;0=false,1=true" => "",
+"boolean:&nbsp;0=false,1=true" => "boolean:&nbsp;0=хибно,1=істинно", // ai 2026-06
 
 // admin/param_wizard.php, row 141
 "Wizard" => "Майстер", // ai 2026-06
@@ -259,7 +259,7 @@ return [
 "link_only......." => "",
 
 // include/constants_param_wizard.php, row 278
-"url_field" => "",
+"url_field" => "поле URL", // ai 2026-06
 
 // include/constants_param_wizard.php, row 279
 "field id if field, where external URL is stored (like hl_href.........)" => "id поля, у якому зберігається зовнішня URL (наприклад hl_href.........)", // ai 2026-06
@@ -610,7 +610,7 @@ return [
 "field id of the field in <b>blurbSliceId</b> where the blurb text is stored (what to print)" => "id поля в рубриці <b>blurbSliceId</b>, у якому збережено текст blurb (що виводити)", // ai 2026-06
 
 // include/constants_param_wizard.php, row 601
-"RSS tag" => "",
+"RSS tag" => "тег RSS", // ai 2026-06
 
 // include/constants_param_wizard.php, row 602
 "serves for internal purposes of the predefined RSS aliases (e.g. _#RSS_TITL). Adds the RSS 0.91 compliant tags." => "служить для внутрішніх потреб попередньо визначених RSS аліасів (напр. _#RSS_TITL). Додає теги, що відповідають RSS 0.91.", // ai 2026-06
@@ -625,7 +625,7 @@ return [
 "default value" => "стандартне значення", // ai 2026-06
 
 // include/constants_param_wizard.php, row 612
-"javascript: window.alert('No source url specified')" => "",
+"javascript: window.alert('No source url specified')" => "javascript: window.alert('Не вказано URL джерела')", // ai 2026-06
 
 // include/constants_param_wizard.php, row 617
 "print field" => "вивід поля", // ai 2026-06
@@ -634,7 +634,7 @@ return [
 "prints <i>the field</i> content (or <i>unalias string</i>) depending on the html flag (if html flag is not set, it converts the content to html. In difference to f_h function, it converts to html line-breaks, too (in its basic variant)" => "виводить вміст <i>поля</i> (або <i>unalias string</i>) залежно від прапорця html (якщо прапорець html не встановлено, перетворює вміст на html. На відміну від функції f_h перетворює на html і кінці рядків (у базовому варіанті)", // ai 2026-06
 
 // include/constants_param_wizard.php, row 621
-"unalias string" => "",
+"unalias string" => "рядок", // ai 2026-06
 
 // include/constants_param_wizard.php, row 622
 "if the <i>unalias string</i> is defined, then the function ignores <i>the field</i> and it rather prints the <i>unalias string</i>. You can of course use any aliases (or fields like {headline.........}) in this string" => "якщо <i>unalias string</i> задано, функція ігнорує <i>поле</i> і виводить натомість <i>unalias string</i>. У цьому рядку можна, звісно, використати будь-які аліаси (або поля на кшталт {headline.........})", // ai 2026-06

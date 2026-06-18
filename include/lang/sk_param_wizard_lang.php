@@ -391,7 +391,7 @@ return [
 "disc - for editing a discussion<br>itemcount - to output an item count<br>safe - for safe html<br>slice_info - select a field from the slice info<br>edit - URL to edit the item<br>add - URL to add a new item" => "disc - pre \xFApravu diskusie<br>itemcount - vyp\xED\x9Ae po\xE8et spr\xE1v<br>safe - pre bezpe\xE8n\xE9 html<br>slice_info - vyberie polo\x9Eku z inform\xE1ci\xED o module<br>edit - URL na \xFApravu spr\xE1vy<br>add - URL na pridanie novej spr\xE1vy", // ai 2026-06
 
 // include/constants_param_wizard.php, row 391
-"edit" => "",
+"edit" => "upravi\x9D", // ai 2026-06
 
 // include/constants_param_wizard.php, row 394
 "return url" => "n\xE1vratov\xE9 url", // ai 2026-06
@@ -505,13 +505,13 @@ return [
 "e-mail" => "",
 
 // include/constants_param_wizard.php, row 511
-"field/text" => "",
+"field/text" => "pole/text", // ai 2026-06
 
 // include/constants_param_wizard.php, row 512
 "if this parameter is a field id, the field's content is used, else it is used verbatim" => "ak je tento parameter id polo\x9Eky, pou\x9Eije sa obsah polo\x9Eky, inak sa pou\x9Eije tak, ako je zadan\xFD", // ai 2026-06
 
 // include/constants_param_wizard.php, row 517
-"else_field/text" => "",
+"else_field/text" => "inak_pole/text", // ai 2026-06
 
 // include/constants_param_wizard.php, row 518
 "if <i>the field</i> is empty, only this text (or field content) is printed" => "ak je <i>polo\x9Eka</i> pr\xE1zdna, vyp\xED\x9Ae sa len tento text (alebo obsah polo\x9Eky)", // ai 2026-06

@@ -95,7 +95,7 @@ return [
 "Float - including scientific notation 1.2E+9" => "Float - včetně vědeckého zápisu 1.2E+9",
 
 // include/constants_param_wizard.php, row 133
-"Decimal" => "",
+"Decimal" => "Desetinné číslo", // ai 2026-06
 
 // include/constants_param_wizard.php, row 136
 "Id = 1-32 hexadecimal digits [0-9a-f]" => "Id = 1-32 šestnáctkových číslic [0-9a-f]",
@@ -156,7 +156,7 @@ return [
 "error message" => "chybová zpráva",
 
 // include/constants_param_wizard.php, row 184
-"Wrong value" => "",
+"Wrong value" => "Chybná hodnota", // ai 2026-06
 
 // include/constants_param_wizard.php, row 189
 "Unique e-mail" => "Jedinečný e-mail",
@@ -223,7 +223,7 @@ return [
 "prints abstract (if exists) or the beginning of the <b>fulltext</b>" => "vypíše abstrakt (pokud existuje), nebo začátek políčka <b>fulltext</b>",
 
 // include/constants_param_wizard.php, row 248
-"length" => "",
+"length" => "délka", // ai 2026-06
 
 // include/constants_param_wizard.php, row 249
 "max number of characters grabbed from the <b>fulltext</b> field" => "maximální počet znaků převzatých z políčka <b>fulltext</b>",
@@ -259,7 +259,7 @@ return [
 "link_only......." => "",
 
 // include/constants_param_wizard.php, row 278
-"url_field" => "",
+"url_field" => "položka s URL", // ai 2026-06
 
 // include/constants_param_wizard.php, row 279
 "field id if field, where external URL is stored (like hl_href.........)" => "id políčka, ve kterém je uložena externí URL (např. hl_href.........)",
@@ -268,7 +268,7 @@ return [
 "hl_href........." => "",
 
 // include/constants_param_wizard.php, row 284, 412
-"redirect" => "",
+"redirect" => "přesměrování", // ai 2026-06
 
 // include/constants_param_wizard.php, row 285, 413
 "The URL of another page which shows the content of the item. (That page should contain SSI include ../slice.php.). If unfilled, the same page as for item index is used for fulltext (which is obvious behavior)." => "URL jiné stránky, která zobrazuje obsah článku. (Stránka by měla obsahovat SSI include ../slice.php.). Pokud není vyplněno, použije se pro celý text stejná stránka jako pro přehled článků (což je obvyklé chování).",
@@ -289,7 +289,7 @@ return [
 "when the specified field hasn't any content, no link is printed, but only the <b>text</b>" => "pokud zadané políčko nemá žádný obsah, odkaz se nevypíše, vypíše se jen <b>text</b>",
 
 // include/constants_param_wizard.php, row 302, 529
-"tag addition" => "",
+"tag addition" => "doplnění tagu", // ai 2026-06
 
 // include/constants_param_wizard.php, row 303, 530
 "additional text to the \"\\<a\\>\" tag" => "další text do tagu \"\\<a\\>\"",
@@ -304,7 +304,7 @@ return [
 "If 1, the session id (AA_Session=...) is not added to url" => "Pokud je 1, session id (AA_Session=...) se do url nepřidává",
 
 // include/constants_param_wizard.php, row 316, 320
-"condition" => "",
+"condition" => "podmínka", // ai 2026-06
 
 // include/constants_param_wizard.php, row 317
 "This is a very powerful function. It may be used as a better replace of some previous functions. If <b>cond_field</b> = <b>condition</b>, prints <b>begin</b> <i>field</i> <b>end</b>, else prints <b>else</b>. If <b>cond_field</b> is not specified, <i>the field</i> is used. Condition may be reversed (negated) by the \"!\" character at the beginning of it." => "Toto je velmi mocná funkce. Lze ji použít jako lepší náhradu některých předchozích funkcí. Pokud <b>cond_field</b> = <b>condition</b>, vypíše <b>begin</b> <i>políčko</i> <b>end</b>, jinak vypíše <b>else</b>. Pokud <b>cond_field</b> není zadáno, použije se <i>políčko</i>. Podmínku lze obrátit (negovat) znakem \"!\" na jejím začátku.",
@@ -313,7 +313,7 @@ return [
 "you may use \"!\" to reverse (negate) the condition" => "znakem \"!\" můžete podmínku obrátit (negovat)",
 
 // include/constants_param_wizard.php, row 326, 505
-"begin" => "",
+"begin" => "začátek", // ai 2026-06
 
 // include/constants_param_wizard.php, row 327
 "text to print before <i>field</i>, if condition is true" => "text vypsaný před <i>políčkem</i>, pokud je podmínka splněna",
@@ -322,13 +322,13 @@ return [
 "Yes" => "Ano",
 
 // include/constants_param_wizard.php, row 332
-"end" => "",
+"end" => "konec", // ai 2026-06
 
 // include/constants_param_wizard.php, row 333
 "text to print after <i>field</i>, if condition is true" => "text vypsaný za <i>políčkem</i>, pokud je podmínka splněna",
 
 // include/constants_param_wizard.php, row 338
-"else" => "",
+"else" => "jinak", // ai 2026-06
 
 // include/constants_param_wizard.php, row 339
 "text to print when condition is not satisfied" => "text vypsaný, pokud podmínka není splněna",
@@ -337,13 +337,13 @@ return [
 "No" => "Ne",
 
 // include/constants_param_wizard.php, row 344
-"cond_field" => "",
+"cond_field" => "položka_podmínky", // ai 2026-06
 
 // include/constants_param_wizard.php, row 345
 "field to compare with the <b>condition</b> - if not filled, <i>field</i> is used" => "políčko porovnávané s <b>condition</b> - pokud není vyplněno, použije se <i>políčko</i>",
 
 // include/constants_param_wizard.php, row 350
-"skip_the_field" => "",
+"skip_the_field" => "vynechat_položku", // ai 2026-06
 
 // include/constants_param_wizard.php, row 351
 "if set to 1, skip <i>the field</i> (print only <b>begin end</b> or <b>else</b>)" => "pokud je nastaveno na 1, přeskočí <i>políčko</i> (vypíše pouze <b>begin end</b> nebo <b>else</b>)",
@@ -352,7 +352,7 @@ return [
 "This example is usable e.g. for Highlight field - it shows Yes or No depending on the field content" => "Tento příklad lze použít např. pro políčko Highlight - vypíše Yes nebo No podle obsahu políčka",
 
 // include/constants_param_wizard.php, row 359
-"1:Yes::No::1" => "",
+"1:Yes::No::1" => "1:Ano::Ne::1", // ai 2026-06
 
 // include/constants_param_wizard.php, row 362
 "When e-mail field is filled, prints something like \"Email: email@apc.org\", when it is empty, prints nothing" => "Pokud je políčko s e-mailem vyplněno, vypíše něco jako \"Email: email@apc.org\", pokud je prázdné, nevypíše nic",
@@ -379,7 +379,7 @@ return [
 "PHP-like format - see <a href=\"https://php.net/manual/en/function.date.php\" target=_blank>PHP manual</a>" => "formát jako v PHP - viz <a href=\"https://php.net/manual/en/function.date.php\" target=_blank>manuál PHP</a>",
 
 // include/constants_param_wizard.php, row 379
-"m-d-Y" => "",
+"m-d-Y" => "d-m-Y", // ai 2026-06
 
 // include/constants_param_wizard.php, row 384
 "edit item" => "úprava článku",
@@ -388,7 +388,7 @@ return [
 "_#EDITITEM used on admin page index.php for itemedit url" => "_#EDITITEM se používá na administrační stránce index.php pro url itemedit",
 
 // include/constants_param_wizard.php, row 388
-"type" => "",
+"type" => "typ", // ai 2026-06
 
 // include/constants_param_wizard.php, row 389
 "disc - for editing a discussion<br>itemcount - to output an item count<br>safe - for safe html<br>slice_info - select a field from the slice info<br>edit - URL to edit the item<br>add - URL to add a new item" => "disc - pro úpravu diskuse<br>itemcount - pro výpis počtu článků<br>safe - pro bezpečné html<br>slice_info - vybere políčko z informací o webíku<br>edit - URL pro úpravu článku<br>add - URL pro přidání nového článku",
@@ -475,7 +475,7 @@ return [
 "upper - convert to UPPERCASE, lower - convert to lowercase, first - convert to First Upper; default is don't change" => "upper - převede na VELKÁ PÍSMENA, lower - převede na malá písmena, first - převede na První Velké; výchozí je beze změny",
 
 // include/constants_param_wizard.php, row 480
-"add string" => "",
+"add string" => "přidat řetězec", // ai 2026-06
 
 // include/constants_param_wizard.php, row 481
 "if string is shortened, <i>add string</i> is appended to the string (probably something like [...])" => "pokud je řetězec zkrácen, připojí se k němu <i>add string</i> (pravděpodobně něco jako [...])",
@@ -490,7 +490,7 @@ return [
 "prints <i>the field</i> as a link if the <b>link URL</b> is not NULL, otherwise prints just <i>the field</i>" => "vypíše <i>políčko</i> jako odkaz, pokud <b>link URL</b> není NULL, jinak vypíše jen <i>políčko</i>",
 
 // include/constants_param_wizard.php, row 493
-"link URL" => "",
+"link URL" => "URL odkazu", // ai 2026-06
 
 // include/constants_param_wizard.php, row 496
 "source_href....." => "",
@@ -508,19 +508,19 @@ return [
 "e-mail" => "",
 
 // include/constants_param_wizard.php, row 511
-"field/text" => "",
+"field/text" => "položka/text", // ai 2026-06
 
 // include/constants_param_wizard.php, row 512
 "if this parameter is a field id, the field's content is used, else it is used verbatim" => "pokud je tento parametr id políčka, použije se obsah políčka, jinak se použije tak, jak je",
 
 // include/constants_param_wizard.php, row 517
-"else_field/text" => "",
+"else_field/text" => "jinak_položka/text", // ai 2026-06
 
 // include/constants_param_wizard.php, row 518
 "if <i>the field</i> is empty, only this text (or field content) is printed" => "pokud je <i>políčko</i> prázdné, vypíše se pouze tento text (nebo obsah políčka)",
 
 // include/constants_param_wizard.php, row 523
-"linktype" => "",
+"linktype" => "typ odkazu", // ai 2026-06
 
 // include/constants_param_wizard.php, row 524
 "mailto / href (default is mailto) - it is possible to use f_m function for links, too - just type 'href' as this parameter" => "mailto / href (výchozí je mailto) - funkci f_m lze použít i pro odkazy - stačí jako tento parametr zadat 'href'",
@@ -547,7 +547,7 @@ return [
 "prints 'New' or 'Old' or any other text in <b>newer text</b> or <b>older text</b> depending on <b>time</b>. Time is specified in minutes from current time." => "vypíše 'New' nebo 'Old' nebo jakýkoli jiný text z <b>newer text</b> nebo <b>older text</b> podle <b>time</b>. Čas se zadává v minutách od aktuálního času.",
 
 // include/constants_param_wizard.php, row 551
-"time" => "",
+"time" => "čas", // ai 2026-06
 
 // include/constants_param_wizard.php, row 552
 "Time in minutes from current time." => "Čas v minutách od aktuálního času.",
@@ -556,16 +556,16 @@ return [
 "1440" => "",
 
 // include/constants_param_wizard.php, row 557
-"newer text" => "",
+"newer text" => "novější text", // ai 2026-06
 
 // include/constants_param_wizard.php, row 558
 "Text to be printed, if the date in <i>the field</i> is newer than <i>current_time</i> - <b>time</b>." => "Text, který se vypíše, pokud je datum v <i>políčku</i> novější než <i>current_time</i> - <b>time</b>.",
 
 // include/constants_param_wizard.php, row 560
-"NEW" => "",
+"NEW" => "NOVÉ", // ai 2026-06
 
 // include/constants_param_wizard.php, row 563
-"older text" => "",
+"older text" => "starší text", // ai 2026-06
 
 // include/constants_param_wizard.php, row 564
 "Text to be printed, if the date in <i>the field</i> is older than <i>current_time</i> - <b>time</b>" => "Text, který se vypíše, pokud je datum v <i>políčku</i> starší než <i>current_time</i> - <b>time</b>",
@@ -616,7 +616,7 @@ return [
 "serves for internal purposes of the predefined RSS aliases (e.g. _#RSS_TITL). Adds the RSS 0.91 compliant tags." => "slouží pro interní potřeby předdefinovaných RSS aliasů (např. _#RSS_TITL). Přidává tagy odpovídající RSS 0.91.",
 
 // include/constants_param_wizard.php, row 605, 609, 801
-"default" => "",
+"default" => "výchozí hodnota", // ai 2026-06
 
 // include/constants_param_wizard.php, row 606
 "prints <i>the field</i> or a default value if <i>the field</i> is empty. The same could be done by the f_c function with parameters :::<b>default</b>." => "vypíše <i>políčko</i>, nebo výchozí hodnotu, pokud je <i>políčko</i> prázdné. Totéž lze provést funkcí f_c s parametry :::<b>default</b>.",
@@ -625,7 +625,7 @@ return [
 "default value" => "výchozí hodnota",
 
 // include/constants_param_wizard.php, row 612
-"javascript: window.alert('No source url specified')" => "",
+"javascript: window.alert('No source url specified')" => "javascript: window.alert('Nebyla zadána zdrojová url')", // ai 2026-06
 
 // include/constants_param_wizard.php, row 617
 "print field" => "výpis políčka",
@@ -634,7 +634,7 @@ return [
 "prints <i>the field</i> content (or <i>unalias string</i>) depending on the html flag (if html flag is not set, it converts the content to html. In difference to f_h function, it converts to html line-breaks, too (in its basic variant)" => "vypíše obsah <i>políčka</i> (nebo <i>unalias string</i>) podle příznaku html (pokud příznak html není nastaven, převede obsah na html. Na rozdíl od funkce f_h převádí na html i konce řádků (v základní variantě)",
 
 // include/constants_param_wizard.php, row 621
-"unalias string" => "",
+"unalias string" => "zrušit alias řetězce", // ai 2026-06
 
 // include/constants_param_wizard.php, row 622
 "if the <i>unalias string</i> is defined, then the function ignores <i>the field</i> and it rather prints the <i>unalias string</i>. You can of course use any aliases (or fields like {headline.........}) in this string" => "pokud je <i>unalias string</i> definován, funkce ignoruje <i>políčko</i> a vypíše raději <i>unalias string</i>. V tomto řetězci samozřejmě můžete použít libovolné aliasy (nebo políčka jako {headline.........})",
@@ -713,19 +713,19 @@ return [
 "Allows to transform the field value to another value.<br>Usage: <b>content_1</b>:<b>return_value_1</b>:<b>content_2</b>:<b>return_value_2</b>:<b>default</b><br>If the content <i>the field</i> is equal to <b>content_1</b> the <b>return_value_1</b> is returned. If the content <i>the field</i> is equal to <b>content_2</b> the <b>return_value_2</b> is returned. If <i>the field is not equal to any <b>content_x</b>, <b>default</b> is returned</i>." => "Umožňuje transformovat hodnotu políčka na jinou hodnotu.<br>Použití: <b>content_1</b>:<b>return_value_1</b>:<b>content_2</b>:<b>return_value_2</b>:<b>default</b><br>Pokud je obsah <i>políčka</i> roven <b>content_1</b>, vrátí se <b>return_value_1</b>. Pokud je obsah <i>políčka</i> roven <b>content_2</b>, vrátí se <b>return_value_2</b>. Pokud <i>políčko není rovno žádnému <b>content_x</b>, vrátí se <b>default</b></i>.",
 
 // include/constants_param_wizard.php, row 681, 693, 705, 717, 729, 741, 753, 765, 777, 789
-"content" => "",
+"content" => "obsah", // ai 2026-06
 
 // include/constants_param_wizard.php, row 682, 694, 706, 718, 730, 742, 754, 766, 778, 790
 "string for comparison with <i>the field</i> for following return value" => "řetězec pro porovnání s <i>políčkem</i> pro následující návratovou hodnotu",
 
 // include/constants_param_wizard.php, row 687, 699, 711, 723, 735, 747, 759, 771, 783, 795
-"return value" => "",
+"return value" => "návratová hodnota", // ai 2026-06
 
 // include/constants_param_wizard.php, row 688, 700, 712, 724, 736, 748, 760, 772, 784, 796
 "string to return if previous content matches - You can use field_id too" => "řetězec, který se vrátí, pokud se předchozí content shoduje - můžete použít i field_id",
 
 // include/constants_param_wizard.php, row 690, 702, 714, 726, 738, 750, 762, 774, 786, 798, 804
-"Environment" => "",
+"Environment" => "Ekologie", // ai 2026-06
 
 // include/constants_param_wizard.php, row 802
 "if no content matches, use this string as return value" => "pokud se neshoduje žádný content, použije se tento řetězec jako návratová hodnota",

@@ -100,7 +100,7 @@ return [
 "State file" => "Файл за състоянието", // ai 2026-06
 
 // modules/site/modedit.php, row 133, 278
-"Router" => "",
+"Router" => "Рутер", // ai 2026-06
 
 // modules/site/modedit.php, row 134, 292
 "Uses modules" => "Използва модули", // ai 2026-06

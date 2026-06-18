@@ -631,7 +631,7 @@ return [
 "prints <i>the field</i> content (or <i>unalias string</i>) depending on the html flag (if html flag is not set, it converts the content to html. In difference to f_h function, it converts to html line-breaks, too (in its basic variant)" => "afiseaz\xE3 continutul <i>c\xE2mpului</i> (sau <i>unalias string</i>) \xEEn functie de indicatorul html (dac\xE3 indicatorul html nu este setat, converteste continutul \xEEn html. Spre deosebire de functia f_h, converteste \xEEn html si sf\xE2rsiturile de linie (\xEEn varianta sa de baz\xE3)", // ai 2026-06
 
 // include/constants_param_wizard.php, row 621
-"unalias string" => "",
+"unalias string" => "\xBAir unalias", // ai 2026-06
 
 // include/constants_param_wizard.php, row 622
 "if the <i>unalias string</i> is defined, then the function ignores <i>the field</i> and it rather prints the <i>unalias string</i>. You can of course use any aliases (or fields like {headline.........}) in this string" => "dac\xE3 <i>unalias string</i> este definit, functia ignor\xE3 <i>c\xE2mpul</i> si afiseaz\xE3 \xEEn schimb <i>unalias string</i>. Puteti folosi, desigur, orice aliasuri (sau c\xE2mpuri precum {headline.........}) \xEEn acest sir", // ai 2026-06

@@ -394,7 +394,7 @@ return [
 "disc - for editing a discussion<br>itemcount - to output an item count<br>safe - for safe html<br>slice_info - select a field from the slice info<br>edit - URL to edit the item<br>add - URL to add a new item" => "disc - pre úpravu diskusie<br>itemcount - vypíše počet správ<br>safe - pre bezpečné html<br>slice_info - vyberie položku z informácií o module<br>edit - URL na úpravu správy<br>add - URL na pridanie novej správy", // ai 2026-06
 
 // include/constants_param_wizard.php, row 391
-"edit" => "",
+"edit" => "upraviť", // ai 2026-06
 
 // include/constants_param_wizard.php, row 394
 "return url" => "návratové url", // ai 2026-06
@@ -508,13 +508,13 @@ return [
 "e-mail" => "",
 
 // include/constants_param_wizard.php, row 511
-"field/text" => "",
+"field/text" => "pole/text", // ai 2026-06
 
 // include/constants_param_wizard.php, row 512
 "if this parameter is a field id, the field's content is used, else it is used verbatim" => "ak je tento parameter id položky, použije sa obsah položky, inak sa použije tak, ako je zadaný", // ai 2026-06
 
 // include/constants_param_wizard.php, row 517
-"else_field/text" => "",
+"else_field/text" => "inak_pole/text", // ai 2026-06
 
 // include/constants_param_wizard.php, row 518
 "if <i>the field</i> is empty, only this text (or field content) is printed" => "ak je <i>položka</i> prázdna, vypíše sa len tento text (alebo obsah položky)", // ai 2026-06

@@ -17,7 +17,7 @@ return [
 "field&nbsp;id" => "id&nbsp;pola", // ai 2026-06
 
 // admin/param_wizard.php, row 117
-"boolean:&nbsp;0=false,1=true" => "",
+"boolean:&nbsp;0=false,1=true" => "wartość logiczna:&nbsp;0=fałsz,1=prawda", // ai 2026-06
 
 // admin/param_wizard.php, row 141
 "Wizard" => "Kreator", // ai 2026-06
@@ -626,7 +626,7 @@ return [
 "prints <i>the field</i> content (or <i>unalias string</i>) depending on the html flag (if html flag is not set, it converts the content to html. In difference to f_h function, it converts to html line-breaks, too (in its basic variant)" => "wypisuje zawartość <i>pola</i> (lub <i>unalias string</i>) w zależności od flagi html (jeśli flaga html nie jest ustawiona, konwertuje zawartość do html. W odróżnieniu od funkcji f_h konwertuje do html także końce wierszy (w wariancie podstawowym)", // ai 2026-06
 
 // include/constants_param_wizard.php, row 621
-"unalias string" => "",
+"unalias string" => "ciąg dosłowny", // ai 2026-06
 
 // include/constants_param_wizard.php, row 622
 "if the <i>unalias string</i> is defined, then the function ignores <i>the field</i> and it rather prints the <i>unalias string</i>. You can of course use any aliases (or fields like {headline.........}) in this string" => "jeśli <i>unalias string</i> jest zdefiniowany, funkcja ignoruje <i>pole</i> i wypisuje raczej <i>unalias string</i>. W tym ciągu można oczywiście użyć dowolnych aliasów (lub pól jak {headline.........})", // ai 2026-06

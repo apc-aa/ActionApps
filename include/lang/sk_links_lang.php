@@ -52,69 +52,69 @@ return [
 // include/searchbar.class.php, row 613
 "Filter" => "",
 
-// include/searchbar.class.php, row 662
+// include/searchbar.class.php, row 664
 "Advanced search" => "Roz\x9A\xEDren\xE9 vyh\xBEad\xE1vanie", // ai 2026-06
 
-// include/searchbar.class.php, row 719
+// include/searchbar.class.php, row 728
 "Save" => "Ulo\x9Ei\x9D", // ai 2026-06
 
-// include/searchbar.class.php, row 720
+// include/searchbar.class.php, row 729
 "Refine" => "Spresni\x9D", // ai 2026-06
 
-// include/searchbar.class.php, row 721
+// include/searchbar.class.php, row 730
 "Cancel" => "Zru\x9Ai\x9D",
 
-// include/searchbar.class.php, row 722
+// include/searchbar.class.php, row 731
 // modules/links/constants.php, row 59, 171
 "Name" => "Meno",
 
-// include/searchbar.class.php, row 723
+// include/searchbar.class.php, row 732
 "Share with all slice users" => "Zdie\xBEa\x9D so v\x9Aetk\xFDmi u\x9E\xEDvate\xBEmi modulu", // ai 2026-06
 
-// include/searchbar.class.php, row 724
+// include/searchbar.class.php, row 733
 "Save filter" => "Ulo\x9Ei\x9D filter", // ai 2026-06
 
-// include/searchbar.class.php, row 725
+// include/searchbar.class.php, row 734
 "Rename filter" => "Premenova\x9D filter", // ai 2026-06
 
-// include/searchbar.class.php, row 726
+// include/searchbar.class.php, row 735
 "Are you sure you want to delete selected filter?" => "Naozaj chcete vymaza\x9D vybran\xFD filter?", // ai 2026-06
 
-// include/searchbar.class.php, row 1008
+// include/searchbar.class.php, row 1017
 "Select one..." => "Vyberte...", // ai 2026-06
 
-// include/searchbar.class.php, row 1023
+// include/searchbar.class.php, row 1032
 "My filters" => "Moje filtre", // ai 2026-06
 
-// include/searchbar.class.php, row 1026
+// include/searchbar.class.php, row 1035
 "Global filters" => "Glob\xE1lne filtre", // ai 2026-06
 
-// include/searchbar.class.php, row 1064
+// include/searchbar.class.php, row 1073
 "Shared filter (click to apply)" => "Zdie\xBEan\xFD filter (kliknut\xEDm pou\x9Eijete)", // ai 2026-06
 
-// include/searchbar.class.php, row 1064
+// include/searchbar.class.php, row 1073
 "Personal filter (click to apply)" => "Osobn\xFD filter (kliknut\xEDm pou\x9Eijete)", // ai 2026-06
 
-// include/searchbar.class.php, row 1074
+// include/searchbar.class.php, row 1083
 "Rename" => "Premenova\x9D", // ai 2026-06
 
-// include/searchbar.class.php, row 1076
+// include/searchbar.class.php, row 1085
 "Delete" => "Vymaza\x9D",
 
-// include/searchbar.class.php, row 1085
+// include/searchbar.class.php, row 1094
 "Manage filters" => "Spr\xE1va filtrov", // ai 2026-06
 
 // include/util.php, row 950
 "Error: Missing Reading Password" => "Chyba: ch\xFDba heslo na \xE8\xEDtanie", // ai 2026-06
 
-// include/util.php, row 1300
+// include/util.php, row 1304
 "Toolkit news message" => "Nastavenia",
 
-// include/util.php, row 1314
+// include/util.php, row 1318
 // modules/links/check_url.php, row 52
 "Back" => "Sp\xE4t",
 
-// include/util.php, row 1314
+// include/util.php, row 1318
 "Relogin" => "Znovu sa prihl\xE1si\x9D", // ai 2026-06
 
 // modules/links/actions.php, row 47, 91, 112
@@ -148,7 +148,7 @@ return [
 // modules/links/catedit.php, row 104
 // modules/links/constants.php, row 58, 170
 // modules/links/linkedit.php, row 430
-"Id" => "",
+"Id" => "ID", // ai 2026-06
 
 // modules/links/catedit.php, row 104
 "Links in subtree" => "Po\xE8et odkazov v kateg\xF3rii - vr\xE1tane v\x9Aetk\xFDch podkateg\xF3ri\xED", // ai 2026-06
@@ -282,7 +282,7 @@ return [
 "Insert date" => "D\xE1tum vlo\x9Eenia", // ai 2026-06
 
 // modules/links/constants.php, row 67
-"Editor" => "",
+"Editor" => "Naposledy upravil", // ai 2026-06
 
 // modules/links/constants.php, row 68
 "Last edit date" => "D\xE1tum poslednej \xFApravy", // ai 2026-06
@@ -301,7 +301,7 @@ return [
 // modules/links/constants.php, row 72
 // modules/links/link.class.php, row 665
 // modules/links/linkedit.php, row 435
-"Url" => "",
+"Url" => "URL", // ai 2026-06
 
 // modules/links/constants.php, row 73
 "Last vote time" => "\xC8as posledn\xE9ho hlasovania", // ai 2026-06

@@ -24,9 +24,40 @@ return [
 "Good" => "Bueno",
 "Bad" => "Malo",
 "howoften" => "frecuencia",
+"feed" => "alimentar",
 // End of runtime-translated messages
 
 // Unused messages — no longer found in the sources; kept commented for reference.
+// "You don't have permissions to view item history." => "No tiene permisos para ver el historial del ítem.",
+// "validate" => "validar",
+// "RSS feeds testing page." => "Página de pruebas para alimentación RSS",
+// "No RSS Feeds set." => "No se ha configurado una alimentación RSS",
+// "Messages" => "Mensajes",
+// "Write" => "Escribir",
+// "update database" => "actualizar base de datos",
+// "Feed url" => "Url alimentación",
+// "Ok : file deleted " => "Ok : archivo borrado ",
+// "Error: Cannot delete file" => "Error: No se puede borrar el archivo",
+// "Error: Invalid directory" => "Error: Directorio inválido",
+// "goes live %1." => "se publica el %1.",
+// "on %1." => "el %1.",
+// "since %1, until %2." => "desde %1, hasta %2.",
+// "since %1." => "desde %1.",
+// "Polls Design" => "Diseño Encuesta",
+// "Module Id" => "Id del módulo",
+// "design description (for administrators only)" => "descripción del diseño (administradores solamente)",
+// "Answer HTML" => "Respuesta HTML",
+// "COUNT_HIT events will be used for counting item hits. After a while it will be automatically deleted." => "Los eventos COUNT_HIT se utilizarán para contar consultas a ítems. Después de un tiempo serán borrados automáticamente",
+// "Log view" => "Ver Log",
+// "See searchlog=1 parameter for slice.php in FAQ: " => "Ver el parámetro searchlog=1 para slice.php en el FAQ: ",
+// "SearchLog view" => "Ver Log de búsqueda",
+// "items found" => "ítems encontrados",
+// "search time" => "hora de búsqueda",
+// "addition" => "adición",
+// "Configure Fields" => "Configurar Campos",
+// "vs current" => "vs actual",
+// "no current value" => "sin valor actual",
+// "same as current" => "igual que el actual",
 // "Must begin with _#.<br>Alias must be exactly ten characters long including \"_#\".<br>Alias should be in upper case letters." => "Debe comenzar con _#.<br>El alias debe ser de exactamente diez caracteres de longitud incluyendo  \"_#\" y en mayúsculas.<br>",
 // "Which function should be used as default:<BR>Now - default is current date<BR>User ID - current user ID<BR>Text - default is text in Parameter field<br>Date - as default is used current date plus <Parameter> number of days" => "Seleccione la función que debe utilizarse por defecto:<li>Ahora - se usa la fecha actual<li>Id del usuario - Id usuario actual<li>Texto - se pone el texto especificado en el parámetro<li>Fecha - por defecto se utiliza la fecha actual más <parametro> número de días",
 // "If default-type is Text, this sets the default text.<BR>If the default-type is Date, this sets the default date to the current date plus the number of days you set here." => "<li>Si el tipo por defecto es texto, este especifica el texto por defecto<li>Si el tipo por defecto es fecha, se establece la fecha por defecto como la fecha actual, más el número de días que se especifique aquí.",
@@ -438,7 +469,7 @@ return [
 // admin/se_fields.php, row 382
 // admin/se_statistics.php, row 66
 // admin/se_views.php, row 144
-// include/formutil.php, row 1401, 1404, 1986
+// include/formutil.php, row 1413, 1416, 1998
 // src/Widget/FilWidget.php, row 153, 232
 // src/Widget/FldWidget.php, row 156
 "Show" => "Mostrar",
@@ -540,7 +571,7 @@ return [
 "Sites" => "Sitios",
 
 // admin/aa_statistics.php, row 127
-// admin/aafinder.php, row 500, 513
+// admin/aafinder.php, row 499, 512
 // admin/se_inputform.php, row 291
 // include/searchlib.php, row 970
 "Slices" => "Canales",
@@ -598,11 +629,11 @@ return [
 "Items found" => "Ítems encontrados",
 
 // admin/aa_statistics.php, row 313
-// admin/se_statistics.php, row 176
+// admin/se_statistics.php, row 179
 "No items found" => "No se encontraron ítems",
 
-// admin/aa_statistics.php, row 321
-// admin/se_statistics.php, row 173
+// admin/aa_statistics.php, row 325
+// admin/se_statistics.php, row 176
 "Server configuration changes" => "Cambios en la configuración del servidor",
 
 // admin/aa_tasks.php, row 34
@@ -627,78 +658,87 @@ return [
 // admin/aa_toexecute.php, row 42
 "Scheduled Tasks" => "Tareas programadas",
 
+// admin/aa_uiprefs.php, row 30
+"You must be logged in." => "Debe iniciar sesión.", // ai 2026-06
+
+// admin/aa_uiprefs.php, row 115
+"Thanks — your note reached the AA team." => "Gracias — su mensaje llegó al equipo de AA.", // ai 2026-06
+
+// admin/aa_uiprefs.php, row 117
+"Couldn't send right now. Please email us directly: %1" => "No se pudo enviar ahora mismo. Escríbanos directamente: %1", // ai 2026-06
+
 // admin/aa_wizardtemplate.php, row 41
 "You do not have permission to manage Wizard Templates" => "No tiene permisos para administrar plantillas de asistente",
 
 // admin/aa_wizardtemplate.php, row 75
-// include/tv_misc.php, row 70, 71
 "Wizard Templates" => "Plantillas Asistentes",
 
-// admin/aafinder.php, row 87
+// admin/aafinder.php, row 86
 "You don't have permissions to do search." => "No tiene permisos para realizar búsquedas.",
 
-// admin/aafinder.php, row 99
+// admin/aafinder.php, row 98
 "Show results with string" => "Mostrar resultados con la cadena",
 
-// admin/aafinder.php, row 101
+// admin/aafinder.php, row 100
 "Item" => "Ítem",
 
-// admin/aafinder.php, row 125
+// admin/aafinder.php, row 124
 // admin/feed_to.php, row 66
 // admin/se_fields.php, row 112
 // admin/slicedit.php, row 244
-// include/itemfunc.php, row 178
-// include/menu.php, row 126
+// include/itemfunc.php, row 185
+// include/logs.php, row 528
+// include/menu.php, row 132
 // include/slice.class.php, row 468
 // include/sliceadd.php, row 52, 77
 "Slice" => "Canal",
 
-// admin/aafinder.php, row 129
+// admin/aafinder.php, row 128
 // src/AA_Plannedtask.php, row 102
 "Module" => "Módulo",
 
-// admin/aafinder.php, row 134, 135, 136, 137
+// admin/aafinder.php, row 133, 134, 135, 136
 // include/um_util.php, row 102
 "Object" => "Objeto",
 
-// admin/aafinder.php, row 140
-// include/itemfunc.php, row 267
-// include/logs.php, row 204
+// admin/aafinder.php, row 139
+// include/itemfunc.php, row 274
+// include/logs.php, row 234
 // src/AA_Plannedtask.php, row 117
 "Log" => "Registro",
 
-// admin/aafinder.php, row 162
+// admin/aafinder.php, row 161
 // include/sliceadd.php, row 36
 // include/slicedit.php, row 150
 "You do not have permissions to add slice" => "Usted no tiene permisos para añadir un canal",
 
-// admin/aafinder.php, row 168
+// admin/aafinder.php, row 167
 // include/menu_util.php, row 79
 "AA finder" => "Buscador AA",
 
-// admin/aafinder.php, row 248
+// admin/aafinder.php, row 247
 "Jump" => "Salto",
 
-// admin/aafinder.php, row 467, 519
-// admin/itemhistory.php, row 39
-// include/itemfunc.php, row 81, 82, 247, 362
-// include/menu.php, row 156
+// admin/aafinder.php, row 466, 518
+// admin/itemhistory.php, row 43
+// include/itemfunc.php, row 83, 84, 254, 376
+// include/menu.php, row 161
 // include/menu_util.php, row 82
 "History" => "Historial",
 
-// admin/aafinder.php, row 479
+// admin/aafinder.php, row 478
 "Manage" => "Administrar",
 
-// admin/aafinder.php, row 482
+// admin/aafinder.php, row 481
 "Manage User:" => "Administrar usuario:",
 
-// admin/aafinder.php, row 484, 490, 506, 534, 547
+// admin/aafinder.php, row 483, 489, 505, 533, 546
 "Go!" => "Ir!",
 
-// admin/aafinder.php, row 488
+// admin/aafinder.php, row 487
 "Manage Group:" => "Administrar grupo:",
 
-// admin/aafinder.php, row 494, 524
+// admin/aafinder.php, row 493, 523
 // admin/um_gedit.php, row 208, 325
 // admin/um_uedit.php, row 249
 // include/se_users.php, row 131, 136
@@ -709,76 +749,76 @@ return [
 // src/Widget/GpsWidget.php, row 434
 "Search" => "Buscar",
 
-// admin/aafinder.php, row 497
+// admin/aafinder.php, row 496
 "Find in" => "Buscar en",
 
-// admin/aafinder.php, row 498
+// admin/aafinder.php, row 497
 "ID & SEO" => "ID y SEO",
 
-// admin/aafinder.php, row 499, 512
-// include/itemfunc.php, row 176
-// include/menu.php, row 138
+// admin/aafinder.php, row 498, 511
+// include/itemfunc.php, row 183
+// include/menu.php, row 143
 "Views" => "Vistas",
 
-// admin/aafinder.php, row 501, 514
+// admin/aafinder.php, row 500, 513
 // admin/anonym_wizard.php, row 216
 // include/exporter.class.php, row 522
-// include/itemfunc.php, row 344
-// include/menu.php, row 127
+// include/itemfunc.php, row 351
+// include/menu.php, row 133
 // include/searchlib.php, row 167
 "Fields" => "Campos",
 
-// admin/aafinder.php, row 502, 515
+// admin/aafinder.php, row 501, 514
 "Site spots" => "Spots del sitio",
 
-// admin/aafinder.php, row 503, 520
+// admin/aafinder.php, row 502, 519
 "Discussion comments" => "Comentarios de discusión",
 
-// admin/aafinder.php, row 511
+// admin/aafinder.php, row 510
 "Search and Replace in" => "Buscar y reemplazar en",
 
-// admin/aafinder.php, row 516
+// admin/aafinder.php, row 515
 "Objects" => "Objetos",
 
-// admin/aafinder.php, row 517
+// admin/aafinder.php, row 516
 "Items from slices with 'Slice Type' like Code... " => "Ítems de canales con 'Tipo de canal' como Código...",
 
-// admin/aafinder.php, row 517
+// admin/aafinder.php, row 516
 "Code Items" => "Ítems de código",
 
-// admin/aafinder.php, row 518
+// admin/aafinder.php, row 517
 "All Items" => "Todos los ítems",
 
-// admin/aafinder.php, row 522
+// admin/aafinder.php, row 521
 "minimum 2 characters for replace function" => "mínimo 2 caracteres para la función de reemplazo",
 
-// admin/aafinder.php, row 523
+// admin/aafinder.php, row 522
 "minimum 6 characters for replace function (or use {#AAA} value which will be replaced by empty string)" => "mínimo 6 caracteres para la función de reemplazo (o use el valor {#AAA}, que será reemplazado por una cadena vacía)",
 
-// admin/aafinder.php, row 525
+// admin/aafinder.php, row 524
 "Replace!" => "¡Reemplazar!",
 
-// admin/aafinder.php, row 532
+// admin/aafinder.php, row 531
 "Get all information about the ITEM" => "Obtener toda la información sobre el ÍTEM",
 
-// admin/aafinder.php, row 539
+// admin/aafinder.php, row 538
 "Shortcut to edit ITEM" => "Atajo para editar el ÍTEM",
 
-// admin/aafinder.php, row 542
+// admin/aafinder.php, row 541
 // include/searchbar.class.php, row 543
 // include/searchlib.php, row 47, 48, 124, 133
 "contains" => "contiene",
 
-// admin/aafinder.php, row 543
+// admin/aafinder.php, row 542
 // include/searchbar.class.php, row 549
 // include/searchlib.php, row 124, 133
 "is" => "es",
 
-// admin/aafinder.php, row 544
+// admin/aafinder.php, row 543
 // admin/se_profile.php, row 98
 "Item number" => "Número de ítem",
 
-// admin/aafinder.php, row 545
+// admin/aafinder.php, row 544
 "seo............. =" => "",
 
 // admin/aarsstest.php, row 37
@@ -804,6 +844,7 @@ return [
 
 // admin/anonym_wizard.php, row 127
 // admin/write_mail.php, row 257
+// include/menu_util.php, row 599
 // include/stringexpand.php, row 9646, 9726
 "Send" => "Enviar",
 
@@ -854,12 +895,12 @@ return [
 // admin/se_fieldid.php, row 308
 // admin/se_fields.php, row 193, 378
 // admin/se_javascript.php, row 90
-// admin/se_profile.php, row 144
+// admin/se_profile.php, row 208
 // admin/search_replace.php, row 173
 // admin/sliceexp_text.php, row 364
 // include/form.class.php, row 183
 // include/searchlib.php, row 357
-// src/Util/ChangesMonitor.php, row 381
+// src/Util/ChangesMonitor.php, row 455
 "Field" => "Campo",
 
 // admin/anonym_wizard.php, row 221
@@ -869,7 +910,6 @@ return [
 // admin/se_javascript.php, row 90
 // admin/slicedit.php, row 277
 // include/constants.php, row 409
-// include/tableviews.php, row 64, 80
 "Id" => "",
 
 // admin/anonym_wizard.php, row 223
@@ -945,7 +985,7 @@ return [
 "Author" => "Autor",
 
 // admin/discedit.php, row 130
-// include/logs.php, row 396
+// include/logs.php, row 442
 "IP Address" => "Dirección IP",
 
 // admin/discedit.php, row 131
@@ -955,7 +995,6 @@ return [
 
 // admin/discedit.php, row 132
 // admin/related_sel.php, row 148
-// admin/rsstest.php, row 96
 // admin/se_views.php, row 132
 // src/Manager.php, row 201
 // src/Optimize/AbstractOptimize.php, row 127
@@ -971,7 +1010,7 @@ return [
 // admin/um_uedit.php, row 266
 // include/field.class.php, row 597
 // include/filedit.php, row 114
-// include/formutil.php, row 1743, 3332
+// include/formutil.php, row 1755, 3346
 // include/metabase.class.php, row 1552
 // include/mlx.php, row 367
 // include/statestore.php, row 1025
@@ -994,10 +1033,10 @@ return [
 // admin/um_uedit.php, row 268
 // central/include/actionapps.class.php, row 778
 // include/field.class.php, row 601
-// include/formutil.php, row 1754, 1891
+// include/formutil.php, row 1766, 1903
 // include/menu_util.php, row 61
 // include/profile.php, row 67
-// include/searchbar.class.php, row 1076
+// include/searchbar.class.php, row 1085
 // include/um_gsrch.php, row 53
 // src/Manageraction/Object_Delete.php, row 24
 // src/Manageraction/Table_Row_Delete.php, row 23
@@ -1005,9 +1044,9 @@ return [
 "Delete" => "Borrar",
 
 // admin/discedit.php, row 169
-// include/adminpage.class.php, row 330
+// include/adminpage.class.php, row 331
 // include/se_users.php, row 121
-// include/util.php, row 1314
+// include/util.php, row 1318
 "Back" => "Atrás",
 
 // admin/discedit.php, row 170
@@ -1064,7 +1103,7 @@ return [
 "Export Item to Selected Slice" => "Exportar ítem al canal seleccionado",
 
 // admin/feed_to.php, row 67
-// include/itemfunc.php, row 146
+// include/itemfunc.php, row 153
 "Holding bin" => "Por aprobar",
 
 // admin/feed_to.php, row 68
@@ -1072,8 +1111,8 @@ return [
 // admin/se_filters.php, row 191
 // admin/slicedit.php, row 139, 145
 // include/exporter.class.php, row 483
-// include/menu.php, row 182
-// include/menu_util.php, row 120
+// include/menu.php, row 187
+// include/menu_util.php, row 119
 // src/Module/Poll/Menu.php, row 61
 "Active" => "Aprobados",
 
@@ -1103,7 +1142,7 @@ return [
 
 // admin/fileman.php, row 114
 // include/filedit.php, row 66
-// include/menu.php, row 160
+// include/menu.php, row 165
 "File Manager" => "Administrador de Archivos",
 
 // admin/fileman.php, row 116
@@ -1159,17 +1198,15 @@ return [
 "Edit Item" => "Editar un ítem",
 
 // admin/itemedit.php, row 387, 388
-// include/menu.php, row 76
+// include/menu.php, row 82
 "Add Item" => "Añadir un ítem",
 
-// admin/itemhistory.php, row 24
-"You don't have permissions to view item history." => "No tiene permisos para ver el historial del ítem.",
-
-// admin/itemhistory.php, row 32
+// admin/itemhistory.php, row 28
 // admin/iteminfo.php, row 29
 // admin/itemstats.php, row 31
 "Item not found." => "Ítem no encontrado.",
 
+// admin/itemhistory.php, row 36
 // admin/iteminfo.php, row 36
 "You have no rights to this item." => "No tiene derechos sobre este ítem.",
 
@@ -1181,8 +1218,8 @@ return [
 "You don't have permissions to view item statistics." => "No tiene permisos para ver las estadísticas del ítem.",
 
 // admin/itemstats.php, row 38
-// include/itemfunc.php, row 86, 443
-// include/menu.php, row 157
+// include/itemfunc.php, row 88, 457
+// include/menu.php, row 162
 // include/menu_util.php, row 81
 // src/Util/Adminlink.php, row 119
 "Statistics" => "Estadísticas",
@@ -1238,48 +1275,11 @@ return [
 // admin/related_sel.php, row 176
 "Editor window - item manager, related selection window" => "Ventana de edición - Gestor de ítems, ventana de ítems relacionados",
 
-// admin/rsstest.php, row 50
-"feed" => "alimentar",
-
-// admin/rsstest.php, row 51
-"validate" => "validar",
-
-// admin/rsstest.php, row 52
-// include/stringexpand.php, row 7900
-"show" => "mostrar",
-
-// admin/rsstest.php, row 85, 86, 136
-"RSS Feed import test" => "Prueba de importación de RSS",
-
-// admin/rsstest.php, row 87
-"RSS feeds testing page." => "Página de pruebas para alimentación RSS",
-
-// admin/rsstest.php, row 89
-"No RSS Feeds set." => "No se ha configurado una alimentación RSS",
-
-// admin/rsstest.php, row 100
-"Messages" => "Mensajes",
-
-// admin/rsstest.php, row 106
-"Write" => "Escribir",
-
-// admin/rsstest.php, row 107
-"update database" => "actualizar base de datos",
-
-// admin/rsstest.php, row 113
-"Feed url" => "Url alimentación",
-
-// admin/rsstest.php, row 117
-// admin/se_inter_import.php, row 98
-"Node" => "Nodo",
-
-// admin/rsstest.php, row 121
-// include/feeding.php, row 464, 470, 527
-"Local slice" => "Canal local",
-
-// admin/rsstest.php, row 130
-// admin/tabledit.php, row 78
+// admin/rsstest.php, row 36
 "You do not have permissions to access this page" => "Usted no tiene permisos a esta página",
+
+// admin/rsstest.php, row 46
+"RSS Feed import test" => "Prueba de importación de RSS",
 
 // admin/se_admin.php, row 72
 "You have no permission to set configuration parameters of this slice" => "Usted no tiene permisos para configurar los parámetros de este canal",
@@ -1287,7 +1287,6 @@ return [
 // admin/se_admin.php, row 81, 173
 // admin/se_compact.php, row 94, 238
 // include/constants.php, row 605, 655, 675, 729, 764, 795, 819, 862, 891, 917, 951
-// include/tableviews.php, row 107
 "Top HTML" => "Encabezado HTML",
 
 // admin/se_admin.php, row 82, 176
@@ -1296,7 +1295,6 @@ return [
 // admin/se_admin.php, row 83, 179
 // admin/se_compact.php, row 95, 248
 // include/constants.php, row 610, 657, 677, 733, 766, 797, 822, 867, 893, 922, 956
-// include/tableviews.php, row 115
 "Bottom HTML" => "Pie HTML",
 
 // admin/se_admin.php, row 84, 182
@@ -1329,6 +1327,7 @@ return [
 // admin/se_compact.php, row 228
 // admin/se_fulltext.php, row 153
 // admin/se_inputform.php, row 187, 439
+// src/Util/UiPrefs.php, row 56
 "Default" => "Predeterminado",
 
 // admin/se_admin.php, row 171
@@ -1461,8 +1460,7 @@ return [
 // include/constedit.php, row 73
 // include/fileman.php, row 31
 // include/se_users.php, row 173
-// include/searchbar.class.php, row 722
-// include/tableviews.php, row 65, 97
+// include/searchbar.class.php, row 731
 // include/um_gedit.php, row 31
 // src/AA_Plannedtask.php, row 102
 // src/Optimize/AbstractOptimize.php, row 125
@@ -1470,7 +1468,7 @@ return [
 
 // admin/se_constant.php, row 220, 402
 // admin/se_mapping.php, row 183
-// admin/se_profile.php, row 146
+// admin/se_profile.php, row 210
 // include/constants.php, row 404
 // include/constedit.php, row 76
 // include/searchlib.php, row 171
@@ -1608,6 +1606,7 @@ return [
 
 // admin/se_csv_import.php, row 236, 241
 // include/filedit.php, row 66
+// include/logs.php, row 543
 "File" => "Archivo",
 
 // admin/se_csv_import.php, row 237, 242
@@ -1617,14 +1616,14 @@ return [
 
 // admin/se_csv_import.php, row 238, 243
 // admin/se_inputform.php, row 471, 472
-// include/itemfunc.php, row 576, 665, 689
+// include/itemfunc.php, row 590, 679, 703
 "Text" => "Texto",
 
 // admin/se_csv_import.php, row 251
 "Source of CSV data" => "Fuente de datos CSV",
 
 // admin/se_csv_import.php, row 275
-// admin/se_csv_import2.php, row 374
+// admin/se_csv_import2.php, row 373
 // src/Manageraction/Item_Preview.php, row 11
 "Preview" => "Vista preliminar",
 
@@ -1650,133 +1649,125 @@ return [
 // admin/se_csv_import2.php, row 284
 "Ok: Item %1 stored" => "Ok: Item %1 almacenado",
 
-// admin/se_csv_import2.php, row 300
-// include/files.class.php, row 298
-"Ok : file deleted " => "Ok : archivo borrado ",
-
-// admin/se_csv_import2.php, row 302
-// include/files.class.php, row 300
-"Error: Cannot delete file" => "Error: No se puede borrar el archivo",
-
-// admin/se_csv_import2.php, row 306
+// admin/se_csv_import2.php, row 305
 "Added to slice" => "Añadido al canal",
 
-// admin/se_csv_import2.php, row 328
+// admin/se_csv_import2.php, row 327
 "Mapping preview" => "Previsualización de relacionamiento",
 
-// admin/se_csv_import2.php, row 379
+// admin/se_csv_import2.php, row 378
 "Finish" => "Terminar",
 
-// admin/se_csv_import2.php, row 384
-// include/searchbar.class.php, row 719
+// admin/se_csv_import2.php, row 383
+// include/searchbar.class.php, row 728
 // src/Widget/MflWidget.php, row 120
 // src/Widget/RioWidget.php, row 124
 // src/Widget/TxtWidget.php, row 109
 // src/Widget/Widget.php, row 416
 "Save" => "Guardar",
 
-// admin/se_csv_import2.php, row 389
+// admin/se_csv_import2.php, row 388
 "Load" => "Cargar",
 
-// admin/se_csv_import2.php, row 399
+// admin/se_csv_import2.php, row 398
 "Mapping settings" => "Configuración relacionamiento",
 
-// admin/se_csv_import2.php, row 402
+// admin/se_csv_import2.php, row 401
 // admin/se_filters.php, row 190
 // admin/se_mapping.php, row 181
 "To" => "A",
 
-// admin/se_csv_import2.php, row 403
+// admin/se_csv_import2.php, row 402
 // admin/se_filters.php, row 189
 // admin/se_mapping.php, row 182
 // include/tv_email.php, row 159
 "From" => "De",
 
-// admin/se_csv_import2.php, row 404
+// admin/se_csv_import2.php, row 403
 // admin/search_replace.php, row 178
 // include/metabase.class.php, row 1577
 // include/statestore.php, row 975, 1289
 // src/AA_Plannedtask.php, row 102
 "Action" => "Acción",
 
-// admin/se_csv_import2.php, row 405
+// admin/se_csv_import2.php, row 404
 "Html" => "",
 
-// admin/se_csv_import2.php, row 406
+// admin/se_csv_import2.php, row 405
 "Action parameters" => "Parámetros acción",
 
-// admin/se_csv_import2.php, row 407
+// admin/se_csv_import2.php, row 406
 "Parameter wizard" => "Asistente de parámetros",
 
-// admin/se_csv_import2.php, row 432
+// admin/se_csv_import2.php, row 431
 "Import options" => "Opciones de importación",
 
-// admin/se_csv_import2.php, row 447
+// admin/se_csv_import2.php, row 446
 "Map item id from" => "Relacionar id ítem desde",
 
-// admin/se_csv_import2.php, row 451
+// admin/se_csv_import2.php, row 450
 "unpacked long id (32 characters)" => "id largo desempaquetado (32 caracteres)",
 
-// admin/se_csv_import2.php, row 452
+// admin/se_csv_import2.php, row 451
 "packed long id (16 characters)" => "id largo empaquetado (16 caracteres)",
 
-// admin/se_csv_import2.php, row 453
+// admin/se_csv_import2.php, row 452
 "string to be converted (string2id) - with param:" => "cadena a ser convertida (string2id) - con param:",
 
-// admin/se_csv_import2.php, row 461
+// admin/se_csv_import2.php, row 460
 "Select, how to store the items" => "Seleccione cómo almacenar los ítems",
 
-// admin/se_csv_import2.php, row 463
+// admin/se_csv_import2.php, row 462
 "Do not store the item" => "No almacene el ítem",
 
-// admin/se_csv_import2.php, row 464
+// admin/se_csv_import2.php, row 463
 "Store the item with new id" => "Almacenar el ítem con nuevo id",
 
-// admin/se_csv_import2.php, row 465
+// admin/se_csv_import2.php, row 464
 "Update the item (overwrite)" => "Actualizar los ítems (sobre-escribir)",
 
-// admin/se_csv_import2.php, row 466
+// admin/se_csv_import2.php, row 465
 "Add the values in parallel to current values (the multivalues are stored, where possible)" => "Añadir los valores en paralelo a los valores actuales (los multivalores son almacenados cuando sea posible)",
 
-// admin/se_csv_import2.php, row 467
+// admin/se_csv_import2.php, row 466
 "Rewrite only the fields, for which the action is defined and compute all computed fields, ..." => "Reescribir solo los campos para los que está definida la acción y calcular todos los campos calculados, ...",
 
-// admin/se_csv_import2.php, row 468
+// admin/se_csv_import2.php, row 467
 "Rewrite only the fields, for which the action is defined (do not update lastedit, computed, ... fields = Silent)" => "Reescribir solo los campos para los que está definida la acción (no actualizar lastedit, campos calculados, ... = Silencioso)",
 
-// admin/se_csv_import2.php, row 469
+// admin/se_csv_import2.php, row 468
 "Rewrite only the fields, for which the action is defined and its value is not empty (computed fields will be computed)" => "Reescribir solo los campos para los que está definida la acción y cuyo valor no esté vacío (los campos calculados se calcularán)",
 
-// admin/se_csv_import2.php, row 472
+// admin/se_csv_import2.php, row 471
 "If the item id is already in the slice" => "Si el id del ítem está actualmente en el canal",
 
-// admin/se_csv_import2.php, row 473
+// admin/se_csv_import2.php, row 472
 // admin/search_replace.php, row 176
 "Silent" => "Silencioso",
 
-// admin/se_csv_import2.php, row 473
+// admin/se_csv_import2.php, row 472
 "Do not perform any other operations like evaluate-computed-field, feed, send e-mail to Readers of Alerts..." => "No realizar ninguna otra operación como evaluate-computed-field, alimentación, envío de e-mail a los lectores de alertas...",
 
-// admin/se_csv_import2.php, row 474
+// admin/se_csv_import2.php, row 473
 "Data source" => "Fuente de datos",
 
-// admin/se_csv_import2.php, row 475
+// admin/se_csv_import2.php, row 474
 // include/feeding.php, row 456, 488
 "Source" => "Fuente",
 
-// admin/se_csv_import2.php, row 477
+// admin/se_csv_import2.php, row 476
 "Store settings..." => "Guardar configuración...",
 
-// admin/se_csv_import2.php, row 483
+// admin/se_csv_import2.php, row 482
 "Load setting" => "Cargar configuración",
 
-// admin/se_csv_import2.php, row 485
+// admin/se_csv_import2.php, row 484
 "Save setting as" => "Guardar configuración como",
 
-// admin/se_csv_import2.php, row 488
+// admin/se_csv_import2.php, row 487
 "Upload periodically" => "Subir periódicamente",
 
-// admin/se_csv_import2.php, row 539
+// admin/se_csv_import2.php, row 538
 "Admin - Import CSV (2/2) - Mapping and Actions" => "Admin - Importar CSV (2/2) - Relacionamiento y Acciones",
 
 // admin/se_export.php, row 75
@@ -1805,7 +1796,7 @@ return [
 
 // admin/se_export.php, row 122
 // include/exporter.class.php, row 485
-// include/itemfunc.php, row 139
+// include/itemfunc.php, row 146
 "Expired" => "Caducados",
 
 // admin/se_export.php, row 123
@@ -1818,7 +1809,7 @@ return [
 
 // admin/se_export.php, row 125
 // include/exporter.class.php, row 488
-// include/itemfunc.php, row 149
+// include/itemfunc.php, row 156
 // src/Manageraction/Central_MoveItem.php, row 43
 "Trash" => "Papelera",
 
@@ -1844,7 +1835,7 @@ return [
 // admin/sliceexp_text.php, row 364
 // include/exporter.class.php, row 509
 // include/fileman.php, row 33
-// include/logs.php, row 316
+// include/logs.php, row 346
 // include/se_users.php, row 173
 // src/Widget/Widget.php, row 724
 "Type" => "Tipo",
@@ -1988,7 +1979,7 @@ return [
 // admin/um_gedit.php, row 281
 // admin/um_uedit.php, row 389
 // central/include/actionapps.class.php, row 781
-// include/formutil.php, row 176, 2880
+// include/formutil.php, row 188, 2894
 // modules/jump/modedit.php, row 182
 "Update" => "Actualizar",
 
@@ -2084,7 +2075,7 @@ return [
 "Time of change" => "Hora del cambio",
 
 // admin/se_history.php, row 162
-// include/itemfunc.php, row 182
+// include/itemfunc.php, row 189
 // src/AA_Plannedtask.php, row 63
 "Item ID" => "ID del ítem",
 
@@ -2142,7 +2133,7 @@ return [
 "Alias" => "",
 
 // admin/se_inputform.php, row 199, 526
-// admin/se_profile.php, row 145
+// admin/se_profile.php, row 209
 "Function" => "Función",
 
 // admin/se_inputform.php, row 303
@@ -2155,7 +2146,7 @@ return [
 "WARNING: Do not change this setting if you are not sure what you're doing!" => "ADVERTENCIA: ¡No cambie esta configuración si no está seguro de lo que hace!",
 
 // admin/se_inputform.php, row 401
-// include/formutil.php, row 177
+// include/formutil.php, row 189
 "Update & Edit" => "Actualizar y editar",
 
 // admin/se_inputform.php, row 402
@@ -2204,7 +2195,7 @@ return [
 // admin/se_inputform.php, row 480
 // admin/sliceimp.php, row 428
 // include/form.class.php, row 409, 411
-// include/formutil.php, row 195, 2891
+// include/formutil.php, row 207, 2905
 "Insert" => "Publicar",
 
 // admin/se_inputform.php, row 483
@@ -2253,13 +2244,14 @@ return [
 "Disabled" => "Desactivado",
 
 // admin/se_inputform.php, row 521
+// src/Util/ChangesMonitor.php, row 514
 "Copy to clipboard" => "Copiar al portapapeles",
 
 // admin/se_inputform.php, row 522
 "Reset" => "Restablecer",
 
 // admin/se_inputform.php, row 527
-// include/logs.php, row 331
+// include/logs.php, row 361
 "Parameters" => "Parámetros",
 
 // admin/se_inter_export.php, row 99
@@ -2302,6 +2294,9 @@ return [
 "Remote slice" => "Canal remoto",
 
 // admin/se_inter_import.php, row 98
+"Node" => "Nodo",
+
+// admin/se_inter_import.php, row 98
 // misc/datovka/datovka.php, row 114
 "State" => "Estado",
 
@@ -2312,7 +2307,7 @@ return [
 "No remote imports into the slice" => "Sin importaciones remotas al canal",
 
 // admin/se_inter_import.php, row 106
-// include/menu.php, row 147
+// include/menu.php, row 152
 "Inter Node Import" => "Importación de Nodos Externos",
 
 // admin/se_inter_import.php, row 107
@@ -2358,7 +2353,7 @@ return [
 "The import was successfully created" => "La importación se creó con éxito",
 
 // admin/se_javascript.php, row 71
-// include/menu.php, row 159
+// include/menu.php, row 164
 "Field Triggers" => "Verificadores de Campos",
 
 // admin/se_javascript.php, row 78
@@ -2514,223 +2509,233 @@ return [
 "UI - inputform - hide" => "UI - formulario de entrada - ocultar",
 
 // admin/se_profile.php, row 118
-"Admin - user Profiles" => "Administración - Perfiles de Usuario",
+"Logo (top)" => "Logo (arriba)",
+
+// admin/se_profile.php, row 119
+"View site (top)" => "Ver sitio (arriba)",
+
+// admin/se_profile.php, row 120
+"Add Item link (top)" => "Enlace Agregar ítem (arriba)",
+
+// admin/se_profile.php, row 121
+"Item Manager link (top)" => "Enlace Administrador de ítems (arriba)",
+
+// admin/se_profile.php, row 122
+"Slice Admin link (top)" => "Enlace Admin del canal (arriba)",
+
+// admin/se_profile.php, row 123
+"AA link (top)" => "Enlace AA (arriba)",
+
+// admin/se_profile.php, row 124
+"Central link (top)" => "Enlace Central (arriba)",
 
 // admin/se_profile.php, row 125
-"Rules" => "Reglas",
+"Title (top)" => "Título (arriba)",
+
+// admin/se_profile.php, row 126
+"Logout link (top)" => "Enlace Cerrar sesión (arriba)",
+
+// admin/se_profile.php, row 127
+"User Info link (top)" => "Enlace Información del usuario (arriba)",
+
+// admin/se_profile.php, row 128
+"Module Selectbox (top)" => "Selector de módulo (arriba)",
+
+// admin/se_profile.php, row 129
+"Module Switch text (top)" => "Texto de cambio de módulo (arriba)",
+
+// admin/se_profile.php, row 130
+"Item Manager Menu: Header (left)" => "Menú del Administrador de ítems: Encabezado (izquierda)",
+
+// admin/se_profile.php, row 131
+"Item Manager Menu: Add Item (left)" => "Menú del Administrador de ítems: Agregar ítem (izquierda)",
+
+// admin/se_profile.php, row 132
+"Item Manager Menu: Active (left)" => "Menú del Administrador de ítems: Activos (izquierda)",
 
 // admin/se_profile.php, row 133
-"No rule is set" => "No hay reglas",
+"Item Manager Menu: Pending (left)" => "Menú del Administrador de ítems: Pendientes (izquierda)",
+
+// admin/se_profile.php, row 134
+"Item Manager Menu: Expired (left)" => "Menú del Administrador de ítems: Expirados (izquierda)",
+
+// admin/se_profile.php, row 135
+"Item Manager Menu: Holding (left)" => "Menú del Administrador de ítems: Por aprobar (izquierda)",
+
+// admin/se_profile.php, row 136
+"Item Manager Menu: Trash (left)" => "Menú del Administrador de ítems: Papelera (izquierda)",
+
+// admin/se_profile.php, row 137
+"Item Manager Menu: Bookmarks show (left)" => "Menú del Administrador de ítems: Mostrar marcadores (izquierda)",
+
+// admin/se_profile.php, row 138
+"Item Manager Menu: Additional 1 (left)" => "Menú del Administrador de ítems: Adicional 1 (izquierda)",
+
+// admin/se_profile.php, row 139
+"Item Manager Menu: Header 2 (left)" => "Menú del Administrador de ítems: Encabezado 2 (izquierda)",
 
 // admin/se_profile.php, row 140
-"Add Rule" => "Añadir regla",
+"Item Manager Menu: Slice Setting (left)" => "Menú del Administrador de ítems: Configuración del canal (izquierda)",
+
+// admin/se_profile.php, row 141
+"Item Manager Menu: Empty Trash (left)" => "Menú del Administrador de ítems: Vaciar papelera (izquierda)",
+
+// admin/se_profile.php, row 142
+"Item Manager Menu: CSV Import (left)" => "Menú del Administrador de ítems: Importación CSV (izquierda)",
 
 // admin/se_profile.php, row 143
+"Item Manager Menu: Debug (left)" => "Menú del Administrador de ítems: Depuración (izquierda)",
+
+// admin/se_profile.php, row 144
+"Item Manager Menu: Additional 2 (left)" => "Menú del Administrador de ítems: Adicional 2 (izquierda)",
+
+// admin/se_profile.php, row 145
+"Add CSS file" => "Agregar archivo CSS",
+
+// admin/se_profile.php, row 149
+"Manager Actions" => "Acciones del administrador",
+
+// admin/se_profile.php, row 150
+"Searchbar - Search Rows" => "Barra de búsqueda - Filas de búsqueda",
+
+// admin/se_profile.php, row 151
+"Searchbar - Order Rows" => "Barra de búsqueda - Filas de ordenación",
+
+// admin/se_profile.php, row 152
+"Searchbar - Bookmarks" => "Barra de búsqueda - Marcadores",
+
+// admin/se_profile.php, row 156
+"Top menu (admin header)" => "Menú superior (cabecera de administración)", // ai 2026-06
+
+// admin/se_profile.php, row 157
+"Left menu (item context)" => "Menú izquierdo (contexto del ítem)", // ai 2026-06
+
+// admin/se_profile.php, row 161
+"Title (add form)" => "Título (formulario de alta)",
+
+// admin/se_profile.php, row 162
+"Top HTML code (add form)" => "Código HTML superior (formulario de alta)",
+
+// admin/se_profile.php, row 163
+"Bottom HTML code (add form)" => "Código HTML inferior (formulario de alta)",
+
+// admin/se_profile.php, row 164
+"Button \"Insert\" / \"Insert as new\" (add form)" => "Botón \"Insertar\" / \"Insertar como nuevo\" (formulario de alta)",
+
+// admin/se_profile.php, row 165
+"Button \"Insert & Edit\" (add form)" => "Botón \"Insertar y editar\" (formulario de alta)",
+
+// admin/se_profile.php, row 166
+"Button \"Insert & View\" (add form)" => "Botón \"Insertar y ver\" (formulario de alta)",
+
+// admin/se_profile.php, row 167
+"Button \"Cancel\" (add form)" => "Botón \"Cancelar\" (formulario de alta)",
+
+// admin/se_profile.php, row 168
+"Title (edit form)" => "Título (formulario de edición)",
+
+// admin/se_profile.php, row 169
+"Top HTML code (edit form)" => "Código HTML superior (formulario de edición)",
+
+// admin/se_profile.php, row 170
+"Bottom HTML code (edit form)" => "Código HTML inferior (formulario de edición)",
+
+// admin/se_profile.php, row 171
+"Button \"Update\" (edit form)" => "Botón \"Actualizar\" (formulario de edición)",
+
+// admin/se_profile.php, row 172
+"Button \"Update & Edit\" (edit form)" => "Botón \"Actualizar y editar\" (formulario de edición)",
+
+// admin/se_profile.php, row 173
+"Button \"Update & View\" (edit form)" => "Botón \"Actualizar y ver\" (formulario de edición)",
+
+// admin/se_profile.php, row 174
+"Button \"Reset form\" (edit form)" => "Botón \"Restablecer formulario\" (formulario de edición)",
+
+// admin/se_profile.php, row 175
+"Button \"Cancel\" (edit form)" => "Botón \"Cancelar\" (formulario de edición)",
+
+// admin/se_profile.php, row 182
+"Admin - user Profiles" => "Administración - Perfiles de Usuario",
+
+// admin/se_profile.php, row 189
+"Rules" => "Reglas",
+
+// admin/se_profile.php, row 197
+"No rule is set" => "No hay reglas",
+
+// admin/se_profile.php, row 204
+"Add Rule" => "Añadir regla",
+
+// admin/se_profile.php, row 207
 "Rule" => "Regla",
 
-// admin/se_profile.php, row 147
-// include/formutil.php, row 1199
+// admin/se_profile.php, row 211
+// include/formutil.php, row 1211
 // include/transformation.class.php, row 181, 356, 426, 510, 680
 // include/widget.class.php, row 569
 "HTML" => "",
 
-// admin/se_profile.php, row 154
-"Logo (top)" => "Logo (arriba)",
-
-// admin/se_profile.php, row 155
-"View site (top)" => "Ver sitio (arriba)",
-
-// admin/se_profile.php, row 156
-"Add Item link (top)" => "Enlace Agregar ítem (arriba)",
-
-// admin/se_profile.php, row 157
-"Item Manager link (top)" => "Enlace Administrador de ítems (arriba)",
-
-// admin/se_profile.php, row 158
-"Slice Admin link (top)" => "Enlace Admin del canal (arriba)",
-
-// admin/se_profile.php, row 159
-"AA link (top)" => "Enlace AA (arriba)",
-
-// admin/se_profile.php, row 160
-"Central link (top)" => "Enlace Central (arriba)",
-
-// admin/se_profile.php, row 161
-"Title (top)" => "Título (arriba)",
-
-// admin/se_profile.php, row 162
-"Logout link (top)" => "Enlace Cerrar sesión (arriba)",
-
-// admin/se_profile.php, row 163
-"User Info link (top)" => "Enlace Información del usuario (arriba)",
-
-// admin/se_profile.php, row 164
-"Module Selectbox (top)" => "Selector de módulo (arriba)",
-
-// admin/se_profile.php, row 165
-"Module Switch text (top)" => "Texto de cambio de módulo (arriba)",
-
-// admin/se_profile.php, row 166
-"Item Manager Menu: Header (left)" => "Menú del Administrador de ítems: Encabezado (izquierda)",
-
-// admin/se_profile.php, row 167
-"Item Manager Menu: Add Item (left)" => "Menú del Administrador de ítems: Agregar ítem (izquierda)",
-
-// admin/se_profile.php, row 168
-"Item Manager Menu: Active (left)" => "Menú del Administrador de ítems: Activos (izquierda)",
-
-// admin/se_profile.php, row 169
-"Item Manager Menu: Pending (left)" => "Menú del Administrador de ítems: Pendientes (izquierda)",
-
-// admin/se_profile.php, row 170
-"Item Manager Menu: Expired (left)" => "Menú del Administrador de ítems: Expirados (izquierda)",
-
-// admin/se_profile.php, row 171
-"Item Manager Menu: Holding (left)" => "Menú del Administrador de ítems: Por aprobar (izquierda)",
-
-// admin/se_profile.php, row 172
-"Item Manager Menu: Trash (left)" => "Menú del Administrador de ítems: Papelera (izquierda)",
-
-// admin/se_profile.php, row 173
-"Item Manager Menu: Bookmarks show (left)" => "Menú del Administrador de ítems: Mostrar marcadores (izquierda)",
-
-// admin/se_profile.php, row 174
-"Item Manager Menu: Additional 1 (left)" => "Menú del Administrador de ítems: Adicional 1 (izquierda)",
-
-// admin/se_profile.php, row 175
-"Item Manager Menu: Header 2 (left)" => "Menú del Administrador de ítems: Encabezado 2 (izquierda)",
-
-// admin/se_profile.php, row 176
-"Item Manager Menu: Slice Setting (left)" => "Menú del Administrador de ítems: Configuración del canal (izquierda)",
-
-// admin/se_profile.php, row 177
-"Item Manager Menu: Empty Trash (left)" => "Menú del Administrador de ítems: Vaciar papelera (izquierda)",
-
-// admin/se_profile.php, row 178
-"Item Manager Menu: CSV Import (left)" => "Menú del Administrador de ítems: Importación CSV (izquierda)",
-
-// admin/se_profile.php, row 179
-"Item Manager Menu: Debug (left)" => "Menú del Administrador de ítems: Depuración (izquierda)",
-
-// admin/se_profile.php, row 180
-"Item Manager Menu: Additional 2 (left)" => "Menú del Administrador de ítems: Adicional 2 (izquierda)",
-
-// admin/se_profile.php, row 181
-"Add CSS file" => "Agregar archivo CSS",
-
-// admin/se_profile.php, row 185
-"Manager Actions" => "Acciones del administrador",
-
-// admin/se_profile.php, row 186
-"Searchbar - Search Rows" => "Barra de búsqueda - Filas de búsqueda",
-
-// admin/se_profile.php, row 187
-"Searchbar - Order Rows" => "Barra de búsqueda - Filas de ordenación",
-
-// admin/se_profile.php, row 188
-"Searchbar - Bookmarks" => "Barra de búsqueda - Marcadores",
-
-// admin/se_profile.php, row 192
-"Title (add form)" => "Título (formulario de alta)",
-
-// admin/se_profile.php, row 193
-"Top HTML code (add form)" => "Código HTML superior (formulario de alta)",
-
-// admin/se_profile.php, row 194
-"Bottom HTML code (add form)" => "Código HTML inferior (formulario de alta)",
-
-// admin/se_profile.php, row 195
-"Button \"Insert\" / \"Insert as new\" (add form)" => "Botón \"Insertar\" / \"Insertar como nuevo\" (formulario de alta)",
-
-// admin/se_profile.php, row 196
-"Button \"Insert & Edit\" (add form)" => "Botón \"Insertar y editar\" (formulario de alta)",
-
-// admin/se_profile.php, row 197
-"Button \"Insert & View\" (add form)" => "Botón \"Insertar y ver\" (formulario de alta)",
-
-// admin/se_profile.php, row 198
-"Button \"Cancel\" (add form)" => "Botón \"Cancelar\" (formulario de alta)",
-
-// admin/se_profile.php, row 199
-"Title (edit form)" => "Título (formulario de edición)",
-
-// admin/se_profile.php, row 200
-"Top HTML code (edit form)" => "Código HTML superior (formulario de edición)",
-
-// admin/se_profile.php, row 201
-"Bottom HTML code (edit form)" => "Código HTML inferior (formulario de edición)",
-
-// admin/se_profile.php, row 202
-"Button \"Update\" (edit form)" => "Botón \"Actualizar\" (formulario de edición)",
-
-// admin/se_profile.php, row 203
-"Button \"Update & Edit\" (edit form)" => "Botón \"Actualizar y editar\" (formulario de edición)",
-
-// admin/se_profile.php, row 204
-"Button \"Update & View\" (edit form)" => "Botón \"Actualizar y ver\" (formulario de edición)",
-
-// admin/se_profile.php, row 205
-"Button \"Reset form\" (edit form)" => "Botón \"Restablecer formulario\" (formulario de edición)",
-
-// admin/se_profile.php, row 206
-"Button \"Cancel\" (edit form)" => "Botón \"Cancelar\" (formulario de edición)",
-
-// admin/se_profile.php, row 210
+// admin/se_profile.php, row 218
 "Author Role" => "Rol de autor",
 
-// admin/se_profile.php, row 211
+// admin/se_profile.php, row 219
 "Editor Role" => "Rol de editor",
 
-// admin/se_profile.php, row 212
+// admin/se_profile.php, row 220
 "Administrator Role" => "Rol de administrador",
 
-// admin/se_profile.php, row 213
+// admin/se_profile.php, row 221
 "Superadmin Role" => "Rol de superadministrador",
 
-// admin/se_profile.php, row 218
+// admin/se_profile.php, row 226
 "number of item displayed in Item Manager" => "número de ítem mostrado en el Administrador de Items",
 
-// admin/se_profile.php, row 219
+// admin/se_profile.php, row 227
 "id of view used for item input" => "id de vista utilizada para el ítem de entrada",
 
-// admin/se_profile.php, row 220
+// admin/se_profile.php, row 228
 "preset \"Search\" in Item Manager" => "preselección \"Búsqueda\" en el Administrador de ítems",
 
-// admin/se_profile.php, row 221
+// admin/se_profile.php, row 229
 "preset \"Order\" in Item Manager" => "preselección \"Orden\" en el Administrador de ítems",
 
-// admin/se_profile.php, row 222
+// admin/se_profile.php, row 230
 "ID of \"Item Set\" which defines the permissions for item - see \"Admin - Item Set\"" => "ID del \"Conjunto de ítems\" que define los permisos del ítem - vea \"Admin - Conjuntos de ítems\"",
 
-// admin/se_profile.php, row 223
+// admin/se_profile.php, row 231
 "hide the field in inputform" => "ocultar campo en formulario de entrada",
 
-// admin/se_profile.php, row 224
+// admin/se_profile.php, row 232
 "show (= unhide) the field in inputform (reverts hide made by group profile,...)" => "mostrar (= desocultar) el campo en el formulario de entrada (revierte la ocultación hecha por el perfil de grupo,...)",
 
-// admin/se_profile.php, row 225
+// admin/se_profile.php, row 233
 "hide the field in inputform and fill it by the value" => "ocultar campo en formulario de entrada y rellenarlo con el valor",
 
-// admin/se_profile.php, row 226
+// admin/se_profile.php, row 234
 "fill the field in inputform by the value" => "rellenar el campo con el valor en formulario entrada",
 
-// admin/se_profile.php, row 227
+// admin/se_profile.php, row 235
 "predefine value of the field in inputform" => "predefinir valor de campo en formulario entrada",
 
-// admin/se_profile.php, row 228
+// admin/se_profile.php, row 236
 "redefine manager UI - (empty values = do not show)" => "redefinir la UI del administrador - (valores vacíos = no mostrar)",
 
-// admin/se_profile.php, row 229
+// admin/se_profile.php, row 237
 "hide this UI element" => "ocultar este elemento de la UI",
 
-// admin/se_profile.php, row 230
+// admin/se_profile.php, row 238
 "redefine inputform UI - (empty values = do not show)" => "redefinir la UI del formulario de entrada - (valores vacíos = no mostrar)",
 
-// admin/se_profile.php, row 257
+// admin/se_profile.php, row 239
+"hide this UI element in the inputform" => "ocultar este elemento de la UI en el formulario de entrada", // ai 2026-06
+
+// admin/se_profile.php, row 266
 "Copy Profile from" => "Copiar perfil de",
 
-// admin/se_profile.php, row 259
+// admin/se_profile.php, row 268
 // central/copyslice2.php, row 116
+// src/Util/ChangesMonitor.php, row 514
 "Copy" => "Copiar",
 
 // admin/se_sets.php, row 64
@@ -2837,7 +2842,7 @@ return [
 // admin/se_users.php, row 122, 181
 // admin/slicewiz.php, row 78
 // include/se_users.php, row 103, 173
-"Editor" => "",
+"Editor" => "Modificado por", // ai 2026-06
 
 // admin/se_users.php, row 123, 181
 // include/se_users.php, row 104, 173
@@ -2945,7 +2950,7 @@ return [
 "Create new view from this one" => "Crear nueva vista a partir de esta",
 
 // admin/se_views.php, row 145, 198, 218
-// include/formutil.php, row 1740, 1747
+// include/formutil.php, row 1752, 1759
 "New" => "Nueva",
 
 // admin/se_views.php, row 146
@@ -3021,7 +3026,7 @@ return [
 // admin/slicewiz.php, row 79
 // admin/um_passwd.php, row 109
 // admin/um_uedit.php, row 314, 318
-// include/itemfunc.php, row 534, 1035
+// include/itemfunc.php, row 548, 1049
 // include/um_util.php, row 296
 "Login name" => "Nombre de usuario (login)",
 
@@ -3036,7 +3041,7 @@ return [
 "Password" => "Clave",
 
 // admin/setup.php, row 100, 242
-// include/formutil.php, row 2166
+// include/formutil.php, row 2178
 "Retype Password" => "Reescriba la Clave",
 
 // admin/setup.php, row 101, 244
@@ -3110,9 +3115,9 @@ return [
 // admin/sliceadd.php, row 93
 // admin/um_gedit.php, row 274
 // admin/um_uedit.php, row 379
-// include/formutil.php, row 1737
+// include/formutil.php, row 1749
 // include/mlx.php, row 371
-// include/profile.php, row 159
+// include/profile.php, row 163
 // include/sliceadd.php, row 69, 83
 // src/Manager.php, row 210
 "Add" => "Añadir",
@@ -3161,13 +3166,13 @@ return [
 "Active with antiSPAM tokens" => "Activos con tokens antiSPAM",
 
 // admin/slicedit.php, row 140, 146
-// include/menu.php, row 185
-// include/menu_util.php, row 121
+// include/menu.php, row 190
+// include/menu_util.php, row 120
 // src/Module/Poll/Menu.php, row 64
 "Hold bin" => "Por Aprobar",
 
 // admin/slicedit.php, row 152
-// include/formutil.php, row 3246
+// include/formutil.php, row 3260
 "All items" => "Todos los items",
 
 // admin/slicedit.php, row 153
@@ -3189,6 +3194,7 @@ return [
 "Admin - Slice settings" => "Administración - Propiedades canal",
 
 // admin/slicedit.php, row 253
+// include/menu_util.php, row 605
 "Language" => "Idioma",
 
 // admin/slicedit.php, row 255
@@ -3228,7 +3234,7 @@ return [
 "Password for Reading" => "Clave (password) para lectura",
 
 // admin/slicedit.php, row 281
-// include/itemfunc.php, row 174
+// include/itemfunc.php, row 181
 "Created" => "Creado",
 
 // admin/slicedit.php, row 281
@@ -3544,6 +3550,7 @@ return [
 
 // admin/um_gedit.php, row 313
 // admin/um_uedit.php, row 231, 242
+// include/logs.php, row 453
 // include/menu_util.php, row 70
 // include/se_users.php, row 129
 "Users" => "Usuarios",
@@ -3731,7 +3738,7 @@ return [
 
 // central/copyslice2.php, row 88
 // central/synchronize3.php, row 94
-// include/menu.php, row 163
+// include/menu.php, row 168
 // include/menu_util.php, row 74
 "Task Manager" => "Administrador de tareas",
 
@@ -3872,13 +3879,13 @@ return [
 // src/Manageraction/Central_Linkcheck.php, row 31
 "Auth" => "Autenticación",
 
-// central/responder.php, row 567
+// central/responder.php, row 597
 "No request sent for responder.php" => "No se envió ninguna petición a responder.php",
 
-// central/responder.php, row 573
+// central/responder.php, row 603
 "Bad request sent for responder.php - %1" => "Petición incorrecta enviada a responder.php - %1",
 
-// central/responder.php, row 578
+// central/responder.php, row 608
 "You (%2) don't have permissions to run %1" => "Usted (%2) no tiene permisos para ejecutar %1",
 
 // central/synchronize.php, row 35
@@ -3981,6 +3988,7 @@ return [
 "Level" => "Nivel",
 
 // include/constants.php, row 460
+// include/logs.php, row 507
 "Feed" => "Alimentar",
 
 // include/constants.php, row 461
@@ -4353,6 +4361,9 @@ return [
 // include/feeding.php, row 454, 490
 "Run (queue)" => "Ejecutar (en cola)",
 
+// include/feeding.php, row 464, 470, 527
+"Local slice" => "Canal local",
+
 // include/feeding.php, row 473
 "URL of the feed" => "URL del canal RSS",
 
@@ -4563,9 +4574,6 @@ return [
 // include/files.class.php, row 255
 "Can't write to file: %1" => "No se puede escribir el archivo: %1",
 
-// include/files.class.php, row 306
-"Error: Invalid directory" => "Error: Directorio inválido",
-
 // include/files.class.php, row 328
 "can't create backup of the file" => "No es posible crear la copia del archivo",
 
@@ -4600,129 +4608,130 @@ return [
 "Rows" => "Filas",
 
 // include/form.class.php, row 301
-// include/menu.php, row 141
+// include/menu.php, row 146
 "Forms" => "Formularios",
 
-// include/formutil.php, row 179
+// include/formutil.php, row 191
 "Update & View" => "Publicar y vista preliminar",
 
-// include/formutil.php, row 186
+// include/formutil.php, row 198
 "Insert as new" => "Publicar como Nuevo",
 
-// include/formutil.php, row 190, 2912
+// include/formutil.php, row 202, 2926
 "Reset form" => "Deshacer cambios",
 
-// include/formutil.php, row 193, 198, 2904, 2908
-// include/searchbar.class.php, row 721
+// include/formutil.php, row 205, 210, 2918, 2922
+// include/searchbar.class.php, row 730
 // src/Widget/LupWidget.php, row 118
 "Cancel" => "Cancelar",
 
-// include/formutil.php, row 196
+// include/formutil.php, row 208
 "Insert & Edit" => "Publicar y Editar",
 
-// include/formutil.php, row 197
+// include/formutil.php, row 209
 "Insert & View" => "Publicar y vista preliminar",
 
-// include/formutil.php, row 277
+// include/formutil.php, row 289
 "Part" => "Parte",
 
-// include/formutil.php, row 341
+// include/formutil.php, row 353
 "No fields defined for this slice" => "No hay campos definidos para este canal",
 
-// include/formutil.php, row 892
+// include/formutil.php, row 904
 "set" => "activo",
 
-// include/formutil.php, row 892
+// include/formutil.php, row 904
 "unset" => "inactivo",
 
-// include/formutil.php, row 1022
+// include/formutil.php, row 1034
 "Unable to find tagprefix table %1" => "No se encontró la tabla (tagprefix) %1",
 
-// include/formutil.php, row 1174
+// include/formutil.php, row 1186
 "import" => "importar",
 
-// include/formutil.php, row 1189
+// include/formutil.php, row 1201
 // src/Widget/TxtWidget.php, row 250
 "Edit in Editor" => "Editar en área HTML",
 
-// include/formutil.php, row 1202
+// include/formutil.php, row 1214
 // include/transformation.class.php, row 182, 357, 427, 511, 681
 // include/widget.class.php, row 570
 "Plain text" => "Texto plano",
 
-// include/formutil.php, row 1244
+// include/formutil.php, row 1256
 // include/transformation.class.php, row 604
 "Translate" => "Traducir",
 
-// include/formutil.php, row 1747, 1751
+// include/formutil.php, row 1759, 1763
 "Enter the value" => "Entre el valor",
 
-// include/formutil.php, row 1751
-// include/menu.php, row 134
-// src/Util/ChangesMonitor.php, row 381
+// include/formutil.php, row 1763
+// include/menu.php, row 139
+// src/Util/ChangesMonitor.php, row 455
 "Change" => "Cambiar",
 
-// include/formutil.php, row 1894, 2081
+// include/formutil.php, row 1906, 2093
 // src/Widget/MchWidget.php, row 134
 // src/Widget/Widget.php, row 808
 "Selected" => "Marcados",
 
-// include/formutil.php, row 2080
+// include/formutil.php, row 2092
 "Offer" => "Ofrecer",
 
-// include/formutil.php, row 2145
+// include/formutil.php, row 2157
 // include/stringexpand.php, row 10624, 10647
 // src/Widget/MflWidget.php, row 166
 // src/Widget/RimWidget.php, row 240
 "new" => "nuevo",
 
-// include/formutil.php, row 2165
+// include/formutil.php, row 2177
 "Change Password" => "Cambiar Clave",
 
-// include/formutil.php, row 2167
+// include/formutil.php, row 2179
 "Delete Password" => "Borrar Clave",
 
-// include/formutil.php, row 2176
+// include/formutil.php, row 2188
 // include/searchlib.php, row 58, 124, 127, 130, 133, 136
 "not set" => "no asignado",
 
-// include/formutil.php, row 2915
+// include/formutil.php, row 2929
 "Submit" => "Enviar",
 
-// include/formutil.php, row 3232
+// include/formutil.php, row 3246
 "Group Name" => "Nombre de grupo",
 
-// include/formutil.php, row 3233
+// include/formutil.php, row 3247
+// include/logs.php, row 497
 "Count" => "Cantidad",
 
-// include/formutil.php, row 3234
+// include/formutil.php, row 3248
 "Created on" => "Creado en",
 
-// include/formutil.php, row 3235
+// include/formutil.php, row 3249
 "Created by" => "Creado por",
 
-// include/formutil.php, row 3236
+// include/formutil.php, row 3250
 "Last updated" => "Ultima actualización",
 
-// include/formutil.php, row 3237
+// include/formutil.php, row 3251
 "Updated by" => "Actualizado por",
 
-// include/formutil.php, row 3238
+// include/formutil.php, row 3252
 "Last used" => "Usado por última vez",
 
-// include/formutil.php, row 3245
+// include/formutil.php, row 3259
 "All active items" => "Todos los ítems activos",
 
-// include/formutil.php, row 3247
+// include/formutil.php, row 3261
 "All pending items" => "Todos los ítems pendientes",
 
-// include/formutil.php, row 3248
+// include/formutil.php, row 3262
 "All expired items" => "Todos los ítems expirados",
 
-// include/formutil.php, row 3249
+// include/formutil.php, row 3263
 "All items in holding bin" => "Todos los ítems en por aprobar",
 
-// include/formutil.php, row 3250
+// include/formutil.php, row 3264
 "All items in trash bin" => "Todos los ítems en la papelera",
 
 // include/init_page.php, row 94
@@ -4890,329 +4899,326 @@ return [
 // include/itemfunc.php, row 130
 "by %1" => "por %1",
 
-// include/itemfunc.php, row 136
+// include/itemfunc.php, row 143
 "Scheduled" => "Programado",
 
-// include/itemfunc.php, row 137
-"goes live %1." => "se publica el %1.",
-
-// include/itemfunc.php, row 140
-"on %1." => "el %1.",
-
-// include/itemfunc.php, row 143, 161
-"Published" => "Publicado",
-
 // include/itemfunc.php, row 144
-"since %1, until %2." => "desde %1, hasta %2.",
+"not yet on the public site" => "aún no está en el sitio público", // ai 2026-06
 
-// include/itemfunc.php, row 144
-"since %1." => "desde %1.",
-
-// include/itemfunc.php, row 147, 150
+// include/itemfunc.php, row 147, 154, 157
 "not on the public site" => "no está en el sitio público",
 
-// include/itemfunc.php, row 162
-"Expires" => "Expira",
+// include/itemfunc.php, row 150, 179
+"Published" => "Publicado",
 
-// include/itemfunc.php, row 163, 175
-"Last edited" => "Última edición",
+// include/itemfunc.php, row 176
+"Never" => "Nunca", // ai 2026-06
 
 // include/itemfunc.php, row 177
+"not used on this site" => "no se usa en este sitio", // ai 2026-06
+
+// include/itemfunc.php, row 180
+"Expires" => "Expira",
+
+// include/itemfunc.php, row 182
+"Last edited" => "Última edición",
+
+// include/itemfunc.php, row 184
 "Revisions" => "Revisiones",
 
-// include/itemfunc.php, row 179
+// include/itemfunc.php, row 186
 "Short ID" => "ID corto",
 
-// include/itemfunc.php, row 185
+// include/itemfunc.php, row 192
 "Details" => "Detalles",
 
-// include/itemfunc.php, row 220
+// include/itemfunc.php, row 227
 "Item table record for the item" => "Registro del ítem en la tabla item",
 
-// include/itemfunc.php, row 244
+// include/itemfunc.php, row 251
 "Content table records for the item" => "Registros del ítem en la tabla content",
 
-// include/itemfunc.php, row 263
+// include/itemfunc.php, row 270
 "Referenced items" => "Ítems referenciados",
 
-// include/itemfunc.php, row 272
+// include/itemfunc.php, row 279
 "AA_Item structure" => "Estructura AA_Item",
 
-// include/itemfunc.php, row 303
+// include/itemfunc.php, row 310
 "Technical details" => "Detalles técnicos",
 
-// include/itemfunc.php, row 344
+// include/itemfunc.php, row 351
 "When" => "Cuándo",
 
-// include/itemfunc.php, row 344
+// include/itemfunc.php, row 351
 "Changed by" => "Modificado por",
 
-// include/itemfunc.php, row 365
+// include/itemfunc.php, row 379
 "Full history" => "Historial completo",
 
-// include/itemfunc.php, row 390
+// include/itemfunc.php, row 404
 "Total views" => "Visualizaciones totales",
 
-// include/itemfunc.php, row 409
+// include/itemfunc.php, row 423
 "Average / day" => "Promedio / día",
 
-// include/itemfunc.php, row 413
+// include/itemfunc.php, row 427
 "Last 7 days" => "Últimos 7 días",
 
-// include/itemfunc.php, row 414
+// include/itemfunc.php, row 428
 "Last 30 days" => "Últimos 30 días",
 
-// include/itemfunc.php, row 416
+// include/itemfunc.php, row 430
 "Last viewed" => "Última visualización",
 
-// include/itemfunc.php, row 420
+// include/itemfunc.php, row 434
 "Avg response" => "Respuesta media",
 
-// include/itemfunc.php, row 423
+// include/itemfunc.php, row 437
 "Served from cache" => "Servido desde caché",
 
-// include/itemfunc.php, row 446
+// include/itemfunc.php, row 460
 "Full statistics" => "Estadísticas completas",
 
-// include/itemfunc.php, row 471
+// include/itemfunc.php, row 485
 "No detailed view statistics have been recorded for this item yet." => "Aún no se han registrado estadísticas detalladas de visualización para este ítem.",
 
-// include/itemfunc.php, row 474
+// include/itemfunc.php, row 488
 "Open full statistics" => "Abrir estadísticas completas",
 
-// include/itemfunc.php, row 501
+// include/itemfunc.php, row 515
 "Now, i.e. current date" => "Ahora, es decir, la fecha actual",
 
-// include/itemfunc.php, row 511
+// include/itemfunc.php, row 525
 "Never, i.e. maximum date" => "Nunca, es decir, la fecha máxima",
 
-// include/itemfunc.php, row 522
+// include/itemfunc.php, row 536
 "User ID" => "Id Usuario",
 
-// include/itemfunc.php, row 548
+// include/itemfunc.php, row 562
 "Date + 'Parameter' days" => "Fecha + 'Parámetro' días",
 
-// include/itemfunc.php, row 555
+// include/itemfunc.php, row 569
 "Number of days" => "Número de días",
 
-// include/itemfunc.php, row 569
+// include/itemfunc.php, row 583
 "Text from 'Parameter'" => "Texto de 'Parámetro'",
 
-// include/itemfunc.php, row 603
+// include/itemfunc.php, row 617
 "Random string" => "Cadena aleatoria",
 
-// include/itemfunc.php, row 605
+// include/itemfunc.php, row 619
 "Random alphanumeric [A-Z0-9] string." => "Cadena alfanumérica aleatoria [A-Z0-9].",
 
-// include/itemfunc.php, row 612
+// include/itemfunc.php, row 626
 "String length" => "Longitud de la cadena",
 
-// include/itemfunc.php, row 613
+// include/itemfunc.php, row 627
 "Field to check" => "Campo a comprobar",
 
-// include/itemfunc.php, row 613
+// include/itemfunc.php, row 627
 "If you need a unique code, you must send the field ID, the function will then look into this field to ensure uniqueness." => "Si necesita un código único, debe enviar el ID del campo; la función consultará ese campo para garantizar la unicidad.",
 
-// include/itemfunc.php, row 614
+// include/itemfunc.php, row 628
 "Slice only" => "Solo este canal",
 
-// include/itemfunc.php, row 614
+// include/itemfunc.php, row 628
 "Do you want to check for uniqueness this slice only or all slices?" => "¿Desea comprobar la unicidad solo en este canal o en todos los canales?",
 
-// include/itemfunc.php, row 656
+// include/itemfunc.php, row 670
 "AA Expression" => "Expresión AA",
 
-// include/itemfunc.php, row 658
+// include/itemfunc.php, row 672
 "any text with possible {AA expressions} like: {date:Y}" => "cualquier texto con posibles {AA expressions} como: {date:Y}",
 
-// include/itemfunc.php, row 682
+// include/itemfunc.php, row 696
 "Multivalue" => "Multivalor",
 
-// include/itemfunc.php, row 690
+// include/itemfunc.php, row 704
 // include/transformation.class.php, row 525
 "Delimiter" => "Delimitador",
 
-// include/itemfunc.php, row 781
+// include/itemfunc.php, row 795
 "Slice with id '%1' is not valid." => "El canal con id '%1' no es válido.",
 
-// include/itemfunc.php, row 881
+// include/itemfunc.php, row 895
 "Text = don't modify" => "Texto = no modificar",
 
-// include/itemfunc.php, row 882
+// include/itemfunc.php, row 896
 "Does not modify the value." => "No modifica el valor.",
 
-// include/itemfunc.php, row 887
+// include/itemfunc.php, row 901
 "Date = don't modify" => "Fecha = no modificar",
 
-// include/itemfunc.php, row 888, 897
+// include/itemfunc.php, row 902, 911
 "Does not modify the value (just like Text), but it is better to separate it for future usage." => "No modifica el valor (igual que Texto), pero es mejor separarlo para usos futuros.",
 
-// include/itemfunc.php, row 896
+// include/itemfunc.php, row 910
 "Number = don't modify" => "Número = no modificar",
 
-// include/itemfunc.php, row 902
+// include/itemfunc.php, row 916
 "Boolean = store 0 or 1" => "Booleano = guardar 0 o 1",
 
-// include/itemfunc.php, row 913
-"Float" => "",
+// include/itemfunc.php, row 927
+"Float" => "Flotante", // ai 2026-06
 
-// include/itemfunc.php, row 914
+// include/itemfunc.php, row 928
 "Real float - could convert big numbers to scientific notation (1.23E+29)" => "Float real - puede convertir números grandes a notación científica (1.23E+29)",
 
-// include/itemfunc.php, row 924
+// include/itemfunc.php, row 938
 "Decimal" => "",
 
-// include/itemfunc.php, row 925
+// include/itemfunc.php, row 939
 "The same as Float, but does not convert big numbers to  scientific notation (1.23E+29)" => "Igual que Float, pero no convierte números grandes a notación científica (1.23E+29)",
 
-// include/itemfunc.php, row 935
+// include/itemfunc.php, row 949
 "Trim" => "Recortar",
 
-// include/itemfunc.php, row 936
+// include/itemfunc.php, row 950
 "Remove whitespaces from beginning and end and also normalize UTF (NFC)" => "Elimina los espacios al principio y al final y además normaliza UTF (NFC)",
 
-// include/itemfunc.php, row 947
+// include/itemfunc.php, row 961
 "Item IDs" => "ID",
 
-// include/itemfunc.php, row 1014
+// include/itemfunc.php, row 1028
 "User ID = always store current user ID" => "ID de usuario = guardar siempre el ID del usuario actual",
 
-// include/itemfunc.php, row 1015
+// include/itemfunc.php, row 1029
 "Inserts the identity of the current user, no matter what the user sets." => "Inserta la identidad del usuario actual, sin importar lo que el usuario indique.",
 
-// include/itemfunc.php, row 1056
+// include/itemfunc.php, row 1070
 "Now = always store current time" => "Ahora = guardar siempre la hora actual",
 
-// include/itemfunc.php, row 1057
+// include/itemfunc.php, row 1071
 "Inserts the current time, no matter what the user sets." => "Inserta la hora actual, sin importar lo que el usuario indique.",
 
-// include/itemfunc.php, row 1087
+// include/itemfunc.php, row 1101
 "Computed field for INSERT/UPDATE" => "Campo calculado para INSERT/UPDATE",
 
-// include/itemfunc.php, row 1088
+// include/itemfunc.php, row 1102
 "The field is the result of expression written in \"Code for unaliasing\". It is a good solution for all values, which could be precomputed, since its computation on item-show-time would be slow. Yes, you can use {view...}, {include...}, {switch...} here" => "El campo es el resultado de la expresión escrita en \"Código para resolver alias\". Es una buena solución para todos los valores que pueden precalcularse, ya que calcularlos al mostrar el ítem sería lento. Sí, aquí puede usar {view...}, {include...}, {switch...}",
 
-// include/itemfunc.php, row 1095
+// include/itemfunc.php, row 1109
 "Code for unaliasing (INSERT)" => "Código para resolver alias (INSERT)",
 
-// include/itemfunc.php, row 1095, 1124
+// include/itemfunc.php, row 1109, 1138
 "There you can write any string. The string will be unaliased on item store, so you can use any {...} construct as well as field aliases here" => "Ahí puede escribir cualquier cadena. La cadena se resolverá al guardar el ítem, así que puede usar cualquier construcción {...} y también alias de campo",
 
-// include/itemfunc.php, row 1096
+// include/itemfunc.php, row 1110
 "Code for unaliasing (UPDATE)" => "Código para resolver alias (UPDATE)",
 
-// include/itemfunc.php, row 1096
+// include/itemfunc.php, row 1110
 "The same as above, but just for UPDATE operation. If unfilled, the value of the field stays unchanged" => "Igual que el anterior, pero solo para la operación UPDATE. Si no se rellena, el valor del campo no cambia",
 
-// include/itemfunc.php, row 1097
+// include/itemfunc.php, row 1111
 "Multivalue delimiter" => "Delimitador de multivalor",
 
-// include/itemfunc.php, row 1097
+// include/itemfunc.php, row 1111
 "Character or string, which will split the computed string into multiple values (the same field)" => "Carácter o cadena que dividirá la cadena calculada en múltiples valores (del mismo campo)",
 
-// include/itemfunc.php, row 1098
+// include/itemfunc.php, row 1112
 "Recompute every" => "Recalcular cada",
 
-// include/itemfunc.php, row 1098
+// include/itemfunc.php, row 1112
 "The field will be recomputed every minute, hour, ... (using UPDATE code above). The times are not exact - the minute means something 1-10 minutes. If not filled, the field will be recomputed only on insert/update of the item." => "El campo se recalculará cada minuto, hora, ... (usando el código UPDATE anterior). Los tiempos no son exactos - minuto significa entre 1 y 10 minutos. Si no se rellena, el campo solo se recalculará al insertar/actualizar el ítem.",
 
-// include/itemfunc.php, row 1116
+// include/itemfunc.php, row 1130
 "Computed field" => "Campo calculado",
 
-// include/itemfunc.php, row 1117
+// include/itemfunc.php, row 1131
 "The field is the result of expression written in \\\"Code for unaliasing\\\". It is good solution for all values, which could be precomputed, since its computation on item-show-time would be slow. Yes, you can use {view...}, {include...}, {switch...} here" => "El campo es el resultado de la expresión escrita en \\\"Código para resolver alias\\\". Es una buena solución para todos los valores que pueden precalcularse, ya que calcularlos al mostrar el ítem sería lento. Sí, aquí puede usar {view...}, {include...}, {switch...}",
 
-// include/itemfunc.php, row 1124
+// include/itemfunc.php, row 1138
 "Code for unaliasing (INSERT+UPDATE)" => "Código para resolver alias (INSERT+UPDATE)",
 
-// include/itemfunc.php, row 1144
+// include/itemfunc.php, row 1158
 "SEO Name" => "Nombre SEO",
 
-// include/itemfunc.php, row 1145
+// include/itemfunc.php, row 1159
 "If the field is not filled, compute seoname from _#HEADLINE alias (or another if specified) unique to all slices in sitemodules, where the slice is mentioned in \"Uses slices\" settings. Basically the SEO Name alias is shortcut for computed field with {ifset:{seo.............}:_#1:{seoname:{_#HEADLINE}:all:CHARSET}}" => "Si el campo no está relleno, calcula el seoname a partir del alias _#HEADLINE (u otro si se especifica), único entre todos los canales de los módulos de sitio donde el canal aparece en la configuración \"Uses slices\". Básicamente, el alias Nombre SEO es un atajo de un campo calculado con {ifset:{seo.............}:_#1:{seoname:{_#HEADLINE}:all:CHARSET}}",
 
-// include/itemfunc.php, row 1152
+// include/itemfunc.php, row 1166
 "Alias to compute from" => "Alias desde el que calcular",
 
-// include/itemfunc.php, row 1152
+// include/itemfunc.php, row 1166
 "if not specified, the _#HEADLINE is used" => "si no se especifica, se usa _#HEADLINE",
 
-// include/itemfunc.php, row 1167
+// include/itemfunc.php, row 1181
 "Unique number for this field (from 1,..)" => "Número único para este campo (desde 1,..)",
 
-// include/itemfunc.php, row 1168
+// include/itemfunc.php, row 1182
 "Unique number in sequence 1,2,3,..." => "Número único en la secuencia 1,2,3,...",
 
-// include/itemfunc.php, row 1190
+// include/itemfunc.php, row 1204
 "File = uploaded file" => "Archivo = archivo subido",
 
-// include/itemfunc.php, row 1191
+// include/itemfunc.php, row 1205
 "Stores the uploaded file and a link to it, parameters only apply if type is image/something." => "Guarda el archivo subido y un enlace a él; los parámetros solo se aplican si el tipo es image/algo.",
 
-// include/itemfunc.php, row 1198
+// include/itemfunc.php, row 1212
 "Mime types accepted" => "Tipos MIME aceptados",
 
-// include/itemfunc.php, row 1198
+// include/itemfunc.php, row 1212
 "Only files of matching mime types will be accepted" => "Solo se aceptarán archivos cuyo tipo MIME coincida",
 
-// include/itemfunc.php, row 1199
+// include/itemfunc.php, row 1213
 "Maximum image width" => "Ancho máximo de la imagen",
 
-// include/itemfunc.php, row 1200
+// include/itemfunc.php, row 1214
 "Maximum image height" => "Alto máximo de la imagen",
 
-// include/itemfunc.php, row 1200
+// include/itemfunc.php, row 1214
 "The image will be resampled to be within these limits, while retaining aspect ratio." => "La imagen se remuestreará para ajustarse a estos límites, manteniendo la relación de aspecto.",
 
-// include/itemfunc.php, row 1201
+// include/itemfunc.php, row 1215
 "Other fields" => "Otros campos",
 
-// include/itemfunc.php, row 1201
+// include/itemfunc.php, row 1215
 "List of other fields to receive this image, separated by ##. Does not work well for multi uploads." => "Lista de otros campos que recibirán esta imagen, separados por ##. No funciona bien con subidas múltiples.",
 
-// include/itemfunc.php, row 1202
+// include/itemfunc.php, row 1216
 "Upload policy" => "Política de subida",
 
-// include/itemfunc.php, row 1202
+// include/itemfunc.php, row 1216
 "new | overwrite | backup<br>This parameter controls what to do if uploaded file alredy exists:<br>new - AA creates new filename (by adding _x postfix) and store it with this new name (default)<br>overwrite - the old file of the same name is overwritten<br>backup - the old file is copied to new (non-existing) file and current file is stored with current name.<br>In all cases the filename is escaped, so any non-word characters will be replaced by an underscore." => "new | overwrite | backup<br>Este parámetro controla qué hacer si el archivo subido ya existe:<br>new - AA crea un nuevo nombre de archivo (añadiendo el sufijo _x) y lo guarda con ese nuevo nombre (predeterminado)<br>overwrite - el archivo antiguo del mismo nombre se sobrescribe<br>backup - el archivo antiguo se copia a un archivo nuevo (inexistente) y el archivo actual se guarda con el nombre actual.<br>En todos los casos el nombre de archivo se escapa, de modo que cualquier carácter no alfanumérico se reemplaza por un guion bajo.",
 
-// include/itemfunc.php, row 1203
+// include/itemfunc.php, row 1217
 "Exact dimensions" => "Dimensiones exactas",
 
-// include/itemfunc.php, row 1203
+// include/itemfunc.php, row 1217
 "If set to 1 the image will be downsized exactly to the specified dimensions (and cropped if needed). Default is 0 or empty: Maintain aspect ratio while resizing the image." => "Si se establece en 1, la imagen se reducirá exactamente a las dimensiones especificadas (y se recortará si es necesario). El valor predeterminado es 0 o vacío: mantener la relación de aspecto al redimensionar la imagen.",
 
-// include/itemfunc.php, row 1204
+// include/itemfunc.php, row 1218
 "Filename template" => "Plantilla del nombre de archivo",
 
-// include/itemfunc.php, row 1204
+// include/itemfunc.php, row 1218
 "Renames file according to template. You can use AA expressions as well as special alias _#name and _#ext or _#full (file name, extension and fullname). The item aliases in AA expressions do not work on INSERT (item does not exist at time of file write). They will work on UPDATE." => "Renombra el archivo según la plantilla. Puede usar expresiones AA y también los alias especiales _#name y _#ext o _#full (nombre de archivo, extensión y nombre completo). Los alias de ítem en expresiones AA no funcionan en INSERT (el ítem no existe en el momento de escribir el archivo). Funcionarán en UPDATE.",
 
-// include/itemfunc.php, row 1361
+// include/itemfunc.php, row 1375
 "Password and Change Password" => "Contraseña y Cambiar contraseña",
 
-// include/itemfunc.php, row 1362
+// include/itemfunc.php, row 1376
 "Stores value from a \"Password and Change Password\" field type. First proves the new password matches the retyped new password, and if so, encrypts the new password and stores it." => "Guarda el valor de un campo de tipo \"Contraseña y Cambiar contraseña\". Primero verifica que la nueva contraseña coincida con la nueva contraseña reescrita y, si es así, cifra la nueva contraseña y la guarda.",
 
-// include/itemfunc.php, row 1369
+// include/itemfunc.php, row 1383
 "Copy of password" => "Copia de la contraseña",
 
-// include/itemfunc.php, row 1369
+// include/itemfunc.php, row 1383
 "Field_id, where you want to store the copy of the password. Sometimes useful if you want to allow people to get his/her old password. It is strongly recommended to not store it in plaintext and encrypt it. See second parameter." => "Field_id donde desea guardar la copia de la contraseña. A veces es útil si quiere permitir que las personas recuperen su contraseña anterior. Se recomienda encarecidamente no guardarla en texto plano y cifrarla. Vea el segundo parámetro.",
 
-// include/itemfunc.php, row 1370, 1409
+// include/itemfunc.php, row 1384, 1423
 "Encrypt phrase" => "Frase de cifrado",
 
-// include/itemfunc.php, row 1370
+// include/itemfunc.php, row 1384
 "If you specify the \"Copy of password\" field, it is recommended to encrypt the password in the database. Fill there any string. If you then need the password, you can decrypt it from the field by using the same phrase - {decrypt:{password.......1}:Some Phrase}" => "Si especifica el campo \"Copia de la contraseña\", se recomienda cifrar la contraseña en la base de datos. Escriba ahí cualquier cadena. Si luego necesita la contraseña, puede descifrarla del campo usando la misma frase - {decrypt:{password.......1}:Some Phrase}",
 
-// include/itemfunc.php, row 1401
+// include/itemfunc.php, row 1415
 "2FA Secret" => "Secreto 2FA",
 
-// include/itemfunc.php, row 1402
+// include/itemfunc.php, row 1416
 "Generates and stores secret for Two-factor authentication, possibly encrypted by password" => "Genera y guarda el secreto para la autenticación de dos factores, opcionalmente cifrado con contraseña",
 
-// include/itemfunc.php, row 1409
+// include/itemfunc.php, row 1423
 "Password to be applied for encrypting this field value. Could contain AA expressions or aliases (for user item in Reader Management slice)" => "Contraseña que se aplicará para cifrar el valor de este campo. Puede contener expresiones AA o alias (del ítem del usuario en el canal de Gestión de lectores)",
 
 // include/itemview.php, row 117
@@ -5230,65 +5236,143 @@ return [
 // include/locauth.php, row 87
 "If you are sure you have typed the correct password, please e-mail <a href=mailto:%1>%1</a>" => "Si Usted está seguro que tecleó bien su clave de acceso, por favor contacte a <a href=mailto:%1>%1</a>.",
 
-// include/logs.php, row 306
+// include/logs.php, row 336
 "Created time" => "Fecha de creación",
 
-// include/logs.php, row 307
+// include/logs.php, row 337
 "Readers to be emailed" => "Lectores a los que enviar correo",
 
-// include/logs.php, row 317
+// include/logs.php, row 347
 "Page" => "Página",
 
-// include/logs.php, row 327, 351, 364
+// include/logs.php, row 357, 397, 410
 "Time [s]" => "Tiempo [s]",
 
-// include/logs.php, row 328, 353
+// include/logs.php, row 358, 399
 "Memory usage [MB]" => "Uso de memoria [MB]",
 
-// include/logs.php, row 329
+// include/logs.php, row 359
 "Memory peak [MB]" => "Pico de memoria [MB]",
 
-// include/logs.php, row 330
+// include/logs.php, row 360
 "Return code" => "Código de retorno",
 
-// include/logs.php, row 349
-"Cached" => "En caché",
-
-// include/logs.php, row 350
-"Not Modified (304)" => "No modificado (304)",
-
-// include/logs.php, row 352
-"Time + Cached + 304" => "Tiempo + En caché + 304",
-
-// include/logs.php, row 354, 365, 397
-"Url" => "",
+// include/logs.php, row 374
+"Tasks done" => "Tareas completadas", // ai 2026-06
 
 // include/logs.php, row 375
+"Tasks started" => "Tareas iniciadas", // ai 2026-06
+
+// include/logs.php, row 376
+"Duration [s]" => "Duración [s]", // ai 2026-06
+
+// include/logs.php, row 377
+"Allowed [s]" => "Permitido [s]", // ai 2026-06
+
+// include/logs.php, row 395
+"Cached" => "En caché",
+
+// include/logs.php, row 396
+"Not Modified (304)" => "No modificado (304)",
+
+// include/logs.php, row 398
+"Time + Cached + 304" => "Tiempo + En caché + 304",
+
+// include/logs.php, row 400, 411, 443, 475
+"Url" => "URL", // ai 2026-06
+
+// include/logs.php, row 421
 // include/menu_util.php, row 45
 "AA" => "",
 
-// include/logs.php, row 376
+// include/logs.php, row 422
 "SVN AA (util.php)" => "",
 
-// include/logs.php, row 377
+// include/logs.php, row 423
 "PHP" => "",
 
-// include/logs.php, row 378
+// include/logs.php, row 424
 "DB" => "",
 
-// include/logs.php, row 379
+// include/logs.php, row 425
 "Memory" => "Memoria",
 
-// include/logs.php, row 380
+// include/logs.php, row 426
 "CPU" => "",
 
-// include/logs.php, row 394
+// include/logs.php, row 440
 "Identifier" => "Identificador",
 
-// include/logs.php, row 395
+// include/logs.php, row 441, 570, 583
 // modules/jump/modedit.php, row 180
 // src/Manager.php, row 584
 "Module ID" => "ID del módulo",
+
+// include/logs.php, row 452
+"Template id" => "Id de plantilla", // ai 2026-06
+
+// include/logs.php, row 454
+"Emails sent" => "Emails enviados", // ai 2026-06
+
+// include/logs.php, row 463
+"Items selected" => "Ítems seleccionados", // ai 2026-06
+
+// include/logs.php, row 464
+"Items updated" => "Ítems actualizados", // ai 2026-06
+
+// include/logs.php, row 465
+"Items planned" => "Ítems planificados", // ai 2026-06
+
+// include/logs.php, row 474
+"Message" => "Mensaje", // ai 2026-06
+
+// include/logs.php, row 476
+"Referer" => "",
+
+// include/logs.php, row 485
+"New name" => "Nombre nuevo", // ai 2026-06
+
+// include/logs.php, row 486
+"Old name" => "Nombre antiguo", // ai 2026-06
+
+// include/logs.php, row 495, 518
+"Phase" => "Fase", // ai 2026-06
+
+// include/logs.php, row 496
+"Collection" => "Colección", // ai 2026-06
+
+// include/logs.php, row 498, 509, 519
+"Detail" => "Detalle", // ai 2026-06
+
+// include/logs.php, row 508
+"Status" => "Estado", // ai 2026-06
+
+// include/logs.php, row 529
+"Processed" => "Procesados", // ai 2026-06
+
+// include/logs.php, row 530
+"Stored" => "Almacenados", // ai 2026-06
+
+// include/logs.php, row 531
+"Errors" => "Errores", // ai 2026-06
+
+// include/logs.php, row 542
+"Outcome" => "Resultado", // ai 2026-06
+
+// include/logs.php, row 555
+"Mode" => "Modo", // ai 2026-06
+
+// include/logs.php, row 556
+"Flags" => "Banderas", // ai 2026-06
+
+// include/logs.php, row 557
+"Context" => "Contexto", // ai 2026-06
+
+// include/logs.php, row 571
+"Feed counterpart" => "Contraparte de alimentación", // ai 2026-06
+
+// include/logs.php, row 584
+"Field ID" => "ID Campo",
 
 // include/mail.php, row 563
 // include/tv_email.php, row 77, 145
@@ -5318,156 +5402,156 @@ return [
 // include/menu.php, row 65
 "View site" => "Ver Canal",
 
-// include/menu.php, row 84, 85, 137
+// include/menu.php, row 90, 91, 142
 "Item Manager" => "Administrador de ítems",
 
-// include/menu.php, row 93
+// include/menu.php, row 99
 "Slice Admin" => "Administración Canal",
 
-// include/menu.php, row 94
+// include/menu.php, row 100
 "Slice Administration" => "Adminstración de Canal",
 
-// include/menu.php, row 125
+// include/menu.php, row 131
 // src/Module/Poll/Menu.php, row 82
 "Main settings" => "Propiedades generales",
 
-// include/menu.php, row 128
+// include/menu.php, row 134
 "Slice Fields" => "Campos del Canal",
 
-// include/menu.php, row 129
+// include/menu.php, row 135
 "Email Notification" => "Notificación por correo electrónico",
 
-// include/menu.php, row 132
+// include/menu.php, row 137
 // include/menu_util.php, row 69
 // include/um_util.php, row 100, 103
 "Permissions" => "Permisos",
 
-// include/menu.php, row 133
+// include/menu.php, row 138
 "Assign" => "Asignar",
 
-// include/menu.php, row 136
+// include/menu.php, row 141
 "Design" => "Diseño",
 
-// include/menu.php, row 139
+// include/menu.php, row 144
 "Fulltext" => "Texto completo",
 
-// include/menu.php, row 140
+// include/menu.php, row 145
 "Index" => "Listado",
 
-// include/menu.php, row 142
+// include/menu.php, row 147
 "Sets of Items" => "Conjuntos de ítems",
 
-// include/menu.php, row 144
+// include/menu.php, row 149
 "Content Pooling" => "Compartir contenido",
 
-// include/menu.php, row 145
+// include/menu.php, row 150
 "Nodes" => "Nodos",
 
-// include/menu.php, row 146
+// include/menu.php, row 151
 "Inner Node Feeding" => "Alimentación Canales Internos",
 
-// include/menu.php, row 148
+// include/menu.php, row 153
 "Inter Node Export" => "Exportación a Nodos Externos",
 
-// include/menu.php, row 149
+// include/menu.php, row 154
 "RSS Feeds" => "Alimentación RSS",
 
-// include/menu.php, row 150
+// include/menu.php, row 155
 "Filters" => "Filtros",
 
-// include/menu.php, row 151
+// include/menu.php, row 156
 "Mapping" => "Correspondencia de Campos",
 
-// include/menu.php, row 152, 214
+// include/menu.php, row 157, 219
 "Import CSV" => "Importar CSV",
 
-// include/menu.php, row 153
+// include/menu.php, row 158
 // src/Manageraction/Item_Export.php, row 20
 "Export to file" => "Exportar a archivo",
 
-// include/menu.php, row 155, 211
-// include/menu_util.php, row 73, 124
+// include/menu.php, row 160, 216
+// include/menu_util.php, row 73, 123
 // src/Module/Poll/Menu.php, row 67
 "Misc" => "Otras opciones",
 
-// include/menu.php, row 158
+// include/menu.php, row 163
 "Change field IDs" => "Cambiar IDs campos",
 
-// include/menu.php, row 161
+// include/menu.php, row 166
 "Anonymous Form Wizard" => "Asistente Publicación Anónima",
 
-// include/menu.php, row 162
+// include/menu.php, row 167
 // include/tv_email.php, row 134
 "Email templates" => "Plantillas Correo-e",
 
-// include/menu.php, row 164
+// include/menu.php, row 169
 // include/menu_util.php, row 75
 "Planned Tasks" => "Tareas planificadas",
 
-// include/menu.php, row 172
+// include/menu.php, row 177
 "Mailman: create list" => "Mailman: crear lista",
 
-// include/menu.php, row 180
-// include/menu_util.php, row 119
+// include/menu.php, row 185
+// include/menu_util.php, row 118
 // src/Module/Poll/Menu.php, row 60
 "Folders" => "Carpetas",
 
-// include/menu.php, row 183
+// include/menu.php, row 188
 // src/Module/Poll/Menu.php, row 62
 "... pending" => "... pendientes",
 
-// include/menu.php, row 184
+// include/menu.php, row 189
 // src/Module/Poll/Menu.php, row 63
 "... expired" => "... caducados",
 
-// include/menu.php, row 186
-// include/menu_util.php, row 122
+// include/menu.php, row 191
+// include/menu_util.php, row 121
 // src/Module/Poll/Menu.php, row 65
 "Trash bin" => "Papelera",
 
-// include/menu.php, row 202
+// include/menu.php, row 207
 "Bookmarks" => "Marcadores",
 
-// include/menu.php, row 212
+// include/menu.php, row 217
 "Setting" => "Propiedad",
 
-// include/menu.php, row 213
-// include/menu_util.php, row 127
+// include/menu.php, row 218
+// include/menu_util.php, row 126
 // src/Module/Poll/Menu.php, row 68
 "Empty trash" => "Vaciar papelera",
 
-// include/menu.php, row 213
-// include/menu_util.php, row 127
+// include/menu.php, row 218
+// include/menu_util.php, row 126
 // src/Module/Poll/Menu.php, row 68
 "Are you sure you want to empty trash?" => "Está seguro de vaciar la papelera?",
 
-// include/menu.php, row 215
+// include/menu.php, row 220
 "Set Debug OFF" => "Apagar Debug",
 
-// include/menu.php, row 215
+// include/menu.php, row 220
 "Set Debug ON" => "Prender Debug",
 
-// include/menu.php, row 225
-// include/menu_util.php, row 420, 595
+// include/menu.php, row 230
+// include/menu_util.php, row 419, 726
 // include/slice.class.php, row 1194
 "Alerts" => "Alertas",
 
-// include/menu.php, row 225
+// include/menu.php, row 230
 "List of Alerts modules using this slice as Reader Management." => "Lista de módulos de alertas utilizando este canal como Gestor de Lectura.",
 
-// include/menu.php, row 227
+// include/menu.php, row 232
 "Bulk Emails" => "Correos Masivos",
 
-// include/menu.php, row 227
+// include/menu.php, row 232
 "Send bulk email to selected users or to users in Stored searches" => "Enviar correo masivo a los usuarios seleccionados o a usuarios en búsquedas almacenadas",
 
-// include/menu.php, row 231
+// include/menu.php, row 236
 "Send emails" => "Enviar mensajes",
 
-// include/menu.php, row 240
+// include/menu.php, row 245
 "Alerts Sent" => "Alertas enviadas",
 
-// include/menu.php, row 240
+// include/menu.php, row 245
 "List of Alerts modules sending items from this slice." => "Lista de módulos Alerta enviando ítems desde este canal.",
 
 // include/menu_util.php, row 46
@@ -5503,76 +5587,97 @@ return [
 // include/menu_util.php, row 95
 "Wizard" => "Asistente",
 
-// include/menu_util.php, row 97
+// include/menu_util.php, row 96
 "Welcomes" => "Bienvenida",
 
-// include/menu_util.php, row 98
+// include/menu_util.php, row 97
 "Templates" => "Plantillas",
 
-// include/menu_util.php, row 100
+// include/menu_util.php, row 99
 "Documentation" => "Documentación",
 
-// include/menu_util.php, row 101
+// include/menu_util.php, row 100
 "Style Guide" => "Guía de estilo",
 
-// include/menu_util.php, row 107
+// include/menu_util.php, row 106
 "Central" => "",
 
-// include/menu_util.php, row 108
+// include/menu_util.php, row 107
 "AA Central" => "",
 
-// include/menu_util.php, row 125
+// include/menu_util.php, row 124
 "Synchronize..." => "Sincronizar...",
 
-// include/menu_util.php, row 126
+// include/menu_util.php, row 125
 "Copy Slice..." => "Copiar canal...",
 
-// include/menu_util.php, row 128
+// include/menu_util.php, row 127
 "Import conf from CSV..." => "Importar configuración desde CSV...",
 
-// include/menu_util.php, row 398
+// include/menu_util.php, row 397
 "Part of %s" => "Parte de %s",
 
-// include/menu_util.php, row 415
+// include/menu_util.php, row 414
 "Other slices" => "Otros canales",
 
-// include/menu_util.php, row 419
+// include/menu_util.php, row 418
 "Reader Management Slice" => "Canal de Suscriptores",
 
-// include/menu_util.php, row 421
+// include/menu_util.php, row 420
 "Jump inside control panel" => "Ir al panel de control",
 
-// include/menu_util.php, row 422
+// include/menu_util.php, row 421
 // include/slice.class.php, row 1226
 "Links" => "Enlaces",
 
-// include/menu_util.php, row 423
+// include/menu_util.php, row 422
 "MySQL Auth (old version)" => "MySQL Auth (versión vieja)",
 
-// include/menu_util.php, row 424
+// include/menu_util.php, row 423
 // src/Module/Poll/Menu.php, row 83
 "Polls" => "Encuestas",
 
-// include/menu_util.php, row 445
+// include/menu_util.php, row 444
 "New slice" => "Nuevo canal",
 
-// include/menu_util.php, row 449
+// include/menu_util.php, row 448
 "Switch module" => "Cambiar de módulo",
 
-// include/menu_util.php, row 599
+// include/menu_util.php, row 578, 589
+"Apply" => "Aplicar", // ai 2026-06
+
+// include/menu_util.php, row 582
+"-- Default for module --" => "-- Predeterminado para el módulo --", // ai 2026-06
+
+// include/menu_util.php, row 590
+"Switches the admin interface language; the page reloads." => "Cambia el idioma de la interfaz de administración; la página se recarga.", // ai 2026-06
+
+// include/menu_util.php, row 598
+"What's working, what isn't — tell the AA team." => "Qué funciona y qué no — díganselo al equipo de AA.", // ai 2026-06
+
+// include/menu_util.php, row 601
+"Settings" => "Configuración",
+
+// include/menu_util.php, row 604
+"Theme" => "Tema", // ai 2026-06
+
+// include/menu_util.php, row 606
+"Feedback" => "Comentarios", // ai 2026-06
+
+// include/menu_util.php, row 730
 // include/slice.class.php, row 554
 "Reader management" => "Administración Suscriptores",
 
-// include/menu_util.php, row 611
+// include/menu_util.php, row 742
 "logout" => "Salir",
 
-// include/menu_util.php, row 619
+// include/menu_util.php, row 750
 "Search.." => "Buscar..",
 
-// include/menu_util.php, row 686
+// include/menu_util.php, row 829
 "Copyright (C) 2001 the <a href=\"https://www.apc.org\">Association for Progressive Communications (APC)</a>" => "(C) Todos los derechos reservados <a href=\"https://www.apc.org\">Asociación para el Progreso de las Comunicaciones - APC</a> ",
 
-// include/menu_util.php, row 696
+// include/menu_util.php, row 839
 "Collapse / expand menu" => "Contraer / expandir menú",
 
 // include/metabase.class.php, row 1572
@@ -5628,7 +5733,7 @@ return [
 // include/profile.class.php, row 343, 353, 362, 371, 380, 389, 397
 "Rule added" => "Regla añadida",
 
-// include/profile.php, row 107
+// include/profile.php, row 109
 "--disabled-- (added by \"Show field\" rule)" => "--deshabilitado-- (añadido por la regla \"Mostrar campo\")",
 
 // include/request.class.php, row 213
@@ -5650,7 +5755,7 @@ return [
 "Reader" => "Lector",
 
 // include/se_users.php, row 78
-"ReaderGroup" => "",
+"ReaderGroup" => "Grupo de lectores", // ai 2026-06
 
 // include/se_users.php, row 126
 "Search user or group" => "Buscar usuario o grupo",
@@ -5694,43 +5799,43 @@ return [
 // include/searchbar.class.php, row 595
 "Order" => "Orden",
 
-// include/searchbar.class.php, row 662
+// include/searchbar.class.php, row 664
 "Advanced search" => "Búsqueda avanzada",
 
-// include/searchbar.class.php, row 720
+// include/searchbar.class.php, row 729
 "Refine" => "Refinar",
 
-// include/searchbar.class.php, row 723
+// include/searchbar.class.php, row 732
 "Share with all slice users" => "Compartir con todos los usuarios del canal",
 
-// include/searchbar.class.php, row 724
+// include/searchbar.class.php, row 733
 "Save filter" => "Guardar filtro",
 
-// include/searchbar.class.php, row 725
+// include/searchbar.class.php, row 734
 "Rename filter" => "Renombrar filtro",
 
-// include/searchbar.class.php, row 726
+// include/searchbar.class.php, row 735
 "Are you sure you want to delete selected filter?" => "¿Está seguro de que desea eliminar el filtro seleccionado?",
 
-// include/searchbar.class.php, row 1008
+// include/searchbar.class.php, row 1017
 "Select one..." => "Selecionar uno...",
 
-// include/searchbar.class.php, row 1023
+// include/searchbar.class.php, row 1032
 "My filters" => "Mis filtros",
 
-// include/searchbar.class.php, row 1026
+// include/searchbar.class.php, row 1035
 "Global filters" => "Filtros globales",
 
-// include/searchbar.class.php, row 1064
+// include/searchbar.class.php, row 1073
 "Shared filter (click to apply)" => "Filtro compartido (clic para aplicar)",
 
-// include/searchbar.class.php, row 1064
+// include/searchbar.class.php, row 1073
 "Personal filter (click to apply)" => "Filtro personal (clic para aplicar)",
 
-// include/searchbar.class.php, row 1074
+// include/searchbar.class.php, row 1083
 "Rename" => "Renombrar",
 
-// include/searchbar.class.php, row 1085
+// include/searchbar.class.php, row 1094
 "Manage filters" => "Gestionar filtros",
 
 // include/searchlib.php, row 54
@@ -6042,6 +6147,9 @@ return [
 // include/stringexpand.php, row 7716
 "version" => "versión",
 
+// include/stringexpand.php, row 7900
+"show" => "mostrar",
+
 // include/stringexpand.php, row 7901
 "hide" => "ocultar",
 
@@ -6175,21 +6283,6 @@ return [
 // include/tabledit_util.php, row 670
 "Wrong value: a number between %1 and %2 is expected." => "Valor erroneo: se espera un número entre %1 y %2.",
 
-// include/tableviews.php, row 59, 60
-"Polls Design" => "Diseño Encuesta",
-
-// include/tableviews.php, row 66, 102
-"Comment" => "Comentario",
-
-// include/tableviews.php, row 88
-"Module Id" => "Id del módulo",
-
-// include/tableviews.php, row 104
-"design description (for administrators only)" => "descripción del diseño (administradores solamente)",
-
-// include/tableviews.php, row 111
-"Answer HTML" => "Respuesta HTML",
-
 // include/transformation.class.php, row 149
 "Fill by value" => "Rellenar con valor",
 
@@ -6301,30 +6394,6 @@ return [
 // include/tv_email.php, row 168
 "Sender" => "Remitente",
 
-// include/tv_misc.php, row 131
-"COUNT_HIT events will be used for counting item hits. After a while it will be automatically deleted." => "Los eventos COUNT_HIT se utilizarán para contar consultas a ítems. Después de un tiempo serán borrados automáticamente",
-
-// include/tv_misc.php, row 139, 140
-"Log view" => "Ver Log",
-
-// include/tv_misc.php, row 162
-"See searchlog=1 parameter for slice.php in FAQ: " => "Ver el parámetro searchlog=1 para slice.php en el FAQ: ",
-
-// include/tv_misc.php, row 170, 171
-"SearchLog view" => "Ver Log de búsqueda",
-
-// include/tv_misc.php, row 175
-"items found" => "ítems encontrados",
-
-// include/tv_misc.php, row 176
-"search time" => "hora de búsqueda",
-
-// include/tv_misc.php, row 177
-"addition" => "adición",
-
-// include/tv_misc.php, row 198, 199
-"Configure Fields" => "Configurar Campos",
-
 // include/um_gedit.php, row 43
 "It is impossible to add group to permission system" => "Imposible añadir el grupo al sistema de permisos",
 
@@ -6343,10 +6412,10 @@ return [
 // include/um_util.php, row 358
 "Can't change user" => "No se puede cambiar de usuario",
 
-// include/util.php, row 1300
+// include/util.php, row 1304
 "Toolkit news message" => "Mensaje de las aa",
 
-// include/util.php, row 1314
+// include/util.php, row 1318
 "Relogin" => "Volver a iniciar sesión",
 
 // include/validate.php, row 52
@@ -6473,10 +6542,10 @@ return [
 "persistent" => "",
 
 // include/widget.class.php, row 173
-"validator" => "",
+"validator" => "validador", // ai 2026-06
 
 // include/widget.class.php, row 174
-"required" => "",
+"required" => "requerido", // ai 2026-06
 
 // include/widget.class.php, row 175
 "input_help" => "",
@@ -6692,10 +6761,10 @@ return [
 // src/AA_Plannedtask.php, row 224
 "next run" => "próxima ejecución",
 
-// src/IO/Grabber/AARSS.php, row 116
+// src/IO/Grabber/AARSS.php, row 117
 "AA RSS" => "",
 
-// src/IO/Grabber/AARSS.php, row 124
+// src/IO/Grabber/AARSS.php, row 125
 "Grabs data from generic RSS or AA RSS (used for item exchange between different AA installations)" => "Obtiene datos de un RSS genérico o de AA RSS (usado para el intercambio de ítems entre distintas instalaciones de AA)",
 
 // src/IO/Grabber/CSV.php, row 66
@@ -6890,7 +6959,7 @@ return [
 "Searchbar" => "Barra de búsqueda",
 
 // src/Manager.php, row 581
-"Scroller" => "",
+"Scroller" => "Paginación", // ai 2026-06
 
 // src/Manager.php, row 582
 "Msg" => "",
@@ -7338,7 +7407,7 @@ return [
 // src/Optimize/BackupTables.php, row 27
 // src/Optimize/RestoreBckTables.php, row 27
 // src/Optimize/UpdateDbStructure.php, row 31
-"[experimental] " => "",
+"[experimental] " => "[experimental]", // ai 2026-06
 
 // src/Optimize/BackupTables.php, row 27
 "Deletes all the current backup tables (bck_slice, bck_item, ...) and copies there live tables (slice, item, ...)." => "Elimina todas las tablas de copia de seguridad actuales (bck_slice, bck_item, ...) y copia en ellas las tablas en vivo (slice, item, ...).",
@@ -8174,32 +8243,47 @@ return [
 // src/Util/ChangesMonitor.php, row 93
 "history (%1)" => "historial (%1)",
 
+// src/Util/ChangesMonitor.php, row 336
+"No recorded changes for this item." => "No hay cambios registrados para este ítem.",
+
 // src/Util/ChangesMonitor.php, row 360
 "1 field changed" => "1 campo cambiado",
 
 // src/Util/ChangesMonitor.php, row 360
 "%1 fields changed" => "%1 campos cambiados",
 
-// src/Util/ChangesMonitor.php, row 370, 382
+// src/Util/ChangesMonitor.php, row 369, 456
 "Restore" => "Restaurar",
 
-// src/Util/ChangesMonitor.php, row 377
+// src/Util/ChangesMonitor.php, row 383
+"(this change)" => "(este cambio)", // ai 2026-06
+
+// src/Util/ChangesMonitor.php, row 387, 573, 577
+"Current (live)" => "Actual (en vivo)", // ai 2026-06
+
+// src/Util/ChangesMonitor.php, row 388
+"Compare to" => "Comparar con", // ai 2026-06
+
+// src/Util/ChangesMonitor.php, row 397
 "change %1 | uid %2 | %3 ns | resource %4" => "cambio %1 | uid %2 | %3 ns | recurso %4",
 
-// src/Util/ChangesMonitor.php, row 382
-"vs current" => "vs actual",
+// src/Util/ChangesMonitor.php, row 449
+"View" => "Ver",
 
-// src/Util/ChangesMonitor.php, row 391
-"seq %1" => "",
+// src/Util/ChangesMonitor.php, row 450
+"Diff" => "",
 
-// src/Util/ChangesMonitor.php, row 405
-"no current value" => "sin valor actual",
+// src/Util/ChangesMonitor.php, row 481
+"seq %1" => "sec. %1", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 407
-"same as current" => "igual que el actual",
+// src/Util/ChangesMonitor.php, row 488
+"No change between these versions." => "Sin cambios entre estas versiones.", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 426
-"No recorded changes for this item." => "No hay cambios registrados para este ítem.",
+// src/Util/ChangesMonitor.php, row 511
+"(empty)" => "(vacío)", // ai 2026-06
+
+// src/Util/ChangesMonitor.php, row 571
+"Original" => "",
 
 // src/Util/Imgfunc.php, row 80
 "Cannot copy %1 to %2" => "No se puede copiar %1 a %2",
@@ -8212,6 +8296,9 @@ return [
 
 // src/Util/Searchfields.php, row 183
 "-- any numeric field --" => "-- cualquier campo numérico --",
+
+// src/Util/UiPrefs.php, row 55
+"Gold" => "Oro", // ai 2026-06
 
 // src/Widget/ChbWidget.php, row 80
 "Check Box" => "Selección",
