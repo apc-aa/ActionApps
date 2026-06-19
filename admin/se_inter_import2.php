@@ -55,7 +55,11 @@ try {
     $Msg = InputVars::stringGETPOST('Msg');
 } catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
 
-['server_url'=>$server_url,'password'=>$password] = DB_AA::select1(['server_url', 'password'], "SELECT server_url, password FROM nodes", [['name',$rem_nodes]]);
+$node = DB_AA::select1(['server_url', 'password'], "SELECT server_url, password FROM nodes", [['name',$rem_nodes]]);
+if (!$node) {   // select1() returns false for an unknown node name - avoid a destructure TypeError
+    MsgPage(_m("Unable to connect and/or retrieve data from the remote node. Contact the administrator of the local node."), self_base() . "se_inter_import.php");
+}
+['server_url'=>$server_url,'password'=>$password] = $node;
 
 if (!($data = FeedUtil::xml_fetch($server_url, ORG_NAME, $password, AuthGetUname(), "", 0, ""))) {
     MsgPage(_m("Unable to connect and/or retrieve data from the remote node. Contact the administrator of the local node."), self_base() . "se_inter_import.php");
@@ -63,7 +67,7 @@ if (!($data = FeedUtil::xml_fetch($server_url, ORG_NAME, $password, AuthGetUname
 
 // find out first character of fetched data: if it is not '<' exit
 if (!str_starts_with($data, "<")) {
-    AA_Log::write("CSN", AA_Log::context(), "Establishing mode: $data");
+    AA_Log::write("CSN", AA_Log::context(), new AA_Logentry_Csn(['status' => 'Establishing mode', 'detail' => $data]));
     $err_msg = match ($data) {
         FeedUtil::ERR_NO_SLICE => _m("No slices available. You do not have permissions to import any data of that node. Contact the administrator of the remote slice and check, that he obtained your correct username."),
         FeedUtil::ERR_PASSWORD => _m("Invalid password for the node name:")." ".ORG_NAME.". "._m("Contact the administrator of the local node."),
@@ -74,7 +78,7 @@ if (!str_starts_with($data, "<")) {
 
 // try to parse xml document
 if (!($aa_rss = aa_rss_parse($data))) {
-    AA_Log::write("CSN", AA_Log::context(), "Establishing mode: Unable to parse XML data");
+    AA_Log::write("CSN", AA_Log::context(), new AA_Logentry_Csn(['status' => 'Establishing mode', 'detail' => 'Unable to parse XML data']));
     MsgPage(_m("Unable to connect and/or retrieve data from the remote node. Contact the administrator of the local node."), self_base() . "se_inter_import.php");
 }
 

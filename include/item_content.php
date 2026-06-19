@@ -1032,7 +1032,7 @@ class ItemContent extends AA_Content {
                     return false;
                 case 'LOG':
                     foreach ($invalid as $fld => $msg) {
-                        AA_Log::write('M_FLDI_VLD', ParamImplode([$slice_id,$fld]), new AA_Logentry_Mfv(['msg' => $msg[0] . ' - ' . $msg[1], 'uri' => document_uri(), 'referer' => $_SERVER['HTTP_REFERER'] ?? '']));
+                        AA_Log::write('M_FLDI_VLD', new AA_Logentry_Mf(['module' => $slice_id, 'field' => $fld]), new AA_Logentry_Mfv(['msg' => $msg[0] . ' - ' . $msg[1], 'uri' => document_uri(), 'referer' => $_SERVER['HTTP_REFERER'] ?? '']));
                     }
                     // drop to next case 'QUIET'
                 case 'QUIET':
@@ -1178,7 +1178,7 @@ class ItemContent extends AA_Content {
 
         $silent       = false;           // do not perform any additional operation (feed, invalidate, compute_fields, ... if not specified by flags)
 
-        $function_params = [$mode, implode('-',(array)$flags), $context];  // just for AA_Log
+        $function_params = ['mode' => $mode, 'flags' => implode('-', (array)$flags), 'context' => $context];  // just for AA_Log
 
         if ($mode === 'update_filled') {
             $this->removeEmptyFields();
@@ -1400,7 +1400,7 @@ class ItemContent extends AA_Content {
         }
         // slice setting historylog applied to history as well as to log for item new/update
         if ($historylog !== '0') {
-            AA_Log::write(($mode === 'insert') ? 'ITEM_NEW' : 'ITEM_UPD', AA_Log::context($id), $function_params);
+            AA_Log::write(($mode === 'insert') ? 'ITEM_NEW' : 'ITEM_UPD', AA_Log::context($id), new AA_Logentry_Iu($function_params));
         }
         // events are after ChangeMonitor - sometimes we use {changed:} in the events
         if ($throw_events) {

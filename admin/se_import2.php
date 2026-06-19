@@ -91,14 +91,14 @@ do {
                 $err["DB"] .= MsgErr("Can't add export to $val");
                 break;    // not necessary - we have set the halt_on_error
             }
-            AA_Log::write("FEED_ENBLE", AA::$module_id.":$val");
+            AA_Log::write("FEED_ENBLE", new AA_Logentry_Fd(['module' => AA::$module_id, 'target' => $val]));
         }
   }
   foreach ($feedto as $to => $val) {
       if ( $val ) {
             $SQL = "DELETE FROM feedperms WHERE from_id = '$p_slice_id' AND to_id=". xpack_id($to);
             $db->query( $SQL );
-            AA_Log::write("FEED_DSBLE", AA::$module_id.":$val");
+            AA_Log::write("FEED_DSBLE", new AA_Logentry_Fd(['module' => AA::$module_id, 'target' => $to]));   // $to is the target id ($val is the loop's keep/remove flag)
         }
     }
 } while (false);
@@ -125,7 +125,7 @@ do {
                 $err["DB"] .= MsgErr("Can't add import from $val");
                 break;  // not necessary - we have set the halt_on_error
             }
-            AA_Log::write("FEED_ADD", AA::$module_id.":$val");
+            AA_Log::write("FEED_ADD", new AA_Logentry_Fd(['module' => AA::$module_id, 'target' => $val]));
         }
     }
 
@@ -133,7 +133,7 @@ do {
       if ( $val ) {
             $SQL = "DELETE FROM feeds WHERE to_id = '$p_slice_id' AND from_id=". xpack_id($from);
             $db->query( $SQL );
-            AA_Log::write("FEED_DEL", AA::$module_id.":$val");
+            AA_Log::write("FEED_DEL", new AA_Logentry_Fd(['module' => AA::$module_id, 'target' => $from]));   // $from is the source id ($val is the loop's keep/remove flag)
         }
     }
 } while (false);

@@ -1978,8 +1978,7 @@ class AA_Items {
         DB_AA::delete_low_priority('hit_short_id', [['id',             $short_arr, 'i']]);
         DB_AA::delete_low_priority('hit_long_id', [['id',             $ids_arr,   'l']]);
 
-        $ctx = AA_Log::context();
-        AA_Log::write("ITEM_DEL", array_map(static fn ($id) => "{$id}{$ctx}", $ids_arr));
+        AA_Log::write("ITEM_DEL", array_map(static fn ($id) => AA_Log::context($id), $ids_arr));
 
         ChangesMonitor::deleteChanges($ids_arr);
     }
