@@ -605,7 +605,7 @@ class AA_Searchbar extends AA_Storable {
      *
      */
     private function get_bar_bookmarks(): string {
-        $ret  = '<div>';
+        $ret  = '<div class="aa-sb-bookmarks relative">';
         $ret .=  '<div class=aa-ui-searches>';
         $ret .=   '<div class="aa-formgroup-inline">';
         // selecting a stored filter applies it immediately (AA_FilterSelectApply),
@@ -645,7 +645,7 @@ class AA_Searchbar extends AA_Storable {
         // full set of fields); otherwise it stays compact - a single field
         $expanded = $this->hasActiveSearch();
 
-        $ret  = '<div class="flex f-between"><input type="hidden" name="srchbr_akce" value="1">';
+        $ret  = '<div class="flex f-between aa-searchbar-row"><input type="hidden" name="srchbr_akce" value="1">';
         $ret .= '<div class="aa-filter relative'.($expanded ? ' expanded' : '').'">';
 
         // print searchbars
@@ -653,14 +653,18 @@ class AA_Searchbar extends AA_Storable {
         $details  = false;   // true once the collapsible "Advanced search" block is open
 
         if ($this->show & MGR_SB_SEARCHROWS) {
-            // first search row - always visible (compact mode shows only this)
-            $ret .= $this->get_search_bar($count_sb++);
-
-            // the rest (further "And" rows, ordering, action buttons) lives in a
-            // collapsible block - revealed by the summary toggle or when expanded
+            // .aa-sb-searchline = first row of the search column: the always-visible
+            // search row 0 plus the "Advanced search" toggle chip, side by side.
+            // The collapsible block (further And/Order rows + buttons) follows it on
+            // the next line of the column, shown/hidden via the .aa-filter.expanded
+            // class (toggled together with the chip's native open state by onclick).
+            $ret .= '<div class="aa-sb-searchline">';
+            $ret .= $this->get_search_bar($count_sb++);   // first search row
             $ret .= '<details class="aa-ui-searchbar"'.($expanded ? ' open' : '').'>'
                   . '<summary class="aa-ad-filter" onclick="document.querySelector(\'.aa-filter\').classList.toggle(\'expanded\')">'. _m('Advanced search') .'</summary>'
-                  . '<div class="aa-ui-searchbar-block">';
+                  . '</details>';
+            $ret .= '</div>';   // close .aa-sb-searchline
+            $ret .= '<div class="aa-ui-searchbar-block">';
             $details = true;
 
             $empty = false;   // flag - true if the last printed searchrow is empty
@@ -681,10 +685,15 @@ class AA_Searchbar extends AA_Storable {
             $ret .= $this->get_bar_actions();
         }
         if ($details) {
-            $ret .= '</div></details>';
+            $ret .= '</div>';
         }
-        $ret .= '</div>';
+        $ret .= '</div>';   // close .aa-filter (left column: search row + advanced toggle + advanced block)
 
+        // bookmarks (Filter dropdown + Manage filters) are a separate right-hand
+        // column - a sibling of .aa-filter in the outer flex row - so they stay
+        // visually distinct from the search/advanced group and align to the right.
+        // The gap between the two shrinks as the window narrows; the filters wrap
+        // below only when they would meet the search group.
         if (($this->show & MGR_SB_BOOKMARKS) && $this->bookmarks->count()) {
             $ret .= $this->get_bar_bookmarks();
         }
