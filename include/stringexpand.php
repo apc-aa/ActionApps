@@ -9148,7 +9148,7 @@ class AA_Stringexpand_Encrypt extends AA_Stringexpand {
     static function decrypt_time_token(string $token, int $hours=24): mixed {
         for ($i=0; $i<$hours; ++$i) {
             if (strlen($serialized = AA\Util\Crypt::decryptAesGcm($token, 'aa-sul'.AA_ID.date('j.n.y H',strtotime("-$i hour"))))) {
-                return unserialize($serialized);
+                return unserialize($serialized, ['allowed_classes' => false]);
             }
         }
         return '';

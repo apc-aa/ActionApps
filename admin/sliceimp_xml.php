@@ -190,7 +190,7 @@ function sliceimp_xml_parse($xml_data, $dry_run=false, $force_this_slice=false) 
                 foreach ( $sl['VIEWS'] as $viewdata ) {
                     $viewdata = base64_decode($viewdata);
                     $viewdata = $sld['GZIP'] ? gzuncompress($viewdata) : $viewdata;
-                    $view = unserialize($viewdata);
+                    $view = unserialize($viewdata, ['allowed_classes' => [AA_View::class]]);
                     import_views($view, $slice_id_new);
                 }
             }

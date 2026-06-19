@@ -26,8 +26,53 @@ https://www.apc.org/
  * HTML code to sitemodule of example-one.org:
  *   <img src="//www.example-two.org/apc-aa/central/setcookie.php?s={cookie:AA_Session}">
  * This will set the auth cookie in example-two.org.
+ *
+ * Security (session fixation): the cookie is set ONLY when ?s= names an
+ * existing, authenticated session in this install's local session store.
+ * Otherwise an attacker could fix an arbitrary session id on a visitor and,
+ * after the visitor logs in, inherit the session. The target session is
+ * probed read-only (no cookie emitted); use_strict_mode makes PHP mint a
+ * fresh id for an unknown $sid, so session_id() === $sid proves it existed.
+ * Auth state is stored in the session as the serialized AA_Auth object
+ * ($_SESSION['auth']), so we load AA's classes to read it via getUid() —
+ * authenticated = uid set and not a sentinel ('form' = login in progress,
+ * 'nobody' = anonymous). This path touches no DB (AA_Auth::$refresh = 0).
+ * See SECURITY-AUDIT-FINDINGS.md B2.
  */
-setcookie("AA_Session", $_GET['s'], 0, '/');
+require_once __DIR__ . "/../vendor/autoload.php";   // classmap: AA_Auth, AA\* for unserialize
+require_once __DIR__ . "/../include/config.php";    // PERM_LIB / AA_LOGIN_TIMEOUT / DB consts
+require_once __DIR__ . "/../include/locauth.php";   // defines Auth / AA_Auth (no DB connect here)
+
+$sid = (string)($_GET['s'] ?? '');
+
+// 1) format gate — PHP session id charset/length
+if (preg_match('/^[A-Za-z0-9,-]{22,256}$/', $sid)) {
+    // 2) probe the target session read-only, without emitting any cookie
+    session_name('AA_Session');
+    session_id($sid);
+    session_start(['use_cookies' => 0, 'use_strict_mode' => 1, 'read_and_close' => true]);
+
+    // 3) only adopt a genuinely logged-in session. We intentionally do not
+    //    gate on session expiry here: freshness is re-validated authoritatively
+    //    by the receiving domain's is_authenticated() on the next page load.
+    $auth = $_SESSION['auth'] ?? null;
+    $uid  = ($auth instanceof Auth) ? $auth->getUid() : '';
+    if (session_id() === $sid
+        && $uid !== ''
+        && $uid !== 'form'
+        && $uid !== 'nobody'
+    ) {
+        // 4) set cookie with the same flags as Session::cookie_setup()
+        setcookie('AA_Session', $sid, [
+            'expires'  => 0,
+            'path'     => '/',
+            'httponly' => true,
+            'secure'   => isset($_SERVER['HTTPS']),
+            'samesite' => 'Lax',
+        ]);
+    }
+}
+
 header('Content-Type: image/gif');
 //pixel blank
 echo "\x47\x49\x46\x38\x37\x61\x1\x0\x1\x0\x80\x0\x0\xfc\x6a\x6c\x0\x0\x0\x2c\x0\x0\x0\x0\x1\x0\x1\x0\x0\x2\x2\x44\x1\x0\x3b";

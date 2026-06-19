@@ -241,7 +241,7 @@ class FormrowWidget extends Widget {
         $ser_values   = $content->getValuesArray($aa_property->getId());
         $arr          = [];
         foreach ($ser_values as $ser_row) {
-            $row   = unserialize($ser_row);
+            $row   = unserialize($ser_row, ['allowed_classes' => [AA_Formrow::class, AA_Formrow_Text::class, AA_Formrow_Html::class, AA_Formrow_Full::class, AA_Formrow_Field::class]]);
             $field = $row->getRowProperty();
             $arr[] = $field->getId();
         }

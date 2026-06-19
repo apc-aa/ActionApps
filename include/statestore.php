@@ -38,7 +38,6 @@ use AA\Manageraction\Manageractions;
 use AA\Manageraction\Object_Delete;
 use AA\Util\AbstractAliasgenerator;
 use AA\Util\Searchfields;
-use AA_Plannedtask;
 
 /** allows to serialize objects
  * @method expand(false|mixed|string $param)
@@ -214,7 +213,7 @@ abstract class AA_Serializable {
         $props = static::getPersistentProperties();
 
         foreach (array_keys($props) as $name) {
-            $value = $this->$name;
+            $value = $this->$name ?? '';   // a logentry/object may leave optional properties unset - treat as empty (no "undefined property" warning, same '' output as before)
             if (is_array($value)) {
                 $value = match (count($value)) {
                     0       => '',
@@ -703,7 +702,7 @@ class AA_Object extends AA_Storable implements AA_iEditable {
                             $tmp_val = self::load($val, $property->getType());
                         } else {
                                 // stores as serialized state
-                            $tmp_val = AA_Storable::factoryFromState($property->getType(),  unserialize($val));
+                            $tmp_val = AA_Storable::factoryFromState($property->getType(),  unserialize($val, ['allowed_classes' => false]));
                         }
                     } else {
                         $tmp_val = $val;
