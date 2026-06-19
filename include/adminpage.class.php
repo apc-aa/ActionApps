@@ -196,8 +196,9 @@ class AA_Adminpageutil {
         }
         AA::Stringexpander()->addRequire('css-aa-system');
         AA::Stringexpander()->addRequire(AA_INSTAL_PATH . 'admin-ecn.css?v='.AA_JS_VERSION);
-        if (ADMIN_CSS !== 'admin-ecn.css') {
-            AA::Stringexpander()->addRequire(AA_INSTAL_PATH . ADMIN_CSS.'?v='.AA_JS_VERSION);
+        // Per-user theme overlay (cookie/profile) wins over the server-wide ADMIN_CSS default.
+        if ($overlay = \AA\Util\UiPrefs::themeOverlay()) {
+            AA::Stringexpander()->addRequire(AA_INSTAL_PATH . $overlay.'?v='.AA_JS_VERSION);
         }
 
         // Positioner for the reusable .aa-overflow-menu popover (HTML5 popover API,

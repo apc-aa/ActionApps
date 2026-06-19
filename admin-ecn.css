@@ -15,6 +15,12 @@
     --clr-gold: #c9b57f;                  /* TODO: rename → --clr-border-strong / --clr-accent */
     --clr-green: #1eb585;                 /* TODO: rename → --clr-success */
 
+    /* Inline word-diff (item history) — soft, prose-friendly add/remove pairs */
+    --clr-diff-ins-bg:   #d6f5d6;
+    --clr-diff-ins-text: #14532d;
+    --clr-diff-del-bg:   #fbdada;
+    --clr-diff-del-text: #7f1d1d;
+
     /* UI states — floating surfaces (popups, dropdowns), accent text,
        hovered borders, selected rows. Skins can override these without
        touching structural CSS. */
@@ -741,20 +747,18 @@ input[type="radio"] {
 .aa-history-event:target { background: var(--clr-surface-selected); }   /* the change a digest row deep-links to */
 .aa-history-summary {
     display: grid;
-    grid-template-columns: 2.4rem minmax(9.5rem, auto) minmax(5rem, auto) auto 1fr auto;
+    grid-template-columns: 2.4rem minmax(9.5rem, auto) minmax(5rem, auto) 1fr auto;
     align-items: baseline; gap: 0.2em 0.9em;
 }
 .aa-history-summary .aa-h-rev   { font-variant-numeric: tabular-nums; color: var(--clr-text-accent); }
 .aa-history-summary .aa-h-time  { font-variant-numeric: tabular-nums; font-weight: 600; }
 .aa-history-summary .aa-h-who   { color: var(--clr-dark); }
 .aa-history-summary .aa-h-count { color: var(--clr-text-accent); }
-.aa-h-type {
-    display: inline-block; border-radius: 13px; padding: 1px 10px;
-    font-size: var(--sz-xs); border: 1px solid rgba(26,4,4,0.3);
-    background: rgba(255,255,255,0.25); color: #61454A;
-}
 .aa-history-body { padding: 0.3em 1em 0.9em 1.1em; }
-.aa-history-meta { margin: 0 0 0.4em 0; }   /* hugs the summary */
+.aa-history-compare { display: flex; align-items: center; flex-wrap: wrap; gap: 0.3em 1.1em; margin: 0.2em 0 0.5em; font-size: var(--sz-s); }
+.aa-history-compare select { font-size: var(--sz-s); }
+/* technical ids: pushed right and dimmed so they don't compete with the diffs for attention */
+.aa-history-meta { margin: 0 0 0.5em 0; text-align: right; font-size: var(--sz-xs); color: var(--clr-text-accent); opacity: 0.7; }
 table.aa-history-fields { width: 100%; border-collapse: collapse; }
 table.aa-history-fields th, table.aa-history-fields td {
     text-align: left; vertical-align: top; padding: 6px 10px; border-top: 1px solid var(--clr-border);
@@ -768,8 +772,43 @@ table.aa-history-fields thead th {
 }
 .aa-h-field-sel { display: block; margin-top: 3px; }   /* dimmed selector under the chip (.tabhlp) */
 .aa-h-restore-field { font-size: var(--sz-s); white-space: nowrap; }
-.aa-h-rowmeta { font-variant-numeric: tabular-nums; }
 .aa-h-nochange { color: var(--clr-text-accent); }
+/* Flowing inline word-diff (Difftext::renderInline): prose, not a code-diff table. */
+.aa-diff { white-space: pre-wrap; overflow-wrap: anywhere; word-break: normal; line-height: 1.5; }
+.aa-diff ins { background: var(--clr-diff-ins-bg); color: var(--clr-diff-ins-text); text-decoration: none; border-radius: 2px; padding: 0 1px; }
+.aa-diff del { background: var(--clr-diff-del-bg); color: var(--clr-diff-del-text); text-decoration: line-through; border-radius: 2px; padding: 0 1px; }
+/* Per-event view toggle (Diff / Version A / Version B) + raw-value code blocks for copy-paste. */
+.aa-h-viewtoggle { display: inline-flex; border: 1px solid var(--clr-border); border-radius: 6px; overflow: hidden; }
+.aa-h-vbtn {
+    font: inherit; font-size: var(--sz-s); line-height: 1.5; padding: 1px 12px; cursor: pointer;
+    background: transparent; color: var(--clr-text-accent); border: 0; border-inline-start: 1px solid var(--clr-border);
+}
+.aa-h-vbtn:first-child { border-inline-start: 0; }
+/* explicit colour - the global `button:hover` sets gold bg + near-white text, unreadable here */
+.aa-h-vbtn:hover { background: rgba(0, 0, 0, 0.06); color: var(--clr-dark, #1f1f1f); }
+.aa-h-vbtn.is-active { background: var(--clr-surface-selected, rgba(0, 0, 0, 0.09)); color: var(--clr-dark, #1f1f1f); font-weight: 600; }
+/* the toggle sits on its own line above the field table (it rides inside the AJAX-swapped diff area) */
+.aa-history-diffarea .aa-h-viewtoggle { margin-bottom: 0.6em; }
+/* view switching keyed on the event's data-view (default, or =diff, shows the diff) */
+.aa-h-view-a, .aa-h-view-b { display: none; }
+.aa-history-event[data-view="a"] .aa-h-view-diff,
+.aa-history-event[data-view="b"] .aa-h-view-diff { display: none; }
+.aa-history-event[data-view="a"] .aa-h-view-a,
+.aa-history-event[data-view="b"] .aa-h-view-b { display: block; }
+.aa-h-code { position: relative; }
+.aa-h-code pre {
+    margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; word-break: normal;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: var(--sz-xs);
+    background: rgba(0, 0, 0, 0.035); border: 1px solid var(--clr-border); border-radius: 4px;
+    padding: 8px 10px; padding-inline-end: 4.5em;
+}
+.aa-h-copy {
+    position: absolute; top: 4px; inset-inline-end: 4px; font: inherit; font-size: var(--sz-xs);
+    padding: 1px 9px; cursor: pointer; border-radius: 4px;
+    border: 1px solid var(--clr-border); background: var(--clr-surface-popup, #fff); color: var(--clr-text-accent);
+}
+.aa-h-copy:hover { background: var(--clr-surface-selected, rgba(0, 0, 0, 0.09)); color: var(--clr-dark, #1f1f1f); border-color: var(--clr-border-hover, #a59850); }
+.aa-h-copy.is-copied { color: var(--clr-green, #1eb585); border-color: var(--clr-green, #1eb585); }
 
 /* HEADER */
 #aa_top {
@@ -1861,14 +1900,6 @@ input[type="checkbox"]:checked:before {
     .aa-group-row .aa-field {
         display: flex;
     }
-    summary.aa-ad-filter {
-        position: absolute;
-        right: -15px;
-        top: 0;
-    }
-    .aa-filter {
-        padding-right: 146px;
-    }
     .no-screen {
         display: none !important;
     }
@@ -2120,15 +2151,6 @@ input[type="checkbox"]:checked:before {
         width: 100%;
         max-width: 100%;
     }
-    details.aa-ui-searchbar summary {
-        position: absolute;
-        right: 0;
-        top: 0;
-    }
-    details.aa-ui-searchbar[open] summary {
-        position: relative;
-        margin: 5px 0 15px calc(100% - 137px);
-    }
     .aa-save-filters .aa-formgroup-inline {justify-content: flex-start;}
     .aa-sb-btns {
         margin: 7px 0 20px;
@@ -2256,10 +2278,7 @@ select[name="srchbr_bookmark"] {
     margin: 7px 0 10px 66px;
 }
 .aa-ui-searchbar {
-    justify-content: space-between;
-    align-items: flex-start;
-    width: 120px;
-    transition: width 0.7s ease;
+    width: auto;            /* just the toggle chip now; block is a sibling */
 }
 .aa-ui-searchbar-block div {
     opacity: 0;
@@ -2270,8 +2289,9 @@ summary.aa-ad-filter {
     margin: 2px;
     padding-top: 4px;
     padding-bottom: 3px;
+    white-space: nowrap;    /* keep "Advanced search" on one line */
 }
-details[open] .aa-ui-searchbar-block div {
+.aa-filter.expanded .aa-ui-searchbar-block div {
     opacity: 1;
 }
 .aa-ui-filterform #patharea {
@@ -2307,6 +2327,105 @@ details[open] .aa-ui-searchbar-block div {
 }
 .expanded .aa-ui-searchbar {
     width: auto;
+}
+/* Searchbar = two columns in the outer .aa-searchbar-row flex row:
+   LEFT  .aa-filter        - the search/advanced group: search row 0 + the
+                             <details> "Advanced search" toggle chip on its first
+                             line, plus the collapsible advanced block (further
+                             And/Order rows + action buttons) on a full-width
+                             second line when expanded.
+   RIGHT .aa-sb-bookmarks  - the filters group: Filter dropdown + Manage filters +
+                             saved-filter list, aligned to the right edge.
+   The two columns top-align with a flexible gap that shrinks as the window
+   narrows; the filters wrap below the search group only when they would meet it.
+   Keeping them as separate columns means opening Manage filters (which makes the
+   filters column tall) never disturbs the search column. */
+.aa-searchbar-row {
+    align-items: flex-start;
+    column-gap: 24px;      /* breathing room between the search and filters columns */
+}
+.aa-searchbar-row > .aa-sb-bookmarks {
+    flex: 0 0 auto;
+    align-self: flex-start;
+}
+/* The search column grows to fill the row up to the filters in BOTH compact and
+   expanded, so the value inputs widen to use the space (capped near half the page
+   via the form groups) and the search area keeps the same width when you open the
+   advanced search. The grown column pushes the filters to the right edge. */
+.aa-filter {
+    display: flex;
+    flex-direction: column;    /* searchline (row 0 + chip), then the advanced block */
+    align-items: stretch;      /* rows fill the column width */
+    row-gap: 4px;
+    flex: 1 1 auto;
+    min-width: 0;
+}
+.aa-sb-searchline {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    column-gap: 6px;
+    row-gap: 4px;
+}
+.aa-sb-searchline > .aa-formgroup-inline {
+    flex: 1 1 auto;
+    min-width: 0;
+    max-width: 50vw;      /* the input widens up to ~half the page */
+}
+.aa-sb-searchline > details.aa-ui-searchbar {
+    flex: 0 0 auto;        /* the toggle chip keeps its natural width, inline */
+    margin-left: -2px;     /* hug the Search button so the chip reads as part of search */
+}
+.aa-filter:not(.expanded) > .aa-ui-searchbar-block {
+    display: none;        /* compact: only the search line */
+}
+summary.aa-ad-filter {
+    position: static;      /* desktop+mobile: always inline */
+}
+/* The value cell fills its form group (uncapped inside the group, so no slack
+   appears between the input and the Search button); any leftover lands after the
+   chip / row, before the filters. On narrower screens the group fills only up to
+   the filters column. */
+.aa-filter:not(.expanded) .aa-sbrow-val {
+    flex: 1 1 auto;
+    min-width: 110px;
+}
+.aa-sbrow-val {
+    flex: 1 1 auto;
+    min-width: 110px;
+}
+/* Expanded And/Order rows fill the column up to ~half the page too, matching the
+   first row, so their value inputs are just as wide. */
+.aa-filter.expanded .aa-ui-searchbar-block .aa-formgroup-inline {
+    max-width: 50vw;
+}
+/* Expanded mode has the Search/Clear/Store action buttons at the bottom, so the
+   inline Search button on row 0 is redundant; hiding it also lets row 0's value
+   input line up with the And rows' inputs (no trailing button to offset it). */
+.aa-filter.expanded .btn-filter-search {
+    display: none;
+}
+.aa-filter input[type=search] {
+    width: 100%;
+    min-width: 110px;
+}
+/* Expanded mode: each row shows label + field + operator + value; the value cell
+   stays generous and the field-name select widens so long option labels (e.g.
+   "Approved Comments Count") are not clipped. */
+.aa-filter.expanded .aa-sbrow-val {
+    flex: 1 1 auto;
+    min-width: 200px;
+}
+.aa-filter.expanded .aa-sbrow-fld {
+    min-width: 160px;
+    max-width: 260px;
+}
+.aa-filter.expanded .aa-sbrow-fld select {
+    width: 100%;
+}
+.aa-filter.expanded .aa-sbrow-op {
+    min-width: 110px;
+    max-width: 160px;
 }
 .aa-manage-filter .aa-form-label {
     padding-top: 5px;
@@ -2964,3 +3083,30 @@ h1:has(+form[name="inputform"]) {
 .mobilmenu .aa-ui-ghost {
     display: none !important; /* .mainmenu a sets display !important on mobile */
 }
+
+/* ============================================================
+   Settings popover (theme / language / feedback) — top-bar gear.
+   Built on the .aa-overflow-menu component; all colours are token-driven
+   so the popover re-skins automatically under the gold overlay.
+   ============================================================ */
+.aa-prefs-trigger { margin-inline-end: 6px; }
+.aa-prefs { padding: 10px 12px; min-width: 248px; }
+.aa-prefs-row { padding: 8px 0; }
+.aa-prefs-row + .aa-prefs-row { border-top: 1px solid var(--clr-border); }
+.aa-prefs-label { font-weight: 600; font-size: var(--sz-s); margin-bottom: 5px; }
+.aa-prefs-help { margin-top: 5px; }
+/* segmented theme control: visually-hidden radios, label carries the look */
+.aa-prefs-seg { vertical-align: middle; }
+.aa-prefs-seg input { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+.aa-prefs-seg label.aa-h-vbtn { cursor: pointer; }
+.aa-prefs-seg input:checked + label.aa-h-vbtn {
+    background: var(--clr-surface-selected, rgba(0, 0, 0, 0.09)); color: var(--clr-dark, #1f1f1f); font-weight: 600;
+}
+.aa-prefs-seg input:focus-visible + label.aa-h-vbtn { outline: 2px solid #0050c8; outline-offset: 1px; }
+.aa-prefs-apply { margin-inline-start: 8px; }
+.aa-prefs-lang select { max-width: 100%; }
+/* stack textarea above the Send button (flex-column keeps the button from
+   sitting beside the textarea and overflowing the popover) */
+.aa-prefs-feedback { display: flex; flex-direction: column; align-items: flex-start; }
+.aa-prefs-feedback textarea { width: 100%; box-sizing: border-box; resize: vertical; font: inherit; }
+.aa-prefs-feedback .aa-prefs-send { margin-top: 6px; }

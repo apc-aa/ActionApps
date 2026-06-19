@@ -1226,17 +1226,21 @@ function HtmlPageBegin(bool $js_lib=false, string $lang= '', bool $inc_by_requir
      * redefine :root and override individual selectors -- they are loaded
      * AFTER the baseline so their cascade wins. When ADMIN_CSS already is
      * the baseline, no overlay is appended. */
+    // Per-user theme overlay (cookie/profile) wins over the server-wide ADMIN_CSS default;
+    // '' = baseline only. The cookie is read server-side so the right skin ships in the
+    // first paint (no flash), and it works on the login page before the user is known.
+    $overlay = \AA\Util\UiPrefs::themeOverlay();
     if ($inc_by_require) {
         AA::Stringexpander()->addRequire('css-aa-system');
         AA::Stringexpander()->addRequire(AA_INSTAL_PATH . 'admin-ecn.css?v='.AA_JS_VERSION);
-        if (ADMIN_CSS !== 'admin-ecn.css') {
-            AA::Stringexpander()->addRequire(AA_INSTAL_PATH . ADMIN_CSS.'?v='.AA_JS_VERSION);
+        if ($overlay) {
+            AA::Stringexpander()->addRequire(AA_INSTAL_PATH . $overlay.'?v='.AA_JS_VERSION);
         }
     } else {
         $inc_css = '<link rel="stylesheet" href="'.AA_INSTAL_PATH.'admin-ecn.css?v='.AA_JS_VERSION.'">'
                  . '<link rel="stylesheet" href="'.AA_INSTAL_PATH.'css/aa-system.css?v='.AA_JS_VERSION.'">';
-        if (ADMIN_CSS !== 'admin-ecn.css') {
-            $inc_css .= '<link rel="stylesheet" href="'.(AA_INSTAL_PATH . ADMIN_CSS).'?v='.AA_JS_VERSION.'">';
+        if ($overlay) {
+            $inc_css .= '<link rel="stylesheet" href="'.safe(AA_INSTAL_PATH . $overlay).'?v='.AA_JS_VERSION.'">';
         }
     }
 

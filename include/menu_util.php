@@ -93,7 +93,6 @@ function GetCommonMenu(AA_Profile $profile): array {
         "sliceimp"    => ["label"=>_m("Import"),          "cond"=>IfSlPerm(PS_ADD),      "href"=>"admin/sliceimp.php"],
 
         "header7"     =>_m("Wizard"),
-        //"te_wizard_welcome2"  => ["label"=>_m("Welcomes"),  "cond"=>IsSuperadmin(),        "href"=>"admin/tabledit.php?set_tview=email"],
         "te_wizard_welcome" => ["label"=>_m("Welcomes"),  "cond"=>IsSuperadmin(),        "href"=>"admin/aa_emails.php"],
         "te_wizard_template"=> ["label"=>_m("Templates"), "cond"=>IsSuperadmin(),        "href"=>"admin/aa_wizardtemplate.php"],
 
@@ -551,6 +550,120 @@ function GetModuleSelection(): string {
     return $ret;
 }
 
+/** Settings popover (theme / language / feedback) for the admin top bar.
+ *  Built on the standard .aa-overflow-menu component (positioner already loaded
+ *  by AA_Adminpageutil::printHead); the trigger sits in the top-bar user area.
+ *  All three controls post to admin/aa_uiprefs.php. Theme additionally previews
+ *  instantly client-side and persists via a background fetch (no reload);
+ *  language reloads; feedback is CSRF-protected.
+ *
+ *  @return string trigger button + popover markup + its inline behaviour script
+ */
+function getUiPrefsPopover(): string
+{
+    $action  = get_admin_url('aa_uiprefs.php');
+    // stable per-session CSRF token (not the single-use AA_Session store: the theme
+    // control re-posts on every change and this popover renders on every admin page)
+    $token   = $_SESSION['aa_ui_csrf'] ??= new_id();
+    $ret_in  = '<input type="hidden" name="ret_url" value="'.safe($_SERVER['REQUEST_URI'] ?? '').'">'
+             . '<input type="hidden" name="aa_token" value="'.safe($token).'">';
+
+    // theme — segmented radios; JS gives instant preview, no-JS uses the Apply button
+    $theme_key = \AA\Util\UiPrefs::themeKey();
+    $segs = '';
+    foreach (\AA\Util\UiPrefs::themes() as $key => $css) {
+        $id    = 'aa-th-'.safe($key);
+        $segs .= '<input type="radio" id="'.$id.'" name="ui_theme" value="'.safe($key).'"'.($key === $theme_key ? ' checked' : '').'>'
+               . '<label class="aa-h-vbtn" for="'.$id.'">'.safe(\AA\Util\UiPrefs::themeLabel($key)).'</label>';
+    }
+    $theme_form = '<form method="post" action="'.safe($action).'" class="aa-prefs-theme">'
+        . '<input type="hidden" name="aa_action" value="update_theme">'.$ret_in
+        . '<span class="aa-h-viewtoggle aa-prefs-seg">'.$segs.'</span>'
+        . '<button type="submit" class="btn aa-prefs-apply">'._m('Apply').'</button></form>';
+
+    // language — select; onchange reloads; the empty option clears the override
+    $lang_key = \AA\Util\UiPrefs::langKey();
+    $opts = '<option value="">'.safe(_m('-- Default for module --')).'</option>';
+    foreach (\AA\Util\UiPrefs::availableLangs() as $code => $name) {
+        $opts .= '<option value="'.safe($code).'"'.($code === $lang_key ? ' selected' : '').'>'.safe($name).'</option>';
+    }
+    $lang_form = '<form method="post" action="'.safe($action).'" class="aa-prefs-lang">'
+        . '<input type="hidden" name="aa_action" value="update_lang">'.$ret_in
+        . '<select name="ui_lang" onchange="this.form.submit()">'.$opts.'</select>'
+        . '<noscript><button type="submit" class="btn">'._m('Apply').'</button></noscript></form>'
+        . '<div class="tabhlp aa-prefs-help">'._m('Switches the admin interface language; the page reloads.').'</div>';
+
+    // feedback — textarea + send. Relies on the authenticated session plus a
+    // same-origin check in the endpoint (like the other admin forms); a
+    // session-stored token is unreliable here because admin pages release the
+    // session before request end, so the freshly-issued token would not persist.
+    $fb_form = '<form method="post" action="'.safe($action).'" class="aa-prefs-feedback">'
+        . '<input type="hidden" name="aa_action" value="send_feedback">'.$ret_in
+        . '<textarea name="aa_feedback" rows="3" required placeholder="'.safe(_m("What's working, what isn't — tell the AA team.")).'"></textarea>'
+        . '<button type="submit" class="btn btn-l btn-primary aa-prefs-send">'._m('Send').'</button></form>';
+
+    $trigger = '<button type="button" class="aa-overflow-trigger aa-prefs-trigger" popovertarget="aa-uiprefs" aria-label="'.safe(_m('Settings')).'" title="'.safe(_m('Settings')).'">&#9881;</button>';
+
+    $body = '<div popover id="aa-uiprefs" class="aa-overflow-menu aa-prefs">'
+        . '<div class="aa-prefs-row"><div class="aa-prefs-label">'._m('Theme').'</div>'.$theme_form.'</div>'
+        . '<div class="aa-prefs-row"><div class="aa-prefs-label">'._m('Language').'</div>'.$lang_form.'</div>'
+        . '<div class="aa-prefs-row"><div class="aa-prefs-label">'._m('Feedback').'</div>'.$fb_form.'</div>'
+        . '</div>';
+
+    $action_js = json_encode($action);   // POST endpoint, JS-string-literal form
+    $token_js  = json_encode($token);    // CSRF token, JS-string-literal form
+    $js = <<<JS
+        <script>
+        (function(){
+          var pop = document.getElementById('aa-uiprefs');
+          if (!pop) return;
+          var apply = pop.querySelector('.aa-prefs-apply');
+          if (apply) apply.style.display = 'none';          // JS: instant preview, no Apply needed
+          var setLink = function(key){
+            var base = null, gold = null;
+            document.querySelectorAll('link[rel="stylesheet"]').forEach(function(l){
+              if (l.href.indexOf('admin-ecn.css')  !== -1) base = l;
+              if (l.href.indexOf('admin-gold.css') !== -1) gold = l;
+            });
+            if (key === 'gold') {
+              if (!gold && base) {
+                gold = document.createElement('link');
+                gold.rel = 'stylesheet';
+                gold.href = base.href.replace('admin-ecn.css', 'admin-gold.css');
+                base.after(gold);
+              }
+            } else if (gold) {
+              gold.remove();
+            }
+          };
+          pop.querySelectorAll('input[name="ui_theme"]').forEach(function(r){
+            r.addEventListener('change', function(){
+              if (!r.checked) return;
+              setLink(r.value);
+              var sec = (location.protocol === 'https:') ? ';secure' : '';
+              document.cookie = 'AA_admin_theme=' + encodeURIComponent(r.value) + ';path=/;max-age=31536000;samesite=lax' + sec;
+              var fd = new FormData();
+              fd.append('aa_action', 'update_theme');
+              fd.append('ui_theme', r.value);
+              fd.append('ret_url', location.pathname + location.search);
+              fd.append('aa_token', $token_js);
+              fetch($action_js, {method:'POST', body:fd, headers:{'X-Requested-With':'fetch'}, credentials:'same-origin'});
+            });
+          });
+          var ta = pop.querySelector('textarea[name="aa_feedback"]');
+          var send = pop.querySelector('.aa-prefs-send');
+          if (ta && send) {
+            var sync = function(){ send.disabled = (ta.value.trim() === ''); };
+            sync();
+            ta.addEventListener('input', sync);
+          }
+        })();
+        </script>
+        JS;
+
+    return $trigger . $body . $js;
+}
+
 // ----------------------------------------------------------------------------------------
 //                                SHOW MENU
 
@@ -690,6 +803,7 @@ function getMenu(string $activeMain, string $activeSubmenu = '', string $submenu
         $ret .= GetModuleSelection();
         $ret .= '</form>
                 <div class="aa-ui-custom-nav">
+                  '. getUiPrefsPopover() .'
                   <form name=logoutform method="post" action="'. get_admin_url('logout.php').'" class="no-mobile">
                    '. $user_out .' '. $logout_out .'
                   </form>

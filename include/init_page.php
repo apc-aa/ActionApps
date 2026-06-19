@@ -213,7 +213,15 @@ if (!$no_slice_id) {
 
 // freeDB($db);   we left it open for /admin/ scripts  - otherwise we have to ask getDB() for every admin page (which is OK as well)
 
-$mgettext_file    = (!$require_default_lang && $r_lang_file != "") ? $r_lang_file : DEFAULT_LANG_INCLUDE;
+// Per-user UI language: on a fresh browser seed the override cookie from the
+// AA_ID-scoped profile, then let it swap the language while keeping the module's
+// section. No override (or a non-admin request) -> the module's own lang_file,
+// exactly as before.
+if (AuthGetUid()) {
+    \AA\Util\UiPrefs::seedCookiesFromProfile(AuthGetUid());
+}
+$module_lang_file = (!$require_default_lang && $r_lang_file != "") ? $r_lang_file : DEFAULT_LANG_INCLUDE;
+$mgettext_file    = \AA\Util\UiPrefs::langOverrideFile($module_lang_file);
 bind_mgettext_domain($mgettext_file);
 AA::$lang         = strtolower(substr($mgettext_file,0,2));      // actual language - two letter shortcut cz / es / en
 AA::$langnum      = [Langs::getLangName2Num(AA::$lang)]; // array of prefered languages in priority order.
