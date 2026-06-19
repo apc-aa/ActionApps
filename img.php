@@ -9,6 +9,20 @@
 require_once __DIR__."/include/config.php";   // we use some constants from AA in the config
 const AA_PHPTHUMB__DIR__ = __DIR__."/vendor/honzito/phpthumb";
 
+// This endpoint emits raw image bytes — a printed warning/notice/deprecation
+// would corrupt the image AND leak server paths into the response. phpThumb.php
+// force-sets ini display_errors=1, so we install an error handler (which ini
+// settings cannot override) that logs non-fatal errors and swallows them instead
+// of printing. Keeping the output clean also lets phpThumb's error path issue its
+// blank-pixel redirect (it can only redirect while no output has been sent yet).
+set_error_handler(static function (int $severity, string $message, string $file = '', int $line = 0): bool {
+    if (!(error_reporting() & $severity)) {
+        return false; // @-suppressed or below threshold — leave to PHP (still not displayed)
+    }
+    error_log("img.php: $message in $file on line $line");
+    return true;      // reported error: handled here, never printed into the image stream
+});
+
 // ---------- vendor/james-heinrich/phpthumb/phpThumb.config.php v2023-05-03 - start ---------
 
 define('phpThumbConfigFileVersion', '1.7.16');
@@ -227,7 +241,13 @@ $PHPTHUMB_CONFIG['output_interlace'] = true;   // if true: interlaced output for
 // * Error message configuration
 $PHPTHUMB_CONFIG['error_image_width']           = 400;      // default width for error images
 $PHPTHUMB_CONFIG['error_image_height']          = 100;      // default height for error images
-$PHPTHUMB_CONFIG['error_message_image_default'] = '';       // Set this to the name of a generic error image (e.g. '/images/error.png') that you want displayed in place of any error message that may occur. This setting is overridden by the 'err' parameter, which does the same thing.
+// Redirect ANY thumbnailing failure (missing/corrupt/unsupported/too-large source)
+// to a blank 1×1 pixel instead of rendering phpThumb's error image. On production
+// this avoids leaking error text/paths into the image response, and it gives the
+// MissCache forge-on-miss client a clean non-2xx signal to negative-cache a typed
+// placeholder (instead of caching an error image forever). phpThumb turns a set
+// error_message_image_default into an HTTP redirect to that URL (see ErrorImage()).
+$PHPTHUMB_CONFIG['error_message_image_default'] = AA_INSTAL_URL . 'images/blank.gif'; // generic error image; overridden by the 'err' GET parameter
 $PHPTHUMB_CONFIG['error_bgcolor']               = 'CCCCFF'; // background color of error message images
 $PHPTHUMB_CONFIG['error_textcolor']             = 'FF0000'; // color of text in error messages
 $PHPTHUMB_CONFIG['error_fontsize']              = 1;        // size of text in error messages, from 1 (smallest) to 5 (largest)
@@ -350,16 +370,5 @@ function phpThumbURL($ParameterString, $path_to_phpThumb = 'phpThumb.php'): stri
     return $path_to_phpThumb . '?' . $ParameterString . $PHPTHUMB_CONFIG['high_security_url_separator'] . 'hash=' . hash_hmac('sha256', $ParameterString, $PHPTHUMB_CONFIG['high_security_password']);
 }
 // ---------- vendor/james-heinrich/phpthumb/phpThumb.config.php v2023-05-03 - end ---------
-
-// MissCache forge subrequest: when the forge-on-miss client signals via this
-// header, make phpThumb answer ANY generation failure (missing/corrupt/unsupported
-// source) with an HTTP redirect instead of a 200 error image, so the client can
-// negative-cache a placeholder instead of caching the error image forever. The
-// signal is a request header, not a GET parameter (phpThumb rejects unknown GET
-// parameters). The redirect target is only a non-empty sentinel — the client
-// detects the non-2xx status, it never follows the Location.
-if (!empty($_SERVER['HTTP_X_MISSCACHE_FORGE'])) {
-    $PHPTHUMB_CONFIG['error_message_image_default'] = '/aa-misscache-noimage';
-}
 
 require_once AA_PHPTHUMB__DIR__."/phpThumb.php";
