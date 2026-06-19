@@ -41,7 +41,6 @@ require_once __DIR__ . "/../include/feeding.php";   // WhereFed/FromFed used by 
 require_once __DIR__ . "/../include/itemfunc.php";  // GetItemInfoHtml - shared item-info renderer
 require_once __DIR__ . "/../include/date.php";
 require_once __DIR__ . "/../include/varset.php";
-require_once __DIR__ . "/../include/tabledit.php";
 //require_once menu_include();      //show navigation column depending on $show
 require_once __DIR__ . "/../include/mgettext.php";
 require_once __DIR__ . "/../modules/alerts/util.php";
@@ -155,12 +154,6 @@ function PrintItemInfo($item_id): void
     // and the Item info page show identical data from one place. See include/itemfunc.php.
     echo GetItemInfoHtml($item, $item_id, true);
     echo '<br><br>';
-}
-
-
-if (!IsSuperadmin()) {
-    MsgPage(_m("You do not have permissions to add slice"));
-    exit;
 }
 
 

@@ -94,3 +94,9 @@ _No longer maintained. Removed 2022-02-25 - honzam (see older apc-aa branches to
   .../ru_*_lang.php (7 files)       - Russian windows-1251 one-byte variants
   Russian UI translation dropped (was 99% untranslated, no known install uses it); 'ru'/'ru-utf8' removed from AA\Util\Langs registry and AA\Lang\LangFile::HEADERS. Ukrainian (uk-utf8), Portuguese (pt-utf8) and Polish (pl-utf8) masters added instead.
   _No longer maintained. Removed 2026-06-12 - honzam (see older apc-aa branches to get the code)_
+
+/admin/**tabledit.php**             - generic router that showed a TableView (GetTableView / GetMiscTableView) in the legacy tabledit CRUD editor
+/include/**tableviews.php**         - GetTableView(): the polls_design / polls_design_edit table views
+/include/**tv_misc.php**            - GetMiscTableView(): the email / wt / log / searchlog / fields table views
+  Part of removing the legacy `tabledit` table editor. These entry points/configs were already superseded by AA\Manager pages and had no live menu links: polls designs -> modules/polls/designs.php (Poll menu, src/Module/Poll/Menu.php repointed); emails -> admin/aa_emails.php; wizard templates -> admin/aa_wizardtemplate.php; log -> admin/aa_log.php; searchlog -> admin/aa_searchlog.php. The `fields` view (raw `field` table editor) was an orphan superadmin tool - slice fields are edited via admin/se_fields.php. admin/rsstest.php was converted to AA\Manager (GetFeedManaged) in the same change. The tabledit CORE (include/tabledit.php, tabledit_util.php, tabledit_column.php, tabledit.css, tv_email.php) and doc/tabledit*.html stay until the Alerts module (modules/alerts/modedit.php) is migrated.
+  _No longer maintained. Removed 2026-06-18 - honzam (see older apc-aa branches to get the code)_

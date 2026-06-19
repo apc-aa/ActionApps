@@ -133,7 +133,6 @@ function get_aamenus(): array
             "fields"        => ["cond"=>IfSlPerm(PS_FIELDS),     "href"=>"admin/se_fields.php",               'ico'=>'ico-fields.png', "label"=>_m("Fields")],
             "slice_fields"  => ["cond"=>IfSlPerm(PS_FIELDS),     "href"=>"admin/se_fields.php?slice_fields=1", "label"=>_m("Slice Fields")],
             "notify"        => ["cond"=>IfSlPerm(PS_EDIT),       "href"=>"admin/se_notify.php",                "label"=>_m("Email Notification")],
-            //"te_emails"   => array("cond"=>IfSlPerm(PS_FULLTEXT), "href"=>"admin/tabledit.php?set_tview=email", "label"=>_m("Emails")),
 
             "header2"       => ["cond"=>$slice && IfSlPerm(PS_USERS), 'label'=>_m("Permissions"), 'ico'=>'ico-permissions.png'],
             "addusers"      => ["cond"=>IfSlPerm(PS_ADD_USER),   "href"=>"admin/se_users.php?adduser=1",       "label"=>_m("Assign")],
