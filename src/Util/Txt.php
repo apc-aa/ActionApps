@@ -20,10 +20,13 @@ class Txt
     // --- UTF-aware string primitives (canonical home; the global aa_*() in
     //     include/util.php now delegate here). grapheme_/mb_ per tonsky.me/blog/unicode. ---
 
-    /** UTF-aware strlen (grapheme count). */
+    /** UTF-aware strlen (grapheme count). grapheme_strlen() returns null for
+     *  invalid UTF-8 (e.g. raw bytes in a debug print_r() dump); fall back to
+     *  byte length so length-dependent callers like shorten() stay robust. */
     public static function strlen($text): int|false
     {
-        return grapheme_strlen((string) $text);
+        $text = (string) $text;
+        return grapheme_strlen($text) ?? strlen($text);
     }
 
     /** UTF-aware substr. */

@@ -1935,7 +1935,7 @@ function arrval(array|ArrayAccess $arr, string|int $key, mixed $default = null):
  */
 function aa_version($format='full'): string
 {
-    $version = '2026.5';
+    $version = '2026.6';
     $full    = 'ActionApps '.$version.' ($Date$, $Revision$), PHP '.PHP_VERSION.', REMOTE_ADDR: '.$_SERVER['REMOTE_ADDR'];
     return match ($format) {
         'svn'  => (int)substr($full, strpos($full, 'Revision') + 10),              // svn version of util.php (which is +/- similar to svn version of AA)
