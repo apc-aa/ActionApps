@@ -85,7 +85,7 @@ echo '<title>ActionApps - '.ORG_NAME.'</title>';
 
     <div class="aa-login-row">
       <label for="username"><?php echo _m("Username:") ?></label>
-      <input type="text" name="username" value="<?php if (isset($this->auth["uname"])) { safe(print $this->auth["uname"]); }?>" size="32" maxlength="255" autocomplete="username">
+      <input type="text" name="username" value="<?php if (isset($this->auth["uname"])) { echo safe($this->auth["uname"]); }?>" size="32" maxlength="255" autocomplete="username">
     </div>
     <div class="aa-login-row">
       <label for="password"><?php echo _m("Password:") ?></label>
