@@ -181,26 +181,76 @@ class Difftext
     CSS;
 
 
+    /**
+     * Tabular HTML diff (the jfcherng "Combined" renderer) with self-contained CSS. Kept for
+     * code/structure diffs - e.g. UpdateDbStructure comparing SQL table definitions - where the
+     * monospaced, line-by-line table form is appropriate. For PROSE (item history) use
+     * renderInline() instead.
+     */
     public static function renderHtml($from_text, $to_text): string
     {
-        // // renderer class name:
-        // //     Text renderers: Context, JsonText, Unified
-        // //     HTML renderers: Combined, Inline, JsonHtml, SideBySide
-        // $rendernames = ['Context', 'JsonText', 'Unified', 'Combined', 'Inline', 'JsonHtml', 'SideBySide',];
-        $rendername = 'Combined';
-        //$result = DiffHelper::calculate($old, $new, $rendername, $differOptions, $rendererOptions);
-        //$renderer = RendererFactory::make($rendername, $rendererOptions);
-        $differ = new Differ(explode("\n", $from_text), explode("\n", $to_text), self::DIFFER_OPTIONS);
-        $renderer = RendererFactory::make($rendername, self::RENDER_OPTIONS); // or your own renderer object
-        $result = $renderer->render($differ);
+        // HTML renderers: Combined, Inline, JsonHtml, SideBySide. "Combined" merges old+new lines.
+        $differ   = new Differ(explode("\n", (string) $from_text), explode("\n", (string) $to_text), self::DIFFER_OPTIONS);
+        $renderer = RendererFactory::make('Combined', self::RENDER_OPTIONS);
 
-        $jsonResult = DiffHelper::calculate($from_text, $to_text, 'Json'); // may store the JSON result in your database
-        $htmlRenderer = RendererFactory::make('Combined', self::RENDER_OPTIONS);
-        $result = $htmlRenderer->renderArray(json_decode($jsonResult, true));
+        return '<style>' . self::CSS . '</style><div class="difftext">' . $renderer->render($differ) . '</div>';
+    }
 
+    /**
+     * Flowing inline word-diff for PROSE (item history): unchanged text flows normally, removed
+     * runs are <del>, added runs <ins>. No diff table, no line numbers, no monospace, no
+     * whitespace markers - the chrome that makes renderHtml() read as a code diff.
+     *
+     * It reuses the library's "Combined" renderer (which merges old+new into a single inline line)
+     * and then strips its <table>/<tbody>/<tr><td> wrapper, keeping only the per-line content. The
+     * library has already HTML-escaped that content (htmlspecialchars, ENT_NOQUOTES) and emits only
+     * its own <ins>/<del>/<br> tags, so removing the structural tags below is safe. CSS lives in
+     * admin-ecn.css (.aa-diff) so it is not re-emitted for every field.
+     *
+     * @return string '' when the two values are identical, otherwise <div class="aa-diff">…</div>
+     */
+    public static function renderInline(string $from_text, string $to_text): string
+    {
+        if ($from_text === $to_text) {
+            return '';
+        }
+        // CONTEXT_ALL: emit the whole text as one hunk so unchanged prose flows around the changes
+        // (the default context of 3 lines would split a long field into detached hunks).
+        $differ_options = ['context' => Differ::CONTEXT_ALL] + self::DIFFER_OPTIONS;
+        $render_options = ['separateBlock' => false, 'showHeader' => false, 'resultForIdenticals' => ''] + self::RENDER_OPTIONS;
+        $html = DiffHelper::calculate($from_text, $to_text, 'Combined', $differ_options, $render_options);
 
+        return '<div class="aa-diff">' . self::stripDiffTable($html) . '</div>';
+    }
 
-        return '<style>' . self::CSS . '</style><div class="difftext">' . $result . '</div>';
+    /**
+     * Flatten the Combined renderer's <table> into a newline-joined stack of inline lines, keyed on
+     * the unambiguous `tbody.change-{eq,ins,del,rep}` op class. A pure insert/delete block has bare
+     * line content, so it is wrapped in <ins>/<del>; an equal or replace block is emitted as-is - a
+     * replace line already carries its inline <ins>/<del> (word renderer / merge), and unchanged
+     * words stay unmarked. (For the rare replace where the line count also changed and the content
+     * diverges past the merge threshold, the library's fallback emits plain old/new lines without
+     * inline marks; they then show uncoloured rather than risk mislabelling unchanged text.)
+     */
+    private static function stripDiffTable(string $html): string
+    {
+        if (!preg_match_all('#<tbody class="change change-(eq|ins|del|rep)">(.*?)</tbody>#s', $html, $blocks, PREG_SET_ORDER)) {
+            return '';
+        }
+        $lines = [];
+        foreach ($blocks as [, $op, $body]) {
+            if (!preg_match_all('#<td class="(?:old|new|rep)">(.*?)</td>#s', $body, $cells)) {
+                continue;
+            }
+            foreach ($cells[1] as $line) {
+                $lines[] = match ($op) {
+                    'ins'   => '<ins>' . $line . '</ins>',
+                    'del'   => '<del>' . $line . '</del>',
+                    default => $line,   // 'eq' (plain) and 'rep' (already carries inline <ins>/<del>)
+                };
+            }
+        }
+        return trim(implode("\n", $lines), "\n");
     }
 
     //    static function renderHtml($from_text, $to_text) {

@@ -331,116 +331,303 @@ class ChangesMonitor
             return;
         }
 
-        if ($arr = DB_AA::select([], "SELECT `change`.time, `change`.user, `change_record`.selector, `change_record`.value, `change_record`.priority, `change_record`.type as chtype, `change_record`.change_id, `change`.resource_id, `change`.type
-                                FROM `change`, `change_record`", [['change.id', 'change_record.change_id' , 'j'], ["`change`.resource_id", $resource_ids], ['change.type',$type]], ['change.resource_id', 'change.time-', 'change_record.change_id', 'change_record.selector', 'change_record.priority'])) {
-            // Flat timeline: one expandable event per change (newest first), replacing the dense
-            // 9-column table. Markup + styling (.aa-history-*) live in admin-ecn.css so this page and
-            // the AA finder's ?showhistory improve together and the CSS is not re-emitted per call.
+        $arr = $this->loadChanges($resource_ids, $type);
+        if (!$arr) {
+            echo "<p class='aa-empty-note'>" . _m('No recorded changes for this item.') . "</p>";
+            return;
+        }
 
-            // Group consecutive rows by change_id (the query orders rows of one change together).
-            $groups = [];
-            foreach ($arr as $key => $row) {
-                $groups[$row['change_id']]['meta'] ??= $row;
-                $groups[$row['change_id']]['rows'][] = ['key' => $key, 'row' => $row];
+        // Flat timeline: one expandable event per change (newest first). Markup + styling
+        // (.aa-history-*) live in admin-ecn.css so this page and the AA finder's ?showhistory
+        // improve together and the CSS is not re-emitted per call.
+        $groups   = $this->groupByChange($arr);
+        $cids     = array_keys($groups);     // newest-first
+        $total    = count($cids);
+        $revlabel = $this->buildRevLabels($cids, $groups);   // rN · date per change_id
+
+        $forms = [];
+        foreach ($cids as $i => $cid) {
+            $g        = $groups[$cid];
+            $rev      = $total - $i;                // newest first -> highest revision number on top
+            $meta     = $g['meta'];
+            $iid      = $meta['resource_id'];
+            $item     = AA_Items::getItem(new zids($iid, 'l'));
+            $slice_id = $item?->getSliceID();
+            $flds     = $slice_id ? AA_Fields::factoryFor($slice_id) : null;
+            $forms[]  = ($form = "frm$cid");
+            $s_chid   = safe((string) $cid);        // also the anchor the Item-info history box links to
+            $nfld     = count($g['rows']);
+            $count    = $nfld === 1 ? _m('1 field changed') : _m('%1 fields changed', [$nfld]);
+
+            echo "<details class='aa-page-section aa-history-event' id='aa-ch-$s_chid'>"
+               . "<summary><span class='aa-tab-title aa-history-summary'>"
+               . "<span class='aa-h-rev'>r$rev</span>"
+               . "<span class='aa-h-time'>" . safe(date('Y-m-d H:i:s', self::toTimestamp((int) $meta['time']))) . "</span>"
+               . "<span class='aa-h-who'>" . safe(perm_username($meta['user'])) . "</span>"
+               . "<span class='aa-h-count'>$count</span>"
+               . "<span class='aa-h-restore'>"
+               . "<button type=submit form=$form class='btn btn-s btn-secondary' onclick='event.stopPropagation()'>" . _m('Restore') . "</button>"
+               . "<input type=hidden name=slice_id form=$form value='" . safe((string) $slice_id) . "'>"
+               . "</span>"
+               . "</span></summary><div class='aa-history-body'>";
+
+            // "Compare to" picker drives the RIGHT side of the diff (the target version); the LEFT is
+            // fixed to this change's own before-value, so "compare to Current" is meaningful for every
+            // row and never an empty diff. Default target = the value THIS change produced. Targets
+            // offered = this change, each newer revision, and Current (live). The newest event's
+            // product already IS the live value, so it has no alternative target -> no picker, it just
+            // shows its before -> Current diff (and a single recorded change behaves the same way).
+            [$label_a, $label_b] = $this->eventEndpointLabels($cids, $revlabel, $cid, 'after');
+
+            if ($i !== 0) {
+                $opts = "<option value='after' selected>" . $revlabel[$cid] . ' ' . _m('(this change)') . "</option>";
+                for ($j = $i - 1; $j >= 1; $j--) {   // newer intermediate revisions, chronological
+                    $opts .= "<option value='" . safe((string) $cids[$j]) . "'>" . $revlabel[$cids[$j]] . "</option>";
+                }
+                $opts .= "<option value='cur'>" . _m('Current (live)') . "</option>";
+                echo "<div class='aa-history-compare'><label>" . _m('Compare to') . ' '
+                   . "<select onchange=\"aaHistCompare(this,'$s_chid','" . safe((string) $iid) . "')\">"
+                   . $opts
+                   . "</select></label></div>";
             }
-            $total = count($groups);
 
-            $forms = [];
-            $idx   = 0;
-            foreach ($groups as $cid => $g) {
-                $rev      = $total - $idx++;            // newest first -> highest revision number on top
-                $meta     = $g['meta'];
-                $iid      = $meta['resource_id'];
-                $item     = AA_Items::getItem(new zids($iid, 'l'));
-                $slice_id = $item?->getSliceID();
-                $flds     = $slice_id ? AA_Fields::factoryFor($slice_id) : null;
-                $forms[]  = ($form = "frm$cid");
-                $s_chid   = safe((string) $cid);       // also the anchor the Item-info history box links to
-                $nfld     = count($g['rows']);
-                $count    = $nfld === 1 ? _m('1 field changed') : _m('%1 fields changed', [$nfld]);
-
-                echo "<details class='aa-page-section aa-history-event' id='aa-ch-$s_chid'>"
-                   . "<summary><span class='aa-tab-title aa-history-summary'>"
-                   . "<span class='aa-h-rev'>r$rev</span>"
-                   . "<span class='aa-h-time'>" . safe(date('Y-m-d H:i:s', self::toTimestamp((int) $meta['time']))) . "</span>"
-                   . "<span class='aa-h-who'>" . safe(perm_username($meta['user'])) . "</span>"
-                   . "<span class='aa-h-type'>" . safe((string) $meta['type']) . "</span>"
-                   . "<span class='aa-h-count'>$count</span>"
-                   . "<span class='aa-h-restore'>"
-                   . "<button type=submit form=$form class='btn btn-s btn-secondary' onclick='event.stopPropagation()'>" . _m('Restore') . "</button>"
-                   . "<input type=hidden name=slice_id form=$form value='" . safe((string) $slice_id) . "'>"
-                   . "</span>"
-                   . "</span></summary><div class='aa-history-body'>";
-
-                // event-level raw ids, one click down (dimmed)
+            // event-level raw ids (superadmin technical detail), one click down (dimmed, right-aligned)
+            if (IsSuperadmin()) {
                 echo "<div class='tabhlp aa-history-meta'>"
                    . _m('change %1 | uid %2 | %3 ns | resource %4', [$s_chid, safe((string) $meta['user']), safe((string) $meta['time']), safe((string) $iid)])
                    . "</div>";
-
-                echo "<table class='aa-history-fields'><thead><tr>"
-                   . "<th scope=col>" . _m('Field') . "</th><th scope=col>" . _m('Change') . "</th>"
-                   . "<th scope=col>" . _m('vs current') . "</th><th scope=col>" . _m('Restore') . "</th>"
-                   . "</tr></thead><tbody>";
-
-                foreach ($g['rows'] as $r) {
-                    $key    = $r['key'];
-                    $change = $r['row'];
-                    $fid    = $change['selector'];
-                    $fname  = ($flds && ($n = (string) $flds->getProperty($change['selector'], 'name')) !== '') ? $n : (string) $change['selector'];
-                    // field chip + dimmed selector / seq / php-type (every raw byte stays reachable)
-                    $sub    = safe((string) $change['selector']) . ' &middot; ' . _m('seq %1', [safe((string) $change['priority'])]) . ' &middot; ' . safe((string) $change['chtype']);
-                    $chip   = "<span class='aa-h-field-chip'>" . safe($fname) . "</span><span class='tabhlp aa-h-field-sel'>$sub</span>";
-
-                    // "Change" cell: the before->after diff; or the raw (rich-rendered) value when the
-                    // field had no previous version (first set).
-                    $prev_value   = $this->findPrevValue($change['selector'], $change['priority'], $arr, $key);
-                    $diff_version = is_null($prev_value) ? '' : Difftext::renderHtml($prev_value, $change['value']);
-                    $change_cell  = $diff_version !== '' ? $diff_version : '<pre>' . Txt::richValue($change['value']) . '</pre>';
-
-                    // "vs current": compare the historical value to the field's live value. Nullsafe the
-                    // whole chain (the item may have been purged) and compare explicitly, so a field
-                    // cleared to "" or 0 is not mislabelled "same as current".
-                    $current = $item?->getAaValue($change['selector'])?->getValue($change['priority']);
-                    if ($current === null) {
-                        $vs_cell = "<span class='aa-h-nochange'>" . _m('no current value') . "</span>";
-                    } elseif ((string) $current === (string) $change['value']) {
-                        $vs_cell = "<span class='aa-h-nochange'>" . _m('same as current') . "</span>";
-                    } else {
-                        $vs_cell = Difftext::renderHtml((string) $change['value'], (string) $current);
-                    }
-                    // restore checkbox enables the (adjacent) hidden input that feeds the per-change form
-                    $restore     = "<input form=$form type=hidden name='aa[u$iid][$fid]' value=\"" . safe($change['value']) . "\" disabled>"
-                                 . "<input type=checkbox onchange=\"this.previousElementSibling.disabled = !this.checked\"> " . safe($fname);
-
-                    echo "<tr><td>$chip</td><td>$change_cell</td><td>$vs_cell</td><td><label class='aa-h-restore-field'>$restore</label></td></tr>";
-                }
-                echo "</tbody></table></div></details>";
             }
 
-            foreach ($forms as $form) {
-                echo "\n<form id=$form action='" . get_aa_url('filler.php') . "' method='POST'></form>";
-            }
-            // open + scroll to the change a history-box deep link (#aa-ch-<id>) targets - CSS cannot force <details> open
-            echo "<script>(()=>{const o=()=>{if(!location.hash)return;const e=document.getElementById(location.hash.slice(1));if(e&&e.classList.contains('aa-history-event')){e.open=true;e.scrollIntoView();}};addEventListener('hashchange',o);o();})();</script>";
-        } else {
-            echo "<p class='aa-empty-note'>" . _m('No recorded changes for this item.') . "</p>";
+            // diff area (toggle + field table); the "Compare to" picker swaps this whole block in
+            // place via AJAX, so the toggle's target label tracks the chosen version.
+            echo "<div class='aa-history-diffarea' id='aa-diffwrap-$s_chid'>"
+               . $this->renderEventDiff($arr, $g['rows'], $item, $flds, $iid, $form, 'after', $label_a, $label_b)
+               . "</div></div></details>";
         }
 
-        //    print_r(array_keys(reset($arr)));
-        //    array_unshift($arr, array_keys(reset($arr)));
-        //    echo GetHtmlTable($arr, 'th');
+        foreach ($forms as $form) {
+            echo "\n<form id=$form action='" . get_aa_url('filler.php') . "' method='POST'></form>";
+        }
+
+        // (1) open + scroll to the change a history-box deep link (#aa-ch-<id>) targets - CSS cannot
+        //     force a <details> open. (2) aaHistCompare: swap one event's diff cells for the chosen
+        //     target version via the AA_Responder_Item_History_Diff responder (which re-checks the
+        //     item edit permission), so this works from itemhistory.php and the finder's ?showhistory.
+        $rurl = json_encode(get_aa_url('central/responder.php', [], false));   // plain url; JS appends ?command=... (correct <script> escaping)
+        echo "<script>(()=>{const o=()=>{if(!location.hash)return;const e=document.getElementById(location.hash.slice(1));if(e&&e.classList.contains('aa-history-event')){e.open=true;e.scrollIntoView();}};addEventListener('hashchange',o);o();})();</script>"
+           . "<script>function aaHistCompare(s,c,i){const w=document.getElementById('aa-diffwrap-'+c);if(!w)return;const u=$rurl,sep=u.indexOf('?')<0?'?':'&';w.style.opacity=.5;fetch(u+sep+'command=Item_History_Diff&id='+encodeURIComponent(i)+'&cid='+encodeURIComponent(c)+'&base='+encodeURIComponent(s.value)).then(r=>r.text()).then(h=>{w.innerHTML=h;const e=w.closest('.aa-history-event');if(e)e.dataset.view='diff';w.style.opacity='';}).catch(()=>{w.style.opacity='';});}"
+           . "function aaHistView(b,v){const e=b.closest('.aa-history-event');if(!e)return;e.dataset.view=v;e.querySelectorAll('.aa-h-vbtn').forEach(x=>x.classList.toggle('is-active',x===b));}"
+           . "function aaHistCopy(b){const p=b.nextElementSibling;if(!p||!navigator.clipboard)return;navigator.clipboard.writeText(p.textContent).then(()=>{b.classList.add('is-copied');setTimeout(()=>b.classList.remove('is-copied'),1200);});}</script>";
     }
 
-    private function findPrevValue(string $fld, string $pri, array $arr, int $key): ?string
+    /** Load all recorded change_record rows for the given resource(s), newest-first (the timeline). */
+    private function loadChanges($resource_ids, string $type): array
     {
-        while (array_key_exists(++$key, $arr)) {
-            if ($arr[$key]['selector'] == $fld and $arr[$key]['priority'] == $pri) {
-                return $arr[$key]['value'];
+        return DB_AA::select([], "SELECT `change`.time, `change`.user, `change_record`.selector, `change_record`.value, `change_record`.priority, `change_record`.type as chtype, `change_record`.change_id, `change`.resource_id, `change`.type
+                                FROM `change`, `change_record`", [['change.id', 'change_record.change_id' , 'j'], ["`change`.resource_id", $resource_ids], ['change.type',$type]], ['change.resource_id', 'change.time-', 'change_record.change_id', 'change_record.selector', 'change_record.priority']) ?: [];
+    }
+
+    /** Group the flat change_record rows by change_id, preserving order (newest-first). */
+    private function groupByChange(array $arr): array
+    {
+        $groups = [];
+        foreach ($arr as $key => $row) {
+            $groups[$row['change_id']]['meta'] ??= $row;
+            $groups[$row['change_id']]['rows'][] = ['key' => $key, 'row' => $row];
+        }
+        return $groups;
+    }
+
+    /**
+     * One event's diff area: the Diff / version-A / version-B toggle (the two buttons labelled by the
+     * actual revisions being compared) followed by the per-field table. The "Compare to" picker swaps
+     * this whole block in place (AJAX), so the toggle's target label tracks the chosen version. Shared
+     * by the initial page render and renderEventDiffFragment.
+     */
+    private function renderEventDiff(array $arr, array $rows, $item, $flds, string $iid, string $form, string $base, string $label_a, string $label_b): string
+    {
+        return "<span class='aa-h-viewtoggle' role='group' aria-label='" . _m('View') . "'>"
+             . "<button type='button' class='aa-h-vbtn is-active' onclick=\"aaHistView(this,'diff')\">" . _m('Diff') . "</button>"
+             . "<button type='button' class='aa-h-vbtn' onclick=\"aaHistView(this,'a')\">" . $label_a . "</button>"
+             . "<button type='button' class='aa-h-vbtn' onclick=\"aaHistView(this,'b')\">" . $label_b . "</button>"
+             . "</span>"
+             . "<table class='aa-history-fields'><thead><tr>"
+             . "<th scope=col>" . _m('Field') . "</th><th scope=col>" . _m('Change') . "</th>"
+             . "<th scope=col>" . _m('Restore') . "</th>"
+             . "</tr></thead><tbody>"
+             . $this->renderEventFields($arr, $rows, $item, $flds, $iid, $form, $base)
+             . "</tbody></table>";
+    }
+
+    /**
+     * Render one change event's per-field rows. The LEFT side of each diff is fixed to the value
+     * just before this change (the previous revision / Original); the RIGHT side is the chosen
+     * target version $base ('after' = the value this change produced, 'cur' = the current live value,
+     * or another change_id). Left precedes right in time, so the diff reads green=added / red=removed.
+     */
+    private function renderEventFields(array $arr, array $rows, $item, $flds, string $iid, string $form, string $base): string
+    {
+        $html = '';
+        $tech = IsSuperadmin();   // raw selector / seq / php-type are a superadmin technical detail
+        foreach ($rows as $r) {
+            $key    = $r['key'];
+            $change = $r['row'];
+            $fid    = $change['selector'];
+            $pri    = $change['priority'];
+            $fname  = ($flds && ($n = (string) $flds->getProperty($fid, 'name')) !== '') ? $n : (string) $fid;
+            // field chip; editors see the friendly name, superadmins also the raw selector / seq / php-type
+            $chip   = "<span class='aa-h-field-chip'>" . safe($fname) . "</span>";
+            if ($tech) {
+                $chip .= "<span class='tabhlp aa-h-field-sel'>" . safe((string) $fid) . ' &middot; ' . _m('seq %1', [safe((string) $pri)]) . ' &middot; ' . safe((string) $change['chtype']) . "</span>";
+            }
+
+            $before = (string) $change['value'];   // value before this change = left (A), fixed
+            $target = (string) ($this->targetValue($arr, $key, $fid, $pri, $base, $item) ?? '');   // right (B)
+
+            $diff = Difftext::renderInline($before, $target);
+            $diff = $diff !== '' ? $diff : "<span class='aa-h-nochange'>" . _m('No change between these versions.') . "</span>";
+
+            // three stacked views toggled by the per-event toggle buttons (CSS keyed on the event's
+            // data-view); A/B show the raw value with a copy-to-clipboard button.
+            $diff_cell = "<div class='aa-h-views'>"
+                       . "<div class='aa-h-view aa-h-view-diff'>$diff</div>"
+                       . "<div class='aa-h-view aa-h-view-a'>" . $this->codeView($before) . "</div>"
+                       . "<div class='aa-h-view aa-h-view-b'>" . $this->codeView($target) . "</div>"
+                       . "</div>";
+
+            // restore checkbox enables the (adjacent) hidden input that feeds the per-change form
+            $restore = "<input form=$form type=hidden name='aa[u" . safe((string) $iid) . "][" . safe((string) $fid) . "]' value=\"" . safe((string) $change['value']) . "\" disabled>"
+                     . "<input type=checkbox onchange=\"this.previousElementSibling.disabled = !this.checked\"> " . safe($fname);
+
+            $html .= "<tr><td>$chip</td><td>$diff_cell</td><td><label class='aa-h-restore-field'>$restore</label></td></tr>";
+        }
+        return $html;
+    }
+
+    /** A single version's raw value with a copy-to-clipboard button (the Version A / Version B views). */
+    private function codeView(string $val): string
+    {
+        if ($val === '') {
+            return "<span class='aa-h-nochange'>" . _m('(empty)') . "</span>";
+        }
+        return "<div class='aa-h-code'>"
+             . "<button type='button' class='aa-h-copy' onclick='aaHistCopy(this)' title='" . _m('Copy to clipboard') . "'>" . _m('Copy') . "</button>"
+             . "<pre>" . safe($val) . "</pre>"
+             . "</div>";
+    }
+
+    /**
+     * AJAX entry point (AA_Responder_Item_History_Diff): re-render one event's diff area against the
+     * chosen target version. Validates $cid/$base against the loaded history and returns '' for
+     * unknowns, so the request parameters cannot reach a query or the markup unchecked.
+     */
+    public function renderEventDiffFragment(string $iid, string $cid, string $base): string
+    {
+        $arr = $this->loadChanges([$iid], 'h');
+        if (!$arr) {
+            return '';
+        }
+        $groups = $this->groupByChange($arr);
+        if (!isset($groups[$cid])) {
+            return '';
+        }
+        $cids = array_keys($groups);
+        if ($base !== 'after' && $base !== 'cur') {   // a specific revision target: accept only one strictly newer than this change
+            $i_base = array_search($base, $cids, true);
+            $i_cid  = array_search($cid, $cids, true);
+            if ($i_base === false || $i_base >= $i_cid) {
+                $base = 'after';
+            }
+        }
+        $revlabel = $this->buildRevLabels($cids, $groups);
+        [$label_a, $label_b] = $this->eventEndpointLabels($cids, $revlabel, $cid, $base);
+        $item = AA_Items::getItem(new zids($iid, 'l'));
+        $flds = ($sid = $item?->getSliceID()) ? AA_Fields::factoryFor($sid) : null;
+        return $this->renderEventDiff($arr, $groups[$cid]['rows'], $item, $flds, $iid, "frm$cid", $base, $label_a, $label_b);
+    }
+
+    /** rN &middot; date label per change_id (newest-first $cids): highest rN on top, dated when that state went live. */
+    private function buildRevLabels(array $cids, array $groups): array
+    {
+        $total    = count($cids);
+        $revlabel = [];
+        foreach ($cids as $i => $cid) {
+            $revlabel[$cid] = 'r' . ($total - $i) . ' &middot; '
+                . safe(date('Y-m-d H:i', self::toTimestamp((int) $groups[$cid]['meta']['time'])));
+        }
+        return $revlabel;
+    }
+
+    /**
+     * The two diff-endpoint labels for event $cid against target $base: [left, right]. Left = the
+     * state before this change (the previous revision, or "Original" when this is the oldest event).
+     * Right = the chosen target: the live value ('cur'), this change's product ('after' = the live
+     * value when this is the newest event), or a specific revision's product.
+     */
+    private function eventEndpointLabels(array $cids, array $revlabel, string $cid, string $base): array
+    {
+        $i       = array_search($cid, $cids, true);
+        $total   = count($cids);
+        $label_a = ($i !== false && $i + 1 < $total) ? $revlabel[$cids[$i + 1]] : _m('Original');
+        if ($base === 'cur' || ($base === 'after' && $i === 0)) {
+            $label_b = _m('Current (live)');
+        } elseif ($base === 'after') {
+            $label_b = $revlabel[$cid];
+        } else {
+            $label_b = $revlabel[$base] ?? _m('Current (live)');
+        }
+        return [$label_a, $label_b];
+    }
+
+    /**
+     * The RIGHT side of the diff - the value of the chosen target version: the current live value
+     * ('cur'), the value this change produced ('after'), or the value produced by a specific revision
+     * (its change_id). Null when the field has no value in that version.
+     */
+    private function targetValue(array $arr, int $key, string $fid, string $pri, string $base, $item): ?string
+    {
+        if ($base === 'cur') {
+            return $this->liveValue($item, $fid, $pri);
+        }
+        if ($base === 'after') {
+            return $this->valueAfter($arr, $key, $fid, $pri, $item);
+        }
+        return $this->versionAfterCid($arr, $base, $fid, $pri, $item);
+    }
+
+    /** The field's current live value (the newest state), or null when absent (e.g. a purged item). */
+    private function liveValue($item, string $fid, string $pri): ?string
+    {
+        $v = $item?->getAaValue($fid)?->getValue($pri);
+        return $v === null ? null : (string) $v;
+    }
+
+    /**
+     * The field's value AFTER the change at row index $idx - i.e. the version that change produced.
+     * Each change_record stores the value BEFORE the change, so the "after" value is the recorded
+     * value of the nearest NEWER change of the same field, or the current live value when this is
+     * the field's newest change. Null when even the live value is absent (e.g. purged item).
+     */
+    private function valueAfter(array $arr, int $idx, string $fid, string $pri, $item): ?string
+    {
+        for ($i = $idx - 1; $i >= 0; $i--) {   // smaller index = newer change in the newest-first list
+            if ($arr[$i]['selector'] == $fid && $arr[$i]['priority'] == $pri) {
+                return (string) $arr[$i]['value'];
+            }
+        }
+        return $this->liveValue($item, $fid, $pri);
+    }
+
+    /** The field's value produced by revision $cid = valueAfter() taken from that change's position. */
+    private function versionAfterCid(array $arr, string $cid, string $fid, string $pri, $item): ?string
+    {
+        foreach ($arr as $i => $row) {
+            if ((string) $row['change_id'] === $cid) {
+                return $this->valueAfter($arr, $i, $fid, $pri, $item);
             }
         }
         return null;
     }
-
 
     /** getProposalByID function
      * @param $change_id

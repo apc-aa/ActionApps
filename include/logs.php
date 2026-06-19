@@ -80,6 +80,11 @@ class AA_Log implements InternalExpandInterface {
             $params = ParamImplode($params);
         }
 
+        // a selector may also be an AA_Logentry - stored reversed (searchable value first, class flag last)
+        if (is_a($selector, 'AA_Logentry')) {
+            $selector = $selector->serializeToString(true);
+        }
+
         $rows = [];
         if (is_array($selector)) {
             foreach ($selector as $sel) {
@@ -152,16 +157,41 @@ class AA_Log implements InternalExpandInterface {
         return implode("\n", $ret);
     }
 
+    /** Width of the `log.selector` column (see include/metabase_schema.php) -
+     *  the reversed Qa selector must fit so its trailing class flag survives. */
+    private const SELECTOR_MAX = 255;
+
     static function context(?string $selector=null): string
     {
-        // There was bug - no return - so the last line was used always. We left it this was right now (maybe it is better for compatibility, but could be changed - HM 2024-10-03)
-        // if (is_null($selector)) {
-        //     ParamImplode([AA::$module_id,'',str_replace(':','_',$_SERVER['REMOTE_ADDR']), ($_SERVER['HTTPS'] ? '' : 'http/'). "{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}"]);
-        // }
-
         // we need to be searchable by selector - so in DB index we use reversed format with Qa at the end
-        $entry = new AA_Logentry_Qa(['ident'=>$selector, 'module'=>AA::$module_id,'ip'=>str_replace(':','_',$_SERVER['REMOTE_ADDR']), 'uri'=>($_SERVER['HTTPS'] ? '' : 'http/'). "{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}"]);
-        return $entry->serializeToString(true);
+        return self::contextSelector(
+            (string)$selector,
+            (string)AA::$module_id,
+            str_replace(':', '_', $_SERVER['REMOTE_ADDR']),
+            (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' ? '' : 'http/') . "{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}"
+        );
+    }
+
+    /** Serialize the reversed AA_Logentry_Qa selector (ident:module:ip:uri:Qa).
+     *  The class flag is appended last, so a long uri would overflow the
+     *  varchar(255) `selector` column and strip the `:Qa` flag - which breaks
+     *  factoryByStringReversed() on the Log page. Trim the uri (the only
+     *  unbounded part) until the whole string, flag included, fits the column.
+     */
+    protected static function contextSelector(string $ident, string $module, string $ip, string $uri): string
+    {
+        $make = static fn (string $u): string => (new AA_Logentry_Qa(
+            ['ident' => $ident, 'module' => $module, 'ip' => $ip, 'uri' => $u]
+        ))->serializeToString(true);
+
+        // measure the actual serialized length (robust to ParamImplode ':' escaping);
+        // strlen in bytes <= MAX guarantees <= MAX chars too; mb_substr avoids cutting a multibyte char
+        $entry = $make($uri);
+        while (strlen($entry) > self::SELECTOR_MAX && $uri !== '') {
+            $uri   = mb_substr($uri, 0, -max(1, strlen($entry) - self::SELECTOR_MAX));
+            $entry = $make($uri);
+        }
+        return $entry;
     }
 
     public static function getAdminUrl(string $event, string $selector = ""): string {
@@ -511,6 +541,47 @@ class AA_Logentry_File extends AA_Logentry {
         return [
             'outcome' => new AA_Property('outcome', _m('Outcome'), 'string'),   // deleted | delete failed | invalid directory
             'file'    => new AA_Property('file',    _m('File'), 'string'),
+        ];
+    }
+}
+
+/** ITEM_NEW / ITEM_UPD params log entry - item store (include/item_content.php).
+ *  Short tag `Iu` (item insert/update) - the postfix is stored in every row.
+ *  The insert vs update distinction is in the event type; this holds the detail.
+ */
+class AA_Logentry_Iu extends AA_Logentry {
+    public static function getClassProperties(): array {
+        return [
+            'mode'    => new AA_Property('mode',    _m('Mode'), 'string'),    // insert | update | update_filled | ...
+            'flags'   => new AA_Property('flags',   _m('Flags'), 'string'),
+            'context' => new AA_Property('context', _m('Context'), 'string'),
+        ];
+    }
+}
+
+/** FEED_ENBLE / FEED_DSBLE / FEED_ADD / FEED_DEL selector - feeding permission
+ *  change (admin/se_import2.php). Short tag `Fd` (feed). Reversed selector
+ *  (module first for prefix lookup): module:target:Fd - direction/action is in
+ *  the event type.
+ */
+class AA_Logentry_Fd extends AA_Logentry {
+    public static function getClassProperties(): array {
+        return [
+            'module' => new AA_Property('module', _m('Module ID'), 'string'),
+            'target' => new AA_Property('target', _m('Feed counterpart'), 'string'),
+        ];
+    }
+}
+
+/** M_FLDI_VLD selector - insert-form field validation (include/item_content.php).
+ *  Short tag `Mf` (module/field); pairs with the params entry AA_Logentry_Mfv
+ *  (message/uri/referer). Reversed selector (module first): module:field:Mf.
+ */
+class AA_Logentry_Mf extends AA_Logentry {
+    public static function getClassProperties(): array {
+        return [
+            'module' => new AA_Property('module', _m('Module ID'), 'string'),
+            'field'  => new AA_Property('field',  _m('Field ID'), 'string'),
         ];
     }
 }

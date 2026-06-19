@@ -417,8 +417,10 @@ class AA_Responder_Tags extends AA_Responder {
     {
         $ret    = [];
         $trimed = trim($this->input);
-        $field  = AA_Slice::getModule($this->slice_id)->getField($this->field_id);
+        $slice  = AA_Slice::getModule($this->slice_id);
+        $field  = $slice ? $slice->getField($this->field_id) : null;
         $found  = false;
+        $widget = null;
         if ($field && $trimed) {
             $widget = $field->getWidget();
             $opts   = $widget->getFormattedOptions($this->item_id, null, $this->input);
@@ -436,7 +438,7 @@ class AA_Responder_Tags extends AA_Responder {
                 }
             }
         }
-        if ($trimed && !$found && (int)$widget->getProperty('disable_new', 0) !== 1) {
+        if ($trimed && !$found && $widget && (int)$widget->getProperty('disable_new', 0) !== 1) {
             array_unshift($ret, ['id'=>$this->input, 'text'=>$this->input]);
         }
         header("Content-type: application/json");
@@ -468,7 +470,7 @@ class AA_Responder_Widget_Selection extends AA_Responder {
         if ($slice && ($widget = $slice->getWidget($this->field_id)) && $this->input !== '') {
             $ret = $widget->getFilterSelection(trim($this->input), $this->limit);
         }
-        return new AA_Response(ConvertCharset::singleton()->Convert($ret, $slice->getCharset(), 'utf-8'));
+        return new AA_Response($slice ? ConvertCharset::singleton()->Convert($ret, $slice->getCharset(), 'utf-8') : $ret);
     }
 }
 
@@ -500,7 +502,7 @@ class AA_Responder_Formatted_By_Widget extends AA_Responder {
             mgettext_bind($slice->getLang(), 'output');
             $ret = $widget->getRelatedItemsHtml(new zids($this->item_id, 'l'), $this->base_id, $this->field_id, $this->slice_id);   //zids $zids, string $base_id, string $sid, string $def_field_id, string $def_slice_id): string {
         }
-        return new AA_Response(ConvertCharset::singleton()->Convert($ret, $slice->getCharset(), 'utf-8'));
+        return new AA_Response($slice ? ConvertCharset::singleton()->Convert($ret, $slice->getCharset(), 'utf-8') : $ret);
     }
 }
 
@@ -541,6 +543,36 @@ class AA_Responder_Alertitem extends AA_Responder {
             //$db->query ("UPDATE item SET moved2active = 0 WHERE id='" .q_pack_id($item_id)."'");    }
         }
         return new AA_Response($ret);
+    }
+}
+
+/** Re-render one item-history change event's diff area against a chosen target version - the AJAX
+ *  backend of the item-edit "Compare to" picker (ChangesMonitor). Read-only. Authorised to anyone
+ *  who may edit the item (the same gate as itemedit.php / iteminfo.php), so the history is never
+ *  exposed wider than the item itself. */
+class AA_Responder_Item_History_Diff extends AA_Responder {
+    protected string $id;
+    protected string $cid;
+    protected string $base;
+
+    function __construct($param=null) {
+        $this->id   = (string) ($param['id']   ?? '');
+        $this->cid  = (string) ($param['cid']  ?? '');
+        $this->base = (string) ($param['base'] ?? '');
+    }
+
+    function isPerm(): bool {
+        if (!is_long_id($this->id)) {
+            return false;
+        }
+        // admin read: ignore the slice reading password so a protected item still resolves (see iteminfo.php)
+        $item = AA_Items::getItem(new zids($this->id), null, true, true);
+        return $item && (IfSlPerm(PS_EDIT_ALL_ITEMS, $item->getSliceID())
+                         || $item->getval('posted_by.......') == AuthGetUid());
+    }
+
+    function run(): AA_Response {
+        return new AA_Response(\AA\Util\ChangesMonitor::singleton()->renderEventDiffFragment($this->id, $this->cid, $this->base));
     }
 }
 
