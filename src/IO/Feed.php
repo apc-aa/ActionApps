@@ -99,7 +99,7 @@ class Feed
     public function feed(string $fire = ''): string
     {
         $fire = $fire ?: $this->fire;
-        $run = ($this->fire === 'write');
+        $run = ($fire === 'write');   // 'test'/'display' are dry-run; only 'write' stores
         $saver = new AA\IO\Saver($this->grabber, null, $this->destination_slice_id, 'by_grabber', 'by_grabber');
         // $saver->run();
         $name     = 'feed&id=' . $this->id . '&type=' . self::getFeedTypeName($this->type);

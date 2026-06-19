@@ -87,17 +87,28 @@ if ( $_GET['display'] ) {
     $fire = 'write';   // default
 }
 
+/** Output the result of Feed::feed(): raw source for 'display' (escaped so the
+ *  XML is visible), else the saver report / 'queued' message. (Previously the
+ *  return value was silently discarded, so Source showed a blank page.) */
+function xmlclient_show(string $ret, string $fire): void {
+    if ($ret === '') {
+        return;
+    }
+    $html = ($fire === 'display') ? '<pre>' . safe($ret) . '</pre>' : '<p>' . safe($ret) . '</p>';
+    echo $html;
+}
+
 
 if ($feed_id) {          // just one specified APC feed
     $feed = new Feed();
     $feed->loadAAFeed($feed_id, $_GET['time']);
     ($debugfeed>8) && huhl('aafeed', $fire, $feed);
-    $feed->feed($fire);
+    xmlclient_show($feed->feed($fire), $fire);
 } elseif ($rssfeed_id) { // just one specified RSS feed
     $feed = new Feed();
     $feed->loadRSSFeed($rssfeed_id, $_GET['url']);
     ($debugfeed>8) && huhl('rssfeed', $fire, $feed);
-    $feed->feed($fire);
+    xmlclient_show($feed->feed($fire), $fire);
 } else {                 // all RSS and APC and general feeds
     $rssfeeds     = GetTable2Array('SELECT feed_id FROM rssfeeds', 'NoCoLuMn', 'feed_id');
     $aafeeds      = GetTable2Array('SELECT feed_id FROM external_feeds', 'NoCoLuMn', 'feed_id');
@@ -138,7 +149,7 @@ if ($feed_id) {          // just one specified APC feed
                 $feed = AA_Object::load($feed_seting['id']);
         }
 
-        $feed->feed($fire);
+        xmlclient_show($feed->feed($fire), $fire);
     }
 }
 
