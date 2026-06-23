@@ -30,7 +30,6 @@ use AA\Manager;
 use AA\Util\Adminlink;
 use AA\Util\ChangesMonitor;
 use AA\Util\InputVars;
-use AA\Util\Txt;
 
 $require_default_lang = true;      // do not use module specific language file
                                    // (message for init_page.php)
@@ -160,9 +159,6 @@ function PrintItemInfo($item_id): void
 $apage = new AA_Adminpageutil('aaadmin','aafinder');
 $apage->setTitle(_m("AA finder"));
 $apage->setForm();   // do not use form around code
-// printHead emits the page <head> and locks-in registered CSS — pre-register
-// keyValTable's CSS so AA_Logentry cells in the Log table render correctly.
-Txt::registerKeyValTableCss();
 $apage->printHead($err, $Msg);
 
 if (!is_object( $db )) {

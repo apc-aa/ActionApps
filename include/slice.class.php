@@ -713,24 +713,28 @@ class AA_Slice extends AA_Module {
         //header("Content-Security-Policy: frame-src 'self' http://svetelnykoren.cz/");
         //header("Strict-Transport-Security: max-age=0");
 
+        $url = '';
         if ($preview_url = $this->getProperty('_url_preview....')) {
-            return $item->unalias($preview_url);
-        }
-        if (('_#FULL_URL' !== ($preview_url = $item->unalias('_#FULL_URL'))) && str_starts_with($preview_url, 'https://'))  {   // not empty and FULL_URL returns full url withj protocol
-            return $preview_url;
-        }
-        if ('_#SEO_URL_' !== ($preview_url = $item->unalias('_#SEO_URL_')))  {
+            $url = $item->unalias($preview_url);
+        } elseif (('_#FULL_URL' !== ($preview_url = $item->unalias('_#FULL_URL'))) && str_starts_with($preview_url, 'https://'))  {   // not empty and FULL_URL returns full url withj protocol
+            $url = $preview_url;
+        } elseif ('_#SEO_URL_' !== ($preview_url = $item->unalias('_#SEO_URL_')))  {
             // Contain _#SEO_URL_ already server?
             // we are really looking for the begining of the string - pos = 0
             if ( !str_starts_with($preview_url, 'http://') && !str_starts_with($preview_url, 'https://') && !str_starts_with($preview_url, '//') ) {
                 $preview_url = rtrim($this->getProperty('slice_url'),'/').'/'.ltrim($preview_url,'/');
             }
-            return $preview_url;
+            $url = $preview_url;
+        } elseif ($fallback_old_sh_itm) {
+            $url = con_url($this->getProperty('slice_url'), "sh_itm=$item_id");
         }
-        if ($fallback_old_sh_itm) {
-            return con_url($this->getProperty('slice_url'), "sh_itm=$item_id");
-        }
-        return '';
+
+        // The candidate may come from raw unaliased item field / slice property content, so only
+        // return an absolute http(s) or root-relative URL - it is meant to be dropped straight into
+        // an href, and safe()/htmlspecialchars does NOT neutralise a javascript:/data: scheme there.
+        // `/(?!/)` rejects protocol-relative `//host` (open redirect); anything else (incl. an
+        // unset/empty result) yields '' => no preview link.
+        return preg_match('~^(?:https?://|/(?!/))~i', $url) ? $url : '';
     }
 
     /** find default field for upload to - first file...........x or img_upload.....x or img_src........x field

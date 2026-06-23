@@ -163,9 +163,21 @@ function GetItemSummaryHtml($item, bool $full = false): string
     $name = $headline !== '' ? safe($headline)
           : trim(($slice ? safe($slice->getName()) : '').' <span class="aa-id">'. safe($short_id) .'</span>');
 
+    // Public-site link: the item's live URL when the slice resolves one (an explicit preview-URL
+    // pattern, _#FULL_URL, or a seo field via _#SEO_URL_). Mirrors the editor's seo-field preview.
+    // getPreviewUrl() returns only an http(s)/relative URL (it drops unsafe schemes centrally), so
+    // it is safe to drop straight into an href.
+    $public = '';
+    if ($slice && ($pub_url = $slice->getPreviewUrl($long_id)) !== '') {
+        $public = '<p class="aa-item-public">'
+                . a_href($pub_url, GetAAImage('external-link.png', '', 13, 13).' '.safe(_m('View on public site')))
+                . '</p>';
+    }
+
     $lede = '<div class="aa-item-lede">'
           . '<h2 class="aa-item-name">'.$name.'</h2>'
           . '<p class="aa-item-status"><span class="aa-status-dot'.($is_live ? ' is-live' : '').'"></span><strong>'. safe($word) .'</strong>'.$rest.'</p>'
+          . $public
           . '</div>';
 
     // --- Details: the reference facts, demoted below the lede. Short ID stays for editors (handy for

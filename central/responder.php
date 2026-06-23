@@ -562,13 +562,15 @@ class AA_Responder_Item_History_Diff extends AA_Responder {
     }
 
     function isPerm(): bool {
-        if (!is_long_id($this->id)) {
+        // Superadmin-only, matching the itemhistory.php page gate it serves.
+        if (!is_long_id($this->id) || !IsSuperadmin()) {
             return false;
         }
+//        $item = AA_Items::getItem(new zids($this->id), null, true, true);
+//        return $item && (IfSlPerm(PS_EDIT_ALL_ITEMS, $item->getSliceID()) || $item->getval('posted_by.......') == AuthGetUid());
+
         // admin read: ignore the slice reading password so a protected item still resolves (see iteminfo.php)
-        $item = AA_Items::getItem(new zids($this->id), null, true, true);
-        return $item && (IfSlPerm(PS_EDIT_ALL_ITEMS, $item->getSliceID())
-                         || $item->getval('posted_by.......') == AuthGetUid());
+        return (bool) AA_Items::getItem(new zids($this->id), null, true, true);
     }
 
     function run(): AA_Response {
