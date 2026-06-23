@@ -297,7 +297,7 @@ class AA_Collection {
                 $SQL .=
                 "WHERE slice_id = $p_slice_id AND
                        publish_date <= $now AND expiry_date >= $last "  // a) 2. and b) 2.
-                   ."AND ((moved2active BETWEEN $last AND $now) "       // a) 1.
+                   ."AND ((moved2active >= $last AND moved2active < $now) "  // a) 1. half-open: defer the current (possibly still-open) second to the next sweep so a boundary item isn't sent twice
                          ."OR (moved2active < $last "                   // b) 1.
                              ."AND publish_date > $last) "              // b) 3.
                        .")";
