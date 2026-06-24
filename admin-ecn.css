@@ -3020,6 +3020,22 @@ h1:has(+form[name="inputform"]) {
     transform: translateY(0);
 }
 
+/* Fallback for browsers without the HTML Popover API (Firefox <125, Chrome <114):
+   they ignore the `popover` attribute, so the UA `[popover]:not(:popover-open)
+   {display:none}` rule never applies and the menu stays in the page as an invisible
+   (opacity:0) position:fixed box that overlaps neighbouring controls and steals
+   their clicks (notably the right part of the top-bar module switcher). Deactivate
+   the component there — hide the menu and its now-inert trigger. Placed after the
+   rules above so display:none wins the cascade over .aa-overflow-trigger's
+   display:inline-block. (Popover API is only Baseline Newly Available 2024, below
+   the project's Widely-Available floor; revisit if a JS open/close shim is added.) */
+@supports not selector(:popover-open) {
+    .aa-overflow-trigger,
+    .aa-overflow-menu {
+        display: none;
+    }
+}
+
 .aa-overflow-item {
     display: block;
 }
