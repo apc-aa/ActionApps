@@ -562,10 +562,14 @@ function GetMailManaged(): Managed {
     $managed->setWidgetSetting('html', ['type' => 'bool', 'name' => _m('Use HTML')]);
     $managed->setWidgetSetting('type', ['enum' => AA_Collection::get_email_types(), 'name' => _m('Email type')]);
     $managed->setWidgetSetting('lang', ['enum' => Langs::getNames(), 'name' => _m('Language (charset)')]);
-    $managed->setWidgetSetting('owner_module_id', ['enum' => AA_Module::getUserModules(), 'name' => _m('Owner')]);
+    // empty owner = global e-mail (not tied to a module); keep it optional so such
+    // e-mails can be saved without being forced into a single module.
+    $managed->setWidgetSetting('owner_module_id', ['enum' => ['' => _m('— all modules (global) —')] + AA_Module::getUserModules(), 'name' => _m('Owner'), 'required' => false]);
     $managed->setWidgetSetting('description', ['name' => _m('Description/Result')]);
     $managed->setWidgetSetting('subject', ['name' => _m('Subject')]);
-    $managed->setWidgetSetting('body', ['name' => _m('Body')]);
+    // Rich editor (CKEditor) only for token-free bodies; templates with {...} commands
+    // keep the code editor so their raw markup is not reformatted on save.
+    $managed->setWidgetSetting('body', ['name' => _m('Body'), 'widget' => static fn ($body) => str_contains((string) $body, '{') ? 'cod' : 'edt']);
     $managed->setWidgetSetting('header_from', ['name' => _m('From (email) ')]);
     $managed->setWidgetSetting('reply_to', ['name' => _m('Reply to (email)')]);
     $managed->setWidgetSetting('errors_to', ['name' => _m('Errors to (email)')]);

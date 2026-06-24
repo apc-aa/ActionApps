@@ -40,6 +40,7 @@ namespace AA;
 use AA;
 use AA\IO\Grabber\ObjectForm;
 use AA\Manageraction\Manageractions;
+use AA\Widget\Widget;
 use AA_Condition;
 use AA_Content;
 use AA_Form;
@@ -428,7 +429,10 @@ class Managed_Table extends Managed
     /** @inheritDoc */
     public function getForm(?string $id, ?string $module_id): ?AA_Form
     {
-        $props = AA::Metabase()->getColumnProperties($this->table, (bool) $id);
+        $props   = AA::Metabase()->getColumnProperties($this->table, (bool) $id);
+        $widgets = [];      // optional per-field input widget overriding AA_Property::defaultWidget()
+        $record        = null;   // edited record, lazily loaded only for value-conditional widgets
+        $record_loaded = false;
         foreach ($props as $k => $prop) {
             if ($setting = $this->widget_setting[$k] ?? null) {
                 if (isset($setting['type'])) {
@@ -447,6 +451,23 @@ class Managed_Table extends Managed
                 if (array_key_exists('default', $setting)) {
                     $prop->setDefault($setting['default']);
                 }
+                if (array_key_exists('required', $setting)) {
+                    $prop->required = (bool) $setting['required'];   // override the enum-forced required
+                }
+                if (isset($setting['widget'])) {
+                    $w = $setting['widget'];
+                    // a non-string callable is a chooser fn($current_value): widget-code|Widget
+                    // — e.g. pick the rich editor only for token-free bodies
+                    if (is_callable($w) && !is_string($w)) {
+                        if (!$record_loaded) {
+                            $record        = $id ? ($this->getContent(new zids($id, $this->getZidsType()))[$id] ?? null) : null;
+                            $record_loaded = true;
+                        }
+                        $w = $w($record ? (string) $record->getAaValue($k)?->getValue() : '');
+                    }
+                    // accept a ready Widget instance or a short-code string ('edt', 'edt:20', ...)
+                    $widgets[$k] = $w instanceof Widget ? $w : Widget::factoryByString((string) $w);
+                }
                 // $props['html']->setHelp('xxx');
             }
         }
@@ -455,19 +476,21 @@ class Managed_Table extends Managed
             $rest = $props;
             foreach ($this->priority_fields as $fid) {
                 if (isset($rest[$fid])) {
-                    $rest[$fid]->addPropertyFormrows($form);
+                    $rest[$fid]->addPropertyFormrows($form, $widgets[$fid] ?? null);
                     unset($rest[$fid]);
                 }
             }
             if ($rest) {
                 $form->addRow(new \AA_Formrow_Html('<details class="aa-form-optional"><summary>' . _m('Optional') . '</summary>'));
-                foreach ($rest as $prop) {
-                    $prop->addPropertyFormrows($form);
+                foreach ($rest as $k => $prop) {
+                    $prop->addPropertyFormrows($form, $widgets[$k] ?? null);
                 }
                 $form->addRow(new \AA_Formrow_Html('</details>'));
             }
         } else {
-            $form->addProperties($props);
+            foreach ($props as $k => $prop) {
+                $prop->addPropertyFormrows($form, $widgets[$k] ?? null);
+            }
         }
         //        if ($id) {
         //            $form->addRow(new AA_Formrow_Text('ddd'.$id));
@@ -976,7 +999,7 @@ class Manager extends AA_Storable
 
             try {
                 $html = '<form name="f" method="post" action="' . StateUrl() . '">';
-                $html .= getFrmTabCaption(_m("Edit id") . ': ' . $_GET['id'], $form_buttons);
+                $html .= getFrmTabCaption(_m("Edit id") . ': ' . safe($_GET['id']), $form_buttons);
                 $html .= '<tr><td colspan="2">';
                 $html .= $form->getObjectEditHtml();//            $html .= $form->getEditFormHtml();
                 $html .= '</td></tr>';

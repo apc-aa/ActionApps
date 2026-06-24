@@ -289,12 +289,14 @@ class AA_Property extends AA_Storable {
         return $val;
     }
 
-    /** returns default widget for given property - it tries to identify,
-     *  if it is multiple, uses constants, is bool, ...
-     * @param $form AA_Form
+    /** Adds form row(s) for this property to $form.
+     *  Uses $widget when given, otherwise falls back to defaultWidget()
+     *  (which derives the widget from multiple/constants/bool/... ).
+     * @param AA_Form     $form
+     * @param Widget|null $widget  explicit input widget overriding defaultWidget()
      * @throws Exception
      */
-    function addPropertyFormrows(AA_Form $form): void {
+    function addPropertyFormrows(AA_Form $form, ?Widget $widget = null): void {
         if ($this->isObject()) {  // not string, int, bool...
             if (is_callable([$this->type, 'addFormrows'])) {
                 call_user_func_array([$this->type, 'addFormrows'], [$form]);
@@ -303,7 +305,7 @@ class AA_Property extends AA_Storable {
             throw new \RuntimeException('Can\'t generate widget for '.$this->type.' object property');
         }
 
-        $form->addRow(new AA_Formrow_Full($this, $this->defaultWidget()));
+        $form->addRow(new AA_Formrow_Full($this, $widget ?? $this->defaultWidget()));
     }
 
     function defaultWidget(): Widget
