@@ -993,7 +993,6 @@ class ComposerStaticInit43e15006db6c3041e7b8c7c57cf04d54
         'htmlMimeMail' => __DIR__ . '/../..' . '/include/htmlMimeMail/htmlMimeMail.php',
         'inputform' => __DIR__ . '/../..' . '/include/formutil.php',
         'itemview' => __DIR__ . '/../..' . '/include/itemview.php',
-        'tabledit' => __DIR__ . '/../..' . '/include/tabledit.php',
         'xml_unserializer' => __DIR__ . '/../..' . '/include/xml_serializer.php',
         'zids' => __DIR__ . '/../..' . '/include/zids.php',
     );

@@ -66,7 +66,7 @@
         'honzito/misscache' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => 'f7ec070af9d882839a41e1925b3c736c2172aca7',
+            'reference' => '9588002688b9321967a3462bc45ed949fe82bb70',
             'type' => 'library',
             'install_path' => __DIR__ . '/../honzito/misscache',
             'aliases' => array(),
@@ -102,9 +102,9 @@
             'dev_requirement' => false,
         ),
         'jfcherng/php-diff' => array(
-            'pretty_version' => '6.16.2',
-            'version' => '6.16.2.0',
-            'reference' => '7f46bcfc582e81769237d0b3f6b8a548efe8799d',
+            'pretty_version' => '6.16.3',
+            'version' => '6.16.3.0',
+            'reference' => '6d7332b6080cdd50011a364b58f24c8d0cdeb5da',
             'type' => 'library',
             'install_path' => __DIR__ . '/../jfcherng/php-diff',
             'aliases' => array(),

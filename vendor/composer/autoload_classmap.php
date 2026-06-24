@@ -899,7 +899,6 @@ return array(
     'htmlMimeMail' => $baseDir . '/include/htmlMimeMail/htmlMimeMail.php',
     'inputform' => $baseDir . '/include/formutil.php',
     'itemview' => $baseDir . '/include/itemview.php',
-    'tabledit' => $baseDir . '/include/tabledit.php',
     'xml_unserializer' => $baseDir . '/include/xml_serializer.php',
     'zids' => $baseDir . '/include/zids.php',
 );
