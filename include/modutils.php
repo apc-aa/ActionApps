@@ -74,8 +74,8 @@ function ModuleFieldsForm($module_id, array $module_arr, bool $superadmin, bool 
 
     // Id row is rendered by callers near the bottom of the form (see slicedit, polls, links, site)
 
-    FrmInputText("name", _m("Title"), $name, 99, 25, true);
-    FrmInputText("slice_url", _m("URL of .shtml page (often leave blank)"), $slice_url);
+    FrmInputText("name", _m("Title"), $name, 99, 0, true);
+    FrmInputText("slice_url", _m("URL of .shtml page (often leave blank)"), $slice_url, 254, 0);
     FrmInputNumber("priority", _m("Priority (order in slice-menu)"), $priority);
 
     // Expand the inline new-owner form only when (a) the caller flags a redisplay-after-error
@@ -255,10 +255,11 @@ function GetModuleFields($source_id): array
 {
     // lookup owners
     $slice_owners = [_m("Select owner")] + DB_AA::select(['uid'=>'name'],"SELECT LOWER(HEX(`id`)) AS uid, name FROM slice_owner",'', ['name']);
-    $arr = array_values(DB_AA::select1('', "SELECT name, slice_url, priority, lang_file, LOWER(HEX(`owner`)) AS owner, deleted FROM module", [['id', $source_id, 'l']]));
-    if ($arr) {
-        $arr[] = $slice_owners;
-    }
+    $row = DB_AA::select1('', "SELECT name, slice_url, priority, lang_file, LOWER(HEX(`owner`)) AS owner, deleted FROM module", [['id', $source_id, 'l']]);
+    // existing module -> its values; brand-new module with no source row (e.g. a
+    // template-less add like Alerts) -> blank fields, so the add form still renders
+    $arr   = is_array($row) ? array_values($row) : ['', '', '', '', '', ''];
+    $arr[] = $slice_owners;
     return $arr;
 }
 
