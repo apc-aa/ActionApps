@@ -34,9 +34,14 @@ require_once __DIR__ . "/alerts_sending.php";
 
 function ShowCollectionAddOns(): void
 {
-    global $example, $fire, $collectionid;
+    global $example, $fire, $collectionid, $mgettext_domain;
 
     initialize_last();
+
+    // send_emails() rebinds gettext to each slice's own language (get_filter_output_cached()
+    // -> mgettext_bind), which would otherwise leak into the rest of this admin page. Remember
+    // the admin UI domain and restore it after every send.
+    $admin_lang_domain = $mgettext_domain;
 
     $collection = new AA_Collection($collectionid);
 
@@ -51,33 +56,42 @@ function ShowCollectionAddOns(): void
         $example["email"] = $me["mail"];
     }
 
-    echo "<br><br>\n    <form name=\"example[form]\" method=\"post\">";
+    $mail_count = 0;
+
+    // send to supplied email (own form)
+    echo "<br><br>\n    <form name=\"example_email_form\" method=\"post\">";
     FrmTabCaption(_m('Send now an example alert email to email'), [], true) ;
 
     if ($example["go"]) {
-        $mail_count = send_emails($example["howoften"], [$collectionid],  [$example["email"]], false, "");
-    } elseif ($example["goreader"]) {
-        $mail_count = send_emails($example["howoftenr"], [$collectionid], [], false, "", $example['reader']);
+        $mail_count = send_emails($example["howoften"], [$collectionid], [$example["email"]], false, "");
+        bind_mgettext_domain($admin_lang_domain, true);
     }
 
-    // send to supplied email
-    FrmInputEmail("example[email]", _m('Email'), $example['email']);
-    FrmInputSelect("example[howoften]", _m("as if"), get_howoften_options(), $example["howoften"]);
+    FrmInputEmail("example[email]", _m('Email'), $example['email'], 254, 25, true);
+    FrmInputSelect("example[howoften]", _m("as if"), get_howoften_options(), $example["howoften"], true);
     FrmTabEnd(['example[go]' => ['type' => 'submit', 'value' => _m("Go!")]]);
+    echo '</form>';
 
     echo '<br>';
 
-    // send to selected user
+    // send to selected reader (own form)
     $reader_mails = $collection->getReadersSelectArray();
     asort($reader_mails);
 
+    echo '<form name="example_reader_form" method="post">';
     FrmTabCaption(_m('Send now an example alert email to Reader'), [], true) ;
-    FrmInputSelect("example[reader]",_m('Reader'), $reader_mails, $example["reader"]);
-    FrmInputSelect("example[howoftenr]", _m("as if"), get_howoften_options(), $example["howoftenr"]);
+
+    if ($example["goreader"]) {
+        $mail_count = send_emails($example["howoftenr"], [$collectionid], [], false, "", $example['reader']);
+        bind_mgettext_domain($admin_lang_domain, true);
+    }
+
+    FrmInputSelect("example[reader]",_m('Reader'), $reader_mails, $example["reader"], true);
+    FrmInputSelect("example[howoftenr]", _m("as if"), get_howoften_options(), $example["howoftenr"], true);
     FrmTabEnd(['example[goreader]' => ['type'=> 'submit', 'value'=>_m("Go!")]]);
     echo '</form>';
 
-    // SEND EMAILS
+    // SEND EMAILS (fire to all - own form)
 
     echo '<br>
     <form name="fire_form" method="post" action="'.StateUrl($_SERVER["PHP_SELF"]).'">';
@@ -85,6 +99,7 @@ function ShowCollectionAddOns(): void
 
     if ($fire["fire"]) {
         $mail_count = send_emails($fire["howoften"], [$collectionid], "all", true, "");
+        bind_mgettext_domain($admin_lang_domain, true);
     }
 
 

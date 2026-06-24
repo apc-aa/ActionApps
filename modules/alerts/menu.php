@@ -48,37 +48,11 @@ function get_aamenus(): array
     $aamenus["admin"] = [
         "label" => _m("Alerts Settings"),
         "title" => _m("Alerts Settings"),
-        "href" => "modules/alerts/modedit.php?set_tview=modedit&cmd[modedit][edit][" .urlencode($slice_id)."]=1",
+        "href" => "modules/alerts/modedit.php",
         "cond" => IfSlPerm(PS_USERS),
         "level" => "main",
         "submenu" => "admin_submenu"
     ];
-/*
-    $aamenus["filters"] = array (
-        "label" => _m("Filters"),
-        "title" => _m("Filters"),
-        "href"=>"modules/alerts/tabledit.php?set_tview=acf",
-        "cond" => IfSlPerm (PS_USERS),
-        "level" => "main",
-        "submenu"=>"admin_submenu");
-
-    $aamenus["send_emails"] = array (
-        "label" => _m("Send emails"),
-        "title" => _m("Send emails"),
-        "href"=>"modules/alerts/tabledit.php?set_tview=send_emails&cmd[send_emails][edit]["
-                .$GLOBALS["collectionid"]."]=1",
-        "cond" => IfSlPerm (PS_USERS),
-        "level" => "main",
-        "submenu"=>"admin_submenu");
-
-    $aamenus["synchro"] = array (
-        "label" => _m("Synchro"),
-        "title" => _m("Slice synchro"),
-        "href"=>"modules/alerts/synchro.php",
-        "cond" => IfSlPerm (PS_USERS),
-        "level" => "main",
-        "submenu"=>"admin_submenu");
-*/
 
     $aamenus["admin_submenu"] = [
         "bottom_td"=>200,
@@ -87,15 +61,15 @@ function get_aamenus(): array
         "header1"=>_m("Alerts Admin"),
   //      "formwizard"=>array ("cond"=>IfSlPerm(PS_USERS), "href"=>"modules/alerts/cf_wizard.php3", "label"=>_m("Form Wizard")),
         "settings"=> ["cond"=>IfSlPerm(PS_USERS),
-            "href" => "modules/alerts/modedit.php?set_tview=modedit&cmd[modedit][edit][".$slice_id."]=1",
+            "href" => "modules/alerts/modedit.php",
             "label"=>_m("Settings"),
             'ico'=>'ico-form.png'],
         "filters"=> ["cond"=>IfSlPerm(PS_USERS),
-            "href"=>"modules/alerts/modedit.php?set_tview=acf",
+            "href"=>"modules/alerts/acf.php",
             "label"=>_m("Selections"),
             'ico'=>'ico-selections.png'],
         "send_emails"=> ["cond"=>IfSlPerm(PS_USERS),
-            "href"=>"modules/alerts/modedit.php?set_tview=send_emails&cmd[send_emails][edit][".$GLOBALS["collectionid"]."]=1",
+            "href"=>"modules/alerts/send.php",
             "label"=>_m("Send emails"),
             'ico'=>'ico-email.png'],
         "synchro"=> [
@@ -108,7 +82,7 @@ function get_aamenus(): array
 
         "header2" => _m("Common"),
         "email"=> ["cond"=>IfSlPerm(PS_USERS),
-            "href" => "modules/alerts/modedit.php?set_tview=email", "label"=>_m("Email templates")]
+            "href" => "modules/alerts/emails.php", "label"=>_m("Email templates")]
         ]
     ];
 

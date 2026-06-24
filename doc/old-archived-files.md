@@ -100,3 +100,15 @@ _No longer maintained. Removed 2022-02-25 - honzam (see older apc-aa branches to
 /include/**tv_misc.php**            - GetMiscTableView(): the email / wt / log / searchlog / fields table views
   Part of removing the legacy `tabledit` table editor. These entry points/configs were already superseded by AA\Manager pages and had no live menu links: polls designs -> modules/polls/designs.php (Poll menu, src/Module/Poll/Menu.php repointed); emails -> admin/aa_emails.php; wizard templates -> admin/aa_wizardtemplate.php; log -> admin/aa_log.php; searchlog -> admin/aa_searchlog.php. The `fields` view (raw `field` table editor) was an orphan superadmin tool - slice fields are edited via admin/se_fields.php. admin/rsstest.php was converted to AA\Manager (GetFeedManaged) in the same change. The tabledit CORE (include/tabledit.php, tabledit_util.php, tabledit_column.php, tabledit.css, tv_email.php) and doc/tabledit*.html stay until the Alerts module (modules/alerts/modedit.php) is migrated.
   _No longer maintained. Removed 2026-06-18 - honzam (see older apc-aa branches to get the code)_
+
+/include/**tabledit.php**           - the tabledit CRUD engine (class tabledit)
+/include/**tabledit_util.php**      - tabledit form processing: ProcessFormData(), TableInsert/Update/Delete(), triggers
+/include/**tabledit_column.php**    - tabledit column rendering / value formatting
+/**tabledit.css**                   - tabledit-only styles (.te_* + a redundant .scroller; .scroller_actual was already dead code)
+/modules/alerts/**tableviews.php**  - GetAlertsTableView(): the Alerts modedit/acf/send_emails/email table views (+ dead FindAlertsUserPermissions, now-redundant AlertsModeditAfterInsert)
+/include/**tv_email.php**           - GetEmailTableView(): email/email_edit views for the Alerts emails (alerts-only)
+/include/**tv_common.php**          - SelectModule() + tabledit form attr/format globals (used only by tv_email)
+/doc/**tabledit.html**
+/doc/**tabledit_developer.html**    - tabledit user/developer documentation
+  Final removal of the legacy `tabledit` table editor. The last consumer was the Alerts module, now migrated to the per-module admin convention: modules/alerts/modedit.php (rewritten, mirrors polls/links modedit - module ⋈ alerts_collection via include/modutils.php helpers), modules/alerts/emails.php (NEW - AA\Manager over `email`, scoped to the module - NOT the superadmin-global admin/aa_emails.php), modules/alerts/acf.php (NEW - alerts_collection_filter list/add/delete/reorder), modules/alerts/send.php (NEW - ShowCollectionAddOns sending UI). The two stray tabledit.css includes were dropped from admin/fileman.php and admin/search_replace.php (they used nothing from it; .scroller comes from the admin theme). composer dump-autoload regenerated to drop the stale 'tabledit' classmap entry.
+  _No longer maintained. Removed 2026-06-23 - honzam (see older apc-aa branches to get the code)_

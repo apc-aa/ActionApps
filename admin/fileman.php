@@ -116,7 +116,6 @@ if ($directory) {
     $apage->setSubtitle(_m("Directory")." ".$directory);
 }
 $apage->setForm(['name'=>'fileman','enctype'=>"multipart/form-data"]);
-$apage->addRequire(get_aa_url('tabledit.css', ['v'=>AA_JS_VERSION], false ));
 $apage->printHead($err, $Msg);
 
 

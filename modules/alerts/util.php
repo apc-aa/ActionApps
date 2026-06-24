@@ -36,6 +36,30 @@ function GetCollection($slice_id) {
     return $ret;
 }
 
+/** Build email <select> options for the given type, matching what
+ *  modules/alerts/emails.php lists: the accessible emails (per GetUserEmails),
+ *  labelled "description (id)" so templates with similar names stay distinct.
+ *  The currently-selected $current_id is always included, even if it belongs
+ *  to a slice the user can no longer access, so a saved value is never
+ *  silently dropped on the next save (backward compatibility).
+ *
+ * @param  string  $type        email type, e.g. "alerts welcome" / "alerts alert"
+ * @param  int     $current_id  currently selected email id (0 = none)
+ * @return array                [0 => "-- none --", id => "description (id)", ...]
+ */
+function alertsEmailOptions(string $type, int $current_id): array
+{
+    $options = [0 => _m("-- none --")];
+    foreach (GetUserEmails($type) as $id => $description) {
+        $options[$id] = $description . " (" . $id . ")";
+    }
+    if ($current_id && !isset($options[$current_id])) {
+        $description = DB_AA::select1('description', "SELECT description FROM email", [['id', $current_id, 'i']]);
+        $options[$current_id] = ($description !== false ? $description : _m("email")) . " (" . $current_id . ")";
+    }
+    return $options;
+}
+
 function set_collectionid(): void
 {
     global $collectionid, $collectionprop, $no_slice_id;
