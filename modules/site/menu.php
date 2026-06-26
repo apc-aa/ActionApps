@@ -46,7 +46,8 @@ function get_aamenus(): array
         "label" => _m("View site"),
         "exact_href"  => $r_slice_view_url,
         "cond"  => 1,
-        "level" => "main"
+        "level" => "main",
+        "class" => "aa-ui-moduleview",
     ];
 
     $aamenus["modadmin"] = [

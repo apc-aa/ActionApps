@@ -58,7 +58,8 @@ function get_aamenus(): array
         "label" => _m("View poll"),
         "exact_href"  => $r_slice_view_url,
         "cond"  => 1,
-        "level" => "main"
+        "level" => "main",
+        "class" => "aa-ui-moduleview",
     ];
 
     $aamenus["polledit"] = [
