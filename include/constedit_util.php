@@ -1,4 +1,5 @@
 <?php
+
 /**
  * The "util" create a string $consts, which contains the JavaScript array
  *    with all constants, prepare some JavaScript constants and call the constedit.min.js
@@ -37,12 +38,12 @@ use AA\Util\JsTriggers;
 
 $hcCol = [
     "Name"  => 0,
-               "Value" => 1,
-               "Prior" => 2,
-               "Desc"  => 3,
-               "ID"    => 4,
-               "Dirty" => 5,
-               "Child" => 6       // always leave colChild as the last one
+    "Value" => 1,
+    "Prior" => 2,
+    "Desc"  => 3,
+    "ID"    => 4,
+    "Dirty" => 5,
+    "Child" => 6,       // always leave colChild as the last one
 ];
 
 /**  getHierConstInitJavaScript function
@@ -54,19 +55,19 @@ $hcCol = [
  * @param  $admin = true - if true, send all info (for constants admin)
  * @return string
  */
-function getHierConstInitJavaScript($hcid, $group_id, $levelCount=3, $formName='f', $admin=true): string
+function getHierConstInitJavaScript($hcid, $group_id, $levelCount = 3, $formName = 'f', $admin = true): string
 {
     global $hcCol;
     $js = "
         hcEasyDelete[$hcid] = 0;     // if set to 1, doesn't uncheck the confirmation check box
         // consts columns: name, value, priority, description, ID, dirty flag, children
-        colName  = ".$hcCol['Name'] .";
-        colValue = ".$hcCol['Value'].";
-        colPrior = ".$hcCol['Prior'].";
-        colDesc  = ".$hcCol['Desc'] .";
-        colID    = ".$hcCol['ID']   .";
-        colDirty = ".$hcCol['Dirty'].";
-        colChild = ".($admin ? $hcCol['Child'] : $hcCol['Prior']).";
+        colName  = " . $hcCol['Name'] . ";
+        colValue = " . $hcCol['Value'] . ";
+        colPrior = " . $hcCol['Prior'] . ";
+        colDesc  = " . $hcCol['Desc'] . ";
+        colID    = " . $hcCol['ID'] . ";
+        colDirty = " . $hcCol['Dirty'] . ";
+        colChild = " . ($admin ? $hcCol['Child'] : $hcCol['Prior']) . ";
 
         // count of levels in hierarchy
         hcLevelCount[$hcid] = $levelCount;
@@ -74,9 +75,9 @@ function getHierConstInitJavaScript($hcid, $group_id, $levelCount=3, $formName='
         // name of form in which are the fields
         hcForm = '$formName';";
 
-        // this will be supplied by the database
-    $js.= "
-        hcConsts[$hcid] = ".createConstsJavaScript ($group_id, $admin).";";
+    // this will be supplied by the database
+    $js .= "
+        hcConsts[$hcid] = " . createConstsJavaScript($group_id, $admin) . ";";
     return getFrmJavascript($js);
 }
 
@@ -105,7 +106,8 @@ function getHierConstEnd(): string
  *
  * @return string
  */
-function getHierConstBoxes($hcid, int $levelCount, bool $horizontal=false, string $targetBox="", $admin=true, $minLevelSelect=0, int $boxWidth=0, array $levelNames= []): string {
+function getHierConstBoxes($hcid, int $levelCount, bool $horizontal = false, string $targetBox = "", $admin = true, $minLevelSelect = 0, int $boxWidth = 0, array $levelNames = []): string
+{
     $admin = $admin ? 1 : 0;
     if ($boxWidth === 0) {
         $boxWidth = $horizontal ? 30 : 70;
@@ -117,30 +119,30 @@ function getHierConstBoxes($hcid, int $levelCount, bool $horizontal=false, strin
        it does not respond to the onChange triger on the mainbox
     */
     $this_triggers = JsTriggers::getFromGlobalSliceId("select", $targetBox);
-    $aa_onchange_exist = strstr($this_triggers,'aa_onChange(');
+    $aa_onchange_exist = strstr($this_triggers, 'aa_onChange(');
     $add_button_trigger = "";
-    if ( $aa_onchange_exist ) {
-        [,$fieldid,] = explode("'",$aa_onchange_exist,3);
-        $add_button_trigger = "aa_onChange('".$fieldid."'); ";
+    if ($aa_onchange_exist) {
+        [,$fieldid,] = explode("'", $aa_onchange_exist, 3);
+        $add_button_trigger = "aa_onChange('" . $fieldid . "'); ";
     }
 
-    $widthTxt = str_repeat("m",$boxWidth);
+    $widthTxt = str_repeat("m", $boxWidth);
     $out = '';
 
-    for ($i=0; $i < $levelCount; ++$i) {
+    for ($i = 0; $i < $levelCount; ++$i) {
         if ($admin) {
-            $buttonAdd = "<input type=\"button\" value=\""._m("Add new")."\" onClick=\"hcAddNew($hcid,$i)\">";
-            $buttonSelect = "<input type=\"button\" value=\""._m("Select")."\" onClick=\"hcSelectItem($hcid,$i,1)\">";
+            $buttonAdd = "<input type=\"button\" value=\"" . _m("Add new") . "\" onClick=\"hcAddNew($hcid,$i)\">";
+            $buttonSelect = "<input type=\"button\" value=\"" . _m("Select") . "\" onClick=\"hcSelectItem($hcid,$i,1)\">";
         } else {
             $buttonAdd = "";
-            $buttonSelect = $minLevelSelect > $i ? "" : "<input type=\"button\" value=\""._m("Select")."\" onClick=\"hcAddItemTo($hcid,$i,'$targetBox'); ".$add_button_trigger."\">";
+            $buttonSelect = $minLevelSelect > $i ? "" : "<input type=\"button\" value=\"" . _m("Select") . "\" onClick=\"hcAddItemTo($hcid,$i,'$targetBox'); " . $add_button_trigger . "\">";
         }
         if (!$levelNames[$i]) {
-            $levelNames[$i] = _m("Level")." $i";
+            $levelNames[$i] = _m("Level") . " $i";
         }
         // if ($horizontal) { ...
         $out .= "<div>
-              <label class=\"aa-label-above\" for=\"hclevel{$i}_{$hcid}\">".$levelNames[$i]."</label>
+              <label class=\"aa-label-above\" for=\"hclevel{$i}_{$hcid}\">" . $levelNames[$i] . "</label>
               <select id=\"hclevel{$i}_{$hcid}\" name=\"hclevel{$i}_{$hcid}\" multiple size=\"10\" onChange=\"hcSelectItem($hcid,$i,$admin)\">
                 <option>$widthTxt
               </select>
@@ -154,14 +156,14 @@ function getHierConstBoxes($hcid, int $levelCount, bool $horizontal=false, strin
 /** showHierConstInitJavaScript function
  *
  */
-function showHierConstInitJavaScript($hcid, $group_id, $levelCount=3, $formName='f', $admin=true): void
+function showHierConstInitJavaScript($hcid, $group_id, $levelCount = 3, $formName = 'f', $admin = true): void
 {
     echo getHierConstInitJavaScript($hcid, $group_id, $levelCount, $formName, $admin);
 }
 /** showHierConstBoxes function
  *
  */
-function showHierConstBoxes($hcid, int $levelCount, bool $horizontal=false, string $targetBox="", bool $admin=true, int $minLevelSelect=0, int $boxWidth=0, array $levelNames= []): void
+function showHierConstBoxes($hcid, int $levelCount, bool $horizontal = false, string $targetBox = "", bool $admin = true, int $minLevelSelect = 0, int $boxWidth = 0, array $levelNames = []): void
 {
     echo getHierConstStart($horizontal);
     echo getHierConstBoxes($hcid, $levelCount, $horizontal, $targetBox, $admin, $minLevelSelect, $boxWidth, $levelNames);
@@ -178,7 +180,7 @@ function showHierConstBoxes($hcid, int $levelCount, bool $horizontal=false, stri
 function createConstsJavaScript($group_id, $admin): string
 {
     createConstsArray($group_id, $admin, $myconsts);
-    eval('$data = '.$myconsts.';');
+    eval('$data = ' . $myconsts . ';');
     hcSortArray($data);
 
     $consts = "new Array(";
@@ -208,22 +210,22 @@ function createConstsArray($group_id, $admin, &$consts): void
     while ($dbc->next_record()) {
         // & in from _GET is taken as parameter delimiter, so we replace it
         // with %26. We do not replace it, if it is called from editing form
-        $value = ( $get_method ? str_replace ("&","%26",ff($dbc->f("value"))) :
-                                                        ff($dbc->f("value")) );
+        $value = ($get_method ? str_replace("&", "%26", ff($dbc->f("value")))
+                                                        : ff($dbc->f("value")));
 
         if (ff($dbc->f("name")) == $value) {
             $value = '#';
         }
-        $data[$dbc->f("ancestors").$dbc->f("id")] = "'"
-                .ff($dbc->f("name"))."','"
-                .$value."',"
-                .ff($dbc->f("pri")).",'"
-                .($admin ? ff($dbc->f("description")) : "")."',"
-                .ff($dbc->f("short_id")).","
-                ."false";
+        $data[$dbc->f("ancestors") . $dbc->f("id")] = "'"
+                . ff($dbc->f("name")) . "','"
+                . $value . "',"
+                . ff($dbc->f("pri")) . ",'"
+                . ($admin ? ff($dbc->f("description")) : "") . "',"
+                . ff($dbc->f("short_id")) . ","
+                . "false";
     }
 
-    freeDB(	$dbc );
+    freeDB($dbc);
     ksort($data);
 
     $path       = "";
@@ -231,7 +233,7 @@ function createConstsArray($group_id, $admin, &$consts): void
     $error_data = [];
     $ok_data    = 0;
     $depth      = 0;
-    foreach ( $data as $ancestors => $col) {
+    foreach ($data as $ancestors => $col) {
         $error = false;
         if (!$path) {
             if (strlen($ancestors) !== 16) {
@@ -241,9 +243,9 @@ function createConstsArray($group_id, $admin, &$consts): void
             }
         } elseif (strlen($ancestors) % 16) {
             $error = true;
-        // step over one layer
+            // step over one layer
         } elseif (strlen($ancestors) > strlen($path) && str_starts_with($ancestors, $path)) {
-            if (strlen($ancestors)-strlen($path) === 16) {
+            if (strlen($ancestors) - strlen($path) === 16) {
                 $consts .= ",array(array($col";
                 $depth++;
             } else {
@@ -257,13 +259,13 @@ function createConstsArray($group_id, $admin, &$consts): void
             }
         } else {
             $consts .= ")";
-            $level=0;
-            while (substr($ancestors,0,$level*16) === substr($path,0,$level*16)) {
+            $level = 0;
+            while (substr($ancestors, 0, $level * 16) === substr($path, 0, $level * 16)) {
                 ++$level;
             }
             for ($i = 0, $ino = strlen($path); $i < $ino / 16 - $level && $depth > 0; ++$i) {
                 $consts .= "))";
-                $depth --;
+                $depth--;
             }
             $consts .= ",array($col";
         }
@@ -282,10 +284,10 @@ function createConstsArray($group_id, $admin, &$consts): void
         if ($ok_data) {
             $consts .= ",";
         }
-        foreach ( $error_data as $col) {
+        foreach ($error_data as $col) {
             $consts .= "array($col),";
         }
-        $consts = substr($consts,0, -1);
+        $consts = substr($consts, 0, -1);
     }
 
     $consts .= ")";
@@ -326,7 +328,8 @@ function hcSortArray(&$arr): void
  * @param $str
  * @return mixed
  */
-function ff($str) {
+function ff($str)
+{
     return str_replace(["\r","\n","'"], ['','',"\\'"], $str);
 }
 
@@ -335,22 +338,23 @@ function ff($str) {
  * @param $admin
  * @return string
  */
-function printConstsArray(&$arr, $admin): string {
+function printConstsArray(&$arr, $admin): string
+{
     global $hcCol;
     $value = ff($arr[$hcCol["Value"]]);
     if (ff($arr[$hcCol["Name"]]) == $value) {
         $value = '#';
     }
     $retval = "new Array('"
-            .ff($arr[$hcCol["Name"]])."','"
-            .$value."'".
-            ($admin ? ","
-            .ff($arr[$hcCol["Prior"]]).",'"
-            .ff($arr[$hcCol["Desc"]])."',"
-            .ff($arr[$hcCol["ID"]]).","
-            ."false"
+            . ff($arr[$hcCol["Name"]]) . "','"
+            . $value . "'"
+            . ($admin ? ","
+            . ff($arr[$hcCol["Prior"]]) . ",'"
+            . ff($arr[$hcCol["Desc"]]) . "',"
+            . ff($arr[$hcCol["ID"]]) . ","
+            . "false"
             : "");
-    if (count ($arr) > $hcCol["Child"]) {
+    if (count($arr) > $hcCol["Child"]) {
         $retval .= ",new Array(";
         foreach ($arr[$hcCol["Child"]] as $i => $iValue) {
             if ($i) {
@@ -378,14 +382,16 @@ function hcUpdate(): void
         if ($db->next_record()) {
             $db->query(
                 "UPDATE constant_slice SET levelcount=$levelCount,
-                horizontal=".($levelsHorizontal ? 1 : 0).",
-                hidevalue=".($hide_value ? 1 : 0)."
-                WHERE group_id='$qgroup_id'");
+                horizontal=" . ($levelsHorizontal ? 1 : 0) . ",
+                hidevalue=" . ($hide_value ? 1 : 0) . "
+                WHERE group_id='$qgroup_id'",
+            );
         } else {
             $db->query(
                 "INSERT INTO constant_slice (group_id,slice_id,horizontal,hidevalue,levelcount)
-                VALUES ('$qgroup_id','$p_slice_id',".($levelsHorizontal ? 1 : 0)
-                .",".($hide_value ? 1 : 0).",".$levelCount.")");
+                VALUES ('$qgroup_id','$p_slice_id'," . ($levelsHorizontal ? 1 : 0)
+                . "," . ($hide_value ? 1 : 0) . "," . $levelCount . ")",
+            );
         }
     } else {
         $hide_value = 0;
@@ -403,15 +409,15 @@ function hcUpdate(): void
         $hcalldata = str_replace(["\\'", "\\:", "\\~"], ["'", "--$--", "--$$--"], $hcalldata);
         $chtag     = ":changes:";
         if (str_contains($hcalldata, $chtag)) {
-            $changes   = substr ($hcalldata, strpos ($hcalldata,$chtag) + strlen($chtag) + 1);
-            $hcalldata = substr ($hcalldata, 0, strpos ($hcalldata,$chtag) - 1);
+            $changes   = substr($hcalldata, strpos($hcalldata, $chtag) + strlen($chtag) + 1);
+            $hcalldata = substr($hcalldata, 0, strpos($hcalldata, $chtag) - 1);
             $chs       = explode(":", $changes);
             $changes   = [];
             foreach ($chs as $ch) {
                 if (!str_contains($ch, "~")) {
                     continue;
                 }
-                $ar = explode("~",$ch);
+                $ar = explode("~", $ch);
                 foreach (array_keys($ar) as $i) {
                     $ar[$i] = str_replace(["--$--", "--$$--"], [":", "~"], $ar[$i]);
                 }
@@ -440,41 +446,40 @@ function hcUpdate(): void
             $column_id = 4;
             $column_ancestors = 5;
             for ($i = 0; $i < $column_id; ++$i) {
-                $change[$i] = str_replace ("'","\\'",$change[$i]);
+                $change[$i] = str_replace("'", "\\'", $change[$i]);
             }
             $varset->clear();
-            $varset->set("name",  $change[0], "quoted");
+            $varset->set("name", $change[0], "quoted");
             $varset->set("value", $change[1], "quoted");
-            $varset->set("pri", ( $change[2] ?: 1000), "number");
+            $varset->set("pri", ($change[2] ?: 1000), "number");
             $varset->set("description", $change[3], "quoted");
 
             $newvalue = $change[1];
             $new_id = $change[$column_id];
             if (str_starts_with($new_id, "#")) {
-                $id = q_pack_id (new_id());
+                $id = q_pack_id(new_id());
                 $shortIDmap[$new_id] = $id;
                 $ancestors = "";
-                $path = explode(",",$change[$column_ancestors]);
+                $path = explode(",", $change[$column_ancestors]);
                 foreach ($path as $myid) {
                     if (!$myid) {
                         continue;
                     }
                     $ancestors .= $shortIDmap[$myid];
                 }
-                $varset->set("id",$id,"quoted");
-                $varset->set("group_id",$group_id,"text");
-                $varset->set("ancestors",$ancestors,"quoted");
+                $varset->set("id", $id, "quoted");
+                $varset->set("group_id", $group_id, "text");
+                $varset->set("ancestors", $ancestors, "quoted");
 
                 $varset->doINSERT('constant');
-            }
-            else {
+            } else {
                 if ($propagate_changes) {
                     $db->query("SELECT id, value FROM constant WHERE short_id=$new_id");
                     if ($db->next_record()) {
                         propagateChanges($group_id, unpack_id($db->f("id")), $newvalue, $db->f("value"));
                     }
                 }
-                $db->query("UPDATE constant SET ". $varset->makeUPDATE() ." WHERE short_id = ".$new_id);
+                $db->query("UPDATE constant SET " . $varset->makeUPDATE() . " WHERE short_id = " . $new_id);
             }
         }
         aaevent::singleton()->comes('CONSTANTGROUP_UPDATED', AA::$module_id, 'S', $event_return_state, $group_id);
@@ -489,7 +494,8 @@ function hcUpdate(): void
  * @param $slice_id
  * @return bool
  */
-function CopyConstants($slice_id): bool{
+function CopyConstants($slice_id): bool
+{
     global $err, $debug;
     $db = getDB();
 
@@ -504,8 +510,8 @@ function CopyConstants($slice_id): bool{
     $db->query("SELECT id, input_show_func FROM field WHERE slice_id =$q_slice_id");
     while ($db->next_record()) {
         $shf = $db->f("input_show_func");
-        if (strlen ($shf) > 4) {
-            [,$group_id] = explode(":",$shf);
+        if (strlen($shf) > 4) {
+            [,$group_id] = explode(":", $shf);
             if (in_array($group_id, $group_list)) {
                 $group_ids[$group_id][$db->f("id")] = $shf;
             }
@@ -521,8 +527,8 @@ function CopyConstants($slice_id): bool{
         // find new id by trying to add "_1", "_2", "_3", ... to the old one
         $new_id = $old_id;
         for ($i = 1; in_array($new_id, $group_list); ++$i) {
-            $postfix = "_".$i;
-            $new_id = substr ($old_id,0, min (strlen($old_id)+strlen($postfix), $max_group_id_len) - strlen($postfix)) . $postfix;
+            $postfix = "_" . $i;
+            $new_id = substr($old_id, 0, min(strlen($old_id) + strlen($postfix), $max_group_id_len) - strlen($postfix)) . $postfix;
         }
         $group_list[] = $new_id;
 
@@ -534,10 +540,10 @@ function CopyConstants($slice_id): bool{
         if (!CopyTableRows(
             "constant",
             "group_id='lt_groupNames' AND name='$old_id'",
-            ["name"=>$new_id,"value"=>$new_id], // set_columns
+            ["name" => $new_id,"value" => $new_id], // set_columns
             ["short_id"],                       // omit_columns
-            ["id"]                              // id_columns
-            )) {
+            ["id"],                              // id_columns
+        )) {
             $err[] = "Could not copy constant group.";
             freeDB($db);
             return false;
@@ -547,19 +553,19 @@ function CopyConstants($slice_id): bool{
         if (!CopyTableRows(
             "constant",
             "group_id='$old_id'",
-            ["group_id"=>$new_id],              // set_columns
+            ["group_id" => $new_id],              // set_columns
             ["short_id"],                       // omit_columns
-            ["id"]                              // id_columns
-            )) {
+            ["id"],                              // id_columns
+        )) {
             $err[] = "Could not copy constant group.";
             freeDB($db);
-           return false;
+            return false;
         }
 
         // update fields
-        foreach ( $fields as $field_id => $shf) {
+        foreach ($fields as $field_id => $shf) {
             if (!$db->query("UPDATE field SET input_show_func = '"
-                .addslashes(str_replace ($old_id, $new_id, $shf))."'
+                . addslashes(str_replace($old_id, $new_id, $shf)) . "'
                 WHERE id='$field_id' AND slice_id=$q_slice_id")) {
                 $err[] = "Could not update fields.";
                 freeDB($db);
@@ -577,12 +583,13 @@ function CopyConstants($slice_id): bool{
  *
  * @param  string  $group_id
  */
-function get_unique_group_id(string $group_id): string {
+function get_unique_group_id(string $group_id): string
+{
     $db = getDB();
 
-    $group_id = str_replace(':','-',$group_id);  // we don't need ':'
+    $group_id = str_replace(':', '-', $group_id);  // we don't need ':'
 
-    $db->query("SELECT value FROM constant WHERE group_id = 'lt_groupNames' AND value LIKE '".quote($group_id)."%'");
+    $db->query("SELECT value FROM constant WHERE group_id = 'lt_groupNames' AND value LIKE '" . quote($group_id) . "%'");
     while ($db->next_record()) {
         $gnames[$db->f("value")] = 1;
     }
@@ -590,7 +597,7 @@ function get_unique_group_id(string $group_id): string {
     if (is_array($gnames)) {
         $i = 1;
         while ($gnames[$unique_name]) {
-            $unique_name = $group_id." ".($i++);
+            $unique_name = $group_id . " " . ($i++);
         }
     }
     freeDB($db);
@@ -631,11 +638,11 @@ function add_constant_group(string $group_id, $constants2import): true|string
     // set in seconds - allows the script to work so long
     MoreTimeLimit(); // set_time_limit to 5 minutes (at least)
 
-    $varset = new CVarset;
-    $varset->add("group_id", "text",     "lt_groupNames");
-    $varset->add("value",    "text",     $group_id);
-    $varset->add("name",     "text",     $group_id);
-    $varset->add("id",       "unpacked", new_id());
+    $varset = new CVarset();
+    $varset->add("group_id", "text", "lt_groupNames");
+    $varset->add("value", "text", $group_id);
+    $varset->add("name", "text", $group_id);
+    $varset->add("id", "unpacked", new_id());
     $varset->doINSERT("constant");
 
     $priority_step = 10;
@@ -643,12 +650,12 @@ function add_constant_group(string $group_id, $constants2import): true|string
     foreach ($constants2import as $constant) {
         $priority = $constant['pri'] ?? $priority + $priority_step;
         $varset->clear();
-        $varset->add("value",    "text",     $constant['value']);
-        $varset->add("name",     "text",     $constant['name']);
-        $varset->add("pri",      "number",   $priority);
-        $varset->add("class",    "text",     $constant['class']);
-        $varset->add("id",       "unpacked", new_id());
-        $varset->add("group_id", "text",     $group_id);
+        $varset->add("value", "text", $constant['value']);
+        $varset->add("name", "text", $constant['name']);
+        $varset->add("pri", "number", $priority);
+        $varset->add("class", "text", $constant['class']);
+        $varset->add("id", "unpacked", new_id());
+        $varset->add("group_id", "text", $group_id);
         $varset->doINSERT("constant");
     }
     freeDB($db);
@@ -688,37 +695,35 @@ function refresh_constant_group($group_id, $items): bool
 {
     $db = getDB();
 
-    $varset = new CVarset;
+    $varset = new CVarset();
 
-    $db->query ("SELECT * FROM constant WHERE group_id='lt_groupNames'
+    $db->query("SELECT * FROM constant WHERE group_id='lt_groupNames'
         AND name='$group_id'");
     if (!$db->next_record()) {
         $existed = false;
-        $varset->add ("group_id", "text", "lt_groupNames");
-        $varset->add ("value","text",$group_id);
-        $varset->add ("name","text",$group_id);
-        $varset->add ("id", "unpacked", new_id());
+        $varset->add("group_id", "text", "lt_groupNames");
+        $varset->add("value", "text", $group_id);
+        $varset->add("name", "text", $group_id);
+        $varset->add("id", "unpacked", new_id());
         $varset->doINSERT('constant');
-    }
-    else {
+    } else {
         $existed = true;
-        $db->query ("DELETE FROM constant WHERE group_id='$group_id'");
+        $db->query("DELETE FROM constant WHERE group_id='$group_id'");
     }
 
     $priority = 100;
     if (is_array($items)) {
         foreach ($items as $value => $name) {
             $varset->clear();
-            $varset->add ("value", "text", $value);
-            $varset->add ("name", "text", $name);
-            $varset->add ("pri", "number", $priority);
+            $varset->add("value", "text", $value);
+            $varset->add("name", "text", $name);
+            $varset->add("pri", "number", $priority);
             $priority += 100;
-            $varset->add ("id", "unpacked", new_id());
-            $varset->add ("group_id", "text", $group_id);
+            $varset->add("id", "unpacked", new_id());
+            $varset->add("group_id", "text", $group_id);
             $varset->doINSERT('constant');
         }
     }
     freeDB($db);
     return $existed;
 }
-

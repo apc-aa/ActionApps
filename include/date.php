@@ -1,4 +1,5 @@
 <?php
+
 /**
  *
  * PHP version 7.2+
@@ -42,7 +43,8 @@ function monthNames(): array
 //	Dropdown lists for Date, Month, Year
 //
 
-class datectrl {
+class datectrl
+{
     private $name;
     private $time;
     private $day;
@@ -63,7 +65,8 @@ class datectrl {
      * @param $from_now = false
      * @param $display_time = false
      */
-    function __construct($name, $y_range_minus=5, $y_range_plus=5, $from_now=false, $display_time=false, $required=true) {
+    public function __construct($name, $y_range_minus = 5, $y_range_plus = 5, $from_now = false, $display_time = false, $required = true)
+    {
         $this->name          = $name;
         $this->y_range_plus  = $y_range_plus;
         $this->y_range_minus = $y_range_minus;
@@ -76,7 +79,7 @@ class datectrl {
     /** update function
      * process form data
      */
-    function update(): void
+    public function update(): void
     {
         $timevar  = trim($_REQUEST["tdctr_" . $this->name . "_time"] ?? '');
         $dayvar   = trim($_REQUEST["tdctr_" . $this->name . "_day"] ?? '');
@@ -84,7 +87,7 @@ class datectrl {
         $yearvar  = trim($_REQUEST["tdctr_" . $this->name . "_year"] ?? '');
 
         // no date
-        if ( strlen($yearvar) && !(int)$yearvar) {
+        if (strlen($yearvar) && !(int) $yearvar) {
             $this->time  = 0;
             $this->day   = 0;
             $this->month = 0;
@@ -92,16 +95,16 @@ class datectrl {
             return;
         }
 
-        if ( $timevar ) {
+        if ($timevar) {
             $this->time = $timevar;
         }
-        if ( $dayvar) {
+        if ($dayvar) {
             $this->day = $dayvar;
         }
-        if ( $monthvar ) {
+        if ($monthvar) {
             $this->month = $monthvar;
         }
-        if ( $yearvar ) {
+        if ($yearvar) {
             $this->year = $yearvar;
         }
     }
@@ -109,7 +112,7 @@ class datectrl {
     /** if the form sent contain this widget
      * @return bool
      */
-    function isUpdatable(): bool
+    public function isUpdatable(): bool
     {
         $n = $this->name;
         return (isset($_REQUEST["tdctr_{$n}_time"]) || isset($_REQUEST["tdctr_{$n}_day"]) || isset($_REQUEST["tdctr_{$n}_month"]) || isset($_REQUEST["tdctr_{$n}_year"]));
@@ -119,7 +122,7 @@ class datectrl {
      *  set date, format form integer
      * @param $date
      */
-    function setdate_int($date): void
+    public function setdate_int($date): void
     {
         if (!$date) {
             $d = ['year' => 0, 'mon' => 1, 'mday' => 1, 'hours' => 0, 'minutes' => 0, 'seconds' => 0];
@@ -129,7 +132,7 @@ class datectrl {
         $this->year  = $d["year"];
         $this->month = $d["mon"];
         $this->day   = $d["mday"];
-        $this->time  = $d["hours"].":".$d["minutes"].":".$d["seconds"] ;
+        $this->time  = $d["hours"] . ":" . $d["minutes"] . ":" . $d["seconds"] ;
     }
 
     /** we check, if the value is not so big (because we solved problem, when
@@ -137,7 +140,7 @@ class datectrl {
      *  takes ages for PHP to evaluate the date() function then. (php 5.2.6))
      *  it is perfectly possible to increase the max value, however
      */
-    function isTimestamp($timestamp): bool
+    public function isTimestamp($timestamp): bool
     {
         // return ctype_digit((string)$timestamp) && ($timestamp > -2147483647) AND ($timestamp < 2147483648);  // wrong - ctype_digit is not work with negative values
         return IsSigInt($timestamp) && $timestamp > -2147483647 && $timestamp < 100000000000;
@@ -146,7 +149,7 @@ class datectrl {
     /** get_date function
      *  get stored date as integer
      */
-    function get_date(): false|int
+    public function get_date(): false|int
     {
         // time is not set ?
         if (!$this->year) {
@@ -154,16 +157,17 @@ class datectrl {
             // (at least from php 5.1.2)
             return 0;
         }
-        $t = explode( ':', $this->time ?: "0:0:0");
-        return mktime((int)$t[0],(int)$t[1],(int)$t[2],(int)$this->month,(int)$this->day,(int)$this->year);
+        $t = explode(':', $this->time ?: "0:0:0");
+        return mktime((int) $t[0], (int) $t[1], (int) $t[2], (int) $this->month, (int) $this->day, (int) $this->year);
 
     }
 
     /** get_datestring function
      *  get stored date as integer
      */
-    function get_datestring(): string {
-        return  $this->day. " - ". $this->month." - ".$this->year." ". $this->time;
+    public function get_datestring(): string
+    {
+        return  $this->day . " - " . $this->month . " - " . $this->year . " " . $this->time;
     }
 
     /** ValidateDate function
@@ -175,14 +179,14 @@ class datectrl {
      * @param $default = '0'
      * @return bool
      */
-    function ValidateDate($inputName, &$err, $required=true, $default='0'): bool
+    public function ValidateDate($inputName, &$err, $required = true, $default = '0'): bool
     {
         $date = $this->get_date();
-        if ( $this->isTimestamp($date) && $date != 0) {
+        if ($this->isTimestamp($date) && $date != 0) {
             return true;
         }
         if ($required) {
-            $err[$this->name] = MsgErr(_m("Error in")." $inputName");
+            $err[$this->name] = MsgErr(_m("Error in") . " $inputName");
             return false;
         }
         if ($default) {
@@ -192,13 +196,13 @@ class datectrl {
     }
 
 
-    function getDayOptions(): string
+    public function getDayOptions(): string
     {
         $ret = '';
         $at  = getdate(time());
         $sel = ($this->day != 0 ? $this->day : $at["mday"]);
         for ($i = 1; $i <= 31; $i++) {
-            $ret .= "<option value=\"$i\"". (($i == $sel) ? ' selected class="sel_on"' : "") . ">$i</option>";
+            $ret .= "<option value=\"$i\"" . (($i == $sel) ? ' selected class="sel_on"' : "") . ">$i</option>";
         }
         return $ret;
     }
@@ -207,19 +211,20 @@ class datectrl {
      * print select box for day
      * @return string
      */
-    function getdayselect(): string {
-        return "<select name=\"tdctr_" . $this->name . "_day\"". JsTriggers::getFromGlobalSliceId("select", $this->name) .">".$this->getDayOptions()."</select>";
+    public function getdayselect(): string
+    {
+        return "<select name=\"tdctr_" . $this->name . "_day\"" . JsTriggers::getFromGlobalSliceId("select", $this->name) . ">" . $this->getDayOptions() . "</select>";
     }
 
 
-    function getMonthOptions(): string
+    public function getMonthOptions(): string
     {
         $months  = monthNames();
         $at      = getdate(time());
         $sel     = ($this->month != 0 ? $this->month : $at["mon"]);
         $ret     = '';
         for ($i = 1; $i <= 12; $i++) {
-            $ret .= "<option value=\"$i\"". (($i == $sel) ? ' selected class="sel_on"' : "") . ">". $months[$i] ."</option>";
+            $ret .= "<option value=\"$i\"" . (($i == $sel) ? ' selected class="sel_on"' : "") . ">" . $months[$i] . "</option>";
         }
         return $ret;
     }
@@ -228,20 +233,21 @@ class datectrl {
      * print select box for month
      * @return string
      */
-    function getmonthselect(): string {
-        return "<select name=\"tdctr_" . $this->name . "_month\"". JsTriggers::getFromGlobalSliceId("select", $this->name) .">".$this->getMonthOptions()."</select>";
-    }
-
-    function isEmpty(): bool
+    public function getmonthselect(): string
     {
-        return (!$this->year || $this->year==1970 && $this->month==1 && $this->day==1);
+        return "<select name=\"tdctr_" . $this->name . "_month\"" . JsTriggers::getFromGlobalSliceId("select", $this->name) . ">" . $this->getMonthOptions() . "</select>";
     }
 
-    function getYearOptions(): string
+    public function isEmpty(): bool
+    {
+        return (!$this->year || $this->year == 1970 && $this->month == 1 && $this->day == 1);
+    }
+
+    public function getYearOptions(): string
     {
         $at           = getdate(time());
-        $from         = ( $this->from_now ? $at["year"] - $this->y_range_minus : $this->y_range_minus );
-        $to           = ( $this->from_now ? $at["year"] + $this->y_range_plus  : $this->y_range_plus );
+        $from         = ($this->from_now ? $at["year"] - $this->y_range_minus : $this->y_range_minus);
+        $to           = ($this->from_now ? $at["year"] + $this->y_range_plus : $this->y_range_plus);
         $selectedused = false;
         $ret          = '';
 
@@ -263,7 +269,7 @@ class datectrl {
 
         // now add all values, which is not in the array, but field has this value
         if ($this->year && !$selectedused) {
-            $ret .= "<option value=\"". safe($this->year) ."\" selected class=\"sel_missing\">".safe($this->year)."</option>";
+            $ret .= "<option value=\"" . safe($this->year) . "\" selected class=\"sel_missing\">" . safe($this->year) . "</option>";
         }
         return $ret;
     }
@@ -272,29 +278,31 @@ class datectrl {
      * print select box for year
      * @return string
      */
-    function getyearselect(): string {
-        return "<select name=\"tdctr_" . $this->name . "_year\"". JsTriggers::getFromGlobalSliceId("select", $this->name) . ($this->required ? 'required' : '' ) .">".$this->getYearOptions()."</select>";
+    public function getyearselect(): string
+    {
+        return "<select name=\"tdctr_" . $this->name . "_year\"" . JsTriggers::getFromGlobalSliceId("select", $this->name) . ($this->required ? 'required' : '') . ">" . $this->getYearOptions() . "</select>";
     }
 
-    function isTimeDisplayed() {
+    public function isTimeDisplayed()
+    {
         return $this->display_time;
     }
 
-    function getTimeString(): string
+    public function getTimeString(): string
     {
-        $t = explode( ":", $this->time );
+        $t = explode(":", $this->time);
         $time_string = '';
 
-        switch( $this->display_time ) {
-            case 1: $time_string = sprintf("%d:%02d",$t[0], $t[1]);
-                    if ($time_string === "0:00") {
-                        $time_string = '';
-                    }
-                    break;
-            case 2: $time_string = sprintf("%d:%02d:%02d",$t[0], $t[1], $t[2]);
-                    break;
-            case 3: $time_string = sprintf("%d:%02d",$t[0], $t[1]);
-                    break;
+        switch ($this->display_time) {
+            case 1: $time_string = sprintf("%d:%02d", $t[0], $t[1]);
+                if ($time_string === "0:00") {
+                    $time_string = '';
+                }
+                break;
+            case 2: $time_string = sprintf("%d:%02d:%02d", $t[0], $t[1], $t[2]);
+                break;
+            case 3: $time_string = sprintf("%d:%02d", $t[0], $t[1]);
+                break;
         }
         return $time_string;
     }
@@ -303,11 +311,11 @@ class datectrl {
      * print select box for time
      * @return string
      */
-    function gettimeselect(): string {
+    public function gettimeselect(): string
+    {
         if (!$this->isTimeDisplayed()) {
             return "";
         }
-        return "<input type=\"text\" name=\"tdctr_". $this->name ."_time\"  value=\"". safe($this->getTimeString()). "\" size=\"8\" maxlength=\"8\"". JsTriggers::getFromGlobalSliceId("input", $this->name) .">";
+        return "<input type=\"text\" name=\"tdctr_" . $this->name . "_time\"  value=\"" . safe($this->getTimeString()) . "\" size=\"8\" maxlength=\"8\"" . JsTriggers::getFromGlobalSliceId("input", $this->name) . ">";
     }
 }
-

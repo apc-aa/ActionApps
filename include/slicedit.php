@@ -1,4 +1,5 @@
 <?php
+
 /**
  *
  * PHP version 7.2+
@@ -30,7 +31,7 @@ require_once __DIR__ . "/se_users.php";
 require_once __DIR__ . "/mail.php";
 
 // add mlx functions
-require_once __DIR__."/mlx.php";
+require_once __DIR__ . "/mlx.php";
 require_once __DIR__ . "/um_util.php";
 
 const SLICE_FIELDS_TEXT = ["id", "name", "owner", "created_by", "created_at", "type", "fulltext_format_top", "fulltext_format", "fulltext_format_bottom", "odd_row_format", "even_row_format", "compact_top", "compact_bottom", "category_top", "category_format", "category_bottom", "slice_url", "lang_file", "fulltext_remove", "compact_remove", "notify_sh_offer", "notify_sh_accept", "notify_sh_remove", "notify_holding_item_s", "notify_holding_item_b", "notify_holding_item_edit_s", "notify_holding_item_edit_b", "notify_active_item_edit_s", "notify_active_item_edit_b", "notify_active_item_s", "notify_active_item_b", "noitem_msg", "admin_format_top", "admin_format", "admin_format_bottom", "admin_remove", "fileman_dir", "fileman_access", "javascript", "aditional", "mailman_field_lists", "auth_field_group", "reading_password"];
@@ -67,18 +68,18 @@ function add_user_and_welcome($welcome_id, $user_login, $slice_id, $role): strin
         return "";
     }
 
-    if ( ($slice_name = DB_AA::select1('name', 'SELECT name FROM `slice`', [['id', $slice_id, 'l']])) === false) {
+    if (($slice_name = DB_AA::select1('name', 'SELECT name FROM `slice`', [['id', $slice_id, 'l']])) === false) {
         return _m("Slice not found.");
     }
     $me = AA::$perm->getIDsInfo(AuthGetUid());
 
     $aliases               = [];
-    $aliases["_#SLICNAME"] = GetAliasDef( "f_t:$slice_name",      "id..............");
-    $aliases["_#LOGIN___"] = GetAliasDef( "f_t:$user_login",      "id..............");
-    $aliases["_#NAME____"] = GetAliasDef( "f_t:". $user["name"],  "id..............");
-    $aliases["_#ROLE____"] = GetAliasDef( "f_t:$role",            "id..............");
-    $aliases["_#ME_MAIL_"] = GetAliasDef( "f_t:". $me["mail"],    "id..............");
-    $aliases["_#ME_NAME_"] = GetAliasDef( "f_t:". $me["cn"],      "id..............");
+    $aliases["_#SLICNAME"] = GetAliasDef("f_t:$slice_name", "id..............");
+    $aliases["_#LOGIN___"] = GetAliasDef("f_t:$user_login", "id..............");
+    $aliases["_#NAME____"] = GetAliasDef("f_t:" . $user["name"], "id..............");
+    $aliases["_#ROLE____"] = GetAliasDef("f_t:$role", "id..............");
+    $aliases["_#ME_MAIL_"] = GetAliasDef("f_t:" . $me["mail"], "id..............");
+    $aliases["_#ME_NAME_"] = GetAliasDef("f_t:" . $me["cn"], "id..............");
 
     $item = new AA_Item('', $aliases);
     if (AA_Mail::sendTemplate($welcome_id, [$me["mail"], $user["mail"]], $item) != 2) {
@@ -151,13 +152,13 @@ function SliceEditProcess($slice_id, $user_firstname, $user_surname, $err, $add_
         exit;
     }
 
-// Add new editor / administrator from Wizard page
+    // Add new editor / administrator from Wizard page
     if ($user_firstname || $user_surname) {
         $err = ProcessUser($submit_action, $selected_user, $err, $add_submit, $user_login, $user_surname, $user_firstname, $user_password1, $user_password2, $user_mail1, $user_mail2, $user_mail3, $user_super, $um_uedit_no_go_url, $posted_groups, $sel_groups, $perm_mod, $new_module, $new_module_role);
     }
 
 
-// additional settings
+    // additional settings
     AA_Slice::processModuleObject($slice_id);
 
     if ($add || $update) {
@@ -349,17 +350,19 @@ function SliceEditProcess($slice_id, $user_firstname, $user_surname, $err, $add_
                 // Copy constants
                 if ($wiz["constants"] === "copy") {
                     if (!CopyConstants($slice_id)) {
-                    $err[] = _m("Error when copying constants.");
-                }
+                        $err[] = _m("Error when copying constants.");
+                    }
                 }
                 // Copy views
                 if ($wiz["copyviews"] && $slice_id && $set_template_id) {
-                    if (!CopyTableRows("view",
-                    "slice_id=" . xpack_id($set_template_id),
-                    ["slice_id" => q_pack_id($slice_id)],
-                    ["id"])) {
-                    $err[] = _m("Error when copying views.");
-                }
+                    if (!CopyTableRows(
+                        "view",
+                        "slice_id=" . xpack_id($set_template_id),
+                        ["slice_id" => q_pack_id($slice_id)],
+                        ["id"],
+                    )) {
+                        $err[] = _m("Error when copying views.");
+                    }
                 }
 
                 // Add new editor / administrator privileges from Wizard page
@@ -374,7 +377,7 @@ function SliceEditProcess($slice_id, $user_firstname, $user_surname, $err, $add_
                 // create new upload directory
                 Files::destinationDir(AA_Slice::getModule($slice_id));
             }
-//        $slice->setSliceField('_upload_url.....', $upload_url);
+            //        $slice->setSliceField('_upload_url.....', $upload_url);
 
             AA::Pagecache()->invalidateFor($slice_id);  // invalidate old cached values for this slice
         } while (false);

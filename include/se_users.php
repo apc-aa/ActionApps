@@ -1,4 +1,5 @@
 <?php
+
 /**
  *
  * PHP version 7.2+
@@ -41,7 +42,7 @@
  */
 function CanChangeRole($user_perm, $editor_perm, $role_perm): bool
 {
-    return (AA_Perm::compare($editor_perm, $user_perm)==="G" && AA_Perm::compare($editor_perm, $role_perm)==="G");
+    return (AA_Perm::compare($editor_perm, $user_perm) === "G" && AA_Perm::compare($editor_perm, $role_perm) === "G");
 }
 
 /** ChangeRole function
@@ -49,14 +50,14 @@ function CanChangeRole($user_perm, $editor_perm, $role_perm): bool
  */
 function ChangeRole($UsrAdd, $UsrDel, $slice_id, $editor_perms, $role): void
 {
-    if ( $UsrAdd ) {
-        if ( CanChangeRole( AA::$perm->getModulePerms($UsrAdd, $slice_id, false), $editor_perms, AA_Perm::ROLES[$role]['perm']) ) {
+    if ($UsrAdd) {
+        if (CanChangeRole(AA::$perm->getModulePerms($UsrAdd, $slice_id, false), $editor_perms, AA_Perm::ROLES[$role]['perm'])) {
             AddPerm($UsrAdd, $slice_id, "slice", AA_Perm::ROLES[$role]['id']);
             AA::$perm->invalidateCache();
             AA::Pagecache()->invalidateFor($slice_id);  // invalidate old cached values
         }
-    } elseif ( $UsrDel ) {
-        if ( CanChangeRole(AA::$perm->getModulePerms($UsrDel, $slice_id, false), $editor_perms, AA_Perm::ROLES["AUTHOR"]['perm']) ) { // smallest permission
+    } elseif ($UsrDel) {
+        if (CanChangeRole(AA::$perm->getModulePerms($UsrDel, $slice_id, false), $editor_perms, AA_Perm::ROLES["AUTHOR"]['perm'])) { // smallest permission
             DelPerm($UsrDel, $slice_id, "slice");
             AA::$perm->invalidateCache();
         }
@@ -68,14 +69,15 @@ function ChangeRole($UsrAdd, $UsrDel, $slice_id, $editor_perms, $role): void
 }
 
 /** UserTypeLabel - returns type string with slice name for Reader/ReaderGroup */
-function UserTypeLabel(array $usrinfo, string $usr_id): string {
+function UserTypeLabel(array $usrinfo, string $usr_id): string
+{
     if (($usrinfo['type'] ?? '') === 'Reader') {
         $item  = new ItemContent($usr_id);
         $slice = AA_Slice::getModule($item->getSliceID());
-        return $slice ? _m('Reader') .'<div class=tabhlp>'. safe($slice->getProperty('name')). '</div>' : _m('Reader');
+        return $slice ? _m('Reader') . '<div class=tabhlp>' . safe($slice->getProperty('name')) . '</div>' : _m('Reader');
     }
     if (($usrinfo['type'] ?? '') === 'ReaderGroup') {
-        return _m('ReaderGroup') .' - '. safe($usrinfo['name']);
+        return _m('ReaderGroup') . ' - ' . safe($usrinfo['name']);
     }
     return _mdelayed($usrinfo['type'] ?? '');
 }
@@ -88,20 +90,20 @@ function UserTypeLabel(array $usrinfo, string $usr_id): string {
  * @param $editor_role
  * @param $new_usr=true
  */
-function PrintAddableUser($usr, $usr_id, $editor_role, $new_usr=true): void
+function PrintAddableUser($usr, $usr_id, $editor_role, $new_usr = true): void
 {
     // $usr_id is DN in LDAP
     $username = perm_username($usr_id);
     $usrinfo  = AA::$perm->getIDsInfo($usr_id);
 
-    echo "<tr><td>". $usr['name'] ."</td>\n";
+    echo "<tr><td>" . $usr['name'] . "</td>\n";
     echo "<td>$username</td>\n";
-    echo "<td>". (($usr['mail']) ?: "&nbsp;") ."</td>\n";
-    echo "<td>". UserTypeLabel($usrinfo, $usr_id) ."</td>\n";
+    echo "<td>" . (($usr['mail']) ?: "&nbsp;") . "</td>\n";
+    echo "<td>" . UserTypeLabel($usrinfo, $usr_id) . "</td>\n";
 
-    echo IfLink(($editor_role > AA_Perm::ROLES["AUTHOR"]['id']) && $new_usr, get_url('', ['UsrAdd'=>$usr_id, 'role'=>'AUTHOR'], true), _m("Author"));
-    echo IfLink(($editor_role > AA_Perm::ROLES["EDITOR"]['id']) && $new_usr, get_url('', ['UsrAdd'=>$usr_id, 'role'=>'EDITOR'], true), _m("Editor"));
-    echo IfLink(($editor_role > AA_Perm::ROLES["ADMINISTRATOR"]['id']) && $new_usr, get_url('', ['UsrAdd'=>$usr_id, 'role'=>'ADMINISTRATOR'], true), _m("Administrator"));
+    echo IfLink(($editor_role > AA_Perm::ROLES["AUTHOR"]['id']) && $new_usr, get_url('', ['UsrAdd' => $usr_id, 'role' => 'AUTHOR'], true), _m("Author"));
+    echo IfLink(($editor_role > AA_Perm::ROLES["EDITOR"]['id']) && $new_usr, get_url('', ['UsrAdd' => $usr_id, 'role' => 'EDITOR'], true), _m("Editor"));
+    echo IfLink(($editor_role > AA_Perm::ROLES["ADMINISTRATOR"]['id']) && $new_usr, get_url('', ['UsrAdd' => $usr_id, 'role' => 'ADMINISTRATOR'], true), _m("Administrator"));
     echo "</tr>\n";
 }
 
@@ -113,7 +115,8 @@ function PrintAddableUser($usr, $usr_id, $editor_role, $new_usr=true): void
  * @param        $editor_perms
  * @return void
  */
-function AddUserForm(string $usr, string $grp, bool $GrpSrch, bool $UsrSrch, $editor_perms): void {
+function AddUserForm(string $usr, string $grp, bool $GrpSrch, bool $UsrSrch, $editor_perms): void
+{
     $form_buttons = [
         "back" => [
             "type"  => "submit",
@@ -170,7 +173,7 @@ function AddUserForm(string $usr, string $grp, bool $GrpSrch, bool $UsrSrch, $ed
                 echo "<tr><td>" . _m("No user (group) found") . "</td>\n";
             }
         } else {
-            echo "<tr><th>"._m("Name")."</th><th>"._m("Username")."</th><th>"._m("Email")."</th><th>"._m("Type")."</th><th>"._m("Author")."</th><th>"._m("Editor")."</th><th>"._m("Administrator")."</th></tr>\n";
+            echo "<tr><th>" . _m("Name") . "</th><th>" . _m("Username") . "</th><th>" . _m("Email") . "</th><th>" . _m("Type") . "</th><th>" . _m("Author") . "</th><th>" . _m("Editor") . "</th><th>" . _m("Administrator") . "</th></tr>\n";
             foreach ($addable as $usr_id => $user) {
                 if (!$slice_users[$usr_id]) {                         // show only new users
                     PrintAddableUser($user, $usr_id, $curr_role, true);
@@ -182,7 +185,7 @@ function AddUserForm(string $usr, string $grp, bool $GrpSrch, bool $UsrSrch, $ed
                 }
             }
             if ($l_counter >= MAX_ENTRIES_SHOWN) {
-                echo "<tr><td colspan='7'>". _m("More users found. Refine your search.") ."</td></tr>\n";
+                echo "<tr><td colspan='7'>" . _m("More users found. Refine your search.") . "</td></tr>\n";
             }
         }
 

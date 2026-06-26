@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Function go_url used to move to another web page.
  * Formly this function was a part of util.php but in some pages
@@ -36,7 +37,8 @@
  * @param  array|string $params
  * @return string
  */
-function con_url($url, $params=[], $state=false): string {
+function con_url($url, $params = [], $state = false): string
+{
     return htmlspecialchars(get_url($url, $params, $state), ENT_QUOTES | ENT_HTML5, 'ISO-8859-1');
 }
 
@@ -56,15 +58,15 @@ function HttpGetParameters($parameters): string
             //   1) $params = array('a=1', 'text=OK%20boy')
             //   2) $params = array('a' => 1, 'b' => 'OK boy')
             //   3) $params = array('als' => array('MY_ALIAS'=>x), 'b' => 'OK boy')
-            if ( is_array($value) ) {
+            if (is_array($value)) {
                 foreach ($value as $inner_key => $inner_value) {
-                    $param_string .= $delimiter. $variable. '['.rawurlencode($inner_key). ']='. rawurlencode($inner_value);
+                    $param_string .= $delimiter . $variable . '[' . rawurlencode($inner_key) . ']=' . rawurlencode($inner_value);
                     $delimiter     = '&';
                 }
-            } elseif ( ctype_digit((string)$variable)) {
-                $param_string .= $delimiter. $value;
+            } elseif (ctype_digit((string) $variable)) {
+                $param_string .= $delimiter . $value;
             } else {
-                $param_string .= $delimiter. rawurlencode($variable). '='. rawurlencode((string)$value);
+                $param_string .= $delimiter . rawurlencode($variable) . '=' . rawurlencode((string) $value);
             }
             $delimiter     = '&';
         }
@@ -76,8 +78,9 @@ function HttpGetParameters($parameters): string
  * @param string $url
  * @return string
  */
-function StateUrl($url=''): string {
-    return (!str_contains($url, 'module_id=') && is_long_id(AA::$module_id)) ? get_url($url, ['module_id' =>AA::$module_id]) : $url;
+function StateUrl($url = ''): string
+{
+    return (!str_contains($url, 'module_id=') && is_long_id(AA::$module_id)) ? get_url($url, ['module_id' => AA::$module_id]) : $url;
 }
 
 /**
@@ -85,7 +88,7 @@ function StateUrl($url=''): string {
  */
 function StateHidden(): string
 {
-    return is_long_id(AA::$module_id) ? '<input type=hidden name=module_id value="'.AA::$module_id.'">' : '';
+    return is_long_id(AA::$module_id) ? '<input type=hidden name=module_id value="' . AA::$module_id . '">' : '';
 }
 
 
@@ -95,16 +98,23 @@ function StateHidden(): string
  * @param  bool    $state
  * @return string
  */
-function get_url($url, $params=[], $state=false): string {
+function get_url($url, $params = [], $state = false): string
+{
     if (empty($params)) {
         return $state ? StateUrl($url) : $url;
     }
 
     // be careful - sometimes we pass url with aliases (like oedit.php?oid=_#AA_ID___...)
     $param_string = HttpGetParameters($params);
-    if (($pos = strpos($url, '?')) !== false)  { return substr_replace($url, "?$param_string&", $pos, 1); }
-    if (($pos = strpos($url, '&')) !== false)  { return substr_replace($url, "&$param_string&", $pos, 1); }
-    if (($pos = strrpos($url, '#')) !== false) { return substr_replace($url, "?$param_string#", $pos, 1); }
+    if (($pos = strpos($url, '?')) !== false) {
+        return substr_replace($url, "?$param_string&", $pos, 1);
+    }
+    if (($pos = strpos($url, '&')) !== false) {
+        return substr_replace($url, "&$param_string&", $pos, 1);
+    }
+    if (($pos = strrpos($url, '#')) !== false) {
+        return substr_replace($url, "?$param_string#", $pos, 1);
+    }
 
     return $state ? StateUrl("$url?$param_string") : "$url?$param_string";
     // [$path, $fragment] = explode( '#', $url, 2 );
@@ -118,8 +128,9 @@ function get_url($url, $params=[], $state=false): string {
  * @param bool         $state
  * @return string
  */
-function get_aa_url($href, $params=[], $state=true): string {
-    return get_url(AA_INSTAL_PATH.$href, $params, $state);
+function get_aa_url($href, $params = [], $state = true): string
+{
+    return get_url(AA_INSTAL_PATH . $href, $params, $state);
 }
 
 /** get_admin_url function
@@ -128,8 +139,9 @@ function get_aa_url($href, $params=[], $state=true): string {
  * @param bool         $state
  * @return string
  */
-function get_admin_url($href='', $params='', $state=true): string {
-    $href = $href ? AA_INSTAL_PATH."admin/$href" : $_SERVER['PHP_SELF'];
+function get_admin_url($href = '', $params = '', $state = true): string
+{
+    $href = $href ? AA_INSTAL_PATH . "admin/$href" : $_SERVER['PHP_SELF'];
     return get_url($href, $params, $state);
 }
 
@@ -139,8 +151,9 @@ function get_admin_url($href='', $params='', $state=true): string {
  * @param $anchor
  * @return string
  */
-function get_help_url($href, $anchor): string {
-    return $href."#".$anchor;
+function get_help_url($href, $anchor): string
+{
+    return $href . "#" . $anchor;
 }
 
 
@@ -149,7 +162,7 @@ function get_help_url($href, $anchor): string {
  * @param $add_param array|string
  * @param $usejs
  */
-function go_url($url, $add_param="", $usejs=false, $code=302): never
+function go_url($url, $add_param = "", $usejs = false, $code = 302): never
 {
     global $sess;
     if (is_object($sess)) {
@@ -159,11 +172,10 @@ function go_url($url, $add_param="", $usejs=false, $code=302): never
         $url = get_url($url, $add_param);
     }
 
-    if ( $usejs || headers_sent() || $_SERVER['SERVER_PROTOCOL']==='INCLUDED') { // SSI included  // INCLUDED does not work 2024 HM
-        echo '<script>window.location = "'.$url.'";</script>';
+    if ($usejs || headers_sent() || $_SERVER['SERVER_PROTOCOL'] === 'INCLUDED') { // SSI included  // INCLUDED does not work 2024 HM
+        echo '<script>window.location = "' . $url . '";</script>';
     } else {
         header("Location: $url", true, $code);
     }
     exit;
 }
-

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Basic script to be included into every Control Panel script
  *
@@ -50,7 +51,10 @@ $free  ??= $_REQUEST['free'] ?? false;
 //  1) in $_POST,$_GET,$_COOKIE,$_REQUEST variables the values are not quoted
 //  2) the variables are imported in global scope and is quoted
 // We are trying to remove any dependecy on the point 2) and use only $_* superglobals
-function AddslashesDeep($value): array|string { return is_array($value) ? array_map('AddslashesDeep',   $value) : addslashes($value);   }
+function AddslashesDeep($value): array|string
+{
+    return is_array($value) ? array_map('AddslashesDeep', $value) : addslashes($value);
+}
 
 if (defined('AA_REGISTER_GLOBALS')) {
     foreach ($_REQUEST as $k => $v) {
@@ -63,7 +67,7 @@ if ($encap === "false") {   // used in itemedit for anonymous form
     $encap = false;        // it must be here, because the variable is rewriten (see above)
 }
 
-require_once __DIR__."/config.php";
+require_once __DIR__ . "/config.php";
 require_once __DIR__ . "/mgettext.php";
 
 if ($free) {
@@ -84,13 +88,13 @@ if (!is_long_id(AA::$module_id = AA::$module_id ?: $_POST['change_id'] ?: $_GET[
 }
 
 // Load the session stored variables.
-pageOpen($nobody ? 'nobody': '');
+pageOpen($nobody ? 'nobody' : '');
 
 // anonymous login
 if ($nobody) {
     $_POST['username'] = $free;
     $_POST['password'] = $freepwd;
-    if ( !$auth->auth_validatelogin()) {
+    if (!$auth->auth_validatelogin()) {
         echo _m("Either your username or your password is not valid");
         exit;
     }
@@ -101,7 +105,7 @@ if ($_GET['relogin']) {
     $auth->relogin();
 }
 
-if ( $no_slice_id ) {
+if ($no_slice_id) {
     unset($slice_id);
     AA::$module_id = null; // unset is_a not allowed for static variables
 }
@@ -117,18 +121,18 @@ $sess->register('r_hidden');
 // sometimes we need to not unset hidden - popup for related stories ...
 // only acceptor can read values. For others, they are destroyed.
 $my_document_uri = $_SERVER['DOCUMENT_URI'] ?: $_SERVER['PHP_SELF'];
-if ( !$save_hidden && ($unset_r_hidden || $r_hidden["hidden_acceptor"] != $my_document_uri)) {
-    unset( $r_hidden );
+if (!$save_hidden && ($unset_r_hidden || $r_hidden["hidden_acceptor"] != $my_document_uri)) {
+    unset($r_hidden);
 }
 $after_login = !$no_slice_id && !AA::$module_id;
 $perm_slices = GetUserSlices();
 
-if ( !$no_slice_id && !IsSuperadmin() && !$perm_slices[AA::$module_id] && !$after_login ) {
-    MsgPage(_m("You do not have permission to edit items in the slice:").' '. safe(AA_Slice::getModuleName(AA::$module_id)));
+if (!$no_slice_id && !IsSuperadmin() && !$perm_slices[AA::$module_id] && !$after_login) {
+    MsgPage(_m("You do not have permission to edit items in the slice:") . ' ' . safe(AA_Slice::getModuleName(AA::$module_id)));
     exit;
 }
 
-if (!is_object( $db )) {
+if (!is_object($db)) {
     $db = getDB();
 }
 
@@ -139,7 +143,7 @@ while ($db->next_record()) {
     if (IsSuperadmin() || (!$db->f('deleted') && $perm_slices[$my_slice_id])) {
         $g_modules[$my_slice_id] = [
             'name' => $db->f('name'),
-            'type' => AA_Moduleregistry::singleton()[$db->f('type')] ? $db->f('type') : 'S'   // @todo remove type and use AA_Module::getModuleType() or AA_Module::getModuleInfo() instead
+            'type' => AA_Moduleregistry::singleton()[$db->f('type')] ? $db->f('type') : 'S',   // @todo remove type and use AA_Module::getModuleType() or AA_Module::getModuleInfo() instead
         ];
     }
 }
@@ -148,7 +152,7 @@ while ($db->next_record()) {
 
 if (!$no_slice_id) {
     if (!is_array($g_modules)) {
-        $auth->auth_loginform('<div style="color:red;"><b>'._m("No slice found for you").'</b></div>');
+        $auth->auth_loginform('<div style="color:red;"><b>' . _m("No slice found for you") . '</b></div>');
         //$auth->relogin();
         exit;
     }
@@ -158,7 +162,7 @@ if (!$no_slice_id) {
         // slice was just deleted, thus is not in $g_modules
         foreach ($g_modules as $mid => $mmodule) {
             // skip AA Core Field slice, if possible
-            if ($mmodule['type']==='S' && $mid !== "41415f436f72655f4669656c64732e2e") {
+            if ($mmodule['type'] === 'S' && $mid !== "41415f436f72655f4669656c64732e2e") {
                 AA::$module_id = $mid;
                 break;
             }
@@ -182,33 +186,33 @@ if (!$no_slice_id) {
     $r_lang_file      = $db->f('lang_file');
     $r_slice_view_url = $db->f('slice_url');
 
-//    $module_type         = $g_modules[AA::$module_id]['type'];
-//
-//    $module_type_changed = $after_login || ($g_modules[$r_last_module_id]['type'] != $module_type);
-//
-//    //$module_type_changed = $after_login || ($_GET['from_type'] != $module_type);  // from_type used on slice selectbox in admin interface
-//
-///* If we switch to another module type, we try whether the requested file
-//   exists in the module direcory and if not, we go to module's index.php page.
-//
-//   Discussion: There is a chance two modules will have the same page name
-//   for very different behavior and that this would be a bit confusing when
-//   using the Select Slice box.
-//*/
-//    if ( $module_type_changed && !$jumping ) {
-//        $page    = pathinfo( $_SERVER['PHP_SELF'], PATHINFO_BASENAME);
-//        $hdd_dir = "../".$MODULES[$module_type]['directory'];
-//        $web_dir = AA_INSTAL_PATH   .$MODULES[$module_type]['directory'];
-//        if (!file_exists($hdd_dir.$page) || ($page==='tabledit.php') || ($module_type==='J') ) {
-//            $page = "index.php";
-//        }
-//        if ($web_dir.$page != $_SERVER['PHP_SELF']) {
-//            $page = StateUrl($web_dir.$page."?slice_id=$slice_id");
-//            Session::page_close();
-//            go_url($page);
-//            exit;
-//        }
-//    }
+    //    $module_type         = $g_modules[AA::$module_id]['type'];
+    //
+    //    $module_type_changed = $after_login || ($g_modules[$r_last_module_id]['type'] != $module_type);
+    //
+    //    //$module_type_changed = $after_login || ($_GET['from_type'] != $module_type);  // from_type used on slice selectbox in admin interface
+    //
+    ///* If we switch to another module type, we try whether the requested file
+    //   exists in the module direcory and if not, we go to module's index.php page.
+    //
+    //   Discussion: There is a chance two modules will have the same page name
+    //   for very different behavior and that this would be a bit confusing when
+    //   using the Select Slice box.
+    //*/
+    //    if ( $module_type_changed && !$jumping ) {
+    //        $page    = pathinfo( $_SERVER['PHP_SELF'], PATHINFO_BASENAME);
+    //        $hdd_dir = "../".$MODULES[$module_type]['directory'];
+    //        $web_dir = AA_INSTAL_PATH   .$MODULES[$module_type]['directory'];
+    //        if (!file_exists($hdd_dir.$page) || ($page==='tabledit.php') || ($module_type==='J') ) {
+    //            $page = "index.php";
+    //        }
+    //        if ($web_dir.$page != $_SERVER['PHP_SELF']) {
+    //            $page = StateUrl($web_dir.$page."?slice_id=$slice_id");
+    //            Session::page_close();
+    //            go_url($page);
+    //            exit;
+    //        }
+    //    }
 }
 
 // freeDB($db);   we left it open for /admin/ scripts  - otherwise we have to ask getDB() for every admin page (which is OK as well)
@@ -223,7 +227,7 @@ if (AuthGetUid()) {
 $module_lang_file = (!$require_default_lang && $r_lang_file != "") ? $r_lang_file : DEFAULT_LANG_INCLUDE;
 $mgettext_file    = \AA\Util\UiPrefs::langOverrideFile($module_lang_file);
 bind_mgettext_domain($mgettext_file);
-AA::$lang         = strtolower(substr($mgettext_file,0,2));      // actual language - two letter shortcut cz / es / en
+AA::$lang         = strtolower(substr($mgettext_file, 0, 2));      // actual language - two letter shortcut cz / es / en
 AA::$langnum      = [Langs::getLangName2Num(AA::$lang)]; // array of prefered languages in priority order.
 AA::$slice_id     = AA::$module_id;
 $_SESSION['r_last_module_id'] = AA::$module_id; // we need it only in filebrowser of CKEditor

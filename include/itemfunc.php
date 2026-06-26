@@ -1,4 +1,5 @@
 <?php
+
 /**
  *
  * PHP version 7.2+
@@ -54,7 +55,7 @@ require_once __DIR__ . "/event.class.php";
  */
 function GetItemContextMenuItems($func_param = null): array
 {
-    $id    = (string)($_REQUEST['id'] ?? '');
+    $id    = (string) ($_REQUEST['id'] ?? '');
     $slice = AA_Slice::getModule(AA::$module_id);
     $items = [];   // no slice-name header row - the top bar already shows the current slice
 
@@ -63,14 +64,14 @@ function GetItemContextMenuItems($func_param = null): array
 
     if ($item_hex === '') {
         $items['edit'] = ['exact_href' => get_admin_url('itemedit.php', ['add' => 1]), 'ico' => 'ico-form.png',
-                          'show_always' => 1, 'title' => _m("Add item"), 'label' => _m("Add item")];
+            'show_always' => 1, 'title' => _m("Add item"), 'label' => _m("Add item")];
         return $items;
     }
 
     $items['edit'] = ['exact_href' => get_admin_url('itemedit.php', ['id' => $item_hex, 'edit' => 1]),
-                      'ico' => 'ico-form.png', 'show_always' => 1, 'title' => _m("Edit item"), 'label' => _m("Edit item")];
+        'ico' => 'ico-form.png', 'show_always' => 1, 'title' => _m("Edit item"), 'label' => _m("Edit item")];
     $items['info'] = ['exact_href' => get_admin_url('iteminfo.php', ['id' => $item_hex]),
-                      'ico' => 'ico-guide.png', 'show_always' => 1, 'title' => _m("Item info"), 'label' => _m("Item info")];
+        'ico' => 'ico-guide.png', 'show_always' => 1, 'title' => _m("Item info"), 'label' => _m("Item info")];
 
     // History and Statistics are superadmin tools - and only worth a menu row when they have data.
     if (IsSuperadmin()) {
@@ -78,12 +79,12 @@ function GetItemContextMenuItems($func_param = null): array
         $hist_cnt = count(ChangesMonitor::getChangeList($item_hex));
         if ($hist_cnt > 0) {
             $items['history'] = ['exact_href' => get_admin_url('itemhistory.php', ['id' => $item_hex]),
-                                 'ico' => 'ico-history.png', 'show_always' => 1, 'title' => _m("History"),
-                                 'label' => _m("History"). " <span class='aa-bin-cnt'>".(int)$hist_cnt."</span>"];
+                'ico' => 'ico-history.png', 'show_always' => 1, 'title' => _m("History"),
+                'label' => _m("History") . " <span class='aa-bin-cnt'>" . (int) $hist_cnt . "</span>"];
         }
-        if ($item && (int)$item->getval('display_count...') > 0) {
+        if ($item && (int) $item->getval('display_count...') > 0) {
             $items['stats'] = ['exact_href' => get_admin_url('itemstats.php', ['id' => $item_hex]),
-                               'ico' => 'ico-statistics.png', 'show_always' => 1, 'title' => _m("Statistics"), 'label' => _m("Statistics")];
+                'ico' => 'ico-statistics.png', 'show_always' => 1, 'title' => _m("Statistics"), 'label' => _m("Statistics")];
         }
     }
 
@@ -99,7 +100,7 @@ function GetItemContextMenuItems($func_param = null): array
 function GetItemDisplayName($item): string
 {
     $hdln = current(AA_Items::getFormatted(new zids($item->getItemID(), 'l'), '_#HEADLINE', AA_BIN_ALL));
-    return ($hdln && $hdln !== '_#HEADLINE') ? trim((string)$hdln) : '';
+    return ($hdln && $hdln !== '_#HEADLINE') ? trim((string) $hdln) : '';
 }
 
 /** Friendly, non-technical overview of an item - headline + the key facts an editor cares about.
@@ -114,19 +115,19 @@ function GetItemSummaryHtml($item, bool $full = false): string
     $sid      = $item->getSliceID();
     $slice    = AA_Slice::getModule($sid);
     $headline = GetItemDisplayName($item);
-    $short_id = (string)$item->getval('short_id........');
+    $short_id = (string) $item->getval('short_id........');
 
     $status = $item->getStatusCode();
-    $pub    = (int)$item->getval('publish_date....');
-    $exp    = (int)$item->getval('expiry_date.....');
-    $post   = (int)$item->getval('post_date.......');
-    $ledit  = (int)$item->getval('last_edit.......');
-    $hits   = (int)$item->getval('display_count...');
+    $pub    = (int) $item->getval('publish_date....');
+    $exp    = (int) $item->getval('expiry_date.....');
+    $post   = (int) $item->getval('post_date.......');
+    $ledit  = (int) $item->getval('last_edit.......');
+    $hits   = (int) $item->getval('display_count...');
     $now    = time();
 
     $dt   = static fn(int $t): string => $t ? safe(date('j.n.Y H:i', $t)) : '-';    // date + time for the Details table
-    $int  = static fn($v): string => safe(number_format((int)$v, 0, '.', ' '));
-    $user = static fn($u): string => trim((string)$u) !== '' ? ' '._m('by %1', [safe(perm_username($u))]) : '';
+    $int  = static fn($v): string => safe(number_format((int) $v, 0, '.', ' '));
+    $user = static fn($u): string => trim((string) $u) !== '' ? ' ' . _m('by %1', [safe(perm_username($u))]) : '';
 
     // Slices can switch pending/expired handling off entirely - then publish/expiry dates act as
     // plain data fields and must not drive the status (the item is live despite a "future" publish
@@ -137,7 +138,7 @@ function GetItemSummaryHtml($item, bool $full = false): string
     // --- Status lede: a one-glance "is it live?" answer. The dates themselves live in the
     //     Details table below; the green dot is the only saturated pixel. ---
     $is_live = false;
-    $hint    = static fn(string $txt): string => ' <span class="tabhlp">'. safe($txt) .'</span>';
+    $hint    = static fn(string $txt): string => ' <span class="tabhlp">' . safe($txt) . '</span>';
     if ($status === 1 && !$no_pending && $pub > $now) {
         $word = _m('Scheduled');
         $rest = $hint(_m('not yet on the public site'));
@@ -155,13 +156,13 @@ function GetItemSummaryHtml($item, bool $full = false): string
         $word = _m('Trash');
         $rest = $hint(_m('not on the public site'));
     } else {
-        $word = (string)$status;
+        $word = (string) $status;
         $rest = '';
     }
 
     // headline, or (no _#HEADLINE) a slice-name + short-id fallback, never a literal "_#HEADLINE"
     $name = $headline !== '' ? safe($headline)
-          : trim(($slice ? safe($slice->getName()) : '').' <span class="aa-id">'. safe($short_id) .'</span>');
+          : trim(($slice ? safe($slice->getName()) : '') . ' <span class="aa-id">' . safe($short_id) . '</span>');
 
     // Public-site link: the item's live URL when the slice resolves one (an explicit preview-URL
     // pattern, _#FULL_URL, or a seo field via _#SEO_URL_). Mirrors the editor's seo-field preview.
@@ -170,13 +171,13 @@ function GetItemSummaryHtml($item, bool $full = false): string
     $public = '';
     if ($slice && ($pub_url = $slice->getPreviewUrl($long_id)) !== '') {
         $public = '<p class="aa-item-public">'
-                . a_href($pub_url, GetAAImage('external-link.png', '', 13, 13).' '.safe(_m('View on public site')))
+                . a_href($pub_url, GetAAImage('external-link.png', '', 13, 13) . ' ' . safe(_m('View on public site')))
                 . '</p>';
     }
 
     $lede = '<div class="aa-item-lede">'
-          . '<h2 class="aa-item-name">'.$name.'</h2>'
-          . '<p class="aa-item-status"><span class="aa-status-dot'.($is_live ? ' is-live' : '').'"></span><strong>'. safe($word) .'</strong>'.$rest.'</p>'
+          . '<h2 class="aa-item-name">' . $name . '</h2>'
+          . '<p class="aa-item-status"><span class="aa-status-dot' . ($is_live ? ' is-live' : '') . '"></span><strong>' . safe($word) . '</strong>' . $rest . '</p>'
           . $public
           . '</div>';
 
@@ -185,22 +186,22 @@ function GetItemSummaryHtml($item, bool $full = false): string
     // expiry set to the "maximum date" sentinel reads as Never; a disabled pending/expired check
     // greys the date out with a note (the value is kept - it still acts as a plain data field)
     $exp_val = ($exp >= MAX_TIME_NEVER) ? safe(_m('Never')) : $dt($exp);
-    $unused  = static fn(string $val): string => '<span class="tabhlp">'. $val .' &ndash; '. safe(_m('not used on this site')) .'</span>';
+    $unused  = static fn(string $val): string => '<span class="tabhlp">' . $val . ' &ndash; ' . safe(_m('not used on this site')) . '</span>';
     $rows = [
         [_m('Published'),   $no_pending ? $unused($dt($pub)) : $dt($pub)],
-        [_m('Expires'),     $no_expired ? $unused($exp_val)  : $exp_val],
-        [_m('Created'),     $dt($post). $user($item->getval('posted_by.......'))],
-        [_m('Last edited'), $dt($ledit).$user($item->getval('edited_by.......'))],
+        [_m('Expires'),     $no_expired ? $unused($exp_val) : $exp_val],
+        [_m('Created'),     $dt($post) . $user($item->getval('posted_by.......'))],
+        [_m('Last edited'), $dt($ledit) . $user($item->getval('edited_by.......'))],
         [_m('Views'),       $int($hits)],
         [_m('Revisions'),   $int(count(ChangesMonitor::getChangeList($long_id)))],
-        [_m('Slice'),       ($slice ? safe($slice->getName()) : '').($full ? ' <span class="aa-id">'. safe($sid) .'</span>' : '')],
-        [_m('Short ID'),    '<span class="aa-id">'. safe($short_id) .'</span>'],
+        [_m('Slice'),       ($slice ? safe($slice->getName()) : '') . ($full ? ' <span class="aa-id">' . safe($sid) . '</span>' : '')],
+        [_m('Short ID'),    '<span class="aa-id">' . safe($short_id) . '</span>'],
     ];
     if ($full) {
-        $rows[] = [_m('Item ID'), '<span class="aa-id">'. safe($long_id) .'</span>'];
+        $rows[] = [_m('Item ID'), '<span class="aa-id">' . safe($long_id) . '</span>'];
     }
 
-    return $lede. GetHtmlTable($rows, 'td', _m('Details'));
+    return $lede . GetHtmlTable($rows, 'td', _m('Details'));
 }
 
 /** Technical/raw item data - DB records, content rows, referenced items, log and the raw
@@ -217,9 +218,13 @@ function GetItemTechnicalHtml($item, $item_id): string
     $zid     = new zids($item_id);
     $long_id = $item->getItemID();
     $sid     = $item->getSliceID();
-    echo "Item ID: ".Adminlink::itemLink($long_id, $sid);
-    if ($arr = WhereFed($item->getItemID())) { echo "<br>Fed to: ".   implode(', ', $arr); }
-    if ($arr = FromFed($item->getItemID()))  { echo "<br>Fed from: ". implode(', ', $arr); }
+    echo "Item ID: " . Adminlink::itemLink($long_id, $sid);
+    if ($arr = WhereFed($item->getItemID())) {
+        echo "<br>Fed to: " . implode(', ', $arr);
+    }
+    if ($arr = FromFed($item->getItemID())) {
+        echo "<br>Fed from: " . implode(', ', $arr);
+    }
 
     $long_id = $zid->longids(0);
     if ($long_id) {
@@ -227,12 +232,14 @@ function GetItemTechnicalHtml($item, $item_id): string
             $rec = $raw[0];
             $rec['id']       = unpack_id($rec['id']);
             $rec['slice_id'] = unpack_id($rec['slice_id']);
-            foreach ($rec as $rk => $rv) { $rec[$rk] = safe((string)$rv); }   // escape every raw column value (incl. legacy text columns)
-            $rec['post_date']    .= Txt::additionalInfo([date('j.n.Y H:i:s', (int)$raw[0]['post_date'])]);
-            $rec['publish_date'] .= Txt::additionalInfo([date('j.n.Y H:i:s', (int)$raw[0]['publish_date'])]);
-            $rec['expiry_date']  .= Txt::additionalInfo([date('j.n.Y H:i:s', (int)$raw[0]['expiry_date'])]);
-            $rec['last_edit']    .= Txt::additionalInfo([date('j.n.Y H:i:s', (int)$raw[0]['last_edit'])]);
-            $rec['moved2active'] .= Txt::additionalInfo([date('j.n.Y H:i:s', (int)$raw[0]['moved2active'])]);
+            foreach ($rec as $rk => $rv) {
+                $rec[$rk] = safe((string) $rv);
+            }   // escape every raw column value (incl. legacy text columns)
+            $rec['post_date']    .= Txt::additionalInfo([date('j.n.Y H:i:s', (int) $raw[0]['post_date'])]);
+            $rec['publish_date'] .= Txt::additionalInfo([date('j.n.Y H:i:s', (int) $raw[0]['publish_date'])]);
+            $rec['expiry_date']  .= Txt::additionalInfo([date('j.n.Y H:i:s', (int) $raw[0]['expiry_date'])]);
+            $rec['last_edit']    .= Txt::additionalInfo([date('j.n.Y H:i:s', (int) $raw[0]['last_edit'])]);
+            $rec['moved2active'] .= Txt::additionalInfo([date('j.n.Y H:i:s', (int) $raw[0]['moved2active'])]);
             $rec['posted_by']    .= Txt::additionalInfo([safe(perm_username($raw[0]['posted_by']))]);
             $rec['edited_by']    .= Txt::additionalInfo([safe(perm_username($raw[0]['edited_by']))]);
             echo GetHtmlTable([$rec], 'key', _m('Item table record for the item'));
@@ -242,40 +249,54 @@ function GetItemTechnicalHtml($item, $item_id): string
 
         if ($res = DB_AA::select([], "SELECT '' as FieldName, `field_id`, `number`,`text`, `flag` FROM `content`", [['item_id',$long_id, 'l']], ['field_id','number'])) {              // empty FieldName - will be filled later
             array_walk($res, static function (&$v, $k) use ($slice) {
-                $v['FieldName'] =  ($f=$slice->getField($v['field_id'])) ? safe($f->getName()) : '-- invalid --';
-                $raw_text  = (string)$v['text'];
+                $v['FieldName'] =  ($f = $slice->getField($v['field_id'])) ? safe($f->getName()) : '-- invalid --';
+                $raw_text  = (string) $v['text'];
                 $v['text'] = safe($raw_text);   // content value may hold author-submitted HTML
                 if (is_long_id($raw_text) && ($hdln = StrExp('item', [$raw_text, '_#HEADLINE']))) {
                     $v['text'] .= Txt::additionalInfo([safe($hdln)]);
                 }
                 $flags = '';
-                if ($v['flag'] & FLAG_HTML) { $flags .= '<span  title="">HTML '; }
-                if ($v['flag'] & FLAG_FEED) { $flags .= '<span title="item is fed">FEED</span> '; }
-                if ($v['flag'] & FLAG_FREEZE) { $flags .= '<span  title="content can\'t be changed">FREEZE</span> '; }
-                if ($v['flag'] & 8) { $flags .= '<span  title="offline filled - no more used flag">OFFLINE</span> '; }   // no more used
-                if ($v['flag'] & FLAG_UPDATE) { $flags .= '<span  title="content should be updated if source is changed (after feeding)">UPDATE</span> '; }
-                if ($v['flag'] & FLAG_TEXT_STORED) { $flags .= '<span  title="value is stored in the text field (and not number field of content table)">TEXT</span> '; }
-                if ($v['flag'] & ITEM_FLAG_ANONYMOUS_EDITABLE ) { $flags .= '<span  title="anonymously added and thus anonymously editable (reset on every use of itemedit.php)">ANONYMEDITABLE</span> '; }
+                if ($v['flag'] & FLAG_HTML) {
+                    $flags .= '<span  title="">HTML ';
+                }
+                if ($v['flag'] & FLAG_FEED) {
+                    $flags .= '<span title="item is fed">FEED</span> ';
+                }
+                if ($v['flag'] & FLAG_FREEZE) {
+                    $flags .= '<span  title="content can\'t be changed">FREEZE</span> ';
+                }
+                if ($v['flag'] & 8) {
+                    $flags .= '<span  title="offline filled - no more used flag">OFFLINE</span> ';
+                }   // no more used
+                if ($v['flag'] & FLAG_UPDATE) {
+                    $flags .= '<span  title="content should be updated if source is changed (after feeding)">UPDATE</span> ';
+                }
+                if ($v['flag'] & FLAG_TEXT_STORED) {
+                    $flags .= '<span  title="value is stored in the text field (and not number field of content table)">TEXT</span> ';
+                }
+                if ($v['flag'] & ITEM_FLAG_ANONYMOUS_EDITABLE) {
+                    $flags .= '<span  title="anonymously added and thus anonymously editable (reset on every use of itemedit.php)">ANONYMEDITABLE</span> ';
+                }
                 $v['flag'] .= Txt::additionalInfo([$flags]);
 
             });
             echo GetHtmlTable($res, 'key', _m('Content table records for the item'));
         }
 
-        echo '<h3>'. _m('History') .'</h3>';
-        echo 'show '. ChangesMonitor::getHistoryLink($item_id);
+        echo '<h3>' . _m('History') . '</h3>';
+        echo 'show ' . ChangesMonitor::getHistoryLink($item_id);
 
         if ($res = DB_AA::select([], "SELECT LOWER(HEX(`item_id`)) as Item, '' as Status, '' as PubDate, '' as ExpDate, '' as LastEdit, '' as FieldName, `field_id`, `number`,`text`, `flag` FROM `content`", [['text',$long_id]])) {
             array_walk($res, static function (&$v, $k) {
-                if (is_long_id($iid = $v['Item']) AND ($refitem = AA_Items::getItem(new zids($iid, 'l')))) {
+                if (is_long_id($iid = $v['Item']) and ($refitem = AA_Items::getItem(new zids($iid, 'l')))) {
                     $v['Item'] = Adminlink::itemLink($iid, $refitem->getSliceID());
                     $v['Status'] = $refitem->getStatusCode();
-                    $v['PubDate']  .= ($tmp = (int)$refitem->getval('publish_date....')). Txt::additionalInfo([date('j.n.Y H:i:s', $tmp)]);
-                    $v['ExpDate']  .= ($tmp = (int)$refitem->getval('expiry_date.....')). Txt::additionalInfo([date('j.n.Y H:i:s', $tmp)]);
-                    $v['LastEdit'] .= ($tmp = (int)$refitem->getval('last_edit.......')). Txt::additionalInfo([date('j.n.Y H:i:s', $tmp), safe($refitem->getval('edited_by.......').' - '.perm_username($refitem->getval('edited_by.......')))]);
+                    $v['PubDate']  .= ($tmp = (int) $refitem->getval('publish_date....')) . Txt::additionalInfo([date('j.n.Y H:i:s', $tmp)]);
+                    $v['ExpDate']  .= ($tmp = (int) $refitem->getval('expiry_date.....')) . Txt::additionalInfo([date('j.n.Y H:i:s', $tmp)]);
+                    $v['LastEdit'] .= ($tmp = (int) $refitem->getval('last_edit.......')) . Txt::additionalInfo([date('j.n.Y H:i:s', $tmp), safe($refitem->getval('edited_by.......') . ' - ' . perm_username($refitem->getval('edited_by.......')))]);
 
                     $islice = AA_Slice::getModule($refitem->getSliceID());
-                    $v['FieldName'] = ($f=$islice?->getField($v['field_id'])) ? safe($f->getName()) : '-- invalid --';
+                    $v['FieldName'] = ($f = $islice?->getField($v['field_id'])) ? safe($f->getName()) : '-- invalid --';
                 }
             });
             echo GetHtmlTable($res, 'key', _m('Referenced items'));
@@ -287,11 +308,11 @@ function GetItemTechnicalHtml($item, $item_id): string
     }
 
     // Raw object dump - kept for debugging but collapsed so it doesn't drown the tables above.
-    echo '<details class="aa-finder-raw"><summary><h3 style="display:inline">'. _m('AA_Item structure') .'</h3></summary><pre>';
+    echo '<details class="aa-finder-raw"><summary><h3 style="display:inline">' . _m('AA_Item structure') . '</h3></summary><pre>';
     echo compact_print_r($item->getItemContent(), 0, true);   // compact HTML dump (self-escaping; long values collapsible)
     echo "</pre></details>";
 
-    return (string)ob_get_clean();
+    return (string) ob_get_clean();
 }
 
 /** Item info page body: friendly overview always; the technical block (collapsed) only when
@@ -312,17 +333,17 @@ function GetItemInfoHtml($item, $item_id, bool $full): string
     $stats   = GetItemStatsBox($item, $item_id, $full);
     if ($history !== '' || $stats !== '') {
         $html .= '<div class="aa-item-boxes">'
-              .  ($history !== '' ? '<div>'.$history.'</div>' : '')
-              .  ($stats   !== '' ? '<div>'.$stats.'</div>'   : '')
-              .  '</div>';
+              . ($history !== '' ? '<div>' . $history . '</div>' : '')
+              . ($stats   !== '' ? '<div>' . $stats . '</div>' : '')
+              . '</div>';
     }
 
     if ($full) {
-        $html .= '<details class="aa-item-technical"><summary><h3 style="display:inline">'. _m('Technical details') .'</h3></summary>'
-              .  GetItemTechnicalHtml($item, $item_id)
-              .  '</details>';
+        $html .= '<details class="aa-item-technical"><summary><h3 style="display:inline">' . _m('Technical details') . '</h3></summary>'
+              . GetItemTechnicalHtml($item, $item_id)
+              . '</details>';
     }
-    return '<div class="aa-iteminfo">'. $html .'</div>';
+    return '<div class="aa-iteminfo">' . $html . '</div>';
 }
 
 /** History digest box: the few most recent recorded changes (when / who / which fields). Each row
@@ -351,7 +372,7 @@ function GetItemHistoryBox($item, $item_id, bool $full): string
     if ($cids = array_keys($recent)) {
         $slice = AA_Slice::getModule($item->getSliceID());
         foreach (DB_AA::select([], 'SELECT `change_id`, `selector` FROM `change_record`', [['change_id', $cids]]) as $cr) {
-            $sel  = (string)$cr['selector'];
+            $sel  = (string) $cr['selector'];
             $name = ($slice && ($f = $slice->getField($sel))) ? $f->getName() : $sel;
             $bag  = in_array($sel, $audit_selectors, true) ? 'audit' : 'content';
             $by_change[$cr['change_id']][$bag][$sel] = $name;   // selector => name, dedup by selector
@@ -367,7 +388,7 @@ function GetItemHistoryBox($item, $item_id, bool $full): string
         $shown = array_slice($sels, 0, 3);
         $more  = count($sels) - count($shown);
         $names = array_map(static fn($s) => $pairs[$s], $shown);
-        $more_html = $more > 0 ? ' <span class="aa-stat-item-sid">+'.(int)$more.'</span>' : '';
+        $more_html = $more > 0 ? ' <span class="aa-stat-item-sid">+' . (int) $more . '</span>' : '';
         if (!$shown) {
             $flds = '<span class="aa-stat-zero">&ndash;</span>';
         } elseif ($full) {
@@ -378,16 +399,19 @@ function GetItemHistoryBox($item, $item_id, bool $full): string
             // editors see just the friendly field names
             $flds = safe(implode(', ', $names)) . $more_html;
         }
-        $when  = safe(date('j.n.Y H:i', (int)$c['time']));
+        $when  = safe(date('j.n.Y H:i', (int) $c['time']));
         // link the row to its entry on the full history page (anchor emitted by ChangesMonitor::display)
-        $when  = $full ? a_href($hist_url.'#aa-ch-'.rawurlencode((string)$cid), $when) : $when;
+        $when  = $full ? a_href($hist_url . '#aa-ch-' . rawurlencode((string) $cid), $when) : $when;
         $rows[] = [$when, safe(perm_username($c['user'])), $flds];
     }
 
     $html = GetHtmlTable($rows, 'th', _m('History'));
     if ($full) {
-        $html .= '<p class="aa-item-followups">'. a_href($hist_url,
-                     _m('Full history').' ('.(int)$total.') &raquo;', ['class' => 'btn btn-l btn-secondary']) .'</p>';
+        $html .= '<p class="aa-item-followups">' . a_href(
+            $hist_url,
+            _m('Full history') . ' (' . (int) $total . ') &raquo;',
+            ['class' => 'btn btn-l btn-secondary'],
+        ) . '</p>';
     }
     return $html;
 }
@@ -402,23 +426,23 @@ function GetItemHistoryBox($item, $item_id, bool $full): string
  */
 function GetItemStatsRows($item): array
 {
-    $views = (int)$item->getval('display_count...');
+    $views = (int) $item->getval('display_count...');
     if ($views <= 0) {
         return [];
     }
 
-    $pub = (int)$item->getval('publish_date....');
+    $pub = (int) $item->getval('publish_date....');
     $now = time();
 
-    $int  = static fn($v): string => safe(number_format((int)$v, 0, '.', ' '));
-    $sum  = \AA\Util\HitcounterDisplay::summaryForItem((int)$item->getval('short_id........'));
+    $int  = static fn($v): string => safe(number_format((int) $v, 0, '.', ' '));
+    $sum  = \AA\Util\HitcounterDisplay::summaryForItem((int) $item->getval('short_id........'));
     $rows = [[_m('Total views'), $int($views)]];
 
     // Average / day over the span we actually have hit data for (so an item published years ago
     // isn't averaged down to ~0); falls back to "since published" when there is no measured span.
     $avg = null;
     if ($sum && $sum['first_t'] && $sum['last_t'] >= $sum['first_t']) {
-        $span = max(1, (int)round(($sum['last_t'] - $sum['first_t']) / 86400));
+        $span = max(1, (int) round(($sum['last_t'] - $sum['first_t']) / 86400));
         $avg  = $sum['total_hits'] / $span;
     } elseif ($pub > 0 && $pub < $now) {
         $avg = $views / max(1, ($now - $pub) / 86400);
@@ -441,11 +465,11 @@ function GetItemStatsRows($item): array
             $rows[] = [_m('Last viewed'), safe(date('j.n.Y', $sum['last_t']))];
         }
         if ($sum['avg_ms'] !== null) {
-            $ms     = (float)$sum['avg_ms'];
-            $rows[] = [_m('Avg response'), safe(number_format($ms, $ms < 10 ? 1 : 0, '.', ' ')).' ms'];
+            $ms     = (float) $sum['avg_ms'];
+            $rows[] = [_m('Avg response'), safe(number_format($ms, $ms < 10 ? 1 : 0, '.', ' ')) . ' ms'];
         }
         if ($sum['cache_pct'] !== null) {
-            $rows[] = [_m('Served from cache'), safe(number_format((float)$sum['cache_pct'], 0)).'%'];
+            $rows[] = [_m('Served from cache'), safe(number_format((float) $sum['cache_pct'], 0)) . '%'];
         }
     }
     return $rows;
@@ -467,8 +491,11 @@ function GetItemStatsBox($item, $item_id, bool $full): string
     }
     $html = GetHtmlTable($rows, 'td', _m('Statistics'));
     if ($full) {
-        $html .= '<p class="aa-item-followups">'. a_href(get_admin_url('itemstats.php', ['id' => $item_id]),
-                                                         _m('Full statistics').' &raquo;', ['class' => 'btn btn-l btn-secondary']) .'</p>';
+        $html .= '<p class="aa-item-followups">' . a_href(
+            get_admin_url('itemstats.php', ['id' => $item_id]),
+            _m('Full statistics') . ' &raquo;',
+            ['class' => 'btn btn-l btn-secondary'],
+        ) . '</p>';
     }
     return $html;
 }
@@ -486,17 +513,20 @@ function GetItemStatsHtml($item, $item_id): string
     // Item-info "Statistics" digest. The page <h1> already says "Statistics".
     $kpis = '';
     foreach (GetItemStatsRows($item) as $r) {
-        $kpis .= '<div class="aa-kpi"><span class="aa-kpi-label">'. safe($r[0]) .'</span><span class="aa-kpi-val">'. $r[1] .'</span></div>';
+        $kpis .= '<div class="aa-kpi"><span class="aa-kpi-label">' . safe($r[0]) . '</span><span class="aa-kpi-val">' . $r[1] . '</span></div>';
     }
-    $html = $kpis !== '' ? '<div class="aa-item-kpis">'. $kpis .'</div>' : '';
+    $html = $kpis !== '' ? '<div class="aa-item-kpis">' . $kpis . '</div>' : '';
 
     // then the trend + per-day detail table + cache diagnostics (renderTable orders the hits chart
     // above the per-day table for a single item).
     $table = \AA\Util\HitcounterDisplay::renderTable(new zids($item_id), 'days');
-    $html .= $table !== '' ? $table : '<p class="aa-empty-note">'. _m('No detailed view statistics have been recorded for this item yet.') .'</p>';
+    $html .= $table !== '' ? $table : '<p class="aa-empty-note">' . _m('No detailed view statistics have been recorded for this item yet.') . '</p>';
 
-    $html .= '<p>'. a_href(get_admin_url('aa_statistics.php', ['items_code' => $item_id, 'for_module' => $item->getSliceID(), 'show' => 1]),
-                           _m('Open full statistics').' &raquo;', ['class' => 'btn btn-l btn-secondary']) .'</p>';
+    $html .= '<p>' . a_href(
+        get_admin_url('aa_statistics.php', ['items_code' => $item_id, 'for_module' => $item->getSliceID(), 'show' => 1]),
+        _m('Open full statistics') . ' &raquo;',
+        ['class' => 'btn btn-l btn-secondary'],
+    ) . '</p>';
     return $html;
 }
 
@@ -508,140 +538,190 @@ function GetItemStatsHtml($item, $item_id): string
 */
 
 
-abstract class AA_Generator extends AA_Serializable implements AA\Util\NamedInterface {
-
-    public static function name(): string        { return _m('');  }      // see NamedInterface
-    public static function description(): string { return _m('');  }      // see NamedInterface
+abstract class AA_Generator extends AA_Serializable implements AA\Util\NamedInterface
+{
+    public static function name(): string
+    {
+        return _m('');
+    }      // see NamedInterface
+    public static function description(): string
+    {
+        return _m('');
+    }      // see NamedInterface
 
     /**
      * @return AA_Value
      */
-    abstract function generate(): AA_Value;
+    abstract public function generate(): AA_Value;
 }
 
 /** AA_Generator_Now - current timestamp */
-class AA_Generator_Now extends AA_Generator {
-
+class AA_Generator_Now extends AA_Generator
+{
     /** Name of the component for selection */
-    public static function name(): string { return _m("Now, i.e. current date");  }
+    public static function name(): string
+    {
+        return _m("Now, i.e. current date");
+    }
 
     /** generate() - main function for generating the value */
-    function generate(): AA_Value    { return new AA_Value(now()); }
+    public function generate(): AA_Value
+    {
+        return new AA_Value(now());
+    }
 }
 
 /** AA_Generator_Never - the biggest date possible */
-class AA_Generator_Never extends AA_Generator {
-
+class AA_Generator_Never extends AA_Generator
+{
     /** Name of the component for selection */
-    public static function name(): string { return _m("Never, i.e. maximum date");  }
+    public static function name(): string
+    {
+        return _m("Never, i.e. maximum date");
+    }
 
     /** generate() - main function for generating the value */
-    function generate(): AA_Value    { return new AA_Value(MAX_TIME_NEVER); }
+    public function generate(): AA_Value
+    {
+        return new AA_Value(MAX_TIME_NEVER);
+    }
 }
 
 
 /** AA_Generator_Uid - User ID */
-class AA_Generator_Uid extends AA_Generator {
-
+class AA_Generator_Uid extends AA_Generator
+{
     /** Name of the component for selection */
-    public static function name(): string { return _m("User ID");  }
+    public static function name(): string
+    {
+        return _m("User ID");
+    }
 
     /** generate() - main function for generating the value */
-    function generate(): AA_Value {
+    public function generate(): AA_Value
+    {
         return new AA_Value(AuthGetUid() ?: '9999999999');  // 9999999999 for anonymous
     }
 }
 
 /** AA_Generator_Log - Login name */
-class AA_Generator_Log extends AA_Generator {
-
+class AA_Generator_Log extends AA_Generator
+{
     /** Name of the component for selection */
-    public static function name(): string { return _m("Login name");  }
+    public static function name(): string
+    {
+        return _m("Login name");
+    }
 
     /** generate() - main function for generating the value */
-    function generate(): AA_Value {
+    public function generate(): AA_Value
+    {
         return new AA_Value(AuthGetUname() ?: 'anonymous'); // "anonymous" for anonymous
     }
 }
 
 /** AA_Generator_Dte - Date + 'Parameter' days */
-class AA_Generator_Dte extends AA_Generator {
-
+class AA_Generator_Dte extends AA_Generator
+{
     protected $plusdays;         // see getClassProperties
 
     /** Name of the component for selection */
-    public static function name(): string {  return _m("Date + 'Parameter' days");  }
+    public static function name(): string
+    {
+        return _m("Date + 'Parameter' days");
+    }
 
     /** getClassProperties function of AA_Serializable
      * @return array
      */
-    public static function getClassProperties(): array {
+    public static function getClassProperties(): array
+    {
         return [             //           id         name                        type    multi  persist validator, required, help, morehelp, example
-            'plusdays' => new AA_Property( 'plusdays',  _m("Number of days"), 'int', false, true, 'int', false, '', '', '365'),
+            'plusdays' => new AA_Property('plusdays', _m("Number of days"), 'int', false, true, 'int', false, '', '', '365'),
         ];
     }
 
     /** generate() value of currrent timestamp */    // checks maximum date bounds
-    function generate(): AA_Value    {  return new AA_Value(min(MAX_TIME_NEVER, mktime(0,0,0,date("m"),date("d")+(int)$this->plusdays,date("Y"))));  }
+    public function generate(): AA_Value
+    {
+        return new AA_Value(min(MAX_TIME_NEVER, mktime(0, 0, 0, date("m"), date("d") + (int) $this->plusdays, date("Y"))));
+    }
 }
 
 /** AA_Generator_Txt - Text from 'Parameter' */
-class AA_Generator_Txt extends AA_Generator {
-
+class AA_Generator_Txt extends AA_Generator
+{
     protected $text;         // see getClassProperties
 
     /** Name of the component for selection */
-    public static function name(): string {  return _m("Text from 'Parameter'");  }
+    public static function name(): string
+    {
+        return _m("Text from 'Parameter'");
+    }
 
     /** getClassProperties function of AA_Serializable
      * @return array
      */
-    public static function getClassProperties(): array {
+    public static function getClassProperties(): array
+    {
         return [      //           id         name     type    multi  persist validator, required, help, morehelp, example
-            'text' => new AA_Property( 'text',  _m("Text"), 'text' ),
+            'text' => new AA_Property('text', _m("Text"), 'text'),
         ];
     }
 
     /** generate() - main function for generating the value */
-    function generate(): AA_Value {
+    public function generate(): AA_Value
+    {
         return strlen($this->text) ? new AA_Value($this->text) : new AA_Value();
     }
 }
 
 /** AA_Generator_Qte - only for backward complatibility. The same as Txt */
-class AA_Generator_Qte extends AA_Generator_Txt {
+class AA_Generator_Qte extends AA_Generator_Txt
+{
     /** Name of the component for selection */
-    public static function name(): string {  return _m('');  }
+    public static function name(): string
+    {
+        return _m('');
+    }
 }
 
 
 
 
 /** AA_Generator_Rnd - Random string */
-class AA_Generator_Rnd extends AA_Generator {
-
+class AA_Generator_Rnd extends AA_Generator
+{
     protected $length;         // see getClassProperties
     protected $checkfield;     // see getClassProperties
     protected $wheretocheck;   // see getClassProperties
 
     /** Name of the component for selection */
-    public static function name(): string        {  return _m("Random string");  }
+    public static function name(): string
+    {
+        return _m("Random string");
+    }
     /** Decription  of the component for selection */
-    public static function description(): string {  return _m("Random alphanumeric [A-Z0-9] string.");  }
+    public static function description(): string
+    {
+        return _m("Random alphanumeric [A-Z0-9] string.");
+    }
 
     /** getClassProperties function of AA_Serializable
      * @return array
      */
-    public static function getClassProperties(): array {
+    public static function getClassProperties(): array
+    {
         return [             //           id         name                       type      multi  persist validator, required, help, morehelp, example
-            'length'       => new AA_Property( 'length      ',  _m("String length"),  'int',    false, true, 'int', false, '', '', '5'),
-            'checkfield'   => new AA_Property( 'checkfield  ',  _m("Field to check"), 'string', false, true, 'field', false, _m("If you need a unique code, you must send the field ID, the function will then look into this field to ensure uniqueness."), '', 'unspecified.....'),
-            'wheretocheck' => new AA_Property( 'wheretocheck',  _m("Slice only"),     'bool',   false, true, 'bool', false, _m("Do you want to check for uniqueness this slice only or all slices?")),
+            'length'       => new AA_Property('length      ', _m("String length"), 'int', false, true, 'int', false, '', '', '5'),
+            'checkfield'   => new AA_Property('checkfield  ', _m("Field to check"), 'string', false, true, 'field', false, _m("If you need a unique code, you must send the field ID, the function will then look into this field to ensure uniqueness."), '', 'unspecified.....'),
+            'wheretocheck' => new AA_Property('wheretocheck', _m("Slice only"), 'bool', false, true, 'bool', false, _m("Do you want to check for uniqueness this slice only or all slices?")),
         ];
     }
 
     /** generate() - main function for generating the value */
-    function generate(): AA_Value {
+    public function generate(): AA_Value
+    {
         global $slice_id;
 
         $len        = $this->length ?: 5;   // default is 5
@@ -673,52 +753,65 @@ class AA_Generator_Rnd extends AA_Generator {
 }
 
 /** AA_Generator_Variable - AA Expression */
-class AA_Generator_Variable extends AA_Generator {
-
+class AA_Generator_Variable extends AA_Generator
+{
     protected $text;         // see getClassProperties
 
     /** Name of the component for selection */
-    public static function name(): string        {  return _m("AA Expression");  }
+    public static function name(): string
+    {
+        return _m("AA Expression");
+    }
     /** Decription  of the component for selection */
-    public static function description(): string {  return _m("any text with possible {AA expressions} like: {date:Y}");  }
+    public static function description(): string
+    {
+        return _m("any text with possible {AA expressions} like: {date:Y}");
+    }
 
     /** getClassProperties function of AA_Serializable
      * @return array
      */
-    public static function getClassProperties(): array {
+    public static function getClassProperties(): array
+    {
         return [      //           id         name     type    multi  persist validator, required, help, morehelp, example
-            'text' => new AA_Property( 'text',  _m("Text"), 'text', false, true, 'text', false, '', '', '{date:Y}'),
+            'text' => new AA_Property('text', _m("Text"), 'text', false, true, 'text', false, '', '', '{date:Y}'),
         ];
     }
 
     /** getClassProperties function of AA_Serializable  */
-    function generate(): AA_Value {
+    public function generate(): AA_Value
+    {
         return new AA_Value(AA::Un($this->text));
     }
 }
 
 /** AA_Generator_Mul - Multivalues */
-class AA_Generator_Mul extends AA_Generator {
-
+class AA_Generator_Mul extends AA_Generator
+{
     protected $text;               // see getClassProperties
     protected $delimiter;          // see getClassProperties
 
     /** Name of the component for selection */
-    public static function name(): string        {  return _m("Multivalue");  }
+    public static function name(): string
+    {
+        return _m("Multivalue");
+    }
 
     /** getClassProperties function of AA_Serializable
      * @return array
      */
-    public static function getClassProperties(): array {
+    public static function getClassProperties(): array
+    {
         return [      //           id         name     type                  multi  persist validator, required, help, morehelp, example
-            'text'      => new AA_Property( 'text',       _m("Text"),      'text',   false, true, 'text', false, '', '', 'red|green|blue'),
-            'delimiter' => new AA_Property( 'delimiter',  _m("Delimiter"), 'string', false, true, 'text', false, '', '', '|'),
+            'text'      => new AA_Property('text', _m("Text"), 'text', false, true, 'text', false, '', '', 'red|green|blue'),
+            'delimiter' => new AA_Property('delimiter', _m("Delimiter"), 'string', false, true, 'text', false, '', '', '|'),
         ];
     }
 
     /** getClassProperties function of AA_Serializable  */
-    function generate(): AA_Value {
-        return new AA_Value(array_filter(explode(($this->delimiter ?: '|'), $this->text),'strlen'));
+    public function generate(): AA_Value
+    {
+        return new AA_Value(array_filter(explode(($this->delimiter ?: '|'), $this->text), 'strlen'));
     }
 }
 
@@ -730,16 +823,22 @@ class AA_Generator_Mul extends AA_Generator {
  *          $string   = AA_Generator::factoryByString('uid')->generate()->getValue();
  * @method  static AA_Inserter factoryByString($string)
  */
-abstract class AA_Inserter extends AA_Serializable implements NamedInterface {
-
+abstract class AA_Inserter extends AA_Serializable implements NamedInterface
+{
     /** @var AA_Field */
     protected $field;         // additional variable common to all AA_Inserters - not filled by standard factoryByString
 
     /** @var AA_Value[] stores array of the fields which should be also changed  */
     private array $change_fields = [];
 
-    public static function name(): string        { return _m('');  }      // see NamedInterface
-    public static function description(): string { return _m('');  }      // see NamedInterface
+    public static function name(): string
+    {
+        return _m('');
+    }      // see NamedInterface
+    public static function description(): string
+    {
+        return _m('');
+    }      // see NamedInterface
 
     // __construct()  // we use AA_Serializable::factoryByString + post initiation for $field
 
@@ -747,7 +846,8 @@ abstract class AA_Inserter extends AA_Serializable implements NamedInterface {
      * @param AA_Field $field
      * @return AA_Inserter
      */
-    public static function factoryByField($field) : AA_Inserter {
+    public static function factoryByField($field): AA_Inserter
+    {
         $definition = $field->getProperty('input_insert_func');
         $inserter = AA_Inserter::factoryByString($definition);
         if (!$inserter) {
@@ -789,10 +889,10 @@ abstract class AA_Inserter extends AA_Serializable implements NamedInterface {
     /** used for additional changes in other fields during item storage */
     protected function addToChangedFields(string $field_id, $value, int $order, int $flag): void
     {
-        if ( array_key_exists($field_id, $this->change_fields) ) {
+        if (array_key_exists($field_id, $this->change_fields)) {
             $this->change_fields[$field_id][$order] = $value;   // using array access to AA_Value
         } else {
-            $this->change_fields[$field_id] = new AA_Value( [$order => $value], $flag );
+            $this->change_fields[$field_id] = new AA_Value([$order => $value], $flag);
         }
     }
 
@@ -811,7 +911,7 @@ abstract class AA_Inserter extends AA_Serializable implements NamedInterface {
         $flag = $cont->getFlag();
         $this->change_fields = [];
         foreach ($cont as $numkey => $v) {
-            $this->execute($field_writer, $item_id, $v, (int)$numkey, $flag);
+            $this->execute($field_writer, $item_id, $v, (int) $numkey, $flag);
             // do not store multiple values if field is not marked as multiple
             // if ( !$f["multiple"]!=1 ) continue;   // ERRORNOUS
         }
@@ -841,7 +941,7 @@ abstract class AA_Inserter extends AA_Serializable implements NamedInterface {
         // if input function is 'selectbox with presets' and add2connstant flag is set,
         // store filled value to constants
         $fnc = ParseFnc($this->field->getProperty("input_show_func"));   // input show function
-        if ($fnc && ($fnc['fnc']==='pre')) {
+        if ($fnc && ($fnc['fnc'] === 'pre')) {
             // get add2constant and constgroup (other parameters are irrelevant in here)
             [$constgroup, $maxlength, $fieldsize,$slice_field, $usevalue, $adding, $secondfield, $add2constant] = explode(':', $fnc['param']);
             // add2constant is used in $this->_store - adds new value to constant table
@@ -862,11 +962,11 @@ abstract class AA_Inserter extends AA_Serializable implements NamedInterface {
                     $new_pri = ($db->next_record() ? $db->f('max_pri') + 10 : 1000);
 
                     // we have priority - we can add
-                    $varset->set("name",  $constvalue, 'quoted');
+                    $varset->set("name", $constvalue, 'quoted');
                     $varset->set("value", $constvalue, 'quoted');
-                    $varset->set("pri",   $new_pri, "number");
-                    $varset->set("id", new_id(), "unpacked" );
-                    $varset->set("group_id", $constgroup, 'quoted' );
+                    $varset->set("pri", $new_pri, "number");
+                    $varset->set("id", new_id(), "unpacked");
+                    $varset->set("group_id", $constgroup, 'quoted');
                     $varset->doInsert('constant');
                 }
                 freeDB($db);
@@ -878,15 +978,15 @@ abstract class AA_Inserter extends AA_Serializable implements NamedInterface {
             // ... which is not correct because in 'in_item_tbl' database field
             // we store REAL database field names from aadb.item table (honzam)
 
-            if (($fid === 'expiry_date') && (date("Hi",($v = (int)$value)) == "0000")) {
+            if (($fid === 'expiry_date') && (date("Hi", ($v = (int) $value)) == "0000")) {
                 // $value += 86399;
                 // if time is not specified, take end of day 23:59:59
                 // !!it is not working for daylight saving change days !!!
-                $value = mktime(23,59,59,date("m",$v),date("d",$v),date("Y",$v));
+                $value = mktime(23, 59, 59, date("m", $v), date("d", $v), date("Y", $v));
             }
             // field in item table  - check, if numeric...
             if (in_array($fid, ['short_id','status_code','post_date','publish_date','expiry_date','highlight','last_edit','display_count','disc_count','disc_app','moved2active'])) {
-                $fieldwriter->addItemField($fid, "number", (int)$value);
+                $fieldwriter->addItemField($fid, "number", (int) $value);
             } else {
                 $fieldwriter->addItemField($fid, "text", $value);
             }
@@ -902,30 +1002,58 @@ abstract class AA_Inserter extends AA_Serializable implements NamedInterface {
 }
 
 /** AA_Inserter_Qte - Just insert string (so quote it before storing to the DB) */
-class AA_Inserter_Qte extends AA_Inserter {
-    public static function name(): string        { return _m("Text = don't modify");  }             // see NamedInterface
-    public static function description(): string { return _m("Does not modify the value.");  }      // see NamedInterface
+class AA_Inserter_Qte extends AA_Inserter
+{
+    public static function name(): string
+    {
+        return _m("Text = don't modify");
+    }             // see NamedInterface
+    public static function description(): string
+    {
+        return _m("Does not modify the value.");
+    }      // see NamedInterface
 }
 
 /** AA_Inserter_Dte - Just insert string (so quote it before storing to the DB) */
-class AA_Inserter_Dte extends AA_Inserter {
-    public static function name(): string        { return _m("Date = don't modify");  }             // see NamedInterface
-    public static function description(): string { return _m("Does not modify the value (just like Text), but it is better to separate it for future usage.");  }      // see NamedInterface
+class AA_Inserter_Dte extends AA_Inserter
+{
+    public static function name(): string
+    {
+        return _m("Date = don't modify");
+    }             // see NamedInterface
+    public static function description(): string
+    {
+        return _m("Does not modify the value (just like Text), but it is better to separate it for future usage.");
+    }      // see NamedInterface
 }
 
 // not used. eventualy the same as Qte
 // class AA_Inserter_Cns extends AA_Inserter {}
 
 /** AA_Inserter_Num - Just insert string (so quote it before storing to the DB) */
-class AA_Inserter_Num extends AA_Inserter {
-    public static function name(): string        { return _m("Number = don't modify");  }             // see NamedInterface
-    public static function description(): string { return _m("Does not modify the value (just like Text), but it is better to separate it for future usage.");  }      // see NamedInterface
+class AA_Inserter_Num extends AA_Inserter
+{
+    public static function name(): string
+    {
+        return _m("Number = don't modify");
+    }             // see NamedInterface
+    public static function description(): string
+    {
+        return _m("Does not modify the value (just like Text), but it is better to separate it for future usage.");
+    }      // see NamedInterface
 }
 
 /** AA_Inserter_Boo - 0 | 1 */
-class AA_Inserter_Boo extends AA_Inserter {
-    public static function name(): string        { return _m("Boolean = store 0 or 1");  }             // see NamedInterface
-    public static function description(): string { return _m('');  }      // see NamedInterface
+class AA_Inserter_Boo extends AA_Inserter
+{
+    public static function name(): string
+    {
+        return _m("Boolean = store 0 or 1");
+    }             // see NamedInterface
+    public static function description(): string
+    {
+        return _m('');
+    }      // see NamedInterface
 
     public function execute(AA_Field_Writer $fieldwriter, $item_id, $value, int $order = 0, int $flag = 0): void
     {
@@ -934,9 +1062,16 @@ class AA_Inserter_Boo extends AA_Inserter {
 }
 
 /** Float - including conversion of 123456789012345678901234567890 to 1.2345678901235E+29 */
-class AA_Inserter_Flo extends AA_Inserter {
-    public static function name(): string        { return _m("Float");  }             // see NamedInterface
-    public static function description(): string { return _m('Real float - could convert big numbers to scientific notation (1.23E+29)');  }      // see NamedInterface
+class AA_Inserter_Flo extends AA_Inserter
+{
+    public static function name(): string
+    {
+        return _m("Float");
+    }             // see NamedInterface
+    public static function description(): string
+    {
+        return _m('Real float - could convert big numbers to scientific notation (1.23E+29)');
+    }      // see NamedInterface
 
     public function execute(AA_Field_Writer $fieldwriter, $item_id, $value, int $order = 0, int $flag = 0): void
     {
@@ -945,9 +1080,16 @@ class AA_Inserter_Flo extends AA_Inserter {
 }
 
 /** AA_Inserter_Dec */
-class AA_Inserter_Dec extends AA_Inserter {
-    public static function name(): string        { return _m("Decimal");  }             // see NamedInterface
-    public static function description(): string { return _m("The same as Float, but does not convert big numbers to  scientific notation (1.23E+29)");  }      // see NamedInterface
+class AA_Inserter_Dec extends AA_Inserter
+{
+    public static function name(): string
+    {
+        return _m("Decimal");
+    }             // see NamedInterface
+    public static function description(): string
+    {
+        return _m("The same as Float, but does not convert big numbers to  scientific notation (1.23E+29)");
+    }      // see NamedInterface
 
     public function execute(AA_Field_Writer $fieldwriter, $item_id, $value, int $order = 0, int $flag = 0): void
     {
@@ -956,9 +1098,16 @@ class AA_Inserter_Dec extends AA_Inserter {
 }
 
 /** AA_Inserter_Trm - trim and normalize */
-class AA_Inserter_Trm extends AA_Inserter {
-    public static function name(): string        { return _m("Trim");  }             // see NamedInterface
-    public static function description(): string { return _m("Remove whitespaces from beginning and end and also normalize UTF (NFC)");  }      // see NamedInterface
+class AA_Inserter_Trm extends AA_Inserter
+{
+    public static function name(): string
+    {
+        return _m("Trim");
+    }             // see NamedInterface
+    public static function description(): string
+    {
+        return _m("Remove whitespaces from beginning and end and also normalize UTF (NFC)");
+    }      // see NamedInterface
 
     public function execute(AA_Field_Writer $fieldwriter, $item_id, $value, int $order = 0, int $flag = 0): void
     {
@@ -968,9 +1117,16 @@ class AA_Inserter_Trm extends AA_Inserter {
 }
 
 /** AA_Inserter_Ids - Just insert string (so quote it before storing to the DB) */
-class AA_Inserter_Ids extends AA_Inserter {
-    public static function name(): string        { return _m("Item IDs");  }             // see NamedInterface
-    public static function description(): string { return _m('');  }      // see NamedInterface
+class AA_Inserter_Ids extends AA_Inserter
+{
+    public static function name(): string
+    {
+        return _m("Item IDs");
+    }             // see NamedInterface
+    public static function description(): string
+    {
+        return _m('');
+    }      // see NamedInterface
 
     public function execute(AA_Field_Writer $fieldwriter, $item_id, $value, int $order = 0, int $flag = 0): void
     {
@@ -978,23 +1134,23 @@ class AA_Inserter_Ids extends AA_Inserter {
         $fid         = $this->field->getId();
         $text_stored = $this->field->getProperty("text_stored");
 
-        $add_mode = substr($value,0,1);          // x=add, y=add mutual, z=add backward
+        $add_mode = substr($value, 0, 1);          // x=add, y=add mutual, z=add backward
         if (str_contains('txyz', $add_mode)) {
-            $value = substr($value,1);  // remove x, y or z
+            $value = substr($value, 1);  // remove x, y or z
         }
-        switch( $add_mode ) {
+        switch ($add_mode) {
             case 't':  // t for tags - it could be normal item ID or new Tag
                 $v = $value;
-                if ( !is_long_id($v)) {
+                if (!is_long_id($v)) {
                     $fnc = ParseFnc($this->field->getProperty("input_show_func"));   // input show function
-                    if ($fnc && ($fnc['fnc']==='tag')) {
+                    if ($fnc && ($fnc['fnc'] === 'tag')) {
                         // get add2constant and constgroup (other parameters are irrelevant in here)
                         [$constgroup, $others] = explode(':', $fnc['param']);
                         // add2constant is used in $this->_store - adds new value to constant table
                         if ((str_starts_with($constgroup, "#sLiCe-")) && trim($v) !== '') {
-                            $sid = substr($constgroup,7);
+                            $sid = substr($constgroup, 7);
                             $content4id = new ItemContent();
-                            $content4id->setItemID($new_id=new_id());
+                            $content4id->setItemID($new_id = new_id());
                             $content4id->setSliceID($sid);
                             $content4id->setAaValue('headline........', new AA_Value($v));
                             $content4id->complete4Insert();
@@ -1007,8 +1163,9 @@ class AA_Inserter_Ids extends AA_Inserter {
                 break;
             case 'y':   // y means 2way related item id - we have to store it for both
                 parent::execute($fieldwriter, $item_id, $value, $order, $flag);
-            // !!!!! there is no break or return - CONTINUE with 'z' case !!!!!
+                // !!!!! there is no break or return - CONTINUE with 'z' case !!!!!
 
+                // no break
             case 'z':   // z means backward related item id - store it only backward
                 // add reverse related
                 $reverse_id = $value;
@@ -1035,9 +1192,16 @@ class AA_Inserter_Ids extends AA_Inserter {
 
 
 /** AA_Inserter_Uid - User ID = always store current user ID */
-class AA_Inserter_Uid extends AA_Inserter {
-    public static function name(): string        { return _m("User ID = always store current user ID");  }             // see NamedInterface
-    public static function description(): string { return _m('Inserts the identity of the current user, no matter what the user sets.');  }      // see NamedInterface
+class AA_Inserter_Uid extends AA_Inserter
+{
+    public static function name(): string
+    {
+        return _m("User ID = always store current user ID");
+    }             // see NamedInterface
+    public static function description(): string
+    {
+        return _m('Inserts the identity of the current user, no matter what the user sets.');
+    }      // see NamedInterface
 
     public function execute(AA_Field_Writer $fieldwriter, $item_id, $value, int $order = 0, int $flag = 0): void
     {
@@ -1056,9 +1220,16 @@ class AA_Inserter_Uid extends AA_Inserter {
 }
 
 /** AA_Inserter_Log - Login name */
-class AA_Inserter_Log extends AA_Inserter {
-    public static function name(): string        { return _m("Login name");  }             // see NamedInterface
-    public static function description(): string { return _m('');  }      // see NamedInterface
+class AA_Inserter_Log extends AA_Inserter
+{
+    public static function name(): string
+    {
+        return _m("Login name");
+    }             // see NamedInterface
+    public static function description(): string
+    {
+        return _m('');
+    }      // see NamedInterface
 
     public function execute(AA_Field_Writer $fieldwriter, $item_id, $value, int $order = 0, int $flag = 0): void
     {
@@ -1077,9 +1248,16 @@ class AA_Inserter_Log extends AA_Inserter {
 }
 
 /** AA_Inserter_Now - Now = always store current time */
-class AA_Inserter_Now extends AA_Inserter {
-    public static function name(): string        { return _m("Now = always store current time");  }             // see NamedInterface
-    public static function description(): string { return _m('Inserts the current time, no matter what the user sets.');  }      // see NamedInterface
+class AA_Inserter_Now extends AA_Inserter
+{
+    public static function name(): string
+    {
+        return _m("Now = always store current time");
+    }             // see NamedInterface
+    public static function description(): string
+    {
+        return _m('Inserts the current time, no matter what the user sets.');
+    }      // see NamedInterface
 
     public function execute(AA_Field_Writer $fieldwriter, $item_id, $value, int $order = 0, int $flag = 0): void
     {
@@ -1097,7 +1275,8 @@ class AA_Inserter_Now extends AA_Inserter {
 
 
 /** AA_Inserter_Co2 - Computed field for INSERT/UPDATE */
-class AA_Inserter_Co2 extends AA_Inserter {
+class AA_Inserter_Co2 extends AA_Inserter
+{
     // we store it to the database at this time, even if it is probably
     // not final value for this field - we probably recompute this value later
     // in storeItem method, but we should compute with this new value there,
@@ -1109,18 +1288,25 @@ class AA_Inserter_Co2 extends AA_Inserter {
     protected $delimiter;              // see getClassProperties
     protected $recompute;              // see getClassProperties
 
-    public static function name(): string        { return _m("Computed field for INSERT/UPDATE");  }             // see NamedInterface
-    public static function description(): string { return _m("The field is the result of expression written in \"Code for unaliasing\". It is a good solution for all values, which could be precomputed, since its computation on item-show-time would be slow. Yes, you can use {view...}, {include...}, {switch...} here");  }      // see NamedInterface
+    public static function name(): string
+    {
+        return _m("Computed field for INSERT/UPDATE");
+    }             // see NamedInterface
+    public static function description(): string
+    {
+        return _m("The field is the result of expression written in \"Code for unaliasing\". It is a good solution for all values, which could be precomputed, since its computation on item-show-time would be slow. Yes, you can use {view...}, {include...}, {switch...} here");
+    }      // see NamedInterface
 
     /** getClassProperties function of AA_Serializable
      * @return array
      */
-    public static function getClassProperties():array {
+    public static function getClassProperties(): array
+    {
         return [             //           id         name                       type      multi  persist validator, required, help, morehelp, example
-            'code'       => new AA_Property( 'code',        _m("Code for unaliasing (INSERT)"),'text', false, true, 'text', false, _m("There you can write any string. The string will be unaliased on item store, so you can use any {...} construct as well as field aliases here"), '', '({publish_date....}) {headline........}'),
-            'code_update'=> new AA_Property( 'code_update', _m("Code for unaliasing (UPDATE)"),'text', false, true, 'text', false, _m("The same as above, but just for UPDATE operation. If unfilled, the value of the field stays unchanged"), '', ''),
-            'delimiter'  => new AA_Property( 'delimiter',   _m("Multivalue delimiter"),        'text', false, true, 'text', false, _m("Character or string, which will split the computed string into multiple values (the same field)"), '', '|'),
-            'recompute'  => new AA_Property( 'recompute',   _m("Recompute every"),             'text', false, true, 'text', false, "minute|hour|day|week|month "._m("The field will be recomputed every minute, hour, ... (using UPDATE code above). The times are not exact - the minute means something 1-10 minutes. If not filled, the field will be recomputed only on insert/update of the item."), '', ''),
+            'code'       => new AA_Property('code', _m("Code for unaliasing (INSERT)"), 'text', false, true, 'text', false, _m("There you can write any string. The string will be unaliased on item store, so you can use any {...} construct as well as field aliases here"), '', '({publish_date....}) {headline........}'),
+            'code_update' => new AA_Property('code_update', _m("Code for unaliasing (UPDATE)"), 'text', false, true, 'text', false, _m("The same as above, but just for UPDATE operation. If unfilled, the value of the field stays unchanged"), '', ''),
+            'delimiter'  => new AA_Property('delimiter', _m("Multivalue delimiter"), 'text', false, true, 'text', false, _m("Character or string, which will split the computed string into multiple values (the same field)"), '', '|'),
+            'recompute'  => new AA_Property('recompute', _m("Recompute every"), 'text', false, true, 'text', false, "minute|hour|day|week|month " . _m("The field will be recomputed every minute, hour, ... (using UPDATE code above). The times are not exact - the minute means something 1-10 minutes. If not filled, the field will be recomputed only on insert/update of the item."), '', ''),
         ];
     }
 
@@ -1134,19 +1320,26 @@ class AA_Inserter_Co2 extends AA_Inserter {
 }
 
 /** AA_Inserter_Com - Computed field*/
-class AA_Inserter_Com extends AA_Inserter {
-
+class AA_Inserter_Com extends AA_Inserter
+{
     protected $code;                   // see getClassProperties
 
-    public static function name(): string        { return _m("Computed field");  }             // see NamedInterface
-    public static function description(): string { return _m('The field is the result of expression written in \"Code for unaliasing\". It is good solution for all values, which could be precomputed, since its computation on item-show-time would be slow. Yes, you can use {view...}, {include...}, {switch...} here');  }      // see NamedInterface
+    public static function name(): string
+    {
+        return _m("Computed field");
+    }             // see NamedInterface
+    public static function description(): string
+    {
+        return _m('The field is the result of expression written in \"Code for unaliasing\". It is good solution for all values, which could be precomputed, since its computation on item-show-time would be slow. Yes, you can use {view...}, {include...}, {switch...} here');
+    }      // see NamedInterface
 
     /** getClassProperties function of AA_Serializable
      * @return array
      */
-    public static function getClassProperties():array {
+    public static function getClassProperties(): array
+    {
         return [             //           id         name                       type      multi  persist validator, required, help, morehelp, example
-            'code'   => new AA_Property( 'code',        _m("Code for unaliasing (INSERT+UPDATE)"),    'text', false, true, 'text', false, _m("There you can write any string. The string will be unaliased on item store, so you can use any {...} construct as well as field aliases here"), '', '({publish_date....}) {headline........}'),
+            'code'   => new AA_Property('code', _m("Code for unaliasing (INSERT+UPDATE)"), 'text', false, true, 'text', false, _m("There you can write any string. The string will be unaliased on item store, so you can use any {...} construct as well as field aliases here"), '', '({publish_date....}) {headline........}'),
         ];
     }
 
@@ -1160,21 +1353,28 @@ class AA_Inserter_Com extends AA_Inserter {
 }
 
 /** AA_Inserter_Seo - SEO Name -  */
-class AA_Inserter_Seo extends AA_Inserter {
-
+class AA_Inserter_Seo extends AA_Inserter
+{
     // the value computed in updateComputedFields
 
     protected $code;                   // see getClassProperties
 
-    public static function name(): string        { return _m("SEO Name");  }             // see NamedInterface
-    public static function description(): string { return _m("If the field is not filled, compute seoname from _#HEADLINE alias (or another if specified) unique to all slices in sitemodules, where the slice is mentioned in \"Uses slices\" settings. Basically the SEO Name alias is shortcut for computed field with {ifset:{seo.............}:_#1:{seoname:{_#HEADLINE}:all:CHARSET}}");  }      // see NamedInterface
+    public static function name(): string
+    {
+        return _m("SEO Name");
+    }             // see NamedInterface
+    public static function description(): string
+    {
+        return _m("If the field is not filled, compute seoname from _#HEADLINE alias (or another if specified) unique to all slices in sitemodules, where the slice is mentioned in \"Uses slices\" settings. Basically the SEO Name alias is shortcut for computed field with {ifset:{seo.............}:_#1:{seoname:{_#HEADLINE}:all:CHARSET}}");
+    }      // see NamedInterface
 
     /** getClassProperties function of AA_Serializable
      * @return array
      */
-    public static function getClassProperties():array {
+    public static function getClassProperties(): array
+    {
         return [             //           id         name                       type      multi  persist validator, required, help, morehelp, example
-            'code'   => new AA_Property( 'code', _m("Alias to compute from"), 'text', false, true, 'text', false, _m("if not specified, the _#HEADLINE is used"), '', '_#HEADLINE'),
+            'code'   => new AA_Property('code', _m("Alias to compute from"), 'text', false, true, 'text', false, _m("if not specified, the _#HEADLINE is used"), '', '_#HEADLINE'),
         ];
     }
 
@@ -1188,9 +1388,16 @@ class AA_Inserter_Seo extends AA_Inserter {
 }
 
 /** AA_Inserter_Seq */
-class AA_Inserter_Seq extends AA_Inserter {
-    public static function name(): string        { return _m("Unique number for this field (from 1,..)");  }             // see NamedInterface
-    public static function description(): string { return _m('Unique number in sequence 1,2,3,...');  }      // see NamedInterface
+class AA_Inserter_Seq extends AA_Inserter
+{
+    public static function name(): string
+    {
+        return _m("Unique number for this field (from 1,..)");
+    }             // see NamedInterface
+    public static function description(): string
+    {
+        return _m('Unique number in sequence 1,2,3,...');
+    }      // see NamedInterface
 }
 
 /** AA_Inserter_Fil  - File = uploaded file
@@ -1202,8 +1409,8 @@ class AA_Inserter_Seq extends AA_Inserter {
 //    its just stored, and no thumbnails etc generated, this could be
 //    fixed later (mtira)
 // in $additional are fields
-class AA_Inserter_Fil extends AA_Inserter {
-
+class AA_Inserter_Fil extends AA_Inserter
+{
     protected $type;                   // see getClassProperties
     protected $width;                  // see getClassProperties
     protected $height;                 // see getClassProperties
@@ -1212,21 +1419,28 @@ class AA_Inserter_Fil extends AA_Inserter {
     protected $exact;                  // see getClassProperties
     protected $nametemplate;           // see getClassProperties
 
-    public static function name(): string        { return _m("File = uploaded file");  }             // see NamedInterface
-    public static function description(): string { return _m('Stores the uploaded file and a link to it, parameters only apply if type is image/something.');  }      // see NamedInterface
+    public static function name(): string
+    {
+        return _m("File = uploaded file");
+    }             // see NamedInterface
+    public static function description(): string
+    {
+        return _m('Stores the uploaded file and a link to it, parameters only apply if type is image/something.');
+    }      // see NamedInterface
 
     /** getClassProperties function of AA_Serializable
      * @return array
      */
-    public static function getClassProperties():array {
+    public static function getClassProperties(): array
+    {
         return [             //           id         name                       type      multi  persist validator, required, help, morehelp, example
-            'type'          => new AA_Property( 'type',         _m("Mime types accepted"), 'text', false, true, 'text', false, _m('Only files of matching mime types will be accepted'), '', 'image/*'),
-            'width'         => new AA_Property( 'width',        _m("Maximum image width"), 'int',  false, true, 'int',  false, '', '', '800'),
-            'height'        => new AA_Property( 'height',       _m("Maximum image height"),'int',  false, true, 'int',  false, _m("The image will be resampled to be within these limits, while retaining aspect ratio."), '', '600'),
-            'otherfield'    => new AA_Property( 'otherfield',   _m("Other fields"),        'text', false, true, 'text', false, _m("List of other fields to receive this image, separated by ##. Does not work well for multi uploads."), '', 'image..........2'),
-            'replacemethod' => new AA_Property( 'replacemethod',_m("Upload policy"),       'text', false, true, 'text', false, _m("new | overwrite | backup<br>This parameter controls what to do if uploaded file alredy exists:<br>new - AA creates new filename (by adding _x postfix) and store it with this new name (default)<br>overwrite - the old file of the same name is overwritten<br>backup - the old file is copied to new (non-existing) file and current file is stored with current name.<br>In all cases the filename is escaped, so any non-word characters will be replaced by an underscore."), '', 'new'),
-            'exact'         => new AA_Property( 'exact',        _m("Exact dimensions"),    'bool', false, true, 'bool', false, _m("If set to 1 the image will be downsized exactly to the specified dimensions (and cropped if needed). Default is 0 or empty: Maintain aspect ratio while resizing the image."), '', '1'),
-            'nametemplate'  => new AA_Property( 'nametemplate', _m("Filename template"),   'text', false, true, 'text', false, _m("Renames file according to template. You can use AA expressions as well as special alias _#name and _#ext or _#full (file name, extension and fullname). The item aliases in AA expressions do not work on INSERT (item does not exist at time of file write). They will work on UPDATE."), '', 'file-_#SITEM_ID-_#name._#ext'),
+            'type'          => new AA_Property('type', _m("Mime types accepted"), 'text', false, true, 'text', false, _m('Only files of matching mime types will be accepted'), '', 'image/*'),
+            'width'         => new AA_Property('width', _m("Maximum image width"), 'int', false, true, 'int', false, '', '', '800'),
+            'height'        => new AA_Property('height', _m("Maximum image height"), 'int', false, true, 'int', false, _m("The image will be resampled to be within these limits, while retaining aspect ratio."), '', '600'),
+            'otherfield'    => new AA_Property('otherfield', _m("Other fields"), 'text', false, true, 'text', false, _m("List of other fields to receive this image, separated by ##. Does not work well for multi uploads."), '', 'image..........2'),
+            'replacemethod' => new AA_Property('replacemethod', _m("Upload policy"), 'text', false, true, 'text', false, _m("new | overwrite | backup<br>This parameter controls what to do if uploaded file alredy exists:<br>new - AA creates new filename (by adding _x postfix) and store it with this new name (default)<br>overwrite - the old file of the same name is overwritten<br>backup - the old file is copied to new (non-existing) file and current file is stored with current name.<br>In all cases the filename is escaped, so any non-word characters will be replaced by an underscore."), '', 'new'),
+            'exact'         => new AA_Property('exact', _m("Exact dimensions"), 'bool', false, true, 'bool', false, _m("If set to 1 the image will be downsized exactly to the specified dimensions (and cropped if needed). Default is 0 or empty: Maintain aspect ratio while resizing the image."), '', '1'),
+            'nametemplate'  => new AA_Property('nametemplate', _m("Filename template"), 'text', false, true, 'text', false, _m("Renames file according to template. You can use AA expressions as well as special alias _#name and _#ext or _#full (file name, extension and fullname). The item aliases in AA expressions do not work on INSERT (item does not exist at time of file write). They will work on UPDATE."), '', 'file-_#SITEM_ID-_#name._#ext'),
         ];
     }
 
@@ -1242,7 +1456,7 @@ class AA_Inserter_Fil extends AA_Inserter {
             // and prefixed with "AA_UPLOAD:" constant  - AA_UPLOAD:aalogo.svg:aalogo.svg:image/svg+xml:/tmp/php4e7YxF:0:5266
             //$up_file = array_combine(['aa_const', 'name', 'type', 'tmp_name', 'error', 'size'], ParamExplode($value));  // there is new full_path member in php 8.1
             $up_file = unserialize(substr($value, 10), ['allowed_classes' => false]);
-            if ($up_file['name']=='') {
+            if ($up_file['name'] == '') {
                 $value = '';
             }
             $mode = 'upload';
@@ -1251,11 +1465,11 @@ class AA_Inserter_Fil extends AA_Inserter {
             $mode = 'thumb';
         } else {
             // old version of input form
-            $up_file = $_FILES["v".unpack_id($fid)."x"];
+            $up_file = $_FILES["v" . unpack_id($fid) . "x"];
             $mode = 'upload';
         }
 
-        if (($mode==='upload' && (!$up_file['name'] || ($up_file['name']==='none'))) || ($fieldwriter->getContext() === 'feed')) { // no upload - store old value?
+        if (($mode === 'upload' && (!$up_file['name'] || ($up_file['name'] === 'none'))) || ($fieldwriter->getContext() === 'feed')) { // no upload - store old value?
             // store specified file URL if nothing was uploaded
             parent::execute($fieldwriter, $item_id, $value, $order, $flag);
             return;
@@ -1326,41 +1540,42 @@ class AA_Inserter_Fil extends AA_Inserter {
     }
 
 
-//    public function execute_thumb($fieldwriter, $item_id, $value, $order, $flag) {
-//        global $err;
-//
-//        $fid         = $this->field->getId();
-//        $dest_file = $value;
-//        $resampled_name = Files::generateUnusedFilename($dest_file);
-//        $slice = AA_Slice::getModule($fieldwriter->getSliceId());
-//
-//        // ---------------------------------------------------------------------
-//        // Create thumbnails (image miniature) into fields identified in this
-//        // field's parameters if file type is supported by GD library.
-//
-//        // This has been considerable simplified, by making ResampleImage
-//        // return true for unsupported types IF they are already small enough
-//        // and also making ResampleImage copy the files if small enough
-//
-//        if ($e = Imgfunc::resampleImage($dest_file, $resampled_name, $this->width, $this->height, $this->exact)) {
-//            $err[$fid] = $e;
-//            return [];
-//        }
-//
-//        if ($thumb_inserters = $this->get_thumb_inserters($slice)) {
-//            $value = $resampled_name;
-//            foreach ($thumb_inserters as $thumb_ins) {
-//                // the content of the field is already deleted in clean_updated_fields();
-//                // $this->_clear_field($item_id, $fid);
-//                $thumb_ins->execute_thumb($fieldwriter, $item_id, $value, $order, $flag);
-//            }
-//        }
-//        // store link to uploaded file
-//        $value = $slice->getUrlFromPath($resampled_name);
-//        parent::execute($fieldwriter, $item_id, $value, $order, $flag);
-//    }
+    //    public function execute_thumb($fieldwriter, $item_id, $value, $order, $flag) {
+    //        global $err;
+    //
+    //        $fid         = $this->field->getId();
+    //        $dest_file = $value;
+    //        $resampled_name = Files::generateUnusedFilename($dest_file);
+    //        $slice = AA_Slice::getModule($fieldwriter->getSliceId());
+    //
+    //        // ---------------------------------------------------------------------
+    //        // Create thumbnails (image miniature) into fields identified in this
+    //        // field's parameters if file type is supported by GD library.
+    //
+    //        // This has been considerable simplified, by making ResampleImage
+    //        // return true for unsupported types IF they are already small enough
+    //        // and also making ResampleImage copy the files if small enough
+    //
+    //        if ($e = Imgfunc::resampleImage($dest_file, $resampled_name, $this->width, $this->height, $this->exact)) {
+    //            $err[$fid] = $e;
+    //            return [];
+    //        }
+    //
+    //        if ($thumb_inserters = $this->get_thumb_inserters($slice)) {
+    //            $value = $resampled_name;
+    //            foreach ($thumb_inserters as $thumb_ins) {
+    //                // the content of the field is already deleted in clean_updated_fields();
+    //                // $this->_clear_field($item_id, $fid);
+    //                $thumb_ins->execute_thumb($fieldwriter, $item_id, $value, $order, $flag);
+    //            }
+    //        }
+    //        // store link to uploaded file
+    //        $value = $slice->getUrlFromPath($resampled_name);
+    //        parent::execute($fieldwriter, $item_id, $value, $order, $flag);
+    //    }
 
-    private function getOtherFields(AA_Slice $slice): array {
+    private function getOtherFields(AA_Slice $slice): array
+    {
         $ret = [];
         $potentional_fields = $this->field->getInsertOtherFields();
 
@@ -1378,21 +1593,28 @@ class AA_Inserter_Fil extends AA_Inserter {
 
 
 /** AA_Inserter_Pwd - Password and Change Password */
-class AA_Inserter_Pwd extends AA_Inserter {
-
+class AA_Inserter_Pwd extends AA_Inserter
+{
     protected $bck_field;                   // see getClassProperties
     protected $crypt_phrase;            // see getClassProperties
 
-    public static function name(): string        { return _m("Password and Change Password");  }             // see NamedInterface
-    public static function description(): string { return _m('Stores value from a "Password and Change Password" field type. First proves the new password matches the retyped new password, and if so, encrypts the new password and stores it.');  }      // see NamedInterface
+    public static function name(): string
+    {
+        return _m("Password and Change Password");
+    }             // see NamedInterface
+    public static function description(): string
+    {
+        return _m('Stores value from a "Password and Change Password" field type. First proves the new password matches the retyped new password, and if so, encrypts the new password and stores it.');
+    }      // see NamedInterface
 
     /** getClassProperties function of AA_Serializable
      * @return array
      */
-    public static function getClassProperties():array {
+    public static function getClassProperties(): array
+    {
         return [             //           id         name                       type      multi  persist validator, required, help, morehelp, example
-            'bck_field'    => new AA_Property( 'bck_field',    _m("Copy of password"), 'text', false, true, 'field', false, _m("Field_id, where you want to store the copy of the password. Sometimes useful if you want to allow people to get his/her old password. It is strongly recommended to not store it in plaintext and encrypt it. See second parameter."), '', 'password.......1'),
-            'crypt_phrase' => new AA_Property( 'crypt_phrase', _m("Encrypt phrase"),   'text',  false, true, 'text', false, _m("If you specify the \"Copy of password\" field, it is recommended to encrypt the password in the database. Fill there any string. If you then need the password, you can decrypt it from the field by using the same phrase - {decrypt:{password.......1}:Some Phrase}"), '', 'Some Phrase'),
+            'bck_field'    => new AA_Property('bck_field', _m("Copy of password"), 'text', false, true, 'field', false, _m("Field_id, where you want to store the copy of the password. Sometimes useful if you want to allow people to get his/her old password. It is strongly recommended to not store it in plaintext and encrypt it. See second parameter."), '', 'password.......1'),
+            'crypt_phrase' => new AA_Property('crypt_phrase', _m("Encrypt phrase"), 'text', false, true, 'text', false, _m("If you specify the \"Copy of password\" field, it is recommended to encrypt the password in the database. Fill there any string. If you then need the password, you can decrypt it from the field by using the same phrase - {decrypt:{password.......1}:Some Phrase}"), '', 'Some Phrase'),
         ];
     }
 
@@ -1419,19 +1641,26 @@ class AA_Inserter_Pwd extends AA_Inserter {
 }
 
 /** AA_Inserter_2fa - 2FA Secret */
-class AA_Inserter_2fa extends AA_Inserter {
-
+class AA_Inserter_2fa extends AA_Inserter
+{
     protected $crypt_phrase;            // see getClassProperties
 
-    public static function name(): string        { return _m("2FA Secret");  }             // see NamedInterface
-    public static function description(): string { return _m('Generates and stores secret for Two-factor authentication, possibly encrypted by password');  }      // see NamedInterface
+    public static function name(): string
+    {
+        return _m("2FA Secret");
+    }             // see NamedInterface
+    public static function description(): string
+    {
+        return _m('Generates and stores secret for Two-factor authentication, possibly encrypted by password');
+    }      // see NamedInterface
 
     /** getClassProperties function of AA_Serializable
      * @return array
      */
-    public static function getClassProperties():array  {
+    public static function getClassProperties(): array
+    {
         return [             //           id         name                       type      multi  persist validator, required, help, morehelp, example
-                             'crypt_phrase' => new AA_Property( 'crypt_phrase',  _m("Encrypt phrase"), 'text', false, true, 'text', false, _m('Password to be applied for encrypting this field value. Could contain AA expressions or aliases (for user item in Reader Management slice)'), '', 'SomeSecret784!*'),
+            'crypt_phrase' => new AA_Property('crypt_phrase', _m("Encrypt phrase"), 'text', false, true, 'text', false, _m('Password to be applied for encrypting this field value. Could contain AA expressions or aliases (for user item in Reader Management slice)'), '', 'SomeSecret784!*'),
         ];
     }
 
@@ -1450,7 +1679,7 @@ class AA_Inserter_2fa extends AA_Inserter {
 
             if ($this->crypt_phrase !== '') {
                 if (is_long_id($uid) && ($item = AA_Items::getItem(new zids($uid)))) {
-                    $phrase = AA::Un($this->crypt_phrase,'',$item);
+                    $phrase = AA::Un($this->crypt_phrase, '', $item);
                 } else {
                     $phrase = AA::Un($this->crypt_phrase);
                 }
@@ -1476,9 +1705,16 @@ class AA_Inserter_2fa extends AA_Inserter {
 }
 
 /** AA_Inserter_Unq - not tested, not used, yet*/
-class AA_Inserter_Unq extends AA_Inserter {
-    public static function name(): string        { return _m("");  }             // see NamedInterface
-    public static function description(): string { return _m('');  }      // see NamedInterface
+class AA_Inserter_Unq extends AA_Inserter
+{
+    public static function name(): string
+    {
+        return _m("");
+    }             // see NamedInterface
+    public static function description(): string
+    {
+        return _m('');
+    }      // see NamedInterface
 
     public function execute(AA_Field_Writer $fieldwriter, $item_id, $value, int $order = 0, int $flag = 0): void
     {
@@ -1487,9 +1723,16 @@ class AA_Inserter_Unq extends AA_Inserter {
 }
 
 /** AA_Inserter_Null - insert nothing - not used */
-class AA_Inserter_Nul extends AA_Inserter {
-    public static function name(): string        { return _m("");  }             // see NamedInterface
-    public static function description(): string { return _m('');  }      // see NamedInterface
+class AA_Inserter_Nul extends AA_Inserter
+{
+    public static function name(): string
+    {
+        return _m("");
+    }             // see NamedInterface
+    public static function description(): string
+    {
+        return _m('');
+    }      // see NamedInterface
 
     public function execute(AA_Field_Writer $fieldwriter, $item_id, $value, int $order = 0, int $flag = 0): void {}
 
@@ -1505,8 +1748,8 @@ class AA_Inserter_Nul extends AA_Inserter {
 // -----------------------------------------------------------------------------
 
 
-class AA_Field_Writer {
-
+class AA_Field_Writer
+{
     /** @var Cvarset  */
     protected Cvarset $item_varset;
     protected string $slice_id;
@@ -1517,10 +1760,11 @@ class AA_Field_Writer {
      * @param string $slice_id - long slice id - it is optional for backward compatibility, but should be provided
      *                           in order file-upload and uniques works...
      */
-    function __construct(string $slice_id, string $context='') {
+    public function __construct(string $slice_id, string $context = '')
+    {
         $this->slice_id    = $slice_id;
         $this->context     = $context;
-        $this->item_varset = new Cvarset;
+        $this->item_varset = new Cvarset();
     }
 
     /** The content fields are already written, but the fields in item table still probably waits - get them for update
@@ -1547,7 +1791,8 @@ class AA_Field_Writer {
 
     /**
      */
-    public function getSlice(): ?AA_Slice {
+    public function getSlice(): ?AA_Slice
+    {
         static $slice = '';
         if ($slice === '') {
             $slice = AA_Slice::getModule($this->slice_id);
@@ -1557,7 +1802,8 @@ class AA_Field_Writer {
 
 
 
-    public function getContext(): string {
+    public function getContext(): string
+    {
         return $this->context;
     }
 }
@@ -1572,12 +1818,13 @@ class AA_Field_Writer {
  *
  * @return bool
  */
-function IsEditable(int $fieldflag, AA_Field $field, AA_Profile $profile): bool {
+function IsEditable(int $fieldflag, AA_Field $field, AA_Profile $profile): bool
+{
     return (!($fieldflag & FLAG_FREEZE)
         && $field->getProperty("input_show")
-        && !$profile->getProperty('hide',$field->getId())
-        && !$profile->getProperty('hide&fill',$field->getId())
-        && !$profile->getProperty('fill',$field->getId()));
+        && !$profile->getProperty('hide', $field->getId())
+        && !$profile->getProperty('hide&fill', $field->getId())
+        && !$profile->getProperty('fill', $field->getId()));
 }
 
 // -----------------------------------------------------------------------------
@@ -1599,12 +1846,12 @@ function IsEditable(int $fieldflag, AA_Field $field, AA_Profile $profile): bool 
  * @param string $context       special parameter used for thumbnails - ''|feed
  * @return false|string item id or false on error
  */
-function StoreItem( $id, $slice_id, $content4id, $insert, $invalidatecache=true, $feed=true, $context='' ): false|string
+function StoreItem($id, $slice_id, $content4id, $insert, $invalidatecache = true, $feed = true, $context = ''): false|string
 {
     $content4id = new ItemContent($content4id);
     $content4id->setItemID($id);
     $content4id->setSliceID($slice_id);
-    return $content4id->storeItem( $insert ? 'insert' : 'update', [$invalidatecache, $feed], (string)$context);     // invalidatecache, feed
+    return $content4id->storeItem($insert ? 'insert' : 'update', [$invalidatecache, $feed], (string) $context);     // invalidatecache, feed
 } // end of StoreItem
 
 // ----------------------------------------------------------------------------
@@ -1629,7 +1876,8 @@ function StoreItem( $id, $slice_id, $content4id, $insert, $invalidatecache=true,
  *                          not shown in the anonymous form
  */
 
-function ValidateContent4Id(&$err, $slice, $action, $id=0, $do_validate=true, $notshown=[]): ?AA_Content {
+function ValidateContent4Id(&$err, $slice, $action, $id = 0, $do_validate = true, $notshown = []): ?AA_Content
+{
 
     $profile = AA_Profile::getProfile(AuthGetUid(), $slice->getId()); // current user settings
 
@@ -1646,7 +1894,7 @@ function ValidateContent4Id(&$err, $slice, $action, $id=0, $do_validate=true, $n
 
     // it is needed to call IsEditable() function and GetContentFromForm()
     $oldcontent4id = null;
-    if ( $action === "update" ) {
+    if ($action === "update") {
         // if we are editing dynamic slice setting fields (stored in content
         // table), we need to get values from slice's fields
         if ($slice_fields) {
@@ -1661,17 +1909,17 @@ function ValidateContent4Id(&$err, $slice, $action, $id=0, $do_validate=true, $n
         // $f = $field->getRecord();  // now we use ArrayAccess
 
         //  'status_code.....' is not in condition - could be set from defaults
-        if (($pri_field_id==='edited_by.......') || ($pri_field_id==='posted_by.......')) {
+        if (($pri_field_id === 'edited_by.......') || ($pri_field_id === 'posted_by.......')) {
             continue;   // filed by AA - it could not be filled here
         }
-        $varname = 'v'. unpack_id($pri_field_id);  // "v" prefix - database field var
-        $htmlvarname = $varname."html";
+        $varname = 'v' . unpack_id($pri_field_id);  // "v" prefix - database field var
+        $htmlvarname = $varname . "html";
 
         global $$varname, $$htmlvarname;
 
         $setdefault = $action === "add"
                 || !$field["input_show"]
-                || $profile->getProperty('hide',$pri_field_id)
+                || $profile->getProperty('hide', $pri_field_id)
                 || ($action === "insert" && $notshown[$varname]);
 
         [$validate_type] = explode(":", $field["input_validate"], 2);
@@ -1682,10 +1930,10 @@ function ValidateContent4Id(&$err, $slice, $action, $id=0, $do_validate=true, $n
 
             // modify the value to be compatible with $_GET[] array - we use
             // slashed variables (this will be changed in future) - TODO
-            $$varname     = ($default->count() > 1) ? array_map('addslashes',$default->getValues()) : addslashes($default->getValue());
+            $$varname     = ($default->count() > 1) ? array_map('addslashes', $default->getValues()) : addslashes($default->getValue());
             $$htmlvarname = $default->getFlag();
 
-        } elseif ($validate_type==='date') {
+        } elseif ($validate_type === 'date') {
             $default = $field->getDefault();
             // we do not know at this moment, if we have to use default
             $default_val  = addslashes($default->getValue());
@@ -1695,7 +1943,7 @@ function ValidateContent4Id(&$err, $slice, $action, $id=0, $do_validate=true, $n
 
         // Run the "validation" which changes field values
         if ($editable && ($action === "insert" || $action === "update")) {
-            if ( $validate_type === 'date' ) {
+            if ($validate_type === 'date') {
                 $foo_datectrl_name = new datectrl($varname);
 
                 if ($$varname != "") {                  // loaded from defaults
@@ -1706,9 +1954,9 @@ function ValidateContent4Id(&$err, $slice, $action, $id=0, $do_validate=true, $n
             } elseif ($insert_type === 'boo') {
                 $$varname = ($$varname ? 1 : 0);
             } elseif ($insert_type === 'pwd') {
-                $change_varname   = $varname.'a';
-                $retype_varname   = $varname.'b';
-                $delete_varname   = $varname.'d';
+                $change_varname   = $varname . 'a';
+                $retype_varname   = $varname . 'b';
+                $delete_varname   = $varname . 'd';
 
                 global $$change_varname, $$retype_varname, $$delete_varname;
 
@@ -1716,7 +1964,7 @@ function ValidateContent4Id(&$err, $slice, $action, $id=0, $do_validate=true, $n
                     $$varname = ParamImplode(['AA_PASSWD',$$change_varname]);
                 } elseif ($$delete_varname) {
                     $$varname = '';
-                } elseif ( ($action === "update") && $oldcontent4id) {
+                } elseif (($action === "update") && $oldcontent4id) {
                     // store the original password to use it in
                     // insert_fnc_pwd when it is not changed
                     // $$varname = $oldcontent4id[$pri_field_id][0]['value'];
@@ -1729,12 +1977,12 @@ function ValidateContent4Id(&$err, $slice, $action, $id=0, $do_validate=true, $n
         if ($do_validate && ($action === "insert" || $action === "update")) {
             // special setting for file upload - there we solve the problem
             // of required fileupload field, but which is empty at this moment
-            if ( $field["required"] && (str_starts_with($field["input_show_func"], 'fil'))) {
-                ValidateInput($varname, $field["name"], $$varname. $GLOBALS[$varname.'x'] , $err, $field["required"] ? 1 : 0, AA_Validate::factoryByString($field["input_validate"]));
+            if ($field["required"] && (str_starts_with($field["input_show_func"], 'fil'))) {
+                ValidateInput($varname, $field["name"], $$varname . $GLOBALS[$varname . 'x'], $err, $field["required"] ? 1 : 0, AA_Validate::factoryByString($field["input_validate"]));
                 continue;
             }
 
-            switch( $validate_type ) {
+            switch ($validate_type) {
                 case 'e-unique':
                 case 'unique':
 
@@ -1757,14 +2005,14 @@ function ValidateContent4Id(&$err, $slice, $action, $id=0, $do_validate=true, $n
                         $$varname = usr_validate($varname, $field["name"], $$varname, $err, $field, $fields);
                     }
                     break;
-                //case 'text':
-                //case 'url':
-                //case 'email':
-                //case 'number':
-                //case 'id':
+                    //case 'text':
+                    //case 'url':
+                    //case 'email':
+                    //case 'number':
+                    //case 'id':
                 default:
                     // status code is never required
-                    ValidateInput($varname, $field["name"], $$varname, $err, ($field["required"] && ($pri_field_id!=='status_code.....')) ? 1 : 0, AA_Validate::factoryByString($field["input_validate"]));
+                    ValidateInput($varname, $field["name"], $$varname, $err, ($field["required"] && ($pri_field_id !== 'status_code.....')) ? 1 : 0, AA_Validate::factoryByString($field["input_validate"]));
                     break;
             }
         }

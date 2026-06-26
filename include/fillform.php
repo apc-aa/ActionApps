@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Extracted from fillform.php to allow inclusion from site module
  *
@@ -31,7 +32,8 @@
  * @param $fillConds
  * @return string
  */
-function fillFormFromVars($fillConds): string {
+function fillFormFromVars($fillConds): string
+{
     global $err;
 
     // init used objects
@@ -50,7 +52,7 @@ function fillFormFromVars($fillConds): string {
 function GetTimeZone(): float|int
 {
     $d = getdate();
-    return (mktime($d['hours'],$d['minutes'],$d['seconds'],$d['mon'],$d['mday'],$d['year']) - gmmktime($d['hours'],$d['minutes'],$d['seconds'],$d['mon'],$d['mday'],$d['year'])) / 3600;
+    return (mktime($d['hours'], $d['minutes'], $d['seconds'], $d['mon'], $d['mday'], $d['year']) - gmmktime($d['hours'], $d['minutes'], $d['seconds'], $d['mon'], $d['mday'], $d['year'])) / 3600;
 }
 
 // ----------------------------------------------------------------------------
@@ -83,11 +85,12 @@ function safeChars($str): string
  *   Proves permissions to update an item.
  *   Returns string of HTML and Javascript for echoing
  */
-function fillForm(): string {
+function fillForm(): string
+{
     global $my_item_id, $slice_id, $oldcontent4id;
     // get slice_id if not specified - try get it from $my_item_id
-    if ( !$slice_id && $my_item_id ) {
-        $zid = new zids( $my_item_id, 'l' );
+    if (!$slice_id && $my_item_id) {
+        $zid = new zids($my_item_id, 'l');
         $content = GetItemContentMinimal($zid, ['id','slice_id']);
         if ($p_slice_id = $content[$my_item_id]["slice_id........"][0]['value']) {
             $slice_id = unpack_id($p_slice_id);
@@ -95,11 +98,11 @@ function fillForm(): string {
     }
     // get slice_id if not specified - try get it from $oldcontent4id
     if (!$slice_id && $oldcontent4id && is_array($oldcontent4id)) {
-        if ( $p_slice_id = $oldcontent4id["slice_id........"][0]['value'] ) {
-        $slice_id = unpack_id($p_slice_id);
+        if ($p_slice_id = $oldcontent4id["slice_id........"][0]['value']) {
+            $slice_id = unpack_id($p_slice_id);
+        }
     }
-    }
-    if ( !$slice_id ) {
+    if (!$slice_id) {
         return "<!-- fillform.php: Slice ID not set, but it could be OK -->";
     }
 
@@ -130,19 +133,20 @@ function fillForm(): string {
 
     if ($slice?->getProperty("type") === "ReaderManagement") {
         if ($slice?->getProperty("permit_anonymous_edit") == ANONYMOUS_EDIT_HTTP_AUTH) {
-            if ( !$_SERVER["REMOTE_USER"]) {
+            if (!$_SERVER["REMOTE_USER"]) {
                 return "<!--Only HTTP authenticated users can edit the reader's data (see slice setting)-->";
-                  // if no user is sent, this is perhaps the subscribe page
-                  // which is out of the protected folder
+                // if no user is sent, this is perhaps the subscribe page
+                // which is out of the protected folder
             }
 
             $db         = getDB();
             $db->query(
-              "SELECT item.id FROM content INNER JOIN item
+                "SELECT item.id FROM content INNER JOIN item
                ON content.item_id = item.id
-               WHERE item.slice_id=".xpack_id($slice_id)."
-               AND content.field_id='".FIELDID_USERNAME."'
-               AND content.text='".addslashes($_SERVER["REMOTE_USER"])."'");
+               WHERE item.slice_id=" . xpack_id($slice_id) . "
+               AND content.field_id='" . FIELDID_USERNAME . "'
+               AND content.text='" . addslashes($_SERVER["REMOTE_USER"]) . "'",
+            );
             if ($db->num_rows() != 1) {
                 freeDB($db);
                 return "<!--HTTP AUTH USER not OK-->";
@@ -152,15 +156,15 @@ function fillForm(): string {
             freeDB($db);
         } elseif ($GLOBALS["ac"]) { // access code
             $db = getDB();
-            $SQL =
-                "SELECT item.id FROM content INNER JOIN item
+            $SQL
+                = "SELECT item.id FROM content INNER JOIN item
                  ON content.item_id = item.id
-                 WHERE item.slice_id=".xpack_id($slice_id)."
-                 AND content.field_id='".FIELDID_ACCESS_CODE."'
-                 AND content.text='".$GLOBALS["ac"]."'";
+                 WHERE item.slice_id=" . xpack_id($slice_id) . "
+                 AND content.field_id='" . FIELDID_ACCESS_CODE . "'
+                 AND content.text='" . $GLOBALS["ac"] . "'";
             $db->query($SQL);
             if ($db->num_rows() != 1) {
-                huhe("Warning, invalid access code '",$GLOBALS["ac"],"'");
+                huhe("Warning, invalid access code '", $GLOBALS["ac"], "'");
                 freeDB($db);
                 return "<!--ACCESS CODE (ac or aw) not OK-->";
             }
@@ -179,11 +183,12 @@ function fillForm(): string {
     $permsok = true;
     // Do not show items which are not allowed to be updated
     switch ($slice?->getProperty("permit_anonymous_edit")) {
-    case ANONYMOUS_EDIT_NOT_ALLOWED: $permsok = false; break;
-    case ANONYMOUS_EDIT_ONLY_ANONYMOUS:
-    case ANONYMOUS_EDIT_NOT_EDITED_IN_AA:
-        $permsok = (($oldcontent4id["flags..........."][0]['value'] & ITEM_FLAG_ANONYMOUS_EDITABLE) != 0);
-        break;
+        case ANONYMOUS_EDIT_NOT_ALLOWED: $permsok = false;
+            break;
+        case ANONYMOUS_EDIT_ONLY_ANONYMOUS:
+        case ANONYMOUS_EDIT_NOT_EDITED_IN_AA:
+            $permsok = (($oldcontent4id["flags..........."][0]['value'] & ITEM_FLAG_ANONYMOUS_EDITABLE) != 0);
+            break;
     }
     if (!$permsok) {
         return "<!--this item is not allowed to be updated-->";
@@ -202,13 +207,14 @@ function fillForm(): string {
  * @param $oldcontent4id
  * @return string
  */
-function fillFormWithContent($oldcontent4id): string {
+function fillFormWithContent($oldcontent4id): string
+{
     global $form, $suffix, $my_item_id;
 
-    $formStr = is_scalar($form) ? (string)$form : '';
+    $formStr = is_scalar($form) ? (string) $form : '';
 
     $timezone = GetTimeZone();
-    $js = "const fillform_fields". $suffix. " = [\n";
+    $js = "const fillform_fields" . $suffix . " = [\n";
 
     $jsarr = [];
     if (is_array($oldcontent4id)) {
@@ -216,16 +222,16 @@ function fillFormWithContent($oldcontent4id): string {
             if (is_array($field_array)) {
                 foreach ($field_array as $field) {
                     $myvalue = safeChars($field['value']);
-                    $control_id = 'v'.unpack_id($field_id);
+                    $control_id = 'v' . unpack_id($field_id);
                     // field password.......x is used to authenticate item edit
                     if (!in_array(substr($field_id, 0, 10), ['password..','secret....']) && !in_array($field_id, ['id..............', 'slice_id........'])) {
-                        $jsarr[] = "\t['". $formStr ."','".$control_id."','".$myvalue."','tdctr_','". ($field["flag"] & FLAG_HTML ? "h" : "t")."',".$timezone."]";
+                        $jsarr[] = "\t['" . $formStr . "','" . $control_id . "','" . $myvalue . "','tdctr_','" . ($field["flag"] & FLAG_HTML ? "h" : "t") . "'," . $timezone . "]";
                     }
                 }
             }
         }
     }
-    $js .= implode(",\n", $jsarr). "];\n";
+    $js .= implode(",\n", $jsarr) . "];\n";
 
     $js .= /** @lang JavaScript */ "
     function fillForm{$suffix}() {
@@ -247,7 +253,8 @@ function fillFormWithContent($oldcontent4id): string {
  *  params: $mydate .. UNIX timestamp
  *          $dateField .. field name
 */
-function fillConds() {
+function fillConds()
+{
     global $form, $conds, $dateConds;
     $js = "function fillConds() {";
 
@@ -255,8 +262,8 @@ function fillConds() {
     // Added by Honza 2005-06-17
     // TODO - it takes no care about multivalues
     //        (varname='jsjjs[]' and setControlArray())
-    foreach (explode('&',shtml_query_string()) as $pair) {
-        [$var,$val] = explode('=',$pair);
+    foreach (explode('&', shtml_query_string()) as $pair) {
+        [$var,$val] = explode('=', $pair);
         $val  = str_replace("\"", '\\"', rawurldecode($val));
         $var  = rawurldecode($var);
         $js  .= "setControl('$form','$var',\"$val\");\n";
@@ -279,7 +286,7 @@ function fillConds() {
                                 if ($arr != "") {
                                     $arr .= ",";
                                 }
-                                $arr .= "'".str_replace ("'", "\\'", $vv) . "'";
+                                $arr .= "'" . str_replace("'", "\\'", $vv) . "'";
                             }
                             $js .= "setControlArray('$form','conds[$i][$k][]',new Array($arr));\n";
                         }
@@ -293,7 +300,7 @@ function fillConds() {
         $timezone = GetTimeZone();
         foreach ($dateConds as $i => $dateField) {
             if (isset($conds[$i]['value']) && $conds[$i]['value']) {
-                $js .= "setControlOrAADate('$form','$dateField','". strtotime($conds[$i]['value'])."','',0,$timezone);\n";
+                $js .= "setControlOrAADate('$form','$dateField','" . strtotime($conds[$i]['value']) . "','',0,$timezone);\n";
             }
         }
     }
@@ -304,4 +311,3 @@ function fillConds() {
     }
     return getFrmJavascript($js);
 }
-

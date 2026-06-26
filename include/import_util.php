@@ -1,4 +1,5 @@
 <?php
+
 /**
  *
  * PHP version 7.2+
@@ -51,7 +52,7 @@ function getCSV($handle, $delimiter = ';', $enclosure = '"'): array
         $enclosure = 0x00;  // unlikely character (not possible to use '' with fgetcsv) - @todo - test it
     }
 
-    return fgetcsv($handle,0,$delimiter, $enclosure) ?: [];
+    return fgetcsv($handle, 0, $delimiter, $enclosure) ?: [];
 }
 
 /** createFieldNames function
@@ -66,10 +67,10 @@ function getCSV($handle, $delimiter = ';', $enclosure = '"'): array
 function createFieldNames($fileName, $addParams): array
 {
     $handle = fopen($fileName, 'rb');
-    $fn = getCSV($handle,$addParams['delimiter'],$addParams['enclosure']);
+    $fn = getCSV($handle, $addParams['delimiter'], $addParams['enclosure']);
     fclose($handle);
     if (!$fn) {
-        return $addParams['caption'] ? [] : ["Field 1"=>"Field 1"];
+        return $addParams['caption'] ? [] : ["Field 1" => "Field 1"];
     }
     $fieldNames = [];
     if ($addParams['caption']) {
@@ -78,8 +79,8 @@ function createFieldNames($fileName, $addParams): array
         }
     } else {
         $l = count($fn);
-        for ($i=1; $i<= $l; $i++) {
-            $f = "Field ".$i;
+        for ($i = 1; $i <= $l; $i++) {
+            $f = "Field " . $i;
             $fieldNames[$f] = $f;
         }
     }
@@ -94,17 +95,19 @@ function createFieldNames($fileName, $addParams): array
  * @param ItemContent $itemContent
  * @return string|null     err or empty string
  */
-function convertCSV2Items($csvRec, $fieldNames, Actions $trans_actions, AA_Fields $slice_fields, &$itemContent): ?string {
-    $itemContent1 = new AA_Content;
+function convertCSV2Items($csvRec, $fieldNames, Actions $trans_actions, AA_Fields $slice_fields, &$itemContent): ?string
+{
+    $itemContent1 = new AA_Content();
     $itemContent1->setFromCSVArray($csvRec, $fieldNames);
-    $itemContent  = new ItemContent;
+    $itemContent  = new ItemContent();
     return $itemContent->transform($itemContent1, $trans_actions, $slice_fields);
 }
 
-class Actions {
+class Actions
+{
     /** @var array */
-    var $actions;
-    var $globalParams;
+    public $actions;
+    public $globalParams;
     /** Actions function
      * @param $actions[]
      * @param $inFields
@@ -112,11 +115,12 @@ class Actions {
      * @param $params
      * @param $globalParams
      */
-    function __construct(array $actions, $inFields, $html, $params, $globalParams="") {
-        foreach ( $actions as $f_id => $action) {
+    public function __construct(array $actions, $inFields, $html, $params, $globalParams = "")
+    {
+        foreach ($actions as $f_id => $action) {
             $this->actions[$f_id] = [
                 "from"   => $inFields[$f_id],
-                "action" => new Action($action,$html[$f_id],stripslashes($params[$f_id]))
+                "action" => new Action($action, $html[$f_id], stripslashes($params[$f_id])),
             ];
         }
         $this->globalParams = $globalParams;
@@ -130,23 +134,24 @@ class Actions {
      * @param ItemContent $outputItemContent
      * @return string|null     err or empty string
      */
-     function transform( AA_Content $itemContent, AA_Fields $slice_fields, ItemContent $outputItemContent): ?string {
+    public function transform(AA_Content $itemContent, AA_Fields $slice_fields, ItemContent $outputItemContent): ?string
+    {
 
-         $fieldIds = $slice_fields->getPriorityArray();
+        $fieldIds = $slice_fields->getPriorityArray();
 
-         // id is not part of $slice_fields, unfortunately (should be changed)
-         if ( !in_array('id..............',$fieldIds)) {
-             $fieldIds[] = 'id..............';           // 'to be processed in next loop';
-         }
+        // id is not part of $slice_fields, unfortunately (should be changed)
+        if (!in_array('id..............', $fieldIds)) {
+            $fieldIds[] = 'id..............';           // 'to be processed in next loop';
+        }
 
-         foreach ( $fieldIds as $field_id ) {
-             $action = &$this->actions[$field_id];
-             unset( $fieldVal, $v);
-             $done = false;
+        foreach ($fieldIds as $field_id) {
+            $action = &$this->actions[$field_id];
+            unset($fieldVal, $v);
+            $done = false;
 
-             // fill up the output field with default value, if the action does not exist for the output field, or the action is "default"
-             if (!$action || $action['action']->getAction() === "default") {
-                     // case "display_count..." : $v = 0; break;
+            // fill up the output field with default value, if the action does not exist for the output field, or the action is "default"
+            if (!$action || $action['action']->getAction() === "default") {
+                // case "display_count..." : $v = 0; break;
                 /* Removed - it created data for fields, so it is then updated on Rewrite/Update action, which is not correct
                   switch ($field_id) {
                      case 'status_code.....' : $done = true; $fieldVal[]['value'] = 1; break; // todo
@@ -161,45 +166,45 @@ class Actions {
                      case 'id..............' : $done = true; $fieldVal[]['value'] = new_id(); break;
                      default :
                    */
-                 if ($action['from'] && ($action['from'] !== '__empty__')) {
-                     $action['action']->setAction('store');
-                 } elseif ($action['action']->getParams()) {
-                     $action['action']->setAction('value');
-                 } else {
-                     $done = true;
-                 }
-             } elseif ($action['action']->getAction() === "new") {
-                  $done = true;
-                  $fieldVal[]['value'] = new_id();
-             }
-             if ( !$done ) {
+                if ($action['from'] && ($action['from'] !== '__empty__')) {
+                    $action['action']->setAction('store');
+                } elseif ($action['action']->getParams()) {
+                    $action['action']->setAction('value');
+                } else {
+                    $done = true;
+                }
+            } elseif ($action['action']->getAction() === "new") {
+                $done = true;
+                $fieldVal[]['value'] = new_id();
+            }
+            if (!$done) {
 
-                 // transform the input field to the output field according the action
-                 /** @var Action $act */
-                 $act = $action['action'];
-                 $err = $act->transform($itemContent,$action['from'],$this->globalParams,$fieldVal );
-                 if ($err) {
-                     return $err;
-                 }
-             }
-             if (isset($fieldVal) && is_array($fieldVal)) {
-                 // store the output field to the output item content
-                 if ($field_id === 'id..............') {
-                     $outputItemContent->setItemId($fieldVal[0]['value']);
-                 } else {
-                     $outputItemContent->setAaValue($field_id, new AA_Value($fieldVal));
-                 }
-             }
-         }
-         return null;
+                // transform the input field to the output field according the action
+                /** @var Action $act */
+                $act = $action['action'];
+                $err = $act->transform($itemContent, $action['from'], $this->globalParams, $fieldVal);
+                if ($err) {
+                    return $err;
+                }
+            }
+            if (isset($fieldVal) && is_array($fieldVal)) {
+                // store the output field to the output item content
+                if ($field_id === 'id..............') {
+                    $outputItemContent->setItemId($fieldVal[0]['value']);
+                } else {
+                    $outputItemContent->setAaValue($field_id, new AA_Value($fieldVal));
+                }
+            }
+        }
+        return null;
     }
 
     /** getHtml function
      *
      */
-    function getHtml(): array
+    public function getHtml(): array
     {
-        foreach ( $this->actions as $v ) {
+        foreach ($this->actions as $v) {
             $f[] = $v['action']->getHtml();
         }
         return $f;
@@ -207,9 +212,10 @@ class Actions {
 
     /** getParams function
      */
-    function getParams(): array {
+    public function getParams(): array
+    {
         $f = [];
-        foreach ( $this->actions as $v ) {
+        foreach ($this->actions as $v) {
             $f[] = $v['action']->getParams();
         }
         return $f;
@@ -222,16 +228,18 @@ class Actions {
  *      $html   - if set => store as HTML
  *  	$params - values or array of values specific to each action
  */
-class Action {
-    var $action;
-    var $html;
-    var $params;
+class Action
+{
+    public $action;
+    public $html;
+    public $params;
     /** Action function
      * @param $action
      * @param $html
      * @param $params
      */
-    function __construct($action, $html, $params) {
+    public function __construct($action, $html, $params)
+    {
         $this->action = $action;
         $this->html = ($html ? FLAG_HTML : 0);
         $this->params = $params;
@@ -239,25 +247,28 @@ class Action {
     /** getAction function
      *
      */
-    function getAction() {
+    public function getAction()
+    {
         return $this->action;
     }
     /** getHtml function
      *
      */
-    function getHtml() {
+    public function getHtml()
+    {
         return $this->html;
     }
     /** getParams function
      *
      */
-    function getParams() {
+    public function getParams()
+    {
         return $this->params;
     }
     /** setAction function
      * @param $action
      */
-    function setAction($action): void
+    public function setAction($action): void
     {
         $this->action = $action;
     }
@@ -272,16 +283,16 @@ class Action {
      *
      * @return string
      */
-    function transform(AA_Content $itemContent, $from, $globalParams, &$fvalues ): string
+    public function transform(AA_Content $itemContent, $from, $globalParams, &$fvalues): string
     {
-        switch ( $this->action) {
+        switch ($this->action) {
             case "expression": {
-                $fvalues[]['value'] = $itemContent->unalias(str_replace('_#this','{'.$from.'}',$this->params));
+                $fvalues[]['value'] = $itemContent->unalias(str_replace('_#this', '{' . $from . '}', $this->params));
                 break;
             }
             case "store": {
                 $ind = 0;
-                if (strlen($this->params)==2) {  // cz | en | de | ..
+                if (strlen($this->params) == 2) {  // cz | en | de | ..
                     $ind = Langs::getLangName2Num(strtolower($this->params));
                 }
                 $fvalues[$ind]['value'] = $itemContent->GetValue($from);		// todo - pokud neexistuje pole s $from , co delat?
@@ -297,13 +308,13 @@ class Action {
             }
             case "removestring": {
                 $v =  $itemContent->GetValue($from);
-                $fvalues[]['value'] = $this->params ? preg_replace('`'.str_replace('`','\`',$this->params).'`', "", $v) :$v;
+                $fvalues[]['value'] = $this->params ? preg_replace('`' . str_replace('`', '\`', $this->params) . '`', "", $v) : $v;
                 break;
             }
             case "formatdate": {
                 $v = strtotime($itemContent->GetValue($from));
                 if ($v == -1) {
-                    return "Invalid date: ".$itemContent->GetValue($from);
+                    return "Invalid date: " . $itemContent->GetValue($from);
                 }
                 $fvalues[]['value'] = $v;
                 break;
@@ -315,19 +326,19 @@ class Action {
             }
             case "web": {
                 $value = $itemContent->GetValue($from);
-                if ( $value && stripos($value, "http") !== 0) {
-                    $value = "https://". $value;
+                if ($value && stripos($value, "http") !== 0) {
+                    $value = "https://" . $value;
                 }
                 $fvalues[]['value'] = $value;
                 break;
-                }
+            }
             case "storemultiasone" : {
                 // $param is delimiter
                 if (!is_array($from)) {
                     $from = [$from];
                 }
                 $save = "";
-                foreach ( $from as $tostore ) {
+                foreach ($from as $tostore) {
                     $savenext = trim($itemContent->GetValue($tostore));
                     if ($savenext != "") {
                         if ($save != "") {
@@ -343,7 +354,7 @@ class Action {
                 if (!is_array($from)) {
                     $from = [$from];
                 }
-                foreach ( $from as $tostore ) {
+                foreach ($from as $tostore) {
                     $save = trim($itemContent->GetValue($tostore));
                     $fvalues[]['value'] = $save;
                 }
@@ -352,14 +363,14 @@ class Action {
             case "storeparsemulti": {
                 $delimiter = $this->params;
                 $langs     = [];
-                if (strpos($this->params,'##')) {
-                   $langs     = explode('##',$this->params);
-                   $delimiter = array_shift($langs);
+                if (strpos($this->params, '##')) {
+                    $langs     = explode('##', $this->params);
+                    $delimiter = array_shift($langs);
                 }
-                $items = explode($delimiter,trim($itemContent->GetValue($from)));
-                foreach ( $items as $k => $save ) {
+                $items = explode($delimiter, trim($itemContent->GetValue($from)));
+                foreach ($items as $k => $save) {
                     $ind = $k;
-                    if ($langs[$k] && strlen($langs[$k])==2) {  // cz | en | de | ..
+                    if ($langs[$k] && strlen($langs[$k]) == 2) {  // cz | en | de | ..
                         $ind = Langs::getLangName2Num(strtolower($langs[$k]));
                     }
                     $fvalues[$ind]['value'] = trim($save);
@@ -367,8 +378,8 @@ class Action {
                 break;
             }
             case "storeparsemultiunpack": {
-                $items = explode ($this->params,trim($itemContent->GetValue($from)));
-                foreach ( $items as $save ) {
+                $items = explode($this->params, trim($itemContent->GetValue($from)));
+                foreach ($items as $save) {
                     $fvalues[]['value'] = unpack_id(trim($save));
                 }
                 break;
@@ -394,12 +405,12 @@ class Action {
                 break;
             }
             default: {
-                  return "Unknown function: $this->action";
+                return "Unknown function: $this->action";
             }
         }
         // set HTML flag and add slashes because of SQL syntax
         if (isset($fvalues) && is_array($fvalues)) {
-            foreach ( $fvalues as $k => $v ) {
+            foreach ($fvalues as $k => $v) {
                 if ($this->html) {
                     $v['flag'] = $this->html;
                 }
@@ -417,8 +428,8 @@ function getActions(): array
 {
     $a = ["expression", "store","removestring","formatdate", "web", "storeparsemulti","storeparsemultiunpack", "value","string2id", 'password', "default"];
     // not used:  "convertvalue","storemultiasone", "storeasmulti", "not map"
-    foreach ( $a as $v ) { $actions[$v] = $v; }
+    foreach ($a as $v) {
+        $actions[$v] = $v;
+    }
     return $actions;
 }
-
-

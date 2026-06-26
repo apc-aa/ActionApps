@@ -1,4 +1,5 @@
 <?php
+
 /**
  *
  * File Utilities.
@@ -45,8 +46,8 @@ const FILE_COPY_OK                = 199;
 const AA_DIRECTORY_WRAPPER_ERROR_NOT_DIR = 150;
 
 
-class Files {
-
+class Files
+{
     use LastErrTrait;
 
     /** destinationDir function
@@ -57,23 +58,23 @@ class Files {
      *
      * @return string|false
      */
-    static function destinationDir(?AA_Module $slice): string|false
+    public static function destinationDir(?AA_Module $slice): string|false
     {
         if (!$slice) {
             // self::lastErr(AA_DIRECTORY_WRAPPER_ERROR_NOT_DIR, _m("No slice specified"));  // could ba added this more info
             return false;
         }
         $upload = $slice->getUploadBase();
-        return self::_destinationDirCreate((string)$upload['path'], (int)$upload['perms']);
+        return self::_destinationDirCreate((string) $upload['path'], (int) $upload['perms']);
     }
 
     /** aadestinationDir
      *  Prepares global AA directory for uploaded file and returns destination
      *  dir name
      */
-    static function aadestinationDir(): string|false
+    public static function aadestinationDir(): string|false
     {
-        return self::_destinationDirCreate(IMG_UPLOAD_PATH. AA_ID, (int)IMG_UPLOAD_DIR_MODE);
+        return self::_destinationDirCreate(IMG_UPLOAD_PATH . AA_ID, (int) IMG_UPLOAD_DIR_MODE);
     }
 
     /** _destinationDirCreate function
@@ -81,9 +82,9 @@ class Files {
      *
      * @return string|false
      */
-    static function _destinationDirCreate(string $path, int $perms): string|false
+    public static function _destinationDirCreate(string $path, int $perms): string|false
     {
-        if ($path==='') {
+        if ($path === '') {
             self::lastErr(FILE_ERROR_NO_DESTINATION, _m('No destination directory for image uploads specified'));  // set error code
             return false;
         }
@@ -102,22 +103,23 @@ class Files {
      * @param $modificator
      * @return string
      */
-    static function generateUnusedFilename($file_name, $modificator=''): string {
+    public static function generateUnusedFilename($file_name, $modificator = ''): string
+    {
         $path_parts = pathinfo($file_name);
 
         // we have to process dot (extension do not contain it)
         // we must think about the files as 'test' or '.test' as well
         if (!str_contains($path_parts['basename'], '.')) {
             $extension = '';
-            $base      = $path_parts['basename'] .$modificator;
+            $base      = $path_parts['basename'] . $modificator;
         } else {
-            $extension = '.'. $path_parts['extension'];
-            $base = substr($path_parts['basename'],0,-strlen($extension)).$modificator;
+            $extension = '.' . $path_parts['extension'];
+            $base = substr($path_parts['basename'], 0, -strlen($extension)) . $modificator;
         }
         $add = '';
         $i   = 0;
         while (file_exists($dest_file = self::makeFile($path_parts['dirname'], "$base$add$extension"))) {
-            $add = '_'. (++$i);
+            $add = '_' . (++$i);
         }
         return $dest_file;
     }
@@ -169,7 +171,7 @@ class Files {
      *
      * @return false|string
      */
-    static function uploadFile($filevarname, $dest_dir, $type='', $replacemethod='new', $filename = null): false|string
+    public static function uploadFile($filevarname, $dest_dir, $type = '', $replacemethod = 'new', $filename = null): false|string
     {
         $up_file = is_array($filevarname) ? $filevarname : $_FILES[$filevarname];
 
@@ -187,9 +189,9 @@ class Files {
 
         // look if type of file is allowed
         if ($type != '') {
-            $file_type = (str_ends_with($type, '*')) ? substr($type,0,strpos($type,'/')) : $type;
+            $file_type = (str_ends_with($type, '*')) ? substr($type, 0, strpos($type, '/')) : $type;
 
-            if ((@strpos($up_file['type'],$file_type)===false)) {
+            if ((@strpos($up_file['type'], $file_type) === false)) {
                 self::lastErr(FILE_ERROR_TYPE_NOT_ALLOWED, _m('type of uploaded file not allowed'));  // set error code
                 return false;
             }
@@ -219,7 +221,7 @@ class Files {
         }
 
         // now change permissions (if we have to)
-        $perms = defined('IMG_UPLOAD_FILE_MODE') ? (int)IMG_UPLOAD_FILE_MODE : 0;
+        $perms = defined('IMG_UPLOAD_FILE_MODE') ? (int) IMG_UPLOAD_FILE_MODE : 0;
         if ($perms && !chmod($dest_file, $perms)) {
             self::lastErr(FILE_ERROR_CHMOD, _m("Can't change permissions on uploaded file: %1 - %2. See IMG_UPLOAD_FILE_MODE in your config.php", [$dest_file, $perms]));  // set error code
             return false;
@@ -264,8 +266,9 @@ class Files {
      * @param $ident
      * @return string
      */
-    static function getTmpFilename($ident): string {
-        return $ident . "_" . hash('md5', uniqid('',true)) . "_" . date("mdY");
+    public static function getTmpFilename($ident): string
+    {
+        return $ident . "_" . hash('md5', uniqid('', true)) . "_" . date("mdY");
     }
 
     /** deleteTmpFiles function
@@ -274,10 +277,10 @@ class Files {
      * @param $ident
      * @param $slice
      */
-    static function deleteTmpFiles($ident, $slice=null): void
+    public static function deleteTmpFiles($ident, $slice = null): void
     {
-        if ( !$slice ) {
-            $upload_dir = IMG_UPLOAD_PATH. AA_ID;
+        if (!$slice) {
+            $upload_dir = IMG_UPLOAD_PATH . AA_ID;
         } else {
             $dir = $slice->getUploadBase();
             $upload_dir = $dir['path'];
@@ -290,8 +293,8 @@ class Files {
                 if (strlen($ident) + 42 !== strlen($file)) {
                     continue;
                 }
-                $date=mktime(0,0,0,date("m"),date("d")-7,date("Y")) ;
-                $filedate = mktime (0,0,0,substr($file,-8,2) ,substr($file,-6,2),substr($file,-4,4));
+                $date = mktime(0, 0, 0, date("m"), date("d") - 7, date("Y")) ;
+                $filedate = mktime(0, 0, 0, substr($file, -8, 2), substr($file, -6, 2), substr($file, -4, 4));
                 $fileName = self::makeFile($upload_dir, $file);
                 if ($filedate < $date) {
                     if (self::delFile($fileName)) {
@@ -314,7 +317,7 @@ class Files {
      *  @return false|string - whole filename of the backup file (or empty string, if
      *           the source file do not exists; returns false if backup fails
      */
-    static function backupFile($source): false|string
+    public static function backupFile($source): false|string
     {
         if (!is_file($source)) {
             return "";
@@ -343,7 +346,7 @@ class Files {
      *
      * @return int|string the new copied filename, else error if anything goes bad.
      */
-    function copyFile($source, $destination_dir, $destination_file, $unique=true): int|string
+    public function copyFile($source, $destination_dir, $destination_file, $unique = true): int|string
     {
         if (!(file_exists($source) && is_file($source))) {
             return FILE_ERROR_NO_SOURCE;
@@ -378,7 +381,8 @@ class Files {
      *
      * @return boolean true if the new folder is created, false otherwise.
      */
-    static function createFolder(string $newFolder, int $perms=0777): bool {
+    public static function createFolder(string $newFolder, int $perms = 0777): bool
+    {
         if (!mkdir($newFolder, $perms) && !is_dir($newFolder)) {
             return false;
         }
@@ -392,7 +396,7 @@ class Files {
      * @param string $filename the orginal filename
      * @return string the escaped safe filename
      */
-    static function escape($filename): string
+    public static function escape($filename): string
     {
         return ConvertCharset::singleton()->escape($filename, Langs::getCharset(), true);
     }
@@ -402,7 +406,7 @@ class Files {
      * @param string $file file to be deleted
      * @return boolean true if deleted, false otherwise.
      */
-    static function delFile($file): bool
+    public static function delFile($file): bool
     {
         return @is_file($file) ? @unlink($file) : false;
     }
@@ -415,17 +419,17 @@ class Files {
      * error if the directory is not empty.
      * @return boolean true if deleted.
      */
-    function delFolder($folder, $recursive=false): bool
+    public function delFolder($folder, $recursive = false): bool
     {
         $deleted = true;
         if ($recursive) {
             $d = dir($folder);
-            while (false !== ($entry = $d->read()))	{
+            while (false !== ($entry = $d->read())) {
                 if ($entry !== '.' && $entry !== '..') {
-                    $obj = self::fixPath($folder).$entry;
+                    $obj = self::fixPath($folder) . $entry;
                     if (is_file($obj)) {
                         $deleted &= self::delFile($obj);
-                    } elseif (is_dir($obj))	{
+                    } elseif (is_dir($obj)) {
                         $deleted &= self::delFolder($obj, $recursive);
                     }
                 }
@@ -440,8 +444,9 @@ class Files {
      * @param string $path the path
      * @return string path with trailing /
      */
-    static function fixPath($path): string {
-        $path = (string)$path;
+    public static function fixPath($path): string
+    {
+        $path = (string) $path;
         //append a slash to the path if it doesn't exist.
         if (!(str_ends_with($path, '/'))) {
             $path .= '/';
@@ -456,12 +461,13 @@ class Files {
      * @param string $pathB the ending path with file
      * @return string combined file path.
      */
-    static function makeFile($pathA, $pathB): string {
+    public static function makeFile($pathA, $pathB): string
+    {
         $pathA = self::fixPath($pathA);
         if (str_starts_with($pathB, '/')) {
-            $pathB = substr($pathB,1);
+            $pathB = substr($pathB, 1);
         }
-        return $pathA.$pathB;
+        return $pathA . $pathB;
     }
 
 
@@ -470,16 +476,17 @@ class Files {
      * @param int $size the raw filesize
      * @return string formated file size.
      */
-    function formatSize($size): string {
+    public function formatSize($size): string
+    {
         if ($size < 1024) {
-            return $size.' bytes';
+            return $size . ' bytes';
         }
 
-        if ($size < 1024*1024) {
-            return sprintf('%01.2f',$size/1024.0).' Kb';
+        if ($size < 1024 * 1024) {
+            return sprintf('%01.2f', $size / 1024.0) . ' Kb';
         }
 
-        return sprintf('%01.2f',$size/(1024.0*1024)).' Mb';
+        return sprintf('%01.2f', $size / (1024.0 * 1024)) . ' Mb';
     }
 
     /** sourceType function
@@ -487,25 +494,27 @@ class Files {
      * @param string $filename the name of file (with path, protocol, ...)
      * @return string FILE, HTTP, HTTPS, ...
      */
-     static function sourceType($filename): string {
-         if (stripos($filename, 'HTTPS') === 0) {
-             return 'HTTPS';
-         }
-         if (stripos($filename, 'HTTP') === 0) {
-             return 'HTTP';
-         }
-         if (stripos($filename, 'FTP') === 0) {
-             return 'FTP';
-         }
-         return 'FILE';
-     }
+    public static function sourceType($filename): string
+    {
+        if (stripos($filename, 'HTTPS') === 0) {
+            return 'HTTPS';
+        }
+        if (stripos($filename, 'HTTP') === 0) {
+            return 'HTTP';
+        }
+        if (stripos($filename, 'FTP') === 0) {
+            return 'FTP';
+        }
+        return 'FILE';
+    }
 
-     //****************  Secure file_get_content and readfile form https ***************/
+    //****************  Secure file_get_content and readfile form https ***************/
 
     /**
      * Safe file_get_contents() variant (HTTPS + allowlist + size limit).
      */
-    public static function safe_file_get_contents_https(string $url, array $allowedHosts=[], int $maxBytes = 0): string {   // int $maxBytes = 5_000_000, int $timeoutSeconds = 10
+    public static function safe_file_get_contents_https(string $url, array $allowedHosts = [], int $maxBytes = 0): string   // int $maxBytes = 5_000_000, int $timeoutSeconds = 10
+    {
         self::safe_https_validate_url($url, $allowedHosts);
 
         $ctx = self::safe_https_stream_context(); // $timeoutSeconds
@@ -525,7 +534,8 @@ class Files {
      * Safe readfile() variant (streams to output; HTTPS + allowlist + size limit).
      * @return int bytes streamed
      */
-    public static function safe_readfile_https( string $url, array $allowedHosts=[], int $maxBytes = 0 ): int {    // int $maxBytes = 10_000_000, int $timeoutSeconds = 10
+    public static function safe_readfile_https(string $url, array $allowedHosts = [], int $maxBytes = 0): int    // int $maxBytes = 10_000_000, int $timeoutSeconds = 10
+    {
         self::safe_https_validate_url($url, $allowedHosts);
 
         $ctx = self::safe_https_stream_context();  // $timeoutSeconds
@@ -555,7 +565,8 @@ class Files {
         return $bytes;
     }
 
-    private static function safe_https_stream_context() {
+    private static function safe_https_stream_context()
+    {
         return stream_context_create([
             'http' => [
                 'method' => 'GET',
@@ -757,42 +768,43 @@ class Files {
  *		   $file->close();
  *
  */
-class AA_File_Wrapper {
-
-	/** @var string URL to the file */
-    var $url;
-	/** @var array parsed URL info */
-    var $info;
-	/** @var resource the file descriptor */
-    var $fp;
+class AA_File_Wrapper
+{
+    /** @var string URL to the file */
+    public $url;
+    /** @var array parsed URL info */
+    public $info;
+    /** @var resource the file descriptor */
+    public $fp;
     /** @var int used in http */
-    var $redirects = 5;
+    public $redirects = 5;
 
     /** AA_File_Wrapper function
      * Constructor.
      * @param $url string
      * @param $info array
      */
-	function __construct($url, $info) {
+    public function __construct($url, $info)
+    {
         $this->url = $url;
         $this->info = $info;
     }
 
-	/**
+    /**
      * Read and return the contents of the file (like file_get_contents()).
      * @return string
      */
-    function contents(): string
+    public function contents(): string
     {
         return trim($this->url) !== '' ? file_get_contents($this->url) : '';
     }
 
-	/**
+    /**
      * Open the file.
      *
      * @param $mode string only 'r' (read-only) is currently supported
      */
-    function open(string $mode = 'rb')
+    public function open(string $mode = 'rb')
     {
         $this->fp = null;
         try {
@@ -800,41 +812,41 @@ class AA_File_Wrapper {
         } catch (Throwable $e) {  // Exceptions and Errors
             return false;
         }
-		return ($this->fp !== false);
+        return ($this->fp !== false);
     }
 
-	/**
+    /**
      * Close the file.
      */
-    function close(): void
+    public function close(): void
     {
         fclose($this->fp);
         unset($this->fp);
     }
-	/**
+    /**
      * Read from the file.
      * @param $len int
      * @return string
      */
-    function read($len = 8192): string
+    public function read($len = 8192): string
     {
         return fread($this->fp, $len);
     }
-	/**
+    /**
      * Check for end-of-file.
      * @return boolean
      */
-    function eof(): bool
+    public function eof(): bool
     {
         return feof($this->fp);
     }
 
-    function getUrl(): string
+    public function getUrl(): string
     {
         return $this->url;
     }
 
-    function getMimeType(): false|string
+    public function getMimeType(): false|string
     {
         return mime_content_type($this->fp);
     }
@@ -848,7 +860,7 @@ class AA_File_Wrapper {
      * @param $url
      *
      */
-    static function wrapper($url): AA_File_HTTPS_Wrapper|AA_File_Wrapper|AA_File_HTTP_Wrapper|AA_File_FTP_Wrapper
+    public static function wrapper($url): AA_File_HTTPS_Wrapper|AA_File_Wrapper|AA_File_HTTP_Wrapper|AA_File_FTP_Wrapper
     {
         $info = parse_url($url);
         if (ini_get('allow_url_fopen')) {
@@ -864,13 +876,13 @@ class AA_File_Wrapper {
 }
 
 /** Just to have common content function for next wrappers */
-class AA_File_Wrapper_Ext extends AA_File_Wrapper {
-
+class AA_File_Wrapper_Ext extends AA_File_Wrapper
+{
     /**
      * Read and return the contents of the file (like file_get_contents()).
      * @return string
      */
-    function contents(): string
+    public function contents(): string
     {
         $contents = '';
         if ($retval = $this->open()) {
@@ -893,17 +905,19 @@ class AA_File_Wrapper_Ext extends AA_File_Wrapper {
  *
  * for proxy (Proxy-Authorization) see https://gitlab.liu.se/edver36/pkp-lib/-/blob/ojs-stable-3_1_1/classes/file/wrappers/HTTPFileWrapper.inc.php?ref_type=heads
  */
-class AA_File_HTTP_Wrapper extends AA_File_Wrapper_Ext {
-    var $headers;
-    var $defaultPort;
-    var $defaultHost;
-    var $defaultPath;
+class AA_File_HTTP_Wrapper extends AA_File_Wrapper_Ext
+{
+    public $headers;
+    public $defaultPort;
+    public $defaultHost;
+    public $defaultPath;
 
     /** AA_File_HTTP_Wrapper function
      * @param $url
      * @param $info
      */
-	function __construct($url, $info) {
+    public function __construct($url, $info)
+    {
         parent::__construct($url, $info);
         $this->setDefaultPort(80);
         $this->setDefaultHost('localhost');
@@ -912,7 +926,7 @@ class AA_File_HTTP_Wrapper extends AA_File_Wrapper_Ext {
     /** setDefaultPort function
      * @param $port
      */
-    function setDefaultPort($port): void
+    public function setDefaultPort($port): void
     {
         $this->defaultPort = $port;
     }
@@ -921,7 +935,7 @@ class AA_File_HTTP_Wrapper extends AA_File_Wrapper_Ext {
      *
      * @param $host
      */
-    function setDefaultHost($host): void
+    public function setDefaultHost($host): void
     {
         $this->defaultHost = $host;
     }
@@ -930,7 +944,7 @@ class AA_File_HTTP_Wrapper extends AA_File_Wrapper_Ext {
      *
      * @param $path
      */
-    function setDefaultPath($path): void
+    public function setDefaultPath($path): void
     {
         $this->defaultPath = $path;
     }
@@ -938,7 +952,7 @@ class AA_File_HTTP_Wrapper extends AA_File_Wrapper_Ext {
      * @param $name
      * @param $value
      */
-    function addHeader($name, $value): void
+    public function addHeader($name, $value): void
     {
         if (!isset($this->headers)) {
             $this->headers = [];
@@ -950,7 +964,7 @@ class AA_File_HTTP_Wrapper extends AA_File_Wrapper_Ext {
      * Read and return the contents of the file (like file_get_contents()).
      * @return string
      */
-    function contents(): string
+    public function contents(): string
     {
         $contents = '';
         if ($retval = $this->open()) {
@@ -972,14 +986,15 @@ class AA_File_HTTP_Wrapper extends AA_File_Wrapper_Ext {
      *
      * @return AA_File_Wrapper|bool
      */
-    function open(string $mode = 'rb') {
+    public function open(string $mode = 'rb')
+    {
         $host = $this->info['host'] ?? $this->defaultHost;
-        $port = isset($this->info['port']) ? (int)$this->info['port'] : $this->defaultPort;
+        $port = isset($this->info['port']) ? (int) $this->info['port'] : $this->defaultPort;
         $path = $this->info['path'] ?? $this->defaultPath;
         if (isset($this->info['query'])) {
             $path .= '?' . $this->info['query'];
         }
-		if (!($this->fp = fsockopen($host, $port))) {
+        if (!($this->fp = fsockopen($host, $port))) {
             return false;
         }
 
@@ -990,44 +1005,44 @@ class AA_File_HTTP_Wrapper extends AA_File_Wrapper_Ext {
             }
         }
 
-        $request = "GET $path HTTP/1.0\r\n" .
-            "Host: $host\r\n" .
-            $additionalHeadersString .
-            "Connection: Close\r\n\r\n";
+        $request = "GET $path HTTP/1.0\r\n"
+            . "Host: $host\r\n"
+            . $additionalHeadersString
+            . "Connection: Close\r\n\r\n";
         fwrite($this->fp, $request);
 
         $response = fgets($this->fp, 4096);
         $rc = 0;
         sscanf($response, "HTTP/%*s %u %*[^\r\n]\r\n", $rc);
         if ($rc == 200) {
-            while(fgets($this->fp, 4096) !== "\r\n") {
+            while (fgets($this->fp, 4096) !== "\r\n") {
                 ;
             }
             return true;
         }
-		if(preg_match('!^3\d\d$!', $rc) && $this->redirects >= 1) {
-			for($response = '', $time = time(); !feof($this->fp) && $time >= time() - 15; ) {
+        if (preg_match('!^3\d\d$!', $rc) && $this->redirects >= 1) {
+            for ($response = '', $time = time(); !feof($this->fp) && $time >= time() - 15;) {
                 $response .= fgets($this->fp, 128);
             }
-			if (preg_match('!^(?:(?:Location)|(?:URI)|(?:location)): ([^\s]+)[\r\n]!m', $response, $matches)) {
-				$this->close();
-				$location = $matches[1];
-				if (preg_match('!^[a-z]+://!', $location)) {
-					$this->url = $location;
-				} else {
-					$newPath = ($this->info['path'] !== '' && !str_starts_with($location, '/') ? dirname($this->info['path']) . '/' : (str_starts_with($location, '/') ? '' : '/')) . $location;
-					$this->info['path'] = $newPath;
-					$this->url = $this->glue_url($this->info);
-				}
-				$returner = AA_File_Wrapper::wrapper($this->url);
-				$returner->redirects = $this->redirects - 1;
-				return $returner;
-			}
-		}
+            if (preg_match('!^(?:(?:Location)|(?:URI)|(?:location)): ([^\s]+)[\r\n]!m', $response, $matches)) {
+                $this->close();
+                $location = $matches[1];
+                if (preg_match('!^[a-z]+://!', $location)) {
+                    $this->url = $location;
+                } else {
+                    $newPath = ($this->info['path'] !== '' && !str_starts_with($location, '/') ? dirname($this->info['path']) . '/' : (str_starts_with($location, '/') ? '' : '/')) . $location;
+                    $this->info['path'] = $newPath;
+                    $this->url = $this->glue_url($this->info);
+                }
+                $returner = AA_File_Wrapper::wrapper($this->url);
+                $returner->redirects = $this->redirects - 1;
+                return $returner;
+            }
+        }
         $this->close();
         return false;
     }
-	function glue_url ($parsed): false|string
+    public function glue_url($parsed): false|string
     {
         // Thanks to php dot net at NOSPAM dot juamei dot com
         // See http://www.php.net/manual/en/function.parse-url.php
@@ -1048,12 +1063,14 @@ class AA_File_HTTP_Wrapper extends AA_File_Wrapper_Ext {
 /**
  * HTTPS protocol class.
  */
-class AA_File_HTTPS_Wrapper extends AA_File_HTTP_Wrapper {
+class AA_File_HTTPS_Wrapper extends AA_File_HTTP_Wrapper
+{
     /** AA_File_HTTPS_Wrapper function
      * @param $url
      * @param $info
      */
-    function __construct($url, $info) {
+    public function __construct($url, $info)
+    {
         parent::__construct($url, $info);
         $this->setDefaultPort(443);
         $this->setDefaultHost('ssl://localhost');
@@ -1066,27 +1083,29 @@ class AA_File_HTTPS_Wrapper extends AA_File_HTTP_Wrapper {
 /**
  * FTP protocol class.
  */
-class AA_File_FTP_Wrapper extends AA_File_Wrapper_Ext {
-	/** @var resource Control socket */
-    var $ctrl;
-	/**
-	 * Open the file.
+class AA_File_FTP_Wrapper extends AA_File_Wrapper_Ext
+{
+    /** @var resource Control socket */
+    public $ctrl;
+    /**
+     * Open the file.
      *
      * @param $mode string See fopen for mode string options.
-	 *
-	 * @return boolean True iff success.
+     *
+     * @return boolean True iff success.
      */
-    function open(string $mode = 'rb') {
+    public function open(string $mode = 'rb')
+    {
         $user = $this->info['user'] ?? 'anonymous';
         $pass = $this->info['pass'] ?? 'user@example.com';
         $host = $this->info['host'] ?? 'localhost';
-        $port = isset($this->info['port']) ? (int)$this->info['port'] : 21;
+        $port = isset($this->info['port']) ? (int) $this->info['port'] : 21;
         $path = $this->info['path'] ?? '/';
-		if (!($this->ctrl = fsockopen($host, $port))) {
+        if (!($this->ctrl = fsockopen($host, $port))) {
             return false;
         }
 
-        if ($this->_open($user, $pass, $path)){
+        if ($this->_open($user, $pass, $path)) {
             return true;
         }
 
@@ -1094,10 +1113,10 @@ class AA_File_FTP_Wrapper extends AA_File_Wrapper_Ext {
         return false;
     }
 
-	/**
-	 * Close an open file.
+    /**
+     * Close an open file.
      */
-    function close(): void
+    public function close(): void
     {
         if ($this->fp) {
             parent::close();
@@ -1110,14 +1129,15 @@ class AA_File_FTP_Wrapper extends AA_File_Wrapper_Ext {
         fclose($this->ctrl);
         $this->ctrl = null;
     }
-	/**
-	 * Internal function to open a connection.
-	 * @param $user string Username
-	 * @param $pass string Password
-	 * @param $path string Path to file
-	 * @return boolean True iff success
+    /**
+     * Internal function to open a connection.
+     * @param $user string Username
+     * @param $pass string Password
+     * @param $path string Path to file
+     * @return boolean True iff success
      */
-    function _open($user, $pass, $path): bool {
+    public function _open($user, $pass, $path): bool
+    {
         // Connection establishment
         if ($this->_receive() != '220') {
             return false;
@@ -1152,8 +1172,8 @@ class AA_File_FTP_Wrapper extends AA_File_Wrapper_Ext {
         [, $h1, $h2, $h3, $h4, $p1, $p2] = $matches;
 
         $host = "$h1.$h2.$h3.$h4";
-        $port = ((int)$p1 << 8) + (int)$p2;
-		if (!($this->fp = fsockopen($host, $port))) {
+        $port = ((int) $p1 << 8) + (int) $p2;
+        if (!($this->fp = fsockopen($host, $port))) {
             return false;
         }
 
@@ -1168,33 +1188,34 @@ class AA_File_FTP_Wrapper extends AA_File_Wrapper_Ext {
         }
         return false;
     }
-	/**
-	 * Internal function to write to the connection.
-	 * @param $command string FTP command
-	 * @param $data string FTP data
-	 * @return boolean True iff success
+    /**
+     * Internal function to write to the connection.
+     * @param $command string FTP command
+     * @param $data string FTP data
+     * @return boolean True iff success
      */
-    function _send($command, $data = ''): bool
+    public function _send($command, $data = ''): bool
     {
         return fwrite($this->ctrl, $command . (empty($data) ? '' : ' ' . $data) . "\r\n");
     }
-	/**
-	 * Internal function to read a line from the connection.
-	 * @return string|false Resulting string, or false indicating error
+    /**
+     * Internal function to read a line from the connection.
+     * @return string|false Resulting string, or false indicating error
      */
-    function _receive(): false|string
+    public function _receive(): false|string
     {
         return $this->_receiveLine($line);
     }
-	/**
-	 * Internal function to receive a line from the connection.
-	 * @param $line string Reference to receive read data
-	 * @return string|false
+    /**
+     * Internal function to receive a line from the connection.
+     * @param $line string Reference to receive read data
+     * @return string|false
      */
-    function _receiveLine(&$line): string|false {
+    public function _receiveLine(&$line): string|false
+    {
         do {
             $line = fgets($this->ctrl);
-        } while($line !== false && ($tmp = substr(trim($line), 3, 1)) !== ' ' && $tmp != '');
+        } while ($line !== false && ($tmp = substr(trim($line), 3, 1)) !== ' ' && $tmp != '');
 
         if ($line !== false) {
             return substr($line, 0, 3);
@@ -1231,44 +1252,45 @@ class AA_File_FTP_Wrapper extends AA_File_Wrapper_Ext {
  *		   $dir->close();
  *
  */
-class AA_Directory_Wrapper {
-
+class AA_Directory_Wrapper
+{
     use LastErrTrait;
 
     /** @var $url string URL to the directory */
-    var $url;
+    public $url;
 
     /** @var $info array parsed URL info */
-    var $info;
+    public $info;
 
     /** @var $dp int the directory descriptor */
-    var $dp = NULL;
+    public $dp = null;
 
     /** @var $is_read bool specified if the content od directory is read */
-    var $is_read = false;
+    public $is_read = false;
 
     /** @var $subdir_names array of subdir names */
-    var $subdir_names = [];
+    public $subdir_names = [];
 
     /** @var $file_names array of file names */
-    var $file_names = [];
+    public $file_names = [];
 
     /** @var string $reg_file_filter filter applied to file names */
-    var $reg_file_filter = false;
+    public $reg_file_filter = false;
 
     /**
      * Constructor.
      * @param $url string
      * @param $info array
      */
-    function __construct($url, $info) {
+    public function __construct($url, $info)
+    {
         $this->url             = Files::fixPath($url);
         $this->info            = $info;
     }
 
     /** Repository of static variables (trick for PHP4)
      *  The trick for static class variables is used */
-    static function _setStatic($varname, $value, $set = true)
+    public static function _setStatic($varname, $value, $set = true)
     {
         static $variables;
         if ($set) {
@@ -1279,7 +1301,7 @@ class AA_Directory_Wrapper {
 
     /** Repository of static variables (trick for PHP4)
      *  The trick for static class variables is used */
-    static function _getStatic($varname)
+    public static function _getStatic($varname)
     {
         return self::_setStatic($varname, null, false);
     }
@@ -1288,13 +1310,13 @@ class AA_Directory_Wrapper {
      * Open the dir.
      * @return int directory descriptor or false if $url id not directory
      */
-    function open()
+    public function open()
     {
         if ($this->dp) {
             $this->close();
         }
 
-        if (is_dir ($this->url)) {
+        if (is_dir($this->url)) {
             $this->dp = opendir($this->url);
             return $this->dp;
         }
@@ -1306,19 +1328,19 @@ class AA_Directory_Wrapper {
     /**
      * Close the dir.
      */
-    function close(): void
+    public function close(): void
     {
         if ($this->dp) {
             closedir($this->dp);
         }
-        $this_dp = NULL;
+        $this_dp = null;
     }
 
     /**
      * Read one item from dir.
      * @return string next file in directory
      */
-    function read(): string
+    public function read(): string
     {
         return readdir($this->dp);
     }
@@ -1326,7 +1348,8 @@ class AA_Directory_Wrapper {
     /**
      * Read whole content of directory to class arrays if needed, fill the class arrays
      */
-    function readWholeDir(): bool {
+    public function readWholeDir(): bool
+    {
         if (!$this->is_read) {
             if ($this->open()) {
                 while ($file_name = $this->read()) {
@@ -1334,8 +1357,7 @@ class AA_Directory_Wrapper {
                         if ($file_name !== "." && $file_name !== "..") {
                             $this->subdir_names[] = $file_name;
                         }
-                    }
-                    elseif (is_file($this->url . $file_name)) {
+                    } elseif (is_file($this->url . $file_name)) {
                         $this->file_names[] = $file_name;
                     }
                 }
@@ -1351,7 +1373,7 @@ class AA_Directory_Wrapper {
     /**
      * Reload dir to class arrays
      */
-    function reloadWholeDir(): void
+    public function reloadWholeDir(): void
     {
         $this->is_read = false;
         $this->subdir_names = [];
@@ -1363,7 +1385,7 @@ class AA_Directory_Wrapper {
      * Make file wrapper from file array
      * @return array of AA_File_Wrapper instances
      */
-    function makeFileWrappers(): array
+    public function makeFileWrappers(): array
     {
         foreach ($this->file_names as $file_name) {
             $return_array[] = AA_File_Wrapper::wrapper($file_name);
@@ -1375,7 +1397,7 @@ class AA_Directory_Wrapper {
      * Make subdir wrapper from subdir array
      * @return AA_Directory_Wrapper[] instances
      */
-    function makeSubdirWrappers(): array
+    public function makeSubdirWrappers(): array
     {
         foreach ($this->subdir_names as $subdir_name) {
             $return_array[] = self::wrapper($subdir_name);
@@ -1387,7 +1409,7 @@ class AA_Directory_Wrapper {
      * Read and return the contents of the directory.
      * @return false|AA_File_Wrapper[] instances
      */
-    function getFiles(): array|false
+    public function getFiles(): array|false
     {
         if ($this->readWholeDir()) {
             return $this->makeFileWrappers();
@@ -1400,7 +1422,7 @@ class AA_Directory_Wrapper {
      * Read and return wrapped subdirs
      * @return false|AA_Directory_Wrapper[] (type by my type)
      */
-    function getSubdirs(): false|array
+    public function getSubdirs(): false|array
     {
         if ($this->readWholeDir()) {
             return $this->makeSubdirWrappers();
@@ -1414,7 +1436,7 @@ class AA_Directory_Wrapper {
      * @param bool $full_path
      * @return false|string[] - of strings file names
      */
-    function getFileNames($full_path = false): array|false
+    public function getFileNames($full_path = false): array|false
     {
         if ($this->readWholeDir()) {
             if ($full_path) {
@@ -1435,7 +1457,7 @@ class AA_Directory_Wrapper {
      * @param $full_path
      * @return false|string[] - of strings filtered file names
      */
-    function getRegFilteredFileNames($full_path = false): array|false
+    public function getRegFilteredFileNames($full_path = false): array|false
     {
         if (!is_array($all_file_names = $this->getFileNames($full_path))) {
             return false;
@@ -1443,7 +1465,7 @@ class AA_Directory_Wrapper {
         if ($this->reg_file_filter) {
             $return_array = [];
             foreach ($all_file_names as $file_name) {
-                if (preg_match('`'.str_replace('`','\`',$this->reg_file_filter).'`i', $file_name)) {
+                if (preg_match('`' . str_replace('`', '\`', $this->reg_file_filter) . '`i', $file_name)) {
                     $return_array[] = $file_name;
                 }
             }
@@ -1458,7 +1480,7 @@ class AA_Directory_Wrapper {
      * @param $full_path
      * @return array of strings subdir names
      */
-    function getSubdirNames($full_path = false): array
+    public function getSubdirNames($full_path = false): array
     {
         if ($this->readWholeDir()) {
             if ($full_path) {
@@ -1476,7 +1498,7 @@ class AA_Directory_Wrapper {
      * Read and return complete subdirtree
      * @return array of arrays indexed by values
      */
-    function getSubdirTree(): array
+    public function getSubdirTree(): array
     {
         return $this->getSubdirNamesRecur();
     }
@@ -1485,7 +1507,7 @@ class AA_Directory_Wrapper {
      * Read and return complete subdirtree - internal
      * @return array of arrays indexed by values
      */
-    function  getSubdirNamesRecur(): array
+    public function getSubdirNamesRecur(): array
     {
         $return_array = [];
         if ($this->readWholeDir()) {
@@ -1512,7 +1534,7 @@ class AA_Directory_Wrapper {
      * Return file names in specified directory
      * @return array of string
      */
-    function getSubdirFileNames(): array
+    public function getSubdirFileNames(): array
     {
         return self::_getStatic('subdir_file_names');
     }
@@ -1521,7 +1543,7 @@ class AA_Directory_Wrapper {
      * Set the $reg_file_filter variable
      * @param $filter string
      */
-    function setRegFileFilter($filter = false): void
+    public function setRegFileFilter($filter = false): void
     {
         $this->reg_file_filter = $filter;
     }
@@ -1530,7 +1552,7 @@ class AA_Directory_Wrapper {
      * Set the $needed_subdir_name variable
      * @param $name string
      */
-    function setNeededSubdir($name): void
+    public function setNeededSubdir($name): void
     {
         self::_setStatic('needed_subdir_name', $name);
     }
@@ -1544,23 +1566,21 @@ class AA_Directory_Wrapper {
      * @param string $url
      * @return AA_Directory_Wrapper directory wrapper (type by $url)
      */
-    static function &wrapper($url): AA_Directory_Wrapper
+    public static function &wrapper($url): AA_Directory_Wrapper
     {
         $info = parse_url($url);
         /*if (ini_get('allow_url_fopen')) {
             $wrapper = new AA_File_Wrapper($url, $info);
         } else {*/
 
-            switch (@$info['scheme']) {
-                case 'ftp':
-                    echo "ftp directory not yet implemented\n";
-                    //$wrapper = new AA_FTP_Directory_Wrapper($url, $info);
-                    break;
-                default:
-                    $wrapper = new AA_Directory_Wrapper($url, $info);
-            }
+        switch (@$info['scheme']) {
+            case 'ftp':
+                echo "ftp directory not yet implemented\n";
+                //$wrapper = new AA_FTP_Directory_Wrapper($url, $info);
+                break;
+            default:
+                $wrapper = new AA_Directory_Wrapper($url, $info);
+        }
         return $wrapper;
     }
 }
-
-

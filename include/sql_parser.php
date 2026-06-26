@@ -28,7 +28,8 @@ use AA\Util\LastErrTrait;
  * @link      https://www.apc.org/ APC
  */
 
-class SQL_Parser_Constants {
+class SQL_Parser_Constants
+{
     // token types - number representation
     public const TOKEN_TYPE_UNKNOWN           = 0;
     public const TOKEN_TYPE_STRING            = 1;
@@ -95,8 +96,8 @@ $First = [
 //  Functions for Lexical analysis
 // -----------------------------------------------------------------------------
 
-class SQL_Lex {
-
+class SQL_Lex
+{
     public const APOS              = "'";
     public const WHITE             = " \t";
     public const LEFT_PARENTHESES  = "({[";
@@ -115,7 +116,8 @@ class SQL_Lex {
      * @param $op
      * @return array
      */
-    public static function resolveOperator($op): array {
+    public static function resolveOperator($op): array
+    {
         return match ($op) {
             '+'     => ["type" => SQL_Parser_Constants::TOKEN_TYPE_OPERATOR_AND, "value" => "and"],
             '-'     => ["type" => SQL_Parser_Constants::TOKEN_TYPE_OPERATOR_NOT, "value" => "not"],
@@ -124,7 +126,8 @@ class SQL_Lex {
     }
 
     /** contains SQL special characters? */
-    public static function isSpecial($text): bool {
+    public static function isSpecial($text): bool
+    {
         return str_contains(self::SPECIAL, $text);
     }
 
@@ -143,7 +146,8 @@ class SQL_Lex {
      * @param $ending
      * @return array
      */
-    public static function tillTheEndingQuotApos($input, $i, $length, $ending): array {
+    public static function tillTheEndingQuotApos($input, $i, $length, $ending): array
+    {
         $tok = "";
         while ($input[$i] != $ending) {
             $tok .= $input[$i++];
@@ -160,16 +164,15 @@ class SQL_Lex {
      * @param $length
      * @return array
      */
-    public static function tillTheFirstSpecial($input, $i, $length): array {
+    public static function tillTheFirstSpecial($input, $i, $length): array
+    {
         $tok  = "";
         $last = $length - 1;
-        while (($i < $length) and
-            (
-                !self::isSpecial($input[$i])
-                or // don't break on apostrophe and minus sign in the middle of words
-                (($input[$i] === '-') and (($i and !self::isSpecial($input[$i - 1])) or ($i == $last)))
-                or
-                (($input[$i] === "'") and ($i and ($i != $last) and !self::isSpecial($input[$i - 1] .$input[$i + 1])))
+        while (($i < $length)
+            and (
+                !self::isSpecial($input[$i]) // don't break on apostrophe and minus sign in the middle of words
+                or (($input[$i] === '-') and (($i and !self::isSpecial($input[$i - 1])) or ($i == $last)))
+                or (($input[$i] === "'") and ($i and ($i != $last) and !self::isSpecial($input[$i - 1] . $input[$i + 1])))
             )) {
             // (false !== strpos("'-", $input[$i])) && ($i != 0) && ($i != $length - 1) && !isSpecial($input[$i-1].$input[$i+1])))) {
             $tok .= $input[$i++];
@@ -183,7 +186,8 @@ class SQL_Lex {
      * @param $length
      * @return array
      */
-    public static function getToken($input, $i, $length): array {
+    public static function getToken($input, $i, $length): array
+    {
         $tok = [];
         // eat whitespaces
         $i += strspn($input, self::WHITE, $i, $length);
@@ -229,7 +233,8 @@ class SQL_Lex {
      * @param array $toks
      * @return array
      */
-    public static function preProcess(array $toks): array {
+    public static function preProcess(array $toks): array
+    {
         foreach ($toks as $val) {
             // UNKNOWN will be set for strings not delimeted by apostrofs,
             // we can't say: "it is string" (see "and", ...)
@@ -264,15 +269,15 @@ class SQL_Lex {
                 $t2         = next($newtoks);
                 if ($t1["type"] == SQL_Parser_Constants::TOKEN_TYPE_STRING) {
                     if (($t2) && (($t2["type"] == SQL_Parser_Constants::TOKEN_TYPE_STRING) || ($t2["type"] == SQL_Parser_Constants::TOKEN_TYPE_LEFT_PARENTHESIS) || ($t2["type"] == SQL_Parser_Constants::TOKEN_TYPE_OPERATOR_NOT))) {
-                    $newtoks2[] = [
-                        "status" => self::S_IMPLICIT,
-                        "value"  => "and",
-                        "i"      => $t1["i"],
-                        "type"   => SQL_Parser_Constants::TOKEN_TYPE_OPERATOR_AND,
-                    ];
+                        $newtoks2[] = [
+                            "status" => self::S_IMPLICIT,
+                            "value"  => "and",
+                            "i"      => $t1["i"],
+                            "type"   => SQL_Parser_Constants::TOKEN_TYPE_OPERATOR_AND,
+                        ];
+                    }
                 }
             }
-        }
         }
         $newtoks2[] = [
             "status" => self::S_IMPLICIT,
@@ -287,7 +292,8 @@ class SQL_Lex {
      * @param $input
      * @return array
      */
-    public static function lex($input): array {
+    public static function lex($input): array
+    {
         $res    = [];
         $length = strlen($input);
         $i      = 0;
@@ -309,19 +315,22 @@ class SQL_Lex {
 //  Functions for Syntax analysis
 // -----------------------------------------------------------------------------
 
-class TokenList {
+class TokenList
+{
     protected $tList;
     protected $index = 0;
 
     /** TokenList function
      * @param $t
      */
-    function __construct($t) {
+    public function __construct($t)
+    {
         $this->tList = $t;
     }
 
     /** lookAhead function  */
-    function lookAhead() {
+    public function lookAhead()
+    {
         return $this->tList[$this->index]["type"];
     }
 
@@ -329,7 +338,8 @@ class TokenList {
      * @param $symbol
      * @return string
      */
-    function match($symbol): string {
+    public function match($symbol): string
+    {
         if (($la = $this->lookAhead()) == $symbol) {
             $this->index++;
             return '';
@@ -341,14 +351,16 @@ class TokenList {
     /** getStringValue function
      *
      */
-    function getStringValue(): string {
+    public function getStringValue(): string
+    {
         return ($this->tList[$this->index]["type"] == SQL_Parser_Constants::TOKEN_TYPE_STRING) ? quote($this->tList[$this->index]['value']) : '';
     }
 
     /** getTokenBegin function
      *
      */
-    function getTokenBegin() {
+    public function getTokenBegin()
+    {
         $t = $this->tList[$this->index];
         return $t["i"] - strlen($t['value']);
     }
@@ -359,7 +371,8 @@ class TokenList {
  * Class for syntax analysis contains variable tList, which is list of token,
  * which comes from lexical analysis.
  */
-class Syntax {
+class Syntax
+{
     use LastErrTrait;
 
     protected $tList;
@@ -380,7 +393,8 @@ class Syntax {
      * @param $operator
      * @param $t
      */
-    function __construct($column, $operator, $t) {
+    public function __construct($column, $operator, $t)
+    {
         $operator       = strtoupper($operator);
         $this->column   = $column;
         $this->operator = self::RL["operator"][$operator];
@@ -400,7 +414,8 @@ class Syntax {
 
     /** S function
      */
-    function S(): string {
+    public function S(): string
+    {
         $la = $this->tList->lookAhead();
         if (($la == SQL_Parser_Constants::TOKEN_TYPE_LEFT_PARENTHESIS) || ($la == SQL_Parser_Constants::TOKEN_TYPE_STRING) || ($la == SQL_Parser_Constants::TOKEN_TYPE_OPERATOR_NOT)) {      // S -> E
             //     echo("S->E<br>\n");//debug
@@ -421,12 +436,12 @@ class Syntax {
 
     /** E function
      */
-    function E(): string {
+    public function E(): string
+    {
         $la = $this->tList->lookAhead();
-        if (($la == SQL_Parser_Constants::TOKEN_TYPE_LEFT_PARENTHESIS) ||
-            ($la == SQL_Parser_Constants::TOKEN_TYPE_STRING) ||
-            ($la == SQL_Parser_Constants::TOKEN_TYPE_OPERATOR_NOT))        // E -> TE'
-        {
+        if (($la == SQL_Parser_Constants::TOKEN_TYPE_LEFT_PARENTHESIS)
+            || ($la == SQL_Parser_Constants::TOKEN_TYPE_STRING)
+            || ($la == SQL_Parser_Constants::TOKEN_TYPE_OPERATOR_NOT)) {        // E -> TE'
             // echo("E->TEap<BR>\n");//debug
             if (($val = $this->T()) === "_SYNTAX_ERROR") {
                 return $val;
@@ -444,7 +459,8 @@ class Syntax {
 
     /** Eap function
      */
-    function Eap(): string {
+    public function Eap(): string
+    {
         $la = $this->tList->lookAhead();
         if ($la == SQL_Parser_Constants::TOKEN_TYPE_OPERATOR_OR) {    // E' -> orTE'
             // echo("Eap->orTEap<BR>\n");//debug
@@ -471,7 +487,8 @@ class Syntax {
 
     /** T function
      */
-    function T(): string {
+    public function T(): string
+    {
         $la = $this->tList->lookAhead();
         if (($la == SQL_Parser_Constants::TOKEN_TYPE_LEFT_PARENTHESIS) || ($la == SQL_Parser_Constants::TOKEN_TYPE_STRING) || ($la == SQL_Parser_Constants::TOKEN_TYPE_OPERATOR_NOT)) {        // T -> FT'
             // echo("T->FTap<BR>\n");//debug
@@ -491,7 +508,8 @@ class Syntax {
 
     /** Tap function
      */
-    function Tap(): string {
+    public function Tap(): string
+    {
         $la = $this->tList->lookAhead();
         if ($la == SQL_Parser_Constants::TOKEN_TYPE_OPERATOR_AND) {    // T' -> andFT'
             //            echo("Tap->andFTap<BR>\n");//debug
@@ -518,7 +536,8 @@ class Syntax {
 
     /** F function
      */
-    function F(): string {
+    public function F(): string
+    {
         $la = $this->tList->lookAhead();
         if ($la == SQL_Parser_Constants::TOKEN_TYPE_OPERATOR_NOT) {    // F -> not G
             // echo("F->notG<BR>\n");//debug
@@ -544,7 +563,8 @@ class Syntax {
 
     /** G function
      */
-    function G(): string {
+    public function G(): string
+    {
         $la = $this->tList->lookAhead();
         if ($la == SQL_Parser_Constants::TOKEN_TYPE_LEFT_PARENTHESIS) { // G -> (E)
             // echo("G->(E)<BR>\n");//debug
@@ -564,7 +584,7 @@ class Syntax {
             $val .= SQL_Parser_Constants::SYNTAX_RIGHT_PAR;
         } elseif ($la == SQL_Parser_Constants::TOKEN_TYPE_STRING) {    // G -> string
             // echo("G->string<BR>\n");//debug
-            $val = DB_AA::quoteIdentifier($this->column). $this->operator . " '" . $this->pre . $this->tList->getStringValue() . $this->post . "'";
+            $val = DB_AA::quoteIdentifier($this->column) . $this->operator . " '" . $this->pre . $this->tList->getStringValue() . $this->post . "'";
             if (($err = $this->tList->match(SQL_Parser_Constants::TOKEN_TYPE_STRING))) {
                 self::lastErr(13, $err);
                 return "_SYNTAX_ERROR";
@@ -577,8 +597,8 @@ class Syntax {
     }
 
     /** B function */
-    public static function B($text): string {
+    public static function B($text): string
+    {
         return "<b>$text</b>";
     }
 } // class Syntax
-

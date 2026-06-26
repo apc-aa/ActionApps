@@ -73,33 +73,35 @@ use AA\Util\Txt;
 //   }
 //
 
-class AA_Debug_Firephp extends AA_Debug {
+class AA_Debug_Firephp extends AA_Debug
+{
     private $_console;
 
-    function __construct() {
+    public function __construct()
+    {
         define('INSIGHT_IPS', '*');
         define('INSIGHT_AUTHKEYS', '*');
         define('INSIGHT_PATHS', __DIR__);
         define('INSIGHT_SERVER_PATH', '/aaa/test.php');
-        require_once(__DIR__."/../misc/firephp/lib/FirePHP/Init.php");
+        require_once(__DIR__ . "/../misc/firephp/lib/FirePHP/Init.php");
         $inspector = FirePHP::to('page');
         $this->_console = $inspector->console();
         $this->_console->log('ActionApps - console initiated');
         parent::__construct();
     }
 
-    function _groupstart($group): void
+    public function _groupstart($group): void
     {
         $this->_console->group($group)->open();
         $this->_console->log($group);
     }
 
-    function _groupend($group): void
+    public function _groupend($group): void
     {
         $this->_console->group($group)->close();
     }
 
-    function _do($func, $params): void
+    public function _do($func, $params): void
     {
         $this->_console->log(microtime(true) - $this->_starttime['main']);
         foreach ($params as $var) {
@@ -109,8 +111,9 @@ class AA_Debug_Firephp extends AA_Debug {
 }
 
 
-class AA_Debug_Console extends AA_Debug {
-    function _do($func, $params): void
+class AA_Debug_Console extends AA_Debug
+{
+    public function _do($func, $params): void
     {
         $code = '';
         foreach ($params as $a) {
@@ -118,45 +121,46 @@ class AA_Debug_Console extends AA_Debug {
                 $a = print_r($a, true);
             }
             // we used escape4js, but it is sometimes not defined yet
-            $a = str_replace( ["\\", "'","\r\n","\n","\r",'<script','</script'], ["\\\\", "\\'",'\n','\n','\n','\x3Cscript','\x3C/script'], $a );
+            $a = str_replace(["\\", "'","\r\n","\n","\r",'<script','</script'], ["\\\\", "\\'",'\n','\n','\n','\x3Cscript','\x3C/script'], $a);
             $code .= "console.$func('$a');\n";  //str_replace("'", "\'", str_replace('\\', '\\\\', $a)).
         }
         $this->_script($code);
     }
 
-    function _groupstart($group): void
+    public function _groupstart($group): void
     {
         $this->_script("console.group();");
         $this->_do('log', [$group]);
     }
 
-    function _groupend($group): void
+    public function _groupend($group): void
     {
         $this->_script("console.groupEnd();");
         $this->_do('log', [$group]);
     }
 
-    function _script($code): void
+    public function _script($code): void
     {
         echo  "\n<script>\n  $code\n</script>\n";
     }
 }
 
-class AA_Debug_Phpconsole extends AA_Debug {
-    function __construct() {
+class AA_Debug_Phpconsole extends AA_Debug
+{
+    public function __construct()
+    {
         PhpConsole::start(true, true, AA_SITE_PATH);
         parent::__construct();
     }
 
-    function _groupstart($group): void
+    public function _groupstart($group): void
     {
         $this->_do($group, $group);
     }
 
-    function _groupend($group): void {
-    }
+    public function _groupend($group): void {}
 
-    function _do($func, $params): void
+    public function _do($func, $params): void
     {
         PhpConsole::debug(microtime(true) - $this->_starttime['main'], 'log');
         foreach ($params as $var) {
@@ -180,8 +184,8 @@ class AA_Debug_Phpconsole extends AA_Debug {
  * them work on script shutdown when FATAL error occurs.
  *
  */
-class PhpConsole {
-
+class PhpConsole
+{
     public static $ignoreRepeatedEvents = false;
     public static $callOldErrorHandler = true;
     public static $callOldExceptionsHandler = true;
@@ -194,14 +198,15 @@ class PhpConsole {
     private $handledMessagesHashes = [];
     private $sourceBasePath;
 
-    private function __construct($handleErrors, $handleExceptions, $sourceBasePath) {
-        if($handleErrors) {
+    private function __construct($handleErrors, $handleExceptions, $sourceBasePath)
+    {
+        if ($handleErrors) {
             $this->initErrorsHandler();
         }
-        if($handleExceptions) {
+        if ($handleExceptions) {
             $this->initExceptionsHandler();
         }
-        if($sourceBasePath) {
+        if ($sourceBasePath) {
             $this->sourceBasePath = realpath($sourceBasePath);
         }
         $this->initClient();
@@ -209,14 +214,15 @@ class PhpConsole {
 
     public static function start($handleErrors = true, $handleExceptions = true, $sourceBasePath = null): void
     {
-        if(self::$instance) {
+        if (self::$instance) {
             die('PhpConsole already started');
         }
         self::$instance = new PhpConsole($handleErrors, $handleExceptions, $sourceBasePath);
     }
 
-    public static function getInstance() {
-        if(!self::$instance) {
+    public static function getInstance()
+    {
+        if (!self::$instance) {
             die('PhpConsole not started');
         }
         return self::$instance;
@@ -224,9 +230,9 @@ class PhpConsole {
 
     private function handle(PhpConsoleEvent $event): void
     {
-        if(self::$ignoreRepeatedEvents) {
+        if (self::$ignoreRepeatedEvents) {
             $eventHash = md5($event->message . $event->file . $event->line);
-            if(in_array($eventHash, $this->handledMessagesHashes)) {
+            if (in_array($eventHash, $this->handledMessagesHashes)) {
                 return;
             }
 
@@ -235,7 +241,8 @@ class PhpConsole {
         $this->sendEventToClient($event);
     }
 
-    public function __destruct() {
+    public function __destruct()
+    {
         self::flushMessagesBuffer();
     }
 
@@ -243,13 +250,13 @@ class PhpConsole {
     CLIENT
      **************************************************************/
 
-    const clientProtocolCookie = 'phpcslc';
-    const serverProtocolCookie = 'phpcsls';
-    const serverProtocol = 4;
-    const messagesCookiePrefix = 'phpcsl_';
-    const cookiesLimit = 50;
-    const cookieSizeLimit = 4000;
-    const messageLengthLimit = 2500;
+    public const clientProtocolCookie = 'phpcslc';
+    public const serverProtocolCookie = 'phpcsls';
+    public const serverProtocol = 4;
+    public const messagesCookiePrefix = 'phpcsl_';
+    public const cookiesLimit = 50;
+    public const cookieSizeLimit = 4000;
+    public const messageLengthLimit = 2500;
 
     private static $isEnabledOnClient;
     private static $isDisabled;
@@ -261,10 +268,10 @@ class PhpConsole {
 
     private function initClient(): void
     {
-        if(self::$isEnabledOnClient === null) {
+        if (self::$isEnabledOnClient === null) {
             self::setEnabledOnServer();
             self::$isEnabledOnClient = self::isEnabledOnClient();
-            if(self::$isEnabledOnClient) {
+            if (self::$isEnabledOnClient) {
                 ob_start();
             }
         }
@@ -277,7 +284,7 @@ class PhpConsole {
 
     private static function setEnabledOnServer(): void
     {
-        if(!isset($_COOKIE[self::serverProtocolCookie]) || $_COOKIE[self::serverProtocolCookie] != self::serverProtocol) {
+        if (!isset($_COOKIE[self::serverProtocolCookie]) || $_COOKIE[self::serverProtocolCookie] != self::serverProtocol) {
             self::setCookie(self::serverProtocolCookie, self::serverProtocol);
         }
     }
@@ -295,19 +302,19 @@ class PhpConsole {
         $message['subject'] = $event->type;
         $message['text'] = substr($event->message, 0, self::messageLengthLimit);
 
-        if($event->file) {
+        if ($event->file) {
             $message['source'] = ($this->sourceBasePath ? preg_replace('!^' . preg_quote($this->sourceBasePath, '!') . '!', '', $event->file) : $event->file) . ($event->line ? ':' . $event->line : '');
         }
-        if($event->trace) {
+        if ($event->trace) {
             $traceArray = $this->convertTraceToArray($event->trace, $event->file, $event->line);
-            if($traceArray) {
+            if ($traceArray) {
                 $message['trace'] = $traceArray;
             }
         }
 
         self::pushMessageToBuffer($message);
 
-        if(strpos($event->tags, ',fatal')) {
+        if (strpos($event->tags, ',fatal')) {
             self::flushMessagesBuffer();
         }
     }
@@ -315,33 +322,31 @@ class PhpConsole {
     private function convertTraceToArray($traceData, $eventFile = null, $eventLine = null): array
     {
         $trace = [];
-        foreach($traceData as $call) {
-            if((isset($call['class']) && $call['class'] == __CLASS__) || (!$trace && isset($call['file']) && $call['file'] == $eventFile && $call['line'] == $eventLine)) {
+        foreach ($traceData as $call) {
+            if ((isset($call['class']) && $call['class'] == __CLASS__) || (!$trace && isset($call['file']) && $call['file'] == $eventFile && $call['line'] == $eventLine)) {
                 $trace = [];
                 continue;
             }
             $args = [];
-            if(isset($call['args'])) {
-                foreach($call['args'] as $arg) {
-                    if(is_object($arg)) {
+            if (isset($call['args'])) {
+                foreach ($call['args'] as $arg) {
+                    if (is_object($arg)) {
                         $args[] = get_class($arg);
-                    }
-                    elseif (is_array($arg)) {
+                    } elseif (is_array($arg)) {
                         $args[] = 'Array';
-                    }
-                    else {
+                    } else {
                         $arg = var_export($arg, 1);
                         $args[] = Txt::shorten($arg, 12, '…\'');
                     }
                 }
             }
-            if(isset($call['file']) && $this->sourceBasePath) {
+            if (isset($call['file']) && $this->sourceBasePath) {
                 $call['file'] = preg_replace('!^' . preg_quote($this->sourceBasePath, '!') . '!', '', $call['file']);
             }
             $trace[] = (isset($call['file']) ? ($call['file'] . ':' . $call['line']) : '[internal call]') . ' - ' . (isset($call['class']) ? $call['class'] . $call['type'] : '') . $call['function'] . '(' . implode(', ', $args) . ')';
         }
         $trace = array_reverse($trace);
-        foreach($trace as $i => &$call) {
+        foreach ($trace as $i => &$call) {
             $call = '#' . ($i + 1) . ' ' . $call;
         }
         return $trace;
@@ -350,7 +355,7 @@ class PhpConsole {
     private static function pushMessageToBuffer($message): void
     {
         $encodedMessageLength = strlen(rawurlencode(json_encode($message)));
-        if(self::$bufferLength + $encodedMessageLength > self::cookieSizeLimit) {
+        if (self::$bufferLength + $encodedMessageLength > self::cookieSizeLimit) {
             self::flushMessagesBuffer();
         }
         self::$messagesBuffer[] = $message;
@@ -364,13 +369,13 @@ class PhpConsole {
 
     public static function flushMessagesBuffer(): void
     {
-        if(self::$messagesBuffer) {
+        if (self::$messagesBuffer) {
             self::sendMessages(self::$messagesBuffer);
             self::$bufferLength = 0;
             self::$messagesSent += count(self::$messagesBuffer);
             self::$messagesBuffer = [];
             self::$cookiesSent++;
-            if(self::$cookiesSent == self::cookiesLimit) {
+            if (self::$cookiesSent == self::cookiesLimit) {
                 self::$isDisabled = true;
                 $message = ['type' => 'error', 'subject' => 'PHP CONSOLE', 'text' => 'MESSAGES LIMIT EXCEEDED BECAUSE OF COOKIES STORAGE LIMIT. TOTAL MESSAGES SENT: ' . self::$messagesSent, 'source' => __FILE__, 'notify' => 3];
                 self::sendMessages([$message]);
@@ -380,7 +385,7 @@ class PhpConsole {
 
     private static function setCookie($name, $value): void
     {
-        if(headers_sent($file, $line)) {
+        if (headers_sent($file, $line)) {
             die('PhpConsole ERROR: setcookie() failed because haders are sent (' . $file . ':' . $line . '). Try to use ob_start()');
         }
         setcookie($name, $value, null, '/');
@@ -407,8 +412,8 @@ class PhpConsole {
         ini_set('ignore_repeated_errors', self::$ignoreRepeatedEvents);
         ini_set('ignore_repeated_source', self::$ignoreRepeatedEvents);
 
-        foreach($this->notCompitableCodes as $code => $tag) {
-            if(defined($code)) {
+        foreach ($this->notCompitableCodes as $code => $tag) {
+            if (defined($code)) {
                 $this->codesTags[constant($code)] = $tag;
                 $this->codesNames[constant($code)] = $code;
             }
@@ -421,17 +426,17 @@ class PhpConsole {
     public function checkFatalError(): void
     {
         $error = error_get_last();
-        if($error) {
+        if ($error) {
             $this->handleError($error['type'], $error['message'], $error['file'], $error['line']);
         }
     }
 
     public function handleError($code = null, $message = null, $file = null, $line = null): void
     {
-        if(error_reporting() == 0) { // if error has been supressed with an @
+        if (error_reporting() == 0) { // if error has been supressed with an @
             return;
         }
-        if(!$code) {
+        if (!$code) {
             $code = E_USER_ERROR;
         }
 
@@ -491,7 +496,7 @@ class PhpConsole {
 
     public static function debug($message, $tags = 'debug'): void
     {
-        if(self::$instance) {
+        if (self::$instance) {
             $event = new PhpConsoleEvent();
             $event->message = $message;
             $event->tags = $tags;
@@ -501,8 +506,8 @@ class PhpConsole {
     }
 }
 
-class PhpConsoleEvent {
-
+class PhpConsoleEvent
+{
     public $message;
     public $type;
     public $tags;
@@ -510,5 +515,3 @@ class PhpConsoleEvent {
     public $file;
     public $line;
 }
-
-

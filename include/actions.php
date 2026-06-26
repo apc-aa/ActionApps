@@ -1,4 +1,5 @@
 <?php
+
 /**
  * File contains definitions of functions which corresponds with actions
  * on Item Manager page (admin/index.php) - manipulates with items
@@ -43,14 +44,14 @@ use AA\Manageraction\Manageractions;
 use AA\Manageraction\Taskmanager_Delete;
 use AA\Manageraction\Taskmanager_Execute;
 
-
 //------------------ Actions for Task Manager --------------------------------
 
 /** Generates manager settings for aa_toexecute.php and se_taskmanager.php
  * @return Managed - manager settings
  */
-function GetToexecuteManagerSettings(): Managed {
-    $actions   = new Manageractions;
+function GetToexecuteManagerSettings(): Managed
+{
+    $actions   = new Manageractions();
     $actions->addAction(new Taskmanager_Execute('ExecuteTaskAction'));
     $actions->addAction(new Taskmanager_Delete('DeleteTaskAction'));
 

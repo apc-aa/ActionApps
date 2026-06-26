@@ -1,4 +1,5 @@
 <?php
+
 /**
  *
  *
@@ -35,13 +36,14 @@ require_once __DIR__ . "/searchlib.php";
 require_once __DIR__ . "/../modules/links/util.php";
 require_once __DIR__ . "/../modules/links/linksearch.php";
 // add mlx functions
-require_once __DIR__."/mlx.php";
+require_once __DIR__ . "/mlx.php";
 
 
 /** Class for storing url commands for view (object of this class stores just
  *  one command
  */
-class ViewCommand {
+class ViewCommand
+{
     private string $command;      /** type of the command (like x, c, d, v, ...) */
     private array $parameters;   /** command parameters */
 
@@ -49,7 +51,8 @@ class ViewCommand {
      *  @param $command    string - the letter indicating the command (x, c, d, v, ...)
      *  @param $parameters string[] of command parameters
      */
-    function __construct(string $command, array $parameters) {
+    public function __construct(string $command, array $parameters)
+    {
         $this->command    = $command;
         $this->parameters = $parameters;
     }
@@ -87,15 +90,15 @@ class ViewCommand {
      *
      * @return string[]
      */
-    public function getParameterArray(int $offset=0): array
+    public function getParameterArray(int $offset = 0): array
     {
         return array_slice($this->parameters, $offset);
     }
 }
 
 /** Class for storing set of url commands for view  */
-class AA_View_Commands {
-
+class AA_View_Commands
+{
     /** @var ViewCommand[] */
     private array $commands = [];     /** array of objects of ViewCommand class */
 
@@ -104,7 +107,8 @@ class AA_View_Commands {
      * @param $cmd
      * @param $als
      */
-    function __construct($cmd, $als=false) {
+    public function __construct($cmd, $als = false)
+    {
         $this->parseCommand($cmd, $als);
     }
 
@@ -112,7 +116,7 @@ class AA_View_Commands {
      *  @return ViewCommand command given by command letter (say 'd')
      * @param $command
      */
-    function get($command): ?ViewCommand
+    public function get($command): ?ViewCommand
     {
         return $this->commands[$command];
     }
@@ -120,7 +124,8 @@ class AA_View_Commands {
     /** count function
      *  @return int number of commands in the set
      */
-    public function count(): int {
+    public function count(): int
+    {
         return count($this->commands);
     }
     /** reset function
@@ -137,7 +142,7 @@ class AA_View_Commands {
     }
     /** current function
      */
-    function current(): ViewCommand|false
+    public function current(): ViewCommand|false
     {
         return current($this->commands);
     }
@@ -149,10 +154,10 @@ class AA_View_Commands {
      *  @param $command    string - the letter indicating the command (x, c, d, v, ...)
      *  @param $parameters array of command patameters
      */
-    function addCommand(string $command, array $parameters): void
+    public function addCommand(string $command, array $parameters): void
     {
         // only one command of specific type must be present
-        if ( isset($this->commands[$command]) ) {
+        if (isset($this->commands[$command])) {
             // if the command is already set, then the parameters are appended
             $this->commands[$command]->addParameters($parameters);
         } else {
@@ -170,15 +175,15 @@ class AA_View_Commands {
      * @param array $als array of aliases used to expand inside cmd
      *                   (als[] obviously comes from url, as well)
      */
-    function parseCommand($cmd, $als=false): void
+    public function parseCommand($cmd, $als = false): void
     {
 
-        AA::$debug&2 && AA::$dbg->log("<br>ParseCommand - cmd:", $cmd);
+        AA::$debug & 2 && AA::$dbg->log("<br>ParseCommand - cmd:", $cmd);
 
         // cmd could be array - in this case more commands are passed to view
         // Usage: cmd[89][]=c-1-On&cmd[89][]=c-2-Cars&cmd[89][]=x-89-2233-5244
         // this will display items 2233 and 5244 if passes the conditions
-        foreach( (array)$cmd as $cmd_part ) {
+        foreach ((array) $cmd as $cmd_part) {
 
             // substitute url aliases in cmd
             if (isset($als) && is_array($als)) {
@@ -195,10 +200,10 @@ class AA_View_Commands {
                     // {view.php?vid=12&cmd[]=x-34-_%23CAMPAIGN&als[CAMPAIGN]=42525}
                     // (%23 is urlencoded #)
                     if (!str_starts_with($k, '_#')) {
-                        $cmd_part = str_replace('_#'.$k, $v, $cmd_part);
+                        $cmd_part = str_replace('_#' . $k, $v, $cmd_part);
                     }
 
-                    $cmd_part = str_replace($k,  $v, $cmd_part);
+                    $cmd_part = str_replace($k, $v, $cmd_part);
                 }
             }
 
@@ -208,25 +213,27 @@ class AA_View_Commands {
             $splited = in_array($command, ['x', 'i', 'o']) ? explode("-", $params) : split_escaped("-", $params, "--");
             $this->addCommand($command, $splited);
 
-//            $splited = split_escaped("-", $cmd_part, "--");
-//            $this->addCommand($splited[0], array_slice($splited,1));
+            //            $splited = split_escaped("-", $cmd_part, "--");
+            //            $this->addCommand($splited[0], array_slice($splited,1));
         }
     }
 
 }
 
 
-class AA_Showview {
+class AA_Showview
+{
     protected $_view_param     = [];
 
-    function __construct($view_param) {
+    public function __construct($view_param)
+    {
         $this->_view_param = $view_param;
     }
 
     /** perform actions on start output */
     protected function outputStart(AA_View $view, float $start_time): void
     {
-        AA::$debug&2 && AA::$dbg->group("view_{$view->getId()}" . '_' . ($start_time));
+        AA::$debug & 2 && AA::$dbg->group("view_{$view->getId()}" . '_' . ($start_time));
     }
 
     protected function outputEnd(AA_View $view, float $start_time, string $warn_msg = ''): void
@@ -235,17 +242,18 @@ class AA_Showview {
             AA::$debug && AA::$dbg->warn($warn_msg);
         }
         $vid = $view->getId();
-        AA::$debug&2 && AA::$dbg->groupend("view_$vid" . '_' . ($start_time));
+        AA::$debug & 2 && AA::$dbg->groupend("view_$vid" . '_' . ($start_time));
         if ($view->doLog()) {
             AA_Log::write('VIEW', $vid, new AA_Logentry_W(["time" => microtime(true) - $start_time, 'uri' => $_SERVER["REQUEST_URI"]]));
         }
     }
 
-    protected function getListLength(AA_View $view, int $idscount): array {
-        $listlen           = (int)$this->_view_param["listlen"] ?: (int)$view->f('listlen');
-        $to                = (int)$this->_view_param["to"];
-        $from              = (int)$this->_view_param["from"];
-        $scroller_settings = (int)$view->f('scroller');
+    protected function getListLength(AA_View $view, int $idscount): array
+    {
+        $listlen           = (int) $this->_view_param["listlen"] ?: (int) $view->f('listlen');
+        $to                = (int) $this->_view_param["to"];
+        $from              = (int) $this->_view_param["from"];
+        $scroller_settings = (int) $view->f('scroller');
 
         if ($this->_view_param["random"]) {
             $random = (($this->_view_param["random"] == 1) ? 'random' : 'random:' . $this->_view_param["random"]);
@@ -254,10 +262,10 @@ class AA_Showview {
         }
 
         $page = '';
-        if ( isset($this->_view_param["page"]) ) {
+        if (isset($this->_view_param["page"])) {
             $page = $this->_view_param["page"]; // page could be '2' as well as '2-5' (page 2 of 5)
-        } elseif ($scroller_settings===1 || $scroller_settings===2) {  // 1 accept xpage, 2 use continuing page
-            $page = (string)(int)$GLOBALS['apc_state']['xpage'];
+        } elseif ($scroller_settings === 1 || $scroller_settings === 2) {  // 1 accept xpage, 2 use continuing page
+            $page = (string) (int) $GLOBALS['apc_state']['xpage'];
         }
 
         $list_from = max(0, $from - 1);    // user counts items from 1, we from 0
@@ -271,21 +279,22 @@ class AA_Showview {
             // Format:  <page>-<number of pages>
             if (str_contains($page, '-')) {
                 [$page_n, $no_of_pages] = explode('-', $page, 2);
-                $no_of_pages = max(1, (int)$no_of_pages);   // at least one page
-                $page_n      = max(0, (int)$page_n - 1);    // count from zero
+                $no_of_pages = max(1, (int) $no_of_pages);   // at least one page
+                $page_n      = max(0, (int) $page_n - 1);    // count from zero
                 // to be last page shorter than others if there is bad number of items
                 $list_from = $page_n * floor($idscount / $no_of_pages);
                 $listlen   = floor(($idscount * ($page_n + 1)) / $no_of_pages) - floor(($idscount * $page_n) / $no_of_pages);
             } else {
                 // second parameter is not specified - take listlen parameter
                 // we can also specify both - page and from, which means from the item xy on the page p
-                $list_from += $listlen * ((int)$page - 1);
+                $list_from += $listlen * ((int) $page - 1);
             }
         }
         return [$listlen, $random ?: ($list_from ?: 0)];
     }
 
-    function getViewOutput(): string {
+    public function getViewOutput(): string
+    {
         $dbgtime = microtime(true);
 
         if (!($view = AA_Views::getView($this->_view_param["vid"]))) {
@@ -300,9 +309,15 @@ class AA_Showview {
         $slices = $this->_view_param["slices"];
         $param_conds = $this->_view_param["param_conds"];
         $param_sort = [];
-        if (array_key_exists('sort', $this->_view_param))        { $param_sort['sort']        = $this->_view_param['sort']; }
-        if (array_key_exists('group_by', $this->_view_param))    { $param_sort['group_by']    = $this->_view_param['group_by']; }
-        if (array_key_exists('group_limit', $this->_view_param)) { $param_sort['group_limit'] = $this->_view_param['group_limit']; }
+        if (array_key_exists('sort', $this->_view_param)) {
+            $param_sort['sort']        = $this->_view_param['sort'];
+        }
+        if (array_key_exists('group_by', $this->_view_param)) {
+            $param_sort['group_by']    = $this->_view_param['group_by'];
+        }
+        if (array_key_exists('group_limit', $this->_view_param)) {
+            $param_sort['group_limit'] = $this->_view_param['group_limit'];
+        }
 
         $category_id = $this->_view_param['cat'];
         // $item_ids   = $this->_view_param["item_ids"];
@@ -316,10 +331,10 @@ class AA_Showview {
 
         $view_info = $view->getViewInfo();
 
-        if ( isset($this->_view_param["page"]) ) {
-            $list_page = (int)$this->_view_param["page"];
-        } elseif (in_array((int)$view->f('scroller'), [1,2], true)) {  // 1 accept xpage, 2 use continuing page
-            $list_page = (int)$GLOBALS['apc_state']['xpage'];
+        if (isset($this->_view_param["page"])) {
+            $list_page = (int) $this->_view_param["page"];
+        } elseif (in_array((int) $view->f('scroller'), [1,2], true)) {  // 1 accept xpage, 2 use continuing page
+            $list_page = (int) $GLOBALS['apc_state']['xpage'];
         } else {
             $list_page = 0;
         }
@@ -337,15 +352,15 @@ class AA_Showview {
             mgettext_bind($view->getLang(), 'output');
         }
         if (!AA::$langnum) { // for multilingual content (not defined when called from view.php, or cron.php mail, ...)
-            AA::$lang    = strtolower(substr($view->getLang(),0,2));   // actual language - two letter shortcut cz / es / en
+            AA::$lang    = strtolower(substr($view->getLang(), 0, 2));   // actual language - two letter shortcut cz / es / en
             AA::$langnum = [Langs::getLangName2Num(AA::$lang)];   // array of prefered languages in priority order.
         }
 
-        $noitem_msg = ($this->_view_param["noitem"] ?? (((strlen($view->f('noitem_msg')) > 0)) ?
-                str_replace('<!--Vacuum-->', '', $view->f('noitem_msg')) :
-                ("<div>" . _m("No item found") . "</div>")));
+        $noitem_msg = ($this->_view_param["noitem"] ?? (((strlen($view->f('noitem_msg')) > 0))
+                ? str_replace('<!--Vacuum-->', '', $view->f('noitem_msg'))
+                : ("<div>" . _m("No item found") . "</div>")));
 
-        if ( $this->_view_param["banner"] ) {
+        if ($this->_view_param["banner"]) {
             $view->setBannerParam(AA_View::parseBannerParam($this->_view_param["banner"]));  // if banner set format
         }
 
@@ -370,10 +385,10 @@ class AA_Showview {
         }
 
         // ---- display content in according to view type ----
-        AA::$debug&2 && AA::$dbg->log("getViewOutput:view_info=",$view_info);
+        AA::$debug & 2 && AA::$dbg->log("getViewOutput:view_info=", $view_info);
 
         $ret = '';
-        switch( $view_info['type'] ) {
+        switch ($view_info['type']) {
             case 'discus':
                 // create array of discussion parameters
                 $disc = [
@@ -401,14 +416,14 @@ class AA_Showview {
                 //      where id of slice is stored in 'id' column (honzam)
 
                 $format['id'] = pack_id($slice_id);                  // set slice_id because of caching
-                                                                     // not needed probably - we no longer call get_output_cached here
+                // not needed probably - we no longer call get_output_cached here
 
                 // special url parameter disc_url - tell us, where we have to show
                 // discussion fulltext (good for discussion search)
-                $durl = ( $this->_view_param["disc_url"] ?: shtml_url());
+                $durl = ($this->_view_param["disc_url"] ?: shtml_url());
                 // add state variable, if defined (apc - AA Pointer Cache)
-                if ( $GLOBALS['apc_state'] && !$GLOBALS['apc_state']['router'] ) {
-                    $durl = con_url($durl,'apc='.$GLOBALS['apc_state']['state']);
+                if ($GLOBALS['apc_state'] && !$GLOBALS['apc_state']['router']) {
+                    $durl = con_url($durl, 'apc=' . $GLOBALS['apc_state']['state']);
                 }
 
                 $itemview = new itemview($format, new AA_Aliases(new AA_Aliasgenerator_Discussion()), null, "", "", $durl, $disc);
@@ -418,35 +433,35 @@ class AA_Showview {
             case 'links':              // links       (module Links)
             case 'categories':         // categories  (module Likns)
             case 'const':              // constants
-                if ( !$category_id ) {
+                if (!$category_id) {
                     $category_id = Links_SliceID2Category($slice_id);             // get default category for the view
                 }
                 $format    = $view->getViewFormat($selected_item);
-            if (!$conds) {          // conds could be defined via cmd[]=d command
+                if (!$conds) {          // conds could be defined via cmd[]=d command
                     $conds = $view->getConds($param_conds);
                 }
                 $sort      = $view->getSort($param_sort);
-                if ( $view_info['type'] === 'const' ) {
+                if ($view_info['type'] === 'const') {
                     $zids             = QueryConstantZIDs($view_info['parameter'], $conds, $sort);
                     $content_function = 'GetConstantContent';
-                } elseif ( $view_info['type'] === 'links' && $category_id ) {
-                    $cat_path = Links_GetCategoryColumn( $category_id, 'path');
-                    if ( $cat_path ) {
+                } elseif ($view_info['type'] === 'links' && $category_id) {
+                    $cat_path = Links_GetCategoryColumn($category_id, 'path');
+                    if ($cat_path) {
                         $zids             = Links_QueryZIDs($cat_path, $conds, $sort, $this->_view_param['show_subcat']);
                         $content_function = 'Links_GetLinkContent';
                     }
-                } elseif ( $view_info['type'] === 'categories' && $category_id ) {
+                } elseif ($view_info['type'] === 'categories' && $category_id) {
                     $zids             = Links_QueryCatZIDs($category_id, $conds, $sort, $this->_view_param['show_subcat']);
                     $content_function = 'Links_GetCategoryContent';
                 }
 
                 [ $listlen, $list_from ] = $this->getListLength($view, $zids->count());
 
-                $itemview = (new itemview($format, GetAliases4Type($view_info['type'],$als), $zids, $list_from, $listlen))->setContentFunct($content_function);
+                $itemview = (new itemview($format, GetAliases4Type($view_info['type'], $als), $zids, $list_from, $listlen))->setContentFunct($content_function);
                 $itemview->parameter('category_id', $category_id);
-                $itemview->parameter('start_cat',   $this->_view_param['start_cat']);
+                $itemview->parameter('start_cat', $this->_view_param['start_cat']);
 
-                if ( !isset($zids) || $zids->isEmpty()) {
+                if (!isset($zids) || $zids->isEmpty()) {
                     $ret = $itemview->unaliasWithScroller($noitem_msg);
                     break;
                 }
@@ -456,20 +471,20 @@ class AA_Showview {
 
             case 'full':  // parameters: zids, als
                 $format = $view->getViewFormat($selected_item);
-                AA::$debug&8 && AA::$dbg->log("view type - full - zids",$zids);
-                if ( isset($zids) && !$zids->isEmpty() && ($slice = AA_Slice::getModule($slice_id))) {
+                AA::$debug & 8 && AA::$dbg->log("view type - full - zids", $zids);
+                if (isset($zids) && !$zids->isEmpty() && ($slice = AA_Slice::getModule($slice_id))) {
                     $bins   = AA_BIN_ACTIVE | ($slice->isExpiredContentAllowed() ? AA_BIN_EXPIRED : 0) | ($slice->isPendingContentAllowed() ? AA_BIN_PENDING : 0);
                     $zids  = QueryZids([], '', '', $bins, 0, $zids);
-                    AA::$debug&8 && AA::$dbg->log("view type - full - cleanzids",$zids);
-                    if ( !$zids->isEmpty() ) {
+                    AA::$debug & 8 && AA::$dbg->log("view type - full - cleanzids", $zids);
+                    if (!$zids->isEmpty()) {
                         //mlx stuff
                         if ($mlxslice = MLXSlice($slice)) {  //mlx stuff, display the item's translation
-                            $mlx = ($this->_view_param["mlx"]?: $this->_view_param["MLX"]);
+                            $mlx = ($this->_view_param["mlx"] ?: $this->_view_param["MLX"]);
                             //make sure the lang info doesnt get reused with different view
-                            $GLOBALS['mlxView'] = new MLXView($mlx,$mlxslice);
-                            $GLOBALS['mlxView']->preQueryZIDs($mlxslice,$conds);
+                            $GLOBALS['mlxView'] = new MLXView($mlx, $mlxslice);
+                            $GLOBALS['mlxView']->preQueryZIDs($mlxslice, $conds);
                             $zids3 = new zids($zids->longids());
-                            $GLOBALS['mlxView']->postQueryZIDs($zids3,$mlxslice,$slice_id); //.serialize($zids3));
+                            $GLOBALS['mlxView']->postQueryZIDs($zids3, $mlxslice, $slice_id); //.serialize($zids3));
                             $zids->cloneFrom($zids3);
                         }
                         $ret = (new itemview($format, $slice->aliases($als), $zids, 0, 1))->get_output("view");
@@ -490,12 +505,13 @@ class AA_Showview {
                     $year = $today['year'];
                 }
                 $calendar_conds = [
-                    ['operator' => '<',  'value' => mktime (0,0,0,$month+1,1,$year), $view_info['field1'] => 1],
-                    ['operator' => '>=', 'value' => mktime (0,0,0,$month,1,$year),   $view_info['field2'] => 1],
+                    ['operator' => '<',  'value' => mktime(0, 0, 0, $month + 1, 1, $year), $view_info['field1'] => 1],
+                    ['operator' => '>=', 'value' => mktime(0, 0, 0, $month, 1, $year),   $view_info['field2'] => 1],
                 ];
                 // Note drops through to next case
 
-    //        case 'full':  // parameters: zids, als
+                //        case 'full':  // parameters: zids, als
+                // no break
             case 'digest':
             case 'list':
             case 'rss':
@@ -505,7 +521,7 @@ class AA_Showview {
                     AA::$headers['type'] = 'text/xml';
                 }
 
-                if ( !$conds ) {        // conds could be defined via cmd[]=d command
+                if (!$conds) {        // conds could be defined via cmd[]=d command
                     $conds = $view->getConds($param_conds);
                 }
                 // merge $conds with $calendar_conds
@@ -540,13 +556,13 @@ class AA_Showview {
 
                 $sort  = $view->getSort($param_sort);
 
-                AA::$debug&64 && AA::$dbg->log("viewparams",$aliases, $conds, $sort);
+                AA::$debug & 64 && AA::$dbg->log("viewparams", $aliases, $conds, $sort);
 
                 if ($mlxslice = MLXSlice($slice)) {
                     $mlx = $this->_view_param["mlx"] ?: $this->_view_param["MLX"];
                     //make sure the lang info doesn't get reused with different view
-                    $GLOBALS['mlxView'] = new MLXView($mlx,$mlxslice);
-                    $GLOBALS['mlxView']->preQueryZIDs($mlxslice,$conds);
+                    $GLOBALS['mlxView'] = new MLXView($mlx, $mlxslice);
+                    $GLOBALS['mlxView']->preQueryZIDs($mlxslice, $conds);
                 }
 
                 $bin   = ($zids && $slice->isExpiredContentAllowed()) ? (AA_BIN_ACTIVE | AA_BIN_EXPIRED) : AA_BIN_ACTIVE;
@@ -554,11 +570,11 @@ class AA_Showview {
                 $zids2 = QueryZids($zids ? false : (is_array($slices) ? $slices : [$slice_id]), $conds, $sort, $bin, 0, $zids);
 
                 if ($mlxslice) {
-                    $GLOBALS['mlxView']->postQueryZIDs($zids2,$mlxslice,$slice_id);
+                    $GLOBALS['mlxView']->postQueryZIDs($zids2, $mlxslice, $slice_id);
                 }
                 //end mlx stuff
                 // Note this zids2 is always packed ids, so lost tag information
-                AA::$debug&64 && AA::$dbg->log("getViewOutput retrieved ". $zids2->count()." IDS");
+                AA::$debug & 64 && AA::$dbg->log("getViewOutput retrieved " . $zids2->count() . " IDS");
 
                 // I do not like tagged ids idea so I want to remove it. The following code in retag function was always broken, so now removed, HM 2025
                 // if (isset($zids) && ($zids->onetype() === "t")) {
@@ -578,9 +594,9 @@ class AA_Showview {
 
                 [$listlen, $list_from] = $this->getListLength($view, $zids2->count());
 
-                $itemview = (new itemview($format, $aliases, $zids2, $list_from, $listlen))->setMultiAliases($multi_aliases)->setContentFunct( ($view_info['type'] === 'urls') ? 'GetItemContentMinimal' : '');
+                $itemview = (new itemview($format, $aliases, $zids2, $list_from, $listlen))->setMultiAliases($multi_aliases)->setContentFunct(($view_info['type'] === 'urls') ? 'GetItemContentMinimal' : '');
 
-                if ($zids2->count() > ( ctype_digit((string)$list_from) ? (int)$list_from : 0)) { // $list_from could be 'random:number.........1' ...
+                if ($zids2->count() > (ctype_digit((string) $list_from) ? (int) $list_from : 0)) { // $list_from could be 'random:number.........1' ...
                     $ret = $itemview->get_output(($view_info['type'] === 'calendar') ? 'calendar' : 'view');
                 } else {
                     $ret = $itemview->unaliasWithScroller($noitem_msg);
@@ -596,24 +612,24 @@ class AA_Showview {
                 // I create a CurItem object so I can use the unalias function
                 $CurItem      = new AA_Item("", $als);
                 $formatstring = $view_info["odd"];          // it is better to copy format-
-                $ret = $CurItem->unalias( $formatstring );  // string to variable - unalias
+                $ret = $CurItem->unalias($formatstring);  // string to variable - unalias
                 break;
         }
 
-        AA::$debug&64 && AA::$dbg->log("getViewOutput: ret=",$ret);
+        AA::$debug & 64 && AA::$dbg->log("getViewOutput: ret=", $ret);
 
         // user could make the view to display view ID before and after the view output
         // which is useful mainly for debugging. See view setting in admin interface
-        if ( AA::$debug || ($ret && ($view_info['flag'] & VIEW_FLAG_COMMENTS)) ) {
-            $ret = "<!-- $vid -->$ret<!-- /$vid, ". (microtime(true) - $dbgtime) .", ". date("y-m-d H:i:s", (int)$dbgtime). " -->";
+        if (AA::$debug || ($ret && ($view_info['flag'] & VIEW_FLAG_COMMENTS))) {
+            $ret = "<!-- $vid -->$ret<!-- /$vid, " . (microtime(true) - $dbgtime) . ", " . date("y-m-d H:i:s", (int) $dbgtime) . " -->";
         }
 
-        if ($this->_view_param['convertto'] || $this->_view_param['convertfrom'] ) {
+        if ($this->_view_param['convertto'] || $this->_view_param['convertfrom']) {
             if (!$this->_view_param['convertfrom']) {
                 $slice                     = AA_Slice::getModule($slice_id);
                 $this->_view_param['convertfrom'] = $slice->getCharset();
             }
-            if ($this->_view_param['convertto'] != $this->_view_param['convertfrom'] ) {
+            if ($this->_view_param['convertto'] != $this->_view_param['convertfrom']) {
                 $ret                     = ConvertCharset::singleton()->Convert($ret, $this->_view_param['convertfrom'], $this->_view_param['convertto']);
                 AA::$headers['encoding'] = $this->_view_param['convertto'];
             }

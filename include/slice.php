@@ -1,4 +1,5 @@
 <?php
+
 /**
  *
  * PHP version 7.2+
@@ -29,11 +30,11 @@ use AA\IO\DB\DB_AA;
 /** Page_HTML_Begin function
  * @param $title
  */
-function Page_HTML_Begin($title=""): void
+function Page_HTML_Begin($title = ""): void
 {
     HtmlPageBegin();
     echo '
-      <title>'.$title.'</title>
+      <title>' . $title . '</title>
     </head>
     <body>';
 }
@@ -57,22 +58,22 @@ function pCatSelector($url, $sli_id): void
 {
 
     // was GetCategories() - strange to search for packed slice id in gropup_id - HM 2024
-    $cats = DB_AA::select(['pvalue'=>'name'], 'SELECT LOWER(HEX(`value`)) AS pvalue, `name` FROM `constant`', [['group_id',$sli_id,'l']]);
+    $cats = DB_AA::select(['pvalue' => 'name'], 'SELECT LOWER(HEX(`value`)) AS pvalue, `name` FROM `constant`', [['group_id',$sli_id,'l']]);
 
     if ($cats) {
         $selected = $_GET['cat_id'];
         echo "<form action=\"$url\" method=\"get\">";
         // not encapsulated - need to send slice_id
-          echo "<input type=hidden name=slice_id value=\"$sli_id\">";
-          echo "<input type=hidden name=encap value=false>";
+        echo "<input type=hidden name=slice_id value=\"$sli_id\">";
+        echo "<input type=hidden name=encap value=false>";
         echo _m("Select Category ") . "<select name=\"cat_id\">";
-        $seloption=(($selected=="")?"selected":"");
-        echo "<option value=all $seloption>"._m("All categories").'</option>';
+        $seloption = (($selected == "") ? "selected" : "");
+        echo "<option value=all $seloption>" . _m("All categories") . '</option>';
         foreach ($cats as $id => $name) {
-            $seloption=(($selected==$id)?"selected":"");
-            echo "<option value=\"$id\" $seloption>".safe($name)."</option>";
+            $seloption = (($selected == $id) ? "selected" : "");
+            echo "<option value=\"$id\" $seloption>" . safe($name) . "</option>";
         }
-        echo "<input type=\"hidden\" name=\"scr_".$scr_name."_Go\" value=\"1\">";
+        echo "<input type=\"hidden\" name=\"scr_" . $scr_name . "_Go\" value=\"1\">";
         echo "<input type=\"submit\" name=\"Go\" value=\"Go\">";
         echo "</select>";
         echo "</form>";
@@ -82,7 +83,7 @@ function pCatSelector($url, $sli_id): void
 /** ExitPage function
  *
  */
-function ExitPage($msg=''): never
+function ExitPage($msg = ''): never
 {
     global $encap, $r_packed_state_vars, $r_state_vars;
     if ($msg) {
@@ -99,7 +100,7 @@ function ExitPage($msg=''): never
 /** SotreVariables function
  *
  */
-function StoreVariables( array $vars ): array
+function StoreVariables(array $vars): array
 {
     $state_vars = [];
     foreach ($vars as $v) {
@@ -111,14 +112,13 @@ function StoreVariables( array $vars ): array
 /** PutSearchLog function
  *
  */
-function PutSearchLog($searchlog, $found_count=0): void
+function PutSearchLog($searchlog, $found_count = 0): void
 {
-    $httpquery = $_SERVER['QUERY_STRING_UNESCAPED'].$_SERVER['REDIRECT_QUERY_STRING_UNESCAPED'];
+    $httpquery = $_SERVER['QUERY_STRING_UNESCAPED'] . $_SERVER['REDIRECT_QUERY_STRING_UNESCAPED'];
     $httpquery = DeBackslash($httpquery);
     $httpquery = str_replace("'", "\\'", $httpquery);
-    [$usec, $sec] = explode(" ",microtime());
-    $slice_time = 1000 * ((float)$usec + (float)$sec - $GLOBALS['slice_starttime']);
+    [$usec, $sec] = explode(" ", microtime());
+    $slice_time = 1000 * ((float) $usec + (float) $sec - $GLOBALS['slice_starttime']);
     $user = $_SERVER['PHP_AUTH_USER'];
-    DB_AA::sql("INSERT INTO searchlog (date,query,user,found_count,search_time,additional1) VALUES (".time().",'$httpquery','$user',$found_count,$slice_time,'$searchlog')");
+    DB_AA::sql("INSERT INTO searchlog (date,query,user,found_count,search_time,additional1) VALUES (" . time() . ",'$httpquery','$user',$found_count,$slice_time,'$searchlog')");
 }
-

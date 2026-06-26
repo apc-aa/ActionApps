@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Form displayed in popup window allowing search and replace item content
  * for specified items
@@ -31,7 +32,6 @@ use AA\Later\LaterInterface;
 use AA\Util\NamedInterface;
 use AA\Util\ReportTrait;
 
-
 /** AA_Transformation - parent class for all Transformations, which is used for
  *  changing Item values - typically when we import item. The Input item has
  *  some fields, the return item should has some fields, so we call
@@ -39,20 +39,27 @@ use AA\Util\ReportTrait;
  *
  *  Main method is transform(), which do the all work.
  */
-abstract class AA_Transformation implements NamedInterface {
+abstract class AA_Transformation implements NamedInterface
+{
     use ReportTrait;
 
-    var $parameters = [];
+    public $parameters = [];
 
     /** name function
      *
      */
-    public static function name(): string         { return ''; }
+    public static function name(): string
+    {
+        return '';
+    }
 
     /** description function
      *
      */
-    public static function description(): string  { return ''; }
+    public static function description(): string
+    {
+        return '';
+    }
 
     /** transform function
      *
@@ -62,7 +69,7 @@ abstract class AA_Transformation implements NamedInterface {
      *
      * @return AA_Value|bool|null - null means no change, true means all done (no more transformations needed), AA_Value means new value to store to field
      */
-    abstract function transform($field_id, $itemcontent, $silent=true): AA_Value|bool|null;
+    abstract public function transform($field_id, $itemcontent, $silent = true): AA_Value|bool|null;
 
     /** Construct name of input form variable
      *  It consists of classname, so we are able to guess which variable
@@ -74,7 +81,7 @@ abstract class AA_Transformation implements NamedInterface {
      * @param string $classname
      * @return string
      */
-    static function _getVarname($name, $input_id, $classname): string
+    public static function _getVarname($name, $input_id, $classname): string
     {
         return $input_id . substr($classname, 18) . $name;
     }
@@ -84,17 +91,17 @@ abstract class AA_Transformation implements NamedInterface {
      * @param $classname
      * @return string[]
      */
-    static function getRequestVariables($input_id, $classname): array
+    public static function getRequestVariables($input_id, $classname): array
     {
         $ret = [];
         if (stripos($classname, 'aa_transformation_') !== 0) {  // to lower - php4 fix
             return $ret;
         }
-        $prefix = $input_id. substr($classname,18);
+        $prefix = $input_id . substr($classname, 18);
         foreach ($_REQUEST as $varname => $varvalue) {
             if (str_starts_with($varname, $prefix)) {
                 // filter out the prefix
-                $ret[substr($varname,strlen($prefix))] = $varvalue;
+                $ret[substr($varname, strlen($prefix))] = $varvalue;
             }
         }
         return $ret;
@@ -103,15 +110,16 @@ abstract class AA_Transformation implements NamedInterface {
     /**
      * @param $param_name
      */
-    function getParam($param_name) {
-//        return $this->parameters[$param_name]->getValue();
+    public function getParam($param_name)
+    {
+        //        return $this->parameters[$param_name]->getValue();
         return $this->$param_name;
     }
 
     /** Reads new flag value from user's HTML form
      *  Common function for many transformations
     */
-    function getFlagFromForm($old_flag): int|string
+    public function getFlagFromForm($old_flag): int|string
     {
         return match ($this->getParam('new_flag')) {
             'u'     => $old_flag,
@@ -126,18 +134,19 @@ abstract class AA_Transformation implements NamedInterface {
      * @param $input_prefix
      * @param $params
      */
-    static function htmlSetting($input_prefix, $params) { }
+    public static function htmlSetting($input_prefix, $params) {}
 }
 
-class AA_Transformation_Value extends AA_Transformation {
-
-    var $new_flag;   // 'h' for HTML, 't' for PlainText or 'u' for unchanged
-    var $new_content;
+class AA_Transformation_Value extends AA_Transformation
+{
+    public $new_flag;   // 'h' for HTML, 't' for PlainText or 'u' for unchanged
+    public $new_content;
 
     /** AA_Transformation_Value function
      * @param $param
      */
-    function __construct($param) {
+    public function __construct($param)
+    {
         $this->new_flag    = $param['new_flag'];
         $this->new_content = $param['new_content'];
     }
@@ -145,14 +154,16 @@ class AA_Transformation_Value extends AA_Transformation {
     /** name function
      * @return string - message
      */
-    public static function name(): string {
+    public static function name(): string
+    {
         return _m("Fill by value");
     }
 
     /** description function
      * @return string - message
      */
-    public static function description(): string {
+    public static function description(): string
+    {
         return _m("Returns single value (not multivalue) which is created as result of AA expression specified in Expression. You can use any AA expressions like {ifset:{_#HEADLINE}:...}, ...");
     }
 
@@ -162,12 +173,12 @@ class AA_Transformation_Value extends AA_Transformation {
      * @param bool $silent
      * @return AA_Value
      */
-    function transform($field_id, $itemcontent, $silent=true): AA_Value|bool|null
+    public function transform($field_id, $itemcontent, $silent = true): AA_Value|bool|null
     {
         $item = GetItemFromContent($itemcontent);
         $text = $item->subst_alias($this->getParam('new_content'));
         $flag = $this->getFlagFromForm($item->getFlag($field_id));
-        return new AA_Value($text,$flag);
+        return new AA_Value($text, $flag);
     }
 
     /** htmlSetting function
@@ -175,12 +186,12 @@ class AA_Transformation_Value extends AA_Transformation {
      * @param $params
      * @return string
      */
-    static function htmlSetting($input_prefix, $params): string
+    public static function htmlSetting($input_prefix, $params): string
     {
         $flag_options = [
             'h' => _m('HTML'),
-                              't' => _m('Plain text'),
-                              'u' => _m('As for other values of this field')
+            't' => _m('Plain text'),
+            'u' => _m('As for other values of this field'),
         ];
         ob_start();
         FrmTabCaption();
@@ -189,9 +200,16 @@ class AA_Transformation_Value extends AA_Transformation {
         $varname_new_flag    = AA_Transformation::_getVarname('new_flag', $input_prefix, __CLASS__);
         $varname_new_content = AA_Transformation::_getVarname('new_content', $input_prefix, __CLASS__);
 
-        FrmInputRadio($varname_new_flag, _m('Mark as'), $flag_options, get_if($_GET[$varname_new_flag],'u'));
-        FrmTextarea($varname_new_content, _m('New content'), $_GET[$varname_new_content], 12, 80, false,
-            _m('You can use also aliases, so the content "&lt;i&gt;{abstract........}&lt;/i&gt;&lt;br&gt;{full_text......1}" is perfectly OK'));
+        FrmInputRadio($varname_new_flag, _m('Mark as'), $flag_options, get_if($_GET[$varname_new_flag], 'u'));
+        FrmTextarea(
+            $varname_new_content,
+            _m('New content'),
+            $_GET[$varname_new_content],
+            12,
+            80,
+            false,
+            _m('You can use also aliases, so the content "&lt;i&gt;{abstract........}&lt;/i&gt;&lt;br&gt;{full_text......1}" is perfectly OK'),
+        );
 
         FrmTabEnd();
         return ob_get_clean();
@@ -199,28 +217,31 @@ class AA_Transformation_Value extends AA_Transformation {
 }
 
 /** Used for {newitem:}, ... */
-class AA_Transformation_Exactvalues extends AA_Transformation {
-
-    var $new_content;
+class AA_Transformation_Exactvalues extends AA_Transformation
+{
+    public $new_content;
 
     /** AA_Transformation_Exactvalues function
      * @param $param
      */
-    function __construct($param) {
+    public function __construct($param)
+    {
         $this->new_content = $param['new_content'];
     }
 
     /** name function
      * @return string - message
      */
-    public static function name(): string {
+    public static function name(): string
+    {
         return _m("Fill by exact values");
     }
 
     /** description function
      * @return string - message
      */
-    public static function description(): string {
+    public static function description(): string
+    {
         return _m("Returns values exactly as specified (no evaluation, ...)");
     }
 
@@ -229,12 +250,12 @@ class AA_Transformation_Exactvalues extends AA_Transformation {
      * @param $itemcontent (by link)
      * @return AA_Value
      */
-    function transform($field_id, $itemcontent, $silent=true): AA_Value|bool|null
+    public function transform($field_id, $itemcontent, $silent = true): AA_Value|bool|null
     {
         $item = GetItemFromContent($itemcontent);
         $text = $this->getParam('new_content');
         $flag = $item->getFlag($field_id);
-        return new AA_Value($text,$flag);
+        return new AA_Value($text, $flag);
     }
 
     /** htmlSetting function
@@ -242,7 +263,7 @@ class AA_Transformation_Exactvalues extends AA_Transformation {
      * @param $params
      * @return string
      */
-    static function htmlSetting($input_prefix, $params): string
+    public static function htmlSetting($input_prefix, $params): string
     {
         ob_start();
         FrmTabCaption();
@@ -259,25 +280,26 @@ class AA_Transformation_Exactvalues extends AA_Transformation {
 
 
 /** Just recompute the field */
-class AA_Transformation_Recompute extends AA_Transformation {
-
+class AA_Transformation_Recompute extends AA_Transformation
+{
     /** AA_Transformation_Exactvalues function
      * @param $param
      */
-    function __construct($param) {
-    }
+    public function __construct($param) {}
 
     /** name function
      * @return string - message
      */
-    public static function name(): string {
+    public static function name(): string
+    {
         return _m("Recompute field");
     }
 
     /** description function
      * @return string - message
      */
-    public static function description(): string {
+    public static function description(): string
+    {
         return _m("Just recomputes field as specified in the field setting. Works just for Computed fields, of course. No parameters needed. If the Silent is not checked, all the computed fields are recomputed (just like with other transformations)");
     }
 
@@ -287,7 +309,7 @@ class AA_Transformation_Recompute extends AA_Transformation {
      * @param bool $silent
      * @return AA_Value|bool
      */
-    function transform($field_id, $itemcontent, $silent=true): AA_Value|bool|null
+    public function transform($field_id, $itemcontent, $silent = true): AA_Value|bool|null
     {
         $itemcontent->updateComputedFields(null, 'update', $silent ? [$field_id] : []);
         return true; // this means: Success - no other operations are needed
@@ -298,7 +320,7 @@ class AA_Transformation_Recompute extends AA_Transformation {
      * @param $params
      * @return string
      */
-    static function htmlSetting($input_prefix, $params): string
+    public static function htmlSetting($input_prefix, $params): string
     {
         ob_start();
         FrmTabCaption();
@@ -308,28 +330,31 @@ class AA_Transformation_Recompute extends AA_Transformation {
     }
 }
 
-class AA_Transformation_Setflag extends AA_Transformation {
-
-    var $new_flag;
+class AA_Transformation_Setflag extends AA_Transformation
+{
+    public $new_flag;
 
     /** AA_Transformation_Value function
      * @param $param
      */
-    function __construct($param) {
+    public function __construct($param)
+    {
         $this->new_flag    = $param['new_flag'];
     }
 
     /** name function
      * @return string - message
      */
-    public static function name(): string {
+    public static function name(): string
+    {
         return _m("Set HTML/Plain-text flag");
     }
 
     /** description function
      * @return string - message
      */
-    public static function description(): string {
+    public static function description(): string
+    {
         return _m("Changes the HTML or Plain-text flag for the field.");
     }
 
@@ -338,7 +363,7 @@ class AA_Transformation_Setflag extends AA_Transformation {
      * @param $itemcontent (by link)
      * @return array
      */
-    function transform($field_id, $itemcontent, $silent=true): AA_Value|bool|null
+    public function transform($field_id, $itemcontent, $silent = true): AA_Value|bool|null
     {
         $item = GetItemFromContent($itemcontent);
         $flag = $this->getFlagFromForm($item->getFlag($field_id));
@@ -350,18 +375,18 @@ class AA_Transformation_Setflag extends AA_Transformation {
      * @param $params
      * @return string
      */
-    static function htmlSetting($input_prefix, $params): string
+    public static function htmlSetting($input_prefix, $params): string
     {
         $flag_options = [
             'h' => _m('HTML'),
-            't' => _m('Plain text')
+            't' => _m('Plain text'),
         ];
         ob_start();
         FrmTabCaption();
         FrmStaticText('', self::description());
 
         $varname_new_flag    = AA_Transformation::_getVarname('new_flag', $input_prefix, __CLASS__);
-        FrmInputRadio($varname_new_flag, _m('Mark as'), $flag_options, get_if($_GET[$varname_new_flag],'h'));
+        FrmInputRadio($varname_new_flag, _m('Mark as'), $flag_options, get_if($_GET[$varname_new_flag], 'h'));
 
         FrmTabEnd();
         return ob_get_clean();
@@ -373,15 +398,16 @@ class AA_Transformation_Setflag extends AA_Transformation {
  *  {switch({category.......1})Bio:...} and such expressions as well as normal
  *  text.
  */
-class AA_Transformation_AddValue extends AA_Transformation {
-
+class AA_Transformation_AddValue extends AA_Transformation
+{
     protected $new_content;
     protected $new_flag = 'u'; // get from old
 
     /** AA_Transformation_AddValue function
      * @param $param
      */
-    function __construct($param) {
+    public function __construct($param)
+    {
         $this->new_content = $param['new_content'];
         $this->new_flag    = $param['new_flag'] ?? 'u';   // get from old
     }
@@ -389,14 +415,16 @@ class AA_Transformation_AddValue extends AA_Transformation {
     /** name function
      * @return string - message
      */
-    public static function name(): string {
+    public static function name(): string
+    {
         return _m("Add value to field");
     }
 
     /** description function
      * @return string - message
      */
-    public static function description(): string {
+    public static function description(): string
+    {
         return _m("Add new value to current content of field, so the field becomes multivalue.<br>You can use any AA expressions like {ifset:{_#HEADLINE}:...}, ... for new value.");
     }
 
@@ -405,7 +433,7 @@ class AA_Transformation_AddValue extends AA_Transformation {
      * @param ItemContent|AA_Content $itemcontent (by link)
      * @return AA_Value
      */
-    function transform($field_id, $itemcontent, $silent=true): AA_Value|bool|null
+    public function transform($field_id, $itemcontent, $silent = true): AA_Value|bool|null
     {
         $item = GetItemFromContent($itemcontent);
         $ret  = $itemcontent->getAaValue($field_id);
@@ -420,12 +448,12 @@ class AA_Transformation_AddValue extends AA_Transformation {
      * @param $params
      * @return string
      */
-    static function htmlSetting($input_prefix, $params): string
+    public static function htmlSetting($input_prefix, $params): string
     {
         $flag_options = [
             'h' => _m('HTML'),
             't' => _m('Plain text'),
-            'u' => _m('As for other values of this field')
+            'u' => _m('As for other values of this field'),
         ];
         ob_start();
         FrmTabCaption();
@@ -434,9 +462,16 @@ class AA_Transformation_AddValue extends AA_Transformation {
         $varname_new_flag    = AA_Transformation::_getVarname('new_flag', $input_prefix, __CLASS__);
         $varname_new_content = AA_Transformation::_getVarname('new_content', $input_prefix, __CLASS__);
 
-        FrmInputRadio($varname_new_flag, _m('Mark as'), $flag_options, get_if($_GET[$varname_new_flag],'u'));
-        FrmTextarea($varname_new_content, _m('New content'), $_GET[$varname_new_content], 12, 80, false,
-            _m('You can use also aliases, so the content "&lt;i&gt;{abstract........}&lt;/i&gt;&lt;br&gt;{full_text......1}" is perfectly OK'));
+        FrmInputRadio($varname_new_flag, _m('Mark as'), $flag_options, get_if($_GET[$varname_new_flag], 'u'));
+        FrmTextarea(
+            $varname_new_content,
+            _m('New content'),
+            $_GET[$varname_new_content],
+            12,
+            80,
+            false,
+            _m('You can use also aliases, so the content "&lt;i&gt;{abstract........}&lt;/i&gt;&lt;br&gt;{full_text......1}" is perfectly OK'),
+        );
 
         FrmTabEnd();
         return ob_get_clean();
@@ -446,16 +481,17 @@ class AA_Transformation_AddValue extends AA_Transformation {
 /** Parses the input text and looks for the delimiter. Separates the parts
  *  and store them as multiple values to destination field
  */
-class AA_Transformation_ParseMulti extends AA_Transformation {
-
-    var $new_flag;
-    var $source;
-    var $delimiter;
+class AA_Transformation_ParseMulti extends AA_Transformation
+{
+    public $new_flag;
+    public $source;
+    public $delimiter;
 
     /** AA_Transformation_AddValue function
      * @param $param
      */
-    function __construct($param) {
+    public function __construct($param)
+    {
         $this->new_flag       = $param['new_flag'];
         $this->source         = $param['source'];
         $this->delimiter      = $param['delimiter'];
@@ -464,14 +500,16 @@ class AA_Transformation_ParseMulti extends AA_Transformation {
     /** name function
      * @return string - message
      */
-    public static function name(): string {
+    public static function name(): string
+    {
         return _m("Divide the text to multiple values (also for multilingual values)");
     }
 
     /** description function
      * @return string - message
      */
-    public static function description(): string {
+    public static function description(): string
+    {
         return _m("Parses the input text and looks for the delimiter. Separates the parts and stores them as multiple values to destination field");
     }
 
@@ -480,7 +518,7 @@ class AA_Transformation_ParseMulti extends AA_Transformation {
      * @param $itemcontent (by link)
      * @return AA_Value
      */
-    function transform($field_id, $itemcontent, $silent=true): AA_Value|bool|null
+    public function transform($field_id, $itemcontent, $silent = true): AA_Value|bool|null
     {
         $item = GetItemFromContent($itemcontent);
         $flag = $this->getFlagFromForm($item->getFlag($field_id));
@@ -504,12 +542,12 @@ class AA_Transformation_ParseMulti extends AA_Transformation {
      * @param $params
      * @return string
      */
-    static function htmlSetting($input_prefix, $params): string
+    public static function htmlSetting($input_prefix, $params): string
     {
         $flag_options = [
             'h' => _m('HTML'),
             't' => _m('Plain text'),
-            'u' => _m('As for other values of this field')
+            'u' => _m('As for other values of this field'),
         ];
         ob_start();
         FrmTabCaption();
@@ -519,11 +557,25 @@ class AA_Transformation_ParseMulti extends AA_Transformation {
         $varname_source    = AA_Transformation::_getVarname('source', $input_prefix, __CLASS__);
         $varname_delimiter = AA_Transformation::_getVarname('delimiter', $input_prefix, __CLASS__);
 
-        FrmInputRadio($varname_new_flag, _m('Mark as'), $flag_options, get_if($_GET[$varname_new_flag],'u'));
-        FrmTextarea($varname_source, _m('Source text'), $_GET[$varname_source], 12, 80, false,
-            _m('You can use also aliases, so the content "&lt;i&gt;{abstract........}&lt;/i&gt;&lt;br&gt;{full_text......1}" is perfectly OK'));
-        FrmTextarea($varname_delimiter, _m('Delimiter'), $_GET[$varname_delimiter], 2, 80, false,
-            _m('use simple delimiter like | or longer like ---ENDTEXT---<br>use AA_LANG constant in delimiter to parse multilingual values like:   delimiter: |AA_LANG|   for Source text: |cz|text jedna|de|Ein text|en|text one'));
+        FrmInputRadio($varname_new_flag, _m('Mark as'), $flag_options, get_if($_GET[$varname_new_flag], 'u'));
+        FrmTextarea(
+            $varname_source,
+            _m('Source text'),
+            $_GET[$varname_source],
+            12,
+            80,
+            false,
+            _m('You can use also aliases, so the content "&lt;i&gt;{abstract........}&lt;/i&gt;&lt;br&gt;{full_text......1}" is perfectly OK'),
+        );
+        FrmTextarea(
+            $varname_delimiter,
+            _m('Delimiter'),
+            $_GET[$varname_delimiter],
+            2,
+            80,
+            false,
+            _m('use simple delimiter like | or longer like ---ENDTEXT---<br>use AA_LANG constant in delimiter to parse multilingual values like:   delimiter: |AA_LANG|   for Source text: |cz|text jedna|de|Ein text|en|text one'),
+        );
         FrmTabEnd();
         return ob_get_clean();
     }
@@ -533,7 +585,8 @@ class AA_Transformation_ParseMulti extends AA_Transformation {
 /** Helper class to handle sting replacements for AA_Transformation_Translate
  *  class
  */
-class AA_Strreplace {
+class AA_Strreplace
+{
     private string $method;
     private string $pattern;
     private array $replacements;
@@ -543,7 +596,8 @@ class AA_Strreplace {
      * @param  string  $pattern
      * @param  array   $replacements
      */
-    function __construct(string $method, string $pattern, array $replacements ) {
+    public function __construct(string $method, string $pattern, array $replacements)
+    {
         $this->method       = $method;
         $this->pattern      = $pattern;
         $this->replacements = $replacements;
@@ -555,7 +609,7 @@ class AA_Strreplace {
      *
      * @return bool
      */
-    function matches($text): bool
+    public function matches($text): bool
     {
         return match ($this->method) {
             'regexp'  => (preg_match($this->pattern, $text) > 0),
@@ -570,14 +624,14 @@ class AA_Strreplace {
      * @param $item (by link)
      * @return array
      */
-    function replace($value, $item): array
+    public function replace($value, $item): array
     {
         $ret = [];
 
-        foreach ( $this->replacements as $replacement) {
+        foreach ($this->replacements as $replacement) {
             $replacement = str_replace('_#0', $value, $replacement);
             $text = $item->subst_alias($replacement);
-            if ( $text !== 'AA_NULL' ) {
+            if ($text !== 'AA_NULL') {
                 $ret[] = $text;
             }
         }
@@ -585,14 +639,16 @@ class AA_Strreplace {
     }
 }
 
-class AA_Transformation_Translate extends AA_Transformation {
-    var $new_flag;
-    var $translation;
+class AA_Transformation_Translate extends AA_Transformation
+{
+    public $new_flag;
+    public $translation;
 
     /** AA_Transformation_Translate function
      * @param $param
      */
-    function __construct($param) {
+    public function __construct($param)
+    {
         $this->new_flag    = $param['new_flag'];
         $this->translation = $param['translation'];
     }
@@ -600,14 +656,16 @@ class AA_Transformation_Translate extends AA_Transformation {
     /** name function
      * @return string - message
      */
-    public static function name(): string {
+    public static function name(): string
+    {
         return _m("Translate");
     }
 
     /** description function
      * @return string - message
      */
-    public static function description(): string {
+    public static function description(): string
+    {
         return _m("Translates one value after other according to translation table. The result is multivalue, since each value of multivalue field is translated separately.");
     }
 
@@ -617,7 +675,7 @@ class AA_Transformation_Translate extends AA_Transformation {
      * @param bool $silent
      * @return AA_Value|false
      */
-    function transform($field_id, $itemcontent, $silent=true): AA_Value|bool|null
+    public function transform($field_id, $itemcontent, $silent = true): AA_Value|bool|null
     {
         if (!$this->translation) {
             $this->message(_m('No translations specified.'));
@@ -628,13 +686,13 @@ class AA_Transformation_Translate extends AA_Transformation {
         $flag = $this->getFlagFromForm($item->getFlag($field_id));
 
         $translations = $this->_parseTranslation();
-        $ret = new AA_Value;
+        $ret = new AA_Value();
         $ret->setFlag($flag);
-        foreach ( $itemcontent->getValues($field_id) as $source ) {
+        foreach ($itemcontent->getValues($field_id) as $source) {
             // if not found any match, use the old value
             $new_value = [$source['value']];
             foreach ($translations as $strreplace) {
-                if ( $strreplace->matches($source['value']) ) {
+                if ($strreplace->matches($source['value'])) {
                     // matches - add all translations to the resulting array
                     // stop searching - go to next value
                     $new_value = $strreplace->replace($source['value'], $item);
@@ -649,15 +707,15 @@ class AA_Transformation_Translate extends AA_Transformation {
     /** _parseTranslation function
      * @return $translations array
      */
-    function & _parseTranslation(): array
+    public function & _parseTranslation(): array
     {
         $translations = [];
-        foreach (explode("\n",$this->translation) as $row) {
+        foreach (explode("\n", $this->translation) as $row) {
             // explode do not eat possible \r at the end - we trim it
             $row = rtrim($row, "\r");
             if (str_starts_with($row, ':regexp:')) {
                 // regular expressions
-                $parts = ParamExplode(substr($row,8));
+                $parts = ParamExplode(substr($row, 8));
                 $regexp = array_shift($parts);
                 $translations[] = new AA_Strreplace('regexp', $regexp, $parts);
             } else {
@@ -674,12 +732,12 @@ class AA_Transformation_Translate extends AA_Transformation {
      * @param $params
      * @return string
      */
-    static function htmlSetting($input_prefix, $params): string
+    public static function htmlSetting($input_prefix, $params): string
     {
         $flag_options = [
             'h' => _m('HTML'),
-                              't' => _m('Plain text'),
-                              'u' => _m('Unchanged')
+            't' => _m('Plain text'),
+            'u' => _m('Unchanged'),
         ];
         ob_start();
         FrmTabCaption();
@@ -688,23 +746,32 @@ class AA_Transformation_Translate extends AA_Transformation {
         $varname_new_flag    = AA_Transformation::_getVarname('new_flag', $input_prefix, __CLASS__);
         $varname_translation = AA_Transformation::_getVarname('translation', $input_prefix, __CLASS__);
 
-        FrmInputRadio($varname_new_flag, _m('Mark as'), $flag_options, get_if($_GET[$varname_new_flag],'u'));
-        FrmTextarea($varname_translation, _m('Translations'), $_GET[$varname_translation], 12, 80, false,
-            _m('Each translation on new line, translations separated by colon : (escape character for colon is #:).<br>You can use also aliases in the translation. There is also special alias _#0, which contain matching text - following translation is perfectly OK:<br><code> Bio:&lt;img src="_#0.jpg"&gt; ({publish_date....})</code><br>You can also use Regular Expressions - in such case the line would be "<code>:regexp:<regular expression>:<output></code>". You can use _#0 alias in <output>, which contains whole matching text.<br>Sometimes you want to remove specific value. In such case use <code>AA_NULL</code> text as translated text:<br> <code>Bio:AA_NULL</code><br>You may want also create more than one value from a value. Then separate the values by colon:<br> <code>Bio:Environment:Ecology</code> ("Bio" is replaced by two values). You can use any number of values here.'));
+        FrmInputRadio($varname_new_flag, _m('Mark as'), $flag_options, get_if($_GET[$varname_new_flag], 'u'));
+        FrmTextarea(
+            $varname_translation,
+            _m('Translations'),
+            $_GET[$varname_translation],
+            12,
+            80,
+            false,
+            _m('Each translation on new line, translations separated by colon : (escape character for colon is #:).<br>You can use also aliases in the translation. There is also special alias _#0, which contain matching text - following translation is perfectly OK:<br><code> Bio:&lt;img src="_#0.jpg"&gt; ({publish_date....})</code><br>You can also use Regular Expressions - in such case the line would be "<code>:regexp:<regular expression>:<output></code>". You can use _#0 alias in <output>, which contains whole matching text.<br>Sometimes you want to remove specific value. In such case use <code>AA_NULL</code> text as translated text:<br> <code>Bio:AA_NULL</code><br>You may want also create more than one value from a value. Then separate the values by colon:<br> <code>Bio:Environment:Ecology</code> ("Bio" is replaced by two values). You can use any number of values here.'),
+        );
 
         FrmTabEnd();
         return ob_get_clean();
     }
 }
 
-class AA_Transformation_Replace extends AA_Transformation {
-    var $searchpattern;
-    var $replacestring;
+class AA_Transformation_Replace extends AA_Transformation
+{
+    public $searchpattern;
+    public $replacestring;
 
     /** AA_Transformation_Translate function
      * @param $param
      */
-    function __construct($param) {
+    public function __construct($param)
+    {
         $this->searchpattern = $param['searchpattern'];
         $this->replacestring = $param['replacestring'];
     }
@@ -712,14 +779,16 @@ class AA_Transformation_Replace extends AA_Transformation {
     /** name function
      * @return string - message
      */
-    public static function name(): string {
+    public static function name(): string
+    {
         return _m("Search and Replace");
     }
 
     /** description function
      * @return string - message
      */
-    public static function description(): string {
+    public static function description(): string
+    {
         return _m("Search the content of text and replaces it with another text. No other transformations/unaliasing are applied - just basic search and replace.");
     }
 
@@ -728,15 +797,15 @@ class AA_Transformation_Replace extends AA_Transformation {
      * @param $itemcontent (by link)
      * @return AA_Value|false
      */
-    function transform($field_id, $itemcontent, $silent=true): AA_Value|bool|null
+    public function transform($field_id, $itemcontent, $silent = true): AA_Value|bool|null
     {
         if (!$this->searchpattern) {
             $this->message(_m('No searchstring specified.'));
             return null;
         }
 
-        $ret = new AA_Value;
-        foreach ( $itemcontent->getValues($field_id) as $source ) {
+        $ret = new AA_Value();
+        foreach ($itemcontent->getValues($field_id) as $source) {
             $ret->addValue(str_replace($this->searchpattern, $this->replacestring, $source['value']));
             $ret->setFlag($source['flag']);
         }
@@ -748,7 +817,7 @@ class AA_Transformation_Replace extends AA_Transformation {
      * @param $params
      * @return string
      */
-    static function htmlSetting($input_prefix, $params): string
+    public static function htmlSetting($input_prefix, $params): string
     {
         ob_start();
         FrmTabCaption();
@@ -764,15 +833,17 @@ class AA_Transformation_Replace extends AA_Transformation {
     }
 }
 
-class AA_Transformation_Regexpreplace extends AA_Transformation {
-    var $searchpattern;
-    var $replacestring;
-    var $unalias;
+class AA_Transformation_Regexpreplace extends AA_Transformation
+{
+    public $searchpattern;
+    public $replacestring;
+    public $unalias;
 
     /** AA_Transformation_Translate function
      * @param $param
      */
-    function __construct($param) {
+    public function __construct($param)
+    {
         $this->searchpattern = $param['searchpattern'];
         $this->replacestring = $param['replacestring'];
         $this->unalias       = $param['unalias'];
@@ -781,14 +852,16 @@ class AA_Transformation_Regexpreplace extends AA_Transformation {
     /** name function
      * @return string - message
      */
-    public static function name(): string {
+    public static function name(): string
+    {
         return _m("Regular Expressions Search and Replace");
     }
 
     /** description function
      * @return string - message
      */
-    public static function description(): string {
+    public static function description(): string
+    {
         return _m("Search the content of text and replaces it with another text using regular expressions. The aliases are unaliased in resulting string.<br>Example:<br> - Search: ^.*x=([0-9]*)\$<br> - Replace: {item:\$1:_#SEO_URL_}<br> - Unalias: Yes<br>Result: replaces all old-form links in the URL field from the new ones <br>(https://biom.cz/item.shtml?x=2344 --&gt; https://biom.cz/cz/about-biom)");
     }
 
@@ -797,20 +870,20 @@ class AA_Transformation_Regexpreplace extends AA_Transformation {
      * @param $itemcontent (by link)
      * @return AA_Value|false
      */
-    function transform($field_id, $itemcontent, $silent=true): AA_Value|bool|null
+    public function transform($field_id, $itemcontent, $silent = true): AA_Value|bool|null
     {
         if (!$this->searchpattern) {
             $this->message(_m('No searchstring specified.'));
             return null;
         }
-        $ret     = new AA_Value;
+        $ret     = new AA_Value();
         $count   = 0;
         if ($this->unalias) {
             $item = GetItemFromContent($itemcontent);
         }
-        foreach ( $itemcontent->getValues($field_id) as $source ) {
+        foreach ($itemcontent->getValues($field_id) as $source) {
             $ret->setFlag($source['flag']);
-            $text = preg_replace('~'.$this->searchpattern.'~', $this->replacestring, $source['value'], -1, $count);
+            $text = preg_replace('~' . $this->searchpattern . '~', $this->replacestring, $source['value'], -1, $count);
             if ($count && $this->unalias) {
                 $text = $item->subst_alias($text);
             }
@@ -824,7 +897,7 @@ class AA_Transformation_Regexpreplace extends AA_Transformation {
      * @param $params
      * @return string
      */
-    static function htmlSetting($input_prefix, $params): string
+    public static function htmlSetting($input_prefix, $params): string
     {
         ob_start();
         FrmTabCaption();
@@ -836,34 +909,37 @@ class AA_Transformation_Regexpreplace extends AA_Transformation {
 
         FrmTextarea($varname_searchpattern, _m('Search'), $_GET[$varname_searchpattern], 4, 80);
         FrmTextarea($varname_replacestring, _m('Replace'), $_GET[$varname_replacestring], 4, 80);
-        FrmInputChBox($varname_unalias,       _m('Unalias'), $_GET[$varname_unalias], false, "", 1, false, _m('perform unaliasing on result strings'));
+        FrmInputChBox($varname_unalias, _m('Unalias'), $_GET[$varname_unalias], false, "", 1, false, _m('perform unaliasing on result strings'));
         FrmTabEnd();
         return ob_get_clean();
     }
 }
 
-class AA_Transformation_CopyField extends AA_Transformation {
-
-    var $field2copy;
+class AA_Transformation_CopyField extends AA_Transformation
+{
+    public $field2copy;
 
     /** AA_Transformation_CopyField function
      * @param $param
      */
-    function __construct($param) {
+    public function __construct($param)
+    {
         $this->field2copy = $param['field2copy'];
     }
 
     /** name function
      * @return string - message
      */
-    public static function name(): string {
+    public static function name(): string
+    {
         return _m("Copy field");
     }
 
     /** description function
      * @return string - message
      */
-    public static function description(): string {
+    public static function description(): string
+    {
         return _m('Selected field will be copied to the "Field" (including multivalues)');
     }
 
@@ -873,7 +949,7 @@ class AA_Transformation_CopyField extends AA_Transformation {
      * @param bool $silent
      * @return AA_Value|false
      */
-    function transform($field_id, $itemcontent, $silent=true): AA_Value|bool|null
+    public function transform($field_id, $itemcontent, $silent = true): AA_Value|bool|null
     {
         if ($this->field2copy === 'no_field' || !$field_id || $field_id === 'no_field') {
             $this->message(_m('Source or destination field is not specified.'));
@@ -888,15 +964,21 @@ class AA_Transformation_CopyField extends AA_Transformation {
      * @param $params
      * @return string
      */
-    static function htmlSetting($input_prefix, $params): string
+    public static function htmlSetting($input_prefix, $params): string
     {
         ob_start();
         FrmTabCaption();
         FrmStaticText('', self::description());
 
         $varname = AA_Transformation::_getVarname('field2copy', $input_prefix, __CLASS__);
-        FrmInputSelect($varname, _m('Copy field'), $params['field_copy_arr'], $_GET[$varname], false,
-                       _m('Selected field will be copied to the "Field" (including multivalues)'));
+        FrmInputSelect(
+            $varname,
+            _m('Copy field'),
+            $params['field_copy_arr'],
+            $_GET[$varname],
+            false,
+            _m('Selected field will be copied to the "Field" (including multivalues)'),
+        );
 
         FrmTabEnd();
         return ob_get_clean();
@@ -904,8 +986,8 @@ class AA_Transformation_CopyField extends AA_Transformation {
 }
 
 
-class AA_Transformator implements LaterInterface {
-
+class AA_Transformator implements LaterInterface
+{
     /** @var zids|null */
     protected $zids   = null;
 
@@ -921,7 +1003,8 @@ class AA_Transformator implements LaterInterface {
     /** @var bool just in special cases of silent bulk change - last_edit.. must be the field_id to work*/
     protected $allow_last_edit;
 
-    function __construct(AA_Transformation $transformation, string $field_id='', zids $zids=null, bool $silent=true, bool $allow_last_edit=false) {
+    public function __construct(AA_Transformation $transformation, string $field_id = '', zids $zids = null, bool $silent = true, bool $allow_last_edit = false)
+    {
         $this->transformation   = $transformation;
         $this->field_id         = $field_id;
         $this->zids             = $zids;
@@ -932,12 +1015,13 @@ class AA_Transformator implements LaterInterface {
     /** You do not check permissions here - you must already know, you have perms for the change
      * @return int
      */
-    function transform(): int {
+    public function transform(): int
+    {
 
         $updated_items     = 0;         // number of updated items
         $slices2invalidate = [];
 
-        foreach ($this->zids as $zid ) {
+        foreach ($this->zids as $zid) {
 
             $itemcontent    = new ItemContent();
             $itemcontent->setByItemID($zid, true);     // ignore password
@@ -953,7 +1037,7 @@ class AA_Transformator implements LaterInterface {
 
             // transform returns AA_Value
             $field_content = $this->transformation->transform($this->field_id, $itemcontent, $this->silent);
-            if ( ! $field_content instanceof \AA_Value) {
+            if (! $field_content instanceof \AA_Value) {
                 if ($field_content === true) {  // for recompute - all is already successfully done
                     $updated_items++;
                     $slices2invalidate[$sli_id] = $sli_id;
@@ -967,7 +1051,7 @@ class AA_Transformator implements LaterInterface {
             $newitemcontent->setItemID($item_id);
             $newitemcontent->setSliceID($sli_id);
 
-            if ($newitemcontent->storeItem( $this->silent ? 'update_silent' : 'update', [false, false, false, $this->allow_last_edit])) {    // not invalidatecache, not feed, no events
+            if ($newitemcontent->storeItem($this->silent ? 'update_silent' : 'update', [false, false, false, $this->allow_last_edit])) {    // not invalidatecache, not feed, no events
                 $updated_items++;
             }
             $slices2invalidate[$sli_id] = $sli_id;
@@ -982,12 +1066,14 @@ class AA_Transformator implements LaterInterface {
         return $updated_items;
     }
 
-    public function setZids(zids $zids): static {
+    public function setZids(zids $zids): static
+    {
         $this->zids = $zids;
         return $this;
     }
 
-    public function setField(string $field_id): static {
+    public function setField(string $field_id): static
+    {
         $this->field_id = $field_id;
         return $this;
     }

@@ -1,4 +1,5 @@
 <?php
+
 /**
 *
 * PHP version 7.2+
@@ -33,36 +34,40 @@ require_once __DIR__ . "/perm_core.php"; // always included!
 
 // choice of the permission system library
 // PERM_LIB is defined in config.php
-require_once __DIR__."/perm_" . PERM_LIB . ".php";
+require_once __DIR__ . "/perm_" . PERM_LIB . ".php";
 
-class AA_Auth extends Auth {
-
-    function __construct() {
+class AA_Auth extends Auth
+{
+    public function __construct()
+    {
         $this->lifetime = defined('AA_LOGIN_TIMEOUT') ? constant('AA_LOGIN_TIMEOUT') : 1440;   // day
         $this->nobody = false;
     }
 
     /** Is some user logged in? The is_authenticated() works differently, so we added this one  */
-    public function is_user(): bool {
+    public function is_user(): bool
+    {
         return strlen($this->auth["uid"]) && $this->auth["uid"] !== 'nobody';
     }
 
-    public function getUid(): string {
-        return (string)$this->auth["uid"];
+    public function getUid(): string
+    {
+        return (string) $this->auth["uid"];
     }
 
-    public function getUname(): string {
-        return (string)$this->auth["uname"];
+    public function getUname(): string
+    {
+        return (string) $this->auth["uname"];
     }
 
-    function set_nobody($state = true): void
+    public function set_nobody($state = true): void
     {
         $this->nobody = $state;
     }
 
     /** former relogin_if function
      */
-    function relogin(): void
+    public function relogin(): void
     {
         $this->unauth();
         $this->start();
@@ -71,7 +76,7 @@ class AA_Auth extends Auth {
     /** auth_loginform
      *
      */
-    function auth_loginform($login_msg = ''): void
+    public function auth_loginform($login_msg = ''): void
     {
         global $sess, $_PHPLIB, $anonymous_user;
         $username = $_POST["username"] ?? '';  // there was problem with variables
@@ -94,7 +99,7 @@ class AA_Auth extends Auth {
      *
      * @return string|false uid
      */
-    function auth_validatelogin(): string|false
+    public function auth_validatelogin(): string|false
     {
         $username = $_POST["username"];  // there was problem with variables
         $password = $_POST["password"];  // in cookies - if someone writes
@@ -110,7 +115,7 @@ class AA_Auth extends Auth {
         return $this->_validatelogin($username, $password, $code2fa);
     }
 
-    protected function _validatelogin($username, $password, $code2fa=''): false|string
+    protected function _validatelogin($username, $password, $code2fa = ''): false|string
     {
         $this->auth['uname'] = ($uid = AA::$perm->authenticateUsername($username, $password, $code2fa)) ? $username : '';
         $this->auth['uid']   = $uid ?: '';
@@ -130,7 +135,7 @@ class AA_Auth extends Auth {
         ]);
     }
 
-    function auth_preauth(): false|string
+    public function auth_preauth(): false|string
     {
         if (isset($_POST['username']) && isset($_POST['password'])) {
             return $this->_validatelogin($_POST['username'], $_POST['password'], $_POST['code2fa']);
@@ -148,9 +153,9 @@ class AA_Auth extends Auth {
     protected function _validateJwt(string $jwt): false|string
     {
         try {
-            $decoded = (array)\Firebase\JWT\JWT::decode(
+            $decoded = (array) \Firebase\JWT\JWT::decode(
                 $jwt,
-                new \Firebase\JWT\Key(AA_ID, 'HS256')
+                new \Firebase\JWT\Key(AA_ID, 'HS256'),
             );
             $this->auth['uname'] = $decoded['name'] ?? '';
             $this->auth['uid']   = $decoded['sub'] ?? '';
@@ -160,4 +165,3 @@ class AA_Auth extends Auth {
         }
     }
 }
-

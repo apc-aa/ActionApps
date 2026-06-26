@@ -1,4 +1,5 @@
 <?php
+
 /**
  *
  * PHP version 7.2+
@@ -27,19 +28,20 @@
 */
 require_once __DIR__ . "/constants_param_wizard.php";
 
-class AA_Profile_Rule {
-
+class AA_Profile_Rule
+{
     /** name of the property */
-    var $property;
+    public $property;
 
     /** one selector or array of possible selectors */
-    var $selector;
+    public $selector;
 
     /** array of possible values */
-    var $values;
+    public $values;
 
 
-    function __construct($property, $selector, $values) {
+    public function __construct($property, $selector, $values)
+    {
         $this->property = $property;
         $this->selector = $selector;
         $this->values   = $values;
@@ -55,16 +57,16 @@ class AA_Profile_Rule {
  * @param $col3
  * @param $col4
  */
-function PrintRuleRow($rid, $prop, $col1="", $col2="", $col3="", $col4=""): void
+function PrintRuleRow($rid, $prop, $col1 = "", $col2 = "", $col3 = "", $col4 = ""): void
 {
-  global $uid;
-  echo "<tr>
+    global $uid;
+    echo "<tr>
           <td>$prop&nbsp;</td>
           <td>$col1&nbsp;</td>
           <td>$col2&nbsp;</td>
           <td>$col3&nbsp;</td>
           <td>$col4&nbsp;</td>
-          <td><a href=\"". StateUrl("se_profile.php?del=$rid&uid=$uid"). "\" class='aa-button-delete'>". _m("Delete") ."</a></td>
+          <td><a href=\"" . StateUrl("se_profile.php?del=$rid&uid=$uid") . "\" class='aa-button-delete'>" . _m("Delete") . "</a></td>
         </tr>";
 }
 
@@ -82,37 +84,42 @@ function PrintRule($rule, $fields, $selector_names = []): void
     $prop = $rule['property'];
     $rid  = $rule['id'];
 
-    switch($prop) {
+    switch ($prop) {
         case 'input_view':
         case 'listlen':
         case 'admin_perm':
             PrintRuleRow($rid, $PROPERTY_TYPES[$prop], "", $rule['value']);
             break;
         case 'admin_order':
-            $fid = substr( $rule['value'], 0, -1 );
-            $ord = substr( $rule['value'], -1 );
-            PrintRuleRow($rid, $PROPERTY_TYPES[$prop], $fid .'<small> ('.$fields[$fid].')</small>', $SORTORDER_TYPES[$ord]);
+            $fid = substr($rule['value'], 0, -1);
+            $ord = substr($rule['value'], -1);
+            PrintRuleRow($rid, $PROPERTY_TYPES[$prop], $fid . '<small> (' . $fields[$fid] . ')</small>', $SORTORDER_TYPES[$ord]);
             break;
         case 'admin_search':
-            $pos = strpos($rule['value'],':');
+            $pos = strpos($rule['value'], ':');
             $fid = substr($rule['value'], 0, $pos);
-            $val = substr($rule['value'], $pos+1);
+            $val = substr($rule['value'], $pos + 1);
             PrintRuleRow($rid, $PROPERTY_TYPES[$prop], $fields[$fid]['name'], $val);
             break;
         case 'hide':
-            PrintRuleRow($rid, $PROPERTY_TYPES[$rule['value']==1 ? 'hide' : 'show'], $rule['selector'].'<small> ('.$fields[$rule['selector']].')</small>');
+            PrintRuleRow($rid, $PROPERTY_TYPES[$rule['value'] == 1 ? 'hide' : 'show'], $rule['selector'] . '<small> (' . $fields[$rule['selector']] . ')</small>');
             break;
         case 'fill':
         case 'hide&fill':
         case 'predefine':
             if (!$rule['value']) {   // for 'show' the hide&fill value is '0' and in this case
-                PrintRuleRow($rid, $PROPERTY_TYPES[$prop], $rule['selector'].'<small> ('.$fields[$rule['selector']].')</small>', _m('--disabled-- (added by "Show field" rule)'));
+                PrintRuleRow($rid, $PROPERTY_TYPES[$prop], $rule['selector'] . '<small> (' . $fields[$rule['selector']] . ')</small>', _m('--disabled-- (added by "Show field" rule)'));
                 break;
             }
-            $fnc = ParseFnc(substr($rule['value'],2));  // all default should have fnc:param format
-            PrintRuleRow($rid, $PROPERTY_TYPES[$prop], $rule['selector'].'<small> ('.$fields[$rule['selector']].')</small>',
-                $INPUT_DEFAULT_TYPES[$fnc['fnc']], $fnc['param'],
-                ($rule['value'][0] == '1')? 'HTML' : "" );
+            $fnc = ParseFnc(substr($rule['value'], 2));  // all default should have fnc:param format
+            PrintRuleRow(
+                $rid,
+                $PROPERTY_TYPES[$prop],
+                $rule['selector'] . '<small> (' . $fields[$rule['selector']] . ')</small>',
+                $INPUT_DEFAULT_TYPES[$fnc['fnc']],
+                $fnc['param'],
+                ($rule['value'][0] == '1') ? 'HTML' : "",
+            );
             break;
         case 'ui_manager':
         case 'ui_inputform':
@@ -141,11 +148,11 @@ function PrintSetRule($n, $rule, $sfld, $func, $sparam, $shtml, $desc): void
 {
     global $PROPERTY_TYPES, $lookup_fields;
     echo "<tr>
-           <td>". $PROPERTY_TYPES[$rule]. "<input type=\"hidden\" name=\"prop$n\" value=\"$rule\"></td>
+           <td>" . $PROPERTY_TYPES[$rule] . "<input type=\"hidden\" name=\"prop$n\" value=\"$rule\"></td>
            <td>";
-    if ( is_array($sfld)) {
+    if (is_array($sfld)) {
         FrmSelectEasy("fld$n", $sfld);
-    } elseif ($sfld)  {
+    } elseif ($sfld) {
         FrmSelectEasy("fld$n", $lookup_fields);
     } else {
         echo "&nbsp;";
@@ -158,9 +165,7 @@ function PrintSetRule($n, $rule, $sfld, $func, $sparam, $shtml, $desc): void
         echo "&nbsp;";
     }
     echo " </td>
-    <td>". ($sparam ? "<input type=\"text\" name=\"param$n\" size=\"20\">" : "&nbsp;"). "</td>
-    <td>". ($shtml  ? "<input type=\"checkbox\" name=\"html$n\">" : "&nbsp;"). "</td>
-    <td><a href=\"javascript:addrule($n)\" class='btn'>". _m("Add") ."</a></td></tr>";
+    <td>" . ($sparam ? "<input type=\"text\" name=\"param$n\" size=\"20\">" : "&nbsp;") . "</td>
+    <td>" . ($shtml ? "<input type=\"checkbox\" name=\"html$n\">" : "&nbsp;") . "</td>
+    <td><a href=\"javascript:addrule($n)\" class='btn'>" . _m("Add") . "</a></td></tr>";
 }
-
-

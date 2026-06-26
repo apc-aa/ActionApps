@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Class AA_Validate
  *
@@ -41,19 +42,20 @@ use AA\Util\LastErrTrait;
  * @param $validator AA_Validate|string|array  ['number',['min'=>0,'max'=>999]])
  * @return bool
  */
-function ValidateInput($variableName, $inputName, $variable, &$err, $needed=false, $validator="all"): bool {
+function ValidateInput($variableName, $inputName, $variable, &$err, $needed = false, $validator = "all"): bool
+{
     if (is_string($validator) || is_array($validator)) {
         $validator = AA_Validate::factoryCached($validator);
     }
     if (is_object($validator)) {
-        foreach ((array)$variable as $var) {
+        foreach ((array) $variable as $var) {
             if ($validator->varempty($var)) {
                 if ($needed) {
                     $err[$variableName] = MsgErr(_m("Error in") . " $inputName (" . _m("it must be filled") . ")");
                     return false;
                 }
             } elseif (!$validator->validate($var)) {
-                $err[(string)$variableName] = MsgErr(_m("Error in") . " $inputName - " . AA_Validate::lastErrMsg());
+                $err[(string) $variableName] = MsgErr(_m("Error in") . " $inputName - " . AA_Validate::lastErrMsg());
                 return false;
             }
         }
@@ -81,55 +83,77 @@ const VALIDATE_ERROR_NOT_FILLED = 410;
  *      if ( AA_Validate::doValidate($variable, 'int') ) {...};
  *      if ( AA_Validate::doValidate($variable, array('int', array('min'=>0, 'max'=>10)) ) {...};
  */
-class AA_Validate extends AA_Serializable {
-
+class AA_Validate extends AA_Serializable
+{
     use LastErrTrait;
 
     /** Returns validators for standard data types
      * @param string|array $v_type - string, or array($type,$parameter)
      * @return AA_Validate|null
      */
-    static function factoryCached($v_type): ? AA_Validate {
+    public static function factoryCached($v_type): ?AA_Validate
+    {
         static $standard_validators = [];
 
         [$type, $parameters] = is_array($v_type) ? $v_type : [$v_type, []];
 
         $sv_key = get_hash($type, $parameters);
-        if ( !isset($standard_validators[$sv_key]) ) {
+        if (!isset($standard_validators[$sv_key])) {
             switch ($type) {
-                case 'bool':     $standard_validators[$sv_key] = new AA_Validate_Bool($parameters);   break;
+                case 'bool':     $standard_validators[$sv_key] = new AA_Validate_Bool($parameters);
+                    break;
                 case 'num':
                 case 'number':
                 case 'int':
-                case 'integer':  $standard_validators[$sv_key] = new AA_Validate_Number($parameters); break;
-                case 'float':    $standard_validators[$sv_key] = new AA_Validate_Float($parameters);  break;
-                case 'decimal':  $standard_validators[$sv_key] = new AA_Validate_Decimal($parameters);  break;
+                case 'integer':  $standard_validators[$sv_key] = new AA_Validate_Number($parameters);
+                    break;
+                case 'float':    $standard_validators[$sv_key] = new AA_Validate_Float($parameters);
+                    break;
+                case 'decimal':  $standard_validators[$sv_key] = new AA_Validate_Decimal($parameters);
+                    break;
                 case 'e-mail':
-                case 'email':    $standard_validators[$sv_key] = new AA_Validate_Email($parameters);  break;
-                case 'alpha':    $standard_validators[$sv_key] = new AA_Validate_Regexp(['pattern'=>'/^[a-zA-Z]+$/']);          break;
+                case 'email':    $standard_validators[$sv_key] = new AA_Validate_Email($parameters);
+                    break;
+                case 'alpha':    $standard_validators[$sv_key] = new AA_Validate_Regexp(['pattern' => '/^[a-zA-Z]+$/']);
+                    break;
                 case 'id':
-                case 'long_id':  $standard_validators[$sv_key] = new AA_Validate_Id();        break;  // empty = "" or "0"
-                case 'packedid': $standard_validators[$sv_key] = new AA_Validate_Packedid();  break;
-                case 'markedid': $standard_validators[$sv_key] = new AA_Validate_Markedid();  break;
-                case 'short_id': $standard_validators[$sv_key] = new AA_Validate_Number(['min'=>0]);           break;
-                case 'alias':    $standard_validators[$sv_key] = new AA_Validate_Regexp(['pattern'=>'/^[_X]#[0-9_#a-zA-Z]{8}$/']); break;
-                case 'filename': $standard_validators[$sv_key] = new AA_Validate_Regexp(['pattern'=>'/^[-.0-9a-zA-Z_]+$/']); break;
-                case 'regexp':   $standard_validators[$sv_key] = new AA_Validate_Regexp($parameters); break;
-                case 'login':    $standard_validators[$sv_key] = new AA_Validate_Login($parameters);  break;
-                case 'password': $standard_validators[$sv_key] = new AA_Validate_Pwd($parameters);    break;
-                case 'unique':   $standard_validators[$sv_key] = new AA_Validate_Unique($parameters); break;
+                case 'long_id':  $standard_validators[$sv_key] = new AA_Validate_Id();
+                    break;  // empty = "" or "0"
+                case 'packedid': $standard_validators[$sv_key] = new AA_Validate_Packedid();
+                    break;
+                case 'markedid': $standard_validators[$sv_key] = new AA_Validate_Markedid();
+                    break;
+                case 'short_id': $standard_validators[$sv_key] = new AA_Validate_Number(['min' => 0]);
+                    break;
+                case 'alias':    $standard_validators[$sv_key] = new AA_Validate_Regexp(['pattern' => '/^[_X]#[0-9_#a-zA-Z]{8}$/']);
+                    break;
+                case 'filename': $standard_validators[$sv_key] = new AA_Validate_Regexp(['pattern' => '/^[-.0-9a-zA-Z_]+$/']);
+                    break;
+                case 'regexp':   $standard_validators[$sv_key] = new AA_Validate_Regexp($parameters);
+                    break;
+                case 'login':    $standard_validators[$sv_key] = new AA_Validate_Login($parameters);
+                    break;
+                case 'password': $standard_validators[$sv_key] = new AA_Validate_Pwd($parameters);
+                    break;
+                case 'unique':   $standard_validators[$sv_key] = new AA_Validate_Unique($parameters);
+                    break;
                 case 'e_unique':
                 case 'e-unique':
-                case 'eunique':  $standard_validators[$sv_key] = new AA_Validate_Eunique($parameters); break;
-                case 'url':      $standard_validators[$sv_key] = new AA_Validate_Url($parameters);  break;
-                case 'date':     $standard_validators[$sv_key] = new AA_Validate_Date($parameters); break;
+                case 'eunique':  $standard_validators[$sv_key] = new AA_Validate_Eunique($parameters);
+                    break;
+                case 'url':      $standard_validators[$sv_key] = new AA_Validate_Url($parameters);
+                    break;
+                case 'date':     $standard_validators[$sv_key] = new AA_Validate_Date($parameters);
+                    break;
                 case 'text':
                 case 'string':
                 case 'field':
-                case 'all':      $standard_validators[$sv_key] = new AA_Validate_Text($parameters); break;
-                case 'enum':     $standard_validators[$sv_key] = new AA_Validate_Enum($parameters); break;
+                case 'all':      $standard_validators[$sv_key] = new AA_Validate_Text($parameters);
+                    break;
+                case 'enum':     $standard_validators[$sv_key] = new AA_Validate_Enum($parameters);
+                    break;
                 default:         // Bad validator type: $type;
-                                 return null;
+                    return null;
             }
         }
 
@@ -147,7 +171,7 @@ class AA_Validate extends AA_Serializable {
     public static function doValidate(&$var, $type): bool
     {
         $validator = self::factoryCached($type);
-        if ( is_null( $validator ) ) {
+        if (is_null($validator)) {
             return self::bad(VALIDATE_ERROR_BAD_VALIDATOR, _m('Bad validator type: %1', [$type]));
         }
         return $validator->validate($var);
@@ -162,7 +186,7 @@ class AA_Validate extends AA_Serializable {
      */
     public static function filter($vararray, $type): array
     {
-        return array_filter((array)$vararray, [self::factoryCached($type),'validate']);
+        return array_filter((array) $vararray, [self::factoryCached($type),'validate']);
     }
 
     /** validate function
@@ -171,22 +195,26 @@ class AA_Validate extends AA_Serializable {
      * @param string          $var_id
      * @return bool
      */
-    public function validate(?string &$var, AA_Content $content_context = null, string $var_id = ''): bool { return true; }
+    public function validate(?string &$var, AA_Content $content_context = null, string $var_id = ''): bool
+    {
+        return true;
+    }
 
     /** sanitize the value - returns the sanitized value or the default value for the validator
      * @param $var
      */
     public function sanitize($var)
     {
-        return $this->validate($var) ? (string)$var : '';  // best default for child validators - probably will be redefined there
+        return $this->validate($var) ? (string) $var : '';  // best default for child validators - probably will be redefined there
     }
 
     /** checks if the variable is empty
      * @param $var
      * @return bool
      */
-    function varempty($var) : bool {
-        return trim((string)$var) === '';
+    public function varempty($var): bool
+    {
+        return trim((string) $var) === '';
     }
 
     /** bad function
@@ -196,8 +224,9 @@ class AA_Validate extends AA_Serializable {
      * @param string $var_id
      * @return bool
      */
-    protected static function bad($err_id, $err_msg, string $var_id = '') : bool {
-        self::lastErr($err_id, $var_id ? ($err_msg." [$var_id]") : $err_msg);
+    protected static function bad($err_id, $err_msg, string $var_id = ''): bool
+    {
+        self::lastErr($err_id, $var_id ? ($err_msg . " [$var_id]") : $err_msg);
         return false;
     }
 
@@ -214,7 +243,8 @@ class AA_Validate extends AA_Serializable {
  *  @param   $max
  *  @param   $step
  */
-class AA_Validate_Signed extends AA_Validate {
+class AA_Validate_Signed extends AA_Validate
+{
     /** Minimum number */
     protected $min;
 
@@ -231,13 +261,14 @@ class AA_Validate_Signed extends AA_Validate {
      *  copied from $VALIDATE_TYPES
      * @return array
      */
-    public static function getClassProperties(): array {
+    public static function getClassProperties(): array
+    {
         return [
             //           id                             name                        type    multi  persist validator, required, help, morehelp, example
-            'min'       => new AA_Property('min',       _m("Allowed minimum value"), 'int', false, true, 'int', false, _m(""), '', 1),
-            'max'       => new AA_Property('max',       _m("Allowed maximum value"), 'int', false, true, 'int', false, _m(""), '', 12),
-            'step'      => new AA_Property('step',      _m("Step"),                  'int', false, true, 'int', false, _m(""), '', 1),
-            'maxlength' => new AA_Property('maxlength', _m("Maximum length"),        'int', false, true, 'int', false, _m(""), '', 15)
+            'min'       => new AA_Property('min', _m("Allowed minimum value"), 'int', false, true, 'int', false, _m(""), '', 1),
+            'max'       => new AA_Property('max', _m("Allowed maximum value"), 'int', false, true, 'int', false, _m(""), '', 12),
+            'step'      => new AA_Property('step', _m("Step"), 'int', false, true, 'int', false, _m(""), '', 1),
+            'maxlength' => new AA_Property('maxlength', _m("Maximum length"), 'int', false, true, 'int', false, _m(""), '', 15),
         ];
     }
 
@@ -247,11 +278,12 @@ class AA_Validate_Signed extends AA_Validate {
      * @param string          $var_id
      * @return bool
      */
-    public function validate(?string &$var, AA_Content $content_context = null, string $var_id = ''): bool {
+    public function validate(?string &$var, AA_Content $content_context = null, string $var_id = ''): bool
+    {
         if (!IsSigInt($var)) {
             return AA_Validate::bad(VALIDATE_ERROR_BAD_TYPE, _m('No integer value') . "'$var'", $var_id);
         }
-        $var = (int)$var;
+        $var = (int) $var;
         if (IsSigInt($this->max) && $var > $this->max) {
             return AA_Validate::bad(VALIDATE_ERROR_OUT_OF_RANGE_MAX, _m('Out of range - too big'), $var_id);
         }
@@ -263,12 +295,12 @@ class AA_Validate_Signed extends AA_Validate {
 
     public function sanitize($var)
     {
-        $var = (int)$var;
+        $var = (int) $var;
         if (IsSigInt($this->max) && $var > $this->max) {
-            return (int)$this->max;
+            return (int) $this->max;
         }
         if (IsSigInt($this->min) && $var < $this->min) {
-            return (int)$this->min;
+            return (int) $this->min;
         }
         return $var;
     }
@@ -277,7 +309,7 @@ class AA_Validate_Signed extends AA_Validate {
     /** returns the type attribute for the HTML 5 <input> tag with possible some
      *  more attributes (like min, max, step, pattern, ...)
      */
-    function getHtmlInputAttr(): array
+    public function getHtmlInputAttr(): array
     {
         $ret = ['type' => 'number', 'pattern' => '-?[0-9]*'];
         if (IsSigInt($this->min)) {
@@ -290,12 +322,12 @@ class AA_Validate_Signed extends AA_Validate {
             $ret['step'] = $this->step;
         }
         if ($this->maxlength > 0) {
-            $ret['maxlength']  = (int)$this->maxlength;
+            $ret['maxlength']  = (int) $this->maxlength;
         } elseif ($this->max > 0) {
-            $ret['maxlength']  = (int)($this->max/10+1);
+            $ret['maxlength']  = (int) ($this->max / 10 + 1);
         }
         if ($ret['maxlength'] && $ret['maxlength'] < 60) {
-            $ret['size']       = ((int)$ret['maxlength']+2);
+            $ret['size']       = ((int) $ret['maxlength'] + 2);
         }
         return $ret;
     }
@@ -306,8 +338,10 @@ class AA_Validate_Signed extends AA_Validate {
  *  @param   $max
  *  @param   $step
  */
-class AA_Validate_Number extends AA_Validate_Signed {
-    function __construct($param= []) {
+class AA_Validate_Number extends AA_Validate_Signed
+{
+    public function __construct($param = [])
+    {
         parent::__construct($param);
         $this->min = 0;
     }
@@ -315,10 +349,10 @@ class AA_Validate_Number extends AA_Validate_Signed {
     /** returns the type attribute for the HTML 5 <input> tag with possible some
      *  more attributes (like min, max, step, pattern, ...)
      */
-    function getHtmlInputAttr(): array
+    public function getHtmlInputAttr(): array
     {
         $ret = parent::getHtmlInputAttr();
-        $ret['pattern']='?[0-9]*';
+        $ret['pattern'] = '?[0-9]*';
         return $ret;
     }
 }
@@ -326,46 +360,51 @@ class AA_Validate_Number extends AA_Validate_Signed {
 
 /** Test for bool value
  */
-class AA_Validate_Bool extends AA_Validate_Number {
-    function __construct($param= []) {
+class AA_Validate_Bool extends AA_Validate_Number
+{
+    public function __construct($param = [])
+    {
         parent::__construct($param);
         $this->min = 0;
         $this->max = 1;
     }
 
-    public function sanitize($var) {
-        return (bool)$var;
+    public function sanitize($var)
+    {
+        return (bool) $var;
     }
 }
 
 /** Test for date value (could be negative)
  */
-class AA_Validate_Date extends AA_Validate_Signed {
-}
+class AA_Validate_Date extends AA_Validate_Signed {}
 
 /** Test for Regular Expression
  *  @param   $pattern
  *  @param   $empty_expression
  *  @param   $maxlength
  */
-class AA_Validate_Regexp extends AA_Validate {
+class AA_Validate_Regexp extends AA_Validate
+{
     /** Regular Expression */
     protected $pattern;
     protected $empty_expression = '/^\s*$/';
     protected $maxlength;
 
-    function __construct($param= []) {
+    public function __construct($param = [])
+    {
         parent::__construct($param);
         if (trim($this->empty_expression) === '') {
             $this->empty_expression = '/^\s*$/';
         }
     }
 
-    public static function getClassProperties(): array {
+    public static function getClassProperties(): array
+    {
         return [                      //           id            name              type    multi  persist validator, required, help, morehelp, example
-            'pattern'          => new AA_Property( 'pattern',           _m("Regular expression"), 'string', false, true, 'string', false, _m(""), '', '/^[a-z]*$/'),
-            'empty_expression' => new AA_Property( 'empty_expression',  _m("Empty expression"),   'string', false, true, 'string', false, _m(""), '', '/^(0|\s*)$/'),
-            'maxlength'        => new AA_Property( 'maxlength',         _m("Maximum length"),     'int',    false, true, 'int',    false, _m(""), '', '15')
+            'pattern'          => new AA_Property('pattern', _m("Regular expression"), 'string', false, true, 'string', false, _m(""), '', '/^[a-z]*$/'),
+            'empty_expression' => new AA_Property('empty_expression', _m("Empty expression"), 'string', false, true, 'string', false, _m(""), '', '/^(0|\s*)$/'),
+            'maxlength'        => new AA_Property('maxlength', _m("Maximum length"), 'int', false, true, 'int', false, _m(""), '', '15'),
         ];
     }
 
@@ -375,11 +414,12 @@ class AA_Validate_Regexp extends AA_Validate {
      * @param string          $var_id
      * @return bool
      */
-    public function validate(?string &$var, AA_Content $content_context = null, string $var_id = ''): bool {
-        if ( $this->maxlength > 0 && strlen($var) > $this->maxlength ) {
+    public function validate(?string &$var, AA_Content $content_context = null, string $var_id = ''): bool
+    {
+        if ($this->maxlength > 0 && strlen($var) > $this->maxlength) {
             return AA_Validate::bad(VALIDATE_ERROR_TOO_LONG, _m('Too long'), $var_id);
         }
-        if ( strlen($this->pattern) < 3 ) {
+        if (strlen($this->pattern) < 3) {
             return true;
         }
         return  preg_match($this->pattern, $var) ? true : AA_Validate::bad(VALIDATE_ERROR_OUT_OF_RANGE, _m('Do not match the pattern'), $var_id);
@@ -389,27 +429,36 @@ class AA_Validate_Regexp extends AA_Validate {
      * @param $var
      * @return bool
      */
-    public function varempty($var) : bool {
+    public function varempty($var): bool
+    {
         return (strlen($this->pattern) < 3) ? parent::varempty($var) : preg_match($this->empty_expression, $var);
     }
 
     /** returns the type attribute for the HTML 5 <input> tag with possible some
      *  more attributes (like min, max, step, pattern, ...)
      */
-    function getHtmlInputAttr(): array
+    public function getHtmlInputAttr(): array
     {
-        $ret = ['type'=>'text'];
-        if ($this->maxlength > 0)                               { $ret['maxlength']  = (int)$this->maxlength; }
-        if ($this->maxlength > 0 && $this->maxlength < 60) { $ret['size']       = ((int)$this->maxlength+2); }
-        if (strlen($this->pattern) > 2)                         { $ret['pattern']    = substr($this->pattern, 1, -1); } // we need to convert /^[a-z]*$/ to ^[a-z]*$
+        $ret = ['type' => 'text'];
+        if ($this->maxlength > 0) {
+            $ret['maxlength']  = (int) $this->maxlength;
+        }
+        if ($this->maxlength > 0 && $this->maxlength < 60) {
+            $ret['size']       = ((int) $this->maxlength + 2);
+        }
+        if (strlen($this->pattern) > 2) {
+            $ret['pattern']    = substr($this->pattern, 1, -1);
+        } // we need to convert /^[a-z]*$/ to ^[a-z]*$
         return $ret;
     }
 }
 
 /** Test for url
  */
-class AA_Validate_Url extends AA_Validate_Regexp {
-    function __construct($param= []) {
+class AA_Validate_Url extends AA_Validate_Regexp
+{
+    public function __construct($param = [])
+    {
         parent::__construct($param);
         $this->pattern          = '|^http(s?):\/\/\S+\.\S+|';
         $this->empty_expression = '~(^http(s?):\/\/$)|(^\s*$)~';
@@ -418,16 +467,18 @@ class AA_Validate_Url extends AA_Validate_Regexp {
     /** returns the type attribute for the HTML 5 <input> tag with possible some
      *  more attributes (like min, max, step, pattern, ...)
      */
-    function getHtmlInputAttr(): array
+    public function getHtmlInputAttr(): array
     {
-        return ['type'=> 'url', 'pattern'=>"^http(s?):\/\/\S+\.\S+"];
+        return ['type' => 'url', 'pattern' => "^http(s?):\/\/\S+\.\S+"];
     }
 }
 
 /** Test for email
  */
-class AA_Validate_Email extends AA_Validate_Regexp {
-    function __construct($param= []) {
+class AA_Validate_Email extends AA_Validate_Regexp
+{
+    public function __construct($param = [])
+    {
         parent::__construct($param);
         $this->pattern = '/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[A-Za-z]{2,6}$/';
         $this->empty_expression = '/^\s*$/';
@@ -436,23 +487,23 @@ class AA_Validate_Email extends AA_Validate_Regexp {
     /** returns the type attribute for the HTML 5 <input> tag with possible some
      *  more attributes (like min, max, step, pattern, ...)
      */
-    function getHtmlInputAttr(): array
+    public function getHtmlInputAttr(): array
     {
-        return ['type'=>'email'];
+        return ['type' => 'email'];
     }
 }
 
 
 /** Test for long item id
  */
-class AA_Validate_Id extends AA_Validate {
-
+class AA_Validate_Id extends AA_Validate
+{
     /** returns the type attribute for the HTML 5 <input> tag with possible some
      *  more attributes (like min, max, step, pattern, ...)
      */
-    function getHtmlInputAttr(): array
+    public function getHtmlInputAttr(): array
     {
-        return ['type'=>'text', 'pattern'=>'[0-9a-f]{32}'];
+        return ['type' => 'text', 'pattern' => '[0-9a-f]{32}'];
     }
 
     /** validate function
@@ -461,7 +512,8 @@ class AA_Validate_Id extends AA_Validate {
      * @param string          $var_id
      * @return bool
      */
-    public function validate(?string &$var, AA_Content $content_context = null, string $var_id = ''): bool {
+    public function validate(?string &$var, AA_Content $content_context = null, string $var_id = ''): bool
+    {
         if (!is_long_id($var)) {
             return AA_Validate::bad(VALIDATE_ERROR_BAD_TYPE, _m('No ID value'), $var_id);
         }
@@ -470,30 +522,32 @@ class AA_Validate_Id extends AA_Validate {
 }
 
 /** Test for packed item id - used just internally for ItemID */
-class AA_Validate_Packedid extends AA_Validate {
-
+class AA_Validate_Packedid extends AA_Validate
+{
     /** validate function
      * @param string|null     $var
      * @param AA_Content|null $content_context
      * @param string          $var_id
      * @return bool
      */
-    public function validate(?string &$var, AA_Content $content_context = null, string $var_id = ''): bool {
+    public function validate(?string &$var, AA_Content $content_context = null, string $var_id = ''): bool
+    {
         return is_packed_id($var) ? true : AA_Validate::bad(VALIDATE_ERROR_BAD_TYPE, _m('No packed ID value'), $var_id);
     }
 }
 
 /** Test for long item id with x,y,z in front of ID (for iso widget) */
-class AA_Validate_Markedid extends AA_Validate_Id {
-
+class AA_Validate_Markedid extends AA_Validate_Id
+{
     /** validate function
      * @param string|null     $var
      * @param AA_Content|null $content_context
      * @param string          $var_id
      * @return bool
      */
-    public function validate(?string &$var, AA_Content $content_context = null, string $var_id = ''): bool {
-        if (!is_long_id(ltrim($var,'xyz'))) {
+    public function validate(?string &$var, AA_Content $content_context = null, string $var_id = ''): bool
+    {
+        if (!is_long_id(ltrim($var, 'xyz'))) {
             return AA_Validate::bad(VALIDATE_ERROR_BAD_TYPE, _m('No ID value'), $var_id);
         }
         return true;
@@ -505,17 +559,19 @@ class AA_Validate_Markedid extends AA_Validate_Id {
  *  @param   $min
  *  @param   $max
  */
-class AA_Validate_Float extends AA_Validate {
+class AA_Validate_Float extends AA_Validate
+{
     /** Minimum number */
     protected $f_min;
 
     /** Maximum number */
     protected $f_max;
 
-    public static function getClassProperties(): array {
+    public static function getClassProperties(): array
+    {
         return [                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
-            'f_min'  => new AA_Property( 'f_min',  _m("Allowed minimum value"), 'float', false, true, 'float', false, _m(""), '', '1.0'),
-            'f_max'  => new AA_Property( 'f_max',  _m("Allowed maximum value"), 'float', false, true, 'float', false, _m(""), '', '1000.0'),
+            'f_min'  => new AA_Property('f_min', _m("Allowed minimum value"), 'float', false, true, 'float', false, _m(""), '', '1.0'),
+            'f_max'  => new AA_Property('f_max', _m("Allowed maximum value"), 'float', false, true, 'float', false, _m(""), '', '1000.0'),
         ];
     }
 
@@ -525,28 +581,30 @@ class AA_Validate_Float extends AA_Validate {
      * @param string          $var_id
      * @return bool
      */
-    public function validate(?string &$var, AA_Content $content_context = null, string $var_id = ''): bool {
-        if ( !preg_match('/^[-+]?((\d*[.,]?\d+([ed][-+]?\d+)?)|(inf)|(nan))$/i', $var) ) {  // is_float($var) is not OK - at least it does not allow 123
+    public function validate(?string &$var, AA_Content $content_context = null, string $var_id = ''): bool
+    {
+        if (!preg_match('/^[-+]?((\d*[.,]?\d+([ed][-+]?\d+)?)|(inf)|(nan))$/i', $var)) {  // is_float($var) is not OK - at least it does not allow 123
             return AA_Validate::bad(VALIDATE_ERROR_BAD_TYPE, _m('No float value'), $var_id);
         }
-        $var = str_replace(',', '.',$var); // Phpfloat does not work well for long int - 123456789012345678901234567890
-        if ( !is_null($this->f_max) && $var > $this->f_max ) {
+        $var = str_replace(',', '.', $var); // Phpfloat does not work well for long int - 123456789012345678901234567890
+        if (!is_null($this->f_max) && $var > $this->f_max) {
             return AA_Validate::bad(VALIDATE_ERROR_OUT_OF_RANGE_MAX, _m('Out of range - too big'), $var_id);
         }
-        if ( !is_null($this->f_min) && $var < $this->f_min ) {
+        if (!is_null($this->f_min) && $var < $this->f_min) {
             return AA_Validate::bad(VALIDATE_ERROR_OUT_OF_RANGE_MIN, _m('Out of range - too small'), $var_id);
         }
         return true;
     }
 
-    public function sanitize($var) {
+    public function sanitize($var)
+    {
         if ($this->validate($var)) {
-            return (float)$var;
+            return (float) $var;
         }
-        if ( AA_Validate::lastErr() === VALIDATE_ERROR_OUT_OF_RANGE_MAX) {
-            return (float)(is_null($this->f_max) ? 0 : $this->f_max);
+        if (AA_Validate::lastErr() === VALIDATE_ERROR_OUT_OF_RANGE_MAX) {
+            return (float) (is_null($this->f_max) ? 0 : $this->f_max);
         }
-        return (float)(is_null($this->f_min) ? 0 : $this->f_min);
+        return (float) (is_null($this->f_min) ? 0 : $this->f_min);
     }
 }
 
@@ -554,17 +612,19 @@ class AA_Validate_Float extends AA_Validate {
  *  @param   $min
  *  @param   $max
  */
-class AA_Validate_Decimal extends AA_Validate {
+class AA_Validate_Decimal extends AA_Validate
+{
     /** Minimum number */
     protected $f_min;
 
     /** Maximum number */
     protected $f_max;
 
-    public static function getClassProperties(): array {
+    public static function getClassProperties(): array
+    {
         return [                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
-                                      'f_min'  => new AA_Property( 'f_min',  _m("Allowed minimum value"), 'float', false, true, 'float', false, _m(""), '', '1.0'),
-                                      'f_max'  => new AA_Property( 'f_max',  _m("Allowed maximum value"), 'float', false, true, 'float', false, _m(""), '', '1000.0'),
+            'f_min'  => new AA_Property('f_min', _m("Allowed minimum value"), 'float', false, true, 'float', false, _m(""), '', '1.0'),
+            'f_max'  => new AA_Property('f_max', _m("Allowed maximum value"), 'float', false, true, 'float', false, _m(""), '', '1000.0'),
         ];
     }
 
@@ -574,38 +634,42 @@ class AA_Validate_Decimal extends AA_Validate {
      * @param string          $var_id
      * @return bool
      */
-    public function validate(?string &$var, AA_Content $content_context = null, string $var_id = ''): bool {
-        if ( !preg_match('/^(?:\d+(?:[.,]\d*)?|[.,]\d+)$/', $var) ) {  // is_float($var) is not OK - at least it does not allow 123
+    public function validate(?string &$var, AA_Content $content_context = null, string $var_id = ''): bool
+    {
+        if (!preg_match('/^(?:\d+(?:[.,]\d*)?|[.,]\d+)$/', $var)) {  // is_float($var) is not OK - at least it does not allow 123
             return AA_Validate::bad(VALIDATE_ERROR_BAD_TYPE, _m('No decimal value'), $var_id);
         }
-        $var = str_replace(',', '.',$var); // Phpfloat does not work well for long int - 123456789012345678901234567890
-        if ( !is_null($this->f_max) && $var > $this->f_max ) {
+        $var = str_replace(',', '.', $var); // Phpfloat does not work well for long int - 123456789012345678901234567890
+        if (!is_null($this->f_max) && $var > $this->f_max) {
             return AA_Validate::bad(VALIDATE_ERROR_OUT_OF_RANGE_MAX, _m('Out of range - too big'), $var_id);
         }
-        if ( !is_null($this->f_min) && $var < $this->f_min ) {
+        if (!is_null($this->f_min) && $var < $this->f_min) {
             return AA_Validate::bad(VALIDATE_ERROR_OUT_OF_RANGE_MIN, _m('Out of range - too small'), $var_id);
         }
         return true;
     }
 
-    public function sanitize($var) {
+    public function sanitize($var)
+    {
         if ($this->validate($var)) {
-            return (string)$var;
+            return (string) $var;
         }
-        if ( AA_Validate::lastErr() === VALIDATE_ERROR_OUT_OF_RANGE_MAX) {
-            return (string)(is_null($this->f_max) ? 0 : $this->f_max);
+        if (AA_Validate::lastErr() === VALIDATE_ERROR_OUT_OF_RANGE_MAX) {
+            return (string) (is_null($this->f_max) ? 0 : $this->f_max);
         }
-        return (string)(is_null($this->f_min) ? 0 : $this->f_min);
+        return (string) (is_null($this->f_min) ? 0 : $this->f_min);
     }
 }
 
-class AA_Validate_Enum extends AA_Validate {
+class AA_Validate_Enum extends AA_Validate
+{
     /** Enumeration array (array of possible values). Values are stored as keys. */
     protected $possible_values;
 
-    public static function getClassProperties(): array {
+    public static function getClassProperties(): array
+    {
         return [                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
-            'possible_values' => new AA_Property( 'possible_values', _m("Possible values"), 'string', true, true, 'string', false)
+            'possible_values' => new AA_Property('possible_values', _m("Possible values"), 'string', true, true, 'string', false),
         ];
     }
 
@@ -615,26 +679,28 @@ class AA_Validate_Enum extends AA_Validate {
      * @param string          $var_id
      * @return bool
      */
-    public function validate(?string &$var, AA_Content $content_context = null, string $var_id = ''): bool {
+    public function validate(?string &$var, AA_Content $content_context = null, string $var_id = ''): bool
+    {
         return isset($this->possible_values[$var]) ? true : AA_Validate::bad(VALIDATE_ERROR_NOT_IN_LIST, _m('Out of range - not in the list'), $var_id);
     }
 }
 
 /** Test for login name value */
-class AA_Validate_Login extends AA_Validate {
-
+class AA_Validate_Login extends AA_Validate
+{
     /** validate function
      * @param string|null     $var
      * @param AA_Content|null $content_context
      * @param string          $var_id
      * @return bool
      */
-    public function validate(?string &$var, AA_Content $content_context = null, string $var_id = ''): bool {
+    public function validate(?string &$var, AA_Content $content_context = null, string $var_id = ''): bool
+    {
         $len = strlen($var);
-        if ( $len<3 ) {
+        if ($len < 3) {
             return AA_Validate::bad(VALIDATE_ERROR_TOO_SHORT, _m('Too short'), $var_id);
         }
-        if ( $len>32 ) {
+        if ($len > 32) {
             return AA_Validate::bad(VALIDATE_ERROR_TOO_LONG, _m('Too long'), $var_id);
         }
         return preg_match('/^[a-zA-Z0-9]*$/', $var) ? true : AA_Validate::bad(VALIDATE_ERROR_WRONG_CHARACTERS, _m("Wrong characters - you should use a-z, A-Z and 0-9 characters"), $var_id);
@@ -643,27 +709,28 @@ class AA_Validate_Login extends AA_Validate {
     /** returns the type attribute for the HTML 5 <input> tag with possible some
      *  more attributes (like min, max, step, pattern, ...)
      */
-    function getHtmlInputAttr(): array
+    public function getHtmlInputAttr(): array
     {
-        return ['type'=>'text', 'pattern'=>'[a-zA-Z0-9]{3,32}'];
+        return ['type' => 'text', 'pattern' => '[a-zA-Z0-9]{3,32}'];
     }
 }
 
 /** Test for password */
-class AA_Validate_Pwd extends AA_Validate {
-
+class AA_Validate_Pwd extends AA_Validate
+{
     /** validate function
      * @param string|null     $var
      * @param AA_Content|null $content_context
      * @param string          $var_id
      * @return bool
      */
-    public function validate(?string &$var, AA_Content $content_context = null, string $var_id = ''): bool {
+    public function validate(?string &$var, AA_Content $content_context = null, string $var_id = ''): bool
+    {
         $len = strlen($var);
-        if ( $len<5 ) {
+        if ($len < 5) {
             return AA_Validate::bad(VALIDATE_ERROR_TOO_SHORT, _m('Too short'), $var_id);
         }
-        if ( $len>255 ) {
+        if ($len > 255) {
             return AA_Validate::bad(VALIDATE_ERROR_TOO_LONG, _m('Too long'), $var_id);
         }
         return true;
@@ -672,9 +739,9 @@ class AA_Validate_Pwd extends AA_Validate {
     /** returns the type attribute for the HTML 5 <input> tag with possible some
      *  more attributes (like min, max, step, pattern, ...)
      */
-    function getHtmlInputAttr(): array
+    public function getHtmlInputAttr(): array
     {
-        return ['type'=>'password', 'min'=>'5'];
+        return ['type' => 'password', 'min' => '5'];
     }
 }
 
@@ -683,7 +750,8 @@ class AA_Validate_Pwd extends AA_Validate {
  *  @param   $scope       - username | slice | allslices
  *  @param   $item_id     - current item ID (most probably is passed by content_context, instead of this param)
  */
-class AA_Validate_Unique extends AA_Validate {
+class AA_Validate_Unique extends AA_Validate
+{
     /** Search in which field */
     protected $field_id;
 
@@ -698,11 +766,12 @@ class AA_Validate_Unique extends AA_Validate {
      *  copied from $VALIDATE_TYPES
      * @return array
      */
-    public static function getClassProperties(): array {
+    public static function getClassProperties(): array
+    {
         return [                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
-            'field_id' => new AA_Property( 'field_id', _m("Field id"), 'string', false, true, 'string', false, _m(""), '', ''),
-            'scope'    => new AA_Property( 'scope',    _m("Scope"),    'string', false, true, 'string', false, _m("username | slice | allslices"), '', 'slice'),  // or 0 | 1 | 2 for field setting
-            'item_id'  => new AA_Property( 'item_id' , _m("Item id which we do not count"), 'string', false, true, 'string', false),
+            'field_id' => new AA_Property('field_id', _m("Field id"), 'string', false, true, 'string', false, _m(""), '', ''),
+            'scope'    => new AA_Property('scope', _m("Scope"), 'string', false, true, 'string', false, _m("username | slice | allslices"), '', 'slice'),  // or 0 | 1 | 2 for field setting
+            'item_id'  => new AA_Property('item_id', _m("Item id which we do not count"), 'string', false, true, 'string', false),
         ];
     }
 
@@ -712,18 +781,22 @@ class AA_Validate_Unique extends AA_Validate {
      * @param string          $var_id
      * @return bool
      */
-    public function validate(?string &$var, AA_Content $content_context = null, string $var_id = ''): bool {
+    public function validate(?string &$var, AA_Content $content_context = null, string $var_id = ''): bool
+    {
         switch ($this->scope) {  // for older approach - presented in field setting
             case '':
-            case '0': $this->scope = 'username';  break;
-            case '1': $this->scope = 'slice';     break;
-            case '2': $this->scope = 'allslices'; break;
+            case '0': $this->scope = 'username';
+                break;
+            case '1': $this->scope = 'slice';
+                break;
+            case '2': $this->scope = 'allslices';
+                break;
         }
 
         $itm_id = $this->item_id ?: ($content_context ? $content_context->getId() : '');
 
-        if ( $this->scope === 'username') {
-            if ( !AA::$perm->isUsernameFree($var) && (!$itm_id || AA_Reader::name2Id($var) != $itm_id)) {
+        if ($this->scope === 'username') {
+            if (!AA::$perm->isUsernameFree($var) && (!$itm_id || AA_Reader::name2Id($var) != $itm_id)) {
                 return AA_Validate::bad(VALIDATE_ERROR_NOT_UNIQUE, _m('Username is not unique'), $var_id);
             }
             return true;
@@ -735,10 +808,10 @@ class AA_Validate_Unique extends AA_Validate {
         }
         $tables = ['content', 'item'];
         $conds  = [['content.item_id', 'item.id', 'j'], ['item.status_code',1]];  // only approved items
-        if ( $this->scope === 'slice') {
+        if ($this->scope === 'slice') {
             $slice = null;
             $slice_id = AA::$slice_id ?: AA::$module_id;   // AA\IO\Saver or itemedit.php tells us the current slice
-            if ( !$slice_id || !($slice = AA_Slice::getModule($slice_id)) || !$slice->getField($field_to_check) ) {
+            if (!$slice_id || !($slice = AA_Slice::getModule($slice_id)) || !$slice->getField($field_to_check)) {
                 return AA_Validate::bad(VALIDATE_ERROR_BAD_PARAMETER, _m('Wrong parameter field_id for unique check'), $var_id);
             }
             $conds[] = ['item.slice_id', $slice_id, 'l'];
@@ -762,8 +835,8 @@ class AA_Validate_Unique extends AA_Validate {
  *  @param   $scope       - username | slice | allslices
  *  @param   $item_id     - current item ID
  */
-class AA_Validate_Eunique extends AA_Validate {
-
+class AA_Validate_Eunique extends AA_Validate
+{
     /** Search in which field */
     protected $field_id;
 
@@ -778,11 +851,12 @@ class AA_Validate_Eunique extends AA_Validate {
      *  copied from $VALIDATE_TYPES
      * @return array
      */
-    public static function getClassProperties(): array {
+    public static function getClassProperties(): array
+    {
         return [                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
-            'field_id' => new AA_Property( 'field_id', _m("Field id"), 'string', false, true, 'string', false, _m(""), '', ''),
-            'scope'    => new AA_Property( 'scope',    _m("Scope"),    'string', false, true, 'string', false, _m("username | slice | <b>allslices</b>"), '', 'slice'),  // or 0 | 1 | 2 for field setting
-            'item_id'  => new AA_Property( 'item_id' , _m("Item id which we do not count"), 'string', false, true, 'string', false),
+            'field_id' => new AA_Property('field_id', _m("Field id"), 'string', false, true, 'string', false, _m(""), '', ''),
+            'scope'    => new AA_Property('scope', _m("Scope"), 'string', false, true, 'string', false, _m("username | slice | <b>allslices</b>"), '', 'slice'),  // or 0 | 1 | 2 for field setting
+            'item_id'  => new AA_Property('item_id', _m("Item id which we do not count"), 'string', false, true, 'string', false),
         ];
     }
 
@@ -792,8 +866,9 @@ class AA_Validate_Eunique extends AA_Validate {
      * @param string          $var_id
      * @return bool
      */
-    public function validate(?string &$var, AA_Content $content_context = null, string $var_id = ''): bool {
-        if ( !AA_Validate::doValidate($var, 'email') ) {
+    public function validate(?string &$var, AA_Content $content_context = null, string $var_id = ''): bool
+    {
+        if (!AA_Validate::doValidate($var, 'email')) {
             return false;
         }
 
@@ -806,20 +881,22 @@ class AA_Validate_Eunique extends AA_Validate {
     /** returns the type attribute for the HTML 5 <input> tag with possible some
      *  more attributes (like min, max, step, pattern, ...)
      */
-    function getHtmlInputAttr(): array
+    public function getHtmlInputAttr(): array
     {
-        return ['type'=>'email'];
+        return ['type' => 'email'];
     }
 }
 
 /** Test for text (any characters allowed)
  */
-class AA_Validate_Text extends AA_Validate {
+class AA_Validate_Text extends AA_Validate
+{
     protected $maxlength;
 
-    public static function getClassProperties(): array {
+    public static function getClassProperties(): array
+    {
         return [                      //           id            name              type    multi  persist validator, required, help, morehelp, example
-            'maxlength'        => new AA_Property( 'maxlength',         _m("Maximum length"),     'int',    false, true, 'int',    false, _m(""), '', '15')
+            'maxlength'        => new AA_Property('maxlength', _m("Maximum length"), 'int', false, true, 'int', false, _m(""), '', '15'),
         ];
     }
 
@@ -829,8 +906,9 @@ class AA_Validate_Text extends AA_Validate {
      * @param string          $var_id
      * @return bool
      */
-    public function validate(?string &$var, AA_Content $content_context = null, string $var_id = ''): bool {
-        if ( $this->maxlength > 0 && strlen($var) > $this->maxlength ) {
+    public function validate(?string &$var, AA_Content $content_context = null, string $var_id = ''): bool
+    {
+        if ($this->maxlength > 0 && strlen($var) > $this->maxlength) {
             return AA_Validate::bad(VALIDATE_ERROR_TOO_LONG, _m('Too long'), $var_id);
         }
         return true;
@@ -839,11 +917,15 @@ class AA_Validate_Text extends AA_Validate {
     /** returns the type attribute for the HTML 5 <input> tag with possible some
      *  more attributes (like min, max, step, pattern, ...)
      */
-    function getHtmlInputAttr(): array
+    public function getHtmlInputAttr(): array
     {
-        $ret = ['type'=>'text'];
-        if ($this->maxlength > 0)                               { $ret['maxlength']  = (int)$this->maxlength; }
-        if ($this->maxlength > 0 && $this->maxlength < 60) { $ret['size']       = ((int)$this->maxlength+2); }
+        $ret = ['type' => 'text'];
+        if ($this->maxlength > 0) {
+            $ret['maxlength']  = (int) $this->maxlength;
+        }
+        if ($this->maxlength > 0 && $this->maxlength < 60) {
+            $ret['size']       = ((int) $this->maxlength + 2);
+        }
         return $ret;
     }
 }
@@ -851,7 +933,8 @@ class AA_Validate_Text extends AA_Validate {
 /** get_javascript_field_validation function
 * used in tabledit.php and itemedit.php
 */
-function get_javascript_field_validation(): string {
+function get_javascript_field_validation(): string
+{
     /* javascript params:
        myform = the form object
        txtfield = field name in the form
@@ -918,23 +1001,26 @@ function get_javascript_field_validation(): string {
 function NEW_get_lines($fp): string
 {
     $data = "";
-    while($str = @fgets($fp,515)) {
+    while ($str = @fgets($fp, 515)) {
         $data .= $str;
         // if the 4th character is a space then we are done reading
         // so just break the loop
-        if($str[3] === ' ') { break; }
+        if ($str[3] === ' ') {
+            break;
+        }
     }
     return $data;
 }
 
-function NEW_checkEmail($email): bool {
+function NEW_checkEmail($email): bool
+{
     // checks proper syntax
     if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
         // gets domain name
-        [$username,$domain]=explode('@',$email);
+        [$username,$domain] = explode('@', $email);
         // checks for if MX records in the DNS
-        if ( getmxrr($domain,$smtphosts,$mx_weight) || gethostbyname($domain) !== $domain ) {
-            if ( $smtphosts ) {
+        if (getmxrr($domain, $smtphosts, $mx_weight) || gethostbyname($domain) !== $domain) {
+            if ($smtphosts) {
                 // Put the records together in a array we can sort
                 foreach ($smtphosts as $i => $smtphost) {
                     $mxs[$smtphosts[$i]] = $mx_weight[$i];
@@ -944,22 +1030,22 @@ function NEW_checkEmail($email): bool {
                 $domain = current(array_keys($mxs));
             }
             // attempts a socket connection to mail server
-            $fp = fsockopen($domain,25,$errno,$errstr,30);
-            if ( $fp ) {
+            $fp = fsockopen($domain, 25, $errno, $errstr, 30);
+            if ($fp) {
                 NEW_get_lines($fp);
-                fwrite($fp, 'ehlo ecn.cz'."\r\n");
+                fwrite($fp, 'ehlo ecn.cz' . "\r\n");
                 NEW_get_lines($fp);
-                fwrite($fp, 'mail from: <>'."\r\n");
+                fwrite($fp, 'mail from: <>' . "\r\n");
                 NEW_get_lines($fp);
-                fwrite($fp, 'rcpt to: <'.$email.'>'."\r\n");
+                fwrite($fp, 'rcpt to: <' . $email . '>' . "\r\n");
                 $odpoved = NEW_get_lines($fp);
-                fwrite($fp, 'quit'."\r\n");
+                fwrite($fp, 'quit' . "\r\n");
                 fclose($fp);
                 if (str_starts_with($odpoved, '250')) {
                     return true;
                 }
 
-                echo 'Error: verification failed: '.$odpoved;
+                echo 'Error: verification failed: ' . $odpoved;
             } else {
                 echo 'Error: connection to 25 failed';
             }
@@ -973,5 +1059,3 @@ function NEW_checkEmail($email): bool {
     echo 'Error: email not look like email';
     return false;
 }
-
-

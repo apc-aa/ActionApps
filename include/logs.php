@@ -54,9 +54,9 @@ LOGIN           module_id:field_id              msg:url                        /
 AA_WARN
 */
 
-class AA_Log implements InternalExpandInterface {
-
-    static function warn(array $params = []): void
+class AA_Log implements InternalExpandInterface
+{
+    public static function warn(array $params = []): void
     {
         self::write('AA_WARN', self::context(), array_merge($params, [self::backtrack(2)]));
     }
@@ -69,8 +69,9 @@ class AA_Log implements InternalExpandInterface {
      * @param string|array|AA_Logentry $params - if array, joined
      * @return bool
      */
-    static function write($event, $selector = "", $params = ""): bool {
-        if ( !self::isLogable($event) ) {
+    public static function write($event, $selector = "", $params = ""): bool
+    {
+        if (!self::isLogable($event)) {
             return false;
         }
 
@@ -88,10 +89,10 @@ class AA_Log implements InternalExpandInterface {
         $rows = [];
         if (is_array($selector)) {
             foreach ($selector as $sel) {
-                $rows[] = ['time'=>time(), 'user'=>AuthGetUid(), 'type'=>$event, 'selector'=>$sel, 'params'=>$params];
+                $rows[] = ['time' => time(), 'user' => AuthGetUid(), 'type' => $event, 'selector' => $sel, 'params' => $params];
             }
         } else {
-            $rows[] = ['time'=>time(), 'user'=>AuthGetUid(), 'type'=>$event, 'selector'=>$selector, 'params'=>$params];
+            $rows[] = ['time' => time(), 'user' => AuthGetUid(), 'type' => $event, 'selector' => $selector, 'params' => $params];
         }
 
         AA::Metabase()->doInsertMulti('log', $rows);
@@ -109,49 +110,50 @@ class AA_Log implements InternalExpandInterface {
 
     /** Is the event logable?
      */
-    static function isLogable($event_type): bool
+    public static function isLogable($event_type): bool
     {
         /** By $DO_NOT_LOG array you are able to specify, which events you don't want
          *  to log - it's just like filter
          *  This should be list of all logable events (at least now - 2005-11-9)
          */
         $DO_NOT_LOG = [
-           // 'ALERTS',
-           // 'BM_CREATE',
-           // 'BM_DELETE',
-           // 'BM_RENAME',
-           // 'BM_UPDATE',
-           // 'CSN',
-           // 'CSV_IMPORT',
-           // 'EMAIL_SENT',
-           // 'FEED2ALL_0',
-           // 'FEED2ALL_1',
-           // 'FEED_ADD',
-           // 'FEED_DEL',
-           // 'FEED_DSBLE',
-           // 'FEED_ENBLE',
-           // 'FILE IMP:',
-           // 'ITEM_FIELD_FILLED',
-           // 'PAGECACHE',
-           // 'TOEXECUTE'
-           // 'HITCOUNT'
-           // 'AA_WARN'
-           // 'ITEM_DEL'
-           // 'ITEM_NEW'
-           // 'ITEM_UPD'
-           // 'M_FLDI_VLD'
-           // LOGIN
-           // PWD_REHASH
-           // VIEW
-           // SYS_STAT
-           // PAGE_PARAM_ERR
+            // 'ALERTS',
+            // 'BM_CREATE',
+            // 'BM_DELETE',
+            // 'BM_RENAME',
+            // 'BM_UPDATE',
+            // 'CSN',
+            // 'CSV_IMPORT',
+            // 'EMAIL_SENT',
+            // 'FEED2ALL_0',
+            // 'FEED2ALL_1',
+            // 'FEED_ADD',
+            // 'FEED_DEL',
+            // 'FEED_DSBLE',
+            // 'FEED_ENBLE',
+            // 'FILE IMP:',
+            // 'ITEM_FIELD_FILLED',
+            // 'PAGECACHE',
+            // 'TOEXECUTE'
+            // 'HITCOUNT'
+            // 'AA_WARN'
+            // 'ITEM_DEL'
+            // 'ITEM_NEW'
+            // 'ITEM_UPD'
+            // 'M_FLDI_VLD'
+            // LOGIN
+            // PWD_REHASH
+            // VIEW
+            // SYS_STAT
+            // PAGE_PARAM_ERR
         ];
         return !in_array($event_type, $DO_NOT_LOG);
     }
 
-    static function backtrack($remove_steps=1): string {
-        $ret = explode("\n", str_replace(AA_BASE_PATH, '', (new Exception() )->getTraceAsString()));
-        for (; $remove_steps>0; --$remove_steps) {
+    public static function backtrack($remove_steps = 1): string
+    {
+        $ret = explode("\n", str_replace(AA_BASE_PATH, '', (new Exception())->getTraceAsString()));
+        for (; $remove_steps > 0; --$remove_steps) {
             array_shift($ret);
         }
         return implode("\n", $ret);
@@ -161,14 +163,14 @@ class AA_Log implements InternalExpandInterface {
      *  the reversed Qa selector must fit so its trailing class flag survives. */
     private const SELECTOR_MAX = 255;
 
-    static function context(?string $selector=null): string
+    public static function context(?string $selector = null): string
     {
         // we need to be searchable by selector - so in DB index we use reversed format with Qa at the end
         return self::contextSelector(
-            (string)$selector,
-            (string)AA::$module_id,
+            (string) $selector,
+            (string) AA::$module_id,
             str_replace(':', '_', $_SERVER['REMOTE_ADDR']),
-            (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' ? '' : 'http/') . "{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}"
+            (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' ? '' : 'http/') . "{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}",
         );
     }
 
@@ -180,8 +182,8 @@ class AA_Log implements InternalExpandInterface {
      */
     protected static function contextSelector(string $ident, string $module, string $ip, string $uri): string
     {
-        $make = static fn (string $u): string => (new AA_Logentry_Qa(
-            ['ident' => $ident, 'module' => $module, 'ip' => $ip, 'uri' => $u]
+        $make = static fn(string $u): string => (new AA_Logentry_Qa(
+            ['ident' => $ident, 'module' => $module, 'ip' => $ip, 'uri' => $u],
         ))->serializeToString(true);
 
         // measure the actual serialized length (robust to ParamImplode ':' escaping);
@@ -194,7 +196,8 @@ class AA_Log implements InternalExpandInterface {
         return $entry;
     }
 
-    public static function getAdminUrl(string $event, string $selector = ""): string {
+    public static function getAdminUrl(string $event, string $selector = ""): string
+    {
         return get_admin_url("aa_log.php", ['srchbr_akce' => 1, 'srchbr_field[0]' => 'selector', 'srchbr_oper[0]' => '=', "srchbr_value[0]=$selector", 'srchbr_field[1]' => 'type', 'srchbr_oper[1]' => '=', 'srchbr_value[1]' => $event, 'srchbr_order[0]' => 'time', 'srchbr_order_dir[0]' => 'on']);
     }
 
@@ -215,7 +218,8 @@ class AA_Log implements InternalExpandInterface {
     }
 
     /** Get first 20 rows from log table with possible link to Log page */
-    public static function getLogTable(string $event, $selector = "", int $from=0, int $to=0, bool $show_log_link = false): string {
+    public static function getLogTable(string $event, $selector = "", int $from = 0, int $to = 0, bool $show_log_link = false): string
+    {
         $conds = [['type', $event, (str_contains($event, '%')) ? 'LIKE' : '=']];
         if ($selector != "") {
             $conds[] = ['selector', $selector];
@@ -231,9 +235,9 @@ class AA_Log implements InternalExpandInterface {
             return '';
         }
         $tab       = self::extendTable($tab);
-        $link_div  = $show_log_link ? '<div>'. a_href(self::getAdminUrl($event, $selector), _m('Log'), ['class' => 'aa-button-show']) . '</div>' : '';
+        $link_div  = $show_log_link ? '<div>' . a_href(self::getAdminUrl($event, $selector), _m('Log'), ['class' => 'aa-button-show']) . '</div>' : '';
 
-        return GetHtmlTable($tab, 'key'). $link_div;
+        return GetHtmlTable($tab, 'key') . $link_div;
     }
 
     /** parse Params row and extract columns based on AA_Logentry structure */
@@ -275,23 +279,24 @@ class AA_Log implements InternalExpandInterface {
     /** Internal aliases for Admin interface
      *  @usage {internal:AA_Log:entries:CSN:RSS#:22:3600} - display number of entries in log for CSN event with selector RSS:{feed_id} in last 3600 seconds
      */
-    static function internal_expand(?AA_Content $content, ...$params): string {
+    public static function internal_expand(?AA_Content $content, ...$params): string
+    {
         $info = array_shift($params);
         switch ($info) {
             case 'count':  // number of entries for type / selector in last seconds
                 [$type, $selector, $seconds] = $params;
-                $seconds = (int)$seconds ?: 3600;
-                return (!$type || !$selector) ? '' : (string)DB_AA::count('log', [['type', $type], ['selector', $selector], ['time', time() - $seconds, '>=']]);
+                $seconds = (int) $seconds ?: 3600;
+                return (!$type || !$selector) ? '' : (string) DB_AA::count('log', [['type', $type], ['selector', $selector], ['time', time() - $seconds, '>=']]);
             case 'print':  // print entries params based on logentry
                 if ($content && ($logEntry = AA_Logentry::factoryByString($content->getValue('params')))) {
                     return $logEntry->getPrintRow(); // also adds CSS to header
                 }
-                return (string)$content->getValue('params');
+                return (string) $content->getValue('params');
             case 'context':  // special format of selector logentry - param is first
                 if ($content && ($logEntry = AA_Logentry::factoryByStringReversed($content->getValue('selector')))) {
                     return $logEntry->getPrintRow(); // also adds CSS to header
                 }
-                return (string)$content->getValue('selector');
+                return (string) $content->getValue('selector');
         }
         return '';
     }
@@ -317,7 +322,8 @@ class AA_Log implements InternalExpandInterface {
 //}
 
 /** Uses AA_Serializable to create log entry. Constructor is taken from AA_Serializable */
-abstract class AA_Logentry extends AA_Serializable {
+abstract class AA_Logentry extends AA_Serializable
+{
     public function getPrintRow(): string
     {
         $props = $this::getClassProperties();
@@ -330,37 +336,43 @@ abstract class AA_Logentry extends AA_Serializable {
 }
 
 /** Mail Template log entry - description */
-class AA_Logentry_Mail2reader extends AA_Logentry {
-    public static function getClassProperties(): array {
+class AA_Logentry_Mail2reader extends AA_Logentry
+{
+    public static function getClassProperties(): array
+    {
         return [
-            'time'    => new AA_Property('time',    _m("Created time"), 'string'),
+            'time'    => new AA_Property('time', _m("Created time"), 'string'),
             'readers' => new AA_Property('readers', _m('Readers to be emailed'), 'int'),
         ];
     }
 }
 
 /** Mail Template log entry - type */
-class AA_Logentry_MR extends AA_Logentry {
-    public static function getClassProperties(): array {
+class AA_Logentry_MR extends AA_Logentry
+{
+    public static function getClassProperties(): array
+    {
         return [
-            'type'  => new AA_Property('type',_m('Type'), 'string'),  // type of mail template
-            'page'  => new AA_Property('page',_m('Page'), 'int'),     // short item id of page, where {mail:... function is
+            'type'  => new AA_Property('type', _m('Type'), 'string'),  // type of mail template
+            'page'  => new AA_Property('page', _m('Page'), 'int'),     // short item id of page, where {mail:... function is
         ];
     }
 }
 
 /** Planedtask Toexecute log entry
  */
-class AA_Logentry_X extends AA_Logentry {
-     public static function getClassProperties(): array {
-         return [
-         'time'       => new AA_Property('time',       _m('Time [s]'), 'string'),
-         'mem_usage'  => new AA_Property('mem_usage',  _m('Memory usage [MB]'), 'string'), // memory usage
-         'mem_peak'   => new AA_Property('mem_peak',   _m('Memory peak [MB]'), 'string'),  // memory peak
-         'ret'        => new AA_Property('ret',        _m('Return code'), 'string'),   // return code
-         'params'     => new AA_Property('params',     _m('Parameters'), 'string'),  // parameters
-         ];
-     }
+class AA_Logentry_X extends AA_Logentry
+{
+    public static function getClassProperties(): array
+    {
+        return [
+            'time'       => new AA_Property('time', _m('Time [s]'), 'string'),
+            'mem_usage'  => new AA_Property('mem_usage', _m('Memory usage [MB]'), 'string'), // memory usage
+            'mem_peak'   => new AA_Property('mem_peak', _m('Memory peak [MB]'), 'string'),  // memory peak
+            'ret'        => new AA_Property('ret', _m('Return code'), 'string'),   // return code
+            'params'     => new AA_Property('params', _m('Parameters'), 'string'),  // parameters
+        ];
+    }
 }
 
 /** Toexecute run summary log entry - one row per cron/queue run, written at the
@@ -368,13 +380,15 @@ class AA_Logentry_X extends AA_Logentry {
  *  text "finished {done}/{started} in {duration}/{allowed}".
  *  Serialized: Xrun:{done}:{started}:{duration}:{allowed}
  */
-class AA_Logentry_Xrun extends AA_Logentry {
-    public static function getClassProperties(): array {
+class AA_Logentry_Xrun extends AA_Logentry
+{
+    public static function getClassProperties(): array
+    {
         return [
-            'done'     => new AA_Property('done',     _m('Tasks done'),    'int'),
-            'started'  => new AA_Property('started',  _m('Tasks started'), 'int'),
-            'duration' => new AA_Property('duration', _m('Duration [s]'),  'string'),
-            'allowed'  => new AA_Property('allowed',  _m('Allowed [s]'),   'string'),
+            'done'     => new AA_Property('done', _m('Tasks done'), 'int'),
+            'started'  => new AA_Property('started', _m('Tasks started'), 'int'),
+            'duration' => new AA_Property('duration', _m('Duration [s]'), 'string'),
+            'allowed'  => new AA_Property('allowed', _m('Allowed [s]'), 'string'),
         ];
     }
 }
@@ -389,39 +403,45 @@ class AA_Logentry_Xrun extends AA_Logentry {
  *  append it at the end of the array.
  *  @see \AA\Later\HitcounterUpdate::toexecutelater()
  */
-class AA_Logentry_H extends AA_Logentry {
-    public static function getClassProperties(): array {
+class AA_Logentry_H extends AA_Logentry
+{
+    public static function getClassProperties(): array
+    {
         return [
-            'cached'       => new AA_Property('cached',       _m('Cached'), 'bool'),
+            'cached'       => new AA_Property('cached', _m('Cached'), 'bool'),
             'not_modified' => new AA_Property('not_modified', _m('Not Modified (304)'), 'bool'),
-            'time'         => new AA_Property('time',         _m('Time [s]'), 'string'),
-            'packtime'     => new AA_Property('packtime',     _m('Time + Cached + 304'), 'string'),
-            'mem_usage'    => new AA_Property('mem_usage',    _m('Memory usage [MB]'), 'string'),
-            'uri'          => new AA_Property('uri',          _m('Url'), 'string'),
+            'time'         => new AA_Property('time', _m('Time [s]'), 'string'),
+            'packtime'     => new AA_Property('packtime', _m('Time + Cached + 304'), 'string'),
+            'mem_usage'    => new AA_Property('mem_usage', _m('Memory usage [MB]'), 'string'),
+            'uri'          => new AA_Property('uri', _m('Url'), 'string'),
         ];
     }
 }
 
 /** Hitcounter entry
  */
-class AA_Logentry_W extends AA_Logentry {
-    public static function getClassProperties(): array {
+class AA_Logentry_W extends AA_Logentry
+{
+    public static function getClassProperties(): array
+    {
         return [
-            'time'         => new AA_Property('time',         _m('Time [s]'), 'string'),
-            'uri'          => new AA_Property('uri',          _m('Url'), 'string'),
+            'time'         => new AA_Property('time', _m('Time [s]'), 'string'),
+            'uri'          => new AA_Property('uri', _m('Url'), 'string'),
         ];
     }
 }
 
 /** System status log entry
  */
-class AA_Logentry_Sys extends AA_Logentry {
-    public static function getClassProperties(): array {
+class AA_Logentry_Sys extends AA_Logentry
+{
+    public static function getClassProperties(): array
+    {
         return [
-            'aa'  => new AA_Property('aa',  _m('AA'), 'string'),
+            'aa'  => new AA_Property('aa', _m('AA'), 'string'),
             'svn' => new AA_Property('svn', _m('SVN AA (util.php)'), 'string'),
             'php' => new AA_Property('php', _m('PHP'), 'string'),
-            'db'  => new AA_Property('db',  _m('DB'), 'string'),
+            'db'  => new AA_Property('db', _m('DB'), 'string'),
             'mem' => new AA_Property('mem', _m('Memory'), 'string'),
             'cpu' => new AA_Property('cpu', _m('CPU'), 'string'),
         ];
@@ -432,55 +452,65 @@ class AA_Logentry_Sys extends AA_Logentry {
  *  uses special format with class Qa at the end for better selector DB lookup
  *
  */
-class AA_Logentry_Qa extends AA_Logentry {
-// $entry = new AA_Logentry_Qa(['ident'=>$selector, 'module'=>AA::$module_id,'ip'=>str_replace(':','_',$_SERVER['REMOTE_ADDR']), 'url'=>($_SERVER['HTTPS'] ? '' : 'http/'). "{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}"]);
+class AA_Logentry_Qa extends AA_Logentry
+{
+    // $entry = new AA_Logentry_Qa(['ident'=>$selector, 'module'=>AA::$module_id,'ip'=>str_replace(':','_',$_SERVER['REMOTE_ADDR']), 'url'=>($_SERVER['HTTPS'] ? '' : 'http/'). "{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}"]);
 
-public static function getClassProperties(): array {
+    public static function getClassProperties(): array
+    {
         return [
-            'ident'        => new AA_Property('ident',        _m('Identifier'), 'string'),
-            'module'       => new AA_Property('module',       _m('Module ID'), 'string'),
-            'ip'           => new AA_Property('ip',           _m('IP Address'), 'string'),
-            'uri'          => new AA_Property('uri',          _m('Url'), 'string'),
+            'ident'        => new AA_Property('ident', _m('Identifier'), 'string'),
+            'module'       => new AA_Property('module', _m('Module ID'), 'string'),
+            'ip'           => new AA_Property('ip', _m('IP Address'), 'string'),
+            'uri'          => new AA_Property('uri', _m('Url'), 'string'),
         ];
     }
 }
 
 /** EMAIL_SENT log entry (admin/write_mail.php) */
-class AA_Logentry_Em extends AA_Logentry {
-    public static function getClassProperties(): array {
+class AA_Logentry_Em extends AA_Logentry
+{
+    public static function getClassProperties(): array
+    {
         return [
             'mail_id' => new AA_Property('mail_id', _m('Template id'), 'string'),
-            'users'   => new AA_Property('users',   _m('Users'), 'int'),
-            'sent'    => new AA_Property('sent',    _m('Emails sent'), 'int'),
+            'users'   => new AA_Property('users', _m('Users'), 'int'),
+            'sent'    => new AA_Property('sent', _m('Emails sent'), 'int'),
         ];
     }
 }
 
 /** ITEM_FIELD_FILLED log entry (admin/search_replace.php) */
-class AA_Logentry_Iff extends AA_Logentry {
-    public static function getClassProperties(): array {
+class AA_Logentry_Iff extends AA_Logentry
+{
+    public static function getClassProperties(): array
+    {
         return [
             'selected' => new AA_Property('selected', _m('Items selected'), 'int'),
-            'updated'  => new AA_Property('updated',  _m('Items updated'), 'int'),
-            'planned'  => new AA_Property('planned',  _m('Items planned'), 'int'),
+            'updated'  => new AA_Property('updated', _m('Items updated'), 'int'),
+            'planned'  => new AA_Property('planned', _m('Items planned'), 'int'),
         ];
     }
 }
 
 /** M_FLDI_VLD log entry - insert-form field validation (include/item_content.php) */
-class AA_Logentry_Mfv extends AA_Logentry {
-    public static function getClassProperties(): array {
+class AA_Logentry_Mfv extends AA_Logentry
+{
+    public static function getClassProperties(): array
+    {
         return [
-            'msg'     => new AA_Property('msg',     _m('Message'), 'string'),
-            'uri'     => new AA_Property('uri',     _m('Url'), 'string'),
+            'msg'     => new AA_Property('msg', _m('Message'), 'string'),
+            'uri'     => new AA_Property('uri', _m('Url'), 'string'),
             'referer' => new AA_Property('referer', _m('Referer'), 'string'),
         ];
     }
 }
 
 /** BM_RENAME log entry - bookmark rename (include/searchbar.class.php) */
-class AA_Logentry_Bmr extends AA_Logentry {
-    public static function getClassProperties(): array {
+class AA_Logentry_Bmr extends AA_Logentry
+{
+    public static function getClassProperties(): array
+    {
         return [
             'newname' => new AA_Property('newname', _m('New name'), 'string'),
             'oldname' => new AA_Property('oldname', _m('Old name'), 'string'),
@@ -489,22 +519,26 @@ class AA_Logentry_Bmr extends AA_Logentry {
 }
 
 /** ALERTS log entry - alert mailing progress (modules/alerts/*) */
-class AA_Logentry_Alerts extends AA_Logentry {
-    public static function getClassProperties(): array {
+class AA_Logentry_Alerts extends AA_Logentry
+{
+    public static function getClassProperties(): array
+    {
         return [
-            'phase'      => new AA_Property('phase',      _m('Phase'), 'string'),       // start | sent | users | queued | emails | debug
+            'phase'      => new AA_Property('phase', _m('Phase'), 'string'),       // start | sent | users | queued | emails | debug
             'collection' => new AA_Property('collection', _m('Collection'), 'string'),
-            'count'      => new AA_Property('count',      _m('Count'), 'string'),
-            'detail'     => new AA_Property('detail',     _m('Detail'), 'string'),
+            'count'      => new AA_Property('count', _m('Count'), 'string'),
+            'detail'     => new AA_Property('detail', _m('Detail'), 'string'),
         ];
     }
 }
 
 /** CSN log entry - content syndication feed status (src/IO/Grabber/AARSS.php) */
-class AA_Logentry_Csn extends AA_Logentry {
-    public static function getClassProperties(): array {
+class AA_Logentry_Csn extends AA_Logentry
+{
+    public static function getClassProperties(): array
+    {
         return [
-            'feed'   => new AA_Property('feed',   _m('Feed'), 'string'),
+            'feed'   => new AA_Property('feed', _m('Feed'), 'string'),
             'status' => new AA_Property('status', _m('Status'), 'string'),
             'detail' => new AA_Property('detail', _m('Detail'), 'string'),
         ];
@@ -512,23 +546,27 @@ class AA_Logentry_Csn extends AA_Logentry {
 }
 
 /** IMPORT log entry - module-chunk import (central/responder.php) */
-class AA_Logentry_Import extends AA_Logentry {
-    public static function getClassProperties(): array {
+class AA_Logentry_Import extends AA_Logentry
+{
+    public static function getClassProperties(): array
+    {
         return [
-            'phase'  => new AA_Property('phase',  _m('Phase'), 'string'),    // start | result
+            'phase'  => new AA_Property('phase', _m('Phase'), 'string'),    // start | result
             'detail' => new AA_Property('detail', _m('Detail'), 'string'),
         ];
     }
 }
 
 /** CSV_IMPORT summary log entry (admin/se_csv_import2.php) */
-class AA_Logentry_Csv extends AA_Logentry {
-    public static function getClassProperties(): array {
+class AA_Logentry_Csv extends AA_Logentry
+{
+    public static function getClassProperties(): array
+    {
         return [
-            'slice'     => new AA_Property('slice',     _m('Slice'), 'string'),
+            'slice'     => new AA_Property('slice', _m('Slice'), 'string'),
             'processed' => new AA_Property('processed', _m('Processed'), 'int'),
-            'stored'    => new AA_Property('stored',    _m('Stored'), 'int'),
-            'error'     => new AA_Property('error',     _m('Errors'), 'int'),
+            'stored'    => new AA_Property('stored', _m('Stored'), 'int'),
+            'error'     => new AA_Property('error', _m('Errors'), 'int'),
         ];
     }
 }
@@ -536,11 +574,13 @@ class AA_Logentry_Csv extends AA_Logentry {
 /** File-operation outcome log entry - shared by CSV_IMPORT / FILE IMP file deletes
  *  (admin/se_csv_import2.php, include/files.class.php)
  */
-class AA_Logentry_File extends AA_Logentry {
-    public static function getClassProperties(): array {
+class AA_Logentry_File extends AA_Logentry
+{
+    public static function getClassProperties(): array
+    {
         return [
             'outcome' => new AA_Property('outcome', _m('Outcome'), 'string'),   // deleted | delete failed | invalid directory
-            'file'    => new AA_Property('file',    _m('File'), 'string'),
+            'file'    => new AA_Property('file', _m('File'), 'string'),
         ];
     }
 }
@@ -549,11 +589,13 @@ class AA_Logentry_File extends AA_Logentry {
  *  Short tag `Iu` (item insert/update) - the postfix is stored in every row.
  *  The insert vs update distinction is in the event type; this holds the detail.
  */
-class AA_Logentry_Iu extends AA_Logentry {
-    public static function getClassProperties(): array {
+class AA_Logentry_Iu extends AA_Logentry
+{
+    public static function getClassProperties(): array
+    {
         return [
-            'mode'    => new AA_Property('mode',    _m('Mode'), 'string'),    // insert | update | update_filled | ...
-            'flags'   => new AA_Property('flags',   _m('Flags'), 'string'),
+            'mode'    => new AA_Property('mode', _m('Mode'), 'string'),    // insert | update | update_filled | ...
+            'flags'   => new AA_Property('flags', _m('Flags'), 'string'),
             'context' => new AA_Property('context', _m('Context'), 'string'),
         ];
     }
@@ -564,8 +606,10 @@ class AA_Logentry_Iu extends AA_Logentry {
  *  (module first for prefix lookup): module:target:Fd - direction/action is in
  *  the event type.
  */
-class AA_Logentry_Fd extends AA_Logentry {
-    public static function getClassProperties(): array {
+class AA_Logentry_Fd extends AA_Logentry
+{
+    public static function getClassProperties(): array
+    {
         return [
             'module' => new AA_Property('module', _m('Module ID'), 'string'),
             'target' => new AA_Property('target', _m('Feed counterpart'), 'string'),
@@ -577,12 +621,13 @@ class AA_Logentry_Fd extends AA_Logentry {
  *  Short tag `Mf` (module/field); pairs with the params entry AA_Logentry_Mfv
  *  (message/uri/referer). Reversed selector (module first): module:field:Mf.
  */
-class AA_Logentry_Mf extends AA_Logentry {
-    public static function getClassProperties(): array {
+class AA_Logentry_Mf extends AA_Logentry
+{
+    public static function getClassProperties(): array
+    {
         return [
             'module' => new AA_Property('module', _m('Module ID'), 'string'),
-            'field'  => new AA_Property('field',  _m('Field ID'), 'string'),
+            'field'  => new AA_Property('field', _m('Field ID'), 'string'),
         ];
     }
 }
-

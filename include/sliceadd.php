@@ -1,4 +1,5 @@
 <?php
+
 /**
  *
  * PHP version 7.2+
@@ -31,7 +32,8 @@ use AA\IO\DB\DB_AA;
  * @param bool $display_views_constants
  * @return void
  */
-function SliceAddForm(bool $wizard=false, bool $display_views_constants=false): void {
+function SliceAddForm(bool $wizard = false, bool $display_views_constants = false): void
+{
     if (!CheckPerms(AuthGetUid(), "aa", AA_ID, PS_ADD)) {
         MsgPage(_m("You do not have permissions to add slice"));
         exit;
@@ -39,11 +41,11 @@ function SliceAddForm(bool $wizard=false, bool $display_views_constants=false): 
 
     $templates   = DB_AA::select(['unpackid' => 'name'], 'SELECT LOWER(HEX(`id`)) AS unpackid, `name` FROM `slice`', [
         ['deleted', 1, '<>'],
-        ['template', 1]
+        ['template', 1],
     ], ['name']);
     $temp_slices = DB_AA::select(['unpackid' => 'name'], 'SELECT LOWER(HEX(`id`)) AS unpackid, `name` FROM `slice`', [
         ['deleted', 1, '<>'],
-        ['template', 1, '<>']
+        ['template', 1, '<>'],
     ], ['name']);
 
     // 'Action Aplication Core' slice - do not use as template
@@ -61,7 +63,7 @@ function SliceAddForm(bool $wizard=false, bool $display_views_constants=false): 
         echo "<tr>
                <th>" . _m("Template") . "</th>
                <td>";
-                  FrmSelectEasy('template_id', $templates);
+        FrmSelectEasy('template_id', $templates);
         echo  '</td><td>';
         if ($wizard) {
             echo '<input type="radio" name="template_slice_radio" value="template" checked>';
@@ -91,7 +93,7 @@ function SliceAddForm(bool $wizard=false, bool $display_views_constants=false): 
         FrmInputRadio("wiz[copyviews]", _m("Copy Views"), [1 => _m("yes"), 0 => _m("no")], 1);
         FrmInputRadio("wiz[constants]", _m("Categories/Constants"), [
             'share' => _m("Share with Template"),
-            'copy'  => _m("Copy from Template")
+            'copy'  => _m("Copy from Template"),
         ], 'copy');
     }
 
@@ -99,4 +101,3 @@ function SliceAddForm(bool $wizard=false, bool $display_views_constants=false): 
 
     echo '<br><br>';
 }
-

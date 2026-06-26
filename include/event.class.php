@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Event class - this class invokes various event handlers based on input
  * event. Basicaly - AA always should call event class instance, if any
@@ -37,15 +38,15 @@ use AA\Util\SingletonTrait;
 require_once __DIR__ . "/mail.php";
 require_once __DIR__ . "/../modules/alerts/event.php";
 //mimo add
-require_once __DIR__."/mlx.php";
+require_once __DIR__ . "/mlx.php";
 
 
 /**
  * aahandler class - stores handler function and 'trigger' conditions for
  * the function invoking
  */
-class aahandler {
-
+class aahandler
+{
     /** @var callable */
     private $funct;       // handler function - function to call is conditions are met - should be callable, but PHP do not allow it here (7.4)
     private array $conds;
@@ -54,7 +55,8 @@ class aahandler {
      * @param callable $funct
      * @param array    $conds
      */
-    function __construct(callable $funct, array $conds ) {
+    public function __construct(callable $funct, array $conds)
+    {
         $this->funct = $funct;
         $this->conds = $conds;
     }
@@ -65,12 +67,13 @@ class aahandler {
      * @param $slice_type
      * @return bool
      */
-    function matches( $type, $slice, $slice_type ): bool {
-        if ( !$this->conds ) {
+    public function matches($type, $slice, $slice_type): bool
+    {
+        if (!$this->conds) {
             return true;   // no conditions are set for handler - do it always
         }
-        foreach ( $this->conds as $condition => $value ) {
-            if ( $$condition != $value ) {
+        foreach ($this->conds as $condition => $value) {
+            if ($$condition != $value) {
                 return false;
             }
         }
@@ -86,7 +89,8 @@ class aahandler {
      * @param $params
      * @param $params2
      */
-    function process($type, $slice, $slice_type, &$ret_params, $params, $params2) {
+    public function process($type, $slice, $slice_type, &$ret_params, $params, $params2)
+    {
         $function = $this->funct;
         return $function($type, $slice, $slice_type, $ret_params, $params, $params2);
     }
@@ -102,8 +106,8 @@ class aahandler {
  * @method  static aaevent singleton()
  *
  */
-class aaevent {
-
+class aaevent
+{
     use SingletonTrait;
 
     /** @var aahandler[]|null  */
@@ -125,13 +129,14 @@ class aaevent {
      *                               each event $type (mainly old values)
      * @return bool
      */
-    function comes($type, $slice, $slice_type, &$ret_params, $params='', $params2=''): bool {
+    public function comes($type, $slice, $slice_type, &$ret_params, $params = '', $params2 = ''): bool
+    {
         $this->returns = []; // unset it
-        if ( !is_array($this->handlers) ) {
+        if (!is_array($this->handlers)) {
             $this->handlers = $this->get_handlers($type, $slice, $slice_type);
         }
-        foreach ( $this->handlers as $handler ) {
-            if ( $handler->matches($type, $slice, $slice_type) ) {
+        foreach ($this->handlers as $handler) {
+            if ($handler->matches($type, $slice, $slice_type)) {
                 $this->returns[] = $handler->process($type, $slice, $slice_type, $ret_params, $params, $params2);
             }
         }
@@ -144,24 +149,25 @@ class aaevent {
      * @param $class
      * @param $selector
      */
-    function get_handlers($type, $class, $selector): array {
+    public function get_handlers($type, $class, $selector): array
+    {
         // TODO - read the events from database instead of this static definition
         $handlers   = [];
-        $handlers[] = new aahandler('Event_ItemsBeforeDelete',       ['type' => 'ITEMS_BEFORE_DELETE',   'slice_type' => 'S']);  // all slices
-        $handlers[] = new aahandler('Event_ItemsMoved',              ['type' => 'ITEMS_MOVED',           'slice_type' => 'S']);  // all slices
-        $handlers[] = new aahandler('Event_ItemBeforeUpdate',        ['type' => 'ITEM_BEFORE_UPDATE',    'slice_type' => 'S']);  // all slices
-        $handlers[] = new aahandler('Event_ItemBeforeInsert',        ['type' => 'ITEM_BEFORE_INSERT',    'slice_type' => 'S']);  // all slices
-        $handlers[] = new aahandler('Event_ItemAfterInsert',         ['type' => 'ITEM_NEW',              'slice_type' => 'S']);  // all slices
-        $handlers[] = new aahandler('Event_ItemAfterUpdate',         ['type' => 'ITEM_UPDATED',          'slice_type' => 'S']);  // all slices
-        $handlers[] = new aahandler('Event_CommentAfterInsert',      ['type' => 'COMMENT_UPDATED',       'slice_type' => 'S']);  // all slices
-        $handlers[] = new aahandler('Event_ConstantBeforeUpdate',    ['type' => 'CONSTANT_BEFORE_UPDATE','slice_type' => 'S']);  // all slices
-        $handlers[] = new aahandler('Event_ConstantUpdated',         ['type' => 'CONSTANT_UPDATED',      'slice_type' => 'S']);  // all slices
-        $handlers[] = new aahandler('Event_ConstantGroupUpdated',    ['type' => 'CONSTANTGROUP_UPDATED', 'slice_type' => 'S']);  // all slices
-        $handlers[] = new aahandler('Event_AddLinkGlobalCat',        ['type' => 'LINK_NEW',              'slice_type' => 'Links']);
-        $handlers[] = new aahandler('Event_AddLinkGlobalCat',        ['type' => 'LINK_UPDATED',          'slice_type' => 'Links']);
-        $handlers[] = new aahandler('Event_ItemNewComment',          ['type' => 'ITEM_NEW_COMMENT',      'slice_type' => 'Item']);
-        $handlers[] = new aahandler('Event_ItemInserted_Efekt',      ['type' => 'ITEM_NEW',         'slice'        => '5f8d11e83b206f3c1a89f39039e9c38b']);  // EFEKT - iEKIS
-        $handlers[] = new aahandler('Event_ItemUpdated_Efekt',       ['type' => 'ITEM_UPDATED',     'slice'        => '5f8d11e83b206f3c1a89f39039e9c38b']);  // EFEKT - iEKIS
+        $handlers[] = new aahandler('Event_ItemsBeforeDelete', ['type' => 'ITEMS_BEFORE_DELETE',   'slice_type' => 'S']);  // all slices
+        $handlers[] = new aahandler('Event_ItemsMoved', ['type' => 'ITEMS_MOVED',           'slice_type' => 'S']);  // all slices
+        $handlers[] = new aahandler('Event_ItemBeforeUpdate', ['type' => 'ITEM_BEFORE_UPDATE',    'slice_type' => 'S']);  // all slices
+        $handlers[] = new aahandler('Event_ItemBeforeInsert', ['type' => 'ITEM_BEFORE_INSERT',    'slice_type' => 'S']);  // all slices
+        $handlers[] = new aahandler('Event_ItemAfterInsert', ['type' => 'ITEM_NEW',              'slice_type' => 'S']);  // all slices
+        $handlers[] = new aahandler('Event_ItemAfterUpdate', ['type' => 'ITEM_UPDATED',          'slice_type' => 'S']);  // all slices
+        $handlers[] = new aahandler('Event_CommentAfterInsert', ['type' => 'COMMENT_UPDATED',       'slice_type' => 'S']);  // all slices
+        $handlers[] = new aahandler('Event_ConstantBeforeUpdate', ['type' => 'CONSTANT_BEFORE_UPDATE','slice_type' => 'S']);  // all slices
+        $handlers[] = new aahandler('Event_ConstantUpdated', ['type' => 'CONSTANT_UPDATED',      'slice_type' => 'S']);  // all slices
+        $handlers[] = new aahandler('Event_ConstantGroupUpdated', ['type' => 'CONSTANTGROUP_UPDATED', 'slice_type' => 'S']);  // all slices
+        $handlers[] = new aahandler('Event_AddLinkGlobalCat', ['type' => 'LINK_NEW',              'slice_type' => 'Links']);
+        $handlers[] = new aahandler('Event_AddLinkGlobalCat', ['type' => 'LINK_UPDATED',          'slice_type' => 'Links']);
+        $handlers[] = new aahandler('Event_ItemNewComment', ['type' => 'ITEM_NEW_COMMENT',      'slice_type' => 'Item']);
+        $handlers[] = new aahandler('Event_ItemInserted_Efekt', ['type' => 'ITEM_NEW',         'slice'        => '5f8d11e83b206f3c1a89f39039e9c38b']);  // EFEKT - iEKIS
+        $handlers[] = new aahandler('Event_ItemUpdated_Efekt', ['type' => 'ITEM_UPDATED',     'slice'        => '5f8d11e83b206f3c1a89f39039e9c38b']);  // EFEKT - iEKIS
         return $handlers;
     }
 
@@ -171,22 +177,23 @@ class aaevent {
      * @param $class
      * @param $selector
      */
-    function get_handlers_newwwwww($type, $class, $selector): array {
+    public function get_handlers_newwwwww($type, $class, $selector): array
+    {
         $handlers = [];
         $db  = getDB();
-        $SQL = "SELECT reaction, params FROM event WHERE type='".quote($type)."'";
+        $SQL = "SELECT reaction, params FROM event WHERE type='" . quote($type) . "'";
         if ($class) {
-            $SQL .= " AND class='".quote($class)."'";
+            $SQL .= " AND class='" . quote($class) . "'";
         }
         if ($selector) {
-            $SQL .= " AND selector='".quote($selector)."'";
+            $SQL .= " AND selector='" . quote($selector) . "'";
         }
         $db->query($SQL);
         while ($db->next_record()) {
             $reaction_class = $db->f('reaction');
             // security check - class must end with "Event"
             if (str_ends_with($reaction_class, 'Event')) {
-                $this->handlers[] = new $reaction_class( $db->f('params'), $type, $class, $selector);
+                $this->handlers[] = new $reaction_class($db->f('params'), $type, $class, $selector);
             }
         }
         freeDB($db);
@@ -198,7 +205,8 @@ class aaevent {
  *  for match method - it is already implemented in database layer - see
  *  get_handlers() method above
  */
-class NewDiscussionCommentEvent {
+class NewDiscussionCommentEvent
+{
     private $email;
     /** NewDiscussionCommentEvent function
      * @param $params
@@ -206,7 +214,8 @@ class NewDiscussionCommentEvent {
      * @param $class
      * @param $selector
      */
-    function __construct( $params, $type, $class, $selector ) {
+    public function __construct($params, $type, $class, $selector)
+    {
         $this->email = unserialize($params, ['allowed_classes' => false]);
     }
 
@@ -217,7 +226,8 @@ class NewDiscussionCommentEvent {
      * @param $slice_type
      * @return bool
      */
-    function matches( $type, $slice, $slice_type ): bool {
+    public function matches($type, $slice, $slice_type): bool
+    {
         return true;
     }
 
@@ -230,33 +240,34 @@ class NewDiscussionCommentEvent {
      * @param $params
      * @param $params2
      */
-    function process($type, $slice, $slice_type, &$ret_params, $params, $params2) {
+    public function process($type, $slice, $slice_type, &$ret_params, $params, $params2)
+    {
 
 
-//todo
+        //todo
         // get discussion item content
-//        $columns = GetDiscussionContentSQL(
-//           "SELECT * FROM discussion WHERE id = '".q_pack_id($new_id)."'",
-//           $d_item_id, "", true, $html, "");
-//        $columns = reset($columns);  // get first element
-//
-//        // get aliases
-//        $aliases = GetDiscussionAliases();
-//        for ( $i=2, $ino=count($item_params); $i<$ino; ++$i) {
-//            FillFakeAlias($columns, $aliases, "_#ITEMPAR".($i+1), $item_params[$i]);
-//        }
-//
-//        $CurItem = new AA_Item($columns, $aliases);
-//
-//        // newer version based on email templates
-//        if ( $vid{0} === 't' ) {   // email template
-//            $mail_id = substr($vid,1);
-//            AA_Mail::sendTemplate($mail_id, $maillist, $CurItem);
-//            return false;
-//        }
-//
-//        $function = $this->funct;
-//        return $function($type, $slice, $slice_type, $ret_params, $params, $params2);
+        //        $columns = GetDiscussionContentSQL(
+        //           "SELECT * FROM discussion WHERE id = '".q_pack_id($new_id)."'",
+        //           $d_item_id, "", true, $html, "");
+        //        $columns = reset($columns);  // get first element
+        //
+        //        // get aliases
+        //        $aliases = GetDiscussionAliases();
+        //        for ( $i=2, $ino=count($item_params); $i<$ino; ++$i) {
+        //            FillFakeAlias($columns, $aliases, "_#ITEMPAR".($i+1), $item_params[$i]);
+        //        }
+        //
+        //        $CurItem = new AA_Item($columns, $aliases);
+        //
+        //        // newer version based on email templates
+        //        if ( $vid{0} === 't' ) {   // email template
+        //            $mail_id = substr($vid,1);
+        //            AA_Mail::sendTemplate($mail_id, $maillist, $CurItem);
+        //            return false;
+        //        }
+        //
+        //        $function = $this->funct;
+        //        return $function($type, $slice, $slice_type, $ret_params, $params, $params2);
     }
 }
 
@@ -268,7 +279,7 @@ class NewDiscussionCommentEvent {
  * @param $params
  * @return array
  */
-function GetNotifications($type, $class, $selector, $reaction=null, $params=null): array
+function GetNotifications($type, $class, $selector, $reaction = null, $params = null): array
 {
     $type     = quote($type);
     $class    = quote($class);
@@ -276,14 +287,14 @@ function GetNotifications($type, $class, $selector, $reaction=null, $params=null
 
     $SQL = "SELECT params FROM event WHERE type='$type' AND class='$class' AND selector = '$selector'";
 
-    if ( isset($reaction) ) {
-       $SQL .= ' AND reaction =\''.quote($reaction).'\'';
+    if (isset($reaction)) {
+        $SQL .= ' AND reaction =\'' . quote($reaction) . '\'';
     }
-    if ( isset($params) ) {
-       $SQL .= ' AND params =\''.quote($params).'\'';
+    if (isset($params)) {
+        $SQL .= ' AND params =\'' . quote($params) . '\'';
     }
     $notifications = GetTable2Array($SQL, 'NoCoLuMn', 'params');
-    return $notifications ? array_unique((array)$notifications) : [];
+    return $notifications ? array_unique((array) $notifications) : [];
 }
 /** AddNotification function
  * @param $type
@@ -296,7 +307,7 @@ function AddNotification($type, $class, $selector, $reaction, $params): void
 {
 
     // check if user already is not set for this item
-    if ( !count(GetNotifications($type, $class, $selector, $reaction, $params)) ) {
+    if (!count(GetNotifications($type, $class, $selector, $reaction, $params))) {
         $notification_id = new_id();
         $notificationVS = new Cvarset();
         $notificationVS->add("id", "text", $notification_id);
@@ -321,7 +332,8 @@ function AddNotification($type, $class, $selector, $reaction, $params): void
  * @param $foo2
  * @return bool
  */
-function Event_ItemNewComment( $type, $item_id, $slice_type, $disc_id, $foo, $foo2 ): bool {
+function Event_ItemNewComment($type, $item_id, $slice_type, $disc_id, $foo, $foo2): bool
+{
 
     $emails = GetNotifications($type, $slice_type, $item_id);
 
@@ -330,10 +342,10 @@ function Event_ItemNewComment( $type, $item_id, $slice_type, $disc_id, $foo, $fo
     $content4id  = reset($content4ids);  // get first element
 
     // send e-mail also to author of the item
-    if ( AA_Validate::doValidate($content4id['e_posted_by.....'][0]['value'], 'email')) {
+    if (AA_Validate::doValidate($content4id['e_posted_by.....'][0]['value'], 'email')) {
         $emails[] = $content4id['e_posted_by.....'][0]['value'];
     }
-    if ( count($emails) < 1 ) {
+    if (count($emails) < 1) {
         return true;
     }
 
@@ -342,17 +354,17 @@ function Event_ItemNewComment( $type, $item_id, $slice_type, $disc_id, $foo, $fo
 
     // if the view vid is assigned to fulltext view, take the e-mail template
     // from that view
-    $view_id     = (int)AA_Slice::getModuleProperty($slice_id,'vid');
+    $view_id     = (int) AA_Slice::getModuleProperty($slice_id, 'vid');
 
-    if ( $view_id ) {
+    if ($view_id) {
         // get id of e-mail template (stored in aditional6 field of view definition)
         $mail_id = AA_Views::getViewField($view_id, 'aditional6');
     } else {
         // get id of e-mail template from first discussion view of the slice
-        $mail_id = GetTable2Array("SELECT aditional6 FROM view WHERE slice_id=".xpack_id($slice_id)." AND type='discus' ORDER BY id", 'aa_first', 'aditional6');
+        $mail_id = GetTable2Array("SELECT aditional6 FROM view WHERE slice_id=" . xpack_id($slice_id) . " AND type='discus' ORDER BY id", 'aa_first', 'aditional6');
     }
 
-    if ( $mail_id < 1 ) {
+    if ($mail_id < 1) {
         return true;
     }
 
@@ -362,7 +374,7 @@ function Event_ItemNewComment( $type, $item_id, $slice_type, $disc_id, $foo, $fo
     $columns   = reset($d_content);  // get first element
     $CurItem   = new AA_Item($columns, new AA_Aliases(new AA_Aliasgenerator_Discussion()));
 
-    $mail = new AA_Mail;
+    $mail = new AA_Mail();
     $mail->setFromTemplate($mail_id, $CurItem);
     $mail->sendLater($emails);
     return true;
@@ -380,19 +392,22 @@ function Event_ItemNewComment( $type, $item_id, $slice_type, $disc_id, $foo, $fo
  * @param             $foo2
  * @return bool
  */
-function Event_ItemAfterInsert( $type, $slice_id, $slice_type, $itemContent, $foo, $foo2 ): bool {
+function Event_ItemAfterInsert($type, $slice_id, $slice_type, $itemContent, $foo, $foo2): bool
+{
     $item_id = $itemContent->getItemID();
-    AA_Mysqlauth::updateReaders( [pack_id( $item_id )], $slice_id );  // maybe not necessary - AA_Mysqlauth_Maintain probably solves it HM 2024-01-16
+    AA_Mysqlauth::updateReaders([pack_id($item_id)], $slice_id);  // maybe not necessary - AA_Mysqlauth_Maintain probably solves it HM 2024-01-16
     (new AA_Mysqlauth_Maintain())->schedule();  // plan or replan the maintenance to be run earlier
-    AlertsSendWelcome( $slice_id, $itemContent );
+    AlertsSendWelcome($slice_id, $itemContent);
     // AlertsSendInstantAlert( $item_id, $slice_id );
 
     AA_Mailman::createSynchroFiles($slice_id);
 
     // notifications
     switch ($itemContent->getStatusCode()) {
-        case SC_ACTIVE:      email_notify($slice_id, 3, $item_id); break;
-        case SC_HOLDING_BIN: email_notify($slice_id, 1, $item_id); break;
+        case SC_ACTIVE:      email_notify($slice_id, 3, $item_id);
+            break;
+        case SC_HOLDING_BIN: email_notify($slice_id, 1, $item_id);
+            break;
     }
     return true;
 }
@@ -408,7 +423,8 @@ function Event_ItemAfterInsert( $type, $slice_id, $slice_type, $itemContent, $fo
  * @param             $foo2
  * @return bool
  */
-function Event_ItemAfterUpdate( $type, $slice_id, $slice_type, $itemContent, $oldItemContent, $foo2 ): bool {
+function Event_ItemAfterUpdate($type, $slice_id, $slice_type, $itemContent, $oldItemContent, $foo2): bool
+{
 
     $item_id = $itemContent->getItemID();
 
@@ -420,8 +436,10 @@ function Event_ItemAfterUpdate( $type, $slice_id, $slice_type, $itemContent, $ol
 
     // notifications
     switch ($itemContent->getStatusCode()) {
-        case SC_ACTIVE:      email_notify($slice_id, 4, $item_id); break;
-        case SC_HOLDING_BIN: email_notify($slice_id, 2, $item_id); break;
+        case SC_ACTIVE:      email_notify($slice_id, 4, $item_id);
+            break;
+        case SC_HOLDING_BIN: email_notify($slice_id, 2, $item_id);
+            break;
     }
     return true;
 }
@@ -437,7 +455,8 @@ function Event_ItemAfterUpdate( $type, $slice_id, $slice_type, $itemContent, $ol
  * @param ItemContent $oldItemContent
  * @param $foo2
  */
-function Event_CommentAfterInsert( $type, $slice_id, $slice_type, &$itemContent, $oldItemContent, $foo2 ): bool {
+function Event_CommentAfterInsert($type, $slice_id, $slice_type, &$itemContent, $oldItemContent, $foo2): bool
+{
     return true;
 }
 
@@ -451,7 +470,8 @@ function Event_CommentAfterInsert( $type, $slice_id, $slice_type, &$itemContent,
  * @param             $foo2
  * @return bool
  */
-function Event_ItemBeforeUpdate( $type, $slice_id, $slice_type, $itemContent, $oldItemContent, $foo2 ): bool {
+function Event_ItemBeforeUpdate($type, $slice_id, $slice_type, $itemContent, $oldItemContent, $foo2): bool
+{
     // Delete reader from Auth tables because if the username changes,
     // AA_Mysqlauth::updateReaders can not recognize it.
     // AA_Mysqlauth::deleteReaders( new zids($itemContent->getItemID(), 'l'), $slice_id );   // AA_Mysqlauth_Maintain probably solves it HM 2024-01-16 (there were multiple DELETEs in Event_ItemBeforeUpdate and Event_ItemAfterUpdate on each readers update)
@@ -469,7 +489,8 @@ function Event_ItemBeforeUpdate( $type, $slice_id, $slice_type, $itemContent, $o
  * @param        $foo2
  * @return bool
  */
-function Event_ItemBeforeInsert( $type, $slice_id, $slice_type, &$itemContent, $foo, $foo2 ): bool {
+function Event_ItemBeforeInsert($type, $slice_id, $slice_type, &$itemContent, $foo, $foo2): bool
+{
     return true;
 }
 
@@ -483,11 +504,12 @@ function Event_ItemBeforeInsert( $type, $slice_id, $slice_type, &$itemContent, $
  * @param        $foo2
  * @return bool
  */
-function Event_ItemsBeforeDelete( $type, $slice_id, $slice_type, $zids, $foo, $foo2 ): bool {
+function Event_ItemsBeforeDelete($type, $slice_id, $slice_type, $zids, $foo, $foo2): bool
+{
     /* It is not really necessary to delete the readers from Auth tables,
        because they should be deleted on moving to Trash bin. But it is
        perhaps better to make sure. */
-    AA_Mysqlauth::deleteReaders( $zids, $slice_id );
+    AA_Mysqlauth::deleteReaders($zids, $slice_id);
     AA_Mailman::createSynchroFiles($slice_id);
     //mimo added
     $mlx = new MLXEvents();
@@ -504,11 +526,11 @@ function Event_ItemsBeforeDelete( $type, $slice_id, $slice_type, $zids, $foo, $f
  * @param $new_status
  * @param $foo2
  */
-function Event_ItemsMoved( $type, $slice_id, $slice_type, $item_ids, $new_status, $foo2 ): bool
+function Event_ItemsMoved($type, $slice_id, $slice_type, $item_ids, $new_status, $foo2): bool
 {
-    AA_Mysqlauth::updateReaders( $item_ids, $slice_id ); // maybe not necessary - AA_Mysqlauth_Maintain probably solves it HM 2024-01-16
+    AA_Mysqlauth::updateReaders($item_ids, $slice_id); // maybe not necessary - AA_Mysqlauth_Maintain probably solves it HM 2024-01-16
     (new AA_Mysqlauth_Maintain())->schedule();  // plan or replan the maintenance to be run earlier
-    AA_Mailman::createSynchroFiles( $slice_id );
+    AA_Mailman::createSynchroFiles($slice_id);
     return true;
 }
 
@@ -522,7 +544,8 @@ function Event_ItemsMoved( $type, $slice_id, $slice_type, $item_ids, $new_status
  * @param string $constant_id Unpacked ID of constant from the constant table.
  * @return bool
  */
-function Event_ConstantBeforeUpdate( $type, $slice_id, $slice_type, &$newvalue, $oldvalue, $constant_id ): bool {
+function Event_ConstantBeforeUpdate($type, $slice_id, $slice_type, &$newvalue, $oldvalue, $constant_id): bool
+{
     return true;
 }
 
@@ -535,7 +558,7 @@ function Event_ConstantBeforeUpdate( $type, $slice_id, $slice_type, &$newvalue, 
  * @param $oldvalue
  * @param string $constant_id Unpacked ID of constant from the constant table.
  */
-function Event_ConstantUpdated( $type, $slice_id, $slice_type, $newvalue, $oldvalue, $constant_id ): bool
+function Event_ConstantUpdated($type, $slice_id, $slice_type, $newvalue, $oldvalue, $constant_id): bool
 {
     AA_Mysqlauth::changeGroups($constant_id, $oldvalue, $newvalue);
     return true;
@@ -553,9 +576,9 @@ function Event_ConstantUpdated( $type, $slice_id, $slice_type, $newvalue, $oldva
  *
  * @return void
  */
-function Event_ConstantGroupUpdated($type, $slice_id, $slice_type, $ret_params, $constant_id, $param_2 ): bool
+function Event_ConstantGroupUpdated($type, $slice_id, $slice_type, $ret_params, $constant_id, $param_2): bool
 {
-    AA_Mailman::constantsChanged( $constant_id );
+    AA_Mailman::constantsChanged($constant_id);
     return true;
 }
 
@@ -574,7 +597,8 @@ function Event_ConstantGroupUpdated($type, $slice_id, $slice_type, $ret_params, 
  * @param string $params2 - old (previous) global category name or false
  * @return bool
  */
-function Event_AddLinkGlobalCat( $type, $slice, $slice_type, &$ret_params, $params, $params2): bool {
+function Event_AddLinkGlobalCat($type, $slice, $slice_type, &$ret_params, $params, $params2): bool
+{
     global $LINK_TYPE_CONSTANTS;
 
     // quite Econnectonous code
@@ -583,7 +607,7 @@ function Event_AddLinkGlobalCat( $type, $slice, $slice_type, &$ret_params, $para
 
     // if new link type is not general (global) category or general category
     // was already set - return
-    if ( !( trim($name)) || trim($oldname) ) {
+    if (!(trim($name)) || trim($oldname)) {
         return false;
     }
 
@@ -593,7 +617,7 @@ function Event_AddLinkGlobalCat( $type, $slice, $slice_type, &$ret_params, $para
              WHERE group_id='$LINK_TYPE_CONSTANTS'
                AND value='$name'";
     $db->query($SQL);
-    if ( $db->next_record() ) {
+    if ($db->next_record()) {
         $general_cat = $db->record();
     } else {
         freeDB($db);
@@ -606,10 +630,10 @@ function Event_AddLinkGlobalCat( $type, $slice, $slice_type, &$ret_params, $para
     // which means - do not store to category 1,2 but to the category 1,2,1224
 
     // Example: 1,2-1,2,1223:1,2,4-1,2,4,43:1,2,983-1,2,983,1226:1,2,984-1,2,984,1229:1,2,985-1,2,985,1232:1,2,986-1,2,986,1235:1,2,987-1,2,987,1238
-    $trans_string = str_replace( ["\n","\t","\r",' '], '', $general_cat['description'] );
+    $trans_string = str_replace(["\n","\t","\r",' '], '', $general_cat['description']);
     $translations = explode(':', $trans_string);             // parse
-    if ( isset($translations) && is_array($translations) ) {
-        foreach ( $translations as $k ) {
+    if (isset($translations) && is_array($translations)) {
+        foreach ($translations as $k) {
             [$from,$to] = explode('-', $k);
             $trans[$from] = $to;
         }
@@ -618,9 +642,9 @@ function Event_AddLinkGlobalCat( $type, $slice, $slice_type, &$ret_params, $para
     // get categories in which we have to create global category
     // = categories and all subcategories - 1,2,33,88 => 1,2; 1,2,33; 1,2,33,88
     $final_categories = [];     // clear return categories
-    if ( isset($ret_params) && is_array($ret_params) ) {
-        foreach ( $ret_params as $cid ) {
-            $cpath = GetCategoryPath( $cid );
+    if (isset($ret_params) && is_array($ret_params)) {
+        foreach ($ret_params as $cid) {
+            $cpath = GetCategoryPath($cid);
             if (!str_starts_with($cpath, '1,2,')) {
                 // category is not in 'Kormidlo' => do not add link to
                 // subcategories, but only to category itself
@@ -632,16 +656,16 @@ function Event_AddLinkGlobalCat( $type, $slice, $slice_type, &$ret_params, $para
             $i           = 0;
             unset($reverse_cat);
             unset($reverse_path);
-            foreach ( $cat_on_path as $subcat ) {
-                $curr_path .= ( $i ? ',' : ''). $subcat;  // Create path
-                if ( $i++ ) {                             // Skip first level
+            foreach ($cat_on_path as $subcat) {
+                $curr_path .= ($i ? ',' : '') . $subcat;  // Create path
+                if ($i++) {                             // Skip first level
                     $reverse_cat[]  = $subcat;
                     $reverse_path[] = $curr_path;         // There we have to
                 }                                         // add general categ.
             }
             // created categories are in wrong order - we need the deepest
             // category as first
-            for ( $j = count($reverse_cat)-1; $j>=0 ; --$j ) {
+            for ($j = count($reverse_cat) - 1; $j >= 0 ; --$j) {
                 $subcategories[$reverse_cat[$j]] = $reverse_path[$j];
             }
         }
@@ -651,10 +675,10 @@ function Event_AddLinkGlobalCat( $type, $slice, $slice_type, &$ret_params, $para
     // where we want to add link (without translation or global cat. creation)
 
     // go through desired categories and translate it, if we have to
-    if ( isset($subcategories) && isset($trans) ) {
-        foreach ( $subcategories as $cid => $path ) {
-            foreach ( $trans as $from => $to ) {
-                if ( $path == $from ) {        // translate this category
+    if (isset($subcategories) && isset($trans)) {
+        foreach ($subcategories as $cid => $path) {
+            foreach ($trans as $from => $to) {
+                if ($path == $from) {        // translate this category
                     $subcat_translated[GetCategoryFromPath($to)] = $to;
                     continue 2;  // next subcategory
                 }
@@ -675,9 +699,9 @@ function Event_AddLinkGlobalCat( $type, $slice, $slice_type, &$ret_params, $para
     $tree = new cattree();
 
     // we have $subcat_translated[] AND $ret_params[] already prefilled
-    foreach ( $subcat_translated as $cid => $path ) {
+    foreach ($subcat_translated as $cid => $path) {
         $sub_cat_id = $tree->subcatExist($cid, $name);
-        if ( !$sub_cat_id && $tree->getName($cid) != $name ) {
+        if (!$sub_cat_id && $tree->getName($cid) != $name) {
             $sub_cat_id = Links_AddCategory($name, $cid, $path);
             Links_AssignCategory($cid, $sub_cat_id, $general_cat['pri']);
         }
@@ -697,7 +721,7 @@ function Event_AddLinkGlobalCat( $type, $slice, $slice_type, &$ret_params, $para
  *
  * @return bool
  */
-function Event_ItemUpdated_Efekt( $type, $slice_id, $slice_type, $ret_params, $foo, $foo2 ): bool
+function Event_ItemUpdated_Efekt($type, $slice_id, $slice_type, $ret_params, $foo, $foo2): bool
 {
     $short_id   = $ret_params->getValue('short_id........');              // item's short_id is in params
 
@@ -709,7 +733,7 @@ function Event_ItemUpdated_Efekt( $type, $slice_id, $slice_type, $ret_params, $f
     $post_date = trim($ret_params->getValue('post_date.......'));
 
     // if ((time()-$post_date) > 864000) {  // starsi 10 dni - neposilame - pravdepodobne editace starych dotazů
-    if ((time()-$post_date) > 2592000) {  // starsi 30 dni - neposilame - pravdepodobne editace starych dotazů
+    if ((time() - $post_date) > 2592000) {  // starsi 30 dni - neposilame - pravdepodobne editace starych dotazů
         return false;
     }
 
@@ -731,13 +755,13 @@ function Event_ItemUpdated_Efekt( $type, $slice_id, $slice_type, $ret_params, $f
  *
  * @return bool
  */
-function Event_ItemInserted_Efekt( $type, $slice_id, $slice_type, $ret_params, $foo, $foo2 ): bool
+function Event_ItemInserted_Efekt($type, $slice_id, $slice_type, $ret_params, $foo, $foo2): bool
 {
     $short_id = $ret_params->getValue('short_id........');              // item's short_id is in params
     $ekis_id  = $ret_params->getValue('relation.......1');              // item's short_id is in params
 
 
-    $email1   = trim(AA::Un('{item:'.$ekis_id.':_#EKISMAIL}'));
+    $email1   = trim(AA::Un('{item:' . $ekis_id . ':_#EKISMAIL}'));
 
     $item     = AA_Items::getItem(new zids($short_id, 's'));
 
@@ -748,5 +772,3 @@ function Event_ItemInserted_Efekt( $type, $slice_id, $slice_type, $ret_params, $
     }
     return false;
 }
-
-

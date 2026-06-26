@@ -1,4 +1,5 @@
 <?php
+
 /**
  *
  * PHP version 7.2+
@@ -33,13 +34,13 @@ require_once __DIR__ . "/zids.php";
 //define('AA_REGEXP_MAIL', '[a-z0-9!#$%&1*+/=?^_`{|}~-]+(?:.[a-z0-9!#$%&1*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?.)+(?:[A-Z]{2}|com|org|net|edu|gov|mil|biz|info|mobi|name|aero|asia|jobs|museum)');
 const AA_REGEXP_MAIL = '(?:[a-z0-9!#$%&\'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&\'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])';
 
-class AA_Operators {
-
+class AA_Operators
+{
     /// Static ///
     /** getEnum function
      *
      */
-    static function getEnum(): array
+    public static function getEnum(): array
     {
         return [
             'enum',
@@ -48,8 +49,8 @@ class AA_Operators {
                 'CONTAIN'   => _m('contains'),      // CONTAIN and BEGIN are like LIKE and RLIKE, but:
 
                 'BEGIN'     => _m('begins with'),   //    - do not stripslashes
-                                                    //    - *, ? and also _, %, ' and " treats as normal characters
-                                                    //    - do not allow OR, AND, NOT
+                //    - *, ? and also _, %, ' and " treats as normal characters
+                //    - do not allow OR, AND, NOT
                 'RLIKE'     => _m('begins with'),
                 'LLIKE'     => _m('LLIKE'),
                 'XLIKE'     => _m('XLIKE'),
@@ -109,14 +110,16 @@ class AA_Operators {
      *
      * @return string
      */
-    public static function normalize(?string $operator): string {
+    public static function normalize(?string $operator): string
+    {
         return str_replace(['eq', 'ne', '&lt;', 'lt', 'le', '&gt;', 'gt', 'ge', '&amp;'], ['==', '<>', '<', '<', '<=', '>', '>', '>=', '&'], $operator ?? '');
     }
 
     /** getJsDefinition function
      *
      */
-    static function getJsDefinition(): string {
+    public static function getJsDefinition(): string
+    {
         return '
             var operator_names  = new Array();
             var operator_values = new Array();
@@ -139,8 +142,8 @@ class AA_Operators {
     }
 }
 
-class AA_Condition extends AA_Object {
-
+class AA_Condition extends AA_Object
+{
     protected array $fields;    // (array)  // private is not accepted - statestore can't access it
     protected string $operator;
     protected string $value;
@@ -161,14 +164,15 @@ class AA_Condition extends AA_Object {
      *  Used parameter format (in fields.input_show_func table)
      * @return array
      */
-    public static function getClassProperties(): array {
+    public static function getClassProperties(): array
+    {
         return [                              //  id            name         type      multi  persistent validator, required, help,                                         morehelp, example
-                   /** Array of compared fields */
-                   'fields'   => new AA_Property('fields', _m("Fields"), 'text', true, true, 'field'),
-                   /** Condition operator like 'CONTAIN', 'BEGIN', '=', '<>', '<', '>' ... */
-                   'operator' => new AA_Property('operator', _m("Operator"), 'text', false, true, AA_Operators::getEnum()),
-                   /** Compared value */
-                   'value'    => new AA_Property('value', _m("Value"), 'text', false, true, 'text'),
+            /** Array of compared fields */
+            'fields'   => new AA_Property('fields', _m("Fields"), 'text', true, true, 'field'),
+            /** Condition operator like 'CONTAIN', 'BEGIN', '=', '<>', '<', '>' ... */
+            'operator' => new AA_Property('operator', _m("Operator"), 'text', false, true, AA_Operators::getEnum()),
+            /** Compared value */
+            'value'    => new AA_Property('value', _m("Value"), 'text', false, true, 'text'),
         ];
     }
 
@@ -180,16 +184,17 @@ class AA_Condition extends AA_Object {
      * @param $operator
      * @param $value
      */
-    function __construct($fields = null, $operator = null, $value = null) {
-        $this->fields   = (array)$fields;
+    public function __construct($fields = null, $operator = null, $value = null)
+    {
+        $this->fields   = (array) $fields;
         $this->operator = AA_Operators::normalize($operator);
-        $this->value    = (string)$value;
+        $this->value    = (string) $value;
     }
 
     /** getFields function
      *  Access function to condition field
      */
-    function getFields(): array
+    public function getFields(): array
     {
         return $this->fields;
     }
@@ -197,7 +202,7 @@ class AA_Condition extends AA_Object {
     /** getOperator function
      * Access function to condition operator
      */
-    function getOperator(): string
+    public function getOperator(): string
     {
         return $this->operator;
     }
@@ -205,7 +210,7 @@ class AA_Condition extends AA_Object {
     /** getValue function
      *  Access function to condition value
      */
-    function getValue(): string
+    public function getValue(): string
     {
         return $this->value;
     }
@@ -217,7 +222,8 @@ class AA_Condition extends AA_Object {
      *                                      [,<field_n> => 1])
      *  Mainly for backward compatibility with old - array approach
      */
-    function getArray(): array {
+    public function getArray(): array
+    {
         $ret = ['value' => $this->value, 'operator' => $this->operator];
         foreach ($this->fields as $cond_field) {
             $ret[$cond_field] = 1;
@@ -229,7 +235,8 @@ class AA_Condition extends AA_Object {
      * @param $condition_number
      * @return string conditions in short form  headline........-RLIKE-Action...
      */
-    function getAsString($condition_number = 0): string {
+    public function getAsString($condition_number = 0): string
+    {
         $val = str_replace('-', '--', $this->value);
         if ($val[0] === '-') {  // we do not want triple --- like in: expiry_date.....-m:<- --432000
             $val = " $val";
@@ -241,7 +248,8 @@ class AA_Condition extends AA_Object {
      * @param $condition_number
      * @return string conditions in long form  conds[0][operator]=BEGIN&conds[0][headline........]=1&conds[0][value]=Action...
      */
-    function getAsLongString($condition_number = 0): string {
+    public function getAsLongString($condition_number = 0): string
+    {
         $ret = [];
         foreach ($this->fields as $cond_field) {
             $ret[] = "conds[$condition_number][$cond_field]=1";
@@ -265,7 +273,8 @@ class AA_Condition extends AA_Object {
      * @param $itemcontent
      * @return bool
      */
-    function matches($itemcontent): bool {
+    public function matches($itemcontent): bool
+    {
         foreach ($this->fields as $field) {
             foreach ($itemcontent->getValues($field) as $val) {
                 if ($this->_compare($val['value'])) {
@@ -282,7 +291,7 @@ class AA_Condition extends AA_Object {
      * @param $field_value
      * @return bool
      */
-    function _compare($field_value): bool
+    public function _compare($field_value): bool
     {
         switch ($this->operator) {
             case 'CONTAIN':
@@ -304,30 +313,30 @@ class AA_Condition extends AA_Object {
                 return !preg_match('/' . str_replace('/', '\/', AA_REGEXP_MAIL) . '/', $field_value);
             case 'BETWEEN':
                 $arr = explode(",", $this->value);
-                return ((int)$field_value >= (int)$arr[0] && (int)$field_value <= (int)$arr[1]);
+                return ((int) $field_value >= (int) $arr[0] && (int) $field_value <= (int) $arr[1]);
             case 'ISNULL':
                 return ($field_value == '');
             case 'NOTNULL':
                 return ($field_value != '');
-            case '==' :                                           // exact match - no SQL parsing
-            case '='  :
+            case '==':                                           // exact match - no SQL parsing
+            case '=':
                 return $field_value == $this->value;
             case '!=':
-            case '<>' :
+            case '<>':
                 return $field_value != $this->value;
-            case '<=' :
+            case '<=':
                 return $field_value <= $this->value;
-            case '<'  :
+            case '<':
                 return $field_value < $this->value;
-            case '>=' :
+            case '>=':
                 return $field_value >= $this->value;
-            case '>'  :
+            case '>':
                 return $field_value > $this->value;
-            case '&'  :
+            case '&':
                 return $field_value & $this->value;
-            case '|'  :
+            case '|':
                 return $field_value | $this->value;
-//          case '<=>':  //MySQL know this operator, but we do not use it in AA
+                //          case '<=>':  //MySQL know this operator, but we do not use it in AA
         }
         return false;
     }
@@ -340,8 +349,8 @@ class AA_Condition extends AA_Object {
  *  of each group. In such case the array looks like:
  *     array( 'limit' => 4, 'category........' => d )
  */
-class AA_Sortorder extends AA_Object {
-
+class AA_Sortorder extends AA_Object
+{
     protected string $field = '';
     protected bool   $desc  = false;    // 0|1  - direction ASCENDING, DESC
     protected $limit;   // number or '' - no limit
@@ -352,29 +361,31 @@ class AA_Sortorder extends AA_Object {
      *  Used parameter format (in fields.input_show_func table)
      * @return array
      */
-    public static function getClassProperties(): array {
+    public static function getClassProperties(): array
+    {
         return [                   //  id            name         type      multi  persistent validator, required, help,                                         morehelp, example
-                                   'field' => new AA_Property('field', _m("Field"), 'text', false, true, 'field'),
-                                   'desc'  => new AA_Property('desc', _m("Descending"), 'text', false, true, 'bool'),
-                                   'limit' => new AA_Property('limit', _m("Limit"), 'text', false, true, 'int'),
+            'field' => new AA_Property('field', _m("Field"), 'text', false, true, 'field'),
+            'desc'  => new AA_Property('desc', _m("Descending"), 'text', false, true, 'bool'),
+            'limit' => new AA_Property('limit', _m("Limit"), 'text', false, true, 'int'),
         ];
     }
 
     /** AA_Sortorder function  */
-    function __construct($sort = []) {
+    public function __construct($sort = [])
+    {
         $this->clear();
         foreach ($sort as $key => $val) {
             if ($key === 'limit') {
                 $this->limit = $val;
             } else {
-                $this->field = (string)$key;
+                $this->field = (string) $key;
                 $this->desc  = ($val === 'd');
             }
         }
     }
 
     /** clear function */
-    function clear(): void
+    public function clear(): void
     {
         $this->field = '';
         $this->desc  = false;
@@ -386,28 +397,41 @@ class AA_Sortorder extends AA_Object {
      *
      *  Mainly for backward compatibility with old - array approach
      */
-    function getArray(): array
+    public function getArray(): array
     {
         if (!$this->field) {
             return [];
         }
         $ret = [$this->field => ($this->desc ? 'd' : 'a')];
-        if (ctype_digit((string)$this->limit)) {
-            $ret['limit'] = (int)$this->limit;
+        if (ctype_digit((string) $this->limit)) {
+            $ret['limit'] = (int) $this->limit;
         }
         return $ret;
     }
 
-    function getField(): string { return $this->field; }
+    public function getField(): string
+    {
+        return $this->field;
+    }
 
-    function getDesc(): string { return $this->desc ? '-' : ''; }
+    public function getDesc(): string
+    {
+        return $this->desc ? '-' : '';
+    }
 
-    function getLimit() { return $this->limit; }
+    public function getLimit()
+    {
+        return $this->limit;
+    }
 
-    function getAsString(): string { return ($f = $this->getField()) ? $this->getLimit() . $f . $this->getDesc() : ''; }
+    public function getAsString(): string
+    {
+        return ($f = $this->getField()) ? $this->getLimit() . $f . $this->getDesc() : '';
+    }
 }
 
-class AA_Set extends AA_Object {
+class AA_Set extends AA_Object
+{
     /** @var string[] slice_ids (unpacked_ids) */
     protected $slices;
 
@@ -440,7 +464,8 @@ class AA_Set extends AA_Object {
      *                2)   sort[0] = 5headline........-
      *                3)   sort[0][headline........]=d&sort[0][limit]=5
      */
-    function __construct($slices = null, $conds = null, $sort = null, $bins = AA_BIN_ACTIVE) {
+    public function __construct($slices = null, $conds = null, $sort = null, $bins = AA_BIN_ACTIVE)
+    {
         $this->clear();
         if (!is_null($conds)) {
             if (is_object($conds)) {
@@ -465,7 +490,8 @@ class AA_Set extends AA_Object {
     }
 
     /** @inheritDoc */
-    protected static function getAdminUrlTemplate(): string {
+    protected static function getAdminUrlTemplate(): string
+    {
         return get_admin_url('se_sets.php', ['module_id=_#AA_OWNER']);
     }
 
@@ -477,7 +503,8 @@ class AA_Set extends AA_Object {
      *
      * @return zids
      */
-    public function query($restrict_zids = null, int $limit = 0): zids {
+    public function query($restrict_zids = null, int $limit = 0): zids
+    {
         if (!$this->postsort) {
             return QueryZids($this->getModules(), $this->getConds(), $this->getSort(), $this->getBins(), 0, $restrict_zids, 'LIKE', $limit);
         }
@@ -487,13 +514,14 @@ class AA_Set extends AA_Object {
         if (!$limit) {
             return new zids($sorted_ids, 'l');
         }
-        return new zids(array_slice($sorted_ids,0,$limit), 'l');
+        return new zids(array_slice($sorted_ids, 0, $limit), 'l');
     }
 
     /** clear function
      *
      */
-    function clear(): static {
+    public function clear(): static
+    {
         $this->conds    = [];
         $this->sort     = [];
         $this->postsort = [];
@@ -506,7 +534,8 @@ class AA_Set extends AA_Object {
      * @param $bins int bitfield
      *              AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING | AA_BIN_HOLDING | AA_BIN_TRASH
      */
-    function setBins($bins): static {
+    public function setBins($bins): static
+    {
         $this->bins = $bins;
         return $this;
     }
@@ -514,7 +543,8 @@ class AA_Set extends AA_Object {
     /** set the slices/modules
      * @param $slices array of slice ids
      */
-    function setModules($slices): static {
+    public function setModules($slices): static
+    {
         if (is_array($slices)) {
             $this->slices = $slices;
         } elseif (is_string($slices)) {
@@ -528,7 +558,8 @@ class AA_Set extends AA_Object {
     /** addCondition function
      * @param AA_Condition $condition
      */
-    function addCondition($condition): static {
+    public function addCondition($condition): static
+    {
         if ($condition) {
             $this->conds[] = $condition;
         }
@@ -538,7 +569,8 @@ class AA_Set extends AA_Object {
     /** addSortorder function
      * @param $sortorder
      */
-    function addSortorder($sortorder): static {
+    public function addSortorder($sortorder): static
+    {
         if ($sortorder) {
             $this->sort[] = $sortorder;
         }
@@ -551,7 +583,7 @@ class AA_Set extends AA_Object {
      * @param $string
      * @param $defaultCondsOperator
      */
-    function addCondsFromString($string, $defaultCondsOperator = 'RLIKE'): void
+    public function addCondsFromString($string, $defaultCondsOperator = 'RLIKE'): void
     {
         if (str_starts_with(inner_trim($string), 'd-')) {
             $this->_parseViewConds($string);
@@ -565,7 +597,7 @@ class AA_Set extends AA_Object {
      * @param $conds_string
      * @param $defaultCondsOperator
      */
-    function _parseCondsString($conds_string, $defaultCondsOperator): void
+    public function _parseCondsString($conds_string, $defaultCondsOperator): void
     {
         if (empty($conds_string)) {
             return;
@@ -581,7 +613,7 @@ class AA_Set extends AA_Object {
      * @param $conds
      * @param $defaultCondsOperator
      */
-    function addCondsFromArray($conds, $defaultCondsOperator = 'RLIKE'): void
+    public function addCondsFromArray($conds, $defaultCondsOperator = 'RLIKE'): void
     {
         if (!is_array($conds)) {
             return;
@@ -665,12 +697,12 @@ class AA_Set extends AA_Object {
                 }
             }
             if (!($cond['operator'] === 'ISNULL') and !($cond['operator'] === 'NOTNULL') and !($cond['operator'] === 'ISMAIL') and !($cond['operator'] === 'NOTMAIL')) {
-            // The value could be empty for ISNULL, NOTNULL, ISMAIL or NOTMAIL operators
+                // The value could be empty for ISNULL, NOTNULL, ISMAIL or NOTMAIL operators
                 if (!isset($conds[$k]['value']) or ($conds[$k]['value'] == "")) {
-                // For other operators we should remove all conditions without value
-                unset ($conds[$k]);
+                    // For other operators we should remove all conditions without value
+                    unset($conds[$k]);
+                }
             }
-        }
         }
 
         // and now replace all united conds (like conds[0][headline........,abstract........]=1)
@@ -713,7 +745,7 @@ class AA_Set extends AA_Object {
      *
      * @param $sort
      */
-    function addSortFromString($sort): void
+    public function addSortFromString($sort): void
     {
         if (str_starts_with(ltrim($sort), 'sort[')) {
             $ret = [];
@@ -733,7 +765,7 @@ class AA_Set extends AA_Object {
      *  array( 'limit' => 4, 'category........' => d )
      * @param $sort_string
      */
-    function addSortFromBasicString($sort_string): void
+    public function addSortFromBasicString($sort_string): void
     {
         if ($sort_string) {
             $sorts = array_filter(explode(',', str_replace(['-', '+', ' '], ['-,', '+,', '+,',], $sort_string))); // ' ' comes from url category.......1+publish_date.... where + is translated to ' '
@@ -741,7 +773,7 @@ class AA_Set extends AA_Object {
                 $retone = [];
                 // is defined group limit?
                 if (($limit_len = strspn($sort, '0123456789')) > 0) {
-                    $retone['limit'] = (int)substr($sort, 0, $limit_len);
+                    $retone['limit'] = (int) substr($sort, 0, $limit_len);
                     $sort            = substr($sort, $limit_len);        // rest of the string
                 }
                 switch (substr($sort, -1)) {    // last character
@@ -775,7 +807,7 @@ class AA_Set extends AA_Object {
      *     2)   sort[0] = 5headline........-
      *     3)   sort[0][headline........]=d&sort[0][limit]=5
      */
-    function addSortFromArray($sort): void
+    public function addSortFromArray($sort): void
     {
         if ($sort && is_array($sort)) {
             ksort($sort, SORT_NUMERIC); // it is not sorted and the order is important
@@ -804,7 +836,7 @@ class AA_Set extends AA_Object {
      * @param string $string - like:   d-headline........,category.......1-BEGIN-Bio
      * @return bool
      */
-    function _parseViewConds($string): bool
+    public function _parseViewConds($string): bool
     {
         $commands = new AA_View_Commands($string);
         $command  = $commands->get('d');
@@ -818,7 +850,8 @@ class AA_Set extends AA_Object {
      * @param $command
      * @return bool
      */
-    function addFromCommand($command): bool {
+    public function addFromCommand($command): bool
+    {
         if ($command->getCommand() !== 'd') {
             return false;
         }
@@ -860,7 +893,8 @@ class AA_Set extends AA_Object {
     /** getConds function
      *  @retrun array $conds[] array - mainly for backward compatibility
      */
-    function getConds(): array {
+    public function getConds(): array
+    {
         $ret = [];
         foreach ($this->conds as $condition) {
             $ret[] = $condition->getArray();
@@ -871,7 +905,7 @@ class AA_Set extends AA_Object {
     /** getSort function
      * @returns $sort[] array - mainly for backward compatibility
      */
-    function getSort(): array
+    public function getSort(): array
     {
         $ret = [];
         foreach ($this->sort as $sortorder) {
@@ -883,7 +917,8 @@ class AA_Set extends AA_Object {
     /**
      * @return string
      */
-    function getSortAsString(): string {
+    public function getSortAsString(): string
+    {
         $ret = [];
         foreach ($this->sort as $sortorder) {
             $ret[] = $sortorder->getAsString();
@@ -895,25 +930,26 @@ class AA_Set extends AA_Object {
     /** getModules function
      *  retruns $modules array - mainly for backward compatibility
      */
-    function getModules(): array
+    public function getModules(): array
     {
-        return (array)$this->slices;  // when loaded by AA_Object, it is not allways array
+        return (array) $this->slices;  // when loaded by AA_Object, it is not allways array
     }
 
     /** @return int bins bitfield - AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING | AA_BIN_HOLDING | AA_BIN_TRASH */
-    function getBins(): int
+    public function getBins(): int
     {
         return $this->bins;
     }
 
     /** @return int bins as used in database status_code */
-    function getBinsNumber(): int {
+    public function getBinsNumber(): int
+    {
         return ($this->bins & AA_BIN_TRASH) ? 3 : (($this->bins & AA_BIN_HOLDING) ? 2 : 1);
     }
 
     /** @return string representing the condition (for {ids} or {view}, ...)
      */
-    function getCondsAsString(): string
+    public function getCondsAsString(): string
     {
         $ret   = '';
         $delim = 'd-';
@@ -930,7 +966,7 @@ class AA_Set extends AA_Object {
      * @param $value
      * @return bool
      */
-    static function check($field, $value): bool
+    public static function check($field, $value): bool
     {
         return ($field && ($value !== 'AAnoCONDITION'));
     }
@@ -944,7 +980,8 @@ class AA_Set extends AA_Object {
      * @return bool
      * @todo allow to compare not only fields, but also aliases
      */
-    function matches($itemcontent): bool {
+    public function matches($itemcontent): bool
+    {
         foreach ($this->conds as $condition) {
             if (!$condition->matches($itemcontent)) {
                 // we must met all the conditions criteria
@@ -960,15 +997,16 @@ class AA_Set extends AA_Object {
      *  Used parameter format (in fields.input_show_func table)
      * @return array
      */
-    public static function getClassProperties(): array {
+    public static function getClassProperties(): array
+    {
         return [ //  id            name         type          multi  persistent validator, required, help,                                         morehelp, example
-                 /** Array of AA_Condition */
-                 'conds'  => new AA_Property('conds', _m("Conditions"), 'AA_Condition', true, true),
-                 /** array of AA_Sortorder */
-                 'sort'   => new AA_Property('sort', _m("Sort"), 'AA_Sortorder', true, true),
-                 /** array of slice_ids */
-                 'slices' => new AA_Property('slices', _m("Slices"), 'text', true, true),
-                 //     'alias'  => new AA_Property( 'alias',   _m("Alias"),         'string', false, true, '', true,  _m('Alias will be called as {_:&lt;Alias_name&gt;[:&lt;Possible parameters - colon separated&gt;]}'),'', 'Message_box'),
+            /** Array of AA_Condition */
+            'conds'  => new AA_Property('conds', _m("Conditions"), 'AA_Condition', true, true),
+            /** array of AA_Sortorder */
+            'sort'   => new AA_Property('sort', _m("Sort"), 'AA_Sortorder', true, true),
+            /** array of slice_ids */
+            'slices' => new AA_Property('slices', _m("Slices"), 'text', true, true),
+            //     'alias'  => new AA_Property( 'alias',   _m("Alias"),         'string', false, true, '', true,  _m('Alias will be called as {_:&lt;Alias_name&gt;[:&lt;Possible parameters - colon separated&gt;]}'),'', 'Message_box'),
         ];
     }
 
@@ -993,8 +1031,8 @@ function getSortFromUrl($sort): array
 }
 
 
-class AA_Dbcondition {
-
+class AA_Dbcondition
+{
     private string $table;
     private string $field;
     private string $operator;
@@ -1007,14 +1045,15 @@ class AA_Dbcondition {
     private string $jointype = '';
     private string $joincond = '';
 
-    function __construct(string $table, $field, $operator, $querystring, string $type='text', bool $joined=false) {
+    public function __construct(string $table, $field, $operator, $querystring, string $type = 'text', bool $joined = false)
+    {
 
-        $this->field = ($table ? "$table." : ''). trim((string)$field);
+        $this->field = ($table ? "$table." : '') . trim((string) $field);
 
         // normalize operator
         // we allow modifiers without ':' - like d>, e>=, ... (which bring administrators the possibility to not deal with escaping ':' in some cases)
         // we are also trying to fix administrators mistakes, when they convert > to &gt; so &gt;, ... are valid operator, now
-        $this->operator = str_replace(['#:', ':', '&gt;', '&lt;', '&amp;'], ['', '', '>', '<','&'], trim((string)$operator)); // #: - fix mistaken escaping of d#:>...
+        $this->operator = str_replace(['#:', ':', '&gt;', '&lt;', '&amp;'], ['', '', '>', '<','&'], trim((string) $operator)); // #: - fix mistaken escaping of d#:>...
         if (strlen($this->operator) < 4) {
             $this->operator = AA_Operators::normalize($this->operator);  // d-highlight.......-lt-5  - lt, gt, le, ge, ne are allowed as well
         }
@@ -1028,20 +1067,30 @@ class AA_Dbcondition {
         $this->joincond  = $arr[1];
 
         //  could be id or expression like 49d94e8e3379dc951eac78c2cd0f9f65 OR 78d89ac8dd0de0967a6f50ee5408ccdd OR ae076560dd8674b169e7d493d23ca8f2
-        $this->condition = ($table==='item' && AA_Metabase::isPacked('item', $field)) ? preg_replace("/'([0-9a-f]{32})'/i", "0x\\1", $arr[2]) : $arr[2];
+        $this->condition = ($table === 'item' && AA_Metabase::isPacked('item', $field)) ? preg_replace("/'([0-9a-f]{32})'/i", "0x\\1", $arr[2]) : $arr[2];
         $this->table = $table;
     }
 
-    function getWhereExp(): string { return $this->condition; }
+    public function getWhereExp(): string
+    {
+        return $this->condition;
+    }
 
-    function getJoinType(): string { return $this->jointype; }
+    public function getJoinType(): string
+    {
+        return $this->jointype;
+    }
 
-    function getJoinCond(): string { return $this->joincond; }
+    public function getJoinCond(): string
+    {
+        return $this->joincond;
+    }
 
     /**
      * @return string[]
      */
-    function _calculate(): array {
+    public function _calculate(): array
+    {
         AA::$debug & 64 && AA::$dbg->log('AA_Dbcondition', $this->field, $this->operator, $this->querystring, $this->type);
 
         $field       = $this->field;
@@ -1067,9 +1116,9 @@ class AA_Dbcondition {
                     $querystring = strtotime($querystring);
                     break;
                 case 'e': // european datum style (like 24. 12. 2001)
-                    if (!preg_match("/^ *(\d{1,2}) *\. *(\d{1,2}) *\. *(\d{4}) *$/", $querystring, $part) &&
-                        !preg_match("/^ *(\d{1,2}) *\. *(\d{1,2}) *\. *(\d{2}) *$/", $querystring, $part) &&
-                        !preg_match("/^ *(\d{1,2}) *\. *(\d{1,2}) *$/", $querystring, $part)) {
+                    if (!preg_match("/^ *(\d{1,2}) *\. *(\d{1,2}) *\. *(\d{4}) *$/", $querystring, $part)
+                        && !preg_match("/^ *(\d{1,2}) *\. *(\d{1,2}) *\. *(\d{2}) *$/", $querystring, $part)
+                        && !preg_match("/^ *(\d{1,2}) *\. *(\d{1,2}) *$/", $querystring, $part)) {
                         $querystring = time();
                         break;
                     }
@@ -1082,7 +1131,7 @@ class AA_Dbcondition {
                     break;
                 case 'm':
                 case '-':
-                    $querystring = time() - (int)$querystring;
+                    $querystring = time() - (int) $querystring;
                     break;
             }
         }
@@ -1111,13 +1160,13 @@ class AA_Dbcondition {
         // new operators - no SQL parsing, no stripslashes
         switch ($operator) {
             case '==':
-                return ['INNER', '', "($qfield = '".quote($querystring)."')",];  // exact match (we added this because SQL Syntax parser in AA have problems with packed ids)
+                return ['INNER', '', "($qfield = '" . quote($querystring) . "')",];  // exact match (we added this because SQL Syntax parser in AA have problems with packed ids)
             case 'BEGIN':
                 return ['INNER', '', "($qfield LIKE '" . addcslashes(quote($querystring), "_%") . "%')"];
             case 'CONTAIN':
                 return ['INNER', '', "($qfield LIKE '%" . addcslashes(quote($querystring), "_%") . "%')"];
             case 'BITSET':
-                return ['INNER', '', "($qfield & " . (int)$querystring . " = " . (int)$querystring . ")"];
+                return ['INNER', '', "($qfield & " . (int) $querystring . " = " . (int) $querystring . ")"];
             case 'XLIKE':
                 $ret = (new Syntax($field, $operator, SQL_Lex::lex(trim($querystring))))->S();
                 if ($ret === "_SYNTAX_ERROR") {
@@ -1149,7 +1198,8 @@ class AA_Dbcondition {
                 // I think we should escape all the % and _ and allow it only for
                 // say XLIKE
                 $querystring = str_replace(['*', '?'], ['%', '_'], trim($querystring));
-            // continue!
+                // continue!
+                // no break
             case '=':
                 // it is not possible to use wildcard characters with '='
                 $syntax = new Syntax($field, $operator, SQL_Lex::lex(trim($querystring)));
@@ -1176,20 +1226,20 @@ class AA_Dbcondition {
                 return ['LEFT', '', "($qfield NOT REGEXP '" . quote(AA_REGEXP_MAIL) . "')"];
             case 'NOTREGEXP':
                 return ['LEFT', '', "($qfield NOT REGEXP '" . quote($querystring) . "')"];
-            //      case '<=>':  //MySQL know this operator, but we do not use it in AA
-            //      MariDB doc: NULL values cannot be used with most comparison operators. For example, =, >, >=, <=, <, or != cannot be used, as any comparison with a NULL always returns a NULL value, never true (1) or false (0).
-            //        - so we can use INNER join
+                //      case '<=>':  //MySQL know this operator, but we do not use it in AA
+                //      MariDB doc: NULL values cannot be used with most comparison operators. For example, =, >, >=, <=, <, or != cannot be used, as any comparison with a NULL always returns a NULL value, never true (1) or false (0).
+                //        - so we can use INNER join
 
-            case '<>' :       // for work with multivalues we look for non existatnt join by value
-            case '!=' :
+            case '<>':       // for work with multivalues we look for non existatnt join by value
+            case '!=':
                 return $this->joined ? ['LEFT', "($qfield = '$cleanstr')", "($qfield IS NULL)"] : ['LEFT', "", "($qfield <> '$cleanstr')"];
 
-            case '<=' :
-            case '<'  :
-            case '>=' :
-            case '>'  :
-            case '&'  :
-            case '|'  :
+            case '<=':
+            case '<':
+            case '>=':
+            case '>':
+            case '&':
+            case '|':
                 if (IsSigInt($cleanstr)) {
                     // it allows comparing also text stored fields - like d-number..........-lt-22 when number.......... is stored as text
                     return ['LEFT', '', "($qfield $operator $cleanstr)"];
@@ -1315,12 +1365,12 @@ function ParseEasyConds(&$conds, $defaultCondsOperator = "LIKE"): void
                 }
             }
             if (!($cond['operator'] === 'ISNULL') and !($cond['operator'] === 'NOTNULL') and !($cond['operator'] === 'ISMAIL') and !($cond['operator'] === 'NOTMAIL')) {
-            // The value could be empty for ISNULL, NOTNULL, ISMAIL or NOTMAIL operators
+                // The value could be empty for ISNULL, NOTNULL, ISMAIL or NOTMAIL operators
                 if (!isset($conds[$k]['value']) or ($conds[$k]['value'] == "")) {
-                // For other operators we should remove all conditions without value
-                unset ($conds[$k]);
+                    // For other operators we should remove all conditions without value
+                    unset($conds[$k]);
+                }
             }
-        }
         }
         // and now replace all united conds (like conds[0][headline........,abstract........]=1)
         // with its equivalents
@@ -1380,7 +1430,7 @@ function MakeSQLConditions($fields_arr, $conds, $defaultCondsOperator, &$join_ta
         foreach ($cond as $field => $val) {
             if ($field === 'all_fields') {
                 unset($conds[$k][$field]);
-                foreach( $fields_arr as $fld2add =>$foo ) {
+                foreach ($fields_arr as $fld2add => $foo) {
                     $conds[$k][$fld2add] = $val;
                 }
             }
@@ -1400,12 +1450,12 @@ function MakeSQLConditions($fields_arr, $conds, $defaultCondsOperator, &$join_ta
                     if (isset($finfo) and is_array($finfo)) {
                         if ($additional_field_cond) {
                             if (!$additional_field_cond($finfo, $v, $add_param)) {
-                            continue;
-                        }
+                                continue;
+                            }
                         }
                         // for Links it contain whole definition of the ink - like "links_cat_cat.state"
                         if (str_contains($finfo['field'], '.')) {   // not common case
-                            [$dbtab, $dbfld] = explode('.',$finfo['field'],2);
+                            [$dbtab, $dbfld] = explode('.', $finfo['field'], 2);
                         } else {
                             $dbtab = $finfo['table'] ?? '';
                             $dbfld = $finfo['field'];
@@ -1459,8 +1509,8 @@ function MakeSQLOrderBy($fields_arr, $sort, &$join_tables, $additional_field_con
                 if ($finfo and is_array($finfo)) {
                     if ($additional_field_cond) {
                         if (!$additional_field_cond($finfo, current($srt), $add_param)) {
-                        continue;
-                    }
+                            continue;
+                        }
                     }
                     $ret[] = $finfo['field'] . ((stripos(current($srt), 'd') !== false) ? " DESC" : "");
                     if ($finfo['table']) {
@@ -1488,7 +1538,8 @@ function MakeSQLOrderBy($fields_arr, $sort, &$join_tables, $additional_field_con
  *                                         selected items (then set the number to 1)
  * @return zids from SQL query;
  */
-function GetZidsFromSQL($SQL, $col, $zid_type = 's', $empty_result_condition = false, $group_limit = null): zids {
+function GetZidsFromSQL($SQL, $col, $zid_type = 's', $empty_result_condition = false, $group_limit = null): zids
+{
     global $QueryIDsCount;
     $db = getDB();
 
@@ -1535,7 +1586,8 @@ function GetZidsFromSQL($SQL, $col, $zid_type = 's', $empty_result_condition = f
 
 
 /** modern version of QueryZids - used in AA_Manager */
-function QueryZidsSet(AA_Set $set): zids {
+function QueryZidsSet(AA_Set $set): zids
+{
     return $set->query();
 }
 
@@ -1595,12 +1647,13 @@ function QueryZidsSet(AA_Set $set): zids {
  *   </pre>
  * @deprecated - use $aa_set->query() instead
  */
-function QueryZids($slices, $conds = "", $sort = "", $type = "ACTIVE", $neverAllItems = 0, $restrict_zids = null, $defaultCondsOperator = "LIKE", int $limit = 0): zids {
+function QueryZids($slices, $conds = "", $sort = "", $type = "ACTIVE", $neverAllItems = 0, $restrict_zids = null, $defaultCondsOperator = "LIKE", int $limit = 0): zids
+{
 
     // select * from item, content as c1, content as c2 where item.id=c1.item_id AND item.id=c2.item_id AND       c1.field_id IN ('fulltext........', 'abstract..........') AND c2.field_id = 'keywords........' AND c1.text like '%eufonie%' AND c2.text like '%eufonie%' AND item.highlight = '1';
 
     if (!is_array($slices)) {
-        $slices = empty($slices) ? [] : (array)$slices;
+        $slices = empty($slices) ? [] : (array) $slices;
     }
 
     AA::$debug & 2 && AA::$dbg->log("QueryZids - start:<br>Conds=", $conds, "<br>Sort=", $sort, "<br>Slices=", implode('-', $slices));
@@ -1619,11 +1672,11 @@ function QueryZids($slices, $conds = "", $sort = "", $type = "ACTIVE", $neverAll
     if ((is_array($conds) and count($conds)) or (is_array($sort) and count($sort))) {
         if (empty($slices)) {
             if (is_object($restrict_zids)) {
-            $sid = $restrict_zids->getFirstSlice();
-            if ($sid) {
-                $slices[] = $sid;
+                $sid = $restrict_zids->getFirstSlice();
+                if ($sid) {
+                    $slices[] = $sid;
+                }
             }
-        }
         }
         // get the fields for the first slice (used as template - we expect that all slices in the query has the same structure)
         if (!empty($slices) && ($slice = AA_Slice::getModule(reset($slices)))) {
@@ -1641,7 +1694,7 @@ function QueryZids($slices, $conds = "", $sort = "", $type = "ACTIVE", $neverAll
 
     $SQL = $query_helper->constructSQL($restrict_zids, $type, $limit, $slices, $slice);
 
-    return ($SQL !== '') ? $query_helper->getZids($SQL, (bool)$neverAllItems) : new zids();
+    return ($SQL !== '') ? $query_helper->getZids($SQL, (bool) $neverAllItems) : new zids();
 }
 
 class QueryZidsHelper
@@ -1666,7 +1719,8 @@ class QueryZidsHelper
     private ?AA_Fields $fields;
 
 
-    public function __construct(?AA_Fields $fields, $conds, $sort, $restrict_zids) {
+    public function __construct(?AA_Fields $fields, $conds, $sort, $restrict_zids)
+    {
         $this->fields = $fields;
 
         if (is_array($conds)) {
@@ -1693,9 +1747,9 @@ class QueryZidsHelper
                 // search in all content table fields (new in AA v2.8)
                 $lowerfid = strtolower($fid);
                 if ($lowerfid === 'all_fields_numeric') {
-                     $cond_flds = 'all_fields';
-                     $store     = 'number';
-                     continue;
+                    $cond_flds = 'all_fields';
+                    $store     = 'number';
+                    continue;
                 }
                 if (str_starts_with($lowerfid, 'all_fields|')) {
                     [$fid, $fid_langs] = AA_Field::parseWithLang($lowerfid);
@@ -1753,8 +1807,8 @@ class QueryZidsHelper
                         }
                         $rel_fld = "'$rel_fld'";
                         if ($cf === 'all_fields') {
-                            $tbl           = 'c'.$this->tbl_count++;
-                            $tbl2          = 'c'.$this->tbl_count++;
+                            $tbl           = 'c' . $this->tbl_count++;
+                            $tbl2          = 'c' . $this->tbl_count++;
                             $this->select_tabs[] = "LEFT JOIN content as $tbl  ON ($tbl.item_id=item.id AND ($tbl.field_id=$rel_fld OR $tbl.field_id is NULL))
                                               LEFT JOIN content as $tbl2 ON ($tbl2.item_id=UNHEX($tbl.text))";
                             $cur_cond      = (new AA_Dbcondition($tbl2, 'text', $cond['operator'], $cond['value']))->getWhereExp();
@@ -1766,8 +1820,8 @@ class QueryZidsHelper
                             }
 
                             $cond_flds = "'$cf'";
-                            $tbl       = 'c'.$this->tbl_count++;
-                            $tbl2      = 'c'.$this->tbl_count++;
+                            $tbl       = 'c' . $this->tbl_count++;
+                            $tbl2      = 'c' . $this->tbl_count++;
                             if ($cond_field->storageTable() === 'item') {   // field is stored in table 'item'
                                 // Long ID in conds should be specified as unpacked, but in db it is packed
                                 $this->select_tabs[] = "LEFT JOIN content as $tbl  ON ($tbl.item_id=item.id AND ($tbl.field_id=$rel_fld OR $tbl.field_id is NULL))
@@ -1777,9 +1831,9 @@ class QueryZidsHelper
                                                   LEFT JOIN content as $tbl2 ON ($tbl2.item_id=UNHEX($tbl.text) AND ($tbl2.field_id=$cond_flds OR $tbl2.field_id is NULL))";
                             }
                             $cur_cond = (new AA_Dbcondition($tbl2, $cond_field->storageColumn(), $cond['operator'], $cond['value']))->getWhereExp();
-//                            if (in_array($cf, ['id..............', 'slice_id........'])) {
-//                                $cur_cond = preg_replace("/'([0-9a-f]{32})'/i", "0x\\1", $cur_cond);
-//                            }
+                            //                            if (in_array($cf, ['id..............', 'slice_id........'])) {
+                            //                                $cur_cond = preg_replace("/'([0-9a-f]{32})'/i", "0x\\1", $cur_cond);
+                            //                            }
                         }
                         $this->select_conds[] = $cur_cond;
                         $this->sortable[$cf]  = $tbl;  // @todo - test if it works
@@ -1818,13 +1872,13 @@ class QueryZidsHelper
                     }
                     $cond_flds = "'$cond_fld_id'";
                     $rel_fld   = "'$rel_fld_id'";
-                    $tbl       = 'c'.$this->tbl_count++;
-                    $tbl2      = 'c'.$this->tbl_count++;
+                    $tbl       = 'c' . $this->tbl_count++;
+                    $tbl2      = 'c' . $this->tbl_count++;
                     if ($cond_field->storageTable() === 'item') {   // field is stored in table 'item'
-                        $rel_bins_cond = ($rel_bins != AA_BIN_ALL) ? " AND ".CreateBinCondition($rel_bins, $tbl2) : '';
+                        $rel_bins_cond = ($rel_bins != AA_BIN_ALL) ? " AND " . CreateBinCondition($rel_bins, $tbl2) : '';
                         // Long ID in conds should be specified as unpacked, but in db it is packed
                         $this->select_tabs[] = "LEFT JOIN content as $tbl  ON ($tbl.field_id=$rel_fld AND HEX(item.id)=$tbl.text)
-                                              LEFT JOIN item as $tbl2 ON ($tbl2.id=$tbl.item_id AND $tbl2.slice_id=".xpack_id($rel_slice_id)."$rel_bins_cond)";
+                                              LEFT JOIN item as $tbl2 ON ($tbl2.id=$tbl.item_id AND $tbl2.slice_id=" . xpack_id($rel_slice_id) . "$rel_bins_cond)";
                     } else {
                         $this->select_tabs[] = "LEFT JOIN content as $tbl  ON ($tbl.field_id=$rel_fld AND HEX(item.id)=$tbl.text)
                                               LEFT JOIN content as $tbl2 ON ($tbl2.item_id=$tbl.item_id AND ($tbl2.field_id=$cond_flds OR $tbl2.field_id is NULL))";
@@ -1860,7 +1914,7 @@ class QueryZidsHelper
                     }
                     $this->select_conds[] = $cur_cond;
                 } else {
-                    $cond_flds .= (($field_count++ > 0) ? ',' : "")."'$fid'";
+                    $cond_flds .= (($field_count++ > 0) ? ',' : "") . "'$fid'";
                     // will not work with one condition for text and number fields
                     $store = $field->storageColumn();
                 }
@@ -1884,7 +1938,7 @@ class QueryZidsHelper
      */
     private function addTableCondition(string $store, $operator, $value, string $cond_flds, array $languages): void
     {
-        $dbcond      = new AA_Dbcondition('c'.$this->tbl_count, $store, $operator, $value, $store, true);
+        $dbcond      = new AA_Dbcondition('c' . $this->tbl_count, $store, $operator, $value, $store, true);
         $dbcjointype = $dbcond->getJoinType();
         if ($dbcjointype === 'ALL') {
             // nothing;
@@ -1892,13 +1946,13 @@ class QueryZidsHelper
             $this->select_conds[] = '1=0';
         } else {
             // INNER / LEFT
-            $tbl = 'c'.$this->tbl_count++;
+            $tbl = 'c' . $this->tbl_count++;
 
             $selprefix = ($dbcjointype === 'INNER') ? 'INNER' : 'LEFT';
 
             $selcondadd = ($dbcjointype === 'INNER') ? '' : "OR $tbl.field_id is NULL";
 
-            $langcond = !$languages ? '' : ' '.Langs::getSql4Langs($languages,$tbl);
+            $langcond = !$languages ? '' : ' ' . Langs::getSql4Langs($languages, $tbl);
 
             // fill arrays to be able to construct select command
             $this->select_conds[] = $dbcond->getWhereExp();
@@ -1949,7 +2003,7 @@ class QueryZidsHelper
                 // one random item (for banner, ...), you should rather use
                 // set[]=random-1 parameter for view.php
                 if ($fid === 'random') {
-                    $this->select_order .= $this->delim.' RAND()';
+                    $this->select_order .= $this->delim . ' RAND()';
                     $this->delim        = ',';
 
                     // break! - we do not want to create expressions like
@@ -1967,14 +2021,14 @@ class QueryZidsHelper
                 }
 
                 if ($field->storageTable() === 'item') {   // field is stored in table 'item'
-                    $fieldId      = 'item.'.$field->storageColumn();
-                    $this->select_order .= $this->delim.$fieldId;
+                    $fieldId      = 'item.' . $field->storageColumn();
+                    $this->select_order .= $this->delim . $fieldId;
                     if (stripos(current($srt), 'd') !== false) {
                         $this->select_order .= ' DESC';
                     }
                 } else {
                     if (!$this->sortable[$fid]) {           // this field is not joined, yet
-                        $tbl = 'c'.$this->tbl_count++;
+                        $tbl = 'c' . $this->tbl_count++;
                         // fill arrays to be able to construct select command
                         $this->select_tabs[] = "LEFT JOIN content as $tbl
                                       ON ($tbl.item_id=item.id
@@ -1991,25 +2045,25 @@ class QueryZidsHelper
                             continue;
                         }
 
-                        $tbl = 'o'.$this->tbl_count++;
+                        $tbl = 'o' . $this->tbl_count++;
                         // fill arrays to be able to construct select command
                         $this->select_tabs[] = "LEFT JOIN constant as $tbl
-                                      ON ($tbl.value=".$this->sortable[$fid].".text
+                                      ON ($tbl.value=" . $this->sortable[$fid] . ".text
                                       AND ($tbl.group_id='$constgroup'
                                       OR $tbl.group_id is NULL))";
                         // mark this field as sortable (store without apostrofs)
 
                         // fill arrays according to this sort specification
-                        $fieldId      = $tbl.".pri";
-                        $this->select_order .= $this->delim.$fieldId;
+                        $fieldId      = $tbl . ".pri";
+                        $this->select_order .= $this->delim . $fieldId;
                         if (str_contains($direction, '9')) {
                             $this->select_order .= " DESC";
                         }
                     } else {                                                   // sort by value
                         $store = $field->storageColumn();
                         // fill arrays according to this sort specification
-                        $fieldId      = $this->sortable[$fid].".$store";
-                        $this->select_order .= $this->delim.$fieldId;
+                        $fieldId      = $this->sortable[$fid] . ".$store";
+                        $this->select_order .= $this->delim . $fieldId;
                         if (stripos(current($srt), 'd') !== false) {
                             $this->select_order .= " DESC";
                         }
@@ -2055,8 +2109,8 @@ class QueryZidsHelper
 
         if (!empty($slices)) {
             $slices_SQL = implode(",", array_map("xpack_id", $slices));
-            $SQL        .= 'item.slice_id' . ((count($slices) === 1) ? " = $slices_SQL AND " :
-                    " IN ($slices_SQL) AND ");
+            $SQL        .= 'item.slice_id' . ((count($slices) === 1) ? " = $slices_SQL AND "
+                    : " IN ($slices_SQL) AND ");
         }
 
         if (is_object($restrict_zids)) {
@@ -2086,9 +2140,9 @@ class QueryZidsHelper
 
         if ($this->select_order) {                                // order ----------
             $SQL .= " ORDER BY $this->select_order";
-//        if (defined("DB_COLLATION") AND (strpos($this->select_order, '.text') !== false)) {
-//            $SQL .= " COLLATE ". DB_COLLATION;
-//        }
+            //        if (defined("DB_COLLATION") AND (strpos($this->select_order, '.text') !== false)) {
+            //            $SQL .= " COLLATE ". DB_COLLATION;
+            //        }
         }
 
         if ($limit > 0) {
@@ -2112,15 +2166,15 @@ class QueryZidsHelper
      */
     public function getSQLcomment($slices): string
     {
-        $SQL_comment = " -- AA slice: ".implode('-', $slices);
+        $SQL_comment = " -- AA slice: " . implode('-', $slices);
         if ($GLOBALS['slice_info']) {
-            $SQL_comment .= ", slice_name: ".$GLOBALS['slice_info']['name'];
+            $SQL_comment .= ", slice_name: " . $GLOBALS['slice_info']['name'];
         }
         if ($GLOBALS['vid']) {
-            $SQL_comment .= ", vid: ".$GLOBALS['vid'];
+            $SQL_comment .= ", vid: " . $GLOBALS['vid'];
         }
         if ($GLOBALS['view_info']) {
-            $SQL_comment .= ", view_name: ".$GLOBALS['view_info']['name'];
+            $SQL_comment .= ", view_name: " . $GLOBALS['view_info']['name'];
         }
         return str_replace(["\n", "\r"], ' ', $SQL_comment);
     }
@@ -2131,7 +2185,7 @@ class QueryZidsHelper
      *
      * @return zids
      */
-    function getZids(string $SQL, bool $neverAllItems): zids
+    public function getZids(string $SQL, bool $neverAllItems): zids
     {
         AA::$debug & 2 && AA::$dbg->log("QueryZids: SQL: $SQL");
 
@@ -2160,7 +2214,8 @@ class QueryZidsHelper
  *   Parameter format example - {see QueryZids, FAQ}
  *   Fields definition - {see include/constants.php}
  */
-function QueryConstantZIDs($group_id, $conds, $sort=null, $restrict_zids = null, $defaultCondsOperator = "RLIKE", int $limit = 0): zids {
+function QueryConstantZIDs($group_id, $conds, $sort = null, $restrict_zids = null, $defaultCondsOperator = "RLIKE", int $limit = 0): zids
+{
     if (!trim($group_id)) {
         return new zids();
     }
@@ -2221,7 +2276,8 @@ function QueryConstantZIDs($group_id, $conds, $sort=null, $restrict_zids = null,
  * @return array|void
  */
 
-function QueryDiscIDs($slice_id, $conds, $sort, $slices) {
+function QueryDiscIDs($slice_id, $conds, $sort, $slices)
+{
     // parameter format example:
     // conds[0][discussion][subject] = 1;   // discussion fields are preceded by [discussion]
     // sort[0][category........]='a';    // order items by category ascending
@@ -2258,7 +2314,7 @@ function QueryDiscIDs($slice_id, $conds, $sort, $slices) {
             // fill arrays according to this condition
             foreach ($cond as $fid => $vv) {
                 if ($fid === 'discussion') {
-                    unset ($select_cond);
+                    unset($select_cond);
                     foreach ($vv as $fid2 => $foo) {
                         if (in_array($fid2, $fields) && $cond['value'] > "") {
                             $select_cond[] = (new AA_Dbcondition('discussion', $fid2, $cond['operator'], $cond['value']))->getWhereExp();
@@ -2317,8 +2373,8 @@ function QueryDiscIDs($slice_id, $conds, $sort, $slices) {
 
     if (is_array($slices) && count($slices)) {
         $slices_SQL = implode(",", array_map("xpack_id", $slices));
-        $SQL        .= ' item.slice_id' . ((count($slices) === 1) ? " = $slices_SQL AND " :
-                " IN ($slices_SQL) AND ");
+        $SQL        .= ' item.slice_id' . ((count($slices) === 1) ? " = $slices_SQL AND "
+                : " IN ($slices_SQL) AND ");
     } elseif ($slice_id) {
         $SQL .= " item.slice_id=" . xpack_id($slice_id);
     }
@@ -2334,6 +2390,3 @@ function QueryDiscIDs($slice_id, $conds, $sort, $slices) {
     // get result --------------------------
     return array_map('unpack_id', DB_AA::select('id', $SQL));
 }
-
-
-

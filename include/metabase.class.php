@@ -1,4 +1,5 @@
 <?php
+
 /**
  *
  * PHP version 7.2+
@@ -61,8 +62,8 @@ use AA\Util\Searchfields;
 
 
 // AA_Metabase_Column - we shorted the names in order the serialized tables could be shorter
-class AA_MbC {
-
+class AA_MbC
+{
     /** Column definition array
      *             0     1    2     3      4       5       6
      *  array ( field, type, null, key, default, extra, comment )
@@ -70,43 +71,50 @@ class AA_MbC {
      *  The reason, why we store it in array is, that the metabase is here
      *  stored as serialized string and I want to keep it as short as possible
      */
-    var $c;
+    public $c;
 
-    function __construct($column = null) {
+    public function __construct($column = null)
+    {
         if ($column !== null) {
-            $this->c = [$column['Field'], $column['Type'], $column['Null']==='YES', $column['Key'], $column['Default'], $column['Extra'], $column['Comment']];
+            $this->c = [$column['Field'], $column['Type'], $column['Null'] === 'YES', $column['Key'], $column['Default'], $column['Extra'], $column['Comment']];
         }
     }
 
     /** Plain-array form of the column: the 7-element [field, type, null, key, default, extra, comment]. */
-    function toArray(): array {
+    public function toArray(): array
+    {
         return $this->c;
     }
 
     /** Rebuild a column from its toArray() form (bypasses the DB-row constructor). */
-    static function fromArray(array $c): AA_MbC {
+    public static function fromArray(array $c): AA_MbC
+    {
         $column = new self();
         $column->c = $c;
         return $column;
     }
 
-    function isKey(): bool {
+    public function isKey(): bool
+    {
         return str_contains($this->c[3], 'PRI');
     }
 
-    function getName() {
+    public function getName()
+    {
         return $this->c[0];
     }
 
-    private function _getBaseType(): string {
+    private function _getBaseType(): string
+    {
         $dbtype = strtolower($this->c[1]);
         return substr($dbtype, 0, strspn($dbtype, "abcdefghijklmnopqrstuvwxyz"));
     }
 
     /** @return int max length of the field if we know it */
-    public function getMaxLength(): int {
+    public function getMaxLength(): int
+    {
         $part = [];
-        return preg_match("/\\((\\d*)\\)/", $this->c[1], $part) ? (int)$part[1] : 0;
+        return preg_match("/\\((\\d*)\\)/", $this->c[1], $part) ? (int) $part[1] : 0;
     }
 
     /** @return string - database field type - 'float' | 'int' | 'string' | 'text' */
@@ -189,7 +197,8 @@ class AA_MbC {
     }
 
     /** @return bool - if the field type is binary or varbinary or *blob */
-    public function isBinary(): bool {
+    public function isBinary(): bool
+    {
         return (str_contains($this->_getBaseType(), 'binary') || str_contains($this->_getBaseType(), 'blob'));
     }
 
@@ -202,61 +211,79 @@ class AA_MbC {
         };
     }
 
-    function getAsProperty(bool $edit=true): ?AA_Property {
+    public function getAsProperty(bool $edit = true): ?AA_Property
+    {
         $type = $this->getFieldType();
         if ($this->isKey() || (strtolower($this->c[5]) === 'auto_increment')) {
-        // for editing or int/long/packed ids do not allow editing - allow edit keys just for new text field (nodes table)
-            if ($edit || ($type==='int') || ($type==='float') || $this->getMaxLength()<=32) {
-            return null;
-        }
+            // for editing or int/long/packed ids do not allow editing - allow edit keys just for new text field (nodes table)
+            if ($edit || ($type === 'int') || ($type === 'float') || $this->getMaxLength() <= 32) {
+                return null;
+            }
         }
         // $id,       $name,     $type, $multi, $persistent, $validator, $required, $input_help, $input_morehlp='', $example='', $show_content_type_switch=0, $content_type_switch_default=, $perms=null, $default=null) {
-        $validator = ($len = $this->getMaxLength()) ? [$type,['maxlength'=>$len]] : $type;
+        $validator = ($len = $this->getMaxLength()) ? [$type,['maxlength' => $len]] : $type;
         $required  = false; //  !($this->c[2]) - nonsense
-        return  new AA_Property( $this->c[0], _mdelayed($this->c[0]), $type, false,  true, $validator, $required, $this->c[6]);
+        return  new AA_Property($this->c[0], _mdelayed($this->c[0]), $type, false, true, $validator, $required, $this->c[6]);
     }
 
-    function getCreateSql(): string {
-        $SQL  = '`'.  $this->c[0] .'`';                     // column name
-        $SQL .= ' '.  $this->c[1];                          // column definition
+    public function getCreateSql(): string
+    {
+        $SQL  = '`' . $this->c[0] . '`';                     // column name
+        $SQL .= ' ' . $this->c[1];                          // column definition
         if (!$this->c[2]) {                                 // NULL ?
             $SQL .= ' NOT NULL';
         }
         if (strlen($this->c[4] ?? '')) {
             // look for keywords for default
-            if ( $this->c[4] === 'CURRENT_TIMESTAMP' ) {
+            if ($this->c[4] === 'CURRENT_TIMESTAMP') {
                 // we ignore it, because DEFAULT CURRENT_TIMESTAMP is
                 // not supported in MySQL < 4.1.x and it is not needed for
                 // MySQL > 4.1.x, because standard settings of any timestamp
                 // column is:
                 //     DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-            } elseif ( in_array(strtolower($this->c[4]), ['null','current_timestamp()']) ) {
-                $SQL .= " default ". $this->c[4];     // default
+            } elseif (in_array(strtolower($this->c[4]), ['null','current_timestamp()'])) {
+                $SQL .= " default " . $this->c[4];     // default
             } else {
-                $SQL .= " default '". $this->c[4] ."'";     // default
+                $SQL .= " default '" . $this->c[4] . "'";     // default
             }
         }
-        $SQL .= ' '.  $this->c[5];                          // extra - like auto_increment
+        $SQL .= ' ' . $this->c[5];                          // extra - like auto_increment
         return $SQL;
     }
 
     /** returns database structure definition as PHP code (array)
      *  not used, yet (and question is, if ever) */
-    function getDefinition(): string {
-        $ret  = "\n        '".$this->c[0]."' => array(";
-        if ($this->c[0]) { $ret .= "\n            'Field'   => \"".$this->c[0].'",';  }
-        if ($this->c[1]) { $ret .= "\n            'Type'    => \"".$this->c[1].'",';  }
-        if ($this->c[2]) { $ret .= "\n            'Null'    => \"".($this->c[2] ? 'YES' : 'NO').'",';  }
-        if ($this->c[3]) { $ret .= "\n            'Key'     => \"".$this->c[3].'",';  }
-        if ($this->c[4]) { $ret .= "\n            'Default' => \"".$this->c[4].'",';  }
-        if ($this->c[5]) { $ret .= "\n            'Extra'   => \"".$this->c[5].'",';  }
-        if ($this->c[6]) { $ret .= "\n            'Comment' => \"".$this->c[6].'"';   }
+    public function getDefinition(): string
+    {
+        $ret  = "\n        '" . $this->c[0] . "' => array(";
+        if ($this->c[0]) {
+            $ret .= "\n            'Field'   => \"" . $this->c[0] . '",';
+        }
+        if ($this->c[1]) {
+            $ret .= "\n            'Type'    => \"" . $this->c[1] . '",';
+        }
+        if ($this->c[2]) {
+            $ret .= "\n            'Null'    => \"" . ($this->c[2] ? 'YES' : 'NO') . '",';
+        }
+        if ($this->c[3]) {
+            $ret .= "\n            'Key'     => \"" . $this->c[3] . '",';
+        }
+        if ($this->c[4]) {
+            $ret .= "\n            'Default' => \"" . $this->c[4] . '",';
+        }
+        if ($this->c[5]) {
+            $ret .= "\n            'Extra'   => \"" . $this->c[5] . '",';
+        }
+        if ($this->c[6]) {
+            $ret .= "\n            'Comment' => \"" . $this->c[6] . '"';
+        }
         $ret .= "\n        )";
         return $ret;
     }
 
     /** generate alias from column */
-    function getAlias(string $name): AA_Alias {
+    public function getAlias(string $name): AA_Alias
+    {
         switch ($this->c[0]) {
             case 'created':
             case 'execute_after':
@@ -272,39 +299,44 @@ class AA_MbC {
         // return GetAliasDef( "f_t:{expandable:_#this:30:...:&raquo;:&laquo;}", $this->c[0], $this->c[0]);
     }
 
-    function getFieldDef() {
-        return GetFieldDef( $this->c[0], $this->c[0], $this->_getSearchType(), false, 1, 1);
+    public function getFieldDef()
+    {
+        return GetFieldDef($this->c[0], $this->c[0], $this->_getSearchType(), false, 1, 1);
     }
 
-    function getEmptyValue(): int|string
+    public function getEmptyValue(): int|string
     {
         return in_array($this->_getSearchType(), ['numeric','date']) ? 0 : '';
     }
 }
 
-class AA_MbI {
+class AA_MbI
+{
     /**
      *  The reason, why we use this short variables is, that the metabase is here
      *  stored as serialized string and I want to keep it as short as possible
      */
-    var $t; // table name
-    var $n; // index name
-    var $s; // sort of index P|U|I  (= PRIMARY|UNIQUE|INDEX)
-    var $c = []; // columns array (array of column names of array (name,part) for partial column index (like text(10))
+    public $t; // table name
+    public $n; // index name
+    public $s; // sort of index P|U|I  (= PRIMARY|UNIQUE|INDEX)
+    public $c = []; // columns array (array of column names of array (name,part) for partial column index (like text(10))
 
-    function __construct($table = null, $name = null, $sort = null) {
+    public function __construct($table = null, $name = null, $sort = null)
+    {
         $this->t = $table;
         $this->n = $name;
         $this->s = $sort;
     }
 
     /** Plain-array form of the index: [t, n, s, c]. */
-    function toArray(): array {
+    public function toArray(): array
+    {
         return ['t' => $this->t, 'n' => $this->n, 's' => $this->s, 'c' => $this->c];
     }
 
     /** Rebuild an index from its toArray() form (bypasses addColumn()). */
-    static function fromArray(array $a): AA_MbI {
+    public static function fromArray(array $a): AA_MbI
+    {
         $index = new self();
         $index->t = $a['t'];
         $index->n = $a['n'];
@@ -313,49 +345,50 @@ class AA_MbI {
         return $index;
     }
 
-    function addColumn($position, $column, $sub_part=''): void
+    public function addColumn($position, $column, $sub_part = ''): void
     {
-        $this->c[(int)$position] = $sub_part ? [$column, $sub_part] : $column;
+        $this->c[(int) $position] = $sub_part ? [$column, $sub_part] : $column;
     }
 
-    function getCreateSql(): string
+    public function getCreateSql(): string
     {
         $cols = [];
         foreach ($this->c as $col) {
-            $cols[] = is_array($col) ? '`'.$col[0].'`('.$col[1].')' : "`$col`";
+            $cols[] = is_array($col) ? '`' . $col[0] . '`(' . $col[1] . ')' : "`$col`";
         }
         $cols_list = implode(',', $cols);
         return match ($this->s) {
             'P'     => "PRIMARY KEY ($cols_list)",
-            'U'     => 'UNIQUE KEY '.$this->n." ($cols_list)",
-            default => 'KEY '.$this->n." ($cols_list)",
+            'U'     => 'UNIQUE KEY ' . $this->n . " ($cols_list)",
+            default => 'KEY ' . $this->n . " ($cols_list)",
         };
     }
 }
 
 
 
-class AA_MbT implements IteratorAggregate, ArrayAccess, Countable {
-
+class AA_MbT implements IteratorAggregate, ArrayAccess, Countable
+{
     /** @var string Name of the table */
-    var $t;
+    public $t;
 
     /** @var string[] of PRIMARY KEY columns */
-    var $k = [];
+    public $k = [];
 
     /** @var AA_MbI[] array of INDEXES: array(index_name => AA_MbI) */
-    var $i = [];
+    public $i = [];
 
     /** @var AA_MbC[] array of table columns */
-    var $c = [];
+    public $c = [];
 
     /** @var string[] array of table flags - like ENGINE=InnoDB, DEFAULT CHARSET=cp1250 */
-    var $f;
+    public $f;
 
     // This is temporary solution - we will use some better structure (MDB2?)
     // for table definition in order we can check the field type,
     // the indexes, generate sql_update script, ...
-    function __construct($tablename = null, $columns = null, $indexes = '') {
+    public function __construct($tablename = null, $columns = null, $indexes = '')
+    {
         $this->t = $tablename;
         foreach (($columns ?? []) as $column) {
             $aa_column  = new AA_MbC($column);
@@ -369,18 +402,19 @@ class AA_MbT implements IteratorAggregate, ArrayAccess, Countable {
             // [0] => Array (
             //      [Table] => email [Non_unique] => 0 [Key_name] => PRIMARY [Seq_in_index] => 1 [Column_name] => id [Collation] => A [Cardinality] => 71 [Sub_part] => [Packed] => [Null] => [Index_type] => BTREE [Comment] => )
             foreach ($indexes as $index_part) {
-                if ( !isset($this->i[$index_part['Key_name']])) {
-                    $index_type = ($index_part['Key_name'] === 'PRIMARY') ? 'P' : (($index_part['Non_unique']) ? 'I': 'U' );
+                if (!isset($this->i[$index_part['Key_name']])) {
+                    $index_type = ($index_part['Key_name'] === 'PRIMARY') ? 'P' : (($index_part['Non_unique']) ? 'I' : 'U');
                     $this->i[$index_part['Key_name']] = new AA_MbI($index_part['Table'], $index_part['Key_name'], $index_type);
                 }
                 $idx = &$this->i[$index_part['Key_name']]; // to work in php4
-                $idx->addColumn((int)$index_part['Seq_in_index'], $index_part['Column_name'], $index_part['Sub_part']);
+                $idx->addColumn((int) $index_part['Seq_in_index'], $index_part['Column_name'], $index_part['Sub_part']);
             }
         }
     }
 
     /** Plain-array form: t, k, i (=> AA_MbI.toArray()), c (=> AA_MbC.toArray()), f. */
-    function toArray(): array {
+    public function toArray(): array
+    {
         $indexes = [];
         foreach ($this->i as $name => $index) {
             $indexes[$name] = $index->toArray();
@@ -393,7 +427,8 @@ class AA_MbT implements IteratorAggregate, ArrayAccess, Countable {
     }
 
     /** Rebuild a table (and its nested indexes/columns) from its toArray() form. */
-    static function fromArray(array $a): AA_MbT {
+    public static function fromArray(array $a): AA_MbT
+    {
         $table = new self();
         $table->t = $a['t'];
         $table->k = $a['k'];
@@ -407,7 +442,7 @@ class AA_MbT implements IteratorAggregate, ArrayAccess, Countable {
         return $table;
     }
 
-    static function factoryFromDb($tablename): AA_MbT
+    public static function factoryFromDb($tablename): AA_MbT
     {
         $columns = GetTable2Array("SHOW FULL COLUMNS FROM `$tablename`", 'Field');
         $indexes = GetTable2Array("SHOW INDEX FROM `$tablename`", '');
@@ -415,17 +450,18 @@ class AA_MbT implements IteratorAggregate, ArrayAccess, Countable {
     }
 
     /** get Table name */
-    public function getName(): string {
+    public function getName(): string
+    {
         return $this->t;
     }
 
-    function getColumnNames(): array
+    public function getColumnNames(): array
     {
         return array_keys($this->c);
     }
 
     /** Is the $columnname the column in this table? */
-    function isColumn($columnname): bool
+    public function isColumn($columnname): bool
     {
         return isset($this->c[$columnname]);
     }
@@ -433,7 +469,7 @@ class AA_MbT implements IteratorAggregate, ArrayAccess, Countable {
     /** get array of Column objects
      *  @return AA_MbC[]
      */
-    function getColumns(): array
+    public function getColumns(): array
     {
         return $this->c;
     }
@@ -441,23 +477,26 @@ class AA_MbT implements IteratorAggregate, ArrayAccess, Countable {
     /** get Column objects
      *  @return AA_MbC
      */
-    function getColumn($columnname): AA_MbC
+    public function getColumn($columnname): AA_MbC
     {
         return $this->c[$columnname];
     }
 
-    function getKeys(): array {
+    public function getKeys(): array
+    {
         return array_keys($this->k);
     }
 
-    function isKey($columnname): bool {
+    public function isKey($columnname): bool
+    {
         return ((bool) $this->k[$columnname]);
     }
 
     /** get type of this key for zids object - 's' | 'w' | 'p' | 'l'
      * @param string $key
      */
-    public function getZidsType(string $key): string {
+    public function getZidsType(string $key): string
+    {
         $column = $this->c[$key];
         if ($column->getFieldType() === 'int') {
             return 's';   // short int
@@ -469,7 +508,8 @@ class AA_MbT implements IteratorAggregate, ArrayAccess, Countable {
     }
 
 
-    function getCreateSql(string $prefix='', string $engine_template_table=''): string {
+    public function getCreateSql(string $prefix = '', string $engine_template_table = ''): string
+    {
         $sql_parts = [];
         foreach ($this->c as $column) {
             $sql_parts[] = $column->getCreateSql();
@@ -480,7 +520,7 @@ class AA_MbT implements IteratorAggregate, ArrayAccess, Countable {
 
         $table_details = [];
         if ($engine_template_table) {
-            ['ENGINE'=>$engine, 'TABLE_COLLATION' => $collation] = \AA\IO\DB\DB_AA::select1(['ENGINE','TABLE_COLLATION'],'SELECT ENGINE, TABLE_COLLATION FROM information_schema.TABLES', [['TABLE_NAME',$engine_template_table]]);
+            ['ENGINE' => $engine, 'TABLE_COLLATION' => $collation] = \AA\IO\DB\DB_AA::select1(['ENGINE','TABLE_COLLATION'], 'SELECT ENGINE, TABLE_COLLATION FROM information_schema.TABLES', [['TABLE_NAME',$engine_template_table]]);
             if ($engine) {
                 $table_details[] = "ENGINE=$engine";
             }
@@ -488,16 +528,17 @@ class AA_MbT implements IteratorAggregate, ArrayAccess, Countable {
                 $table_details[] = "COLLATE='$collation'";
             }
         }
-        return "CREATE TABLE IF NOT EXISTS `$prefix".$this->t."` (\n". implode(",\n",$sql_parts) ."\n) ". implode(',', $table_details);
+        return "CREATE TABLE IF NOT EXISTS `$prefix" . $this->t . "` (\n" . implode(",\n", $sql_parts) . "\n) " . implode(',', $table_details);
     }
 
     /** returns database structure definition as PHP code (array) */
-    function getDefinition(): string {
+    public function getDefinition(): string
+    {
         $defs = [];
         foreach ($this->c as $column) {
             $defs[] = $column->getDefinition();
         }
-        $ret  = "\n    '". $this->t ."' => array(";
+        $ret  = "\n    '" . $this->t . "' => array(";
         $ret .= implode(",", $defs);
         $ret .= "\n    )";
         return $ret;
@@ -510,38 +551,39 @@ class AA_MbT implements IteratorAggregate, ArrayAccess, Countable {
      * @param $tablename
      * @param $create_SQL
      */
-//    function setFromSql($tablename, $create_SQL) {
-//        $this->t = $tablename;
-//        foreach (explode("\n", $create_SQL) as $row) {
-//            $row = trim($row);
-//            // first row - CREATE TABLE - no need to grab anything from it
-//            if ( strpos($row, 'CREATE TABLE') === 0 ) {
-//                continue;
-//            }
-//            // field definition row - grab it
-//            if ( (strpos($row, 'KEY') === 0) OR
-//                (strpos($row, 'UNIQUE KEY') === 0) OR
-//                (strpos($row, 'PRIMARY KEY') === 0) ) {
-//                $this->_setIndexFromSql($row);
-//                continue;
-//            }
-//            if ( strpos($row, ')') === 0 ) {
-//                $this->_setFlagFromSql($row);
-//                continue;
-//            }
-//            // else urecognized row
-//            echo $row;
-//        }
-//    }
+    //    function setFromSql($tablename, $create_SQL) {
+    //        $this->t = $tablename;
+    //        foreach (explode("\n", $create_SQL) as $row) {
+    //            $row = trim($row);
+    //            // first row - CREATE TABLE - no need to grab anything from it
+    //            if ( strpos($row, 'CREATE TABLE') === 0 ) {
+    //                continue;
+    //            }
+    //            // field definition row - grab it
+    //            if ( (strpos($row, 'KEY') === 0) OR
+    //                (strpos($row, 'UNIQUE KEY') === 0) OR
+    //                (strpos($row, 'PRIMARY KEY') === 0) ) {
+    //                $this->_setIndexFromSql($row);
+    //                continue;
+    //            }
+    //            if ( strpos($row, ')') === 0 ) {
+    //                $this->_setFlagFromSql($row);
+    //                continue;
+    //            }
+    //            // else urecognized row
+    //            echo $row;
+    //        }
+    //    }
 
     /**   */
-    function generateAliases(): AA_Aliases {
-        $aliases = new AA_Aliases;
+    public function generateAliases(): AA_Aliases
+    {
+        $aliases = new AA_Aliases();
         foreach ($this->c as $column_name => $column) {
-            $aliasname = "_#".substr(str_pad(strtoupper($column_name),8,'_'),0,8);
-            $i=2;
+            $aliasname = "_#" . substr(str_pad(strtoupper($column_name), 8, '_'), 0, 8);
+            $i = 2;
             while ($aliases->getAlias($aliasname)) { // already defined
-                $aliasname = substr($aliasname,0,-strlen((string)$i)).(string)$i;
+                $aliasname = substr($aliasname, 0, -strlen((string) $i)) . (string) $i;
                 ++$i;
             }
             $aliases->addAlias($column->getAlias($aliasname));
@@ -550,7 +592,8 @@ class AA_MbT implements IteratorAggregate, ArrayAccess, Countable {
     }
 
     /**  */
-    function getSearchArray(): array {
+    public function getSearchArray(): array
+    {
         $fieldarr = [];
         foreach ($this->c as $column_name => $column) {
             // @todo - make alias field type aware
@@ -562,7 +605,8 @@ class AA_MbT implements IteratorAggregate, ArrayAccess, Countable {
     /**
      *  @return Searchfields
      */
-    function getSearchfields(): Searchfields  {
+    public function getSearchfields(): Searchfields
+    {
         $searchfields = new AA\Util\Searchfields();
         foreach ($this->c as $column_name => $column) {
             $searchfields->addArray($column_name, $column->getFieldDef());
@@ -571,7 +615,8 @@ class AA_MbT implements IteratorAggregate, ArrayAccess, Countable {
     }
 
     /** returns associative array of table fields filled with '' or 0 (based on column type) */
-    function getEmptyRowArray(): array {
+    public function getEmptyRowArray(): array
+    {
         $fieldarr = [];
         foreach ($this->c as $column_name => $column) {
             $fieldarr[$column_name] = $column->getEmptyValue();
@@ -584,8 +629,9 @@ class AA_MbT implements IteratorAggregate, ArrayAccess, Countable {
      * @param  string[] $data    data array - all data unpacked. The values are converted to correct ones
      * @return Cvarset|null
      */
-    public function getVarset4Data(array $data): ?Cvarset {
-        if ( !($cols = $this->getColumns())) {
+    public function getVarset4Data(array $data): ?Cvarset
+    {
+        if (!($cols = $this->getColumns())) {
             return null;
         }
         $varset = new Cvarset();
@@ -595,7 +641,7 @@ class AA_MbT implements IteratorAggregate, ArrayAccess, Countable {
                 $value = $data[$colname];
                 $iskey = $coldef->isKey();
                 if ($coldef->getFieldType() === 'int') {
-                    $varset->add($colname, 'number', (int)$value, $iskey);
+                    $varset->add($colname, 'number', (int) $value, $iskey);
                 } elseif (AA_Metabase::isPacked($this->t, $colname)) {
                     $varset->add($colname, 'unpacked', $value, $iskey);
                 } else {
@@ -612,8 +658,9 @@ class AA_MbT implements IteratorAggregate, ArrayAccess, Countable {
      * @param  string[] $data    data array - all data unpacked. The values are converted to correct ones
      * @return array ['colname' => 'value', ...]
      */
-    public function getSQLData(array $data): array {
-        if ( !($cols = $this->getColumns())) {
+    public function getSQLData(array $data): array
+    {
+        if (!($cols = $this->getColumns())) {
             return [];
         }
         $ret = [];
@@ -624,9 +671,9 @@ class AA_MbT implements IteratorAggregate, ArrayAccess, Countable {
                 // $iskey = $coldef->isKey();
                 $type = $coldef->getFieldType();
                 if ($type === 'int') {
-                    $ret[$colname] = (int)$value;
+                    $ret[$colname] = (int) $value;
                 } elseif ($type === 'float') {
-                    $ret[$colname] = (float)$value;
+                    $ret[$colname] = (float) $value;
                 } elseif (AA_Metabase::isPacked($this->t, $colname) && is_long_id($value)) {
                     $ret[$colname] = '0x' . $value;
                 } else {
@@ -641,35 +688,53 @@ class AA_MbT implements IteratorAggregate, ArrayAccess, Countable {
     }
 
     /** implements IteratorAggregate */
-    public function getIterator(): \Traversable   {
+    public function getIterator(): \Traversable
+    {
         return new \ArrayIterator($this->c);
     }
 
     /** Countable interface */
-    public function count(): int     { return count($this->c);                 }
+    public function count(): int
+    {
+        return count($this->c);
+    }
 
     /** ArrayAccess interface */
-    public function offsetSet($offset, $value): void { $this->c[$offset] = $value;      }
-    public function offsetExists($offset): bool      { return array_key_exists($offset, $this->c); }
-    public function offsetUnset($offset): void       { unset($this->c[$offset]);        }
-    public function offsetGet($offset): mixed        { return $this->c[$offset] ?? null; }
+    public function offsetSet($offset, $value): void
+    {
+        $this->c[$offset] = $value;
+    }
+    public function offsetExists($offset): bool
+    {
+        return array_key_exists($offset, $this->c);
+    }
+    public function offsetUnset($offset): void
+    {
+        unset($this->c[$offset]);
+    }
+    public function offsetGet($offset): mixed
+    {
+        return $this->c[$offset] ?? null;
+    }
 }
 
 /** @todo convert to static class variables after move to PHP5 */
-class AA_Metabase {
+class AA_Metabase
+{
     /**
      * @var AA_MbT[]
      * we can change it to protected, but then we need to regenerate the serialized string
      */
-    var $tables = [];
+    public $tables = [];
 
     /** AA_Metabase function - constructor
      *  Do not use it in most cases - use $metabase = AA::Metabase() instead
      */
-    function __construct() {}
+    public function __construct() {}
 
     /** Readable plain-array form of the whole schema: [tablename => AA_MbT.toArray()]. */
-    function toArray(): array {
+    public function toArray(): array
+    {
         $tables = [];
         foreach ($this->tables as $name => $table) {
             $tables[$name] = $table->toArray();
@@ -678,7 +743,8 @@ class AA_Metabase {
     }
 
     /** Rebuild the metabase (and all nested objects) from a toArray()/schema-file array. */
-    static function fromArray(array $tables): AA_Metabase {
+    public static function fromArray(array $tables): AA_Metabase
+    {
         $metabase = new self();
         foreach ($tables as $name => $table) {
             $metabase->tables[$name] = AA_MbT::fromArray($table);
@@ -690,7 +756,8 @@ class AA_Metabase {
      *  One line per column / per index → clean blame and grep. The two "Generate metabase"
      *  optimize actions emit exactly this, so regeneration yields minimal diffs. Loaded back
      *  by singleton() via fromArray(require ...). */
-    function renderSchemaPhp(): string {
+    public function renderSchemaPhp(): string
+    {
         $php = "<?php\n"
             . "/* The expected AA database schema (" . count($this->tables) . " tables) as a readable PHP array.\n"
             . " * Hand-edit for small schema changes (one line per column), or regenerate from a reference DB\n"
@@ -709,7 +776,8 @@ class AA_Metabase {
     }
 
     /** Export a scalar or (recursively) an array onto a single line, short [] syntax. */
-    private static function exportInline($value): string {
+    private static function exportInline($value): string
+    {
         if (!is_array($value)) {
             return var_export($value, true);
         }
@@ -722,7 +790,8 @@ class AA_Metabase {
     }
 
     /** Export an assoc array as one entry per line (each value inlined), indented; [] if empty. */
-    private static function exportBlock(array $a, int $indent): string {
+    private static function exportBlock(array $a, int $indent): string
+    {
         if ($a === []) {
             return '[]';
         }
@@ -735,7 +804,8 @@ class AA_Metabase {
     }
 
     /** Static function called like $metabase = AA::Metabase() */
-    public static function singleton() {
+    public static function singleton()
+    {
         static $instance = null;
         if ($instance === null) {
             // The expected DB schema is stored as a readable, diffable PHP array in
@@ -749,39 +819,40 @@ class AA_Metabase {
         return $instance;
     }
 
-    public function addTable(AA_MbT $table): void {
+    public function addTable(AA_MbT $table): void
+    {
         $this->tables[$table->getName()] = $table;
     }
 
     /** Returns array of all table names */
-    function getTableNames(): array
+    public function getTableNames(): array
     {
         return array_keys($this->tables);
     }
 
     /** Returns array of keys for given table */
-    function getKeys($tablename): array
+    public function getKeys($tablename): array
     {
         $table = $this->tables[$tablename];
         return is_object($table) ? $table->getKeys() : [];
     }
 
     /** is the $columnname the key for given table */
-    function isKey($tablename, $columnname): bool
+    public function isKey($tablename, $columnname): bool
     {
         $table = $this->tables[$tablename];
         return is_object($table) ? $table->isKey($columnname) : false;
     }
 
     /** Returns array of all columns */
-    function getColumnNames($tablename): array
+    public function getColumnNames($tablename): array
     {
         $table = $this->tables[$tablename];
         return is_object($table) ? $table->getColumnNames() : [];
     }
 
     /** Is the $columnname the column in the $tablename? */
-    function isColumn($tablename, $columnname): bool
+    public function isColumn($tablename, $columnname): bool
     {
         $table = $this->tables[$tablename];
         return is_object($table) ? $table->isColumn($columnname) : false;
@@ -791,7 +862,7 @@ class AA_Metabase {
      * @param $tablename
      * @return AA_MbC[]
      */
-    function getColumns($tablename): array
+    public function getColumns($tablename): array
     {
         return $this->tables[$tablename]->getColumns();
     }
@@ -800,7 +871,7 @@ class AA_Metabase {
      * @param $data
      * @param $identifier
      */
-    function fillKeys(&$data, $identifier): void
+    public function fillKeys(&$data, $identifier): void
     {
 
         $module_id  = $identifier->getModuleId();
@@ -832,7 +903,7 @@ class AA_Metabase {
      *  belongs. That way you just move the data to another module
      *  It modifies $data parameter
      */
-    function reassignModule(&$data, $tablename, $module_id): void
+    public function reassignModule(&$data, $tablename, $module_id): void
     {
         $module_field = self::getModuleField($tablename);
         if ($module_field) {
@@ -841,7 +912,7 @@ class AA_Metabase {
     }
 
     /** static method */
-    static function isTableKeysSupported($tablename): bool
+    public static function isTableKeysSupported($tablename): bool
     {
         static $SUPPORTED_TABLES = [
             // single keys
@@ -912,21 +983,22 @@ class AA_Metabase {
      * @param $column
      * @return bool
      */
-    static function isPacked($tablename, $column): bool {
+    public static function isPacked($tablename, $column): bool
+    {
         return in_array($column, self::getPacked($tablename));
     }
 
     /** get type of the column in the table */
-    function getFieldType($tablename, $column): string
+    public function getFieldType($tablename, $column): string
     {
         return $this->tables[$tablename]->getColumn($column)->getFieldType();
     }
 
     /** auto generated fields */
-    const AUTO_KEYS = ['polls_design' => 'id'];
+    public const AUTO_KEYS = ['polls_design' => 'id'];
 
     /** static method */
-    static function getModuleFields(): array
+    public static function getModuleFields(): array
     {
         static $MODULE_KEYS = [
             'alerts_collection'   => 'module_id',
@@ -952,7 +1024,7 @@ class AA_Metabase {
     }
 
     /** static method */
-    static function getModuleField($tablename): ?string
+    public static function getModuleField($tablename): ?string
     {
         $fields = self::getModuleFields();
         return $fields[$tablename];
@@ -962,7 +1034,7 @@ class AA_Metabase {
      *  @todo - would be probably better to move it to AA_MbT
      *  @todo - convert to static class members for PHP5
      */
-    static function getPacked($tablename): array
+    public static function getPacked($tablename): array
     {
         static $PACKED = [
             'alerts_collection'   => ['module_id','slice_id'],
@@ -1007,9 +1079,9 @@ class AA_Metabase {
      * @param  string[] $data[]    data array - all data unpacked. The values are converted to correct ones
      * @return bool|int   0|false on error
      */
-    function doUpdate($tablename, $data): bool|int
+    public function doUpdate($tablename, $data): bool|int
     {
-        if ( ($varset = $this->getVarset4Data($tablename, $data)) && $this->isKeysFilled($tablename, $varset)) {
+        if (($varset = $this->getVarset4Data($tablename, $data)) && $this->isKeysFilled($tablename, $varset)) {
             return $varset->doUpdate($tablename);
         }
         return false;
@@ -1026,7 +1098,7 @@ class AA_Metabase {
      *
      * @return bool|int   0|false on error, int on success. If INSERT, returns last inserted id or PHP_INT_MAX if not provided
      */
-    function doInsert(string $tablename, array $data, ?string $nohalt=null): bool|int
+    public function doInsert(string $tablename, array $data, ?string $nohalt = null): bool|int
     {
         if ($varset = $this->getVarset4Data($tablename, $data)) {
             return $varset->doInsert($tablename, $nohalt);
@@ -1038,7 +1110,8 @@ class AA_Metabase {
      *  maybe we can do it automaticaly in doInsert
      *  maybe we can do it based on getKey() method and using the getMaxLength() method
      */
-    function autoInsertKey($tablename, array &$data): array {
+    public function autoInsertKey($tablename, array &$data): array
+    {
         if (($fld = self::AUTO_KEYS[$tablename]) ?? false) {
             $data[$fld] = new_id();
         }
@@ -1053,9 +1126,9 @@ class AA_Metabase {
      * @param  string   $nohalt  'nohalt' - do not halt on database error
      * @return bool|int   0|false on error
      */
-    function doReplace($tablename, $data, $nohalt=null): bool|int
+    public function doReplace($tablename, $data, $nohalt = null): bool|int
     {
-        if ( ($varset = $this->getVarset4Data($tablename, $data)) && $this->isKeysFilled($tablename, $varset)) {
+        if (($varset = $this->getVarset4Data($tablename, $data)) && $this->isKeysFilled($tablename, $varset)) {
             return $varset->doTrueReplace($tablename, $nohalt);
         }
         return false;
@@ -1071,14 +1144,14 @@ class AA_Metabase {
      * @return bool|int   0|false on error
      * @todo   process it as one SQL insert statement
      */
-    function doInsertMulti($tablename, $data, $nohalt=null): bool|int
+    public function doInsertMulti($tablename, $data, $nohalt = null): bool|int
     {
         $table = $this->tables[$tablename];
 
         $chunkSize  = 1000;           // Define chunk size
         $chunkedData = array_chunk($data, $chunkSize);
 
-        $SQLstart = "INSERT INTO `$tablename` (`". implode('`,`', $table->getColumnNames()). '`) VALUES ';
+        $SQLstart = "INSERT INTO `$tablename` (`" . implode('`,`', $table->getColumnNames()) . '`) VALUES ';
         $inserded = 0;
         foreach ($chunkedData as $chunk) {
             $SQL = $SQLstart;
@@ -1104,9 +1177,9 @@ class AA_Metabase {
      * @param string[] $keydata
      * @return bool|int   0|false on error
      */
-    function doDelete(string $tablename, array $keydata): bool|int
+    public function doDelete(string $tablename, array $keydata): bool|int
     {
-        if ( ($varset = $this->getVarset4Data($tablename, $keydata)) && $this->isKeysFilled($tablename, $varset)) {
+        if (($varset = $this->getVarset4Data($tablename, $keydata)) && $this->isKeysFilled($tablename, $varset)) {
             return $varset->doDelete($tablename);
         }
         return false;
@@ -1128,10 +1201,11 @@ class AA_Metabase {
      * @param Cvarset $varset
      * @return bool
      */
-    private function isKeysFilled($tablename, $varset): bool {
+    private function isKeysFilled($tablename, $varset): bool
+    {
         if ($table_keys = $this->getKeys($tablename)) {
             foreach ($table_keys as $key) {
-                if (!$varset->get((string)$key)) {  // 0 and null is probably not allowed for key
+                if (!$varset->get((string) $key)) {  // 0 and null is probably not allowed for key
                     return false;
                 }
             }
@@ -1144,7 +1218,7 @@ class AA_Metabase {
      * @param bool  $regular
      * @param array $only_tables
      */
-    function loadFromDb(bool $regular=false, array $only_tables=[]): void
+    public function loadFromDb(bool $regular = false, array $only_tables = []): void
     {
         $db     = getDb();
         $tables = $db->table_names();
@@ -1152,29 +1226,31 @@ class AA_Metabase {
             if ($only_tables && !in_array($table['table_name'], $only_tables)) {
                 continue;
             }
-            if ( !$regular || !in_array(substr($table['table_name'],0,4), ['bck_', 'tmp_'])) {
+            if (!$regular || !in_array(substr($table['table_name'], 0, 4), ['bck_', 'tmp_'])) {
                 $this->tables[$table['table_name']] = AA_MbT::factoryFromDb($table['table_name']);
             }
         }
         freeDb($db);
     }
 
-    function getCreateSql(string $tablename='', string $prefix='', string $engine_template_table=''): string {
+    public function getCreateSql(string $tablename = '', string $prefix = '', string $engine_template_table = ''): string
+    {
         $sql_parts = [];
         $tables = $tablename ? [$this->tables[$tablename]] : $this->tables;
         foreach ($tables as $table) {
-            if ( is_object($table) ) {
+            if (is_object($table)) {
                 $sql_parts[] = $table->getCreateSql($prefix, $engine_template_table);
             }
         }
-        return implode("\n",$sql_parts);
+        return implode("\n", $sql_parts);
     }
 
     /** returns database structure definition as PHP code (array) */
-    function getDefinition(): string {
+    public function getDefinition(): string
+    {
         $defs = [];
         foreach ($this->tables as $table) {
-            $defs[]= $table->getDefinition();
+            $defs[] = $table->getDefinition();
         }
         $ret = "array(";
         $ret .= implode(",", $defs);
@@ -1186,31 +1262,35 @@ class AA_Metabase {
      * @param $tablename
      * @param $create_SQL
      */
-//    function addTableFromSql($tablename, $create_SQL) {
-//        $this->tables[$tablename] = new AA_MbT;
-//        $this->tables[$tablename]->setFromSQL($tablename, $create_SQL);
-//    }
+    //    function addTableFromSql($tablename, $create_SQL) {
+    //        $this->tables[$tablename] = new AA_MbT;
+    //        $this->tables[$tablename]->setFromSQL($tablename, $create_SQL);
+    //    }
 
     /** returns associative array of table fields filled with '' or 0 (based on column type)  */
-    function getEmptyRowArray($tablename): array  {
+    public function getEmptyRowArray($tablename): array
+    {
         return $this->tables[$tablename]->getEmptyRowArray();
     }
 
     /** getSearchArray function
      * @deprecated - use getSearchfields
      */
-    function getSearchArray($tablename): array  {
+    public function getSearchArray($tablename): array
+    {
         return $this->tables[$tablename]->getSearchArray();
     }
 
     /** getSearchfields function
      */
-    function getSearchfields($tablename): Searchfields  {
+    public function getSearchfields($tablename): Searchfields
+    {
         return $this->tables[$tablename]->getSearchfields();
     }
 
     /** get zid-object type for key of this table - 's' | 'w' | 'p' | 'l' | '' (error) */
-    public function getZidsType($tablename): string {
+    public function getZidsType($tablename): string
+    {
         $keys     = $this->getKeys($tablename);
         if (count($keys) !== 1) {
             warn("you can't use this function for [$tablename] table - " . count($keys) . " keys");
@@ -1223,7 +1303,8 @@ class AA_Metabase {
      *          ret[id] = array('column'=>value, ...)
      *          ids are always UNPACKED (as keys as well as in values)
      */
-    function getModuleRows($tablename, $module_id): array {
+    public function getModuleRows($tablename, $module_id): array
+    {
         $JOIN = [
             // @todo - do the 'constant' better - check the fields setting, and get all the constants used
             'constant'   => ['scr_field' => 'group_id', 'dest_table' => 'constant_slice', 'dest_field' => 'group_id'],
@@ -1238,10 +1319,10 @@ class AA_Metabase {
         $module_table = $tablename;
         $join_sql     = '';
 
-        if ( isset($JOIN[$tablename]) ) {
+        if (isset($JOIN[$tablename])) {
             $j = $JOIN[$tablename];
             $module_table = $j['dest_table'];
-            $join_sql     = "INNER JOIN $module_table ON $tablename.". $j['scr_field']."=$module_table.".$j['dest_field'];
+            $join_sql     = "INNER JOIN $module_table ON $tablename." . $j['scr_field'] . "=$module_table." . $j['dest_field'];
         }
 
         $module_field = self::getModuleField($module_table);
@@ -1254,12 +1335,10 @@ class AA_Metabase {
         $table_keys   = $this->getKeys($tablename);
         if (count($table_keys) === 1) {
             $table_key = $table_keys[0];
-        }
-        elseif (count($table_keys) === 2 && in_array($module_field, $table_keys)) {
+        } elseif (count($table_keys) === 2 && in_array($module_field, $table_keys)) {
             // two keys, but one of them is module_id, which is OK
             $table_key = ($table_keys[0] == $module_field) ? $table_keys[1] : $table_keys[0];
-        }
-        else {
+        } else {
             // you can't use this function for that table - this is programmers mistake - correct the code
             //echo "table $tablename not supported in AA_Metabase::getModuleRows() - too much keys";
             //exit;
@@ -1280,7 +1359,7 @@ class AA_Metabase {
         return $ret;
     }
 
-    function unpackIds($tablename, &$data): void
+    public function unpackIds($tablename, &$data): void
     {
         $packed_columns = self::getPacked($tablename);
         foreach ($packed_columns as $column) {
@@ -1290,7 +1369,7 @@ class AA_Metabase {
         }
     }
 
-    function packIds($tablename, &$data): void
+    public function packIds($tablename, &$data): void
     {
         $packed_columns = self::getPacked($tablename);
         foreach ($packed_columns as $column) {
@@ -1307,7 +1386,8 @@ class AA_Metabase {
      *
      * @return array
      */
-    function compare(AA_Metabase $metabase): array {
+    public function compare(AA_Metabase $metabase): array
+    {
         $diffs = [];
 
         // for us are varchar and char the same - some tables are never converted
@@ -1354,7 +1434,8 @@ class AA_Metabase {
      * @static
      * @see GetItemContent(), itemview class, item class
      */
-    static function getContent($zids, $settings): array {
+    public static function getContent($zids, $settings): array
+    {
         $ret = [];
 
         $tablename = $settings['table'];
@@ -1378,7 +1459,7 @@ class AA_Metabase {
         // it is unordered, so we have to sort it:
         for ($i = 0, $ino = $zids->count(); $i < $ino; ++$i) {
             $id = $zids->id($i);
-            $ret[(string)$id] = $content[$id];
+            $ret[(string) $id] = $content[$id];
         }
         // tried to replace the for () with foreach (), but it is two times slower (PHP 5.3.6 - eAccelerator 0.9.6.1 )
         // reset($zids); foreach($zids as $id) { $ret[(string)$id] = $content[$id]; }
@@ -1407,7 +1488,7 @@ class AA_Metabase {
      * @global bool  $debug =1       - many debug messages
      * @return zids
      */
-    function queryZids($settings, $set): zids
+    public function queryZids($settings, $set): zids
     {
         global $debug;                 // displays debug messages
 
@@ -1415,13 +1496,13 @@ class AA_Metabase {
 
         if ($this->isColumn($tablename, 'status_code')) {
             $bin  = $set->getBinsNumber();
-            $set->addCondition(new AA_Condition('status_code','==',$bin));
+            $set->addCondition(new AA_Condition('status_code', '==', $bin));
         }
 
         $conds     = $set->getConds();
         $sort      = $set->getSort();
 
-        if ( $debug ) {
+        if ($debug) {
             huhl("<br>Conds:", $conds, "<br>--<br>Sort:", $sort, "<br>--");
         }
 
@@ -1437,7 +1518,7 @@ class AA_Metabase {
         $key = $keys[0];
 
         $SQL    = "SELECT DISTINCT $key FROM $tablename ";
-//        $SQL .= CreateBinCondition($type, $tablename);
+        //        $SQL .= CreateBinCondition($type, $tablename);
         $where  = MakeSQLConditions($fields, $conds, $fields, $join_tables);
         $SQL   .= ($where ? "WHERE (1=1) $where" : '');
         $SQL   .= MakeSQLOrderBy($fields, $sort, $join_tables);
@@ -1445,13 +1526,14 @@ class AA_Metabase {
         return GetZidsFromSQL($SQL, $key, $this->tables[$tablename]->getZidsType($key));
     }
 
-    static function queryCount($settings, $set) {
+    public static function queryCount($settings, $set)
+    {
         $tablename = $settings['table'];
         $metabase = AA::Metabase();
 
         if ($metabase->isColumn($tablename, 'status_code')) {
             $bin  = $set->getBinsNumber();
-            $set->addCondition(new AA_Condition('status_code','==',$bin));
+            $set->addCondition(new AA_Condition('status_code', '==', $bin));
         }
 
         $conds = $set->getConds();
@@ -1470,43 +1552,44 @@ class AA_Metabase {
     /** Get tabledit cofiguration for easy edit and add to the table
      *  NO LONGER USED
      */
-//    function getTableditConf($tablename) {
-//        $ret = [
-//            "table"     => $tablename,
-//            "type"      => "edit",
-////          "mainmenu"  => "modadmin",
-////          "submenu"   => "design",
-//            "readonly"  => false,
-//            "addrecord" => false,
-////          "cond"      => CheckPerms( AuthGetUid(), "slice", $slice_id, PS_MODP_EDIT_DESIGN),
-////          "title"     => $title,
-////          "caption"   => $title,
-//            "attrs"     => ["table"=>""],
-////          "gotoview"  => "polls_designs_edit",
-//        ];
-//
-//        $table         = $this->tables[$tablename];
-//        $table_columns = $table->getColumnNames();
-//        foreach ($table_columns as $column_name) { // in priority order
-//            $field_type = 'text';    // @todo - get the type from field type
-//            $ret['fields'][$column_name] = [
-//                'caption' => $column_name,
-//                'view'    => ['type' => $field_type]
-//            ];
-//            // @todo - do better check - based on table setting
-//            if ($column_name = 'id') {
-//                $ret['fields'][$column_name]['view']['readonly'] = true;
-//            }
-//        }
-//        return $ret;
-//    }
+    //    function getTableditConf($tablename) {
+    //        $ret = [
+    //            "table"     => $tablename,
+    //            "type"      => "edit",
+    ////          "mainmenu"  => "modadmin",
+    ////          "submenu"   => "design",
+    //            "readonly"  => false,
+    //            "addrecord" => false,
+    ////          "cond"      => CheckPerms( AuthGetUid(), "slice", $slice_id, PS_MODP_EDIT_DESIGN),
+    ////          "title"     => $title,
+    ////          "caption"   => $title,
+    //            "attrs"     => ["table"=>""],
+    ////          "gotoview"  => "polls_designs_edit",
+    //        ];
+    //
+    //        $table         = $this->tables[$tablename];
+    //        $table_columns = $table->getColumnNames();
+    //        foreach ($table_columns as $column_name) { // in priority order
+    //            $field_type = 'text';    // @todo - get the type from field type
+    //            $ret['fields'][$column_name] = [
+    //                'caption' => $column_name,
+    //                'view'    => ['type' => $field_type]
+    //            ];
+    //            // @todo - do better check - based on table setting
+    //            if ($column_name = 'id') {
+    //                $ret['fields'][$column_name]['view']['readonly'] = true;
+    //            }
+    //        }
+    //        return $ret;
+    //    }
 
     /** AA_Propery array - for form generation
      * @param string $tablename
      * @param bool   $edit
      * @return AA_Property[]
      */
-    function getColumnProperties(string $tablename, bool $edit=true): array {
+    public function getColumnProperties(string $tablename, bool $edit = true): array
+    {
         $table = $this->tables[$tablename];
         $ret   = [];
         foreach ($table as $column) { // in priority order
@@ -1527,7 +1610,8 @@ class AA_Metabase {
      *
      * @return Managed
      */
-    function getManagerConf(string $tablename, Manageractions $actions=null, Manageractions $switches=null, array $set=[], array $addbuttons=[]): Managed {
+    public function getManagerConf(string $tablename, Manageractions $actions = null, Manageractions $switches = null, array $set = [], array $addbuttons = []): Managed
+    {
         $table         = $this->tables[$tablename];
         $aliases       = $table->generateAliases();
         $search_fields = $this->getSearchfields($tablename);
@@ -1535,20 +1619,20 @@ class AA_Metabase {
         $keys = $table->getKeys();
 
         if (!is_object($actions)) {
-            $actions   = new Manageractions;
+            $actions   = new Manageractions();
         }
 
         $buttons = [];
         $key_alias = '';
         // for now, we support only tables with 1-column key, but it could be extended to id|module type of id later
-        if (count($keys)===1) {
-            if ( $addbuttons['Delete'] ?? true ) {    // not ['Edit'=>false]
+        if (count($keys) === 1) {
+            if ($addbuttons['Delete'] ?? true) {    // not ['Edit'=>false]
                 $actions->addAction(new Table_Row_Delete('DeleteTRow'));
             }
             // $key_alias = $aliases->getNamesForField($keys[0])[0];
-            $key_alias = "{rawurlencode:{".$keys[0]."}}";
-            if ( $addbuttons['Edit'] ?? true ) {
-                $edit_url = array_key_exists('edit_url', $set) ? str_replace('_#id', "{rawurlencode:{".$keys[0]."}}", $set['edit_url']) : get_url('', ["id={rawurlencode:{".$keys[0]."}}"], true);  // can't be shorted - we need {} aroud the key_alias; $key_alias is sefe()d, which we not need
+            $key_alias = "{rawurlencode:{" . $keys[0] . "}}";
+            if ($addbuttons['Edit'] ?? true) {
+                $edit_url = array_key_exists('edit_url', $set) ? str_replace('_#id', "{rawurlencode:{" . $keys[0] . "}}", $set['edit_url']) : get_url('', ["id={rawurlencode:{" . $keys[0] . "}}"], true);  // can't be shorted - we need {} aroud the key_alias; $key_alias is sefe()d, which we not need
                 $buttons['Edit'] = a_href($edit_url, _m('Edit'), ['class' => 'aa-button-edit']);
             }
         }
@@ -1567,10 +1651,10 @@ class AA_Metabase {
                 $popid = 'aa-rowmenu-' . $key_alias;
                 $items = '';
                 foreach ($secondary as $btn) {
-                    $items .= '<div class="aa-overflow-item">'.$btn.'</div>';
+                    $items .= '<div class="aa-overflow-item">' . $btn . '</div>';
                 }
-                $cell .= ' <button type="button" class="aa-overflow-trigger" popovertarget="'.$popid.'" aria-label="'.safe(_m('More')).'">&hellip;</button>'
-                       . '<div popover id="'.$popid.'" class="aa-overflow-menu">'.$items.'</div>';
+                $cell .= ' <button type="button" class="aa-overflow-trigger" popovertarget="' . $popid . '" aria-label="' . safe(_m('More')) . '">&hellip;</button>'
+                       . '<div popover id="' . $popid . '" class="aa-overflow-menu">' . $items . '</div>';
                 // The positioner JS for `.aa-overflow-menu` is loaded by adminpage.class.php
                 // alongside aa-system.css, so it works for any reuse of the popover pattern.
             }
@@ -1578,7 +1662,7 @@ class AA_Metabase {
         }
 
         $aliasnames = $aliases->getNames();
-        $i=0;
+        $i = 0;
         foreach ($search_fields as $fid => $fld) {
             $columns[$fid] = [$fld['name'], $aliasnames[$i++]];
         }
@@ -1599,8 +1683,8 @@ class AA_Metabase {
                 //'fields'               => $search_fields,
                 'aliases'              => $aliases,
                 //    static class method               , first parameter to the method
-                'get_content_funct'    => [['AA_Metabase', 'getContent'], ['table'=>$tablename]],
-                'query_funct'          => [[AA::Metabase(), 'queryZids'], ['table'=>$tablename]],
+                'get_content_funct'    => [['AA_Metabase', 'getContent'], ['table' => $tablename]],
+                'query_funct'          => [[AA::Metabase(), 'queryZids'], ['table' => $tablename]],
             ],
             'actions'   => $actions,
             'switches'  => $switches,
@@ -1614,11 +1698,10 @@ class AA_Metabase {
         return $managed;
     }
 
-//    /** AA_iEditable method - adds Object's editable properties to the $form */
-//    public static function addFormrows(AA_Form $form) {
-//        $table = $form->getObjectOwner();
-//        return $form->addProperties(AA::Metabase()->getColumnProperties($table));
-//    }
+    //    /** AA_iEditable method - adds Object's editable properties to the $form */
+    //    public static function addFormrows(AA_Form $form) {
+    //        $table = $form->getObjectOwner();
+    //        return $form->addProperties(AA::Metabase()->getColumnProperties($table));
+    //    }
 
 }
-

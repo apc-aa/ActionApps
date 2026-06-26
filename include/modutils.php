@@ -1,4 +1,5 @@
 <?php
+
 /**
  *
  * PHP version 7.2+
@@ -43,7 +44,7 @@ function CreateNewOwner($new_owner, $new_owner_email, &$err, $varset): false|str
     ValidateInput("new_owner", _m("New Owner"), $new_owner, $err, true, "text");
     ValidateInput("new_owner_email", _m("New Owner's E-mail"), $new_owner_email, $err, true, "email");
 
-    if ( count($err)) {
+    if (count($err)) {
         return false;
     }
 
@@ -53,7 +54,7 @@ function CreateNewOwner($new_owner, $new_owner_email, &$err, $varset): false|str
     $varset->set("email", $new_owner_email, "text");
 
     // create new owner
-    if ( !$varset->doINSERT('slice_owner')) {
+    if (!$varset->doINSERT('slice_owner')) {
         $err["DB"] .= MsgErr("Can't add owner");
         return false;
     }
@@ -61,7 +62,7 @@ function CreateNewOwner($new_owner, $new_owner_email, &$err, $varset): false|str
     return $owner;
 }
 
-function ModuleFieldsForm($module_id, array $module_arr, bool $superadmin, bool $template=false, $new_owner='', $new_owner_email='', bool $expand_new_owner=false): void
+function ModuleFieldsForm($module_id, array $module_arr, bool $superadmin, bool $template = false, $new_owner = '', $new_owner_email = '', bool $expand_new_owner = false): void
 {
     static $js_emitted = false;
 
@@ -131,7 +132,7 @@ document.querySelector(\'select[name="owner"]\')?.addEventListener("change", (ev
         echo '<script>document.querySelectorAll(".cont-new_owner, .cont-new_owner_email").forEach(r => { r.style.display = "none"; });</script>' . "\n";
     }
 
-    if ( $superadmin ) {
+    if ($superadmin) {
         FrmInputChBox("deleted", _m("Deleted"), $deleted);
     }
 }
@@ -153,7 +154,7 @@ document.querySelector(\'select[name="owner"]\')?.addEventListener("change", (ev
  * @return array                      the $marr array used to render the form;
  *                                    callers needing the source's lang_file read $marr[3]
  */
-function RenderModuleFieldsForm($source_id, bool $superadmin, bool $is_new, bool $redisplay_posted, array $posted, $new_owner='', $new_owner_email=''): array
+function RenderModuleFieldsForm($source_id, bool $superadmin, bool $is_new, bool $redisplay_posted, array $posted, $new_owner = '', $new_owner_email = ''): array
 {
     $marr = GetModuleFields($source_id);
     if ($redisplay_posted && $marr) {
@@ -173,7 +174,7 @@ function RenderModuleFieldsForm($source_id, bool $superadmin, bool $is_new, bool
  * @param $owner
  * @param $err
  */
-function ValidateModuleFields( $name, $slice_url, $priority, $lang_file, $owner, &$err ): void
+function ValidateModuleFields($name, $slice_url, $priority, $lang_file, $owner, &$err): void
 {
     ValidateInput("name", _m("Title"), $name, $err, true, "text");
     ValidateInput("owner", _m("Owner"), $owner, $err, false, "id");
@@ -198,19 +199,19 @@ function ValidateModuleFields( $name, $slice_url, $priority, $lang_file, $owner,
  *
  * @return string
  */
-function WriteModuleFields( ?string $module_id, $superadmin, $type, $name, $slice_url, $priority, $lang_file, $owner, $deleted, string $new_id="" ): ?string
+function WriteModuleFields(?string $module_id, $superadmin, $type, $name, $slice_url, $priority, $lang_file, $owner, $deleted, string $new_id = ""): ?string
 {
     global $err;
     $varset     = new CVarset();
 
-    if ( $module_id )  {
+    if ($module_id) {
         $varset->add("name", "text", $name);
         $varset->add("slice_url", "text", $slice_url);
         $varset->add("priority", "number", $priority);
         $varset->add("lang_file", "text", $lang_file);
         $varset->add("owner", "unpacked", $owner);
         $varset->addkey("id", "unpacked", $module_id);
-        if ( $superadmin ) {
+        if ($superadmin) {
             $varset->add("deleted", "number", $deleted);
         }
 
@@ -235,7 +236,7 @@ function WriteModuleFields( ?string $module_id, $superadmin, $type, $name, $slic
         $varset->set("lang_file", $lang_file, "text");
         $varset->set("type", $type, "text");
 
-        if ( !$varset->doInsert('module') ) {
+        if (!$varset->doInsert('module')) {
             $err["DB"] .= MsgErr("Can't add module");
             return null;
         }
@@ -254,7 +255,7 @@ function WriteModuleFields( ?string $module_id, $superadmin, $type, $name, $slic
 function GetModuleFields($source_id): array
 {
     // lookup owners
-    $slice_owners = [_m("Select owner")] + DB_AA::select(['uid'=>'name'],"SELECT LOWER(HEX(`id`)) AS uid, name FROM slice_owner",'', ['name']);
+    $slice_owners = [_m("Select owner")] + DB_AA::select(['uid' => 'name'], "SELECT LOWER(HEX(`id`)) AS uid, name FROM slice_owner", '', ['name']);
     $row = DB_AA::select1('', "SELECT name, slice_url, priority, lang_file, LOWER(HEX(`owner`)) AS owner, deleted FROM module", [['id', $source_id, 'l']]);
     // existing module -> its values; brand-new module with no source row (e.g. a
     // template-less add like Alerts) -> blank fields, so the add form still renders
@@ -268,9 +269,9 @@ function GetModuleFields($source_id): array
  *  check if module can be deleted
  * @param $del
  */
-function ExitIfCantDelete( $del ): void
+function ExitIfCantDelete($del): void
 {
-    if ( DB_AA::select1('', 'SELECT deleted FROM `module`', [['id', $del, 'l']]) === false ) {
+    if (DB_AA::select1('', 'SELECT deleted FROM `module`', [['id', $del, 'l']]) === false) {
         go_url(get_admin_url("slicedel.php", ['Msg' => _m("No such module.")]));
     }
 }
@@ -279,8 +280,7 @@ function ExitIfCantDelete( $del ): void
  *  delete module from module table
  * @param $del
  */
-function DeleteModule( $del ): void
+function DeleteModule($del): void
 {
     DB_AA::sql('DELETE LOW_PRIORITY FROM `module`', [['id', $del, 'l']]);
 }
-

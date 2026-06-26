@@ -1,4 +1,5 @@
 <?php
+
 /**
  * PHP version 7.2+
  *
@@ -28,23 +29,24 @@
 /** Classes for manipulating trees,
  *
  */
-class AA_Table {
-
+class AA_Table
+{
     /** long item id of the tree root */
-    var $id;
-    var $rows = [];
-    var $colindex = [];  // Array of column indexes
-    var $attrs = [];     // Array of attribute names
+    public $id;
+    public $rows = [];
+    public $colindex = [];  // Array of column indexes
+    public $attrs = [];     // Array of attribute names
 
     /** Constructor
      * @param $id
      * @param $relation_field
      */
-    function __construct($id) {
+    public function __construct($id)
+    {
         $this->id       = $id;
     }
 
-    function set($r, $c, $value, $attribute=''): void
+    public function set($r, $c, $value, $attribute = ''): void
     {
         if (!isset($this->rows[$r])) {
             $this->rows[$r] = [];
@@ -57,7 +59,7 @@ class AA_Table {
         if (!is_array($val)) {
             $val = [];
         }
-        $attribute = (string)$attribute;
+        $attribute = (string) $attribute;
         if (!strlen($attribute)) {
             $attribute = '1';
         }
@@ -68,21 +70,22 @@ class AA_Table {
         $this->attrs[$attribute] = true;
     }
 
-    function addset($r, $c, $value): void
+    public function addset($r, $c, $value): void
     {
         $cur = $this->getOne($r, $c);
-        $val = ((float)PhpFloat($cur)) + ((float)PhpFloat($value));
+        $val = ((float) PhpFloat($cur)) + ((float) PhpFloat($value));
         $this->set($r, $c, $val);
     }
 
-    function joinset($r, $c, $value, $delimiter): void
+    public function joinset($r, $c, $value, $delimiter): void
     {
         $cur = $this->getOne($r, $c);
-        $val = strlen($cur) ? $cur. $delimiter. $value : $value;
+        $val = strlen($cur) ? $cur . $delimiter . $value : $value;
         $this->set($r, $c, $val);
     }
 
-    function getOne($r, $c, $att='1') {
+    public function getOne($r, $c, $att = '1')
+    {
         if (isset($this->colindex[$c]) && isset($this->rows[$r])) {
             $val_arr = $this->rows[$r][$this->colindex[$c]];
             return is_array($val_arr) ? $val_arr[$att] : '';
@@ -90,9 +93,9 @@ class AA_Table {
         return '';
     }
 
-    function get($r, $c, $exp="_#1"): string
+    public function get($r, $c, $exp = "_#1"): string
     {
-        $cols = explode('-',$c);
+        $cols = explode('-', $c);
         $ret  = '';
 
         // three variants - just for speedup
@@ -101,7 +104,7 @@ class AA_Table {
             foreach ($cols as $col) {
                 $ret .= $this->getOne($r, $col);
             }
-        } elseif (substr_count($exp,'_#1') === substr_count($exp,'_#')) {
+        } elseif (substr_count($exp, '_#1') === substr_count($exp, '_#')) {
             // get element surrounded by some code
             foreach ($cols as $col) {
                 $ret .= str_replace('_#1', $this->getOne($r, $col), $exp);
@@ -119,27 +122,28 @@ class AA_Table {
         return $ret;
     }
 
-    function sum($r, $c, $exp="_#1") {
+    public function sum($r, $c, $exp = "_#1")
+    {
         // todo - sum also rows;
         $ret  = 0.0;
         foreach ($this->rows as $row => $cols) {
-            $ret += (float)PhpFloat($this->getOne($row, $c));
+            $ret += (float) PhpFloat($this->getOne($row, $c));
         }
         return str_replace('_#1', $ret, $exp);
     }
 
-    function gethtml(): string
+    public function gethtml(): string
     {
         $ret = '';
         foreach ($this->rows as $row => $cols) {
             $ret .= '<tr>';
             foreach ($this->colindex as $col => $i) {
-                $ret .= '<td>'. $this->getOne($row,$col) .'</td>';
+                $ret .= '<td>' . $this->getOne($row, $col) . '</td>';
             }
             $ret .= '</tr>';
         }
         if ($ret) {
-            return '<table>'.$ret.'</table>';
+            return '<table>' . $ret . '</table>';
         }
         return $ret;
     }
@@ -149,50 +153,54 @@ class AA_Table {
 /** Classes for manipulating with arrays for AAscript,
  *
  */
-class AA_Array {
-
+class AA_Array
+{
     private array $arr = [];
 
-    function __construct() {}
+    public function __construct() {}
 
-    function set($i, $value): void
+    public function set($i, $value): void
     {
-        if ((string)$i === '') {
+        if ((string) $i === '') {
             $this->arr[] = $value;
         } else {
-            $this->arr[(string)$i] = $value;
+            $this->arr[(string) $i] = $value;
         }
     }
 
-    function addmulti($values, $delimiter): void
+    public function addmulti($values, $delimiter): void
     {
         array_push($this->arr, ...AA_Stringexpand::explode2array($values, $delimiter));
     }
 
-    function addset($i, $value): void
+    public function addset($i, $value): void
     {
-        $this->arr[(string)$i] = ((float)PhpFloat($this->arr[(string)$i])) + ((float)PhpFloat($value));
-    }
-    
-    function joinset($i, $value, $delimiter): void
-    {
-        $cur = $this->get($i);
-        $this->arr[(string)$i] = strlen($cur) ? $cur. $delimiter. $value : $value;
-    }
-    
-    function get($i) {
-        return $this->arr[(string)$i];
+        $this->arr[(string) $i] = ((float) PhpFloat($this->arr[(string) $i])) + ((float) PhpFloat($value));
     }
 
-    function getAll($exp="_#1", $join='', $sort=''): string {
+    public function joinset($i, $value, $delimiter): void
+    {
+        $cur = $this->get($i);
+        $this->arr[(string) $i] = strlen($cur) ? $cur . $delimiter . $value : $value;
+    }
+
+    public function get($i)
+    {
+        return $this->arr[(string) $i];
+    }
+
+    public function getAll($exp = "_#1", $join = '', $sort = ''): string
+    {
         $work_arr = $this->arr;
         switch ($sort) {
-            case 'key':  ksort($work_arr, SORT_NUMERIC);  break;
-            case 'rkey': krsort($work_arr, SORT_NUMERIC); break;
+            case 'key':  ksort($work_arr, SORT_NUMERIC);
+                break;
+            case 'rkey': krsort($work_arr, SORT_NUMERIC);
+                break;
         }
         $ret = [];
         // speedup
-        if ( ($exp === '_#1') || !strlen($exp) ) {
+        if (($exp === '_#1') || !strlen($exp)) {
             $ret = $work_arr;
         } else {
             foreach ($work_arr as $k => $v) {
@@ -201,12 +209,9 @@ class AA_Array {
         }
         return implode($join, $ret);
     }
-    function getFiltered($filter, $delimiter): string
+    public function getFiltered($filter, $delimiter): string
     {
-        $ret = preg_grep('/'. preg_quote($filter, '/'). '/', $this->arr);
+        $ret = preg_grep('/' . preg_quote($filter, '/') . '/', $this->arr);
         return $ret ? AA_Stringexpand::joinWithDelimiter($ret, $delimiter) : '';
     }
 }
-
-
-

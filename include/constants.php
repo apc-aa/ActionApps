@@ -1,4 +1,5 @@
 <?php
+
 /**
  *
  * PHP version 7.2+
@@ -69,7 +70,8 @@ function GetAliasDef($fce, $field = '', $hlp = ''): array
 }
 
 
-class AA_Alias {
+class AA_Alias
+{
     /** @var string */
     private string $alias;
     /** @var string */
@@ -85,11 +87,12 @@ class AA_Alias {
      * @param string $field_id
      * @param string $hlp = ''
      */
-    function __construct($alias, $funct, $field_id, $hlp = '') {
+    public function __construct($alias, $funct, $field_id, $hlp = '')
+    {
         $this->alias    = self::ensureAlias($alias);  // just make sure the alias is in correct _#SOME_ALS format
-        $this->field_id = (string)$field_id;
-        $this->funct    = (string)$funct;
-        $this->hlp      = (string)$hlp;
+        $this->field_id = (string) $field_id;
+        $this->funct    = (string) $funct;
+        $this->hlp      = (string) $hlp;
     }
 
     /** conditional create
@@ -108,8 +111,9 @@ class AA_Alias {
     }
 
     /** just make sure the alias is in correct _#SOME_ALS format */
-    public static function ensureAlias(string $alias): string {
-        return (str_starts_with($alias, 'X#') ? 'X#' : '_#').substr(strtoupper($alias).'________', 2, 8);
+    public static function ensureAlias(string $alias): string
+    {
+        return (str_starts_with($alias, 'X#') ? 'X#' : '_#') . substr(strtoupper($alias) . '________', 2, 8);
     }
 
     /** test if the text looks like alias (_#ABCDEFGH)
@@ -117,7 +121,8 @@ class AA_Alias {
      * @param bool   $raw   if true, we want to pass also raw alias name (ABCDEFGH)
      * @return string alias with _# or empty string
      */
-    public static function isAliasLike(string $text, bool $raw = false): string {
+    public static function isAliasLike(string $text, bool $raw = false): string
+    {
         if (preg_match("/^_#[A-Z0-9_#]{8}$/", $text) === 1) {   // pattern="_#[A-Z0-9_#]{8} - used also in se_field.php UI"
             return $text;
         }
@@ -125,35 +130,41 @@ class AA_Alias {
     }
 
     /** Is this alias disabled? */
-    public function isDisabled(): bool {
+    public function isDisabled(): bool
+    {
         return str_starts_with($this->getAlias(), 'X#');
     }
 
     /** can we move the alias to another field? (=field independent) */
-    public function isMoveable(): bool {
+    public function isMoveable(): bool
+    {
         $fnc = $this->getFnc();
         $prm = $this->getFncParam();
-        return (($fnc === 'f__') || ($fnc === 'f_t' && strlen($prm)>12)) && !str_contains($prm,'_#this');   // @todo - make the check more accurate (see ChangeF_t2F__) - 12 - not just :csv, but also :safe, :javascript, :urlencode, :striptags, :rss, :conds, :asis, :substitute, :debug
+        return (($fnc === 'f__') || ($fnc === 'f_t' && strlen($prm) > 12)) && !str_contains($prm, '_#this');   // @todo - make the check more accurate (see ChangeF_t2F__) - 12 - not just :csv, but also :safe, :javascript, :urlencode, :striptags, :rss, :conds, :asis, :substitute, :debug
     }
 
     /**
      * @return array
      * @deprecated - use getFnc() and getParam() instead
      */
-    function getArray(): array {
+    public function getArray(): array
+    {
         // $fce = ParamImplode(array_merge(array($this->funct),$this->parameters));
         return ['fce' => $this->funct, 'param' => $this->field_id, 'hlp' => $this->hlp];
     }
 
-    public function getFnc(): string {
+    public function getFnc(): string
+    {
         return ParseFnc($this->funct)['fnc'];
     }
 
-    public function getFncParam(): string {
+    public function getFncParam(): string
+    {
         return ParseFnc($this->funct)['param'];
     }
 
-    public function getFuncDef(): string {
+    public function getFuncDef(): string
+    {
         return $this->funct;
     }
 
@@ -161,28 +172,32 @@ class AA_Alias {
     /** get alias name
      * @return string
      */
-    function getAlias(): string {
+    public function getAlias(): string
+    {
         return $this->alias;
     }
 
     /**
      * @return string
      */
-    public function getField(): string {
+    public function getField(): string
+    {
         return $this->field_id;
     }
 
     /**
      * @return string
      */
-    public function getHelp(): string {
+    public function getHelp(): string
+    {
         return $this->hlp;
     }
 }
 
 
 /**   */
-interface LazyloaderInterface {
+interface LazyloaderInterface
+{
     /** loads object */
     public function lazyLoad();
 }
@@ -190,10 +205,12 @@ interface LazyloaderInterface {
 /**
  * @usage in constructor or like (new AA_Aliases())->addLoader('lazy_aliases', new AA_Aliasgenerator_Slice($slice_id));
  */
-trait LazyloadTrait {
+trait LazyloadTrait
+{
     private $lazy_loaders = [];
 
-    final public function addLoader(string $var, LazyloaderInterface $loader): static {
+    final public function addLoader(string $var, LazyloaderInterface $loader): static
+    {
         $this->lazy_loaders[$var] = $loader;
         return $this;
     }
@@ -207,8 +224,8 @@ trait LazyloadTrait {
     }
 }
 
-class AA_Aliases implements IteratorAggregate, ArrayAccess, Countable {
-
+class AA_Aliases implements IteratorAggregate, ArrayAccess, Countable
+{
     use LazyloadTrait;
 
     /**
@@ -219,7 +236,8 @@ class AA_Aliases implements IteratorAggregate, ArrayAccess, Countable {
     /** AA_Aliases function
      *
      */
-    function __construct($loader = null) {
+    public function __construct($loader = null)
+    {
         if (is_object($loader)) {
             $this->addLoader('lazy_aliases', $loader);
         }
@@ -228,7 +246,8 @@ class AA_Aliases implements IteratorAggregate, ArrayAccess, Countable {
     /** addAlias function
      * @param AA_Alias|null $alias
      */
-    function addAlias(?AA_Alias $alias): static {
+    public function addAlias(?AA_Alias $alias): static
+    {
         $this->lazyGet('lazy_aliases');
         if ($alias) {
             $this->lazy_aliases[$alias->getAlias()] = $alias;
@@ -237,7 +256,8 @@ class AA_Aliases implements IteratorAggregate, ArrayAccess, Countable {
     }
 
     /** adds another AA_Aliases */
-    public function add(AA_Aliases $aliases): static {
+    public function add(AA_Aliases $aliases): static
+    {
         $this->lazyGet('lazy_aliases');
         $this->lazy_aliases = array_merge($this->lazy_aliases, $aliases->getAliases());
         return $this;
@@ -247,7 +267,8 @@ class AA_Aliases implements IteratorAggregate, ArrayAccess, Countable {
      * @param $alias_name
      * @param $text
      */
-    function addTextAlias($alias_name, $text): static {
+    public function addTextAlias($alias_name, $text): static
+    {
         $this->addAlias(new AA_Alias($alias_name, ParamImplode(['f_p', $text]), "id.............."));
         return $this;
     }
@@ -256,7 +277,8 @@ class AA_Aliases implements IteratorAggregate, ArrayAccess, Countable {
      * @param AA_Property[] $properties
      * @return $this
      */
-    function addFromProperties(array $properties): static {
+    public function addFromProperties(array $properties): static
+    {
         foreach ($properties as $prop_id => $property) {
             if ($property->isObject()) {
                 continue;
@@ -272,7 +294,8 @@ class AA_Aliases implements IteratorAggregate, ArrayAccess, Countable {
      * @return AA_Aliases
      * @deprecated
      */
-    function addFromArray(array $alias_arr): static {
+    public function addFromArray(array $alias_arr): static
+    {
         foreach ($alias_arr as $aid => $als) {
             $this->addAlias(new AA_Alias($aid, $als['fce'], $als['param'], $als['hlp']));
         }
@@ -281,7 +304,8 @@ class AA_Aliases implements IteratorAggregate, ArrayAccess, Countable {
 
     /** @deprecated convert the AA code to use AA_Aliases
      */
-    public function getArray(): array {
+    public function getArray(): array
+    {
         $this->lazyGet('lazy_aliases');
         $ret = [];
         foreach ($this->lazy_aliases as $alias) {
@@ -290,30 +314,34 @@ class AA_Aliases implements IteratorAggregate, ArrayAccess, Countable {
         return $ret;
     }
 
-    function getAlias(string $name): ?AA_Alias {
+    public function getAlias(string $name): ?AA_Alias
+    {
         $this->lazyGet('lazy_aliases');
         return $this->lazy_aliases[$name];
     }
 
-    public function isAlias(string $name): bool {
+    public function isAlias(string $name): bool
+    {
         $this->lazyGet('lazy_aliases');
         return array_key_exists($name, $this->lazy_aliases);
     }
 
-    function getAliases(): array
+    public function getAliases(): array
     {
         $this->lazyGet('lazy_aliases');
         return $this->lazy_aliases;
     }
 
     /** get alias names - ['_#HEADLINE', ...] */
-    function getNames(): array {
+    public function getNames(): array
+    {
         $this->lazyGet('lazy_aliases');
         return array_keys($this->lazy_aliases);
     }
 
     /** get alias names for specified field - ['_#HEADLINE', ...] */
-    function getNamesForField(string $fld): array {
+    public function getNamesForField(string $fld): array
+    {
         $this->lazyGet('lazy_aliases');
         $ret = [];
         foreach ($this->lazy_aliases as $name => $a) {
@@ -325,19 +353,40 @@ class AA_Aliases implements IteratorAggregate, ArrayAccess, Countable {
     }
 
     /** implements IteratorAggregate */
-    public function getIterator(): \Traversable   {
+    public function getIterator(): \Traversable
+    {
         $this->lazyGet('lazy_aliases');
         return new \ArrayIterator($this->lazy_aliases);
     }
 
     /** Countable interface - Returns number of values  */
-    public function count(): int     { $this->lazyGet('lazy_aliases'); return count($this->lazy_aliases); }
+    public function count(): int
+    {
+        $this->lazyGet('lazy_aliases');
+        return count($this->lazy_aliases);
+    }
 
     /** ArrayAccess interface */
-    public function offsetSet($offset, $value): void { $this->lazyGet('lazy_aliases');$this->lazy_aliases[$offset] = $value; }
-    public function offsetExists($offset): bool      { $this->lazyGet('lazy_aliases'); return array_key_exists($offset, $this->lazy_aliases); }
-    public function offsetUnset($offset): void       { $this->lazyGet('lazy_aliases'); unset($this->lazy_aliases[$offset]); }
-    public function offsetGet($offset): mixed        { $this->lazyGet('lazy_aliases'); return $this->lazy_aliases[$offset] ?? null; }
+    public function offsetSet($offset, $value): void
+    {
+        $this->lazyGet('lazy_aliases');
+        $this->lazy_aliases[$offset] = $value;
+    }
+    public function offsetExists($offset): bool
+    {
+        $this->lazyGet('lazy_aliases');
+        return array_key_exists($offset, $this->lazy_aliases);
+    }
+    public function offsetUnset($offset): void
+    {
+        $this->lazyGet('lazy_aliases');
+        unset($this->lazy_aliases[$offset]);
+    }
+    public function offsetGet($offset): mixed
+    {
+        $this->lazyGet('lazy_aliases');
+        return $this->lazy_aliases[$offset] ?? null;
+    }
 }
 
 // There we can mention $FIELD_TYPES, but they are not defined in this file,
@@ -527,15 +576,15 @@ function getViewFields(): array
     $VIEW_FIELDS["cond3cond"]       = GetViewFieldDef("text", "text", "none");
     $VIEW_FIELDS["listlen"]         = GetViewFieldDef("number", "text", "field");
     //$VIEW_FIELDS["flag"]          = GetViewFieldDef("", "bool", "chbox");
-    $VIEW_FIELDS["flag0"]           = GetViewFieldDef("", "bool",   "bitflag" ); // Add view ID as HTML comment / Allow HTML tags in the comments
-    $VIEW_FIELDS["flag1"]           = GetViewFieldDef("", "bool",   "bitflag" ); // Disabled view
-    $VIEW_FIELDS["flag2"]           = GetViewFieldDef("", "bool",   "bitflag" ); // Log view usage
-    $VIEW_FIELDS["flag3"]           = GetViewFieldDef("", "bool",   "bitflag" ); // not used
-    $VIEW_FIELDS["flag4"]           = GetViewFieldDef("", "bool",   "bitflag" ); // not used
-    $VIEW_FIELDS["flag5"]           = GetViewFieldDef("", "bool",   "bitflag" ); // not used
-    $VIEW_FIELDS["flag6"]           = GetViewFieldDef("", "bool",   "bitflag" ); // not used
-    $VIEW_FIELDS["flag7"]           = GetViewFieldDef("", "bool",   "bitflag" ); // not used
-    $VIEW_FIELDS["scroller"]        = GetViewFieldDef("", "number", "rioscrl" );
+    $VIEW_FIELDS["flag0"]           = GetViewFieldDef("", "bool", "bitflag"); // Add view ID as HTML comment / Allow HTML tags in the comments
+    $VIEW_FIELDS["flag1"]           = GetViewFieldDef("", "bool", "bitflag"); // Disabled view
+    $VIEW_FIELDS["flag2"]           = GetViewFieldDef("", "bool", "bitflag"); // Log view usage
+    $VIEW_FIELDS["flag3"]           = GetViewFieldDef("", "bool", "bitflag"); // not used
+    $VIEW_FIELDS["flag4"]           = GetViewFieldDef("", "bool", "bitflag"); // not used
+    $VIEW_FIELDS["flag5"]           = GetViewFieldDef("", "bool", "bitflag"); // not used
+    $VIEW_FIELDS["flag6"]           = GetViewFieldDef("", "bool", "bitflag"); // not used
+    $VIEW_FIELDS["flag7"]           = GetViewFieldDef("", "bool", "bitflag"); // not used
+    $VIEW_FIELDS["scroller"]        = GetViewFieldDef("", "number", "rioscrl");
     $VIEW_FIELDS["aditional"]       = GetViewFieldDef("text", "text", "area");
     $VIEW_FIELDS["aditional2"]      = GetViewFieldDef("text", "text", "area");
     $VIEW_FIELDS["aditional3"]      = GetViewFieldDef("text", "text", "area");
@@ -566,7 +615,7 @@ function getViewGroupFunctions(): array
         7   => '7 ' . _m("letters"),
         8   => '8 ' . _m("letters"),
         9   => '9 ' . _m("letters"),
-        127 => _m("all before ") . '~'   // we could add 126, 125,...
+        127 => _m("all before ") . '~',   // we could add 126, 125,...
     ];
 }
 
@@ -594,9 +643,9 @@ function getViewTypes(): array
     $common = [
         "flag1" => _m("Disabled view"),
         "flag2" => [
-                     "label" => _m("Log view usage"),
-                     "help"  => _m("Be careful with this. It really logs every view use! Good for debugging and checking, if disabled view is not used anymore..."),
-              ]];
+            "label" => _m("Log view usage"),
+            "help"  => _m("Be careful with this. It really logs every view use! Good for debugging and checking, if disabled view is not used anymore..."),
+        ]];
 
     return [
         'list' => [
@@ -646,7 +695,7 @@ function getViewTypes(): array
                 "help"  => _m("use {#} if you do not want print anything"),
             ],
             "flag0"            => _m("Add view ID as HTML comment"),
-                //                     "aditional" => _m("Additional") );
+            //                     "aditional" => _m("Additional") );
         ] + $common,
 
         'full' => [

@@ -43,8 +43,8 @@ https://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-class AA_Http {
-
+class AA_Http
+{
     use LastErrTrait;
 
     /** Move to another page
@@ -58,7 +58,7 @@ class AA_Http {
      *                      we do not want to try it, when database connection
      *                      error occurs, for example
      */
-    public static function go(string $url, array $parameters, string $type='GET', bool $sess_close=true): never
+    public static function go(string $url, array $parameters, string $type = 'GET', bool $sess_close = true): never
     {
         global $sess;
 
@@ -67,11 +67,11 @@ class AA_Http {
         }
 
         // if headers are already sent, we have to use javascript redirect
-        if ( headers_sent() ) {
+        if (headers_sent()) {
             self::_goJs($url, $parameters);
             exit;
         }
-        if ($type==='POST') {
+        if ($type === 'POST') {
             $response = self::request($url, $parameters, [], 'POST');
             if ($response !== false) {
                 // POST request OK
@@ -87,12 +87,12 @@ class AA_Http {
     }
 
     /** Move (redirect) to page $url using javascript */
-    private static function _goJs($url, array $parameters= []): never
+    private static function _goJs($url, array $parameters = []): never
     {
-        $url = get_url( $url, $parameters);
+        $url = get_url($url, $parameters);
         echo '
         <script>
-            window.location = "'.$url.'";
+            window.location = "' . $url . '";
         </script>
         ';
         exit;
@@ -110,7 +110,7 @@ class AA_Http {
      * @return false|string $result[]
      * inspired by http://netevil.org/blog/2006/nov/http-post-from-php-without-curl
      */
-    public static function request($url, string|array $data=[], array $headers=[], string $method='', string $err=''): false|string
+    public static function request($url, string|array $data = [], array $headers = [], string $method = '', string $err = ''): false|string
     {
         $opts = [];
         if ($data || $headers || $method) {
@@ -139,9 +139,9 @@ class AA_Http {
         $ret = file_get_contents($url, false, $ctx);
 
         if ($ret === false) {
-            self::lastErr(2, sprintf("Problem reading data from url: %s (%s)",$url, error_get_last()["message"]));  // set error code
+            self::lastErr(2, sprintf("Problem reading data from url: %s (%s)", $url, error_get_last()["message"]));  // set error code
             if ($err) {
-                if ( str_contains($err, '_#') ) {
+                if (str_contains($err, '_#')) {
                     $statusCode = (isset($http_response_header) && preg_match('{HTTP\/\S*\s(\d{3})}', $http_response_header[0], $match)) ? $match[1] : '';
                     $ret = str_replace(['_#status', '_#errmsg'], [$statusCode, error_get_last()["message"]], $err);
                 } else {
@@ -153,7 +153,8 @@ class AA_Http {
         return $ret;
     }
 
-    public static function isHttps(): bool {
+    public static function isHttps(): bool
+    {
         return match (true) {
             !empty($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) !== 'off' => true,
             ($_SERVER['SERVER_PORT'] ?? null) == 443 => true,
@@ -169,21 +170,22 @@ class AA_Http {
     }
 }
 
-class AA_Response {
-
+class AA_Response
+{
     private mixed $response;  // could be string, array, object, etc. - depends on the request
 
     /** @var int */
     private int $error;
 
-    static $Response_type = 'serialize';
+    public static $Response_type = 'serialize';
 
-    public function __construct($response = null, int $error = 0) {
+    public function __construct($response = null, int $error = 0)
+    {
         $this->response = $response;
         $this->error = $error;
     }
 
-    function getResponse(): mixed
+    public function getResponse(): mixed
     {
         return $this->response;
     }
@@ -191,16 +193,18 @@ class AA_Response {
     /**
      * @return int
      */
-    function getError() : int  {
+    public function getError(): int
+    {
         return $this->error;
     }
 
     /** @return bool   */
-    function isError() : bool {
+    public function isError(): bool
+    {
         return ($this->error > 0);
     }
 
-    function respond(): void
+    public function respond(): void
     {
         switch (self::$Response_type) {
             case 'serialize':
@@ -229,42 +233,50 @@ class AA_Response {
     }
 }
 
-class AA_Request {
-    var $command;
-    var $params;
+class AA_Request
+{
+    public $command;
+    public $params;
 
-    function __construct( $command, $params= []) {
+    public function __construct($command, $params = [])
+    {
         $this->command = $command;
         $this->params  = $params;
     }
 
-    function _requestVal(): string {
+    public function _requestVal(): string
+    {
         return serialize($this);
     }
 
-    function _requestArr() : array {
+    public function _requestArr(): array
+    {
         return ['request' => $this->_requestVal()];
     }
 
-    function encode4Url(): string {
+    public function encode4Url(): string
+    {
         return rawurlencode(base64_encode($this->_requestVal()));
     }
 
     /** static member function called like:
      *     $request = AA_Request::decode($_POST['request']);
      */
-    public static function decode(string $posted_data) {
+    public static function decode(string $posted_data)
+    {
         return unserialize($posted_data, ['allowed_classes' => [
             AA_Request::class,
             AA_Definition_Module_Chunk::class,    // Do_Import_Module_Chunk carries a chunk in params
         ]]);
     }
 
-    function getCommand() {
+    public function getCommand()
+    {
         return $this->command;
     }
 
-    function getParameters() {
+    public function getParameters()
+    {
         return $this->params;
     }
 
@@ -273,21 +285,22 @@ class AA_Request {
      * @param $parameters - optional array of additional url parameters 'k'=>'v'
      * @return AA_Response|mixed
      */
-    function ask($url, $parameters= [], $headers= []) {
+    public function ask($url, $parameters = [], $headers = [])
+    {
         $ask_arr = $this->_requestArr();
         if (is_array($parameters)) {
             $ask_arr = array_merge($ask_arr, $parameters);
         }
 
-//       if (!strpos($ask_arr['request'], 'Get_Sessionid')) {
-//           $r = unserialize($ask_arr['request']);
-//           huhl($ask_arr, unserialize($ask_arr['request']), $r->params['sync'][0], unserialize($r->params['sync'][0]), unserialize(str_replace("'", "\'", $r->params['sync'][0])), $url);
-//       }
+        //       if (!strpos($ask_arr['request'], 'Get_Sessionid')) {
+        //           $r = unserialize($ask_arr['request']);
+        //           huhl($ask_arr, unserialize($ask_arr['request']), $r->params['sync'][0], unserialize($r->params['sync'][0]), unserialize(str_replace("'", "\'", $r->params['sync'][0])), $url);
+        //       }
         $result = AA_Http::request($url, $ask_arr, $headers);
 
-        if ( $result === false ) {
+        if ($result === false) {
             //echo "<br>Error - response: ". AA_Http::lastErrMsg();
-            return new AA_Response('No response recieved ('. AA_Http::lastErr() .' - '. AA_Http::lastErrMsg(). ')', 3);
+            return new AA_Response('No response recieved (' . AA_Http::lastErr() . ' - ' . AA_Http::lastErrMsg() . ')', 3);
         }
         $response  = unserialize(trim($result), ['allowed_classes' => [
             AA_Response::class,
@@ -298,7 +311,7 @@ class AA_Request {
             AA_Definition_Module_Alerts::class,
             AA_Definition_Module_Chunk::class,
         ]]);
-        if ( $response === false ) {
+        if ($response === false) {
             return new AA_Response("Bad response", 3);
         }
         return $response;
@@ -306,20 +319,22 @@ class AA_Request {
 }
 
 /** @todo - should be updated for new php5 sessions - Honza 2016-09-29 */
-class AA_ClientAuth {
+class AA_ClientAuth
+{
     /** path to AA auth script - like: https://example.org/apc-aa/auth.php */
-    var $_aa_responder_script;
+    public $_aa_responder_script;
 
     /** time in seconds of session validity. If not set, then the session
      *  is valid just for current browser session, 63072000 for two years */
-    var $_cookie_lifetime;
+    public $_cookie_lifetime;
 
     /** caches remote auth object */
-    var $_auth = null;
+    public $_auth = null;
 
     private $_reader_slices = [];
 
-    function __construct($options= []) {
+    public function __construct($options = [])
+    {
         if (!is_array($options)) {
             $options = [];
         }
@@ -328,26 +343,24 @@ class AA_ClientAuth {
         $this->_reader_slices       = $options['reader_slices'] ?? [];
     }
 
-    function checkAuth(): false
+    public function checkAuth(): false
     {
         // we are trying to login
         $request = new AA_Request('Get_Sessionid');
         $params  = [];
         $headers = [];
         if ($_REQUEST['username']) {
-            $params = ['free' => $_REQUEST['username'], 'freepwd' =>$_REQUEST['password']];
-        }
-        elseif ($_COOKIE['AA_Sess']) {
-            $headers = ['Cookie' => 'AA_CP_Session='.$_COOKIE['AA_Sess']];
-        }
-        else {
+            $params = ['free' => $_REQUEST['username'], 'freepwd' => $_REQUEST['password']];
+        } elseif ($_COOKIE['AA_Sess']) {
+            $headers = ['Cookie' => 'AA_CP_Session=' . $_COOKIE['AA_Sess']];
+        } else {
             $this->logout();
             return false;
         }
 
         $response = $request->ask($this->_aa_responder_script, $params, $headers);
 
-        if ( !$response->isError() ) {
+        if (!$response->isError()) {
 
             $arr = $response->getResponse();
             $session_id  = $arr[0];
@@ -370,14 +383,15 @@ class AA_ClientAuth {
     //     return isset($_COOKIE['AA_Uid']) ? $_COOKIE['AA_Uid'] : false;
     // }
 
-    function getRemoteAuth() {
+    public function getRemoteAuth()
+    {
         return $this->_auth;
     }
 
-    function logout(): void
+    public function logout(): void
     {
         $request  = new AA_Request('Logout');
-        $params   = ['AA_CP_Session'=>$_COOKIE['AA_Sess']];
+        $params   = ['AA_CP_Session' => $_COOKIE['AA_Sess']];
         $response = $request->ask($this->_aa_responder_script, $params);
 
         // both is necessary - one for current page, one for next page
@@ -387,5 +401,3 @@ class AA_ClientAuth {
         // $_COOKIE['AA_Uid']  = '';
     }
 }
-
-

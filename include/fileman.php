@@ -1,4 +1,5 @@
 <?php
+
 /**
  *
  * PHP version 7.2+
@@ -28,10 +29,10 @@
 
 // array params: column header, default sort order
 $sortable_columns = [
-    "name"=> ["label"=>_m("Name"),"sort"=>"a"],
-    "size"=> ["label"=>_m("Size"),"sort"=>"a"],
-    "type"=> ["label"=>_m("Type"),"sort"=>"a"],
-    "lastm"=> ["label"=>_m("Last modified"),"sort"=>"d"]
+    "name" => ["label" => _m("Name"),"sort" => "a"],
+    "size" => ["label" => _m("Size"),"sort" => "a"],
+    "type" => ["label" => _m("Type"),"sort" => "a"],
+    "lastm" => ["label" => _m("Last modified"),"sort" => "d"],
 ];
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -40,15 +41,16 @@ $sortable_columns = [
  *
  * @return string returns the suffix part of the filename (beginning with the last dot (.) in the filename)
  */
-function filesuffix($filename): string {
+function filesuffix($filename): string
+{
     if (!str_contains($filename, ".")) {
         return "";
     }
     $i = strlen($filename);
     while ($filename[$i] !== ".") {
-        $i --;
+        $i--;
     }
-    return substr ($filename,$i+1);
+    return substr($filename, $i + 1);
 }
 
 /** make_secure function
@@ -56,7 +58,7 @@ function filesuffix($filename): string {
  */
 function make_secure(&$filename): void
 {
-    $filename = str_replace ("..","",$filename);
+    $filename = str_replace("..", "", $filename);
 }
 
 /** set_directory function
@@ -69,7 +71,7 @@ function set_directory($dir): void
     endslash($directory);
     make_secure($directory);
     if (str_starts_with($directory, "./")) {
-        $directory = substr ($directory, 2);
+        $directory = substr($directory, 2);
     }
 }
 
@@ -107,14 +109,15 @@ function compare_files($f1, $f2): int
  *
  * @return string
  */
-function format_file_size($size): string {
-    $i = strlen ($size) % 3;
+function format_file_size($size): string
+{
+    $i = strlen($size) % 3;
     if ($i == 0) {
         $i = 3;
     }
-    $retval = substr ($size,0,$i);
-    while ($i < strlen ($size)) {
-        $retval .= ",".substr ($size,$i,3);
+    $retval = substr($size, 0, $i);
+    while ($i < strlen($size)) {
+        $retval .= "," . substr($size, $i, 3);
         $i += 3;
     }
     $retval .= " b";
@@ -124,13 +127,13 @@ function format_file_size($size): string {
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 $filetypes = [
-    _m("HTML file")  => ["img"=>"html",   "ext"=> ["shtml","html","htm","js"]],
-    _m("Web file")   => ["img"=>"ie",     "ext"=> ["php","php3","asp"]],
-    _m("Image file") => ["img"=>"image2", "ext"=> ["gif","jpg","jpeg","tiff","img","webp","png","avif"]],
-    _m("Text file")  => ["img"=>"txt",    "ext"=> ["txt", "text", "log", "asc", "doc", "rtf", "pdf", "md"]],
-    _m("Directory")  => ["img"=>"folder"],
-    _m("Parent")     => ["img"=>"parent"],
-    _m("Other")      => ["img"=>"oth"]
+    _m("HTML file")  => ["img" => "html",   "ext" => ["shtml","html","htm","js"]],
+    _m("Web file")   => ["img" => "ie",     "ext" => ["php","php3","asp"]],
+    _m("Image file") => ["img" => "image2", "ext" => ["gif","jpg","jpeg","tiff","img","webp","png","avif"]],
+    _m("Text file")  => ["img" => "txt",    "ext" => ["txt", "text", "log", "asc", "doc", "rtf", "pdf", "md"]],
+    _m("Directory")  => ["img" => "folder"],
+    _m("Parent")     => ["img" => "parent"],
+    _m("Other")      => ["img" => "oth"],
 ];
 
 /**
@@ -188,21 +191,20 @@ function get_file_array($path, $dirname): array
     endslash($path);
     endslash($dirname);
 
-/*    $connid = ftp_connect ($path);
-    $filesa = ftp_nlist ($connid, $dirname);
-    print_r ($filesa);
-*/
+    /*    $connid = ftp_connect ($path);
+        $filesa = ftp_nlist ($connid, $dirname);
+        print_r ($filesa);
+    */
 
-    if (!is_dir ($path.$dirname)) {
-            return [];
+    if (!is_dir($path . $dirname)) {
+        return [];
     }
 
     // fill the $files array
-    if (!($dir = opendir($path.$dirname))) {
-        echo $path.$dirname;
-    }
-    else {
-        while ($filename = readdir ($dir)) {
+    if (!($dir = opendir($path . $dirname))) {
+        echo $path . $dirname;
+    } else {
+        while ($filename = readdir($dir)) {
             // don't allow to jump higher from base dir
             if ($filename === ".") {
                 continue;
@@ -210,24 +212,24 @@ function get_file_array($path, $dirname): array
             if ($filename === ".." && !$dirname) {
                 continue;
             }
-            $filepath = $dirname.$filename;
+            $filepath = $dirname . $filename;
             if ($filename === "..") {
-                $i = strlen ($dirname)-2;
+                $i = strlen($dirname) - 2;
                 while ($i > 0 && $dirname[$i] !== "/") {
                     $i--;
                 }
-                $filepath = substr ($dirname, 0, $i);
+                $filepath = substr($dirname, 0, $i);
             }
 
-            $filetype = get_filetype($path.$dirname.$filename);
+            $filetype = get_filetype($path . $dirname . $filename);
             $files[] = [
-                "path"=>$filepath,
-                "dir"=>is_dir ($path.$filepath),
-                "name"=>$filename,
-                "size"=>filesize ($path.$filepath),
-                "type"=>$filetype,
-                "img"=>$filetypes[$filetype]["img"],
-                "lastm"=>date("d-M-Y",filemtime($path.$filepath))
+                "path" => $filepath,
+                "dir" => is_dir($path . $filepath),
+                "name" => $filename,
+                "size" => filesize($path . $filepath),
+                "type" => $filetype,
+                "img" => $filetypes[$filetype]["img"],
+                "lastm" => date("d-M-Y", filemtime($path . $filepath)),
             ];
         }
         closedir($dir);
@@ -258,18 +260,18 @@ function file_table($path, $dirname): string
 {
     global $directory;
 
-    $files = get_file_array ($path, $dirname);
+    $files = get_file_array($path, $dirname);
     if (is_array($files)) {
         // create the HTML code
         foreach ($files as $file) {
             $href = StateUrl("fileman.php?cmd=" . ($file["dir"] ? "chdir&arg[chdir]=" : "edit&arg[edit]=") . $file['path'] . "&fmset[directory]=$directory");
             $retval .= "<tr>
-            <td>".($file['name'] !== ".." ? "<input type=\"checkbox\" name=\"chb[".$file['path']."]\">" : "&nbsp;")."</td>
-            <td><a href=\"$href\"><img src=\"../images/$file[img].gif\" alt=\"".$file['type']."\"></a></td>
-            <td><a href=\"$href\">".$file['name']."</a></td>
-            <td>".($file["dir"] ? "&nbsp;" : format_file_size($file["size"]))."</td>
-            <td>".$file['type']."</td>
-            <td>".$file['lastm']."</td>
+            <td>" . ($file['name'] !== ".." ? "<input type=\"checkbox\" name=\"chb[" . $file['path'] . "]\">" : "&nbsp;") . "</td>
+            <td><a href=\"$href\"><img src=\"../images/$file[img].gif\" alt=\"" . $file['type'] . "\"></a></td>
+            <td><a href=\"$href\">" . $file['name'] . "</a></td>
+            <td>" . ($file["dir"] ? "&nbsp;" : format_file_size($file["size"])) . "</td>
+            <td>" . $file['type'] . "</td>
+            <td>" . $file['lastm'] . "</td>
             </tr>";
         }
     }
@@ -280,9 +282,10 @@ function file_table($path, $dirname): string
  * @param $dirname
  * @return bool
  */
-function is_dir_empty($dirname): bool {
+function is_dir_empty($dirname): bool
+{
     if ($dir = @opendir($dirname)) {
-        while ($filename = readdir ($dir)) {
+        while ($filename = readdir($dir)) {
             if ($filename === ".") {
                 continue;
             }
@@ -291,8 +294,7 @@ function is_dir_empty($dirname): bool {
             }
             return false;
         }
-    }
-    else {
+    } else {
         return false;
     }
     return true;
@@ -310,10 +312,10 @@ function is_dir_empty($dirname): bool {
 function fileman_execute_command($basedir, $directory, $cmd, $arg, $chb, $fmset): void
 {
     global $err,
-        // set to the name of file which should be viewed by filedit.php
-        $fe_filename,
-        // used in copy template
-        $fileman_dir;
+    // set to the name of file which should be viewed by filedit.php
+    $fe_filename,
+    // used in copy template
+    $fileman_dir;
 
     if (!$cmd) {
         return;
@@ -322,81 +324,79 @@ function fileman_execute_command($basedir, $directory, $cmd, $arg, $chb, $fmset)
     $arg = $arg[$cmd];
 
     // Click on directory
-    if ($cmd==='chdir'){
+    if ($cmd === 'chdir') {
         set_directory($arg);
     } elseif ($cmd === 'edit') {
         $fe_filename = $arg;
     }
-        // Action taken in caller, which outputs HTML
+    // Action taken in caller, which outputs HTML
 
     // Create file
-    elseif ($cmd==='createfile') {
-        if ( !preg_match("/^[0-9a-zA-Z_.]*$/", $arg)) {
+    elseif ($cmd === 'createfile') {
+        if (!preg_match("/^[0-9a-zA-Z_.]*$/", $arg)) {
             $err[] = _m("Wrong file name.");
             return;
         }
         if (filesuffix($arg) == "") {
             $arg .= ".html";
         }
-        $newfile = $basedir.$directory.$arg;
+        $newfile = $basedir . $directory . $arg;
         if (file_exists($newfile)) {
-            $err[] = _m("File already exists")." ($newfilename).";
+            $err[] = _m("File already exists") . " ($newfilename).";
             return;
         }
         if (!fopen($newfile, 'wb')) {
-            $err[] = _m("Unable to create file")." $newfilename.";
+            $err[] = _m("Unable to create file") . " $newfilename.";
             return;
         }
         chmod($newfile, FILEMAN_MODE_FILE);
-        $fe_filename = $directory.$arg;
+        $fe_filename = $directory . $arg;
         // Action taken in caller, which outputs HTML
     }
 
     // Create directory
-    elseif ($cmd==='createdir') {
-        if ( !preg_match("/^\\w*\$/", $arg)) {
+    elseif ($cmd === 'createdir') {
+        if (!preg_match("/^\\w*\$/", $arg)) {
             $err[] = _m("Wrong directory name.");
             return;
         }
-        $newdir = $basedir.$directory.$arg;
+        $newdir = $basedir . $directory . $arg;
         mkdir($newdir, FILEMAN_MODE_DIR);
-        if (!is_dir ($newdir)) {
-            $err[] = _m("Unable to create directory")." $newdirname.";
+        if (!is_dir($newdir)) {
+            $err[] = _m("Unable to create directory") . " $newdirname.";
         }
     }
 
     // Delete
-    elseif ($cmd==='delete' && is_array($chb)) {
+    elseif ($cmd === 'delete' && is_array($chb)) {
         foreach (array_keys($chb) as $arg) {
-            $f = $basedir.$arg;
-            if (is_dir ($f)) {
+            $f = $basedir . $arg;
+            if (is_dir($f)) {
                 if (!is_dir_empty($f)) {
-                    $err[] = _m("First delete all files from directory")." $arg.";
-                } elseif (!rmdir ($f)) {
-                    $err[] = _m("Unable to delete directory")." $arg.";
+                    $err[] = _m("First delete all files from directory") . " $arg.";
+                } elseif (!rmdir($f)) {
+                    $err[] = _m("Unable to delete directory") . " $arg.";
                 }
-            } elseif (!unlink ($f)) {
-                $err[] = _m("Unable to delete file")." $arg.";
+            } elseif (!unlink($f)) {
+                $err[] = _m("Unable to delete file") . " $arg.";
             }
         }
     }
-        // Upload file
-    elseif ($cmd==='upload') {
-        if ((int)FILEMAN_UPLOAD_TIME_LIMIT) { // set time limit for upload
-            MoreTimeLimit((int)FILEMAN_UPLOAD_TIME_LIMIT);
+    // Upload file
+    elseif ($cmd === 'upload') {
+        if ((int) FILEMAN_UPLOAD_TIME_LIMIT) { // set time limit for upload
+            MoreTimeLimit((int) FILEMAN_UPLOAD_TIME_LIMIT);
         }
 
         // $uploaderr = aa_move_uploaded_file("uploadarg", $basedir.$directory, FILEMAN_MODE_FILE);
-        $dest_file = Files::uploadFile('uploadarg', $basedir.$directory);
+        $dest_file = Files::uploadFile('uploadarg', $basedir . $directory);
         if ($dest_file === false) {   // error
             $err[] = Files::lastErrMsg();
         }
-    }
-
-    elseif ($cmd==='copytmp') {
-        $tmperr = fileman_copy_template(FILEMAN_BASE_DIR."templates/".$arg, FILEMAN_BASE_DIR.$fileman_dir);
+    } elseif ($cmd === 'copytmp') {
+        $tmperr = fileman_copy_template(FILEMAN_BASE_DIR . "templates/" . $arg, FILEMAN_BASE_DIR . $fileman_dir);
         if ($tmperr) {
-            $err[] = _m("Error: ").": $tmperr";
+            $err[] = _m("Error: ") . ": $tmperr";
         }
     }
 
@@ -404,28 +404,26 @@ function fileman_execute_command($basedir, $directory, $cmd, $arg, $chb, $fmset)
     elseif ($filename = $fmset['filename']) {
 
         // Save changes
-        if ($cmd==='savefile') {
-            $f       = $basedir.$filename;
+        if ($cmd === 'savefile') {
+            $f       = $basedir . $filename;
             $filedes = fopen($f, 'wb');
             if (!$filedes) {
-                $err[] = _m("Unable to open file for writing")." ($filename).";
-            }
-            else {
+                $err[] = _m("Unable to open file for writing") . " ($filename).";
+            } else {
                 $bytes = fwrite($filedes, $arg);
                 if ($bytes == -1) {
-                    $err[] = _m("Error writing to file")." $filename.";
+                    $err[] = _m("Error writing to file") . " $filename.";
                 }
-                fclose ($filedes);
+                fclose($filedes);
             }
 
-        } elseif ($cmd==='rename') { // Rename
+        } elseif ($cmd === 'rename') { // Rename
             make_secure($renamearg);
-            $newname = dirname($basedir.$filename)."/".$arg;
-            if (file_exists ($newname)) {
-                $err[] = _m("File with this name already exists")." ($arg).";
-            }
-            elseif (!rename($basedir.$filename, $newname)) {
-                $err[] = _m("Unable to rename")." $filename.";
+            $newname = dirname($basedir . $filename) . "/" . $arg;
+            if (file_exists($newname)) {
+                $err[] = _m("File with this name already exists") . " ($arg).";
+            } elseif (!rename($basedir . $filename, $newname)) {
+                $err[] = _m("Unable to rename") . " $filename.";
             }
         }
     }
@@ -442,7 +440,7 @@ function fileman_execute_command($basedir, $directory, $cmd, $arg, $chb, $fmset)
 function get_files_subtree($mydir): array
 {
     endslash($mydir);
-    if (!is_dir ($mydir)) {
+    if (!is_dir($mydir)) {
         return [];
     }
     if (!($dir = opendir($mydir))) {
@@ -452,12 +450,12 @@ function get_files_subtree($mydir): array
     $retval = [];
     while ($filename = readdir($dir)) {
         if ($filename !== "." && $filename !== "..") {
-            if (!is_dir ($mydir.$filename)) {
+            if (!is_dir($mydir . $filename)) {
                 $retval[] = $filename;
             } else {
-                $sub = get_files_subtree($mydir.$filename);
+                $sub = get_files_subtree($mydir . $filename);
                 foreach ($sub as $subfn) {
-                    $retval[] = $filename."/".$subfn;
+                    $retval[] = $filename . "/" . $subfn;
                 }
             }
         }
@@ -470,39 +468,40 @@ function get_files_subtree($mydir): array
  * @param $dstdir
  * @return string
  */
-function fileman_copy_template($srcdir, $dstdir): string {
+function fileman_copy_template($srcdir, $dstdir): string
+{
     global $slice_id;
 
     $aliases = [
-        "_#SLICE_ID" => $slice_id
+        "_#SLICE_ID" => $slice_id,
     ];
 
     $db = getDB();
-    $db->query("SELECT name FROM slice WHERE id = ".xpack_id($slice_id));
+    $db->query("SELECT name FROM slice WHERE id = " . xpack_id($slice_id));
     $db->next_record();
     $aliases["_#SLICNAME"] = $db->f('name');
     freeDB($db);
 
     if (!is_dir($srcdir)) {
-        return _m("Wrong directory name")." ($srcdir)";
+        return _m("Wrong directory name") . " ($srcdir)";
     }
     $files = get_files_subtree($srcdir);
     foreach ($files as $file) {
-        if (file_exists($dstdir."/".$file)) {
+        if (file_exists($dstdir . "/" . $file)) {
             $errfiles[] = $file;
         }
     }
     if (is_array($errfiles)) {
-        return _m("Files with the same names as some in the template already exist. Please change the file names first.") . " (".implode(", ",$errfiles).").";
+        return _m("Files with the same names as some in the template already exist. Please change the file names first.") . " (" . implode(", ", $errfiles) . ").";
     }
     foreach ($files as $file) {
-        $ft = get_filetype($srcdir."/".$file);
+        $ft = get_filetype($srcdir . "/" . $file);
         if ($ft == _m("HTML file") || $ft == _m("Text file")) {
-            $fd = fopen($dstdir."/".$file, 'wb');
+            $fd = fopen($dstdir . "/" . $file, 'wb');
             if (!$fd) {
-                return _m("Unable to create file")." $dstdir/$file.";
+                return _m("Unable to create file") . " $dstdir/$file.";
             }
-            $fcontent = file($srcdir."/".$file);
+            $fcontent = file($srcdir . "/" . $file);
             foreach ($fcontent as $frow) {
                 foreach ($aliases as $alias => $replace) {
                     $frow = str_replace($alias, $replace, $frow);
@@ -510,9 +509,9 @@ function fileman_copy_template($srcdir, $dstdir): string {
                 fwrite($fd, $frow);
             }
         } else {
-            copy($srcdir."/".$file, $dstdir."/".$file);
+            copy($srcdir . "/" . $file, $dstdir . "/" . $file);
         }
-        chmod($dstdir."/".$file, FILEMAN_MODE_FILE);
+        chmod($dstdir . "/" . $file, FILEMAN_MODE_FILE);
     }
     return '';
 }
@@ -543,7 +542,7 @@ $fileman_js = "
             case 'uncheckall':
                 SelectVis (formname,'chb',0); break;
             case 'delete':
-                if (confirm('" ._m("Are you sure you want to delete the selected files and folders?")."'))
+                if (confirm('" . _m("Are you sure you want to delete the selected files and folders?") . "'))
                     submitCommand ('delete');
                 break;
             case 'reset':
@@ -554,4 +553,3 @@ $fileman_js = "
             }
         }
     </script>";
-

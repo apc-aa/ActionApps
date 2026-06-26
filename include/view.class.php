@@ -1,4 +1,5 @@
 <?php
+
 /**
  *
  *
@@ -45,7 +46,8 @@ use AA\Util\Txt;
  * go to the database when something is needed.
  */
 
-class AA_View {
+class AA_View
+{
     protected int $id;
     protected $fields; // Array of fields
 
@@ -59,8 +61,9 @@ class AA_View {
      * @param $id
      * @param $rec
      */
-    function __construct($id, $rec=null) {
-        $this->id = (int)$id;
+    public function __construct($id, $rec = null)
+    {
+        $this->id = (int) $id;
         if (isset($rec)) {
             $this->fields = $rec;
         }
@@ -70,7 +73,8 @@ class AA_View {
      * @param bool $force
      * @return bool
      */
-    function load( $force=false ): bool {
+    public function load($force = false): bool
+    {
         if (!isset($this->fields) || $force) {
             $this->fields = DB_AA::select1([], 'SELECT view.*, module.deleted, module.lang_file FROM view, module', [['module.id', 'view.slice_id', 'j'], ['view.id', $this->id]]);
         }
@@ -78,7 +82,7 @@ class AA_View {
     }
 
     /** Checks, if view exists and the slice is not deleted */
-    function isValid(): bool
+    public function isValid(): bool
     {
         return $this->load() && !$this->f('deleted') && !$this->isDisabled();
     }
@@ -86,9 +90,9 @@ class AA_View {
     /** f function
      * @param $field
      */
-    function f( $field ): ?string
+    public function f($field): ?string
     {
-        if ( !$field ) {
+        if (!$field) {
             return '';
         }
         $this->load();
@@ -96,7 +100,8 @@ class AA_View {
     }
 
     /** getViewInfo function */
-    function getViewInfo() {
+    public function getViewInfo()
+    {
         $this->load();
         return $this->fields;
     }
@@ -104,7 +109,7 @@ class AA_View {
     /**
      * @return string - long id of the slice of this view
      */
-    function getSliceId(): string
+    public function getSliceId(): string
     {
         return unpack_id($this->f('slice_id'));
     }
@@ -112,30 +117,32 @@ class AA_View {
     /**
      * @return int - number ID of the view
      */
-    function getId(): int
+    public function getId(): int
     {
         return $this->id;
     }
 
     /** @return string lang code ('cz', 'en', 'en-utf8', 'de',...)
      */
-    function getLang(): string
+    public function getLang(): string
     {
         return Langs::getLang($this->f('lang_file'));
     }
 
-    function isDisabled(): bool {
+    public function isDisabled(): bool
+    {
         return $this->f('flag') & VIEW_FLAG_DISABLE;
     }
 
-    function doLog(): bool {
+    public function doLog(): bool
+    {
         return $this->f('flag') & VIEW_FLAG_LOG;
     }
 
     /** Generates link to view edit
      * @param $name
      */
-    function jumpLink(bool $name=false): string
+    public function jumpLink(bool $name = false): string
     {
         $id =  $this->id;
         if ($this->f('field3')) {
@@ -149,7 +156,7 @@ class AA_View {
 
     /** @returns string Url of view edit
      */
-    function jumpUrl(): string
+    public function jumpUrl(): string
     {
         return get_admin_url('se_view.php', ['change_id' => $this->getSliceId(), 'view_id' => $this->id]);
     }
@@ -158,9 +165,9 @@ class AA_View {
     /** Sets ['banners']
      * @param $banner_param
      */
-    function setBannerParam($banner_param): void
+    public function setBannerParam($banner_param): void
     {
-        $this->fields = array_merge( (array)$this->fields, $banner_param);
+        $this->fields = array_merge((array) $this->fields, $banner_param);
     }
 
     /** old GetViewConds function
@@ -169,23 +176,23 @@ class AA_View {
      * @param array $param_conds possibly redefinition of conds from url (cmd[]=c)
      * @return array conditions array
      */
-    public function getConds($param_conds= []): array
+    public function getConds($param_conds = []): array
     {
         // If param_conds[0] = "OR" as set by ParseViewParameters then set valuejoin
         // used by ParseMultiSelectConds
 
         // param_conds - redefines default condition values by url parameter (cmd[]=c)
 
-        AA::$debug&2 && AA::$dbg->log("(AA_View->getConds) param_conds=",$param_conds);
+        AA::$debug & 2 && AA::$dbg->log("(AA_View->getConds) param_conds=", $param_conds);
         $conds = [];
 
-        $this->resolveCondsConflict($conds, $this->f('cond1field'), $this->f('cond1op'), $this->f('cond1cond'),  $param_conds[1]);
-        $this->resolveCondsConflict($conds, $this->f('cond2field'), $this->f('cond2op'), $this->f('cond2cond'),  $param_conds[2]);
-        $this->resolveCondsConflict($conds, $this->f('cond3field'), $this->f('cond3op'), $this->f('cond3cond'),  $param_conds[3]);
+        $this->resolveCondsConflict($conds, $this->f('cond1field'), $this->f('cond1op'), $this->f('cond1cond'), $param_conds[1]);
+        $this->resolveCondsConflict($conds, $this->f('cond2field'), $this->f('cond2op'), $this->f('cond2cond'), $param_conds[2]);
+        $this->resolveCondsConflict($conds, $this->f('cond3field'), $this->f('cond3op'), $this->f('cond3cond'), $param_conds[3]);
         if ($param_conds[0]) {
             $conds['valuejoin'] = $param_conds[0];
         }
-        AA::$debug&2 && AA::$dbg->log("(AA_View->getConds) conds=",$conds);
+        AA::$debug & 2 && AA::$dbg->log("(AA_View->getConds) conds=", $conds);
 
         return $conds;
     }
@@ -211,8 +218,8 @@ class AA_View {
         if ($fld && $op) {
             $conds[] = [
                 'operator' => $op,
-                'value'    => (strlen((string)$param)>0 ? $param : $val),  // param could be also "0"
-                $fld       => 1
+                'value'    => (strlen((string) $param) > 0 ? $param : $val),  // param could be also "0"
+                $fld       => 1,
             ];
         }
     }
@@ -222,7 +229,7 @@ class AA_View {
      * @param array $param_sort
      * @return array|null
      */
-    public function getSort(array $param_sort=[]): ?array
+    public function getSort(array $param_sort = []): ?array
     {
         $sort = null;
         // grouping
@@ -238,7 +245,7 @@ class AA_View {
         //sorting
         if (array_key_exists('sort', $param_sort)) {
             if ($param_sort['sort'] && $param_sort['sort'] !== 'AAnoSORT') {
-                $set = new AA_Set;
+                $set = new AA_Set();
                 $set->addSortFromString($param_sort['sort']);
                 $sort = $set->getSort();
             }
@@ -262,7 +269,7 @@ class AA_View {
      * @param $selected_item
      * @return array
      */
-    function getViewFormat($selected_item=''): array
+    public function getViewFormat($selected_item = ''): array
     {
         $format                        = [];
         $format['group_by']            = $this->fields['group_by1'];
@@ -299,23 +306,24 @@ class AA_View {
      * @param $text
      * @return string
      */
-    static function getViewJumpLinks($text): string {
+    public static function getViewJumpLinks($text): string
+    {
         $ret = '';
         $matches = [];
         if ($text) {
             $view_ids = [];
-            if (preg_match_all("/view\.php3?\?vid=(\w+)/",$text, $matches) > 0) {
-                $view_ids = (array)$matches[1];
+            if (preg_match_all("/view\.php3?\?vid=(\w+)/", $text, $matches) > 0) {
+                $view_ids = (array) $matches[1];
             }
-            if (preg_match_all("/{view:(\w+)/",$text, $matches) > 0) {
-                $view_ids = array_merge($view_ids, (array)$matches[1]);
+            if (preg_match_all("/{view:(\w+)/", $text, $matches) > 0) {
+                $view_ids = array_merge($view_ids, (array) $matches[1]);
             }
             if ($view_ids = array_unique($view_ids)) {
                 $ret = _m('Jump to view:');
-                foreach($view_ids as $vid) {
+                foreach ($view_ids as $vid) {
                     $view = AA_Views::getView($vid);
                     if ($view) {                  // probably will be set
-                        $ret .= ' '. $view->jumpLink();
+                        $ret .= ' ' . $view->jumpLink();
                     }
                 }
             }
@@ -330,10 +338,10 @@ class AA_View {
      * @param $a
      * @return string
      */
-    function xml_serialize($t,$i,$ii,$a): string
+    public function xml_serialize($t, $i, $ii, $a): string
     {
         $f = $this->getViewInfo();
-        return xml_serialize("view",$f,$i.$ii,$ii,"tname=\"$t\" ".$a);
+        return xml_serialize("view", $f, $i . $ii, $ii, "tname=\"$t\" " . $a);
     }
 
     /** ParseBannerParam function
@@ -341,10 +349,11 @@ class AA_View {
      *  (banner parameter format: banner-<position in list>-<banner vid>-[<weight_field>]
      *  (@see {@link https://actionapps.org/faq/#219})
      */
-    public static function parseBannerParam($banner_arr): array {
+    public static function parseBannerParam($banner_arr): array
+    {
         $ret = [];
         if ($banner_arr) {
-            foreach ((array)$banner_arr as $banner) {
+            foreach ((array) $banner_arr as $banner) {
                 [$foo_pos, $foo_vid, $foo_fld] = explode('-', $banner);
                 if (ctype_digit($foo_pos) && strlen($foo_vid)) {
                     $bparam = "vid=$foo_vid";
@@ -418,7 +427,7 @@ class AA_View {
                     "cmd[$vid][]",
                     "cmd[$vid][]",
                     "set[$vid][]",
-                    "set[$vid][]"
+                    "set[$vid][]",
                 ], $query_string);
 
                 // we no not want older calls to ParseViewParameters() will infect this call
@@ -444,7 +453,7 @@ class AA_View {
 
         // Splits on "-" and subsitutes aliases
         $commands = new AA_View_Commands($new_params['cmd'][$vid], $new_params['als']);
-        $v_conds  = new AA_Set;
+        $v_conds  = new AA_Set();
 
         AA::$debug & 2 && AA::$dbg->log("<br>ParseViewParameters - command:", $commands);
 
@@ -481,9 +490,9 @@ class AA_View {
                         $command_params = $command->getParameterArray();
                     }
 
-//                       if (ctype_digit((string)$command_params[0])) {
-//
-//                       }
+                    //                       if (ctype_digit((string)$command_params[0])) {
+                    //
+                    //                       }
 
                     if (AA_Set::check($command_params[0], $command_params[1])) {
                         $param_conds[$command_params[0]] = stripslashes($command_params[1]);
@@ -502,7 +511,7 @@ class AA_View {
             }
         }
 
-        $arr = isset($new_params['set'][$vid]) ? self::parseSettings((array)$new_params['set'][$vid]) : [];
+        $arr = isset($new_params['set'][$vid]) ? self::parseSettings((array) $new_params['set'][$vid]) : [];
 
         // Following line is here just for caching purposes - we are creating cache
         // keystring from view parameters and we need to add all set[] and cmd[]
@@ -567,7 +576,8 @@ class AA_View {
      * @param  AA_Aliases  $aliases
      * @param  array       $conds
      */
-    public static function addViewAliases(AA_Aliases $aliases, array $conds): void {
+    public static function addViewAliases(AA_Aliases $aliases, array $conds): void
+    {
         foreach ($conds as $k => $v) {
             $aliases->addTextAlias(str_pad('_#VIEW_C' . ($k + 1), 10, '_'), $v['value']);
         }
@@ -592,8 +602,8 @@ class AA_View {
 /** usually called as $view = AA_Views::getView($vid);
  * @method  static AA_Views singleton()
  */
-class AA_Views {
-
+class AA_Views
+{
     use SingletonTrait;
 
     protected $a = [];
@@ -605,30 +615,31 @@ class AA_Views {
      * @param $a
      * @return string
      */
-    function xml_serialize($t,$i,$ii,$a): string
+    public function xml_serialize($t, $i, $ii, $a): string
     {
-        return xml_serialize("views",$this->a,$i.$ii,$ii,"tname=\"$t\" ".$a);
+        return xml_serialize("views", $this->a, $i . $ii, $ii, "tname=\"$t\" " . $a);
     }
 
     /** Older factory static method - for numeric views only, do not check, if exist
      * @param int $vid
      * @return AA_View
      */
-    static function getViewNumeric($vid) : AA_View {
-        return self::singleton()->_getView((int)$vid);
+    public static function getViewNumeric($vid): AA_View
+    {
+        return self::singleton()->_getView((int) $vid);
     }
 
     /** Main factory static method - allows numeric and named views. Do not create view for non existing/accessible views
      * @param int|string $vid
      * @return AA_View|null
      */
-    static function getView($vid): ?AA_View
+    public static function getView($vid): ?AA_View
     {
-        if (ctype_digit((string)$vid)) {
-            $vid = (int)$vid;
-        } elseif (AA::$site_id ) {
+        if (ctype_digit((string) $vid)) {
+            $vid = (int) $vid;
+        } elseif (AA::$site_id) {
             $vid = AA_Module_Site::findViewId($vid, AA::$site_id);
-        } elseif ( is_long_id($m = AA::$module_id ?: AA::$slice_id) && strlen($vid) ) {  // for planned tasks, for example
+        } elseif (is_long_id($m = AA::$module_id ?: AA::$slice_id) && strlen($vid)) {  // for planned tasks, for example
             if (AA_Module::getModuleType($m) === 'W') {
                 $vid = AA_Module_Site::findViewId($vid, $m);
             } else {
@@ -638,7 +649,7 @@ class AA_Views {
             return null;
         }
 
-        $view = self::singleton()->_getView((int)$vid);
+        $view = self::singleton()->_getView((int) $vid);
         return $view->load() ? $view : null;  // if exists return
     }
 
@@ -648,7 +659,7 @@ class AA_Views {
      *
      * @return null
      */
-    static function getViewField(int $vid, string $field): ?string
+    public static function getViewField(int $vid, string $field): ?string
     {
         /** @var AA_Views $views */
         return self::singleton()->_getView($vid)?->f($field);
@@ -659,7 +670,8 @@ class AA_Views {
      *
      * @return AA_View
      */
-    function _getView(int $vid) : AA_View {
+    public function _getView(int $vid): AA_View
+    {
         if (!isset($this->a[$vid])) {
             $this->a[$vid] = new AA_View($vid);
         }
@@ -670,12 +682,12 @@ class AA_Views {
      * @param $slice_id
      * @return AA_View[]
      */
-    static function getSliceViews($slice_id): array
+    public static function getSliceViews($slice_id): array
     {
         $a = [];
         if ($slice_id) {
             $views = self::singleton();
-            $SQL   = "SELECT id FROM view WHERE slice_id=". xpack_id($slice_id);
+            $SQL   = "SELECT id FROM view WHERE slice_id=" . xpack_id($slice_id);
             $v_arr = GetTable2Array($SQL, 'NoCoLuMn', 'id');
             if (is_array($v_arr)) {
                 foreach ($v_arr as $id) {
@@ -683,11 +695,10 @@ class AA_Views {
                     if (!isset($views->a[$id])) {
                         $views->a[$id] = new AA_View($id);
                     }
-                    $a[(string)$id] = &$views->a[$id];
+                    $a[(string) $id] = &$views->a[$id];
                 }
             }
         }
         return $a;
     }
 }
-

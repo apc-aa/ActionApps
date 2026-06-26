@@ -38,13 +38,20 @@ use AA\Widget\HidWidget;
 */
 
 
-class AA_Formrow extends AA_Storable {
-    function getRowProperty(): ?AA_Property { return null; }
+class AA_Formrow extends AA_Storable
+{
+    public function getRowProperty(): ?AA_Property
+    {
+        return null;
+    }
 
     /**
      * @return AA\Widget\Widget|null
      */
-    function getWidget()      { return null; }
+    public function getWidget()
+    {
+        return null;
+    }
 
     /**
      * @param  AA_Content  $content
@@ -53,7 +60,8 @@ class AA_Formrow extends AA_Storable {
      * @return string
      * @throws Exception
      */
-    function getRowHtml(AA_Content $content, string $type=''): string {
+    public function getRowHtml(AA_Content $content, string $type = ''): string
+    {
         $widget = $this->getWidget();
         // $widget->registerRequires(); // now in _finalizeHtml
         $prop = $this->getRowProperty();
@@ -75,11 +83,11 @@ class AA_Formrow extends AA_Storable {
 
             $this->echovar($widget->getOnlyHtml($aa_property, $content));
         }
-//        if (is_null($item)) {
-//            $this->echovar(AA::Un('{inputonly:'.$slice_id.':'.$this->id.'}'));
-//        } else {
-//            $this->echovar(AA::Un('{edit:'.$item->getId().':'.$this->id.'}','',$item));
-//        }
+        //        if (is_null($item)) {
+        //            $this->echovar(AA::Un('{inputonly:'.$slice_id.':'.$this->id.'}'));
+        //        } else {
+        //            $this->echovar(AA::Un('{edit:'.$item->getId().':'.$this->id.'}','',$item));
+        //        }
         $this->echoo($widget->stdFormEnd($aa_property));
 
 
@@ -92,21 +100,24 @@ class AA_Formrow extends AA_Storable {
         $slice  = AA_Slice::getModule($form->object_owner);
         $fields = $slice->getFields();
         $f_arr  = $fields->getNameArray();
-              // AA_Property($id='', $name='',              $type='text', $multi=false, $persistent=true, $validator=null, $required=false, $input_help='', $input_morehlp='', $example='', $show_content_type_switch=0, $content_type_switch_default=FLAG_HTML, $perms=null, $default=null) {
-        $p = new AA_Property('rows', _m("Fields to show"),  'AA_Formrow_Field', true, false);
+        // AA_Property($id='', $name='',              $type='text', $multi=false, $persistent=true, $validator=null, $required=false, $input_help='', $input_morehlp='', $example='', $show_content_type_switch=0, $content_type_switch_default=FLAG_HTML, $perms=null, $default=null) {
+        $p = new AA_Property('rows', _m("Fields to show"), 'AA_Formrow_Field', true, false);
         $w = new FormrowWidget(['const_arr' => $f_arr]);
         //$w = new AA\Widget\MchWidget(array('columns'=>1,'const_arr' => $f_arr));
         $form->addRow(new AA_Formrow_Full($p, $w));  // use default widget for the field
     }
 }
 
-class AA_Formrow_Text extends AA_Formrow {
+class AA_Formrow_Text extends AA_Formrow
+{
     protected $text;        // protected - we need the data visible for AA_Statestore
-    function __construct($text=null) { // default values are needed for AA_Storable's construction
+    public function __construct($text = null) // default values are needed for AA_Storable's construction
+    {
         $this->text = $text;
     }
-    function getRowHtml(AA_Content $content, string $type=''): string {
-        return '<div>'.$this->text.'</div>';
+    public function getRowHtml(AA_Content $content, string $type = ''): string
+    {
+        return '<div>' . $this->text . '</div>';
     }
 }
 
@@ -114,59 +125,75 @@ class AA_Formrow_Text extends AA_Formrow {
  *  Useful when the text itself opens or closes a block element that must
  *  span multiple form rows (e.g. <details>…</details> grouping).
  */
-class AA_Formrow_Html extends AA_Formrow {
+class AA_Formrow_Html extends AA_Formrow
+{
     protected $html;
-    function __construct($html=null) {
-        $this->html = (string)$html;
+    public function __construct($html = null)
+    {
+        $this->html = (string) $html;
     }
-    function getRowHtml(AA_Content $content, string $type=''): string {
+    public function getRowHtml(AA_Content $content, string $type = ''): string
+    {
         return $this->html;
     }
 }
 
 /** Fully qualified form row */
-class AA_Formrow_Full extends AA_Formrow {
+class AA_Formrow_Full extends AA_Formrow
+{
     protected $property;        // protected - we need the data visible for AA_Statestore
     protected $widget;
 
     /** Constructor - use the default for AA_Object */
-    function __construct($property=null, $widget=null) { // default values are needed for AA_Storable's construction
+    public function __construct($property = null, $widget = null) // default values are needed for AA_Storable's construction
+    {
         $this->property       = $property;
         $this->widget         = $widget;
     }
 
-    function getRowProperty(): ?AA_Property { return $this->property; }
+    public function getRowProperty(): ?AA_Property
+    {
+        return $this->property;
+    }
 
-    function getWidget()      { return $this->widget; }
+    public function getWidget()
+    {
+        return $this->widget;
+    }
 
     /**
      * @return array
      */
-    public static function getClassProperties(): array {
+    public static function getClassProperties(): array
+    {
         return [                   //       id                   name                  type        multi  persist validator, required, help, morehelp, example
-            'property'       => new AA_Property( 'property',       _m("Property"),          'AA_Property', false, true),
-            'widget'         => new AA_Property( 'widget',         _m("Widget"), 'AA\Widget\Widget',   false, true)
+            'property'       => new AA_Property('property', _m("Property"), 'AA_Property', false, true),
+            'widget'         => new AA_Property('widget', _m("Widget"), 'AA\Widget\Widget', false, true),
         ];
     }
 }
 
-class AA_Formrow_Field extends AA_Formrow {
+class AA_Formrow_Field extends AA_Formrow
+{
     protected $field_id;        // protected - we need the data visible for AA_Statestore
     protected $slice_id;        // protected - we need the data visible for AA_Statestore
 
     /** Constructor - use the default for AA_Object */
-    function __construct($field_id='', $slice_id='') { // default values are needed for AA_Storable's construction
+    public function __construct($field_id = '', $slice_id = '') // default values are needed for AA_Storable's construction
+    {
         $this->field_id       = $field_id;
         $this->slice_id       = $slice_id;
     }
 
-    function getRowProperty(): ?AA_Property {
+    public function getRowProperty(): ?AA_Property
+    {
         $field  = $this->_getField();
         $widget = $field?->getWidget();
-        return $field?->getAaProperty(['multiple'=>$widget::multiple()]);
+        return $field?->getAaProperty(['multiple' => $widget::multiple()]);
     }
 
-    function getWidget() {
+    public function getWidget()
+    {
         return $this->_getField()?->getWidget();
     }
 
@@ -178,10 +205,11 @@ class AA_Formrow_Field extends AA_Formrow {
     /**
      * @return array
      */
-    public static function getClassProperties(): array {
+    public static function getClassProperties(): array
+    {
         return [                   //       id                   name               type        multi  persist validator, required, help, morehelp, example
-            'field_id'       => new AA_Property( 'field_id',       _m("Field"),          'string', false, true),
-            'slice_id'       => new AA_Property( 'slice_id',       _m("Slice ID"),       'string', false, true)
+            'field_id'       => new AA_Property('field_id', _m("Field"), 'string', false, true),
+            'slice_id'       => new AA_Property('slice_id', _m("Slice ID"), 'string', false, true),
         ];
     }
 }
@@ -189,8 +217,8 @@ class AA_Formrow_Field extends AA_Formrow {
 
 
 /** Form Row - special widget for form setting */
-class FormrowWidget extends Widget {
-
+class FormrowWidget extends Widget
+{
     /** Constructor - use the default for AA_Object */
     // function __construct($params=array()) { parent::__construct($params); }  // not needed - called as default
 
@@ -199,12 +227,14 @@ class FormrowWidget extends Widget {
      */
 
     /** name function */
-    public static function name(): string {
+    public static function name(): string
+    {
         return _m('Form Row - special widget for form setting');
     }   // widget name
 
     /** returns if the widget handles multivalue or just single value   */
-    public static function multiple(): bool {
+    public static function multiple(): bool
+    {
         return true;   // returns multivalue or single value
     }
 
@@ -212,9 +242,10 @@ class FormrowWidget extends Widget {
      *  Used parameter format (in fields.input_show_func table)
      * @return array
      */
-    public static function getClassProperties(): array {
+    public static function getClassProperties(): array
+    {
         return [                      //           id                        name                        type    multi  persist validator, required, help, morehelp, example
-            'const_arr'              => new AA_Property( 'const_arr',              _m("Values array"),         'string', true,  true, 'string', false, _m("Directly specified array of values (do not use Constants, if filled)"))
+            'const_arr'              => new AA_Property('const_arr', _m("Values array"), 'string', true, true, 'string', false, _m("Directly specified array of values (do not use Constants, if filled)")),
         ];
     }
 
@@ -229,12 +260,13 @@ class FormrowWidget extends Widget {
      *  @return array
      *  @throws Exception
      */
-    function _getRawHtml(AA_Property $aa_property, AA_Content $content, string $type='normal'): array {
+    public function _getRawHtml(AA_Property $aa_property, AA_Content $content, string $type = 'normal'): array
+    {
         // $property_id  = $aa_property->getId();
         // $input_name   = AA\FormArray::getName4Form($property_id, $content)."[formrow][]";
 
         $base_name   = FormArray::getName4Form($aa_property->getId(), $content);
-        $input_name  = $base_name ."[]";
+        $input_name  = $base_name . "[]";
         $base_id     = FormArray::formName2Id($base_name);
         // $widget_add  = ($type === 'live') ? " class=\"live\" onchange=\"AA_SendWidgetLive('$base_id')\"" : '';
 
@@ -246,21 +278,22 @@ class FormrowWidget extends Widget {
             $arr[] = $field->getId();
         }
 
-        $fields    = new AA_Content;
+        $fields    = new AA_Content();
         $selected  = new AA_Value($arr);
         $fields->setAaValue($aa_property->getId(), $selected);
         $widget    = "<select name=\"$input_name\" id=\"$base_id\" multiple size=20>";
         $options   = $this->getOptions($selected, $fields, false, false, $aa_property->isRequired() ? 2 : 1);
-        $widget   .= $this->getSelectOptions( $options );
+        $widget   .= $this->getSelectOptions($options);
         $widget   .= "</select>";
 
-        return ['html'=>$widget, 'last_input_name'=>$input_name, 'base_name' => $base_name, 'base_id'=>$base_id, 'required'=>$aa_property->isRequired()];
+        return ['html' => $widget, 'last_input_name' => $input_name, 'base_name' => $base_name, 'base_id' => $base_id, 'required' => $aa_property->isRequired()];
     }
 
     /**
      * @inheritDoc
      */
-    public static function description(): string {
+    public static function description(): string
+    {
         return ''; // TODO: Implement description() method.
     }
 }
@@ -270,25 +303,26 @@ class FormrowWidget extends Widget {
  *  The code could be a bit confusing since this class manages forms, but the
  *  forms are also manageable as form - that's why it must implement some
  *  AA_Object's methods */
-class AA_Form extends AA_Object implements NamedInterface {
-
+class AA_Form extends AA_Object implements NamedInterface
+{
     /** @var AA_Formrow[] */
     protected $rows = [];
 
-    public   $object_type  = '';  // for which object class is current form
-    public   $object_id    = '';  // for which object is current form
-    public   $object_owner = '';  // to whom the form belongs
+    public $object_type  = '';  // for which object class is current form
+    public $object_id    = '';  // for which object is current form
+    public $object_owner = '';  // to whom the form belongs
 
-    const PREPARED = 1;
-    const SAVED    = 2;
+    public const PREPARED = 1;
+    public const SAVED    = 2;
 
     /** allows storing form in database
      *  AA_Object's method
      * @return array
      */
-    public static function getClassProperties(): array {
+    public static function getClassProperties(): array
+    {
         return [          //           id       name       type        multi  persist validator, required, help, morehelp, example
-            'rows'        => new AA_Property( 'rows',        _m("Rows"),         'AA_Formrow', true, true)
+            'rows'        => new AA_Property('rows', _m("Rows"), 'AA_Formrow', true, true),
             // 'object_type' => new AA_Property( 'object_type', _m("Object Type"),  'text', false, true)
         ];
     }
@@ -297,19 +331,22 @@ class AA_Form extends AA_Object implements NamedInterface {
      * @inheritDoc
      * needed as title to Alias manager page /modules/site/aliases.php
      */
-    public static function name(): string {
+    public static function name(): string
+    {
         return _m('Forms');
     }
 
     /**
      * @inheritDoc
      */
-    public static function description(): string {
+    public static function description(): string
+    {
         return '';
     }
 
     /** @inheritDoc */
-    protected static function getAdminUrlTemplate(): string {
+    protected static function getAdminUrlTemplate(): string
+    {
         return get_admin_url('se_forms.php', ['id=_#AA_ID___','module_id=_#AA_OWNER']);
     }
 
@@ -318,35 +355,37 @@ class AA_Form extends AA_Object implements NamedInterface {
      * @return $this
      * @throws Exception
      */
-    function addProperties(array $props): static {
-        foreach ($props as $prop ) {
+    public function addProperties(array $props): static
+    {
+        foreach ($props as $prop) {
             $prop->addPropertyFormrows($this);
         }
         return $this;
     }
 
-    function addRow(AA_Formrow $row): void
+    public function addRow(AA_Formrow $row): void
     {
         $this->rows[] = $row;
     }
 
-    function setObject($otype, $oid, $oowner): void
+    public function setObject($otype, $oid, $oowner): void
     {
         $this->object_type  = $otype;
         $this->object_id    = $oid;
         $this->object_owner = $oowner;
     }
 
-    public static function factoryForm($otype, $oid, $oowner): AA_Form {
+    public static function factoryForm($otype, $oid, $oowner): AA_Form
+    {
         $form = new AA_Form();
         $form->setObject($otype, $oid, $oowner);
         $otype::addFormrows($form);
         return $form;
     }
 
-    function process($aa): int
+    public function process($aa): int
     {
-        if ( !empty($aa) ) {
+        if (!empty($aa)) {
             // update or insert
             $managed = Managed::factoryFromType($this->object_type);
             $managed->save($this->object_owner);
@@ -360,25 +399,25 @@ class AA_Form extends AA_Object implements NamedInterface {
      * @return string
      * @throws Exception
      */
-    public function getObjectEditHtml(bool $std_table=false): string
+    public function getObjectEditHtml(bool $std_table = false): string
     {
         $content = $this->loadContent();
 
         if ($std_table) {
             $html    = $this->getRowsHtml($content, 'tr');
-            $html   .= (new HidWidget )->stdHtml(AA_Object::getPropertyObject('aa_owner'), $content);
-            $html   .= (new HidWidget )->stdHtml(AA_Object::getPropertyObject('aa_type'),  $content);
+            $html   .= (new HidWidget())->stdHtml(AA_Object::getPropertyObject('aa_owner'), $content);
+            $html   .= (new HidWidget())->stdHtml(AA_Object::getPropertyObject('aa_type'), $content);
 
             if ($this->object_id) {
-                $html .= (new HidWidget )->stdHtml(AA_Object::getPropertyObject('aa_id'), $content);
+                $html .= (new HidWidget())->stdHtml(AA_Object::getPropertyObject('aa_id'), $content);
             }
         } else {
             $html = $this->getRowsHtml($content, $std_table ? 'tr' : '');
-            $html .= (new HidWidget)->getHtml(AA_Object::getPropertyObject('aa_owner'), $content);
-            $html .= (new HidWidget)->getHtml(AA_Object::getPropertyObject('aa_type'), $content);
+            $html .= (new HidWidget())->getHtml(AA_Object::getPropertyObject('aa_owner'), $content);
+            $html .= (new HidWidget())->getHtml(AA_Object::getPropertyObject('aa_type'), $content);
 
             if ($this->object_id) {
-                $html .= (new HidWidget)->getHtml(AA_Object::getPropertyObject('aa_id'), $content);
+                $html .= (new HidWidget())->getHtml(AA_Object::getPropertyObject('aa_id'), $content);
             }
         }
         return $html;
@@ -390,26 +429,28 @@ class AA_Form extends AA_Object implements NamedInterface {
      * @return string
      * @throws Exception
      */
-    function getAjaxHtml($ret_code, $type='add'): string
+    public function getAjaxHtml($ret_code, $type = 'add'): string
     {
-        if (!isset($this->object_type)) { $this->object_type = 'AA_Item'; } // older forms stored in database do not have this field set
+        if (!isset($this->object_type)) {
+            $this->object_type = 'AA_Item';
+        } // older forms stored in database do not have this field set
         $this->object_owner = $this->getOwnerId();                          // slice_id is the same as the slice_id of the form (where it is defined)
 
         $id  = get_if($this->object_id, new_id());
         $content = $this->loadContent();
 
         $html  = "\n  <fieldset id=\"form$id\">";
-        $html .= "\n    ". '<input id="inline" name="inline" value="1" type="hidden">';
-        $html .= "\n    ". '<input id="slice_id" name="slice_id" value="'.$this->object_owner.'" type="hidden">';
-        $html .= "\n    ". '<input id="ret_code" name="ret_code" value="'.$ret_code.'" type="hidden">';
+        $html .= "\n    " . '<input id="inline" name="inline" value="1" type="hidden">';
+        $html .= "\n    " . '<input id="slice_id" name="slice_id" value="' . $this->object_owner . '" type="hidden">';
+        $html .= "\n    " . '<input id="ret_code" name="ret_code" value="' . $ret_code . '" type="hidden">';
 
         $html .= $this->getRowsHtml($content);
 
         switch ($type) {
-            case 'add':      $html .= "\n    <input id=\"ajaxsend$id\" name=\"ajaxsend$id\" value=\"". _m('Insert'). "\" onclick=\"AA_AjaxSendAddForm('form$id')\" type=\"button\">";
-                             break;
-            case 'inplace':  $html .= "\n    <input id=\"ajaxsend$id\" name=\"ajaxsend$id\" value=\"". _m('Insert'). "\" onclick=\"AA_AjaxSendForm('form$id', 'filler.php')\" type=\"button\">";
-                             break;
+            case 'add':      $html .= "\n    <input id=\"ajaxsend$id\" name=\"ajaxsend$id\" value=\"" . _m('Insert') . "\" onclick=\"AA_AjaxSendAddForm('form$id')\" type=\"button\">";
+                break;
+            case 'inplace':  $html .= "\n    <input id=\"ajaxsend$id\" name=\"ajaxsend$id\" value=\"" . _m('Insert') . "\" onclick=\"AA_AjaxSendForm('form$id', 'filler.php')\" type=\"button\">";
+                break;
         }
         $html .= "\n  </fieldset>";
 
@@ -423,14 +464,14 @@ class AA_Form extends AA_Object implements NamedInterface {
      * @return string
      * @throws Exception
      */
-    public function getEditFormHtml(string $type='live'): string
+    public function getEditFormHtml(string $type = 'live'): string
     {
         if (!$this->object_id) {
             return '';
         }
         $content = $this->loadContent();
 
-        $html  = "\n  <fieldset id=\"form".$this->object_id."\">";
+        $html  = "\n  <fieldset id=\"form" . $this->object_id . "\">";
         $html .= $this->getRowsHtml($content, $type);
         $html .= "\n  </fieldset>";
 
@@ -445,10 +486,10 @@ class AA_Form extends AA_Object implements NamedInterface {
      *@todo   write permission function, which modifies the form based on the
      *        actual user's permissions and profile
      */
-    public function getRowsHtml(AA_Content $content, string $type=''): string
+    public function getRowsHtml(AA_Content $content, string $type = ''): string
     {
         $ret = '';
-        foreach($this->rows as $row) {
+        foreach ($this->rows as $row) {
             $ret .= $row->getRowHtml($content, $type);
         }
         return $ret;
@@ -486,7 +527,7 @@ class AA_Form extends AA_Object implements NamedInterface {
     }
 
     /** AA_iEditable method - creates Object from the form data */
-    public static function factoryFromForm($oowner, $otype=null): AA_Form
+    public static function factoryFromForm($oowner, $otype = null): AA_Form
     {
         $grabber = new ObjectForm();
         $grabber->prepare();    // maybe some initialization in grabber
@@ -505,7 +546,7 @@ class AA_Form extends AA_Object implements NamedInterface {
 
         $fields2show = $content->getValuesArray('rows');
         foreach ($fields2show as $field) {
-            $object->addRow( new AA_Formrow_Field($field, $oowner));   // use default widget for the field (@todo - make possible to change the widget)
+            $object->addRow(new AA_Formrow_Field($field, $oowner));   // use default widget for the field (@todo - make possible to change the widget)
         }
         return $object;
     }
@@ -513,7 +554,8 @@ class AA_Form extends AA_Object implements NamedInterface {
     /**
      * @return string
      */
-    public function getObjectOwner(): string {
+    public function getObjectOwner(): string
+    {
         return $this->object_owner;
     }
 
@@ -523,5 +565,3 @@ class AA_Form extends AA_Object implements NamedInterface {
     /** AA_iEditable method - save the object to the database */
     // public        function save(): false|string;
 }
-
-

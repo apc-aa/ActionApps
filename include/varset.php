@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Class Cvariable, Cvarset
  *
@@ -35,13 +36,14 @@ use AA\Util\ChangesMonitor;
  *          - simplifies database manipulation (by Cvarset class below)
  */
 
-class Cvariable {
-    var $name;
-    var $type;
-    var $value;
+class Cvariable
+{
+    public $name;
+    public $type;
+    public $value;
     /** Is it a key value? key values are used in UPDATE -> WHERE,
     *  INSERT -> VALUES.  See also makeINSERTorUPDATE. */
-    var $iskey;
+    public $iskey;
 
     /** Cvariable function
      *  constructor
@@ -50,7 +52,8 @@ class Cvariable {
      * @param string $value
      * @param bool $iskey
      */
-    function __construct($name, $type, $value, $iskey=false) {
+    public function __construct($name, $type, $value, $iskey = false)
+    {
         $this->name  = $name;
         $this->type  = $type;
         $this->value = $value;
@@ -60,7 +63,7 @@ class Cvariable {
     /** getValue function
      *
      */
-    function getValue()
+    public function getValue()
     {
         return ($this->type === 'quoted') ? stripslashes($this->value) : $this->value;
     }
@@ -71,12 +74,12 @@ class Cvariable {
      *
      * @return float|int|string
      */
-    function getSQLValue($column=null)
+    public function getSQLValue($column = null)
     {
         $ret = '';
         $quote = true;
 
-        switch ( $this->type ) {
+        switch ($this->type) {
             case "integer":
             case "number":
                 // grrr: if $var=0 then $var=""!!!
@@ -87,7 +90,7 @@ class Cvariable {
                     $ret = '0x' . quote($this->value);
                     $quote = false;
                 } else {
-                    huhe('There should be unpacked long id: '. $this->value ."(in $this->name)");
+                    huhe('There should be unpacked long id: ' . $this->value . "(in $this->name)");
                 }
                 break;
             case "quoted":
@@ -106,8 +109,8 @@ class Cvariable {
 
         if ($column) {
             switch ($column->getFieldType()) {
-                case 'int':    return (int)$ret;
-                case 'float':  return (float)$ret;
+                case 'int':    return (int) $ret;
+                case 'float':  return (float) $ret;
             }
         }
         // text
@@ -115,7 +118,8 @@ class Cvariable {
     }
 }
 
-class Cvarset {
+class Cvarset
+{
     /** @var array Cvariable */
     private array $vars = [];          // array of variables
     private bool $just_print = false;    // debug option - just prints the query (not implemented for all methods!!!)
@@ -124,15 +128,16 @@ class Cvarset {
      *  constructor - also good for filling the varset
      * @param $arr
      */
-    function __construct( $arr= []) {
-        $TRANS              = ['i'=>'number', 's'=>'text', 'q'=>'quoted', 'l'=>'unpacked'];
+    public function __construct($arr = [])
+    {
+        $TRANS              = ['i' => 'number', 's' => 'text', 'q' => 'quoted', 'l' => 'unpacked'];
 
-        foreach ( $arr as $def ) {
+        foreach ($arr as $def) {
             $this->add($def[0], isset($def[2]) ? $TRANS[$def[2]] : 'text', $def[1]);
         }
     }
 
-    function setDebug(): static
+    public function setDebug(): static
     {
         $this->just_print = true;
         return $this;
@@ -141,7 +146,7 @@ class Cvarset {
     /** clear function
      *  clears whole varset
      */
-    function clear(): static
+    public function clear(): static
     {
         $this->vars = [];
         return $this;
@@ -157,7 +162,7 @@ class Cvarset {
      *
      * @param  string  $varname
      */
-    function get(string $varname): string|false
+    public function get(string $varname): string|false
     {
         $cv = $this->vars[$varname];
         return $cv ? $cv->getValue() : false;
@@ -167,9 +172,10 @@ class Cvarset {
      * @param $varname
      * @return bool
      */
-    function getSQLvalue($varname) {
+    public function getSQLvalue($varname)
+    {
         $cv = $this->vars[$varname];
-        return ( $cv ? $cv->getSQLvalue() : false);
+        return ($cv ? $cv->getSQLvalue() : false);
     }
 
     /** add function
@@ -179,9 +185,9 @@ class Cvarset {
      * @param string $value
      * @param bool   $iskey
      */
-    function add($varname, $type="text", $value="", $iskey=false): void
+    public function add($varname, $type = "text", $value = "", $iskey = false): void
     {
-        $this->vars[$varname]= new Cvariable($varname, $type, $value, $iskey);
+        $this->vars[$varname] = new Cvariable($varname, $type, $value, $iskey);
     }
 
     /** addglobals function
@@ -189,10 +195,10 @@ class Cvarset {
      * @param string[] $arr
      * @param string   $type
      */
-    function addglobals(array $arr, $type="quoted"): void
+    public function addglobals(array $arr, $type = "quoted"): void
     {
-        foreach ( $arr as $varname ) {
-            $this->vars[$varname]= new Cvariable($varname, $type, $GLOBALS[$varname]);
+        foreach ($arr as $varname) {
+            $this->vars[$varname] = new Cvariable($varname, $type, $GLOBALS[$varname]);
         }
     }
 
@@ -202,7 +208,7 @@ class Cvarset {
      * @param string $type - integer | number | unpacked | quoted | null | float | date | text
      * @param string $value
      */
-    function addkey($varname, $type="text", $value=""): void
+    public function addkey($varname, $type = "text", $value = ""): void
     {
         $this->vars[$varname] = new Cvariable($varname, $type, $value, true);
     }
@@ -211,9 +217,9 @@ class Cvarset {
      *  remove variable from varset
      * @param string $varname
      */
-    function remove($varname): void
+    public function remove($varname): void
     {
-        unset ($this->vars[$varname]);
+        unset($this->vars[$varname]);
     }
 
     /**  set variable value
@@ -221,9 +227,9 @@ class Cvarset {
      * @param string $value
      * @param string $type - integer | number | unpacked | quoted | null | float | date | text
      */
-    function set($varname, $value, $type=""): void
+    public function set($varname, $value, $type = ""): void
     {
-        if ( $type=="" ) {
+        if ($type == "") {
             $v    = $this->vars[$varname];
             $type = $v->type;
         }
@@ -234,14 +240,16 @@ class Cvarset {
      *  return variable value
      * @param string $varname
      */
-    function value($varname){
-        return $this->vars[(string)$varname]->value;
+    public function value($varname)
+    {
+        return $this->vars[(string) $varname]->value;
     }
 
     /** get key=>value array of variables and values */
-    function getArray() : array {
+    public function getArray(): array
+    {
         $ret = [];
-        foreach ( $this->vars as  $varname => $variable ) {
+        foreach ($this->vars as $varname => $variable) {
             if (!$variable->iskey) {
                 $ret[$varname] = $variable->getValue();
             }
@@ -253,9 +261,9 @@ class Cvarset {
      *  set variables values due to array
      * @param array $arr
      */
-    function setFromArray($arr): void
+    public function setFromArray($arr): void
     {
-        foreach ( array_keys($this->vars) as $varname ) {
+        foreach (array_keys($this->vars) as $varname) {
             $this->set($varname, $arr[$varname]);
         }
     }
@@ -264,11 +272,11 @@ class Cvarset {
      *  Fills varset with data grabbed from database ($db->record())
      * @param $record
      */
-    function resetFromRecord($record): void
+    public function resetFromRecord($record): void
     {
         $this->clear();
-        foreach ( $record as $name => $value ) {
-            if ( !ctype_digit((string)$name) ) {
+        foreach ($record as $name => $value) {
+            if (!ctype_digit((string) $name)) {
                 $this->add($name, 'text', $value);
             }
         }
@@ -279,12 +287,12 @@ class Cvarset {
      * @param string[] $text_fields
      * @param string[] $num_fields
      */
-    function addArray(array $text_fields, array $num_fields=[]): void
+    public function addArray(array $text_fields, array $num_fields = []): void
     {
         foreach ($text_fields as $name) {
             $this->add($name, "text");
         }
-        foreach ( $num_fields as $name) {
+        foreach ($num_fields as $name) {
             $this->add($name, "number");
         }
     }
@@ -300,15 +308,15 @@ class Cvarset {
      *                    If SELECT - returns number of returned rows
      *
      */
-    function _doQuery($SQL, $nohalt=null): bool|int
+    public function _doQuery($SQL, $nohalt = null): bool|int
     {
         if ($this->just_print) {
             huhl($SQL);
             return true;
         }
         $db = getDB();
-        if ( $nohalt==='nohalt' ) {
-            $retval = $db->query_halt($SQL,'no');
+        if ($nohalt === 'nohalt') {
+            $retval = $db->query_halt($SQL, 'no');
         } else {
             $retval = $db->query($SQL);
         }
@@ -328,8 +336,9 @@ class Cvarset {
      * @param $tablename
      * @return string
      */
-    function _makeInsertReplace($command, $tablename): string {
-        if ( !($cols = AA::Metabase()->getColumns($tablename))) {
+    public function _makeInsertReplace($command, $tablename): string
+    {
+        if (!($cols = AA::Metabase()->getColumns($tablename))) {
             return '';
         }
         $arr  = [];
@@ -343,7 +352,7 @@ class Cvarset {
         if (!$arr) {
             return '';
         }
-        return "$command INTO `$tablename` (`". implode('`,`', array_keys($arr)) ."`) VALUES (". implode(',', array_values($arr)) .")";
+        return "$command INTO `$tablename` (`" . implode('`,`', array_keys($arr)) . "`) VALUES (" . implode(',', array_values($arr)) . ")";
     }
 
     //function _makeInsertReplace($command, $tablename) {
@@ -368,7 +377,7 @@ class Cvarset {
      * @param $tablename
      * @return string
      */
-    function makeINSERT($tablename): string
+    public function makeINSERT($tablename): string
     {
         return $this->_makeInsertReplace('INSERT', $tablename);
     }
@@ -378,7 +387,7 @@ class Cvarset {
      * @param $nohalt     'nohalt' - do not halt on database error
      * @return bool|int   0|false on error, int on success. If INSERT, returns last inserted id or PHP_INT_MAX if not provided
      */
-    function doInsert($tablename, $nohalt=null): bool|int
+    public function doInsert($tablename, $nohalt = null): bool|int
     {
         return $this->_doQuery($this->makeINSERT($tablename), $nohalt);
     }
@@ -388,36 +397,37 @@ class Cvarset {
      * @param $tablename
      * @return string
      */
-    function makeUPDATE($tablename = ""): string
+    public function makeUPDATE($tablename = ""): string
     {
         $updates = [];
-        foreach ( $this->vars as  $varname => $variable ) {
+        foreach ($this->vars as $varname => $variable) {
             if (!$variable->iskey) {
-                $updates[] = "`$varname`" ."=". $variable->getSQLValue();
+                $updates[] = "`$varname`" . "=" . $variable->getSQLValue();
             }
         }
         if ($tablename) {
             $retval = "UPDATE `$tablename` SET";
         }
-        $retval .= " " . implode (", ", $updates);
+        $retval .= " " . implode(", ", $updates);
         if ($where = $this->makeWHERE()) {     // assignment
-            $retval .= " WHERE ".$where;
+            $retval .= " WHERE " . $where;
         }
         return $retval;
     }
 
 
     /** before doUpdate you can call saveHistory() to store changes */
-    private function saveHistory($tablename, $id): string {
+    private function saveHistory($tablename, $id): string
+    {
         $data = DB_AA::select([], $this->makeSELECT($tablename));
         if (count($data) !== 1) {
             // Error: there are several rows with the same key variables
-            return "Error using doUpdate: ".count($data)." rows match the query";
+            return "Error using doUpdate: " . count($data) . " rows match the query";
         }
         $data = $data[0]; // we have only one row
         $packed = AA_Metabase::getPacked($tablename);
         foreach ($packed as $col) {
-           $data[$col] = unpack_id($data[$col]);
+            $data[$col] = unpack_id($data[$col]);
         }
         ChangesMonitor::singleton()->addHistory(ChangesMonitor::getDiff($id, $data, $this->getArray()));
         return '';
@@ -428,10 +438,10 @@ class Cvarset {
      * @param        $nohalt
      * @param string $history_key 16 character long resource id - if presented, history is written to database
      */
-    function doUpdate($tablename, $nohalt=null, $history_key=''): bool|int
+    public function doUpdate($tablename, $nohalt = null, $history_key = ''): bool|int
     {
         if ($history_key) {
-            $this->saveHistory($tablename, substr($history_key,0,32));
+            $this->saveHistory($tablename, substr($history_key, 0, 32));
         }
         return $this->_doQuery($this->makeUPDATE($tablename), $nohalt);
     }
@@ -442,7 +452,8 @@ class Cvarset {
      * @return int|void
      */
     // be sure, you have defined key field
-    function doREPLACE($tablename, $nohalt=null) {
+    public function doREPLACE($tablename, $nohalt = null)
+    {
         // we do no longer use REPLACE SQL command - it is not implemented in
         // some DB engines (it is not ANSI SQL) and even in MySQL it works bad
         // with autoincremented fields
@@ -455,7 +466,8 @@ class Cvarset {
      * @return int|void
      */
     // be sure, you have defined key field
-    function doTrueReplace($tablename, $nohalt=null) {
+    public function doTrueReplace($tablename, $nohalt = null)
+    {
         // uses REPLACE SQL command - it is not implemented in some DB engines
         // (it is not ANSI SQL) and even in MySQL it works bad
         // with autoincremented fields
@@ -467,7 +479,8 @@ class Cvarset {
      * @param $nohalt
      * @return int|void
      */
-    function doTruncate($tablename, $nohalt=null) {
+    public function doTruncate($tablename, $nohalt = null)
+    {
         return $this->_doQuery("TRUNCATE $tablename", $nohalt);
     }
 
@@ -475,11 +488,11 @@ class Cvarset {
      * @param $tablename
      * @return string
      */
-    function makeSELECT($tablename): string
+    public function makeSELECT($tablename): string
     {
         $where = $this->makeWHERE();
-        return ($where ? "SELECT * FROM `$tablename` WHERE ".$where :
-                         "SELECT * FROM `$tablename`");
+        return ($where ? "SELECT * FROM `$tablename` WHERE " . $where
+                         : "SELECT * FROM `$tablename`");
     }
 
     /** makeDELETE function
@@ -487,12 +500,12 @@ class Cvarset {
      * @param $where
      * @return string
      */
-    function makeDELETE($tablename, $where=null): string
+    public function makeDELETE($tablename, $where = null): string
     {
-        if ( is_null($where) ) {
+        if (is_null($where)) {
             $where = $this->makeWHERE();
         }
-        return ($where ? "DELETE FROM `$tablename` WHERE ".$where : 'Error');
+        return ($where ? "DELETE FROM `$tablename` WHERE " . $where : 'Error');
     }
 
     /** doDelete function
@@ -500,7 +513,8 @@ class Cvarset {
      * @param $nohalt
      * @return int|void
      */
-    function doDelete($tablename, $nohalt=null) {
+    public function doDelete($tablename, $nohalt = null)
+    {
         return $this->_doQuery($this->makeDELETE($tablename), $nohalt);
     }
 
@@ -510,7 +524,8 @@ class Cvarset {
      * @param $nohalt
      * @return int|void
      */
-    function doDeleteWhere($tablename, $where, $nohalt=null) {
+    public function doDeleteWhere($tablename, $where, $nohalt = null)
+    {
         return $this->_doQuery($this->makeDELETE($tablename, $where), $nohalt);
     }
 
@@ -518,18 +533,18 @@ class Cvarset {
      * @param $tablename
      * @return string
      */
-    function makeWHERE($tablename=""): string
+    public function makeWHERE($tablename = ""): string
     {
         $where = "";
-        foreach ( $this->vars as $varname => $variable) {
+        foreach ($this->vars as $varname => $variable) {
             if ($variable->iskey) {
                 if ($where) {
                     $where .= " AND ";
                 }
                 if ($tablename) {
-                    $varname = $tablename.".".$varname;
+                    $varname = $tablename . "." . $varname;
                 }
-                $where .= $varname ."=". $variable->getSQLValue();
+                $where .= $varname . "=" . $variable->getSQLValue();
             }
         }
         return $where;
@@ -542,10 +557,10 @@ class Cvarset {
      * @param $tablename
      * @return string
      */
-    function makeINSERTorUPDATE($tablename): string
+    public function makeINSERTorUPDATE($tablename): string
     {
         $where = $this->makeWHERE();
-        $SQL = "SELECT count(*) as cnt FROM `$tablename`". ($where ? " WHERE $where" : "");
+        $SQL = "SELECT count(*) as cnt FROM `$tablename`" . ($where ? " WHERE $where" : "");
         $rows = DB_AA::select1('cnt', $SQL);
 
         if ($rows > 1) {
@@ -554,7 +569,7 @@ class Cvarset {
 
         return match ($rows) {
             0       => $this->makeINSERT($tablename),
-            1       => $this->makeUPDATE($tablename)
+            1       => $this->makeUPDATE($tablename),
         };
     }
 
@@ -566,12 +581,13 @@ class Cvarset {
      * @param $values
      * @return string
      */
-    static function sqlin($column, $values): string {
+    public static function sqlin($column, $values): string
+    {
         if (!is_array($values)) {
             $values = [$values];
         }
         $arr = [];
-        foreach ((array)$values as $v) {
+        foreach ((array) $values as $v) {
             if ($v != '') {
                 $arr[] = "'" . quote($v) . "'";
             }
@@ -592,7 +608,8 @@ class Cvarset {
  * @param $field_type
  * @return bool
  */
-function is_field_type_numerical($field_type): bool {
+function is_field_type_numerical($field_type): bool
+{
     return in_array($field_type, ["float","double","decimal","int","timestamp"]);
 }
 
@@ -608,8 +625,9 @@ function is_field_type_numerical($field_type): bool {
  *   @param array  $omit_columns [optional] array ($column_name, ...) - fields to be omitted
  *   @param array  $id_columns   [optional] array ($column_name, ...) - fields with the 16 byte ID to be generated for each row a new one
  */
-function CopyTableRows(string $table, $where, $set_columns, $omit_columns = "", $id_columns = ""): bool {
-    if (!$omit_columns ) {
+function CopyTableRows(string $table, $where, $set_columns, $omit_columns = "", $id_columns = ""): bool
+{
+    if (!$omit_columns) {
         $omit_columns = [];
     }
     if (!$id_columns) {
@@ -641,18 +659,16 @@ function CopyTableRows(string $table, $where, $set_columns, $omit_columns = "", 
             // look into $set_columns
             if (isset($set_columns[$col["name"]])) {
                 $val = $set_columns[$col["name"]];
-            }
-            elseif (in_array($col["name"], $id_columns)) {
+            } elseif (in_array($col["name"], $id_columns)) {
                 $val = q_pack_id(new_id());
-            }
-            else {
+            } else {
                 $val = $datarow[$col["name"]];
             }
 
-            $varset->set($col["name"],$val,$type);
+            $varset->set($col["name"], $val, $type);
         }
 
-        if ( !$varset->doINSERT($table)) {
+        if (!$varset->doINSERT($table)) {
             return false;
         }
     }

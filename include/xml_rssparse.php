@@ -1,4 +1,5 @@
 <?php
+
 /**
  *
  *
@@ -58,11 +59,11 @@ use AA\IO\Grabber\AARSS_Parser;
 function decode($v): string
 {
     static $encoder;
-    if ( !$encoder ) {
-        $encoder = new ConvertCharset;
+    if (!$encoder) {
+        $encoder = new ConvertCharset();
     }
-    if ($GLOBALS['debugfeed'] >=8) {
-        huhl("decode: UTF-8 ---> ".$GLOBALS['g_slice_encoding'].": $v");
+    if ($GLOBALS['debugfeed'] >= 8) {
+        huhl("decode: UTF-8 ---> " . $GLOBALS['g_slice_encoding'] . ": $v");
     }
     return $encoder->Convert($v, 'utf-8', $GLOBALS['g_slice_encoding']);
 }
@@ -74,78 +75,90 @@ function decode($v): string
  */
 function startElement($parser, $name, $attrs): void
 {
-  global $cur_tag,
-         $rdf_modules,
-         $channel_uri,
-         $channel,
-         $item, $item_uri,
-         $field_uri, $field_uri_slice, $category_uri,
-         $content_format, $rss_version,
-         $fielddata_uri, $fielddata_content_format, $fielddata;
-  $cur_tag .= "^". AARSS_Parser::nsName2abbrevname($name);
-  $RDF = AARSS_Parser::nsAbbrev2name("RDF");   // For matching with NameSpace expanded attributes
+    global $cur_tag,
+    $rdf_modules,
+    $channel_uri,
+    $channel,
+    $item, $item_uri,
+    $field_uri, $field_uri_slice, $category_uri,
+    $content_format, $rss_version,
+    $fielddata_uri, $fielddata_content_format, $fielddata;
+    $cur_tag .= "^" . AARSS_Parser::nsName2abbrevname($name);
+    $RDF = AARSS_Parser::nsAbbrev2name("RDF");   // For matching with NameSpace expanded attributes
 
-  if ($GLOBALS['debugfeed'] >=8) {
-      print("\nStartElement:$cur_tag");
-  }
-  switch ($cur_tag) {
-    case "^RSS" :       // rss header, read version
-        $rss_version = $attrs["VERSION"]; break;
+    if ($GLOBALS['debugfeed'] >= 8) {
+        print("\nStartElement:$cur_tag");
+    }
+    switch ($cur_tag) {
+        case "^RSS":       // rss header, read version
+            $rss_version = $attrs["VERSION"];
+            break;
 
-    case "^RDF:RDF" :                                                   // rdf modules
-      $rdf_modules = $attrs; break;
+        case "^RDF:RDF":                                                   // rdf modules
+            $rdf_modules = $attrs;
+            break;
 
-    case "^RDF:RDF^RSS:CHANNEL":                                            // channel URI
-      $channel_uri = FeedUtil::attr2id($attrs["$RDF:ABOUT"]); break;
+        case "^RDF:RDF^RSS:CHANNEL":                                            // channel URI
+            $channel_uri = FeedUtil::attr2id($attrs["$RDF:ABOUT"]);
+            break;
 
-    case "^RDF:RDF^RSS:CHANNEL^AA:CATEGORIES^RDF:BAG^RDF:LI":               // list of categories AA specific
-      $channel['categories'][substr(strrchr($attrs["$RDF:RESOURCE"],"/"),1)] = 1; break;
+        case "^RDF:RDF^RSS:CHANNEL^AA:CATEGORIES^RDF:BAG^RDF:LI":               // list of categories AA specific
+            $channel['categories'][substr(strrchr($attrs["$RDF:RESOURCE"], "/"), 1)] = 1;
+            break;
 
-    case "^RDF:RDF^RSS:CHANNEL^AA:FIELDS^RDF:BAG^RDF:LI":                   // list of fields AA specific
-        $channel['fields'][substr($attrs["$RDF:RESOURCE"],-16)] = 1;
-      break;
+        case "^RDF:RDF^RSS:CHANNEL^AA:FIELDS^RDF:BAG^RDF:LI":                   // list of fields AA specific
+            $channel['fields'][substr($attrs["$RDF:RESOURCE"], -16)] = 1;
+            break;
 
-    case "^RDF:RDF^RSS:CHANNEL^RSS:ITEMS^RDF:SEQ^RDF:LI":                       // list of items
-     $channel['items'][FeedUtil::attr2id($attrs["$RDF:RESOURCE"])] = 1; break;
+        case "^RDF:RDF^RSS:CHANNEL^RSS:ITEMS^RDF:SEQ^RDF:LI":                       // list of items
+            $channel['items'][FeedUtil::attr2id($attrs["$RDF:RESOURCE"])] = 1;
+            break;
 
-    case "^RDF:RDF^AA:CATEGORY":                                        // category URI AA specific
-      $category_uri = substr(strrchr($attrs["$RDF:ABOUT"],"/"),1); break;
+        case "^RDF:RDF^AA:CATEGORY":                                        // category URI AA specific
+            $category_uri = substr(strrchr($attrs["$RDF:ABOUT"], "/"), 1);
+            break;
 
-    case "^RDF:RDF^AA:FIELD":                                           // field URI AA specific
-      $field_uri = substr($attrs["$RDF:ABOUT"],-16);
-      $field_uri_slice = substr(strrchr(substr($attrs["$RDF:ABOUT"],0,-17),"/"),1);
-      break;
+        case "^RDF:RDF^AA:FIELD":                                           // field URI AA specific
+            $field_uri = substr($attrs["$RDF:ABOUT"], -16);
+            $field_uri_slice = substr(strrchr(substr($attrs["$RDF:ABOUT"], 0, -17), "/"), 1);
+            break;
 
-    case "^RSS^CHANNEL^ITEM":											// RSS 0.9
-        $item_uri = ""; break ;
+        case "^RSS^CHANNEL^ITEM":											// RSS 0.9
+            $item_uri = "";
+            break ;
 
-    case "^RDF:RDF^RSS:ITEM":                                               // item URI
-//Some feeds e.g. http://www.heise.de/newsticker/heise.rdf leave blank!
-      $item_uri =
-        ($attrs["$RDF:ABOUT"])
-        ? FeedUtil::attr2id($attrs["$RDF:ABOUT"])
-        : "";
-      break;
+        case "^RDF:RDF^RSS:ITEM":                                               // item URI
+            //Some feeds e.g. http://www.heise.de/newsticker/heise.rdf leave blank!
+            $item_uri
+              = ($attrs["$RDF:ABOUT"])
+              ? FeedUtil::attr2id($attrs["$RDF:ABOUT"])
+              : "";
+            break;
 
-    case "^RDF:RDF^RSS:ITEM^CONTENT:ITEMS^RDF:BAG^RDF:LI^CONTENT:ITEM^CONTENT:FORMAT":    // format (html/plain) of fulltext
-      $content_format = $attrs["$RDF:RESOURCE"]; break;
+        case "^RDF:RDF^RSS:ITEM^CONTENT:ITEMS^RDF:BAG^RDF:LI^CONTENT:ITEM^CONTENT:FORMAT":    // format (html/plain) of fulltext
+            $content_format = $attrs["$RDF:RESOURCE"];
+            break;
 
-    case "^RDF:RDF^RSS:ITEM^CONTENT:ENCODED":   // format is implicit - EG5
-      $content_format = array_search(FeedUtil::HTML, FeedUtil::CONTENT_FORMATS);  break;
+        case "^RDF:RDF^RSS:ITEM^CONTENT:ENCODED":   // format is implicit - EG5
+            $content_format = array_search(FeedUtil::HTML, FeedUtil::CONTENT_FORMATS);
+            break;
 
-    case "^RDF:RDF^RSS:ITEM^AA:CATEGORIES^RDF:BAG^RDF:LI":                  // list of categories into which an item belongs AA Specific
-      $item['categories'][] = substr(strrchr($attrs["$RDF:RESOURCE"],"/"),1); break;
+        case "^RDF:RDF^RSS:ITEM^AA:CATEGORIES^RDF:BAG^RDF:LI":                  // list of categories into which an item belongs AA Specific
+            $item['categories'][] = substr(strrchr($attrs["$RDF:RESOURCE"], "/"), 1);
+            break;
 
-    case "^RDF:RDF^RSS:ITEM^AA:FIELDDATACONT^RDF:BAG^RDF:LI^AA:FIELDDATA":
-      $fielddata = ['value'=>"", 'flag'=>0];
-      break;
+        case "^RDF:RDF^RSS:ITEM^AA:FIELDDATACONT^RDF:BAG^RDF:LI^AA:FIELDDATA":
+            $fielddata = ['value' => "", 'flag' => 0];
+            break;
 
-    case "^RDF:RDF^RSS:ITEM^AA:FIELDDATACONT^RDF:BAG^RDF:LI^AA:FIELDDATA^AA:FIELD":       // field's URI
-      $fielddata_uri = substr($attrs["$RDF:RESOURCE"],-16); break;
+        case "^RDF:RDF^RSS:ITEM^AA:FIELDDATACONT^RDF:BAG^RDF:LI^AA:FIELDDATA^AA:FIELD":       // field's URI
+            $fielddata_uri = substr($attrs["$RDF:RESOURCE"], -16);
+            break;
 
-    case "^RDF:RDF^RSS:ITEM^AA:FIELDDATACONT^RDF:BAG^RDF:LI^AA:FIELDDATA^AA:FORMAT":      // field's content format (html/plain)
-      $fielddata_content_format = $attrs["$RDF:RESOURCE"]; break;
-  }
+        case "^RDF:RDF^RSS:ITEM^AA:FIELDDATACONT^RDF:BAG^RDF:LI^AA:FIELDDATA^AA:FORMAT":      // field's content format (html/plain)
+            $fielddata_content_format = $attrs["$RDF:RESOURCE"];
+            break;
+    }
 }
 /** endElement function
  * @param $parser
@@ -153,130 +166,162 @@ function startElement($parser, $name, $attrs): void
  */
 function endElement($parser, $name): void
 {
-  global $cur_tag,
-         $aa_rss,
-         $channel_uri, $channel,
-         $category_uri, $category,
-         $field_uri, $field_uri_slice, $field,
-         $item_uri, $item, $content_format,
-         $fielddata_uri, $fielddata, $fielddata_content_format,
-         $fulltext_content;
+    global $cur_tag,
+    $aa_rss,
+    $channel_uri, $channel,
+    $category_uri, $category,
+    $field_uri, $field_uri_slice, $field,
+    $item_uri, $item, $content_format,
+    $fielddata_uri, $fielddata, $fielddata_content_format,
+    $fulltext_content;
 
-    if ($GLOBALS['debugfeed'] >=8) {
+    if ($GLOBALS['debugfeed'] >= 8) {
         print("\nendElement:$cur_tag");
     }
-  switch ($cur_tag) {
-    case "^RDF:RDF":
-      break;
+    switch ($cur_tag) {
+        case "^RDF:RDF":
+            break;
 
-    case "^RSS^CHANNEL":
-    case "^RDF:RDF^RSS:CHANNEL":
-      if (!($channel_uri)) {
-          $channel_uri = string2id($channel['title']);
-      }   // RSS 0.9
-      $aa_rss['channels'][$channel_uri] = $channel;
-      $channel = [];
-      break;
+        case "^RSS^CHANNEL":
+        case "^RDF:RDF^RSS:CHANNEL":
+            if (!($channel_uri)) {
+                $channel_uri = string2id($channel['title']);
+            }   // RSS 0.9
+            $aa_rss['channels'][$channel_uri] = $channel;
+            $channel = [];
+            break;
 
-    case "^RDF:RDF^AA:CATEGORY":
-      $aa_rss['categories'][$category_uri] = $category;
-      $category = [];
-      break;
+        case "^RDF:RDF^AA:CATEGORY":
+            $aa_rss['categories'][$category_uri] = $category;
+            $category = [];
+            break;
 
-    case "^RDF:RDF^AA:FIELD":
-      $aa_rss['fields'][$field_uri] = $field;
-      $field = [];
-      break;
+        case "^RDF:RDF^AA:FIELD":
+            $aa_rss['fields'][$field_uri] = $field;
+            $field = [];
+            break;
 
-    case "^RSS^CHANNEL^ITEM":			// RSS 0.9
-    case "^RDF:RDF^RSS:ITEM":
-      // dc elements decode
-      if (isset($item['dc'])) {
-          foreach ($item['dc'] as $k => $v) {
-              $item['dc'][$k] = decode($v);
-          }
-      }
-      if (!($item_uri)) { $item_uri = string2id($item['title'] . $item["link"] . $item['description']); } // RSS 0.9
-      $aa_rss['items'][$item_uri] = $item;
-      $item = [];
-      break;
+        case "^RSS^CHANNEL^ITEM":			// RSS 0.9
+        case "^RDF:RDF^RSS:ITEM":
+            // dc elements decode
+            if (isset($item['dc'])) {
+                foreach ($item['dc'] as $k => $v) {
+                    $item['dc'][$k] = decode($v);
+                }
+            }
+            if (!($item_uri)) {
+                $item_uri = string2id($item['title'] . $item["link"] . $item['description']);
+            } // RSS 0.9
+            $aa_rss['items'][$item_uri] = $item;
+            $item = [];
+            break;
 
-    case "^RDF:RDF^RSS:ITEM^AA:FIELDDATACONT^RDF:BAG^RDF:LI^AA:FIELDDATA":
-      $fielddata['format'] = FeedUtil::CONTENT_FORMATS[$fielddata_content_format];
-      $item['fields_content'][$fielddata_uri][] = $fielddata;
-      break;
+        case "^RDF:RDF^RSS:ITEM^AA:FIELDDATACONT^RDF:BAG^RDF:LI^AA:FIELDDATA":
+            $fielddata['format'] = FeedUtil::CONTENT_FORMATS[$fielddata_content_format];
+            $item['fields_content'][$fielddata_uri][] = $fielddata;
+            break;
 
-    case "^RDF:RDF^RSS:ITEM^CONTENT:ENCODED":  //EG5
-    case "^RDF:RDF^RSS:ITEM^CONTENT:ITEMS^RDF:BAG^RDF:LI^CONTENT:ITEM":
-      $item['content'][FeedUtil::CONTENT_FORMATS[$content_format]] = $fulltext_content;
-      $fulltext_content                                            ="";
-      break;
-  }
+        case "^RDF:RDF^RSS:ITEM^CONTENT:ENCODED":  //EG5
+        case "^RDF:RDF^RSS:ITEM^CONTENT:ITEMS^RDF:BAG^RDF:LI^CONTENT:ITEM":
+            $item['content'][FeedUtil::CONTENT_FORMATS[$content_format]] = $fulltext_content;
+            $fulltext_content                                            = "";
+            break;
+    }
 
-  $caret_pos = strrpos($cur_tag, '^');
-  $cur_tag = substr($cur_tag, 0, $caret_pos);
- }
+    $caret_pos = strrpos($cur_tag, '^');
+    $cur_tag = substr($cur_tag, 0, $caret_pos);
+}
 /** charD function
  * @param $parser
  * @param $data
  */
 function charD($parser, $data): void
 {
- global $cur_tag,
-         $aa_rss, $channel, $category, $field, $item,
-         $fulltext_content, $fielddata,$content_format;
+    global $cur_tag,
+    $aa_rss, $channel, $category, $field, $item,
+    $fulltext_content, $fielddata,$content_format;
 
-  switch ($cur_tag) {
-    case "^RSS^CHANNEL^TITLE":
-    case "^RDF:RDF^RSS:CHANNEL^RSS:TITLE" :             $channel['title']       .= decode($data); break;
-    case "^RSS^CHANNEL^DESCRIPTION":
-    case "^RDF:RDF^RSS:CHANNEL^DESCRIPTION" :           $channel['description'] .= decode($data); break;
-    case "^RSS^CHANNEL^LANGUAGE":
-    case "^RDF:RDF^RSS:CHANNEL^RSS:LANGUAGE" :          $channel['language']     = $data; break;
-    case "^RDF:RDF^RSS:CHANNEL^AA:NEWESTITEMTIMESTAMP": $channel['timestamp']    = $data; break;
-    case "^RSS^CHANNEL^LINK":
-    case "^RDF:RDF^RSS:CHANNEL^RSS:LINK" :              $channel['link']        .= decode($data); break;
-    case "^RDF:RDF^RSS:CHANNEL^DC:IDENTIFIER" :         $channel['slice_id']     = $data; break;
+    switch ($cur_tag) {
+        case "^RSS^CHANNEL^TITLE":
+        case "^RDF:RDF^RSS:CHANNEL^RSS:TITLE":             $channel['title']       .= decode($data);
+            break;
+        case "^RSS^CHANNEL^DESCRIPTION":
+        case "^RDF:RDF^RSS:CHANNEL^DESCRIPTION":           $channel['description'] .= decode($data);
+            break;
+        case "^RSS^CHANNEL^LANGUAGE":
+        case "^RDF:RDF^RSS:CHANNEL^RSS:LANGUAGE":          $channel['language']     = $data;
+            break;
+        case "^RDF:RDF^RSS:CHANNEL^AA:NEWESTITEMTIMESTAMP": $channel['timestamp']    = $data;
+            break;
+        case "^RSS^CHANNEL^LINK":
+        case "^RDF:RDF^RSS:CHANNEL^RSS:LINK":              $channel['link']        .= decode($data);
+            break;
+        case "^RDF:RDF^RSS:CHANNEL^DC:IDENTIFIER":         $channel['slice_id']     = $data;
+            break;
 
-    case "^RDF:RDF^AA:CATEGORY^AA:NAME":                $category['name']       .= decode($data); break;
-    case "^RDF:RDF^AA:CATEGORY^AA:ID":                  $category['id']          = $data; break;
-    case "^RDF:RDF^AA:CATEGORY^AA:VALUE":               $category['value']      .= decode($data); break;
-    case "^RDF:RDF^AA:CATEGORY^AA:CATPARENT":           $category['catparent']   = decode($data); break;
+        case "^RDF:RDF^AA:CATEGORY^AA:NAME":                $category['name']       .= decode($data);
+            break;
+        case "^RDF:RDF^AA:CATEGORY^AA:ID":                  $category['id']          = $data;
+            break;
+        case "^RDF:RDF^AA:CATEGORY^AA:VALUE":               $category['value']      .= decode($data);
+            break;
+        case "^RDF:RDF^AA:CATEGORY^AA:CATPARENT":           $category['catparent']   = decode($data);
+            break;
 
-    case "^RDF:RDF^AA:FIELD^AA:NAME":                   $field['name']          .= decode($data); break;
-    case "^RDF:RDF^AA:FIELD^AA:ID":                     $field['id']             = $data; break;
+        case "^RDF:RDF^AA:FIELD^AA:NAME":                   $field['name']          .= decode($data);
+            break;
+        case "^RDF:RDF^AA:FIELD^AA:ID":                     $field['id']             = $data;
+            break;
 
-    case "^RSS^CHANNEL^ITEM^TITLE":
-    case "^RDF:RDF^RSS:ITEM^RSS:TITLE" :                $item['title']          .= decode($data); break;
-    case "^RSS^CHANNEL^ITEM^DESCRIPTION":
-    case "^RDF:RDF^RSS:ITEM^RSS:DESCRIPTION" :          $item['description']    .= decode($data); break;
-    case "^RSS^CHANNEL^ITEM^LINK":
-    case "^RDF:RDF^RSS:ITEM^RSS:LINK" :                 $item['link']           .= decode($data); break;
-    case "^RDF:RDF^RSS:ITEM^DC:IDENTIFIER" :            $item['id']              = $data; break;
-    case "^RSS^CHANNEL^ITEM^GUID":                      $item['guid']           .= decode($data); break;
-    case "^RSS^CHANNEL^ITEM^PUBDATE":                   $item['pubdate']        .= decode($data); break;
+        case "^RSS^CHANNEL^ITEM^TITLE":
+        case "^RDF:RDF^RSS:ITEM^RSS:TITLE":                $item['title']          .= decode($data);
+            break;
+        case "^RSS^CHANNEL^ITEM^DESCRIPTION":
+        case "^RDF:RDF^RSS:ITEM^RSS:DESCRIPTION":          $item['description']    .= decode($data);
+            break;
+        case "^RSS^CHANNEL^ITEM^LINK":
+        case "^RDF:RDF^RSS:ITEM^RSS:LINK":                 $item['link']           .= decode($data);
+            break;
+        case "^RDF:RDF^RSS:ITEM^DC:IDENTIFIER":            $item['id']              = $data;
+            break;
+        case "^RSS^CHANNEL^ITEM^GUID":                      $item['guid']           .= decode($data);
+            break;
+        case "^RSS^CHANNEL^ITEM^PUBDATE":                   $item['pubdate']        .= decode($data);
+            break;
 
-    // Dublin Core elements
-    // Mitra changed these back to DC names, and then interprets them in the client
-    case "^RDF:RDF^RSS:ITEM^DC:TITLE" :       $item['dc']['title']       .= $data; break; // was headline
-    case "^RDF:RDF^RSS:ITEM^DC:CREATOR" :     $item['dc']['creator']     .= $data; break; // was author
-    case "^RDF:RDF^RSS:ITEM^DC:SUBJECT" :     $item['dc']['subject']     .= $data; break; // was abstract
-    case "^RDF:RDF^RSS:ITEM^DC:DESCRIPTION" : $item['dc']['description'] .= $data; break; // was abstract
-    case "^RDF:RDF^RSS:ITEM^DC:DATE" :        $item['dc']['date']        .= $data; break; // was publish_date
-    case "^RDF:RDF^RSS:ITEM^DC:SOURCE" :      $item['dc']['source']      .= $data; break;
-    case "^RDF:RDF^RSS:ITEM^DC:LANGUAGE" :    $item['dc']['language']    .= $data; break; // was lang_code
-    case "^RDF:RDF^RSS:ITEM^DC:RELATION" :    $item['dc']['relation']    .= $data; break; // was source_href
-    case "^RDF:RDF^RSS:ITEM^DC:COVERAGE" :    $item['dc']['coverage']    .= $data; break; // was place
+            // Dublin Core elements
+            // Mitra changed these back to DC names, and then interprets them in the client
+        case "^RDF:RDF^RSS:ITEM^DC:TITLE":       $item['dc']['title']       .= $data;
+            break; // was headline
+        case "^RDF:RDF^RSS:ITEM^DC:CREATOR":     $item['dc']['creator']     .= $data;
+            break; // was author
+        case "^RDF:RDF^RSS:ITEM^DC:SUBJECT":     $item['dc']['subject']     .= $data;
+            break; // was abstract
+        case "^RDF:RDF^RSS:ITEM^DC:DESCRIPTION": $item['dc']['description'] .= $data;
+            break; // was abstract
+        case "^RDF:RDF^RSS:ITEM^DC:DATE":        $item['dc']['date']        .= $data;
+            break; // was publish_date
+        case "^RDF:RDF^RSS:ITEM^DC:SOURCE":      $item['dc']['source']      .= $data;
+            break;
+        case "^RDF:RDF^RSS:ITEM^DC:LANGUAGE":    $item['dc']['language']    .= $data;
+            break; // was lang_code
+        case "^RDF:RDF^RSS:ITEM^DC:RELATION":    $item['dc']['relation']    .= $data;
+            break; // was source_href
+        case "^RDF:RDF^RSS:ITEM^DC:COVERAGE":    $item['dc']['coverage']    .= $data;
+            break; // was place
 
-    case "^RDF:RDF^RSS:ITEM^CONTENT:ENCODED":   // EG5
-    case "^RDF:RDF^RSS:ITEM^CONTENT:ITEMS^RDF:BAG^RDF:LI^CONTENT:ITEM^RDF:VALUE":    // item's fulltext
-        $fulltext_content .= decode($data); break;
+        case "^RDF:RDF^RSS:ITEM^CONTENT:ENCODED":   // EG5
+        case "^RDF:RDF^RSS:ITEM^CONTENT:ITEMS^RDF:BAG^RDF:LI^CONTENT:ITEM^RDF:VALUE":    // item's fulltext
+            $fulltext_content .= decode($data);
+            break;
 
-    case "^RDF:RDF^RSS:ITEM^AA:FIELDDATACONT^RDF:BAG^RDF:LI^AA:FIELDDATA^RDF:VALUE":
-        $fielddata['value'] .= decode($data); break;
-    case "^RDF:RDF^RSS:ITEM^AA:FIELDDATACONT^RDF:BAG^RDF:LI^AA:FIELDDATA^AA:FIELDFLAGS":
-        $fielddata['flag'] = $data; break;
-  }
+        case "^RDF:RDF^RSS:ITEM^AA:FIELDDATACONT^RDF:BAG^RDF:LI^AA:FIELDDATA^RDF:VALUE":
+            $fielddata['value'] .= decode($data);
+            break;
+        case "^RDF:RDF^RSS:ITEM^AA:FIELDDATACONT^RDF:BAG^RDF:LI^AA:FIELDDATA^AA:FIELDFLAGS":
+            $fielddata['flag'] = $data;
+            break;
+    }
 }
 
 /** aa_rss_parse function
@@ -285,17 +330,17 @@ function charD($parser, $data): void
  *
  * @param $xml_data
  */
-function aa_rss_parse($xml_data, string $feed_id=''): ?array
+function aa_rss_parse($xml_data, string $feed_id = ''): ?array
 {
     global $cur_tag, $aa_rss, $channel, $category, $field, $item, $fulltext_content, $fielddata, $content_format;
 
-    if ($GLOBALS['debugfeed'] >=8) {
+    if ($GLOBALS['debugfeed'] >= 8) {
         huhl("aa_rss_parse:Parsing ...");
     }
 
     // Destination slice encoding should be set in aa_rss_parse caller function.
     // If not set, we probably want to parse data for current slice (node list, ... )
-    if ( !$GLOBALS['g_slice_encoding'] ) {
+    if (!$GLOBALS['g_slice_encoding']) {
         $GLOBALS['g_slice_encoding'] = AA_Slice::getModule($GLOBALS['slice_id'])->getCharset();
     }
 
@@ -314,13 +359,13 @@ function aa_rss_parse($xml_data, string $feed_id=''): ?array
     $aa_rss = [];
 
     xml_set_element_handler($xml_parser, "startElement", "endElement");
-    xml_set_character_data_handler($xml_parser,"charD");
+    xml_set_character_data_handler($xml_parser, "charD");
     if (!xml_parse($xml_parser, $xml_data)) {
         $err = sprintf("Feed %s: XML parse error: %s at line %d", $feed_id, xml_error_string(xml_get_error_code($xml_parser)), xml_get_current_line_number($xml_parser));
         print("\nXML_RSSPARSE:ERR:$err");
         return null;
     }
-    if ($GLOBALS['debugfeed'] >=8) {
+    if ($GLOBALS['debugfeed'] >= 8) {
         huhl("aa_rss_parse:Parsed ok array=", $aa_rss);
     }
     xml_parser_free($xml_parser);
@@ -342,4 +387,3 @@ from fielddata_content_format
 $item[content][0 | 1] = $fulltext_content  where 0|1
 from $content_format in RDF/ITEM/ITEMS/BAG/LI/ITEM | RDF/ITEM/ENCODED
 */
-

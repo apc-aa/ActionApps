@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Image manipulation functions - all functions require_once GD Library
  *
@@ -41,4 +42,3 @@
 // if type is defined return true ro false,
 // if type is not defined return array of supported types
 //#####################################################
-

@@ -1,4 +1,5 @@
 <?php
+
 /**
  *
  * PHP version 7.2+
@@ -47,17 +48,19 @@ require_once __DIR__ . '/formutil.php';
  * @param array  $attr ['onclick' => "return confirm('Are you sure?')"]
  * @return string
  */
-function a_href($url, $label='', array $attr=[]): string {
+function a_href($url, $label = '', array $attr = []): string
+{
     $add = htmlattr($attr);
     if (!strlen($label)) {
         $label = $url;
     }
-    return '<a href="'.safe($url) ."\" $add>$label</a>";
+    return '<a href="' . safe($url) . "\" $add>$label</a>";
 }
 
 /* @usage htmlattr(['class'=>['info','disabled']])  // any attr could be array */
-function htmlattr(array $attr): string {
-    return (string)array_reduce( array_keys($attr), static fn($str, $key) => $str . (($attr[$key] !== '') ? ' ' . $key . '="' . safe(is_array($attr[$key]) ? implode(' ', $attr[$key]) : $attr[$key]) . '"' : ''));
+function htmlattr(array $attr): string
+{
+    return (string) array_reduce(array_keys($attr), static fn($str, $key) => $str . (($attr[$key] !== '') ? ' ' . $key . '="' . safe(is_array($attr[$key]) ? implode(' ', $attr[$key]) : $attr[$key]) . '"' : ''));
 }
 
 /** creates html tag with attributes
@@ -65,15 +68,17 @@ function htmlattr(array $attr): string {
  * @usage htmltag('div','text',['class'=>'info'])
  * @usage htmltag('div','text',['class'=>['info','disabled']])  // any attr could be array
  */
-function htmltag($tag, $content, $attr=[]): string {
-    return "<$tag". htmlattr($attr).'>'. $content ."</$tag>";
+function htmltag($tag, $content, $attr = []): string
+{
+    return "<$tag" . htmlattr($attr) . '>' . $content . "</$tag>";
 }
 
 /** creates xml/html tag with attributes
  * @usage xmltag('name',John,['sex'=>'M'])
  */
-function xmltag($tag, $content, $attr=[]): string {
-    return "<$tag". array_reduce( array_keys($attr), static fn($str, $key) => $str . ' ' . $key . '="' . safexml($attr[$key]) . '"').'>'. safexml($content)."</$tag>";
+function xmltag($tag, $content, $attr = []): string
+{
+    return "<$tag" . array_reduce(array_keys($attr), static fn($str, $key) => $str . ' ' . $key . '="' . safexml($attr[$key]) . '"') . '>' . safexml($content) . "</$tag>";
 }
 
 /** expand_return_url function
@@ -81,7 +86,8 @@ function xmltag($tag, $content, $attr=[]): string {
  * @param $session
  * @return mixed|string
  */
-function expand_return_url($session=true): string {
+function expand_return_url($session = true): string
+{
     global $return_url, $sess;
     return ($session && is_object($sess)) ? StateUrl($return_url) : $return_url;
 }
@@ -97,7 +103,7 @@ function expand_return_url($session=true): string {
  * @param $session
  * @param $add_param
  */
-function go_return_or_url($url, $usejs=false, $session=false): void
+function go_return_or_url($url, $usejs = false, $session = false): void
 {
     global $return_url;
 
@@ -125,7 +131,7 @@ function endslash(&$s): void
  */
 function escape4js($code): string
 {
-    return str_replace( ["\\", "'","\r\n","\n","\r",'<script','</script'], ["\\\\", "\\'",'\n','\n','\n','\x3Cscript','\x3C/script'], $code );   // remove newlines ...
+    return str_replace(["\\", "'","\r\n","\n","\r",'<script','</script'], ["\\\\", "\\'",'\n','\n','\n','\x3Cscript','\x3C/script'], $code);   // remove newlines ...
 }
 
 /** self_server function
@@ -134,15 +140,15 @@ function escape4js($code): string
 function self_server(): string
 {
     $port = '';
-    if ( isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ) {
-        $PROTOCOL='https';
+    if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
+        $PROTOCOL = 'https';
         if ($_SERVER['SERVER_PORT'] != "443") {
-            $port = ':'. $_SERVER['SERVER_PORT'];
+            $port = ':' . $_SERVER['SERVER_PORT'];
         }
     } else {
-        $PROTOCOL='http';
+        $PROTOCOL = 'http';
         if ($_SERVER['SERVER_PORT'] != "80") {
-            $port = ':'. $_SERVER['SERVER_PORT'];
+            $port = ':' . $_SERVER['SERVER_PORT'];
         }
     }
     // better to use HTTP_HOST - if we use SERVER_NAME and we try to open window
@@ -156,8 +162,9 @@ function self_server(): string
 /** self_base function
  * returns server name with protocol, port and current directory of php script
  */
-function self_base(): string {
-    return (self_server(). preg_replace('~/[^/]*$~', '', $_SERVER['PHP_SELF']) . '/');
+function self_base(): string
+{
+    return (self_server() . preg_replace('~/[^/]*$~', '', $_SERVER['PHP_SELF']) . '/');
 }
 
 /** document_uri function
@@ -166,22 +173,25 @@ function self_base(): string {
  *   and somewhere nor REDIRECT_URL
  *   (canaca.com 2003-09-19 - Apache/1.3.27 (Unix) (Red-Hat/Linux), Honza)
  */
-function document_uri(): string {
-    return get_if($_SERVER['DOCUMENT_URI'],$_SERVER['REDIRECT_URL'],$_SERVER['SCRIPT_URL'],'');
+function document_uri(): string
+{
+    return get_if($_SERVER['DOCUMENT_URI'], $_SERVER['REDIRECT_URL'], $_SERVER['SCRIPT_URL'], '');
 }
 
 /** shtml_base function
  *  returns server name with protocol, port and current directory of shtml file
  */
-function shtml_base(): string {
-    return (self_server(). preg_replace('~/[^/]*$~', '', document_uri()) . '/');
+function shtml_base(): string
+{
+    return (self_server() . preg_replace('~/[^/]*$~', '', document_uri()) . '/');
 }
 
 /** shtml_url function
  * returns url of current shtml file
  */
-function shtml_url(): string {
-    return (self_server(). document_uri());
+function shtml_url(): string
+{
+    return (self_server() . document_uri());
 }
 
 /** shtml_query_string function
@@ -195,15 +205,16 @@ function shtml_query_string(): string
 
     // get off magic quotes
 
-    return ($_SERVER['REQUEST_URI'] && strpos($_SERVER['REQUEST_URI'],'?')) ?
-                        substr($_SERVER['REQUEST_URI'],strpos($_SERVER['REQUEST_URI'], '?')+1) :
-                  ( isset($_SERVER['REDIRECT_QUERY_STRING_UNESCAPED'])    ?
-                        stripslashes($_SERVER['REDIRECT_QUERY_STRING_UNESCAPED']) :
-                        stripslashes($_SERVER['QUERY_STRING_UNESCAPED']) );
+    return ($_SERVER['REQUEST_URI'] && strpos($_SERVER['REQUEST_URI'], '?'))
+                        ? substr($_SERVER['REQUEST_URI'], strpos($_SERVER['REQUEST_URI'], '?') + 1)
+                  : (isset($_SERVER['REDIRECT_QUERY_STRING_UNESCAPED'])
+                        ? stripslashes($_SERVER['REDIRECT_QUERY_STRING_UNESCAPED'])
+                        : stripslashes($_SERVER['QUERY_STRING_UNESCAPED']));
 }
 
 /** check, if the script was called as ajax call */
-function IsAjaxCall(): bool {
+function IsAjaxCall(): bool
+{
     return (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest');
 }
 
@@ -220,29 +231,34 @@ function DeBackslash(string $txt): string
  * @param $param
  * @return string
  */
-function ParamImplode($param): string {
+function ParamImplode($param): string
+{
     if (!is_array($param)) {
-        return (string)$param;
+        return (string) $param;
     }
-    array_walk($param, static function (&$v) {$v = str_replace(':', '#:', $v);});
+    array_walk($param, static function (&$v) {
+        $v = str_replace(':', '#:', $v);
+    });
     return implode(":", $param);
 }
 
 /** Converts float value into php form of float - string */
-function PhpFloat($value): string {
+function PhpFloat($value): string
+{
     // internally uses PHP float always with decimal point, so we have to convert
     // twice, since (float) typecasting is unfortunately LOCALE dependent. Grr
-    return str_replace(',', '.',(float)str_replace([',','&#8239;',' '], ['.','',''], trim($value)));
+    return str_replace(',', '.', (float) str_replace([',','&#8239;',' '], ['.','',''], trim($value)));
 }
 
-function ConvertEncodingDeep($value, $from=null, $to=null) {
+function ConvertEncodingDeep($value, $from = null, $to = null)
+{
     $from = $from ?: 'UTF-8';
-    $to   = $to   ?: 'UTF-8';
+    $to   = $to ?: 'UTF-8';
     array_walk_recursive(
         $value,
         static function (&$entry) use ($from, $to) {
             $entry = iconv($from, "$to//TRANSLIT", $entry);
-        }
+        },
     );
 
     // mb_convert_variables($to, $from, $value);   // does not work with windows-1250
@@ -254,10 +270,10 @@ function ConvertEncodingDeep($value, $from=null, $to=null) {
  * @param string $from  source      encoding utf-8|windows-1250|us-ascii|...  - utf-8 is default
  * @param string $to    destination encoding utf-8|windows-1250|us-ascii|...  - utf-8 is default
  */
-function ConvertEncoding($str, $from, $to='UTF-8'): false|string
+function ConvertEncoding($str, $from, $to = 'UTF-8'): false|string
 {
     $from = $from ?: 'UTF-8';
-    $to   = $to   ?: 'UTF-8';
+    $to   = $to ?: 'UTF-8';
     //return function_exists('mb_convert_encoding') ? mb_convert_encoding($str, $to, $from) : iconv($from, "$to//TRANSLIT",$str);  // does not work with windows-1250
     return iconv($from, "$to//TRANSLIT", $str);
 }
@@ -267,15 +283,15 @@ function ConvertEncoding($str, $from, $to='UTF-8'): false|string
  *   to GLOBALS.
  * @param $query_string
  */
-function add_vars($query_string="", $where='GLOBALS'): array
+function add_vars($query_string = "", $where = 'GLOBALS'): array
 {
-    $varstring = ( $query_string ?: shtml_query_string() );
+    $varstring = ($query_string ?: shtml_query_string());
 
-    if ( !$varstring ) {
+    if (!$varstring) {
         return [];
     }
-    if ( ($pos = strpos('#', $varstring)) !== false ) {  // remove 'fragment' part
-        $varstring = substr($varstring,0,$pos);
+    if (($pos = strpos('#', $varstring)) !== false) {  // remove 'fragment' part
+        $varstring = substr($varstring, 0, $pos);
     }
 
     parse_str($varstring, $aa_query_arr);
@@ -285,11 +301,11 @@ function add_vars($query_string="", $where='GLOBALS'): array
     // we do not want to replace sess variable, since we use it for sessions
     unset($aa_query_arr['sess']);
     $aa_query_arr = NormalizeArrayIndex($aa_query_arr);
-    if (is_array($aa_query_arr) ) {
+    if (is_array($aa_query_arr)) {
         // use of $$where do not work for some reason
         switch ($where) {
             case '_REQUEST': array_merge_append($_REQUEST, $aa_query_arr);
-                             break;
+                break;
             case 'return':   break;
             default:         array_merge_append_global($aa_query_arr);
         }
@@ -303,14 +319,15 @@ function add_vars($query_string="", $where='GLOBALS'): array
  *  Removes starting and closing quotes from array index
  * @param $arr ["key"]=...   transforms to arr[key]=...
  */
-function NormalizeArrayIndex($arr) {
+function NormalizeArrayIndex($arr)
+{
     if (!is_array($arr)) {
         return $arr;
     }
     $ret = [];
     foreach ($arr as $k => $v) {
-        if ( ($k[0] === '"' && str_ends_with($k, '"')) ||
-             ($k[0] === "'" && str_ends_with($k, "'")) ) {
+        if (($k[0] === '"' && str_ends_with($k, '"'))
+             || ($k[0] === "'" && str_ends_with($k, "'"))) {
             $k = substr($k, 1, -1);
         }
         $ret[$k] = NormalizeArrayIndex($v);
@@ -325,7 +342,7 @@ function NormalizeArrayIndex($arr) {
  */
 function array_add($source, &$target): void
 {
-    foreach ( (array)$source as $k => $v) {
+    foreach ((array) $source as $k => $v) {
         if (!isset($target[$k])) {
             $target[$k] = $v;
         } else {
@@ -346,8 +363,8 @@ function array_add($source, &$target): void
  */
 function array_merge_append(array &$array, $newValues): array
 {
-    foreach ($newValues as $key => $value ) {
-        if ( !isset($array[$key]) || !is_array($array[$key]) || !is_array($value)) {
+    foreach ($newValues as $key => $value) {
+        if (!isset($array[$key]) || !is_array($array[$key]) || !is_array($value)) {
             $array[$key] = $value;
         } else {
             $array[$key] = array_merge_append($array[$key], $value);
@@ -359,8 +376,8 @@ function array_merge_append(array &$array, $newValues): array
 /** the same as array_merge_append but operates on $GLOBALS which is not possible to pass as reference in PHP>=8.1 */
 function array_merge_append_global($newValues): void
 {
-    foreach ($newValues as $key => $value ) {
-        if ( !isset($GLOBALS[$key]) || !is_array($GLOBALS[$key]) || !is_array($value)) {
+    foreach ($newValues as $key => $value) {
+        if (!isset($GLOBALS[$key]) || !is_array($GLOBALS[$key]) || !is_array($value)) {
             $GLOBALS[$key] = $value;
         } else {
             $tmp = $GLOBALS[$key];
@@ -385,13 +402,13 @@ function recursive_array_replace($find, $replace, $array): array|string
  *  returns new unpacked md5 unique id, except these which can  force unexpected end of string
  * @param $mark
  */
-function new_id($mark=0): string
+function new_id($mark = 0): string
 {
     do {
-        $id = hash('md5', uniqid('',true));
-    } while (str_contains($id, '00') || str_contains($id, '27') || substr($id,30,2)==='20');
-      // '00' is end of string, '27' is ' and packed '20' is space,
-      // which is removed by MySQL
+        $id = hash('md5', uniqid('', true));
+    } while (str_contains($id, '00') || str_contains($id, '27') || substr($id, 30, 2) === '20');
+    // '00' is end of string, '27' is ' and packed '20' is space,
+    // which is removed by MySQL
 
     // the condition above is too restrictive, since it do not allow also ids
     // like 30049391... (00 on odd position), which makes no problem in packing
@@ -399,9 +416,9 @@ function new_id($mark=0): string
     // We have 3*15=45 marks, first 15 are implemented
 
     // mark 1 used for AA_Set used in groups of readers - permission related
-    if ($mark>0) {
+    if ($mark > 0) {
         // 27 is first, since it can't create any secondary problems like '00' and '20' could (123056 => 100056...)
-        return substr_replace($id, '27', $mark*2-1, 2);
+        return substr_replace($id, '27', $mark * 2 - 1, 2);
     }
     return $id;
 }
@@ -414,7 +431,7 @@ function new_id($mark=0): string
 function is_marked_by($id, $mark): bool
 {
     // now only supports mark 1-15
-    return (substr($id, $mark*2-1, 2) === '27');
+    return (substr($id, $mark * 2 - 1, 2) === '27');
 }
 
 
@@ -428,11 +445,11 @@ function is_marked_by($id, $mark): bool
 function string2id($str): string
 {
     do {
-        $id  = hash('md5',$str);
+        $id  = hash('md5', $str);
         $str .= " ";
-    } while (str_contains($id, '00') || str_contains($id, '27') || substr($id,30,2)==='20');
-      // '00' is end of string, '27' is ' and packed '20' is space,
-      // which is removed by MySQL
+    } while (str_contains($id, '00') || str_contains($id, '27') || substr($id, 30, 2) === '20');
+    // '00' is end of string, '27' is ' and packed '20' is space,
+    // which is removed by MySQL
     return $id;
 }
 
@@ -441,17 +458,19 @@ function string2id($str): string
  * @param $step - time could be returned in steps (good for database query speedup)
  * @return int
  */
-function now($step=false): int {
-    return (($step!=='step') ? time() : ((int)(time()/QUERY_DATE_STEP)+1)*QUERY_DATE_STEP);     // round up
+function now($step = false): int
+{
+    return (($step !== 'step') ? time() : ((int) (time() / QUERY_DATE_STEP) + 1) * QUERY_DATE_STEP);     // round up
 }
 
 /** get current time in nanoseconds from 1970
  *  PHP int should be enough to year > 2200
  *  the microtime is not precise enough, but we can update the function later to be more accurate
  */
-function nanotime():int {
+function nanotime(): int
+{
     $t = explode(" ", microtime());
-    return (int)(1000000000*$t[0]) + (int)(1000000000*$t[1]);
+    return (int) (1000000000 * $t[0]) + (int) (1000000000 * $t[1]);
 }
 
 /** debug function
@@ -461,10 +480,10 @@ function nanotime():int {
 function debug(...$messages): void
 {
     // could be toggled from Item Manager left menu 'debug' (by Superadmins!)
-    if ( $_COOKIE['aa_debug'] != 1 ) {
+    if ($_COOKIE['aa_debug'] != 1) {
         return;
     }
-    foreach ( $messages as $msg ) {
+    foreach ($messages as $msg) {
         AA::$dbg->log($msg);
     }
 }
@@ -477,7 +496,7 @@ function warn($msg): void
     if (AA::$debug) {
         AA::$dbg->log(AA_Log::backtrack());
         $trace = debug_backtrace();
-        AA::$dbg->warn( implode('->', [$trace[1]['class'], $trace[1]['function']]).': '.$msg );
+        AA::$dbg->warn(implode('->', [$trace[1]['class'], $trace[1]['function']]) . ': ' . $msg);
     }
 }
 
@@ -499,7 +518,7 @@ function huhe(...$arg_list): void
  */
 function timestartdiff(): float
 {
-    $start_time = $_SERVER['REQUEST_TIME_FLOAT'] ?: (float)$_SERVER['REQUEST_TIME'];  // FLOAT version is not in PHP <5.4
+    $start_time = $_SERVER['REQUEST_TIME_FLOAT'] ?: (float) $_SERVER['REQUEST_TIME'];  // FLOAT version is not in PHP <5.4
     return microtime(true) - $start_time;
 }
 
@@ -507,7 +526,8 @@ function timestartdiff(): float
 /** huhl function
  * Debug function to print debug messages recursively - handles arrays
  */
-function huhl(...$vars): void {
+function huhl(...$vars): void
+{
     AA::$dbg->log(AA_Log::backtrack());
     foreach ($vars as $var) {
         AA::$dbg->log($var);
@@ -516,14 +536,15 @@ function huhl(...$vars): void {
 
 /** Print messages to screen recursively - handles arrays
  */
-function huh(...$vars): void {
+function huh(...$vars): void
+{
     foreach ($vars as $var) {
         if (is_array($var)) {
-            echo "\n<pre>".safe(print_r($var, true)).'</pre>';
+            echo "\n<pre>" . safe(print_r($var, true)) . '</pre>';
         } elseif (is_object($var)) {
-            echo is_callable([$var, "__toString"]) ? $var : "\n<pre>".safe(print_r($var, true)).'</pre>';
+            echo is_callable([$var, "__toString"]) ? $var : "\n<pre>" . safe(print_r($var, true)) . '</pre>';
         } else {
-            echo "\n<pre>".safe(print_r($var, true)).'</pre>';
+            echo "\n<pre>" . safe(print_r($var, true)) . '</pre>';
         }
     }
 }
@@ -536,7 +557,7 @@ function GetPrintArray($a): string
 {
     $ret = '';
     if (is_array($a)) {
-        foreach ( $a as $val) {
+        foreach ($a as $val) {
             $ret .=  is_array($val) ? GetPrintArray($val) : "<div>$val</div>";
         }
     }
@@ -567,7 +588,7 @@ function _dumpScalar($v): string
     if (is_bool($v)) {
         return $v ? 'true' : 'false';
     }
-    return (string)$v;
+    return (string) $v;
 }
 
 /** Compact counterpart to print_r(): same "[key] => value" structure (array indexes kept),
@@ -590,8 +611,8 @@ function compact_print_r($var, int $indent = 0, bool $html = false): string
 {
     if (is_object($var)) {
         $clean = [];
-        foreach ((array)$var as $k => $v) {                                  // (array) exposes protected/private props...
-            $clean[preg_replace('/^\x00.*?\x00/', '', (string)$k)] = $v;      // ...behind null-byte prefixes - strip them
+        foreach ((array) $var as $k => $v) {                                  // (array) exposes protected/private props...
+            $clean[preg_replace('/^\x00.*?\x00/', '', (string) $k)] = $v;      // ...behind null-byte prefixes - strip them
         }
         $class = $html ? safe(get_class($var)) : get_class($var);
         return $class . ' ' . compact_print_r($clean, $indent, $html);
@@ -611,7 +632,7 @@ function compact_print_r($var, int $indent = 0, bool $html = false): string
     if ($indent > 12) {                                                       // runaway / circular-reference guard
         return '[...]';
     }
-    $key = static fn($k): string => '[' . ($html ? safe((string)$k) : (string)$k) . ']';
+    $key = static fn($k): string => '[' . ($html ? safe((string) $k) : (string) $k) . ']';
     // A leaf array (all-scalar members) prints on one line - UNLESS (HTML mode) one of its values
     // is long/multiline: then break it onto indented lines so the clamped block aligns with the tree.
     $nested = false;
@@ -640,7 +661,8 @@ function compact_print_r($var, int $indent = 0, bool $html = false): string
  * @param  string  $txt
  * @return string
  */
-function MsgOk(string $txt): string {
+function MsgOk(string $txt): string
+{
     return "<div class=\"aa-ok\">$txt</div>";
 }
 
@@ -648,7 +670,8 @@ function MsgOk(string $txt): string {
  * @param  string  $txt
  * @return string
  */
-function MsgErr(string $txt): string {
+function MsgErr(string $txt): string
+{
     return "<div class=\"aa-err\">$txt</div>";
 }
 
@@ -660,27 +683,30 @@ function MsgErr(string $txt): string {
  * @param string $keycolumn
  * @return array
  */
-function GetConstants($group, $order='pri', $column='name', $keycolumn='value'): array {
+function GetConstants($group, $order = 'pri', $column = 'name', $keycolumn = 'value'): array
+{
     // we can use 'const_name' insteadad of real name of the column 'name' => translate
-    $order     = str_replace( 'const_', '', $order);
-    $column    = str_replace( 'const_', '', $column);
-    $keycolumn = str_replace( 'const_', '', $keycolumn);
+    $order     = str_replace('const_', '', $order);
+    $column    = str_replace('const_', '', $column);
+    $keycolumn = str_replace('const_', '', $keycolumn);
 
     $db_order     = $order;
     $db_column    = ($column    === 'level') ? 'ancestors' : $column;
     $db_keycolumn = ($keycolumn === 'level') ? 'ancestors' : $keycolumn;
 
-    $const_fields = ['id'=>1,'group_id'=>1,'name'=>1,'value'=>1,'class'=>1,'pri'=>1,'ancestors'=>1,'description'=>1,'short_id'=>1];
+    $const_fields = ['id' => 1,'group_id' => 1,'name' => 1,'value' => 1,'class' => 1,'pri' => 1,'ancestors' => 1,'description' => 1,'short_id' => 1];
 
     $db = getDB();
-    if (  $const_fields[$db_order] ) {
+    if ($const_fields[$db_order]) {
         $order_by  = "ORDER BY $db_order";
     }
-    if ( !$const_fields[$db_column] ) {
-        $db_column    = 'name';  $column    = 'name';
+    if (!$const_fields[$db_column]) {
+        $db_column    = 'name';
+        $column    = 'name';
     }
-    if ( !$const_fields[$db_keycolumn] ) {
-        $db_keycolumn = 'value'; $keycolumn = 'value';
+    if (!$const_fields[$db_keycolumn]) {
+        $db_keycolumn = 'value';
+        $keycolumn = 'value';
     }
     $fields = ($db_column === $db_keycolumn ? $db_column : "$db_keycolumn, $db_column");
 
@@ -693,7 +719,7 @@ function GetConstants($group, $order='pri', $column='name', $keycolumn='value'):
         $key = GrabConstantColumn($db, $keycolumn);
         $key = $key['value'];
         // generate unique keys by adding space
-        while ( $already_key[$key] ) {
+        while ($already_key[$key]) {
             $key .= ' ';                   // add space in order we get unique keys
         }
         $already_key[$key] = true;       // mark the $key
@@ -715,7 +741,7 @@ function GetConstants($group, $order='pri', $column='name', $keycolumn='value'):
  */
 function GetModuleInfo($module_id, $type): array
 {
-    $table = match($type) {
+    $table = match ($type) {
         'Links'  => 'links',
         'S'      => 'slice',
         default  => '',
@@ -732,7 +758,7 @@ function GetModuleInfo($module_id, $type): array
         return [];
     }
 
-    if ($ret['reading_password'] ) {
+    if ($ret['reading_password']) {
         // do it more secure and do not store it plain
         // (we should be careful - mainly with debug outputs)
         $ret['reading_password'] = AA_Credentials::encrypt($ret['reading_password']);
@@ -750,15 +776,16 @@ function GetModuleInfo($module_id, $type): array
  * @param bool $ignore_pending_date
  * @return string
  */
-function CreateBinCondition($bin, $table, bool $ignore_expiry_date=false, bool $ignore_pending_date=false): string {
+function CreateBinCondition($bin, $table, bool $ignore_expiry_date = false, bool $ignore_pending_date = false): string
+{
     // now is rounded in order the time is in steps - it is better for search
     // caching - SQL is THE SAME during one time step
     $now = now('step');            // round up
 
     /* new version of bin selecting, now we use type of bin from constants.php */
-    if (ctype_digit((string)$bin)) {
+    if (ctype_digit((string) $bin)) {
         /* $bin is numeric constant */
-        $numeric_bin = max(1,$bin);
+        $numeric_bin = max(1, $bin);
     } elseif (is_string($bin)) { /* for backward compatibility */
         $numeric_bin = match ($bin) {
             /* assign to string type it's numeric constant */
@@ -777,7 +804,7 @@ function CreateBinCondition($bin, $table, bool $ignore_expiry_date=false, bool $
 
     /* create SQL query for different types of numeric constants */
     switch ($numeric_bin) {
-        case AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING | AA_BIN_HOLDING | AA_BIN_TRASH :
+        case AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING | AA_BIN_HOLDING | AA_BIN_TRASH:
             return ' 1=1 ';
         case AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING:
             return " $table.status_code=1 ";
@@ -793,21 +820,21 @@ function CreateBinCondition($bin, $table, bool $ignore_expiry_date=false, bool $
         if ($numeric_bin & AA_BIN_ACTIVE) {
             $SQL = " $table.status_code=1 ";
             /* for slices, where we want to allow to look into pending items using cond -publish_date....-gt-1 */
-            if ( !$ignore_pending_date  ) {
+            if (!$ignore_pending_date) {
                 $SQL .= "AND $table.publish_date <= '$now' ";
             }
             /* condition can specify expiry date (good for archives) */
-            if ( !( $ignore_expiry_date && defined("ALLOW_DISPLAY_EXPIRED_ITEMS") && ALLOW_DISPLAY_EXPIRED_ITEMS) ) {
+            if (!($ignore_expiry_date && defined("ALLOW_DISPLAY_EXPIRED_ITEMS") && ALLOW_DISPLAY_EXPIRED_ITEMS)) {
                 //              $SQL2 .= " AND ($table.expiry_date > '$now' OR $table.expiry_date IS NULL) ";
                 $SQL .= "AND $table.expiry_date > '$now' ";
             }
             $or_conds[] = $SQL;
         }
         if ($numeric_bin & AA_BIN_EXPIRED) {
-           $or_conds[] = " $table.status_code=1 AND $table.expiry_date <= '$now' ";
+            $or_conds[] = " $table.status_code=1 AND $table.expiry_date <= '$now' ";
         }
         if ($numeric_bin & AA_BIN_PENDING) {
-           $or_conds[] = " $table.status_code=1 AND $table.publish_date > '$now' AND expiry_date > '$now'";
+            $or_conds[] = " $table.status_code=1 AND $table.publish_date > '$now' AND expiry_date > '$now'";
         }
     }
     if ($numeric_bin & AA_BIN_HOLDING) {
@@ -818,8 +845,8 @@ function CreateBinCondition($bin, $table, bool $ignore_expiry_date=false, bool $
     }
     return match (count($or_conds)) {
         0       => ' 1=1 ',
-        1       => ' '.$or_conds[0].' ',
-        default => ' (('.implode(') OR (', $or_conds).')) ',
+        1       => ' ' . $or_conds[0] . ' ',
+        default => ' ((' . implode(') OR (', $or_conds) . ')) ',
     };
 }
 
@@ -841,19 +868,20 @@ function CreateBinCondition($bin, $table, bool $ignore_expiry_date=false, bool $
  *
  * @return array
  */
-function GetItemContent($zids, $unused_use_short_ids=false, $ignore_reading_password=false, $fields2get=false, $crypted_additional_slice_pwd=null, $bin = null): array {
+function GetItemContent($zids, $unused_use_short_ids = false, $ignore_reading_password = false, $fields2get = false, $crypted_additional_slice_pwd = null, $bin = null): array
+{
     // Fills array $content with current content of $sel_in items (comma separated ids).
 
     // construct WHERE clause
-    if ( !is_object($zids) ) {
-        $zids = new zids( $zids, 'l' );
+    if (!is_object($zids)) {
+        $zids = new zids($zids, 'l');
     }
 
     if ($zids->isEmpty()) {
         return [];
     }
 
-    AA::$debug&32 && AA::$dbg->tracestart('GetItemContent', $zids->count());
+    AA::$debug & 32 && AA::$dbg->tracestart('GetItemContent', $zids->count());
 
     // get content from item table
 
@@ -861,15 +889,15 @@ function GetItemContent($zids, $unused_use_short_ids=false, $ignore_reading_pass
     $metabase      = AA::Metabase();
 
     // if the output fields are restricted, restrict also item fields
-    if ( $fields2get ) {
+    if ($fields2get) {
 
         $content_fields = [];
         $item_fields    = [];
-        foreach ( (array)$fields2get as $field_name ) {
+        foreach ((array) $fields2get as $field_name) {
             //convert publish_date.... to publish_date
             $clean_name = AA_Fields::getFieldType($field_name);
 
-            if ( $metabase->isColumn('item', $clean_name) ) {
+            if ($metabase->isColumn('item', $clean_name)) {
                 $item_fields[]    = $clean_name;
             } else {
                 $content_fields[] = $field_name;
@@ -880,15 +908,15 @@ function GetItemContent($zids, $unused_use_short_ids=false, $ignore_reading_pass
         $real_item_fields2get = $item_fields;
 
         // we need item id for $content index
-        if ( !in_array('id', $item_fields) ) {
+        if (!in_array('id', $item_fields)) {
             $item_fields[] = 'id';
         }
-        if ( $use_short_ids && !in_array('short_id', $item_fields) ) {
+        if ($use_short_ids && !in_array('short_id', $item_fields)) {
             $item_fields[] = 'short_id';
         }
 
         // we need slice_id for each item, if we have to count with slice permissions
-        if ( !$ignore_reading_password && !in_array('slice_id', $item_fields) ) {
+        if (!$ignore_reading_password && !in_array('slice_id', $item_fields)) {
             $item_fields[] = 'slice_id';
         }
 
@@ -898,11 +926,11 @@ function GetItemContent($zids, $unused_use_short_ids=false, $ignore_reading_pass
         $real_item_fields2get = $metabase->getColumnNames('item');
     }
 
-    $SQL = "SELECT $item_fields_sql FROM item WHERE ". $zids->sqlin();
+    $SQL = "SELECT $item_fields_sql FROM item WHERE " . $zids->sqlin();
 
     // when we construct tree, we want to use only current item, for example
     if (!is_null($bin)) {
-        $SQL .= ' AND '. CreateBinCondition($bin, 'item');
+        $SQL .= ' AND ' . CreateBinCondition($bin, 'item');
     }
     $db = getDB();
     $db->query($SQL);
@@ -913,7 +941,7 @@ function GetItemContent($zids, $unused_use_short_ids=false, $ignore_reading_pass
     $slices      = [];
     $content     = [];
 
-    while ( $db->next_record() ) {
+    while ($db->next_record()) {
 
         $row = $db->record();
 
@@ -929,13 +957,13 @@ function GetItemContent($zids, $unused_use_short_ids=false, $ignore_reading_pass
         $content[$unpack_id]['unpacked_id.....'] = [['value' => $unpack_id]];
 
         // if ($ignore_reading_password OR $credentials->checkSlice($unpack_slice_id, $crypted_additional_slice_pwd)) {
-           // this row leads to creation second database connection db2 - for the first_child item in slice @todo - do something about it, Honza 2015-12-28
-           //   (we should test it after this while cycle - once for slice)
-           // Solved 2016-08-24 Honza
+        // this row leads to creation second database connection db2 - for the first_child item in slice @todo - do something about it, Honza 2015-12-28
+        //   (we should test it after this while cycle - once for slice)
+        // Solved 2016-08-24 Honza
         foreach ($real_item_fields2get as $item_fid) {
             // FLAG_HTML does not mean in fact, that the content is in HTML, but it rather means, that we should not call txt2html function on the content
             // we do not need to call txt2html() to any of the item table fields
-            $content[$unpack_id][AA_Fields::createFieldId($item_fid)][] = ["value" => (string)$row[$item_fid], "flag"  => FLAG_HTML];  // value is string - it was string for mysql_* DB acces, with PDO it could be int - so convert
+            $content[$unpack_id][AA_Fields::createFieldId($item_fid)][] = ["value" => (string) $row[$item_fid], "flag"  => FLAG_HTML];  // value is string - it was string for mysql_* DB acces, with PDO it could be int - so convert
         }
     }
     freeDB($db);
@@ -952,7 +980,7 @@ function GetItemContent($zids, $unused_use_short_ids=false, $ignore_reading_pass
                     $unpermitted[$unpack_id] = true;
                     foreach (array_keys($c4id) as $fid) {
                         // at least id and slice_id should be correct.............. for AA_Items::getItems()
-                        if ( !in_array($fid, ['id..............','slice_id........','unpacked_id.....','u_slice_id......'])) {
+                        if (!in_array($fid, ['id..............','slice_id........','unpacked_id.....','u_slice_id......'])) {
                             $content[$unpack_id][$fid] = $ERR_VALUE;
                         }
                     }
@@ -963,12 +991,12 @@ function GetItemContent($zids, $unused_use_short_ids=false, $ignore_reading_pass
 
     // Skip the rest if no items found
     if (empty($content)) {
-        AA::$debug&32 && AA::$dbg->traceend('GetItemContent');
+        AA::$debug & 32 && AA::$dbg->traceend('GetItemContent');
         return [];
     }
 
     // If its a tagged id, then set the "idtag..........." field
-    if ( $zids->onetype() === 't') {
+    if ($zids->onetype() === 't') {
         $tags = $zids->gettags();
         foreach ($tags as $k => $v) {
             $content[$k]["idtag..........."][] = ["value" => $v];
@@ -980,12 +1008,12 @@ function GetItemContent($zids, $unused_use_short_ids=false, $ignore_reading_pass
 
     $restrict_cond = '';
 
-    if ( is_array( $fields2get ) ) {
+    if (is_array($fields2get)) {
         $restrict_cond = match (count($content_fields)) {
             // we want just some item fields
             0       => '1=0',
-            1       => " AND field_id = '".reset($content_fields)."' ",
-            default => " AND field_id IN ( '".implode("','", $content_fields)."' ) ",
+            1       => " AND field_id = '" . reset($content_fields) . "' ",
+            default => " AND field_id IN ( '" . implode("','", $content_fields) . "' ) ",
         };
     }
 
@@ -995,12 +1023,12 @@ function GetItemContent($zids, $unused_use_short_ids=false, $ignore_reading_pass
     // in content table is updated too
 
     // do we want any content field?
-    if ( $restrict_cond !== '1=0' ) {
+    if ($restrict_cond !== '1=0') {
         $db = getDB();
         $SQL = "SELECT * FROM content WHERE $new_sel_in $restrict_cond ORDER BY item_id, number"; // usable just for multivalues
         $db->query($SQL);
 
-        while ( $db->next_record() ) {
+        while ($db->next_record()) {
 
             $row       = $db->record();
 
@@ -1011,13 +1039,13 @@ function GetItemContent($zids, $unused_use_short_ids=false, $ignore_reading_pass
 
             $unpack_id = unpack_id($row['item_id']);
 
-            if ( $unpermitted[$unpack_id] ) {
+            if ($unpermitted[$unpack_id]) {
                 $content[$unpack_id][$row['field_id']] = $ERR_VALUE;
                 continue;
             }
 
             // which database field is used (from 05/15/2004 we have FLAG_TEXT_STORED set for text-field-stored values
-            if ( $row['flag'] & FLAG_TEXT_STORED || strlen($row['text'] ?? '')) {
+            if ($row['flag'] & FLAG_TEXT_STORED || strlen($row['text'] ?? '')) {
                 if (is_array($content[$unpack_id][$row['field_id']][0]) && $content[$unpack_id][$row['field_id']][0]['value'] == $row['text']) {
                     // ignore content duplicates (there could be more that two values for field
                     // with the same number (=NULL) - the ones which comes from "add value to field" operation)
@@ -1031,7 +1059,7 @@ function GetItemContent($zids, $unused_use_short_ids=false, $ignore_reading_pass
             } else {
                 // we can set FLAG_HTML, because the text2html gives the same result as the number itself
                 // it speeds the item->f_h() function a bit
-                $content[$unpack_id][$row['field_id']][] = ["value" => $row['number'], "flag"  => ($row['flag']|FLAG_HTML)];
+                $content[$unpack_id][$row['field_id']][] = ["value" => $row['number'], "flag"  => ($row['flag'] | FLAG_HTML)];
             }
         }
         freeDB($db);
@@ -1049,7 +1077,7 @@ function GetItemContent($zids, $unused_use_short_ids=false, $ignore_reading_pass
     }
 
 
-    AA::$debug&32 && AA::$dbg->traceend('GetItemContent', count($content));
+    AA::$debug & 32 && AA::$dbg->traceend('GetItemContent', count($content));
 
     // $use_short_ids && AA_Log::warn('use_short_ids');
 
@@ -1064,17 +1092,17 @@ function GetItemContent($zids, $unused_use_short_ids=false, $ignore_reading_pass
  * @param $zids
  * @param $fields2get
  */
-function GetItemContentMinimal(zids $zids, $fields2get=false): array
+function GetItemContentMinimal(zids $zids, $fields2get = false): array
 {
-    if ( !$fields2get ) {
+    if (!$fields2get) {
         $fields2get = ['id', 'short_id'];
     }
-    $columns = implode(',',$fields2get);
+    $columns = implode(',', $fields2get);
 
-    if ( $zids->isEmpty() ) {
+    if ($zids->isEmpty()) {
         return [];
     }
-    $sel_in = $zids->sqlin( '' );
+    $sel_in = $zids->sqlin('');
     $content = [];
 
     if ($sel_in) {
@@ -1082,9 +1110,9 @@ function GetItemContentMinimal(zids $zids, $fields2get=false): array
         $db    = getDB();
         $SQL   = "SELECT $columns FROM item WHERE id $sel_in";
         $db->query($SQL);
-        while ( $db->next_record() ) {
+        while ($db->next_record()) {
             $foo_id = unpack_id($db->f("id"));
-            foreach ( $fields2get as $fld ) {
+            foreach ($fields2get as $fld) {
                 $content[$foo_id][AA_Fields::createFieldId($fld)][] = ["value" => $db->f($fld)];
             }
         }
@@ -1107,7 +1135,7 @@ function GrabConstantColumn($db, $column): array
         "id"          => ["value" => unpack_id($db->f("id"))],
         "description" => ["value" => $db->f("description"), "flag" => FLAG_HTML],
         "short_id"    => ["value" => $db->f("short_id")],
-        "level"       => ["value" => strlen((string)$db->f("ancestors")) / 16],
+        "level"       => ["value" => strlen((string) $db->f("ancestors")) / 16],
         default       => [],
     };
 }
@@ -1121,15 +1149,15 @@ function GrabConstantColumn($db, $column): array
  */
 function GetConstantContent(zids $zids): array
 {
-    if ( $zids->isEmpty() ) {
+    if ($zids->isEmpty()) {
         return [];
     }
     $db = getDB();
 
-    $SQL = 'SELECT * FROM constant WHERE short_id '. $zids->sqlin(false);
-    $db->query( $SQL );
+    $SQL = 'SELECT * FROM constant WHERE short_id ' . $zids->sqlin(false);
+    $db->query($SQL);
     $content = [];
-    $i=1;
+    $i = 1;
     while ($db->next_record()) {
         $coid = $db->f('short_id');
         $content[$coid]["const_name"][]        = GrabConstantColumn($db, "name");
@@ -1159,10 +1187,10 @@ function GetConstantContent(zids $zids): array
 function StoreTable2Content(&$content, $SQL, $prefix, $id_field): void
 {
     $data = GetTable2Array($SQL, 'NoCoLuMn', 'aa_fields');
-    if ( is_array($data) ) {
-        foreach ( $data as $row ) {
+    if (is_array($data)) {
+        foreach ($data as $row) {
             $foo_id = $row[$id_field];
-            foreach($row as $key => $val) {
+            foreach ($row as $key => $val) {
                 $content[$foo_id][$prefix . $key][] = ['value' => $val];
             }
         }
@@ -1193,13 +1221,14 @@ function ParseFnc($s): array
  * @param string|null $var
  * @return string - html safe code (used for preparing variable to print in form)
  */
-function safe( $var='' ): string
+function safe($var = ''): string
 {
     return \AA\Util\Txt::safe($var);
 }
 
 /** quotes utf string for use in xml attributes and content */
-function safexml( $var='' ): string {
+function safexml($var = ''): string
+{
     return \AA\Util\Txt::safexml($var);
 }
 
@@ -1217,7 +1246,7 @@ function aa_html_entity_decode(string $text): string
  *
  * @see AA_Adminpageutil->getPageBegin()
  */
-function HtmlPageBegin(bool $js_lib=false, string $lang= '', bool $inc_by_require=false): void
+function HtmlPageBegin(bool $js_lib = false, string $lang = '', bool $inc_by_require = false): void
 {
     AA::sendAdminHeaders($lang);
     $inc_css = '';
@@ -1232,32 +1261,32 @@ function HtmlPageBegin(bool $js_lib=false, string $lang= '', bool $inc_by_requir
     $overlay = \AA\Util\UiPrefs::themeOverlay();
     if ($inc_by_require) {
         AA::Stringexpander()->addRequire('css-aa-system');
-        AA::Stringexpander()->addRequire(AA_INSTAL_PATH . 'admin-ecn.css?v='.AA_JS_VERSION);
+        AA::Stringexpander()->addRequire(AA_INSTAL_PATH . 'admin-ecn.css?v=' . AA_JS_VERSION);
         if ($overlay) {
-            AA::Stringexpander()->addRequire(AA_INSTAL_PATH . $overlay.'?v='.AA_JS_VERSION);
+            AA::Stringexpander()->addRequire(AA_INSTAL_PATH . $overlay . '?v=' . AA_JS_VERSION);
         }
     } else {
-        $inc_css = '<link rel="stylesheet" href="'.AA_INSTAL_PATH.'admin-ecn.css?v='.AA_JS_VERSION.'">'
-                 . '<link rel="stylesheet" href="'.AA_INSTAL_PATH.'css/aa-system.css?v='.AA_JS_VERSION.'">';
+        $inc_css = '<link rel="stylesheet" href="' . AA_INSTAL_PATH . 'admin-ecn.css?v=' . AA_JS_VERSION . '">'
+                 . '<link rel="stylesheet" href="' . AA_INSTAL_PATH . 'css/aa-system.css?v=' . AA_JS_VERSION . '">';
         if ($overlay) {
-            $inc_css .= '<link rel="stylesheet" href="'.safe(AA_INSTAL_PATH . $overlay).'?v='.AA_JS_VERSION.'">';
+            $inc_css .= '<link rel="stylesheet" href="' . safe(AA_INSTAL_PATH . $overlay) . '?v=' . AA_JS_VERSION . '">';
         }
     }
 
     echo
 '<!DOCTYPE html>
-<html lang="'.Langs::getLangName2Code($lang).'">
+<html lang="' . Langs::getLangName2Code($lang) . '">
   <head>
-    <link rel="SHORTCUT ICON" href="'. AA_INSTAL_PATH .'images/favicon.ico">
-    '.$inc_css.'
-    <meta charset="'.AA::$encoding.'">
+    <link rel="SHORTCUT ICON" href="' . AA_INSTAL_PATH . 'images/favicon.ico">
+    ' . $inc_css . '
+    <meta charset="' . AA::$encoding . '">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 ';
 
     if ($js_lib) {
-        echo getFrmJavascriptFile( 'javascript/js_lib.min.js' );
-        echo getFrmJavascriptFile( 'javascript/jquery.min.js' );
-        echo getFrmJavascriptFile( 'javascript/aajslib-jquery.min.js' );
+        echo getFrmJavascriptFile('javascript/js_lib.min.js');
+        echo getFrmJavascriptFile('javascript/jquery.min.js');
+        echo getFrmJavascriptFile('javascript/aajslib-jquery.min.js');
     }
 }
 
@@ -1266,16 +1295,16 @@ function HtmlPageBegin(bool $js_lib=false, string $lang= '', bool $inc_by_requir
 function HtmlPageEnd(): void
 {
     global $slices4cache;
-    AA::$debug&2 && AA::$dbg->info('time: '. timestartdiff());
-    if (AA::$debug&16) {
+    AA::$debug & 2 && AA::$dbg->info('time: ' . timestartdiff());
+    if (AA::$debug & 16) {
         echo AA::$dbg->basic_stat();
         if ($slices4cache) {
-            echo '<br>UsedModules:<br> - ' . implode('<br> - ', array_map(static fn ($mid) => AA_Module::getModuleName($mid), $slices4cache));
+            echo '<br>UsedModules:<br> - ' . implode('<br> - ', array_map(static fn($mid) => AA_Module::getModuleName($mid), $slices4cache));
         }
         echo AA::$dbg->duration_stat();
     }
 
-  echo "
+    echo "
             </td>
           </tr>
         </table>
@@ -1311,11 +1340,11 @@ function MsgPage($msg, string $url = ''): never
         echo "<p>$msg</p><br><br>";
     }
     if (!$url) {
-        $url = self_base(). "index.php";
+        $url = self_base() . "index.php";
     }
     $url = safe(StateUrl($url));
     $relogin_url = safe(get_admin_url('logout.php', '', false));
-    echo "<a href=\"$url\">"._m("Back")."</a> | <a href=\"$relogin_url\">"._m("Relogin")."</a>";
+    echo "<a href=\"$url\">" . _m("Back") . "</a> | <a href=\"$relogin_url\">" . _m("Relogin") . "</a>";
     echo "</body></html>";
     Session::page_close();
     exit;
@@ -1332,7 +1361,7 @@ function MsgPage($msg, string $url = ''): never
  * @param  int         $flag
  * @param  bool        $delete       - erease the old values
  */
-function StoreToContent($item_id, $field_id, $text_stored, $value, int $order, int $flag, bool $delete=false): void
+function StoreToContent($item_id, $field_id, $text_stored, $value, int $order, int $flag, bool $delete = false): void
 {
     if (!is_long_id($item_id) || strlen($field_id) != 16) {
         return;
@@ -1344,12 +1373,12 @@ function StoreToContent($item_id, $field_id, $text_stored, $value, int $order, i
         // if ( !$value['value'] ) { return false; }    // can't do it, conditions do not work then (ecn joblist)
         $varset->add("text", "text", $value);
         // set "TEXT stored" flag
-        $varset->add("flag", "number", $flag | FLAG_TEXT_STORED );
+        $varset->add("flag", "number", $flag | FLAG_TEXT_STORED);
         $varset->add("number", "number", $order);
     } else {
-        $varset->add("number", "number", (int)$value);
+        $varset->add("number", "number", (int) $value);
         // clear "TEXT stored" flag
-        $varset->add("flag",   "number", $flag & ~FLAG_TEXT_STORED );
+        $varset->add("flag", "number", $flag & ~FLAG_TEXT_STORED);
     }
 
     // insert item but new field
@@ -1380,11 +1409,11 @@ function gensalt($saltlen): string
     $salt = '';
 
     do {
-        $more_sec .= hash('md5', microtime().'xy');
+        $more_sec .= hash('md5', microtime() . 'xy');
     } while ($saltlen > strlen($more_sec));
 
     for ($i = 0; $i < $saltlen; $i++) {
-        $salt .= $salt_chars[(mt_rand(0,61)+ord($more_sec[$i])) % 62];  // mt_rand is faster than random_int (10x) so we use it here, but it is questionable @todo
+        $salt .= $salt_chars[(mt_rand(0, 61) + ord($more_sec[$i])) % 62];  // mt_rand is faster than random_int (10x) so we use it here, but it is questionable @todo
     }
     return $salt;
 }
@@ -1399,7 +1428,8 @@ function gensalt($saltlen): string
  * @param $escape_pattern
  * @return array
  */
-function split_escaped($pattern, $string, $escape_pattern): array {
+function split_escaped($pattern, $string, $escape_pattern): array
+{
     $dummy = chr(0x1E);  // record separator ASCII character - we can use any other, however
     while (str_contains($string, $dummy)) {
         $dummy .= '^';   // add another strange character to the
@@ -1412,10 +1442,10 @@ function split_escaped($pattern, $string, $escape_pattern): array {
  * @param $strings
  * @return string
  */
-function join_and_quote( $pattern, $strings ): string
+function join_and_quote($pattern, $strings): string
 {
     $retval = '';
-    foreach ((array)$strings as $string) {
+    foreach ((array) $strings as $string) {
         if ($retval) {
             $retval .= $pattern;
         }
@@ -1428,13 +1458,14 @@ function join_and_quote( $pattern, $strings ): string
  * @param $string
  * @return string
  */
-function inner_trim(string $string): string {
+function inner_trim(string $string): string
+{
     return str_replace([' ', "\n", "\t", "\r"], '', $string);
 }
 
 function ReadFileSafe($url): void
 {
-    if ( (stripos($url, 'http://')===0 || stripos($url, 'https://')===0) && !str_contains($url, '..') ) {
+    if ((stripos($url, 'http://') === 0 || stripos($url, 'https://') === 0) && !str_contains($url, '..')) {
         readfile($url);
     }
 }
@@ -1499,12 +1530,12 @@ function getSelectBoxFromParamWizard(array $var): array
  * @param string $add_path
  * @return string
  */
-function GetAAImage($filename, $alt, $width, $height, $add='', $add_path=''): string
+function GetAAImage($filename, $alt, $width, $height, $add = '', $add_path = ''): string
 {
-    $image_path = AA_BASE_PATH.   $add_path. "images/$filename";
-    $image_url  = AA_INSTAL_PATH. $add_path. "images/$filename";
+    $image_path = AA_BASE_PATH . $add_path . "images/$filename";
+    $image_url  = AA_INSTAL_PATH . $add_path . "images/$filename";
     $title      = ($alt ? "title=\"$alt\"" : '');
-    if ( $width ) {
+    if ($width) {
         $size = "width=\"$width\" height=\"$height\"";
     } else {
         // this should not be used - the width should be always provided
@@ -1523,7 +1554,7 @@ function GetAAImage($filename, $alt, $width, $height, $add='', $add_path=''): st
  * @param $add
  * @return string
  */
-function GetModuleImage($module, $filename, $alt='', $width=0, $height=0, $add=''): string
+function GetModuleImage($module, $filename, $alt = '', $width = 0, $height = 0, $add = ''): string
 {
     return GetAAImage($filename, $alt, $width, $height, $add, "modules/$module/");
 }
@@ -1535,7 +1566,7 @@ function GetModuleImage($module, $filename, $alt='', $width=0, $height=0, $add='
  *
  * @return string
  */
-function get_class_name($object, bool $add_id=false): string
+function get_class_name($object, bool $add_id = false): string
 {
     $classname = is_object($object) ? get_class($object) : $object;
     if ($pos = strrpos($classname, '\\')) {
@@ -1554,8 +1585,8 @@ function get_class_name($object, bool $add_id=false): string
  * @method  static AA_Credentials singleton()
  *
  */
-class AA_Credentials {
-
+class AA_Credentials
+{
     use SingletonTrait;
 
     protected $_pwd = [];     // Array of all known slice passwords (md5 for better security)
@@ -1565,10 +1596,10 @@ class AA_Credentials {
      * @param string $crypted_additional_slice_pwd
      * @return bool
      */
-    function checkSlice($slice_id, $crypted_additional_slice_pwd=null): bool
+    public function checkSlice($slice_id, $crypted_additional_slice_pwd = null): bool
     {
         // AA_Slice::getModuleProperty($slice_id,'reading_password') is encrypted
-        return $this->checkCryptedPassword(AA_Slice::getModuleProperty($slice_id,'reading_password'), $crypted_additional_slice_pwd);
+        return $this->checkCryptedPassword(AA_Slice::getModuleProperty($slice_id, 'reading_password'), $crypted_additional_slice_pwd);
     }
 
     /**
@@ -1576,7 +1607,8 @@ class AA_Credentials {
      * @param string $crypted_additional_slice_pwd
      * @return bool
      */
-    function checkCryptedPassword($crypted_slice_pwd, $crypted_additional_slice_pwd=null): bool {
+    public function checkCryptedPassword($crypted_slice_pwd, $crypted_additional_slice_pwd = null): bool
+    {
         if (!$crypted_slice_pwd || $this->_pwd[$crypted_slice_pwd] || $crypted_slice_pwd == $crypted_additional_slice_pwd) {
             return true;
         }
@@ -1589,12 +1621,12 @@ class AA_Credentials {
     /** Load reading_password from slice
      * @param $slice_id
      */
-    function loadFromSlice($slice_id): void
+    public function loadFromSlice($slice_id): void
     {
-        $this->register(AA_Slice::getModuleProperty($slice_id,'reading_password'));  // AA_Slice::getModuleProperty($slice_id,'reading_password') is encrypted
+        $this->register(AA_Slice::getModuleProperty($slice_id, 'reading_password'));  // AA_Slice::getModuleProperty($slice_id,'reading_password') is encrypted
     }
 
-    function register($crypted_slice_pwd): void
+    public function register($crypted_slice_pwd): void
     {
         if (!empty($crypted_slice_pwd)) {
             $this->_pwd[$crypted_slice_pwd] = true;
@@ -1602,14 +1634,15 @@ class AA_Credentials {
     }
 
     /** we are sending collected slice passwords to {ajax...} */
-    public function getAsToken(): string {
-        return AA_Stringexpand_Encrypt::get_time_token(['spwd'=> array_keys($this->_pwd)]);
+    public function getAsToken(): string
+    {
+        return AA_Stringexpand_Encrypt::get_time_token(['spwd' => array_keys($this->_pwd)]);
     }
 
     public function importFromToken(string $timetoken): void
     {
         $arr = AA_Stringexpand_Encrypt::decrypt_time_token($timetoken);
-        if ( is_array($arr) && is_array($arr['spwd']) ) {
+        if (is_array($arr) && is_array($arr['spwd'])) {
             foreach ($arr['spwd'] as $crypted_slice_pwd) {
                 $this->register($crypted_slice_pwd);
             }
@@ -1618,7 +1651,7 @@ class AA_Credentials {
 
     /** wrapper function
      *  called as AA_Credentials::encrypt($reading_password) */
-    static function encrypt($pwd): string
+    public static function encrypt($pwd): string
     {
         return hash('md5', $pwd);
     }
@@ -1636,7 +1669,8 @@ class AA_Credentials {
  *
  *    The best to use this class for time-consuming functions with small results
  */
-class AA_Contentcache {
+class AA_Contentcache
+{
     // used for global cache of contents
     /** @var $content string[] - array of cache entry - 'key'=>[result, generation_time, uses, identification] */
     protected $content = [];
@@ -1665,7 +1699,8 @@ class AA_Contentcache {
      *                     only on its parameters, but also on some (global?) variable
      * @return mixed
      */
-    function get_result( $function, $params= [], $additional_params='', $stable=false ) {
+    public function get_result($function, $params = [], $additional_params = '', $stable = false)
+    {
         return $this->_get_result(get_hash($function, $params, $additional_params), $function, $params, $this->callable2ident($function), $stable);
     }
 
@@ -1674,7 +1709,8 @@ class AA_Contentcache {
      *
      * @param mixed $function The function to identify.
      */
-    function callable2ident($function): string {
+    public function callable2ident($function): string
+    {
         if (is_string($function)) {
             return $function;
         }
@@ -1704,19 +1740,20 @@ class AA_Contentcache {
      * @param $ident
      * @return mixed
      */
-    function _get_result($key, $function, $params, string $ident, $stable=false) {
+    public function _get_result($key, $function, $params, string $ident, $stable = false)
+    {
         if ($stable) { // not possible to shorthand it, because of the reference
             $content = &$this->content_stable;
         } else {
             $content = &$this->content;
         }
-        if ( isset( $content[$key]) ) {
+        if (isset($content[$key])) {
             $content[$key][2]++;
             return $content[$key][0];
         }
         $time = microtime(true);
-        $val = call_user_func_array($function, (array)$params);
-        $content[$key] = [$val, microtime(true)-$time, 0, $ident];
+        $val = call_user_func_array($function, (array) $params);
+        $content[$key] = [$val, microtime(true) - $time, 0, $ident];
         return $val;
     }
 
@@ -1728,7 +1765,8 @@ class AA_Contentcache {
      * @param $add
      * @return mixed
      */
-    function get_result_4_object($function, $params, $classname_hint, $add) {
+    public function get_result_4_object($function, $params, $classname_hint, $add)
+    {
         return $this->_get_result(get_hash($classname_hint, $params, $add), $function, $params, $classname_hint);
     }
 
@@ -1738,7 +1776,7 @@ class AA_Contentcache {
      * @param $access_code string  - access code to check
      * @return bool
      */
-    function is_soft($access_code): bool
+    public function is_soft($access_code): bool
     {
         return !str_starts_with($access_code, 'define');
     }
@@ -1748,7 +1786,7 @@ class AA_Contentcache {
      * @param $access_code
      * @param $val
      */
-    function set($access_code, $val): void
+    public function set($access_code, $val): void
     {
         if ($this->is_soft($access_code)) {
             $this->content[hash('md5', $access_code)] = [$val, 0, 0];
@@ -1761,14 +1799,14 @@ class AA_Contentcache {
      *  @param $access_code
      *  @return false if the value is not cached for the $access_code (use ===)
      */
-    function get($access_code): mixed
+    public function get($access_code): mixed
     {
         $key = hash('md5', $access_code);
         if ($this->is_soft($access_code)) {
-            if ( isset($this->content[$key]) ) {
+            if (isset($this->content[$key])) {
                 return $this->content[$key][0];
             }
-        } elseif ( isset($this->content_stable[$key]) ) {
+        } elseif (isset($this->content_stable[$key])) {
             return $this->content_stable[$key][0];
         }
         return false;
@@ -1779,7 +1817,7 @@ class AA_Contentcache {
      * @param $access_code
      * @return bool
      */
-    function exists($access_code): bool
+    public function exists($access_code): bool
     {
         return isset($this->content[hash('md5', $access_code)]);
     }
@@ -1789,7 +1827,7 @@ class AA_Contentcache {
      * clear key or all content from contentcache
      * @param $key
      */
-    function clear($key=null): void
+    public function clear($key = null): void
     {
         if (!is_null($key)) {
             unset($this->content[$key]);
@@ -1802,7 +1840,7 @@ class AA_Contentcache {
 
     /** clear_soft function
      */
-    function clear_soft(): void
+    public function clear_soft(): void
     {
         $this->content = [];
     }
@@ -1815,11 +1853,11 @@ class AA_Contentcache {
      * @param $access_code
      * @param $val
      */
-    function push($access_code, $val): void
+    public function push($access_code, $val): void
     {
-        if ( $this->exists($access_code) ) {
+        if ($this->exists($access_code)) {
             // backup access code - arr underscore before (with possible recursion)
-            $this->push('_'.$access_code, $this->get($access_code));
+            $this->push('_' . $access_code, $this->get($access_code));
         }
         $this->set($access_code, $val);
     }
@@ -1827,11 +1865,11 @@ class AA_Contentcache {
     /** pop function
      * @param $access_code
      */
-    function pop($access_code)
+    public function pop($access_code)
     {
         $ret = $this->get($access_code);
-        if ( $this->exists('_'.$access_code) ) {
-            $this->set($access_code, $this->pop('_'.$access_code)); // with recurcsion
+        if ($this->exists('_' . $access_code)) {
+            $this->set($access_code, $this->pop('_' . $access_code)); // with recurcsion
         }
         return $ret;
     }
@@ -1843,71 +1881,74 @@ class AA_Contentcache {
      * @param $access_code
      * @param $arr
      */
- //  function push_arr($access_code, array $arr) {
- //      foreach ($arr as $k => $v) {
- //          $key = hash('md5', $k);
- //          if ( isset($this->content[$key]) ) {
- //              $this->set('_'.$k, $this->content[$key]);
- //          }
- //          $this->set($k, $v);
- //      }
- //      $this->set($access_code, array_keys($arr));
- //  }
- //
- //  /** pop_arr function
- //   *  restores previous values pushed by push_arr
- //   * @param $access_code
- //   */
- //  function pop_arr($access_code) {
- //      if (is_array($keys = $this->get($access_code))) {
- //          foreach ($keys as $k => $v) {
- //              $key = hash('md5', $k);
- //              if ( isset($this->content[$key]) ) {
- //                  $this->set('_'.$k, $this->content[$key]);
- //              }
- //              $this->set($k, $v);
- //          }
- //          $this->set($access_code, array_keys($arr));
- //  }
+    //  function push_arr($access_code, array $arr) {
+    //      foreach ($arr as $k => $v) {
+    //          $key = hash('md5', $k);
+    //          if ( isset($this->content[$key]) ) {
+    //              $this->set('_'.$k, $this->content[$key]);
+    //          }
+    //          $this->set($k, $v);
+    //      }
+    //      $this->set($access_code, array_keys($arr));
+    //  }
+    //
+    //  /** pop_arr function
+    //   *  restores previous values pushed by push_arr
+    //   * @param $access_code
+    //   */
+    //  function pop_arr($access_code) {
+    //      if (is_array($keys = $this->get($access_code))) {
+    //          foreach ($keys as $k => $v) {
+    //              $key = hash('md5', $k);
+    //              if ( isset($this->content[$key]) ) {
+    //                  $this->set('_'.$k, $this->content[$key]);
+    //              }
+    //              $this->set($k, $v);
+    //          }
+    //          $this->set($access_code, array_keys($arr));
+    //  }
 
 
 
 
-    function duration_stat(): string {
+    public function duration_stat(): string
+    {
         $ret  = $this->content_stat($this->content, 'content');
         $ret .= $this->content_stat($this->content_stable, 'content stable');
         return $ret;
     }
 
-    protected function content_stat(array &$content, string $name): string {
-        $ret = "<br><b>contentcache - $name</b> (".count($content)." rows)<br>";
+    protected function content_stat(array &$content, string $name): string
+    {
+        $ret = "<br><b>contentcache - $name</b> (" . count($content) . " rows)<br>";
         $ret .= '<table class=aa-stat><tr><th>id</th><th>generation time</th><th>content(length)</th><th>used</th></tr>';
-        foreach($content as $c) {
+        foreach ($content as $c) {
             $val = $c[0];
-            $val = is_array($val) ? '['.count($val).']' : (is_object($val) ? get_class_name($val) : (string)$val);
-            $ret .= '<tr><td>'.safe($c[3]).'</td><td class=num>'.sprintf("%.4f",1000*$c[1]).'</td><td class=num>'.safe(substr($val,0,20)).' ('.strlen($val).')</td><td class=num>'.$c[2].'</td></tr>';
+            $val = is_array($val) ? '[' . count($val) . ']' : (is_object($val) ? get_class_name($val) : (string) $val);
+            $ret .= '<tr><td>' . safe($c[3]) . '</td><td class=num>' . sprintf("%.4f", 1000 * $c[1]) . '</td><td class=num>' . safe(substr($val, 0, 20)) . ' (' . strlen($val) . ')</td><td class=num>' . $c[2] . '</td></tr>';
         }
         $ret .= '</table>';
 
         $stat = [];
-        foreach($content as $c) {
-            if ( !isset($stat[$c[3]]) ) {
+        foreach ($content as $c) {
+            if (!isset($stat[$c[3]])) {
                 $stat[$c[3]] = [];
             }
             $stat[$c[3]]['cases']++;
-            $stat[$c[3]]['unused']+=($c[2] ? 0 : 1);
-            $stat[$c[3]]['gentime']+=1000*$c[1];
-            $stat[$c[3]]['length']+= is_string($c[0]) ? strlen($c[0]) : 0;
-            $stat[$c[3]]['hits']+=$c[2];
-            $stat[$c[3]]['saved']+=$c[2]*1000*$c[1];
+            $stat[$c[3]]['unused'] += ($c[2] ? 0 : 1);
+            $stat[$c[3]]['gentime'] += 1000 * $c[1];
+            $stat[$c[3]]['length'] += is_string($c[0]) ? strlen($c[0]) : 0;
+            $stat[$c[3]]['hits'] += $c[2];
+            $stat[$c[3]]['saved'] += $c[2] * 1000 * $c[1];
         }
         $ret .= '<table class=aa-stat><tr><th>id</th><th>cases</th><th>unused</th><th>sum gentime</th><th>sum length</th><th>sum hits</th><th>saved</th></tr>';
-        foreach($stat as $key=>$c) {
-            $ret .= '<tr><td>'.safe($key).'</td><td class=num>'.$c['cases'].'</td><td class=num>'.$c['unused'].'</td><td class=num>'.sprintf("%.4f",$c['gentime']).'</td><td class=num>'.$c['length'].'</td><td class=num>'.$c['hits'].'</td><td class=num>'.sprintf("%.4f",$c['saved']).'</td></tr>';
+        foreach ($stat as $key => $c) {
+            $ret .= '<tr><td>' . safe($key) . '</td><td class=num>' . $c['cases'] . '</td><td class=num>' . $c['unused'] . '</td><td class=num>' . sprintf("%.4f", $c['gentime']) . '</td><td class=num>' . $c['length'] . '</td><td class=num>' . $c['hits'] . '</td><td class=num>' . sprintf("%.4f", $c['saved']) . '</td></tr>';
         }
-        return $ret.'</table>';    }
+        return $ret . '</table>';
+    }
 
-// end of contentcache class
+    // end of contentcache class
 }
 
 
@@ -1917,15 +1958,17 @@ class AA_Contentcache {
  * @param $else
  * @param $else2
  */
-function get_if($value, $else, $else2='aa_NoNe', $else3='aa_NoNe') {
-    return $value ?: ($else ?: (($else2==='aa_NoNe') ? $else : (($else3==='aa_NoNe') ? $else2 : $else3)));
+function get_if($value, $else, $else2 = 'aa_NoNe', $else3 = 'aa_NoNe')
+{
+    return $value ?: ($else ?: (($else2 === 'aa_NoNe') ? $else : (($else3 === 'aa_NoNe') ? $else2 : $else3)));
 }
 
 /**
  * Value from array/object or default if not set or empty
  * clean way to write $arr[$key] ?: $default without PHP warning
  */
-function arrval(array|ArrayAccess $arr, string|int $key, mixed $default = null): mixed {
+function arrval(array|ArrayAccess $arr, string|int $key, mixed $default = null): mixed
+{
     return !empty($arr[$key]) ? $arr[$key] : $default;
 }
 
@@ -1933,13 +1976,13 @@ function arrval(array|ArrayAccess $arr, string|int $key, mixed $default = null):
  *  Version of AA - automatically included also date and revision of util.php
  *  file, for better version information
  */
-function aa_version($format='full'): string
+function aa_version($format = 'full'): string
 {
     $version = '2026.6';
-    $full    = 'ActionApps '.$version.' ($Date$, $Revision$), PHP '.PHP_VERSION.', REMOTE_ADDR: '.$_SERVER['REMOTE_ADDR'];
+    $full    = 'ActionApps ' . $version . ' ($Date$, $Revision$), PHP ' . PHP_VERSION . ', REMOTE_ADDR: ' . $_SERVER['REMOTE_ADDR'];
     return match ($format) {
-        'svn'  => (int)substr($full, strpos($full, 'Revision') + 10),              // svn version of util.php (which is +/- similar to svn version of AA)
-        'svn2' => trim(shell_exec("svnversion ".escapeshellarg(AA_BASE_PATH))),    // more accurate for whole AA, but slower
+        'svn'  => (int) substr($full, strpos($full, 'Revision') + 10),              // svn version of util.php (which is +/- similar to svn version of AA)
+        'svn2' => trim(shell_exec("svnversion " . escapeshellarg(AA_BASE_PATH))),    // more accurate for whole AA, but slower
         'aa'   => $version,
         'php'  => PHP_VERSION,
         default => $full,
@@ -1952,7 +1995,8 @@ function aa_version($format='full'): string
     */
 }
 
-class CookieManager {
+class CookieManager
+{
     //  we are adding prefix AA_ - at least it prevents conflicts between GET
     //  and COOKIES variables of the same name
     /** set function
@@ -1960,38 +2004,38 @@ class CookieManager {
      * @param $value
      * @param $time int seconds - like 60*60*24*2
      */
-    function set($name, $value, $time=0, $path='/'): void
+    public function set($name, $value, $time = 0, $path = '/'): void
     {
-        setcookie('AA_'.$name, $value, $time ? time() + $time : 0, $path, $_SERVER['HTTP_HOST']);
+        setcookie('AA_' . $name, $value, $time ? time() + $time : 0, $path, $_SERVER['HTTP_HOST']);
     }
 
     /** get function
      * @param $name
      * @return
      */
-    function get($name) {
-        return $_COOKIE['AA_'.$name];
+    public function get($name)
+    {
+        return $_COOKIE['AA_' . $name];
     }
 }
 
-class AA_GeneralizedArray {
+class AA_GeneralizedArray
+{
     private array $arr = [];
 
     /** AA_GeneralizedArray function
      */
-    function __construct()
-    {
-    }
+    public function __construct() {}
 
     /** add function
      * @param $value
      * @param $coordinates
      */
-    function add($value, $coordinates): void
+    public function add($value, $coordinates): void
     {
-        $arr =& $this->arr;
+        $arr = & $this->arr;
         // make sure the position exist
-        foreach ( $coordinates as $key ) {
+        foreach ($coordinates as $key) {
             if (!isset($arr[$key])) {
                 $arr[$key] = [];
             }
@@ -2004,11 +2048,11 @@ class AA_GeneralizedArray {
     /** getValues function
      * @param $coordinates
      */
-    function getValues($coordinates): ?array
+    public function getValues($coordinates): ?array
     {
-        $arr =& $this->arr;
+        $arr = & $this->arr;
         // make sure the position exist
-        foreach ( $coordinates as $key ) {
+        foreach ($coordinates as $key) {
             if (!isset($arr[$key])) {
                 return null;
             }
@@ -2021,7 +2065,8 @@ class AA_GeneralizedArray {
 
     /** getArray function
      */
-    function getArray(): array {
+    public function getArray(): array
+    {
         return $this->arr;
     }
 }
@@ -2030,7 +2075,8 @@ class AA_GeneralizedArray {
  * @param $text
  * @return bool
  */
-function IsSpamText($text, $tolerance=4): bool {
+function IsSpamText($text, $tolerance = 4): bool
+{
     // we do not accept any text using something like:
     //     [url=https://example.net]Example.net[/url]
     if (substr_count(strtolower($text), '[/url]')) {
@@ -2042,11 +2088,11 @@ function IsSpamText($text, $tolerance=4): bool {
 
 
     // four links are OK always
-    if ( $link_count < ($tolerance+1) ) {
+    if ($link_count < ($tolerance + 1)) {
         return false;
     }
     // link density - text of 250 characters could contain one link (in average)
-    return !(($text_length/$link_count)>250);
+    return !(($text_length / $link_count) > 250);
 }
 
 /** checks, if the identifier looks like alias. Used in {ifset:{_#HEADLINE}:...}
@@ -2054,26 +2100,29 @@ function IsSpamText($text, $tolerance=4): bool {
  * @param string $identifier
  * @return bool
  */
-function IsAlias($identifier): bool {
-    return  (str_starts_with($identifier, '_#') && ((strlen($identifier)===10) || (str_starts_with($identifier, '_#P') && ctype_digit(substr($identifier,3)))));
+function IsAlias($identifier): bool
+{
+    return  (str_starts_with($identifier, '_#') && ((strlen($identifier) === 10) || (str_starts_with($identifier, '_#P') && ctype_digit(substr($identifier, 3)))));
 }
 
 /** is signed int (ctype_digit do not allow signed numbers)
  * @param string $var
  * @return bool
  */
-function IsSigInt($var): bool { // like function is_signed(),function is_number(), function is_positive(), function is_numeric(),
+function IsSigInt($var): bool // like function is_signed(),function is_number(), function is_positive(), function is_numeric(),
+{
     if (is_int(filter_var($var, FILTER_VALIDATE_INT))) {
         return true;
     }
-    return (strlen((string)$var) && is_int(filter_var(ltrim($var,'0'), FILTER_VALIDATE_INT)));  // the 04 is int
+    return (strlen((string) $var) && is_int(filter_var(ltrim($var, '0'), FILTER_VALIDATE_INT)));  // the 04 is int
 }
 
 /** check, if variable could be converted to string
  * @param string $var
  * @return bool
  */
-function IsStringable($var): bool { // like function is_signed(),function is_number(), function is_positive(), function is_numeric(),
+function IsStringable($var): bool // like function is_signed(),function is_number(), function is_positive(), function is_numeric(),
+{
     return $var === null || is_scalar($var) || (is_object($var) && method_exists($var, '__toString'));
     // And since PHP 8 you can replace the third condition with $var instanceof Stringable    // And since PHP 8 you can replace the third condition with $var instanceof Stringable
 }
@@ -2087,49 +2136,52 @@ function RestoreVariables(array $r_state_vars): void
 }
 
 /** susbstr with utf in mind */
-function aa_substr($text, $start, $len=null): string {
+function aa_substr($text, $start, $len = null): string
+{
     return \AA\Util\Txt::substr($text, $start, $len);
 }
 
 /** strlen with utf in mind */
-function aa_strlen($text) {
+function aa_strlen($text)
+{
     return \AA\Util\Txt::strlen($text);
 }
 
 /** strpos with utf in mind */
-function aa_strpos($haystack , $needle , $offset = 0): false|int
+function aa_strpos($haystack, $needle, $offset = 0): false|int
 {
     return \AA\Util\Txt::strpos($haystack, $needle, $offset);
 }
 
 /** strrpos with utf in mind */
-function aa_strrpos($haystack , $needle , $offset = 0): false|int
+function aa_strrpos($haystack, $needle, $offset = 0): false|int
 {
     return \AA\Util\Txt::strrpos($haystack, $needle, $offset);
 }
 
 /** trim  with utf in mind */
-function aa_trim(string $string='', string $chars=''): string {
-    return ($chars==='' && Langs::isUTF()) ? preg_replace("/^\s+|\s+$/u", "", $string) : trim($string, $chars);
+function aa_trim(string $string = '', string $chars = ''): string
+{
+    return ($chars === '' && Langs::isUTF()) ? preg_replace("/^\s+|\s+$/u", "", $string) : trim($string, $chars);
     // trim($string, " \t\n\r\0\x0B\xA0");  // standard + chr(160) - hard space   // does not work for UTF characters - the hardspace \xA0 can break some UTF chars - "MŠ" for example
 }
 
 /** strtolower with utf in mind */
 function aa_strtolower($string): string
 {
-    return Langs::isUTF() ? mb_strtolower((string)$string) : strtolower((string)$string); // maybe we could count with other languages
+    return Langs::isUTF() ? mb_strtolower((string) $string) : strtolower((string) $string); // maybe we could count with other languages
 }
 
 /** lcfirst with utf in mind */
 function aa_lcfirst(string $string): string
 {
-    return Langs::isUTF() ? mb_strtolower(mb_substr($string, 0, 1)).mb_substr($string, 1) : lcfirst($string); // maybe we could count with other languages
+    return Langs::isUTF() ? mb_strtolower(mb_substr($string, 0, 1)) . mb_substr($string, 1) : lcfirst($string); // maybe we could count with other languages
 }
 
 /** ucfirst with utf in mind */
 function aa_ucfirst(string $string): string
 {
-    return Langs::isUTF() ? mb_strtoupper(mb_substr($string, 0, 1)).mb_substr($string, 1) : ucfirst($string); // maybe we could count with other languages
+    return Langs::isUTF() ? mb_strtoupper(mb_substr($string, 0, 1)) . mb_substr($string, 1) : ucfirst($string); // maybe we could count with other languages
 }
 
 /** strtoupper with utf in mind */
@@ -2143,7 +2195,8 @@ function aa_strtoupper(string $string): string
  *  @usage array_find_fnc([1,2,3,4,5,6], function($x) { return $x > 4; });  // 5
  *  @usage array_find_fnc(['x', 'y', 'z', 1, 2, 3], ['Foo', 'match']);
  */
-function array_find_fnc(iterable $arr, callable $comparator) {
+function array_find_fnc(iterable $arr, callable $comparator)
+{
     foreach ($arr as $x) {
         if (call_user_func($comparator, $x)) {
             return $x;
@@ -2155,22 +2208,24 @@ function array_find_fnc(iterable $arr, callable $comparator) {
 /** trims all the values and also keys of the array recursively
  * @usage array_trim_all(json2asoc($json));
  */
-function array_trim_all($arr) {
+function array_trim_all($arr)
+{
     return is_array($arr) ? array_map('array_trim_all', array_combine(array_map('trim', array_keys($arr)), array_values($arr))) : (is_string($arr) ? trim($arr) : $arr);
 }
 
 /** Get Authorization Header
  * @return string
  */
-function get_authorization_header(): string {
-    $ret='';
+function get_authorization_header(): string
+{
+    $ret = '';
     if (isset($_SERVER['Authorization'])) {
         $ret = $_SERVER['Authorization'];
     } elseif (isset($_SERVER['HTTP_AUTHORIZATION'])) {
         $ret = $_SERVER['HTTP_AUTHORIZATION'];
-    } elseif ( function_exists('apache_request_headers')) {
+    } elseif (function_exists('apache_request_headers')) {
         $apache_auth_tmp = apache_request_headers();
-        if ( strlen($apache_auth_tmp['Authorization']) ) {
+        if (strlen($apache_auth_tmp['Authorization'])) {
             // $ret = 'Bearer '.$apache_auth_tmp['Authorization'];  // no need to add Bearer - already included
             $ret = $apache_auth_tmp['Authorization'];
         }
@@ -2182,8 +2237,9 @@ function get_authorization_header(): string {
  * @param int $seconds - increase time by $seconds - default 300 seconds
  * @return void
  */
-function MoreTimeLimit(int $seconds=300): void {
-    if (ini_get('max_execution_time')<$seconds) {
+function MoreTimeLimit(int $seconds = 300): void
+{
+    if (ini_get('max_execution_time') < $seconds) {
         set_time_limit($seconds);
     }
 }

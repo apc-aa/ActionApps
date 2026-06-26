@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Usage of the mini-gettext system.
  * See include/lang/readme.html for more info; lang files are maintained
@@ -49,9 +50,9 @@ function bind_mgettext_domain($filename, $cache = false, $lang = ""): void
 
     static $_m_backup = [];
 
-    $filename = __DIR__.'/lang/'.basename(str_replace('.php3','.php',$filename)); // basename: the name may come from DB (module.lang_file) - prevent path traversal; .php3 from old configs
+    $filename = __DIR__ . '/lang/' . basename(str_replace('.php3', '.php', $filename)); // basename: the name may come from DB (module.lang_file) - prevent path traversal; .php3 from old configs
 
-    if ( $mgettext_domain == $filename ) {
+    if ($mgettext_domain == $filename) {
         return;                             // allready loaded
     }
 
@@ -68,7 +69,7 @@ function bind_mgettext_domain($filename, $cache = false, $lang = ""): void
         }
     }
 
-    if ( !is_file($filename)) {
+    if (!is_file($filename)) {
         echo "<h1>WRONG MGETTEXT DOMAIN $filename</h1>";
     } else {
         if ($lang != Langs::currentLang()) {
@@ -84,9 +85,9 @@ function bind_mgettext_domain($filename, $cache = false, $lang = ""): void
     }
 }
 
-function mgettext_bind($lang, $section, $cache=false): void
+function mgettext_bind($lang, $section, $cache = false): void
 {
-    bind_mgettext_domain( $lang.'_'.$section.'_lang.php', $cache, $lang);
+    bind_mgettext_domain($lang . '_' . $section . '_lang.php', $cache, $lang);
 }
 
 /** _m function
@@ -99,7 +100,8 @@ function mgettext_bind($lang, $section, $cache=false): void
  * @return string if translation in the active language (get_mgettext_lang()) does not yet exist,
  *                           returns $id, i.e. the English version
  */
-function _m($id, $params=[]): string {
+function _m($id, $params = []): string
+{
     global $_m;
 
     if (!strlen($id)) {
@@ -110,9 +112,9 @@ function _m($id, $params=[]): string {
     //$arr = ['<hr>', ++$count, $id, $_m[$id], $GLOBALS['mgettext_domain']];
     //array_walk($arr, function ($v) { echo "<br>".$v;});
 
-    $retval = $_m ? (string)($_m[$id] ?? '') : '';
+    $retval = $_m ? (string) ($_m[$id] ?? '') : '';
     if (!$retval) {
-        $retval = (string)$id;
+        $retval = (string) $id;
     }
 
     if (!$params || !is_array($params)) {
@@ -122,7 +124,7 @@ function _m($id, $params=[]): string {
     $s = ['\%'];
     $r = ['#$&*'];
     foreach ($params as $i => $iValue) {
-        $s[] = '%'.($i+1);
+        $s[] = '%' . ($i + 1);
         $r[] = $iValue;
     }
     $s[] = '#$&*';
@@ -137,6 +139,7 @@ function _m($id, $params=[]): string {
  * @param array  $params
  * @return string
  */
-function _mdelayed($id, $params=[]): string {
+function _mdelayed($id, $params = []): string
+{
     return _m($id, $params);
 }

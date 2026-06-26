@@ -29,16 +29,18 @@ use AA\Util\SingletonTrait;
 */
 
 
-class AA_Supertree {
+class AA_Supertree
+{
     protected array $_i = [];        // Array of items
     protected $_relation_field;  //
     protected $_sort;     // sort array().
-                          // Currently wors only for Reverse trees. @todo
+    // Currently wors only for Reverse trees. @todo
     protected array $_modules = [];  // Array of modules
 
     protected $_restrict_slices;  // Array of allowed slices
 
-    function __construct($relation_field, $sort=null, $slices= []) {
+    public function __construct($relation_field, $sort = null, $slices = [])
+    {
         $this->_relation_field  = $relation_field;
         $this->_sort            = $sort;
         $this->_restrict_slices = $slices;
@@ -47,7 +49,7 @@ class AA_Supertree {
     /** load function
      * @param $force
      */
-    function load( $id ): void
+    public function load($id): void
     {
         if (isset($this->_i[$id])) {
             return;
@@ -72,12 +74,12 @@ class AA_Supertree {
                 // mark module_id
                 $this->_modules[$sid] = true;
                 $next  = $this->_compactValue($columns[$this->_relation_field]);
-                $new   = array_merge($new,$next);
+                $new   = array_merge($new, $next);
                 $this->_i[$item_id] = $next;
             }
 
             $new_subitems = array_diff($new, array_keys($this->_i));
-            if ( count($new_subitems) < 1 ) {
+            if (count($new_subitems) < 1) {
                 break;
             }
         }
@@ -95,7 +97,8 @@ class AA_Supertree {
      * @param $id
      * @return array
      */
-    function getIds($id): array {
+    public function getIds($id): array
+    {
         $this->load($id);
         return $this->_subIds($id, 1);
     }
@@ -105,19 +108,21 @@ class AA_Supertree {
      * @param int $level
      * @return array
      */
-    function _subIds($id, $level=1): array {
+    public function _subIds($id, $level = 1): array
+    {
         if ($level > 100) {
             // @todo throw error
             return [];
         }
         $sub = [$id];
-        foreach($this->_i[$id] as $down_id) {
-            $sub = array_merge($sub, $this->_subIds($down_id, $level+1));
+        foreach ($this->_i[$id] as $down_id) {
+            $sub = array_merge($sub, $this->_subIds($down_id, $level + 1));
         }
         return $sub;
     }
 
-    function getMenu($ids, $current_ids, $code, $inner=false, $expanded=false, $exp_button=false): string {
+    public function getMenu($ids, $current_ids, $code, $inner = false, $expanded = false, $exp_button = false): string
+    {
         $ret = '';
         $xid = end($current_ids);
 
@@ -132,7 +137,7 @@ class AA_Supertree {
             if ($expanded || $inpath) {
                 $this->load($mid);
                 $sub  = empty($this->_i[$mid]) ? '' : $this->getMenu($this->_i[$mid], $current_ids, $code, true, $expanded, $exp_button);
-                $ret .= '  <li id="menu-'.$mid.'" class="'.$inpath.($mid==$xid  ? ' xidmatch':'').'">';
+                $ret .= '  <li id="menu-' . $mid . '" class="' . $inpath . ($mid == $xid ? ' xidmatch' : '') . '">';
                 $ret .= $menu_txt;
                 $ret .= ($exp_button && strlen($sub)) ? '<i class=aa-ico-expand onclick="this.closest(\'li\').classList.toggle(\'inpath\');"></i>' : '' ;
                 $ret .= $sub;
@@ -153,7 +158,8 @@ class AA_Supertree {
      * @param $id
      * @return string
      */
-    function getTreeString($id): string {
+    public function getTreeString($id): string
+    {
         $this->load($id);
         return $this->_subTreeString($id, 1);
     }
@@ -163,25 +169,27 @@ class AA_Supertree {
      * @param $level
      * @return string
      */
-    function _subTreeString($id, $level): string {
+    public function _subTreeString($id, $level): string
+    {
         if ($level > 100) {
             // @todo throw error
             return '';
         }
         $treestring = '';
         $delim      = '';
-        foreach($this->_i[$id] as $down_id) {
-            $treestring .= $delim. $this->_subTreeString($down_id, $level+1);
+        foreach ($this->_i[$id] as $down_id) {
+            $treestring .= $delim . $this->_subTreeString($down_id, $level + 1);
             $delim       = '-';
         }
-        return $id. (empty($treestring) ? '' : "($treestring)");
+        return $id . (empty($treestring) ? '' : "($treestring)");
     }
 
-    function _compactValue($value_arr): array {
+    public function _compactValue($value_arr): array
+    {
         $ret = [];
         if (is_array($value_arr)) {
-            foreach ( $value_arr as $fld_content ) {
-                if ( !empty($fld_content['value']) ) {
+            foreach ($value_arr as $fld_content) {
+                if (!empty($fld_content['value'])) {
                     $ret[] = $fld_content['value'];
                 }
             }
@@ -196,19 +204,19 @@ class AA_Supertree {
  *  !! The Reverse Tree is limited to one relation slice only !! - @todo - fix
  *  It is the same - we just change the way, how to construct the tree.
  */
-class AA_Supertree_Reverse extends AA_Supertree {
-
+class AA_Supertree_Reverse extends AA_Supertree
+{
     /** load function
      * @param string $id long_item_id
      */
-    function load( $id ): void
+    public function load($id): void
     {
         if (isset($this->_i[$id])) {
             return;
         }
 
         if (!count($this->_restrict_slices)) {
-            $zid = new zids($id,'l');
+            $zid = new zids($id, 'l');
             $sid = $zid->getFirstSlice();
             //huhl($this->_restrict_slices,$zid,$sid,$this);
             if (!$sid) {
@@ -238,7 +246,7 @@ class AA_Supertree_Reverse extends AA_Supertree {
             $next    = $zids->longids();
             $this->_i[$item_id] = $next;
 
-            $queue   = array_merge($queue,$next);
+            $queue   = array_merge($queue, $next);
         }
         return;
     }
@@ -249,8 +257,8 @@ class AA_Supertree_Reverse extends AA_Supertree {
  * Class AA_Trees
  * @method  static AA_Trees singleton()
  */
-class AA_Trees {
-
+class AA_Trees
+{
     use SingletonTrait;
 
     /** parent->child trees */
@@ -265,7 +273,8 @@ class AA_Trees {
      * @return
      * @noinspection PhpUnused
      */
-    static function getTreeString($id, $relation_field, $reverse=false, $sort=null, $slices=null): string {
+    public static function getTreeString($id, $relation_field, $reverse = false, $sort = null, $slices = null): string
+    {
         return self::getSupertree($relation_field, $reverse, $sort, $slices)->getTreeString($id);
     }
 
@@ -274,7 +283,7 @@ class AA_Trees {
      * @param $id
      * @return array
      */
-    static function getIds($id, $relation_field, $reverse=false, $sort=null, $slices=null): array
+    public static function getIds($id, $relation_field, $reverse = false, $sort = null, $slices = null): array
     {
         return self::getSupertree($relation_field, $reverse, $sort, $slices)->getIds($id);
     }
@@ -287,7 +296,7 @@ class AA_Trees {
      *
      * @return AA_Supertree
      */
-    static function getSupertree($relation_field, $reverse, $sort, $slices = []): AA_Supertree
+    public static function getSupertree($relation_field, $reverse, $sort, $slices = []): AA_Supertree
     {
         $trees = self::singleton();
         $key   = get_hash($relation_field, $reverse, $sort, $slices);
@@ -297,4 +306,3 @@ class AA_Trees {
         return $trees->a[$key];
     }
 }
-

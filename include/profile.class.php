@@ -1,4 +1,5 @@
 <?php
+
 /**
  * File contains definition of profile class - used for custom user settings
  *
@@ -37,11 +38,12 @@ require_once __DIR__ . "/locauth.php";  // for getMembership()
 /** AA_Profile class - used for storing specific custom settings of loged user
  *  in one specific slice
  */
-class AA_Profile {
-    var $module_id;      // for which slice/module we hold the profile?
-    var $user_id;        // for which user we hold the profile?
-    var $properties;     // user's profile/settings
-    var $err;            // array of error messages from methods
+class AA_Profile
+{
+    public $module_id;      // for which slice/module we hold the profile?
+    public $user_id;        // for which user we hold the profile?
+    public $properties;     // user's profile/settings
+    public $err;            // array of error messages from methods
 
     /** AA_Profile function - do not use directly - use rather
      *     $profile = AA_Profile::getProfile($user_id, $module_id);
@@ -49,7 +51,8 @@ class AA_Profile {
      *  @param $module_id - for which slice/module we hold the profile?
      *  @param $user_id   - for which user we hold the profile?
      */
-    function __construct($user_id, $module_id) {
+    public function __construct($user_id, $module_id)
+    {
         $this->user_id   = $user_id;
         $this->module_id = $module_id;
     }
@@ -60,7 +63,8 @@ class AA_Profile {
      * @param string $module_id
      * @return AA_Profile
      */
-    static function getProfile($user_id, $module_id): AA_Profile {
+    public static function getProfile($user_id, $module_id): AA_Profile
+    {
         // AA_Profiles array
         static $instances = [];
         if (empty($instances[$user_id])) {
@@ -77,7 +81,8 @@ class AA_Profile {
      * @param string $module_id
      * @return array
      */
-    public static function getUsersForModule(string $module_id): array {
+    public static function getUsersForModule(string $module_id): array
+    {
         return DB_AA::select('uid', 'SELECT uid FROM profile', [['slice_id',$module_id,'l']]);
     }
 
@@ -90,12 +95,12 @@ class AA_Profile {
      *  @param bool $force - if true, reread the profile from database even if
      *                       profile is already loaded
      */
-    function loadprofile( $force=false ): void
+    public function loadprofile($force = false): void
     {
-        if ( $force ) {
-            unset( $this->properties );  // refresh from database
+        if ($force) {
+            unset($this->properties);  // refresh from database
         }
-        if ( !$this->module_id || (isset($this->properties) && is_array($this->properties)) ) {
+        if (!$this->module_id || (isset($this->properties) && is_array($this->properties))) {
             return;
         }
         $this->properties = [];
@@ -108,9 +113,9 @@ class AA_Profile {
         $profiles = DB_AA::select([], 'SELECT * FROM profile', [['slice_id',$this->module_id,'l'], ['uid',$usr_groups]]);
 
         foreach ($profiles as $pi) {
-            if ( $pi['uid'] == $this->user_id ) {
+            if ($pi['uid'] == $this->user_id) {
                 $this->set($pi['property'], $pi['selector'], $pi['value'], 'u', $pi['id'], $pi['uid']);
-            } elseif ( in_array($pi['uid'], $groups) ) {
+            } elseif (in_array($pi['uid'], $groups)) {
                 $group_profile[] = $pi;  // store for later use
             } else {
                 $general_profile[] = $pi;  // store for later use
@@ -118,18 +123,18 @@ class AA_Profile {
         }
         // now add properties from group profile(s), if it is not already set
         // TODO: deal with priority of multiple groups
-        if ( $group_profile ) {
-            foreach ( $group_profile as $v ) {
-                if ( false === $this->getProperty($v['property'],$v['selector'],true) ) {
-                    $this->set( $v['property'], $v['selector'], $v['value'], '*', $v['id'], $v['uid'] );
+        if ($group_profile) {
+            foreach ($group_profile as $v) {
+                if (false === $this->getProperty($v['property'], $v['selector'], true)) {
+                    $this->set($v['property'], $v['selector'], $v['value'], '*', $v['id'], $v['uid']);
                 }
             }
         }
         // now add properties from default profile, if it is not already set
-        if ( $general_profile ) {
-            foreach ( $general_profile as $v ) {
-                if ( false === $this->getProperty($v['property'],$v['selector'],true) ) {
-                    $this->set( $v['property'], $v['selector'], $v['value'], '*', $v['id'], $v['uid'] );
+        if ($general_profile) {
+            foreach ($general_profile as $v) {
+                if (false === $this->getProperty($v['property'], $v['selector'], true)) {
+                    $this->set($v['property'], $v['selector'], $v['value'], '*', $v['id'], $v['uid']);
                 }
             }
         }
@@ -145,9 +150,9 @@ class AA_Profile {
      * @param $id
      * @param $uid
      */
-    function set($property, $selector, $value, $type='u', $id='', $uid=''): void
+    public function set($property, $selector, $value, $type = 'u', $id = '', $uid = ''): void
     {
-        $this->properties[$property][$selector] = [(string)$value, (string)$type, (string)$id, (string)$uid];
+        $this->properties[$property][$selector] = [(string) $value, (string) $type, (string) $id, (string) $uid];
     }
 
 
@@ -161,12 +166,13 @@ class AA_Profile {
      *  @param $no_load
      *  @return false|array property value (directly - not in array as get() does)
      */
-    function get($property, $selector=0, $no_load=false ) {
-        if ( !$no_load ) {
+    public function get($property, $selector = 0, $no_load = false)
+    {
+        if (!$no_load) {
             $this->loadprofile();
         }
-        if ( isset($this->properties) && isset($this->properties[$property]) ) {
-            return ( (string)$selector==='*' ) ? $this->properties[$property] : $this->properties[$property][$selector];
+        if (isset($this->properties) && isset($this->properties[$property])) {
+            return ((string) $selector === '*') ? $this->properties[$property] : $this->properties[$property][$selector];
         }
         return false;
 
@@ -180,7 +186,8 @@ class AA_Profile {
      * @param bool $no_load
      * @return string|bool property value (directly - not in array as get() does)
      */
-    function getProperty( $property, $selector=0, $no_load=false ) {
+    public function getProperty($property, $selector = 0, $no_load = false)
+    {
         $prop = $this->get($property, $selector, $no_load);
         return is_array($prop) ? $prop[0] : false;
     }
@@ -189,12 +196,12 @@ class AA_Profile {
      * @param $field_id
      * @return AA_Value|null
      */
-    function getFormFieldValue($field_id): ?AA_Value
+    public function getFormFieldValue($field_id): ?AA_Value
     {
-        if ($profile_value = $this->getProperty('hide&fill',$field_id)) {
+        if ($profile_value = $this->getProperty('hide&fill', $field_id)) {
             return $this->parseContentProperty($profile_value);
         }
-        if (!($profile_value = $this->getProperty('fill',$field_id))) {
+        if (!($profile_value = $this->getProperty('fill', $field_id))) {
             return null;
         }
         return $this->parseContentProperty($profile_value);
@@ -208,9 +215,10 @@ class AA_Profile {
      * @param $value
      * @return AA_Value
      */
-    function parseContentProperty($value): AA_Value {
-        if (!($generator = AA_Generator::factoryByString(substr($value,2)))) {  // see format described above
-            return new AA_Value;
+    public function parseContentProperty($value): AA_Value
+    {
+        if (!($generator = AA_Generator::factoryByString(substr($value, 2)))) {  // see format described above
+            return new AA_Value();
         }
         return $generator->generate()->setFlag(($value[0] == '1') ? FLAG_HTML : 0);
     }
@@ -219,9 +227,9 @@ class AA_Profile {
      *  Deletes all rules for the user
      *  (used on revoking the perms for user on a slice)
      */
-    function delUserProfile(): void
+    public function delUserProfile(): void
     {
-        $this->do_sql("DELETE FROM profile WHERE uid='". $this->user_id ."' AND slice_id=". xpack_id($this->module_id), "Can't delete profile");
+        $this->do_sql("DELETE FROM profile WHERE uid='" . $this->user_id . "' AND slice_id=" . xpack_id($this->module_id), "Can't delete profile");
     }
 
     /** insertProperty function
@@ -231,12 +239,16 @@ class AA_Profile {
      * @param $global
      * @return bool
      */
-    function insertProperty($property, $selector, $value, $global=false): bool
+    public function insertProperty($property, $selector, $value, $global = false): bool
     {
-        $property = quote($property); $selector = quote($selector); $value = quote($value);
-        $last_id = $this->do_sql("INSERT INTO profile (slice_id, uid, property, selector, value)
-                                         VALUES (". xpack_id($this->module_id) .",'". ($global ? '*' : $this->user_id) ."','$property','$selector','$value')",
-                      "Can't update profile");
+        $property = quote($property);
+        $selector = quote($selector);
+        $value = quote($value);
+        $last_id = $this->do_sql(
+            "INSERT INTO profile (slice_id, uid, property, selector, value)
+                                         VALUES (" . xpack_id($this->module_id) . ",'" . ($global ? '*' : $this->user_id) . "','$property','$selector','$value')",
+            "Can't update profile",
+        );
         return $last_id;
     }
     /** deleteProperty function
@@ -244,23 +256,26 @@ class AA_Profile {
      * @param $selector
      * @param $global
      */
-    function deleteProperty($property, $selector="", $global=false): void
+    public function deleteProperty($property, $selector = "", $global = false): void
     {
-        $property = quote($property); $selector = quote($selector);
-        $this->do_sql("DELETE FROM profile WHERE property='$property'
-                                             AND      uid='". ($global ? '*' : $this->user_id) ."'
-                                             AND slice_id=". xpack_id($this->module_id).
-                              ($selector ? " AND selector = '$selector' " : ''),
-                       "Can't delete profile");
+        $property = quote($property);
+        $selector = quote($selector);
+        $this->do_sql(
+            "DELETE FROM profile WHERE property='$property'
+                                             AND      uid='" . ($global ? '*' : $this->user_id) . "'
+                                             AND slice_id=" . xpack_id($this->module_id)
+                              . ($selector ? " AND selector = '$selector' " : ''),
+            "Can't delete profile",
+        );
     }
 
     /** Copies the profile form one user to another
      */
-    static function copyProfile($slice_id, $from_uid, $to_uid): void
+    public static function copyProfile($slice_id, $from_uid, $to_uid): void
     {
         $p_slice_id = xpack_id($slice_id);
         $rules      = GetTable2Array("SELECT * FROM profile WHERE slice_id=$p_slice_id AND (uid='$from_uid')");
-        $varset     = new CVarset;
+        $varset     = new CVarset();
         foreach ($rules as $row) {
             $varset->resetFromRecord($row);
             $varset->remove('id');
@@ -276,28 +291,30 @@ class AA_Profile {
      * @param $value
      * @param $id
      */
-    function updateProperty($property, $selector, $value, $id): void
+    public function updateProperty($property, $selector, $value, $id): void
     {
-        $property = quote($property); $selector = quote($selector); $value=quote($value);
+        $property = quote($property);
+        $selector = quote($selector);
+        $value = quote($value);
         $SQL = "UPDATE profile SET";
         $SQL2 = '';
         if ($selector != "") {
-            $SQL2 .= " selector='".$selector."'";
+            $SQL2 .= " selector='" . $selector . "'";
         }
         if ($value != "") {
             if ($SQL2) {
-                $SQL2 .= ", value='".$value."'";
+                $SQL2 .= ", value='" . $value . "'";
             } else {
-                $SQL2 .= " value='".$value."'";
+                $SQL2 .= " value='" . $value . "'";
             }
         }
         $SQL .= $SQL2;
         $SQL .= "WHERE property='$property'";
         if ($id) {
-            $SQL .= " AND id='".$id."'";
+            $SQL .= " AND id='" . $id . "'";
         }
-        $SQL .= " AND slice_id=". xpack_id($this->module_id);
-        $this->do_sql($SQL,"Can't delete profile");
+        $SQL .= " AND slice_id=" . xpack_id($this->module_id);
+        $this->do_sql($SQL, "Can't delete profile");
     }
 
     /** do_sql function
@@ -305,9 +322,9 @@ class AA_Profile {
      * @param $err
      * @return bool
      */
-    function do_sql($SQL, $err=""): bool
+    public function do_sql($SQL, $err = ""): bool
     {
-        if ( !$this->module_id || !$this->user_id ) {
+        if (!$this->module_id || !$this->user_id) {
             return false;
         }
         $db = getDB();
@@ -330,14 +347,14 @@ class AA_Profile {
      * @param $html
      * @return string
      */
-    static function addProfileProperty($uid, $slice_id, $property, $field_id, $fnction, $param, $html): string
+    public static function addProfileProperty($uid, $slice_id, $property, $field_id, $fnction, $param, $html): string
     {
         $profile = self::getProfile($uid, $slice_id); // user settings
-        switch($property) {
+        switch ($property) {
             case 'listlen':
             case 'input_view':
             case 'admin_perm':
-                if ( (($property==='admin_perm') && (strlen($param)===32) ) || ($param > 0) ) {
+                if ((($property === 'admin_perm') && (strlen($param) === 32)) || ($param > 0)) {
                     $profile->deleteProperty($property);
                     $profile->insertProperty($property, '0', $param);
                     $Msg = MsgOk(_m("Rule added"));
@@ -347,14 +364,14 @@ class AA_Profile {
                 }
                 break;
             case 'admin_order':
-                if ( $field_id ) {
+                if ($field_id) {
                     $profile->deleteProperty($property, $field_id);
-                    $profile->insertProperty($property, $field_id, $field_id.$fnction);
+                    $profile->insertProperty($property, $field_id, $field_id . $fnction);
                     $Msg = MsgOk(_m("Rule added"));
                 }
                 break;
             case 'admin_search':
-                if ( $field_id ) {
+                if ($field_id) {
                     $profile->deleteProperty($property, $field_id);
                     // 0 is just placeholder - normaly we use it for html flag
                     // @todo - do it better with some classes and custom parameters
@@ -365,16 +382,16 @@ class AA_Profile {
             case 'hide':
             case 'ui_manager_hide':
             case 'ui_inputform_hide':
-                if ( $field_id ) {
+                if ($field_id) {
                     $profile->deleteProperty($property, $field_id);
                     $profile->insertProperty($property, $field_id, '1');
                     $Msg = MsgOk(_m("Rule added"));
                 }
                 break;
             case 'show':
-                if ( $field_id ) {
-                    $profile->deleteProperty('hide',      $field_id);
-                    $profile->insertProperty('hide',      $field_id, '0');  // clear preset value for hide
+                if ($field_id) {
+                    $profile->deleteProperty('hide', $field_id);
+                    $profile->insertProperty('hide', $field_id, '0');  // clear preset value for hide
                     $profile->deleteProperty('hide&fill', $field_id);
                     $profile->insertProperty('hide&fill', $field_id, '0'); // clear preset value for hide&fill
                     $Msg = MsgOk(_m("Rule added"));
@@ -383,17 +400,17 @@ class AA_Profile {
             case 'fill':
             case 'hide&fill':
             case 'predefine':
-                if ( $field_id ) {
-                    $profile->deleteProperty($property,$field_id);
+                if ($field_id) {
+                    $profile->deleteProperty($property, $field_id);
                     $profile->insertProperty($property, $field_id, "$html:$fnction:$param");
                     $Msg = MsgOk(_m("Rule added"));
                 }
                 break;
             case 'ui_manager':
             case 'ui_inputform':
-                if ( $field_id ) {
-                    $profile->deleteProperty($property,$field_id);
-                    $profile->insertProperty($property, $field_id, (string)$param);
+                if ($field_id) {
+                    $profile->deleteProperty($property, $field_id);
+                    $profile->insertProperty($property, $field_id, (string) $param);
                     $Msg = MsgOk(_m("Rule added"));
                 }
                 break;

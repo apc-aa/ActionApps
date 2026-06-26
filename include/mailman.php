@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Mailman feature related functions:
  * Event handlers.
@@ -33,8 +34,8 @@ use AA\IO\DB\DB_AA;
 
 require_once __DIR__ . "/util.php";
 
-class AA_Mailman {
-
+class AA_Mailman
+{
     /** AA_Mailman::createSynchroFiles function
      *   Finds all reader-mailing list assignments for the given slice.
      *   Creates one file for each mailing list, named the same as the list.
@@ -44,7 +45,7 @@ class AA_Mailman {
     {
         global $MAILMAN_SYNCHRO_DIR;
 
-        if ( !$MAILMAN_SYNCHRO_DIR) {
+        if (!$MAILMAN_SYNCHRO_DIR) {
             return;
         }
 
@@ -60,7 +61,7 @@ class AA_Mailman {
         // Add empty mailing lists
         if ($group_id = $slice?->getFields()->getCategoryGroup($field)) {
             if (! @is_dir($MAILMAN_SYNCHRO_DIR)) {
-                warn('Error: mailman dir not exists '.$MAILMAN_SYNCHRO_DIR);
+                warn('Error: mailman dir not exists ' . $MAILMAN_SYNCHRO_DIR);
                 return;
             }
             endslash($MAILMAN_SYNCHRO_DIR);
@@ -79,13 +80,13 @@ class AA_Mailman {
     {
         global $MAILMAN_SYNCHRO_DIR;
         if ($slice_id && $field_id && $listname) {
-            $mails = implode("\n",AA_Validate::filter(explode('|',str_replace([' ', "\t"], ['', ''],AA::Un("{item:{ids:$slice_id:d-$field_id-=-".str_replace('-', '--',$listname)."}:".FIELDID_EMAIL.":|}"))), 'email'));
+            $mails = implode("\n", AA_Validate::filter(explode('|', str_replace([' ', "\t"], ['', ''], AA::Un("{item:{ids:$slice_id:d-$field_id-=-" . str_replace('-', '--', $listname) . "}:" . FIELDID_EMAIL . ":|}"))), 'email'));
 
-            if ($fd = fopen($MAILMAN_SYNCHRO_DIR.$listname, 'wb')) {
-                fwrite ($fd, $mails);
-                fclose ($fd);
+            if ($fd = fopen($MAILMAN_SYNCHRO_DIR . $listname, 'wb')) {
+                fwrite($fd, $mails);
+                fclose($fd);
             } else {
-                warn('Error: mailman file write '.$MAILMAN_SYNCHRO_DIR.$listname);
+                warn('Error: mailman file write ' . $MAILMAN_SYNCHRO_DIR . $listname);
             }
         }
     }
@@ -96,14 +97,14 @@ class AA_Mailman {
     /** constantsChanged function
      * @param $constant_id
      */
-    static function constantsChanged( $constant_id): void
+    public static function constantsChanged($constant_id): void
     {
         global $MAILMAN_SYNCHRO_DIR;
-        if ( !$MAILMAN_SYNCHRO_DIR) {
+        if (!$MAILMAN_SYNCHRO_DIR) {
             return;
         }
 
-        if ( !($group_id = DB_AA::select1('group_id', 'SELECT group_id FROM `constant`', [['id', $constant_id, 'l']])) ) {
+        if (!($group_id = DB_AA::select1('group_id', 'SELECT group_id FROM `constant`', [['id', $constant_id, 'l']]))) {
             return;
         }
         $db = getDB();
@@ -122,4 +123,3 @@ class AA_Mailman {
         freeDB($db);
     }
 }
-

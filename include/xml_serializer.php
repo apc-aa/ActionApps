@@ -1,4 +1,5 @@
 <?php
+
 /**
  *
  *
@@ -49,10 +50,10 @@
  * @param $a
  * @return string
  */
-function xml_serialize($k, $v, $i, $ii, $a=null): string
+function xml_serialize($k, $v, $i, $ii, $a = null): string
 {
     $start = (isset($a) ? "$k $a" : "t tname=\"$k\"");
-    $end   = (isset($a) ? (string)$k : "t");
+    $end   = (isset($a) ? (string) $k : "t");
     if (is_null($v)) {
         return "$i<$start />";
     }
@@ -60,16 +61,16 @@ function xml_serialize($k, $v, $i, $ii, $a=null): string
     if (is_string($v) || is_int($v) || is_float($v) || is_bool($v)) {
         //if ($debug) print "STRING";
         // if contains stuff other than printable ascii and CRLF then hex it
-        if (preg_match('/[\000-\011\013-\014\016-\037\200-\377]/',$v)) {
-            return "$i<$start coding=\"bin2hex\">".bin2hex($v)."</$end>";
+        if (preg_match('/[\000-\011\013-\014\016-\037\200-\377]/', $v)) {
+            return "$i<$start coding=\"bin2hex\">" . bin2hex($v) . "</$end>";
         }
 
-        return "$i<$start>".safe($v)."</$end>";
+        return "$i<$start>" . safe($v) . "</$end>";
     }
 
     if (is_array($v)) {
         foreach ($v as $k1 => $v1) {
-            $o .= xml_serialize($k1,$v1,$i.$ii,$ii);
+            $o .= xml_serialize($k1, $v1, $i . $ii, $ii);
         }
         return "$i<$start>$o$i</$end>";
     }
@@ -77,7 +78,7 @@ function xml_serialize($k, $v, $i, $ii, $a=null): string
     if (is_object($v)) {
         //if ($debug) print "OBJECT";
         if (is_callable([$v,"xml_serialize"])) {
-            return $v->xml_serialize($k,$i,$ii,$a);
+            return $v->xml_serialize($k, $i, $ii, $a);
         }
 
         print("ERROR: Can't serialize an Object");
@@ -93,31 +94,33 @@ function xml_serialize($k, $v, $i, $ii, $a=null): string
  *  Note this matches the xml_serializer above,
  * @usage $data = (new xml_unserializer())->parse($xml_data);
  */
-class xml_unserializer {
-    var $stack = [];          // stack of items above oen being worked on
-    var $chardata = "";          // Current string of CDATA
-    var $top = null;        // Element we are working on (array? at least sometimes)
-    var $coding = "";   // set to bin2hex when coded id
-    var $debug = false;          // set to true to debug this
-    var $parser;
-    var $namestack = [];
-    var $codingstack = [];
-    var $name;      // Name of the current array
+class xml_unserializer
+{
+    public $stack = [];          // stack of items above oen being worked on
+    public $chardata = "";          // Current string of CDATA
+    public $top = null;        // Element we are working on (array? at least sometimes)
+    public $coding = "";   // set to bin2hex when coded id
+    public $debug = false;          // set to true to debug this
+    public $parser;
+    public $namestack = [];
+    public $codingstack = [];
+    public $name;      // Name of the current array
     /** xml_unserializer function
      *
      */
-    function __construct() {
+    public function __construct()
+    {
         $this->parser      = xml_parser_create();
         xml_set_object($this->parser, $this);
         xml_set_element_handler($this->parser, "startElement", "endElement");
-        xml_set_character_data_handler($this->parser,"charD");
+        xml_set_character_data_handler($this->parser, "charD");
     }
 
     /** parse function
      * @param $xml_data
      * @return null|array|string
      */
-    public function parse($xml_data): null|array|string
+    public function parse($xml_data): array|string|null
     {
         if (!xml_parse($this->parser, $xml_data, true)) {
             $ret =  sprintf("XML parse error: %s at line %d", xml_error_string(xml_get_error_code($this->parser)), xml_get_current_line_number($this->parser));
@@ -131,10 +134,10 @@ class xml_unserializer {
      * @param $name
      * @param $attrs
      */
-    function startElement($parser, $name, $attrs): void
+    public function startElement($parser, $name, $attrs): void
     {
         if ($this->debug) {
-            huhl("\n:start='".$name."'",$attrs,$this);
+            huhl("\n:start='" . $name . "'", $attrs, $this);
         }
         $this->stack[]       = $this->top;
         $this->namestack[]   = $this->name;
@@ -161,15 +164,16 @@ class xml_unserializer {
      * @param $parser
      * @param $name
      */
-    function endElement($parser,$name): void
+    public function endElement($parser, $name): void
     {
         if ($this->debug) {
-            huhl("\n:end='".$name."'",$this);
+            huhl("\n:end='" . $name . "'", $this);
         }
         switch ($this->coding) {
-          case "bin2hex": $this->chardata = pack_id($this->chardata); break;
-          case "serialize":
-          case "serializezip":
+            case "bin2hex": $this->chardata = pack_id($this->chardata);
+                break;
+            case "serialize":
+            case "serializezip":
                 $c = base64_decode($this->chardata);
                 if ($this->coding === "serializegzip") {
                     $c = gzuncompress($c);
@@ -177,24 +181,24 @@ class xml_unserializer {
                 $this->top = unserialize($c, ['allowed_classes' => false]);
                 $this->chardata = "";
                 break;
-          default:
-    //       $this->chardata = preg_replace("/^\s+/",'',$this->chardata);
-    // Strip trailing whitespace, note this occurs in parent stack
-            $this->chardata = rtrim($this->chardata);
+            default:
+                //       $this->chardata = preg_replace("/^\s+/",'',$this->chardata);
+                // Strip trailing whitespace, note this occurs in parent stack
+                $this->chardata = rtrim($this->chardata);
         }
         $n = $this->name;
         if (isset($this->top)) { // Already seen children or attrs
             $t = $this->top;
             $this->top = array_pop($this->stack);
             $this->name = array_pop($this->namestack);
-            $this->coding= array_pop($this->codingstack);
+            $this->coding = array_pop($this->codingstack);
             if ($this->chardata) {
                 $t["CHARDATA"] = $this->chardata;
                 $this->chardata = "";
             }
-            if (is_callable($name."_xml_unserialize")) {
-                $f=$name."_xml_unserialize";
-                $this->top[$n] = $f($n,$t);
+            if (is_callable($name . "_xml_unserialize")) {
+                $f = $name . "_xml_unserialize";
+                $this->top[$n] = $f($n, $t);
                 //print("Unparsing object $name as name $n");
             } elseif ($n == $name) {
                 // Cant assume its a structure export, import as array
@@ -212,7 +216,8 @@ class xml_unserializer {
             } else { // Came from structure export, name from attribute
                 $this->top[$n] = $this->chardata; // possibly empty
             }
-            $this->chardata = ""; $this->coding = "";
+            $this->chardata = "";
+            $this->coding = "";
         }
         if ($this->debug) {
             huhl("END:$name: els=", $this->stack, "Top=", $this->top);
@@ -222,14 +227,14 @@ class xml_unserializer {
      * @param $parser
      * @param $data
      */
-    function charD($parser, $data): void
+    public function charD($parser, $data): void
     {
         if ($this->debug) {
-            huhl("\n:charD='".$data."'");
+            huhl("\n:charD='" . $data . "'");
         }
         $this->chardata .= $data;
         if ($this->debug) {
-            huhl("\n:charD now='".$this->chardata."'");
+            huhl("\n:charD now='" . $this->chardata . "'");
         }
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * PHP version 7.2+
  *
@@ -164,14 +165,16 @@ const DEBUG_MODE         = -1;
  *
  * @link http://www.unicode.org Unicode Homepage
  */
-class ConvertCharset {
+class ConvertCharset
+{
     private bool $Entities; // This value keeps information if output should be with numeric entities.
 
     /** Default conversions for this convertor */
     private ?string $from_charset;
     private ?string $to_charset;
 
-    function __construct(?string $from_charset = null, ?string $to_charset = null) {
+    public function __construct(?string $from_charset = null, ?string $to_charset = null)
+    {
         $this->from_charset = $from_charset;
         $this->to_charset   = $to_charset;
     }
@@ -212,7 +215,7 @@ class ConvertCharset {
      * @return string This is an input string olso with unicode chars, bus saved as entities
      * @see HexToUtf()
      */
-    function UnicodeEntity($UnicodeString): string
+    public function UnicodeEntity($UnicodeString): string
     {
         $OutString  = "";
         $StringLenght = strlen($UnicodeString);
@@ -222,8 +225,7 @@ class ConvertCharset {
 
             if ($AsciiChar < 128) { //1 7 0bbbbbbb (127)
                 $OutString .= $Char;
-            }
-            elseif ($AsciiChar >> 5 == 6) { //2 11 110bbbbb 10bbbbbb (2047)
+            } elseif ($AsciiChar >> 5 == 6) { //2 11 110bbbbb 10bbbbbb (2047)
                 $FirstByte      = ($AsciiChar & 31);
                 $CharPosition++;
                 $Char           = $UnicodeString[$CharPosition];
@@ -232,8 +234,7 @@ class ConvertCharset {
                 $AsciiChar      = ($FirstByte * 64) + $SecondByte;
                 $Entity         = sprintf("&#%d;", $AsciiChar);
                 $OutString     .= $Entity;
-            }
-            elseif ($AsciiChar >> 4  == 14) { //3 16 1110bbbb 10bbbbbb 10bbbbbb
+            } elseif ($AsciiChar >> 4  == 14) { //3 16 1110bbbb 10bbbbbb 10bbbbbb
                 $FirstByte      = ($AsciiChar & 31);
                 $CharPosition++;
                 $Char           = $UnicodeString[$CharPosition];
@@ -247,8 +248,7 @@ class ConvertCharset {
 
                 $Entity         = sprintf("&#%d;", $AsciiChar);
                 $OutString     .= $Entity;
-            }
-            elseif ($AsciiChar >> 3 == 30) { //4 21 11110bbb 10bbbbbb 10bbbbbb 10bbbbbb
+            } elseif ($AsciiChar >> 3 == 30) { //4 21 11110bbb 10bbbbbb 10bbbbbb 10bbbbbb
                 $FirstByte      = ($AsciiChar & 31);
                 $CharPosition++;
                 $Char           = $UnicodeString[$CharPosition];
@@ -282,18 +282,18 @@ class ConvertCharset {
      * @return string Encoded hexadecimal value as a regular char.
      * @see UnicodeEntity()
      */
-    function HexToUtf($UtfCharInHex): string
+    public function HexToUtf($UtfCharInHex): string
     {
         $OutputChar = "";
         $UtfCharInDec = hexdec($UtfCharInHex);
-        if (    $UtfCharInDec<128) {
+        if ($UtfCharInDec < 128) {
             $OutputChar .= chr($UtfCharInDec);
-        } elseif ($UtfCharInDec<2048) {
-            $OutputChar .= chr(($UtfCharInDec >> 6) + 192).chr(($UtfCharInDec & 63) + 128);
-        } elseif ($UtfCharInDec<65536) {
-            $OutputChar .= chr(($UtfCharInDec >> 12) + 224).chr((($UtfCharInDec >> 6) & 63) + 128).chr(($UtfCharInDec & 63) + 128);
-        } elseif ($UtfCharInDec<2097152) {
-            $OutputChar .= chr($UtfCharInDec >> 18 + 240).chr((($UtfCharInDec >> 12) & 63) + 128).chr(($UtfCharInDec >> 6) & 63 + 128).chr($UtfCharInDec & 63 + 128);
+        } elseif ($UtfCharInDec < 2048) {
+            $OutputChar .= chr(($UtfCharInDec >> 6) + 192) . chr(($UtfCharInDec & 63) + 128);
+        } elseif ($UtfCharInDec < 65536) {
+            $OutputChar .= chr(($UtfCharInDec >> 12) + 224) . chr((($UtfCharInDec >> 6) & 63) + 128) . chr(($UtfCharInDec & 63) + 128);
+        } elseif ($UtfCharInDec < 2097152) {
+            $OutputChar .= chr($UtfCharInDec >> 18 + 240) . chr((($UtfCharInDec >> 12) & 63) + 128) . chr(($UtfCharInDec >> 6) & 63 + 128) . chr($UtfCharInDec & 63 + 128);
         }
         return $OutputChar;
     }
@@ -335,10 +335,10 @@ class ConvertCharset {
      * @param string $SecondEncoding Name of second encoding and second encoding filename (thay have to be the same). Optional for building a joined table.
      * @return array Table necessary to change one encoding to another.
      */
-    function MakeConvertTable($FirstEncoding, $SecondEncoding = ""): array
+    public function MakeConvertTable($FirstEncoding, $SecondEncoding = ""): array
     {
         $ConvertTable = [];
-        for ($i = 0, $fmax=func_num_args(); $i < $fmax; $i++) {
+        for ($i = 0, $fmax = func_num_args(); $i < $fmax; $i++) {
             /**
             * Because func_*** can't be used inside of another function call
             * we have to save it as a separate value.
@@ -354,7 +354,7 @@ class ConvertCharset {
                 * We asume that line is not longer
                 * than 1024 which is the default value for fgets function
                 */
-                if ($OneLine=trim(fgets($FileWithEncTabe))) {
+                if ($OneLine = trim(fgets($FileWithEncTabe))) {
                     /**
                     * We don't need all comment lines. I check only for "#" sign, because
                     * this is a way of making comments by unicode.org in thair encoding files
@@ -398,14 +398,15 @@ class ConvertCharset {
      * @param bool $dot        - allow dot in the escaped sequence
      * @return string
      */
-    function escape($string, $encoding=null, $dot=false): string {
+    public function escape($string, $encoding = null, $dot = false): string
+    {
         $base  = html_entity_decode($string, ENT_QUOTES);
         if ($encoding) {
             $base  = $this->Convert($base, $encoding, 'us-ascii');
         }
         $base  = trim(preg_replace($dot ? '/[^\da-z-_.]/i' : '/[^\da-z-_]/i', '-', $base), '-.');
         $count = 1;
-        while ( $count ) {
+        while ($count) {
             $base = str_replace(['--','..','.-','-.'], ['-','.','.','.'], $base, $count);
         }
         // remove starting and ending dash
@@ -424,15 +425,16 @@ class ConvertCharset {
      * @return string Converted string in brand-new encoding :)
      * @version 1.1 BETA 2003-10-21 01:09
      */
-    function Convert($StringToChange, $FromCharset = null, $ToCharset = null, $TurnOnEntities = false): string {
+    public function Convert($StringToChange, $FromCharset = null, $ToCharset = null, $TurnOnEntities = false): string
+    {
 
-        $StringToChange = (string)$StringToChange; // it returned nonsense for 0 as int for iso-8859-1 to utf-8
+        $StringToChange = (string) $StringToChange; // it returned nonsense for 0 as int for iso-8859-1 to utf-8
 
         // get default conversions, if it is not specified in parameter
-        if ( is_null($FromCharset) ) {
+        if (is_null($FromCharset)) {
             $FromCharset = $this->from_charset;
         }
-        if ( is_null($ToCharset) ) {
+        if (is_null($ToCharset)) {
             $ToCharset   = $this->to_charset;
         }
 
@@ -449,7 +451,7 @@ class ConvertCharset {
 
         /** Now a few variables need to be set. */
         $NewString      = "";
-        $this->Entities = (bool)$TurnOnEntities;
+        $this->Entities = (bool) $TurnOnEntities;
 
         /**
          * For all people who like to use uppercase for charset encoding names :)
@@ -483,18 +485,18 @@ class ConvertCharset {
 
             // the strtr and the $table is workaround for systems with broken iconv (RHEL 4 with glibc 2.3.x), where iconv gives bad result just with questionmarks
             $table = [
-                'Š'=>'S', 'š'=>'s', 'Đ'=>'Dj', 'đ'=>'dj', 'Ž'=>'Z', 'ž'=>'z', 'Č'=>'C', 'č'=>'c', 'Ć'=>'C', 'ć'=>'c',
-                'À'=>'A', 'Á'=>'A', 'Â'=>'A', 'Ã'=>'A', 'Ä'=>'A', 'Å'=>'A', 'Æ'=>'A', 'Ç'=>'C', 'È'=>'E', 'É'=>'E',
-                'Ê'=>'E', 'Ë'=>'E', 'Ì'=>'I', 'Í'=>'I', 'Î'=>'I', 'Ï'=>'I', 'Ñ'=>'N', 'Ò'=>'O', 'Ó'=>'O', 'Ô'=>'O',
-                'Õ'=>'O', 'Ö'=>'O', 'Ø'=>'O', 'Ù'=>'U', 'Ú'=>'U', 'Û'=>'U', 'Ü'=>'U', 'Ý'=>'Y', 'Þ'=>'B', 'ß'=>'Ss',
-                'à'=>'a', 'á'=>'a', 'â'=>'a', 'ã'=>'a', 'ä'=>'a', 'å'=>'a', 'æ'=>'a', 'ç'=>'c', 'è'=>'e', 'é'=>'e',
-                'ê'=>'e', 'ë'=>'e', 'ì'=>'i', 'í'=>'i', 'î'=>'i', 'ï'=>'i', 'ð'=>'o', 'ñ'=>'n', 'ò'=>'o', 'ó'=>'o',
-                'ô'=>'o', 'õ'=>'o', 'ö'=>'o', 'ø'=>'o', 'ù'=>'u', 'ú'=>'u', 'û'=>'u', 'ý'=>'y', 'þ'=>'b',
-                'ÿ'=>'y', 'Ŕ'=>'R', 'ŕ'=>'r', 'Ě'=>'E', 'ě'=>'e', 'ř'=>'r', 'Ř'=>'R', 'ť'=>'t', 'Ť'=>'T', 'Ď'=>'D',
-                'ď'=>'d', 'ň'=>'n', 'Ň'=>'N', 'ů'=>'u', 'Ů'=>'U', 'ĺ'=>'l', 'Ĺ'=>'L', 'ľ'=>'l', 'Ľ'=>'L'
+                'Š' => 'S', 'š' => 's', 'Đ' => 'Dj', 'đ' => 'dj', 'Ž' => 'Z', 'ž' => 'z', 'Č' => 'C', 'č' => 'c', 'Ć' => 'C', 'ć' => 'c',
+                'À' => 'A', 'Á' => 'A', 'Â' => 'A', 'Ã' => 'A', 'Ä' => 'A', 'Å' => 'A', 'Æ' => 'A', 'Ç' => 'C', 'È' => 'E', 'É' => 'E',
+                'Ê' => 'E', 'Ë' => 'E', 'Ì' => 'I', 'Í' => 'I', 'Î' => 'I', 'Ï' => 'I', 'Ñ' => 'N', 'Ò' => 'O', 'Ó' => 'O', 'Ô' => 'O',
+                'Õ' => 'O', 'Ö' => 'O', 'Ø' => 'O', 'Ù' => 'U', 'Ú' => 'U', 'Û' => 'U', 'Ü' => 'U', 'Ý' => 'Y', 'Þ' => 'B', 'ß' => 'Ss',
+                'à' => 'a', 'á' => 'a', 'â' => 'a', 'ã' => 'a', 'ä' => 'a', 'å' => 'a', 'æ' => 'a', 'ç' => 'c', 'è' => 'e', 'é' => 'e',
+                'ê' => 'e', 'ë' => 'e', 'ì' => 'i', 'í' => 'i', 'î' => 'i', 'ï' => 'i', 'ð' => 'o', 'ñ' => 'n', 'ò' => 'o', 'ó' => 'o',
+                'ô' => 'o', 'õ' => 'o', 'ö' => 'o', 'ø' => 'o', 'ù' => 'u', 'ú' => 'u', 'û' => 'u', 'ý' => 'y', 'þ' => 'b',
+                'ÿ' => 'y', 'Ŕ' => 'R', 'ŕ' => 'r', 'Ě' => 'E', 'ě' => 'e', 'ř' => 'r', 'Ř' => 'R', 'ť' => 't', 'Ť' => 'T', 'Ď' => 'D',
+                'ď' => 'd', 'ň' => 'n', 'Ň' => 'N', 'ů' => 'u', 'Ů' => 'U', 'ĺ' => 'l', 'Ĺ' => 'L', 'ľ' => 'l', 'Ľ' => 'L',
             ];
 
-            return (string)iconv("utf-8", "us-ascii//TRANSLIT", strtr($StringToChange, $table));
+            return (string) iconv("utf-8", "us-ascii//TRANSLIT", strtr($StringToChange, $table));
         }
 
         /*
@@ -517,14 +519,14 @@ class ConvertCharset {
             /**
              * For each char in a string...
              */
-            for ($i = 0, $fmax=strlen($StringToChange); $i < $fmax; $i++) {
+            for ($i = 0, $fmax = strlen($StringToChange); $i < $fmax; $i++) {
 
                 $UnicodeHexChar = "";
                 $HexChar        = strtoupper(dechex(ord($StringToChange[$i])));
                 // This is fix from Mario Klingemann, it prevents
                 // droping chars below 16 because of missing leading 0 [zeros]
-                if (strlen($HexChar)===1) {
-                    $HexChar = "0".$HexChar;
+                if (strlen($HexChar) === 1) {
+                    $HexChar = "0" . $HexChar;
                 }
                 //end of fix by Mario Klingemann
                 // This is quick fix of 10 chars in gsm0338
@@ -540,18 +542,17 @@ class ConvertCharset {
                     if (in_array($HexChar, $CharsetTable[$FromCharset])) {
 
                         $UnicodeHexChar = array_search($HexChar, $CharsetTable[$FromCharset]);
-                        $UnicodeHexChars = explode("+",$UnicodeHexChar);
+                        $UnicodeHexChars = explode("+", $UnicodeHexChar);
                         foreach ($UnicodeHexChars as $UnicodeHexCharElementValue) {
 
                             if (array_key_exists($UnicodeHexCharElementValue, $CharsetTable[$ToCharset])) {
                                 $NewString .= $this->Entities ? $this->UnicodeEntity($this->HexToUtf($UnicodeHexCharElementValue)) : chr(hexdec($CharsetTable[$ToCharset][$UnicodeHexCharElementValue]));
-                            }  else {
+                            } else {
                                 print $this->DebugOutput(0, 1, $StringToChange[$i]);
                             }
                         } //for ($UnicodeH...
-                    }
-                    else {
-                        print $this->DebugOutput(0, 2,$StringToChange[$i]);
+                    } else {
+                        print $this->DebugOutput(0, 2, $StringToChange[$i]);
                     }
                 } elseif (in_array($HexChar, $CharsetTable[$FromCharset])) {
                     $UnicodeHexChar = array_search($HexChar, $CharsetTable[$FromCharset]);
@@ -564,12 +565,11 @@ class ConvertCharset {
                      * In Mazowia we have 007A+0142, but sometimes it can look like this
                      * 0x007A+0x0142+0x2034 (that string means nothing, it just shows the possibility...)
                      */
-                    $UnicodeHexChars = explode("+",$UnicodeHexChar);
+                    $UnicodeHexChars = explode("+", $UnicodeHexChar);
                     foreach ($UnicodeHexChars as $UnicodeHexCharElementValue) {
                         $NewString .= $this->Entities ? $this->UnicodeEntity($this->HexToUtf($UnicodeHexCharElementValue)) : $this->HexToUtf($UnicodeHexCharElementValue);
                     }
-                }
-                else {
+                } else {
                     print $this->DebugOutput(0, 2, $StringToChange[$i]);
                 }
             }
@@ -604,17 +604,17 @@ class ConvertCharset {
      * @param mixed $Value This walue is whatever you want, usualy it's some parameter value, for better message understanding.
      * @return string String with a proper message.
      */
-    function DebugOutput($Group, $Number, $Value = false): string
+    public function DebugOutput($Group, $Number, $Value = false): string
     {
         //$Debug[$Group][$Number] = "Message, can by with $Value";
         //$Group[0] - Errors
         //$Group[1] - Notice
         $Debug[0][0] = "Error, can NOT read file: " . $Value . "<br>";
-        $Debug[0][1] = "Error, can't find maching char \"". $Value ."\" in destination encoding table!" . "<br>";
-        $Debug[0][2] = "Error, can't find maching char \"". $Value ."\" in source encoding table!" . "<br>";
+        $Debug[0][1] = "Error, can't find maching char \"" . $Value . "\" in destination encoding table!" . "<br>";
+        $Debug[0][2] = "Error, can't find maching char \"" . $Value . "\" in source encoding table!" . "<br>";
         $Debug[0][3] = "Error, you did NOT set variable " . $Value . " in Convert() function." . "<br>";
-        $Debug[0][4] = "You can NOT convert string from " . $Value . " to " . $Value . "!" .  "<BR>";
-        $Debug[1][0] = "Notice, you are trying to convert string from ". $Value ." to ". $Value .", don't you feel it's strange? ;-)" . "<br>";
+        $Debug[0][4] = "You can NOT convert string from " . $Value . " to " . $Value . "!" . "<BR>";
+        $Debug[1][0] = "Notice, you are trying to convert string from " . $Value . " to " . $Value . ", don't you feel it's strange? ;-)" . "<br>";
         $Debug[1][1] = "Notice, both charsets " . $Value . " are identical! Check encoding tables files." . "<br>";
         $Debug[1][2] = "Notice, there is no unicode char in the string you are trying to convert." . "<br>";
 
@@ -622,4 +622,3 @@ class ConvertCharset {
     } // function DebugOutput
 
 } //class ends here
-
