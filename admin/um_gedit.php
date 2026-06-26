@@ -141,7 +141,7 @@ if ( $add_submit || $submit_action === "update_submit") {
     // all the actions are in following require_once (we reuse this part of code for slice wizard)
     require_once __DIR__ . "/../include/um_gedit.php";
     // reload the page
-    go_url( StateUrl($_SERVER['PHP_SELF']), ['selected_group'=>$selected_group, 'Msg'=>($add_submit ? _m("Group successfully added to permission system") : _m("Group successfully updated"))]);
+    go_url( StateUrl($_SERVER['PHP_SELF']), ['grp_edit'=>'1', 'selected_group'=>$selected_group, 'Msg'=>($add_submit ? _m("Group successfully added to permission system") : _m("Group successfully updated"))]);
 }
 
 
