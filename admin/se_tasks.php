@@ -1,4 +1,5 @@
 <?php
+
 /**
  * PHP version 7.2+
  *
@@ -38,9 +39,11 @@ try {
     // array ( 'Přihlásit' => 2, )
     // $submit = InputVars::stringSlashedPOST('submit');
     // $cancel = InputVars::boolPOST('cancel');
-    
+
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
+} catch (Exception $e) {
+    AA_Adminpageutil::pageParameterError($e);
+}
 
 
 if (!IfSlPerm(PS_FORMS)) {
@@ -50,5 +53,5 @@ if (!IfSlPerm(PS_FORMS)) {
 
 $apage = new AA_Adminpageutil('sliceadmin', 'tasks');
 $apage->setTitle(_m('Manage %1', [AA_Plannedtask::name()]));
-$apage->setSubtitle( _m("You can plan a task for specified time, or as the reaction to some event. The task will probably be sending e-mails using {mail...} expression, or recounting some fields after update by {recount...}") );
+$apage->setSubtitle(_m("You can plan a task for specified time, or as the reaction to some event. The task will probably be sending e-mails using {mail...} expression, or recounting some fields after update by {recount...}"));
 $apage->printWithManager(new Manager('task' . AA::$module_id, AA_Plannedtask::getManagerConf()));

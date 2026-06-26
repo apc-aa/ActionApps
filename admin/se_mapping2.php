@@ -1,4 +1,5 @@
 <?php
+
 /**  se_mapping2.php - writes feed mapping to feedmap table
  *     expected $slice_id for edit slice
  *              $from_slice_id for id of imported slice
@@ -47,13 +48,15 @@ try {
     // array ( )
     $fval = InputVars::arrayPOST('fval', true);
     $cancel = InputVars::boolPOST('cancel');
-    
+
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
+} catch (Exception $e) {
+    AA_Adminpageutil::pageParameterError($e);
+}
 
 if (!IfSlPerm(PS_FEEDING)) {
-  MsgPage(_m("You do not have permissions to change feeding setting"));
-  exit;
+    MsgPage(_m("You do not have permissions to change feeding setting"));
+    exit;
 }
 
 $p_from_slice_id = xpack_id($from_slice_id);
@@ -73,19 +76,21 @@ foreach ($fmap as $to_field_id => $val) {
     $catVS->clear();
     $catVS->add("from_slice_id", "unpacked", $from_slice_id);
     $catVS->add("to_slice_id", "unpacked", AA::$module_id);
-    $catVS->add("to_field_id", "text",$to_field_id);
+    $catVS->add("to_field_id", "text", $to_field_id);
     $catVS->add("from_field_name", "text", $map_to[$val]);
 
     switch ($val) {
-        case _m("-- Not map --") :
+        case _m("-- Not map --"):
             $flag = FEEDMAP_FLAG_EMPTY;
             break;
         case _m("-- Value --"):
             $flag = FEEDMAP_FLAG_VALUE ;
-            $catVS->add("value", "quoted", $fval[$to_field_id]); break;
+            $catVS->add("value", "quoted", $fval[$to_field_id]);
+            break;
         case _m("-- Joined fields --"):
             $flag = FEEDMAP_FLAG_JOIN;
-            $catVS->add("value", "quoted", $fval[$to_field_id]); break;
+            $catVS->add("value", "quoted", $fval[$to_field_id]);
+            break;
         case _m("-- RSS field or expr --"):
             $flag = FEEDMAP_FLAG_RSS;
             $catVS->add("value", "quoted", $fval[$to_field_id]);
@@ -94,16 +99,16 @@ foreach ($fmap as $to_field_id => $val) {
             }
             unset($map_to[$val]);
             break;
-        case  FEEDMAP_FLAG_EXTMAP :
-        case  FEEDMAP_FLAG_MAP :
+        case FEEDMAP_FLAG_EXTMAP:
+        case FEEDMAP_FLAG_MAP:
             $flag = ($ext_slice) ? FEEDMAP_FLAG_EXTMAP : FEEDMAP_FLAG_MAP ;
-            $catVS->add("from_field_id", "text", $val );
+            $catVS->add("from_field_id", "text", $val);
             unset($map_to[$val]);
             break;
     }
-    $catVS->add("flag", "quoted",$flag);
+    $catVS->add("flag", "quoted", $flag);
 
-    if ( !$catVS->doINSERT('feedmap')) {
+    if (!$catVS->doINSERT('feedmap')) {
         $err["DB"] .= MsgErr("Can't add fields mapping");
     }
 }
@@ -114,15 +119,14 @@ if ($map_to && is_array($map_to)) {
         $catVS->clear();
         $catVS->add("from_slice_id", "unpacked", $from_slice_id);
         $catVS->add("to_slice_id", "unpacked", AA::$module_id);
-        $catVS->add("from_field_id",   "text", $from_field_id );
-        $catVS->add("from_field_name", "text", $map_to[$from_field_id] );
-        $catVS->add("flag", "quoted",FEEDMAP_FLAG_EXTMAP);
-        if ( !$catVS->doINSERT('feedmap')) {
+        $catVS->add("from_field_id", "text", $from_field_id);
+        $catVS->add("from_field_name", "text", $map_to[$from_field_id]);
+        $catVS->add("flag", "quoted", FEEDMAP_FLAG_EXTMAP);
+        if (!$catVS->doINSERT('feedmap')) {
             $err["DB"] .= MsgErr("Can't add fields mapping");
         }
     }
 }
 
-go_url( StateUrl(self_base() . "se_mapping.php") . "&from_slice_id=".rawurlencode($from_slice_id) ."&Msg=" . rawurlencode(MsgOk(_m("Fields' mapping update successful"))));  // @todo Mssg
+go_url(StateUrl(self_base() . "se_mapping.php") . "&from_slice_id=" . rawurlencode($from_slice_id) . "&Msg=" . rawurlencode(MsgOk(_m("Fields' mapping update successful"))));  // @todo Mssg
 Session::page_close();
-

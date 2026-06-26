@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Executes actions called from synchro.php:
  * Adds Alerts-specific fields to the Reader Management Slice.
@@ -58,20 +59,20 @@ function get_alerts_specific_fields($collectionid): array
         "input_insert_func" => "qte",
         "input_show" => 1,
         "text_stored" => 1,
-        'input_validate' => ''
+        'input_validate' => '',
     ];
 
     $retval[getAlertsField('alerts1', $collectionid)] = array_merge($FIELD_DEFAULTS, [
-            "name" => _m("How often"),
-            "input_help" => _m("How often for {ALERNAME}"),   // {ALERNAME} will be replaced by the current Alerts Name
-            "input_show_func" => "sel:{CONSTGROUP}",          // Add a constant group and add its name to "input_show_func"
-            "constants" => [
-                "group" => "How often",
-                "items" => get_howoften_options() + [" " => _m("not subscribed")]
-            ],
-            "alias1" => "_#HOWOFTEN",
-            "alias1_func" => "f_c:!:::&nbsp;",
-            "alias1_help" => _m("How often for {ALERNAME}"),
+        "name" => _m("How often"),
+        "input_help" => _m("How often for {ALERNAME}"),   // {ALERNAME} will be replaced by the current Alerts Name
+        "input_show_func" => "sel:{CONSTGROUP}",          // Add a constant group and add its name to "input_show_func"
+        "constants" => [
+            "group" => "How often",
+            "items" => get_howoften_options() + [" " => _m("not subscribed")],
+        ],
+        "alias1" => "_#HOWOFTEN",
+        "alias1_func" => "f_c:!:::&nbsp;",
+        "alias1_help" => _m("How often for {ALERNAME}"),
     ]);
     $retval[getAlertsField('alerts2', $collectionid)] = array_merge($FIELD_DEFAULTS, [
         "name" => _m("Selections"),
@@ -79,7 +80,7 @@ function get_alerts_specific_fields($collectionid): array
         "input_show_func" => "mch:{CONSTGROUP}:3:1",
         "constants" => [
             "group" => "Selections",
-            "items" => "{FILTERS}"
+            "items" => "{FILTERS}",
         ],
         "alias1" => "_#FILTERS_",
         "alias1_func" => "f_h:,",
@@ -97,18 +98,18 @@ function get_alerts_specific_fields($collectionid): array
  *	 @return string Message about the number of field added. */
 function add_fields_2_slice($collectionid, $slice_id): string
 {
-    $alerts_specific_fields = get_alerts_specific_fields ($collectionid);
+    $alerts_specific_fields = get_alerts_specific_fields($collectionid);
 
     // find current Alerts Name
     $alerts_name = DB_AA::select1('name', 'SELECT module.name FROM alerts_collection, module', [
         ['alerts_collection.module_id', 'module.id', 'j'],
-        ['alerts_collection.id', $collectionid]
+        ['alerts_collection.id', $collectionid],
     ]);
 
     // find filters to fill into the Filters constant group
-    $filters = DB_AA::select(['fid'=>'description'], "SELECT CONCAT('f',alerts_filter.id) AS fid, alerts_filter.description FROM alerts_filter, alerts_collection_filter", [
+    $filters = DB_AA::select(['fid' => 'description'], "SELECT CONCAT('f',alerts_filter.id) AS fid, alerts_filter.description FROM alerts_filter, alerts_collection_filter", [
         ['alerts_filter.id','alerts_collection_filter.filterid','j'],
-        ['alerts_collection_filter.collectionid',$collectionid]
+        ['alerts_collection_filter.collectionid',$collectionid],
     ], ['alerts_collection_filter.myindex']);
 
     // find priority: find gap beginning by 2000 with step 200
@@ -117,7 +118,7 @@ function add_fields_2_slice($collectionid, $slice_id): string
         $input_pri += 200;
     }
 
-    $varset = new CVarset;
+    $varset = new CVarset();
     // count of added fields
     $nadded = 0;
 
@@ -126,15 +127,15 @@ function add_fields_2_slice($collectionid, $slice_id): string
 
         $varset->clear();
         $varset->addkey("slice_id", "unpacked", $slice_id);
-        $varset->addkey("id",       "text", $field_id);
+        $varset->addkey("id", "text", $field_id);
 
         // don't add fields twice
         $field_info = DB_AA::select1('', 'SELECT * FROM field', [['slice_id', $slice_id, 'l'], ['id', $field_id]]);
 
-        if (! is_array($field_info) ) {
-            $nadded ++;
+        if (! is_array($field_info)) {
+            $nadded++;
 
-            $varset->add ("input_pri", "number", $input_pri);
+            $varset->add("input_pri", "number", $input_pri);
             $input_pri += 10;
         }
 
@@ -152,8 +153,8 @@ function add_fields_2_slice($collectionid, $slice_id): string
                 // prepare array for adding to constants
                 $constants = [];
                 if (isset($fprop["constants"]["items"]) && is_array($fprop["constants"]["items"])) {
-                    foreach ( $fprop["constants"]["items"] as $value => $name ) {
-                        $constants[] = ['name'=>$name, 'value'=>$value];
+                    foreach ($fprop["constants"]["items"] as $value => $name) {
+                        $constants[] = ['name' => $name, 'value' => $value];
                     }
                 }
                 add_constant_group($groupname, $constants);
@@ -162,8 +163,8 @@ function add_fields_2_slice($collectionid, $slice_id): string
         }
         foreach ($fprop as $name => $value) {
             if (!is_array($value)) {
-                $value = str_replace ("{ALERNAME}", $alerts_name, $value);
-                $varset->add ($name, "text", $value);
+                $value = str_replace("{ALERNAME}", $alerts_name, $value);
+                $varset->add($name, "text", $value);
             }
         }
         $varset->doREPLACE("field");
@@ -175,20 +176,21 @@ function add_fields_2_slice($collectionid, $slice_id): string
 
 /** Deletes Alerts-specific fields from slice, including constant groups.
 *   Negates add_fields_2_slice() doings. */
-function delete_fields_from_slice($collectionid, $slice_id) {
+function delete_fields_from_slice($collectionid, $slice_id)
+{
     $ndeleted_groups        = 0;
     $ndeleted               = 0;
     $alerts_specific_fields = get_alerts_specific_fields($collectionid);
-    $varset = new CVarset;
-    $varset->addkey ("slice_id", "unpacked", $slice_id);
+    $varset = new CVarset();
+    $varset->addkey("slice_id", "unpacked", $slice_id);
 
     $db = getDB();
     foreach (array_keys($alerts_specific_fields) as $field_id) {
         $varset->addkey("id", "text", $field_id);
 
-        $db->query($varset->makeSELECT ("field"));
+        $db->query($varset->makeSELECT("field"));
         if ($db->next_record()) {
-            [, $group_id] = explode (":", $db->f("input_show_func"));
+            [, $group_id] = explode(":", $db->f("input_show_func"));
             if (delete_constant_group($group_id, $slice_id)) {
                 $ndeleted_groups++;
             }
@@ -197,32 +199,32 @@ function delete_fields_from_slice($collectionid, $slice_id) {
         }
     }
     freeDB($db);
-    return _m("%1 field(s) and %2 constant group(s) deleted", [$ndeleted+0, $ndeleted_groups+0]);
+    return _m("%1 field(s) and %2 constant group(s) deleted", [$ndeleted + 0, $ndeleted_groups + 0]);
 }
 
 // -------------------------------------------------------------------
 
 /** Returns array (unpacked_slice_id => name) of slices which contain
 *   all fields listed in $required_fields_in_reader_management. */
-function getReaderManagementSlices (): array
+function getReaderManagementSlices(): array
 {
     global $slice_id, $collectionprop;
 
     $slices = GetUserSlices();
     $SQL = "SELECT id, name FROM slice WHERE type='ReaderManagement'
-        AND id <> '".addslashes($collectionprop["sliceid"])."'";
+        AND id <> '" . addslashes($collectionprop["sliceid"]) . "'";
     if (is_array($slices)) {
         $delim = "";
         foreach (array_keys($slices) as $slice_id) {
-            $where .= $delim . xpack_id ($slice_id);
+            $where .= $delim . xpack_id($slice_id);
             $delim = ",";
         }
-        $SQL .= " AND id IN (".$where.")";
+        $SQL .= " AND id IN (" . $where . ")";
     }
     $db = getDB();
-    $db->query ($SQL);
+    $db->query($SQL);
     while ($db->next_record()) {
-        $retval[unpack_id ($db->f("id"))] = $db->f("name");
+        $retval[unpack_id($db->f("id"))] = $db->f("name");
     }
     if ($collectionprop["slice_id"]) {
         $retval[""] = _m("not set");

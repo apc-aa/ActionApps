@@ -1,4 +1,5 @@
 <?php
+
 /**
  * PHP version 7.2+
  *
@@ -44,7 +45,9 @@ try {
     $date_from   = InputVars::stringGETPOST('date_from');
     $for_module  = InputVars::stringGETPOST('for_module');
     $show        = InputVars::boolGETPOST('show');
-} catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
+} catch (Exception $e) {
+    AA_Adminpageutil::pageParameterError($e);
+}
 
 if (!IfSlPerm(PS_EDIT_ALL_ITEMS)) {
     AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php", _m("You do not have permissions to see statistics"), "admin");
@@ -63,24 +66,24 @@ if (!$item_sort && !$item_period && $item_set) {
     }
 }
 
-$item_count  = $item_count  ?: 5;
-$item_sort   = $item_sort   ?: 'top';
+$item_count  = $item_count ?: 5;
+$item_sort   = $item_sort ?: 'top';
 $item_period = $item_period ?: 'last_day';
-$tip_period  = $tip_period  ?: 'last_day';   // diagnostics window — default last day (cheap on heavy sites)
-$for_module  = $for_module  ?: 'all';
-$date_from   = $date_from   ?: date('Y-m-d', strtotime('-1 month'));
+$tip_period  = $tip_period ?: 'last_day';   // diagnostics window — default last day (cheap on heavy sites)
+$for_module  = $for_module ?: 'all';
+$date_from   = $date_from ?: date('Y-m-d', strtotime('-1 month'));
 
 //$script2run = '
 //   var opts = { lineWrapping:true, matchBrackets: true, matchTags: true, viewportMargin: 10000, mode: "htmlmixed" };
 //   window.cm_items  = CodeMirror.fromTextArea(document.getElementById("items"), opts);
 //   ';
-$apage = new AA_Adminpageutil('aaadmin','statistics');
+$apage = new AA_Adminpageutil('aaadmin', 'statistics');
 $apage->setTitle(_m("Admin - Statistics"));
 //$apage->addRequire($script2run, 'AA_Req_Load');
 $apage->addRequire('chartjs@4');
 $apage->printHead();
 
-$form_buttons = ["show" => ["type"=>"submit", "value"=>_m("Show")]];
+$form_buttons = ["show" => ["type" => "submit", "value" => _m("Show")]];
 
 define('HITCOUNTER_OPTIONS', [
     'years'    => _m('years'),
@@ -121,7 +124,7 @@ define('ITEM_PERIODS', [
 $MODULES_FROM = [
     'all' => _m('All AA'),
     'AA_OPTGROUP2' => _m('Sites'),
-    ];
+];
 
 $MODULES_FROM += AA_Module::getModules('W', true, ['deleted','type','priority','name']);   // ORDER matches the DB index
 $MODULES_FROM['AA_OPTGROUP3'] = _m('Slices');
@@ -156,11 +159,11 @@ echo '<summary><h2 class="aa-tab-title">' . _m('Quick diagnostics') . '</h2></su
 echo HitcounterDisplay::renderDiagnosticsPanel(
     $slices,
     $tip_period,
-    (int)$item_count,
+    (int) $item_count,
     [
         'for_module' => $for_module,
         'date_from'  => $date_from,
-    ]
+    ],
 );
 echo '</details>';
 
@@ -212,7 +215,7 @@ FrmTabEnd();
 // ---- Section 2: Items to show (which items to put in the table) ----
 FrmTabCaption(_m('Items to show'));
 FrmStaticText(_m('Display for module'), getFrmSelectEasy('for_module', $MODULES_FROM, $for_module), '', '', false);
-FrmInputSelect('item_sort',   _m('Sort items by'),         ITEM_SORTS,   $item_sort,   true);
+FrmInputSelect('item_sort', _m('Sort items by'), ITEM_SORTS, $item_sort, true);
 FrmInputSelect('item_period', _m('Period (item ranking)'), ITEM_PERIODS, $item_period, true);
 FrmTextarea('items_code', _m('Exact items to show'), $items_code, 4, 60, false, _m('dash-separated list of item ids/short_ids or AA expression like {ids:{_#SLICE_ID}:d-publish_date....-gt-{timestamp:2023-08-22}}}'));
 FrmInputNumber('item_count', _m('Number of items to show'), $item_count, 1, 9999, true);
@@ -229,7 +232,7 @@ if ($show) {
     // the form to see these results, so this section is always expanded on render. The matching
     // </details> closes at the end of this block (after the table or the "no items" message).
     echo '<br><br><details class="aa-page-section" open>';
-    echo '<summary><h2 class="aa-tab-title">'._m('Display Statistics for Item').'</h2></summary>';
+    echo '<summary><h2 class="aa-tab-title">' . _m('Display Statistics for Item') . '</h2></summary>';
 
     // ranking time window from $item_period
     $now = time();
@@ -269,11 +272,17 @@ if ($show) {
         if ($item_sort === 'slowed-down' || $item_sort === 'sped-up') {
             foreach ($globals as $sid => $tc) {
                 $tp = $globals_prev[$sid] ?? null;
-                if (!$tp) continue;
-                if ($tc['bucket_sum'] < 5 || $tp['bucket_sum'] < 5) continue;
+                if (!$tp) {
+                    continue;
+                }
+                if ($tc['bucket_sum'] < 5 || $tp['bucket_sum'] < 5) {
+                    continue;
+                }
                 $cur_avg = $tc['ms_x_hits'] / $tc['bucket_sum'];
                 $prv_avg = $tp['ms_x_hits'] / $tp['bucket_sum'];
-                if ($prv_avg <= 0) continue;
+                if ($prv_avg <= 0) {
+                    continue;
+                }
                 $scored[$sid] = (($cur_avg - $prv_avg) / $prv_avg) * 100;   // % delta
             }
             $desc = ($item_sort === 'slowed-down');
@@ -290,7 +299,9 @@ if ($show) {
             $desc = !in_array($item_sort, ['fastest', 'best-cached'], true);
             foreach ($globals as $sid => $t) {
                 $v = $key_fn($t);
-                if ($v === null) continue;
+                if ($v === null) {
+                    continue;
+                }
                 $scored[$sid] = $v;
             }
         }
@@ -306,7 +317,7 @@ if ($show) {
             $template .= "<h2>$name</h2>\n{hitcounter:$code:$items:$from}\n";
         }
         $template .= '</div>';
-        $template .= '<div>'._m('Items found').': '. StrExp('count', [$items]).'</div>';
+        $template .= '<div>' . _m('Items found') . ': ' . StrExp('count', [$items]) . '</div>';
         //FrmStaticText(_m('Display Statistics for Item'), AA::Un($template), '', '', false);
         echo AA::Un($template);
     } else {

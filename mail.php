@@ -1,4 +1,5 @@
 <?php
+
 //$Id$
 /*
 Copyright (C) 1999, 2000 Association for Progressive Communications
@@ -21,7 +22,7 @@ https://www.apc.org/
 
 /** Used in {mailform} */
 
-require_once __DIR__."/./include/config.php";
+require_once __DIR__ . "/./include/config.php";
 require_once __DIR__ . "/include/util.php";
 require_once __DIR__ . "/include/item.php";
 require_once __DIR__ . "/include/searchlib.php";
@@ -32,7 +33,7 @@ if (!$_POST['aa_mailconf']) {
     exit;
 }
 
-$config_arr = AA_Stringexpand_Encrypt::decrypt_time_token($_POST['aa_mailconf'],24);
+$config_arr = AA_Stringexpand_Encrypt::decrypt_time_token($_POST['aa_mailconf'], 24);
 if (!$config_arr) {
     echo '<!-- wrong token (old?) -->';
     exit;
@@ -62,13 +63,11 @@ $mail_arr = [
     'body'        => $body,
     'header_from' => $config_arr['from'],
     'lang'        => $config_arr['lang'],
-    'html'        => 1
+    'html'        => 1,
 ];
 
-$mail = new AA_Mail;
+$mail = new AA_Mail();
 $mail->setFromArray($mail_arr);
 $mail->sendLater($to);
 
 echo $config_arr['ok'];
-
-

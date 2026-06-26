@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Allows to POST data to a PHP script SSI-included in a .shtml page.
  *
@@ -68,8 +69,8 @@ https://www.apc.org/
 // required (and probably is on another path)
 use AA\IO\DB\DB_AA;
 
-if ( !defined('DB_NAME') ) {
-    require_once __DIR__."/./include/config.php";
+if (!defined('DB_NAME')) {
+    require_once __DIR__ . "/./include/config.php";
 }
 require_once __DIR__ . "/include/locsess.php";
 require_once __DIR__ . "/include/util.php";
@@ -85,7 +86,7 @@ function store_vars(): void
         "post"   => &$_POST,
         "get"    => &$_GET,
         "files"  => &$_FILES,
-        "cookie" => &$_COOKIE
+        "cookie" => &$_COOKIE,
     ];
 
     foreach ($vars as $key => $foo) {
@@ -98,15 +99,14 @@ function store_vars(): void
     }
 
     $id = new_id();
-    AA::Metabase()->doInsert('post2shtml', ['id'=>$id,'vars'=>serialize($vars),'time'=>time()]);
+    AA::Metabase()->doInsert('post2shtml', ['id' => $id,'vars' => serialize($vars),'time' => time()]);
     if ($shtml_page) {
         $shtml_page  = stripslashes($shtml_page);
         $shtml_page .= (str_contains($shtml_page, "?") ? "&" : "?") . "post2shtml_id=$id";
         header("HTTP/1.1 Status: 302 Moved Temporarily");
         header("Status: 302 Moved Temporarily");
         header("Location: $shtml_page");
-    }
-    else {
+    } else {
         $GLOBALS["post2shtml_id"] = $id;
     }
 }
@@ -118,9 +118,8 @@ function md5_array(&$array): void
         foreach ($array as $key => $foo) {
             md5_array($array[$key]);
         }
-    }
-    elseif ($array) {
-        $array = crypt( $array, 'xx');
+    } elseif ($array) {
+        $array = crypt($array, 'xx');
     }
 }
 
@@ -145,9 +144,7 @@ function add_var3($varname, &$source, &$dest): void
         foreach ($source as $key => $foo) {
             add_var3($key, $source[$key], $dest[$varname]);
         }
-    }
-    elseif (isset($source)) {
+    } elseif (isset($source)) {
         $dest[$varname] = $source;
     }
 }
-

@@ -1,4 +1,6 @@
-<?php  //slice_id expected
+<?php
+
+//slice_id expected
 /**
  *
  *
@@ -54,7 +56,9 @@ try {
 
     $cancel = InputVars::boolPOST('cancel');
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
+} catch (Exception $e) {
+    AA_Adminpageutil::pageParameterError($e);
+}
 
 
 // new manager class approach ------------------------------------------------
@@ -70,64 +74,65 @@ $module_id = AA::$module_id;
 
 $slice       = AA_Slice::getModule($module_id);
 
-if ( !IfSlPerm(PS_EDIT_ALL_ITEMS)) {
+if (!IfSlPerm(PS_EDIT_ALL_ITEMS)) {
     MsgPage(_m("You do not have permission to see the users in this slice:") . AA_Slice::getModuleName(AA::$module_id));
     exit;
 }
 
-if ( !$_GET['type'] && $r_userstate['type'] ) {
+if (!$_GET['type'] && $r_userstate['type']) {
     $type = $r_userstate['type'];
 }
 
-switch( $type ) {
+switch ($type) {
     case 'users':
-           $row =  '<td>{ifset:{_#LASTNAME}:_#1:_#HEADLINE}</td><td>{ifset:{_#FIRSTNAM}:_#1}</td><td>{ifset:{_#EMAIL___}:_#1}<input type="hidden" name="items[x_#ITEM_ID#]" value=""></td>';
-           $default_sort_field = "con_email.......";
-           $format = [
-              'compact_top'      => '<table class="aa-table"><thead><tr><th colspan="2">'._m('User').'</th><th>'._m('Email').'</th></tr></thead><tbody>',
-              'odd_row_format'   => '<tr>'.$row.'</tr>',
-              'compact_bottom'   => "</tbody></table>"
-           ];
-    // add your type here
+        $row =  '<td>{ifset:{_#LASTNAME}:_#1:_#HEADLINE}</td><td>{ifset:{_#FIRSTNAM}:_#1}</td><td>{ifset:{_#EMAIL___}:_#1}<input type="hidden" name="items[x_#ITEM_ID#]" value=""></td>';
+        $default_sort_field = "con_email.......";
+        $format = [
+            'compact_top'      => '<table class="aa-table"><thead><tr><th colspan="2">' . _m('User') . '</th><th>' . _m('Email') . '</th></tr></thead><tbody>',
+            'odd_row_format'   => '<tr>' . $row . '</tr>',
+            'compact_bottom'   => "</tbody></table>",
+        ];
+        // add your type here
+        // no break
     default:  // no format used - taken default format from manager class
 }
 
 $manager_settings = [
-     'module_id' => $module_id,
-     'show'      => MGR_SB_ORDERROWS,      //     // MGR_ACTIONS | MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS
-     'searchbar' => [
-         'fields'               => $slice->getSearchfields(),
-         'search_row_count_min' => 1,
-         'order_row_count_min'  => 1,
-         'add_empty_search_row' => true,
-         'function'             => false,  // name of function for aditional action hooked on standard filter action
-         'default_bookmark'     => $group
-     ],
-     'scroller'  => [
-         'listlen'              => ($listlen ?: EDIT_ITEM_COUNT)
-     ],
-     'itemview'  => [
-         'manager_vid'          => false,    // $slice_info['manager_vid'],      // id of view which controls the design
-         'format'               => $format,
-         //'fields'               => $slice->getFields()->getRecordArray(),
-         'aliases'              => new AA_Aliases(new AA_Aliasgenerator_Slice($module_id)),
-         'get_content_funct'    => 'GetItemContent',
-         'query_funct'          => 'QueryZidsSet'
-     ]
+    'module_id' => $module_id,
+    'show'      => MGR_SB_ORDERROWS,      //     // MGR_ACTIONS | MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS
+    'searchbar' => [
+        'fields'               => $slice->getSearchfields(),
+        'search_row_count_min' => 1,
+        'order_row_count_min'  => 1,
+        'add_empty_search_row' => true,
+        'function'             => false,  // name of function for aditional action hooked on standard filter action
+        'default_bookmark'     => $group,
+    ],
+    'scroller'  => [
+        'listlen'              => ($listlen ?: EDIT_ITEM_COUNT),
+    ],
+    'itemview'  => [
+        'manager_vid'          => false,    // $slice_info['manager_vid'],      // id of view which controls the design
+        'format'               => $format,
+        //'fields'               => $slice->getFields()->getRecordArray(),
+        'aliases'              => new AA_Aliases(new AA_Aliasgenerator_Slice($module_id)),
+        'get_content_funct'    => 'GetItemContent',
+        'query_funct'          => 'QueryZidsSet',
+    ],
 ];
 
-$manager = new Manager('users'.AA::$module_id, (new Managed())->setSettings($manager_settings)->setTitle(_m("Show selected users")));
+$manager = new Manager('users' . AA::$module_id, (new Managed())->setSettings($manager_settings)->setTitle(_m("Show selected users")));
 
 // r_userstate array holds all configuration of Manager
 // the configuration then could be Bookmarked
 
 
-if ( !isset($r_userstate) || $group || isset($items)) {
+if (!isset($r_userstate) || $group || isset($items)) {
     // we are here for the first time
     unset($r_userstate);
     // set default admin interface settings from user's profile
     $sess->register('r_userstate');
-    if ( $items ) {   // store items to sessions
+    if ($items) {   // store items to sessions
         $r_userstate['items'] = $items;
     }
     $r_userstate['type'] = $type;
@@ -137,7 +142,7 @@ if ( !isset($r_userstate) || $group || isset($items)) {
 //echo "<pre>"; print_r($manager); echo "</pre>";
 
 
-if ( $r_userstate['usershowmanager'] ) {        // do not set state for the first time calling
+if ($r_userstate['usershowmanager']) {        // do not set state for the first time calling
     $manager->setFromState($r_userstate['usershowmanager']);
 }
 
@@ -148,11 +153,11 @@ $conds = $manager->getConds();
 $sort  = $manager->getSort();
 
 if (!$sort && $default_sort_field) {
-    $sort[0][$default_sort_field]="a";
+    $sort[0][$default_sort_field] = "a";
 }
 
 $zids = new zids(null, 'l');
-if ( is_array($r_userstate['items']) ) {
+if (is_array($r_userstate['items'])) {
     $zids->setFromItemArr($r_userstate['items']);
 }
 
@@ -173,7 +178,7 @@ $r_userstate['usershowmanager'] = $manager->getState();
 echo "<table>
  <tr>
   <td>
-   <input type=\"button\" value='". _m("Close") ."' onclick='window.close()'>
+   <input type=\"button\" value='" . _m("Close") . "' onclick='window.close()'>
    <input type=\"hidden\" name=\"group\" value=\"$group\">
   </td>
  </tr>
@@ -181,4 +186,3 @@ echo "<table>
 
 HtmlPageEnd();
 Session::page_close();
-

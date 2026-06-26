@@ -1,4 +1,5 @@
 <?php
+
 /**  expected at least $slice_id
  *   user calling is with $edit for edit item
  *   optionally free and freepwd for anonymous user login (free == login, freepwd == password)
@@ -31,8 +32,7 @@
 use AA\Util\InputVars;
 use AA\Util\Langs;
 
-
-if ( isset($_REQUEST['edit']) || isset($_REQUEST['add'])) {         // parameter for init_page - we edited new item so
+if (isset($_REQUEST['edit']) || isset($_REQUEST['add'])) {         // parameter for init_page - we edited new item so
     $unset_r_hidden = true;  // clear stored content
 }
 
@@ -45,10 +45,10 @@ require_once __DIR__ . "/../include/itemfunc.php";
 require_once __DIR__ . "/../include/notify.php";
 require_once __DIR__ . "/../include/menu_util.php";
 
-if ( file_exists( "../include/usr_validate.php" ) ) {
-    require_once __DIR__."/../include/usr_validate.php";
-} elseif ( file_exists( "../include/usr_validate.php3" ) ) {
-    require_once __DIR__."/../include/usr_validate.php3";
+if (file_exists("../include/usr_validate.php")) {
+    require_once __DIR__ . "/../include/usr_validate.php";
+} elseif (file_exists("../include/usr_validate.php3")) {
+    require_once __DIR__ . "/../include/usr_validate.php3";
 }
 
 // Allow edit current slice without slice_pwd
@@ -61,11 +61,14 @@ AA::setEncoding(Langs::getCharset());
 $id = AA::$module_id;
 
 if ($cancel) {
-    go_return_or_url(self_base() . "index.php",true,true);
+    go_return_or_url(self_base() . "index.php", true, true);
 }
 
 $go_edit = false;
-if ($_POST['upd_edit'])    {$update = true; $go_edit=true; }
+if ($_POST['upd_edit']) {
+    $update = true;
+    $go_edit = true;
+}
 
 $action = $update ? "update" : "edit";
 
@@ -74,22 +77,22 @@ $oldcontent4id = ValidateContent4Id($err, $slice, $action, $id);
 $fields = $slice->getFields(true);
 
 //  update database
-if ( $update && !count($err) && $fields->count() ) {
+if ($update && !count($err) && $fields->count()) {
 
     $profile = AA_Profile::getProfile(AuthGetUid(), $slice->getId()); // current user settings
 
 
     // prepare content4id array before call StoreItem function
-    $content4id = new ItemContent;
-    $content4id->setFieldsFromForm($oldcontent4id, false, $fields, $profile );
+    $content4id = new ItemContent();
+    $content4id->setFieldsFromForm($oldcontent4id, false, $fields, $profile);
 
     // added_to_db contains id
     // removed $oldcontent4id (see ItemContent::storeItem)
-    $content4id->storeSliceFields( $slice_id, $fields );
+    $content4id->storeSliceFields($slice_id, $fields);
 
     if (!$go_edit) {
         Session::page_close();
-        go_return_or_url(self_base() . "index.php",true,true);
+        go_return_or_url(self_base() . "index.php", true, true);
     }
 }
 
@@ -98,40 +101,40 @@ if ( $update && !count($err) && $fields->count() ) {
 // -----------------------------------------------------------------------------
 
 
-unset( $content );       // used in another context for storing item to db
-unset( $content4id );
+unset($content);       // used in another context for storing item to db
+unset($content4id);
 
 if ($edit) {
-    if ( !$fields->count() ) {
+    if (!$fields->count()) {
         $err["DB"] = MsgErr(_m("Error: no fields."));
         // do not quit - just go back.
-        go_return_or_url(self_base() . "index.php",true,true);
+        go_return_or_url(self_base() . "index.php", true, true);
     }
 
     // fill content array from item and content tables
     $content4id = $slice->get_dynamic_setting_content(true);
-    if ( !$content4id ) {
+    if (!$content4id) {
         $err["DB"] = MsgErr(_m("Bad item ID id=%1", [$id]));
         MsgPage($err);
         exit;
     }
 } else {
     // we need the $content4id to be object (for getForm, at least)
-    $content4id = new ItemContent;
+    $content4id = new ItemContent();
 }
 
 // print begin ---------------------------------------------------------------
 $inputform_settings = [
     'display_aa_begin_end' => true,
-    'page_title'           => _m("Slice Setting"). " (". AA_Slice::getModuleName(AA::$module_id).")",
+    'page_title'           => _m("Slice Setting") . " (" . AA_Slice::getModuleName(AA::$module_id) . ")",
 ];
 
 $inputform_settings['messages']            = ['err' => $err];
-$inputform_settings['form_action']         = ($_SERVER['DOCUMENT_URI'] != "" ? $_SERVER['DOCUMENT_URI'] :
-                                             $_SERVER['PHP_SELF'] . ($return_url ? "?return_url=".rawurlencode($return_url) : ''));
+$inputform_settings['form_action']         = ($_SERVER['DOCUMENT_URI'] != "" ? $_SERVER['DOCUMENT_URI']
+                                             : $_SERVER['PHP_SELF'] . ($return_url ? "?return_url=" . rawurlencode($return_url) : ''));
 $inputform_settings['form4update']         = true;
-$inputform_settings['cancel_url']          = ($return_url === 'close_dialog' ? get_admin_url("itemedit.php", ['cancel' =>1, 'return_url' =>'close_dialog']) :
-                                              ($return_url ? expand_return_url(1) : get_admin_url("index.php", ['cancel'=>1])));
+$inputform_settings['cancel_url']          = ($return_url === 'close_dialog' ? get_admin_url("itemedit.php", ['cancel' => 1, 'return_url' => 'close_dialog'])
+                                              : ($return_url ? expand_return_url(1) : get_admin_url("index.php", ['cancel' => 1])));
 
 $inputform_settings['hidden']              = ['openervar'   => $openervar];  // id of variable in parent window (used for popup inputform)
 $inputform_settings['hidden']['id']        = $id;
@@ -146,4 +149,3 @@ $form = new inputform($inputform_settings);
 $form->printForm($content4id, $slice, $edit, true);
 
 Session::page_close();
-

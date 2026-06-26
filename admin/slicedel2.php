@@ -1,4 +1,5 @@
 <?php
+
 /**
  * PHP version 7.2+
  *
@@ -43,16 +44,18 @@ try {
     // array ( 'todelete' => 1, )
     $slices2show = InputVars::stringPOST('slices2show'); // alpha
     $cancel = InputVars::boolPOST('cancel');
-    
+
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
+} catch (Exception $e) {
+    AA_Adminpageutil::pageParameterError($e);
+}
 
 
 if ($cancel) {
-    go_url( StateUrl(self_base() . "index.php"));
+    go_url(StateUrl(self_base() . "index.php"));
 }
 
-$deletearr = $del ? [$del] : (array)$deletearr;
+$deletearr = $del ? [$del] : (array) $deletearr;
 if (!count($deletearr)) {
     MsgPage(_m("You don't have permissions to delete slice."));
     exit;
@@ -67,7 +70,7 @@ $err = [];      // error array (Init - just for initializing variable
 //AA::$debug = 127;
 
 if (!AA_Module::deleteModules($deletearr)) {
-    go_url(get_admin_url("slicedel.php", ['Msg'=>_m("No such module.")]));
+    go_url(get_admin_url("slicedel.php", ['Msg' => _m("No such module.")]));
 }
 //echo AA::$dbg->duration_stat();
 //exit;
@@ -76,7 +79,4 @@ Session::page_close();                                // to save session variabl
 
 // There is a bug in here, that typically if you go SliceAdmin->delete->AA->delete it
 // will delete your current slice, and leave you nowhere to go to, you have to login again (mitra)
-go_url(get_admin_url("slicedel.php", ['Msg'=>_m("Slice successfully deleted, tables are optimized")]));
-
-
-
+go_url(get_admin_url("slicedel.php", ['Msg' => _m("Slice successfully deleted, tables are optimized")]));

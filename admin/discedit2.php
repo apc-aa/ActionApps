@@ -1,26 +1,27 @@
 <?php
- /**
- * PHP version 7.2+
- *
- * LICENSE: This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program (LICENSE); if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
- * @version   $Id$
- * @author    Honza Malik <honza.malik@ecn.cz>
- * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
- * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
- * @link      https://www.apc.org/ APC
+
+/**
+* PHP version 7.2+
+*
+* LICENSE: This program is free software; you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation; either version 2 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program (LICENSE); if not, write to the Free Software
+* Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+*
+* @version   $Id$
+* @author    Honza Malik <honza.malik@ecn.cz>
+* @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+* @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+* @link      https://www.apc.org/ APC
 */
 
 // discedit2.php - admin discussion comments
@@ -64,13 +65,15 @@ try {
     // array ( '' => 9, )
     $url_description = InputVars::stringPOST('url_description'); // empty
     $cancel = InputVars::boolPOST('cancel');
-    
-    $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
 
-$cancel_url = get_url(self_base() . "discedit.php", ['item_id'=>$item_id], true);
+    $Msg = InputVars::stringGETPOST('Msg');
+} catch (Exception $e) {
+    AA_Adminpageutil::pageParameterError($e);
+}
+
+$cancel_url = get_url(self_base() . "discedit.php", ['item_id' => $item_id], true);
 if ($cancel) {
-    go_url(StateUrl(self_base() . "discedit.php?item_id=".$item_id));
+    go_url(StateUrl(self_base() . "discedit.php?item_id=" . $item_id));
 }
 
 if (!IfSlPerm(PS_EDIT_ALL_ITEMS)) {
@@ -86,7 +89,7 @@ $err = [];          // error array (Init - just for initializing variable
 $varset = new Cvarset();
 
 if ($update) {
-  //update discussion table
+    //update discussion table
     ValidateInput("subject", _m("Subject"), $subject, $err, true, "text");
     ValidateInput("author", _m("Author"), $author, $err, true, "text");
     ValidateInput("e_mail", _m("E-mail"), $e_mail, $err, false, "text");
@@ -114,17 +117,17 @@ if ($update) {
         $varset->add("free1", "text", $free1);
         $varset->add("free2", "text", $free2);
 
-        $SQL = "UPDATE discussion SET ". $varset->makeUPDATE() . " WHERE id=" .xpack_id($d_id);
+        $SQL = "UPDATE discussion SET " . $varset->makeUPDATE() . " WHERE id=" . xpack_id($d_id);
         $db->query($SQL);
 
         AA::Pagecache()->invalidateFor(AA::$module_id);  // invalidate old cached values
 
-        go_url(StateUrl(self_base() . "discedit.php?item_id=".$item_id));
+        go_url(StateUrl(self_base() . "discedit.php?item_id=" . $item_id));
     }
 }
 
 // set variables from table discussion
-$SQL= " SELECT * FROM discussion WHERE id=".xpack_id($d_id);
+$SQL = " SELECT * FROM discussion WHERE id=" . xpack_id($d_id);
 $db->query($SQL);
 if ($db->next_record()) {
     RestoreVariables($db->record());
@@ -138,21 +141,21 @@ $apage->printHead($err, $Msg);
 $form_buttons = [
     "update"  => ['type' => 'submit'],
     "cancel"  => ['url'  => $cancel_url],
-    "d_id"    => ['type' => 'hidden', 'value'=>$d_id],
-    "item_id" => ['type' => 'hidden', 'value'=> unpack_id($item_id)],
+    "d_id"    => ['type' => 'hidden', 'value' => $d_id],
+    "item_id" => ['type' => 'hidden', 'value' => unpack_id($item_id)],
 ];
 
 FrmTabCaption(_m("Edit comment"), $form_buttons);
-    FrmStaticText("id", $d_id);
-    FrmInputText("subject", _m("Subject"), $subject, 99, 50, true);
-    FrmInputText("author", _m("Author"), $author, 60, 25, true);
-    FrmInputEmail("e_mail",_m("E-mail"), $e_mail, 60);
-    FrmTextarea("body", _m("Text of discussion comment"), $body, 10, 40);
-    FrmDate("date", _m('Date'), $date, false, '', '', true);
-    FrmInputText("url_address", _m("Author's WWW  - URL"), $url_address, 99, 50);
-    FrmInputText("url_description", _m("Author's WWW - description"), $url_description, 60);
-    FrmInputText("remote_addr", _m("Remote address"), $remote_addr, 60);
-    FrmTextarea("free1", _m("Free 1"), $free1, 5, 40);
-    FrmTextarea("free2", _m("Tracking"), $free2, 5, 40);
+FrmStaticText("id", $d_id);
+FrmInputText("subject", _m("Subject"), $subject, 99, 50, true);
+FrmInputText("author", _m("Author"), $author, 60, 25, true);
+FrmInputEmail("e_mail", _m("E-mail"), $e_mail, 60);
+FrmTextarea("body", _m("Text of discussion comment"), $body, 10, 40);
+FrmDate("date", _m('Date'), $date, false, '', '', true);
+FrmInputText("url_address", _m("Author's WWW  - URL"), $url_address, 99, 50);
+FrmInputText("url_description", _m("Author's WWW - description"), $url_description, 60);
+FrmInputText("remote_addr", _m("Remote address"), $remote_addr, 60);
+FrmTextarea("free1", _m("Free 1"), $free1, 5, 40);
+FrmTextarea("free2", _m("Tracking"), $free2, 5, 40);
 FrmTabEnd($form_buttons);
 $apage->printFoot();

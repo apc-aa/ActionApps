@@ -1,4 +1,5 @@
 <?php
+
 //$Id$
 /*
 Copyright (C) 1999, 2000 Association for Progressive Communications
@@ -21,7 +22,7 @@ https://www.apc.org/
 
 use AA\Later\Toexecute;
 
-require_once __DIR__."/include/init_central.php";
+require_once __DIR__ . "/include/init_central.php";
 require_once __DIR__ . "/../include/formutil.php";
 
 
@@ -30,11 +31,11 @@ function CompareSliceDefs($template_slice_defs, $comp_slice_defs, $mapping): arr
 {
     // resulting array of all differences between selected slices
     $differences = [];
-    if ( is_array($template_slice_defs) ) {
-        foreach ( $template_slice_defs as $tmp_slice_name => $slice_def ) {
+    if (is_array($template_slice_defs)) {
+        foreach ($template_slice_defs as $tmp_slice_name => $slice_def) {
             $cmp_slice_name = $mapping[$tmp_slice_name];
             $differences[$tmp_slice_name] = [];
-            if ( empty($comp_slice_defs[$cmp_slice_name]) ) {
+            if (empty($comp_slice_defs[$cmp_slice_name])) {
                 $differences[$tmp_slice_name][] = new AA_Difference('INFO', _m("Comparison slice (%1) does not exist", [$tmp_slice_name]));
             }
             $differences[$tmp_slice_name] = array_merge($differences[$tmp_slice_name], $slice_def->compareWith($comp_slice_defs[$cmp_slice_name]));
@@ -57,17 +58,17 @@ $slices2compare  = [];
 
 if ($_POST['compare']) {
 
-    foreach($_POST['sync_slices'] as $slice_tmp => $slice_cmp) {
+    foreach ($_POST['sync_slices'] as $slice_tmp => $slice_cmp) {
         if ($slice_cmp) {
             $slices4template[] = $slice_tmp;
-            if ( $slice_cmp != '1') {   // 0 - do not compare, 1 - exact copy
+            if ($slice_cmp != '1') {   // 0 - do not compare, 1 - exact copy
                 $slices2compare[]  = $slice_cmp;
             }
         }
     }
 
     $template_slice_defs = $aas[$_POST['template_aa']]->requestDefinitions('Slice', $slices4template, true);
-    if (isset($_POST['comparation_aa']) ) {
+    if (isset($_POST['comparation_aa'])) {
         $comp_slice_defs = $aas[$_POST['comparation_aa']]->requestDefinitions('Slice', $slices2compare, true);
         // now compare slices
         $differences = CompareSliceDefs($template_slice_defs, $comp_slice_defs, $_POST['sync_slices']);
@@ -75,13 +76,13 @@ if ($_POST['compare']) {
 }
 
 if ($_POST['synchronize']) {
-    $toexecute = new Toexecute;
+    $toexecute = new Toexecute();
 
-    if (is_array($_POST['destination_aa']) ) {
+    if (is_array($_POST['destination_aa'])) {
         $no_sync_tasks = 0;
         foreach ($_POST['destination_aa'] as $dest_aa) {
             if (is_array($_POST['sync'])) {
-                foreach ( $_POST['sync'] as $sync_action ) {
+                foreach ($_POST['sync'] as $sync_action) {
                     // plan the synchronization action to for execution via Task Manager
                     $sync_task = new AA_Task_Sync($sync_action, $aas[$dest_aa]);
                     $toexecute->userQueue($sync_task, [], 'AA_Task_Sync');
@@ -90,7 +91,7 @@ if ($_POST['synchronize']) {
             }
         }
     }
-    echo _m("%1 synchronization actions planned. See", [$no_sync_tasks]). ' ';
+    echo _m("%1 synchronization actions planned. See", [$no_sync_tasks]) . ' ';
     echo a_href(get_admin_url('se_taskmanager.php'), _m('Task Manager'));
 }
 
@@ -101,7 +102,7 @@ $apage->printHead($err, $Msg);
 
 // ActionApps to synchronize
 $aas_array = [];
-foreach ( $aas as $k => $aa ) {
+foreach ($aas as $k => $aa) {
     $aas_array[$k] = $aa->getName();
 }
 
@@ -111,18 +112,18 @@ $template_slices = $aas[$_POST['template_aa']]->requestSlices();
 $form_buttons = [
     "synchronize"  => [
         "type"      => "submit",
-                                               "value"     => _m("Synchronize"),
-                                               "accesskey" => "S"
+        "value"     => _m("Synchronize"),
+        "accesskey" => "S",
     ],
-                      "template_aa"    => ["value"     =>  $_POST['template_aa']],
-                      "comparation_aa" => ["value"     =>  $_POST['comparation_aa']]
+    "template_aa"    => ["value"     =>  $_POST['template_aa']],
+    "comparation_aa" => ["value"     =>  $_POST['comparation_aa']],
 ];
 
 FrmTabCaption(_m('Slice Comparison - %1 x %2', [
     $aas[$_POST['template_aa']]->getName(),
-    $aas[$_POST['comparation_aa']]->getName()
+    $aas[$_POST['comparation_aa']]->getName(),
 ]), $form_buttons);
-if ( isset($differences) ) {
+if (isset($differences)) {
     // and print diffs out
     foreach ($differences as $sid => $diffs) {
         $sync_sid = $_POST['sync_slices'][$sid];
@@ -151,8 +152,8 @@ if ( isset($differences) ) {
                 }
             }
         </script>
-        <a id="toggle_info_'.$sid.'" href="javascript:toggleViaCss(\'#diff_'.$sid.' tr.diff_info\')">'._m("Hide/show info values").'</a>
-        <a id="toggle_check_'.$sid.'" href="javascript:toggleCheckViaCss(\'#diff_'.$sid.' input[type=checkbox]\')">'._m("Check/Uncheck")."</a>
+        <a id="toggle_info_' . $sid . '" href="javascript:toggleViaCss(\'#diff_' . $sid . ' tr.diff_info\')">' . _m("Hide/show info values") . '</a>
+        <a id="toggle_check_' . $sid . '" href="javascript:toggleCheckViaCss(\'#diff_' . $sid . ' input[type=checkbox]\')">' . _m("Check/Uncheck") . "</a>
         <table id=\"diff_$sid\">";
         foreach ($diffs as $diff) {
             $diff->printOut();

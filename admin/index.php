@@ -1,4 +1,6 @@
-<?php  //slice_id expected
+<?php
+
+//slice_id expected
 /**
  *
  *
@@ -75,9 +77,11 @@ try {
     // array ( 'Přihlásit' => 12, )
     $submit = InputVars::boolPOST('submit');
     $cancel = InputVars::boolPOST('cancel');
-    
+
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
+} catch (Exception $e) {
+    AA_Adminpageutil::pageParameterError($e);
+}
 
 
 
@@ -95,8 +99,8 @@ $slice       = AA_Slice::getModule($module_id);
 $perm_edit_all  = IfSlPerm(PS_EDIT_ALL_ITEMS);
 $perm_edit_self = IfSlPerm(PS_EDIT_SELF_ITEMS);
 
-if ( !$perm_edit_all && !$perm_edit_self) {
-    MsgPage(_m("You do not have permission to edit items in the slice:").' '. safe(AA_Slice::getModuleName(AA::$module_id)));
+if (!$perm_edit_all && !$perm_edit_self) {
+    MsgPage(_m("You do not have permission to edit items in the slice:") . ' ' . safe(AA_Slice::getModuleName(AA::$module_id)));
     exit;
 }
 
@@ -110,10 +114,10 @@ if ( !$perm_edit_all && !$perm_edit_self) {
 
 
 
-$actions   = new Manageractions;
+$actions   = new Manageractions();
 $actions->addAction(new Item_MoveItem('Activate', 1));
-$actions->addAction(new Item_MoveItem('Folder2',  2));
-$actions->addAction(new Item_MoveItem('Folder3',  3));
+$actions->addAction(new Item_MoveItem('Folder2', 2));
+$actions->addAction(new Item_MoveItem('Folder3', 3));
 
 $new_action = new Item_Feed('Feed', $slice->getId());
 $new_action->setOpenUrl(StateUrl("feed_to.php"));
@@ -121,67 +125,75 @@ $actions->addAction($new_action);
 
 // rXn=1 is foo parameter to make sure, we can use '&' to join items[] parameter (see open_url_add below)
 // '&'    add items[] array to open_url url which will hold checked items
-$actions->addAction(new Item_Preview(      'Preview',       con_url($slice->getProperty('slice_url'),'rXn=1'), '&'));
+$actions->addAction(new Item_Preview('Preview', con_url($slice->getProperty('slice_url'), 'rXn=1'), '&'));
 $actions->addAction(new Item_Modifycontent('ModifyContent', StateUrl("search_replace.php"), '&'));
-$actions->addAction(new Item_Email(        'Email',         StateUrl("write_mail.php"),     '&'));
-$actions->addAction(new Item_DeleteTrash(  'DeleteTrashAction',true));
-$actions->addAction(new Item_Duplicate(    'Duplicate'));
-$actions->addAction(new Item_Move2Slice(   'Move2slice',    $module_id));
-$actions->addAction(new Item_Export(       'Export2File'));
+$actions->addAction(new Item_Email('Email', StateUrl("write_mail.php"), '&'));
+$actions->addAction(new Item_DeleteTrash('DeleteTrashAction', true));
+$actions->addAction(new Item_Duplicate('Duplicate'));
+$actions->addAction(new Item_Move2Slice('Move2slice', $module_id));
+$actions->addAction(new Item_Export('Export2File'));
 
 
-$switches  = new Manageractions;
+$switches  = new Manageractions();
 
 // no problem to write tabs as one action, but we use 3
 $switches->addAction(new Item_Tab('Tab1a', 'app'));
 $switches->addAction(new Item_Tab('Tab1b', 'appb'));
 $switches->addAction(new Item_Tab('Tab1c', 'appc'));
-$switches->addAction(new Item_Tab('Tab2',  'hold'));
-$switches->addAction(new Item_Tab('Tab3',  'trash'));
-$switches->addAction(new Item_DeleteTrash('DeleteTrash',false));
-$switches->addAction(new Item_Gobookmark(   'GoBookmark'));
+$switches->addAction(new Item_Tab('Tab2', 'hold'));
+$switches->addAction(new Item_Tab('Tab3', 'trash'));
+$switches->addAction(new Item_DeleteTrash('DeleteTrash', false));
+$switches->addAction(new Item_Gobookmark('GoBookmark'));
 //$switches->addAction(new  AA\Manageraction\Item_Email('SendEmail'));
 
 
 $profile       = AA_Profile::getProfile(AuthGetUid(), $module_id); // current user settings
 $show_settings = MGR_ALL;
-if ($profile->getProperty('ui_manager_hide', 'mgr_actions'))       { $show_settings -= MGR_ACTIONS; }
-if ($profile->getProperty('ui_manager_hide', 'mgr_sb_searchrows')) { $show_settings -= MGR_SB_SEARCHROWS; }
-if ($profile->getProperty('ui_manager_hide', 'mgr_sb_orderrows'))  { $show_settings -= MGR_SB_ORDERROWS; }
-if ($profile->getProperty('ui_manager_hide', 'mgr_sb_bookmarks'))  { $show_settings -= MGR_SB_BOOKMARKS; }
+if ($profile->getProperty('ui_manager_hide', 'mgr_actions')) {
+    $show_settings -= MGR_ACTIONS;
+}
+if ($profile->getProperty('ui_manager_hide', 'mgr_sb_searchrows')) {
+    $show_settings -= MGR_SB_SEARCHROWS;
+}
+if ($profile->getProperty('ui_manager_hide', 'mgr_sb_orderrows')) {
+    $show_settings -= MGR_SB_ORDERROWS;
+}
+if ($profile->getProperty('ui_manager_hide', 'mgr_sb_bookmarks')) {
+    $show_settings -= MGR_SB_BOOKMARKS;
+}
 
 $manager_settings = [
-     'module_id'   => $module_id,
-     'show'        => $show_settings,    // MGR_ACTIONS | MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS
-     'use_profile' => true,
-     'searchbar'   => [
-         'fields'               => $slice->getSearchfields(),
-         'search_row_count_min' => 1,
-         'order_row_count_min'  => 1,
-         'add_empty_search_row' => true,
-         'function'             => false  // name of function for aditional action hooked on standard filter action
-     ],
-     'scroller'    => [
-         'listlen'              => ($listlen ?: EDIT_ITEM_COUNT)
-     ],
-     'itemview'    => [
-         'manager_vid'          => false,    // $slice_info['manager_vid'],      // id of view which controls the design
-         'format'               => $slice->get_format_strings(),   // optionally to manager_vid you can set format array
-         //'fields'               => $slice->getFields()->getRecordArray(),
-         'aliases'              => new AA_Aliases(new AA_Aliasgenerator_Slice($module_id)),
-         'get_content_funct'    => 'GetItemContent',
-         'query_funct'          => 'QueryZidsSet'
-     ],
-     'actions'     => $actions,
-     'switches'    => $switches,
-     'bin'         => 'app'
+    'module_id'   => $module_id,
+    'show'        => $show_settings,    // MGR_ACTIONS | MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS
+    'use_profile' => true,
+    'searchbar'   => [
+        'fields'               => $slice->getSearchfields(),
+        'search_row_count_min' => 1,
+        'order_row_count_min'  => 1,
+        'add_empty_search_row' => true,
+        'function'             => false,  // name of function for aditional action hooked on standard filter action
+    ],
+    'scroller'    => [
+        'listlen'              => ($listlen ?: EDIT_ITEM_COUNT),
+    ],
+    'itemview'    => [
+        'manager_vid'          => false,    // $slice_info['manager_vid'],      // id of view which controls the design
+        'format'               => $slice->get_format_strings(),   // optionally to manager_vid you can set format array
+        //'fields'               => $slice->getFields()->getRecordArray(),
+        'aliases'              => new AA_Aliases(new AA_Aliasgenerator_Slice($module_id)),
+        'get_content_funct'    => 'GetItemContent',
+        'query_funct'          => 'QueryZidsSet',
+    ],
+    'actions'     => $actions,
+    'switches'    => $switches,
+    'bin'         => 'app',
 ];
 
 $managed = (new Managed())->setSettings($manager_settings);
-$managed->setTitle($slice->getName(). ' - '. (($slice->type() === 'ReaderManagement') ? _m('ActionApps - Reader Manager') : _m('ActionApps - Item Manager')));
-$manager = new Manager('item'.$module_id, $managed);
+$managed->setTitle($slice->getName() . ' - ' . (($slice->type() === 'ReaderManagement') ? _m('ActionApps - Reader Manager') : _m('ActionApps - Item Manager')));
+$manager = new Manager('item' . $module_id, $managed);
 
-if ( $change_id || $r_state["module_id"] !== $module_id) {
+if ($change_id || $r_state["module_id"] !== $module_id) {
     // we are here for the first time, or we are switching to another slice
     unset($r_state);
     // set default admin interface settings from user's profile
@@ -205,7 +217,7 @@ $perm_set_id = $profile->getProperty('admin_perm');
 // permissions could be defined in user profiles through Item Set conditions
 if ($perm_set_id) {
     $profile_set = AA_Object::load($perm_set_id, 'AA_Set');     /** @var AA_Set $profile_set */
-    if ( is_null($profile_set)) {
+    if (is_null($profile_set)) {
         // we want to proceed next $perm_edit_all condition
         $perm_set_id = 0;
     } else {
@@ -221,7 +233,7 @@ if (!$perm_edit_all && !$perm_set_id) {
     $aa_set->addCondition(new AA_Condition('posted_by.......', '==', AuthGetUid()));
 }
 
-$apage = new AA_Adminpageutil('itemmanager',$manager->getBin());
+$apage = new AA_Adminpageutil('itemmanager', $manager->getBin());
 $apage->setForm();
 if ($css_add = $profile->getProperty('ui_manager', 'css_add')) {
     $apage->addRequire($css_add);
@@ -231,4 +243,3 @@ $html = $manager->getDisplayPage($aa_set->query());
 
 // this allows to automatically load codemirror in the head (printHead is called after $form->getObjectEditHtml)
 $apage->printAllPage($html, $err, $Msg);
-

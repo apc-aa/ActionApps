@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Parameters: group_id - identifier of constant group
  *             categ - if true, constants are taken as category, so
@@ -49,12 +50,14 @@ try {
     $delimiter = InputVars::stringSlashedPOST('delimiter');
     $update = InputVars::boolPOST('update');
     $cancel = InputVars::boolPOST('cancel');
-    
+
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
+} catch (Exception $e) {
+    AA_Adminpageutil::pageParameterError($e);
+}
 
 if ($cancel) {
-    go_url( StateUrl(self_base() . "index.php"));
+    go_url(StateUrl(self_base() . "index.php"));
 }
 
 if (!IfSlPerm(PS_FIELDS)) {
@@ -62,13 +65,13 @@ if (!IfSlPerm(PS_FIELDS)) {
     exit;
 }
 
-$back_url = ($return_url ? ($fid ? con_url($return_url,"fid=".$fid) : $return_url) : "index.php");
+$back_url = ($return_url ? ($fid ? con_url($return_url, "fid=" . $fid) : $return_url) : "index.php");
 
 if ($update) {
     do {
         $err = [];          // error array (Init - just for initializing variable
-        $new_group_id = stripslashes(str_replace(':','-',$new_group_id));  // we don't need ':'
-                                                             // in id (parameter separator)
+        $new_group_id = stripslashes(str_replace(':', '-', $new_group_id));  // we don't need ':'
+        // in id (parameter separator)
         ValidateInput("new_group_id", _m("Constant Group"), $new_group_id, $err, true, "text");
         ValidateInput("constant_list", _m("Constants"), $constant_list, $err, true, "text");
         if (count($err)) {
@@ -98,31 +101,31 @@ if ($update) {
         }
 
         $Msg .= MsgOk(_m("Constants update successful"));
-        go_url(get_url($back_url, ['Msg'=>$Msg], true));  // @todo Mssg
-    } while( 0 );           // in order we can use "break;" statement
+        go_url(get_url($back_url, ['Msg' => $Msg], true));  // @todo Mssg
+    } while (0);           // in order we can use "break;" statement
 }
 
 
-$apage = new AA_Adminpageutil('sliceadmin','fields');
+$apage = new AA_Adminpageutil('sliceadmin', 'fields');
 $apage->setTitle(_m("Admin - Constants Import"));
 $apage->printHead($err, $Msg);
 
 $form_buttons = [
     "update",
-                      "cancel"    => ["url"=> $back_url],
-                      "return_url"=> ["value"=>$return_url],
-                      "fid"       => ["value"=>$fid]
+    "cancel"    => ["url" => $back_url],
+    "return_url" => ["value" => $return_url],
+    "fid"       => ["value" => $fid],
 ];
 
 FrmTabCaption(_m("Constants"), $form_buttons);
 FrmInputText('new_group_id', _m("Constant Group"), $new_group_id, 16, 16);
 $delimiters = [
     ''   => '-none- (Name is the same as Value)',
-                    ';'  => 'semicolon ;',
-                    ','  => 'comma ,',
-                    '\t' => 'tabulator \t',
-                    '|'  => 'pipe |',
-                    '~'  => 'tilde ~'
+    ';'  => 'semicolon ;',
+    ','  => 'comma ,',
+    '\t' => 'tabulator \t',
+    '|'  => 'pipe |',
+    '~'  => 'tilde ~',
 ];
 FrmInputSelect('delimiter', _m('Name - Value delimiter'), $delimiters, '', true);
 FrmTextarea('constant_list', _m("Constants"), $constant_list, 25, 60, false, _m('write each constant to new row in form <name><delimiter><value> (or just <name> if the values should be the same as names)'));

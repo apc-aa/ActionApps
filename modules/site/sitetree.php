@@ -1,4 +1,5 @@
 <?php
+
 //$Id$
 /*
 Copyright (C) 1999, 2000 Association for Progressive Communications
@@ -24,9 +25,9 @@ https://www.apc.org/
 function normalize_arr($arr): array
 {
     $ret = [];
-    if ( isset($arr) && is_array($arr) ) {
+    if (isset($arr) && is_array($arr)) {
         foreach ($arr as $v) {
-            if ( isset($v) ) {
+            if (isset($v)) {
                 $ret[] = $v;
             }
         }
@@ -34,16 +35,18 @@ function normalize_arr($arr): array
     return $ret;
 }
 
-class AA_Site_Spot_Match {
+class AA_Site_Spot_Match
+{
     public $op;
     public $val;
 
-    function __construct($op='', $val='') {
-            $this->op  = $op;
-            $this->val = $val;
+    public function __construct($op = '', $val = '')
+    {
+        $this->op  = $op;
+        $this->val = $val;
     }
 
-    public static function factoryByString($string, $var=null): AA_Site_Spot_Match
+    public static function factoryByString($string, $var = null): AA_Site_Spot_Match
     {
         if (str_starts_with($string, '=:')) { // begins with =: - special identification of new matches
             $arr = ParamExplode($string);
@@ -53,7 +56,7 @@ class AA_Site_Spot_Match {
         return new AA_Site_Spot_Match(($var && $var[0] === '{') ? '=' : 'REGEXP', $string);
     }
 
-    function implode(): string
+    public function implode(): string
     {
         return ParamImplode(['=',$this->op, $this->val]);
     }
@@ -62,22 +65,23 @@ class AA_Site_Spot_Match {
     {
         return match ($this->op) {
             '='        => ($value == $this->val),
-            'REGEXP'   => (bool)preg_match('/'.str_replace('/', '\/', $this->val).'/', $value),
+            'REGEXP'   => (bool) preg_match('/' . str_replace('/', '\/', $this->val) . '/', $value),
             'contains' => (strlen($value) && str_contains($this->val, $value)),
             default    => false,
         };
     }
 }
 
-class spot {
-    var $id;          // spot id
-    var $n;           // spot name
-    var $c;           // spot conditions
-    var $v;           // spot variables
-    var $p;           // id of parent spot
-    var $po;          // positions - array of spot ids defining the sequence
-    var $ch;          // choices - array of spot ids defining the choices for the spot
-    var $f;           // flags
+class spot
+{
+    public $id;          // spot id
+    public $n;           // spot name
+    public $c;           // spot conditions
+    public $v;           // spot variables
+    public $p;           // id of parent spot
+    public $po;          // positions - array of spot ids defining the sequence
+    public $ch;          // choices - array of spot ids defining the choices for the spot
+    public $f;           // flags
     // the names of variables are short in order the outpot of serialize() function
     // would be as short as possible
 
@@ -92,10 +96,11 @@ class spot {
         'parent'     => 'p',
         'positions'  => 'po',
         'choices'    => 'ch',
-        'flag'       => 'f'
+        'flag'       => 'f',
     ];
 
-    function __construct($id=false, $name=false, $conditions=false, $variables=false, $parent=false, $positions=false, $choices=false, $flag=0) {
+    public function __construct($id = false, $name = false, $conditions = false, $variables = false, $parent = false, $positions = false, $choices = false, $flag = 0)
+    {
         $this->id = $id;
         $this->n  = $name;
         $this->c  = $conditions; // Array of conditions to match to be this
@@ -110,53 +115,53 @@ class spot {
         $this->f  = $flag;
     }
 
-    function addInSequence($spot): void
+    public function addInSequence($spot): void
     {
         $this->po[] = $spot->Id();
         $spot->set('parent', $this->Id());  // set/repair parent of inserted spot
     }
 
-    function addChoice($spot): void
+    public function addChoice($spot): void
     {
         $this->ch[] = $spot->Id();
         $spot->set('parent', $this->Id());  // set/repair parent of inserted spot
     }
 
-    function addVariable($name): void
+    public function addVariable($name): void
     {
         $this->v[$name] = $name;
     }
 
-    function removeVariable($name): void
+    public function removeVariable($name): void
     {
         unset($this->v[$name]);
     }
 
-    function addCondition($var, $match): void
+    public function addCondition($var, $match): void
     {
         $this->c[$var] = $match->implode();
     }
 
-    function removeCondition($name): void
+    public function removeCondition($name): void
     {
         unset($this->c[$name]);
     }
 
-    function isLeaf(): bool
+    public function isLeaf(): bool
     {
-        return ((!is_array($this->ch) || (count($this->ch)<1)) && (!is_array($this->po) || (count($this->po)<2)));
+        return ((!is_array($this->ch) || (count($this->ch) < 1)) && (!is_array($this->po) || (count($this->po) < 2)));
     }
 
     /** Returns true, if the $spot_id is in sequence of this spot (position) */
-    function isSequence($spot_id): bool
+    public function isSequence($spot_id): bool
     {
-        return (false !== ($k = array_search($spot_id, (array)$this->po)));
+        return (false !== ($k = array_search($spot_id, (array) $this->po)));
     }
 
     /** Returns true, if the $spot_id is choice of this spot */
-    function isChoice($spot_id): bool
+    public function isChoice($spot_id): bool
     {
-        return (false !== ($k = array_search($spot_id, (array)$this->ch)));
+        return (false !== ($k = array_search($spot_id, (array) $this->ch)));
     }
 
     /** Check the positions (po) array and choices (ch) array,
@@ -164,18 +169,19 @@ class spot {
     *     - removes empty positions (where they come from?)
     *     - normalizes keys to be from 0 to .. with step of 1
     */
-    function normalize(): void
+    public function normalize(): void
     {
         $this->po = normalize_arr($this->po);
         $this->ch = normalize_arr($this->ch);
     }
 
-    function removeSpot( $spot_id ) {
+    public function removeSpot($spot_id)
+    {
         // search in options
         $priorsib = $this->id;
-        if (isset($this->ch) AND is_array($this->ch)) {
+        if (isset($this->ch) and is_array($this->ch)) {
             foreach ($this->ch as $k => $v) {
-                if ( $v == $spot_id ) {
+                if ($v == $spot_id) {
                     unset($this->ch[$k]);
                     return $priorsib;   // Returning prior sibling
                 }
@@ -183,9 +189,9 @@ class spot {
             }
         }
         //search in sequence
-        if ( isset($this->po) AND is_array($this->po) ) {
+        if (isset($this->po) and is_array($this->po)) {
             foreach ($this->po as $k => $v) {
-                if ( $v == $spot_id ) {
+                if ($v == $spot_id) {
                     unset($this->po[$k]);
                     return $priorsib;   // Returning prior sibling
                 }
@@ -195,71 +201,97 @@ class spot {
         return false;
     }
 
-    function moveUp( $spot_id ): bool {
-        $this->normalize();  // just check, if there are no problems in this spot
-
-        // search in options
-        if (false !== ($k = array_search($spot_id, (array)$this->ch))) {
-            if ( $k == 0 ) {
-                return false;
-            }
-            $this->ch[$k]   = $this->ch[$k-1];
-            $this->ch[$k-1] = $spot_id;
-            return true;
-        }
-        //search in sequence
-        if (false !== ($k = array_search($spot_id, (array)$this->po))) {
-            if ( $k<=1 ) {   // can't move to the first position in sequence
-                return false;
-            }
-            $this->po[$k]   = $this->po[$k-1];
-            $this->po[$k-1] = $spot_id;
-            return true;
-        }
-        return false;
-    }
-
-    function moveDown( $spot_id ): bool {
-        $this->normalize();  // just check, if there are no problems in this spot
-
-        // search in options
-        if (false !== ($k = array_search($spot_id, (array)$this->ch))) {
-            if ($k == count($this->ch)-1) { // last
-                return false;
-            }
-            $this->ch[$k]   = $this->ch[$k+1];
-            $this->ch[$k+1] = $spot_id;
-            return true;
-        }
-        //search in sequence
-        if (false !== ($k = array_search($spot_id, (array)$this->po))) {
-            if ($k==0 || $k==count($this->po)-1) {    // can't move to the first position in sequence
-                return false;
-            }
-            $this->po[$k]   = $this->po[$k+1];
-            $this->po[$k+1] = $spot_id;
-            return true;
-        }
-        return false;
-    }
-
-    function Name()                        { return $this->n; }
-    function Id()                          { return $this->id; }
-    function Conditions()                  { return $this->c; }
-    function Variables()                   { return $this->v; }
-
-    function get_translated($what)         { return $this->$what; }
-    function get($what)                    { return $this->get_translated(self::SPOT_VAR_NAMES[$what]); }
-
-    function set_translated($what, $value): void { $this->$what = $value; }
-    function set($what,$value): void { $this->set_translated(self::SPOT_VAR_NAMES[$what], $value); }
-
-    function conditionMatches($state): bool
+    public function moveUp($spot_id): bool
     {
-        if ( isset($this->c) AND is_array($this->c) ) {  //c is array of conditions
+        $this->normalize();  // just check, if there are no problems in this spot
+
+        // search in options
+        if (false !== ($k = array_search($spot_id, (array) $this->ch))) {
+            if ($k == 0) {
+                return false;
+            }
+            $this->ch[$k]   = $this->ch[$k - 1];
+            $this->ch[$k - 1] = $spot_id;
+            return true;
+        }
+        //search in sequence
+        if (false !== ($k = array_search($spot_id, (array) $this->po))) {
+            if ($k <= 1) {   // can't move to the first position in sequence
+                return false;
+            }
+            $this->po[$k]   = $this->po[$k - 1];
+            $this->po[$k - 1] = $spot_id;
+            return true;
+        }
+        return false;
+    }
+
+    public function moveDown($spot_id): bool
+    {
+        $this->normalize();  // just check, if there are no problems in this spot
+
+        // search in options
+        if (false !== ($k = array_search($spot_id, (array) $this->ch))) {
+            if ($k == count($this->ch) - 1) { // last
+                return false;
+            }
+            $this->ch[$k]   = $this->ch[$k + 1];
+            $this->ch[$k + 1] = $spot_id;
+            return true;
+        }
+        //search in sequence
+        if (false !== ($k = array_search($spot_id, (array) $this->po))) {
+            if ($k == 0 || $k == count($this->po) - 1) {    // can't move to the first position in sequence
+                return false;
+            }
+            $this->po[$k]   = $this->po[$k + 1];
+            $this->po[$k + 1] = $spot_id;
+            return true;
+        }
+        return false;
+    }
+
+    public function Name()
+    {
+        return $this->n;
+    }
+    public function Id()
+    {
+        return $this->id;
+    }
+    public function Conditions()
+    {
+        return $this->c;
+    }
+    public function Variables()
+    {
+        return $this->v;
+    }
+
+    public function get_translated($what)
+    {
+        return $this->$what;
+    }
+    public function get($what)
+    {
+        return $this->get_translated(self::SPOT_VAR_NAMES[$what]);
+    }
+
+    public function set_translated($what, $value): void
+    {
+        $this->$what = $value;
+    }
+    public function set($what, $value): void
+    {
+        $this->set_translated(self::SPOT_VAR_NAMES[$what], $value);
+    }
+
+    public function conditionMatches($state): bool
+    {
+        if (isset($this->c) and is_array($this->c)) {  //c is array of conditions
             foreach ($this->c as $var => $cond) {
                 $value = ($var[0] === '{') ? AA::Un($var, '', $state['item']) : $state[$var];
-                if ( !(AA_Site_Spot_Match::factoryByString($cond,$var)->match($value)) ) {
+                if (!(AA_Site_Spot_Match::factoryByString($cond, $var)->match($value))) {
                     return false;
                 }
             }
@@ -268,7 +300,8 @@ class spot {
     }
 }
 
-class sitetree {
+class sitetree
+{
     use AA\Util\SerializerTrait;
 
     /** @var spot[] -  Array of spots */
@@ -278,8 +311,9 @@ class sitetree {
     /** @var int Current spot id */
     private int $current_id;
 
-    function __construct($spot=false) {
-        $this->tree[1]    = new spot( $spot['spot_id'], $spot['name'] ?:'start', $spot['conditions'], $spot['variables'], $spot['spot_id'], [$spot['spot_id']], $spot['flag'] );
+    public function __construct($spot = false)
+    {
+        $this->tree[1]    = new spot($spot['spot_id'], $spot['name'] ?: 'start', $spot['conditions'], $spot['variables'], $spot['spot_id'], [$spot['spot_id']], $spot['flag']);
         $this->start_id   = (int) $spot['spot_id'];
         $this->current_id = $this->start_id;
     }
@@ -296,14 +330,16 @@ class sitetree {
         $this->current_id = $id;
     }
 
-    public function getCurrentId(): int {
+    public function getCurrentId(): int
+    {
         return $this->current_id;
     }
 
     /** Creates the spot object and adds it in the sequence (positions) */
-    function addInSequence($where, $name, $conditions=false, $variables=false, $flag=false): bool {
+    public function addInSequence($where, $name, $conditions = false, $variables = false, $flag = false): bool
+    {
         // parent is not set yet (set by addInSequence() in next step);
-        $spot = new spot( $this->new_id(), $name, $conditions, $variables, false, $flag );
+        $spot = new spot($this->new_id(), $name, $conditions, $variables, false, $flag);
         if ($this->_addInSequence($spot, $where)) {
             $this->tree[$spot->Id()] = $spot;
             return true;
@@ -312,16 +348,17 @@ class sitetree {
     }
 
     /** Adds already created spot object into sequence (positions array) */
-    function _addInSequence($spot, $where): bool {
+    public function _addInSequence($spot, $where): bool
+    {
         //get real parent
-        $parent_spot =& $this->tree[$where];
+        $parent_spot = & $this->tree[$where];
 
         // this is true for simple spot, which is normal member of any sequence
         // real parent must have positions set
-        if ( !$parent_spot->get('positions') ) {
+        if (!$parent_spot->get('positions')) {
             // if we want to add spot to simple spot in sequence, then we have
-           // to add it its parent (the first in the sequence
-            $parent_spot =& $this->tree[$parent_spot->get('parent')];
+            // to add it its parent (the first in the sequence
+            $parent_spot = & $this->tree[$parent_spot->get('parent')];
         }
 
         // parent is set by addInSequence() in next step;
@@ -330,8 +367,9 @@ class sitetree {
         return true;
     }
 
-    function new_id() {
-        return max(array_keys($this->tree))+1;
+    public function new_id()
+    {
+        return max(array_keys($this->tree)) + 1;
     }
 
     /** Creates the spot object and adds it in the choices array
@@ -342,10 +380,11 @@ class sitetree {
      * @param bool $flag
      * @return bool
      */
-    function addChoice($where, $name, $conditions = false, $variables = false, $flag = false): bool {
+    public function addChoice($where, $name, $conditions = false, $variables = false, $flag = false): bool
+    {
         // parent is not set yet (set by addChoice() in next step);
         $new_id = $this->new_id();
-        $spot = new spot( $new_id, $name, $conditions, $variables, false, [$new_id], $flag );
+        $spot = new spot($new_id, $name, $conditions, $variables, false, [$new_id], $flag);
         if ($this->_addChoice($spot, $where)) {
             $this->tree[$spot->Id()] = $spot;
             return true;
@@ -354,9 +393,10 @@ class sitetree {
     }
 
     /** Adds already created spot object in the choices array */
-    function _addChoice($spot, $where): bool {
+    public function _addChoice($spot, $where): bool
+    {
         //get real parent
-        $where_spot =& $this->tree[$where];
+        $where_spot = & $this->tree[$where];
         if (!$where_spot->get('variables')) {  // before creating choice must be defined the list of dependency variables
             return false;
         }
@@ -365,16 +405,17 @@ class sitetree {
         return true;
     }
 
-    function removeSpot( $spot_id ) {
-        $spot =& $this->tree[$spot_id];
+    public function removeSpot($spot_id)
+    {
+        $spot = & $this->tree[$spot_id];
 
         if ($spot && $spot->isLeaf()) {
             $parent_id = $spot->get('parent');
-            $parent =& $this->tree[$parent_id];
+            $parent = & $this->tree[$parent_id];
             if (!$parent) {
                 return false;
             }
-            if ( $priorsib = $parent->removeSpot($spot_id)) {
+            if ($priorsib = $parent->removeSpot($spot_id)) {
                 unset($this->tree[$spot_id]);
                 return $priorsib;
             }
@@ -388,14 +429,14 @@ class sitetree {
      * @param $direction string - 'moveDown' or 'moveLeft'
      * @return bool
      */
-    function move($spot_id, $direction): bool
+    public function move($spot_id, $direction): bool
     {
-        $spot =& $this->tree[$spot_id];
+        $spot = & $this->tree[$spot_id];
         if (!$spot) {
             return false;
         }
         $parent_id = $spot->get('parent');
-        $parent =& $this->tree[$parent_id];
+        $parent = & $this->tree[$parent_id];
         if (!$parent) {
             return false;
         }
@@ -408,13 +449,14 @@ class sitetree {
      * @param string $direction - 'moveLeft' or 'moveRight'
      * @return bool
      */
-    function moveLeftRight($spot_id, $direction): bool {
-        $spot =& $this->tree[$spot_id];
+    public function moveLeftRight($spot_id, $direction): bool
+    {
+        $spot = & $this->tree[$spot_id];
         if (!$spot) {
             return false;
         }
         $parent_id = $spot->get('parent');
-        $parent =& $this->tree[$parent_id];
+        $parent = & $this->tree[$parent_id];
         if (!$parent) {
             return false;
         }
@@ -429,7 +471,7 @@ class sitetree {
             // fing next spot in the current spot-set (positions/choices)
             $sibling_id = $spot_id;
             while (false !== ($sibling_id = $this->getNextSibling($sibling_id))) {
-                if ( $this->haveBranches($sibling_id) ) {
+                if ($this->haveBranches($sibling_id)) {
                     if ($spot_type === 'choice') {
                         // if the moved spot is choice, then we just add it to choices
                         $destination_parent_id = $sibling_id;
@@ -448,7 +490,7 @@ class sitetree {
             return false;
         }
 
-        $destination_parent =& $this->tree[$destination_parent_id];
+        $destination_parent = & $this->tree[$destination_parent_id];
         if (!$destination_parent) {
             return false;
         }
@@ -470,13 +512,14 @@ class sitetree {
     /** Returns id of next sibling - the next spot in the set
      *  (positions or choices) of the given $spot_id
      */
-    function getNextSibling($spot_id) {
-        $spot =& $this->tree[$spot_id];
+    public function getNextSibling($spot_id)
+    {
+        $spot = & $this->tree[$spot_id];
         if (!$spot) {
             return false;
         }
         $parent_id = $spot->get('parent');
-        $parent =& $this->tree[$parent_id];
+        $parent = & $this->tree[$parent_id];
         if (!$parent) {
             return false;
         }
@@ -507,9 +550,10 @@ class sitetree {
         return false;
     }
 
-    function addVariable($where, $var): bool {
+    public function addVariable($where, $var): bool
+    {
         //get real parent
-        $where_spot =& $this->tree[$where];
+        $where_spot = & $this->tree[$where];
         if (!$where_spot) {
             return false;
         }
@@ -517,9 +561,10 @@ class sitetree {
         return true;
     }
 
-    function removeVariable($where, $var): bool {
+    public function removeVariable($where, $var): bool
+    {
         //get real parent
-        $where_spot =& $this->tree[$where];
+        $where_spot = & $this->tree[$where];
         if (!$where_spot) {
             return false;
         }
@@ -527,19 +572,21 @@ class sitetree {
         return true;
     }
 
-    function addCondition( $where, $var, $cond, $op): bool {
+    public function addCondition($where, $var, $cond, $op): bool
+    {
         //get real parent
         if (!$this->isChoice($where)) {
             return false;
         }
-        $where_spot =& $this->tree[$where];
+        $where_spot = & $this->tree[$where];
         $where_spot->addCondition($var, new AA_Site_Spot_Match($op, $cond));
         return true;
     }
 
-    function removeCondition( $where, $var ): bool {
+    public function removeCondition($where, $var): bool
+    {
         //get real parent
-        $where_spot =& $this->tree[$where];
+        $where_spot = & $this->tree[$where];
         if (!$where_spot) {
             return false;
         }
@@ -547,7 +594,7 @@ class sitetree {
         return true;
     }
 
-    function setFlag($spot_id, $flag): void
+    public function setFlag($spot_id, $flag): void
     {
         $current_flag = $this->get('flag', $spot_id);
 
@@ -556,7 +603,7 @@ class sitetree {
         $this->set('flag', $spot_id, $current_flag); // wite the state also to the structure
     }
 
-    function clearFlag($spot_id, $flag): void
+    public function clearFlag($spot_id, $flag): void
     {
         $current_flag = $this->get('flag', $spot_id);
 
@@ -565,30 +612,32 @@ class sitetree {
         $this->set('flag', $spot_id, $current_flag); // wite the state also to the structure
     }
 
-    function isFlag($spot_id, $flag): int
+    public function isFlag($spot_id, $flag): int
     {
         return $this->get('flag', $spot_id) & $flag;
     }
 
-    function isChoice($spot_id) {
-        $spot =& $this->tree[$spot_id];
+    public function isChoice($spot_id)
+    {
+        $spot = & $this->tree[$spot_id];
         if (!$spot) {
             return false;
         }
         $parent_spot_id = $spot->get('parent');
-        if (!$parent_spot_id || !($vars=$this->get('variables',$parent_spot_id))) {
+        if (!$parent_spot_id || !($vars = $this->get('variables', $parent_spot_id))) {
             return false;
         }
         return $vars;
     }
 
-    function isOption($spot_id) {
-        $spot =& $this->tree[$spot_id];
+    public function isOption($spot_id)
+    {
+        $spot = & $this->tree[$spot_id];
         if (!$spot) {
             return false;
         }
         $parent_spot_id = $spot->get('parent');
-        if ( !$parent_spot_id || !($choices=$this->get('choices',$parent_spot_id)) ) {
+        if (!$parent_spot_id || !($choices = $this->get('choices', $parent_spot_id))) {
             return false;
         }
         if (is_array($choices) && in_array($spot_id, $choices, true)) {
@@ -598,37 +647,46 @@ class sitetree {
     }
 
     // Find the spot from the tree, and then do a get on the spot.
-    function get($what, $id) {
-        $s =& $this->tree[$id];
+    public function get($what, $id)
+    {
+        $s = & $this->tree[$id];
         return $s ? $s->get($what) : false;
     }
 
-    function set($what, $id, $value): void
+    public function set($what, $id, $value): void
     {
-        $s =& $this->tree[$id];
+        $s = & $this->tree[$id];
         $s?->set($what, $value);
     }
 
-    function getName($id) { return $this->get( 'name', $id ); }
-    function exist($id): bool { return isset($this->tree[$id]); }
+    public function getName($id)
+    {
+        return $this->get('name', $id);
+    }
+    public function exist($id): bool
+    {
+        return isset($this->tree[$id]);
+    }
 
-    function haveBranches($id): bool {
+    public function haveBranches($id): bool
+    {
         return (bool) $this->get('choices', $id);
     }
 
-    function isSequenceStart($id): bool {
+    public function isSequenceStart($id): bool
+    {
         return (bool) $this->get('positions', $id);
     }
 
-    function isLeaf($id): bool
+    public function isLeaf($id): bool
     {
-        $s =& $this->tree[$id];
+        $s = & $this->tree[$id];
         return $s->isLeaf();
     }
 
-    function conditionMatches( $id, $state ): bool
+    public function conditionMatches($id, $state): bool
     {
-        $s =& $this->tree[$id];
+        $s = & $this->tree[$id];
         return $s ? $s->conditionMatches($state) : false;
     }
 
@@ -640,7 +698,9 @@ class sitetree {
     {
         $foo_apc  = [];
         $spot_ids = [];
-        $this->walkTree($foo_apc, 1, function ($spot_id) use (&$spot_ids) { $spot_ids[] = $spot_id; }, 'all');
+        $this->walkTree($foo_apc, 1, function ($spot_id) use (&$spot_ids) {
+            $spot_ids[] = $spot_id;
+        }, 'all');
         return $spot_ids;
     }
 
@@ -648,15 +708,15 @@ class sitetree {
      *
      *
      */
-    function walkTree(&$state, $id, $functions, $method='cond', $depth=0): void
+    public function walkTree(&$state, $id, $functions, $method = 'cond', $depth = 0): void
     {
         // $functions could be array which defines the callback functions,
         // or nonarray - just main - spot -  function
         if (!is_array($functions)) {
             // functions are array now
-            $functions = ['spot'=>$functions];
+            $functions = ['spot' => $functions];
         }
-        $current =& $this->tree[$id];
+        $current = & $this->tree[$id];
         $positions = $current->get("positions");
         if (!$positions) {
             echo 'something is wrong - no "positions" for parent';
@@ -666,9 +726,9 @@ class sitetree {
             if ($pos) {
                 // There is a bug that introduced empty positions
                 // this is to skip them.
-                if (($method==='all') || ($method==='collapsed') || (($method==='cond') && !$this->isFlag($pos, AA_Module_Site::FLAG_DISABLE))) {
+                if (($method === 'all') || ($method === 'collapsed') || (($method === 'cond') && !$this->isFlag($pos, AA_Module_Site::FLAG_DISABLE))) {
                     call_user_func_array($functions['spot'], [$pos, $depth]);
-               }
+                }
 
                 // if this position is collapsed, then print only first position
                 // and skip the others as well as all the choices
@@ -677,9 +737,9 @@ class sitetree {
                 }
 
                 if ($this->haveBranches($pos)) {
-                    $chcurrent =& $this->tree[$pos];
+                    $chcurrent = & $this->tree[$pos];
                     $choices = $chcurrent->get("choices");
-                    if ( !$choices ) {
+                    if (!$choices) {
                         echo "something is wrong - haveBranches but it has not choices[]";
                         exit;
                     }
@@ -688,14 +748,14 @@ class sitetree {
                     $choices_index = 0;
                     foreach ($choices as $k => $cho) {
                         if ($cho) { // skip buggy empty choices
-                            if (($method==='all') || ($method==='collapsed') || ($this->conditionMatches($cho, $state) && !$this->isFlag($cho, AA_Module_Site::FLAG_DISABLE))) {
+                            if (($method === 'all') || ($method === 'collapsed') || ($this->conditionMatches($cho, $state) && !$this->isFlag($cho, AA_Module_Site::FLAG_DISABLE))) {
 
                                 // sometimes it is useful to call a function before the choice
                                 if ($functions['before_choice']) {
                                     call_user_func_array($functions['before_choice'], [$cho, $depth, $choices_index, $choices_count]);
                                 }
 
-                                $this->walkTree($state, $cho, $functions, $method, $depth+1);
+                                $this->walkTree($state, $cho, $functions, $method, $depth + 1);
 
                                 // and sometimes it is useful to call a function after the choice
                                 if ($functions['after_choice']) {
@@ -703,55 +763,55 @@ class sitetree {
                                 }
                                 $choices_index++;
 
-                                if ($method==='cond') {
+                                if ($method === 'cond') {
                                     break;                 // one matching spot is enough
                                 }
                             }
                         } else {
-//                            if ($GLOBALS["sitefix"]) {
-//                                unset($chcurrent->ch[$k]); // fix position($pos)=",$chcurrent);
-//                            } else {
-                                huhe("Warning: skipping Empty choice in position=$pos, run with &amp;sitefix=1 to fix; tree=",$this);
-//                            }
+                            //                            if ($GLOBALS["sitefix"]) {
+                            //                                unset($chcurrent->ch[$k]); // fix position($pos)=",$chcurrent);
+                            //                            } else {
+                            huhe("Warning: skipping Empty choice in position=$pos, run with &amp;sitefix=1 to fix; tree=", $this);
+                            //                            }
                         }
                     } // each choice
                 } // haveBranches
             } else {  // Empty $pos
-//                if ($GLOBALS["sitefix"]) {
-//                    // unset($current->po[$poskey]); //  fix: poskey=$poskey val=",$current->po,"cur=", $current);
-//                } else {
-                    huhe("Warning: skipping Empty position in id=$id key $poskey of tree=",$this->tree[$id]);
-//                }
+                //                if ($GLOBALS["sitefix"]) {
+                //                    // unset($current->po[$poskey]); //  fix: poskey=$poskey val=",$current->po,"cur=", $current);
+                //                } else {
+                huhe("Warning: skipping Empty position in id=$id key $poskey of tree=", $this->tree[$id]);
+                //                }
             }
         } // each position
     } // function
 
 
-    function printSpotName_Start($spot_id, $depth): void
+    public function printSpotName_Start($spot_id, $depth): void
     {
         // print the spot itself
         $this->printSpotHtml($spot_id, $this->getName($spot_id), $spot_id == $this->current_id, ($this->get('flag', $spot_id) & AA_Module_Site::FLAG_DISABLE));
 
         // variables defined? - print it
         if (!$this->isFlag($spot_id, AA_Module_Site::FLAG_COLLAPSE) && ($vars = $this->get('variables', $spot_id))) {
-            echo "\n  <div class=\"variables\">(". implode(',',$vars) .')</div>';
+            echo "\n  <div class=\"variables\">(" . implode(',', $vars) . ')</div>';
         }
     }
 
-    function printChoice_Start($spot_id, $depth, $choices_index, $choices_count): void
+    public function printChoice_Start($spot_id, $depth, $choices_index, $choices_count): void
     {
         // begin of the choice (open <div>)
 
         // last choice in the list is special
-        $last  = ($choices_index == $choices_count-1);    // just shortcut variable
+        $last  = ($choices_index == $choices_count - 1);    // just shortcut variable
         $class = $last ? 'lastchoice' : 'choice';
 
         if ($this->isLeaf($spot_id)) {
             $colaps = GetModuleImage('site', $last ? 'l.gif' : 't.gif', '', 21, 13);
         } elseif ($this->get('flag', $spot_id) & AA_Module_Site::FLAG_COLLAPSE) {
-            $colaps = a_href(self::siteAdminPageUrl($spot_id, ['akce'=>'m']), GetModuleImage('site', 'plus.gif', '', 21, 13));
+            $colaps = a_href(self::siteAdminPageUrl($spot_id, ['akce' => 'm']), GetModuleImage('site', 'plus.gif', '', 21, 13));
         } else {
-            $colaps = a_href(self::siteAdminPageUrl($spot_id, ['akce'=>'p']), GetModuleImage('site', 'minus.gif', '', 21, 13));
+            $colaps = a_href(self::siteAdminPageUrl($spot_id, ['akce' => 'p']), GetModuleImage('site', 'minus.gif', '', 21, 13));
         }
         echo "\n<div class=\"$class\">$colaps";
 
@@ -760,7 +820,7 @@ class sitetree {
         if ($conds = $this->get('conditions', $spot_id)) {
             $delim = ' ';
             foreach ($conds as $k => $v) {
-                $match = AA_Site_Spot_Match::factoryByString($v,$k);
+                $match = AA_Site_Spot_Match::factoryByString($v, $k);
                 $conditions .= "$delim$k: <strong>$match->val</strong> <small>($match->op)</small>";
                 $delim = ', ';
             }
@@ -768,53 +828,53 @@ class sitetree {
         if ($conditions == '') {
             $conditions = '&nbsp;';
         }
-        echo "\n  <div class=\"conditions\">". a_href( self::siteAdminPageUrl($spot_id, ['go_sid'=>$spot_id]), $conditions) ."</div>";
+        echo "\n  <div class=\"conditions\">" . a_href(self::siteAdminPageUrl($spot_id, ['go_sid' => $spot_id]), $conditions) . "</div>";
     }
 
-    function printChoice_End($spot_id, $depth, $choices_index, $choices_count): void
+    public function printChoice_End($spot_id, $depth, $choices_index, $choices_count): void
     {
         // close previously opened <div class="choice">
         echo "\n</div>";
     }
 
-    function printVariables( $spot_id, $vars ): void
+    public function printVariables($spot_id, $vars): void
     {
-        echo "<tr><th>"._m("Spot&nbsp;variables")."</th><td>";
+        echo "<tr><th>" . _m("Spot&nbsp;variables") . "</th><td>";
         if (isset($vars) && is_array($vars)) {
             foreach ($vars as $k => $v) {
-                echo safe($v) ."<span>". a_href(self::siteAdminPageUrl($spot_id, ["delvar"=>$k]), _m("Delete"), ['class'=>"aa-button-delete"]). "</span><br>";
+                echo safe($v) . "<span>" . a_href(self::siteAdminPageUrl($spot_id, ["delvar" => $k]), _m("Delete"), ['class' => "aa-button-delete"]) . "</span><br>";
             }
         }
-        echo "<form name=fvar action=\"".$_SERVER['PHP_SELF']."\"><input type='text' name='addvar' value='' size='50'><span><a href='javascript:document.fvar.submit()' class=\"aa-button-new\">"._m("Add")."</a></span>";
+        echo "<form name=fvar action=\"" . $_SERVER['PHP_SELF'] . "\"><input type='text' name='addvar' value='' size='50'><span><a href='javascript:document.fvar.submit()' class=\"aa-button-new\">" . _m("Add") . "</a></span>";
         echo $this->getCurrentSpotId();
         echo StateHidden();
         echo "</form></td></tr>";
     }
 
-    function printConditions($spot_id, $conds, $vars): void
+    public function printConditions($spot_id, $conds, $vars): void
     {
-        echo "<tr><th>"._m("Spot&nbsp;conditions")."</th><td>";
-        if ( isset($vars) && is_array($vars) ) {
-            $i=0;
+        echo "<tr><th>" . _m("Spot&nbsp;conditions") . "</th><td>";
+        if (isset($vars) && is_array($vars)) {
+            $i = 0;
             foreach ($vars as $k => $v) {
                 $safe_v = safe($v);
                 $safe_k = safe($k);
 
                 if ($conds[$v]) {
-                    $match = AA_Site_Spot_Match::factoryByString($conds[$v],$v);
-                    $warning = (trim($match->val) == $match->val) ? '' : '<div style="color:red;"><small>'._m('Warning: the condition starts or ends with whitespace character. Please check, if it is OK in your expression.').'</small></div>';
-                    echo "$safe_v ($match->op) <strong>".safe($match->val)."</strong> <span>". a_href(self::siteAdminPageUrl($spot_id, ['delcond' =>$v]), _m("Delete"), ['class'=>"aa-button-delete"]). "</span>$warning<br>";
+                    $match = AA_Site_Spot_Match::factoryByString($conds[$v], $v);
+                    $warning = (trim($match->val) == $match->val) ? '' : '<div style="color:red;"><small>' . _m('Warning: the condition starts or ends with whitespace character. Please check, if it is OK in your expression.') . '</small></div>';
+                    echo "$safe_v ($match->op) <strong>" . safe($match->val) . "</strong> <span>" . a_href(self::siteAdminPageUrl($spot_id, ['delcond' => $v]), _m("Delete"), ['class' => "aa-button-delete"]) . "</span>$warning<br>";
                 } else {
-                    echo "<form name=fcond$i action=\"". $_SERVER['PHP_SELF'] ."\">
+                    echo "<form name=fcond$i action=\"" . $_SERVER['PHP_SELF'] . "\">
                          $safe_k
                          <select name=addcondop>
                            <option>=</option>
-                           <option value=contains>"._m('contains')."</option>
-                           <option value=REGEXP>"._m('Regular Expression')."</option>
+                           <option value=contains>" . _m('contains') . "</option>
+                           <option value=REGEXP>" . _m('Regular Expression') . "</option>
                          </select>
                          <input type='text' name='addcond' value='' size='50'>
                      <input type='hidden' name='addcondvar' value='$safe_v'>
-                     <span><a href='javascript:document.fcond$i.submit()' class=\"aa-button-new\">"._m("Add")."</a></span>";
+                     <span><a href='javascript:document.fcond$i.submit()' class=\"aa-button-new\">" . _m("Add") . "</a></span>";
                     echo StateHidden();
                     echo $this->getCurrentSpotId();
                     echo "</form>";
@@ -831,12 +891,12 @@ class sitetree {
         $class = ($selected) ? ' class="selected"' : '';
 
         // get actions (eye for disable/enable, at this moment
-        $action = $disabled ?
-            a_href(self::siteAdminPageUrl($spot_id, ['akce'=>'e']), GetModuleImage('site', 'disabled.gif', '', 16, 16), ['class'=>'eye']) :
-            a_href(self::siteAdminPageUrl($spot_id, ['akce'=>'h']), GetModuleImage('site', 'enabled.gif', '', 16, 16), ['class'=>'eye']);
+        $action = $disabled
+            ? a_href(self::siteAdminPageUrl($spot_id, ['akce' => 'e']), GetModuleImage('site', 'disabled.gif', '', 16, 16), ['class' => 'eye'])
+            : a_href(self::siteAdminPageUrl($spot_id, ['akce' => 'h']), GetModuleImage('site', 'enabled.gif', '', 16, 16), ['class' => 'eye']);
 
         // print the spot <div>
-        echo "<div$class title=\"spot ID: $spot_id\">{$action}". a_href(self::siteAdminPageUrl($spot_id, ["go_sid"=>$spot_id]), $spot_name ?: '&nbsp;', ['class'=>"spot"]). "</div>";
+        echo "<div$class title=\"spot ID: $spot_id\">{$action}" . a_href(self::siteAdminPageUrl($spot_id, ["go_sid" => $spot_id]), $spot_name ?: '&nbsp;', ['class' => "spot"]) . "</div>";
     }
 
     public function getCurrentSpotId(): string
@@ -844,15 +904,15 @@ class sitetree {
         return '<input type="hidden" name="spot_id" value="' . $this->current_id . '">';
     }
 
-    public static function siteAdminPageUrl($spot_id, array $add=[]): string
+    public static function siteAdminPageUrl($spot_id, array $add = []): string
     {
         return get_url($_SERVER['PHP_SELF'], ['spot_id' => $spot_id] + $add, true);
     }
 
-    public static function siteActionLink($spot_id, $action, $text, $img, $link = null, $add=[]): string
+    public static function siteActionLink($spot_id, $action, $text, $img, $link = null, $add = []): string
     {
         $link ??= self::siteAdminPageUrl($spot_id, ['akce' => $action]);
-        $image  = $img ? GetModuleImage('site', $img, '', 16, 16).' ' : '';
+        $image  = $img ? GetModuleImage('site', $img, '', 16, 16) . ' ' : '';
         return a_href($link, "$image$text", $add + ['class' => 'aa-button']);
     }
 }

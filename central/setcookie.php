@@ -1,4 +1,5 @@
 <?php
+
 //$Id$
 /*
 Copyright (C) 1999, 2000 Association for Progressive Communications
@@ -43,7 +44,7 @@ require_once __DIR__ . "/../vendor/autoload.php";   // classmap: AA_Auth, AA\* f
 require_once __DIR__ . "/../include/config.php";    // PERM_LIB / AA_LOGIN_TIMEOUT / DB consts
 require_once __DIR__ . "/../include/locauth.php";   // defines Auth / AA_Auth (no DB connect here)
 
-$sid = (string)($_GET['s'] ?? '');
+$sid = (string) ($_GET['s'] ?? '');
 
 // 1) format gate — PHP session id charset/length
 if (preg_match('/^[A-Za-z0-9,-]{22,256}$/', $sid)) {

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * AA speech-to-text endpoint — direct PHP entry point.
  *

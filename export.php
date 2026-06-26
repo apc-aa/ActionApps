@@ -1,4 +1,5 @@
 <?php
+
 /**
  *
  * PHP version 7.2+
@@ -37,7 +38,7 @@
  *  you will be able to call it like /apc-aa/export.php?id=5357...&year=2012)
  *  */
 
-require_once __DIR__."/./include/config.php";
+require_once __DIR__ . "/./include/config.php";
 require_once __DIR__ . "/include/util.php";
 require_once __DIR__ . "/include/item.php";
 require_once __DIR__ . "/include/searchlib.php";
@@ -54,7 +55,7 @@ if (!$_GET['id']) {
 $exportset = AA_Exportsetings::load($_GET['id'], 'AA_Exportsetings');
 
 if (is_null($exportset)) {
-    echo 'Bad export id - '. safe($_GET['form_id'] ?? '');
+    echo 'Bad export id - ' . safe($_GET['form_id'] ?? '');
     exit;
 }
 
@@ -62,5 +63,3 @@ $exportset->export();
 
 Session::page_close();
 exit;
-
-

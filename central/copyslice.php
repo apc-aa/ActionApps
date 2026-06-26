@@ -1,4 +1,5 @@
 <?php
+
 //$Id$
 /*
 Copyright (C) 1999, 2000 Association for Progressive Communications
@@ -20,28 +21,28 @@ https://www.apc.org/
 */
 
 
-require_once __DIR__."/include/init_central.php";
+require_once __DIR__ . "/include/init_central.php";
 require_once __DIR__ . "/../include/formutil.php";
 require_once __DIR__ . "/include/actionapps.class.php";
 
 pageOpen();
 
 if (!IsSuperadmin()) {
-  AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php", _m("You don't have permissions to synchronize slices."), "admin");
-  exit;
+    AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php", _m("You don't have permissions to synchronize slices."), "admin");
+    exit;
 }
 
 $aas = AA_Actionapps::getArray();
 
 
 $apage = new AA_Adminpageutil('central', 'copyslice');
-$apage->setTitle( _m("Central - Copy Slice (1/2) - Select Source ActionApps") );
-$apage->setForm(['action'=>'copyslice2.php']);
+$apage->setTitle(_m("Central - Copy Slice (1/2) - Select Source ActionApps"));
+$apage->setForm(['action' => 'copyslice2.php']);
 $apage->printHead($err, $Msg);
 
 
 $aas_array = [];
-foreach ( $aas as $k => $aa ) {
+foreach ($aas as $k => $aa) {
     $aas_array[$k] = $aa->getName();
 }
 

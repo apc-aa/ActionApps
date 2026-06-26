@@ -1,9 +1,10 @@
 <?php
+
 /* This script allows you to fill constants group with constants defined
      by the array - next in this file ($constants2import).
 */
 
-require_once __DIR__."/../../include/config.php";
+require_once __DIR__ . "/../../include/config.php";
 require_once __DIR__ . "/../../include/locsess.php";
 require_once __DIR__ . "/../../include/util.php";
 require_once __DIR__ . "/../../include/formutil.php";
@@ -15,7 +16,8 @@ require_once __DIR__ . "/../../include/discussion.php";
 require_once __DIR__ . "/../../include/date.php";
 require_once __DIR__ . "/../../include/feeding.php";
 
-function myQuery ($db, $SQL, $fire) {
+function myQuery($db, $SQL, $fire)
+{
     echo "$SQL<br>";
     return !$fire ? true : $db->query($SQL);
 }
@@ -27,20 +29,20 @@ function myQuery ($db, $SQL, $fire) {
 // as $group_id group
 
 $constants2import = [
-'Byst�ice nad Pern�tejnem',
-'Chot�bo�',
-'Havl��k�v Brod',
-'Humpolec',
-'Jihlava',
-'Jihlava, kraj Vyso�ina',
-'Moravsk� Bud�jovice',
-'N�m욝 nad Oslavou',
-'Nov� M�sto na Morav�'
+    'Byst�ice nad Pern�tejnem',
+    'Chot�bo�',
+    'Havl��k�v Brod',
+    'Humpolec',
+    'Jihlava',
+    'Jihlava, kraj Vyso�ina',
+    'Moravsk� Bud�jovice',
+    'N�m욝 nad Oslavou',
+    'Nov� M�sto na Morav�',
 ];
 // ---------------------- Just do it -----------------------------------------
 
 $group_id = 'NSZM_Obce_3_____';              // define name of group
-                                             // MUST be 16 character long !!!
+// MUST be 16 character long !!!
 $fire = true;                               // write to DB?
 $priority_step = 10;
 
@@ -49,27 +51,27 @@ MoreTimeLimit();
 
 $err = [];          // error array (Init - just for initializing variable
 $varset = new Cvarset();
-is_object( $db ) || ($db = getDB());
+is_object($db) || ($db = getDB());
 
-$SQL = "INSERT INTO constant SET id='". q_pack_id(new_id()) ."',
+$SQL = "INSERT INTO constant SET id='" . q_pack_id(new_id()) . "',
                                      group_id='lt_groupNames',
                                      name='$group_id',
                                      value='$group_id',
                                      class='',
                                      pri='100'";
-myQuery ($db, $SQL, $fire);
+myQuery($db, $SQL, $fire);
 
 foreach ($constants2import as $cnst) {
     $varset->clear();
-    $varset->set("name",  $cnst, "text");
+    $varset->set("name", $cnst, "text");
     $varset->set("value", $cnst, "text");
-    $varset->set("pri",   $pri += $priority_step, "number");
+    $varset->set("pri", $pri += $priority_step, "number");
     // $varset->set("class", $class[$key], "text");
-    $varset->set("id", new_id(), "unpacked" );
-    $varset->set("group_id", $group_id, "text" );
+    $varset->set("id", new_id(), "unpacked");
+    $varset->set("group_id", $group_id, "text");
     $SQL =  $varset->makeINSERT('constant');
 
-    if ( !myQuery ($db, $SQL, $fire )) {
+    if (!myQuery($db, $SQL, $fire)) {
         $err["DB"] .= MsgErr("Can't copy constant");
         break;
     }
@@ -77,9 +79,8 @@ foreach ($constants2import as $cnst) {
 
 
 if (count($err)) {
-  print("<br><b>Import error!</b>");
-  print_r($err);
-} else
-  print("<br><b>Import successful!</b>");
-
-
+    print("<br><b>Import error!</b>");
+    print_r($err);
+} else {
+    print("<br><b>Import successful!</b>");
+}

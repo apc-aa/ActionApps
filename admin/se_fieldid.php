@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This script allows to change a field ID in hopefully all tables where it occurs.
  *
@@ -54,33 +55,35 @@ try {
     // array ( ' Změnit [^…' => 2, )
     $update = InputVars::boolPOST('update');
     $cancel = InputVars::boolPOST('cancel');
-    
+
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
+} catch (Exception $e) {
+    AA_Adminpageutil::pageParameterError($e);
+}
 
 
 MoreTimeLimit(600); // set_time_limit to 10 minutes (at least)
 
 const RESERVED_IDS = [
-  "disc_app........",
-  "disc_count......",
-  "display_count...",
-  "edited_by.......",
-  "expiry_date.....",
-  "flags...........",
-  "highlight.......",
-  "last_edit.......",
-  "posted_by.......",
-  "post_date.......",
-  "publish_date....",
-  "slice_id........",
-  "status_code....."
+    "disc_app........",
+    "disc_count......",
+    "display_count...",
+    "edited_by.......",
+    "expiry_date.....",
+    "flags...........",
+    "highlight.......",
+    "last_edit.......",
+    "posted_by.......",
+    "post_date.......",
+    "publish_date....",
+    "slice_id........",
+    "status_code.....",
 ];
 
 $xslice_id = xpack_id(AA::$module_id);
 
 if ($cancel) {
-    go_url( StateUrl(self_base() . "index.php"));
+    go_url(StateUrl(self_base() . "index.php"));
 }
 
 
@@ -104,22 +107,22 @@ function ChangeFieldID($old_id, $new_id): void
             "primary_type" => "text", // key type (text / number)
             "slice_id"     => "id", // slice_id key
             "fields"       => [     // fields to be changed
-                                    "fulltext_format_top",
-                                    "fulltext_format",
-                                    "fulltext_format_bottom",
-                                    "odd_row_format",
-                                    "even_row_format",
-                                    "compact_top",
-                                    "compact_bottom",
-                                    "category_top",
-                                    "category_format",
-                                    "category_bottom",
-                                    "admin_format_top",
-                                    "admin_format",
-                                    "admin_format_bottom",
-                                    "aditional",
-                                    "javascript"
-            ]
+                "fulltext_format_top",
+                "fulltext_format",
+                "fulltext_format_bottom",
+                "odd_row_format",
+                "even_row_format",
+                "compact_top",
+                "compact_bottom",
+                "category_top",
+                "category_format",
+                "category_bottom",
+                "admin_format_top",
+                "admin_format",
+                "admin_format_bottom",
+                "aditional",
+                "javascript",
+            ],
         ],
         "field" => [
             "primary_part" => "id", // the whole key is (id,slice_id)
@@ -129,8 +132,8 @@ function ChangeFieldID($old_id, $new_id): void
                 "id",
                 "alias1_func",
                 "alias2_func",
-                "alias3_func"
-            ]
+                "alias3_func",
+            ],
         ],
         "view"  => [
             "primary"      => "id",
@@ -158,26 +161,26 @@ function ChangeFieldID($old_id, $new_id): void
                 "group_bottom",
                 "field1",
                 "field2",
-                "field3"
-            ]
-        ]
+                "field3",
+            ],
+        ],
     ]);
 
     $xslice_id = xpack_id(AA::$module_id);
 
     define("MAINTAIN_SQL", [
         "UPDATE feedmap SET to_field_id=':new_id:' WHERE to_field_id=':old_id:' AND to_slice_id = $xslice_id",
-        "UPDATE feedmap SET from_field_id=':new_id:' WHERE from_field_id=':old_id:' AND from_slice_id = $xslice_id"
+        "UPDATE feedmap SET from_field_id=':new_id:' WHERE from_field_id=':old_id:' AND from_slice_id = $xslice_id",
     ]);
 
     $varset = new Cvarset();
-    foreach ( MAINTAIN_FIELDS as $table => $settings) {
+    foreach (MAINTAIN_FIELDS as $table => $settings) {
         $keyfield = $settings['primary'];
         if (!$keyfield) {
             $keyfield = $settings['primary_part'];
         }
-        $SQL = "SELECT `$keyfield`, `". implode("`, `", $settings['fields'])."` FROM `$table`  WHERE ".$settings['slice_id']." = $xslice_id";
-        $rows = GetTable2Array ($SQL);
+        $SQL = "SELECT `$keyfield`, `" . implode("`, `", $settings['fields']) . "` FROM `$table`  WHERE " . $settings['slice_id'] . " = $xslice_id";
+        $rows = GetTable2Array($SQL);
         if (is_array($rows)) {
             foreach ($rows as $row) {
                 $varset->clear();
@@ -189,15 +192,15 @@ function ChangeFieldID($old_id, $new_id): void
                     }
                 }
                 if (!$varset->isEmpty()) {
-                    $SQL = "UPDATE $table SET ".$varset->makeUPDATE();
+                    $SQL = "UPDATE $table SET " . $varset->makeUPDATE();
                     $SQL .= " WHERE $keyfield = ";
                     if ($settings['primary_type'] === "text") {
-                        $SQL .= "'".$row[$keyfield]."'";
+                        $SQL .= "'" . $row[$keyfield] . "'";
                     } else {
                         $SQL .= $row[$keyfield];
                     }
                     if ($settings['primary_part']) {
-                        $SQL .= " AND ". $settings["slice_id"]." = $xslice_id";
+                        $SQL .= " AND " . $settings["slice_id"] . " = $xslice_id";
                     }
                     DB_AA::sql($SQL);
                 }
@@ -225,9 +228,9 @@ if ($update && $new_id_text && AA::$module_id) {
     } elseif (strlen($new_id) !== 16) {
         $err[] = _m("The new ID is not valid");
     } elseif (in_array($new_id, RESERVED_IDS)) {
-        $err[] = _m("This ID is reserved")." ($new_id).";
+        $err[] = _m("This ID is reserved") . " ($new_id).";
     } elseif (DB_AA::test("field", [["slice_id", AA::$module_id, 'l'], ["id", $new_id]])) {    // prove the field does not exist
-        $err[] = _m("This ID is already used")." ($new_id).";
+        $err[] = _m("This ID is already used") . " ($new_id).";
     } else {
         ++$nchanges;
         ChangeFieldID($old_id, $new_id);
@@ -253,24 +256,24 @@ $footcode = '<script>
 </script>';
 
 
-$apage = new AA_Adminpageutil('sliceadmin','field_ids');
+$apage = new AA_Adminpageutil('sliceadmin', 'field_ids');
 $apage->setTitle(_m("Admin - change Field IDs"));
 $apage->addRequire($footcode, 'AA_Req_Footcode');
 
 if ($update) {
-    $Msg = "$nchanges "._m("field IDs were changed").".";
+    $Msg = "$nchanges " . _m("field IDs were changed") . ".";
 }
 
 $apage->printHead($err, $Msg);
 
 FrmTabCaption(_m("Change Field IDs"));
 
-echo"<tr><td>"._m("This page allows to change field IDs. It is a bit dangerous operation and may last long.\n    You need to do it only in special cases, like using search form for multiple slices. <br><br>\n    Choose a field ID to be changed and the new name and number, the dots ..... will be\n    added automatically.<br>")."</td></tr>
-<tr><td><br>"._m("Change from").": <select name='old_id' id='old_id'>";
+echo"<tr><td>" . _m("This page allows to change field IDs. It is a bit dangerous operation and may last long.\n    You need to do it only in special cases, like using search form for multiple slices. <br><br>\n    Choose a field ID to be changed and the new name and number, the dots ..... will be\n    added automatically.<br>") . "</td></tr>
+<tr><td><br>" . _m("Change from") . ": <select name='old_id' id='old_id'>";
 $slice_fields = false;
 foreach (array_keys($s_fields) as $fid) {
     if (!in_array($fid, RESERVED_IDS)) {
-         if ( AA_Fields::isSliceField($fid)) {
+        if (AA_Fields::isSliceField($fid)) {
             $slice_fields = true;
         }
         echo "<option>$fid";
@@ -278,7 +281,7 @@ foreach (array_keys($s_fields) as $fid) {
 }
 echo "</select> ";
 
-echo _m("to")." <select name='new_id_text' id='new_id_text'>";
+echo _m("to") . " <select name='new_id_text' id='new_id_text'>";
 foreach (array_keys($d_fields) as $fid) {
     echo "<option>$fid";
 }
@@ -301,7 +304,7 @@ echo "</select><br><br></td></tr>";
 $form_buttons =  [
     "update" => ["type" => "hidden", "value" => "1"],
     "update",
-    "cancel" => ["url" => "se_fields.php"]
+    "cancel" => ["url" => "se_fields.php"],
 ];
 FrmTabEnd($form_buttons);
 

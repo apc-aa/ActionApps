@@ -1,4 +1,5 @@
 <?php
+
 //$Id$
 /*
 Copyright (C) 1999, 2000 Association for Progressive Communications
@@ -31,32 +32,34 @@ try {
     // array ( 'e294141961f…' => 1, )
     $del = InputVars::idGET('del', true);
     $cancel = InputVars::boolPOST('cancel');
-    
+
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
+} catch (Exception $e) {
+    AA_Adminpageutil::pageParameterError($e);
+}
 
 if ($cancel) {
-    go_url(StateUrl(self_base()."index.php"));
+    go_url(StateUrl(self_base() . "index.php"));
 }
 
 
 if ($del) {
-  if (!IsSuperadmin()) {
-    MsgPage(_m("You don't have permissions to delete a site."));
-    exit;
-  }
+    if (!IsSuperadmin()) {
+        MsgPage(_m("You don't have permissions to delete a site."));
+        exit;
+    }
 } else {
-  MsgPage(_m("Module not found."));
-  exit;
+    MsgPage(_m("Module not found."));
+    exit;
 }
 
 $err = [];      // error array (Init - just for initializing variable
 
 // check if module can be deleted
-ExitIfCantDelete( $del );
+ExitIfCantDelete($del);
 
 // delete module (from common module table)
-DeleteModule( $del );
+DeleteModule($del);
 
 // delete all module specific tables
 DB_AA::sql('DELETE LOW_PRIORITY FROM `site`', [['id', $del, 'l']]);
@@ -66,7 +69,4 @@ DB_AA::sql('DELETE LOW_PRIORITY FROM `site_spot`', [['site_id', $del, 'l']]);
 DelPermObject($del, "slice");  // the word 'slice' is not mistake - do not change
 
 Session::page_close();                                // to save session variables
-go_url(con_url(StateUrl(AA_INSTAL_PATH . "admin/slicedel.php"), "Msg=".rawurlencode(_m("Slice successfully deleted, tables are optimized"))));
-
-
-
+go_url(con_url(StateUrl(AA_INSTAL_PATH . "admin/slicedel.php"), "Msg=" . rawurlencode(_m("Slice successfully deleted, tables are optimized"))));

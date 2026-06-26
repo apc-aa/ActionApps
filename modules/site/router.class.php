@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Provides AA_Router and AA_Router_Seo
  *
@@ -26,7 +27,6 @@ https://www.apc.org/
 */
 
 use AA\Util\Langs;
-
 
 /** AA_Router - base class for all routers
  *  Router is the class, which controls the url in AA site module. It should be
@@ -62,8 +62,8 @@ use AA\Util\Langs;
  *                      specific methods - you can instantiate the AA_Router_Seo
  *                      class directly.
  */
-class AA_Router {
-
+class AA_Router
+{
     protected $apc;
     protected $slices;
     protected $home;
@@ -74,13 +74,14 @@ class AA_Router {
      */
     private static $_instance;
 
-    function __construct($slices=null, $home='') {
+    public function __construct($slices = null, $home = '')
+    {
         $this->slices = is_array($slices) ? $slices : [];
         $this->home   = $home;
     }
 
     /** @return AA_Router */
-    public static function singleton($type, $slices=null, $home='', $web_languages=null): AA_Router
+    public static function singleton($type, $slices = null, $home = '', $web_languages = null): AA_Router
     {
         if (!isset(self::$_instance)) {
             self::$_instance = new $type($slices, $home);
@@ -105,22 +106,34 @@ class AA_Router {
      * @param array $apc_state
      * @return string
      */
-    static function getState($apc_state): string { return '';  }
+    public static function getState($apc_state): string
+    {
+        return '';
+    }
 
-    function go2url($query_string): string
+    public function go2url($query_string): string
     {
         global $apc_state;
         return static::getState(static::newState($apc_state, $query_string));
     }
 
     // should be refined in subclass
-    function xid($param=null, $url=null): string { return ''; }
+    public function xid($param = null, $url = null): string
+    {
+        return '';
+    }
 
     // should be refined in subclass
-    function xuser($param=''): string { return ''; }
+    public function xuser($param = ''): string
+    {
+        return '';
+    }
 
     // should be refined in subclass
-    function parse($url=''): array { return []; }
+    public function parse($url = ''): array
+    {
+        return [];
+    }
 }
 
 
@@ -169,8 +182,8 @@ class AA_Router {
  *    {go:xqs=iid=_#N1_ID___}                   cz/news/about-us?iid=_#N1_ID___  (iid will contain the id of the new item, if this {go} command will be used in ok_url parameter of the form)
  *    {go:xqs=}                                 cz/news/about-us   (and removes all parameters in query string, if any)
  */
-class AA_Router_Seo extends AA_Router {
-
+class AA_Router_Seo extends AA_Router
+{
     /** array of translations xseoX -> id */
     protected $_seocache;
 
@@ -178,7 +191,7 @@ class AA_Router_Seo extends AA_Router {
      * @param $url
      * @return array
      */
-    function parse($url=''): array
+    public function parse($url = ''): array
     {
         global $auth;
 
@@ -209,7 +222,7 @@ class AA_Router_Seo extends AA_Router {
             $this->apc['xuid']  = '';
         }
 
-        if ( $_REQUEST['username'] ) {
+        if ($_REQUEST['username']) {
             // not necessary - we alredy logged in by pageOpen() in site.php
             //$auth->relogin();
             $this->apc['xuser'] = AuthGetUname();
@@ -257,22 +270,22 @@ class AA_Router_Seo extends AA_Router {
     }
 
     /** static function - calling from outside is not necessary, now */
-    public static function parseApc($apc, $home='', $langs= []): array
+    public static function parseApc($apc, $home = '', $langs = []): array
     {
         if (!$home) {
-            $home = '/'. Langs::currentLang();
+            $home = '/' . Langs::currentLang();
         }
         // manage links like example.org/?filter=22
         if (str_starts_with($apc, '/?')) {  // maybe also "#"
-            $apc = $home.$apc;
+            $apc = $home . $apc;
         } elseif ($apc === '/index.php') { // useful for AA behind proxy (HTTP_X_FORWARDED_SERVER) - Apache adds index.php as default path so we have to re
             $apc = $home;
         }
 
-        $parsed_url = parse_url(trim($apc,' \t/') ? $apc : $home);
-        $arr        = explode('/', trim($parsed_url['path'],'/'));
+        $parsed_url = parse_url(trim($apc, ' \t/') ? $apc : $home);
+        $arr        = explode('/', trim($parsed_url['path'], '/'));
         $langs      = array_filter($langs);   // sometimes there is [0] => '' for some reason...
-        $re_lang    = count($langs) ? implode('|',$langs) : '[a-z]{2}';
+        $re_lang    = count($langs) ? implode('|', $langs) : '[a-z]{2}';
 
         $matches    = [];
         $ret        = [];
@@ -280,15 +293,15 @@ class AA_Router_Seo extends AA_Router {
             if (count($langs) && trim($arr[0])) {
                 // if we define web_languages in Site Module setting (so for newer sites), then we can use pages without
                 // the first directory - so instead of /en/users we can use just /users (xlang will be filled form first web_language)
-                array_unshift($arr,$langs[0]);
-                $ret = ['xlang'=>$langs[0],'xpage'=>'','xflag'=>'','xcat'=>'','xnolang'=>1];
+                array_unshift($arr, $langs[0]);
+                $ret = ['xlang' => $langs[0],'xpage' => '','xflag' => '','xcat' => '','xnolang' => 1];
             } else {
                 return [];
                 // newer behavior (not helped on library4all, so commented out)
                 // return array('xlang'=>'','xpage'=>'','xflag'=>'','xcat'=>'','xseo1'=>'','xseo2'=>'','xseo3'=>'','xseo4'=>'','xseo5'=>'','xseo6'=>'','xseo7'=>'','xseo8'=>'','xseo9'=>'');
             }
         } else {
-            $ret = ['xlang' => $matches[1], 'xpage' => $matches[2], 'xflag' => $matches[3], 'xcat' => $matches[4], 'xnolang'=>''];
+            $ret = ['xlang' => $matches[1], 'xpage' => $matches[2], 'xflag' => $matches[3], 'xcat' => $matches[4], 'xnolang' => ''];
 
             // add xseoX from $home if only the {xlang} is provided -- /cz/   -> /cz/home
             // if (count($arr) < 2) {
@@ -312,8 +325,8 @@ class AA_Router_Seo extends AA_Router {
 
         $ret['xajax'] = IsAjaxCall() ? 1 : '';
 
-        for ($i=1, $ino=count($arr); $i<$ino; ++$i) {
-            $ret['xseo'.$i] = $arr[$i];
+        for ($i = 1, $ino = count($arr); $i < $ino; ++$i) {
+            $ret['xseo' . $i] = $arr[$i];
         }
 
         // add querystring
@@ -329,7 +342,8 @@ class AA_Router_Seo extends AA_Router {
      * @param array $apc_state
      * @return string
      */
-    static function getState($apc_state): string {
+    public static function getState($apc_state): string
+    {
         $ret = '/' . $apc_state['xlang'] . $apc_state['xpage'] . $apc_state['xflag'] . ($apc_state['xcat'] ? '-' . $apc_state['xcat'] : '') . '/';
         $i   = 1;
         while (!empty($apc_state['xseo' . $i])) {
@@ -357,7 +371,8 @@ class AA_Router_Seo extends AA_Router {
     /** From the current $apc_state and parsed query-string updates the values in $apc_state and returns
      *  the new current apc string
      */
-    public static function newState($apc_state, $query_string): array {
+    public static function newState($apc_state, $query_string): array
+    {
         $new_arr = [];
         parse_str($query_string, $new_arr);   // now we have $new_arr['x'], $new_arr['p'], etc.
 
@@ -369,21 +384,21 @@ class AA_Router_Seo extends AA_Router {
         // $old_x for current state, $new_x for new state
         $new_x_max = self::_maxKey($new_arr, 'xseo');
 
-        if ( $new_x_max > 0 ) {
+        if ($new_x_max > 0) {
             $old_x_max = self::_maxKey($apc_state, 'xseo');
             $max       = max($new_x_max, $old_x_max);
             $state     = 'COPY';
-            for ( $i=1; $i <= $max; ++$i) {
+            for ($i = 1; $i <= $max; ++$i) {
                 if ($state === 'CLEAR') {
-                    unset($apc_state['xseo'. $i]);
-                } elseif ($new_arr['xseo'. $i]) {
-                    $apc_state['xseo'. $i] = $new_arr['xseo'.$i];
+                    unset($apc_state['xseo' . $i]);
+                } elseif ($new_arr['xseo' . $i]) {
+                    $apc_state['xseo' . $i] = $new_arr['xseo' . $i];
                     $state = 'REDEFINING';
                 } elseif ($state === 'REDEFINING') {
-                    unset($apc_state['xseo'. $i]);
+                    unset($apc_state['xseo' . $i]);
                     $state = 'CLEAR';
-                } elseif (!$apc_state['xseo'. $i]) {
-                    unset($apc_state['xseo'. $i]);
+                } elseif (!$apc_state['xseo' . $i]) {
+                    unset($apc_state['xseo' . $i]);
                     $state = 'CLEAR';
                 } else {// $state = 'COPY';
                     // $apc_state['xseo'. $i] = $apc_state['xseo'. $i];
@@ -395,7 +410,7 @@ class AA_Router_Seo extends AA_Router {
         }
         if (!empty($new_arr['xseoadd'])) {
             $x_max = self::_maxKey($apc_state, 'xseo');
-            $apc_state['xseo'. ($x_max+1)] = $new_arr['xseoadd'];
+            $apc_state['xseo' . ($x_max + 1)] = $new_arr['xseoadd'];
         }
         // xseo changed - reset pager
         if ($new_x_max > 0 || !empty($new_arr['xseoadd'])) {
@@ -417,8 +432,8 @@ class AA_Router_Seo extends AA_Router {
         // {go:xqs_year=2019&xqs_type=enviro}  ==> example.org/...?year=2019&type=enviro&some_other_params_from_old_url
         $xqs_subst = [];
         foreach ($new_arr as $var => $v) {
-            if (str_starts_with($var, 'xqs_') && strlen($var)>4) { // begins with 'xqs_'
-               $xqs_subst[substr($var,4)] = $v;
+            if (str_starts_with($var, 'xqs_') && strlen($var) > 4) { // begins with 'xqs_'
+                $xqs_subst[substr($var, 4)] = $v;
             }
         }
         if ($xqs_subst) {
@@ -428,12 +443,12 @@ class AA_Router_Seo extends AA_Router {
         }
         $x_max = self::_maxKey($apc_state, 'xseo');
         // we clear all unused {xseoX} in order {xseoX} is allaways SEO string or empty string and not something like {xseo4}
-        for ($i=$x_max+1; $i<10; ++$i) {
-            $apc_state['xseo'.$i] = '';
+        for ($i = $x_max + 1; $i < 10; ++$i) {
+            $apc_state['xseo' . $i] = '';
         }
-        $apc_state['xseo']   = ($x_max>0) ? $apc_state['xseo'. $x_max] : '';
-        if (empty($apc_state['xseo']) && $x_max>1) {
-            $apc_state['xseo']   = $apc_state['xseo'. ($x_max-1)];
+        $apc_state['xseo']   = ($x_max > 0) ? $apc_state['xseo' . $x_max] : '';
+        if (empty($apc_state['xseo']) && $x_max > 1) {
+            $apc_state['xseo']   = $apc_state['xseo' . ($x_max - 1)];
         }
 
         // workaround for the static::get_class()
@@ -460,7 +475,7 @@ class AA_Router_Seo extends AA_Router {
      *
      * @return string
      */
-    function xid($param=null, $url=null): string
+    public function xid($param = null, $url = null): string
     {
 
         $apc = empty($url) ? $this->apc : self::parseApc($url, $this->home, $this->web_languages);
@@ -469,22 +484,22 @@ class AA_Router_Seo extends AA_Router {
             // current item id
             return $this->_xseo2id($apc['xseo']);
         }
-        if (ctype_digit((string)$param)) {
+        if (ctype_digit((string) $param)) {
             // item on specified level
-            return $this->_xseo2id($apc['xseo'.$param]);
+            return $this->_xseo2id($apc['xseo' . $param]);
         }
         if ($param === 'path') {
             // tree for breadcrumb - just like 7663(7434(7432))
             $i     = 1;
             $delim = '';
             $path  = '';
-            while (!empty($apc['xseo'.$i])) {
-                $path  .= $delim. $this->_xseo2id($apc['xseo'.$i]);
+            while (!empty($apc['xseo' . $i])) {
+                $path  .= $delim . $this->_xseo2id($apc['xseo' . $i]);
                 $delim  = '(';
                 $i++;
             }
             if ($i > 2) {
-                $path .= str_repeat(')', $i-2);   // close all open brackets
+                $path .= str_repeat(')', $i - 2);   // close all open brackets
             }
             return $path;
         }
@@ -492,14 +507,14 @@ class AA_Router_Seo extends AA_Router {
             // list of ids - just like 7663-7434-7432
             $i     = 1;
             $ids   = [];
-            while (!empty($apc['xseo'.$i])) {
-                $ids[] = $this->_xseo2id($apc['xseo'.$i++]);
+            while (!empty($apc['xseo' . $i])) {
+                $ids[] = $this->_xseo2id($apc['xseo' . $i++]);
             }
             if ($param === 'list') {
-                return implode('-',$ids);
+                return implode('-', $ids);
             }
-            for( $i=count($ids)-1; $i>=0; $i--) {
-                if ( $ids[$i] && is_object($item = AA_Items::getItem($ids[$i])) && $item->getSliceID()==$param ) {
+            for ($i = count($ids) - 1; $i >= 0; $i--) {
+                if ($ids[$i] && is_object($item = AA_Items::getItem($ids[$i])) && $item->getSliceID() == $param) {
                     return $ids[$i];
                 }
             }
@@ -523,22 +538,23 @@ class AA_Router_Seo extends AA_Router {
     //     return array_map('unpack_id', DB_AA::select('slice_id', 'SELECT slice_id FROM field', array(array('slice_id', $this->slices, 'l'), array('id', 'seo.............'))));
     // }
 
-    function _xseo2id($seo_string) {
+    public function _xseo2id($seo_string)
+    {
         // Q: Is the cache needed, when AA_Stringexpand_Seo2ids is already cached? Honza 2015-07-16
         // A: Yes - based on measures it seams to be much quicker. Honza 2015-07-16
         if (!isset($this->_seocache[$seo_string])) {
-            $this->_seocache[$seo_string] = substr(StrExp('seo2ids', [implode('-',$this->slices), $seo_string]),0,32);
+            $this->_seocache[$seo_string] = substr(StrExp('seo2ids', [implode('-', $this->slices), $seo_string]), 0, 32);
         }
         return $this->_seocache[$seo_string];
     }
 
-    static function _maxKey($arr, $prefix): int
+    public static function _maxKey($arr, $prefix): int
     {
         $max = 0;
-        foreach($arr as $key => $val) {
+        foreach ($arr as $key => $val) {
             $prefix_len = strlen($prefix);
-            if ( !empty($val) && strpos($key, $prefix) === 0) {
-                $max = (int)max((int)substr($key,$prefix_len), $max);
+            if (!empty($val) && strpos($key, $prefix) === 0) {
+                $max = (int) max((int) substr($key, $prefix_len), $max);
             }
         }
         return $max;
@@ -561,21 +577,22 @@ class AA_Router_Seo extends AA_Router {
  *  @param string $url   if filled, returns the information about the specified
  *                       url instead of the current item
  */
-class AA_Stringexpand_Xid extends AA_Stringexpand_Nevercache {
+class AA_Stringexpand_Xid extends AA_Stringexpand_Nevercache
+{
     // Never cached (extends AA_Stringexpand_Nevercache)
     // Cached inside the router itself
     /** expand function */
-    function expand($param='', $url=''): string
+    public function expand($param = '', $url = ''): string
     {
         $router_class = $GLOBALS['apc_state']['router'];
         if (empty($router_class)) {
             return MsgErr('Err in {xid} - router not found - {xid} is designed for site modules');
         }
         $router = AA_Router::singleton($router_class);
-        if (empty($param) || ctype_digit((string)$param) || $param==='path' || $param==='list' || is_long_id($param)) {
+        if (empty($param) || ctype_digit((string) $param) || $param === 'path' || $param === 'list' || is_long_id($param)) {
             return $router->xid($param, $url);
         }
-        return AA::Un('{item:'.$router->xid().':'.$param.'}');
+        return AA::Un('{item:' . $router->xid() . ':' . $param . '}');
     }
 }
 
@@ -586,12 +603,12 @@ class AA_Stringexpand_Xid extends AA_Stringexpand_Nevercache {
  *  {xseo:3}   - returns {xseo1} - third directory level in url
  *  @param string $level specifies which information you want to get (see above)
  */
-class AA_Stringexpand_Xseo extends AA_Stringexpand_Nevercache {
+class AA_Stringexpand_Xseo extends AA_Stringexpand_Nevercache
+{
     // Never cached (extends AA_Stringexpand_Nevercache)
     /** expand function */
-    function expand($level=''): string
+    public function expand($level = ''): string
     {
-        return $GLOBALS['apc_state']['xseo'.(ctype_digit((string)$level) ? $level : '' )] ?? '';
+        return $GLOBALS['apc_state']['xseo' . (ctype_digit((string) $level) ? $level : '')] ?? '';
     }
 }
-

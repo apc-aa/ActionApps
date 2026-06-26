@@ -1,4 +1,5 @@
 <?php
+
 /** Gets the content from the cache based on keystr
  *  This file is useful for storin external javascript files (used for client
  *  side speedup, because it is cached on client side
@@ -30,7 +31,7 @@ https://www.apc.org/
 */
 
 /** APC-AA configuration file */
-require_once __DIR__."/./include/config.php";
+require_once __DIR__ . "/./include/config.php";
 // Fast asset-serving path — no cron-fallback work here.
 define('AA_NO_CRON_FALLBACK_THIS_REQUEST', true);
 /** Main include file for using session management function on page */
@@ -39,16 +40,16 @@ require_once __DIR__ . "/include/locsess.php";
 require_once __DIR__ . "/include/util.php";
 
 // headers copied from include/extsess.php file
-$allowcache_expire = 24*3600; // 1 day
+$allowcache_expire = 24 * 3600; // 1 day
 $exp_gmt           = gmdate("D, d M Y H:i:s", time() + $allowcache_expire) . " GMT";
 $mod_gmt           = gmdate("D, d M Y H:i:s", getlastmod()) . " GMT";
 // send headers for cache
-header('Expires: '       . $exp_gmt);
+header('Expires: ' . $exp_gmt);
 header('Last-Modified: ' . $mod_gmt);
 header('Cache-Control: public');
 header('Cache-Control: max-age=' . $allowcache_expire);
 header('Content-Type: application/javascript');
-if(!$keystr) {
+if (!$keystr) {
     $keystr = $_REQUEST['keystr'];
 }
 echo AA::Pagecache()->getById($keystr);

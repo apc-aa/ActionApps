@@ -65,7 +65,8 @@ https://www.apc.org/
 
 // new_state() function
 //   - exactly the same as we use in standard site control file
-function new_state(&$new_state, $x, $p, $d, $t, $scrl) {
+function new_state(&$new_state, $x, $p, $d, $t, $scrl)
+{
     if (isset($t)) {
         $new_state['t'] = $t;
     }
@@ -98,14 +99,16 @@ function new_state(&$new_state, $x, $p, $d, $t, $scrl) {
  */
 function ApcStr2Arr($varnames, $str, $strdef, $reg): array
 {
-    if (!$str) { $str = $strdef; }
+    if (!$str) {
+        $str = $strdef;
+    }
     $varout = [];
-    $reg    = '`'.str_replace('`','\`',$reg).'`';
+    $reg    = '`' . str_replace('`', '\`', $reg) . '`';
     if (!(preg_match($reg, $str, $vars)) && !(preg_match($reg, $strdef, $vars))) {
         print("Error initial string $strdef doesn't match regexp $reg\n<br>");
     }
-    for ($i=0, $ino = min(strlen($varnames),count($vars)-1); $i < $ino; ++$i) {
-        $varout[substr($varnames,$i,1)] = $vars[$i+1];
+    for ($i = 0, $ino = min(strlen($varnames), count($vars) - 1); $i < $ino; ++$i) {
+        $varout[substr($varnames, $i, 1)] = $vars[$i + 1];
     }
     return $varout;
 }
@@ -117,8 +120,8 @@ function ApcStr2Arr($varnames, $str, $strdef, $reg): array
 function ApcArr2Str($varnames, $arr): string
 {
     $strout = "";
-    for ($i=0, $ino = strlen($varnames); $i < $ino; ++$i) {
-        $strout .= $arr[substr($varnames,$i,1)];
+    for ($i = 0, $ino = strlen($varnames); $i < $ino; ++$i) {
+        $strout .= $arr[substr($varnames, $i, 1)];
     }
     return $strout;
 }
@@ -160,12 +163,11 @@ $slices4cache = [
 ];
 
 $url  =  'https://example.org/apc-aa/modules/site/site.php3?';
-$url .= http_build_query( [
+$url .= http_build_query([
     'apc_state'    => $apc_state,
-                                 'slices4cache' => $slices4cache,
-                                 'site_id'      => '9d87891f6eff3f7406cf55f66e1e16da'
+    'slices4cache' => $slices4cache,
+    'site_id'      => '9d87891f6eff3f7406cf55f66e1e16da',
 ]);
 
 readfile($url);
 exit;
-

@@ -1,4 +1,5 @@
 <?php
+
 //$Id$
 /*
 Copyright (C) 1999, 2000 Association for Progressive Communications
@@ -32,7 +33,9 @@ require_once __DIR__ . "/../../include/formutil.php";
 
 try {
     $cancel = InputVars::boolPOST('cancel');
-} catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
+} catch (Exception $e) {
+    AA_Adminpageutil::pageParameterError($e);
+}
 
 // id of the editted module
 $module_id   = AA::$module_id;        // id in long form (32-digit hexadecimal number)
@@ -41,15 +44,15 @@ $module_id   = AA::$module_id;        // id in long form (32-digit hexadecimal n
 // You should change PS_MODW_EDIT_CODE permission to match the permission in your
 // module. See /include/perm_core.php for more details
 
-if ( !($module = AA_Module_XX::getModule($module_id)) ) {
+if (!($module = AA_Module_XX::getModule($module_id))) {
     MsgErr(_m("Module XX not found"));
     Session::page_close();
     exit;
 }
 
-if ( !IfSlPerm(PS_MODX_EDIT_CODE) ) {
-  MsgPage(_m("You do not have permission to edit items in this module"));
-  exit;
+if (!IfSlPerm(PS_MODX_EDIT_CODE)) {
+    MsgPage(_m("You do not have permission to edit items in this module"));
+    exit;
 }
 
 
@@ -59,7 +62,7 @@ if ( !IfSlPerm(PS_MODX_EDIT_CODE) ) {
 
 
 $apage = new AA_Adminpageutil('modadmin', 'xxmanager');
-$apage->setTitle( _m("Editor window - xx manager") );
+$apage->setTitle(_m("Editor window - xx manager"));
 
 // possible other imports
 // $apage->addRequire('aa-jslib');   // {htmltoggle in helpbox}

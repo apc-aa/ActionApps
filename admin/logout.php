@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Logout
  *  safely destroys current session information from database
@@ -34,7 +35,6 @@ $sess->delete();
 // go to url - we can't use go_url() function since it call Session::page_close().
 // We can't call it, because then the deleted session is stored again!
 header("HTTP/1.1 Status: 302 Moved Temporarily");
-header("Location: ". get_admin_url('index.php', '', false));
+header("Location: " . get_admin_url('index.php', '', false));
 
 //Session::page_close();  NO!!!
-

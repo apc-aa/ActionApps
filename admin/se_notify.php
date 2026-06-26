@@ -1,4 +1,5 @@
 <?php
+
 /**  ////////////////////////////////////////////////////////////////////
  *
  *   ////////////////////////////////////////////////////////////////////
@@ -81,9 +82,11 @@ try {
     // array ( 1 => 5, )
     $update = InputVars::boolPOST('update');
     $cancel = InputVars::boolPOST('cancel');
-    
+
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
+} catch (Exception $e) {
+    AA_Adminpageutil::pageParameterError($e);
+}
 
 /** save_notify2db function
  * @param $slice_id
@@ -98,7 +101,7 @@ function save_notify2db($slice_id, $function, $emails): void
     $arr = explode("\n", $emails);
     foreach ($arr as $uid) {
         $uid = trim($uid);
-        if ( AA_Validate::doValidate($uid, 'email')) {
+        if (AA_Validate::doValidate($uid, 'email')) {
             $SQL = "INSERT INTO email_notify (uid, slice_id, function) VALUES ( '$uid', $p_slice_id, $function)";
             $db->query($SQL);
         }
@@ -107,11 +110,11 @@ function save_notify2db($slice_id, $function, $emails): void
 
 // sanity checks
 
-if ($cancel){
-    go_url( StateUrl(self_base() . "index.php"));
+if ($cancel) {
+    go_url(StateUrl(self_base() . "index.php"));
 }
 
-if (! AA::$module_id){
+if (! AA::$module_id) {
     MsgPage("error on se_notify.php");
     exit;
 }
@@ -132,49 +135,49 @@ $superadmin  = IsSuperadmin();
 //  II) if in 'update mode', do the update to the database
 ////////////////////////////////////////////////////////////////////
 
-if ( $update ) {
+if ($update) {
 
-  //validate input
-  //  ValidateInput("name", _m("Title"), $name, $err, true, "text");
+    //validate input
+    //  ValidateInput("name", _m("Title"), $name, $err, true, "text");
 
-  // check to make sure we passed our validation cleanly
-    if ( count($err)) {
+    // check to make sure we passed our validation cleanly
+    if (count($err)) {
         exit;
     }
 
-  // if we passed our validation, change the slice records
-    $up  = "notify_holding_item_s = '" .     $notify_holding_item_s . "',\n ";
-    $up .= "notify_holding_item_b = '" .     $notify_holding_item_b . "',\n";
-    $up .= "notify_holding_item_edit_s = '". $notify_holding_item_edit_s . "',\n";
-    $up .= "notify_holding_item_edit_b = '". $notify_holding_item_edit_b . "',\n";
-    $up .= "notify_active_item_s = '" .      $notify_active_item_s . "',\n";
-    $up .= "notify_active_item_b = '" .      $notify_active_item_b . "',\n";
+    // if we passed our validation, change the slice records
+    $up  = "notify_holding_item_s = '" . $notify_holding_item_s . "',\n ";
+    $up .= "notify_holding_item_b = '" . $notify_holding_item_b . "',\n";
+    $up .= "notify_holding_item_edit_s = '" . $notify_holding_item_edit_s . "',\n";
+    $up .= "notify_holding_item_edit_b = '" . $notify_holding_item_edit_b . "',\n";
+    $up .= "notify_active_item_s = '" . $notify_active_item_s . "',\n";
+    $up .= "notify_active_item_b = '" . $notify_active_item_b . "',\n";
     $up .= "notify_active_item_edit_s = '" . $notify_active_item_edit_s . "',\n";
-    $up .= "notify_active_item_edit_b = '" . $notify_active_item_edit_b ."' ";
+    $up .= "notify_active_item_edit_b = '" . $notify_active_item_edit_b . "' ";
 
     $SQL    = "UPDATE slice set $up WHERE id = '$p_slice_id'";
     $db->query($SQL);
 
-  // in email_notify
+    // in email_notify
 
-  // delete all the records in email_notify relating to this slice
-  // keep a backup until our transaction has gone through.
-  //   ideally we would have transaction that would roll back, but mysql
-  //   does not have these transactions
+    // delete all the records in email_notify relating to this slice
+    // keep a backup until our transaction has gone through.
+    //   ideally we would have transaction that would roll back, but mysql
+    //   does not have these transactions
     $SQL    = "delete from email_notify where slice_id = 'not_transition'";
     $db->query($SQL);
 
     $SQL    = "update email_notify SET slice_id = 'not_transition' WHERE slice_id='$p_slice_id'";
     $db->query($SQL);
 
-  // insert all the records into email_notify
+    // insert all the records into email_notify
 
     save_notify2db(AA::$module_id, 1, $notify_holding_item_e);
     save_notify2db(AA::$module_id, 2, $notify_holding_item_edit_e);
     save_notify2db(AA::$module_id, 3, $notify_active_item_e);
     save_notify2db(AA::$module_id, 4, $notify_active_item_edit_e);
 
-  // delete the backed-up users
+    // delete the backed-up users
     $SQL    = "DELETE FROM email_notify WHERE slice_id='not_transition'";
     $db->query($SQL);
 
@@ -186,28 +189,32 @@ if ( $update ) {
 
 // grab variables from the table slice
 
-$SQL= "
+$SQL = "
 SELECT notify_holding_item_s,      notify_holding_item_b,
        notify_holding_item_edit_s, notify_holding_item_edit_b,
        notify_active_item_s,       notify_active_item_b,
        notify_active_item_edit_s,  notify_active_item_edit_b
- FROM slice WHERE id=".xpack_id(AA::$module_id);
+ FROM slice WHERE id=" . xpack_id(AA::$module_id);
 $db->query($SQL);
 if ($db->next_record()) {
     RestoreVariables($db->record());
 }
 
 // grab variables from email_notify
-$SQL                       = "SELECT uid, function FROM email_notify WHERE slice_id=".xpack_id(AA::$module_id);
+$SQL                       = "SELECT uid, function FROM email_notify WHERE slice_id=" . xpack_id(AA::$module_id);
 $notify_active_item_edit_e = $notify_active_item_e = $notify_holding_item_edit_e = $notify_holding_item_e = '';
 
 $db->query($SQL);
 while ($db->next_record()) {
     switch ($db->record('function')) {
-        case 1: $notify_holding_item_e      .= $db->record('uid') . "\n"; break;
-        case 2: $notify_holding_item_edit_e .= $db->record('uid') . "\n"; break;
-        case 3: $notify_active_item_e       .= $db->record('uid') . "\n"; break;
-        case 4: $notify_active_item_edit_e  .= $db->record('uid') . "\n"; break;
+        case 1: $notify_holding_item_e      .= $db->record('uid') . "\n";
+            break;
+        case 2: $notify_holding_item_edit_e .= $db->record('uid') . "\n";
+            break;
+        case 3: $notify_active_item_e       .= $db->record('uid') . "\n";
+            break;
+        case 4: $notify_active_item_edit_e  .= $db->record('uid') . "\n";
+            break;
     }
 }
 
@@ -223,7 +230,7 @@ $script2run = '
    window.cm_a4 = CodeMirror.fromTextArea(document.getElementById("notify_active_item_edit_b"), opts);
    ';
 
-$apage = new AA_Adminpageutil('sliceadmin','notify');
+$apage = new AA_Adminpageutil('sliceadmin', 'notify');
 $apage->setTitle(_m("Email Notifications of Events"));
 $apage->addRequire('codemirror@5');
 $apage->addRequire($script2run, 'AA_Req_Load');
@@ -231,35 +238,35 @@ $apage->printHead($err, $Msg);
 
 
 $form_buttons = [
-    "update" => ["type"=>"hidden", "value"=>"1"],
-                      "update",
-                      "cancel" => ["url"=>"se_fields.php"]
+    "update" => ["type" => "hidden", "value" => "1"],
+    "update",
+    "cancel" => ["url" => "se_fields.php"],
 ];
 
-    FrmTabCaption(_m("Email Notifications of Events"), $form_buttons);
+FrmTabCaption(_m("Email Notifications of Events"), $form_buttons);
 
 $help = _m('E-mail is sent only if body is not empty.<br>You can use this for selective e-mails. For example: {ifset:{category........}:e-mail text}');
 
-echo "<tr><td colspan=\"2\">". _m("<h4>New Item in Holding Bin</h4> People can be notified by email when an item is created and put into the Holding Bin.  If you want to make use of this feature, enter the recipients email address below.  In the following fields, you can customize the format of the email they will receive.") . "</td></tr>";
-  FrmTextarea("notify_holding_item_e", _m("Email addresses, one per line"), $notify_holding_item_e, 3);
-  FrmTextarea("notify_holding_item_s", _m("Subject of the Email message"), $notify_holding_item_s, 2);
-  FrmTextarea("notify_holding_item_b", _m("Body of the Email message"), $notify_holding_item_b, 6, 60, false, $help);
+echo "<tr><td colspan=\"2\">" . _m("<h4>New Item in Holding Bin</h4> People can be notified by email when an item is created and put into the Holding Bin.  If you want to make use of this feature, enter the recipients email address below.  In the following fields, you can customize the format of the email they will receive.") . "</td></tr>";
+FrmTextarea("notify_holding_item_e", _m("Email addresses, one per line"), $notify_holding_item_e, 3);
+FrmTextarea("notify_holding_item_s", _m("Subject of the Email message"), $notify_holding_item_s, 2);
+FrmTextarea("notify_holding_item_b", _m("Body of the Email message"), $notify_holding_item_b, 6, 60, false, $help);
 
-echo "<tr><td colspan=\"2\">". _m("<h4>Item Changed in Holding Bin</h4>  People can be notified by email when an item in the Holding Bin is modified.  If you want to make use of this feature, enter the recipients email address below.  In the following fields, you can customize the format of the email they will receive.") . "</td></tr>";
-  FrmTextarea("notify_holding_item_edit_e", _m("Email addresses, one per line"), $notify_holding_item_edit_e, 3);
-  FrmTextarea("notify_holding_item_edit_s", _m("Subject of the Email message"), $notify_holding_item_edit_s, 2);
-  FrmTextarea("notify_holding_item_edit_b", _m("Body of the Email message"), $notify_holding_item_edit_b, 6, 60, false, $help);
+echo "<tr><td colspan=\"2\">" . _m("<h4>Item Changed in Holding Bin</h4>  People can be notified by email when an item in the Holding Bin is modified.  If you want to make use of this feature, enter the recipients email address below.  In the following fields, you can customize the format of the email they will receive.") . "</td></tr>";
+FrmTextarea("notify_holding_item_edit_e", _m("Email addresses, one per line"), $notify_holding_item_edit_e, 3);
+FrmTextarea("notify_holding_item_edit_s", _m("Subject of the Email message"), $notify_holding_item_edit_s, 2);
+FrmTextarea("notify_holding_item_edit_b", _m("Body of the Email message"), $notify_holding_item_edit_b, 6, 60, false, $help);
 
-echo "<tr><td colspan=\"2\">". _m("<h4>New Item in Approved Bin</h4>  People can be notified by email when an item is created and put into the Approved Bin.  If you want to make use of this feature, enter the recipients email address below.  In the following fields, you can customize the format of the email they will receive.") . "</td></tr>";
-  FrmTextarea("notify_active_item_e", _m("Email addresses, one per line"), $notify_active_item_e, 3);
-  FrmTextarea("notify_active_item_s", _m("Subject of the Email message"), $notify_active_item_s, 2);
-  FrmTextarea("notify_active_item_b", _m("Body of the Email message"), $notify_active_item_b, 6, 60, false, $help);
+echo "<tr><td colspan=\"2\">" . _m("<h4>New Item in Approved Bin</h4>  People can be notified by email when an item is created and put into the Approved Bin.  If you want to make use of this feature, enter the recipients email address below.  In the following fields, you can customize the format of the email they will receive.") . "</td></tr>";
+FrmTextarea("notify_active_item_e", _m("Email addresses, one per line"), $notify_active_item_e, 3);
+FrmTextarea("notify_active_item_s", _m("Subject of the Email message"), $notify_active_item_s, 2);
+FrmTextarea("notify_active_item_b", _m("Body of the Email message"), $notify_active_item_b, 6, 60, false, $help);
 
-echo "<tr><td colspan=\"2\">". _m("<h4>Item Changed in Approved Bin</h4>  People can be notified by email when an item in the Approved Bin is modified.  If you want to make use of this feature, enter the recipients email address below.  In the following fields, you can customize the format of the email they will receive.") . "</td></tr>";
-  FrmTextarea("notify_active_item_edit_e", _m("Email addresses, one per line"), $notify_active_item_edit_e, 3);
-  FrmTextarea("notify_active_item_edit_s", _m("Subject of the Email message"), $notify_active_item_edit_s, 2);
-  FrmTextarea("notify_active_item_edit_b", _m("Body of the Email message"), $notify_active_item_edit_b, 6, 60, false, $help);
+echo "<tr><td colspan=\"2\">" . _m("<h4>Item Changed in Approved Bin</h4>  People can be notified by email when an item in the Approved Bin is modified.  If you want to make use of this feature, enter the recipients email address below.  In the following fields, you can customize the format of the email they will receive.") . "</td></tr>";
+FrmTextarea("notify_active_item_edit_e", _m("Email addresses, one per line"), $notify_active_item_edit_e, 3);
+FrmTextarea("notify_active_item_edit_s", _m("Subject of the Email message"), $notify_active_item_edit_s, 2);
+FrmTextarea("notify_active_item_edit_b", _m("Body of the Email message"), $notify_active_item_edit_b, 6, 60, false, $help);
 
-  FrmTabEnd($form_buttons);
+FrmTabEnd($form_buttons);
 
 $apage->printFoot();

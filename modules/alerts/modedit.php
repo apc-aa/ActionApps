@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Alerts admin: Settings.
  *
@@ -66,7 +67,9 @@ try {
     $cancel          = InputVars::boolPOST('cancel');
 
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
+} catch (Exception $e) {
+    AA_Adminpageutil::pageParameterError($e);
+}
 
 if ($cancel) {
     go_url(StateUrl(self_base() . "index.php"));
@@ -110,15 +113,17 @@ if ($insert || $update) {
 
         // alerts_collection satellite (1:1 by module_id)
         if ($update && DB_AA::test('alerts_collection', [['module_id', $module_id, 'l']])) {
-            DB_AA::update('alerts_collection',
+            DB_AA::update(
+                'alerts_collection',
                 [['emailid_welcome', $emailid_welcome, 'i'], ['emailid_alert', $emailid_alert, 'i']],
-                [['module_id', $module_id, 'l']]);
+                [['module_id', $module_id, 'l']],
+            );
         } else {
             $cv = new CVarset();
-            $cv->set('id',              new_collection_id(), 'text');
-            $cv->set('module_id',       $module_id,          'unpacked');
-            $cv->set('emailid_welcome', $emailid_welcome,    'number');
-            $cv->set('emailid_alert',   $emailid_alert,      'number');
+            $cv->set('id', new_collection_id(), 'text');
+            $cv->set('module_id', $module_id, 'unpacked');
+            $cv->set('emailid_welcome', $emailid_welcome, 'number');
+            $cv->set('emailid_alert', $emailid_alert, 'number');
             $cv->doInsert('alerts_collection');
         }
 

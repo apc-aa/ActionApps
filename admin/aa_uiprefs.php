@@ -1,4 +1,5 @@
 <?php
+
 /**  aa_uiprefs.php - persist per-user admin UI preferences (theme, language)
  *     and relay user feedback to ERROR_REPORTING_EMAIL.
  *
@@ -71,10 +72,12 @@ switch ($aa_action) {
         }
         go_url(StateUrl($safe_ret));   // no-JS fallback: reload with the saved theme
 
+        // no break
     case 'update_lang':
         UiPrefs::saveLang(AuthGetUid(), $ui_lang);
         go_url(StateUrl($safe_ret));   // page reloads -> init_page re-resolves the language
 
+        // no break
     case 'send_feedback':
         $feedback = trim($aa_feedback);
         if ($feedback === '') {
@@ -115,6 +118,7 @@ switch ($aa_action) {
         }
         AA_Adminpageutil::MsgPageMenu(safe(StateUrl($safe_ret)), MsgErr(_m("Couldn't send right now. Please email us directly: %1", [ERROR_REPORTING_EMAIL])), "admin");
 
+        // no break
     default:
         go_url(StateUrl($safe_ret));
 }

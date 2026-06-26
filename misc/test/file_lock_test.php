@@ -1,4 +1,5 @@
 <?php
+
 // Manual concurrency smoke test: open this file two or more times in a
 // browser and look at output.txt — writes must not interleave.
 
@@ -8,7 +9,7 @@ $lock = new \AA\Util\FileLock("file_lock");
 for ($i = 1; $i < 1000; $i++) {
     $lock->Lock();
     $fd = fopen("output.txt", 'ab');
-    fwrite($fd, $i."\n");
+    fwrite($fd, $i . "\n");
     fclose($fd);
     $lock->Unlock();
     // small busy pause to encourage interleaving on contended runs

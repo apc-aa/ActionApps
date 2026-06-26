@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  Mailman create list: Used only for Reader Management Slices using the
  *  mailman feature. Adds a constant to the constant group with mail list names
@@ -56,18 +57,20 @@ try {
     $cancel = InputVars::boolPOST('cancel');
 
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
+} catch (Exception $e) {
+    AA_Adminpageutil::pageParameterError($e);
+}
 
 if ($cancel) {
-  go_url( StateUrl(self_base() . "index.php"));
+    go_url(StateUrl(self_base() . "index.php"));
 }
 
 if (!IfSlPerm(PS_FIELDS)) {
-  AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php", _m("You do not have permissions to change fields settings"), "admin");
-  exit;
+    AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php", _m("You do not have permissions to change fields settings"), "admin");
+    exit;
 }
 
-$apage = new AA_Adminpageutil('sliceadmin','mailman_create_list');
+$apage = new AA_Adminpageutil('sliceadmin', 'mailman_create_list');
 $apage->setTitle(_m("Admin - Create Mailman List"));
 $apage->printHead($err, $Msg);
 
@@ -80,7 +83,7 @@ if (! $slice->getProperty("mailman_field_lists")) {
 }
 
 $db = getDB();
-$db->query("SELECT field.input_show_func, field.name FROM field WHERE slice_id=".xpack_id(AA::$module_id)." AND id='" .$slice->getProperty("mailman_field_lists")."'");
+$db->query("SELECT field.input_show_func, field.name FROM field WHERE slice_id=" . xpack_id(AA::$module_id) . " AND id='" . $slice->getProperty("mailman_field_lists") . "'");
 $db->next_record();
 $field_name = $db->f("name");
 [,$groupid] = explode(":", $db->f("input_show_func"));
@@ -97,16 +100,16 @@ function add_mailman_list($admin_email, $list_name, $admin_password, $groupid): 
 {
 
     $db = getDB();
-    $db->query("SELECT * FROM constant WHERE group_id='".addslashes($groupid)."' AND name='".$list_name."'");
+    $db->query("SELECT * FROM constant WHERE group_id='" . addslashes($groupid) . "' AND name='" . $list_name . "'");
     if ($db->next_record()) {
         echo _m("Error: This list name is already used.");
         freeDB($db);
         return;
     }
-    $db->query("SELECT MAX(pri) AS max_pri FROM constant WHERE group_id='".addslashes($groupid)."'");
+    $db->query("SELECT MAX(pri) AS max_pri FROM constant WHERE group_id='" . addslashes($groupid) . "'");
     $db->next_record();
     $pri = $db->f("max_pri") + 100;
-    if (! $db->query("INSERT INTO constant (id, group_id, name, value, pri) VALUES (".xpack_id(new_id()).", '".addslashes($groupid)."', '$list_name', '$list_name', $pri)")) {
+    if (! $db->query("INSERT INTO constant (id, group_id, name, value, pri) VALUES (" . xpack_id(new_id()) . ", '" . addslashes($groupid) . "', '$list_name', '$list_name', $pri)")) {
         echo "Internal Error with DB.";
         freeDB($db);
         return;
@@ -115,13 +118,13 @@ function add_mailman_list($admin_email, $list_name, $admin_password, $groupid): 
 
     global $MAILMAN_SYNCHRO_DIR;
     endslash($MAILMAN_SYNCHRO_DIR);
-    $filelock = new \AA\Util\FileLock($MAILMAN_SYNCHRO_DIR.".mailman_lock");
+    $filelock = new \AA\Util\FileLock($MAILMAN_SYNCHRO_DIR . ".mailman_lock");
     if (! $filelock->Lock()) {
         echo "Internal Error when creating lock file.";
         return;
     }
 
-    if (! ($fd = fopen($MAILMAN_SYNCHRO_DIR.".mailman", 'ab'))) {
+    if (! ($fd = fopen($MAILMAN_SYNCHRO_DIR . ".mailman", 'ab'))) {
         echo "Internal Error when creating request file.";
         return;
     }
@@ -143,29 +146,30 @@ if (! $admin_email) {
  * @param string $s
  * @return string - $s in <b> and spaces are replaced by "&nbsp;"
  */
-function caption($s): string {
-    return str_replace (" ","&nbsp;",$s).'&nbsp;<span class="aa-required">*</span>';
+function caption($s): string
+{
+    return str_replace(" ", "&nbsp;", $s) . '&nbsp;<span class="aa-required">*</span>';
 }
 
 echo '
-<form name="mailman_create_list" method="post" action="'.StateUrl().'"
+<form name="mailman_create_list" method="post" action="' . StateUrl() . '"
     onsubmit="return this.list_name.value != \'\' && this.admin_email.value != \'\'
     && this.admin_password.value != \'\'">
-<input type="hidden" name="slice_id" value="'.AA::$module_id.'">
+<input type="hidden" name="slice_id" value="' . AA::$module_id . '">
 <table width="440">
-<tr class="aa-tbl-header"><th colspan="2">'._m("List Settings").'</th></tr>
-<tr><td colspan="2">'._m("The list will be added to mailman and also
-    to the constant group for the field %1 selected as Mailman Lists Field in Slice Settings.", [$field_name]).'<br><br>'
-._m("All the fields are required.").'</td></tr>
-<tr><th>'.caption(_m("List name")).'</th>
-<td><input type="text" name="list_name" size="20" value="'.$list_name.'"></td></tr>
-<tr><th>'.caption(_m("Admin email")).'</th>
-<td><input type="text" name="admin_email" value="'.str_replace('"','&quot;',$admin_email).'" size="50"></td></tr>
-<tr><th>'.caption(_m("Admin password")).'</th>
+<tr class="aa-tbl-header"><th colspan="2">' . _m("List Settings") . '</th></tr>
+<tr><td colspan="2">' . _m("The list will be added to mailman and also
+    to the constant group for the field %1 selected as Mailman Lists Field in Slice Settings.", [$field_name]) . '<br><br>'
+. _m("All the fields are required.") . '</td></tr>
+<tr><th>' . caption(_m("List name")) . '</th>
+<td><input type="text" name="list_name" size="20" value="' . $list_name . '"></td></tr>
+<tr><th>' . caption(_m("Admin email")) . '</th>
+<td><input type="text" name="admin_email" value="' . str_replace('"', '&quot;', $admin_email) . '" size="50"></td></tr>
+<tr><th>' . caption(_m("Admin password")) . '</th>
 <td><input type="password" name="admin_password" size="20"></td></tr>';
 echo '
 <tr><td colspan="2">
-    <input type="submit" name="create_list" value="'._m("Create").'">&nbsp;&nbsp;
+    <input type="submit" name="create_list" value="' . _m("Create") . '">&nbsp;&nbsp;
 </td></tr></table>
 ';
 

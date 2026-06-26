@@ -212,7 +212,7 @@ function expand_group(string $base, array $entries): array
                 exit(2);
             }
             $it = new RecursiveIteratorIterator(
-                new RecursiveDirectoryIterator("$base/$entry", FilesystemIterator::SKIP_DOTS)
+                new RecursiveDirectoryIterator("$base/$entry", FilesystemIterator::SKIP_DOTS),
             );
             foreach ($it as $f) {
                 if ($f->isFile() && $f->getExtension() === 'php') {
@@ -249,7 +249,7 @@ foreach ($LANG_GROUPS as $group => $entries) {
 $uncovered = [];
 $repo_it = new RecursiveIteratorIterator(
     new RecursiveDirectoryIterator($AA_BASE, FilesystemIterator::SKIP_DOTS),
-    RecursiveIteratorIterator::LEAVES_ONLY
+    RecursiveIteratorIterator::LEAVES_ONLY,
 );
 foreach ($repo_it as $f) {
     if (!$f->isFile() || $f->getExtension() !== 'php') {

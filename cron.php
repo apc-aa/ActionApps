@@ -1,4 +1,5 @@
 <?php
+
 /**
  * PHP cron: reads items from database and runs them. The item format is UNIX-cron-like.
  *
@@ -48,7 +49,7 @@ use AA\IO\DB\DB_AA;
 // Real cron entry — suppress the post-response fallback in locsess.php.
 define('AA_NO_CRON_FALLBACK_THIS_REQUEST', true);
 
-require_once __DIR__."/./include/config.php";
+require_once __DIR__ . "/./include/config.php";
 /** Main include file for using session management function on page */
 require_once __DIR__ . "/include/locsess.php";
 /** At least for MoreTimeLimit() */
@@ -74,8 +75,8 @@ function cron($time = 0): void
         echo "DEBUGGING. I don't run any script!<br>";
     }
 
-    $translate["mon"] = ["jan"=>1,"feb"=>2,"mar"=>3,"apr"=>4,"may"=>5,"jun"=>6,"jul"=>7,"aug"=>8,"sep"=>9,"oct"=>10,"nov"=>11,"dec"=>12];
-    $translate["wday"] = ["sun"=>0,"mon"=>1,"tue"=>2,"wed"=>3,"thu"=>4,"fri"=>5,"sat"=>6,"7"=>0];
+    $translate["mon"] = ["jan" => 1,"feb" => 2,"mar" => 3,"apr" => 4,"may" => 5,"jun" => 6,"jul" => 7,"aug" => 8,"sep" => 9,"oct" => 10,"nov" => 11,"dec" => 12];
+    $translate["wday"] = ["sun" => 0,"mon" => 1,"tue" => 2,"wed" => 3,"thu" => 4,"fri" => 5,"sat" => 6,"7" => 0];
 
     if (!$time) {
         $time = time();
@@ -83,8 +84,10 @@ function cron($time = 0): void
 
     $db = getDB();
 
-    $parts = ["mon"=>12,"wday"=>7,"mday"=>31,"hours"=>24,"minutes"=>60];
-    if ($_GET['debug']) { echo "<b>".date("d.m.y H:i",$time)."</b><br>"; }
+    $parts = ["mon" => 12,"wday" => 7,"mday" => 31,"hours" => 24,"minutes" => 60];
+    if ($_GET['debug']) {
+        echo "<b>" . date("d.m.y H:i", $time) . "</b><br>";
+    }
 
     $db->query("SELECT * FROM cron");
     while ($db->next_record()) {
@@ -101,30 +104,32 @@ function cron($time = 0): void
 
             // If an hour passed, I want to have minutes as 60+minutes etc.
             $now = getdate($time);
-            $now["mon"] += 12 * ($now["year"]-$last_run["year"]);
+            $now["mon"] += 12 * ($now["year"] - $last_run["year"]);
 
             // If the month(s) changed, find how many days it had
-            $now_tst = mktime($last_run["hours"],$last_run["minutes"],$last_run["seconds"], $now["mon"],$last_run["mday"],$now["year"]);
+            $now_tst = mktime($last_run["hours"], $last_run["minutes"], $last_run["seconds"], $now["mon"], $last_run["mday"], $now["year"]);
             $days_in_months = ($now_tst - $db->f("last_run")) / (60 * 60 * 24);
 
             $now["wday"]    += $days_in_months;
             $now["mday"]    += $days_in_months;
-            $now["hours"]   += 24 * ($now["mday"]-$last_run["mday"]);
-            $now["minutes"] += 60 * ($now["hours"]-$last_run["hours"]);
+            $now["hours"]   += 24 * ($now["mday"] - $last_run["mday"]);
+            $now["minutes"] += 60 * ($now["hours"] - $last_run["hours"]);
 
             $realnow = getdate($time);
 
             if ($_GET['debug'] > 1) {
-                 echo "<br>lastrun: ";print_r($last_run);
-                 echo "<br>now: ";print_r($now);
+                echo "<br>lastrun: ";
+                print_r($last_run);
+                echo "<br>now: ";
+                print_r($now);
             }
 
-//            while ((list($part) = each($parts)) && $nearest_part > -1) {
+            //            while ((list($part) = each($parts)) && $nearest_part > -1) {
             foreach ($parts as $part => $foo) {
                 if ($nearest_part < 0) {
                     break;
                 }
-            
+
                 $now_part = $now[$part];
 
                 $value = $db->f($part);
@@ -137,41 +142,39 @@ function cron($time = 0): void
                 $tr = $translate[$part];
                 if (is_array($tr)) {
                     foreach ($tr as $search => $replace) {
-                        $value = str_replace ($search,$replace,$value);
+                        $value = str_replace($search, $replace, $value);
                     }
                 }
 
                 if (str_contains($value, '/')) {
-                    [$from,$to,$step] = preg_split('~[/-]~',$value);
+                    [$from,$to,$step] = preg_split('~[/-]~', $value);
                     for ($i = $from; $i <= $to; $i += $step) {
                         if ($i <= $now_part && $i > $nearest_part) {
                             $nearest_part = $i;
                         }
                     }
-                }
-                else {
-                    $ranges = explode(',',$value);
+                } else {
+                    $ranges = explode(',', $value);
                     foreach ($ranges as $range) {
                         if (str_contains($range, "-")) {
-                            [$from,$to] = explode('-',$value);
-                                for ($i = $from; $i <= $to; $i++) {
-                                    if ($i <= $now_part && $i > $nearest_part) {
-                                        $nearest_part = $i;
-                                    }
+                            [$from,$to] = explode('-', $value);
+                            for ($i = $from; $i <= $to; $i++) {
+                                if ($i <= $now_part && $i > $nearest_part) {
+                                    $nearest_part = $i;
                                 }
-                        }
-                        elseif ($range <= $now_part && $range > $nearest_part) {
+                            }
+                        } elseif ($range <= $now_part && $range > $nearest_part) {
                             $nearest_part = $range;
                         }
                     }
                 }
                 $nearest[$part] = $nearest_part;
             } // end of while
-            $nearest_time = mktime($nearest["hours"], $nearest["minutes"],0, $nearest["mon"], $nearest["mday"], $now["year"]);
+            $nearest_time = mktime($nearest["hours"], $nearest["minutes"], 0, $nearest["mon"], $nearest["mday"], $now["year"]);
             // mktime does not consider week day. We must shift it manually to the desired week day.
             // This will not work correct when combining week day with month or month day settings.
             if ($db->f("wday") !== "*") {
-                $wday = getdate ($nearest_time);
+                $wday = getdate($nearest_time);
                 $diff = (7 - $nearest["wday"] + $wday["wday"]) % 7;
                 $nearest_time -= $diff * 24 * 60 * 60;
             }
@@ -180,19 +183,18 @@ function cron($time = 0): void
             $nearest_time = time();
         }
 
-        $url = AA_INSTAL_URL.$db->f("script")."?".$db->f("params");
+        $url = AA_INSTAL_URL . $db->f("script") . "?" . $db->f("params");
 
         if ($_GET['debug']) {
             if ($nearest_part > -1 && $nearest_time > $db->f("last_run")) {
-                 echo "<br><b>$url</b> will be run now<br>";
+                echo "<br><b>$url</b> will be run now<br>";
             } else {
-                 echo "<br><small>$url will not start now - will be run on " .date( "d.m.Y H:i",$nearest_time). " ($nearest_time)</small><br><small>nearest_part: $nearest_part, db->last_run:".$db->f("last_run")."</small><br>";
+                echo "<br><small>$url will not start now - will be run on " . date("d.m.Y H:i", $nearest_time) . " ($nearest_time)</small><br><small>nearest_part: $nearest_part, db->last_run:" . $db->f("last_run") . "</small><br>";
             }
             //echo "Nearest time: "; print_r ($nearest);
             // DB_AA::sql("UPDATE cron SET last_run=".$time." WHERE id=".$db->f("id"));
-        }
-        elseif ($nearest_part > -1 && $nearest_time > $db->f("last_run")) {
-            DB_AA::sql("UPDATE cron SET last_run=".$time." WHERE id=".$db->f("id"));
+        } elseif ($nearest_part > -1 && $nearest_time > $db->f("last_run")) {
+            DB_AA::sql("UPDATE cron SET last_run=" . $time . " WHERE id=" . $db->f("id"));
             fopen($url, 'rb');
         }
     }
@@ -216,4 +218,3 @@ for ($i = 0; $i < 50; $i++) {
 */
 
 cron();
-

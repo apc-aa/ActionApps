@@ -1,4 +1,5 @@
 <?php
+
 //$Id$
 /*
 Copyright (C) 1999, 2000 Association for Progressive Communications
@@ -47,19 +48,21 @@ try {
     $content = InputVars::stringPOST('content');
     $name = InputVars::stringPOST('name');
     $cancel = InputVars::boolPOST('cancel');
-    
+
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
+} catch (Exception $e) {
+    AA_Adminpageutil::pageParameterError($e);
+}
 
 $module_id   = AA::$module_id;
 
-if ( !($module = AA_Module_Site::getModule($module_id)) ) {
+if (!($module = AA_Module_Site::getModule($module_id))) {
     MsgErr(_m("Site module not found"));
     Session::page_close();
     exit;
 }
 
-if ( !IfSlPerm(PS_MODW_EDIT_CODE) ) {
+if (!IfSlPerm(PS_MODW_EDIT_CODE)) {
     MsgPage(_m("You do not have permission to edit items in this slice"));
     exit;
 }
@@ -81,24 +84,34 @@ if ($go_sid) {
 
 $current_spot_id = $tree->getCurrentId();
 
-switch( $akce ) {
-    case 's': $tree->addInSequence( $current_spot_id, 'spot' ); break;  // Add Spot
-    case 'c': $tree->addChoice($current_spot_id, 'option');   break;  // Add Choice
-    case 'r': $parent = $tree->get( 'parent', $current_spot_id );       // Remove
-              if ($priorsib = $tree->removeSpot($current_spot_id)) {
-                  $current_spot_id = $priorsib; // was set to $parent;
-              }
-              break;
-    case 'u': $tree->move(          $current_spot_id, 'moveUp' );    break;  // Up
-    case 'd': $tree->move(          $current_spot_id, 'moveDown' );  break;  // Down
-    case 'l': $tree->moveLeftRight( $current_spot_id, 'moveLeft' );  break;  // Left
-    case 'a': $tree->moveLeftRight( $current_spot_id, 'moveRight' ); break;  // Right
+switch ($akce) {
+    case 's': $tree->addInSequence($current_spot_id, 'spot');
+        break;  // Add Spot
+    case 'c': $tree->addChoice($current_spot_id, 'option');
+        break;  // Add Choice
+    case 'r': $parent = $tree->get('parent', $current_spot_id);       // Remove
+        if ($priorsib = $tree->removeSpot($current_spot_id)) {
+            $current_spot_id = $priorsib; // was set to $parent;
+        }
+        break;
+    case 'u': $tree->move($current_spot_id, 'moveUp');
+        break;  // Up
+    case 'd': $tree->move($current_spot_id, 'moveDown');
+        break;  // Down
+    case 'l': $tree->moveLeftRight($current_spot_id, 'moveLeft');
+        break;  // Left
+    case 'a': $tree->moveLeftRight($current_spot_id, 'moveRight');
+        break;  // Right
 
-    case 'h': $tree->setFlag($current_spot_id, AA_Module_Site::FLAG_DISABLE);   break;  // Hide
-    case 'e': $tree->clearFlag($current_spot_id, AA_Module_Site::FLAG_DISABLE); break;  // Disable
+    case 'h': $tree->setFlag($current_spot_id, AA_Module_Site::FLAG_DISABLE);
+        break;  // Hide
+    case 'e': $tree->clearFlag($current_spot_id, AA_Module_Site::FLAG_DISABLE);
+        break;  // Disable
 
-    case 'p': $tree->setFlag($current_spot_id, AA_Module_Site::FLAG_COLLAPSE);   break;  // Collapse
-    case 'm': $tree->clearFlag($current_spot_id, AA_Module_Site::FLAG_COLLAPSE); break;  // Expand
+    case 'p': $tree->setFlag($current_spot_id, AA_Module_Site::FLAG_COLLAPSE);
+        break;  // Collapse
+    case 'm': $tree->clearFlag($current_spot_id, AA_Module_Site::FLAG_COLLAPSE);
+        break;  // Expand
 }
 
 
@@ -142,14 +155,14 @@ if ($addcond || $delcond || $content || $name || $akce) {
 }
 
 if ($addcond || $delcond || $content || $name || $akce || $addvar || $delvar) {
-    $module->saveTree($tree, $akce==='r');  // delete unused spots after we delete one spot
+    $module->saveTree($tree, $akce === 'r');  // delete unused spots after we delete one spot
 }
 
 $apage = new AA_Adminpageutil('modadmin', 'codemanager');
-$apage->setTitle( _m("Editor window - site code manager") );
+$apage->setTitle(_m("Editor window - site code manager"));
 $apage->addRequire('codemirror@5');
 $apage->addRequire('aa-jslib');   // {htmltoggle in helpbox}
-$apage->addRequire(get_aa_url('javascript/js_lib.min.js', ['v'=>AA_JS_VERSION], false ));
+$apage->addRequire(get_aa_url('javascript/js_lib.min.js', ['v' => AA_JS_VERSION], false));
 
 $script2run = ' 
    var opts = { lineWrapping:true, matchBrackets: true, matchTags: true, viewportMargin: 10000, mode: "htmlmixed" };
@@ -166,24 +179,24 @@ echo '<div class="aa-site-codemanager">
         <div id="sitetree" class="aa-site-tree">
       <table class="aa-w-full">
         <tr>
-          <td>'.sitetree::siteActionLink($current_spot_id, 's', _m("Add&nbsp;spot"), 'add_spot.gif').'</td>
-          <td>'.sitetree::siteActionLink($current_spot_id, 'c', _m("Add&nbsp;choice"), 'add_choice.gif').'</td>
+          <td>' . sitetree::siteActionLink($current_spot_id, 's', _m("Add&nbsp;spot"), 'add_spot.gif') . '</td>
+          <td>' . sitetree::siteActionLink($current_spot_id, 'c', _m("Add&nbsp;choice"), 'add_choice.gif') . '</td>
         </tr>
         <tr>
-          <td>'.sitetree::siteActionLink($current_spot_id, 'u', _m("Move&nbsp;up"), 'up.gif').'</td>
-          <td>'.sitetree::siteActionLink($current_spot_id, 'd', _m("Move&nbsp;down"), 'down.gif').'</td>
+          <td>' . sitetree::siteActionLink($current_spot_id, 'u', _m("Move&nbsp;up"), 'up.gif') . '</td>
+          <td>' . sitetree::siteActionLink($current_spot_id, 'd', _m("Move&nbsp;down"), 'down.gif') . '</td>
         </tr>
         <tr>
-          <td>'.sitetree::siteActionLink($current_spot_id, 'l', _m("Move&nbsp;left"), 'left.gif').'</td>
-          <td>'.sitetree::siteActionLink($current_spot_id, 'a', _m("Move&nbsp;right"), 'right.gif').'</td>
+          <td>' . sitetree::siteActionLink($current_spot_id, 'l', _m("Move&nbsp;left"), 'left.gif') . '</td>
+          <td>' . sitetree::siteActionLink($current_spot_id, 'a', _m("Move&nbsp;right"), 'right.gif') . '</td>
         </tr>
         <tr>
-          <td>'.sitetree::siteActionLink($current_spot_id, 'r', _m("Delete"), 'delete.gif', 'javascript:GoIfConfirmed(\''.sitetree::siteAdminPageUrl($current_spot_id, ['akce' => 'r']).'\', \''. _m("Are you sure you want to delete the spot?").'\')').'</td>
-          <td>'.
-          (($tree->get('flag', $current_spot_id) & AA_Module_Site::FLAG_DISABLE) ?
-              sitetree::siteActionLink($current_spot_id, 'e', _m("Enable"), 'enabled.gif')     :
-              sitetree::siteActionLink($current_spot_id, 'h', _m("Disable"), 'disabled.gif'))
-              .'</td>
+          <td>' . sitetree::siteActionLink($current_spot_id, 'r', _m("Delete"), 'delete.gif', 'javascript:GoIfConfirmed(\'' . sitetree::siteAdminPageUrl($current_spot_id, ['akce' => 'r']) . '\', \'' . _m("Are you sure you want to delete the spot?") . '\')') . '</td>
+          <td>'
+          . (($tree->get('flag', $current_spot_id) & AA_Module_Site::FLAG_DISABLE)
+              ? sitetree::siteActionLink($current_spot_id, 'e', _m("Enable"), 'enabled.gif')
+              : sitetree::siteActionLink($current_spot_id, 'h', _m("Disable"), 'disabled.gif'))
+              . '</td>
         </tr>
       </table>
       ';
@@ -192,7 +205,7 @@ echo '<div class="aa-site-codemanager">
 $functions = [
     'spot'          => [$tree,'printSpotName_Start'],
     'before_choice' => [$tree,'printChoice_Start'],
-    'after_choice'  => [$tree,'printChoice_End']
+    'after_choice'  => [$tree,'printChoice_End'],
 ];
 
 $tree->walkTree($apc_state, 1, $functions, 'collapsed');

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * PHP version 7.2+
  *
@@ -48,7 +49,7 @@ $apage->setTitle(_m("Remote RSS Feed administration"));
 $manager = new Manager('rssfeeds', $managed);
 
 $manager->setRestrictionConds([
-    new AA_Condition('slice_id', '==', pack_id(AA::$module_id))
+    new AA_Condition('slice_id', '==', pack_id(AA::$module_id)),
 ]);
 
 $apage->printWithManager($manager);

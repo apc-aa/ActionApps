@@ -1,4 +1,5 @@
 <?php
+
 //$Id$
 /*
 Copyright (C) 1999, 2000 Association for Progressive Communications
@@ -55,7 +56,7 @@ function get_aamenus(): array
         "href"  => "modules/site/modedit.php",
         "cond"  => IfSlPerm(PS_MODW_SETTINGS),
         "level" => "main",
-        "submenu"=>"modadmin_submenu"
+        "submenu" => "modadmin_submenu",
     ];
 
     /*  Second-level (left) menu description:
@@ -73,19 +74,17 @@ function get_aamenus(): array
 
 
     $aamenus["modadmin_submenu"] = [
-        "bottom_td"=>200,
-        "level"=>"submenu",
-        "items"=> [
-          "main"        => ["cond"=>IfSlPerm(PS_MODW_SETTINGS),  "href"=>"modules/site/modedit.php", "label"=>_m("Module Settings"), 'ico'=>'ico-site.png'],
-          "codemanager" => ["cond"=>IfSlPerm(PS_MODW_EDIT_CODE), "href"=>"modules/site/index.php",  "label"=>_m("Code Manager"), 'ico'=>'ico-code.png'],
-          "aliases"     => ["cond"=>IfSlPerm(PS_MODW_SETTINGS),  "href"=>"modules/site/aliases.php", "label"=>_m("Aliases"), 'ico'=>'ico-aliases.png'],
-        ]
+        "bottom_td" => 200,
+        "level" => "submenu",
+        "items" => [
+            "main"        => ["cond" => IfSlPerm(PS_MODW_SETTINGS),  "href" => "modules/site/modedit.php", "label" => _m("Module Settings"), 'ico' => 'ico-site.png'],
+            "codemanager" => ["cond" => IfSlPerm(PS_MODW_EDIT_CODE), "href" => "modules/site/index.php",  "label" => _m("Code Manager"), 'ico' => 'ico-code.png'],
+            "aliases"     => ["cond" => IfSlPerm(PS_MODW_SETTINGS),  "href" => "modules/site/aliases.php", "label" => _m("Aliases"), 'ico' => 'ico-aliases.png'],
+        ],
     ];
-    
+
     $profile = AA_Profile::getProfile(AuthGetUid(), $slice_id); // current user settings
 
     // left menu for aaadmin is common to all modules, so it is shared
     return array_merge($aamenus, GetCommonMenu($profile));
 }
-
-

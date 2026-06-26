@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Item info - friendly overview of a single item (and, for superadmins, the full technical
  * detail). Reached from the item editor's left rail. Shares the editor's permission rule:
@@ -19,7 +20,9 @@ require_once __DIR__ . "/../include/menu_util.php";
 
 try {
     $id = InputVars::idGETPOST('id');
-} catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
+} catch (Exception $e) {
+    AA_Adminpageutil::pageParameterError($e);
+}
 
 // Admin context: the viewer already passed the edit-rights gate below, so bypass the slice's
 // reading password (otherwise the content - incl. posted_by used by that gate - reads as the

@@ -1,4 +1,5 @@
 <?php
+
 /**
 * Polls module is based on Till Gerken's phpPolls version 1.0.3. Thanks!
 *
@@ -36,10 +37,11 @@ require_once __DIR__ . '/../../../include/varset.php';
 /** cached polls aliases
  *  @usage new AA_Aliases(new AA_Aliasgenerator_Polls())
  */
-class AA_Aliasgenerator_Polls extends AbstractAliasgenerator {
-
-    public static function getAliasesFromParams(array $params): AA_Aliases {
-        $aliases = new AA_Aliases;
+class AA_Aliasgenerator_Polls extends AbstractAliasgenerator
+{
+    public static function getAliasesFromParams(array $params): AA_Aliases
+    {
+        $aliases = new AA_Aliases();
 
         $aliases->addAlias(new AA_Alias('_#POLL_ID_', 'f_1', 'id', _m('Poll ID')));
         $aliases->addAlias(new AA_Alias('_#MODULEID', 'f_n', 'module_id', _m('Module ID')));
@@ -55,10 +57,11 @@ class AA_Aliasgenerator_Polls extends AbstractAliasgenerator {
 /** cached polls answer aliases
  *  @usage new AA_Aliases(new AA_Aliasgenerator_Answer())
  */
-class AA_Aliasgenerator_Answer extends AbstractAliasgenerator {
-
-    public static function getAliasesFromParams(array $params): AA_Aliases {
-        $aliases = new AA_Aliases;
+class AA_Aliasgenerator_Answer extends AbstractAliasgenerator
+{
+    public static function getAliasesFromParams(array $params): AA_Aliases
+    {
+        $aliases = new AA_Aliases();
 
         $aliases->addAlias(new AA_Alias('_#QUESTION', 'f_t:{poll:{_#POLL_ID_}:_#QUESTION}', '', _m('Prints poll question')));
         $aliases->addAlias(new AA_Alias('_#POLLQUES', 'f_t:{poll:{_#POLL_ID_}:_#QUESTION}', '', _m('Prints poll question')));  // @deprecated
@@ -79,5 +82,3 @@ class AA_Aliasgenerator_Answer extends AbstractAliasgenerator {
         return $aliases;
     }
 }
-
-

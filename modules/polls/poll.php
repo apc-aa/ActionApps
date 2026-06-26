@@ -1,4 +1,5 @@
 <?php
+
 /**
 * Polls module is based on Till Gerken's phpPolls version 1.0.3. Thanks!
 *
@@ -43,7 +44,7 @@
 */
 
 
-require_once __DIR__."/../../include/config.php";
+require_once __DIR__ . "/../../include/config.php";
 require_once __DIR__ . "/../../include/util.php";
 require_once __DIR__ . "/../../include/mgettext.php";
 require_once __DIR__ . "/../../include/searchlib.php";
@@ -59,11 +60,10 @@ if (empty($_REQUEST['lock'])) {
     add_vars('', '_REQUEST');
 }
 
-$encap = ( array_key_exists('encap', $_REQUEST) && $_REQUEST['encap']==="false" ) ? false : true;
+$encap = (array_key_exists('encap', $_REQUEST) && $_REQUEST['encap'] === "false") ? false : true;
 
 require_once __DIR__ . "/../../include/locsess.php";
 
 echo AA_Poll::processPoll($_REQUEST);
 
 exit;
-

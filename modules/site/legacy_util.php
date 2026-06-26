@@ -1,4 +1,5 @@
 <?php
+
 //$Id$
 /*
 Copyright (C) 1999, 2000 Association for Progressive Communications
@@ -29,7 +30,7 @@ https://www.apc.org/
 
 // id = an item id, unpacked or short
 // short_ids = boolean indicating type of $ids (default is false => unpacked)
-function ModW_id2item($id,$use_short_ids="false"): ?AA_Item
+function ModW_id2item($id, $use_short_ids = "false"): ?AA_Item
 {
     return AA_Items::getItem(new zids($id, $use_short_ids ? 's' : 'l'));
 }
@@ -41,35 +42,37 @@ function ModW_id2item($id,$use_short_ids="false"): ?AA_Item
  */
 function ModW_str2arr($varnames, $str, $strdef, $reg): array
 {
-    if (!$str) { $str = $strdef; }
+    if (!$str) {
+        $str = $strdef;
+    }
     $varout = [];
-    $reg    = '`'.str_replace('`','\`',$reg).'`';
+    $reg    = '`' . str_replace('`', '\`', $reg) . '`';
     if (!(preg_match($reg, $str, $vars))) {
         if (!(preg_match($reg, $strdef, $vars))) {
             print("Error initial string $strdef doesn't match regexp $reg\n<br>");
         }
     }
-    for ($i=0, $ino=min(strlen($varnames),count($vars)-1); $i<$ino; ++$i) {
-        $varout[substr($varnames,$i,1)] = $vars[$i+1];
+    for ($i = 0, $ino = min(strlen($varnames), count($vars) - 1); $i < $ino; ++$i) {
+        $varout[substr($varnames, $i, 1)] = $vars[$i + 1];
     }
-    AA::$debug&2 && AA::$dbg->info('State=',$varout);
+    AA::$debug & 2 && AA::$dbg->info('State=', $varout);
     return $varout;
 }
 
 /** Convert an array into a state string, in the order from $varnames
  *  This is fairly simplistic, just concatenating state, a more sophisticated sprint version might be needed
  */
-function ModW_arr2str($varnames, $arr, string $strdef='', string $reg=''): string {
+function ModW_arr2str($varnames, $arr, string $strdef = '', string $reg = ''): string
+{
     $strout = "";
-    for ($i=0, $ino=strlen($varnames); $i<$ino; ++$i) {
-        $strout .= $arr[substr($varnames,$i,1)];
+    for ($i = 0, $ino = strlen($varnames); $i < $ino; ++$i) {
+        $strout .= $arr[substr($varnames, $i, 1)];
     }
     if ($reg) {
-        $reg = '`'.str_replace('`','\`',$reg).'`';
+        $reg = '`' . str_replace('`', '\`', $reg) . '`';
         if (!preg_match($reg, $strout)) {
             $strout = $strdef;
         }
     }
     return $strout;
 }
-

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * PHP version 7.2+
  *
@@ -38,9 +39,11 @@ require_once __DIR__ . "/../include/sliceadd.php";
 
 try {
     $cancel = InputVars::boolPOST('cancel');
-    
+
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
+} catch (Exception $e) {
+    AA_Adminpageutil::pageParameterError($e);
+}
 
 /** GetModuleTemplateSelecbox function
  * @param $type
@@ -50,10 +53,10 @@ try {
 function GetModuleTemplateSelecbox($type, $g_modules): string
 {
     $ret = '';
-    if (isset($g_modules) && is_array($g_modules) ) {
+    if (isset($g_modules) && is_array($g_modules)) {
         foreach ($g_modules as $mid => $mod) {
-            if ( $mod['type']==$type ) {
-                $ret .=  "\n  <option value=\"x$mid\">".$mod['name']."</option>";
+            if ($mod['type'] == $type) {
+                $ret .=  "\n  <option value=\"x$mid\">" . $mod['name'] . "</option>";
             }
         }
     }
@@ -64,14 +67,14 @@ function GetModuleTemplateSelecbox($type, $g_modules): string
 // the parts used by the slice wizard are in the included file
 
 if ($cancel) {
-  go_url( StateUrl(self_base() . "index.php"));
+    go_url(StateUrl(self_base() . "index.php"));
 }
 
 $err = [];          // error array (Init - just for initializing variable
 
 $apage = new AA_Adminpageutil();
 $apage->setTitle(_m("Create New Slice / Module"));
-$apage->setForm(['action'=>'slicedit.php']);
+$apage->setForm(['action' => 'slicedit.php']);
 $apage->printHead($err, $Msg);
 
 SliceAddForm();
@@ -88,13 +91,13 @@ foreach ($module_types as $type => $conf) {
         continue;
     }
     echo "<tr>
-            <th>".$conf->get('name')."</th>
-            <td>". ($conf->get('use_templates') ? GetModuleTemplateSelecbox($type, $g_modules) : "&nbsp;")."</td>
-            <td><input type=submit name=\"create[$type]\" value=\""._m("Add")."\"></td>
+            <th>" . $conf->get('name') . "</th>
+            <td>" . ($conf->get('use_templates') ? GetModuleTemplateSelecbox($type, $g_modules) : "&nbsp;") . "</td>
+            <td><input type=submit name=\"create[$type]\" value=\"" . _m("Add") . "\"></td>
           </tr>";
 }
 FrmTabEnd();
-echo '<br><br>'. getTabStart();
+echo '<br><br>' . getTabStart();
 
 echo getFrmInputButtons(["cancel" => ["url" => "aafinder.php"]]);
 FrmTabEnd();

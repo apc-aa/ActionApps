@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Alerts menu: Send emails.
  * Functions for showing info and allowing to send an example email to the user.
@@ -86,15 +87,15 @@ function ShowCollectionAddOns(): void
         bind_mgettext_domain($admin_lang_domain, true);
     }
 
-    FrmInputSelect("example[reader]",_m('Reader'), $reader_mails, $example["reader"], true);
+    FrmInputSelect("example[reader]", _m('Reader'), $reader_mails, $example["reader"], true);
     FrmInputSelect("example[howoftenr]", _m("as if"), get_howoften_options(), $example["howoftenr"], true);
-    FrmTabEnd(['example[goreader]' => ['type'=> 'submit', 'value'=>_m("Go!")]]);
+    FrmTabEnd(['example[goreader]' => ['type' => 'submit', 'value' => _m("Go!")]]);
     echo '</form>';
 
     // SEND EMAILS (fire to all - own form)
 
     echo '<br>
-    <form name="fire_form" method="post" action="'.StateUrl($_SERVER["PHP_SELF"]).'">';
+    <form name="fire_form" method="post" action="' . StateUrl($_SERVER["PHP_SELF"]) . '">';
     FrmTabCaption(_m('Send alerts'));
 
     if ($fire["fire"]) {
@@ -103,12 +104,12 @@ function ShowCollectionAddOns(): void
     }
 
 
-    FrmInputSelect("fire[howoften]",_m('Send now alerts to all users subscribed to '), get_howoften_options(), $fire["howoften"], _m("Warning: This is a real command!"));
-    FrmTabEnd(['fire[fire]' => ['type'=> 'submit', 'value'=>_m("Go!")]]);
+    FrmInputSelect("fire[howoften]", _m('Send now alerts to all users subscribed to '), get_howoften_options(), $fire["howoften"], _m("Warning: This is a real command!"));
+    FrmTabEnd(['fire[fire]' => ['type' => 'submit', 'value' => _m("Go!")]]);
     echo '<br>';
 
     FrmTabCaption(_m("Last time the alerts were sent on:"));
-    $last = GetTable2Array("SELECT howoften, last FROM alerts_collection_howoften WHERE collectionid='".$collectionid."'", 'howoften', 'last');
+    $last = GetTable2Array("SELECT howoften, last FROM alerts_collection_howoften WHERE collectionid='" . $collectionid . "'", 'howoften', 'last');
 
     $ho_options = get_howoften_options();
     foreach ($ho_options as $ho => $msg) {
@@ -118,7 +119,7 @@ function ShowCollectionAddOns(): void
     echo "</form>\n";
 
     if ($fire["fire"] || $example["go"] || $example["goreader"]) {
-        echo "<br><b>"._m("%1 email(s) sent", [$mail_count+0])."</b>\n";
+        echo "<br><b>" . _m("%1 email(s) sent", [$mail_count + 0]) . "</b>\n";
     }
 
 }
@@ -126,14 +127,15 @@ function ShowCollectionAddOns(): void
 function showSelectionTable(): void
 {
     $db = getDB();
-    $db->query (
+    $db->query(
         "SELECT view.slice_id, slice.name AS slice_name,
             alerts_filter.vid, view.name AS view_name,
             alerts_filter.id AS fid, view.type AS view_type,
             alerts_filter.description AS filter_name
          FROM slice INNER JOIN view ON slice.id = view.slice_id
          INNER JOIN alerts_filter ON alerts_filter.vid = view.id
-         ORDER BY slice.name, view.name, alerts_filter.id");
+         ORDER BY slice.name, view.name, alerts_filter.id",
+    );
     $myslices = GetUserSlices();
     while ($db->next_record()) {
         $a[$db->f("slice_id")]["name"] = $db->f("slice_name");
@@ -146,23 +148,23 @@ function showSelectionTable(): void
 
     //echo "<BR><B>"._m("Selections ordered by slice and view:")."</B><BR>";
     echo "<br><table>
-        <tr class=\"aa-tbl-header\"><th>"._m("Slice")."</th>
-        <th>"._m("View (Selection set)")."</th>
-        <th>"._m("Selections")."</th></tr>";
+        <tr class=\"aa-tbl-header\"><th>" . _m("Slice") . "</th>
+        <th>" . _m("View (Selection set)") . "</th>
+        <th>" . _m("Selections") . "</th></tr>";
 
     if (!is_array($a)) {
         echo "<tr><td colspan=3><b>"
-        ._m("Define selections in slices from which you want to send Alerts,
-        in views of type Alerts Selection Set")."</b></td></tr>";
+        . _m("Define selections in slices from which you want to send Alerts,
+        in views of type Alerts Selection Set") . "</b></td></tr>";
     } else {
         foreach ($a as $slice_id => $slice) {
             if (! IsSuperadmin() && !str_contains($myslices[unpack_id($slice_id)], PS_FULLTEXT)) {
                 continue;
             }
-            echo "<tr><td rowspan=".count($slice["views"]).">
-                <a href=\"".StateUrl(AA_INSTAL_PATH
-                    ."admin/index.php?slice_id=".unpack_id($slice_id))."\">"
-                    .$slice["name"]."</a></td>";
+            echo "<tr><td rowspan=" . count($slice["views"]) . ">
+                <a href=\"" . StateUrl(AA_INSTAL_PATH
+                    . "admin/index.php?slice_id=" . unpack_id($slice_id)) . "\">"
+                    . $slice["name"] . "</a></td>";
             $first_view = true;
             foreach ($slice["views"] as $vid => $view) {
                 if (! $first_view) {
@@ -170,9 +172,9 @@ function showSelectionTable(): void
                 }
                 $first_view = false;
                 echo "<td>
-                    <a href=\"".StateUrl(AA_INSTAL_PATH ."admin/se_view.php?slice_id=".unpack_id($slice_id) ."&view_id=".$vid."&view_type=".$view["type"]) ."\">".$view["name"]."</a></td><td>";
+                    <a href=\"" . StateUrl(AA_INSTAL_PATH . "admin/se_view.php?slice_id=" . unpack_id($slice_id) . "&view_id=" . $vid . "&view_type=" . $view["type"]) . "\">" . $view["name"] . "</a></td><td>";
                 foreach ($view["filters"] as $fid => $filter) {
-                    echo "f".$fid." ".$filter."<br>";
+                    echo "f" . $fid . " " . $filter . "<br>";
                 }
                 echo "</td></tr>";
             }
@@ -180,4 +182,3 @@ function showSelectionTable(): void
     }
     echo "</table>";
 }
-

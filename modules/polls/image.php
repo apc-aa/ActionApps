@@ -1,5 +1,6 @@
 <?php
-/** 
+
+/**
 * Polls module is based on Till Gerken's phpPolls version 1.0.3. Thanks!
 *
 * PHP version 7.2+
@@ -37,7 +38,7 @@ $COLORNAMES = [
     "maroon" => "#800000",
     "red"    => "#FF0000",
     "purple" => "#800080",
-    "fuchsia"=> "#FF00FF",
+    "fuchsia" => "#FF00FF",
     "green"  => "#008000",
     "lime"   => "#00FF00",
     "olive"  => "#808000",
@@ -45,38 +46,37 @@ $COLORNAMES = [
     "navy"   => "#000080",
     "blue"   => "#0000FF",
     "teal"   => "#008080",
-    "aqua"   => "#00FFFF"
+    "aqua"   => "#00FFFF",
 ];
 
 function mkcolor($color): array
 {
     global $COLORNAMES;
-    
+
     if (!str_starts_with($color, "#")) {
         $color = strtolower($color);
         $color = $COLORNAMES[$color];
     }
-    $color = str_replace("#","",$color);
-    
-    $out["red"]   = hexdec(substr($color,0,2));
-    $out["green"] = hexdec(substr($color,2,2));
-    $out["blue"]  = hexdec(substr($color,4,2));
-    
+    $color = str_replace("#", "", $color);
+
+    $out["red"]   = hexdec(substr($color, 0, 2));
+    $out["green"] = hexdec(substr($color, 2, 2));
+    $out["blue"]  = hexdec(substr($color, 4, 2));
+
     return $out;
 }
 
-if (isset($width) && isset($height) && isset($color)){
-    
+if (isset($width) && isset($height) && isset($color)) {
+
     header("Content-type: image/jpeg");
-    
+
     $image   = imagecreate($width, $height);
     $rgb     = mkcolor($color);
     $bgcolor = imagecolorallocate($image, $rgb["red"], $rgb["green"], $rgb["blue"]);
-    imagefill($image, 0,0, $bgcolor);
-    
+    imagefill($image, 0, 0, $bgcolor);
+
     imagejpeg($image);
     imagedestroy($image);
-} else { 
+} else {
     echo "Ko";
 }
-

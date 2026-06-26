@@ -1,4 +1,6 @@
-<?php  //slice_id expected
+<?php
+
+//slice_id expected
 /**
  * PHP version 7.2+
  *
@@ -33,7 +35,7 @@ use AA\Manager;
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/actions.php";
 
-if ( !IsSuperadmin() ) {
+if (!IsSuperadmin()) {
     MsgPage(_m("You do not have permission to see currently scheduled tasks"));
     exit;
 }
@@ -41,4 +43,3 @@ if ( !IsSuperadmin() ) {
 $apage = new AA_Adminpageutil('aaadmin', 'toexecute');
 $apage->setTitle(_m('Manage %1', [_m("Scheduled Tasks")]));
 $apage->printWithManager((new Manager('toexecute', GetToexecuteManagerSettings()))->setAllModules());
-

@@ -1,4 +1,5 @@
 <?php
+
 /**
  *
  *
@@ -68,7 +69,9 @@ try {
     $cancel = InputVars::boolPOST('cancel');
 
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
+} catch (Exception $e) {
+    AA_Adminpageutil::pageParameterError($e);
+}
 
 
 // FilemanPerms() is defined in perm_core.php, it sets $fileman_dir
@@ -77,26 +80,26 @@ if (!FilemanPerms(AA::$module_id)) {
 }
 
 // FILEMAN_BASE_DIR defined in config.php
-if (!is_dir (FILEMAN_BASE_DIR)) {
+if (!is_dir(FILEMAN_BASE_DIR)) {
     AA_Adminpageutil::MsgPageMenu("index.php", _m("Unable to run File Manager") . " '" . FILEMAN_BASE_DIR . "' " . _m("doesn't exist"), "admin", "fileman");
 }
 
-$basedir = FILEMAN_BASE_DIR.$fileman_dir;
+$basedir = FILEMAN_BASE_DIR . $fileman_dir;
 
-if (!is_dir ($basedir) && !file_exists ($basedir) && !mkdir ($basedir, FILEMAN_MODE_DIR)) {
+if (!is_dir($basedir) && !file_exists($basedir) && !mkdir($basedir, FILEMAN_MODE_DIR)) {
     AA_Adminpageutil::MsgPageMenu("index.php", _m("Unable to mkdir") . " '" . $basedir . "'", "admin", "fileman");
 }
 
 if (IsSuperadmin()) {
     $basedir = FILEMAN_BASE_DIR;
-    if (!isset($fmset['directory']) && is_dir ($basedir.$fileman_dir)) {
+    if (!isset($fmset['directory']) && is_dir($basedir . $fileman_dir)) {
         $fmset['directory'] = $fileman_dir;
     }
 }
 
-set_directory ($fmset['directory']);
+set_directory($fmset['directory']);
 //echo "<p><font color=purple>fileman_execute_command:basedir=$basedir;directory=$directory,cmd=$cmd,arg=$arg,chb=$chb,fmset=$fmset;</font></p>";
-fileman_execute_command ($basedir, $directory, $cmd, $arg, $chb, $fmset);
+fileman_execute_command($basedir, $directory, $cmd, $arg, $chb, $fmset);
 
 // One file page
 if ($cmd === 'edit' || $cmd === 'createfile') {
@@ -110,12 +113,12 @@ if ($cmd === 'edit' || $cmd === 'createfile') {
 }
 
 
-$apage = new AA_Adminpageutil('sliceadmin','fileman');
+$apage = new AA_Adminpageutil('sliceadmin', 'fileman');
 $apage->setTitle(_m("File Manager"));
 if ($directory) {
-    $apage->setSubtitle(_m("Directory")." ".$directory);
+    $apage->setSubtitle(_m("Directory") . " " . $directory);
 }
-$apage->setForm(['name'=>'fileman','enctype'=>"multipart/form-data"]);
+$apage->setForm(['name' => 'fileman','enctype' => "multipart/form-data"]);
 $apage->printHead($err, $Msg);
 
 
@@ -144,9 +147,9 @@ function formatAction($value): string
  *   @param string $value - the internationalized string to display
  *   @return string - an HTML button
  */
-function fileAction($name,$value): string
+function fileAction($name, $value): string
 {
-     return "<input type=\"button\" name=\"button$name\" value=\"$value\" onclick=\"command('$name')\">&nbsp;&nbsp;";
+    return "<input type=\"button\" name=\"button$name\" value=\"$value\" onclick=\"command('$name')\">&nbsp;&nbsp;";
 }
 
 /** uilr function
@@ -154,7 +157,8 @@ function fileAction($name,$value): string
  *   @param string $act - the HTML for the action element
  *   @return string two columns of input and action, can flip and table
  */
-function uilr($inp,$act) : string {
+function uilr($inp, $act): string
+{
     return "<tr><td>$inp</td><td>$act</td></tr>\n";
 }
 
@@ -164,16 +168,17 @@ function uilr($inp,$act) : string {
  * @param string $value - the internationalized string to display
  * @return string two
  */
-function inputplusaction($name,$value) :string {
-    return uilr("<input name=\"arg[$name]\">", fileAction($name,$value));
+function inputplusaction($name, $value): string
+{
+    return uilr("<input name=\"arg[$name]\">", fileAction($name, $value));
 }
 
 
 echo $jsSender;
 echo '<tr class="aa-tbl-header"><th>';
 echo //fileAction ("checkall",_m("Select All")) .
-     fileAction ("uncheckall",_m("Unselect all")) .
-     fileAction ("delete",_m("Delete selected"));
+     fileAction("uncheckall", _m("Unselect all"))
+     . fileAction("delete", _m("Delete selected"));
 echo "</th></tr>
 <tr><td>";
 echo '<table>';
@@ -186,7 +191,7 @@ if (!$sortable_columns[$sort_key]) {
 foreach ($sortable_columns as $sortk => $col) {
     if ($sort_key == $sortk) {
         $so = $sort_order ?: $col["sort"];
-        $img = "&nbsp;<img src='../images/".($so === 'd' ? 'up' : 'down').".gif'>";
+        $img = "&nbsp;<img src='../images/" . ($so === 'd' ? 'up' : 'down') . ".gif'>";
         $so  = $so === 'a' ? 'd' : 'a';
         $so  = "&sort_order=$so";
     } else {
@@ -194,14 +199,14 @@ foreach ($sortable_columns as $sortk => $col) {
         $img = "";
     }
 
-    echo "<td><a href=\"".StateUrl("fileman.php?sort_key=$sortk$so&fmset[directory]=$directory")."\">" . formatAction($col['label'].$img) . "</a></td>";
+    echo "<td><a href=\"" . StateUrl("fileman.php?sort_key=$sortk$so&fmset[directory]=$directory") . "\">" . formatAction($col['label'] . $img) . "</a></td>";
 }
 if (!$sort_order) {
     $sort_order = $sortable_columns[$sort_key]["sort"];
 }
 
 // * * * * * * * * Show the file table * * * * * * * *
-echo file_table ($basedir, $directory);
+echo file_table($basedir, $directory);
 echo "</table>
       <input type=\"hidden\" name=\"sort_key\" value=\"$sort_key\">
       <input type=\"hidden\" name=\"sort_order\" value=\"$sort_order\">
@@ -210,23 +215,25 @@ echo "</table>
 echo '<table>';
 
 echo "<tr><td colspan=\"2\"></td></tr>";
-echo inputplusaction("createfile",_m("Create new file"));
+echo inputplusaction("createfile", _m("Create new file"));
 // echo "<input type=\"hidden\" name=\"MAX_FILE_SIZE\" value=\"10485760\">";         // browsers do not use this variable - removed
-echo uilr("<input type=\"file\" name=\"uploadarg\">",
-    fileAction("upload",_m("Upload file")." (max. 10 MB)"));
+echo uilr(
+    "<input type=\"file\" name=\"uploadarg\">",
+    fileAction("upload", _m("Upload file") . " (max. 10 MB)"),
+);
 echo "<tr><td colspan=\"2\"></td></tr>";
 
 $db->query("SELECT * FROM wizard_template");
 if ($db->num_rows()) {
     $i = "<select name=\"arg[copytmp]\">";
     while ($db->next_record()) {
-        $i .= "<option value=\"".$db->f("dir")."\">".$db->f("dir")." (".$db->f("description").")";
+        $i .= "<option value=\"" . $db->f("dir") . "\">" . $db->f("dir") . " (" . $db->f("description") . ")";
     }
     $i .= "</select>";
-    echo uilr($i,fileAction("copytmp",_m("Copy template dir")));
+    echo uilr($i, fileAction("copytmp", _m("Copy template dir")));
 }
 
-echo inputplusaction("createdir",_m("Create new directory"));
+echo inputplusaction("createdir", _m("Create new directory"));
 echo "</table></td></tr>";
 
 echo "</table>";

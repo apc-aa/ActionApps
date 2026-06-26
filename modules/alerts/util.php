@@ -1,4 +1,5 @@
 <?php
+
 //$Id$
 /*
 Copyright (C) 1999, 2000 Association for Progressive Communications
@@ -24,10 +25,11 @@ use AA\IO\DB\DB_AA;
 require_once __DIR__ . "/../../include/mail.php";
 require_once __DIR__ . "/../../include/mgettext.php";
 
-function GetCollection($slice_id) {
+function GetCollection($slice_id)
+{
     $SQL =  "SELECT AC.*, module.name, module.lang_file, module.slice_url
               FROM alerts_collection AC INNER JOIN module ON AC.module_id = module.id
-              WHERE module_id=".xpack_id($slice_id);
+              WHERE module_id=" . xpack_id($slice_id);
     $ret = GetTable2Array($SQL, 'aa_first');
     if (is_array($ret)) {
         $ret['module_id'] = unpack_id($ret['module_id']);
@@ -65,12 +67,15 @@ function set_collectionid(): void
     global $collectionid, $collectionprop, $no_slice_id;
 
     if (!$no_slice_id) {
-        if (!AA::$module_id) { echo "Error: no slice ID"; exit; }
+        if (!AA::$module_id) {
+            echo "Error: no slice ID";
+            exit;
+        }
         $collectionprop = GetCollection(AA::$module_id);
         if ($collectionprop) {
             $collectionid = $collectionprop['id'];
         } else {
-            echo "Can't find collection with module_id=". AA::$module_id. ". Bailing out.<br>";
+            echo "Can't find collection with module_id=" . AA::$module_id . ". Bailing out.<br>";
             exit;
         }
     }
@@ -93,21 +98,23 @@ function get_bin_names(): array
     return [
         1 => _m("Active"),
         2 => _m("Holding bin"),
-        3 => _m("Trash bin")
+        3 => _m("Trash bin"),
     ];
 }
 
-function new_collection_id() {
+function new_collection_id()
+{
     do {
         $new_id = gensalt(5);
-    } while ( DB_AA::test('alerts_collection', [['id', $new_id]]) );
+    } while (DB_AA::test('alerts_collection', [['id', $new_id]]));
     return $new_id;
 }
 
 // ----------------------------------------------------------------------------------------
 
-function getAlertsField($field_id, $collection_id): string {
-    return substr($field_id.".............", 0, 16 - strlen ($collection_id)). $collection_id;
+function getAlertsField($field_id, $collection_id): string
+{
+    return substr($field_id . ".............", 0, 16 - strlen($collection_id)) . $collection_id;
 }
 
 // -----------------------------------------------------------------------------------
@@ -117,7 +124,8 @@ function getAlertsField($field_id, $collection_id): string {
  *   is sent only in Welcome messages.
  *   Returns true if email exists and not yet confirmed, false otherwise.
  */
-function confirm_email($slice_id, $aw): bool {
+function confirm_email($slice_id, $aw): bool
+{
 
     require_once __DIR__ . "/../../include/itemfunc.php";
 
@@ -125,7 +133,7 @@ function confirm_email($slice_id, $aw): bool {
     $zids = $set->query();
 
     if ($zids->count() !== 1) {
-        warn("AW not OK: ".$zids->count()." items");
+        warn("AW not OK: " . $zids->count() . " items");
         return false;
     }
     UpdateField($zids->longids(0), FIELDID_MAIL_CONFIRMED, new AA_Value('1'));
@@ -134,24 +142,25 @@ function confirm_email($slice_id, $aw): bool {
 
 /** unsubscribe_reader function
  */
-function unsubscribe_reader($slice_id, $au, $c): bool {
+function unsubscribe_reader($slice_id, $au, $c): bool
+{
     require_once __DIR__ . "/../../include/itemfunc.php";
 
-    $readers = DB_AA::select('iid', 'SELECT LOWER(HEX(item.id)) as iid FROM `content`,`item`',[['content.item_id', 'item.id', 'j'],['item.slice_id',$slice_id,'l'],['content.field_id', FIELDID_ACCESS_CODE],['content.text',$au]]);
+    $readers = DB_AA::select('iid', 'SELECT LOWER(HEX(item.id)) as iid FROM `content`,`item`', [['content.item_id', 'item.id', 'j'],['item.slice_id',$slice_id,'l'],['content.field_id', FIELDID_ACCESS_CODE],['content.text',$au]]);
     if (count($readers) !== 1) {
-        warn("AU not OK: ".count($readers)." items");
+        warn("AU not OK: " . count($readers) . " items");
         return false;
     }
     $item_id   = reset($readers);
     $field_id  = getAlertsField(FIELDID_HOWOFTEN, $c);
-    $frequency = DB_AA::select1('text', 'SELECT `text` FROM `content`',[['item_id', $item_id, 'l'], ['field_id', $field_id]]);
+    $frequency = DB_AA::select1('text', 'SELECT `text` FROM `content`', [['item_id', $item_id, 'l'], ['field_id', $field_id]]);
 
     if ($frequency === false) {
         return false;
     }
 
     if (!str_starts_with($frequency, 'unsub')) {  // left old unsub message and date
-        UpdateField($item_id, $field_id, new AA_Value('unsubscribed:'. date('Y-m-d H:i'). ':au')); // just inform text
+        UpdateField($item_id, $field_id, new AA_Value('unsubscribed:' . date('Y-m-d H:i') . ':au')); // just inform text
         debug("<!--OK: f $field_id unsubscribed-->");
     }
     return true;

@@ -1,4 +1,5 @@
 <?php
+
 //$Id$
 /*
 Copyright (C) 1999, 2000 Association for Progressive Communications
@@ -34,7 +35,10 @@ https://www.apc.org/
 //  1) in $_POST,$_GET,$_COOKIE,$_REQUEST variables the values are not quoted
 //  2) the variables are imported in global scope and is quoted
 // We are trying to remove any dependecy on the point 2) and use only $_* superglobals
-function AddslashesDeep($value): array|string { return is_array($value) ? array_map('AddslashesDeep',   $value) : addslashes($value);   }
+function AddslashesDeep($value): array|string
+{
+    return is_array($value) ? array_map('AddslashesDeep', $value) : addslashes($value);
+}
 
 
 foreach ($_REQUEST as $k => $v) {
@@ -43,7 +47,7 @@ foreach ($_REQUEST as $k => $v) {
 // ----- input variables normalization - end ----------------------------------
 
 
-require_once __DIR__."/./include/config.php";
+require_once __DIR__ . "/./include/config.php";
 require_once __DIR__ . "/include/util.php";
 require_once __DIR__ . "/include/item.php";
 require_once __DIR__ . "/include/searchlib.php";
@@ -59,11 +63,11 @@ if (!$_GET['form_id']) {
 $form = AA_Object::load($_GET['form_id'], 'AA_Form');
 
 if (is_null($form)) {
-    echo '<!-- bad form_id in /form.php - '. safe($_GET['form_id'] ?? ''). ' -->';
+    echo '<!-- bad form_id in /form.php - ' . safe($_GET['form_id'] ?? '') . ' -->';
     exit;
 }
 
-if ($_GET['type']==='ajax') {
+if ($_GET['type'] === 'ajax') {
     try {
         $html = $form->getAjaxHtml($_GET['ret_code']);
     } catch (Exception $e) {
@@ -74,4 +78,3 @@ if ($_GET['type']==='ajax') {
     }
     echo $html;
 }
-

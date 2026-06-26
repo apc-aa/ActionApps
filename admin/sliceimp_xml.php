@@ -1,4 +1,5 @@
 <?php
+
 /**  Slice Import - XML parsing function
  *
  *      Note: This parser does not check correctness of the data. It assumes, that xml document
@@ -62,23 +63,23 @@ require_once __DIR__ . "/../include/xml_serializer.php";
  * @param $dry_run = false
  * @param $force_this_slice = false
  */
-function sliceimp_xml_parse($xml_data, $dry_run=false, $force_this_slice=false): void
+function sliceimp_xml_parse($xml_data, $dry_run = false, $force_this_slice = false): void
 {
     MoreTimeLimit(600); // set_time_limit to 5 minutes (at least) - this can take a while
     $xu = new xml_unserializer();
     if ($dry_run) {
-        huhl("Importing data=",safe($xml_data));
+        huhl("Importing data=", safe($xml_data));
     }
 
     /** Create array structure from XML data */
     $i = $xu->parse($xml_data);  // PHP data structure
     if ($dry_run) {
-        huhl("Parsed data=",$i);
+        huhl("Parsed data=", $i);
     }
 
     $s = $i["SLICEEXPORT"][0];
     if ($dry_run) {
-        echo "<br>Slices:".count($s["SLICE"]);
+        echo "<br>Slices:" . count($s["SLICE"]);
     }
 
     if (! $s) {
@@ -104,12 +105,11 @@ function sliceimp_xml_parse($xml_data, $dry_run=false, $force_this_slice=false):
         $slice["id"]   = $sl['ID'];
         $slice["name"] = $sl['NAME'];
         if ($dry_run) {
-            echo "<br><br>Would import slice=".safe($slice['name']);
+            echo "<br><br>Would import slice=" . safe($slice['name']);
         } else {
             import_slice($slice);
         }
-    }
-    elseif ($s['VERSION'] === "1.1") {
+    } elseif ($s['VERSION'] === "1.1") {
         foreach ($s['SLICE'] as $sl) {
             $sld = $sl['SLICEDATA'][0];
 
@@ -131,7 +131,7 @@ function sliceimp_xml_parse($xml_data, $dry_run=false, $force_this_slice=false):
                 $slice["id"]   = $sl['ID'];
                 $slice["name"] = $sl['NAME'];
                 if ($dry_run) {
-                    echo "<br><br>Would import slice=".safe($slice['name']);
+                    echo "<br><br>Would import slice=" . safe($slice['name']);
                     $slice_id_new = '11111111111111112222222222222222';
                 } else {
                     $slice_id_new = import_slice($slice);
@@ -145,13 +145,13 @@ function sliceimp_xml_parse($xml_data, $dry_run=false, $force_this_slice=false):
             if (is_array($sl['VIEWS'])) {
                 // in fact there is only [0] element of the array, where more
                 // views is defined
-                foreach ( $sl['VIEWS'] as $viewdata ) {
+                foreach ($sl['VIEWS'] as $viewdata) {
                     $viewdata = base64_decode($viewdata);
                     $viewdata = $sld['GZIP'] ? gzuncompress($viewdata) : $viewdata;
                     // views are exported as getViewInfo() field-arrays (no objects)
                     $views = unserialize($viewdata, ['allowed_classes' => false]);
                     if ($dry_run) {
-                        echo "<br>Views:".count($views);
+                        echo "<br>Views:" . count($views);
                     }
                     import_views($views, $slice_id_new, $dry_run);
                 }
@@ -165,7 +165,7 @@ function sliceimp_xml_parse($xml_data, $dry_run=false, $force_this_slice=false):
             /** Now import items */
             if (is_array($sl['DATA'])) {
                 if ($dry_run) {
-                    echo "<br>Items:".count($sl["DATA"]);
+                    echo "<br>Items:" . count($sl["DATA"]);
                 }
                 foreach ($sl['DATA'] as $sld) {
                     if (isset($sld['CHARDATA'])) {
@@ -180,9 +180,9 @@ function sliceimp_xml_parse($xml_data, $dry_run=false, $force_this_slice=false):
                         exit;
                     }
                     if ($dry_run) {
-                        huhl("Would import data to ",$sld['ITEM_ID'],$content4id);
+                        huhl("Would import data to ", $sld['ITEM_ID'], $content4id);
                     } else {
-                        import_slice_data( $force_this_slice ? $GLOBALS['slice_id'] : $sl['ID'], $sld['ITEM_ID'], $content4id, true, true);
+                        import_slice_data($force_this_slice ? $GLOBALS['slice_id'] : $sl['ID'], $sld['ITEM_ID'], $content4id, true, true);
                     }
                 }
             } // loop over each item
@@ -198,10 +198,10 @@ function sliceimp_xml_parse($xml_data, $dry_run=false, $force_this_slice=false):
  * @param $slvs array
  * @param $slice_id_new
  */
-function import_views($slvs, $slice_id_new, $dry_run=false): void
+function import_views($slvs, $slice_id_new, $dry_run = false): void
 {
 
-    if ( $dry_run ) {
+    if ($dry_run) {
         huhl($slvs);
     }
 
@@ -209,9 +209,9 @@ function import_views($slvs, $slice_id_new, $dry_run=false): void
 
     // Get all views in current AA
     // $av = GetViewsWhere();
-    $av = DB_AA::select(['vid'=>1], "SELECT view.id as vid FROM `view`, `slice`", [
+    $av = DB_AA::select(['vid' => 1], "SELECT view.id as vid FROM `view`, `slice`", [
         ['slice.id', 'view.slice_id', 'j'],
-        ['slice.deleted', '1', '<>']
+        ['slice.deleted', '1', '<>'],
     ]);
 
     /** Several cases here
@@ -242,8 +242,8 @@ function import_views($slvs, $slice_id_new, $dry_run=false): void
         foreach ($slvf as $k => $v) {
             // there was a bug in viewobj - we store 'slice.deleted' field to
             // view - we must skip it, now.
-            if ( $k !== 'deleted' ) {
-                $varset->add($k,"text",$v);
+            if ($k !== 'deleted') {
+                $varset->add($k, "text", $v);
             }
         }
 
@@ -253,9 +253,9 @@ function import_views($slvs, $slice_id_new, $dry_run=false): void
          *  behavior could lead to necessary code change for slice admins,
          *  but it is far best solution for now.
          */
-        if ( isset($av[$id]) && ($GLOBALS["submit"] == _m("Overwrite"))) {
+        if (isset($av[$id]) && ($GLOBALS["submit"] == _m("Overwrite"))) {
             // owerwrite
-            $SQL = $varset->makeUPDATE('view')." WHERE id=".(int)$id;   // view id is an autoincrement int
+            $SQL = $varset->makeUPDATE('view') . " WHERE id=" . (int) $id;   // view id is an autoincrement int
             print(_m("<br>Overwriting view %1", [$id]));
         } else {
             // insert as new view
@@ -264,9 +264,9 @@ function import_views($slvs, $slice_id_new, $dry_run=false): void
             $SQL = $varset->makeINSERT('view');
         }
         if ($dry_run) {
-            print("<br><br>VIEW import: " .safe($SQL));
-        } elseif ( !$db->query($SQL)) {
-            $err["DB"] = MsgErr( _m("Can't insert into view.") );
+            print("<br><br>VIEW import: " . safe($SQL));
+        } elseif (!$db->query($SQL)) {
+            $err["DB"] = MsgErr(_m("Can't insert into view."));
         }
     } // each view
     freeDB($db);

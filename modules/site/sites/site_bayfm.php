@@ -1,4 +1,5 @@
 <?php
+
 // site definition file for Site Example (http://apc-aa.sf.net/site/index.shtml)
 // This is just an example of site file. For more details on sites see FAQ:
 // https://actionapps.org/faq/
@@ -43,23 +44,23 @@ if (isset($i)) {
 } //item id to display
 
 // Handle paging
-if ( isset($scrl) ) {      // page scroller
-  $pagevar = "scr_".$scrl."_Go";
-  $apc_state['p'] = $$pagevar;
+if (isset($scrl)) {      // page scroller
+    $pagevar = "scr_" . $scrl . "_Go";
+    $apc_state['p'] = $$pagevar;
 }
-if ( $apc_state["p"] <= 0 || $apc_state["p"] === '-' ) {
+if ($apc_state["p"] <= 0 || $apc_state["p"] === '-') {
     $apc_state["p"] = 1;
 }
 
 // Set up some variables in apc_state
-$apc_state['state'] =  ModW_arr2str($apc_varnames,$apc_state);
+$apc_state['state'] =  ModW_arr2str($apc_varnames, $apc_state);
 $relargs = "apc=" . $apc_state['state'] . ($nocache ? "&nocache=1" : "") . ($debug ? "&debug=1" : "");
 $apc_state['relargs'] = $relargs;
 // site_url is used as a return address, for example after going into edit
 //$apc_state["site_url"] = AA_INSTAL_EDIT_PATH . "modules/site/site.php?site_id=$site_id&" . $relargs;
-$apc_state["site_url"] = "index.shtml?".$relargs;
+$apc_state["site_url"] = "index.shtml?" . $relargs;
 // Read item from database
-$apc_state["item"] = ModW_id2item($apc_state["i"],true);
+$apc_state["item"] = ModW_id2item($apc_state["i"], true);
 
 if ($debug) {
     huhl("<pre>New State=", $apc_state);
@@ -70,15 +71,15 @@ if ($debug) {
 // show the newest slice content. In $slice4cache array you will tell the slice
 // module, which slices it should take care about
 $slices4cache = [
-        "c85a4a34ccbe0ce54c4306b5c32373b1", //BayFM Home
-        "498aab17441f29623f404512198566ea",  //BayFM Site
-        "8b6a44fb578aa6ee5ffbd7851da5317d", //BayFM discounters
-        "0f94e5c07c9593b7199ca076ec079977", //BayFM CSA
-        "a5815ddb8287399e1bd6fbb25a3f3e3c", //BayFM pages
-        "54315b8263bfd7664b06e920f9a34385", //BayFM presenters
-        "29b3878c68a37ae6f495636a7968e48f", //BayFM photos
-        "973f382e3ce6f17e2d96318398e6c0dc", //BayFM photo sections
-        "6d5bedb31f4db3f5805afb11d8425b54"  //BayFM section
+    "c85a4a34ccbe0ce54c4306b5c32373b1", //BayFM Home
+    "498aab17441f29623f404512198566ea",  //BayFM Site
+    "8b6a44fb578aa6ee5ffbd7851da5317d", //BayFM discounters
+    "0f94e5c07c9593b7199ca076ec079977", //BayFM CSA
+    "a5815ddb8287399e1bd6fbb25a3f3e3c", //BayFM pages
+    "54315b8263bfd7664b06e920f9a34385", //BayFM presenters
+    "29b3878c68a37ae6f495636a7968e48f", //BayFM photos
+    "973f382e3ce6f17e2d96318398e6c0dc", //BayFM photo sections
+    "6d5bedb31f4db3f5805afb11d8425b54",  //BayFM section
 ];
 
 // You can define macros here, these can include any of the { ...} syntaxes
@@ -98,4 +99,3 @@ function myfillform($txt): string
     return "";
 }
 $GLOBALS['eb_functions']['myfillform'] = "myfillform";
-

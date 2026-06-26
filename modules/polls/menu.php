@@ -1,4 +1,5 @@
 <?php
+
 /**
 * Polls module is based on Till Gerken's phpPolls version 1.0.3. Thanks!
 *
@@ -65,26 +66,26 @@ function get_aamenus(): array
     $aamenus["polledit"] = [
         "label" => ($polledit ? _m("Edit poll") : _m("Add poll")),
         "title" => ($polledit ? _m("Edit poll") : _m("Add new poll")),
-        "href"  => $module_location."polledit.php",
+        "href"  => $module_location . "polledit.php",
         "level" => "main",
-        "submenu" => "polledit_submenu"
+        "submenu" => "polledit_submenu",
     ];
 
     $aamenus["pollsmanager"] = [
         "label" => _m("Polls manager"),
         "title" => _m("Polls manager"),
-        "href"  => $module_location."index.php?Tab=app",
+        "href"  => $module_location . "index.php?Tab=app",
         "level" => "main",
-        "submenu" => "pollsmanager_submenu"
+        "submenu" => "pollsmanager_submenu",
     ];
 
     $aamenus["modadmin"] = [
         "label" => _m("Polls admin"),
         "title" => _m("Polls admin"),
-        "href"  => $module_location."modedit.php",
+        "href"  => $module_location . "modedit.php",
         "cond"  => IfSlPerm(PS_MODP_SETTINGS),
         "level" => "main",
-        "submenu"=>"modadmin_submenu"
+        "submenu" => "modadmin_submenu",
     ];
 
     $aamenus["pollsmanager_submenu"] = [
@@ -92,31 +93,31 @@ function get_aamenus(): array
         "level"     => "submenu",
         "items"     => [
             "header1"     => _m("Folders"),
-            "app"       => ["cond"=>1,                           "href"=>"modules/polls/index.php?Folder1a=1",                         "label"=>"<img src='../../images/ico-items.png'>"._m("Active")." <span class='aa-bin-cnt'>". $r_state['bin_cnt']['app'] ."</span>"],
-            "appb"      => ["cond"=>1,                           "href"=>"modules/polls/index.php?Folder1b=1",                         "label"=>_m("... pending")." <span class='aa-bin-cnt'>". $r_state['bin_cnt']['appb'] ."</span>"],
-            "appc"      => ["cond"=>1,                           "href"=>"modules/polls/index.php?Folder1c=1",                         "label"=>_m("... expired")." <span class='aa-bin-cnt'>". $r_state['bin_cnt']['appc'] ."</span>"],
-            "folder2"   => ["cond"=>1,                           "href"=>"modules/polls/index.php?Folder2=1",                          "label"=>"<img src='../../images/ico-holdbin.png'>"._m("Hold bin")." <span class='aa-bin-cnt'>". $r_state['bin_cnt']['folder2'] ."</span>"],
-            "folder3"   => ["cond"=>1,                           "href"=>"modules/polls/index.php?Folder3=1",                          "label"=>"<img src='../../images/ico-trashbin.png'>"._m("Trash bin")." <span class='aa-bin-cnt'>". $r_state['bin_cnt']['folder3'] ."</span>"],
+            "app"       => ["cond" => 1,                           "href" => "modules/polls/index.php?Folder1a=1",                         "label" => "<img src='../../images/ico-items.png'>" . _m("Active") . " <span class='aa-bin-cnt'>" . $r_state['bin_cnt']['app'] . "</span>"],
+            "appb"      => ["cond" => 1,                           "href" => "modules/polls/index.php?Folder1b=1",                         "label" => _m("... pending") . " <span class='aa-bin-cnt'>" . $r_state['bin_cnt']['appb'] . "</span>"],
+            "appc"      => ["cond" => 1,                           "href" => "modules/polls/index.php?Folder1c=1",                         "label" => _m("... expired") . " <span class='aa-bin-cnt'>" . $r_state['bin_cnt']['appc'] . "</span>"],
+            "folder2"   => ["cond" => 1,                           "href" => "modules/polls/index.php?Folder2=1",                          "label" => "<img src='../../images/ico-holdbin.png'>" . _m("Hold bin") . " <span class='aa-bin-cnt'>" . $r_state['bin_cnt']['folder2'] . "</span>"],
+            "folder3"   => ["cond" => 1,                           "href" => "modules/polls/index.php?Folder3=1",                          "label" => "<img src='../../images/ico-trashbin.png'>" . _m("Trash bin") . " <span class='aa-bin-cnt'>" . $r_state['bin_cnt']['folder3'] . "</span>"],
 
             "header2"     => _m("Misc"),
-            "deletetrash" => ["cond"=>IfSlPerm(PS_DELETE_ITEMS),   "href"=>"modules/polls/index.php?DeleteTrash=1",                     "label"=>_m("Empty trash"), "js"=>"EmptyTrashQuestion('{href}','"._m("Are you sure you want to empty trash?")."')"]
-        ]
+            "deletetrash" => ["cond" => IfSlPerm(PS_DELETE_ITEMS),   "href" => "modules/polls/index.php?DeleteTrash=1",                     "label" => _m("Empty trash"), "js" => "EmptyTrashQuestion('{href}','" . _m("Are you sure you want to empty trash?") . "')"],
+        ],
     ];
 
     $aamenus["polledit_submenu"] = [
-        "bottom_td"=>200,
-        "level"=>"submenu",
+        "bottom_td" => 200,
+        "level" => "submenu",
         "items" => [],
     ];
 
     $aamenus["modadmin_submenu"] = [
-        "bottom_td"=>200,
-        "level"=>"submenu",
-        "items"=> [
-        "header1"=>_m("Main settings"),
-        "main"=> ["cond"=>IfSlPerm(PS_MODP_SETTINGS), "href"=>"modules/polls/modedit.php", "label"=>_m("Polls")],
-        "design"=> ["cond"=>IfSlPerm(PS_MODP_EDIT_DESIGN), "href"=>"modules/polls/designs.php", "label"=>_m("Designs")],
-        ]
+        "bottom_td" => 200,
+        "level" => "submenu",
+        "items" => [
+            "header1" => _m("Main settings"),
+            "main" => ["cond" => IfSlPerm(PS_MODP_SETTINGS), "href" => "modules/polls/modedit.php", "label" => _m("Polls")],
+            "design" => ["cond" => IfSlPerm(PS_MODP_EDIT_DESIGN), "href" => "modules/polls/designs.php", "label" => _m("Designs")],
+        ],
     ];
 
     /*  Second-level (left) menu description:
@@ -150,4 +151,3 @@ function get_aamenus(): array
     // left menu for aaadmin is common to all modules, so it is shared
     return array_merge($aamenus, GetCommonMenu($profile));
 }
-

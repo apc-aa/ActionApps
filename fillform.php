@@ -1,4 +1,5 @@
 <?php
+
 /*
  *  Uses a combination of JavaScript and PHP to fill values in anonymous posting
  *  forms and searchforms.
@@ -90,10 +91,10 @@ https://www.apc.org/
 if (!isset($form)) {
     $form = "f";
 }
-$encap = ( array_key_exists('encap', $_REQUEST) && ($_REQUEST['encap']==="false") ) ? false : true;
+$encap = (array_key_exists('encap', $_REQUEST) && ($_REQUEST['encap'] === "false")) ? false : true;
 
 /** APC-AA configuration file */
-require_once __DIR__."/include/config.php";
+require_once __DIR__ . "/include/config.php";
 /** Set of useful functions used on most pages */
 require_once __DIR__ . "/include/util.php";
 /**  Defines class for item manipulation (shows item in compact or fulltext format, replaces aliases ...) */
@@ -125,14 +126,14 @@ echo fillFormFromVars($fillConds);
 
 if ($show_result) {
     if ($result) {
-        ReadFileSafe(con_url($show_result, "result=".rawurlencode(serialize($result))));
+        ReadFileSafe(con_url($show_result, "result=" . rawurlencode(serialize($result))));
     } else {
         ReadFileSafe($show_result);
     }
 } elseif (is_array($result)) {
     echo "<b>";
-    foreach ( $result as $k => $v) {
-        echo $k.": ";
+    foreach ($result as $k => $v) {
+        echo $k . ": ";
         if (is_array($v)) {
             foreach ($v as $kk => $vv) {
                 echo "$kk - $vv ";
@@ -144,5 +145,3 @@ if ($show_result) {
     }
     echo "</b>";
 }
-
-

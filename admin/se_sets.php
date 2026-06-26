@@ -1,4 +1,5 @@
 <?php
+
 /** se_sets.php - creates sets
  *   expected $slice_id for edit slice
  *   optionally $Msg to show under <h1>Headline</h1> (typically: update successful)
@@ -51,13 +52,15 @@ try {
     // array ( ' Změnit [^…' => 23, )
     $update = InputVars::boolPOST('update');
     $cancel = InputVars::boolPOST('cancel');
-    
+
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
+} catch (Exception $e) {
+    AA_Adminpageutil::pageParameterError($e);
+}
 
 
 if ($cancel) {
-    go_url( StateUrl(self_base() . "index.php"));
+    go_url(StateUrl(self_base() . "index.php"));
 }
 
 if (!IfSlPerm(PS_FULLTEXT)) {
@@ -67,22 +70,22 @@ if (!IfSlPerm(PS_FULLTEXT)) {
 
 $err = [];          // error array (Init - just for initializing variable
 
-if ( $update ) {
+if ($update) {
     do {
-        for ($k=1; $k<=$_POST['setcount']; $k++) {
+        for ($k = 1; $k <= $_POST['setcount']; $k++) {
             $name  = $_POST['name'][$k];
             $sli   = $_POST['sli'][$k];
             $cond  = $_POST['cond'][$k];
             $sort  = $_POST['sort'][$k];
             $objid = $_POST['objid'][$k];
 
-            ValidateInput("name$k",  _m("Name %1", [$k]),      $name,  $err, false, "text");
-            ValidateInput("sli$k",   _m("Slice %1", [$k]),     $sli,   $err, false, "text");
-            ValidateInput("cond$k",  _m("Condition %1", [$k]), $cond,  $err, false, "text");
-            ValidateInput("sort$k",  _m("Sort %1", [$k]),      $sort,  $err, false, "text");
+            ValidateInput("name$k", _m("Name %1", [$k]), $name, $err, false, "text");
+            ValidateInput("sli$k", _m("Slice %1", [$k]), $sli, $err, false, "text");
+            ValidateInput("cond$k", _m("Condition %1", [$k]), $cond, $err, false, "text");
+            ValidateInput("sort$k", _m("Sort %1", [$k]), $sort, $err, false, "text");
             ValidateInput("objid$k", _m("Object ID %1", [$k]), $objid, $err, false, "text");
 
-            if ( count($err)) {
+            if (count($err)) {
                 break;
             }
 
@@ -100,31 +103,31 @@ if ( $update ) {
 
     } while (false);
 
-    if ( !count($err) ) {
+    if (!count($err)) {
         $Msg = MsgOk(_m("Sets stored successfully"));
     }
 }
 
 
-$apage = new AA_Adminpageutil('sliceadmin','sets');
+$apage = new AA_Adminpageutil('sliceadmin', 'sets');
 $apage->setTitle(_m("Admin - Item Sets"));
 $apage->printHead($err, $Msg);
 
 $form_buttons = [
     "update",
-    "cancel" => ["url"=>"se_fields.php"],
+    "cancel" => ["url" => "se_fields.php"],
 ];
 FrmTabCaption(_m("Sets"), $form_buttons);
 FrmStaticText('', _m('Conditions are in "d-..." or "conds[]" form - just like:<br> &nbsp; d-headline........,category.......1-BEGIN-Bio (d-&lt;fields&gt;-&lt;operator&gt;-&lt;value&gt;-&lt;fields&gt;-&lt;op...)<br> &nbsp; conds[0][category........]=first&conds[1][switch.........1]=1 (default operator is RLIKE, here!)'), '', '', false);
 
 $set_ids = AA_Object::querySet('AA_Set', new AA_Set([AA::$module_id]));
 $k = 0;
-foreach( $set_ids as $i => $set_id ) {
+foreach ($set_ids as $i => $set_id) {
     $set = AA_Object::load($set_id, 'AA_Set');    /** @var AA_Set $set */
-    if ( is_null($set)) {
+    if (is_null($set)) {
         continue;
     }
-    $k = $i+1;
+    $k = $i + 1;
     FrmHidden("objid[$k]", $set->getId());
     FrmStaticText(_m('ID'), $set->getId());
     FrmInputText("name[$k]", _m("Set name %1", [$k]), $set->getName(), 32, 32, false, _m('use alphanumeric characters only'));  // it is not absolutely necessary to use alphanum only, but it is easier to use, then

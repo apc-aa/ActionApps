@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Gets first x (20) entries (tasks) from toexecute table (=task queue) - sorted
  * by priority and executes it. It is used for tasks, which is relatively easy
@@ -40,7 +41,7 @@ use AA\Later\Toexecute;
 // Real cron runner — suppress the post-response fallback in locsess.php.
 define('AA_NO_CRON_FALLBACK_THIS_REQUEST', true);
 
-require_once __DIR__."/../include/config.php";
+require_once __DIR__ . "/../include/config.php";
 /** Main include file for using session management function on page */
 require_once __DIR__ . "/../include/locsess.php";
 require_once __DIR__ . "/../include/varset.php";
@@ -64,7 +65,7 @@ AA_Log::write('TOEXECUTE', 'toexecute.php', 'start');
 // first of all - make sure all AA maintenance tasks are scheduled
 (new ScheduleAaTasks())->planAaTasks();
 
-$toexecute = new Toexecute;
+$toexecute = new Toexecute();
 
 /*
 $mail = new AA_Mail;
@@ -85,12 +86,7 @@ $toexecute->execute();
 touch(CronFallback::lockFile());
 
 if (AA::$debug) {
-    echo '<br>Dababase instances: '. DB_PDO::$_instances_no;
-    echo '<br>UsedModules:<br> - '. implode('<br> - ', array_map(static fn ($mid) => AA_Module::getModuleName($mid), AA_Module::getUsedModules()));
+    echo '<br>Dababase instances: ' . DB_PDO::$_instances_no;
+    echo '<br>UsedModules:<br> - ' . implode('<br> - ', array_map(static fn($mid) => AA_Module::getModuleName($mid), AA_Module::getUsedModules()));
     echo AA::$dbg->duration_stat();
 }
-
-
-
-
-

@@ -1,4 +1,6 @@
-<?php  //slice_id expected
+<?php
+
+//slice_id expected
 /**
  * PHP version 7.2+
  *
@@ -37,7 +39,7 @@ require_once __DIR__ . "/../include/item.php";
 require_once __DIR__ . "/../include/actions.php";
 require_once __DIR__ . "/../include/mail.php";
 
-if ( !IsSuperadmin() ) {
+if (!IsSuperadmin()) {
     MsgPage(_m("You do not have permission to manage Emails"));
     exit;
 }
@@ -50,5 +52,3 @@ if ($_GET['id']) {
     $apage->addHelpbox('', AA_Collection::getEmailAliasesHelpbox());
 }
 $apage->printWithManager((new Manager('email', $managed))->setAllModules());
-
-

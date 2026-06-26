@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Alerts admin: Selections (alerts_collection_filter).
  *
@@ -55,13 +56,16 @@ try {
     $do_save      = InputVars::boolPOST('save_order');
     $idx          = InputVars::arrayPOST('idx');          // [filterid => order]
     $Msg          = InputVars::stringGETPOST('Msg');
-} catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
+} catch (Exception $e) {
+    AA_Adminpageutil::pageParameterError($e);
+}
 
 set_collectionid();
 $collectionid = $GLOBALS['collectionid'];
 
 /** Selections the current user may add: filterid => description, restricted to the user's PS_FULLTEXT slices. */
-function alertsAvailableSelections(): array {
+function alertsAvailableSelections(): array
+{
     $available = [];
     $myslices  = GetUserSlices();
     $db = getDB();
@@ -99,8 +103,8 @@ if ($add && $add_filterid && isset($available[$add_filterid])
         && !DB_AA::test('alerts_collection_filter', [['collectionid', $collectionid, 's'], ['filterid', $add_filterid, 'i']])) {
     $varset = new CVarset();
     $varset->set('collectionid', $collectionid, 'text');
-    $varset->set('filterid',     $add_filterid, 'number');
-    $varset->set('myindex',      $add_myindex ?: 1, 'number');
+    $varset->set('filterid', $add_filterid, 'number');
+    $varset->set('myindex', $add_myindex ?: 1, 'number');
     $varset->doInsert('alerts_collection_filter');
 }
 

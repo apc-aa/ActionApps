@@ -1,4 +1,5 @@
 <?php
+
 /**
  * File contains definition of AA_Actionapps class - holding information about
  * one AA installation.
@@ -35,17 +36,20 @@ https://www.apc.org/
 //  1) in $_POST,$_GET,$_COOKIE,$_REQUEST variables the values are not quoted
 //  2) the variables are imported in global scope and is quoted
 // We are trying to remove any dependecy on the point 2) and use only $_* superglobals
-function AddslashesDeep($value): array|string { return is_array($value) ? array_map('AddslashesDeep',   $value) : addslashes($value);   }
+function AddslashesDeep($value): array|string
+{
+    return is_array($value) ? array_map('AddslashesDeep', $value) : addslashes($value);
+}
 
 foreach ($_REQUEST as $k => $v) {
     $$k = AddslashesDeep($v);
 }
 // ----- input variables normalization - end ----------------------------------
 
-require_once __DIR__."/../../include/config.php";
+require_once __DIR__ . "/../../include/config.php";
 require_once __DIR__ . "/../../include/mgettext.php";
 require_once __DIR__ . "/../../include/locauth.php";
-require_once __DIR__."/actionapps.class.php";
+require_once __DIR__ . "/actionapps.class.php";
 
 if (!is_long_id(AA::$module_id = $_POST['change_id'] ?: $_GET['change_id'] ?: $_POST['module_id'] ?: $_GET['module_id'] ?: $_POST['slice_id'] ?: $_GET['slice_id'])) {
     AA::$module_id = '';

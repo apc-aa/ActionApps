@@ -1,4 +1,5 @@
 <?php
+
 /** Event handlers called from include/event_handler.php3
  *
  * @package Alerts
@@ -33,14 +34,14 @@ require_once __DIR__ . "/../../modules/alerts/alerts_sending.php";
 /** Sends welcome e-mail to newly subscribed readers, which means new
 *   "items" appearing in a Reader Management Slice.
 */
-function AlertsSendWelcome( $slice_id, $itemContent ): void
+function AlertsSendWelcome($slice_id, $itemContent): void
 {
     $mydb = getDB();
 
     $mydb->query("SELECT alerts_collection.id, slice_url, emailid_welcome
         FROM alerts_collection INNER JOIN module
         ON alerts_collection.module_id = module.id
-        WHERE alerts_collection.slice_id=".xpack_id($slice_id));
+        WHERE alerts_collection.slice_id=" . xpack_id($slice_id));
 
     $slice   = AA_Slice::getModule($slice_id);
     $aliases = $slice->aliases();
@@ -51,16 +52,16 @@ function AlertsSendWelcome( $slice_id, $itemContent ): void
     if (! $itemContent->getValue(FIELDID_MAIL_CONFIRMED)) {   // switch..........
 
         while ($mydb->next_record()) {
-            $aliases["_#COLLFORM"] = GetAliasDef( "f_t:". get_url($mydb->f("slice_url"),['aw'=>$itemContent->getValue(FIELDID_ACCESS_CODE)]), "id..............");
-            $aliases["_#HOWOFTEN"] = GetAliasDef( "f_h",  getAlertsField(FIELDID_HOWOFTEN, $mydb->f("id")));
-            $aliases["_#CONFIRM_"] = GetAliasDef( "f_h",  FIELDID_MAIL_CONFIRMED);
+            $aliases["_#COLLFORM"] = GetAliasDef("f_t:" . get_url($mydb->f("slice_url"), ['aw' => $itemContent->getValue(FIELDID_ACCESS_CODE)]), "id..............");
+            $aliases["_#HOWOFTEN"] = GetAliasDef("f_h", getAlertsField(FIELDID_HOWOFTEN, $mydb->f("id")));
+            $aliases["_#CONFIRM_"] = GetAliasDef("f_h", FIELDID_MAIL_CONFIRMED);
             $item  = new AA_Item($itemContent, $aliases);
 
             if ($mydb->f("emailid_welcome")) {
                 AA_Mail::sendTemplate($mydb->f("emailid_welcome"), $itemContent->getValue(FIELDID_EMAIL), $item);
             }
             break; // one is enough
-                   // @todo - send right e-mails (depending on the subscribed alerts, when readers works for more than 1 alerts)
+            // @todo - send right e-mails (depending on the subscribed alerts, when readers works for more than 1 alerts)
         }
     }
     freeDB($mydb);
@@ -75,17 +76,17 @@ function AlertsSendWelcome( $slice_id, $itemContent ): void
 *   by the regular call from the cron.php script in the same way
 *   as daily, weekly or monthly alerts.
 */
-function AlertsSendInstantAlert( $item_id, $slice_id ): void
+function AlertsSendInstantAlert($item_id, $slice_id): void
 {
     $db = getDB();
-    $db->query ("SELECT moved2active, publish_date, expiry_date FROM item  WHERE id=".xpack_id($item_id));
+    $db->query("SELECT moved2active, publish_date, expiry_date FROM item  WHERE id=" . xpack_id($item_id));
 
     if ($db->next_record() && $db->f("moved2active") && time() >= $db->f("publish_date") && time() <= $db->f("expiry_date")) {
-        $db->query ("
+        $db->query("
             SELECT DISTINCT ACF.collectionid FROM alerts_collection_filter ACF
             INNER JOIN alerts_filter AF ON ACF.filterid = AF.id
             INNER JOIN view ON view.id = AF.vid
-            WHERE view.slice_id=".xpack_id($slice_id));
+            WHERE view.slice_id=" . xpack_id($slice_id));
         while ($db->next_record()) {
             $collection_ids[] = $db->f("collectionid");
         }
@@ -94,9 +95,8 @@ function AlertsSendInstantAlert( $item_id, $slice_id ): void
             MoreTimeLimit();  // This can take a while
             send_emails("instant", $collection_ids, "", true, $item_id);
             // We must reset moved2active so that the item is not re-sent on update.
-            $db->query ("UPDATE item SET moved2active = 0 WHERE id=" .xpack_id($item_id));
+            $db->query("UPDATE item SET moved2active = 0 WHERE id=" . xpack_id($item_id));
         }
     }
     freeDB($db);
 }
-

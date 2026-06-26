@@ -1,4 +1,6 @@
-<?php  //slice_id expected
+<?php
+
+//slice_id expected
 /**
  * PHP version 7.2+
  *
@@ -32,7 +34,7 @@ use AA\Manager;
 // const  AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
 
-if ( !IsSuperadmin() ) {
+if (!IsSuperadmin()) {
     MsgPage(_m("You do not have permission to manage ActionApps logs"));
     exit;
 }
@@ -67,4 +69,3 @@ $managed->settings['itemview']['format']['odd_row_format'] = '
 $apage = new AA_Adminpageutil('aaadmin', 'searchlog');
 $apage->setTitle(_m("View SearchLog"));
 $apage->printWithManager((new Manager('searchlog', $managed))->setAllModules());
-

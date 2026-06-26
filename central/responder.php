@@ -1,4 +1,5 @@
 <?php
+
 //$Id$
 /*
 Copyright (C) 1999, 2000 Association for Progressive Communications
@@ -27,31 +28,43 @@ if (!empty($_REQUEST['free'])) {   // can't be just POST - we use it in live Tag
     $nobody = true;
 }
 
-require_once __DIR__."/include/init_central.php";
+require_once __DIR__ . "/include/init_central.php";
 
 /** AA_Responder base class - defines some useful common methods
  */
-class AA_Responder extends AA_Object {
-
-    function run(): AA_Response { return new AA_Response();}
+class AA_Responder extends AA_Object
+{
+    public function run(): AA_Response
+    {
+        return new AA_Response();
+    }
 
     /** by default only superadmins are allowed to perform remote operations */
-    function isPerm() { return IsSuperadmin(); }
+    public function isPerm()
+    {
+        return IsSuperadmin();
+    }
 
-    public static function name(): string   { return str_replace('AA_Responder_', '', static::class); }
+    public static function name(): string
+    {
+        return str_replace('AA_Responder_', '', static::class);
+    }
 }
 
 /** Used for autentication
  *  @return Session ID
  */
-class AA_Responder_Get_Sessionid extends AA_Responder {
-
-    function __construct($param=null) {}
+class AA_Responder_Get_Sessionid extends AA_Responder
+{
+    public function __construct($param = null) {}
 
     /** every authenticated user can get his/her session_id */
-    function isPerm(): bool { return true; }
+    public function isPerm(): bool
+    {
+        return true;
+    }
 
-    function run(): AA_Response
+    public function run(): AA_Response
     {
         global $sess, $auth;
         return new AA_Response([$sess->id(), $auth]);
@@ -62,14 +75,14 @@ class AA_Responder_Get_Sessionid extends AA_Responder {
  *  Used by Central to obtain long-lived auth token
  *  @return JWT string
  */
-class AA_Responder_Get_Jwt extends AA_Responder {
-
-    function __construct($param=null) {}
+class AA_Responder_Get_Jwt extends AA_Responder
+{
+    public function __construct($param = null) {}
 
     /** Only superadmins can get JWT tokens */
     // isPerm() inherited — returns IsSuperadmin()
 
-    function run(): AA_Response
+    public function run(): AA_Response
     {
         $token = [
             'sub'  => AuthGetUid(),
@@ -85,17 +98,20 @@ class AA_Responder_Get_Jwt extends AA_Responder {
 /** Used for autentication
  *  @return Session ID
  */
-class AA_Responder_Logout extends AA_Responder {
-
-    function __construct($param=null) {}
+class AA_Responder_Logout extends AA_Responder
+{
+    public function __construct($param = null) {}
 
     /** every authenticated user can get his/her session_id */
-    function isPerm(): bool { return true; }
+    public function isPerm(): bool
+    {
+        return true;
+    }
 
-    function run(): AA_Response
+    public function run(): AA_Response
     {
         global $sess;
-        $ret = ['sessid'=>$sess->id(), 'command' => $GLOBALS['request']->getCommand()];
+        $ret = ['sessid' => $sess->id(), 'command' => $GLOBALS['request']->getCommand()];
         if (is_object($sess)) {
             $sess->delete();
         }
@@ -104,25 +120,28 @@ class AA_Responder_Logout extends AA_Responder {
 }
 
 /** @return array of information about AA - org_name, domaun */
-class AA_Responder_Get_Aaname extends AA_Responder {
-    function __construct($param=null) {}
+class AA_Responder_Get_Aaname extends AA_Responder
+{
+    public function __construct($param = null) {}
 
-    function run(): AA_Response
+    public function run(): AA_Response
     {
-        return new AA_Response(['org_name'=>ORG_NAME, 'domain'=>AA_HTTP_DOMAIN]);
+        return new AA_Response(['org_name' => ORG_NAME, 'domain' => AA_HTTP_DOMAIN]);
     }
 }
 
 /** @return array of information about AA - org_name, domain */
-class AA_Responder_Get_Modules extends AA_Responder {
+class AA_Responder_Get_Modules extends AA_Responder
+{
     /** array of module types to get */
     private $types;
 
-    function __construct($param=null) {
+    public function __construct($param = null)
+    {
         $this->types = is_array($param['types']) ? $param['types'] : [];
     }
 
-    function run(): AA_Response
+    public function run(): AA_Response
     {
         $type_sql = !count($this->types) ? '' : Cvarset::sqlin('type', $this->types) . ' AND ';
         $modules  = GetTable2Array("SELECT id, name FROM module WHERE $type_sql deleted=0  ORDER BY type, priority, name", "unpack:id", 'name');
@@ -133,23 +152,25 @@ class AA_Responder_Get_Modules extends AA_Responder {
 /** return structure which define all the definition of the slice (like slice
  *  properties, fields, views, ...). It is returned for all the slices in array
  */
-class AA_Responder_Get_Module_Defs extends AA_Responder {
+class AA_Responder_Get_Module_Defs extends AA_Responder
+{
     private array $ids;
     private array $limited;  // array - limits the definitions sent
     private string $type;     // module type
 
-    function __construct($param) {
+    public function __construct($param)
+    {
         $this->ids     = is_array($param['ids']) ? $param['ids'] : [];
         $this->limited = is_array($param['limited']) ? $param['limited'] : [];
-        $this->type    = (string)$param['type'];
+        $this->type    = (string) $param['type'];
     }
 
-    function run(): AA_Response
+    public function run(): AA_Response
     {
         $ret        = [];
-        $class_name = 'AA_Definition_Module_'. $this->type;
-        foreach ( $this->ids as $sid ) {
-            $ret[$sid] = new $class_name;
+        $class_name = 'AA_Definition_Module_' . $this->type;
+        foreach ($this->ids as $sid) {
+            $ret[$sid] = new $class_name();
             $ret[$sid]->loadForId($sid, $this->limited);
         }
         return new AA_Response($ret);
@@ -159,17 +180,19 @@ class AA_Responder_Get_Module_Defs extends AA_Responder {
 /** return structure which define all the definition of the slice (like slice
  *  properties, fields, views, ...). It is returned for all the slices in array
  */
-class AA_Responder_Do_Synchronize extends AA_Responder {
+class AA_Responder_Do_Synchronize extends AA_Responder
+{
     private array $sync_commands;
 
-    function __construct($param) {
+    public function __construct($param)
+    {
         $this->sync_commands = is_array($param['sync']) ? $param['sync'] : [];
     }
 
-    function run(): AA_Response
+    public function run(): AA_Response
     {
         $ret = [];
-        foreach ( $this->sync_commands as $serialized_command ) {
+        foreach ($this->sync_commands as $serialized_command) {
             $cmd = unserialize($serialized_command);
             $ret[] = $cmd->doAction();
         }
@@ -182,16 +205,18 @@ class AA_Responder_Do_Synchronize extends AA_Responder {
  *  $param['class']  - fully qualified Optimize class, e.g. 'AA\Optimize\UpdateDbStructure'
  *  $param['method'] - one of the actions declared by that class (typically 'test' or 'repair')
  */
-class AA_Responder_Do_Optimize extends AA_Responder {
+class AA_Responder_Do_Optimize extends AA_Responder
+{
     protected string $class;
     protected string $method;
 
-    function __construct($param = null) {
-        $this->class  = (string)($param['class']  ?? '');
-        $this->method = (string)($param['method'] ?? '');
+    public function __construct($param = null)
+    {
+        $this->class  = (string) ($param['class']  ?? '');
+        $this->method = (string) ($param['method'] ?? '');
     }
 
-    function run(): AA_Response
+    public function run(): AA_Response
     {
         if (!is_subclass_of($this->class, \AA\Optimize\AbstractOptimize::class)) {
             return new AA_Response("Unknown optimize class: $this->class", 4);
@@ -207,14 +232,16 @@ class AA_Responder_Do_Optimize extends AA_Responder {
 }
 
 /** imports the slice to the database */
-class AA_Responder_Do_Import_Module_Chunk extends AA_Responder {
+class AA_Responder_Do_Import_Module_Chunk extends AA_Responder
+{
     private ?AA_Definition_Module_Chunk $definition_chunk;
 
-    function __construct($param) {
+    public function __construct($param)
+    {
         $this->definition_chunk = $param['definition_chunk'];
     }
 
-    function run(): AA_Response
+    public function run(): AA_Response
     {
         AA_Log::write('IMPORT', AA_Log::context(), new AA_Logentry_Import(['phase' => 'start', 'detail' => serialize($this->definition_chunk)]));
         $ret = $this->definition_chunk->importModuleChunk();
@@ -224,7 +251,8 @@ class AA_Responder_Do_Import_Module_Chunk extends AA_Responder {
 }
 
 /** return html widget for the field of item */
-class AA_Responder_Get_Widget extends AA_Responder {
+class AA_Responder_Get_Widget extends AA_Responder
+{
     protected string $field_id;
     protected string $item_id;
     protected string $widget_type;
@@ -232,18 +260,22 @@ class AA_Responder_Get_Widget extends AA_Responder {
     protected string $lang;
     protected string $context;   // slice_pwd (spwd) for now
 
-    function __construct($param=null) {
-        $this->field_id             = (string)$param['field_id'];
-        $this->item_id              = (string)$param['item_id'];
-        $this->widget_type          = (string)$param['widget_type'];
-        $this->widget_properties    = (string)$param['widget_properties'];
-        $this->lang                 = (string)$param['lang'];
-        $this->context              = (string)$param['context'];
+    public function __construct($param = null)
+    {
+        $this->field_id             = (string) $param['field_id'];
+        $this->item_id              = (string) $param['item_id'];
+        $this->widget_type          = (string) $param['widget_type'];
+        $this->widget_properties    = (string) $param['widget_properties'];
+        $this->lang                 = (string) $param['lang'];
+        $this->context              = (string) $param['context'];
     }
 
-    function isPerm(): bool { return true; }  //return true;
+    public function isPerm(): bool
+    {
+        return true;
+    }  //return true;
 
-    function run(): AA_Response
+    public function run(): AA_Response
     {
 
         $item         = AA_Item::getItem(new zids($this->item_id));
@@ -267,9 +299,9 @@ class AA_Responder_Get_Widget extends AA_Responder {
         }
 
         // Use right language (from slice settings) - languages are used for button texts, ...
-        $lang         = $this->lang ? Langs::getLang(Langs::getLangCode2Name($this->lang).'-utf8') : $slice->getLang();
+        $lang         = $this->lang ? Langs::getLang(Langs::getLangCode2Name($this->lang) . '-utf8') : $slice->getLang();
         mgettext_bind($lang, 'output');
-        AA::$lang     = strtolower(substr($lang,0,2));   // actual language - two letter shortcut cz / es / en
+        AA::$lang     = strtolower(substr($lang, 0, 2));   // actual language - two letter shortcut cz / es / en
         AA::$langnum  = [Langs::getLangName2Num(AA::$lang)];   // array of preferred languages in priority order.
         AA::setEncoding(Langs::getCharset($lang));
 
@@ -295,18 +327,21 @@ class AA_Responder_Optimize4id extends AA_Responder
     protected string $class;  // class to run
     protected string $id;     // optimize ID - could be slice, item, record ot some compound ID
 
-    function __construct($param = null)
+    public function __construct($param = null)
     {
-        $this->class = (string)$param['class'];
-        $this->id    = (string)$param['id'];
+        $this->class = (string) $param['class'];
+        $this->id    = (string) $param['id'];
     }
 
-    function isPerm() { return IsSuperadmin(); }
+    public function isPerm()
+    {
+        return IsSuperadmin();
+    }
 
-    function run(): AA_Response
+    public function run(): AA_Response
     {
         /** @var \AA\Optimize\AbstractOptimize $optimizer */
-        $optimizer = AA_Serializable::factory('AA\\Optimize\\'.$this->class);
+        $optimizer = AA_Serializable::factory('AA\\Optimize\\' . $this->class);
         $ret = 'no repair4ids';
         if ($optimizer?->hasAction('repair4ids')) {
             $ret = $optimizer->repair4ids([$this->id]);
@@ -351,17 +386,20 @@ class AA_Responder_Optimize4id extends AA_Responder
 
 
 /** return html selectbox of fields in given slice */
-class AA_Responder_Get_Fields extends AA_Responder {
+class AA_Responder_Get_Fields extends AA_Responder
+{
     /** array of module types to get */
     private string $slice_id;
     private bool $slice_fields;  // bool
 
-    function __construct($param=null) {
+    public function __construct($param = null)
+    {
         $this->slice_id     = (string) $param['slice_id'];
         $this->slice_fields = (bool) $param['slice_fields'];
     }
 
-    function isPerm() {
+    public function isPerm()
+    {
         // AA Core Fields slice must be readable by any slice Administrator (for field template picking)
         if ($this->slice_id === '41415f436f72655f4669656c64732e2e') {
             $slices = GetUserSlices(PS_FIELDS);
@@ -370,11 +408,11 @@ class AA_Responder_Get_Fields extends AA_Responder {
         return IfSlPerm(PS_FIELDS);
     }
 
-    function run(): AA_Response
+    public function run(): AA_Response
     {
         $ret = '';
         if ($slice = AA_Slice::getModule($this->slice_id)) {
-            $encoder = new ConvertCharset;
+            $encoder = new ConvertCharset();
 
             // AA_Core_Fields.. holds also templates for special slice fields, like _upload_url.....
             // and we do not want to list it as option for normal fields
@@ -396,24 +434,29 @@ class AA_Responder_Get_Fields extends AA_Responder {
 }
 
 /** return html selectbox of fields in given slice */
-class AA_Responder_Tags extends AA_Responder {
+class AA_Responder_Tags extends AA_Responder
+{
     /** array of module types to get */
     protected string $slice_id;
     protected string $input;
     protected string $field_id;
     protected string $item_id;  // not filled for new item
 
-    function  __construct($param=null) {
+    public function __construct($param = null)
+    {
         // the slice id and the field id defines the field, where the widget is DEFINED
-        $this->slice_id = (string)$param['s'];
-        $this->field_id = (string)$param['f'];
-        $this->input    = (string)$param['q'];
-        $this->item_id  = (string)$param['i'];
+        $this->slice_id = (string) $param['s'];
+        $this->field_id = (string) $param['f'];
+        $this->input    = (string) $param['q'];
+        $this->item_id  = (string) $param['i'];
     }
 
-    function isPerm(): bool { return true; }
+    public function isPerm(): bool
+    {
+        return true;
+    }
 
-    function run(): AA_Response
+    public function run(): AA_Response
     {
         $ret    = [];
         $trimed = trim($this->input);
@@ -424,22 +467,22 @@ class AA_Responder_Tags extends AA_Responder {
         if ($field && $trimed) {
             $widget = $field->getWidget();
             $opts   = $widget->getFormattedOptions($this->item_id, null, $this->input);
-            $i=100;
+            $i = 100;
             foreach ($opts as $id => $text) {
                 if (trim($text) === trim($this->input)) {
                     // to the front
-                    array_unshift($ret, ['id'=>$id, 'text'=>$text]);
+                    array_unshift($ret, ['id' => $id, 'text' => $text]);
                     $found = true;
                 } else {
-                    $ret[] = ['id'=>$id, 'text'=>$text];
+                    $ret[] = ['id' => $id, 'text' => $text];
                 }
                 if (--$i === 0) {
                     break;
                 }
             }
         }
-        if ($trimed && !$found && $widget && (int)$widget->getProperty('disable_new', 0) !== 1) {
-            array_unshift($ret, ['id'=>$this->input, 'text'=>$this->input]);
+        if ($trimed && !$found && $widget && (int) $widget->getProperty('disable_new', 0) !== 1) {
+            array_unshift($ret, ['id' => $this->input, 'text' => $this->input]);
         }
         header("Content-type: application/json");
         return new AA_Response(json_encode($ret));
@@ -447,23 +490,28 @@ class AA_Responder_Tags extends AA_Responder {
 }
 
 /** return html with items matching the filter for specified widget - add new relation for WidgetRim */
-class AA_Responder_Widget_Selection extends AA_Responder {
+class AA_Responder_Widget_Selection extends AA_Responder
+{
     /** array of module types to get */
     protected string $slice_id;
     protected string $input;
     protected string $field_id;
     protected int    $limit = 50;
 
-    function  __construct($param=null) {
+    public function __construct($param = null)
+    {
         // the slice id and the field id defines the field, where the widget is DEFINED
-        $this->slice_id = (string)$param['s'];
-        $this->field_id = (string)$param['f'];
-        $this->input    = (string)$param['q'];
+        $this->slice_id = (string) $param['s'];
+        $this->field_id = (string) $param['f'];
+        $this->input    = (string) $param['q'];
     }
 
-    function isPerm(): bool { return true; }
+    public function isPerm(): bool
+    {
+        return true;
+    }
 
-    function run(): AA_Response
+    public function run(): AA_Response
     {
         $ret   = '';
         $slice = AA_Slice::getModule($this->slice_id);
@@ -476,14 +524,16 @@ class AA_Responder_Widget_Selection extends AA_Responder {
 
 
 /** return html for item formatted as specified in widget in slice_id/field_id */
-class AA_Responder_Formatted_By_Widget extends AA_Responder {
+class AA_Responder_Formatted_By_Widget extends AA_Responder
+{
     /** array of module types to get */
     protected string $slice_id;
     protected string $field_id;
     protected string $item_id;
     protected string $base_id;
 
-    function  __construct($param=null) {
+    public function __construct($param = null)
+    {
         // the slice id and the field id defines the field, where the widget is DEFINED
         $this->slice_id = $param['s'];
         $this->field_id = $param['f'];
@@ -491,9 +541,12 @@ class AA_Responder_Formatted_By_Widget extends AA_Responder {
         $this->base_id  = $param['b'];
     }
 
-    function isPerm(): bool { return true; }
+    public function isPerm(): bool
+    {
+        return true;
+    }
 
-    function run(): AA_Response
+    public function run(): AA_Response
     {
         $ret   = '';
         $slice = AA_Slice::getModule($this->slice_id);
@@ -508,20 +561,23 @@ class AA_Responder_Formatted_By_Widget extends AA_Responder {
 
 
 /** return sends one item in mail to alert irregular readers collection */
-class AA_Responder_Alertitem extends AA_Responder {
+class AA_Responder_Alertitem extends AA_Responder
+{
     /** array of module types to get */
     protected $item_id;
     protected $collection_id;
     protected $test_email;
 
-    function  __construct($param=null) {
+    public function __construct($param = null)
+    {
         // the slice id and the field id defines the field, where the widget is DEFINED
         $this->item_id       = $param['item_id'];
         $this->collection_id = $param['collection_id'];
-        $this->test_email    = strpos($param['test_email'],'@') ? [$param['test_email']] : [];
+        $this->test_email    = strpos($param['test_email'], '@') ? [$param['test_email']] : [];
     }
 
-    function isPerm() {
+    public function isPerm()
+    {
         if (!is_long_id($this->item_id)) {
             return false;
         }
@@ -532,10 +588,10 @@ class AA_Responder_Alertitem extends AA_Responder {
         return false;
     }
 
-    function run(): AA_Response
+    public function run(): AA_Response
     {
         $ret = '0';
-        if (is_long_id($this->item_id) && strlen($this->collection_id)===5) {
+        if (is_long_id($this->item_id) && strlen($this->collection_id) === 5) {
             //initialize_last();
             //MoreTimeLimit(); // This can take a while
             $ret = send_emails("irregular", [$this->collection_id], $this->test_email, true, $this->item_id);
@@ -550,30 +606,34 @@ class AA_Responder_Alertitem extends AA_Responder {
  *  backend of the item-edit "Compare to" picker (ChangesMonitor). Read-only. Authorised to anyone
  *  who may edit the item (the same gate as itemedit.php / iteminfo.php), so the history is never
  *  exposed wider than the item itself. */
-class AA_Responder_Item_History_Diff extends AA_Responder {
+class AA_Responder_Item_History_Diff extends AA_Responder
+{
     protected string $id;
     protected string $cid;
     protected string $base;
 
-    function __construct($param=null) {
+    public function __construct($param = null)
+    {
         $this->id   = (string) ($param['id']   ?? '');
         $this->cid  = (string) ($param['cid']  ?? '');
         $this->base = (string) ($param['base'] ?? '');
     }
 
-    function isPerm(): bool {
+    public function isPerm(): bool
+    {
         // Superadmin-only, matching the itemhistory.php page gate it serves.
         if (!is_long_id($this->id) || !IsSuperadmin()) {
             return false;
         }
-//        $item = AA_Items::getItem(new zids($this->id), null, true, true);
-//        return $item && (IfSlPerm(PS_EDIT_ALL_ITEMS, $item->getSliceID()) || $item->getval('posted_by.......') == AuthGetUid());
+        //        $item = AA_Items::getItem(new zids($this->id), null, true, true);
+        //        return $item && (IfSlPerm(PS_EDIT_ALL_ITEMS, $item->getSliceID()) || $item->getval('posted_by.......') == AuthGetUid());
 
         // admin read: ignore the slice reading password so a protected item still resolves (see iteminfo.php)
         return (bool) AA_Items::getItem(new zids($this->id), null, true, true);
     }
 
-    function run(): AA_Response {
+    public function run(): AA_Response
+    {
         return new AA_Response(\AA\Util\ChangesMonitor::singleton()->renderEventDiffFragment($this->id, $this->cid, $this->base));
     }
 }
@@ -587,7 +647,7 @@ $GLOBALS['apc_state']['xuid']  = AuthGetUid();
 $request = null;
 
 // we use primarily POST, but manager class actions needs to send GET request
-if ( $_POST['request'] ) {
+if ($_POST['request']) {
     $request = AA_Request::decode($_POST['request']);
 } elseif ($_GET['command']) {  // ajax call (html output expected)
 
@@ -597,13 +657,13 @@ if ( $_POST['request'] ) {
     $request = new AA_Request($_GET['command'], $_REQUEST);  // params are in $_POST for ajax
 }
 
-if ( !is_object($request)) {
+if (!is_object($request)) {
     AA_Response::error(_m("No request sent for responder.php"), 102);  // error code > 0
     exit;
 }
 
 $responder = AA_Responder::factoryByName($request->getCommand(), $request->getParameters());
-if ( empty($responder) ) {
+if (empty($responder)) {
     AA_Response::error(_m("Bad request sent for responder.php - %1", [$request->getCommand()]), 103);  // error code > 0
     exit;
 }
@@ -621,6 +681,3 @@ if ($request->getCommand() !== 'Logout') {
 
 $response->respond();
 exit;
-
-
-

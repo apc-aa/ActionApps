@@ -37,7 +37,10 @@ https://www.apc.org/
 //  1) in $_POST,$_GET,$_COOKIE,$_REQUEST variables the values are not quoted
 //  2) the variables are imported in global scope and is quoted
 // We are trying to remove any dependecy on the point 2) and use only $_* superglobals
-function AddslashesDeep($value): array|string { return is_array($value) ? array_map('AddslashesDeep',   $value) : addslashes($value);   }
+function AddslashesDeep($value): array|string
+{
+    return is_array($value) ? array_map('AddslashesDeep', $value) : addslashes($value);
+}
 
 foreach ($_REQUEST as $k => $v) {
     $$k = AddslashesDeep($v);
@@ -48,21 +51,21 @@ foreach ($_REQUEST as $k => $v) {
 /**
  * PutSearchLog
  */
-function PutSearchLog($searchlog, $found_count=0): void
+function PutSearchLog($searchlog, $found_count = 0): void
 {
-    $httpquery    = $_SERVER['QUERY_STRING_UNESCAPED'].$_SERVER['REDIRECT_QUERY_STRING_UNESCAPED'];
+    $httpquery    = $_SERVER['QUERY_STRING_UNESCAPED'] . $_SERVER['REDIRECT_QUERY_STRING_UNESCAPED'];
     $httpquery    = DeBackslash($httpquery);
     $httpquery    = str_replace("'", "\\'", $httpquery);
     $db           = getDb();
-    [$usec, $sec] = explode(" ",microtime());
-    $slice_time   = 1000 * ((float)$usec + (float)$sec - $GLOBALS['disc_starttime']);
+    [$usec, $sec] = explode(" ", microtime());
+    $slice_time   = 1000 * ((float) $usec + (float) $sec - $GLOBALS['disc_starttime']);
     $user         = $_SERVER['PHP_AUTH_USER'];
-    $db->query("INSERT INTO searchlog (date,query,user,found_count,search_time,additional1) VALUES (".time().",'$httpquery','$user',$found_count,$slice_time,'discuss $searchlog')");
+    $db->query("INSERT INTO searchlog (date,query,user,found_count,search_time,additional1) VALUES (" . time() . ",'$httpquery','$user',$found_count,$slice_time,'discuss $searchlog')");
     freeDb($db);
 }
 
 /** APC-AA configuration file */
-require_once __DIR__."/./include/config.php";
+require_once __DIR__ . "/./include/config.php";
 /** Set of useful functions used on most pages */
 require_once __DIR__ . "/include/util.php";
 /** Mail sending functions */
@@ -80,19 +83,19 @@ require_once __DIR__ . "/include/locsess.php";    // DB_AA object definition
 
 add_vars();
 
-if (!is_object( $db )) {
+if (!is_object($db)) {
     $db = getDB();
 }
 
-[$usec, $sec]   = explode(" ",microtime());
-$disc_starttime = ((float)$usec + (float)$sec);
+[$usec, $sec]   = explode(" ", microtime());
+$disc_starttime = ((float) $usec + (float) $sec);
 
 $view_param              = AA_View::parseViewParameters();
-$view_param["disc_ids"]  = QueryDiscIDs($slice_id, $conds, $sort, $slices );
+$view_param["disc_ids"]  = QueryDiscIDs($slice_id, $conds, $sort, $slices);
 $view_param["disc_type"] = "list";
 // special url parameter disc_url - tell us, where we have to show
 // discussion fulltext (good for discussion search)
-if ( $disc_url ) {
+if ($disc_url) {
     $view_param["disc_url"] = $disc_url;
 }
 
@@ -119,4 +122,3 @@ if ($searchlog) {
     PutSearchLog($searchlog, count($view_param["disc_ids"]));
 }
 exit;
-

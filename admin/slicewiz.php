@@ -1,4 +1,5 @@
 <?php
+
 /**
  * PHP version 7.2+
  *
@@ -28,7 +29,7 @@
 // messages for init_page:
 use AA\Util\InputVars;
 
-die('We want to remove this file from the codebase. HM 2023-02-22. Please comment out line '.__LINE__.' in '.basename(__FILE__));
+die('We want to remove this file from the codebase. HM 2023-02-22. Please comment out line ' . __LINE__ . ' in ' . basename(__FILE__));
 
 $no_slice_id          = true;
 $require_default_lang = true;
@@ -43,12 +44,14 @@ require_once __DIR__ . "/../include/slicedit.php";
 try {
     $add = InputVars::boolPOST('add');   // ??? from where it could come?
     $cancel = InputVars::boolPOST('cancel');
-    
+
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
+} catch (Exception $e) {
+    AA_Adminpageutil::pageParameterError($e);
+}
 
 if ($cancel) {
-    go_url( StateUrl(self_base() . "index.php"));
+    go_url(StateUrl(self_base() . "index.php"));
 }
 
 $wizard = 1;
@@ -65,7 +68,7 @@ if ($add) {
 
 $apage = new AA_Adminpageutil();
 $apage->setTitle(_m("Add Slice Wizard"));
-$apage->setForm(['action'=>'slicedit.php']);
+$apage->setForm(['action' => 'slicedit.php']);
 $apage->printHead($err, $Msg);
 
 $display_views_constants = true;
@@ -74,14 +77,18 @@ SliceAddForm(true, true);
 FrmTabCaption(_m("[Optional] Create New User"));
 
 // User data ---------------------------------------------------
-FrmInputRadio("user_role", _m("Level of Access"),
-    ["EDITOR"=>_m("Editor"), "ADMINISTRATOR"=>_m("Slice Administrator")], "EDITOR");
+FrmInputRadio(
+    "user_role",
+    _m("Level of Access"),
+    ["EDITOR" => _m("Editor"), "ADMINISTRATOR" => _m("Slice Administrator")],
+    "EDITOR",
+);
 FrmInputText("user_login", _m("Login name"), "", 50, 50, true);
 FrmInputPwd("user_password1", _m("Password"), "");
 FrmInputPwd("user_password2", _m("Retype password"), "");
 FrmInputText("user_firstname", _m("First name"), "", 50, 50, true);
 FrmInputText("user_surname", _m("Surname"), "", 50, 50, true);
-FrmInputEmail("user_mail1", _m("E-mail")." 1", "", 50, 50);
+FrmInputEmail("user_mail1", _m("E-mail") . " 1", "", 50, 50);
 echo '<input type="hidden" name="add_submit" value="1">
 <input type="hidden" name="um_uedit_no_go_url" value="1">';
 
@@ -96,12 +103,12 @@ echo '<br><br>';
 
 FrmTabCaption();
 FrmTabEnd([
-    "no_slice"=> [
-        "value"=>_m("Go: Add Slice"),
-                                    "type"=>"submit",
-                                    "accesskey"=>"S"
+    "no_slice" => [
+        "value" => _m("Go: Add Slice"),
+        "type" => "submit",
+        "accesskey" => "S",
     ],
-                  "cancel"=> ["url"=>"um_uedit.php"]
+    "cancel" => ["url" => "um_uedit.php"],
 ]);
 
 $apage->printFoot();

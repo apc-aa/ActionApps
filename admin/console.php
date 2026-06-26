@@ -28,7 +28,7 @@
 use AA\Util\InputVars;
 
 $require_default_lang = true;      // do not use module specific language file
-                                   // (message for init_page.php)
+// (message for init_page.php)
 // const  AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/formutil.php";
@@ -37,7 +37,9 @@ require_once __DIR__ . "/../include/mgettext.php";
 try {
     $code = InputVars::stringPOST('code');
     $html = InputVars::boolPOST('html');
-} catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
+} catch (Exception $e) {
+    AA_Adminpageutil::pageParameterError($e);
+}
 
 if (!IsSuperadmin()) {
     MsgPage(_m("You do not have permissions to access Console"));
@@ -48,20 +50,20 @@ $script2run = '
    var opts = { lineWrapping:true, matchBrackets: true, matchTags: true, viewportMargin: 10000, mode: "htmlmixed" };
    window.cm_code  = CodeMirror.fromTextArea(document.getElementById("code"), opts);
    ';
-$apage = new AA_Adminpageutil('aaadmin','console');
+$apage = new AA_Adminpageutil('aaadmin', 'console');
 $apage->setTitle(_m("ActionApps Console"));
 $apage->addRequire($script2run, 'AA_Req_Load');
 $apage->addRequire('codemirror@5');
 $apage->printHead();
 
-$form_buttons = ["show" => ["type"=>"submit", "value"=>_m("Show")]];
+$form_buttons = ["show" => ["type" => "submit", "value" => _m("Show")]];
 
 // ------------------------------------------------------------------------------------------
 FrmTabCaption(_m('Console'), $form_buttons);
-FrmTextarea('code', _m('Code'),$code);
+FrmTextarea('code', _m('Code'), $code);
 FrmInputChBox('html', _m('HTML output'), $html);
 if (strlen($code)) {
-    FrmStaticText(_m('Result'), $html ? AA::Un($code) : '<pre><code>'. safe(AA::Un($code)).'</code></pre>','','',false);
+    FrmStaticText(_m('Result'), $html ? AA::Un($code) : '<pre><code>' . safe(AA::Un($code)) . '</code></pre>', '', '', false);
 }
 FrmTabEnd($form_buttons);
 

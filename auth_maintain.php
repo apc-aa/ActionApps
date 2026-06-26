@@ -8,7 +8,7 @@ exit; // now planned by AA\Later\ScheduleAaTasks
  * @package ReaderInput
  * @version $Id$
  * @author Jakub Adamek, Econnect
- * @copyright (c) 2002-3 Association for Progressive Communications 
+ * @copyright (c) 2002-3 Association for Progressive Communications
  */
 
 // require_once __DIR__ . "/include/auth.php";

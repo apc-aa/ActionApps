@@ -1,4 +1,5 @@
 <?php
+
 /**
  * PHP version 7.2+
  *
@@ -37,7 +38,7 @@ require_once __DIR__ . "/../include/formutil.php";
 require_once __DIR__ . "/../include/item.php";
 require_once __DIR__ . "/../include/actions.php";
 
-if ( !IsSuperadmin() ) {
+if (!IsSuperadmin()) {
     MsgPage(_m("You do not have permission to manage Wizard Templates"));
     exit;
 }

@@ -1,4 +1,5 @@
 <?php
+
 //$Id$
 /*
 Copyright (C) 1999, 2000 Association for Progressive Communications
@@ -123,9 +124,9 @@ foreach ($_REQUEST as $k => $v) {
 }
 // ----- input variables normalization - end ----------------------------------
 
-$encap = (array_key_exists('encap', $_REQUEST) && ($_REQUEST['encap']==="false")) ? false : true ;
+$encap = (array_key_exists('encap', $_REQUEST) && ($_REQUEST['encap'] === "false")) ? false : true ;
 
-require_once __DIR__."/./include/config.php";
+require_once __DIR__ . "/./include/config.php";
 require_once __DIR__ . "/include/util.php";
 require_once __DIR__ . "/include/item.php";
 require_once __DIR__ . "/include/view.php";
@@ -144,10 +145,10 @@ function MyUrl($encap, $scr_url): string
 {  //sliceID is here just for compatibility with MyUrl function
 
     $server  = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ? 'https' : 'http';
-    $server .= '://'. $_SERVER['HTTP_HOST'];
+    $server .= '://' . $_SERVER['HTTP_HOST'];
 
     if ($scr_url) {  // if included into php script
-        return $server.$scr_url;
+        return $server . $scr_url;
     }
 
     if ($_SERVER["HTTP_X_FORWARDED_SERVER"]) {
@@ -186,7 +187,7 @@ function MyUrl($encap, $scr_url): string
 
 
 //MLX stuff
-require_once __DIR__."/include/mlx.php";
+require_once __DIR__ . "/include/mlx.php";
 
 // session is not working right now with PHP5 style sessions. It should not be
 // needed. We are testing the code, and if all will be OK, we remove sessions
@@ -210,7 +211,7 @@ if ($encap) {                    // adds values from QUERY_STRING_UNESCAPED
     add_vars("");                //       and REDIRECT_STRING_UNESCAPED
     // if we use input type="buton" for submitting of form, then it adds x and y
     // variables, which we do not want (x means (unfortunately) - item id in AA)
-    if (isset($x) && isset($y) && ctype_digit((string)$x) && ctype_digit((string)$y) && isset($conds)) {
+    if (isset($x) && isset($y) && ctype_digit((string) $x) && ctype_digit((string) $y) && isset($conds)) {
         unset($x);
     }
 }
@@ -229,11 +230,11 @@ if ($slicetext) {
 if ($inc) {                   // this section must be after add_vars()
     //  StoreVariables(array("inc")); // store in session
     if (!preg_match("/^([0-9a-z_])+(\.[0-9a-z]*)?$/i", $inc)) {
-        echo _m("Bad inc parameter - included file must contain only alphanumeric characters"). safe(" $inc");
+        echo _m("Bad inc parameter - included file must contain only alphanumeric characters") . safe(" $inc");
     } else {
-        $fp = @fopen(shtml_base().$inc, 'rb');    //   if encapsulated
+        $fp = @fopen(shtml_base() . $inc, 'rb');    //   if encapsulated
         if (!$fp) {
-            echo _m("No such file") .safe(" $inc");
+            echo _m("No such file") . safe(" $inc");
         } else {
             fpassthru($fp);
         }
@@ -259,10 +260,10 @@ if (!is_object($db)) {
 $slice      = AA_Slice::getModule($slice_id);
 $slice_info = GetModuleInfo($slice_id, 'S');       // get slice info
 
-if (!$slice_info || $slice_info['deleted']>0) {
+if (!$slice_info || $slice_info['deleted'] > 0) {
     ExitPage(_m("Invalid slice number or slice was deleted") . " (ID: $slice_id)");
 }
-if ($slice_info['d_listlen']==0) {
+if ($slice_info['d_listlen'] == 0) {
     ExitPage(_m("slice.php output forbidden for this slice"));
 }
 
@@ -278,7 +279,7 @@ if (!$slice_info['even_odd_differ']) {
 if ($fview || $iview) {
     if ($fview) {                       // use formating from view for fulltext
         $fview_info = AA_Views::getViewNumeric($fview);
-        if ($fview_info->f('deleted')<1) {
+        if ($fview_info->f('deleted') < 1) {
             $slice_info['fulltext_format']        = $fview_info->f('odd');
             $slice_info['fulltext_format_top']    = $fview_info->f('before');
             $slice_info['fulltext_format_bottom'] = $fview_info->f('after');
@@ -287,7 +288,7 @@ if ($fview || $iview) {
     }
     if ($iview) {                       // use formating from view for index
         $iview_info = AA_Views::getViewNumeric($iview);
-        if ($iview_info->f('deleted')<1) {
+        if ($iview_info->f('deleted') < 1) {
             $slice_info['group_by']        = $iview_info->f('group_by1');
             $slice_info['gb_direction']    = AA_View::VIEW_SORT_DIRECTIONS[$iview_info->f('g1_direction')];  // views uses different sort codes (historical reasons)
             $slice_info['category_format'] = $iview_info->f('group_title');
@@ -351,16 +352,16 @@ if (!is_array($slices)) {
 if ($sh_itm || $x || $o || $seo) {
     //  $r_state_vars = StoreVariables(array("sh_itm")); // store in session
     if ($x) {
-        $zid = new zids((int)$x, 's');
+        $zid = new zids((int) $x, 's');
     } elseif ($seo) {
         $zid = new zids(explode_ids(StrExp('seo2ids', [$slice_id, $seo])), 'l');
     } elseif ($o) {
-        $zid = new zids((int)$o, 's');
+        $zid = new zids((int) $o, 's');
     } else {
         $zid = new zids($sh_itm, 'l');
     }
 
-    if (!is_object($item = AA_Items::getItem($zid)) || ($item->getStatusCode()!==1)) {
+    if (!is_object($item = AA_Items::getItem($zid)) || ($item->getStatusCode() !== 1)) {
         ExitPage();
     }
 
@@ -373,7 +374,7 @@ if ($sh_itm || $x || $o || $seo) {
     if (!isset($hideFulltext)) {
         $itemview   = (new itemview($slice_info, $aliases, $zid))->setMultiAliases($multi_aliases);
         echo $itemview->get_output_cached("fulltext");
-        $was_cached = (bool)$itemview->wasCached();
+        $was_cached = (bool) $itemview->wasCached();
     }
     if (!$o) {                                          // $o preserves the "same as x but no hit" semantic
         Hitcounter::hit($zid, $was_cached);
@@ -383,7 +384,7 @@ if ($sh_itm || $x || $o || $seo) {
     $discussion_vid = ($dview ?? $slice_info['vid']);
     // you can set dview=0 to not show discussion
     if ($discussion_vid > 0) {
-        $db->query("SELECT view.*, slice.flag FROM view, slice WHERE slice.id=".xpack_id($slice_id)." AND view.id=".(int)$discussion_vid);
+        $db->query("SELECT view.*, slice.flag FROM view, slice WHERE slice.id=" . xpack_id($slice_id) . " AND view.id=" . (int) $discussion_vid);
         if ($db->next_record()) {
             $view_info = $db->record();
 
@@ -394,7 +395,7 @@ if ($sh_itm || $x || $o || $seo) {
                 'item_id'     => $zid->longids(0),
                 'vid'         => $view_info['id'],
                 'html_format' => $view_info['flag'] & DISCUS_HTML_FORMAT,
-                'parent_id'   => $parent_id
+                'parent_id'   => $parent_id,
             ];
 
             $format  = GetDiscussionFormat($view_info);
@@ -435,20 +436,20 @@ $r_state_vars = StoreVariables(["no_scr","scr_go","order","cat_id", "cat_name", 
 
 if ($cat_id && ($flds = $slice->getFields()) && ($cat_field = $flds->firstOfTypeFieldId())) {  // optional parameter cat_id - deprecated - slow ------
     $cat_group = $flds->getCategoryGroup();
-    $SQL = "SELECT value FROM constant WHERE group_id = '$cat_group' AND id=". xpack_id($cat_id);
+    $SQL = "SELECT value FROM constant WHERE group_id = '$cat_group' AND id=" . xpack_id($cat_id);
     $db->query($SQL);
     if ($db->next_record()) {
         $conds[] = [
             $cat_field => 1,
             'value'    => $db->f('value'),
-            'operator' => ($exact ? '=' : 'LIKE')
+            'operator' => ($exact ? '=' : 'LIKE'),
         ];
     }
 } elseif ($cat_name && ($tmpobj = $slice->getFields()) && ($cat_field = $tmpobj->firstOfTypeFieldId())) {  // optional parameter cat_name -------
     $conds[]     = [
         $cat_field => 1,
         'value'    => $cat_name,
-        'operator' => ($exact ? '=' : 'LIKE')
+        'operator' => ($exact ? '=' : 'LIKE'),
     ];
 }
 
@@ -456,7 +457,7 @@ if ($restrict) {
     $conds[]     = [
         $restrict  => 1,
         'value'    => ((($res_val[0] === '"' || $res_val[0] === "'") && $exact != 2) ? $res_val : "\"$res_val\""),
-        'operator' => ($exact ? '=' : 'LIKE')
+        'operator' => ($exact ? '=' : 'LIKE'),
     ];
 }
 
@@ -492,7 +493,7 @@ if (is_array($conds)) {
 $sort_tmp = [];
 
 if ($order) {
-    $set = new AA_Set;
+    $set = new AA_Set();
     $set->addSortFromString($order);
     $sort_tmp       = $set->getSort();
     $orderarr       = reset($sort_tmp);  // get the first from array
@@ -501,19 +502,19 @@ if ($order) {
 }
 
 if ($debug) {
-    echo "<br>Group by: - ".safe($group_by)." - <br>Slice_info[category_sort] - ". safe($slice_info['category_sort'])." -<br>slice_info[group_by] - ". safe($slice_info['group_by'])." -";
+    echo "<br>Group by: - " . safe($group_by) . " - <br>Slice_info[category_sort] - " . safe($slice_info['category_sort']) . " -<br>slice_info[group_by] - " . safe($slice_info['group_by']) . " -";
 }
 
 if ($group_by) {
-    $set = new AA_Set;
+    $set = new AA_Set();
     $set->addSortFromString($group_by);
     $sort_tmp = $set->getSort();
     $slice_info["group_by"] = key($sort_tmp[0]);
 } elseif ($slice_info['category_sort'] && ($tmpobj = $slice->getFields()) && ($group_field = $tmpobj->firstOfTypeFieldId())) {
-    $grp_odir    = (($order==$group_field) && ($orderdirection!=='d')) ? 'a' : 'd';
+    $grp_odir    = (($order == $group_field) && ($orderdirection !== 'd')) ? 'a' : 'd';
     $sort_tmp[]  = [$group_field => $grp_odir];
 } elseif ($slice_info['group_by']) {
-    $gbd = match ((string)$slice_info['gb_direction']) {  // gb_direction is number
+    $gbd = match ((string) $slice_info['gb_direction']) {  // gb_direction is number
         '1'      => '1',    // 1 (1)- ascending by priority
         'd', '8' => 'd',    // d (8)- descending - 'd' goes from view (iview) settings
         '9'      => '9',    // 9 (9)- descending by priority (for fields using constants)
@@ -552,7 +553,7 @@ if ($mlxslice) {
 
 if (!is_object($scr)) {
     $sess->register('scr');
-    $scr_url_param = get_url(($scr_url ? StateUrl("$scr_url") : MyUrl($encap, $scr_url)), is_array($als) ? ['als'=>$als] : '');
+    $scr_url_param = get_url(($scr_url ? StateUrl("$scr_url") : MyUrl($encap, $scr_url)), is_array($als) ? ['als' => $als] : '');
     $scr = new AA_Scroller_Easy('scr', $slice_info['d_listlen'], $zids->count(), $scr_url_param);
 }
 
@@ -577,8 +578,8 @@ if ($scrl) {
 }
 
 /** Add scroller aliases - page number, listlen */
-$scr_aliases['_#PAGE_NO_'] = GetAliasDef('f_s:'. $scr->getCurrent(), '', _m('number of current page (on pagescroller)'));
-$scr_aliases['_#PAGE_LEN'] = GetAliasDef('f_s:'. $scr->getListlen(), '', _m('page length (number of items)'));
+$scr_aliases['_#PAGE_NO_'] = GetAliasDef('f_s:' . $scr->getCurrent(), '', _m('number of current page (on pagescroller)'));
+$scr_aliases['_#PAGE_LEN'] = GetAliasDef('f_s:' . $scr->getListlen(), '', _m('page length (number of items)'));
 // aliases array have two form (quite stupid - will be changed in future - TODO)
 // depending on listing for one slice or many slices
 if (!is_array($slices)) {
@@ -612,8 +613,8 @@ if (!$zids->isEmpty()) {
     }
 } else {
     // test if the noitem_msg is filled (be careful - "0" should be considered as filled)
-    echo (isset($slice_info['noitem_msg']) && strlen($slice_info['noitem_msg'])) ?               // <!--Vacuum--> is keyword for removing 'no item message'
-          str_replace('<!--Vacuum-->', '', AA::Un($slice_info['noitem_msg'])) : ("<div>"._m("No item found") ."</div>");
+    echo (isset($slice_info['noitem_msg']) && strlen($slice_info['noitem_msg'])) // <!--Vacuum--> is keyword for removing 'no item message'
+          ? str_replace('<!--Vacuum-->', '', AA::Un($slice_info['noitem_msg'])) : ("<div>" . _m("No item found") . "</div>");
 }
 
 if ($searchlog) {
@@ -621,7 +622,7 @@ if ($searchlog) {
 }
 
 if ($debug) {
-    echo "<br><br>Page generation time: ". timestartdiff();
+    echo "<br><br>Page generation time: " . timestartdiff();
 }
 
 ExitPage();

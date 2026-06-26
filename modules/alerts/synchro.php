@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Alerts menu: Slice Synchro.
  * Adds Alerts-specific fields to the Reader Management Slice.
@@ -45,9 +46,11 @@ try {
     // array ( 'on' => 5, )
     $change_to_delete = InputVars::boolPOST('change_to_delete');
     $cancel = InputVars::boolPOST('cancel');
-    
+
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
+} catch (Exception $e) {
+    AA_Adminpageutil::pageParameterError($e);
+}
 
 // -------------------------------------------------------------------
 // HTML code
@@ -69,22 +72,22 @@ $apage->printHead($err, $Msg);
 // Execute requested actions from FORM
 
 if ($add_fields) {
-    echo "<b>".add_fields_2_slice($collectionid, $collectionprop["slice_id"])."</b><br><br>";
+    echo "<b>" . add_fields_2_slice($collectionid, $collectionprop["slice_id"]) . "</b><br><br>";
 }
 
-if ($change_to_cmd && ($change_to != $collectionprop["slice_id"]))	{
+if ($change_to_cmd && ($change_to != $collectionprop["slice_id"])) {
     if ($change_to_delete) {
-        echo "<b>".delete_fields_from_slice($collectionid, $collectionprop["slice_id"])."</b><br><br>";
+        echo "<b>" . delete_fields_from_slice($collectionid, $collectionprop["slice_id"]) . "</b><br><br>";
     }
     if ($change_to) {
-        $db->query ("UPDATE alerts_collection SET slice_id=".xpack_id($change_to)." WHERE id='$collectionid'");
+        $db->query("UPDATE alerts_collection SET slice_id=" . xpack_id($change_to) . " WHERE id='$collectionid'");
     } else {
-        $db->query ("UPDATE alerts_collection SET slice_id = NULL WHERE id='$collectionid'");
+        $db->query("UPDATE alerts_collection SET slice_id = NULL WHERE id='$collectionid'");
     }
     $collectionprop["slice_id"] = $change_to;
 }
 
-$db->query ("SELECT name FROM slice WHERE id=". xpack_id($collectionprop["slice_id"]));
+$db->query("SELECT name FROM slice WHERE id=" . xpack_id($collectionprop["slice_id"]));
 if ($db->next_record()) {
     $slice_name = $db->f("name");
     $slice_set  = true;
@@ -96,56 +99,58 @@ if ($db->next_record()) {
 // Choose Reader Management Slice
 
 echo '
-<form method="post" name="form_choose" action="'.StateUrl("synchro.php").'">
+<form method="post" name="form_choose" action="' . StateUrl("synchro.php") . '">
 <table width="440">
     <tr><td>
-    <h2>'._m("Choose Reader Management Slice").'</h2>
-    '._m("This Alerts Collection takes user data from the slice").":<br><b>";
+    <h2>' . _m("Choose Reader Management Slice") . '</h2>
+    ' . _m("This Alerts Collection takes user data from the slice") . ":<br><b>";
 
 if ($slice_set) {
-    echo "<a href=\"".StateUrl(AA_INSTAL_PATH."admin/index.php?change_id=". $collectionprop["slice_id"])."\">".$slice_name.'</a>';
+    echo "<a href=\"" . StateUrl(AA_INSTAL_PATH . "admin/index.php?change_id=" . $collectionprop["slice_id"]) . "\">" . $slice_name . '</a>';
 } else {
     echo $slice_name;
 }
-echo '</b><br><br>'._m("Change to: ");
+echo '</b><br><br>' . _m("Change to: ");
 
 FrmSelectEasy("change_to", getReaderManagementSlices(), $collectionprop["slice_id"]);
 
 if ($slice_set) {
     echo '<br><input type="checkbox" name="change_to_delete" checked> '
-        ._m("and delete the %1-specific fields from %2", [$collectionprop["name"], $slice_name]);
+        . _m("and delete the %1-specific fields from %2", [$collectionprop["name"], $slice_name]);
 }
 
 echo '
-    <br><br><input type="submit" name="change_to_cmd" value="'._m("Change").'">
+    <br><br><input type="submit" name="change_to_cmd" value="' . _m("Change") . '">
 </td></tr></table></form>
 <br>';
 
 // Add Alerts-specific fields to Reader Management
 
 echo '
-<form method="post" name="form_add" action="'.StateUrl("synchro.php").'">
+<form method="post" name="form_add" action="' . StateUrl("synchro.php") . '">
 <table0" width="440">
     <tr><td>
-    <h2>'._m("Add %1-specific fields to %2",
-             [$collectionprop["name"], $slice_name]).'</h2>';
+    <h2>' . _m(
+    "Add %1-specific fields to %2",
+    [$collectionprop["name"], $slice_name],
+) . '</h2>';
 echo _m("Adds only fields the IDs of which don't yet exist in the slice.
     Refreshes the constant group containing selections if it already exists.");
 
 // Field table
 
 echo '<br><br><table class="aa-table">
-    <tr class="aa-tbl-header"><th>'._m("Field Name").'</th>
-        <th>'._m("Field ID").'</th></tr>';
+    <tr class="aa-tbl-header"><th>' . _m("Field Name") . '</th>
+        <th>' . _m("Field ID") . '</th></tr>';
 
 $fields = get_alerts_specific_fields($collectionid);
 foreach ($fields as $field_id => $fprop) {
-    echo "<tr><td>".$fprop["name"]."</td><td>$field_id</td></tr>\n";
+    echo "<tr><td>" . $fprop["name"] . "</td><td>$field_id</td></tr>\n";
 }
 echo '</table><br>';
 
 if ($slice_set) {
-    echo '<input type="submit" name="add_fields" value="'._m("Add or refresh fields").'">';
+    echo '<input type="submit" name="add_fields" value="' . _m("Add or refresh fields") . '">';
 } else {
     echo _m("This command can not be used until you choose the Reader Management Slice.");
 }

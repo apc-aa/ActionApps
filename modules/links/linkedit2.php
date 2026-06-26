@@ -1,4 +1,5 @@
 <?php
+
 //$Id$
 
 // const  AA_REGISTER_GLOBALS = true;
@@ -87,58 +88,60 @@ try {
     // array ( 'https://dat…' => 4, 'https://cdn…' => 2, 'https://www…' => 1, )
     $url = InputVars::stringPOST('url', true);
     $cancel = InputVars::boolPOST('cancel');
-    
+
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
+} catch (Exception $e) {
+    AA_Adminpageutil::pageParameterError($e);
+}
 
 unset($r_state['linkedit']);
 $r_state['linkedit']['old'] = $_POST;  // in case of bad input
 unset($r_msg);
 unset($r_err);
 
-$senderUrlOK  = ( Links_IsPublic() ? "/podekovani.shtml" : StateUrl(self_base() . "index.php"));      // TODO - poradne
-$senderUrlErr = ( Links_IsPublic() ? StateUrl(self_base()."linkedit.php") : StateUrl(self_base()."linkedit.php"));
+$senderUrlOK  = (Links_IsPublic() ? "/podekovani.shtml" : StateUrl(self_base() . "index.php"));      // TODO - poradne
+$senderUrlErr = (Links_IsPublic() ? StateUrl(self_base() . "linkedit.php") : StateUrl(self_base() . "linkedit.php"));
 
 // this is not used, now I think - cancel is served in linkedit.php
 if ($cancel) {
     // page where to go after this script execution
-    $cancelUrl = ( Links_IsPublic() ? "/" : StateUrl(self_base() . "index.php"));         // TODO - poradne
-    go_url( $cancelUrl );
+    $cancelUrl = (Links_IsPublic() ? "/" : StateUrl(self_base() . "index.php"));         // TODO - poradne
+    go_url($cancelUrl);
 }
 
 
 // trap field for spammer bots
-if ( $answer )    {
-     echo _m("Not accepted, sorry. Looks like spam.");
-     exit;
+if ($answer) {
+    echo _m("Not accepted, sorry. Looks like spam.");
+    exit;
 }
 
 $err = [];  // error array (just for initializing variable)
 
 // we're always sending link id - it prevent us of bug with 'Back' browser button
-if ( $lid ) {
-   $r_state['link_id'] = $lid;
+if ($lid) {
+    $r_state['link_id'] = $lid;
 }
 
 // $r_state['link_id'] is not necessarily filled (for new links)
 $new_link = new linkobj($r_state['link_id']);
 $new_link->loadFromForm($r_err);
 
-if ( $r_err && count($r_err) > 1) {
+if ($r_err && count($r_err) > 1) {
     Session::page_close();
-    go_url( con_url($senderUrlErr, "getOldV=1"));
+    go_url(con_url($senderUrlErr, "getOldV=1"));
 }
 
 // old link (the atempt to change old link)
-if ( $r_state['link_id'] ) {
+if ($r_state['link_id']) {
     $old_link = new linkobj($r_state['link_id']);
     $old_link->load();
     debug('linkedit2: old link loaded:', $old_link);
     $result = $old_link->tryChange($new_link);
     debug('linkedit2: now call oldlink save. oldlink:', $old_link);
     $r_state['link_id'] = $old_link->save();
-    $r_msg[] = MsgOk(($result==='PROPOSAL') ?
-               _m('Link change proposal inserted') : _m('Link inserted'));
+    $r_msg[] = MsgOk(($result === 'PROPOSAL')
+               ? _m('Link change proposal inserted') : _m('Link inserted'));
     // $event->comes('LINK_UPDATED', $r_state["module_id"], 'Links',  $categs2assign, $isGlobalcat, $isGlobalcat);
 } else {
     $r_state['link_id'] = $new_link->save();
@@ -148,7 +151,6 @@ if ( $r_state['link_id'] ) {
 cattree::singleton()->count_all_links();  // update number of links info in all categories
 
 Session::page_close();
-debug('<a href="'.$senderUrlOK.'">'._m('Continue').'</a>');
-go_url( $senderUrlOK );
+debug('<a href="' . $senderUrlOK . '">' . _m('Continue') . '</a>');
+go_url($senderUrlOK);
 exit;
-

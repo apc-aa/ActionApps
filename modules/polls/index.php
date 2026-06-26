@@ -1,4 +1,6 @@
-<?php  //slice_id expected
+<?php
+
+//slice_id expected
 /**
  * PHP version 7.2+
  *
@@ -32,7 +34,6 @@ use AA\Manageraction\Item_Tab;
 use AA\Manageraction\Manageractions;
 use AA\Manageraction\Polls_DeleteTrash;
 use AA\Manageraction\Polls_MoveItem;
-
 // const  AA_REGISTER_GLOBALS = true;
 use AA\Util\InputVars;
 
@@ -46,31 +47,33 @@ require_once __DIR__ . "/../../modules/polls/include/util.php";
 
 try {
     $cancel = InputVars::boolPOST('cancel');
-    
+
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
+} catch (Exception $e) {
+    AA_Adminpageutil::pageParameterError($e);
+}
 
 
-if ( !IfSlPerm(PS_EDIT_ALL_ITEMS) ) {
+if (!IfSlPerm(PS_EDIT_ALL_ITEMS)) {
     MsgPage(_m("You do not have permission to manage Polls"));
     exit;
 }
 
-$actions   = new Manageractions;
+$actions   = new Manageractions();
 $actions->addAction(new Polls_MoveItem('Activate', 1));
-$actions->addAction(new Polls_MoveItem('Folder2',  2));
-$actions->addAction(new Polls_MoveItem('Folder3',  3));
-$actions->addAction(new Polls_DeleteTrash('DeleteTrashAction',true));
+$actions->addAction(new Polls_MoveItem('Folder2', 2));
+$actions->addAction(new Polls_MoveItem('Folder3', 3));
+$actions->addAction(new Polls_DeleteTrash('DeleteTrashAction', true));
 
-$switches  = new Manageractions;
+$switches  = new Manageractions();
 
 // no problem to write tabs as one action, but we use 3
 $switches->addAction(new Item_Tab('Folder1a', 'app'));      // we use the same action as for Items!
 $switches->addAction(new Item_Tab('Folder1b', 'appb'));     // we use the same action as for Items!
 $switches->addAction(new Item_Tab('Folder1c', 'appc'));     // we use the same action as for Items!
-$switches->addAction(new Item_Tab('Folder2',  'folder2'));  // we use the same action as for Items!
-$switches->addAction(new Item_Tab('Folder3',  'folder3'));  // we use the same action as for Items!
-$switches->addAction(new Polls_DeleteTrash('DeleteTrash',false));
+$switches->addAction(new Item_Tab('Folder2', 'folder2'));  // we use the same action as for Items!
+$switches->addAction(new Item_Tab('Folder3', 'folder3'));  // we use the same action as for Items!
+$switches->addAction(new Polls_DeleteTrash('DeleteTrash', false));
 
 
 // id of the editted module (id in long form (32-digit hexadecimal number))
@@ -94,7 +97,7 @@ $managed  = AA::Metabase()->getManagerConf('polls', $actions, $switches, ['edit_
 //$manager_settings['itemview']['format']['odd_row_format'] = '<tr><td width="30"><input type="checkbox" name="chb[x_#POLL_ID_]" value=""></td><td>_#POLL_ID_</td><td><a href="_#EDITPOLL">_#QUESTION</a></td><td>_#PUB_DATE</td><td>_#EXP_DATE</td></tr>
 //                                      ';
 
-$manager = new Manager('poll'.$module_id, $managed);   // no special meaning of the manager_id, just some ID
+$manager = new Manager('poll' . $module_id, $managed);   // no special meaning of the manager_id, just some ID
 $manager->performActions();
 
 $aa_set = $manager->getSet();
@@ -132,13 +135,13 @@ $r_state['bin_cnt']['appc']    = AA_Metabase::queryCount(['table' => 'polls'], $
 $r_state['bin_cnt']['folder2'] = AA_Metabase::queryCount(['table' => 'polls'], $bin_sets['folder2']);
 $r_state['bin_cnt']['folder3'] = AA_Metabase::queryCount(['table' => 'polls'], $bin_sets['folder3']);
 
-$zids  = AA::Metabase()->queryZids(['table'=>'polls'], $bin_sets[$manager->getBin()]);
+$zids  = AA::Metabase()->queryZids(['table' => 'polls'], $bin_sets[$manager->getBin()]);
 
 //$manager_settings['itemview']['query_funct'] = 'Central_QueryZids';
 //$manager_settings['messages']['title'] = _m('ActionApps Central');
 //         'get_content_funct'    => 'Central_GetAaContent'
 
-$apage = new AA_Adminpageutil('pollsmanager',$manager->getBin());
+$apage = new AA_Adminpageutil('pollsmanager', $manager->getBin());
 $apage->setForm();
 
 $html = $manager->getDisplayPage($zids);
@@ -146,4 +149,3 @@ $html = $manager->getDisplayPage($zids);
 
 // this allows to automatically load codemirror in the head (printHead is called after $form->getObjectEditHtml)
 $apage->printAllPage($html, $err, $Msg);
-

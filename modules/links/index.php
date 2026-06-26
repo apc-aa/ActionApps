@@ -1,4 +1,5 @@
 <?php
+
 //$Id$
 /*
 Copyright (C) 1999, 2000 Association for Progressive Communications
@@ -71,16 +72,18 @@ try {
     $change_id = InputVars::idGETPOST('change_id');
     $listlen = InputVars::intGET('listlen');
     $cancel = InputVars::boolPOST('cancel');
-    
+
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
+} catch (Exception $e) {
+    AA_Adminpageutil::pageParameterError($e);
+}
 
 
 // Check permissions for this page.
 // You should change PS_MODP_EDIT_POLLS permission to match the permission in your
 // module. See /include/perm_core.php for more details
 
-if ( !IfSlPerm(PS_LINKS_EDIT_LINKS) ) {
+if (!IfSlPerm(PS_LINKS_EDIT_LINKS)) {
     MsgPage(_m("No permissions to edit links"));
     exit;
 }
@@ -91,7 +94,7 @@ function Links_UpdateStateFromFilter(): void
     global $r_state;
     $r_state["show_subtree"] = ((bool) $_REQUEST['show_subtree']);
     $r_state['cat_id']       = $_REQUEST['cat_id'];
-    $r_state['cat_path']     = GetCategoryPath( $r_state['cat_id'] );
+    $r_state['cat_path']     = GetCategoryPath($r_state['cat_id']);
 }
 
 function Links_CountLinkInBins($cat_path): array
@@ -102,7 +105,7 @@ function Links_CountLinkInBins($cat_path): array
               LEFT JOIN links_link_cat ON links_links.id = links_link_cat.what_id
              WHERE (links_link_cat.category_id IS NULL AND (links_links.folder<3))';
     $db->query($SQL);
-    if ( $db->next_record() ) {
+    if ($db->next_record()) {
         $ret['unasigned'] = $db->f('count');
     }
 
@@ -111,7 +114,7 @@ function Links_CountLinkInBins($cat_path): array
               LEFT JOIN links_link_cat ON links_links.id = links_link_cat.what_id
              WHERE (links_link_cat.category_id IS NULL AND (links_links.folder=3))';
     $db->query($SQL);
-    if ( $db->next_record() ) {
+    if ($db->next_record()) {
         $ret['unasigned3'] = $db->f('count');
     }
 
@@ -125,12 +128,12 @@ function Links_CountLinkInBins($cat_path): array
                AND (links_link_cat.base = 'y')
                AND (links_links.folder < 2)";
     $db->query($SQL);
-    if ( $db->next_record() ) {
+    if ($db->next_record()) {
         $ret['new'] = $db->f('count');
     }
 
     // app
-    $linkcounter = new linkcounter;
+    $linkcounter = new linkcounter();
     $ret['app']  = $linkcounter->get_link_count($cat_path);
 
     // changed
@@ -150,12 +153,12 @@ function Links_CountLinkInBins($cat_path): array
                          AND (links_link_cat.proposal = 'n')))
                AND (links_links.folder < 2)";
     $db->query($SQL);
-    if ( $db->next_record() ) {
+    if ($db->next_record()) {
         $ret['changed'] = $db->f('count');
     }
 
-        // folders
-        // prepare
+    // folders
+    // prepare
     $ret['folder0'] = $ret['folder1'] = $ret['folder2'] = $ret['folder3'] = 0;
     $SQL = "SELECT count(DISTINCT links_links.id) as count, links_links.folder
               FROM links_links, links_link_cat, links_categories
@@ -165,8 +168,8 @@ function Links_CountLinkInBins($cat_path): array
                AND links_links.folder > 1
              GROUP BY links_links.folder";
     $db->query($SQL);
-    while ( $db->next_record() ) {
-        $ret['folder'.($db->f('folder'))] = $db->f('count');
+    while ($db->next_record()) {
+        $ret['folder' . ($db->f('folder'))] = $db->f('count');
     }
     freeDB($db);
     return $ret;
@@ -174,21 +177,21 @@ function Links_CountLinkInBins($cat_path): array
 
 // id of the editted module (id in long form (32-digit hexadecimal number))
 $module_id   = AA::$module_id;
-$links_info  = GetModuleInfo($module_id,'Links');
+$links_info  = GetModuleInfo($module_id, 'Links');
 
-$actions   = new Manageractions;
+$actions   = new Manageractions();
 $actions->addAction(new Links_Move('Activate', 1));
-$actions->addAction(new Links_Move('Folder2',  2));
-$actions->addAction(new Links_Move('Folder3',  3));
+$actions->addAction(new Links_Move('Folder2', 2));
+$actions->addAction(new Links_Move('Folder3', 3));
 $actions->addAction(new Links_Check('Check'));
-$actions->addAction(new Links_Highlight('Highlight',true));
+$actions->addAction(new Links_Highlight('Highlight', true));
 $actions->addAction(new Links_Highlight('DeHighlight', false));
 $actions->addAction(new Links_Delete('Delete'));
-$actions->addAction(new Links_Add2Cat('Add2Cat',   StateUrl("getcat.php?start=".GetCategoryFromPath($links_info['tree_start']))));
-$actions->addAction(new Links_Move2Cat('Move2Cat', StateUrl("getcat.php?start=".GetCategoryFromPath($links_info['tree_start']))));
+$actions->addAction(new Links_Add2Cat('Add2Cat', StateUrl("getcat.php?start=" . GetCategoryFromPath($links_info['tree_start']))));
+$actions->addAction(new Links_Move2Cat('Move2Cat', StateUrl("getcat.php?start=" . GetCategoryFromPath($links_info['tree_start']))));
 
 
-$switches  = new Manageractions;
+$switches  = new Manageractions();
 $switches->addAction(new Links_DeleteTrash('DeleteTrash'));
 $switches->addAction(new Links_GoCateg('GoCateg'));
 $switches->addAction(new Links_Tab('Tab'));
@@ -197,47 +200,47 @@ $switches->addAction(new Links_GoBookmark('GoBookmark'));
 
 // function - we need trnslate _m() on use (not at include time)
 $manager_settings = [
-     'searchbar' => [
-         'fields'               => GetLinkFields(),
-         'search_row_count_min' => 1,
-         'order_row_count_min'  => 1,
-         'add_empty_search_row' => true,
-         'show_bookmarks'       => false,
-         'function'             => 'Links_UpdateStateFromFilter',  // aditional action hooked on standard filter action
-         'hint'                 => _m("HINT: \"social ecology\" AND environment"),
-         'hint_url'             => get_help_url(AA_LINKS_HELP_MAIN,"hledat-radit")
-     ],
-     'scroller'  => [
-         'listlen'              => ($listlen ?: EDIT_ITEM_COUNT),
-         'slice_id'             => AA::$module_id
-     ],
-     'itemview'  => [
-         'manager_vid'          => $links_info['manager_vid'],      // id of view which controls the design
-         'format'               => [                           // optionally to manager_vid you can set format array
-             'compact_top'      => "<table>",
-             'category_sort'    => false,
-             'category_format'  => "",
-             'category_top'     => "",
-             'category_bottom'  => "",
-             'even_odd_differ'  => false,
-             'even_row_format'  => "",
-             'odd_row_format'   => '<tr><td width="30"><input type="checkbox" name="chb[_#LINK_ID_]" value=""></td><td><a href="_#EDITLINK">{switch({_#L_NAME__}).:_#L_NAME__:???}</a> (_#L_O_NAME)<div class="tabsmall">_#L_DESCRI<br>(_#CATEG_GO)<br><a href="_#L_URL___" target="_blank">_#L_URL___</a></div></td><td class=tabsmall>{alias:checked:f_d:j.n.Y}<br>{alias:created_by:f_e:username}<br>{alias:edited_by:f_e:username}<br><span style="background:#_#L_VCOLOR;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;_#L_VALID_&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td></tr>
+    'searchbar' => [
+        'fields'               => GetLinkFields(),
+        'search_row_count_min' => 1,
+        'order_row_count_min'  => 1,
+        'add_empty_search_row' => true,
+        'show_bookmarks'       => false,
+        'function'             => 'Links_UpdateStateFromFilter',  // aditional action hooked on standard filter action
+        'hint'                 => _m("HINT: \"social ecology\" AND environment"),
+        'hint_url'             => get_help_url(AA_LINKS_HELP_MAIN, "hledat-radit"),
+    ],
+    'scroller'  => [
+        'listlen'              => ($listlen ?: EDIT_ITEM_COUNT),
+        'slice_id'             => AA::$module_id,
+    ],
+    'itemview'  => [
+        'manager_vid'          => $links_info['manager_vid'],      // id of view which controls the design
+        'format'               => [                           // optionally to manager_vid you can set format array
+            'compact_top'      => "<table>",
+            'category_sort'    => false,
+            'category_format'  => "",
+            'category_top'     => "",
+            'category_bottom'  => "",
+            'even_odd_differ'  => false,
+            'even_row_format'  => "",
+            'odd_row_format'   => '<tr><td width="30"><input type="checkbox" name="chb[_#LINK_ID_]" value=""></td><td><a href="_#EDITLINK">{switch({_#L_NAME__}).:_#L_NAME__:???}</a> (_#L_O_NAME)<div class="tabsmall">_#L_DESCRI<br>(_#CATEG_GO)<br><a href="_#L_URL___" target="_blank">_#L_URL___</a></div></td><td class=tabsmall>{alias:checked:f_d:j.n.Y}<br>{alias:created_by:f_e:username}<br>{alias:edited_by:f_e:username}<br><span style="background:#_#L_VCOLOR;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;_#L_VALID_&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td></tr>
              ',
-             'compact_remove'   => "()",
-             'compact_bottom'   => "</table>",
-             'id'               => $links_info['id']
-         ],
-         //'fields'               => '',
-         'aliases'              => new AA_Aliases(new AA_Aliasgenerator_Link()),
-         'get_content_funct'    => 'Links_GetLinkContent'
-     ],
-     'actions_hint' => _m("Perform action on selected items"),
-     'actions_hint_url' => get_help_url(AA_LINKS_HELP_MAIN,"co-udelat-sodkazy"),
-     'actions'   => $actions,
-     'switches'  => $switches
+            'compact_remove'   => "()",
+            'compact_bottom'   => "</table>",
+            'id'               => $links_info['id'],
+        ],
+        //'fields'               => '',
+        'aliases'              => new AA_Aliases(new AA_Aliasgenerator_Link()),
+        'get_content_funct'    => 'Links_GetLinkContent',
+    ],
+    'actions_hint' => _m("Perform action on selected items"),
+    'actions_hint_url' => get_help_url(AA_LINKS_HELP_MAIN, "co-udelat-sodkazy"),
+    'actions'   => $actions,
+    'switches'  => $switches,
 ];
 
-if ( $change_id || $r_state["module_id"] != $module_id) {
+if ($change_id || $r_state["module_id"] != $module_id) {
     // we are here for the first time or we are switching to another slice
     unset($r_state);
     // set default admin interface settings from user's profile
@@ -245,16 +248,16 @@ if ( $change_id || $r_state["module_id"] != $module_id) {
     $r_state["module_id"]       = $module_id;
     $r_state["show_subtree"]    = false;
     $r_state['cat_id']          = $links_info['start_id'];
-    $r_state['cat_path']        = GetCategoryPath( $links_info['start_id'] );
-    $r_state['start_path']      = GetCategoryPath( $links_info['start_id']);
+    $r_state['cat_path']        = GetCategoryPath($links_info['start_id']);
+    $r_state['start_path']      = GetCategoryPath($links_info['start_id']);
     $r_state['tree_start_path'] = $links_info['tree_start'];
     $r_state['bin']             = 'app';
     $sess->register('r_state');
 }
 
-$manager_id = 'links'. $module_id;  // no special meaning - just manager id
+$manager_id = 'links' . $module_id;  // no special meaning - just manager id
 
-$manager = new Manager($manager_id, (new Managed())->setSettings($manager_settings)->setTitle( _m('ActionApps - Links Manager')));
+$manager = new Manager($manager_id, (new Managed())->setSettings($manager_settings)->setTitle(_m('ActionApps - Links Manager')));
 $manager->performActions();
 $manager->printHtmlPageBegin();  // html, head, css, title, javascripts
 
@@ -262,10 +265,10 @@ $manager->printHtmlPageBegin();  // html, head, css, title, javascripts
 // still in <head>
 // js needed for category selection
 
-$tree = new cattree( $links_info['start_id'], true, '<br> - ');
+$tree = new cattree($links_info['start_id'], true, '<br> - ');
 echo getFrmJavascriptFile('javascript/js_lib.min.js');
 echo getFrmJavascriptFile('javascript/js_lib_links.min.js');   // js for category selection
-$tree->printTreeData($links_info['start_id'],1,true);
+$tree->printTreeData($links_info['start_id'], 1, true);
 $cat_tree = $tree->getFrmTree('change', $links_info['start_id'], 'patharea', 'document.filterform.cat_id', false, 250, 8, 'filterform');
 
 $r_state['bin_cnt'] = Links_CountLinkInBins($r_state['start_path']);
@@ -277,7 +280,7 @@ echo '<script>
   }
 
   function EditCurrentCat() {
-      window.location = "'.StateUrl('catedit.php').'&cid=" + document.filterform.cat_id.value;
+      window.location = "' . StateUrl('catedit.php') . '&cid=" + document.filterform.cat_id.value;
   }
 </script>
 </head>';
@@ -296,14 +299,14 @@ $sort  = $manager->getSort();
 //links_link_cat.state <> 'hidden'
 //print_r($r_state);
 
-$link_zids=Links_QueryZIDs($r_state['cat_path'], $conds, $sort, $r_state["show_subtree"], $r_state['bin']);
+$link_zids = Links_QueryZIDs($r_state['cat_path'], $conds, $sort, $r_state["show_subtree"], $r_state['bin']);
 
 echo $manager->getSearchbarBegin();
 
 // special code extending searchbar - category selection
 echo '<div class=flex>';
 echo '<div class=search>
-         <input type="hidden" name="cat_id" value="'.$r_state['cat_id']."\">
+         <input type="hidden" name="cat_id" value="' . $r_state['cat_id'] . "\">
          $cat_tree
       </div>";
 echo '<div id="patharea"> </div>';
@@ -314,13 +317,13 @@ echo  getFrmMoreHelp(get_help_url(AA_LINKS_HELP_MAIN, "zobraz-odkazy"));
 echo  getFrmInputButtons([ 'editcat' => [ 'type' => 'button', 'value' => _m('Edit Category'), 'add' => 'onclick="EditCurrentCat()"' ]]);    // 'bookmark' => array('type'=>'button','value'=>_m('Bookmark'))
 echo  getFrmMoreHelp(get_help_url(AA_LINKS_HELP_MAIN, "editujkat"));
 echo  '<div>';
-  FrmChBoxEasy("show_subtree", $r_state["show_subtree"]);
-  echo _m('Show subtree links');
-  echo getFrmMoreHelp(get_help_url(AA_LINKS_HELP_MAIN,"zobraz-odkazy")).
-      ' </div>';
+FrmChBoxEasy("show_subtree", $r_state["show_subtree"]);
+echo _m('Show subtree links');
+echo getFrmMoreHelp(get_help_url(AA_LINKS_HELP_MAIN, "zobraz-odkazy"))
+    . ' </div>';
 echo "</div>";
 echo "</div>";
-echo getFrmMoreHelp(get_help_url(AA_LINKS_HELP_MAIN,"seznamkat"));
+echo getFrmMoreHelp(get_help_url(AA_LINKS_HELP_MAIN, "seznamkat"));
 
 echo $manager->getSearchbarEnd();   // close the searchbar form
 
@@ -339,4 +342,3 @@ echo $tree->goCategory($r_state['cat_id'], 'patharea', 'document.filterform.cat_
 
 HtmlPageEnd();
 Session::page_close();
-

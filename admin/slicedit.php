@@ -1,4 +1,5 @@
 <?php
+
 /**
  * PHP version 7.2+
  *
@@ -38,7 +39,7 @@ require_once __DIR__ . "/../include/formutil.php";
 require_once __DIR__ . "/../include/date.php";
 require_once __DIR__ . "/../include/varset.php";
 // add mlx functions
-require_once __DIR__."/../include/mlx.php";
+require_once __DIR__ . "/../include/mlx.php";
 require_once __DIR__ . "/../include/slicedit.php";
 require_once __DIR__ . "/../include/modutils.php";
 
@@ -129,36 +130,38 @@ try {
     // array ( )
     $wiz = InputVars::arrayPOST('wiz');
     $cancel = InputVars::boolPOST('cancel');
-    
-    $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
 
-define ('PERMS_STATE_POST', [
+    $Msg = InputVars::stringGETPOST('Msg');
+} catch (Exception $e) {
+    AA_Adminpageutil::pageParameterError($e);
+}
+
+define('PERMS_STATE_POST', [
     0 => _m("Not allowed"),
     3 => _m("Active with antiSPAM tokens"),
     1 => _m("Active"),
-    2 => _m("Hold bin")
+    2 => _m("Hold bin"),
 ]);
 
-define ('PERMS_STATE_OFFLINE', [
+define('PERMS_STATE_OFFLINE', [
     0 => _m("Not allowed"),
     1 => _m("Active"),
-    2 => _m("Hold bin")
+    2 => _m("Hold bin"),
 ]);
 
 
-define ('PERMS_ANONYMOUS_EDIT', [
+define('PERMS_ANONYMOUS_EDIT', [
     ANONYMOUS_EDIT_NOT_ALLOWED      => _m("Not allowed"),
     ANONYMOUS_EDIT_ALL              => _m("All items"),
     ANONYMOUS_EDIT_ONLY_ANONYMOUS   => _m("Only items posted anonymously"),
     ANONYMOUS_EDIT_NOT_EDITED_IN_AA => _m("-\"- and not edited in AA"),
     ANONYMOUS_EDIT_PASSWORD         => _m("Authorized by a password field"),
     ANONYMOUS_EDIT_HTTP_AUTH        => _m("Readers, authorized by HTTP auth"),
-    ANONYMOUS_EDIT_CRON             => _m("Only by Planned tasks (cron-toexecute)")
+    ANONYMOUS_EDIT_CRON             => _m("Only by Planned tasks (cron-toexecute)"),
 ]);
 
 if ($cancel) {
-    go_url( StateUrl(self_base() . "index.php"));
+    go_url(StateUrl(self_base() . "index.php"));
 }
 
 // Create new module
@@ -167,11 +170,11 @@ if ($cancel) {
 if (is_array($create = $_POST['create'])) {
     reset($create);
     if ($type = key($create)) {
-        $url = StateUrl(AA_INSTAL_PATH. AA_Moduleregistry::info($type, 'dir') . "modedit.php?no_slice_id=1");
-        if ( $_POST['template'][$type] ) {
-            $url = get_url( $url, ["template[$type]" => $_POST['template'][$type]]);
+        $url = StateUrl(AA_INSTAL_PATH . AA_Moduleregistry::info($type, 'dir') . "modedit.php?no_slice_id=1");
+        if ($_POST['template'][$type]) {
+            $url = get_url($url, ["template[$type]" => $_POST['template'][$type]]);
         }
-        go_url( $url );
+        go_url($url);
     }
 }
 
@@ -182,16 +185,19 @@ $set_template_id = $_POST['template_from_slice'] ? $_POST['template_id2'] : $_PO
 
 $err = SliceEditProcess($slice_id, $user_firstname, $user_surname, $err, $add_submit, $user_login, $user_password1, $user_password2, $user_mail1, $user_mail2, $user_mail3, $user_super, $um_uedit_no_go_url, $selected_user, $posted_groups, $sel_groups, $perm_mod, $new_module, $new_module_role, $add, $update, $owner, $new_owner, $new_owner_email, $name, $slice_url, $slice_type, $upload_url, $priority, $permit_anonymous_post, $permit_anonymous_edit, $permit_offline_fill, $lang_file, $d_listlen, $mlxctrl, $fileman_access, $fileman_dir, $template, $deleted, $flag_allow_expired, $auth_field_group, $mailman_field_lists, $reading_password, $flag_allow_pending, $set_template_id, $wiz, $user_role);
 
-$foo_source = ( ( $slice_id=="" ) ? $set_template_id : $slice_id);
+$foo_source = (($slice_id == "") ? $set_template_id : $slice_id);
 
-$sarr = DB_AA::select1('', 'SELECT slice.id, slice.name, slice.type as slice_type, reading_password, mailman_field_lists, auth_field_group, fileman_dir, fileman_access, slice.lang_file, permit_offline_fill,permit_anonymous_edit,permit_anonymous_post, d_listlen, slice.template, slice.deleted, LOWER(HEX(module.owner)) as owner, slice.slice_url, slice.flag, slice.mlxctrl, module.priority, module.created_by, module.created_at FROM `slice`, `module`',
-          [ [ 'slice.id', 'module.id', 'j' ], [ 'module.id', $foo_source, 'l' ]]);
+$sarr = DB_AA::select1(
+    '',
+    'SELECT slice.id, slice.name, slice.type as slice_type, reading_password, mailman_field_lists, auth_field_group, fileman_dir, fileman_access, slice.lang_file, permit_offline_fill,permit_anonymous_edit,permit_anonymous_post, d_listlen, slice.template, slice.deleted, LOWER(HEX(module.owner)) as owner, slice.slice_url, slice.flag, slice.mlxctrl, module.priority, module.created_by, module.created_at FROM `slice`, `module`',
+    [ [ 'slice.id', 'module.id', 'j' ], [ 'module.id', $foo_source, 'l' ]],
+);
 if (!$sarr) {
     $sarr = [];
 }
 
 $is_new     = ($slice_id == "");
-$has_errors = (bool)count($err);
+$has_errors = (bool) count($err);
 
 // On validation error, redisplay form with user's submitted values instead of template/DB values
 if ($has_errors && ($add || $update)) {
@@ -227,18 +233,18 @@ $flag_allow_expired = ($sarr['flag'] & SLICE_ALLOW_EXPIRED_CONTENT) == SLICE_ALL
 $flag_allow_pending = ($sarr['flag'] & SLICE_ALLOW_PENDING_CONTENT) == SLICE_ALLOW_PENDING_CONTENT;
 
 // lookup owners
-$slice_owners = DB_AA::select(['unpackid'=>'name'], 'SELECT LOWER(HEX(`id`)) AS unpackid, `name` FROM `slice_owner` ORDER BY `name`');
+$slice_owners = DB_AA::select(['unpackid' => 'name'], 'SELECT LOWER(HEX(`id`)) AS unpackid, `name` FROM `slice_owner` ORDER BY `name`');
 
 $biglangs = Langs::getFiles();
 
-$apage = new AA_Adminpageutil('sliceadmin','main');
-$apage->setTitle( $slice_id=="" ? _m("Add Slice") : _m("Admin - Slice settings"));
+$apage = new AA_Adminpageutil('sliceadmin', 'main');
+$apage->setTitle($slice_id == "" ? _m("Add Slice") : _m("Admin - Slice settings"));
 $apage->printHead($err, $Msg);
 
 if ($slice_id == "") {
-    $form_buttons = ["insert", "cancel"=> ["url"=>"sliceadd.php"]];
+    $form_buttons = ["insert", "cancel" => ["url" => "sliceadd.php"]];
 } else {
-    $form_buttons = ["update", "cancel"=> ["url"=>"sliceadd.php"]];
+    $form_buttons = ["update", "cancel" => ["url" => "sliceadd.php"]];
 }
 
 FrmTabCaption(_m("Slice"), $form_buttons);
@@ -250,12 +256,12 @@ if (DB_CHARACTER_SET === "cp1250" && $slice_id && AA_Slice::getModule($slice_id)
     $convert_action = 'Convert encoding of this slice to utf <a href=' . StateUrl($_SERVER['PHP_SELF'] . '?convert=utf') . '>test</a> <a href=' . StateUrl($_SERVER['PHP_SELF'] . '?convert=doutf') . '>convert</a>';
 }
 
-FrmInputSelect("lang_file", _m("Language"), $biglangs, rtrim($sarr['lang_file'],'3'), false, $convert_action);  // trim for old php3 lang file extension
-if ( $sarr['slice_type'] !== 'AA_Core_Fields..') {  // we do not want change type for AA_Core_Fields.. slice
+FrmInputSelect("lang_file", _m("Language"), $biglangs, rtrim($sarr['lang_file'], '3'), false, $convert_action);  // trim for old php3 lang file extension
+if ($sarr['slice_type'] !== 'AA_Core_Fields..') {  // we do not want change type for AA_Core_Fields.. slice
     FrmInputSelect("slice_type", _m("Slice Type"), AA_Slice::getSliceTypes(), $sarr['slice_type']);
 }
 
-if ( $superadmin ) {
+if ($superadmin) {
     FrmInputChBox("template", _m("Template"), $sarr['template']);
 }
 
@@ -263,14 +269,14 @@ FrmInputChBox("flag_allow_expired", _m("Show content of expired items"), $flag_a
 FrmInputChBox("flag_allow_pending", _m("Show content of pending items"), $flag_allow_pending);
 FrmInputSelect("permit_anonymous_post", _m("Allow anonymous posting of items"), PERMS_STATE_POST, $sarr['permit_anonymous_post']);
 FrmInputSelect("permit_anonymous_edit", _m("Allow anonymous editing of items"), PERMS_ANONYMOUS_EDIT, $sarr['permit_anonymous_edit'], false, "", "../doc/anonym.html");
-FrmInputSelect("permit_offline_fill", _m("Allow off-line item filling"),        PERMS_STATE_OFFLINE, $sarr['permit_offline_fill']);
+FrmInputSelect("permit_offline_fill", _m("Allow off-line item filling"), PERMS_STATE_OFFLINE, $sarr['permit_offline_fill']);
 
 // Reader Management specific settings (Jakub, 7.2.2003)
 $slice     = AA_Slice::getModule($slice_id);
 if ($slice && $slice->getProperty("type") === 'ReaderManagement') {
     $slicefields = AA_Fields::getFields4Select($slice_id, false, 'input_pri');
     FrmInputSelect("auth_field_group", _m("Auth Group Field"), $slicefields, $sarr['auth_field_group'], false, "", "../doc/reader.html#auth_field_group");
-    FrmInputSelect("mailman_field_lists",_m("Mailman Lists Field"), $slicefields, $sarr['mailman_field_lists'], false, "", "../doc/reader.html#mailman");
+    FrmInputSelect("mailman_field_lists", _m("Mailman Lists Field"), $slicefields, $sarr['mailman_field_lists'], false, "", "../doc/reader.html#mailman");
 }
 FrmInputText("reading_password", _m("Password for Reading"), $sarr['reading_password'], 100, 50, false, "", "https://actionapps.org/faq/detail.shtml?x=1667");
 
@@ -292,7 +298,7 @@ FrmInputNumber("d_listlen", _m("Listing length"), $sarr['d_listlen'], 0, 99999, 
 if ($slice_id && ($mlx_ctrl_for = DB_AA::select1('name', 'SELECT name FROM `slice`', [['mlxctrl', $slice_id, 'l']]))) {
     FrmStaticText(_m("MLX Control Slice for"), $mlx_ctrl_for, 0, "https://actionapps.org/faq/detail.shtml?x=2290");
 } else {
-    $mlx_slices = DB_AA::select(['unpackid'=>'name'], "SELECT LOWER(HEX(`id`)) AS unpackid, `name` FROM `slice` WHERE ((mlxctrl IS NULL) OR (mlxctrl='')) ORDER BY `name`");
+    $mlx_slices = DB_AA::select(['unpackid' => 'name'], "SELECT LOWER(HEX(`id`)) AS unpackid, `name` FROM `slice` WHERE ((mlxctrl IS NULL) OR (mlxctrl='')) ORDER BY `name`");
     FrmInputSelect('mlxctrl', _m("MLX: Language Control Slice"), $mlx_slices, unpack_id($sarr['mlxctrl']), false, "", "https://actionapps.org/faq/detail.shtml?x=2290");
 }
 
@@ -301,10 +307,10 @@ if ($superadmin) {
     FrmInputText("fileman_dir", _m("File Manager Directory"), $sarr['fileman_dir'], 99, 50, false, "", "https://actionapps.org/faq/detail.shtml?x=1698");
 }
 
-if ($slice_id=="") {
+if ($slice_id == "") {
     echo "<input type=\"hidden\" name=\"add\" value=\"1\">";        // action
     echo "<input type=\"hidden\" name=\"no_slice_id\" value=\"1\">";  // detects new slice
-    echo "<input type=\"hidden\" name=\"template_id\" value=\"". $set_template_id .'">';
+    echo "<input type=\"hidden\" name=\"template_id\" value=\"" . $set_template_id . '">';
 
     // fields storing values from wizard
     echo "<input type=\"hidden\" name=\"wiz[copyviews]\" value='$wiz[copyviews]'>";

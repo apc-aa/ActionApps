@@ -1,26 +1,27 @@
 <?php
- /**
- * PHP version 7.2+
- *
- * LICENSE: This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program (LICENSE); if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
- * @version   $Id$
- * @author    Honza Malik <honza.malik@ecn.cz>
- * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
- * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
- * @link      https://www.apc.org/ APC
+
+/**
+* PHP version 7.2+
+*
+* LICENSE: This program is free software; you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation; either version 2 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program (LICENSE); if not, write to the Free Software
+* Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+*
+* @version   $Id$
+* @author    Honza Malik <honza.malik@ecn.cz>
+* @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+* @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+* @link      https://www.apc.org/ APC
 */
 // discedit.php - admin discussion comments
 // expected  $item_id for comment's item_id
@@ -47,9 +48,11 @@ try {
     // array ( 'hide' => 14, 'delete' => 1, 'deleteshown' => 1, 'deleteall' => 1, )
     $mode = InputVars::stringGET('mode'); // alpha
     $cancel = InputVars::boolPOST('cancel');
-    
+
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
+} catch (Exception $e) {
+    AA_Adminpageutil::pageParameterError($e);
+}
 
 // check permission to edit discussion - you must be Editor, at least
 if (!IfSlPerm(PS_EDIT_ALL_ITEMS)) {
@@ -64,13 +67,13 @@ $zids     = QueryDiscussionZIDs($item_id);
 $dcontent = GetDiscussionContent($zids, false);
 $tree     = GetDiscussionTree($dcontent);
 
-if ($mode === "hide" || $mode==="delete" || $mode==="deleteall" || $mode==="deleteshown") {
+if ($mode === "hide" || $mode === "delete" || $mode === "deleteall" || $mode === "deleteshown") {
     switch ($mode) {
-        case "hide" :
-            $h = ( $h ? 1 : 0 );
+        case "hide":
+            $h = ($h ? 1 : 0);
             $dcontent[$d_id]["d_state........."][0]['value'] = $h;
 
-            $db->query("UPDATE discussion SET state='$h' WHERE id=".xpack_id($d_id));
+            $db->query("UPDATE discussion SET state='$h' WHERE id=" . xpack_id($d_id));
             break;
         case "delete":
             DeleteNode($tree, $dcontent, $d_id);
@@ -98,53 +101,53 @@ GetDiscussionThread($tree, "0", 0, $outcome);         // get array of images
 
 $script2run = '<script>
   function DeleteComment(id) {
-    if ( !confirm("'. _m("Are you sure you want to delete selected comment?") .'")) {
+    if ( !confirm("' . _m("Are you sure you want to delete selected comment?") . '")) {
        return;
     }
-    window.location = "'. get_url("./discedit.php", ['mode'=>'delete', 'item_id' => $item_id], true). '&d_id=" + encodeURIComponent(id);
+    window.location = "' . get_url("./discedit.php", ['mode' => 'delete', 'item_id' => $item_id], true) . '&d_id=" + encodeURIComponent(id);
   }
   function DeleteAllComments() {
-    if ( !confirm("'. _m("Are you sure you want to delete ALL comments? There is no way back!") .'")) {
+    if ( !confirm("' . _m("Are you sure you want to delete ALL comments? There is no way back!") . '")) {
        return;
     }
-    window.location = "'. get_url("./discedit.php", ['mode'=>'deleteall', 'item_id' => $item_id], true). '";
+    window.location = "' . get_url("./discedit.php", ['mode' => 'deleteall', 'item_id' => $item_id], true) . '";
   }
   function DeleteAllHiddenComments() {
-    if ( !confirm("'. _m("Are you sure you want to delete ALL unhidden comments (the comments, which are NOT HIDDEN)? There is no way back!") .'")) {
+    if ( !confirm("' . _m("Are you sure you want to delete ALL unhidden comments (the comments, which are NOT HIDDEN)? There is no way back!") . '")) {
        return;
     }
-    window.location = "'. get_url("./discedit.php", ['mode'=>'deleteshown', 'item_id' => $item_id], true). '";
+    window.location = "' . get_url("./discedit.php", ['mode' => 'deleteshown', 'item_id' => $item_id], true) . '";
   }
 </script>';
 
 $apage = new AA_Adminpageutil();
 $apage->setTitle(_m("Admin - Discussion comments management"));
-$apage->setForm(['action'=>'index.php']);
+$apage->setForm(['action' => 'index.php']);
 $apage->addRequire($script2run, 'AA_Req_Footcode');
 $apage->printHead($err, $Msg);
 
-FrmTabCaption(AA::Un(_m("Item: ")." {item:$item_id:{(_#HEADLINE ({disc_app........}/{disc_count......}))}}"));
-   echo '<tr class="aa-tbl-header">
-        <th>'. _m("Title") .'</th>
-        <th>'. _m("Author") .'</th>
-        <th>'. _m("IP Address") .'</th>
-        <th>'. _m("Date") .'</th>
-        <th>'. _m("Actions") .'</th>
+FrmTabCaption(AA::Un(_m("Item: ") . " {item:$item_id:{(_#HEADLINE ({disc_app........}/{disc_count......}))}}"));
+echo '<tr class="aa-tbl-header">
+        <th>' . _m("Title") . '</th>
+        <th>' . _m("Author") . '</th>
+        <th>' . _m("IP Address") . '</th>
+        <th>' . _m("Date") . '</th>
+        <th>' . _m("Actions") . '</th>
     </tr>';
 
 $item = new AA_Item('', new AA_Aliases(new AA_Aliasgenerator_Discussion()));
 $i = 0;
 if (!$outcome) {
-    echo "<tr><td colspan=5>". _m("No discussion comments") ."<br><br></td></tr>";
+    echo "<tr><td colspan=5>" . _m("No discussion comments") . "<br><br></td></tr>";
 } else {
     foreach ($outcome as $d_id => $images) {
         $im = "";
-        foreach($images as $img) {
+        foreach ($images as $img) {
             $im .= GetImageSrc($img);
         }
         $im2 = "<tr>
                  <td><table>
-                    <tr><td>".$im. GetAAImage('blank.gif','',2,21)."</td>
+                    <tr><td>" . $im . GetAAImage('blank.gif', '', 2, 21) . "</td>
                         <td>_#SUBJECT_&nbsp;</td>
                     </tr>
                     </table>
@@ -158,17 +161,17 @@ if (!$outcome) {
         echo $item->get_item();
 
         echo "<td>";
-        echo   "<a class=aa-button-edit href=". con_url("discedit2.php",["d_id"=>$d_id,"item_id"=>$item_id],true) ."><small>". _m("Edit") ."</small></a>";
+        echo   "<a class=aa-button-edit href=" . con_url("discedit2.php", ["d_id" => $d_id,"item_id" => $item_id], true) . "><small>" . _m("Edit") . "</small></a>";
         $s = ($h = !$dcontent[$d_id]["d_state........."][0]['value']) ? _m("Hide") : _m("Approve");
-        echo   "<a class=aa-button-delete href=\"javascript:DeleteComment('".$d_id."')\"><small>". _m("Delete") ."</small></a>";
-        echo   "<a class='btn btn-secondary' href=" . con_url("discedit.php", ["mode"=>'hide','h'=>$h, 'd_id'=>$d_id, 'item_id'=>$item_id], true) ."><small>". $s. "</small></a>";
+        echo   "<a class=aa-button-delete href=\"javascript:DeleteComment('" . $d_id . "')\"><small>" . _m("Delete") . "</small></a>";
+        echo   "<a class='btn btn-secondary' href=" . con_url("discedit.php", ["mode" => 'hide','h' => $h, 'd_id' => $d_id, 'item_id' => $item_id], true) . "><small>" . $s . "</small></a>";
         echo "</td></tr>\n";
     }
 }
 $form_buttons = [
-        "update"     => ["value"=>_m("Back")],
-        "delete_all" => ["value"=>_m("Delete All"), "js"=>"DeleteAllComments()"],
-        "delete_un"  => ["value"=>_m("Delete All Unhidden"), "js"=>"DeleteAllHiddenComments()"]
-        ];
+    "update"     => ["value" => _m("Back")],
+    "delete_all" => ["value" => _m("Delete All"), "js" => "DeleteAllComments()"],
+    "delete_un"  => ["value" => _m("Delete All Unhidden"), "js" => "DeleteAllHiddenComments()"],
+];
 FrmTabEnd($form_buttons);
 $apage->printFoot();

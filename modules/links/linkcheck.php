@@ -1,4 +1,5 @@
 <?php
+
 //$Id$
 /*
 Copyright (C) 1999, 2000 Association for Progressive Communications
@@ -31,19 +32,17 @@ https://www.apc.org/
 
 use AA\Util\Linkcheck;
 
-require_once __DIR__."/../../include/config.php";
+require_once __DIR__ . "/../../include/config.php";
 require_once __DIR__ . "/../../include/locsess.php";   // DB_AA definition
 require_once __DIR__ . "/../../include/zids.php";
 require_once __DIR__ . "/../../include/util.php";
 
-if (!is_object( $db )) {
+if (!is_object($db)) {
     $db = getDB();
 }
 
 require_once __DIR__ . "/../../include/linkcheck.class.php";
 
-$check_links = new Linkcheck;
+$check_links = new Linkcheck();
 
 $check_links->checking();
-
-

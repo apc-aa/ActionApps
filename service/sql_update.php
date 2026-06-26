@@ -1,4 +1,5 @@
 <?php
+
 //$Id$
 /*
 Copyright (C) 1999, 2000 Association for Progressive Communications
@@ -27,7 +28,6 @@ use AA\IO\DB\DB_AA;
 use AA\Optimize\AbstractOptimize;
 use AA\Optimize\RestoreBckTables;
 use AA\Util\ReportTrait;
-
 
 /** FILL SOME ACCESS CODE HERE !!!
  *  example:
@@ -86,7 +86,7 @@ if (!$silent) {
       <p>See instructions directly in this file (sql_update.php) on the server.</p>';
 }
 
-if ( !constant('ACCESS_CODE') || strlen(constant('ACCESS_CODE'))<10 ) {
+if (!constant('ACCESS_CODE') || strlen(constant('ACCESS_CODE')) < 10) {
     echo '<p>For update or restore you need to edit this script on the server
           (sql_update.php) and fill there some Access Code which you then fill
           also here (it is for security reasons).</p>
@@ -97,7 +97,7 @@ if ( !constant('ACCESS_CODE') || strlen(constant('ACCESS_CODE'))<10 ) {
 }
 
 // need config.php to set db access, and phplib, and probably other stuff
-require_once __DIR__."/../include/config.php";
+require_once __DIR__ . "/../include/config.php";
 require_once __DIR__ . "/../include/locsess.php";   // DB_AA definition
 require_once __DIR__ . "/../include/util.php";
 require_once __DIR__ . "/../include/zids.php";   // qquote, is_long_id, ...
@@ -108,11 +108,11 @@ require_once __DIR__ . "/../include/varset.php";
 
 
 if (!$_GET['silent']) {
-    echo '<form name="f" action="' .$_SERVER['PHP_SELF'] .'">
+    echo '<form name="f" action="' . $_SERVER['PHP_SELF'] . '">
             Access Code
-            <input type="password" name="acccode" value="'.safe($_GET['acccode']).'"><br>
+            <input type="password" name="acccode" value="' . safe($_GET['acccode']) . '"><br>
 
-            Write to database <input type="checkbox" name="fire" value="1"'.($_GET['fire'] ? ' checked' : ''). '><br>
+            Write to database <input type="checkbox" name="fire" value="1"' . ($_GET['fire'] ? ' checked' : '') . '><br>
             <small>Check this for real work with writing to database</small>
             <br><br>
 
@@ -122,51 +122,53 @@ if (!$_GET['silent']) {
           </form>';
 }
 
-if ( strlen($_GET['acccode'])<10 || $_GET['acccode'] != constant('ACCESS_CODE') ) {
+if (strlen($_GET['acccode']) < 10 || $_GET['acccode'] != constant('ACCESS_CODE')) {
     echo '</body></html>';
     exit;
 }
 
 //require_once __DIR__."/update.optimize.class.php";
 
-class AA_SQL_Updater {
+class AA_SQL_Updater
+{
     use ReportTrait;
 
-    function test(): bool
+    public function test(): bool
     {
         $optimizers = $this->getOptimizers();
         $msg        = '<table>';
         $result     = true;
         foreach ($optimizers as $optimizer) {
-            $msg .= '<tr><td>'. $optimizer->name() .'</td>';
+            $msg .= '<tr><td>' . $optimizer->name() . '</td>';
             $res  = $optimizer->test();
             if (!$res) {
                 $result = false;
             }
-            $msg .= '<td>'. ($res ? 'OK' : 'Problem') .'</td>';
-            $msg .= '<td>'. $optimizer->report(). '</td></tr>';
+            $msg .= '<td>' . ($res ? 'OK' : 'Problem') . '</td>';
+            $msg .= '<td>' . $optimizer->report() . '</td></tr>';
         }
         $msg .= "</table>";
         $this->message($msg);
         return $result;
     }
 
-    function restore(): bool {
+    public function restore(): bool
+    {
         $optimizer = new RestoreBckTables();
         $optimizer->repair();
         $this->message($optimizer->report());
         return true;
     }
 
-    function update(): bool
+    public function update(): bool
     {
         $optimizers = $this->getOptimizers();
         $msg        = '<table>';
         $result     = true;
         foreach ($optimizers as $optimizer) {
-            $msg .= '<tr><td>'. $optimizer->name() .'</td>';
+            $msg .= '<tr><td>' . $optimizer->name() . '</td>';
 
-            if ( $optimizer->test() ) {
+            if ($optimizer->test()) {
                 $msg .= '<td>test passed - skipping</td></tr>';
             } else {
                 $optimizer->clear_report();
@@ -174,7 +176,7 @@ class AA_SQL_Updater {
                 if (!$res) {
                     $result = false;
                 }
-                $msg .= '<td>'. $optimizer->report(). '</td></tr>';
+                $msg .= '<td>' . $optimizer->report() . '</td></tr>';
             }
         }
         $msg .= "</table>";
@@ -185,10 +187,11 @@ class AA_SQL_Updater {
     /** getOptimizers function
      *  Return names of all known AA classes, which begins with AA\Optimize\AA_Optimize
      */
-    function getOptimizers(): array {
+    public function getOptimizers(): array
+    {
         $optimizers = [];
         foreach (AA_Components::getClassNames('AA\\Optimize\\', static fn($class) => in_array('sql_update', $class::types(), true)) as $optimize_class) {
-            $optimizers[sprintf("%05s",$optimize_class::priority()).$optimize_class] = AA_Serializable::factory($optimize_class);
+            $optimizers[sprintf("%05s", $optimize_class::priority()) . $optimize_class] = AA_Serializable::factory($optimize_class);
         }
         ksort($optimizers);
         return $optimizers;
@@ -203,15 +206,13 @@ if ($_GET['update']) {
     }
     $status = $updater->update();
     echo ($status ? 'OK ' : 'Err ') . $updater->report();
-}
-elseif ( $_GET['restore']) {
+} elseif ($_GET['restore']) {
     if (!$_GET['fire']) {
         AbstractOptimize::justPrint(true);
     }
     $status = $updater->restore();
     echo ($status ? 'OK ' : 'Err ') . $updater->report();
-}
-elseif ( $_GET['dotest']) {
+} elseif ($_GET['dotest']) {
     $status = $updater->test();
     echo ($status ? 'OK ' : 'Err ') . $updater->report();
 }
@@ -219,4 +220,3 @@ elseif ( $_GET['dotest']) {
 if (!$_GET['silent']) {
     echo '</body></html>';
 }
-

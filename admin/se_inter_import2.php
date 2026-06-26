@@ -1,4 +1,5 @@
 <?php
+
 /** se_inter_import2.php - Inter node feed import settings
  *
  *             $slice_id
@@ -51,15 +52,17 @@ try {
     $submitbtn = InputVars::boolPOST('submitbtn');
     $exact_copy = InputVars::boolPOST('exact_copy');
     $cancel = InputVars::boolPOST('cancel');
-    
+
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
+} catch (Exception $e) {
+    AA_Adminpageutil::pageParameterError($e);
+}
 
 $node = DB_AA::select1(['server_url', 'password'], "SELECT server_url, password FROM nodes", [['name',$rem_nodes]]);
 if (!$node) {   // select1() returns false for an unknown node name - avoid a destructure TypeError
     MsgPage(_m("Unable to connect and/or retrieve data from the remote node. Contact the administrator of the local node."), self_base() . "se_inter_import.php");
 }
-['server_url'=>$server_url,'password'=>$password] = $node;
+['server_url' => $server_url,'password' => $password] = $node;
 
 if (!($data = FeedUtil::xml_fetch($server_url, ORG_NAME, $password, AuthGetUname(), "", 0, ""))) {
     MsgPage(_m("Unable to connect and/or retrieve data from the remote node. Contact the administrator of the local node."), self_base() . "se_inter_import.php");
@@ -70,8 +73,8 @@ if (!str_starts_with($data, "<")) {
     AA_Log::write("CSN", AA_Log::context(), new AA_Logentry_Csn(['status' => 'Establishing mode', 'detail' => $data]));
     $err_msg = match ($data) {
         FeedUtil::ERR_NO_SLICE => _m("No slices available. You do not have permissions to import any data of that node. Contact the administrator of the remote slice and check, that he obtained your correct username."),
-        FeedUtil::ERR_PASSWORD => _m("Invalid password for the node name:")." ".ORG_NAME.". "._m("Contact the administrator of the local node."),
-        default                => _m("Remote server returns following error:")." $data",
+        FeedUtil::ERR_PASSWORD => _m("Invalid password for the node name:") . " " . ORG_NAME . ". " . _m("Contact the administrator of the local node."),
+        default                => _m("Remote server returns following error:") . " $data",
     };
     MsgPage($err_msg, StateUrl(self_base() . "se_inter_import.php")); // $data contains error message
 }                                                                   // from the server module
@@ -89,22 +92,30 @@ foreach ($aa_rss['channels'] as $id => $foo) {
 
 $err = [];          // error array (Init - just for initializing variable
 
-$apage = new AA_Adminpageutil('sliceadmin','n_import');
+$apage = new AA_Adminpageutil('sliceadmin', 'n_import');
 $apage->setTitle(_m("Inter node import settings"));
-$apage->setForm(['action'=>'se_inter_import3.php']);
+$apage->setForm(['action' => 'se_inter_import3.php']);
 $apage->printHead($err, $Msg);
 
 $form_buttons = [
-    "new_in_feed"      => ['type'=>'submit', 'value'=>_m("Choose slice")],
-                      "cancel"           => ['url'=>'se_inter_import.php'],
-                      "remote_node_name" => ['type' => 'hidden', 'value' => $rem_nodes],
-                      "aa"               => ['type' => 'hidden', 'value' => safe(serialize($aa_rss))]
+    "new_in_feed"      => ['type' => 'submit', 'value' => _m("Choose slice")],
+    "cancel"           => ['url' => 'se_inter_import.php'],
+    "remote_node_name" => ['type' => 'hidden', 'value' => $rem_nodes],
+    "aa"               => ['type' => 'hidden', 'value' => safe(serialize($aa_rss))],
 ];
 
-FrmTabCaption(_m("List of available slices from the node ")."<b>$rem_nodes</b>", $form_buttons);
+FrmTabCaption(_m("List of available slices from the node ") . "<b>$rem_nodes</b>", $form_buttons);
 FrmInputMultiSelect('f_slices[]', _m('Slice to import'), $chan, '', 5, true);
-FrmInputChBox('exact_copy', _m("Exact copy"), $exact_copy, false, '', 1, false,
-           _m("The slice will be an exact copy of the remote slice. All items will be copied including holdingbin and trash bin items. Also on any change in the remote item, the content will be copied to local copy of the item. The items will have the same long ids (not the short ones!). It makes no sense to change items in local copy - it will be overwritten from remote master."));
+FrmInputChBox(
+    'exact_copy',
+    _m("Exact copy"),
+    $exact_copy,
+    false,
+    '',
+    1,
+    false,
+    _m("The slice will be an exact copy of the remote slice. All items will be copied including holdingbin and trash bin items. Also on any change in the remote item, the content will be copied to local copy of the item. The items will have the same long ids (not the short ones!). It makes no sense to change items in local copy - it will be overwritten from remote master."),
+);
 
 FrmTabEnd($form_buttons);
 

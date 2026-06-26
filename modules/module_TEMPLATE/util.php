@@ -1,7 +1,8 @@
-<?php 
+<?php
+
 //$Id$
-/* 
-Copyright (C) 1999, 2000 Association for Progressive Communications 
+/*
+Copyright (C) 1999, 2000 Association for Progressive Communications
 https://www.apc.org/
 
     This program is free software; you can redistribute it and/or modify
@@ -37,4 +38,3 @@ Revision 1.1  2002/04/25 12:07:26  honzam
 initial version
 
 */
-

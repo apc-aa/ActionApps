@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Item history - the recorded changes (when / who) for a single item, with per-field diffs and a
  * revert tool. Superadmin only (matches the left-rail link and the Statistics page). Reached from
@@ -19,7 +20,9 @@ require_once __DIR__ . "/../include/menu_util.php";
 
 try {
     $id = InputVars::idGETPOST('id');
-} catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
+} catch (Exception $e) {
+    AA_Adminpageutil::pageParameterError($e);
+}
 
 // Superadmin-only, like the Statistics page. (A future relaxation - history for item editors -
 // is the edit-rights gate kept in version control.) The "Compare to" AJAX swap is served by

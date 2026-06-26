@@ -32,7 +32,7 @@ use AA\Util\ChangesMonitor;
 use AA\Util\InputVars;
 
 $require_default_lang = true;      // do not use module specific language file
-                                   // (message for init_page.php)
+// (message for init_page.php)
 // const  AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/formutil.php";
@@ -77,9 +77,11 @@ try {
     $finditem_edit_op = InputVars::stringGET('finditem_edit_op'); // alpha
     // array ( 'Jeď!' => 1, )
     $go_finditem_edit = InputVars::boolGET('go_finditem_edit'); // convert submit to bool
-    
+
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
+} catch (Exception $e) {
+    AA_Adminpageutil::pageParameterError($e);
+}
 
 if (!IsSuperadmin()) {
     AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php", _m("You don't have permissions to do search."), "admin");
@@ -87,21 +89,22 @@ if (!IsSuperadmin()) {
 }
 // ----------------------------------------------------------------------------------------
 
-function query_search(array $where, string $phrase): string {
+function query_search(array $where, string $phrase): string
+{
     $where[] = ['slice.id', 'item.slice_id', 'j'];
     $where[] = ['content.item_id', 'item.id', 'j'];
 
     $arr = DB_AA::select([], 'SELECT distinct slice.name as slice_name, LOWER(HEX(slice.id)) as slice_id, LOWER(HEX(item.id)) as iid, item.short_id, item.status_code, item.post_date, item.last_edit, item.edited_by from slice, item, content', $where, ['status_code','slice_name','short_id']);
 
     $phrase = safe($phrase);
-    $output = count($arr)." "._m('Show results with string')."  <b><i>$phrase</i></b><br>";
+    $output = count($arr) . " " . _m('Show results with string') . "  <b><i>$phrase</i></b><br>";
 
     $items = [[_m('Item'), 'short_id', 'status_code', 'publish_date', 'last_edit', 'edited_by']];
     foreach ($arr as $f) {
-        $items[]    = [Adminlink::itemLink($f['iid'], $f['slice_id']), $f['short_id'], $f['status_code'], date('Y-m-d H:i', (int)$f['post_date']), date('Y-m-d H:i',(int)$f['last_edit']), $f['edited_by']];
+        $items[]    = [Adminlink::itemLink($f['iid'], $f['slice_id']), $f['short_id'], $f['status_code'], date('Y-m-d H:i', (int) $f['post_date']), date('Y-m-d H:i', (int) $f['last_edit']), $f['edited_by']];
     }
 
-    return $output. GetHtmlTable($items, 'th'). '<br><br>';
+    return $output . GetHtmlTable($items, 'th') . '<br><br>';
 }
 
 
@@ -110,7 +113,7 @@ function PrintIdsInfo($l_or_s_id): void
     if (is_short_id($l_or_s_id)) {
         if (DB_AA::test('view', [['id', $l_or_s_id, 'i']])) {
             echo '<h3>View</h3><pre>';
-            echo Adminlink::viewLink($l_or_s_id). "<br>";
+            echo Adminlink::viewLink($l_or_s_id) . "<br>";
             echo "</pre>";
         }
         return;
@@ -120,16 +123,16 @@ function PrintIdsInfo($l_or_s_id): void
     }
 
     if (DB_AA::test('slice', [['id', $l_or_s_id, 'l']])) {
-        echo '<h3>'. _m('Slice') .'</h3><pre>';
-        echo Adminlink::moduleLink($l_or_s_id). "<br>";
+        echo '<h3>' . _m('Slice') . '</h3><pre>';
+        echo Adminlink::moduleLink($l_or_s_id) . "<br>";
         echo "</pre>";
     } elseif (DB_AA::test('module', [['id', $l_or_s_id, 'l']])) {
-        echo '<h3>'. _m('Module') .'</h3><pre>';
-        echo Adminlink::moduleLink($l_or_s_id). "<br>";
+        echo '<h3>' . _m('Module') . '</h3><pre>';
+        echo Adminlink::moduleLink($l_or_s_id) . "<br>";
         echo "</pre>";
     }
     if ($rec = DB_AA::select([], 'SELECT * FROM `object_text`', [['object_id', $l_or_s_id]])) {
-        echo '<h3>'. _m('Object') .'</h3>';
+        echo '<h3>' . _m('Object') . '</h3>';
         echo GetHtmlTable($rec, 'key', _m('Object'), 'td');
         echo GetHtmlTable(DB_AA::select([], 'SELECT * FROM `object_integer`', [['object_id', $l_or_s_id]]), 'key', _m('Object'), 'td');
         echo GetHtmlTable(DB_AA::select([], 'SELECT * FROM `object_float`', [['object_id', $l_or_s_id]]), 'key', _m('Object'), 'td');
@@ -156,16 +159,17 @@ function PrintItemInfo($item_id): void
 }
 
 
-$apage = new AA_Adminpageutil('aaadmin','aafinder');
+$apage = new AA_Adminpageutil('aaadmin', 'aafinder');
 $apage->setTitle(_m("AA finder"));
 $apage->setForm();   // do not use form around code
 $apage->printHead($err, $Msg);
 
-if (!is_object( $db )) {
+if (!is_object($db)) {
     $db = getDB();
 }
 
-function PrintSeoSearch($q): void {
+function PrintSeoSearch($q): void
+{
     if (in_array(guesstype(trim($q)), ['s', 'l'])) {
         PrintItemInfo(trim($q));
     } elseif (preg_match_all("/([0-9a-f]{32})/", $q, $ids)) {
@@ -188,15 +192,15 @@ if (strlen($findtext)) {
     if ($findinview) {
         $fields = ['id', 'before', 'even', 'row_delimiter', 'odd', 'after', 'group_title', 'order1', 'order2', 'group_by1', 'group_by2', 'cond1field', 'cond2field', 'cond3field', 'aditional', 'aditional2', 'aditional3', 'aditional4', 'aditional5', 'aditional6', 'group_bottom', 'field1', 'field2', 'field3'];
 
-        $SQL = "SELECT `view`.`id`, `view`.`type`, `view`.`slice_id`, `slice`.`name` FROM `view` INNER JOIN `slice` ON `view`.`slice_id` = `slice`.`id` WHERE "; 
+        $SQL = "SELECT `view`.`id`, `view`.`type`, `view`.`slice_id`, `slice`.`name` FROM `view` INNER JOIN `slice` ON `view`.`slice_id` = `slice`.`id` WHERE ";
         foreach ($fields as $field) {
-            $SQL .= "(`view`.`$field` LIKE '%". addcslashes(quote($findtext),'_%')."%') OR ";
+            $SQL .= "(`view`.`$field` LIKE '%" . addcslashes(quote($findtext), '_%') . "%') OR ";
         }
         $SQL .= "0";
         $db->query($SQL);
-        echo "<b>views</b> <small>(".$db->num_rows()." matching found)</small><br>";
+        echo "<b>views</b> <small>(" . $db->num_rows() . " matching found)</small><br>";
         while ($db->next_record()) {
-            echo Adminlink::viewLink($db->f("id")). "<br>\n";
+            echo Adminlink::viewLink($db->f("id")) . "<br>\n";
         }
         echo '<br><br>';
     }
@@ -221,20 +225,20 @@ if (strlen($findtext)) {
             'slice.admin_format_bottom',
             'slice.aditional',
             'slice.javascript',
-            'email_notify.uid'
+            'email_notify.uid',
         ];
 
         $SQL = 'SELECT slice.name, slice.id FROM slice LEFT JOIN email_notify ON email_notify.slice_id = slice.id WHERE ';
         foreach ($fields as $field) {
-            $SQL .= "$field LIKE '%". addcslashes(quote($findtext),'_%') ."%' OR ";
+            $SQL .= "$field LIKE '%" . addcslashes(quote($findtext), '_%') . "%' OR ";
         }
         $SQL .= "0";
         $db->query($SQL);
-        echo "<b>slices</b> <small>(".$db->num_rows()." matching found)</small><br>";
+        echo "<b>slices</b> <small>(" . $db->num_rows() . " matching found)</small><br>";
         while ($db->next_record()) {
-            echo $db->f("name")." "
-                    ."<a href=\"".StateUrl("se_fulltext.php?change_id=".unpack_id($db->f("id")))
-                    ."\">"._m("Jump")."</a><br>";
+            echo $db->f("name") . " "
+                    . "<a href=\"" . StateUrl("se_fulltext.php?change_id=" . unpack_id($db->f("id")))
+                    . "\">" . _m("Jump") . "</a><br>";
         }
         echo '<br><br>';
     }
@@ -244,23 +248,23 @@ if (strlen($findtext)) {
 
         $SQL = "SELECT slice_id, id, name FROM field WHERE ";
         foreach ($fields as $field) {
-            $SQL .= "$field LIKE '%". addcslashes(quote($findtext),'_%') ."%' OR ";
+            $SQL .= "$field LIKE '%" . addcslashes(quote($findtext), '_%') . "%' OR ";
         }
         $SQL .= '0';
         $db->query($SQL);
-        echo "<b>fields</b> <small>(" .$db->num_rows()." matching found)</small><br>";
+        echo "<b>fields</b> <small>(" . $db->num_rows() . " matching found)</small><br>";
 
         while ($db->next_record()) {
-            echo $db->f("name")." ".Adminlink::fieldLink($db->f("id"), unpack_id($db->f("slice_id"))). "<br>";
+            echo $db->f("name") . " " . Adminlink::fieldLink($db->f("id"), unpack_id($db->f("slice_id"))) . "<br>";
         }
         echo '<br><br>';
     }
 
     if ($findinspot) {
-        $like_text = addcslashes(quote($findtext),'_%');
+        $like_text = addcslashes(quote($findtext), '_%');
 
         $fields = [
-            'content'
+            'content',
         ];
 
         $SQL = "SELECT site_id, spot_id FROM site_spot WHERE ";
@@ -269,25 +273,25 @@ if (strlen($findtext)) {
         }
         $SQL .= "0";
         $db->query($SQL);
-        echo "<b>site spots</b> <small>(".$db->num_rows()." matching found)</small><br>";
+        echo "<b>site spots</b> <small>(" . $db->num_rows() . " matching found)</small><br>";
         while ($db->next_record()) {
-            echo Adminlink::siteLink($db->f("spot_id"), unpack_id($db->f("site_id"))). "<br>";
+            echo Adminlink::siteLink($db->f("spot_id"), unpack_id($db->f("site_id"))) . "<br>";
         }
         echo '<br><br>';
 
 
         // ------
-        $zids =       AA_Object::querySet('AA_Aliasfunc', new AA_Set(null, new AA_Condition('alias',   'CONTAIN', $findtext)));
-        $zids->union( AA_Object::querySet('AA_Aliasfunc', new AA_Set(null, new AA_Condition('code',    'CONTAIN', $findtext))) );
-        $zids->union( AA_Object::querySet('AA_Aliasfunc', new AA_Set(null, new AA_Condition('desc',    'CONTAIN', $findtext))) );
-        $zids->union( AA_Object::querySet('AA_Aliasfunc', new AA_Set(null, new AA_Condition('ussage',  'CONTAIN', $findtext))) );
-        $zids->union( AA_Object::querySet('AA_Aliasfunc', new AA_Set(null, new AA_Condition('aa_name', 'CONTAIN', $findtext))) );
+        $zids =       AA_Object::querySet('AA_Aliasfunc', new AA_Set(null, new AA_Condition('alias', 'CONTAIN', $findtext)));
+        $zids->union(AA_Object::querySet('AA_Aliasfunc', new AA_Set(null, new AA_Condition('code', 'CONTAIN', $findtext))));
+        $zids->union(AA_Object::querySet('AA_Aliasfunc', new AA_Set(null, new AA_Condition('desc', 'CONTAIN', $findtext))));
+        $zids->union(AA_Object::querySet('AA_Aliasfunc', new AA_Set(null, new AA_Condition('ussage', 'CONTAIN', $findtext))));
+        $zids->union(AA_Object::querySet('AA_Aliasfunc', new AA_Set(null, new AA_Condition('aa_name', 'CONTAIN', $findtext))));
 
         if (!$zids->isEmpty()) {
             $managed         = AA_Aliasfunc::getManagerConf();  // we should provide: ['module_id'=>$obj->getOwnerId()]
-            $managed->setUrl(get_aa_url('modules/site/aliases.php',[],false));
+            $managed->setUrl(get_aa_url('modules/site/aliases.php', [], false));
             $managed->settings['show'] = MGR_ITEMS;
-            $manager         = new Manager('aafindaliases'.AA::$module_id, $managed);
+            $manager         = new Manager('aafindaliases' . AA::$module_id, $managed);
             $manager->performActions();
             echo $manager->getManagerCode($zids);
         }
@@ -298,23 +302,23 @@ if (strlen($findtext)) {
 
         $SQL = "SELECT slice_id, discussion.* FROM discussion, item WHERE discussion.item_id = item.id AND (";
         foreach ($fields as $field) {
-            $SQL .= "discussion.$field LIKE '%". addcslashes(quote($findtext),'_%') ."%' OR ";
+            $SQL .= "discussion.$field LIKE '%" . addcslashes(quote($findtext), '_%') . "%' OR ";
         }
         $SQL .= "0) ORDER BY date";
         $db->query($SQL);
-        echo "<b>comments</b> <small>(".$db->num_rows()." matching found)</small><br>";
+        echo "<b>comments</b> <small>(" . $db->num_rows() . " matching found)</small><br>";
         $head = '';
         while ($db->next_record()) {
             if (!$head) {
-                echo ($head = '<table><tr><td>'. implode('</td><td>', array_keys($db->record())).'</td></tr>');
+                echo($head = '<table><tr><td>' . implode('</td><td>', array_keys($db->record())) . '</td></tr>');
             }
             $print = $db->record();
             $print['slice_id'] = unpack_id($print['slice_id']);
             $print['id'] = unpack_id($print['id']);
             $print['parent']  = unpack_id($print['parent']);
             $print['item_id'] = Adminlink::itemLink(unpack_id($print['item_id']), $print['slice_id']);
-            $print['date'] = date('Y-m-d H:i:s', (int)$print['date']);
-            echo '<tr><td>'. implode('</td><td>', $print).'</td></tr>';
+            $print['date'] = date('Y-m-d H:i:s', (int) $print['date']);
+            echo '<tr><td>' . implode('</td><td>', $print) . '</td></tr>';
         }
         echo '</table>';
         echo '<br><br>';
@@ -328,7 +332,7 @@ if ($go_finditem && $finditem) {
 if ($go_finditem_edit && $finditem_edit && $finditem_edit_op) {
     switch ($finditem_edit_op) {
         case 'LIKE':
-            $qstring =  '%' . addcslashes(quote($finditem_edit),'_%') . '%';
+            $qstring =  '%' . addcslashes(quote($finditem_edit), '_%') . '%';
             print query_search([['content.text', $qstring, 'LIKE']], "LIKE $qstring");
             break;
         case '=':
@@ -343,9 +347,9 @@ if ($go_finditem_edit && $finditem_edit && $finditem_edit_op) {
     }
 }
 
-if ( strlen($go_search) || strlen($go_replace) ) {
+if (strlen($go_search) || strlen($go_replace)) {
     $row = [];
-    if ( strlen($search) || ( strlen($go_replace) && (strlen($replace)>5) ) ) {
+    if (strlen($search) || (strlen($go_replace) && (strlen($replace) > 5))) {
         $metabase = AA::Metabase();
 
         $table2search = [];
@@ -368,9 +372,9 @@ if ( strlen($go_search) || strlen($go_replace) ) {
             // $table2search['content'] = ['id' => 'LOWER(HEX(`item_id`))'];
             $table2search['content'] = ['id' => 'LOWER(HEX(`item_id`))', 'slice_id' => 'LOWER(HEX(`slice_id`))', 'addtables' => ',`item`', 'addconds' => 'item.id=content.item_id AND '];
         } elseif ($searchincodeitems) {
-            $codeslices = DB_AA::select('lid','SELECT LOWER(HEX(`id`)) as lid FROM `slice`',[['type', '___Code', 'BEGIN']]) ?: ['90112233001122330011223300112233'];
-            $codeslicesquery = sqlin( 'item.slice_id', $codeslices, true );
-            $table2search['content'] = ['id' => 'LOWER(HEX(`item_id`))', 'slice_id' => 'LOWER(HEX(`slice_id`))', 'addtables' => ',`item`', 'addconds' => 'item.id=content.item_id AND '.$codeslicesquery.' AND '];
+            $codeslices = DB_AA::select('lid', 'SELECT LOWER(HEX(`id`)) as lid FROM `slice`', [['type', '___Code', 'BEGIN']]) ?: ['90112233001122330011223300112233'];
+            $codeslicesquery = sqlin('item.slice_id', $codeslices, true);
+            $table2search['content'] = ['id' => 'LOWER(HEX(`item_id`))', 'slice_id' => 'LOWER(HEX(`slice_id`))', 'addtables' => ',`item`', 'addconds' => 'item.id=content.item_id AND ' . $codeslicesquery . ' AND '];
         }
         if ($searchinobject) {
             $table2search['object_text'] = ['id' => '`object_id`'];
@@ -415,7 +419,7 @@ if ( strlen($go_search) || strlen($go_replace) ) {
                     FrmTabRow($row);
                     $row = [];
                     foreach ($txt as $t) {
-                        $code = aa_substr($t['txt'], 0, $t['pos']-1). 'AA_$@MArK%'. aa_substr($t['txt'], $t['pos']-1);
+                        $code = aa_substr($t['txt'], 0, $t['pos'] - 1) . 'AA_$@MArK%' . aa_substr($t['txt'], $t['pos'] - 1);
                         if (strlen($code) > 210) {
                             if ($t['pos'] > 40) {
 
@@ -425,8 +429,8 @@ if ( strlen($go_search) || strlen($go_replace) ) {
                             }
                         }
                         $code = str_replace('AA_$@MArK%', '<span style="background-color:#DDD">', safe($code)) . '</span>';
-                        $row[0] = "<small>" .Adminlink::linkByTable($tbl, $fld, $t). "</small>";
-                        $row[1] = "<small>". AA_Module::getModuleName($t['sid'],true)."</small>";
+                        $row[0] = "<small>" . Adminlink::linkByTable($tbl, $fld, $t) . "</small>";
+                        $row[1] = "<small>" . AA_Module::getModuleName($t['sid'], true) . "</small>";
                         $row[2] = "<small> $code</small>";
                         FrmTabRow($row);
                     }
@@ -453,7 +457,7 @@ if ( strlen($go_search) || strlen($go_replace) ) {
 }
 
 if ($showhistory) {
-    echo '<h3>'. _m('History') .'</h3>';
+    echo '<h3>' . _m('History') . '</h3>';
     ChangesMonitor::singleton()->display([$showhistory]);
     echo '<br><br>';
 
@@ -467,73 +471,73 @@ if ($showhistory) {
 
 FrmTabCaption(_m("Manage"));
 echo '<tr><td>';
-echo '<form name="f_finduser" action="'.StateUrl("um_uedit.php").'">';
-echo '<b>'._m("Manage User:").'</b><br>
+echo '<form name="f_finduser" action="' . StateUrl("um_uedit.php") . '">';
+echo '<b>' . _m("Manage User:") . '</b><br>
     <input type="text" name="usr" value="" size=120>&nbsp;&nbsp;<input type="hidden" name="UsrSrch" value="1">
-    <input type="submit" name="go_finduser" value="'._m("Go!").'">' .StateHidden();
+    <input type="submit" name="go_finduser" value="' . _m("Go!") . '">' . StateHidden();
 echo '</form>';
 echo '</td></tr><tr><td>';
-echo '<form name="f_findgroup" action="'.StateUrl("um_gedit.php").'">';
-echo '<b>'._m("Manage Group:").'</b><br>
+echo '<form name="f_findgroup" action="' . StateUrl("um_gedit.php") . '">';
+echo '<b>' . _m("Manage Group:") . '</b><br>
     <input type="text" name="grp" value="" size=120>&nbsp;&nbsp;<input type="hidden" name="GrpSrch" value="1">
-    <input type="submit" name="go_findgroup" value="'._m("Go!").'">' .StateHidden();
+    <input type="submit" name="go_findgroup" value="' . _m("Go!") . '">' . StateHidden();
 
 echo '</form>';
 echo '</td></tr>';
 FrmTabSeparator(_m("Search"));
 echo '<tr><td>';
 echo '<form name="f_findtext">';
-echo '<b>'._m('Find in').'</b>
-      <label><input type="checkbox" name="findinseo"    value="1" '. ((!$findtext || $findinseo)? 'checked':'').'>'._m("ID & SEO").'</label>&nbsp;&nbsp;
-      <label><input type="checkbox" name="findinview"   value="1" '. ((!$findtext || $findinview)? 'checked':'').'>'._m("Views").'</label>&nbsp;&nbsp;
-      <label><input type="checkbox" name="findinslice"  value="1" '. ((!$findtext || $findinslice)? 'checked':'').'>'._m("Slices").'</label>&nbsp;&nbsp;
-      <label><input type="checkbox" name="findinfield"  value="1" '. ((!$findtext || $findinfield)? 'checked':'').'>'._m("Fields").'</label>&nbsp;&nbsp;
-      <label><input type="checkbox" name="findinspot"   value="1" '. ((!$findtext || $findinspot)? 'checked':'').'>'._m("Site spots").'</label>&nbsp;&nbsp;
-      <label><input type="checkbox" name="findindiscus" value="1" '. ((                      $findindiscus)? 'checked':'').'>'._m("Discussion comments").'</label>&nbsp;&nbsp;
+echo '<b>' . _m('Find in') . '</b>
+      <label><input type="checkbox" name="findinseo"    value="1" ' . ((!$findtext || $findinseo) ? 'checked' : '') . '>' . _m("ID & SEO") . '</label>&nbsp;&nbsp;
+      <label><input type="checkbox" name="findinview"   value="1" ' . ((!$findtext || $findinview) ? 'checked' : '') . '>' . _m("Views") . '</label>&nbsp;&nbsp;
+      <label><input type="checkbox" name="findinslice"  value="1" ' . ((!$findtext || $findinslice) ? 'checked' : '') . '>' . _m("Slices") . '</label>&nbsp;&nbsp;
+      <label><input type="checkbox" name="findinfield"  value="1" ' . ((!$findtext || $findinfield) ? 'checked' : '') . '>' . _m("Fields") . '</label>&nbsp;&nbsp;
+      <label><input type="checkbox" name="findinspot"   value="1" ' . ((!$findtext || $findinspot) ? 'checked' : '') . '>' . _m("Site spots") . '</label>&nbsp;&nbsp;
+      <label><input type="checkbox" name="findindiscus" value="1" ' . (($findindiscus) ? 'checked' : '') . '>' . _m("Discussion comments") . '</label>&nbsp;&nbsp;
     <br>
-    <input type="text" name="findtext" value="'.safe($findtext).'" size=120>&nbsp;&nbsp;
-      <input type="submit" name="go_findtext" value="'._m("Go!").'">' .StateHidden();
+    <input type="text" name="findtext" value="' . safe($findtext) . '" size=120>&nbsp;&nbsp;
+      <input type="submit" name="go_findtext" value="' . _m("Go!") . '">' . StateHidden();
 echo '</form>';
 echo '</td></tr><tr><td>';
 
 echo '<form name="f_replace">';
-echo '<b>'._m('Search and Replace in').'</b>
-      <label><input type="checkbox" name="searchinview"      value="1" '. ((!$search || $searchinview)? 'checked':'').'>'._m("Views").'</label>&nbsp;&nbsp;
-      <label><input type="checkbox" name="searchinslice"     value="1" '. ((!$search || $searchinslice)? 'checked':'').'>'._m("Slices").'</label>&nbsp;&nbsp;
-      <label><input type="checkbox" name="searchinfield"     value="1" '. ((!$search || $searchinfield)? 'checked':'').'>'._m("Fields").'</label>&nbsp;&nbsp;
-      <label><input type="checkbox" name="searchinspot"      value="1" '. ((!$search || $searchinspot)? 'checked':'').'>'._m("Site spots").'</label>&nbsp;&nbsp;
-      <label><input type="checkbox" name="searchinobject"    value="1" '. ((!$search || $searchinobject)? 'checked':'').'>'._m("Objects").'</label>&nbsp;&nbsp;
-      <label><input type="checkbox" name="searchincodeitems" value="1" '. ((                $searchincodeitems)? 'checked':'').' title="'._m("Items from slices with 'Slice Type' like Code... ").'">'._m("Code Items").'</label>&nbsp;&nbsp;
-      <label><input type="checkbox" name="searchinitems"     value="1" '. ((                    $searchinitems)? 'checked':'').'>'._m("All Items").'</label>&nbsp;&nbsp;
-      <label><input type="checkbox" name="searchinhistory"   value="1" '. ((                    $searchinhistory)? 'checked':'').'>'._m("History").'</label>&nbsp;&nbsp;
-      <label><input type="checkbox" name="searchindiscus"    value="1" '. ((                    $searchindiscus)? 'checked':'').'>'._m("Discussion comments").'</label>&nbsp;&nbsp;
+echo '<b>' . _m('Search and Replace in') . '</b>
+      <label><input type="checkbox" name="searchinview"      value="1" ' . ((!$search || $searchinview) ? 'checked' : '') . '>' . _m("Views") . '</label>&nbsp;&nbsp;
+      <label><input type="checkbox" name="searchinslice"     value="1" ' . ((!$search || $searchinslice) ? 'checked' : '') . '>' . _m("Slices") . '</label>&nbsp;&nbsp;
+      <label><input type="checkbox" name="searchinfield"     value="1" ' . ((!$search || $searchinfield) ? 'checked' : '') . '>' . _m("Fields") . '</label>&nbsp;&nbsp;
+      <label><input type="checkbox" name="searchinspot"      value="1" ' . ((!$search || $searchinspot) ? 'checked' : '') . '>' . _m("Site spots") . '</label>&nbsp;&nbsp;
+      <label><input type="checkbox" name="searchinobject"    value="1" ' . ((!$search || $searchinobject) ? 'checked' : '') . '>' . _m("Objects") . '</label>&nbsp;&nbsp;
+      <label><input type="checkbox" name="searchincodeitems" value="1" ' . (($searchincodeitems) ? 'checked' : '') . ' title="' . _m("Items from slices with 'Slice Type' like Code... ") . '">' . _m("Code Items") . '</label>&nbsp;&nbsp;
+      <label><input type="checkbox" name="searchinitems"     value="1" ' . (($searchinitems) ? 'checked' : '') . '>' . _m("All Items") . '</label>&nbsp;&nbsp;
+      <label><input type="checkbox" name="searchinhistory"   value="1" ' . (($searchinhistory) ? 'checked' : '') . '>' . _m("History") . '</label>&nbsp;&nbsp;
+      <label><input type="checkbox" name="searchindiscus"    value="1" ' . (($searchindiscus) ? 'checked' : '') . '>' . _m("Discussion comments") . '</label>&nbsp;&nbsp;
     <br>
-    <textarea name="search" placeholder="'._m("minimum 2 characters for replace function").'" rows=6 style="width:40%">'.safe($search).'</textarea>&nbsp;&nbsp;
-    <textarea name="replace" placeholder="'._m("minimum 6 characters for replace function (or use {#AAA} value which will be replaced by empty string)").'" rows=6 style="width:40%">'.safe($replace).'</textarea>&nbsp;&nbsp;
-    <input type="submit" name="go_search" value="'._m("Search").'">
-    <input type="submit" name="go_replace" value="'._m("Replace!").'">'.StateHidden();
+    <textarea name="search" placeholder="' . _m("minimum 2 characters for replace function") . '" rows=6 style="width:40%">' . safe($search) . '</textarea>&nbsp;&nbsp;
+    <textarea name="replace" placeholder="' . _m("minimum 6 characters for replace function (or use {#AAA} value which will be replaced by empty string)") . '" rows=6 style="width:40%">' . safe($replace) . '</textarea>&nbsp;&nbsp;
+    <input type="submit" name="go_search" value="' . _m("Search") . '">
+    <input type="submit" name="go_replace" value="' . _m("Replace!") . '">' . StateHidden();
 
 echo '</form>';
 echo '</td></tr><tr><td>';
 
 
 echo '<form name="f_finditem">';
-echo '<b>'._m("Get all information about the ITEM").'</b><br>
-    <input type="text" name="finditem" value="'.safe($finditem).'" size=120>&nbsp;&nbsp;
-    <input type="submit" name="go_finditem" value="'._m("Go!").'">' .StateHidden();
+echo '<b>' . _m("Get all information about the ITEM") . '</b><br>
+    <input type="text" name="finditem" value="' . safe($finditem) . '" size=120>&nbsp;&nbsp;
+    <input type="submit" name="go_finditem" value="' . _m("Go!") . '">' . StateHidden();
 echo '</form>';
 echo '</td></tr><tr><td>';
 
 echo '<form name="f_finditem_edit">';
-echo '<b>'._m("Shortcut to edit ITEM").'</b><br>
-    <input type="text" name="finditem_edit" value="'.safe($finditem_edit).'" size=120>&nbsp;&nbsp;
+echo '<b>' . _m("Shortcut to edit ITEM") . '</b><br>
+    <input type="text" name="finditem_edit" value="' . safe($finditem_edit) . '" size=120>&nbsp;&nbsp;
     <select name="finditem_edit_op">
-    <option value="LIKE">'._m('contains').'</option>
-    <option value="=">'._m('is').'</option>
-    <option value="item">'._m('Item number').'</option>
-    <option value="seo">'._m('seo............. =').'</option>
+    <option value="LIKE">' . _m('contains') . '</option>
+    <option value="=">' . _m('is') . '</option>
+    <option value="item">' . _m('Item number') . '</option>
+    <option value="seo">' . _m('seo............. =') . '</option>
     </select>
-    <input type="submit" name="go_finditem_edit" value="'._m("Go!").'">'.StateHidden();
+    <input type="submit" name="go_finditem_edit" value="' . _m("Go!") . '">' . StateHidden();
 echo '</form></td></tr>';
 
 FrmTabEnd();

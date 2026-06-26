@@ -1,4 +1,5 @@
 <?php
+
 /**
  * PHP version 7.2+
  *
@@ -36,12 +37,14 @@ require_once __DIR__ . "/../include/varset.php";
 try {
     $update = InputVars::boolPOST('update');
     $cancel = InputVars::boolPOST('cancel');
-    
+
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
+} catch (Exception $e) {
+    AA_Adminpageutil::pageParameterError($e);
+}
 
 if ($cancel) {
-    go_url( StateUrl(self_base() . "index.php"));
+    go_url(StateUrl(self_base() . "index.php"));
 }
 
 if (!IfSlPerm(PS_FIELDS)) {
@@ -67,7 +70,7 @@ $script2run = '
    window.cm_top  = CodeMirror.fromTextArea(document.getElementById("javascript"), opts);
    ';
 
-$apage = new AA_Adminpageutil('sliceadmin','javascript');
+$apage = new AA_Adminpageutil('sliceadmin', 'javascript');
 $apage->setTitle(_m("Field Triggers"));
 $apage->addRequire('codemirror@5');
 $apage->addRequire($script2run, 'AA_Req_Load');
@@ -81,7 +84,7 @@ FrmTextarea("javascript", _m("Code"), $javascript, 4, 60, false, _m("Enter code 
 $form_buttons =  [
     "update",
     "update" => ["type" => "hidden", "value" => "1"],
-    "cancel" => ["url" => "se_fields.php"]
+    "cancel" => ["url" => "se_fields.php"],
 ];
 FrmTabEnd($form_buttons);
 
@@ -93,17 +96,13 @@ foreach ($fields as $fid => $fname) {
 }
 $apage->addHelpbox(_m("Field IDs"), GetHtmlTable($rows, 'th'), true);
 
-$trig_hlp = '<p>'._m("Write trigger functions like").' "aa_onSubmit (fieldid) { }", <a href="https://actionapps.org/faq/detail.shtml?x=1706" target="_blank">'._m("see FAQ</a> for more details and examples").'</p>';
-$trig_hlp .= '<p>'._m("You can place {require:...} anywhere in the code to load any js library. If you do not use any {require:...}, AA will use default {require:aa-fillform@1} {require:aa-jslib@1}. Feel free to use just {require:aa-fillform} if you do not need old {require:aa-jslib@1}.").'</p>';
-$trig_hlp .= '<p>'._m("If you want to use javascript without any library, use {require:} or // {require:}.").'</p>';
-$trig_hlp .= '<table class="aa-table"><tr class="aa-tbl-header"><th>'._m("Field Type").'</th><th>'._m("Triggers Available -- see some JavaScript help for when a trigger is run").'</th></tr>';
+$trig_hlp = '<p>' . _m("Write trigger functions like") . ' "aa_onSubmit (fieldid) { }", <a href="https://actionapps.org/faq/detail.shtml?x=1706" target="_blank">' . _m("see FAQ</a> for more details and examples") . '</p>';
+$trig_hlp .= '<p>' . _m("You can place {require:...} anywhere in the code to load any js library. If you do not use any {require:...}, AA will use default {require:aa-fillform@1} {require:aa-jslib@1}. Feel free to use just {require:aa-fillform} if you do not need old {require:aa-jslib@1}.") . '</p>';
+$trig_hlp .= '<p>' . _m("If you want to use javascript without any library, use {require:} or // {require:}.") . '</p>';
+$trig_hlp .= '<table class="aa-table"><tr class="aa-tbl-header"><th>' . _m("Field Type") . '</th><th>' . _m("Triggers Available -- see some JavaScript help for when a trigger is run") . '</th></tr>';
 $trig_hlp .= JsTriggers::getSummary();
 $trig_hlp .= '</table>';
 
 $apage->addHelpbox(_m("Triggers"), $trig_hlp);
 
 $apage->printFoot();
-
-
-
-

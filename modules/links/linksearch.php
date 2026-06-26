@@ -1,4 +1,5 @@
 <?php
+
 require_once __DIR__ . "/../../include/searchlib.php";
 require_once __DIR__ . "/../../modules/links/constants.php";
 require_once __DIR__ . "/../../modules/links/util.php";
@@ -33,14 +34,14 @@ https://www.apc.org/
 function IsFieldSupported($field_info, $v, $param): bool
 {
     $field = $field_info['field'];
-      // param is 'type' for this function
-    return ($param !== 'unasigned' ) OR
-           str_starts_with($field, 'links_links.') OR
-           str_starts_with($field, 'links_regions.') OR
-           str_starts_with($field, 'links_link_reg.') OR
-           str_starts_with($field, 'links_languages.') OR
-           str_starts_with($field, 'links_link_lang.') OR
-           str_starts_with($field, 'links_changes.');
+    // param is 'type' for this function
+    return ($param !== 'unasigned')
+           or str_starts_with($field, 'links_links.')
+           or str_starts_with($field, 'links_regions.')
+           or str_starts_with($field, 'links_link_reg.')
+           or str_starts_with($field, 'links_languages.')
+           or str_starts_with($field, 'links_link_lang.')
+           or str_starts_with($field, 'links_changes.');
 }
 
 
@@ -64,35 +65,35 @@ function IsFieldSupported($field_info, $v, $param): bool
  * @global int   $QueryIDsCount - set to the count of IDs returned
  * @return zids
  */
-function Links_QueryZIDs($cat_path, $conds, $sort="", $subcat=false, $type="app"): zids
+function Links_QueryZIDs($cat_path, $conds, $sort = "", $subcat = false, $type = "app"): zids
 {
     $LINKS_FIELDS = GetLinkFields();
 
     $where_sql    = MakeSQLConditions($LINKS_FIELDS, $conds, $LINKS_FIELDS, $join_tables, 'IsFieldSupported', $type);
-    $order_by_sql = MakeSQLOrderBy(   $LINKS_FIELDS, $sort,  $join_tables, 'IsFieldSupported', $type);
+    $order_by_sql = MakeSQLOrderBy($LINKS_FIELDS, $sort, $join_tables, 'IsFieldSupported', $type);
 
-//    AA::$debug&4 && AA::$dbg->log('Links_QueryZIDs', $cat_path, $conds, $sort, $subcat, $type);
-//    AA::$debug&4 && AA::$dbg->log('wheresql', $where_sql);
-//    AA::$debug&4 && AA::$dbg->log('order', $order_by_sql);
+    //    AA::$debug&4 && AA::$dbg->log('Links_QueryZIDs', $cat_path, $conds, $sort, $subcat, $type);
+    //    AA::$debug&4 && AA::$dbg->log('wheresql', $where_sql);
+    //    AA::$debug&4 && AA::$dbg->log('order', $order_by_sql);
 
     $SQL = match ($type) {
         'unasigned', 'unasigned3' => 'SELECT DISTINCT links_links.id  FROM links_links LEFT JOIN links_link_cat ON links_links.id = links_link_cat.what_id ',
         default                   => 'SELECT DISTINCT links_links.id  FROM links_categories, links_link_cat, links_links ',
     };
 
-    if ( $type === 'changed' ) {
+    if ($type === 'changed') {
         $join_tables['changes'] = true;
     }
 
-    if ( $join_tables['regions'] ) {
+    if ($join_tables['regions']) {
         $SQL .= ' LEFT JOIN links_link_reg ON links_links.id = links_link_reg.link_id
                   LEFT JOIN links_regions ON links_regions.id = links_link_reg.region_id ';
     }
-    if ( $join_tables['languages'] ) {
+    if ($join_tables['languages']) {
         $SQL .= ' LEFT JOIN links_link_lang ON links_links.id = links_link_lang.link_id
                   LEFT JOIN links_languages ON links_languages.id = links_link_lang.lang_id ';
     }
-    if ( $join_tables['changes'] ) {
+    if ($join_tables['changes']) {
         $SQL .= ' LEFT JOIN links_changes ON links_links.id = links_changes.changed_link_id ';
     }
 
@@ -101,17 +102,17 @@ function Links_QueryZIDs($cat_path, $conds, $sort="", $subcat=false, $type="app"
         $SQL .= '  WHERE links_links.id = links_link_cat.what_id
                      AND links_link_cat.category_id = links_categories.id ';
 
-        $SQL .= ( $subcat ? " AND ((path = '$cat_path') OR (path LIKE '$cat_path,%')) "
+        $SQL .= ($subcat ? " AND ((path = '$cat_path') OR (path LIKE '$cat_path,%')) "
                           : " AND (path = '$cat_path') ");
     }
 
     switch ($type) {
         case 'all':        $SQL .= " AND (links_link_cat.proposal = 'n') ";
-                           break;
+            break;
         case 'new':        $SQL .= ' AND (links_link_cat.proposal = \'y\')
                                      AND (links_link_cat.base = \'y\')
                                      AND (links_links.folder < 2) ';
-                           break;
+            break;
         case 'changed':    $SQL .= ' AND (   (     ((links_link_cat.proposal = \'y\')
                                                  OR (links_link_cat.proposal_delete = \'y\'))
                                                AND (links_link_cat.state <> \'hidden\')
@@ -121,20 +122,20 @@ function Links_QueryZIDs($cat_path, $conds, $sort="", $subcat=false, $type="app"
                                                AND (links_link_cat.base = \'y\')
                                                AND (links_link_cat.proposal = \'n\')))
                                      AND (links_links.folder < 2) ';
-                           break;
+            break;
         case 'unasigned':  $SQL .= ' WHERE (links_link_cat.category_id IS NULL) AND (links_links.folder<3)';
-                           break;
+            break;
         case 'unasigned3': $SQL .= ' WHERE (links_link_cat.category_id IS NULL) AND (links_links.folder=3)';
-                           break;
+            break;
         case 'app':        $SQL .= " AND (links_link_cat.proposal = 'n') ";
-                           // no break;
+            // no break;
         default:           $folder = Links_GetFolder($type);
-                           // folder string (like folder3) contains folder number
+            // folder string (like folder3) contains folder number
 
-                           // $SQL .= " AND (links_link_cat.proposal = 'n') ";
-                           $SQL .= ($folder ?
-                                       " AND (links_links.folder = $folder) " :
-                                       " AND (links_links.folder < 2) " );
+            // $SQL .= " AND (links_link_cat.proposal = 'n') ";
+            $SQL .= ($folder
+                        ? " AND (links_links.folder = $folder) "
+                        : " AND (links_links.folder < 2) ");
     }
     $SQL .=  $where_sql . $order_by_sql;
 
@@ -156,16 +157,16 @@ function Links_QueryZIDs($cat_path, $conds, $sort="", $subcat=false, $type="app"
  * @global int   $QueryIDsCount - set to the count of IDs returned
  * @return zids
  */
-function Links_QueryCatZIDs($cid, $conds, $sort= [], $subcat=false, $type="app"): zids
+function Links_QueryCatZIDs($cid, $conds, $sort = [], $subcat = false, $type = "app"): zids
 {
     $CATEGORY_FIELDS = GetCategoryFields();
-    $cid = (int)$cid;
+    $cid = (int) $cid;
 
     $where_sql    = MakeSQLConditions($CATEGORY_FIELDS, $conds, $CATEGORY_FIELDS, $foo);
-    $order_by_sql = MakeSQLOrderBy(   $CATEGORY_FIELDS, $sort,  $foo);
+    $order_by_sql = MakeSQLOrderBy($CATEGORY_FIELDS, $sort, $foo);
 
-    if ( $subcat ) {  // this is not obvious usage - used for category search
-        $cat_path = Links_GetCategoryColumn( $cid, 'path');
+    if ($subcat) {  // this is not obvious usage - used for category search
+        $cat_path = Links_GetCategoryColumn($cid, 'path');
         $SQL  = "SELECT DISTINCT links_categories.id  FROM links_categories
                   WHERE ((path = '$cat_path') OR (path LIKE '$cat_path,%')) ";
     } else {         // standard usage - looking for subcategories of given $cid (crossreferenced included)
@@ -178,5 +179,3 @@ function Links_QueryCatZIDs($cid, $conds, $sort= [], $subcat=false, $type="app")
     // get result --------------------------
     return GetZidsFromSQL($SQL, 'id', 's');
 }
-
-

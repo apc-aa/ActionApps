@@ -1,4 +1,5 @@
 <?php
+
 /**
  * PHP version 7.2+
  *
@@ -44,14 +45,14 @@ $managed->setColumns2show(['name','comment','id']);
 
 $managed->setModule(AA::$module_id);
 // $managed->setWidgetSetting('slice_id', ['enum'=>AA_Module::getUserModules(), 'name'=>_m('Owner')]);
-$managed->setWidgetSetting('module_id', ['type'=>'hidden', 'name'=>_m('Owner')]);
-$managed->setWidgetSetting('id',                          ['name'=>_m('ID')]);
-$managed->setWidgetSetting('comment',                     ['name'=>_m('Comment')]);
-$managed->setWidgetSetting('name',                        ['name'=>_m('Name')]);
+$managed->setWidgetSetting('module_id', ['type' => 'hidden', 'name' => _m('Owner')]);
+$managed->setWidgetSetting('id', ['name' => _m('ID')]);
+$managed->setWidgetSetting('comment', ['name' => _m('Comment')]);
+$managed->setWidgetSetting('name', ['name' => _m('Name')]);
 
-$managed->setWidgetSetting('top',                         ['name'=>_m('Top HTML')]);
-$managed->setWidgetSetting('answer',                      ['name'=>_m('Answer HTML')]);
-$managed->setWidgetSetting('bottom',                      ['name'=>_m('Bottom HTML')]);
+$managed->setWidgetSetting('top', ['name' => _m('Top HTML')]);
+$managed->setWidgetSetting('answer', ['name' => _m('Answer HTML')]);
+$managed->setWidgetSetting('bottom', ['name' => _m('Bottom HTML')]);
 
 $apage = new AA_Adminpageutil('modadmin', 'design');
 $apage->setTitle(_m("Polls Design"));
@@ -59,7 +60,7 @@ $apage->setTitle(_m("Polls Design"));
 $manager = new Manager('polls_design', $managed);
 
 $manager->setRestrictionConds([
-    new AA_Condition('module_id', '==', pack_id(AA::$module_id))
+    new AA_Condition('module_id', '==', pack_id(AA::$module_id)),
 ]);
 
 $apage->printWithManager($manager);

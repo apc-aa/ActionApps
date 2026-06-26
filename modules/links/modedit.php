@@ -1,4 +1,5 @@
 <?php
+
 //$Id$
 /*
 Copyright (C) 1999, 2000 Association for Progressive Communications
@@ -29,7 +30,7 @@ use AA\Util\InputVars;
 $LINKS_LANGUAGE_FILES = [
     "en_links_lang.php" => "en_links_lang.php",
     "cz_links_lang.php" => "cz_links_lang.php",
-    "cz-utf8_links_lang.php" => "cz-utf8_links_lang.php"
+    "cz-utf8_links_lang.php" => "cz-utf8_links_lang.php",
 ];
 
 
@@ -78,12 +79,14 @@ try {
     $deleted = InputVars::boolPOST('deleted');
     $update = InputVars::boolPOST('update');
     $cancel = InputVars::boolPOST('cancel');
-    
+
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
+} catch (Exception $e) {
+    AA_Adminpageutil::pageParameterError($e);
+}
 
 if ($cancel) {
-    go_url( StateUrl(self_base() . "index.php"));
+    go_url(StateUrl(self_base() . "index.php"));
 }
 
 $err = [];          // error array (Init - just for initializing variable
@@ -93,46 +96,46 @@ $module_id   = AA::$module_id;
 
 
 if ($template['Links']) {        // add module
-    if (!CheckPerms( AuthGetUid(), "aa", AA_ID, PS_ADD)) {
+    if (!CheckPerms(AuthGetUid(), "aa", AA_ID, PS_ADD)) {
         MsgPage(_m('No permission to add module'));
         exit;
     }
-} elseif (!CheckPerms( AuthGetUid(), "slice", $module_id, PS_LINKS_SETTINGS)) {
+} elseif (!CheckPerms(AuthGetUid(), "slice", $module_id, PS_LINKS_SETTINGS)) {
     // edit module
     MsgPage(_m('No permission to edit module'));
     exit;
 }
 
-if ( ($insert && $superadmin) || $update ) {
+if (($insert && $superadmin) || $update) {
     do {
-        if ( !$owner )  { // insert new owner
-            if ( !( $owner = CreateNewOwner($new_owner, $new_owner_email, $err, $varset))) {
+        if (!$owner) { // insert new owner
+            if (!($owner = CreateNewOwner($new_owner, $new_owner_email, $err, $varset))) {
                 break;
             }
         }
 
         // validate all fields needed for module table (name, slice_url, lang_file, owner)
-        ValidateModuleFields( $name, $slice_url, $priority, $lang_file, $owner, $err );
-        $deleted  = ( $deleted  ? 1 : 0 );
+        ValidateModuleFields($name, $slice_url, $priority, $lang_file, $owner, $err);
+        $deleted  = ($deleted ? 1 : 0);
 
         // now validate all module specific fields
         ValidateInput("start_id", _m("Start category id"), $start_id, $err, false, "number");
         ValidateInput("tree_start", _m("Tree start id"), $tree_start, $err, false, "number");
         ValidateInput("select_start", _m("Select start id"), $select_start, $err, false, "number");
 
-        if ( count($err)) {
+        if (count($err)) {
             break;
         }
 
         // write all fields needed for module table
         $module_id = WriteModuleFields(($update && $module_id) ? $module_id : null, $superadmin, 'Links', $name, $slice_url, $priority, $lang_file, $owner, $deleted, Links_Category2SliceID($start_id));
-        if ( !$module_id ) {       // error?
+        if (!$module_id) {       // error?
             break;
         }
         $slice_id = $module_id;
 
         // now set all module specific settings
-        if ( $update && $superadmin) {
+        if ($update && $superadmin) {
             // tree_start and select_start could be changed only by superadmin
             // Maybe we could allow also administrators to change $select_start in
             // future
@@ -148,7 +151,7 @@ if ( ($insert && $superadmin) || $update ) {
 
             // defaults - we use the same table for all links. The setting of defaults to 1
             // flags this as default for this poll module
-            $SQL = "UPDATE links SET ". $varset->makeUPDATE() . " WHERE (id=$p_module_id)";
+            $SQL = "UPDATE links SET " . $varset->makeUPDATE() . " WHERE (id=$p_module_id)";
             if (!$db->query($SQL)) {  // not necessary - we have set the halt_on_error
                 $err["DB"] = MsgErr("Can't change links table");
                 break;
@@ -156,12 +159,12 @@ if ( ($insert && $superadmin) || $update ) {
         } elseif ($insert && $superadmin) { // insert (add)
             $varset->clear();
 
-            $p_template_id = ( $template['Links'] ?
-            q_pack_id(substr($template['Links'],1)) : 'LinksTemplate...' );
+            $p_template_id = ($template['Links']
+            ? q_pack_id(substr($template['Links'], 1)) : 'LinksTemplate...');
 
             $SQL = "SELECT * FROM links WHERE (id='$p_template_id')";
             $db->query($SQL);
-            if ( !$db->next_record() ) {
+            if (!$db->next_record()) {
                 $err["DB"] = MsgErr("Bad template id");
                 break;
             }
@@ -174,7 +177,7 @@ if ( ($insert && $superadmin) || $update ) {
             //      $varset->set("link_tmpl", $link_tmpl, "text");
 
             // create new links
-            if ( !$varset->doINSERT('links')) {
+            if (!$varset->doINSERT('links')) {
                 $err["DB"] .= MsgErr("Can't add links");
                 break;
             }
@@ -182,9 +185,9 @@ if ( ($insert && $superadmin) || $update ) {
         AA::Pagecache()->invalidateFor($module_id);  // invalidate old cached values for this slice
     } while (false);
 
-    if ( !count($err) ) {
+    if (!count($err)) {
         Session::page_close();                                // to save session variables
-        $netscape = (($r=="") ? "r=1" : "r=".++$r);  // special parameter for Netscape to reload page
+        $netscape = (($r == "") ? "r=1" : "r=" . ++$r);  // special parameter for Netscape to reload page
         // added by Setu, 2002-0227
         if ($return_url) {  // after work for action, if return_url is there, we go to the page.
             go_url(rawurldecode($return_url));
@@ -196,11 +199,11 @@ if ( ($insert && $superadmin) || $update ) {
 
 // And the form -----------------------------------------------------
 
-$source_id   = ($template['Links'] ? substr($template['Links'],1) : $module_id );
-$p_source_id = xpack_id( $source_id );
+$source_id   = ($template['Links'] ? substr($template['Links'], 1) : $module_id);
+$p_source_id = xpack_id($source_id);
 
 // load module specific data
-$SQL= " SELECT * FROM links WHERE id=$p_source_id";
+$SQL = " SELECT * FROM links WHERE id=$p_source_id";
 
 $db->query($SQL);
 if ($db->next_record()) {
@@ -208,19 +211,19 @@ if ($db->next_record()) {
 }
 $id = unpack_id($db->f("id"));  // correct ids
 
-if ( $template['Links'] ) {           // set new name and owner for NEW module
+if ($template['Links']) {           // set new name and owner for NEW module
     $name  = "";
     $owner = "";
 }
 
-$apage = new AA_Adminpageutil('modadmin','main');
-$apage->setTitle( $template['Links'] ? _m("Add Links module") : _m("Edit Links module"));
+$apage = new AA_Adminpageutil('modadmin', 'main');
+$apage->setTitle($template['Links'] ? _m("Add Links module") : _m("Edit Links module"));
 $apage->printHead($err, $Msg);
 
 FrmTabCaption(_m('Module Links data'));
 
-$marr = RenderModuleFieldsForm($source_id, $superadmin, (bool)$template['Links'], (bool)count($err), compact('name', 'slice_url', 'priority', 'lang_file', 'owner', 'deleted'), $new_owner, $new_owner_email);
-$lang_file = rtrim($marr[3],'3');   // trim for old php3 lang file extension
+$marr = RenderModuleFieldsForm($source_id, $superadmin, (bool) $template['Links'], (bool) count($err), compact('name', 'slice_url', 'priority', 'lang_file', 'owner', 'deleted'), $new_owner, $new_owner_email);
+$lang_file = rtrim($marr[3], '3');   // trim for old php3 lang file extension
 
 FrmInputSelect("lang_file", _m('Used Language File'), $LINKS_LANGUAGE_FILES, $lang_file);
 
@@ -231,7 +234,7 @@ if ($template['Links']) {
     // we can't change start_id (module_id is derived from it)
     FrmStaticText(_m('Start category id'), $start_id);
 }
-if ( $superadmin ) {
+if ($superadmin) {
     FrmInputNumber("tree_start", _m("Tree start id"), $tree_start, 0, 999999);
     FrmInputNumber("select_start", _m("Select start id"), $select_start, 0, 999999);
 } else {
@@ -239,11 +242,10 @@ if ( $superadmin ) {
     FrmStaticText(_m("Select start id"), $select_start);
 }
 
-if ( $template['Links'] ) {
-    FrmTabEnd( ['insert', 'template[Links]' => ['type'=>"hidden", 'value'=> $template['Links']]]);
+if ($template['Links']) {
+    FrmTabEnd(['insert', 'template[Links]' => ['type' => "hidden", 'value' => $template['Links']]]);
 } else {
-    FrmTabEnd( ['update', 'reset', 'cancel']);
+    FrmTabEnd(['update', 'reset', 'cancel']);
 }
 
 $apage->printFoot();
-

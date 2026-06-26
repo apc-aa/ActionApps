@@ -1,4 +1,5 @@
 <?php
+
 //$Id$
 /*
 Copyright (C) 1999, 2000 Association for Progressive Communications
@@ -21,8 +22,8 @@ https://www.apc.org/
 
 // includes for alerts files
 
-if (!defined ("AA_ID")) {
-    require_once __DIR__."/../../include/config.php";
+if (!defined("AA_ID")) {
+    require_once __DIR__ . "/../../include/config.php";
 }
 require_once __DIR__ . "/../../include/locsess.php";
 require_once __DIR__ . "/../../include/util.php";
@@ -36,4 +37,3 @@ if (!$lang) {
 mgettext_bind($lang, 'alerts');
 
 require_once __DIR__ . "/util.php";
-

@@ -60,7 +60,7 @@ use AA\Util\InputVars;
 
 
 // const  AA_REGISTER_GLOBALS = true;
-require_once __DIR__."/../include/config.php";
+require_once __DIR__ . "/../include/config.php";
 require_once __DIR__ . "/../include/locsess.php";
 require_once __DIR__ . "/../include/util.php";
 require_once __DIR__ . "/../include/varset.php";
@@ -74,14 +74,16 @@ try {
     $feed_id    = InputVars::intGET('feed_id');
     $rssfeed_id = InputVars::intGET('rssfeed_id');
     $cancel = InputVars::boolPOST('cancel');
-} catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
+} catch (Exception $e) {
+    AA_Adminpageutil::pageParameterError($e);
+}
 
 ($debugfeed >= 8) && print("\n<br>XMLCLIENT STARTING");
 
 // prepare Get variables
-if ( $_GET['display'] ) {
+if ($_GET['display']) {
     $fire = 'display';
-} elseif ( isset($_GET['fill']) && $_GET['fill']==0 ) {
+} elseif (isset($_GET['fill']) && $_GET['fill'] == 0) {
     $fire = 'test';
 } else {
     $fire = 'write';   // default
@@ -90,7 +92,8 @@ if ( $_GET['display'] ) {
 /** Output the result of Feed::feed(): raw source for 'display' (escaped so the
  *  XML is visible), else the saver report / 'queued' message. (Previously the
  *  return value was silently discarded, so Source showed a blank page.) */
-function xmlclient_show(string $ret, string $fire): void {
+function xmlclient_show(string $ret, string $fire): void
+{
     if ($ret === '') {
         return;
     }
@@ -102,12 +105,12 @@ function xmlclient_show(string $ret, string $fire): void {
 if ($feed_id) {          // just one specified APC feed
     $feed = new Feed();
     $feed->loadAAFeed($feed_id, $_GET['time']);
-    ($debugfeed>8) && huhl('aafeed', $fire, $feed);
+    ($debugfeed > 8) && huhl('aafeed', $fire, $feed);
     xmlclient_show($feed->feed($fire), $fire);
 } elseif ($rssfeed_id) { // just one specified RSS feed
     $feed = new Feed();
     $feed->loadRSSFeed($rssfeed_id, $_GET['url']);
-    ($debugfeed>8) && huhl('rssfeed', $fire, $feed);
+    ($debugfeed > 8) && huhl('rssfeed', $fire, $feed);
     xmlclient_show($feed->feed($fire), $fire);
 } else {                 // all RSS and APC and general feeds
     $rssfeeds     = GetTable2Array('SELECT feed_id FROM rssfeeds', 'NoCoLuMn', 'feed_id');
@@ -118,19 +121,19 @@ if ($feed_id) {          // just one specified APC feed
     // that makes the feeding in random order, so broken feeds do not stale
     // whole feeding
     $todo_feed = [];
-    if ( is_array($rssfeeds) ) {
-        foreach ( $rssfeeds as $v ) {
-            $todo_feed[] = ['type'=>'rss', 'id'=>$v];
+    if (is_array($rssfeeds)) {
+        foreach ($rssfeeds as $v) {
+            $todo_feed[] = ['type' => 'rss', 'id' => $v];
         }
     }
-    if ( is_array($aafeeds) ) {
-        foreach ( $aafeeds as $v ) {
-            $todo_feed[] = ['type'=>'aarss', 'id'=>$v];
+    if (is_array($aafeeds)) {
+        foreach ($aafeeds as $v) {
+            $todo_feed[] = ['type' => 'aarss', 'id' => $v];
         }
     }
-    if ( is_array($generalfeeds) ) {
-        foreach ( array_keys($generalfeeds) as $id ) {
-            $todo_feed[] = ['type'=>'general', 'id'=>$id];
+    if (is_array($generalfeeds)) {
+        foreach (array_keys($generalfeeds) as $id) {
+            $todo_feed[] = ['type' => 'general', 'id' => $id];
         }
     }
 
@@ -152,5 +155,3 @@ if ($feed_id) {          // just one specified APC feed
         xmlclient_show($feed->feed($fire), $fire);
     }
 }
-
-

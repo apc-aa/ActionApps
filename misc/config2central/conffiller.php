@@ -1,16 +1,16 @@
 <?php
 
-require_once __DIR__."/../../include/config.php";    // scripts do so (/misc/x.php)
+require_once __DIR__ . "/../../include/config.php";    // scripts do so (/misc/x.php)
 require_once __DIR__ . "/../../include/locsess.php";
 require_once __DIR__ . "/../../include/util.php";
 require_once __DIR__ . "/../../include/varset.php";
 
 /** This is the file used in Colnodo to fill central_conf table for AA Central.
- *  We expect the AA config files for all the AAs in /data/www/aa-config 
+ *  We expect the AA config files for all the AAs in /data/www/aa-config
  *  directory.
- *  conffiler.php takes each file and ask the conf reader for the extraction 
- *  of the data from the conf file. We have to use this technique, since it is 
- *  impossible to redefine the constants in PHP, so we have to include 
+ *  conffiler.php takes each file and ask the conf reader for the extraction
+ *  of the data from the conf file. We have to use this technique, since it is
+ *  impossible to redefine the constants in PHP, so we have to include
  *  the config.php files to clean HTTP request.
  */
 
@@ -22,20 +22,20 @@ if ($handle = opendir('/data/www/aa-config/')) {
     echo "Directory handle: $handle\n";
     echo "Files:\n";
 
-    $varset = new CVarset;
-    $i=1;
+    $varset = new CVarset();
+    $i = 1;
     /* This is the correct way to loop over the directory. */
     while (false !== ($file = readdir($handle))) {
         // do not want files like '.', '..'
         if (!str_ends_with($file, '.conf')) {
             continue;
         }
-        $result = file_get_contents("https://odm.colnodo.apc.org/apc-aa-dev/misc/test/confreader.php?file=". rawurlencode($file));
+        $result = file_get_contents("https://odm.colnodo.apc.org/apc-aa-dev/misc/test/confreader.php?file=" . rawurlencode($file));
         print_r($file);
         print_r($result);
         $conf   = unserialize($result, ['allowed_classes' => false]);
         $varset->clear();
-        foreach ( $conf as $k=>$v ) {
+        foreach ($conf as $k => $v) {
             $varset->add($k, 'text', $v);
         }
         $varset->doInsert('central_conf');
@@ -80,4 +80,3 @@ $conf = array( 'dns_conf'                  => '',
                'status_code'               => 1
              );
 */
-

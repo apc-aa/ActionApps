@@ -1,28 +1,29 @@
 <?php
- /**
- *
- * PHP version 7.2+
- *
- * LICENSE: This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program (LICENSE); if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
- * @package   Maintain
- * @version   $Id$
- * @author    Honza Malik <honza.malik@ecn.cz>
- * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
- * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
- * @link      https://www.apc.org/ APC
+
+/**
+*
+* PHP version 7.2+
+*
+* LICENSE: This program is free software; you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation; either version 2 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program (LICENSE); if not, write to the Free Software
+* Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+*
+* @package   Maintain
+* @version   $Id$
+* @author    Honza Malik <honza.malik@ecn.cz>
+* @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+* @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+* @link      https://www.apc.org/ APC
 */
 
 use AA\Manageraction\AbstractManageraction;
@@ -37,22 +38,28 @@ require_once __DIR__ . "/../include/init_page.php";
 /** Manager action Item_DeleteTrash - Handler for DeleteTrash switch
  *  Delete all items in the trash bin
  */
-class Optimize_Action_Test extends AbstractManageraction {
+class Optimize_Action_Test extends AbstractManageraction
+{
+    public const ACTION_NAME = 'test';
 
-    const ACTION_NAME = 'test';
-
-    protected function doAction(AbstractOptimize $optimizer): bool { return $optimizer->test(); }
+    protected function doAction(AbstractOptimize $optimizer): bool
+    {
+        return $optimizer->test();
+    }
 
     /** @inheritDoc */
-    public function getName(): string { return _m('Test'); }
+    public function getName(): string
+    {
+        return _m('Test');
+    }
 
     /** @inheritDoc */
-    function perform(Manager $manager, zids $item_zids, $action_param): string|false
+    public function perform(Manager $manager, zids $item_zids, $action_param): string|false
     {
         $Msg = '';
         foreach ($item_zids as $optimize_class) {
             /** @var AbstractOptimize $optimizer */
-            $optimizer = AA_Serializable::factory('AA\\Optimize\\'.$optimize_class);
+            $optimizer = AA_Serializable::factory('AA\\Optimize\\' . $optimize_class);
             if ($optimizer) {
                 if ($optimizer->hasAction(static::ACTION_NAME)) {
                     AbstractOptimize::$action_results[$optimize_class] = $this->doAction($optimizer);
@@ -75,7 +82,8 @@ class Optimize_Action_Test extends AbstractManageraction {
      *
      * @return bool
      */
-    function isPerm4Action($manager):bool {
+    public function isPerm4Action($manager): bool
+    {
         /** @todo Should be changed to different permission */
         // if we want to use it as "action" (not "switch"), then we should be in trash bin
         return  IsSuperadmin();
@@ -83,49 +91,78 @@ class Optimize_Action_Test extends AbstractManageraction {
 
 
     /** @inheritDoc */
-    protected function getButtonDef(): array {
+    protected function getButtonDef(): array
+    {
         return [
             'label' => $this->getName(),
-            'attr'  => ['class'=>'aa-button'],
-            'cond'  => '{ifin:|{@actions:|}|:|'.static::ACTION_NAME.'|:1}'
+            'attr'  => ['class' => 'aa-button'],
+            'cond'  => '{ifin:|{@actions:|}|:|' . static::ACTION_NAME . '|:1}',
         ];
     }
 }
 
-class Optimize_Action_Test4modules extends Optimize_Action_Test {
-    const ACTION_NAME = 'test4modules';
+class Optimize_Action_Test4modules extends Optimize_Action_Test
+{
+    public const ACTION_NAME = 'test4modules';
 
-    protected function doAction(AbstractOptimize $optimizer): bool { return $optimizer->test4modules([AA::$module_id]); }
+    protected function doAction(AbstractOptimize $optimizer): bool
+    {
+        return $optimizer->test4modules([AA::$module_id]);
+    }
 
     /** @inheritDoc */
-    public function getName(): string { return _m('Test current'); }
+    public function getName(): string
+    {
+        return _m('Test current');
+    }
 }
 
-class Optimize_Action_Repair extends Optimize_Action_Test {
-    const ACTION_NAME = 'repair';
+class Optimize_Action_Repair extends Optimize_Action_Test
+{
+    public const ACTION_NAME = 'repair';
 
-    protected function doAction(AbstractOptimize $optimizer): bool { return $optimizer->repair(); }
+    protected function doAction(AbstractOptimize $optimizer): bool
+    {
+        return $optimizer->repair();
+    }
 
     /** @inheritDoc */
-    public function getName(): string { return _m('Repair'); }
+    public function getName(): string
+    {
+        return _m('Repair');
+    }
 }
 
-class Optimize_Action_Repair4modules extends Optimize_Action_Test {
-    const ACTION_NAME = 'repair4modules';
+class Optimize_Action_Repair4modules extends Optimize_Action_Test
+{
+    public const ACTION_NAME = 'repair4modules';
 
-    protected function doAction(AbstractOptimize $optimizer): bool { return $optimizer->repair4modules([AA::$module_id]); }
+    protected function doAction(AbstractOptimize $optimizer): bool
+    {
+        return $optimizer->repair4modules([AA::$module_id]);
+    }
 
     /** @inheritDoc */
-    public function getName(): string { return _m('Repair current'); }
+    public function getName(): string
+    {
+        return _m('Repair current');
+    }
 }
 
-class Optimize_Action_Revert extends Optimize_Action_Test {
-    const ACTION_NAME = 'revert';
+class Optimize_Action_Revert extends Optimize_Action_Test
+{
+    public const ACTION_NAME = 'revert';
 
-    protected function doAction(AbstractOptimize $optimizer): bool { return $optimizer->revert(); }
+    protected function doAction(AbstractOptimize $optimizer): bool
+    {
+        return $optimizer->revert();
+    }
 
     /** @inheritDoc */
-    public function getName(): string { return _m('Revert'); }
+    public function getName(): string
+    {
+        return _m('Revert');
+    }
 }
 
 
@@ -136,10 +173,10 @@ if (!IsSuperadmin()) {
 
 MoreTimeLimit(); // set_time_limit to 5 minutes (at least)
 
-$apage = new AA_Adminpageutil('aaadmin','optimize');
+$apage = new AA_Adminpageutil('aaadmin', 'optimize');
 $apage->setTitle(_m("Admin - Optimize a Repair ActionApps"));
 
-$actions   = new Manageractions;
+$actions   = new Manageractions();
 $actions->addAction(new Optimize_Action_Test('OptimizeTest'));
 $actions->addAction(new Optimize_Action_Test4modules('OptimizeTest4modules'));
 $actions->addAction(new Optimize_Action_Repair('OptimizeRepair'));
@@ -147,7 +184,7 @@ $actions->addAction(new Optimize_Action_Repair4modules('OptimizeRepair4modules')
 $actions->addAction(new Optimize_Action_Revert('OptimizeRevert'));
 
 $managed = AA_Components::getManagerConf('AA\\Optimize\\', 'AA\\Optimize\\AbstractOptimize', $actions);
-$managed->setColumn('name', '<b class="{ifeq:{result}:OK:aa-ok:ERR:aa-err}">{name}</b><div>{description}</div>{ifset:{resulttxt}:<div><em>_#1</em></div>}' );
+$managed->setColumn('name', '<b class="{ifeq:{result}:OK:aa-ok:ERR:aa-err}">{name}</b><div>{description}</div>{ifset:{resulttxt}:<div><em>_#1</em></div>}');
 $managed->setColumns2show(['name','types']);
 
 $apage->printWithManager(new Manager('optimize' . AA::$module_id, $managed));

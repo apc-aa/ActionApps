@@ -1,4 +1,5 @@
 <?php
+
 /**
  *
  * PHP version 7.2+
@@ -32,13 +33,11 @@
 use AA\IO\DB\DB_AA;
 
 // const  AA_REGISTER_GLOBALS = true;
-require_once __DIR__."/../../include/init_page.php";
-require_once __DIR__."/../../include/formutil.php";
-require_once __DIR__."/../../include/varset.php";
+require_once __DIR__ . "/../../include/init_page.php";
+require_once __DIR__ . "/../../include/formutil.php";
+require_once __DIR__ . "/../../include/varset.php";
 
 // request monitor - developer temporary tool for catching all the REQUEST variables in order we can remove foreach addslashesdeep above
 $request_monitor = new \AA\Doit\RequestMonitor();
 $request_monitor->analyze();
 echo $request_monitor->report();
-
-

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * A class for manipulating polls
  *
@@ -30,16 +31,18 @@ use AA\Util\SingletonTrait;
 
 require_once __DIR__ . "/../../../include/zids.php"; // Pack and unpack ids
 
-class AA_Poll {
+class AA_Poll
+{
     protected $name;         // The name of the poll
     protected $poll_id;      // The unpacked id of the poll i.e. 32 chars
     protected ?AA_Content $content = null;  // poll content - Record from polls table stored as ItemContent
-    var $_sum = null;         // sum of all votes of this poll - caching purposes
+    public $_sum = null;         // sum of all votes of this poll - caching purposes
 
     /** AA_Poll function - constructor
      * @param $poll_id
      */
-    function __construct($poll_id) {
+    public function __construct($poll_id)
+    {
         $this->poll_id = $poll_id; // unpacked id
     }
 
@@ -47,14 +50,14 @@ class AA_Poll {
      *  Load $this from the DB for any of $fields not already loaded
      * @param $force
      */
-    function loadSettings($force=false): void
+    public function loadSettings($force = false): void
     {
-        if ( !$force && isset($this->content) ) {
+        if (!$force && isset($this->content)) {
             return;
         }
 
         $content = AA_Metabase::getContent(new zids($this->poll_id), ['table' => 'polls']);
-//        $this->content = new ItemContent($content[$this->poll_id]);
+        //        $this->content = new ItemContent($content[$this->poll_id]);
         $this->content = $content[$this->poll_id];  // this is AA_Content
     }
 
@@ -64,24 +67,29 @@ class AA_Poll {
      *
      * @return false|string
      */
-    function getProperty($fname) {
+    public function getProperty($fname)
+    {
         $this->loadSettings();
         return $this->content->getValue($fname);
     }
 
     /** Get Unpacked Module ID */
-    function getModuleId() { return unpack_id($this->getProperty('module_id')); }
-
-    function getVotesSum(): int
+    public function getModuleId()
     {
-        if (is_null($this->_sum)){
-            $this->_sum = (int)GetTable2Array("SELECT SUM(votes) as sum FROM polls_answer WHERE poll_id = '".$this->poll_id."'", 'aa_first', 'sum');
+        return unpack_id($this->getProperty('module_id'));
+    }
+
+    public function getVotesSum(): int
+    {
+        if (is_null($this->_sum)) {
+            $this->_sum = (int) GetTable2Array("SELECT SUM(votes) as sum FROM polls_answer WHERE poll_id = '" . $this->poll_id . "'", 'aa_first', 'sum');
         }
         return $this->_sum;
     }
 
     /** get id of poll */
-    function id() {
+    public function id()
+    {
         return $this->poll_id; // Return a 32 character id
     }
 
@@ -90,7 +98,7 @@ class AA_Poll {
      * @param string $design  beforevote|aftervote|<design_id>
      * @return array
      */
-    function get_format_strings($design='beforevote'): array
+    public function get_format_strings($design = 'beforevote'): array
     {
         $this->loadSettings();
         $design_id = match ($design) {
@@ -103,29 +111,30 @@ class AA_Poll {
             $design_id = $this->getProperty('design_id');
         }
 
-        $design = GetTable2Array("SELECT top, answer, bottom FROM polls_design WHERE id = '".quote($design_id)."'", 'aa_first');
+        $design = GetTable2Array("SELECT top, answer, bottom FROM polls_design WHERE id = '" . quote($design_id) . "'", 'aa_first');
         // additional string for compact_top and compact_bottom needed
         // for historical reasons (not manager.class verion of item manager)
         return [
             "compact_top"     => $design['top'],
-                       "category_sort"   => false,
-                       "category_format" => "",
-                       "category_top"    => "",
-                       "category_bottom" => "",
-                       "even_odd_differ" => false,
-                       "even_row_format" => "",
-                       "odd_row_format"  => $design['answer'],
-                       "compact_remove"  => '',
-                       "compact_bottom"  => $design['bottom'],
-                       "noitem_msg"      => '',
-                       // id is packed (format string are used as itemview
-                       //               parameter, where $slice_info expected)
-                       "id"              => $this->id()
+            "category_sort"   => false,
+            "category_format" => "",
+            "category_top"    => "",
+            "category_bottom" => "",
+            "even_odd_differ" => false,
+            "even_row_format" => "",
+            "odd_row_format"  => $design['answer'],
+            "compact_remove"  => '',
+            "compact_bottom"  => $design['bottom'],
+            "noitem_msg"      => '',
+            // id is packed (format string are used as itemview
+            //               parameter, where $slice_info expected)
+            "id"              => $this->id(),
         ]; // we need id for invalidating cache in itemview
     }
 
     /** @return true, if the string is column in polls table */
-    function isField($string): bool {
+    public function isField($string): bool
+    {
         static $columns = null;
         if (is_null($columns)) {
             $metabase = AA::Metabase();
@@ -134,23 +143,23 @@ class AA_Poll {
         return in_array($string, $columns);
     }
 
-    function unalias($expression): false|string
+    public function unalias($expression): false|string
     {
         $this->loadSettings();
         if ($this->isField($expression)) {
             return $this->getProperty($expression);
         }
-        $item = new AA_Item($this->content->getContent(), new AA_Aliases(new AA_Aliasgenerator_Polls), $expression);
+        $item = new AA_Item($this->content->getContent(), new AA_Aliases(new AA_Aliasgenerator_Polls()), $expression);
         return $item->get_item();
     }
 
-    function registerVote($vote_id): bool
+    public function registerVote($vote_id): bool
     {
         $vote_invalid = false;
         $current_time = now();
         $poll_id       = $this->id();
 
-        $varset = new CVarset;
+        $varset = new CVarset();
 
         // checkig for duplicated votes - ip_locking method
         if ($this->getProperty('locked') == 1) {
@@ -160,21 +169,21 @@ class AA_Poll {
 
             // ip_lock_timeout = 0 means it is locked forever
             if ($this->getProperty('ip_lock_timeout') != 0) {
-                $varset->doDeleteWhere('polls_ip_lock', "poll_id='$poll_id' AND timestamp < ". ($current_time - $this->getProperty('ip_lock_timeout')));
+                $varset->doDeleteWhere('polls_ip_lock', "poll_id='$poll_id' AND timestamp < " . ($current_time - $this->getProperty('ip_lock_timeout')));
             }
 
-            $ip = GetTable2Array("SELECT voters_ip FROM polls_ip_lock WHERE (poll_id='$poll_id') AND (voters_ip = '".$_SERVER['REMOTE_ADDR']."')", 'aa_first');
+            $ip = GetTable2Array("SELECT voters_ip FROM polls_ip_lock WHERE (poll_id='$poll_id') AND (voters_ip = '" . $_SERVER['REMOTE_ADDR'] . "')", 'aa_first');
             if ($ip) {
                 $vote_invalid = "IP";
             } else {
-                $varset->resetFromRecord( ['poll_id'=>$poll_id, 'voters_ip'=>$_SERVER['REMOTE_ADDR'], 'timestamp'=> $current_time]);
+                $varset->resetFromRecord(['poll_id' => $poll_id, 'voters_ip' => $_SERVER['REMOTE_ADDR'], 'timestamp' => $current_time]);
                 $varset->doInsert('polls_ip_lock');
             }
         }
 
         // checkig for duplicated votes - Cookies method
         if ($this->getProperty('set_cookies') == 1) {
-            $cookie = 'AA_Polls_'.$poll_id;   // $this->getProperty('cookies_prefix') // it is not necessary
+            $cookie = 'AA_Polls_' . $poll_id;   // $this->getProperty('cookies_prefix') // it is not necessary
             if ($_COOKIE[$cookie] == "1") {
                 $vote_invalid = "Cookie";
             } else {
@@ -184,10 +193,10 @@ class AA_Poll {
 
         if (!$vote_invalid) {
             DB_AA::sql("UPDATE polls_answer SET votes=votes+1 WHERE id='$vote_id'");
-            AA::Pagecache()->invalidateFor( $this->getModuleId());
+            AA::Pagecache()->invalidateFor($this->getModuleId());
 
             if ($this->getProperty('logging') == 1) {
-                $varset->resetFromRecord( ['answer_id'=> $vote_id, 'voters_ip'=>$_SERVER['REMOTE_ADDR'], 'timestamp'=> $current_time]);
+                $varset->resetFromRecord(['answer_id' => $vote_id, 'voters_ip' => $_SERVER['REMOTE_ADDR'], 'timestamp' => $current_time]);
                 $varset->doInsert('polls_log');
             }
         }
@@ -195,19 +204,19 @@ class AA_Poll {
     }
 
 
-    function getOutput($design='beforevote'): string
+    public function getOutput($design = 'beforevote'): string
     {
         $format   = $this->get_format_strings($design);
 
-        $set = new AA_Set;
+        $set = new AA_Set();
         $set->addCondition(new AA_Condition('poll_id', '==', $this->id()));
         $set->addSortorder(new AA_Sortorder(['priority' => 'a']));
 
-        $zids     = AA::Metabase()->queryZids(['table'=>'polls_answer'], $set);
-        return (new itemview($format, new AA_Aliases(new AA_Aliasgenerator_Answer), $zids))->setContentFunct([['AA_Metabase', 'getContent'], ['table' => 'polls_answer']])->get_output();
+        $zids     = AA::Metabase()->queryZids(['table' => 'polls_answer'], $set);
+        return (new itemview($format, new AA_Aliases(new AA_Aliasgenerator_Answer()), $zids))->setContentFunct([['AA_Metabase', 'getContent'], ['table' => 'polls_answer']])->get_output();
     }
 
-    function display($design='beforevote'): void
+    public function display($design = 'beforevote'): void
     {
         echo $this->getOutput($design);
     }
@@ -215,10 +224,10 @@ class AA_Poll {
     /** called like $set=AA_Poll::generateSet()
      *  It creates the set based on the conds and sort array
      */
-    static function generateSet($pid,$conds=null,$sort=null): AA_Set
+    public static function generateSet($pid, $conds = null, $sort = null): AA_Set
     {
-        $set = new AA_Set;
-        $set->addCondition(new AA_Condition('module_id',   '==', xpack_id($pid)));
+        $set = new AA_Set();
+        $set->addCondition(new AA_Condition('module_id', '==', xpack_id($pid)));
         // there is also one poll which acts as template - managed from Polls Admin
         // (and not from the Polls Manager page) - it has status_code=0,
         // so it is filtered out automatically
@@ -248,7 +257,7 @@ class AA_Poll {
             $set->addSortFromArray($sort);
         } else {
             // default sort order - just like for items - publish date - descending
-            $set->addSortorder( new AA_Sortorder( ['publish_date' => 'd']));
+            $set->addSortorder(new AA_Sortorder(['publish_date' => 'd']));
         }
         return $set;
     }
@@ -256,7 +265,7 @@ class AA_Poll {
     /** called like: echo AA_Poll::processPoll($_REQUEST)
      *  It process all the options/vodes and displays the result for the poll
      */
-    static function processPoll($request): string
+    public static function processPoll($request): string
     {
 
         if (isset($request['vote_id']) && isset($request['poll_id']) && !isset($request['novote'])) {
@@ -269,8 +278,8 @@ class AA_Poll {
             $poll_zids = new zids($request['poll_id']);
         } else {
             $set       = self::generateSet($request['pid'], $request['conds'], $request['sort']);
-            $poll_zids = AA::Metabase()->queryZids(['table'=>'polls'], $set);
-            $from      = $request['from'] ? $request['from']-1 : 0;
+            $poll_zids = AA::Metabase()->queryZids(['table' => 'polls'], $set);
+            $from      = $request['from'] ? $request['from'] - 1 : 0;
             $listlen   = get_if($request['listlen'], 1);
             $poll_zids = $poll_zids->slice($from, $listlen);
         }
@@ -280,13 +289,13 @@ class AA_Poll {
         $zid_count = $poll_zids->count();
 
         $ret = '';
-        for ( $i=0; $i < $zid_count; $i++ ) {
+        for ($i = 0; $i < $zid_count; $i++) {
             $poll   = AA_Polls::getPoll($poll_zids->id($i));
             $design = $request['design_id'] ?: ($request['vote_id'] ? 'aftervote' : 'beforevote');
             $ret   .= $poll->getOutput($design);
         }
 
-        if ($request['convertto'] || $request['convertfrom'] ) {
+        if ($request['convertto'] || $request['convertfrom']) {
             $ret = ConvertCharset::singleton()->Convert($ret, $request['convertfrom'], $request['convertto']);
         } elseif (IsAjaxCall()) {
             $ret = ConvertCharset::singleton()->Convert($ret, AA_Module_Polls::getModule($poll->id())->getCharset(), 'utf-8');
@@ -299,8 +308,8 @@ class AA_Poll {
  * Class AA_Polls
  * @method  static AA_Polls singleton()
  */
-class AA_Polls {
-
+class AA_Polls
+{
     use SingletonTrait;
 
     /**
@@ -315,7 +324,7 @@ class AA_Polls {
      *
      * @return AA_Poll
      */
-    static function getPoll($poll_id): AA_Poll
+    public static function getPoll($poll_id): AA_Poll
     {
         return self::singleton()->_getPoll($poll_id);
     }
@@ -326,7 +335,8 @@ class AA_Polls {
      * @param $field
      * @return null|string|false
      */
-    static function getPollProperty($poll_id, $field) {
+    public static function getPollProperty($poll_id, $field)
+    {
         return self::singleton()->_getPoll($poll_id)?->getProperty($field);
     }
 
@@ -335,7 +345,8 @@ class AA_Polls {
      * @param $poll_id
      * @return null
      */
-    function getName($poll_id) {
+    public function getName($poll_id)
+    {
         return self::getPollProperty($poll_id, 'name');
     }
 
@@ -353,5 +364,3 @@ class AA_Polls {
         return $this->a[$poll_id];
     }
 }
-
-

@@ -1,4 +1,5 @@
 <?php
+
 //$Id$
 /*
 Copyright (C) 1999, 2000 Association for Progressive Communications
@@ -51,39 +52,39 @@ function get_aamenus(): array
         "href" => "modules/alerts/modedit.php",
         "cond" => IfSlPerm(PS_USERS),
         "level" => "main",
-        "submenu" => "admin_submenu"
+        "submenu" => "admin_submenu",
     ];
 
     $aamenus["admin_submenu"] = [
-        "bottom_td"=>200,
-        "level"=>"submenu",
-        "items"=> [
-        "header1"=>_m("Alerts Admin"),
-  //      "formwizard"=>array ("cond"=>IfSlPerm(PS_USERS), "href"=>"modules/alerts/cf_wizard.php3", "label"=>_m("Form Wizard")),
-        "settings"=> ["cond"=>IfSlPerm(PS_USERS),
-            "href" => "modules/alerts/modedit.php",
-            "label"=>_m("Settings"),
-            'ico'=>'ico-form.png'],
-        "filters"=> ["cond"=>IfSlPerm(PS_USERS),
-            "href"=>"modules/alerts/acf.php",
-            "label"=>_m("Selections"),
-            'ico'=>'ico-selections.png'],
-        "send_emails"=> ["cond"=>IfSlPerm(PS_USERS),
-            "href"=>"modules/alerts/send.php",
-            "label"=>_m("Send emails"),
-            'ico'=>'ico-email.png'],
-        "synchro"=> [
-            "cond"=>IfSlPerm(PS_USERS),
-            "href" => "modules/alerts/synchro.php",
-            "label" => _m("Reader management"),
-            'ico'=>'ico-users.png'
-        ],
-        "doc"=> ["cond"=>1, "href"=>"doc/alerts.html", "label" => _m("Documentation")],
+        "bottom_td" => 200,
+        "level" => "submenu",
+        "items" => [
+            "header1" => _m("Alerts Admin"),
+            //      "formwizard"=>array ("cond"=>IfSlPerm(PS_USERS), "href"=>"modules/alerts/cf_wizard.php3", "label"=>_m("Form Wizard")),
+            "settings" => ["cond" => IfSlPerm(PS_USERS),
+                "href" => "modules/alerts/modedit.php",
+                "label" => _m("Settings"),
+                'ico' => 'ico-form.png'],
+            "filters" => ["cond" => IfSlPerm(PS_USERS),
+                "href" => "modules/alerts/acf.php",
+                "label" => _m("Selections"),
+                'ico' => 'ico-selections.png'],
+            "send_emails" => ["cond" => IfSlPerm(PS_USERS),
+                "href" => "modules/alerts/send.php",
+                "label" => _m("Send emails"),
+                'ico' => 'ico-email.png'],
+            "synchro" => [
+                "cond" => IfSlPerm(PS_USERS),
+                "href" => "modules/alerts/synchro.php",
+                "label" => _m("Reader management"),
+                'ico' => 'ico-users.png',
+            ],
+            "doc" => ["cond" => 1, "href" => "doc/alerts.html", "label" => _m("Documentation")],
 
-        "header2" => _m("Common"),
-        "email"=> ["cond"=>IfSlPerm(PS_USERS),
-            "href" => "modules/alerts/emails.php", "label"=>_m("Email templates")]
-        ]
+            "header2" => _m("Common"),
+            "email" => ["cond" => IfSlPerm(PS_USERS),
+                "href" => "modules/alerts/emails.php", "label" => _m("Email templates")],
+        ],
     ];
 
     $profile = AA_Profile::getProfile(AuthGetUid(), $slice_id); // current user settings
@@ -91,4 +92,3 @@ function get_aamenus(): array
     // left menu for aaadmin is common to all modules, so it is shared
     return array_merge($aamenus, GetCommonMenu($profile));
 }
-

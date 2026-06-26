@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Database maintainance script. It optimizes database tables.
  * This script could be called from cron.php - see AA -> Cron and set there
@@ -36,38 +37,33 @@ https://www.apc.org/
 // need config.php to set db access, and phplib, and probably other stuff
 use AA\IO\DB\DB_AA;
 
-require_once __DIR__."/../include/config.php";
+require_once __DIR__ . "/../include/config.php";
 require_once __DIR__ . "/../include/locsess.php";   // DB_AA definition
 require_once __DIR__ . "/../include/util.php";
 
 MoreTimeLimit(); // set_time_limit to 5 minutes (at least)
 
-if ( substr( DB_PASSWORD, 0, 5 ) != $_GET['key'] ) {
+if (substr(DB_PASSWORD, 0, 5) != $_GET['key']) {
     exit;                 // We need first five characters of database password
 }                         // No-one then can run the script incidentally (or with
-                          // bad thoughts)
+// bad thoughts)
 
 $template_metabase = AA::Metabase();
 $template_tables = $template_metabase->getTableNames();
 
-$this_metabase = new AA_Metabase;
+$this_metabase = new AA_Metabase();
 $this_metabase->loadFromDb();
 $this_tables = $this_metabase->getTableNames();
 
 // start with different table each time to minimize impact of corrupted/big/... tables
 shuffle($template_tables);
-    
+
 // optimize only current AA tables (not bck_* tables ...    )
-foreach ( $template_tables as $table ) {
-    if ( in_array($table, $this_tables) ) {
+foreach ($template_tables as $table) {
+    if (in_array($table, $this_tables)) {
         DB_AA::sql("OPTIMIZE TABLE `$table`");
         echo "<br> $table optimized";
     } else {
         echo "<br> $table not exist";
     }
 }
-
-
-
-
-

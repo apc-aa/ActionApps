@@ -53,15 +53,17 @@ try {
     // array ( ' Změnit [^…' => 5, ' Create [^S…' => 4, ' Update [^S…' => 1, )
     $update = InputVars::boolPOST('update');
     $cancel = InputVars::boolPOST('cancel');
-    
+
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
+} catch (Exception $e) {
+    AA_Adminpageutil::pageParameterError($e);
+}
 
 // create the $jumps array:
 $jumps = AA_Module::getModules('J');
 
 // choose the first module when none is chosen
-if ($edit && !$jump_id && count ($jumps)) {
+if ($edit && !$jump_id && count($jumps)) {
     reset($jumps);
     $jump_id = key($jumps);
 }
@@ -77,7 +79,7 @@ if ($update) {
     if (!$jump_id) {
         $jump_id = new_id();
     }
-    $q_jump_id = xpack_id ($jump_id);
+    $q_jump_id = xpack_id($jump_id);
 
     $varset = new Cvarset();
     $varset->clear();
@@ -86,32 +88,31 @@ if ($update) {
 
     $db->query("SELECT * FROM module WHERE id=$q_jump_id");
     if ($db->next_record()) {
-        $db->query("UPDATE jump SET ".$varset->makeUPDATE() ." WHERE slice_id=$q_jump_id");
+        $db->query("UPDATE jump SET " . $varset->makeUPDATE() . " WHERE slice_id=$q_jump_id");
 
         $varset->clear();
-        $varset->add("name","text",$jump_name);
-        $db->query("UPDATE module SET ".$varset->makeUPDATE() ." WHERE id=$q_jump_id");
-    }
-    else {
+        $varset->add("name", "text", $jump_name);
+        $db->query("UPDATE module SET " . $varset->makeUPDATE() . " WHERE id=$q_jump_id");
+    } else {
         $varset->add("slice_id", "unpacked", $jump_id);
         $varset->doINSERT('jump');
 
         $varset->clear();
-        $varset->add("id","unpacked",$jump_id);
-        $varset->add("name","text",$jump_name);
-        $varset->add("type","text",'J');
-        $varset->add("lang_file","text","en_news_lang.php");
-        $varset->add("owner","text",'');
-        $varset->add("created_by","text",AuthGetUid());
-        $varset->add("created_at","text",now());
+        $varset->add("id", "unpacked", $jump_id);
+        $varset->add("name", "text", $jump_name);
+        $varset->add("type", "text", 'J');
+        $varset->add("lang_file", "text", "en_news_lang.php");
+        $varset->add("owner", "text", '');
+        $varset->add("created_by", "text", AuthGetUid());
+        $varset->add("created_at", "text", now());
 
-//        $varset->set("slice_url", $slice_url, "text");
-//        $varset->set("priority", $priority, "number");
+        //        $varset->set("slice_url", $slice_url, "text");
+        //        $varset->set("priority", $priority, "number");
         $varset->set("deleted", 0, "number");
 
         $varset->doINSERT('module');
     }
-    $jumps = DB_AA::select(['jid'=>'name'], 'SELECT LOWER(HEX(`id`)) AS jid, name FROM module', [['type','J']]);
+    $jumps = DB_AA::select(['jid' => 'name'], 'SELECT LOWER(HEX(`id`)) AS jid, name FROM module', [['type','J']]);
 }
 
 if (!$jump_id) {
@@ -119,7 +120,7 @@ if (!$jump_id) {
 } else {
     $db->query("SELECT name,destination,dest_slice_id FROM jump INNER JOIN module
             ON jump.slice_id = module.id
-            WHERE jump.slice_id = ".xpack_id($jump_id));
+            WHERE jump.slice_id = " . xpack_id($jump_id));
     if ($db->next_record()) {
         $jump_name = $db->f("name");
         $jump_url = $db->f("destination");
@@ -130,18 +131,18 @@ if (!$jump_id) {
 // Show the select box to choose a module to edit
 if ($jump_id) {
     echo '
-    <form name=choose action="'.StateUrl("modedit.php").'" method="post">';
+    <form name=choose action="' . StateUrl("modedit.php") . '" method="post">';
     FrmTabCaption(_m("Choose module to be edited"));
 
     echo '<tr>
             <td>
                 <select name="jump_id" onchange="document.forms.choose.submit();">';
-                foreach ($jumps as $id => $name) {
-                    echo "<option value=\"$id\"" .($id == $jump_id ? " selected" : "") .">".safe($name);
-                }
+    foreach ($jumps as $id => $name) {
+        echo "<option value=\"$id\"" . ($id == $jump_id ? " selected" : "") . ">" . safe($name);
+    }
 
-                echo '</select>&nbsp;</td><td>
-                <input type=submit name="edit" value="'._m("Edit").'">
+    echo '</select>&nbsp;</td><td>
+                <input type=submit name="edit" value="' . _m("Edit") . '">
             </td>
         </tr>';
     FrmTabEnd();
@@ -149,38 +150,38 @@ if ($jump_id) {
 }
 
 echo '<br>
-<form name=f action="'.StateUrl("modedit.php").'" method="post">
-<input type=hidden name="jump_id" value="'.$jump_id.'">';
+<form name=f action="' . StateUrl("modedit.php") . '" method="post">
+<input type=hidden name="jump_id" value="' . $jump_id . '">';
 if ($edit) {
     echo "<input type=hidden name='edit' value='1'>";
 }
 FrmTabCaption(_m("Edit module"));
 echo '
-     <tr><th>'._m("Module name").':</th>
-        <td><input type=text name="jump_name" size=20 value="'.$jump_name.'"></td></tr>
-     <tr><th>'._m("Jump to").' (URL):</th>
-        <td><input type=text name="jump_url" size=60 value="'.$jump_url.'"></td></tr>
-     <tr><td colspan=2>'._m("Type in an AA-relative path, e.g.").' <code>admin/se_constant.php?group_id=something</code></td></tr>
-     <tr><th>'._m("Jump to slice").":</th>
+     <tr><th>' . _m("Module name") . ':</th>
+        <td><input type=text name="jump_name" size=20 value="' . $jump_name . '"></td></tr>
+     <tr><th>' . _m("Jump to") . ' (URL):</th>
+        <td><input type=text name="jump_url" size=60 value="' . $jump_url . '"></td></tr>
+     <tr><td colspan=2>' . _m("Type in an AA-relative path, e.g.") . ' <code>admin/se_constant.php?group_id=something</code></td></tr>
+     <tr><th>' . _m("Jump to slice") . ":</th>
         <td><select name=dest_id>";
 //        <option value=''>* * * Don't change slice * * *";
-     if ( is_array($g_modules) && count($g_modules) > 1 ) {
-        foreach ($g_modules as $k => $v) {
-            echo "<option value=\"". safe($k)."\"";
-            if ( $dest_id == $k ) {
-                echo " selected";
-            }
-            echo ">". safe($v['name']);
+if (is_array($g_modules) && count($g_modules) > 1) {
+    foreach ($g_modules as $k => $v) {
+        echo "<option value=\"" . safe($k) . "\"";
+        if ($dest_id == $k) {
+            echo " selected";
         }
-     } else {
-         echo "<option>No module exists";
-     }
-     echo "</select></td>
+        echo ">" . safe($v['name']);
+    }
+} else {
+    echo "<option>No module exists";
+}
+echo "</select></td>
      </tr>
-     <tr><th>"._m("Module ID").":</th><td>$jump_id</td></tr>";
+     <tr><th>" . _m("Module ID") . ":</th><td>$jump_id</td></tr>";
 FrmTabEnd([
-    "update"=> ["value"=>($jump_id ? _m("Update") : _m("Create"))],
-                "cancel"=> ["url"=>AA_INSTAL_PATH."admin/um_uedit.php"]
+    "update" => ["value" => ($jump_id ? _m("Update") : _m("Create"))],
+    "cancel" => ["url" => AA_INSTAL_PATH . "admin/um_uedit.php"],
 ]);
 echo "</form>";
 

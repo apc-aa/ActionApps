@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Sends Alerts messages with new items to users.
  * To be called directly or by Cron.
@@ -31,8 +32,8 @@ https://www.apc.org/
 
 use AA\IO\DB\DB_AA;
 
-if (!defined ("AA_ID")) {
-    require_once __DIR__."/../../include/config.php";
+if (!defined("AA_ID")) {
+    require_once __DIR__ . "/../../include/config.php";
 }
 require_once __DIR__ . "/../../include/locsess.php";
 require_once __DIR__ . "/../../include/util.php";
@@ -67,14 +68,14 @@ require_once __DIR__ . "/../../modules/alerts/alerts_sending.php";
 
 // get 'howoften' parameter from comandline, if it is specified.
 
-if (isset($_SERVER["argv"] )) {
+if (isset($_SERVER["argv"])) {
     $cmd_parameters = [];
-    parse_str( implode('&',$_SERVER["argv"]), $cmd_parameters );
-    if ( $cmd_parameters['howoften'] ) {
+    parse_str(implode('&', $_SERVER["argv"]), $cmd_parameters);
+    if ($cmd_parameters['howoften']) {
         $howoften = $cmd_parameters['howoften'];
     }
     // $fix - if set, then send only e-mail to not processed collections
-    if ( $cmd_parameters['fix'] ) {
+    if ($cmd_parameters['fix']) {
         $fix      = $cmd_parameters['fix'];
     }
 }
@@ -85,7 +86,7 @@ $frequency['twoweeks']  = 14 * $frequency['daily'];
 $frequency['monthly']   = 31 * $frequency['daily'];
 //$frequency['irregular']  = ...;   // not specified - used for irregular sending - see AA_Response('Alertitem', ...
 
-if (!is_object( $db )) {
+if (!is_object($db)) {
     $db = getDB();
 }
 
@@ -93,10 +94,10 @@ $howoften_options = get_howoften_options();
 
 if ($howoften_options[$howoften]) {
     initialize_last();
-    if ( $fix == 1) {
-         // send only e-mail to not processed collections
-         $SQL = "SELECT collectionid FROM alerts_collection_howoften WHERE howoften = '$howoften' AND last < ". (time() - $frequency[$howoften]);
-         $colections = GetTable2Array($SQL, '', 'collectionid');
+    if ($fix == 1) {
+        // send only e-mail to not processed collections
+        $SQL = "SELECT collectionid FROM alerts_collection_howoften WHERE howoften = '$howoften' AND last < " . (time() - $frequency[$howoften]);
+        $colections = GetTable2Array($SQL, '', 'collectionid');
     } else {
         $colections = 'all';
     }
@@ -105,6 +106,3 @@ if ($howoften_options[$howoften]) {
     AA_Log::write("ALERTS", $howoften, new AA_Logentry_Alerts(['phase' => 'sent', 'count' => $mail_count + 0]));
     //echo "<br>Count of emails sent is <b>".($mail_count+0)."</b><br>";
 }
-
-
-

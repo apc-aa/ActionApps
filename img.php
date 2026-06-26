@@ -6,8 +6,8 @@
  * This file joins two files - phpThumb.config.php and phpThumb.php - one after another
 */
 
-require_once __DIR__."/include/config.php";   // we use some constants from AA in the config
-const AA_PHPTHUMB__DIR__ = __DIR__."/vendor/honzito/phpthumb";
+require_once __DIR__ . "/include/config.php";   // we use some constants from AA in the config
+const AA_PHPTHUMB__DIR__ = __DIR__ . "/vendor/honzito/phpthumb";
 
 // This endpoint emits raw image bytes — a printed warning/notice/deprecation
 // would corrupt the image AND leak server paths into the response. phpThumb.php
@@ -371,4 +371,4 @@ function phpThumbURL($ParameterString, $path_to_phpThumb = 'phpThumb.php'): stri
 }
 // ---------- vendor/james-heinrich/phpthumb/phpThumb.config.php v2023-05-03 - end ---------
 
-require_once AA_PHPTHUMB__DIR__."/phpThumb.php";
+require_once AA_PHPTHUMB__DIR__ . "/phpThumb.php";

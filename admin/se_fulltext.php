@@ -1,4 +1,5 @@
 <?php
+
 /** se_fulltext.php - assigns html format for fulltext view
  *   expected $slice_id for edit slice
  *   optionally $Msg to show under <h1>Headline</h1> (typically: update successful)
@@ -54,22 +55,24 @@ try {
     // array ( 1 => 15, )
     $update = InputVars::boolPOST('update');
     $cancel = InputVars::boolPOST('cancel');
-    
+
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
+} catch (Exception $e) {
+    AA_Adminpageutil::pageParameterError($e);
+}
 
 $err = [];          // error array (Init - just for initializing variable
 $varset      = new Cvarset();
 
-if ( $update ) {
+if ($update) {
     do {
-        ValidateInput("fulltext_format_top",    _m("Top HTML code"),      $fulltext_format_top,    $err, false, "text");
-        ValidateInput("fulltext_format",        _m("Fulltext HTML code"), $fulltext_format,        $err, false,  "text");
-        ValidateInput("fulltext_format_bottom", _m("Bottom HTML code"),   $fulltext_format_bottom, $err, false, "text");
-        ValidateInput("fulltext_remove",        _m("Remove strings"),     $fulltext_remove,        $err, false, "text");
-        ValidateInput("discus_vid",             _m("Show discussion"),    $discus_vid,             $err, false,  "text");
+        ValidateInput("fulltext_format_top", _m("Top HTML code"), $fulltext_format_top, $err, false, "text");
+        ValidateInput("fulltext_format", _m("Fulltext HTML code"), $fulltext_format, $err, false, "text");
+        ValidateInput("fulltext_format_bottom", _m("Bottom HTML code"), $fulltext_format_bottom, $err, false, "text");
+        ValidateInput("fulltext_remove", _m("Remove strings"), $fulltext_remove, $err, false, "text");
+        ValidateInput("discus_vid", _m("Show discussion"), $discus_vid, $err, false, "text");
 
-        if ( count($err) ) {
+        if (count($err)) {
             break;
         }
 
@@ -84,23 +87,23 @@ if ( $update ) {
         $discus_flag |= $discus_disabled ? DISCUS_ADD_DISABLED : 0;
 
         $varset->add("flag", "number", $discus_flag);
-        $varset->add("vid",  "number", $discus_vid);
+        $varset->add("vid", "number", $discus_vid);
         $varset->addkey("id", "unpacked", AA::$module_id);
 
-        if ( !$varset->doUpdate('slice', null, AA::$module_id) ) {
-            $err["DB"] = MsgErr( _m("Can't change slice settings") );
+        if (!$varset->doUpdate('slice', null, AA::$module_id)) {
+            $err["DB"] = MsgErr(_m("Can't change slice settings"));
             break;    // not necessary - we have set the halt_on_error
         }
 
         AA::Pagecache()->invalidateFor(AA::$module_id);  // invalidate old cached values
 
     } while (false);
-    if ( !count($err) ) {
+    if (!count($err)) {
         $Msg = MsgOk(_m("Fulltext format update successful"));
     }
 }
 
-if ( AA::$module_id != "" ) {  // set variables from database
+if (AA::$module_id != "") {  // set variables from database
     $rec = DB_AA::select1('', 'SELECT fulltext_format, fulltext_format_top, fulltext_format_bottom, fulltext_remove, flag, vid FROM slice', [['id', AA::$module_id, 'l']]);
     if ($rec) {
         $fulltext_format_top    =  $rec['fulltext_format_top'];
@@ -129,7 +132,7 @@ $headcode = '<script>
   }
 </script>';
 
-$apage = new AA_Adminpageutil('sliceadmin','fulltext');
+$apage = new AA_Adminpageutil('sliceadmin', 'fulltext');
 $apage->setTitle(_m("Admin - design Fulltext view"));
 $apage->setSubtitle(_m("Use these boxes ( with the tags listed below ) to control what appears on full text view of each item"));
 $apage->addRequire('codemirror@5');
@@ -139,34 +142,68 @@ $apage->printHead($err, $Msg);
 
 
 // lookup discussion views
-$discus_vids = DB_AA::select(['id'=>'name'], "SELECT id, name FROM view", [
+$discus_vids = DB_AA::select(['id' => 'name'], "SELECT id, name FROM view", [
     ['slice_id', AA::$module_id, 'l'],
-    ['type','discus']
+    ['type','discus'],
 ]);
 
 $form_buttons = [
     "update",
-    "update" => ['type' => 'hidden', 'value'=>'1'],
-    "cancel" => ["url"=>"se_fields.php"],
+    "update" => ['type' => 'hidden', 'value' => '1'],
+    "cancel" => ["url" => "se_fields.php"],
     "default" => [
         'type'  => 'button',
         'value' => _m("Default"),
-        'add'   => 'onclick="Defaults()"'
-    ]
+        'add'   => 'onclick="Defaults()"',
+    ],
 ];
 
 FrmTabCaption(_m("HTML code for fulltext view"), $form_buttons);
-FrmTextarea("fulltext_format_top", _m("Top HTML code"), $fulltext_format_top, 4, 60, false,
+FrmTextarea(
+    "fulltext_format_top",
+    _m("Top HTML code"),
+    $fulltext_format_top,
+    4,
+    60,
+    false,
     _m("HTML code which appears at the top of slice area")
-    . '<br>' . AA_View::getViewJumpLinks($fulltext_format_top), '', 1);
-FrmTextarea("fulltext_format", _m("Fulltext HTML code"), $fulltext_format, 8, 60, false,
+    . '<br>' . AA_View::getViewJumpLinks($fulltext_format_top),
+    '',
+    1,
+);
+FrmTextarea(
+    "fulltext_format",
+    _m("Fulltext HTML code"),
+    $fulltext_format,
+    8,
+    60,
+    false,
     _m("Put here the HTML code combined with aliases form bottom of this page\n                     <br>The aliases will be substituted by real values from database when it will be posted to page")
-    . '<br>' . AA_View::getViewJumpLinks($fulltext_format), '', 1);
-FrmTextarea("fulltext_format_bottom", _m("Bottom HTML code"), $fulltext_format_bottom, 4, 60, false,
+    . '<br>' . AA_View::getViewJumpLinks($fulltext_format),
+    '',
+    1,
+);
+FrmTextarea(
+    "fulltext_format_bottom",
+    _m("Bottom HTML code"),
+    $fulltext_format_bottom,
+    4,
+    60,
+    false,
     _m("HTML code which appears at the bottom of slice area")
-    . '<br>' . AA_View::getViewJumpLinks($fulltext_format_bottom), '', 1);
-FrmInputText("fulltext_remove", _m("Remove strings"), $fulltext_remove, 254, 50, false,
-    _m("Removes empty brackets etc. Use ## as delimiter."));
+    . '<br>' . AA_View::getViewJumpLinks($fulltext_format_bottom),
+    '',
+    1,
+);
+FrmInputText(
+    "fulltext_remove",
+    _m("Remove strings"),
+    $fulltext_remove,
+    254,
+    50,
+    false,
+    _m("Removes empty brackets etc. Use ## as delimiter."),
+);
 if ($discus_vids) {
     FrmInputSelect("discus_vid", _m("Show discussion"), $discus_vids, $discus_vid, false, _m("The template for discussion you can set on \"Design\" -> \"View\" page"));
     FrmInputChBox("discus_htmlf", _m("Use HTML tags"), $discus_htmlf);

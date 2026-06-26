@@ -1,4 +1,5 @@
 <?php
+
 //$Id$
 /*
 Copyright (C) 1999, 2000 Association for Progressive Communications
@@ -29,19 +30,19 @@ use AA\Util\Langs;
 use MissCache\MissCache;
 use MissCache\Plugins\PhpThumbPlugin;
 
-require_once __DIR__."/../../include/config.php";
-require_once __DIR__."/../../include/locsess.php";
-require_once __DIR__."/../../include/zids.php";
-require_once __DIR__."/../../include/locauth.php";
-require_once __DIR__."/../../include/locauth.php";
+require_once __DIR__ . "/../../include/config.php";
+require_once __DIR__ . "/../../include/locsess.php";
+require_once __DIR__ . "/../../include/zids.php";
+require_once __DIR__ . "/../../include/locauth.php";
+require_once __DIR__ . "/../../include/locauth.php";
 
 // MissCache forge-on-miss: requests for a missing cached file under IMG_UPLOAD/mC/
 // are routed here by the web server (try_files / RewriteCond !-f — see
 // misc/missCache/README). Generate the artifact once and serve it; every later
 // request is served statically by the web server, never reaching PHP.
-$mc_dir = parse_url(IMG_UPLOAD_URL, PHP_URL_PATH).'mC/';  // e.g. /img_upload/mC/
+$mc_dir = parse_url(IMG_UPLOAD_URL, PHP_URL_PATH) . 'mC/';  // e.g. /img_upload/mC/
 if (str_starts_with($_SERVER['REQUEST_URI'], $mc_dir)) {
-    $mC = new MissCache(IMG_UPLOAD_URL, IMG_UPLOAD_PATH, 'mC', IMG_UPLOAD_DIR_MODE, [new PhpThumbPlugin(AA_INSTAL_URL."img.php")]);
+    $mC = new MissCache(IMG_UPLOAD_URL, IMG_UPLOAD_PATH, 'mC', IMG_UPLOAD_DIR_MODE, [new PhpThumbPlugin(AA_INSTAL_URL . "img.php")]);
     $mC->handleRequest($_SERVER['REQUEST_URI']);
     exit;
 }
@@ -82,20 +83,20 @@ $cache_key = get_hash(
     get_authorization_header(),
     PageCache::filterIgnoredParams($_POST),
     PageCache::filterIgnoredParams($_GET),
-    $auth4cache
+    $auth4cache,
 );
 
 
 // store nocache to the variable (since it should be set for some view and we
 // do not want to have it set for whole site.
 // temporary solution - should be solved on view level (not global nocache) - TODO
-$site_nocache = (((int)$_REQUEST['nocache'] & 1) || isset($_POST['aa']) || (isset($_REQUEST['username']) && isset($_REQUEST['password'])) || $_REQUEST['logout']);
+$site_nocache = (((int) $_REQUEST['nocache'] & 1) || isset($_POST['aa']) || (isset($_REQUEST['username']) && isset($_REQUEST['password'])) || $_REQUEST['logout']);
 
-AA::$debug&2 && AA::$dbg->log("Pagecache site_nocache: $site_nocache, REQUEST:". var_export($_REQUEST, true). ", GET:". var_export($_GET, true). ", POST:". var_export($_POST, true). ", COOKIE:". var_export($_COOKIE, true));
+AA::$debug & 2 && AA::$dbg->log("Pagecache site_nocache: $site_nocache, REQUEST:" . var_export($_REQUEST, true) . ", GET:" . var_export($_GET, true) . ", POST:" . var_export($_POST, true) . ", COOKIE:" . var_export($_COOKIE, true));
 
-if ($cacheentry = AA::Pagecache()->getPage($cache_key, (string)$site_nocache)) {
+if ($cacheentry = AA::Pagecache()->getPage($cache_key, (string) $site_nocache)) {
     $cacheentry->processPage(true);
-    if ( AA::$debug ) {
+    if (AA::$debug) {
         echo '<br><br>Site cache hit!!!';
         echo AA::$dbg->basic_stat();
         echo AA::$dbg->duration_stat();
@@ -105,16 +106,17 @@ if ($cacheentry = AA::Pagecache()->getPage($cache_key, (string)$site_nocache)) {
 
 // -- /CACHE ------------------------------------------------------------------
 
-require_once __DIR__."/../../include/util.php";
+require_once __DIR__ . "/../../include/util.php";
 
-function IsInDomain( $domain ): bool {
-    return (($_SERVER['HTTP_HOST'] === $domain)  || ($_SERVER['HTTP_HOST'] === 'www.'.$domain));
+function IsInDomain($domain): bool
+{
+    return (($_SERVER['HTTP_HOST'] === $domain)  || ($_SERVER['HTTP_HOST'] === 'www.' . $domain));
 }
 
 /** Send 404 header and optionally output custom page content, then exit.
  * @param null $page
  */
-function Die404($page=null): never
+function Die404($page = null): never
 {
     http_response_code(404);
 
@@ -122,8 +124,8 @@ function Die404($page=null): never
     // (avoids content-type mismatch that triggers antivirus false positives)
     if (!is_null($page)) {
         $accept = strtolower($_SERVER['HTTP_ACCEPT'] ?? '');
-        if ( $accept === '' || str_contains($accept, 'text/') || str_contains($accept, 'application/') ) {
-            header('Content-Type: '. (AA::$headers['type'] ?: 'text/html') .'; charset='.(AA::$headers['encoding'] ?: AA::$encoding ?: Langs::getCharset()));
+        if ($accept === '' || str_contains($accept, 'text/') || str_contains($accept, 'application/')) {
+            header('Content-Type: ' . (AA::$headers['type'] ?: 'text/html') . '; charset=' . (AA::$headers['encoding'] ?: AA::$encoding ?: Langs::getCharset()));
             echo AA::Stringexpander()->postprocess(AA::Un($page));
         }
     }
@@ -143,13 +145,13 @@ function Die404($page=null): never
 // change the state
 add_vars();                 // get variables passed to stm page
 
-require_once __DIR__."/../../modules/site/router.class.php";
+require_once __DIR__ . "/../../modules/site/router.class.php";
 
 $err = [];          // error array (Init - just for initializing variable
 
 AA::$site_id  = $_REQUEST['site_id'] ?: AA_Module_Site::getIdFromUrl();
 
-if ( !($module = AA_Module_Site::getModule(AA::$site_id)) ) {
+if (!($module = AA_Module_Site::getModule(AA::$site_id))) {
     Die404();
     exit;
 }
@@ -185,25 +187,25 @@ $hit_lid = null;
 //           First Reader Management slice is encouraged option - only the
 //           people from this slice is allowed to login to public pages.
 //           If not selected, "AA + all Reader Management slices" option is used.
-$perm_mode  = (string)$module->getProperty('perm_mode');
-if ( $perm_mode == '1' || $perm_mode == '2' ) {
+$perm_mode  = (string) $module->getProperty('perm_mode');
+if ($perm_mode == '1' || $perm_mode == '2') {
     $tmp_rm_slices = AA_Module_Site::getRelatedModules([AA::$site_id]);
     // we need to preserve order!
     $type_slices  = DB_AA::select('', 'SELECT LOWER(HEX(`id`)) AS unpackid FROM slice', [['id', $tmp_rm_slices, 'l'], ['type', 'ReaderManagement']]);
     $rm_slices = [];
     foreach ($tmp_rm_slices as $sl) {
-        if (in_array($sl,$type_slices)) {
+        if (in_array($sl, $type_slices)) {
             $rm_slices[] = $sl;
         }
     }
 
-    if ($perm_mode=='1') {
-        $rm_slices = array_slice($rm_slices,0,1);
+    if ($perm_mode == '1') {
+        $rm_slices = array_slice($rm_slices, 0, 1);
     }
     AA::$perm->restrictPermsTo($rm_slices);
 }
 
-if ($ga_id = (string)$module->getProperty('ga_id')) {
+if ($ga_id = (string) $module->getProperty('ga_id')) {
     $ga_code = "<script async src=\"https://www.googletagmanager.com/gtag/js?id=$ga_id\"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
@@ -254,32 +256,32 @@ if ($module->getProperty('flag') == 1) {    // 1 - Use AA_Router_Seo
 
     //    } elseif ( $uri AND $router->xid(null, "/$lang_file/_404-not-found")) {  // item not found => 404
     //        $apc_state = $router->parse("/$lang_file/_404-not-found");
-} elseif ( $module->getProperty('state_file') ) {
+} elseif ($module->getProperty('state_file')) {
     // in the following file we should define apc_state variable
     require_once __DIR__ . "/legacy_util.php";
-    require_once __DIR__."/sites/site_".$module->getProperty('state_file');
+    require_once __DIR__ . "/sites/site_" . $module->getProperty('state_file');
     $apc_state['4cacheQS'] = shtml_query_string();
     $_REQUEST['nocache'] = $_REQUEST['nocache'] ?: $nocache;
 }
 
-if ( !isset($apc_state) )  {
+if (!isset($apc_state)) {
     Die404(($module->getProperty('page404') == '3') ? $module->getProperty('page404_code') : null);
     exit;
 }
 
 require_once __DIR__ . "/../../modules/site/sitetree.php";
-require_once __DIR__."/../../include/searchlib.php";
-require_once __DIR__."/../../include/view.php";
-require_once __DIR__."/../../include/discussion.php";
-require_once __DIR__."/../../include/item.php";
+require_once __DIR__ . "/../../include/searchlib.php";
+require_once __DIR__ . "/../../include/view.php";
+require_once __DIR__ . "/../../include/discussion.php";
+require_once __DIR__ . "/../../include/item.php";
 
-if ((int)$_REQUEST['nocache'] & 2) {  // nocache=2 or nocache=3, ... - second bit set
+if ((int) $_REQUEST['nocache'] & 2) {  // nocache=2 or nocache=3, ... - second bit set
     AA_Stringexpand::switchCacheOff();
 }
 
 if ($lang_file) {
     mgettext_bind(Langs::getLang($lang_file), 'output');
-    AA::$lang    = strtolower(substr($lang_file,0,2));   // actual language - two letter shortcut cz / es / en
+    AA::$lang    = strtolower(substr($lang_file, 0, 2));   // actual language - two letter shortcut cz / es / en
     AA::$langnum = [Langs::getLangName2Num(AA::$lang)];   // array of preferred languages in priority order.
 }
 
@@ -293,7 +295,7 @@ $is_valid = ($perm_alias = $module->getProperty('perm_alias')) ? AA::Un("{item:$
 $content_function = static function () use (&$module, &$apc_state) {
     // we need to evaluate $page_content in order to reevaluate DependentParts
     $apc_state['xajax'] = 2;  // to not be 1
-    return $module->getSite( $apc_state );
+    return $module->getSite($apc_state);
 };
 
 $page_changer = new OnPageChanger($content_function);
@@ -302,7 +304,7 @@ $page_changer->checkAndProcessCall($is_valid === 'Valid');
 // --- if not EXITEed above, continue
 
 
-$page_content = ($is_valid === 'Valid') ? $module->getSite( $apc_state ) : AA::Stringexpander()->postprocess(AA::Un($module->getProperty('loginpage_code')));
+$page_content = ($is_valid === 'Valid') ? $module->getSite($apc_state) : AA::Stringexpander()->postprocess(AA::Un($module->getProperty('loginpage_code')));
 
 // AJAX check
 if ((AA::$headers['encoding'] !== 'utf-8') && (AA::$encoding !== 'utf-8') && IsAjaxCall()) {
@@ -322,17 +324,17 @@ if (empty($slices4cache)) {    // can't be combined empty() and assignment = for
 }
 
 // do not cache for logged users
-$cached = "not cached ($site_nocache,". array_key_exists('xuid', $apc_state) .')';
-if (!$site_nocache AND (empty($apc_state['xuid']) or ($apc_state['xuid']==='nobody'))) {
+$cached = "not cached ($site_nocache," . array_key_exists('xuid', $apc_state) . ')';
+if (!$site_nocache and (empty($apc_state['xuid']) or ($apc_state['xuid'] === 'nobody'))) {
     $str2find = new CacheStr2find($slices4cache);
     $cached = AA::Pagecache()->storePage($cache_key, $cacheentry, $str2find) ? "cached ($cache_key)" : 'not cached in storePage';
 }
 
-if (AA::$debug&2) {
-    echo '<br><br>Site cache MIS!!! - '.$cached;
+if (AA::$debug & 2) {
+    echo '<br><br>Site cache MIS!!! - ' . $cached;
     echo AA::$dbg->basic_stat();
-    echo '<br>UsedModules:<br> - '. implode('<br> - ', array_map(static fn ($mid) => AA_Module::getModuleName($mid), $slices4cache));
-    if (AA::$debug&4) {
+    echo '<br>UsedModules:<br> - ' . implode('<br> - ', array_map(static fn($mid) => AA_Module::getModuleName($mid), $slices4cache));
+    if (AA::$debug & 4) {
         echo AA::$dbg->duration_stat();
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 //$Id$
 
 // Miscellaneous utility functions ---------------------------------------------
@@ -10,7 +11,7 @@ use AA\IO\DB\DB_AA;
  *
  * @return array
  */
-function GetLinkInfo( $lid): array
+function GetLinkInfo($lid): array
 {
     $ret = DB_AA::select1([], 'SELECT * FROM `links_links`', [['id', $lid, 'i']]);
     return $ret ?: [];
@@ -20,7 +21,7 @@ function GetLinkInfo( $lid): array
  * @param int $cid
  * @return string
  */
-function GetCategoryPath( $cid ): string
+function GetCategoryPath($cid): string
 {
     $ret = DB_AA::select1('path', 'SELECT path FROM `links_categories`', [['id', $cid, 'i']]);
     return $ret ?: '';
@@ -30,13 +31,13 @@ function GetCategoryPath( $cid ): string
  * @param string $path
  * @return string
  */
-function GetCategoryFromPath( $path ): string
+function GetCategoryFromPath($path): string
 {
-    return strrchr($path, ",") ? substr( strrchr($path, ","), 1) : $path;
+    return strrchr($path, ",") ? substr(strrchr($path, ","), 1) : $path;
 }
 
 /** Assign category to given parent category */
-function Links_AssignCategory($category_id, $insertedId, $pri=10, $base='y', $state='visible'): void
+function Links_AssignCategory($category_id, $insertedId, $pri = 10, $base = 'y', $state = 'visible'): void
 {
     DB_AA::sql("INSERT INTO links_cat_cat (category_id, what_id, base, state, priority, proposal, proposal_delete) VALUES ($category_id, $insertedId, '$base', '$state',  $pri, 'n', 'n')");
 }
@@ -44,13 +45,14 @@ function Links_AssignCategory($category_id, $insertedId, $pri=10, $base='y', $st
 /** Add new category, copies parents permissions
  *  @returns int - id of new category
  */
-function Links_AddCategory($name, $parent, $parentpath): int {
+function Links_AddCategory($name, $parent, $parentpath): int
+{
     $db = getDB();
-    $db->query( "INSERT INTO links_categories  ( name ) VALUES ('$name')" );
-    $res = (int)$db->last_insert_id();
+    $db->query("INSERT INTO links_categories  ( name ) VALUES ('$name')");
+    $res = (int) $db->last_insert_id();
 
     // correct path
-    $db->query( "UPDATE links_categories set path='$parentpath,$res' WHERE id=$res" );
+    $db->query("UPDATE links_categories set path='$parentpath,$res' WHERE id=$res");
     freeDB($db);
 
     ChangeCatPermAsIn($res, $parent);
@@ -58,14 +60,14 @@ function Links_AddCategory($name, $parent, $parentpath): int {
 }
 
 // Get specified column for base category of specified link
-function Links_GetBaseCategoryColumn( $lid, $col ): string
+function Links_GetBaseCategoryColumn($lid, $col): string
 {
     $db = getDB();
     $db->query("SELECT $col as retcol FROM links_categories, links_link_cat
                WHERE links_categories.id = links_link_cat.category_id
                  AND what_id='$lid'
                  AND links_link_cat.base='y'");
-    $ret = ( $db->next_record() ? $db->f('retcol') : "");
+    $ret = ($db->next_record() ? $db->f('retcol') : "");
     freeDB($db);
     return $ret;
 }
@@ -76,7 +78,7 @@ function Links_GetBaseCategoryColumn( $lid, $col ): string
  * @param string $col
  * @return string
  */
-function Links_GetCategoryColumn( $cid, $col ): string
+function Links_GetCategoryColumn($cid, $col): string
 {
     return DB_AA::select1('retcol', "SELECT $col as retcol FROM links_categories", [['id', $cid, 'i']]);
 }
@@ -87,9 +89,9 @@ function Links_GetCategoryColumn( $cid, $col ): string
  *
  * @return string
  */
-function GetBaseCategoryPath( $lid): string
+function GetBaseCategoryPath($lid): string
 {
-    return Links_GetBaseCategoryColumn( $lid, 'path' );
+    return Links_GetBaseCategoryColumn($lid, 'path');
 }
 
 // Transforms path to named path with links ( <a href=...>Base</a> > <a ...)
@@ -98,23 +100,23 @@ function GetBaseCategoryPath( $lid): string
 //        url     - make links to categories except the last one
 //   whole - if set, make links to all categories
 
-function NamePath($skip, $path, $translate, $separator = " > ", $url="", $whole=false, $target=""): string
+function NamePath($skip, $path, $translate, $separator = " > ", $url = "", $whole = false, $target = ""): string
 {
     $target_atrib = $target != "" ? " target=\"$target\" " : "";
-    $ids       = explode(",",$path);
+    $ids       = explode(",", $path);
     $name      = '';
     $delimiter = '';
-    if ( isset($ids) && is_array($ids)) {
-        $last=end($ids);
-        if ( $url ) {
+    if (isset($ids) && is_array($ids)) {
+        $last = end($ids);
+        if ($url) {
             foreach ($ids as $catid) {
                 if (--$skip >= 0) {
                     continue;
                 }
-                if ( $catid !== $last || $whole ) { // do not make link for last category
-                    $name .= $delimiter."<a href=\"$url$catid\" $target_atrib>".$translate[$catid]."</a>";
+                if ($catid !== $last || $whole) { // do not make link for last category
+                    $name .= $delimiter . "<a href=\"$url$catid\" $target_atrib>" . $translate[$catid] . "</a>";
                 } else {
-                    $name .= $delimiter.$translate[$catid];
+                    $name .= $delimiter . $translate[$catid];
                 }
                 $delimiter = $separator;
             }
@@ -123,7 +125,7 @@ function NamePath($skip, $path, $translate, $separator = " > ", $url="", $whole=
                 if (--$skip >= 0) {
                     continue;
                 }
-                $name .= $delimiter.$translate[$catid];
+                $name .= $delimiter . $translate[$catid];
                 $delimiter = $separator;
             }
         }
@@ -136,17 +138,19 @@ function NamePath($skip, $path, $translate, $separator = " > ", $url="", $whole=
  * <category_id>'Links'<shorted AA_ID>
  * @returns string - packed slice id
  */
-function Links_Category2SliceID($cid): string {
-    return unpack_id(substr( $cid.'Links'.pack_id(AA_ID), 0, 16 ));
+function Links_Category2SliceID($cid): string
+{
+    return unpack_id(substr($cid . 'Links' . pack_id(AA_ID), 0, 16));
 }
 
 /** Get base category from slice id (reverse to Links_Category2SliceID())
  * @param $sl_id
  * @return int
  */
-function Links_SliceID2Category($sl_id): int {
+function Links_SliceID2Category($sl_id): int
+{
     $psl_id = q_pack_id($sl_id);
-    return (int) substr( $psl_id, 0, strspn($psl_id, "1234567890"));
+    return (int) substr($psl_id, 0, strspn($psl_id, "1234567890"));
 }
 
 /**
@@ -166,30 +170,30 @@ function Links_GetLinkContent($zids): array
 
     $db = getDB();
     // construct WHERE clausule
-    $sel_in = $zids->sqlin( false );
+    $sel_in = $zids->sqlin(false);
 
     // get not rejected changes
     $SQL = "SELECT changed_link_id, proposal_link_id FROM links_changes
              WHERE changed_link_id $sel_in
                AND rejected='n'";              // get only not rejected changes
     $db->query($SQL);
-    while ( $db->next_record() ) {
+    while ($db->next_record()) {
         $changes_ids[] = $db->f('proposal_link_id');
         $changes_map[$db->f('proposal_link_id')] = $db->f('changed_link_id');
     }
 
-    if ( isset($changes_ids) && is_array($changes_ids) ) {
-        $changes_where = ' OR id '. (count($changes_ids)>1 ? 'IN ('. implode( ",", $changes_ids ). ')' : "='". $changes_ids[0] ."'");
+    if (isset($changes_ids) && is_array($changes_ids)) {
+        $changes_where = ' OR id ' . (count($changes_ids) > 1 ? 'IN (' . implode(",", $changes_ids) . ')' : "='" . $changes_ids[0] . "'");
     }
 
     // get link data (including data of link changes)
     $SQL = "SELECT * FROM links_links WHERE id $sel_in $changes_where";
     $db->query($SQL);
-    while ( $db->next_record() ) {
+    while ($db->next_record()) {
         $foo_id = $db->f('id');
         $rec = $db->record();
-        foreach ($rec as $key => $val ) {
-            if ( $changes_map[$foo_id] ) {    // this link is just change-link
+        foreach ($rec as $key => $val) {
+            if ($changes_map[$foo_id]) {    // this link is just change-link
                 $content[$changes_map[$foo_id]]["change_$key"][] = ['value' => $val];
             } else {
                 $content[$foo_id][$key][] = ['value' => $val];
@@ -266,7 +270,7 @@ function Links_GetFolder($type): false|string
 /**
  *  Helper function which writes link assignment into database
  */
-function Links_AssignLink($cat_id, $link_id, $base='y', $state='visible',$prop='n',$prop_del='n'): void
+function Links_AssignLink($cat_id, $link_id, $base = 'y', $state = 'visible', $prop = 'n', $prop_del = 'n'): void
 {
     DB_AA::sql("INSERT INTO links_link_cat (category_id, what_id, base, state, priority, proposal, proposal_delete) VALUES ($cat_id,    $link_id, '$base','$state', 1.0,   '$prop',    '$prop_del')");
 }
@@ -278,9 +282,9 @@ function Links_AssignLink($cat_id, $link_id, $base='y', $state='visible',$prop='
  *  @param int|array $categs  array of ids or just single id of categories to add link
  *  @param bool $proposal     if the link is just proposal to change
  */
-function Links_Assign2Category($lid, $categs, $proposal=false): void
+function Links_Assign2Category($lid, $categs, $proposal = false): void
 {
-    if ( !isset($categs) ) {
+    if (!isset($categs)) {
         return;
     }
 
@@ -288,32 +292,32 @@ function Links_Assign2Category($lid, $categs, $proposal=false): void
     $categories = is_array($categs) ? $categs : [$categs];
 
     // what is the state of this link - proposal: y|n|'' (= not base category)
-    $base_proposal = Links_GetBaseCategoryColumn( $lid, 'proposal' );
+    $base_proposal = Links_GetBaseCategoryColumn($lid, 'proposal');
 
-    foreach ( $categories as $cid ) {
-        if ( $proposal ) {   // link to change - just propose as change
-          //Links_AssignLink($cat_id, $link_id, $base, $state, $prop,$prop_del)
-            Links_AssignLink($cid, $lid, 'n', 'hidden', 'y','n');
+    foreach ($categories as $cid) {
+        if ($proposal) {   // link to change - just propose as change
+            //Links_AssignLink($cat_id, $link_id, $base, $state, $prop,$prop_del)
+            Links_AssignLink($cid, $lid, 'n', 'hidden', 'y', 'n');
             continue;
         }
 
-        switch( $base_proposal ) {
+        switch ($base_proposal) {
             case 'n':          // adding to base category was sucesfull
-                if ( IsCatPerm( PS_LINKS_ADD_LINK, GetCategoryPath( $cid ) )) {
-                    Links_AssignLink($cid, $lid, 'n', 'visible', 'n','n'); // directly add not base link
+                if (IsCatPerm(PS_LINKS_ADD_LINK, GetCategoryPath($cid))) {
+                    Links_AssignLink($cid, $lid, 'n', 'visible', 'n', 'n'); // directly add not base link
                 } else {
-                    Links_AssignLink($cid, $lid, 'n', 'visible', 'y','n'); // add not base link as proposal
+                    Links_AssignLink($cid, $lid, 'n', 'visible', 'y', 'n'); // add not base link as proposal
                 }
                 break;
             case 'y':      // add to base category wasn't sucesfull because of perm
-                Links_AssignLink($cid, $lid, 'n', 'hidden', 'y','n'); // just propose as change
+                Links_AssignLink($cid, $lid, 'n', 'hidden', 'y', 'n'); // just propose as change
                 break;
             default:            // try to add base link
-                if ( IsCatPerm( PS_LINKS_ADD_LINK, GetCategoryPath( $cid ))) {
-                    Links_AssignLink($cid, $lid, 'y', 'visible', 'n','n'); // directly add base link
+                if (IsCatPerm(PS_LINKS_ADD_LINK, GetCategoryPath($cid))) {
+                    Links_AssignLink($cid, $lid, 'y', 'visible', 'n', 'n'); // directly add base link
                     $base_proposal = 'n';   // for next assignments
                 } else {
-                    Links_AssignLink($cid, $lid, 'y', 'visible', 'y','n'); // add base link as proposal
+                    Links_AssignLink($cid, $lid, 'y', 'visible', 'y', 'n'); // add base link as proposal
                     $base_proposal = 'y';   // for next assignments
                 }
                 break;
@@ -353,20 +357,21 @@ $GENERAL_CATS['Festivaly']                                  = ['pri' => 3040, 's
 $GENERAL_CATS['Kalend��e akc�']                             = ['pri' => 3050, 'super' => 'Akce'];
 $GENERAL_CATS['Ostatn� akce']                               = ['pri' => 3060, 'super' => 'Akce'];
 
- /** Fills $LINK_TYPE_CONSTANTS_ARR by general categories (if not filled, yet) */
-function  Links_LoadGlobalCategories(): bool {
+/** Fills $LINK_TYPE_CONSTANTS_ARR by general categories (if not filled, yet) */
+function Links_LoadGlobalCategories(): bool
+{
     global $LINK_TYPE_CONSTANTS, $LINK_TYPE_CONSTANTS_ARR;
-    if ( !$LINK_TYPE_CONSTANTS ) {
+    if (!$LINK_TYPE_CONSTANTS) {
         return false;
     }
-    if ( !$LINK_TYPE_CONSTANTS_ARR ) {  // array is cached (=stored to globals)
+    if (!$LINK_TYPE_CONSTANTS_ARR) {  // array is cached (=stored to globals)
         $LINK_TYPE_CONSTANTS_ARR = GetConstants($LINK_TYPE_CONSTANTS, 'pri', 'pri');
         // General categories names could be stored not only in 'Value' of
         // constants, but also in 'Description'. The general categories in
         // 'Description' field are the categs are not shown in selectbox
         $tmp = GetConstants($LINK_TYPE_CONSTANTS, 'pri', 'pri', 'description');
-        foreach ( $tmp as $k => $pri ) {
-            if ( trim($k) !== "" ) {
+        foreach ($tmp as $k => $pri) {
+            if (trim($k) !== "") {
                 $LINK_TYPE_CONSTANTS_ARR[$k] = $pri;
             }
         }
@@ -384,41 +389,43 @@ function  Links_LoadGlobalCategories(): bool {
 function Links_IsGlobalCategory($type): false|string
 {
     global $LINK_TYPE_CONSTANTS_ARR;
-    if ( !Links_LoadGlobalCategories() || !$LINK_TYPE_CONSTANTS_ARR[$type] ) {
+    if (!Links_LoadGlobalCategories() || !$LINK_TYPE_CONSTANTS_ARR[$type]) {
         return false;
     }
     return $type;
 }
 
 /** Returns priority of general category (for sorting) */
-function  Links_GlobalCatPriority($type) {
+function Links_GlobalCatPriority($type)
+{
     global $LINK_TYPE_CONSTANTS_ARR;
-    if ( !Links_LoadGlobalCategories() || !$LINK_TYPE_CONSTANTS_ARR[$type] ) {
+    if (!Links_LoadGlobalCategories() || !$LINK_TYPE_CONSTANTS_ARR[$type]) {
         return 0;
     }
     return $LINK_TYPE_CONSTANTS_ARR[$type];
 }
 
 /** Returns priority of general category (for sorting) */
-function Links_GlobalCatSuper($type) {
+function Links_GlobalCatSuper($type)
+{
     return $GLOBALS['GENERAL_CATS'][$type]['super'];
 }
 
 /** Returns listing of links with the same URL */
-function Links_getUrlReport($url, $format_strings, $checked_id, $tree_start=false): string
+function Links_getUrlReport($url, $format_strings, $checked_id, $tree_start = false): string
 {
     if (str_ends_with($url, '/')) {
-        $url = substr( $url, 0, -1);  // remove last '/'
+        $url = substr($url, 0, -1);  // remove last '/'
     }
 
     $url   = addslashes($url);
     $conds = [
         ['value' => "$url OR {$url}_", 'operator' => 'XLIKE', 'url' => 1],
-        ['value'    => $checked_id,       'operator' => '<>',    'id'       => 1]// we do not want to find the link itself
+        ['value'    => $checked_id,       'operator' => '<>',    'id'       => 1],// we do not want to find the link itself
     ];
     $sort  = '';
     // 1 - base category - look for all links in the database (no matter in which subtree)
-    $start_cat_path = ($tree_start ? GetCategoryPath( $tree_start ) : 1);
+    $start_cat_path = ($tree_start ? GetCategoryPath($tree_start) : 1);
 
     // we have to look for unassigned links (not assigned to some category),
     // as well as for assinged ones
@@ -428,11 +435,10 @@ function Links_getUrlReport($url, $format_strings, $checked_id, $tree_start=fals
     // url nahore
     // zarazeno v kategorii
     $out = "";
-    if ( !$links_zids->isEmpty() ) {
+    if (!$links_zids->isEmpty()) {
         // function - we need trnslate _m() on use (not at include time)
-        $itemview = (new itemview($format_strings, new AA_Aliases(new AA_Aliasgenerator_Link), $links_zids, 0, 100))->setContentFunct('Links_GetLinkContent');
+        $itemview = (new itemview($format_strings, new AA_Aliases(new AA_Aliasgenerator_Link()), $links_zids, 0, 100))->setContentFunct('Links_GetLinkContent');
         $out      = $itemview->get_output("view");
     }
     return $out;
 }
-

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * AA JSON API front controller.
  *

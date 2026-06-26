@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Redirects to the main Alerts page.
  * Kept only for compatibility with the modules interface.
@@ -29,4 +30,4 @@ https://www.apc.org/
 // const  AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../../include/init_page.php";
 require_once __DIR__ . "/../../include/go_url.php";
-go_url(AA_INSTAL_PATH ."modules/alerts/modedit.php?module_id=".AA::$module_id);
+go_url(AA_INSTAL_PATH . "modules/alerts/modedit.php?module_id=" . AA::$module_id);

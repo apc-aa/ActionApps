@@ -1,4 +1,5 @@
 <?php
+
 //$Id$
 /*
 Copyright (C) 1999, 2000 Association for Progressive Communications
@@ -21,15 +22,15 @@ https://www.apc.org/
 
 use AA\Later\Toexecute;
 
-require_once __DIR__."/include/init_central.php";
+require_once __DIR__ . "/include/init_central.php";
 require_once __DIR__ . "/../include/formutil.php";
 
 
 pageOpen();
 
 if (!IsSuperadmin()) {
-  AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php", _m("You don't have permissions to synchronize slices."), "admin");
-  exit;
+    AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php", _m("You don't have permissions to synchronize slices."), "admin");
+    exit;
 }
 
 MoreTimeLimit(); // set_time_limit to 5 minutes (at least)
@@ -38,25 +39,35 @@ MoreTimeLimit(); // set_time_limit to 5 minutes (at least)
 $aas = AA_Actionapps::getArray();
 
 if ($_POST['copy']) {
-    $toexecute = new Toexecute;
+    $toexecute = new Toexecute();
     $no_sync_tasks = 0;
 
     $limit = [];
-    if ($sync_items) { $limit['items']       = true; }
-    if ($sync_defs)  { $limit['definitions'] = true; }
+    if ($sync_items) {
+        $limit['items']       = true;
+    }
+    if ($sync_defs) {
+        $limit['definitions'] = true;
+    }
     if (count($limit)) {
         $template_slice_defs = $aas[$_POST['template_aa']]->requestDefinitions('Slice', $_POST['sync_slices'], $limit);
     }
-    $template_site_defs   = $aas[$_POST['template_aa']]->requestDefinitions('Site',    $_POST['sync_sites']);
-    $template_alerts_defs  = $aas[$_POST['template_aa']]->requestDefinitions('Alerts',  $_POST['sync_alerts']);
+    $template_site_defs   = $aas[$_POST['template_aa']]->requestDefinitions('Site', $_POST['sync_sites']);
+    $template_alerts_defs  = $aas[$_POST['template_aa']]->requestDefinitions('Alerts', $_POST['sync_alerts']);
 
     foreach ($_POST['destination_aa'] as $dest_aa) {
 
         // import with changed module ids
         $changed_ids = [];
-        foreach ($_POST['sync_slices'] as $mid) { $changed_ids[$mid] = new_id(); }
-        foreach ($_POST['sync_sites']  as $mid) { $changed_ids[$mid] = new_id(); }
-        foreach ($_POST['sync_alerts'] as $mid) { $changed_ids[$mid] = new_id(); }
+        foreach ($_POST['sync_slices'] as $mid) {
+            $changed_ids[$mid] = new_id();
+        }
+        foreach ($_POST['sync_sites'] as $mid) {
+            $changed_ids[$mid] = new_id();
+        }
+        foreach ($_POST['sync_alerts'] as $mid) {
+            $changed_ids[$mid] = new_id();
+        }
 
         if (is_array($_POST['sync_slices']) && count($limit)) {
             foreach ($_POST['sync_slices'] as $sid) {
@@ -84,7 +95,7 @@ if ($_POST['copy']) {
             }
         }
     }
-    echo _m("%1 import actions planned. See", [$no_sync_tasks]). ' ';
+    echo _m("%1 import actions planned. See", [$no_sync_tasks]) . ' ';
     echo a_href(get_admin_url('se_taskmanager.php'), _m('Task Manager'));
 } else {
     // init values for form
@@ -93,12 +104,12 @@ if ($_POST['copy']) {
 }
 
 $apage = new AA_Adminpageutil('central', 'copyslice');
-$apage->setTitle( _m("Central - Copy Slice (2/2) - Slices to Copy") );
+$apage->setTitle(_m("Central - Copy Slice (2/2) - Slices to Copy"));
 $apage->printHead($err, $Msg);
 
 // ActionApps to synchronize
 $aas_array = ['thisAA' => _m('* this ActionApps')];
-foreach ( $aas as $k => $aa ) {
+foreach ($aas as $k => $aa) {
     $aas_array[$k] = $aa->getName();
 }
 
@@ -113,10 +124,10 @@ $template_alerts = $aas[$_POST['template_aa']]->requestModules(['Alerts']);
 $form_buttons = [
     "copy"      => [
         "type"      => "submit",
-                                            "value"     => _m("Copy"),
-                                            "accesskey" => "C"
+        "value"     => _m("Copy"),
+        "accesskey" => "C",
     ],
-                      "template_aa"     => ["value"     =>  $_POST['template_aa']]
+    "template_aa"     => ["value"     =>  $_POST['template_aa']],
 ];
 
 $sync_slices    = $_POST['sync_slices']    ?? [];
@@ -128,7 +139,7 @@ FrmTabCaption('', $form_buttons);
 FrmStaticText(_m('Template ActionApps'), $aas[$_POST['template_aa']]->getName());
 FrmTabSeparator(_m('Modules to Copy from %1', [$aas[$_POST['template_aa']]->getName()]));
 FrmInputMultiSelect('sync_slices[]', _m('Slices to copy'), $template_slices, reset($sync_slices), 10);
-FrmInputChBox('sync_defs',  _m('Copy definitions'), $sync_defs, false, '', 1, false, _m('Copy slice, fields, views, .... of selected slices above'));
+FrmInputChBox('sync_defs', _m('Copy definitions'), $sync_defs, false, '', 1, false, _m('Copy slice, fields, views, .... of selected slices above'));
 FrmInputChBox('sync_items', _m('Copy also items'), $sync_items, false, '', 1, false, _m('Copy also item data (items, content, discussions tables) of selected slices above - You can also check only this checkbox to copy the content of the slice into previously prepared (and empty) slice'));
 FrmInputMultiSelect('sync_sites[]', _m('Site modules to copy'), $template_sites, reset($sync_sites), 10);
 FrmInputMultiSelect('sync_alerts[]', _m('Alerts modules to copy'), $template_alerts, reset($sync_alerts), 10);

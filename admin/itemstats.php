@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Item statistics - total views and a per-day hit table for a single item, with a link to the
  * full statistics dashboard. Superadmin only. Reached from the item editor's left rail.
@@ -17,7 +18,9 @@ require_once __DIR__ . "/../include/menu_util.php";
 
 try {
     $id = InputVars::idGETPOST('id');
-} catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
+} catch (Exception $e) {
+    AA_Adminpageutil::pageParameterError($e);
+}
 
 if (!IsSuperadmin()) {
     AA_Adminpageutil::MsgPageMenu(get_admin_url('index.php'), _m("You don't have permissions to view item statistics."), 'admin');

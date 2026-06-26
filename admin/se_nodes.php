@@ -1,4 +1,5 @@
 <?php
+
 /**  se_nodes.php - Remote node administration
  * PHP version 7.2+
  *
@@ -33,7 +34,7 @@ require_once __DIR__ . "/../include/formutil.php";
 require_once __DIR__ . "/../include/item.php";
 require_once __DIR__ . "/../include/actions.php";
 
-if ( !IsSuperadmin() ) {
+if (!IsSuperadmin()) {
     MsgPage(_m("You do not have permissions to manage nodes"));
     exit;
 }
@@ -44,4 +45,3 @@ $managed = AA::Metabase()->getManagerConf('nodes');
 $apage = new AA_Adminpageutil('sliceadmin', 'nodes');
 $apage->setTitle(_m("Remote node administration"));
 $apage->printWithManager((new Manager('nodes', $managed))->setAllModules());
-

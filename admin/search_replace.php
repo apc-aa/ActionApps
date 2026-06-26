@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Form displayed in popup window allowing search and replace item content
  * for specified items
@@ -65,21 +66,23 @@ try {
     $tasks = InputVars::intPOST('tasks');
     // $transform* // not necessary
     $cancel = InputVars::boolPOST('cancel');
-    
+
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
+} catch (Exception $e) {
+    AA_Adminpageutil::pageParameterError($e);
+}
 
 
 
-if ( !IfSlPerm(PS_EDIT_ALL_ITEMS)) {
+if (!IfSlPerm(PS_EDIT_ALL_ITEMS)) {
     MsgPage(_m("You do not have permission to edit items this way in this slice"));
     exit;
 }
 
 $searchbar = new AA_Searchbar(AA::$module_id);   // mainly for bookmarks
-$items=$chb;
+$items = $chb;
 
-if ( !$fill ) {               // for the first time - directly from item manager
+if (!$fill) {               // for the first time - directly from item manager
     $sess->register('r_sr_state');
     unset($r_sr_state);       // clear if it was filled
     $r_sr_state['items'] = $items;
@@ -87,20 +90,20 @@ if ( !$fill ) {               // for the first time - directly from item manager
 } else {
     $items     = $r_sr_state['items'];  // session variable holds selected items from item manager
     // we really want to fill fields
-    $zids          = new zids;
+    $zids          = new zids();
     $updated_items = 0;
     $planned = 0;
     if ($_REQUEST[SEARCH_REPLACE_PREFIX] && str_starts_with(strtolower($_REQUEST[SEARCH_REPLACE_PREFIX]), 'aa_transformation_')) {   // strtolower is fix for php4, where case of any class is small
-        $transformation = AA_Object::factory($_REQUEST[SEARCH_REPLACE_PREFIX],AA_Transformation::getRequestVariables(SEARCH_REPLACE_PREFIX, $_REQUEST[SEARCH_REPLACE_PREFIX]));
-        $zids           = ( ($group === 'testitemgroup') ? new zids($testitem) : getZidsFromGroupSelect($group, $items, $searchbar) );
+        $transformation = AA_Object::factory($_REQUEST[SEARCH_REPLACE_PREFIX], AA_Transformation::getRequestVariables(SEARCH_REPLACE_PREFIX, $_REQUEST[SEARCH_REPLACE_PREFIX]));
+        $zids           = (($group === 'testitemgroup') ? new zids($testitem) : getZidsFromGroupSelect($group, $items, $searchbar));
 
         $transformator  = new AA_Transformator($transformation, $field_id, null, $silent, ($silent && $field_id === 'last_edit.......' && IsSuperadmin()));
-        if ($tasks>0) {
+        if ($tasks > 0) {
             $zids_chunked = $zids->chunk($tasks);
             $toexecute = new Toexecute();
 
             foreach ($zids_chunked as $chunk) {
-                $toexecute->later($transformator->setZids($chunk),[],'ModifyItemContent');
+                $toexecute->later($transformator->setZids($chunk), [], 'ModifyItemContent');
                 $planned += $chunk->count();
             }
         } else {
@@ -109,12 +112,12 @@ if ( !$fill ) {               // for the first time - directly from item manager
     }
 
     $Msg     = MsgOk(_m("Items selected: %1, Items successfully updated: %2, Items planned: %3", [$zids->count(), $updated_items, $planned]));
-    if ((string)$group === "sel_item") {
+    if ((string) $group === "sel_item") {
         $sel = "LIST";
-    } elseif ((string)$group === "testitemgroup") {
+    } elseif ((string) $group === "testitemgroup") {
         $sel = "TEST";
     } else {
-        $sel = get_if($group,"0");  // bookmarks groups are identified by numbers
+        $sel = get_if($group, "0");  // bookmarks groups are identified by numbers
     }
     AA_Log::write("ITEM_FIELD_FILLED", $sel, new AA_Logentry_Iff(['selected' => $zids->count(), 'updated' => $updated_items, 'planned' => $planned]));
 }
@@ -122,13 +125,13 @@ if ( !$fill ) {               // for the first time - directly from item manager
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 
 echo '
-  <title>'.  _m("Modify items") .'</title>';
-echo getFrmJavascriptFile('javascript/inputform.min.js', ['v'=>AA_JS_VERSION]);
+  <title>' . _m("Modify items") . '</title>';
+echo getFrmJavascriptFile('javascript/inputform.min.js', ['v' => AA_JS_VERSION]);
 IncludeManagerJavascript();
 echo '
 </head>
 <body>
-  <h1>'. _m("Modify items") .'</h1>
+  <h1>' . _m("Modify items") . '</h1>
   <form name="modifyitemsform" method="post">';
 
 echo GetPrintArray($err);
@@ -136,11 +139,11 @@ echo $Msg;
 
 $slice  = AA_Slice::getModule(AA::$module_id);
 
-if ( !IsSuperadmin() ) {
+if (!IsSuperadmin()) {
     $restricted_fields = [
         'slice_id........' => true,
         'id..............' => true,
-        'short_id........' => true
+        'short_id........' => true,
     ];
 } else {
     $restricted_fields = ['short_id........' => true];
@@ -151,7 +154,7 @@ $field_select['no_field'] = _m('Select field...');
 $field_copy_arr           = [];
 $fields                   = $slice->getFields()->getNameArray();
 foreach ($fields as $fld_id => $fld_name) {
-    if ( !$restricted_fields[$fld_id] ) {
+    if (!$restricted_fields[$fld_id]) {
         $field_select[$fld_id] = "$fld_name ($fld_id)";
     }
     $field_copy_arr[$fld_id] = "$fld_name ($fld_id)";
@@ -159,18 +162,24 @@ foreach ($fields as $fld_id => $fld_name) {
 
 $params = [
     'field_copy_arr' => $field_copy_arr,
-    'field_select'   => $field_select
+    'field_select'   => $field_select,
 ];
 
 FrmTabCaption((count($items) ? _m("Items") : (_m("Stored searches for ") . $slice->getName())));
 
 $messages['view_items']     = _m("View items");
 $messages['selected_items'] = _m('Selected items');
-FrmItemGroupSelect( $items, $searchbar, $group, 'items', $messages);
+FrmItemGroupSelect($items, $searchbar, $group, 'items', $messages);
 
 FrmTabSeparator(_m('Fill field'));
-FrmInputSelect('field_id',       _m('Field'),             $field_select,       $field_id, true,
-               _m('Be very careful with this. Changes in some fields (Status Code, Publish Date, Slice ID, ...) could be very crucial for your item\'s data. There is no data validity check - what you will type will be written to the database.<br>You should also know there is no UNDO operation (at least now).'));
+FrmInputSelect(
+    'field_id',
+    _m('Field'),
+    $field_select,
+    $field_id,
+    true,
+    _m('Be very careful with this. Changes in some fields (Status Code, Publish Date, Slice ID, ...) could be very crucial for your item\'s data. There is no data validity check - what you will type will be written to the database.<br>You should also know there is no UNDO operation (at least now).'),
+);
 
 FrmInputChBox('silent', _m('Silent'), true, false, "", 1, false, _m('Just update the field and do not perform any other operations like set-last-edit, evaluate-computed-field, feed, ...'));
 
@@ -179,8 +188,8 @@ FrmStaticText(_m('Action'), AA_Components::getSelectionCode('AA_Transformation_'
 FrmInputNumber('tasks', _m('Run as Tasks - fill number of items in one task'), $tasks, 0, 99999999, false, _m('If you want to run this operation as tasks, enter the number of items in one task here. The operation will be split into tasks. The tasks will be run in the background. You can check the status of the tasks in the task manager.'));
 
 FrmTabEnd([
-    'fill' => ['type'=>'submit', 'value'=>_m('Fill')],
-    'close'=> ['type'=>'button', 'value'=>_m('Close'), 'add'=>'onclick="window.close()"']
+    'fill' => ['type' => 'submit', 'value' => _m('Fill')],
+    'close' => ['type' => 'button', 'value' => _m('Close'), 'add' => 'onclick="window.close()"'],
 ]);
 
 // list selected items to special form - used by manager.min.js to show items (recipients)
@@ -188,4 +197,3 @@ echo "\n  </form>";
 FrmItemListForm($items);
 echo "\n  </body>\n</html>";
 Session::page_close();
-

@@ -1,4 +1,6 @@
-<?php  //slice_id expected
+<?php
+
+//slice_id expected
 /**
  * PHP version 7.2+
  *
@@ -37,7 +39,7 @@ require_once __DIR__ . "/../include/item.php";
 require_once __DIR__ . "/../include/actions.php";
 require_once __DIR__ . "/../include/mail.php";  // GetMailManaged funct def
 
-if ( !IsSuperadmin() ) {
+if (!IsSuperadmin()) {
     MsgPage(_m("You do not have permission to manage Emails"));
     exit;
 }
@@ -52,9 +54,7 @@ if ($_GET['id']) {
 
 $manager = new Manager('se-email', $managed);
 $manager->setRestrictionConds([
-    new AA_Condition('owner_module_id', '==', pack_id(AA::$module_id))
+    new AA_Condition('owner_module_id', '==', pack_id(AA::$module_id)),
 ]);
 
 $apage->printWithManager($manager);
-
-

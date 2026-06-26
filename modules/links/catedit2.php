@@ -1,4 +1,6 @@
-<?php  //catedit2.php - proceeds submitted data from catedit.php
+<?php
+
+//catedit2.php - proceeds submitted data from catedit.php
 //$Id$
 
 use AA\IO\DB\DB_AA;
@@ -35,9 +37,11 @@ try {
     // array ( 4 => 2, )
     $tree = InputVars::intPOST('tree');
     $cancel = InputVars::boolPOST('cancel');
-    
+
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
+} catch (Exception $e) {
+    AA_Adminpageutil::pageParameterError($e);
+}
 
 $r_state['linkedit']['old'] = $_POST;  // in case of bad input
 unset($r_msg);
@@ -64,7 +68,7 @@ function IsCatEmpty($category_id): bool
 
     $db = getDB();
     $db->query($SQL);
-    if ( $db->next_record() ) {
+    if ($db->next_record()) {
         freeDB($db);
         return false;
     }
@@ -86,8 +90,8 @@ function DeleteCatAssignment($parent, $child): void
 // Delete one category
 function DeleteCategory($catId): void
 {
-    DB_AA::delete('links_link_cat',   [['category_id', $catId, 'i']]);
-    DB_AA::delete('links_cat_cat',    [['category_id', $catId, 'i']]);
+    DB_AA::delete('links_link_cat', [['category_id', $catId, 'i']]);
+    DB_AA::delete('links_cat_cat', [['category_id', $catId, 'i']]);
     DB_AA::delete('links_categories', [['id', $catId, 'i']]);
 }
 
@@ -95,7 +99,7 @@ function ChangeCatPriority($category_id, $insertedId, $pri, $state, $name): void
 {
     // General categories have its own priorities
     $new_pri = Links_GlobalCatPriority($name);
-    if ( $new_pri ) {
+    if ($new_pri) {
         $pri = $new_pri;
     }
     DB_AA::sql("UPDATE links_cat_cat SET priority=$pri, state='$state' WHERE category_id = $category_id AND what_id = $insertedId");
@@ -119,8 +123,8 @@ function UnassignBaseCategory($parent, $child): void
 
     $db->query($SQL);
 
-    while ( $db->next_record() ) {  // this base category is linked to another
-        if ( $db->f('category_id') == $parent ) { // this we unasign => skip it
+    while ($db->next_record()) {  // this base category is linked to another
+        if ($db->f('category_id') == $parent) { // this we unasign => skip it
             continue;
         }
 
@@ -129,7 +133,7 @@ function UnassignBaseCategory($parent, $child): void
         // make first as base
         $SQL = "UPDATE links_cat_cat SET base='y' WHERE what_id = $child AND category_id = $newParent";
 
-        $db->query( $SQL );
+        $db->query($SQL);
 
         // we have to change path to this category
         $newPath = GetCategoryPath($newParent);
@@ -139,7 +143,7 @@ function UnassignBaseCategory($parent, $child): void
             $SQL = "UPDATE links_categories
                        SET path = REPLACE(path, '$oldPath' , '$newPath,$child')
                      WHERE path  LIKE '$oldPath%'";
-            $db->query( $SQL );
+            $db->query($SQL);
         } else {
             huhl("Something very strange in UnassignBaseCategory() in catedit2.php");
             freeDB($db);
@@ -157,7 +161,7 @@ function UnassignBaseCategory($parent, $child): void
 
     freeDB($db);
     // category is not linked to another => delete if clear
-    if ( IsCatEmpty($child) ) {
+    if (IsCatEmpty($child)) {
         DeleteCategory($child);
         DeleteCatAssignment($parent, $child);
         DelPermObject($child, 'category');
@@ -170,9 +174,10 @@ function UnassignBaseCategory($parent, $child): void
     return;
 }
 
-function GetPureName($name, &$state) {
-    if (($length=strlen($name)) >= 4) {
-        switch (substr($name,0,4)) {
+function GetPureName($name, &$state)
+{
+    if (($length = strlen($name)) >= 4) {
+        switch (substr($name, 0, 4)) {
             case "(!) ":
                 $state = "'highlight'";
                 break;
@@ -183,7 +188,7 @@ function GetPureName($name, &$state) {
                 $state = "'visible'";
                 return $name;
         }
-        return $length > 4 ? substr($name, -$length+4, $length-4) : "";
+        return $length > 4 ? substr($name, -$length + 4, $length - 4) : "";
     }
     $state = "'visible'";
     return $name;
@@ -192,17 +197,17 @@ function GetPureName($name, &$state) {
 // End of function definitions -------------------------------------------------
 
 if ($cancel) {
-    go_url(StateUrl(self_base()."index.php"));
+    go_url(StateUrl(self_base() . "index.php"));
 }
 
 
 // we always sending cat id - it prevent us of bug with 'Back' browser button
-if ( $cid ) {
+if ($cid) {
     $r_state['cat_id'] = $cid;
 }
 
-$cpath = GetCategoryPath( $cid );
-if ( IsCatPerm( PS_LINKS_EDIT_CATEGORY, $cpath ) ) {
+$cpath = GetCategoryPath($cid);
+if (IsCatPerm(PS_LINKS_EDIT_CATEGORY, $cpath)) {
     $r_state['cat_path']  = $cpath;
 } else {
     MsgPage(_m('No permission to edit category'));
@@ -214,36 +219,36 @@ $varset = new Cvarset();
 
 // Category properties ------------------
 
-ValidateInput("cat_name",    _m('Category name'),          $cat_name,    $r_err, true,  "text");
-ValidateInput("description", _m('Category description'),   $description, $r_err, false, "text");
+ValidateInput("cat_name", _m('Category name'), $cat_name, $r_err, true, "text");
+ValidateInput("description", _m('Category description'), $description, $r_err, false, "text");
 //  we use additional field to display some special text on the category
 // (actually right column), so we need to not modify it by user - Honza
-ValidateInput("additional",  _m('Additional information'), $additional,  $r_err, false, "text");
-ValidateInput("note",        _m('Editor\'s note'),         $note,        $r_err, false, "text");
+ValidateInput("additional", _m('Additional information'), $additional, $r_err, false, "text");
+ValidateInput("note", _m('Editor\'s note'), $note, $r_err, false, "text");
 
 if (!$r_err || count($r_err) <= 1) {
-    $varset->add("name",        "text", $cat_name);
+    $varset->add("name", "text", $cat_name);
     $varset->add("description", "text", $description);
-    $varset->add("additional",  "text", $additional);
-    $varset->add("note",        "text", $note);
-    $varset->add("nolinks",     "text", $nolinks ? 1 : 0);
-    $db->query("UPDATE links_categories SET ". $varset->makeUPDATE() . " WHERE id=$cid");
+    $varset->add("additional", "text", $additional);
+    $varset->add("note", "text", $note);
+    $varset->add("nolinks", "text", $nolinks ? 1 : 0);
+    $db->query("UPDATE links_categories SET " . $varset->makeUPDATE() . " WHERE id=$cid");
     $r_msg[] = MsgOk(_m('Category data changed'));
 } else {
     Session::page_close();
-    go_url( StateUrl(self_base() . "catedit.php"));
+    go_url(StateUrl(self_base() . "catedit.php"));
 }
 
 // Procces subcategories ---------------------
 
 //subcatIds contains cross delimeted list of selected subcategories ids
-$ids = explode(",",$subcatIds);
+$ids = explode(",", $subcatIds);
 
 //subcatNames contains cross delimeted list of  selected subcategories names
-$names = explode("#",$subcatNames);
+$names = explode("#", $subcatNames);
 
 //subcatStates contains cross delimeted list of selected subcategories states
-$states = explode("#",$subcatStates);
+$states = explode("#", $subcatStates);
 
 // First we delete all not owned (not base) subcategories
 
@@ -259,7 +264,7 @@ $SQL = "SELECT what_id FROM links_cat_cat
 
 $db->query($SQL);                            //    - 'n' was deleted
 
-while ( $db->next_record() ) {
+while ($db->next_record()) {
     $oldBaseSubcat[$db->f('what_id')] = $db->f('what_id');
 }
 
@@ -272,7 +277,7 @@ if ($subcatIds) {
 
     $db->query($SQL);
 
-    while ( $db->next_record() ) {
+    while ($db->next_record()) {
         $newNotBaseSubcat[$db->f('what_id')] = $db->f('what_id');
     }
 }
@@ -283,26 +288,26 @@ if (isset($ids) && is_array($ids) && $subcatIds != "") {
         $pri += 1.0;
 
         // new subcategory
-        if ( $insertedId == 0 ) {
+        if ($insertedId == 0) {
             $foo_id = Links_AddCategory($names[$key], $cid, $cpath);
 
             // adds perms too
             Links_AssignCategory($cid, $foo_id, $pri, LINKS_BASE_CAT, $states[$key]);
-            $r_msg[] = MsgOk( _m('New category created') );
+            $r_msg[] = MsgOk(_m('New category created'));
         }
 
         // existing but not base in here
         elseif ($newNotBaseSubcat[$insertedId]) {
             Links_AssignCategory($cid, $insertedId, $pri, LINKS_NOT_BASE_CAT, $states[$key]);
-            $r_msg[] = MsgOk( _m('Foreign category assigned') );
+            $r_msg[] = MsgOk(_m('Foreign category assigned'));
         }
 
         // existing but base (so assignment must exist before)
         else {
-// commented out - Honza - priorities are not possible, now - all is displayed
-// alphabeticaly. On the other hand, to add priorities just uncoment following
-// line and add order changing arrows to catedit admin interface
-//          ChangeCatPriority($cid, $insertedId, $pri, $states[$key], $names[$key]);
+            // commented out - Honza - priorities are not possible, now - all is displayed
+            // alphabeticaly. On the other hand, to add priorities just uncoment following
+            // line and add order changing arrows to catedit admin interface
+            //          ChangeCatPriority($cid, $insertedId, $pri, $states[$key], $names[$key]);
             ChangeCatState($cid, $insertedId, $states[$key]);
             $oldBaseSubcat[$insertedId] = "";      // reassigned
         }
@@ -310,16 +315,16 @@ if (isset($ids) && is_array($ids) && $subcatIds != "") {
 }
 
 // unassign old base subcategories
-if (isset($oldBaseSubcat) && is_array($oldBaseSubcat) ) {
+if (isset($oldBaseSubcat) && is_array($oldBaseSubcat)) {
     foreach ($oldBaseSubcat as $key => $val) {
-        if ($val=="" ) { // this category was reassigned
+        if ($val == "") { // this category was reassigned
             continue;
         }
-            // Moves this category to another subtree or delete
-            //   (if clear and no link to it)
+        // Moves this category to another subtree or delete
+        //   (if clear and no link to it)
         UnassignBaseCategory($cid, $val);
     }
 }
 
 Session::page_close();
-go_url( StateUrl(self_base() . "index.php"));
+go_url(StateUrl(self_base() . "index.php"));

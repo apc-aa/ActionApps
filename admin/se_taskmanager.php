@@ -1,4 +1,6 @@
-<?php  //slice_id expected
+<?php
+
+//slice_id expected
 /**
  * PHP version 7.2+
  *
@@ -34,7 +36,7 @@ use AA\Manager;
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/actions.php";
 
-if ( !IsSuperadmin() ) {
+if (!IsSuperadmin()) {
     MsgPage(_m("You do not have permission to manage ActionApps tasks"));
     exit;
 }
@@ -65,16 +67,13 @@ if ( !IsSuperadmin() ) {
 //$toexecute->userQueue($test_task, array(), 'AA_Task_Test');
 
 
-// Common manager settings for Tasks 
-$manager = new Manager('task'.AuthGetUid(), GetToexecuteManagerSettings());
+// Common manager settings for Tasks
+$manager = new Manager('task' . AuthGetUid(), GetToexecuteManagerSettings());
 $manager->setRestrictionConds([
     new AA_Condition('execute_after', '==', Toexecute::TOEXECUTE_USER_TASK_TIME),
-    new AA_Condition('aa_user',       '==', AuthGetUid())
-    ]);
+    new AA_Condition('aa_user', '==', AuthGetUid()),
+]);
 
 $apage = new AA_Adminpageutil('sliceadmin', 'taskmanager');
 $apage->setTitle(_m('Manage %1', [_m("User Tasks")]));
 $apage->printWithManager($manager);
-
-
-

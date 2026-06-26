@@ -1,4 +1,5 @@
 <?php
+
 //$Id$
 /*
 Copyright (C) 1999, 2000 Association for Progressive Communications
@@ -28,7 +29,7 @@ use AA\IO\DB\DB_AA;
 use AA\Optimize\AddPolls;
 use AA\Util\InputVars;
 
-if ($_GET['template']['P'] ?? null ) {
+if ($_GET['template']['P'] ?? null) {
     $no_slice_id = true;       // message for init_page.php
 }
 
@@ -73,13 +74,15 @@ try {
     $deleted = InputVars::boolPOST('deleted');
     $update = InputVars::boolPOST('update');
     $cancel = InputVars::boolPOST('cancel');
-    
+
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
+} catch (Exception $e) {
+    AA_Adminpageutil::pageParameterError($e);
+}
 
 
 if ($cancel) {
-    go_url( StateUrl(self_base() . "index.php"));
+    go_url(StateUrl(self_base() . "index.php"));
 }
 
 $err = [];          // error array (Init - just for initializing variable
@@ -89,63 +92,63 @@ $superadmin  = IsSuperadmin();
 $module_id   = AA::$module_id;
 
 if ($template['P']) {        // add module
-    if (!CheckPerms( AuthGetUid(), "aa", AA_ID, PS_ADD)) {
+    if (!CheckPerms(AuthGetUid(), "aa", AA_ID, PS_ADD)) {
         MsgPage(_m("You do not have permissions to add polls"));
         exit;
     }
-} elseif (!CheckPerms( AuthGetUid(), "slice", $module_id, PS_MODP_SETTINGS)) {
+} elseif (!CheckPerms(AuthGetUid(), "slice", $module_id, PS_MODP_SETTINGS)) {
     // edit module
     MsgPage(_m("You do not have permissions to edit this poll"));
     exit;
 }
 
-if ( $insert || $update ) {
+if ($insert || $update) {
     do {
-        if ( !$owner ) {  // insert new owner
-            if ( !( $owner = CreateNewOwner($new_owner, $new_owner_email, $err, $varset))) {
+        if (!$owner) {  // insert new owner
+            if (!($owner = CreateNewOwner($new_owner, $new_owner_email, $err, $varset))) {
                 break;
             }
         }
 
         // validate all fields needed for module table (name, slice_url, lang_file, owner)
-        ValidateModuleFields( $name, $slice_url, $priority, $lang_file, $owner, $err );
-        $deleted  = ( $deleted  ? 1 : 0 );
+        ValidateModuleFields($name, $slice_url, $priority, $lang_file, $owner, $err);
+        $deleted  = ($deleted ? 1 : 0);
 
         // now validate all module specific fields
         ValidateInput("ip_lock_timeout", _m("IP Locking timeout"), $ip_lock_timeout, $err, false, "text");
-        ValidateInput("cookies_prefix",  _m("Cookies prefix"),     $cookies_prefix,  $err, false, "text");
+        ValidateInput("cookies_prefix", _m("Cookies prefix"), $cookies_prefix, $err, false, "text");
         //ValidateInput("params",          _m("Parameters"),         $params,          $err, false, "text");
-        $logging      = ( $logging     ? 1 : 0 );
-        $ip_locking   = ( $ip_locking  ? 1 : 0 );
-        $set_cookies  = ( $set_cookies ? 1 : 0 );
+        $logging      = ($logging ? 1 : 0);
+        $ip_locking   = ($ip_locking ? 1 : 0);
+        $set_cookies  = ($set_cookies ? 1 : 0);
 
-        if ( count($err)) {
+        if (count($err)) {
             break;
         }
 
         // write all fields needed for module table
-        $module_id = WriteModuleFields( ($update && $module_id) ? $module_id : null, $superadmin, 'P', $name, $slice_url, $priority, $lang_file, $owner, $deleted );
+        $module_id = WriteModuleFields(($update && $module_id) ? $module_id : null, $superadmin, 'P', $name, $slice_url, $priority, $lang_file, $owner, $deleted);
 
-        if ( !$module_id ) {      // error?
+        if (!$module_id) {      // error?
             break;
         }
         AA::$module_id = $module_id;
         $slice_id = $module_id;
 
         // now set all module specific settings
-        if ( $update ) {
+        if ($update) {
             $record = ["module_id"        => $module_id,
-                       'status_code'      => 0,   // status_code=0 flags this poll as default for this poll module
-                       "logging"          => $logging,
-                       "ip_locking"       => $ip_locking,
-                       "ip_lock_timeout"  => $ip_lock_timeout,
-                       "set_cookies"      => $set_cookies,
-                       "cookies_prefix"   => $cookies_prefix,
-                       "params"           => '',
-                       "headline"         => '',
-                       "publish_date"     => 0,
-                       "expiry_date"      => 0,
-                       "locked"           => 0,
+                'status_code'      => 0,   // status_code=0 flags this poll as default for this poll module
+                "logging"          => $logging,
+                "ip_locking"       => $ip_locking,
+                "ip_lock_timeout"  => $ip_lock_timeout,
+                "set_cookies"      => $set_cookies,
+                "cookies_prefix"   => $cookies_prefix,
+                "params"           => '',
+                "headline"         => '',
+                "publish_date"     => 0,
+                "expiry_date"      => 0,
+                "locked"           => 0,
             ];
             if ($pollid = DB_AA::select1('id', 'SELECT id FROM polls', [['module_id',$module_id,'l'],['status_code',0]])) {
                 $record['id'] = $pollid;
@@ -159,27 +162,27 @@ if ( $insert || $update ) {
         } else { // insert (add)
             $varset->clear();
 
-            $p_template_id = ( $template['P'] ? q_pack_id(substr($template['P'],1)) : 'PollsTemplate...' );
+            $p_template_id = ($template['P'] ? q_pack_id(substr($template['P'], 1)) : 'PollsTemplate...');
 
             $SQL = "SELECT * FROM polls WHERE (module_id='$p_template_id' AND status_code=0)";
             $db->query($SQL);
-            if ( $db->next_record() ) {
+            if ($db->next_record()) {
                 $varset->resetFromRecord($db->record());
             } else {
                 warn("Bad template id");
                 $varset->resetFromRecord(AddPolls::POLLS_DEFAULT_VALUES);
             }
-            $varset->set("id",             new_id(),        "text");
-            $varset->set("module_id",      $module_id,      "unpacked");
-            $varset->set("logging",        $logging,        "number");
-            $varset->set("ip_locking",     $ip_locking,     "number");
-            $varset->set("ip_lock_timeout",$ip_lock_timeout,"number");
-            $varset->set("set_cookies",    $set_cookies,    "number");
+            $varset->set("id", new_id(), "text");
+            $varset->set("module_id", $module_id, "unpacked");
+            $varset->set("logging", $logging, "number");
+            $varset->set("ip_locking", $ip_locking, "number");
+            $varset->set("ip_lock_timeout", $ip_lock_timeout, "number");
+            $varset->set("set_cookies", $set_cookies, "number");
             $varset->set("cookies_prefix", $cookies_prefix, "text");
-            $varset->set("status_code",    0,               "number");
-            $varset->set("headline",       '',              "text");
-            $varset->set("params",         '',              "text");
-            $varset->set("publish_date",   now(),           "number");
+            $varset->set("status_code", 0, "number");
+            $varset->set("headline", '', "text");
+            $varset->set("params", '', "text");
+            $varset->set("publish_date", now(), "number");
 
             // create new poll
             $varset->doInsert('polls');
@@ -187,38 +190,38 @@ if ( $insert || $update ) {
             // copy design themes...
             $SQL = "SELECT * FROM polls_design WHERE module_id='$p_template_id'";
             $db->query($SQL);
-            while ( $db->next_record() ) {
+            while ($db->next_record()) {
                 $varset->resetFromRecord($db->record());
-                $varset->set("module_id", $module_id, "unpacked" );
-                $varset->set('id',        new_id(),   'text');
+                $varset->set("module_id", $module_id, "unpacked");
+                $varset->set('id', new_id(), 'text');
                 $varset->doInsert('polls_design');
             }
         }
         AA::Pagecache()->invalidateFor($module_id);  // invalidate old cached values for this slice
-    } while(false);
+    } while (false);
 
-    if ( !count($err) ) {
+    if (!count($err)) {
         go_return_or_url(self_base() . "modedit.php", 0, 0);
     }
 }
 
 // And the form -----------------------------------------------------
 
-$source_id   = ($template['P'] ? substr($template['P'],1) : $module_id );
+$source_id   = ($template['P'] ? substr($template['P'], 1) : $module_id);
 
 // load module specific data
-[ $status_code, $headline, $publish_date, $expiry_date, $locked, $logging, $ip_locking, $ip_lock_timeout, $set_cookies, $cookies_prefix, $design_id, $params] = array_values((array)DB_AA::select1('', "SELECT status_code, headline, publish_date, expiry_date, locked, logging, ip_locking, ip_lock_timeout, set_cookies, cookies_prefix, design_id, params FROM polls", [
+[ $status_code, $headline, $publish_date, $expiry_date, $locked, $logging, $ip_locking, $ip_lock_timeout, $set_cookies, $cookies_prefix, $design_id, $params] = array_values((array) DB_AA::select1('', "SELECT status_code, headline, publish_date, expiry_date, locked, logging, ip_locking, ip_lock_timeout, set_cookies, cookies_prefix, design_id, params FROM polls", [
     ['module_id', $source_id, 'l'],
-    ['status_code', 0]
+    ['status_code', 0],
 ]));
 
-if ( $template['P'] ) {
+if ($template['P']) {
     $form_buttons = [
         'insert',
-        'template[P]' => ['type'=>"hidden", 'value'=> $template['P']]
+        'template[P]' => ['type' => "hidden", 'value' => $template['P']],
     ];
 } else {
-    $form_buttons = ['update',  "update"  => ['type' => 'hidden', 'value'=>'1']];
+    $form_buttons = ['update',  "update"  => ['type' => 'hidden', 'value' => '1']];
 }
 
 $apage = new AA_Adminpageutil('modadmin', 'main');
@@ -227,18 +230,18 @@ $apage->printHead($err, $Msg);
 
 FrmTabCaption(_m("Polls Module general data"), $form_buttons);
 
-$marr = RenderModuleFieldsForm($source_id, $superadmin, (bool)$template['P'], (bool)count($err), compact('name', 'slice_url', 'priority', 'lang_file', 'owner', 'deleted'), $new_owner, $new_owner_email);
-$lang_file = rtrim($marr[3],'3');   // trim for old php3 lang file extension
+$marr = RenderModuleFieldsForm($source_id, $superadmin, (bool) $template['P'], (bool) count($err), compact('name', 'slice_url', 'priority', 'lang_file', 'owner', 'deleted'), $new_owner, $new_owner_email);
+$lang_file = rtrim($marr[3], '3');   // trim for old php3 lang file extension
 
-FrmInputSelect("lang_file", _m("Used Language File"), AA_Moduleregistry::info('P','langs'), $lang_file);
+FrmInputSelect("lang_file", _m("Used Language File"), AA_Moduleregistry::info('P', 'langs'), $lang_file);
 
 // module specific...
 
 FrmTabSeparator(_m("Defaults for polls in this module"));
-FrmInputChBox("logging",      _m("Use logging"),        $logging);
-FrmInputChBox("ip_locking",    _m("Use IP locking"),     $ip_locking);
+FrmInputChBox("logging", _m("Use logging"), $logging);
+FrmInputChBox("ip_locking", _m("Use IP locking"), $ip_locking);
 FrmInputNumber("ip_lock_timeout", _m("IP Locking timeout"), $ip_lock_timeout);
-FrmInputChBox("set_cookies",   _m("Use cookies"),        $set_cookies);
+FrmInputChBox("set_cookies", _m("Use cookies"), $set_cookies);
 FrmInputText("cookies_prefix", _m("Cookies prefix"), $cookies_prefix);
 //    FrmInputText("params",        _m("Parameters"),         $params);     // @todo - add paramwizard
 FrmTabEnd($form_buttons);

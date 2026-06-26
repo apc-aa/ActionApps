@@ -1,4 +1,5 @@
 <?php
+
 //$Id$
 /*
 Copyright (C) 1999, 2000 Association for Progressive Communications
@@ -28,20 +29,20 @@ require_once __DIR__ . "/../../include/init_page.php";
 require_once __DIR__ . "/../../include/varset.php";
 require_once __DIR__ . "/../../include/view.php";
 
-if (!is_object( $db )) {
+if (!is_object($db)) {
     $db = getDB();
 }
-$db->query("SELECT * FROM jump WHERE slice_id = ".xpack_id($slice_id));
+$db->query("SELECT * FROM jump WHERE slice_id = " . xpack_id($slice_id));
 if ($db->next_record()) {
     $dest       = $db->f("destination");
     $dest      .= str_contains($dest, "?") ? "&" : "?";
     $instal_url = AA_INSTAL_PATH;
-    $url        = StateUrl($instal_url.$dest);
+    $url        = StateUrl($instal_url . $dest);
     $change_id  = $db->f("dest_slice_id");
     if ($change_id) {
         $url .= "&jumping=1&change_id=" . unpack_id($change_id);
     }
-    go_url ($url);
+    go_url($url);
 } else {
     echo "<html><body>Something is wrong. I didn't find any record for this slice in the <b>jump</b> table.</body></html>";
 }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * PHP version 7.2+
  *
@@ -44,7 +45,9 @@ try {
     $for_module = InputVars::stringPOST('for_module');
     $show       = InputVars::boolGETPOST('show');
     $stats_code = InputVars::stringGETPOST('stats');       // deep-link granularity, e.g. 'days' or 'days,weeks'
-} catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
+} catch (Exception $e) {
+    AA_Adminpageutil::pageParameterError($e);
+}
 
 if (!IfSlPerm(PS_EDIT_ALL_ITEMS)) {
     AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php", _m("You do not have permissions to see statistics"), "admin");
@@ -57,13 +60,13 @@ $item_count = $item_count ?: 5;
 //   var opts = { lineWrapping:true, matchBrackets: true, matchTags: true, viewportMargin: 10000, mode: "htmlmixed" };
 //   window.cm_items  = CodeMirror.fromTextArea(document.getElementById("items"), opts);
 //   ';
-$apage = new AA_Adminpageutil('sliceadmin','statistics');
+$apage = new AA_Adminpageutil('sliceadmin', 'statistics');
 $apage->setTitle(_m("Admin - Statistics"));
 //$apage->addRequire($script2run, 'AA_Req_Load');
 $apage->addRequire('chartjs@4');
 $apage->printHead();
 
-$form_buttons = ["show" => ["type"=>"submit", "value"=>_m("Show")]];
+$form_buttons = ["show" => ["type" => "submit", "value" => _m("Show")]];
 
 define('HITCOUNTER_OPTIONS', [
     'years'    => _m('years'),
@@ -76,7 +79,7 @@ define('HITCOUNTER_OPTIONS', [
     'weekdays' => _m('week-days'),
 ]);
 
-define ('ITEM_SETS', [
+define('ITEM_SETS', [
     'exact'      => _m('Specified below'),
     'all'        => _m('Top all time'),
     'year'       => _m('Top this year'),
@@ -132,17 +135,17 @@ if ($show && !is_array($_POST['aa'] ?? null)) {
     }
 }
 
-echo $w->getHtml(new AA_Property( 'stats', _m('Stats to show'), 'string', true), $content);
+echo $w->getHtml(new AA_Property('stats', _m('Stats to show'), 'string', true), $content);
 
 FrmTabEnd($form_buttons);
 
 if ($show) {
 
-    echo '<br><br><div class=aa-tab-title>'._m('Display Statistics for Item').'</div>';
+    echo '<br><br><div class=aa-tab-title>' . _m('Display Statistics for Item') . '</div>';
 
     $slices = [AA::$module_id];
 
-// determine, which items to show
+    // determine, which items to show
     $items = match ($item_set) {
         'all'        => implode('-', array_keys(HitcounterStats::getStats($slices, 0, 0, true, $item_count))),
         'year'       => implode('-', array_keys(HitcounterStats::getStats($slices, time() - 60 * 60 * 24 * 365, 0, true, $item_count))),
@@ -165,7 +168,7 @@ if ($show) {
             $template .= "<h2>$name</h2>\n{hitcounter:$code:$items:$from}\n";
         }
         $template .= '</div>';
-        $template .= '<div>'._m('Items found').': '. StrExp('count', [$items]).'</div>';
+        $template .= '<div>' . _m('Items found') . ': ' . StrExp('count', [$items]) . '</div>';
         //FrmStaticText(_m('Display Statistics for Item'), AA::Un($template), '', '', false);
         echo AA::Un($template);
 

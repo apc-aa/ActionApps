@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Alerts admin: Email templates.
  *
@@ -48,7 +49,9 @@ if (!IfSlPerm(PS_USERS)) {
 
 try {
     $id = InputVars::stringGET('id');   // set when editing a single email (Manager reads it too)
-} catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
+} catch (Exception $e) {
+    AA_Adminpageutil::pageParameterError($e);
+}
 
 $managed = GetMailManaged();   // owner_module_id = the user's modules (as in admin/aa_emails.php)
 // Owner column - resolve owner_module_id to the owning module/slice name.
@@ -74,7 +77,7 @@ $myslices = GetUserSlices();
 if (is_array($myslices)) {
     $slice_ids = array_map('pack_id', array_keys($myslices));
     $manager->setRestrictionConds([
-        new AA_Condition('owner_module_id', '==', $slice_ids ?: ['__none__'])
+        new AA_Condition('owner_module_id', '==', $slice_ids ?: ['__none__']),
     ]);
 }
 

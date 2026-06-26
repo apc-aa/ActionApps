@@ -1,4 +1,5 @@
 <?php
+
 /**
  * constants definition file for links module
  *
@@ -54,54 +55,54 @@ const LINKS_NOT_BASE_CAT = 'n';
 function GetLinkFields(): Searchfields
 {  // function - we need trnslate _m() on use (not at include time)
     $searchfields = new AA\Util\Searchfields();
-                   //   id                     $name,                        $field,                 operators='text', $table=false, $search_pri=false, $order_pri=false
-    $searchfields->add('id'                  , _m('Id'),                    'links_links.id',                'numeric', false,          0,    0);
-    $searchfields->add('name'                , _m('Name'),                  'links_links.name',              'text',    false,       1002, 1002);
-    $searchfields->add('original_name'       , _m('Original name'),         'links_links.original_name',     'text',    false,       1004, 1004);
-    $searchfields->add('description'         , _m('Description'),           'links_links.description',       'text',    false,       1005, 1005);
-    $searchfields->add('type'                , _m('Link type'),             'links_links.type',              'text',    false,       2036, 2036);
-    $searchfields->add('rate'                , _m('Rate'),                  'links_links.rate',              'numeric', false,       3041, 3041);
-    $searchfields->add('votes'               , _m('Votes'),                 'links_links.votes',             'numeric', false,       3042, 3042);
-    $searchfields->add('created_by'          , _m('Author'),                'links_links.created_by',        'text',    false,       1020, 1020);
-    $searchfields->add('created'             , _m('Insert date'),           'links_links.created',           'date',    false,       1014, 1014);
-    $searchfields->add('edited_by'           , _m('Editor'),                'links_links.edited_by',         'text',    false,       1024, 1024);
-    $searchfields->add('last_edit'           , _m('Last edit date'),        'links_links.last_edit',         'date',    false,       1016, 1016);
-    $searchfields->add('checked_by'          , _m('Revised by'),            'links_links.checked_by',        'text',    false,       1026, 1026);
-    $searchfields->add('checked'             , _m('Revision date'),         'links_links.checked',           'date',    false,       1018, 1018);
-    $searchfields->add('initiator'           , _m('E-mail'),                'links_links.initiator',         'text',    false,       1022, 1022);
-    $searchfields->add('url'                 , _m('Url'),                   'links_links.url',               'text',    false,       1006, 1006);
-    $searchfields->add('voted'               , _m('Last vote time'),        'links_links.voted',             'date',    false,       3044, 3044);
-    $searchfields->add('flag'                , _m('Flag'),                  'links_links.flag',              'numeric', false,          0,    0);
-    $searchfields->add('note'                , _m('Editor\'s note'),        'links_links.note',              'text',    false,       1028, 1028);
-    $searchfields->add('org_city'            , _m('Organization city'),     'links_links.org_city',          'text',    false,          0,    0);
-    $searchfields->add('org_street'          , _m('Organization street'),   'links_links.org_street',        'text',    false,          0,    0);
-    $searchfields->add('org_post_code'       , _m('Organization post code'),'links_links.org_post_code',     'text',    false,          0,    0);
-    $searchfields->add('org_phone'           , _m('Organization phone'),    'links_links.org_phone',         'text',    false,          0,    0);
-    $searchfields->add('org_fax'             , _m('Organization fax'),      'links_links.org_fax',           'text',    false,          0,    0);
-    $searchfields->add('org_email'           , _m('Organization e-mail'),   'links_links.org_email',         'text',    false,          0,    0);
-    $searchfields->add('folder'              , _m('Folder'),                'links_links.folder',            'numeric', false,          0,    0);
-    $searchfields->add('validated'           , _m('Last validation date'),  'links_links.validated',         'date',    false,          0,    0);
-    $searchfields->add('valid_codes'         , _m('Validation codes'),      'links_links.valid_codes',       'text',    false,          0,    0);
-    $searchfields->add('valid_rank'          , _m('Validity Rank'),         'links_links.valid_rank',        'numeric', false,       3040, 3040);
-    $searchfields->add('reg_id'              , _m('Region id'),             'links_regions.id',              'numeric', 'regions',      0,    0);
-    $searchfields->add('reg_name'            , _m('Region name'),           'links_regions.name',            'text',    'regions',   1008, 1008);
-    $searchfields->add('reg_level'           , _m('Region level'),          'links_regions.level',           'numeric', 'regions',      0,    0);
-    $searchfields->add('lang_id'             , _m('Language id'),           'links_languages.id',            'numeric', 'languages',    0,    0);
-    $searchfields->add('lang_name'           , _m('Language'),              'links_languages.name',          'text',    'languages', 1010, 1010);
-    $searchfields->add('lang_short_name'     , _m('Language short name'),   'links_languages.short_name',    'text',    'languages', 1012, 1012);
-    $searchfields->add('cat_id'              , _m('Category id'),           'links_link_cat.category_id',    'numeric', false,          0,    0);
-    $searchfields->add('cat_name'            , _m('Category name'),         'links_categories.name',         'text',    false,       2030, 2030);
-    $searchfields->add('cat_deleted'         , _m('Category deleted'),      'links_categories.deleted',      'numeric', false,          0,    0);
-    $searchfields->add('cat_path'            , _m('Category path'),         'links_categories.path',         'text',    false,          0,    0);
-    $searchfields->add('cat_link_count'      , _m('Category link count'),   'links_categories.link_count',   'numeric', false,       2038, 2038);
-    $searchfields->add('cat_description'     , _m('Category description'),  'links_categories.description',  'text',    false,       2032, 2032);
-    $searchfields->add('cat_note'            , _m('Category editor\'s note'),'links_categories.note',        'text',    false,       2034, 2034);
-    $searchfields->add('cat_base'            , _m('Base'),                  'links_link_cat.base',           'text',    false,          0,    0);
-    $searchfields->add('cat_state'           , _m('State'),                 'links_link_cat.state',          'text',    false,          0,    0);
-    $searchfields->add('cat_proposal'        , _m('Change proposal'),       'links_link_cat.proposal',       'numeric', false,          0,    0);
-    $searchfields->add('cat_proposal_delete' , _m('To be deleted'),         'links_link_cat.proposal_delete','numeric', false,          0,    0);
-    $searchfields->add('cat_priority'        , _m('Priority'),              'links_link_cat.priority',       'numeric', false,          0,    0);
-    $searchfields->add('change'              , _m('Change'),                'links_changes.rejected',        'numeric', 'changes',      0,    0);
+    //   id                     $name,                        $field,                 operators='text', $table=false, $search_pri=false, $order_pri=false
+    $searchfields->add('id', _m('Id'), 'links_links.id', 'numeric', false, 0, 0);
+    $searchfields->add('name', _m('Name'), 'links_links.name', 'text', false, 1002, 1002);
+    $searchfields->add('original_name', _m('Original name'), 'links_links.original_name', 'text', false, 1004, 1004);
+    $searchfields->add('description', _m('Description'), 'links_links.description', 'text', false, 1005, 1005);
+    $searchfields->add('type', _m('Link type'), 'links_links.type', 'text', false, 2036, 2036);
+    $searchfields->add('rate', _m('Rate'), 'links_links.rate', 'numeric', false, 3041, 3041);
+    $searchfields->add('votes', _m('Votes'), 'links_links.votes', 'numeric', false, 3042, 3042);
+    $searchfields->add('created_by', _m('Author'), 'links_links.created_by', 'text', false, 1020, 1020);
+    $searchfields->add('created', _m('Insert date'), 'links_links.created', 'date', false, 1014, 1014);
+    $searchfields->add('edited_by', _m('Editor'), 'links_links.edited_by', 'text', false, 1024, 1024);
+    $searchfields->add('last_edit', _m('Last edit date'), 'links_links.last_edit', 'date', false, 1016, 1016);
+    $searchfields->add('checked_by', _m('Revised by'), 'links_links.checked_by', 'text', false, 1026, 1026);
+    $searchfields->add('checked', _m('Revision date'), 'links_links.checked', 'date', false, 1018, 1018);
+    $searchfields->add('initiator', _m('E-mail'), 'links_links.initiator', 'text', false, 1022, 1022);
+    $searchfields->add('url', _m('Url'), 'links_links.url', 'text', false, 1006, 1006);
+    $searchfields->add('voted', _m('Last vote time'), 'links_links.voted', 'date', false, 3044, 3044);
+    $searchfields->add('flag', _m('Flag'), 'links_links.flag', 'numeric', false, 0, 0);
+    $searchfields->add('note', _m('Editor\'s note'), 'links_links.note', 'text', false, 1028, 1028);
+    $searchfields->add('org_city', _m('Organization city'), 'links_links.org_city', 'text', false, 0, 0);
+    $searchfields->add('org_street', _m('Organization street'), 'links_links.org_street', 'text', false, 0, 0);
+    $searchfields->add('org_post_code', _m('Organization post code'), 'links_links.org_post_code', 'text', false, 0, 0);
+    $searchfields->add('org_phone', _m('Organization phone'), 'links_links.org_phone', 'text', false, 0, 0);
+    $searchfields->add('org_fax', _m('Organization fax'), 'links_links.org_fax', 'text', false, 0, 0);
+    $searchfields->add('org_email', _m('Organization e-mail'), 'links_links.org_email', 'text', false, 0, 0);
+    $searchfields->add('folder', _m('Folder'), 'links_links.folder', 'numeric', false, 0, 0);
+    $searchfields->add('validated', _m('Last validation date'), 'links_links.validated', 'date', false, 0, 0);
+    $searchfields->add('valid_codes', _m('Validation codes'), 'links_links.valid_codes', 'text', false, 0, 0);
+    $searchfields->add('valid_rank', _m('Validity Rank'), 'links_links.valid_rank', 'numeric', false, 3040, 3040);
+    $searchfields->add('reg_id', _m('Region id'), 'links_regions.id', 'numeric', 'regions', 0, 0);
+    $searchfields->add('reg_name', _m('Region name'), 'links_regions.name', 'text', 'regions', 1008, 1008);
+    $searchfields->add('reg_level', _m('Region level'), 'links_regions.level', 'numeric', 'regions', 0, 0);
+    $searchfields->add('lang_id', _m('Language id'), 'links_languages.id', 'numeric', 'languages', 0, 0);
+    $searchfields->add('lang_name', _m('Language'), 'links_languages.name', 'text', 'languages', 1010, 1010);
+    $searchfields->add('lang_short_name', _m('Language short name'), 'links_languages.short_name', 'text', 'languages', 1012, 1012);
+    $searchfields->add('cat_id', _m('Category id'), 'links_link_cat.category_id', 'numeric', false, 0, 0);
+    $searchfields->add('cat_name', _m('Category name'), 'links_categories.name', 'text', false, 2030, 2030);
+    $searchfields->add('cat_deleted', _m('Category deleted'), 'links_categories.deleted', 'numeric', false, 0, 0);
+    $searchfields->add('cat_path', _m('Category path'), 'links_categories.path', 'text', false, 0, 0);
+    $searchfields->add('cat_link_count', _m('Category link count'), 'links_categories.link_count', 'numeric', false, 2038, 2038);
+    $searchfields->add('cat_description', _m('Category description'), 'links_categories.description', 'text', false, 2032, 2032);
+    $searchfields->add('cat_note', _m('Category editor\'s note'), 'links_categories.note', 'text', false, 2034, 2034);
+    $searchfields->add('cat_base', _m('Base'), 'links_link_cat.base', 'text', false, 0, 0);
+    $searchfields->add('cat_state', _m('State'), 'links_link_cat.state', 'text', false, 0, 0);
+    $searchfields->add('cat_proposal', _m('Change proposal'), 'links_link_cat.proposal', 'numeric', false, 0, 0);
+    $searchfields->add('cat_proposal_delete', _m('To be deleted'), 'links_link_cat.proposal_delete', 'numeric', false, 0, 0);
+    $searchfields->add('cat_priority', _m('Priority'), 'links_link_cat.priority', 'numeric', false, 0, 0);
+    $searchfields->add('change', _m('Change'), 'links_changes.rejected', 'numeric', 'changes', 0, 0);
     return $searchfields;
 }
 
@@ -109,10 +110,11 @@ function GetLinkFields(): Searchfields
 /** cached link aliases
  *  @usage new AA_Aliases(new AA_Aliasgenerator_Link())
  */
-class AA_Aliasgenerator_Link extends AbstractAliasgenerator {
-
-    public static function getAliasesFromParams(array $params): AA_Aliases {
-        $aliases = new AA_Aliases;
+class AA_Aliasgenerator_Link extends AbstractAliasgenerator
+{
+    public static function getAliasesFromParams(array $params): AA_Aliases
+    {
+        $aliases = new AA_Aliases();
 
         //  Standard aliases
         $aliases->addAlias(new AA_Alias('_#LINK_ID_', 'f_t', 'id', _m('Link id')));
@@ -167,24 +169,25 @@ class AA_Aliasgenerator_Link extends AbstractAliasgenerator {
 function GetCategoryFields(): array
 {  // function - we need trnslate _m() on use (not at include time)
     return [
-     'id'          => GetFieldDef( _m('Id'),          'links_categories.id',          'numeric', false,           10, 10),
-     'name'        => GetFieldDef( _m('Name'),        'links_categories.name',        'text',    false,           20, 20),
-     'path'        => GetFieldDef( _m('Path'),        'links_categories.path',        'text',    false,           30, 30),
-     'link_count'  => GetFieldDef( _m('Link Count'),  'links_categories.link_count',  'numeric', false,           40, 40),
-     'description' => GetFieldDef( _m('Description'), 'links_categories.description', 'text',    false,           50, 50),
-     'note'        => GetFieldDef( _m('Note'),        'links_categories.note',        'text',    false,           60, 60),
-     'priority'    => GetFieldDef( _m('Priority'),    'links_cat_cat.priority',       'numeric', 'links_cat_cat', 70, 70),
-     'state'       => GetFieldDef( _m('State'),       'links_cat_cat.state',          'text',    'links_cat_cat', 80, 80)
+        'id'          => GetFieldDef(_m('Id'), 'links_categories.id', 'numeric', false, 10, 10),
+        'name'        => GetFieldDef(_m('Name'), 'links_categories.name', 'text', false, 20, 20),
+        'path'        => GetFieldDef(_m('Path'), 'links_categories.path', 'text', false, 30, 30),
+        'link_count'  => GetFieldDef(_m('Link Count'), 'links_categories.link_count', 'numeric', false, 40, 40),
+        'description' => GetFieldDef(_m('Description'), 'links_categories.description', 'text', false, 50, 50),
+        'note'        => GetFieldDef(_m('Note'), 'links_categories.note', 'text', false, 60, 60),
+        'priority'    => GetFieldDef(_m('Priority'), 'links_cat_cat.priority', 'numeric', 'links_cat_cat', 70, 70),
+        'state'       => GetFieldDef(_m('State'), 'links_cat_cat.state', 'text', 'links_cat_cat', 80, 80),
     ];
 }
 
 /** cached category aliases
  *  @usage new AA_Aliases(new AA_Aliasgenerator_Category())
  */
-class AA_Aliasgenerator_Category extends AbstractAliasgenerator {
-
-    public static function getAliasesFromParams(array $params): AA_Aliases {
-        $aliases = new AA_Aliases;
+class AA_Aliasgenerator_Category extends AbstractAliasgenerator
+{
+    public static function getAliasesFromParams(array $params): AA_Aliases
+    {
+        $aliases = new AA_Aliases();
 
         //  Standard aliases
         $aliases->addAlias(new AA_Alias('_#CATEG_ID', 'f_t', 'id', _m('Category id')));
@@ -200,5 +203,3 @@ class AA_Aliasgenerator_Category extends AbstractAliasgenerator {
         return $aliases;
     }
 }
-
-

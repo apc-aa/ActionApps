@@ -1,4 +1,5 @@
 <?php
+
 /**
 * go.php for finding links to associated items (fed from...)
 *
@@ -35,11 +36,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
 // ----- input variables normalization --------------------------------
-$sh_itm = (string)$_REQUEST['sh_itm'];
-$url    = (string)$_REQUEST['url'];
+$sh_itm = (string) $_REQUEST['sh_itm'];
+$url    = (string) $_REQUEST['url'];
 
 /** APC-AA configuration file */
-require_once __DIR__."/./include/config.php";
+require_once __DIR__ . "/./include/config.php";
 /** Set of useful functions used on most pages */
 require_once __DIR__ . "/include/util.php";
 /** Main include file for using session management function on a page */
@@ -47,12 +48,11 @@ require_once __DIR__ . "/include/locsess.php";
 
 use AA\IO\DB\DB_AA;
 
-
-if ( !$sh_itm ) {
+if (!$sh_itm) {
     exit;
 }
 
-if (!is_object( $db )) {
+if (!is_object($db)) {
     $db = getDB();
 }
 $p_id = xpack_id($sh_itm);
@@ -82,8 +82,8 @@ if ($db->next_record()) {
     }
 }
 
-if ( !$url ) {  // url can be given by parameter
+if (!$url) {  // url can be given by parameter
     $url = $slice_url;
 }
 
-go_url(con_url($url,"sh_itm=$item"));
+go_url(con_url($url, "sh_itm=$item"));

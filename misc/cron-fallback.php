@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Runner endpoint for the post-response cron fallback.
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**  um_passwd.php - change password for user
  *    expected $slice_id for edit slice
  *    optionally $Msg to show under <h1>Headline</h1> (typically: update successful)
@@ -46,13 +47,15 @@ try {
     $user_surname = InputVars::stringSlashedPOST('user_surname'); // alpha
     $update = InputVars::boolPOST('update');
     $cancel = InputVars::boolPOST('cancel');
-    
+
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
+} catch (Exception $e) {
+    AA_Adminpageutil::pageParameterError($e);
+}
 
 
 if ($cancel) {
-    go_url( StateUrl(self_base() . "index.php"));
+    go_url(StateUrl(self_base() . "index.php"));
 }
 
 if (!IfSlPerm(PS_EDIT_SELF_USER_DATA) || !AA::$perm->isUserEditable(AuthGetUid())) {
@@ -67,16 +70,16 @@ $user_data = AA::$perm->getIDsInfo(AuthGetUid());
 if ($update) {
     // Procces user data -------------------------------------------------------
     ValidateInput("user_password_old", _m("Current password"), $user_password_old, $err, true, "password");
-    if ( !AA::$perm->authenticateUsername(AuthGetUname(), $user_password_old, '') ) {
+    if (!AA::$perm->authenticateUsername(AuthGetUname(), $user_password_old, '')) {
         $err['Password'] = MsgErr(_m("Error in current password - password is not changed"));
     }
-    $userrecord = FillUserRecord($err, 'nOnEwlOgiN', $user_surname, $user_firstname, $user_password1, $user_password2,  $user_mail1);
+    $userrecord = FillUserRecord($err, 'nOnEwlOgiN', $user_surname, $user_firstname, $user_password1, $user_password2, $user_mail1);
 
-    if ( !count($err)) {
+    if (!count($err)) {
         ChangeUserData($err, AuthGetUid(), $userrecord, 'AA_NO_CHANGE');
     }
 
-    if ( !count($err) ) {
+    if (!count($err)) {
         $Msg = MsgOk(_m("User data modified"));
     }
 } elseif (is_array($user_data)) {
@@ -88,7 +91,7 @@ if ($update) {
     // unchanged password
     $user_password2 = "nOnEwpAsswD";
     // unchanged password
-    if ( is_array($user_data['mails'])) {
+    if (is_array($user_data['mails'])) {
         $user_mail1 = $user_data['mails'][0];
         $user_mail2 = $user_data['mails'][1];
         $user_mail3 = $user_data['mails'][2];
@@ -102,7 +105,7 @@ $apage->printHead($err, $Msg);
 
 $form_buttons = [
     "update",
-                       "cancel" => ["url"=>"index.php"]
+    "cancel" => ["url" => "index.php"],
 ];
 
 FrmTabCaption(_m("Edit User"));
@@ -113,7 +116,7 @@ FrmInputPwd("user_password1", _m("Password"), $user_password1);
 FrmInputPwd("user_password2", _m("Retype password"), $user_password2);
 FrmInputText("user_firstname", _m("First name"), $user_firstname, 50, 50, true);
 FrmInputText("user_surname", _m("Surname"), $user_surname, 50, 50, true);
-FrmInputEmail("user_mail1",    _m("E-mail")." 1",    $user_mail1, 50, 50, true);
+FrmInputEmail("user_mail1", _m("E-mail") . " 1", $user_mail1, 50, 50, true);
 //  FrmInputEmail("user_mail2", _m("E-mail")." 2",    $user_mail2, 50, 50, false);  // removed for compatibility with perm_sql.php
 //  FrmInputEmail("user_mail3", _m("E-mail")." 3",    $user_mail3, 50, 50, false);
 //  FrmInputChBox("user_super", _m("Superadmin account"), $user_super, false, "", 1, false); // can't be changed by user itself

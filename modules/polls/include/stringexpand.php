@@ -32,25 +32,26 @@
  *  @param $poll_id       - id of the poll (not poll module, but poll as one question)
  *  @param $aa_expression - field from 'polls' table or any other expression
  */
-class AA_Stringexpand_Poll extends AA_Stringexpand {
-
+class AA_Stringexpand_Poll extends AA_Stringexpand
+{
     /** expand function
      * @param $ids_string
      * @param $expression
      * @return string
      */
-    function expand($ids_string='', $expression=''): string {
+    public function expand($ids_string = '', $expression = ''): string
+    {
         $ids     = explode_ids($ids_string);
         $results = [];
-        foreach ( $ids as $poll_id ) {
-            if ( $poll_id ) {
+        foreach ($ids as $poll_id) {
+            if ($poll_id) {
                 $poll = AA_Polls::getPoll($poll_id);
                 if ($poll && $expression) {
                     $results[$poll_id] = $poll->unalias($expression);
                 }
             }
         }
-        return implode('',$results);
+        return implode('', $results);
     }
 }
 
@@ -60,29 +61,27 @@ class AA_Stringexpand_Poll extends AA_Stringexpand {
  *  $max which could be used as image width, ...
  *  @param $max
  */
-class AA_Stringexpand_Poll_Share extends AA_Stringexpand_Nevercache {
-
+class AA_Stringexpand_Poll_Share extends AA_Stringexpand_Nevercache
+{
     /** expand function
      * @param $max - maximum the votes for the answer could reach, default is 100
      */
-    function expand($max=''): string
+    public function expand($max = ''): string
     {
         $poll     = AA_Polls::getPoll($this->item->getVal('poll_id'));
         $sum      = $poll->getVotesSum();
         $quotient = $max ?: 100;
 
-        return $sum==0 ? 0 : round(($this->item->getVal('votes')/$sum) * $quotient);
+        return $sum == 0 ? 0 : round(($this->item->getVal('votes') / $sum) * $quotient);
     }
 }
 
 /** Expands {poll_sum} with number of all votes in this poll */
-class AA_Stringexpand_Poll_Sum extends AA_Stringexpand_Nevercache {
-
+class AA_Stringexpand_Poll_Sum extends AA_Stringexpand_Nevercache
+{
     /** expand function - number of all votes in this poll */
-    function expand(): string
+    public function expand(): string
     {
         return AA_Polls::getPoll($this->item->getVal('poll_id'))->getVotesSum();
     }
 }
-
-

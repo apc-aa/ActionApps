@@ -1,4 +1,5 @@
 <?php
+
 /**
  * The file is used to convert file character encoding to another one.
  * Usage:
@@ -35,9 +36,9 @@ https://www.apc.org/
 require_once __DIR__ . "/../../include/convert_charset.class.php";
 
 $from   = ($_REQUEST['from'] ?: 'iso-8859-1');
-$to     = ($_REQUEST['to']   ?: 'utf-8');
+$to     = ($_REQUEST['to'] ?: 'utf-8');
 $source = $_REQUEST['source'];
-if ( !$source ) {
+if (!$source) {
     echo "<--! source not specified -->";
     exit;
 }
@@ -47,12 +48,5 @@ if (!str_starts_with($source, 'http://') && !str_starts_with($source, 'https://'
     exit;
 }
 
-$encoder = new ConvertCharset;
+$encoder = new ConvertCharset();
 echo $encoder->Convert(file_get_contents($source), $from, $to);
-
-
-
-
-
-
-

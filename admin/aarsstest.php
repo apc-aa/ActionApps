@@ -1,4 +1,5 @@
 <?php
+
 /**
  * PHP version 7.2+
  *
@@ -52,4 +53,3 @@ $manager = new Manager('rsstest', $managed);
 //]);
 
 $apage->printWithManager($manager);
-

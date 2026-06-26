@@ -1,4 +1,5 @@
 <?php
+
 /** se_inter_import3.php - Store feeds into tables
  *
  *   $slice_id
@@ -47,8 +48,10 @@ try {
     $remote_node_name = InputVars::stringPOST('remote_node_name');
     $exact_copy       = InputVars::boolPOST('exact_copy');
     $aa_rss           = unserialize(InputVars::stringPOST('aa'), ['allowed_classes' => false]);
-    
-} catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
+
+} catch (Exception $e) {
+    AA_Adminpageutil::pageParameterError($e);
+}
 
 
 $l_categs = FeedUtil::GetGroupConstants(AA::$module_id);        // get all categories belong to local slice
@@ -65,53 +68,53 @@ foreach ($f_slices as $f_slice) {
     }
 
     $data = ['slice_id'          => AA::$module_id,
-             'remote_slice_id'   => $remote_slice_id,
-             'remote_slice_name' => $channel['title'],
-             'user_id'           => AuthGetUname(),
-             'node_name'         => $remote_node_name,
-             'newest_item'       => FeedUtil::unixstamp_to_iso8601(time()),
-             'feed_mode'         => ($exact_copy ? 'exact' : '')
+        'remote_slice_id'   => $remote_slice_id,
+        'remote_slice_name' => $channel['title'],
+        'user_id'           => AuthGetUname(),
+        'node_name'         => $remote_node_name,
+        'newest_item'       => FeedUtil::unixstamp_to_iso8601(time()),
+        'feed_mode'         => ($exact_copy ? 'exact' : ''),
     ];
 
-    if ( !($feed_id = AA::Metabase()->doInsert('external_feeds', $data)) ) {
+    if (!($feed_id = AA::Metabase()->doInsert('external_feeds', $data))) {
         $err["DB"] .= MsgErr("Can't add external import");
     }
 
     // insert categories
-    foreach ( $channel['categories'] as $cat_id => $v ) {
+    foreach ($channel['categories'] as $cat_id => $v) {
         $cat = $aa_rss['categories'][$cat_id];
 
         $catVS->clear();
-        $catVS->add("feed_id",           "number",   $feed_id);
-        $catVS->add("category",          "text",     $cat['value']);
-        $catVS->add("category_name",     "text",     $cat['name']);
-        $catVS->add("category_id",       "unpacked", $cat_id);
-        $catVS->add("target_category_id","unpacked", FeedUtil::MapDefaultCategory($l_categs, $cat['value'], $cat['catparent']));       // default category
-        $catVS->add("approved",          "number",   0);
+        $catVS->add("feed_id", "number", $feed_id);
+        $catVS->add("category", "text", $cat['value']);
+        $catVS->add("category_name", "text", $cat['name']);
+        $catVS->add("category_id", "unpacked", $cat_id);
+        $catVS->add("target_category_id", "unpacked", FeedUtil::MapDefaultCategory($l_categs, $cat['value'], $cat['catparent']));       // default category
+        $catVS->add("approved", "number", 0);
 
-        if ( !$catVS->doTrueReplace('ef_categories')) {
+        if (!$catVS->doTrueReplace('ef_categories')) {
             $err["DB"] .= MsgErr("Can't add external import");
         }
     }
 
     // fill up feedmap table
-    foreach ( $channel['fields'] as $field_id => $v ) {
+    foreach ($channel['fields'] as $field_id => $v) {
 
         $catVS->clear();
-        $catVS->add("from_slice_id",  "unpacked", $remote_slice_id );
-        $catVS->add("from_field_id",  "packed",   $field_id );
-        $catVS->add("to_slice_id",    "unpacked", AA::$module_id);
-        $catVS->add("to_field_id",    "packed",   $field_id );
-        $catVS->add("flag",           "number",   FEEDMAP_FLAG_EXTMAP);
-        $catVS->add("value",          "text",     '');
-        $catVS->add("from_field_name","text",     $aa_rss['fields'][$field_id]['name']);
+        $catVS->add("from_slice_id", "unpacked", $remote_slice_id);
+        $catVS->add("from_field_id", "packed", $field_id);
+        $catVS->add("to_slice_id", "unpacked", AA::$module_id);
+        $catVS->add("to_field_id", "packed", $field_id);
+        $catVS->add("flag", "number", FEEDMAP_FLAG_EXTMAP);
+        $catVS->add("value", "text", '');
+        $catVS->add("from_field_name", "text", $aa_rss['fields'][$field_id]['name']);
 
-        if ( !$catVS->doINSERT('feedmap')) {
+        if (!$catVS->doINSERT('feedmap')) {
             $err["DB"] .= MsgErr("Can't add external import");
         }
     }
     $msg = rawurlencode(MsgOk(_m("The import was successfully created")));
 }
 
-go_url( StateUrl(self_base() . "se_inter_import.php"). "&Msg=" . $msg );
+go_url(StateUrl(self_base() . "se_inter_import.php") . "&Msg=" . $msg);
 Session::page_close();

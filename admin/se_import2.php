@@ -1,4 +1,5 @@
 <?php
+
 /** se_import2.php - assigns imports (feeding) to specified slice - writes it to database
  *   expected $slice_id for edit slice
  *            $I[] with ids of imported slices
@@ -43,14 +44,16 @@ try {
     // array ( 0 => 3, )
     $to_all = InputVars::boolGET('to_all', true);
     $cancel = InputVars::boolPOST('cancel');
-    
+
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
+} catch (Exception $e) {
+    AA_Adminpageutil::pageParameterError($e);
+}
 
 
 if (!IfSlPerm(PS_FEEDING)) {
-  AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php", _m("You do not have permissions to change feeding setting"), "admin");
-  exit;
+    AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php", _m("You do not have permissions to change feeding setting"), "admin");
+    exit;
 }
 
 $err = [];          // error array (Init - just for initializing variable
@@ -60,15 +63,15 @@ $expVS       = new Cvarset();
 $slice      = AA_Slice::getModule(AA::$module_id);
 
 // update export_to_all switch
-if ( ($slice->getProperty('export_to_all') ? 1:0) !== ($to_all ? 1:0) ) {
-    $SQL = "UPDATE slice SET export_to_all=". ($to_all ? 1 : 0) ." WHERE id='$p_slice_id'";
+if (($slice->getProperty('export_to_all') ? 1 : 0) !== ($to_all ? 1 : 0)) {
+    $SQL = "UPDATE slice SET export_to_all=" . ($to_all ? 1 : 0) . " WHERE id='$p_slice_id'";
     $db->query($SQL);
     AA_Log::write(($to_all ? "FEED2ALL_1" : "FEED2ALL_0"), AA::$module_id);
 }
 
 // ------------------------ Export --------------------------
 // feeding lookup
-$feedto = DB_AA::select(['unid'=>true], "SELECT LOWER(HEX(`to_id`)) AS unid FROM `feedperms`", [['from_id',AA::$module_id,'l']]);
+$feedto = DB_AA::select(['unid' => true], "SELECT LOWER(HEX(`to_id`)) AS unid FROM `feedperms`", [['from_id',AA::$module_id,'l']]);
 
 //$feedto["Init"] = false;  // create array
 //$SQL= "SELECT to_id FROM feedperms WHERE from_id='$p_slice_id'";
@@ -78,26 +81,26 @@ $feedto = DB_AA::select(['unid'=>true], "SELECT LOWER(HEX(`to_id`)) AS unid FROM
 //}
 
 do {
-    if ( isset($E) && is_array($E) ) {  // Export to any slice
+    if (isset($E) && is_array($E)) {  // Export to any slice
         foreach ($E as $val) {
-            if ( $feedto[$val] ) {
+            if ($feedto[$val]) {
                 $feedto[$val] = false;      // this feed is allready in database => don't change
                 continue;
             }
             $expVS->clear();
             $expVS->add("from_id", "unpacked", AA::$module_id);
             $expVS->add("to_id", "unpacked", $val);
-            if ( !$expVS->doINSERT('feedperms')) {
+            if (!$expVS->doINSERT('feedperms')) {
                 $err["DB"] .= MsgErr("Can't add export to $val");
                 break;    // not necessary - we have set the halt_on_error
             }
             AA_Log::write("FEED_ENBLE", new AA_Logentry_Fd(['module' => AA::$module_id, 'target' => $val]));
         }
-  }
-  foreach ($feedto as $to => $val) {
-      if ( $val ) {
-            $SQL = "DELETE FROM feedperms WHERE from_id = '$p_slice_id' AND to_id=". xpack_id($to);
-            $db->query( $SQL );
+    }
+    foreach ($feedto as $to => $val) {
+        if ($val) {
+            $SQL = "DELETE FROM feedperms WHERE from_id = '$p_slice_id' AND to_id=" . xpack_id($to);
+            $db->query($SQL);
             AA_Log::write("FEED_DSBLE", new AA_Logentry_Fd(['module' => AA::$module_id, 'target' => $to]));   // $to is the target id ($val is the loop's keep/remove flag)
         }
     }
@@ -106,12 +109,12 @@ do {
 // ------------------------ Import --------------------------
 // feeding lookup
 
-$feedfrom = DB_AA::select(['unid'=>true], "SELECT LOWER(HEX(`from_id`)) AS unid FROM `feeds`", [['to_id',AA::$module_id,'l']]);
+$feedfrom = DB_AA::select(['unid' => true], "SELECT LOWER(HEX(`from_id`)) AS unid FROM `feeds`", [['to_id',AA::$module_id,'l']]);
 
 do {
-    if ( isset($I) && is_array($I) ) {  // insert to categories
+    if (isset($I) && is_array($I)) {  // insert to categories
         foreach ($I as $val) {
-            if ( $feedfrom[$val] ) {
+            if ($feedfrom[$val]) {
                 $feedfrom[$val] = false;      // this feed is allready in database => don't change
                 continue;
             }
@@ -121,7 +124,7 @@ do {
             $catVS->add("all_categories", "number", 1);
             $catVS->add("to_approved", "number", 0);
             $catVS->add("to_category_id", "unpacked", "0");   // zero means import to the same category (if all_actegories==1)
-            if ( !$catVS->doINSERT('feeds')) {
+            if (!$catVS->doINSERT('feeds')) {
                 $err["DB"] .= MsgErr("Can't add import from $val");
                 break;  // not necessary - we have set the halt_on_error
             }
@@ -129,25 +132,24 @@ do {
         }
     }
 
-  foreach ($feedfrom as $from => $val) {  // delete removed feeds
-      if ( $val ) {
-            $SQL = "DELETE FROM feeds WHERE to_id = '$p_slice_id' AND from_id=". xpack_id($from);
-            $db->query( $SQL );
+    foreach ($feedfrom as $from => $val) {  // delete removed feeds
+        if ($val) {
+            $SQL = "DELETE FROM feeds WHERE to_id = '$p_slice_id' AND from_id=" . xpack_id($from);
+            $db->query($SQL);
             AA_Log::write("FEED_DEL", new AA_Logentry_Fd(['module' => AA::$module_id, 'target' => $from]));   // $from is the source id ($val is the loop's keep/remove flag)
         }
     }
 } while (false);
 
 
-if ( $err === [] ) {
-    if ( isset($I) && is_array($I) ) {   // slice imports some slices
-        go_url( StateUrl(self_base() . "se_filters.php") ."&Msg=" . rawurlencode(MsgOk(_m("Content Pooling update successful"))));
+if ($err === []) {
+    if (isset($I) && is_array($I)) {   // slice imports some slices
+        go_url(StateUrl(self_base() . "se_filters.php") . "&Msg=" . rawurlencode(MsgOk(_m("Content Pooling update successful"))));
     } else {
-        go_url( StateUrl(self_base() . "se_import.php") ."&Msg=" . rawurlencode(MsgOk(_m("Content Pooling update successful"))));
+        go_url(StateUrl(self_base() . "se_import.php") . "&Msg=" . rawurlencode(MsgOk(_m("Content Pooling update successful"))));
     }
 } else {
-  MsgPage($err, StateUrl(self_base() . "se_import.php"));
+    MsgPage($err, StateUrl(self_base() . "se_import.php"));
 }
 
 Session::page_close();
-

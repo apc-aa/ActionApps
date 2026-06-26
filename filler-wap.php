@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Script for submitting items anonymously, without accessing the admin interface
  *
@@ -50,5 +51,3 @@ https://www.apc.org/
 $GLOBALS['wap'] = true;
 
 require_once __DIR__ . "/filler.php";
-
-

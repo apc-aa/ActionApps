@@ -1,4 +1,5 @@
 <?php
+
 //$Id$
 /*
 Copyright (C) 1999, 2000 Association for Progressive Communications
@@ -30,26 +31,26 @@ https://www.apc.org/
 
 //expected  vid      // id of view
 //optionally cmd[]    // command to modify the view
-                    // cmd[23]=v-25 means: show view id 25 in place of id 23
-                    // cmd[23]=i-24-7464674747 means view
-                    //   number 23 has to display item 74.. in format defined
-                    //   in view 24
-                    // cmd[23]=c-1-Environment means display view no 23 in place
-                    //   of view no 23 (that's normal), but change value for
-                    //   condition 1 to "Environment".
-                    // cmd[23]=c-1-Environment-2-Jane means the same as above,
-                    //   but there are redefined two conditions
-                    // cmd[23]=d-headline........-LIKE-Profit-publish_date....-m:>-86400
-                    //   generalized version of cmd[]-c
-                    //      - fields and operators specifed
-                    //      - unlimited number of conditions
-                    //      - all default conditions from view definition are
-                    //        completely redefined by the specified ones
+// cmd[23]=v-25 means: show view id 25 in place of id 23
+// cmd[23]=i-24-7464674747 means view
+//   number 23 has to display item 74.. in format defined
+//   in view 24
+// cmd[23]=c-1-Environment means display view no 23 in place
+//   of view no 23 (that's normal), but change value for
+//   condition 1 to "Environment".
+// cmd[23]=c-1-Environment-2-Jane means the same as above,
+//   but there are redefined two conditions
+// cmd[23]=d-headline........-LIKE-Profit-publish_date....-m:>-86400
+//   generalized version of cmd[]-c
+//      - fields and operators specifed
+//      - unlimited number of conditions
+//      - all default conditions from view definition are
+//        completely redefined by the specified ones
 //optionally set[]    // setings to modify view behavior (can be combined with cmd)
-                    // set[23]=listlen-20
-                    // set[23]=mlx-EN-FR-DE
-                    //   - sets maximal number of viewed items in view 23 to 20
-                    //   - there can be more settings (future) - comma separated
+// set[23]=listlen-20
+// set[23]=mlx-EN-FR-DE
+//   - sets maximal number of viewed items in view 23 to 20
+//   - there can be more settings (future) - comma separated
 //optionally als[]    // user alias - see slice.php for more details
 //
 // please look into /view.php for more details
@@ -66,7 +67,10 @@ use AA\Cache\Cacheentry;
 use AA\Cache\CacheStr2find;
 use AA\Cache\PageCache;
 
-function AddslashesDeep($value): array|string { return is_array($value) ? array_map('AddslashesDeep',   $value) : addslashes($value);   }
+function AddslashesDeep($value): array|string
+{
+    return is_array($value) ? array_map('AddslashesDeep', $value) : addslashes($value);
+}
 
 foreach ($_REQUEST as $k => $v) {
     $$k = AddslashesDeep($v);
@@ -74,7 +78,7 @@ foreach ($_REQUEST as $k => $v) {
 // ----- input variables normalization - end ----------------------------------
 
 
-require_once __DIR__."/./include/config.php";
+require_once __DIR__ . "/./include/config.php";
 require_once __DIR__ . "/include/util.php";
 require_once __DIR__ . "/include/item.php";
 require_once __DIR__ . "/include/view.php";
@@ -86,11 +90,11 @@ require_once __DIR__ . "/include/locsess.php";    // DB_AA object definition
 // honza 2017-04-19
 //AA::$debug&2 && AA::$dbg->group("/jsview.php", "Start");
 
-if (ctype_digit((string)$time_limit)) {
-    MoreTimeLimit((int)$time_limit); // set_time_limit
+if (ctype_digit((string) $time_limit)) {
+    MoreTimeLimit((int) $time_limit); // set_time_limit
 }
 
-AA::$debug&2 && AA::$dbg->group("/jsview.php", "Start");
+AA::$debug & 2 && AA::$dbg->group("/jsview.php", "Start");
 
 $view_param = AA_View::parseViewParameters();
 
@@ -115,7 +119,7 @@ if ($cacheentry = AA::Pagecache()->getPage($cache_key, $nocache & 1)) {  // noca
 
     // special for jsview - print it as javascript!!!
     // backslash quotes, remove newlines, escape </script, which will make the code broken
-    $page_content = 'document.write(\''. escape4js($page_content) .'\');';
+    $page_content = 'document.write(\'' . escape4js($page_content) . '\');';
 
     $cacheentry = new Cacheentry($page_content, AA::getHeaders());
     $cacheentry->processPage();
@@ -126,7 +130,7 @@ if ($cacheentry = AA::Pagecache()->getPage($cache_key, $nocache & 1)) {  // noca
     }
 }
 
-AA::$debug&2 && AA::$dbg->groupend("/jsview.php", "Completed view");
+AA::$debug & 2 && AA::$dbg->groupend("/jsview.php", "Completed view");
 
 if (AA::$debug) {
     echo AA::$dbg->duration_stat();

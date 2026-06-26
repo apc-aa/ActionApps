@@ -1,4 +1,5 @@
 <?php
+
 /**
  *
  *
@@ -47,7 +48,7 @@ use AA\IO\OnPageChanger;
 use AA\Util\InputVars;
 use AA\Util\Langs;
 
-if ( isset($_REQUEST['edit']) || isset($_REQUEST['edit_new']) || isset($_REQUEST['add'])) {         // parameter for init_page - we edited new item so
+if (isset($_REQUEST['edit']) || isset($_REQUEST['edit_new']) || isset($_REQUEST['add'])) {         // parameter for init_page - we edited new item so
     $unset_r_hidden = true;  // clear stored content
 }
 
@@ -60,11 +61,11 @@ require_once __DIR__ . "/../include/itemfunc.php";
 require_once __DIR__ . "/../include/notify.php";
 require_once __DIR__ . "/../include/menu_util.php";
 //mimo include mlx functions
-require_once __DIR__."/../include/mlx.php";
+require_once __DIR__ . "/../include/mlx.php";
 
-if ( file_exists( "../include/usr_validate.php" ) ) {
-    require_once __DIR__."/../include/usr_validate.php";
-} elseif (file_exists( "../include/usr_validate.php3" ) ) {
+if (file_exists("../include/usr_validate.php")) {
+    require_once __DIR__ . "/../include/usr_validate.php";
+} elseif (file_exists("../include/usr_validate.php3")) {
     require_once __DIR__ . "/../include/usr_validate.php3";
 }
 
@@ -97,9 +98,11 @@ try {
     $post_preview = $_REQUEST['post_preview'] ?? true;
 
     $cancel = InputVars::boolGET('cancel');
-    
+
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
+} catch (Exception $e) {
+    AA_Adminpageutil::pageParameterError($e);
+}
 
 
 
@@ -125,7 +128,7 @@ function GetHidden($itemform_id) {
  * @param $url2go=null
  *
  */
-function CloseDialog(?zids $zid = null, string $openervar = '', bool $insert=true, ?string $url2go=null): void
+function CloseDialog(?zids $zid = null, string $openervar = '', bool $insert = true, ?string $url2go = null): void
 {
     // Used for adding item to another slice from itemedit's popup.
     $js = '';
@@ -135,21 +138,21 @@ function CloseDialog(?zids $zid = null, string $openervar = '', bool $insert=tru
 
         $aliases  = AA_Slice::getModule($item->getSliceID())?->aliases();
         DefineBaseAliases($aliases, $item->getSliceID());  // _#JS_HEAD_, ...
-        $item->setAliases( (new AA_Aliases())->addFromArray($aliases) ); //      = new AA_Item($content->getContent(),$aliases);
+        $item->setAliases((new AA_Aliases())->addFromArray($aliases)); //      = new AA_Item($content->getContent(),$aliases);
 
-        if (str_starts_with($openervar,'/rim/')) {
+        if (str_starts_with($openervar, '/rim/')) {
             // parse the openervar - like /rim/[sid]/[fid]/[base_id]
-            [$sid,$fid,$base_id] = explode('/',substr($openervar,5));
-            $js = "window.opener.AA_RimUpdateId('$base_id', '$sid', '$fid', '$zid[0]', ". ($insert ? 1 : 0). ");";
+            [$sid,$fid,$base_id] = explode('/', substr($openervar, 5));
+            $js = "window.opener.AA_RimUpdateId('$base_id', '$sid', '$fid', '$zid[0]', " . ($insert ? 1 : 0) . ");";
         } else {
-            $item->setformat( ($insert ? 'SelectRelations' : 'UpdateRelations') ."('$openervar','".TPS['AMB']['A']['tag']."','".TPS['AMB']['A']['prefix']."','".TPS['AMB']['A']['tag']."_#ITEM_ID_','_#JS_HEAD_');" );
-            $js = $item->get_item() ."\n";
+            $item->setformat(($insert ? 'SelectRelations' : 'UpdateRelations') . "('$openervar','" . TPS['AMB']['A']['tag'] . "','" . TPS['AMB']['A']['prefix'] . "','" . TPS['AMB']['A']['tag'] . "_#ITEM_ID_','_#JS_HEAD_');");
+            $js = $item->get_item() . "\n";
         }
     }
     $js .= ($url2go ? "window.location = '$url2go';\n" : "window.close();\n");
 
     // inputform.min.js for SelectRelations
-    echo getHtmlPage(getFrmJavascriptFile('javascript/inputform.min.js', ['v'=>AA_JS_VERSION]).  getFrmJavascript($js));
+    echo getHtmlPage(getFrmJavascriptFile('javascript/inputform.min.js', ['v' => AA_JS_VERSION]) . getFrmJavascript($js));
 }
 
 // Allow edit current slice without slice_pwd
@@ -167,24 +170,42 @@ $update  = false;
 $preview = false;
 $go_edit = false;
 $edit    = $edit || $edit_new;
-if ($_POST['insert'])      { $insert = true;                                               }
-if ($_POST['insert_new'])  { $insert = true;                                               }
-if ($_POST['ins_preview']) { $insert = true;                 $preview=true;                }
-if ($_POST['ins_edit'])    { $insert = true;                                $go_edit=true; }
-if ($_POST['update'])      {                 $update = true;                               }
-if ($_POST['upd_preview']) {                 $update = true; $preview=true;                }
-if ($_POST['upd_edit'])    {                 $update = true;                $go_edit=true; }
+if ($_POST['insert']) {
+    $insert = true;
+}
+if ($_POST['insert_new']) {
+    $insert = true;
+}
+if ($_POST['ins_preview']) {
+    $insert = true;
+    $preview = true;
+}
+if ($_POST['ins_edit']) {
+    $insert = true;
+    $go_edit = true;
+}
+if ($_POST['update']) {
+    $update = true;
+}
+if ($_POST['upd_preview']) {
+    $update = true;
+    $preview = true;
+}
+if ($_POST['upd_edit']) {
+    $update = true;
+    $go_edit = true;
+}
 
-$add = !( $update || $cancel || $insert || $edit );
+$add = !($update || $cancel || $insert || $edit);
 
 if ($cancel) {
     if ($anonymous) { // anonymous login
-        go_url( $r_slice_view_url, '', $encap );
+        go_url($r_slice_view_url, '', $encap);
     } elseif ($return_url === 'close_dialog') {
         // Used for adding item to another slice from itemedit's popup.
         CloseDialog();
     } else {
-        go_return_or_url(self_base() . "index.php",true,true);
+        go_return_or_url(self_base() . "index.php", true, true);
     }
 }
 
@@ -196,10 +217,10 @@ $id = $_REQUEST['id'];
 $slice_id = AA::$module_id;
 
 // link from public pages sometimes do not contain slice_id
-if ( $id ) {
-    if ((strlen($id)===33) && strpos(' xyz', $id[0])) {
+if ($id) {
+    if ((strlen($id) === 33) && strpos(' xyz', $id[0])) {
         // x, y, z prefixed ids for new added related items
-        $id = substr($id,1);
+        $id = substr($id, 1);
     }
 
     $content4id = new ItemContent($id);
@@ -251,14 +272,14 @@ if ($lang_control = MLXSlice($slice)) {
 $err = [];          // error array (Init - just for initializing variable
 
 //  update database
-if ( ($insert || $update) && count($fields) ) {
+if (($insert || $update) && count($fields)) {
 
     // prepare content4id array before call StoreItem function
-    $content4id    = new ItemContent;
+    $content4id    = new ItemContent();
     $oldcontent4id = null;
 
     // it is needed to call IsEditable() function and GetContentFromForm()
-    if ( $update ) {
+    if ($update) {
         // if we are editing dynamic slice setting fields (stored in content
         // table), we need to get values from slice's fields
         if ($slice_fields) {
@@ -282,9 +303,9 @@ if ( ($insert || $update) && count($fields) ) {
         $content4id->setItemID($id);
     }
 
-    if ( $validate_report = $content4id->validateReport('visible')) {
+    if ($validate_report = $content4id->validateReport('visible')) {
         foreach ($validate_report as $vr_fid => $vr_err) {
-            $err[$vr_fid] =  MsgErr(_m("Error in").' <b>'.$fields->getProperty($vr_fid,'name')."</b> - ".$vr_err[1]);
+            $err[$vr_fid] =  MsgErr(_m("Error in") . ' <b>' . $fields->getProperty($vr_fid, 'name') . "</b> - " . $vr_err[1]);
         }
     }
 
@@ -306,18 +327,18 @@ if ( ($insert || $update) && count($fields) ) {
             $preview_url = get_admin_url("preview.php", ["slice_id" => $slice_id, "sh_itm" => $id, "return_url" => $return_url]);
         }
         if ($anonymous) { // anonymous login
-            go_url( $r_slice_view_url, '', $encap );
+            go_url($r_slice_view_url, '', $encap);
         } elseif ($return_url === 'close_dialog') {
             // Used for adding item to another slice from itemedit's popup - Related Item Window - iso widget, ....
             CloseDialog(new zids($added_to_db, 'l'), $openervar, $insert, $preview_url);
             Session::page_close();
             exit;
         } elseif ($preview) {
-            go_url( $preview_url );
+            go_url($preview_url);
         } elseif ($go_edit) {   // if go_edit - continue to edit again
-            go_url( Inputform_url(false, $added_to_db, $slice_id, '', $vid, null, false) );
+            go_url(Inputform_url(false, $added_to_db, $slice_id, '', $vid, null, false));
         } else {
-            go_return_or_url(self_base() . "index.php",true,true);
+            go_return_or_url(self_base() . "index.php", true, true);
         }
     }
 }
@@ -327,9 +348,9 @@ if ( ($insert || $update) && count($fields) ) {
 // -----------------------------------------------------------------------------
 
 
-unset( $content );       // used in another context for storing item to db
+unset($content);       // used in another context for storing item to db
 if ($edit) {
-    if ( !count($fields) ) {
+    if (!count($fields)) {
         $err["DB"] = MsgErr(_m("Error: no fields."));
         MsgPage($err);
         exit;
@@ -337,7 +358,7 @@ if ($edit) {
 
     // fill content array from item and content tables
     $content = GetItemContent($id);
-    if ( !$content ) {
+    if (!$content) {
         $err["DB"] = MsgErr(_m("Bad item ID id=%1", [$id]));
         MsgPage($err);
         exit;
@@ -356,7 +377,7 @@ if ($edit) {
     }
 } elseif (!is_object($content4id)) {  // form is submitted
     // we need the $content4id to be object (for getForm, at least)
-    $content4id = new ItemContent;
+    $content4id = new ItemContent();
 
     // not necessary - filled later
     // $content4id->setFieldsFromProfile($fields, AA_Profile::getProfile(AuthGetUid(), $slice->getId()));
@@ -367,12 +388,12 @@ if ($lang_control) {
     if (is_null($mlx)) {
         $mlx = new MLX($slice);
     }
-    [$mlx_formheading,$mlxl,$mlxid] = $mlx->itemform(['encap'=>$encap], $content4id->getContent(),$action,$mlxl,$mlxid);
+    [$mlx_formheading,$mlxl,$mlxid] = $mlx->itemform(['encap' => $encap], $content4id->getContent(), $action, $mlxl, $mlxid);
 }
 // end mimo changes
 
 // print begin ---------------------------------------------------------------
-if ( !$encap ) {
+if (!$encap) {
     // Show the global top header (so the editor can navigate to another slice/page mid-edit)
     // only on a real admin full-page edit - never in a popup/dialog or anonymous form.
     $is_popup     = ($return_url === 'close_dialog') || ($openervar !== '');
@@ -385,36 +406,36 @@ if ( !$encap ) {
         'submenu_override'     => $show_header ? 'itemcontext_submenu' : '',  // item-context left rail
         'active_submenu'       => 'edit',
         'page_h1'              => ($edit ? _m("Edit Item") : _m("Add Item")),  // slice name lives in the header + left rail now
-        'page_title'           => (($edit=="") ? _m("Add Item") : _m("Edit Item")). " (". trim(safe($slice->getName())).")",
-        'formheading'          => $mlx_formheading
+        'page_title'           => (($edit == "") ? _m("Add Item") : _m("Edit Item")) . " (" . trim(safe($slice->getName())) . ")",
+        'formheading'          => $mlx_formheading,
     ]; //added MLX
 }
 $inputform_settings['messages']            = ['err' => $err];
-$inputform_settings['form_action']         = ($_SERVER['DOCUMENT_URI'] != "" ? $_SERVER['DOCUMENT_URI'] :
-                                             $_SERVER['PHP_SELF'] . ($return_url ? "?return_url=".rawurlencode($return_url) : ''));
+$inputform_settings['form_action']         = ($_SERVER['DOCUMENT_URI'] != "" ? $_SERVER['DOCUMENT_URI']
+                                             : $_SERVER['PHP_SELF'] . ($return_url ? "?return_url=" . rawurlencode($return_url) : ''));
 $inputform_settings['form4update']         = $edit || $update || ($insert && $added_to_db);
 $inputform_settings['form4asnew']          = $edit_new;
 $inputform_settings['show_preview_button'] = ($post_preview != 0 || !isset($post_preview));
 
-$inputform_settings['cancel_url']          =  ($anonymous  ? $r_slice_view_url :
-                                              ($return_url === 'close_dialog' ? get_admin_url("itemedit.php", ['cancel' =>1, 'return_url' =>'close_dialog']) :
-                                              ($return_url ? expand_return_url(1) :
-                                              get_admin_url("index.php", ['cancel'=>1]))));
+$inputform_settings['cancel_url']          =  ($anonymous ? $r_slice_view_url
+                                              : ($return_url === 'close_dialog' ? get_admin_url("itemedit.php", ['cancel' => 1, 'return_url' => 'close_dialog'])
+                                              : ($return_url ? expand_return_url(1)
+                                              : get_admin_url("index.php", ['cancel' => 1]))));
 
 $inputform_settings['hidden']              = [
-                             'anonymous'   => (($free || $anonymous) ? true : ""),
-                             'mlxid'       => $mlxid,
-                             'mlxl'        => $mlxl,
-                             'openervar'   => $openervar
+    'anonymous'   => (($free || $anonymous) ? true : ""),
+    'mlxid'       => $mlxid,
+    'mlxl'        => $mlxl,
+    'openervar'   => $openervar,
 ];  // id of variable in parent window (used for popup inputform)
 
-if ( $vid ) {
+if ($vid) {
     $inputform_settings['template'] = $vid;
     $inputform_settings['hidden']['vid'] = $vid;
 }
 
 
-if ( $inputform_settings['form4update'] ) {
+if ($inputform_settings['form4update']) {
     $inputform_settings['hidden']['id']    = $id;
 }
 
@@ -424,4 +445,3 @@ $form = new inputform($inputform_settings);
 $form->printForm($content4id, $slice, ($edit || $update));
 
 Session::page_close();
-

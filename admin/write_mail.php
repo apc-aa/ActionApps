@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Form displayed in popup window sending emails to user/group_of_users
  *
@@ -82,9 +83,11 @@ try {
     // array ( 'malik@sezna…' => 4, )
     $testemail = InputVars::stringPOST('testemail');
     $cancel = InputVars::boolPOST('cancel');
-    
+
     $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
+} catch (Exception $e) {
+    AA_Adminpageutil::pageParameterError($e);
+}
 
 $err = [];          // error array (Init - just for initializing variable
 
@@ -101,7 +104,7 @@ AA_Credentials::singleton()->loadFromSlice(AA::$module_id);
 
 $slice       = AA_Slice::getModule(AA::$module_id);
 
-if ( !$send ) {               // for the first time - directly from item manager
+if (!$send) {               // for the first time - directly from item manager
     $sess->register('r_wm_state');
     unset($r_wm_state);       // clear if it was filled
     $r_wm_state['items'] = $items;
@@ -114,22 +117,22 @@ if ( !$send ) {               // for the first time - directly from item manager
         // --- write the e-mail template to the table ---
         $varset = new Cvarset();
         $owner_module_id = q_pack_id(AA::$module_id);
-        $description     = date('Y-m-d H:i:s'). ', '. AuthGetUid();
+        $description     = date('Y-m-d H:i:s') . ', ' . AuthGetUid();
         $type            = 'bulk email';
-        ValidateInput("subject",     _m("Subject"),            $subject,     $err, true,  "text");
-        ValidateInput("body",        _m("Body"),               $body,        $err, true,  "text");
-        ValidateInput("header_from", _m("From (email)"),       $header_from, $err, true,  "text");
-        ValidateInput("reply_to",    _m("Reply to (email)"),   $reply_to,    $err, false, "text");
-        ValidateInput("errors_to",   _m("Errors to (email)"),  $errors_to,   $err, false, "text");
-        ValidateInput("sender",      _m("Sender (email)"),     $sender,      $err, false, "text");
-        ValidateInput("lang",        _m("Language (charset)"), $lang,        $err, false, "text");
-        ValidateInput("html",        _m("Use HTML"),           $html,        $err, false, "number");
-        ValidateInput("template_id", _m("Email template"),     $template_id, $err, false, "number");
+        ValidateInput("subject", _m("Subject"), $subject, $err, true, "text");
+        ValidateInput("body", _m("Body"), $body, $err, true, "text");
+        ValidateInput("header_from", _m("From (email)"), $header_from, $err, true, "text");
+        ValidateInput("reply_to", _m("Reply to (email)"), $reply_to, $err, false, "text");
+        ValidateInput("errors_to", _m("Errors to (email)"), $errors_to, $err, false, "text");
+        ValidateInput("sender", _m("Sender (email)"), $sender, $err, false, "text");
+        ValidateInput("lang", _m("Language (charset)"), $lang, $err, false, "text");
+        ValidateInput("html", _m("Use HTML"), $html, $err, false, "number");
+        ValidateInput("template_id", _m("Email template"), $template_id, $err, false, "number");
 
         $attachs = [];
         foreach (['attachment1', 'attachment2', 'attachment3'] as $attach) {
-            $uploadvar = $attach.'x';
-            if ( $_FILES[$uploadvar]['name'] != '' ) {
+            $uploadvar = $attach . 'x';
+            if ($_FILES[$uploadvar]['name'] != '') {
                 $dest_file = Files::uploadFile($uploadvar, Files::destinationDir($slice));
 
                 if ($dest_file === false) {   // error
@@ -145,14 +148,14 @@ if ( !$send ) {               // for the first time - directly from item manager
 
         $attachments = ParamImplode($attachs);
 
-        if ( count($err)) {
+        if (count($err)) {
             break;
         }
 
-        $varset->addglobals( [ 'description', 'subject', 'header_from', 'reply_to', 'errors_to', 'sender', 'lang', 'owner_module_id', 'type', 'attachments']);
+        $varset->addglobals([ 'description', 'subject', 'header_from', 'reply_to', 'errors_to', 'sender', 'lang', 'owner_module_id', 'type', 'attachments']);
 
-        if ($template_id && !($mailtemplate = new AA_Mailtemplate((int)$template_id))->isEmpty()) {
-            $varset->add('body', 'text', str_replace(['_#BODYTEXT','_#SUBJECT_'], [$_POST['body'], $_POST['subject']],$mailtemplate['body']));
+        if ($template_id && !($mailtemplate = new AA_Mailtemplate((int) $template_id))->isEmpty()) {
+            $varset->add('body', 'text', str_replace(['_#BODYTEXT','_#SUBJECT_'], [$_POST['body'], $_POST['subject']], $mailtemplate['body']));
         } else {
             $varset->add('body', 'quoted', $body);
         }
@@ -160,14 +163,14 @@ if ( !$send ) {               // for the first time - directly from item manager
 
         $mail_id = $varset->doINSERT('email');  // get mail template id - last_insert_id
 
-        if ( !ctype_digit((string)$mail_id) )  {
-            $err["mail"] = MsgErr( _m("No template set (which is strange - template was just written to the database)") );
+        if (!ctype_digit((string) $mail_id)) {
+            $err["mail"] = MsgErr(_m("No template set (which is strange - template was just written to the database)"));
             break;
         }
 
         // --- send emails
-        if ( $group === 'testuser') {
-            $mails_to    = explode(',',$testemail);
+        if ($group === 'testuser') {
+            $mails_to    = explode(',', $testemail);
             $mails_sent  = AA_Mail::sendTemplate($mail_id, $mails_to);
             $users_count = count($mails_to);
         } else {
@@ -180,21 +183,21 @@ if ( !$send ) {               // for the first time - directly from item manager
         }
         $Msg = MsgOk(_m("Email successfully sent (Users: %1, Emails sent (valid e-mails...): %2, template id: %3)", [$users_count, $mails_sent, $mail_id]));
 
-        if ((string)$group === "sel_item") {
+        if ((string) $group === "sel_item") {
             $sel = "LIST";
-            $description .= ' - '. _m("Manually selected");
-        } elseif ((string)$group === "testuser") {
+            $description .= ' - ' . _m("Manually selected");
+        } elseif ((string) $group === "testuser") {
             $sel = "TEST";
             $description .= " - ($testemail)";
         } else {
-            $sel = get_if($group,"0");  // bookmarks groups are identified by numbers
-            $description .= ' - '. _m('Filter'). " $sel";
+            $sel = get_if($group, "0");  // bookmarks groups are identified by numbers
+            $description .= ' - ' . _m('Filter') . " $sel";
         }
         AA_Log::write("EMAIL_SENT", $sel, new AA_Logentry_Em(['mail_id' => $mail_id, 'users' => $users_count, 'sent' => $mails_sent]));
         // remove temporary email template from database
-        $SQL = "UPDATE email SET description='".quote($description. " - $mails_sent/$users_count" )."' WHERE id='$mail_id'";
-        if ( !$db->query($SQL)) {
-            $err["DB"] = MsgErr( _m("Can't update email template") );
+        $SQL = "UPDATE email SET description='" . quote($description . " - $mails_sent/$users_count") . "' WHERE id='$mail_id'";
+        if (!$db->query($SQL)) {
+            $err["DB"] = MsgErr(_m("Can't update email template"));
             break;    // not necessary - we have set the halt_on_error
         }
     } while (false);
@@ -208,9 +211,9 @@ $apage->setForm();
 $apage->addRequire('ckeditor@4');
 // IncludeManagerJavascript() - start
 // $apage->addRequire(get_aa_url('javascript/aajslib.php', ['v'=>AA_JS_VERSION] ));  // already loaded with ckeditor
-$apage->addRequire(get_aa_url('javascript/manager.min.js', ['v'=>AA_JS_VERSION] ));
+$apage->addRequire(get_aa_url('javascript/manager.min.js', ['v' => AA_JS_VERSION]));
 // IncludeManagerJavascript() - end
-$apage->addRequire(get_aa_url('javascript/inputform.min.js', ['v'=>AA_JS_VERSION] ));
+$apage->addRequire(get_aa_url('javascript/inputform.min.js', ['v' => AA_JS_VERSION]));
 
 // removed - maybe we will have to put it back
 //  <link rel="StyleSheet" href="'.AA_INSTAL_PATH.'tabledit.css"  title="TableEditCSS">
@@ -226,11 +229,11 @@ FrmTabCaption((is_array($items) ? _m("Recipients") : (_m("Stored searches for ")
 
 $messages['view_items']     = _m("View Recipients");
 $messages['selected_items'] = _m('Selected users');
-$additional[]               = ['text' => '<input type="text" name="testemail" value="'.$testemail.'" size="80"> '._m('Test email address(es)'), 'varname' => 'testuser'];
+$additional[]               = ['text' => '<input type="text" name="testemail" value="' . $testemail . '" size="80"> ' . _m('Test email address(es)'), 'varname' => 'testuser'];
 
 $user_templates = GetUserEmails("user template");  // false or array['id']=>'name'
 
-FrmItemGroupSelect( $items, $searchbar, $group, 'users', $messages, $additional);
+FrmItemGroupSelect($items, $searchbar, $group, 'users', $messages, $additional);
 
 FrmTabSeparator(_m('Write the email'));
 
@@ -238,24 +241,24 @@ FrmInputText('subject', _m('Subject'), $_POST['subject'], 254, 80, true);
 //FrmTextarea(   'body',        _m('Body'),              $_POST['body'],         20, 80, true, '', '', '', true);  // enable rich text area
 
 if ($user_templates) {
-    FrmInputSelect('template_id', _m('Email template'), $user_templates,  $_POST['template_id']);
+    FrmInputSelect('template_id', _m('Email template'), $user_templates, $_POST['template_id']);
 }
 
 FrmTextarea('body', _m('Body'), $_POST['body'], 30, 80, true, '', '', '', true);  // enable rich text area
-FrmInputEmail(  'header_from', _m('From (email)'),      $_POST['header_from'], 254, 80, true );
-FrmInputEmail(  'reply_to',    _m('Reply to (email)'),  $_POST['reply_to'],    254, 80);
-FrmInputEmail(  'errors_to',   _m('Errors to (email)'), $_POST['errors_to'],   254, 80);
-FrmInputEmail(  'sender',      _m('Sender (email)'),    $_POST['sender'],      254, 80);
-FrmInputSelect('lang',        _m('Language (charset)'),  Langs::getNames(), $_POST['lang'] ?: $slice->getLang(), true);
-FrmInputSelect('html',        _m('Use HTML'),           [_m('no'), _m('yes')], $_POST['html'], true);
-FrmInputFile(  'attachment1',   _m("Attachment 1"), $attachment1, false, "*/*");
-FrmInputFile(  'attachment2',   _m("Attachment 2"), $attachment2, false, "*/*");
-FrmInputFile(  'attachment3',   _m("Attachment 3"), $attachment3, false, "*/*");
+FrmInputEmail('header_from', _m('From (email)'), $_POST['header_from'], 254, 80, true);
+FrmInputEmail('reply_to', _m('Reply to (email)'), $_POST['reply_to'], 254, 80);
+FrmInputEmail('errors_to', _m('Errors to (email)'), $_POST['errors_to'], 254, 80);
+FrmInputEmail('sender', _m('Sender (email)'), $_POST['sender'], 254, 80);
+FrmInputSelect('lang', _m('Language (charset)'), Langs::getNames(), $_POST['lang'] ?: $slice->getLang(), true);
+FrmInputSelect('html', _m('Use HTML'), [_m('no'), _m('yes')], $_POST['html'], true);
+FrmInputFile('attachment1', _m("Attachment 1"), $attachment1, false, "*/*");
+FrmInputFile('attachment2', _m("Attachment 2"), $attachment2, false, "*/*");
+FrmInputFile('attachment3', _m("Attachment 3"), $attachment3, false, "*/*");
 
 
 FrmTabEnd([
-    'send' => ['type'=>'submit', 'value'=>_m('Send')],
-                 'close'=> ['type'=>'button', 'value'=>_m('Close'), 'add'=>'onclick="window.close()"']
+    'send' => ['type' => 'submit', 'value' => _m('Send')],
+    'close' => ['type' => 'button', 'value' => _m('Close'), 'add' => 'onclick="window.close()"'],
 ]);
 
 // list selected items to special form - used by manager.min.js to show items (recipients)
@@ -266,4 +269,3 @@ FrmItemListForm($items);
 //echo $form->getObjectEditHtml();
 
 $apage->printFoot();
-

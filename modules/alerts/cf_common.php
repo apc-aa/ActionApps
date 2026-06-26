@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Alerts - Collection Forms
  * Defines the $cf_fields array used in Collection Form handling scripts.
@@ -37,50 +38,50 @@ add_post2shtml_vars();
 
 $cf_fields = [
     "lang" => [
-        "code"=>getFrmSelectEasy ("formlang", Langs::getCharsets(), \AA\Util\Langs::currentLang()),
-        "label"=>_m("Language"),
+        "code" => getFrmSelectEasy("formlang", Langs::getCharsets(), \AA\Util\Langs::currentLang()),
+        "label" => _m("Language"),
         // do not show in wizard
-        "hidewizard"=>true
+        "hidewizard" => true,
     ],
     "email" => [
-        "code"=>"<INPUT type=\"text\" name=\"alerts[email]\" size=\"40\">",
-        "label"=>_m("Email"),
-        "required"=>true,
-        "userinfo"=>true
+        "code" => "<INPUT type=\"text\" name=\"alerts[email]\" size=\"40\">",
+        "label" => _m("Email"),
+        "required" => true,
+        "userinfo" => true,
     ],
     "password" => [
-        "code"=>"<INPUT type=\"password\" name=\"alerts[password]\" size=\"20\">",
-        "label"=>_m("Password"),
-        "required"=>true
+        "code" => "<INPUT type=\"password\" name=\"alerts[password]\" size=\"20\">",
+        "label" => _m("Password"),
+        "required" => true,
     ],
     "firstname" => [
-        "code"=>"<INPUT type=\"text\" name=\"alerts[firstname]\" size=\"20\">",
-        "label"=>_m("First name"),
-        "userinfo"=>true
+        "code" => "<INPUT type=\"text\" name=\"alerts[firstname]\" size=\"20\">",
+        "label" => _m("First name"),
+        "userinfo" => true,
     ],
     "lastname" => [
-        "code"=>"<INPUT type=\"text\" name=\"alerts[lastname]\" size=\"25\">",
-        "label"=>_m("Last name"),
-        "userinfo"=>true
+        "code" => "<INPUT type=\"text\" name=\"alerts[lastname]\" size=\"25\">",
+        "label" => _m("Last name"),
+        "userinfo" => true,
     ],
     "howoften" => [
-        "code"=>getFrmSelectEasy("alerts[howoften]", get_howoften_options()),
-        "required"=>true,
+        "code" => getFrmSelectEasy("alerts[howoften]", get_howoften_options()),
+        "required" => true,
         // do not show in user center
-        "hidecenter"=>true,
-        "label"=>_m("How often")
+        "hidecenter" => true,
+        "label" => _m("How often"),
     ],
     "chpwd" => [
-        "code"=>"<INPUT type=\"password\" name=\"alerts[chpwd]\">",
-        "required"=>false,
+        "code" => "<INPUT type=\"password\" name=\"alerts[chpwd]\">",
+        "required" => false,
         // the checkbox is valid for both this and the next row
-        "rowspan"=>2,
-        "label"=>_m("Change password")
+        "rowspan" => 2,
+        "label" => _m("Change password"),
     ],
     "chpwd2" => [
-        "code"=>"<INPUT type=\"password\" name=\"alerts[chpwd2]\">",
+        "code" => "<INPUT type=\"password\" name=\"alerts[chpwd2]\">",
         // the checkbox from chpwd is valid for this row too
-        "checkbox"=>"chpwd",
-        "label"=>_m("Retype new password")
-    ]
+        "checkbox" => "chpwd",
+        "label" => _m("Retype new password"),
+    ],
 ];

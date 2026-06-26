@@ -1,4 +1,5 @@
 <?php
+
 // site definition file for Site Example (http://apc-aa.sf.net/site/index.shtml)
 // This is just an example of site file. For more details on sites see FAQ:
 // https://actionapps.org/faq/
@@ -39,27 +40,27 @@ if (isset($i)) {
 } //item id to display
 
 // Handle paging
-if ( isset($scrl) ) {      // page scroller
-  $pagevar = "scr_".$scrl."_Go";
-  $apc_state['p'] = $$pagevar;
+if (isset($scrl)) {      // page scroller
+    $pagevar = "scr_" . $scrl . "_Go";
+    $apc_state['p'] = $$pagevar;
 }
 
-if ( $apc_state["p"] <= 0 || $apc_state["p"] === '-' ) {
+if ($apc_state["p"] <= 0 || $apc_state["p"] === '-') {
     $apc_state["p"] = 1;
 }
 
 $nocache = 1; // Force nocache until caching problems fixed
 
 // Set up some variables in apc_state
-$apc_state['state'] =  ModW_arr2str($apc_varnames,$apc_state);
+$apc_state['state'] =  ModW_arr2str($apc_varnames, $apc_state);
 $relargs = "apc=" . $apc_state['state'] . ($nocache ? "&nocache=1" : "")
     . ($debug ? "&debug=1" : "");
 $apc_state['relargs'] = $relargs;
 // site_url is used as a return address, for example after going into edit
 //$apc_state["site_url"] = AA_INSTAL_EDIT_PATH . "modules/site/site.php?site_id=$site_id&" . $relargs;
-$apc_state["site_url"] = "/gp/draft.shtml?".$relargs;
+$apc_state["site_url"] = "/gp/draft.shtml?" . $relargs;
 // Read item from database
-$apc_state["item"] = ModW_id2item($apc_state["i"],true);
+$apc_state["item"] = ModW_id2item($apc_state["i"], true);
 
 if ($debug) {
     huhl("<pre>New State=", $apc_state);
@@ -70,18 +71,14 @@ if ($debug) {
 // show the newest slice content. In $slice4cache array you will tell the slice
 // module, which slices it should take care about
 $slices4cache = [
-        "5a8fc21be3fdb898d3ba77b62ac1a613", //GP business2flag
-        "0ec747ad42babf093e92e6bb9853e5e2", //GP businesses
-        "43cae042188b8d094044da804497ba3b", //GP Category
-        "aa1e51ff4e4e955386296cf7c3ea87df", //GP Flags
-        "0d9bd7ff5e62515e6fd432806fda8c6a", //GP Stories
-        "93075b63f842973ab40859a2104765a8"
+    "5a8fc21be3fdb898d3ba77b62ac1a613", //GP business2flag
+    "0ec747ad42babf093e92e6bb9853e5e2", //GP businesses
+    "43cae042188b8d094044da804497ba3b", //GP Category
+    "aa1e51ff4e4e955386296cf7c3ea87df", //GP Flags
+    "0d9bd7ff5e62515e6fd432806fda8c6a", //GP Stories
+    "93075b63f842973ab40859a2104765a8",
 ]; //GP Site
 
 // You can define macros here, these can include any of the { ...} syntaxes
 $als['editme'] = '{switch({t})e:<a href="_#EDITITEM"><img src="' . AA_INSTAL_PATH . 'images/edit.gif"></a>}'; //Use {editme}
 $als['additem'] = '{switch({t})e:<a href="{alias::f_e:add}"><img src="' . AA_INSTAL_PATH . 'images/add.gif"></a>}'; //Use {additem}
-
-
-
-

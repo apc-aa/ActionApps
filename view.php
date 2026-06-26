@@ -1,4 +1,5 @@
 <?php
+
 //$Id$
 /*
 Copyright (C) 1999, 2000 Association for Progressive Communications
@@ -21,26 +22,26 @@ https://www.apc.org/
 
 //expected  vid      // id of view
 //optionally cmd[]    // command to modify the view
-                    // cmd[23]=v-25 means: show view id 25 in place of id 23
-                    // cmd[23]=i-24-7464674747 means view
-                    //   number 23 has to display item 74.. in format defined
-                    //   in view 24
-                    // cmd[23]=c-1-Environment means display view no 23 in place
-                    //   of view no 23 (that's normal), but change value for
-                    //   condition 1 to "Environment".
-                    // cmd[23]=c-1-Environment-2-Jane means the same as above,
-                    //   but there are redefined two conditions
-                    // cmd[23]=d-headline........-LIKE-Profit-publish_date....-m:>-86400
-                    //   generalized version of cmd[]-c
-                    //      - fields and operators specified
-                    //      - unlimited number of conditions
-                    //      - all default conditions from view definition are
-                    //        completely redefined by the specified ones
+// cmd[23]=v-25 means: show view id 25 in place of id 23
+// cmd[23]=i-24-7464674747 means view
+//   number 23 has to display item 74.. in format defined
+//   in view 24
+// cmd[23]=c-1-Environment means display view no 23 in place
+//   of view no 23 (that's normal), but change value for
+//   condition 1 to "Environment".
+// cmd[23]=c-1-Environment-2-Jane means the same as above,
+//   but there are redefined two conditions
+// cmd[23]=d-headline........-LIKE-Profit-publish_date....-m:>-86400
+//   generalized version of cmd[]-c
+//      - fields and operators specified
+//      - unlimited number of conditions
+//      - all default conditions from view definition are
+//        completely redefined by the specified ones
 //optionally set[]   // settings to modify view behavior (can be combined with cmd)
-                    // set[23]=listlen-20
-                    // set[23]=mlx-EN-FR-DE
-                    //   - sets maximal number of viewed items in view 23 to 20
-                    //   - there can be more settings (future) - comma separated
+// set[23]=listlen-20
+// set[23]=mlx-EN-FR-DE
+//   - sets maximal number of viewed items in view 23 to 20
+//   - there can be more settings (future) - comma separated
 //optionally als[]    // user alias - see slice.php for more details
 // for more info see AA FAQ: https://actionapps.org/faq/#219
 
@@ -58,7 +59,10 @@ use AA\Cache\Cacheentry;
 use AA\Cache\CacheStr2find;
 use AA\Cache\PageCache;
 
-function AddslashesDeep($value): array|string { return is_array($value) ? array_map('AddslashesDeep',   $value) : addslashes($value);   }
+function AddslashesDeep($value): array|string
+{
+    return is_array($value) ? array_map('AddslashesDeep', $value) : addslashes($value);
+}
 
 foreach ($_REQUEST as $k => $v) {
     $$k = AddslashesDeep($v);
@@ -66,7 +70,7 @@ foreach ($_REQUEST as $k => $v) {
 // ----- input variables normalization - end ----------------------------------
 
 
-require_once __DIR__."/./include/config.php";
+require_once __DIR__ . "/./include/config.php";
 require_once __DIR__ . "/include/util.php";
 require_once __DIR__ . "/include/item.php";
 require_once __DIR__ . "/include/view.php";
@@ -78,28 +82,28 @@ add_vars();
 
 pageOpen('noauth');   // just to start $sess with right parameters
 
-if (ctype_digit((string)$time_limit)) {
-    MoreTimeLimit((int)$time_limit); // set_time_limit
+if (ctype_digit((string) $time_limit)) {
+    MoreTimeLimit((int) $time_limit); // set_time_limit
 }
 
-AA::$debug&2 && AA::$dbg->group("/view.php", "Start");
+AA::$debug & 2 && AA::$dbg->group("/view.php", "Start");
 
 // Need to be able to set content-type for RSS, cannot do it in the view
 // because the cache won't reflect this
 if ($contenttype) {
     $contenttype = strtolower(trim($contenttype));
-    if ($len = strspn($contenttype,'abcdefghijklmnopqrstuvwxyz/')) {
-        AA::$headers['type'] = substr($contenttype,0,$len);
+    if ($len = strspn($contenttype, 'abcdefghijklmnopqrstuvwxyz/')) {
+        AA::$headers['type'] = substr($contenttype, 0, $len);
     }
 }
 
 if ($filename) {
-   header('Content-Description: File Transfer');
-   if (!$contenttype) {
-       header('Content-Type: application/octet-stream');
-   }
-   header('Content-Disposition: attachment; filename='.basename($filename));
-   header('Content-Transfer-Encoding: binary');
+    header('Content-Description: File Transfer');
+    if (!$contenttype) {
+        header('Content-Type: application/octet-stream');
+    }
+    header('Content-Disposition: attachment; filename=' . basename($filename));
+    header('Content-Transfer-Encoding: binary');
 }
 
 $view_param = AA_View::parseViewParameters();
@@ -121,23 +125,23 @@ if ($nocache & 2) {  // nocache=2 or nocache=3, ... - second bit set
 }
 
 if ($cacheentry = AA::Pagecache()->getPage($cache_key, $nocache & 1)) {   // nocache=1 or nocache=3, ... - first bit set
-    AA::$debug&2 && AA::$dbg->log("view from cache");
+    AA::$debug & 2 && AA::$dbg->log("view from cache");
     $cacheentry->processPage(true);
 } else {
-    AA::$debug&2 && AA::$dbg->log("view not found in cache");
+    AA::$debug & 2 && AA::$dbg->log("view not found in cache");
     $showview     = new AA_Showview($view_param);
     $page_content = $showview->getViewOutput();
     $cache_sids   = AA_Module::getUsedModules();
     $cacheentry = new Cacheentry($page_content, AA::getHeaders());
     $cacheentry->processPage();
 
-    if (!$nocache AND $cache_sids) {
+    if (!$nocache and $cache_sids) {
         $str2find = new CacheStr2find($cache_sids);
         AA::Pagecache()->storePage($cache_key, $cacheentry, $str2find);
     }
 }
 
-AA::$debug&2 && AA::$dbg->groupend("/view.php", "Completed view");
+AA::$debug & 2 && AA::$dbg->groupend("/view.php", "Completed view");
 
 if (AA::$debug) {
     echo AA::$dbg->duration_stat();

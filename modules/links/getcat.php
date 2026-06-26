@@ -1,4 +1,5 @@
 <?php
+
 //$Id$
 /*
 Copyright (C) 1999, 2000 Association for Progressive Communications
@@ -33,30 +34,31 @@ require_once __DIR__ . "/../../modules/links/util.php";      // module specific 
 
 try {
     $start = InputVars::intGET('start') ?: 1;
-} catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
+} catch (Exception $e) {
+    AA_Adminpageutil::pageParameterError($e);
+}
 
-function PrintCategory( $id, $name, $base, $state, $parent, $level ): void
+function PrintCategory($id, $name, $base, $state, $parent, $level): void
 {
     echo "<br>";
-    while ( $level-- ) {
+    while ($level--) {
         echo '.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
     }
     echo " <a href=\"javascript:ReturnParam('$id')\">$name</a> $base";
 }
 
-$tree = new cattree( $start );
+$tree = new cattree($start);
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
 
-echo '  <title>'. _m('Category Tree') .'</title>';
+echo '  <title>' . _m('Category Tree') . '</title>';
 IncludeManagerJavascript();
 echo '
 </head>
 <body>
-  <p>'. _m('Select category'). '</p>';
+  <p>' . _m('Select category') . '</p>';
 
 $tree->update();
 $tree->walkTree($start, 'PrintCategory');
 
 echo '</BODY></HTML>';
-
