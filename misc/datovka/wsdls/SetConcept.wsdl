@@ -97,7 +97,7 @@ Seznam služeb:
     </binding>
     <service name="SetKonceptService">
         <port binding="tns:SetConceptSoap11" name="SetConceptSoap11">
-            <soap:address location="https://cert.mojedatovaschranka.cz/asws/konceptEndpoint"/>
+            <soap:address location="https://cert.datovka.gov.cz/asws/konceptEndpoint"/>
         </port>
     </service>
 </definitions>
