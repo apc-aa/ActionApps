@@ -169,7 +169,21 @@ function GetModuleSelection(): string {
     if ( is_array($g_modules) && count($g_modules) > 1 && $profile->getProperty('ui_manager', 'top_moduleselection') === false) {
         // build the selector options:
         $permitted_slices = GetUserSlices();
-        $modules_cond = ($permitted_slices==='all') ? [] : [['module.id', array_keys($permitted_slices), 'l']];
+        $modules_cond     = [];
+        if ($permitted_slices !== 'all') {
+            /* Parent sites of the permitted modules come along even when the user has no
+               permission to the site itself - they render as a disabled grouping row (see
+               the $site_perm branch below), so a restricted user still sees which site their
+               slices belong to instead of a flat "Other slices" list. The module.type='W'
+               clause keeps a stray relation row from pulling in a selectable module the
+               user has no permission to. */
+            $parent_sites = DB_AA::select('',
+                'SELECT DISTINCT LOWER(HEX(module.id)) AS unpackid FROM `relation` JOIN `module` ON module.id=relation.source_id',
+                [['relation.destination_id', array_keys($permitted_slices), 'l'],
+                 ['relation.flag',           REL_FLAG_MODULE_DEPEND,        'i'],
+                 ['module.type',             'W',                           's']]);
+            $modules_cond = [['module.id', array_merge(array_keys($permitted_slices), $parent_sites), 'l']];
+        }
 
         $mymodules = DB_AA::select([],
             'SELECT LOWER(HEX(module.id)) AS unpackid, module.type, module.priority, module.deleted, module.name, slice.type AS slice_type FROM `module` LEFT JOIN `slice` ON module.id=slice.id',
