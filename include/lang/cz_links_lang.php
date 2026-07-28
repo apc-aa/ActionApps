@@ -343,7 +343,7 @@ return [
 "Insert date" => "Datum vlo\x9Een\xED",
 
 // modules/links/constants.php, row 67
-"Editor" => "Naposledy upravoval",
+"Editor" => "Editor",
 
 // modules/links/constants.php, row 68
 "Last edit date" => "Datum posledn\xED \xFApravy",

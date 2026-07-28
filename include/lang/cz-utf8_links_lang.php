@@ -344,7 +344,7 @@ return [
 "Insert date" => "Datum vložení",
 
 // modules/links/constants.php, row 67
-"Editor" => "Naposledy upravoval",
+"Editor" => "Editor",
 
 // modules/links/constants.php, row 68
 "Last edit date" => "Datum poslední úpravy",

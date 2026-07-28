@@ -2602,7 +2602,7 @@ return [
 // admin/se_users.php, row 122, 181
 // admin/slicewiz.php, row 78
 // include/se_users.php, row 103, 173
-"Editor" => "Naposledy upravil", // ai 2026-06
+"Editor" => "Editor", // ai 2026-06
 
 // admin/se_users.php, row 123, 181
 // include/se_users.php, row 104, 173

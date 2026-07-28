@@ -285,7 +285,7 @@ return [
 "Insert date" => "Dátum vloženia", // ai 2026-06
 
 // modules/links/constants.php, row 67
-"Editor" => "Naposledy upravil", // ai 2026-06
+"Editor" => "Editor", // ai 2026-06
 
 // modules/links/constants.php, row 68
 "Last edit date" => "Dátum poslednej úpravy", // ai 2026-06
