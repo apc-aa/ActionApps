@@ -66,6 +66,13 @@ class Toexecute
 
     public const TOEXECUTE_USER_TASK_TIME =  2000000000;
 
+    /** Seconds a claimed task is leased - its execute_after is pushed this far
+     *  ahead by the claim UPDATE in _exeOne(), so concurrent runners' scans do
+     *  not see it while it executes. Must exceed the longest single task
+     *  (executeTask() allows 360 s); if the claiming runner dies mid-task, the
+     *  task retries after the lease expires. */
+    public const CLAIM_LEASE = 1800;
+
     /** later function
      *  Stores the object and params to the database for later execution.
      *  Such task is called from cron (the order depends on priority)
@@ -126,12 +133,26 @@ class Toexecute
         }
 
         $time = (int) $time < time() ? time() : $time; // the same as in later()
-        $task = self::scheduledTask($selector);  // ['id' => $id, 'time' => $time]
-        if (!$task['id']) {
-            $this->later($object, $params, $selector, $priority, $time);
-        } elseif ($task['time'] > $time) {
-            // we need it run earlier
-            DB_AA::update('toexecute', [['execute_after' => $time]], [['id', $task['id'], 'i']]);
+
+        // The check+insert below is a race when two processes schedule the same
+        // selector concurrently (both see "not scheduled", both insert - and the
+        // duplicated task later executes twice). Serialize it with a DB named
+        // lock, held on a dedicated connection so acquire and release pair up.
+        // On lock timeout we proceed unlocked (scheduling must not be dropped).
+        $lock_name = 'aa_laterOnce_' . constant('DB_NAME');
+        $db = getDB();
+        try {
+            $db->query('SELECT GET_LOCK(' . $db->quote($lock_name) . ', 2)');
+            $task = self::scheduledTask($selector);  // ['id' => $id, 'time' => $time]
+            if (!$task['id']) {
+                $this->later($object, $params, $selector, $priority, $time);
+            } elseif ($task['time'] > $time) {
+                // we need it run earlier
+                DB_AA::update('toexecute', [['execute_after' => $time]], [['id', $task['id'], 'i']]);
+            }
+        } finally {
+            $db->query('SELECT RELEASE_LOCK(' . $db->quote($lock_name) . ')');
+            freeDB($db);
         }
     }
 
@@ -192,19 +213,26 @@ class Toexecute
 
         while ($task = DB_AA::select1('', 'SELECT * FROM `toexecute`', [['execute_after', time(), '<'], ['priority', 0, '>']], ['priority-'])) {
             ++$started;
-            if ($this->_exeOne($task, $execute_times, $execute_start, $allowed_time)) {
+            $ret = $this->_exeOne($task, $execute_times, $execute_start, $allowed_time);
+            if ($ret > 0) {
                 ++$count;
-            } else {
+            } elseif ($ret === 0) {
                 break;
             }
+            // $ret < 0: a concurrent runner claimed the task - its execute_after
+            // moved ahead, so the next SELECT skips it; just carry on
         }
         AA_Log::write('TOEXECUTE', 'AA\Later\Toexecute', new AA_Logentry_Xrun(['done' => $count, 'started' => $started, 'duration' => sprintf('%.3g', microtime(true) - $execute_start), 'allowed' => $allowed_time]));
     }
 
     /** Executes as many tasks from the $tasks array as time allows
-     * @param $tasks - array of ids of tasks to execute
+     * @param $tasks    - array of ids of tasks to execute
+     * @param $expected - optional task_id => priority the UI displayed when the
+     *                    user selected the task; a task whose current priority
+     *                    no longer matches is skipped (it was claimed/executed
+     *                    meanwhile). Ids without expectation are not checked.
      */
-    public function executeTask($tasks): void
+    public function executeTask($tasks, array $expected = []): void
     {
 
         if (!is_array($tasks) || !count($tasks)) {
@@ -224,16 +252,34 @@ class Toexecute
 
         foreach ($tasks as $task_id) {
             $task = DB_AA::select1('', 'SELECT * FROM toexecute', [['id', $task_id, 'i']]);
+            if (!$task) {
+                $this->message("#$task_id: " . _m('task is no longer in the queue'));
+                continue;   // task finished (deleted) meanwhile
+            }
+            if (isset($expected[$task_id]) && (int) $expected[$task_id] !== (int) $task['priority']) {
+                $this->message("#$task_id: " . _m('skipped - the task changed meanwhile (reload the list)'));
+                continue;   // claimed or executed since the UI list was rendered
+            }
+            // No lease-window check here, deliberately: this is the explicit
+            // "Execute" action in the Task Manager UI - the user may re-run
+            // even a task another runner is just executing (with a reloaded,
+            // matching priority), and a task scheduled for the near future
+            // must stay manually runnable. The CAS in _exeOne() still
+            // collapses two concurrent clicks (same snapshot) into one run.
             ++$started;
-            if ($this->_exeOne($task, $execute_times, $execute_start, $allowed_time)) {
+            $ret = $this->_exeOne($task, $execute_times, $execute_start, $allowed_time);
+            if ($ret > 0) {
                 ++$count;
-            } else {
+            } elseif ($ret === 0) {
                 break;
             }
+            // $ret < 0: claimed by a concurrent runner meanwhile - skip it
         }
         AA_Log::write('TOEXECUTE', 'AA\Later\Toexecute', new AA_Logentry_Xrun(['done' => $count, 'started' => $started, 'duration' => sprintf('%.3g', microtime(true) - $execute_start), 'allowed' => $allowed_time]));
     }
 
+    /** @return int 1 = task executed, 0 = out of allowed time (caller stops),
+     *              -1 = lost the claim to a concurrent runner (caller skips) */
     public function _exeOne($task, &$execute_times, $execute_start, $allowed_time): int
     {
         $task_type = get_if($task['selector'], 'aa_unspecified');
@@ -244,12 +290,31 @@ class Toexecute
         if ((($task_start + $expected_time) - $execute_start) > $allowed_time) {
             return 0;
         }
-        $varset = new Cvarset([['priority', max($task['priority'] - 1, 0)]]);
-        $varset->addkey('id', 'number', $task['id']);
-        // We lower the priority for this task before the execution, so
-        // if the task is not able to finish, then other tasks with the same
-        // priority is called before this one (next time)
-        $varset->doUpdate('toexecute');
+        // Atomic claim (CAS): in ONE conditional UPDATE push execute_after ahead
+        // by the lease and lower the priority, guarded by the values we read.
+        // Exactly one of the concurrent runners (OS-cron toexecute.php vs.
+        // CronFallback) hits the row; the loser sees 0 affected rows and skips.
+        // The lease hides the row from other runners' scans while it executes;
+        // the post-execution DELETE removes it, and if this runner dies the task
+        // retries after the lease expires. Lowering priority keeps the old
+        // semantics: a repeatedly failing task sinks and priority=0 retires it.
+        // User-queue tasks keep their parking time instead of a real lease -
+        // if the runner dies mid-task they must stay invisible to the cron
+        // scan (the user-queue contract), not surface 30 minutes later.
+        $lease = ((int) $task['execute_after'] === self::TOEXECUTE_USER_TASK_TIME)
+            ? self::TOEXECUTE_USER_TASK_TIME
+            : time() + self::CLAIM_LEASE;
+        $claimed = DB_AA::update('toexecute', [
+            ['priority', max($task['priority'] - 1, 0), 'i'],
+            ['execute_after', $lease, 'i'],
+        ], [
+            ['id', $task['id'], 'i'],
+            ['execute_after', $task['execute_after'], 'i'],
+            ['priority', $task['priority'], 'i'],
+        ]);
+        if ($claimed !== 1) {
+            return -1;
+        }
 
         $object = unserialize($task['object']);
         if (is_object($object) && !is_a($object, '__PHP_Incomplete_Class', false)) {
@@ -263,7 +328,7 @@ class Toexecute
         }
 
         // Task is done - remove it from queue
-        $varset->doDelete('toexecute');
+        DB_AA::delete('toexecute', [['id', $task['id'], 'i']]);
         $execute_times[$task_type] = microtime(true) - $task_start;
 
         $mem_usage = sprintf('%.3g', (memory_get_usage() / (1024 * 1024)));

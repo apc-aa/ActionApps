@@ -2746,7 +2746,13 @@ select[name="sel_module"] option.aa-section-header {
         border-top: none;
         margin-top: 0;
     }
-    select[name="sel_module"] option.aa-site-readonly { cursor: not-allowed; }
+    /* A site the user may see (their slices hang under it) but not enter. It is a
+       non-selectable label, exactly like the section headers below - share their
+       accent colour, or Chrome's default disabled grey makes it read as broken. */
+    select[name="sel_module"] option.aa-site-readonly {
+        cursor: not-allowed;
+        color: var(--clr-text-accent);
+    }
     /* Indent submodules under their parent site. Modern markup carries no NBSP
        prefix, so this padding is what creates the visual hierarchy here; the
        fallback path injects NBSPs via JS instead (see menu_util.php). */

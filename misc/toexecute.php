@@ -62,6 +62,11 @@ require_once __DIR__ . "/../modules/links/cattree.php";
 
 AA_Log::write('TOEXECUTE', 'toexecute.php', 'start');
 
+// Touch the CronFallback gate right away (not only after the run) so web
+// traffic does not fire the fallback runner while this run is processing
+// the queue - the file mtime is the fallback's suppression gate.
+touch(CronFallback::lockFile());
+
 // first of all - make sure all AA maintenance tasks are scheduled
 (new ScheduleAaTasks())->planAaTasks();
 

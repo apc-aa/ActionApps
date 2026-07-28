@@ -72,8 +72,10 @@ function GetToexecuteManagerSettings(): Managed
                                               <th>object</th>
                                               <th>params</th>
                                             </tr>';
+    // checkbox value carries the displayed priority as a parseable "p-<n>"
+    // token (see Taskmanager_Execute) - managers may add more tokens later
     $managed->settings['itemview']['format']['odd_row_format'] = '
-                                      <tr><td width="30"><input name="chb[x_#ID______]" value="" type="checkbox"></td>
+                                      <tr><td width="30"><input name="chb[x_#ID______]" value="p-_#PRIORITY" type="checkbox"></td>
                                         <td>_#ID______</td>
                                         <td>_#CREATED_</td>
                                         <td>_#EXECUTE_</td>

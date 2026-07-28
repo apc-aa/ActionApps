@@ -31,8 +31,27 @@ class Taskmanager_Execute extends AbstractManageraction
         }
 
         $toexecute = new Toexecute();
-        $toexecute->executeTask($item_zids->shortids());
+        $toexecute->executeTask($item_zids->shortids(), self::expectedPriorities($_REQUEST['chb'] ?? []));
         return $toexecute->report();
+    }
+
+    /** Parse the priorities the UI displayed from the manager checkbox values
+     *  ('p-<n>' token, see GetToexecuteManagerSettings()) - task_id => priority.
+     *  The value is a token string so managers can pass more hints later;
+     *  values without the token (select-all, GET links) yield no expectation.
+     * @param array $chb - $_REQUEST['chb']: 'x<task_id>' => 'p-<priority>'
+     */
+    private static function expectedPriorities(array $chb): array
+    {
+        $expected = [];
+        foreach ($chb as $key => $value) {
+            if (is_string($value) && preg_match('/\bp-(\d+)\b/', $value, $m)) {
+                $key = (string) $key;
+                $id = rawurldecode(str_starts_with($key, 'x') ? substr($key, 1) : $key);
+                $expected[(int) $id] = (int) $m[1];
+            }
+        }
+        return $expected;
     }
 
     /** Checks if the user have enough permission to perform the action
