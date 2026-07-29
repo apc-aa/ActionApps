@@ -341,25 +341,29 @@ $apage->addRequire($headcode, 'AA_Req_Headcode');
 //$apage->addRequire("DisplayAaResponse('fieldselection', 'Get_Fields', {slice_id:'". get_if($from_slice, unpack_id('AA_Core_Fields..')) ."'});", 'AA_Req_Load');
 $apage->addRequire("document.querySelector('select[name=from_slice]').dispatchEvent(new Event('change'));", 'AA_Req_Load');
 
+// Reports belong to the page body ($code), not to echo: printAllPage() prints the page -
+// and the <form> the "change all" button submits - only later, so echoed output lands
+// before <!DOCTYPE html>, outside the form, where a submit button does nothing.
+$code = '';
+
 if ($analyze) {
     $to_fix = false;
     if ( !($optimizer = new ChangeF_h2F_1())->test4modules([AA::$module_id])) {
-        echo $optimizer->report();
+        $code .= $optimizer->report();
         $to_fix = true;
     }
     if ( !($optimizer = new ChangeF_t2F_1())->test4modules([AA::$module_id])) {
-        echo $optimizer->report();
+        $code .= $optimizer->report();
         $to_fix = true;
     }
     if ( !($optimizer = new ChangeF_t2F__())->test4modules([AA::$module_id])) {
-        echo $optimizer->report();
+        $code .= $optimizer->report();
         $to_fix = true;
     }
     if ($to_fix) {
-        echo "<div><input type='submit' value='"._m('change all')."' name='fix'>";
+        $code .= "<div><input type='submit' value='"._m('change all')."' name='fix'></div>";
     }
 }
-$code = '';
 
 if ($fix) {
     ($optimizer = new ChangeF_h2F_1())->repair4modules([AA::$module_id]);
@@ -372,7 +376,7 @@ if ($fix) {
 
 $form_buttons = ["update", "analyze" => ["type"=>"submit", "value"=>_m("Analyze")], "cancel"=> ["url"=>"se_fields.php"]];
 
-$code = getFrmTabCaption('', $form_buttons);
+$code .= getFrmTabCaption('', $form_buttons);
 $code .= "<thead>
     <tr>
      <th scope=col>". _m("Field") ."</th> 
