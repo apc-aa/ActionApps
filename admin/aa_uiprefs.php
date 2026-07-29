@@ -45,8 +45,9 @@ try {
 // (getUiPrefsPopover() in include/menu_util.php). It is stable per session - not
 // the single-use AA_Session token store - because the theme control re-posts on
 // every change and this popover renders on every admin page. Fails closed.
-$token = (string) ($_POST['aa_token'] ?? '');
-if (($_SESSION['aa_ui_csrf'] ?? '') === '' || !hash_equals((string) $_SESSION['aa_ui_csrf'], $token)) {
+$expected_token = UiPrefs::formToken();
+$posted_token   = (string) ($_POST['aa_token'] ?? '');
+if ($expected_token === '' || !hash_equals($expected_token, $posted_token)) {
     http_response_code(403);
     exit;
 }

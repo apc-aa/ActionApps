@@ -578,7 +578,7 @@ function getUiPrefsPopover(): string
     $action  = get_admin_url('aa_uiprefs.php');
     // stable per-session CSRF token (not the single-use AA_Session store: the theme
     // control re-posts on every change and this popover renders on every admin page)
-    $token   = $_SESSION['aa_ui_csrf'] ??= new_id();
+    $token   = \AA\Util\UiPrefs::formToken();
     $ret_in  = '<input type="hidden" name="ret_url" value="'.safe($_SERVER['REQUEST_URI'] ?? '').'">'
              . '<input type="hidden" name="aa_token" value="'.safe($token).'">';
 
@@ -607,10 +607,7 @@ function getUiPrefsPopover(): string
         . '<noscript><button type="submit" class="btn">'._m('Apply').'</button></noscript></form>'
         . '<div class="tabhlp aa-prefs-help">'._m('Switches the admin interface language; the page reloads.').'</div>';
 
-    // feedback — textarea + send. Relies on the authenticated session plus a
-    // same-origin check in the endpoint (like the other admin forms); a
-    // session-stored token is unreliable here because admin pages release the
-    // session before request end, so the freshly-issued token would not persist.
+    // feedback — textarea + send; CSRF-protected by the same token as above
     $fb_form = '<form method="post" action="'.safe($action).'" class="aa-prefs-feedback">'
         . '<input type="hidden" name="aa_action" value="send_feedback">'.$ret_in
         . '<textarea name="aa_feedback" rows="3" required placeholder="'.safe(_m("What's working, what isn't — tell the AA team.")).'"></textarea>'

@@ -132,6 +132,27 @@ class UiPrefs
         return 'news';
     }
 
+    /* ---- CSRF token for the prefs popover forms ------------------------- */
+
+    /** Token protecting the admin/aa_uiprefs.php posts (theme / language / feedback).
+     *
+     *  Derived from the session id instead of being stored in the session: the
+     *  legacy Session::freeze() - run by AA_Adminpageutil::printFoot() through
+     *  Session::page_close() - rewrites every $_SESSION key from the same-named
+     *  global, so a plain session key with no global counterpart is nulled at the
+     *  end of every admin page and would never survive to the next request.
+     *  The session id is httponly and same-origin, so a cross-site attacker can
+     *  neither read it nor derive the token; the hash never exposes it.
+     *
+     *  @param  string $session_id explicit id (tests); '' = the current session
+     *  @return string '' when there is no session - callers must fail closed
+     */
+    public static function formToken(string $session_id = ''): string
+    {
+        $sid = ($session_id !== '') ? $session_id : (string) session_id();
+        return ($sid === '') ? '' : hash_hmac('sha256', 'aa_uiprefs', $sid);
+    }
+
     /* ---- persistence (cookie + AA_ID-scoped profile) -------------------- */
 
     /** Save the theme choice. Both 'default' and 'gold' are stored EXPLICITLY
