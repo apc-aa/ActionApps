@@ -278,7 +278,7 @@ class RimWidget extends Widget
         $input_name = FormArray::formId2Name($base_id) . "[rim][]";
 
         if ($item_width = $this->getProperty('item_width')) {
-            $item_width = ctype_digit((string) $item_width) ? " style=\"width:${item_width}px\"" : " style=\"width:$item_width\"";
+            $item_width = ctype_digit((string) $item_width) ? " style=\"width:{$item_width}px\"" : " style=\"width:$item_width\"";
         }
 
         $buttons = $this->getButtons($base_id, $def_field_id, $def_slice_id);
@@ -306,7 +306,7 @@ class RimWidget extends Widget
     public function getFilterSelection(string $searchstring, int $limit = 0): string
     {
         if ($item_width = $this->getProperty('item_width')) {
-            $item_width = ctype_digit((string) $item_width) ? " style=\"width:${item_width}px\"" : " style=\"width:$item_width\"";
+            $item_width = ctype_digit((string) $item_width) ? " style=\"width:{$item_width}px\"" : " style=\"width:$item_width\"";
         }
 
         $options = $this->getFormattedOptions('', null, $searchstring, false, $limit);

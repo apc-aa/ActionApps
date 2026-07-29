@@ -76,7 +76,7 @@ class FormArray
             //    throw new Exception('No owner specified for ' . $form_field_id);
         }
         $item_index = ctype_digit((string) $item_index) ? (int) $item_index : 1;
-        return "aa[n${item_index}_$oowner][$form_field_id]";
+        return "aa[n{$item_index}_$oowner][$form_field_id]";
     }
 
     /** returns string to be used as input id

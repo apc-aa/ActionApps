@@ -48,10 +48,10 @@ class ChangeF_t2F__ extends ChangeF_h2F_1
      */
     protected function fieldrepair(AA_Field $fld, string $aliasfld): string
     {
-        $alias = $fld[$aliasfld];
+        $alias = safe($fld[$aliasfld]);
         $dbfield = $aliasfld . '_func';
         $slice_id = $fld->getSliceId();
-        $slicename = AA_Module::getModuleName($slice_id);
+        $slicename = safe(AA_Module::getModuleName($slice_id));
 
         $this->query("UPDATE field SET `$dbfield`=CONCAT('f__', SUBSTRING(`$dbfield`,4)) " . DB_AA::makeWhere([['slice_id', $fld->getSliceId(), 'l'], ['id', $fld['id']]]));
         return "<br>$alias ($slicename) changed to f__";
