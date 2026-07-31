@@ -463,7 +463,7 @@ class Managed_Table extends Managed
                             $record        = $id ? ($this->getContent(new zids($id, $this->getZidsType()))[$id] ?? null) : null;
                             $record_loaded = true;
                         }
-                        $w = $w($record ? (string) $record->getAaValue($k)?->getValue() : '');
+                        $w = $w($record ? (string) $record->getAaValue($k)->getValue() : '');
                     }
                     // accept a ready Widget instance or a short-code string ('edt', 'edt:20', ...)
                     $widgets[$k] = $w instanceof Widget ? $w : Widget::factoryByString((string) $w);
