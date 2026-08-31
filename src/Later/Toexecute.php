@@ -320,11 +320,11 @@ class Toexecute
         if (is_object($object) && !is_a($object, '__PHP_Incomplete_Class', false)) {
             $retcode = $this->execute_one($object, unserialize($task['params']));
             $this->message($retcode);
-            $selector = get_class_name($object, true);
+            $selector = AA_Log::selector($object);
         } else {
             $this->message('Toexecute:execute - unserialize err:' . $task['object']);
             $retcode = 'no execute, removed from queue';
-            $selector = 'no object:' . $task['object'];
+            $selector = AA_Log::selector('no object', $task['object']);
         }
 
         // Task is done - remove it from queue

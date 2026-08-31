@@ -78,6 +78,13 @@ class htmlMimeMail {
 	private string $return_path;
 
     /**
+     * Which branch of send() ran last ('mail' or 'smtp') and what it reported
+     * back. Read by AA_Mail::send() for the MAIL_SEND log row.
+     */
+    private string $last_transport = '';
+    private string $last_transport_response = '';
+
+    /**
      * Constructor function. Sets the headers
      * if supplied.
      */
@@ -658,6 +665,11 @@ class htmlMimeMail {
      */
     public function send($recipients): int
     {
+        /* One AA_Mail object serves a whole sendLater() batch -- clear what the
+         * previous recipient's send recorded before this one runs. */
+        $this->last_transport          = '';
+        $this->last_transport_response = '';
+
         if ( !(isset($recipients) && is_array($recipients)) ) {
             return 0;
         }
@@ -678,6 +690,19 @@ class htmlMimeMail {
             return $this->sendViaSmtp($recipients);
         }
         return $this->sendViaMail($recipients);
+    }
+
+    /** Transport used by the last send(): 'mail', 'smtp' or '' before any send. */
+    public function getLastTransport(): string
+    {
+        return $this->last_transport;
+    }
+
+    /** What that transport reported back -- the SMTP server's own reply text on
+     *  the smtp branch, a short mail() verdict on the mail branch. */
+    public function getLastTransportResponse(): string
+    {
+        return $this->last_transport_response;
     }
 
     /** @param string[] $recipients */
@@ -703,6 +728,10 @@ class htmlMimeMail {
         if ($subject !== '') {
             $this->headers['Subject'] = $subject;
         }
+
+        /* mail() has no server dialogue -- its bool only says the MTA took over. */
+        $this->last_transport          = \AA\Mail\SmtpTransport::TRANSPORT_MAIL;
+        $this->last_transport_response = $result ? 'accepted for delivery' : 'mail() returned false';
 
         return $result ? count($recipients) : 0;
     }
@@ -734,6 +763,9 @@ class htmlMimeMail {
 
         $transport = new \AA\Mail\SmtpTransport();
         $result    = $transport->sendRaw($envelopeFrom, $rcpts, $rfc822);
+
+        $this->last_transport          = \AA\Mail\SmtpTransport::TRANSPORT_SMTP;
+        $this->last_transport_response = $transport->getLastResponse();
 
         switch ($result) {
             case \AA\Mail\SmtpTransport::RESULT_SENT:

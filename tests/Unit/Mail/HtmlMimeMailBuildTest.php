@@ -19,10 +19,13 @@ final class CapturingMail extends \htmlMimeMail
     /** @var array<string,string> */
     public array $captured = [];
 
+    /** What the stubbed mail() reports back -- flip to false to exercise the failure branch. */
+    public bool $native_result = true;
+
     protected function nativeMail(string $to, string $subject, string $body, string $headers, string $params = ''): bool
     {
         $this->captured = compact('to', 'subject', 'body', 'headers', 'params');
-        return true;
+        return $this->native_result;
     }
 }
 
@@ -197,5 +200,26 @@ final class HtmlMimeMailBuildTest extends TestCase
         // Envelope sender passed via sendmail -f.
         $this->assertSame('-fsender@example.org', $captured['params']);
         $this->assertNotEmpty($captured['body']);
+    }
+
+    // --- what each branch reports back for the MAIL_SEND log row -----------
+
+    public function test_mail_branch_records_its_transport_and_verdict(): void
+    {
+        $mail = new CapturingMail();
+        $mail->setFrom('sender@example.org');
+        $mail->setSubject('s');
+        $mail->setText('b');
+
+        $this->assertSame('', $mail->getLastTransport(), 'nothing recorded before the first send');
+
+        $mail->send(['to@example.org']);
+        $this->assertSame('mail', $mail->getLastTransport());
+        $this->assertSame('accepted for delivery', $mail->getLastTransportResponse());
+
+        $mail->native_result = false;
+        $this->assertSame(0, $mail->send(['to@example.org']));
+        $this->assertSame('mail', $mail->getLastTransport());
+        $this->assertSame('mail() returned false', $mail->getLastTransportResponse());
     }
 }

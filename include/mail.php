@@ -126,9 +126,31 @@ class AA_Mail extends htmlMimeMail implements LaterInterface {
     /** Seconds between SMTP retry attempts. */
     private const SMTP_RETRY_DELAY = 300;
 
-    /** used in AA_Log after toexecute */
+    /** Composite id `{email.id}:{item id}` - the queue's selector column and
+     *  get_class_name($obj, true) both build on it. Kept as-is for those; for
+     *  the log use logSelector(), which keeps the two values apart.
+     *  Used in AA_Log after toexecute*/
     function getId(): string {
         return $this->template_id.':'.$this->reader_id;
+    }
+
+    /** How this mail identifies itself in the log - picked up by AA_Log::selector(),
+     *  so the MAIL_SEND row and the TOEXECUTE row of the same queued mail carry
+     *  the identical selector. */
+    public function logSelector(): AA_Logentry_Mailid {
+        return new AA_Logentry_Mailid(['cls' => get_class_name($this), 'template' => (string)$this->template_id, 'reader' => (string)$this->reader_id]);
+    }
+
+    /** Log one MAIL_SEND row per attempt -- which transport ran and what it
+     *  said back (on SMTP the server's own reply, queue id included). Takes the
+     *  selector from AA_Log::selector(), the same call AA\Later\Toexecute makes,
+     *  so a queued mail's MAIL_SEND and TOEXECUTE rows sit side by side. */
+    private function logSend(int $sent): void
+    {
+        if ($this->getLastTransport() === '') {
+            return;   // send() bailed out before picking a transport - nothing was attempted
+        }
+        AA_Log::write('MAIL_SEND', AA_Log::selector($this), AA_Logentry_Ms::make($this->getLastTransport(), $sent, $this->getLastTransportResponse()));
     }
 
     /**
@@ -138,8 +160,11 @@ class AA_Mail extends htmlMimeMail implements LaterInterface {
     public function send($recipients): int
     {
         try {
-            return parent::send($recipients);
+            $sent = parent::send($recipients);
+            $this->logSend($sent);
+            return $sent;
         } catch (\AA\Mail\TransientSmtpException $e) {
+            $this->logSend(0);
             $this->retry_attempts++;
             if ($this->retry_attempts > self::MAX_SMTP_RETRIES) {
                 trigger_error(

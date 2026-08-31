@@ -68,7 +68,8 @@ class SmtpTransport
     private int    $timeout;
     private string $cafile;
 
-    private string $lastError = '';
+    private string $lastError    = '';
+    private string $lastResponse = '';
 
     public function __construct()
     {
@@ -132,6 +133,13 @@ class SmtpTransport
         return $this->lastError;
     }
 
+    /** What the server said about the message -- its final `250` reply (which
+     *  usually carries the queue id) on success, the failing reply otherwise. */
+    public function getLastResponse(): string
+    {
+        return $this->lastResponse ?: $this->lastError;
+    }
+
     /**
      * Send one pre-built RFC822 message to one or more envelope recipients.
      *
@@ -167,7 +175,7 @@ class SmtpTransport
         $smtp->setDebug(false);
 
         try {
-            $this->check($smtp->connect($this->timeout), 'connect');
+            $this->check($smtp->connect($this->timeout), 'connect', $smtp);
 
             if ($this->encryption === self::ENC_TLS) {
                 $starttls = $smtp->starttls();
@@ -179,19 +187,25 @@ class SmtpTransport
                         'SmtpTransport: server did not offer STARTTLS but AA_SMTP_ENCRYPTION=tls',
                     );
                 }
-                $this->check($starttls, 'starttls');
+                $this->check($starttls, 'starttls', $smtp);
             }
 
             if ($this->user !== '') {
                 /* $tls=false because we already called starttls() above. */
-                $this->check($smtp->auth($this->user, $this->pass, '', false), 'auth');
+                $this->check($smtp->auth($this->user, $this->pass, '', false), 'auth', $smtp);
             }
 
-            $this->check($smtp->mailFrom($envelopeFrom), 'mailFrom');
+            $this->check($smtp->mailFrom($envelopeFrom), 'mailFrom', $smtp);
             foreach ($rcpts as $rcpt) {
-                $this->check($smtp->rcptTo($rcpt), 'rcptTo');
+                $this->check($smtp->rcptTo($rcpt), 'rcptTo', $smtp);
             }
-            $this->check($smtp->data($rfc822), 'data');
+            $this->check($smtp->data($rfc822), 'data', $smtp);
+
+            /* Read the final 250 before disconnect() -- QUIT would overwrite it.
+             * Index-safe on purpose: anything throwing here would be caught below
+             * as "transient" and requeue a message the server already accepted. */
+            $response           = $smtp->getResponse();
+            $this->lastResponse = trim(((string) ($response[0] ?? '')) . ' ' . self::stripControl((string) ($response[1] ?? '')));
         } catch (TransientSmtpException $e) {
             $this->lastError = $e->getMessage();
             $this->safeDisconnect($smtp);
@@ -216,7 +230,7 @@ class SmtpTransport
      *
      * @param mixed $result true on success, PEAR_Error on failure
      */
-    private function check($result, string $context): void
+    private function check($result, string $context, Net_SMTP $smtp): void
     {
         if ($result === true) {
             return;
@@ -225,7 +239,7 @@ class SmtpTransport
             return;
         }
         $code = (int) $result->getCode();
-        $msg  = self::stripControl($result->getMessage());
+        $msg  = self::stripControl(self::serverText($smtp, $context, $code) ?: $result->getMessage());
         $full = "SmtpTransport[$context] $code: $msg";
 
         if ($code >= 400 && $code < 500) {
@@ -235,6 +249,28 @@ class SmtpTransport
             throw new PermanentSmtpException($full, $code);
         }
         throw new TransientSmtpException($full, $code);
+    }
+
+    /**
+     * The server's own words for a failed command. Net_SMTP flattens every
+     * rejection into the same "Invalid response code received from server"
+     * PEAR_Error and keeps the actual reply text only in its response buffer --
+     * yet that text ("5.1.1 No such user here", "5.7.1 Spam message rejected")
+     * is the whole point of logging a failure. Returns '' when the buffered
+     * response is not the one that produced $code (socket/TLS errors carry no
+     * server reply at all), so the caller falls back to the PEAR message.
+     *
+     * Never for AUTH: a server rejecting a malformed AUTH command may quote the
+     * offending argument back, and that argument is the base64 PLAIN blob --
+     * the same credential leak setDebug(false) exists to prevent.
+     */
+    private static function serverText(Net_SMTP $smtp, string $context, int $code): string
+    {
+        if (($code <= 0) || ($context === 'auth')) {
+            return '';
+        }
+        $response = $smtp->getResponse();
+        return ((int) ($response[0] ?? 0) === $code) ? trim((string) ($response[1] ?? '')) : '';
     }
 
     private function safeDisconnect(Net_SMTP $smtp): void

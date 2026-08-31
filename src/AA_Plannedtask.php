@@ -114,7 +114,13 @@ class AA_Plannedtask extends AA_Object implements LaterInterface, AA\Util\NamedI
               <td><input name="chb[x_#AA_ID___]" value="" type="checkbox"></td>
               <td style="white-space:nowrap;">'
             . $buttons['Edit'] . ' '
-            . a_href(AA_Log::getAdminUrl('', 'AA_Plannedtask:_#AA_ID___'), _m('Log'), ['class' => 'aa-button-show']) . ' '
+            /* `RLIKE` (= "begins with" -> `selector LIKE 'AA_Plannedtask:{id}%'`) so the
+               button finds both the rows written before AA_Logentry_Obj
+               (`AA_Plannedtask:{id}`) and the ones written since
+               (`AA_Plannedtask:{id}:Obj`). A prefix, not a substring: it cannot match
+               an id that merely appears somewhere inside another selector, and it is
+               the only form a `selector` index could ever serve. */
+            . a_href(AA_Log::getAdminUrl('', 'AA_Plannedtask:_#AA_ID___', 'RLIKE'), _m('Log'), ['class' => 'aa-button-show']) . ' '
             . $buttons['DeleteObject'] . ' </td>
               <td>_#AA_NAME_</td>
               <td>_#EVENT___</td>

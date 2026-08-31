@@ -83,6 +83,67 @@ final class SmtpSendTest extends TestCase
         $this->assertStringNotContainsString('bcc@example.org', $data);
     }
 
+    public function test_smtp_branch_records_the_servers_own_final_reply(): void
+    {
+        $run = $this->runWithFakeSmtp(
+            ['data_end' => '250 2.0.0 Ok: queued as 4c1TxQ2mZ3z9QG'],
+            static function (string $ip, int $port): array {
+                define('AA_SMTP_HOST', $ip);
+                define('AA_SMTP_PORT', $port);
+                define('AA_SMTP_ENCRYPTION', SmtpTransport::ENC_NONE);
+                define('AA_SMTP_TIMEOUT', 3);
+                define('AA_MAIL_TRANSPORT', SmtpTransport::TRANSPORT_SMTP);
+
+                require_once dirname(__DIR__, 3) . '/include/htmlMimeMail/htmlMimeMail.php';
+
+                $mail = new \htmlMimeMail();
+                $mail->setReturnPath('sender@example.org');
+                $mail->setFrom('sender@example.org');
+                $mail->setSubject('s');
+                $mail->setText('b');
+                $mail->send(['to@example.org']);
+
+                return [$mail->getLastTransport(), $mail->getLastTransportResponse()];
+            },
+        );
+
+        // What AA_Mail::send() writes into the MAIL_SEND log row: the branch that
+        // ran, and the reply the server gave the DATA terminator -- queue id and all.
+        // The 221 from QUIT must NOT have overwritten it.
+        $this->assertSame(['smtp', '250 2.0.0 Ok: queued as 4c1TxQ2mZ3z9QG'], $run['result']);
+    }
+
+    public function test_smtp_branch_records_a_rejection_as_the_response(): void
+    {
+        $run = $this->runWithFakeSmtp(
+            ['rcpt' => '550 5.1.1 No such user here'],
+            static function (string $ip, int $port): array {
+                define('AA_SMTP_HOST', $ip);
+                define('AA_SMTP_PORT', $port);
+                define('AA_SMTP_ENCRYPTION', SmtpTransport::ENC_NONE);
+                define('AA_SMTP_TIMEOUT', 3);
+                define('AA_MAIL_TRANSPORT', SmtpTransport::TRANSPORT_SMTP);
+
+                require_once dirname(__DIR__, 3) . '/include/htmlMimeMail/htmlMimeMail.php';
+
+                $mail = new \htmlMimeMail();
+                $mail->setReturnPath('sender@example.org');
+                $mail->setFrom('sender@example.org');
+                $mail->setSubject('s');
+                $mail->setText('b');
+                $sent = $mail->send(['to@example.org']);
+
+                return [$sent, $mail->getLastTransport(), $mail->getLastTransportResponse()];
+            },
+        );
+
+        [$sent, $transport, $response] = $run['result'];
+        $this->assertSame(0, $sent);
+        $this->assertSame('smtp', $transport);
+        $this->assertStringContainsString('550', $response);
+        $this->assertStringContainsString('No such user here', $response);
+    }
+
     public function test_sendraw_happy_path_returns_sent(): void
     {
         $run = $this->runWithFakeSmtp(

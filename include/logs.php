@@ -45,7 +45,8 @@ BM_UPDATE       bookmark id in profile table    name
 BM_RENAME       bookmark id in profile table    new_name:old_name
 BM_DELETE       bookmark id in profile table    name
 EMAIL_SENT      bookmark id/LIST/TEST           users:valid_emails:emails_sent
-TOEXECUTE       object's class                  return code
+MAIL_SEND       AA_Mail:{templ}:{reader}:Mailid transport:sent:server_response   // one row per send() attempt
+TOEXECUTE       {class}:{id}:Obj                return code                      // AA_Mail uses the Mailid form too
 ALERTS          howoften                        Start/email sent
 HITCOUNT        type
 ITEM_DEL        item_id
@@ -65,7 +66,9 @@ class AA_Log implements InternalExpandInterface
      *  Static function
      *
      * @param              $event
-     * @param string|array $selector - if array, stored as separate entries (for ITEM_DEL, ...)
+     * @param string|array|AA_Logentry $selector - if array, stored as separate
+     *        entries (for ITEM_DEL, ...); if AA_Logentry, serialized reversed
+     *        (see AA_Logentry_Qa / AA_Logentry_Obj)
      * @param string|array|AA_Logentry $params - if array, joined
      * @return bool
      */
@@ -98,6 +101,21 @@ class AA_Log implements InternalExpandInterface
         AA::Metabase()->doInsertMulti('log', $rows);
 
         return true;
+    }
+
+    /** The log selector for $object: its own entry when the class knows how to
+     *  describe itself (AA_Mail splits its composite id into template + reader),
+     *  otherwise the generic class:id one. Callers that log "some object did
+     *  something" go through here so they cannot drift apart.
+     *
+     *  @param object|string $object the object the row is about, or a plain label
+     */
+    public static function selector($object, ?string $id = null): AA_Logentry
+    {
+        if (is_object($object) && method_exists($object, 'logSelector')) {
+            return $object->logSelector();
+        }
+        return AA_Logentry_Obj::make($object, $id);
     }
 
     public static function writeIfChanged(string $event, string $selector, AA_Logentry $params): bool
@@ -140,6 +158,7 @@ class AA_Log implements InternalExpandInterface
             // 'ITEM_DEL'
             // 'ITEM_NEW'
             // 'ITEM_UPD'
+            // 'MAIL_SEND'
             // 'M_FLDI_VLD'
             // LOGIN
             // PWD_REHASH
@@ -196,9 +215,13 @@ class AA_Log implements InternalExpandInterface
         return $entry;
     }
 
-    public static function getAdminUrl(string $event, string $selector = ""): string
+    /** @param string $oper searchbar operator for the selector condition. 'RLIKE'
+     *        ("begins with") is what callers want when the selector is only a
+     *        `{class}:{id}` prefix of the stored (AA_Logentry) form - it renders
+     *        as `selector LIKE 'prefix%'`. 'LIKE' would be a substring match. */
+    public static function getAdminUrl(string $event, string $selector = "", string $oper = '='): string
     {
-        return get_admin_url("aa_log.php", ['srchbr_akce' => 1, 'srchbr_field[0]' => 'selector', 'srchbr_oper[0]' => '=', "srchbr_value[0]=$selector", 'srchbr_field[1]' => 'type', 'srchbr_oper[1]' => '=', 'srchbr_value[1]' => $event, 'srchbr_order[0]' => 'time', 'srchbr_order_dir[0]' => 'on']);
+        return get_admin_url("aa_log.php", ['srchbr_akce' => 1, 'srchbr_field[0]' => 'selector', 'srchbr_oper[0]' => $oper, "srchbr_value[0]=$selector", 'srchbr_field[1]' => 'type', 'srchbr_oper[1]' => '=', 'srchbr_value[1]' => $event, 'srchbr_order[0]' => 'time', 'srchbr_order_dir[0]' => 'on']);
     }
 
     /** Get events from log
@@ -476,6 +499,110 @@ class AA_Logentry_Em extends AA_Logentry
             'mail_id' => new AA_Property('mail_id', _m('Template id'), 'string'),
             'users'   => new AA_Property('users', _m('Users'), 'int'),
             'sent'    => new AA_Property('sent', _m('Emails sent'), 'int'),
+        ];
+    }
+}
+
+/** Object-identifying log SELECTOR - the class that produced the row plus its
+ *  getId(). Serialized reversed (`{class}:{id}:Obj`, like AA_Logentry_Qa) so the
+ *  class stays the column prefix for `selector LIKE 'AA_Mail:%'` and the class
+ *  flag survives as the last segment for factoryByStringReversed().
+ */
+class AA_Logentry_Obj extends AA_Logentry
+{
+    /** mirrors the `log.selector` column width in include/metabase_schema.php */
+    private const SELECTOR_MAX = 255;
+
+    /** NOT named `class`: parseClassProperties() keeps the class to instantiate
+     *  under that very key, and a property of the same name would overwrite it
+     *  in its array_merge - factoryByString() would then instantiate the logged
+     *  class instead of this entry. */
+    public string $cls = '';
+    public string $id  = '';
+
+    /** @param object|string $object the object the row is about, or a plain label */
+    public static function make($object, ?string $id = null): self
+    {
+        $entry = new self([
+            'cls' => is_object($object) ? get_class_name($object) : (string) $object,
+            'id'  => $id ?? (is_object($object) && method_exists($object, 'getId') ? (string) $object->getId() : ''),
+        ]);
+        // `id` is the only unbounded part (the no-object branch passes a whole
+        // serialized task) - trim it so the trailing `:Obj` flag always fits.
+        while ((($over = strlen($entry->serializeToString(true)) - self::SELECTOR_MAX) > 0) && ($entry->id !== '')) {
+            $entry->id = mb_substr($entry->id, 0, -$over);
+        }
+        return $entry;
+    }
+
+    public static function getClassProperties(): array
+    {
+        return [
+            'cls' => new AA_Property('cls', _m('Class'), 'string'),
+            'id'  => new AA_Property('id', _m('Object id'), 'string'),
+        ];
+    }
+}
+
+/** Mail-identifying log SELECTOR - the decomposed AA_Mail::getId().
+ *
+ *  That id is a composite: `{email.id}:{item id}` - the mail template row and
+ *  the item the template was unaliased against (a reader item on the
+ *  sendToReader()/alerts paths, the triggering item on a few event paths;
+ *  empty when the mail went to a bare address). Logged as one opaque string it
+ *  told the reader nothing and needed ParamImplode to escape its inner colon;
+ *  as two properties each value is its own segment, so `AA_Mail:2:c24ef6…:Mailid`
+ *  stays escape-free and the Log page can label the parts.
+ */
+class AA_Logentry_Mailid extends AA_Logentry
+{
+    public string $cls      = '';
+    public string $template = '';
+    public string $reader   = '';
+
+    public static function getClassProperties(): array
+    {
+        return [
+            'cls'      => new AA_Property('cls', _m('Class'), 'string'),
+            'template' => new AA_Property('template', _m('Mail template'), 'int'),    // email.id
+            'reader'   => new AA_Property('reader', _m('Reader item'), 'string'),     // item.id, may be empty
+        ];
+    }
+}
+
+/** MAIL_SEND log entry -- one delivery attempt of one mail (include/mail.php).
+ *  Sits under the same selector as the TOEXECUTE row the queue writes for the
+ *  same mail, so both line up in the Log page filter. */
+class AA_Logentry_Ms extends AA_Logentry
+{
+    /** log.params is varbinary(128) and the server runs STRICT_TRANS_TABLES, so
+     *  an over-long server reply would fail the INSERT (and thus the send). */
+    private const PARAMS_MAX = 128;
+
+    /** Declared (unlike the older sibling entries) so setProperties() does not
+     *  create them dynamically - deprecated since PHP 8.2. All string, because
+     *  setProperties() also fills them from a parsed log row on the Log page,
+     *  where a malformed `sent` would be a TypeError against an int property. */
+    public string $transport = '';
+    public string $sent      = '';
+    public string $resp      = '';
+
+    /** Build the entry with `resp` -- the only unbounded property -- trimmed to fit. */
+    public static function make(string $transport, int $sent, string $resp): self
+    {
+        $entry = new self(['transport' => $transport, 'sent' => $sent, 'resp' => $resp]);
+        while ((($over = strlen($entry->serializeToString()) - self::PARAMS_MAX) > 0) && ($entry->resp !== '')) {
+            $entry->resp = mb_substr($entry->resp, 0, -$over);   // mb_ so a trim never splits a multibyte char
+        }
+        return $entry;
+    }
+
+    public static function getClassProperties(): array
+    {
+        return [
+            'transport' => new AA_Property('transport', _m('Transport'), 'string'),   // 'mail' or 'smtp'
+            'sent'      => new AA_Property('sent', _m('Recipients sent'), 'int'),
+            'resp'      => new AA_Property('resp', _m('Server response'), 'string'),
         ];
     }
 }
