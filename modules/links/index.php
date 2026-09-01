@@ -179,6 +179,14 @@ function Links_CountLinkInBins($cat_path): array
 $module_id   = AA::$module_id;
 $links_info  = GetModuleInfo($module_id, 'Links');
 
+// Everything below reads $links_info and the manager state derived from it.
+// GetModuleInfo() returns [] for an unknown module, and the page would then die
+// on the first null handed to a typed parameter instead of saying what is wrong.
+if (!$links_info) {
+    MsgPage(_m("Module not found."));
+    exit;
+}
+
 $actions   = new Manageractions();
 $actions->addAction(new Links_Move('Activate', 1));
 $actions->addAction(new Links_Move('Folder2', 2));

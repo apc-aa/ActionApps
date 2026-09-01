@@ -28,11 +28,12 @@ function GetCategoryPath($cid): string
 }
 
 /** Get category id from path
- * @param string $path
+ * @param string|null $path  null for a module with no tree_start (see index.php)
  * @return string
  */
-function GetCategoryFromPath($path): string
+function GetCategoryFromPath(?string $path): string
 {
+    $path = (string) $path;
     return strrchr($path, ",") ? substr(strrchr($path, ","), 1) : $path;
 }
 
