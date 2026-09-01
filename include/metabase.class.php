@@ -1523,7 +1523,7 @@ class AA_Metabase
         $SQL   .= ($where ? "WHERE (1=1) $where" : '');
         $SQL   .= MakeSQLOrderBy($fields, $sort, $join_tables);
 
-        return GetZidsFromSQL($SQL, $key, $this->tables[$tablename]->getZidsType($key));
+        return GetZidsFromSQL($SQL, $this->tables[$tablename]->getZidsType($key));
     }
 
     public static function queryCount($settings, $set)

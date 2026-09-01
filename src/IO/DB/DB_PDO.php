@@ -347,14 +347,24 @@ class DB_PDO
         return true;
     }
 
-    /* public get 1 column */
-    public function fetch_column($col): array
+    /** Get the FIRST column of the pending result as a flat array.
+     *
+     *  Taken by position, not by name: every query that reaches here selects its
+     *  id column first - the sole caller is GetZidsFromSQL() (include/searchlib.php),
+     *  and the one multi-column query, AA_Object::querySet()
+     *  (include/statestore.php), appends its extra sort column *after* the id.
+     *  Any new query fed to this method MUST keep that order.
+     *
+     *  Fetching by position also avoids building one associative array per row -
+     *  measured 507 MB for a 1.2M row id list - only to discard it again.
+     */
+    public function fetch_first_column(): array
     {
         if (!$this->sth) {
-            $this->halt("fetchColumn called with no query pending.");
+            $this->halt("fetch_first_column called with no query pending.");
             return [];
         }
-        return array_column($this->sth->fetchAll(PDO::FETCH_ASSOC), $col);
+        return $this->sth->fetchAll(PDO::FETCH_COLUMN, 0);
     }
 
     //    /* public get all records */
@@ -482,6 +492,16 @@ class DB_PDO
     public function f($Name)
     {
         return $this->Record[$Name] ?? null;
+    }
+
+    /** Value of the FIRST column of the current record - the id, by the same
+     *  invariant fetch_first_column() documents. next_record() fills $Record
+     *  with PDO::FETCH_ASSOC, which keeps the SELECT order, so the first entry
+     *  is the first selected column.
+     */
+    public function first_col()
+    {
+        return $this->Record ? reset($this->Record) : null;
     }
 
     /** based on my test mysqli contains string[], while db_pdo:mysql returns columns in type based on table column type */

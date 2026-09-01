@@ -988,5 +988,5 @@ function Central_QueryZids(AA_Set $set): zids
     $SQL .= MakeSQLConditions($fields, $conds, $fields, $join_tables);
     $SQL .= MakeSQLOrderBy($fields, $sort, $join_tables);
 
-    return GetZidsFromSQL($SQL, 'id', 's');
+    return GetZidsFromSQL($SQL, 's');
 }

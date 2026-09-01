@@ -140,7 +140,7 @@ function Links_QueryZIDs($cat_path, $conds, $sort = "", $subcat = false, $type =
     $SQL .=  $where_sql . $order_by_sql;
 
     // get result --------------------------
-    return GetZidsFromSQL($SQL, 'id', 's');
+    return GetZidsFromSQL($SQL, 's');
 }
 
 
@@ -177,5 +177,5 @@ function Links_QueryCatZIDs($cid, $conds, $sort = [], $subcat = false, $type = "
     $SQL .=  $where_sql . $order_by_sql;
 
     // get result --------------------------
-    return GetZidsFromSQL($SQL, 'id', 's');
+    return GetZidsFromSQL($SQL, 's');
 }

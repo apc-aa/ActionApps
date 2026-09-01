@@ -1524,8 +1524,12 @@ function MakeSQLOrderBy($fields_arr, $sort, &$join_tables, $additional_field_con
 }
 
 /** GetZidsFromSQL function - get zids from database
- * @param string $SQL                      - SQL query
- * @param string $col                      - column in database containing id
+ *
+ *  The ids are taken from the FIRST selected column, so $SQL must select the id
+ *  column first - all callers do, and the queries which add columns (the sort
+ *  columns of AA_Object::querySet() and of QueryIDs()) append them after the id.
+ *
+ * @param string $SQL                      - SQL query, id column selected first
  * @param        $zid_type
  * @param bool   $empty_result_condition   - have we return empty set?
  * @param array  $group_limit              - array('field' => <grouping_column>,
@@ -1538,7 +1542,7 @@ function MakeSQLOrderBy($fields_arr, $sort, &$join_tables, $additional_field_con
  *                                         selected items (then set the number to 1)
  * @return zids from SQL query;
  */
-function GetZidsFromSQL($SQL, $col, $zid_type = 's', $empty_result_condition = false, $group_limit = null): zids
+function GetZidsFromSQL($SQL, $zid_type = 's', $empty_result_condition = false, $group_limit = null): zids
 {
     global $QueryIDsCount;
     $db = getDB();
@@ -1550,7 +1554,7 @@ function GetZidsFromSQL($SQL, $col, $zid_type = 's', $empty_result_condition = f
         AA::$debug & 2 && AA::$dbg->log("GetZidsFromSQL: SQL", $SQL);
 
         if (!$group_limit) {
-            $arr = $db->fetch_column($col);
+            $arr = $db->fetch_first_column();
         } else {
             // we have to remove the ids above the limit for group, and also we have to add extended attributes
             // to zids, because of group_by
@@ -1563,7 +1567,7 @@ function GetZidsFromSQL($SQL, $col, $zid_type = 's', $empty_result_condition = f
                 AA::$debug & 2 && AA::$dbg->log("result", $db->record());
 
                 if (++$groups[$db->f($gfield)] <= $glimit) {
-                    $arr[]      = $db->f($col);
+                    $arr[]      = $db->first_col();
                     $group_by[] = $db->f('s0');
                 }
             }
@@ -2190,7 +2194,7 @@ class QueryZidsHelper
         AA::$debug & 2 && AA::$dbg->log("QueryZids: SQL: $SQL");
 
         // if neverAllItems is set, return empty set if no conds[] are used
-        $ret = GetZidsFromSQL($SQL, 'itemid', 'p', empty($this->select_conds) && $neverAllItems, $this->select_limit_field);
+        $ret = GetZidsFromSQL($SQL, 'p', empty($this->select_conds) && $neverAllItems, $this->select_limit_field);
 
         AA::$debug & 2 && AA::$dbg->log("QueryZids: result:", $ret);
         return $ret;
@@ -2262,7 +2266,7 @@ function QueryConstantZIDs($group_id, $conds, $sort = null, $restrict_zids = nul
     }
 
     // get result --------------------------
-    return GetZidsFromSQL($SQL, 'short_id', 's');
+    return GetZidsFromSQL($SQL, 's');
 }
 
 // -------------------------------------------------------------------------------------------

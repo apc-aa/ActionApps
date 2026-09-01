@@ -931,7 +931,7 @@ class AA_Object extends AA_Storable implements AA_iEditable
         $SQL .= " ORDER BY " . implode(', ', $select_order);
 
         // not cached result
-        return GetZidsFromSQL($SQL, 'objectid', 'l');
+        return GetZidsFromSQL($SQL, 'l');
     }
 
     /**
@@ -1413,7 +1413,7 @@ class AA_Components
         $SQL .=  $where_sql . $order_by_sql;
 
         // get result --------------------------
-        return GetZidsFromSQL($SQL, 'aa_id', 'w');
+        return GetZidsFromSQL($SQL, 'w');
     }
 }
 

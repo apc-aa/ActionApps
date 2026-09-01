@@ -726,6 +726,6 @@ class ChangesMonitor
         $SQL .= $where_sql . $order_by_sql;
 
         // get result --------------------------
-        return GetZidsFromSQL($SQL, 'id', 'l');
+        return GetZidsFromSQL($SQL, 'l');
     }
 }
