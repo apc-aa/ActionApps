@@ -33,7 +33,7 @@
 namespace AA\Cache;
 
 use AA;
-use Cvarset;
+use AA\IO\DB\DB_AA;
 
 /** AA\Cache\CacheStr2find class - storage for str2find pairs used by pagecache
  *  to identify records to be deleted (invalidated) from cache
@@ -53,7 +53,7 @@ class CacheStr2find
     }
 
     /** add function
-     *  Add ids (array) of specified type (common to all added ids)
+     *  Add ids (array) of a specified type (common to all added ids)
      * @param string[] $strings
      * @param string   $type
      */
@@ -78,14 +78,16 @@ class CacheStr2find
     }
 
     /** add_str2find function
-     * @param CacheStr2find $str2find
+     *  Null is a normal argument, not an error: startLevel() returns null on the
+     *  outermost render, and that level simply has no parent to merge.
      */
-    public function add_str2find($str2find): void
+    public function add_str2find(?self $str2find): void
     {
-        if (is_a($str2find, 'AA\Cache\CacheStr2find')) {
-            foreach ($str2find->strings as $k => $v) {
-                $this->strings[$k] = true;   // copy all the $str2find ids to this
-            }
+        if ($str2find === null) {
+            return;
+        }
+        foreach (array_keys($str2find->strings) as $k) {
+            $this->strings[$k] = true;   // copy all the $str2find ids to this
         }
     }
 
@@ -96,16 +98,20 @@ class CacheStr2find
         $this->strings = [];
     }
 
-    /** store function
+    /** Replaces the str2find rows of one pagecache key.
+     *
      * @param $keyid
      */
     public function store($keyid): void
     {
-        $varset = new Cvarset([['pagecache_id', $keyid], ['str2find','']]);
-        $varset->doDeleteWhere('pagecache_str2find', "pagecache_id='$keyid'");
-        foreach (array_keys((array) $this->strings) as $str) {
-            $varset->set('str2find', $str);
-            $varset->doInsert('pagecache_str2find');
+        DB_AA::delete('pagecache_str2find', [['pagecache_id', $keyid]]);
+        if (!$this->strings) {
+            return;
         }
+        $rows = [];
+        foreach (array_keys($this->strings) as $str) {
+            $rows[] = ['pagecache_id' => $keyid, 'str2find' => $str];
+        }
+        AA::Metabase()->doInsertMulti('pagecache_str2find', $rows);
     }
 }

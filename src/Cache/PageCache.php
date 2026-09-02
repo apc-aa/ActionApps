@@ -444,24 +444,27 @@ class PageCache
         }
     }
 
-    /**
-     * @param $time
+    /** Deletes everything stored before $time.
      *
+     * @param $time
      * @return string
      */
     public static function invalidateOlder($time): string
     {
-        $highest_old_pid = DB_AA::select1('id', 'SELECT id FROM pagecache', [['stored', $time, '<']], ['id-']);
-        $highest_old_id  = DB_AA::select1('id', 'SELECT id FROM pagecache_str2find', [['pagecache_id', $highest_old_pid]]);
+        $highest_old_pid = DB_AA::select1('id', 'SELECT id FROM pagecache', [['stored', $time, '<']], ['stored-']);
+        if (!$highest_old_pid) {
+            return "time<$time, nothing older";
+        }
+        $highest_old_id  = DB_AA::select1('id', 'SELECT id FROM pagecache_str2find', [['pagecache_id', $highest_old_pid]], ['id-']);
         if ($highest_old_id) {
             DB_AA::delete_low_priority('pagecache_str2find', [['id',$highest_old_id,'<=']]);
-            DB_AA::delete_low_priority('pagecache', [['stored',$time,'<']]);
         }
+        DB_AA::delete_low_priority('pagecache', [['stored',$time,'<']]);
         return "time<$time, id<=$highest_old_id";
     }
 
     /** invalidateFor function
-     *  Remove cached information for all rows which have the $cond in str2find
+     *  Remove cached information for all rows that have the $cond in str2find
      * @param string | array $strings
      * @param string         $type
      */
@@ -470,16 +473,16 @@ class PageCache
         // We do not want to report errors here. Sometimes this SQL leads to:
         //   "MySQL Error: 1213 (Deadlock found when trying to get lock; Try
         //    restarting transaction)" error.
-        // It is not so big problem if we do not invalidate cache - much less than
+        // It is a not-so-big problem if we do not invalidate cache - much less than
         // halting the operation.
 
         $str2find = new CacheStr2find($strings, $type);
 
         $keys = DB_AA::select('pagecache_id', "SELECT pagecache_id FROM pagecache_str2find", [['str2find',$str2find->getStrings()]]);
 
-        // invalidateById() is quite slow - mainly if we have to delete more rows
-        // I do not know, how to make it quicker. I tried to refine the SQL
-        // command, but following SQL do not help either:
+        // invalidateById() is quite slow - mainly if we have to delete more rows,
+        // I do not know how to make it quicker. I tried to refine the SQL
+        // command, but following SQL does not help either:
         //
         //   DELETE pagecache, pagecache_str2find FROM pagecache, pagecache_str2find
         //    WHERE pagecache.id = pagecache_str2find.pagecache_id AND pagecache_str2find.str2find = '".quote($cond)."'";

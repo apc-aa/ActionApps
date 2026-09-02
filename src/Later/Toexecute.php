@@ -317,7 +317,7 @@ class Toexecute
         }
 
         $object = unserialize($task['object']);
-        if (is_object($object) && !is_a($object, '__PHP_Incomplete_Class', false)) {
+        if (is_object($object) && !($object instanceof \__PHP_Incomplete_Class)) {
             $retcode = $this->execute_one($object, unserialize($task['params']));
             $this->message($retcode);
             $selector = AA_Log::selector($object);
@@ -347,7 +347,7 @@ class Toexecute
      */
     public function execute_one($object, $params): string
     {
-        if (!is_object($object) || is_a($object, '__PHP_Incomplete_Class', false)) {
+        if (!is_object($object) || $object instanceof \__PHP_Incomplete_Class) {
             return 'Toexecute:execute_one: No object: ' . serialize($object); // Error
         }
         set_time_limit(max(30, ini_get('max_execution_time')));   // 30 seconds (at least) for each task

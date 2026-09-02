@@ -78,14 +78,14 @@ class AA_Log implements InternalExpandInterface
             return false;
         }
 
-        if (is_a($params, 'AA_Logentry')) {
+        if ($params instanceof AA_Logentry) {
             $params = $params->serializeToString();
         } elseif (is_array($params)) {
             $params = ParamImplode($params);
         }
 
         // a selector may also be an AA_Logentry - stored reversed (searchable value first, class flag last)
-        if (is_a($selector, 'AA_Logentry')) {
+        if ($selector instanceof AA_Logentry) {
             $selector = $selector->serializeToString(true);
         }
 

@@ -209,7 +209,11 @@ class itemview
         }
         $key = get_hash('outp', $keystr, $this->disc, $this->aa_aliases, $this->multi_aliases, PageCache::globalKeyArray());
 
-        global $str2find_passon;
+        // One slot shared by every call of this method, nested ones included - a
+        // method-level static behaves like the `global` it replaced (shared across
+        // instances and across recursion), but stays private to this function.
+        static $str2find_passon;
+
         if (!$GLOBALS['nocache'] && ($res = AA::Pagecache()->get($key))) {
             $this->_was_cached = true;
             return $res;
@@ -218,6 +222,9 @@ class itemview
         $str2find_save   = $str2find_passon;    // Save str2find from same level
         $str2find_passon = new CacheStr2find(); // clear it for caches stored further down
         $res             = $this->get_output($view_type);
+        // NOT the object made two lines above: nested views run inside get_output()
+        // and leave their own (already merged) accumulator in the shared slot - that
+        // superset is what this level has to store.
         $str2find_passon->add([unpack_id($this->slice_info["id"])]);
         AA::Pagecache()->store($key, $res, $str2find_passon);
         $str2find_passon->add_str2find($str2find_save); // and append saved for above
