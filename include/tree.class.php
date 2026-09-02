@@ -240,8 +240,8 @@ class AA_Supertree_Reverse extends AA_Supertree
             // enormous OR expression; each chunk is bucketed on its own, so the
             // order of a parent's children always comes from a single query
             foreach (array_chunk($level, self::LEVEL_CHUNK) as $chunk) {
-                $children   = $this->_queryChildren($chunk);
-                $next_level = array_merge($next_level, $children);
+                $children     = $this->_queryChildren($chunk);
+                $next_level[] = $children;      // merged once below - array_merge() in a loop is O(n^2)
 
                 // every visited node needs an entry, leaves included - _subIds() and
                 // _subTreeString() foreach over $this->_i[$id] without a guard
@@ -269,7 +269,8 @@ class AA_Supertree_Reverse extends AA_Supertree
             }
 
             // items already visited end the walk here - this is the cycle guard
-            $level = array_values(array_diff(array_unique($next_level), array_keys($this->_i)));
+            $found = $next_level ? array_merge(...$next_level) : [];
+            $level = array_values(array_diff(array_unique($found), array_keys($this->_i)));
         }
     }
 
@@ -282,13 +283,13 @@ class AA_Supertree_Reverse extends AA_Supertree
     {
         $cond = [
             $this->_relation_field => 1,
+            // '=' parses the value with Syntax/SQL_Lex, so an array becomes
+            // (field="id1" OR field="id2" OR ...). '==' cannot be used here - it
+            // compares against the raw string and never parses an OR expression.
             'operator'             => '=',
-            // '=' runs the value through Syntax/SQL_Lex, so an OR expression
-            // becomes (field='id1' OR field='id2' OR ...) - the same value form
-            // ParseMultiSelectConds() builds
-            'value'                => implode(' OR ', $parent_ids),
+            'value'                => $parent_ids,   // AA_Set quotes each value and joins them with OR
         ];
-        return QueryZids($this->_restrict_slices, [$cond], $this->_sort)->longids();
+        return (new AA_Set($this->_restrict_slices, [$cond], $this->_sort))->query()->longids();
     }
 
     /** child long id => the long ids its relation field points at
