@@ -34,7 +34,7 @@ class AA_Supertree
     protected array $_i = [];        // Array of items
     protected $_relation_field;  //
     protected $_sort;     // sort array().
-    // Currently wors only for Reverse trees. @todo
+    // Currently works only for Reverse trees. @todo
     protected array $_modules = [];  // Array of modules
 
     protected $_restrict_slices;  // Array of allowed slices
@@ -206,7 +206,14 @@ class AA_Supertree
  */
 class AA_Supertree_Reverse extends AA_Supertree
 {
+    /** how many parents at most go into one query */
+    private const LEVEL_CHUNK = 200;
+
     /** load function
+     *  Walks the reverse tree by levels: one query for the whole level, not one
+     *  per node. The parent class batches the same way (it can just read the
+     *  relation field of ids it already has); here the direction forces a second
+     *  query per level to learn which parent each child belongs to.
      * @param string $id long_item_id
      */
     public function load($id): void
@@ -226,29 +233,82 @@ class AA_Supertree_Reverse extends AA_Supertree
         }
         $this->_modules = array_fill_keys($this->_restrict_slices, true);
 
-        /** items, which are already in trash, or expired, ... */
-        $queue    = [$id];
+        $level = [$id];
+        while ($level) {
+            $next_level = [];
+            // chunked so that a level with thousands of nodes cannot build one
+            // enormous OR expression; each chunk is bucketed on its own, so the
+            // order of a parent's children always comes from a single query
+            foreach (array_chunk($level, self::LEVEL_CHUNK) as $chunk) {
+                $children   = $this->_queryChildren($chunk);
+                $next_level = array_merge($next_level, $children);
 
-        // prepare cond in order we can be as quick as possible
-        $cond[$this->_relation_field] = 1;
-        $cond['operator'] = '=';
+                // every visited node needs an entry, leaves included - _subIds() and
+                // _subTreeString() foreach over $this->_i[$id] without a guard
+                foreach ($chunk as $parent_id) {
+                    $this->_i[$parent_id] = [];
+                }
 
-        while (count($queue)) {
+                if (count($chunk) === 1) {
+                    // one parent asked for - every returned child is its own, so there
+                    // is nothing to look up (keeps narrow deep trees at one query per level)
+                    $this->_i[$chunk[0]] = $children;
+                    continue;
+                }
 
-            $item_id  = array_pop($queue);
-            if (isset($this->_i[$item_id])) {
-                continue;
+                $chunk_set = array_flip($chunk);
+                foreach ($this->_loadParents($children) as $child_id => $parents) {
+                    foreach (array_unique($parents) as $parent_id) {
+                        // only parents of THIS chunk - a child pointing at an already
+                        // finished parent was handed to it when that parent was asked for
+                        if (isset($chunk_set[$parent_id])) {
+                            $this->_i[$parent_id][] = $child_id;
+                        }
+                    }
+                }
             }
 
-            $cond['value'] = $item_id;
-            $zids          = QueryZids($this->_restrict_slices, [$cond], $this->_sort);
-
-            $next    = $zids->longids();
-            $this->_i[$item_id] = $next;
-
-            $queue   = array_merge($queue, $next);
+            // items already visited end the walk here - this is the cycle guard
+            $level = array_values(array_diff(array_unique($next_level), array_keys($this->_i)));
         }
-        return;
+    }
+
+    /** long ids of all items whose relation field points at any of $parent_ids,
+     *  in the order $this->_sort asks for
+     * @param  string[] $parent_ids
+     * @return string[]
+     */
+    protected function _queryChildren(array $parent_ids): array
+    {
+        $cond = [
+            $this->_relation_field => 1,
+            'operator'             => '=',
+            // '=' runs the value through Syntax/SQL_Lex, so an OR expression
+            // becomes (field='id1' OR field='id2' OR ...) - the same value form
+            // ParseMultiSelectConds() builds
+            'value'                => implode(' OR ', $parent_ids),
+        ];
+        return QueryZids($this->_restrict_slices, [$cond], $this->_sort)->longids();
+    }
+
+    /** child long id => the long ids its relation field points at
+     * @param  string[] $child_ids
+     * @return array<string, string[]>
+     */
+    protected function _loadParents(array $child_ids): array
+    {
+        if (!$child_ids) {
+            return [];
+        }
+        $ret     = [];
+        $content = GetItemContent($child_ids, false, false, ['id..............', $this->_relation_field], null, AA_BIN_ACTIVE);
+        // walked in $child_ids order - the sort order _queryChildren() returned them in
+        foreach ($child_ids as $child_id) {
+            if (isset($content[$child_id])) {
+                $ret[$child_id] = $this->_compactValue($content[$child_id][$this->_relation_field]);
+            }
+        }
+        return $ret;
     }
 }
 
