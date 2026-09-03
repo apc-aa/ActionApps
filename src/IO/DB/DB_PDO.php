@@ -156,7 +156,7 @@ class DB_PDO
                 $this->halt(array_search(null, $param) ? "Null Parameter" : "Cannot Execute");
             }
         }
-        $this->getErrorInfo();
+        // $this->getErrorInfo();
         return $status;
     }
 
@@ -323,11 +323,9 @@ class DB_PDO
 
         if ($this->Debug) {
             echo "Still Connected, ";
-        }
-
-        if ($this->Debug) {
             printf("Debug: query = %s<br>\n", $Query_String);
         }
+
         try {
             $this->sth = $this->dbh->query($Query_String, PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
@@ -338,7 +336,7 @@ class DB_PDO
         #    $result = $this->sth->setFetchMode(PDO::FETCH_BOTH); /wasn't required, must be default.
         #}
         $this->Row = 0;
-        $this->getErrorInfo();
+        // $this->getErrorInfo();  // commented out - rewritten in halt() - HM - 2026-09-01
         if (!$this->sth) {
             $this->halt("SQL Query Failed: " . $Query_String);
             return false;
@@ -431,7 +429,7 @@ class DB_PDO
 
         $this->Record = $this->sth->fetch(PDO::FETCH_ASSOC);
         ++$this->Row;
-        $this->getErrorInfo();
+        // $this->getErrorInfo();  // commented out - rewritten in halt() - HM - 2026-09-01
 
         $stat = is_array($this->Record);
 
@@ -790,7 +788,7 @@ class DB_PDO
         return false;
     }
 
-    public function getErrorInfo(): void
+    private function getErrorInfo(): void
     {
         if (is_object($this->dbh)) {
             $e = $this->dbh->errorInfo();

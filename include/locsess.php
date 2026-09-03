@@ -577,6 +577,10 @@ $spareDBs     = [];
  */
 function getDB() {
     global $spareDBs;
+    // inside DB_AA::transaction() everything must run on the handle owning it
+    if ($tx_db = DB_AA::transactionDb()) {
+        return $tx_db;
+    }
     if (!($db = array_pop($spareDBs))) {
         $type = DB_TYPE;
         //$type = ($_GET['mysqli']==1) ? 'db_mysgl': 'db_pdo:mysql'; //DB_TYPE; // : 'db_pdo:mysql';,
@@ -601,7 +605,9 @@ function getDB() {
  */
 function freeDB(&$db): void
 {
-    $GLOBALS['spareDBs'][] = $db;
+    if (!DB_AA::releaseTransactionDb($db)) {   // the transaction's handle stays pinned
+        $GLOBALS['spareDBs'][] = $db;
+    }
     $db = null;  // quite important - otherwise you can use it again and when needed second db, we getDB return the same on (stored as $spareDBs) - (aafinder fields search)
 }
 

@@ -8,8 +8,88 @@ use AA_Http;
 /** proxy class for other db engines */
 final class DB_AA
 {
+    /** handle owning the open transaction, or null - @see transaction() */
+    private static ?DB_PDO $tx_db = null;
+
+    /** is the transaction's handle currently checked out by getDB()? */
+    private static bool $tx_db_out = false;
+
     /* private: constructor - NO INSTANCES! */
     private function __construct(array $connection) {}
+
+    /** Runs $work as one database transaction.
+     *
+     *  Everything inside must run on the ONE connection that owns the transaction:
+     *  with AA_USE_NON_PERSISTENT_CONNECT every DB_PDO is its own connection, so a
+     *  statement on a second handle would silently fall outside. getDB() therefore
+     *  hands out this handle (@see transactionDb()) and refuses to hand out a second.
+     *
+     *  Nesting is not emulated with savepoints - an inner call joins the outer
+     *  transaction, so an inner failure rolls the whole block back.
+     *
+     * @usage DB_AA::transaction(static function () { ...several writes... });
+     * @return mixed whatever $work returned
+     */
+    public static function transaction(callable $work): mixed
+    {
+        if (self::$tx_db) {
+            return $work();                     // already inside - join the outer transaction
+        }
+        $db = getDB();
+        if (!$db->beginTransaction()) {
+            freeDB($db);
+            return $work();                     // no transaction available - behave as before
+        }
+        self::$tx_db     = $db;
+        self::$tx_db_out = false;
+        try {
+            $ret = $work();
+            if (!$db->commit()) {
+                // PDO runs in silent error mode, so a failed commit only returns false.
+                // The writes are gone, so the caller must not be told the block succeeded.
+                throw new \RuntimeException('DB_AA::transaction(): commit failed, the block was not stored');
+            }
+            return $ret;
+        } catch (\Throwable $e) {
+            try {
+                $db->rollback();
+            } catch (\Throwable) {
+                // transaction already gone (implicit commit by DDL, lost connection) - keep the original error
+            }
+            throw $e;
+        } finally {
+            self::$tx_db     = null;   // unpin first - only then freeDB() returns the handle to the pool
+            self::$tx_db_out = false;
+            freeDB($db);
+        }
+    }
+
+    /** Handle getDB() must use, or null when no transaction runs. Marks it as checked
+     *  out; freeDB() checks it back in (@see releaseTransactionDb()).
+     * @throws \RuntimeException when a second handle is asked for inside a transaction
+     */
+    public static function transactionDb(): ?DB_PDO
+    {
+        if (!self::$tx_db) {
+            return null;
+        }
+        if (self::$tx_db_out) {
+            throw new \RuntimeException('DB_AA::transaction(): a second database handle was requested inside a transaction - its statements would fall outside it. Rework the block so it uses one handle at a time.');
+        }
+        self::$tx_db_out = true;
+        return self::$tx_db;
+    }
+
+    /** Counterpart for freeDB(): true when $db belongs to the open transaction
+     *  and must not go back to the $spareDBs pool. */
+    public static function releaseTransactionDb($db): bool
+    {
+        if (!self::$tx_db || $db !== self::$tx_db) {
+            return false;
+        }
+        self::$tx_db_out = false;
+        return true;
+    }
 
     /** just for debug purposes */
     public static function getDbType(): string
