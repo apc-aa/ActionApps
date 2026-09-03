@@ -968,6 +968,7 @@ abstract class AA_Inserter extends AA_Serializable implements NamedInterface
                     $varset->set("id", new_id(), "unpacked");
                     $varset->set("group_id", $constgroup, 'quoted');
                     $varset->doInsert('constant');
+                    ConstantsChanged();                 // new constant row - drop the cached reads
                 }
                 freeDB($db);
             }

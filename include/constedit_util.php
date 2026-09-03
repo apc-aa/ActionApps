@@ -484,6 +484,7 @@ function hcUpdate(): void
         }
         aaevent::singleton()->comes('CONSTANTGROUP_UPDATED', AA::$module_id, 'S', $event_return_state, $group_id);
     }
+    ConstantsChanged();
     freeDB($db);
 }
 
@@ -574,6 +575,7 @@ function CopyConstants($slice_id): bool
         }
     }
 
+    ConstantsChanged();
     return true;
 }
 
@@ -658,6 +660,7 @@ function add_constant_group(string $group_id, $constants2import): true|string
         $varset->add("group_id", "text", $group_id);
         $varset->doINSERT("constant");
     }
+    ConstantsChanged();
     freeDB($db);
     return true;
 }
@@ -679,7 +682,9 @@ function delete_constant_group($group_id, $slice_id = ""): bool
         return false;
     }
     // delete group name and constants
-    return DB_AA::sql("DELETE FROM `constant` WHERE (`group_id`='lt_groupNames' AND `value`='$qgrouip_id') OR `group_id`='$qgrouip_id'");
+    $ret = DB_AA::sql("DELETE FROM `constant` WHERE (`group_id`='lt_groupNames' AND `value`='$qgrouip_id') OR `group_id`='$qgrouip_id'");
+    ConstantsChanged();
+    return $ret;
 }
 
 // -------------------------------------------------------------------
@@ -724,6 +729,7 @@ function refresh_constant_group($group_id, $items): bool
             $varset->doINSERT('constant');
         }
     }
+    ConstantsChanged();
     freeDB($db);
     return $existed;
 }

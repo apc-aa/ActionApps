@@ -1697,12 +1697,11 @@ function getConstantValue($group, $what, $field_name) {
         case "class" :
         case "id" :
         case "level" :
-            // get values from contentcache or use GetConstants function to get it from db
-            $val = AA::Contentcache()->get_result("GetConstants", [$group, 'pri', $what]);
+            $val = GetConstants($group, 'pri', $what);   // GetConstants() caches per request itself
             return $val[$field_name];
         default :
             if (strlen($what)) {
-                $val = AA::Contentcache()->get_result("GetConstants", [$group, 'pri', 'short_id']);
+                $val = GetConstants($group, 'pri', 'short_id');
                 $cid = $val[$field_name];
                 if ($cid) {
                     $content = GetConstantContent(new zids($cid, 's'));
@@ -3792,7 +3791,7 @@ class AA_Stringexpand_Ids extends AA_Stringexpand {
         $ids   = trim($ids);
         $limit = (int)trim($limit);
 
-        $restrict_zids = $ids ? new zids(explode_ids($ids),'l') : false;
+        $restrict_zids = $ids ? new zids(explode_ids($ids),'l') : null;
         $set = new AA_Set(explode_ids($slices), $conds, $sort);
         if ($limit > 0) {
             $zids = $set->query($restrict_zids, $limit);

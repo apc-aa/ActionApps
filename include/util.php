@@ -696,7 +696,6 @@ function GetConstants($group, $order = 'pri', $column = 'name', $keycolumn = 'va
 
     $const_fields = ['id' => 1,'group_id' => 1,'name' => 1,'value' => 1,'class' => 1,'pri' => 1,'ancestors' => 1,'description' => 1,'short_id' => 1];
 
-    $db = getDB();
     if ($const_fields[$db_order]) {
         $order_by  = "ORDER BY $db_order";
     }
@@ -711,6 +710,25 @@ function GetConstants($group, $order = 'pri', $column = 'name', $keycolumn = 'va
     $fields = ($db_column === $db_keycolumn ? $db_column : "$db_keycolumn, $db_column");
 
     $SQL = "SELECT $fields FROM constant WHERE group_id='$group' $order_by";
+
+    // constants are a lookup table - the same read repeats many times per request
+    return AA::Contentcache()->get_result('GetConstantsFromDb', [$SQL, $column, $keycolumn]);
+}
+
+/** Call after ANY write to the `constant` table. GetConstants(), GetConstantContent() and
+ *  QueryConstantZIDs() cache their reads for the whole request, so a later read in the same
+ *  request would be stale - see include/constedit_util.php and admin/se_constant.php.
+ *  Clears the whole soft cache; constant writes are rare admin work, so that is cheap enough.
+ */
+function ConstantsChanged(): void
+{
+    AA::Contentcache()->clear_soft();
+}
+
+/** Reads the rows for GetConstants() - separate function, so the result can be cached */
+function GetConstantsFromDb(string $SQL, string $column, string $keycolumn): array
+{
+    $db = getDB();
     $db->query($SQL);
 
     $already_key = [];
@@ -859,7 +877,7 @@ function CreateBinCondition($bin, $table, bool $ignore_expiry_date = false, bool
  * @param bool  $ignore_reading_password
  *                                    Use carefully only when you are sure the data is used safely and not viewed
  *                                    to unauthorized persons.
- * @param bool  $fields2get
+ * @param  array  $fields2get
  *                                    restrict return fields only to listed fields (so the content4id array
  *                                    is not so big)
  *                                    like: ['headline........', 'category.......1']
@@ -868,7 +886,7 @@ function CreateBinCondition($bin, $table, bool $ignore_expiry_date = false, bool
  *
  * @return array
  */
-function GetItemContent($zids, $unused_use_short_ids = false, $ignore_reading_password = false, $fields2get = false, $crypted_additional_slice_pwd = null, $bin = null): array
+function GetItemContent($zids, $unused_use_short_ids = false, $ignore_reading_password = false, array $fields2get = [], $crypted_additional_slice_pwd = null, $bin = null): array
 {
     // Fills array $content with current content of $sel_in items (comma separated ids).
 
@@ -893,7 +911,7 @@ function GetItemContent($zids, $unused_use_short_ids = false, $ignore_reading_pa
 
         $content_fields = [];
         $item_fields    = [];
-        foreach ((array) $fields2get as $field_name) {
+        foreach ($fields2get as $field_name) {
             //convert publish_date.... to publish_date
             $clean_name = AA_Fields::getFieldType($field_name);
 
@@ -1008,7 +1026,7 @@ function GetItemContent($zids, $unused_use_short_ids = false, $ignore_reading_pa
 
     $restrict_cond = '';
 
-    if (is_array($fields2get)) {
+    if ($fields2get) {
         $restrict_cond = match (count($content_fields)) {
             // we want just some item fields
             0       => '1=0',
@@ -1152,9 +1170,16 @@ function GetConstantContent(zids $zids): array
     if ($zids->isEmpty()) {
         return [];
     }
-    $db = getDB();
-
     $SQL = 'SELECT * FROM constant WHERE short_id ' . $zids->sqlin(false);
+
+    // one constant per rendered item means the same rows are asked for over and over
+    return AA::Contentcache()->get_result('GetConstantContentFromDb', [$SQL]);
+}
+
+/** Reads the rows for GetConstantContent() - separate function, so the result can be cached */
+function GetConstantContentFromDb(string $SQL): array
+{
+    $db = getDB();
     $db->query($SQL);
     $content = [];
     $i = 1;

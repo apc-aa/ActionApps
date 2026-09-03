@@ -114,6 +114,7 @@ function add_mailman_list($admin_email, $list_name, $admin_password, $groupid): 
         freeDB($db);
         return;
     }
+    ConstantsChanged();
     freeDB($db);
 
     global $MAILMAN_SYNCHRO_DIR;

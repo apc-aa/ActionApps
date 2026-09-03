@@ -300,6 +300,7 @@ if ($update) {
         }
         $event_return_state = '';
         aaevent::singleton()->comes('CONSTANTGROUP_UPDATED', AA::$module_id, 'S', $event_return_state, $group_id);
+        ConstantsChanged();                              // constant reads are cached per request
         AA::Pagecache()->invalidateFor(AA::$module_id);  // invalidate old cached values
 
         if (!count($err)) {

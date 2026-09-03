@@ -232,6 +232,8 @@ class RedefineCoreConstants extends \AA\Optimize\AbstractOptimize
         $this->query("REPLACE INTO constant (id, group_id, name, value, class, pri) VALUES( 'AA-predefined057', 'lt_groupNames', 'AA Core Bins', 'AA_Core_Bins....', '', '10000')");
         $this->query("REPLACE INTO constant (id, group_id, name, value, class, pri) VALUES( 'AA-predefined056', 'lt_groupNames', 'APC-wide Categories', 'lt_apcCategories', '', '1000')");
 
+        \ConstantsChanged();   // the reads are cached per request - see include/util.php
+
         $this->message(_m('Redefine core constants - done.'));
         return true;
     }
