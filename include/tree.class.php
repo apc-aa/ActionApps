@@ -60,7 +60,7 @@ class AA_Supertree
 
         $new_subitems  = [$id];
         while (1) {
-            $content4ids   = GetItemContent($new_subitems, false, false, ['id..............','slice_id........', $this->_relation_field], null, AA_BIN_ACTIVE);
+            $content4ids   = GetItemContent($new_subitems, false, false, ['id..............', 'slice_id........', $this->_relation_field], null, AA_BIN_ACTIVE);
 
             $invalid = array_merge($invalid, array_diff($new_subitems, array_keys($content4ids)));
 

@@ -42,7 +42,7 @@
 // ----- input variables normalization - start --------------------------------
 
 // This code handles with "magic quotes" and "register globals" PHP (<5.4) setting
-// It make us sure, taht
+// It make us sure, that
 //  1) in $_POST,$_GET,$_COOKIE,$_REQUEST variables the values are not quoted
 //  2) the variables are imported in global scope and is quoted
 // We are trying to remove any dependecy on the point 2) and use only $_* superglobals

@@ -338,7 +338,7 @@ function Event_ItemNewComment($type, $item_id, $slice_type, $disc_id, $foo, $foo
     $emails = GetNotifications($type, $slice_type, $item_id);
 
     $item_zid    = new zids($item_id, 'l');
-    $content4ids = GetItemContent($item_zid, false, false, ['id..............','slice_id........','e_posted_by.....']);
+    $content4ids = GetItemContent($item_zid, false, false, ['id..............', 'slice_id........', 'e_posted_by.....']);
     $content4id  = reset($content4ids);  // get first element
 
     // send e-mail also to author of the item

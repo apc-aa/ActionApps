@@ -96,7 +96,7 @@ try {
     $view_view = InputVars::intGET('view_view'); // -
 
     $cancel = InputVars::boolPOST('cancel');
-    
+
     $Msg = InputVars::stringGETPOST('Msg');
 } catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
 
@@ -483,7 +483,7 @@ $headcode = <<<'EOT'
 <script>
     function InitPage() {
       [].forEach.call(document.querySelectorAll('tr.cont-even_row_format'), (e) => { e.style.display=(document.f['even_odd_differ'].checked ? 'table-row' : 'none'); });
-       
+
       EnableClick('even_odd_differ','even')
     }
     function EnableClick(cond,what) {

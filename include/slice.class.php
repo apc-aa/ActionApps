@@ -163,9 +163,9 @@ abstract class AA_Module
      *
      * @param  string  $module_id
      *
-     * @return AA_Module|null
+     * @return static|null
      */
-    public static function getModule($module_id): ?AA_Module
+    public static function getModule($module_id): ?static
     {
         if (!is_long_id($module_id)) {
             return null;
