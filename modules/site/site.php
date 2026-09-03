@@ -40,7 +40,10 @@ require_once __DIR__ . "/../../include/locauth.php";
 // are routed here by the web server (try_files / RewriteCond !-f — see
 // misc/missCache/README). Generate the artifact once and serve it; every later
 // request is served statically by the web server, never reaching PHP.
-$mc_dir = parse_url(IMG_UPLOAD_URL, PHP_URL_PATH) . 'mC/';  // e.g. /img_upload/mC/
+// rtrim: MissCache rtrim()s the base too, so an IMG_UPLOAD_URL without a trailing
+// slash still renders ".../img_upload/mC/..." — concatenating "mC/" onto the raw
+// path would build "/img_uploadmC/" and the guard would silently never match.
+$mc_dir = rtrim((string) parse_url(IMG_UPLOAD_URL, PHP_URL_PATH), '/') . '/mC/';  // e.g. /img_upload/mC/
 if (str_starts_with($_SERVER['REQUEST_URI'], $mc_dir)) {
     $mC = new MissCache(IMG_UPLOAD_URL, IMG_UPLOAD_PATH, 'mC', IMG_UPLOAD_DIR_MODE, [new PhpThumbPlugin(AA_INSTAL_URL . "img.php")]);
     $mC->handleRequest($_SERVER['REQUEST_URI']);
