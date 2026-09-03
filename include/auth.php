@@ -88,15 +88,19 @@ class AA_Mysqlauth
     /** AA_Mysqlauth::getReadersData function
      *
      * @param $slice_id
-     * @param $restrict_zids  = false
+     * @param  zids|null  $restrict_zids  = null
      *
      * @return array
      */
-    public static function getReadersData($slice_id, $restrict_zids = false): array
+    public static function getReadersData($slice_id, ?zids $restrict_zids = null): array
     {
         $auth_field_group = AA_Slice::getModuleProperty($slice_id, 'auth_field_group');
         $zids  = QueryZids([$slice_id], '', '', 'ALL', 0, $restrict_zids);
-        return GetItemContent($zids, false, true, ['id..............','status_code.....','slice_id........', 'publish_date....', 'expiry_date.....', $auth_field_group, FIELDID_USERNAME, FIELDID_PASSWORD]);
+        return GetItemContent($zids,
+            false,
+            true,
+            ['id..............', 'status_code.....', 'slice_id........', 'publish_date....', 'expiry_date.....', $auth_field_group, FIELDID_USERNAME, FIELDID_PASSWORD]
+        );
     }
 
     // --------------------------------------------------------------------------

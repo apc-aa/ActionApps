@@ -498,12 +498,12 @@ class AA_Set extends AA_Object
     /** New main function to get item ids from database based on conditions...
      *  Should replace QueryZids() in future
      *
-     * @param  null  $restrict_zids
-     * @param  int   $limit
+     * @param  zids|null  $restrict_zids
+     * @param  int        $limit
      *
      * @return zids
      */
-    public function query($restrict_zids = null, int $limit = 0): zids
+    public function query(?zids $restrict_zids = null, int $limit = 0): zids
     {
         if (!$this->postsort) {
             return QueryZids($this->getModules(), $this->getConds(), $this->getSort(), $this->getBins(), 0, $restrict_zids, 'LIKE', $limit);
@@ -1529,10 +1529,10 @@ function MakeSQLOrderBy($fields_arr, $sort, &$join_tables, $additional_field_con
  *  column first - all callers do, and the queries which add columns (the sort
  *  columns of AA_Object::querySet() and of QueryIDs()) append them after the id.
  *
- * @param string $SQL                      - SQL query, id column selected first
+ * @param string  $SQL                     - SQL query, id column selected first
  * @param        $zid_type
- * @param bool   $empty_result_condition   - have we return empty set?
- * @param array  $group_limit              - array('field' => <grouping_column>,
+ * @param  bool   $empty_result_condition  - have we return empty set?
+ * @param array   $group_limit             - array('field' => <grouping_column>,
  *                                         'limit' => <number>)
  *                                         Limits the number of returned ids from each
  *                                         group. Group is defined by 'field'. Used
@@ -1540,9 +1540,10 @@ function MakeSQLOrderBy($fields_arr, $sort, &$join_tables, $additional_field_con
  *                                         from each group. Also good, if you want to
  *                                         list just the group names which is used in
  *                                         selected items (then set the number to 1)
+ *
  * @return zids from SQL query;
  */
-function GetZidsFromSQL($SQL, $zid_type = 's', $empty_result_condition = false, $group_limit = null): zids
+function GetZidsFromSQL($SQL, $zid_type = 's', bool $empty_result_condition = false, array $group_limit = []): zids
 {
     global $QueryIDsCount;
     $db = getDB();
@@ -1553,7 +1554,7 @@ function GetZidsFromSQL($SQL, $zid_type = 's', $empty_result_condition = false, 
         $db->query($SQL);
         AA::$debug & 2 && AA::$dbg->log("GetZidsFromSQL: SQL", $SQL);
 
-        if (!$group_limit) {
+        if (empty($group_limit)) {
             $arr = $db->fetch_first_column();
         } else {
             // we have to remove the ids above the limit for group, and also we have to add extended attributes
@@ -1600,36 +1601,36 @@ function QueryZidsSet(AA_Set $set): zids
 /** QueryZids function
  *  Finds item IDs for items to be shown in a slice / view
  *
- * @param  array   $slices        array of slices in which to look for items
+ * @param  array      $slices     array of slices in which to look for items
  *                                could be false. if you specify restrict_zids
- * @param  string  $conds         search conditions (see FAQ)
- * @param  string  $sort          sort fields (see FAQ)
- * @param  string  $type
+ * @param  array|""   $conds      search conditions (see FAQ)
+ * @param  array|""   $sort       sort fields (see FAQ)
+ * @param  string     $type
  *                                sets status, pub_date and expiry_date according to specified type:
  *                                ACTIVE | EXPIRED | PENDING | HOLDING | TRASH | ALL.
  *                                If you want to specify it in conds, set to ALL.
  *
- * @param  int     $neverAllItems
+ * @param  int        $neverAllItems
  *                                if no conds[] apply (all are wrong formatted or empty),
  *                                should the function generate an empty set?
  *                                Otherwise, all items from given slices are returned.
  *
- * @param  null    $restrict_zids
+ * @param  zids|null  $restrict_zids
  *                                ids are packed but not quoted in $restrict_ids or short.
  *                                Use it if you want to choose only from a set of items
  *                                (used by E-mail Alerts and related item view
  *                                (for sorting and eliminating of expired items)).
  *
- * @param  string  $defaultCondsOperator
+ * @param  string     $defaultCondsOperator
  *                                replaces the default "LIKE" for conditions with no operator set
- * @param  int     $limit
+ * @param  int        $limit
  *
  * @return zids - A zids object with a list of the ids that match the query.
  *
- * @global  bool   $debug         (in) many debug messages
- * @global  bool   $debugfields   (in) useful mainly for multiple slices mode -- views info about field_ids
+ * @global  bool      $debug         (in) many debug messages
+ * @global  bool      $debugfields   (in) useful mainly for multiple slices mode -- views info about field_ids
  *                                used in conds[] but not existing in some of the slices
- * @global  int    $QueryIDsCount (out) is set to the count of IDs returned
+ * @global  int       $QueryIDsCount (out) is set to the count of IDs returned
  *
  *   Parameter format example:
  *   <pre>
@@ -1651,7 +1652,7 @@ function QueryZidsSet(AA_Set $set): zids
  *   </pre>
  * @deprecated - use $aa_set->query() instead
  */
-function QueryZids($slices, $conds = "", $sort = "", $type = "ACTIVE", $neverAllItems = 0, $restrict_zids = null, $defaultCondsOperator = "LIKE", int $limit = 0): zids
+function QueryZids($slices, $conds = "", $sort = "", $type = "ACTIVE", $neverAllItems = 0, ?zids $restrict_zids = null, $defaultCondsOperator = "LIKE", int $limit = 0): zids
 {
 
     // select * from item, content as c1, content as c2 where item.id=c1.item_id AND item.id=c2.item_id AND       c1.field_id IN ('fulltext........', 'abstract..........') AND c2.field_id = 'keywords........' AND c1.text like '%eufonie%' AND c2.text like '%eufonie%' AND item.highlight = '1';
@@ -1662,7 +1663,7 @@ function QueryZids($slices, $conds = "", $sort = "", $type = "ACTIVE", $neverAll
 
     AA::$debug & 2 && AA::$dbg->log("QueryZids - start:<br>Conds=", $conds, "<br>Sort=", $sort, "<br>Slices=", implode('-', $slices));
 
-    if (is_object($restrict_zids) && $restrict_zids->isEmpty()) {
+    if ($restrict_zids?->isEmpty()) {
         return new zids(); // restrict_zids defined but empty - no result
     }
 
@@ -1674,14 +1675,10 @@ function QueryZids($slices, $conds = "", $sort = "", $type = "ACTIVE", $neverAll
     // we need fields just in case we use sort or conds. Not necessary for
     // restrict_zids queries, where we often do not have slice id
     if ((is_array($conds) and count($conds)) or (is_array($sort) and count($sort))) {
-        if (empty($slices)) {
-            if (is_object($restrict_zids)) {
-                $sid = $restrict_zids->getFirstSlice();
-                if ($sid) {
-                    $slices[] = $sid;
-                }
-            }
+        if (empty($slices) and ($sid = $restrict_zids?->getFirstSlice())) {
+            $slices[] = $sid;
         }
+
         // get the fields for the first slice (used as template - we expect that all slices in the query has the same structure)
         if (!empty($slices) && ($slice = AA_Slice::getModule(reset($slices)))) {
             // @todo convert whole $slices to AA_Slice
@@ -1713,7 +1710,7 @@ class QueryZidsHelper
     // for sort
     private string $select_distinct = '';
     private string $select_order = '';
-    private string $select_limit_field = '';
+    private array  $select_limit_field = [];
 
     private string $delim = '';
 
@@ -1723,7 +1720,7 @@ class QueryZidsHelper
     private ?AA_Fields $fields;
 
 
-    public function __construct(?AA_Fields $fields, $conds, $sort, $restrict_zids)
+    public function __construct(?AA_Fields $fields, $conds, $sort, ?zids $restrict_zids)
     {
         $this->fields = $fields;
 
@@ -1736,7 +1733,7 @@ class QueryZidsHelper
     /**
      * @param  array  $conds
      *
-     * @return array
+     * @return void
      */
     private function prepareConds(array $conds): void
     {
@@ -1983,11 +1980,11 @@ class QueryZidsHelper
      * @param  zids|null  $restrict_zids
      *
      */
-    private function prepareSort($sort, $restrict_zids): void
+    private function prepareSort($sort, ?zids $restrict_zids): void
     {
 
         if (!is_array($sort) || count($sort) < 1) {
-            $this->select_order = is_object($restrict_zids) ? '' : 'item.publish_date DESC';   // default item order
+            $this->select_order = $restrict_zids ? '' : 'item.publish_date DESC';   // default item order
         } else {
             foreach ($sort as $sort_no => $srt) {
                 if (key($srt) === 'limit') {
@@ -2085,7 +2082,7 @@ class QueryZidsHelper
 
         // sort in order of zids as last sort order
         // good for preservation of sortorder (now works also with grouping in views)
-        if (is_object($restrict_zids)) {
+        if (!is_null($restrict_zids)) {
             if ($restrict_zids->use_short_ids()) {
                 $ord_field = 'short_id';
                 $ord_ids   = implode(",", $restrict_zids->shortids());
@@ -2099,7 +2096,7 @@ class QueryZidsHelper
         }
     }
 
-    public function constructSQL($restrict_zids, $type, $limit, $slices, $slice): string
+    public function constructSQL(?zids $restrict_zids, $type, $limit, $slices, $slice): string
     {
         AA::$debug & 2 && AA::$dbg->log("QueryZids:slice_id=", implode('-', $slices), "  select_tabs=", $this->select_tabs, "  select_conds=", $this->select_conds, "  select_order=", $this->select_order);
 
@@ -2117,7 +2114,7 @@ class QueryZidsHelper
                     : " IN ($slices_SQL) AND ");
         }
 
-        if (is_object($restrict_zids)) {
+        if (!is_null($restrict_zids)) {
             $SQL .= " " . $restrict_zids->sqlin() . " AND ";
         } elseif (!$slices_SQL) {
             // slice(s) or $restrict_zids MUST be specified (in order we can get answer in limited time)
@@ -2213,6 +2210,7 @@ class QueryZidsHelper
  *                            replaces the default "RLIKE" for conditions with no operator set
  * @param  int     $limit     limit the number of results
  *
+ * @global int    $QueryIDsCount (out) is set to the count of IDs returned
  * @return zids object with a list of the ids that match the query.
  *
  *   Parameter format example - {see QueryZids, FAQ}
@@ -2266,7 +2264,17 @@ function QueryConstantZIDs($group_id, $conds, $sort = null, $restrict_zids = nul
     }
 
     // get result --------------------------
-    return GetZidsFromSQL($SQL, 's');
+    // constants are a lookup table - cache the ids, not the zids object: callers
+    // mutate what they get (itemview::get_output() rebuilds it for random weight)
+    $ids = AA::Contentcache()->get_result('GetConstantZidsFromDb', [$SQL]);
+    $GLOBALS['QueryIDsCount'] = count($ids);   // normally set by GetZidsFromSQL(), which we skip on a cache hit
+    return new zids($ids, 's');
+}
+
+/** Reads the ids for QueryConstantZIDs() - separate function, so the result can be cached */
+function GetConstantZidsFromDb(string $SQL): array
+{
+    return GetZidsFromSQL($SQL, 's')->shortids();
 }
 
 // -------------------------------------------------------------------------------------------

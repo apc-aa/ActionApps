@@ -44,7 +44,7 @@ class FileLock
     /** full path to the lock file */
     private string $filename;
 
-    /** Open file descriptor holding the flock, or null when unlocked. */
+    /** @var resource|null Open file descriptor holding the flock, or null when unlocked. */
     private $fd = null;
 
     public function __construct(string $filename)

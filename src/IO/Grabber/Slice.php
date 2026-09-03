@@ -23,9 +23,8 @@ class Slice extends AbstractGrabber
     /** @var AA_Set specifies the slice, conds and sort */
     protected $set;
 
-    /** @var zids possible subset of ids grabbed */
-    protected $restrict_zids;
-
+    /** @var zids|null possible subset of ids grabbed */
+    protected ?zids $restrict_zids;
 
     /** @var array possible subset of fields - used in {updateitem:...} for field value update */
     protected $restrict_fields;
@@ -38,11 +37,11 @@ class Slice extends AbstractGrabber
 
     /**  */
 
-    public function __construct($set, $restrict_zids = null, $restrict_fields = null)
+    public function __construct($set, ?zids $restrict_zids = null, $restrict_fields = null)
     {
         $this->set = $set;
         $this->restrict_zids = $restrict_zids;
-        $this->restrict_fields = is_array($restrict_fields) ? $restrict_fields : false;
+        $this->restrict_fields = is_array($restrict_fields) ? $restrict_fields : [];
     }
 
     /** Name of the grabber - used for grabber selection box */

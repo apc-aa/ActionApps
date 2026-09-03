@@ -555,7 +555,7 @@ class AA_Exportsetings extends AA_Object
         ];
     }
 
-    public function export($restrict_zids = null): void
+    public function export(?zids $restrict_zids = null): void
     {
         $slice_id = $this->aa_owner;
         $slice  = AA_Slice::getModule($slice_id);
@@ -655,8 +655,8 @@ class AA_Exportsetings extends AA_Object
               <td style="white-space:nowrap;">'
             . $buttons['Edit'] . ' '
             . a_href(get_aa_url('export.php', ['id=_#AA_ID___'], false), _m('Export'), ['class' => 'aa-button-show']) . ' '
-            . $buttons['DeleteObject'] . ' 
-            </td>          
+            . $buttons['DeleteObject'] . '
+            </td>
               <td>' . implode("</td>\n<td>", $aliases->getNames()) . '</td>
             </tr>
             ';

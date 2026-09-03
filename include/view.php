@@ -567,7 +567,7 @@ class AA_Showview
 
                 $bin   = ($zids && $slice->isExpiredContentAllowed()) ? (AA_BIN_ACTIVE | AA_BIN_EXPIRED) : AA_BIN_ACTIVE;
 
-                $zids2 = QueryZids($zids ? false : (is_array($slices) ? $slices : [$slice_id]), $conds, $sort, $bin, 0, $zids);
+                $zids2 = QueryZids($zids ? false : (is_array($slices) ? $slices : [$slice_id]), $conds, $sort, $bin, 0, ($zids instanceof zids) ? $zids : null);
 
                 if ($mlxslice) {
                     $GLOBALS['mlxView']->postQueryZIDs($zids2, $mlxslice, $slice_id);

@@ -756,7 +756,7 @@ class AA_Inputfield {
                 $whichitems = AA_BIN_ACT_PEND;              // fix for older (bool) format
             }
             $format          = $slice?->getField($slice_field) ? '{substr:{index:'.$slice_field.'}:0:50}' : $slice_field;
-            $zids            = is_null($ids_arr) ? false : new zids($ids_arr);  // transforms content array to zids
+            $zids            = is_null($ids_arr) ? null : new zids($ids_arr);  // transforms content array to zids
             $set             = new AA_Set($sid, $conds, $sort, $whichitems);
             $this->const_arr = GetFormattedItems( $set->query($zids), $format, $crypted_additional_slice_pwd, $tagprefix);
             // $this->const_arr = GetFormatedItems( $sid, $format, $zids, $whichitems, $conds, $sort, $tagprefix); // older version of the function :honzam03/09
@@ -2824,7 +2824,7 @@ function getFrmTabInnerSeparator($subtitle): string {
 
 /** getFrmTabEnd function
  * Prints form table end with buttons (@see FrmInputButtons)
- * @param bool $buttons
+ * @param array|false $buttons
  * @return string
  */
 function getFrmTabEnd( $buttons=false ): string {
