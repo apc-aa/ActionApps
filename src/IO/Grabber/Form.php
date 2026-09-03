@@ -300,7 +300,7 @@ class Form extends AbstractGrabber
 
                 // if field is not found, skip it
                 // This is new - 2025-02-25 - see if it do not break something, but it should not
-                if (!($field = $slice?->getField($field_id))) {
+                if (!($field = $slice->getField($field_id))) {
                     continue;
                 }
                 $default_val = ($store_mode === 'new') ? $field->getDefault() : $oldcontent4id->getAaValue($field_id);

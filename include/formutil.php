@@ -32,6 +32,7 @@
 use AA\Cache\CacheStr2find;
 use AA\Util\Langs;
 use AA\Util\JsTriggers;
+use AA\Util\Txt;
 use AA\Widget\Widget;
 
 
@@ -2735,7 +2736,7 @@ function getFrmSelectEasy($name, $arr, $selected="", array $add= [], $showempty=
         }
         if (strlen($val) > 100) {
             $title = ' title="'. safe($val) .'"';
-            $val   = AA_Stringexpand_Shorten::shorten_middle($val, 100);
+            $val   = Txt::shortenMiddle(trim($val), 100);   // $val is already strip_tags()'d above
         }
         $retval .= "$title>". safe($val);
     }

@@ -30,6 +30,7 @@
 
 use AA\Util\Langs;
 use AA\Util\LastErrTrait;
+use AA\Util\Txt;
 
 const FILE_ERROR_NO_SOURCE        = 100;
 const FILE_ERROR_COPY_FAILED      = 101;
@@ -49,6 +50,30 @@ const AA_DIRECTORY_WRAPPER_ERROR_NOT_DIR = 150;
 class Files
 {
     use LastErrTrait;
+
+    /** Maximum length (bytes) of a filename produced by {@see escape()}.
+     *  Nothing in AA used to bound it, so a caption pasted as a filename reached
+     *  the disk in full (biom.cz has live uploads of 209 bytes). That breaks well
+     *  beyond AA: MissCache builds its cache filename from the source name plus
+     *  the phpThumb parameters and its own extension, so a ~200-byte source
+     *  overflows NAME_MAX (255 bytes) and the thumbnail cannot be written at all;
+     *  Windows caps MAX_PATH at 260 bytes for the whole path and eCryptfs caps
+     *  NAME_MAX at 143, so such a file will not check out, zip or rsync
+     *  everywhere. 140 bytes leaves MissCache room for its parameters and keeps
+     *  the name portable, while still being far longer than any name a human
+     *  types.
+     */
+    public const MAX_FILENAME_LENGTH = 140;
+
+    /** Delimiter wrapped around the digest that replaces the elided middle in
+     *  {@see shortenFilename()}. "__" and not "--" because
+     *  ConvertCharset::escape() collapses "--" to "-" but leaves "_" alone, so
+     *  escaping an already-elided name stays stable.
+     */
+    private const ELISION_MARKER = '__';
+
+    /** Hex digits of the name digest kept between the elision markers. */
+    private const ELISION_DIGEST_LENGTH = 6;
 
     /** destinationDir function
      *  Prepares slice directories for uploaded file and returns destination
@@ -398,7 +423,61 @@ class Files
      */
     public static function escape($filename): string
     {
-        return ConvertCharset::singleton()->escape($filename, Langs::getCharset(), true);
+        return self::shortenFilename(ConvertCharset::singleton()->escape($filename, Langs::getCharset(), true));
+    }
+
+    /** shortenFilename function
+     * Cap an already-escaped filename at {@see MAX_FILENAME_LENGTH} bytes by
+     * eliding its MIDDLE, keeping the extension whole.
+     *
+     * The middle is dropped rather than the end because the tail of a filename
+     * carries the more identifying part - a numbered series, an author, a variant
+     * suffix - so cutting the end would collapse distinct uploads into one name.
+     *
+     * The dropped middle is replaced by a short digest of the whole name, not by
+     * a fixed marker: without it any two names sharing their head and tail would
+     * fold onto one filename, which loses the part that told them apart and -
+     * for an upload field whose policy is "overwrite" or "backup"
+     * ({@see uploadFile()}) - would let one upload replace an unrelated file.
+     *
+     * Only ever shortens: a name within the cap is returned untouched, and the
+     * result is itself within the cap, so escaping an already-escaped name is
+     * stable.
+     *
+     * @param string $filename escaped filename (output of ConvertCharset::escape())
+     * @return string the filename, at most MAX_FILENAME_LENGTH bytes long
+     */
+    private static function shortenFilename(string $filename): string
+    {
+        if (strlen($filename) <= self::MAX_FILENAME_LENGTH) {
+            return $filename;
+        }
+
+        // Split off a real extension only. The last dot of a long name is often
+        // part of the text itself ("...klimatu.bez-ohledu-na-ge"), which must be
+        // shortened like the rest, not preserved as an extension.
+        $extension = '';
+        $base      = $filename;
+        $dot       = strrpos($filename, '.');
+        if ($dot !== false && $dot > 0 && preg_match('/^[\da-z]{1,10}$/', substr($filename, $dot + 1))) {
+            $extension = substr($filename, $dot);
+            $base      = substr($filename, 0, $dot);
+        }
+
+        // Digest of the full name, so two names differing only in their (dropped)
+        // middle never produce the same filename.
+        $marker = self::ELISION_MARKER
+            . substr(hash('sha256', $filename), 0, self::ELISION_DIGEST_LENGTH)
+            . self::ELISION_MARKER;
+
+        // Txt::shortenMiddle() counts graphemes while MAX_FILENAME_LENGTH is a byte
+        // budget; the two coincide here because ConvertCharset::escape() has already
+        // reduced $base to the ASCII set [0-9a-z._-].
+        $shortened = Txt::shortenMiddle($base, self::MAX_FILENAME_LENGTH - strlen($extension), $marker);
+
+        // Drop separators the cut left exposed beside the marker, so the result
+        // keeps escape()'s shape (no run of separators, none at either end).
+        return preg_replace('/[-.]*' . preg_quote($marker, '/') . '[-.]*/', $marker, $shortened) . $extension;
     }
 
     /** delFile function

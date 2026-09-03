@@ -15,6 +15,36 @@ class Txt
         return (self::strlen($str) > $len) ? self::substr($str, 0, $len - strlen($ellipsis)) . $ellipsis : $str;
     }
 
+    /** Shorten to $len by eliding the MIDDLE, keeping head and tail.
+     *
+     *  Use instead of {@see shorten()} when the end of the string is as
+     *  identifying as its start - a numbered series, an author, a filename
+     *  extension - so that cutting the end would collapse distinct values.
+     *
+     *  Counts graphemes, not bytes, and never returns more than $len of them -
+     *  a string already within $len comes back untouched.
+     *
+     *  The odd grapheme goes to the TAIL (length 21 gives a 9 + marker + 11
+     *  split), matching what {shorten:<text>:<len>:3} and the option labels at
+     *  formutil.php:2738 have always rendered.
+     *
+     *  $marker replaces the elided middle. Callers that need the result to stay
+     *  within a restricted alphabet pass their own - {@see \Files::escape()} uses
+     *  a digest, because a filename may hold no "…".
+     */
+    public static function shortenMiddle(string $str, int $len = 20, string $marker = "…"): string
+    {
+        if (self::strlen($str) <= $len) {
+            return $str;
+        }
+        $budget = $len - self::strlen($marker);
+        if ($budget < 2) {              // no room for a head and a tail around the marker
+            return self::substr($marker, 0, max($len, 0));
+        }
+        $head_len = intdiv($budget - 1, 2);
+        return self::substr($str, 0, $head_len) . $marker . self::substr($str, $head_len - $budget);
+    }
+
     // --- UTF-aware string primitives (canonical home; the global aa_*() in
     //     include/util.php now delegate here). grapheme_/mb_ per tonsky.me/blog/unicode. ---
 

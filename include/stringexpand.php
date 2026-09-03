@@ -1322,19 +1322,6 @@ class AA_Stringexpand_Shorten extends AA_Stringexpand_Nevercachenotrim {
 
     // Never cache this code - it is most probably not repeating on the page
     /**
-     * @param $text
-     * @param $length
-     *
-     * @return string
-     */
-    public static function shorten_middle($text, $length): string
-    {
-        $text = trim(strip_tags($text));
-        $ret = aa_substr($text, 0, $length / 2 - 1) . '…';
-        return $ret . aa_substr($text, aa_strlen($ret) - $length);
-    }
-
-    /**
      * @param string $text
      * @param int $length
      * @param int $mode
@@ -1358,7 +1345,7 @@ class AA_Stringexpand_Shorten extends AA_Stringexpand_Nevercachenotrim {
         }
         $text_add = $add;
         switch ($mode) {
-            case 3: return self::shorten_middle($strip_text, $length);
+            case 3: return Txt::shortenMiddle($strip_text, $length);   // $strip_text is already trim(strip_tags())'d
             case 1:
                 $shorted_modif = aa_substr(trim(strip_tags(str_ireplace(['</p>', '<p>', '<br>', '<br />', '<br/>'], ['~@|^1', '~@|^1', '~@|^1', '~@|^1', '~@|^1'], $text))), 0, $length);
                 if ( (($paraend = aa_strrpos($shorted_modif, '~@|^1')) > $length/2) ) {  // half is minimum
