@@ -27,7 +27,7 @@ class Links_Move2Cat extends AbstractManageraction
         if (ctype_digit((string) $action_param)) {
             foreach ($item_zids as $lid) {
                 Links_DeleteLink($lid);
-                Links_Assign2Category($lid, $action_param);
+                Links_Assign2Category($lid, (int) $action_param);
             }
         }
         return false;                                     // OK - no error
