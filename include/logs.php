@@ -45,8 +45,8 @@ BM_UPDATE       bookmark id in profile table    name
 BM_RENAME       bookmark id in profile table    new_name:old_name
 BM_DELETE       bookmark id in profile table    name
 EMAIL_SENT      bookmark id/LIST/TEST           users:valid_emails:emails_sent
-MAIL_SEND       AA_Mail:{templ}:{reader}:Mailid transport:sent:server_response   // one row per send() attempt
-TOEXECUTE       {class}:{id}:Obj                return code                      // AA_Mail uses the Mailid form too
+MAIL_SEND       AA_Mail:{tmpl}:{rdr}:{origin}:Mailid  transport:sent:server_response:recipients:subject  // one row per send() attempt
+TOEXECUTE       {class}:{id}:Obj                time:mem_usage:mem_peak:return_code:task_arguments   // AA_Mail uses the Mailid form too
 ALERTS          howoften                        Start/email sent
 HITCOUNT        type
 ITEM_DEL        item_id
@@ -201,18 +201,11 @@ class AA_Log implements InternalExpandInterface
      */
     protected static function contextSelector(string $ident, string $module, string $ip, string $uri): string
     {
-        $make = static fn(string $u): string => (new AA_Logentry_Qa(
-            ['ident' => $ident, 'module' => $module, 'ip' => $ip, 'uri' => $u],
-        ))->serializeToString(true);
-
-        // measure the actual serialized length (robust to ParamImplode ':' escaping);
-        // strlen in bytes <= MAX guarantees <= MAX chars too; mb_substr avoids cutting a multibyte char
-        $entry = $make($uri);
-        while (strlen($entry) > self::SELECTOR_MAX && $uri !== '') {
-            $uri   = mb_substr($uri, 0, -max(1, strlen($entry) - self::SELECTOR_MAX));
-            $entry = $make($uri);
-        }
-        return $entry;
+        $entry = new AA_Logentry_Qa(['ident' => $ident, 'module' => $module, 'ip' => $ip, 'uri' => $uri]);
+        // the uri is the only unbounded part - it gives up its tail so the
+        // trailing `:Qa` flag survives
+        $entry->trimToFit(['uri'], self::SELECTOR_MAX, true);
+        return $entry->serializeToString(true);
     }
 
     /** @param string $oper searchbar operator for the selector condition. 'RLIKE'
@@ -347,6 +340,11 @@ class AA_Log implements InternalExpandInterface
 /** Uses AA_Serializable to create log entry. Constructor is taken from AA_Serializable */
 abstract class AA_Logentry extends AA_Serializable
 {
+    /** log.params is varbinary(128) and the server runs STRICT_TRANS_TABLES, so
+     *  an over-long row fails the INSERT instead of being truncated - and those
+     *  INSERTs sit on the mail-sending and queue-run paths. */
+    protected const PARAMS_MAX = 128;
+
     public function getPrintRow(): string
     {
         $props = $this::getClassProperties();
@@ -355,6 +353,32 @@ abstract class AA_Logentry extends AA_Serializable
             $arr[$prop->name] = $this->$id;
         }
         return Txt::keyValTable($arr);
+    }
+
+    /** Shorten the named properties, in the given order, until the serialized
+     *  form fits $max bytes - PARAMS_MAX for a `params` row, the log.selector
+     *  width for a selector. Each property gives up its tail completely before
+     *  the next one is touched, so the order says which value is sacrificed
+     *  first. mb_strcut cuts on a byte count (that is the budget) without
+     *  splitting a multibyte character.
+     *
+     *  Measuring the serialized form rather than the raw values is what makes
+     *  this correct: ParamImplode escapes every ':' to '#:', so a colon-heavy
+     *  value costs more than its own length. Public because AA_Log builds the
+     *  Qa context selector without being an AA_Logentry itself.
+     *
+     * @param string[] $properties property names, in the order they give up their tail
+     * @param bool     $reversed   selector serialization (values first, class flag
+     *                             last) - the flag has to survive the trim, or
+     *                             factoryByStringReversed() cannot read the row back
+     */
+    public function trimToFit(array $properties, int $max, bool $reversed = false): void
+    {
+        foreach ($properties as $property) {
+            while ((($over = strlen($this->serializeToString($reversed)) - $max) > 0) && ($this->$property !== '')) {
+                $this->$property = mb_strcut($this->$property, 0, max(0, strlen($this->$property) - $over));
+            }
+        }
     }
 }
 
@@ -386,6 +410,69 @@ class AA_Logentry_MR extends AA_Logentry
  */
 class AA_Logentry_X extends AA_Logentry
 {
+    /** Ceilings in bytes for the two properties a task can blow up, and the
+     *  order in which they give up their tail if the row still does not fit. */
+    private const VALUE_MAX  = ['ret' => 40, 'params' => 60];
+    private const TRIM_ORDER = ['params', 'ret'];
+
+    /** How much of a task's argument list flatten() spells out. */
+    private const FLATTEN_ITEMS = 4;
+    private const FLATTEN_DEPTH = 3;
+
+    public string $time      = '';
+    public string $mem_usage = '';
+    public string $mem_peak  = '';
+    public string $ret       = '';
+    public string $params    = '';
+
+    /** Build the row from the task's *unserialized* arguments. Storing
+     *  `serialize()`'s output verbatim (as this did until 2026-09) put
+     *  `a:1:{i:0;a:1:{i:0;s:28:"someone@example.org";}}` in the Log page where
+     *  `someone@example.org` was the whole content - and blew the INSERT, which
+     *  sits inside the queue run, whenever a task carried bigger arguments.
+     *
+     * @param mixed $params the task's arguments as passed to execute_one()
+     */
+    public static function make(string $time, string $mem_usage, string $mem_peak, string $ret, $params): self
+    {
+        $entry = new self([
+            'time'      => $time,
+            'mem_usage' => $mem_usage,
+            'mem_peak'  => $mem_peak,
+            'ret'       => mb_strcut($ret, 0, self::VALUE_MAX['ret']),
+            'params'    => mb_strcut(self::flatten($params), 0, self::VALUE_MAX['params']),
+        ]);
+        $entry->trimToFit(self::TRIM_ORDER, self::PARAMS_MAX);
+        return $entry;
+    }
+
+    /** A task's arguments as a short readable list: `a,b`, `k=v`, `{AA_Mail}`.
+     *  Bounded in both width and depth - this runs on every queue task, and the
+     *  arguments are arbitrary (an AA_Mail recipient list, a whole item id set).
+     *
+     * @param mixed $value
+     */
+    private static function flatten($value, int $depth = self::FLATTEN_DEPTH): string
+    {
+        if (is_array($value)) {
+            if ($depth < 1) {
+                return '[...]';
+            }
+            $parts = [];
+            foreach (array_slice($value, 0, self::FLATTEN_ITEMS, true) as $key => $item) {
+                $parts[] = (is_string($key) ? $key . '=' : '') . self::flatten($item, $depth - 1);
+            }
+            return implode(',', $parts) . (count($value) > self::FLATTEN_ITEMS ? ',...' : '');
+        }
+        if (is_object($value)) {
+            return '{' . get_class_name($value) . '}';
+        }
+        if (is_bool($value)) {
+            return $value ? 'true' : 'false';
+        }
+        return is_scalar($value) ? (string) $value : '';   // null, resource, ...
+    }
+
     public static function getClassProperties(): array
     {
         return [
@@ -479,6 +566,13 @@ class AA_Logentry_Qa extends AA_Logentry
 {
     // $entry = new AA_Logentry_Qa(['ident'=>$selector, 'module'=>AA::$module_id,'ip'=>str_replace(':','_',$_SERVER['REMOTE_ADDR']), 'url'=>($_SERVER['HTTPS'] ? '' : 'http/'). "{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}"]);
 
+    /** Declared so trimToFit() has a real property to shorten (and so
+     *  setProperties() stops creating them dynamically - deprecated since PHP 8.2). */
+    public string $ident  = '';
+    public string $module = '';
+    public string $ip     = '';
+    public string $uri    = '';
+
     public static function getClassProperties(): array
     {
         return [
@@ -529,9 +623,7 @@ class AA_Logentry_Obj extends AA_Logentry
         ]);
         // `id` is the only unbounded part (the no-object branch passes a whole
         // serialized task) - trim it so the trailing `:Obj` flag always fits.
-        while ((($over = strlen($entry->serializeToString(true)) - self::SELECTOR_MAX) > 0) && ($entry->id !== '')) {
-            $entry->id = mb_substr($entry->id, 0, -$over);
-        }
+        $entry->trimToFit(['id'], self::SELECTOR_MAX, true);
         return $entry;
     }
 
@@ -551,14 +643,21 @@ class AA_Logentry_Obj extends AA_Logentry
  *  sendToReader()/alerts paths, the triggering item on a few event paths;
  *  empty when the mail went to a bare address). Logged as one opaque string it
  *  told the reader nothing and needed ParamImplode to escape its inner colon;
- *  as two properties each value is its own segment, so `AA_Mail:2:c24ef6…:Mailid`
- *  stays escape-free and the Log page can label the parts.
+ *  as two properties each value is its own segment, so
+ *  `AA_Mail:2:c24ef6…::Mailid` stays escape-free and the Log page can label the
+ *  parts.
+ *
+ *  `origin` is appended after them: in practice most mails carry no template at
+ *  all (notify.php and the {sendmail} expansion build their message with
+ *  setFromArray()/setSubject() and never create an `email` row), so the code
+ *  site the mail was born at is what actually identifies it.
  */
 class AA_Logentry_Mailid extends AA_Logentry
 {
     public string $cls      = '';
     public string $template = '';
     public string $reader   = '';
+    public string $origin   = '';
 
     public static function getClassProperties(): array
     {
@@ -566,7 +665,23 @@ class AA_Logentry_Mailid extends AA_Logentry
             'cls'      => new AA_Property('cls', _m('Class'), 'string'),
             'template' => new AA_Property('template', _m('Mail template'), 'int'),    // email.id
             'reader'   => new AA_Property('reader', _m('Reader item'), 'string'),     // item.id, may be empty
+            'origin'   => new AA_Property('origin', _m('Origin'), 'string'),          // AA_Mail::detectOrigin(), appended last so older rows still parse
         ];
+    }
+
+    /** Same key-value table as the parent, except the template id links to the
+     *  template it names. Both this page and admin/aa_emails.php are
+     *  superadmin-only, so the link needs no extra permission check. */
+    public function getPrintRow(): string
+    {
+        $arr = [];
+        foreach (static::getClassProperties() as $id => $prop) {
+            $value = trim($this->$id);
+            $arr[safe($prop->name)] = ($id === 'template' && $value !== '')
+                ? '<a href="' . safe(AA_INSTAL_PATH . 'admin/aa_emails.php?id=' . $value) . '">' . safe($value) . '</a>'
+                : safe($value);
+        }
+        return Txt::keyValTable($arr, true);   // html - the values are escaped above
     }
 }
 
@@ -575,9 +690,20 @@ class AA_Logentry_Mailid extends AA_Logentry
  *  same mail, so both line up in the Log page filter. */
 class AA_Logentry_Ms extends AA_Logentry
 {
-    /** log.params is varbinary(128) and the server runs STRICT_TRANS_TABLES, so
-     *  an over-long server reply would fail the INSERT (and thus the send). */
-    private const PARAMS_MAX = 128;
+    /** Ceilings for the three unbounded properties, in bytes. Their sum plus the
+     *  fixed part is over PARAMS_MAX, so a maxed-out row still needs TRIM_ORDER -
+     *  but no single long value can starve the other two. `resp` gets the widest
+     *  one because a whole SMTP reply is what makes the mail findable in the MTA
+     *  log: `250 2.0.0 67VCcxIC4029086 Message accepted for delivery` is 54 B,
+     *  and the queue id in the middle of it is worthless if the tail is cut. */
+    private const VALUE_MAX = ['resp' => 64, 'to' => 36, 'subj' => 44];
+
+    /** Which property gives up its tail first when the row still does not fit.
+     *  `subj` leads: a shortened subject still identifies the mail, and where a
+     *  template exists the Log page links to its full text anyway. `to` is next.
+     *  `resp` yields last, so a long subject can never cost us the server's
+     *  answer - the one value nothing else in the row can substitute for. */
+    private const TRIM_ORDER = ['subj', 'to', 'resp'];
 
     /** Declared (unlike the older sibling entries) so setProperties() does not
      *  create them dynamically - deprecated since PHP 8.2. All string, because
@@ -586,14 +712,24 @@ class AA_Logentry_Ms extends AA_Logentry
     public string $transport = '';
     public string $sent      = '';
     public string $resp      = '';
+    public string $to        = '';
+    public string $subj      = '';
 
-    /** Build the entry with `resp` -- the only unbounded property -- trimmed to fit. */
-    public static function make(string $transport, int $sent, string $resp): self
+    /** Build the entry, capped per property and then trimmed to fit PARAMS_MAX.
+     *  `to` and `subj` are appended after `resp` (not inserted next to the other
+     *  identifying values) because the serialization is positional and unnamed -
+     *  putting them earlier would make every pre-existing row decode its server
+     *  response as a recipient. */
+    public static function make(string $transport, int $sent, string $resp, string $to = '', string $subj = ''): self
     {
-        $entry = new self(['transport' => $transport, 'sent' => $sent, 'resp' => $resp]);
-        while ((($over = strlen($entry->serializeToString()) - self::PARAMS_MAX) > 0) && ($entry->resp !== '')) {
-            $entry->resp = mb_substr($entry->resp, 0, -$over);   // mb_ so a trim never splits a multibyte char
-        }
+        $entry = new self([
+            'transport' => $transport,
+            'sent'      => $sent,
+            'resp'      => mb_strcut($resp, 0, self::VALUE_MAX['resp']),
+            'to'        => mb_strcut($to, 0, self::VALUE_MAX['to']),
+            'subj'      => mb_strcut($subj, 0, self::VALUE_MAX['subj']),
+        ]);
+        $entry->trimToFit(self::TRIM_ORDER, self::PARAMS_MAX);
         return $entry;
     }
 
@@ -603,6 +739,8 @@ class AA_Logentry_Ms extends AA_Logentry
             'transport' => new AA_Property('transport', _m('Transport'), 'string'),   // 'mail' or 'smtp'
             'sent'      => new AA_Property('sent', _m('Recipients sent'), 'int'),
             'resp'      => new AA_Property('resp', _m('Server response'), 'string'),
+            'to'        => new AA_Property('to', _m('Recipients'), 'string'),         // first address + how many more
+            'subj'      => new AA_Property('subj', _m('Subject'), 'string'),          // appended last - see make()
         ];
     }
 }
@@ -662,6 +800,44 @@ class AA_Logentry_Alerts extends AA_Logentry
 /** CSN log entry - content syndication feed status (src/IO/Grabber/AARSS.php) */
 class AA_Logentry_Csn extends AA_Logentry
 {
+    /** Only `detail` gets a ceiling: it is a raw excerpt of whatever a remote
+     *  server sent and has no natural size at all, while `feed` is a name and
+     *  `status` a short literal from this file's own call sites. Capping the
+     *  other two as well would shorten rows that fit perfectly today - the real
+     *  CSN log runs to 124 bytes at its longest, all of it feed name.
+     *
+     *  `feed` yields its tail first because the CSN selector already carries
+     *  `RSS:{feed_id}`, so the row stays attributable without it; `detail` is
+     *  the only diagnostic and `status` is never trimmed. With both maxed out
+     *  each still keeps a usable head. */
+    private const VALUE_MAX  = ['detail' => 48];
+    private const TRIM_ORDER = ['feed', 'detail'];
+
+    public string $feed   = '';
+    public string $status = '';
+    public string $detail = '';
+
+    /** `detail` is whatever the remote end sent back where XML was expected -
+     *  short in practice ("Not active"), but nothing stops it being a whole
+     *  HTML error page. Until 2026-09 it went into the 128-byte `log.params`
+     *  column raw, and under STRICT_TRANS_TABLES an over-long value fails the
+     *  INSERT rather than truncating: the feed run would have died on the log
+     *  write instead of recording the feed error it was called to record.
+     *  Latent, not observed - the real CSN log (199k rows on geoinformace)
+     *  peaks at 124 bytes, none of it detail. Whitespace is collapsed because
+     *  the excerpt shares one table cell with the rest of the row.
+     */
+    public static function make(string $feed, string $status, string $detail = ''): self
+    {
+        $entry = new self([
+            'feed'   => $feed,
+            'status' => $status,
+            'detail' => mb_strcut(trim((string) preg_replace('/\s+/', ' ', $detail)), 0, self::VALUE_MAX['detail']),
+        ]);
+        $entry->trimToFit(self::TRIM_ORDER, self::PARAMS_MAX);
+        return $entry;
+    }
+
     public static function getClassProperties(): array
     {
         return [

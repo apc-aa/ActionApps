@@ -126,6 +126,53 @@ class AA_Mail extends htmlMimeMail implements LaterInterface {
     /** Seconds between SMTP retry attempts. */
     private const SMTP_RETRY_DELAY = 300;
 
+    /** Where this mail was created - see detectOrigin(). Defaults to '' so a
+     *  task serialized by an older version still unserializes. */
+    private string $origin = '';
+
+    /** Frames scanned for the creating call site, and the files that are the
+     *  mail machinery itself (full paths - apc-aa/mail.php, the {mail} contact
+     *  form, shares its basename with this file). */
+    private const ORIGIN_BACKTRACE_DEPTH = 6;
+    private const ORIGIN_OWN_FILES = [__DIR__ . '/mail.php', __DIR__ . '/htmlMimeMail/htmlMimeMail.php'];
+    /** Fits `log.selector` next to template + reader with room to spare. */
+    private const ORIGIN_MAX = 40;
+
+    public function __construct()
+    {
+        parent::__construct();
+        $this->origin = self::detectOrigin();
+    }
+
+    /** Entry script plus the first call frame outside the mail classes, e.g.
+     *  `index.php>notify.php:77`. Captured here, at construction, rather than
+     *  at send time: Toexecute::later() serializes the whole AA_Mail object, so
+     *  the origin travels through the queue with it - taken at send time, every
+     *  queued mail would report only the cron run that flushed it.
+     */
+    private static function detectOrigin(): string
+    {
+        $script = basename((string) ($_SERVER['SCRIPT_NAME'] ?? ($_SERVER['argv'][0] ?? '')));
+        $caller = '';
+        foreach (debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, self::ORIGIN_BACKTRACE_DEPTH) as $frame) {
+            if (empty($frame['file']) || in_array($frame['file'], self::ORIGIN_OWN_FILES, true)) {
+                continue;
+            }
+            $caller = basename($frame['file']) . ':' . ($frame['line'] ?? 0);
+            break;
+        }
+        // `write_mail.php>write_mail.php:174` says nothing twice - name the entry
+        // script only where it differs from the file the mail was created in.
+        if (($script === '') || str_starts_with($caller, $script . ':')) {
+            $origin = $caller;
+        } elseif ($caller === '') {
+            $origin = $script;
+        } else {
+            $origin = $script . '>' . $caller;
+        }
+        return mb_strcut($origin, 0, self::ORIGIN_MAX);
+    }
+
     /** Composite id `{email.id}:{item id}` - the queue's selector column and
      *  get_class_name($obj, true) both build on it. Kept as-is for those; for
      *  the log use logSelector(), which keeps the two values apart.
@@ -138,19 +185,41 @@ class AA_Mail extends htmlMimeMail implements LaterInterface {
      *  so the MAIL_SEND row and the TOEXECUTE row of the same queued mail carry
      *  the identical selector. */
     public function logSelector(): AA_Logentry_Mailid {
-        return new AA_Logentry_Mailid(['cls' => get_class_name($this), 'template' => (string)$this->template_id, 'reader' => (string)$this->reader_id]);
+        return new AA_Logentry_Mailid([
+            'cls'      => get_class_name($this),
+            'template' => (string)$this->template_id,
+            'reader'   => (string)$this->reader_id,
+            'origin'   => $this->origin,
+        ]);
     }
 
     /** Log one MAIL_SEND row per attempt -- which transport ran and what it
      *  said back (on SMTP the server's own reply, queue id included). Takes the
      *  selector from AA_Log::selector(), the same call AA\Later\Toexecute makes,
      *  so a queued mail's MAIL_SEND and TOEXECUTE rows sit side by side. */
-    private function logSend(int $sent): void
+    private function logSend(int $sent, array $recipients): void
     {
-        if ($this->getLastTransport() === '') {
+        $transport = $this->getLastTransport();
+        if ($transport === '') {
             return;   // send() bailed out before picking a transport - nothing was attempted
         }
-        AA_Log::write('MAIL_SEND', AA_Log::selector($this), AA_Logentry_Ms::make($this->getLastTransport(), $sent, $this->getLastTransportResponse()));
+        AA_Log::write('MAIL_SEND', AA_Log::selector($this), AA_Logentry_Ms::make(
+            $transport,
+            $sent,
+            $this->getLastTransportResponse(),
+            self::formatRecipients($recipients),
+            $this->getSubject()
+        ));
+    }
+
+    /** Recipients for one log row: the first address, plus how many more went
+     *  with it (`jan@ecn.cz+2`). A send() is usually one address anyway -
+     *  sendLater() splits a batch into one send() per recipient. */
+    private static function formatRecipients(array $recipients): string
+    {
+        $first = (string) reset($recipients);
+        $more  = count($recipients) - 1;
+        return $more > 0 ? $first . '+' . $more : $first;
     }
 
     /**
@@ -161,10 +230,10 @@ class AA_Mail extends htmlMimeMail implements LaterInterface {
     {
         try {
             $sent = parent::send($recipients);
-            $this->logSend($sent);
+            $this->logSend($sent, (array) $recipients);
             return $sent;
         } catch (\AA\Mail\TransientSmtpException $e) {
-            $this->logSend(0);
+            $this->logSend(0, (array) $recipients);
             $this->retry_attempts++;
             if ($this->retry_attempts > self::MAX_SMTP_RETRIES) {
                 trigger_error(
