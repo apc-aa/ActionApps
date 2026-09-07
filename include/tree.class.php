@@ -126,6 +126,9 @@ class AA_Supertree
         $ret = '';
         $xid = end($current_ids);
 
+        // one item + one content SELECT for the whole level - getItem() below then hits the cache
+        AA_Items::preload(new zids($ids, 'l'));
+
         foreach ($ids as $mid) {
             if (!($item = AA_Items::getItem(new zids($mid, 'l')))) {
                 continue;
@@ -209,6 +212,9 @@ class AA_Supertree_Reverse extends AA_Supertree
     /** how many parents at most go into one query */
     private const LEVEL_CHUNK = 200;
 
+    /** set once the slices to query (and their relation field) have been checked */
+    protected bool $_slices_settled = false;
+
     /** load function
      *  Walks the reverse tree by levels: one query for the whole level, not one
      *  per node. The parent class batches the same way (it can just read the
@@ -222,16 +228,27 @@ class AA_Supertree_Reverse extends AA_Supertree
             return;
         }
 
-        if (!count($this->_restrict_slices)) {
-            $zid = new zids($id, 'l');
-            $sid = $zid->getFirstSlice();
-            //huhl($this->_restrict_slices,$zid,$sid,$this);
-            if (!$sid) {
-                return;
+        // the slices to query are settled once per tree: {menu:} calls load() for every
+        // expanded entry, so this must not cost a lookup per entry
+        if (!$this->_slices_settled) {
+            if (!$this->_restrict_slices) {
+                if (!($sid = $this->_firstSlice($id))) {
+                    return;
+                }
+                $this->_restrict_slices = [$sid];
             }
-            $this->_restrict_slices = [$sid];
+            // a condition on a field a slice does not define is silently dropped by QueryZids -
+            // every item of that slice would then come back as a child of every parent (N^2)
+            $this->_restrict_slices = $this->_slicesWithRelationField($this->_restrict_slices);
+            $this->_modules         = array_fill_keys($this->_restrict_slices, true);
+            $this->_slices_settled  = true;
         }
-        $this->_modules = array_fill_keys($this->_restrict_slices, true);
+
+        // no slice left to query - the tree is empty, but every asked node still needs an entry
+        if (!$this->_restrict_slices) {
+            $this->_i[$id] = [];
+            return;
+        }
 
         $level = [$id];
         while ($level) {
@@ -272,6 +289,28 @@ class AA_Supertree_Reverse extends AA_Supertree
             $found = $next_level ? array_merge(...$next_level) : [];
             $level = array_values(array_diff(array_unique($found), array_keys($this->_i)));
         }
+    }
+
+    /** slice of item $id - from the per-request item cache when the item is already
+     *  loaded ({menu:} preloads its entries), otherwise one SELECT
+     * @return string|false  false when the item does not exist
+     */
+    protected function _firstSlice(string $id): string|false
+    {
+        $zid = new zids($id, 'l');
+        return AA_Items::singleton()->_getFromCache($zid)?->getSliceID() ?: $zid->getFirstSlice();
+    }
+
+    /** the subset of $slices whose field definitions contain the relation field
+     * @param  string[] $slices
+     * @return string[]
+     */
+    protected function _slicesWithRelationField(array $slices): array
+    {
+        return array_values(array_filter(
+            $slices,
+            fn($sid) => (bool) AA_Slice::getModule($sid)?->isField($this->_relation_field)
+        ));
     }
 
     /** long ids of all items whose relation field points at any of $parent_ids,
