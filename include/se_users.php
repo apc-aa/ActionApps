@@ -68,9 +68,13 @@ function ChangeRole($UsrAdd, $UsrDel, $slice_id, $editor_perms, $role): void
     }
 }
 
-/** UserTypeLabel - returns type string with slice name for Reader/ReaderGroup */
-function UserTypeLabel(array $usrinfo, string $usr_id): string
+/** UserTypeLabel - returns type string with slice name for Reader/ReaderGroup
+ *  $usrinfo is false when the id no longer exists (orphan perms/profile row of a deleted user) */
+function UserTypeLabel(array|false $usrinfo, string $usr_id): string
 {
+    if ($usrinfo === false) {
+        return '<i>' . _m('deleted user') . '</i>';
+    }
     if (($usrinfo['type'] ?? '') === 'Reader') {
         $item  = new ItemContent($usr_id);
         $slice = AA_Slice::getModule($item->getSliceID());

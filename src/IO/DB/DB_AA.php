@@ -244,7 +244,7 @@ final class DB_AA
      *
      * @return int
      */
-    public static function count(string|array $table, array $where = null): int
+    public static function count(string|array $table, ?array $where = null): int
     {
         return self::select1('cnt', "SELECT count(*) as cnt FROM " . self::makeTables($table), $where);
     }
@@ -402,8 +402,8 @@ final class DB_AA
     {
         $where = [];
         foreach ($varlist as $vardef) {
-            // $vardef is array(varname, type, value)
-            [$name, $value, $type] = $vardef;
+            // $vardef is array(varname, value, type) - the type is optional
+            [$name, $value, $type] = array_pad($vardef, 3, null);
             $type = (string) $type;   // just normalize to RLIKE and LIKE (in this context we do not use expression parsing as we do for RLIKE in public search)
             if (in_array($type, ['>', '<', '<=', '>=', '<>', 'i<>', '!='])) {
                 $operator = $type === 'i<>' ? '<>' : $type;

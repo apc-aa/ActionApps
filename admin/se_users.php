@@ -113,13 +113,14 @@ function PrintUser($perm, $usr_id, $editor_perm): void
     ];
     $usrinfo = AA::$perm->getIDsInfo($usr_id);
 
-    // add link to user settings for superadmins
-    $usr_code = ((!IsSuperadmin() || !array_key_exists($usrinfo['type'], $go_url_arr)) ? $usrinfo['name']
-        : '<a href="' . get_admin_url($go_url_arr[$usrinfo['type']]) . '">' . safe($usrinfo['name']) . '</a>');
+    // add link to user settings for superadmins ($usrinfo is false for an orphan row of a deleted user)
+    $usr_name = safe($usrinfo['name'] ?? $usr_id);
+    $usr_code = ((!IsSuperadmin() || !array_key_exists($usrinfo['type'] ?? '', $go_url_arr)) ? $usr_name
+        : '<a href="' . get_admin_url($go_url_arr[$usrinfo['type']]) . '">' . $usr_name . '</a>');
 
     echo "<td>" . $usr_code . "</td>\n";
     echo "<td>" . safe($username) . "</td>\n";
-    echo "<td>" . (safe($usrinfo['mail']) ?: "&nbsp;") . "</td>\n";
+    echo "<td>" . (safe($usrinfo['mail'] ?? '') ?: "&nbsp;") . "</td>\n";
     echo "<td>" . UserTypeLabel($usrinfo, $usr_id) . "</td>\n";
 
     echo IfLink(CanChangeRole($perm, $editor_perm, AA_Perm::ROLES["AUTHOR"]['perm']), get_url('', ['UsrAdd' => $usr_id, 'role' => "AUTHOR"], true), _m("Author"));

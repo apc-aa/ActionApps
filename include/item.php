@@ -1998,7 +1998,10 @@ class AA_Items
             // yes we store it in the cache first
             $content = GetItemContent($zids2get, false, false, [], $crypted_additional_slice_pwd);
             for ($i = 0, $ino = $zids2get->count(); $i < $ino; ++$i) {
-                $items->_store(GetItemFromContent(new ItemContent($content[$zids2get->short_or_longids($i)])));
+                $key = $zids2get->short_or_longids($i);
+                if (isset($content[$key])) {    // unknown (deleted) id - nothing to cache, getItem() answers null for it
+                    $items->_store(GetItemFromContent(new ItemContent($content[$key])));
+                }
             }
         }
         return;

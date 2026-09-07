@@ -986,7 +986,7 @@ class Manager extends AA_Storable
      * @return string
      * @throws Exception
      */
-    public function getDisplayPage(zids $zids = null): string
+    public function getDisplayPage(?zids $zids = null): string
     {
         global $r_state;
 
@@ -1168,7 +1168,7 @@ class Manager extends AA_Storable
     public function getAndClearMessages()
     {
         $ret = GetPrintArray($this->msg);
-        unset($this->msg);
+        $this->msg = [];
         return $ret;
     }
 

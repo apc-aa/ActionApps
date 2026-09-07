@@ -3732,6 +3732,12 @@ class AA_Stringexpand_Fulltext extends AA_Stringexpand {
     {
         $ret = '';
         $iids = explode_ids($item_ids);
+        // one item + one content SELECT per id type for all the ids - getItem() below then hits the cache
+        foreach (['s', 'l'] as $type) {
+            if ($typed = array_filter($iids, static fn($id) => $id && guesstype($id) === $type)) {
+                AA_Items::preload(new zids(array_values($typed), $type));
+            }
+        }
         foreach ($iids as $item_id) {
             $id_type    = guesstype($item_id);
             if ( $item_id && ($id_type === 's' || $id_type === 'l')) {
@@ -7770,8 +7776,8 @@ class AA_Stringexpand {
     /**
      */
     function __construct($param) {
-        $this->item     = $param['item'];
-        $this->itemview = $param['itemview'];
+        $this->item     = $param['item'] ?? null;
+        $this->itemview = $param['itemview'] ?? null;
     }
 
     public static function switchCacheOff(): void

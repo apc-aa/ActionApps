@@ -52,11 +52,10 @@ trait ReportTrait
     }
 
     /** Clear report function
-     * unsets all current messages
+     * drops all current messages
      */
     public function clear_report(): void
     {
-        unset($this->messages);
         $this->messages = [];
     }
 }

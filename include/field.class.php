@@ -872,7 +872,7 @@ class AA_Fields implements IteratorAggregate, Countable
      */
     public function loadField(string $fid): void
     {
-        if ($this->loaded_all || !is_null($this->fields[$fid]) || !AA_Field::isValidFieldId($fid)) {
+        if ($this->loaded_all || !is_null($this->fields[$fid] ?? null) || !AA_Field::isValidFieldId($fid)) {
             return;
         }
 

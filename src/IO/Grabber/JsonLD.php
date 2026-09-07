@@ -111,7 +111,7 @@ class JsonLD extends AbstractGrabber
      * @param string|null $item_splitter
      * @return JsonLD
      */
-    public function setItemSplitter(string $item_splitter = null): static
+    public function setItemSplitter(?string $item_splitter = null): static
     {
         $this->item_splitter = $item_splitter;
         return $this;
@@ -135,7 +135,7 @@ class JsonLD extends AbstractGrabber
     /**
      * @param string|null $next_func
      */
-    public function setNextFunc(string $next_func = null): static
+    public function setNextFunc(?string $next_func = null): static
     {
         $this->next_func = $next_func;
         return $this;
