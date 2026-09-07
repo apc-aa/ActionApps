@@ -1057,14 +1057,14 @@ function GetItemContent($zids, $unused_use_short_ids = false, $ignore_reading_pa
 
             $unpack_id = unpack_id($row['item_id']);
 
-            if ($unpermitted[$unpack_id]) {
+            if (!empty($unpermitted[$unpack_id])) {
                 $content[$unpack_id][$row['field_id']] = $ERR_VALUE;
                 continue;
             }
 
             // which database field is used (from 05/15/2004 we have FLAG_TEXT_STORED set for text-field-stored values
             if ($row['flag'] & FLAG_TEXT_STORED || strlen($row['text'] ?? '')) {
-                if (is_array($content[$unpack_id][$row['field_id']][0]) && $content[$unpack_id][$row['field_id']][0]['value'] == $row['text']) {
+                if (is_array($content[$unpack_id][$row['field_id']][0] ?? null) && $content[$unpack_id][$row['field_id']][0]['value'] == $row['text']) {
                     // ignore content duplicates (there could be more that two values for field
                     // with the same number (=NULL) - the ones which comes from "add value to field" operation)
                     continue;
@@ -1388,36 +1388,13 @@ function MsgPage($msg, string $url = ''): never
  */
 function StoreToContent($item_id, $field_id, $text_stored, $value, int $order, int $flag, bool $delete = false): void
 {
-    if (!is_long_id($item_id) || strlen($field_id) != 16) {
-        return;
-    }
-    $varset = new Cvarset();
-    $varset->clear();
-    if ($text_stored) {
-        // do not store empty values in content table for text_stored fields
-        // if ( !$value['value'] ) { return false; }    // can't do it, conditions do not work then (ecn joblist)
-        $varset->add("text", "text", $value);
-        // set "TEXT stored" flag
-        $varset->add("flag", "number", $flag | FLAG_TEXT_STORED);
-        $varset->add("number", "number", $order);
-    } else {
-        $varset->add("number", "number", (int) $value);
-        // clear "TEXT stored" flag
-        $varset->add("flag", "number", $flag & ~FLAG_TEXT_STORED);
-    }
-
-    // insert item but new field
-    $varset->addkey("item_id", "unpacked", $item_id);
-    $varset->addkey("field_id", "text", $field_id);
-
-    // not used yet
-    // if ($history) {
-    //     $varset->saveHistory('content', $item_id);
-    // }
+    // the same row an item store queues - here written right away (one caller, one value at a time)
+    $writer = new AA_Field_Writer('');
     if ($delete) {
-        $varset->doDelete('content');
+        $writer->clearField((string) $item_id, (string) $field_id);
     }
-    $varset->doInsert('content');
+    $writer->addContentRow((string) $item_id, (string) $field_id, (bool) $text_stored, $value, $order, $flag);
+    $writer->flush();
 }
 
 

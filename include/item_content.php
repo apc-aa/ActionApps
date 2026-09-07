@@ -482,7 +482,7 @@ class AA_Content implements Iterator, ArrayAccess, Countable
      */
     protected function getIndex($field_id, $idx = 0): int|false
     {
-        if (!is_array($a = $this->content[$field_id])) {
+        if (!is_array($a = $this->content[$field_id] ?? null)) {
             return false;
         }
         if (isset($a[$idx])) {
@@ -1373,91 +1373,95 @@ class ItemContent extends AA_Content
             }
         }
 
-        switch ($mode) {
-            case 'overwrite':
-                // delete content for all the fields but not the safe fields
-                $delete_conds = [['item_id', $id, 'l']];
-                if (count($safe_fields = $fields->getSafeFieldsArray())) {
-                    $delete_conds[] = ['field_id', $safe_fields, 's<>'];
-                }
-                DB_AA::delete('content', $delete_conds);
-                break;
-            case 'update':
-                (new AA_Field_Cleaner($fields))->clean_updated_fields($this, $id);
-                break;
-            case 'insert':
-                // reset hit counter fields for new items
-                $hitfields = array_filter($fields->getPriorityArray(), static function ($fid): bool {
-                    return (str_starts_with($fid, 'hit_'));
-                });
-                foreach ($hitfields as $fid) {
-                    $this->setValue($fid, 0);
-                }
-
-                // we store the skeleton item to the item table to get short_id in order we can use _#SITEM_ID in computed fields (filename change aliases)
-                // Most of the fields will be rewritten later (see below)
-                AA::Metabase()->doInsert('item', ['id' => $id,'slice_id' => $slice_id, 'status_code' => $this->getStatusCode(), 'externally_fed' => '']);
-                $this->setValue('short_id........', DB_AA::select1('short_id', "SELECT short_id FROM `item`", [['id', $id, 'l']]));
-                break;
-        }
-        // else 'add' do not clear the current content - the values are added
-        // in parallel to current values (stored as multivalues for all fields
-        // stored in content table)
-
-        // and NOW - store the fields and prepare item_varset
-        $item_varset = $this->_store_fields($id, $fields, $context);
-
-        // Alerts module uses moved2active as the time when an item was moved to the active bin
-        if ($mode === 'insert' || ($item_varset->get('status_code') != $oldItemContent->getStatusCode() && $item_varset->get('status_code') >= 1)) {
-            $item_varset->add("moved2active", "number", $item_varset->get('status_code') > 1 ? 0 : time());
-        }
-
-        /** update item table */
-        // we can't redefine id or short_id for the field, so if it is set, unset it
-        $item_varset->remove("short_id");
-        $item_varset->addkey('id', 'unpacked', $id);
-        $item_varset->add("slice_id", "unpacked", $slice_id);
-        // update item table
-        switch ($mode) {
-            case 'update':
-            case 'add':
-                if ($silent) {
-                    if ($allow_edit['last_edit'] && $this->getValue('last_edit')) {
-                        $item_varset->add("last_edit", "date", (int) $this->getValue('last_edit'));
+        // one transaction for the whole write - the old rows, the new rows and the item
+        // row land together (3-5 commits become one; every commit is two fsyncs here)
+        DB_AA::transaction(function () use ($mode, $id, $slice_id, $fields, $context, $oldItemContent, $silent, $allow_edit) {
+            switch ($mode) {
+                case 'overwrite':
+                    // delete content for all the fields but not the safe fields
+                    $delete_conds = [['item_id', $id, 'l']];
+                    if (count($safe_fields = $fields->getSafeFieldsArray())) {
+                        $delete_conds[] = ['field_id', $safe_fields, 's<>'];
                     }
-                } else {
+                    DB_AA::delete('content', $delete_conds);
+                    break;
+                case 'update':
+                    (new AA_Field_Cleaner($fields))->clean_updated_fields($this, $id);
+                    break;
+                case 'insert':
+                    // reset hit counter fields for new items
+                    $hitfields = array_filter($fields->getPriorityArray(), static function ($fid): bool {
+                        return (str_starts_with($fid, 'hit_'));
+                    });
+                    foreach ($hitfields as $fid) {
+                        $this->setValue($fid, 0);
+                    }
+
+                    // we store the skeleton item to the item table to get short_id in order we can use _#SITEM_ID in computed fields (filename change aliases)
+                    // Most of the fields will be rewritten later (see below)
+                    AA::Metabase()->doInsert('item', ['id' => $id,'slice_id' => $slice_id, 'status_code' => $this->getStatusCode(), 'externally_fed' => '']);
+                    $this->setValue('short_id........', DB_AA::select1('short_id', "SELECT short_id FROM `item`", [['id', $id, 'l']]));
+                    break;
+            }
+            // else 'add' do not clear the current content - the values are added
+            // in parallel to current values (stored as multivalues for all fields
+            // stored in content table)
+
+            // and NOW - store the fields and prepare item_varset
+            $item_varset = $this->_store_fields($id, $fields, $context);
+
+            // Alerts module uses moved2active as the time when an item was moved to the active bin
+            if ($mode === 'insert' || ($item_varset->get('status_code') != $oldItemContent->getStatusCode() && $item_varset->get('status_code') >= 1)) {
+                $item_varset->add("moved2active", "number", $item_varset->get('status_code') > 1 ? 0 : time());
+            }
+
+            /** update item table */
+            // we can't redefine id or short_id for the field, so if it is set, unset it
+            $item_varset->remove("short_id");
+            $item_varset->addkey('id', 'unpacked', $id);
+            $item_varset->add("slice_id", "unpacked", $slice_id);
+            // update item table
+            switch ($mode) {
+                case 'update':
+                case 'add':
+                    if ($silent) {
+                        if ($allow_edit['last_edit'] && $this->getValue('last_edit')) {
+                            $item_varset->add("last_edit", "date", (int) $this->getValue('last_edit'));
+                        }
+                    } else {
+                        $item_varset->add("last_edit", "quoted", AA_Generator::factoryByString('now')->generate()->getValue());
+                        $item_varset->add("edited_by", "quoted", AA_Generator::factoryByString('uid')->generate()->getValue());
+                    }
+                    $item_varset->doUpdate('item');
+                    break;
+                case 'overwrite':
+                    if ($item_varset->get('status_code') < 1) {
+                        $item_varset->set('status_code', 1);
+                    }
+                    $item_varset->set('display_count', (int) $this->getValue('display_count...'));
                     $item_varset->add("last_edit", "quoted", AA_Generator::factoryByString('now')->generate()->getValue());
                     $item_varset->add("edited_by", "quoted", AA_Generator::factoryByString('uid')->generate()->getValue());
-                }
-                $item_varset->doUpdate('item');
-                break;
-            case 'overwrite':
-                if ($item_varset->get('status_code') < 1) {
-                    $item_varset->set('status_code', 1);
-                }
-                $item_varset->set('display_count', (int) $this->getValue('display_count...'));
-                $item_varset->add("last_edit", "quoted", AA_Generator::factoryByString('now')->generate()->getValue());
-                $item_varset->add("edited_by", "quoted", AA_Generator::factoryByString('uid')->generate()->getValue());
-                $item_varset->set('externally_fed', (int) $this->getValue('externally_fed..'));
-                $item_varset->doReplace('item');
-                break;
-            case 'insert':
-                // check, if all data in item table are correct
-                if ($item_varset->get('status_code') < 1) {
-                    $item_varset->set('status_code', 1);
-                }
-                if ($item_varset->get('publish_date') < 1) {
-                    $item_varset->set('publish_date', AA_Generator::factoryByString('now')->generate()->getValue());
-                }
-                if ($item_varset->get('expiry_date') < 1) {
-                    $item_varset->set('expiry_date', AA_Generator::factoryByString('never')->generate()->getValue());
-                }
-                $item_varset->set('display_count', (int) $this->getValue('display_count...'));
-                $item_varset->add('post_date', "quoted", AA_Generator::factoryByString('now')->generate()->getValue());
-                $item_varset->add('posted_by', "quoted", AA_Generator::factoryByString('uid')->generate()->getValue());
-                $item_varset->set('externally_fed', (int) $this->getValue('externally_fed..'));
-                $item_varset->doUpdate('item');  // already inserted above
-        }
+                    $item_varset->set('externally_fed', (int) $this->getValue('externally_fed..'));
+                    $item_varset->doReplace('item');
+                    break;
+                case 'insert':
+                    // check, if all data in item table are correct
+                    if ($item_varset->get('status_code') < 1) {
+                        $item_varset->set('status_code', 1);
+                    }
+                    if ($item_varset->get('publish_date') < 1) {
+                        $item_varset->set('publish_date', AA_Generator::factoryByString('now')->generate()->getValue());
+                    }
+                    if ($item_varset->get('expiry_date') < 1) {
+                        $item_varset->set('expiry_date', AA_Generator::factoryByString('never')->generate()->getValue());
+                    }
+                    $item_varset->set('display_count', (int) $this->getValue('display_count...'));
+                    $item_varset->add('post_date', "quoted", AA_Generator::factoryByString('now')->generate()->getValue());
+                    $item_varset->add('posted_by', "quoted", AA_Generator::factoryByString('uid')->generate()->getValue());
+                    $item_varset->set('externally_fed', (int) $this->getValue('externally_fed..'));
+                    $item_varset->doUpdate('item');  // already inserted above
+            }
+        });
         if ($invalidatecache) {
             // invalidate old cached values
             AA::Pagecache()->invalidateFor($slice_id);
@@ -1616,6 +1620,7 @@ class ItemContent extends AA_Content
             }
 
             AA_Inserter::factoryByString('qte')->setField($field)->executeMulti($field_writer, $id, $aa_val);
+            $field_writer->flush();   // per field: the next computed field's expression may read this one back
         }
 
         $item_varset = $field_writer->getItemVarset();
@@ -1666,6 +1671,7 @@ class ItemContent extends AA_Content
             $inserter = AA_Inserter::factoryByField($fld);
             $inserter->executeMulti($field_writer, $id, $cont);
         }
+        $field_writer->flush();   // the queued content rows - one DELETE + one INSERT instead of one per value
         return $field_writer->getItemVarset();
     }
 

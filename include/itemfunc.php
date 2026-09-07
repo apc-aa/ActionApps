@@ -868,16 +868,6 @@ abstract class AA_Inserter extends AA_Serializable implements NamedInterface
         return $this;
     }
 
-    /** deletes content for field in database
-     * @param $item_id
-     * @param $field_id
-     */
-    protected function _clear_field($item_id, $field_id): void
-    {
-        // delete content just for displayed fields
-        DB_AA::delete('content', [['item_id', $item_id, 'l'], ['field_id', $field_id]]);
-    }
-
     /** Returns true, if the content of this field is always generated (so it is OK to have this field unfilled)
      * @return bool
      */
@@ -896,6 +886,10 @@ abstract class AA_Inserter extends AA_Serializable implements NamedInterface
         }
     }
 
+    /** Runs execute() on every value of the field. The `content` rows are only QUEUED in
+     *  $field_writer - they reach the database when the caller runs $field_writer->flush().
+     *  Everything else an inserter does happens right away (see execute()).
+     */
     public function executeMulti(AA_Field_Writer $field_writer, string $item_id, AA_Value $cont): void
     {
         global $err;
@@ -919,15 +913,22 @@ abstract class AA_Inserter extends AA_Serializable implements NamedInterface
         if ($this->change_fields) {
             foreach ($this->change_fields as $fid => $value) {
                 if ($fld = $field_writer->getSlice()?->getField($fid)) {
-                    $this->_clear_field($item_id, $fid);
-                    AA_Inserter::factoryByField($fld)->executeMulti($field_writer, $item_id, $value);
+                    $field_writer->clearField($item_id, $fid);
+                    self::factoryByField($fld)->executeMulti($field_writer, $item_id, $value);
                 }
             }
         }
         $this->change_fields = []; // just to clean it - it was executed
     }
 
-    /**
+    /** Applies the field's insert function to one value. The value itself is handed to
+     *  $fieldwriter - as an `item` column, or as a `content` row that is only QUEUED and
+     *  written by $fieldwriter->flush() - as is a new constant (add2constant) and the other
+     *  item's side of a mutual relation (AA_Inserter_Ids). What still happens right away is
+     *  outside the database: AA_Inserter_Fil moves files, AA_Inserter_Ids 't' stores a new
+     *  tag item. An inserter that reads the content table of the stored item must call
+     *  $fieldwriter->flush() first.
+     *
      * @param  AA_Field_Writer  $fieldwriter
      * @param  string           $item_id
      * @param  string|int       $value
@@ -937,40 +938,14 @@ abstract class AA_Inserter extends AA_Serializable implements NamedInterface
     public function execute(AA_Field_Writer $fieldwriter, $item_id, $value, int $order = 0, int $flag = 0): void
     {
 
-        $varset = new Cvarset();
-        // if input function is 'selectbox with presets' and add2connstant flag is set,
-        // store filled value to constants
+        // if input function is 'selectbox with presets' and add2constant flag is set,
+        // a value not yet in the constant group becomes a new constant (written by flush())
         $fnc = ParseFnc($this->field->getProperty("input_show_func"));   // input show function
         if ($fnc && ($fnc['fnc'] === 'pre')) {
             // get add2constant and constgroup (other parameters are irrelevant in here)
-            [$constgroup, $maxlength, $fieldsize,$slice_field, $usevalue, $adding, $secondfield, $add2constant] = explode(':', $fnc['param']);
-            // add2constant is used in $this->_store - adds new value to constant table
+            [$constgroup, $maxlength, $fieldsize, $slice_field, $usevalue, $adding, $secondfield, $add2constant] = explode(':', $fnc['param']);
             if ($add2constant && $constgroup && (!str_starts_with($constgroup, "#sLiCe-")) && trim($value) !== '') {
-                $db = getDB();
-                // does this constant already exist?
-                $constgroup = quote($constgroup);
-                $constvalue = quote($value);
-                $SQL = "SELECT * FROM constant WHERE group_id='$constgroup' AND value='$constvalue'";
-                $db->query($SQL);
-                if (!$db->next_record()) {
-                    // constant is not in database yet => add it
-
-                    // first we have to get max priority in order we can add new constant
-                    // with bigger number
-                    $SQL = "SELECT max(pri) as max_pri FROM constant WHERE group_id='$constgroup'";
-                    $db->query($SQL);
-                    $new_pri = ($db->next_record() ? $db->f('max_pri') + 10 : 1000);
-
-                    // we have priority - we can add
-                    $varset->set("name", $constvalue, 'quoted');
-                    $varset->set("value", $constvalue, 'quoted');
-                    $varset->set("pri", $new_pri, "number");
-                    $varset->set("id", new_id(), "unpacked");
-                    $varset->set("group_id", $constgroup, 'quoted');
-                    $varset->doInsert('constant');
-                    ConstantsChanged();                 // new constant row - drop the cached reads
-                }
-                freeDB($db);
+                $fieldwriter->addConstant($constgroup, (string) $value);
             }
         }
 
@@ -994,11 +969,13 @@ abstract class AA_Inserter extends AA_Serializable implements NamedInterface
             return;
         }
 
-        // all the fields are already deleted. Now the isSafeStored field is really updated, so we can finally delete it
-        $delete = $this->field->isSafeStored();  // safe stored fields are not erased, yet
-
-        // field in content table (function defined in util.php since we need it for display count
-        StoreToContent($item_id, $this->field->getId(), $this->field->getProperty("text_stored"), $value, $order, $flag, $delete);
+        // field in content table - queued in the writer and written in one batch by its flush()
+        $field_id = $this->field->getId();
+        if ($this->field->isSafeStored()) {
+            // AA_Field_Cleaner leaves safe stored fields alone, so they are cleared right here
+            $fieldwriter->clearField($item_id, $field_id);
+        }
+        $fieldwriter->addContentRow($item_id, $field_id, (bool) $this->field->getProperty("text_stored"), $value, $order, $flag);
     }
 }
 
@@ -1131,6 +1108,7 @@ class AA_Inserter_Ids extends AA_Inserter
 
     public function execute(AA_Field_Writer $fieldwriter, $item_id, $value, int $order = 0, int $flag = 0): void
     {
+        global $err;
 
         $fid         = $this->field->getId();
         $text_stored = $this->field->getProperty("text_stored");
@@ -1154,8 +1132,11 @@ class AA_Inserter_Ids extends AA_Inserter
                             $content4id->setItemID($new_id = new_id());
                             $content4id->setSliceID($sid);
                             $content4id->setAaValue('headline........', new AA_Value($v));
-                            $content4id->complete4Insert();
-                            $content4id->storeItem('insert');
+                            if (!$content4id->complete4Insert() || !$content4id->storeItem('insert')) {
+                                // no tag item (no permission, bad slice, ...) - a relation to its id would dangle
+                                $err[$fid] = _m("The tag '%1' could not be stored: %2", [safe($v), safe(ItemContent::lastErrMsg())]);   // $err is printed as HTML
+                                return;
+                            }
                             $value = $new_id;
                         }
                     }
@@ -1168,20 +1149,10 @@ class AA_Inserter_Ids extends AA_Inserter
 
                 // no break
             case 'z':   // z means backward related item id - store it only backward
-                // add reverse related
-                $reverse_id = $value;
-                $value      = $item_id;
-
-                // mimo added
-                // get rid of empty dummy relations (text='')
-                // this is only a problem for text content
-                if ($text_stored) {
-                    DB_AA::delete('content', [['item_id', $reverse_id, 'l'], ['field_id', $fid], ['text', '']]);
-                }
-                // is reverse relation already set?
-                if (!DB_AA::test('content', [['item_id',$reverse_id, 'l'], ['field_id', $fid], [($text_stored ? "text" : "number"), $value]])) { // not found
-                    parent::execute($fieldwriter, $reverse_id, $value, $order, $flag);
-                }
+                // the other item's row (pointing back at $item_id) is written by flush(),
+                // once the rows of this store are in - a relation to the item itself
+                // must see its own row when flush() checks for an existing backward row
+                $fieldwriter->addReverseRelation($value, $fid, (bool) $text_stored, $item_id, $order, $flag);
                 break;
 
             case 'x':   // just filling character - remove it
@@ -1679,6 +1650,7 @@ class AA_Inserter_2fa extends AA_Inserter
             $this->crypt_phrase = trim($this->crypt_phrase);
 
             if ($this->crypt_phrase !== '') {
+                $fieldwriter->flush();   // the phrase reads the user's item back, which may be the one being stored
                 if (is_long_id($uid) && ($item = AA_Items::getItem(new zids($uid)))) {
                     $phrase = AA::Un($this->crypt_phrase, '', $item);
                 } else {
@@ -1749,12 +1721,28 @@ class AA_Inserter_Nul extends AA_Inserter
 // -----------------------------------------------------------------------------
 
 
+/** Collects everything one item store writes: the `item` columns (a Cvarset for one
+ *  UPDATE) and the `content` rows, which are queued and sent by flush() as one DELETE
+ *  per item and one multi-row INSERT - instead of a statement per value. Anything that
+ *  reads the content table of the stored item mid-store must call flush() first.
+ */
 class AA_Field_Writer
 {
+    /** one INSERT carries at most this much text - keeps it far below any max_allowed_packet */
+    private const INSERT_CHUNK_BYTES = 4_000_000;
+
     /** @var Cvarset  */
     protected Cvarset $item_varset;
     protected string $slice_id;
     protected string $context;
+    /** @var array[] `content` rows waiting for flush() - each row is column name => value */
+    private array $content_rows = [];
+    /** @var array item_id => [field_id => true] - (item, field) pairs to clear before the rows are written */
+    private array $to_clear = [];
+    /** @var array group_id => [value => true] - constants a `pre` field with add2constant asks for */
+    private array $constants = [];
+    /** @var array[] backward rows of mutual relations, written after the item's own rows - see addReverseRelation() */
+    private array $reverse = [];
 
     /**
      * AA_Field_Writer constructor.
@@ -1774,6 +1762,148 @@ class AA_Field_Writer
     public function getItemVarset(): Cvarset
     {
         return $this->item_varset;
+    }
+
+    /** Queues one `content` row - nothing reaches the database before flush(). */
+    public function addContentRow(string $item_id, string $field_id, bool $text_stored, $value, int $order, int $flag): void
+    {
+        if (!is_long_id($item_id) || strlen($field_id) != 16) {
+            return;
+        }
+        $this->content_rows[] = self::contentRow($item_id, $field_id, $text_stored, $value, $order, $flag);
+    }
+
+    /** The row StoreToContent() has always built: a text stored field keeps the value in
+     *  `text` (flag gains FLAG_TEXT_STORED, `number` is the value index), any other keeps
+     *  it in `number` (flag loses FLAG_TEXT_STORED, `text` stays NULL).
+     */
+    private static function contentRow(string $item_id, string $field_id, bool $text_stored, $value, int $order, int $flag): array
+    {
+        if ($text_stored) {
+            return ['item_id' => $item_id, 'field_id' => $field_id, 'number' => $order, 'text' => (string) $value, 'flag' => $flag | FLAG_TEXT_STORED];
+        }
+        return ['item_id' => $item_id, 'field_id' => $field_id, 'number' => (int) $value, 'flag' => $flag & ~FLAG_TEXT_STORED];
+    }
+
+    /** Queues the removal of every `content` row of the (item, field) pair. Rows already
+     *  queued for that pair are dropped, exactly as the delete would have removed them
+     *  had they been written one by one.
+     */
+    public function clearField(string $item_id, string $field_id): void
+    {
+        if (!is_long_id($item_id) || strlen($field_id) != 16) {
+            return;
+        }
+        $this->to_clear[$item_id][$field_id] = true;
+        $this->content_rows = array_values(array_filter(
+            $this->content_rows,
+            static fn(array $row): bool => $row['item_id'] !== $item_id || $row['field_id'] !== $field_id,
+        ));
+    }
+
+    /** Makes sure the constant exists in the group once flush() runs (add2constant of the
+     *  `pre` widget) - it is added with the next free priority if it is not there yet.
+     */
+    public function addConstant(string $group_id, string $value): void
+    {
+        $this->constants[$group_id][$value] = true;
+    }
+
+    /** Queues the other item's side of a mutual/backward relation: a row on $reverse_id
+     *  pointing back at $value (the stored item). flush() writes it only if that row is
+     *  not there yet and first drops the empty placeholder rows of that field.
+     */
+    public function addReverseRelation(string $reverse_id, string $field_id, bool $text_stored, string $value, int $order, int $flag): void
+    {
+        if (!is_long_id($reverse_id) || strlen($field_id) != 16) {
+            return;
+        }
+        $this->reverse[] = ['row' => self::contentRow($reverse_id, $field_id, $text_stored, $value, $order, $flag), 'text_stored' => $text_stored];
+    }
+
+    /** Writes what is queued, in this order: new constants; the deletes (one per item);
+     *  the rows in one multi-row INSERT (split only when the text alone would exceed
+     *  INSERT_CHUNK_BYTES); the backward relation rows the other items are still missing.
+     */
+    public function flush(): void
+    {
+        $this->flushConstants();
+
+        foreach ($this->to_clear as $item_id => $fields) {
+            DB_AA::delete('content', [['item_id', $item_id, 'l'], ['field_id', array_keys($fields)]]);
+        }
+        $this->to_clear = [];
+
+        $chunk = [];
+        $bytes = 0;
+        foreach ($this->content_rows as $row) {
+            $size = strlen($row['text'] ?? '');
+            if ($chunk && ($bytes + $size > self::INSERT_CHUNK_BYTES)) {
+                AA::Metabase()->doInsertMulti('content', $chunk);
+                $chunk = [];
+                $bytes = 0;
+            }
+            $chunk[] = $row;
+            $bytes  += $size;
+        }
+        if ($chunk) {
+            AA::Metabase()->doInsertMulti('content', $chunk);
+        }
+        $this->content_rows = [];
+
+        $this->flushReverseRelations();
+    }
+
+    /** One look-up per constant group, then one INSERT per constant that is missing */
+    private function flushConstants(): void
+    {
+        foreach ($this->constants as $group_id => $values) {
+            $wanted  = array_keys($values);
+            $known   = DB_AA::select('value', 'SELECT value FROM `constant`', [['group_id', $group_id], ['value', $wanted]]);
+            $missing = array_diff($wanted, $known);
+            if (!$missing) {
+                continue;
+            }
+            // max(pri) of an empty group is NULL, so its first constant gets 10 - as it always did
+            $pri = (int) DB_AA::select1('max_pri', 'SELECT max(pri) as max_pri FROM `constant`', [['group_id', $group_id]]);
+            foreach ($missing as $value) {
+                $pri   += 10;
+                $varset = new Cvarset();
+                $varset->set('id', new_id(), 'unpacked');
+                $varset->set('group_id', $group_id, 'text');
+                $varset->set('name', $value, 'text');
+                $varset->set('value', $value, 'text');
+                $varset->set('pri', $pri, 'number');
+                $varset->doInsert('constant');
+            }
+            ConstantsChanged();                 // new constant rows - drop the cached reads
+        }
+        $this->constants = [];
+    }
+
+    /** Empty placeholder rows go first, then every backward row the other item does not have yet */
+    private function flushReverseRelations(): void
+    {
+        $rows = [];
+        foreach ($this->reverse as $reverse) {
+            $row    = $reverse['row'];
+            $column = $reverse['text_stored'] ? 'text' : 'number';   // where contentRow() put the related id
+            $key    = $row['item_id'] . $row['field_id'] . $row[$column];
+            if (isset($rows[$key])) {
+                continue;                       // the same backward row asked for twice
+            }
+            if ($reverse['text_stored']) {
+                // get rid of empty dummy relations (text='') - only a problem for text content
+                DB_AA::delete('content', [['item_id', $row['item_id'], 'l'], ['field_id', $row['field_id']], ['text', '']]);
+            }
+            if (!DB_AA::test('content', [['item_id', $row['item_id'], 'l'], ['field_id', $row['field_id']], [$column, $row[$column]]])) {
+                $rows[$key] = $row;
+            }
+        }
+        $this->reverse = [];
+        if ($rows) {
+            AA::Metabase()->doInsertMulti('content', array_values($rows));
+        }
     }
 
     /** Adds item field */
