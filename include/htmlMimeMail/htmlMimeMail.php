@@ -203,6 +203,15 @@ class htmlMimeMail {
         $this->headers['Subject'] = $subject;
     }
 
+    /** The Subject: header as set (never encoded) - read by AA_Mail for the
+     *  MAIL_SEND log row, where it is often the only hint about the content:
+     *  mails built by setFromArray()/setSubject() have no template row to
+     *  point at. */
+    public function getSubject(): string
+    {
+        return (string) ($this->headers['Subject'] ?? '');
+    }
+
     /**
      * Accessor to add a From: header
      */
