@@ -345,7 +345,7 @@ function FilemanPerms($slice_id): bool
  *  get email permissions
  * (c) Jakub Adamek, Econnect, December 2002
  *
- * @param string $type      OPTIONAL emails type, see get_email_types() in tv_email.php.
+ * @param string $type      OPTIONAL emails type, see AA_Collection::get_email_types().
  *                          If not specified, all types are included.
  * @return array (email id => description)
  */
@@ -697,6 +697,40 @@ class AA_Perm {
         return null;
     }
 
+    /** Verify a password against a LDAP-style hash ({SSHA}, {SHA},
+     *  {SMD5}, {MD5}, {CRYPT}). Used by comparePwds() to accept hashes
+     *  migrated from the LDAP perm backend. Returns true iff the
+     *  password matches. Unknown prefixes return false.
+     */
+    private static function verifyLdapHash(string $password, string $hash): bool
+    {
+        if (!preg_match('/^\{([A-Za-z0-9]+)\}(.*)$/s', $hash, $m)) {
+            return false;
+        }
+        $value = $m[2];
+        switch (strtoupper($m[1])) {
+            case 'SSHA':    // base64( sha1(password . salt) . salt )
+                $raw = base64_decode($value, true);
+                if ($raw === false || strlen($raw) < 20) {
+                    return false;
+                }
+                return hash_equals(substr($raw, 0, 20), sha1($password . substr($raw, 20), true));
+            case 'SHA':
+                return hash_equals($value, base64_encode(sha1($password, true)));
+            case 'SMD5':    // base64( md5(password . salt) . salt )
+                $raw = base64_decode($value, true);
+                if ($raw === false || strlen($raw) < 16) {
+                    return false;
+                }
+                return hash_equals(substr($raw, 0, 16), md5($password . substr($raw, 16), true));
+            case 'MD5':
+                return hash_equals($value, base64_encode(md5($password, true)));
+            case 'CRYPT':   // the value is a crypt(3) string incl. its salt; an invalid salt makes crypt() return '*0'
+                return hash_equals($value, (string) crypt($password, $value));
+        }
+        return false;
+    }
+
     /** Creates a password hash
      *
      * @param $password
@@ -723,8 +757,21 @@ class AA_Perm {
      */
     public static function comparePwds($password, $hash, $try_old=false): bool
     {
+        // null (no password sent, empty users.password) must fail quietly, not raise deprecations/TypeError below
+        $password = (string) $password;
+        $hash     = (string) $hash;
+
         $ret = false;
-        if (strlen($hash) === 30) {
+        if (str_starts_with($hash, '{')) {
+            // LDAP-style hash formats - used when SQL perm backend holds
+            // hashes migrated from LDAP by AA\Optimize\LdapPermsToSql.
+            // Recognized: {SSHA} {SHA} {SMD5} {MD5} {CRYPT}. Caller is
+            // expected to rehash the row to bcrypt after a successful
+            // match (see AA_Permsystem_Sql::authenticateUsername).
+            // Tested before the length branch below - a {SMD5} hash with a
+            // two-byte salt is exactly 30 characters long.
+            $ret = self::verifyLdapHash($password, $hash);
+        } elseif (strlen($hash) === 30) {
             // legacy only - not so secure to timing attacks... but in current AA it shouldn't be executed
             // passwords in SQL perms in AA 2.x was 30 characters long (in user table),
             // so we have to compare it with shortened hash

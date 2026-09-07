@@ -56,9 +56,9 @@ users        membership     perms
  * @param $user
  * @param $flags
  * creates new person in permission system
- * @return bool
+ * @return false|string  id of the new user (last_insert_id), false when the login is taken
  */
-function AddUser($user, $flags = 0): bool
+function AddUser($user, $flags = 0): false|string
 {
     if (! AA::$perm->isUsernameFree($user["uid"])) {
         return false;
@@ -318,7 +318,17 @@ class AA_Permsystem_Sql extends AA_Permsystem {
     public function authenticateUsername($username, $password, $code2fa = ''): false|string
     {
         if ($user = DB_AA::select1('', 'SELECT id, password FROM `users`', [[strpos($username, "@") ? 'mail' : 'uid', $username]])) {
-            return AA_Perm::comparePwds($password, $user['password']) ? $user['id'] : false;
+            if (!AA_Perm::comparePwds($password, $user['password'])) {
+                return false;
+            }
+            // Opportunistic rehash: if the stored hash is a legacy LDAP
+            // hash ({SSHA}/{SHA}/{SMD5}/{MD5}/{CRYPT}) carried over by
+            // AA\Optimize\LdapPermsToSql, upgrade it to bcrypt now that
+            // we have the plaintext in hand. Silent and transparent.
+            if (str_starts_with((string) $user['password'], '{')) {
+                DB_AA::update('users', [['password', self::generatePasswordHash($password), 's']], [['id', $user['id'], 'i']]);
+            }
+            return $user['id'];
         }
         return false;
     }
