@@ -317,8 +317,9 @@ class Toexecute
         }
 
         $object = unserialize($task['object']);
+        $params = unserialize((string) $task['params']);   // also fed to the log row below, so unserialize once
         if (is_object($object) && !($object instanceof \__PHP_Incomplete_Class)) {
-            $retcode = $this->execute_one($object, unserialize($task['params']));
+            $retcode = $this->execute_one($object, $params);
             $this->message($retcode);
             $selector = AA_Log::selector($object);
         } else {
@@ -334,7 +335,7 @@ class Toexecute
         $mem_usage = sprintf('%.3g', (memory_get_usage() / (1024 * 1024)));
         $mem_peak  = sprintf('%.3g', (memory_get_peak_usage() / (1024 * 1024)));
 
-        AA_Log::write('TOEXECUTE', $selector, new AA_Logentry_X(["time" => sprintf('%.3g', $execute_times[$task_type]), "mem_usage" => $mem_usage, 'mem_peak' => $mem_peak, 'ret' => $retcode, 'params' => (string) $task['params']]));
+        AA_Log::write('TOEXECUTE', $selector, AA_Logentry_X::make(sprintf('%.3g', $execute_times[$task_type]), $mem_usage, $mem_peak, (string) $retcode, $params));
         return 1;
     }
 
