@@ -74,6 +74,9 @@ class AA_Property extends AA_Storable
      *  text | bool | int | float | email | alpha | long_id | short_id | alias | filename | login | password | unique | e_unique | url | all | enum
      */
     protected $_validator;
+    /** enum values still to be computed - the Closure given as ['enum', Closure]; called on first use
+     *  (getConstants(), getValidator()), never when the property list is merely built */
+    protected ?Closure $_const_provider = null;
 
     /** boolean - is it required? - like: true */
     public $required;
@@ -120,7 +123,7 @@ class AA_Property extends AA_Storable
 
     /**
      * examples of properties:
-     * new AA_Property( 'translate_slice', _m("Slice with translations"),      'string', false, true, ['enum', AA_Module::getUserModules('S')], false, _m("the slice used for {tr:text...} translations (the slice needs to have just headline........ field set as 'Allow translation')")),
+     * new AA_Property( 'translate_slice', _m("Slice with translations"),      'string', false, true, ['enum', static fn() => AA_Module::getUserModules('S')], false, _m("the slice used for {tr:text...} translations (the slice needs to have just headline........ field set as 'Allow translation')")),
      * new AA_Property( 'web_languages',   _m("Languages on website"),         'string', true,  true, ['regexp', ['pattern'=>'/^[a-z]{2}$/','maxlength'=>2]], false, _m('List all languages for which you want to use sitemodule - en, es, cz, ..<br>It is quite necessary if you want to call sitemodule newer way from Apache:<br> RewriteEngine on<br> RewriteRule ^$ /apc-aa/modules/site/site.php [L,QSA]<br> RewriteCond %{REQUEST_FILENAME} !-f<br> RewriteCond %{REQUEST_FILENAME} !-d<br> RewriteRule ^ /apc-aa/modules/site/site.php [L,QSA]<br>')),
      * new AA_Property( 'page404',         _m("Page not Found (404)"),         'string', false, true, ['enum',   ['1'=>_m('Do not care'),'2'=>_m('Send standard 404 page, when {xid} is empty'),'3'=>_m('Send code below')]], false, _m('When first option "Do not care" is selected (old behavior), you should test unfilled {xid} in your sitemodule yourself')),
      * new AA_Property( 'ga_id',           _m("Google analytics tracking id"), 'string', false, true, ['text', ['maxlength'=>20]],  false, _m('If you are using {generate:HEAD} and {generate:FOOT} in yor sitemodule code, then the Google Analytics code is generated with this tracking ID. The generated code could be changed in the future when Google changes the snippet.<br>To use user Consent bar, add {eucookies} or {eucookies:OK to use cookies?:OK:more://www.example.cz/cz/cookies-strategy::No:top} in the site.'))
@@ -154,7 +157,13 @@ class AA_Property extends AA_Storable
         $this->show_content_type_switch    = (int) $show_content_type_switch;
         $this->content_type_switch_default = (int) $content_type_switch_default;
         $this->perm                        = $perm;
-        $this->const_arr                   = (is_array($validator) && $validator[0] === 'enum') ? $validator[1] : [];
+        if (is_array($validator) && $validator[0] === 'enum') {
+            if ($validator[1] instanceof Closure) {
+                $this->_const_provider = $validator[1];   // lazy enum - computed on first use, see _resolveConstants()
+            } else {
+                $this->const_arr = $validator[1];
+            }
+        }
         $this->default                     = $default;
         $this->translations                = is_array($translations) ? $translations : [];
     }
@@ -213,7 +222,38 @@ class AA_Property extends AA_Storable
     }
     public function getConstants()
     {
+        $this->_resolveConstants();
         return $this->const_arr;
+    }
+
+    /** A Closure cannot be serialized - resolve the lazy enum first and leave the provider out */
+    public function __serialize(): array
+    {
+        $this->_resolveConstants();
+        $vars = get_object_vars($this);
+        unset($vars['_const_provider']);
+        return $vars;
+    }
+
+    public function __unserialize(array $data): void
+    {
+        foreach ($data as $name => $value) {
+            $this->$name = $value;
+        }
+    }
+
+    /** Computes a lazy enum (['enum', Closure]) on first use and turns the validator
+     *  spec into the plain ['enum', values] form the validator factory understands. */
+    private function _resolveConstants(): void
+    {
+        if (!$this->_const_provider) {
+            return;
+        }
+        $this->const_arr = (array) ($this->_const_provider)();
+        if (is_array($this->_validator) && ($this->_validator[1] ?? null) === $this->_const_provider) {
+            $this->_validator = ['enum', $this->const_arr];
+        }
+        $this->_const_provider = null;
     }
 
     /** @return string[] */
@@ -233,6 +273,7 @@ class AA_Property extends AA_Storable
 
     public function getValidator(): AA_Validate
     {
+        $this->_resolveConstants();
         if (!is_object($this->_validator)) {
             if (is_null($this->_validator = AA_Validate::factoryCached($this->_validator))) {
                 $this->_validator = AA_Validate::factoryCached('all');
@@ -283,8 +324,9 @@ class AA_Property extends AA_Storable
     /** set the Values array and also the validator */
     public function setConstants($arr): void
     {
+        $this->_const_provider = null;   // an explicit enum replaces a lazy one
         $this->const_arr = (array) $arr;
-        $this->_validator = new AA_Validate_Enum(['possible_values' => array_keys($this->const_arr)]);
+        $this->_validator = new AA_Validate_Enum(['possible_values' => $this->const_arr]);   // the values are the keys
     }
 
     /** called before StoreItem to fill the field with correct data

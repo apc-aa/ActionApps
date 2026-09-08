@@ -150,7 +150,7 @@ class AA_Validate extends AA_Serializable
                 case 'field':
                 case 'all':      $standard_validators[$sv_key] = new AA_Validate_Text($parameters);
                     break;
-                case 'enum':     $standard_validators[$sv_key] = new AA_Validate_Enum($parameters);
+                case 'enum':     $standard_validators[$sv_key] = new AA_Validate_Enum(['possible_values' => $parameters]);   // ['enum', [value => label, ...]] - the values are the keys
                     break;
                 default:         // Bad validator type: $type;
                     return null;
@@ -681,7 +681,7 @@ class AA_Validate_Enum extends AA_Validate
      */
     public function validate(?string &$var, AA_Content $content_context = null, string $var_id = ''): bool
     {
-        return isset($this->possible_values[$var]) ? true : AA_Validate::bad(VALIDATE_ERROR_NOT_IN_LIST, _m('Out of range - not in the list'), $var_id);
+        return (is_array($this->possible_values) && array_key_exists($var ?? '', $this->possible_values)) ? true : AA_Validate::bad(VALIDATE_ERROR_NOT_IN_LIST, _m('Out of range - not in the list'), $var_id);
     }
 }
 
