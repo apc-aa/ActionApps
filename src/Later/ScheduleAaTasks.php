@@ -68,6 +68,11 @@ class ScheduleAaTasks implements LaterInterface
 
         // purge MissCache forge-on-miss image cache: files unused > 30 days, plus a 2 GB size cap
         $toexecute->laterOnce(new MissCachePurge(), [], "MissCachePurge", 10, now() + (60 * 60 * 24));
+
+        // invalidate cached pages after items expire / get published by the clock - AA\Later\PagecacheDateSweep
+        if (PagecacheDateSweep::interval() > 0) {
+            $toexecute->laterOnce(new PagecacheDateSweep(), [], 'PagecacheDateSweep', 101, time() + PagecacheDateSweep::interval());
+        }
     }
 
     /** Not used - we call it directly from toxecute.php

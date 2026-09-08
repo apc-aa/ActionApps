@@ -472,8 +472,12 @@ class PageCache
      *  Remove cached information for all rows that have the $cond in str2find
      * @param string | array $strings
      * @param string         $type
+     * @param int|null       $stored_before  only entries with pagecache.stored < $stored_before
+     *                       (AA\Later\PagecacheDateSweep: pages rendered after an item's publish/expiry
+     *                       moment are already correct and must survive)
+     * @return int number of cache entries selected for deletion
      */
-    public function invalidateFor($strings, $type = 'M'): void
+    public function invalidateFor($strings, $type = 'M', ?int $stored_before = null): int
     {
         // We do not want to report errors here. Sometimes this SQL leads to:
         //   "MySQL Error: 1213 (Deadlock found when trying to get lock; Try
@@ -483,7 +487,13 @@ class PageCache
 
         $str2find = new CacheStr2find($strings, $type);
 
-        $keys = DB_AA::select('pagecache_id', "SELECT pagecache_id FROM pagecache_str2find", [['str2find',$str2find->getStrings()]]);
+        if ($stored_before === null) {
+            $keys = DB_AA::select('pagecache_id', "SELECT pagecache_id FROM pagecache_str2find", [['str2find',$str2find->getStrings()]]);
+        } else {
+            // never touches `content`: s via the str2find(20) prefix index, p via PRIMARY (only the inline `stored`)
+            $keys = DB_AA::select('pagecache_id', 'SELECT s.pagecache_id FROM pagecache_str2find s JOIN pagecache p ON p.id = s.pagecache_id', [['s.str2find', $str2find->getStrings()], ['p.stored', $stored_before, '<']]);
+        }
+        $keys = array_values(array_unique($keys));
 
         // invalidateById() is quite slow - mainly if we have to delete more rows,
         // I do not know how to make it quicker. I tried to refine the SQL
@@ -493,6 +503,7 @@ class PageCache
         //    WHERE pagecache.id = pagecache_str2find.pagecache_id AND pagecache_str2find.str2find = '".quote($cond)."'";
 
         $this->invalidateById($keys);
+        return count($keys);
     }
 
     /** invalidate function

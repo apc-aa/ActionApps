@@ -258,9 +258,20 @@ define( "ENABLE_PAGE_CACHE", true );
 *  flushing on page change (but then there will be problem with item
 *  expiration). Typically this is 600, i.e. 10 minutes, but 1 day (86400)
 *  makes for faster serving
+*  Item expiration / publication by the clock is handled by the cron sweep
+*  PAGECACHE_DATE_SWEEP_INTERVAL (below), so CACHE_TTL can be long.
 *  See: https://actionapps.org/en/Troubleshooting_and_Optimization#Caching
 */
 define("CACHE_TTL", 10800 ); // 3 hours
+
+/** PAGECACHE_DATE_SWEEP_INTERVAL - how often (seconds) the cron task
+ *  AA\Later\PagecacheDateSweep looks for items that expired or got published
+ *  by the clock and drops the cached pages rendered before that moment.
+ *  Without it a page could show an expired item for up to CACHE_TTL; with it
+ *  the staleness is bounded by this interval (+ ~3 min), so CACHE_TTL can be
+ *  long (12-24 h). Default 600 (10 minutes); 0 disables the sweep (then keep
+ *  CACHE_TTL short). */
+// define('PAGECACHE_DATE_SWEEP_INTERVAL', 600);
 
 
 /** Post-response cron fallback

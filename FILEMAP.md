@@ -97,6 +97,7 @@ Feeding/import back-ends; each declares `name()` + `description()` shown in the 
 | Later/LogCleanup.php | Clean up log tables | LogCleanup | S |
 | Later/LogSystemstatus.php | Log system status tracking | LogSystemstatus | S |
 | Later/MissCachePurge.php | Deferred purge of MissCache entries | MissCachePurge | S |
+| Later/PagecacheDateSweep.php | Invalidate cached pages after item publish/expiry dates pass (periodic sweep) | PagecacheDateSweep | S |
 | Later/PagecachePurge.php | Purge page cache | PagecachePurge | S |
 | Later/PlannedtaskSchedule.php | Schedule planned tasks | PlannedtaskSchedule | S |
 | Later/Post2shtmlCleanup.php | Post-SHTML cleanup | Post2shtmlCleanup | S |
