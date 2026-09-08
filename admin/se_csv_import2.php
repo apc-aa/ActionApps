@@ -130,6 +130,11 @@ class AA_Csv_Importer {
     /** @var bool Do not send mails to readers from Alerts, do not update mailinglists, ... */
     private bool $insertSilent = false;
 
+    /** @var string Name under which the settings are stored ("Save setting as" form field) */
+    public string $save_name = '';
+    /** @var bool Upload periodically (form checkbox, HTTP(S) sources only) */
+    public bool $save_periodical = false;
+
     var $auth_uid;
 
 /** AA_Csv_Importer function
@@ -154,6 +159,8 @@ class AA_Csv_Importer {
         $this->itemIdMappedParams  = $_REQUEST['itemIdMappedParams'];
         $this->actionIfItemExists  = $_REQUEST['actionIfItemExists'];
         $this->insertSilent        = (bool)$_REQUEST['insertSilent'];
+        $this->save_name           = (string)($_REQUEST['save_name'] ?? '');
+        $this->save_periodical     = (bool)($_REQUEST['save_periodical'] ?? false);
         $this->addParams           = unserialize(Txt::url2bin($_REQUEST['addParamsSerial']), ['allowed_classes' => false]);
         $this->auth_uid            = AuthGetUid();
     }

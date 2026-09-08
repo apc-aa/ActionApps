@@ -157,7 +157,7 @@ class AA_Plannedtask extends AA_Object implements LaterInterface, AA\Util\NamedI
                     return '<span title="task.id:' . $task['id'] . '">' . ($task['execute_after'] ? date('Y-m-d H:i:s', $task['execute_after']) : '--') . '</span>';
                 case 'computedtime':
                     $task = AA_Object::load($task_id, 'AA_Plannedtask');
-                    $time = $task->nexttime();
+                    $time = $task?->nexttime();
                     return $time ? date('Y-m-d H:i:s', $time) : '--';
             }
         }
@@ -262,8 +262,10 @@ class AA_Plannedtask extends AA_Object implements LaterInterface, AA\Util\NamedI
         $tasks = [];
 
         foreach ($zids as $id) {
-            $tasks[] = AA_Object::load($id, 'AA_Plannedtask');
-
+            $task = AA_Object::load($id, 'AA_Plannedtask');
+            if ($task instanceof self) {
+                $tasks[] = $task;
+            }
         }
         return $tasks;
     }

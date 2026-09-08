@@ -116,7 +116,6 @@ if (!$send) {               // for the first time - directly from item manager
     do {
         // --- write the e-mail template to the table ---
         $varset = new Cvarset();
-        $owner_module_id = q_pack_id(AA::$module_id);
         $description     = date('Y-m-d H:i:s') . ', ' . AuthGetUid();
         $type            = 'bulk email';
         ValidateInput("subject", _m("Subject"), $subject, $err, true, "text");
@@ -152,12 +151,13 @@ if (!$send) {               // for the first time - directly from item manager
             break;
         }
 
-        $varset->addglobals([ 'description', 'subject', 'header_from', 'reply_to', 'errors_to', 'sender', 'lang', 'owner_module_id', 'type', 'attachments']);
+        $varset->addglobals(['description', 'subject', 'header_from', 'reply_to', 'errors_to', 'sender', 'lang', 'type', 'attachments'], 'text');
+        $varset->add('owner_module_id', 'unpacked', AA::$module_id);
 
         if ($template_id && !($mailtemplate = new AA_Mailtemplate((int) $template_id))->isEmpty()) {
             $varset->add('body', 'text', str_replace(['_#BODYTEXT','_#SUBJECT_'], [$_POST['body'], $_POST['subject']], $mailtemplate['body']));
         } else {
-            $varset->add('body', 'quoted', $body);
+            $varset->add('body', 'text', $body);
         }
         $varset->add('html', 'number', $html);
 

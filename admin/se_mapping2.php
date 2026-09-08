@@ -85,17 +85,17 @@ foreach ($fmap as $to_field_id => $val) {
             break;
         case _m("-- Value --"):
             $flag = FEEDMAP_FLAG_VALUE ;
-            $catVS->add("value", "quoted", $fval[$to_field_id]);
+            $catVS->add("value", "text", $fval[$to_field_id]);
             break;
         case _m("-- Joined fields --"):
             $flag = FEEDMAP_FLAG_JOIN;
-            $catVS->add("value", "quoted", $fval[$to_field_id]);
+            $catVS->add("value", "text", $fval[$to_field_id]);
             break;
         case _m("-- RSS field or expr --"):
             $flag = FEEDMAP_FLAG_RSS;
-            $catVS->add("value", "quoted", $fval[$to_field_id]);
+            $catVS->add("value", "text", $fval[$to_field_id]);
             if (! $map_to[$val]) {
-                $catVS->add("from_field_name", "quoted", $fval[$to_field_id]);
+                $catVS->add("from_field_name", "text", $fval[$to_field_id]);
             }
             unset($map_to[$val]);
             break;

@@ -79,11 +79,11 @@ class Files
      *  Prepares slice directories for uploaded file and returns destination
      *  dir name
      *
-     * @param $slice
+     * @param ?AA_Slice $slice
      *
      * @return string|false
      */
-    public static function destinationDir(?AA_Module $slice): string|false
+    public static function destinationDir(?AA_Slice $slice): string|false
     {
         if (!$slice) {
             // self::lastErr(AA_DIRECTORY_WRAPPER_ERROR_NOT_DIR, _m("No slice specified"));  // could ba added this more info
@@ -811,7 +811,7 @@ class Files
             // IPv4-mapped IPv6 ::ffff:0:0/96 -> validate embedded IPv4 too
             if (str_starts_with($lower, '::ffff:')) {
                 $v4 = substr($lower, 7);
-                return !filter_var($v4, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4) || is_disallowed_ip($v4);
+                return !filter_var($v4, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4) || self::is_disallowed_ip($v4);
             }
 
             return false;

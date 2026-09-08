@@ -600,7 +600,7 @@ class AA_Perm {
     public function isUserEditable($uid): bool
     {
         if ( $uid && ($ps = $this->_whichUsersystem($uid))) {
-            return $ps->isUserEditable($uid);
+            return $ps->isUserEditable();
         }
         return false;
     }
@@ -1271,6 +1271,9 @@ class AA_Permsystem_Reader extends AA_Permsystem {
         $set_ids         = AA_Object::querySet('AA_Set', new AA_Set([$reader_slice_id]));
         foreach( $set_ids as $set_id ) {
             $set  = AA_Object::load($set_id, 'AA_Set');
+            if (!($set instanceof AA_Set)) {
+                continue;
+            }
             $zids = QueryZids([$reader_slice_id], $set->getConds(), '', 'ACTIVE', 0, $restrict_zids);
 
             // reader is in this reader set

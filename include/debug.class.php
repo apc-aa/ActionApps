@@ -73,43 +73,12 @@ use AA\Util\Txt;
 //   }
 //
 
-class AA_Debug_Firephp extends AA_Debug
-{
-    private $_console;
-
-    public function __construct()
-    {
-        define('INSIGHT_IPS', '*');
-        define('INSIGHT_AUTHKEYS', '*');
-        define('INSIGHT_PATHS', __DIR__);
-        define('INSIGHT_SERVER_PATH', '/aaa/test.php');
-        require_once(__DIR__ . "/../misc/firephp/lib/FirePHP/Init.php");
-        $inspector = FirePHP::to('page');
-        $this->_console = $inspector->console();
-        $this->_console->log('ActionApps - console initiated');
-        parent::__construct();
-    }
-
-    public function _groupstart($group): void
-    {
-        $this->_console->group($group)->open();
-        $this->_console->log($group);
-    }
-
-    public function _groupend($group): void
-    {
-        $this->_console->group($group)->close();
-    }
-
-    public function _do($func, $params): void
-    {
-        $this->_console->log(microtime(true) - $this->_starttime['main']);
-        foreach ($params as $var) {
-            call_user_func_array([$this->_console, $func], [$var]);
-        }
-    }
-}
-
+/*
+ * AA_Debug_Firephp (AA::$debug starting with 'f') was removed 2026-09-07: it required
+ * misc/firephp/lib/FirePHP/Init.php, which was never shipped in the tree (FirePHP is a
+ * dead browser-console library), so instantiating it was a certain fatal. Since
+ * AA::$debug is cast to int in locsess.php the branch was unreachable anyway.
+ */
 
 class AA_Debug_Console extends AA_Debug
 {

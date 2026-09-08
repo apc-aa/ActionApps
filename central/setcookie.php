@@ -57,7 +57,7 @@ if (preg_match('/^[A-Za-z0-9,-]{22,256}$/', $sid)) {
     //    gate on session expiry here: freshness is re-validated authoritatively
     //    by the receiving domain's is_authenticated() on the next page load.
     $auth = $_SESSION['auth'] ?? null;
-    $uid  = ($auth instanceof Auth) ? $auth->getUid() : '';
+    $uid  = ($auth instanceof AA_Auth) ? $auth->getUid() : '';
     if (session_id() === $sid
         && $uid !== ''
         && $uid !== 'form'
