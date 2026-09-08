@@ -1456,10 +1456,12 @@ class AA_Metabase
 
         // AA::$debug&2 && AA::$dbg->group('meta');
 
-        // it is unordered, so we have to sort it:
+        // it is unordered, so we have to sort it (ids with no row in the table are skipped):
         for ($i = 0, $ino = $zids->count(); $i < $ino; ++$i) {
             $id = $zids->id($i);
-            $ret[(string) $id] = $content[$id];
+            if (isset($content[$id])) {
+                $ret[(string) $id] = $content[$id];
+            }
         }
         // tried to replace the for () with foreach (), but it is two times slower (PHP 5.3.6 - eAccelerator 0.9.6.1 )
         // reset($zids); foreach($zids as $id) { $ret[(string)$id] = $content[$id]; }

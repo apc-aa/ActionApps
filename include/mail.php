@@ -50,7 +50,7 @@ class AA_Mailtemplate implements AA_iEditable, ArrayAccess, Countable, IteratorA
     function __construct($id=null) {
         if ($id && ctype_digit((string)$id)) {
             $template = AA_Metabase::getContent(new zids($id, 's'), ['table' => 'email']);
-            if ($template[$id]) {
+            if (isset($template[$id])) {
                 $this->data = $template[$id]->getAllAsScalar();
             }
         }

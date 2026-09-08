@@ -58,7 +58,8 @@ class AA_Poll
 
         $content = AA_Metabase::getContent(new zids($this->poll_id), ['table' => 'polls']);
         //        $this->content = new ItemContent($content[$this->poll_id]);
-        $this->content = $content[$this->poll_id];  // this is AA_Content
+        // no row for the id (deleted/wrong poll) -> empty content, so getProperty() just returns false
+        $this->content = $content[$this->poll_id] ?? new AA_Content();  // this is AA_Content
     }
 
     /** getProperty function
