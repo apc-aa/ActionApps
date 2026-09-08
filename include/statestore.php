@@ -82,7 +82,7 @@ abstract class AA_Serializable
     }
 
     /** For Log selector we use param1:param2...:class serialization (for faster DB lookup in log table) */
-    public static function factoryByStringReversed($string): ?AA_Serializable
+    public static function factoryByStringReversed($string): ?static
     {
         if (false !== ($pos = strrpos($string, ':'))) {
             if (($id = substr($string, $pos + 1)) !== '') {
@@ -660,6 +660,39 @@ class AA_Object extends AA_Storable implements AA_iEditable
         return DB_AA::select(['object_id' => '+value'], 'SELECT object_id, value FROM `object_text`', [['object_id', $ids], ['property', $property]]);
     }
 
+    /** the tables an object's properties live in - the order matters: load() merges them in it,
+     *  so a property with rows in two tables takes the later one's values */
+    private const STORAGE_TABLES = ['object_text', 'object_integer', 'object_float'];
+
+    /** @return string[] the tables the properties are stored in, in STORAGE_TABLES order - object_text
+     *                   is always among them (aa_type, aa_name and aa_owner live there) */
+    private static function storageTables(array $properties): array
+    {
+        $used = ['object_text' => true];
+        foreach ($properties as $property) {
+            $used[AA_Property::storageType($property->getType())] = true;
+        }
+        return array_values(array_intersect(self::STORAGE_TABLES, array_keys($used)));
+    }
+
+    /** Reads the object's rows from the given tables in one statement (UNION ALL of one
+     *  SELECT per table, ordered by property and priority like the former per-table reads).
+     *  @return array table => property => [value, ...]   (every requested table is present)
+     */
+    private static function loadRows($id, array $tables): array
+    {
+        $where   = DB_AA::makeWhere([['object_id', $id]]);
+        $selects = [];
+        foreach ($tables as $table) {   // every $table is one of self::STORAGE_TABLES - never user input
+            $selects[] = "SELECT '$table' AS tbl, `property`, `value`, `priority` FROM `$table` $where";
+        }
+        $ret = array_fill_keys($tables, []);
+        foreach (DB_AA::select([], implode(' UNION ALL ', $selects), null, ['property', 'priority']) as $row) {
+            $ret[$row['tbl']][$row['property']][] = $row['value'];
+        }
+        return $ret;
+    }
+
     /** Loads object from database: AA_Object::load($set_id, 'AA_Set')
      * @param $id - aa_id - object id
      * @param $type - object class - like 'AA_Form'
@@ -684,40 +717,55 @@ class AA_Object extends AA_Storable implements AA_iEditable
 
         // AA::$dbg->log("$key - not cached", count($cache)  );
 
-        // @todo optimize the load
-        //    - get used tables from properties,
-        //    - load object from database in one step using aa_subobjects property of the objects
-        if ((!$type && !($type = self::loadProperty($id, 'aa_type'))) || !class_exists($type)) {
+        // One round trip for the whole object (T5): the rows of every object_* table the class
+        // stores into - or, when the type was not given, of all three, since aa_type is one of
+        // those rows and the class name thus comes out of the very statement that fetched its
+        // properties.
+        if ($type) {
+            if (!class_exists($type)) {
+                return null;
+            }
+            $properties = $type::getClassProperties();
+            $tables     = self::storageTables($properties);
+        } else {
+            $tables = self::STORAGE_TABLES;   // the class is not known yet - read them all
+        }
+        $by_table = self::loadRows($id, $tables);
+        if (!$by_table['object_text']) {   // every saved object has its aa_type/aa_owner rows there - none means no object
             return null;
+        }
+
+        if (!$type) {
+            $type = $by_table['object_text']['aa_type'][0] ?? '';
+            if (!$type || !class_exists($type)) {
+                return null;
+            }
+            $properties = $type::getClassProperties();
         }
         $key = "$id|$type";
 
         $obj = new $type();
         $obj->setId($id);
-        $properties = $type::getClassProperties();
 
-        // for speedup - we will check DB only for used types
-        $storegetypes = [];
-        foreach ($properties as $property) {
-            $storegetypes[AA_Property::storageType($property->getType())] = true;
-        }
-
-        $prop_arr =                            DB_AA::select(['property' => '+value'], 'SELECT `property`, `value` FROM `object_text`', [['object_id', $id]], ['property', 'priority']);
-        if ($storegetypes['object_integer']) {
-            $prop_arr = array_merge($prop_arr, DB_AA::select(['property' => '+value'], 'SELECT `property`, `value` FROM `object_integer`', [['object_id', $id]], ['property', 'priority']));
-        }
-        if ($storegetypes['object_float']) {
-            $prop_arr = array_merge($prop_arr, DB_AA::select(['property' => '+value'], 'SELECT `property`, `value` FROM `object_float`', [['object_id', $id]], ['property', 'priority']));
+        // only the class' own tables - an untyped load read all three (STORAGE_TABLES holds the order)
+        $prop_arr = [];
+        foreach (self::storageTables($properties) as $table) {
+            $prop_arr = array_merge($prop_arr, $by_table[$table] ?? []);
         }
 
         foreach ($properties as $property_id => $property) {
             $prop_val = '';
-            if (is_array($prop_arr[$property_id])) {
+            if (is_array($prop_arr[$property_id] ?? null)) {
                 foreach ($prop_arr[$property_id] as $val) {
                     if ($property->isObject()) {
                         if (preg_match('/^[0-9a-f]{32}$/', $val)) {
                             // stored as object (subclass of AA_Object in prvious save())
-                            $tmp_val = self::load($val, $property->getType());
+                            $sub_type = $property->getType();
+                            $tmp_val  = self::load($val, $sub_type);
+                            if (!$tmp_val) {   // the sub-object is gone - an empty one of its class keeps the parent usable, as before
+                                $tmp_val = new $sub_type();
+                                $tmp_val->setId($val);
+                            }
                         } else {
                             // stores as serialized state
                             $tmp_val = AA_Storable::factoryFromState($property->getType(), unserialize($val, ['allowed_classes' => false]));
@@ -740,8 +788,8 @@ class AA_Object extends AA_Storable implements AA_iEditable
         }
 
         // standard object properties
-        $obj->setName($prop_arr['aa_name'][0]);
-        $obj->setOwnerId($prop_arr['aa_owner'][0]);
+        $obj->setName($prop_arr['aa_name'][0] ?? null);      // save() writes no aa_name row for a nameless object
+        $obj->setOwnerId($prop_arr['aa_owner'][0] ?? null);
 
         $cache[$key] = $obj;
         // AA::$dbg->log("$key - now cached", count($cache) );
