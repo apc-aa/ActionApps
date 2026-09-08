@@ -42,16 +42,6 @@ use AA\Util\Txt;
 // supress PHP notices
 error_reporting(error_reporting() & ~(E_WARNING | E_NOTICE | E_DEPRECATED | E_STRICT));
 
-/*
-register_shutdown_function(function() {
-    $error = error_get_last();
-    if ($error && in_array($error['type'], [E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR])) {
-        error_log("FATAL ERROR: {$error['message']} in {$error['file']} on line {$error['line']}");
-        // You can also notify admin, write to DB, etc.
-    }
-});
-*/
-
 // if AA used in proxy mode, we need to correct some internal variables
 if ($_SERVER['HTTP_X_FORWARDED_SERVER']) {
     $_SERVER['HTTP_HOST']   = $_SERVER['HTTP_X_FORWARDED_HOST'];
@@ -74,6 +64,11 @@ if (!defined('AA_BASE_PATH')) {
 /* Change this to match your database. */
 require_once __DIR__."/phplib.php";
 require_once __DIR__."/../vendor/autoload.php";
+
+// record fatals / uncaught exceptions as PHP_FATAL rows in the `log` table (config.php opt-in)
+if (defined('AA_LOG_PHP_FATALS') && AA_LOG_PHP_FATALS) {
+    \AA\Util\FatalLogger::register();
+}
 
 spl_autoload_register(static function ($class_name) {
     $PAIRS = [
@@ -565,7 +560,7 @@ class AA {
 }
 
 AA::$debug = (int)($_REQUEST['debug'] ?: $_COOKIE['aa_debug']);  // aa_debug used in admin interface - item manager - left menu
-AA::$dbg   = (AA::$debug[0] === 'f') ? new AA_Debug_Firephp() : ((AA::$debug[0] === 'c') ? new AA_Debug_Console() : new AA_Debug_Console());
+AA::$dbg   = new AA_Debug_Console();   // AA_Debug_Firephp removed 2026-09-07 (never shipped, AA::$debug is int so the 'f' branch was unreachable)
 
 // This pair of functions remove the guessing about which of $db $db2
 // to use
