@@ -318,6 +318,7 @@ class LdapPermsToSql extends AbstractOptimize
                 ]);
                 $varset->doInsert('membership');
                 freeDB($db);
+                self::forgetMembershipMemo();
                 $added++;
             }
         }
@@ -438,6 +439,7 @@ class LdapPermsToSql extends AbstractOptimize
             $sql_id = (int) $row['sql_id'];
             DB_AA::delete('membership', [['memberid', $sql_id, 'i']]);
             DB_AA::delete('membership', [['groupid',  $sql_id, 'i']]);
+            self::forgetMembershipMemo();
             DB_AA::delete('perms', [['userid', (string) $sql_id]]);
             DB_AA::delete('users', [['id', $sql_id, 'i']]);
             if ($row['kind'] === 'group') {
@@ -579,5 +581,17 @@ class LdapPermsToSql extends AbstractOptimize
     {
         $rows = DB_AA::select([], "SELECT ldap_dn, sql_id, kind, login FROM `" . self::MAP_TABLE . "`");
         return is_array($rows) ? $rows : [];
+    }
+
+    /**
+     * AA_Permsystem_Sql memoizes getMembership() per request; every write to `membership` has to
+     * drop that memo. perm_sql.php is only loaded when PERM_LIB is 'sql' (it must never be
+     * required from here - its functions clash with perm_ldap.php), so the call is guarded.
+     */
+    private static function forgetMembershipMemo(): void
+    {
+        if (class_exists(\AA_Permsystem_Sql::class, false)) {
+            \AA_Permsystem_Sql::forgetMembership();
+        }
     }
 }

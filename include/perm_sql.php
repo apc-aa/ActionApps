@@ -89,6 +89,7 @@ function DelUser($user_id, $flags = 3): bool {
      if ($flags & 1) {
          // cancel this group's membership in other groups
          DB_AA::delete('membership', [['memberid', $user_id]]);
+         AA_Permsystem_Sql::forgetMembership();
      }
      if ($flags & 2) {
          // cancel direct permissions
@@ -163,6 +164,7 @@ function DelGroup($group_id, $flags = 3): bool {
          // cancel this group's membership in other groups
          DB_AA::delete('membership', [['memberid', $group_id]]);
      }
+     AA_Permsystem_Sql::forgetMembership();   // after both writes to the membership table
      if ($flags & 2) {
          // cancel direct permissions
          DB_AA::delete('perms', [['userid', $group_id]]);
@@ -201,6 +203,7 @@ function AddGroupMember($group_id, $id, $flags = 0): void
         DelGroupMember($group_id, $id);
         $varset = new CVarset([['groupid',$group_id], ['memberid',$id]]);
         $varset->doInsert('membership');
+        AA_Permsystem_Sql::forgetMembership();
     }
 }
 
@@ -212,6 +215,7 @@ function AddGroupMember($group_id, $id, $flags = 0): void
 function DelGroupMember($group_id, $id, $flags = 0): void
 {
     DB_AA::delete('membership', [['groupid', $group_id], ['memberid', $id]]);
+    AA_Permsystem_Sql::forgetMembership();
 }
 
 // ----------------------------- PERMS -----------------------------------
@@ -291,6 +295,15 @@ function ChangePerm($id, $objectID, $objectType, $perm, $flags = 0): bool
 //#############################################################################
 
 class AA_Permsystem_Sql extends AA_Permsystem {
+
+    /** @var array<string, string[]> groups (all levels) of the ids resolved in this request - see getMembership() */
+    private static array $membership = [];
+
+    /** Drops the per-request membership memo - called by every function that writes the membership table */
+    public static function forgetMembership(): void
+    {
+        self::$membership = [];
+    }
 
     /** true, if the system is able to store permissions for groups and users (even foreign users and groups)
      *  SQL and LDAP is able to store it, Reader not. */
@@ -424,6 +437,12 @@ class AA_Permsystem_Sql extends AA_Permsystem {
      * @return array of group_ids, where id (group or user) is a member
      */
     function getMembership($id, $flags = 0): array {
+        // per-request memo (T6) - CheckPerms() asks for the same id over and over; only a scalar id
+        // can be a key (an array id never worked, but it must not turn into a TypeError here)
+        $memo_key = is_scalar($id) ? (string) $id : null;
+        if ($memo_key !== null && isset(self::$membership[$memo_key])) {
+            return self::$membership[$memo_key];
+        }
 
         // groups now can contain also Readers
         // if (!ctype_digit((string)$id)) { return []; }
@@ -451,6 +470,9 @@ class AA_Permsystem_Sql extends AA_Permsystem {
         } while (count($last_groups));
 
         // I _think_ this is a list of groupids.
+        if ($memo_key !== null) {
+            self::$membership[$memo_key] = $all_groups;
+        }
         return $all_groups;
     }
 
