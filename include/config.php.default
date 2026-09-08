@@ -369,3 +369,10 @@ $MAILMAN_SYNCHRO_DIR = "/www/mailman/";
  *  (auto-stop) and server-side (reject oversized uploads — paid-API cost guard).
  */
 // define('AA_SPEECH_MAX_SECONDS', 120);
+
+/** Record PHP fatals and uncaught exceptions (TypeError, …) as PHP_FATAL rows in the
+ *  `log` table (selector = file:line, params = message), so they can be found in the
+ *  admin log or by a DB query on installs without shell access. Best-effort: falls
+ *  back to error_log() when the DB is not available yet. Off when undefined.
+ */
+// define('AA_LOG_PHP_FATALS', true);
