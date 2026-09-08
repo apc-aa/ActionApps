@@ -45,23 +45,9 @@ https://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-// ----- input variables normalization - start --------------------------------
-
-// This code handles with "magic quotes" and "register globals" PHP (<5.4) setting
-// It make us sure, taht
-//  1) in $_POST,$_GET,$_COOKIE,$_REQUEST variables the values are not quoted
-//  2) the variables are imported in global scope and is quoted
-// We are trying to remove any dependecy on the point 2) and use only $_* superglobals
-function AddslashesDeep($value): array|string
-{
-    return is_array($value) ? array_map('AddslashesDeep', $value) : addslashes($value);
-}
-
-foreach ($_REQUEST as $k => $v) {
-    $$k = AddslashesDeep($v);
-}
-// ----- input variables normalization - end ----------------------------------
-
+// Inputs are read explicitly below (InputVars for the validated fields, $_REQUEST for the
+// optional ones) — the old $$k = AddslashesDeep() register_globals emulation was removed
+// (finding N14, 2026-09). Values are kept RAW and escaped by the DB layer at insert time.
 
 /** APC-AA configuration file */
 require_once __DIR__ . "/./include/config.php";
@@ -100,7 +86,15 @@ try {
     AA_Adminpageutil::pageParameterError($e);
 }
 
-
+// Optional discussion fields (previously seeded by the register_globals loop). Read RAW;
+// escaped by the DB layer at insert (type "text"). $d_free2 stays null when absent so the
+// cookie-dump fallback at insert still fires.
+$d_state           = $_REQUEST['d_state']           ?? '';
+$d_flag            = $_REQUEST['d_flag']            ?? '';
+$d_free1           = $_REQUEST['d_free1']           ?? '';
+$d_free2           = $_REQUEST['d_free2']           ?? null;
+$d_url_address     = $_REQUEST['d_url_address']     ?? '';
+$d_url_description  = $_REQUEST['d_url_description'] ?? '';
 
 $err = [];       // error array (Init - just for initializing variable)
 
@@ -215,18 +209,22 @@ $catVS = new Cvarset();
 $catVS->add("id", "unpacked", $new_id);
 $catVS->add("parent", "unpacked", $d_parent);
 $catVS->add("item_id", "unpacked", $d_item_id);
-$catVS->add("subject", "quoted", $d_subject);
-$catVS->add("author", "quoted", $d_author);
-$catVS->add("e_mail", "quoted", $d_e_mail);
-$catVS->add("body", "quoted", $d_body);
-$catVS->add("state", "quoted", $d_state);
-$catVS->add("flag", "quoted", $d_flag);
-$catVS->add("free1", "quoted", $d_free1);
-$catVS->add("free2", "quoted", $d_free2 ?? quote(var_export($_COOKIE, true)));
-$catVS->add("url_address", "quoted", $d_url_address);
-$catVS->add("url_description", "quoted", $d_url_description);
+// All user-supplied values arrive RAW (InputVars::stringPOST / $_REQUEST / $_SERVER), so the
+// DB layer must escape them: type "text" applies quote()=addslashes once. Do NOT use "quoted"
+// (it inserts the value verbatim, assuming pre-slashing) — that was an unauthenticated SQL
+// injection here (2026-09, finding N1).
+$catVS->add("subject", "text", $d_subject);
+$catVS->add("author", "text", $d_author);
+$catVS->add("e_mail", "text", $d_e_mail);
+$catVS->add("body", "text", $d_body);
+$catVS->add("state", "text", $d_state);
+$catVS->add("flag", "text", $d_flag);
+$catVS->add("free1", "text", $d_free1);
+$catVS->add("free2", "text", $d_free2 ?? var_export($_COOKIE, true));
+$catVS->add("url_address", "text", $d_url_address);
+$catVS->add("url_description", "text", $d_url_description);
 $catVS->add("date", "quoted", time());
-$catVS->add("remote_addr", "quoted", $ip_address);
+$catVS->add("remote_addr", "text", $ip_address);
 
 if (!$catVS->doInsert('discussion')) {  // not necessary - we have set the halt_on_error
     $err["DB"] .= MsgErr("Can't add discussion comment");
