@@ -173,6 +173,19 @@ final class HtmlMimeMailBuildTest extends TestCase
         $this->assertMatchesRegularExpression('/^<[^@\s]+@[^>\s]+>$/', $id1);
     }
 
+    /** AA_Mail reads the subject back for the MAIL_SEND log row - raw, because
+     *  the mail() branch unsets the header while sending and puts back the
+     *  RFC2047-encoded form. */
+    public function test_subject_is_readable_back_unencoded(): void
+    {
+        $mail = new CapturingMail();
+
+        $this->assertSame('', $mail->getSubject(), 'no subject set yet');
+
+        $mail->setSubject('Nový příspěvek v sekci Aktuality');
+        $this->assertSame('Nový příspěvek v sekci Aktuality', $mail->getSubject());
+    }
+
     // --- mail() path: argument assembly via the seam ---------------------
 
     public function test_mail_path_assembles_args_and_keeps_bcc_in_headers(): void
