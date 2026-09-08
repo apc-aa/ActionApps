@@ -892,14 +892,9 @@ abstract class AA_Inserter extends AA_Serializable implements NamedInterface
      */
     public function executeMulti(AA_Field_Writer $field_writer, string $item_id, AA_Value $cont): void
     {
-        global $err;
-
-        // this check is maybe no necessary
-        $slice = $field_writer->getSlice();
-        if (!$slice || !$slice->isValid()) {
-            $err['field_writer'] = _m("Slice with id '%1' is not valid.", [$field_writer->getSliceId()]);
-            return;
-        }
+        // No slice check here: storeItem() already refuses a slice without fields before it
+        // deletes anything, and a soft-deleted slice must still store (its trash is editable).
+        // A silent return at this point would leave the item with its old rows already deleted.
 
         // update content table or fill item_varset
         $flag = $cont->getFlag();
@@ -1491,7 +1486,7 @@ class AA_Inserter_Fil extends AA_Inserter
     /**
      * @return false|string
      */
-    protected function uploadFile(array $up_file, $item_id, ?AA_Module $slice, $fid): false|string
+    protected function uploadFile(array $up_file, $item_id, ?AA_Slice $slice, $fid): false|string
     {
         // determine filename ----
         $filename = null;
