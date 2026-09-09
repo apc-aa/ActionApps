@@ -267,7 +267,7 @@ class phpthumb {
 	public $issafemode       = null;
 	public $php_memory_limit = null;
 
-	public $phpthumb_version = '1.7.24-202601081042';
+	public $phpthumb_version = '1.7.24-202602061556';
 
 	//////////////////////////////////////////////////////////////////////
 
@@ -481,18 +481,20 @@ class phpthumb {
 		);
 
 		$this->DebugMessage('memory_get_usage() after copy-resize = '.(function_exists('memory_get_usage') ? @memory_get_usage() : 'n/a'), __FILE__, __LINE__);
-		imagedestroy($this->gdimg_source);
-		$this->DebugMessage('memory_get_usage() after imagedestroy = '.(function_exists('memory_get_usage') ? @memory_get_usage() : 'n/a'), __FILE__, __LINE__);
+		if (PHP_VERSION_ID < 80000) { // imagedestroy does nothing after PHP8 and give deprecation warnings in PHP8.5
+			imagedestroy($this->gdimg_source);
+			$this->DebugMessage('memory_get_usage() after imagedestroy = '.(function_exists('memory_get_usage') ? @memory_get_usage() : 'n/a'), __FILE__, __LINE__);
+		}
 
-			$this->phpThumbDebug('8i');
+		$this->phpThumbDebug('8i');
 		$this->AntiOffsiteLinking();
-			$this->phpThumbDebug('8j');
+		$this->phpThumbDebug('8j');
 		$this->ApplyFilters();
-			$this->phpThumbDebug('8k');
+		$this->phpThumbDebug('8k');
 		$this->AlphaChannelFlatten();
-			$this->phpThumbDebug('8l');
+		$this->phpThumbDebug('8l');
 		$this->MaxFileSize();
-			$this->phpThumbDebug('8m');
+		$this->phpThumbDebug('8m');
 
 		$this->DebugMessage('GenerateThumbnail() completed successfully', __FILE__, __LINE__);
 		return true;
@@ -1749,8 +1751,22 @@ class phpthumb {
 						$this->is_alpha = true;
 						break;
 					case 'avif':
-						$ImageCreateFunction = 'imagecreatefromavif';
-						$this->is_alpha = true;
+						// ImageMagick writes AVIF through libheif, and libheif < 1.12.0 omits the
+						// mandatory 'pixi' property. Firefox parses AVIF strictly and rejects such a
+						// file with "Image corrupt or truncated", while Chrome/Edge accept it. GD
+						// (libavif) always writes 'pixi', so hand the ImageMagick-resized image over
+						// to GD through a lossless PNG intermediate instead of using raw IM output.
+						if (function_exists('imagetypes') && (imagetypes() & IMG_AVIF)) {
+							$this->DebugMessage('Not using raw ImageMagick output for AVIF (libheif may omit the mandatory "pixi" property); re-encoding via GD', __FILE__, __LINE__);
+							$outputFormat = 'png';
+							$ImageCreateFunction = 'imagecreatefrompng';
+							$this->is_alpha = true;
+							$this->useRawIMoutput = false;
+						} else {
+							// GD cannot output AVIF - fall back to raw ImageMagick output
+							$ImageCreateFunction = 'imagecreatefromavif';
+							$this->is_alpha = true;
+						}
 						break;
 					default:
 						$this->DebugMessage('Forcing output to PNG because $this->thumbnailFormat ('.$this->thumbnailFormat.' is not a GD-supported format)', __FILE__, __LINE__);
@@ -2691,7 +2707,9 @@ if (false) {
 				$opacity = 50;
 				$margin  = 5;
 				$phpthumbFilters->WatermarkOverlay($this->gdimg_output, $watermark_img, '*', $opacity, $margin);
-				imagedestroy($watermark_img);
+				if (PHP_VERSION_ID < 80000) { // imagedestroy does nothing after PHP8 and give deprecation warnings in PHP8.5
+					imagedestroy($watermark_img);
+				}
 				unset($phpthumbFilters);
 
 			} else {
@@ -2776,7 +2794,9 @@ if (false) {
 								}
 							}
 						}
-						imagedestroy($img_alpha_mixdown_dither);
+						if (PHP_VERSION_ID < 80000) { // imagedestroy does nothing after PHP8 and give deprecation warnings in PHP8.5
+							imagedestroy($img_alpha_mixdown_dither);
+						}
 
 						$this->DebugMessage('AlphaChannelFlatten() set image to 255+1 colors with transparency for GIF output', __FILE__, __LINE__);
 						return true;
@@ -2810,7 +2830,9 @@ if (false) {
 			imagecolortransparent($this->gdimg_output, -1);
 			imagecopy($this->gdimg_output, $gdimg_flatten_temp, 0, 0, 0, 0, $this->thumbnail_width, $this->thumbnail_height);
 
-			imagedestroy($gdimg_flatten_temp);
+			if (PHP_VERSION_ID < 80000) { // imagedestroy does nothing after PHP8 and give deprecation warnings in PHP8.5
+				imagedestroy($gdimg_flatten_temp);
+			}
 			return true;
 
 		} else {
@@ -2975,7 +2997,9 @@ if (false) {
 								}
 								$this->is_alpha = true;
 								$phpthumbFilters->ApplyMask($gdimg_mask, $this->gdimg_output);
-								imagedestroy($gdimg_mask);
+								if (PHP_VERSION_ID < 80000) { // imagedestroy does nothing after PHP8 and give deprecation warnings in PHP8.5
+									imagedestroy($gdimg_mask);
+								}
 							} else {
 								$this->DebugMessage('ImageCreateFromStringReplacement() failed for "'.$mask_filename.'"', __FILE__, __LINE__);
 							}
@@ -3061,7 +3085,9 @@ if (false) {
 										} else {
 											$this->DebugMessage('phpthumb_functions::ImageCreateFunction('.$resized_x.', '.$resized_y.')', __FILE__, __LINE__);
 										}
-										imagedestroy($img_watermark_resized);
+										if (PHP_VERSION_ID < 80000) { // imagedestroy does nothing after PHP8 and give deprecation warnings in PHP8.5
+											imagedestroy($img_watermark_resized);
+										}
 									} else {
 										$this->DebugMessage('phpthumb_functions::ImageCreateFunction('.imagesx($this->gdimg_output).', '.imagesy($this->gdimg_output).')', __FILE__, __LINE__);
 									}
@@ -3073,13 +3099,17 @@ if (false) {
 										imagesavealpha($img_watermark_resized, true);
 										$this->ImageResizeFunction($img_watermark_resized, $img_watermark, 0, 0, 0, 0, imagesx($img_watermark_resized), imagesy($img_watermark_resized), imagesx($img_watermark), imagesy($img_watermark));
 										$phpthumbFilters->WatermarkOverlay($this->gdimg_output, $img_watermark_resized, 'C', $opacity, $margin);
-										imagedestroy($img_watermark_resized);
+										if (PHP_VERSION_ID < 80000) { // imagedestroy does nothing after PHP8 and give deprecation warnings in PHP8.5
+											imagedestroy($img_watermark_resized);
+										}
 									} else {
 										$this->DebugMessage('phpthumb_functions::ImageCreateFunction('.$resized_x.', '.$resized_y.')', __FILE__, __LINE__);
 									}
 
 								}
-								imagedestroy($img_watermark);
+								if (PHP_VERSION_ID < 80000) { // imagedestroy does nothing after PHP8 and give deprecation warnings in PHP8.5
+									imagedestroy($img_watermark);
+								}
 
 							} else {
 								$this->DebugMessage('ImageCreateFromStringReplacement() failed for "'.$filename.'"', __FILE__, __LINE__);
@@ -3133,9 +3163,11 @@ if (false) {
 									$alignment = $watermark_dest_x.'x'.$watermark_dest_y;
 								}
 								$phpthumbFilters->WatermarkOverlay($this->gdimg_output, $img_watermark, $alignment, $opacity, $margin['x'], $margin['y']);
-								imagedestroy($img_watermark);
-								if (isset($img_watermark2) && (is_resource($img_watermark2) || (is_object($img_watermark2) && $img_watermark2 instanceOf \GdImage))) {
-									imagedestroy($img_watermark2);
+								if (PHP_VERSION_ID < 80000) { // imagedestroy does nothing after PHP8 and give deprecation warnings in PHP8.5
+									imagedestroy($img_watermark);
+									if (isset($img_watermark2) && (is_resource($img_watermark2) || (is_object($img_watermark2) && $img_watermark2 instanceOf \GdImage))) {
+										imagedestroy($img_watermark2);
+									}
 								}
 							} else {
 								$this->DebugMessage('ImageCreateFromFilename() failed for "'.$filename.'"', __FILE__, __LINE__);
@@ -3241,7 +3273,9 @@ if (false) {
 								} else {
 									$this->DebugMessage('ImageCreateFunction('.($scale_x * imagesx($img_temp)).', '.($scale_y * imagesy($img_temp)).') failed', __FILE__, __LINE__);
 								}
-								imagedestroy($img_temp);
+								if (PHP_VERSION_ID < 80000) { // imagedestroy does nothing after PHP8 and give deprecation warnings in PHP8.5
+									imagedestroy($img_temp);
+								}
 							} else {
 								$this->DebugMessage('ImageCreateFunction('.imagesx($this->gdimg_output).', '.imagesy($this->gdimg_output).') failed', __FILE__, __LINE__);
 							}
@@ -3264,7 +3298,9 @@ if (false) {
 						if ($gdimg_mask = $phpthumbFilters->SourceTransparentColorMask($this->gdimg_output, $hexcolor, $min_limit, $max_limit)) {
 							$this->is_alpha = true;
 							$phpthumbFilters->ApplyMask($gdimg_mask, $this->gdimg_output);
-							imagedestroy($gdimg_mask);
+							if (PHP_VERSION_ID < 80000) { // imagedestroy does nothing after PHP8 and give deprecation warnings in PHP8.5
+								imagedestroy($gdimg_mask);
+							}
 						} else {
 							$this->DebugMessage('SourceTransparentColorMask() failed for "'.$hexcolor.','.$min_limit.','.$max_limit.'"', __FILE__, __LINE__);
 						}
@@ -4171,7 +4207,9 @@ if (false) {
 					}
 					if ($cropped !== false) {                 // in case a new image resource was returned
 						$this->DebugMessage('ImageCropAuto changing source image size from '.imagesx($this->gdimg_source).'x'.imagesy($this->gdimg_source).' to '.imagesx($cropped).'x'.imagesy($cropped), __FILE__, __LINE__);
-						imagedestroy($this->gdimg_source);    // we destroy the original image
+						if (PHP_VERSION_ID < 80000) { // imagedestroy does nothing after PHP8 and give deprecation warnings in PHP8.5
+							imagedestroy($this->gdimg_source);    // we destroy the original image
+						}
 						$this->gdimg_source = $cropped;       // and assign the cropped image to $im
 						$this->source_width  = imagesx($this->gdimg_source);
 						$this->source_height = imagesy($this->gdimg_source);
@@ -4444,7 +4482,9 @@ if (false) {
 					imagewbmp($gdimg_error);
 				}
 			}
-			imagedestroy($gdimg_error);
+			if (PHP_VERSION_ID < 80000) { // imagedestroy does nothing after PHP8 and give deprecation warnings in PHP8.5
+				imagedestroy($gdimg_error);
+			}
 
 		}
 		if (!headers_sent()) {
