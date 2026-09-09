@@ -54,7 +54,6 @@
 
 // todo - work with global variable $err??
 
-// const  AA_REGISTER_GLOBALS = true;
 use AA\Util\InputVars;
 use AA\Util\Txt;
 

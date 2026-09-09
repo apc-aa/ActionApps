@@ -31,7 +31,6 @@
 */
 
 
-// const  AA_REGISTER_GLOBALS = true;
 use AA\IO\FeedUtil;
 use AA\Util\InputVars;
 

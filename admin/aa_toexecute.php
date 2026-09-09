@@ -31,7 +31,6 @@
 
 use AA\Manager;
 
-// const  AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/actions.php";
 

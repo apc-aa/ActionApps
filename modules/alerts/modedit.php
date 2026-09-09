@@ -42,7 +42,6 @@ if ($_GET['no_slice_id'] ?? null) {
 }
 
 $directory_depth = "../";
-// const  AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../../include/init_page.php";
 require_once __DIR__ . "/../../include/formutil.php";
 require_once __DIR__ . "/../../include/varset.php";

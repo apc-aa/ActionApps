@@ -33,7 +33,6 @@
 use AA\Util\InputVars;
 use AA\Util\Langs;
 
-// const  AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/formutil.php";
 require_once __DIR__ . "/../modules/alerts/util.php";

@@ -1130,7 +1130,7 @@ class AA_Fields implements IteratorAggregate, Countable
             foreach ($related_fields as $rf_def) {
                 $related_fields = self::factoryFor($rf_def['sid'])->getSearchfields(0);
                 $related += 1000;
-                $opt_group = AA_Module::getModuleName($rf_def['sid']) . ' / ' . $rf_def['name'];
+                $opt_group = (AA_Module::getModule($rf_def['sid'])?->getName() ?? '') . ' / ' . $rf_def['name'];   // raw name - getFrmSelectEasy() safe()s the optgroup label
                 // add "-- any text field --" search option
                 // This does not work - all_fields@5cae6644f58fe31c4e704e3887e18524/relation........ is probably not implemented, yet
                 // if ($related_fields) {

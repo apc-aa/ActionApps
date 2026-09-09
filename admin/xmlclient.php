@@ -59,7 +59,6 @@ use AA\Util\InputVars;
 // ----- input variables normalization - end ----------------------------------
 
 
-// const  AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/config.php";
 require_once __DIR__ . "/../include/locsess.php";
 require_once __DIR__ . "/../include/util.php";

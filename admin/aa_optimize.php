@@ -31,7 +31,6 @@ use AA\Manageraction\Manageractions;
 use AA\Optimize\AbstractOptimize;
 use AA\Manager;
 
-// const  AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
 
 

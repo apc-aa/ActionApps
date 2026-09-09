@@ -42,29 +42,18 @@
 use AA\Doit\RequestMonitor;
 use AA\Util\Langs;
 
-$encap ??= $_REQUEST['encap'] ?? false;
-$free  ??= $_REQUEST['free'] ?? false;
-
-// ----- input variables normalization - start
-// This code handles with "magic quotes" and "register globals" PHP (<5.4) setting
-// It make us sure, that
-//  1) in $_POST,$_GET,$_COOKIE,$_REQUEST variables the values are not quoted
-//  2) the variables are imported in global scope and is quoted
-// We are trying to remove any dependecy on the point 2) and use only $_* superglobals
-function AddslashesDeep($value): array|string
-{
-    return is_array($value) ? array_map('AddslashesDeep', $value) : addslashes($value);
-}
-
-if (defined('AA_REGISTER_GLOBALS')) {
-    foreach ($_REQUEST as $k => $v) {
-        $$k = AddslashesDeep($v);
-    }
-}
-// ----- input variables normalization - end
+// Request inputs used by this bootstrap. Everything else an including page needs it reads
+// for itself: the $$k = AddslashesDeep($v) register_globals emulation that used to seed the
+// global scope here was removed 2026-09 (finding N14), together with the AA_REGISTER_GLOBALS
+// gate that gated it. The flags below ($no_slice_id, $save_hidden, $unset_r_hidden,
+// $require_default_lang) are therefore what their docblock always said they were - messages
+// set by the including page before the require, never request parameters.
+$encap   ??= $_REQUEST['encap'] ?? false;
+$free    ??= $_REQUEST['free'] ?? false;
+$freepwd ??= $_REQUEST['freepwd'] ?? '';   // password for the $free anonymous login below
 
 if ($encap === "false") {   // used in itemedit for anonymous form
-    $encap = false;        // it must be here, because the variable is rewriten (see above)
+    $encap = false;
 }
 
 require_once __DIR__ . "/config.php";
@@ -128,7 +117,7 @@ $after_login = !$no_slice_id && !AA::$module_id;
 $perm_slices = GetUserSlices();
 
 if (!$no_slice_id && !IsSuperadmin() && !$perm_slices[AA::$module_id] && !$after_login) {
-    MsgPage(_m("You do not have permission to edit items in the slice:") . ' ' . safe(AA_Slice::getModuleName(AA::$module_id)));
+    MsgPage(_m("You do not have permission to edit items in the slice:") . ' ' . AA_Slice::getModuleName(AA::$module_id));
     exit;
 }
 

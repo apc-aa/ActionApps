@@ -27,7 +27,6 @@ https://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-// const  AA_REGISTER_GLOBALS = true;
 use AA\Util\InputVars;
 
 require_once __DIR__ . "/../../include/init_page.php";

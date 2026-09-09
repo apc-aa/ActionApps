@@ -30,7 +30,6 @@
 
 use AA\Manager;
 
-// const  AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../../include/init_page.php";
 
 if (!IfSlPerm(PS_MODW_SETTINGS)) {

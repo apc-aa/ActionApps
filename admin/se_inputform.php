@@ -32,7 +32,6 @@ use AA\Util\InputVars;
 use AA\Util\Langs;
 use AA\Widget\Widget;
 
-// const  AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
 mgettext_bind(Langs::currentLang(), 'param_wizard');
 require_once __DIR__ . "/../include/constants_param_wizard.php";

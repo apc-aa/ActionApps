@@ -38,7 +38,6 @@ use AA\Util\ChangesMonitor;
 use AA\Util\InputVars;
 use AA\Util\Searchfields;
 
-// const  AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/formutil.php";
 require_once __DIR__ . "/../include/varset.php";

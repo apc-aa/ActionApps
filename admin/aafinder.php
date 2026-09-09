@@ -33,7 +33,6 @@ use AA\Util\InputVars;
 
 $require_default_lang = true;      // do not use module specific language file
 // (message for init_page.php)
-// const  AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/formutil.php";
 require_once __DIR__ . "/../include/feeding.php";   // WhereFed/FromFed used by GetItemInfoHtml (item info)

@@ -42,7 +42,6 @@
  *
  */
 
-// const  AA_REGISTER_GLOBALS = true;
 use AA\Util\InputVars;
 use AA\Util\Langs;
 use AA\Util\Paramwizard;

@@ -28,7 +28,6 @@
  *
 */
 
-// const  AA_REGISTER_GLOBALS = true;
 use AA\Later\Toexecute;
 use AA\Util\InputVars;
 

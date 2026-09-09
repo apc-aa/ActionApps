@@ -29,7 +29,6 @@ use AA\Util\InputVars;
 
 $no_slice_id   = isset($_REQUEST['template']) && isset($_REQUEST['template']['W']);       // message for init_page.php
 
-// const  AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../../include/init_page.php";
 //require_once __DIR__."/../../include/en_site_lang.php";
 require_once __DIR__ . "/../../include/formutil.php";

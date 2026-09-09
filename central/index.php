@@ -39,7 +39,6 @@ use AA\Manageraction\Central_Sqlupdate;
 use AA\Manageraction\Central_Tab;
 use AA\Manageraction\Manageractions;
 
-// const  AA_REGISTER_GLOBALS = true;
 use AA\Util\InputVars;
 
 require_once __DIR__ . "/../include/init_page.php";

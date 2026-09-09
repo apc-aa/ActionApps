@@ -24,7 +24,6 @@
  * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
  * @link      https://www.apc.org/ APC
 */
-// const  AA_REGISTER_GLOBALS = true;
 use AA\Util\InputVars;
 
 require_once __DIR__ . "/../include/init_page.php";

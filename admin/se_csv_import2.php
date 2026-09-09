@@ -37,7 +37,6 @@ use AA\IO\DB\DB_AA;
 use AA\Util\InputVars;
 use AA\Util\Txt;
 
-// const  AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/util.php";
 require_once __DIR__ . "/../include/import_util.php";

@@ -33,7 +33,6 @@ use AA\Util\InputVars;
 // it is message for init_page.php so it must be set here already
 $no_slice_id = $_POST['no_slice_id'] ?? false;
 
-// const  AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/formutil.php";
 require_once __DIR__ . "/../include/date.php";

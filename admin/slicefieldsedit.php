@@ -36,7 +36,6 @@ if (isset($_REQUEST['edit']) || isset($_REQUEST['add'])) {         // parameter 
     $unset_r_hidden = true;  // clear stored content
 }
 
-const AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";     // This pays attention to $change_id
 require_once __DIR__ . "/../include/formutil.php";
 require_once __DIR__ . "/../include/varset.php";
@@ -49,6 +48,23 @@ if (file_exists("../include/usr_validate.php")) {
     require_once __DIR__ . "/../include/usr_validate.php";
 } elseif (file_exists("../include/usr_validate.php3")) {
     require_once __DIR__ . "/../include/usr_validate.php3";
+}
+
+// Page inputs, read explicitly. Until 2026-09 they were seeded by the $$k = AddslashesDeep()
+// register_globals emulation in init_page.php - this page held the only live
+// `const AA_REGISTER_GLOBALS = true` in the tree (finding N14). Same names, sources and types
+// as the sibling admin/itemedit.php, which $update only joins here (that page derives it from
+// its own POST flags). Kept before QuoteVars() below, exactly as there, so the POSTed values
+// it re-imports still win - no behaviour change.
+try {
+    $cancel     = InputVars::boolGET('cancel');
+    $edit       = InputVars::boolGET('edit');
+    $update     = InputVars::boolPOST('update');
+    $openervar  = InputVars::stringGETPOST('openervar');   // id of variable in parent window (popup inputform)
+    $return_url = InputVars::stringGETPOST('return_url');
+    $vid        = InputVars::stringGET('vid');             // display as view $vid
+} catch (Exception $e) {
+    AA_Adminpageutil::pageParameterError($e);
 }
 
 // Allow edit current slice without slice_pwd

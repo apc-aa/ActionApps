@@ -34,7 +34,6 @@ die('We want to remove this file from the codebase. HM 2023-02-22. Please commen
 $no_slice_id          = true;
 $require_default_lang = true;
 
-// const  AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
 // the parts used by the slice wizard are in the included file
 require_once __DIR__ . "/../include/formutil.php";

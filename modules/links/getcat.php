@@ -23,7 +23,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 // used in init_page.php script to include config.php from the right directory
 
-// const  AA_REGISTER_GLOBALS = true;
 use AA\Util\InputVars;
 
 require_once __DIR__ . "/../../include/init_page.php";

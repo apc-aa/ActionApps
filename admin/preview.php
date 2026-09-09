@@ -31,7 +31,6 @@
  *  @param $return_url - where to go after hit OK button
  */
 
-// const  AA_REGISTER_GLOBALS = true;
 use AA\Util\InputVars;
 
 require_once __DIR__ . "/../include/init_page.php";

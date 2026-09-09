@@ -41,7 +41,6 @@
 use AA\Manager;
 use AA\Util\InputVars;
 
-// const  AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/util.php";
 require_once __DIR__ . "/../include/item.php";

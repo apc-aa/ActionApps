@@ -36,7 +36,6 @@ require_once __DIR__ . "/../include/varset.php";
 require_once __DIR__ . "/../include/item.php";     // GetAliasesFromField funct def
 require_once __DIR__ . "/../include/discussion.php";  // GetDiscussionAliases funct def
 
-// const  AA_REGISTER_GLOBALS = true;
 try {
     // array ( '<img src="/…' => 31, )
     $aditional = InputVars::stringPOST('aditional');

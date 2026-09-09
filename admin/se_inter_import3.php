@@ -35,7 +35,6 @@ use AA\IO\DB\DB_AA;
 use AA\IO\FeedUtil;
 use AA\Util\InputVars;
 
-// const  AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
 if (!IfSlPerm(PS_FEEDING)) {
     MsgPage(_m("You do not have permissions to change feeding setting"));
