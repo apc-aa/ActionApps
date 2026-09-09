@@ -66,7 +66,7 @@
         'honzito/misscache' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => '9588002688b9321967a3462bc45ed949fe82bb70',
+            'reference' => '6a43ed1cbd385b772d20ffd65585b86a87ad03b8',
             'type' => 'library',
             'install_path' => __DIR__ . '/../honzito/misscache',
             'aliases' => array(),
@@ -75,7 +75,7 @@
         'honzito/phpthumb' => array(
             'pretty_version' => 'dev-justcode',
             'version' => 'dev-justcode',
-            'reference' => '51a5e2ab342ea23de6ac95aa6db19d52132e1de7',
+            'reference' => 'cd782d6d4d931dfa1c89dfabe863a2155e44e4f0',
             'type' => 'library',
             'install_path' => __DIR__ . '/../honzito/phpthumb',
             'aliases' => array(),
