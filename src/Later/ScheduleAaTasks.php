@@ -70,7 +70,7 @@ class ScheduleAaTasks implements LaterInterface
         $toexecute->laterOnce(new MissCachePurge(), [], "MissCachePurge", 10, now() + (60 * 60 * 24));
 
         // invalidate cached pages after items expire / get published by the clock - AA\Later\PagecacheDateSweep
-        if (PagecacheDateSweep::interval() > 0) {
+        if (PagecacheDateSweep::isEnabled()) {
             $toexecute->laterOnce(new PagecacheDateSweep(), [], 'PagecacheDateSweep', 101, time() + PagecacheDateSweep::interval());
         }
     }
