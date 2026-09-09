@@ -268,9 +268,10 @@ define("CACHE_TTL", 10800 ); // 3 hours
  *  AA\Later\PagecacheDateSweep looks for items that expired or got published
  *  by the clock and drops the cached pages rendered before that moment.
  *  Without it a page could show an expired item for up to CACHE_TTL; with it
- *  the staleness is bounded by this interval (+ ~3 min), so CACHE_TTL can be
- *  long (12-24 h). Default 600 (10 minutes); 0 disables the sweep (then keep
- *  CACHE_TTL short). */
+ *  the staleness is bounded by this interval plus up to two cron ticks (the task
+ *  is re-planned only after it ran), so CACHE_TTL can be long (12-24 h).
+ *  Covers items only - polls keep their own dates. Default 600 (10 minutes);
+ *  0 disables the sweep (then keep CACHE_TTL short). */
 // define('PAGECACHE_DATE_SWEEP_INTERVAL', 600);
 
 

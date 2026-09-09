@@ -97,6 +97,12 @@ class PageCache
         $this->cacheTime = (int) $ct;
     }
 
+    /** Seconds a stored page is served (CACHE_TTL) - the rule getById() applies */
+    public function getCacheTime(): int
+    {
+        return $this->cacheTime;
+    }
+
     /**
      * Returns true when $name is a known third-party tracker that must not
      * be part of the page-cache key. Case-sensitive.
@@ -493,7 +499,7 @@ class PageCache
             // never touches `content`: s via the str2find(20) prefix index, p via PRIMARY (only the inline `stored`)
             $keys = DB_AA::select('pagecache_id', 'SELECT s.pagecache_id FROM pagecache_str2find s JOIN pagecache p ON p.id = s.pagecache_id', [['s.str2find', $str2find->getStrings()], ['p.stored', $stored_before, '<']]);
         }
-        $keys = array_values(array_unique($keys));
+        $keys = array_unique($keys);
 
         // invalidateById() is quite slow - mainly if we have to delete more rows,
         // I do not know how to make it quicker. I tried to refine the SQL
