@@ -112,3 +112,10 @@ _No longer maintained. Removed 2022-02-25 - honzam (see older apc-aa branches to
 /doc/**tabledit_developer.html**    - tabledit user/developer documentation
   Final removal of the legacy `tabledit` table editor. The last consumer was the Alerts module, now migrated to the per-module admin convention: modules/alerts/modedit.php (rewritten, mirrors polls/links modedit - module ⋈ alerts_collection via include/modutils.php helpers), modules/alerts/emails.php (NEW - AA\Manager over `email`, scoped to the module - NOT the superadmin-global admin/aa_emails.php), modules/alerts/acf.php (NEW - alerts_collection_filter list/add/delete/reorder), modules/alerts/send.php (NEW - ShowCollectionAddOns sending UI). The two stray tabledit.css includes were dropped from admin/fileman.php and admin/search_replace.php (they used nothing from it; .scroller comes from the admin theme). composer dump-autoload regenerated to drop the stale 'tabledit' classmap entry.
   _No longer maintained. Removed 2026-06-23 - honzam (see older apc-aa branches to get the code)_
+
+/javascript/**aajslib-src/**
+Build sources of the aajslib JavaScript library (aajslib-common.js, the three
+*-src.js variants, merge_common_js.sh).
+_Not removed - moved to /dev/aajslib/ 2026-09-10 - honzam. `dev/` holds only build
+inputs and can be deleted on a server (see INSTALL); the built files stay in
+/javascript/. merge_common_js.sh now writes there explicitly._

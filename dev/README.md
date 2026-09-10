@@ -8,7 +8,12 @@ does not need any of them.
 
 | Directory | Rebuilds | How |
 |---|---|---|
+| `aajslib/` | `javascript/aajslib-{jquery,legacy}.js` | `dev/aajslib/merge_common_js.sh <name>-src.js`, then `uglifyjs` |
 | `codemirror6/` | `javascript/codemirror6.min.js` | `dev/codemirror6/build.sh` |
+
+`aajslib/` also holds `aajslib-common.js`, the shared vanilla source every variant
+includes. After editing it, rebuild **and** re-minify - the `.min.js` is what loads - then
+bump `AA_JS_VERSION` in `include/constants.php`.
 
 Build steps need `node`/`npm` and write their output into the tree; run them
 only when upgrading the library in question, and commit the regenerated file
