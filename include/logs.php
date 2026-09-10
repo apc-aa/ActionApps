@@ -253,7 +253,11 @@ class AA_Log implements InternalExpandInterface
         $tab       = self::extendTable($tab);
         $link_div  = $show_log_link ? '<div>' . a_href(self::getAdminUrl($event, $selector), _m('Log'), ['class' => 'aa-button-show']) . '</div>' : '';
 
-        return GetHtmlTable($tab, 'key') . $link_div;
+        // 'all' escapes both the header and the cells. extendTable() puts raw
+        // AA_Logentry property values in them, and some of those are whatever the
+        // visitor sent: a VIEW row carries $_SERVER['REQUEST_URI'] verbatim
+        // (include/view.php), and admin/se_view.php renders it through here.
+        return GetHtmlTable($tab, 'key', '', 'all') . $link_div;
     }
 
     /** parse Params row and extract columns based on AA_Logentry structure */
@@ -545,6 +549,13 @@ class AA_Logentry_W extends AA_Logentry
  */
 class AA_Logentry_Sys extends AA_Logentry
 {
+    public string $aa  = '';
+    public string $svn = '';
+    public string $php = '';
+    public string $db  = '';
+    public string $mem = '';
+    public string $cpu = '';
+
     public static function getClassProperties(): array
     {
         return [
