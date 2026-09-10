@@ -28,6 +28,8 @@
 use AA\Later\HitcounterStats;
 use AA\Util\HitcounterDisplay;
 use AA\Util\InputVars;
+use AA\Util\TaskProgress;
+use AA\Util\VersionProgress;
 use AA\Widget\Widget;
 
 require_once __DIR__ . "/../include/init_page.php";
@@ -144,16 +146,41 @@ if ($for_module !== 'all') {
     }
 }
 
+// All three panels above the form share the $show-driven open state: on first load
+// (show=0) they are the orientation surface; once the operator submits the form they
+// collapse so the per-day table they asked for sits above the fold.
+$diag_open = !$show ? ' open' : '';
+
+// Version progress: "did what we shipped make it faster?". First on the page because
+// it is the strategic question; the diagnostics below answer the tactical "what is slow
+// right now". Renders nothing at all on installs without duration logging.
+if ($version_progress = VersionProgress::render($slices, VersionProgress::WINDOW_DAYS, ['for_module' => $for_module])) {
+    echo "<details class=\"aa-page-section\"$diag_open>";
+    echo '<summary><h2 class="aa-tab-title">' . _m('Version progress') . '</h2></summary>';
+    echo $version_progress;
+    echo '</details>';
+}
+
+// Queue progress: the same comparison over cron task durations, which is the only
+// place the work done after the page is sent (page-cache store, log and hit writes,
+// item saves, imports) can be measured at all. Collapsed by default because the
+// page's usual question is about pages.
+//
+// Superadmin only. The queue is install-wide and its task names spell out what the
+// whole installation does, which feeds it imports and which sites send mail, while
+// this page itself only asks for PS_EDIT_ALL_ITEMS on the operator's own slice.
+if (IsSuperadmin() && ($task_progress = TaskProgress::render())) {
+    echo '<details class="aa-page-section">';
+    echo '<summary><h2 class="aa-tab-title">' . _m('Queue progress') . '</h2></summary>';
+    echo $task_progress;
+    echo '</details>';
+}
+
 // Quick diagnostics panel — rendered ABOVE the form. Independent of the form's
 // item-selection choices: shows AA-wide (or per-slice) ranked top-N over the
 // tip_period window. Card click-throughs land in the form below.
 //
-// Wrapped in <details class="aa-page-section"> with $show-driven open state: when
-// the operator submits the form (show=1) and the per-day table renders below, the
-// diagnostics auto-collapse so the answer sits above the fold. On first load
-// (show=0) the diagnostics stay open as the quick orientation surface. The
-// section <h2> lives in <summary>; the panel itself no longer emits its own <h3>.
-$diag_open = !$show ? ' open' : '';
+// The section <h2> lives in <summary>; the panel itself no longer emits its own <h3>.
 echo "<details class=\"aa-page-section\"$diag_open>";
 echo '<summary><h2 class="aa-tab-title">' . _m('Quick diagnostics') . '</h2></summary>';
 echo HitcounterDisplay::renderDiagnosticsPanel(

@@ -1134,17 +1134,21 @@ class HitcounterDisplay
     /**
      * Render a Chart.js chart inside a responsive container.
      *
-     * @param  array   $data         dataset list: [['label', 'data', 'color', 'dash', 'width']]
+     * @param  array   $data         dataset list: [['label', 'data', 'color', 'dash', 'width']], plus the
+     *                               optional 'showLine', 'pointStyle', 'pointRadius' and 'order' of a
+     *                               marker series
      * @param  array   $labels       x-axis labels
      * @param  string  $type         'line' (default) | 'stacked' (mapped to bar with stacked:true axes)
      * @param  string  $class_extra  extra CSS class on the chart container (e.g. 'aa-stat-chart-mini')
+     * @param  array   $y_scale      extra Chart.js y-axis options, e.g. ['beginAtZero' => false] for a
+     *                               series that varies around a baseline rather than growing from zero
      */
-    private static function getGraph(array $data, array $labels, string $type = 'line', string $class_extra = ''): string
+    public static function getGraph(array $data, array $labels, string $type = 'line', string $class_extra = '', array $y_scale = []): string
     {
         $is_bar = ($type === 'stacked');
         $datasets = [];
         foreach ($data as $set) {
-            $datasets[] = [
+            $dataset = [
                 'label'           => $set['label'],
                 'data'            => $set['data'],
                 'borderColor'     => $set['color'],
@@ -1153,6 +1157,15 @@ class HitcounterDisplay
                 'tension'         => 0.2,
                 'borderWidth'     => $is_bar ? 0 : ($set['width'] ?? 2),
             ];
+            // A marker-only series (one point per event, no line) opts in per dataset;
+            // anything omitted keeps Chart.js' own default. Chart.js draws sorted
+            // datasets back to front, so the LOWEST 'order' ends up on top.
+            foreach (['showLine', 'pointStyle', 'pointRadius', 'order'] as $option) {
+                if (isset($set[$option])) {
+                    $dataset[$option] = $set[$option];
+                }
+            }
+            $datasets[] = $dataset;
         }
 
         $is_mini = str_contains($class_extra, 'aa-stat-chart-mini');
@@ -1179,6 +1192,9 @@ class HitcounterDisplay
             $conf['options']['scales']['y']        ??= [];
             $conf['options']['scales']['x']['ticks'] = ['display' => false];
             $conf['options']['scales']['y']['ticks'] = ['display' => false];
+        }
+        if ($y_scale) {
+            $conf['options']['scales']['y'] = $y_scale + ($conf['options']['scales']['y'] ?? []);
         }
 
         $chart_id = \gensalt(8);
