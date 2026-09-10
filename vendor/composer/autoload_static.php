@@ -328,6 +328,7 @@ class ComposerStaticInit43e15006db6c3041e7b8c7c57cf04d54
         'AA\\Util\\Paramwizard' => __DIR__ . '/../..' . '/src/Util/Paramwizard.php',
         'AA\\Util\\ProgressPanel' => __DIR__ . '/../..' . '/src/Util/ProgressPanel.php',
         'AA\\Util\\ReportTrait' => __DIR__ . '/../..' . '/src/Util/ReportTrait.php',
+        'AA\\Util\\ScriptTag' => __DIR__ . '/../..' . '/src/Util/ScriptTag.php',
         'AA\\Util\\Searchfields' => __DIR__ . '/../..' . '/src/Util/Searchfields.php',
         'AA\\Util\\SerializerTrait' => __DIR__ . '/../..' . '/src/Util/SerializerTrait.php',
         'AA\\Util\\Singleton4idTrait' => __DIR__ . '/../..' . '/src/Util/Singleton4idTrait.php',

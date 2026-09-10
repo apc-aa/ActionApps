@@ -234,6 +234,7 @@ return array(
     'AA\\Util\\Paramwizard' => $baseDir . '/src/Util/Paramwizard.php',
     'AA\\Util\\ProgressPanel' => $baseDir . '/src/Util/ProgressPanel.php',
     'AA\\Util\\ReportTrait' => $baseDir . '/src/Util/ReportTrait.php',
+    'AA\\Util\\ScriptTag' => $baseDir . '/src/Util/ScriptTag.php',
     'AA\\Util\\Searchfields' => $baseDir . '/src/Util/Searchfields.php',
     'AA\\Util\\SerializerTrait' => $baseDir . '/src/Util/SerializerTrait.php',
     'AA\\Util\\Singleton4idTrait' => $baseDir . '/src/Util/Singleton4idTrait.php',

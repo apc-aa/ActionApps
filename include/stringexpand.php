@@ -7175,19 +7175,7 @@ class AA_Req_Lib extends AA_Req {
      * @return string
      */
     function getCode(): string {
-        if (!$this->url) {
-            return '';
-        }
-        $defer = '';
-        $type  = '';
-        if ($this->loadtype) {
-            if ($this->loadtype === 'module') {
-                $type = ' type=module';
-            } else {
-                $defer = ' '.$this->loadtype;
-            }
-        }
-        return "<script".$defer.$type ." src=\"{$this->url}\"" .$this->getIntegrity(). "></script>";
+        return \AA\Util\ScriptTag::head($this->url, $this->integrity, $this->loadtype);
     }
 
 
@@ -7195,10 +7183,7 @@ class AA_Req_Lib extends AA_Req {
      * @return string
      */
     function getExternal(): string {
-        if (trim($this->url)) {
-            return "AA_LoadJs('load_once',AA_IsLoaded,'{$this->url}',true);";  // we use script.async=false - codemirror in {ajax} did not load plugins withou it
-        }
-        return '';
+        return \AA\Util\ScriptTag::ajaxJs($this->url, $this->integrity, $this->loadtype);
     }
 
     /**
@@ -7279,15 +7264,14 @@ class AA_Req_Css extends AA_Req_Lib {
      * @return string
      */
     function getCode(): string {
-        $loadtype = (($this->loadtype === 'async') ? "media=print onload=\"this.media='all'\"" : ( $this->loadtype ? "media=\"{$this->loadtype}\"" : ''));  // onload - trick to load css asynchronously - https://stackoverflow.com/questions/32759272/how-to-load-css-asynchronously
-        return "<link rel=stylesheet" .$this->getIntegrity(). " href=\"{$this->url}\" $loadtype >";
+        return \AA\Util\ScriptTag::css($this->url, $this->integrity, $this->loadtype);
     }
 
     /**  getExternal and getScript is counterpart to getCode, but used in AJAX calls - external for libs to load before the script is called
      * @return string
      */
     function getExternal(): string {
-        return ($this->loadtype==='print') ? '' : "AA_LoadCss('{$this->url}');";
+        return \AA\Util\ScriptTag::ajaxCss($this->url, $this->loadtype);
     }
 }
 
