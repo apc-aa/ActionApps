@@ -47,7 +47,21 @@ if ($_SERVER['HTTP_X_FORWARDED_SERVER']) {
     $_SERVER['HTTP_HOST']   = $_SERVER['HTTP_X_FORWARDED_HOST'];
     $_SERVER['SERVER_NAME'] = $_SERVER['HTTP_X_FORWARDED_SERVER'];
     if ($_SERVER['HTTP_X_FORWARDED_FOR']) {
-        $_SERVER['REMOTE_ADDR'] = $_SERVER['HTTP_X_FORWARDED_FOR'];
+        // X-Forwarded-For is a chain "client, proxy1, proxy2, ..." - the first hop is the
+        // original client, which is the address wanted here (behind a proxy REMOTE_ADDR holds
+        // the proxy's own address, which is useless). This is the ONLY assignment to
+        // REMOTE_ADDR in AA and every reader expects a single address: filldisc.php:154 cuts
+        // the /24 subnet with strrpos($ip, '.'), logs.php:191 puts it in a log selector,
+        // phplib.php:384 compares it for session forgery. Copying the raw header used to hand
+        // all of them "1.2.3.4, 5.6.7.8". So take one hop, and only when it parses as an IP -
+        // an unusable header leaves whatever the web server reported.
+        // NOTE: this does not make REMOTE_ADDR trustworthy - both headers come from the client
+        // and there is still no trusted-proxy gate, which is the rest of security audit finding
+        // N3 (2026-09) and a separate change.
+        $forwarded_for = filter_var(trim(explode(',', $_SERVER['HTTP_X_FORWARDED_FOR'])[0]), FILTER_VALIDATE_IP);
+        if ($forwarded_for) {
+            $_SERVER['REMOTE_ADDR'] = $forwarded_for;
+        }
     }
 }
 

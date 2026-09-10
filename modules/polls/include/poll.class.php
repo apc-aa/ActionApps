@@ -154,11 +154,34 @@ class AA_Poll
         return $item->get_item();
     }
 
+    /** Counts one vote for the $vote_id answer of this poll.
+     *
+     *  Reachable unauthenticated through modules/polls/poll.php -> processPoll($_REQUEST),
+     *  so no request value may be interpolated into SQL (finding N2, 2026-09).
+     *
+     * @param $vote_id  unpacked 32-char id of the answer voted for
+     * @return bool     false when the ids are malformed or the vote was blocked (locked / IP /
+     *                  cookie), true otherwise - "true" does not promise the UPDATE matched a
+     *                  row, an answer id belonging to another poll matches none
+     */
     public function registerVote($vote_id): bool
     {
+        $poll_id = $this->id();
+
+        // Both ids come straight from the request. polls.id / polls_answer.id are UNPACKED
+        // 32-char hex text (varbinary(32) in include/metabase_schema.php; written by the
+        // new_id() calls at polledit.php:109/164 and read back with substr($v, 1, 32) at :160),
+        // so is_long_id() is the exact test and the values go to makeWhere() as plain strings -
+        // packing them through zids/xpack_id would match nothing.
+        if (!is_long_id($poll_id) || !is_long_id($vote_id)) {
+            return false;
+        }
+
+        // A single, already validated address - include/locsess.php normalizes REMOTE_ADDR
+        // for the proxy case, and it is the only place in AA that ever writes it.
+        $voters_ip    = $_SERVER['REMOTE_ADDR'] ?? '';
         $vote_invalid = false;
         $current_time = now();
-        $poll_id       = $this->id();
 
         $varset = new CVarset();
 
@@ -169,15 +192,15 @@ class AA_Poll
         if ($this->getProperty('ip_locking') == 1) {
 
             // ip_lock_timeout = 0 means it is locked forever
-            if ($this->getProperty('ip_lock_timeout') != 0) {
-                $varset->doDeleteWhere('polls_ip_lock', "poll_id='$poll_id' AND timestamp < " . ($current_time - $this->getProperty('ip_lock_timeout')));
+            $lock_timeout = $this->getProperty('ip_lock_timeout');
+            if ($lock_timeout != 0) {
+                DB_AA::delete('polls_ip_lock', [['poll_id', $poll_id], ['timestamp', $current_time - $lock_timeout, '<']]);
             }
 
-            $ip = GetTable2Array("SELECT voters_ip FROM polls_ip_lock WHERE (poll_id='$poll_id') AND (voters_ip = '" . $_SERVER['REMOTE_ADDR'] . "')", 'aa_first');
-            if ($ip) {
+            if (DB_AA::test('polls_ip_lock', [['poll_id', $poll_id], ['voters_ip', $voters_ip]])) {
                 $vote_invalid = "IP";
             } else {
-                $varset->resetFromRecord(['poll_id' => $poll_id, 'voters_ip' => $_SERVER['REMOTE_ADDR'], 'timestamp' => $current_time]);
+                $varset->resetFromRecord(['poll_id' => $poll_id, 'voters_ip' => $voters_ip, 'timestamp' => $current_time]);
                 $varset->doInsert('polls_ip_lock');
             }
         }
@@ -193,11 +216,13 @@ class AA_Poll
         }
 
         if (!$vote_invalid) {
-            DB_AA::sql("UPDATE polls_answer SET votes=votes+1 WHERE id='$vote_id'");
+            // poll_id belongs in the WHERE too: an answer id from ANOTHER poll would otherwise
+            // be counted here, while it is the other poll's ip-lock / cookie check that never ran
+            DB_AA::sql("UPDATE polls_answer SET votes=votes+1", [['id', $vote_id], ['poll_id', $poll_id]]);
             AA::Pagecache()->invalidateFor($this->getModuleId());
 
             if ($this->getProperty('logging') == 1) {
-                $varset->resetFromRecord(['answer_id' => $vote_id, 'voters_ip' => $_SERVER['REMOTE_ADDR'], 'timestamp' => $current_time]);
+                $varset->resetFromRecord(['answer_id' => $vote_id, 'voters_ip' => $voters_ip, 'timestamp' => $current_time]);
                 $varset->doInsert('polls_log');
             }
         }

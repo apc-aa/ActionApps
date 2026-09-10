@@ -157,8 +157,10 @@ class DbBinaryTrailingZeros extends AbstractOptimize
         $this->_fixTable('polls_ip_lock', 'poll_id', "varbinary(32)  NOT NULL default ''");
         $this->_fixTable('polls_log', 'answer_id', "varbinary(32)  NOT NULL default ''");
         $this->_fixTable('polls_design', 'module_id', "varbinary(16)  NOT NULL default ''");
-        $this->_fixTable('polls_ip_lock', 'voters_ip', "varbinary(16)  NOT NULL");
-        $this->_fixTable('polls_log', 'voters_ip', "varbinary(16)  NOT NULL default ''");
+        // 45 = longest textual IPv6 address; 16 truncated it and broke the poll ip-lock
+        // (security audit 2026-09, N18) - keep in sync with include/metabase_schema.php
+        $this->_fixTable('polls_ip_lock', 'voters_ip', "varbinary(45)  NOT NULL");
+        $this->_fixTable('polls_log', 'voters_ip', "varbinary(45)  NOT NULL default ''");
         $this->_fixTable('post2shtml', 'id', "varbinary(32)  NOT NULL default ''");
         $this->_fixTable('profile', 'slice_id', "varbinary(16)  NOT NULL default ''");
         $this->_fixTable('relation', 'source_id', "varbinary(16)  NOT NULL default ''");

@@ -1021,7 +1021,7 @@ return [
         ],
         'c' => [
             'poll_id' => ['poll_id', 'varbinary(32)', false, 'MUL', null, '', ''],
-            'voters_ip' => ['voters_ip', 'varbinary(16)', false, '', null, '', ''],
+            'voters_ip' => ['voters_ip', 'varbinary(45)', false, '', null, '', ''],
             'timestamp' => ['timestamp', 'int(11)', false, '', null, '', ''],
         ],
         'f' => null,
@@ -1035,7 +1035,7 @@ return [
         'c' => [
             'id' => ['id', 'int(11)', false, 'PRI', null, 'auto_increment', ''],
             'answer_id' => ['answer_id', 'varbinary(32)', false, '', null, '', ''],
-            'voters_ip' => ['voters_ip', 'varbinary(16)', false, '', null, '', ''],
+            'voters_ip' => ['voters_ip', 'varbinary(45)', false, '', null, '', ''],
             'timestamp' => ['timestamp', 'int(11)', false, '', null, '', ''],
         ],
         'f' => null,
