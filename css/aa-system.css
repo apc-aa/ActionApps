@@ -4,6 +4,13 @@
 * div#aa-bottom-toolbar {position: fixed;...}  - we use it as test
 */
 
+/* Admin themes give form controls an explicit display, which outranks the UA
+   stylesheet - el.hidden did nothing on a textarea, select or text input.
+   aa-system.css loads before the themes, hence !important. */
+[hidden] {
+    display: none !important;
+}
+
 /* HTMLeditor */
 *[contenteditable] {
     background: url(data:image/gif;base64,R0lGODlhAwADAJEAAOE3NuNOTeugnwAAACH5BAAAAAAALAAAAAADAAMAAAIEVAx3BQA7) no-repeat left 6px;
@@ -496,6 +503,7 @@ i.ico.aa-tool-edit:hover {
 }
 .CodeMirror-scroll { height: auto; overflow-y: hidden !important; overflow-x: auto !important; }
 .CodeMirror div[contenteditable] { color: inherit; }
+
 /* tlkt widget */
 .aa-widget-wi2 .aa-input, .aa-widget-iso .aa-input {
     display: flex;
