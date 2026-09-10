@@ -192,38 +192,47 @@ function AA_Toolbar(text) {
 }
 
 /** If condition, call callback directly. Otherwise - load js script from url and execute callback after the script is loaded */
-function AA_LoadJs(condition, callback, url, sync) {
+/** Loads an external script once.
+ *  @param condition truthy = treat as already loaded; 'load_once' = look for the same src in the DOM
+ *  @param callback  run when loaded - AA_IsLoaded counts down to fire the queued run-code
+ *  @param url       script src
+ *  @param sync      true = script.async = false, keeping insertion order (CodeMirror 5 addons need it)
+ *  @param opts      optional {type: 'module', integrity: 'sha256-...'}
+ */
+function AA_LoadJs(condition, callback, url, sync, opts) {
     if (condition && ((condition!=='load_once') || (url && document.querySelector('script[src="'+url+'"]')))) {
         if (callback) {
             callback();
         }
-    } else {
-        var script = document.createElement("script")
-        script.type = "text/javascript";
-        if (sync) {
-            script.async = false;
-        }
-
-        if (script.readyState) { //IE
-            script.onreadystatechange = function () {
-                if (script.readyState === "loaded" || script.readyState === "complete") {
-                    script.onreadystatechange = null;
-                    if (callback) {
-                        callback();
-                    }
-                }
-            };
-        } else { //Others
-            script.onload = function () {
-                if (callback) {
-                    callback();
-                }
-            };
-        }
-
-        script.src = url;
-        document.getElementsByTagName("head")[0].append(script);
+        return;
     }
+    const options = opts || {};
+    const script  = document.createElement('script');
+    // type=module also fires onload after the whole module graph has executed,
+    // so the AA_IsLoaded countdown keeps working for ESM libraries.
+    script.type = (options.type === 'module') ? 'module' : 'text/javascript';
+    if (sync) {
+        script.async = false;
+    }
+    if (options.integrity) {
+        script.integrity   = options.integrity;
+        script.crossOrigin = 'anonymous';
+    }
+    script.onload = function () {
+        if (callback) {
+            callback();
+        }
+    };
+    // Without this a script that 404s or fails its SRI check would stall the
+    // AA_IsLoaded countdown for good and the queued run-code would never fire.
+    script.onerror = function () {
+        console.error('AA_LoadJs: failed to load ' + url);
+        if (callback) {
+            callback();
+        }
+    };
+    script.src = url;
+    document.head.append(script);
 }
 
 /** internal AA function for function call after all the scripts are loaded */
