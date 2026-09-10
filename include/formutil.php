@@ -2849,6 +2849,15 @@ function FrmTabEnd( $buttons=false ): void
  * @param bool   $print_hidden - if false, prints all $buttons except the hidden fields
  * @param string $prefix       - prefix for button ids
  *
+ * Escaping contract (finding N19, 2026-09): 'value' and 'title' are plain text and are
+ * safe()d here - callers must NOT pre-escape them. 'url' is written to a data-url attribute
+ * and read back by the handler as this.dataset.url, so it never enters a JavaScript string
+ * (safe() alone would not protect that context: the HTML parser decodes the entity before
+ * JS sees it). Deliberately still raw: 'js' (caller-supplied JavaScript - see se_view.php's
+ * 'asnew' button), 'add' (caller-supplied extra HTML attributes), 'accesskey' and 'type'
+ * (short literals, emitted straight into attributes) and the $buttons key itself (it becomes
+ * the name/id attribute). Never route request data into any of those.
+ *
  * @return string
  *@see FrmTabEnd())
  */
@@ -2885,14 +2894,14 @@ function getFrmInputButtons($buttons, $print_hidden = true, $prefix = ''): strin
             $name = $properties;
             $properties = [];
         }
-        $title = $properties['title'] ? ' title="'.$properties['title'].'"' : '';
+        $title = $properties['title'] ? ' title="'.safe($properties['title']).'"' : '';
         switch($name) {
             case 'update':
                 if ($properties['type'] === 'hidden') {
-                    $ret .= ' <input type="hidden" name="update" id="'.$prefix .'update"'.$title.' value="'. get_if($properties['value'], "") .'">';
+                    $ret .= ' <input type="hidden" name="update" id="'.$prefix .'update"'.$title.' value="'. safe(get_if($properties['value'], "")) .'">';
                 } else {
                     $save_btn_id = $prefix .'update';
-                    $ret .= ' <input type="submit" class="btn-l" name="update" id="'.$save_btn_id.'"'.$title.' accesskey="S" value=" '. get_if($properties['value'], _m("Update")) ." [^S] " .' ">';
+                    $ret .= ' <input type="submit" class="btn-l" name="update" id="'.$save_btn_id.'"'.$title.' accesskey="S" value=" '. safe(get_if($properties['value'], _m("Update"))) ." [^S] " .' ">';
                     AA::Stringexpander()->addRequire("if (sessionStorage.getItem('aa_pgtop')>0) { window.scrollTo(0,sessionStorage.getItem('aa_pgtop')); sessionStorage.setItem('aa_pgtop', 0); }", 'AA_Req_Load');
                     $noaccess = true; // use for update of item, bug was, that both "update" and "insert" has accesskey S
                 }
@@ -2903,7 +2912,7 @@ function getFrmInputButtons($buttons, $print_hidden = true, $prefix = ''): strin
                     $save_btn_id = $prefix .'insert';
                     $ret .= 'accesskey="S" ';
                 }
-                $ret .= 'value=" '. get_if($properties['value'], _m("Insert")) ." ";
+                $ret .= 'value=" '. safe(get_if($properties['value'], _m("Insert"))) ." ";
                 if (!$noaccess) {
                     $ret .= " [^S]";
                 }
@@ -2916,30 +2925,30 @@ function getFrmInputButtons($buttons, $print_hidden = true, $prefix = ''): strin
                 }
                 $url  = StateUrl($url);
                 //          echo ' <input type="button" name="cancel" value=" '. get_if($properties['value'], _m("Cancel")) .' "> ';
-                $ret .= ' <input type="button" name="cancel" id="'.$prefix .'cancel"'.$title.' value=" '. get_if($properties['value'], _m("Cancel")) .' " class="btn-l btn-secondary" onclick="window.location=\''.$url.'\'"> ';
+                $ret .= ' <input type="button" name="cancel" id="'.$prefix .'cancel"'.$title.' value=" '. safe(get_if($properties['value'], _m("Cancel"))) .' " class="btn-l btn-secondary" data-url="'.safe($url).'" onclick="window.location=this.dataset.url"> ';
                 $esc_btn_id = $prefix .'cancel';
                 break;
             case 'close':
-                $ret .= ' <input type="button" name="cancel" id="'.$prefix .'cancel"'.$title.' value=" '. get_if($properties['value'], _m("Cancel")) .' " class="btn-l btn-secondary" onclick="window.close();"> ';
+                $ret .= ' <input type="button" name="cancel" id="'.$prefix .'cancel"'.$title.' value=" '. safe(get_if($properties['value'], _m("Cancel"))) .' " class="btn-l btn-secondary" onclick="window.close();"> ';
                 $esc_btn_id = $prefix .'cancel';
                 break;
             case 'reset':
                 $ret .= ' <input type="reset" id="'.$prefix .'reset"'.$title.' value=" '. _m("Reset form") .' " class="btn-l btn-secondary"> ';
                 break;
             case 'submit': // name is not submit because it breaks document.f.submit() function call
-                $ret .= ' <input type="submit" class="btn-l" name="submitbtn"'.$title.' id="'.$prefix .'submit" accesskey="S" value=" '. get_if($properties['value'], _m("Submit")) ."  [^S] ". ' "> ';
+                $ret .= ' <input type="submit" class="btn-l" name="submitbtn"'.$title.' id="'.$prefix .'submit" accesskey="S" value=" '. safe(get_if($properties['value'], _m("Submit"))) ."  [^S] ". ' "> ';
                 $save_btn_id = $prefix .'submit';
                 break;
             default:
                 if ($properties['js']) {
-                    $type    = ($properties['type'] ?: 'button');
-                    $onclick = ' onclick="'.$properties['js'].'"';
+                    $type        = ($properties['type'] ?: 'button');
+                    $click_attrs = ' onclick="'.$properties['js'].'"';
                 } elseif ($properties['url']) {
-                    $type = ($properties['type'] ?: 'button');
-                    $onclick = ' onclick="window.location=\''. StateUrl($properties['url']).'\'"';
+                    $type        = ($properties['type'] ?: 'button');
+                    $click_attrs = ' data-url="'. safe(StateUrl($properties['url'])) .'" onclick="window.location=this.dataset.url"';
                 } else {
-                    $type = ($properties['type'] ?: 'hidden');
-                    $onclick = '';
+                    $type        = ($properties['type'] ?: 'hidden');
+                    $click_attrs = '';
                 }
 
                 if ( !$print_hidden && $type === 'hidden' ) {
@@ -2948,10 +2957,10 @@ function getFrmInputButtons($buttons, $print_hidden = true, $prefix = ''): strin
                     break;
                 }
                 $nbsp = ( $type === 'hidden' ) ? '' : ' ';
-                $ret .= $nbsp.'<input type="'.  $type .'"'.$onclick .
+                $ret .= $nbsp.'<input type="'.  $type .'"'.$click_attrs .
                     ' name="'.  $name .
                     '" id="'.  $prefix . $name .
-                    '" value="'. $properties['value'] . ($properties['accesskey'] ? "  [^".$properties['accesskey']."]  " : "").
+                    '" value="'. safe($properties['value']) . ($properties['accesskey'] ? "  [^".$properties['accesskey']."]  " : "").
                     '" '.($properties['accesskey'] ? 'accesskey="'.$properties['accesskey'].'" ' : ""). $properties['add'] . ' class="btn-l btn-secondary"'.$title.'>'.$nbsp;
         }
         $ret .= "\n";

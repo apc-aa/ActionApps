@@ -130,21 +130,38 @@ abstract class AA_Module
 
     abstract public static function getModuleconfig(): AA_Moduleconfig;
 
-    /** get module - called as:
+    /** Module name as stored - RAW, not escaped. Escape at the point of use, or call
+     *  getModuleNameSafe() below for HTML output. Called as:
      *   $name = AA_Module_Site::getModuleName($module_id)
      *   $name = AA_Slice::getModuleName($module_id)
-     *   $name = AA_Module::getModuleName($module_id, IfSlPerm(PS_FIELDS, $module_id), 'admin/se_inputform.php', ['fid' => $fid]])
-     * @param      $module_id
-     * @param bool $link
-     * @return string
+     *
+     * The class it is called on does not matter - the name lives in the same `module` column
+     * for every module type (see the note at getModule()).
+     *
+     * @param  $module_id
+     * @return string  the raw name; '' for an unknown or malformed id
      */
-    public static function getModuleName($module_id, bool $link = false, ?string $page = null, array $params = []): string
+    public static function getModuleName($module_id): string
     {
-        $module = static::getModule($module_id);
-        if ($module) {
-            return $link ? a_href(static::getModuleUrl($module_id, $page, $params), safe($module->getName())) : $module->getName();
+        return AA_Module::getModule($module_id)?->getName() ?? '';
+    }
+
+    /** Module name escaped for HTML, optionally rendered as a link to the module's admin page.
+     *  The HTML-context counterpart of getModuleName(). Called as:
+     *   $name = AA_Slice::getModuleNameSafe($module_id)
+     *   $name = AA_Module::getModuleNameSafe($module_id, IfSlPerm(PS_FIELDS, $module_id), 'admin/se_inputform.php', ['fid' => $fid])
+     *
+     * @param      $module_id
+     * @param bool $link  wrap the name in a link to the module (or to $page)
+     * @return string  HTML
+     */
+    public static function getModuleNameSafe($module_id, bool $link = false, ?string $page = null, array $params = []): string
+    {
+        if (!($module = AA_Module::getModule($module_id))) {
+            return '';
         }
-        return '';
+        $name = Txt::safe($module->getName());
+        return $link ? a_href(static::getModuleUrl($module_id, $page, $params), $name) : $name;
     }
 
     /** Module switch url
@@ -161,21 +178,23 @@ abstract class AA_Module
      *   $slice       = AA_Slice::getModule($module_id)
      *   $some_module = AA_Module::getModule($module_id)  // this is not recommended - we usually know which module it should be
      *
+     * The class of the instance follows the module type in the database, never the class it is
+     * asked through - AA_Module::$_modules caches one instance per module id for all callers.
+     * So a mismatched call gives the object of the real class, which is why the native return
+     * type has to be ?AA_Module and not ?static (?static ends in a TypeError); the @return below
+     * describes the usual, matching call and keeps the type known to callers.
+     *
      * @param  string  $module_id
      *
      * @return static|null
      */
-    public static function getModule($module_id): ?static
+    public static function getModule($module_id): ?AA_Module
     {
         if (!is_long_id($module_id)) {
             return null;
         }
         if (!isset(AA_Module::$_modules[$module_id])) {
-            if (($class = static::class) === 'AA_Module') {
-                // this is not usual case - use it just if you do not know what module is it
-                $class = AA_Module::getModuleInfo('class', $module_id);
-            }
-            if (!$class) {
+            if (!($class = AA_Module::getModuleInfo('class', $module_id))) {
                 return null;
             }
             AA_Module::$_modules[$module_id] =  new $class($module_id);
@@ -220,7 +239,7 @@ abstract class AA_Module
             $_module_types = DB_AA::select(['unpackid' => 'type'], 'SELECT LOWER(HEX(`id`)) AS unpackid, `type` FROM `module`');
         }
 
-        $type = $_module_types[$module_id] ?: 'S';
+        $type = ($_module_types[$module_id] ?? '') ?: 'S';   // unknown module id (or no type) = slice
         return ($info === 'type') ? $type : AA_Moduleregistry::info($type, $info);
     }
 
@@ -269,7 +288,7 @@ abstract class AA_Module
      */
     public static function getModuleProperty($module_id, $prop)
     {
-        return static::getModule($module_id)?->getProperty($prop);
+        return AA_Module::getModule($module_id)?->getProperty($prop);
     }
 
     protected function _isModuleTableProperty($prop): bool

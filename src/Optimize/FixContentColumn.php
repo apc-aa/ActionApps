@@ -44,7 +44,7 @@ class FixContentColumn extends AbstractOptimize
             $statistic[$row['name'] . ' ' . $row['field_id']]++;
 
             if ($index < 240) {
-                $this->message(_m('slice %1: field_id: %2 item_id: %3', [$row['name'], unpack_id($row['item_id']), $row['field_id']]));
+                $this->message(_m('slice %1: field_id: %2 item_id: %3', [safe($row['name']), unpack_id($row['item_id']), $row['field_id']]));
             }
             if ($index == 240) {
                 $this->message(_m('and more...'));
@@ -52,7 +52,7 @@ class FixContentColumn extends AbstractOptimize
         }
         $this->message(_m('We found %1 inconsistent rows in content table', [count($bad_rows)]));
         foreach ($statistic as $field => $count) {
-            $this->message("$field: $count problems");
+            $this->message(safe($field) . ": $count problems");
         }
         // $this->message(_m('We found %1 inconsistent rows from %2 in pagecache_str2find', array($wrong_count, $row_count)));
         return false;
