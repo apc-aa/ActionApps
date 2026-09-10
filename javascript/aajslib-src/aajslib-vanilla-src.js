@@ -848,11 +848,4 @@ function aa_maketags(id, slice_id, field_id, max_values, item_id ) {
     $('#'+id).select2( conf );
 }
 
-function AA_Translate(text, from, to) {
-    const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${from}&tl=${to}&dt=t&q=${encodeURIComponent(text)}`;
-    return fetch(url).then(response => response.json()).then(data => {
-        return data[0]?.map(item => item[0]).join('') || '';
-    })
-}
-
 INCLUDE_AAJSLIB_COMMON

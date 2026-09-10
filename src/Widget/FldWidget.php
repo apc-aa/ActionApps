@@ -157,7 +157,14 @@ class FldWidget extends Widget
         $ret = "<input $attr_string name=\"$input_name\" id=\"$input_id\" value=\"$input_value\" $required $widget_add $autofocus>$link" . Widget::_saveIcon($base_id, $type === 'live'); //, 'right', $link ? 16 : 0);
         if ($lang = Langs::getLangNum2Name($i)) {
             $langcode  = Langs::getLangName2Code($lang);
-            $translate =  ($langcode == $base['langcode']) ? '' : "<span class=\"btn aa-langtrans-tbtn\" onclick=\"AA_Translate(document.getElementById('" . $base['id'] . "').value, '" . $base['langcode'] . "', '$langcode').then(txt => { const inp=document.getElementById('$input_id'); inp.value=txt; inp.dispatchEvent(new Event('change'));});\">" . _m("translate from") . ' ' . Langs::getLangCode2Name($base['langcode']) . "</span>";
+            $translate = '';
+
+            if ($langcode != $base['langcode']) {
+                // Fire "change" after writing, or live editing never stores the value.
+                $get_source = "document.getElementById('" . $base['id'] . "').value";
+                $set_target = "const inp = document.getElementById('$input_id'); inp.value = txt; inp.dispatchEvent(new Event('change'))";
+                $translate  = "<span class=\"btn aa-langtrans-tbtn\" onclick=\"AA_TranslateInto(() => $get_source, txt => { $set_target; }, '" . $base['langcode'] . "', '$langcode', this)\">" . _m("translate from") . ' ' . Langs::getLangCode2Name($base['langcode']) . "</span>";
+            }
             $ret = "<div class=\"aa-langtrans aa-lang-$lang\"><strong class=\"aa-langtrans-label\">$lang</strong>$ret $translate</div>";
         }
         return "<div class='aa-one-val'>$ret</div>";

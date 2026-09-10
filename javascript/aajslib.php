@@ -824,11 +824,89 @@ function AA__doChange(params) {
   });
 }
 
-function AA_Translate(text, from, to) {
-    const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${from}&tl=${to}&dt=t&q=${encodeURIComponent(text)}`;
-    return fetch(url).then(response => response.json()).then(data => {
-       return data[0]?.map(item => item[0]).join('') || '';
-    })
+/** Translate `text` from one language to another.
+ *
+ *  Tries the service straight from the page first, so the load and the rate limit
+ *  stay spread across users' own IPs. Falls back to AA's endpoint, which is the
+ *  only way to survive a content blocker on one machine, to see the real HTTP
+ *  status (error responses carry no CORS header, so here they are opaque) and to
+ *  log that it happened.
+ *
+ *  Rejects rather than resolving with an empty string - callers write the result
+ *  straight into a field and would wipe it.
+ *
+ *  @param {string} text  text to translate
+ *  @param {string} from  source language code, e.g. 'cs'
+ *  @param {string} to    target language code, e.g. 'uk'
+ *  @returns {Promise<string>} the translated text
+ */
+async function AA_Translate(text, from, to) {
+    if (typeof text !== 'string' || text.trim() === '') {
+        throw new Error('Nothing to translate');
+    }
+    const direct = await AA__TranslateDirect(text, from, to);
+    return direct !== null ? direct : AA__TranslateViaAa(text, from, to);
+}
+
+/** Direct call to the translation service. Returns null on any failure - never
+ *  throws - so AA_Translate() can just try the server instead. POST, not GET:
+ *  over GET the text hits a ~16 kB URL limit.
+ *  @returns {Promise<?string>} */
+async function AA__TranslateDirect(text, from, to) {
+    const url = 'https://translate.googleapis.com/translate_a/single?client=gtx&dt=t'
+              + '&sl=' + encodeURIComponent(from) + '&tl=' + encodeURIComponent(to);
+    try {
+        const response = await fetch(url, {
+            method:  'POST',
+            headers: {'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'},
+            body:    new URLSearchParams({q: text}).toString(),
+            signal:  AbortSignal.timeout(15000)
+        });
+        if (!response.ok) {
+            return null;
+        }
+        const data = await response.json();
+        const out = (data?.[0] ?? []).map(seg => seg?.[0]).filter(v => typeof v === 'string').join('');
+        return out === '' ? null : out;
+    } catch {
+        // Blocked, throttled or offline - all indistinguishable here, and all
+        // mean the same thing: let the server try.
+        return null;
+    }
+}
+
+/** Translate through AA's own endpoint (api/translate.php). Throws with the
+ *  server's message, which unlike the direct call knows what really went wrong.
+ *  @returns {Promise<string>} */
+async function AA__TranslateViaAa(text, from, to) {
+    const response = await fetch(AA_GetConf('path') + 'api/translate.php', {
+        method:      'POST',
+        headers:     {'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'},
+        body:        new URLSearchParams({text, from, to}).toString(),
+        credentials: 'same-origin',
+        // Without it a stalled connection leaves the button spinning forever.
+        signal:      AbortSignal.timeout(120000)
+    });
+    const data = await response.json().catch(() => ({}));   // error pages are not always JSON
+    if (!response.ok || typeof data.text !== 'string' || data.text === '') {
+        throw new Error(data.error || ('Translation failed (HTTP ' + response.status + ')'));
+    }
+    return data.text;
+}
+
+async function AA_TranslateInto(getSource, setTarget, from, to, btn) {
+    if (btn?.classList.contains('aa-updating')) {
+        return;    // already translating - ignore the double click
+    }
+    btn?.classList.add('aa-updating');
+    try {
+        // Both callbacks sit inside the try: a missing editor throws there.
+        setTarget(await AA_Translate(getSource(), from, to));
+    } catch (err) {
+        AA_Message('Translation failed: ' + (err?.message || err), 'err');
+    } finally {
+        btn?.classList.remove('aa-updating');
+    }
 }
 
 /* Cookies */

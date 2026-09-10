@@ -15,9 +15,12 @@
 namespace AA\Api\Controller;
 
 use AA\Api\JsonResponse;
+use AA\Api\SameHostGate;
 
 class SpeechController
 {
+    use SameHostGate;
+
     /** Model used for transcription. gpt-4o-transcribe outperforms Whisper-1 on Czech. */
     protected const MODEL = 'gpt-4o-transcribe';
 
@@ -152,27 +155,6 @@ class SpeechController
             'audio/flac'      => 'flac',
             default           => 'bin',
         };
-    }
-
-    /** Origin or Referer host must match this server's host. Cheap anti-abuse
-     *  for public anonymous dictation; not a security boundary. */
-    protected function sameHostRequest(): bool
-    {
-        $own = strtolower((string) ($_SERVER['HTTP_HOST'] ?? ''));
-        if ($own === '') {
-            return false;
-        }
-        foreach (['HTTP_ORIGIN', 'HTTP_REFERER'] as $hdr) {
-            $val = $_SERVER[$hdr] ?? '';
-            if ($val === '') {
-                continue;
-            }
-            $host = strtolower((string) parse_url($val, PHP_URL_HOST));
-            if ($host !== '' && $host === $own) {
-                return true;
-            }
-        }
-        return false;
     }
 
     /** Accept only "xx" or "xx-YY" locale codes; reject anything else. */

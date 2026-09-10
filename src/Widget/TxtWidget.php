@@ -262,16 +262,23 @@ class TxtWidget extends Widget
             $langcode  = Langs::getLangName2Code($lang);
             $translate = '';
 
-            // the AA_Translate do not work on CodeMirror, yet
-            // @todo make AA_Translate work on CodeMirror
             if ($langcode != $base['langcode']) {
+                // Read and write wherever the text really lives: the editor instance
+                // when one is attached, the plain textarea otherwise.
+                $source_id = $base['id'];
                 if ($showhtmlarea) {
-                    $translate =  "<span class=\"btn aa-langtrans-tbtn\" onclick=\"AA_Translate(CKEDITOR.instances['" . $base['id'] . "'].getData(), '" . $base['langcode'] . "', '$langcode').then(txt => CKEDITOR.instances['$input_id'].setData(txt));\">" . _m("translate from") . ' ' . Langs::getLangCode2Name($base['langcode']) . "</span>";
+                    $get_source = "CKEDITOR.instances['$source_id'].getData()";
+                    $set_target = "CKEDITOR.instances['$input_id'].setData(txt)";
                 } elseif ($showcodeeditor) {
-                    $translate = "<span class=\"btn aa-langtrans-tbtn\" onclick=\"AA_Translate(document.getElementById('" . $base['id'] . "').value, '" . $base['langcode'] . "', '$langcode').then(txt => document.getElementById('$input_id').nextSibling.CodeMirror.setValue(txt));\">" . _m("translate from") . ' ' . Langs::getLangCode2Name($base['langcode']) . "</span>";
+                    $get_source = "document.getElementById('$source_id').nextSibling.CodeMirror.getValue()";
+                    $set_target = "document.getElementById('$input_id').nextSibling.CodeMirror.setValue(txt)";
                 } else {
-                    $translate = "<span class=\"btn aa-langtrans-tbtn\" onclick=\"AA_Translate(document.getElementById('" . $base['id'] . "').value, '" . $base['langcode'] . "', '$langcode').then(txt => document.getElementById('$input_id').value = txt);\">" . _m("translate from") . ' ' . Langs::getLangCode2Name($base['langcode']) . "</span>";
+                    // No editor bridge here, so nothing else fires onchange - and in
+                    // live mode onchange is AA_SendWidgetLive(), i.e. the save.
+                    $get_source = "document.getElementById('$source_id').value";
+                    $set_target = "const el = document.getElementById('$input_id'); el.value = txt; el.dispatchEvent(new Event('change'))";
                 }
+                $translate = "<span class=\"btn aa-langtrans-tbtn\" onclick=\"AA_TranslateInto(() => $get_source, txt => { $set_target; }, '" . $base['langcode'] . "', '$langcode', this)\">" . _m("translate from") . ' ' . Langs::getLangCode2Name($base['langcode']) . "</span>";
             }
             $ret = "<div class=\"aa-langtrans aa-lang-$lang\"><strong class=\"aa-langtrans-label\">$lang</strong>$ret$translate</div>";
         }

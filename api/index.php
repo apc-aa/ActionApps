@@ -11,6 +11,7 @@
  */
 
 use AA\Api\Controller\SpeechController;
+use AA\Api\Controller\TranslateController;
 use AA\Api\JsonResponse;
 use AA\Api\Router;
 
@@ -42,6 +43,10 @@ $router->register('GET', '/v1/ping', static function (): JsonResponse {
 
 $router->register('POST', '/v1/speech/transcribe', static function (): JsonResponse {
     return (new SpeechController())->transcribe();
+});
+
+$router->register('POST', '/v1/translate', static function (): JsonResponse {
+    return (new TranslateController())->translate();
 });
 
 $router->dispatch();
