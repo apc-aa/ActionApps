@@ -29,22 +29,11 @@ https://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-// ----- input variables normalization - start --------------------------------
-
-// This code handles with "magic quotes" and "register globals" PHP (<5.4) setting
-// It make us sure, taht
-//  1) in $_POST,$_GET,$_COOKIE,$_REQUEST variables the values are not quoted
-//  2) the variables are imported in global scope and is quoted
-// We are trying to remove any dependecy on the point 2) and use only $_* superglobals
-function AddslashesDeep($value): array|string
-{
-    return is_array($value) ? array_map('AddslashesDeep', $value) : addslashes($value);
-}
-
-foreach ($_REQUEST as $k => $v) {
-    $$k = AddslashesDeep($v);
-}
-// ----- input variables normalization - end ----------------------------------
+// The central pages that include this bootstrap (responder / import_csv / copyslice /
+// synchronize and their variants) read their inputs explicitly from $_POST/$_GET/$param,
+// so the old $$k = AddslashesDeep() register_globals emulation was removed (finding N14,
+// 2026-09). It was also unsafe here: it let a request key overwrite $nobody, set by
+// responder.php just before this include.
 
 require_once __DIR__ . "/../../include/config.php";
 require_once __DIR__ . "/../../include/mgettext.php";

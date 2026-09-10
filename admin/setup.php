@@ -28,19 +28,20 @@
 
 ///////////////////////////////////////////////////////////////////////////
 
-// ----- input variables normalization - start --------------------------------
-
-// This code handles with "magic quotes" and "register globals" PHP (<5.4) setting
-// It make us sure, taht
-//  1) in $_POST,$_GET,$_COOKIE,$_REQUEST variables the values are not quoted
-//  2) the variables are imported in global scope and is quoted
-// We are trying to remove any dependecy on the point 2) and use only $_* superglobals
-function AddslashesDeep($value): array|string { return is_array($value) ? array_map('AddslashesDeep',   $value) : addslashes($value);   }
-
-foreach ($_REQUEST as $k => $v) {
-    $$k = AddslashesDeep($v);
-}
-// ----- input variables normalization - end ----------------------------------
+// Superadmin-creation form inputs, read explicitly from the request. Kept RAW - the DB layer
+// escapes them on insert (AddUser() in include/perm_sql.php builds a Cvarset, whose two-item
+// rows default to type "text" = quote()d) and AA_Inputfield::inputText() safe()s them when the
+// form is redisplayed. The old $$k = AddslashesDeep() register_globals loop was removed
+// (finding N14, 2026-09); it also double-escaped these values on top of the "text" insert.
+// Plain $_REQUEST and not InputVars here: the composer autoloader is only registered by
+// locsess.php, which this page requires below.
+$phase     = $_REQUEST['phase']     ?? '';
+$login     = $_REQUEST['login']     ?? '';
+$password1 = $_REQUEST['password1'] ?? '';
+$password2 = $_REQUEST['password2'] ?? '';
+$fname     = $_REQUEST['fname']     ?? '';
+$lname     = $_REQUEST['lname']     ?? '';
+$email     = $_REQUEST['email']     ?? '';
 
 require_once __DIR__."/../include/config.php";
 require_once __DIR__ . "/../include/locsess.php";
