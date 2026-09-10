@@ -812,8 +812,6 @@ class AA_Metabase
             // include/metabase_schema.php (hand-edit for small changes, or regenerate via the
             // "Generate metabase" optimize action). It is opcache-compiled, so loading it is
             // ~4-5x cheaper than the previous unserialize() of a 109 KB blob.
-            // The pre-change blob is preserved as the test golden in
-            // tests/Unit/Legacy/fixtures/metabase_golden.serialized (the == safety gate).
             $instance = self::fromArray(require __DIR__ . "/metabase_schema.php");
         }
         return $instance;

@@ -38,7 +38,7 @@ class DbFeedInconsistency extends AbstractOptimize
         $err = GetTable2Array($SQL, "unpack:from_id", 'unpack:to_id');
         if (is_array($err) && count($err)) {
             foreach ($err as $from_id => $to_id) {
-                $this->message(_m('Wrong destination slice id: %1 -> %2', [safe(AA_Slice::getModuleName($from_id)), $to_id]));
+                $this->message(_m('Wrong destination slice id: %1 -> %2', [AA_Slice::getModuleNameSafe($from_id), $to_id]));
             }
             $ret = false;
         }
@@ -49,7 +49,7 @@ class DbFeedInconsistency extends AbstractOptimize
         $err = GetTable2Array($SQL, "unpack:from_id", 'unpack:to_id');
         if (is_array($err) && count($err)) {
             foreach ($err as $from_id => $to_id) {
-                $this->message(_m('Wrong source slice id: %1 -> %2', [$from_id, safe(AA_Slice::getModuleName($to_id))]));
+                $this->message(_m('Wrong source slice id: %1 -> %2', [$from_id, AA_Slice::getModuleNameSafe($to_id)]));
             }
             $ret = false;
         }

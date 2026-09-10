@@ -53,10 +53,11 @@ class SeoDuplicates extends AbstractOptimize
         ])) {
             $this->message(_m("We found %1 required checkbox fields:", [count($fields)]));
             foreach ($fields as $field) {
+                $field = array_map('safe', $field);   // goes to the HTML report
                 $this->message(_m('%1 - %2 (%3) Show: %4', [
                     $field['id'],
                     $field['name'],
-                    AA_Slice::getModuleName($field['uslice_id']),
+                    AA_Slice::getModuleNameSafe($field['uslice_id']),
                     $field['input_show'],
                 ]));
             }

@@ -151,7 +151,7 @@ class AA_View
         if ($name && $this->f('name')) {
             $id .= " - {$this->f('name')}";
         }
-        return a_href($this->jumpUrl(), Txt::decoratedName($id, !$this->isValid()));
+        return a_href($this->jumpUrl(), Txt::decoratedName(Txt::safe($id), !$this->isValid()));   // HTML - the name is set in the admin UI
     }
 
     /** @returns string Url of view edit

@@ -111,7 +111,7 @@ class ChangeF_h2F_1 extends AbstractOptimize
     {
         $alias = safe($fld[$aliasfld]);
         $slice_id = $fld->getSliceId();
-        $slicename = safe(AA_Module::getModuleName($slice_id));
+        $slicename = AA_Module::getModuleNameSafe($slice_id);
         $this->query("UPDATE field SET `{$aliasfld}_func`='f_1:' " . DB_AA::makeWhere([['slice_id', $fld->getSliceId(), 'l'], ['id', $fld['id']]]));
         return "<br>$alias ($slicename) changed to f_1";
     }
@@ -120,7 +120,7 @@ class ChangeF_h2F_1 extends AbstractOptimize
     protected static function alias_code(AA_Field $fld, string $aliasfld, string $text): string
     {
         $slice_id  = $fld->getSliceId();
-        $slicename = safe(AA_Module::getModuleName($slice_id));
+        $slicename = AA_Module::getModuleNameSafe($slice_id);
         $alias     = $fld[$aliasfld];
         $aliaslink = a_href(get_admin_url('se_inputform.php', ['change_id' => $slice_id, 'fid' => $fld['id']]) . '#alias' . substr($alias, 2), safe($alias));
         ['fnc' => $fnc, 'param' => $param ] = ParseFnc($fld[$aliasfld . '_func']);

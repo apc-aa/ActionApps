@@ -429,7 +429,7 @@ if (strlen($go_search) || strlen($go_replace)) {
                         }
                         $code = str_replace('AA_$@MArK%', '<span style="background-color:#DDD">', safe($code)) . '</span>';
                         $row[0] = "<small>" . Adminlink::linkByTable($tbl, $fld, $t) . "</small>";
-                        $row[1] = "<small>" . AA_Module::getModuleName($t['sid'], true) . "</small>";
+                        $row[1] = "<small>" . AA_Module::getModuleNameSafe($t['sid'], true) . "</small>";
                         $row[2] = "<small> $code</small>";
                         FrmTabRow($row);
                     }

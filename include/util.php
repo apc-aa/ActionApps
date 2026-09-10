@@ -1324,7 +1324,7 @@ function HtmlPageEnd(): void
     if (AA::$debug & 16) {
         echo AA::$dbg->basic_stat();
         if ($slices4cache) {
-            echo '<br>UsedModules:<br> - ' . implode('<br> - ', array_map(static fn($mid) => AA_Module::getModuleName($mid), $slices4cache));
+            echo '<br>UsedModules:<br> - ' . implode('<br> - ', array_map(static fn($mid) => AA_Module::getModuleNameSafe($mid), $slices4cache));
         }
         echo AA::$dbg->duration_stat();
     }

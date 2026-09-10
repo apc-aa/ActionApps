@@ -35,7 +35,6 @@ use AA\Optimize\ChangeF_t2F_1;
 use AA\Optimize\ChangeF_t2F__;
 use AA\Util\InputVars;
 
-// const  AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/formutil.php";
 require_once __DIR__ . "/../include/varset.php";
@@ -115,7 +114,8 @@ function ShowNewField($from_slice, $slice_id, bool $slice_fields): string
     $from_slice  = get_if($from_slice, $template_id);
     $slice_array = AA_Module::getUserModules('S');
     unset($slice_array[$template_id], $slice_array[$slice_id]);
-    $slice_array = array_merge( [$template_id => '* Action Aplication Core', $slice_id => '* '.AA_Slice::getModuleName($slice_id)._m(' (this)')], $slice_array);
+    $slice_name  = AA_Slice::getModule($slice_id)?->getName() ?? '';   // raw name - getFrmSelectEasy() safe()s the labels
+    $slice_array = array_merge( [$template_id => '* Action Aplication Core', $slice_id => '* '.$slice_name._m(' (this)')], $slice_array);
 
     $ret .= getFrmSelectEasy('from_slice', $slice_array, $from_slice, ['onchange' => "DisplayAaResponse('fieldselection', 'Get_Fields', {slice_id:this.value,slice_fields:" . ($slice_fields ? 1 : 0) . "})"]);
     $ret .= "\n</td>

@@ -68,10 +68,11 @@ class RemoveUndefineAlias extends AbstractOptimize
         ])) {
             $this->message(_m('We found %1 old _#UNDEFINE aliases:', [count($fields)]));
             foreach ($fields as $field) {
+                $field = array_map('safe', $field);   // goes to the HTML report
                 $this->message(_m('%1 - %2 (%3) Params: %4', [
                     $field['id'],
                     $field['name'],
-                    safe(AA_Slice::getModuleName($field['uslice_id'])),
+                    AA_Slice::getModuleNameSafe($field['uslice_id']),
                     $field['alias1'],
                 ]));
             }
@@ -89,10 +90,11 @@ class RemoveUndefineAlias extends AbstractOptimize
         ])) {
             $this->message(_m('We found %1 old help.html help link:', [count($fields)]));
             foreach ($fields as $field) {
+                $field = array_map('safe', $field);   // goes to the HTML report
                 $this->message(_m('%1 - %2 (%3) Params: %4', [
                     $field['id'],
                     $field['name'],
-                    safe(AA_Slice::getModuleName($field['uslice_id'])),
+                    AA_Slice::getModuleNameSafe($field['uslice_id']),
                     $field['input_morehlp'],
                 ]));
             }

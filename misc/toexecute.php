@@ -92,6 +92,6 @@ touch(CronFallback::lockFile());
 
 if (AA::$debug) {
     echo '<br>Dababase instances: ' . DB_PDO::$_instances_no;
-    echo '<br>UsedModules:<br> - ' . implode('<br> - ', array_map(static fn($mid) => AA_Module::getModuleName($mid), AA_Module::getUsedModules()));
+    echo '<br>UsedModules:<br> - ' . implode('<br> - ', array_map(static fn($mid) => AA_Module::getModuleNameSafe($mid), AA_Module::getUsedModules()));
     echo AA::$dbg->duration_stat();
 }

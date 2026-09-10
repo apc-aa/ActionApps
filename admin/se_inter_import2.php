@@ -29,7 +29,6 @@
  *
 */
 
-// const  AA_REGISTER_GLOBALS = true;
 use AA\IO\DB\DB_AA;
 use AA\IO\FeedUtil;
 use AA\Util\InputVars;
@@ -101,7 +100,7 @@ $form_buttons = [
     "new_in_feed"      => ['type' => 'submit', 'value' => _m("Choose slice")],
     "cancel"           => ['url' => 'se_inter_import.php'],
     "remote_node_name" => ['type' => 'hidden', 'value' => $rem_nodes],
-    "aa"               => ['type' => 'hidden', 'value' => safe(serialize($aa_rss))],
+    "aa"               => ['type' => 'hidden', 'value' => serialize($aa_rss)],
 ];
 
 FrmTabCaption(_m("List of available slices from the node ") . "<b>$rem_nodes</b>", $form_buttons);

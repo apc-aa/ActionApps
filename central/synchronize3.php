@@ -127,7 +127,7 @@ if (isset($differences)) {
     // and print diffs out
     foreach ($differences as $sid => $diffs) {
         $sync_sid = $_POST['sync_slices'][$sid];
-        FrmTabSeparator(AA_Slice::getModuleName($sid) . " ($sid) x " . AA_Slice::getModuleName($sync_sid) . " ($sync_sid)");
+        FrmTabSeparator(AA_Slice::getModuleNameSafe($sid) . " ($sid) x " . AA_Slice::getModuleNameSafe($sync_sid) . " ($sync_sid)");
 
         echo '<tr><td  colspan="2">
         <script>

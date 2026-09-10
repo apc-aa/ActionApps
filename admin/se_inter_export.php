@@ -113,7 +113,7 @@ $apage->printHead($err, $Msg);
 
 FrmTabCaption(_m("Inter node export settings"));
 ?>
-      <tr><td colspan="2"><?php echo _m("Existing exports of the slice "). "<b>".AA_Slice::getModuleName(AA::$module_id)."</b>"; ?></td></tr>
+      <tr><td colspan="2"><?php echo _m("Existing exports of the slice "). "<b>".AA_Slice::getModuleNameSafe(AA::$module_id)."</b>"; ?></td></tr>
       <tr><td colspan="2">
         <select name="perms" size="5">
          <?php

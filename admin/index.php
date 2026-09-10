@@ -44,7 +44,6 @@ use AA\Manageraction\Item_Tab;
 use AA\Manageraction\Manageractions;
 use AA\Util\InputVars;
 
-// const  AA_REGISTER_GLOBALS = true;
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/varset.php";
 require_once __DIR__ . "/../include/view.php";
@@ -100,7 +99,7 @@ $perm_edit_all  = IfSlPerm(PS_EDIT_ALL_ITEMS);
 $perm_edit_self = IfSlPerm(PS_EDIT_SELF_ITEMS);
 
 if (!$perm_edit_all && !$perm_edit_self) {
-    MsgPage(_m("You do not have permission to edit items in the slice:") . ' ' . safe(AA_Slice::getModuleName(AA::$module_id)));
+    MsgPage(_m("You do not have permission to edit items in the slice:") . ' ' . AA_Slice::getModuleNameSafe(AA::$module_id));
     exit;
 }
 

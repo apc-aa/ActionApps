@@ -368,7 +368,7 @@ if ($group_id) {
         <td colspan=\"4\">".implode(
             '<br>',
             array_map(
-                static fn($arr) => AA_Module::getModuleName($arr['unpackid'], IfSlPerm(PS_FIELDS, $arr['unpackid']), 'admin/se_inputform.php', ['fid' => $arr['fid']])." <small>[".$arr['unpackid']."]</small> (".safe($arr['fname'])." <small>[".safe($arr['fid'])."]</small>)",
+                static fn($arr) => AA_Module::getModuleNameSafe($arr['unpackid'], IfSlPerm(PS_FIELDS, $arr['unpackid']), 'admin/se_inputform.php', ['fid' => $arr['fid']])." <small>[".$arr['unpackid']."]</small> (".safe($arr['fname'])." <small>[".safe($arr['fid'])."]</small>)",
                 $using_slices_arr,
             ),
         )."</td>

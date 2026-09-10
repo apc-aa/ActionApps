@@ -41,7 +41,7 @@ class SetExpirydate extends AbstractOptimizeById
 
         foreach ($potential_slices as $sid => $row) {
             if (DB_AA::test('item', [['slice_id', $sid, 'l'], ['expiry_date', 2145826800, 'i<>']]) or DB_AA::test('field', [['slice_id', $sid, 'l'], ['id', 'expiry_date.....',], ['input_default','never:', 's<>']])) {
-                $bad_ids[$sid] = ['name' => AA_Slice::getModuleName($sid), ...$row];
+                $bad_ids[$sid] = ['name' => AA_Slice::getModule($sid)?->getName() ?? '', ...$row];   // raw name - AbstractOptimizeById::test() safe()s the row
             }
         }
 

@@ -142,7 +142,7 @@ if ($edit) {
 // print begin ---------------------------------------------------------------
 $inputform_settings = [
     'display_aa_begin_end' => true,
-    'page_title'           => _m("Slice Setting") . " (" . AA_Slice::getModuleName(AA::$module_id) . ")",
+    'page_title'           => _m("Slice Setting") . " (" . AA_Slice::getModuleNameSafe(AA::$module_id) . ")",
 ];
 
 $inputform_settings['messages']            = ['err' => $err];

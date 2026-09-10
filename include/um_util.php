@@ -83,7 +83,7 @@ function PrintModulePermModificator($selected_user): string
     $i=0;
     $current_perm_table = '';
     foreach ( array_keys($all_modules) as $mid ) {
-        $name = AA_Module::getModuleName($mid);
+        $name = AA_Module::getModule($mid)?->getName() ?? '';   // raw name - both usages below safe() it
         $type = AA_Module::getModuleType($mid);
         if ( $perm_slices[$mid] ) {
             $odd = is_int($i / 2);

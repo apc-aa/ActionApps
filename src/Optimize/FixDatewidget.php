@@ -35,10 +35,11 @@ class FixDatewidget extends AbstractOptimize
         if ($fields = DB_AA::select([], 'SELECT `id`, LOWER(HEX(`slice_id`)) AS uslice_id, `name`, `input_show_func` FROM `field`', [['input_show_func', "dte:%'%", 'LIKE',]])) {
             $this->message(_m('We found %1 old delimiters:', [count($fields)]));
             foreach ($fields as $field) {
+                $field = array_map('safe', $field);   // goes to the HTML report
                 $this->message(_m('%1 - %2 (%3) Params: %4', [
                     $field['id'],
                     $field['name'],
-                    AA_Slice::getModuleName($field['uslice_id']),
+                    AA_Slice::getModuleNameSafe($field['uslice_id']),
                     $field['input_show_func'],
                 ]));
             }
