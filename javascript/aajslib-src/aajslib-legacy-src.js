@@ -7997,34 +7997,7 @@ function DisplayInputBack(input_id) {
 /*return first element up the DOM tree matching css */
 // function AA_up(el, css) { return $(el).up(css); } // use el.closest(css)
 
-/** Send the form by AJAX and on success displays the ok_html text
- *  @param id        - form id
- *  @param loader_id - id of the html element, where you want to display the loader gif
- *                   - the button itself could be used here (not the form!)
- *  @param ok_html   - what text (html) should be displayed after the success
- *  Note, that the form action atribute must be RELATIVE (not with 'http://...')
- */
-function AA_AjaxSendAddForm(id) {
-    var code = Form.serialize(id);
-    var sb   = $(id).up('div').previous('a').identify().substring(1);
-    $(id).insert(AA_GetConf('loader'));
-
-    new Ajax.Request(AA_GetConf('path') + 'filler.php', {
-        parameters: code,
-        requestHeaders: {Accept: 'application/json'},
-        onSuccess: function(transport) {
-            var items = $H(transport.responseText.evalJSON(true));  // maybe we can remove "true"
-
-            items.each(function(pair) {
-                sb_SetValue( $(sb), 'new', pair.value, pair.key);
-            });
-
-            //new Insertion.After($(id).up('div'), new Element('div').update(transport.responseText));
-            // close form and display add icon
-            AA_AjaxInsert($(id).up('div').previous(), '');
-        }
-    });
-}
+/* AA_AjaxSendAddForm() moved to aajslib-common.js (vanilla, shared by all variants) */
 
 /** This function replaces the older one - proposeChange
  *  The main change is, that now we use standard AA input names:

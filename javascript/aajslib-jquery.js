@@ -72,6 +72,11 @@ if (typeof window.AA_GetConf === 'undefined') {
 
 /** rewrite of AA_AjaxInsert, which uses prototype.js to vanilla JS */
 function AA_AjaxInsert(a_obj, form_url) {
+    // templates call AA_AjaxInsert(this, ...) on an <a> with no id - prototype.js's
+    // identify() used to auto-assign one, the vanilla rewrite must do it explicitly
+    if (!a_obj.id) {
+        a_obj.id = 'aa_el_' + AA_NewId();
+    }
     var new_div_id = a_obj.id + '_ins';
     if ( document.getElementById(new_div_id) == null ) {
         var new_div  = document.createElement('div');
@@ -83,6 +88,70 @@ function AA_AjaxInsert(a_obj, form_url) {
         a_obj.innerHTML =  '<img src="' + AA_GetConf('path') + 'images/icon_new.gif" width=16 height=16>';
         document.getElementById(new_div_id).remove();
     }
+}
+
+/** Serializes the named form controls inside `root` into a query string.
+ *  FormData is no help here - AA serializes controls sitting in a <div>/<fieldset>,
+ *  not in a <form>. Skips what jQuery's .serialize() skips: unnamed and disabled
+ *  controls, buttons, file inputs and unchecked boxes.
+ *  @param {HTMLElement} root
+ *  @returns {string} e.g. "aa%5Bn1%5D%5Bheadline%5D=Hi&slice_id=1234"
+ */
+function AA__Serialize(root) {
+    const params = new URLSearchParams();
+    // browsers send CRLF for newlines on a real form submit - do the same, or textarea
+    // content would reach the server one byte per line shorter than it used to
+    const add = (name, value) => params.append(name, String(value).replace(/\r?\n/g, '\r\n'));
+    AA_$$('input, select, textarea', root).forEach(el => {
+        if (!el.name || el.disabled || ['submit', 'button', 'image', 'reset', 'file'].includes(el.type)) {
+            return;
+        }
+        if ((el.type === 'checkbox' || el.type === 'radio') && !el.checked) {
+            return;
+        }
+        if (el.multiple && el.selectedOptions) {
+            [...el.selectedOptions].forEach(opt => add(el.name, opt.value));
+        } else {
+            add(el.name, el.value);
+        }
+    });
+    return params.toString();
+}
+
+/** Sends the "add new item" form opened by AA_AjaxInsert and puts the new item
+ *  into the selectbox the form belongs to, then closes the form.
+ *  The opening <a id="a<selectbox_id>"> sits right before the div AA_AjaxInsert
+ *  created, so it is both the way back to the selectbox and the thing to click closed.
+ *  @param {string} id  id of the fieldset holding the form (see AA_Form::getAjaxHtml)
+ */
+function AA_AjaxSendAddForm(id) {
+    const form = document.getElementById(id);
+    let   opener = form.parentElement.closest('div')?.previousElementSibling;
+    while (opener && opener.tagName !== 'A') {
+        opener = opener.previousElementSibling;
+    }
+    if (!opener) {
+        return;
+    }
+    const selectbox = document.getElementById(opener.id.substring(1));   // <a> id is 'a' + selectbox id
+    const code      = AA__Serialize(form);
+
+    form.insertAdjacentHTML('beforeend', AA_GetConf('loader'));
+
+    fetch(AA_GetConf('path') + 'filler.php', {
+        method:      'POST',
+        headers:     {'Content-Type': 'application/x-www-form-urlencoded', 'Accept': 'application/json'},
+        body:        code,
+        credentials: 'same-origin'
+    })
+        .then(response => response.json())
+        .then(data => {
+            for (const key in data) {
+                sb_SetValue(selectbox, 'new', data[key], key);   // key is the item id, value its label
+            }
+            AA_AjaxInsert(opener, '');   // the _ins div exists, so this closes the form
+        })
+        .catch(error => console.error('Error:', error));
 }
 
 /** calls AA responder with permissions of current user and displays returned
@@ -677,9 +746,21 @@ function AA_Response(method, resp_params, ok_func, err_func) {
 
 /** Refreshes the id using the data-aa-url attribute.
  *  If that attribute is not present, finds the first up in the DOM
+ *  @param {HTMLElement|string} id  element or its id - AA_Refresh(this) is a documented
+ *                                  idiom of {ajax:...:<onsuccess>}, see AA_Stringexpand_Ajax
+ *  @param {boolean} inside         accepted for compatibility - the content is always
+ *                                  replaced inside the element (aa-jslib@1 replaced the
+ *                                  whole element when falsy)
+ *  @param {function} ok_func       called after the content is refreshed
  */
-function AA_Refresh(id,inside,ok_func) {
-    AA_Ajax(id, $(jqid(id)).attr('data-aa-url'));
+function AA_Refresh(id, inside, ok_func) {
+    const el     = (id instanceof HTMLElement) ? id : AA_$(jqid(id));
+    // closest() also matches the element itself, not just ancestors - covers both cases
+    const target = el?.closest('[data-aa-url]');
+    if (!target) {
+        return;
+    }
+    AA_AjaxCss(target, target.getAttribute('data-aa-url'), '', ok_func);
 }
 
 /** Send the form by AJAX and on success displays the ok_html text
@@ -746,26 +827,7 @@ function DisplayInputBack(input_id) {
     $(valdiv).attr('data-aa-edited', '0');
 }
 
-/** Rewrite of xxxAA_AjaxSendAddForm, which uses prototype.js to jQuery */
-function AA_AjaxSendAddForm(id) {
-    const code = $(jqid(id) + ' *').serialize();
-    // var sb   = $(id).up('div').previous('a').identify().substring(1);
-    const sb = document.getElementById(id).parentNode.parentNode.previousElementSibling.children[0].id.substring(1);
-    document.getElementById(id).innerHTML = AA_GetConf('loader');
-
-    $.ajax({
-        url: AA_GetConf('path') + 'filler.php',
-        data: code,
-        dataType: 'json',
-        success: function(data) {
-            $.each(data, function(key, value) {
-                sb_SetValue( $('#' + sb), 'new', value, key);
-            });
-            // close form and display add icon
-            AA_AjaxInsert($(id).up('div').previous(), '');
-        }
-    });
-}
+/* AA_AjaxSendAddForm() moved to aajslib-common.js (vanilla, shared by all variants) */
 
 
 /** This function replaces the older one - proposeChange
@@ -785,6 +847,10 @@ function AA_SendWidgetAjax(base_id) {
         }
 
     }
+
+    // CodeMirror writes into its textarea on form submit - and we never submit, we serialize.
+    // CodWidget saves on every change, MflWidget does not, so flush them all first.
+    AA_$$(valdiv + ' .CodeMirror').forEach(el => el.CodeMirror?.save());
 
     var code   = $(valdiv + ' *').serialize();
     AA_StateChange(base_id, 'updating');
@@ -820,7 +886,10 @@ function AA_ReloadAjaxResponse(id, responseText) {
     $(valdiv).attr("data-aa-edited", "0");
     var succes_function = $(valdiv).attr('data-aa-onsuccess');
     if (succes_function) {
-        eval(succes_function);
+        // eval() is the documented contract of {ajax:...:<onsuccess>} - the code comes from the
+        // slice template (admin-authored), not from user input. Called with `this` set to the
+        // value div, so the documented AA_Refresh(this) idiom resolves.
+        (function() { eval(succes_function); }).call(AA_$(valdiv));
     }
 }
 

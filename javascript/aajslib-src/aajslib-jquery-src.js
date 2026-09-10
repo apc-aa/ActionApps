@@ -188,9 +188,21 @@ function AA_Response(method, resp_params, ok_func, err_func) {
 
 /** Refreshes the id using the data-aa-url attribute.
  *  If that attribute is not present, finds the first up in the DOM
+ *  @param {HTMLElement|string} id  element or its id - AA_Refresh(this) is a documented
+ *                                  idiom of {ajax:...:<onsuccess>}, see AA_Stringexpand_Ajax
+ *  @param {boolean} inside         accepted for compatibility - the content is always
+ *                                  replaced inside the element (aa-jslib@1 replaced the
+ *                                  whole element when falsy)
+ *  @param {function} ok_func       called after the content is refreshed
  */
-function AA_Refresh(id,inside,ok_func) {
-    AA_Ajax(id, $(jqid(id)).attr('data-aa-url'));
+function AA_Refresh(id, inside, ok_func) {
+    const el     = (id instanceof HTMLElement) ? id : AA_$(jqid(id));
+    // closest() also matches the element itself, not just ancestors - covers both cases
+    const target = el?.closest('[data-aa-url]');
+    if (!target) {
+        return;
+    }
+    AA_AjaxCss(target, target.getAttribute('data-aa-url'), '', ok_func);
 }
 
 /** Send the form by AJAX and on success displays the ok_html text
@@ -257,26 +269,7 @@ function DisplayInputBack(input_id) {
     $(valdiv).attr('data-aa-edited', '0');
 }
 
-/** Rewrite of xxxAA_AjaxSendAddForm, which uses prototype.js to jQuery */
-function AA_AjaxSendAddForm(id) {
-    const code = $(jqid(id) + ' *').serialize();
-    // var sb   = $(id).up('div').previous('a').identify().substring(1);
-    const sb = document.getElementById(id).parentNode.parentNode.previousElementSibling.children[0].id.substring(1);
-    document.getElementById(id).innerHTML = AA_GetConf('loader');
-
-    $.ajax({
-        url: AA_GetConf('path') + 'filler.php',
-        data: code,
-        dataType: 'json',
-        success: function(data) {
-            $.each(data, function(key, value) {
-                sb_SetValue( $('#' + sb), 'new', value, key);
-            });
-            // close form and display add icon
-            AA_AjaxInsert($(id).up('div').previous(), '');
-        }
-    });
-}
+/* AA_AjaxSendAddForm() moved to aajslib-common.js (vanilla, shared by all variants) */
 
 
 /** This function replaces the older one - proposeChange
@@ -296,6 +289,10 @@ function AA_SendWidgetAjax(base_id) {
         }
 
     }
+
+    // CodeMirror writes into its textarea on form submit - and we never submit, we serialize.
+    // CodWidget saves on every change, MflWidget does not, so flush them all first.
+    AA_$$(valdiv + ' .CodeMirror').forEach(el => el.CodeMirror?.save());
 
     var code   = $(valdiv + ' *').serialize();
     AA_StateChange(base_id, 'updating');
@@ -331,7 +328,10 @@ function AA_ReloadAjaxResponse(id, responseText) {
     $(valdiv).attr("data-aa-edited", "0");
     var succes_function = $(valdiv).attr('data-aa-onsuccess');
     if (succes_function) {
-        eval(succes_function);
+        // eval() is the documented contract of {ajax:...:<onsuccess>} - the code comes from the
+        // slice template (admin-authored), not from user input. Called with `this` set to the
+        // value div, so the documented AA_Refresh(this) idiom resolves.
+        (function() { eval(succes_function); }).call(AA_$(valdiv));
     }
 }
 
