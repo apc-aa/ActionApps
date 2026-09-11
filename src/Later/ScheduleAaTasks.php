@@ -58,11 +58,17 @@ class ScheduleAaTasks implements LaterInterface
 
         // clean all older than 40 days
         //                                                                what to clean                                                                       when to run
-        $toexecute->laterOnce(new LogCleanup(now() - (60 * 60 * 24 * 40), [], ['LOGIN', 'BM_CREATE', 'BM_DELETE', 'BM_RENAME', 'BM_UPDATE', 'SYS_STAT']), [], "LogCleanup", 10, now() + (60 * 60 * 24));  // delete all log entries older than 40 days except LOGINs and Bookmark opperations
+        $toexecute->laterOnce(new LogCleanup(now() - (60 * 60 * 24 * 40), [], ['LOGIN', 'BM_CREATE', 'BM_DELETE', 'BM_RENAME', 'BM_UPDATE', 'SYS_STAT', StateCheck::EVENT]), [], "LogCleanup", 10, now() + (60 * 60 * 24));  // delete all log entries older than 40 days except LOGINs and Bookmark opperations
 
         $toexecute->laterOnce(new LogSystemstatus(), [], "LogSystemstatus", 10, now() + 600);  // log system status every 10 minutes
 
+        // daily State Check snapshot - the STATE_CHK rows behind admin/aa_statecheck.php
+        $toexecute->laterOnce(new StateCheck(), [], 'StateCheck', 10, now() + (60 * 60 * 24));
+
         $toexecute->laterOnce(new Post2shtmlCleanup(now() - (60 * 60 * 24 * 40)), [], "Post2shtmlCleanup", 10, now() + (60 * 60 * 24));
+
+        // OPTIMIZE TABLE over the AA tables once a week - was the misc/optimize.php cron entry until 2026-09
+        $toexecute->laterOnce(new OptimizeTables(), [], 'OptimizeTables', 10, now() + (60 * 60 * 24 * 7));
 
         $toexecute->laterOnce(new ToexecuteCleanup(), [], "ToexecuteCleanup", 10, now() + (60 * 60 * 24));
 

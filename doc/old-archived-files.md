@@ -119,3 +119,12 @@ Build sources of the aajslib JavaScript library (aajslib-common.js, the three
 _Not removed - moved to /dev/aajslib/ 2026-09-10 - honzam. `dev/` holds only build
 inputs and can be deleted on a server (see INSTALL); the built files stay in
 /javascript/. merge_common_js.sh now writes there explicitly._
+
+/src/Optimize/**DatabaseStructure.php** - Optimize entry "Checks if all tables have right columns and indexes"
+  A stub: test() ran SHOW CREATE TABLE over every table and always returned true, repair() did nothing, so the Optimize page (and the planned State Check page) showed it green whatever the schema looked like. Fully covered by src/Optimize/UpdateDbStructure.php, which really diffs every table against include/metabase_schema.php and rebuilds the differing ones.
+  _No longer maintained. Removed 2026-09-11 - honzam (see older apc-aa branches to get the code)_
+
+/misc/**optimize.php** - OPTIMIZE TABLE over the AA tables, fetched weekly over HTTP by the AA cron with `key=<first five characters of DB_PASSWORD>`
+  The key was stored in `cron.params`, shown on admin/aa_cron.php and written into the web server's access log on every run. Replaced by the queue task src/Later/OptimizeTables.php (planned weekly from src/Later/ScheduleAaTasks.php, no HTTP, no key, work split into 30 s runs so it never blocks the queue). The cron row is removed by src/Optimize/RemoveOptimizeCronEntry.php (renamed from AddOptimizeCronEntry.php, which used to install it).
+  _No longer maintained. Removed 2026-09-11 - honzam (see older apc-aa branches to get the code)_
+
