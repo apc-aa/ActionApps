@@ -97,6 +97,7 @@ Feeding/import back-ends; each declares `name()` + `description()` shown in the 
 | Later/LogCleanup.php | Clean up log tables | LogCleanup | S |
 | Later/LogSystemstatus.php | Log system status tracking | LogSystemstatus | S |
 | Later/MissCachePurge.php | Deferred purge of MissCache entries | MissCachePurge | S |
+| Later/OptimizeTables.php | Weekly OPTIMIZE TABLE queue task (replaces misc/optimize.php) | OptimizeTables | S |
 | Later/PagecacheDateSweep.php | Invalidate cached pages after item publish/expiry dates pass (periodic sweep) | PagecacheDateSweep | S |
 | Later/PagecachePurge.php | Purge page cache | PagecachePurge | S |
 | Later/PlannedtaskSchedule.php | Schedule planned tasks | PlannedtaskSchedule | S |
@@ -187,7 +188,6 @@ Feeding/import back-ends; each declares `name()` + `description()` shown in the 
 | Optimize/AddMsgBannedFieldTemplate.php | Add message banned field template | AddMsgBannedFieldTemplate | S |
 | Optimize/AddMsgSpamFieldTemplate.php | Add message spam field template | AddMsgSpamFieldTemplate | S |
 | Optimize/AddNameFieldTemplate.php | Add name field template | AddNameFieldTemplate | S |
-| Optimize/AddOptimizeCronEntry.php | Add optimize cron entry | AddOptimizeCronEntry | S |
 | Optimize/AddPhoneFieldTemplate.php | Add phone field template | AddPhoneFieldTemplate | S |
 | Optimize/AddPolls.php | Add polls module tables | AddPolls | S |
 | Optimize/AddRangeFieldTemplate.php | Add range field template | AddRangeFieldTemplate | S |
@@ -246,6 +246,7 @@ Feeding/import back-ends; each declares `name()` + `description()` shown in the 
 | Optimize/RedefineViewRssTemplates.php | Redefine RSS view templates | RedefineViewRssTemplates | S |
 | Optimize/RedefineViewStaticTemplates.php | Redefine static view templates | RedefineViewStaticTemplates | S |
 | Optimize/RedefineViewUrlsTemplates.php | Redefine URLs view templates | RedefineViewUrlsTemplates | S |
+| Optimize/RemoveOptimizeCronEntry.php | Remove the obsolete misc/optimize.php cron entry | RemoveOptimizeCronEntry | S |
 | Optimize/RemoveUndefineAlias.php | Remove undefined aliases | RemoveUndefineAlias | M |
 | Optimize/RequiredChecboxes.php | Handle required checkboxes | RequiredChecboxes | S |
 | Optimize/RestoreBckTables.php | Restore backup tables | RestoreBckTables | S |
