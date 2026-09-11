@@ -149,7 +149,11 @@ class AA_Collection
 
             // get all confirmed users for this collection and frequency
             $zids = is_null($reader_id) ? $this->getReaders($ho) : new zids($reader_id, 'l');
-            AA_Log::write("ALERTS", $ho, new AA_Logentry_Alerts(['phase' => 'users', 'collection' => $this->id, 'count' => (int) $zids->count()]));
+            // a collection with no readers writes no row: every 5 minutes x every
+            // collection at zero was 12 % of the whole log on geoinformace
+            if ($zids->count() > 0) {
+                AA_Log::write("ALERTS", $ho, new AA_Logentry_Alerts(['phase' => 'users', 'collection' => $this->id, 'count' => (int) $zids->count()]));
+            }
 
             $readerContent = new ItemContent();
 
@@ -196,12 +200,16 @@ class AA_Collection
             }
             $aliases = $als->getArray();
         }
-        AA_Log::write("ALERTS", $ho, new AA_Logentry_Alerts(['phase' => 'sent', 'collection' => $this->id, 'count' => $email_count]));
-        AA_Log::write("ALERTS", $ho, new AA_Logentry_Alerts(['phase' => 'debug', 'collection' => $this->id, 'detail' => implode('; ', [
-            $this->getProp('email_id_alert'),
-            implode(',', (array) $emails),
-            implode(',', $aliases),
-        ])]));
+        // nothing sent = nothing to record per collection; the per-run `start` and `sent`
+        // rows in modules/alerts/alerts.php still show that the sweep itself ran
+        if ($email_count > 0) {
+            AA_Log::write("ALERTS", $ho, new AA_Logentry_Alerts(['phase' => 'sent', 'collection' => $this->id, 'count' => $email_count]));
+            AA_Log::write("ALERTS", $ho, new AA_Logentry_Alerts(['phase' => 'debug', 'collection' => $this->id, 'detail' => implode('; ', [
+                $this->getProp('email_id_alert'),
+                implode(',', (array) $emails),
+                implode(',', $aliases),
+            ])]));
+        }
         return $email_count;
     }
 

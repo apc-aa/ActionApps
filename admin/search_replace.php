@@ -118,7 +118,7 @@ if (!$fill) {               // for the first time - directly from item manager
     } else {
         $sel = get_if($group, "0");  // bookmarks groups are identified by numbers
     }
-    AA_Log::write("ITEM_FIELD_FILLED", $sel, new AA_Logentry_Iff(['selected' => $zids->count(), 'updated' => $updated_items, 'planned' => $planned]));
+    AA_Log::write("ITEM_FIELD", $sel, new AA_Logentry_Iff(['selected' => $zids->count(), 'updated' => $updated_items, 'planned' => $planned]));
 }
 
 HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)

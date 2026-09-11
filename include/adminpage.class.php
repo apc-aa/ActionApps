@@ -64,7 +64,7 @@ class AA_Adminpageutil {
     {
         $msg = $e->getMessage();
         $param_name = substr($e->getMessage(), 0, strpos($e->getMessage(), ':'));
-        AA_Log::write('PAGE_PARAM_ERR', AA_Log::context($param_name), $msg);
+        AA_Log::write('PAGE_PARAM', AA_Log::context($param_name), $msg);   // log.type is 10 bytes, longer names get cut
         self::MsgPageMenu(StateUrl(''), _m("Error in page parameter: %1", [$msg]), 'standalone');
         exit;
     }
@@ -249,6 +249,11 @@ class AA_Adminpageutil {
 
         if (!empty($Msg)) {
             echo "<div class='mb-3 mt-3'>$Msg</div>";
+        }
+
+        // the notes every admin page carries (AA\Util\Note) - a collapsed "Notes (n)" under the title
+        if (AuthGetUid() !== '') {
+            echo \AA\Util\Notes::panel(\AA\Util\Note::pageResource(), (string) ($_SERVER['REQUEST_URI'] ?? ''));
         }
 
         if ($this->form) {

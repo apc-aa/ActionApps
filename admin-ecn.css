@@ -334,6 +334,22 @@ td {
     vertical-align: middle;
     padding: 0;
 }
+/* getFrmTabRow() wraps escaped cells in <pre> (its $safe branch, which every log
+   and record dump goes through). Keep those reading as ordinary table cells: the
+   browser default is monospace and never wraps, which widens the whole page as
+   soon as one value is long. Code blocks keep their own look via .aa-h-code pre. */
+td > pre,
+th > pre {
+    margin: 0;
+    font-family: inherit;
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+}
+/* AA_Log::markChanges(): the value that differs from the log entry before it */
+td.aa-log-changed {
+    background: var(--clr-surface-selected);
+    font-weight: 600;
+}
 form {
     margin: 0;
 }

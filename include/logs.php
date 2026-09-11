@@ -38,6 +38,9 @@ use AA\Util\Txt;
 
 /*
 Events logged into AA log
+type is at most AA_Log::TYPE_MAX bytes - a longer name is stored cut, so
+getLogTable() with the full name never matches it
+
 type            selector                        parameters
 -------------------------------------------------------------------------------
 BM_CREATE       bookmark id in profile table    name
@@ -52,11 +55,15 @@ HITCOUNT        type
 ITEM_DEL        item_id
 M_FLDI_VLD      module_id:field_id              msg:url                        // insert form field validation
 LOGIN           module_id:field_id              msg:url                        // insert form field validation
+STATE_CHK       {CheckClass} | summary          Sc:severity:count:title | Scs:errors:warnings:infos:checks   // daily State Check snapshot (AA\Later\StateCheck)
 AA_WARN
 */
 
 class AA_Log implements InternalExpandInterface
 {
+    /** width of `log.type` (include/metabase_schema.php); Metabase cuts longer names silently */
+    public const TYPE_MAX = 10;
+
     public static function warn(array $params = []): void
     {
         self::write('AA_WARN', self::context(), array_merge($params, [self::backtrack(2)]));
@@ -76,6 +83,13 @@ class AA_Log implements InternalExpandInterface
     {
         if (!self::isLogable($event)) {
             return false;
+        }
+
+        // CRON_FALLBACK_ERR, PAGE_PARAM_ERR and ITEM_FIELD_FILLED were logged for months
+        // under cut names nobody searched for; make the next such slip visible in the log
+        if (strlen($event) > self::TYPE_MAX) {
+            self::warn(['msg' => "log type '$event' exceeds " . self::TYPE_MAX . ' bytes and is stored cut']);
+            $event = substr($event, 0, self::TYPE_MAX);
         }
 
         if ($params instanceof AA_Logentry) {
@@ -150,7 +164,7 @@ class AA_Log implements InternalExpandInterface
             // 'FEED_DSBLE',
             // 'FEED_ENBLE',
             // 'FILE IMP:',
-            // 'ITEM_FIELD_FILLED',
+            // 'ITEM_FIELD',
             // 'PAGECACHE',
             // 'TOEXECUTE'
             // 'HITCOUNT'
@@ -164,7 +178,8 @@ class AA_Log implements InternalExpandInterface
             // PWD_REHASH
             // VIEW
             // SYS_STAT
-            // PAGE_PARAM_ERR
+            // PAGE_PARAM
+            // CRON_FALLB
         ];
         return !in_array($event_type, $DO_NOT_LOG);
     }
@@ -233,8 +248,10 @@ class AA_Log implements InternalExpandInterface
         return DB_AA::select1('', 'SELECT * FROM log', $conds, ['id-']) ?: [];
     }
 
-    /** Get first 20 rows from log table with possible link to Log page */
-    public static function getLogTable(string $event, $selector = "", int $from = 0, int $to = 0, bool $show_log_link = false): string
+    /** Get first 20 rows from log table with possible link to Log page
+     * @param bool $mark_changes  highlight each value that differs from the entry before it
+     */
+    public static function getLogTable(string $event, $selector = "", int $from = 0, int $to = 0, bool $show_log_link = false, bool $mark_changes = false): string
     {
         $conds = [['type', $event, (str_contains($event, '%')) ? 'LIKE' : '=']];
         if ($selector != "") {
@@ -251,6 +268,9 @@ class AA_Log implements InternalExpandInterface
             return '';
         }
         $tab       = self::extendTable($tab);
+        if ($mark_changes) {
+            $tab = self::markChanges($tab);
+        }
         $link_div  = $show_log_link ? '<div>' . a_href(self::getAdminUrl($event, $selector), _m('Log'), ['class' => 'aa-button-show']) . '</div>' : '';
 
         // 'all' escapes both the header and the cells. extendTable() puts raw
@@ -258,6 +278,30 @@ class AA_Log implements InternalExpandInterface
         // visitor sent: a VIEW row carries $_SERVER['REQUEST_URI'] verbatim
         // (include/view.php), and admin/se_view.php renders it through here.
         return GetHtmlTable($tab, 'key', '', 'all') . $link_div;
+    }
+
+    /**
+     * Rows are newest first, so each row is compared with the one below it, the
+     * entry before. A value that differs becomes a highlighted cell; the oldest row
+     * has nothing to differ from. When and who are not the entry's content.
+     */
+    public static function markChanges(array $tab): array
+    {
+        $rows = array_values($tab);
+        $out  = $rows;
+        foreach ($rows as $k => $row) {
+            $older = $rows[$k + 1] ?? null;
+            if ($older === null) {
+                break;
+            }
+            foreach ($row as $col => $value) {
+                if (!in_array($col, ['time', 'user'], true) && (string) ($older[$col] ?? '') !== (string) $value) {
+                    // unquoted on purpose: GetHtmlTable()'s escaping branch passes the attribute through safe()
+                    $out[$k][$col] = ['attr' => 'class=aa-log-changed', 'text' => $value];
+                }
+            }
+        }
+        return $out;
     }
 
     /** parse Params row and extract columns based on AA_Logentry structure */
@@ -569,6 +613,53 @@ class AA_Logentry_Sys extends AA_Logentry
     }
 }
 
+/** State Check snapshot - one row per check with a non-ok finding, written
+ *  by AA\Later\StateCheck only when it changed. Serialized: Sc:severity:count:title
+ */
+class AA_Logentry_Sc extends AA_Logentry
+{
+    public string $severity = '';
+    public string $count = '';
+    public string $title = '';
+
+    public static function make(string $severity, int $count, string $title): self
+    {
+        $entry = new self(['severity' => $severity, 'count' => (string) $count, 'title' => $title]);
+        $entry->trimToFit(['title'], self::PARAMS_MAX);
+        return $entry;
+    }
+
+    public static function getClassProperties(): array
+    {
+        return [
+            'severity' => new AA_Property('severity', _m('Severity'), 'string'),
+            'count'    => new AA_Property('count', _m('Count'), 'int'),
+            'title'    => new AA_Property('title', _m('Finding'), 'string'),
+        ];
+    }
+}
+
+/** State Check snapshot summary - one row per run (selector "summary"), so the
+ *  time of the last full run is known. Serialized: Scs:errors:warnings:infos:checks
+ */
+class AA_Logentry_Scs extends AA_Logentry
+{
+    public string $errors = '';
+    public string $warnings = '';
+    public string $infos = '';
+    public string $checks = '';
+
+    public static function getClassProperties(): array
+    {
+        return [
+            'errors'   => new AA_Property('errors', _m('Problems'), 'int'),
+            'warnings' => new AA_Property('warnings', _m('Warnings'), 'int'),
+            'infos'    => new AA_Property('infos', _m('Recommendations'), 'int'),
+            'checks'   => new AA_Property('checks', _m('Checks'), 'int'),
+        ];
+    }
+}
+
 /** Log-selector-context
  *  uses special format with class Qa at the end for better selector DB lookup
  *
@@ -756,7 +847,7 @@ class AA_Logentry_Ms extends AA_Logentry
     }
 }
 
-/** ITEM_FIELD_FILLED log entry (admin/search_replace.php) */
+/** ITEM_FIELD log entry (admin/search_replace.php) */
 class AA_Logentry_Iff extends AA_Logentry
 {
     public static function getClassProperties(): array

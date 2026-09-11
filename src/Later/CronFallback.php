@@ -140,7 +140,7 @@ class CronFallback
             (new Toexecute())->execute();
         } catch (\Throwable $e) {
             if (class_exists('AA_Log')) {
-                \AA_Log::write('CRON_FALLBACK_ERR', 'CronFallback', $e->getMessage());
+                \AA_Log::write('CRON_FALLB', 'CronFallback', $e->getMessage());   // log.type is 10 bytes, longer names get cut
             }
         } finally {
             $lock->Unlock();
