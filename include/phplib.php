@@ -206,15 +206,19 @@ class Session
     } // end func url
 
     /**
-    * Get current request URL.
+    * Get current request URL: the script plus the query string. The login form
+    * posts to it.
     *
-    * WARNING: I'm not sure with the $this->url() call. Can someone check it?
+    * SCRIPT_NAME, not PHP_SELF: PHP_SELF carries PATH_INFO, so a request for
+    * /admin/index.php3/admin/index.php3/ got a form posting to that very path
+    * and a scanner following it grew the URL by one segment per attempt
+    * (2 875 login attempts on a 255-byte URL, toolkit.ecn.cz 2026-08-06).
+    *
     * WARNING: Apache variable $REQUEST_URI used -
     * this it the best you can get but there's warranty the it's set beside
     * the Apache world.
     *
     * @return string
-    * @global $REQUEST_URI
     * @access public
     */
     public function self_url(): string
@@ -224,7 +228,7 @@ class Session
         } else {
             $qs = (isset($_SERVER["QUERY_STRING"]) && "" != $_SERVER["QUERY_STRING"]) ? '?' . $_SERVER["QUERY_STRING"] : '';
         }
-        return $this->url($_SERVER["PHP_SELF"] . $qs);
+        return $this->url(($_SERVER['SCRIPT_NAME'] ?? '' ?: $_SERVER['PHP_SELF']) . $qs);
     }
 
     /**
