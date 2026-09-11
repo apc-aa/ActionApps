@@ -125,15 +125,14 @@ final class ProgressPanel
     {
         $diff = ConfigTimeline::describeDiff($interval['changes'], self::lastChange($previous));
 
-        // The window's own first day, not the moment the change was logged. Those are
-        // never the same: the change day belongs to no window, so a deployment
-        // detected on the 7th opens a window on the 8th. For the leading window they
-        // are not even close, since whatever was already running started before the
-        // measured period. Everything else in the cell (the day count, the tooltip)
-        // is measured from `from`, so the date has to be too.
+        // The window's own start, not the moment the change was logged: on whole-day
+        // data the change day belongs to no window, so a deployment detected on the 7th
+        // opens a window on the 8th, and the leading window starts with the measured
+        // period. The duration and the tooltip are measured from `from` too. A window
+        // cut at the change itself (exact data, the last week) shows the time as well.
         $h  = '<td class="aa-ver-when" title="' . \safe($title) . '">'
-            . \safe(date('Y-m-d', $interval['from']))
-            . '<span class="aa-ver-days">' . \safe(sprintf(\_m('%d days'), $interval['days'])) . '</span>'
+            . \safe(date($interval['exact'] ? 'Y-m-d H:i' : 'Y-m-d', $interval['from']))
+            . '<span class="aa-ver-days">' . \safe(self::spanLabel($interval['span'])) . '</span>'
             . '</td>';
 
         $h .= '<td class="aa-ver-changed">';
@@ -141,6 +140,52 @@ final class ProgressPanel
             $h .= '<span class="aa-ver-tag">' . \safe($tag) . '</span>';
         }
         return $h . '</td>';
+    }
+
+    /** A window's tooltip: when it ran, and which part of it is measured. */
+    public static function spanTitle(array $interval): string
+    {
+        $format = $interval['exact'] ? 'Y-m-d H:i' : 'Y-m-d';
+        $title  = sprintf(
+            \_m('Running %1$s to %2$s (%3$s).'),
+            date($format, $interval['from']),
+            date($format, max($interval['from'], $interval['to'] - 1)),
+            self::spanLabel($interval['span']),
+        );
+        if ($interval['short']) {
+            return $title;
+        }
+        return $title . ' ' . sprintf(
+            \_m('Measured %1$s to %2$s, its freshest whole days.'),
+            date('Y-m-d H:i', $interval['measure_from']),
+            date('Y-m-d H:i', $interval['measure_to']),
+        );
+    }
+
+    /** How long a window ran, in the unit that reads best: "40 min", "14 h", "6 days". */
+    public static function spanLabel(int $span): string
+    {
+        if ($span < 3600) {
+            return sprintf(\_m('%d min'), intdiv($span, 60));
+        }
+        if ($span < 2 * ConfigTimeline::DAY) {
+            return sprintf(\_m('%d h'), (int) round($span / 3600));
+        }
+        return sprintf(\_m('%d days'), (int) round($span / ConfigTimeline::DAY));
+    }
+
+    /**
+     * The measured cells of a row whose window has not run long enough to say
+     * anything yet, as one cell. It is listed anyway: it is what is running now.
+     */
+    public static function tooEarlyCell(int $colspan): string
+    {
+        return '<td class="aa-ver-early" colspan="' . $colspan . '">'
+             . \safe(sprintf(
+                 \_m('Too early to measure. It is compared once it has run for %s.'),
+                 self::spanLabel(ConfigTimeline::MIN_SPAN),
+             ))
+             . '</td>';
     }
 
     /**
@@ -186,19 +231,26 @@ final class ProgressPanel
             . '.aa-ver-table th:nth-child(2),.aa-ver-table td:first-child,.aa-ver-table td:nth-child(2){text-align:left}'
             . '.aa-ver-when{white-space:nowrap}'
             . '.aa-ver-days{display:block;font-size:85%;color:#666}'
-            . '.aa-ver-changed{white-space:normal;max-width:26ch}'
-            . '.aa-ver-tag{display:inline-block;background:var(--clr-basic-light,#eeebe3);padding:0 .3em;margin:0 .3em .15em 0;white-space:nowrap}'
-            /* Filed Green as specified; Deadline Orange darkened from #dd6644, which is a
-               fill colour and reaches only 3.5:1 as small text. Both clear WCAG AA on the
-               white cell background. The muted state stays legible on purpose: it is a
-               measured number, only not a claim. */
-            . '.aa-ver-delta{display:inline-block;margin-left:.5em;font-size:90%}'
-            . '.aa-ver-delta--good{color:#2e7d52;font-weight:600}'
-            . '.aa-ver-delta--bad{color:#b8452a;font-weight:600}'
+            /* .aa-stat-table td keeps every cell on one line; this one holds a list */
+            . '.aa-ver-table td.aa-ver-changed{white-space:normal;max-width:26ch}'
+            /* a tag may be a list of revisions a window swallowed, so it wraps */
+            . '.aa-ver-tag{display:inline-block;background:var(--clr-basic-light,#eeebe3);padding:0 .3em;margin:0 .3em .15em 0}'
+            /* A move past the noise is a filled chip, so it stands out in a column of
+               greyed numbers - faster and slower alike. The colours are the admin diff
+               pair (inserted / deleted), which read at 8:1 and more. The muted state
+               stays legible on purpose: it is a measured number, only not a claim. */
+            . '.aa-ver-delta{display:inline-block;margin-left:.5em;font-size:90%;padding:0 .3em;border-radius:2px}'
+            . '.aa-ver-delta--good{color:var(--clr-diff-ins-text,#14532d);background:var(--clr-diff-ins-bg,#d6f5d6);font-weight:600}'
+            . '.aa-ver-delta--bad{color:var(--clr-diff-del-text,#7f1d1d);background:var(--clr-diff-del-bg,#fbdada);font-weight:600}'
             . '.aa-ver-delta--flat{color:#555}'
             . '.aa-ver-agree{font-weight:600}'
             . '.aa-ver-cache{--bar:hsl(calc(var(--pct,0) * 1.2),60%,55%)}'
             . '.aa-ver-short td{color:#666}'
+            . '.aa-ver-table td.aa-ver-early{text-align:left;font-style:italic}'
+            /* the item link comes from the diagnostics panel, which keeps it on one line */
+            . '.aa-ver-table td.aa-ver-item{text-align:left;white-space:normal;max-width:40ch}'
+            . '.aa-ver-item a{white-space:normal}'
+            . '.aa-ver-hits{white-space:nowrap;color:#555}'
             . '.aa-ver-trend{margin:1em 0}'
             . '.aa-ver-trend > summary{margin-bottom:.5em}'
             . '.aa-ver-axis{margin:.25em 0 .5em;font-size:90%;color:#555}'

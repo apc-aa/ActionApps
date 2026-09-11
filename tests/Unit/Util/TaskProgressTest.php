@@ -39,14 +39,25 @@ final class TaskProgressTest extends TestCase
 
     private static function twoWindows(): array
     {
-        $mk = static fn(string $from, string $to) => [
-            'from'    => (int) strtotime($from . ' 00:00:00'),
-            'to'      => (int) strtotime($to . ' 00:00:00'),
-            'days'    => (int) round(((int) strtotime($to) - (int) strtotime($from)) / 86400),
-            'changes' => [],
-            'short'   => false,
+        return [self::window('2026-07-01', '2026-07-03'), self::window('2026-07-05', '2026-07-07')];
+    }
+
+    /** A window as ConfigTimeline::buildIntervals() hands it over. */
+    private static function window(string $from, string $to, bool $short = false): array
+    {
+        $start = (int) strtotime($from . ' 00:00:00');
+        $end   = (int) strtotime($to . ' 00:00:00');
+        return [
+            'from'         => $start,
+            'to'           => $end,
+            'span'         => $end - $start,
+            'measure_from' => $start,
+            'measure_to'   => $end,
+            'days'         => ($end - $start) / 86400,
+            'exact'        => false,
+            'changes'      => [],
+            'short'        => $short,
         ];
-        return [$mk('2026-07-01', '2026-07-03'), $mk('2026-07-05', '2026-07-07')];
     }
 
     /** Two tasks that both ran often enough in both windows, at the given durations. */
@@ -194,5 +205,33 @@ final class TaskProgressTest extends TestCase
         self::assertSame([], $summary['cohort']);
         self::assertNull($summary['rows'][1]['typical']);
         self::assertSame(0, $summary['rows'][1]['run_total']);
+    }
+
+    public function testAJustStartedWindowDoesNotThinTheCohort(): void
+    {
+        // A release detected today: listed, but no task has run under it enough to
+        // say anything, and none of them must drop out of the comparison for that.
+        $intervals   = self::twoWindows();
+        $intervals[] = self::window('2026-07-07', '2026-07-07', true);
+
+        $summary = TaskProgress::summarize(self::steadyPair(2.0, 1.0, 8.0, 4.0), $intervals);
+
+        self::assertSame(['alpha', 'beta'], $summary['cohort']);
+        self::assertNull($summary['rows'][2]['typical']);
+        self::assertArrayNotHasKey('d_seconds', $summary['rows'][2], 'no "-100%" against a window with no runs yet');
+    }
+
+    public function testAWindowShorterThanADayIsNotCountedAsAWholeOne(): void
+    {
+        // The spring DST day has 23 hours; 23 runs in it are 24 a day, not 23.
+        $intervals            = self::twoWindows();
+        $intervals[1]['days'] = 23 / 24;
+
+        $summary = TaskProgress::summarize(self::runs(array_merge(
+            self::repeat('2026-07-01', 'alpha', 1.0, 46),
+            self::repeat('2026-07-05', 'alpha', 1.0, 23),
+        )), $intervals);
+
+        self::assertEqualsWithDelta(24.0, $summary['rows'][1]['runs'], 0.001);
     }
 }

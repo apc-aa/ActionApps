@@ -82,14 +82,20 @@ namespace Tests\Unit\Util {
 
 
         /** An interval as ConfigTimeline::buildIntervals() hands it over. */
-        private static function interval(string $from, string $to, int $change_time = 0): array
+        private static function interval(string $from, string $to, int $change_time = 0, bool $exact = false): array
         {
+            $start = (int) strtotime($exact ? $from : $from . ' 00:00:00');
+            $end   = (int) strtotime($exact ? $to : $to . ' 00:00:00');
             return [
-                'from'    => (int) strtotime($from . ' 00:00:00'),
-                'to'      => (int) strtotime($to . ' 00:00:00'),
-                'days'    => (int) round(((int) strtotime($to) - (int) strtotime($from)) / 86400),
-                'changes' => $change_time ? [['time' => $change_time, 'aa' => '', 'tree' => '5348M', 'rev' => '', 'php' => '', 'db' => '', 'mem' => '', 'cpu' => '']] : [],
-                'short'   => false,
+                'from'         => $start,
+                'to'           => $end,
+                'span'         => $end - $start,
+                'measure_from' => $start,
+                'measure_to'   => $end,
+                'days'         => ($end - $start) / 86400,
+                'exact'        => $exact,
+                'changes'      => $change_time ? [['time' => $change_time, 'aa' => '', 'tree' => '5348M', 'rev' => '', 'php' => '', 'db' => '', 'mem' => '', 'cpu' => '']] : [],
+                'short'        => false,
             ];
         }
 
@@ -121,6 +127,35 @@ namespace Tests\Unit\Util {
 
             self::assertStringContainsString('2026-07-01', $cells);
             self::assertStringNotContainsString('2026-05-02', $cells);
+        }
+
+        public function testAWindowCutAtTheChangeShowsTheTimeAndItsLengthInHours(): void
+        {
+            $cells = ProgressPanel::whenCells(
+                self::interval('2026-09-09 15:58:14', '2026-09-10 06:36:08', (int) strtotime('2026-09-09 15:58:14'), true),
+                null,
+                'tooltip',
+            );
+
+            self::assertStringContainsString('2026-09-09 15:58', $cells);
+            self::assertStringContainsString('15 h', $cells);
+        }
+
+        public function testALengthReadsInTheUnitThatFitsIt(): void
+        {
+            self::assertSame('40 min', ProgressPanel::spanLabel(40 * 60));
+            self::assertSame('0 min', ProgressPanel::spanLabel(0));
+            self::assertSame('15 h', ProgressPanel::spanLabel(52680));
+            self::assertSame('40 h', ProgressPanel::spanLabel(40 * 3600));
+            self::assertSame('6 days', ProgressPanel::spanLabel(6 * 86400 - 3600), 'a DST week is still six days');
+        }
+
+        public function testAWindowTooShortToMeasureSaysWhenItWillBe(): void
+        {
+            $cell = ProgressPanel::tooEarlyCell(4);
+
+            self::assertStringContainsString('colspan="4"', $cell);
+            self::assertStringContainsString('24 h', $cell);
         }
     }
 }

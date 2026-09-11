@@ -39,8 +39,8 @@ final class TaskProgress
     /** Runs a task needs in every window before it may speak for the comparison. */
     public const MIN_RUNS = 20;
 
-    /** Windows shown, newest first. */
-    public const MAX_INTERVALS = 6;
+    /** Windows shown, newest first. A busy fortnight of development is about this many. */
+    public const MAX_INTERVALS = 12;
 
     /** Below this many task types the numbers are not worth showing. */
     private const MIN_COHORT = 3;
@@ -57,9 +57,15 @@ final class TaskProgress
     {
         $now       = time();
         $from      = ConfigTimeline::dayStart($now - (self::WINDOW_DAYS * ConfigTimeline::DAY));
-        $intervals = array_slice(ConfigTimeline::buildIntervals(ConfigTimeline::getChanges(), $from, $now), -self::MAX_INTERVALS);
+        // The queue log keeps every run's own time, so every window can start at its
+        // change; measuring only whole days of each keeps day and night even.
+        $intervals = array_slice(
+            ConfigTimeline::buildIntervals(ConfigTimeline::getChanges(), $from, $now, ConfigTimeline::MIN_SPAN, $from),
+            -self::MAX_INTERVALS,
+        );
 
-        if (count($intervals) < 2) {
+        // Two windows with numbers, not two rows: a just-started newest window has none.
+        if (count(array_filter($intervals, static fn($interval) => !$interval['short'])) < 2) {
             return '';   // the page-speed panel above already says why
         }
 
@@ -157,7 +163,9 @@ final class TaskProgress
      */
     public static function summarize(array $runs, array $intervals): array
     {
-        $count = count($intervals);
+        // A window that has not run long enough is listed but not measured: the newest
+        // may have started minutes ago, and a task missing from it says nothing yet.
+        $count = count(array_filter($intervals, static fn($interval) => !$interval['short']));
 
         // Per task and window: the median run, and how much time the task spent in total.
         $medians = $totals = $counts = [];
@@ -165,7 +173,7 @@ final class TaskProgress
             $by_window = [];
             foreach ($task_runs as $run) {
                 $i = ConfigTimeline::windowOf($run['time'], $intervals);
-                if ($i !== null) {
+                if ($i !== null && !$intervals[$i]['short']) {
                     $by_window[$i][] = $run['secs'];
                 }
             }
@@ -205,17 +213,20 @@ final class TaskProgress
             foreach ($cohort as $task) {
                 $runs_in_window += $counts[$i][$task] ?? 0;
             }
-            $rows[] = [
+            // Per real day, fractions included: a 23-hour DST day is 0.96 of one. Only a
+            // just-started window has none, and it shows no numbers.
+            $per_day = $interval['days'] > 0 ? 1 / $interval['days'] : 0.0;
+            $rows[]  = [
                 'interval'  => $interval,
                 'typical'   => self::typical($medians, $baselines, $cohort, $i),
-                'seconds'   => ($totals[$i] ?? 0.0) / max(1, $interval['days']),
-                'runs'      => $runs_in_window / max(1, $interval['days']),
+                'seconds'   => ($totals[$i] ?? 0.0) * $per_day,
+                'runs'      => $runs_in_window * $per_day,
                 'run_total' => $runs_in_window,
             ];
         }
 
         foreach ($rows as $i => $row) {
-            if ($i === 0) {
+            if ($i === 0 || $row['interval']['short']) {
                 continue;
             }
             $before                = $rows[$i - 1];
@@ -284,7 +295,7 @@ final class TaskProgress
             \_m('Lower is faster. A change is highlighted only when most tasks moved the same way.'),
         );
         $h .= ProgressPanel::tableOpen([
-            [\_m('Running since'),      \_m('The day after the change was recorded.')],
+            [\_m('Running since'),      \_m('When this configuration started: the queue log keeps exact times. Only the freshest whole days of each window are measured, so night and day weigh the same in every row.')],
             [\_m('Changed'),            \_m('What this window changed against the one above it.')],
             [\_m('Queue time per day'), \_m('Server time the whole queue spent per day. Real seconds, so it also moves when there is more work to do.')],
             [\_m('Typical task'),       \_m('How long the cohort\'s tasks took, as a percentage of their own usual duration. Free of how much work arrived.')],
@@ -305,13 +316,14 @@ final class TaskProgress
         $agree    = $row['agree'] ?? null;
 
         $h  = '<tr' . ($interval['short'] ? ' class="aa-ver-short"' : '') . '>';
-        $h .= ProgressPanel::whenCells($interval, $previous, sprintf(
-            \_m('%1$s to %2$s, %3$d days, %4$s runs'),
-            date('Y-m-d', $interval['from']),
-            date('Y-m-d', $interval['to'] - 1),
-            $interval['days'],
-            number_format($row['run_total'], 0, '.', ' '),
-        ));
+        $h .= ProgressPanel::whenCells(
+            $interval,
+            $previous,
+            ProgressPanel::spanTitle($interval) . ' ' . sprintf(\_m('%s runs.'), number_format($row['run_total'], 0, '.', ' ')),
+        );
+        if ($interval['short']) {
+            return $h . ProgressPanel::tooEarlyCell(4) . '</tr>';
+        }
 
         // Real seconds: it answers "is the server doing less work", but it moves with
         // the amount of work too, so it never gets the significance highlight.
@@ -320,7 +332,7 @@ final class TaskProgress
             . '</td>';
 
         $h .= '<td>' . ($row['typical'] === null ? '<span class="aa-stat-zero">-</span>' : \safe(number_format($row['typical'], 0) . '%'))
-            . self::renderDelta($row['d_typical'] ?? null, !$interval['short'] && $agree && ProgressPanel::isSignificant($agree))
+            . self::renderDelta($row['d_typical'] ?? null, $agree && ProgressPanel::isSignificant($agree))
             . '</td>';
 
         $h .= '<td>' . \safe(number_format($row['runs'], 0, '.', ' ')) . '</td>';
@@ -343,7 +355,11 @@ final class TaskProgress
     /** Which tasks actually moved, deferred: the table says whether the queue changed, this says where. */
     private static function renderBreakdown(array $summary): string
     {
+        // The newest window with numbers: a just-started one is listed without any.
         $last = count($summary['rows']) - 1;
+        if ($last >= 0 && $summary['rows'][$last]['interval']['short']) {
+            $last--;
+        }
         if ($last < 1) {
             return '';
         }

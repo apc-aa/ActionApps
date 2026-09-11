@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace AA\Util;
 
 use AA\IO\DB\DB_AA;
+use AA\Later\HitcounterGroup;
 
 /**
  * "Did what we shipped make the site faster?" - page speed compared between
@@ -25,10 +26,14 @@ use AA\IO\DB\DB_AA;
  *    row, the whole admin interface and everything cron does all happen after
  *    it stops. See TaskProgress for the queue side.
  *  - Durations are stored as a 6-bit logarithmic index, one step being 18.7%,
- *    and days older than about eight are averaged per day. Averaging a cohort
+ *    and days older than a week are averaged per day. Averaging a cohort
  *    recovers the resolution the rounding costs, but the noise floor of a
  *    window-to-window comparison is still a few percent. The sign test in the
  *    last column, not the percentage, is what says whether a move is real.
+ *  - Within the last week hits keep their time, so windows start at the change
+ *    itself. Each window is measured over its freshest whole days only
+ *    (ConfigTimeline::measuredSpan()): pages are built faster at night than in
+ *    the evening, and a window holding each hour equally often cancels that out.
  */
 final class VersionProgress
 {
@@ -38,17 +43,23 @@ final class VersionProgress
     /** Items carrying the comparison. Large enough for the sign test to speak. */
     public const COHORT = 20;
 
-    /** Windows shown, newest first. */
-    public const MAX_INTERVALS = 8;
+    /** Windows shown, newest first. A busy stretch of development is about this many. */
+    public const MAX_INTERVALS = 12;
 
-    /** Measured hits an item needs in every window to join the cohort. */
-    public const MIN_HITS = 20;
+    /** Rows a quiet install still gets: the period reaches back for them, up to MAX_DAYS. */
+    public const MIN_ROWS = 4;
 
-    /** Measured hits an item-day needs before it may move the daily curve. */
-    public const MIN_DAY_HITS = 10;
+    /** How far back the period may reach for MIN_ROWS. Bounds the hit rows read. */
+    public const MAX_DAYS = 120;
+
+    /** Measured hits an item needs in a window (or a day of the curve) for its average to count. */
+    public const MIN_HITS = 10;
 
     /** Below this many items the numbers are not worth showing. */
     private const MIN_COHORT = 3;
+
+    /** The fewest items the sign test can call a move real with. @see ProgressPanel::isSignificant() */
+    private const SIGN_TEST_MIN = 5;
 
     /** One duration index step, as a ratio. @see LogarithmIndex::calculateStep() */
     private const STEP = 1.18728;
@@ -72,11 +83,16 @@ final class VersionProgress
             return '';   // no duration logging - the diagnostics panel above says so already
         }
 
-        $now       = time();
-        $from      = ConfigTimeline::dayStart($now - ($window_days * ConfigTimeline::DAY));
-        $intervals = array_slice(ConfigTimeline::buildIntervals(ConfigTimeline::getChanges(), $from, $now), -self::MAX_INTERVALS);
+        $now        = time();
+        $exact_from = HitcounterGroup::exactSince($now);
+        $changes    = ConfigTimeline::getChanges();
+        $intervals  = array_slice(
+            ConfigTimeline::buildIntervals($changes, self::periodStart($changes, $now, $window_days), $now, ConfigTimeline::MIN_SPAN, $exact_from),
+            -self::MAX_INTERVALS,
+        );
+        $measured = array_values(array_filter($intervals, static fn($interval) => !$interval['short']));
 
-        if (count($intervals) < 2) {
+        if (count($measured) < 2) {
             return self::renderNote(\_m('Not enough recorded configuration changes in this period to compare. AA logs one whenever its revision, the PHP version or the database version changes.'));
         }
 
@@ -85,69 +101,93 @@ final class VersionProgress
         // and once on the items that survived the per-window traffic floor.
         $no_cohort = \_m('Not enough items with steady traffic through the whole period. A comparison needs the same pages measured in every window.');
 
-        $cohort = self::getCohort($slice_ids, $intervals);
+        $cohort = self::getCohort($slice_ids, $measured[count($measured) - 1]);
         if (count($cohort) < self::MIN_COHORT) {
             return self::renderNote($no_cohort);
         }
 
-        $summary = self::summarize(self::getItemDays($cohort, $from, $now), $intervals);
+        $summary = self::summarize(self::getItemHours($cohort, $intervals[0]['from'], $now), $intervals);
         if (count($summary['cohort']) < self::MIN_COHORT) {
             return self::renderNote($no_cohort);
         }
 
         return ProgressPanel::css()
              . self::renderTable($summary, $base_qs)
+             . self::renderItems($summary)
              . self::renderTrend($summary);
     }
 
     /**
-     * Items that can carry the comparison: busy in the newest window, and still
-     * present in every older one. Candidates come from the newest window only,
+     * Where the compared period starts: $window_days back, or further when that
+     * holds fewer than MIN_ROWS deployments. On a quiet install the last few
+     * deployments are still the question, however long ago they were.
+     *
+     * @param list<array{time:int}> $changes  from ConfigTimeline::getChanges(), oldest first
+     */
+    public static function periodStart(array $changes, int $now, int $window_days): int
+    {
+        $from = ConfigTimeline::dayStart($now - ($window_days * ConfigTimeline::DAY));
+        // Starting the day after the MIN_ROWS-th newest change makes its configuration
+        // the oldest row, the baseline the newer ones are compared to.
+        $oldest_row = $changes[count($changes) - self::MIN_ROWS] ?? $changes[0] ?? null;
+        if ($oldest_row) {
+            $from = min($from, ConfigTimeline::nextDayStart($oldest_row['time']));
+        }
+        return max($from, ConfigTimeline::dayStart($now - (self::MAX_DAYS * ConfigTimeline::DAY)));
+    }
+
+    /**
+     * Items that can carry the comparison: busy in the newest measured window, and
+     * still present in every older one. Candidates come from that one window only,
      * which keeps the expensive ranking query off the whole history.
      *
      * @return list<string> short ids
      */
-    private static function getCohort(array $slice_ids, array $intervals): array
+    private static function getCohort(array $slice_ids, array $newest): array
     {
-        $newest = $intervals[count($intervals) - 1];
-        return array_keys(HitcounterDisplay::getGlobalTotals($slice_ids, $newest['from'], $newest['to'], self::COHORT * 4));
+        return array_keys(HitcounterDisplay::getGlobalTotals($slice_ids, $newest['measure_from'], $newest['measure_to'], self::COHORT * 4));
     }
 
     /**
-     * Per item and day, hits and summed duration index for each cache state.
+     * Per item and hour, hits and summed duration index for each cache state.
+     *
+     * Hours rather than days so a window can start at the change itself. Only the
+     * last week has them: hit_archive keeps older days as one row stamped at
+     * midnight, which comes back here as that day's only hour.
      *
      * @param  list<string> $short_ids
-     * @return array<string, array<string, array{h:array<int,int>,w:array<int,int>}>> item => day => counts
+     * @return array<string, array<int, array{h:array<int,int>,w:array<int,float>}>> item => hour start => counts
      */
-    private static function getItemDays(array $short_ids, int $from, int $to): array
+    private static function getItemHours(array $short_ids, int $from, int $to): array
     {
         if (!$short_ids) {
             return [];
         }
-        $cols = ['`id`', "DATE_FORMAT(FROM_UNIXTIME(`time`), '%Y-%m-%d') AS `day`"];
+        $cols = ['`id`', '`time` DIV 3600 AS `hour`'];
         foreach ([0, 1, 2, 3] as $state) {
             $cols[] = "SUM(CASE WHEN `duration` & 3 = $state THEN `hits` ELSE 0 END) AS `h$state`";
         }
         foreach ([self::STATE_UNCACHED, self::STATE_CACHED] as $state) {
             $cols[] = "SUM(CASE WHEN `duration` & 3 = $state THEN (`duration` >> 2) * `hits` ELSE 0 END) AS `w$state`";
         }
-        $rows = DB_AA::select(
+        // One row per item and grouped day, or item and hour in the last week: the
+        // cap is that count, here so a later change to the period or the cohort
+        // cannot quietly turn an admin page into an unbounded read.
+        $max_rows = self::COHORT * 4 * ((int) ceil(($to - $from) / ConfigTimeline::DAY) + 24 * (HitcounterGroup::EXACT_DAYS + 1));
+        $rows     = DB_AA::select(
             [],
             'SELECT ' . implode(', ', $cols) . ' FROM `hit_archive`',
             [['id', $short_ids, 'i'], ['time', $from, '>='], ['time', $to, '<'], ['duration', 0, '<>']],
             null,
-            ['id', 'day'],
-            // One row per item-day, so the cohort size and the window bound this
-            // already. The cap is here so a later change to either cannot quietly
-            // turn an admin page into an unbounded read.
-            self::COHORT * 4 * self::WINDOW_DAYS,
+            ['id', 'hour'],
+            $max_rows,
         );
 
         $out = [];
         foreach ($rows as $row) {
-            $out[(string) $row['id']][(string) $row['day']] = [
+            $out[(string) $row['id']][((int) $row['hour']) * 3600] = [
                 'h' => [(int) $row['h0'], (int) $row['h1'], (int) $row['h2'], (int) $row['h3']],
-                'w' => [self::STATE_UNCACHED => (int) $row['w0'], self::STATE_CACHED => (int) $row['w2']],
+                'w' => [self::STATE_UNCACHED => (float) $row['w0'], self::STATE_CACHED => (float) $row['w2']],
             ];
         }
         return $out;
@@ -156,17 +196,21 @@ final class VersionProgress
     /**
      * The numbers behind the panel. Pure: everything it needs is in its arguments.
      *
-     * @param  array $item_days  from getItemDays()
-     * @param  array $intervals  from ConfigTimeline::buildIntervals()
-     * @return array{rows:list<array<string,mixed>>,cohort:list<string>,cached_cohort:list<string>,daily:array<string,mixed>}
+     * @param  array $item_hours  from getItemHours()
+     * @param  array $intervals   from ConfigTimeline::buildIntervals()
+     * @return array{rows:list<array<string,mixed>>,cohort:list<string>,cached_cohort:list<string>,items:array<string,array<int,array{0:int,1:int}>>,daily:array<string,mixed>}
      */
-    public static function summarize(array $item_days, array $intervals): array
+    public static function summarize(array $item_hours, array $intervals): array
     {
-        $per_item = self::foldIntoIntervals($item_days, $intervals);
-        $count    = count($intervals);
+        $intervals = self::dropThinWindows(self::foldIntoIntervals($item_hours, $intervals), $intervals);
+        // Folded again: a dropped window renumbers every window after it.
+        $per_item = self::foldIntoIntervals($item_hours, $intervals);
+        // A window too short to measure (the newest, just started) is listed without
+        // numbers, so it must not decide who is in the cohort either.
+        $count = count(array_filter($intervals, static fn($interval) => !$interval['short']));
 
         // The cohort is fixed for the whole table, so plain means are comparable
-        // between rows: any item missing from any window is out.
+        // between rows: any item missing from any measured window is out.
         $cohort = $cached_cohort = [];
         foreach ($per_item as $sid => $windows) {
             if (count($windows) < $count) {
@@ -201,14 +245,15 @@ final class VersionProgress
                 'ms_nc'     => self::indexToMs($idx_nc),
                 'ms_c'      => self::indexToMs($idx_c),
                 'cache_pct' => self::meanCachePct($per_item, $cohort, $i),
-                'hits'      => self::sumHits($per_item, $cohort, $i),
+                'hits_nc'   => self::sumHits($per_item, $cohort, $i, self::STATE_UNCACHED),
+                'hits_c'    => self::sumHits($per_item, $cached_cohort, $i, self::STATE_CACHED),
             ];
         }
 
         // Each window against the one before it: how big the move was, and how
         // many of the cohort's items agree with its direction.
         foreach ($rows as $i => $row) {
-            if ($i === 0) {
+            if ($i === 0 || $row['interval']['short']) {
                 continue;
             }
             $rows[$i]['d_nc']     = self::ratioPct($row['idx_nc'], $rows[$i - 1]['idx_nc']);
@@ -220,37 +265,124 @@ final class VersionProgress
             $rows[$i]['agree_c']  = ProgressPanel::agreement($c_index, $cached_cohort, $i);
         }
 
+        // What each measured item rests on, so a reader can judge how far to trust a row.
+        $items = [];
+        foreach ($cohort as $sid) {
+            foreach ($per_item[$sid] as $i => $window) {
+                $items[$sid][$i] = [$window['h'][self::STATE_UNCACHED], $window['h'][self::STATE_CACHED]];
+            }
+        }
+
         return [
             'rows'          => $rows,
             'cohort'        => $cohort,
             'cached_cohort' => $cached_cohort,
-            'daily'         => self::dailySeries($item_days, $cohort, $cached_cohort),
+            'items'         => $items,
+            'daily'         => self::dailySeries(self::perDay($item_hours), $cohort, $cached_cohort),
         ];
     }
 
     /**
-     * Item days added up per measurement window. Days outside every window
-     * (the configuration-change days) are dropped here.
+     * The windows this install has enough traffic to compare: the thinnest one is
+     * taken out, again and again, until SIGN_TEST_MIN items are measured in every
+     * window that is left, or only two are.
      *
-     * @return array<string, array<int, array{h:array<int,int>,w:array<int,int>}>> item => window index => counts
+     * Fifteen hours of a busy site are plenty and fifteen hours of a quiet one are
+     * a handful of hits, so this is decided by the data, the way a too-short window
+     * is decided by the clock - and handled the same way: its hits are left out
+     * and its deployments are named in the next row. The newest window has no next
+     * row, so it stays, listed without numbers and flagged `thin`.
+     *
+     * @param  array $per_item   from foldIntoIntervals() over $intervals
+     * @param  array $intervals  from ConfigTimeline::buildIntervals()
+     * @return list<array<string,mixed>> the intervals to report
      */
-    private static function foldIntoIntervals(array $item_days, array $intervals): array
+    private static function dropThinWindows(array $per_item, array $intervals): array
+    {
+        $kept = array_keys(array_filter($intervals, static fn($interval) => !$interval['short']));
+        while (count($kept) > 2) {
+            $speaking = array_fill_keys($kept, 0);   // window => items measured in it
+            $cohort   = 0;
+            foreach ($per_item as $windows) {
+                $everywhere = true;
+                foreach ($kept as $i) {
+                    $measured       = ($windows[$i]['h'][self::STATE_UNCACHED] ?? 0) >= self::MIN_HITS;
+                    $speaking[$i]  += $measured ? 1 : 0;
+                    $everywhere     = $everywhere && $measured;
+                }
+                $cohort += $everywhere ? 1 : 0;
+            }
+            if ($cohort >= self::SIGN_TEST_MIN) {
+                break;
+            }
+            asort($speaking);
+            $thinnest = array_key_first($speaking);
+            $kept     = array_values(array_filter($kept, static fn($i) => $i !== $thinnest));
+        }
+
+        $out     = [];
+        $carried = [];
+        $last    = count($intervals) - 1;
+        foreach ($intervals as $i => $interval) {
+            $dropped = !$interval['short'] && !in_array($i, $kept, true);
+            if ($dropped && $i !== $last) {
+                $carried = array_merge($carried, $interval['changes']);
+                continue;
+            }
+            $interval['changes'] = array_merge($carried, $interval['changes']);
+            $interval['thin']    = $dropped;
+            $interval['short']   = $interval['short'] || $dropped;
+            $carried             = [];
+            $out[]               = $interval;
+        }
+        return $out;
+    }
+
+    /**
+     * Item hours added up per local day, for the daily curve.
+     *
+     * @return array<string, array<string, array{h:array<int,int>,w:array<int,float>}>> item => Y-m-d => counts
+     */
+    private static function perDay(array $item_hours): array
+    {
+        $days = [];
+        foreach ($item_hours as $sid => $hours) {
+            foreach ($hours as $start => $counts) {
+                $day              = date('Y-m-d', $start);
+                $days[$sid][$day] = self::addCounts($days[$sid][$day] ?? null, $counts);
+            }
+        }
+        return $days;
+    }
+
+    /** Two sets of hit counts added up; null stands for none yet. */
+    private static function addCounts(?array $into, array $counts): array
+    {
+        $into ??= ['h' => [0, 0, 0, 0], 'w' => [self::STATE_UNCACHED => 0.0, self::STATE_CACHED => 0.0]];
+        foreach ($counts['h'] as $state => $hits) {
+            $into['h'][$state] += $hits;
+        }
+        foreach ($counts['w'] as $state => $weight) {
+            $into['w'][$state] += $weight;
+        }
+        return $into;
+    }
+
+    /**
+     * Item hours added up per measurement window. Hours in no window are dropped
+     * here: a change day in grouped data, the hour a change cut through, and the
+     * whole of a window too short to measure yet.
+     *
+     * @return array<string, array<int, array{h:array<int,int>,w:array<int,float>}>> item => window index => counts
+     */
+    private static function foldIntoIntervals(array $item_hours, array $intervals): array
     {
         $per_item = [];
-        foreach ($item_days as $sid => $days) {
-            foreach ($days as $day => $counts) {
-                $i = ConfigTimeline::windowOf((int) strtotime($day . ' 00:00:00'), $intervals);
-                if ($i === null) {
-                    continue;
-                }
-                if (!isset($per_item[$sid][$i])) {
-                    $per_item[$sid][$i] = ['h' => [0, 0, 0, 0], 'w' => [self::STATE_UNCACHED => 0, self::STATE_CACHED => 0]];
-                }
-                foreach ($counts['h'] as $state => $hits) {
-                    $per_item[$sid][$i]['h'][$state] += $hits;
-                }
-                foreach ($counts['w'] as $state => $weight) {
-                    $per_item[$sid][$i]['w'][$state] += $weight;
+        foreach ($item_hours as $sid => $hours) {
+            foreach ($hours as $start => $counts) {
+                $i = ConfigTimeline::windowOf($start, $intervals, 3600);
+                if ($i !== null && !$intervals[$i]['short']) {
+                    $per_item[$sid][$i] = self::addCounts($per_item[$sid][$i] ?? null, $counts);
                 }
             }
         }
@@ -318,12 +450,12 @@ final class VersionProgress
         return $values ? array_sum($values) / count($values) : null;
     }
 
-    /** Measured hits the window rests on, across the cohort. */
-    private static function sumHits(array $per_item, array $cohort, int $i): int
+    /** Measured hits in one cache state the window rests on, across the cohort. */
+    private static function sumHits(array $per_item, array $cohort, int $i, int $state): int
     {
         $sum = 0;
         foreach ($cohort as $sid) {
-            $sum += array_sum($per_item[$sid][$i]['h'] ?? []);
+            $sum += $per_item[$sid][$i]['h'][$state] ?? 0;
         }
         return $sum;
     }
@@ -362,7 +494,7 @@ final class VersionProgress
         foreach ($cohort as $sid) {
             $values = [];
             foreach ($item_days[$sid] ?? [] as $counts) {
-                $value = self::itemIndex($counts, $state, self::MIN_DAY_HITS);
+                $value = self::itemIndex($counts, $state, self::MIN_HITS);
                 if ($value !== null) {
                     $values[] = $value;
                 }
@@ -376,7 +508,7 @@ final class VersionProgress
         foreach ($labels as $day) {
             $deltas = [];
             foreach ($cohort as $sid) {
-                $value = self::itemIndex($item_days[$sid][$day] ?? null, $state, self::MIN_DAY_HITS);
+                $value = self::itemIndex($item_days[$sid][$day] ?? null, $state, self::MIN_HITS);
                 if ($value !== null && isset($baseline[$sid])) {
                     $deltas[] = $value - $baseline[$sid];
                 }
@@ -435,11 +567,12 @@ final class VersionProgress
             \_m('Lower is faster. A change is highlighted only when most items moved the same way.'),
         );
         $h .= ProgressPanel::tableOpen([
-            [\_m('Running since'),   \_m('The day after the change was recorded. The change day itself is left out, because older hit data is stored per whole day.')],
+            [\_m('Running since'),   \_m('When this configuration started. Within the last week that is the change itself. Older hit data is stored per whole day, so there the change day is left out and the window starts the next day. Only the freshest whole days of each window are measured, so night and evening weigh the same in every row.')],
             [\_m('Changed'),         \_m('What this window changed against the one above it.')],
             [\_m('Uncached (NC+M)'), \_m('Average time to build a page that was not in the page cache. This is the number AA code changes move.')],
             [\_m('Cached (C+M)'),    \_m('Average time to serve a page out of the page cache.')],
             [\_m('Cache %'),         \_m('Share of hits served from the page cache, averaged over the cohort.')],
+            [\_m('Hits'),            \_m('Measured hits the row rests on: uncached (NC+M) / cached (C+M), over the items of each column. The list of items is below the table.')],
             [\_m('Items faster'),    \_m('How many cohort items got faster, out of those measurable in both windows. This, not the percentage, says whether a move is real.')],
         ]);
 
@@ -456,23 +589,24 @@ final class VersionProgress
         $interval = $row['interval'];
 
         $h  = '<tr' . ($interval['short'] ? ' class="aa-ver-short"' : '') . '>';
-        $h .= ProgressPanel::whenCells($interval, $previous, sprintf(
-            \_m('%1$s to %2$s, %3$d days, %4$s measured hits'),
-            date('Y-m-d', $interval['from']),
-            date('Y-m-d', $interval['to'] - 1),
-            $interval['days'],
-            number_format($row['hits'], 0, '.', ' '),
-        ));
-        $h .= self::renderMsCell($row['ms_nc'], $row['d_nc'] ?? null, $row['agree_nc'] ?? null, $interval['short']);
-        $h .= self::renderMsCell($row['ms_c'], $row['d_c'] ?? null, $row['agree_c'] ?? null, $interval['short']);
+        $h .= ProgressPanel::whenCells($interval, $previous, ProgressPanel::spanTitle($interval));
+        if ($interval['short']) {
+            $unmeasured = empty($interval['thin'])
+                ? ProgressPanel::tooEarlyCell(5)
+                : '<td class="aa-ver-early" colspan="5">' . \safe(\_m('Too few hits in this window yet to compare it.')) . '</td>';
+            return $h . $unmeasured . '</tr>';
+        }
+        $h .= self::renderMsCell($row['ms_nc'], $row['d_nc'] ?? null, $row['agree_nc'] ?? null);
+        $h .= self::renderMsCell($row['ms_c'], $row['d_c'] ?? null, $row['agree_c'] ?? null);
         $h .= self::renderCacheCell($row['cache_pct'], $row['d_cache'] ?? null);
+        $h .= '<td class="aa-ver-hits">' . \safe(self::hitsLabel($row['hits_nc'], $row['hits_c'])) . '</td>';
         $h .= ProgressPanel::agreeCell($row['agree_nc'] ?? null);
 
         return $h . '</tr>';
     }
 
     /** A duration cell: the measured time, and the move against the window above it. */
-    private static function renderMsCell(?float $ms, ?float $delta, ?array $agreement, bool $short): string
+    private static function renderMsCell(?float $ms, ?float $delta, ?array $agreement): string
     {
         if ($ms === null) {
             return '<td class="aa-stat-zero">-</td>';
@@ -480,9 +614,9 @@ final class VersionProgress
         return '<td>' . \safe(($ms < 10 ? number_format($ms, 1) : number_format($ms, 0)) . ' ms')
             . ProgressPanel::delta(
                 $delta,
-                !$short && $agreement && ProgressPanel::isSignificant($agreement),
+                $agreement && ProgressPanel::isSignificant($agreement),
                 \_m('Most items moved this way, so the change is larger than the usual noise.'),
-                \_m('Within the usual noise of this measurement, or too few days to tell.'),
+                \_m('Within the usual noise of this measurement.'),
             )
             . '</td>';
     }
@@ -504,6 +638,55 @@ final class VersionProgress
                 . \safe(sprintf('%+.0f', $delta)) . '</span>';
         }
         return $h . '</td>';
+    }
+
+    /** "15 139 / 1 180": uncached / cached hits, the way the Hits column and the item list print them. */
+    private static function hitsLabel(int $uncached, int $cached): string
+    {
+        return number_format($uncached, 0, '.', ' ') . ' / ' . number_format($cached, 0, '.', ' ');
+    }
+
+    /**
+     * Which items the table rests on and how many hits each brought to each window,
+     * deferred. A row resting on a few hundred hits of three pages says less than
+     * one resting on thousands of twenty, and only this list shows which it is.
+     */
+    private static function renderItems(array $summary): string
+    {
+        $measured = array_filter($summary['rows'], static fn($row) => !$row['interval']['short']);
+        $windows  = array_reverse(array_keys($measured));   // newest first, as in the table
+        $items    = $summary['items'];
+        // Busiest first: the items that weigh most in every average lead the list.
+        uasort($items, static fn($a, $b) => array_sum(array_column($b, 0)) <=> array_sum(array_column($a, 0)));
+
+        \AA_Items::preload(new \zids(array_keys($items), 's'));
+        $meta = HitcounterDisplay::buildItemMeta(array_map('strval', array_keys($items)));
+
+        $h  = '<details class="aa-ver-trend">';
+        $h .= '<summary>' . \safe(sprintf(\_m('Measured items and their hits (%d)'), count($items))) . '</summary>';
+        $h .= '<p class="aa-ver-axis">' . \safe(sprintf(
+            \_m('Hits in the measured part of each window, uncached / cached. An item is compared only with at least %d uncached hits in every window; its cached time only with as many cached hits too.'),
+            self::MIN_HITS,
+        )) . '</p>';
+        $columns = [[\_m('Item')]];
+        foreach ($windows as $i) {
+            $interval  = $summary['rows'][$i]['interval'];
+            $columns[] = [date($interval['exact'] ? 'm-d H:i' : 'm-d', $interval['from']), ProgressPanel::spanTitle($interval)];
+        }
+        $h .= ProgressPanel::tableOpen($columns);
+        foreach ($items as $sid => $hits) {
+            $sid      = (string) $sid;
+            $headline = trim(\AA::Un("{item:$sid:_#HEADLINE}"));
+            $h .= '<tr><td class="aa-ver-item">'
+                . HitcounterDisplay::renderItemLink($sid, Txt::shorten($headline, 40, '…'), $headline, $meta[$sid] ?? [], 'aa-stat-tip-name')
+                . '</td>';
+            foreach ($windows as $i) {
+                $h .= '<td>' . \safe(self::hitsLabel(...($hits[$i] ?? [0, 0]))) . '</td>';
+            }
+            $h .= '</tr>';
+        }
+        $h .= ProgressPanel::tableClose();
+        return $h . '</details>';
     }
 
     /** The daily curve, deferred: the table answers the question, this shows the shape. */

@@ -15,6 +15,9 @@ use CVarset;
  */
 class HitcounterGroup implements LaterInterface
 {
+    /** Days before today whose hits are still stored one by one; older days are grouped. */
+    public const EXACT_DAYS = 7;
+
     /** @var int|null caches if we use duration logging for speedup */
     private static ?int $duration_log_feature_from = null;
 
@@ -127,13 +130,26 @@ class HitcounterGroup implements LaterInterface
         AA::Metabase()->doInsertMulti('hit_archive', $to_insert);
     }
 
+    /**
+     * From this moment on, every hit_archive row still carries the time of its own
+     * hit. Rows before it may already be grouped into one row per item, day and
+     * cache state, stamped with the day's midnight, so they cannot be split
+     * within a day. plan() groups nothing newer, and a plan from an earlier day
+     * reached even less far, so this holds whenever the queue last ran.
+     */
+    public static function exactSince(int $now): int
+    {
+        return (int) mktime(0, 0, 0, (int) date('n', $now), (int) date('j', $now) - self::EXACT_DAYS, (int) date('Y', $now));
+    }
+
     /** plan grouping tasks to toexecute queue
      *  - by default we plan all the task
      */
     public function plan(int $max_task = 0): void
     {
         $oldest = GetTable2Array("SELECT min( time ) as oldest FROM `hit_archive`", 'aa_first', 'oldest');
-        $grouping_start = mktime(0, 0, 0, date("m"), date("d") - 8, date("Y")); // week ago
+        // the day just before exactSince(); mktime(), not "- 86400", which misses midnight on a DST switch
+        $grouping_start = mktime(0, 0, 0, date("m"), date("d") - self::EXACT_DAYS - 1, date("Y"));
         $step = 60 * 60 * 24;                        // day
 
         $toexecute = new Toexecute();

@@ -720,7 +720,7 @@ class HitcounterDisplay
      * @param  string[] $sids  short_ids (numeric strings); 'all' is ignored
      * @return array<string, array{long_id:string,slice_id:string,slice_name:string,slice_short:string}>
      */
-    private static function buildItemMeta(array $sids): array
+    public static function buildItemMeta(array $sids): array
     {
         $real_sids = array_values(array_filter($sids, static fn($s) => $s !== 'all'));
         if (empty($real_sids)) {
@@ -753,8 +753,8 @@ class HitcounterDisplay
     /**
      * Render an item label as a linked anchor (or span when long_id is unknown)
      * with optional "[slice_short]" prefix and "headline · slice · #sid" tooltip.
-     * Shared between the diagnostics card list and the per-day stats-table header
-     * so both UIs stay in sync.
+     * Shared between the diagnostics card list, the per-day stats-table header and
+     * the Version progress item list, so all three stay in sync.
      *
      * @param string $sid              short_id
      * @param string $visible_headline pre-truncated headline shown inline (raw text)
@@ -762,7 +762,7 @@ class HitcounterDisplay
      * @param array  $meta             keys: long_id, slice_id, slice_name, slice_short
      * @param string $anchor_class     CSS class applied to the wrapping <a>
      */
-    private static function renderItemLink(string $sid, string $visible_headline, string $tooltip_headline, array $meta, string $anchor_class): string
+    public static function renderItemLink(string $sid, string $visible_headline, string $tooltip_headline, array $meta, string $anchor_class): string
     {
         // trim() guards against slice names stored with stray whitespace (e.g. " Sandbox"),
         // which otherwise rendered as "[ Sandbox]" in the column header.
