@@ -81,7 +81,7 @@ echo '<title>ActionApps - '.ORG_NAME.'</title>';
   $qs= str_replace( ["&relogin=true", "relogin=true"],"", $this->url());
 ?>
 </div>
-<form action="<?php echo $qs ?>" method=post class="aa-login-form">
+<form action="<?php echo safe($qs) ?>" method=post class="aa-login-form">
 
     <div class="aa-login-row">
       <label for="username"><?php echo _m("Username:") ?></label>
