@@ -148,19 +148,13 @@ if (!$no_slice_id) {
 
 
     if ($after_login || !$g_modules[AA::$module_id]) {
-        // slice was just deleted, thus is not in $g_modules
-        foreach ($g_modules as $mid => $mmodule) {
-            // skip AA Core Field slice, if possible
-            if ($mmodule['type'] === 'S' && $mid !== "41415f436f72655f4669656c64732e2e") {
-                AA::$module_id = $mid;
-                break;
-            }
-            // fallback - if no slice found, use another type of module with parms
-            AA::$module_id = $mid;
-        }
-        if ($g_modules[AA::$module_id]['type'] !== 'S') {  // for fallback
+        // no module id, or one the user can't access (e.g. just deleted) - prefer the page's own module type
+        $script        = substr((string) realpath(get_included_files()[0]), strlen(dirname(__DIR__)) + 1);
+        $page_type     = AA_Moduleregistry::typeOfScript($script);
+        AA::$module_id = AA_Module::getFallbackModuleId($g_modules, $page_type);
+        // a fallback slice stays, as before: a request creating a module can come here with no id (alerts/modedit.php)
+        if (!in_array($g_modules[AA::$module_id]['type'], ['S', $page_type], true)) {
             go_url(AA_Module::getModuleUrl(AA::$module_id));
-            exit;
         }
     }
 

@@ -55,21 +55,18 @@ try {
 
 $module_id   = AA::$module_id;
 
-if (!($module = AA_Module_Site::getModule($module_id))) {
-    MsgErr(_m("Site module not found"));
-    Session::page_close();
-    exit;
+// id of another module type (explicit, or the fallback for a user with no site) goes to that module's page
+$module = AA_Module_Site::getModule($module_id);
+if (!($module instanceof AA_Module_Site)) {
+    go_url(AA_Module::getModuleUrl($module_id));
 }
 
 if (!IfSlPerm(PS_MODW_EDIT_CODE)) {
     MsgPage(_m("You do not have permission to edit items in this slice"));
-    exit;
 }
 
 if (!($tree = $module->getTree())) {
-    MsgErr(_m("Starting spot not found"));
-    Session::page_close();
-    exit;
+    MsgPage(_m("Starting spot not found"));
 }
 
 if ($spot_id) {

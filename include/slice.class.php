@@ -102,6 +102,20 @@ class AA_Moduleregistry implements IteratorAggregate, ArrayAccess, Countable
     {
         return static::singleton()[$type]?->get($info) ?? '';
     }
+
+    /** Module type whose directory holds the script ('modules/site/index.php' -> 'W'), 'S' for any other page
+     * @param string $script  path relative to the AA root
+     */
+    public static function typeOfScript(string $script): string
+    {
+        foreach (static::singleton() as $type => $conf) {
+            // a module with the slice menu (Jump) has no admin of its own - its pages run in a slice
+            if (str_starts_with($script, $conf->get('dir')) && ($conf->get('menu') !== 'include/menu.php')) {
+                return $type;
+            }
+        }
+        return 'S';
+    }
 }
 
 
@@ -222,6 +236,24 @@ abstract class AA_Module
             $sort = ['priority','name'];
         }
         return DB_AA::select(['unpackid' => 'name'], 'SELECT LOWER(HEX(`id`)) AS unpackid, `name` FROM `module`', $conds, $sort);
+    }
+
+    /** Module the admin switches to when the request brings none the user can access (init_page.php):
+     *  the first one of the page's $type, else the first slice, else the last module of any type.
+     *  AA Core Fields slice is never the first choice.
+     * @param array  $modules  module id => ['type' => ...], in menu order - non-empty
+     * @param string $type     module type of the page - AA_Moduleregistry::typeOfScript()
+     */
+    public static function getFallbackModuleId(array $modules, string $type): string
+    {
+        foreach ([$type, 'S'] as $t) {
+            foreach ($modules as $mid => $module) {
+                if ($module['type'] === $t && $mid !== '41415f436f72655f4669656c64732e2e') {
+                    return $mid;
+                }
+            }
+        }
+        return array_key_last($modules);
     }
 
     /** Returns 'class', 'url', 'menu', 'letter' for module
