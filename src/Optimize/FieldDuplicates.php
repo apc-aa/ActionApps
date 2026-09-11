@@ -26,7 +26,7 @@ class FieldDuplicates extends \AA\Optimize\AbstractOptimize
     /** checks if this Optimize class belongs to specified type (like "sql_update") */
     public static function types(): array
     {
-        return ['sql_update'];
+        return ['sql_update', self::CHECK_BASIC, self::CHECK_BASIC];
     }
 
     /** the optimizers are ordered by priority (less first) when executed

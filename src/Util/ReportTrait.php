@@ -32,12 +32,7 @@ trait ReportTrait
     public function report(int $verbosity = 1, string $type = 'html'): string
     {
         $ret = '';
-        $rows = [];
-        foreach ($this->messages as $m) {
-            if ($m[0] <= $verbosity) {
-                $rows[] = $m[1];
-            }
-        }
+        $rows = $this->reportRows($verbosity);
 
         if ($rows) {
             $caption =  is_callable([$this, "getId"]) ? $this->getId() : '';
@@ -49,6 +44,20 @@ trait ReportTrait
             }
         }
         return $ret;
+    }
+
+    /** The recorded rows themselves - a Finding's evidence
+     * @return list<array<string,mixed>>
+     */
+    public function reportRows(int $verbosity = 1): array
+    {
+        $rows = [];
+        foreach ($this->messages as $m) {
+            if ($m[0] <= $verbosity) {
+                $rows[] = $m[1];
+            }
+        }
+        return $rows;
     }
 
     /** Clear report function

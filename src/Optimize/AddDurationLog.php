@@ -29,7 +29,7 @@ class AddDurationLog extends \AA\Optimize\AbstractOptimize
     /** checks if this Optimize class belongs to a specified type (like "sql_update") */
     public static function types(): array
     {
-        return ['opt_feature'];
+        return ['opt_feature', self::CHECK_BASIC];
     }
 
     /** @inheritDoc  */

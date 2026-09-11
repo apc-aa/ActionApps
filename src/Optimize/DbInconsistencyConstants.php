@@ -9,6 +9,18 @@ use AA\Util\Adminlink;
  */
 class DbInconsistencyConstants extends AbstractOptimize
 {
+    /** shown on State Check - see AbstractOptimize::CHECK_* */
+    public static function types(): array
+    {
+        return [self::CHECK_BASIC];
+    }
+
+    /** unused constant groups are clutter, not a malfunction */
+    public static function failSeverity(): string
+    {
+        return Finding::INFO;
+    }
+
     /** Name function
      * @return string - a name
      */

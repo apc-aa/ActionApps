@@ -7,11 +7,19 @@ use AA\Util\ReportTrait;
 use AA_Content;
 use AA_Property;
 use AA_Value;
+use ReflectionMethod;
 use RuntimeException;
 
 abstract class AbstractOptimize implements NamedInterface
 {
     use ReportTrait;
+
+    /** types() tags read by State Check (admin/aa_statecheck.php, CheckRunner) */
+    /** cheap, index-only, at most ~200 ms - runs on every load of the page */
+    public const CHECK_BASIC = 'check_basic';
+    /** full scans - on request and in the daily snapshot */
+    public const CHECK_EXTENDED = 'check_extended';
+    public const CHECK_SECURITY = 'check_security';
 
     /** @var array used in the manager to store test results in order we can use it in alias _#RESULT__ */
     public static array $action_results = [];
@@ -36,10 +44,37 @@ abstract class AbstractOptimize implements NamedInterface
      */
     // public static function isOptimizing(): bool { return true; }  // not used - better to use isType() here
 
-    /** @return bool - true if everything is OK - no action needed */
+    /** @return bool - true if everything is OK - no action needed
+     *  A class that describes itself through findings() gets it from them: OK = no error finding
+     */
     public function test(): bool
     {
-        return true;
+        return !self::overridesFindings() || !Finding::hasError($this->findings());
+    }
+
+    /** Structured results for State Check. A legacy class gets one Finding from
+     *  test() + report(); a checker overrides this and inherits test() from it.
+     * @return Finding[]
+     */
+    public function findings(): array
+    {
+        $this->clear_report();
+        $ok = $this->test();
+        return [new Finding($ok ? Finding::OK : static::failSeverity(), static::name(), evidence: $this->reportRows(), repairable: !$ok && $this->hasAction('repair'))];
+    }
+
+    /** What a failed test() means on State Check for a class that does not write
+     *  findings(): Finding::ERROR unless the class says it is only a recommendation
+     *  (unused constants, an optional feature not installed) - Finding::INFO. */
+    public static function failSeverity(): string
+    {
+        return Finding::ERROR;
+    }
+
+    /** test() and findings() default to each other; this says which one the class wrote */
+    private static function overridesFindings(): bool
+    {
+        return (new ReflectionMethod(static::class, 'findings'))->getDeclaringClass()->getName() !== self::class;
     }
 
     /** @return bool - true if everything is OK */
@@ -97,15 +132,23 @@ abstract class AbstractOptimize implements NamedInterface
 
     /** checks if this Optimize class belongs to specified type (like "sql_update")
      *  full set is:
-     *    sql_update  - should be run on every SQL update of AA
-     *    opt_feature - optional features, which could be added to AA
-     *    add_field   - just tag the add field optimizers
-     *    private_fix - private_fix for site specific repairs - probably not useful for others
+     *    sql_update     - should be run on every SQL update of AA
+     *    opt_feature    - optional features, which could be added to AA
+     *    add_field      - just tag the add field optimizers
+     *    private_fix    - private_fix for site specific repairs - probably not useful for others
+     *    check_basic, check_extended, check_security - shown on State Check, see the CHECK_* constants
      */
     public static function types(): array
     {
         return [];
-    }      // full set is ['sql_update','add_field', 'private_fix']  - private_fix for site specific repairs - probably not useful for others
+    }
+
+    /** Where State Check files the findings: cron, errors, db, mail, feeds, cache,
+     *  security, forms, log, environment. '' means db (the legacy Optimize classes). */
+    public static function category(): string
+    {
+        return '';
+    }
 
     /** the optimizers are ordered by priority when executed in chain (like for sql_update) */
     public static function priority(): int

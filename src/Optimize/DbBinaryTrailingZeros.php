@@ -13,6 +13,12 @@ use AA_Module_Site;
  */
 class DbBinaryTrailingZeros extends AbstractOptimize
 {
+    /** shown on State Check - see AbstractOptimize::CHECK_* */
+    public static function types(): array
+    {
+        return [self::CHECK_BASIC];
+    }
+
     /** Name function
      * @return string - a name
      */

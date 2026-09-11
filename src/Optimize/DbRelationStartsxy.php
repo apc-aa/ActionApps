@@ -6,6 +6,12 @@ namespace AA\Optimize;
  */
 class DbRelationStartsxy extends AbstractOptimize
 {
+    /** shown on State Check - see AbstractOptimize::CHECK_* */
+    public static function types(): array
+    {
+        return [self::CHECK_EXTENDED];
+    }
+
     /** Name function
      * @return string - a name
      */

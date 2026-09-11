@@ -6,6 +6,12 @@ namespace AA\Optimize;
  */
 class DbInconsistency extends AbstractOptimize
 {
+    /** shown on State Check - see AbstractOptimize::CHECK_* */
+    public static function types(): array
+    {
+        return [self::CHECK_EXTENDED];
+    }
+
     /** Name function
      * @return string - a name
      */
@@ -46,7 +52,7 @@ class DbInconsistency extends AbstractOptimize
         $err = GetTable2Array($SQL, "unpack:item_id", 'text');
         if (is_array($err) && count($err)) {
             foreach ($err as $item_id => $text) {
-                $this->message(_m('Wrong item id in content table: %1 -> %2', [$item_id, $text]));
+                $this->message(_m('Wrong item id in content table: %1 -> %2', [$item_id, safe($text)]));   // content.text is editor input, the report is HTML
             }
             $ret = false;
         }

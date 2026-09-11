@@ -29,7 +29,9 @@
 namespace AA\Later;
 
 use AA\IO\DB\DB_AA;
+use AA\Util\ConfigTimeline;
 use AA_Log;
+use AA_Logentry;
 use AA_Logentry_Sys;
 
 /** logs system state which can help us to identify problems in AA (speed, stability) after upgrades */
@@ -44,7 +46,34 @@ class LogSystemstatus implements LaterInterface
      */
     public function toexecutelater($params = []): string
     {
-        return AA_Log::writeIfChanged('SYS_STAT', 'basic', new AA_Logentry_Sys($this->getSystemInfo()));
+        $last = AA_Log::getLastLogEvents('SYS_STAT', 'basic');
+        $info = $this->getSystemInfo();
+        $info['svn'] = self::svnField($info['svn'], $last['params'] ?? '');
+        return AA_Log::writeIfChanged('SYS_STAT', 'basic', new AA_Logentry_Sys($info));
+    }
+
+    /** "5378M (5365)": the tree's svnversion plus the revision of util.php.
+     *
+     *  svnversion cannot read a checkout synced by rsync without .svn and then
+     *  answers "Unversioned directory" (or nothing); when another process on the
+     *  same DB does read it, the value flaps and writeIfChanged() adds a new,
+     *  never-cleaned row every 10 minutes (3 635 rows on aadev). An unreadable
+     *  tree is therefore not a change: the tree from the last stored row is kept,
+     *  exactly as ConfigTimeline does when reading these rows back.
+     *
+     *  @param string $svn          this run's "tree (rev)" as getSystemInfo() built it
+     *  @param string $last_params  params of the last SYS_STAT row, '' if none
+     */
+    public static function svnField(string $svn, string $last_params): string
+    {
+        [$tree, $rev] = ConfigTimeline::splitSvn($svn);
+        if ($tree === '' && $last_params !== '') {
+            $last = AA_Logentry::factoryByString($last_params);
+            if ($last instanceof AA_Logentry_Sys) {
+                [$tree] = ConfigTimeline::splitSvn((string) $last->svn);
+            }
+        }
+        return $tree . ' (' . $rev . ')';
     }
 
     public function getSystemInfo(): array

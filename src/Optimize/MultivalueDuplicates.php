@@ -6,6 +6,12 @@ namespace AA\Optimize;
  */
 class MultivalueDuplicates extends AbstractOptimize
 {
+    /** shown on State Check - see AbstractOptimize::CHECK_* */
+    public static function types(): array
+    {
+        return [self::CHECK_EXTENDED];
+    }
+
     /** Name function
      * @return string - a name
      */
@@ -38,8 +44,8 @@ class MultivalueDuplicates extends AbstractOptimize
             foreach ($err_text as $wrong) {
                 $this->message(_m('Duplicates (%4) in item %1 - field %2 - value %3', [
                     unpack_id($wrong['item_id']),
-                    $wrong['field_id'],
-                    $wrong['text'],
+                    safe($wrong['field_id']),
+                    safe($wrong['text']),   // editor input, the report is HTML
                     $wrong['cnt'],
                 ]));
             }
