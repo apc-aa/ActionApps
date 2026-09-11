@@ -16,7 +16,7 @@
   "repositories": [
     {
       "type": "vcs",
-      "url": "https://github.com/honzito/phpThumb.git"
+      "url": "https://github.com/honzito/phpthumb.git"
     },
     {
       "type": "vcs",

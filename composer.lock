@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "57d6d4835904c886deaaa00b2e4414dc",
+    "content-hash": "c99d9b6c48bb0c9a6e18953da47b93f2",
     "packages": [
         {
             "name": "dasprid/enum",
@@ -247,7 +247,7 @@
             "dist": {
                 "type": "path",
                 "url": "misc/missCache",
-                "reference": "9588002688b9321967a3462bc45ed949fe82bb70"
+                "reference": "6a43ed1cbd385b772d20ffd65585b86a87ad03b8"
             },
             "require": {
                 "ext-mbstring": "*",
@@ -298,12 +298,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/honzito/phpthumb.git",
-                "reference": "51a5e2ab342ea23de6ac95aa6db19d52132e1de7"
+                "reference": "cd782d6d4d931dfa1c89dfabe863a2155e44e4f0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/honzito/phpthumb/zipball/51a5e2ab342ea23de6ac95aa6db19d52132e1de7",
-                "reference": "51a5e2ab342ea23de6ac95aa6db19d52132e1de7",
+                "url": "https://api.github.com/repos/honzito/phpthumb/zipball/cd782d6d4d931dfa1c89dfabe863a2155e44e4f0",
+                "reference": "cd782d6d4d931dfa1c89dfabe863a2155e44e4f0",
                 "shasum": ""
             },
             "require": {
@@ -357,7 +357,7 @@
             "support": {
                 "source": "https://github.com/honzito/phpthumb/tree/justcode"
             },
-            "time": "2026-01-12T14:59:26+00:00"
+            "time": "2026-09-09T13:43:54+00:00"
         },
         {
             "name": "honzito/qr-platba",

@@ -102,8 +102,10 @@ class ComposerStaticInit43e15006db6c3041e7b8c7c57cf04d54
     public static $classMap = array (
         'AA' => __DIR__ . '/../..' . '/include/locsess.php',
         'AA\\Api\\Controller\\SpeechController' => __DIR__ . '/../..' . '/src/Api/Controller/SpeechController.php',
+        'AA\\Api\\Controller\\TranslateController' => __DIR__ . '/../..' . '/src/Api/Controller/TranslateController.php',
         'AA\\Api\\JsonResponse' => __DIR__ . '/../..' . '/src/Api/JsonResponse.php',
         'AA\\Api\\Router' => __DIR__ . '/../..' . '/src/Api/Router.php',
+        'AA\\Api\\SameHostGate' => __DIR__ . '/../..' . '/src/Api/SameHostGate.php',
         'AA\\Cache\\CacheStr2find' => __DIR__ . '/../..' . '/src/Cache/CacheStr2find.php',
         'AA\\Cache\\Cacheentry' => __DIR__ . '/../..' . '/src/Cache/Cacheentry.php',
         'AA\\Cache\\PageCache' => __DIR__ . '/../..' . '/src/Cache/PageCache.php',

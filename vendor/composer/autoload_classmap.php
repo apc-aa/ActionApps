@@ -8,8 +8,10 @@ $baseDir = dirname($vendorDir);
 return array(
     'AA' => $baseDir . '/include/locsess.php',
     'AA\\Api\\Controller\\SpeechController' => $baseDir . '/src/Api/Controller/SpeechController.php',
+    'AA\\Api\\Controller\\TranslateController' => $baseDir . '/src/Api/Controller/TranslateController.php',
     'AA\\Api\\JsonResponse' => $baseDir . '/src/Api/JsonResponse.php',
     'AA\\Api\\Router' => $baseDir . '/src/Api/Router.php',
+    'AA\\Api\\SameHostGate' => $baseDir . '/src/Api/SameHostGate.php',
     'AA\\Cache\\CacheStr2find' => $baseDir . '/src/Cache/CacheStr2find.php',
     'AA\\Cache\\Cacheentry' => $baseDir . '/src/Cache/Cacheentry.php',
     'AA\\Cache\\PageCache' => $baseDir . '/src/Cache/PageCache.php',
