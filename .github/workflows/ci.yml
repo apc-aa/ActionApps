@@ -1,0 +1,101 @@
+name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+env:
+  PHP_EXTENSIONS: ctype, curl, dom, fileinfo, gd, iconv, intl, mbstring, pdo, pdo_mysql, simplexml, sodium, xml, xsl, zlib
+  # composer resolves honzito/* packages through the GitHub API; the job token lifts the anonymous rate limit
+  COMPOSER_AUTH: '{"github-oauth":{"github.com":"${{ github.token }}"}}'
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: ${{ env.PHP_EXTENSIONS }}
+          tools: composer:v2
+          coverage: none
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/composer
+          key: composer-${{ hashFiles('composer.lock') }}
+      - run: composer install --no-interaction --no-progress
+      - run: composer check
+
+  dist:
+    needs: check
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    concurrency:
+      group: dist
+      cancel-in-progress: false
+    permissions:
+      contents: write
+    outputs:
+      changed: ${{ steps.commit.outputs.changed }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: src
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: ${{ env.PHP_EXTENSIONS }}
+          tools: composer:v2
+          coverage: none
+      - run: src/dev/release/build-dist.sh src "$RUNNER_TEMP/dist"
+      - name: Check out the dist branch (or start it)
+        env:
+          REPO_URL: https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git
+        run: |
+          if git ls-remote --exit-code --heads "$REPO_URL" dist >/dev/null 2>&1; then
+            git clone -q --branch dist --single-branch --depth 1 "$REPO_URL" distwc
+          else
+            git init -q distwc && git -C distwc remote add origin "$REPO_URL"
+          fi
+      - id: commit
+        run: src/dev/release/commit-dist.sh "$RUNNER_TEMP/dist" distwc "${{ github.sha }}" "$(git -C src log -1 --format=%s)"
+      - if: steps.commit.outputs.changed == 'true'
+        run: git -C distwc push -q origin HEAD:dist
+
+  svn:
+    needs: dist
+    if: needs.dist.outputs.changed == 'true'
+    runs-on: ubuntu-latest
+    concurrency:
+      group: svn
+      cancel-in-progress: false
+    steps:
+      - id: key
+        env:
+          KEY: ${{ secrets.SF_SVN_SSH_KEY }}
+        run: echo "present=$([ -n "$KEY" ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+      - if: steps.key.outputs.present != 'true'
+        run: echo "SF_SVN_SSH_KEY is not set - SVN mirror sync skipped"
+      - if: steps.key.outputs.present == 'true'
+        uses: actions/checkout@v4
+        with:
+          path: src
+      - if: steps.key.outputs.present == 'true'
+        name: Install svn and the SourceForge key
+        env:
+          KEY: ${{ secrets.SF_SVN_SSH_KEY }}
+        run: |
+          sudo apt-get -qq update && sudo apt-get -qq install -y subversion >/dev/null
+          install -d -m 700 ~/.ssh
+          printf '%s\n' "$KEY" > ~/.ssh/id_sf && chmod 600 ~/.ssh/id_sf
+          cp src/dev/release/known_hosts ~/.ssh/known_hosts
+      - if: steps.key.outputs.present == 'true'
+        name: Mirror dist into SVN trunk
+        env:
+          REPO_URL: https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git
+        run: |
+          export SVN_SSH="ssh -i $HOME/.ssh/id_sf -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes"
+          git clone -q --branch dist --single-branch --depth 1 "$REPO_URL" dist
+          svn checkout -q --non-interactive svn+ssh://honzam@svn.code.sf.net/p/apc-aa/svn/trunk svnwc
+          src/dev/release/sync-svn.sh dist svnwc "$(git -C dist log -1 --format=%s)"
