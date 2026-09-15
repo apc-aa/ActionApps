@@ -260,6 +260,7 @@ class ComposerStaticInit43e15006db6c3041e7b8c7c57cf04d54
         'AA\\Optimize\\CheckPhpFatals' => __DIR__ . '/../..' . '/src/Optimize/CheckPhpFatals.php',
         'AA\\Optimize\\CheckQueue' => __DIR__ . '/../..' . '/src/Optimize/CheckQueue.php',
         'AA\\Optimize\\CheckRunner' => __DIR__ . '/../..' . '/src/Optimize/CheckRunner.php',
+        'AA\\Optimize\\CheckSiteStateFiles' => __DIR__ . '/../..' . '/src/Optimize/CheckSiteStateFiles.php',
         'AA\\Optimize\\ClearPagecache' => __DIR__ . '/../..' . '/src/Optimize/ClearPagecache.php',
         'AA\\Optimize\\Convert2innodb' => __DIR__ . '/../..' . '/src/Optimize/Convert2innodb.php',
         'AA\\Optimize\\Convert2utf8mb4' => __DIR__ . '/../..' . '/src/Optimize/Convert2utf8mb4.php',

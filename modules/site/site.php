@@ -154,7 +154,8 @@ $err = [];          // error array (Init - just for initializing variable
 
 AA::$site_id  = $_REQUEST['site_id'] ?: AA_Module_Site::getIdFromUrl();
 
-if (!($module = AA_Module_Site::getModule(AA::$site_id))) {
+// site_id comes from the request - a slice id is not a site
+if (!($module = AA_Module_Site::getOwnModule(AA::$site_id))) {
     Die404();
     exit;
 }
@@ -259,10 +260,23 @@ if ($module->getProperty('flag') == 1) {    // 1 - Use AA_Router_Seo
 
     //    } elseif ( $uri AND $router->xid(null, "/$lang_file/_404-not-found")) {  // item not found => 404
     //        $apc_state = $router->parse("/$lang_file/_404-not-found");
-} elseif ($module->getProperty('state_file')) {
+} elseif ($state_name = AA_Module_Site::stateFileName($module->getProperty('state_file'))) {
+    $state_path = AA_Module_Site::stateFilePath($state_name);
+    if (!is_file($state_path) || !is_readable($state_path)) {   // one extra stat(), warm in the OS cache
+        // No DB row: this runs for every anonymous request to a broken site, and a crawler would grow
+        // the `log` table without limit. The admin-visible record is CheckSiteStateFiles (State Check).
+        error_log('AA: site ' . AA::$site_id . " misconfigured - missing modules/site/sites/$state_name");
+        if (!headers_sent()) {   // ?debug=2 prints before this point
+            http_response_code(500);
+            header('Content-Type: text/plain; charset=utf-8');
+        }
+        mgettext_bind(Langs::getLang($lang_file), 'output');   // the page binds it below, past this branch
+        // site_id comes from the request, so this text reaches anonymous visitors - no module name in it
+        exit(_m('Site is misconfigured: %1 does not exist or is not readable. Add that file, or fix the "State file" setting of this site module.', ['modules/site/sites/' . $state_name]) . "\n");
+    }
     // in the following file we should define apc_state variable
     require_once __DIR__ . "/legacy_util.php";
-    require_once __DIR__ . "/sites/site_" . $module->getProperty('state_file');
+    require_once $state_path;
     $apc_state['4cacheQS'] = shtml_query_string();
     $_REQUEST['nocache'] = $_REQUEST['nocache'] ?: $nocache;
 }

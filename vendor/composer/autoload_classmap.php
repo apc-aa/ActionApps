@@ -166,6 +166,7 @@ return array(
     'AA\\Optimize\\CheckPhpFatals' => $baseDir . '/src/Optimize/CheckPhpFatals.php',
     'AA\\Optimize\\CheckQueue' => $baseDir . '/src/Optimize/CheckQueue.php',
     'AA\\Optimize\\CheckRunner' => $baseDir . '/src/Optimize/CheckRunner.php',
+    'AA\\Optimize\\CheckSiteStateFiles' => $baseDir . '/src/Optimize/CheckSiteStateFiles.php',
     'AA\\Optimize\\ClearPagecache' => $baseDir . '/src/Optimize/ClearPagecache.php',
     'AA\\Optimize\\Convert2innodb' => $baseDir . '/src/Optimize/Convert2innodb.php',
     'AA\\Optimize\\Convert2utf8mb4' => $baseDir . '/src/Optimize/Convert2utf8mb4.php',

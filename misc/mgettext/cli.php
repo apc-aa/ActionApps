@@ -82,7 +82,10 @@ $LANG_GROUPS = [
         '-include/mgettext.php',    // its only _m() call is the _mdelayed() wrapper
     ],
     // _site_lang.php — Site module (public)
-    'site' => ['modules/site/'],
+    'site' => [
+        'modules/site/',
+        '-modules/site/site.php',   // the dispatcher binds `output`, see below
+    ],
     // _links_lang.php — Links module
     'links' => [
         'modules/links/',
@@ -104,6 +107,7 @@ $LANG_GROUPS = [
         'include/scroller.php',
         'include/itemview.php',
         'misc/proposefieldchange.php',
+        'modules/site/site.php',    // site dispatcher - the only domain it binds (site.php:305)
     ],
     // _param_wizard_lang.php — parameter wizard only
     'param_wizard' => [
