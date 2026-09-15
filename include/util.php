@@ -1975,26 +1975,24 @@ function arrval(array|ArrayAccess $arr, string|int $key, mixed $default = null):
 }
 
 /** aa_version function
- *  Version of AA - automatically included also date and revision of util.php
- *  file, for better version information
+ *  Version of AA plus the build stamp (main commit and its date) that
+ *  dev/release/build-dist.sh writes to include/release.php. A source checkout
+ *  has no release.php, so its stamp is empty ("source checkout" in the full string).
  */
 function aa_version($format = 'full'): string
 {
     $version = '2026.6';
-    $full    = 'ActionApps ' . $version . ' ($Date$, $Revision$), PHP ' . PHP_VERSION . ', REMOTE_ADDR: ' . $_SERVER['REMOTE_ADDR'];
+    $release = is_file(__DIR__ . '/release.php') ? include __DIR__ . '/release.php' : [];
+    $commit  = substr((string) ($release['commit'] ?? ''), 0, 7);
+    $build   = trim($commit . ' ' . ($release['date'] ?? ''));
+    $full    = 'ActionApps ' . $version . ' (' . ($build ?: 'source checkout') . '), PHP ' . PHP_VERSION . ', REMOTE_ADDR: ' . $_SERVER['REMOTE_ADDR'];
     return match ($format) {
-        'svn'  => (int) substr($full, strpos($full, 'Revision') + 10),              // svn version of util.php (which is +/- similar to svn version of AA)
-        'svn2' => trim(shell_exec("svnversion " . escapeshellarg(AA_BASE_PATH))),    // more accurate for whole AA, but slower
-        'aa'   => $version,
-        'php'  => PHP_VERSION,
-        default => $full,
+        'svn', 'svn2' => $commit,     // were the SVN revision of util.php / `svnversion` of the tree; '' in a source checkout
+        'build'       => $build,      // commit and its date, for humans
+        'aa'          => $version,
+        'php'         => PHP_VERSION,
+        default       => $full,
     };
-
-    /* svn2 for SVN < 1.7
-       $rev = file_get_contents(AA_BASE_PATH. ".svn/entries", false, null, 0, 20);
-       $rev = explode("\n", $rev);
-       return $rev[3];
-    */
 }
 
 class CookieManager

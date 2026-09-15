@@ -8297,12 +8297,13 @@ class AA_Stringexpand_Gethostbyaddr extends AA_Stringexpand {
     }
 }
 
-/** Prints a version of AA as full-string, AA version (2.11.0), svn revision (2368) or php version
- *  {version[:aa|svn|svn2|php|full]}
+/** Prints a version of AA as full-string, AA version (2026.6), build stamp (main commit and date,
+ *  empty in a source checkout) or php version
+ *  {version[:aa|build|php|full]}   (svn and svn2 still work: both give the commit)
  */
 class AA_Stringexpand_Version extends AA_Stringexpand_Nevercachenotrim {
 
-    /** @param string $type full|svn|svn2|aa */
+    /** @param string $type full|build|aa|php|svn|svn2 */
     function expand($type=''): string
     {
         return aa_version($type);
