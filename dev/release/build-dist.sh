@@ -18,6 +18,7 @@ done
 { grep -v -E '^\s*(#|$)' "$here/vendor-prune-paths.txt" || true; } | while IFS= read -r pat; do
     ( cd "$dst/vendor" && rm -rf -- $pat 2>/dev/null ) || true   # unquoted on purpose: the list holds globs
 done
+find "$dst/vendor" -type d -empty -delete   # pruning leaves empty package directories behind
 install -m 644 "$here/dist-gitignore" "$dst/.gitignore"
 # build stamp read by aa_version() (include/util.php); a source checkout has no release.php
 commit=$(git -C "$src" rev-parse HEAD 2>/dev/null || echo unknown)

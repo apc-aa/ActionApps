@@ -21,4 +21,5 @@ if [ -z "$(svn status -q)" ]; then echo "sync-svn: trunk already up to date"; ex
 echo "sync-svn: $(svn status -q | wc -l) changed paths"
 if [ "${DRY_RUN:-0}" = 1 ]; then svn status -q; exit 0; fi
 svn commit -q --non-interactive -m "$msg" .
+svn update -q --non-interactive   # the WC root keeps the old revision until updated; report the one just created
 echo "sync-svn: committed r$(svn info --show-item revision .)"
