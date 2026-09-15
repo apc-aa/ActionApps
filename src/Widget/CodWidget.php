@@ -23,20 +23,7 @@ class CodWidget extends TxtWidget
 
     protected function requireLibs($aa_property, $winfo): array
     {
-        return array_merge(['codemirror@5'], parent::requireLibs($aa_property, $winfo));
-    }
-
-    /** script to run after the page DOM is loaded */
-    protected function requireRun($aa_property, $winfo): string
-    {
-        $ret = '';
-        // are there some textareas not converted to CodeMirror?
-        if ($this->ids_4_editor) {
-            $ret .= "\n  document.querySelectorAll(\"" . implode(',', $this->ids_4_editor) . '").forEach( function(el) { CodeMirror.fromTextArea(el, { lineWrapping:true, matchBrackets: true, matchTags: true, viewportMargin: 10000, mode: "htmlmixed", spellcheck:true, inputStyle: "contenteditable" }).on("change", function(editor) {editor.save(); const ta = editor.getTextArea(); if (typeof ta.onchange === "function") { ta.onchange() }; }) });';
-            // clean the list - all textareas are converted
-            $this->ids_4_editor = [];
-        }
-        return $ret;
+        return array_merge(['aa-code@1'], parent::requireLibs($aa_property, $winfo));
     }
 
     /** @return AA_Value for the data send by the widget

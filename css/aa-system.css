@@ -504,6 +504,42 @@ i.ico.aa-tool-edit:hover {
 .CodeMirror-scroll { height: auto; overflow-y: hidden !important; overflow-x: auto !important; }
 .CodeMirror div[contenteditable] { color: inherit; }
 
+/* <aa-code> - CodeMirror 6. Grows with content, like the CodeMirror 5 block above. */
+aa-code {
+    display: block;
+}
+aa-code .cm-editor {
+    margin: 2px;
+    font-size: 12px;
+    /* four rows like a default textarea; sizing the outer box, because CodeMirror's
+       own .cm-content rule is more specific than anything reasonable here */
+    min-height: calc(4 * 1.4em + 8px);
+    /* same frame as the other form controls; the fallback is for public sites,
+       which load aa-system.css without the admin theme */
+    border: 1px solid var(--clr-border, #ccc);
+    border-radius: 4px;
+    background: #fff;
+}
+/* outranks CodeMirror's own dotted focus outline */
+aa-code .cm-editor.cm-focused {
+    outline: 1px solid #cea756;
+    outline-offset: -1px;
+}
+aa-code .cm-content {
+    /* the *[contenteditable] rules at the top of this file mark editable areas with
+       AA's blue, a corner gif and a red hover outline - none of that belongs in a
+       code editor, same reason the CodeMirror 5 rule above opts out of the colour */
+    color: inherit;
+    background: none;
+    line-height: 1.4;
+}
+aa-code .cm-content:hover {
+    outline: none;
+}
+aa-code .cm-scroller {
+    overflow-x: auto;
+}
+
 /* tlkt widget */
 .aa-widget-wi2 .aa-input, .aa-widget-iso .aa-input {
     display: flex;

@@ -237,9 +237,11 @@ class TxtWidget extends Widget
         $htmlareaedit = '';
 
         if ($showhtmlarea || $showcodeeditor) {
-            // add this textarea to the list for CKEditor creation or CodeMirror
-            $this->ids_4_editor[] = '#' . $input_id;
-            // $attrs['class'] = 'ckeditor';
+            if ($showhtmlarea) {
+                // CKEditor is still created from a generated per-instance call
+                // in EdtWidget::requireRun(); <aa-code> upgrades itself.
+                $this->ids_4_editor[] = '#' . $input_id;
+            }
 
             // we do not mark base textarea as required for CodeMirror, since it causes "An invalid form control with name='' is not focusable."
             if ($showcodeeditor) {
@@ -258,6 +260,10 @@ class TxtWidget extends Widget
         $attr_string = htmlattr($attrs);
 
         $ret = "<textarea id=\"$input_id\" name=\"$input_name\" $attr_string $required $areaclass>$input_value</textarea>";
+        if ($showcodeeditor) {
+            // <aa-code> only enhances - the textarea stays and is what gets submitted
+            $ret = '<aa-code syntax="html">' . $ret . '</aa-code>';
+        }
         if ($lang = Langs::getLangNum2Name($i)) {
             $langcode  = Langs::getLangName2Code($lang);
             $translate = '';
@@ -270,8 +276,9 @@ class TxtWidget extends Widget
                     $get_source = "CKEDITOR.instances['$source_id'].getData()";
                     $set_target = "CKEDITOR.instances['$input_id'].setData(txt)";
                 } elseif ($showcodeeditor) {
-                    $get_source = "document.getElementById('$source_id').nextSibling.CodeMirror.getValue()";
-                    $set_target = "document.getElementById('$input_id').nextSibling.CodeMirror.setValue(txt)";
+                    // <aa-code>'s setter goes through the editor and fires change, which live mode needs.
+                    $get_source = "document.getElementById('$source_id').closest('aa-code').value";
+                    $set_target = "document.getElementById('$input_id').closest('aa-code').value = txt";
                 } else {
                     // No editor bridge here, so nothing else fires onchange - and in
                     // live mode onchange is AA_SendWidgetLive(), i.e. the save.

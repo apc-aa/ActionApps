@@ -1,17 +1,19 @@
 /**
  * Build input for javascript/codemirror6.min.js - see build.sh in this directory.
  *
- * CodeMirror 6 cannot be loaded from a CDN piecemeal: codemirror@6.0.2 and
- * @codemirror/lang-html@6 resolve to five different @codemirror/view versions
- * and four @codemirror/state versions, and CM6 needs exactly one instance of
- * each (facet and StateField identity). Bundling here pins one of each.
+ * CodeMirror 6 cannot be loaded from a CDN piecemeal: its packages resolve to
+ * several different @codemirror/view and @codemirror/state versions, and CM6 needs
+ * exactly one instance of each. Bundling here pins one of each.
  *
- * Everything AA needs goes through createEditor(); the raw CodeMirror API is
- * deliberately not re-exported, so the bundle stays the only thing that has to
- * know about CodeMirror internals.
+ * The extension set matches what CodeMirror 5 was configured with in AA, so the
+ * field still reads as a textarea: no line numbers, no fold gutter, no active-line
+ * highlight. basicSetup would add all three.
  */
-import { EditorView, basicSetup } from 'codemirror';
+import { EditorView, keymap, drawSelection, dropCursor } from '@codemirror/view';
 import { EditorState, Compartment } from '@codemirror/state';
+import { defaultKeymap, history, historyKeymap } from '@codemirror/commands';
+import { bracketMatching, indentOnInput, syntaxHighlighting, defaultHighlightStyle } from '@codemirror/language';
+import { search, searchKeymap, highlightSelectionMatches } from '@codemirror/search';
 import { html } from '@codemirror/lang-html';
 import { javascript } from '@codemirror/lang-javascript';
 import { css } from '@codemirror/lang-css';
@@ -21,9 +23,8 @@ const LANGUAGES = { html, javascript, css };
 /**
  * Mounts an editor after `textarea` and keeps the textarea's value in sync.
  *
- * The textarea stays in the DOM on purpose: it remains the value that gets
- * submitted, so plain form posts and AA_SendWidgetLive/Ajax (which serialize
- * with jQuery and only see native form controls) keep working unchanged.
+ * The textarea stays in the DOM: it is what gets submitted, so plain form posts
+ * and AA_SendWidgetLive/Ajax keep working.
  *
  * @param {HTMLTextAreaElement} textarea
  * @param {{language?: string, onChange?: (value: string) => void}} [options]
@@ -35,9 +36,18 @@ export function createEditor(textarea, { language = 'html', onChange } = {}) {
         state: EditorState.create({
             doc: textarea.value,
             extensions: [
-                basicSetup,
+                history(),
+                drawSelection(),
+                dropCursor(),
+                indentOnInput(),
+                syntaxHighlighting(defaultHighlightStyle, { fallback: true }),
+                bracketMatching(),            // CodeMirror 5's matchBrackets + matchTags
+                search(),
+                highlightSelectionMatches(),
+                keymap.of([...defaultKeymap, ...searchKeymap, ...historyKeymap]),
                 languageConf.of((LANGUAGES[language] || LANGUAGES.html)()),
                 EditorView.lineWrapping,
+                EditorView.contentAttributes.of({ spellcheck: 'true' }),
                 EditorView.updateListener.of((update) => {
                     if (!update.docChanged) {
                         return;
