@@ -15,6 +15,9 @@ rsync -a --delete --filter="merge $here/dist-exclude.txt" "$src/" "$dst/"
 { grep -v -E '^\s*(#|$)' "$here/vendor-prune.txt" || true; } | while IFS= read -r name; do
     find "$dst/vendor" -mindepth 3 -name "$name" -prune -exec rm -rf {} +   # depth 3 = inside vendor/<owner>/<package>/
 done
+{ grep -v -E '^\s*(#|$)' "$here/vendor-prune-paths.txt" || true; } | while IFS= read -r pat; do
+    ( cd "$dst/vendor" && rm -rf -- $pat 2>/dev/null ) || true   # unquoted on purpose: the list holds globs
+done
 install -m 644 "$here/dist-gitignore" "$dst/.gitignore"
 # build stamp read by aa_version() (include/util.php); a source checkout has no release.php
 commit=$(git -C "$src" rev-parse HEAD 2>/dev/null || echo unknown)

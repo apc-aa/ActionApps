@@ -1,0 +1,8 @@
+# Paths removed from vendor/ by build-dist.sh after the name-based pruning (vendor-prune.txt): package data
+# that nothing loads at runtime but that no generic name rule can single out. One glob per line, relative
+# to vendor/. Only the registry PhpRegistryLoader.php requires stays in iban-validation.
+honzito/iban-validation/Resource/*.txt
+honzito/iban-validation/Resource/iban_registry_202009r88.php
+honzito/phpthumb/phpThumb.config.php.default
+honzito/qr-platba/logo.png
+mobiledetect/mobiledetectlib/Mobile_Detect.json
