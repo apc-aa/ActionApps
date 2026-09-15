@@ -494,26 +494,29 @@ final class ConfigTimeline
 
     /**
      * "5348M (5345)" is the whole tree's svnversion plus the revision of
-     * util.php. Either half can be missing: LogSystemstatus writes "" or
-     * "Unversioned directory" for the tree when svnversion cannot read the
-     * working copy.
+     * util.php (rows from the SVN era); "a1b2c3d (a1b2c3d)" is the main commit a
+     * dist tree was built from (include/release.php, since the git migration).
+     * Either half can be missing: LogSystemstatus writes "" or "Unversioned
+     * directory" for the tree when svnversion cannot read the working copy, and
+     * a source checkout has no release.php.
      *
      * Public because AA\Later\LogSystemstatus applies the same rule when it
      * decides whether the tree version it just read is worth a new SYS_STAT row.
      *
-     * @return array{0:string,1:string} tree version, util.php revision
+     * @return array{0:string,1:string} tree version, code revision
      */
     public static function splitSvn(string $svn): array
     {
         $rev = '';
-        if (preg_match('/\((\d+)\)\s*$/', $svn, $m)) {
+        if (preg_match('/\(([0-9a-f]+)\)\s*$/', $svn, $m)) {
             $rev = $m[1];
             $svn = substr($svn, 0, (int) strrpos($svn, '('));
         }
         $tree = trim($svn);
-        // Only a version svnversion actually produced: digits, optionally a range
-        // (5240:5245) and the M / S / P flags. "Unversioned directory" is not one.
-        return [preg_match('/^\d[\d:]*[MSP]*$/', $tree) ? $tree : '', $rev];
+        // Only what a real tool produced: svnversion's digits, optionally a range
+        // (5240:5245) and the M / S / P flags, or an abbreviated git commit.
+        // "Unversioned directory" is neither.
+        return [preg_match('/^(\d[\d:]*[MSP]*|[0-9a-f]{7,40})$/', $tree) ? $tree : '', $rev];
     }
 
     /** Identity of a configuration: two rows with the same fingerprint are the same deployment. */

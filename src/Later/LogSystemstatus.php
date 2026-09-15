@@ -91,7 +91,9 @@ class LogSystemstatus implements LaterInterface
      *  same DB does read it, the value flaps and writeIfChanged() adds a new,
      *  never-cleaned row every 10 minutes (3 635 rows on aadev). An unreadable
      *  tree is therefore not a change: the tree from the last stored row is kept,
-     *  exactly as ConfigTimeline does when reading these rows back.
+     *  exactly as ConfigTimeline does when reading these rows back. Since the git
+     *  migration aa_version() reports the dist build stamp (include/release.php)
+     *  as both halves and an empty tree for a source checkout - the same rule applies.
      *
      *  @param string $svn          this run's "tree (rev)" as getSystemInfo() built it
      *  @param string $last_params  params of the last SYS_STAT row, '' if none

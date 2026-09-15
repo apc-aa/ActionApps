@@ -71,6 +71,14 @@ final class LogSystemstatusTest extends TestCase
         $this->assertFalse(LogSystemstatus::sameButForServer($older, new AA_Logentry_Sys(['server' => ''] + $info)), 'nothing to add: writeIfChanged decides');
     }
 
+    public function test_git_build_stamp_is_a_readable_tree(): void
+    {
+        // a dist checkout: include/release.php names the main commit, aa_version() reports it as tree and revision
+        $this->assertSame('a1b2c3d (a1b2c3d)', LogSystemstatus::svnField('a1b2c3d (a1b2c3d)', $this->lastRow('5378M (5365)')), 'the first git build after the SVN era');
+        $this->assertSame('b2c3d4e (b2c3d4e)', LogSystemstatus::svnField('b2c3d4e (b2c3d4e)', $this->lastRow('a1b2c3d (a1b2c3d)')));
+        $this->assertSame('a1b2c3d ()', LogSystemstatus::svnField(' ()', $this->lastRow('a1b2c3d (a1b2c3d)')), 'a source checkout has no stamp: keep the last tree, no revision of its own');
+    }
+
     public function test_nothing_to_carry_leaves_the_tree_empty(): void
     {
         $this->assertSame(' (5365)', LogSystemstatus::svnField('Unversioned directory (5365)', ''));

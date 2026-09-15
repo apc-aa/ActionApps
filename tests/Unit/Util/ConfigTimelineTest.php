@@ -69,6 +69,15 @@ namespace Tests\Unit\Util {
             return (int) strtotime($date . ' 00:00:00');
         }
 
+        public function testReadsAGitBuildStampAsTheTreeVersion(): void
+        {
+            // rows written by a dist checkout after the git migration: the main commit is tree and revision alike
+            $changes = self::fold([[1000, self::sys('5382M', '5365')], [2000, self::sys('a1b2c3d', 'a1b2c3d')], [3000, self::sys('a1b2c3d', 'a1b2c3d')]]);
+
+            self::assertSame(['5382M', 'a1b2c3d'], array_column($changes, 'tree'), 'the first git build is one deployment, the repeat row none');
+            self::assertSame('a1b2c3d', $changes[1]['rev']);
+        }
+
         public function testReadsTheFieldsOfASysStatRow(): void
         {
             $changes = self::fold([[1000, self::sys('5348M', '5345')]]);
