@@ -147,8 +147,10 @@ $findings      = CheckRunner::run([AbstractOptimize::CHECK_BASIC]);
 $basic_seconds = microtime(true) - $started;
 // every POST carries the same token: repair writes, the other two only run checks, but extended ones are minutes of DB time
 $posted = FormToken::check(STATECHECK_TOKEN, $token);
+// a stale token means the extended run was refused - the summary must not claim it ran
+$extended_ran     = $run_extended && $posted;
 $extended_seconds = 0.0;
-if ($run_extended && $posted) {
+if ($extended_ran) {
     MoreTimeLimit();
     $started          = microtime(true);
     $findings         = CheckRunner::sort(array_merge($findings, CheckRunner::run([AbstractOptimize::CHECK_EXTENDED])));
@@ -158,7 +160,7 @@ if ($run_extended && $posted) {
 // The answer is about that one problem (check + key), not the page: still there, or gone.
 $toast = [];
 if ($recheck !== '' && $posted && isset(($classes = CheckRunner::classes(STATECHECK_TAGS))[$recheck])) {
-    if (!in_array(AbstractOptimize::CHECK_BASIC, $classes[$recheck]::types()) && !$run_extended) {
+    if (!in_array(AbstractOptimize::CHECK_BASIC, $classes[$recheck]::types()) && !$extended_ran) {
         MoreTimeLimit();
         $findings = CheckRunner::sort(array_merge($findings, CheckRunner::runClass($recheck, $classes[$recheck])));
     }
@@ -187,6 +189,8 @@ $last_snapshot = AA_Log::getLastLogEvents(StateCheck::EVENT, StateCheck::SUMMARY
 // ---- page --------------------------------------------------------------------------
 $apage = new AA_Adminpageutil('aaadmin', 'statecheck');
 $apage->setTitle(_m("State Check"));
+// no page-wide <form>: the rows carry their own (Repair, Recheck, Mark resolved) and the HTML parser drops a nested one
+$apage->setForm();
 $apage->addRequire('
     .aa-statecheck { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
     .aa-statecheck th { text-align: left; }
@@ -197,9 +201,6 @@ $apage->addRequire('
     .aa-statecheck details > p { margin: 0.5em 0; }
     .aa-statecheck-inline { display: inline; }
     .aa-statecheck-summary { margin: 0.5em 0 1em; }
-    .aa-statecheck-inline > summary { display: inline-block; list-style: none; }
-    .aa-statecheck-inline[open] > summary { margin-bottom: 0.3em; }
-    .aa-note { margin: 0.4em 0; }
 ', 'AA_Req_CSScode');
 if ($toast) {
     $apage->addRequire('aa-jslib');
@@ -214,7 +215,7 @@ if ($repair_report !== '') {
 echo '<p class="aa-statecheck-summary">'
     . _m('%1 problems, %2 warnings, %3 recommendations, %4 checks passed.', [$summary[Finding::ERROR], $summary[Finding::WARNING], $summary[Finding::INFO], $summary[Finding::OK]])
     . ' ' . _m('Basic checks ran now in %1 s.', [sprintf('%.1f', $basic_seconds)])
-    . ' ' . ($run_extended ? _m('Extended checks ran now in %1 s.', [sprintf('%.1f', $extended_seconds)]) : _m('Extended checks were not run.'))
+    . ' ' . ($extended_ran ? _m('Extended checks ran now in %1 s.', [sprintf('%.1f', $extended_seconds)]) : _m('Extended checks were not run.'))
     . ' ' . ($last_snapshot ? _m('The daily snapshot last ran %1.', [date('Y-m-d H:i', (int) $last_snapshot['time'])]) : _m('No daily snapshot yet.'))
     . '</p>';
 
@@ -245,7 +246,7 @@ statecheck_section(
     '<p>' . _m('Full scans of the database; they take seconds to minutes on a large installation. Their findings are merged into the sections above once run.') . '</p>'
     . '<p>' . safe(implode(', ', $extended_names)) . '</p>'
     . '<form method="post">' . FormToken::field(STATECHECK_TOKEN) . '<button class="aa-button-run" type="submit" name="run_extended" value="1">' . _m('Run extended checks now') . '</button></form>',
-    (bool) $run_extended,
+    $extended_ran,
 );
 statecheck_section(_m('Environment'), statecheck_table($environment), false);
 

@@ -50,7 +50,7 @@ try {
     AA_Adminpageutil::pageParameterError($e);
 }
 
-if (!IsSuperadmin() && !IfSlPerm(PS_EDIT_ALL_ITEMS)) {
+if (!Notes::mayWrite()) {
     MsgPage(_m("You do not have permissions to write notes"));
     exit;
 }

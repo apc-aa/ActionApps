@@ -238,6 +238,11 @@ class inputform {
             $html_start .= getMenu($this->active_main, $this->active_submenu, $this->submenu_override);
             // page_h1 is plain (translated) text; page_title may already be safe()-escaped by the caller
             $h1 = $this->page_h1 !== '' ? $this->page_h1 : $page_title;
+            // The note corner (AA\Util\Note) goes before the H1 to sit level with it, but only as a
+            // marker: note text is user content and must not pass through the unalias further down.
+            if ($this->active_main !== '') {
+                $html_start .= '<!--aa-notes-->';
+            }
             if ($h1) {
                 $html_start .= "\n<h1>$h1</h1>";
             }
@@ -275,6 +280,13 @@ class inputform {
 
         $html_start = AA::Un($html_start);
         $html_start = AA::Stringexpander()->postprocess($html_start);
+        // The marker is gone on pages that do not carry the corner, and pageCorner() costs a query.
+        // It still runs before $html_end is postprocessed, so its {generate:FOOT} requires land.
+        // Only the first occurrence: the same literal in a page title or in profile HTML would
+        // otherwise paste a second corner with a duplicate DOM id.
+        if (($notes_pos = strpos($html_start, '<!--aa-notes-->')) !== false) {
+            $html_start = substr_replace($html_start, \AA\Util\Notes::pageCorner(), $notes_pos, strlen('<!--aa-notes-->'));
+        }
         $html_end   = AA::Un($html_end);
         $html_end   = AA::Stringexpander()->postprocess($html_end);
 

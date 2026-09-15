@@ -139,3 +139,8 @@ inputs and can be deleted on a server (see INSTALL); the built files stay in
 /src/Optimize/**RemoveOptimizeCronEntry.php** - sql_update optimizers that installed (or, the last one, removed) AA's own rows of the `cron` table
   All AA periodic jobs are queue tasks since 2026-09 (AA\Later\AlertsSweep, FeedsRun, LinkcheckRun, OptimizeTables, AA_Mysqlauth_Maintain; cron.php runs the queue itself through Toexecute::runQueue()), so nothing installs cron rows any more. The one class src/Optimize/RemoveAaCronEntries.php deletes whatever of those rows is left (.php3 and hand-renamed variants included); the `cron` table stays for the admin's own scripts. AddEmailTemplatesCronEntry.php stays - despite the name it installs the alerts e-mail templates, not a cron row.
   _No longer maintained. Removed 2026-09-15 - honzam (see older apc-aa branches to get the code)_
+
+/images/**ico-user-xs.png**
+/images/**ico-users-xs.png** - 16px person / people icons for the searchbar bookmark filters
+  Dead since the searchbar redesign: the only rules loading them (`input[type="text"].aa-fiter-user`, `.aa-fiter-users` in admin-ecn.css) selected an input, while the class has always been rendered on the bookmark `<button class="aa-bm-name aa-fiter-user">` (include/searchbar.class.php). The button draws both icons as inline SVG data URIs, so nothing referenced the files.
+  _No longer maintained. Removed 2026-09-15 - honzam (see older apc-aa branches to get the code)_

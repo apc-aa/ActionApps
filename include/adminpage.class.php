@@ -201,25 +201,7 @@ class AA_Adminpageutil {
             AA::Stringexpander()->addRequire(AA_INSTAL_PATH . $overlay.'?v='.AA_JS_VERSION);
         }
 
-        // Positioner for the reusable .aa-overflow-menu popover (HTML5 popover API,
-        // top-layer rendering). Open the popover via <button popovertarget="…">⋯</button>
-        // and the menu is anchored under the trigger automatically.
-        AA::Stringexpander()->addRequire(<<<'JS'
-            (function(){
-                document.addEventListener('toggle', function(e){
-                    var m = e.target;
-                    if (!m.classList || !m.classList.contains('aa-overflow-menu') || e.newState !== 'open') return;
-                    var btn = document.querySelector('[popovertarget="' + CSS.escape(m.id) + '"]');
-                    if (!btn) return;
-                    var r = btn.getBoundingClientRect();
-                    var w = m.offsetWidth || 180;
-                    var left = r.right - w;       // right-align under trigger
-                    if (left < 4) left = r.left;  // flip if it would clip viewport-left
-                    m.style.top  = (r.bottom + 4) + 'px';
-                    m.style.left = left + 'px';
-                }, true);
-            })();
-            JS, 'AA_Req_Load');
+        self::addOverflowMenuPositioner();
 
         if ($errtext = trim(implode('<br>',(array)$err))) {
             //$errtext = 'some text';
@@ -240,6 +222,10 @@ class AA_Adminpageutil {
 
         echo getMenu($this->menu, $this->submenu, $this->submenu_override); // opens two divs - in all cases
 
+        // The note corner (AA\Util\Note) is emitted before the H1, not after: it floats right, so
+        // printing it first puts it level with the title and leaves h1 sibling selectors intact.
+        echo \AA\Util\Notes::pageCorner();
+
         if ($this->title) {
             echo "<h1>" . $this->title . "</h1>";
         }
@@ -251,15 +237,13 @@ class AA_Adminpageutil {
             echo "<div class='mb-3 mt-3'>$Msg</div>";
         }
 
-        // the notes every admin page carries (AA\Util\Note) - a collapsed "Notes (n)" under the title
-        if (AuthGetUid() !== '') {
-            echo \AA\Util\Notes::panel(\AA\Util\Note::pageResource(), (string) ($_SERVER['REQUEST_URI'] ?? ''));
-        }
+        // Remember the scroll position over a submit. Outside the $this->form branch:
+        // it listens on every form of the page, and a page without the wrapper form
+        // (State Check, whose rows carry their own) is exactly where it is needed.
+        AA::Stringexpander()->addRequire("document.querySelectorAll('form').forEach(function(f) { f.addEventListener('submit', function() {sessionStorage.setItem('aa_pgtop', window.pageYOffset);});})", 'AA_Req_Load');
+        AA::Stringexpander()->addRequire("if (sessionStorage.getItem('aa_pgtop')>0) { window.scrollTo(0,sessionStorage.getItem('aa_pgtop')); sessionStorage.setItem('aa_pgtop', 0); }", 'AA_Req_Load');
 
         if ($this->form) {
-            // to remember the page scroll position in order we can return back
-            AA::Stringexpander()->addRequire("document.querySelectorAll('form').forEach(function(f) { f.addEventListener('submit', function() {sessionStorage.setItem('aa_pgtop', window.pageYOffset);});})", 'AA_Req_Load');
-            AA::Stringexpander()->addRequire("if (sessionStorage.getItem('aa_pgtop')>0) { window.scrollTo(0,sessionStorage.getItem('aa_pgtop')); sessionStorage.setItem('aa_pgtop', 0); }", 'AA_Req_Load');
             $frm = "\n<form";
             foreach ($this->form as $k => $v) {
                 if ($k === 'action') {
@@ -290,6 +274,31 @@ class AA_Adminpageutil {
                 echo '<br>'.$html;
             }
         }
+    }
+
+    /** Positioner for the reusable .aa-overflow-menu popover (HTML5 popover API,
+     *  top-layer rendering). Open the popover via <button popovertarget="…">⋯</button>
+     *  and the menu is anchored under the trigger automatically. Static and idempotent
+     *  (addRequire() deduplicates), because pages built by printForm() need it too.
+     */
+    public static function addOverflowMenuPositioner(): void
+    {
+        AA::Stringexpander()->addRequire(<<<'JS'
+            (function(){
+                document.addEventListener('toggle', function(e){
+                    var m = e.target;
+                    if (!m.classList || !m.classList.contains('aa-overflow-menu') || e.newState !== 'open') return;
+                    var btn = document.querySelector('[popovertarget="' + CSS.escape(m.id) + '"]');
+                    if (!btn) return;
+                    var r = btn.getBoundingClientRect();
+                    var w = m.offsetWidth || 180;
+                    var left = r.right - w;       // right-align under trigger
+                    if (left < 4) left = r.left;  // flip if it would clip viewport-left
+                    m.style.top  = (r.bottom + 4) + 'px';
+                    m.style.left = left + 'px';
+                }, true);
+            })();
+            JS, 'AA_Req_Load');
     }
 
     public function printFoot(): void
