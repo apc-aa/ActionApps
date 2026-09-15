@@ -269,37 +269,24 @@ class Linkcheck
         return $result;
     }
 
-    /** checking function
-     *  checking - runs check_url for links (count defined in LINKS_VALIDATION_COUNT)
+    /** Re-validates the LINKS_VALIDATION_COUNT least recently checked links (the hourly AA\Later\LinkcheckRun task)
+     * @return int links checked
      */
-    public function checking(): void
+    public function checking(): int
     {
-        $db = getDB();
+        // least recently validated first; never checked links have validated = 0
+        $links = DB_AA::select([], 'SELECT id, url, valid_codes, valid_rank FROM links_links', order: ['validated'], rows: (int) LINKS_VALIDATION_COUNT);
 
-        // select from links_links, ordered by validated (timestamp),
-        // unchecked links have validated = 0
-        $links = DB_AA::select([], 'SELECT id, url, valid_codes, valid_rank FROM links_links ORDER BY validated');
-        $max   = min(LINKS_VALIDATION_COUNT, count($links));
-
-        for ($i = 0; $i < $max; ++$i) {
-
-            $l_id  = $links['id'];
-            $l_url = (string) $links['url'];
-            $l_vc  = $links['valid_codes'];
-            $l_vr  = $links['valid_rank'];
-
-            $val                = $this->check_url($l_url); // check url
-            $val["valid_codes"] = $this->add_check($val, $l_vc); // add this check into valid_codes
-            $val["valid_rank"]  = $this->count_weight($val["valid_codes"]); // count rank for link
-
-            // update values in db
-            $SQL = "UPDATE links_links SET valid_codes='" . $val["valid_codes"] . "',
-                                           valid_rank='" . $val["valid_rank"] . "',
-                                           validated='" . $val["timestamp"] . "'
-                    WHERE id = '" . $l_id . "'";
-            $db->query($SQL);
+        foreach ($links as $link) {
+            $val = $this->check_url((string) $link['url']);
+            $val['valid_codes'] = $this->add_check($val, $link['valid_codes']);
+            DB_AA::update('links_links', [
+                ['valid_codes', $val['valid_codes']],
+                ['valid_rank', $this->count_weight($val['valid_codes'])],
+                ['validated', $val['timestamp'], 'i'],
+            ], [['id', $link['id'], 'i']]);
         }
-        freeDB($db);
+        return count($links);
     }
 
     /** add_check function
