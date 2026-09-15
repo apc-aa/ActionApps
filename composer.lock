@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c99d9b6c48bb0c9a6e18953da47b93f2",
+    "content-hash": "9d578555f78b3e1d040252121838f8cc",
     "packages": [
         {
             "name": "dasprid/enum",
@@ -243,11 +243,17 @@
         },
         {
             "name": "honzito/misscache",
-            "version": "dev-main",
-            "dist": {
-                "type": "path",
-                "url": "misc/missCache",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/honzito/MissCache.git",
                 "reference": "6a43ed1cbd385b772d20ffd65585b86a87ad03b8"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/honzito/MissCache/zipball/6a43ed1cbd385b772d20ffd65585b86a87ad03b8",
+                "reference": "6a43ed1cbd385b772d20ffd65585b86a87ad03b8",
+                "shasum": ""
             },
             "require": {
                 "ext-mbstring": "*",
@@ -259,6 +265,7 @@
             "suggest": {
                 "ext-curl": "Faster, more robust HTTP subrequests in PhpThumbPlugin (falls back to allow_url_fopen)"
             },
+            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -287,10 +294,11 @@
                 "cache",
                 "php"
             ],
-            "transport-options": {
-                "symlink": false,
-                "relative": true
-            }
+            "support": {
+                "source": "https://github.com/honzito/MissCache/tree/master",
+                "issues": "https://github.com/honzito/MissCache/issues"
+            },
+            "time": "2026-09-04T13:21:52+00:00"
         },
         {
             "name": "honzito/phpthumb",
