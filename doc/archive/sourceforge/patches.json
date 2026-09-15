@@ -1,0 +1,100 @@
+{"tickets": [{
+  "votes_up": 0,
+  "votes_down": 0,
+  "_id": "519a56cf34309d2f05e4504c",
+  "mod_date": "2000-06-13 21:15:40",
+  "labels": [],
+  "related_artifacts": [],
+  "discussion_thread": {
+    "_id": "4e9e8dc1",
+    "discussion_id": "519a56cf34309d2f05e45040",
+    "subject": "",
+    "limit": null,
+    "page": null,
+    "posts": [
+      {
+        "slug": "31d3",
+        "text": "None",
+        "subject": "#1 patch admin/slicedit.php3 thispatch # expiry",
+        "author": "madebeer",
+        "author_icon_url": "https://a.fsdn.com/con/images/sandiego/icons/default-avatar.png",
+        "timestamp": "2000-06-13 21:15:40",
+        "last_edited": null,
+        "attachments": [
+          {
+            "bytes": 2815,
+            "url": "https://sourceforge.net/p/apc-aa/patches/_discuss/thread/4e9e8dc1/31d3/attachment/None",
+            "path": "patches/519a56cf34309d2f05e4504c/4e9e8dc1/31d3/None"
+          }
+        ],
+        "is_meta": false
+      }
+    ]
+  },
+  "discussion_thread_url": "https://sourceforge.net/rest/p/apc-aa/patches/_discuss/thread/4e9e8dc1/",
+  "created_date": "2000-06-13 21:15:40",
+  "ticket_num": 1,
+  "summary": "patch admin/slicedit.php3 thispatch # expiry",
+  "description": "",
+  "reported_by": "madebeer",
+  "assigned_to": null,
+  "reported_by_id": "512bcef1e88f3d3e617ea882",
+  "assigned_to_id": null,
+  "status": "open",
+  "private": false,
+  "discussion_disabled": false,
+  "attachments": [],
+  "custom_fields": {
+    "_priority": "5"
+  }
+}],
+"tracker_config":{
+  "_id": "519a56cf34309d2f05e4503e",
+  "options": {
+    "ordinal": 9,
+    "import_id": "tracker/306341",
+    "mount_point": "patches",
+    "TicketMonitoringType": null,
+    "EnableVoting": false,
+    "TicketMonitoringEmail": "",
+    "mount_label": "Patches",
+    "url": "/p/apc-aa/patches/"
+  }
+},
+"milestones":[],
+"custom_fields":[
+  {
+    "milestones": [],
+    "type": "milestone",
+    "name": "_milestone",
+    "label": "Group"
+  },
+  {
+    "label": "Priority",
+    "type": "select",
+    "options": "1 2 3 4 *5 6 7 8 9",
+    "name": "_priority"
+  }
+],
+"open_status_names":"open unread accepted pending",
+"closed_status_names":"closed wont-fix",
+"saved_bins":[
+  {
+    "_id": "519a56cf34309d2f05e45048",
+    "summary": "Changes",
+    "terms": "!status:wont-fix && !status:closed",
+    "sort": "mod_date_dt desc"
+  },
+  {
+    "_id": "519a56cf34309d2f05e45047",
+    "summary": "Closed Tickets",
+    "terms": "status:wont-fix or status:closed",
+    "sort": ""
+  },
+  {
+    "_id": "519a56cf34309d2f05e45046",
+    "summary": "Open Tickets",
+    "terms": "!status:wont-fix && !status:closed",
+    "sort": ""
+  }
+]}

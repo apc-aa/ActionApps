@@ -1,0 +1,1065 @@
+{"tickets": [{
+  "votes_up": 0,
+  "votes_down": 0,
+  "_id": "519a56bd34309d2f05e44eea",
+  "mod_date": "2002-11-19 07:24:08",
+  "labels": [],
+  "related_artifacts": [],
+  "discussion_thread": {
+    "_id": "d74e5cbc",
+    "discussion_id": "519a56bd34309d2f05e44ede",
+    "subject": "",
+    "limit": null,
+    "page": null,
+    "posts": [
+      {
+        "slug": "4100",
+        "text": "- **priority**: 5 --> 4",
+        "subject": "#1 remove string enhancements",
+        "author": "keb",
+        "author_icon_url": "https://a.fsdn.com/con/images/sandiego/icons/default-avatar.png",
+        "timestamp": "2001-05-13 15:37:00",
+        "last_edited": null,
+        "attachments": [],
+        "is_meta": true
+      },
+      {
+        "slug": "3727",
+        "text": "- **labels**: 102580 --> \n- **milestone**: 101575 --> \n- **priority**: 4 --> 3",
+        "subject": "#1 remove string enhancements",
+        "author": "honzam",
+        "author_icon_url": "https://a.fsdn.com/con/images/sandiego/icons/default-avatar.png",
+        "timestamp": "2002-05-18 13:03:16",
+        "last_edited": null,
+        "attachments": [],
+        "is_meta": true
+      },
+      {
+        "slug": "e6c7",
+        "text": "Logged In: YES \nuser\\_id=40086\n\nRemove strings are less important now, when we can use \r\nbetter alias functions. Mainly \\{switch: ...\\} and f\\_c alias \r\nfunction.",
+        "subject": "#1 remove string enhancements",
+        "author": "honzam",
+        "author_icon_url": "https://a.fsdn.com/con/images/sandiego/icons/default-avatar.png",
+        "timestamp": "2002-05-18 13:03:16",
+        "last_edited": null,
+        "attachments": [],
+        "is_meta": false
+      },
+      {
+        "slug": "8455",
+        "text": "- **status**: open --> closed",
+        "subject": "#1 remove string enhancements",
+        "author": "keb",
+        "author_icon_url": "https://a.fsdn.com/con/images/sandiego/icons/default-avatar.png",
+        "timestamp": "2002-11-19 07:24:08",
+        "last_edited": null,
+        "attachments": [],
+        "is_meta": true
+      }
+    ]
+  },
+  "discussion_thread_url": "https://sourceforge.net/rest/p/apc-aa/feature-requests/_discuss/thread/d74e5cbc/",
+  "created_date": "2001-04-19 04:39:19",
+  "ticket_num": 1,
+  "summary": "remove string enhancements",
+  "description": "It would be useful if the Remove String on the Design\r\nview could \r\n\\- be longer than 255 characters;\r\n\\- accept single quote characters;\r\n\\- implement regular expressions.\r\n\r\nOf course it's better if the data entered is good in\r\nthe first place, and many needs can now be met via the\r\nconditional alias, but you never know when a workaround\r\nwill be needed.\r\n",
+  "reported_by": "keb",
+  "assigned_to": null,
+  "reported_by_id": "50c72ed22718462295042f3a",
+  "assigned_to_id": null,
+  "status": "closed",
+  "private": false,
+  "discussion_disabled": false,
+  "attachments": [],
+  "custom_fields": {
+    "_priority": "3"
+  }
+},{
+  "votes_up": 0,
+  "votes_down": 0,
+  "_id": "519a56bf34309d2f05e44f06",
+  "mod_date": "2001-06-03 17:18:20",
+  "labels": [],
+  "related_artifacts": [],
+  "discussion_thread": {
+    "_id": "541a194e",
+    "discussion_id": "519a56bd34309d2f05e44ede",
+    "subject": "",
+    "limit": null,
+    "page": null,
+    "posts": [
+      {
+        "slug": "0e05",
+        "text": "Logged In: YES \nuser\\_id=40086\n\nNow it is possible.\r\n\r\nHonza",
+        "subject": "#2 Asign multiple cathegories to an item",
+        "author": "honzam",
+        "author_icon_url": "https://a.fsdn.com/con/images/sandiego/icons/default-avatar.png",
+        "timestamp": "2001-06-03 17:18:20",
+        "last_edited": null,
+        "attachments": [],
+        "is_meta": false
+      },
+      {
+        "slug": "d947",
+        "text": "- **status**: open --> closed",
+        "subject": "#2 Asign multiple cathegories to an item",
+        "author": "honzam",
+        "author_icon_url": "https://a.fsdn.com/con/images/sandiego/icons/default-avatar.png",
+        "timestamp": "2001-06-03 17:18:20",
+        "last_edited": null,
+        "attachments": [],
+        "is_meta": true
+      }
+    ]
+  },
+  "discussion_thread_url": "https://sourceforge.net/rest/p/apc-aa/feature-requests/_discuss/thread/541a194e/",
+  "created_date": "2001-05-14 13:17:23",
+  "ticket_num": 2,
+  "summary": "Asign multiple cathegories to an item",
+  "description": "It would be great if there is possibility to asign multiple \r\ncathegories to an item \\(article\\). It will much improve \r\nflexibility of AA use \\(e.g. display all items where \r\ncathegory is &amp;quot;environment and legislation&amp;quot;\\).",
+  "reported_by": "*anonymous",
+  "assigned_to": null,
+  "reported_by_id": null,
+  "assigned_to_id": null,
+  "status": "closed",
+  "private": false,
+  "discussion_disabled": false,
+  "attachments": [],
+  "custom_fields": {
+    "_priority": "5"
+  }
+},{
+  "votes_up": 0,
+  "votes_down": 0,
+  "_id": "519a56c034309d2f05e44f17",
+  "mod_date": "2002-03-23 12:24:05",
+  "labels": [],
+  "related_artifacts": [],
+  "discussion_thread": {
+    "_id": "f7ce216d",
+    "discussion_id": "519a56bd34309d2f05e44ede",
+    "subject": "",
+    "limit": null,
+    "page": null,
+    "posts": [
+      {
+        "slug": "0245",
+        "text": "Logged In: NO \n\nThis proposal coulde be extended in a way that the users \r\ncan &amp;quot;register&amp;quot; via publicly accessible form. Administrator \r\n\\(publisher\\) of the slice can then select user\\(s\\) and assign \r\naccess \\(author/editor\\) permissions to his/her slice. In \r\nthis way you will not need create the same user for each \r\ndifferent slice he/she should have access to.",
+        "subject": "#3 Publisher to add Users",
+        "author": "nobody",
+        "author_icon_url": "https://a.fsdn.com/con/images/sandiego/icons/default-avatar.png",
+        "timestamp": "2002-03-23 12:57:12",
+        "last_edited": null,
+        "attachments": [],
+        "is_meta": false
+      }
+    ]
+  },
+  "discussion_thread_url": "https://sourceforge.net/rest/p/apc-aa/feature-requests/_discuss/thread/f7ce216d/",
+  "created_date": "2002-03-23 12:24:05",
+  "ticket_num": 3,
+  "summary": "Publisher to add Users",
+  "description": "Shouldn't we have a feature, that we can have some \r\nlike a group admin, who can add users in his group or \r\na publisher who can add usrs to his/her slice?\r\n\r\nAFAIK now every user has to be entered by the 'super \r\nadmin' which will most likely be the APC provider that \r\nruns the AA.\r\n\r\nIf we rent the AA to many clients, these should be \r\nable to add users to their own slices.\r\n\r\n\\--Udo\r\n",
+  "reported_by": "udosw",
+  "assigned_to": null,
+  "reported_by_id": "518bb6f034309d5b4c087ec2",
+  "assigned_to_id": null,
+  "status": "open",
+  "private": false,
+  "discussion_disabled": false,
+  "attachments": [],
+  "custom_fields": {
+    "_priority": "5"
+  }
+},{
+  "votes_up": 0,
+  "votes_down": 0,
+  "_id": "519a56c134309d2f05e44f24",
+  "mod_date": "2002-05-17 20:30:02",
+  "labels": [],
+  "related_artifacts": [],
+  "discussion_thread": {
+    "_id": "fd6366dc",
+    "discussion_id": "519a56bd34309d2f05e44ede",
+    "subject": "",
+    "limit": null,
+    "page": null,
+    "posts": [
+      {
+        "slug": "d489",
+        "text": "Logged In: YES \nuser\\_id=40086\n\nHierarchical constant editor is part of AA 2.2-pre \r\n\\(currently in CVS\\). Honza",
+        "subject": "#4 Support for hierarchical categories",
+        "author": "honzam",
+        "author_icon_url": "https://a.fsdn.com/con/images/sandiego/icons/default-avatar.png",
+        "timestamp": "2002-05-17 20:30:02",
+        "last_edited": null,
+        "attachments": [],
+        "is_meta": false
+      },
+      {
+        "slug": "2de9",
+        "text": "- **status**: open --> closed",
+        "subject": "#4 Support for hierarchical categories",
+        "author": "honzam",
+        "author_icon_url": "https://a.fsdn.com/con/images/sandiego/icons/default-avatar.png",
+        "timestamp": "2002-05-17 20:30:02",
+        "last_edited": null,
+        "attachments": [],
+        "is_meta": true
+      }
+    ]
+  },
+  "discussion_thread_url": "https://sourceforge.net/rest/p/apc-aa/feature-requests/_discuss/thread/fd6366dc/",
+  "created_date": "2002-03-23 13:10:25",
+  "ticket_num": 4,
+  "summary": "Support for hierarchical categories",
+  "description": "AA should support hierarchical categories with parent-\r\nchild relationships.",
+  "reported_by": "brazdax",
+  "assigned_to": null,
+  "reported_by_id": "519a56c134309d2f05e44f25",
+  "assigned_to_id": null,
+  "status": "closed",
+  "private": false,
+  "discussion_disabled": false,
+  "attachments": [],
+  "custom_fields": {
+    "_priority": "5"
+  }
+},{
+  "votes_up": 0,
+  "votes_down": 0,
+  "_id": "519a56c334309d2f05e44f53",
+  "mod_date": "2002-03-23 13:14:45",
+  "labels": [],
+  "related_artifacts": [],
+  "discussion_thread": {
+    "_id": "63be5d07",
+    "discussion_id": "519a56bd34309d2f05e44ede",
+    "subject": "",
+    "limit": null,
+    "page": null,
+    "posts": []
+  },
+  "discussion_thread_url": "https://sourceforge.net/rest/p/apc-aa/feature-requests/_discuss/thread/63be5d07/",
+  "created_date": "2002-03-23 13:14:45",
+  "ticket_num": 5,
+  "summary": "Update of a value of a field by visitor",
+  "description": "AA should support update of value of selected field by \r\nan anonymous user \\(visitor\\) \\(e.g. increase value by 1 \r\nor other calculation, change value, add value to list \r\nof existing ones\\). Usefull for article ratings, \r\nopinion pools, etc.",
+  "reported_by": "brazdax",
+  "assigned_to": null,
+  "reported_by_id": "519a56c134309d2f05e44f25",
+  "assigned_to_id": null,
+  "status": "open",
+  "private": false,
+  "discussion_disabled": false,
+  "attachments": [],
+  "custom_fields": {
+    "_priority": "5"
+  }
+},{
+  "votes_up": 0,
+  "votes_down": 0,
+  "_id": "519a56c334309d2f05e44f5a",
+  "mod_date": "2002-05-17 20:37:43",
+  "labels": [],
+  "related_artifacts": [],
+  "discussion_thread": {
+    "_id": "41e6afc8",
+    "discussion_id": "519a56bd34309d2f05e44ede",
+    "subject": "",
+    "limit": null,
+    "page": null,
+    "posts": [
+      {
+        "slug": "f2da",
+        "text": "Logged In: YES \nuser\\_id=40086\n\n\\(1\\) Now it is possible. The discussion could be included \r\nfor example by following inline alias: \r\n\r\n\\{alias::f\\_v:vid=336&amp;amp;set\\[336\\]=sh\\_itm-\\_\\#unpacked\\_id.....\\}\r\n\r\n\\(2\\) It is possible. Just change the '\\_\\#unpacked\\_id.....' \r\nwith the long form of item id under which discussion \r\nbelongs:\r\n\r\n\\{alias::f\\_v:vid=336&amp;amp;set\\[336\\]=sh\\_itm-\r\n2a5c47b78e2d1c574f5421a57795e4a5\\}\r\n\r\nHonza",
+        "subject": "#6 Discussion forums as normal views",
+        "author": "honzam",
+        "author_icon_url": "https://a.fsdn.com/con/images/sandiego/icons/default-avatar.png",
+        "timestamp": "2002-05-17 20:37:43",
+        "last_edited": null,
+        "attachments": [],
+        "is_meta": false
+      },
+      {
+        "slug": "32b6",
+        "text": "- **status**: open --> closed",
+        "subject": "#6 Discussion forums as normal views",
+        "author": "honzam",
+        "author_icon_url": "https://a.fsdn.com/con/images/sandiego/icons/default-avatar.png",
+        "timestamp": "2002-05-17 20:37:43",
+        "last_edited": null,
+        "attachments": [],
+        "is_meta": true
+      }
+    ]
+  },
+  "discussion_thread_url": "https://sourceforge.net/rest/p/apc-aa/feature-requests/_discuss/thread/41e6afc8/",
+  "created_date": "2002-03-23 13:19:10",
+  "ticket_num": 6,
+  "summary": "Discussion forums as normal views",
+  "description": "Discussion forum views should have the same \r\nfuncionality as other views. Especially \\(1\\) \r\npossibility to include discussion view on any place of \r\nthe fulltext .shtml page and \\(2\\) possibility to \r\ncontrol by parameters what discussion \\(comments to \r\nwhich article\\) is displayed.",
+  "reported_by": "brazdax",
+  "assigned_to": null,
+  "reported_by_id": "519a56c134309d2f05e44f25",
+  "assigned_to_id": null,
+  "status": "closed",
+  "private": false,
+  "discussion_disabled": false,
+  "attachments": [],
+  "custom_fields": {
+    "_priority": "5"
+  }
+},{
+  "votes_up": 0,
+  "votes_down": 0,
+  "_id": "519a56c434309d2f05e44f6b",
+  "mod_date": "2004-09-13 09:53:23",
+  "labels": [],
+  "related_artifacts": [],
+  "discussion_thread": {
+    "_id": "8506a87d",
+    "discussion_id": "519a56bd34309d2f05e44ede",
+    "subject": "",
+    "limit": null,
+    "page": null,
+    "posts": [
+      {
+        "slug": "6932",
+        "text": "- **status**: open --> closed",
+        "subject": "#7 Discussion enhancements",
+        "author": "marek_tichy",
+        "author_icon_url": "https://a.fsdn.com/con/images/sandiego/icons/default-avatar.png",
+        "timestamp": "2004-09-13 09:53:23",
+        "last_edited": null,
+        "attachments": [],
+        "is_meta": true
+      }
+    ]
+  },
+  "discussion_thread_url": "https://sourceforge.net/rest/p/apc-aa/feature-requests/_discuss/thread/8506a87d/",
+  "created_date": "2002-03-23 13:31:39",
+  "ticket_num": 7,
+  "summary": "Discussion enhancements",
+  "description": "Possibility to display titles and/or texts of \r\ndiscussion comments \\(grouped according to articles\\). \r\nUsefull for hot articles/discussions listing, latest \r\ncomments listing, etc.\r\n\r\nPossibility to send discussion comments to email \r\naddress \\(watch all discussions in this slice, \r\ndiscussion in this article, discussion in this thread, \r\nonly replyies to my comment\\). ",
+  "reported_by": "brazdax",
+  "assigned_to": null,
+  "reported_by_id": "519a56c134309d2f05e44f25",
+  "assigned_to_id": null,
+  "status": "closed",
+  "private": false,
+  "discussion_disabled": false,
+  "attachments": [],
+  "custom_fields": {
+    "_priority": "5"
+  }
+},{
+  "votes_up": 0,
+  "votes_down": 0,
+  "_id": "519a56c534309d2f05e44f77",
+  "mod_date": "2002-03-23 13:39:13",
+  "labels": [],
+  "related_artifacts": [],
+  "discussion_thread": {
+    "_id": "07ed5278",
+    "discussion_id": "519a56bd34309d2f05e44ede",
+    "subject": "",
+    "limit": null,
+    "page": null,
+    "posts": []
+  },
+  "discussion_thread_url": "https://sourceforge.net/rest/p/apc-aa/feature-requests/_discuss/thread/07ed5278/",
+  "created_date": "2002-03-23 13:39:13",
+  "ticket_num": 8,
+  "summary": "Read access permissions",
+  "description": "AA need possibility to assign also &amp;quot;read&amp;quot; access \r\npermissions to the slice data. Not only to slice \r\nitself, but to individual items/articles. \r\n\r\nNow it is not safe to use AA for publishing \r\nprivate/sensitive information. Anyonye can display \r\nsuch information by guesing view ID and short item ID \r\n\\(/apc-aa/view.php3?vid=xxx&amp;amp;x=yyy\\), even with use of \r\ndifferent view which has the same aliases...\r\n\r\n",
+  "reported_by": "brazdax",
+  "assigned_to": null,
+  "reported_by_id": "519a56c134309d2f05e44f25",
+  "assigned_to_id": null,
+  "status": "open",
+  "private": false,
+  "discussion_disabled": false,
+  "attachments": [],
+  "custom_fields": {
+    "_priority": "5"
+  }
+},{
+  "votes_up": 0,
+  "votes_down": 0,
+  "_id": "519a56c534309d2f05e44f7e",
+  "mod_date": "2004-09-13 09:54:10",
+  "labels": [],
+  "related_artifacts": [],
+  "discussion_thread": {
+    "_id": "519a2bf5",
+    "discussion_id": "519a56bd34309d2f05e44ede",
+    "subject": "",
+    "limit": null,
+    "page": null,
+    "posts": [
+      {
+        "slug": "1528",
+        "text": "- **status**: open --> closed",
+        "subject": "#9 &quot;Skins&quot; for Admin interface",
+        "author": "marek_tichy",
+        "author_icon_url": "https://a.fsdn.com/con/images/sandiego/icons/default-avatar.png",
+        "timestamp": "2004-09-13 09:54:10",
+        "last_edited": null,
+        "attachments": [],
+        "is_meta": true
+      }
+    ]
+  },
+  "discussion_thread_url": "https://sourceforge.net/rest/p/apc-aa/feature-requests/_discuss/thread/519a2bf5/",
+  "created_date": "2002-03-23 13:42:07",
+  "ticket_num": 9,
+  "summary": "&quot;Skins&quot; for Admin interface",
+  "description": "Design of Admin interface should be customizable \\(at \r\nleast some parts of it\\) so the design of Admin \r\ninterface is consistent with design of public pages \r\nwhere slice data are included/displayed.",
+  "reported_by": "brazdax",
+  "assigned_to": null,
+  "reported_by_id": "519a56c134309d2f05e44f25",
+  "assigned_to_id": null,
+  "status": "closed",
+  "private": false,
+  "discussion_disabled": false,
+  "attachments": [],
+  "custom_fields": {
+    "_priority": "5"
+  }
+},{
+  "votes_up": 0,
+  "votes_down": 0,
+  "_id": "519a56c534309d2f05e44f8a",
+  "mod_date": "2002-05-17 20:47:14",
+  "labels": [],
+  "related_artifacts": [],
+  "discussion_thread": {
+    "_id": "af0b447b",
+    "discussion_id": "519a56bd34309d2f05e44ede",
+    "subject": "",
+    "limit": null,
+    "page": null,
+    "posts": [
+      {
+        "slug": "5625",
+        "text": "Logged In: YES \nuser\\_id=40086\n\nCalendar view, written by Jakub Adamek is part of AA v2.2-\r\npre - currently in CVS.\r\n",
+        "subject": "#10 Calendar view for calendar application",
+        "author": "honzam",
+        "author_icon_url": "https://a.fsdn.com/con/images/sandiego/icons/default-avatar.png",
+        "timestamp": "2002-05-17 20:47:14",
+        "last_edited": null,
+        "attachments": [],
+        "is_meta": false
+      },
+      {
+        "slug": "2df7",
+        "text": "- **status**: open --> closed",
+        "subject": "#10 Calendar view for calendar application",
+        "author": "honzam",
+        "author_icon_url": "https://a.fsdn.com/con/images/sandiego/icons/default-avatar.png",
+        "timestamp": "2002-05-17 20:47:14",
+        "last_edited": null,
+        "attachments": [],
+        "is_meta": true
+      }
+    ]
+  },
+  "discussion_thread_url": "https://sourceforge.net/rest/p/apc-aa/feature-requests/_discuss/thread/af0b447b/",
+  "created_date": "2002-03-23 13:43:24",
+  "ticket_num": 10,
+  "summary": "Calendar view for calendar application",
+  "description": "Calendar view \\(monthly, weekly, daily\\) for calendar \r\napplication.",
+  "reported_by": "brazdax",
+  "assigned_to": null,
+  "reported_by_id": "519a56c134309d2f05e44f25",
+  "assigned_to_id": null,
+  "status": "closed",
+  "private": false,
+  "discussion_disabled": false,
+  "attachments": [],
+  "custom_fields": {
+    "_priority": "5"
+  }
+},{
+  "votes_up": 0,
+  "votes_down": 0,
+  "_id": "519a56c634309d2f05e44f9b",
+  "mod_date": "2004-09-13 09:55:06",
+  "labels": [],
+  "related_artifacts": [],
+  "discussion_thread": {
+    "_id": "450694aa",
+    "discussion_id": "519a56bd34309d2f05e44ede",
+    "subject": "",
+    "limit": null,
+    "page": null,
+    "posts": [
+      {
+        "slug": "38ab",
+        "text": "- **status**: open --> closed",
+        "subject": "#11 Web interfacre for mass import of data",
+        "author": "marek_tichy",
+        "author_icon_url": "https://a.fsdn.com/con/images/sandiego/icons/default-avatar.png",
+        "timestamp": "2004-09-13 09:55:06",
+        "last_edited": null,
+        "attachments": [],
+        "is_meta": true
+      },
+      {
+        "slug": "87f2",
+        "text": "Logged In: YES \nuser\\_id=689847\n\nThere is now csv import in AA &gt;=  2.8.0. MT",
+        "subject": "#11 Web interfacre for mass import of data",
+        "author": "marek_tichy",
+        "author_icon_url": "https://a.fsdn.com/con/images/sandiego/icons/default-avatar.png",
+        "timestamp": "2004-09-13 09:55:06",
+        "last_edited": null,
+        "attachments": [],
+        "is_meta": false
+      }
+    ]
+  },
+  "discussion_thread_url": "https://sourceforge.net/rest/p/apc-aa/feature-requests/_discuss/thread/450694aa/",
+  "created_date": "2002-03-23 13:46:39",
+  "ticket_num": 11,
+  "summary": "Web interfacre for mass import of data",
+  "description": "Add web interface for mass import of data \\(now done \r\nvia /misc/file2slice/\\) into AA Admin interface.\r\n\r\nThe simpliest way could be just to have two text area \r\nfiled \\(one for definition what to import where - see \r\nimport.php3\\) and another one for pasting imported data \r\ninto.",
+  "reported_by": "brazdax",
+  "assigned_to": null,
+  "reported_by_id": "519a56c134309d2f05e44f25",
+  "assigned_to_id": null,
+  "status": "closed",
+  "private": false,
+  "discussion_disabled": false,
+  "attachments": [],
+  "custom_fields": {
+    "_priority": "5"
+  }
+},{
+  "votes_up": 0,
+  "votes_down": 0,
+  "_id": "519a56c734309d2f05e44fac",
+  "mod_date": "2002-03-23 14:13:04",
+  "labels": [],
+  "related_artifacts": [],
+  "discussion_thread": {
+    "_id": "c1fcecf7",
+    "discussion_id": "519a56bd34309d2f05e44ede",
+    "subject": "",
+    "limit": null,
+    "page": null,
+    "posts": []
+  },
+  "discussion_thread_url": "https://sourceforge.net/rest/p/apc-aa/feature-requests/_discuss/thread/c1fcecf7/",
+  "created_date": "2002-03-23 14:13:04",
+  "ticket_num": 12,
+  "summary": "Email notification enhancement",
+  "description": "If a field included in email notification is type of \r\nHTML \\(e.g. full text of item/article formated as \r\nhtml\\), it should be either converted into plain text \r\nor email message should contain correct Mime headers, \r\netc. before it is send.\r\n\r\n",
+  "reported_by": "brazdax",
+  "assigned_to": null,
+  "reported_by_id": "519a56c134309d2f05e44f25",
+  "assigned_to_id": null,
+  "status": "open",
+  "private": false,
+  "discussion_disabled": false,
+  "attachments": [],
+  "custom_fields": {
+    "_priority": "5"
+  }
+},{
+  "votes_up": 0,
+  "votes_down": 0,
+  "_id": "519a56c834309d2f05e44fb3",
+  "mod_date": "2002-03-23 14:19:39",
+  "labels": [],
+  "related_artifacts": [],
+  "discussion_thread": {
+    "_id": "4dc4d225",
+    "discussion_id": "519a56bd34309d2f05e44ede",
+    "subject": "",
+    "limit": null,
+    "page": null,
+    "posts": [
+      {
+        "slug": "0ba1",
+        "text": "Logged In: YES \nuser\\_id=40086\n\nWe are thinking about this feature. There are my notes:\r\n\r\n1\\) We do not see as good to implement mathematical \r\noperations into the formatstring \\(for example just like:\r\n\\{math:\\{number.........1\\}+\\{number.........2\\}\\}\r\nThe reasons are:\r\n\\- sliceadmins have to learn new syntax\r\n\\- user needs are unlimitted, so we have to implement not \r\nonly +, -, \\*, /, \\(\\), but we have to implement string \r\noperations - concaternation, substring, ... which means to \r\ndevelop new programming language, in fact.\r\n\r\n2\\) So, best is to use the existing languages. We have two \r\nchoices \\(at least\\) - PHP and javascript.\r\n\r\n2a\\) PHP - PHP you already can use. You just use f\\_u alias \r\nfunction and the special output function you will write to \r\nusr\\_aliasfnc.php3 file.\r\n\r\n2b\\) Javascript - Yes, it seems to us as the best solution \r\nfor fields counted in inputform. We are thinking about the \r\nway to give slice admins possibility to define for each \r\nfield any javascript function. The function will be invoked \r\nonselect, onchange, on... as user defines it.\r\n\r\nDo you think it is sufficient to your needs?\r\n\r\nHonza",
+        "subject": "#13 Mathematical functions",
+        "author": "honzam",
+        "author_icon_url": "https://a.fsdn.com/con/images/sandiego/icons/default-avatar.png",
+        "timestamp": "2002-05-17 21:09:27",
+        "last_edited": null,
+        "attachments": [],
+        "is_meta": false
+      }
+    ]
+  },
+  "discussion_thread_url": "https://sourceforge.net/rest/p/apc-aa/feature-requests/_discuss/thread/4dc4d225/",
+  "created_date": "2002-03-23 14:19:39",
+  "ticket_num": 13,
+  "summary": "Mathematical functions",
+  "description": "Add mathematical functions \\(such as +, -, \\*, /, count, \r\nsum\\) into AA \\(probably into aliases display \r\nfunctions\\). Usefull for calculation of fields and \r\nsummarizing data, e.g. price \\* amount or sum\\(amount\\).\r\n",
+  "reported_by": "brazdax",
+  "assigned_to": null,
+  "reported_by_id": "519a56c134309d2f05e44f25",
+  "assigned_to_id": null,
+  "status": "open",
+  "private": false,
+  "discussion_disabled": false,
+  "attachments": [],
+  "custom_fields": {
+    "_priority": "5"
+  }
+},{
+  "votes_up": 0,
+  "votes_down": 0,
+  "_id": "519a56c834309d2f05e44fbf",
+  "mod_date": "2002-05-17 20:24:52",
+  "labels": [],
+  "related_artifacts": [],
+  "discussion_thread": {
+    "_id": "b130887e",
+    "discussion_id": "519a56bd34309d2f05e44ede",
+    "subject": "",
+    "limit": null,
+    "page": null,
+    "posts": [
+      {
+        "slug": "1fa6",
+        "text": "Logged In: YES \nuser\\_id=40086\n\nIn CVS now. Thanks to Stano from ChangeNet.",
+        "subject": "#14 Selectboxes from other slices/views",
+        "author": "honzam",
+        "author_icon_url": "https://a.fsdn.com/con/images/sandiego/icons/default-avatar.png",
+        "timestamp": "2002-05-17 20:24:52",
+        "last_edited": null,
+        "attachments": [],
+        "is_meta": false
+      },
+      {
+        "slug": "62be",
+        "text": "- **status**: open --> closed",
+        "subject": "#14 Selectboxes from other slices/views",
+        "author": "honzam",
+        "author_icon_url": "https://a.fsdn.com/con/images/sandiego/icons/default-avatar.png",
+        "timestamp": "2002-05-17 20:24:52",
+        "last_edited": null,
+        "attachments": [],
+        "is_meta": true
+      }
+    ]
+  },
+  "discussion_thread_url": "https://sourceforge.net/rest/p/apc-aa/feature-requests/_discuss/thread/b130887e/",
+  "created_date": "2002-03-23 15:33:07",
+  "ticket_num": 14,
+  "summary": "Selectboxes from other slices/views",
+  "description": "Add the possiblility to define content of selectboxes \r\nin cases the values \\(rows\\) are filled-in from \r\ndifferent slice/view \\(e.g. not only headline...... \r\nfield, but also other fields or their combination\\). ",
+  "reported_by": "brazdax",
+  "assigned_to": null,
+  "reported_by_id": "519a56c134309d2f05e44f25",
+  "assigned_to_id": null,
+  "status": "closed",
+  "private": false,
+  "discussion_disabled": false,
+  "attachments": [],
+  "custom_fields": {
+    "_priority": "5"
+  }
+},{
+  "votes_up": 0,
+  "votes_down": 0,
+  "_id": "519a56ca34309d2f05e44fd0",
+  "mod_date": "2002-08-30 17:30:25",
+  "labels": [],
+  "related_artifacts": [],
+  "discussion_thread": {
+    "_id": "7d2812ce",
+    "discussion_id": "519a56bd34309d2f05e44ede",
+    "subject": "",
+    "limit": null,
+    "page": null,
+    "posts": []
+  },
+  "discussion_thread_url": "https://sourceforge.net/rest/p/apc-aa/feature-requests/_discuss/thread/7d2812ce/",
+  "created_date": "2002-08-30 17:30:25",
+  "ticket_num": 15,
+  "summary": "Profile for groups",
+  "description": "If a user is assigned to a group, the user inherits the\r\nprofile of the group.\r\n\r\nJoseph Vavpetic &amp;lt;JVavpeti@hotchkiss.org&amp;gt;",
+  "reported_by": "*anonymous",
+  "assigned_to": null,
+  "reported_by_id": null,
+  "assigned_to_id": null,
+  "status": "open",
+  "private": false,
+  "discussion_disabled": false,
+  "attachments": [],
+  "custom_fields": {
+    "_priority": "5"
+  }
+},{
+  "votes_up": 0,
+  "votes_down": 0,
+  "_id": "519a56ca34309d2f05e44fd7",
+  "mod_date": "2004-09-13 09:48:41",
+  "labels": [],
+  "related_artifacts": [],
+  "discussion_thread": {
+    "_id": "cd992aec",
+    "discussion_id": "519a56bd34309d2f05e44ede",
+    "subject": "",
+    "limit": null,
+    "page": null,
+    "posts": [
+      {
+        "slug": "0687",
+        "text": "Edited FrmInputMultiChBox",
+        "subject": "#16 FrmInputMultiChBox - wrapping fix",
+        "author": "jhall",
+        "author_icon_url": "https://a.fsdn.com/con/images/sandiego/icons/default-avatar.png",
+        "timestamp": "2002-11-08 18:24:42",
+        "last_edited": null,
+        "attachments": [
+          {
+            "bytes": 755,
+            "url": "https://sourceforge.net/p/apc-aa/feature-requests/_discuss/thread/cd992aec/0687/attachment/FrmInputMultiChBox.txt",
+            "path": "feature-requests/519a56ca34309d2f05e44fd7/cd992aec/0687/FrmInputMultiChBox.txt"
+          }
+        ],
+        "is_meta": false
+      },
+      {
+        "slug": "1f23",
+        "text": "- **status**: open --> closed",
+        "subject": "#16 FrmInputMultiChBox - wrapping fix",
+        "author": "honzam",
+        "author_icon_url": "https://a.fsdn.com/con/images/sandiego/icons/default-avatar.png",
+        "timestamp": "2002-11-08 21:41:48",
+        "last_edited": null,
+        "attachments": [],
+        "is_meta": true
+      },
+      {
+        "slug": "549b",
+        "text": "Logged In: YES \nuser\\_id=40086\n\nThanks John, your solution is in CVS, now. \r\n\r\nHonza",
+        "subject": "#16 FrmInputMultiChBox - wrapping fix",
+        "author": "honzam",
+        "author_icon_url": "https://a.fsdn.com/con/images/sandiego/icons/default-avatar.png",
+        "timestamp": "2002-11-08 21:41:48",
+        "last_edited": null,
+        "attachments": [],
+        "is_meta": false
+      },
+      {
+        "slug": "be5f",
+        "text": "Logged In: YES \nuser\\_id=53969\n\nThis is actually broken in a new way. All constants with \r\ncheckboxes are now forced onto a single line -- no wrapping \r\nat all -- stretching the screen mega-wide if there are many \r\nconstants defined.\r\n\r\nSimple fix:\r\n\r\n/include/formutil.php3\r\n\r\nLine 664: Add one space after the closing NOBR tag",
+        "subject": "#16 FrmInputMultiChBox - wrapping fix",
+        "author": "jhall",
+        "author_icon_url": "https://a.fsdn.com/con/images/sandiego/icons/default-avatar.png",
+        "timestamp": "2004-05-12 18:55:00",
+        "last_edited": null,
+        "attachments": [],
+        "is_meta": false
+      },
+      {
+        "slug": "5513",
+        "text": "- **status**: closed --> open",
+        "subject": "#16 FrmInputMultiChBox - wrapping fix",
+        "author": "jhall",
+        "author_icon_url": "https://a.fsdn.com/con/images/sandiego/icons/default-avatar.png",
+        "timestamp": "2004-05-12 18:56:19",
+        "last_edited": null,
+        "attachments": [],
+        "is_meta": true
+      },
+      {
+        "slug": "7989",
+        "text": "- **status**: open --> closed",
+        "subject": "#16 FrmInputMultiChBox - wrapping fix",
+        "author": "marek_tichy",
+        "author_icon_url": "https://a.fsdn.com/con/images/sandiego/icons/default-avatar.png",
+        "timestamp": "2004-09-13 09:48:41",
+        "last_edited": null,
+        "attachments": [],
+        "is_meta": true
+      }
+    ]
+  },
+  "discussion_thread_url": "https://sourceforge.net/rest/p/apc-aa/feature-requests/_discuss/thread/cd992aec/",
+  "created_date": "2002-11-08 18:24:42",
+  "ticket_num": 16,
+  "summary": "FrmInputMultiChBox - wrapping fix",
+  "description": "When using multiple checkboxes to show an array of \nconstants on an itemedit form ... line wrapping is not \nalways elegant. \r\n\r\nWe always want the check box \nand the full label to appear on one line:\r\n\r\n\\[ \\] label here  \\[ \\] \nlabel here  \r\n\\[ \\] label here  \\[ \\] label here \r\n\r\nWith many \nconstants defined, the wrap can happen after the \ncheckbox, or between the label words: \r\n\r\n\\[ \\] label here  \n\\[ \\] label here  \\[ \\] label \r\nhere  \\[ \\] label here \r\n\r\nSimple \nsolution is to add NOBR tags around each whole unit. \nEdited function attached.\r\n\r\nAre there browser \ncompatibility issues with using NOBRs in this way? \\(I've \nbeen using this edited function for months -- no probs.\\)",
+  "reported_by": "jhall",
+  "assigned_to": null,
+  "reported_by_id": "519a55f034309d2f05e44557",
+  "assigned_to_id": null,
+  "status": "closed",
+  "private": false,
+  "discussion_disabled": false,
+  "attachments": [],
+  "custom_fields": {
+    "_priority": "5"
+  }
+},{
+  "votes_up": 0,
+  "votes_down": 0,
+  "_id": "519a56cc34309d2f05e45001",
+  "mod_date": "2002-12-17 19:00:38",
+  "labels": [],
+  "related_artifacts": [],
+  "discussion_thread": {
+    "_id": "d9e1f996",
+    "discussion_id": "519a56bd34309d2f05e44ede",
+    "subject": "",
+    "limit": null,
+    "page": null,
+    "posts": [
+      {
+        "slug": "074d",
+        "text": "- **assigned_to**: honzam --> nobody",
+        "subject": "#17 Advanced search module",
+        "author": "msurman",
+        "author_icon_url": "https://a.fsdn.com/con/images/sandiego/icons/default-avatar.png",
+        "timestamp": "2002-12-17 19:00:38",
+        "last_edited": null,
+        "attachments": [],
+        "is_meta": true
+      }
+    ]
+  },
+  "discussion_thread_url": "https://sourceforge.net/rest/p/apc-aa/feature-requests/_discuss/thread/d9e1f996/",
+  "created_date": "2002-12-17 18:52:21",
+  "ticket_num": 17,
+  "summary": "Advanced search module",
+  "description": "An AA advanced search module would allow for more \r\nadvanced searching of materials in AA sites including:\r\n\r\n\\- Searching across many slices at once\r\n\\- User determined filtering of results by field, date etc.\r\n\\- Search result relevance rankings\r\n\\- Search full text of binary attachments \\(e.g. PDF\\)\r\n\r\nSome of the functions needed have recently been added \r\nthrough version 2.4 or through GreenNet's EIN project. \r\n\r\nOthers would need to be added from scratch. It is \r\npossible that these 'front scratch' components could be \r\nadded by pulling HTDig, Perlfect or anohter search \r\nenging into AA as a module. \r\n\r\nThe forms wizard currently under development could be \r\nused to create search pages. \r\n\r\nSponsorship: Depending on cost, these features could \r\nbe sponsored by the CEH and PKRN projects currently \r\nmanaged by Commons Group\r\n\r\nDeveloper: Marek has expressed an interest in working \r\non something like this. \r\n\r\nRequirements: Commons Group could work on detailed \r\nrequirements for this if needed. ",
+  "reported_by": "msurman",
+  "assigned_to": null,
+  "reported_by_id": "519a55ff34309d2f05e446cd",
+  "assigned_to_id": null,
+  "status": "open",
+  "private": false,
+  "discussion_disabled": false,
+  "attachments": [],
+  "custom_fields": {
+    "_priority": "5"
+  }
+},{
+  "votes_up": 0,
+  "votes_down": 0,
+  "_id": "519a56cc34309d2f05e4500e",
+  "mod_date": "2002-12-17 18:57:53",
+  "labels": [],
+  "related_artifacts": [],
+  "discussion_thread": {
+    "_id": "1589c004",
+    "discussion_id": "519a56bd34309d2f05e44ede",
+    "subject": "",
+    "limit": null,
+    "page": null,
+    "posts": []
+  },
+  "discussion_thread_url": "https://sourceforge.net/rest/p/apc-aa/feature-requests/_discuss/thread/1589c004/",
+  "created_date": "2002-12-17 18:57:53",
+  "ticket_num": 18,
+  "summary": "End user permissions module",
+  "description": "There is currently a need for an end user permissions \r\nmodule. This module would provide the following:\r\n\r\n\\- Authentication for native AA end user systems like \r\nAlerts \r\n\\- Authentication for end user modules plugged in using \r\nmodule system\r\n\\- Ability to use as authentication method for other PHP \r\napps on the same server\r\n\\- Ability to use as simple directory level HTTP \r\nauthentication for HTML pages that wrap around and \r\nActionApps site\r\n\\- Single user profile for each user that is tied into all of \r\nthese applications\r\n\\- Ability to add custom fields to the user profile\r\n\\- Ability to track information that users have accessed \r\nfrom AA and Alerts \\(future\\)\r\n\\- Record level authentication \\(e.g. for reading individual \r\nAA articles\\) \\(future\\)\r\n\r\nSome of the work for this is already underway for the \r\nAlerts system. However, new demands that are beyond \r\nwhat we are doing for Alerts could emerge quickly \\(see \r\nlist above\\). \r\n\r\nSponosorhship: Depending on cost, these features \r\ncould be sponsored by the CEH and PKRN projects \r\ncurrently managed by Commons Group\r\n",
+  "reported_by": "msurman",
+  "assigned_to": null,
+  "reported_by_id": "519a55ff34309d2f05e446cd",
+  "assigned_to_id": null,
+  "status": "open",
+  "private": false,
+  "discussion_disabled": false,
+  "attachments": [],
+  "custom_fields": {
+    "_priority": "7"
+  }
+},{
+  "votes_up": 0,
+  "votes_down": 0,
+  "_id": "519a56cd34309d2f05e45015",
+  "mod_date": "2004-09-13 09:47:47",
+  "labels": [],
+  "related_artifacts": [],
+  "discussion_thread": {
+    "_id": "309dad9a",
+    "discussion_id": "519a56bd34309d2f05e44ede",
+    "subject": "",
+    "limit": null,
+    "page": null,
+    "posts": [
+      {
+        "slug": "b8ba",
+        "text": "Logged In: YES \nuser\\_id=689847\n\nThe initial translation of en\\_news  has been created by \r\nMichael Lambert and submitted to cvs by honza \\(around \r\n13/09/2004\\). MT \r\n",
+        "subject": "#19 French admin interface",
+        "author": "marek_tichy",
+        "author_icon_url": "https://a.fsdn.com/con/images/sandiego/icons/default-avatar.png",
+        "timestamp": "2004-09-13 09:47:47",
+        "last_edited": null,
+        "attachments": [],
+        "is_meta": false
+      },
+      {
+        "slug": "dd92",
+        "text": "- **status**: open --> closed",
+        "subject": "#19 French admin interface",
+        "author": "marek_tichy",
+        "author_icon_url": "https://a.fsdn.com/con/images/sandiego/icons/default-avatar.png",
+        "timestamp": "2004-09-13 09:47:47",
+        "last_edited": null,
+        "attachments": [],
+        "is_meta": true
+      }
+    ]
+  },
+  "discussion_thread_url": "https://sourceforge.net/rest/p/apc-aa/feature-requests/_discuss/thread/309dad9a/",
+  "created_date": "2002-12-17 18:59:05",
+  "ticket_num": 19,
+  "summary": "French admin interface",
+  "description": "There is a need for a French version of the admin \r\ninterface \\(unless it exists and I don't know it\\). \r\n\r\nSponsorship: Commons will volunteer to produce this as \r\na part of the current projects it is working on. ",
+  "reported_by": "msurman",
+  "assigned_to": null,
+  "reported_by_id": "519a55ff34309d2f05e446cd",
+  "assigned_to_id": null,
+  "status": "closed",
+  "private": false,
+  "discussion_disabled": false,
+  "attachments": [],
+  "custom_fields": {
+    "_priority": "5"
+  }
+},{
+  "votes_up": 0,
+  "votes_down": 0,
+  "_id": "519a56ce34309d2f05e45026",
+  "mod_date": "2002-12-17 19:00:21",
+  "labels": [],
+  "related_artifacts": [],
+  "discussion_thread": {
+    "_id": "07ff2b17",
+    "discussion_id": "519a56bd34309d2f05e44ede",
+    "subject": "",
+    "limit": null,
+    "page": null,
+    "posts": []
+  },
+  "discussion_thread_url": "https://sourceforge.net/rest/p/apc-aa/feature-requests/_discuss/thread/07ff2b17/",
+  "created_date": "2002-12-17 19:00:21",
+  "ticket_num": 20,
+  "summary": "Hierarchical view of constants",
+  "description": "The hierarchical view of constants would provide an \r\nautomated interface based on a taxonomy created with \r\nthe current constants system. Only categories that \r\ncontain items would be displayed. ",
+  "reported_by": "msurman",
+  "assigned_to": null,
+  "reported_by_id": "519a55ff34309d2f05e446cd",
+  "assigned_to_id": null,
+  "status": "open",
+  "private": false,
+  "discussion_disabled": false,
+  "attachments": [],
+  "custom_fields": {
+    "_priority": "5"
+  }
+},{
+  "votes_up": 0,
+  "votes_down": 0,
+  "_id": "519a56ce34309d2f05e4502d",
+  "mod_date": "2004-09-13 09:44:48",
+  "labels": [],
+  "related_artifacts": [],
+  "discussion_thread": {
+    "_id": "d308c6ce",
+    "discussion_id": "519a56bd34309d2f05e44ede",
+    "subject": "",
+    "limit": null,
+    "page": null,
+    "posts": [
+      {
+        "slug": "1476",
+        "text": "- **status**: open --> closed",
+        "subject": "#21 Buttons at the top of forms please please",
+        "author": "marek_tichy",
+        "author_icon_url": "https://a.fsdn.com/con/images/sandiego/icons/default-avatar.png",
+        "timestamp": "2004-09-13 09:44:48",
+        "last_edited": null,
+        "attachments": [],
+        "is_meta": true
+      },
+      {
+        "slug": "6005",
+        "text": "Logged In: YES \nuser\\_id=689847\n\nAPC-AA 2.8  has them at the top. MT ",
+        "subject": "#21 Buttons at the top of forms please please",
+        "author": "marek_tichy",
+        "author_icon_url": "https://a.fsdn.com/con/images/sandiego/icons/default-avatar.png",
+        "timestamp": "2004-09-13 09:44:48",
+        "last_edited": null,
+        "attachments": [],
+        "is_meta": false
+      }
+    ]
+  },
+  "discussion_thread_url": "https://sourceforge.net/rest/p/apc-aa/feature-requests/_discuss/thread/d308c6ce/",
+  "created_date": "2003-05-20 20:21:15",
+  "ticket_num": 21,
+  "summary": "Buttons at the top of forms please please",
+  "description": "Could you add update/submit/cancel buttons at the top \r\nAND bottom of every long form \\(e.g. 'design Fulltext \r\nview' 'Add Item'\\)?\r\n\r\nIt would save many days of scrolling through long forms.\r\n\r\nPlease please thank you thank you.\r\n\r\n\\- JD- - -",
+  "reported_by": "jasondiceman",
+  "assigned_to": null,
+  "reported_by_id": "50c399365fcbc909a3cb2286",
+  "assigned_to_id": null,
+  "status": "closed",
+  "private": false,
+  "discussion_disabled": false,
+  "attachments": [],
+  "custom_fields": {
+    "_priority": "5"
+  }
+}],
+"tracker_config":{
+  "_id": "519a56bd34309d2f05e44edc",
+  "options": {
+    "ordinal": 8,
+    "import_id": "tracker/356341",
+    "mount_point": "feature-requests",
+    "TicketMonitoringType": null,
+    "EnableVoting": false,
+    "TicketMonitoringEmail": "",
+    "mount_label": "Feature Requests",
+    "url": "/p/apc-aa/feature-requests/"
+  }
+},
+"milestones":[],
+"custom_fields":[
+  {
+    "milestones": [],
+    "type": "milestone",
+    "name": "_milestone",
+    "label": "Group"
+  },
+  {
+    "type": "select",
+    "label": "Priority",
+    "show_in_search": true,
+    "options": "1 2 3 4 *5 6 7 8 9",
+    "name": "_priority"
+  }
+],
+"open_status_names":"open unread accepted pending",
+"closed_status_names":"closed wont-fix",
+"saved_bins":[
+  {
+    "_id": "519a56bd34309d2f05e44ee6",
+    "summary": "Changes",
+    "terms": "!status:wont-fix && !status:closed",
+    "sort": "mod_date_dt desc"
+  },
+  {
+    "_id": "519a56bd34309d2f05e44ee5",
+    "summary": "Closed Tickets",
+    "terms": "status:wont-fix or status:closed",
+    "sort": ""
+  },
+  {
+    "_id": "519a56bd34309d2f05e44ee4",
+    "summary": "Open Tickets",
+    "terms": "!status:wont-fix && !status:closed",
+    "sort": ""
+  }
+]}

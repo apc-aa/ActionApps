@@ -1,0 +1,960 @@
+{"tickets": [{
+  "votes_up": 0,
+  "votes_down": 0,
+  "_id": "519a56d034309d2f05e4506b",
+  "mod_date": "2000-06-21 21:21:05",
+  "labels": [
+    "install-aa core"
+  ],
+  "related_artifacts": [],
+  "discussion_thread": {
+    "_id": "4a07343d",
+    "discussion_id": "519a56d034309d2f05e4505f",
+    "subject": "",
+    "limit": null,
+    "page": null,
+    "posts": [
+      {
+        "slug": "ca0c",
+        "text": "Logged In: YES \nuser\\_id=3903\nBrowser: Mozilla/4.7 \\[en\\] \\(X11; I; Linux 2.2.13-7mdk i586\\)\n\nheath@web.net did a fresh install of the \r\nAction applications.\r\n\r\nThe login page and add-slice page both reported\r\nan error. \r\n\r\nI created a doit.php3 page that boiled the\r\nerror down.  You can see it here:\r\n\r\nhttp://haumea.web.net/aa/doc/doit.php3\r\n\r\nAfter perusing the phplib mailing list at\r\n\r\nhttp://www.geocrawler.com/lists/4/Web/195/0/\r\n\r\nI killed the mysql daemon with\r\nmysqladmin -p shutdown\r\n\r\nand then I ran \r\n\r\nsafe\\_mysqld -l -O max\\_allowed\\_packet=512K &amp;amp;\r\n-l so I could see what was going on\r\n-O so I could set a variable that the list advised \r\nme to set higher.  However, this was not very \r\nilluminating.  Mysql was doing running the sql but\r\nphplib was still believing there was an error.\r\n\r\nAt this point, I would say either post the problem to\r\nthe phplib mailinglist or start over with a new install\r\nof the server -- either\r\na\\) redhat .rpm's all the way OR\r\nb\\) source .tar.gz \\(not binary\\) all the way\r\n\r\nSorry not to get this working\\!\r\n-Michael\r\n\r\np.s. I've requested some mysql databases at\r\nsourceforge, so we might be able to give you guys \r\na development space there by Friday.",
+        "subject": "#1 Invalid SQL says login page",
+        "author": "nobody",
+        "author_icon_url": "https://a.fsdn.com/con/images/sandiego/icons/default-avatar.png",
+        "timestamp": "2000-06-13 07:30:02",
+        "last_edited": null,
+        "attachments": [],
+        "is_meta": false
+      },
+      {
+        "slug": "f122",
+        "text": "Logged In: YES \nuser\\_id=3903\nBrowser: Mozilla/4.7 \\[en\\] \\(X11; I; Linux 2.2.13-7mdk i586\\)\n\nHeath, let me know if I can be of more help on this.\r\n\r\nThe problem is somewhere between \r\nphp\r\nmysql\r\nphplib\r\nCould be static libraries, config file issues, \r\nleftover php4 stuff, or whatever.\r\n\r\nCheers,\r\n-Michael",
+        "subject": "#1 Invalid SQL says login page",
+        "author": "nobody",
+        "author_icon_url": "https://a.fsdn.com/con/images/sandiego/icons/default-avatar.png",
+        "timestamp": "2000-06-13 07:33:19",
+        "last_edited": null,
+        "attachments": [],
+        "is_meta": false
+      },
+      {
+        "slug": "5530",
+        "text": "- **priority**: 5 --> 2\n- **assigned_to**: nobody --> hjohns",
+        "subject": "#1 Invalid SQL says login page",
+        "author": "madebeer",
+        "author_icon_url": "https://a.fsdn.com/con/images/sandiego/icons/default-avatar.png",
+        "timestamp": "2000-06-13 07:33:19",
+        "last_edited": null,
+        "attachments": [],
+        "is_meta": true
+      },
+      {
+        "slug": "f0bf",
+        "text": "Logged In: YES \nuser\\_id=3903\nBrowser: Mozilla/4.7 \\[en\\] \\(X11; I; Linux 2.2.13-7mdk i586\\)\n\nHeath installed SuSE linux and the problems went away.\r\nClosing....",
+        "subject": "#1 Invalid SQL says login page",
+        "author": "nobody",
+        "author_icon_url": "https://a.fsdn.com/con/images/sandiego/icons/default-avatar.png",
+        "timestamp": "2000-06-21 21:21:05",
+        "last_edited": null,
+        "attachments": [],
+        "is_meta": false
+      },
+      {
+        "slug": "518b",
+        "text": "- **status**: open --> closed",
+        "subject": "#1 Invalid SQL says login page",
+        "author": "madebeer",
+        "author_icon_url": "https://a.fsdn.com/con/images/sandiego/icons/default-avatar.png",
+        "timestamp": "2000-06-21 21:21:05",
+        "last_edited": null,
+        "attachments": [],
+        "is_meta": true
+      }
+    ]
+  },
+  "discussion_thread_url": "https://sourceforge.net/rest/p/apc-aa/support-requests/_discuss/thread/4a07343d/",
+  "created_date": "2000-06-13 07:30:02",
+  "ticket_num": 1,
+  "summary": "Invalid SQL says login page",
+  "description": "",
+  "reported_by": "madebeer",
+  "assigned_to": "hjohns",
+  "reported_by_id": "512bcef1e88f3d3e617ea882",
+  "assigned_to_id": "519a55ec34309d2f05e444f1",
+  "status": "closed",
+  "private": false,
+  "discussion_disabled": false,
+  "attachments": [],
+  "custom_fields": {
+    "_priority": "2"
+  }
+},{
+  "votes_up": 0,
+  "votes_down": 0,
+  "_id": "519a56d334309d2f05e4508e",
+  "mod_date": "2000-08-04 07:33:15",
+  "labels": [
+    "install-aa core"
+  ],
+  "related_artifacts": [],
+  "discussion_thread": {
+    "_id": "6c44445e",
+    "discussion_id": "519a56d034309d2f05e4505f",
+    "subject": "",
+    "limit": null,
+    "page": null,
+    "posts": [
+      {
+        "slug": "393b",
+        "text": "Logged In: YES \nuser\\_id=3903\nBrowser: Mozilla/4.7 \\[en\\] \\(X11; I; Linux 2.2.13-7mdk i586\\)\n\nThe main APC website is hosted at pair.com\r\nWe need to install the AA there, so that \r\nkhiggs@apc.org \\(Karen Higgs\\) can start to use them\r\nfor our Action Alerts.\r\n\r\n0\\) contact KarenH and get info for apc account on    \r\npair.com -- request mysql account from pair.com if\r\nwe don't already have one\r\n1\\) install AA\r\n2\\) setup an APC slice\r\n3\\) contact KarenH, and make sure it is working for her.\r\n\r\n",
+        "subject": "#2 install AA on main apc website",
+        "author": "nobody",
+        "author_icon_url": "https://a.fsdn.com/con/images/sandiego/icons/default-avatar.png",
+        "timestamp": "2000-06-21 21:24:34",
+        "last_edited": null,
+        "attachments": [],
+        "is_meta": false
+      },
+      {
+        "slug": "793f",
+        "text": "- **assigned_to**: nobody --> honzam",
+        "subject": "#2 install AA on main apc website",
+        "author": "madebeer",
+        "author_icon_url": "https://a.fsdn.com/con/images/sandiego/icons/default-avatar.png",
+        "timestamp": "2000-06-21 21:24:58",
+        "last_edited": null,
+        "attachments": [],
+        "is_meta": true
+      },
+      {
+        "slug": "a9f9",
+        "text": "- **assigned_to**: honzam --> kzajicek",
+        "subject": "#2 install AA on main apc website",
+        "author": "kzajicek",
+        "author_icon_url": "https://a.fsdn.com/con/images/sandiego/icons/default-avatar.png",
+        "timestamp": "2000-07-07 18:36:54",
+        "last_edited": null,
+        "attachments": [],
+        "is_meta": true
+      },
+      {
+        "slug": "6293",
+        "text": "Logged In: YES \nuser\\_id=40030\nBrowser: Mozilla/4.03 \\[en\\] \\(Win95; U\\)\n\npair.com did not processed the account upgrade \\(due to their conversion to pair2000\\),\r\nKaren has to request the mysql access again...\r\n",
+        "subject": "#2 install AA on main apc website",
+        "author": "nobody",
+        "author_icon_url": "https://a.fsdn.com/con/images/sandiego/icons/default-avatar.png",
+        "timestamp": "2000-07-14 23:28:29",
+        "last_edited": null,
+        "attachments": [],
+        "is_meta": false
+      },
+      {
+        "slug": "ce8b",
+        "text": "Logged In: YES \nuser\\_id=40030\nBrowser: Mozilla/4.61 \\[cs\\] \\(OS/2; U\\)\n\npair.com is running an old version of PHP \\(3.0.6 \r\nfrom December 24 1998\\) in CGI mode and there seems \r\nto be a lot of incompatibilities \\(resulting in \r\n&amp;quot;Internal server errors&amp;quot; etc\\). I will install this \r\nversion locally and try to discover more from  \r\nerror.log.\r\n",
+        "subject": "#2 install AA on main apc website",
+        "author": "nobody",
+        "author_icon_url": "https://a.fsdn.com/con/images/sandiego/icons/default-avatar.png",
+        "timestamp": "2000-07-18 16:25:24",
+        "last_edited": null,
+        "attachments": [],
+        "is_meta": false
+      },
+      {
+        "slug": "fd53",
+        "text": "Logged In: YES \nuser\\_id=40030\nBrowser: Mozilla/4.03 \\[en\\] \\(Win95; U\\)\n\nPHP 3.0.6 does not support WDDX functions. Installation of a custom version of PHP 3.0.16 helped.\r\nA sligtly modified 1.1.0 of apc-aa is now running and a test slice is up.",
+        "subject": "#2 install AA on main apc website",
+        "author": "nobody",
+        "author_icon_url": "https://a.fsdn.com/con/images/sandiego/icons/default-avatar.png",
+        "timestamp": "2000-07-23 16:32:33",
+        "last_edited": null,
+        "attachments": [],
+        "is_meta": false
+      },
+      {
+        "slug": "be1c",
+        "text": "- **status**: open --> closed",
+        "subject": "#2 install AA on main apc website",
+        "author": "kzajicek",
+        "author_icon_url": "https://a.fsdn.com/con/images/sandiego/icons/default-avatar.png",
+        "timestamp": "2000-08-04 07:33:15",
+        "last_edited": null,
+        "attachments": [],
+        "is_meta": true
+      },
+      {
+        "slug": "7c4a",
+        "text": "Logged In: YES \nuser\\_id=40030\nBrowser: Mozilla/4.61 \\[cs\\] \\(OS/2; U\\)\n\nThis is already done \\(used PHP 3.0.16 as CGI\\).",
+        "subject": "#2 install AA on main apc website",
+        "author": "nobody",
+        "author_icon_url": "https://a.fsdn.com/con/images/sandiego/icons/default-avatar.png",
+        "timestamp": "2000-08-04 07:33:15",
+        "last_edited": null,
+        "attachments": [],
+        "is_meta": false
+      }
+    ]
+  },
+  "discussion_thread_url": "https://sourceforge.net/rest/p/apc-aa/support-requests/_discuss/thread/6c44445e/",
+  "created_date": "2000-06-21 21:24:34",
+  "ticket_num": 2,
+  "summary": "install AA on main apc website",
+  "description": "",
+  "reported_by": "madebeer",
+  "assigned_to": "kzajicek",
+  "reported_by_id": "512bcef1e88f3d3e617ea882",
+  "assigned_to_id": "519a55ee34309d2f05e44535",
+  "status": "closed",
+  "private": false,
+  "discussion_disabled": false,
+  "attachments": [],
+  "custom_fields": {
+    "_priority": "5"
+  }
+},{
+  "votes_up": 0,
+  "votes_down": 0,
+  "_id": "519a56d734309d2f05e450c0",
+  "mod_date": "2000-06-21 21:29:34",
+  "labels": [
+    "install-aa core"
+  ],
+  "related_artifacts": [],
+  "discussion_thread": {
+    "_id": "efc2d73f",
+    "discussion_id": "519a56d034309d2f05e4505f",
+    "subject": "",
+    "limit": null,
+    "page": null,
+    "posts": [
+      {
+        "slug": "c29f",
+        "text": "Logged In: YES \nuser\\_id=3903\nBrowser: Mozilla/4.7 \\[en\\] \\(X11; I; Linux 2.2.13-7mdk i586\\)\n\nAdolfo ran into a problem when installing the AA.\r\nThe error said:\r\n\r\nFatal error: Call to unsupported or undefined function\r\nwddx\\_deserialize\\(\\)\r\nin ../include/init\\_page.php3 on line 127\r\n\r\n",
+        "subject": "#3 wddx function unknown",
+        "author": "nobody",
+        "author_icon_url": "https://a.fsdn.com/con/images/sandiego/icons/default-avatar.png",
+        "timestamp": "2000-06-21 21:28:02",
+        "last_edited": null,
+        "attachments": [],
+        "is_meta": false
+      },
+      {
+        "slug": "9855",
+        "text": "- **assigned_to**: nobody --> madebeer\n- **status**: open --> closed",
+        "subject": "#3 wddx function unknown",
+        "author": "madebeer",
+        "author_icon_url": "https://a.fsdn.com/con/images/sandiego/icons/default-avatar.png",
+        "timestamp": "2000-06-21 21:29:34",
+        "last_edited": null,
+        "attachments": [],
+        "is_meta": true
+      },
+      {
+        "slug": "dd58",
+        "text": "Logged In: YES \nuser\\_id=3903\nBrowser: Mozilla/4.7 \\[en\\] \\(X11; I; Linux 2.2.13-7mdk i586\\)\n\nThe problem, which showed up in phpinfo\\(\\), \r\nwas that php was not ./configure -with-xml\r\n\r\nFor more on this, see the mailing list archives, thread: \r\n\\[Apc-aa-general\\] installing aa-1.0.1\r\n",
+        "subject": "#3 wddx function unknown",
+        "author": "nobody",
+        "author_icon_url": "https://a.fsdn.com/con/images/sandiego/icons/default-avatar.png",
+        "timestamp": "2000-06-21 21:29:35",
+        "last_edited": null,
+        "attachments": [],
+        "is_meta": false
+      }
+    ]
+  },
+  "discussion_thread_url": "https://sourceforge.net/rest/p/apc-aa/support-requests/_discuss/thread/efc2d73f/",
+  "created_date": "2000-06-21 21:28:02",
+  "ticket_num": 3,
+  "summary": "wddx function unknown",
+  "description": "",
+  "reported_by": "madebeer",
+  "assigned_to": "madebeer",
+  "reported_by_id": "512bcef1e88f3d3e617ea882",
+  "assigned_to_id": "512bcef1e88f3d3e617ea882",
+  "status": "closed",
+  "private": false,
+  "discussion_disabled": false,
+  "attachments": [],
+  "custom_fields": {
+    "_priority": "5"
+  }
+},{
+  "votes_up": 0,
+  "votes_down": 0,
+  "_id": "519a56d834309d2f05e450d8",
+  "mod_date": "2000-07-04 22:08:27",
+  "labels": [
+    "install-aa core"
+  ],
+  "related_artifacts": [],
+  "discussion_thread": {
+    "_id": "7b1ce291",
+    "discussion_id": "519a56d034309d2f05e4505f",
+    "subject": "",
+    "limit": null,
+    "page": null,
+    "posts": [
+      {
+        "slug": "f0a6",
+        "text": "Logged In: YES \nuser\\_id=3903\nBrowser: Mozilla/4.7 \\[en\\] \\(X11; I; Linux 2.2.13-7mdk i586\\)\n\nIf you install v1.0.2 under sourceforge,\r\nall requests get internal server error.\r\n\r\nI fixed this by commented out this line in the\r\n.htaccess file, like this:\r\n\r\n\\#DirectoryIndex index.html index.php3\r\n\r\nAfter I commented out this line, everything worked.",
+        "subject": "#4 all requests get 'internal server error'",
+        "author": "nobody",
+        "author_icon_url": "https://a.fsdn.com/con/images/sandiego/icons/default-avatar.png",
+        "timestamp": "2000-07-04 22:07:58",
+        "last_edited": null,
+        "attachments": [],
+        "is_meta": false
+      },
+      {
+        "slug": "158e",
+        "text": "- **priority**: 5 --> 3\n- **assigned_to**: nobody --> honzam\n- **status**: open --> closed",
+        "subject": "#4 all requests get 'internal server error'",
+        "author": "madebeer",
+        "author_icon_url": "https://a.fsdn.com/con/images/sandiego/icons/default-avatar.png",
+        "timestamp": "2000-07-04 22:08:27",
+        "last_edited": null,
+        "attachments": [],
+        "is_meta": true
+      }
+    ]
+  },
+  "discussion_thread_url": "https://sourceforge.net/rest/p/apc-aa/support-requests/_discuss/thread/7b1ce291/",
+  "created_date": "2000-07-04 22:07:58",
+  "ticket_num": 4,
+  "summary": "all requests get 'internal server error'",
+  "description": "",
+  "reported_by": "madebeer",
+  "assigned_to": "honzam",
+  "reported_by_id": "512bcef1e88f3d3e617ea882",
+  "assigned_to_id": "5165db6124b0d97d917e7135",
+  "status": "closed",
+  "private": false,
+  "discussion_disabled": false,
+  "attachments": [],
+  "custom_fields": {
+    "_priority": "3"
+  }
+},{
+  "votes_up": 0,
+  "votes_down": 0,
+  "_id": "519a56da34309d2f05e450eb",
+  "mod_date": "2001-01-12 04:43:55",
+  "labels": [
+    "install-aa core"
+  ],
+  "related_artifacts": [],
+  "discussion_thread": {
+    "_id": "9c0c2c11",
+    "discussion_id": "519a56d034309d2f05e4505f",
+    "subject": "",
+    "limit": null,
+    "page": null,
+    "posts": [
+      {
+        "slug": "b556",
+        "text": "Logged In: NO \nBrowser: Mozilla/4.0 \\(compatible; MSIE 5.01; Windows 98\\)\n\nDepsite havinf faithfully followed the install \r\ninstructions and havinf some help from Karel I still \r\ncannot get the AA's working on our server here.\r\n\r\nWould like a techie to have a look and debug the \r\ninstallation and give us a report on what the problem \r\nwas.\r\n\r\nAccess vi ssh please send public key to \r\nphilcarr@gn.apc.org for password.\r\n\r\n\r\nBest Wishes\r\n\r\nPhil\r\n\r\n",
+        "subject": "#5 Debugging GreenNets AA installation",
+        "author": "nobody",
+        "author_icon_url": "https://a.fsdn.com/con/images/sandiego/icons/default-avatar.png",
+        "timestamp": "2000-08-02 11:48:57",
+        "last_edited": null,
+        "attachments": [],
+        "is_meta": false
+      },
+      {
+        "slug": "16a0",
+        "text": "- **assigned_to**: nobody --> kzajicek",
+        "subject": "#5 Debugging GreenNets AA installation",
+        "author": "kzajicek",
+        "author_icon_url": "https://a.fsdn.com/con/images/sandiego/icons/default-avatar.png",
+        "timestamp": "2000-08-02 13:08:09",
+        "last_edited": null,
+        "attachments": [],
+        "is_meta": true
+      },
+      {
+        "slug": "4ce8",
+        "text": "- **status**: open --> closed",
+        "subject": "#5 Debugging GreenNets AA installation",
+        "author": "madebeer",
+        "author_icon_url": "https://a.fsdn.com/con/images/sandiego/icons/default-avatar.png",
+        "timestamp": "2001-01-12 04:43:55",
+        "last_edited": null,
+        "attachments": [],
+        "is_meta": true
+      }
+    ]
+  },
+  "discussion_thread_url": "https://sourceforge.net/rest/p/apc-aa/support-requests/_discuss/thread/9c0c2c11/",
+  "created_date": "2000-08-02 11:48:57",
+  "ticket_num": 5,
+  "summary": "Debugging GreenNets AA installation",
+  "description": "",
+  "reported_by": "*anonymous",
+  "assigned_to": "kzajicek",
+  "reported_by_id": null,
+  "assigned_to_id": "519a55ee34309d2f05e44535",
+  "status": "closed",
+  "private": false,
+  "discussion_disabled": false,
+  "attachments": [],
+  "custom_fields": {
+    "_priority": "5"
+  }
+},{
+  "votes_up": 0,
+  "votes_down": 0,
+  "_id": "519a56db34309d2f05e45104",
+  "mod_date": "2000-10-12 14:39:07",
+  "labels": [
+    "install-aa core"
+  ],
+  "related_artifacts": [],
+  "discussion_thread": {
+    "_id": "38503191",
+    "discussion_id": "519a56d034309d2f05e4505f",
+    "subject": "",
+    "limit": null,
+    "page": null,
+    "posts": [
+      {
+        "slug": "86bb",
+        "text": "Logged In: NO \nBrowser: Mozilla/4.73 \\[en\\] \\(X11; I; Linux 2.2.15-4mdk i586\\)\n\nHave installed all the software and the latest version\r\nof the AA's on mandrake linux 7.1 \r\nMYSQL, PHP3 and APACHE all work.\r\nHave installed and configured the latest version of AA\r\nand get the following message:\r\n\r\nFatal error: Failed opening required 'db\\_mysql.inc' in\r\n/usr/local/httpd/htdocs/aa/include/locauth.php3 on line\r\n29\r\n\r\nLine 29 reads:\r\n\r\nrequire\\($\\_PHPLIB\\[&amp;quot;libdir&amp;quot;\\] . &amp;quot;db\\_mysql.inc&amp;quot;\\); \r\n\r\n\r\nPhil",
+        "subject": "#6 Installing AA's at Greennet PT 2",
+        "author": "nobody",
+        "author_icon_url": "https://a.fsdn.com/con/images/sandiego/icons/default-avatar.png",
+        "timestamp": "2000-09-19 14:39:50",
+        "last_edited": null,
+        "attachments": [],
+        "is_meta": false
+      },
+      {
+        "slug": "c68c",
+        "text": "Logged In: YES \nuser\\_id=3903\nBrowser: Mozilla/4.0 \\(compatible; MSIE 4.01; Windows 95\\)\n\nFixed.\r\n\r\nPhil reinstalled, and then I helped a little bit.\\#\r\n\r\n-Michael\r\n",
+        "subject": "#6 Installing AA's at Greennet PT 2",
+        "author": "nobody",
+        "author_icon_url": "https://a.fsdn.com/con/images/sandiego/icons/default-avatar.png",
+        "timestamp": "2000-10-12 14:39:07",
+        "last_edited": null,
+        "attachments": [],
+        "is_meta": false
+      },
+      {
+        "slug": "e617",
+        "text": "- **assigned_to**: nobody --> madebeer\n- **status**: open --> closed",
+        "subject": "#6 Installing AA's at Greennet PT 2",
+        "author": "madebeer",
+        "author_icon_url": "https://a.fsdn.com/con/images/sandiego/icons/default-avatar.png",
+        "timestamp": "2000-10-12 14:39:07",
+        "last_edited": null,
+        "attachments": [],
+        "is_meta": true
+      }
+    ]
+  },
+  "discussion_thread_url": "https://sourceforge.net/rest/p/apc-aa/support-requests/_discuss/thread/38503191/",
+  "created_date": "2000-09-19 14:39:50",
+  "ticket_num": 6,
+  "summary": "Installing AA's at Greennet PT 2",
+  "description": "",
+  "reported_by": "*anonymous",
+  "assigned_to": "madebeer",
+  "reported_by_id": null,
+  "assigned_to_id": "512bcef1e88f3d3e617ea882",
+  "status": "closed",
+  "private": false,
+  "discussion_disabled": false,
+  "attachments": [],
+  "custom_fields": {
+    "_priority": "5"
+  }
+},{
+  "votes_up": 0,
+  "votes_down": 0,
+  "_id": "519a56dc34309d2f05e4511c",
+  "mod_date": "2001-01-12 04:47:06",
+  "labels": [
+    "install-aa core"
+  ],
+  "related_artifacts": [],
+  "discussion_thread": {
+    "_id": "4ba9955e",
+    "discussion_id": "519a56d034309d2f05e4505f",
+    "subject": "",
+    "limit": null,
+    "page": null,
+    "posts": [
+      {
+        "slug": "27ac",
+        "text": "Logged In: YES \nuser\\_id=3903\nBrowser: Mozilla/4.0 \\(compatible; MSIE 4.01; Windows 95\\)\n\nricsi@zpok.hu &amp;quot;Richard Toth&amp;quot; has a install problem:\r\n\r\nNetscape send this message:\r\nFatal error: Call to unsupported or undefined function \r\nmysql\\_pconnect\\(\\) in\r\ndb\\_mysql.inc on line 73\r\n\r\ndb\\_mysql.inc line 73:\r\n$this-&amp;gt;Link\\_ID=mysql\\_pconnect\\($Host, $User, \r\n$Password\\);\r\n\r\nDatabase access problem??\r\n\r\nMy config.php3:\r\ndefine\\(&amp;quot;DB\\_HOST&amp;quot;, &amp;quot;localhost&amp;quot;\\);\r\ndefine\\(&amp;quot;DB\\_NAME&amp;quot;, &amp;quot;aadb&amp;quot;\\);\r\ndefine\\(&amp;quot;DB\\_USER&amp;quot;, &amp;quot;aadbuser&amp;quot;\\);\r\ndefine\\(&amp;quot;DB\\_PASSWORD&amp;quot;, &amp;quot;xxx&amp;quot;\\);         \r\n\r\nBut, manual access is OK.\r\nmysql.log:\r\n001012 11:53:39       3 Connect    aadbuser@localhost \r\non\r\n001012 11:53:45       3 Init DB    aadb\r\n001012 11:53:51       3 Query      select DATABASE\r\n\\(\\),USER\\(\\)\r\n3 Statistics\r\n001012 11:55:16       3 Quit            ",
+        "subject": "#7 pconnect",
+        "author": "nobody",
+        "author_icon_url": "https://a.fsdn.com/con/images/sandiego/icons/default-avatar.png",
+        "timestamp": "2000-10-12 14:41:45",
+        "last_edited": null,
+        "attachments": [],
+        "is_meta": false
+      },
+      {
+        "slug": "cd46",
+        "text": "- **priority**: 5 --> 1",
+        "subject": "#7 pconnect",
+        "author": "madebeer",
+        "author_icon_url": "https://a.fsdn.com/con/images/sandiego/icons/default-avatar.png",
+        "timestamp": "2001-01-12 04:47:06",
+        "last_edited": null,
+        "attachments": [],
+        "is_meta": true
+      }
+    ]
+  },
+  "discussion_thread_url": "https://sourceforge.net/rest/p/apc-aa/support-requests/_discuss/thread/4ba9955e/",
+  "created_date": "2000-10-12 14:41:45",
+  "ticket_num": 7,
+  "summary": "pconnect",
+  "description": "",
+  "reported_by": "madebeer",
+  "assigned_to": null,
+  "reported_by_id": "512bcef1e88f3d3e617ea882",
+  "assigned_to_id": null,
+  "status": "open",
+  "private": false,
+  "discussion_disabled": false,
+  "attachments": [],
+  "custom_fields": {
+    "_priority": "1"
+  }
+},{
+  "votes_up": 0,
+  "votes_down": 0,
+  "_id": "519a56df34309d2f05e4512f",
+  "mod_date": "2001-11-21 20:02:27",
+  "labels": [],
+  "related_artifacts": [],
+  "discussion_thread": {
+    "_id": "85d86bf8",
+    "discussion_id": "519a56d034309d2f05e4505f",
+    "subject": "",
+    "limit": null,
+    "page": null,
+    "posts": [
+      {
+        "slug": "a49e",
+        "text": "Logged In: YES \nuser\\_id=40086\n\ndb\\_mysql.inc is file from PHPLib. If script cant find it, \r\nit means, that PHPLib probably isn't on include path. Check \r\nplease, if PHPLib files are on include path.\r\n\r\nHonza\r\n",
+        "subject": "#8 More error messages installing AA's",
+        "author": "honzam",
+        "author_icon_url": "https://a.fsdn.com/con/images/sandiego/icons/default-avatar.png",
+        "timestamp": "2001-06-03 17:31:20",
+        "last_edited": null,
+        "attachments": [],
+        "is_meta": false
+      },
+      {
+        "slug": "ffb6",
+        "text": "- **status**: open --> closed",
+        "subject": "#8 More error messages installing AA's",
+        "author": "madebeer",
+        "author_icon_url": "https://a.fsdn.com/con/images/sandiego/icons/default-avatar.png",
+        "timestamp": "2001-11-21 20:02:27",
+        "last_edited": null,
+        "attachments": [],
+        "is_meta": true
+      }
+    ]
+  },
+  "discussion_thread_url": "https://sourceforge.net/rest/p/apc-aa/support-requests/_discuss/thread/85d86bf8/",
+  "created_date": "2001-04-23 15:06:27",
+  "ticket_num": 8,
+  "summary": "More error messages installing AA's",
+  "description": "\r\nError Messages Installing AA's \r\nRedhat Linux 7 on i686 \r\nUsing Apache 3.3.12 \\(server and devel\\) \r\nMySQL 3.23.35-1 \\(server, development and client\\) \r\nphp-3.0.18 built without RPM's \r\nNo Open LDAP installed \r\nPhplib 7.2b  \r\n\r\nFollowing my last message I have now installed \r\nPHP3.ini and changed the relevant file permission\r\n\r\nNow I get the following errors\r\n\r\nWarning: Unable to access db\\_mysql.inc \r\nin /home/httpd/html/aa/include/locauth.php3 on line 29\r\n\r\nFatal error: Failed opening required 'db\\_mysql.inc' \r\nin /home/httpd/html/aa/include/locauth.php3 on line 29\r\n\r\nPhil\r\n",
+  "reported_by": "*anonymous",
+  "assigned_to": null,
+  "reported_by_id": null,
+  "assigned_to_id": null,
+  "status": "closed",
+  "private": false,
+  "discussion_disabled": false,
+  "attachments": [],
+  "custom_fields": {
+    "_priority": "5"
+  }
+},{
+  "votes_up": 0,
+  "votes_down": 0,
+  "_id": "519a56e034309d2f05e45141",
+  "mod_date": "2001-11-21 20:03:08",
+  "labels": [
+    "install-aa core"
+  ],
+  "related_artifacts": [],
+  "discussion_thread": {
+    "_id": "564d788d",
+    "discussion_id": "519a56d034309d2f05e4505f",
+    "subject": "",
+    "limit": null,
+    "page": null,
+    "posts": [
+      {
+        "slug": "7eff",
+        "text": "Logged In: YES \nuser\\_id=40086\n\nI'm affraid it is impossible to run APC-AA on IIS. Tested \r\nis just Apache \\(on Linux or Windows\\).\r\n\r\nThe reason, why it is impossible to use IIS is, that \r\ndatabse outputs \\(slices\\) are included to page by SSI \r\ncommands. In this approach we need to get parameters from \r\nurl to scripts included by SSI. It is problem for IIS, \r\nbecause it do not gives SSIed scripts url parameters.\r\n\r\nHonza",
+        "subject": "#9 IIS",
+        "author": "honzam",
+        "author_icon_url": "https://a.fsdn.com/con/images/sandiego/icons/default-avatar.png",
+        "timestamp": "2001-06-03 17:28:29",
+        "last_edited": null,
+        "attachments": [],
+        "is_meta": false
+      },
+      {
+        "slug": "6cda",
+        "text": "- **status**: open --> closed",
+        "subject": "#9 IIS",
+        "author": "madebeer",
+        "author_icon_url": "https://a.fsdn.com/con/images/sandiego/icons/default-avatar.png",
+        "timestamp": "2001-11-21 20:03:08",
+        "last_edited": null,
+        "attachments": [],
+        "is_meta": true
+      }
+    ]
+  },
+  "discussion_thread_url": "https://sourceforge.net/rest/p/apc-aa/support-requests/_discuss/thread/564d788d/",
+  "created_date": "2001-05-07 10:03:35",
+  "ticket_num": 9,
+  "summary": "IIS",
+  "description": "How can I setup AA to run on MS IIS4.0 or PWS ?",
+  "reported_by": "*anonymous",
+  "assigned_to": null,
+  "reported_by_id": null,
+  "assigned_to_id": null,
+  "status": "closed",
+  "private": false,
+  "discussion_disabled": false,
+  "attachments": [],
+  "custom_fields": {
+    "_priority": "5"
+  }
+},{
+  "votes_up": 0,
+  "votes_down": 0,
+  "_id": "519a56e134309d2f05e45153",
+  "mod_date": "2001-05-31 22:28:55",
+  "labels": [],
+  "related_artifacts": [],
+  "discussion_thread": {
+    "_id": "bde1c920",
+    "discussion_id": "519a56d034309d2f05e4505f",
+    "subject": "",
+    "limit": null,
+    "page": null,
+    "posts": [
+      {
+        "slug": "ca82",
+        "text": "Logged In: YES \nuser\\_id=40086\n\nIt looks like you want to use LDAP version of permission \r\nsystem, which is a bit more complicated than sql.\r\n\r\nThe message means, it is imposible to write to LDAP. \r\nPlease, check your permissions. Check, if you have set \r\nright permision system in config.php3 \\(perm\\_ldap and not \r\nperm\\_sql\\)\r\n\r\n\r\nHonza",
+        "subject": "#10 permission system",
+        "author": "honzam",
+        "author_icon_url": "https://a.fsdn.com/con/images/sandiego/icons/default-avatar.png",
+        "timestamp": "2001-06-03 17:23:40",
+        "last_edited": null,
+        "attachments": [],
+        "is_meta": false
+      },
+      {
+        "slug": "0dd7",
+        "text": "Logged In: NO \n\nthanks honzam for your answer \\!\r\n\r\nbut if I put perm\\_sql in config.php3 all is ok , but when I try to use perm\\_ldap I return to the error message\r\n\r\nI have test ldap with ldapsearch and aalduser and I can read all the objects , this means that the ldaps \r\nbase , the user and password are OK , arent they ?\r\n\r\nI cant see any log messages \\(except star and stop from ldap server \\) that can help me . \r\n\r\nCan you or anybody help more ? \r\n\r\nSorry by my english , and thanks in advance ",
+        "subject": "#10 permission system",
+        "author": "nobody",
+        "author_icon_url": "https://a.fsdn.com/con/images/sandiego/icons/default-avatar.png",
+        "timestamp": "2001-06-04 19:51:11",
+        "last_edited": null,
+        "attachments": [],
+        "is_meta": false
+      }
+    ]
+  },
+  "discussion_thread_url": "https://sourceforge.net/rest/p/apc-aa/support-requests/_discuss/thread/bde1c920/",
+  "created_date": "2001-05-31 22:28:55",
+  "ticket_num": 10,
+  "summary": "permission system",
+  "description": "when I try to create superadmin account I \r\nobtain &amp;quot;Can\u00b4t add primary permission object&amp;quot;\r\n\r\nI revised the settings of ldap and mysql and I couldn\\!\r\nt find errors\r\n\r\nThanks \\!",
+  "reported_by": "*anonymous",
+  "assigned_to": null,
+  "reported_by_id": null,
+  "assigned_to_id": null,
+  "status": "open",
+  "private": false,
+  "discussion_disabled": false,
+  "attachments": [],
+  "custom_fields": {
+    "_priority": "5"
+  }
+},{
+  "votes_up": 0,
+  "votes_down": 0,
+  "_id": "519a56e234309d2f05e45165",
+  "mod_date": "2002-09-26 22:58:29",
+  "labels": [],
+  "related_artifacts": [],
+  "discussion_thread": {
+    "_id": "5513bd9b",
+    "discussion_id": "519a56d034309d2f05e4505f",
+    "subject": "",
+    "limit": null,
+    "page": null,
+    "posts": []
+  },
+  "discussion_thread_url": "https://sourceforge.net/rest/p/apc-aa/support-requests/_discuss/thread/5513bd9b/",
+  "created_date": "2002-09-26 22:58:29",
+  "ticket_num": 11,
+  "summary": "Bug in calendar view",
+  "description": "Hi,\r\nwe can work a calendar view type, but without work the second \r\noption in order to filter BETWEEN dates...\r\n\r\nour sintaxis in the first view is:\r\n&amp;lt;a href=&amp;quot;agenda2.shtml\r\n?vid=183&amp;amp;cmd\\[183\\]=c-1-\\_\\#CV\\_TST\\_1-c-2-\\_\\#CV\\_TST\\_2\r\n&amp;amp;day=\\_\\#CV\\_NUM\\_D&amp;amp;month=\\_\\#CV\\_NUM\\_M&amp;amp;year=\\_\\#CV\\_NUM\r\n\\_Y&amp;quot;&amp;gt;&amp;lt;b&amp;gt;\\_\\#CV\\_NUM\\_D&amp;lt;/b&amp;gt;\r\n&amp;lt;/a&amp;gt;\r\n\r\nand, in the second view \\(number 183 in our case\\)\r\nwe put the first condition in\r\nstart date &amp;gt;=\r\nend date &amp;lt;=\r\n\r\nThe start date filter function Ok but we can't make work the \r\nsecond option \\(end date\\)\r\n\r\nplease... some help\\!\r\n\r\nthank in advanced\r\nCarlos\r\n\r\ncarlos@wamani.apc.org\r\n\r\n",
+  "reported_by": "*anonymous",
+  "assigned_to": null,
+  "reported_by_id": null,
+  "assigned_to_id": null,
+  "status": "open",
+  "private": false,
+  "discussion_disabled": false,
+  "attachments": [],
+  "custom_fields": {
+    "_priority": "5"
+  }
+},{
+  "votes_up": 0,
+  "votes_down": 0,
+  "_id": "519a56e234309d2f05e4516c",
+  "mod_date": "2003-04-07 04:29:00",
+  "labels": [
+    "install-aa core"
+  ],
+  "related_artifacts": [],
+  "discussion_thread": {
+    "_id": "c38bddc1",
+    "discussion_id": "519a56d034309d2f05e4505f",
+    "subject": "",
+    "limit": null,
+    "page": null,
+    "posts": [
+      {
+        "slug": "a0e6",
+        "text": "Logged In: YES \nuser\\_id=382803\n\nIs Apache configured to read .php3 \\(as well as .php\\) files.\r\nYou may only need to add &amp;quot;.php3&amp;quot; to the list of AddType. E.g., \r\n\r\nAddType application/x-httpd-php .php .php3 .php3 .phtml\r\n",
+        "subject": "#12 php4",
+        "author": "markgill",
+        "author_icon_url": "https://a.fsdn.com/con/images/sandiego/icons/default-avatar.png",
+        "timestamp": "2003-11-10 15:48:22",
+        "last_edited": null,
+        "attachments": [],
+        "is_meta": false
+      }
+    ]
+  },
+  "discussion_thread_url": "https://sourceforge.net/rest/p/apc-aa/support-requests/_discuss/thread/c38bddc1/",
+  "created_date": "2003-04-07 04:29:00",
+  "ticket_num": 12,
+  "summary": "php4",
+  "description": "I am trying to install on RedHat Linux 7.3 with php-4.3.1 \r\nand mysql 4.0.12. \r\n\r\nA: will the unaltered code run under this system?\r\nB: do I have to re-name all files to .php ext rather \r\nthan .php3\r\nC: at this point, I am receiving the following error:\r\n\r\n&amp;quot;Fatal error: Cannot redeclare gc\\(\\) \r\nin /usr/web/docs/projects.zuka.net/docs/activeapp/includ\r\ne/phplib/session.inc on line 461&amp;quot;\r\n\r\nAny help with definitly be appreciated.\r\n\r\nDave Filchak\r\n",
+  "reported_by": "*anonymous",
+  "assigned_to": null,
+  "reported_by_id": null,
+  "assigned_to_id": null,
+  "status": "open",
+  "private": false,
+  "discussion_disabled": false,
+  "attachments": [],
+  "custom_fields": {
+    "_priority": "5"
+  }
+},{
+  "votes_up": 0,
+  "votes_down": 0,
+  "_id": "519a56e434309d2f05e4517b",
+  "mod_date": "2003-04-07 04:35:14",
+  "labels": [
+    "install-aa core"
+  ],
+  "related_artifacts": [],
+  "discussion_thread": {
+    "_id": "1750d8b5",
+    "discussion_id": "519a56d034309d2f05e4505f",
+    "subject": "",
+    "limit": null,
+    "page": null,
+    "posts": [
+      {
+        "slug": "b54e",
+        "text": "Logged In: YES \nuser\\_id=408058\n\nDave:\r\n\r\nHi\\!, do you resolve this problem?, what version to apc-aa\r\ntry install?\r\n\r\ngreetings from cl\r\n\r\nRenato",
+        "subject": "#13 Installation Problems",
+        "author": "rmoya",
+        "author_icon_url": "https://a.fsdn.com/con/images/sandiego/icons/default-avatar.png",
+        "timestamp": "2005-06-13 19:41:00",
+        "last_edited": null,
+        "attachments": [],
+        "is_meta": false
+      }
+    ]
+  },
+  "discussion_thread_url": "https://sourceforge.net/rest/p/apc-aa/support-requests/_discuss/thread/1750d8b5/",
+  "created_date": "2003-04-07 04:35:14",
+  "ticket_num": 13,
+  "summary": "Installation Problems",
+  "description": "I am trying to install \\(first time user\\) on a RH 7.3 \r\nsystems with php-4.3.1 and mysql 4.0.12.\r\n\r\nWill ActionApps run under this system as long as I turn \r\nregister\\_globals On for this directory? \r\n\r\nDo I have to rename all extensions to php?\r\n\r\nI am currently receiving the following error:\r\n\r\nFatal error: Cannot redeclare gc\\(\\) \r\nin /usr/web/docs/projects.zuka.net/docs/activeapp/includ\r\ne/phplib/session.inc on line 461\r\n\r\nAll help is greatly appreciated.\r\n\r\nDave Filchak\r\ndfilchak@sympatico.ca",
+  "reported_by": "dfilchak",
+  "assigned_to": null,
+  "reported_by_id": "507714e871b75b4a579f0173",
+  "assigned_to_id": null,
+  "status": "open",
+  "private": false,
+  "discussion_disabled": false,
+  "attachments": [],
+  "custom_fields": {
+    "_priority": "5"
+  }
+},{
+  "votes_up": 0,
+  "votes_down": 0,
+  "_id": "519a56e734309d2f05e451a7",
+  "mod_date": "2003-08-03 05:43:13",
+  "labels": [
+    "install-aa core"
+  ],
+  "related_artifacts": [],
+  "discussion_thread": {
+    "_id": "b8d0acc0",
+    "discussion_id": "519a56d034309d2f05e4505f",
+    "subject": "",
+    "limit": null,
+    "page": null,
+    "posts": []
+  },
+  "discussion_thread_url": "https://sourceforge.net/rest/p/apc-aa/support-requests/_discuss/thread/b8d0acc0/",
+  "created_date": "2003-08-03 05:43:13",
+  "ticket_num": 14,
+  "summary": "documentation issue",
+  "description": "I just finished installing the core and ran into a\r\ncouple of minor problems.\r\n\r\n\r\n\\------\r\n\r\nsection 4.2 of the manual doesn't work without specify\r\na database name \\(-D database\\)  on the mysql prompt. \r\n\r\nHere is the correction:\r\n\r\n\\--\r\n4.2 Creating the database\r\nThen create your initial Action Applications database.\r\nTo do this, you need the file aadb.sql from the Action\r\nApplications doc directory. It contains SQL commands\r\nwhich create the database. When queried for a password,\r\nuse the mysql root password. \r\n\r\n\r\n\\#  mysql -u root -p\r\nEnter password:\r\nmysql&amp;gt; CREATE DATABASE aadb;\r\nQuery OK, 1 row affected \\(0.03 sec\\)\r\n\r\nmysql&amp;gt; QUIT\r\nBye\r\n\\# cd /home/httpd/html/apc-aa\r\n\\# mysql -D yourdatabasename -u root -p aadb &amp;lt;\r\ndoc/aadb.sql\r\nEnter Password:\r\n\\#\r\n\r\n\r\n\\----\r\n\r\n\r\n\r\nI got a fatal error initially\r\n&amp;quot;Fatal error: Cannot redeclare gc\\(\\) in\r\n/home/apc-aa-2.4.0/include/phplib/session.inc on line 461&amp;quot;\r\n\r\n\r\nNot sure what the &amp;quot;correct&amp;quot; fix for this is but\r\ncommenting out the first declaration of gc in\r\nphplib/session.inc got it going.\r\n\r\n\r\nmy php version is 4.3.2\r\n",
+  "reported_by": "mike5",
+  "assigned_to": null,
+  "reported_by_id": "518277d8e88f3d774fb59f69",
+  "assigned_to_id": null,
+  "status": "open",
+  "private": false,
+  "discussion_disabled": false,
+  "attachments": [],
+  "custom_fields": {
+    "_priority": "5"
+  }
+},{
+  "votes_up": 0,
+  "votes_down": 0,
+  "_id": "519a56e734309d2f05e451ae",
+  "mod_date": "2004-02-12 15:04:17",
+  "labels": [
+    "install-aa core"
+  ],
+  "related_artifacts": [],
+  "discussion_thread": {
+    "_id": "7a1b6862",
+    "discussion_id": "519a56d034309d2f05e4505f",
+    "subject": "",
+    "limit": null,
+    "page": null,
+    "posts": []
+  },
+  "discussion_thread_url": "https://sourceforge.net/rest/p/apc-aa/support-requests/_discuss/thread/7a1b6862/",
+  "created_date": "2004-02-12 15:04:17",
+  "ticket_num": 15,
+  "summary": "Installation with only FTP and PHPmyadmin access",
+  "description": "Is it possible to install without shell access?  I need\r\nto set these tables up in an exsisting mysql databse. \r\nI don't want it to create its own db.\r\n\r\nI get the following when trying to setup\r\n\r\n\"Database error: Invalid SQL: select val from\r\nactive\\_sessions where sid =\r\n'5d21a362c247c9c03a1aacacb9c782c1' and name =\r\n'AA\\_SL\\_Session'\r\nMySQL Error: 1146 \\(Table\r\n'chhgoshe\\_cal1.active\\_sessions' doesn't exist\\)\r\nPlease contact webmaster@chhgoshen.org and report the\r\nexact error message.\r\nSession halted.\"\r\n\r\n-Thanks",
+  "reported_by": "*anonymous",
+  "assigned_to": null,
+  "reported_by_id": null,
+  "assigned_to_id": null,
+  "status": "open",
+  "private": false,
+  "discussion_disabled": false,
+  "attachments": [],
+  "custom_fields": {
+    "_priority": "5"
+  }
+},{
+  "votes_up": 0,
+  "votes_down": 0,
+  "_id": "519a56e834309d2f05e451b5",
+  "mod_date": "2010-10-20 08:13:07",
+  "labels": [
+    "install-aa core"
+  ],
+  "related_artifacts": [],
+  "discussion_thread": {
+    "_id": "0ed81bde",
+    "discussion_id": "519a56d034309d2f05e4505f",
+    "subject": "",
+    "limit": null,
+    "page": null,
+    "posts": []
+  },
+  "discussion_thread_url": "https://sourceforge.net/rest/p/apc-aa/support-requests/_discuss/thread/0ed81bde/",
+  "created_date": "2010-10-20 08:13:07",
+  "ticket_num": 16,
+  "summary": "Initializing the database and creating a superadmin account",
+  "description": "Hi,\r\n\r\nI have created and added user and password to the database and when I point my browser to http://localhost/apc-aa/admin/setup.php3, the connection was reset and I cant create a superadmin account. What should i do? Thank you",
+  "reported_by": "annepineda",
+  "assigned_to": null,
+  "reported_by_id": "519a56e834309d2f05e451b6",
+  "assigned_to_id": null,
+  "status": "open",
+  "private": false,
+  "discussion_disabled": false,
+  "attachments": [],
+  "custom_fields": {
+    "_priority": "5"
+  }
+}],
+"tracker_config":{
+  "_id": "519a56d034309d2f05e4505d",
+  "options": {
+    "ordinal": 10,
+    "import_id": "tracker/206341",
+    "mount_point": "support-requests",
+    "TicketMonitoringType": null,
+    "EnableVoting": false,
+    "TicketMonitoringEmail": "",
+    "mount_label": "Support Requests",
+    "url": "/p/apc-aa/support-requests/"
+  }
+},
+"milestones":[],
+"custom_fields":[
+  {
+    "milestones": [],
+    "type": "milestone",
+    "name": "_milestone",
+    "label": "Group"
+  },
+  {
+    "show_in_search": true,
+    "type": "select",
+    "options": "1 2 3 4 *5 6 7 8 9",
+    "name": "_priority",
+    "label": "Priority"
+  }
+],
+"open_status_names":"open unread accepted pending",
+"closed_status_names":"closed wont-fix",
+"saved_bins":[
+  {
+    "_id": "519a56d034309d2f05e45067",
+    "summary": "Changes",
+    "terms": "!status:wont-fix && !status:closed",
+    "sort": "mod_date_dt desc"
+  },
+  {
+    "_id": "519a56d034309d2f05e45066",
+    "summary": "Closed Tickets",
+    "terms": "status:wont-fix or status:closed",
+    "sort": ""
+  },
+  {
+    "_id": "519a56d034309d2f05e45065",
+    "summary": "Open Tickets",
+    "terms": "!status:wont-fix && !status:closed",
+    "sort": ""
+  }
+]}
