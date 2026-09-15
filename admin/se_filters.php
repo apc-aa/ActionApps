@@ -1,0 +1,350 @@
+<?php
+/** se_filters.php - feeding filters settings
+ *   expected $slice_id for edit slice
+ *   optionally $import_id for selected imported slice
+ *   optionally $Msg to show under <h1>Headline</h1> (typically: Filters update successful)
+ *
+ * PHP version 7.2+
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @version   $Id$
+ * @author    Honza Malik <honza.malik@ecn.cz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      https://www.apc.org/ APC
+ *
+*/
+
+use AA\IO\DB\DB_AA;
+use AA\IO\FeedUtil;
+use AA\Util\InputVars;
+
+require_once __DIR__ . "/../include/init_page.php";
+require_once __DIR__ . "/../include/formutil.php";
+
+try {
+    // array ( 'dcf6f197e02…' => 3, '6c81ec28dd4…' => 4, '4429a8e44bb…' => 8, )
+    $import_id = InputVars::idGET('import_id');
+    $cancel = InputVars::boolPOST('cancel');
+    
+    $Msg = InputVars::stringGETPOST('Msg');
+} catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
+
+if ($cancel) {
+    go_url( StateUrl(self_base() . "index.php"));
+}
+
+if (!IfSlPerm(PS_FEEDING)) {
+    AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php", _m("You do not have permissions to change feeding setting"), "sliceadmin", "filters");
+    exit;
+}
+
+$err = [];          // error array (Init - just for initializing variable
+
+$chboxcat = [];
+$selcat   = [];
+$chboxapp = [];
+
+// lookup (slices)
+$SQL= "SELECT name, id FROM feeds, slice
+        LEFT JOIN feedperms ON slice.id=feedperms.from_id
+        WHERE slice.id=feeds.from_id
+          AND (feedperms.to_id='$p_slice_id' OR slice.export_to_all=1)
+          AND feeds.to_id='$p_slice_id' ORDER BY name";
+
+$db->query($SQL);
+while ($db->next_record()) {
+    $impslices[unpack_id($db->f('id'))] = $db->f('name');
+}
+
+// lookup external slices
+$SQL = "SELECT remote_slice_id, remote_slice_name, feed_id, node_name
+        FROM external_feeds
+        WHERE slice_id='$p_slice_id' ORDER BY remote_slice_name";
+$db->query($SQL);
+
+while ($db->next_record()) {
+    $impslices[unpack_id($db->f('remote_slice_id'))] = $db->f('node_name')." - ".$db->f('remote_slice_name');
+    $remote_slices[unpack_id($db->f('remote_slice_id'))] = $db->f('feed_id');
+}
+
+if ( !isset($impslices) || !is_array($impslices)){
+    AA_Adminpageutil::MsgPageMenu(StateUrl(self_base() . "se_import.php"), _m("There are no imported slices"), "sliceadmin", "filters");
+    exit;
+}
+
+if ( $import_id == "" ) {
+    reset($impslices);
+    $import_id = key($impslices);
+}
+$p_import_id = xpack_id($import_id);
+
+$slice = AA_Slice::getModule(AA::$module_id);
+
+// lookup (to_categories)
+$group =  $slice?->getFields()->getCategoryGroup();
+
+if ( $group ) {
+    $db->query("SELECT id, name FROM constant
+                 WHERE group_id='$group'
+                 ORDER BY pri");
+    $first_time = true;               // in order to The Same to be first in array
+    while ($db->next_record()) {
+        if ( $first_time ) {
+            $to_categories[unpack_id('AA_The_Same_Cate')] = _m("-- The same --");
+            $first_time = false;
+        }
+        $to_categories[unpack_id($db->f('id'))] = $db->f('name');
+    }
+}
+
+// lookup (from_categories) and preset form values
+if ($feed_id = $remote_slices[$import_id]) {   // not comparison! - external feed
+
+    $ext_categs = FeedUtil::GetExternalCategories($feed_id, true);  // get also default 'AA_Other_Categor' category
+
+    $imp_count  = count($ext_categs);
+
+    if ($ext_categs && is_array($ext_categs)) {
+
+        // check, if we use 'All categories' option
+        $all_categories = FeedUtil::UseAllCategoriesOption($ext_categs);
+
+        if ( $all_categories ) {
+            // first row - all categories
+            $approved_0     = $ext_categs[FeedUtil::UNPACKED_AA_OTHER_CATEGOR]['approved'];
+            $categ_0        = $ext_categs[FeedUtil::UNPACKED_AA_OTHER_CATEGOR]['target_category_id'];
+        } else {
+            foreach ( $ext_categs as $id => $v) {
+                $chboxcat[$id] = (strlen($v['target_category_id'])>1);
+                $selcat[$id]   =  $v['target_category_id'];
+                $chboxapp[$id] =  $v['approved'];
+            }
+        }
+    }
+} else {   // inner feeding
+// lookup (to_categories)
+    $imp_group =  AA_Slice::getModule($import_id)?->getFields()->getCategoryGroup() ?? '';
+
+    // count number of imported categories
+    $imp_count = ($imp_group==='') ? 0 : DB_AA::count('constant', [['group_id', $imp_group]]);
+
+    // preset variables due to feeds database
+    $SQL= "SELECT category_id, to_category_id, all_categories, to_approved FROM feeds WHERE from_id=$p_import_id AND to_id='$p_slice_id'";
+    $db->query($SQL);
+    while ($db->next_record()) {
+        if ( $db->f('all_categories') ) {
+            $all_categories = true;
+            $approved_0     = $db->f('to_approved');
+            $categ_0        = unpack_id($db->f('to_category_id'));  // if 0 => the same category
+        } else {
+            $chboxcat[unpack_id($db->f('category_id'))] = true;
+            $selcat[unpack_id($db->f('category_id'))]   = unpack_id($db->f('to_category_id'));
+            $chboxapp[unpack_id($db->f('category_id'))] = $db->f('to_approved');
+        }
+    }
+}
+
+$apage = new AA_Adminpageutil('sliceadmin','filters');
+$apage->setTitle(_m("Admin - Content Pooling - Filters"));
+$apage->addRequire('InitPage();', 'AA_Req_Load');
+$apage->printHead($err, $Msg);
+
+$form_buttons= [
+    "btn_upd"=> [
+        "type"  =>"button",
+        "value"       =>_m("Update"),
+        "accesskey"   =>"S",
+        "add"         =>"onclick=\"UpdateFilters('".AA::$module_id."','".$import_id."')\""
+    ],
+    "cancel" => ["url" =>"se_fields.php"]
+];
+
+FrmTabCaption(_m("Content Pooling - Configure Filters"), $form_buttons);
+?>
+<tr>
+  <th><?php echo _m("Filter for imported slice") . "&nbsp; "?></th>
+  <td><?php FrmSelectEasy("import_id", $impslices, $import_id, ["onchange" => "ChangeImport()"]); ?></td>
+</tr>
+<?php
+FrmTabSeparator(_m("Categories"));
+?>
+<tr><td>
+<table>
+<tr class="aa-tbl-header">
+  <th width="40%" colspan="2"><?php echo _m("From") ?></th>
+  <th width="30%"><?php echo _m("To") ?></th>
+  <th width="30%"><?php echo _m("Active") ?></th>
+</tr>
+
+<tr>
+<?php
+if ($imp_count) {
+   echo "<td>";
+   FrmChBoxEasy("all_categories", $all_categories, "OnClick=\"AllCategClick()\"");
+   echo "</td>";
+}
+?>
+<td <?php if (!$imp_count) { echo "colspan=\"2\""; } ?>><?php echo _m("All Categories") ?></td>
+</td>
+
+<td><?php
+if ( isset($to_categories) && is_array($to_categories) ) {
+    FrmSelectEasy("categ_0", $to_categories, $categ_0);
+} else {
+    echo "<span>". _m("No category defined") ."</span>";
+}
+?></td>
+<td><?php FrmChBoxEasy("approved_0", $approved_0); ?></td>
+</tr>
+<tr><td colspan="4"><hr></td></tr>
+<?php
+/** PrintOneRow function
+ *  @param $id
+ *  @param $cat_name
+ *  @param $i
+ */
+function PrintOneRow($id, $cat_name, $i): void
+{
+    global $chboxcat, $selcat, $chboxapp, $to_categories;
+
+    echo "<tr><td>";
+    $chboxname = "chbox_". $i;
+    FrmChBoxEasy($chboxname, $chboxcat[$id] );
+    echo "</td>\n<td>". $cat_name. "</td><td>";
+    $selectname = "categ_". $i;
+    if ( isset($to_categories) && is_array($to_categories) ) {
+        FrmSelectEasy($selectname, $to_categories, $selcat[$id] ?? $id);
+    } else {
+        echo "<span>". _m("No category defined") ."</span>";
+    }
+    echo "</td>\n<td>";
+    $chboxname = "approved_". $i;
+    FrmChBoxEasy($chboxname, $chboxapp[$id] );
+    echo "<input type=\"hidden\" name=\"hid_$i\" value=\"$id\">";
+    echo "</td></tr>";
+}
+
+if ($feed_id) {
+    if (isset($ext_categs) && is_array($ext_categs)) {
+        $i=1;
+        foreach ($ext_categs as $id => $v ) {
+            if ( $id == FeedUtil::UNPACKED_AA_OTHER_CATEGOR) {
+                $other_categ = $v;   // we just want to list it at the end
+                continue;
+            }
+            PrintOneRow($id,$v['name'],$i++);
+        }
+        if ( $other_categ ) {
+            PrintOneRow(FeedUtil::UNPACKED_AA_OTHER_CATEGOR, $other_categ['name'],$i++);
+        }
+    }
+}
+else {
+    if ( $imp_group ) {
+        $db->query("SELECT id, name, value FROM constant
+                     WHERE group_id='$imp_group'
+                     ORDER BY name");
+        $i=1;
+        while ($db->next_record()) {
+            PrintOneRow(unpack_id($db->f('id')),$db->f('name'),$i++);
+        }
+    }
+}
+?>
+<tr><td colspan="3"><a href="javascript:SelectChboxes('chbox_')"><?php echo _m('Select all');?></td><td><a href="javascript:SelectChboxes('approved_')"><?php echo _m('Select all');?></td></tr>
+<?php
+FrmTabEnd($form_buttons);
+?>
+<script>
+
+    function ChangeImport()
+    {
+        var url = "<?php echo StateUrl(self_base() . "se_filters.php")?>"
+        url += "&slice_id=<?php echo AA::$module_id ?>"
+        url += "&import_id=" + document.f.import_id.value
+        window.location=url
+    }
+
+    function AllCategClick() {
+        for (let i=1; i<=<?php echo $imp_count?>; i++ ) {
+            DisableClick('document.f.all_categories','document.f.chbox_'+i)
+            if ( <?php echo (( isset($to_categories) && is_array($to_categories)) ? 1 : 0 ) ?> ) {
+                DisableClick('document.f.all_categories', 'document.f.categ_' + i)
+            }
+            DisableClick('document.f.all_categories','document.f.approved_'+i)
+        }
+    }
+
+    function InitPage() {
+        AllCategClick()
+    }
+
+    function DisableClick(cond,what) {
+        eval(what).disabled=eval(cond).checked;
+        // property .disabled supported only in MSIE 4.0+
+    }
+
+    function UpdateFilters(slice_id, import_id) {
+        var url = "<?php echo StateUrl(self_base() . "se_filters2.php")?>"
+        var done = 0
+        url += "&slice_id=" + slice_id
+        url += "&import_id=" + import_id
+        url += "&feed_id=<?php echo $feed_id ?>"
+        if ((typeof document.f.all_categories === 'undefined') || document.f.all_categories.checked) { // no import cats
+            done = 1
+            if ( <?php echo (( isset($to_categories) && is_array($to_categories)) ? 1 : 0 ) ?> ) {
+                url += "&all=1&C=" + encodeURIComponent(document.f.categ_0.value)
+                url += "-" + (document.f.approved_0.checked ? 1 : 0)
+            } else {
+                url += "&all=1&C=0-" + (document.f.approved_0.checked ? 1 : 0)
+            }
+        } else {
+            for (var i = 1; i <= <?php echo $imp_count?>; i++) {
+                if (document.f['chbox_'+i].checked) {
+                    done = 1
+                    if ( <?php echo (( isset($to_categories) && is_array($to_categories)) ? 1 : 0 ) ?> ) {
+                        url += "&T%5B%5D=" + encodeURIComponent(document.f['categ_'+i].value)
+                    } else {
+                        url += "&T%5B%5D=0"
+                    }
+                    url += "&F%5B%5D=" +  encodeURIComponent(document.f['hid_'+i].value)
+                    url += "-" + (document.f['approved_'+i].checked ? 1 : 0)
+                }
+            }
+        }
+        if (done == 0) {
+            alert ( "<?php echo _m("No From category selected!") ?>" )
+        } else {
+            window.location=url
+        }
+    }
+
+    function SelectChboxes(chb_name) {
+        var len = document.f.elements.length;
+        var state = 2;
+        var str_len = chb_name.length;
+        for ( var i=0; i<len; i++ )
+            if ( document.f.elements[i].name.substring(0,str_len) == chb_name) { //items checkboxes
+                if (state == 2) {
+                    state = ! document.f.elements[i].checked;
+                }
+                document.f.elements[i].checked = state;
+            }
+    }
+</script>
+<?php
+$apage->printFoot();

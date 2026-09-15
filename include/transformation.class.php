@@ -1,0 +1,1087 @@
+<?php
+
+/**
+ * Form displayed in popup window allowing search and replace item content
+ * for specified items
+ *
+ * PHP version 7.2+
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @version   $Id$
+ * @author    Honza Malik <honza.malik@ecn.cz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      https://www.apc.org/ APC
+ *
+*/
+
+use AA\Later\LaterInterface;
+use AA\Util\NamedInterface;
+use AA\Util\ReportTrait;
+
+/** AA_Transformation - parent class for all Transformations, which is used for
+ *  changing Item values - typically when we import item. The Input item has
+ *  some fields, the return item should has some fields, so we call
+ *  Transformations for all fields of destination item and construct it this way
+ *
+ *  Main method is transform(), which do the all work.
+ */
+abstract class AA_Transformation implements NamedInterface
+{
+    use ReportTrait;
+
+    public $parameters = [];
+
+    /** name function
+     *
+     */
+    public static function name(): string
+    {
+        return '';
+    }
+
+    /** description function
+     *
+     */
+    public static function description(): string
+    {
+        return '';
+    }
+
+    /** transform function
+     *
+     * @param string       $field_id
+     * @param ItemContent  $itemcontent
+     * @param bool         $silent
+     *
+     * @return AA_Value|bool|null - null means no change, true means all done (no more transformations needed), AA_Value means new value to store to field
+     */
+    abstract public function transform($field_id, $itemcontent, $silent = true): AA_Value|bool|null;
+
+    /** Construct name of input form variable
+     *  It consists of classname, so we are able to guess which variable
+     *  is used for which class (child of AA_Transformation). It also contains
+     *  $input_id, so we are able to have more than one instance of the class
+     *  in one form
+     * @param string $name
+     * @param string $input_id
+     * @param string $classname
+     * @return string
+     */
+    public static function _getVarname($name, $input_id, $classname): string
+    {
+        return $input_id . substr($classname, 18) . $name;
+    }
+
+    /** Grabs only variables, which is intended for class $classname
+     * @param $input_id
+     * @param $classname
+     * @return string[]
+     */
+    public static function getRequestVariables($input_id, $classname): array
+    {
+        $ret = [];
+        if (stripos($classname, 'aa_transformation_') !== 0) {  // to lower - php4 fix
+            return $ret;
+        }
+        $prefix = $input_id . substr($classname, 18);
+        foreach ($_REQUEST as $varname => $varvalue) {
+            if (str_starts_with($varname, $prefix)) {
+                // filter out the prefix
+                $ret[substr($varname, strlen($prefix))] = $varvalue;
+            }
+        }
+        return $ret;
+    }
+
+    /**
+     * @param $param_name
+     */
+    public function getParam($param_name)
+    {
+        //        return $this->parameters[$param_name]->getValue();
+        return $this->$param_name;
+    }
+
+    /** Reads new flag value from user's HTML form
+     *  Common function for many transformations
+    */
+    public function getFlagFromForm($old_flag): int|string
+    {
+        return match ($this->getParam('new_flag')) {
+            'u'     => $old_flag,
+            'h'     => $old_flag | FLAG_HTML,
+            't'     => $old_flag & ~FLAG_HTML,
+            default => 0,                     // should never happen
+        };
+
+    }
+
+    /**
+     * @param $input_prefix
+     * @param $params
+     */
+    public static function htmlSetting($input_prefix, $params) {}
+}
+
+class AA_Transformation_Value extends AA_Transformation
+{
+    public $new_flag;   // 'h' for HTML, 't' for PlainText or 'u' for unchanged
+    public $new_content;
+
+    /** AA_Transformation_Value function
+     * @param $param
+     */
+    public function __construct($param)
+    {
+        $this->new_flag    = $param['new_flag'];
+        $this->new_content = $param['new_content'];
+    }
+
+    /** name function
+     * @return string - message
+     */
+    public static function name(): string
+    {
+        return _m("Fill by value");
+    }
+
+    /** description function
+     * @return string - message
+     */
+    public static function description(): string
+    {
+        return _m("Returns single value (not multivalue) which is created as result of AA expression specified in Expression. You can use any AA expressions like {ifset:{_#HEADLINE}:...}, ...");
+    }
+
+    /** transform function
+     * @param string $field_id
+     * @param ItemContent   $itemcontent (by link)
+     * @param bool $silent
+     * @return AA_Value
+     */
+    public function transform($field_id, $itemcontent, $silent = true): AA_Value|bool|null
+    {
+        $item = GetItemFromContent($itemcontent);
+        $text = $item->subst_alias($this->getParam('new_content'));
+        $flag = $this->getFlagFromForm($item->getFlag($field_id));
+        return new AA_Value($text, $flag);
+    }
+
+    /** htmlSetting function
+     * @param $input_prefix
+     * @param $params
+     * @return string
+     */
+    public static function htmlSetting($input_prefix, $params): string
+    {
+        $flag_options = [
+            'h' => _m('HTML'),
+            't' => _m('Plain text'),
+            'u' => _m('As for other values of this field'),
+        ];
+        ob_start();
+        FrmTabCaption();
+        FrmStaticText('', self::description());
+
+        $varname_new_flag    = AA_Transformation::_getVarname('new_flag', $input_prefix, __CLASS__);
+        $varname_new_content = AA_Transformation::_getVarname('new_content', $input_prefix, __CLASS__);
+
+        FrmInputRadio($varname_new_flag, _m('Mark as'), $flag_options, get_if($_GET[$varname_new_flag], 'u'));
+        FrmTextarea(
+            $varname_new_content,
+            _m('New content'),
+            $_GET[$varname_new_content],
+            12,
+            80,
+            false,
+            _m('You can use also aliases, so the content "&lt;i&gt;{abstract........}&lt;/i&gt;&lt;br&gt;{full_text......1}" is perfectly OK'),
+        );
+
+        FrmTabEnd();
+        return ob_get_clean();
+    }
+}
+
+/** Used for {newitem:}, ... */
+class AA_Transformation_Exactvalues extends AA_Transformation
+{
+    public $new_content;
+
+    /** AA_Transformation_Exactvalues function
+     * @param $param
+     */
+    public function __construct($param)
+    {
+        $this->new_content = $param['new_content'];
+    }
+
+    /** name function
+     * @return string - message
+     */
+    public static function name(): string
+    {
+        return _m("Fill by exact values");
+    }
+
+    /** description function
+     * @return string - message
+     */
+    public static function description(): string
+    {
+        return _m("Returns values exactly as specified (no evaluation, ...)");
+    }
+
+    /** transform function
+     * @param $field_id
+     * @param $itemcontent (by link)
+     * @return AA_Value
+     */
+    public function transform($field_id, $itemcontent, $silent = true): AA_Value|bool|null
+    {
+        $item = GetItemFromContent($itemcontent);
+        $text = $this->getParam('new_content');
+        $flag = $item->getFlag($field_id);
+        return new AA_Value($text, $flag);
+    }
+
+    /** htmlSetting function
+     * @param $input_prefix
+     * @param $params
+     * @return string
+     */
+    public static function htmlSetting($input_prefix, $params): string
+    {
+        ob_start();
+        FrmTabCaption();
+        FrmStaticText('', self::description());
+
+        $varname_new_content = AA_Transformation::_getVarname('new_content', $input_prefix, __CLASS__);
+
+        FrmTextarea($varname_new_content, _m('New content'), $_GET[$varname_new_content], 12, 80, false, _m('Exact value only - no AA expressions'));
+
+        FrmTabEnd();
+        return ob_get_clean();
+    }
+}
+
+
+/** Just recompute the field */
+class AA_Transformation_Recompute extends AA_Transformation
+{
+    /** AA_Transformation_Exactvalues function
+     * @param $param
+     */
+    public function __construct($param) {}
+
+    /** name function
+     * @return string - message
+     */
+    public static function name(): string
+    {
+        return _m("Recompute field");
+    }
+
+    /** description function
+     * @return string - message
+     */
+    public static function description(): string
+    {
+        return _m("Just recomputes field as specified in the field setting. Works just for Computed fields, of course. No parameters needed. If the Silent is not checked, all the computed fields are recomputed (just like with other transformations)");
+    }
+
+    /** transform function
+     * @param string $field_id
+     * @param ItemContent $itemcontent
+     * @param bool $silent
+     * @return AA_Value|bool
+     */
+    public function transform($field_id, $itemcontent, $silent = true): AA_Value|bool|null
+    {
+        $itemcontent->updateComputedFields(null, 'update', $silent ? [$field_id] : []);
+        return true; // this means: Success - no other operations are needed
+    }
+
+    /** htmlSetting function
+     * @param $input_prefix
+     * @param $params
+     * @return string
+     */
+    public static function htmlSetting($input_prefix, $params): string
+    {
+        ob_start();
+        FrmTabCaption();
+        FrmStaticText('', self::description());
+        FrmTabEnd();
+        return ob_get_clean();
+    }
+}
+
+class AA_Transformation_Setflag extends AA_Transformation
+{
+    public $new_flag;
+
+    /** AA_Transformation_Value function
+     * @param $param
+     */
+    public function __construct($param)
+    {
+        $this->new_flag    = $param['new_flag'];
+    }
+
+    /** name function
+     * @return string - message
+     */
+    public static function name(): string
+    {
+        return _m("Set HTML/Plain-text flag");
+    }
+
+    /** description function
+     * @return string - message
+     */
+    public static function description(): string
+    {
+        return _m("Changes the HTML or Plain-text flag for the field.");
+    }
+
+    /** transform function
+     * @param $field_id
+     * @param $itemcontent (by link)
+     * @return array
+     */
+    public function transform($field_id, $itemcontent, $silent = true): AA_Value|bool|null
+    {
+        $item = GetItemFromContent($itemcontent);
+        $flag = $this->getFlagFromForm($item->getFlag($field_id));
+        return $itemcontent->getAaValue($field_id)->setFlag($flag);
+    }
+
+    /** htmlSetting function
+     * @param $input_prefix
+     * @param $params
+     * @return string
+     */
+    public static function htmlSetting($input_prefix, $params): string
+    {
+        $flag_options = [
+            'h' => _m('HTML'),
+            't' => _m('Plain text'),
+        ];
+        ob_start();
+        FrmTabCaption();
+        FrmStaticText('', self::description());
+
+        $varname_new_flag    = AA_Transformation::_getVarname('new_flag', $input_prefix, __CLASS__);
+        FrmInputRadio($varname_new_flag, _m('Mark as'), $flag_options, get_if($_GET[$varname_new_flag], 'h'));
+
+        FrmTabEnd();
+        return ob_get_clean();
+    }
+}
+
+/** The result is single-value (not multivalue), which is created as result of
+ *  normal AA expression using source item. You can use
+ *  {switch({category.......1})Bio:...} and such expressions as well as normal
+ *  text.
+ */
+class AA_Transformation_AddValue extends AA_Transformation
+{
+    protected $new_content;
+    protected $new_flag = 'u'; // get from old
+
+    /** AA_Transformation_AddValue function
+     * @param $param
+     */
+    public function __construct($param)
+    {
+        $this->new_content = $param['new_content'];
+        $this->new_flag    = $param['new_flag'] ?? 'u';   // get from old
+    }
+
+    /** name function
+     * @return string - message
+     */
+    public static function name(): string
+    {
+        return _m("Add value to field");
+    }
+
+    /** description function
+     * @return string - message
+     */
+    public static function description(): string
+    {
+        return _m("Add new value to current content of field, so the field becomes multivalue.<br>You can use any AA expressions like {ifset:{_#HEADLINE}:...}, ... for new value.");
+    }
+
+    /** transform function
+     * @param $field_id
+     * @param ItemContent|AA_Content $itemcontent (by link)
+     * @return AA_Value
+     */
+    public function transform($field_id, $itemcontent, $silent = true): AA_Value|bool|null
+    {
+        $item = GetItemFromContent($itemcontent);
+        $ret  = $itemcontent->getAaValue($field_id);
+        $old = clone $ret;
+        $ret->setFlag($this->getFlagFromForm($item->getFlag($field_id)));
+        $ret->addValue($item->subst_aliases($this->new_content));
+        return ($old == $ret) ? null : $ret;   // '==' is right - compare data. No change - return null
+    }
+
+    /** htmlSetting function
+     * @param $input_prefix
+     * @param $params
+     * @return string
+     */
+    public static function htmlSetting($input_prefix, $params): string
+    {
+        $flag_options = [
+            'h' => _m('HTML'),
+            't' => _m('Plain text'),
+            'u' => _m('As for other values of this field'),
+        ];
+        ob_start();
+        FrmTabCaption();
+        FrmStaticText('', self::description());
+
+        $varname_new_flag    = AA_Transformation::_getVarname('new_flag', $input_prefix, __CLASS__);
+        $varname_new_content = AA_Transformation::_getVarname('new_content', $input_prefix, __CLASS__);
+
+        FrmInputRadio($varname_new_flag, _m('Mark as'), $flag_options, get_if($_GET[$varname_new_flag], 'u'));
+        FrmTextarea(
+            $varname_new_content,
+            _m('New content'),
+            $_GET[$varname_new_content],
+            12,
+            80,
+            false,
+            _m('You can use also aliases, so the content "&lt;i&gt;{abstract........}&lt;/i&gt;&lt;br&gt;{full_text......1}" is perfectly OK'),
+        );
+
+        FrmTabEnd();
+        return ob_get_clean();
+    }
+}
+
+/** Parses the input text and looks for the delimiter. Separates the parts
+ *  and store them as multiple values to destination field
+ */
+class AA_Transformation_ParseMulti extends AA_Transformation
+{
+    public $new_flag;
+    public $source;
+    public $delimiter;
+
+    /** AA_Transformation_AddValue function
+     * @param $param
+     */
+    public function __construct($param)
+    {
+        $this->new_flag       = $param['new_flag'];
+        $this->source         = $param['source'];
+        $this->delimiter      = $param['delimiter'];
+    }
+
+    /** name function
+     * @return string - message
+     */
+    public static function name(): string
+    {
+        return _m("Divide the text to multiple values (also for multilingual values)");
+    }
+
+    /** description function
+     * @return string - message
+     */
+    public static function description(): string
+    {
+        return _m("Parses the input text and looks for the delimiter. Separates the parts and stores them as multiple values to destination field");
+    }
+
+    /** transform function
+     * @param $field_id
+     * @param $itemcontent (by link)
+     * @return AA_Value
+     */
+    public function transform($field_id, $itemcontent, $silent = true): AA_Value|bool|null
+    {
+        $item = GetItemFromContent($itemcontent);
+        $flag = $this->getFlagFromForm($item->getFlag($field_id));
+        if (str_contains($this->delimiter, 'AA_LANG')) {   // multilangual
+            $delimiter = str_replace('AA_LANG', '([A-Za-z]{2})', preg_quote($this->delimiter, '/'));
+            $twos = preg_split("/$delimiter/", $item->subst_alias($this->source), -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
+            $i = 0;
+            $twoscount = count($twos);
+            $val = new AA_Value(null, $flag);
+            while ($i < $twoscount) {
+                $val->addStringValue(trim($twos[$i + 1]), trim($twos[$i]));
+                $i += 2;
+            }
+            return $val;
+        }
+        return new AA_Value(array_filter(array_map('trim', explode($this->delimiter, $item->subst_alias($this->source))), 'strlen'), $flag); // trim and remove empty
+    }
+
+    /** htmlSetting function
+     * @param $input_prefix
+     * @param $params
+     * @return string
+     */
+    public static function htmlSetting($input_prefix, $params): string
+    {
+        $flag_options = [
+            'h' => _m('HTML'),
+            't' => _m('Plain text'),
+            'u' => _m('As for other values of this field'),
+        ];
+        ob_start();
+        FrmTabCaption();
+        FrmStaticText('', self::description());
+
+        $varname_new_flag  = AA_Transformation::_getVarname('new_flag', $input_prefix, __CLASS__);
+        $varname_source    = AA_Transformation::_getVarname('source', $input_prefix, __CLASS__);
+        $varname_delimiter = AA_Transformation::_getVarname('delimiter', $input_prefix, __CLASS__);
+
+        FrmInputRadio($varname_new_flag, _m('Mark as'), $flag_options, get_if($_GET[$varname_new_flag], 'u'));
+        FrmTextarea(
+            $varname_source,
+            _m('Source text'),
+            $_GET[$varname_source],
+            12,
+            80,
+            false,
+            _m('You can use also aliases, so the content "&lt;i&gt;{abstract........}&lt;/i&gt;&lt;br&gt;{full_text......1}" is perfectly OK'),
+        );
+        FrmTextarea(
+            $varname_delimiter,
+            _m('Delimiter'),
+            $_GET[$varname_delimiter],
+            2,
+            80,
+            false,
+            _m('use simple delimiter like | or longer like ---ENDTEXT---<br>use AA_LANG constant in delimiter to parse multilingual values like:   delimiter: |AA_LANG|   for Source text: |cz|text jedna|de|Ein text|en|text one'),
+        );
+        FrmTabEnd();
+        return ob_get_clean();
+    }
+}
+
+
+/** Helper class to handle sting replacements for AA_Transformation_Translate
+ *  class
+ */
+class AA_Strreplace
+{
+    private string $method;
+    private string $pattern;
+    private array $replacements;
+
+    /**
+     * @param  string  $method
+     * @param  string  $pattern
+     * @param  array   $replacements
+     */
+    public function __construct(string $method, string $pattern, array $replacements)
+    {
+        $this->method       = $method;
+        $this->pattern      = $pattern;
+        $this->replacements = $replacements;
+    }
+
+    /** matches function
+     *
+     * @param $text
+     *
+     * @return bool
+     */
+    public function matches($text): bool
+    {
+        return match ($this->method) {
+            'regexp'  => (preg_match($this->pattern, $text) > 0),
+            'replace' => ($text == $this->pattern),
+            default   => false,
+        };
+    }
+
+    /** replace function
+     * @param $value
+     * @param $flag
+     * @param $item (by link)
+     * @return array
+     */
+    public function replace($value, $item): array
+    {
+        $ret = [];
+
+        foreach ($this->replacements as $replacement) {
+            $replacement = str_replace('_#0', $value, $replacement);
+            $text = $item->subst_alias($replacement);
+            if ($text !== 'AA_NULL') {
+                $ret[] = $text;
+            }
+        }
+        return $ret;
+    }
+}
+
+class AA_Transformation_Translate extends AA_Transformation
+{
+    public $new_flag;
+    public $translation;
+
+    /** AA_Transformation_Translate function
+     * @param $param
+     */
+    public function __construct($param)
+    {
+        $this->new_flag    = $param['new_flag'];
+        $this->translation = $param['translation'];
+    }
+
+    /** name function
+     * @return string - message
+     */
+    public static function name(): string
+    {
+        return _m("Translate");
+    }
+
+    /** description function
+     * @return string - message
+     */
+    public static function description(): string
+    {
+        return _m("Translates one value after other according to translation table. The result is multivalue, since each value of multivalue field is translated separately.");
+    }
+
+    /** transform function
+     * @param      $field_id
+     * @param      $itemcontent (by link)
+     * @param bool $silent
+     * @return AA_Value|false
+     */
+    public function transform($field_id, $itemcontent, $silent = true): AA_Value|bool|null
+    {
+        if (!$this->translation) {
+            $this->message(_m('No translations specified.'));
+            return null;
+        }
+
+        $item = GetItemFromContent($itemcontent);
+        $flag = $this->getFlagFromForm($item->getFlag($field_id));
+
+        $translations = $this->_parseTranslation();
+        $ret = new AA_Value();
+        $ret->setFlag($flag);
+        foreach ($itemcontent->getValues($field_id) as $source) {
+            // if not found any match, use the old value
+            $new_value = [$source['value']];
+            foreach ($translations as $strreplace) {
+                if ($strreplace->matches($source['value'])) {
+                    // matches - add all translations to the resulting array
+                    // stop searching - go to next value
+                    $new_value = $strreplace->replace($source['value'], $item);
+                    break;
+                }
+            }
+            $ret->addValue($new_value);
+        }
+        return $ret;
+    }
+
+    /** _parseTranslation function
+     * @return $translations array
+     */
+    public function & _parseTranslation(): array
+    {
+        $translations = [];
+        foreach (explode("\n", $this->translation) as $row) {
+            // explode do not eat possible \r at the end - we trim it
+            $row = rtrim($row, "\r");
+            if (str_starts_with($row, ':regexp:')) {
+                // regular expressions
+                $parts = ParamExplode(substr($row, 8));
+                $regexp = array_shift($parts);
+                $translations[] = new AA_Strreplace('regexp', $regexp, $parts);
+            } else {
+                $parts = ParamExplode($row);
+                $replace = array_shift($parts);
+                $translations[] = new AA_Strreplace('replace', $replace, $parts);
+            }
+        }
+        return $translations;
+    }
+
+    /** htmlSetting function
+     * @param $input_prefix
+     * @param $params
+     * @return string
+     */
+    public static function htmlSetting($input_prefix, $params): string
+    {
+        $flag_options = [
+            'h' => _m('HTML'),
+            't' => _m('Plain text'),
+            'u' => _m('Unchanged'),
+        ];
+        ob_start();
+        FrmTabCaption();
+        FrmStaticText('', self::description());
+
+        $varname_new_flag    = AA_Transformation::_getVarname('new_flag', $input_prefix, __CLASS__);
+        $varname_translation = AA_Transformation::_getVarname('translation', $input_prefix, __CLASS__);
+
+        FrmInputRadio($varname_new_flag, _m('Mark as'), $flag_options, get_if($_GET[$varname_new_flag], 'u'));
+        FrmTextarea(
+            $varname_translation,
+            _m('Translations'),
+            $_GET[$varname_translation],
+            12,
+            80,
+            false,
+            _m('Each translation on new line, translations separated by colon : (escape character for colon is #:).<br>You can use also aliases in the translation. There is also special alias _#0, which contain matching text - following translation is perfectly OK:<br><code> Bio:&lt;img src="_#0.jpg"&gt; ({publish_date....})</code><br>You can also use Regular Expressions - in such case the line would be "<code>:regexp:<regular expression>:<output></code>". You can use _#0 alias in <output>, which contains whole matching text.<br>Sometimes you want to remove specific value. In such case use <code>AA_NULL</code> text as translated text:<br> <code>Bio:AA_NULL</code><br>You may want also create more than one value from a value. Then separate the values by colon:<br> <code>Bio:Environment:Ecology</code> ("Bio" is replaced by two values). You can use any number of values here.'),
+        );
+
+        FrmTabEnd();
+        return ob_get_clean();
+    }
+}
+
+class AA_Transformation_Replace extends AA_Transformation
+{
+    public $searchpattern;
+    public $replacestring;
+
+    /** AA_Transformation_Translate function
+     * @param $param
+     */
+    public function __construct($param)
+    {
+        $this->searchpattern = $param['searchpattern'];
+        $this->replacestring = $param['replacestring'];
+    }
+
+    /** name function
+     * @return string - message
+     */
+    public static function name(): string
+    {
+        return _m("Search and Replace");
+    }
+
+    /** description function
+     * @return string - message
+     */
+    public static function description(): string
+    {
+        return _m("Search the content of text and replaces it with another text. No other transformations/unaliasing are applied - just basic search and replace.");
+    }
+
+    /** transform function
+     * @param $field_id
+     * @param $itemcontent (by link)
+     * @return AA_Value|false
+     */
+    public function transform($field_id, $itemcontent, $silent = true): AA_Value|bool|null
+    {
+        if (!$this->searchpattern) {
+            $this->message(_m('No searchstring specified.'));
+            return null;
+        }
+
+        $ret = new AA_Value();
+        foreach ($itemcontent->getValues($field_id) as $source) {
+            $ret->addValue(str_replace($this->searchpattern, $this->replacestring, $source['value']));
+            $ret->setFlag($source['flag']);
+        }
+        return $ret;
+    }
+
+    /** htmlSetting function
+     * @param $input_prefix
+     * @param $params
+     * @return string
+     */
+    public static function htmlSetting($input_prefix, $params): string
+    {
+        ob_start();
+        FrmTabCaption();
+        FrmStaticText('', self::description());
+
+        $varname_searchpattern = AA_Transformation::_getVarname('searchpattern', $input_prefix, __CLASS__);
+        $varname_replacestring = AA_Transformation::_getVarname('replacestring', $input_prefix, __CLASS__);
+
+        FrmTextarea($varname_searchpattern, _m('Search'), $_GET[$varname_searchpattern], 4, 80);
+        FrmTextarea($varname_replacestring, _m('Replace'), $_GET[$varname_replacestring], 4, 80);
+        FrmTabEnd();
+        return ob_get_clean();
+    }
+}
+
+class AA_Transformation_Regexpreplace extends AA_Transformation
+{
+    public $searchpattern;
+    public $replacestring;
+    public $unalias;
+
+    /** AA_Transformation_Translate function
+     * @param $param
+     */
+    public function __construct($param)
+    {
+        $this->searchpattern = $param['searchpattern'];
+        $this->replacestring = $param['replacestring'];
+        $this->unalias       = $param['unalias'];
+    }
+
+    /** name function
+     * @return string - message
+     */
+    public static function name(): string
+    {
+        return _m("Regular Expressions Search and Replace");
+    }
+
+    /** description function
+     * @return string - message
+     */
+    public static function description(): string
+    {
+        return _m("Search the content of text and replaces it with another text using regular expressions. The aliases are unaliased in resulting string.<br>Example:<br> - Search: ^.*x=([0-9]*)\$<br> - Replace: {item:\$1:_#SEO_URL_}<br> - Unalias: Yes<br>Result: replaces all old-form links in the URL field from the new ones <br>(https://biom.cz/item.shtml?x=2344 --&gt; https://biom.cz/cz/about-biom)");
+    }
+
+    /** transform function
+     * @param $field_id
+     * @param $itemcontent (by link)
+     * @return AA_Value|false
+     */
+    public function transform($field_id, $itemcontent, $silent = true): AA_Value|bool|null
+    {
+        if (!$this->searchpattern) {
+            $this->message(_m('No searchstring specified.'));
+            return null;
+        }
+        $ret     = new AA_Value();
+        $count   = 0;
+        if ($this->unalias) {
+            $item = GetItemFromContent($itemcontent);
+        }
+        foreach ($itemcontent->getValues($field_id) as $source) {
+            $ret->setFlag($source['flag']);
+            $text = preg_replace('~' . $this->searchpattern . '~', $this->replacestring, $source['value'], -1, $count);
+            if ($count && $this->unalias) {
+                $text = $item->subst_alias($text);
+            }
+            $ret->addValue($text);
+        }
+        return $ret;
+    }
+
+    /** htmlSetting function
+     * @param $input_prefix
+     * @param $params
+     * @return string
+     */
+    public static function htmlSetting($input_prefix, $params): string
+    {
+        ob_start();
+        FrmTabCaption();
+        FrmStaticText('', self::description(), "", "", false);
+
+        $varname_searchpattern = AA_Transformation::_getVarname('searchpattern', $input_prefix, __CLASS__);
+        $varname_replacestring = AA_Transformation::_getVarname('replacestring', $input_prefix, __CLASS__);
+        $varname_unalias       = AA_Transformation::_getVarname('unalias', $input_prefix, __CLASS__);
+
+        FrmTextarea($varname_searchpattern, _m('Search'), $_GET[$varname_searchpattern], 4, 80);
+        FrmTextarea($varname_replacestring, _m('Replace'), $_GET[$varname_replacestring], 4, 80);
+        FrmInputChBox($varname_unalias, _m('Unalias'), $_GET[$varname_unalias], false, "", 1, false, _m('perform unaliasing on result strings'));
+        FrmTabEnd();
+        return ob_get_clean();
+    }
+}
+
+class AA_Transformation_CopyField extends AA_Transformation
+{
+    public $field2copy;
+
+    /** AA_Transformation_CopyField function
+     * @param $param
+     */
+    public function __construct($param)
+    {
+        $this->field2copy = $param['field2copy'];
+    }
+
+    /** name function
+     * @return string - message
+     */
+    public static function name(): string
+    {
+        return _m("Copy field");
+    }
+
+    /** description function
+     * @return string - message
+     */
+    public static function description(): string
+    {
+        return _m('Selected field will be copied to the "Field" (including multivalues)');
+    }
+
+    /** transform function
+     * @param      $field_id
+     * @param      $itemcontent
+     * @param bool $silent
+     * @return AA_Value|false
+     */
+    public function transform($field_id, $itemcontent, $silent = true): AA_Value|bool|null
+    {
+        if ($this->field2copy === 'no_field' || !$field_id || $field_id === 'no_field') {
+            $this->message(_m('Source or destination field is not specified.'));
+            return null;
+        }
+        // get content from $field2copy field of current item
+        return $itemcontent->getAaValue($this->field2copy);
+    }
+
+    /** htmlSetting function
+     * @param $input_prefix
+     * @param $params
+     * @return string
+     */
+    public static function htmlSetting($input_prefix, $params): string
+    {
+        ob_start();
+        FrmTabCaption();
+        FrmStaticText('', self::description());
+
+        $varname = AA_Transformation::_getVarname('field2copy', $input_prefix, __CLASS__);
+        FrmInputSelect(
+            $varname,
+            _m('Copy field'),
+            $params['field_copy_arr'],
+            $_GET[$varname],
+            false,
+            _m('Selected field will be copied to the "Field" (including multivalues)'),
+        );
+
+        FrmTabEnd();
+        return ob_get_clean();
+    }
+}
+
+
+class AA_Transformator implements LaterInterface
+{
+    /** @var zids|null */
+    protected $zids   = null;
+
+    /** @var string     */
+    protected $field_id = '';
+
+    /** @var AA_Transformation|null */
+    protected $transformation = null;
+
+    /** @var bool  */
+    protected $silent;
+
+    /** @var bool just in special cases of silent bulk change - last_edit.. must be the field_id to work*/
+    protected $allow_last_edit;
+
+    public function __construct(AA_Transformation $transformation, string $field_id = '', zids $zids = null, bool $silent = true, bool $allow_last_edit = false)
+    {
+        $this->transformation   = $transformation;
+        $this->field_id         = $field_id;
+        $this->zids             = $zids;
+        $this->silent           = $silent;
+        $this->allow_last_edit  = $allow_last_edit;
+    }
+
+    /** You do not check permissions here - you must already know, you have perms for the change
+     * @return int
+     */
+    public function transform(): int
+    {
+
+        $updated_items     = 0;         // number of updated items
+        $slices2invalidate = [];
+
+        foreach ($this->zids as $zid) {
+
+            $itemcontent    = new ItemContent();
+            $itemcontent->setByItemID($zid, true);     // ignore password
+            // if we do not ignore it, then it will not work for slices with slice_pwd
+            // It is OK to do not care about password here - we are logged in and have permission PS_EDIT_ALL_ITEMS
+
+            $sli_id  = $itemcontent->getSliceID();
+            $item_id = $itemcontent->getItemID();
+            if (!$sli_id || !$item_id) {
+                // Probably: item not found, for some reason
+                continue;
+            }
+
+            // transform returns AA_Value
+            $field_content = $this->transformation->transform($this->field_id, $itemcontent, $this->silent);
+            if (! $field_content instanceof \AA_Value) {
+                if ($field_content === true) {  // for recompute - all is already successfully done
+                    $updated_items++;
+                    $slices2invalidate[$sli_id] = $sli_id;
+                }
+                // no need to change, or something goes wrong - missing parameter for transformation, ....
+                continue;
+            }
+            $field_content->removeDuplicates();
+            $newitemcontent = new ItemContent();
+            $newitemcontent->setAaValue($this->field_id, $field_content);
+            $newitemcontent->setItemID($item_id);
+            $newitemcontent->setSliceID($sli_id);
+
+            if ($newitemcontent->storeItem($this->silent ? 'update_silent' : 'update', [false, false, false, $this->allow_last_edit])) {    // not invalidatecache, not feed, no events
+                $updated_items++;
+            }
+            $slices2invalidate[$sli_id] = $sli_id;
+        }
+        if (is_array($slices2invalidate)) {
+            AA::Pagecache()->invalidateFor($slices2invalidate);
+
+            // we disabled events, so at the end we should update auth data
+            // for Reader Management slice
+            (new AA_Mysqlauth_Maintain())->schedule();  // plan or replan the maintenance to be run earlier
+        }
+        return $updated_items;
+    }
+
+    public function setZids(zids $zids): static
+    {
+        $this->zids = $zids;
+        return $this;
+    }
+
+    public function setField(string $field_id): static
+    {
+        $this->field_id = $field_id;
+        return $this;
+    }
+
+    /** @inheritDoc  */
+    public function toexecutelater($params = []): string
+    {
+        $num = $this->transform();
+        return "OK: $num";
+    }
+}

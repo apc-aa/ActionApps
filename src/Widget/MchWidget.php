@@ -1,0 +1,173 @@
+<?php
+
+/**
+ * Created by PhpStorm.
+ * User: honzama
+ * Date: 15.10.18
+ * Time: 20:32
+ */
+
+namespace AA\Widget;
+
+use AA\FormArray;
+use AA_Content;
+use AA_Property;
+use AA_Value;
+use Exception;
+
+/** Multiple Checkboxes widget */
+class MchWidget extends Widget
+{
+    protected $const;
+    protected $columns;
+    protected $move_right;
+    protected $slice_field;
+    protected $bin_filter;
+    protected $filter_conds;
+    protected $sort_by;
+    protected $additional_slice_pwd;
+    protected $const_arr;
+    protected $height;
+    protected $other_option;
+
+    /** - static member functions
+     *  used as simulation of static class variables (not present in php4)
+     */
+    /** name function
+     *
+     */
+    public static function name(): string
+    {
+        return _m('Multiple Checkboxes');   // widget name
+    }
+
+    /** returns if the widget handles multivalue or just a single value   */
+    public static function multiple(): bool
+    {
+        return true;
+    }
+
+    /** getClassProperties function of AA_Serializable
+     *  Used parameter format (in fields.input_show_func table)
+     * @return array
+     */
+    public static function getClassProperties(): array
+    {
+        return Widget::propertiesShop(['const', 'columns', 'move_right', 'slice_field', 'bin_filter', 'filter_conds', 'sort_by', 'additional_slice_pwd', 'const_arr', 'height', 'other_option']);
+    }
+
+    protected function requireRun($aa_property, $winfo): string
+    {
+        return $this->getProperty('other_option', false) ? RioWidget::generateJS4OtherOption('.aa-tab-mch-other input[type="checkbox"]', '.aa-mch-other-option input[type="checkbox"]') : '';
+    }
+
+    /** Returns one checkbox tag - Used in removed inputMultiChBox */
+    public function getOneChBoxTag($option, $input_name, $input_id, $add = '', bool $other = false): string
+    {
+        $class = $other ? ' class="aa-mch-other-option"' : ($option['mis'] ? ' class="aa-missing-option"' : '');
+
+        $input_text = RioWidget::getOtherInputText($other, $input_id, $option, 'aa-mch-other-txt');
+
+        $ret = "\n<label$class><input type=\"checkbox\" name=\"$input_name\" id=\"$input_id\" value=\"" . safe($option['k']) . "\" $add";
+        if ($option['selected']) {
+            $ret .= " checked";
+        }
+        $ret .= "><span>" . safe($option['v']) . "    </span>$input_text</label>";
+        return $ret;
+    }
+
+    /** Creates base widget HTML, which will be surrounded by Live, Ajxax
+     *  or normal decorations (added by _finalize*Html)
+     *
+     * @param  AA_Property  $aa_property
+     * @param  AA_Content   $content
+     * @param  string       $type  normal|live|ajax
+     *
+     *  @return array
+     *  @throws Exception
+     */
+    public function _getRawHtml(AA_Property $aa_property, AA_Content $content, string $type = 'normal'): array
+    {
+        $base_name = FormArray::getName4Form($aa_property->getId(), $content, $this->item_index);
+        $base_id = FormArray::formName2Id($base_name);
+        $base_name_add = $base_name . '[mch]';
+
+        $attrs = Widget::stdInputAttrs($type, $base_id);
+        $widget_add = htmlattr($attrs);
+
+        $height = (int) $this->getProperty('height');
+        if ($height < 1) {
+            $height = 400;
+        }
+
+        $other    = $this->getProperty('other_option', false);
+
+        $selected = $content->getAaValue($aa_property->getId());
+        $options = $this->getOptions($selected, $content, (bool) $this->getProperty('use_name', false));
+        $htmlopt = [];
+        for ($i = 0, $ino = count($options); $i < $ino; ++$i) {
+            $option = $options[$i];
+            $input_name = $base_name_add . "[$i]";
+            $input_id = FormArray::formName2Id($input_name);
+            if ($other && ($i === $ino - 2) && $options[$ino - 1]['mis']) {  // special case - the filled Other option - use mis value added as last option and name from current option
+                $opt = $options[$ino - 1];
+                $opt['v'] = $options[$i]['v'];
+
+                $htmlopt[] = $this->getOneChBoxTag($opt, $input_name, $input_id, $widget_add, true);
+                break;
+            }
+            $htmlopt[] = $this->getOneChBoxTag($option, $input_name, $input_id, $widget_add, ($other && $i === $ino - 1));
+        }
+
+        $selection = [];
+        foreach ($options as $o) {
+            if ($o['selected']) {
+                $selection[] = '<span data-aa-mchval="' . safe($o['k']) . '" onclick="const el=document.querySelector(\'#widget-' . $base_id . ' input[type=checkbox][value=&quot;' . $o['k'] . '&quot;]\');el.checked=!el.checked;this.style.opacity=el.checked?1:.3;el.dispatchEvent(new Event(\'change\'));">' . $o['v'] . '</span>';
+            }
+        }
+
+        // default value - in order something is sent when no checkbox is checked
+        $input_name = $base_name_add . "[def]";
+        $input_id = FormArray::formName2Id($input_name);
+
+        $small  = (count($options) < 7) ? ' aa-mch-options-s' : '';
+        $widget = count($selection) ? ("<div class=\"aa-mch-selected$small\"><strong>" . _m('Selected') . ':</strong><div class="aa-mch-tags">' . implode(' ', $selection)) . '</div></div>' : '';
+        $widget .= '<div class="aa-mch-list" style="max-height:' . $height . 'px; overflow:auto;">';
+        $widget .= "\n<input type=\"hidden\" name=\"$input_name\" id=\"$input_id\" value=\"\">";
+        $widget .= $this->getInMatrix($htmlopt, $this->getProperty('columns', 0), $this->getProperty('move_right', false), $other ? 'aa-tab-mch aa-tab-mch-other' : 'aa-tab-mch');
+        $widget .= '</div>';
+
+        return ['html' => $widget, 'last_input_name' => $input_name, 'base_name' => $base_name, 'base_id' => $base_id, 'required' => $aa_property->isRequired()];
+    }
+
+    /** @return AA_Value for the data send by the widget
+     *   The data submitted by form usually looks like
+     *       aa[n1_54343ea876898b6754e3578a8cc544e6][switch__________][mch][0]=1
+     *       aa[n1_54343ea876898b6754e3578a8cc544e6][headline________][mch][def]=0
+     * @param $data4field - ['mch'=>['def'=>val, '0'=>val]]
+     *   This method coverts such data to AA_Value.
+     *
+     */
+    public static function getWidgetValue(array $data4field, ?AA_Value $default): AA_Value
+    {
+        $flag = ($data4field['flag'] ?? $default?->getFlag() ?? 0) & FLAG_HTML;
+        $data4field = $data4field['mch'];
+        $fld_value_arr = [];
+
+        foreach ((array) $data4field as $key => $value) {
+            if (ctype_digit((string) $key)) {
+                $fld_value_arr[$key] = ['value' => $value, 'flag' => $flag];
+            }
+        }
+        if (!count($fld_value_arr)) {
+            $fld_value_arr[] = ['value' => $data4field['def'], 'flag' => $flag];
+        }
+        return new AA_Value($fld_value_arr, $flag);
+    }
+
+    /** @inheritDoc */
+    public static function description(): string
+    {
+        return ''; // TODO: Implement description() method.
+    }
+}

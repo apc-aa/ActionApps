@@ -1,0 +1,48 @@
+<?php
+
+namespace AA\Optimize;
+
+use AA_Field;
+use AA_Module;
+
+/** Set Expiry date to maximum value for items in slices, where expiry_date.....
+ *  field is not shown. It also sets the field's default to that value.
+ */
+class ChangeF_t2F_1 extends ChangeF_h2F_1
+{
+    /** Name function
+     * @return string - a name
+     */
+    public static function name(): string
+    {
+        return _m("Optimize f_t alias to f_1");
+    }
+
+    /** Description function
+     * @return string - a description
+     */
+    public static function description(): string
+    {
+        return _m("Replaces f_t alias for field marked as non multiple and html by quicker f_1 function for direct content print");
+    }
+
+    protected function fieldtest(AA_Field $fld, string $aliasfld): string
+    {
+        $func  = $fld[$aliasfld . '_func'];
+
+        if (($func === 'f_t:') && ((($fld['html_default'] == 1) && ($fld['html_show'] == 0) && ($fld['multiple'] == 0)) || (strlen($fld['in_item_tbl']) > 1) || ($fld['text_stored'] == 0))) {
+            return self::alias_code($fld, $aliasfld, "f_t: used with field marked as non-multiple and html - consider using quicker f_1 function for direct content print");
+        }
+        return '';
+    }
+
+    /**
+     * @param AA_Field $fld
+     * @param string    $aliasfld  alias1 | alias2 | alias3
+     * @return string
+     */
+    protected function fieldrepair(AA_Field $fld, string $aliasfld): string
+    {
+        return parent::fieldrepair($fld, $aliasfld);
+    }
+}

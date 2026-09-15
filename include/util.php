@@ -1,0 +1,2245 @@
+<?php
+
+/**
+ *
+ * PHP version 7.2+
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @version   $Id$
+ * @author    Honza Malik <honza.malik@ecn.cz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      https://www.apc.org/ APC
+ *
+*/
+//
+// Miscellaneous utility functions
+//
+
+use AA\IO\DB\DB_AA;
+use AA\Util\Langs;
+use AA\Util\SingletonTrait;
+
+require_once __DIR__ . '/locsess.php';
+require_once __DIR__ . '/constants.php';
+require_once __DIR__ . '/mgettext.php';
+require_once __DIR__ . '/zids.php';
+require_once __DIR__ . '/logs.php';
+require_once __DIR__ . '/go_url.php';
+require_once __DIR__ . '/formutil.php';
+
+/** a_href function
+ *  Get <a href> tag
+ * @param        $url
+ * @param        $label
+ * @param array  $attr ['onclick' => "return confirm('Are you sure?')"]
+ * @return string
+ */
+function a_href($url, $label = '', array $attr = []): string
+{
+    $add = htmlattr($attr);
+    if (!strlen($label)) {
+        $label = $url;
+    }
+    return '<a href="' . safe($url) . "\" $add>$label</a>";
+}
+
+/* @usage htmlattr(['class'=>['info','disabled']])  // any attr could be array */
+function htmlattr(array $attr): string
+{
+    return (string) array_reduce(array_keys($attr), static fn($str, $key) => $str . (($attr[$key] !== '') ? ' ' . $key . '="' . safe(is_array($attr[$key]) ? implode(' ', $attr[$key]) : $attr[$key]) . '"' : ''));
+}
+
+/** creates html tag with attributes
+ *
+ * @usage htmltag('div','text',['class'=>'info'])
+ * @usage htmltag('div','text',['class'=>['info','disabled']])  // any attr could be array
+ */
+function htmltag($tag, $content, $attr = []): string
+{
+    return "<$tag" . htmlattr($attr) . '>' . $content . "</$tag>";
+}
+
+/** creates xml/html tag with attributes
+ * @usage xmltag('name',John,['sex'=>'M'])
+ */
+function xmltag($tag, $content, $attr = []): string
+{
+    return "<$tag" . array_reduce(array_keys($attr), static fn($str, $key) => $str . ' ' . $key . '="' . safexml($attr[$key]) . '"') . '>' . safexml($content) . "</$tag>";
+}
+
+/** expand_return_url function
+ * Expand return_url, possibly adding a session to it
+ * @param $session
+ * @return mixed|string
+ */
+function expand_return_url($session = true): string
+{
+    global $return_url, $sess;
+    return ($session && is_object($sess)) ? StateUrl($return_url) : $return_url;
+}
+
+/** go_return_or_url function
+ *  This function goes to either $return_url if set, or to $url
+ * if $usejs is set, then it will use inline Javascript, its not clear why this is done
+ *    sometimes (item.php) but not others.
+ *    session is always added to the other case
+ * if $add_param are set, then they are added to the cases EXCEPT return_url
+ * @param $url
+ * @param $usejs
+ * @param $session
+ * @param $add_param
+ */
+function go_return_or_url($url, $usejs = false, $session = false): void
+{
+    global $return_url;
+
+    if ($return_url) {
+        go_url(expand_return_url($session), '', $usejs);
+    } elseif ($url) {
+        go_url(StateUrl($url));
+    }
+    // Note if no $url or $return_url then drops through - this is used in index.php
+}
+
+/** endslash function
+ *  Adds slash at the end of a directory name if it is not yet there.
+ * @param $s
+ */
+function endslash(&$s): void
+{
+    if (strlen($s) && !str_ends_with($s, "/")) {
+        $s .= "/";
+    }
+}
+
+/** backslash quotes, remove newlines, escape </script, which will make the code broken
+ *  use as: echo "el.insertAdjacentHTML('afterbegin',".escape4js($code).");";
+ */
+function escape4js($code): string
+{
+    return str_replace(["\\", "'","\r\n","\n","\r",'<script','</script'], ["\\\\", "\\'",'\n','\n','\n','\x3Cscript','\x3C/script'], $code);   // remove newlines ...
+}
+
+/** self_server function
+ *  returns server name with protocol and port
+ */
+function self_server(): string
+{
+    $port = '';
+    if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
+        $PROTOCOL = 'https';
+        if ($_SERVER['SERVER_PORT'] != "443") {
+            $port = ':' . $_SERVER['SERVER_PORT'];
+        }
+    } else {
+        $PROTOCOL = 'http';
+        if ($_SERVER['SERVER_PORT'] != "80") {
+            $port = ':' . $_SERVER['SERVER_PORT'];
+        }
+    }
+    // better to use HTTP_HOST - if we use SERVER_NAME and we try to open window
+    // by javascript, it is possible that the new window will be opened in other
+    // location than window.opener. That's  bad because accessing window.opener
+    // then leads to access denied javascript error (in IE at least)
+    $sname = $_SERVER['HTTP_HOST'] ?: $_SERVER['SERVER_NAME'];
+    return "$PROTOCOL://$sname$port";
+}
+
+/** self_base function
+ * returns server name with protocol, port and current directory of php script
+ */
+function self_base(): string
+{
+    return (self_server() . preg_replace('~/[^/]*$~', '', $_SERVER['PHP_SELF']) . '/');
+}
+
+/** document_uri function
+ *  On some servers isn't defined DOCUMENT_URI
+ *   Ecn - when rewrite is applied - http://privatizacepraha2.cz/cz/aktuality/2084368
+ *   and somewhere nor REDIRECT_URL
+ *   (canaca.com 2003-09-19 - Apache/1.3.27 (Unix) (Red-Hat/Linux), Honza)
+ */
+function document_uri(): string
+{
+    return get_if($_SERVER['DOCUMENT_URI'], $_SERVER['REDIRECT_URL'], $_SERVER['SCRIPT_URL'], '');
+}
+
+/** shtml_base function
+ *  returns server name with protocol, port and current directory of shtml file
+ */
+function shtml_base(): string
+{
+    return (self_server() . preg_replace('~/[^/]*$~', '', document_uri()) . '/');
+}
+
+/** shtml_url function
+ * returns url of current shtml file
+ */
+function shtml_url(): string
+{
+    return (self_server() . document_uri());
+}
+
+/** shtml_query_string function
+ *  returns query string passed to shtml file (variables are not quoted)
+ */
+function shtml_query_string(): string
+{
+    // there is problem (at least with QUERY_STRING_UNESCAPED), when
+    // param=a%26a&second=2 is returned as param=a\\&a\\&second=2 - we can't
+    // explode it! - that's why we use $REQUEST_URI, if possible
+
+    // get off magic quotes
+
+    return ($_SERVER['REQUEST_URI'] && strpos($_SERVER['REQUEST_URI'], '?'))
+                        ? substr($_SERVER['REQUEST_URI'], strpos($_SERVER['REQUEST_URI'], '?') + 1)
+                  : (isset($_SERVER['REDIRECT_QUERY_STRING_UNESCAPED'])
+                        ? stripslashes($_SERVER['REDIRECT_QUERY_STRING_UNESCAPED'])
+                        : stripslashes($_SERVER['QUERY_STRING_UNESCAPED']));
+}
+
+/** check, if the script was called as ajax call */
+function IsAjaxCall(): bool
+{
+    return (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest');
+}
+
+/** DeBackslash function
+ *  skips terminating backslashes
+ * @param $txt
+ */
+function DeBackslash(string $txt): string
+{
+    return str_replace('\\', "", $txt);        // better for two places
+}
+
+/** joins values of array into string, values are separated by colon with colon escaping
+ * @param $param
+ * @return string
+ */
+function ParamImplode($param): string
+{
+    if (!is_array($param)) {
+        return (string) $param;
+    }
+    array_walk($param, static function (&$v) {
+        $v = str_replace(':', '#:', $v);
+    });
+    return implode(":", $param);
+}
+
+/** Converts float value into php form of float - string */
+function PhpFloat($value): string
+{
+    // internally uses PHP float always with decimal point, so we have to convert
+    // twice, since (float) typecasting is unfortunately LOCALE dependent. Grr
+    return str_replace(',', '.', (float) str_replace([',','&#8239;',' '], ['.','',''], trim($value)));
+}
+
+function ConvertEncodingDeep($value, $from = null, $to = null)
+{
+    $from = $from ?: 'UTF-8';
+    $to   = $to ?: 'UTF-8';
+    array_walk_recursive(
+        $value,
+        static function (&$entry) use ($from, $to) {
+            $entry = iconv($from, "$to//TRANSLIT", $entry);
+        },
+    );
+
+    // mb_convert_variables($to, $from, $value);   // does not work with windows-1250
+    return $value;
+}
+
+/** Converts the string to another encoding. Wrong characters are transliterated.
+ * @param string $str   text to convert
+ * @param string $from  source      encoding utf-8|windows-1250|us-ascii|...  - utf-8 is default
+ * @param string $to    destination encoding utf-8|windows-1250|us-ascii|...  - utf-8 is default
+ */
+function ConvertEncoding($str, $from, $to = 'UTF-8'): false|string
+{
+    $from = $from ?: 'UTF-8';
+    $to   = $to ?: 'UTF-8';
+    //return function_exists('mb_convert_encoding') ? mb_convert_encoding($str, $to, $from) : iconv($from, "$to//TRANSLIT",$str);  // does not work with windows-1250
+    return iconv($from, "$to//TRANSLIT", $str);
+}
+
+/** add_vars function
+ *  Adds variables passed by QUERY_STRING_UNESCAPED (or user $query_string)
+ *   to GLOBALS.
+ * @param $query_string
+ */
+function add_vars($query_string = "", $where = 'GLOBALS'): array
+{
+    $varstring = ($query_string ?: shtml_query_string());
+
+    if (!$varstring) {
+        return [];
+    }
+    if (($pos = strpos('#', $varstring)) !== false) {  // remove 'fragment' part
+        $varstring = substr($varstring, 0, $pos);
+    }
+
+    parse_str($varstring, $aa_query_arr);
+    // we need PHP to think a['key'] is the same as a[key], that's why we
+    // call NormalizeArrayIndex()
+
+    // we do not want to replace sess variable, since we use it for sessions
+    unset($aa_query_arr['sess']);
+    $aa_query_arr = NormalizeArrayIndex($aa_query_arr);
+    if (is_array($aa_query_arr)) {
+        // use of $$where do not work for some reason
+        switch ($where) {
+            case '_REQUEST': array_merge_append($_REQUEST, $aa_query_arr);
+                break;
+            case 'return':   break;
+            default:         array_merge_append_global($aa_query_arr);
+        }
+        return $aa_query_arr;
+    }
+    return [];
+}
+
+
+/** NormalizeArrayIndex function
+ *  Removes starting and closing quotes from array index
+ * @param $arr ["key"]=...   transforms to arr[key]=...
+ */
+function NormalizeArrayIndex($arr)
+{
+    if (!is_array($arr)) {
+        return $arr;
+    }
+    $ret = [];
+    foreach ($arr as $k => $v) {
+        if (($k[0] === '"' && str_ends_with($k, '"'))
+             || ($k[0] === "'" && str_ends_with($k, "'"))) {
+            $k = substr($k, 1, -1);
+        }
+        $ret[$k] = NormalizeArrayIndex($v);
+    }
+    return $ret;
+}
+
+/** array_add function
+ *  adds all items from source to target, but doesn't overwrite items
+ * @param $source
+ * @param $target
+ */
+function array_add($source, &$target): void
+{
+    foreach ((array) $source as $k => $v) {
+        if (!isset($target[$k])) {
+            $target[$k] = $v;
+        } else {
+            $target[]   = $v;
+        }
+    }
+}
+
+/** array_merge_append function
+ *  Adds second array to the first one - values are appended to the array, if
+ *  uses the same key (regardless if string or numeric!)
+ * @param $array
+ * @param $newValues
+ * @example:
+ *    array_merge_append( $conds[0]['value']=x, $conds[0][operator]=LIKE )
+ *    results in $conds[0] = array( 'value'=>'x', 'operator'=>'LIKE' )
+ *  no PHP function do it ($a+$b nor array_merge()  array_merge_recursive())
+ */
+function array_merge_append(array &$array, $newValues): array
+{
+    foreach ($newValues as $key => $value) {
+        if (!isset($array[$key]) || !is_array($array[$key]) || !is_array($value)) {
+            $array[$key] = $value;
+        } else {
+            $array[$key] = array_merge_append($array[$key], $value);
+        }
+    }
+    return $array;
+}
+
+/** the same as array_merge_append but operates on $GLOBALS which is not possible to pass as reference in PHP>=8.1 */
+function array_merge_append_global($newValues): void
+{
+    foreach ($newValues as $key => $value) {
+        if (!isset($GLOBALS[$key]) || !is_array($GLOBALS[$key]) || !is_array($value)) {
+            $GLOBALS[$key] = $value;
+        } else {
+            $tmp = $GLOBALS[$key];
+            $GLOBALS[$key] = array_merge_append($tmp, $value);
+        }
+    }
+}
+
+function recursive_array_replace($find, $replace, $array): array|string
+{
+    if (!is_array($array)) {
+        return str_replace($find, $replace, $array);
+    }
+    $newArray = [];
+    foreach ($array as $key => $value) {
+        $newArray[$key] = recursive_array_replace($find, $replace, $value);
+    }
+    return $newArray;
+}
+
+/** new_id function
+ *  returns new unpacked md5 unique id, except these which can  force unexpected end of string
+ * @param $mark
+ */
+function new_id($mark = 0): string
+{
+    do {
+        $id = hash('md5', uniqid('', true));
+    } while (str_contains($id, '00') || str_contains($id, '27') || substr($id, 30, 2) === '20');
+    // '00' is end of string, '27' is ' and packed '20' is space,
+    // which is removed by MySQL
+
+    // the condition above is too restrictive, since it do not allow also ids
+    // like 30049391... (00 on odd position), which makes no problem in packing
+    // That allow us to "mark" some ids, so we can distinguish, that belongs to ...
+    // We have 3*15=45 marks, first 15 are implemented
+
+    // mark 1 used for AA_Set used in groups of readers - permission related
+    if ($mark > 0) {
+        // 27 is first, since it can't create any secondary problems like '00' and '20' could (123056 => 100056...)
+        return substr_replace($id, '27', $mark * 2 - 1, 2);
+    }
+    return $id;
+}
+
+/** is_marked_by function
+ * @param $id
+ * @param $mark
+ *  @return true, if the $id is marked by $mark - @see new_id()
+ */
+function is_marked_by($id, $mark): bool
+{
+    // now only supports mark 1-15
+    return (substr($id, $mark * 2 - 1, 2) === '27');
+}
+
+
+/** string2id function
+ * @param $str
+ *  @return string - unique (long - unpacked) id from a string.
+ *  Note that it will always return the same id from the same string so it
+ *  can be used to compare the hashes as well as create new item id (combining
+ *  item id of fed item and slice_id, for example - @see xml_fetch.php)
+ */
+function string2id($str): string
+{
+    do {
+        $id  = hash('md5', $str);
+        $str .= " ";
+    } while (str_contains($id, '00') || str_contains($id, '27') || substr($id, 30, 2) === '20');
+    // '00' is end of string, '27' is ' and packed '20' is space,
+    // which is removed by MySQL
+    return $id;
+}
+
+/** now function
+ *  returns current date/time as timestamp;
+ * @param $step - time could be returned in steps (good for database query speedup)
+ * @return int
+ */
+function now($step = false): int
+{
+    return (($step !== 'step') ? time() : ((int) (time() / QUERY_DATE_STEP) + 1) * QUERY_DATE_STEP);     // round up
+}
+
+/** get current time in nanoseconds from 1970
+ *  PHP int should be enough to year > 2200
+ *  the microtime is not precise enough, but we can update the function later to be more accurate
+ */
+function nanotime(): int
+{
+    $t = explode(" ", microtime());
+    return (int) (1000000000 * $t[0]) + (int) (1000000000 * $t[1]);
+}
+
+/** debug function
+ *  variable count of variables
+ * @param mixed ...$messages
+ */
+function debug(...$messages): void
+{
+    // could be toggled from Item Manager left menu 'debug' (by Superadmins!)
+    if ($_COOKIE['aa_debug'] != 1) {
+        return;
+    }
+    foreach ($messages as $msg) {
+        AA::$dbg->log($msg);
+    }
+}
+
+/** Debug warn function - when something is not OK
+ * @param string $msg
+ */
+function warn($msg): void
+{
+    if (AA::$debug) {
+        AA::$dbg->log(AA_Log::backtrack());
+        $trace = debug_backtrace();
+        AA::$dbg->warn(implode('->', [$trace[1]['class'], $trace[1]['function']]) . ': ' . $msg);
+    }
+}
+
+/** huhe function
+ * Report only if errcheck is set, this is used to test for errors to speed debugging
+ * Use to catch cases in the code which shouldn't exist, but are handled anyway.
+ * @param mixed ...$arg_list
+ */
+function huhe(...$arg_list): void
+{
+    global $errcheck;
+    if ($errcheck) {
+        huhl(...$arg_list);
+    }
+}
+
+/** return time from start of the script (page start) in seconds (float)
+ * @return float
+ */
+function timestartdiff(): float
+{
+    $start_time = $_SERVER['REQUEST_TIME_FLOAT'] ?: (float) $_SERVER['REQUEST_TIME'];  // FLOAT version is not in PHP <5.4
+    return microtime(true) - $start_time;
+}
+
+// Set a starting timestamp, if checking times, huhl can report
+/** huhl function
+ * Debug function to print debug messages recursively - handles arrays
+ */
+function huhl(...$vars): void
+{
+    AA::$dbg->log(AA_Log::backtrack());
+    foreach ($vars as $var) {
+        AA::$dbg->log($var);
+    }
+}
+
+/** Print messages to screen recursively - handles arrays
+ */
+function huh(...$vars): void
+{
+    foreach ($vars as $var) {
+        if (is_array($var)) {
+            echo "\n<pre>" . safe(print_r($var, true)) . '</pre>';
+        } elseif (is_object($var)) {
+            echo is_callable([$var, "__toString"]) ? $var : "\n<pre>" . safe(print_r($var, true)) . '</pre>';
+        } else {
+            echo "\n<pre>" . safe(print_r($var, true)) . '</pre>';
+        }
+    }
+}
+
+/**
+ * @param $a
+ * Gets all values from array for printing
+ */
+function GetPrintArray($a): string
+{
+    $ret = '';
+    if (is_array($a)) {
+        foreach ($a as $val) {
+            $ret .=  is_array($val) ? GetPrintArray($val) : "<div>$val</div>";
+        }
+    }
+    return $ret;
+}
+
+/** Whether a scalar dump value is long enough to warrant the collapsible, clamped block in
+ *  compact_print_r()'s HTML mode (more than ~120 chars, or any line break).
+ * @param string $s
+ * @return bool
+ */
+function _isLongDumpValue(string $s): bool
+{
+    return strlen($s) > 120 || str_contains($s, "\n");
+}
+
+/** Render one scalar for compact_print_r(). Unlike print_r() (which prints null and false both as
+ *  ''), this labels them explicitly - NULL / true / false - so a debug dump never confuses null,
+ *  false and the empty string. Everything else casts to string.
+ * @param mixed $v
+ * @return string
+ */
+function _dumpScalar($v): string
+{
+    if ($v === null) {
+        return 'NULL';
+    }
+    if (is_bool($v)) {
+        return $v ? 'true' : 'false';
+    }
+    return (string) $v;
+}
+
+/** Compact counterpart to print_r(): same "[key] => value" structure (array indexes kept),
+ *  but any array/object whose members are all scalar collapses onto one bracketed line, and
+ *  "Array (...)" / "Object (...)" become "[...]" - so deep data dumps stay readable. Objects
+ *  print their class then their properties (incl. protected/private, like print_r). Returns
+ *  the string (never echoes); recursion is depth-capped so it is safe on circular data.
+ *
+ *  With $html=true the result is HTML (meant to sit inside a <pre>): every key/value is
+ *  safe()-escaped internally, and a long or multiline scalar value is wrapped in a collapsible
+ *  <details class="aa-cpr-long"> clamped to ~4 rows (CSS in admin-ecn.css) so big text bodies
+ *  don't swamp the dump. In that mode the output is already escaped - do NOT wrap it in safe().
+ *
+ * @param mixed $var
+ * @param int   $indent  current indent depth (internal, for recursion)
+ * @param bool  $html    emit HTML (escaped, with collapsible long values) instead of plain text
+ * @return string  plain-text mode: raw, HTML-unsafe (wrap in safe() before emitting). HTML mode: already safe.
+ */
+function compact_print_r($var, int $indent = 0, bool $html = false): string
+{
+    if (is_object($var)) {
+        $clean = [];
+        foreach ((array) $var as $k => $v) {                                  // (array) exposes protected/private props...
+            $clean[preg_replace('/^\x00.*?\x00/', '', (string) $k)] = $v;      // ...behind null-byte prefixes - strip them
+        }
+        $class = $html ? safe(get_class($var)) : get_class($var);
+        return $class . ' ' . compact_print_r($clean, $indent, $html);
+    }
+    if (!is_array($var)) {                                                    // scalar
+        $s = _dumpScalar($var);
+        if (!$html) {
+            return $s;
+        }
+        return _isLongDumpValue($s)                                          // long/multiline -> collapsible, clamped to 4 rows
+             ? '<details class="aa-cpr-long"><summary>' . safe($s) . '</summary></details>'
+             : safe($s);
+    }
+    if ($var === []) {
+        return '[]';
+    }
+    if ($indent > 12) {                                                       // runaway / circular-reference guard
+        return '[...]';
+    }
+    $key = static fn($k): string => '[' . ($html ? safe((string) $k) : (string) $k) . ']';
+    // A leaf array (all-scalar members) prints on one line - UNLESS (HTML mode) one of its values
+    // is long/multiline: then break it onto indented lines so the clamped block aligns with the tree.
+    $nested = false;
+    foreach ($var as $v) {
+        if (is_array($v) || is_object($v) || ($html && is_string($v) && _isLongDumpValue($v))) {
+            $nested = true;
+            break;
+        }
+    }
+    if (!$nested) {                                                           // leaf array - one line: [[k] => v, [k] => v]
+        $parts = [];
+        foreach ($var as $k => $v) {
+            $parts[] = $key($k) . ' => ' . ($html ? safe(_dumpScalar($v)) : _dumpScalar($v));
+        }
+        return '[' . implode(', ', $parts) . ']';
+    }
+    $pad = str_repeat('    ', $indent + 1);                                   // nested - keep structure, one member per line
+    $out = "[\n";
+    foreach ($var as $k => $v) {
+        $out .= $pad . $key($k) . ' => ' . compact_print_r($v, $indent + 1, $html) . "\n";
+    }
+    return $out . str_repeat('    ', $indent) . ']';
+}
+
+/** Prepare OK Message
+ * @param  string  $txt
+ * @return string
+ */
+function MsgOk(string $txt): string
+{
+    return "<div class=\"aa-ok\">$txt</div>";
+}
+
+/** Prepare Err Message
+ * @param  string  $txt
+ * @return string
+ */
+function MsgErr(string $txt): string
+{
+    return "<div class=\"aa-err\">$txt</div>";
+}
+
+/** Fills the array from constants table
+ * @param        $group
+ * @param string $order
+ * @param string $column - column used as values. We can use 'name' as well as
+ *                       'const_name' for name of fields
+ * @param string $keycolumn
+ * @return array
+ */
+function GetConstants($group, $order = 'pri', $column = 'name', $keycolumn = 'value'): array
+{
+    // we can use 'const_name' insteadad of real name of the column 'name' => translate
+    $order     = str_replace('const_', '', $order);
+    $column    = str_replace('const_', '', $column);
+    $keycolumn = str_replace('const_', '', $keycolumn);
+
+    $db_order     = $order;
+    $db_column    = ($column    === 'level') ? 'ancestors' : $column;
+    $db_keycolumn = ($keycolumn === 'level') ? 'ancestors' : $keycolumn;
+
+    $const_fields = ['id' => 1,'group_id' => 1,'name' => 1,'value' => 1,'class' => 1,'pri' => 1,'ancestors' => 1,'description' => 1,'short_id' => 1];
+
+    if ($const_fields[$db_order]) {
+        $order_by  = "ORDER BY $db_order";
+    }
+    if (!$const_fields[$db_column]) {
+        $db_column    = 'name';
+        $column    = 'name';
+    }
+    if (!$const_fields[$db_keycolumn]) {
+        $db_keycolumn = 'value';
+        $keycolumn = 'value';
+    }
+    $fields = ($db_column === $db_keycolumn ? $db_column : "$db_keycolumn, $db_column");
+
+    $SQL = "SELECT $fields FROM constant WHERE group_id='$group' $order_by";
+
+    // constants are a lookup table - the same read repeats many times per request
+    return AA::Contentcache()->get_result('GetConstantsFromDb', [$SQL, $column, $keycolumn]);
+}
+
+/** Call after ANY write to the `constant` table. GetConstants(), GetConstantContent() and
+ *  QueryConstantZIDs() cache their reads for the whole request, so a later read in the same
+ *  request would be stale - see include/constedit_util.php and admin/se_constant.php.
+ *  Clears the whole soft cache; constant writes are rare admin work, so that is cheap enough.
+ */
+function ConstantsChanged(): void
+{
+    AA::Contentcache()->clear_soft();
+}
+
+/** Reads the rows for GetConstants() - separate function, so the result can be cached */
+function GetConstantsFromDb(string $SQL, string $column, string $keycolumn): array
+{
+    $db = getDB();
+    $db->query($SQL);
+
+    $already_key = [];
+    $arr = [];
+    while ($db->next_record()) {
+        $key = GrabConstantColumn($db, $keycolumn);
+        $key = $key['value'];
+        // generate unique keys by adding space
+        while ($already_key[$key]) {
+            $key .= ' ';                   // add space in order we get unique keys
+        }
+        $already_key[$key] = true;       // mark the $key
+        $val               = GrabConstantColumn($db, $column);
+        $arr[$key]         = $val['value'];
+    }
+    freeDB($db);
+    return $arr;
+}
+
+/** GetModuleInfo function
+ * gets fields from main table of the module
+ *
+ * @param $module_id
+ * @param $type string -  restricted to Links and slice
+ *
+ * @return array
+ *@deprecated - use AA_Slice::getModule($slice_id) and silmilar
+ */
+function GetModuleInfo($module_id, $type): array
+{
+    $table = match ($type) {
+        'Links'  => 'links',
+        'S'      => 'slice',
+        default  => '',
+    };
+    if (!$module_id || !$table) {
+        return [];
+    }
+
+    // $SQL = "SELECT * FROM " .$MODULES[$type]['table']. " WHERE id = '$p_module_id'";
+    // $ret = GetTable2Array($SQL, 'aa_first', 'aa_fields');
+    $ret = DB_AA::select1([], "SELECT * FROM " . $table, [['id', $module_id, 'l']]);
+
+    if (!$ret) {
+        return [];
+    }
+
+    if ($ret['reading_password']) {
+        // do it more secure and do not store it plain
+        // (we should be careful - mainly with debug outputs)
+        $ret['reading_password'] = AA_Credentials::encrypt($ret['reading_password']);
+    }
+    return $ret;
+}
+
+// -------------------------------------------------------------------------------
+
+/** CreateBinCondition function
+ *  Returns part of SQL command used in where related to bins
+ * @param        $bin
+ * @param string $table table name
+ * @param bool $ignore_expiry_date
+ * @param bool $ignore_pending_date
+ * @return string
+ */
+function CreateBinCondition($bin, $table, bool $ignore_expiry_date = false, bool $ignore_pending_date = false): string
+{
+    // now is rounded in order the time is in steps - it is better for search
+    // caching - SQL is THE SAME during one time step
+    $now = now('step');            // round up
+
+    /* new version of bin selecting, now we use type of bin from constants.php */
+    if (ctype_digit((string) $bin)) {
+        /* $bin is numeric constant */
+        $numeric_bin = max(1, $bin);
+    } elseif (is_string($bin)) { /* for backward compatibility */
+        $numeric_bin = match ($bin) {
+            /* assign to string type it's numeric constant */
+            'ACTIVE'  => AA_BIN_ACTIVE,
+            'PENDING' => AA_BIN_PENDING,
+            'EXPIRED' => AA_BIN_EXPIRED,
+            'HOLDING' => AA_BIN_HOLDING,
+            'TRASH'   => AA_BIN_TRASH,
+            'ALL'     => (AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING | AA_BIN_HOLDING | AA_BIN_TRASH),
+            default   => AA_BIN_ACTIVE,
+        };
+    } else {
+        /* strange case, I think never possible :) */
+        $numeric_bin = AA_BIN_ACTIVE;
+    }
+
+    /* create SQL query for different types of numeric constants */
+    switch ($numeric_bin) {
+        case AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING | AA_BIN_HOLDING | AA_BIN_TRASH:
+            return ' 1=1 ';
+        case AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING:
+            return " $table.status_code=1 ";
+        case AA_BIN_ACTIVE | AA_BIN_EXPIRED:
+            return " $table.status_code=1 AND ($table.publish_date <= '$now') ";
+        case AA_BIN_ACTIVE | AA_BIN_PENDING:
+            return " $table.status_code=1 AND ($table.expiry_date > '$now') ";
+    }
+    $or_conds = [];
+    if (($numeric_bin & (AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING)) == (AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING)) {
+        $or_conds[] = " $table.status_code=1 ";
+    } else {
+        if ($numeric_bin & AA_BIN_ACTIVE) {
+            $SQL = " $table.status_code=1 ";
+            /* for slices, where we want to allow to look into pending items using cond -publish_date....-gt-1 */
+            if (!$ignore_pending_date) {
+                $SQL .= "AND $table.publish_date <= '$now' ";
+            }
+            /* condition can specify expiry date (good for archives) */
+            if (!($ignore_expiry_date && defined("ALLOW_DISPLAY_EXPIRED_ITEMS") && ALLOW_DISPLAY_EXPIRED_ITEMS)) {
+                //              $SQL2 .= " AND ($table.expiry_date > '$now' OR $table.expiry_date IS NULL) ";
+                $SQL .= "AND $table.expiry_date > '$now' ";
+            }
+            $or_conds[] = $SQL;
+        }
+        if ($numeric_bin & AA_BIN_EXPIRED) {
+            $or_conds[] = " $table.status_code=1 AND $table.expiry_date <= '$now' ";
+        }
+        if ($numeric_bin & AA_BIN_PENDING) {
+            $or_conds[] = " $table.status_code=1 AND $table.publish_date > '$now' AND expiry_date > '$now'";
+        }
+    }
+    if ($numeric_bin & AA_BIN_HOLDING) {
+        $or_conds[] = " $table.status_code=2 ";
+    }
+    if ($numeric_bin & AA_BIN_TRASH) {
+        $or_conds[] = " $table.status_code=3 ";
+    }
+    return match (count($or_conds)) {
+        0       => ' 1=1 ',
+        1       => ' ' . $or_conds[0] . ' ',
+        default => ' ((' . implode(') OR (', $or_conds) . ')) ',
+    };
+}
+
+
+/**
+ * Basic function to get item content. Use this function, not direct SQL queries.
+ *
+ * @param       $zids
+ * @param bool  $unused_use_short_ids  // no longer used
+ * @param bool  $ignore_reading_password
+ *                                    Use carefully only when you are sure the data is used safely and not viewed
+ *                                    to unauthorized persons.
+ * @param  array  $fields2get
+ *                                    restrict return fields only to listed fields (so the content4id array
+ *                                    is not so big)
+ *                                    like: ['headline........', 'category.......1']
+ * @param null  $crypted_additional_slice_pwd
+ * @param null  $bin
+ *
+ * @return array
+ */
+function GetItemContent($zids, $unused_use_short_ids = false, $ignore_reading_password = false, array $fields2get = [], $crypted_additional_slice_pwd = null, $bin = null): array
+{
+    // Fills array $content with current content of $sel_in items (comma separated ids).
+
+    // construct WHERE clause
+    if (!is_object($zids)) {
+        $zids = new zids($zids, 'l');
+    }
+
+    if ($zids->isEmpty()) {
+        return [];
+    }
+
+    AA::$debug & 32 && AA::$dbg->tracestart('GetItemContent', $zids->count());
+
+    // get content from item table
+
+    $use_short_ids = ($zids->onetype() === 's');
+    $metabase      = AA::Metabase();
+
+    // if the output fields are restricted, restrict also item fields
+    if ($fields2get) {
+
+        $content_fields = [];
+        $item_fields    = [];
+        foreach ($fields2get as $field_name) {
+            //convert publish_date.... to publish_date
+            $clean_name = AA_Fields::getFieldType($field_name);
+
+            if ($metabase->isColumn('item', $clean_name)) {
+                $item_fields[]    = $clean_name;
+            } else {
+                $content_fields[] = $field_name;
+            }
+        }
+
+        // save it (without possible new fields 'id' and 'slice_id' - see below)
+        $real_item_fields2get = $item_fields;
+
+        // we need item id for $content index
+        if (!in_array('id', $item_fields)) {
+            $item_fields[] = 'id';
+        }
+        if ($use_short_ids && !in_array('short_id', $item_fields)) {
+            $item_fields[] = 'short_id';
+        }
+
+        // we need slice_id for each item, if we have to count with slice permissions
+        if (!$ignore_reading_password && !in_array('slice_id', $item_fields)) {
+            $item_fields[] = 'slice_id';
+        }
+
+        $item_fields_sql = implode(',', $item_fields);
+    } else {
+        $item_fields_sql = '*';
+        $real_item_fields2get = $metabase->getColumnNames('item');
+    }
+
+    $SQL = "SELECT $item_fields_sql FROM item WHERE " . $zids->sqlin();
+
+    // when we construct tree, we want to use only current item, for example
+    if (!is_null($bin)) {
+        $SQL .= ' AND ' . CreateBinCondition($bin, 'item');
+    }
+    $db = getDB();
+    $db->query($SQL);
+
+    // returned ids (possibly removed items in trash, ...)
+    $long_ids    = [];
+    $unpermitted = [];
+    $slices      = [];
+    $content     = [];
+
+    while ($db->next_record()) {
+
+        $row = $db->record();
+
+        // prove permissions for password-read-protected slices
+        $unpack_id                  = unpack_id($row['id']);
+        $unpack_slice_id            = unpack_id($row['slice_id']);
+        $long_ids[]                 = $unpack_id;
+        $slices[$unpack_slice_id]   = true;   // mark slice for perm check
+
+        // add special fields to all items (zids)
+        // slice_id... and id... is packed  - add unpacked variant now
+        $content[$unpack_id]['u_slice_id......'] = [['value' => $unpack_slice_id]];
+        $content[$unpack_id]['unpacked_id.....'] = [['value' => $unpack_id]];
+
+        // if ($ignore_reading_password OR $credentials->checkSlice($unpack_slice_id, $crypted_additional_slice_pwd)) {
+        // this row leads to creation second database connection db2 - for the first_child item in slice @todo - do something about it, Honza 2015-12-28
+        //   (we should test it after this while cycle - once for slice)
+        // Solved 2016-08-24 Honza
+        foreach ($real_item_fields2get as $item_fid) {
+            // FLAG_HTML does not mean in fact, that the content is in HTML, but it rather means, that we should not call txt2html function on the content
+            // we do not need to call txt2html() to any of the item table fields
+            $content[$unpack_id][AA_Fields::createFieldId($item_fid)][] = ["value" => (string) $row[$item_fid], "flag"  => FLAG_HTML];  // value is string - it was string for mysql_* DB acces, with PDO it could be int - so convert
+        }
+    }
+    freeDB($db);
+
+    if (!$ignore_reading_password) {
+        $credentials = AA_Credentials::singleton();
+        foreach (array_keys($slices) as $unpack_slice_id) {
+            if (!$credentials->checkSlice($unpack_slice_id, $crypted_additional_slice_pwd)) {
+                // it should be rare
+
+                // mark all items from this slice as unpermitted
+                $ERR_VALUE = [["value" => _m("Error: Missing Reading Password"), "flag"  => FLAG_HTML]];
+                foreach ($content as $unpack_id => $c4id) {
+                    $unpermitted[$unpack_id] = true;
+                    foreach (array_keys($c4id) as $fid) {
+                        // at least id and slice_id should be correct.............. for AA_Items::getItems()
+                        if (!in_array($fid, ['id..............','slice_id........','unpacked_id.....','u_slice_id......'])) {
+                            $content[$unpack_id][$fid] = $ERR_VALUE;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // Skip the rest if no items found
+    if (empty($content)) {
+        AA::$debug & 32 && AA::$dbg->traceend('GetItemContent');
+        return [];
+    }
+
+    // If its a tagged id, then set the "idtag..........." field
+    if ($zids->onetype() === 't') {
+        $tags = $zids->gettags();
+        foreach ($tags as $k => $v) {
+            $content[$k]["idtag..........."][] = ["value" => $v];
+        }
+    }
+
+    // construct WHERE query to content table
+    $new_sel_in    = sqlin('item_id', $long_ids, true);
+
+    $restrict_cond = '';
+
+    if ($fields2get) {
+        $restrict_cond = match (count($content_fields)) {
+            // we want just some item fields
+            0       => '1=0',
+            1       => " AND field_id = '" . reset($content_fields) . "' ",
+            default => " AND field_id IN ( '" . implode("','", $content_fields) . "' ) ",
+        };
+    }
+
+    // get content from content table
+
+    // feeding - don't worry about it - when fed item is updated, information
+    // in content table is updated too
+
+    // do we want any content field?
+    if ($restrict_cond !== '1=0') {
+        $db = getDB();
+        $SQL = "SELECT * FROM content WHERE $new_sel_in $restrict_cond ORDER BY item_id, number"; // usable just for multivalues
+        $db->query($SQL);
+
+        while ($db->next_record()) {
+
+            $row       = $db->record();
+
+            // secret.........* fields should not be part of the $content array
+            if (str_starts_with($row['field_id'], 'secret')) {
+                continue;
+            }
+
+            $unpack_id = unpack_id($row['item_id']);
+
+            if (!empty($unpermitted[$unpack_id])) {
+                $content[$unpack_id][$row['field_id']] = $ERR_VALUE;
+                continue;
+            }
+
+            // which database field is used (from 05/15/2004 we have FLAG_TEXT_STORED set for text-field-stored values
+            if ($row['flag'] & FLAG_TEXT_STORED || strlen($row['text'] ?? '')) {
+                if (is_array($content[$unpack_id][$row['field_id']][0] ?? null) && $content[$unpack_id][$row['field_id']][0]['value'] == $row['text']) {
+                    // ignore content duplicates (there could be more that two values for field
+                    // with the same number (=NULL) - the ones which comes from "add value to field" operation)
+                    continue;
+                }
+                if ($row['number'] > 999999) {  // translations
+                    $content[$unpack_id][$row['field_id']][$row['number']] = ["value" => $row['text'], "flag"  => $row['flag']];
+                } else {
+                    $content[$unpack_id][$row['field_id']][] = ["value" => $row['text'], "flag"  => $row['flag']];
+                }
+            } else {
+                // we can set FLAG_HTML, because the text2html gives the same result as the number itself
+                // it speeds the item->f_h() function a bit
+                $content[$unpack_id][$row['field_id']][] = ["value" => $row['number'], "flag"  => ($row['flag'] | FLAG_HTML)];
+            }
+        }
+        freeDB($db);
+    }
+
+    if ($use_short_ids) {
+        // if $zids->onetype() === 's' we should return $content constructed using short_id (to be backward compatible)
+        // it is deprecated, so maybe rather update calling code to accept $content with unpacked_id keys
+        // (there is problem with calling after zids->short_or_longids - say: view.php?vid=26&cmd[26]=x-26-23074  ) Honza 2016-09-30
+        $content_long = $content;
+        $content = [];
+        foreach ($content_long as $c4id) {
+            $content[$c4id['short_id........'][0]['value']] = $c4id;
+        }
+    }
+
+
+    AA::$debug & 32 && AA::$dbg->traceend('GetItemContent', count($content));
+
+    // $use_short_ids && AA_Log::warn('use_short_ids');
+
+    return $content;   // Note null returned above if no items found
+}
+
+/** GetItemContentMinimal function
+ *  The same as GetItemContent function, but it returns just id and short_id
+ *  (or other fields form item table - specified in $fields2get) for the item
+ *  (used in URL listing view @see view_type['urls']).
+ *  If $fields2get is specified, it MUST contain at least 'id'.
+ * @param $zids
+ * @param $fields2get
+ */
+function GetItemContentMinimal(zids $zids, $fields2get = false): array
+{
+    if (!$fields2get) {
+        $fields2get = ['id', 'short_id'];
+    }
+    $columns = implode(',', $fields2get);
+
+    if ($zids->isEmpty()) {
+        return [];
+    }
+    $sel_in = $zids->sqlin('');
+    $content = [];
+
+    if ($sel_in) {
+        // get content from item table
+        $db    = getDB();
+        $SQL   = "SELECT $columns FROM item WHERE id $sel_in";
+        $db->query($SQL);
+        while ($db->next_record()) {
+            $foo_id = unpack_id($db->f("id"));
+            foreach ($fields2get as $fld) {
+                $content[$foo_id][AA_Fields::createFieldId($fld)][] = ["value" => $db->f($fld)];
+            }
+        }
+        freeDB($db);
+    }
+    return $content;
+}
+
+/**
+ */
+function GrabConstantColumn($db, $column): array
+{
+    return match ($column) {
+        "name"        => ["value" => $db->f("name")],
+        "value"       => ["value" => $db->f("value"), "flag" => FLAG_HTML],
+        "pri"         => ["value" => $db->f("pri")],
+        "group"       => ["value" => $db->f("group_id")],
+        "class"       => ["value" => $db->f("class")],
+        // "counter"  => ["value" => $i++],
+        "id"          => ["value" => unpack_id($db->f("id"))],
+        "description" => ["value" => $db->f("description"), "flag" => FLAG_HTML],
+        "short_id"    => ["value" => $db->f("short_id")],
+        "level"       => ["value" => strlen((string) $db->f("ancestors")) / 16],
+        default       => [],
+    };
+}
+
+/** GetConstantContent function
+ *  Fills Abstract data srtructure for Constants
+ *
+ * @param $zids
+ *
+ * @return array
+ */
+function GetConstantContent(zids $zids): array
+{
+    if ($zids->isEmpty()) {
+        return [];
+    }
+    $SQL = 'SELECT * FROM constant WHERE short_id ' . $zids->sqlin(false);
+
+    // one constant per rendered item means the same rows are asked for over and over
+    return AA::Contentcache()->get_result('GetConstantContentFromDb', [$SQL]);
+}
+
+/** Reads the rows for GetConstantContent() - separate function, so the result can be cached */
+function GetConstantContentFromDb(string $SQL): array
+{
+    $db = getDB();
+    $db->query($SQL);
+    $content = [];
+    $i = 1;
+    while ($db->next_record()) {
+        $coid = $db->f('short_id');
+        $content[$coid]["const_name"][]        = GrabConstantColumn($db, "name");
+        $content[$coid]["const_value"][]       = GrabConstantColumn($db, "value");
+        $content[$coid]["const_pri"][]         = GrabConstantColumn($db, "pri");
+        $content[$coid]["const_group"][]       = GrabConstantColumn($db, "group");
+        $content[$coid]["const_class"][]       = GrabConstantColumn($db, "class");
+        $content[$coid]["const_counter"][]     = $i++;
+        $content[$coid]["const_id"][]          = GrabConstantColumn($db, "id");
+        $content[$coid]["const_description"][] = GrabConstantColumn($db, "description");
+        $content[$coid]["const_short_id"][]    = GrabConstantColumn($db, "short_id");
+        $content[$coid]["const_level"][]       = GrabConstantColumn($db, "level");
+    }
+    freeDB($db);
+
+    return $content;
+}
+
+/** StoreTable2Content function
+ *  Just helper function for storing data from database to Abstract Data Structure
+ * @param $content
+ * @param $SQL
+ * @param $prefix
+ * @param $id_field
+ * @deprecated use directly AA_Content::StoreTable2AaContent()
+ */
+function StoreTable2Content(&$content, $SQL, $prefix, $id_field): void
+{
+    $data = GetTable2Array($SQL, 'NoCoLuMn', 'aa_fields');
+    if (is_array($data)) {
+        foreach ($data as $row) {
+            $foo_id = $row[$id_field];
+            foreach ($row as $key => $val) {
+                $content[$foo_id][$prefix . $key][] = ['value' => $val];
+            }
+        }
+    }
+}
+
+
+/** find group_id for constants of the slice
+ * @param string $slice_id
+ * @deprecated use AA_Fields->getCategoryGroup() directly
+ */
+//function GetCategoryGroup($slice_id): ?string
+//{
+//    return AA_Slice::getModule($slice_id)?->getFields()->getCategoryGroup($field_id);
+//}
+
+// -------------------------------------------------------------------------------
+
+/** Parses the string xxx:yyyy (database stored func) to arr[fce]=xxx [param]=yyyy
+ */
+function ParseFnc($s): array
+{
+    $parts = explode(":", $s, 2);
+    return ['fnc' => $parts[0], 'param' => $parts[1] ?? ''];
+}
+
+/** identical to old myspecialchars() which replaced htmlspecialchars because of changes in php 5.4
+ * @param string|null $var
+ * @return string - html safe code (used for preparing variable to print in form)
+ */
+function safe($var = ''): string
+{
+    return \AA\Util\Txt::safe($var);
+}
+
+/** quotes utf string for use in xml attributes and content */
+function safexml($var = ''): string
+{
+    return \AA\Util\Txt::safexml($var);
+}
+
+/** replaces all the &apos;, ... html entities */
+function aa_html_entity_decode(string $text): string
+{
+    return html_entity_decode($text, ENT_QUOTES | ENT_HTML5);
+}
+
+/** Prints HTML start page tags (html begin, encoding, style sheet, but no title).
+ * Chooses the right encoding by get_mgettext_lang().
+ *
+ * @param  bool    $js_lib  if true, includes js_lib.min.js javascript
+ * @param  string  $lang
+ *
+ * @see AA_Adminpageutil->getPageBegin()
+ */
+function HtmlPageBegin(bool $js_lib = false, string $lang = '', bool $inc_by_require = false): void
+{
+    AA::sendAdminHeaders($lang);
+    $inc_css = '';
+    /* Skinning model: admin-ecn.css holds the structural baseline (and the
+     * legacy :root palette). Other admin-*.css files are skin overlays that
+     * redefine :root and override individual selectors -- they are loaded
+     * AFTER the baseline so their cascade wins. When ADMIN_CSS already is
+     * the baseline, no overlay is appended. */
+    // Per-user theme overlay (cookie/profile) wins over the server-wide ADMIN_CSS default;
+    // '' = baseline only. The cookie is read server-side so the right skin ships in the
+    // first paint (no flash), and it works on the login page before the user is known.
+    $overlay = \AA\Util\UiPrefs::themeOverlay();
+    if ($inc_by_require) {
+        AA::Stringexpander()->addRequire('css-aa-system');
+        AA::Stringexpander()->addRequire(AA_INSTAL_PATH . 'admin-ecn.css?v=' . AA_JS_VERSION);
+        if ($overlay) {
+            AA::Stringexpander()->addRequire(AA_INSTAL_PATH . $overlay . '?v=' . AA_JS_VERSION);
+        }
+    } else {
+        $inc_css = '<link rel="stylesheet" href="' . AA_INSTAL_PATH . 'admin-ecn.css?v=' . AA_JS_VERSION . '">'
+                 . '<link rel="stylesheet" href="' . AA_INSTAL_PATH . 'css/aa-system.css?v=' . AA_JS_VERSION . '">';
+        if ($overlay) {
+            $inc_css .= '<link rel="stylesheet" href="' . safe(AA_INSTAL_PATH . $overlay) . '?v=' . AA_JS_VERSION . '">';
+        }
+    }
+
+    echo
+'<!DOCTYPE html>
+<html lang="' . Langs::getLangName2Code($lang) . '">
+  <head>
+    <link rel="SHORTCUT ICON" href="' . AA_INSTAL_PATH . 'images/favicon.ico">
+    ' . $inc_css . '
+    <meta charset="' . AA::$encoding . '">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+';
+
+    if ($js_lib) {
+        echo getFrmJavascriptFile('javascript/js_lib.min.js');
+        echo getFrmJavascriptFile('javascript/jquery.min.js');
+        echo getFrmJavascriptFile('javascript/aajslib-jquery.min.js');
+    }
+}
+
+
+// use instead of </body></html> on pages which show menu
+function HtmlPageEnd(): void
+{
+    global $slices4cache;
+    AA::$debug & 2 && AA::$dbg->info('time: ' . timestartdiff());
+    if (AA::$debug & 16) {
+        echo AA::$dbg->basic_stat();
+        if ($slices4cache) {
+            echo '<br>UsedModules:<br> - ' . implode('<br> - ', array_map(static fn($mid) => AA_Module::getModuleNameSafe($mid), $slices4cache));
+        }
+        echo AA::$dbg->duration_stat();
+    }
+
+    echo "
+            </td>
+          </tr>
+        </table>
+      </div>
+</body>
+</html>";
+}
+
+/**
+ * @param $code
+ * @return string
+ */
+function getHtmlPage($code): string
+{
+    return "<!DOCTYPE html>\n<html>\n<head>\n</head>\n<body>\n  $code \n</body>\n</html>";
+}
+
+/** MsgPage function
+ * Displays page with message and link to $url
+ * @param $msg        - displayed message
+ * @param string $url - where to go if user clicks on Back link on this message page
+ */
+function MsgPage($msg, string $url = ''): never
+{
+    HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
+    echo "<title>" . _m("Toolkit news message") . "</title>
+      </head>
+    <body>";
+
+    if (isset($msg) && is_array($msg)) {
+        echo GetPrintArray($msg);
+    } else {
+        echo "<p>$msg</p><br><br>";
+    }
+    if (!$url) {
+        $url = self_base() . "index.php";
+    }
+    $url = safe(StateUrl($url));
+    $relogin_url = safe(get_admin_url('logout.php', '', false));
+    echo "<a href=\"$url\">" . _m("Back") . "</a> | <a href=\"$relogin_url\">" . _m("Relogin") . "</a>";
+    echo "</body></html>";
+    Session::page_close();
+    exit;
+}
+
+/**  Low level save data to the content table
+ *   Should not be used by "user" scripts
+ *
+ * @param  string      $item_id      long item id
+ * @param  string      $field_id     field id
+ * @param  bool        $text_stored  AA_Field['text_stored']
+ * @param  int|string  $value
+ * @param  int         $order
+ * @param  int         $flag
+ * @param  bool        $delete       - erease the old values
+ */
+function StoreToContent($item_id, $field_id, $text_stored, $value, int $order, int $flag, bool $delete = false): void
+{
+    // the same row an item store queues - here written right away (one caller, one value at a time)
+    $writer = new AA_Field_Writer('');
+    if ($delete) {
+        $writer->clearField((string) $item_id, (string) $field_id);
+    }
+    $writer->addContentRow((string) $item_id, (string) $field_id, (bool) $text_stored, $value, $order, $flag);
+    $writer->flush();
+}
+
+
+// -----------------------------------------------------------------------------
+
+/** Generates random string of given length
+ * @param $saltlen
+ * @return string
+ */
+function gensalt($saltlen): string
+{
+    $salt_chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456589";
+    $more_sec = '';
+    $salt = '';
+
+    do {
+        $more_sec .= hash('md5', microtime() . 'xy');
+    } while ($saltlen > strlen($more_sec));
+
+    for ($i = 0; $i < $saltlen; $i++) {
+        $salt .= $salt_chars[(mt_rand(0, 61) + ord($more_sec[$i])) % 62];  // mt_rand is faster than random_int (10x) so we use it here, but it is questionable @todo
+    }
+    return $salt;
+}
+
+// ---------------------------------------------------------------------------------------------
+
+/** split_escaped function
+ *  like PHP split, but additionally provides $escape_pattern to stand for occurrences of $pattern,
+ *  e.g. split_escaped (":", "a#:b:c", "#:") returns array ("a:b","c")
+ * @param $pattern
+ * @param $string
+ * @param $escape_pattern
+ * @return array
+ */
+function split_escaped($pattern, $string, $escape_pattern): array
+{
+    $dummy = chr(0x1E);  // record separator ASCII character - we can use any other, however
+    while (str_contains($string, $dummy)) {
+        $dummy .= '^';   // add another strange character to the
+    }
+    return str_replace($dummy, $pattern, explode($pattern, str_replace($escape_pattern, $dummy, $string)));
+}
+
+/** join_and_quote function
+ * @param $pattern
+ * @param $strings
+ * @return string
+ */
+function join_and_quote($pattern, $strings): string
+{
+    $retval = '';
+    foreach ((array) $strings as $string) {
+        if ($retval) {
+            $retval .= $pattern;
+        }
+        $retval .= addslashes($string);
+    }
+    return $retval;
+}
+
+/** removes all whitespaces from the string
+ * @param $string
+ * @return string
+ */
+function inner_trim(string $string): string
+{
+    return str_replace([' ', "\n", "\t", "\r"], '', $string);
+}
+
+function ReadFileSafe($url): void
+{
+    if ((stripos($url, 'http://') === 0 || stripos($url, 'https://') === 0) && !str_contains($url, '..')) {
+        readfile($url);
+    }
+}
+
+/** add_post2shtml_vars function
+ * Cooperates with the script post2shtml.php (see more doc there),
+ * which allows to easily post variables
+ * to PHP scripts SSI-included in a .shtml page.
+ *
+ * @param bool $delete Should delete the vars from database after recalling them?
+ *                     If you use the vars in several scripts included in one
+ *                     shtml page, delete them in the last script.
+ *
+ * @author Jakub Adamek, Econnect, December 2002
+ */
+function add_post2shtml_vars($delete = true): void
+{
+    global $post2shtml_id;
+    add_vars();
+    if (!$post2shtml_id) {
+        return;
+    }
+    $db = getDB();
+    $db->query("SELECT * FROM post2shtml WHERE id='$post2shtml_id'");
+    $db->next_record();
+    $vars = unserialize($db->f("vars"), ['allowed_classes' => false]);
+    if ($delete) {
+        $db->query("DELETE FROM post2shtml WHERE id='$post2shtml_id'");
+    }
+    freeDB($db);
+    $var_types = ["post","get","files","cookie"];
+
+    foreach ($var_types as $var_type) {
+        if (is_array($vars[$var_type])) {
+            foreach ($vars[$var_type] as $var => $value) {
+                global $$var;
+                $$var = $value;
+            }
+        }
+    }
+}
+
+/** getSelectBoxFromParamWizard function
+ *  Creates values for a select box showing some param wizard section.
+ * @param $var
+ */
+function getSelectBoxFromParamWizard(array $var): array
+{
+    $retval = [];
+    foreach ($var["items"] as $value => $prop) {
+        $retval[$value] = $prop["name"];
+    }
+    return $retval;
+}
+
+/** GetAAImage function
+ * @param        $filename
+ * @param string $alt
+ * @param int    $width
+ * @param int    $height
+ * @param string $add
+ * @param string $add_path
+ * @return string
+ */
+function GetAAImage($filename, $alt, $width, $height, $add = '', $add_path = ''): string
+{
+    $image_path = AA_BASE_PATH . $add_path . "images/$filename";
+    $image_url  = AA_INSTAL_PATH . $add_path . "images/$filename";
+    $title      = ($alt ? "title=\"$alt\"" : '');
+    if ($width) {
+        $size = "width=\"$width\" height=\"$height\"";
+    } else {
+        // this should not be used - the width should be always provided
+        $im_size = @getimagesize($image_path);
+        $size = $im_size[3];
+    }
+    return "<img src=\"$image_url\" alt=\"$alt\" $title $size $add>";
+}
+
+/** GetModuleImage function
+ * @param $module
+ * @param $filename
+ * @param $alt
+ * @param $width
+ * @param $height
+ * @param $add
+ * @return string
+ */
+function GetModuleImage($module, $filename, $alt = '', $width = 0, $height = 0, $add = ''): string
+{
+    return GetAAImage($filename, $alt, $width, $height, $add, "modules/$module/");
+}
+
+/** returns $object's class name without namespace and possibly Id for logging purposes
+ *
+ * @param string|object  $object
+ * @param  bool          $add_id
+ *
+ * @return string
+ */
+function get_class_name($object, bool $add_id = false): string
+{
+    $classname = is_object($object) ? get_class($object) : $object;
+    if ($pos = strrpos($classname, '\\')) {
+        $classname = substr($classname, $pos + 1);
+    }
+    if ($add_id && method_exists($object, 'getId')) {
+        $classname .= ":" . $object->getId();
+    }
+    return $classname;
+}
+
+/**
+ * Use as
+ *   $credentials = AA_Credentials::singleton();
+ *   $credentials->loadFromSlice($slice_id);
+ * @method  static AA_Credentials singleton()
+ *
+ */
+class AA_Credentials
+{
+    use SingletonTrait;
+
+    protected $_pwd = [];     // Array of all known slice passwords (md5 for better security)
+
+    /** main method for checking the slice_pwd
+     * @param string $slice_id
+     * @param string $crypted_additional_slice_pwd
+     * @return bool
+     */
+    public function checkSlice($slice_id, $crypted_additional_slice_pwd = null): bool
+    {
+        // AA_Slice::getModuleProperty($slice_id,'reading_password') is encrypted
+        return $this->checkCryptedPassword(AA_Slice::getModuleProperty($slice_id, 'reading_password'), $crypted_additional_slice_pwd);
+    }
+
+    /**
+     * @param string $crypted_slice_pwd
+     * @param string $crypted_additional_slice_pwd
+     * @return bool
+     */
+    public function checkCryptedPassword($crypted_slice_pwd, $crypted_additional_slice_pwd = null): bool
+    {
+        if (!$crypted_slice_pwd || $this->_pwd[$crypted_slice_pwd] || $crypted_slice_pwd == $crypted_additional_slice_pwd) {
+            return true;
+        }
+        if ($GLOBALS['slice_pwd']) {
+            $this->register(self::encrypt($GLOBALS['slice_pwd']));
+        }
+        return (bool) $this->_pwd[$crypted_slice_pwd];
+    }
+
+    /** Load reading_password from slice
+     * @param $slice_id
+     */
+    public function loadFromSlice($slice_id): void
+    {
+        $this->register(AA_Slice::getModuleProperty($slice_id, 'reading_password'));  // AA_Slice::getModuleProperty($slice_id,'reading_password') is encrypted
+    }
+
+    public function register($crypted_slice_pwd): void
+    {
+        if (!empty($crypted_slice_pwd)) {
+            $this->_pwd[$crypted_slice_pwd] = true;
+        }
+    }
+
+    /** we are sending collected slice passwords to {ajax...} */
+    public function getAsToken(): string
+    {
+        return AA_Stringexpand_Encrypt::get_time_token(['spwd' => array_keys($this->_pwd)]);
+    }
+
+    public function importFromToken(string $timetoken): void
+    {
+        $arr = AA_Stringexpand_Encrypt::decrypt_time_token($timetoken);
+        if (is_array($arr) && is_array($arr['spwd'])) {
+            foreach ($arr['spwd'] as $crypted_slice_pwd) {
+                $this->register($crypted_slice_pwd);
+            }
+        }
+    }
+
+    /** wrapper function
+     *  called as AA_Credentials::encrypt($reading_password) */
+    public static function encrypt($pwd): string
+    {
+        return hash('md5', $pwd);
+    }
+}
+
+/** AA_Contentcache class - prevents from executing the same - time consuming code
+ *  twice in one run of the script.
+ *  Usage:
+ *    Instead of calling:
+ *        $result = function_name(param1, param2);
+ *    we will use
+ *        $result = AA::Contentcache()->get_result("function_name", array(param1, param2));
+ *    For the first time call the function_name is called, for second, third,...
+ *    time calling, the result is returned from cache (for the same parameters)
+ *
+ *    The best to use this class for time-consuming functions with small results
+ */
+class AA_Contentcache
+{
+    // used for global cache of contents
+    /** @var $content string[] - array of cache entry - 'key'=>[result, generation_time, uses, identification] */
+    protected $content = [];
+
+    /** @var $content_stable string[] - the same as $content, but for special content, which is not deleted by clear_soft() */
+    protected $content_stable = [];
+
+    /** get_result function
+     *  Calls $function with $params and returns its return value. The result
+     *  value is then stored into cache, so next call of the $function with the
+     *  same parameters is returned from cache - function is not performed.
+     *  Use this feature mainly for repeating, time consuming functions!
+     *
+     * @param $function - name of function or you could use also object methods
+     *                     then the $function parameter should be array
+     *                     (see http://php.net/manual/en/function.call-user-func.php)
+     *                     For static class methods:
+     *                        $result = AA::Contentcache()->get_result(['Classname', 'function_name'], [param1, param2]);
+     *                     For instance methods:
+     *                        $result = AA::Contentcache()->get_result([$this, 'function_name'], [param1, param2]);
+     * @param $params - array of function's parameters
+     * @param $additional_params - string
+     *                   - special param for cache - it is not passed to the
+     *                     function but the cache counts with it (useful, if you
+     *                     know, that the result of the $function depends not
+     *                     only on its parameters, but also on some (global?) variable
+     * @return mixed
+     */
+    public function get_result($function, $params = [], $additional_params = '', $stable = false)
+    {
+        return $this->_get_result(get_hash($function, $params, $additional_params), $function, $params, $this->callable2ident($function), $stable);
+    }
+
+    /**
+     * This function is used to identify a any callable function in PHP (passed as array, string, object, ...).
+     *
+     * @param mixed $function The function to identify.
+     */
+    public function callable2ident($function): string
+    {
+        if (is_string($function)) {
+            return $function;
+        }
+        if (is_array($function)) {
+            return is_object($function[0]) ? get_class($function[0]) . '>' . $function[1] : implode('>', $function);
+        }
+        return ($function instanceof Closure) ? 'Closure' : var_export($function, true);
+    }
+
+    ///** sometimes it is quicker to not count the key automatically (in case of object call) */
+    //function get_result_by_id($key, $function, $params) {
+    //    if ( isset( $this->content[$key]) ) {
+    //        $this->content[$key][2]++;
+    //        return $this->content[$key][0];
+    //    }
+    //    $time = microtime(true);
+    //    $val = call_user_func_array($function, (array)$params);
+    //    $this->content[$key] = array($val, microtime(true)-$time, 0);
+    //    return $val;
+    //}
+
+
+    /** sometimes it is quicker to not count the key automatically (in case of object call)
+     * @param $key
+     * @param $function
+     * @param $params
+     * @param $ident
+     * @return mixed
+     */
+    public function _get_result($key, $function, $params, string $ident, $stable = false)
+    {
+        if ($stable) { // not possible to shorthand it, because of the reference
+            $content = &$this->content_stable;
+        } else {
+            $content = &$this->content;
+        }
+        if (isset($content[$key])) {
+            $content[$key][2]++;
+            return $content[$key][0];
+        }
+        $time = microtime(true);
+        $val = call_user_func_array($function, (array) $params);
+        $content[$key] = [$val, microtime(true) - $time, 0, $ident];
+        return $val;
+    }
+
+
+    /** sometimes it is quicker to not count the key automatically (in case of object call)
+     * @param $function
+     * @param $params
+     * @param $classname_hint
+     * @param $add
+     * @return mixed
+     */
+    public function get_result_4_object($function, $params, $classname_hint, $add)
+    {
+        return $this->_get_result(get_hash($classname_hint, $params, $add), $function, $params, $classname_hint);
+    }
+
+
+    /** Decides if the content should go to stable or soft cache - $content_stable - not deleted by clear_soft()
+     *  (we don't want to invalidate the variables {(  )} when {newitem::} (so StoreItem()) is called  )
+     * @param $access_code string  - access code to check
+     * @return bool
+     */
+    public function is_soft($access_code): bool
+    {
+        return !str_starts_with($access_code, 'define');
+    }
+
+    /** set function
+     *  set new value for key $key
+     * @param $access_code
+     * @param $val
+     */
+    public function set($access_code, $val): void
+    {
+        if ($this->is_soft($access_code)) {
+            $this->content[hash('md5', $access_code)] = [$val, 0, 0];
+        } else {
+            $this->content_stable[hash('md5', $access_code)] = [$val, 0, 0];
+        }
+    }
+
+    /** Get value for $access_code.
+     *  @param $access_code
+     *  @return false if the value is not cached for the $access_code (use ===)
+     */
+    public function get($access_code): mixed
+    {
+        $key = hash('md5', $access_code);
+        if ($this->is_soft($access_code)) {
+            if (isset($this->content[$key])) {
+                return $this->content[$key][0];
+            }
+        } elseif (isset($this->content_stable[$key])) {
+            return $this->content_stable[$key][0];
+        }
+        return false;
+    }
+
+    /** exists function
+     *  returns true or false if the key exists
+     * @param $access_code
+     * @return bool
+     */
+    public function exists($access_code): bool
+    {
+        return isset($this->content[hash('md5', $access_code)]);
+    }
+
+
+    /** clear function
+     * clear key or all content from contentcache
+     * @param $key
+     */
+    public function clear($key = null): void
+    {
+        if (!is_null($key)) {
+            unset($this->content[$key]);
+            unset($this->content_stable[$key]);
+        } else {
+            $this->content = [];
+            $this->content_stable = [];
+        }
+    }
+
+    /** clear_soft function
+     */
+    public function clear_soft(): void
+    {
+        $this->content = [];
+    }
+
+
+    /** push function
+     *  stores value for access_code to cache and backups the old values
+     *  each push, should have pop counterpart call, which restores previous value
+     *  used with push_arr for storing view qs parameters when entering view, for example
+     * @param $access_code
+     * @param $val
+     */
+    public function push($access_code, $val): void
+    {
+        if ($this->exists($access_code)) {
+            // backup access code - arr underscore before (with possible recursion)
+            $this->push('_' . $access_code, $this->get($access_code));
+        }
+        $this->set($access_code, $val);
+    }
+
+    /** pop function
+     * @param $access_code
+     */
+    public function pop($access_code)
+    {
+        $ret = $this->get($access_code);
+        if ($this->exists('_' . $access_code)) {
+            $this->set($access_code, $this->pop('_' . $access_code)); // with recurcsion
+        }
+        return $ret;
+    }
+
+    /** push_arr function
+     *  stores all values form array to cache and backups the old values
+     *  each push, should have pop_arr counterpart call, which restores previous values
+     *  used for storin view qs parameters when entering view, for example
+     * @param $access_code
+     * @param $arr
+     */
+    //  function push_arr($access_code, array $arr) {
+    //      foreach ($arr as $k => $v) {
+    //          $key = hash('md5', $k);
+    //          if ( isset($this->content[$key]) ) {
+    //              $this->set('_'.$k, $this->content[$key]);
+    //          }
+    //          $this->set($k, $v);
+    //      }
+    //      $this->set($access_code, array_keys($arr));
+    //  }
+    //
+    //  /** pop_arr function
+    //   *  restores previous values pushed by push_arr
+    //   * @param $access_code
+    //   */
+    //  function pop_arr($access_code) {
+    //      if (is_array($keys = $this->get($access_code))) {
+    //          foreach ($keys as $k => $v) {
+    //              $key = hash('md5', $k);
+    //              if ( isset($this->content[$key]) ) {
+    //                  $this->set('_'.$k, $this->content[$key]);
+    //              }
+    //              $this->set($k, $v);
+    //          }
+    //          $this->set($access_code, array_keys($arr));
+    //  }
+
+
+
+
+    public function duration_stat(): string
+    {
+        $ret  = $this->content_stat($this->content, 'content');
+        $ret .= $this->content_stat($this->content_stable, 'content stable');
+        return $ret;
+    }
+
+    protected function content_stat(array &$content, string $name): string
+    {
+        $ret = "<br><b>contentcache - $name</b> (" . count($content) . " rows)<br>";
+        $ret .= '<table class=aa-stat><tr><th>id</th><th>generation time</th><th>content(length)</th><th>used</th></tr>';
+        foreach ($content as $c) {
+            $val = $c[0];
+            $val = is_array($val) ? '[' . count($val) . ']' : (is_object($val) ? get_class_name($val) : (string) $val);
+            $ret .= '<tr><td>' . safe($c[3]) . '</td><td class=num>' . sprintf("%.4f", 1000 * $c[1]) . '</td><td class=num>' . safe(substr($val, 0, 20)) . ' (' . strlen($val) . ')</td><td class=num>' . $c[2] . '</td></tr>';
+        }
+        $ret .= '</table>';
+
+        $stat = [];
+        foreach ($content as $c) {
+            if (!isset($stat[$c[3]])) {
+                $stat[$c[3]] = [];
+            }
+            $stat[$c[3]]['cases']++;
+            $stat[$c[3]]['unused'] += ($c[2] ? 0 : 1);
+            $stat[$c[3]]['gentime'] += 1000 * $c[1];
+            $stat[$c[3]]['length'] += is_string($c[0]) ? strlen($c[0]) : 0;
+            $stat[$c[3]]['hits'] += $c[2];
+            $stat[$c[3]]['saved'] += $c[2] * 1000 * $c[1];
+        }
+        $ret .= '<table class=aa-stat><tr><th>id</th><th>cases</th><th>unused</th><th>sum gentime</th><th>sum length</th><th>sum hits</th><th>saved</th></tr>';
+        foreach ($stat as $key => $c) {
+            $ret .= '<tr><td>' . safe($key) . '</td><td class=num>' . $c['cases'] . '</td><td class=num>' . $c['unused'] . '</td><td class=num>' . sprintf("%.4f", $c['gentime']) . '</td><td class=num>' . $c['length'] . '</td><td class=num>' . $c['hits'] . '</td><td class=num>' . sprintf("%.4f", $c['saved']) . '</td></tr>';
+        }
+        return $ret . '</table>';
+    }
+
+    // end of contentcache class
+}
+
+
+/** get_if function
+ *  If $value is set, returns $value - else $else
+ * @param $value
+ * @param $else
+ * @param $else2
+ */
+function get_if($value, $else, $else2 = 'aa_NoNe', $else3 = 'aa_NoNe')
+{
+    return $value ?: ($else ?: (($else2 === 'aa_NoNe') ? $else : (($else3 === 'aa_NoNe') ? $else2 : $else3)));
+}
+
+/**
+ * Value from array/object or default if not set or empty
+ * clean way to write $arr[$key] ?: $default without PHP warning
+ */
+function arrval(array|ArrayAccess $arr, string|int $key, mixed $default = null): mixed
+{
+    return !empty($arr[$key]) ? $arr[$key] : $default;
+}
+
+/** aa_version function
+ *  Version of AA plus the build stamp (main commit and its date) that
+ *  dev/release/build-dist.sh writes to include/release.php. A source checkout
+ *  has no release.php, so its stamp is empty ("source checkout" in the full string).
+ */
+function aa_version($format = 'full'): string
+{
+    $version = '2026.6';
+    $release = is_file(__DIR__ . '/release.php') ? include __DIR__ . '/release.php' : [];
+    $commit  = substr((string) ($release['commit'] ?? ''), 0, 7);
+    $build   = trim($commit . ' ' . ($release['date'] ?? ''));
+    $full    = 'ActionApps ' . $version . ' (' . ($build ?: 'source checkout') . '), PHP ' . PHP_VERSION . ', REMOTE_ADDR: ' . $_SERVER['REMOTE_ADDR'];
+    return match ($format) {
+        'svn', 'svn2' => $commit,     // were the SVN revision of util.php / `svnversion` of the tree; '' in a source checkout
+        'build'       => $build,      // commit and its date, for humans
+        'aa'          => $version,
+        'php'         => PHP_VERSION,
+        default       => $full,
+    };
+}
+
+class CookieManager
+{
+    //  we are adding prefix AA_ - at least it prevents conflicts between GET
+    //  and COOKIES variables of the same name
+    /** set function
+     * @param $name
+     * @param $value
+     * @param $time int seconds - like 60*60*24*2
+     */
+    public function set($name, $value, $time = 0, $path = '/'): void
+    {
+        setcookie('AA_' . $name, $value, $time ? time() + $time : 0, $path, $_SERVER['HTTP_HOST']);
+    }
+
+    /** get function
+     * @param $name
+     * @return
+     */
+    public function get($name)
+    {
+        return $_COOKIE['AA_' . $name];
+    }
+}
+
+class AA_GeneralizedArray
+{
+    private array $arr = [];
+
+    /** AA_GeneralizedArray function
+     */
+    public function __construct() {}
+
+    /** add function
+     * @param $value
+     * @param $coordinates
+     */
+    public function add($value, $coordinates): void
+    {
+        $arr = & $this->arr;
+        // make sure the position exist
+        foreach ($coordinates as $key) {
+            if (!isset($arr[$key])) {
+                $arr[$key] = [];
+            }
+            // go down - more deep in the structure
+            $arr = &$arr[$key];
+        }
+        $arr = array_merge($arr, [$value]);
+    }
+
+    /** getValues function
+     * @param $coordinates
+     */
+    public function getValues($coordinates): ?array
+    {
+        $arr = & $this->arr;
+        // make sure the position exist
+        foreach ($coordinates as $key) {
+            if (!isset($arr[$key])) {
+                return null;
+            }
+            // go down - more deep in the structure
+            $arr = &$arr[$key];
+        }
+        $ret = $arr;   // do not return reference
+        return $ret;
+    }
+
+    /** getArray function
+     */
+    public function getArray(): array
+    {
+        return $this->arr;
+    }
+}
+
+/** IsSpamText function
+ * @param $text
+ * @return bool
+ */
+function IsSpamText($text, $tolerance = 4): bool
+{
+    // we do not accept any text using something like:
+    //     [url=https://example.net]Example.net[/url]
+    if (substr_count(strtolower($text), '[/url]')) {
+        return true;
+    }
+
+    $link_count  = substr_count(strtoupper($text), 'HTTP');
+    $text_length = strlen($text);
+
+
+    // four links are OK always
+    if ($link_count < ($tolerance + 1)) {
+        return false;
+    }
+    // link density - text of 250 characters could contain one link (in average)
+    return !(($text_length / $link_count) > 250);
+}
+
+/** checks, if the identifier looks like alias. Used in {ifset:{_#HEADLINE}:...}
+ *  to check the string - for example - accepts _#HEADLINE and also _#P3 (for {_:...} functions)
+ * @param string $identifier
+ * @return bool
+ */
+function IsAlias($identifier): bool
+{
+    return  (str_starts_with($identifier, '_#') && ((strlen($identifier) === 10) || (str_starts_with($identifier, '_#P') && ctype_digit(substr($identifier, 3)))));
+}
+
+/** is signed int (ctype_digit do not allow signed numbers)
+ * @param string $var
+ * @return bool
+ */
+function IsSigInt($var): bool // like function is_signed(),function is_number(), function is_positive(), function is_numeric(),
+{
+    if (is_int(filter_var($var, FILTER_VALIDATE_INT))) {
+        return true;
+    }
+    return (strlen((string) $var) && is_int(filter_var(ltrim($var, '0'), FILTER_VALIDATE_INT)));  // the 04 is int
+}
+
+/** check, if variable could be converted to string
+ * @param string $var
+ * @return bool
+ */
+function IsStringable($var): bool // like function is_signed(),function is_number(), function is_positive(), function is_numeric(),
+{
+    return $var === null || is_scalar($var) || (is_object($var) && method_exists($var, '__toString'));
+    // And since PHP 8 you can replace the third condition with $var instanceof Stringable    // And since PHP 8 you can replace the third condition with $var instanceof Stringable
+}
+
+/** RestoreVariables to global context - kind of @deprecated */
+function RestoreVariables(array $r_state_vars): void
+{
+    foreach ($r_state_vars as $k => $v) {
+        $GLOBALS[$k] = $v;
+    }
+}
+
+/** susbstr with utf in mind */
+function aa_substr($text, $start, $len = null): string
+{
+    return \AA\Util\Txt::substr($text, $start, $len);
+}
+
+/** strlen with utf in mind */
+function aa_strlen($text)
+{
+    return \AA\Util\Txt::strlen($text);
+}
+
+/** strpos with utf in mind */
+function aa_strpos($haystack, $needle, $offset = 0): false|int
+{
+    return \AA\Util\Txt::strpos($haystack, $needle, $offset);
+}
+
+/** strrpos with utf in mind */
+function aa_strrpos($haystack, $needle, $offset = 0): false|int
+{
+    return \AA\Util\Txt::strrpos($haystack, $needle, $offset);
+}
+
+/** trim  with utf in mind */
+function aa_trim(string $string = '', string $chars = ''): string
+{
+    return ($chars === '' && Langs::isUTF()) ? preg_replace("/^\s+|\s+$/u", "", $string) : trim($string, $chars);
+    // trim($string, " \t\n\r\0\x0B\xA0");  // standard + chr(160) - hard space   // does not work for UTF characters - the hardspace \xA0 can break some UTF chars - "MŠ" for example
+}
+
+/** strtolower with utf in mind */
+function aa_strtolower($string): string
+{
+    return Langs::isUTF() ? mb_strtolower((string) $string) : strtolower((string) $string); // maybe we could count with other languages
+}
+
+/** lcfirst with utf in mind */
+function aa_lcfirst(string $string): string
+{
+    return Langs::isUTF() ? mb_strtolower(mb_substr($string, 0, 1)) . mb_substr($string, 1) : lcfirst($string); // maybe we could count with other languages
+}
+
+/** ucfirst with utf in mind */
+function aa_ucfirst(string $string): string
+{
+    return Langs::isUTF() ? mb_strtoupper(mb_substr($string, 0, 1)) . mb_substr($string, 1) : ucfirst($string); // maybe we could count with other languages
+}
+
+/** strtoupper with utf in mind */
+function aa_strtoupper(string $string): string
+{
+    return Langs::isUTF() ? mb_strtoupper($string) : strtoupper($string); // maybe we could count with other languages
+}
+
+
+/** test if any array member passes the callback test - implements missing PHP function
+ *  @usage array_find_fnc([1,2,3,4,5,6], function($x) { return $x > 4; });  // 5
+ *  @usage array_find_fnc(['x', 'y', 'z', 1, 2, 3], ['Foo', 'match']);
+ */
+function array_find_fnc(iterable $arr, callable $comparator)
+{
+    foreach ($arr as $x) {
+        if (call_user_func($comparator, $x)) {
+            return $x;
+        }
+    }
+    return null;
+}
+
+/** trims all the values and also keys of the array recursively
+ * @usage array_trim_all(json2asoc($json));
+ */
+function array_trim_all($arr)
+{
+    return is_array($arr) ? array_map('array_trim_all', array_combine(array_map('trim', array_keys($arr)), array_values($arr))) : (is_string($arr) ? trim($arr) : $arr);
+}
+
+/** Get Authorization Header
+ * @return string
+ */
+function get_authorization_header(): string
+{
+    $ret = '';
+    if (isset($_SERVER['Authorization'])) {
+        $ret = $_SERVER['Authorization'];
+    } elseif (isset($_SERVER['HTTP_AUTHORIZATION'])) {
+        $ret = $_SERVER['HTTP_AUTHORIZATION'];
+    } elseif (function_exists('apache_request_headers')) {
+        $apache_auth_tmp = apache_request_headers();
+        if (strlen($apache_auth_tmp['Authorization'])) {
+            // $ret = 'Bearer '.$apache_auth_tmp['Authorization'];  // no need to add Bearer - already included
+            $ret = $apache_auth_tmp['Authorization'];
+        }
+    }
+    return trim($ret);
+}
+
+/** Increase the time limit for the script by x seconds
+ * @param int $seconds - increase time by $seconds - default 300 seconds
+ * @return void
+ */
+function MoreTimeLimit(int $seconds = 300): void
+{
+    if (ini_get('max_execution_time') < $seconds) {
+        set_time_limit($seconds);
+    }
+}

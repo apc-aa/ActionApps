@@ -1,0 +1,216 @@
+<?php
+
+//$Id$
+/*
+Copyright (C) 1999, 2000 Association for Progressive Communications
+https://www.apc.org/
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program (LICENSE); if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+*/
+// APC AA site Module main administration page
+
+// used in initpage.php3 script to include config.php from the right directory
+
+use AA\IO\DB\DB_AA;
+use AA\Util\InputVars;
+
+require_once __DIR__ . "/../../include/init_page.php";
+require_once __DIR__ . "/../../include/varset.php";
+require_once __DIR__ . "/../../include/formutil.php";
+
+require_once __DIR__ . "/../../modules/site/sitetree.php";   // module specific utils
+
+// ----------------- function definition end -----------------------------------
+
+try {
+    $spot_id = InputVars::intGETPOST('spot_id');
+    $go_sid = InputVars::intGET('go_sid');
+    $akce = InputVars::stringGET('akce');
+    $addcond = InputVars::stringGET('addcond');
+    $addcondop = InputVars::stringGET('addcondop');
+    $addcondvar = InputVars::stringGET('addcondvar');
+    $addvar = InputVars::stringGET('addvar');
+    $delvar = InputVars::stringGET('delvar');
+    $delcond = InputVars::stringGET('delcond');
+    $content = InputVars::stringPOST('content');
+    $name = InputVars::stringPOST('name');
+    $cancel = InputVars::boolPOST('cancel');
+
+    $Msg = InputVars::stringGETPOST('Msg');
+} catch (Exception $e) {
+    AA_Adminpageutil::pageParameterError($e);
+}
+
+$module_id   = AA::$module_id;
+
+// an id of another module type (explicit, or the fallback for a user with no site) goes to that module's page
+if (!($module = AA_Module_Site::getOwnModule($module_id))) {
+    go_url(AA_Module::getModuleUrl($module_id));
+}
+
+if (!IfSlPerm(PS_MODW_EDIT_CODE)) {
+    MsgPage(_m("You do not have permission to edit items in this slice"));
+}
+
+if (!($tree = $module->getTree())) {
+    MsgPage(_m("Starting spot not found"));
+}
+
+if ($spot_id) {
+    $tree->setCurrentId($spot_id);
+}
+
+// switch to another spot, if the spot is in this site
+if ($go_sid) {
+    $tree->setCurrentId($go_sid);
+}
+
+$current_spot_id = $tree->getCurrentId();
+
+switch ($akce) {
+    case 's': $tree->addInSequence($current_spot_id, 'spot');
+        break;  // Add Spot
+    case 'c': $tree->addChoice($current_spot_id, 'option');
+        break;  // Add Choice
+    case 'r': $parent = $tree->get('parent', $current_spot_id);       // Remove
+        if ($priorsib = $tree->removeSpot($current_spot_id)) {
+            $current_spot_id = $priorsib; // was set to $parent;
+        }
+        break;
+    case 'u': $tree->move($current_spot_id, 'moveUp');
+        break;  // Up
+    case 'd': $tree->move($current_spot_id, 'moveDown');
+        break;  // Down
+    case 'l': $tree->moveLeftRight($current_spot_id, 'moveLeft');
+        break;  // Left
+    case 'a': $tree->moveLeftRight($current_spot_id, 'moveRight');
+        break;  // Right
+
+    case 'h': $tree->setFlag($current_spot_id, AA_Module_Site::FLAG_DISABLE);
+        break;  // Hide
+    case 'e': $tree->clearFlag($current_spot_id, AA_Module_Site::FLAG_DISABLE);
+        break;  // Disable
+
+    case 'p': $tree->setFlag($current_spot_id, AA_Module_Site::FLAG_COLLAPSE);
+        break;  // Collapse
+    case 'm': $tree->clearFlag($current_spot_id, AA_Module_Site::FLAG_COLLAPSE);
+        break;  // Expand
+}
+
+
+if ($addcond) {
+    $tree->addCondition($current_spot_id, $addcondvar, $addcond, $addcondop);
+} elseif ($addvar) {
+    $tree->addVariable($current_spot_id, $addvar);
+} elseif ($delvar) {
+    $tree->removeVariable($current_spot_id, $delvar);
+} elseif ($delcond) {
+    $tree->removeCondition($current_spot_id, $delcond);
+} elseif ($content || $name) {
+    $varset     = new CVarset();
+    $varset->add("content", "text", $content);
+
+    $db_id = DB_AA::select1('id', 'SELECT `id` FROM `site_spot`', [ ['site_id', $module_id, 'l'], ['spot_id', $current_spot_id] ]);
+    if ($db_id) {
+        $varset->addkey("id", "number", $db_id);
+        $varset->doUpdate('site_spot', null, "S.$db_id");
+    } else {
+        $varset->add("site_id", "unpacked", $module_id);
+        $varset->add("spot_id", "number", $current_spot_id);
+        $varset->doInsert('site_spot');
+    }
+
+    // $SQL = "SELECT id FROM site_spot WHERE site_id='$p_module_id' AND spot_id='$r_spot_id'";
+    // $db->query($SQL);
+    // $SQL = ($db->next_record() ?
+    //        "UPDATE site_spot SET content='$content' WHERE id='". $db->f('id') ."'" :
+    //        "INSERT INTO site_spot (site_id, spot_id, content) VALUES ('$p_module_id', '$r_spot_id', '$content')");
+    // $db->query($SQL);
+
+    if ($name) {  // do not change to empty
+        $tree->set('name', $current_spot_id, $name);
+    }
+
+}
+
+if ($addcond || $delcond || $content || $name || $akce) {
+    AA::Pagecache()->invalidateFor($module_id);  // invalidate old cached values
+}
+
+if ($addcond || $delcond || $content || $name || $akce || $addvar || $delvar) {
+    $module->saveTree($tree, $akce === 'r');  // delete unused spots after we delete one spot
+}
+
+$apage = new AA_Adminpageutil('modadmin', 'codemanager');
+$apage->setTitle(_m("Editor window - site code manager"));
+$apage->addRequire('codemirror@5');
+$apage->addRequire('aa-jslib');   // {htmltoggle in helpbox}
+$apage->addRequire(get_aa_url('javascript/js_lib.min.js', ['v' => AA_JS_VERSION], false));
+
+$script2run = ' 
+   var opts = { lineWrapping:true, matchBrackets: true, matchTags: true, viewportMargin: 10000, mode: "htmlmixed" };
+   window.cm_a1 = CodeMirror.fromTextArea(document.getElementById("content"), opts);
+   ';
+$apage->addRequire($script2run, 'AA_Req_Load');
+
+$apage->setForm();
+$apage->printHead($err, $Msg);
+
+// echo "<style>.CodeMirror { min-height: 500px; } </style>";
+
+echo '<div class="aa-site-codemanager">
+        <div id="sitetree" class="aa-site-tree">
+      <table class="aa-w-full">
+        <tr>
+          <td>' . sitetree::siteActionLink($current_spot_id, 's', _m("Add&nbsp;spot"), 'add_spot.gif') . '</td>
+          <td>' . sitetree::siteActionLink($current_spot_id, 'c', _m("Add&nbsp;choice"), 'add_choice.gif') . '</td>
+        </tr>
+        <tr>
+          <td>' . sitetree::siteActionLink($current_spot_id, 'u', _m("Move&nbsp;up"), 'up.gif') . '</td>
+          <td>' . sitetree::siteActionLink($current_spot_id, 'd', _m("Move&nbsp;down"), 'down.gif') . '</td>
+        </tr>
+        <tr>
+          <td>' . sitetree::siteActionLink($current_spot_id, 'l', _m("Move&nbsp;left"), 'left.gif') . '</td>
+          <td>' . sitetree::siteActionLink($current_spot_id, 'a', _m("Move&nbsp;right"), 'right.gif') . '</td>
+        </tr>
+        <tr>
+          <td>' . sitetree::siteActionLink($current_spot_id, 'r', _m("Delete"), 'delete.gif', 'javascript:GoIfConfirmed(\'' . sitetree::siteAdminPageUrl($current_spot_id, ['akce' => 'r']) . '\', \'' . _m("Are you sure you want to delete the spot?") . '\')') . '</td>
+          <td>'
+          . (($tree->get('flag', $current_spot_id) & AA_Module_Site::FLAG_DISABLE)
+              ? sitetree::siteActionLink($current_spot_id, 'e', _m("Enable"), 'enabled.gif')
+              : sitetree::siteActionLink($current_spot_id, 'h', _m("Disable"), 'disabled.gif'))
+              . '</td>
+        </tr>
+      </table>
+      ';
+
+// callback functions
+$functions = [
+    'spot'          => [$tree,'printSpotName_Start'],
+    'before_choice' => [$tree,'printChoice_Start'],
+    'after_choice'  => [$tree,'printChoice_End'],
+];
+
+$tree->walkTree($apc_state, 1, $functions, 'collapsed');
+
+echo '</div><div class="aa-site-code">';
+
+$module->showSpot($tree, $current_spot_id);
+
+echo '</div></div>';
+
+$apage->addHelpbox(_m('Possible system requires - &lcub;require:...&rcub; or &lcub;require:["...","..."]&rcub;'), GetHtmlTable(AA_Requires::getAvailableLibs(), 'th'), true);
+
+$apage->printFoot();

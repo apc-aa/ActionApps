@@ -1,0 +1,2120 @@
+<?php
+
+/**
+ *
+ * PHP version 7.2+
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @version   $Id$
+ * @author    Honza Malik <honza.malik@ecn.cz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      https://www.apc.org/ APC
+ *
+*/
+
+use AA\IO\DB\DB_AA;
+use AA\Util\AbstractAliasgenerator;
+use AA\Util\Langs;
+use AA\Util\ChangesMonitor;
+use AA\Util\SingletonTrait;
+
+require_once __DIR__ . "/stringexpand.php";
+if (file_exists(__DIR__ . "/usr_aliasfnc.php")) {
+    require_once __DIR__ . "/usr_aliasfnc.php";
+} elseif (file_exists(__DIR__ . "/usr_aliasfnc.php3")) {   // for compatibility with old AAs
+    require_once __DIR__ . "/usr_aliasfnc.php3";
+}
+
+require_once __DIR__ . "/item_content.php";
+require_once __DIR__ . "/../modules/links/constants.php";
+
+/** DefineBaseAliases function
+ * @param $aliases
+ * @param $module_id
+ */
+function DefineBaseAliases(&$aliases, $module_id): void
+{
+    if (!isset($aliases["_#ITEM_ID_"])) {
+        $aliases["_#ITEM_ID_"] = GetAliasDef("f_1", "unpacked_id.....");
+    }
+    if (!isset($aliases["_#SITEM_ID"])) {
+        $aliases["_#SITEM_ID"] = GetAliasDef("f_1", "short_id........");
+    }
+    if (!isset($aliases["_#HEADLINE"])) {
+        $headline_field = AA_Slice::getModule($module_id)?->getFields()->firstOfTypeFieldId('headline') ?? '';
+        $aliases["_#HEADLINE"] = GetAliasDef("f_t::safe", $headline_field);
+    }
+    if (!isset($aliases["_#JS_HEAD_"])) {
+        $headline_field ??= AA_Slice::getModule($module_id)?->getFields()->firstOfTypeFieldId('headline') ?? '';
+        $aliases["_#JS_HEAD_"] = GetAliasDef("f_t", $headline_field ?: 'short_id........');
+    }
+}
+
+/** Returns aliases
+ *
+ * @param  string  $type  type - 'const'/'links'/'categories' - just like *view* types
+ * @param  array   $additional
+ *
+ * @return AA_Aliases
+ */
+function GetAliases4Type($type, $additional = []): AA_Aliases
+{
+    $aliases = match ($type) {
+        'const'      => new AA_Aliases(new AA_Aliasgenerator_Constant()),
+        'links'      => new AA_Aliases(new AA_Aliasgenerator_Link()),
+        'categories' => new AA_Aliases(new AA_Aliasgenerator_Category()),
+        default      => new AA_Aliases(),
+    };
+
+    // add additional aliases
+    if ($additional && is_array($additional)) {
+        $aliases->addFromArray($additional);
+    }
+    return $aliases;
+}
+
+
+/** FillFakeAlias function
+ * Adds new $alias to $aliases array and creates fake field for it
+ *  (to $content4id array). The value for the field is set to $value (and $flag)
+ * @param $content4id
+ * @param AA_Aliases $aliases
+ * @param $alias
+ * @param $value
+ * @param $flag
+ */
+function FillFakeAlias(&$content4id, $aliases, $alias, $value, $flag = FLAG_HTML): void
+{
+    do {
+        $colname = AA_Fields::createFieldId(strtolower(substr($alias, 2, 12)));
+    } while (isset($content4id[$colname]));
+    $content4id[$colname][] = ["value" => $value, "flag" => $flag];
+    $aliases->addAlias(new AA_Alias($alias, 'f_1', $colname, _m("Alias for %1", [$colname])));
+    // old - [$alias] = GetAliasDef("f_1", $colname, _m("Alias for %1", [$colname]));
+}
+
+/** sess_return_url function
+ * helper function for f_e
+ * this is called from admin/index.php and include/usr_aliasfnc.php in some site
+ * added by setu@gwtech.org 2002-0211
+ *
+ * make_return_url
+ * global function to get return_url
+ * this function may be replaced by extension of $sess as a method $sess->return_url().
+ * @param $url
+ */
+function sess_return_url($url): string
+{
+    global $return_url;
+
+    // decode and return $return_url OR return for standard APC-AA behavier
+    return $return_url ? expand_return_url(1) : StateUrl($url);
+}
+
+
+/** make_return_url function
+ * helper function for f_e
+ *  this is called from admin/index.php and include/usr_aliasfnc.php in some site
+ *  added by setu@gwtech.org 2002-0211
+ *
+ *  make_return_url
+ * function make_return_url($prifix="&return_url=")
+ *
+ * @param  string|null  $r1
+ *
+ * @return string|null
+ */
+function make_return_url(?string $r1 = ""): ?string
+{
+    global $return_url, $sess;
+    if ($r1) {
+        return $r1;
+    }
+    if ($return_url) {
+        return $return_url;
+    }
+    if (!$sess) {   // If there is no $sess, then we need a return url, default to self, including parameters
+        // but remove any leftover AA_Session, it will be re-added if needed
+        return preg_match("/(.*)([?&])AA_Session=[0-9a-f]{32}(.*)/", $_SERVER['REQUEST_URI'], $parts) ? ($parts[1] . $parts[2] . $parts[3]) : $_SERVER['REQUEST_URI'];
+    }
+    return '';
+}
+
+/** Inputform_url function
+ *  helper function which create link to inputform from item manager
+ * (_#EDITITEM, f_e:add, ...)
+ *
+ * @param  bool         $add
+ * @param  string       $iid
+ * @param  string       $sid  - for edditing it is not necessary
+ * @param  string|null  $ret_url
+ * @param  null         $vid
+ * @param  null         $var
+ * @param  bool         $safe
+ *
+ * @return string
+ */
+function Inputform_url($add, $iid, $sid = '', ?string $ret_url = '', $vid = null, $var = null, $safe = true): string
+{
+    global $profile;
+
+    // $admin_path = AA_INSTAL_URL. "admin/itemedit.php";
+    // changed back to relative address - in order we stay within the same
+    // domain and protocol (https...)
+    // $admin_path = 'itemedit.php';
+    $param      = [];
+
+    // If Session is set, then append session id, otherwise append slice_id and it will prompt userid
+    //$url2go = isset($sess) ? StateUrl($admin_path) : ($admin_path .(isset($AA_CP_Session) ? "?AA_CP_Session=$AA_CP_Session" : "" ));
+
+    // return_url is used for non AA Admin interface filling - writen by Settu
+    // Not sure, if it is functional. Honza 2006-01-07
+    $return_url = make_return_url($ret_url);
+
+    if ($iid) {
+        $param['id'] = $iid;
+    }
+    $param[$add ? 'add' : 'edit'] = 1;
+    $param['encap'] = "false";
+    if ($sid) {
+        $param['slice_id'] = $sid;
+    }
+    if ($return_url) {
+        $param['return_url'] = $return_url;
+    }
+    if ($var) {
+        $param['openervar'] = $var;  // id of variable in parent window (used for popup inputform)
+    }
+    if ($vid) {
+        $param['vid'] = $vid;
+    } elseif (isset($profile) && $profile->getProperty('input_view')) {
+        $param['vid'] = $profile->getProperty('input_view');
+    }
+    return $safe ? con_url('itemedit.php', $param) : get_url('itemedit.php', $param);
+}
+
+/** GetFormattedItems function
+ *  Fills array - [unpacked_item_id] => unaliased string (headline) for item_id
+ * @param $zids - items
+ * @param $format - normal AA alias string like {headline.......1} or more complicated
+ * @param $crypted_additional_slice_pwd
+ * @param $tagprefix - array as defined in itemfunc.php
+ * @return array
+ */
+function GetFormattedItems($zids, $format, $crypted_additional_slice_pwd = null, $tagprefix = null): array
+{
+    $ret  = [];
+    if ($zids->isEmpty()) {
+        return $ret;
+    }
+
+    $items = AA_Items::getItems($zids, $crypted_additional_slice_pwd);
+    foreach ($items as $long_id => $item) {
+        $ret[$long_id] = AA::Un($format, '', $item);
+    }
+
+    if (!(isset($tagprefix) && $zids->onetype() === 't')) {
+        return $ret;
+    }
+
+    // following code is just for tagged ids
+    // (I hope it works, but I can't test it, since I do not want to use it.)
+    // I think the design of tagged IDs is bad and will be probably
+    // removed in future
+
+    // Honza 8/27/04
+
+    // See if need to Put the tags back on the ids
+    $tags = $zids->gettags() ;
+    if (!isset($tags)) {
+        return $ret;
+    }
+
+    $t2p = [];
+    foreach ($tagprefix as $v) {
+        $t2p[$v["tag"]] = $v["prefix"];
+    }
+
+    // we want headlines in the same order than in zids
+    $new_ret = [];
+    foreach ($ret as $u_id => $headline) {
+        $new_ret[$tags[$u_id] . $u_id] = $t2p[$tags[$u_id]] . $headline;
+    }
+    return $new_ret;
+}
+
+/** GetFormatedConstants function
+ *
+ * @param             $constgroup
+ * @param             $format
+ * @param array|null  $restrict_zids
+ * @param             $conds
+ * @param             $sort
+ * @param  string     $for_id  if created for some item and _#ITEM_ID_ alias
+ *
+ * @return array
+ * @todo Teach itemview to return array (instead of whole listing) and convert
+ *                            those functions (GetFormattedConstants() and GetFormattedItems())
+ *                            to itemview
+ */
+function GetFormatedConstants($constgroup, $format, $restrict_zids, $conds, $sort, string $for_id = '', int $limit = 0): array
+{
+    if (!trim($constgroup)) {
+        return [];
+    }
+
+    $conds = String2Conds($conds);
+    $sort  = String2Sort($sort ?: 'sort[0][const_pri]=a');
+    $zids  = QueryConstantZIDs($constgroup, $conds, $sort, $restrict_zids, 'RLIKE', $limit);
+    if ($zids->isEmpty()) {
+        return [];
+    }
+
+    $content =  GetConstantContent($zids);
+    if ($for_id) {
+        $aliases = new AA_Aliases((new AA_Aliasgenerator_Constant())->addAliases((new AA_Aliases())->addTextAlias('_#ITEM_ID_', $for_id)));
+    } else {
+        $aliases = new AA_Aliases(new AA_Aliasgenerator_Constant());
+    }
+    $item    = new AA_Item('', $aliases);
+    $format  = $format ?: 'const_name';
+    $ret     = [];
+    for ($i = 0, $ino = $zids->count(); $i < $ino; ++$i) {
+        $iid = $zids->short_or_longids($i);
+        $item->set_data($content[$iid]);
+        $ret[$item->subst_alias('const_value')] = $item->subst_alias($format);
+    }
+    return $ret;
+}
+
+/** GetItemFromContent function
+ * Creates item object just from item_content
+ *
+ * @param $content  ItemContent|AA_Content object
+ *
+ * @return AA_Item|null
+ */
+function GetItemFromContent($content): ?AA_Item
+{
+    if (!is_object($content)) {
+        return null;
+    }
+    return new AA_Item($content, ($content->getType() === 'item') ? new AA_Aliases(new AA_Aliasgenerator_Slice((new ItemContent($content))->getSliceID())) : '');
+}
+
+
+/** cached slice aliases
+ *  @usage new AA_Aliases(new AA_Aliasgenerator_Slice($slice_id))
+ */
+class AA_Aliasgenerator_Slice extends AbstractAliasgenerator
+{
+    protected $slice_id;
+
+    public function __construct(string $slice_id)
+    {
+        $this->slice_id = $slice_id;
+    }
+
+    /** generate params array for getAliasesFromParams from real generator object */
+    protected function getParamsArray(): array
+    {
+        return ['slice_id' => $this->slice_id];
+    }
+
+    public static function getAliasesFromParams(array $params): AA_Aliases
+    {
+        $slice = AA_Slice::getModule($params['slice_id']);
+        return $slice ? (new AA_Aliases())->addFromArray($slice->aliases()) : new AA_Aliases();
+    }
+}
+
+/** cached slicejustids aliases
+ *  @usage new AA_Aliases(new AA_Aliasgenerator_Slicejustids($slice_id))
+ */
+class AA_Aliasgenerator_Slicejustids extends AA_Aliasgenerator_Slice
+{
+    public static function getAliasesFromParams(array $params): AA_Aliases
+    {
+        $slice = AA_Slice::getModule($params['slice_id']);
+        return $slice ? (new AA_Aliases())->addFromArray($slice->aliases(null, 'justids')) : new AA_Aliases();
+    }
+}
+
+
+
+/** cached discussion aliases
+ *  @usage new AA_Aliases(new AA_Aliasgenerator_Discussion())
+ */
+class AA_Aliasgenerator_Discussion extends AbstractAliasgenerator
+{
+    public static function getAliasesFromParams(array $params): AA_Aliases
+    {
+
+        $aliases = new AA_Aliases();
+
+        $aliases->addAlias(new AA_Alias('_#SUBJECT_', 'f_h', 'd_subject.......', _m("Alias for subject of the discussion comment")));
+        $aliases->addAlias(new AA_Alias('_#BODY###_', 'f_t', 'd_body..........', _m("Alias for text of the discussion comment")));
+        $aliases->addAlias(new AA_Alias('_#AUTHOR#_', 'f_h', 'd_author........', _m("Alias for written by")));
+        $aliases->addAlias(new AA_Alias('_#EMAIL##_', 'f_h', 'd_e_mail........', _m("Alias for author's e-mail")));
+        $aliases->addAlias(new AA_Alias('_#WWW_URL_', 'f_h', 'd_url_address...', _m("Alias for url address of author's www site")));
+        $aliases->addAlias(new AA_Alias('_#WWW_DESC', 'f_h', 'd_url_descript..', _m("Alias for description of author's www site")));
+        $aliases->addAlias(new AA_Alias('_#DATE###_', 'f_d:d M Y H:i', 'd_date..........', _m("Alias for publish date")));
+        $aliases->addAlias(new AA_Alias('_#IP_ADDR_', 'f_h', 'd_remote_addr...', _m("Alias for IP address of author's computer")));
+        $aliases->addAlias(new AA_Alias('_#CHECKBOX', 'f_h', 'd_checkbox......', _m("Alias for checkbox used for choosing discussion comment")));
+        $aliases->addAlias(new AA_Alias('_#TREEIMGS', 'f_h', 'd_treeimages....', _m("Alias for images")));
+        $aliases->addAlias(new AA_Alias('_#DITEM_ID', 'f_h', 'd_item_id.......', _m("Alias for comment ID<br>\n                             <i>Usage: </i>in form code<br>\n                             <i>Example: </i>&lt;input type=hidden name=d_item_id value=\"_#DITEM_ID\">")));
+        $aliases->addAlias(new AA_Alias('_#ITEM_ID_', 'f_h', 'd_item_id.......', _m("Alias for comment ID (the same as _#DITEM_ID<br>)\n                             <i>Usage: </i>in form code<br>\n                             <i>Example: </i>&lt;input type=hidden name=d_item_id value=\"_#ITEM_ID#\">")));
+        $aliases->addAlias(new AA_Alias('_#DISC_ID_', 'f_h', 'd_id............', _m("Alias for item ID<br>\n                             <i>Usage: </i>in form code<br>\n                             <i>Example: </i>&lt;input type=hidden name=d_parent value=\"_#DISC_ID#\">")));
+        $aliases->addAlias(new AA_Alias('_#URL_BODY', 'f_h', 'd_url_fulltext..', _m("Alias for link to text of the discussion comment<br>\n                             <i>Usage: </i>in HTML code for index view of the comment<br>\n                             <i>Example: </i>&lt;a href=_#URL_BODY>_#SUBJECT#&lt;/a>")));
+        $aliases->addAlias(new AA_Alias('_#URLREPLY', 'f_h', 'd_url_reply.....', _m("Alias for link to a form<br>\n                             <i>Usage: </i>in HTML code for fulltext view of the comment<br>\n                             <i>Example: </i>&lt;a href=_#URLREPLY&gt;Reply&lt;/a&gt;")));
+        $aliases->addAlias(new AA_Alias('_#DISC_URL', 'f_h', 'd_disc_url......', _m("Alias for link to discussion<br>\n                             <i>Usage: </i>in form code<br>\n                             <i>Example: </i>&lt;input type=hidden name=url value=\"_#DISC_URL\">")));
+        $aliases->addAlias(new AA_Alias('_#BUTTONS_', 'f_h', 'd_buttons.......', _m("Alias for buttons Show all, Show selected, Add new<br>\n                             <i>Usage: </i> in the Bottom HTML code")));
+
+        return $aliases;
+    }
+}
+
+
+/** cached discussion2mail aliases
+ *  @usage new AA_Aliases(new AA_Aliasgenerator_Discussion2mail())
+ */
+class AA_Aliasgenerator_Discussion2mail extends AbstractAliasgenerator
+{
+    public static function getAliasesFromParams(array $params): AA_Aliases
+    {
+        $aliases = new AA_Aliases();
+
+        $aliases->addAlias(new AA_Alias('_#ITEMPAR3', '', '', _m("3rd parameter filled in DiscussionMailList field")));
+        for ($i = 4; $i < 10; ++$i) {
+            $aliases->addAlias(new AA_Alias("_#ITEMPAR$i", '', '', _m("%1th parameter filled in DiscussionMailList field", [$i])));
+        }
+        return $aliases;
+    }
+}
+
+/** cached constants aliases
+ *  @usage new AA_Aliases(new AA_Aliasgenerator_Constant())
+ */
+class AA_Aliasgenerator_Constant extends AbstractAliasgenerator
+{
+    public static function getAliasesFromParams(array $params): AA_Aliases
+    {
+        $aliases = new AA_Aliases();
+
+        //  Standard aliases
+        $aliases->addAlias(new AA_Alias('_#NAME###_', 'f_1', 'const_name', _m("Constant name")));
+        $aliases->addAlias(new AA_Alias('_#TR_NAME_', 'f__:{tr:{_#NAME###_}}', 'const_name', _m("Translated constant name")));
+        $aliases->addAlias(new AA_Alias('_#VALUE##_', 'f_1', 'const_value', _m("Constant value")));
+        $aliases->addAlias(new AA_Alias('_#PRIORITY', 'f_1', 'const_pri', _m("Constant priority")));
+        $aliases->addAlias(new AA_Alias('_#GROUP##_', 'f_1', 'const_group', _m("Constant group id")));
+        $aliases->addAlias(new AA_Alias('_#CLASS##_', 'f_1', 'const_class', _m("Category class (for categories only)")));
+        $aliases->addAlias(new AA_Alias('_#COUNTER_', 'f_1', 'const_counter', _m("Constant number")));
+        $aliases->addAlias(new AA_Alias('_#CONST_ID', 'f_1', 'const_id', _m("Constant unique id (32-hexadecimal characters)")));
+        $aliases->addAlias(new AA_Alias('_#SHORT_ID', 'f_1', 'const_short_id', _m("Constant unique short id (autoincremented from '1' for each constant in the system)")));
+        $aliases->addAlias(new AA_Alias('_#DESCRIPT', 'f_1', 'const_description', _m("Constant description")));
+        $aliases->addAlias(new AA_Alias('_#LEVEL##_', 'f_1', 'const_level', _m("Constant level (used for hierarchical constants)")));
+
+        return $aliases;
+    }
+}
+
+
+
+class AA_Item
+{
+    /** @var ItemContent  */
+    private $content4id;        // ItemContent array for this Item (like from GetItemContent)
+    private $format;            // format string with aliases
+    private $remove;            // remove string
+    /** @var AA_Aliases|null  */
+    private $aliases;           // AA_Aliases with possible generator for alias lazy load
+    private $parameters;        // optional additional parameters - copied from itemview->parameters
+
+    /** item function
+     *  Constructor
+     *  @param $content4id ItemContent|AA_Content|zids|array - could be ItemContent as well as zids as well as old contentent array
+     *  @param $aliases
+     *  @param $format
+     *  @param $remove
+     *  @param $param
+     *
+     *  Take a look at AA_Item::getItem() (non caching) or
+     *  AA_Items::getItem() (caching), if you want to create item from id
+     * @see AA_Item::getItem(), AA_Items::getItem()
+     */
+    public function __construct($content4id = '', $aliases = '', $format = '', $remove = '', $param = false)
+    {
+        $this->set_data($content4id);
+        if ($aliases instanceof AA_Aliases) {
+            $this->aliases = $aliases;
+        } else {
+            $this->aliases = new AA_Aliases();
+            if ($aliases) {
+                $this->aliases->addFromArray($aliases);
+            }
+        }
+        $this->format       = $format;
+        $this->remove       = $remove;
+        $this->parameters   = ($param ?: []);
+    }
+
+    /** setformat function
+     * @param $format
+     * @param $remove
+     */
+    public function setformat($format, $remove = ""): void
+    {
+        $this->format = $format;
+        $this->remove = $remove;
+    }
+
+    /** set_parameters function
+     *  Optional asociative array of additional parameters
+     *  Used for category_id (in Links module) ...
+     * @param $parameters
+     */
+    public function set_parameters($parameters): void
+    {
+        $this->parameters = $parameters;
+    }
+
+    /** set_data function
+     * sets content (ItemContent object or older - content4id array)
+     * @param $content4id
+     */
+    public function set_data($content4id): void
+    {
+        $this->content4id = (is_object($content4id) ? $content4id : new ItemContent($content4id));
+    }
+
+    /** set_field_value function
+     *  sets for defined field it's new value
+     * @param $field string
+     * @param $value AA_Value
+     */
+    public function setAaValue($field, $value): void
+    {
+        $this->content4id->setAaValue($field, $value);
+    }
+
+    /** shortcut for AA_Content->getValue()
+     *
+     * @param       $field_id
+     * @param  int  $index
+     *
+     * @return string | false
+     */
+    public function getval($field_id, $index = 0)
+    {
+        return $this->content4id->getValue($field_id, $index);
+    }
+
+    /** shortcut for AA_Content->getFlag()
+     *
+     * @param $field_id
+     *
+     */
+    public function getFlag($field_id): int
+    {
+        return $this->content4id->getFlag($field_id);
+    }
+
+    /** shortcut for ItemContent->getValues()
+     *  low level - function
+     *  use just for low level manipulations
+     * @param  string  $field_id
+     * @return array
+     * @deprecated
+     */
+    public function getValues($field_id): array
+    {
+        return $this->content4id->getValues($field_id);
+    }
+
+    /** shortcut for ItemContent->getValue()
+     *
+     * @param  string  $field_id
+     *
+     * @return string | false
+     */
+    public function getValue($field_id): false|string
+    {
+        return $this->content4id->getValue($field_id);
+    }
+
+    /** shortcut for ItemContent->getValuesArray()
+     * @param $field_id
+     * @return array
+     */
+    public function getValuesArray($field_id): array
+    {
+        return $this->content4id->getValuesArray($field_id);
+    }
+
+    /**
+     * @param $field_id
+     * @return AA_Value
+     */
+    public function getAaValue($field_id): AA_Value
+    {
+        return $this->content4id->getAaValue($field_id);
+    }
+
+    public function isEmpty(): bool
+    {
+        return $this->content4id->isEmpty();
+    }
+
+    /** Without $bin returns true if the item is visible - not expired/trashed/pending/...
+     *  You can specify bin AA_BIN_ACTIVE or AA_BIN_HOLDING or AA_BIN_TRASH or AA_BIN_ALL or its bitwise combination (the trash and pending is not supported, now)
+     * @return bool
+     */
+    public function isActive($bin = AA_BIN_ACTIVE): bool
+    {
+        return $this->content4id->isActive($bin);
+    }
+
+    public function getStatusCode(): int
+    {
+        return $this->content4id->getStatusCode();
+    }
+
+    public function isMultilingual($field_id): bool
+    {
+        return $this->content4id->isMultilingual($field_id);
+    }
+
+
+    /** checks, if the field looks like the field ID */
+    public function isField($text): bool
+    {
+        if (str_starts_with($this->content4id->getType(), '_T')) { // some table
+            return AA::Metabase()->isColumn(substr($this->content4id->getType(), 2), $text);
+        }
+        return $this->content4id->isField($text);
+    }
+
+    /** getContent function
+     *  @deprecated - for backward compatibility (used in AA_Object getContent)
+     *  @return array
+     */
+    public function getContent(): array
+    {
+        return $this->content4id->getContent();
+    }
+
+    /** getItemContent function
+     */
+    public function getItemContent(): AA_Content
+    {
+        return $this->content4id;
+    }
+
+    /** getItemID function */
+    public function getItemId(): string
+    {
+        return $this->content4id->getItemID();
+    }
+
+    /** getId */
+    public function getId(): string
+    {
+        return $this->content4id->getId();
+    }
+
+    /** getSliceID function  */
+    public function getSliceID(): string
+    {
+        return $this->content4id->getSliceID();
+    }
+
+    /** getOwnerID function  */
+    public function getOwnerID(): string
+    {
+        return $this->content4id->getSliceID();
+    }
+
+    /** text2Html function
+     * @param $txt string
+     * @param $flag
+     * @return string
+     */
+    public function text2Html($txt, $flag): string
+    {
+        if ($flag & FLAG_HTML) {
+            return (string) $txt;
+        }
+        // converts plain text to basic html
+        return (str_contains($txt, '&')) ? nl2br(preg_replace('/&amp;#(\d+);/', "&#\\1;", safe($txt))) : nl2br(safe($txt));
+    }
+
+    /** col2Html function - better txt2html function - it replaces also urls...
+     *
+     * @param $col
+     *
+     * @return string
+     */
+    public function col2Html(string $col): string
+    {
+        $txt = (string) $this->getval($col);
+        if (($txt === '') || ($this->getFlag($col) & FLAG_HTML)) {
+            return $txt;
+        }
+        return StrExp('text2html', [$txt]);
+    }
+
+    /** getbaseurl function
+     *
+     * @param  string|null  $redirect
+     * @param               $no_sess
+     *
+     * @return string
+     */
+    public function getbaseurl(?string $redirect, $no_sess): string
+    {
+        global $sess;
+
+        // redirecting to another page?
+        $url_base = ($redirect ?: (($no_sess || !is_object($sess)) ? '' : StateUrl()));
+
+        // add state variable, if defined (apc - AA Pointer Cache)
+        if ($GLOBALS['apc_state'] && $GLOBALS['apc_state']['state']) {
+            return con_url($url_base, 'apc=' . $GLOBALS['apc_state']['state']);
+        }
+        return $url_base;
+    }
+
+    /** getitemurl function
+     * get item url - take in mind: item_id, external links and redirection
+     *
+     * @param               $extern
+     * @param               $extern_url
+     * @param  string|null  $redirect
+     * @param  bool         $condition
+     * @param  bool         $no_sess
+     *
+     * @return string
+     */
+    public function getitemurl($extern, $extern_url, ?string $redirect, $condition = true, $no_sess = false): string
+    {
+        if ($extern && ($extern_url = trim($extern_url)) !== "") {      // link_only
+            return $extern_url;
+        }
+        if (!$condition) {
+            return '';
+        }
+
+        $url_param = ($GLOBALS['USE_SHORT_URL'] ? "x=" . $this->getval('short_id........')
+                                                   : "sh_itm=" . $this->getItemID());
+
+        return con_url($this->getbaseurl($redirect, $no_sess), $url_param);
+    }
+
+    /**
+     *  get array of alias names
+     */
+    public function getAliasNames(): array
+    {
+        return $this->aliases->getNames();
+    }
+
+    /**
+     *   add new alias if not exist yet
+     *   @deprecated Should be added to aliases not to $item
+     */
+    public function addAlias(AA_Alias $alias): void
+    {
+        $this->aliases->addAlias($alias);
+    }
+
+    public function setAliases(AA_Aliases $aliases): void
+    {
+        $this->aliases = $aliases;
+    }
+
+    public function getAlias(string $alias): ?AA_Alias
+    {
+        return $this->aliases->getAlias($alias);
+    }
+
+    /** getahref function
+     * get link from url and text
+     * @param $url
+     * @param $txt
+     * @param $add
+     * @param $html
+     * @param $hide
+     * @return string
+     */
+    public function getahref($url, $txt, $add = "", $html = false, $hide = false): string
+    {
+        if ($url && $txt) {
+            // repair url if user omits to write http://
+            if (substr($url, 4) === 'www.') {
+                $url = '//' . $url;
+            }
+            // hide email from spam robots
+            if ($hide == '1') {
+                $linkpart = explode('@', str_replace("'", "\'", $url . '@' . $this->text2Html($txt, $html)), 4);
+                $link  = $linkpart[0] . "'+'@'+'" . $linkpart[1];
+                $inner = $linkpart[2] . ($linkpart[3] ? "'+'@'+'" . $linkpart[3] : '');
+                if (!$add) {
+                    // new approach - do not support $add
+                    return "<script>var el=document.createElement('a');el.setAttribute('href','$link');el.innerHTML='$inner';var scrs=document.getElementsByTagName('script');var scr=scrs[scrs.length-1];scr.parentNode.insertBefore(el,scr);</script>";
+                }
+                // old, but hard to replace by createElement
+                return "<script>\n document.write('<a href=\"" . $linkpart[0] . "'+'@'+'" . $linkpart[1] . "\" " . $add . ">" . $inner . "</a>')\n</script>";
+            }
+
+            return '<a href="' . $url . "\" $add>" . $this->text2Html($txt, $html) . '</a>';
+        }
+        return $this->text2Html($txt, $html);
+    }
+
+    /** get_alias_subst function
+     * @param        $alias
+     * @param string $default
+     * @param string $use_field
+     * @return string
+     */
+    public function get_alias_subst($alias, $default = null, $use_field = ""): string
+    {
+
+        // use_field is for expanding aliases with loop - prefix {@
+        $ali = $this->aliases->getAlias($alias);
+
+        // is this really alias?
+        if (!$ali) {
+            // try alternative alias (old form of _#ITEM_ID_ alias was _#ITEM_ID#. It was bad for
+            // unaliasing with colon ':', so we change it, but for compatibility we have to test _#ITEM_ID# too)
+            if (! ((substr($alias, 9, 1) === '#') && ($ali = $this->aliases->getAlias(substr($alias, 0, 9) . '_')))) {
+                return is_null($default) ? $alias : $default;
+            }
+        }
+
+        // get from "f_d:mm-hh" array fnc="f_d", param="mm-hh"
+        $fce      = $ali->getFnc();
+
+        if (!is_callable([$this,$fce])) {
+            return _m('Error: wrong alias function %1 for %2', [$fce,$alias]);
+        }
+
+        // call function (called by function reference (pointer))
+        // like f_d("start_date......", "mm-dd")
+        $field_id = get_if($use_field, $ali->getField());
+        $param    = str_replace('_#this', '{' . $field_id . '}', $ali->getFncParam());
+        AA::$debug & 32 && AA::$dbg->tracestart($alias, $param);
+        AA::$debug & 8 && AA::$dbg->tracestart($fce, $param);
+        $ret = (string) $this->$fce($field_id, $param);
+        AA::$debug & 8 && AA::$dbg->traceend($fce, $ret);
+        AA::$debug & 32 && AA::$dbg->traceend($alias, $ret);
+        return $ret;
+    }
+
+    /** substitute_alias_and_remove function
+     * the function substitutes all _#... aliases and then applies "remove strings"
+     * it searches for removal just in parts where all aliases are expanded
+     * to empty string
+     * @param $text
+     * @param $remove_arr
+     * @return string
+     */
+    public function substitute_alias_and_remove($text, $remove_arr = null): string
+    {
+        if (empty($remove_arr)) {
+            // no removal, we can use easier and more accurate replacement
+            $rest = $text;
+            $ret  = '';
+            while (($begin = strpos($rest, '_#')) !== false) {
+                $maybe_alias  = substr($rest, $begin, 10);
+                $substitution = $this->get_alias_subst($maybe_alias);
+                if ($maybe_alias === $substitution) {
+                    // it is not alias - we move just ..._# to ret, which helps with cases like "link:_#SEO_URL_#_#LASTEDIT"
+                    $ret .= substr($rest, 0, $begin + 2);
+                    $rest = substr($rest, $begin + 2);
+                } else {
+                    // substituted
+                    $ret .= substr($rest, 0, $begin) . $substitution;
+                    $rest = substr($rest, $begin + 10);
+                }
+            }
+            return $ret . $rest;
+        }
+
+        // we have to remove stings
+        // In this case we use older approach of substitution - it has problems with strings like "link:_#SEO_URL_#_#LASTEDIT"
+        $piece = explode("_#", $text);
+        $out   = array_shift($piece);   // initial sequence
+        $clear_output = '';
+        foreach ($piece as $vparam) {
+            //search for alias definition (fce,param,hlp)
+            $substitution = $this->get_alias_subst("_#" . (substr($vparam, 0, 8)));
+
+            if ($substitution !== '') {   // alias produced some output, so we can remove
+                // strings in previous section and we can start new section
+                $clear_output .= str_replace($remove_arr, "", $out) . $substitution;
+                $out           = '';  // start with clear string
+            }
+            $out .= substr($vparam, 8);
+        }
+        return $clear_output . str_replace($remove_arr, '', $out);
+    }
+
+    /** unalias function
+     * @param $text
+     * @param $remove
+     * @return string
+     */
+    public function unalias($text, $remove = ""): string
+    {
+        return AA::Un($text, $remove, $this);
+    }
+
+    /** subst_alias function
+     * @param $text
+     */
+    public function subst_alias($text): string
+    {
+        return ($this->isField($text) ? (string) $this->getval($text) : $this->unalias($text));
+    }
+
+    /** subst_aliases function
+     * @param $var
+     * @return string|string[]
+     */
+    public function subst_aliases($var): array|string
+    {
+        if (!is_array($var)) {
+            return $this->subst_alias($var);
+        }
+        $ret = [];
+        foreach ($var as $k => $v) {
+            $ret[$k] = $this->subst_alias($v);
+        }
+        return $ret;
+    }
+
+    // --------------- functions called for alias substitution -------------------
+
+    /** f__ function - just code
+     *  prints the code in parameter (no implicit output of the content of the field)
+     *   - _#this could be used
+     *   - easier than f_t (no additional parameter)")
+     * @param $col
+     * @param $param string to be printed (like <img src="{img_src........1}"></img>
+     * @return string
+     */
+    public function f__($col, $param = ""): string
+    {
+        return $this->subst_alias($param);
+    }
+
+    /** f_0 function
+     * null function
+     * param: 0
+     * @param $col
+     * @param $param
+     * @return string
+     */
+    public function f_0($col, $param = ""): string
+    {
+        return "";
+    }
+
+    /** f_1 function
+     *  Prints just first value and without any txt2html...
+     *  used for _#ITEM_ID_, ...
+     * @param $col
+     * @param $param
+     * @return string
+     */
+    public function f_1($col, $param = ""): string
+    {
+        return (string) $this->getval($col);
+    }
+
+    /** f_2 function
+     *  Prints translated field based on currently selected language
+     * @param $col
+     * @param $param
+     * @return string
+     */
+    public function f_2($col, $param = ""): string
+    {
+        // first_child try translation to right language
+        if (!strlen($txt = $this->getval($col, Langs::getLangName2Num(AA::$lang)))) {
+            // if not present - translate to default language of the slice
+            $translations = AA_Slice::getModuleProperty($this->getSliceID(), 'translations');
+            if (!strlen($txt = $this->getval($col, Langs::getLangName2Num($translations[0])))) {
+                // last try the 0 index (if the field was not set to translation)
+                $txt = $this->getval($col);
+            }
+        }
+        return $this->text2Html($txt, $this->getFlag($col));
+    }
+
+
+    /** Prints the parameter - it is shortcut for f_t:<text>:asis
+     *  Internal function - used just for addTextAlias()
+     * @param string $col
+     * @param string $param
+     * @return string
+     */
+    public function f_p($col, $param = ""): string
+    {
+        return str_replace('#:', ':', $param);  // slower, but using the right code path: join(':',ParamExplode($param));
+    }
+
+    /** f_h function
+     * print due to html flag set (escape html special characters or just print)
+     * @param string $col
+     * @param string $param delimiter - used to separate values if the field is multi
+     * @return string
+     */
+    public function f_h($col, $param = ""): string
+    {
+        if (empty($param)) {
+            return $this->text2Html($this->getval($col), $this->getFlag($col));
+        }
+        if ($param === 'AA_DashOrLanG') {
+            if ($this->isMultilingual($col)) {
+                return $this->text2Html($this->getval($col), $this->getFlag($col));
+            }
+
+            $param = '-';
+        }
+
+        $values = $this->getValues($col);
+        if (empty($values)) {
+            return '';
+        }
+        // create list of values for multivalue fields
+        if (strlen($param) > 2) {  // for speedup of standard {relation........} alias
+            $param = $this->unalias($param);
+        }
+        //        $res = '';
+        //        foreach ( $values as $v ) {
+        //            $res .= ($res ? $param : ''). $this->text2Html($v['value'], $v['flag']); // add value separator just if field is filled
+        //        }
+        //        return $res;
+        // optimized for speed
+
+        return implode($param, array_map(fn($v) => $this->text2Html($v['value'], $v['flag']), $values));
+    }
+
+    /** f_d function
+     * prints date in user defined format
+     * @param string $param date format like in PHP (like "m-d-Y")
+     * @return string
+     */
+    public function f_d($col, $param = ""): string
+    {
+        $param = $this->subst_alias($param);
+        if ($param == "") {
+            $param = "m/d/Y";
+        }
+        // we check, if the value is not so big (because we solved problem, when
+        // the date was entered as 230584301025887115 - which is too big and it
+        // takes ages for PHP to evaluate the date() function then. (php 5.2.6))
+        // it is perfectly possible to increase the max value, however
+        $time = $this->getval($col);
+        if ($time > 10000000000000) {  // check for nanotime - used in se_history for example
+            $time = (int) $time / 1000000000; // convert to seconds from nanotime()
+        }
+        $dstr = (string) date($param, (int) max(-2147483647, min(100000000000, $time)));
+        return (($param !== "H:i") ? $dstr : (($dstr === "00:00") ? "" : $dstr));
+    }
+
+    /** f_i function
+     * prints image scr (<img src=...) - NO_PICTURE for none
+     * param: 0
+     * @param $col
+     * @param $param
+     * @return string
+     */
+    public function f_i($col, $param = ""): string
+    {
+        return (string) get_if($this->getval($col), NO_PICTURE_URL);
+    }
+
+    /** f_y function
+     *  expands and prints a string, if parameters are blank then expands field
+     * @param $col
+     * @param $param
+     * @return string
+     */
+    public function f_y($col, $param = ""): string
+    {
+        $str2unalias = $param ?: $this->text2Html($this->getval($col), $this->getFlag($col));
+        return $this->unalias($str2unalias);
+    }
+
+    /** i_s function
+     * prints height and width of image file or URL referenced in field
+     * Could be special case if in uploads directory, so can read directly
+     * @param $col
+     * @param $param
+     * @return string
+     */
+    public function i_s($col, $param = ""): string
+    {
+        // No warning required, will be generated by getimagesize
+        [ $ptype ] = $this->subst_aliases(ParamExplode($param));
+        if (!in_array($ptype, ['width', 'height', 'imgtype', 'mime', 'html', 'htmlb'])) {
+            $ptype = 'hw';
+        }
+        return StrExp('img', [$this->getval($col), '', $ptype]);
+    }
+
+    /** f_n function
+     * prints unpacked id
+     * param: 0
+     * @param $col
+     * @param $param
+     * @return string
+     */
+    public function f_n($col, $param = ""): string
+    {
+        return unpack_id($this->getval($col));
+    }
+
+    /** f_g function
+     * prints image height atribut (<img height=...) or clears it
+     * param: 0
+     * @param $col
+     * @param $param
+     * @return string
+     */
+    public function f_g($col, $param = ""): string    // image height
+    {
+        global $out;
+        if (!$this->getval($col)) {
+            $out = preg_replace("/height[[:space:]]*=[[:space:]]*[\"]?^/i", "", $out);  // delete height = x
+            return '';
+        }
+        return safe($this->getval($col));
+    }
+
+    /** f_w function
+     * prints image width atribut (<img width=...) or clears it
+     * param: 0
+     * @param $col
+     * @param $param
+     * @return string
+     */
+    public function f_w($col, $param = ""): string    // image width
+    {
+        global $out;
+        if (!$this->getval($col)) {
+            $out = preg_replace("/width[[:space:]]*=[[:space:]]*[\"]?^/i", "", $out);  // delete width = x
+            return '';
+        }
+        return safe($this->getval($col));
+    }
+
+    /** f_a function
+     *  Prints abstract ($col) or grabed fulltext text from field_id
+     *  param: length:field_id:paragraph
+     *         length    - max number of characters taken from field_id
+     *                     (like "80:full_text.......")
+     *         field_id  - field from which we grab the paragraph, if $col is
+     *                     empty. If we do not specify field_id or we specify
+     *                     the same field as current $col, then the content is
+     *                     grabbed from current $col
+     *         paragraph - boolean - if true, it tries to identify return only
+     *                     first paragraph or at least stop at the end of sentence
+     * @param $col
+     * @param $param
+     * @return string
+     */
+    public function f_a($col, $param = ""): string
+    {
+        $parts = array_pad(ParamExplode($param), 3, '');
+        $field = $parts[1];   // unexpanded - needed for the $col != $field test below
+        [ $plength, $pfield, $pparagraph ] = $this->subst_aliases($parts);
+        $value = $this->getval($col);
+        // - no length - not shorten
+        // - shorten diffent field, but actual is filled - use whole current
+        if ($value && ($plength === '' || ($field !== '' && $col !== $field))) {
+            return $this->text2Html($value, $this->getFlag($col));
+        }
+
+        $source = get_if($value, $pfield);
+        $shorted_text = $pparagraph ? StrExp('shorten', [$source, $plength]) : substr($source, 0, (int) $plength);
+        return strip_tags($shorted_text);
+    }
+
+    /** f_f function
+     * prints link to fulltext (headline url)
+     *  col: hl_href.........
+     *  param: link_only:redirect
+     *     link_only field id (like "link_only.......")
+     *     redirect - url of another page which shows the content of item
+     *              - this page should contain SSI include ../slice.php too
+     *     no_sess  - if true, it does not add session id to url
+     * @param $col
+     * @param $param
+     * @return string
+     */
+    public function f_f($col, $param = ""): string
+    {
+        [$plink, $predir, $psess] = $this->subst_aliases(ParamExplode($param));
+        return $this->getitemurl($plink, $this->getval($col), $predir, 1, $psess);
+    }
+
+    /** f_b function
+     * prints text with link to fulltext (headline url)
+     * param: link_only:url_field:redirect:txt:condition_fld
+     *    link_only     - field id (like "link_only.......")
+     *    url_field     - field id of external url for link_only
+     *                  - (like hl_href.........)
+     *    redirect      - url of another page which shows the content of item
+     *                  - this page should contain SSI include ../slice.php too
+     *    txt           - if txt is field_id content is shown as link, else txt
+     *    condition_fld - field id - if no content of this field, no link
+     *    addition      - additional parameter to <a tag (like target=_blank)
+     *    no_sess  - if true, it does not add session id to url
+     * @param $col
+     * @param $param
+     * @return string
+     */
+    public function f_b($col, $param = ""): string
+    {
+        $p = ParamExplode($param);
+        [$plink_only, $purl_field, $predirect, $ptxt, $pcondition, $paddition, $pno_sess] = $this->subst_aliases($p);
+
+        if (!$p[4]) {          // undefined condition parameter
+            $pcondition = true;
+        }
+
+        // last parameter - condition field
+        $url = $this->getitemurl($plink_only, $purl_field, $predirect, $pcondition, $pno_sess);
+        $flg = ($this->content4id->isSet($p[3]) ? $this->getFlag($p[3]) : true);
+        return $this->getahref($url, $ptxt, $paddition, $flg);
+    }
+
+    // prints 'blurb' (piece of text) based from another slice,
+    // based on a simple condition.
+    /*
+    Blurb slice, has fields
+    headline........  ; example: "Computer Basics - Technology"
+    full_text.......  ; example: "What you need to know for this cateogry is .."
+    OR
+    title.......     ; "Computer Basics - Overview"
+    fulltext.....  ; "What you need to know for this cateogry is ...."
+
+    In view (of other slices), these blurbs can be gotten by creating a
+    _#BLURB### alias, as a part of the field category........
+    _#BLURB### uses function f_q
+    */
+
+
+    /** f_q function
+     * returns fulltext of the blurb
+     * @param $col
+     * @param $param
+     * @return string
+     */
+    public function f_q($col, $param = ""): string
+    {
+        /* Usually this is called with no parameters.
+        Optional parameters for f_q are:
+        [0] stringToMatch is by default $col
+        It can be formatted either as the name of a field in self->content4id OR
+        as static text.
+        [1] blurbSliceId  is by default the non-packed id in BLURB_SLICE_ID
+        [2] fieldToMatch  is by default BLURB_FIELD_TO_MATCH
+        [3] fieldToReturn is by default BLURB_FIELD_TO_RETURN
+        these constants should be defined in include/config.php
+        */
+
+        $p = ParamExplode($param);
+        $stringToMatch_Raw = $p[0] ?: $col;
+        // can use either the 'headline......' format or "You static text here"
+        $stringToMatch   = get_if($this->getval($stringToMatch_Raw), $stringToMatch_Raw);
+
+        $fieldToMatch    = quote($p[2] ?: (defined('BLURB_FIELD_TO_MATCH') ? BLURB_FIELD_TO_MATCH : ''));
+        $fieldToReturn   = quote($p[3] ?: (defined('BLURB_FIELD_TO_RETURN') ? BLURB_FIELD_TO_RETURN : ''));
+        /*
+        This SQL effectively narrows down through three sets:
+        a) all the items from our blurb slice
+        (all the item_ids from item where item.slice_id  = $blurb_sliceid_packed)
+        b) take set a) and filter to find where the headline (category name)
+        matches our category name.
+        c) using the single item_id from b), find the content record that has the
+        fulltext blurb
+        */
+        if ($fieldToReturn === "id.............." || $fieldToReturn === "short_id........") {
+            print("f_q cannot yet return $fieldToReturn fields");
+            return '';
+        }
+
+        if ($fieldToMatch === "id..............") {
+            // Special case id... its not a real field
+            $fqsqlid = xpack_id($stringToMatch);
+            $SQL = "SELECT c2.text AS text
+                    FROM content c2
+                    WHERE c2.field_id    = '$fieldToReturn' AND
+                          c2.item_id     = $fqsqlid";
+
+        } elseif ($fieldToMatch === "short_id........") {
+            $p_blurbSliceId  = xpack_id($p[1] ?: (defined('BLURB_SLICE_ID') ? BLURB_SLICE_ID : ''));
+            $SQL = "SELECT c2.text AS text
+                    FROM item LEFT JOIN content c2 ON item.id = c2.item_id
+                    WHERE slice_id  = $p_blurbSliceId AND
+                         item.short_id = '$stringToMatch' AND
+                         c2.field_id    = '$fieldToReturn'";
+        } else {
+            $p_blurbSliceId  = xpack_id($p[1] ?: (defined('BLURB_SLICE_ID') ? BLURB_SLICE_ID : ''));
+            $SQL = "SELECT c2.text AS text
+                    FROM item LEFT JOIN content c1 ON item.id = c1.item_id
+                              LEFT JOIN content c2 ON item.id = c2.item_id
+                    WHERE slice_id  = $p_blurbSliceId AND
+                         c1.field_id    = '$fieldToMatch' AND
+                         c2.field_id    = '$fieldToReturn' AND
+                         c1.text        = '" . addslashes($stringToMatch) . "'";
+        }
+        $db = getDB();
+        $db->query($SQL);
+        $res = ($db->next_record() ? $db->f('text') : '');
+        freeDB($db);
+        return $res;
+    }
+
+
+    /** RSS_restrict function
+     *  This function used to do a UTF8 encode, but since characters
+     *  are coming out of a DB which I believe is iso-8859-1, they shouldn't
+     *  be utf8 encoded. Unfortunately the internationalisation of AA isn't
+     *  documented anywhere and noone responded to email about it. So this is
+     *  just a guess. If anyone who knows something about this is looking
+     *  at this comment, then you can replace this code with something
+     *  that intelligently looks at the database encoding before converting to
+     *  iso-8859-1. OR possibly better, output the encoding in the head of the RSS
+     *  via  a new alias - mitra@mitra.biz 30Oct03
+     * @param $txt
+     * @param $len
+     * @return string
+     */
+    public function RSS_restrict($txt, $len): string
+    {
+        return safe(substr($txt, 0, $len));
+    }
+
+    /** f_r function
+     *  standard aliases to generate RSS .91 compliant meta-information
+     * @param $col
+     * @param $param
+     * @return string
+     */
+    public function f_r($col, $param = ""): string
+    {
+        static $title, $link, $description, $q_owner;
+
+        if ($col === 'SLICEdate') {
+            return $this->RSS_restrict(gmdate("D, d M Y H:i:s ") . "GMT", 100);
+        }
+
+        $slice_id   = $this->getSliceID();
+        $p_slice_id = xpack_id($slice_id);
+
+        if (! $title) {
+            if ($slice_id == "") {
+                echo "Error: slice_id not defined";
+                exit;
+            }
+
+            // RSS chanel (= slice) info
+            $SQL = "SELECT name, slice_url, owner FROM module WHERE id=$p_slice_id";
+
+            $db  = getDB();
+            $db->query($SQL);
+            if (!$db->next_record()) {
+                echo "Can't get slice info";
+                exit;
+            }
+
+            $title       = $this->RSS_restrict($db->f('name'), 100);
+            $link        = $this->RSS_restrict($db->f('slice_url'), 500);
+            //$name        = $db->f('name');
+            $q_owner     = addslashes($db->f('owner'));
+            //$language  = RSS_restrict( strtolower($db->f(lang_file)), 2);
+        }
+
+        //   return "tt: $col : $param<BR>";
+        if ($col === 'SLICEtitle') {
+            return $title;
+        }
+        if ($col === 'SLICElink') {
+            return $link;
+        }
+        if ($col === 'SLICEdesc') {
+            if (!$description) {
+                $owner_name  = GetTable2Array("SELECT name FROM slice_owner WHERE id='$q_owner'", 'aa_first', 'name');
+                $description = $this->RSS_restrict($owner_name, 400) . ": $title";
+            }
+            return $description;
+        }
+
+        $p = ParamExplode($param);
+
+        if ($col === 'hl_href.........' && strlen($p[0]) == 16) {
+            $redirect  = $p[1]
+                                        ?: strtr(AA_INSTAL_URL, ':', '#:')
+                                        . "slice.php?slice_id=$slice_id&encap=false";
+            //      return strtr( $this->f_f($col, $p[0] . ':' . $redirect), '#/', ':/') ;
+            return $this->RSS_restrict(strtr($this->f_f($col, $p[0] . ':' . $redirect), '#/', ':/'), 500) ;
+        }
+
+        if (str_contains($p[0], "{")) {
+            // It can't be a field, must be expandable
+            return $this->RSS_restrict(strtr($this->unalias($p[0]), '#/', ':/'), 500) ;
+        }
+        if ($foo = $this->getval($col)) {
+            return $this->RSS_restrict($foo, $p[0]);
+        }
+        return '';
+    }
+
+    /** f_t function
+     *  prints the field content and converts text to html or escape html (due to
+     *  html flag). If param is specified, it prints rather param (instead of field)
+     *
+     *  f_t looks to see if param is a field, and if so gets the value, and
+     *   if it doesn't look like a field, then it unaliases the param
+     *  If there is no param, then it converts the field to HTML (if text)
+     * @param $col
+     * @param $param string to be printed (like <img src="{img_src........1}"></img>
+     * @return string
+     */
+    public function f_t($col, $param = ""): string
+    {
+        $p = ParamExplode($param);
+        if (isset($p[1])) {
+            $modif = $p[1];
+            if (in_array($modif, ['csv', 'safe', 'javascript', 'urlencode', 'striptags', 'rss', 'conds', 'asis', 'substitute', 'debug'])) {
+                // if ( $fnc = PHP_FUNCTIONS[$modif] ) {  return $fnc($text); }               // special php functions aliases
+                return AA_Serializable::factoryByName($modif, null, 'AA_Stringexpand_')->expand($p[0] ?: $this->getval($col));
+                //                return call_user_func( array( AA_Stringexpand::constructClassName($modif), 'expand'), $text);
+            }
+            if ($p[1] == '') {
+                $param = $p[0];
+            }
+        }
+        return strlen($param) ? $this->subst_alias($param) : $this->text2Html($this->getval($col), $this->getFlag($col));
+    }
+
+    /** f_s function
+     * print database field or default value if empty
+     * @param $col
+     * @param string $param default (like "javascript: window.alert('No source url specified')")
+     * @return string
+     */
+    public function f_s($col, $param = ""): string
+    {
+        return ($this->getval($col) ? (string) $this->getval($col) : $param);
+    }
+
+    /** f_l function
+     * prints $col as link, if field_id in $param is defined, else prints just $col
+     * @param $col
+     * @param string $param field_id         - of possible link (like "source_href.....")
+     *               additional atrib - for <a> tag
+     * @return string
+     */
+    public function f_l($col, $param = ""): string
+    {
+        [$plink, $padditional] = $this->subst_aliases(ParamExplode($param));
+        return $this->getahref($plink, $this->getval($col), $padditional, $this->getFlag($col));
+    }
+
+    /** f_e function
+     * If someone understands the parameter wizzard, it would be good to expand this to take a second parameter
+     * i.e. return url.
+     * _#EDITITEM used on admin page index.php for itemedit url
+     * param: 0
+     * @param $col
+     * @param $param
+     * @return string
+     */
+    public function f_e($col, $param = ""): string
+    {
+        global $sess;
+
+        $p = ParamExplode($param);  // 0 = disc|itemcount|safe|slice_info  //2 = return_url
+        switch ($p[0]) {
+            case "session":
+                return $sess->id();
+            case "disc":
+                // _#DISCEDIT used on admin page index.php for edit discussion comments
+                return con_url(StateUrl("discedit.php"), "item_id=" . $this->getItemID());
+                // These next two return values from globals that would actually be better coming froom the item or itemview,
+                // otherwise won't work if there are nested views.
+            case "itemcount":
+                return (string) $GLOBALS['QueryIDsCount'];
+            case "itemindex": /*mimo hack, this is now a stack*/
+                return "" . end($GLOBALS['QueryIDsIndex']);   // Need to append to "" so doesn't return "false" on 0th item
+            case "pageindex": /*mimo hack, this is now a stack*/
+                return "" . end($GLOBALS['QueryIDsPageIndex']);   // Need to append to "" so doesn't return "false" on 0th item
+            case "groupindex": /*mimo hack, this is now a stack*/
+                return "" . end($GLOBALS['QueryIDsGroupIndex']);   // Need to append to "" so doesn't return "false" on 0th item
+            case "itemgroupindex": /*mimo hack, this is now a stack*/
+                return "" . end($GLOBALS['QueryIDsItemGroupIndex']);   // Need to append to "" so doesn't return "false" on 0th item
+            case "safe":         // safe, javascript, urlencode, csv - for backward
+            case "javascript":   // compatibility
+            case "urlencode":
+            case "csv":
+                return $this->f_t($col, ":" . $p[0]);
+            case "slice_info":
+                return StrExp('modulefield', [get_if($this->getSliceID(), $GLOBALS['slice_id']), $col]);
+            case "link_edit":
+                return (($p[1] === 'anonym')
+                ? get_aa_url('modules/links/linkedit.php?free=anonym&freepwd=anonym&lid=' . $this->getval('id'))
+                : get_aa_url('modules/links/linkedit.php?lid=' . $this->getval('id')));
+            case "poll_edit":
+                return get_aa_url('modules/polls/polledit.php?poll_id=' . $this->getval('id'));
+            case "link_go_categ":
+                $cat_names            = $this->getValues('cat_name');
+                $cat_ids              = $this->getValues('cat_id');
+                $cat_highlight        = $this->getValues('cat_state');
+                $cat_proposal         = $this->getValues('cat_proposal');
+                $cat_proposal_delete  = $this->getValues('cat_proposal_delete');
+                if (empty($cat_names)) {
+                    return "";
+                }
+                $delim = '';
+                $ret   = '';
+                foreach ($cat_names as $k => $cat) {
+                    $print_cname = $cat['value'];
+                    if ($cat_highlight[$k]['value'] === 'highlight') {
+                        $print_cname = "<b>$print_cname</b>";    // mark highlighted categories
+                    }
+                    if ($cat_proposal[$k]['value'] === 'y') {
+                        $print_cname = "$print_cname (+)";       // mark proposals
+                    }
+                    if ($cat_proposal_delete[$k]['value'] === 'y') {
+                        $print_cname = "$print_cname (-)";       // mark proposals for deletion
+                    }
+                    $ret .= $delim . '<a href="javascript:SwitchToCat(' . $cat_ids[$k]['value'] . ")\">$print_cname</a>";
+                    $delim = ', ';
+                }
+                return $ret;
+            case 'link_valid':  //converts valid_rank (0-1000) to color (from green to red)
+                $red = $this->getval('valid_rank') * 0.255;
+                return sprintf("%02X%02X%02X", $red, 255 - $red, 0);
+            case 'selected':  // returns true, if current item is the selected one
+                // (given by set[]=selected-454343 view.php parameter)
+                // we can compare short_ids as well as long ones
+                $data2compare = false;
+                if (($guesstype = guesstype($p[1])) === 's') {
+                    $data2compare = $this->getval('short_id........');
+                } elseif ($guesstype === 'l') {
+                    $data2compare = $this->getval('unpacked_id.....');
+                }
+                // no short_id or long_id - it must be a constant
+                if (!$data2compare) {
+                    $data2compare = $this->getval('const_value');
+                }
+                return (((string) $p[1] === (string) $data2compare) ? '1' : '0');
+            case 'username':    // prints user name from its id
+                return perm_username($this->getval($col));
+            case 'mlx_lang':    // print the current mlx language (the desired or default one instead of the lang_code...)
+                if (!$GLOBALS['mlxView']) {
+                    return "MLX no global mlxView set: this shouldnt happen in:" . __FILE__ . "," . __LINE__;
+                }
+                return $GLOBALS['mlxView']->getCurrentLang();
+            case 'mlx_dir':    // print the current mlx language html markup dir tag
+                //(the article's 'real' one!)
+                $mlx_dir = $GLOBALS['mlxScriptsTable'][$this->getval('lang_code.......')];
+                return ($mlx_dir ? " DIR=" . $mlx_dir['DIR'] . " " : "");
+            case 'addform':   // show link to inputform with special design defined in view (id in p[1])
+                $add = true;
+                // drop through to default
+                // no break
+            case 'editform':
+                return Inputform_url($add, $this->getItemID(), $this->getSliceID(), $p[2], $p[1]);
+            case "add":
+                $add = true;
+                // drop through to default
+                // no break
+            default:
+                return Inputform_url($add, $this->getItemID(), $this->getSliceID(), $p[1]);
+        }
+    }
+
+    /** f_c function
+     *  prints "begin".$col."end" if $col="condition", else prints "none"
+     *  if no cond_col specified - $col is used
+     *  if pskip_col == 1, skips $col
+     *  param: condition:begin:end:none:cond_col
+     *  if pararam begins with "!", condition is negated
+     * @param $col
+     * @param $param
+     * @return string
+     */
+    public function f_c($col, $param = ""): string
+    {
+        if ($param[0] === "!") {
+            $param = substr($param, 1);
+            $negate = true;
+        }
+
+        $p = ParamExplode($param);
+
+        [$pcond, $pbegin, $pend, $pnone, $pccol, $pskip_col] = $this->subst_aliases($p);
+
+        $cond = ($p[4] ? $pccol : $this->subst_alias($col));
+        if ($cond !== $pcond) {
+            $negate = !$negate;
+        }
+        if (!$pskip_col) {
+            $coltxt = $this->text2Html($this->getval($col), $this->getFlag($col));
+        }
+        return (string) ($negate ? $pnone : $pbegin . $coltxt . $pend);
+    }
+
+    /** f_u function
+     * Calls user defined function in file /include/usr_aliasfnc.php
+     * @param $col
+     * @param $param
+     * @return string
+     */
+    public function f_u($col, $param = ""): string
+    {
+        // first we substitute alias on whole param string
+        // (it will be passed to usr_function already substituted
+        $param = $this->subst_alias($param);
+        $p = ParamExplode($param);
+        $fnc = $p[0];
+        if (!is_callable($fnc)) {
+            huhl("Field $col is defined with f_u and function '$fnc', but '$fnc' is not defined in apc-aa/include/usr_aliasfnc.php");
+            return '';
+        }
+        return (string) $fnc($this->content4id->getContent(), $col, $param);
+    }
+
+    /** f_v function
+     * display specified view
+     *  param:
+     *     link_only     - field id (like "link_only.......")
+     *     url_field     - field id of external url for link_only
+     *                   - (like hl_href.........)
+     *     redirect      - url of another page which shows the content of item
+     *                   - this page should contain SSI include ../slice.php too
+     *     txt           - if txt is field_id content is shown as link, else txt
+     *     condition_fld - field id - if no content of this field, no link
+     *     addition      - additional parameter to <a tag (like target=_blank)
+     *
+     * @param          $col
+     * @param  string  $param
+     *
+     * @return string
+     */
+
+    public function f_v($col, $param = ""): string
+    {
+        // if no parameter specified, the content of this field specifies view id
+        if (!$param) {
+            $param = "vid=" . $this->getval($col);
+        }
+
+        // older aliases substitution ------------- (_#publish_date....) -----------
+        // substitute aliases by real item content
+        $part = $param;
+
+        // If you change this to support more items, please change FAQ item //1488
+        while ($part = strstr($part, "_#")) {  // aliases for field content
+            $fid = substr($part, 2, 16);         // looks like _#headline........
+
+            if (str_starts_with($fid, "slice")) {  // Another special alias _#slice
+                //Mitra says: looks like this mucks up _#slice_id........
+                $param = str_replace("_#slice", $this->getval('slice_id........'), $param);
+            } elseif ($fid === 'unpacked_id.....') {
+                $param = str_replace("_#$fid", $this->f_n('id..............'), $param);
+            } elseif ($this->isField($fid)) {
+                $param = str_replace("_#$fid", $this->f_h($fid, "-"), $param);
+            }
+            $part = substr($part, 6);
+        }
+
+        // unalias new ------------ ({publish_date....}, _#ITEM_ID_, ...) -----------
+        // do not pagecache the view
+        return (new AA_Showview(AA_View::parseViewParameters($this->subst_alias($param))))->getViewOutput();
+    }
+
+    /** f_m function
+     *  mailto link
+     * prints: "begin<a href="mailto:$col">field/text</a>"
+     * if no $col is filled, prints "else_fileld/text"
+     * param: begin:field/text:else_fileld/text
+     * linktype: mailto/href (default is mailto)
+     * @param $col
+     * @param $param
+     * @return string
+     */
+    public function f_m($col, $param = ""): string
+    {
+        $p = ParamExplode($param);
+        [$pbegin, $pfield, $pelse, $ptype, $padd, $phide] = $this->subst_aliases($p);
+
+        if (!$this->getval($col)) {
+            return $pelse ? $pbegin . $pelse : "";
+        }
+        if ($this->content4id->isSet($p[1])) {
+            $field_id = ($pfield ? $p[1] : $col);
+            $txt = $this->getval($field_id);
+            $flg = $this->getFlag($field_id);
+        } else {
+            $txt = ($p[1] ? $pfield : $this->getval($col));
+            $flg = ($p[1] ? FLAG_HTML : $this->getFlag($col));
+        }
+        $linktype =  (($ptype && ($ptype !== 'mailto')) ? "" : "mailto:");
+        return $pbegin . $this->getahref($linktype . $this->getval($col), $txt, $padd, $flg, $phide);
+    }
+
+    /** f_j function
+     *  substring with case conversion
+     * param $start  - position, where to start the substring
+     * param $n      - number of characters (<=0 means all characters to the end)
+     * param $case   - convert to upper/lower/first
+     * param $addstr - string to be added at the end of SHORTED string
+     *                  (probably something like [...])
+     * @param $col
+     * @param $param
+     * @return string
+     */
+    public function f_j($col, $param = ""): string
+    {
+        $p = ParamExplode($param);
+        [$start, $n, $case, $addstr] = $this->subst_aliases($p);
+
+        $text = $this->getval($col);
+        if ($n <= 0) {
+            $n = strlen($text);
+        }
+        $ret = substr($text, $start, $n);
+
+        if ($case === "upper") {
+            $ret = strtoupper($ret);
+        } elseif ($case === "lower") {
+            $ret = strtolower($ret);
+        } elseif ($case === "first") {
+            $ret = ucwords(strtolower($ret));
+        }
+
+        if ($addstr && strlen($ret) !== strlen($text)) {
+            $ret .= $addstr;
+        }
+        return $ret;
+    }
+
+    /** f_k function
+     *  live checkbox -- updates database immediately on clicking without reloading the page
+     * @param $col
+     * @param $param
+     * @return string
+     */
+    public function f_k($col, $param = ""): string
+    {
+        return $this->unalias("{live::$col}");
+    }
+
+    /** f_x function
+     * transformation function - transforms strings to another strings
+     * Parameters: <from1>:<to1>:<from2>:<to2>:<default>
+     *   if $col==<from1> the function returns <to1>
+     *   if $col==<from2> the function returns <to2>
+     *   else it returns <dafault>
+     *   <to1>, <to2>, ... and <default> can be field ids
+     *
+     * @param          $col
+     * @param  string  $param
+     *
+     * @return string
+     */
+    public function f_x($col, $param = ""): string
+    {
+        $p        = $this->subst_aliases(ParamExplode($param));
+        $to       = (int) floor(count($p) / 2);
+        $colvalue = $this->getval($col);
+
+        for ($i = 0; $i < $to; ++$i) {
+            $first  = $i * 2;
+            $second = $first + 1;
+            if ($p[$first] != '' && preg_match('`' . str_replace('`', '\`', $p[$first]) . '`', $colvalue)) {
+                return (string) $p[$second];
+            }
+        }
+        // the last option can be defined as default
+        return (string) $p[$second + 1];
+    }
+
+    /** f_o function
+     *  prints 'New' (or something similar) for new items
+     * Parameters: <time_in_minutes>:<text_to_print_if_newer>:<text_to_print_if_older>
+     *   (this alias will be probably used with expiry date field)
+     * @param $col
+     * @param $param
+     * @return string
+     */
+    public function f_o($col, $param = ""): string
+    {
+        $p = $this->subst_aliases(ParamExplode($param));
+        return (string) ((time() - $this->getval($col)) < $p[0] * 60) ? $p[1] : $p[2];  // time in minutes
+    }
+
+    /** f_z function
+     *  get the size or type of the file
+     * @author Adam Sanchez
+     * @param $col
+     * @param $param
+     * @return string
+     */
+    public function f_z($col, $param = ""): string
+    {
+        return StrExp('fileinfo', [$this->getval($col),$param]);
+    }
+
+    /** l_b function
+     *  Link module (category) function - prints @ (or first parameter) when
+     *  category is crossreferenced
+     *  param <crossreference_character> - specify if you want another, than '@'
+     * @param $col
+     * @param $param
+     * @return string
+     */
+    public function l_b($col, $param = ""): string
+    {
+        $p   = $this->subst_aliases(ParamExplode($param));
+        $way = explode(',', $this->getval($col)); // to get parent category
+        return ($way[count($way) - 2] == $this->parameters['category_id']) ? '' : ($p[0] ?: '@');
+    }
+
+    /** l_g function
+     * Link module (category) function - prints 1 when category is general one
+     * @param $col
+     * @param $param
+     * @return string
+     */
+    public function l_g($col, $param = ""): string
+    {
+        return Links_IsGlobalCategory($this->getval($col)) ? '1' : '0';
+    }
+
+    /** l_o function
+     * Link module (category) function - prints category priority, if category
+     *  is general one
+     * @param $col
+     * @param $param
+     * @return string
+     */
+    public function l_o($col, $param = ""): string
+    {
+        return (string) Links_GlobalCatPriority($this->getval($col));
+    }
+
+    /** l_p function
+     * Link module - print current path (or list of paths to categories specified
+     *       in $col (when <categs delimiter> is present)
+     *  param <start_level>:<format>:<delimiter>:<categs delimiter>:<add url param>:<url_base>:<restrict>
+     *         <start_level> - display path from level ... (0 is root)
+     *         <format>      - category link modification (not used, yet)
+     *         <delimiter>   - delimiter character (default is ' &gt; ')
+     *         <categs delimiter>   - delimiter character (<br> is good there)
+     *         <add url param>      - url parameter added to cat=xxx (id=links)
+     *         <url_base>    - file to go (like: kormidlo.shtml)
+     *         <restrict>    - display only categories matching <restrict> path
+     *                       - example: restrict=1,23, - only categs under 23 shown
+     * @param $col
+     * @param $param
+     * @return string
+     */
+    public function l_p($col, $param = ""): string
+    {
+
+        $translate = AA::Contentcache()->get_result('GetTable2Array', ["SELECT id, name FROM links_categories WHERE deleted='n'", 'id', true]);
+
+        [$start, $format, $separator, $catseparator, $urlprm, $url_base, $restrict] = $this->subst_aliases(ParamExplode($param));
+        if (!$separator) {
+            $separator = ' &gt; ';
+        }
+        // $url_base = ''; //$this->getbaseurl();
+        $urlprm = ($urlprm ? '&' . $urlprm : '');
+
+        $categs2print = $catseparator ? $this->getValues($col)
+                                        : [0 => ['value' => $this->parameters['category_id']]]; // current category
+        $linklast     = (bool) $catseparator;
+
+        $ret = '';
+        foreach ((array) $categs2print as $v) {
+            $path = GetCategoryPath($v['value']);
+            if ($restrict && !str_starts_with($path, $restrict)) {
+                continue;   // category is not on restriced branch
+            }
+            if ($ret) {
+                $ret .= $catseparator;
+            }
+            $way = explode(',', $path);
+            $start_count = $start;
+            $delimiter = '';
+            if (isset($way) && is_array($way)) {
+                $last = $linklast ? '' : end($way);
+                foreach ($way as $catid) {
+                    if ($start_count-- > 0) {
+                        continue;
+                    }
+                    $cat_url   = con_url($url_base, 'cat=' . $catid . $urlprm);
+                    $ret      .= (($catid === $last) // do not make link for last category
+                        ? $delimiter . $translate[$catid]['name']
+                        : $delimiter . "<a href=\"$cat_url\">" . $translate[$catid]['name'] . "</a>");
+                    $delimiter = $separator;
+                }
+            }
+        }
+        return $ret;
+    }
+
+    // ----------------- alias function definition end --------------------------
+
+    /** get_item function
+     * Get format string, unalias it and return (not clear why unaliased - Mitra)
+     */
+    public function get_item(): string
+    {
+        return AA::Un($this->format, $this->remove, $this);  // $this->unalias
+    }
+
+    /** Noncaching equivalent to AA_Items::getItem()
+     *
+     *  Creates item object just from item id and fills all necessary structures
+     *
+     * @param  zids|null $zid  - an item id
+     */
+    public static function getItem(?zids $zid): ?AA_Item
+    {
+        return $zid ? GetItemFromContent(new ItemContent($zid)) : null;
+    }
+
+}
+
+/**
+ * Class AA_Items
+ * @method  static AA_Items singleton()
+ */
+class AA_Items
+{
+    use SingletonTrait;
+
+    /** Array of all items grabbed from database during rendering of the page
+     *  Array short item id -> AA_Item object (short for smaller memory usage)
+     */
+    private $_i = [];
+
+    /** translation table from long ids to short ones */
+    private $_l2s;
+
+    /** Item caching function
+     *
+     *  This function is used for caching all the items which we need during
+     *  page rendering. The main reason is, that we want to grab the item from
+     *  database just once during the page creation.
+     *
+     *  Creates item object just from item id and fills all necessary structures
+     *
+     * @param  $zid                          zids    - an item id - zid object, unpacked or short id
+     * @param  $crypted_additional_slice_pwd string
+     * @param  $renew bool  - regenerate the item form database
+     *
+     */
+    public static function getItem($zid, $crypted_additional_slice_pwd = null, $renew = false, $ignore_reading_password = false): ?AA_Item
+    {
+        if (empty($zid)) {
+            return null;
+        }
+        $items = self::singleton();
+
+        if (!is_object($zid)) {
+            $zid = new zids($zid);
+        }
+
+        // Do we want to count with inner cache (probably yes)
+        if (!$renew && ($item = $items->_getFromCache($zid))) {
+            // assignment
+            return $item;
+        }
+
+        $content = GetItemContent($zid, false, $ignore_reading_password, [], $crypted_additional_slice_pwd);
+        return $content ? $items->_store(GetItemFromContent(new ItemContent(reset($content)))) : null;
+    }
+
+    /** @param zids $zids
+     * @return AA_Item[] - array(long_id -> AA_Item)
+     */
+    public static function & getItems($zids, $crypted_additional_slice_pwd = null): array
+    {
+        self::preload($zids, $crypted_additional_slice_pwd);
+        $items = self::singleton();
+
+        // all is cached, we get all the items in RIGHT ORDER
+        $ret = [];
+        for ($i = 0, $ino = $zids->count(); $i < $ino; ++$i) {
+            $item = $items->_getFromCache($zids->zid($i));
+            $ret[$item->getItemId()] = $item;       // long item id
+        }
+        return $ret;
+    }
+
+    /** @param zids $zids
+     */
+    public static function preload($zids, $crypted_additional_slice_pwd = null): void
+    {
+        $items = self::singleton();
+
+        // check for already cached items
+        $zids2get = new zids(null, $zids->onetype());
+
+        for ($i = 0, $ino = $zids->count(); $i < $ino; ++$i) {
+            if (!$items->_getFromCache($zids->zid($i))) {  // just check
+                $zids2get->add($zids->id($i));
+            }
+        }
+
+        // do we need some not cached items?
+        if ($zids2get->count()) {
+            // yes we store it in the cache first
+            $content = GetItemContent($zids2get, false, false, [], $crypted_additional_slice_pwd);
+            for ($i = 0, $ino = $zids2get->count(); $i < $ino; ++$i) {
+                $key = $zids2get->short_or_longids($i);
+                if (isset($content[$key])) {    // unknown (deleted) id - nothing to cache, getItem() answers null for it
+                    $items->_store(GetItemFromContent(new ItemContent($content[$key])));
+                }
+            }
+        }
+        return;
+    }
+
+    /** returns output of Active items
+     * @param $bin - AA_BIN_ACTIVE or AA_BIN_HOLDING or AA_BIN_TRASH or AA_BIN_ALL or its bitwise combination (the trash and pending is not supported, now)
+     * @return array
+     */
+    public static function getFormatted($zids, $expression, $bin = AA_BIN_ACTIVE): array
+    {
+        $res = [];
+        self::preload($zids);
+        $items = self::singleton();
+
+        // all is cached, we get all the items in RIGHT ORDER
+        for ($i = 0, $ino = $zids->count(); $i < $ino; ++$i) {
+            $item = $items->_getFromCache($zids->zid($i));
+            if ($item && ($bin == AA_BIN_ALL || $item->isActive($bin))) {  // AA_BIN_ALL - all items - speedup - no need to check
+                $res[$item->getItemId()] = strlen($expression) ? $item->subst_alias($expression) : '';       // long item id
+            }
+        }
+        return $res;
+    }
+
+    /** getItemProperty function
+     * @param $item_zid
+     * @param             $field
+     * @return AA_Value|null
+     */
+    public static function getItemProperty($item_zid, $field): ?AA_Value
+    {
+        return self::getItem($item_zid)?->getAaValue($field);
+    }
+
+    // array of unpacked ids
+    public static function deleteItems($zids): void
+    {
+        $ids_arr   = $zids->longids(); // unpacked ids
+        $short_arr = $zids->shortids();
+        DB_AA::delete_low_priority('item', [['id',             $ids_arr,   'l']]);
+        DB_AA::delete_low_priority('content', [['item_id',        $ids_arr,   'l']]);
+        DB_AA::delete_low_priority('discussion', [['item_id',        $ids_arr,   'l']]);
+        DB_AA::delete_low_priority('offline', [['id',             $ids_arr,   'l']]);
+        DB_AA::delete_low_priority('relation', [['source_id',      $ids_arr,   'l'], ['flag', REL_FLAG_FEED, 'set']]);
+        DB_AA::delete_low_priority('relation', [['destination_id', $ids_arr,   'l'], ['flag', REL_FLAG_FEED, 'set']]);
+
+        DB_AA::delete_low_priority('hit_archive', [['id',             $short_arr, 'i']]);
+        DB_AA::delete_low_priority('hit_short_id', [['id',             $short_arr, 'i']]);
+        DB_AA::delete_low_priority('hit_long_id', [['id',             $ids_arr,   'l']]);
+
+        AA_Log::write("ITEM_DEL", array_map(static fn($id) => AA_Log::context($id), $ids_arr));
+
+        ChangesMonitor::deleteChanges($ids_arr);
+    }
+
+    /** Invalidate item cache */
+    public function invalidate(): void
+    {
+        self::singleton()->doInvalidate();
+    }
+
+    /** called just from clear in order internal variables could be private */
+    public function doInvalidate(): void
+    {
+        $this->_i = [];
+        $this->_l2s = [];
+    }
+
+    /** Invalidate item cache */
+    public function invalidateItem($zid): void
+    {
+        self::singleton()->_invalidateLongIdItem($zid->longids(0));
+    }
+
+    public function _invalidateLongIdItem($id): void
+    {
+        if (isset($this->_i[$this->_l2s[$id]])) {
+            unset($this->_i[$this->_l2s[$id]]);
+        }
+    }
+
+    /** @returns AA_Item or null (if not cached)
+     * @param $zid zids
+     * @return AA_Item|null
+     */
+    public function _getFromCache($zid): ?AA_Item
+    {
+        if ($zid->use_short_ids()) {
+            $id = $zid->id();
+            // is it cached under its id (we expect short id here)
+            return $this->_i[$id] ?? null;
+        }
+
+        // long or packed
+        $id = $zid->longids(0);
+        // long id, so we look for translation to short one
+        if (isset($this->_l2s[$id]) && isset($this->_i[$this->_l2s[$id]])) {
+            return $this->_i[$this->_l2s[$id]];
+        }
+        return null;
+    }
+
+    /**
+     * @param $item AA_Item
+     *
+     * @return AA_Item
+     */
+    public function _store(AA_Item $item): AA_Item
+    {
+        $short_id                       = $item->getval('short_id........');
+        $this->_i[$short_id]            = &$item;    // cache it
+        $this->_l2s[$item->getItemId()] = $short_id;
+        return $item;
+    }
+}

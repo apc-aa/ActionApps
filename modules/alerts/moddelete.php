@@ -1,0 +1,11 @@
+<?php
+
+/**
+ * Redirects to the slicedel2 page, kept only for compatibility with the modules interface.
+ *
+ * @package Alerts
+ * @version $Id$
+ * @author Jakub Ad�mek <jakubadamek@ecn.cz>, Econnect, December 2002
+ * @copyright Copyright (C) 1999-2002 Association for Progressive Communications
+*/
+require_once __DIR__ . "/../../admin/slicedel2.php";

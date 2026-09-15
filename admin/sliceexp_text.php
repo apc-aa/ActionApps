@@ -1,0 +1,467 @@
+<?php
+
+/**  This page is called from sliceexp.php to generate the exported text.
+ *
+ *    slices: an associative array variable of all the slices to be exported,
+ *    the index is the slice ID.
+ *    The value for each slice is an associative array again,
+ *    it contains all the members of one slice.
+ *    The fields for each slice are one member of the
+ *    slice array, in the form of a third-level associative array.
+ *
+ * PHP version 7.2+
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @version   $Id$
+ * @author    Jakub Adamek, Pavel Jisl
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      https://www.apc.org/ APC
+ *
+*/
+
+
+use AA\IO\DB\DB_AA;
+use AA\Widget\Widget;
+
+require_once __DIR__ . "/../include/searchlib.php";
+require_once __DIR__ . "/../include/xml_serializer.php";
+
+class AA_Slice_Exporter
+{
+    // used for conversion data to utf-8
+    /**
+     * @var ConvertCharset|null
+     */
+    protected $_encoder = null;
+
+    public function __construct(protected $type, protected $gzip, protected $struct, protected $data, protected $spec_date, protected $from_date, protected $to_date, protected $hex, protected $views, protected $to_utf) {}
+
+    /** exportOneSliceStruct function
+     * Export information about the slice
+     * @param $slobj
+     * @param $new_slice_id
+     * @param $temp_file
+     * Writes to file
+     */
+    public function exportOneSliceStruct($slobj, $new_slice_id, $temp_file): void
+    {
+
+        $slice = DB_AA::select1('', 'SELECT * FROM `slice`', [['id', $slobj->getId(), 'l']]);
+        if (!$slice) {
+            MsgPage("ERROR - slice " . $slobj->getId() . " not found");
+            exit;
+        }
+        $uid = unpack_id($slice['id']);
+
+        //unpack the IDs
+        //TODO: add fields which contain IDs that should be unpacked
+        // but add them in sliceimp.php too!
+        $slice["owner"] = unpack_id($slice["owner"]);
+
+        if ($this->type !== 'backup') {
+            if (strlen($new_slice_id) !== 16) {
+                MsgPage(_m("Wrong slice ID length: ") . strlen($new_slice_id));
+                exit;
+            }
+
+            $uid = unpack_id($new_slice_id);
+        }
+
+        $slice["id"] = $uid;
+
+        $fields = DB_AA::select([], 'SELECT * FROM `field`', [['slice_id',$slobj->getId(), 'l']]);
+        foreach ($fields as $new) {
+            $new["slice_id"] = $uid; // Use new id if set
+
+            //unpack the IDs
+            //TODO: add fields which contain IDs that should be unpacked
+            // but add them in sliceimp.php too!
+            // I don't think so, this can't know about struc of actual fields
+            // better to take care to handle any binary data
+
+            $slice["fields"][] = $new;
+        }
+
+        $slice_data = $this->encode($slice, 'slice');
+        fwrite($temp_file, "<slicedata gzip=\"" . $this->gzip . "\">\n$slice_data\n</slicedata>\n");
+    }
+
+
+    /** exportOneSliceViews function
+     *  Export each view
+     * @param AA_Slice $slobj
+     * @param          $temp_file
+     * @return void - writes to file
+     */
+    public function exportOneSliceViews(AA_Slice $slobj, $temp_file): void
+    {
+        if (!($views = AA_Views::getSliceViews($slobj->getId()))) {
+            return;
+        }
+
+        $views_data = [];
+        foreach ($views as $k => $view) {
+            $views_data[$k] = $view->getViewInfo();
+            unset($views_data[$k]['deleted']);  // ?
+        }
+        $views_data = $this->encode($views_data, 'views', ' ');
+        if ($this->hex) {
+            $views_data = "<views coding=\"serialize" . ($this->gzip ? "gzip" : "") . "\">$views_data</views>";
+        }
+        fwrite($temp_file, $views_data . "\n");
+    }
+
+
+    public function exportOneSliceData($slobj, $temp_file): void
+    {
+        if ($this->spec_date) {
+            $conds = [];
+            $conds[0]["operator"]         = "d:>=";
+            $conds[0]["publish_date...."] = 1;
+            $conds[0]['value']            = $this->from_date;
+            $conds[1]["operator"]         = "d:<=";
+            $conds[1]["publish_date...."] = 1;
+            $conds[1]['value']            = $this->to_date;
+        } else {
+            $conds = "";
+        }
+        $zids = QueryZids([$slobj->getId()], $conds, "", "ALL");
+        if ($zids->isEmpty()) {
+            if ($this->spec_date) {
+                fwrite($temp_file, "<comment>\nThere are no data in selected days (from " . $this->from_date . " to " . $this->to_date . ").\n</comment>\n");
+            } else {
+                fwrite($temp_file, "<comment>\nThere are no data in slice.\n</comment>\n");
+            }
+        } else {
+            $item_ids   = $zids->longids();
+            foreach ($item_ids as $iValue) {
+                $content = GetItemContent($iValue);
+                fwrite($temp_file, "<data item_id=\"$iValue\" gzip=\"" . $this->gzip . "\">\n" . $this->encode($content, 'item') . "\n</data>\n");
+            }
+        }
+    }
+
+    /** exporter function
+     *  Generate the output and write to a temporary file
+     *  I'm assuming $export_slices contains UNPACKED slice ids
+     * @param $slice_id
+     * @param $export_slices
+     * @param $new_slice_id
+     * @return resource
+     */
+    public function exporter($slice_id, $export_slices, $new_slice_id)
+    {
+        $temp_file = tmpfile();
+
+        if (!$temp_file) {
+            echo _m("Can't create temporary file.");
+            exit;
+        }
+
+        if ($this->type !== 'backup') {
+            unset($export_slices);
+            $export_slices = [$slice_id];
+        }
+
+        fwrite($temp_file, "<sliceexport version=\"1.1\">\n");
+        fwrite($temp_file, "<comment>\nThis text contains exported slices definitions (and/or slices data). You may import them to any ActionApps.\n");
+        if ($this->type !== 'backup') {
+            fwrite($temp_file, "This text is exported slice data for use in another ActionApps installation (new slice_id)\n");
+        } else {
+            fwrite($temp_file, "This text is backed up slice data with the same slice_id as is in the source slice\n");
+        }
+        if ($this->spec_date && $this->data) {
+            fwrite($temp_file, "Exported data from " . $this->from_date . " to " . $this->to_date . "\n");
+        }
+        fwrite($temp_file, "</comment>\n");
+
+        if ($this->gzip != 1) {
+            $this->gzip = 0;
+        }
+
+        foreach ($export_slices as $sid) {
+            $slobj = AA_Slice::getModule($sid);
+            $this->prepareEncoder($slobj?->getCharset());
+
+            if ($this->type !== 'backup') {
+                if (strlen($new_slice_id) !== 16) {
+                    MsgPage(_m("Wrong slice ID length:") . strlen($new_slice_id));
+                    exit;
+                }
+
+                $new_slice_idunpack = unpack_id($new_slice_id);
+            }
+
+            fwrite($temp_file, "<slice id=\"");
+            fwrite($temp_file, ($this->type !== 'backup' ? $new_slice_idunpack : $slobj->getId()));
+            fwrite($temp_file, "\" name=\"" . safe($slobj->getName()) . "\">\n");
+
+            if ($this->struct) {
+                // export of slice structure
+                $this->exportOneSliceStruct($slobj, $new_slice_id, $temp_file);
+            }
+            if ($this->data) {
+                // export of slice data
+                $this->exportOneSliceData($slobj, $temp_file);
+            }
+            if ($this->views) {
+                // export of views
+                $this->exportOneSliceViews($slobj, $temp_file);
+            }
+            fwrite($temp_file, "</slice>\n");
+        }
+
+        fwrite($temp_file, "</sliceexport>");
+        return $temp_file;
+    }
+
+    /** exportToFile function
+     *  Export data to file:
+     *  Opens browser's dialog to write file to disk...
+     *
+     * @param $slice_id
+     * @param $export_slices
+     * @param $new_slice_id
+     */
+    public function exportToFile($slice_id, $export_slices, $new_slice_id): void
+    {
+        if ($this->gzip != 1) {
+            $this->gzip = 0;
+        }
+
+        $temp_file = $this->exporter($slice_id, $export_slices, $new_slice_id);
+
+        rewind($temp_file);
+
+        header("Content-type: application/octec-stream");
+        //	header("Content-type: text/xml");
+        header("Content-Disposition: attachment; filename=aaa.aaxml");
+
+        while (!feof($temp_file)) {
+            $buffer = fread($temp_file, 4096);
+            echo $buffer;
+        }
+        fclose($temp_file);
+    }
+
+    /** exportToForm function
+     *  Export data to text area in browser's window ...
+     * @param $slice_id
+     * @param $export_slices
+     * @param $new_slice_id
+     */
+    public function exportToForm($slice_id, $export_slices, $new_slice_id): void
+    {
+
+        if ($this->gzip != 1) {
+            $this->gzip = 0;
+        }
+
+        $temp_file = $this->exporter($slice_id, $export_slices, $new_slice_id);
+
+        rewind($temp_file);
+
+        echo "
+            <tr><td>
+            <form>
+            <p><b>" . _m("Save this text. You may use it to import the slices into any ActionApps:") . "</b>
+            </p>
+            <textarea cols=\"80\" rows=\"20\">";
+
+        // fpassthru($export_file);
+
+        while (!feof($temp_file)) {
+            $buffer = fread($temp_file, 4096);
+            echo $buffer;
+        }
+        fclose($temp_file);
+
+        echo "</textarea>
+            </form>
+            </p>
+            </tr></td>";
+    }
+
+    public function prepareEncoder(?string $charset): void
+    {
+        if ($this->to_utf) {
+            $this->_encoder = new ConvertCharset($charset, 'utf-8');
+        }
+    }
+
+    /** Converts text or values of array to utf, if it is requested */
+    public function encode($content, $type, $add = null): string
+    {
+        if ($this->to_utf) {
+            $content = $this->convertToUtf($content);
+        }
+
+        if ($this->hex || $this->gzip) {
+            $content = serialize($content);
+            if ($this->gzip) {
+                $content = gzcompress($content);
+            }
+            return safe(base64_encode($content));
+        }
+        return xml_serialize($type, $content, "\n", "    ", $add);
+    }
+
+    public function convertToUtf($text)
+    {
+        if (is_array($text)) {
+            foreach ($text as $k => $v) {
+                $text[$k] = $this->convertToUtf($v);
+            }
+        } else {
+            $text = $this->_encoder->Convert($text);
+        }
+        return $text;
+    }
+}
+
+
+
+
+
+class AA_Slice_Documentator extends AA_Slice_Exporter
+{
+    /** exportOneSliceStruct function
+     * Export information about the slice
+     * @param $slobj
+     * @param $new_slice_id
+     * @param $temp_file
+     * @return void - writes to file
+     */
+    public function exportOneSliceStruct($slobj, $new_slice_id, $temp_file): void
+    {
+
+        $slice = DB_AA::select1('', 'SELECT * FROM `slice`', [['id', $slobj->getId(), 'l']]);
+        if (!$slice) {
+            MsgPage("ERROR - slice " . $slobj->getId() . " not found");
+            exit;
+        }
+        $uid = unpack_id($slice['id']);
+
+        //unpack the IDs
+        //TODO: add fields which contain IDs that should be unpacked
+        // but add them in sliceimp.php too!
+        $slice["owner"] = unpack_id($slice["owner"]);
+
+        $slice["id"] = $uid;
+        $slice_data = '<table><tr><th>' . _m('Field') . '</th><th>' . _m('ID') . '</th><th>' . _m('Type') . '</th><th>' . _m('Hidden') . '</th></tr>';
+
+        $fields = DB_AA::select([], 'SELECT * FROM `field`', [['slice_id',$slobj->getId(), 'l']], ['input_show-', 'input_pri']);
+        foreach ($fields as $new) {
+            $slice_data .= '<tr><th>' . $new['name'] . '</th><td>' . $new['id'] . '</td><td>' . Widget::factoryByString($new["input_show_func"])::name() . '</td><td>' . ($new['input_show'] ? '' : _m('Hidden')) . '</td></tr>';
+
+            $new["slice_id"] = $uid; // Use new id if set
+
+            //unpack the IDs
+            //TODO: add fields which contain IDs that should be unpacked
+            // but add them in sliceimp.php too!
+            // I don't think so, this can't know about struc of actual fields
+            // better to take care to handle any binary data
+
+            $slice["fields"][] = $new;
+        }
+
+        $slice_data .= '</table>';
+        fwrite($temp_file, $slice_data);
+    }
+
+
+    /** exportOneSliceViews function
+     *  Export each view
+     * @param AA_Slice $slobj
+     * @param          $temp_file
+     * Writes to file
+     */
+    public function exportOneSliceViews(AA_Slice $slobj, $temp_file): void {}
+
+    public function exportOneSliceData($slobj, $temp_file): void {}
+
+    /** exporter function
+     *  Generate the output and write to a temporary file
+     *  I'm assuming $export_slices contains UNPACKED slice ids
+     * @param $slice_id
+     * @param $export_slices
+     * @param $new_slice_id
+     * @return resource
+     */
+    public function exporter($slice_id, $export_slices, $new_slice_id)
+    {
+        $temp_file = tmpfile();
+
+        if (!$temp_file) {
+            echo _m("Can't create temporary file.");
+            exit;
+        }
+
+        if ($this->gzip != 1) {
+            $this->gzip = 0;
+        }
+
+        foreach ($export_slices as $sid) {
+            $slobj = AA_Slice::getModule($sid);
+            $this->prepareEncoder($slobj?->getCharset());
+
+            fwrite($temp_file, "<h2>" . safe($slobj->getName()) . "</h2>\n");
+            fwrite($temp_file, "<p><b>ID:</b> " . $slobj->getId() . "</p>\n");
+
+            if ($this->struct) {
+                // export of slice structure
+                $this->exportOneSliceStruct($slobj, $new_slice_id, $temp_file);
+            }
+            fwrite($temp_file, "<br><br>\n");
+        }
+
+        return $temp_file;
+    }
+
+    /** exportToForm function
+     *  Export data to text area in browser's window ...
+     * @param $slice_id
+     * @param $export_slices
+     * @param $new_slice_id
+     */
+    public function exportToForm($slice_id, $export_slices, $new_slice_id): void
+    {
+
+        if ($this->gzip != 1) {
+            $this->gzip = 0;
+        }
+
+        $temp_file = $this->exporter($slice_id, $export_slices, $new_slice_id);
+
+        rewind($temp_file);
+
+        echo "
+            <tr><td>";
+
+        // fpassthru($export_file);
+
+        while (!feof($temp_file)) {
+            $buffer = fread($temp_file, 4096);
+            echo $buffer;
+        }
+        fclose($temp_file);
+
+        echo "
+            </tr></td>";
+    }
+
+}

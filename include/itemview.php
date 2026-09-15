@@ -1,0 +1,1054 @@
+<?php
+
+/**
+ * File contains definition of itemview class
+ * used to display set of item/links
+ *
+ * Should be included to other scripts
+ *
+ *
+ * PHP version 7.2+
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @package   Include
+ * @version   $Id$
+ * @author    Honza Malik <honza.malik@ecn.cz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      https://www.apc.org/ APC
+ *
+*/
+
+use AA\Cache\CacheStr2find;
+use AA\Cache\PageCache;
+use AA\Util\Hitcounter;
+
+require_once __DIR__ . "/stringexpand.php";
+
+/**
+ * itemview class - used to display set of items or links or ...
+ *
+ * it - selects right set of items/link IDs to display (based on page scroller
+ *      for example)
+ *    - get item/links content from database (using "Abstract Data Structure"
+ *      described also in {@link https://actionapps.org/faq/#1337})
+ *    - instantiate 'item' class (defined in item.php) for each item/link which
+ *      should be printed.
+ *
+ * @see itemview
+ */
+class itemview
+{
+    public $zids;               // zids to show
+    public string $from_record; // from which index begin showing items - number | 'random[:<weight_field>]'
+    public $num_records;        // number of shown records
+    public $slice_info;         // record from slice database for current slice
+    public $fields;             // array of fields used in this slice  // not used
+    //protected $aliases;      // array of alias definitions. @deprecated
+    //  If used with multi-slice, this variable contains an array of aliases for all slices aliases[slice_id0] are aliases for slice 0 etc - Do we still use it HM 2025-01-27
+    private AA_Aliases $aa_aliases;   // new aliases AA_Aliases object
+    private array $multi_aliases = [];   // array of slice_id => AA_Aliases for multislice itemviews
+
+    public $clean_url;          // url of slice page with session id and encap.. - used mainly in discussion views
+    public $group_fld;          // id of field for grouping
+    public $disc;               // array of discussion parameters (see apc-aa/view.php)
+    public $get_content_funct;  // function to call, if we want to get content
+    // (using "Abstract Data Structure" described also
+    // in {@link https://actionapps.org/faq/#1337})
+    public $parameters;         // optional asociative array of additional parameters
+    // - used for category_id (in Links module) ...
+    // - filed by parameter() method
+    private array $_content = [];       // stores item contents to be used for display
+
+    /**
+     * Cache state of the LAST get_output_cached() call: true=cache hit,
+     * false=rendered fresh, null=not yet called. Read via wasCached() so
+     * Hitcounter::hit() records the correct `cached` flag.
+     */
+    private ?bool $_was_cached = null;
+
+    /** itemview function
+     * @param        $slice_info
+     * @param        $aliases
+     * @param        $zids
+     * @param        $from
+     * @param        $number
+     * @param        $clean_url
+     * @param array  $disc
+     * @param string $get_content_funct
+     */
+    public function __construct($slice_info, $aliases, $zids, $from = 0, $number = null, $clean_url = '', $disc = [], $get_content_funct = 'GetItemContent')
+    {
+
+        $this->slice_info = $slice_info;  // $slice_info is array with these fields:
+        //      - print_view() function:
+        //   compact_top, category_sort,
+        //   category_format, category_top,
+        //   category_bottom, even_odd_differ,
+        //   even_row_format, odd_row_format,
+        //   row_delimiter
+        //   compact_remove, compact_bottom,
+        //   vid - used for scroller
+        //      - print_item() function:
+        //   fulltext_format, fulltext_remove,
+        //   fulltext_format_top,
+        //   fulltext_format_bottom,
+        //   banners
+        //   group_by2, g2_direction  // allows to sort by alias
+
+        $this->group_fld  = $slice_info['group_by'];
+
+        //$this->aliases    = $aliases instanceof \AA_Aliases ? $aliases->getArray() : ( is_array($aliases) ? $aliases : [] );
+        $this->aa_aliases = $aliases instanceof \AA_Aliases ? $aliases : (is_array($aliases) ? (new AA_Aliases())->addFromArray($aliases) : new AA_Aliases());
+
+        // add special alias, which is = 1 for selected item (given by
+        // set[34]=selected-43535 view.php parameter
+        if ($slice_info['selected_item'] && !$this->aa_aliases->isAlias('_#SELECTED')) {
+            $this->aa_aliases->addAlias(new AA_Alias('_#SELECTED', 'f_e:selected:' . $slice_info['selected_item'], 'id..............', _m('Selected item')));
+        }
+
+        // we fill the ID_COUNT now, because the global $GLOBALS['QueryIDsCount'] variable is
+        // most probably filled by the right value. Later the $QueryIDsCount could be damaged
+        // mainly if you use nested views, ... {view.php?vid=} which makes new queries
+        $idcount = (string) ($GLOBALS['QueryIDsCount'] ?: ' 0');
+        $this->aa_aliases->addAlias(new AA_Alias('_#ID_COUNT', "f_t:$idcount", 'id..............', _m('number of found items')));
+
+        $this->fields            = '';
+        $this->zids              = $zids;
+        $this->from_record       = $from;      // number or text "random[:<weight_field>]"
+        $this->num_records       = $number ?? $zids?->count() ?? '';    // negative number used for displaying n-th group of items only; If null, then all items if provided
+        $this->clean_url         = $clean_url;
+        $this->disc              = (array) $disc;
+        $this->parameters        = [];
+        $this->_content          = [];
+        $this->multi_aliases     = [];
+        $this->setContentFunct($get_content_funct);
+    }
+
+    /** set array of slice_id => AA_Aliases for multislice itemviews
+     *
+     * @param  AA_Aliases[] $multi_aliases
+     */
+    public function setMultiAliases(array $multi_aliases): static
+    {
+        $this->multi_aliases = $multi_aliases;
+        return $this;
+    }
+
+    /** Sets calleable function to get Contane
+     * @param string|array $content_funct callable function
+     * @return $this
+     */
+    public function setContentFunct($content_funct): static
+    {
+        $this->get_content_funct = $content_funct ?: 'GetItemContent';
+        return $this;
+    }
+
+
+    /** parameter function
+     *  Optional asociative array of additional parameters
+     *  Used for category_id (in Links module) ...
+     * @param $property
+     * @param $value
+     */
+    public function parameter($property, $value): void
+    {
+        $this->parameters[$property] = $value;
+    }
+
+    /** is_random function
+     * returns true, if view have to show random item (weighted or not)
+     */
+    public function is_random(): bool
+    {
+        return (str_starts_with($this->from_record, 'random'));
+    }
+
+    /**
+     * Returns whether the LAST call to get_output_cached() served the response
+     * from the page cache. Returns null when get_output_cached() hasn't been
+     * called on this instance yet. Used by slice.php to pass the correct
+     * `cached` flag to Hitcounter::hit().
+     */
+    public function wasCached(): ?bool
+    {
+        return $this->_was_cached;
+    }
+
+    /** get_output_cached function
+     * @param $view_type
+     */
+    public function get_output_cached($view_type = "")
+    {
+        //create keystring from values, which exactly identifies resulting content
+
+        if ($this->is_random()) {                         // don't cache random item
+            $this->_was_cached = false;
+            return $this->get_output($view_type);
+        }
+
+        if (isset($this->zids)) {
+            $keystr = get_hash($this->slice_info, $view_type, $this->from_record, $this->num_records, $this->zids->id(0));
+            $number_of_ids = (($this->num_records < 0) ? MAX_NO_OF_ITEMS_4_GROUP // negative used for displaying n-th group of items only
+                                                          : $this->from_record + $this->num_records);
+            $keystr .= implode('-', $this->zids->ids($this->from_record, $number_of_ids));
+        }
+        $key = get_hash('outp', $keystr, $this->disc, $this->aa_aliases, $this->multi_aliases, PageCache::globalKeyArray());
+
+        // One slot shared by every call of this method, nested ones included - a
+        // method-level static behaves like the `global` it replaced (shared across
+        // instances and across recursion), but stays private to this function.
+        static $str2find_passon;
+
+        if (!$GLOBALS['nocache'] && ($res = AA::Pagecache()->get($key))) {
+            $this->_was_cached = true;
+            return $res;
+        }
+
+        $str2find_save   = $str2find_passon;    // Save str2find from same level
+        $str2find_passon = new CacheStr2find(); // clear it for caches stored further down
+        $res             = $this->get_output($view_type);
+        // NOT the object made two lines above: nested views run inside get_output()
+        // and leave their own (already merged) accumulator in the shared slot - that
+        // superset is what this level has to store.
+        $str2find_passon->add([unpack_id($this->slice_info["id"])]);
+        AA::Pagecache()->store($key, $res, $str2find_passon);
+        $str2find_passon->add_str2find($str2find_save); // and append saved for above
+
+        $this->_was_cached = false;
+        return $res;
+    }
+
+    /** get_disc_buttons function
+     * @param $empty
+     * @return string
+     */
+    public function get_disc_buttons($empty): string
+    {
+        $out = '';
+        if (!$empty) {
+            $out .= $this->slice_info['d_sel_butt'];
+            $out .= ' ' . $this->slice_info['d_all_butt'];
+        }
+        $out .= ' ' . $this->slice_info['d_add_butt'];
+        return $out;
+    }
+
+    /** show list of discussion items --- useful as search form return value
+     * @param AA_Item  $CurItem
+     * @return string
+     */
+    private function get_disc_list(AA_Item $CurItem): string
+    {
+        $top_html_already_printed = false;
+        $out = '';
+        if (is_array($this->disc['disc_ids'])) {
+            $zids = new zids($this->disc['disc_ids'], 'l');
+            $this->_content = GetDiscussionContent($zids, true, $this->disc['html_format'], $this->clean_url);
+            foreach ($this->_content as $id => $disc) {
+                $CurItem->set_data($disc);
+                // print top HTML with aliases
+                if (!$top_html_already_printed) {
+                    $CurItem->setformat($this->slice_info['d_top']);
+                    $out = $CurItem->get_item();
+                    $top_html_already_printed = true;
+                }
+                $CurItem->setformat($this->slice_info['d_compact']);
+                $out .= $CurItem->get_item();
+            }
+        }
+        if (!$top_html_already_printed) {  // print top HTML even no item found
+            $CurItem->setformat($this->slice_info['d_top']);
+            $out = $CurItem->get_item();
+        }
+        $CurItem->setformat($this->slice_info['d_bottom']);
+        $out .= $CurItem->get_item();
+        return $out;
+    }
+
+    /** show discussion comments in the thread mode
+     *
+     * @param AA_Item  $CurItem
+     *
+     * @return string
+     */
+    private function get_disc_thread(AA_Item $CurItem): string
+    {
+        $top_html_already_printed = false;
+
+        $zids           = QueryDiscussionZIDs($this->disc['item_id'], "", $this->slice_info['d_order']);
+        $this->_content = GetDiscussionContent($zids, true, $this->disc['html_format'], $this->clean_url);
+        $d_tree         = GetDiscussionTree($this->_content);
+
+        $out = '<a name="disc"></a><form name="discusform">';
+        $cnt = 0;     // count of discussion comments
+
+        if ($d_tree) {    // if not empty tree
+            $CurItem->setformat($this->slice_info['d_compact']);
+
+            if ($this->slice_info['d_showimages'] || $this->slice_info['d_order'] === 'thread') {
+                // show discussion in the thread mode
+                GetDiscussionThread($d_tree, "0", 0, $outcome);
+                if ($outcome) {
+                    foreach ($outcome as $d_id => $images) {
+                        SetCheckboxContent($this->_content, $d_id, $cnt++);
+                        SetImagesContent($this->_content, $d_id, $images, $this->slice_info['d_showimages'], $this->slice_info['images']);
+                        $this->setColumns($CurItem, $d_id);
+                        // print top HTML with aliases
+                        if (!$top_html_already_printed) {
+                            $CurItem->setformat($this->slice_info['d_top']);
+                            $out .= $CurItem->get_item();    // top html code
+                            $CurItem->setformat($this->slice_info['d_compact']); // back
+                            $top_html_already_printed = true;
+                        }
+                        $out .= $CurItem->get_item();
+                    }
+                }
+            } else {                      // show discussion sorted by date
+                foreach ($this->_content as $d_id => $foo) {
+                    if ($this->_content[$d_id]["hide"]) {
+                        continue;
+                    }
+                    SetCheckboxContent($this->_content, $d_id, $cnt++);
+                    $this->setColumns($CurItem, $d_id);
+                    // print top HTML with aliases
+                    if (!$top_html_already_printed) {
+                        $CurItem->setformat($this->slice_info['d_top']);
+                        $out .= $CurItem->get_item();    // top html code
+                        $CurItem->setformat($this->slice_info['d_compact']); // back
+                        $top_html_already_printed = true;
+                    }
+                    $out .= $CurItem->get_item();
+                }
+            }
+        }
+        if (!$top_html_already_printed) {  // print top HTML even no item found
+            $CurItem->setformat($this->slice_info['d_top']);
+            $out .= $CurItem->get_item();    // top html code
+            $top_html_already_printed = true;
+        }
+
+        // buttons bar
+        $CurItem->setformat($this->slice_info['d_bottom']);        // bottom html code
+        $col["d_buttons......."][0]['value'] = $this->unaliasWithScroller($this->get_disc_buttons($cnt == 0));
+        $col["d_buttons......."][0]['flag']  = FLAG_HTML;
+        $col["d_item_id......."][0]['value'] = $this->disc['item_id'];
+
+        // set $col["d_url_fulltext.."], $col["d_url_reply....."], $col["d_disc_url......"]
+        setDiscUrls($col, $this->clean_url, $this->disc['item_id']);
+        $CurItem->set_data($col);
+        $out .= $CurItem->get_item() ;
+
+        $out .= "</form>";
+
+        // create a javascript code for getting selected ids and sending them to a script
+        [$script_loc,] = explode('#', $col["d_disc_url......"][0]['value']); // remove #disc part
+
+        $out .= "
+      <script>
+        function showSelectedComments() {
+          var url = \"" . get_url($script_loc, ['sel_ids' => '1']) . "\";
+          var done = 0;
+
+          for (var i = 0; i<$cnt; i++) {
+            if ( eval('document.forms[\"discusform\"].c_'+i).checked) {
+              done = 1;
+              url += \"&ids[\" +  escape(eval('document.forms[\"discusform\"].h_'+i).value) + \"]=1\";
+            }
+          }
+          url += \"\#disc\";
+          if (done == 0) {
+            alert (\" " . _m("No comment was selected") . "\" );
+          } else {
+            window.location = url;
+          }
+        }
+        function showAllComments() {window.location = \"" . get_url($script_loc, ['all_ids' => '1']) . "#disc\"; }
+        function showAddComments() {window.location = \"" . get_url($script_loc, ['add_disc' => '1']) . "#disc\";}
+      </script>";
+        return $out;
+    }
+
+    /** show discussion comments in the fulltext mode
+     * @param AA_Item  $CurItem
+     * @return string
+     */
+    private function get_disc_fulltext(AA_Item $CurItem): string
+    {
+        $CurItem->setformat($this->slice_info['d_fulltext']);      // set fulltext format
+        $zids           = QueryDiscussionZIDs($this->disc['item_id'], $this->disc['ids']);
+        $this->_content = GetDiscussionContent($zids, true, $this->disc['html_format'], $this->clean_url);
+        $d_tree         = GetDiscussionTree($this->_content);
+        if ($this->disc['ids'] && is_array($this->disc['ids']) && $this->_content) {  // show selected cooments
+            foreach ($this->_content as $id => $val) {
+                // if hidden => skip  OR if the comment is already in the outcome => skip
+                if ($val["hide"] || $outcome[$id]) {
+                    continue;
+                }
+                GetDiscussionThread($d_tree, $id, 1, $outcome);
+            }
+        } else {     // show all comments
+            GetDiscussionThread($d_tree, "0", 0, $outcome);
+        }
+
+        $out = '<a name="disc"></a>';
+        if (isset($outcome) && is_array($outcome)) {
+            foreach ($outcome as $d_id => $images) {
+                $this->setColumns($CurItem, $d_id);
+                $depth = count($images) - 1;
+                $out .= '
+              <table class="discrow" id="disc' . $d_id . '">
+                <tr>';
+                $spacer = str_repeat($this->slice_info['d_spacer'], $depth);
+                if ($spacer) {
+                    $out .= "
+                      <td class=\"discspacer\">$spacer</td>";
+                }
+                $out .= "
+                  <td class=\"discitem\">" . $CurItem->get_item() . "
+                  </td>
+                </tr>
+              </table>
+              <br>";
+            }
+        }
+        return $out;
+    }
+
+    /** show the form for adding discussion comments
+     *
+     * @param AA_Item  $CurItem
+     * @return string
+     */
+    private function get_disc_add(AA_Item $CurItem): string
+    {
+        // if parent_id is set => show discussion comment
+        $out = '<a name="disc"></a>';
+        if ($this->disc['parent_id']) {
+
+            $zids           = QueryDiscussionZIDs($this->disc['item_id'], $this->disc['ids']);
+            $this->_content = GetDiscussionContent($zids, true, $this->disc['html_format'], $this->clean_url);
+
+            $CurItem->setformat($this->slice_info['d_fulltext']);
+            $this->setColumns($CurItem, $this->disc['parent_id']);
+            $out .= $CurItem->get_item();
+        } else {
+            $col["d_item_id......."][0]['value'] = $this->disc['item_id'];
+            setDiscUrls($col, $this->clean_url, $this->disc['item_id']);
+            $CurItem->set_data($col);
+        }
+        // show a form for posting a comment
+        $CurItem->setformat($this->slice_info['d_form']);
+        $out .= $CurItem->get_item();
+
+        // preset the for values from cookies
+        $cookie = new CookieManager();
+        $js     = '';
+        foreach (['d_author', 'd_e_mail', 'd_url_address', 'd_url_description'] as $form_field) {
+            if ($value = $cookie->get($form_field)) {
+                $js .= "setControl('f','$form_field',\"$value\");\n";
+            }
+        }
+        if ($js) {
+            $out .= "\n <script src=\"" . get_aa_url('javascript/fillform.min.js', '', false) . "\"></script>";
+            $out .= "\n <script>$js</script>";
+        }
+        return $out;
+    }
+
+    /** unaliasWithScroller function
+     * @param string $txt
+     * @param AA_Item $item
+     * @return string
+     */
+    public function unaliasWithScroller($txt, $item = null): string
+    {
+        // If no item is specified, then still try and expand aliases using parameters
+        if (!$item) {
+            // @todo we should cont with multi_aliases here
+            $item = new AA_Item(null, $this->aa_aliases, null, null, $this->parameters);
+        }
+        return AA::Un($txt, '', $item, true, $this);
+    }
+
+    // set the aliases from the slice of the item ... used to view items from
+    // several slices at once: all slices have to define aliases with the same names
+    /** setColumns function
+     * @param AA_Item $CurItem
+     * @param string  $iid
+     */
+    public function setColumns(AA_Item $CurItem, string $iid): void
+    {
+        // hack for searching in multiple slices. This is not so nice part
+        // of code - we mix there $aliases[<alias>] with $aliases[<p_slice_id>][<alias>]
+        // used (filled) in slice.php
+
+        AA::$debug & 32 && AA::$dbg->tracestart('itemview->setColumns-Als', count($this->aa_aliases));
+        $CurItem->set_data($this->_content[$iid]);
+        if ($this->multi_aliases && ($als = $this->multi_aliases[$CurItem->getSliceID()])) {
+            $CurItem->setAliases($als);
+        } else {
+            $CurItem->setAliases($this->aa_aliases);
+        }
+        AA::$debug & 32 && AA::$dbg->traceend('itemview->setColumns-Als');
+    }
+
+    // ----------------------------------------------------------------------------------
+
+    /**
+     * @param STRING $view_type used internally for different view types
+     * @return string
+     */
+    public function get_output($view_type = ""): string
+    {
+        if ($view_type === "discussion") {
+            $CurItem = new AA_Item("", $this->aa_aliases);   // just prepare
+            $CurItem->set_parameters($this->parameters);
+            return match ($this->disc['type']) {
+                'thread'   => $this->get_disc_thread($CurItem),
+                'fulltext' => $this->get_disc_fulltext($CurItem),
+                'list'     => $this->get_disc_list($CurItem),
+                default    => $this->get_disc_add($CurItem),
+            };
+        }
+        // other view_type than discussion
+
+        if (!(isset($this->zids) && is_object($this->zids))) {
+            return '';
+        }
+
+        $is_random = $this->is_random();
+        $real_from = (int) $this->from_record;  // $this->from_record could be "random:..."
+
+        // fill the foo_ids - ids to itemids to get from database
+        if (!$is_random) {
+            if ($this->group_fld && ($grp_al = AA_Alias::isAliasLike($this->group_fld, true))) {
+                $this->group_fld = $grp_al;   // replaces possible ABCDEFGH alias with _#ABCDEFGH
+                $this->zids = new zids(explode_ids(StrExp('order', [implode('-', $this->zids->short_or_longids()), $this->group_fld, 'locale'])));
+            } elseif ((strlen($this->slice_info['group_by2'] ?? '') === 10) && (str_starts_with($this->slice_info['group_by2'], '_#'))) {
+                define('SORT_CONST', [0 => 'locale', 1 => 'rlocale', 4 => 'numeric', 5 => 'rnumeric']);
+                $this->zids = new zids(explode_ids(StrExp('order', [implode('-', $this->zids->short_or_longids()), $this->slice_info['group_by2'], SORT_CONST[(int) $this->slice_info['g2_direction']]])));
+            }
+            $foo_zids = $this->zids->slice($real_from, (($this->num_records < 0) ? MAX_NO_OF_ITEMS_4_GROUP : $this->num_records));
+        } else { // Selecting random record
+            [ $random, $rweight ] = explode(":", $this->from_record);
+            if (!$rweight) {
+                $foo_ids = [];
+                // not weighted, we can select random id(s)
+                for ($i = 0; $i < $this->num_records; $i++) {
+                    $sel = mt_rand(0, $this->zids->count() - 1) ;
+                    if ($this->zids->id($sel)) {
+                        $foo_ids[] = $this->zids->id($sel);
+                    }
+                }
+                $foo_zids = new zids($foo_ids, $this->zids->onetype());
+                $this->zids = $foo_zids;  // Set zids so can index into it
+            } else {   // weighted - we must get all items (banners) and then select
+                // the one based on weight field (now in $rweight variable
+                $foo_zids = $this->zids;
+            }
+            $real_from = 0;
+        }
+
+        // Create an array of content, indexed by either long or short id (not tagged id)
+
+        // fill Abstract Data Structure by the right function
+        // (GetItemContent / GetLinkContent / $metabase->getContent / ...)
+        if (is_array($this->get_content_funct)) {
+            // Get content function should be also method of some class. In that
+            // case it is passed as two members array(method,params), where both
+            // method and params are arrays again, so in fact it looks like:
+            // [['classname', method],[param1, param2]]
+            // Example [['AA_Metabase','getContent'],[table=>'toexecute']]
+            // getContent is in this case static class method
+            // parameter array (if supplied) is passed as FIRST parameter of the method
+            $this->_content = ($this->get_content_funct[0])($foo_zids, $this->get_content_funct[1]);
+        } else {
+            $this->_content = ($this->get_content_funct)($foo_zids);
+        }
+
+        $CurItem = new AA_Item("", $this->aa_aliases);   // just prepare
+        $CurItem->set_parameters($this->parameters);
+
+        // process the random selection (based on weight)
+        if ($rweight) {
+            $this->zids->clear('l');   // remove id and prepare for long ids
+            //get sum of all weight
+            foreach ($this->_content as $v) {
+                $weightsum += $v[$rweight][0]['value'];
+            }
+            for ($i = 0; $i < $this->num_records; $i++) {
+                $winner = mt_rand(1, $weightsum);
+                $ws = 0;
+                foreach ($this->_content as $k => $v) {
+                    $ws += $v[$rweight][0]['value'];
+                    if ($ws >= $winner) {
+                        $this->zids->add($k);
+                        break;
+                    }
+                }
+            }
+        }
+
+        // count hit for random item - it is used for banners, so it is important
+        // to count display number
+        if ($is_random && $this->zids->count() === 1) {
+            Hitcounter::hit($this->zids);
+        }
+
+        switch ($view_type) {
+            case "fulltext":
+                $iid = $this->zids->short_or_longids(0);  // unpacked or short id
+                $this->setColumns($CurItem, $iid);        // set right content for aliases
+
+                // print item
+                $out = AA::Un($this->slice_info['fulltext_format_top'] . $this->slice_info['fulltext_format'] . $this->slice_info['fulltext_format_bottom'], $this->slice_info['fulltext_remove'], $CurItem);
+                break;
+
+            case "itemlist":          // multiple items as fulltext one after one
+                $out = $this->slice_info['fulltext_format_top'];
+                for ($i = 0; $i < $this->num_records; $i++) {
+                    $iid = $this->zids->short_or_longids($real_from + $i);
+                    if (!$iid) {
+                        continue;
+                    }                                     // iid = quoted or short id
+
+                    $this->setColumns($CurItem, $iid);   // set right content for aliases
+
+                    // print item
+                    $CurItem->setformat($this->slice_info['fulltext_format'], $this->slice_info['fulltext_remove']);
+                    $out .= $CurItem->get_item();
+                }
+                $out .= $this->unaliasWithScroller($this->slice_info['fulltext_format_bottom'], $CurItem);
+                break;
+
+            case "calendar":
+                $out = $this->get_output_calendar();
+                break;
+
+            default:
+                // compact view (of items or links)
+                $oldcat                   = "_No CaTeg";
+                $catname                  = '';
+                $group_n                  = 0;    // group counter (see group_n slice.php parameter)
+                $top_html_already_printed = false;
+
+                // negative num_record used for displaying n-th group of items only
+                $number_of_ids = (($this->num_records < 0) ? MAX_NO_OF_ITEMS_4_GROUP : $this->num_records);
+                $ingroup_index = 0;
+                $group_index   = 0;
+                AA::$debug & 2 && AA::$dbg->log("itemlist - number_of_ids: $number_of_ids");
+
+                $zidscount = $this->zids->count();
+                for ($i = 0; $i < $number_of_ids; ++$i) {
+                    // display banner, if you have to
+                    if ($this->slice_info['banners'] && $this->slice_info['banners'][$i]) {
+                        $out .= (new AA_Showview(AA_View::parseViewParameters($this->slice_info['banners'][$i])))->getViewOutput();
+                    }
+
+                    $zidx = $real_from + $i;
+                    if ($zidx >= $zidscount) {
+                        break;
+                    }
+                    /* mimo hack -- put this on a stack */
+                    if (!$GLOBALS['QueryIDsIndex']) {
+                        $GLOBALS['QueryIDsIndex']          = [];
+                    }
+                    if (!$GLOBALS['QueryIDsPageIndex']) {
+                        $GLOBALS['QueryIDsPageIndex']      = [];
+                    }
+                    if (!$GLOBALS['QueryIDsGroupIndex']) {
+                        $GLOBALS['QueryIDsGroupIndex']     = [];
+                    }
+                    if (!$GLOBALS['QueryIDsItemGroupIndex']) {
+                        $GLOBALS['QueryIDsItemGroupIndex'] = [];
+                    }
+                    $GLOBALS['QueryIDsIndex'][]          = $zidx;          // So that _#ITEMINDX = f_e:itemindex can find it
+                    $GLOBALS['QueryIDsPageIndex'][]      = $i;             // So that _#PAGEINDX = f_e:pageindex can find it
+                    $GLOBALS['QueryIDsGroupIndex'][]     = $group_index;   // So that _#GRP_INDX = f_e:groupindex can find it
+                    $GLOBALS['QueryIDsItemGroupIndex'][] = $ingroup_index; // So that _#IGRPINDX = f_e:itemgroupindex can find it
+
+                    // $iid = $this->zids->short_or_longids($zidx);
+                    $iid = $this->zids->id_slw($zidx);
+                    if (!$iid) {
+                        huhe("Warning: itemview: got a null id");
+                        continue;
+                    }
+                    // Note if iid is invalid, then expect empty answers
+
+
+                    $OldItem = clone($CurItem);  // this could be used in CATEGORY BOTTOM -
+                    // we need old item aliases & content there
+
+                    $this->setColumns($CurItem, $iid);   // set right content for aliases
+
+                    if ($this->group_fld) {
+
+                        //AA::$debug&2 && AA::$dbg->info("group_fld", $iid, $this->zids->getAttr($zidx, 'group_by')) && exit;
+                        if (is_null($catname = $this->zids->getAttr($zidx, 'group_by'))) {  // used in GetZidsFromSQL for group_limit...
+                            // $catname = $CurItem->getval($this->group_fld);
+                            $catname = $CurItem->subst_alias($this->group_fld);
+                        }
+                        // it shouldn't be set, but just in case - we do not want to redefine it
+                        $CurItem->addAlias(new AA_Alias('_#GRP_NAME', ParamImplode(["f__", $catname]), 'id..............', _m("exact group name")));
+
+                        if (is_null($catname = $this->zids->getAttr($zidx, 'group_by'))) {  // used in GetZidsFromSQL for group_limit...
+                            // $catname = $CurItem->getval($this->group_fld);
+                            $catname = $CurItem->subst_alias($this->group_fld);
+                        }
+                        // it shouldn't be set, but just in case - we do not want to redefine it
+                        // @todo move it outside else - there it is just for first testing
+                        $CurItem->addAlias(new AA_Alias('_#GRP_NAME', ParamImplode(["f__", $catname]), 'id..............', _m("exact group name")));
+                        if ($this->slice_info['gb_header']) {
+                            if ($this->slice_info['gb_header'] == 127) {  // all before ~
+                                $catname = strtok($catname, '~');
+                            } else {
+                                $catname = substr($catname, 0, $this->slice_info['gb_header']);
+                            }
+                        }
+                    }
+
+                    // get top HTML code, unalias it and add scroller, if needed
+                    if (!$top_html_already_printed) {
+                        $out = $this->unaliasWithScroller($this->slice_info['compact_top'], $CurItem);
+                        // we move printing of top HTML here, in order we can use aliases
+                        // data from the first found item
+                        $top_html_already_printed = true;
+                    }
+
+                    // should we display row_delimiter (see category_top below!)
+                    $print_delimiter = ($i > 0 && isset($this->slice_info['row_delimiter']));
+
+                    // print category name if needed
+                    if ($this->group_fld && strcasecmp($catname, $oldcat)) {
+                        if ($this->num_records >= 0) {
+                            if ($oldcat !== "_No CaTeg") {
+                                // print bottom category code for previous category
+
+                                // we need to use old values for category bottom
+                                $GLOBALS['QueryIDsIndex'][count($GLOBALS['QueryIDsIndex']) - 1]                   = end($GLOBALS['QueryIDsIndex']) - 1;
+                                $GLOBALS['QueryIDsPageIndex'][count($GLOBALS['QueryIDsPageIndex']) - 1]           = end($GLOBALS['QueryIDsPageIndex']) - 1;
+                                $GLOBALS['QueryIDsItemGroupIndex'][count($GLOBALS['QueryIDsItemGroupIndex']) - 1] = end($GLOBALS['QueryIDsItemGroupIndex']) - 1;
+
+                                $out .= $this->unaliasWithScroller($this->slice_info['category_bottom'], $OldItem);
+
+                                // we need to use old values
+                                $GLOBALS['QueryIDsIndex'][count($GLOBALS['QueryIDsIndex']) - 1]                   = end($GLOBALS['QueryIDsIndex']) + 1;
+                                $GLOBALS['QueryIDsPageIndex'][count($GLOBALS['QueryIDsPageIndex']) - 1]           = end($GLOBALS['QueryIDsPageIndex']) + 1;
+                                $GLOBALS['QueryIDsItemGroupIndex'][count($GLOBALS['QueryIDsItemGroupIndex']) - 1] = end($GLOBALS['QueryIDsItemGroupIndex']) + 1;
+
+                                $GLOBALS['QueryIDsGroupIndex'][count($GLOBALS['QueryIDsGroupIndex']) - 1] = ++$group_index; // change current
+                            }
+                            $ingroup_index = 0;
+                            $GLOBALS['QueryIDsItemGroupIndex'][count($GLOBALS['QueryIDsItemGroupIndex']) - 1] = $ingroup_index; // change current
+                            $out .= $this->unaliasWithScroller($this->slice_info['category_top'], $CurItem);
+                            $out .= $this->unaliasWithScroller($this->slice_info['category_format'], $CurItem);
+                            $category_top_html_printed = true;
+
+                            // do not print row_delimiter if we printed category top
+                            $print_delimiter           = false;
+                        } else {
+                            // used to display n-th group only
+                            $group_n++;
+                        }
+                        $oldcat = $catname;
+                    }
+
+                    if ($this->num_records < 0 && $group_n != -$this->num_records) {
+                        continue;    // we have to display just -$this->num_records-th group
+                    }
+
+
+                    // print item
+                    $CurItem->setformat(
+                        ($i % 2 && $this->slice_info['even_odd_differ'])
+                                         ? $this->slice_info['even_row_format'] : $this->slice_info['odd_row_format'],
+                        $this->slice_info['compact_remove'],
+                    );
+
+                    if ($print_delimiter) {
+                        $out .= $this->unaliasWithScroller($this->slice_info['row_delimiter'], $CurItem);
+                    }
+
+                    $out .= $CurItem->get_item();
+                    $ingroup_index++;
+
+                    // return to QueryIDs* right values (could be changed by get_item(), if we use inner view
+                    // TODO - do QueryIDs* better - not as global variables with such hacks
+                    /*$GLOBALS['QueryIDsIndex']     = $zidx;  // So that _#ITEMINDX = f_e:itemindex can find it
+                    $GLOBALS['QueryIDsPageIndex'] = $i;     // So that _#PAGEINDX = f_e:pageindex can find it
+                    */
+                    /*mimo hack, clear the end of the stack */
+                    $last_ii  = array_pop($GLOBALS['QueryIDsIndex']);
+                    $last_pi  = array_pop($GLOBALS['QueryIDsPageIndex']);
+                    $last_gi  = array_pop($GLOBALS['QueryIDsGroupIndex']);
+                    $last_igi = array_pop($GLOBALS['QueryIDsItemGroupIndex']);
+                }
+                $GLOBALS['QueryIDsIndex'][]          = $last_ii;  // So that _#ITEMINDX = f_e:itemindex can find it
+                $GLOBALS['QueryIDsPageIndex'][]      = $last_pi;  // So that _#PAGEINDX = f_e:pageindex can find it
+                $GLOBALS['QueryIDsGroupIndex'][]     = $last_gi;  // So that _#GRP_INDX = f_e:groupindex can find it
+                $GLOBALS['QueryIDsItemGroupIndex'][] = $last_igi;  // So that _#IGRPINDX = f_e:itemgroupindex can find it
+                if ($category_top_html_printed) {
+                    $out .= $this->unaliasWithScroller($this->slice_info['category_bottom'], $CurItem);
+                }
+                if (!$top_html_already_printed) {  // print top HTML even no item found
+                    $out  = $this->unaliasWithScroller($this->slice_info['compact_top'], $CurItem);
+                }
+                $out .= $this->unaliasWithScroller($this->slice_info['compact_bottom'], $CurItem);
+                array_pop($GLOBALS['QueryIDsIndex']);
+                array_pop($GLOBALS['QueryIDsPageIndex']);
+                array_pop($GLOBALS['QueryIDsGroupIndex']);
+                array_pop($GLOBALS['QueryIDsItemGroupIndex']);
+        }
+        return $out;
+    }
+
+    // ----------------------------------------------------------------------------
+    //                            calendar view
+    // ----------------------------------------------------------------------------
+    /** resolve_calendar_aliases function
+     * @param $txt
+     * @param $day
+     * @return string
+     */
+    public function resolve_calendar_aliases($txt, $day = ""): string
+    {
+        $month = (int) $this->slice_info['calendar_month'];
+        $year  = (int) $this->slice_info['calendar_year'];
+
+        $aliases = [
+            '_#CV_NUM_Y' => $year,
+            '_#CV_NUM_M' => $month,
+            '_#CV_NUM_D' => $day,
+            '_#CV_TST_1' => mktime(0, 0, 0, $month, (int) $day, $year),
+            '_#CV_TST_2' => mktime(0, 0, 0, $month, (int) $day + 1, $year),
+        ];
+
+        return strtr($txt, $aliases);
+    }
+
+    /** get_output_calendar function
+     *  send content via reference to be quicker
+     */
+    public function get_output_calendar(): string
+    {
+        $CurItem = new AA_Item("", $this->aa_aliases);   // just prepare
+        $CurItem->set_parameters($this->parameters);
+
+        $month = $this->slice_info['calendar_month'];
+        $year  = $this->slice_info['calendar_year'];
+
+        $min_cell_date = mktime(0, 0, 0, $month, 1, $year);
+        $max_cell_date = mktime(0, 0, 0, $month + 1, 1, $year);
+
+        $min_cell = getdate($min_cell_date);
+        $max_cell = getdate($max_cell_date - 1);
+
+        $max_cell = $max_cell["mday"] - $min_cell["mday"] + 1;
+        $min_cell = 1;
+
+        /* calendar is an array of days, every day contains info about events starting on that day:
+            iid is short_id of event
+            span is number of days in current month
+            start is 1 when it's the first cell containing this iid. The event is repeated in all days over which it spans.
+        */
+        $calendar = [];
+        $max_events = 0;
+        $row_len  = 7;
+        $firstday = getdate(mktime(0, 0, 0, $month, 1, $year));
+        $firstday = $firstday["wday"] - 2;
+        if ($firstday < -1) {
+            $firstday += $row_len;
+        }
+        $rowcount = ($max_cell + $firstday + 1) / $row_len;
+
+        for ($i = 0; $i < $this->num_records && ($i + $this->from_record < $this->zids->count()); $i++) {
+            $iid = $this->zids->short_or_longids($this->from_record + $i);
+            if (!$iid) {
+                continue;
+            }// iid = unpacked item id
+            $start_date = $this->_content[$iid][$this->slice_info['calendar_start_date']][0]['value'];
+            $end_date   = $this->_content[$iid][$this->slice_info['calendar_end_date']][0]['value'];
+
+            AA::$debug & 2 && AA::$dbg->info("------ $start_date - $end_date");
+
+            if ($start_date > $max_cell_date) {
+                warn("Some error in calendar view! $start_date &gt; $max_cell_date");
+                continue;
+            }
+
+            if ($end_date < $min_cell_date) {
+                warn("Some error in calendar view! $end_date &lt; $min_cell_date");
+                continue;
+            }
+
+            $start_cell = ($start_date < $min_cell_date) ? $min_cell : date('j', $start_date);
+            $end_cell   = ($end_date >= $max_cell_date) ? $max_cell : date('j', $end_date);
+
+            $ievent = 0;
+            do {
+                $free = true;
+                for ($date = $start_cell; $date <= $end_cell; ++$date) {
+                    if ($calendar[$date][$ievent]["iid"]) {
+                        $free = false;
+                        break;
+                    }
+                }
+                if (!$free) {
+                    ++$ievent;
+                }
+            } while (!$free);
+
+            $max_events = max($max_events, $ievent + 1);
+
+            AA::$debug & 2 && AA::$dbg->info("------ $start_date - $end_date: $start_cell - $end_cell : min($row_len-(($firstday+$start_cell) % 7),$end_cell-$start_cell+1)");
+
+            $calendar[$start_cell][$ievent] = ["iid" => $iid,"span" => min($row_len - (($firstday + $start_cell) % 7), $end_cell - $start_cell + 1),"start" => 1];
+            for ($date = $start_cell + 1; $date <= $end_cell; ++$date) {
+                $calendar[$date][$ievent] = ["iid" => $iid,"span" => $end_cell - $date + 1];
+            }
+        }
+
+        AA::$debug & 2 && AA::$dbg->info('----------calendar------------', $calendar);
+
+        $out = $this->unaliasWithScroller($this->resolve_calendar_aliases($this->slice_info['compact_top']), $CurItem);
+
+        if ($this->slice_info['calendar_type'] === 'mon_table') {
+            for ($cell = 7 - $firstday; $cell <= $max_cell; $cell += $row_len) {
+                for ($ievent = 0; $ievent < $max_events; ++$ievent) {
+                    if ($calendar[$cell][$ievent]["iid"]) {
+                        $calendar[$cell][$ievent]["start"] = 1;
+                        $calendar[$cell][$ievent]["span"]  = min($calendar[$cell][$ievent]["span"], $row_len);
+                    }
+                }
+            }
+
+            // go throgh all weeks
+            for ($row = 0; $row < $rowcount; ++$row) {
+                $outrow = "";
+                $firstcell = $row * $row_len - $firstday;
+                for ($cell = $firstcell; $cell < $firstcell + $row_len; ++$cell) {
+                    $events = $calendar[$cell];
+                    if ($this->slice_info['even_odd_differ'] && !count($events)) {
+                        $header = $this->slice_info['aditional'];
+                    } else {
+                        $header = $this->slice_info['category_format'];
+                    }
+                    $label = $cell >= $min_cell && $cell <= $max_cell ? $cell : "";
+                    $CurItem->setformat($this->resolve_calendar_aliases($header, $label));
+                    $outrow .= $CurItem->get_item();
+                }
+                if ($outrow) {
+                    $out .= "\n<tr>$outrow</tr>";
+                }
+
+                if ($this->slice_info['odd_row_format']) {
+                    $row_for_week_printed = false;
+                    for ($ievent = 0; $ievent < $max_events; ++$ievent) {
+                        $outrow = "";
+                        $we_have_event_this_week = false;
+                        for ($cell = $firstcell; $cell < $firstcell + $row_len; ++$cell) {
+                            $event = $calendar[$cell][$ievent];
+                            if ($event["iid"] && $event["start"]) {
+                                $this->setColumns($CurItem, $event['iid']);
+                                $CurItem->setformat($this->slice_info['aditional3']);
+                                $tdattribs = $CurItem->get_item();
+                                $CurItem->setformat($this->slice_info['odd_row_format']);
+                                $colspan = ($event['span'] > 1) ? 'colspan=' . $event['span'] : '';
+                                $outrow .= "<td $colspan $tdattribs>" . $CurItem->get_item() . "</td>";
+                                $we_have_event_this_week = true;
+                            } elseif (!$event["iid"]) {
+                                $outrow .= '<td class="empty">&nbsp;</td>';
+                            }
+                        }
+                        // do not print empty calendar rows ...
+                        if ($outrow && $we_have_event_this_week) {
+                            $out .= "\n<tr>$outrow</tr>";
+                            $row_for_week_printed = true;
+                        }
+                    }
+                    // ... but print it in case we didn't print any (at leas one should be printed)
+                    if (!$row_for_week_printed) {
+                        $out .= "\n<tr>$outrow</tr>";
+                    }
+                }
+                $outrow = "";
+                for ($cell = $firstcell; $cell < $firstcell + $row_len; ++$cell) {
+                    $events = $calendar[$cell];
+                    if ($this->slice_info['even_odd_differ'] && !count($events)) {
+                        $footer = $this->slice_info['aditional2'];
+                    } else {
+                        $footer = $this->slice_info['category_bottom'];
+                    }
+                    $label = $cell >= $min_cell && $cell <= $max_cell ? $cell : "";
+                    $CurItem->setformat($this->resolve_calendar_aliases($footer, $label));
+                    $outrow .= $CurItem->get_item();
+                }
+                if ($outrow) {
+                    $out .= "\n<tr>$outrow</tr>";
+                }
+            }
+
+        } else {
+            for ($cell = $min_cell; $cell <= $max_cell; ++$cell) {
+                $calendar_aliases["_#CV_NUM_D"] = $cell;
+                $events = $calendar[$cell];
+                if ($this->slice_info['even_odd_differ'] && !count($events)) {
+                    $header = $this->slice_info['aditional'];
+                    $footer = $this->slice_info['aditional2'];
+                } else {
+                    $header = $this->slice_info['category_format'];
+                    $footer = $this->slice_info['category_bottom'];
+                }
+                $CurItem->setformat($this->resolve_calendar_aliases($header, $cell));
+                $out .= $CurItem->get_item();
+
+                for ($ievent = 0; $ievent < $max_events; ++$ievent) {
+                    $event = $events[$ievent];
+                    if ($event["iid"] && $event["start"]) {
+                        $this->setColumns($CurItem, $event['iid']);
+                        $CurItem->setformat($this->slice_info['aditional3']);
+                        $tdattribs = $CurItem->get_item();
+                        $CurItem->setformat($this->slice_info['odd_row_format']);
+                        $out .= "<td rowspan=\"" . $event['span'] . "\" $tdattribs>" . $CurItem->get_item() . "</td>";
+                    } elseif (!$event["iid"]) {
+                        $out .= '<td class="empty">&nbsp;</td>';
+                    }
+                }
+
+                $CurItem->setformat($this->resolve_calendar_aliases($footer, $cell));
+                $out .= $CurItem->get_item();
+            }
+        }
+
+        $out .= $this->unaliasWithScroller($this->resolve_calendar_aliases($this->slice_info['compact_bottom']), $CurItem);
+        return $out;
+    }
+
+    // ----------------------------------------------------------------------------
+    //                            end of calendar view
+    // ----------------------------------------------------------------------------
+
+    /** idcount function
+     *
+     */
+    public function idcount()
+    {
+        return $this->zids->count();
+    }
+
+}   //class itemview

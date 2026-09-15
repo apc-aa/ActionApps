@@ -1,0 +1,117 @@
+{
+  "name": "apc/actionapps",
+  "description": "ActionApps is a collaborative web publishing tool and an open-source development platform for web applications.",
+  "keywords": [
+    "CMS"
+  ],
+  "type": "project",
+  "homepage": "https://actionapps.org",
+  "license": "GPL-2.0-or-later",
+  "authors": [
+    {
+      "name": "Honza Malik",
+      "email": "honza.malik@ecn.cz",
+      "homepage": "https://ecnstudio.cz",
+      "role": "Developer"
+    }
+  ],
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://github.com/honzito/phpthumb.git"
+    },
+    {
+      "type": "vcs",
+      "url": "https://github.com/honzito/iban-validation.git"
+    },
+    {
+      "type": "vcs",
+      "url": "https://github.com/honzito/MissCache.git"
+    }
+  ],
+  "require": {
+    "php": ">=8.2",
+    "ext-ctype": "*",
+    "firebase/php-jwt": "^7.0",
+    "mobiledetect/mobiledetectlib": "2.*",
+    "phpgangsta/googleauthenticator": "dev-master",
+    "softcreatr/jsonpath": "*",
+    "honzito/qr-platba": "@dev",
+    "honzito/phpthumb": "dev-justcode",
+    "honzito/misscache": "@dev",
+    "jfcherng/php-diff": "^6.0",
+    "ext-iconv": "*",
+    "ext-zlib": "*",
+    "ext-gd": "*",
+    "ext-mbstring": "*",
+    "ext-dom": "*",
+    "ext-xsl": "*",
+    "ext-simplexml": "*",
+    "ext-xml": "*",
+    "ext-intl": "*",
+    "ext-pdo": "*",
+    "ext-fileinfo": "*",
+    "ext-curl": "*",
+    "ext-sodium": "*",
+    "pear/net_smtp": "^1.12"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^11.0",
+    "phpstan/phpstan": "^2.0",
+    "friendsofphp/php-cs-fixer": "^3.95"
+  },
+  "commented-out-r-equire-dev": {
+    "roave/security-advisories": "dev-latest",
+    "pestphp/pest": "*",
+    "symfony/http-client": "*",
+    "codeception/codeception": "^5.1",
+    "rector/rector": "^0.15"
+  },
+  "suggest": {
+    "ext-ldap": "*",
+    "ext-openssl": "*",
+    "ext-apache": "*",
+    "ext-mysqli": "*",
+    "ext-libxml": "*",
+    "ext-ftp": "*",
+    "ext-soap": "*"
+  },
+  "autoload": {
+    "classmap": [
+      "include/",
+      "src/"
+    ],
+    "exclude-from-classmap": [
+      "include/custom/"
+    ]
+  },
+  "scripts": {
+    "lint": "find src include -name '*.php' -not -path 'include/custom/*' -print0 | xargs -0 -n1 -P4 php -l > /dev/null",
+    "stan": "phpstan analyse --no-progress --memory-limit=1G",
+    "cs": "php-cs-fixer check",
+    "fix": "php-cs-fixer fix",
+    "test": "phpunit",
+    "check": [
+      "@lint",
+      "@cs",
+      "@stan",
+      "@test"
+    ]
+  },
+  "config": {
+    "discard-changes": true,
+    "optimize-autoloader": true,
+    "allow-plugins": {
+      "pestphp/pest-plugin": true
+    },
+    "platform": {
+      "php": "8.2"
+    }
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "support": {
+    "source": "https://github.com/apc-aa/ActionApps",
+    "issues": "https://github.com/apc-aa/ActionApps/issues"
+  }
+}

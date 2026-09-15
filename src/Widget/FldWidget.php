@@ -1,0 +1,178 @@
+<?php
+
+/**
+ * Created by PhpStorm.
+ * User: honzama
+ * Date: 15.10.18
+ * Time: 20:29
+ */
+
+namespace AA\Widget;
+
+use AA\FormArray;
+use AA_Content;
+use AA\Util\Langs;
+use AA_Property;
+use Exception;
+
+/** Text Field widget */
+class FldWidget extends Widget
+{
+    protected $max_characters;
+    protected $width;
+    protected $input_type;
+    protected $placeholder;
+
+    /** - static member functions
+     *  used as simulation of static class variables (not present in php4)
+     */
+    /** name function
+     *
+     */
+    public static function name(): string
+    {
+        return _m('Text Field');   // widget name
+    }
+
+    /** getClassProperties function of AA_Serializable
+     *  Used parameter format (in fields.input_show_func table)
+     * @return array
+     */
+    public static function getClassProperties(): array
+    {
+        return Widget::propertiesShop(['max_characters', 'width', 'input_type', 'placeholder']);
+    }
+
+    /** libs to run after the page DOM is loaded */
+    protected function requireLibs($aa_property, $winfo): array
+    {
+        return (count($aa_property->getTranslations()) > 1) ? ['aa-jslib@3'] : [];
+    }
+
+
+    /** Creates base widget HTML, which will be surrounded by Live, Ajax
+     *  or normal decorations (added by _finalize*Html)
+     *
+     * @param  AA_Property  $aa_property
+     * @param AA_Content    $content
+     * @param  string       $type  normal|live|ajax
+     *
+     *  @return array
+     *  @throws Exception
+     */
+    public function _getRawHtml(AA_Property $aa_property, AA_Content $content, string $type = 'normal'): array
+    {
+        $base_name = FormArray::getName4Form($aa_property->getId(), $content, $this->item_index);
+        $base_id = FormArray::formName2Id($base_name);
+        $required = $aa_property->isRequired() ? 'required' : '';
+
+        $attrs = Widget::stdInputAttrs($type, $base_id, ['dirty']);
+
+        // $widget_add = ($type === 'live') ? " class=\"live\" onkeypress=\"AA_StateChange('$base_id', 'dirty')\" onchange=\"AA_SendWidgetLive('$base_id', this, AA_LIVE_OK_FUNC)\"" : '';   //style=\"padding-right:16px;\"" : '';
+        $widget = '';
+        $autofocus = ($type === 'ajax') ? 'autofocus' : '';
+
+        $value = $content->getAaValue($aa_property->getId());
+
+        $translations = $aa_property->getTranslations();
+
+        $attrs = array_merge($attrs, $aa_property->getValidator()->getHtmlInputAttr());
+        $attrs['type'] = $this->getProperty('input_type') ?: $attrs['type'] ?: 'text';
+        if ($this->getProperty('placeholder')) {
+            $attrs['placeholder'] = $this->getProperty('placeholder');
+        }
+
+        // type number does not support size parameter, so we have to set max and min (make no sense to do it for numbers > 11 characters - use default)
+        if ($attrs['type'] === 'number') {
+            if (!isset($attrs['max']) && ($nchars = $attrs['maxlength'] ?: $this->getProperty('max_characters') ?: $attrs['size'] ?: 0) && $nchars < 11) {  // $this->getProperty('width') - removed - max should not be set based on widget width
+                $attrs['max'] = (10 ** $nchars) - 1;
+                $attrs['min'] = $attrs['min'] ?: '0';
+            }
+        } else {
+            $attrs['size'] = get_if($this->getProperty('width'), $attrs['size']);
+            if (!$attrs['size']) {
+                unset($attrs['size']);
+                if (count($translations) > 1) {
+                    $attrs['style'] = 'width:85%'; // for translations, we need more space for buttons
+                } else {
+                    $attrs['class'] = $attrs['class'] ? $attrs['class'] . ' aa-w-full' : 'aa-w-full'; // $attrs['style'] = 'width:95%';
+                }
+            }
+            $attrs['maxlength'] = get_if($this->getProperty('max_characters'), $attrs['maxlength'], 255);
+        }
+
+        $datalist = '';
+        if ($this instanceof \AA\Widget\PreWidget) {
+            // $widget .= Widget::getWidgetIdentificationCode($base_name, 'pre');   // not necessary, I think - we can stay with Fld styles...
+            $options  = $this->getOptions(null, $content, (bool) $this->getProperty('use_name', false));
+            if ($options) {
+                $datalist_id = $base_id . '_lst';
+                $datalist = "<datalist id=\"{$datalist_id}\">" . $this->getSelectOptions($options) . "</datalist>";
+                $attrs['list'] = $datalist_id;
+            }
+        }
+
+
+        $attr_string = htmlattr($attrs);
+
+        if ($value->isEmpty()) {
+            $value->addValue('');   // display empty field at least
+        }
+        $value->fixTranslations($translations);  // modify for translations if needed
+
+        $base = [];
+        foreach ($value as $i => $val) {
+            $input_name = $base_name . "[$i]";
+            if (!$base) {
+                $base['id']       = FormArray::formName2Id($input_name);
+                $base['langcode'] = Langs::getLangName2Code(Langs::getLangNum2Name($i));
+            }
+            $widget .= $this->getOneInput($input_name, $i, $val, $attr_string, $autofocus, $base_id, $type, '', $required, $base);
+            $required = ''; // only one is required
+            $autofocus = '';
+        }
+        $widget .= $datalist;
+
+        return ['html' => $widget, 'last_input_name' => $input_name, 'base_name' => $base_name, 'base_id' => $base_id, 'required' => $aa_property->isRequired()];
+    }
+
+    /**
+     * @param $input_name
+     * @param $i
+     * @param $val
+     * @param $attr_string
+     * @param $autofocus
+     * @param $base_id
+     * @param $type
+     * @param $widget_add
+     * @param $required
+     * @param $base
+     * @return string
+     */
+    protected function getOneInput($input_name, $i, $val, $attr_string, $autofocus, $base_id, $type, $widget_add, $required, $base): string
+    {
+        $input_id = FormArray::formName2Id($input_name);
+        $input_value = safe($val);
+        $link = (str_starts_with($input_value, 'http://') || str_starts_with($input_value, 'https://')) ? '&nbsp;' . a_href($input_value, GetAAImage('external-link.png', _m('Show'), 16, 16)) : '';
+        $ret = "<input $attr_string name=\"$input_name\" id=\"$input_id\" value=\"$input_value\" $required $widget_add $autofocus>$link" . Widget::_saveIcon($base_id, $type === 'live'); //, 'right', $link ? 16 : 0);
+        if ($lang = Langs::getLangNum2Name($i)) {
+            $langcode  = Langs::getLangName2Code($lang);
+            $translate = '';
+
+            if ($langcode != $base['langcode']) {
+                // Fire "change" after writing, or live editing never stores the value.
+                $get_source = "document.getElementById('" . $base['id'] . "').value";
+                $set_target = "const inp = document.getElementById('$input_id'); inp.value = txt; inp.dispatchEvent(new Event('change'))";
+                $translate  = "<span class=\"btn aa-langtrans-tbtn\" onclick=\"AA_TranslateInto(() => $get_source, txt => { $set_target; }, '" . $base['langcode'] . "', '$langcode', this)\">" . _m("translate from") . ' ' . Langs::getLangCode2Name($base['langcode']) . "</span>";
+            }
+            $ret = "<div class=\"aa-langtrans aa-lang-$lang\"><strong class=\"aa-langtrans-label\">$lang</strong>$ret $translate</div>";
+        }
+        return "<div class='aa-one-val'>$ret</div>";
+    }
+
+    /** @inheritDoc */
+    public static function description(): string
+    {
+        return ''; // TODO: Implement description() method.
+    }
+}

@@ -1,0 +1,312 @@
+<?php
+// $Id$
+/**
+ * PHP version 7.2+
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @version   $Id$
+ * @author    Honza Malik <honza.malik@ecn.cz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      https://www.apc.org/ APC
+ *
+*/
+
+
+///////////////////////////////////////////////////////////////////////////
+
+// Superadmin-creation form inputs, read explicitly from the request. Kept RAW - the DB layer
+// escapes them on insert (AddUser() in include/perm_sql.php builds a Cvarset, whose two-item
+// rows default to type "text" = quote()d) and AA_Inputfield::inputText() safe()s them when the
+// form is redisplayed. The old $$k = AddslashesDeep() register_globals loop was removed
+// (finding N14, 2026-09); it also double-escaped these values on top of the "text" insert.
+// Plain $_REQUEST and not InputVars here: the composer autoloader is only registered by
+// locsess.php, which this page requires below.
+$phase     = $_REQUEST['phase']     ?? '';
+$login     = $_REQUEST['login']     ?? '';
+$password1 = $_REQUEST['password1'] ?? '';
+$password2 = $_REQUEST['password2'] ?? '';
+$fname     = $_REQUEST['fname']     ?? '';
+$lname     = $_REQUEST['lname']     ?? '';
+$email     = $_REQUEST['email']     ?? '';
+
+require_once __DIR__."/../include/config.php";
+require_once __DIR__ . "/../include/locsess.php";
+require_once __DIR__ . "/../include/perm_core.php";
+require_once __DIR__."/../include/perm_" . PERM_LIB . ".php";
+require_once __DIR__ . "/../include/util.php";
+require_once __DIR__ . "/../include/formutil.php";
+require_once __DIR__ . "/../include/mgettext.php";
+bind_mgettext_domain(DEFAULT_LANG_INCLUDE);
+
+/** HtmlStart function
+ *  Prints title,body,h1
+ */
+function HtmlStart(): void
+{
+    HtmlPageBegin();
+    echo "<title>" . _m("ActionApps Setup") . "</title></head>\n";
+    echo "<body>\n";
+    echo "<div style=\"text-align: center;\">\n";
+    echo "<h1>" . _m("ActionApps Setup") . "</h1>\n";
+}
+
+/** NoAction function
+ *  Prints a message
+ */
+function NoAction(): void
+{
+    echo _m("This script can't be used on a configured system.");
+}
+/** PrintErr function
+ * @param $err
+ * Prints every value in $err
+ */
+function PrintErr($err): void
+{
+    foreach($err as $value) {
+        echo $value;
+    }
+}
+
+/** SuperForm function
+ *  Prints a form
+ */
+function SuperForm(): void
+{
+  global $login, $password1, $password2, $fname, $lname, $email;
+  ?>
+  <form action="setup.php">
+    <table
+           class="aa-table">
+      <tr class="aa-tbl-header"><th><?php echo _m("Superadmin account"); ?></th></tr>
+      <tr><td>
+         <table>
+            <?php
+              FrmInputText("login", _m("Login name"), $login, 12, 30, true);
+              FrmInputPwd("password1", _m("Password"), $password1);
+              FrmInputPwd("password2", _m("Retype Password"), $password2);
+              FrmInputText("fname", _m("First name"), $fname, 50, 30, true);
+              FrmInputText("lname", _m("Last name"), $lname, 50, 30, true);
+              FrmInputEmail("email", _m("E-mail"), $email, 50, 30, true);
+            ?>
+         </table>
+      <tr><td>
+         <?php echo StateHidden(); ?>
+         <input type=submit name=phase value="<?php echo _m("Create") ?>">
+    </td></tr>
+    </table>
+  </form>
+  <?php
+}
+/** InitForm function
+ * Prints two messages and a form
+ */
+function InitForm(): void
+{
+   echo _m("Welcome! Use this script to create the superadmin account.<p>If you are installing a new copy of AA, press <b>Init</b>.<br>");
+   echo _m("If you deleted your superadmin account by mistake, press <b>Recover</b>.<br>");
+   ?>
+   <form method=get action="setup.php">
+   <?php echo StateHidden(); ?>
+   <input type=submit name=phase value="<?php echo _m(" Init "); ?>">
+   <input type=submit name=phase value="<?php echo _m("Recover"); ?>">
+   </form>
+   <?php
+}
+
+/** HtmlEnd function
+ *  Prints end of html tags
+ */
+function HtmlEnd(): void
+{
+   echo "</div></body></html>";
+}
+
+///////////////////////////////////////////////////////////////////////////
+
+pageOpen('noauth');
+
+$db = getDB();
+
+// Check if database is already created - test that the `content` table exists
+$info = $db->metadata('content');
+if ( !is_array($info) || count($info) < 1 ) {
+    HtmlStart();
+    echo _m('Database is not configured correctly or the database is empty.<br>
+             Check please the database credentials in <b>include/config.php</b>
+             file <br>or run <a href="../service/sql_update.php">/service/sql_update.php</a> script,
+             which creates AA tables for you.');
+    HtmlEnd();
+    exit;
+}
+
+
+$notusers    = [];
+$others      = [];
+$supergroups = [];
+$superusers  = [];
+
+// Discover current state in AA object perms
+if ($perms = AA::$perm->getObjectsPerms(AA_ID, "aa")) {
+    foreach ($perms as $uid => $perm) {
+        $uinfo = AA::$perm->getIDsInfo($uid);
+        if (!$uinfo) {
+            $notusers[]    = $uid;      // non-existent user/group
+        } elseif ($perm != AA_Perm::ROLES["SUPER"]['id']) {
+            $others[]      = $uid;        // other than super privilege
+        } elseif ($uinfo["type"] === 'Group') {
+            $supergroups[] = $uid;   // groups with super privileges
+        } else {
+            $superusers[]  = $uid;    // users with super privileges
+        }
+    }
+}
+
+// Consider only non-empty superadmin groups
+$nonemptysupergroups = [];
+foreach ($supergroups as $uid) {
+    $members = AA::$perm->getGroupMembers($uid);
+    if (count($members)) {
+        $nonemptysupergroups[] = $uid;
+    }
+}
+$supergroups = $nonemptysupergroups;
+
+HtmlStart();
+$err = [];
+
+switch ($phase) {
+
+   case _m(" Init "):
+      if ($superusers || $supergroups) {
+         NoAction();
+         break;
+      }
+
+      if (AddPermObject(AA_ID, "aa")) {
+         SuperForm();
+      } else {         // Either AA_ID exists or there is more severe error
+         echo "<p>", _m("Can't add primary permission object.<br>Please check the access settings to your permission system.<br>If you just deleted your superadmin account, use <b>Recover</b>"), "</p>";
+      }
+
+      break;
+
+   case _m("Recover"):
+
+      if ($superusers || $supergroups) {
+         NoAction();
+         break;
+      }
+
+      if ($notusers) {                 // Delete orphan permissions
+         foreach ($notusers as $uid) {
+            if (!DelPerm ($uid, AA_ID, "aa")) {
+               echo _m("Can't delete invalid permission."), "$uid<br>";
+            } else {
+               echo _m("Invalid permission deleted (no such user/group): "), "$uid<br>";
+            }
+         }
+      }
+
+      // Print the account form
+      SuperForm();
+
+      $recover = true;
+      $sess->register("recover");
+
+      break;
+
+   case _m("Create"):
+
+      if ($superusers || $supergroups) {
+         NoAction();
+         break;
+      }
+
+      ValidateInput("login", _m("Login name"), $login, $err, true, "login");
+      ValidateInput("password1", _m("Password"), $password1,
+                    $err, true, "password");
+      ValidateInput("password2", _m("Retype Password"), $password2,
+                    $err, true, "password");
+      ValidateInput("fname", _m("First name"), $fname, $err, true, "all");
+      ValidateInput("lname", _m("Last name"), $lname, $err, true, "all");
+      ValidateInput("email", _m("E-mail"), $email, $err, false, "email");
+
+      if ( $password1 != $password2 ) {
+         $err[$password1] = MsgErr(_m("Retyped password is not the same as the first one"));
+      }
+
+      if (count($err)) {        // Insufficient input data
+         PrintErr($err);
+         SuperForm();
+         break;
+      }
+
+      // Input data are OK, prepare the record
+
+      $super["uid"] = $login;
+      $super["userpassword"] = $password1;
+      $super["givenname"] = $fname;
+      $super["sn"] = $lname;
+      $super["mail"][] = $email ?: "";
+
+      // Try to create the account
+
+      $superid = AddUser($super);
+
+      if (!$superid) {               // No success :-(
+         echo _m("It is impossible to add user to permission system");
+         break;
+      }
+
+      // Assign super admin privilege
+
+      AddPerm($superid, AA_ID, "aa", AA_Perm::ROLES["SUPER"]['id']);
+
+      // Check whether succefful
+
+      $perms = AA::$perm->getObjectsPerms(AA_ID, "aa");
+
+      if ($perms[$superid]) {
+         echo _m("Congratulations! The account was created.");
+         if (!$recover) {
+            echo "<p>", _m("Use this account to login and add your first slice:"), "<p>";
+            echo ">" . _m("Add Slice") . "</a>";
+         }
+      } else {
+         echo _m("Can't assign super access permission.");
+      }
+
+      break;
+
+   default:
+
+      if ($superusers || $supergroups) {
+         NoAction();
+         break;
+      }
+
+      // Print the welcome page
+
+      InitForm();
+      break;
+
+}
+
+HtmlEnd();
+
+Session::page_close();

@@ -1,0 +1,104 @@
+<?php
+
+/**
+ * PHP version 7.2+
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @version   $Id$
+ * @author    Honza Malik <honza.malik@ecn.cz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      https://www.apc.org/ APC
+ *
+*/
+
+
+// messages for init_page:
+use AA\IO\DB\DB_AA;
+use AA\Util\InputVars;
+
+// $no_slice_id          = true;
+$require_default_lang = true;
+
+require_once __DIR__ . "/../include/init_page.php";
+require_once __DIR__ . "/../include/sliceadd.php";
+
+try {
+    $cancel = InputVars::boolPOST('cancel');
+
+    $Msg = InputVars::stringGETPOST('Msg');
+} catch (Exception $e) {
+    AA_Adminpageutil::pageParameterError($e);
+}
+
+/** GetModuleTemplateSelecbox function
+ * @param $type
+ * @param $g_modules
+ * @return string - a html select box or false if g_modules is null or not an array
+ */
+function GetModuleTemplateSelecbox($type, $g_modules): string
+{
+    $ret = '';
+    if (isset($g_modules) && is_array($g_modules)) {
+        foreach ($g_modules as $mid => $mod) {
+            if ($mod['type'] == $type) {
+                $ret .=  "\n  <option value=\"x$mid\">" . $mod['name'] . "</option>";
+            }
+        }
+    }
+    return $ret ? "<select name=\"template[$type]\">$ret\n</select>" : '';
+}
+
+
+// the parts used by the slice wizard are in the included file
+
+if ($cancel) {
+    go_url(StateUrl(self_base() . "index.php"));
+}
+
+$err = [];          // error array (Init - just for initializing variable
+
+$apage = new AA_Adminpageutil();
+$apage->setTitle(_m("Create New Slice / Module"));
+$apage->setForm(['action' => 'slicedit.php']);
+$apage->printHead($err, $Msg);
+
+SliceAddForm();
+
+FrmTabCaption(_m("Modules"));
+
+$module_types = AA_Moduleregistry::singleton();
+foreach ($module_types as $type => $conf) {
+    if ($type === 'S') {
+        continue;
+    }
+    // Jump is a legacy module: hide entirely on installs that have never used it
+    if ($type === 'J' && !DB_AA::test('module', [['type','J'],['deleted',0,'i']])) {
+        continue;
+    }
+    echo "<tr>
+            <th>" . $conf->get('name') . "</th>
+            <td>" . ($conf->get('use_templates') ? GetModuleTemplateSelecbox($type, $g_modules) : "&nbsp;") . "</td>
+            <td><input type=submit name=\"create[$type]\" value=\"" . _m("Add") . "\"></td>
+          </tr>";
+}
+FrmTabEnd();
+echo '<br><br>' . getTabStart();
+
+echo getFrmInputButtons(["cancel" => ["url" => "aafinder.php"]]);
+FrmTabEnd();
+
+$apage->printFoot();

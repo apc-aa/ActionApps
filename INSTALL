@@ -1,0 +1,9 @@
+$Id$
+To install, see doc/install.html
+
+Directories a running installation does not need. They are in the repository
+because they build or document the shipped code; delete them on a server:
+
+    dev/     build inputs - regenerate files that ship (see dev/README.md)
+    doc/     documentation
+    tests/   PHPUnit test suite

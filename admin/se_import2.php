@@ -1,0 +1,154 @@
+<?php
+
+/** se_import2.php - assigns imports (feeding) to specified slice - writes it to database
+ *   expected $slice_id for edit slice
+ *            $I[] with ids of imported slices
+ *
+ * PHP version 7.2+
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @version   $Id$
+ * @author    Honza Malik <honza.malik@ecn.cz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      https://www.apc.org/ APC
+ *
+*/
+
+use AA\IO\DB\DB_AA;
+use AA\Util\InputVars;
+
+require_once __DIR__ . "/../include/init_page.php";
+require_once __DIR__ . "/../include/logs.php";
+require_once __DIR__ . "/../include/varset.php";
+
+try {
+    // array ( )
+    $E = InputVars::arrayGET('E', true);
+    // array ( )
+    $I = InputVars::arrayGET('I', true);
+    // array ( 0 => 3, )
+    $to_all = InputVars::boolGET('to_all', true);
+    $cancel = InputVars::boolPOST('cancel');
+
+    $Msg = InputVars::stringGETPOST('Msg');
+} catch (Exception $e) {
+    AA_Adminpageutil::pageParameterError($e);
+}
+
+
+if (!IfSlPerm(PS_FEEDING)) {
+    AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php", _m("You do not have permissions to change feeding setting"), "admin");
+    exit;
+}
+
+$err = [];          // error array (Init - just for initializing variable
+$catVS       = new Cvarset();
+$expVS       = new Cvarset();
+
+$slice      = AA_Slice::getModule(AA::$module_id);
+
+// update export_to_all switch
+if (($slice->getProperty('export_to_all') ? 1 : 0) !== ($to_all ? 1 : 0)) {
+    $SQL = "UPDATE slice SET export_to_all=" . ($to_all ? 1 : 0) . " WHERE id='$p_slice_id'";
+    $db->query($SQL);
+    AA_Log::write(($to_all ? "FEED2ALL_1" : "FEED2ALL_0"), AA::$module_id);
+}
+
+// ------------------------ Export --------------------------
+// feeding lookup
+$feedto = DB_AA::select(['unid' => true], "SELECT LOWER(HEX(`to_id`)) AS unid FROM `feedperms`", [['from_id',AA::$module_id,'l']]);
+
+//$feedto["Init"] = false;  // create array
+//$SQL= "SELECT to_id FROM feedperms WHERE from_id='$p_slice_id'";
+//$db->query($SQL);
+//while ($db->next_record()) {
+//    $feedto[unpack_id($db->f('to_id'))] = true;
+//}
+
+do {
+    if (isset($E) && is_array($E)) {  // Export to any slice
+        foreach ($E as $val) {
+            if ($feedto[$val]) {
+                $feedto[$val] = false;      // this feed is allready in database => don't change
+                continue;
+            }
+            $expVS->clear();
+            $expVS->add("from_id", "unpacked", AA::$module_id);
+            $expVS->add("to_id", "unpacked", $val);
+            if (!$expVS->doINSERT('feedperms')) {
+                $err["DB"] .= MsgErr("Can't add export to $val");
+                break;    // not necessary - we have set the halt_on_error
+            }
+            AA_Log::write("FEED_ENBLE", new AA_Logentry_Fd(['module' => AA::$module_id, 'target' => $val]));
+        }
+    }
+    foreach ($feedto as $to => $val) {
+        if ($val) {
+            $SQL = "DELETE FROM feedperms WHERE from_id = '$p_slice_id' AND to_id=" . xpack_id($to);
+            $db->query($SQL);
+            AA_Log::write("FEED_DSBLE", new AA_Logentry_Fd(['module' => AA::$module_id, 'target' => $to]));   // $to is the target id ($val is the loop's keep/remove flag)
+        }
+    }
+} while (false);
+
+// ------------------------ Import --------------------------
+// feeding lookup
+
+$feedfrom = DB_AA::select(['unid' => true], "SELECT LOWER(HEX(`from_id`)) AS unid FROM `feeds`", [['to_id',AA::$module_id,'l']]);
+
+do {
+    if (isset($I) && is_array($I)) {  // insert to categories
+        foreach ($I as $val) {
+            if ($feedfrom[$val]) {
+                $feedfrom[$val] = false;      // this feed is allready in database => don't change
+                continue;
+            }
+            $catVS->clear();
+            $catVS->add("to_id", "unpacked", AA::$module_id);
+            $catVS->add("from_id", "unpacked", $val);
+            $catVS->add("all_categories", "number", 1);
+            $catVS->add("to_approved", "number", 0);
+            $catVS->add("to_category_id", "unpacked", "0");   // zero means import to the same category (if all_actegories==1)
+            if (!$catVS->doINSERT('feeds')) {
+                $err["DB"] .= MsgErr("Can't add import from $val");
+                break;  // not necessary - we have set the halt_on_error
+            }
+            AA_Log::write("FEED_ADD", new AA_Logentry_Fd(['module' => AA::$module_id, 'target' => $val]));
+        }
+    }
+
+    foreach ($feedfrom as $from => $val) {  // delete removed feeds
+        if ($val) {
+            $SQL = "DELETE FROM feeds WHERE to_id = '$p_slice_id' AND from_id=" . xpack_id($from);
+            $db->query($SQL);
+            AA_Log::write("FEED_DEL", new AA_Logentry_Fd(['module' => AA::$module_id, 'target' => $from]));   // $from is the source id ($val is the loop's keep/remove flag)
+        }
+    }
+} while (false);
+
+
+if ($err === []) {
+    if (isset($I) && is_array($I)) {   // slice imports some slices
+        go_url(StateUrl(self_base() . "se_filters.php") . "&Msg=" . rawurlencode(MsgOk(_m("Content Pooling update successful"))));
+    } else {
+        go_url(StateUrl(self_base() . "se_import.php") . "&Msg=" . rawurlencode(MsgOk(_m("Content Pooling update successful"))));
+    }
+} else {
+    MsgPage($err, StateUrl(self_base() . "se_import.php"));
+}
+
+Session::page_close();

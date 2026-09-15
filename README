@@ -1,0 +1,42 @@
+$Id$
+
+ActionApps
+=======================
+ActionApps (under the GPL) provide easy automated publishing for
+non-profit WWW sites and 'Usenet-like' sharing of articles between sites.
+
+Features
+========
+- Complete web publishing system: no HTML skills required
+- Fully online service: all you need is a web browser
+- Article manager: all features packed into one browser-based control panel
+- Configurable output: make ActionApps look like your web site
+- Moderation tools: share the load of posting articles online
+- Discussion support
+- Content Pooling: Swap content with other ActionApps users on any server
+- Classify articles using built-in categories (or create your own)
+- Search engine included
+- Alerts and Links modules included
+- Multilingual support: English, Spanish, Czech, Slovak, Deutch, Romanian and
+  Japan included (easy to add new languages)
+
+
+Update
+======
+To upgrade or just check database use /service/sql_update.php script.
+
+
+Contact
+=======
+See https://actionapps.org/ for more info about ActionApps
+
+See https://sourceforge.net/projects/apc-aa/ for
+
+  list of developers
+  cvs
+  download links
+  bug tracking
+  patches
+  support manager for help with installation
+
+See https://actionapps.org/ for recent documentation, or look in the doc/ subdirectory.

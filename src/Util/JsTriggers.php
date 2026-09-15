@@ -1,0 +1,214 @@
+<?php
+
+namespace AA\Util;
+
+use AA;
+use AA_Slice;
+
+/**
+ *
+ * PHP version 7.2+
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @package   Include
+ * @version   $Id$
+ * @author    Honza Malik <honza.malik@ecn.cz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      https://www.apc.org/ APC
+ *
+ */
+class JsTriggers
+{
+    use Singleton4idTrait;
+
+    private const CONTROL_TRIGGERS = [
+        "input"    => ["onBlur", "onClick", "onDblClick", "onFocus", "onChange", "onKeyDown", "onKeyPress", "onKeyUp", "onMouseDown", "onMouseMove", "onMouseOut", "onMouseOver", "onMouseUp", "onSelect",],
+        "select"   => ["onBlur", "onFocus", "onChange"],
+        "textarea" => ["onBlur", "onClick", "onDblClick", "onFocus", "onChange", "onKeyDown", "onKeyPress", "onKeyUp", "onMouseDown", "onMouseMove", "onMouseOut", "onMouseOver", "onMouseUp", "onSelect",],
+        "form"     => ["onClick", "onDblClick", "onKeyDown", "onKeyPress", "onKeyUp", "onMouseDown", "onMouseMove", "onMouseOut", "onMouseOver", "onMouseUp", "onReset", "onSubmit",],
+        "body"     => ["onLoad"],
+    ];
+
+    /** @var array|null array with triggers used, e.g. ["onBlur" => 1, "onClick" => 1] which means aa_onBlur, aa_onClick are defined */
+    protected ?array  $js_trig    = null;
+    protected ?string $slice_id   = null;
+    protected string  $javascript = '';
+
+    /** called from Singleton4idTrait */
+    protected function __construct($id)
+    {
+        $this->slice_id = $id;
+    }
+
+    /** Load $js_trig array */
+    protected function loadTriggers(): array
+    {
+        if (!is_null($this->js_trig)) {
+            return $this->js_trig;
+        }
+        $this->js_trig = [];
+
+        if ($this->javascript = (string) AA_Slice::getModuleProperty($this->slice_id, 'javascript')) {
+            $all_trig = array_unique(array_merge(...array_values(self::CONTROL_TRIGGERS)));
+
+            $ws = "\s*";
+            foreach ($all_trig as $trg) {
+                // match e.g. aa_onSubmit( fieldid ) {
+                if (preg_match("/aa_{$trg}{$ws}\({$ws}fieldid{$ws}\){$ws}\{/", $this->javascript)) {
+                    $this->js_trig[$trg] = true;
+                }
+            }
+
+        }
+        return $this->js_trig;
+    }
+
+    // $unpacked_fieldid -- the function ignores the first character (usually 'v')
+
+    /** getTriggers function
+     * @param string $control
+     * @param string $unpacked_fieldid
+     * @param array  $add
+     * @return string
+     */
+    public function get(string $control, string $unpacked_fieldid = '', array $add = []): string
+    {
+
+        $this->loadTriggers();
+        $control_triggers = self::CONTROL_TRIGGERS[$control];
+        $retval  = '';
+
+        if (!$control_triggers || (!$this->js_trig && !$add)) {
+            return '';
+        }
+
+        if (str_ends_with($unpacked_fieldid, "[]")) {
+            $unpacked_fieldid = substr($unpacked_fieldid, 0, -2);
+        }
+        if (str_ends_with($unpacked_fieldid, "x")) {
+            $unpacked_fieldid = substr($unpacked_fieldid, 0, -1);
+        }
+
+        if (preg_match('/^v[0-9a-f]+$/', $unpacked_fieldid)) {
+            $fieldid = pack_id(substr($unpacked_fieldid, 1));
+        } elseif (preg_match('/^[0-9a-f]+$/', $unpacked_fieldid)) {
+            $fieldid = pack_id($unpacked_fieldid);
+        } else {
+            $fieldid = $unpacked_fieldid;
+        }
+
+        foreach ($control_triggers as $ctrig) {
+            $funcs = "";
+            // Omar Martinez fix - 2005/04/28
+            // onSubmit is special case - for all other events we can concatenate
+            // the commands, but if you do so for onSubmit, you will get:
+            //   return BeforeSubmit(); aa_onSubmit('inputform');
+            // which is nonsense.
+            if ($ctrig === "onSubmit" && $add[$ctrig] === "return BeforeSubmit()") {
+                if ($this->js_trig[$ctrig]) {
+                    $retval .= " $ctrig=\"if( BeforeSubmit() ){ return aa_$ctrig('$fieldid'); } else { return false; }\"";
+                } else {
+                    $retval .= " $ctrig=\"$add[$ctrig]\"";
+                }
+            } else {
+                if ($add[$ctrig]) {
+                    $funcs = $add[$ctrig] . ";";
+                }
+                if ($this->js_trig[$ctrig]) {
+                    $funcs .= "aa_$ctrig('$fieldid');";
+                }
+                if ($funcs) {
+                    $retval .= " $ctrig=\"$funcs\"";
+                }
+            }
+        }
+        return $retval;
+    }
+
+    public function getJavascriptAndRegisterRequires(): string
+    {
+        $this->loadTriggers();
+        if ($this->javascript) {
+            // modern version of js for field can use own libs - say {require:aa-fillform@1} - without unnecessary aa-jslib@1
+            if (!str_contains($this->javascript, '{require:')) {
+                AA::Stringexpander()->addRequire('aa-jslib@1');
+                AA::Stringexpander()->addRequire('aa-fillform@1');
+            }
+
+            $events = [];
+            foreach ($this->js_trig as $trig => $foo) {
+                foreach (self::CONTROL_TRIGGERS as $el => $evs) {
+                    if (in_array($trig, $evs, true)) {
+                        $events[$trig][] = $el;
+                    }
+                }
+            }
+            $listeners = [];
+            $script2run = '';
+            foreach ($events as $e => $els) {
+                if ($els[0] === 'body') {
+                    // special case for body onload
+                    $listeners[] = "aa_onLoad('');";
+                } else {
+                    $listeners[] = 'document.querySelectorAll("' . implode(', ', array_map(static fn($el) => "form[name=inputform] $el", $els)) . '").forEach(function(el) { el.addEventListener("' . strtolower(substr($e, 2)) . '", aa_runevent, false); });';
+                    $script2run = <<<'JS'
+                        function aa_runevent(e) {
+                            const fnc = `aa_on${e.type.charAt(0).toUpperCase()}${e.type.slice(1)}`;
+                            const match = e.target.name.match(/aa\[[^\]]*\]\[([a-z0-9_]*)\]/);
+                            const fld = match ? match[1].replaceAll('_', '.') : null;
+                            if (fld && typeof window[fnc] === "function") {
+                                window[fnc](fld);
+                            }
+                        }                    
+                        JS;
+                }
+            }
+            if ($listeners) {
+                AA::Stringexpander()->addRequire(implode("\n", $listeners), 'AA_Req_Load');
+            }
+            if ($script2run) {
+                AA::Stringexpander()->addRequire($script2run, 'AA_Req_Run');
+            }
+        }
+        return $this->javascript;
+    }
+
+
+    /** @deprecated  */
+    public static function getFromGlobalSliceId(string $control, string $unpacked_fieldid = '', array $add = []): string
+    {
+        global $slice_id;
+        return $slice_id ? self::singleton4id($slice_id)->get($control, $unpacked_fieldid, $add) : '';
+    }
+
+    /** get html table with list of possible triggers
+     * @return string
+     */
+    public static function getSummary(): string
+    {
+        $ret = '';
+        foreach (self::CONTROL_TRIGGERS as $control => $trigs) {
+            $ret .= '<tr><td>' . $control . '</td><td>' . implode(", ", $trigs) . '</td></tr>';
+        }
+        return $ret;
+    }
+
+    public function isTriggers(): bool
+    {
+        return count($this->loadTriggers()) > 0;
+    }
+}

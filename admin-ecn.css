@@ -1,0 +1,3204 @@
+:root {
+    /* Surfaces and chrome */
+    --clr-body: #f3f3f1;
+    --clr-footer: #e6e3d9;
+    --clr-basic: #ebdcc3;
+    --clr-basic-dark: #d5c2a4;
+    --clr-basic-darker: #A8977A;
+    --clr-basic-light: #eeebe3;
+    --clr-opacity-light: rgb(255 255 255 / 30%);
+    --clr-opacity-dark: rgb(0 0 0 / 0.02);
+
+    /* Text + lines */
+    --clr-dark: #1f1f1f;                  /* TODO: rename → --clr-text */
+    --clr-border: rgb(220 213 194);
+    --clr-gold: #c9b57f;                  /* TODO: rename → --clr-border-strong / --clr-accent */
+    --clr-green: #1eb585;                 /* TODO: rename → --clr-success */
+
+    /* Inline word-diff (item history) — soft, prose-friendly add/remove pairs */
+    --clr-diff-ins-bg:   #d6f5d6;
+    --clr-diff-ins-text: #14532d;
+    --clr-diff-del-bg:   #fbdada;
+    --clr-diff-del-text: #7f1d1d;
+
+    /* UI states — floating surfaces (popups, dropdowns), accent text,
+       hovered borders, selected rows. Skins can override these without
+       touching structural CSS. */
+    --clr-surface-popup: #fbfaf9;
+    --clr-text-accent:      #6a5e22;
+    --clr-border-hover:     #a59850;
+    --clr-surface-selected: #f3e6c3;
+
+    /* Sizing */
+    --sz-m: 1rem;
+    --sz-s: 0.955rem;
+    --sz-xs: 0.867rem;
+}
+@font-face {
+    font-family: 'Open Sans';
+    font-style: normal;
+    font-weight: 400;
+    font-stretch: 100%;
+    font-display: swap;
+    src: local('Open Sans Regular'), local('OpenSans-Regular'),
+    url('fonts/open-sans-v17-latin-ext_latin-regular.woff2') format('woff2');
+}
+@font-face {
+    font-family: 'Open Sans';
+    font-style: italic;
+    font-weight: 400;
+    font-stretch: 100%;
+    font-display: swap;
+    src: local('Open Sans Italic'), local('OpenSans-Italic'),
+    url('fonts/open-sans-v17-latin-ext_latin-italic.woff2') format('woff2');
+}
+@font-face {
+    font-family: 'Open Sans';
+    font-style: normal;
+    font-weight: 600;
+    font-stretch: 100%;
+    font-display: swap;
+    src: local('Open Sans SemiBold'), local('OpenSans-SemiBold'),
+    url('fonts/open-sans-v17-latin-ext_latin-600.woff2') format('woff2');
+}
+@font-face {
+    font-family: 'Open Sans';
+    font-style: italic;
+    font-weight: 600;
+    font-stretch: 100%;
+    font-display: swap;
+    src: local('Open Sans SemiBold Italic'), local('OpenSans-SemiBoldItalic'),
+    url('fonts/open-sans-v17-latin-ext_latin-600italic.woff2') format('woff2');
+}
+.bg-clr-body {background-color: var(--clr-body) !important;}
+.bg-clr-dark {background-color:var(--clr-dark) !important;}
+.bg-clr-footer {background-color: var(--clr-footer) !important;}
+.bg-clr-basic {background-color: var(--clr-basic) !important;}
+.bg-clr-basic-dark {background-color: var(--clr-basic-dark) !important;}
+.bg-clr-basic-darker {background-color: var(--clr-basic-darker) !important;}
+.bg-clr-basic-light {background-color: var(--clr-basic-light) !important;}
+.bg-clr-opacity-light {background-color: var(--clr-opacity-light) !important;}
+.bg-clr-opacity-dark{background-color: var(--clr-opacity-dark) !important;}
+.bg-clr-green {background-color: var(--clr-green) !important;}
+.clr-border {background-color: var(--clr-border) !important;}
+.clr-btn-border {background-color: var(--clr-btn-border) !important;}
+/*srollbar*/
+.aa-mch-list::-webkit-scrollbar,
+.aa-table select::-webkit-scrollbar {
+    width: 8px;
+}
+.aa-mch-list::-webkit-scrollbar-track,
+.aa-table select::-webkit-scrollbar-track{
+    background: #efefef;
+}
+.aa-mch-list::-webkit-scrollbar-thumb,
+.aa-table select::-webkit-scrollbar-thumb{
+    background: #c1c1c1;
+}
+.aa-mch-list::-webkit-scrollbar-thumb:hover,
+.aa-table select::-webkit-scrollbar-thumb:hover{
+    background: #a1a1a1;
+}
+/* flex vlastnosti*/
+.flex {
+    display: flex !important;
+    flex-direction: column;
+}
+.always-flex {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+.f-baseline {
+    align-items: baseline !important;
+}
+.f-bottom {
+    align-items: flex-end !important;
+}
+.f-middle {
+    align-items: center !important;
+}
+.f-start {
+    justify-content: flex-start !important;
+}
+.f-between {
+    justify-content: space-between !important;
+}
+.f-center{
+    justify-content: center !important;
+}
+.f-end {
+    justify-content: end;
+}
+/* align */
+.right {
+    text-align: right !important;
+}
+.left {
+    text-align: left !important;
+}
+.center {
+    text-align: center !important;
+}
+.top, .top td, .top th {
+    vertical-align: top !important;
+}
+.middle, .middle > * {
+    vertical-align: middle !important;
+}
+.bottom, .bottom >* {
+    vertical-align: bottom !important;
+}
+.nowrap {
+    white-space: nowrap;
+}
+/* box margin */
+.m-0 {
+    margin: 0 !important;
+}
+.m-1 {
+    margin: 10px !important;
+}
+.m-2 {
+    margin: 25px !important;
+}
+.m-3 {
+    margin: 35px !important;
+}
+.m-4 {
+    margin: 30px 45px !important;
+}
+.ml-0 {
+    margin-left: 0 !important;
+}
+.ml-05 {
+    margin-left: 5px !important;
+}
+.ml-1 {
+    margin-left: 10px !important;
+}
+.ml-2 {
+    margin-left: 25px !important;
+}
+.ml-3 {
+    margin-left: 35px !important;
+}
+.mr-0 {
+    margin-right: 0 !important;
+}
+.mr-1 {
+    margin-right: 10px !important;
+}
+.mr-05 {
+    margin-right: 5px !important;
+}
+.mr-2 {
+    margin-right: 25px !important;
+}
+.mr-3 {
+    margin-right: 35px !important;
+}
+.mt-0 {
+    margin-top: 0 !important;
+}
+.mt-05 {
+    margin-top: 5px !important;
+}
+.mt-1 {
+    margin-top: 10px !important;
+}
+.mt-2 {
+    margin-top: 25px !important;
+}
+.mt-3 {
+    margin-top: 35px !important;
+}
+.mb-0 {
+    margin-bottom: 0 !important;
+}
+.mb-05 {
+    margin-bottom: 5px !important;
+}
+.mb-1 {
+    margin-bottom: 10px !important;
+}
+.mb-2 {
+    margin-bottom: 25px !important;
+}
+.mb-3 {
+    margin-bottom: 35px !important;
+}
+.m-auto {
+    margin: auto !important;
+}
+/* box padding */
+.p-0 {
+    padding: 0 !important;
+}
+.p-1 {
+    padding: 10px !important;
+}
+.p-2 {
+    padding: 25px !important;
+}
+.p-3 {
+    padding: 35px !important;
+}
+.pl-0 {
+    padding-left: 0 !important;
+}
+.pl-1 {
+    padding-left: 10px !important;
+}
+.pl-2 {
+    padding-left: 25px !important;
+}
+.pl-3 {
+    padding-left: 35px !important;
+}
+.pr-0 {
+    padding-right: 0 !important;
+}
+.pr-1 {
+    padding-right: 10px !important;
+}
+.pr-2 {
+    padding-right: 25px !important;
+}
+.pr-3 {
+    padding-right: 35px !important;
+}
+.pb-0 {
+    padding-bottom: 0 !important;
+}
+.pb-1 {
+    padding-bottom: 10px !important;
+}
+.pb-2 {
+    padding-bottom: 20px !important;
+}
+.pb-3 {
+    padding-bottom: 35px !important;
+}
+.pt-0 {
+    padding-top: 0 !important;
+}
+.pt-1 {
+    padding-top: 10px !important;
+}
+.pt-2 {
+    padding-top: 20px !important;
+}
+.pt-3 {
+    padding-top: 35px !important;
+}
+/**/
+.relative {
+    position: relative;
+}
+.absolute {
+    position: absolute;
+}
+html {
+    font-size: 13px;
+}
+body {
+    margin: 0;
+    color: #000000;
+    background: var(--clr-body);
+    font-family: 'Open Sans', sans-serif;
+    line-height: 1.4em;
+}
+a {
+    color: #2F3D99;
+    text-decoration: none;
+}
+a:hover {
+    color: #007ed7;
+}
+.aa-table a:not(.btn):visited, [class^="aa-button-edit"]:visited {
+    color: #896996;
+}
+b, strong {
+    font-weight: 600;
+}
+i, em {
+    font-style: italic;
+}
+table {
+    border-collapse: collapse;
+    border: 0;
+    font-size: 1rem;
+}
+td {
+    vertical-align: middle;
+    padding: 0;
+}
+/* getFrmTabRow() wraps escaped cells in <pre> (its $safe branch, which every log
+   and record dump goes through). Keep those reading as ordinary table cells: the
+   browser default is monospace and never wraps, which widens the whole page as
+   soon as one value is long. Code blocks keep their own look via .aa-h-code pre. */
+td > pre,
+th > pre {
+    margin: 0;
+    font-family: inherit;
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+}
+/* AA_Log::markChanges(): the value that differs from the log entry before it */
+td.aa-log-changed {
+    background: var(--clr-surface-selected);
+    font-weight: 600;
+}
+form {
+    margin: 0;
+}
+img {
+    vertical-align: middle;
+}
+h1 {
+    font-weight: normal;
+    font-size: 1.3rem;
+}
+h2 {
+    font-size: 1.23rem;
+}
+h3 {
+    font-size: 1.1rem;
+}
+h1:empty {
+    display: none;
+}
+small, .tabhlp, .tabsmall, .sz-s, .small {
+    vertical-align: top;
+    font-size: var(--sz-s);
+}
+hr {
+    height: 1px;
+    border: 0;
+    border-bottom: solid 1px #9e9e9e;
+    margin: 0;
+}
+details summary  {
+    cursor: pointer;
+    padding: 4px 12px;
+    margin-bottom: 1em;
+    display: inline-block;
+    background-color: rgb(255 255 255 / 20%);
+    border: solid 1px rgb(26 4 4 / 30%);
+    color: #61454A;
+    border-radius: 13px;
+    transition: all 0.3s;
+}
+details summary:after, .aa-ui-searchbar .btn.aa-ad-filter:after  {
+    content: "";
+    display: inline-block;
+    border: solid 4px transparent;
+    margin-left: 3px;
+    vertical-align: middle;
+    border-top-color: hsl(0deg 0% 0% / 80%);
+    border-bottom: 0;
+}
+details[open] summary:after, .aa-ui-searchbar[open] .btn.aa-ad-filter:after  {
+    border: solid 4px transparent;
+    border-bottom-color: hsl(0deg 0% 0% / 80%);
+    border-top: 0;
+    margin-bottom: 1px;
+}
+/* Section disclosure: full-width collapsible page section. Distinct from the
+   inline `details summary` chip above by being block-level and letting the
+   inner .aa-tab-title band carry the look. Caret sits at the right of the band
+   and rotates on open. Reusable beyond stats (the same primitive will host the
+   left-menu submenu pattern when that lands).
+
+   Together with `[data-aa-class="clasic"]` (the wrapper FrmTabCaption emits via
+   getTabStart), every top-level page section gets the same Bond Paper inset:
+   warm-tinted background, hairline border, H2 tan band as the header. Per
+   DESIGN.md Cards & Containers rule: "a flat surface with background
+   var(--clr-basic-light) and a single full-width hairline border 1px solid
+   var(--clr-border). Never use box-shadow decoratively." Same chrome on
+   collapsibles and static form tabs, so the page reads as one component family. */
+.aa-page-section,
+[data-aa-class="clasic"] {
+    background: var(--clr-basic-light);
+    margin: 1em 0;
+}
+.aa-page-section > :not(summary),
+[data-aa-class="clasic"] > :not(.aa-tab-title) {
+    padding: 0 1em 1em;
+    background: var(--clr-body);
+}
+[data-aa-class="clasic"] > .aa-table {
+    background: transparent;
+    margin: 0;
+}
+.aa-page-section > summary {
+    display: block;
+    padding: 0;
+    margin: 0;
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    list-style: none;
+}
+.aa-page-section > summary::-webkit-details-marker { display: none; }
+.aa-page-section > summary::after { display: none; }      /* suppress the inherited chip caret */
+.aa-page-section > summary > .aa-tab-title {
+    position: relative;
+    padding-right: 36px;
+    cursor: pointer;
+}
+.aa-page-section > summary > .aa-tab-title::after {
+    content: "";
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    margin-top: -2px;
+    width: 0;
+    height: 0;
+    border: solid 5px transparent;
+    border-top-color: rgba(0, 0, 0, 0.45);
+    transition: transform 0.15s cubic-bezier(0.5, 1, 0.89, 1), border-top-color 0.15s cubic-bezier(0.5, 1, 0.89, 1);
+}
+.aa-page-section[open] > summary > .aa-tab-title::after {
+    transform: rotate(180deg);
+}
+/* Hover: only the chevron darkens. No color swap on the header band itself, so
+   clickable section H2s match the static FrmTabCaption H2s at rest, and the
+   chevron is the only differentiator (rotation confirms the click). Resolves the
+   "tab header color is different" complaint. */
+.aa-page-section > summary:hover > .aa-tab-title::after {
+    border-top-color: rgba(0, 0, 0, 0.75);
+}
+.aa-page-section > summary:focus-visible {
+    outline: none;
+}
+.aa-page-section > summary:focus-visible > .aa-tab-title {
+    box-shadow: 0 0 0 3px rgba(184, 162, 70, 0.20);
+}
+.sz-xs, .x-small {
+    font-size: var(--sz-xs);
+}
+input[type="text"], input[type="tel"], input[type="email"], input[type="number"], input[type="password"], input[type="date"], input[type="search"], input[type="url"], select, textarea, input[type="datetime-local"], input:not([type]) {
+    font-family: 'Open Sans', sans-serif;
+    font-size: var(--sz-s);
+    border: 1px solid var(--clr-border);
+    margin: 2px;
+    padding: 3px 3px;
+    vertical-align: middle;
+    box-sizing: border-box;
+    max-width: 100%;
+    display: inline-block;
+    background: white;
+    border-radius: 4px;
+}
+input[type="file"] {
+    font-family: "Open Sans", sans-serif;
+    margin-left: 7px;
+    font-size: var(--sz-s);
+    padding: 5px 0;
+    color: rgb(0 0 0 / 72%);
+}
+.aa-fil-file input {
+    max-width: calc(100% - 25px);
+}
+input[type="file"]:before {
+    content: "Vybrat soubor";
+    font-size: var(--sz-s);
+    background-color: var(--clr-dark);
+    padding: 5px 7px;
+    display: inline-block;
+    color: rgb(255 255 255 / 95%);
+    line-height: 16px;
+    pointer-events: none;
+    position: absolute;
+    cursor: pointer;
+    margin: -3px 0 0 -3px;
+}
+select {
+    padding: 3px 3px 2px;
+}
+select:empty {
+    min-width: 100px;
+}
+textarea {
+    width: 100%;
+}
+.CodeMirror {
+    font-size: 1rem;
+    border: 1px solid var(--clr-border);
+    min-width: 20vw;
+}
+input:focus, textarea:focus, select:focus {
+    outline: 1px solid #cea756;
+    outline-offset: -1px;
+}
+/* BUTTONS */
+input[type="submit"] img, input[type="button"] img, .button img, .btn img {
+    vertical-align: middle;
+}
+/* standart buttons */
+input[type="submit"], input[type="button"], button, .button, .btn {
+    display: inline-block;
+    font-family: 'Open Sans', sans-serif;
+    border: solid 1px transparent;
+    text-decoration: none;
+    font-size: var(--sz-s);
+    background-color: var(--clr-dark);
+    margin: 2px;
+    padding: 6px 12px;
+    color: #fff;
+    line-height: 16px;
+    vertical-align: middle;
+    transition: all 0.3s;
+    cursor: pointer;
+}
+/* bigger buttons */
+input[type="submit"].btn-l, input[type="button"].btn-l, button.btn-l, .button.btn-l, .btn.btn-l, .btn-l  {
+    padding: 6px 18px;
+}
+input[type="submit"].btn-primary, input[type="button"].btn-primary, button.btn-primary, .button.btn-primary, .btn.btn-primary, .btn-primary  {
+    background-color: var(--clr-green);
+}
+.btn.btn-s, button.btn-s, input[type="submit"].btn-s, .aa-table input[type="button"].btn-s, input[type="button"].btn-s, .aa-table input[type="button"].btn-s {
+    padding: 3px 7px; /*zatim jen u editace policka*/
+}
+/* aa- buttons */
+.aa-filter .btn, .aa-ui-searches button {
+    padding: 4px 8px;
+    line-height: 16px;
+}
+[class^="aa-button"], [class^="aa-button"] {
+    border: solid 1px rgb(26 4 4 / 30%);
+    color: #61454A;
+    text-decoration: none;
+    font-size: var(--sz-s);
+    background-color: var(--clr-body);
+    padding: 4px 8px 4px;
+    display: inline-block;
+    line-height: 16px;
+    vertical-align: middle;
+    transition: all 0.3s;
+}
+/* all transparent secondary buttons */
+input[type="submit"].btn-secondary, input[type="button"].btn-secondary, button.btn-secondary, .button.btn-secondary, .btn.btn-secondary, .btn-secondary .aa-sb-bkmrks-btns .btn.btn-xs {
+    background-color: rgb(255 255 255 / 20%);
+    border: solid 1px rgb(26 4 4 / 30%);
+    color: #61454A;
+}
+/* all buttons hover */
+input[type="submit"]:hover, input[type="button"]:hover, button:hover, [class^="aa-button"]:hover, .btn:hover, .btn-l:hover, .aa-rim i.ico:hover, .icogroup i.ico:hover, input[type="file"]:hover:before {
+    background-color: /* #009688*/ var(--clr-gold);
+    color: rgb(255 255 255 / 95%);
+    border-color: transparent;
+    transition: all 0.3s;
+}
+/* all transparent secondary hover */
+input[type="submit"].btn-secondary:hover, input[type="button"].btn-secondary:hover, button.btn-secondary:hover, .button.btn-secondary:hover, .btn.btn-secondary:hover, .btn-secondary .aa-sb-bkmrks-btns .btn.btn-xs:hover, details summary:hover {
+    color: #000000;
+    background-color: var(--clr-basic-dark);
+    border-color: var(--clr-basic-dark);
+}
+[class^="aa-button"]:hover {
+    color: #61454A;
+    background-color: var(--clr-footer);
+    border-color: rgb(26 4 4 / 30%);
+}
+.aa-rim i.ico:not(.delete):hover {
+    background: var(--clr-basic-darker);
+}
+/* img buttons */
+[class^="aa-button-"] {
+    padding-left: 18px;
+    background-position: 4px center;
+    background-repeat: no-repeat;
+}
+.btn.btn-new {
+    background-image: url(images/ico-plus.png);
+    background-repeat: no-repeat;
+    background-position: 6px center;
+    padding-left: 32px;
+}
+.aa-button-edit {
+    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAYAAABWdVznAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAKdJREFUeNpi/P//PwMMtGfqMWABPEA8B4ibgPgaEwNhUA3E4UB8CYhbCGmQBuJ8KJsZiJ8S0tAFxJxQ9gUgnoVPgw0QRyHxc4H4Ly4NIOsnI/G3AvEREAOXBn4gvg9l/wLiApgECxbFbEAsB8RBQGwPxFpAfAcmic0GFSA+D8TTgPgyEE9HlsSlAQS8kdgM+JykDsTHoU56gS6JzYazQOyATTEIAAQYAH+NG5PbUXGeAAAAAElFTkSuQmCC);
+    background-position: 2px center;
+    /*background-color: #add8e6;*/
+}
+.aa-button-save {
+    background-image: url(data:image/webp;base64,UklGRmQAAABXRUJQVlA4WAoAAAAgAAAACwAACwAAVlA4TEUAAAAvC8ACABcgEEhDaEFMsEAgDaElMcACgTTkFsEGz39U4QdFkaRGi4u87y1UxASekJEntUKjIaL/gXhUUiRY8pI3zFT/3DAA);
+}
+.aa-button-delete {
+    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAALBAMAAAC0QAErAAAAAXNSR0IB2cksfwAAAAlwSFlzAAALEwAACxMBAJqcGAAAACRQTFRFAAAA2gQE3AAA2gMD2gMD2QIC1QAA2gMD2AYG2gMD2gMD2QQEUMcqwAAAAAx0Uk5TAIQd7uxzEpgu/8GAf7ayjAAAAD1JREFUeJxjYAADRgYGJgMGFgEG5QAGNkcmU6BQSnEAkOSYBZJW3iIAVGDK5sjAwBzAkCLAwMrAwOYA0QoArgQFeabWEZIAAAAASUVORK5CYII=);
+}
+.aa-button-run {
+    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAALCAMAAABxsOwqAAAAAXNSR0IB2cksfwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAD9QTFRFAAAAhmgthmgthmgthmgthmgthmgthmgthmgthmgthmgthmgthmgthmgthmgthmgthmgthmgthmgthmgthmgtqkexIAAAABV0Uk5TAJsG/8cZ5i/2V4sD9G8Cwh/wZQGvvnnTRwAAAEFJREFUeJxjZIADRiBi/AdjMjMy/oYxgZyfMCYDK+N3GJOBgZ3xK5TJycj4CcLkYfwAUcDHyPgWok3k42+YuTAAACZ6Cgz7AuAHAAAAAElFTkSuQmCC);
+}
+.aa-button-delete:hover {
+    border-color: #e00303 !important;
+    background-color: #e00303 !important;
+    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAALCAYAAABGbhwYAAAAAXNSR0IB2cksfwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAFBJREFUeJxjYCAF/P//vwWHuCwQv0MWeIOuGKYIiIuRBYWQFWNVhEXxDJyKkBTr/YeAg/gUwaxrwOZmrA5HdzOyQgw3YVWMy+EwxTjdiw0AAFxakTfhiqBuAAAAAElFTkSuQmCC);
+    color: white;
+}
+.aa-button-show {
+    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAALBAMAAABbgmoVAAAAAXNSR0IB2cksfwAAAAlwSFlzAAALEwAACxMBAJqcGAAAABVQTFRFAAAAfWBgfV9fg2gofF9ffWFheVxclh75YQAAAAd0Uk5TAP43wLLEI9SbUecAAAA2SURBVHicY2CAAEYFZgZFBgYWIQYmESDXUUHRgQEGmKEYCgITEgMYGFjFGNhEgfoSDBgSYTIAdNQDxF+/ClcAAAAASUVORK5CYII=);
+}
+.aa-button-more {
+    background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgdmlld2JveD0iMCAwIDE2IDE2Ij48cGF0aCBkPSJNMi41IDYuMjVhMS43NSAxLjc1IDAgMSAxIDAgMy41IDEuNzUgMS43NSAwIDAgMSAwLTMuNXptNS41IDBhMS43NSAxLjc1IDAgMSAxIDAgMy41IDEuNzUgMS43NSAwIDAgMSAwLTMuNXptNS41IDBhMS43NSAxLjc1IDAgMSAxIDAgMy41IDEuNzUgMS43NSAwIDEgMSAwLTMuNXoiIGZpbGw9IiMwMDAwMDAiLz48L3N2Zz4=);
+    background-color: transparent !important;
+    border: 0;
+    padding-left: 25px;
+}
+.aa-button-new:before {
+    content: "+";
+    font-size: 14px;
+    display: inline-block;
+    line-height: 1;
+    margin-left: -13px;
+    margin-right: 3px;
+}
+/* --- */
+.aa-ui-filterform input[type="checkbox"] {
+    vertical-align: bottom;
+    margin-bottom: 0;
+}
+input[type="radio"] {
+    vertical-align: baseline;
+}
+/* layout */
+.aa-ui-main {
+    display: flex;
+}
+.aa-ui-content {
+    flex: 1 0 auto;
+    width: calc(80% - 230px);
+    margin-top: 20px;
+    padding: 0 35px 25px 35px;
+}
+.aa-ui-content > h1 {
+    margin: 1em 0 1em 0;
+}
+/* Item-info digest boxes (History / Statistics) shown side by side under the Overview.
+   align-items:stretch + the table filling its box keeps both boxes the same height
+   whatever each holds (the spare height is shared across that box's rows). */
+.aa-item-boxes {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5em;
+    align-items: stretch;
+    margin: 1.5em 0;
+}
+.aa-item-boxes > div { min-width: 0; display: flex; flex-direction: column; }
+.aa-item-boxes > div > .top { flex: 1 1 auto; display: flex; flex-direction: column; }
+.aa-item-boxes > div > .top > .aa-table { flex: 1 1 auto; }
+.aa-item-boxes .aa-item-followups { margin: 0.5em 0 0 0; }
+
+/* ============================================================
+   Item inspection pages (Info / History / Statistics) redesign.
+   All values are tokens so the rules re-skin under admin-gold.css.
+   ============================================================ */
+
+/* tabular figures on the Item-info data tables (Tabular-Numerics Rule) */
+.aa-iteminfo .aa-table td { font-variant-numeric: tabular-nums; }
+
+/* Item info: identity + status lede (leads the page; deliberately no gold caption band) */
+.aa-item-lede {
+    background: var(--clr-basic-light);
+    border: 1px solid var(--clr-border);
+    padding: 0.9em 1.1em 1em;
+    margin: 0.5em 0 1.2em;
+}
+.aa-item-lede .aa-item-name { margin: 0 0 0.45em; font-size: 1.23rem; font-weight: 600; line-height: 1.4; }
+.aa-item-status { margin: 0 0 0.25em; font-size: 1.1rem; line-height: 1.4; }
+.aa-status-dot {
+    display: inline-block; width: 0.62em; height: 0.62em; border-radius: 50%;
+    margin-right: 0.45em; vertical-align: 0.02em;
+    background: var(--clr-basic-darker);
+    box-shadow: 0 0 0 1px var(--clr-text-accent);   /* ring lifts the dot boundary to >=3:1 (WCAG 1.4.11) */
+}
+.aa-status-dot.is-live { background: var(--clr-green); }   /* the one saturated voice: "live" = publish state */
+.aa-id { color: var(--clr-text-accent); font-size: var(--sz-s); font-variant-numeric: tabular-nums; }
+
+/* "View on public site" link under the status (shown when the slice resolves a public URL) */
+.aa-item-public { margin: 0.45em 0 0; font-size: var(--sz-s); }
+.aa-item-public img { vertical-align: -2px; margin-right: 0.3em; opacity: 0.85; }
+
+/* a flat surface notice used for the empty History / Statistics state (language, not red) */
+.aa-empty-note {
+    background: var(--clr-basic-light); border: 1px solid var(--clr-border);
+    padding: 0.9em 1.1em; color: var(--clr-text-accent); margin: 0.6em 0;
+}
+
+/* compact label-over-value pairs from Txt::keyValTable() - log entries (Item-info Log table, AA
+   finder), field-value dumps, etc. Lives here (always-loaded base sheet) so the markup is styled
+   wherever it appears in the admin, without a per-page CSS registration. */
+.aa-log-entry {
+    display: flex; gap: 0.5rem;
+    div {
+        position: relative; display: flex; flex-direction: column; align-items: flex-start;
+        label { font-size: 0.7rem; color: rgb(0 0 0 / 70%); margin-bottom: -0.5rem; line-height: 0.9rem; }
+        span  { font-size: 0.8rem; }
+    }
+}
+
+/* Compact item dump (AA finder / Item info "AA_Item structure"): a long or multiline value is
+   wrapped in <details class="aa-cpr-long">. It sits inline after "[value] => " so its wrapped
+   lines hang-indent under the value (aligned to the array hierarchy); the summary is clamped to
+   exactly 4 rows via max-height, and a +/- glyph (native marker hidden) is the expand toggle. */
+.aa-finder-raw .aa-cpr-long {
+    display: inline-block; vertical-align: top; max-width: 80ch;
+    margin: 0.1em 0; padding-left: 0.6ch;
+    border-left: 2px solid var(--clr-border);
+}
+.aa-finder-raw .aa-cpr-long > summary {
+    display: block; box-sizing: border-box; margin: 0; padding: 0;
+    line-height: 1.4; max-height: 5.6em;                   /* exactly 4 rows * 1.4 line-height */
+    overflow: hidden; white-space: pre-wrap; cursor: pointer; list-style: none;
+}
+.aa-finder-raw .aa-cpr-long > summary::-webkit-details-marker { display: none; }
+.aa-finder-raw .aa-cpr-long > summary::before { content: '\229E  '; color: var(--clr-text-accent); }   /* ⊞ */
+.aa-finder-raw .aa-cpr-long[open] > summary { max-height: none; }
+.aa-finder-raw .aa-cpr-long[open] > summary::before { content: '\229F  '; }                            /* ⊟ */
+
+/* Item statistics: KPI summary strip (flat figures strip, not a card grid, not hero numbers) */
+.aa-item-kpis {
+    display: flex; flex-wrap: wrap; gap: 0.5em 2em;
+    background: var(--clr-basic-light); border: 1px solid var(--clr-border);
+    padding: 0.7em 1.3em 0.8em 1.1em; margin: 0.6em 0 0.4em;
+}
+.aa-kpi { display: flex; flex-direction: column; min-width: 6.5em; }
+.aa-kpi-label { font-size: var(--sz-xs); color: var(--clr-text-accent); }
+.aa-kpi-val { font-size: 1.23rem; line-height: 1.4; font-variant-numeric: tabular-nums; }
+.aa-kpi-val .u { color: var(--clr-text-accent); }   /* unit dimmed by colour, not size */
+
+/* Item history: flat timeline of expandable change events (replaces the 9-column table).
+   Every selector is scoped to .aa-history-event/.aa-history-* so it cannot leak into the
+   aa finder's other tables, which share ChangesMonitor::display(). */
+.aa-history-event { margin: 0.6em 0; }
+.aa-history-event > summary { list-style: none; cursor: pointer; }
+.aa-history-event > summary::-webkit-details-marker { display: none; }
+.aa-history-event:target { background: var(--clr-surface-selected); }   /* the change a digest row deep-links to */
+.aa-history-summary {
+    display: grid;
+    grid-template-columns: 2.4rem minmax(9.5rem, auto) minmax(5rem, auto) 1fr auto;
+    align-items: baseline; gap: 0.2em 0.9em;
+}
+.aa-history-summary .aa-h-rev   { font-variant-numeric: tabular-nums; color: var(--clr-text-accent); }
+.aa-history-summary .aa-h-time  { font-variant-numeric: tabular-nums; font-weight: 600; }
+.aa-history-summary .aa-h-who   { color: var(--clr-dark); }
+.aa-history-summary .aa-h-count { color: var(--clr-text-accent); }
+.aa-history-body { padding: 0.3em 1em 0.9em 1.1em; }
+.aa-history-compare { display: flex; align-items: center; flex-wrap: wrap; gap: 0.3em 1.1em; margin: 0.2em 0 0.5em; font-size: var(--sz-s); }
+.aa-history-compare select { font-size: var(--sz-s); }
+/* technical ids: pushed right and dimmed so they don't compete with the diffs for attention */
+.aa-history-meta { margin: 0 0 0.5em 0; text-align: right; font-size: var(--sz-xs); color: var(--clr-text-accent); opacity: 0.7; }
+table.aa-history-fields { width: 100%; border-collapse: collapse; }
+table.aa-history-fields th, table.aa-history-fields td {
+    text-align: left; vertical-align: top; padding: 6px 10px; border-top: 1px solid var(--clr-border);
+}
+table.aa-history-fields thead th {
+    font-size: var(--sz-xs); color: var(--clr-text-accent); font-weight: 600; border-top: 0; padding-bottom: 2px;
+}
+.aa-h-field-chip {
+    display: inline-block; border-radius: 13px; padding: 2px 11px;
+    background: rgba(255,255,255,0.3); border: 1px solid rgba(26,4,4,0.3); color: #61454A; white-space: nowrap;
+}
+.aa-h-field-sel { display: block; margin-top: 3px; }   /* dimmed selector under the chip (.tabhlp) */
+.aa-h-restore-field { font-size: var(--sz-s); white-space: nowrap; }
+.aa-h-nochange { color: var(--clr-text-accent); }
+/* Flowing inline word-diff (Difftext::renderInline): prose, not a code-diff table. */
+.aa-diff { white-space: pre-wrap; overflow-wrap: anywhere; word-break: normal; line-height: 1.5; }
+.aa-diff ins { background: var(--clr-diff-ins-bg); color: var(--clr-diff-ins-text); text-decoration: none; border-radius: 2px; padding: 0 1px; }
+.aa-diff del { background: var(--clr-diff-del-bg); color: var(--clr-diff-del-text); text-decoration: line-through; border-radius: 2px; padding: 0 1px; }
+/* Per-event view toggle (Diff / Version A / Version B) + raw-value code blocks for copy-paste. */
+.aa-h-viewtoggle { display: inline-flex; border: 1px solid var(--clr-border); border-radius: 6px; overflow: hidden; }
+.aa-h-vbtn {
+    font: inherit; font-size: var(--sz-s); line-height: 1.5; padding: 1px 12px; cursor: pointer;
+    background: transparent; color: var(--clr-text-accent); border: 0; border-inline-start: 1px solid var(--clr-border);
+}
+.aa-h-vbtn:first-child { border-inline-start: 0; }
+/* explicit colour - the global `button:hover` sets gold bg + near-white text, unreadable here */
+.aa-h-vbtn:hover { background: rgba(0, 0, 0, 0.06); color: var(--clr-dark, #1f1f1f); }
+.aa-h-vbtn.is-active { background: var(--clr-surface-selected, rgba(0, 0, 0, 0.09)); color: var(--clr-dark, #1f1f1f); font-weight: 600; }
+/* the toggle sits on its own line above the field table (it rides inside the AJAX-swapped diff area) */
+.aa-history-diffarea .aa-h-viewtoggle { margin-bottom: 0.6em; }
+/* view switching keyed on the event's data-view (default, or =diff, shows the diff) */
+.aa-h-view-a, .aa-h-view-b { display: none; }
+.aa-history-event[data-view="a"] .aa-h-view-diff,
+.aa-history-event[data-view="b"] .aa-h-view-diff { display: none; }
+.aa-history-event[data-view="a"] .aa-h-view-a,
+.aa-history-event[data-view="b"] .aa-h-view-b { display: block; }
+.aa-h-code { position: relative; }
+.aa-h-code pre {
+    margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; word-break: normal;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: var(--sz-xs);
+    background: rgba(0, 0, 0, 0.035); border: 1px solid var(--clr-border); border-radius: 4px;
+    padding: 8px 10px; padding-inline-end: 4.5em;
+}
+.aa-h-copy {
+    position: absolute; top: 4px; inset-inline-end: 4px; font: inherit; font-size: var(--sz-xs);
+    padding: 1px 9px; cursor: pointer; border-radius: 4px;
+    border: 1px solid var(--clr-border); background: var(--clr-surface-popup, #fff); color: var(--clr-text-accent);
+}
+.aa-h-copy:hover { background: var(--clr-surface-selected, rgba(0, 0, 0, 0.09)); color: var(--clr-dark, #1f1f1f); border-color: var(--clr-border-hover, #a59850); }
+.aa-h-copy.is-copied { color: var(--clr-green, #1eb585); border-color: var(--clr-green, #1eb585); }
+
+/* HEADER */
+#aa_top {
+    display: flex;
+    width: 100%;
+    background: #ffffff;
+}
+.nblogo {
+    text-align: center;
+    flex: 0 0 245px;
+    max-width: 245px;
+    padding-top: 14px;
+}
+.nblogo a {
+    display: block;
+    margin: 0 auto 0 25px;
+    max-width: 112px;
+    padding-right: 10px;
+}
+.aa-ui-nav {
+    flex: 1 1 auto;
+    display: flex;
+    padding-left: 15px;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-content: center;
+    background: var(--clr-basic);
+    min-height: 50px;
+}
+.slicehead {
+    font-size: 1.1rem;
+    padding: 0 10px 0 19px;
+    flex: 1 0 auto;
+}
+.aa-ui-custom-nav {
+    display: flex;
+    justify-content: flex-end;
+    white-space: nowrap;
+    align-items: center;
+    position: relative;
+    margin-right: 10px;
+}
+.aa-ui-modules {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    white-space: nowrap;
+}
+.aa-ui-nav .navbar {
+    flex: 1;
+    display: flex;
+    padding: 0;
+    white-space: nowrap;
+    font-size: var(--sz-xs);
+    align-items: center;
+    min-height: 50px;
+}
+.slicehead img {
+    margin: -10px 9px;
+}
+#aa_top input[type=search] {
+    padding: 10px;
+    border: none;
+    margin: 0;
+    height: 33px;
+    width: 30px;
+    font-size: var(--sz-s);
+    background: url(images/ico-search.svg) no-repeat 10px 9px;
+}
+#aa_top input[type=search]:focus {
+    width: 200px;
+    background: white;
+    transition: width 0.1s ease-in-out;
+    outline: 0;
+}
+.aa-ui-custom-nav a, .aa-ui-custom-nav input[type="submit"], .aa-ui-modules a  {
+    display: inline-block;
+    font-family: 'Open Sans', sans-serif;
+    font-size: var(--sz-s);
+    line-height: 16px;
+    text-decoration: none;
+    transition: all 0.3s;
+    cursor: pointer;
+    margin: 0;
+    color: black;
+    padding: 6px 15px;
+    vertical-align: middle;
+}
+.aa-ui-nav .navbar a  {
+    font-weight: 600;
+    text-transform: uppercase;
+    color: #633840;
+    display: inline-block;
+    font-family: 'Open Sans', sans-serif;
+    line-height: 16px;
+    font-size: var(--sz-xs);
+    text-decoration: none;
+    transition: all 0.3s;
+    cursor: pointer;
+    background-color: transparent;
+    border-right: solid 1px rgb(255 255 255 / 70%);
+    padding: 10px 15px;
+    vertical-align: middle;
+    letter-spacing: 0.03em;
+    position: relative;
+    text-transform: none;
+}
+.aa-ui-nav .navbar a:after {
+    content: "";
+    height: 1px;
+    width: calc(100% - 30px);
+    background-color: transparent;
+    position: absolute;
+    bottom: 2px;
+    display: block;
+    transition: all 0.3s;
+}
+.aa-ui-nav a.aa-ui-btn-additem {
+    background: var(--clr-green);
+    color: white;
+    padding: 10px 23px;
+    text-transform: uppercase;
+    margin: 7px 7px 7px 0;
+    transition: all 0.3s;
+    border-color: var(--clr-green);
+}
+.aa-ui-nav a.aa-ui-btn-additem:hover {
+    background: hsl(161 72% 36% / 1);
+    color: white;
+}
+.aa-ui-nav a.nbactive {
+    color: black;
+    background-color: var(--clr-opacity-light);
+}
+.aa-ui-nav .navbar a.nbactive:after {
+    background-color: var(--clr-green);
+}
+.aa-ui-nav a:hover, .aa-ui-nav input[type="submit"]:hover, .aa-ui-custom-nav .aa-ui-userinfo:hover {
+    opacity: 0.75;
+    background-position-y: 4px;
+}
+input[type="submit"].aa-off:hover {
+    background-position-y: 6px;
+}
+/* Header user-info link: paint the reader icon (same SVG used by ReaderManagement
+   slices in the module dropdown) on the right side via background-image. Stroke
+   colour is hard-coded #6a5e22 because CSS custom properties cannot be
+   interpolated into data: URIs. Skins override the rule with their own colour. */
+.aa-ui-custom-nav .aa-ui-userinfo {
+    padding-right: 35px;
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none" stroke="%23000000" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="5.5" r="2.3"/><path d="M3 14c.7-2.5 2.8-3.8 5-3.8s4.3 1.3 5 3.8"/></svg>') no-repeat right 8px center / 22px;
+    border-color: transparent;
+}
+input[type="submit"].aa-off {
+    background: transparent url(images/ico-off.svg) no-repeat center;
+    padding: 10px;
+    color: transparent;
+    border: 0;
+    font-size: 5px;
+}
+.aa-ui-modules a {
+    padding: 9px 6px;
+    box-sizing: border-box;
+}
+.aa-ui-nav select {
+    padding: 2px 5px;
+    height: 30px;
+    border-color: transparent;
+    margin: 0 10px 0 5px;
+    font-size: 13px;
+    max-width: 260px;
+}
+.aa-ui-modules a.aa-ui-moduleview {
+    background: url(images/ico-oko.svg) no-repeat right 9px;
+    width: 54px;
+    height: 33px;
+    text-align: right;
+    font-size: 0;
+    margin-right: 5px;
+    background-size: 15px;
+}
+.aa-ui-modules a.aa-ui-moduleview:hover {
+    background-image: none;
+    font-size: var(--sz-s);
+}
+/* LEFT MENU */
+.aa-ui-leftmenu  {
+    color: #4a4a4a;
+    flex: 0 0 245px;
+    max-width: 245px;
+    background: var(--clr-basic-dark);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: calc(100vh - 50px);
+}
+.leftmenu  ul, .leftmenu  li {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    list-style: none;
+}
+.leftmenu > ul > li[class^="aa-menuname-"]:first-child a {
+    padding-top: 19px;
+}
+.leftmenu a, li.aa-leftmenu-header {
+    text-decoration: none;
+    display: block;
+    padding: 7px 10px 7px 43px;
+    border-bottom: solid 1px rgb(0 0 0 / 10%);
+    margin: 0 20px 0 20px;
+    color: rgb(0 0 0 / 85%);
+    font-weight: 600;
+    position: relative;
+}
+li.aa-leftmenu-header {
+    padding-top: 20px;
+    padding-left: 25px;
+    font-size: var(--sz-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+.leftmenu li img {
+    margin: -3px 8px -2px -33px;
+    vertical-align: bottom;
+}
+.aa-bin-cnt, .aa-morehelp, .leftmenu .aa-bin-cnt, .leftmenu .aa-morehelp {
+    display: inline-block;
+    color: rgb(127 67 81 / 91%);
+    padding: 2px 5px;
+    border-radius: 8px;
+    letter-spacing: 0.02em;
+    font-size: 10px;
+    font-weight: 600;
+    border: solid 1px rgb(168 151 122 / 67%);
+    line-height: 10px;
+    background: rgb(255 255 255 / 20%);
+}
+.leftmenu .aa-bin-cnt, .leftmenu .aa-morehelp {
+    float: right;
+    position: absolute;
+    right: 3px;
+    top: 7px;
+}
+.leftmenu .aa-leftmenu-header .aa-morehelp {
+    top: 18px;
+}
+.leftmenu a:hover, .leftmenua {
+    background-color: rgb(255 255 255 / 20%);
+}
+.aa-ui-copyright {
+    font-size: var(--sz-xs);
+    padding: 20px 10px 20px 15px;
+}
+.aa-ui-copyright a {
+    font-weight: 600;;
+    color: rgb(0 0 0 / 75%);
+}
+.aa-ui-copyright a:hover {
+    font-weight: 600;;
+    color: #000000;
+}
+/* Collapsible item rail (item pages only — gated by .aa-leftmenu-collapsible).
+   Colours follow the neighbouring rail rules (alpha black/white over the skin bg),
+   so this re-skins automatically under the gold overlay. */
+.aa-leftmenu-collapsible {
+    /* user-initiated one-shot collapse; width is layout, so it's guarded by
+       prefers-reduced-motion below. ease-out-quint, no bounce. */
+    transition: max-width 0.18s cubic-bezier(0.22, 1, 0.36, 1),
+                flex-basis 0.18s cubic-bezier(0.22, 1, 0.36, 1);
+}
+/* Quiet, flat chevron — borderless, native to the rail (echoes .leftmenu a:hover),
+   not a floating app button. Colour tints toward press-black, never #000. */
+.aa-rail-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    margin: 8px 12px 8px auto;        /* push-left; bottom gap separates control from nav */
+    padding: 0;
+    border: 0;
+    border-radius: 4px;               /* sm — barely there */
+    background: transparent;
+    color: rgb(31 31 31 / 72%);       /* press-black, tinted; quiet but findable */
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+.aa-rail-toggle:hover {
+    background: rgb(255 255 255 / 28%);
+    color: rgb(31 31 31 / 95%);
+}
+.aa-rail-toggle:focus-visible {
+    outline: none;
+    background: rgb(255 255 255 / 28%);
+    box-shadow: 0 0 0 2px rgb(31 31 31 / 30%);
+    color: rgb(31 31 31 / 95%);
+}
+.aa-rail-toggle-ico {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-left: 2px solid currentColor;
+    border-bottom: 2px solid currentColor;
+    transform: rotate(45deg);         /* points left = collapse */
+    transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1);
+}
+html.aa-itemrail-collapsed .aa-leftmenu-collapsible {
+    flex: 0 0 52px;
+    max-width: 52px;
+}
+html.aa-itemrail-collapsed .aa-leftmenu-collapsible .aa-rail-toggle {
+    margin-right: auto;
+    margin-left: auto;
+}
+html.aa-itemrail-collapsed .aa-leftmenu-collapsible .aa-rail-toggle-ico {
+    transform: rotate(-135deg);       /* points right = expand */
+}
+html.aa-itemrail-collapsed .aa-leftmenu-collapsible .leftmenu a {
+    padding-left: 0;
+    padding-right: 0;
+    margin-left: 6px;
+    margin-right: 6px;
+    text-align: center;
+    font-size: 0;                     /* hide the label, keep the icon */
+    white-space: nowrap;
+}
+html.aa-itemrail-collapsed .aa-leftmenu-collapsible .leftmenu li img {
+    margin: -3px 0 -2px 0;            /* re-centre icon (was tucked under left padding) */
+}
+html.aa-itemrail-collapsed .aa-leftmenu-collapsible .aa-bin-cnt {
+    font-size: 9px;                   /* badge text was zeroed by the parent font-size:0 */
+    padding: 1px 4px;
+}
+html.aa-itemrail-collapsed .aa-leftmenu-collapsible .aa-ui-copyright {
+    display: none;
+}
+@media (prefers-reduced-motion: reduce) {
+    .aa-leftmenu-collapsible,
+    .aa-rail-toggle,
+    .aa-rail-toggle-ico {
+        transition: none;
+    }
+}
+.aa-rim .item {
+    background-color: var(--clr-basic-light)
+}
+td.scroller {
+    background: #a0a0a0;
+}
+/**/
+.scrhead {
+    font-size: var(--sz-s);
+    color: #4A4A4A;
+}
+.tabtxt_field_alerts {
+    background-color: #ADD8E6;
+}
+.nbviewlp {
+    background: #584011;
+    color: #F5F0E7;
+}
+.nbmenu {
+    background: #F5F0E7;
+    color: #584011;
+}
+.nbdisable {
+    color: #4A4A4A;
+    vertical-align: middle;
+}
+.disabled {
+    color: #808080;
+}
+.example {
+    font-family: Courier, sans-serif;
+}
+.slicesubhead {
+    font-size : 0.6875rem;
+    color: #EEEEEE;
+    font-weight: 600;
+    background: #589868;
+}
+.subwindow  {
+    font-size: var(--sz-xs);
+    font-weight: 600;
+    background: #A8C8B0;
+    color: #4A4A4A;
+}
+.windowtitle {
+    font-size: var(--sz-xs);
+    font-weight: 600;
+    background: #589868;
+    color: #FFFFFF;
+}
+.ipostdate {
+    font-size: var(--sz-s);
+}
+.inoutertd {
+    font-size: var(--sz-xs);
+    color: #FFFFFF;
+}
+.tabtit {
+    font-size: var(--sz-s);
+}
+.tabtit a {
+    color: red;
+}
+.tabtit a:visited {
+    color: red;
+}
+.change {
+    color: red;
+}
+/* multiple selecty */
+.sel_on {
+    background: #dbe6f9;
+}
+.sel_missing {
+    color: #CC0000;
+}
+.sel_title {
+    background: var(--clr-basic);
+}
+td.sel_title {
+    background: #F5F0E7;
+}
+/* tabs k formularum */
+#formtabs, #formtabs2 {
+    font-size: 0.85em;
+    font-weight: bold;
+    padding: 0;
+    margin: 0;
+    background-color: #584011;
+    border-bottom: 1px solid #ebdabe;
+}
+#formtabs td, #formtabs2 td {
+    padding: 0;
+    border-bottom: 1px solid #745623;;
+}
+.tabsactiv, .tabsnonactiv {
+    color: #000000;
+    background-color: #ebdabe;
+    text-decoration: none;
+    margin: 0;
+    padding: 0 6px;
+    border-right: 1px solid #ebdabe;
+}
+.tabsnonactiv {
+    color: #ebdabe;
+    background-color: #745623;
+}
+.separator td {
+    padding-top: 5px;
+    border-top: 2px solid #584011;
+}
+.general {
+    color: #444;
+    background-color: #F5F0E7;
+}
+.difftext {
+    font-size: small;
+    font-family: monospace;
+    text-align: left;
+}
+.difftext ins {
+    background-color: #0F02;
+    text-decoration: none;
+}
+.difftext del {
+    background-color: #F002;
+    text-decoration: none;
+}
+/* ---sitemodul--- */
+h1:has(+.aa-site-codemanager) {
+    margin-left: 0;
+}
+.aa-site-codemanager {
+    display: flex;
+}
+#sitetree .aa-w-full a {
+    margin-bottom: 5px;
+}
+#sitetree {
+    font-size: var(--sz-s);
+    color: #000000;
+    flex: 0 1 280px;
+    padding-right: 35px;
+}
+#sitetree a {
+    display: block;
+}
+#sitetree tr>td {
+    width: 50%;
+}
+#sitetree tr>td:last-child {
+    padding-left: 5px
+}
+#sitetree div {
+    background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABcAAAAECAYAAABlaKSVAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAACBJREFUeNpi+P//PwMhnJ2dPZMYdeiYiYGGYOgaDhBgABQgQ5+pcMyZAAAAAElFTkSuQmCC") repeat-y;
+}
+#sitetree .spot  {
+    color: #000000;
+    background-color: #fdfdfd;
+    border: 1px solid rgb(0 0 0 / 15%);
+    padding: 3px 7px;
+    display: block;
+    white-space: normal;
+}
+#sitetree div[title^="spot"] + div[title^="spot"] {
+    margin-top: 5px;
+}
+#sitetree div.choice .spot, #sitetree div.lastchoice .spot  {
+    border-top: 0;
+}
+#sitetree div.choice, #sitetree div.lastchoice {
+    padding: 0 0 5px 21px;
+}
+#sitetree div.lastchoice {
+    background-image: none;
+}
+#sitetree div.conditions {
+    background: var(--clr-footer);
+    border: 1px solid rgb(0 0 0 / 10%);
+    padding: 3px 7px;
+}
+#sitetree div.conditions a {
+    color: #584011;
+}
+#sitetree div.variables {
+    padding: 2px 0 8px 28px;
+    color: #584011;
+}
+#sitetree a.spot:hover {
+    background-color: #ffffff;
+    color: #007ed7;
+}
+#sitetree div.selected a {
+    background-color: var(--clr-basic-darker);
+    color: #FFF;
+    border: solid 1px transparent;
+    margin-top: -1px;
+    display: inherit;
+}
+.choice img, .lastchoice img {
+    margin: 0 0 0 -21px;
+    float: left;
+}
+#sitetree a.eye, #sitetree div.selected a.eye {
+    margin: 3px;
+    padding: 0;
+    float: right;
+    border: none;
+}
+.aa-site-code {
+    flex: 1;
+}
+/* -- live editing  */
+select.live, input.live, textarea.live {
+    padding: 2px;
+    font-size: var(--sz-s);
+}
+.aa-live label {
+    display: inline-block;
+}
+select.updating, input.updating, textarea.updating {
+    outline: 1px solid #FF0000;
+}
+div.ajax_value {
+    background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABEAAAALCAYAAACZIGYHAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAIlJREFUeNpi7E12YSATHAfit0VzdvuwkGnASSA2AzH6Ulx3MFFiABTwM1FowAmgdyxJMeQMmgFHgdgSxGAiwQBjNANsYBxiDEnEZwAxhqRCo3IuLgNAgFAU9wIxKxAbAvFuIF6JTRE+l2QBMS/UkAhcBsAM2QDEVmg0COQA8WogFgDiBnzOBQgwACRoHQr41SuNAAAAAElFTkSuQmCC") no-repeat scroll right center transparent;
+    padding-right: 23px;
+}
+div.ajax_value:hover { /* edit-a.png */
+    background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABEAAAALCAYAAACZIGYHAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAHpJREFUeNpi+P//PwM2TAQ4DsRbwCwyDTkJ0grFO5gYSAcgA8yQ+PykugTZBf+hXiLJO2fQDDgClyHSENwGEGlIIl4DiDAkFYg1gHgOTgOIMOQTEH+HGhSOM77wGJIFtf0PEDcQivcNQGyFTEMNuQbEq4CYh5ABAAEGAL3WyHg+TfxBAAAAAElFTkSuQmCC");}
+
+div.ajax_value[data-aa-edited="1"],
+div.ajax_value[data-aa-edited="1"]:hover {
+    background: none;
+}
+div[data-aa-required] label:after {
+    content:" *";
+    color: red;
+}
+.ajax_buttons {
+    margin-top: 8px;
+}
+.ajax_buttons input.save-button, .ajax_buttons input.cancel-button {
+    text-transform: lowercase;
+}
+.ajax_buttons input.cancel-button {
+    background-color: transparent;
+    border: solid 1px rgb(26 4 4 / 30%);
+    color: #61454A;
+}
+/* -- items manager table  -- */
+.mgr_table {
+    width: 100%;
+    border-collapse: collapse;
+}
+.mgr_table th, .mgr_table td {
+    /* border-top: 1px solid #ccc; */
+    text-align: left;
+    box-sizing: border-box;
+    min-height: 33px;
+}
+.aa-items-manager {
+    margin-bottom: 15px;
+}
+.aa-items-manager table, table.aa-items-manager  {
+    background: transparent;
+    border-collapse: collapse;
+    width: 100%;
+}
+.aa-items-manager thead td, .aa-items-manager thead th, .aa-items-manager .aa-tbl-header td, .aa-items-manager .aa-tbl-header th {
+    background-color: var(--clr-basic-dark);
+    padding: 7px 6px 4px 6px;
+    font-weight: normal;
+    color: rgb(0 0 0 / 80%);
+    border-left: solid 1px rgb(255 255 255 / 45%);
+    line-height: 1.1;
+}
+.aa-items-manager thead td:first-child, .aa-items-manager thead th:first-child, .aa-items-manager .aa-tbl-header td:first-child, .aa-items-manager .aa-tbl-header th:first-child {
+    border-left: 0;
+}
+.aa-items-manager thead td:first-child, .aa-items-manager thead th:first-child, .aa-items-manager .aa-tbl-header td:first-child, .aa-items-manager .aa-tbl-header th:first-child {
+    border-left: 0;
+}
+.aa-items-manager tr:nth-of-type(odd), .aa-table tr:nth-of-type(odd) {
+    background-color: rgb(255 255 255 / 40%);
+}
+.aa-items-manager tr:nth-of-type(even), .aa-table tr:nth-of-type(even) {
+    background-color: var(--clr-opacity-dark);
+}
+#inputtab .aa-table tr:nth-of-type(even), #inputtab .aa-table tr:nth-of-type(odd) {
+    background-color: transparent;
+}
+.aa-table table table tr:nth-of-type(even), table.aa-table table tr:nth-of-type(even),
+.aa-table table table tr:nth-of-type(odd), table.aa-table table tr:nth-of-type(odd){
+    background-color: transparent;
+}
+.aa-table.aa-table-simple tr:nth-of-type(odd), .aa-table.aa-table-simple tr:nth-of-type(even) {
+    background-color: var(--clr-opacity-light);
+}
+.aa-items-manager td {
+    padding: 5px 5px;
+    vertical-align: top;
+}
+.aa-items-manager th {
+    text-align: left;
+}
+.aa-items-manager td p:first-child {
+    margin-top: 0;
+}
+.aa-items-manager tr:first-child th, .aa-items-manager .tablename td, .aa-items-manager .aa-tbl-header td  {
+    text-align: left;
+    vertical-align: bottom;
+    background-color: var(--clr-basic-dark);
+    padding: 8px 10px 4px 5px;
+    font-weight: 600;
+    color: rgb(0 0 0 / 80%);
+    border: 0;
+    border-left: solid 1px rgb(243 243 241 / 52%);
+    font-size: var(--sz-s);
+}
+.aa-items-manager tr:first-child th[colspan], .aa-items-manager thead th[colspan], .aa-items-manager .tablename td[colspan], .aa-items-manager .aa-tbl-header td[colspan] {
+    text-align: center;
+}
+.aa-items-manager a[href*="itemedit"] {
+    font-weight: 600;;
+    display: inline-block;
+    margin-bottom: 2px;
+}
+.aa_manager_actions {
+    padding: 12px 0;
+}
+.markedaction_select {
+    padding: 2px 3px 3px;
+}
+/* pager item manager */
+.pager {
+    clear: both;
+    padding: 42px 0 0 0;
+    color: transparent;
+    font-size: 0;
+}
+.pager a, .pager [aria-current] {
+    display: inline-block;
+    background-color: var(--clr-footer);
+    padding: 4px 11px;
+    letter-spacing: normal;
+    margin: 0 2px;
+    color: #000000;
+    text-decoration: none;
+    font-size: var(--sz-s);
+}
+.pager .dots {
+    background-color: transparent;
+    color: #414141;
+    letter-spacing: normal;
+}
+.pager a:hover {
+    background-color: var(--clr-basic-darker);
+    color: white;
+}
+.pager [aria-current] {
+    background-color: var(--clr-dark);
+    color: white;
+}
+.pager:empty {
+    display: none;
+}
+.pager .found {
+    color: #414141;
+    letter-spacing: 0.03em;
+    margin-left: 10px;
+    font-size: var(--sz-xs);
+}
+/* -- aa-table -- */
+div[data-aa-class="clasic"] {
+    display: block;
+}
+.aa-table > table, table.aa-table  {
+    border-collapse: collapse;
+    margin-bottom: 1px;
+    width: 100%;
+}
+.aa-table thead td, .aa-table thead th, .aa-table .aa-tbl-header td, .aa-table .aa-tbl-header th, .tabtit {
+    background-color: var(--clr-basic-dark);
+    padding: 11px 10px 4px 12px;
+    font-weight: normal;
+    color: rgb(0 0 0 / 80%);
+    border-left: solid 1px rgb(255 255 255 / 45%);
+    border-top: solid 1px rgb(255 255 255 / 45%);
+    line-height: 1.3;
+}
+.aa-tab-title, .aa-tab-title td  {
+    text-align: left;
+    margin: 0;                                 /* zero browser-default h2 margin so the tab bar reads as chrome, not text */
+    padding: 13px 10px 7px 25px;
+    background-color: var(--clr-basic-dark);
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    font-size: 1rem;
+}
+.aa-tab-separate {
+    border-top: solid 30px #f3f3f1;
+}
+tr.aa-tab-separate + tr td {
+    padding-top: 10px !important;
+}
+.aa-table .aa-tab-line td, .aa-table .aa-tab-line th, .aa-table .aa-tab-line td:first-child {
+    padding: 0;
+    height: 1px;
+    background: var(--clr-basic-dark);
+}
+.aa-table thead td:first-child, .aa-table thead th:first-child, .aa-table .aa-tbl-header td:first-child, .aa-table .aa-tbl-header th:first-child {
+    border-left: 0;
+    padding-left: 25px;
+}
+.aa-tab-buttons input[type="submit"]  {
+    margin-left: 0;
+}
+.aa-table tr:nth-of-type(odd) {
+    background-color: rgb(255 255 255 / 40%);
+}
+.aa-table tr:nth-of-type(even) {
+    background-color: hsl(31 18% 98% / 1);
+}
+#inputtab .aa-table tr:nth-of-type(even), #inputtab .aa-table tr:nth-of-type(odd) {
+    background-color: hsl(0deg 0% 100% / 59%);
+}
+table.aa-table table {
+    width: inherit !important;
+}
+table.aa-table table td {
+    padding-top: 0 !important;
+}
+.aa-table table table tr:nth-of-type(even), table.aa-table table tr:nth-of-type(even),
+.aa-table table table tr:nth-of-type(odd), table.aa-table table tr:nth-of-type(odd){
+    background-color: transparent;
+}
+.aa-table.aa-table-simple tr:nth-of-type(odd), .aa-table.aa-table-simple tr:nth-of-type(even) {
+    background-color: var(--clr-opacity-light);
+}
+.aa-table.aa-table-simple td, .aa-table.aa-table-simple th {
+    border-bottom: solid 1px var(--clr-footer);
+}
+.aa-table td {
+    padding: 6px 10px;
+}
+.aa-table th, .aa-table tr > td:first-child {
+    text-align: left;
+    padding: 6px 5px 6px 25px;
+    vertical-align: top;
+    line-height: 1.2;
+}
+.aa-table tr > th:first-child {
+    padding-top: 11px;
+    padding-bottom: 10px;
+}
+.aa-table thead tr > th:first-child, .aa-table thead tr > td:first-child, .aa-table .aa-tbl-header > th:first-child, .aa-table .aa-tbl-header > td:first-child {
+    padding-bottom: 4px;
+}
+.aa-table td:has(hr) {
+    padding: 10px 0 !important;
+}
+.aa-table-foot td {
+    text-align: center;
+}
+.aa-flds-aliases a {
+    padding: 0 4px;
+    border-left: solid 1px rgb(0 0 0 / 18%);
+}
+.aa-flds-aliases a:first-child {
+    padding-left: 0;
+    border-left: 0;
+}
+.aa-tab-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 12px 0;
+    margin-bottom: -1px;
+    justify-content: center;
+    max-width: 100%;
+    background-color: var(--clr-body);
+}
+.aa-table h4 {
+    font-size: var(--sz-s);
+    text-transform: uppercase;
+    margin: 1em 0 0.3em;
+}
+.aa-paramwiz-link {
+    align-items: center;
+    line-height: 1;
+}
+.aa-input-const {
+    align-items: baseline;
+}
+.aa-input-const strong {
+    margin-right: 10px;
+}
+.pojmenuj {
+    margin-top: 7px;
+}
+.pojmenuj strong {
+    padding: 6px 6px 0 0;
+}
+/* message-boxes css */
+#aa-message-box {
+    width: 100%;
+    text-align: center;
+    position: absolute;
+    z-index: 100;
+}
+#aa-message-box span {
+    display: inline-block;
+    min-width: 20%;
+    max-width: 40%;
+    margin: 150px 25%;
+    box-shadow: 0 0 20px #000;
+    border: solid 1px #5A5A5A;
+    padding: 20px;
+    text-align: left;
+}
+#aa-message-box.aa-err span {
+    background-color: #FFE0DB;
+}
+#aa-message-box.aa-info span {
+    background-color: #FFF9BA;
+}
+#aa-message-box.aa-ok span {
+    background-color: #E2FAC4;
+}
+.dis-avatar {
+    width: 48px;
+    height: 48px;
+    float: left;
+    margin-right: 12px;
+}
+.dis-avatar div {
+    width: 48px;
+    height: 48px;
+    line-height: 48px;
+    font-size: 1.2em;
+    text-align: center;
+}
+.dis-color1 { background-color: #afb478; }
+.dis-color2 { background-color: #a48a72; }
+.dis-color3 { background-color: #a1988f; }
+.dis-color4 { background-color: #c5c5c5; }
+.dis-color5 { background-color: #eae5e0; }
+.dis-color6 { background-color: #e1bfc5; }
+.dis-color7 { background-color: #bb94c6; }
+.dis-color8 { background-color: #c46f87; }
+.always-flex {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+/* form new item */
+form[name="inputform"] {
+    box-sizing: border-box;
+    margin: 0 -20px 0 -10px;
+}
+h1:has(+form[name="inputform"]) {
+    text-align: center;
+    margin: 0 0 0 -10px;
+    padding: 20px 17px 10px 0;
+    background: var(--clr-basic);
+    font-size: 1.1em;
+}
+#inputtab {
+    display: inline-block;
+    width: 100%;
+    margin: auto;
+}
+#inputtab .aa-tab-buttons {
+    max-width: 100%;
+    border-bottom: solid 1px var(--clr-border);
+}
+#inputtab thead td, #inputtab thead th {
+    border-left: solid 1px rgb(255 255 255 / 45%);
+    font-weight: 600;;
+}
+#inputtab td {
+    padding: 0.6em;
+    vertical-align: top;
+    text-align: left;
+    font-size: 1rem;
+    position: relative;
+}
+#inputtab tr > th:first-child {
+    padding-top: 17px;
+    padding-right: 25px;
+    width: 10%;
+    text-align: right;
+}
+#inputtab  tr:first-child th {
+    padding-top: 24px;
+}
+#inputtab .aa-table tr:first-child td {
+    padding-top: 15px;
+}
+#inputtab tr > th:first-child > div {
+    max-width: 263px;
+    min-width: 177px;
+}
+#inputtab .aa-table > tr td:last-child {
+    padding-right: 25px;
+    font-size: 1rem;
+}
+#inputtab .aa-table table tr > td:last-child, #inputtab .aa-table > table tr > td:first-child, #inputtab .aa-table table th {
+    padding: 2px;
+}
+#inputtab tr > td[colspan] {
+    padding: 11px 5px 8px 25px;
+    font-weight: bold;
+    font-size: 1.1rem;
+    letter-spacing: 0.03em;
+}
+#inputtab tr > td[colspan][style] {
+    background-color: var(--clr-basic-dark) !important;
+    font-size: 1rem;
+}
+#inputtab tr tr:nth-child(even), #inputtab tr tr:nth-child(odd) {
+    background-color: transparent;
+    border: 0;
+}
+#inputtab input[type="text"], #inputtab input[type="tel"], #inputtab input[type="email"], #inputtab input[type="number"], #inputtab input[type="password"], #inputtab input[type="url"], #inputtab input[type="date"], #inputtab select, #inputtab textarea, #inputtab input:not([type]) {
+    font-size: 1rem;
+    padding: 4px 5px 4px 10px;
+}
+#inputtab select {
+    padding: 3px 5px;
+    max-width: calc(100vw - 50px);
+}
+#inputtab textarea {
+    line-height: 1.6em;
+}
+.tabhlp {
+    padding: 3px 0 3px 2px;
+    color: rgb(0 0 0 / 70%);
+    font-size: var(--sz-s);
+}
+.aa-w-full + a.aa-externallink {
+    position: absolute;
+    right: 3px;
+    top: 2px;
+}
+.aa-w-full + a.aa-morehelp, a.aa-externallink + a.aa-morehelp  {
+    position: absolute;
+    right: 4px;
+    top: 6px;
+}
+a.aa-externallink + a.aa-morehelp  {
+    top: 21px;
+}
+#inputtab input[type="checkbox"] + .tabhlp {
+    padding-left: 0;
+}
+#inputtab .aa-mch-list  {
+    display: inline-block;
+}
+#inputtab .aa-table  .aa-mch-list td {
+    padding: 4px !important;
+}
+#inputtab .aa-widget-wi2 label, #inputtab .aa-widget-iso label, .aa-label-above {
+    display: block;
+    text-align: center;
+    background-color: #f7f7f7;
+    border: solid 1px #cdcdcd;
+    border-bottom: 0;
+    padding: 4px 0;
+    margin: 2px 2px 0;
+}
+#inputtab .aa-widget-wi2 .aa-wi2-selected label, .aa-label-above.selected {
+    border-top: solid 1px var(--clr-green);
+    font-weight: normal;
+}
+.aa-tab-mch .aa-chb {
+    white-space: nowrap;
+}
+.aa-mch-selected {
+    margin: -2px 0 10px;
+}
+.aa-widget-mch, .aa-widget-rio {
+    padding-top: 5px;
+}
+.aa-label-above + select {
+    min-width: 70px;
+}
+#inputtab img[title="new"] {
+    margin-left: 3px;
+    border: solid var(--clr-dark);
+    border-width: 4px 9px;
+}
+.formbuttons td {
+    text-align: center;
+    padding: 10px;
+    background: #8d6d60;
+}
+.okno {
+    background: #ffffff;
+    border: solid 1px #c1bbac;
+    outline: solid 10px white;
+    padding: 30px;
+    width: 300px;
+    margin: 20px auto;
+    position: relative;
+    text-align: center;
+    pointer-events: visible;
+    line-height: 1.5;
+}
+input[type="checkbox"] {
+    margin: 0 6px 2px 6px;
+    padding: 0;
+    width: 20px;
+    height: 20px;
+    appearance: none;
+    border: solid 1px var(--clr-border);
+    background-color: white;
+    vertical-align: middle;
+}
+input[type="checkbox"]:checked:before {
+    display: block;
+    width: 20px;
+    height: 20px;
+    text-align: center;
+    background: #66cda3 no-repeat center url(data:image/webp;base64,UklGRrAAAABXRUJQVlA4WAoAAAAQAAAACQAACgAAQUxQSGYAAAAJgFvb1rLo4g4NuLtkpCxyQpfQHSpwb8Attcxn0inF3TXlp4eImACcDJVP2PpCIu05s0hAX/JWNce/BogbXiOw0jqQlJB7xvjOaW8KdjPgNYOB9ycMAPO1EoWrI8S/LrogvHSFcQxWUDggJAAAAJABAJ0BKgoACwAAAAAlpAAC51m2AAD+//++LKj///S6YAAAAA==);
+    color: white;
+    content: "";
+    margin-top: -1px;
+    margin-left: -1px;
+}
+@media print {
+    .noprint {
+        display: none;
+    }
+    body, #hlavnitbl {
+        background-color: #FFFFFF;
+    }
+}
+/*screen*/
+@media (min-width: 768px) {
+    .flex {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+    .aa-group-row .aa-field {
+        display: flex;
+    }
+    .no-screen {
+        display: none !important;
+    }
+    .aa-formgroup-inline {
+        align-items: center;
+        display: flex;
+    }
+    .aa-sb-btns {
+        margin: 7px 0 10px 55px;
+    }
+    table.aa-table, .mgr_table {
+        border: solid 1px var(--clr-border);
+    }
+}
+@media (max-width: 1200px) {
+    .slicehead {
+        padding-left: 37px;
+    }
+}
+/* mobil */
+@media (max-width: 767px)  {
+    body {
+        background: white;
+    }
+    .ico-menu {
+        display: inline-block;
+        color: white;
+        background: black;
+        text-align: center;
+        font-size: 20px;
+        width: 33px;
+        height: 33px;
+        line-height: 30px;
+        font-style: normal;
+    }
+    .ico-menu:after {
+        content: "\2630";
+    }
+    .mobilmenu.active .ico-menu:after {
+        content: "\2715";
+        position: relative;
+        top: 2px;
+    }
+    .mainmenu  {
+        margin-left: 2em;
+        margin-right: 1.5em;
+    }
+    .mainmenu a {
+        display: inline-block !important;
+        margin: 0 0 7px 6px;
+        padding: 7px 10px;
+        background: var(--clr-basic);
+    }
+    .mainmenu a.aa-ui-btn-additem {
+        background: var(--clr-green);
+        color: white !important;
+        margin-right: calc(100% - 133px);
+    }
+    .mainmenu a {
+        display: inline-block;
+        margin: 0 0 7px 6px;
+        padding: 7px 10px;
+        background: var(--clr-basic);
+    }
+    .mainmenu a.active {
+        background: var(--clr-dark);
+        color: white;
+    }
+    .no-mobile {
+        display: none !important;
+    }
+    .center-mo {
+        text-align: center !important;
+    }
+    .mobile-page-padding {
+        padding-left: 35px;
+        padding-right: 35px;
+    }
+    .flex-tbl, .flex-tbl tr, .flex-tbl th, .flex-tbl td, .flex-tbl tbody {
+        display: block;
+        width: 100%;
+    }
+    .mobilmenu {
+        text-align: right;
+        position: absolute;
+        right: 0;
+        top: 0;
+        z-index: 1100;
+        padding: 10px 10px 0 0;
+        box-sizing: border-box;
+    }
+    .mobilmenu a {
+        display: block;
+        color: white;
+        text-decoration: none;
+    }
+    .leftmenua {
+        border-left-color: var(--clr-green) !important;
+    }
+    .mobilmenu nav {
+        display: none;
+        text-align: left;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+    .mobilmenu nav ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+    .mobilmenu li {
+        position: relative;
+        margin: 0 3em 0 3em;
+        padding-left: 0;
+    }
+    .mobilmenu nav ul ul {
+        padding: 9px 0;
+    }
+    .mobilmenu nav ul ul li {
+        margin: 0 0 0 1em;
+        border: 0;
+        padding: 4px 0;
+    }
+    .mobilmenu.active {
+        width: 100vw;
+        min-height: 100vh;
+        background-color: #000;
+    }
+    .mobilmenu.active nav {
+        display: block;
+    }
+    .mobilmenu.active nav ul ul {
+        display: none;
+    }
+    .mobilmenu.active nav li.inpath > ul {
+        display: block;
+        border-top: solid 1px rgb(255 255 255 / 20%);
+        margin-top: 6px;
+    }
+    .aa-ui-leftmenu {
+        display: none;
+    }
+    i.aa-ico-expand {
+        display: block;
+        width: 23px;
+        height: 12px;
+        background: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxODQuMjUgOTcuMDgiPg0KICA8cGF0aCBmaWxsPSJub25lIiBzdHJva2U9IiNmZmYiIHN0cm9rZS1taXRlcmxpbWl0PSIxMCIgc3Ryb2tlLXdpZHRoPSI3IiBkPSJNMTgxLjc4IDIuNDggOTIuMTMgOTIuMTMgMi40OCAyLjQ3Ii8+DQo8L3N2Zz4=) no-repeat top;
+        position: absolute;
+        right: 0;
+        top: 12px;
+        font-size: 47px;
+        line-height: 41px;
+    }
+    .mobilmenu.active nav li.inpath > i.aa-ico-expand {
+        transform: rotate(180deg);
+    }
+    /* white-menu */
+    .mobilmenu.white-menu.active {
+        background-color: #fff;
+    }
+    .mobilmenu.white-menu li, .mobilmenu.white-menu.active nav li.inpath > ul  {
+    }
+    .mobilmenu.white-menu a {
+        color: black;
+    }
+    .mobilmenu.white-menu .ico-menu {
+        background: transparent;
+        color: black;
+    }
+    .mobilmenu.white-menu i.aa-ico-expand {
+        background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxODQuMjUgOTcuMDgiPg0KICA8cGF0aCBmaWxsPSJub25lIiBzdHJva2U9IiMwMDAiIHN0cm9rZS1taXRlcmxpbWl0PSIxMCIgc3Ryb2tlLXdpZHRoPSI3IiBkPSJNMTgxLjc4IDIuNDggOTIuMTMgOTIuMTMgMi40OCAyLjQ3Ii8+DQo8L3N2Zz4=);
+    }
+    .leftmenu .aa-bin-cnt {
+        top: 8px;
+    }
+    .aa-ui-copyright {
+        display: none;
+    }
+    #aa_top {
+        flex-wrap: wrap;
+        background: var(--clr-basic);
+        margin-bottom: 20px;
+    }
+    .nblogo {
+        flex: 0 0 100%;
+        margin-left: -15px;
+        margin-bottom: 14px;
+    }
+    .aa-ui-nav {
+        padding: 0;
+    }
+    .aa-ui-nav a.aa-ui-btn-additem  {
+        position: absolute;
+        top: 0;
+        right: 50px;
+    }
+    .aa-ui-nav .navbar a:not(.aa-ui-btn-addite) {
+        display: none;
+    }
+    .aa-ui-nav .navbar{
+        flex:0
+    }
+    .aa-ui-modules {
+        flex-wrap: wrap;
+        justify-content: space-between;
+        padding: 10px 12px 15px 20px;
+        flex-direction: row-reverse;
+    }
+    .aa-ui-custom-nav {
+        white-space: wrap;
+        flex: 0 0 100%;
+    }
+    .aa-ui-nav select {
+        max-width: 81vw;
+        width: 81vw;
+        margin: 0;
+    }
+    .aa-ui-modules a.aa-ui-moduleview {width: 20px;}
+    .navbar form {
+        position: absolute;
+        top: 94px;
+        left: 20px;
+    }
+    #aa_top input[type=search] {
+
+        background-color: white;
+        border: solid 1px var(--clr-basic);
+        width: 35px;
+    }
+    #aa_top input[type=search]:before {
+        /* content: "tlkt"; */
+    }
+    .aa-ui-main {
+        max-width: 100vw;
+        /* overflow-x: hidden; */
+        margin: 0;
+    }
+    .aa-ui-content {
+        width: calc(100vw - 20px);
+        margin: 0 20px;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    .aa-ui-content > .aa-ui-filterform {
+        margin: 0 0 50px;
+    }
+    .expanded .aa-formgroup-inline .aa-sbrow-and, .aa-orderrow-label, .aa-form-label {
+        width: 100%;
+        max-width: 100%;
+    }
+    .aa-save-filters .aa-formgroup-inline {justify-content: flex-start;}
+    .aa-sb-btns {
+        margin: 7px 0 20px;
+    }
+    .aa-ui-searches {
+        margin-top: 15px;
+    }
+    .mobilmenu a.aa-ui-userinfo {
+        display: inline-block;
+    }
+    input[type="submit"].aa-off {
+        background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAMAAABhEH5lAAAAAXNSR0IB2cksfwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAQtQTFRFAAAAYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKcZdsBQAAAFl0Uk5TAAvi3wc4/1RxAjAvclJ8LDN1S8UDykME3NEMD9bTAU4nQqbUmc6NmNuAIv78HITYxKE2pb+L5QXugy1seSao9zJB/ZwUbXr6DiXmlJv0GyGxFjuOy/HGhi4kebZQAAAA+UlEQVR4nGNkgABGIPgDZUKFWBkZ/v9GCLEzMn7n+sPA+pWTmfEzWIjvBwPnR7CQwDcG7vdAIaEvDLzfIKpEGD8yCLxiFGd8J8z4jAEsxCDN+EqckVH+OYPUAwaoEAP3b6Cw0hPetwxwIQblx3KMqg8VbiEJqd/nZdS4p3wdyNQCOvUykNa7oclocE37PMiBRgznQJTxZT1G04sG994wwIA54zljRqszDKZH4UI2p4CiDHYnLBkPQEUcGY/Y7mVkcNnPbMm2HxQKUjqM+8V0dgD96Mm4h8FI+B6DMuNOBiW1TeCQ8H94DarRi3E9LLyCgK4COptxBYgDALlISmKAVjlfAAAAAElFTkSuQmCC);
+    }
+    #inputtab tr > th, #inputtab tr > th:first-child {
+        padding: 18px 3px 4px;
+        min-width: 100%;
+        text-align: left;
+    }
+    #inputtab > table td, #inputtab tr:first-child td, #inputtab tr td:last-child {
+        padding: 0;
+    }
+    .aa-items-manager, .aa-table {
+        overflow-x: auto;
+    }
+    /*.mgr_table,
+    .mgr_table thead,
+    .mgr_table tbody,
+    .mgr_table tr,
+    .mgr_table th,
+    .mgr_table td,*/
+    #inputtab .aa-table,
+    #inputtab .aa-table,
+    #inputtab .aa-table th,
+    #inputtab .aa-table td {
+        display: block;
+        max-width: 100%;
+        margin: auto;
+    }
+    #inputtab .aa-table,
+    #inputtab .aa-table,
+    #inputtab .aa-table th,
+    #inputtab .aa-table td {
+        max-width: calc(100vw - 60px);
+        overflow: visible;
+    }
+    /* flex-table items
+      .mgr_table td:nth-child(1) {
+      display: inline-block;
+      width: 32px;
+      vertical-align: top;
+      padding-left: 0;
+      padding-right: 0;
+      background-color: var(--clr-basic);
+    }
+    .mgr_table td:nth-child(2) {
+      display: inline-block;
+      width: calc(100% - 36px);
+    }
+    .mgr_table td:nth-child(n+3) {
+      display: block;
+      width: 100%;
+      padding-left: 39px;
+    }
+    .aa-items-manager tr:first-child th, .aa-items-manager .tablename td, .aa-items-manager .aa-tbl-header td {
+      padding-top: 0;
+      padding-bottom: 0;
+      min-height: 18px;
+      background-color: var(--clr-basic-dark);
+      border: 0;
+    }*/
+}
+/* FILTERFORM for new single input */
+.aa-ui-content > .aa-ui-filterform {
+    display: block;
+    margin: 10px -30px 25px 0;
+    box-sizing: border-box;
+    font-size: var(--sz-s);
+    max-width: 92vw;
+}
+.aa-formgroup-inline {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+}
+.expanded .aa-formgroup-inline {
+    margin-left: 0;
+}
+.aa-sbrow-and, .aa-sbrow-fld, .aa-sbrow-op {
+    overflow: hidden;
+    max-width: 0;
+    opacity: 0;
+    transition: all 0.7s ease;
+}
+.aa-sbrow-val, .btn-filter-search, .aa-ad-filter {
+    flex: 0 0 auto;
+}
+.expanded .aa-formgroup-inline .aa-sbrow-and,
+.expanded .aa-formgroup-inline .aa-sbrow-fld,
+.expanded .aa-formgroup-inline .aa-sbrow-op {
+    max-width: 159px;
+    opacity: 1;
+}
+.expanded .aa-formgroup-inline .aa-sbrow-and b,
+.expanded .aa-orderrow-label b {
+    display: inline-block;
+    width: 66px;
+}
+.btn-action {
+    border-radius: 13px;
+}
+select[name="srchbr_bookmark"] {
+    width: 150px;
+}
+.aa-sb-btns {
+    margin: 7px 0 10px 66px;
+}
+.aa-ui-searchbar {
+    width: auto;            /* just the toggle chip now; block is a sibling */
+}
+.aa-ui-searchbar-block div {
+    opacity: 0;
+    transition: all 0.7s ease;
+}
+summary.aa-ad-filter {
+    border: 0;
+    margin: 2px;
+    padding-top: 4px;
+    padding-bottom: 3px;
+    white-space: nowrap;    /* keep "Advanced search" on one line */
+}
+.aa-filter.expanded .aa-ui-searchbar-block div {
+    opacity: 1;
+}
+.aa-ui-filterform #patharea {
+    padding: 11px;
+    font-weight: 600;
+}
+.aa-ui-filterform #patharea + div .aa-tab-buttons {
+    display:inline-block;
+    padding: 3px;
+}
+.aa-ui-searches {
+    padding-right: 124px;
+}
+.aa-search-img {
+    width: 0;
+}
+.unpack .aa-search-img {
+    opacity: 0;
+    width: 45px;
+}
+.aa-filter select, .aa-filter input[type=search], .aa-filter input[type=text], select[name="srchbr_bookmark"] {
+    width: 156px;
+    margin-left: 0;
+    height: 26px;
+}
+/* Long option labels (e.g. "Approved Comments Count") must not bleed past the
+   native select's arrow — clip with an ellipsis. (Ignored by base-select's own
+   button; that path is handled in the @supports block below.) */
+.aa-filter select {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.expanded .aa-ui-searchbar {
+    width: auto;
+}
+/* Searchbar = two columns in the outer .aa-searchbar-row flex row:
+   LEFT  .aa-filter        - the search/advanced group: search row 0 + the
+                             <details> "Advanced search" toggle chip on its first
+                             line, plus the collapsible advanced block (further
+                             And/Order rows + action buttons) on a full-width
+                             second line when expanded.
+   RIGHT .aa-sb-bookmarks  - the filters group: Filter dropdown + Manage filters +
+                             saved-filter list, aligned to the right edge.
+   The two columns top-align with a flexible gap that shrinks as the window
+   narrows; the filters wrap below the search group only when they would meet it.
+   Keeping them as separate columns means opening Manage filters (which makes the
+   filters column tall) never disturbs the search column. */
+.aa-searchbar-row {
+    align-items: flex-start;
+    column-gap: 24px;      /* breathing room between the search and filters columns */
+}
+.aa-searchbar-row > .aa-sb-bookmarks {
+    flex: 0 0 auto;
+    align-self: flex-start;
+}
+/* The search column grows to fill the row up to the filters in BOTH compact and
+   expanded, so the value inputs widen to use the space (capped near half the page
+   via the form groups) and the search area keeps the same width when you open the
+   advanced search. The grown column pushes the filters to the right edge. */
+.aa-filter {
+    display: flex;
+    flex-direction: column;    /* searchline (row 0 + chip), then the advanced block */
+    align-items: stretch;      /* rows fill the column width */
+    row-gap: 4px;
+    flex: 1 1 auto;
+    min-width: 0;
+}
+.aa-sb-searchline {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    column-gap: 6px;
+    row-gap: 4px;
+}
+.aa-sb-searchline > .aa-formgroup-inline {
+    flex: 1 1 auto;
+    min-width: 0;
+    max-width: 50vw;      /* the input widens up to ~half the page */
+}
+.aa-sb-searchline > details.aa-ui-searchbar {
+    flex: 0 0 auto;        /* the toggle chip keeps its natural width, inline */
+    margin-left: -2px;     /* hug the Search button so the chip reads as part of search */
+}
+.aa-filter:not(.expanded) > .aa-ui-searchbar-block {
+    display: none;        /* compact: only the search line */
+}
+summary.aa-ad-filter {
+    position: static;      /* desktop+mobile: always inline */
+}
+/* The value cell fills its form group (uncapped inside the group, so no slack
+   appears between the input and the Search button); any leftover lands after the
+   chip / row, before the filters. On narrower screens the group fills only up to
+   the filters column. */
+.aa-filter:not(.expanded) .aa-sbrow-val {
+    flex: 1 1 auto;
+    min-width: 110px;
+}
+.aa-sbrow-val {
+    flex: 1 1 auto;
+    min-width: 110px;
+}
+/* Expanded And/Order rows fill the column up to ~half the page too, matching the
+   first row, so their value inputs are just as wide. */
+.aa-filter.expanded .aa-ui-searchbar-block .aa-formgroup-inline {
+    max-width: 50vw;
+}
+/* Expanded mode has the Search/Clear/Store action buttons at the bottom, so the
+   inline Search button on row 0 is redundant; hiding it also lets row 0's value
+   input line up with the And rows' inputs (no trailing button to offset it). */
+.aa-filter.expanded .btn-filter-search {
+    display: none;
+}
+.aa-filter input[type=search] {
+    width: 100%;
+    min-width: 110px;
+}
+/* Expanded mode: each row shows label + field + operator + value; the value cell
+   stays generous and the field-name select widens so long option labels (e.g.
+   "Approved Comments Count") are not clipped. */
+.aa-filter.expanded .aa-sbrow-val {
+    flex: 1 1 auto;
+    min-width: 200px;
+}
+.aa-filter.expanded .aa-sbrow-fld {
+    min-width: 160px;
+    max-width: 260px;
+}
+.aa-filter.expanded .aa-sbrow-fld select {
+    width: 100%;
+}
+.aa-filter.expanded .aa-sbrow-op {
+    min-width: 110px;
+    max-width: 160px;
+}
+.aa-manage-filter .aa-form-label {
+    padding-top: 5px;
+}
+.aa-save-filters summary {
+    position: absolute;
+    right: 0;
+    top: -28px;
+    white-space: nowrap;
+    line-height: 16px;
+    border: 0;
+    margin: 2px;
+    padding-top: 4px;
+    padding-bottom: 3px;
+}
+/* Manage filters opens with the same fade-in as Advanced search */
+.aa-save-filters .aa-manage-filter {
+    opacity: 0;
+    transition: opacity 0.7s ease;
+}
+.aa-save-filters[open] .aa-manage-filter {
+    opacity: 1;
+}
+.aa-ui-searches .aa-sb-bkmrks {
+    margin-right:0;
+}
+.aa-sb-bkmrks-btns  {
+    white-space: nowrap;
+    margin-left: -2px;
+}
+.aa-sb-bkmrks-btns button {
+    padding-left: 9px;
+    margin: 2px;
+    min-width: 26px;
+    height: 25px;
+    background-position: center;
+}
+/* Saved-filter rows: name link (applies the filter) fills the row so the action
+   icons line up in a right-hand column; a person / people SVG (same style as the
+   header user icon) marks personal vs shared filters at one consistent size. */
+.aa-manage-filter .aa-ui-searches {
+    width: 290px;
+    padding-right: 0;
+}
+.aa-save-filters .aa-formgroup-inline {
+    justify-content: flex-start;
+    flex-wrap: nowrap;
+    white-space: nowrap;
+}
+/* the name is a standard btn-secondary <button> (matches the edit/delete buttons
+   in the row, hovers like a button, keyboard-accessible); only the icon + ellipsis
+   layout is custom, so use background longhands here to keep the button's own
+   background-color/hover. Scoped under .aa-manage-filter so the padding (icon room)
+   beats the generic ".aa-ui-searches button" rule. */
+.aa-manage-filter .aa-bm-name {
+    flex: 1 1 auto;
+    min-width: 0;
+    text-align: left;
+    padding: 4px 8px 4px 26px;
+    background-repeat: no-repeat;
+    background-position: 7px center;
+    background-size: 16px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.aa-bm-name.aa-fiter-user {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none" stroke="%236a5e22" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="5.5" r="2.3"/><path d="M3 14c.7-2.5 2.8-3.8 5-3.8s4.3 1.3 5 3.8"/></svg>');
+}
+.aa-bm-name.aa-fiter-users {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none" stroke="%236a5e22" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6.2" cy="5.8" r="2.1"/><path d="M1.8 13.6c.6-2.3 2.5-3.5 4.4-3.5s3.8 1.2 4.4 3.5"/><path d="M10.6 4.3a2 2 0 0 1 .1 3.6"/><path d="M11.2 9.5c1.5.3 2.8 1.4 3.2 3.1"/></svg>');
+}
+.aa-sb-bkmrks-btns {
+    flex: 0 0 auto;
+}
+
+/* === AA_Dialog — reusable modal built on native <dialog> (see javascript/manager.js) === */
+.aa-dialog {
+    padding: 0;
+    border: 1px solid var(--clr-border);
+    border-radius: 8px;
+    min-width: 320px;
+    max-width: 92vw;
+    background: var(--clr-surface-popup);
+    color: var(--clr-dark);
+}
+.aa-dialog::backdrop {
+    background: rgba(0, 0, 0, 0.4);
+}
+.aa-dialog-form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 18px 20px;
+}
+.aa-dialog-title {
+    margin: 0;
+    font-size: var(--sz-m);
+    font-weight: 600;
+}
+.aa-dialog-row {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.aa-dialog-row > span {
+    font-size: var(--sz-s);
+}
+.aa-dialog-row input[type="text"] {
+    width: 100%;
+    box-sizing: border-box;
+}
+.aa-dialog-check {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.aa-dialog-btns {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 4px;
+}
+
+/* === Module selector (top-right dropdown, emitted by include/menu_util.php) ===
+   Pure structure + spacing. All colors come from :root tokens, so skins
+   re-theme without touching this block. Two layers:
+   1. Always-applied rules — only the font-weight bits the native fallback honors.
+   2. @supports (appearance: base-select) — Chromium 130+ rich popup with icons,
+      hover state, section dividers, custom chevron.
+   Note: the chevron is an inline SVG inside a data: URI and cannot reference
+   CSS custom properties, so its stroke colour (#6a5e22) must be kept in sync
+   with --clr-text-accent by hand if that token is retuned. */
+select[name="sel_module"] option.aa-site { font-weight: 700; }
+select[name="sel_module"] option.aa-section-header {
+    font-weight: 600;
+    font-style: italic;
+    letter-spacing: .05em;
+}
+
+/* Fallback emphasis for browsers that don't support `appearance: base-select`
+   (Firefox, Safari). Native listboxes in those engines mostly ignore padding
+   and border on <option>, so we lean on background-color (and color for the
+   section header) to keep the visual hierarchy visible. font-weight + italic
+   from the baseline rules above apply when honoured. */
+@supports not (appearance: base-select) {
+    select[name="sel_module"] option.aa-site {
+        background-color: var(--clr-basic);
+        color: var(--clr-text-accent);
+    }
+    select[name="sel_module"] option.aa-section-header {
+        color: var(--clr-text-accent);
+        background-color: var(--clr-basic);
+    }
+}
+
+@supports (appearance: base-select) {
+    /* Fallback-only blank spacer (see menu_util.php). Modern popups get real
+       padding on the header, so the spacer is redundant — hide it. */
+    select[name="sel_module"] option.aa-section-spacer { display: none; }
+
+    select[name="sel_module"] {
+        appearance: base-select;
+        font-size: var(--sz-m);
+        background: var(--clr-surface-popup) url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 12" fill="none" stroke="%236a5e22" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4.5l3 3 3-3"/></svg>') no-repeat right 8px center / 11px;
+        border: 1px solid var(--clr-gold);
+        border-radius: 4px;
+        padding: 5px 36px 0px 15px;
+        color: var(--clr-dark);
+        cursor: pointer;
+        transition: border-color .12s ease, box-shadow .12s ease;
+    }
+    /* The explicit closed-state button (injected in menu_util.php) carries the selected
+       label; strip its native chrome so only our <select> frame shows, and ellipsize the
+       label so a long site name no longer bleeds into the user info beside it. */
+    select[name="sel_module"] > button {
+        all: unset;
+        display: flex;
+        align-items: center;
+        width: 100%;
+        min-width: 0;
+        box-sizing: border-box;
+        font: inherit;
+        color: inherit;
+        cursor: pointer;
+    }
+    select[name="sel_module"] selectedcontent {
+        display: block;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    select[name="sel_module"]:hover { border-color: var(--clr-border-hover); }
+    select[name="sel_module"]:focus {
+        outline: none;
+        border-color: var(--clr-text-accent);
+        box-shadow: 0 0 0 3px rgba(184, 162, 70, .20);
+    }
+    /* Chromium's default ::picker-icon often doesn't paint in this layout; the
+       chevron above is reliable, so suppress the default to avoid duplication. */
+    select[name="sel_module"]::picker-icon { display: none; }
+    select[name="sel_module"]::picker(select) {
+        appearance: base-select;
+        background: var(--clr-surface-popup);
+        border: 1px solid var(--clr-gold);
+        border-radius: 6px;
+        padding: 4px 0;
+        box-shadow: 0 14px 36px rgba(60, 50, 20, .20);
+        min-width: 280px;
+    }
+    select[name="sel_module"] option {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 2px 5px;
+        background: transparent;
+        transition: background .08s ease;
+    }
+    select[name="sel_module"] option:hover { background: var(--clr-basic); }
+    select[name="sel_module"] option:checked {
+        background: var(--clr-surface-selected);
+        font-weight: 500;
+    }
+    /* Sites are bold (see baseline rule outside @supports). When a site is the
+       selected option, :checked above would otherwise drop it back to 500 — keep
+       it at 700 so the "you are inside this site" cue stays consistent. */
+    select[name="sel_module"] option.aa-site:checked { font-weight: 700; }
+    /* Keyboard-search highlight: the JS typeahead handler in menu_util.php wraps
+       the matched run of every pooled option in <span class="aa-hl">. A low-alpha
+       tint of the skin accent (#6a5e22) reads as "this is what you typed" without
+       fighting the :checked / :hover backgrounds. */
+    select[name="sel_module"] option .aa-hl {
+        background: rgba(106, 94, 34, .22);
+        border-radius: 2px;
+    }
+    /* Per-type icon painted via ::after pseudo-element rather than a real child
+       element: Chromium's base-select popup renders pseudo-elements reliably,
+       and keeping the icon in CSS leaves the <option> text clean for native
+       typeahead. Each icon is an inline-SVG data URI in `::after`.
+
+       Stroke colour is hard-coded to #6a5e22 (same as the chevron above) —
+       CSS custom properties cannot be interpolated into data: URIs. Skins
+       that need a different icon colour override the rules below. */
+    select[name="sel_module"] option[class*="aa-ic-"]::after {
+        content: '';
+        display: inline-block;
+        width: 14px;
+        height: 14px;
+        margin-left: auto;
+        opacity: .55;
+        flex-shrink: 0;
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: contain;
+    }
+    select[name="sel_module"] option[class*="aa-ic-"]:hover::after { opacity: .75; }
+    select[name="sel_module"] option.aa-ic-site::after {
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none" stroke="%236a5e22" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="5.5"/><path d="M2.5 8h11"/><path d="M8 2.5c1.8 2 1.8 9 0 11M8 2.5c-1.8 2-1.8 9 0 11"/></svg>');
+    }
+    select[name="sel_module"] option.aa-ic-reader::after {
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none" stroke="%236a5e22" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="5.5" r="2.3"/><path d="M3 14c.7-2.5 2.8-3.8 5-3.8s4.3 1.3 5 3.8"/></svg>');
+    }
+    select[name="sel_module"] option.aa-ic-constants::after {
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none" stroke="%236a5e22" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="3.5" width="11" height="9" rx="1"/><path d="M2.5 6.5h11M2.5 9.5h11M7 3.5v9"/></svg>');
+    }
+    select[name="sel_module"] option.aa-ic-pages::after {
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none" stroke="%236a5e22" stroke-width="1.25" stroke-linecap="square" stroke-linejoin="miter"><rect x="1" y="6" width="4" height="4"/><rect x="10" y="2" width="5" height="4"/><rect x="10" y="10" width="5" height="4"/><path d="M5 8H7.5M7.5 4V12M7.5 4H10M7.5 12H10"/></svg>');
+    }
+    select[name="sel_module"] option.aa-ic-items::after {
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none" stroke="%236a5e22" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"><circle cx="3" cy="4" r=".7" fill="%236a5e22" stroke="none"/><circle cx="3" cy="8" r=".7" fill="%236a5e22" stroke="none"/><circle cx="3" cy="12" r=".7" fill="%236a5e22" stroke="none"/><path d="M5 4h8.5M5 8h8.5M5 12h8.5"/></svg>');
+    }
+    select[name="sel_module"] option.aa-ic-views::after {
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none" stroke="%236a5e22" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="2.5" width="11" height="11" rx="1.2"/><path d="M6 6L4.5 8 6 10M10 6l1.5 2L10 10M8 5.5l-1 5"/></svg>');
+    }
+    select[name="sel_module"] option.aa-ic-translate::after {
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none" stroke="%236a5e22" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3h4M5 2.5V7"/><path d="M3 7c0-2 2-2 2-2s2 0 2 2"/><path d="M9 14L12 7l3 7M9.8 12h4.4"/></svg>');
+    }
+    select[name="sel_module"] option.aa-ic-field::after {
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none" stroke="%236a5e22" stroke-width="1.25" stroke-linecap="square" stroke-linejoin="miter"><path d="M1.5 2h4"/><rect x="1.5" y="3.5" width="13" height="2.75"/><path d="M1.5 9h4"/><rect x="1.5" y="10.5" width="13" height="2.75"/></svg>');
+    }
+    select[name="sel_module"] option.aa-ic-polls::after {
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none" stroke="%236a5e22" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 4.5h10M2.5 8h7M2.5 11.5h4.5"/></svg>');
+    }
+    select[name="sel_module"] option.aa-ic-alerts::after {
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none" stroke="%236a5e22" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="4" width="11" height="8" rx="1"/><path d="M2.5 4.5L8 9l5.5-4.5"/></svg>');
+    }
+    select[name="sel_module"] option.aa-ic-links::after {
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none" stroke="%236a5e22" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 11.3l-1.5 1.5a2.5 2.5 0 11-3.5-3.5l3-3a2.5 2.5 0 013.5 0"/><path d="M9.5 4.7l1.5-1.5a2.5 2.5 0 113.5 3.5l-3 3a2.5 2.5 0 01-3.5 0"/></svg>');
+    }
+    select[name="sel_module"] option.aa-ic-jump::after {
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none" stroke="%236a5e22" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8h7.5"/><path d="M6.5 5l3 3-3 3"/><circle cx="12.5" cy="8" r="1.2" fill="%236a5e22" stroke="none"/></svg>');
+    }
+    select[name="sel_module"] option.aa-site {
+        padding-top: 10px;
+        padding-bottom: 0px;
+        margin-top: 4px;
+        border-top: 1px solid var(--clr-gold);
+        letter-spacing: .015em;
+    }
+    select[name="sel_module"] option.aa-site:first-of-type {
+        border-top: none;
+        margin-top: 0;
+    }
+    /* A site the user may see (their slices hang under it) but not enter. It is a
+       non-selectable label, exactly like the section headers below - share their
+       accent colour, or Chrome's default disabled grey makes it read as broken. */
+    select[name="sel_module"] option.aa-site-readonly {
+        cursor: not-allowed;
+        color: var(--clr-text-accent);
+    }
+    /* Indent submodules under their parent site. Modern markup carries no NBSP
+       prefix, so this padding is what creates the visual hierarchy here; the
+       fallback path injects NBSPs via JS instead (see menu_util.php). */
+    select[name="sel_module"] option.aa-slice-of-site {
+        color: var(--clr-dark);
+        padding-left: 20px;
+    }
+    select[name="sel_module"] option.aa-section-header {
+        padding-top: 10px;
+        padding-bottom: 4px;
+        margin-top: 4px;
+        color: var(--clr-text-accent);
+        border-top: 1px solid var(--clr-basic);
+        letter-spacing: .01em;
+    }
+}
+
+/* === Stored-filter selector ("Filter:" dropdown, searchbar.class.php) ===
+   Progressive enhancement: capable browsers (Chromium 130+) get a styled popup
+   showing the same person/people scope icons as the Manage-filters list. Every
+   other browser keeps the plain native <select> with its My/Global optgroups,
+   which already convey scope. Mirrors the module-selector block above; the icon
+   stroke (#6a5e22) is hard-coded because data: URIs cannot read CSS variables. */
+@supports (appearance: base-select) {
+    select[name="srchbr_bookmark"] {
+        appearance: base-select;
+        font-size: var(--sz-s);
+        background: var(--clr-surface-popup) url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 12" fill="none" stroke="%236a5e22" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4.5l3 3 3-3"/></svg>') no-repeat right 8px center / 11px;
+        border: 1px solid var(--clr-basic-dark);
+        padding: 3px 30px 2px 6px;
+        color: var(--clr-dark);
+        cursor: pointer;
+        transition: border-color .12s ease, box-shadow .12s ease;
+    }
+    select[name="srchbr_bookmark"]:hover {border-color: var(--clr-gold);}
+    select[name="srchbr_bookmark"]:focus {
+        outline: none;
+        border-color: var(--clr-text-accent);
+        box-shadow: 0 0 0 3px rgba(184, 162, 70, .20);
+    }
+    select[name="srchbr_bookmark"]::picker-icon { display: none; }
+    select[name="srchbr_bookmark"]::picker(select) {
+        appearance: base-select;
+        background: var(--clr-surface-popup);
+        border: 1px solid var(--clr-gold);
+        border-radius: 6px;
+        padding: 4px 0;
+        box-shadow: 0 14px 36px rgba(60, 50, 20, .20);
+        min-width: 220px;
+    }
+    select[name="srchbr_bookmark"] optgroup {
+        font-weight: 600;
+        color: var(--clr-text-accent);
+        padding: 6px 8px 2px;
+    }
+    select[name="srchbr_bookmark"] option {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 3px 10px;
+        background: transparent;
+        transition: background .08s ease;
+    }
+    select[name="srchbr_bookmark"] option:hover   { background: var(--clr-basic); }
+    select[name="srchbr_bookmark"] option:checked { background: var(--clr-surface-selected); font-weight: 500; }
+    /* scope icon leads the name (matches the Manage-filters list) */
+    select[name="srchbr_bookmark"] option[class*="aa-ic-"]::before {
+        content: '';
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        flex-shrink: 0;
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: contain;
+    }
+    select[name="srchbr_bookmark"] option.aa-ic-user::before {
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none" stroke="%236a5e22" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="5.5" r="2.3"/><path d="M3 14c.7-2.5 2.8-3.8 5-3.8s4.3 1.3 5 3.8"/></svg>');
+    }
+    select[name="srchbr_bookmark"] option.aa-ic-users::before {
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none" stroke="%236a5e22" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6.2" cy="5.8" r="2.1"/><path d="M1.8 13.6c.6-2.3 2.5-3.5 4.4-3.5s3.8 1.2 4.4 3.5"/><path d="M10.6 4.3a2 2 0 0 1 .1 3.6"/><path d="M11.2 9.5c1.5.3 2.8 1.4 3.2 3.1"/></svg>');
+    }
+}
+
+/* ============================================================
+ * Promoted from admin-gold.css (2026 redesign). Each rule keeps
+ * structural properties (layout, spacing, sizes, pseudo-element
+ * scaffolding, font weights) plus colors that resolve via tokens
+ * defined in every skin. Hardcoded colors and references to
+ * gold-only tokens stay behind in admin-gold.css.
+ * ============================================================ */
+
+.aa-mch-selected span {
+    border: none;
+    outline: 1px solid var(--clr-border);
+    padding: 2px 14px 2px 3px;
+    font-weight: normal;
+}
+.aa-rim kbd {
+    background: var(--clr-dark);
+}
+.aa-widget-txt .aa-formatters {
+    border-bottom: solid 1px var(--clr-border);
+}
+.aa-langtrans-tbtn {
+    background-color: var(--clr-basic-light);
+}
+.aa-formatters label {
+    padding: 5px 14px 4px 14px;
+    margin: 0 2px -1px;
+    background: var(--clr-basic-light);
+    border: solid 1px var(--clr-border);
+    white-space: nowrap;
+    outline: none;
+    height: 28px;
+}
+#inputtab .aa-formatters input[type="checkbox"], #inputtab .aa-formatters input[type="radio"] {
+    display: none;
+}
+#inputtab .aa-formatters label:has(input:checked) {
+    border-top-color: var(--clr-green);
+}
+.btn.aa-arealink, .btn.aa-convertor, .btn.aa-langtrans-tbtn {
+    border: solid 1px var(--clr-border);
+    background-color: var(--clr-basic-light);
+}
+.cke_chrome {
+    box-shadow: none;
+}
+#inputtab .aa-formatters label:hover, .aa-fld-toolbar .btn:hover, .btn.aa-arealink:hover, .btn.aa-langtrans-tbtn:hover {
+    box-shadow: none;
+    border-color: var(--clr-border);
+    background-color: var(--clr-basic-light);
+}
+.aa-tab-buttons {
+    justify-content: flex-start;
+}
+.nblogo {
+    text-align: center;
+    max-width: 245px;
+    padding-top: 14px;
+}
+.nblogo a {
+    margin: 0 auto 0 35px;
+    max-width: 102px;
+}
+.nblogo img {
+    width: 112px;
+    height: 11px;
+}
+.aa-ui-nav .navbar a.nbactive {
+    background-color: transparent;
+    color: #000000;
+}
+.leftmenu a, li.aa-leftmenu-header {
+    padding: 7px 43px 7px 50px;
+}
+li.aa-leftmenu-header {
+    padding-left: 18px;
+    padding-top: 20px;
+    font-size: var(--sz-m);
+    text-transform: none;
+}
+.leftmenu .leftmenua:before, .leftmenu .leftmenua:after {
+    content: "";
+    display: inline-block;
+    position: absolute;
+    left: -20px;
+    width: 20px;
+    height: calc(100% + 2px);
+    top: -1px;
+    box-sizing: border-box;
+}
+.leftmenu .leftmenua:after {
+    right: -20px;
+    left: auto;
+}
+.aa-bin-cnt, .aa-morehelp, .leftmenu .aa-bin-cnt, .leftmenu .aa-morehelp {
+    padding: 3px 5px;
+    border-color: transparent;
+}
+.aa-table thead td, .aa-table thead th, .aa-table .aa-tbl-header td, .aa-table .aa-tbl-header th, .tabtit, .aa-items-manager tr:first-child th, .aa-items-manager .tablename td, .aa-items-manager .aa-tbl-header td, .aa-table.aa-table-simple thead td, .aa-table.aa-table-simple thead th {
+    font-weight: normal;
+}
+#inputtab tr > th:first-child > div {
+    padding-right: 5px;
+}
+h1:has(+form[name="inputform"]) {
+    text-align: left;
+    background: transparent;
+}
+.pager a, .pager [aria-current] {
+    margin: 0;
+}
+@media (min-width: 768px) {
+    .nblogo {
+        text-align: center;
+        flex: 0 0 245px;
+        max-width: 245px;
+        padding-top: 16px;
+    }
+}
+
+
+/* ============================================================
+   .aa-overflow — reusable "kebab/dot-dot-dot" overflow menu.
+   Built on the HTML5 popover API (Baseline 2024). Trigger and
+   menu are decoupled via popovertarget so the menu lives in the
+   browser top-layer and is never clipped by table cells / overflow.
+   Positioning is set imperatively in JS (see metabase.class.php
+   getManagerConf()), because cross-browser CSS anchor positioning
+   is not yet baseline.
+   Reuse anywhere:
+     <button type="button" class="aa-overflow-trigger"
+             popovertarget="my-menu-id">…</button>
+     <div popover id="my-menu-id" class="aa-overflow-menu">
+       <div class="aa-overflow-item"><a href="…">Item</a></div>
+       …
+     </div>
+   ============================================================ */
+
+/* Trigger is a regular button (white bg, border, light shadow, rounded), neutral
+   so it sits well next to existing admin buttons across themes. */
+.aa-overflow-trigger {
+    background: transparent;
+    border-right: 1px solid rgba(0, 0, 0, 0.20);
+    padding: 1px 10px 2px;
+    font-size: 1.6em;
+    color: inherit;
+    vertical-align: middle;
+    user-select: none;
+    position: relative;
+}
+.aa-overflow-trigger:hover {
+    background: transparent;
+    color: black;
+    border-right-color: rgba(0, 0, 0, 0.20);
+    top: -2px;
+}
+.aa-overflow-trigger:focus-visible {
+    outline: 2px solid #0050c8;
+    outline-offset: 1px;
+}
+.aa-overflow-trigger:active {
+    background: #ebebeb;
+}
+
+/* HTML5 popover — reset UA defaults (centered modal-ish look) and
+   let our JS place it next to the trigger via top/left. */
+.aa-overflow-menu {
+    position: fixed;
+    inset: auto;
+    margin: 0;
+    padding: 4px;
+    min-width: 160px;
+    max-width: min(320px, calc(100vw - 16px));
+    border: 1px solid rgba(0, 0, 0, 0.10);
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14);
+    color: inherit;
+    /* fade-in when opened */
+    opacity: 0;
+    transform: translateY(-4px);
+    transition: opacity 120ms ease, transform 120ms ease;
+}
+.aa-overflow-menu:popover-open {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Fallback for browsers without the HTML Popover API - position:fixed box that overlaps
+   neighbouring controls and steals their clicks */
+@supports not selector(:popover-open) {
+    .aa-overflow-trigger,
+    .aa-overflow-menu {
+        display: none;
+    }
+}
+
+.aa-overflow-item {
+    display: block;
+}
+/* Make whatever lives inside an item (most often <a>) look like a menu row,
+   regardless of the original CSS classes the action's getButtonDef() set. */
+.aa-overflow-item > a,
+.aa-overflow-item > button,
+.aa-overflow-item > * {
+    display: block;
+    width: 100%;
+    padding: 6px 12px;
+    border-radius: 4px;
+    text-decoration: none;
+    color: inherit;
+    background: transparent;
+    border: none;
+    text-align: left;
+    cursor: pointer;
+    white-space: nowrap;
+    font: inherit;
+    box-sizing: border-box;
+}
+.aa-overflow-item > a:hover,
+.aa-overflow-item > button:hover {
+    background: rgba(0, 80, 200, 0.08);
+}
+.aa-overflow-item > a:focus-visible,
+.aa-overflow-item > button:focus-visible {
+    outline: 2px solid #0050c8;
+    outline-offset: -2px;
+}
+.aa-overflow-item:empty {
+    display: none;
+}
+
+/* ============================================================
+   Sticky admin chrome (desktop only — the mobile header is tall,
+   wraps, and is not worth pinning; the rail is hidden there).
+   --aa-topbar-h is measured by an inline script next to #aa_top
+   (menu_util.php): the bar can wrap to >50px at 768–1100px, and
+   some pages render the rail WITHOUT the top bar (discedit2,
+   popups) — hence every fallback is 0px, never 50px.
+   ============================================================ */
+@media screen and (min-width: 768px) {
+    /* anchor jumps / error-field focus must land below the pinned bar */
+    html {
+        scroll-padding-top: calc(var(--aa-topbar-h, 0px) + 8px);
+    }
+    #aa_top {
+        position: sticky;
+        top: 0;
+        z-index: 50; /* < 100: #aa-message-box and suggesters must overlay the bar */
+    }
+    .aa-ui-leftmenu {
+        position: sticky;
+        top: var(--aa-topbar-h, 0px);
+        align-self: flex-start; /* default stretch leaves sticky no travel room */
+        height: calc(100vh - var(--aa-topbar-h, 0px)); /* full height keeps the copyright at the visible bottom (space-between) */
+        min-height: 0;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+    #sitetree {
+        position: sticky;
+        top: calc(var(--aa-topbar-h, 0px) + 10px); /* small gap so Add spot isn't glued to the pinned bar */
+        align-self: flex-start;
+        max-height: calc(100vh - var(--aa-topbar-h, 0px) - 10px);
+        overflow-y: auto;
+    }
+    /* On item pages "+ Add Item" is pointless — hide it but keep its
+       flex space so the neighboring menu entries don't shift. */
+    .aa-ui-nav a.aa-ui-btn-additem.aa-ui-ghost {
+        visibility: hidden;
+        pointer-events: none;
+    }
+}
+.mobilmenu .aa-ui-ghost {
+    display: none !important; /* .mainmenu a sets display !important on mobile */
+}
+
+/* ============================================================
+   Settings popover (theme / language / feedback) — top-bar gear.
+   Built on the .aa-overflow-menu component; all colours are token-driven
+   so the popover re-skins automatically under the gold overlay.
+   ============================================================ */
+.aa-prefs-trigger { margin-inline-end: 6px; }
+.aa-prefs { padding: 10px 12px; min-width: 248px; }
+.aa-prefs-row { padding: 8px 0; }
+.aa-prefs-row + .aa-prefs-row { border-top: 1px solid var(--clr-border); }
+.aa-prefs-label { font-weight: 600; font-size: var(--sz-s); margin-bottom: 5px; }
+.aa-prefs-help { margin-top: 5px; }
+/* segmented theme control: visually-hidden radios, label carries the look */
+.aa-prefs-seg { vertical-align: middle; }
+.aa-prefs-seg input { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+.aa-prefs-seg label.aa-h-vbtn { cursor: pointer; }
+.aa-prefs-seg input:checked + label.aa-h-vbtn {
+    background: var(--clr-surface-selected, rgba(0, 0, 0, 0.09)); color: var(--clr-dark, #1f1f1f); font-weight: 600;
+}
+.aa-prefs-seg input:focus-visible + label.aa-h-vbtn { outline: 2px solid #0050c8; outline-offset: 1px; }
+.aa-prefs-apply { margin-inline-start: 8px; }
+.aa-prefs-lang select { max-width: 100%; }
+/* stack textarea above the Send button (flex-column keeps the button from
+   sitting beside the textarea and overflowing the popover) */
+.aa-prefs-feedback { display: flex; flex-direction: column; align-items: flex-start; }
+.aa-prefs-feedback textarea { width: 100%; box-sizing: border-box; resize: vertical; font: inherit; }
+.aa-prefs-feedback .aa-prefs-send { margin-top: 6px; }
+
+/* ============================================================
+   Notes (AA\Util\Notes) — the note corner every admin page carries and
+   the Mark resolved popover on State Check. The corner floats right
+   before the H1: an icon alone while the page has no note, a one-row
+   strip (count + the newest note's first words) once it has one. Both
+   open a .aa-overflow-menu popover (positioner in adminpage.class.php),
+   so nothing is clipped by tables or sections. Colours are tokens, so
+   the gold overlay re-skins it.
+   ============================================================ */
+.aa-notes { float: right; margin: 0 0 4px 12px; max-width: min(44ch, 60%); }
+.aa-notes-trigger {
+    display: inline-flex; align-items: center; gap: 6px; max-width: 100%;
+    padding: 3px 6px; border: 1px solid transparent; border-radius: 0;
+    background: transparent; color: var(--clr-text-accent, #6a5e22);
+    font: inherit; font-size: var(--sz-s); line-height: 1.4; cursor: pointer;
+    transition: background-color 0.15s cubic-bezier(0.25, 1, 0.5, 1), border-color 0.15s cubic-bezier(0.25, 1, 0.5, 1);
+}
+.aa-notes-trigger::before {
+    content: ""; flex: none; width: 16px; height: 16px; opacity: 0.7;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath fill='none' stroke='%231f1f1f' stroke-width='1.3' stroke-linejoin='round' d='M3.5 1.5h6l3 3v10h-9z'/%3E%3Cpath fill='none' stroke='%231f1f1f' stroke-width='1.3' d='M9.5 1.5v3h3M5.5 7.5h5M5.5 10h5M5.5 12.5h3'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+.aa-notes-trigger:hover, .aa-notes-some {
+    border-color: var(--clr-border); background: var(--clr-basic-light); color: var(--clr-dark, #1f1f1f);
+}
+.aa-notes-trigger:hover::before { opacity: 1; }
+.aa-notes-trigger:focus-visible {
+    outline: none; border-color: var(--clr-border-hover); box-shadow: 0 0 0 3px rgba(184, 162, 70, 0.20);
+}
+.aa-notes-count { font-weight: 600; flex: none; font-variant-numeric: tabular-nums; }
+.aa-notes-preview { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* the popover: notes list above a hairline, the form under it */
+.aa-notes-pop { padding: 10px 12px; min-width: 280px; max-width: min(440px, calc(100vw - 16px)); max-height: 70vh; overflow: auto; }
+.aa-notes-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid var(--clr-border); }
+.aa-note-head { font-size: var(--sz-xs); opacity: 0.75; }
+.aa-note-text { margin: 2px 0; overflow-wrap: anywhere; }
+.aa-note-text > :first-child { margin-top: 0; }
+.aa-note-text > :last-child { margin-bottom: 0; }
+.aa-note-actions { display: flex; gap: 6px; margin-top: 3px; }
+.aa-note-actions .aa-notes-form, .aa-note-actions .aa-notes-row { display: inline; }
+.aa-notes-form { display: flex; flex-direction: column; gap: 6px; align-items: flex-start; }
+.aa-notes-form textarea, .aa-notes-form input[type="text"] { width: 100%; box-sizing: border-box; font: inherit; resize: vertical; margin: 0; }
+.aa-notes-form [hidden] { display: none; }   /* the base input rule sets display, which beats the UA hidden style */
+.aa-notes-row { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; width: 100%; }
+.aa-notes-row > label { font-size: var(--sz-s); }
+.aa-notes-row > .btn { margin-inline-start: auto; }
+.aa-notes-resolve { display: inline-block; }
+/* State Check renders resolution notes straight into a cell, without the flex list and its gap */
+:not(.aa-notes-list) > .aa-note + .aa-note { margin-top: 10px; }
+/* no Popover API: the corner and Mark resolved would be dead buttons; the page-section
+   fallbacks (Resolved table, State Check itself) keep working */
+@supports not selector(:popover-open) {
+    .aa-notes, .aa-notes-resolve { display: none; }
+}
+@media screen and (max-width: 767px) {
+    .aa-notes { float: none; max-width: 100%; margin: 0 0 6px; }
+}

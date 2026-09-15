@@ -1,0 +1,64 @@
+<?php
+/**
+ *
+ *
+ * PHP version 7.2+
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @version   $Id$
+ * @author    Honza Malik <honza.malik@ecn.cz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      https://www.apc.org/ APC
+ *
+*/
+
+/** @param $slice_id   - long id of slice
+ *  @param $sh_itm     - long id of item
+ *  @param $return_url - where to go after hit OK button
+ */
+
+use AA\Util\InputVars;
+
+require_once __DIR__ . "/../include/init_page.php";
+
+try {
+    $return_url = InputVars::stringGET('return_url'); // empty
+    $sh_itm = InputVars::idGET('sh_itm', true);
+} catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
+
+$sh_itm     = $_GET['sh_itm'];
+$return_url = $_GET['return_url'];
+
+$slice = AA_Slice::getModule(AA::$module_id);
+if ($slice === null) {
+     echo _m("Wrong slice_id.");
+     exit;
+}
+
+$preview_url = AA_Http::makeProtocolCompatible($slice->getPreviewURL($sh_itm, true));
+
+HtmlPageBegin();   // Print HTML start page tags (html begin, encoding, style sheet, but no title)
+
+// <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' 'unsafe-eval'">
+?>
+</head>
+<!-- frames -->
+<frameset  rows="30,*">
+   <frame name="Navigation" src="<?php echo con_url(StateUrl("prev_navigation.php"),"sh_itm=$sh_itm&return_url=$return_url"); ?>" marginwidth="10" marginheight="10" scrolling="no" frameborder="0">
+   <frame name="Item" src="<?php echo $preview_url; ?>" marginwidth="10" marginheight="10" scrolling="auto" frameborder="0">
+</frameset>
+</html>

@@ -1,0 +1,176 @@
+<?php
+
+/**
+ *  Mailman create list: Used only for Reader Management Slices using the
+ *  mailman feature. Adds a constant to the constant group with mail list names
+ *  and adds a row
+ *
+ *      createnew <listname> <listadmin-addr> <admin-password>
+ *
+ *  to the file ".mailman" in the $MAILMAN_SYNCHRO_DIR.
+ *
+ *  To avoid conflicts, uses the file lock (see src/Util/FileLock.php).
+ *  A Unix shell script should be run regularly by cron and use the file-lock
+ *  mechanism as well. The Unix script executes the commands and deletes the file.
+ *
+ *
+ *  PHP version 7.2+
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @package   UserInput
+ * @version   $Id$
+ * @author    Jakub Adamek <jakubadamek@ecn.cz>, February 2003
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999-2003 Association for Progressive Communications
+ * @link      https://www.apc.org/ APC
+ *
+*/
+
+
+use AA\Util\InputVars;
+
+require_once __DIR__ . "/../include/init_page.php";
+require_once __DIR__ . "/../include/formutil.php";
+require_once __DIR__ . "/../include/varset.php";
+
+require_once __DIR__ . "/../include/itemfunc.php";
+
+try {
+    $admin_email = InputVars::stringPOST('admin_email');
+    $admin_password = InputVars::stringPOST('admin_password'); // alpha
+    $create_list = InputVars::stringPOST('create_list');
+    $list_name = InputVars::stringPOST('list_name'); // alpha
+    $cancel = InputVars::boolPOST('cancel');
+
+    $Msg = InputVars::stringGETPOST('Msg');
+} catch (Exception $e) {
+    AA_Adminpageutil::pageParameterError($e);
+}
+
+if ($cancel) {
+    go_url(StateUrl(self_base() . "index.php"));
+}
+
+if (!IfSlPerm(PS_FIELDS)) {
+    AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php", _m("You do not have permissions to change fields settings"), "admin");
+    exit;
+}
+
+$apage = new AA_Adminpageutil('sliceadmin', 'mailman_create_list');
+$apage->setTitle(_m("Admin - Create Mailman List"));
+$apage->printHead($err, $Msg);
+
+$slice = AA_Slice::getModule(AA::$module_id);
+if (! $slice->getProperty("mailman_field_lists")) {
+    echo _m('First set Mailman Lists Field in Slice Settings.');
+
+    $apage->printFoot();
+    exit;
+}
+
+$db = getDB();
+$db->query("SELECT field.input_show_func, field.name FROM field WHERE slice_id=" . xpack_id(AA::$module_id) . " AND id='" . $slice->getProperty("mailman_field_lists") . "'");
+$db->next_record();
+$field_name = $db->f("name");
+[,$groupid] = explode(":", $db->f("input_show_func"));
+freeDB($db);
+
+if ($create_list && $admin_email && $list_name && $admin_password) {
+    add_mailman_list($admin_email, $list_name, $admin_password, $groupid);
+}
+/** add_mailman_list function
+ * Creates a new mailman list
+ * @return void - none on error
+ */
+function add_mailman_list($admin_email, $list_name, $admin_password, $groupid): void
+{
+
+    $db = getDB();
+    $db->query("SELECT * FROM constant WHERE group_id='" . addslashes($groupid) . "' AND name='" . $list_name . "'");
+    if ($db->next_record()) {
+        echo _m("Error: This list name is already used.");
+        freeDB($db);
+        return;
+    }
+    $db->query("SELECT MAX(pri) AS max_pri FROM constant WHERE group_id='" . addslashes($groupid) . "'");
+    $db->next_record();
+    $pri = $db->f("max_pri") + 100;
+    if (! $db->query("INSERT INTO constant (id, group_id, name, value, pri) VALUES (" . xpack_id(new_id()) . ", '" . addslashes($groupid) . "', '$list_name', '$list_name', $pri)")) {
+        echo "Internal Error with DB.";
+        freeDB($db);
+        return;
+    }
+    ConstantsChanged();
+    freeDB($db);
+
+    global $MAILMAN_SYNCHRO_DIR;
+    endslash($MAILMAN_SYNCHRO_DIR);
+    $filelock = new \AA\Util\FileLock($MAILMAN_SYNCHRO_DIR . ".mailman_lock");
+    if (! $filelock->Lock()) {
+        echo "Internal Error when creating lock file.";
+        return;
+    }
+
+    if (! ($fd = fopen($MAILMAN_SYNCHRO_DIR . ".mailman", 'ab'))) {
+        echo "Internal Error when creating request file.";
+        return;
+    }
+    fwrite($fd, "createnew $list_name $admin_email $admin_password\n");
+    fclose($fd);
+
+    if (! $filelock->Unlock()) {
+        echo "Internal Error when deleting lock file.";
+        return;
+    }
+    echo _m("The list was successfully created.");
+}
+
+$me = AA::$perm->getIDsInfo(AuthGetUid());
+if (! $admin_email) {
+    $admin_email = $me["mail"];
+}
+/** caption function
+ * @param string $s
+ * @return string - $s in <b> and spaces are replaced by "&nbsp;"
+ */
+function caption($s): string
+{
+    return str_replace(" ", "&nbsp;", $s) . '&nbsp;<span class="aa-required">*</span>';
+}
+
+echo '
+<form name="mailman_create_list" method="post" action="' . StateUrl() . '"
+    onsubmit="return this.list_name.value != \'\' && this.admin_email.value != \'\'
+    && this.admin_password.value != \'\'">
+<input type="hidden" name="slice_id" value="' . AA::$module_id . '">
+<table width="440">
+<tr class="aa-tbl-header"><th colspan="2">' . _m("List Settings") . '</th></tr>
+<tr><td colspan="2">' . _m("The list will be added to mailman and also
+    to the constant group for the field %1 selected as Mailman Lists Field in Slice Settings.", [$field_name]) . '<br><br>'
+. _m("All the fields are required.") . '</td></tr>
+<tr><th>' . caption(_m("List name")) . '</th>
+<td><input type="text" name="list_name" size="20" value="' . $list_name . '"></td></tr>
+<tr><th>' . caption(_m("Admin email")) . '</th>
+<td><input type="text" name="admin_email" value="' . str_replace('"', '&quot;', $admin_email) . '" size="50"></td></tr>
+<tr><th>' . caption(_m("Admin password")) . '</th>
+<td><input type="password" name="admin_password" size="20"></td></tr>';
+echo '
+<tr><td colspan="2">
+    <input type="submit" name="create_list" value="' . _m("Create") . '">&nbsp;&nbsp;
+</td></tr></table>
+';
+
+$apage->printFoot();

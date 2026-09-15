@@ -1,0 +1,65 @@
+<?php
+
+/**
+ * Gets first x (20) entries (tasks) from toexecute table (=task queue) - sorted
+ * by priority and executes it. It is used for tasks, which is relatively easy
+ * to do, but there is a lot of such tasks to do. For example - sending e-mails
+ * to all people from Reader slice (Alerts)
+ * To be called directly or by Cron.
+ * Parameter: none
+ *
+ * @version $Id$
+ * @author Honza Malik <honza.malik@ecn.cz>, Econnect, December 2004
+ * @copyright Copyright (C) 1999-2004 Association for Progressive Communications
+*/
+/*
+Copyright (C) 1999-2002 Association for Progressive Communications
+https://www.apc.org/
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program (LICENSE); if not, write to the Free Software
+    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+*/
+
+/** APC-AA configuration file */
+
+use AA\IO\DB\DB_PDO;
+use AA\Later\Toexecute;
+
+// Real cron runner — suppress the post-response fallback in locsess.php.
+define('AA_NO_CRON_FALLBACK_THIS_REQUEST', true);
+
+require_once __DIR__ . "/../include/config.php";
+/** Main include file for using session management function on page */
+require_once __DIR__ . "/../include/locsess.php";
+require_once __DIR__ . "/../include/varset.php";
+require_once __DIR__ . "/../include/util.php";
+
+/** This script is possible to run from commandline (so also from cron). The
+ * benefit is, that the script then can run as long as you want - it is not
+ * stopped be Apache after 2 minutes or whatever is set in TimeOut
+ * The commandline could look like:
+ *   # php toexecute.php
+ * or with 'nice' and skipping to right directory for example:
+ *   # cd /var/www/example.org/apc-aa/misc && nice php toexecute.php
+ * The command above could be used from cron.
+ */
+
+
+Toexecute::runQueue('toexecute.php');
+
+if (AA::$debug) {
+    echo '<br>Dababase instances: ' . DB_PDO::$_instances_no;
+    echo '<br>UsedModules:<br> - ' . implode('<br> - ', array_map(static fn($mid) => AA_Module::getModuleNameSafe($mid), AA_Module::getUsedModules()));
+    echo AA::$dbg->duration_stat();
+}

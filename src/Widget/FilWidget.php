@@ -1,0 +1,260 @@
+<?php
+
+/**
+ * Created by PhpStorm.
+ * User: honzama
+ * Date: 15.10.18
+ * Time: 20:33
+ */
+
+namespace AA\Widget;
+
+use AA;
+use AA\FormArray;
+use AA_Content;
+use AA_Property;
+use AA_Validate;
+use AA_Value;
+use Exception;
+
+/** File Upload widget */
+class FilWidget extends Widget
+{
+    protected $allowed_ftypes;
+    protected $label;
+    protected $hint;
+    protected $display_url;
+    protected $multiple;
+
+    /** - static member functions
+     *  used as simulation of static class variables (not present in php4)
+     */
+    /** name function
+     *
+     */
+    public static function name(): string
+    {
+        return _m('File Upload');   // widget name
+    }
+
+    /** getClassProperties function of AA_Serializable
+     *  Used parameter format (in fields.input_show_func table)
+     * @return array
+     */
+    public static function getClassProperties(): array
+    {
+        return Widget::propertiesShop(['allowed_ftypes', 'label', 'hint', 'display_url', 'multiple']);
+    }
+
+    //    function requireLibs($aa_property, $winfo)
+    //    {
+    //        return array('https://unpkg.com/filepond/dist/filepond.css', 'https://unpkg.com/filepond/dist/filepond.js');
+    //    }
+    //
+    //    /** script to run after the page DOM is loaded */
+    //    function requireRun($aa_property, $winfo)
+    //    {
+    //        return '
+    //
+    //        FilePond.setOptions({
+    //            allowReplace: false,
+    //            instantUpload: false,
+    //            server: {
+    //                url: \'http://192.168.33.10\',
+    //                process: \'./process.php\',
+    //                revert: \'./revert.php\',
+    //                restore: \'./restore.php?id=\',
+    //                fetch: \'./fetch.php?data=\'
+    //            }
+    //        });
+    //
+    //        FilePond.parse(document.body);
+    //      ';
+    //    }
+
+
+    /** @return AA_Value for the data send by the widget
+     *   This is compound widgets, which consists from more than one input - filled
+     *   URL of the file or name of input[type=file] for upload,
+     *   so the inputs looks like:
+     *       aa[n1_54343ea876898b6754e3578a8cc544e6][img_upload______][fil][var][]  // array of uploaded files info - ['_0'=>['name'=>..,'type'=>..,'tmp_name'=>..,'error'=>..,'size'=>..],..]
+     *       aa[n1_54343ea876898b6754e3578a8cc544e6][img_upload______][fil][url][]  // url
+     *
+     *   This method AA\Widget\FilWidget::getValue() is called to grab the value
+     *   (or multivalues) from the submitted form. The function actually do not
+     *   upload the file. The upload itself is done by insert_fnc_fil() later
+     *   Here we just mark the uploaded file by prefix AA_UPLOAD:, so
+     *   insert_fnc_fil() knows about the new file for upload
+     *
+     * @param $data4field - ['fil'=>['var'=>[], 'url'=>[]]
+     */
+    public static function getWidgetValue(array $data4field, ?AA_Value $default): AA_Value
+    {
+        $data4field = $data4field['fil'];
+        $uploads = (array) $data4field['var'];
+        $urls = (array) $data4field['url'];
+        $add = $data4field['add'] == '1';  // if the widget is multiple, then it behaves differently with deletion - the old uploads are not cleaned
+
+        // upload could be also multivalue
+
+        $values = [];
+
+        $upload_ok = false;
+        if (!empty($uploads)) {
+            foreach ($uploads as $file) {
+                if (isset($file['error']) && $file['error'] == 0) { // 0 means UPLOAD_ERR_OK - sometimes (when using FormData JS API) the array is present even for empty field upload
+                    $upload_ok = true;
+                    // the information about file is in array - ['name'=>..,'type'=>..,'tmp_name'=>..,'error'=>..,'size'=>..]
+                    $values[] = 'AA_UPLOAD:' . serialize($file);
+                }
+            }
+        }
+        if (!$upload_ok || $add) {
+            foreach ($urls as $url) {
+                if (strlen(trim($url))) {
+                    $values[] = $url;
+                }
+            }
+        }
+        return new AA_Value($values, FLAG_HTML);
+    }
+
+
+    /** Creates base widget HTML, which will be surrounded by Live, Ajax
+     *  or normal decorations (added by _finalize*Html)
+     *
+     * @param  AA_Property  $aa_property
+     * @param  AA_Content   $content
+     * @param  string       $type  normal|live|ajax
+     *
+     *  @return array
+     *  @throws Exception
+     */
+    public function _getRawHtml(AA_Property $aa_property, AA_Content $content, string $type = 'normal'): array
+    {
+        $base_name = FormArray::getName4Form($aa_property->getId(), $content, $this->item_index);
+        $base_id = FormArray::formName2Id($base_name);
+
+        $attrs = Widget::stdInputAttrs($type, $base_id);
+        $widget_add = htmlattr($attrs);
+
+        $widget = '';
+        $width = ""; // $this->getProperty('width', 60);            // @todo - width is not property of file widget, yet
+        $max_characters = (int) $this->getProperty('max_characters', 254);  // @todo - width is not property of file widget, yet
+        $allowed_ftypes = $this->getProperty('allowed_ftypes', '');
+        $display_url = (int) $this->getProperty('display_url', 0);
+        $multiple = (int) $this->getProperty('multiple', 0) ? ' multiple' : '';
+        $value = $content->getAaValue($aa_property->getId());
+
+        for ($i = 0, $ino = $value->count(); $i < $ino; ++$i) {
+            $input_name  = $base_name . "[fil][url][$i]";
+            $input_id    = FormArray::formName2Id($input_name);
+            $input_value = safe($value->getValue($i));
+            $link        = $input_value ? a_href($input_value, GetAAImage('external-link.png', _m('Show') . ' ' . $input_value, 16, 16), ['class' => 'aa-fil-link']) : '';
+            $widget     .= "\n<div class=aa-fil-file>";
+            if ($display_url < 2 && $type === 'normal') {
+                $widget .= "<input type=\"text\" class=aa-w-full maxlength=\"$max_characters\" name=\"$input_name\" id=\"$input_id\" value=\"$input_value\"$widget_add> $link";
+            } else {
+                $widget .= "<input type=\"hidden\" name=\"$input_name\" id=\"$input_id\" value=\"$input_value\">$link";
+            }
+            $widget     .= '</div>';
+        }
+
+        // if the widget is multiple, then it behaves differently with deletion - the old uploads are not cleaned unless you say so
+        if ($widget && $multiple) {
+            $input_name = $base_name . "[fil][add]";
+            $input_id = FormArray::formName2Id($input_name);
+            $widget .= "\n<input type=\"hidden\" name=\"$input_name\" id=\"$input_id\" value=\"1\">";
+        }
+
+        //        if ($_GET['dd']==='wer') {
+        //            huhl($display_url, $widget, $value, $value->count(), $content, $this);
+        //        }
+        // no input was printed, we need to print one
+        if (!$widget && $display_url === 0) {
+            $input_name = $base_name . "[fil][url][0]";
+            $input_id = FormArray::formName2Id($input_name);
+            $widget   = "\n<div class=aa-fil-file>";
+            $widget  .= "\n<input type=\"text\" class=aa-w-full maxlength=\"$max_characters\" name=\"$input_name\" id=\"$input_id\" value=\"\"$widget_add>";
+            $widget  .= '</div>';
+
+        }
+
+        $input_name = $base_name . "[fil][var][]";
+        $input_id = FormArray::formName2Id($input_name);
+        //$input_name = "testfileupload";
+        $accept  = $allowed_ftypes ? "accept=\"$allowed_ftypes\"" : '';
+
+        if ($type === 'normal') {
+            $required = ($aa_property->isRequired() && !$value->count() && $display_url > 0) ? 'required' : '';   // @todo - improve required handling for display_url = 0 - file or! url must be present
+            $widget .= "    <input type=file class=filepond size=\"$width\"$multiple maxlength=\"$max_characters\" name=\"$input_name\" id=\"$input_id\" $required $accept><!--$type -->";
+        } else {
+            $url_params = [
+                'inline' => 1,
+                'ret_code_js' => 'parent.AA_ReloadAjaxResponse(\'' . $base_id . '\', AA_ITEM_JSON)',
+            ];
+            $widget .= '
+                <form id="fuf' . $base_id . '" method="POST" enctype="multipart/form-data" action="' . safe(get_aa_url('filler.php', $url_params)) . '" target="iframe' . $base_id . '">';
+            if ($link) {
+                $widget .= '
+                    <input type="button" value="' . _m('Delete') . '" onclick="document.getElementById(\'fuf' . $base_id . '\').submit()"><br>';
+            }
+            $widget .= '
+                <input type="file" size="' . $width . '"' . $multiple . ' maxlength="' . $max_characters . '" name="' . $input_name . '" id="' . $input_id . '" ' . $accept . ' onchange="document.getElementById(\'' . $base_id . 'upload\').style.display = ((this.value == \'\') ? \'none\' : \'inline-block\');">
+                <input type="hidden" name="ret_code_enc" id="ret_code_enc' . $base_id . '" value="">
+                <input type="submit" name="' . $base_id . 'upload" id="' . $base_id . 'upload" value="' . _m('Upload') . '" style="display:none;">
+                </form>
+                <iframe id="iframe' . $base_id . '" name="iframe' . $base_id . '" src="" style="width:0;height:0;border:0px solid #fff;visibility:hidden;"></iframe>
+                <script>
+                  document.getElementById("ret_code_enc' . $base_id . '").value = document.getElementById("ajaxv_' . $base_id . '").getAttribute(\'data-aa-alias\');
+                </script>
+            ';
+        }
+        return ['html' => $widget, 'last_input_name' => $input_name, 'base_name' => $base_name, 'base_id' => $base_id, 'required' => $aa_property->isRequired()];
+    }
+
+    /** Get Live HTML widget (in place editing)
+     *
+     * @param  AA_Property  $aa_property  - the variable
+     * @param  AA_Content   $content      - contain the value of property to display
+     * @param  null         $function
+     *
+     * @return string - widget HTML for using as Live component (in place editing)
+     * @throws Exception
+     */
+    public function getLiveHtml(AA_Property $aa_property, AA_Content $content, $function = null): string
+    {
+        //return $this->getAjaxHtml($aa_property, $content);
+        // this is not standard implementation - we reuse Ajax function instead of Live function, because it is more natural for file upload
+        $url = $content->getValue($aa_property->getId());
+
+        if ($url && AA_Validate::doValidate($url, 'url')) {
+            $link = '&nbsp;' . a_href($url, GetAAImage('external-link.png', _m('Show'), 16, 16));
+        }
+
+        return AA::Un('{ajax:' . $content->getId() . ':' . $aa_property->getId() . ':{({item:' . $content->getId() . ':' . $aa_property->getId() . '})}' . $link . '<br><input type=button value=' . _m('Upload') . '>}');
+        // add JS OK Function
+        //return str_replace('AA_LIVE_OK_FUNC', $function ? $function : "''", $this->_finalizeAjaxHtml($this->_getRawHtml($aa_property, $content)));
+    }
+
+    public function _finalizeAjaxHtml($winfo, $aa_property): string
+    {
+        // not standard - we do not show save button (the upload input works the same way here)
+        $base_name = $winfo['base_name'];
+        $base_id = FormArray::formName2Id($base_name);
+        $help = $aa_property->getHelp();
+        $widget_html = '<div class=ajax_widget>';
+        $widget_html .= "\n" . $winfo['html'] . ($help ? "\n    <div class=\"aa-help\"><small>$help</small></div>\n" : '');
+        $widget_html .= "\n<div class=ajax_buttons>";
+        $widget_html .= "\n<input class=\"cancel-button\" type=\"button\" value=\"" . _m('EXIT WITHOUT CHANGE') . "\" onclick=\"(arguments[0] || window.event).stopPropagation();DisplayInputBack('$base_id');\">";
+        $widget_html .= "\n</div>";
+        $widget_html .= "\n</div>";
+        return $widget_html;
+    }
+
+    /** @inheritDoc */
+    public static function description(): string
+    {
+        return ''; // TODO: Implement description() method.
+    }
+}

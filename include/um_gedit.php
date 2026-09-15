@@ -1,0 +1,90 @@
+<?php
+
+/**
+ *
+ * PHP version 7.2+
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @version   $Id$
+ * @author    Honza Malik <honza.malik@ecn.cz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      https://www.apc.org/ APC
+ *
+*/
+
+do {
+
+    // Procces group data ---------------------
+    ValidateInput("group_name", _m("Name"), $group_name, $err, ((bool) $add_submit), "text");
+    ValidateInput("group_description", _m("Description"), $group_description, $err, false, "text");
+    if (count($err)) {
+        break;
+    }
+
+    $grouprecord["description"] = $group_description;
+    $grouprecord["name"]        = $group_name;
+    //  $grouprecord["owner"] = ...;           // not used, for now
+
+    if ($add_submit) {
+        if (!($newgroupid = AddGroup($grouprecord))) {
+            $err["LDAP"] = MsgErr(_m("It is impossible to add group to permission system"));
+        }
+        if (!count($err)) {
+            if ($group_super) {	// set super admin privilege
+                AddPerm($newgroupid, AA_ID, "aa", AA_Perm::ROLES["SUPER"]['id']);
+            }
+            go_url(get_url('', ['grp_edit' => 1, 'selected_group' => $newgroupid, 'Msg' => _m("Group successfully added to permission system")], true));
+        }
+    } else {
+        $grouprecord["uid"] = $selected_group;
+        if (!ChangeGroup($grouprecord)) {
+            $err["LDAP"] = MsgErr(_m("Can't change group"));
+        }
+        if ($group_super) {		// set or revoke super admin privilege
+            AddPerm($grouprecord["uid"], AA_ID, "aa", AA_Perm::ROLES["SUPER"]['id']);
+        } else {
+            DelPerm($grouprecord["uid"], AA_ID, "aa");
+        }
+    }
+
+    // Procces users data ---------------------
+    // posted_users contains comma delimeted list of selected users of group
+    if ($posted_users) {
+        // we use urldecode in order to use comma as separator
+        $assigned_users = array_map('rawurldecode', explode(",", $posted_users));
+    }
+
+    if (isset($sel_users) && is_array($sel_users) && $sel_users["n"] == "") {
+        foreach (array_keys($sel_users) as $foo_uid) {
+            DelGroupMember($selected_group, $foo_uid);
+        }
+    }
+    if (isset($assigned_users)) {
+        foreach ($assigned_users as $foo_uid) {
+            AddGroupMember($selected_group, $foo_uid);
+        }
+    }
+
+    // Procces module permissions ----------------------------------------------
+
+    // Change module permissions if user wants
+    ChangeUserModulePerms($perm_mod, $selected_group);
+
+    // Add new modules for this user
+    AddUserModulePerms($new_module, $new_module_role, $selected_group);
+
+} while (false);

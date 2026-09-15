@@ -1,0 +1,240 @@
+<?php
+
+/**
+ *
+ *
+ * PHP version 7.2+
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @version   $Id$
+ * @author    Jakub Adamek <jakubadamek@ecn.cz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      https://www.apc.org/ APC
+ *
+ * Global parameters:
+ *   sort_key .. anything from $sortable_columns
+ *   sort_order .. 'a' or 'd'
+ *   cmd[] .. contains desired command
+ *   arg[] .. command arguments
+ *   fmset[directory] .. active dir
+ *   fmset[filename] .. active file (only in the one file page)
+ *
+ *   The code is divided into
+ *       admin/fileman.php -- basic file table page interface
+ *       include/fileman.php -- file table creation, all file actions (commands)
+ *       include/filedit.php -- single file part of the manager (another page)
+ *
+ *   The variable $basedir is the base directory to the parent of which the user can't go.
+ *   All paths are relative to this directory. It is set in the slices settings and if it does
+ *   not exist, it is created.
+ *   AA admins may go to the upper level.
+*/
+
+use AA\Util\InputVars;
+
+require_once __DIR__ . "/../include/init_page.php";
+require_once __DIR__ . "/../include/formutil.php";
+require_once __DIR__ . "/../include/date.php";
+require_once __DIR__ . "/../include/varset.php";
+require_once __DIR__ . "/../include/fileman.php";
+
+try {
+    // array ( )-array ( )
+    $arg = InputVars::arrayGETPOST('arg'); // -
+    // array ( )
+    $chb = InputVars::arrayPOST('chb');
+    // array ( 'edit' => 6, )-array ( 'createfile' => 5, 'cancel' => 6, 'rename' => 2, 'upload' => 2, 'copytmp' => 1, 'createdir' => 1, 'delete' => 5, )
+    $cmd = InputVars::stringGETPOST('cmd'); // alpha-alpha
+    // array ( )-array ( )
+    $fmset = InputVars::arrayGETPOST('fmset'); // -
+    // array ( 'name' => 4, )-array ( 'name' => 14, )
+    $sort_key = InputVars::stringGETPOST('sort_key'); // alpha-alpha
+    // array ( 'd' => 1, 'a' => 3, )-array ( 'a' => 14, )
+    $sort_order = InputVars::stringGETPOST('sort_order'); // alpha-alpha
+    $cancel = InputVars::boolPOST('cancel');
+
+    $Msg = InputVars::stringGETPOST('Msg');
+} catch (Exception $e) {
+    AA_Adminpageutil::pageParameterError($e);
+}
+
+
+// FilemanPerms() is defined in perm_core.php, it sets $fileman_dir
+if (!FilemanPerms(AA::$module_id)) {
+    AA_Adminpageutil::MsgPageMenu("index.php", _m("No permissions for file manager."), "admin", "fileman");
+}
+
+// FILEMAN_BASE_DIR defined in config.php
+if (!is_dir(FILEMAN_BASE_DIR)) {
+    AA_Adminpageutil::MsgPageMenu("index.php", _m("Unable to run File Manager") . " '" . FILEMAN_BASE_DIR . "' " . _m("doesn't exist"), "admin", "fileman");
+}
+
+$basedir = FILEMAN_BASE_DIR . $fileman_dir;
+
+if (!is_dir($basedir) && !file_exists($basedir) && !mkdir($basedir, FILEMAN_MODE_DIR)) {
+    AA_Adminpageutil::MsgPageMenu("index.php", _m("Unable to mkdir") . " '" . $basedir . "'", "admin", "fileman");
+}
+
+if (IsSuperadmin()) {
+    $basedir = FILEMAN_BASE_DIR;
+    if (!isset($fmset['directory']) && is_dir($basedir . $fileman_dir)) {
+        $fmset['directory'] = $fileman_dir;
+    }
+}
+
+set_directory($fmset['directory']);
+//echo "<p><font color=purple>fileman_execute_command:basedir=$basedir;directory=$directory,cmd=$cmd,arg=$arg,chb=$chb,fmset=$fmset;</font></p>";
+fileman_execute_command($basedir, $directory, $cmd, $arg, $chb, $fmset);
+
+// One file page
+if ($cmd === 'edit' || $cmd === 'createfile') {
+    $fe_path = $basedir;
+    $fe_script = StateUrl("fileman.php");
+    $fe_wwwpath = FILEMAN_BASE_URL;
+    // NOTE require_once outputs text, its not just defining functions
+    require_once __DIR__ . "/../include/filedit.php";
+    Session::page_close();
+    exit;
+}
+
+
+$apage = new AA_Adminpageutil('sliceadmin', 'fileman');
+$apage->setTitle(_m("File Manager"));
+if ($directory) {
+    $apage->setSubtitle(_m("Directory") . " " . $directory);
+}
+$apage->setForm(['name' => 'fileman','enctype' => "multipart/form-data"]);
+$apage->printHead($err, $Msg);
+
+
+// J A V A S C R I P T
+
+echo $fileman_js;
+
+echo "
+<input type=\"hidden\" name=\"cmd\">
+<input type=\"hidden\" name=\"fmset[directory]\" value=\"$directory\">";
+
+echo '<table>';
+
+/** formatAction function
+ * @param $value
+ * @return string - the value in <strong>
+ */
+function formatAction($value): string
+{
+    return "<strong>$value</strong>";
+}
+
+/** fileAction function
+ * Creates a fileAction user element,
+ *   @param string $name - the name of the javascript command
+ *   @param string $value - the internationalized string to display
+ *   @return string - an HTML button
+ */
+function fileAction($name, $value): string
+{
+    return "<input type=\"button\" name=\"button$name\" value=\"$value\" onclick=\"command('$name')\">&nbsp;&nbsp;";
+}
+
+/** uilr function
+ *   @param string $inp - the HTML for the input element
+ *   @param string $act - the HTML for the action element
+ *   @return string two columns of input and action, can flip and table
+ */
+function uilr($inp, $act): string
+{
+    return "<tr><td>$inp</td><td>$act</td></tr>\n";
+}
+
+/** inputplusaction function
+ * Creates a input box and action, uses uilr and fileAction which vary
+ * @param string $name - the name of the javascript command
+ * @param string $value - the internationalized string to display
+ * @return string two
+ */
+function inputplusaction($name, $value): string
+{
+    return uilr("<input name=\"arg[$name]\">", fileAction($name, $value));
+}
+
+
+echo $jsSender;
+echo '<tr class="aa-tbl-header"><th>';
+echo //fileAction ("checkall",_m("Select All")) .
+     fileAction("uncheckall", _m("Unselect all"))
+     . fileAction("delete", _m("Delete selected"));
+echo "</th></tr>
+<tr><td>";
+echo '<table>';
+
+// Show column headers
+echo '<tr><td>&nbsp;</td><td>&nbsp;</td>';
+if (!$sortable_columns[$sort_key]) {
+    $sort_key = "name";
+}
+foreach ($sortable_columns as $sortk => $col) {
+    if ($sort_key == $sortk) {
+        $so = $sort_order ?: $col["sort"];
+        $img = "&nbsp;<img src='../images/" . ($so === 'd' ? 'up' : 'down') . ".gif'>";
+        $so  = $so === 'a' ? 'd' : 'a';
+        $so  = "&sort_order=$so";
+    } else {
+        $so  = "";
+        $img = "";
+    }
+
+    echo "<td><a href=\"" . StateUrl("fileman.php?sort_key=$sortk$so&fmset[directory]=$directory") . "\">" . formatAction($col['label'] . $img) . "</a></td>";
+}
+if (!$sort_order) {
+    $sort_order = $sortable_columns[$sort_key]["sort"];
+}
+
+// * * * * * * * * Show the file table * * * * * * * *
+echo file_table($basedir, $directory);
+echo "</table>
+      <input type=\"hidden\" name=\"sort_key\" value=\"$sort_key\">
+      <input type=\"hidden\" name=\"sort_order\" value=\"$sort_order\">
+</td></tr>
+<tr><td>";
+echo '<table>';
+
+echo "<tr><td colspan=\"2\"></td></tr>";
+echo inputplusaction("createfile", _m("Create new file"));
+// echo "<input type=\"hidden\" name=\"MAX_FILE_SIZE\" value=\"10485760\">";         // browsers do not use this variable - removed
+echo uilr(
+    "<input type=\"file\" name=\"uploadarg\">",
+    fileAction("upload", _m("Upload file") . " (max. 10 MB)"),
+);
+echo "<tr><td colspan=\"2\"></td></tr>";
+
+$db->query("SELECT * FROM wizard_template");
+if ($db->num_rows()) {
+    $i = "<select name=\"arg[copytmp]\">";
+    while ($db->next_record()) {
+        $i .= "<option value=\"" . $db->f("dir") . "\">" . $db->f("dir") . " (" . $db->f("description") . ")";
+    }
+    $i .= "</select>";
+    echo uilr($i, fileAction("copytmp", _m("Copy template dir")));
+}
+
+echo inputplusaction("createdir", _m("Create new directory"));
+echo "</table></td></tr>";
+
+echo "</table>";
+
+$apage->printFoot();

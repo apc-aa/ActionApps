@@ -1,0 +1,217 @@
+<?php
+
+/** se_fulltext.php - assigns html format for fulltext view
+ *   expected $slice_id for edit slice
+ *   optionally $Msg to show under <h1>Headline</h1> (typically: update successful)
+ *
+ * PHP version 7.2+
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @version   $Id$
+ * @author    Honza Malik <honza.malik@ecn.cz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      https://www.apc.org/ APC
+ *
+*/
+
+use AA\IO\DB\DB_AA;
+use AA\Managed;
+use AA\Manager;
+use AA\Manageraction\AbstractManageraction;
+use AA\Manageraction\Manageractions;
+use AA\Util\AbstractAliasgenerator;
+use AA\Util\ChangesMonitor;
+use AA\Util\InputVars;
+use AA\Util\Searchfields;
+
+require_once __DIR__ . "/../include/init_page.php";
+require_once __DIR__ . "/../include/formutil.php";
+require_once __DIR__ . "/../include/varset.php";
+require_once __DIR__ . "/../include/item.php";     // GetAliasesFromField funct def
+
+try {
+    $cancel = InputVars::boolPOST('cancel');
+} catch (Exception $e) {
+    AA_Adminpageutil::pageParameterError($e);
+}
+
+if ($cancel) {
+    go_url(StateUrl(self_base() . "index.php"));
+}
+
+if (!IfSlPerm(PS_HISTORY)) {
+    AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php", _m("You do not have permissions to view history"), "admin");
+    exit;
+}
+
+//------------------ Actions for History Manager --------------------------------
+
+/**
+ *
+ */
+class Manageraction_History_Apply extends AbstractManageraction
+{
+    /** Name of this Manager's action */
+    public function getName(): string
+    {
+        return _m('Set again this old values');
+    }
+
+    /** @inheritDoc */
+    public function perform(Manager $manager, zids $item_zids, $action_param): string|false
+    {
+        $change_ids = $item_zids;  // just rename to match real content
+
+        if (!IfSlPerm(PS_EDIT)) {    // permission to delete items?
+            /** @todo Should be changed to different permission */
+            return _m("You do not have permissions to change items");
+        }
+
+        if ($change_ids->isEmpty()) {
+            return false;     // OK - no errors
+        }
+
+        // AA::$debug = 255;
+
+        $sid = $manager->getModuleId();
+        $changes_to_apply = DB_AA::select('id', 'SELECT `change`.id FROM `change`, `item`', [['item.id', 'UNHEX(change.resource_id)', 'j'], ['change.id', $change_ids->longids()], ['slice_id', $sid, 'l']]);
+
+        $changes = ChangesMonitor::GetHistoryContent(new zids($changes_to_apply, 'l'));
+
+        $updated_items = 0;
+        foreach ($changes as $chid => $fields) {
+            $newcontent4id = new ItemContent();
+            $newcontent4id->setItemID($fields['resource_id'][0]['value']);
+            $newcontent4id->setSliceID($sid);
+            $doit = false;
+
+            foreach ($fields as $fid => $val_arr) {
+                if (strlen($fid) === 16 && $fid !== 'last_edit.......') {
+                    $newcontent4id->setAaValue($fid, new AA_Value($val_arr, FLAG_HTML));   // , $content4id->getFlag($field_id));
+                    $doit = true;
+                }
+            }
+            if ($doit && $newcontent4id->storeItem('update', [false, false, true])) {
+                $updated_items = 1;
+            }
+        }
+        AA::Pagecache()->invalidateFor($sid);   // invalidate old cached values
+
+        return false;     // OK
+    }
+
+    /** Checks if the user have enough permission to perform the action
+     *
+     * @param \AA\Manager  $manager
+     *
+     * @return bool
+     */
+    public function isPerm4Action($manager): bool
+    {
+        /** @todo Should be changed to different permission */
+        return IfSlPerm(PS_EDIT);
+    }
+}
+
+/** GetHistoryFields function
+ * List of fields, which will be listed in searchbar in Manager (search)
+ * @return AA\Util\Searchfields
+ */
+function GetHistoryFields(): Searchfields
+{  // function - we need trnslate _m() on use (not at include time)
+    $searchfields = new AA\Util\Searchfields();
+    //   id                     $name,                        $field,                 operators='text', $table=false, $search_pri=false, $order_pri=false
+    //$searchfields->add('id'                  , _m('Id'),                    'links_links.id',                'numeric', false,          0,    0);
+
+    $searchfields->add('change_id', _m('Id'), 'change.id', 'text', false, 10, 10);
+    $searchfields->add('resource_id', _m('Resource ID'), 'change.resource_id', 'text', false, 20, 20);
+    $searchfields->add('type', _m('Type'), 'change.type', 'text', false, 30, 30);
+    $searchfields->add('user', _m('User'), 'change.user', 'text', false, 40, 40);
+    $searchfields->add('time', _m('Time'), 'change.time', 'date', false, 50, 50);
+    // $searchfields->add('selector'    , _m('Selector'),    'change_record.selector',    'text',    'change_record', 60, 60);
+    // $searchfields->add('priority'    , _m('Priority'),    'change_record.priority',    'numeric', 'change_record', 70, 70);
+    // $searchfields->add('_value'      , _m('Value'),       'change_record.value',       'text',    'change_record', 80, 80);   // we do not use change_record, yet. I added underscore to _value, because it makes MakeSQLConditions to return wrong conditions (condition[value] badly detected)
+    // $searchfields->add('vtype'       , _m('Value Type'),  'change_record.type',        'text',    'change_record', 90, 90);
+    return $searchfields;
+}
+
+/** cached History aliases
+ *  @usage (new AA_Aliasgenerator_History())->getAliases()
+ */
+class AA_Aliasgenerator_History extends AbstractAliasgenerator
+{
+    public static function getAliasesFromParams(array $params): AA_Aliases
+    {
+        $aliases = new AA_Aliases();
+        $aliases->addAlias(new AA_Alias('_#HI_CH_ID', 'f_1', 'id', _m('Change ID')));
+        // $aliases->addAlias(new AA_Alias('_#HI_FIELD', 'f_t', 'selector',   _m('Field selector')));
+        // $aliases->addAlias(new AA_Alias('_#HI_VALUE', 'f_t', 'value',      _m('Value')));
+        // $aliases->addAlias(new AA_Alias('_#HI_TYPE_', 'f_t', 'vtype',       _m('Type of value')));
+        $aliases->addAlias(new AA_Alias('_#HI_TIME_', 'f_d:j.n.Y H:i:s', 'time', _m('Time of change')));
+        $aliases->addAlias(new AA_Alias('_#HI_USER_', 'f_1', 'user', _m('User')));
+        $aliases->addAlias(new AA_Alias('_#HI_UNAME', 'f_t:{userinfo:{_#HI_USER_}}', 'user', _m('User')));
+        $aliases->addAlias(new AA_Alias('_#HI_ITEM_', 'f_1', 'resource_id', _m('Item ID')));
+        return $aliases;
+    }
+}
+
+
+$actions   = new Manageractions();
+$actions->addAction(new Manageraction_History_Apply('ApplyHistory'));
+
+$manager_settings = [
+    'module_id' => AA::$module_id,
+    'show'      =>  MGR_ALL & ~MGR_SB_BOOKMARKS,    // MGR_ACTIONS | MGR_SB_SEARCHROWS | MGR_SB_ORDERROWS | MGR_SB_BOOKMARKS | MGR_SB_ALLTEXT | MGR_SB_ALLNUM
+    'searchbar' => [
+        'fields'               => GetHistoryFields(),
+        'search_row_count_min' => 1,
+        'order_row_count_min'  => 1,
+        'add_empty_search_row' => true,
+        'function'             => false,  // name of function for aditional action hooked on standard filter action
+        'default_sort'         =>  [0 => ['time' => 'd']],
+    ],
+    'scroller'  => [
+        'listlen'              => EDIT_ITEM_COUNT,
+    ],
+    'itemview'  => [
+        'manager_vid'          => false,    // $slice_info['manager_vid'],      // id of view which controls the design
+        'format'               => [                           // optionally to manager_vid you can set format array
+            'compact_top'      => '<table class="aa-table">
+                                      <tr class="aa-tbl-header"><th width="30"></th><th>Item</th><th>Item ID</th><th>User</th><th>Change time</th></tr>',
+            'category_sort'    => false,
+            'category_format'  => "",
+            'category_top'     => "",
+            'category_bottom'  => "",
+            'even_odd_differ'  => false,
+            'even_row_format'  => "",
+            //           'odd_row_format'   => '<tr><td width="30"><input type="checkbox" name="chb[_#HI_CH_ID]" value=""></td><td><a href="_#EDITLINK">{switch({_#L_NAME__}).:_#L_NAME__:???}</a> (_#L_O_NAME)<div class="tabsmall">_#L_DESCRI<br>(_#CATEG_GO)<br><a href="_#L_URL___" target="_blank">_#L_URL___</a></div></td><td class="tabsmall">{alias:checked:f_d:j.n.Y}<br>{alias:created_by:f_e:username}<br>{alias:edited_by:f_e:username}<br><span style="background:#_#L_VCOLOR;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;_#L_VALID_&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td></tr>
+            'odd_row_format'   => '<tr><td width="30"><input type="checkbox" name="chb[x_#HI_CH_ID]" value=""></td><td><strong>{item:{_#HI_ITEM_}:_#HEADLINE}</strong></td><td>_#HI_ITEM_ <a href="{item:{_#HI_ITEM_}:_#EDITITEM}">&raquo;</a></td><td>_#HI_UNAME <small>(_#HI_USER_)</small></td><td>_#HI_TIME_</td></tr>' . "\n",
+            'compact_remove'   => '',
+            'compact_bottom'   => "</table>",
+            'id'               => AA::$module_id,
+        ],
+        //'fields'               => '',
+        'aliases'              => new AA_Aliases(new AA_Aliasgenerator_History()),
+        'get_content_funct'    => 'AA\Util\ChangesMonitor::GetHistoryContent',
+        'query_funct'          => 'AA\Util\ChangesMonitor::QueryHistoryZIDs',
+    ],
+    'actions'   => $actions,
+];
+
+$apage = new AA_Adminpageutil('sliceadmin', 'history');
+$apage->setTitle(_m('ActionApps - History Manager'));
+$apage->printWithManager(new Manager('history' . AA::$module_id, (new Managed())->setSettings($manager_settings)->setTitle(_m('ActionApps - History Manager'))));

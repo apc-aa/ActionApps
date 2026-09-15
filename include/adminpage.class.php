@@ -1,0 +1,350 @@
+<?php
+/**
+ *
+ * PHP version 7.2+
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @version   $Id$
+ * @author    Honza Malik <honza.malik@ecn.cz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      https://www.apc.org/ APC
+ *
+*/
+
+
+use AA\Manager;
+
+require_once __DIR__ . "/menu_util.php";
+
+
+/** Admin page helper class
+ *  Simplifies and unifies admin page approach. It uses {generate:head} for automatic script load, ...
+ *  Used for slower move towards more radical AA_Adminpage approach below...
+ */
+class AA_Adminpageutil {
+    private string $modulemenu = 'include';
+    private string $menu       = '';
+    private string $submenu    = '';
+    private string $submenu_override = '';   // render this named submenu instead of the main menu's default
+    private string $title      = '';
+    private string $subtitle   = '';
+    private array $require     = [];
+    private array $form        = ['name' => 'f', 'id' =>'', 'method' =>'post', 'action' => '', 'enctype' =>'', 'onsubmit' =>''];
+    private array $helpboxes   = [];
+
+    /**
+     * AA_Adminpageutil constructor.
+     *
+     * @param  string  $menu
+     * @param  string  $submenu
+     */
+    public function __construct(string $menu = '', string $submenu='')
+    {
+        $this->menu    = $menu;
+        $this->submenu = $submenu;
+        $formsetup = "document.querySelectorAll('form').forEach(function(el) { el.addEventListener('submit', function(e) { e.target.classList.add('aa-updating'); }); });";
+        $this->addRequire($formsetup, 'AA_Req_Load');
+    }
+
+    public static function pageParameterError(Exception $e): never
+    {
+        $msg = $e->getMessage();
+        $param_name = substr($e->getMessage(), 0, strpos($e->getMessage(), ':'));
+        AA_Log::write('PAGE_PARAM', AA_Log::context($param_name), $msg);   // log.type is 10 bytes, longer names get cut
+        self::MsgPageMenu(StateUrl(''), _m("Error in page parameter: %1", [$msg]), 'standalone');
+        exit;
+    }
+
+    /**
+     * @param  string  $title
+     */
+    public function setTitle(string $title): void
+    {
+        $this->title = $title;
+    }
+
+    /**
+     * @param array $settings  // like: ['action'=>'se_mapping2.php', 'enctype'=>'multipart/form-data', 'id'=>'formf','onsubmit'=>"return validate2()"]
+     */
+    public function setForm(array $settings= []): void
+    {
+        if ( empty($settings) ) {
+            $this->form = [];
+        } else {
+            foreach ($settings as $k => $v) {
+                $this->form[$k] = $v;
+            }
+        }
+    }
+
+    /**
+     * @param  string  $modulemenu
+     */
+    public function setModuleMenu(string $modulemenu): void
+    {
+        $this->modulemenu = $modulemenu;
+    }
+
+    /** Render a named submenu (from menu.php) instead of the one the main menu defaults to.
+     *  Lets a page keep its top-menu highlight while showing a different left rail
+     *  (e.g. main 'itemmanager' + submenu 'itemcontext_submenu').
+     * @param string $submenu_key
+     */
+    public function setSubmenuKey(string $submenu_key): void
+    {
+        $this->submenu_override = $submenu_key;
+    }
+
+    /**
+     * @param  string  $subtitle
+     */
+    public function setSubtitle(string $subtitle): void
+    {
+        $this->subtitle = $subtitle;
+    }
+
+    /**
+     * @param  Manager  $manager
+     *
+     * @throws Exception
+     */
+    public function printWithManager(Manager $manager): void
+    {
+        $manager->performActions();
+
+        //$zids = $manager->getZids();
+        $html = $manager->getDisplayPage();
+
+        $this->setForm();
+
+        // this allows to automatically load codemirror in the head (printHead is called after $form->getObjectEditHtml)
+        $this->printAllPage($html, $err, $Msg);
+    }
+
+    /**
+     * displayed at the end of page or in the right column (later)
+     *
+     * @param  string  $name
+     * @param string   $html
+     */
+    public function addHelpbox(string $name, $html, bool $packed=false): void
+    {
+        $this->helpboxes[] = ['name'=>$name, 'html'=>$html, 'packed'=>$packed];
+    }
+
+    /**
+     * @param string $require
+     * @param string $type
+     */
+    public function addRequire($require, $type=''): void
+    {
+        $this->require[] = [$require, $type];
+    }
+
+    public function getPageBegin(): string
+    {
+        return '<!DOCTYPE html>
+<html>
+<head>
+  <link rel="SHORTCUT ICON" href="' . AA_INSTAL_PATH . 'images/favicon.ico">
+  <meta charset="' . AA::$encoding . '">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>' . $this->title . '</title>
+  {generate:HEAD}
+  </head>
+  <body>
+';
+    }
+
+    public function getPageEnd(): string
+    {
+        $ret ='';
+        if ($this->form) {
+            $ret = '</form>';
+        }
+
+        if (AA::$debug&2) { $ret .= AA::$dbg->basic_stat();    }
+        if (AA::$debug&4) { $ret .= AA::$dbg->duration_stat(); }
+
+        return $ret. '</div></div>{generate:FOOT}</body></html>';
+    }
+
+    public function printHead($err=[], $Msg=''): void
+    {
+        AA::sendAdminHeaders();
+
+        $html_start = $this->getPageBegin();
+
+        if ($this->require) {
+            foreach ($this->require as $req) {
+                AA::Stringexpander()->addRequire($req[0], $req[1]);
+            }
+        }
+        AA::Stringexpander()->addRequire('css-aa-system');
+        AA::Stringexpander()->addRequire(AA_INSTAL_PATH . 'admin-ecn.css?v='.AA_JS_VERSION);
+        // Per-user theme overlay (cookie/profile) wins over the server-wide ADMIN_CSS default.
+        if ($overlay = \AA\Util\UiPrefs::themeOverlay()) {
+            AA::Stringexpander()->addRequire(AA_INSTAL_PATH . $overlay.'?v='.AA_JS_VERSION);
+        }
+
+        self::addOverflowMenuPositioner();
+
+        if ($errtext = trim(implode('<br>',(array)$err))) {
+            //$errtext = 'some text';
+            AA::Stringexpander()->addRequire('aa-jslib');
+            AA::Stringexpander()->addRequire("AA_Message('".escape4js($errtext)."', 'err')", 'AA_Req_Load');
+        }
+
+        // this also fills AA::Stringexpander required libs, so we can continue with postprocess
+        // $out        = $form->getObjectEditHtml();
+        // $out        = AA::Stringexpander()->postprocess($out); // to replace  {generate:HEAD} with dynamic javascripts needed by inputform
+
+        $html_start = AA::Un($html_start);
+        $html_start = AA::Stringexpander()->postprocess($html_start);
+
+        echo $html_start;
+
+        // this is old code used everywhere, so it is copied here. It should be rewritten - without globals...
+
+        echo getMenu($this->menu, $this->submenu, $this->submenu_override); // opens two divs - in all cases
+
+        // The note corner (AA\Util\Note) is emitted before the H1, not after: it floats right, so
+        // printing it first puts it level with the title and leaves h1 sibling selectors intact.
+        echo \AA\Util\Notes::pageCorner();
+
+        if ($this->title) {
+            echo "<h1>" . $this->title . "</h1>";
+        }
+        if ($this->subtitle) {
+            echo "<div>" . $this->subtitle . "</div>";
+        }
+
+        if (!empty($Msg)) {
+            echo "<div class='mb-3 mt-3'>$Msg</div>";
+        }
+
+        // Remember the scroll position over a submit. Outside the $this->form branch:
+        // it listens on every form of the page, and a page without the wrapper form
+        // (State Check, whose rows carry their own) is exactly where it is needed.
+        AA::Stringexpander()->addRequire("document.querySelectorAll('form').forEach(function(f) { f.addEventListener('submit', function() {sessionStorage.setItem('aa_pgtop', window.pageYOffset);});})", 'AA_Req_Load');
+        AA::Stringexpander()->addRequire("if (sessionStorage.getItem('aa_pgtop')>0) { window.scrollTo(0,sessionStorage.getItem('aa_pgtop')); sessionStorage.setItem('aa_pgtop', 0); }", 'AA_Req_Load');
+
+        if ($this->form) {
+            $frm = "\n<form";
+            foreach ($this->form as $k => $v) {
+                if ($k === 'action') {
+                    $frm .= " $k=\"".StateUrl($v) ."\"";
+                } elseif (strlen($v)) {
+                    $frm .= " $k=\"$v\"";
+                }
+            }
+            echo $frm.'>';
+        }
+    }
+
+    public function printHelpbox(): void
+    {
+        foreach ($this->helpboxes as $helpbox) {
+            $tab = '<div class=aa-helpbox-container>';
+            if ($helpbox['name']) {
+                $tab .= "\n <div class=aa-tab-title>" . $helpbox['name'] . "</div>";
+            }
+            $tab .= "\n <div class=aa-tab-content>" . $helpbox['html'] . "</div>";
+            $tab .= "</div>";
+
+            $html = ($helpbox['packed']) ? "<details class='aa-helpbox'><summary>".$helpbox['name']."</summary>$tab</details>" : $tab;
+            if ($html) {
+                // not necessary to unalias - help text for aliases was executed
+                // $html = AA::Un($html);
+                // $html = AA::Stringexpander()->postprocess($html);
+                echo '<br>'.$html;
+            }
+        }
+    }
+
+    /** Positioner for the reusable .aa-overflow-menu popover (HTML5 popover API,
+     *  top-layer rendering). Open the popover via <button popovertarget="…">⋯</button>
+     *  and the menu is anchored under the trigger automatically. Static and idempotent
+     *  (addRequire() deduplicates), because pages built by printForm() need it too.
+     */
+    public static function addOverflowMenuPositioner(): void
+    {
+        AA::Stringexpander()->addRequire(<<<'JS'
+            (function(){
+                document.addEventListener('toggle', function(e){
+                    var m = e.target;
+                    if (!m.classList || !m.classList.contains('aa-overflow-menu') || e.newState !== 'open') return;
+                    var btn = document.querySelector('[popovertarget="' + CSS.escape(m.id) + '"]');
+                    if (!btn) return;
+                    var r = btn.getBoundingClientRect();
+                    var w = m.offsetWidth || 180;
+                    var left = r.right - w;       // right-align under trigger
+                    if (left < 4) left = r.left;  // flip if it would clip viewport-left
+                    m.style.top  = (r.bottom + 4) + 'px';
+                    m.style.left = left + 'px';
+                }, true);
+            })();
+            JS, 'AA_Req_Load');
+    }
+
+    public function printFoot(): void
+    {
+        $this->printHelpbox();
+        $html_end = $this->getPageEnd();
+        $html_end = AA::Un($html_end);
+        $html_end = AA::Stringexpander()->postprocess($html_end);
+        echo $html_end;
+        Session::page_close();
+    }
+
+    public function printAllPage($body_html, $err, $Msg): void
+    {
+        $this->printHead($err, $Msg);
+        echo $body_html;
+        $this->printFoot();
+    }
+
+    /** MsgPageMenu function
+     *  Displays page with message and link to $url
+     * @param $url - where to go if user clicks on Back link on this message page
+     * @param $msg string|array - displayed message or array of messages
+     * @param $mode - items/admin/standalone for surrounding of message
+     * @param $menu
+     */
+    public static function MsgPageMenu($url, $msg, $mode, $menu = ""): never
+    {
+        global $sess;
+
+        if (!isset($sess)) {
+            require_once __DIR__ . "/locauth.php";
+            pageOpen();
+        }
+
+        if (is_array($msg)) {
+            $msg = implode(' ', $msg); // probably error messages in divs
+        }
+
+        $apage = new AA_Adminpageutil($mode === 'admin' ? 'aaadmin' : 'sliceadmin', $menu);
+        $apage->setForm();
+        $apage->printHead([], $msg);
+
+        echo "<div><a href=\"$url\" class='btn'>" . _m("Back") . "</a></div>";
+        $apage->printFoot();
+
+        exit;
+    }
+}

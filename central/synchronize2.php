@@ -1,0 +1,79 @@
+<?php
+//$Id$
+/*
+Copyright (C) 1999, 2000 Association for Progressive Communications
+https://www.apc.org/
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program (LICENSE); if not, write to the Free Software
+    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+*/
+
+require_once __DIR__."/include/init_central.php";
+require_once __DIR__ . "/../include/formutil.php";
+
+
+pageOpen();
+
+if (!IsSuperadmin()) {
+  AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php", _m("You don't have permissions to synchronize slices."), "admin");
+  exit;
+}
+
+$apage = new AA_Adminpageutil('central', 'synchronize');
+$apage->setTitle(_m("Central - Synchronize ActionApps (2/3) - Slices to Compare"));
+$apage->addRequire('aa-jslib@1');
+$apage->setForm();
+$apage->printHead($err, $Msg);
+
+
+// ActionApps to synchronize
+$aas = AA_Actionapps::getArray();
+$aas_array = [];
+foreach ( $aas as $k => $aa ) {
+    $aas_array[$k] = $aa->getName();
+}
+
+// Template slice - grab from remote AA
+$tmplate_slices = $aas[$_POST['template_aa']]->requestSlices();
+
+// Compared slice - grab from remote AA
+$cmp_slices = array_merge( [0 => _m('do not compare')], $aas[$_POST['comparation_aa']]->requestSlices());
+
+$form_buttons = [
+    "compare"      => [
+        "type"      => "submit",
+                                               "value"     => _m("Compare"),
+                                               "accesskey" => "C"
+    ],
+                      "template_aa"     => ["value"     =>  $_POST['template_aa']],
+                      "comparation_aa"  => ["value"     =>  $_POST['comparation_aa']]
+];
+
+?>
+<form name=f method=post action="<?php echo StateUrl(self_base() ."synchronize3.php") ?>">
+<?php
+
+FrmTabCaption('', $form_buttons);
+FrmStaticText(_m('Template ActionApps'), $aas[$_POST['template_aa']]->getName());
+FrmTabSeparator(_m('Slice Mapping'));
+FrmStaticText($aas[$_POST['template_aa']]->getName(), $aas[$_POST['comparation_aa']]->getName());
+foreach($tmplate_slices as $sid => $name) {
+    FrmInputSelect('sync_slices['.$sid.']', $name, $cmp_slices, $_POST['sync_slices'], true);
+}
+FrmTabEnd($form_buttons);
+?>
+</form>
+<?php
+
+$apage->printFoot();

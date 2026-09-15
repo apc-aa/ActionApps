@@ -1,0 +1,233 @@
+<?php
+
+namespace AA\Optimize;
+
+use AA\Util\NamedInterface;
+use AA\Util\ReportTrait;
+use AA_Content;
+use AA_Property;
+use AA_Value;
+use ReflectionMethod;
+use RuntimeException;
+
+abstract class AbstractOptimize implements NamedInterface
+{
+    use ReportTrait;
+
+    /** types() tags read by State Check (admin/aa_statecheck.php, CheckRunner) */
+    /** cheap, index-only, at most ~200 ms - runs on every load of the page */
+    public const CHECK_BASIC = 'check_basic';
+    /** full scans - on request and in the daily snapshot */
+    public const CHECK_EXTENDED = 'check_extended';
+    public const CHECK_SECURITY = 'check_security';
+
+    /** @var array used in the manager to store test results in order we can use it in alias _#RESULT__ */
+    public static array $action_results = [];
+    public static array $action_results_text = [];
+
+    protected $db;
+
+    /** \AA\Util\NamedInterface function */
+    public static function name(): string
+    {
+        return '';
+    }
+
+    /** \AA\Util\NamedInterface function */
+    public static function description(): string
+    {
+        return '';
+    }
+
+    /** true for the actions which should be performed from time to time on every AA
+     *  false for the specific tasks which you run on specific cases - like converting character encodings, ...
+     */
+    // public static function isOptimizing(): bool { return true; }  // not used - better to use isType() here
+
+    /** @return bool - true if everything is OK - no action needed
+     *  A class that describes itself through findings() gets it from them: OK = no error finding
+     */
+    public function test(): bool
+    {
+        return !self::overridesFindings() || !Finding::hasError($this->findings());
+    }
+
+    /** Structured results for State Check. A legacy class gets one Finding from
+     *  test() + report(); a checker overrides this and inherits test() from it.
+     * @return Finding[]
+     */
+    public function findings(): array
+    {
+        $this->clear_report();
+        $ok = $this->test();
+        return [new Finding($ok ? Finding::OK : static::failSeverity(), static::name(), evidence: $this->reportRows(), repairable: !$ok && $this->hasAction('repair'))];
+    }
+
+    /** What a failed test() means on State Check for a class that does not write
+     *  findings(): Finding::ERROR unless the class says it is only a recommendation
+     *  (unused constants, an optional feature not installed) - Finding::INFO. */
+    public static function failSeverity(): string
+    {
+        return Finding::ERROR;
+    }
+
+    /** test() and findings() default to each other; this says which one the class wrote */
+    private static function overridesFindings(): bool
+    {
+        return (new ReflectionMethod(static::class, 'findings'))->getDeclaringClass()->getName() !== self::class;
+    }
+
+    /** @return bool - true if everything is OK */
+    public function repair(): bool
+    {
+        return true;
+    }
+
+    /** Reverts the changes made by repair() method
+     *  Normally it should not be needed to revert the changes - used mainly for optional features like AddDurationLog
+     * @return bool - true if everything is OK
+     */
+    public function revert(): bool
+    {
+        return true;
+    }
+
+    /** @return bool - true if everything is OK - no action needed */
+    public function test4modules(array $modules): bool
+    {
+        return true;
+    }   // test just for specified modules
+
+    public function repair4modules(array $modules): bool
+    {
+        return true;
+    } // repair just for specified modules
+
+    /**
+     * @param  array  $ids
+     *
+     * @return  false|string false - err, string - very short report (to be printed on button) - like number of fixed items
+     */
+    public function repair4ids(array $ids): false|string
+    {
+        return false;
+    } // repair just for specified ids - allows repair4ids - fix one after another
+
+    /** implemented actions within this class
+     * @return string[]
+     */
+    public static function actions(): array
+    {
+        return ['test', 'repair'];
+    }  // full set is ['test', 'repair', 'revert', 'test4modules', 'repair4modules', 'repair4ids']
+
+    /** is action present in this class
+     * @param string $action
+     * @return bool
+     */
+    public function hasAction(string $action): bool
+    {
+        return in_array($action, static::actions());
+    }
+
+    /** checks if this Optimize class belongs to specified type (like "sql_update")
+     *  full set is:
+     *    sql_update     - should be run on every SQL update of AA
+     *    opt_feature    - optional features, which could be added to AA
+     *    add_field      - just tag the add field optimizers
+     *    private_fix    - private_fix for site specific repairs - probably not useful for others
+     *    check_basic, check_extended, check_security - shown on State Check, see the CHECK_* constants
+     */
+    public static function types(): array
+    {
+        return [];
+    }
+
+    /** Where State Check files the findings: cron, errors, db, mail, feeds, cache,
+     *  security, forms, log, environment. '' means db (the legacy Optimize classes). */
+    public static function category(): string
+    {
+        return '';
+    }
+
+    /** the optimizers are ordered by priority when executed in chain (like for sql_update) */
+    public static function priority(): int
+    {
+        return 100;
+    }
+
+
+    /** used for generating aliases and content for Manager
+     * @return array
+     */
+    public static function getClassProperties(): array
+    {
+        //                                          id              name            type     multi  persist validator, required, help, morehelp, example
+        return [
+            'aa_id'       => new AA_Property('aa_id', _m("ID"), 'string', false, false),
+            'name'        => new AA_Property('name', _m("Name"), 'string', false, false),
+            'description' => new AA_Property('description', _m("Description"), 'string', false, false),
+            'actions'     => new AA_Property('actions', _m("Actions"), 'string', true, false),
+            'types'       => new AA_Property('types', _m("Types"), 'string', true, false),
+            'priority'    => new AA_Property('priority', _m("Priority"), 'int', false, false),
+            'result'      => new AA_Property('result', _m("Result"), 'string', false, false),
+            'resulttxt'   => new AA_Property('resulttxt', _m("Result text"), 'string', false, false),
+        ];
+    }
+
+    /** function to add content fields to getContent of Component for each type of Components (for Manager)*/
+    public static function contentAdd(AA_Content $content): void
+    {
+        $content->setAaValue('name', new AA_Value(static::name()));
+        $content->setAaValue('description', new AA_Value(static::description()));
+        $content->setAaValue('actions', new AA_Value(static::actions()));
+        $content->setAaValue('types', new AA_Value(static::types()));
+        $content->setAaValue('priority', new AA_Value(static::priority()));
+        $res = self::$action_results[get_class_name(static::class)] ?? '-';
+        $content->setAaValue('result', new AA_Value(($res === '-') ? '' : ($res ? 'OK' : 'ERR'))); // result is '' when no action was performed, OK or ERR as action result
+        $content->setAaValue('resulttxt', new AA_Value(self::$action_results_text[get_class_name(static::class)] ?? ''));
+    }
+
+    /** This function stores global state for all optimizations.
+     *  You can call it with bool parameter which will switch the state
+     *  If you call it without parameters, then you get current stete
+     *  true means, the DB queries are not written to the database, but just
+     *  written to messages (report)
+     *  Used by query($SQL) method
+     *  Called as AA\Optimize\AA_Optimize::justPrint();
+     * @todo convert to static class variable (after migration to PHP5)
+     */
+    public static function justPrint($state = null)
+    {
+        static $just_print = false;
+        if (!is_null($state)) {
+            $just_print = $state;
+        }
+        return $just_print;
+    }
+
+    /** $db->query wrapper - always use it to not execute the command and just
+     *  display it, ...
+     *
+     * @throws RuntimeException
+     */
+    public function query($SQL): bool
+    {
+        $this->message(safe($SQL));
+        $just_print = self::justPrint();
+
+        if ($just_print) {
+            return true;
+        }
+        if (!$this->db) {
+            $this->db = getDb();
+            $this->db->set_halt('report');
+        }
+        $db = $this->db;
+
+        if (!($ret = $db->query($SQL))) {
+            throw new RuntimeException('db err');  // @todo - better exception text
+        }
+        return $ret;
+    }
+}

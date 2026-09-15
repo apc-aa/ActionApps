@@ -1,0 +1,408 @@
+<?php
+/**
+ * Application wide configuration options
+ *
+ * This is the ActionApps main configuration file. In fact, this file is a PHP
+ * script which is included into every AA page, thus, php syntax is used.
+ * This basically means that this file defines constants in the form:
+ *
+ *        $name = "value";
+ *    or in the form
+ *        define("name", "value);
+ *
+ *
+ * PHP version 8.2+
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @version   $Id$
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      https://www.apc.org/ APC
+ *
+*/
+
+/** AA_SITE_PATH defines the webserver's home directory. It must be an absolute
+ *  path from the root. Make sure to terminate this path with a slash!
+ *  Fill in the correct value between the quotes.
+ *  It normaly looks like:
+ *  define('AA_SITE_PATH', "/home/httpd/html/");
+ */
+define('AA_SITE_PATH', "/home/httpd/html/");
+
+
+/** AA_BASE_DIR defines AA directory under AA_SITE_PATH where is AA installed.
+ *  If you concaternate AA_SITE_PATH and AA_BASE_DIR, you should get absolute
+ *  path from root to AA directory (where file slice.php is in).
+ *  Make sure to terminate this path with a slash!
+ *  Example:
+ *  define('AA_BASE_DIR', "apc-aa/");
+ */
+define('AA_BASE_DIR', "apc-aa/"); // AA_BASE_DIR is only used in this file so that
+                                  // a single change is required for multiple AA
+                                  // versions
+
+
+/** AA_INSTAL_PATH is server url relative path to base AA directory
+ *  You need to change this option only if your AA directory accessible through
+ *  Apache webserver differ from AA_BASE_DIR (for example if you install AA to
+ *  apc-aa-2026.6 directory and then create define aa -> apc-aa-2026.6 in Apache.
+ */
+define('AA_INSTAL_PATH', "/".AA_BASE_DIR);  // you can left it as it is
+
+
+/** Domain in which you want to run AA admin interface - in which domain we can
+ *  find AA directory
+ *  Make sure to terminate this path with a slash!
+ *  Example:
+ *  define('AA_HTTP_DOMAIN', "https://aa.apc.org/");
+ */
+define('AA_HTTP_DOMAIN', "https://my.domain.org/");
+
+
+/** ID of AA (any unique 32chars long hexadecimal number)
+ *  Please change this value to be unique - use any random hexadecimal number
+ *  You MUST set it before you run setup.php script - you can't change it later
+ *  bacause AA superadmin permission is joined with this number
+ */
+define("AA_ID", "990111222333444555666777888999A9");
+
+/** Organization name
+ *  It should be also world unique - it is important to have it unique mainly
+ *  if you plan exchange articles between servers
+ *  (@see https://actionapps.org/faq/detail.shtml?x=1788)
+ */
+define("ORG_NAME","An APC Member");
+
+
+/** DB Access Configuration */
+define("DB_HOST",    "my.domain.org"); // server on which the database (MySQL) is
+                                       // often you can use "localhost" here
+define("DB_NAME",    "aadb");          // Name of database
+define("DB_USER",    "aadbuser");      // User name for database access
+define("DB_PASSWORD","test.pw");       // Database password
+define("DB_TYPE",    "db_mysql");      // you can use db_mysql, db_pdo:mysql and (in theory) also another
+                                       // databases like db_odbc, db_mssql, ...
+
+/** Page shown on database error
+ *  If you do not specify this page, then some default error messages are
+ *  displayed. It is good for debuging, but it is better to not show this
+ *  messages to user on production server for security reasons */
+//    define("DB_ERROR_PAGE", "https://example.org/out-of-service.php");
+
+
+/** MySQL 4.1 is able to use different character sets for the communication.
+ *  Standard for MySQL client communication in PHP5 is UTF (probably), but if
+ *  you are using another character sets (maybe for historical reason), then you
+ *  need to specify it by "SET CHARACTER SET" and "SET COLLATION_CONNECTION" SQL
+ *  commands. Just set the right values to following variables.
+ *  We use (for czech character set):
+ *     define("DB_CHARACTER_SET", "utf8mb4");
+ *     define("DB_COLLATION_CONNECTION", "utf8mb4_czech_ci");
+ *  Default is: commented out
+ */
+define("DB_CHARACTER_SET", "utf8mb4");
+define("DB_COLLATION_CONNECTION", "utf8mb4_czech_ci");
+
+/** Use MySQL non-persistent database connect (mysqli_connect())
+ *  or the persistent one?
+ *  Persistent connection should be better for most servers, but if you have
+ *  experience troubles in MySQL connection, use non-persistent connections
+ *  see https://www.php.net/manual/en/mysqli.construct.php
+ *  Default value: false
+ */
+define('AA_USE_NON_PERSISTENT_CONNECT', false);
+
+/** Permissions system settings
+ *  Select permission system (exactly one of "dummy", "ldap", "sql")
+ *  default is "sql" - all user permissions are stored in sql database.
+ *  You probably do not need to change this setting
+ */
+define("PERM_LIB", "sql");
+
+/** LDAP Configuration
+*  You need to configure it only if you use "ldap" permission system
+*  (@see PERM_LIB above)
+*/
+// define("LDAP_HOST",   "localhost");
+// define("LDAP_BINDDN", "cn=aauser,ou=AA");
+// define("LDAP_BINDPW", "somepasswd");  // password
+// define("LDAP_BASEDN", "ou=AA");
+// define("LDAP_PEOPLE", "ou=People,ou=AA");
+// define("LDAP_GROUPS", "ou=AA");
+// define("LDAP_ACLS",   "ou=ACLs,ou=AA");
+// define("LDAP_PORT",   389);            // standard LDAP port: 389
+
+/** Default language file
+ *  Language files are stored in include/lang/ directory. At this time you can
+ *  use any *-utf8_news_lang.php, where '*' is one of cz, de, en, es, ja, ro, sk
+ *  ( @see https://actionapps.org/faq/detail.shtml?x=1776 )
+ */
+define("DEFAULT_LANG_INCLUDE", "en-utf8_news_lang.php");
+
+/** e-mail for bug reporting contact */
+define("ERROR_REPORTING_EMAIL", "webmaster@my.domain.org");
+
+/** PHP error reporting
+ *  Should PHP display Errors? It is good to switch it off on production server
+ */
+// error_reporting(0);  // Turn off all error reporting
+// error_reporting(E_ALL ^ E_NOTICE); // This is the default value set in php.ini
+
+/** e-mail for Alerts management */
+define("ALERTS_EMAIL", "aaadmin@somewhere.com");
+
+/** Outgoing mail transport.
+ *  'mail' = PHP's built-in mail() function (default, unchanged behavior).
+ *  'smtp' = relay through an external SMTP server (recommended on shared
+ *           hosting and any setup that needs DKIM/SPF/DMARC alignment to
+ *           pass at Gmail/Outlook -- the hosting MTA usually can't be
+ *           trusted to sign on behalf of arbitrary From: domains).
+ *  When 'smtp', the AA_SMTP_* constants below are consulted.
+ */
+define('AA_MAIL_TRANSPORT', 'mail');
+
+/** SMTP relay settings -- only consulted when AA_MAIL_TRANSPORT === 'smtp'.
+ *  AA_SMTP_PASS is a credential; treat config.php as 0600 and keep secrets
+ *  out of version control.
+ */
+define('AA_SMTP_HOST',       'smtp.example.org');
+define('AA_SMTP_PORT',       587);              // 25 (cleartext, rare), 465 (implicit TLS / SMTPS), 587 (submission + STARTTLS)
+define('AA_SMTP_ENCRYPTION', 'tls');            // 'tls' (STARTTLS), 'ssl' (implicit TLS for port 465), 'none' (cleartext, dev only)
+define('AA_SMTP_USER',       '');               // empty = no AUTH
+define('AA_SMTP_PASS',       '');               // SMTP password / app password
+define('AA_SMTP_HELO',       '');               // EHLO hostname; empty -> AA_MAIL_HOSTNAME, then HTTP_HOST, then 'localhost'
+define('AA_SMTP_TIMEOUT',    15);               // socket timeout in seconds (MUST be > 0)
+define('AA_SMTP_CAFILE',     '');               // optional explicit CA bundle path, empty = system default
+
+/** Hostname used in Message-ID and as a fallback EHLO. Set this on cron-driven
+ *  installs where $_SERVER['HTTP_HOST'] is empty -- otherwise Message-IDs end
+ *  up as <…@localhost>, which hurts DKIM alignment and looks suspicious to
+ *  receivers. Set to your site's public hostname - like yourdomain.org.
+ */
+define('AA_MAIL_HOSTNAME', '');
+
+/** Queue script run duration (in seconds)
+ *  How long could run the script, which goes through queued tasks and executes
+ *  them (toexecute class - used for Alerts mail sending, ...).
+ *  Default value is 16.0 [second] */
+define('TOEXECUTE_ALLOWED_TIME', 59.0);
+
+
+/** File uploads settings
+ *  The directory for file uploads should be webserver writeable and it
+ *  shouldn't be inside AA directory (for security reasons - PHP script upload)
+ *  ( @see https://actionapps.org/faq/detail.shtml?x=1696 )
+ *  ( @see https://actionapps.org/faq/detail.shtml?x=1694 )
+ */
+
+/** url to image/file directory */
+define("IMG_UPLOAD_URL", AA_HTTP_DOMAIN."img_upload/");
+
+/** path from server root to image/file directory */
+define("IMG_UPLOAD_PATH", AA_SITE_PATH."img_upload/");
+
+/** mkdir perms - AA creates new directory for each slice in image/file upload
+*  directory specified above. Each slice then have its own subdirectory.
+*  Default is 774 */
+define("IMG_UPLOAD_DIR_MODE",  octdec('0774'));
+/** perms for uploaded file. If not specified, the permissions are left, as
+*  is after the upload (based on configuration of your server
+*  Default is: commented out */
+// define('IMG_UPLOAD_FILE_MODE', octdec('0664'));
+
+/** Resized images ({img:...} in templates) are cached as static files under
+ *  <IMG_UPLOAD_PATH>/mC/ and served by the web server - PHP only ever generates
+ *  each of them once. Nothing has to be configured: a request for a file which is
+ *  not there yet has to reach modules/site/site.php, which the usual site module
+ *  rewrite already does, and AA additionally writes <IMG_UPLOAD_PATH>/mC/.htaccess
+ *  with the rule. Add it by hand only on nginx (or where AllowOverride forbids
+ *  .htaccess):
+ *
+ *      location ^~ /img_upload/mC/ { try_files $uri @aa; }
+ *      location @aa { include fastcgi_params;
+ *                     fastcgi_param SCRIPT_FILENAME $document_root/apc-aa/modules/site/site.php;
+ *                     fastcgi_pass php-fpm; }
+ *
+ *  Uncomment to keep everything on img.php instead (images outside IMG_UPLOAD -
+ *  the file manager, a foreign domain - always stay on it anyway).
+ *  Default is: commented out */
+// define('AA_MISSCACHE_IMG_DISABLE', true);
+
+//-----------------------------------------------------------------------------
+// Folloving section contains not so important config options and you will
+// probably left it as it is
+
+/** number of shown pages links in scroller's navigation bar */
+define("SCROLLER_LENGTH", 3);
+
+/** Select color profile (skin) for the administration UI.
+ *  ADMIN_CSS is the skin overlay. The admin page builder always loads
+ *  admin-ecn.css as the structural baseline first; non-baseline skins
+ *  are appended afterward to redefine the :root palette and override
+ *  selectors. Pick the value that matches the look you want. */
+// Econnects profile (legacy beige/gold — current production look) ----------
+define("ADMIN_CSS",       "admin-ecn.css");     // style for admin interface
+
+//  // 2026 redesign (warm gold) ------------------------------------------------
+//  define("ADMIN_CSS",       "admin-gold.css");     // style for admin interface
+//
+//  // WebNetworks profile (modernized green) -----------------------------------
+//  define("ADMIN_CSS",       "admin.css");          // style for admin interface
+//
+//  // Comlink profile (legacy) -------------------------------------------------
+//  define("ADMIN_CSS",       "admin-cml.css");      // style for admin interface
+
+/** Page cache setting
+ *  pages with items/views/slices/sites are automatically cached by AA
+ *  The caching system is quite smart - it caches only unchanged pages.
+ *  However, You can switch caching off. */
+define( "ENABLE_PAGE_CACHE", true );
+
+/** CACHE_TTL defines the time in seconds the page will be stored in cache
+*  (Time To Live) - in fact it can be infinity because of automatic cache
+*  flushing on page change (but then there will be problem with item
+*  expiration). Typically this is 600, i.e. 10 minutes, but 1 day (86400)
+*  makes for faster serving
+*  Item expiration / publication by the clock is handled by the cron sweep
+*  PAGECACHE_DATE_SWEEP_INTERVAL (below), so CACHE_TTL can be long - default 12.
+*  See: https://actionapps.org/en/Troubleshooting_and_Optimization#Caching
+*/
+define("CACHE_TTL", 43200 ); // 12 hours
+
+/** PAGECACHE_DATE_SWEEP_INTERVAL - how often (seconds) the cron task
+ *  AA\Later\PagecacheDateSweep looks for items that expired or got published
+ *  by the clock and drops the cached pages rendered before that moment.
+ *  Without it a page could show an expired item for up to CACHE_TTL; with it
+ *  the staleness is bounded by this interval plus up to two cron ticks (the task
+ *  is re-planned only after it ran), so CACHE_TTL can be long (12-24 h).
+ *  Covers items only - polls keep their own dates. Default 600 (10 minutes);
+ *  0 disables the sweep (then keep CACHE_TTL short). */
+// define('PAGECACHE_DATE_SWEEP_INTERVAL', 600);
+
+
+/** Post-response cron fallback
+ *  When OS-level cron is not configured, AA can run the toexecute queue and
+ *  scheduled maintenance tasks AFTER sending the response on a normal page
+ *  request. The trigger is mtime-gated via <IMG_UPLOAD_PATH>cron-fallback.lock,
+ *  so the hot path costs only two filesystem syscalls (no DB query).
+ *  Recommended: keep enabled. Disable only if real cron (calling cron.php
+ *  every minute) is reliably configured.
+ */
+// define('DISABLE_CRON_FALLBACK', true);
+/** Minimum seconds between fallback runs. Default: 120 (2 minutes). */
+// define('CRON_FALLBACK_INTERVAL', 120);
+
+/** Convertors - you can install it and then use
+ *  Just uncomment and fill the right path and convert option will be shown
+ *  above any textarea in inputform, where you allow HTML
+ */
+  // $CONV_HTMLFILTERS = array( ".doc" => "/usr/local/bin/wvHtml",
+  //                            ".pdf" => "/usr/local/bin/pdftohtml",
+  //                            ".xls" => "/usr/bin/xlhtml",
+  //                            ".ppt" => "/usr/bin/ppthtml",
+  //                            "iconv"=> "/usr/bin/iconv" );
+  // define(CONV_DEFAULTENCODING,'windows-1250');   // default output encoding
+
+/** If true, the expired items could be displayed by in specific query
+ *  (good for archive display). If false, expired items are never shown */
+define("ALLOW_DISPLAY_EXPIRED_ITEMS", true);
+
+/** Since v1.8 you can use short id for item identification
+ *  (x instead of sh_itm) */
+$USE_SHORT_URL = true;
+
+//-----------------------------------------------------------------------------
+// Following section just prepares some constants
+// You probably do not need to change this
+
+if ( !defined('AA_SITE_PATH') OR (strlen(AA_SITE_PATH) < 1)) {
+    echo "you must set AA_SITE_PATH and other variables in config.php !";
+}
+
+/** URL of aa instalation */
+define("AA_INSTAL_URL", AA_HTTP_DOMAIN. substr(AA_INSTAL_PATH,1));    // do not change
+
+/** URL of index of help files for AA */
+define("DOCUMENTATION_URL", "https://actionapps.org/aa/doc");
+
+/** developer SITE_CONFIG
+ *  Note: developers can put their site-specific config in SITE_CONFIG
+ *  Only the first define() has any effect.
+ *  Therefore, if constants are defined in SITE_CONFIG and also defined
+ *  in the //add new CONSTANTS section, the second definitions do not take hold.
+ *
+ *  Switches here are based on $_SERVER['SERVER_ADDR'] so that all virtual hosts
+ *  can be configured in one place
+ */
+/*
+  switch ($_SERVER['SERVER_ADDR']) {
+    case "209.220.30.175":
+    case "209.220.30.171":
+      define (SITE_CONFIG, "config-cyborganic.inc"); break;
+  }
+
+  if (defined ("SITE_CONFIG")) {
+    // require does not work as expected inside control structures!
+    include (__DIR__ . SITE_CONFIG);
+  }
+*/
+
+/** Filemanager is special feature which allows you to modify static files right
+ *  inside AA admin interface.
+ *  It's not necessary to configure it here, if you don't plan to use it.
+ *  ( @see https://actionapps.org/faq/detail.shtml?x=1698 )
+ *  ( @see https://actionapps.org/faq/detail.shtml?x=1697 )
+ */
+/** mkdir perms, set by variable because constants don't work with octal
+*  values */
+define('FILEMAN_MODE_DIR', octdec('0770'));
+/** create file perms */
+define('FILEMAN_MODE_FILE', octdec('0664'));
+/** in this directory individual slice directories and directory "templates"
+*  are created  */
+define("FILEMAN_BASE_DIR",AA_SITE_PATH."apc-aa-files/");
+/** URL path to the base directory */
+define("FILEMAN_BASE_URL",AA_HTTP_DOMAIN."apc-aa-files/");
+/** time in seconds to allow to upload big files */
+define("FILEMAN_UPLOAD_TIME_LIMIT", 600);
+
+/** MAILMAN synchronization dir. In this directory are placed the
+ * files with lists of email addresses which processes mailman.
+ * The dir must exist, it is not created by the mailman.php script.
+ * ( @see https://actionapps.org/faq/detail.shtml?x=2009 )   */
+$MAILMAN_SYNCHRO_DIR = "/www/mailman/";
+
+/** Voice dictation on TxtWidget (audio_enable property).
+ *  Primary path uses the browser's Web Speech API (free, streams at the caret)
+ *  and falls back to OpenAI's gpt-4o-transcribe model via the api/transcribe.php
+ *  proxy. The proxy keeps the API key on the server — browsers never see it.
+ *  Leave undefined to disable the OpenAI fallback; Web Speech still works on
+ *  browsers that support it (Chrome, Edge on most platforms).
+ */
+// define('AA_APIKEY_OPENAI', 'sk-...');
+
+/** Upper bound (seconds) for a single dictation recording. The per-widget
+ *  `audio_max_seconds` property overrides this default. Enforced client-side
+ *  (auto-stop) and server-side (reject oversized uploads — paid-API cost guard).
+ */
+// define('AA_SPEECH_MAX_SECONDS', 120);
+
+/** Record PHP fatals and uncaught exceptions (TypeError, …) as PHP_FATAL rows in the
+ *  `log` table (selector = file:line, params = message), so they can be found in the
+ *  admin log or by a DB query on installs without shell access. Best-effort: falls
+ *  back to error_log() when the DB is not available yet. Off when undefined.
+ */
+// define('AA_LOG_PHP_FATALS', true);

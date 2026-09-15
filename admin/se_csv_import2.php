@@ -1,0 +1,555 @@
+<?php
+
+ /** Setting the transformation actions for converting an input ItemContent
+ *  to an output ItemContent
+ *
+ * Parameters:
+ * Input:
+ *   $module_id       - for edit slice
+ *   $fileName        - file in upload directory
+ *   $addParamsSerial - serialized additional parameters (file type specific)
+ *
+ * PHP version 7.2+
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @version   $Id$
+ * @author    Ondrej Mazanec, Honza Malik <honza.malik@ecn.cz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      https://www.apc.org/ APC
+ *
+*/
+
+use AA\IO\DB\DB_AA;
+use AA\Util\InputVars;
+use AA\Util\Txt;
+
+require_once __DIR__ . "/../include/init_page.php";
+require_once __DIR__ . "/../include/util.php";
+require_once __DIR__ . "/../include/import_util.php";
+require_once __DIR__ . "/../include/constants_param_wizard.php";
+require_once __DIR__ . "/../include/formutil.php";
+require_once __DIR__ . "/../include/feeding.php";
+
+try {
+    // array ( 'insert_new' => 1, 'overwrite' => 1, )
+    $actionIfItemExists = InputVars::stringPOST('actionIfItemExists');
+    $insertSilent = InputVars::boolPOST('insertSilent');
+    // array ( )
+    $actions = InputVars::arrayPOST('actions'); // alpha
+    // array ( 'YTozOntzOjk…' => 2, )-array ( 'YTozOntzOjk…' => 2, )
+    $addParamsSerial = InputVars::stringGETPOST('addParamsSerial'); // -
+    // array ( '' => 2, )-array ( '' => 2, )
+    $fileName = InputVars::stringGETPOST('fileName'); // -
+    // array ( 'new' => 2, )
+    $itemId = InputVars::stringPOST('itemId'); // alpha
+    // array ( 'unpack_id' => 1, 'store' => 1, )
+    $itemIdMappedActions = InputVars::stringPOST('itemIdMappedActions');
+    // array ( '__empty__' => 2, )
+    $itemIdMappedFrom = InputVars::stringPOST('itemIdMappedFrom');
+    // array ( '🦆' => 1, '🦆ú)¨§…' => 1, )
+    $itemIdMappedParams = InputVars::stringPOST('itemIdMappedParams');
+    // array ( 0 => 1, '' => 1, )
+    $load_id = InputVars::boolPOST('load_id'); // empty
+    // array ( )
+    $mapping = InputVars::arrayPOST('mapping');
+    // array ( )
+    $params = InputVars::arrayPOST('params');
+    // array ( 1 => 1, '38😱😱�…' => 1, )
+    $save_name = InputVars::stringPOST('save_name');
+    // array ( 'Dokončit …' => 2, )
+    $save = InputVars::boolPOST('save');
+    $save_periodical = InputVars::boolPOST('save_periodical');
+    $load = InputVars::boolPOST('load');
+    $preview = InputVars::boolPOST('preview');
+    $upload = InputVars::boolPOST('upload');
+    $cancel = InputVars::boolPOST('cancel');
+    
+    $Msg = InputVars::stringGETPOST('Msg');
+} catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
+
+/** findNearestText function
+ * Returns key of the $array, which value is most similar to given $text
+ * @param $fid
+ * @param $text
+ * @param $array
+ * @return string
+ */
+function findNearestText($fid, $text, $array): string
+{
+    if (isset($array[$fid]))       {  return $fid; }
+    if (isset($array[trim($fid)])) {  return trim($fid); }
+    $ret = '__empty__';
+    $max = 5;
+    if ( isset($array) && is_array($array) ) {
+        $text = strtoupper($text);
+        foreach ( $array as $k => $v ) {
+            $distance = levenshtein( $text, strtoupper($v) );
+            if ( $distance < $max ) {
+                $max = $distance;
+                $ret = $k;
+            }
+        }
+    }
+    return $ret;
+}
+
+
+/** AA_Csv_Importer
+ *  @todo this class should be rewritten to something more general
+ */
+class AA_Csv_Importer {
+    var $slice_id;
+    var $fileName;
+    var $actions;
+    var $mapping;
+    var $html;
+    var $params;
+    var $addParams;
+
+    var $itemId;
+    var $itemIdMappedFrom;
+    var $itemIdMappedActions;
+    var $itemIdMappedParams;
+    var $actionIfItemExists;
+
+    /** @var bool Do not send mails to readers from Alerts, do not update mailinglists, ... */
+    private bool $insertSilent = false;
+
+    /** @var string Name under which the settings are stored ("Save setting as" form field) */
+    public string $save_name = '';
+    /** @var bool Upload periodically (form checkbox, HTTP(S) sources only) */
+    public bool $save_periodical = false;
+
+    var $auth_uid;
+
+/** AA_Csv_Importer function
+ *
+ */
+    function __construct() {}
+
+/** loadFromRequest function
+ *
+ */
+    function loadFromRequest(): void
+    {
+        $this->slice_id            = AA::$module_id;
+        $this->fileName            = $_REQUEST['fileName'];
+        $this->actions             = $_REQUEST['actions'];
+        $this->mapping             = $_REQUEST['mapping'];
+        $this->html                = $_REQUEST['html'];
+        $this->params              = $_REQUEST['params'];
+        $this->itemId              = $_REQUEST['itemId'];
+        $this->itemIdMappedFrom    = $_REQUEST['itemIdMappedFrom'];
+        $this->itemIdMappedActions = $_REQUEST['itemIdMappedActions'];
+        $this->itemIdMappedParams  = $_REQUEST['itemIdMappedParams'];
+        $this->actionIfItemExists  = $_REQUEST['actionIfItemExists'];
+        $this->insertSilent        = (bool)$_REQUEST['insertSilent'];
+        $this->save_name           = (string)($_REQUEST['save_name'] ?? '');
+        $this->save_periodical     = (bool)($_REQUEST['save_periodical'] ?? false);
+        $this->addParams           = unserialize(Txt::url2bin($_REQUEST['addParamsSerial']), ['allowed_classes' => false]);
+        $this->auth_uid            = AuthGetUid();
+    }
+
+/** loadFromDb function
+ *
+ */
+    function loadFromDb() {}
+
+/** saveToDb function
+ *
+ */
+    function saveToDb()   {}
+
+/** setFilename function
+ * @param $filename
+ */
+    function setFilename($filename): void
+    {
+        $this->fileName            = $filename;
+    }
+
+/** getSliceId function
+ * @return string slice ID
+ */
+    function getSliceId(): string
+    {
+        return $this->slice_id;
+    }
+
+/** check function
+ *
+ */
+    function check(): void
+    {
+        if (!CheckPerms( $this->auth_uid, "slice", $this->slice_id, PS_EDIT_ALL_ITEMS)) {
+            MsgPage(_m("You have not permissions to setting "));
+            exit;
+        }
+
+        // check parameters
+/*
+        if (!file_exists($fileName)) {
+            MsgPage(StateUrl(_m("File for import does not exists:", self_base()."se_csv_import.php").$fileName );
+        }
+*/
+        if (!$this->addParams) {
+            MsgPage(_m("Invalid additional parameters for import"));
+            exit;
+        }
+    }
+
+/** prepare function
+ *
+ */
+    function _prepare(): void
+    {
+        if (!isset($this->itemId)) {
+            $this->itemId = "new";
+        }
+
+        if (!isset($this->actionIfItemExists)) {
+            $this->actionIfItemExists = STORE_WITH_NEW_ID;
+        }
+
+        // create actions from the form
+        $this->actions['slice_id........'] = "value";
+        $this->params['slice_id........']  = $this->slice_id;
+
+        $this->actions['id..............'] = $this->itemId;
+        if ($this->itemId === 'old') {
+            // update items with the id specified in $itemIdMappedFrom field
+            $this->mapping['id..............'] = $this->itemIdMappedFrom;
+            $this->actions['id..............'] = $this->itemIdMappedActions;
+            $this->params['id..............']  = $this->itemIdMappedParams;
+        } elseif ( $this->itemId === 'new' ) {
+            $this->actions['id..............'] = 'new';  // new_id
+        }
+    }
+
+/** upload function
+ *
+ */
+    function upload(): void
+    {
+        $this->_prepare();
+
+        //-----------------------------------------------------------------------------
+        // Output items should contain just these slice fields
+
+        $slice = AA_Slice::getModule($this->slice_id);
+
+        $trans_actions = new Actions($this->actions,$this->mapping, $this->html, $this->params);
+
+        // Create list of fields from the first row of csv data
+        $fieldNames = createFieldNames($this->fileName,$this->addParams);
+
+
+        MoreTimeLimit(IMPORTFILE_TIME_LIMIT);	// set time for the executing this script
+
+        $handle       = fopen($this->fileName, 'rb');
+        $numProcessed = 0;
+        $numError     = 0;
+
+        // if first row is used for field names, skip it
+        if ($this->addParams['caption']) {
+            getCSV($handle,$this->addParams['delimiter'],$this->addParams['enclosure']);
+        }
+
+        while ($csvRec = getCSV($handle,$this->addParams['delimiter'],$this->addParams['enclosure'])) {
+            $err = convertCSV2Items($csvRec, $fieldNames, $trans_actions, $slice->getFields(), $itemContent);
+            $numProcessed++;
+            $msg .= _m("Item:").$numProcessed .":";
+
+            // huhl($csvRec, $fieldNames, $trans_actions, $slice->getFields(), $itemContent);
+
+            if (!$err) {
+                $itemContent->setSliceID($this->slice_id);
+                $added_to_db = $itemContent->storeItem($this->actionIfItemExists, $this->insertSilent ? ItemContent::FLAG_JUST_STORE : [false]);     // not invalidate cache
+                if (!$added_to_db) {
+                    $err = _m("Cannot store item to DB"). ' '. ItemContent::lastErrMsg();
+                }
+            }
+            if ($err) {
+                $numError++;
+                $msg.= _m("Transformation error:"). $err . "not inserted";
+            } else {
+                $msg.= _m('Ok: Item %1 stored', [$added_to_db]);
+            }
+            $msg .= "<br>\n";
+        }
+        // log
+        AA_Log::write("CSV_IMPORT", AA_Log::context(), new AA_Logentry_Csv(['slice' => $this->slice_id, 'processed' => $numProcessed, 'stored' => $numProcessed - $numError, 'error' => $numError]));
+
+        // invalidate cache;
+        AA::Pagecache()->invalidateFor($this->slice_id);  // invalidate old cached values
+
+        fclose($handle);
+
+        // deletes  uploaded file, todo - uncomment
+        if ( !in_array( Files::sourceType($this->fileName), ['HTTP', 'HTTPS']) ) {
+            if (unlink($this->fileName)) {
+                AA_Log::write("CSV_IMPORT", '', new AA_Logentry_File(['outcome' => 'deleted', 'file' => $this->fileName]));
+            } else {
+                AA_Log::write("CSV_IMPORT", '', new AA_Logentry_File(['outcome' => 'delete failed', 'file' => $this->fileName]));
+            }
+        }
+
+        $msg = _m("Added to slice"). $this->slice_id ." :<br><br>\n". $msg." <br><br>\n";
+        MsgPage($msg . $logMsg, StateUrl(self_base() . "se_csv_import.php"));
+    }
+
+/** preview function
+ *
+ */
+    function preview(): void
+    {
+        $this->_prepare();
+
+        $slice         = AA_Slice::getModule($this->slice_id);
+        $trans_actions = new Actions($this->actions,$this->mapping, $this->html, $this->params);
+
+        // Create list of fields from the first row of csv data
+        $fieldNames    = createFieldNames($this->fileName,$this->addParams);
+        $slice_fields  = $slice->getFields();
+
+        $slf = array_merge(['unpacked_id.....' => 'Item id'], $slice_fields->getNameArray());
+
+        $handle = fopen($this->fileName, 'rb');
+
+        FrmTabCaption(_m("Mapping preview"));
+        FrmTabRow($slf);			// print output fields
+
+        // if the first row is used for field names, skip it
+        if ($this->addParams['caption']) {
+            getCSV($handle,$this->addParams['delimiter'],$this->addParams['enclosure']);
+        }
+
+        $numRows=5;		// number of showed items(rows) in the table
+        while ($numRows-- > 0) {
+            $csvRec = getCSV($handle,$this->addParams['delimiter'],$this->addParams['enclosure']);
+            if (!$csvRec) {  // end of file
+                break;
+            }
+            $err = convertCSV2Items($csvRec,$fieldNames,$trans_actions,$slice_fields,$itemContent);
+            if ($err) {
+                echo "<tr><td>Transformation error: $err </td></tr>";	// todo
+            }
+            $itemContent->showAsRowInTable($slf);
+        }
+        FrmTabEnd();
+        // end preview
+    }
+
+    /** printForm function
+     *
+     * @param  bool  $set_default
+     */
+    public function printForm(bool $set_default): void
+    {
+        //----------------------------------------------------------------------------
+        // Create output fields
+
+        $outFields = AA_Slice::getModule($this->slice_id)?->getFields()->getNameArray();
+        unset($outFields['slice_id........']);
+
+        //create list of actions, : todo : possible loading from a file
+        $actionList = getActions();
+
+        // Create input fields from the first row of CSV data
+        $inFields = createFieldNames($this->fileName,$this->addParams);
+
+
+        $form_buttons = [
+            "preview"         => [
+                "type"      => "submit",
+                "value"     => _m("Preview"),
+                "accesskey" => "P"
+            ],
+            "upload"          => [
+                "type"      => "submit",
+                "value"     => _m("Finish"),
+                "accesskey" => "S"
+            ],
+            "save"            => [
+                "type"      => "submit",
+                "value"     => _m("Save"),
+                "accesskey" => "A"
+            ],
+            "load"            => [
+                "type"      => "submit",
+                "value"     => _m("Load"),
+                "accesskey" => "L"
+            ],
+            "fileName"        => ["value"     => $this->fileName],
+            "addParamsSerial" => ["value"     => Txt::bin2url(serialize($this->addParams))]
+        ];
+
+
+        echo '<form enctype="multipart/form-data" method=post name="f" action="'. StateUrl(self_base() . "se_csv_import2.php") .'">';
+
+        FrmTabCaption(_m("Mapping settings"));
+        ?>
+            <tr class="aa-tbl-header">
+              <th><?php echo _m("To") ?></th>
+              <th><?php echo _m("From") ?></th>
+              <th><?php echo _m("Action") ?></th>
+              <th><?php echo _m("Html") ?></th>
+              <th><?php echo _m("Action parameters") ?></th>
+              <th><?php echo _m("Parameter wizard") ?></th>
+             </tr>
+
+               <?php
+               $inFields["__empty__"] = "     ";
+               foreach ( $outFields as $f_id => $f_name) {
+                   echo "<tr><th>$f_name</th>\n";
+                   echo "<td>";
+                   FrmSelectEasy("mapping[$f_id]", $inFields, $set_default ? findNearestText($f_id, $f_name, $inFields) : $this->mapping[$f_id]);		// todo - multiple
+                   echo "</td>";
+                   echo "<td>";
+                   FrmSelectEasy("actions[$f_id]", $actionList, $set_default ? "default" : $this->actions[$f_id]);
+                   echo "</td>";
+
+                   echo "<td><input type=\"checkbox\" name=\"html[$f_id]\" "; if (!$set_default && $this->html[$f_id]) {
+                       echo "checked";
+                   }
+                   echo  "></td>";
+                   echo "<td><input type=\"text\" name=\"params[$f_id]\" value=\""; if (!$set_default) {
+                       echo stripslashes($this->params[$f_id]);
+                   }
+                   echo "\"></td>";
+                   echo "<td class=\"tabhlp\">". getParamWizardLink("TRANS_ACTIONS","actions[$f_id]","params[$f_id]"). "</td>";
+                   echo "</tr>\n";
+               }
+               FrmTabSeparator(_m("Import options"));
+        ?>
+
+               <tr><td colspan="2">Setting item id:</td><tr>
+
+               <tr><td><input type="radio" <?php if ($this->itemId === "new") {
+                           echo "CHECKED";
+                       } ?> name="itemId" value="new"></td>
+                <td>Create new id</td>
+               </tr>
+               <tr>
+               <td><input type="radio" <?php if ($this->itemId === "old") {
+                       echo "CHECKED";
+                   } ?> name="itemId" value="old"></td>
+               <td><?php
+                 echo _m("Map item id from"). '&nbsp';
+                 FrmSelectEasy("itemIdMappedFrom", $inFields, $this->itemIdMappedFrom ?: ($set_default ? $inFields[0] : ''));
+                 echo '<br>';
+                 $mapping_options = [
+                     'store'     => _m("unpacked long id (32 characters)"),
+                                            'unpack_id' => _m("packed long id (16 characters)"),
+                                            'string2id' => _m('string to be converted (string2id) - with param:')
+                 ];
+
+                 FrmSelectEasy("itemIdMappedActions", $mapping_options, $set_default ? 'store' : $this->itemIdMappedActions);
+                 echo '&nbsp<input type="text" name="itemIdMappedParams" value="'. ($set_default ? '' : $this->itemIdMappedParams).'">';
+               ?></td>
+            </tr>
+        <?php
+        FrmTabSeparator(_m("Select, how to store the items"));
+        $storage_mode = [
+            'insert_if_new' => _m('Do not store the item'),
+            'insert_new'    => _m('Store the item with new id'),
+            'overwrite'     => _m('Update the item (overwrite)'),
+            'add'           => _m("Add the values in parallel to current values (the multivalues are stored, where possible)"),
+            'update'        => _m("Rewrite only the fields, for which the action is defined and compute all computed fields, ..."),
+            'update_silent' => _m('Rewrite only the fields, for which the action is defined (do not update lastedit, computed, ... fields = Silent)'),
+            'update_filled' => _m('Rewrite only the fields, for which the action is defined and its value is not empty (computed fields will be computed)')
+        ];
+
+        FrmInputRadio('actionIfItemExists', _m('If the item id is already in the slice'), $storage_mode, $set_default ? "insert_if_new" : $this->actionIfItemExists, true, '', '', 1);
+        FrmInputChBox('insertSilent', _m('Silent'), $set_default ? false : $this->insertSilent, false, '', 1, false, _m("Do not perform any other operations like evaluate-computed-field, feed, send e-mail to Readers of Alerts..."));
+        FrmTabSeparator(_m("Data source"));
+        FrmInputText('fileName', _m('Source'), $this->fileName, 254, 100);
+
+        FrmTabSeparator(_m("Store settings..."));
+
+        $load_arr = GetTable2Array("SELECT o1.object_id, o2.value FROM object_text as o1 INNER JOIN object_text as o2 ON o1.object_id=o2.object_id
+                                     WHERE o1.property LIKE 'type' AND o1.value LIKE 'AA_Csv_Importer'
+                                     AND o2.property LIKE 'name'", 'object_id', 'value');
+
+        FrmInputSelect('load_id', _m('Load setting'), (array)$load_arr);
+
+        FrmInputText('save_name', _m('Save setting as'), $this->save_name);
+
+        if ( in_array(Files::sourceType($this->fileName), ['HTTP','HTTPS'])) {
+            FrmInputChBox('save_periodical', _m("Upload periodically"), $this->save_periodical);
+        }
+
+        FrmTabEnd($form_buttons);
+        echo "</form>";
+    }
+
+}
+
+if ( $load ) {
+    // should be rewritten to true object storing functions
+    // $SQL      = "SELECT value FROM object_text WHERE object_id = '$load_id' AND property='importer'";
+    // $ret      = GetTable2Array($SQL, 'aa_first', 'aa_fields');
+    // $importer = unserialize($ret['value']);
+    $importer = unserialize( DB_AA::select1('val', "SELECT LOWER(HEX(`value`)) as val FROM object_text", [['object_id', $load_id], ['property', 'importer']]), ['allowed_classes' => [AA_Csv_Importer::class]] );
+    $importer->setFilename($_REQUEST['fileName']);
+} else {
+    $importer = new AA_Csv_Importer();
+    $importer->loadFromRequest();
+}
+
+/** SaveObjectProperty function
+ * @param $obj_id
+ * @param $property
+ * @param $value
+ *
+ */
+function SaveObjectProperty($obj_id, $property, $value): void
+{
+    $varset = new CVarset();
+    $varset->add('object_id', 'text', $obj_id);
+    $varset->add('property',  'text', $property);
+    $varset->add('value',     'text', $value);
+    $varset->doInsert('object_text');
+}
+
+if ( $save ) {
+    $obj_id = new_id();
+    SaveObjectProperty($obj_id, 'type',       'AA_Csv_Importer');
+    SaveObjectProperty($obj_id, 'importer',   serialize($importer));
+    SaveObjectProperty($obj_id, 'name',       $save_name);
+    SaveObjectProperty($obj_id, 'periodical', $save_periodical);
+    SaveObjectProperty($obj_id, 'owner',      $importer->getSliceId());
+}
+
+$importer->check();
+if ($upload) {
+    $importer->upload();
+}
+
+$apage = new AA_Adminpageutil('sliceadmin','CSVimport');
+$apage->setTitle(_m("Admin - Import CSV (2/2) - Mapping and Actions"));
+$apage->setForm();
+$apage->addRequire(get_aa_url('javascript/js_lib.min.js', ['v'=>AA_JS_VERSION], false));
+$apage->printHead($err, $Msg);
+
+if ($preview) {
+    $importer->preview();
+}
+
+$importer->printForm(!($preview || $load || $save));
+
+$apage->printFoot();

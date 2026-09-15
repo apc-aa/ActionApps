@@ -1,0 +1,46 @@
+<?php
+
+namespace AA\Manageraction;
+
+use AA\Manager;
+use zids;
+
+/**  */
+class Links_Move2Cat extends AbstractManageraction
+{
+    /** Constructor - fills the information about the target bin */
+    public function __construct($id, $url)
+    {
+        parent::__construct($id);
+        $this->setOpenUrl($url);
+    }
+
+    /** Name of this Manager's action */
+    public function getName(): string
+    {
+        return _m('Move to category');
+    }
+
+    /** @inheritDoc */
+    public function perform(Manager $manager, zids $item_zids, $action_param): string|false
+    {
+        if (ctype_digit((string) $action_param)) {
+            foreach ($item_zids as $lid) {
+                Links_DeleteLink($lid);
+                Links_Assign2Category($lid, (int) $action_param);
+            }
+        }
+        return false;                                     // OK - no error
+    }
+
+    /** Checks if the user have enough permission to perform the action
+     *
+     * @param \AA\Manager  $manager
+     *
+     * @return bool
+     */
+    public function isPerm4Action($manager): bool
+    {
+        return !$GLOBALS['r_state']['show_subtree'] && IsCatPerm(PS_LINKS_DELETE_LINK, $GLOBALS['r_state']['cat_path']);
+    }
+}

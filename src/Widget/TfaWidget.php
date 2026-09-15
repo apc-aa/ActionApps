@@ -1,0 +1,130 @@
+<?php
+
+/** 2FA - how to
+ * The 2FA field on AA login page is shown when the first user in the AA installation use 2FA.
+ *
+ * In order you can use it, you have to:
+ *
+ *    1) Add field Secret (secret..........) to the Reader Management slice
+ *       (if the field type Secret in not in the list, you have to add the template for this field in AA -> Optimize -> "Add secret field template")
+ *
+ *    2) Let users edit this field (probably on some "My Profile" page) by placing edit code for this field and logged user:
+ *       {edit:{user:id}:secret..........}
+ *
+ *    3) Go to the "My Profile" page on your site for any user and generate 2FA there.
+ *
+ * Then you will see  2FA login field also on AA login.
+ */
+
+/**
+ * Created by PhpStorm.
+ * User: honzama
+ * Date: 15.10.18
+ * Time: 20:37
+ */
+
+namespace AA\Widget;
+
+use AA;
+use AA\FormArray;
+use AA_Content;
+use AA_Property;
+use AA_Value;
+use Exception;
+
+/** 2FA Auth - generate secret widget */
+class TfaWidget extends Widget
+{
+    /** name function
+     *
+     */
+    public static function name(): string
+    {
+        return _m('2FA Secret generator');
+    }
+
+    protected function requireLibs($aa_property, $winfo): array
+    {
+        return ['aa-jslib'];  // for AA_SendWidgetAjax
+    }
+
+    /** Creates base widget HTML, which will be surrounded by Live, Ajxax
+     *  or normal decorations (added by _finalize*Html)
+     *
+     * @param  AA_Property  $aa_property
+     * @param  AA_Content   $content
+     * @param  string       $type  normal|live|ajax
+     *
+     *  @return array
+     *  @throws Exception
+     */
+    public function _getRawHtml(AA_Property $aa_property, AA_Content $content, string $type = 'normal'): array
+    {
+        $base_name = FormArray::getName4Form($aa_property->getId(), $content, $this->item_index);
+        $base_id = FormArray::formName2Id($base_name);
+
+        $widget = "\n<div id=\"ajaxv_$base_id\" data-aa-alias=\"" . safe(base64_encode('AA_2FA_QR')) . "\">";
+        $widget .= "\n<div class=\"aa-2fa-changeform aa-widget aa-widget-2fa\" id=\"widget-$base_id\">";
+
+        $input_name = $base_name . "[tfa][usr]";
+        $input_id = FormArray::formName2Id($input_name);
+        $widget .= "\n<div class=aa-2fa-username><input type=text readonly id=\"$input_id\" name=\"$input_name\" placeholder=\"" . _m('Username') . "\" value=\"" . AuthGetUname() . "\"></div>";
+
+        $input_name = $base_name . "[tfa][pwd]";
+        $input_id = FormArray::formName2Id($input_name);
+        $widget .= "\n<div class=aa-2fa-password><input type=password id=\"$input_id\" name=\"$input_name\" placeholder=\"" . _m('Password') . "\" autocomplete=\"current-password\"></div>";
+
+        $input_name = $base_name . "[tfa][otc]";
+        $input_id = FormArray::formName2Id($input_name);
+        $widget .= "\n<div class=aa-2fa-otc><input type=text id=\"$input_id\" name=\"$input_name\" placeholder=\"" . _m('One time Code') . "\" inputmode=\"numeric\"  pattern=\"[0-9]*\" autocomplete=\"one-time-code\"></div>";
+
+        $hidden_name = $base_name . "[tfa][gen]";
+        $hidden_id = FormArray::formName2Id($hidden_name);
+        $widget .= "\n<input type=hidden id=\"$hidden_id\" name=\"$hidden_name\" value=0></div>";
+
+        if ($help = $aa_property->getHelp()) {
+            $widget .= "\n<div class=aa-help><small>$help</small></div>";
+        }
+        $widget .= "\n<div class=aa-2fa-buttons>";
+        $widget .= "\n<input type=\"button\" value=\"" . _m('Generate New Secret') . "\" onclick=\"document.getElementById('$hidden_id').value=1;AA_SendWidgetAjax('$base_id'); return false;\">"; //Save change
+        $widget .= "\n<input type=\"button\" value=\"" . _m('Get Secret') . "\" onclick=\"AA_SendWidgetAjax('$base_id'); return false;\">";
+        $widget .= "\n</div>";
+        $widget .= "\n</div>";
+        $widget .= "\n</div>";
+
+        return ['html' => $widget, 'last_input_name' => $input_name, 'base_name' => $base_name, 'base_id' => $base_id, 'required' => $aa_property->isRequired()];
+    }
+
+
+    /** @return AA_Value for the data send by the widget
+     *   The data submitted by form usually looks like
+     *       aa[n1_54343ea876898b6754e3578a8cc544e6][password________][tfa][gen]=1
+     * @param $data4field - ['tfa'=>['gen'=>1,'usr'=>,'pwd'=>,'otc'=>)
+     *   This method coverts such data to AA_Value.
+     */
+    public static function getWidgetValue(array $data4field, ?AA_Value $default): AA_Value
+    {
+        $data4field = $data4field['tfa'];
+        if (is_array($data4field) && isset($data4field['usr'])) {
+            return new AA_Value(ParamImplode([(($data4field['gen'] == 1) ? 'AA_2FASECRET' : 'AA_doNotGenerate'), $data4field['usr'], $data4field['pwd'], $data4field['otc']]), FLAG_HTML);
+        }
+        return new AA_Value('', FLAG_HTML); // ? or something else ?
+    }
+
+    /** getClassProperties function of AA_Serializable
+     *  Used parameter format (in fields.input_show_func table)
+     * @return array
+     */
+    public static function getClassProperties(): array
+    {
+        return Widget::propertiesShop([]);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public static function description(): string
+    {
+        return ''; // TODO: Implement description() method.
+    }
+}

@@ -1,0 +1,881 @@
+<?php
+/**
+* Filename.......: class.html.mime.mail.inc
+* Project........: HTML Mime mail class
+* Last Modified..: Date: 2002/07/24 13:14:10
+* CVS Revision...: Revision: 1.4
+* Copyright......: 2001, 2002 Richard Heyes
+*
+* AA CVS: $Id$
+*/
+
+require_once __DIR__."/mimePart.php";
+
+class htmlMimeMail {
+    /**
+     * The html part of the message
+     * @var string
+     */
+	private string $html;
+    /**
+     * The text part of the message(only used in TEXT only messages)
+     * @var string
+     */
+	private $text;
+    /**
+     * The main body of the message after building
+     * @var string
+     */
+	private $output;
+    /**
+     * The alternative text to the HTML part (only used in HTML messages)
+     * @var string
+     */
+	private $html_text;
+    /**
+     * An array of embedded images/objects
+     */
+	private array $html_images = [];
+    /**
+     * An array of recognised image types for the findHtmlImages() method
+     * @var array
+     *
+     * If you want the auto load functionality to find other image/file types, add the
+     * extension and content type here.
+     */
+	private array $image_types = [
+     'gif'    => 'image/gif',
+     'jpg'    => 'image/jpeg',
+     'jpeg'    => 'image/jpeg',
+     'jpe'    => 'image/jpeg',
+     'bmp'    => 'image/bmp',
+     'png'    => 'image/png',
+     'tif'    => 'image/tiff',
+     'tiff'    => 'image/tiff',
+     'swf'    => 'application/x-shockwave-flash'
+ ];
+    /**
+     * Parameters that affect the build process
+     */
+	private array $build_params = [];
+    /**
+     * Array of attachments
+     */
+	private ?array $attachments = [];   // @todo remove null after upgrade - used just for already planed task mails from older version - HM 2025-06-25
+    /**
+     * The main message headers
+     */
+	private array $headers = [];
+    /**
+     * Whether the message has been built or not
+     * @var boolean
+     */
+	private bool $is_built = false;
+    /**
+     * The return path address. If not set the From: address is used instead
+     * @var string
+     */
+	private string $return_path;
+
+    /**
+     * Which branch of send() ran last ('mail' or 'smtp') and what it reported
+     * back. Read by AA_Mail::send() for the MAIL_SEND log row.
+     */
+    private string $last_transport = '';
+    private string $last_transport_response = '';
+
+    /**
+     * Constructor function. Sets the headers
+     * if supplied.
+     */
+    function __construct() {
+        /**
+         * Set these up
+         */
+        $this->build_params['html_encoding'] = 'quoted-printable';
+        $this->build_params['text_encoding'] = 'quoted-printable';  // safer setup for non 7bit mails (should not break DKIM sign) HM 2018-10-11
+        $this->build_params['html_charset']  = 'ISO-8859-1';
+        $this->build_params['text_charset']  = 'ISO-8859-1';
+        $this->build_params['head_charset']  = 'ISO-8859-1';
+        $this->build_params['text_wrap']     = 998;
+
+        /**
+         * Defaults for smtp sending
+         */
+        if (!empty($_SERVER['HTTP_HOST'])) {
+            $helo = $_SERVER['HTTP_HOST'];
+        } elseif (!empty($_SERVER['SERVER_NAME'])) {
+            $helo = $_SERVER['SERVER_NAME'];
+        } else {
+            $helo = 'localhost';
+        }
+
+        /**
+         * Make sure the MIME version header is first.
+         */
+        $this->headers['MIME-Version'] = '1.0';
+    }
+
+    /**
+     * This function will read a file in from a supplied filename and return it. This can then be given as the first
+     * argument of the functions add_html_image() or add_attachment().
+     */
+    function getFile($filename): string
+    {
+        return AA_File_Wrapper::wrapper($filename)->contents();
+    }
+
+    /**
+     * Accessor to set the CRLF style
+     */
+	public function setCrlf($crlf = "\n"): void
+    {
+        if (!defined('CRLF')) {
+            define('CRLF', $crlf);
+        }
+
+        if (!defined('MAIL_MIMEPART_CRLF')) {
+            define('MAIL_MIMEPART_CRLF', $crlf);
+        }
+    }
+
+    /**
+     * Accessor function to set the text encoding
+     */
+	public function setTextEncoding($encoding = '7bit'): void
+    {
+        $this->build_params['text_encoding'] = $encoding;
+    }
+
+    /**
+     * Accessor function to set the HTML encoding
+     */
+	public function setHtmlEncoding($encoding = 'quoted-printable'): void
+    {
+        $this->build_params['html_encoding'] = $encoding;
+    }
+
+    /**
+     * Accessor function to set the text charset
+     */
+	public function setTextCharset($charset = 'ISO-8859-1'): void
+    {
+        $this->build_params['text_charset'] = $charset;
+    }
+
+    /**
+     * Accessor function to set the HTML charset
+     */
+	public function setHtmlCharset($charset = 'ISO-8859-1'): void
+    {
+        $this->build_params['html_charset'] = $charset;
+    }
+
+    /**
+     * Accessor function to set the header encoding charset
+     */
+	public function setHeadCharset($charset = 'ISO-8859-1'): void
+    {
+        $this->build_params['head_charset'] = $charset;
+    }
+
+    /**
+     * Accessor function to set the text wrap count
+     */
+	public function setTextWrap($count = 998): void
+    {
+        $this->build_params['text_wrap'] = $count;
+    }
+
+    /**
+     * Accessor to set a header
+     */
+	public function setHeader($name, $value): void
+    {
+        $this->headers[$name] = $value;
+    }
+
+    /**
+     * Accessor to add a Subject: header
+     */
+	public function setSubject($subject): void
+    {
+        $this->headers['Subject'] = $subject;
+    }
+
+    /** The Subject: header as set (never encoded) - read by AA_Mail for the
+     *  MAIL_SEND log row, where it is often the only hint about the content:
+     *  mails built by setFromArray()/setSubject() have no template row to
+     *  point at. */
+    public function getSubject(): string
+    {
+        return (string) ($this->headers['Subject'] ?? '');
+    }
+
+    /**
+     * Accessor to add a From: header
+     */
+	public function setFrom($from): void
+    {
+        $this->headers['From'] = $from;
+    }
+
+    /**
+     * Accessor to set priority. Priority given should be either high, normal or low.
+     * Can also be specified numerically, being 1, 3 or 5 (respectively).
+     *
+     * @param mixed $priority The priority to use.
+     */
+    function setPriority($priority = 'normal'): void
+    {
+        switch (strtolower($priority)) {
+            case 'high':
+            case '1':
+                $this->headers['X-Priority'] = '1';
+                $this->headers['X-MSMail-Priority'] = 'High';
+                break;
+
+            case 'normal':
+            case '3':
+                $this->headers['X-Priority'] = '3';
+                $this->headers['X-MSMail-Priority'] = 'Normal';
+                break;
+
+            case 'low':
+            case '5':
+                $this->headers['X-Priority'] = '5';
+                $this->headers['X-MSMail-Priority'] = 'Low';
+                break;
+        }
+    }
+
+    /**
+     * Accessor to set the return path
+     */
+	public function setReturnPath(string $return_path): void
+    {
+        $this->return_path = $return_path;
+    }
+
+    /**
+     * Accessor to add a Cc: header
+     */
+	public function setCc($cc): void
+    {
+        $this->headers['Cc'] = is_array($cc) ? implode(",", $cc) : $cc;
+    }
+
+    /**
+     * Accessor to add a Bcc: header
+     */
+	public function setBcc($bcc): void
+    {
+        $this->headers['Bcc'] = is_array($bcc) ? implode(",", $bcc) : $bcc;
+    }
+
+    /**
+     * Adds plain text. Use this function when NOT sending html email
+     */
+	public function setText($text = ''): void
+    {
+        $this->text = $text;
+    }
+
+    /**
+     * Adds a html part to the mail. Also replaces image names with content-id's.
+     */
+	public function setHtml($html, $text = null, $images_dir = null): void
+    {
+        $this->html      = (string)$html;
+        $this->html_text = $text;
+        $this->_findHtmlImages($images_dir);
+        // original code from the library, but not OK for us - we are looking for much more image sources, than original, so it makes sense to call it even without $images_dir - HM 2024-03-15
+        // if (isset($images_dir)) {
+        //     $this->_findHtmlImages($images_dir);
+        // }
+
+    }
+    /**
+     * Function for extracting images from html source. This function will look through the html code
+     * supplied by add_html() and find any file that ends in one of the extensions defined in $obj->image_types.
+     * If the file exists it will read it in and embed it, (not an attachment).
+     *
+     * @author Dan Allen
+     */
+	private function _findHtmlImages($images_dir): void
+    {
+        // Build the list of image extensions
+        $extensions = array_keys($this->image_types);
+
+        // str_ireplace make the regexp not match <a href="some-image.jpg"> (otherwise it add such image into the mail)
+        $sanit_text = str_ireplace(['href="', "href='"], ['', ''], $this->html);
+        preg_match_all('/["\']([^"\']+\.('.implode('|', $extensions).'))["\']/Ui', $sanit_text, $images); // (?:x) - non capturing parentheses - matches, but not in the result
+        preg_match_all('~["\']([^"\']+/img\.php\?src=[^"\']+)["\']~Ui', $sanit_text, $images2);
+
+        $images      = array_unique(array_merge($images[1], $images2[1]));
+
+        $img_content = [];
+        $img_name    = [];
+        $html_images = [];
+        $i=0;  // counter to use different img_name for the same filename in different directory
+        foreach ($images as $img) {
+            ++$i;
+            if (stripos($img, 'http') === 0) {
+                $image_path = $img;
+                if ($pos = strpos($img,'/img.php?src=')) {
+                    $img_name[$image_path] = (string)$i.basename( parse_url( substr($image_path, $pos+13, strpos($image_path,'&')-$pos-13), PHP_URL_PATH) );
+                } else {
+                    $img_name[$image_path] = (string)$i.basename( parse_url($image_path, PHP_URL_PATH) );
+                }
+            } elseif (false !== ($pos = strpos($img,'/img.php?src='))) {
+                // this one is used in new versions of AA - Honza 14.8.2013
+                $image_path            = AA_INSTAL_URL . substr($img,$pos+1);
+                $pos                   = strpos($image_path,'/img.php?src='); // recompute for full url and use the same approach as above
+                $img_name[$image_path] = (string)$i.basename( parse_url( substr($image_path, $pos+13, strpos($image_path,'&')-$pos-13), PHP_URL_PATH) );
+            } else {
+                $image_path            = $images_dir . $img;
+                $img_name[$image_path] = (string)$i.basename( $image_path );
+            }
+
+            if (!isset($img_content[$image_path])) {
+                $img_content[$image_path] = $this->getFile(str_replace('&amp;', '&', $image_path));
+            }
+            if ($img_content[$image_path]) {
+                $html_images[] = $image_path;
+                $this->html = str_replace($img, $img_name[$image_path], $this->html);
+            }
+        }
+
+        if (!empty($html_images)) {
+            // // If duplicate images are embedded, they may show up as attachments, so remove them.
+            // $html_images = array_unique($html_images);
+            sort($html_images);
+
+            foreach ($html_images as $iValue) {
+                $image        = $img_content[$iValue];
+                $ext          = strpos($iValue,'/img.php?src=') ? 'jpg' : substr($iValue, strrpos($iValue, '.') + 1);
+                $content_type = $this->image_types[strtolower($ext)];
+                $this->addHtmlImage($image, $img_name[$iValue], $content_type);
+            }
+        }
+
+    }
+
+    /**
+     * Adds an image to the list of embedded images.
+     */
+	public function addHtmlImage($file, $name = '', $c_type='application/octet-stream'): void
+    {
+        $this->html_images[] = [
+            'body'   => $file,
+            'name'   => $name,
+            'c_type' => $c_type,
+            'cid'    => md5(uniqid(time(), true))
+        ];
+    }
+
+    /**
+     * Adds a file to the list of attachments.
+     */
+	public function addAttachment($file, $name = '', $c_type='application/octet-stream', $encoding = 'base64'): void
+    {
+        $this->attachments[] = [
+            'body'     => $file,
+            'name'     => $name,
+            'c_type'   => $c_type,
+            'encoding' => $encoding
+        ];
+    }
+
+    /**
+     * Adds a text subpart to a mime_part object
+     */
+	private function &_addTextPart($obj, $text)
+    {
+        $params['content_type'] = 'text/plain';
+        $params['encoding']     = $this->build_params['text_encoding'];
+        $params['charset']      = $this->build_params['text_charset'];
+        if (is_object($obj)) {
+            return $obj->addSubpart($text, $params);
+        }
+        $ret = new Mail_mimePart($text, $params);
+        return $ret;
+    }
+
+    /**
+     * Adds a html subpart to a mime_part object
+     */
+   private function &_addHtmlPart($obj)
+    {
+        $params['content_type'] = 'text/html';
+        $params['encoding']     = $this->build_params['html_encoding'];
+        $params['charset']      = $this->build_params['html_charset'];
+        if (is_object($obj)) {
+            return $obj->addSubpart($this->html, $params);
+        }
+
+        $ret = new Mail_mimePart($this->html, $params);
+        return $ret;
+    }
+
+    /**
+     * Starts a message with a mixed part
+     */
+   private function &_addMixedPart(): Mail_mimePart
+   {
+        $params['content_type'] = 'multipart/mixed';
+        $return = new Mail_mimePart('', $params);
+
+        return $return;
+    }
+
+    /**
+     * Adds an alternative part to a mime_part object
+     */
+   private function &_addAlternativePart($obj)
+    {
+        $params['content_type'] = 'multipart/alternative';
+        if (is_object($obj)) {
+            return $obj->addSubpart('', $params);
+        }
+
+        $ret = new Mail_mimePart('', $params);
+        return $ret;
+    }
+
+    /**
+     * Adds a html subpart to a mime_part object
+     */
+   private function &_addRelatedPart($obj)
+    {
+        $params['content_type'] = 'multipart/related';
+        if (is_object($obj)) {
+            return $obj->addSubpart('', $params);
+        }
+        $return = new Mail_mimePart('', $params);
+
+        return $return;
+    }
+
+    /**
+     * Adds an html image subpart to a mime_part object
+     */
+   private function _addHtmlImagePart($obj, $value): void
+   {
+        $params['content_type'] = $value['c_type'];
+        $params['encoding']     = 'base64';
+        $params['disposition']  = 'inline';
+        $params['dfilename']    = $value['name'];
+        $params['cid']          = $value['cid'];
+        $obj->addSubpart($value['body'], $params);
+    }
+
+    /**
+     * Adds an attachment subpart to a mime_part object
+     */
+   private function _addAttachmentPart($obj, $value): void
+   {
+        $params['content_type'] = $value['c_type'];
+        $params['encoding']     = $value['encoding'];
+        $params['disposition']  = 'attachment';
+        $params['dfilename']    = $value['name'];
+        $obj->addSubpart($value['body'], $params);
+    }
+
+    /**
+     * Builds the multipart message from the list ($this->_parts). $params is an
+     * array of parameters that shape the building of the message. Currently supported are:
+     *
+     * $params['html_encoding'] - The type of encoding to use on html. Valid options are
+     *                            "7bit", "quoted-printable" or "base64" (all without quotes).
+     *                            7bit is EXPRESSLY NOT RECOMMENDED. Default is quoted-printable
+     * $params['text_encoding'] - The type of encoding to use on plain text Valid options are
+     *                            "7bit", "quoted-printable" or "base64" (all without quotes).
+     *                            Default is 7bit
+     * $params['text_wrap']     - The character count at which to wrap 7bit encoded data.
+     *                            Default this is 998.
+     * $params['html_charset']  - The character set to use for a html section.
+     *                            Default is ISO-8859-1
+     * $params['text_charset']  - The character set to use for a text section.
+     *                          - Default is ISO-8859-1
+     * $params['head_charset']  - The character set to use for header encoding should it be needed.
+     *                          - Default is ISO-8859-1
+     */
+    function buildMessage($params = []): bool
+    {
+        if (!empty($params)) {
+            foreach ($params as $key => $value) {
+                $this->build_params[$key] = $value;
+            }
+        }
+
+        if (!empty($this->html_images)) {
+            foreach ($this->html_images as $value) {
+                $quoted = preg_quote($value['name'], '/');
+                $cid    = $value['cid']; // Do not preg_quote the CID - it is just hexadecimals
+                $this->html = (string)preg_replace( "/(src|background)=(\"|')$quoted\\2/i", "$1=$2cid:$cid$2", $this->html);
+            }
+        }
+
+        $null        = null;
+        $attachments = !empty($this->attachments);
+        $html_images = !empty($this->html_images);
+        $html        = !empty($this->html);
+        $text        = isset($this->text);
+
+        switch (true) {
+            case $text && !$attachments:
+                $message = &$this->_addTextPart($null, $this->text);
+                break;
+
+            case !$text && $attachments && !$html:
+                $message = &$this->_addMixedPart();
+
+                foreach ($this->attachments as $i => $attachment) {
+                    $this->_addAttachmentPart($message, $attachment);
+                }
+                break;
+
+            case $text && $attachments:
+                $message = &$this->_addMixedPart();
+                $this->_addTextPart($message, $this->text);
+
+                foreach ($this->attachments as $i => $attachment) {
+                    $this->_addAttachmentPart($message, $attachment);
+                }
+                break;
+
+            case $html && !$attachments && !$html_images:
+                if (!is_null($this->html_text)) {
+                    $message = &$this->_addAlternativePart($null);
+                    $this->_addTextPart($message, $this->html_text);
+                    $this->_addHtmlPart($message);
+                } else {
+                    $message = &$this->_addHtmlPart($null);
+                }
+                break;
+
+            case $html && !$attachments && $html_images:
+                if (!is_null($this->html_text)) {
+                    $message = &$this->_addAlternativePart($null);
+                    $this->_addTextPart($message, $this->html_text);
+                    $related = &$this->_addRelatedPart($message);
+                } else {
+                    $message = &$this->_addRelatedPart($null);
+                    $related = &$message;
+                }
+                $this->_addHtmlPart($related);
+                foreach ($this->html_images as $i => $html_image) {
+                    $this->_addHtmlImagePart($related, $html_image);
+                }
+                break;
+
+            case $html && $attachments && !$html_images:
+                $message = &$this->_addMixedPart();
+                if (!is_null($this->html_text)) {
+                    $alt = &$this->_addAlternativePart($message);
+                    $this->_addTextPart($alt, $this->html_text);
+                    $this->_addHtmlPart($alt);
+                } else {
+                    $this->_addHtmlPart($message);
+                }
+                foreach ($this->attachments as $i => $attachment) {
+                    $this->_addAttachmentPart($message, $attachment);
+                }
+                break;
+
+            case $html && $attachments && $html_images:
+                $message = &$this->_addMixedPart();
+                if (!is_null($this->html_text)) {
+                    $alt = &$this->_addAlternativePart($message);
+                    $this->_addTextPart($alt, $this->html_text);
+                    $rel = &$this->_addRelatedPart($alt);
+                } else {
+                    $rel = &$this->_addRelatedPart($message);
+                }
+                $this->_addHtmlPart($rel);
+                foreach ($this->html_images as $i => $html_image) {
+                    $this->_addHtmlImagePart($rel, $html_image);
+                }
+                foreach ($this->attachments as $i => $attachment) {
+                    $this->_addAttachmentPart($message, $attachment);
+                }
+                break;
+
+        }
+
+        if (isset($message)) {
+            $output = $message->encode();
+            $this->output   = $output['body'];
+            $this->headers  = array_merge($this->headers, $output['headers']);
+
+            /* Self-set Date so DKIM canonicalization on the relay is stable.
+             * mail() and most MTAs would add one, but a self-set Date avoids
+             * the case where two hops disagree on the second the message
+             * crossed and the signature breaks. */
+            if (empty($this->headers['Date'])) {
+                $this->headers['Date'] = date('r');
+            }
+
+            $this->is_built = true;
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Generate a fresh Message-ID. Called from send() rather than buildMessage()
+     * so that every recipient in a sendLater() batch gets its own ID -- otherwise
+     * Gmail/Outlook collapse the whole batch into one thread.
+     */
+    protected function generateMessageId(): string
+    {
+        return sprintf('<%s.%s@%s>',
+            base_convert((string)time(), 10, 36),
+            base_convert((string)mt_rand(), 10, 36),
+            \AA\Mail\SmtpTransport::resolveHostname()
+        );
+    }
+
+    /**
+     * Function to encode a header if necessary according to RFC2047
+     */
+    function _encodeHeader($input, $charset = 'ISO-8859-1')
+    {
+        /* Header-injection guard. Every header value on both the mail() and
+         * SMTP transports is serialized through this method, so neutralizing
+         * CR / LF / NUL here stops a value -- e.g. a user-controlled item
+         * field aliased into Subject or From: by AA_Mail::setFromTemplate()
+         * -- from forging extra headers or smuggling a Bcc recipient. Fold to
+         * a single space rather than reject, so legacy callers keep sending. */
+        $input = preg_replace('/[\r\n\x00]+/', ' ', (string)$input);
+
+        preg_match_all('/(\s?\w*[\x80-\xFF]+\w*\s?)/', $input, $matches);
+        foreach ($matches[1] as $value) {
+            //$replacement = preg_replace('/([\x20\x80-\xFF])/e', '"=" . strtoupper(dechex(ord("\1")))', $value);
+            $replacement = preg_replace_callback('/([\x20\x80-\xFF])/', static fn ($ms) => '=' . strtoupper(dechex(ord($ms[0]))), $value);
+            $input       = str_replace($value, '=?' . $charset . '?Q?' . $replacement . '?=', $input);
+        }
+        return $input;
+
+        // tried to replace it with, but it failed on From for "Biofarma Sasov - Sklenářová Klotylda <sk...@biofarma.cz>" - HM 2024-03-15
+        //		if (($m = preg_match_all('/(\w*[\x80-\xFF]+\w*)/', $input, $matches)) > 0) {
+        //			$input = mb_encode_mimeheader($input,$charset, 'Q');
+        //		}
+        //		return $input;
+    }
+
+    /**
+     * Sends the mail. Transport is chosen from AA_MAIL_TRANSPORT.
+     *
+     * @param  string[]  $recipients
+     * @throws \AA\Mail\TransientSmtpException on retryable SMTP failure
+     */
+    public function send($recipients): int
+    {
+        /* One AA_Mail object serves a whole sendLater() batch -- clear what the
+         * previous recipient's send recorded before this one runs. */
+        $this->last_transport          = '';
+        $this->last_transport_response = '';
+
+        if ( !(isset($recipients) && is_array($recipients)) ) {
+            return 0;
+        }
+
+        if (!defined('CRLF')) {
+            $this->setCrlf("\n");
+        }
+
+        if (!$this->is_built) {
+            $this->buildMessage();
+        }
+
+        /* Fresh Message-ID per send() call so a sendLater() batch doesn't
+         * collapse into one Gmail/Outlook thread. */
+        $this->headers['Message-ID'] = $this->generateMessageId();
+
+        if (defined('AA_MAIL_TRANSPORT') && AA_MAIL_TRANSPORT === \AA\Mail\SmtpTransport::TRANSPORT_SMTP) {
+            return $this->sendViaSmtp($recipients);
+        }
+        return $this->sendViaMail($recipients);
+    }
+
+    /** Transport used by the last send(): 'mail', 'smtp' or '' before any send. */
+    public function getLastTransport(): string
+    {
+        return $this->last_transport;
+    }
+
+    /** What that transport reported back -- the SMTP server's own reply text on
+     *  the smtp branch, a short mail() verdict on the mail branch. */
+    public function getLastTransportResponse(): string
+    {
+        return $this->last_transport_response;
+    }
+
+    /** @param string[] $recipients */
+    private function sendViaMail(array $recipients): int
+    {
+        $subject = '';
+        if (!empty($this->headers['Subject'])) {
+            $subject = $this->_encodeHeader($this->headers['Subject'], $this->build_params['head_charset']);
+            unset($this->headers['Subject']);
+        }
+
+        $headers = [];
+        foreach ($this->headers as $name => $value) {
+            $headers[] = $name . ': ' . $this->_encodeHeader($value, $this->build_params['head_charset']);
+        }
+
+        $to = $this->_encodeHeader(implode(', ', $recipients), $this->build_params['head_charset']);
+
+        $params = !empty($this->return_path) ? '-f' . $this->return_path : '';
+        $result = $this->nativeMail($to, $subject, $this->output, implode(CRLF, $headers), $params);
+
+        // Reset the subject in case mail is resent
+        if ($subject !== '') {
+            $this->headers['Subject'] = $subject;
+        }
+
+        /* mail() has no server dialogue -- its bool only says the MTA took over. */
+        $this->last_transport          = \AA\Mail\SmtpTransport::TRANSPORT_MAIL;
+        $this->last_transport_response = $result ? 'accepted for delivery' : 'mail() returned false';
+
+        return $result ? count($recipients) : 0;
+    }
+
+    /**
+     * Thin wrapper around PHP's mail(). Isolated as a seam so the mail()
+     * transport can be exercised in tests (a subclass overrides this to
+     * capture the assembled arguments without actually sending).
+     *
+     * @param string $params sendmail extra args ('-f<envelope>' or '')
+     * @return bool mail() result
+     */
+    protected function nativeMail(string $to, string $subject, string $body, string $headers, string $params = ''): bool
+    {
+        return $params !== ''
+            ? mail($to, $subject, $body, $headers, $params)
+            : mail($to, $subject, $body, $headers);
+    }
+
+    /**
+     * @param string[] $recipients
+     * @throws \AA\Mail\TransientSmtpException
+     */
+    private function sendViaSmtp(array $recipients): int
+    {
+        $rcpts        = $this->collectRcpts($recipients);
+        $envelopeFrom = $this->resolveEnvelopeFrom();
+        $rfc822       = $this->assembleRfc822($recipients);
+
+        $transport = new \AA\Mail\SmtpTransport();
+        $result    = $transport->sendRaw($envelopeFrom, $rcpts, $rfc822);
+
+        $this->last_transport          = \AA\Mail\SmtpTransport::TRANSPORT_SMTP;
+        $this->last_transport_response = $transport->getLastResponse();
+
+        switch ($result) {
+            case \AA\Mail\SmtpTransport::RESULT_SENT:
+                return count($recipients);
+            case \AA\Mail\SmtpTransport::RESULT_TRANSIENT:
+                throw new \AA\Mail\TransientSmtpException(
+                    'SMTP transient failure: ' . $transport->getLastError()
+                );
+            case \AA\Mail\SmtpTransport::RESULT_PERMANENT:
+            default:
+                return 0;
+        }
+    }
+
+    /**
+     * Extract bare e-mail addresses from a header string:
+     *   "Econnect <info@ecn.cz>, foo@bar.cz" -> ['info@ecn.cz', 'foo@bar.cz']
+     *
+     * Used by the SMTP envelope helpers below and by AA_Mail for return-path
+     * extraction. Lives in the base class because the SMTP send path here
+     * depends on it.
+     *
+     * @return string[]
+     */
+    public function extractEmails($string): array
+    {
+        preg_match_all("/[._a-zA-Z0-9-]+@[._a-zA-Z0-9-]+/i", (string)$string, $matches);
+        return $matches[0];
+    }
+
+    /**
+     * Collect the SMTP envelope recipient list -- To + Cc + Bcc, deduplicated.
+     *
+     * @param string[] $recipients
+     * @return string[]
+     */
+    private function collectRcpts(array $recipients): array
+    {
+        $rcpts = $recipients;
+        if (!empty($this->headers['Cc'])) {
+            $rcpts = array_merge($rcpts, $this->extractEmails((string)$this->headers['Cc']));
+        }
+        if (!empty($this->headers['Bcc'])) {
+            $rcpts = array_merge($rcpts, $this->extractEmails((string)$this->headers['Bcc']));
+        }
+        return array_values(array_unique(array_filter(array_map('trim', $rcpts))));
+    }
+
+    /** Envelope sender: return_path takes precedence over the From: header. */
+    private function resolveEnvelopeFrom(): string
+    {
+        if (!empty($this->return_path)) {
+            return $this->return_path;
+        }
+        if (!empty($this->headers['From'])) {
+            $fromAddrs = $this->extractEmails((string)$this->headers['From']);
+            return $fromAddrs[0] ?? '';
+        }
+        return '';
+    }
+
+    /**
+     * Assemble the RFC822 payload for SMTP DATA. To/Subject get synthesized
+     * (mail() used to add them as separate args). Bcc is stripped -- it goes
+     * only into RCPT TO envelopes, never on the wire.
+     *
+     * @param string[] $recipients
+     */
+    private function assembleRfc822(array $recipients): string
+    {
+        $charset = $this->build_params['head_charset'];
+
+        $headersForData = $this->headers;
+        /* Drop Bcc (envelope-only) and any caller-set To: -- we synthesize a
+         * canonical To: from $recipients below. Avoids a duplicate header on
+         * the wire if a future caller ever sets $this->headers['To']. */
+        unset($headersForData['Bcc'], $headersForData['To']);
+
+        /* RFC 5322 requires From:. Some callers (email_notify) set only the
+         * envelope sender; the mail() transport's MTA used to synthesize the
+         * missing From: header, SMTP submission has no such safety net. */
+        if (empty($headersForData['From']) && !empty($this->return_path)) {
+            $headersForData['From'] = $this->return_path;
+        }
+
+        $lines   = [];
+        $lines[] = 'To: ' . $this->_encodeHeader(implode(', ', $recipients), $charset);
+        if (!empty($headersForData['Subject'])) {
+            $lines[] = 'Subject: ' . $this->_encodeHeader((string)$headersForData['Subject'], $charset);
+            unset($headersForData['Subject']);
+        }
+        foreach ($headersForData as $name => $value) {
+            $lines[] = $name . ': ' . $this->_encodeHeader((string)$value, $charset);
+        }
+        return implode("\r\n", $lines) . "\r\n\r\n" . $this->output;
+    }
+
+    /**
+     * Use this method to return the email in message/rfc822 format. Useful for adding an email
+     * to another email as an attachment. there's a commented out example in example.php.
+     */
+    //function getRFC822($recipients, $type = 'mail') { ... }  // not used - removed
+} // End of class.
+

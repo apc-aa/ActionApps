@@ -1,0 +1,328 @@
+<?php
+
+/**
+ * Auth feature (mod_auth_mysql) related functions:
+ * Event handlers and maintenance.
+ *
+ *
+ * PHP version 7.2+
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @package   ReaderInput
+ * @version   $Id$
+ * @author    Jakub Adamek, Econnect
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 2002-3 Association for Progressive Communications
+ * @link      https://www.apc.org/ APC
+ *
+*/
+
+use AA\IO\DB\DB_AA;
+use AA\Later\LaterInterface;
+use AA\Later\Toexecute;
+
+require_once __DIR__ . "/util.php";
+
+class AA_Mysqlauth
+{
+    // --------------------------------------------------------------------------
+    /** AA_Mysqlauth::deleteReaders function
+    *   Updates the mysql_auth tables <em>auth_user</em> and <em>auth_group</em>.
+    *   @param zids $zids non-quoted packed IDs
+    *   @param $slice_id
+    */
+    public static function deleteReaders($zids, $slice_id): void
+    {
+        if (!AA_Slice::getModuleProperty($slice_id, 'auth_field_group') || AA_Slice::getModuleProperty($slice_id, 'type') !== "ReaderManagement") {
+            return;
+        }
+
+        $usernames = DB_AA::select('text', "SELECT `text` FROM `content`, `item`", [['content.item_id', 'item.id', 'j'], ['item.id', $zids->longids(), 'l'], ['content.field_id', FIELDID_USERNAME]]);
+        if ($usernames) {
+            DB_AA::delete('auth_user', [['username', $usernames]]);
+            DB_AA::delete('auth_group', [['username', $usernames]]);
+        }
+    }
+
+    // --------------------------------------------------------------------------
+    /** AA_Mysqlauth::updateReaders function
+    *   Updates the mysql_auth tables <em>auth_user</em> and <em>auth_group</em>.
+    *   @param array $item_ids non-quoted packed IDs
+    *   @param $slice_id
+    */
+    public static function updateReaders($item_ids, $slice_id): void
+    {
+        $sl_auth_field_group = AA_Slice::getModuleProperty($slice_id, 'auth_field_group');
+        if (!$sl_auth_field_group || AA_Slice::getModuleProperty($slice_id, 'type') !== "ReaderManagement") {
+            return;
+        }
+
+        // This select follows the idea of QueryZids: it uses several times the
+        // table content to place several fields on one row.
+        $zids    = new zids($item_ids, 'p');
+        $readers = self::getReadersData($slice_id, $zids);
+
+        foreach ($readers as $reader) {
+            $reader_obj = new ItemContent($reader);
+            if (self::isActive($reader_obj) && $reader_obj->isSet($sl_auth_field_group)) {
+                self::updateReader($reader_obj->getValue(FIELDID_USERNAME), $reader_obj->getValue(FIELDID_PASSWORD), $reader_obj->getValues($sl_auth_field_group));
+            } else {
+                self::deleteReader($reader_obj->getValue(FIELDID_USERNAME));
+            }
+        }
+    }
+
+    /** AA_Mysqlauth::getReadersData function
+     *
+     * @param $slice_id
+     * @param  zids|null  $restrict_zids  = null
+     *
+     * @return array
+     */
+    public static function getReadersData($slice_id, ?zids $restrict_zids = null): array
+    {
+        $auth_field_group = AA_Slice::getModuleProperty($slice_id, 'auth_field_group');
+        $zids  = QueryZids([$slice_id], '', '', 'ALL', 0, $restrict_zids);
+        return GetItemContent($zids,
+            false,
+            true,
+            ['id..............', 'status_code.....', 'slice_id........', 'publish_date....', 'expiry_date.....', $auth_field_group, FIELDID_USERNAME, FIELDID_PASSWORD]
+        );
+    }
+
+    // --------------------------------------------------------------------------
+    /** AA_Mysqlauth::maintenance function
+    *   Adds readers moved automatically from Pending to Active, deletes readers moved from
+    *   Active to Expired. Does some sanity checks also. Writes the results to AA LOG
+     *  (previously writes to 'auth_log' table, but now removed - HM - 2025)
+    *
+    *   This function should be called once a day from cron.
+    */
+    public static function maintenance(): string
+    {
+        $db = getDB();
+        $result = [];
+
+        // Create the array $oldusers with user names
+        $db->query("SELECT username FROM auth_user");
+        while ($db->next_record()) {
+            $oldusers[$db->f("username")] = 1;
+        }
+
+        $slices = GetTable2Array("SELECT id, auth_field_group FROM slice WHERE type='ReaderManagement' AND auth_field_group > ''");
+
+        // Work slice by slice
+        foreach ($slices as $slice_id => $slice) {
+            if (! $slice["auth_field_group"]) {   // often is "0"
+                continue;
+            }
+            // Get all reader data for this slice
+
+            $readers = self::getReadersData(unpack_id($slice_id));
+
+            foreach ($readers as $reader) {
+                $reader_obj = new ItemContent($reader);
+
+                $olduser_exists = $oldusers[$reader_obj->getValue(FIELDID_USERNAME)];
+                unset($oldusers[$reader_obj->getValue(FIELDID_USERNAME)]);
+
+                // Add readers which should be in auth_user but are not
+                // (perhaps moved recently from Pending to Active)
+                if (self::isActive($reader_obj) && $reader_obj->isSet($slice["auth_field_group"])) {
+                    if (! $olduser_exists) {
+                        $result["readers added"]++;
+                        self::updateReader($reader_obj->getValue(FIELDID_USERNAME), $reader_obj->getValue(FIELDID_PASSWORD), $reader_obj->getValues($slice["auth_field_group"]));
+                    }
+                }
+                // Remove readers which are in auth_user but should not
+                // (perhaps moved recently from Active to Expired)
+                elseif ($olduser_exists) {
+                    $result["not active readers deleted"]++;
+                    self::deleteReader($reader_obj->getValue(FIELDID_USERNAME));
+                }
+            }
+        }
+
+        // Sanity checks:
+
+        // Delete readers which are in no slice
+        if (is_array($oldusers) && count($oldusers)) {
+            $result["not existing readers deleted"] = count($oldusers);
+            $usernames = array_keys($oldusers);
+            $where     = "WHERE username IN ('" . join_and_quote("','", $usernames) . "')";
+            $db->query("DELETE FROM auth_user " . $where);
+            $db->query("DELETE FROM auth_group " . $where);
+        }
+
+        // Delete readers with no groups
+        $db->query("
+            SELECT auth_user.username FROM auth_user LEFT JOIN auth_group
+            ON auth_user.username = auth_group.username
+            WHERE auth_group.username IS NULL");
+        if ($db->num_rows()) {
+            $result["Readers with no groups, deleted"] = $db->num_rows();
+            while ($db->next_record()) {
+                $usernames[] = $db->f("username");
+            }
+            $db->query("DELETE FROM auth_user WHERE username IN ('" . join_and_quote("','", $usernames) . "')");
+        }
+
+        // Delete groups with username not from auth_user
+        $db->query("
+            SELECT auth_group.username FROM auth_user RIGHT JOIN auth_group
+            ON auth_user.username = auth_group.username
+            WHERE auth_user.username IS NULL");
+        if ($db->num_rows()) {
+            $result["Readers in auth_group but not in auth_user, deleted"] = $db->num_rows();
+            while ($db->next_record()) {
+                $usernames[] = $db->f("username");
+            }
+            $db->query("DELETE FROM auth_group WHERE username IN ('" . join_and_quote("','", $usernames) . "')");
+        }
+
+        freeDB($db);
+        return is_array($result) ? implode("\n", array_map(static fn($msg, $count) => $msg . ": " . $count, array_keys($result), $result)) : "Nothing changed.";
+    }
+
+    // --------------------------------------------------------------------------
+    /** AA_Mysqlauth::deleteReader function
+     * @param $username
+     */
+    public static function deleteReader($username): void
+    {
+        DB_AA::delete('auth_user', [['username', $username]]);
+        self::updateGroups($username);
+    }
+
+    // --------------------------------------------------------------------------
+    /** AA_Mysqlauth::updateReader function
+     * @param $username
+     * @param $password
+     * @param $groups
+     */
+    public static function updateReader($username, $password, $groups): void
+    {
+        DB_AA::sql("REPLACE INTO auth_user (username, passwd, last_changed) VALUES ('" . addslashes($username) . "', '" . addslashes($password) . "', " . time() . ")");
+        self::updateGroups($username, $groups);
+    }
+
+    // --------------------------------------------------------------------------
+
+    /** AA_Mysqlauth::isActive function
+     * @param $reader
+     * @return bool
+     */
+    public static function isActive($reader): bool
+    {
+        return ($reader->getValue('status_code.....') == SC_ACTIVE)
+               && ($reader->getValue('publish_date....') <= time())
+               && ($reader->getValue('expiry_date.....') >= time());
+    }
+
+
+    // --------------------------------------------------------------------------
+
+    /** AA_Mysqlauth::updateGroups function
+    *   Writes user's groups to the database.
+    *   You can specify multiple groups for the user in two ways:
+    *      - pass $groups as array( 0 => array('value' => ...),
+    *      - separate groups in $groups string by semicolon ';'
+    *   @param $username
+    *   @param $groups
+    */
+    public static function updateGroups($username, $groups = []): void
+    {
+        DB_AA::delete('auth_group', [['username', $username]]);
+
+        $final_groups = array_unique(array_merge(...array_map(fn($group_string) => explode(";", $group_string['value']), (array) $groups)));
+
+        foreach ($final_groups as $group) {
+            if ($group) {
+                DB_AA::sql("INSERT INTO auth_group (username, `groups`, last_changed) VALUES ('$username','" . addslashes($group) . "'," . time() . ")");
+            }
+        }
+    }
+
+    // --------------------------------------------------------------------------
+    //    /** AA_Mysqlauth::select function
+    //     * @param $auth_field_group
+    //     * @return string
+    //     */
+    //    function select($auth_field_group) {
+    //        return "
+    //        SELECT `publish_date`, `expiry_date`, `status_code`, `groups`.text AS groups, username.text AS username, password.text AS password
+    //        FROM item, content AS groups, content AS username, content AS password
+    //        WHERE groups.item_id = item.id
+    //          AND groups.field_id = '".$auth_field_group."'
+    //          AND username.item_id = item.id
+    //          AND username.field_id = '".FIELDID_USERNAME."'
+    //          AND password.item_id = item.id
+    //          AND password.field_id = '".FIELDID_PASSWORD."'";
+    //    }
+    // --------------------------------------------------------------------------
+
+    /** AA_Mysqlauth::changeGroups function
+     * Called from Event_ItemsAfterPropagateConstantChanges().
+     * @param $constant_id
+     * @param $oldvalue
+     * @param $newvalue
+     */
+    public static function changeGroups($constant_id, $oldvalue, $newvalue): void
+    {
+        if (empty($newvalue) || $oldvalue == $newvalue) {
+            return;
+        }
+        if (false === ($group_id = DB_AA::select1('group_id', 'SELECT group_id FROM `constant`', [['id', $constant_id, 'l']]))) {
+            return;
+        }
+
+        $usernames = DB_AA::select(
+            'text',
+            "SELECT username.text as text FROM slice
+            INNER JOIN field ON slice.id=field.slice_id
+            INNER JOIN item ON slice.id = item.slice_id
+            INNER JOIN content ON item.id=content.item_id AND field.id = content.field_id
+            INNER JOIN content AS username ON username.item_id=item.id
+            WHERE slice.type = 'ReaderManagement'
+            AND slice.auth_field_group = field.id
+            AND (field.input_show_func LIKE '___:$group_id:%'
+            OR  field.input_show_func LIKE '___:$group_id')
+            AND content.text = '$newvalue'
+            AND username.field_id='" . FIELDID_USERNAME . "'",
+        );
+
+        $newvalue = stripslashes($newvalue);
+
+        foreach ($usernames as $name) {
+            self::updateGroups($name, $newvalue);
+        }
+    }
+}
+
+class AA_Mysqlauth_Maintain implements LaterInterface
+{
+    public function toexecutelater($params = []): string
+    {
+        return AA_Mysqlauth::maintenance();
+    }
+
+    public function schedule(): string
+    {
+        AA::$debug & 32 && AA::$dbg->info('AA_Mysqlauth_Maintain::schedule');
+        (new Toexecute())->laterOnce($this, [], self::class, 100, now() + 2, true); // when deleting many items (readers), we need to wait for the end of the transaction to run it only once
+        return '';
+    }
+}

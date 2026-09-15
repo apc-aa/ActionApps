@@ -1,0 +1,362 @@
+<?php
+
+//$Id$
+/*
+Copyright (C) 1999, 2000 Association for Progressive Communications
+https://www.apc.org/
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program (LICENSE); if not, write to the Free Software
+    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+*/
+
+// APC AA site Module main administration page
+use AA\Cache\Cacheentry;
+use AA\Cache\CacheStr2find;
+use AA\Cache\PageCache;
+use AA\IO\DB\DB_AA;
+use AA\IO\OnPageChanger;
+use AA\Util\Langs;
+use MissCache\MissCache;
+use MissCache\Plugins\PhpThumbPlugin;
+
+require_once __DIR__ . "/../../include/config.php";
+require_once __DIR__ . "/../../include/locsess.php";
+require_once __DIR__ . "/../../include/zids.php";
+require_once __DIR__ . "/../../include/locauth.php";
+require_once __DIR__ . "/../../include/locauth.php";
+
+// MissCache forge-on-miss: requests for a missing cached file under IMG_UPLOAD/mC/
+// are routed here by the web server (try_files / RewriteCond !-f — see
+// misc/missCache/README). Generate the artifact once and serve it; every later
+// request is served statically by the web server, never reaching PHP.
+// rtrim: MissCache rtrim()s the base too, so an IMG_UPLOAD_URL without a trailing
+// slash still renders ".../img_upload/mC/..." — concatenating "mC/" onto the raw
+// path would build "/img_uploadmC/" and the guard would silently never match.
+$mc_dir = rtrim((string) parse_url(IMG_UPLOAD_URL, PHP_URL_PATH), '/') . '/mC/';  // e.g. /img_upload/mC/
+if (str_starts_with($_SERVER['REQUEST_URI'], $mc_dir)) {
+    $mC = new MissCache(IMG_UPLOAD_URL, IMG_UPLOAD_PATH, 'mC', IMG_UPLOAD_DIR_MODE, [new PhpThumbPlugin(AA_INSTAL_URL . "img.php")]);
+    $mC->handleRequest($_SERVER['REQUEST_URI']);
+    exit;
+}
+
+$auth4cache = '';
+if ($_COOKIE['AA_Session'] && !isset($_REQUEST['username'])) {   // do not authenticate new user - we could restrict reader slices later
+    pageOpen('nobody');   // define $sess and $auth; login user, if (s)he tries to; "nobody" allowed
+    $auth4cache = AuthGetUid();
+}
+
+// -- CACHE -------------------------------------------------------------------
+// CACHE_TTL defines the time in seconds the page will be stored in cache
+// (Time To Live) - in fact it can be infinity because of automatic cache
+// flushing on page change
+
+/** Create keystring from values, which exactly identifies resulting content */
+//  25June03 - Mitra - added post2shtml into here, maybe should add all URL?
+//  25Sept03 - Honza - all apc_state is serialized instead of just
+//       $apc_state['state'] (we store browser agent in state in kormidlo.cz)
+//  28Apr05  - Honza - added also $all_ids, $add_disc, $disc_type, $sh_itm,
+//                     $parent_id, $ids, $sel_ids, $disc_ids - for discussions
+//                      - it is in fact all global variables used in view.php
+// Tracker params (utm_*, gclid, fbclid, ...) and analytics cookies (IDE,
+// NID, ...) are stripped from every key source so identical content does
+// not get cached under thousands of campaign-tagged URLs. See
+// PageCache::IGNORED_PARAMS_EXACT / IGNORED_PARAMS_PREFIX for the list.
+// $_GET is kept (in addition to REQUEST_URI) because URL-rewrite variables
+// (site_id) only show up in $_GET; *_STRING_UNESCAPED is for the old
+// sitemodule shtml_query_string() path.
+$cache_key = get_hash(
+    'site',
+    PageCache::globalKeyArray(),
+    PageCache::normalizeRequestUri($_SERVER['REQUEST_URI'] ?? ''),
+    $_SERVER['REQUEST_METHOD'] ?? '',
+    $_SERVER['REDIRECT_URL'] ?? '',
+    PageCache::normalizeQueryString($_SERVER['REDIRECT_QUERY_STRING_UNESCAPED'] ?? ''),
+    PageCache::normalizeQueryString($_SERVER['QUERY_STRING_UNESCAPED'] ?? ''),
+    get_authorization_header(),
+    PageCache::filterIgnoredParams($_POST),
+    PageCache::filterIgnoredParams($_GET),
+    $auth4cache,
+);
+
+
+// store nocache to the variable (since it should be set for some view and we
+// do not want to have it set for whole site.
+// temporary solution - should be solved on view level (not global nocache) - TODO
+$site_nocache = (((int) $_REQUEST['nocache'] & 1) || isset($_POST['aa']) || (isset($_REQUEST['username']) && isset($_REQUEST['password'])) || $_REQUEST['logout']);
+
+AA::$debug & 2 && AA::$dbg->log("Pagecache site_nocache: $site_nocache, REQUEST:" . var_export($_REQUEST, true) . ", GET:" . var_export($_GET, true) . ", POST:" . var_export($_POST, true) . ", COOKIE:" . var_export($_COOKIE, true));
+
+if ($cacheentry = AA::Pagecache()->getPage($cache_key, (string) $site_nocache)) {
+    $cacheentry->processPage(true);
+    if (AA::$debug) {
+        echo '<br><br>Site cache hit!!!';
+        echo AA::$dbg->basic_stat();
+        echo AA::$dbg->duration_stat();
+    }
+    exit;
+}
+
+// -- /CACHE ------------------------------------------------------------------
+
+require_once __DIR__ . "/../../include/util.php";
+
+function IsInDomain($domain): bool
+{
+    return (($_SERVER['HTTP_HOST'] === $domain)  || ($_SERVER['HTTP_HOST'] === 'www.' . $domain));
+}
+
+/** Send 404 header and optionally output custom page content, then exit.
+ * @param null $page
+ */
+function Die404($page = null): never
+{
+    http_response_code(404);
+
+    // If client doesn't accept HTML, return empty body
+    // (avoids content-type mismatch that triggers antivirus false positives)
+    if (!is_null($page)) {
+        $accept = strtolower($_SERVER['HTTP_ACCEPT'] ?? '');
+        if ($accept === '' || str_contains($accept, 'text/') || str_contains($accept, 'application/')) {
+            header('Content-Type: ' . (AA::$headers['type'] ?: 'text/html') . '; charset=' . (AA::$headers['encoding'] ?: AA::$encoding ?: Langs::getCharset()));
+            echo AA::Stringexpander()->postprocess(AA::Un($page));
+        }
+    }
+    exit;   // empty body — proper 404 for non-HTML resources
+
+    //    $path = parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH);
+    //    $ext = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+    //    $nonHtmlExts = ['png','jpg','jpeg','gif','ico','svg','webp','avif','woff','woff2','ttf','eot','css','js','json','xml','map'];
+    //    if (in_array($ext, $nonHtmlExts)) {
+    //        exit;
+    //    }
+    //    else { echo '<!doctype html><html><head><title>404 Not Found</title></head><body><h1>Not Found</h1><p>The requested URL was not found on this server.</p></body></html>'; }
+}
+
+// ----------------- function definition end -----------------------------------
+
+// change the state
+add_vars();                 // get variables passed to stm page
+
+require_once __DIR__ . "/../../modules/site/router.class.php";
+
+$err = [];          // error array (Init - just for initializing variable
+
+AA::$site_id  = $_REQUEST['site_id'] ?: AA_Module_Site::getIdFromUrl();
+
+// site_id comes from the request - a slice id is not a site
+if (!($module = AA_Module_Site::getOwnModule(AA::$site_id))) {
+    Die404();
+    exit;
+}
+
+$lang_file    = $module->getProperty('lang_file');
+AA::setEncoding($module->getCharset());
+
+// @deprecated - use AA_Router_Seo instead
+// There are two possibilities, how to control the apc_state variable. It could
+// be se in ./modules/site/sites/site_...php control file. The control file
+// could be managed only by people, who have the access to the AA sources on the
+// server. If we want to permit control of the site to extenal people, which do
+// not have access to AA scripts directory, then it is possible to them to not
+// fill "site control file" in site configuration dialog and then call this
+// script from their own file, where the new $apc_state, $slices4cache and
+// $site_id will be defined and passed by GET method. Just like this:
+//
+//    $url  = 'https://example.org/apc-aa/modules/site/site.php3?';
+//    $url .= http_build_query( array( 'apc_state'    => $apc_state,
+//                                     'slices4cache' => $slices4cache,
+//                                     'site_id'      => 'ae54378beac7c7e8a998e7de8a998e7a'
+//                                    ));
+//    readfile($url);
+// /@deprecated - use AA_Router_Seo instead
+
+$hit_lid = null;
+
+// auth people from: Reader slice / Reader slices / AA + Reader slices
+//
+// perm_mode 1 - first Reader Management slice listed in Uses slices
+//           2 - all Reader Management slices listed in Uses slices
+//           3 - AA + all Reader Management slices in AA (old behavior)
+//           First Reader Management slice is encouraged option - only the
+//           people from this slice is allowed to login to public pages.
+//           If not selected, "AA + all Reader Management slices" option is used.
+$perm_mode  = (string) $module->getProperty('perm_mode');
+if ($perm_mode == '1' || $perm_mode == '2') {
+    $tmp_rm_slices = AA_Module_Site::getRelatedModules([AA::$site_id]);
+    // we need to preserve order!
+    $type_slices  = DB_AA::select('', 'SELECT LOWER(HEX(`id`)) AS unpackid FROM slice', [['id', $tmp_rm_slices, 'l'], ['type', 'ReaderManagement']]);
+    $rm_slices = [];
+    foreach ($tmp_rm_slices as $sl) {
+        if (in_array($sl, $type_slices)) {
+            $rm_slices[] = $sl;
+        }
+    }
+
+    if ($perm_mode == '1') {
+        $rm_slices = array_slice($rm_slices, 0, 1);
+    }
+    AA::$perm->restrictPermsTo($rm_slices);
+}
+
+if ($ga_id = (string) $module->getProperty('ga_id')) {
+    $ga_code = "<script async src=\"https://www.googletagmanager.com/gtag/js?id=$ga_id\"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      // AAGenerateGACONSENT //
+      gtag('js', new Date());
+      gtag('config', '$ga_id');
+    </script>";
+    AA::Stringexpander()->addRequire($ga_code, 'AA_Req_Headcode');
+    AA::Stringexpander()->addPostpocess("// AAGenerateGACONSENT //");
+}
+
+
+if ($module->getProperty('flag') == 1) {    // 1 - Use AA_Router_Seo
+
+    if (!is_object($sess)) {  // could be already opened above
+        pageOpen('nobody');   // define $sess and $auth; login user, if (s)he tries to; "nobody" allowed
+    }
+
+    $router = $module->getRouter();
+
+    // use REDIRECT_URL for homepage redirects:
+    //    RewriteRule ^/?$ /en/home [QSA]
+    //    RewriteRule ^/?en /apc-aa/modules/site/site.php?site_id=439ee0af030d6b2598763de404aa5e34 [QSA,L,PT]
+
+    // or (I think better)
+    //    RewriteEngine on
+    //    RewriteRule ^/?$  /apc-aa/modules/site/site.php?site_id=439ee0af030d6b2598763de404aa5e34 [QSA,L,PT]
+    //    RewriteRule ^/?en /apc-aa/modules/site/site.php?site_id=439ee0af030d6b2598763de404aa5e34 [QSA,L,PT]
+
+    $uri          = (strlen($_SERVER['REQUEST_URI']) > 1) ? $_SERVER['REQUEST_URI'] : $_SERVER['REDIRECT_URL'];
+    $apc_state    = $router->parse($uri);
+    $lang_file    = substr_replace($lang_file, $apc_state['xlang'], 0, 2);
+
+    // count hit for current page - deferred after the page is sent to user
+
+    if (!($hit_lid = $router->xid())) {
+        if ($module->getProperty('page404') == '2') {
+            Die404();
+            exit;
+        }
+        if ($module->getProperty('page404') == '3') {
+            Die404($module->getProperty('page404_code'));
+            exit;
+        }
+        // else - older behavior - site cares
+    }
+
+    //    } elseif ( $uri AND $router->xid(null, "/$lang_file/_404-not-found")) {  // item not found => 404
+    //        $apc_state = $router->parse("/$lang_file/_404-not-found");
+} elseif ($state_name = AA_Module_Site::stateFileName($module->getProperty('state_file'))) {
+    $state_path = AA_Module_Site::stateFilePath($state_name);
+    if (!is_file($state_path) || !is_readable($state_path)) {   // one extra stat(), warm in the OS cache
+        // No DB row: this runs for every anonymous request to a broken site, and a crawler would grow
+        // the `log` table without limit. The admin-visible record is CheckSiteStateFiles (State Check).
+        error_log('AA: site ' . AA::$site_id . " misconfigured - missing modules/site/sites/$state_name");
+        if (!headers_sent()) {   // ?debug=2 prints before this point
+            http_response_code(500);
+            header('Content-Type: text/plain; charset=utf-8');
+        }
+        mgettext_bind(Langs::getLang($lang_file), 'output');   // the page binds it below, past this branch
+        // site_id comes from the request, so this text reaches anonymous visitors - no module name in it
+        exit(_m('Site is misconfigured: %1 does not exist or is not readable. Add that file, or fix the "State file" setting of this site module.', ['modules/site/sites/' . $state_name]) . "\n");
+    }
+    // in the following file we should define apc_state variable
+    require_once __DIR__ . "/legacy_util.php";
+    require_once $state_path;
+    $apc_state['4cacheQS'] = shtml_query_string();
+    $_REQUEST['nocache'] = $_REQUEST['nocache'] ?: $nocache;
+}
+
+if (!isset($apc_state)) {
+    Die404(($module->getProperty('page404') == '3') ? $module->getProperty('page404_code') : null);
+    exit;
+}
+
+require_once __DIR__ . "/../../modules/site/sitetree.php";
+require_once __DIR__ . "/../../include/searchlib.php";
+require_once __DIR__ . "/../../include/view.php";
+require_once __DIR__ . "/../../include/discussion.php";
+require_once __DIR__ . "/../../include/item.php";
+
+if ((int) $_REQUEST['nocache'] & 2) {  // nocache=2 or nocache=3, ... - second bit set
+    AA_Stringexpand::switchCacheOff();
+}
+
+if ($lang_file) {
+    mgettext_bind(Langs::getLang($lang_file), 'output');
+    AA::$lang    = strtolower(substr($lang_file, 0, 2));   // actual language - two letter shortcut cz / es / en
+    AA::$langnum = [Langs::getLangName2Num(AA::$lang)];   // array of preferred languages in priority order.
+}
+
+
+
+$is_valid = ($perm_alias = $module->getProperty('perm_alias')) ? AA::Un("{item:$hit_lid:{($perm_alias)}}") : 'Valid';
+
+
+// --- Process all AJAX commands and possibly EXIT ---------------------
+
+$content_function = static function () use (&$module, &$apc_state) {
+    // we need to evaluate $page_content in order to reevaluate DependentParts
+    $apc_state['xajax'] = 2;  // to not be 1
+    return $module->getSite($apc_state);
+};
+
+$page_changer = new OnPageChanger($content_function);
+$page_changer->checkAndProcessCall($is_valid === 'Valid');
+
+// --- if not EXITEed above, continue
+
+
+$page_content = ($is_valid === 'Valid') ? $module->getSite($apc_state) : AA::Stringexpander()->postprocess(AA::Un($module->getProperty('loginpage_code')));
+
+// AJAX check
+if ((AA::$headers['encoding'] !== 'utf-8') && (AA::$encoding !== 'utf-8') && IsAjaxCall()) {
+    $page_content = ConvertCharset::singleton()->Convert($page_content, AA::$encoding, 'utf-8');
+    AA::$headers['encoding'] = 'utf-8';
+}
+
+$cacheentry = new Cacheentry($page_content, AA::getHeaders(), $hit_lid, ((is_object($auth) && $auth->is_user()) ? 'private' : 'public'));
+$cacheentry->processPage();
+
+// changed the way, how to get $slices4cache - now we ask for module ids really
+// used during page generation. Honza 2015-12-29
+$slices4cache = AA_Module::getUsedModules();
+if (empty($slices4cache)) {    // can't be combined empty() and assignment = for php 5.3
+    // probably not necessary
+    $slices4cache = [AA::$site_id];
+}
+
+// do not cache for logged users
+$cached = "not cached ($site_nocache," . array_key_exists('xuid', $apc_state) . ')';
+if (!$site_nocache and (empty($apc_state['xuid']) or ($apc_state['xuid'] === 'nobody'))) {
+    $str2find = new CacheStr2find($slices4cache);
+    $cached = AA::Pagecache()->storePage($cache_key, $cacheentry, $str2find) ? "cached ($cache_key)" : 'not cached in storePage';
+}
+
+if (AA::$debug & 2) {
+    echo '<br><br>Site cache MIS!!! - ' . $cached;
+    echo AA::$dbg->basic_stat();
+    echo '<br>UsedModules:<br> - ' . implode('<br> - ', array_map(static fn($mid) => AA_Module::getModuleNameSafe($mid), $slices4cache));
+    if (AA::$debug & 4) {
+        echo AA::$dbg->duration_stat();
+    }
+}
+
+
+// do not remove this exit - we do not want to allow users
+// to include this script (honzam)
+exit;

@@ -1,0 +1,98 @@
+<?php
+
+declare(strict_types=1);
+
+namespace AA\Util;
+
+/**
+ * Records PHP fatals and uncaught exceptions (TypeError, ArgumentCountError, …) as
+ * `PHP_FATAL` rows in the `log` table, so an install without shell access can be
+ * checked from the admin log / a DB query. Enabled per install by
+ * `define('AA_LOG_PHP_FATALS', true)` in config.php; locsess.php calls register().
+ *
+ * The DB write is best-effort: if AA is not booted far enough (no AA_Log, no DB)
+ * the entry only goes to error_log(). Never changes how the fatal itself is
+ * reported — the previous exception handler (or PHP's default) still runs.
+ */
+final class FatalLogger
+{
+    public const EVENT = 'PHP_FATAL';
+
+    /** `log.selector` is varbinary(255), `log.params` varbinary(128) */
+    private const SELECTOR_MAX = 255;
+    private const PARAMS_MAX = 128;
+
+    private const FATAL_TYPES = E_ERROR | E_PARSE | E_CORE_ERROR | E_COMPILE_ERROR | E_RECOVERABLE_ERROR | E_USER_ERROR;
+
+    private static bool $logged = false;
+
+    /** @var callable|null previous exception handler, chained after ours */
+    private static $previousHandler = null;
+
+    public static function register(): void
+    {
+        register_shutdown_function(static function (): void {
+            $e = error_get_last();
+            if ($e !== null && self::isFatal($e['type'])) {
+                self::log($e['message'], $e['file'], $e['line']);
+            }
+        });
+        self::$previousHandler = set_exception_handler(static function (\Throwable $t): void {
+            self::log(get_class($t) . ': ' . $t->getMessage(), $t->getFile(), $t->getLine());
+            if (self::$previousHandler !== null) {
+                (self::$previousHandler)($t);
+                return;
+            }
+            throw $t; // let PHP report it exactly as before (Uncaught … fatal)
+        });
+    }
+
+    public static function isFatal(int $type): bool
+    {
+        return ($type & self::FATAL_TYPES) !== 0;
+    }
+
+    /**
+     * Squeeze a fatal into the `log` columns: selector = "relative/file.php:line"
+     * (base path stripped), params = single-line message. Both cut to the column
+     * size in BYTES on a UTF-8 boundary.
+     *
+     * @return array{selector: string, params: string}
+     */
+    public static function format(string $message, string $file, int $line, string $base = ''): array
+    {
+        if ($base !== '' && str_starts_with($file, $base)) {
+            $file = substr($file, strlen($base));
+        }
+        $suffix   = ':' . $line;
+        $selector = $file . $suffix;
+        if (strlen($selector) > self::SELECTOR_MAX) {
+            $selector = mb_strcut($file, -(self::SELECTOR_MAX - strlen($suffix) - 1)) . $suffix;
+            $selector = ltrim($selector, '/');
+        }
+        $params = trim((string) preg_replace('/\s+/u', ' ', $message));
+
+        return [
+            'selector' => $selector,
+            'params'   => mb_strcut($params, 0, self::PARAMS_MAX),
+        ];
+    }
+
+    private static function log(string $message, string $file, int $line): void
+    {
+        if (self::$logged) {
+            return; // a rethrown exception also surfaces in error_get_last()
+        }
+        self::$logged = true;
+        $row = self::format($message, $file, $line, defined('AA_BASE_PATH') ? (string) AA_BASE_PATH : '');
+        try {
+            if (class_exists(\AA_Log::class, false) && function_exists('AuthGetUid')) {
+                \AA_Log::write(self::EVENT, $row['selector'], $row['params']);
+                return;
+            }
+        } catch (\Throwable) {
+            // fall through to error_log
+        }
+        error_log(self::EVENT . ' ' . $row['selector'] . ' ' . $row['params']);
+    }
+}

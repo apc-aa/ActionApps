@@ -1,0 +1,249 @@
+<?php
+
+/**
+ * Created by PhpStorm.
+ * User: honzama
+ * Date: 10.4.19
+ * Time: 13:47
+ */
+
+namespace AA\Util;
+
+use AA;
+use ArrayAccess;
+use Countable;
+
+class Searchfields implements \IteratorAggregate, ArrayAccess, Countable
+{
+    use ArrTrait;
+
+    /** @var array fields - arr is used also by ArrTrait */
+    protected array $arr = [];
+
+    /**  Valid searchfield properties  */
+    protected const FLDPROPS = [
+        'name'       => true,
+        'field'      => true,
+        'operators'  => true,
+        'table'      => true,
+        'search_pri' => true,
+        'order_pri'  => true,
+        'opt_group'  => true,
+    ];
+
+    /**
+     * @param $properties
+     *
+     * @return Searchfields
+     */
+    public static function factoryFromProperties($properties): Searchfields
+    {
+        $i            = 0;
+        $searchfields = new self();
+
+        foreach ($properties as $prop_id => $property) {
+            if ($property->isObject()) {
+                continue;
+            }
+
+            $field_type = $property->getType();    // @todo - convert to right search values
+
+            switch ($field_type) {
+                case 'int':
+                    $field_type = 'numeric';
+                    break;
+
+                case 'text':
+                case 'numeric':
+                case 'date':
+                case 'constants':
+                case 'numconstants':
+                    break;
+
+                    // case 'string':
+                default:
+                    $field_type = 'text';
+            }
+
+            // we can hide the field, if we put in fields.search_pri=0
+            $search_pri = ++$i;
+            //             $name,        $field,       $operators, $table, $search_pri, $order_pri
+            $searchfields->add($prop_id, $property->getName(), $prop_id, $field_type, false, $search_pri, $search_pri);
+        }
+        return $searchfields;
+    }
+
+
+    /**  add search field to Searchfields
+     * @param string $id
+     * @param string $name
+     * @param string $field
+     * @param string $operators
+     * @param string $table
+     * @param int    $search_pri searchbar priority (0 = "do not show in searchbar")
+     * @param int    $order_pri orderbar  priority (0 = "do not show in orderbar")
+     * @param string $opt_group
+     */
+    public function add($id, $name, $field, $operators = 'text', $table = '', $search_pri = 0, $order_pri = 0, $opt_group = ''): void
+    {
+        if (!$id) {
+            return;
+        }
+        $this->arr[$id] = ['name' => $name, 'field' => $field, 'operators' => $operators, 'table' => $table, 'search_pri' => $search_pri, 'order_pri' => $order_pri, 'opt_group' => $opt_group];
+    }
+
+    public function addArray($id, array $fld): void
+    {
+        if (!$id) {
+            return;
+        }
+        // copy just existing properties
+        $this->arr[$id] = array_intersect_key($fld, self::FLDPROPS);
+    }
+
+    /**
+     * @param bool $add_alltext
+     * @param bool $add_allnum
+     * @return array
+     */
+    public function getSearchArray($add_alltext = true, $add_allnum = true): array
+    {
+        return $this->generateArray('search', $add_alltext, $add_allnum);
+    }
+
+    /**
+     * @param bool $add_alltext
+     * @param bool $add_allnum
+     * @return array
+     */
+    public function getOperatorsArray($add_alltext = true, $add_allnum = true): array
+    {
+        return $this->generateArray('operators', $add_alltext, $add_allnum);
+    }
+
+    /**
+     * @return array
+     */
+    public function getOrderArray(): array
+    {
+        $order_fields     = [];
+        $fields           = $this->arr;
+
+        // sort
+        uasort($fields, [self::class, 'orderfields_cmp']);
+        $last_pri = 0;
+        foreach ($fields as $fid => $v) {
+            if ($v['order_pri'] > 0) {
+                // orderfields could be splited into groups
+                // one group is always with order_pri 0-999, 1000-1999, ...
+                if ($last_pri && floor($last_pri / 1000) !== floor($v['order_pri'] / 1000)) {
+                    $order_fields['AA_OPTGROUP ' . $last_pri] = ($v['opt_group'] ?: '---------------');
+                }
+                $last_pri = $v['order_pri'];
+                $order_fields[$fid]     = $v['name'];
+            }
+        }
+        return $order_fields;
+    }
+
+    /** Return array of field ids
+     * @return array
+     */
+    public function getFieldidsArray(): array
+    {
+        return array_keys($this->arr);
+    }
+
+    /** Return array of field names
+     * @return array
+     */
+    public function getFieldnamesArray(): array
+    {
+        return array_column($this->arr, 'name');
+    }
+
+    /**
+     * @param string $type      search | operators
+     * @param bool $add_alltext
+     * @param bool $add_allnum
+     * @return array
+     */
+    private function generateArray($type, $add_alltext = true, $add_allnum = true): array
+    {
+        $search_fields    = [];
+        $search_operators = [];
+        $fields           = $this->arr;
+
+        // add "all fields" search
+        if ($add_alltext) {
+            $search_fields['all_fields']            = _m('-- any text field --');
+            $search_operators['all_fields']         = 'text';
+        }
+        if ($add_allnum) {
+            $search_fields['all_fields_numeric']    = _m('-- any numeric field --');
+            $search_operators['all_fields_numeric'] = 'numeric';
+        }
+
+        uasort($fields, [ self::class, 'searchfields_cmp']);
+        $last_pri = 0;
+        foreach ($fields as $fid => $v) {
+            if ($v['search_pri'] > 0) {           // not searchable fields
+                // searchfields could be splited into groups
+                // one group is always with search_pri 0-999, 1000-1999, ...
+                if ($last_pri && floor($last_pri / 1000) !== floor($v['search_pri'] / 1000)) {
+                    $search_fields['AA_OPTGROUP ' . $last_pri] = ($v['opt_group'] ?: '---------------');
+                    $search_operators[$fid] = 'text';
+                }
+                $last_pri = $v['search_pri'];
+                $search_fields[$fid]    = $v['name'];
+                $search_operators[$fid] = $v['operators'];
+            }
+        }
+
+        return ($type === 'search') ? $search_fields : $search_operators;
+    }
+
+    public function containNumeric(): bool
+    {
+        return in_array('numeric', array_column($this->arr, 'operators'));
+    }
+
+
+    /** Helper function to sort search fields
+     *  @param $a array first field for comparison
+     *  @param $b array second
+     *  @return int  (0 or 1 or -1)
+     */
+    protected static function searchfields_cmp($a, $b): int
+    {
+        if ($a['search_pri'] == $b['search_pri']) {
+            return 0;
+        }
+        return ($a['search_pri'] < $b['search_pri']) ? -1 : 1;
+    }
+
+    /** Helper function to sort order fields
+     * @param $a
+     * @param $b
+     * @return int
+     */
+    protected static function orderfields_cmp($a, $b): int
+    {
+        if ($a['order_pri'] == $b['order_pri']) {
+            return 0;
+        }
+        return ($a['order_pri'] < $b['order_pri']) ? -1 : 1;
+    }
+
+    /**
+     * @deprecated
+     * @todo - replace all calls with Searfield object
+     * @return array - old searchfield array for backward compatibility in some functions
+     */
+    public function getArrayDeprecated(): array
+    {
+        return $this->arr;
+    }
+
+    // ArrayAccess, Countable and IteratorAggregate interface implementation is in ArrTrait --------------------------
+}

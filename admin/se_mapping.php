@@ -1,0 +1,257 @@
+<?php
+/** se_mapping.php - mapping fields settings
+ *
+ *    expected $slice_id for edit slice
+ *    optionally $from_slice_id for selected imported slice
+ *    optionally $Msg to show under <h1>Headline</h1> (typically: Fields' mapping update)
+ *
+ * PHP version 7.2+
+ *
+ * LICENSE: This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program (LICENSE); if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @version   $Id$
+ * @author    Honza Malik <honza.malik@ecn.cz>
+ * @license   http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @copyright Copyright (C) 1999, 2000 Association for Progressive Communications
+ * @link      https://www.apc.org/ APC
+ *
+*/
+
+
+use AA\IO\FeedUtil;
+use AA\IO\Grabber\AARSS;
+use AA\Util\InputVars;
+
+require_once __DIR__ . "/../include/init_page.php";
+
+try {
+    // array ( '4429a8e44bb…' => 4, 'dcf6f197e02…' => 1, 'e1f2cde4860…' => 1, '164ced40da0…' => 6, )
+    $from_slice_id = InputVars::idGET('from_slice_id');
+    $rssfeed_id    = InputVars::intGET('rssfeed_id'); // optional - for link from rss admin apge
+
+    $Msg = InputVars::stringGETPOST('Msg');
+} catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
+
+if (!IfSlPerm(PS_FEEDING)) {
+    MsgPage(_m("You do not have permissions to change feeding setting"));
+    exit;
+}
+
+require_once __DIR__ . "/../include/formutil.php";
+$err = [];          // error array (Init - just for initializing variable
+
+if ($rssfeed_id) {
+    $from_slice_id = FeedUtil::rssid2rssfeed($rssfeed_id);
+}
+
+
+
+// lookup internal fed slices
+$SQL= "SELECT name, id FROM feeds, slice
+        LEFT JOIN feedperms ON slice.id=feedperms.from_id
+        WHERE slice.id=feeds.from_id
+          AND (feedperms.to_id='$p_slice_id' OR slice.export_to_all=1)
+          AND feeds.to_id='$p_slice_id' ORDER BY name";
+$db->query($SQL);
+while ($db->next_record()) {
+    $impslices[unpack_id($db->f('id'))] = $db->f('name');
+}
+
+// lookup external fed slices
+$SQL = "SELECT remote_slice_id, remote_slice_name, node_name
+        FROM external_feeds
+        WHERE slice_id='$p_slice_id'";
+$db->query($SQL);
+while ($db->next_record()) {
+    $impslices[unpack_id($db->f('remote_slice_id'))] = $db->f('node_name')." - ".$db->f('remote_slice_name');
+    $remote_slices[unpack_id($db->f('remote_slice_id'))] = 1;       // mark slice as external
+}
+// lookup RSS feeds
+$SQL="SELECT feed_id, server_url, name, slice_id FROM rssfeeds
+       WHERE slice_id='$p_slice_id'";
+$db->query($SQL);
+while ($db->next_record()) {
+    $u_remote_slice_id = FeedUtil::attr2id($db->f('server_url'));         // @todo - remove the mapping dependence on URL
+    $impslices[$u_remote_slice_id] = "RSS - ".$db->f('name');
+    $remote_slices[$u_remote_slice_id] = 2;       // mark slice as RSS
+}
+
+// add all slices where I have permission to (for setting of mapping for slices,
+// which is only manualy fed)
+$first=true;
+foreach ($g_modules as  $k => $v) {
+    if ($impslices[$k] || $v['type'] !== 'S' || $k==AA::$module_id) {
+        continue;
+    }
+    if ($first && isset($impslices) && is_array($impslices)) {
+        $impslices[0] = '---------------';             // put delimiter there
+    }
+    $impslices[$k] = $v['name'];
+    $first=false;
+}
+
+if (!isset($impslices) || !is_array($impslices)){
+    MsgPage(_m("There are no imported slices"), self_base() . "se_import.php");
+    exit;
+}
+
+// set from_slice_id
+if ($from_slice_id == "") {
+    reset($impslices);
+    $from_slice_id = key($impslices);
+}
+
+// get mapping from table
+[$map_to,$field_map] = FeedUtil::GetExternalMapping(AA::$module_id, $from_slice_id);
+
+if (is_null($field_map) && ($remote_slices[$from_slice_id] == 2)) {
+    $field_map = AARSS::getDefaultRssMap();
+}
+
+// find out list of "to fields"
+$to_fields = AA_Fields::getFields4Select(AA::$module_id);
+
+// find out list of "from fields"
+$from_fields[_m("-- Not map --")]           = _m("-- Not map --");
+$from_fields[_m("-- Value --")]             = _m("-- Value --");
+$from_fields[_m("-- Joined fields --")]     = _m("-- Joined fields --");
+$from_fields[_m("-- RSS field or expr --")] = _m("-- RSS field or expr --");
+
+if (!$remote_slices[$from_slice_id]) {
+    // local fields : from slice fields
+    $from_fields += AA_Fields::getFields4Select($from_slice_id);
+} elseif (isset($map_to) && is_array($map_to)) {
+    // remote fields : from feedmap table
+    foreach ($map_to as $k => $v) {
+        $from_fields[$k] = $v;
+    }
+}
+
+foreach (array_keys($to_fields) as  $k) {
+    if (!isset($field_map[$k])) {
+        $field_map[$k] =  $from_fields[$k] ? ["feedmap_flag"=>FEEDMAP_FLAG_MAP,"value"=>$k] :
+                                             ["feedmap_flag"=>FEEDMAP_FLAG_EMPTY,"value"=>""];
+    }
+}
+
+$apage = new AA_Adminpageutil('sliceadmin','mapping');
+$apage->setTitle(_m("Admin - Content Pooling - Fields' Mapping"));
+$apage->setForm(['action'=>'se_mapping2.php', 'enctype'=>'multipart/form-data']);
+$apage->printHead($err, $Msg);
+
+$form_buttons = [
+    "ext_slice" => [
+        "type"  => "hidden",
+                                         "value"=>$remote_slices[$from_slice_id]
+    ],
+    "btn_upd"   => [
+        "type"      => "button",
+        "value"     => _m("Update"),
+        "accesskey" => "S",
+                                       "add"=>'onclick="Submit()"'
+    ],
+                      "cancel"=> ["url"=>"se_fields.php"]
+];
+
+FrmTabCaption(_m("Content Pooling - Fields' mapping"), $form_buttons);
+?>
+        <tr>
+          <td><b><?php echo _m("Mapping from slice") . "&nbsp; "?></b>
+          <?php FrmSelectEasy("from_slice_id", $impslices, $from_slice_id, ["onchange" => "ChangeFromSlice()"]); ?></td>
+         </tr>
+<?php
+FrmTabSeparator(_m("Fields' mapping"));
+?>
+    <tr><td>
+      <table>
+        <tr>
+          <td colspan=2><b><?php echo _m("To") ?></b></td>
+          <td colspan=2><b><?php echo _m("From") ?></b></td>
+          <td><b><?php echo _m("Value") ?></b></td>
+        </tr>
+<?php
+foreach ($to_fields as $f_id => $f_name) {
+    echo "<tr><th>$f_name</th>\n";
+    echo "<td>$f_id</td>\n";
+    echo "<td>";
+    $val = "";
+
+    switch ($field_map[$f_id]['feedmap_flag']) {
+        case FEEDMAP_FLAG_VALUE :
+            $sel = _m("-- Value --");
+            $val = safe($field_map[$f_id]['value']); break;
+        case FEEDMAP_FLAG_JOIN :
+            $sel = _m("-- Joined fields --");
+            $val = safe($field_map[$f_id]['value']); break;
+        case FEEDMAP_FLAG_EMPTY:
+            $sel =  _m("-- Not map --");
+            break;
+        case FEEDMAP_FLAG_MAP :
+        case FEEDMAP_FLAG_EXTMAP :
+            $sel = $field_map[$f_id]['value'];
+            break;
+        case FEEDMAP_FLAG_RSS :
+            $v = $field_map[$f_id]['value'];
+            $sel =  ($from_fields[$v]) ? $v : _m("-- RSS field or expr --");
+            $val = safe($field_map[$f_id]['value']);
+            break;
+    }
+    FrmSelectEasy("fmap[$f_id]", $from_fields, $sel);
+    echo "</td><td>$sel</td>";
+    echo "<td> <input type=\"text\" name=\"fval[$f_id]\" value=\"$val\"></td>";
+    echo "</tr>\n";
+}
+FrmTabEnd($form_buttons);
+?>
+<script>
+
+    function SelectValue(sel) {
+        const svindex = eval(sel).selectedIndex;
+        return (svindex !== -1) ? eval(sel).options[svindex].value : null;
+    }
+
+    function ChangeFromSlice() {
+        var url = "<?php echo StateUrl(self_base() . "se_mapping.php")?>"
+        var from_sl = SelectValue('document.f.from_slice_id')
+        if (from_sl == 0) {
+            return;
+        }
+        url += "&slice_id=<?php echo AA::$module_id ?>"
+        url += "&from_slice_id=" + from_sl
+        window.location=url
+    }
+
+    function Cancel() {
+        window.location = "<?php echo StateUrl(self_base() . "index.php")?>"
+    }
+
+    function Submit() {
+        // var e = document.f.elements;
+        // fcnt = <?php echo count($from_fields)?>
+        //
+        // // test for duplicity
+        // for ( i=1; i < fcnt; i++) {
+        //   for ( j=i+1; j<fcnt+1; j++) {
+        //     if (e[i].selectedIndex !=0 && SelectValue(e[i]) == SelectValue(e[j])) {
+        //       alert("<?php //echo _m("Cannot map to same field") ?>//");
+        //       return;
+        //     }
+        //   }
+        // }
+        document.f.submit();
+    }
+</script>
+<?php
+$apage->printFoot();

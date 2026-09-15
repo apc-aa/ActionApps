@@ -1,0 +1,70 @@
+/* AA admin skin — "WebNetworks" (modernized green)
+ *
+ * Skin overlay loaded by the admin page builder AFTER admin-ecn.css and
+ * aa-system.css (see include/util.php::HtmlPageBegin and
+ * include/adminpage.class.php). Selectable via:
+ *
+ *     define("ADMIN_CSS", "admin.css");   // in config.php
+ *
+ * Recolors the admin in a forest/mint green palette inspired by the
+ * historical admin.css (#213F21, #A8C8B0, #589868). All selector logic
+ * and modern UI components (popovers, responsive tweaks, etc.) come from
+ * admin-ecn.css -- only the :root tokens diverge plus a few targeted
+ * leftmenu/login overrides for elements the baseline doesn't paint.
+ */
+/* Palette is contrast-tuned for WCAG AA against the structural CSS in
+ * admin-ecn.css, which paints white text on --clr-basic-dark / --clr-darker
+ * / --clr-green and black text on --clr-basic / --clr-footer / --clr-light.
+ * --clr-basic-dark was darkened from the historical #7BB290 (white text
+ * only reached 2.4:1) to #3F7553 so button-hover white text passes AA, and
+ * --clr-green was darkened from #1eb585 (white text 2.6:1) to #1A8568 so
+ * primary buttons pass AA. --clr-gold pairs with black text (.bg-clr-gold
+ * utility); white on it is only 3.4:1 and should be avoided. */
+:root {
+    --clr-body: #f1f5f1;
+    --clr-dark: #213F21;
+    --clr-footer: #DAE8E1;
+    --clr-basic: #A8C8B0;
+    --clr-basic-dark: #3F7553;
+    --clr-basic-darker: #2F5A3F;
+    --clr-basic-light: #D8E7DC;
+    --clr-opacity-light: rgb(255 255 255 / 30%);
+    --clr-opacity-dark: rgb(0 0 0 / 0.02);
+    --clr-border: rgb(120 165 130 / 60%);
+    --clr-gold: #589868;
+    --clr-green: #1A8568;
+    --sz-m: 1rem;
+    --sz-s: 0.955rem;
+    --sz-xs: 0.867rem;
+}
+
+/* Leftmenu chrome — dark forest with white text for a strong contrast
+ * accent. The structural rule in admin-ecn.css doesn't set a leftmenu
+ * background, so this lives here. */
+.aa-ui-leftmenu {
+    background: var(--clr-dark);
+    color: #ffffff;
+}
+.aa-ui-leftmenu a {
+    color: #ffffff;
+}
+.aa-ui-leftmenu a:hover {
+    background-color: var(--clr-basic-darker);
+    color: #ffffff;
+}
+
+/* Badge pills (.aa-bin-cnt, .aa-morehelp) inside the leftmenu — the
+ * baseline rule paints them in dark-wine on rgba(white, 0.2) which is
+ * unreadable on the dark forest leftmenu. Repaint in white-on-overlay
+ * so they stay legible. ~6:1 contrast (AA). */
+.leftmenu .aa-bin-cnt, .leftmenu .aa-morehelp {
+    color: #ffffff;
+    background: rgb(255 255 255 / 18%);
+    border-color: rgb(255 255 255 / 40%);
+}
+
+/* Login box — historically used the light-mint card look */
+.login {
+    background: var(--clr-basic);
+    color: #000000;
+}
