@@ -1,0 +1,4 @@
+# git blame --ignore-revs-file; also set: git config blame.ignoreRevsFile .git-blame-ignore-revs
+# PER-CS3.0 formatting (php-cs-fixer), no behaviour change - SVN r5314 and r5315, 2026-06-26
+6d9429ff45c6de7f6225a5fc60e1ae1e8765cc96
+a04cb1822503c45386aee69c1c78255153f88517
