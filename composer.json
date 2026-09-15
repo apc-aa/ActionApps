@@ -103,6 +103,9 @@
     "optimize-autoloader": true,
     "allow-plugins": {
       "pestphp/pest-plugin": true
+    },
+    "platform": {
+      "php": "8.2"
     }
   },
   "minimum-stability": "dev",
