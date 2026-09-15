@@ -29,7 +29,9 @@ use AA\IO\DB\DB_AA;
 use AA\Optimize\AddPolls;
 use AA\Util\InputVars;
 
-if ($_GET['template']['P'] ?? null) {
+// Creating a module: slicedit.php always sends no_slice_id, the template only when one exists already.
+// init_page.php must know, or it falls back to a slice. Not $_REQUEST - that can include cookies.
+if (($_GET['no_slice_id'] ?? $_POST['no_slice_id'] ?? null) || ($_GET['template']['P'] ?? $_POST['template']['P'] ?? null)) {
     $no_slice_id = true;       // message for init_page.php
 }
 

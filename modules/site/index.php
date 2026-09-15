@@ -55,9 +55,8 @@ try {
 
 $module_id   = AA::$module_id;
 
-// id of another module type (explicit, or the fallback for a user with no site) goes to that module's page
-$module = AA_Module_Site::getModule($module_id);
-if (!($module instanceof AA_Module_Site)) {
+// an id of another module type (explicit, or the fallback for a user with no site) goes to that module's page
+if (!($module = AA_Module_Site::getOwnModule($module_id))) {
     go_url(AA_Module::getModuleUrl($module_id));
 }
 

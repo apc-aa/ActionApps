@@ -71,10 +71,12 @@ class Adminlink
 
     public static function siteLink($spot_id, $module_id): string
     {
-        if (($module = AA_Module_Site::getModule($module_id)) && ($tree = $module->getTree())) {
-            $spot_code = ($tree->get('flag', $spot_id) & AA_Module_Site::FLAG_DISABLE) ? "<s>$spot_id</s>" : "<b>$spot_id</b>";
+        // a slice id is not a site, and has no tree
+        $spot_safe = safe($spot_id);   // the label keeps its <s>/<b> markup, so the value is escaped instead
+        if (($module = AA_Module_Site::getOwnModule($module_id)) && ($tree = $module->getTree())) {
+            $spot_code = ($tree->get('flag', $spot_id) & AA_Module_Site::FLAG_DISABLE) ? "<s>$spot_safe</s>" : "<b>$spot_safe</b>";
         } else {
-            $spot_code = "??? $spot_id";
+            $spot_code = "??? $spot_safe";
         }
         return a_href(get_aa_url("modules/site/index.php", ['slice_id' => $module_id, 'module_id' => $module_id, 'spot_id' => $spot_id, 'go_sid' => $spot_id]), $spot_code) . ' &nbsp; '
             . ChangesMonitor::getHistoryLink("S.$spot_id");

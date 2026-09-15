@@ -37,7 +37,9 @@ use AA\IO\DB\DB_AA;
 use AA\Util\InputVars;
 use AA\Util\Langs;
 
-if ($_GET['no_slice_id'] ?? null) {
+// Creating a module: the insert posts no_slice_id back as a hidden field, and init_page.php must
+// know on the POST too, or it falls back to a slice. Not $_REQUEST - that can include cookies.
+if ($_GET['no_slice_id'] ?? $_POST['no_slice_id'] ?? null) {
     $no_slice_id = true;       // message for init_page.php (no existing slice yet)
 }
 
@@ -60,7 +62,7 @@ try {
     $owner           = InputVars::idPOST('owner');           // empty for new owner
     $new_owner       = InputVars::stringPOST('new_owner');
     $new_owner_email = InputVars::stringPOST('new_owner_email');
-    $no_slice_id     = InputVars::boolGET('no_slice_id');
+    $no_slice_id     = InputVars::boolGETPOST('no_slice_id');   // POST too - $is_add below, and the gate above
     $insert          = InputVars::boolPOST('insert');
     $update          = InputVars::boolPOST('update');
     $cancel          = InputVars::boolPOST('cancel');

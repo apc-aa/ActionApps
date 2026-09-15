@@ -216,6 +216,25 @@ abstract class AA_Module
         return AA_Module::$_modules[$module_id];
     }
 
+    /** Module of the class it is asked through, or null - the null check getModule() looks like it does:
+     *   $site = AA_Module_Site::getOwnModule($module_id)   // a slice id gives null, not an AA_Slice
+     *
+     * Use it wherever the id comes from a request or from old data, before calling anything the
+     * class adds to AA_Module - getModule() follows the module type in the database, so a
+     * mismatched id ends in "Call to undefined method" (see its note above).
+     *
+     * It is a class check, not a not-found check: getModuleInfo() resolves an unknown id to type 'S',
+     * so AA_Slice::getOwnModule() still builds an AA_Slice for a module that does not exist.
+     *
+     * @param  string  $module_id
+     * @return static|null
+     */
+    public static function getOwnModule($module_id): ?static
+    {
+        $module = static::getModule($module_id);
+        return ($module instanceof static) ? $module : null;
+    }
+
 
     /** AA_Module::getModules() function
      * @param string $type      - S | W | Alerts | J | P | Links
@@ -1165,6 +1184,28 @@ class AA_Module_Site extends AA_Module
 
         // trim remove whitespaces from start and end (mainly the start - it is better to start right with the code)
         return trim(AA::Stringexpander()->postprocess($out));
+    }
+
+    /** Name of the legacy control file ('example.php3' -> 'site_example.php3'), '' when unset.
+     *  basename() keeps the include inside sites/ - the value is a site setting, and the path-like
+     *  values ('/cz/home') belong to the router (flag 1), which never reads it as a file.
+     */
+    public static function stateFileName(?string $state_file): string
+    {
+        $state_file = trim((string) $state_file);
+        // A value with a slash is a router home path ('/en/home', see getRouter()) sharing this column,
+        // not a control file - reshaping it with basename() would invent a file name nobody configured.
+        // '0' was falsy for the caller before this helper existed; keep it meaning "unset".
+        if ($state_file === '' || $state_file === '0' || str_contains($state_file, '/') || str_contains($state_file, '\\')) {
+            return '';
+        }
+        return 'site_' . basename($state_file);   // basename() still stops a stray '..'
+    }
+
+    /** Absolute path of a stateFileName() result - used by the dispatcher and by CheckSiteStateFiles */
+    public static function stateFilePath(string $state_file_name): string
+    {
+        return AA_BASE_PATH . 'modules/site/sites/' . $state_file_name;
     }
 
     public function getTree(): ?sitetree

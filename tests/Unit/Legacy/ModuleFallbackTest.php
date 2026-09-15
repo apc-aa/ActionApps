@@ -5,9 +5,8 @@ declare(strict_types=1);
 /**
  * Which module include/init_page.php falls back to when the request brings none: the page's own
  * type first (by its directory in AA_Moduleregistry), else the old choice - first slice, else the
- * last module. A fallback slice must stay usable on a module page: the insert POST creating the
- * first Alerts module comes with no module id at all. Jump pages count as slice pages - Jump has
- * no admin of its own (it uses the slice menu).
+ * last module - init_page.php then redirects to that module's own page. Jump pages count as slice
+ * pages - Jump has no admin of its own (it uses the slice menu).
  *
  * No DB: both methods are pure (the registry is built from the module classes).
  */

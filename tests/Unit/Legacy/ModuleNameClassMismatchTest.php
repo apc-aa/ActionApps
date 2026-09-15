@@ -43,6 +43,7 @@ namespace Tests\Unit\Legacy {
 
     use AA_Module;
     use AA_Module_Site;
+    use AA_Moduleconfig;
     use AA_Slice;
     use PHPUnit\Framework\Attributes\DataProvider;
     use PHPUnit\Framework\TestCase;
@@ -77,13 +78,37 @@ namespace Tests\Unit\Legacy {
         }
     }
 
+    /** Another module type in the cache - the direction the site call sites guard against.
+     *  Extends AA_Module, not AA_Slice: the AA_Slice constructor calls AA_Fields::factoryFor(),
+     *  which pulls in the whole legacy boot (field.class.php … formutil.php, PERM_LIB).
+     */
+    final class CachedOtherModule extends AA_Module
+    {
+        public static function register(string $module_id): void
+        {
+            AA_Module::$_modules[$module_id] = new self($module_id);
+        }
+
+        public static function forget(string $module_id): void
+        {
+            unset(AA_Module::$_modules[$module_id]);
+        }
+
+        public static function getModuleconfig(): AA_Moduleconfig
+        {
+            return new AA_Moduleconfig('X', 'Fake', self::class, 'fake/', 'fake/menu.php', [], false);
+        }
+    }
+
     final class ModuleNameClassMismatchTest extends TestCase
     {
-        private const SITE_ID = '2438f1a5adf91ca7f7160d5071249b80';
+        private const SITE_ID  = '2438f1a5adf91ca7f7160d5071249b80';
+        private const OTHER_ID = '9a7f16005071249b802438f1a5adf91c';
 
         protected function tearDown(): void
         {
             NamedSiteModule::forget(self::SITE_ID);
+            CachedOtherModule::forget(self::OTHER_ID);
         }
 
         /** @return array<string, array{class-string<AA_Module>}> */
@@ -120,6 +145,18 @@ namespace Tests\Unit\Legacy {
         {
             NamedSiteModule::register(self::SITE_ID, '<img src=x onerror="alert(1)"> R&D');
             self::assertSame('&lt;img src=x onerror=&quot;alert(1)&quot;&gt; R&amp;D', AA_Slice::getModuleNameSafe(self::SITE_ID));
+        }
+
+        /** getOwnModule() is the null check getModule() looks like it does - the guard for request ids. */
+        public function testOwnModuleIsNullWhenTheClassDoesNotMatch(): void
+        {
+            NamedSiteModule::register(self::SITE_ID, 'historickademografie');
+            CachedOtherModule::register(self::OTHER_ID);
+            // what modules/site/index.php, site.php and Adminlink::siteLink() guard against
+            self::assertNull(AA_Module_Site::getOwnModule(self::OTHER_ID));
+            self::assertInstanceOf(AA_Module_Site::class, AA_Module_Site::getOwnModule(self::SITE_ID));
+            self::assertNull(AA_Slice::getOwnModule(self::SITE_ID));
+            self::assertInstanceOf(AA_Module_Site::class, AA_Module::getOwnModule(self::SITE_ID));  // every module is an AA_Module
         }
 
         public function testMalformedIdGivesEmptyName(): void

@@ -152,8 +152,8 @@ if (!$no_slice_id) {
         $script        = substr((string) realpath(get_included_files()[0]), strlen(dirname(__DIR__)) + 1);
         $page_type     = AA_Moduleregistry::typeOfScript($script);
         AA::$module_id = AA_Module::getFallbackModuleId($g_modules, $page_type);
-        // a fallback slice stays, as before: a request creating a module can come here with no id (alerts/modedit.php)
-        if (!in_array($g_modules[AA::$module_id]['type'], ['S', $page_type], true)) {
+        // nothing of this page's type - go to the fallback module's own page rather than run e.g. alerts/modedit.php on a slice
+        if ($g_modules[AA::$module_id]['type'] !== $page_type) {
             go_url(AA_Module::getModuleUrl(AA::$module_id));
         }
     }

@@ -27,7 +27,9 @@ https://www.apc.org/
 use AA\IO\DB\DB_AA;
 use AA\Util\InputVars;
 
-$no_slice_id   = isset($_REQUEST['template']) && isset($_REQUEST['template']['W']);       // message for init_page.php
+// Creating a module: slicedit.php always sends no_slice_id, the template only when one exists already.
+// init_page.php must know, or it falls back to a slice. Not $_REQUEST - that can include cookies.
+$no_slice_id   = (bool) (($_GET['no_slice_id'] ?? $_POST['no_slice_id'] ?? null) ?: ($_GET['template']['W'] ?? $_POST['template']['W'] ?? null));
 
 require_once __DIR__ . "/../../include/init_page.php";
 //require_once __DIR__."/../../include/en_site_lang.php";

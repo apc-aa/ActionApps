@@ -43,10 +43,10 @@ $module_id   = AA::$module_id;        // id in long form (32-digit hexadecimal n
 // You should change PS_MODW_EDIT_CODE permission to match the permission in your
 // module. See /include/perm_core.php for more details
 
-if (!($module = AA_Module_XX::getModule($module_id))) {
-    MsgErr(_m("Module XX not found"));
-    Session::page_close();
-    exit;
+// getOwnModule(), not getModule(): the latter follows the module type in the database, so an id of
+// another type gives an object without this module's methods ("Call to undefined method")
+if (!($module = AA_Module_XX::getOwnModule($module_id))) {
+    MsgPage(_m("Module XX not found"));
 }
 
 if (!IfSlPerm(PS_MODX_EDIT_CODE)) {
