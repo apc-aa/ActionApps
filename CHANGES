@@ -1,7 +1,10 @@
 The changes could be tracked on:
-    https://sourceforge.net/p/apc-aa/svn/commit_browser
-    https://sourceforge.net/p/apc-aa/svn/HEAD/log/
-    https://sourceforge.net/p/apc-aa/svn/feed
+    https://github.com/apc-aa/ActionApps/commits/main
+    https://github.com/apc-aa/ActionApps/commits/main.atom
+
+Since September 2026 development happens in git; the SourceForge SVN trunk
+(https://sourceforge.net/p/apc-aa/svn/) is a one-way mirror of the `dist` branch,
+which carries the runtime files only. See INSTALL for how to install or update.
 
 --- Older changes are listed also here: -----
 20-01-16 - optimized SQL query for remote items search like in query
