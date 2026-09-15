@@ -1,0 +1,15 @@
+# Forward-looking check: analyse pinned at the NEWEST PHP, to catch what will be
+# deprecated there. The main phpstan.neon spans 8.2-8.5 and such rules are
+# reported only when they hold across the whole range, so they never show there.
+# Everything else (level, paths, scanDirectories, baseline) is inherited.
+#
+#     vendor/bin/phpstan analyse -c phpstan-next.neon --memory-limit=1G
+#
+includes:
+    - phpstan.neon
+
+parameters:
+    tmpDir: %env.HOME%/.cache/phpstan-aa-next
+    phpVersion:
+        min: 80500
+        max: 80500

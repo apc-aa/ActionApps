@@ -1,0 +1,165 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-05-28T00:00:00Z",
+  "title": "Design System: APC-AA",
+  "extensions": {
+    "colorMeta": {
+      "press-paper":          { "role": "neutral",   "displayName": "Press Paper",          "canonical": "oklch(96.5% 0.003 80)",  "tonalRamp": ["oklch(20% 0.003 80)","oklch(32% 0.003 80)","oklch(45% 0.003 80)","oklch(58% 0.003 80)","oklch(70% 0.003 80)","oklch(82% 0.003 80)","oklch(90% 0.003 80)","oklch(96.5% 0.003 80)"] },
+      "bond-paper":           { "role": "neutral",   "displayName": "Bond Paper",           "canonical": "oklch(94% 0.006 78)" },
+      "dust-jacket":          { "role": "neutral",   "displayName": "Dust Jacket",          "canonical": "oklch(91% 0.012 78)" },
+      "newsroom-sand":        { "role": "primary",   "displayName": "Newsroom Sand",        "canonical": "oklch(88% 0.04 78)",    "tonalRamp": ["oklch(20% 0.04 78)","oklch(34% 0.04 78)","oklch(48% 0.04 78)","oklch(60% 0.04 78)","oklch(72% 0.04 78)","oklch(80% 0.04 78)","oklch(88% 0.04 78)","oklch(95% 0.025 78)"] },
+      "reporters-tan":        { "role": "neutral",   "displayName": "Reporter's Tan",       "canonical": "oklch(80% 0.05 78)" },
+      "filing-cabinet":       { "role": "neutral",   "displayName": "Filing Cabinet",       "canonical": "oklch(65% 0.05 78)" },
+      "press-black":          { "role": "primary",   "displayName": "Press Black",          "canonical": "oklch(22% 0.005 78)",   "tonalRamp": ["oklch(15% 0.005 78)","oklch(22% 0.005 78)","oklch(32% 0.005 78)","oklch(45% 0.005 78)","oklch(58% 0.005 78)","oklch(72% 0.005 78)","oklch(85% 0.005 78)","oklch(95% 0.005 78)"] },
+      "margin-line":          { "role": "neutral",   "displayName": "Margin Line",          "canonical": "oklch(86% 0.025 78)" },
+      "brass-stamp":          { "role": "primary",   "displayName": "Brass Stamp",          "canonical": "oklch(75% 0.085 80)",   "tonalRamp": ["oklch(25% 0.085 80)","oklch(38% 0.085 80)","oklch(50% 0.085 80)","oklch(60% 0.085 80)","oklch(68% 0.085 80)","oklch(75% 0.085 80)","oklch(85% 0.06 80)","oklch(93% 0.035 80)"] },
+      "hover-olive":          { "role": "neutral",   "displayName": "Hover Olive",          "canonical": "oklch(67% 0.09 95)" },
+      "olive-ink":            { "role": "neutral",   "displayName": "Olive Ink",            "canonical": "oklch(43% 0.07 95)" },
+      "selected-highlighter": { "role": "neutral",   "displayName": "Selected Highlighter", "canonical": "oklch(92% 0.06 90)" },
+      "floating-paper":       { "role": "neutral",   "displayName": "Floating Paper",       "canonical": "oklch(98.5% 0.003 78)" },
+      "published-green":      { "role": "secondary", "displayName": "Published Green",      "canonical": "oklch(72% 0.16 160)",   "tonalRamp": ["oklch(20% 0.08 160)","oklch(32% 0.12 160)","oklch(45% 0.15 160)","oklch(56% 0.17 160)","oklch(64% 0.17 160)","oklch(72% 0.16 160)","oklch(83% 0.10 160)","oklch(93% 0.05 160)"] },
+      "link-slate":           { "role": "neutral",   "displayName": "Link Slate",           "canonical": "oklch(36% 0.14 270)" },
+      "link-hover-blue":      { "role": "neutral",   "displayName": "Link Hover Blue",      "canonical": "oklch(60% 0.18 240)" },
+      "visited-muted":        { "role": "neutral",   "displayName": "Visited Muted",        "canonical": "oklch(55% 0.08 320)" },
+      "data-cnm-best":        { "role": "tertiary",  "displayName": "Filed Green",          "canonical": "oklch(52% 0.10 150)" },
+      "data-cm-good":         { "role": "tertiary",  "displayName": "Working Green",        "canonical": "oklch(72% 0.13 135)" },
+      "data-ncm-bad":         { "role": "tertiary",  "displayName": "Deadline Orange",      "canonical": "oklch(63% 0.16 35)" },
+      "data-ncnm-worst":      { "role": "tertiary",  "displayName": "Stop the Press",       "canonical": "oklch(43% 0.18 25)" }
+    },
+    "typographyMeta": {
+      "display":    { "displayName": "Display / H1",     "purpose": "Page-level section title. Deliberately normal-weight, not bold. The page heading announces; it does not shout." },
+      "headline":   { "displayName": "Headline / H2",    "purpose": "Subsection title. Bold (600) because dense forms below need separation." },
+      "title":      { "displayName": "Title / H3",       "purpose": "Sub-subsection title, inline chart titles." },
+      "body":       { "displayName": "Body",             "purpose": "Default text. Forms, table cells, paragraphs. 65–75ch line length where layout allows." },
+      "body-small": { "displayName": "Body Small (sz-s)","purpose": "Help text under inputs, secondary table rows, tab subtitles." },
+      "label":      { "displayName": "Label (sz-xs)",    "purpose": "Metadata: item short-id, slice prefix, timestamp." }
+    },
+    "shadows": [
+      { "name": "focus-ring",       "value": "0 0 0 3px rgba(184, 162, 70, 0.20)",  "purpose": "Gold glow on focused buttons and inputs in modern surfaces. Replaces the legacy blue outline." },
+      { "name": "floating-surface", "value": "0 14px 36px rgba(60, 50, 20, 0.20)",  "purpose": "Dropdowns, per-search popovers, comparison drill-downs. Paper hovering above paper." },
+      { "name": "subtle-lift",      "value": "0 1px 2px rgba(0, 0, 0, 0.10)",       "purpose": "Single small bump used sparingly on interactive chips. Legitimate but rare." }
+    ],
+    "motion": [
+      { "name": "legacy-slow",   "value": "all 0.3s",                       "purpose": "Existing transition pattern across legacy buttons. Grandfathered; do not extend." },
+      { "name": "modern",        "value": "0.15s cubic-bezier(0.5,1,0.89,1)", "purpose": "Recommended for new components. ease-out-quart; no bounce, no elastic." },
+      { "name": "modern-fast",   "value": "0.12s cubic-bezier(0.5,1,0.89,1)", "purpose": "Border-color and box-shadow transitions on inputs/buttons in modern focus treatment." }
+    ],
+    "breakpoints": [
+      { "name": "mobile-narrow", "value": "640px",  "purpose": "Narrow phones; admin density forces some controls to wrap." },
+      { "name": "tablet",        "value": "900px",  "purpose": "Used by `.aa-stat-chart` aspect-ratio override and several admin layouts." },
+      { "name": "desktop",       "value": "1200px", "purpose": "Standard admin desktop." }
+    ]
+  },
+  "components": [
+    {
+      "name": "Default Button",
+      "kind": "button",
+      "refersTo": "button-default",
+      "description": "The workhorse. Square, dense, near-black on warm background. Used for almost every admin action except publish/save.",
+      "html": "<button class=\"ds-btn\">Show</button>",
+      "css": ".ds-btn { display: inline-block; font-family: 'Open Sans', sans-serif; font-size: 0.955rem; line-height: 16px; padding: 6px 12px; margin: 2px; background-color: #1f1f1f; color: #f3f3f1; border: solid 1px transparent; border-radius: 0; text-decoration: none; cursor: pointer; transition: background-color 0.15s cubic-bezier(0.5,1,0.89,1), color 0.15s cubic-bezier(0.5,1,0.89,1); } .ds-btn:hover { background-color: #A8977A; color: #f3f3f1; } .ds-btn:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(184, 162, 70, 0.20); }"
+    },
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Publish / save / confirm only. The single saturated voice in the chrome.",
+      "html": "<button class=\"ds-btn-primary\">Publish</button>",
+      "css": ".ds-btn-primary { display: inline-block; font-family: 'Open Sans', sans-serif; font-size: 0.955rem; line-height: 16px; padding: 6px 12px; margin: 2px; background-color: #1eb585; color: #f3f3f1; border: solid 1px transparent; border-radius: 0; text-decoration: none; cursor: pointer; transition: background-color 0.15s cubic-bezier(0.5,1,0.89,1); } .ds-btn-primary:hover { background-color: #189869; } .ds-btn-primary:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(184, 162, 70, 0.20); }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Transparent over warm surface. Use when an action is real but secondary in priority.",
+      "html": "<button class=\"ds-btn-secondary\">Cancel</button>",
+      "css": ".ds-btn-secondary { display: inline-block; font-family: 'Open Sans', sans-serif; font-size: 0.955rem; line-height: 16px; padding: 6px 12px; margin: 2px; background-color: rgba(255,255,255,0.2); color: #6a5e22; border: solid 1px rgba(26,4,4,0.3); border-radius: 0; text-decoration: none; cursor: pointer; transition: background-color 0.15s cubic-bezier(0.5,1,0.89,1), color 0.15s cubic-bezier(0.5,1,0.89,1); } .ds-btn-secondary:hover { background-color: #d5c2a4; color: #1f1f1f; } .ds-btn-secondary:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(184, 162, 70, 0.20); }"
+    },
+    {
+      "name": "Text Input",
+      "kind": "input",
+      "refersTo": "input-text",
+      "description": "Dense, square, white on warm surface. Border is Margin Line; focus shifts to Hover Olive plus a gold focus ring.",
+      "html": "<input class=\"ds-input\" type=\"text\" placeholder=\"Item headline\" />",
+      "css": ".ds-input { display: inline-block; font-family: 'Open Sans', sans-serif; font-size: 0.955rem; line-height: 1.4; padding: 3px 4px; margin: 2px; background: #ffffff; color: #1f1f1f; border: 1px solid #dcd5c2; border-radius: 0; box-sizing: border-box; max-width: 100%; transition: border-color 0.12s cubic-bezier(0.5,1,0.89,1), box-shadow 0.12s cubic-bezier(0.5,1,0.89,1); } .ds-input:focus, .ds-input:focus-visible { outline: none; border-color: #a59850; box-shadow: 0 0 0 3px rgba(184, 162, 70, 0.20); }"
+    },
+    {
+      "name": "Details Chip",
+      "kind": "chip",
+      "refersTo": "chip-details",
+      "description": "The pill-shaped expander. Sole rounded primitive in the system. Toggleable affordance.",
+      "html": "<details class=\"ds-details\"><summary>Show advanced</summary><p style=\"font-size:0.955rem;margin:0.5em 0;color:#6a5e22\">Hidden until requested.</p></details>",
+      "css": ".ds-details summary { cursor: pointer; padding: 4px 12px; margin-bottom: 0; display: inline-block; background-color: rgba(255,255,255,0.2); border: solid 1px rgba(26,4,4,0.3); color: #61454A; border-radius: 13px; font-family: 'Open Sans', sans-serif; font-size: 0.955rem; transition: background-color 0.15s cubic-bezier(0.5,1,0.89,1), color 0.15s cubic-bezier(0.5,1,0.89,1); list-style: none; } .ds-details summary::-webkit-details-marker { display: none; } .ds-details summary:after { content: ''; display: inline-block; border: solid 4px transparent; border-top-color: #61454A; margin-left: 6px; transform: translateY(2px); transition: transform 0.15s cubic-bezier(0.5,1,0.89,1); } .ds-details[open] summary:after { transform: translateY(-2px) rotate(180deg); } .ds-details summary:hover { background-color: #d5c2a4; color: #1f1f1f; }"
+    },
+    {
+      "name": "Stats Cell with In-Cell Bar",
+      "kind": "custom",
+      "refersTo": "table-cell",
+      "description": "Numeric table cell with a 3px bar at the bottom encoding the value as length, and HSL-tinted hue swinging red→amber→green with --pct.",
+      "html": "<table class=\"ds-stat-table\"><thead><tr><th>Slice</th><th>Cache %</th></tr></thead><tbody><tr><td>Headlines</td><td class=\"ds-stat-bar ds-stat-cache\" style=\"--pct:82\">82%</td></tr><tr><td>Archive</td><td class=\"ds-stat-bar ds-stat-cache\" style=\"--pct:34\">34%</td></tr></tbody></table>",
+      "css": ".ds-stat-table { border-collapse: collapse; font-variant-numeric: tabular-nums; font-family: 'Open Sans', sans-serif; font-size: 1rem; } .ds-stat-table thead th { padding: 4px 6px; text-align: right; background-color: #d5c2a4; color: rgb(0 0 0 / 80%); font-weight: 400; border-left: solid 1px rgba(255,255,255,0.45); border-top: solid 1px rgba(255,255,255,0.45); } .ds-stat-table tbody td { padding: 2px 6px; text-align: right; white-space: nowrap; line-height: 1.3; } .ds-stat-table tbody td:first-child { text-align: left; background-color: #ffffff; } .ds-stat-table tbody tr:nth-of-type(even) td:first-child { background-color: #f3efe6; } .ds-stat-bar { background-image: linear-gradient(to right, var(--bar, #7a9) calc(var(--pct, 0) * 1%), transparent 0); background-repeat: no-repeat; background-position: left bottom; background-size: 100% 3px; } .ds-stat-cache { --bar: hsl(calc(var(--pct, 0) * 1.2), 60%, 55%); }"
+    },
+    {
+      "name": "Drill-down Link",
+      "kind": "nav",
+      "refersTo": "link-slate",
+      "description": "Inline link inside a table cell or diagnostic card. No underline by default; underlines on hover; inherits the cell's color for in-context use.",
+      "html": "<a class=\"ds-link-drill\" href=\"#\">Headlines slice <small style=\"color:#aaa\">#12349</small></a>",
+      "css": ".ds-link-drill { color: #2F3D99; text-decoration: none; font-family: 'Open Sans', sans-serif; font-size: 1rem; transition: color 0.15s cubic-bezier(0.5,1,0.89,1); } .ds-link-drill:hover { color: #007ed7; text-decoration: underline; } .ds-link-drill:visited { color: #896996; } .ds-link-drill:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(184, 162, 70, 0.20); border-radius: 2px; }"
+    },
+    {
+      "name": "Floating Popover",
+      "kind": "card",
+      "refersTo": "floating-paper",
+      "description": "Dropdown / popover surface. Paper hovering above paper: warm-tinted shadow, near-white fill, no border decoration.",
+      "html": "<div class=\"ds-popover\"><p style=\"margin:0;font-family:'Open Sans',sans-serif;font-size:0.955rem;color:#1f1f1f;\">Filter by slice</p><ul style=\"margin:8px 0 0;padding:0 0 0 18px;font-family:'Open Sans',sans-serif;font-size:0.955rem;color:#6a5e22\"><li>Headlines</li><li>Archive</li><li>Events</li></ul></div>",
+      "css": ".ds-popover { display: inline-block; padding: 12px 16px; background-color: #fbfaf9; border: 1px solid #dcd5c2; border-radius: 6px; box-shadow: 0 14px 36px rgba(60, 50, 20, 0.20); max-width: 280px; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Open Newsroom",
+    "overview": "APC-AA is the back office of a public-interest newsroom that has been running since 1999. Every screen is a layout slug for somebody else's published work; nothing in the chrome competes with the article it is helping to ship. The warm palette is newsprint and stained-pine desks, not Silicon Valley cream. The type sits in a tight 1.05x–1.1x scale because dense reference material is what editors actually read. The H1 is `font-weight: normal` on purpose: nothing in the admin is 'the headline', everything is the work. Aesthetic family is modern app shell calibrated down toward editorial-civic: cleaner type and rhythm than legacy CMS admins, dramatically less ornament than commercial dashboards, data-first throughout. Closer to a well-run public library than a startup.",
+    "keyCharacteristics": [
+      "Warm earth palette (newsprint, sand, brass, olive ink). No cool greys.",
+      "Editorial type density: 13px root, 1.05–1.1 scale, font-weight: normal on H1.",
+      "Square by default. Border-radius is rare and earns its place (chips, dropdowns).",
+      "Flat by default. Shadows are warm-tinted and only appear on floating surfaces or focus.",
+      "Progressive disclosure as identity: clean default surface, full power one click away.",
+      "Vibrant green for *published* (not for 'delight') and warm red-orange for *wasted work* (not 'danger')."
+    ],
+    "rules": [
+      { "name": "The Earth-Only Rule",          "body": "Cool greys are forbidden. Every neutral is tinted warm. If a token wants to lean cool (#f5f5f7, #e0e0e0, blue-grey scales), it is the wrong choice, not a different choice.", "section": "colors" },
+      { "name": "The One Saturated Voice Rule", "body": "Published Green is the only saturated UI color in the chrome. Charts and diagnostic surfaces may use the data-state ramp; nothing else may go saturated.", "section": "colors" },
+      { "name": "The Reserved-Red Rule",        "body": "Stop the Press red (#a02222) and Deadline Orange (#dd6644) are reserved for the data-state palette. Do not co-opt them for generic error/danger UI without a chart-shaped reason.", "section": "colors" },
+      { "name": "The Normal-Weight H1 Rule",    "body": "Page-level H1 is font-weight: 400, never 600 or 700. The page heading announces, it does not shout.", "section": "typography" },
+      { "name": "The Tabular-Numerics Rule",    "body": "Any table or chart cell that carries numeric data MUST set font-variant-numeric: tabular-nums. Column alignment is part of the contract with the operator scanning for outliers.", "section": "typography" },
+      { "name": "The 1.4-Line-Height Rule",     "body": "Line-height is 1.4 everywhere by default. Tighter (1.2) is allowed for ALL-CAPS micro-labels only; looser (1.6+) is allowed for paragraph-form help text inside <details> panels.", "section": "typography" },
+      { "name": "The Flat-By-Default Rule",     "body": "New components ship flat. A shadow is added only when (a) the element floats above the page, (b) it carries focus, or (c) the user has the right to drag/rearrange it. Decorative shadow is forbidden.", "section": "elevation" },
+      { "name": "The Warm-Shadow Rule",         "body": "Every shadow uses warm-tinted color (rgba(60, 50, 20, .X), rgba(184, 162, 70, .X), or a similar sand-brass family). Black shadows read as templated admin chrome — the design family we are not in.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do tint every neutral toward the warm-earth family. Cool greys are wrong, not different.",
+      "Do keep buttons square (border-radius: 0). Rounding a button means you have misread the system.",
+      "Do set font-variant-numeric: tabular-nums on every numeric column or chart cell.",
+      "Do use font-weight: 400 on page-level H1. The page heading announces; it does not shout.",
+      "Do show real numbers. 'Cache hit ratio is 32%, below the 70% threshold.' Not 'Looks like caching could use some love!'",
+      "Do put depth one click away (<details>, drill-down link, tooltip on metric). Never hide information from a curious user; defer it.",
+      "Do use the gold Focus Ring shadow (0 0 0 3px rgba(184, 162, 70, .20)) on new components.",
+      "Do verify long-form translations (Czech, German) before declaring a layout done. Labels can be 1.5x to 2x the English length.",
+      "Do ship vanilla JS and small CSS where the choice exists. APC users include slow-bandwidth regions."
+    ],
+    "donts": [
+      "Don't drift toward SaaS-cliché polish (Linear, Stripe dashboards, Vercel): hyper-polished cards, gradient accents, big hero numbers.",
+      "Don't import a generic Bootstrap admin theme look (AdminLTE, SBAdmin, 'Material Dashboard'): identikit blue-on-white cards.",
+      "Don't swing to dark observability (Grafana, Datadog): cold dark surfaces, neon traces, ops-engineer aesthetic.",
+      "Don't ape AI-app chat (Claude, Cursor): monochrome with one purple accent, soft pillowy shadows.",
+      "Don't use side-stripe borders (border-left: 4px solid X). Full borders, background tints, leading numbers, or nothing.",
+      "Don't use gradient text (background-clip: text + gradient). Single solid color. Emphasis via weight or size.",
+      "Don't add decorative shadow. Shadows belong to floating surfaces, focus states, and drag affordances.",
+      "Don't use #000 or #fff as a token. Press Black (#1f1f1f) and Press Paper (#f3f3f1) tinted toward the brand.",
+      "Don't introduce em dashes in user-facing UI copy. Commas, colons, semicolons, periods, or parentheses.",
+      "Don't add modal dialogs as the first thought. Inline <details>, popovers, and progressive disclosure exhaust their alternatives first.",
+      "Don't ship without verifying prefers-reduced-motion: reduce is respected for any animation longer than 200ms."
+    ]
+  }
+}

@@ -1,0 +1,1195 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Call to an undefined method AA_Object\:\:nexttime\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/AA_Plannedtask.php
+
+		-
+			message: '#^Call to an undefined static method AA_Object\:\:getForm\(\)\.$#'
+			identifier: staticMethod.notFound
+			count: 1
+			path: src/AA_Plannedtask.php
+
+		-
+			message: '#^Method AA_Plannedtask\:\:getModuleTasks\(\) should return array\<AA_Plannedtask\> but returns list\<AA_Object\|null\>\.$#'
+			identifier: return.type
+			count: 1
+			path: src/AA_Plannedtask.php
+
+		-
+			message: '#^PHPDoc tag @implements has invalid value \(InternalExpandInterface\:\:internal_expand\(\)\)\: Unexpected token "\:\:", expected ''\<'' at offset 169 on line 2$#'
+			identifier: phpDoc.parseError
+			count: 1
+			path: src/AA_Plannedtask.php
+
+		-
+			message: '#^Parameter \#2 \$callback of function array_filter expects \(callable\(string\)\: bool\)\|null, ''trim'' given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Cache/CacheStr2find.php
+
+		-
+			message: '#^Constant ENABLE_PAGE_CACHE not found\.$#'
+			identifier: constant.notFound
+			count: 2
+			path: src/Cache/PageCache.php
+
+		-
+			message: '#^If condition is always false\.$#'
+			identifier: if.alwaysFalse
+			count: 1
+			path: src/Cache/PageCache.php
+
+		-
+			message: '#^Strict comparison using \!\=\= between non\-falsy\-string and '''' will always evaluate to true\.$#'
+			identifier: notIdentical.alwaysTrue
+			count: 1
+			path: src/Cache/PageCache.php
+
+		-
+			message: '#^Variable \$_COOKIE in isset\(\) always exists and is not nullable\.$#'
+			identifier: isset.variable
+			count: 1
+			path: src/Cache/PageCache.php
+
+		-
+			message: '#^Binary operation "\." between ''\<br\>'' and array results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: src/Doit/RequestMonitor.php
+
+		-
+			message: '#^Elseif condition is always true\.$#'
+			identifier: elseif.alwaysTrue
+			count: 1
+			path: src/Doit/RequestMonitor.php
+
+		-
+			message: '#^Right side of && is always true\.$#'
+			identifier: booleanAnd.rightAlwaysTrue
+			count: 1
+			path: src/Doit/RequestMonitor.php
+
+		-
+			message: '#^Ternary operator condition is always true\.$#'
+			identifier: ternary.alwaysTrue
+			count: 1
+			path: src/Doit/RequestMonitor.php
+
+		-
+			message: '#^Variable \$alnum might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: src/Doit/RequestMonitor.php
+
+		-
+			message: '#^Variable \$alpha might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: src/Doit/RequestMonitor.php
+
+		-
+			message: '#^Variable \$bool might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: src/Doit/RequestMonitor.php
+
+		-
+			message: '#^Variable \$float might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: src/Doit/RequestMonitor.php
+
+		-
+			message: '#^Variable \$ids might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: src/Doit/RequestMonitor.php
+
+		-
+			message: '#^Variable \$int might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: src/Doit/RequestMonitor.php
+
+		-
+			message: '#^Variable \$string might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: src/Doit/RequestMonitor.php
+
+		-
+			message: '#^Cannot use array destructuring on string\.$#'
+			identifier: offsetAccess.nonArray
+			count: 1
+			path: src/IO/DB/DB_AA.php
+
+		-
+			message: '#^Constant DB_NAME not found\.$#'
+			identifier: constant.notFound
+			count: 2
+			path: src/IO/DB/DB_AA.php
+
+		-
+			message: '#^Constant DB_TYPE not found\.$#'
+			identifier: constant.notFound
+			count: 1
+			path: src/IO/DB/DB_AA.php
+
+		-
+			message: '#^Constructor of class AA\\IO\\DB\\DB_AA has an unused parameter \$connection\.$#'
+			identifier: constructor.unusedParameter
+			count: 1
+			path: src/IO/DB/DB_AA.php
+
+		-
+			message: '#^Method AA\\IO\\DB\\DB_PDO\:\:connect\(\) should return PDO\|false but returns 0\.$#'
+			identifier: return.type
+			count: 1
+			path: src/IO/DB/DB_PDO.php
+
+		-
+			message: '#^Offset ''driver'' on non\-empty\-array on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.offset
+			count: 1
+			path: src/IO/DB/DB_PDO.php
+
+		-
+			message: '#^Offset ''length'' does not exist on array\{name\: string, table\?\: string, native_type\?\: string, len\: 0, flags\: array\<int, string\>, precision\: int\<0, max\>, pdo_type\: 0\|1\|2\|3\|4\|5\|6\|536870912\|1073741824\|2147483648, type\?\: string, \.\.\.\}\.$#'
+			identifier: offsetAccess.notFound
+			count: 1
+			path: src/IO/DB/DB_PDO.php
+
+		-
+			message: '#^Parameter \#2 \$callback of method PDO\:\:sqliteCreateFunction\(\) expects callable\(\)\: mixed, ''_sql_greatest'' given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/IO/DB/DB_PDO.php
+
+		-
+			message: '#^Parameter \#2 \$callback of method PDO\:\:sqliteCreateFunction\(\) expects callable\(\)\: mixed, ''_sql_least'' given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/IO/DB/DB_PDO.php
+
+		-
+			message: '#^Parameter \#2 \$callback of method PDO\:\:sqliteCreateFunction\(\) expects callable\(\)\: mixed, ''_sql_rand'' given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/IO/DB/DB_PDO.php
+
+		-
+			message: '#^Parameter \#2 \$text of method AA_Debug\:\:traceend\(\) expects string, int given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/IO/DB/DB_PDO.php
+
+		-
+			message: '#^Variable \$null might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: src/IO/DB/DB_PDO.php
+
+		-
+			message: '#^Variable \$type might not be defined\.$#'
+			identifier: variable.undefined
+			count: 4
+			path: src/IO/DB/DB_PDO.php
+
+		-
+			message: '#^Call to function is_array\(\) with array will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/IO/Feed.php
+
+		-
+			message: '#^Negated boolean expression is always false\.$#'
+			identifier: booleanNot.alwaysFalse
+			count: 1
+			path: src/IO/Feed.php
+
+		-
+			message: '#^PHPDoc tag @param for parameter \$rss_id with type string is incompatible with native type int\.$#'
+			identifier: parameter.phpDocType
+			count: 1
+			path: src/IO/Feed.php
+
+		-
+			message: '''
+				#^PHPDoc tag @var has invalid value \(\$fire \- write \| test \| display
+				      \- write   \- feed and write the items to the databse
+				      \- test    \- process without write anything to the database
+				      \- display \- only display the data from the feed\)\: Unexpected token "\$fire", expected type at offset 9 on line 1$#
+			'''
+			identifier: phpDoc.parseError
+			count: 1
+			path: src/IO/Feed.php
+
+		-
+			message: '#^Variable \$new_categories might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: src/IO/Feed.php
+
+		-
+			message: '#^Variable \$used_values might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: src/IO/Feed.php
+
+		-
+			message: '#^Variable \$v might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: src/IO/Feed.php
+
+		-
+			message: '#^Call to function is_array\(\) with array will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/IO/Grabber/AARSS.php
+
+		-
+			message: '#^Constant ORG_NAME not found\.$#'
+			identifier: constant.notFound
+			count: 2
+			path: src/IO/Grabber/AARSS.php
+
+		-
+			message: '#^Right side of && is always true\.$#'
+			identifier: booleanAnd.rightAlwaysTrue
+			count: 1
+			path: src/IO/Grabber/AARSS.php
+
+		-
+			message: '#^Variable \$content4id might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: src/IO/Grabber/AARSS.php
+
+		-
+			message: '#^PHPDoc tag @return with type AA\\IO\\Grabber\\AbstractGrabber is not subtype of native type static\(AA\\IO\\Grabber\\AbstractGrabber\)\.$#'
+			identifier: return.phpDocType
+			count: 1
+			path: src/IO/Grabber/AbstractGrabber.php
+
+		-
+			message: '#^Strict comparison using \=\=\= between false and string will always evaluate to false\.$#'
+			identifier: identical.alwaysFalse
+			count: 1
+			path: src/IO/Grabber/AbstractGrabber.php
+
+		-
+			message: '#^Property AA\\IO\\Grabber\\CSV\:\:\$caption \(bool\) does not accept default value of type string\.$#'
+			identifier: property.defaultValue
+			count: 1
+			path: src/IO/Grabber/CSV.php
+
+		-
+			message: '#^Parameter \#2 \$val of method AA_Content\:\:setValue\(\) expects string, \(int\|false\) given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/IO/Grabber/CTK.php
+
+		-
+			message: '#^Parameter \#2 \$val of method AA_Content\:\:setValue\(\) expects string, int given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/IO/Grabber/CTK.php
+
+		-
+			message: '#^Parameter \#2 \$val of method AA_Content\:\:setValue\(\) expects string, int given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/IO/Grabber/FilesFTP.php
+
+		-
+			message: '#^If condition is always true\.$#'
+			identifier: if.alwaysTrue
+			count: 1
+			path: src/IO/Grabber/Form.php
+
+		-
+			message: '#^Strict comparison using \=\=\= between ''add''\|''update'' and ''new'' will always evaluate to false\.$#'
+			identifier: identical.alwaysFalse
+			count: 1
+			path: src/IO/Grabber/Form.php
+
+		-
+			message: '#^Instantiated class iCalFile not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/IO/Grabber/Ical.php
+
+		-
+			message: '#^PHPDoc tag @return with type AA\\IO\\Grabber\\JsonLD is not subtype of native type static\(AA\\IO\\Grabber\\JsonLD\)\.$#'
+			identifier: return.phpDocType
+			count: 1
+			path: src/IO/Grabber/JsonLD.php
+
+		-
+			message: '#^PHPDoc tag @var has invalid value \(\$authdata string\[\] array for auth \[''username''\=\> , ''password''\=\>, ''tokenurl''\=\> \]\)\: Unexpected token "\$authdata", expected type at offset 9 on line 1$#'
+			identifier: phpDoc.parseError
+			count: 1
+			path: src/IO/Grabber/JsonLD.php
+
+		-
+			message: '#^PHPDoc tag @var has invalid value \(\$file string url of the file\)\: Unexpected token "\$file", expected type at offset 9 on line 1$#'
+			identifier: phpDoc.parseError
+			count: 1
+			path: src/IO/Grabber/JsonLD.php
+
+		-
+			message: '#^PHPDoc tag @var has invalid value \(\$token string JWT token\)\: Unexpected token "\$token", expected type at offset 9 on line 1$#'
+			identifier: phpDoc.parseError
+			count: 1
+			path: src/IO/Grabber/JsonLD.php
+
+		-
+			message: '#^Binary operation "\*" between string and 1\.0\|1\.1\|1\.2 results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: src/IO/Grabber/PohodaStocks.php
+
+		-
+			message: '#^Parameter \#2 \$val of method AA_Content\:\:setValue\(\) expects string, float given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/IO/Grabber/PohodaStocks.php
+
+		-
+			message: '#^Parameter \#2 \$val of method AA_Content\:\:setValue\(\) expects string, int given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/IO/Grabber/PohodaStocks.php
+
+		-
+			message: '#^Parameter \#2 \$post_body of method AA\\IO\\Grabber\\XML\:\:__construct\(\) expects null, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/IO/Grabber/SOAP.php
+
+		-
+			message: '#^Cannot call method query\(\) on array\<string\>\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: src/IO/Grabber/SQL.php
+
+		-
+			message: '#^Property AA\\IO\\Grabber\\SQL\:\:\$db \(array\<string\>\) does not accept PDO\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: src/IO/Grabber/SQL.php
+
+		-
+			message: '#^Property AA\\IO\\Grabber\\SQL\:\:\$db \(array\<string\>\) does not accept null\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: src/IO/Grabber/SQL.php
+
+		-
+			message: '#^Parameter \#2 \$unused_use_short_ids of function GetItemContent expects bool, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/IO/Grabber/Slice.php
+
+		-
+			message: '#^PHPDoc tag @var has invalid value \(\$file string url of the file\)\: Unexpected token "\$file", expected type at offset 9 on line 1$#'
+			identifier: phpDoc.parseError
+			count: 1
+			path: src/IO/Grabber/XML.php
+
+		-
+			message: '#^Property AA\\IO\\Grabber\\XML\:\:\$post_body \(string\) does not accept null\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: src/IO/Grabber/XML.php
+
+		-
+			message: '#^If condition is always true\.$#'
+			identifier: if.alwaysTrue
+			count: 1
+			path: src/IO/Grabber/XMLIekis.php
+
+		-
+			message: '#^Parameter \#2 \$val of method AA_Content\:\:setValue\(\) expects string, int\|false given\.$#'
+			identifier: argument.type
+			count: 3
+			path: src/IO/Grabber/XMLIekis.php
+
+		-
+			message: '#^Variable \$t0 might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: src/IO/Grabber/XMLIekis.php
+
+		-
+			message: '#^Variable \$t0a might not be defined\.$#'
+			identifier: variable.undefined
+			count: 4
+			path: src/IO/Grabber/XMLIekis.php
+
+		-
+			message: '#^Variable \$t1 might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: src/IO/Grabber/XMLIekis.php
+
+		-
+			message: '#^Variable \$t1a might not be defined\.$#'
+			identifier: variable.undefined
+			count: 4
+			path: src/IO/Grabber/XMLIekis.php
+
+		-
+			message: '#^Call to an undefined method AA_Content\:\:complete4Insert\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/IO/Saver.php
+
+		-
+			message: '#^Call to an undefined method AA_Content\:\:getItemID\(\)\.$#'
+			identifier: method.notFound
+			count: 3
+			path: src/IO/Saver.php
+
+		-
+			message: '#^Call to an undefined method AA_Content\:\:getSliceID\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/IO/Saver.php
+
+		-
+			message: '#^Call to an undefined method AA_Content\:\:setItemID\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/IO/Saver.php
+
+		-
+			message: '#^Call to an undefined method AA_Content\:\:setSliceID\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/IO/Saver.php
+
+		-
+			message: '#^Call to an undefined method AA_Content\:\:storeItem\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/IO/Saver.php
+
+		-
+			message: '#^Call to an undefined method AA_Content\:\:validate4Update\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/IO/Saver.php
+
+		-
+			message: '#^PHPDoc tag @param has invalid value \(AbstractGrabber grabber          \- provides source for item data\)\: Unexpected token "grabber", expected variable at offset 75 on line 2$#'
+			identifier: phpDoc.parseError
+			count: 1
+			path: src/IO/Saver.php
+
+		-
+			message: '#^PHPDoc tag @return with type AA\\IO\\Saver is not subtype of native type static\(AA\\IO\\Saver\)\.$#'
+			identifier: return.phpDocType
+			count: 1
+			path: src/IO/Saver.php
+
+		-
+			message: '#^Parameter \#2 \$itemcontent of method AA_Transformation\:\:transform\(\) expects ItemContent, AA_Content given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/IO/Saver.php
+
+		-
+			message: '#^Method AA\\Later\\ComputedfieldsItemUpdater\:\:toexecutelater\(\) should return string but returns int\<0, max\>\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Later/ComputedfieldsItemUpdater.php
+
+		-
+			message: '#^Parameter \#1 \$hour of function mktime expects int, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Later/ComputedfieldsUpdater.php
+
+		-
+			message: '#^Parameter \#4 \$month of function mktime expects int\|null, string given\.$#'
+			identifier: argument.type
+			count: 3
+			path: src/Later/ComputedfieldsUpdater.php
+
+		-
+			message: '#^Parameter \#5 \$day of function mktime expects int\|null, string given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Later/ComputedfieldsUpdater.php
+
+		-
+			message: '#^Parameter \#6 \$year of function mktime expects int\|null, string given\.$#'
+			identifier: argument.type
+			count: 4
+			path: src/Later/ComputedfieldsUpdater.php
+
+		-
+			message: '#^Static property AA\:\:\$perm \(AA_Perm\) in isset\(\) is not nullable\.$#'
+			identifier: isset.property
+			count: 1
+			path: src/Later/CronFallback.php
+
+		-
+			message: '#^Class Cvarset referenced with incorrect case\: CVarset\.$#'
+			identifier: class.nameCase
+			count: 2
+			path: src/Later/HitcounterGroup.php
+
+		-
+			message: '#^Parameter \#2 \$data of method AA_Metabase\:\:doInsertMulti\(\) expects array\<array\<string\>\>, list\<array\<string, mixed\>\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Later/HitcounterGroup.php
+
+		-
+			message: '#^Parameter \#3 \$value of method Cvarset\:\:add\(\) expects string, int given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Later/HitcounterGroup.php
+
+		-
+			message: '#^Parameter \#4 \$month of function mktime expects int\|null, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Later/HitcounterGroup.php
+
+		-
+			message: '#^Parameter \#6 \$year of function mktime expects int\|null, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Later/HitcounterGroup.php
+
+		-
+			message: '#^Method AA\\Later\\LogSystemstatus\:\:toexecutelater\(\) should return string but returns bool\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Later/LogSystemstatus.php
+
+		-
+			message: '#^Call to an undefined method AA\\Manageraction\\AbstractManageraction\:\:htmlSettings\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Manager.php
+
+		-
+			message: '#^If condition is always true\.$#'
+			identifier: if.alwaysTrue
+			count: 1
+			path: src/Manager.php
+
+		-
+			message: '#^PHPDoc tag @return with type AA\\Managed is not subtype of native type static\(AA\\Managed\)\.$#'
+			identifier: return.phpDocType
+			count: 8
+			path: src/Manager.php
+
+		-
+			message: '#^PHPDoc tag @return with type mixed is not subtype of native type string\.$#'
+			identifier: return.phpDocType
+			count: 1
+			path: src/Manager.php
+
+		-
+			message: '#^Property itemview\:\:\$from_record \(string\) does not accept \(float\|int\)\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: src/Manager.php
+
+		-
+			message: '#^Call to static method getActionapps\(\) on an unknown class AA_Actionapps\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Manageraction/Central_Linkcheck.php
+
+		-
+			message: '#^Call to static method getActionapps\(\) on an unknown class AA_Actionapps\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Manageraction/Central_Optimize.php
+
+		-
+			message: '#^Ternary operator condition is always true\.$#'
+			identifier: ternary.alwaysTrue
+			count: 1
+			path: src/Manageraction/Manageractions.php
+
+		-
+			message: '#^Call to an undefined method AA\\Managed\:\:getClass\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Manageraction/Object_Delete.php
+
+		-
+			message: '#^If condition is always true\.$#'
+			identifier: if.alwaysTrue
+			count: 1
+			path: src/Manageraction/Object_Delete.php
+
+		-
+			message: '#^Variable \$class in PHPDoc tag @var does not exist\.$#'
+			identifier: varTag.variableNotFound
+			count: 1
+			path: src/Manageraction/Object_Delete.php
+
+		-
+			message: '#^Call to an undefined method AA\\Managed\:\:getClass\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Manageraction/Object_Move2slice.php
+
+		-
+			message: '#^Call to an undefined method AA\\Managed\:\:getTable\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Manageraction/Table_Row_Delete.php
+
+		-
+			message: '#^Variable \$class in PHPDoc tag @var does not exist\.$#'
+			identifier: varTag.variableNotFound
+			count: 1
+			path: src/Manageraction/Table_Row_Delete.php
+
+		-
+			message: '#^Parameter \#2 \$data of method AA_Metabase\:\:doInsert\(\) expects array\<string\>, array given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Optimize/AddEmailTemplatesCronEntry.php
+
+		-
+			message: '#^PHPDoc tag @return with type string is incompatible with native type bool\.$#'
+			identifier: return.phpDocType
+			count: 1
+			path: src/Optimize/AddPolls.php
+
+		-
+			message: '#^Parameter \#2 \$data of method AA_Metabase\:\:doReplace\(\) expects array\<string\>, array\<string, int\|string\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Optimize/AddPolls.php
+
+		-
+			message: '#^Constant DB_NAME not found\.$#'
+			identifier: constant.notFound
+			count: 2
+			path: src/Optimize/Convert2innodb.php
+
+		-
+			message: '#^Constant DB_NAME not found\.$#'
+			identifier: constant.notFound
+			count: 3
+			path: src/Optimize/Convert2utf8mb4.php
+
+		-
+			message: '#^Constant DB_CHARACTER_SET not found\.$#'
+			identifier: constant.notFound
+			count: 2
+			path: src/Optimize/ConvertSliceEncoding.php
+
+		-
+			message: '#^Ternary operator condition is always false\.$#'
+			identifier: ternary.alwaysFalse
+			count: 1
+			path: src/Optimize/ConvertSliceEncoding.php
+
+		-
+			message: '#^Undefined variable\: \$msg$#'
+			identifier: variable.undefined
+			count: 1
+			path: src/Optimize/ConvertSliceEncoding.php
+
+		-
+			message: '#^Constant DB_NAME not found\.$#'
+			identifier: constant.notFound
+			count: 2
+			path: src/Optimize/Convertlatin2Utf8Mb4.php
+
+		-
+			message: '#^PHPDoc tag @return with type string is incompatible with native type bool\.$#'
+			identifier: return.phpDocType
+			count: 1
+			path: src/Optimize/CopyContent.php
+
+		-
+			message: '#^Variable \$deleted_content might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: src/Optimize/CopyItemsFromBackup.php
+
+		-
+			message: '#^Variable \$deleted_item might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: src/Optimize/CopyItemsFromBackup.php
+
+		-
+			message: '#^PHPDoc tag @return with type string is incompatible with native type bool\.$#'
+			identifier: return.phpDocType
+			count: 1
+			path: src/Optimize/CreateUploadDir.php
+
+		-
+			message: '#^Parameter \#2 \$callback of function array_filter expects \(callable\(string\)\: bool\)\|null, ''strlen'' given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Optimize/DbInconsistencyConstants.php
+
+		-
+			message: '#^If condition is always true\.$#'
+			identifier: if.alwaysTrue
+			count: 1
+			path: src/Optimize/FieldDuplicates.php
+
+		-
+			message: '#^Unreachable statement \- code above always terminates\.$#'
+			identifier: deadCode.unreachable
+			count: 1
+			path: src/Optimize/FieldDuplicates.php
+
+		-
+			message: '#^PHPDoc tag @return with type string is incompatible with native type bool\.$#'
+			identifier: return.phpDocType
+			count: 1
+			path: src/Optimize/FixContentColumn.php
+
+		-
+			message: '#^Undefined variable\: \$del_rows$#'
+			identifier: variable.undefined
+			count: 2
+			path: src/Optimize/FixPagecache.php
+
+		-
+			message: '#^Call to function is_array\(\) with array will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 2
+			path: src/Optimize/LdapPermsToSql.php
+
+		-
+			message: '#^Class Cvarset referenced with incorrect case\: CVarset\.$#'
+			identifier: class.nameCase
+			count: 6
+			path: src/Optimize/LdapPermsToSql.php
+
+		-
+			message: '#^Constant AA_ID not found\.$#'
+			identifier: constant.notFound
+			count: 1
+			path: src/Optimize/LdapPermsToSql.php
+
+		-
+			message: '#^Negated boolean expression is always false\.$#'
+			identifier: booleanNot.alwaysFalse
+			count: 2
+			path: src/Optimize/ReadersLogin2id.php
+
+		-
+			message: '#^Constant AA_BASE_DIR not found\.$#'
+			identifier: constant.notFound
+			count: 2
+			path: src/Optimize/RedefineFieldTemplates.php
+
+		-
+			message: '#^Constant AA_HTTP_DOMAIN not found\.$#'
+			identifier: constant.notFound
+			count: 1
+			path: src/Optimize/RedefineFieldTemplates.php
+
+		-
+			message: '#^Constant ERROR_REPORTING_EMAIL not found\.$#'
+			identifier: constant.notFound
+			count: 1
+			path: src/Optimize/RedefineFieldTemplates.php
+
+		-
+			message: '#^Constant AA_ID not found\.$#'
+			identifier: constant.notFound
+			count: 2
+			path: src/Optimize/RedefineLinksTemplates.php
+
+		-
+			message: '#^Parameter \#2 \$data of method AA_Metabase\:\:doReplace\(\) expects array\<string\>, array given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Optimize/RedefineLinksTemplates.php
+
+		-
+			message: '#^Constant AA_BASE_DIR not found\.$#'
+			identifier: constant.notFound
+			count: 2
+			path: src/Optimize/RedefineSlicReaderTemplates.php
+
+		-
+			message: '#^Constant AA_BASE_DIR not found\.$#'
+			identifier: constant.notFound
+			count: 2
+			path: src/Optimize/RedefineSliceNewsTemplates.php
+
+		-
+			message: '#^Constant AA_HTTP_DOMAIN not found\.$#'
+			identifier: constant.notFound
+			count: 1
+			path: src/Optimize/RedefineSliceNewsTemplates.php
+
+		-
+			message: '#^Constant AA_BASE_DIR not found\.$#'
+			identifier: constant.notFound
+			count: 2
+			path: src/Optimize/RedefineSliceNoticiasTemplates.php
+
+		-
+			message: '#^Constant AA_BASE_DIR not found\.$#'
+			identifier: constant.notFound
+			count: 1
+			path: src/Optimize/RedefineViewDiscusTemplates.php
+
+		-
+			message: '#^PHPDoc tag @return with type string is incompatible with native type bool\.$#'
+			identifier: return.phpDocType
+			count: 1
+			path: src/Optimize/RestoreBckTables.php
+
+		-
+			message: '#^PHPDoc tag @return with type string is incompatible with native type bool\.$#'
+			identifier: return.phpDocType
+			count: 1
+			path: src/Optimize/UpdateDbStructure.php
+
+		-
+			message: '#^PHPDoc tag @usage has invalid value \(\(new AA_Aliasgenerator_Constant\)\-\>addAliases\(\(new AA_Aliases\)\-\>addTextAlias\(''_\#ITEM_ID_'',\$for_id\)\)\)\: Unexpected token "AA_Aliasgenerator_Constant", expected ''\)'' at offset 47 on line 2$#'
+			identifier: phpDoc.parseError
+			count: 1
+			path: src/Util/AbstractAliasgenerator.php
+
+		-
+			message: '#^Call to function is_array\(\) with array will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 2
+			path: src/Util/ChangesMonitor.php
+
+		-
+			message: '#^Negated boolean expression is always false\.$#'
+			identifier: booleanNot.alwaysFalse
+			count: 1
+			path: src/Util/ChangesMonitor.php
+
+		-
+			message: '#^Parameter \#1 \$column of method zids\:\:sqlin\(\) expects string, false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Util/ChangesMonitor.php
+
+		-
+			message: '#^Parameter \#3 \$value of method Cvarset\:\:add\(\) expects string, int given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Util/ChangesMonitor.php
+
+		-
+			message: '#^Parameter \#3 \$value of method Cvarset\:\:add\(\) expects string, int\<0, max\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Util/ChangesMonitor.php
+
+		-
+			message: '#^Result of && is always true\.$#'
+			identifier: booleanAnd.alwaysTrue
+			count: 1
+			path: src/Util/ChangesMonitor.php
+
+		-
+			message: '#^Unsafe usage of new static\(\)\.$#'
+			identifier: new.static
+			count: 1
+			path: src/Util/ChangesMonitor.php
+
+		-
+			message: '#^Trait AA\\Util\\DataArrayAccessTrait is used zero times and is not analysed\.$#'
+			identifier: trait.unused
+			count: 1
+			path: src/Util/DataArrayAccessTrait.php
+
+		-
+			message: '#^Call to function is_object\(\) with zids will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/Util/Hitcounter.php
+
+		-
+			message: '#^Class Cvarset referenced with incorrect case\: CVarset\.$#'
+			identifier: class.nameCase
+			count: 2
+			path: src/Util/Hitcounter.php
+
+		-
+			message: '#^Method AA\\Util\\AA_Packtime\:\:factoryFromInt\(\) should return static\(AA\\Util\\AA_Packtime\) but returns AA\\Util\\AA_Packtime\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Util/Hitcounter.php
+
+		-
+			message: '#^Parameter \#3 \$value of method Cvarset\:\:add\(\) expects string, int\<1, max\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Util/Hitcounter.php
+
+		-
+			message: '#^Anonymous function has an unused use \$fmt_int\.$#'
+			identifier: closure.unusedUse
+			count: 1
+			path: src/Util/HitcounterDisplay.php
+
+		-
+			message: '#^Call to function in_array\(\) with arguments ''DURATION'', array\{''HITS'', ''DURATION'', ''SUM''\} and true will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/Util/HitcounterDisplay.php
+
+		-
+			message: '#^Call to function in_array\(\) with arguments ''SUM'', array\{''HITS'', ''DURATION'', ''SUM''\} and true will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/Util/HitcounterDisplay.php
+
+		-
+			message: '#^Parameter \#2 \$params of function StrExp expects array\<string\>, array\<int, float\|int\|string\> given\.$#'
+			identifier: argument.type
+			count: 4
+			path: src/Util/HitcounterDisplay.php
+
+		-
+			message: '#^Method AA\\Util\\Imgfunc\:\:resampleImage\(\) should return false but returns string\.$#'
+			identifier: return.type
+			count: 2
+			path: src/Util/Imgfunc.php
+
+		-
+			message: '#^Ternary operator condition is always true\.$#'
+			identifier: ternary.alwaysTrue
+			count: 1
+			path: src/Util/Imgfunc.php
+
+		-
+			message: '#^Variable \$dst_img might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: src/Util/Imgfunc.php
+
+		-
+			message: '#^Variable \$x might not be defined\.$#'
+			identifier: variable.undefined
+			count: 3
+			path: src/Util/Imgfunc.php
+
+		-
+			message: '#^Variable \$y might not be defined\.$#'
+			identifier: variable.undefined
+			count: 3
+			path: src/Util/Imgfunc.php
+
+		-
+			message: '#^Negated boolean expression is always false\.$#'
+			identifier: booleanNot.alwaysFalse
+			count: 1
+			path: src/Util/JsTriggers.php
+
+		-
+			message: '#^Constant DEFAULT_LANG_INCLUDE not found\.$#'
+			identifier: constant.notFound
+			count: 4
+			path: src/Util/Langs.php
+
+		-
+			message: '#^Ternary operator condition is always true\.$#'
+			identifier: ternary.alwaysTrue
+			count: 2
+			path: src/Util/Langs.php
+
+		-
+			message: '#^Trait AA\\Util\\LastErrTrait is used zero times and is not analysed\.$#'
+			identifier: trait.unused
+			count: 1
+			path: src/Util/LastErrTrait.php
+
+		-
+			message: '#^Call to an undefined method AA_Req\:\:parseUrl\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Util/LibUpdater.php
+
+		-
+			message: '#^Call to an undefined method AA_Req\:\:tryUpdate\(\)\.$#'
+			identifier: method.notFound
+			count: 3
+			path: src/Util/LibUpdater.php
+
+		-
+			message: '#^PHPDoc tag @param references unknown parameter\: \$result$#'
+			identifier: parameter.notFound
+			count: 1
+			path: src/Util/Linkcheck.php
+
+		-
+			message: '#^Variable \$class in PHPDoc tag @var does not exist\.$#'
+			identifier: varTag.variableNotFound
+			count: 1
+			path: src/Util/Paramwizard.php
+
+		-
+			message: '#^Parameter \#5 \$table of method AA\\Util\\Searchfields\:\:add\(\) expects string, false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Util/Searchfields.php
+
+		-
+			message: '#^Trait AA\\Util\\SerializerTrait is used zero times and is not analysed\.$#'
+			identifier: trait.unused
+			count: 1
+			path: src/Util/SerializerTrait.php
+
+		-
+			message: '#^Trait AA\\Util\\SingletonTrait is used zero times and is not analysed\.$#'
+			identifier: trait.unused
+			count: 1
+			path: src/Util/SingletonTrait.php
+
+		-
+			message: '#^Constant AA_ID not found\.$#'
+			identifier: constant.notFound
+			count: 1
+			path: src/Util/UiPrefs.php
+
+		-
+			message: '#^Constant DEFAULT_LANG_INCLUDE not found\.$#'
+			identifier: constant.notFound
+			count: 1
+			path: src/Util/UiPrefs.php
+
+		-
+			message: '#^Parameter \#1 \$hour of function mktime expects int, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Widget/DteWidget.php
+
+		-
+			message: '#^Parameter \#2 \$minute of function mktime expects int\|null, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Widget/DteWidget.php
+
+		-
+			message: '#^Parameter \#3 \$second of function mktime expects int\|null, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Widget/DteWidget.php
+
+		-
+			message: '#^Variable \$link might not be defined\.$#'
+			identifier: variable.undefined
+			count: 2
+			path: src/Widget/FilWidget.php
+
+		-
+			message: '#^Variable \$input_name might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: src/Widget/FldWidget.php
+
+		-
+			message: '#^Ternary operator condition is always false\.$#'
+			identifier: ternary.alwaysFalse
+			count: 2
+			path: src/Widget/GpsWidget.php
+
+		-
+			message: '#^Variable \$input_name might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: src/Widget/MflWidget.php
+
+		-
+			message: '#^Variable \$rows might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: src/Widget/MflWidget.php
+
+		-
+			message: '#^Parameter \#2 \$iid of function Inputform_url expects string, null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Widget/RimWidget.php
+
+		-
+			message: '#^Parameter \#6 \$var of function Inputform_url expects null, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Widget/RimWidget.php
+
+		-
+			message: '#^Variable \$dz_setup_code might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: src/Widget/RimWidget.php
+
+		-
+			message: '#^PHPDoc tag @param references unknown parameter\: \$widget_add$#'
+			identifier: parameter.notFound
+			count: 1
+			path: src/Widget/TxtWidget.php
+
+		-
+			message: '#^PHPDoc tag @param references unknown parameter\: \$widget_add2$#'
+			identifier: parameter.notFound
+			count: 1
+			path: src/Widget/TxtWidget.php
+
+		-
+			message: '#^Variable \$input_name might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: src/Widget/TxtWidget.php
+
+		-
+			message: '#^If condition is always true\.$#'
+			identifier: if.alwaysTrue
+			count: 1
+			path: src/Widget/Widget.php
+
+		-
+			message: '#^Negated boolean expression is always false\.$#'
+			identifier: booleanNot.alwaysFalse
+			count: 1
+			path: src/Widget/Widget.php
+
+		-
+			message: '#^PHPDoc tag @param for parameter \$flags with type string is incompatible with native type array\.$#'
+			identifier: parameter.phpDocType
+			count: 1
+			path: src/Widget/Widget.php
+
+		-
+			message: '#^Parameter \#10 \$example of class AA_Property constructor expects string, int given\.$#'
+			identifier: argument.type
+			count: 10
+			path: src/Widget/Widget.php
+
+		-
+			message: '#^Ternary operator condition is always false\.$#'
+			identifier: ternary.alwaysFalse
+			count: 1
+			path: src/Widget/Widget.php
+
+		-
+			message: '#^Unreachable statement \- code above always terminates\.$#'
+			identifier: deadCode.unreachable
+			count: 1
+			path: src/Widget/Widget.php
+

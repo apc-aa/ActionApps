@@ -1,0 +1,10 @@
+# APC-AA browser support target
+#
+# Matches Baseline Widely Available: features supported in all core browsers
+# (Chrome, Edge, Firefox, Safari) for at least 30 months. "with downstream"
+# also accounts for Chromium-based minority browsers (Samsung Internet, etc.).
+#
+# Native Browserslist syntax — supported by Stylelint, PostCSS, Autoprefixer,
+# cssnano, esbuild, Babel, Lightning CSS. Verify with: npx browserslist
+
+baseline widely available with downstream

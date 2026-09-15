@@ -1,0 +1,36 @@
+parameters:
+    level: 5
+    paths:
+        - src
+    # Per-user cache: the tree is shared between honzama (PHPStorm) and aiclaude
+    # (Claude Code); a shared cache dir hands the other user un-writable
+    # subdirs and PHPStan dies with "Failed to create directory".
+    tmpDir: %env.HOME%/.cache/phpstan-aa
+    excludePaths:
+        - vendor
+    # AA supports PHP 8.2 (composer.json: ">=8.2") but the servers run 8.4 and so
+    # does the CLI here -- without this PHPStan analysed 8.4-only and happily
+    # accepted code that fatals on an 8.2 install. A range reports a symbol
+    # missing in ANY version of it, e.g. json_validate() (8.3+). `max` is the
+    # newest PHP PHPStan knows; raise it when PHP 8.6 lands.
+    # NOTE: the range is not symmetric. A MISSING symbol is reported when it is
+    # missing in any version, but a rule that only exists from some version up
+    # (8.4 deprecations, property hooks) is reported only when it holds across
+    # the WHOLE range -- so widening `max` never adds warnings, it only ever
+    # hides them. For the forward-looking check run phpstan-next.neon, which
+    # pins the newest version.
+    phpVersion:
+        min: 80200
+        max: 80500
+    # Neither dir is in the composer classmap (that is include/ + src/ only), yet
+    # src/ calls into both: module classes AA autoloads through its own map in
+    # include/locsess.php ('sitetree' => modules/site/sitetree.php), and admin
+    # entry points define globals like GetHistoryFields() (admin/se_history.php).
+    # Scanned, not analysed: supplies the declarations without widening `paths`.
+    scanDirectories:
+        - modules
+        - admin
+    reportUnmatchedIgnoredErrors: false
+
+includes:
+    - phpstan-baseline.neon
