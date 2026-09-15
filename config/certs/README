@@ -1,0 +1,3 @@
+Certificates for the data-box (ISDS) client in misc/datovka go here, see misc/datovka/datovka_conf.php
+(myTestCert.crt / myRealCert.crt). The directory is versioned only through this file: git does not keep
+empty directories, and the certificates themselves are per-install and ignored.

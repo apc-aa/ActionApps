@@ -6,6 +6,8 @@
 # per-install configuration
 /include/config.php
 /include/config.php3
+/config/certs/*
+!/config/certs/README
 # editor typings (package.json is versioned, its install is not)
 /node_modules/
 # tool caches
