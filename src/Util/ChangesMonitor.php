@@ -719,7 +719,14 @@ class ChangesMonitor
         $where_sql    = MakeSQLConditions($HISTORY_FIELDS, $conds, 'LIKE', $foo);
         $order_by_sql = MakeSQLOrderBy($HISTORY_FIELDS, $sort, $foo);
 
-        $SQL = "SELECT DISTINCT `change`.id FROM `change`, `item`  WHERE item.id = UNHEX(change.resource_id) AND item.slice_id = " . xpack_id($slice_id) . " AND `change`.type = 'h'";
+        // No DISTINCT: item.id is the primary key and is bound by equality, so the
+        // join yields at most one item row per change row - each change.id can
+        // appear only once. MySQL cannot prove that (the key is bound to an
+        // expression, not a constant), so a DISTINCT here would really build a
+        // temp table over the whole result: measured ~25% slower on 334k rows.
+        // Joining change_record (see below) WOULD multiply the rows - such a
+        // query needs DISTINCT back.
+        $SQL = "SELECT `change`.id FROM `change`, `item`  WHERE item.id = UNHEX(change.resource_id) AND item.slice_id = " . xpack_id($slice_id) . " AND `change`.type = 'h'";
 
         //    $SQL  = "SELECT DISTINCT change.id FROM `change`, change_record WHERE change.id = change_record.change_id AND change.resource_id = '$slice_id' ";
 
