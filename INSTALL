@@ -1,9 +1,21 @@
-$Id$
 To install, see doc/install.html
 
-Directories a running installation does not need. They are in the repository
-because they build or document the shipped code; delete them on a server:
+Getting the code
+----------------
+Git (recommended):   git clone --depth 1 --single-branch --branch dist https://github.com/apc-aa/ActionApps.git apc-aa
+                     update later with:  git pull --ff-only
+Subversion (mirror): svn checkout https://svn.code.sf.net/p/apc-aa/svn/trunk apc-aa
+                     update later with:  svn update
 
-    dev/     build inputs - regenerate files that ship (see dev/README.md)
-    doc/     documentation
-    tests/   PHPUnit test suite
+Both deliver the same runtime-only tree ("dist": vendor/ included, no composer needed on the
+server); the SVN trunk is mirrored from the git dist branch after every change. Keep .git/ and
+.svn/ out of the web server's reach, e.g. Apache:
+    <DirectoryMatch "/\.(git|svn)"> Require all denied </DirectoryMatch>
+Then create include/config.php from include/config.php.default (git installations; SVN
+installations keep the shipped include/config.php shim and put their settings in
+include/config.php3). After every update run the checks in admin -> AA -> Optimize
+(service/sql_update.php) as before.
+
+Developers work on the "main" branch (sources, tests, docs, dev/ build inputs):
+    git clone https://github.com/apc-aa/ActionApps.git && cd ActionApps && composer install
+dev/release/README.md describes how the dist branch and the SVN mirror are produced.

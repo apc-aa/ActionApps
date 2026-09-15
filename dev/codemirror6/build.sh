@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 # Rebuilds javascript/codemirror6.min.js from entry.js.
-# Run only when upgrading CodeMirror - the output is committed to SVN.
+# Run only when upgrading CodeMirror - the output is committed to git.
 #
 # npm install deliberately happens OUTSIDE the working copy: this tree is rsynced
 # to the live aadev server with --delete and has no exclude for node_modules, so a

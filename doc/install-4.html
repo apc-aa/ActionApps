@@ -20,54 +20,55 @@ into some directory. There are two options how to install APC-AA. You
 can either: <br>
 </p>
 <ul>
-  <li>download latest SVN version via Subversion (SVN)</li>
+  <li>clone the current version with git (recommended) or with Subversion (a mirror of the same tree)</li>
   <li>download the latest stable version in zipped format</li>
 </ul>
-<p>Installing the ActionApps via Subversion (SVN) makes it easy to update later. The
-problem is that SVN repository is mainly intended for developers and
-thus always contains latest development version, which doesn't always
-have to be stable, and may contain bugs. On the other hand, you will
-get latest features and known bug fixes. The rule-of-thumb is if you
-need fetures that are currently being developed, than use SVN. If it's
-quite unlikely that you will need to update APC-AA very often, than
-stick on stable releases. </p>
+<p>Installing from git makes it easy to update later: the <code>dist</code> branch of
+<a href="https://github.com/apc-aa/ActionApps">https://github.com/apc-aa/ActionApps</a> carries exactly
+the files a running installation needs (including <code>vendor/</code>; no composer on the server) and
+is rebuilt after every change. The Subversion trunk at SourceForge is a mirror of that branch, so
+existing SVN installations keep working with <code>svn update</code>. Both always contain the latest
+development version, which may contain bugs; if you are unlikely to update often, stick to stable
+releases.</p>
 <p> The exact details will depend on whether your machine is serving
 multiple Virtual Domains and if so, whether ActionApps is to be made
 available to all the domains or not. </p>
 <p>ActionApps can be installed either in some common location, or
 inside one of the Virtual Hosts, the example below assumes that
 ActionApps is installed in a common location, "/home/httpd/" </p>
-<h3><a name="ss4.1.1">4.1.1 Installing via Subversion (SVN) for developers</a></h3>
-<p>Developers should check the <a
- href="https://sourceforge.net/docs/E09">Subversion (Version Control for Source Code)</a> item for an
-alternative. </p>
-<h3><a name="ss4.1.2">4.1.2 Installing via Subversion (SVN) for non-developers</a></h3>
-<p>If you are installing from SVN repository, you must have subversion utility
-installed on your machine. Check: </p>
-<blockquote>
-  <hr>
-  <pre>
-    <code>
-# rpm -q subversion
-# subversion-1.10.2-4.el8.x86_64
-
-    </code>
-  </pre>
-  <hr>
-</blockquote>
-<p> SVN will automatically create the installation directory for you named apc-aa. </p>
+<h3><a name="ss4.1.1">4.1.1 Installing via git</a></h3>
+<p>You need the <code>git</code> command (2.23 or newer). git creates the installation directory for
+you, named apc-aa: </p>
 <blockquote>
   <hr>
   <pre>
     <code>
 # cd /home/httpd/
-# svn co svn://svn.code.sf.net/p/apc-aa/svn/trunk apc-aa
+# git clone --depth 1 --single-branch --branch dist https://github.com/apc-aa/ActionApps.git apc-aa
     </code>
   </pre>
   <hr> </blockquote>
+<p>To update later run <code>git pull --ff-only</code> in that directory. Keep the <code>.git</code>
+directory out of the web server's reach, for example in Apache:
+<code>&lt;DirectoryMatch "/\.(git|svn)"&gt; Require all denied &lt;/DirectoryMatch&gt;</code>.
+Developers who want the sources, tests and documentation clone the <code>main</code> branch instead
+and run <code>composer install</code>; see <code>dev/release/README.md</code> in the repository.</p>
+<h3><a name="ss4.1.2">4.1.2 Installing via Subversion (SVN)</a></h3>
+<p>The SVN trunk is a mirror of the git <code>dist</code> branch. You must have the subversion
+utility installed on your machine; SVN creates the installation directory for you, named apc-aa: </p>
+<blockquote>
+  <hr>
+  <pre>
+    <code>
+# cd /home/httpd/
+# svn checkout https://svn.code.sf.net/p/apc-aa/svn/trunk apc-aa
+    </code>
+  </pre>
+  <hr> </blockquote>
+<p>To update later run <code>svn update</code> in that directory.</p>
 <h3><a name="ss4.1.3">4.1.3 Installing the stable release via FTP</a></h3>
-<p>If you want to install the latest stable version rather than the one
-from SVN, download it from <a
+<p>If you want to install the latest stable version rather than the current one
+from git or SVN, download it from <a
  href="https://sourceforge.net/projects/apc-aa/">https://sourceforge.net/projects/apc-aa/</a>
 to the hard drive (let's say to <code>/tmp</code>) and than untar </p>
 <blockquote>
