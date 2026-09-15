@@ -49,8 +49,13 @@ final class TaskProgress
      *  because a truncated read is a biased one and a sampled read is not. */
     private const TARGET_ROWS = 20000;
 
-    /** Task types listed one by one under the table. */
+    /** Task families listed one by one under the table. */
     private const BREAKDOWN_ROWS = 12;
+
+    /** Families that count in the queue time but never vote: their duration is
+     *  mostly a remote server's (fetching a feed, talking to SMTP), so a move of
+     *  theirs says nothing about AA. */
+    public const NETWORK_BOUND = ['Importer', 'AA_Mail'];
 
     /** The whole panel, or a short explanation when there is nothing to compare. */
     public static function render(): string
@@ -118,7 +123,7 @@ final class TaskProgress
 
         $runs = [];
         foreach ($rows as $row) {
-            $task = self::taskName((string) $row['selector']);
+            $task = self::taskFamily((string) $row['selector']);
             // sprintf('%.3g') can write 1.23e+3 for a long task; (float) reads that, a
             // SQL CAST would have stopped at 1.23.
             $secs = (float) $row['secs'];
@@ -137,21 +142,18 @@ final class TaskProgress
     }
 
     /**
-     * The stable name of a task, which is not quite what the log stores.
+     * The family a run belongs to: the class before the first colon of the selector,
+     * so `Importer:feed&id=5&type=APC:Obj` is `Importer`, with every other feed.
      *
-     * AA_Log::selector() serializes an AA_Logentry_Obj reversed, so the same task
-     * is written as `HitcounterUpdate` by an older AA and `HitcounterUpdate::Obj`
-     * by a newer one. That suffix is a serialization artifact, not part of the
-     * task's identity, and taking it at face value splits every task in two at the
-     * upgrade - which is exactly the moment this panel exists to measure across.
+     * One family is one cohort member. Counted selector by selector, the feeds of a
+     * production install were 194 of its ~200 "tasks": the cohort measured the
+     * internet and outvoted everything AA does itself. The `::Obj` suffix a newer
+     * AA writes (AA_Log::selector() serializes an AA_Logentry_Obj reversed) falls
+     * off with the rest, so an upgrade does not split a task in two either.
      */
-    public static function taskName(string $selector): string
+    public static function taskFamily(string $selector): string
     {
-        $selector = trim($selector);
-        if (str_ends_with($selector, ':Obj')) {
-            $selector = rtrim(substr($selector, 0, -4), ':');
-        }
-        return $selector;
+        return trim(explode(':', $selector, 2)[0]);
     }
 
     /**
@@ -195,7 +197,7 @@ final class TaskProgress
         // read as the whole queue getting faster.
         $cohort = [];
         foreach ($medians as $task => $windows) {
-            if (count($windows) < $count || $baselines[$task] <= 0) {
+            if (count($windows) < $count || $baselines[$task] <= 0 || in_array($task, self::NETWORK_BOUND, true)) {
                 continue;
             }
             $enough = true;
@@ -291,7 +293,7 @@ final class TaskProgress
     private static function renderTable(array $summary): string
     {
         $h  = ProgressPanel::head(
-            \safe(sprintf(\_m('Same %d task types in every row, across the whole install.'), count($summary['cohort']))),
+            \safe(sprintf(\_m('Same %d task families in every row, across the whole install. Imports and mail count in the queue time only: their duration is the remote server\'s.'), count($summary['cohort']))),
             \_m('Lower is faster. A change is highlighted only when most tasks moved the same way.'),
         );
         $h .= ProgressPanel::tableOpen([
@@ -380,7 +382,7 @@ final class TaskProgress
         uasort($moves, static fn($a, $b) => abs($b[0]) <=> abs($a[0]));
 
         $h  = '<details class="aa-ver-trend">';
-        $h .= '<summary>' . \safe(\_m('Which tasks moved, newest window against the one before')) . '</summary>';
+        $h .= '<summary>' . \safe(\_m('Which task families moved, newest window against the one before')) . '</summary>';
         $h .= ProgressPanel::tableOpen([
             [\_m('Task')],
             [\_m('Before')],

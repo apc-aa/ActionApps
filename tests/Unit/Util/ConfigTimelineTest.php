@@ -47,10 +47,12 @@ namespace Tests\Unit\Util {
             require_once __DIR__ . '/../Legacy/fixtures/store_fixtures.php';
         }
 
-        /** A SYS_STAT params string as LogSystemstatus writes it. */
-        private static function sys(string $tree, string $rev, string $php = '8.2.33', string $db = '10.11.19-MariaDB-log/DB_PDO'): string
+        /** A SYS_STAT params string as LogSystemstatus writes it. No trailing field
+         *  without $server, which is how a row from before that field looks. */
+        private static function sys(string $tree, string $rev, string $php = '8.2.33', string $db = '10.11.19-MariaDB-log/DB_PDO', string $mem = '128318 MB', string $server = ''): string
         {
-            return "Sys:2026.6:$tree ($rev):$php:$db:128318 MB:AMD Ryzen 9 5950X 16-Core Processor";
+            $row = "Sys:2026.6:$tree ($rev):$php:$db:$mem:AMD Ryzen 9 5950X 16-Core Processor";
+            return $server === '' ? $row : "$row:$server";
         }
 
         /** @param list<array{int,string}> $rows [time, params] */
@@ -222,6 +224,7 @@ namespace Tests\Unit\Util {
             self::assertCount(2, $intervals, 'the one-day window between the 27th and the 28th is not measurable');
             self::assertSame(self::day('2026-05-29'), $intervals[1]['from']);
             self::assertSame(['5242M', '5245M', '5258M'], array_column($intervals[1]['changes'], 'tree'));
+            self::assertNull($intervals[1]['running'], 'what the row before it ran: nothing, the dropped windows are this row');
         }
 
         public function testTheNewestWindowIsKeptEvenWhenItIsStillShort(): void
@@ -292,8 +295,106 @@ namespace Tests\Unit\Util {
             self::assertSame($t('2026-09-07 06:00:00'), $fri['measure_to']);
             self::assertSame($t('2026-09-07 09:00:00'), $mon['measure_from'], 'the hour the change cut through is not measured');
             self::assertSame(1.0, $tue['days'], 'a full day of 24 hours');
-            self::assertSame($t('2026-09-09 11:48:08'), $today['from'], 'the short window of the morning folds into the newest');
+            self::assertSame($t('2026-09-09 09:24:07'), $today['from'], 'the morning release opens the newest window; the noon one is listed inside it');
             self::assertTrue($today['short']);
+        }
+
+        public function testABurstOfReleasesStillGetsARowADay(): void
+        {
+            // Five releases in 44 hours on a live install. Read strictly, only the first
+            // of them has a day of its own, and the other four would fold into the window
+            // after them: two days of development shown as one row naming five revisions.
+            $t = static fn(string $when) => (int) strtotime($when);
+            $changes = self::fold([
+                [$t('2026-09-07 23:46:06'), self::sys('5348M', '5345')],
+                [$t('2026-09-09 15:46:02'), self::sys('5348#:5363M', '5345')],   // a mixed-revision tree; the log escapes its colon
+                [$t('2026-09-10 06:44:12'), self::sys('5364M', '5345')],
+                [$t('2026-09-11 00:44:29'), self::sys('5378M', '5365')],
+                [$t('2026-09-11 09:26:48'), self::sys('5379M', '5365')],
+                [$t('2026-09-11 11:52:02'), self::sys('5382M', '5365')],
+            ]);
+
+            $intervals = ConfigTimeline::buildIntervals($changes, self::day('2026-09-01'), $t('2026-09-14 09:35:00'), ConfigTimeline::MIN_SPAN, self::day('2026-09-07'));
+
+            $trees = array_map(static fn(array $i) => array_column($i['changes'], 'tree'), $intervals);
+            self::assertSame([['5348M'], ['5348:5363M', '5364M'], ['5378M', '5379M', '5382M'], []], array_slice($trees, -4));
+
+            [, $second, $third, $rest] = array_slice($intervals, -4);
+            self::assertSame($t('2026-09-09 15:46:02'), $second['from'], 'the day opens at the release that could not have a day of its own');
+            self::assertSame($t('2026-09-10 15:46:02'), $second['to'], 'and runs for exactly a day, the release inside it included');
+            self::assertSame('5348M', $second['running']['tree']);
+            self::assertSame($t('2026-09-10 15:46:02'), $third['from'], 'the next day opens at the cut, not at a release');
+            self::assertSame($t('2026-09-11 15:46:02'), $third['to']);
+            self::assertFalse($third['short']);
+            self::assertSame('5364M', $third['running']['tree'], 'in force when it opened: the last release of the day before');
+            self::assertSame($t('2026-09-11 15:46:02'), $rest['from'], 'what is left runs the last release, cleanly');
+            self::assertSame('5382M', $rest['running']['tree']);
+        }
+
+        public function testDiffFallsBackToTheUtilPhpRevisionWhenTheTreeDidNotMove(): void
+        {
+            // An rsync-synced checkout: svnversion has said 3919:5208M for a year,
+            // while util.php moved with every release.
+            $before = self::fold([[1000, self::sys('3919#:5208M', '5314')]])[0];
+            $after  = self::fold([[2000, self::sys('3919#:5208M', '5332')]])[0];
+
+            self::assertSame(['util.php r5332'], ConfigTimeline::describeDiff([$after], $before));
+        }
+
+        public function testDiffNamesAMemoryChange(): void
+        {
+            $before = self::fold([[1000, self::sys('5348M', '5345')]])[0];
+            $after  = self::fold([[2000, self::sys('5348M', '5345', mem: '256000 MB')]])[0];
+
+            self::assertSame(['memory 256000 MB'], ConfigTimeline::describeDiff([$after], $before));
+        }
+
+        public function testServerSettingsReadShortAndRoundTrip(): void
+        {
+            $variables = ['INNODB_FLUSH_LOG_AT_TRX_COMMIT' => '1', 'SYNC_BINLOG' => '1', 'LOG_BIN_COMPRESS' => 'OFF', 'INNODB_DOUBLEWRITE' => 'OFF', 'INNODB_BUFFER_POOL_SIZE' => '42949672960', 'max_connections' => '350'];
+
+            self::assertSame('f1 s1 c0 d0 b40G', ConfigTimeline::encodeServer($variables));
+            self::assertSame('b1536M', ConfigTimeline::encodeServer(['innodb_buffer_pool_size' => '1610612736']));
+            self::assertSame('', ConfigTimeline::encodeServer([]));
+            self::assertSame(
+                ['innodb_flush_log_at_trx_commit' => '1', 'sync_binlog' => '1', 'log_bin_compress' => '0', 'innodb_doublewrite' => '0', 'innodb_buffer_pool_size' => '40G'],
+                ConfigTimeline::decodeServer('f1 s1 c0 d0 b40G'),
+            );
+        }
+
+        public function testAChangedServerSettingIsAChangeAndIsNamed(): void
+        {
+            $changes = self::fold([
+                [1000, self::sys('5348M', '5345')],   // from before the field existed
+                [2000, self::sys('5348M', '5345', server: 'f1 s1 c0 d0 b40G')],
+                [3000, self::sys('5348M', '5345', server: 'f2 s0 c1 d0 b40G')],
+                [4000, self::sys('5348M', '5345', server: 'f2 s0 c1 d0 b40G')],
+            ]);
+
+            // The first row carrying settings is not a deployment: it only says what the
+            // configuration already running had been on, and is folded into it.
+            self::assertCount(2, $changes);
+            self::assertSame(1000, $changes[0]['time']);
+            self::assertSame('f1 s1 c0 d0 b40G', $changes[0]['server']);
+            self::assertSame(
+                ['innodb_flush_log_at_trx_commit 1 → 2', 'sync_binlog 1 → 0', 'log_bin_compress 0 → 1'],
+                ConfigTimeline::describeDiff([$changes[1]], $changes[0]),
+            );
+        }
+
+        public function testARowWithoutServerSettingsDoesNotUnsetThem(): void
+        {
+            // Two trees on one database, one of them an older AA that writes the row
+            // without the field: the rows alternate, the configuration does not.
+            $changes = self::fold([
+                [1000, self::sys('5348M', '5345', server: 'f1 s1 c0 d0 b40G')],
+                [2000, self::sys('5348M', '5345')],
+                [3000, self::sys('5348M', '5345', server: 'f1 s1 c0 d0 b40G')],
+                [4000, self::sys('5348M', '5345')],
+            ]);
+
+            self::assertCount(1, $changes);
+            self::assertSame('f1 s1 c0 d0 b40G', $changes[0]['server']);
         }
 
         public function testAWindowOfSeveralDaysIsMeasuredOverItsFreshestWholeDays(): void

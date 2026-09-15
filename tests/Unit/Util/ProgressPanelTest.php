@@ -141,6 +141,21 @@ namespace Tests\Unit\Util {
             self::assertStringContainsString('15 h', $cells);
         }
 
+        public function testAWindowOpenedAtACutSaysUnchanged(): void
+        {
+            // The day after a burst of releases: no release of its own, it measures the
+            // last one cleanly. "first window" would be wrong, and an empty cell unclear.
+            $previous          = self::interval('2026-09-10 15:46:02', '2026-09-11 15:46:02', (int) strtotime('2026-09-11 11:52:02'), true);
+            $window            = self::interval('2026-09-11 15:46:02', '2026-09-14 09:35:00', 0, true);
+            $window['running'] = $previous['changes'][0];
+
+            $cells = ProgressPanel::whenCells($window, $previous, 'tooltip');
+
+            self::assertStringContainsString('unchanged', $cells);
+            self::assertStringNotContainsString('first window', $cells);
+            self::assertSame($previous['changes'][0], ProgressPanel::lastChange($window), 'the configuration it runs is the one in force when it opened');
+        }
+
         public function testALengthReadsInTheUnitThatFitsIt(): void
         {
             self::assertSame('40 min', ProgressPanel::spanLabel(40 * 60));

@@ -56,6 +56,13 @@ class CheckEnvironment extends AbstractOptimize
             _m('Unchanged since')  => date('Y-m-d H:i', $last['time']),
             _m('Recorded changes') => (string) count($changes),
         ]];
+        if ($last['server'] !== '') {
+            $settings = [];
+            foreach (ConfigTimeline::decodeServer($last['server']) as $name => $value) {
+                $settings[] = "$name=$value";
+            }
+            $evidence[0][_m('Server settings')] = safe(implode(', ', $settings));
+        }
         return [new Finding(Finding::INFO, _m('AA %1 (%2), PHP %3, %4; unchanged since %5', [$last['aa'], $svn, $last['php'], $last['db'], date('Y-m-d', $last['time'])]), since: $last['time'], evidence: $evidence, links: [_m('Log rows') => AA_Log::getAdminUrl('SYS_STAT', 'basic')], key: 'environment')];
     }
 }

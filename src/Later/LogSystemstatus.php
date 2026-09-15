@@ -46,10 +46,42 @@ class LogSystemstatus implements LaterInterface
      */
     public function toexecutelater($params = []): string
     {
-        $last = AA_Log::getLastLogEvents('SYS_STAT', 'basic');
-        $info = $this->getSystemInfo();
+        $last  = AA_Log::getLastLogEvents('SYS_STAT', 'basic');
+        $info  = $this->getSystemInfo();
         $info['svn'] = self::svnField($info['svn'], $last['params'] ?? '');
-        return AA_Log::writeIfChanged('SYS_STAT', 'basic', new AA_Logentry_Sys($info));
+        $entry = self::fitted(new AA_Logentry_Sys($info));
+        if (self::sameButForServer($last['params'] ?? '', $entry)) {
+            return '';   // what writeIfChanged()'s "nothing new" reads as once cast to string
+        }
+        return AA_Log::writeIfChanged('SYS_STAT', 'basic', $entry);
+    }
+
+    /** Whether the last row is this very configuration with only the server
+     *  settings missing: written by an older AA sharing the database, or trimmed
+     *  to fit. Writing ours on top would make the two alternate every ten minutes,
+     *  a row each, for ever (LogCleanup keeps SYS_STAT) - the tree version used to. */
+    public static function sameButForServer(string $last_params, AA_Logentry_Sys $entry): bool
+    {
+        if ($last_params === '' || $entry->server === '') {
+            return false;
+        }
+        $last = AA_Logentry::factoryByString($last_params);
+        if (!($last instanceof AA_Logentry_Sys) || $last->server !== '') {
+            return false;
+        }
+        $last->server = $entry->server;
+        return $last->serializeToString() === $entry->serializeToString();
+    }
+
+    /** The entry with its server settings left out when the row would not fit
+     *  log.params: they are the one optional field, and a cut token would not
+     *  read back. Whole, so the row is the same every run and does not flap. */
+    public static function fitted(AA_Logentry_Sys $entry): AA_Logentry_Sys
+    {
+        if (strlen($entry->serializeToString()) > AA_Logentry::PARAMS_MAX) {
+            $entry->server = '';
+        }
+        return $entry;
     }
 
     /** "5378M (5365)": the tree's svnversion plus the revision of util.php.
@@ -85,6 +117,10 @@ class LogSystemstatus implements LaterInterface
             'db' => DB_AA::select1('ver', 'SELECT VERSION() as ver') . '/' . DB_AA::getDbType(),
             'mem' => trim(shell_exec("free -m | awk 'NR==2{print $2 \" MB\"}'")),
             'cpu' => trim(str_replace('Model name:', '', shell_exec("lscpu | grep 'Model name:'"))),
+            // The database settings that decide what a commit and a read cost; the
+            // PHP side is not read here on purpose - this runs under the CLI, whose
+            // opcache and limits are not the web server's.
+            'server' => ConfigTimeline::encodeServer(DB_AA::select(['Variable_name' => 'Value'], 'SHOW GLOBAL VARIABLES')),
         ];
         //'load' => sys_getloadavg()[1] ?? 'N/A',            // 5 min avg
         //'memory_usage' => memory_get_usage(true) . '/' . ini_get('memory_limit'),

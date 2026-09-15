@@ -30,7 +30,13 @@ use AA_Logentry_Sys;
  *  - hit_archive rows older than a week are grouped per day and carry the
  *    day's midnight as their timestamp (AA\Later\HitcounterGroup), so such a
  *    day cannot be split. A change on it invalidates the whole calendar day,
- *    and buildIntervals() drops it. Within the last week it can cut exactly.
+ *    and buildIntervals() drops it. Within the last week it can cut exactly,
+ *    and a burst of deployments there still gets a row a day: a window that
+ *    cannot reach MIN_SPAN before the next change runs for MIN_SPAN anyway and
+ *    names every change that landed inside it.
+ *
+ * The row also carries a few server settings (SERVER_VARS), so that a change
+ * of the database configuration opens a window like a release does.
  */
 final class ConfigTimeline
 {
@@ -38,9 +44,71 @@ final class ConfigTimeline
     public const DAY = 86400;
 
     /** The shortest window worth measuring: a day, so that it holds every hour of
-     *  one (see measuredSpan()). A shorter one is dropped and its deployments are
-     *  reported with the next window's, which keeps the table at a row a day at most. */
+     *  one (see measuredSpan()). On whole-day data a shorter one is dropped and its
+     *  deployments are reported with the next window's; on exact data it is
+     *  stretched to this length instead (see buildIntervals()). */
     public const MIN_SPAN = self::DAY;
+
+    /**
+     * Server settings the SYS_STAT row keeps, token letter => global variable.
+     * Chosen for what moves AA's speed and changes without any AA release: the
+     * first four decide what a commit costs (a write is ~25x a read with flush=1
+     * and sync_binlog=1), the buffer pool decides what a read costs. Letters,
+     * because log.params is 128 bytes and the row is 104 of them already;
+     * LogSystemstatus drops the whole field when it does not fit.
+     */
+    public const SERVER_VARS = [
+        'f' => 'innodb_flush_log_at_trx_commit',
+        's' => 'sync_binlog',
+        'c' => 'log_bin_compress',
+        'd' => 'innodb_doublewrite',
+        'b' => 'innodb_buffer_pool_size',
+    ];
+
+    /**
+     * The server settings as the SYS_STAT row stores them: "f1 s1 c0 d0 b40G".
+     * ON/OFF become 1/0 and byte sizes G or M, so the field stays short and stable.
+     *
+     * @param array<string,string> $variables  variable name => value, as SHOW GLOBAL VARIABLES lists them
+     */
+    public static function encodeServer(array $variables): string
+    {
+        $variables = array_change_key_case($variables, CASE_LOWER);
+        $parts     = [];
+        foreach (self::SERVER_VARS as $letter => $name) {
+            if (!isset($variables[$name])) {
+                continue;
+            }
+            $value = strtoupper(trim((string) $variables[$name]));
+            if ($value === 'ON') {
+                $value = '1';
+            } elseif ($value === 'OFF') {
+                $value = '0';
+            } elseif (ctype_digit($value) && (int) $value >= (1 << 20)) {
+                $bytes = (int) $value;
+                $value = $bytes % (1 << 30) === 0 ? intdiv($bytes, 1 << 30) . 'G' : intdiv($bytes, 1 << 20) . 'M';
+            }
+            $parts[] = $letter . $value;
+        }
+        return implode(' ', $parts);
+    }
+
+    /**
+     * encodeServer() read back.
+     *
+     * @return array<string,string> variable name => value
+     */
+    public static function decodeServer(string $server): array
+    {
+        $out = [];
+        foreach (preg_split('/\s+/', trim($server), -1, PREG_SPLIT_NO_EMPTY) ?: [] as $token) {
+            $name = self::SERVER_VARS[$token[0]] ?? null;
+            if ($name !== null) {
+                $out[$name] = substr($token, 1);
+            }
+        }
+        return $out;
+    }
 
     /**
      * Every recorded configuration change, oldest first, one entry per actual
@@ -50,7 +118,7 @@ final class ConfigTimeline
      * buildIntervals() bounds it anyway, and a constant argument is what lets both
      * panels on a page share one read instead of each doing its own.
      *
-     * @return list<array{time:int,aa:string,tree:string,rev:string,php:string,db:string,mem:string,cpu:string}>
+     * @return list<array{time:int,aa:string,tree:string,rev:string,php:string,db:string,mem:string,cpu:string,server:string}>
      */
     public static function getChanges(): array
     {
@@ -70,12 +138,13 @@ final class ConfigTimeline
      * without a database.
      *
      * @param  list<array{time:mixed,params:mixed}> $rows  oldest first
-     * @return list<array{time:int,aa:string,tree:string,rev:string,php:string,db:string,mem:string,cpu:string}>
+     * @return list<array{time:int,aa:string,tree:string,rev:string,php:string,db:string,mem:string,cpu:string,server:string}>
      */
     public static function foldChanges(array $rows): array
     {
         $changes     = [];
         $last_tree   = '';
+        $last_server = '';
         $last_finger = null;
         foreach ($rows as $row) {
             $change = self::parse((int) $row['time'], (string) $row['params'], $last_tree);
@@ -83,15 +152,29 @@ final class ConfigTimeline
                 continue;
             }
             $last_tree = $change['tree'];
-            $finger    = self::fingerprint($change);
+            // A row without server settings (an older AA sharing the database, or a
+            // row too long to hold them) does not say they changed: the last known stand.
+            if ($change['server'] === '') {
+                $change['server'] = $last_server;
+            }
+            $last_server = $change['server'];
+            $finger      = self::fingerprint($change);
             if ($finger === $last_finger) {
                 continue;   // the same configuration logged again - not a change
+            }
+            $count = count($changes);
+            // The first row carrying server settings only says what the configuration
+            // already running had been on all along: known now, not changed.
+            if ($count > 0 && $changes[$count - 1]['server'] === '' && $change['server'] !== ''
+                && self::fingerprint(['server' => ''] + $change) === self::fingerprint($changes[$count - 1])) {
+                $changes[$count - 1]['server'] = $change['server'];
+                $last_finger = $finger;
+                continue;
             }
             // A, then B, then A again within a day: B never replaced A. Two installs
             // sharing one database write their own SYS_STAT rows into it and the two
             // series interleave, which without this reads as a deployment every few
             // minutes. A configuration that stood for a day is kept whatever follows.
-            $count = count($changes);
             if ($count >= 2
                 && self::fingerprint($changes[$count - 2]) === $finger
                 && ($change['time'] - $changes[$count - 1]['time']) < self::DAY) {
@@ -117,92 +200,122 @@ final class ConfigTimeline
      * The newest window is always listed, however short: it is what is running
      * now, and flagged `short` until it has run for $min_span.
      *
+     * On exact data a window that would end before $min_span, because the next
+     * change comes sooner, runs for $min_span anyway: every change inside it is
+     * listed with it, and the window after it opens at that cut with no change
+     * of its own (`running` says which configuration it measures). A day with
+     * five releases is then one row naming five revisions, and the day after it
+     * a clean row of the last one, instead of both days folding into one row.
+     *
      * Only part of a window is measured, `measure_from` to `measure_to`: its
      * freshest whole days, see measuredSpan(). `days` is the length of that part.
      *
      * @param  list<array<string,mixed>> $changes     from getChanges(), oldest first
      * @param  int      $from        start of the measured span
      * @param  int      $to          end of the measured span (exclusive)
-     * @param  int      $min_span    seconds; a shorter window is dropped and its deployments carried into the next one
+     * @param  int      $min_span    seconds; a shorter window is stretched (exact data) or dropped with its deployments carried into the next one (whole-day data)
      * @param  int|null $exact_from  where data with exact times starts, see above; null = nowhere
-     * @return list<array{from:int,to:int,span:int,measure_from:int,measure_to:int,days:float,exact:bool,changes:list<array<string,mixed>>,short:bool}>
+     * @return list<array{from:int,to:int,span:int,measure_from:int,measure_to:int,days:float,exact:bool,changes:list<array<string,mixed>>,running:?array<string,mixed>,short:bool}>
+     *         `changes` are the deployments inside the window, `running` the one in force when it opened
      */
     public static function buildIntervals(array $changes, int $from, int $to, int $min_span = self::MIN_SPAN, ?int $exact_from = null): array
     {
-        $window_start = self::dayStart($from);
-        if ($to <= $window_start) {
+        $start = self::dayStart($from);
+        if ($to <= $start) {
             return [];
         }
         $exact_from ??= PHP_INT_MAX;
 
-        // The configuration in force when the window opens, plus every change inside it.
-        $prior  = null;
-        $inside = [];
+        // The configuration in force when the period opens, and every change inside it.
+        $running = null;
+        $queue   = [];
         foreach ($changes as $change) {
             if ($change['time'] >= $to) {
                 break;
             }
-            if ($change['time'] < $window_start) {
-                $prior = $change;
+            if ($change['time'] < $start) {
+                $running = $change;
                 continue;
             }
-            $inside[] = $change;
+            $queue[] = $change;
         }
 
-        // One candidate window per configuration: the leading one carries whatever
-        // was already running, each further one starts at its change, or the day after.
-        $candidates = [['start' => $window_start, 'exact' => false, 'changes' => $prior ? [$prior] : []]];
-        foreach ($inside as $change) {
-            $exact = $change['time'] >= $exact_from;
-            $candidates[count($candidates) - 1]['end'] = $exact ? $change['time'] : self::dayStart($change['time']);
-            $candidates[] = [
-                'start'   => $exact ? $change['time'] : self::nextDayStart($change['time']),
-                'exact'   => $exact,
-                'changes' => [$change],
-            ];
-        }
-        $candidates[count($candidates) - 1]['end'] = $to;
-
-        // A window too short to measure contributes nothing; its deployments are
-        // carried into the next window, which is the first one that can show them.
+        // The leading window carries whatever was already running; each further one
+        // opens at its change, the day after it on whole-day data, or at a cut.
         $intervals = [];
-        $carried   = [];
-        $last      = count($candidates) - 1;
-        foreach ($candidates as $i => $candidate) {
-            $span           = max(0, $candidate['end'] - $candidate['start']);
-            $window_changes = array_merge($carried, $candidate['changes']);
-            [$measure_from, $measure_to] = self::measuredSpan($candidate['start'], $candidate['start'] + $span, $candidate['exact']);
+        $carried   = [];   // deployments of windows too short to measure, named with the next one
+        $window    = ['start' => $start, 'exact' => false, 'changes' => $running ? [$running] : []];
+        while (true) {
+            $next_change = $queue[0] ?? null;
+            $exact       = $next_change !== null && $next_change['time'] >= $exact_from;
+            // The window ends at the next change, or - on whole-day data, where the change
+            // day belongs to neither window - at the midnight before it.
+            $end = match (true) {
+                $next_change === null => $to,
+                $exact                => $next_change['time'],
+                default               => self::dayStart($next_change['time']),
+            };
+
+            $next_window = null;
+            if ($next_change !== null && $window['start'] >= $exact_from && $end - $window['start'] < $min_span) {
+                // Exact data and the next change comes too soon: the window runs for
+                // $min_span anyway and reports every change that landed inside it.
+                $end = min($to, $window['start'] + $min_span);
+                while ($queue && $queue[0]['time'] < $end) {
+                    $window['changes'][] = array_shift($queue);
+                }
+                if ($end < $to) {
+                    $next_window = ['start' => $end, 'exact' => true, 'changes' => []];
+                }
+            } elseif ($next_change !== null) {
+                array_shift($queue);
+                $opens       = $exact ? $next_change['time'] : self::nextDayStart($next_change['time']);
+                $next_window = ['start' => $opens, 'exact' => $exact, 'changes' => [$next_change]];
+            }
+
+            $span           = max(0, $end - $window['start']);
+            $window_changes = array_merge($carried, $window['changes']);
+            [$measure_from, $measure_to] = self::measuredSpan($window['start'], $window['start'] + $span, $window['exact']);
             // Long enough, and with a whole day in it: a 25-hour DST day can hold a
             // window of 24 hours that ends before its first midnight.
             $short = $span < $min_span || $measure_to <= $measure_from;
-            if ($short && $i !== $last) {
+            if ($short && $next_window !== null) {
+                // Whole-day data: nothing measurable, the next window names its deployments.
                 $carried = $window_changes;
-                continue;
+            } else {
+                $carried = [];
+                if ($end < $window['start'] && $window_changes) {
+                    // A change today on whole-day data: its window would open tomorrow. It is
+                    // listed as running since the change itself, and not measured.
+                    $window['start'] = min($end, $window_changes[count($window_changes) - 1]['time']);
+                    $window['exact'] = true;
+                    $span            = $end - $window['start'];
+                }
+                if ($short) {
+                    $measure_from = $measure_to = $window['start'];
+                }
+                $intervals[] = [
+                    'from'         => $window['start'],
+                    'to'           => $window['start'] + $span,
+                    'span'         => $span,
+                    'measure_from' => $measure_from,
+                    'measure_to'   => $measure_to,
+                    'days'         => (float) ($measure_to - $measure_from) / self::DAY,
+                    'exact'        => $window['exact'],
+                    'changes'      => $window_changes,
+                    'running'      => $running,
+                    'short'        => $short,
+                ];
+                // What the next row runs: this row's last deployment, or, when it brought
+                // none, whatever this one was already running. A dropped window does not
+                // move it - its deployments are named in the row that follows it.
+                $running = $window_changes ? $window_changes[count($window_changes) - 1] : $running;
             }
-            $carried = [];
-            if ($candidate['end'] < $candidate['start'] && $window_changes) {
-                // A change today on whole-day data: its window would open tomorrow. It is
-                // listed as running since the change itself, and not measured.
-                $candidate['start'] = min($candidate['end'], $window_changes[count($window_changes) - 1]['time']);
-                $candidate['exact'] = true;
-                $span               = $candidate['end'] - $candidate['start'];
+            if ($next_window === null) {
+                return $intervals;
             }
-            if ($short) {
-                $measure_from = $measure_to = $candidate['start'];
-            }
-            $intervals[] = [
-                'from'         => $candidate['start'],
-                'to'           => $candidate['start'] + $span,
-                'span'         => $span,
-                'measure_from' => $measure_from,
-                'measure_to'   => $measure_to,
-                'days'         => (float) ($measure_to - $measure_from) / self::DAY,
-                'exact'        => $candidate['exact'],
-                'changes'      => $window_changes,
-                'short'        => $short,
-            ];
+            $window = $next_window;
         }
-        return $intervals;
     }
 
     /**
@@ -278,6 +391,11 @@ final class ConfigTimeline
         }
 
         $now = $changes[count($changes) - 1];
+        // A checkout synced by rsync keeps one svnversion for months while util.php
+        // moves with every release: then the util.php revision is the deployment.
+        if (!$revs && $now['rev'] !== '' && $now['rev'] !== $previous['rev']) {
+            $parts[] = 'util.php r' . $now['rev'];
+        }
         if ($now['aa'] !== $previous['aa'] && $now['aa'] !== '') {
             $parts[] = 'AA ' . $now['aa'];
         }
@@ -289,6 +407,30 @@ final class ConfigTimeline
         }
         if ($now['cpu'] !== $previous['cpu'] && $now['cpu'] !== '') {
             $parts[] = \_m('new hardware');
+        }
+        if ($now['mem'] !== $previous['mem'] && $now['mem'] !== '') {
+            $parts[] = \_m('memory') . ' ' . $now['mem'];
+        }
+        return array_merge($parts, self::serverDiff((string) ($previous['server'] ?? ''), (string) ($now['server'] ?? '')));
+    }
+
+    /**
+     * Which server settings moved between two rows, as "sync_binlog 1 → 0". Nothing
+     * when either row has none: a row from before the field existed is not a change.
+     *
+     * @return list<string>
+     */
+    public static function serverDiff(string $before, string $after): array
+    {
+        if ($before === '' || $after === '') {
+            return [];
+        }
+        $was   = self::decodeServer($before);
+        $parts = [];
+        foreach (self::decodeServer($after) as $name => $value) {
+            if (isset($was[$name]) && $was[$name] !== $value) {
+                $parts[] = "$name {$was[$name]} → $value";
+            }
         }
         return $parts;
     }
@@ -328,7 +470,7 @@ final class ConfigTimeline
      * One SYS_STAT row as a configuration, or null when it cannot be read.
      *
      * @param  string $last_tree  the last readable tree version, used when this row has none
-     * @return array{time:int,aa:string,tree:string,rev:string,php:string,db:string,mem:string,cpu:string}|null
+     * @return array{time:int,aa:string,tree:string,rev:string,php:string,db:string,mem:string,cpu:string,server:string}|null
      */
     private static function parse(int $time, string $params, string $last_tree): ?array
     {
@@ -338,14 +480,15 @@ final class ConfigTimeline
         }
         [$tree, $rev] = self::splitSvn((string) $entry->svn);
         return [
-            'time' => $time,
-            'aa'   => (string) $entry->aa,
-            'tree' => $tree !== '' ? $tree : $last_tree,   // unreadable svnversion is not a change
-            'rev'  => $rev,
-            'php'  => (string) $entry->php,
-            'db'   => (string) $entry->db,
-            'mem'  => (string) $entry->mem,
-            'cpu'  => (string) $entry->cpu,
+            'time'   => $time,
+            'aa'     => (string) $entry->aa,
+            'tree'   => $tree !== '' ? $tree : $last_tree,   // unreadable svnversion is not a change
+            'rev'    => $rev,
+            'php'    => (string) $entry->php,
+            'db'     => (string) $entry->db,
+            'mem'    => (string) $entry->mem,
+            'cpu'    => (string) $entry->cpu,
+            'server' => (string) $entry->server,   // '' on rows from before the field existed
         ];
     }
 
@@ -376,6 +519,6 @@ final class ConfigTimeline
     /** Identity of a configuration: two rows with the same fingerprint are the same deployment. */
     private static function fingerprint(array $change): string
     {
-        return implode('|', [$change['aa'], $change['tree'], $change['rev'], $change['php'], $change['db'], $change['mem'], $change['cpu']]);
+        return implode('|', [$change['aa'], $change['tree'], $change['rev'], $change['php'], $change['db'], $change['mem'], $change['cpu'], $change['server']]);
     }
 }

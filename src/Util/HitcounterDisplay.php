@@ -22,6 +22,12 @@ use AA\Util\Txt;
  */
 class HitcounterDisplay
 {
+    /** Hits a side a period-over-period comparison needs, twice what a single average
+     *  takes: one stored index step is 18.7 %, so five hits a side is a coin flip and
+     *  the cards would claim a move. admin/aa_statistics.php ranks by the same floor,
+     *  so a card's click-through lists the items the card showed. */
+    public const MIN_HITS_FOR_DIFF = 10;
+
     /**
      * AA-wide (or per-slice) per-item totals over a time window.
      * Returns [short_id => totals] where totals = {hits, bucket_sum, cache_hits, wasted, ms_x_hits, long_id}.
@@ -275,7 +281,7 @@ class HitcounterDisplay
             if (!$tp) {
                 continue;
             }
-            if ($tc['bucket_sum'] < $min_hits_for_avg || $tp['bucket_sum'] < $min_hits_for_avg) {
+            if ($tc['bucket_sum'] < self::MIN_HITS_FOR_DIFF || $tp['bucket_sum'] < self::MIN_HITS_FOR_DIFF) {
                 continue;
             }
             $cur_avg = $tc['ms_x_hits'] / $tc['bucket_sum'];
@@ -1332,16 +1338,18 @@ class HitcounterDisplay
             // getGlobalTotals already orders by total_hits DESC; reindex for array_slice.
             $items_ordered = array_values($items);
 
-            $all_cache = $all_bucket = $all_hits = 0;
+            $all_cache = $all_bucket = $all_hits = $all_wasted = 0;
             $all_msx   = 0.0;
             foreach ($items_ordered as $t) {
                 $all_hits   += $t['hits'];
                 $all_cache  += $t['cache_hits'];
                 $all_bucket += $t['bucket_sum'];
                 $all_msx    += $t['ms_x_hits'];
+                $all_wasted += $t['wasted'];
             }
 
-            $row = ['total_hits' => $all_hits];
+            // The sums stay in the row so a caller can add slices up without re-weighting.
+            $row = ['total_hits' => $all_hits, 'bucket_sum' => $all_bucket, 'cache_hits' => $all_cache, 'ms_x_hits' => $all_msx, 'wasted' => $all_wasted];
             foreach ($top_ns as $n) {
                 $cache = $bucket = 0;
                 foreach (array_slice($items_ordered, 0, $n) as $t) {
@@ -1523,6 +1531,7 @@ class HitcounterDisplay
         foreach ($cache_cols as $col) {
             $h .= '<th title="' . \safe($col['hint']) . '">' . \safe($col['label']) . '</th>';
         }
+        $h .= '<th title="' . \safe(\_m('Pages built fresh and then answered 304 Not Modified: server work nobody saw.')) . '">' . \safe(\_m('Wasted (NC+NM)')) . '</th>';
         $h .= '<th title="' . \safe(\_m('Hits-weighted average page render time.')) . '">' . \safe(\_m('Avg ms')) . '</th>';
         $h .= '</tr></thead><tbody>';
 
@@ -1555,6 +1564,7 @@ class HitcounterDisplay
                         . \safe($fmt_pct($v)) . '</td>';
                 }
             }
+            $h .= '<td>' . \safe($fmt_int($r['wasted'])) . '</td>';
             $avg = $r['avg_ms'];
             if ($avg === null) {
                 $h .= '<td class="aa-stat-zero">–</td>';
@@ -1565,6 +1575,24 @@ class HitcounterDisplay
             }
             $h .= '</tr>';
         }
+
+        // Every slice, the hidden low-traffic ones included: what the install as a
+        // whole does, and the ratio a single slice's numbers are read against. The
+        // top-N cache columns have no whole-install meaning, so they stay empty.
+        $sum = ['total_hits' => 0, 'bucket_sum' => 0, 'cache_hits' => 0, 'ms_x_hits' => 0.0, 'wasted' => 0];
+        foreach ($rows as $r) {
+            foreach (array_keys($sum) as $key) {
+                $sum[$key] += $r[$key];
+            }
+        }
+        $all_cache_pct = $sum['bucket_sum'] > 0 ? ($sum['cache_hits'] / $sum['bucket_sum']) * 100 : null;
+        $all_avg_ms    = $sum['bucket_sum'] > 0 ? $sum['ms_x_hits'] / $sum['bucket_sum'] : null;
+        $h .= '<tr class="aa-stat-compare-total"><td>' . \safe(sprintf(\_m('All %d slices'), count($rows))) . '</td>'
+            . '<td>' . \safe($fmt_int($sum['total_hits'])) . '</td>'
+            . str_repeat('<td class="aa-stat-zero">–</td>', count($cache_cols) - 1)   // the top-N columns; "cache % all" is the last one
+            . '<td>' . \safe($fmt_pct($all_cache_pct)) . '</td>'
+            . '<td>' . \safe($fmt_int($sum['wasted'])) . '</td>'
+            . '<td>' . \safe($fmt_ms($all_avg_ms)) . '</td></tr>';
         $h .= '</tbody></table>';
         $h .= '</div>';
 
@@ -1625,6 +1653,7 @@ class HitcounterDisplay
             . '.aa-stat-compare-controls{display:flex;align-items:center;gap:1em;flex-wrap:wrap;margin:.5em 0;font-size:90%;color:#555}'
             . '.aa-stat-compare-controls label{display:inline-flex;align-items:center;gap:.4em}'
             . '.aa-stat-compare-low{display:none}'
+            . '.aa-stat-compare-total td{font-weight:600;border-top:2px solid #ccc}'
             . '.aa-stat-compare-cache{--bar:hsl(calc(var(--pct,0) * 1.2),60%,55%)}'
             . '.aa-stat-compare-empty{padding:.5em;color:#777}'
             . '.aa-stat-legend-chip{display:inline-block;margin:0}'

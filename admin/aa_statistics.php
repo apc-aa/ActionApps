@@ -51,7 +51,10 @@ try {
     AA_Adminpageutil::pageParameterError($e);
 }
 
-if (!IfSlPerm(PS_EDIT_ALL_ITEMS)) {
+// Superadmin only, like every page of the AA submenu: the panels are install-wide
+// (every slice's items and headlines, the queue's task names), and a slice editor has
+// admin/se_statistics.php for the slice's own numbers.
+if (!IsSuperadmin()) {
     AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php", _m("You do not have permissions to see statistics"), "admin");
     exit;
 }
@@ -165,11 +168,7 @@ if ($version_progress = VersionProgress::render($slices, VersionProgress::WINDOW
 // place the work done after the page is sent (page-cache store, log and hit writes,
 // item saves, imports) can be measured at all. Collapsed by default because the
 // page's usual question is about pages.
-//
-// Superadmin only. The queue is install-wide and its task names spell out what the
-// whole installation does, which feeds it imports and which sites send mail, while
-// this page itself only asks for PS_EDIT_ALL_ITEMS on the operator's own slice.
-if (IsSuperadmin() && ($task_progress = TaskProgress::render())) {
+if ($task_progress = TaskProgress::render()) {
     echo '<details class="aa-page-section">';
     echo '<summary><h2 class="aa-tab-title">' . _m('Queue progress') . '</h2></summary>';
     echo $task_progress;
@@ -196,16 +195,10 @@ echo '</details>';
 
 // Slice comparison — same scope expansion, uses item_period as the window so all
 // three sections (diagnostics, comparison, per-item table below) stay aligned.
-// for_module='all' (the default) expands to every slice the operator can edit;
-// a Site or Slice scope is used verbatim. Only renders when there is more than
-// one slice to compare — a single-row table tells the operator nothing.
-$compare_slices = $slices;
-if (empty($compare_slices)) {
-    $perm_slices    = GetUserSlices(PS_EDIT_ALL_ITEMS);
-    $compare_slices = $perm_slices === 'all'
-        ? array_keys(AA_Module::getModules('S', true))
-        : $perm_slices;
-}
+// for_module='all' (the default) expands to every slice; a Site or Slice scope is
+// used verbatim. Only renders when there is more than one slice to compare — a
+// single-row table tells the operator nothing.
+$compare_slices = $slices ?: array_keys(AA_Module::getModules('S', true));
 if (count($compare_slices) > 1) {
     [$compare_from, $compare_to] = HitcounterDisplay::periodToRange($item_period, time());
     // Same $show-driven open state as Quick Diagnostics: open on first paint, collapses when the
@@ -302,7 +295,8 @@ if ($show) {
                 if (!$tp) {
                     continue;
                 }
-                if ($tc['bucket_sum'] < 5 || $tp['bucket_sum'] < 5) {
+                // The same floor as the diagnostics cards, so the click-through lists the same items.
+                if ($tc['bucket_sum'] < HitcounterDisplay::MIN_HITS_FOR_DIFF || $tp['bucket_sum'] < HitcounterDisplay::MIN_HITS_FOR_DIFF) {
                     continue;
                 }
                 $cur_avg = $tc['ms_x_hits'] / $tc['bucket_sum'];

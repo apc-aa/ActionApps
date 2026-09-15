@@ -57,8 +57,9 @@ final class ProgressPanel
     }
 
     /**
-     * The configuration a window ended up running, which is the last deployment
-     * inside it. Null for the leading window of an install with no history before
+     * The configuration a window ended up running: the last deployment inside it,
+     * or the one in force when it opened for a window cut at a time rather than at
+     * a change. Null for the leading window of an install with no history before
      * it, and for "there is no window above this row".
      *
      * @param  array<string,mixed>|null $interval
@@ -67,7 +68,7 @@ final class ProgressPanel
     public static function lastChange(?array $interval): ?array
     {
         $changes = $interval['changes'] ?? [];
-        return $changes ? $changes[count($changes) - 1] : null;
+        return $changes ? $changes[count($changes) - 1] : ($interval['running'] ?? null);
     }
 
     // -------------------------------------------------------------------------
@@ -135,8 +136,13 @@ final class ProgressPanel
             . '<span class="aa-ver-days">' . \safe(self::spanLabel($interval['span'])) . '</span>'
             . '</td>';
 
+        // Nothing to name: the leading window of an install without history, or a
+        // window cut at a time, which measures the deployment before it cleanly.
+        if (!$diff) {
+            $diff = [$previous ? \_m('unchanged') : \_m('first window')];
+        }
         $h .= '<td class="aa-ver-changed">';
-        foreach ($diff ?: [\_m('first window')] as $tag) {
+        foreach ($diff as $tag) {
             $h .= '<span class="aa-ver-tag">' . \safe($tag) . '</span>';
         }
         return $h . '</td>';
@@ -155,10 +161,12 @@ final class ProgressPanel
         if ($interval['short']) {
             return $title;
         }
+        // With the weekday: a weekend and a working day load the server differently,
+        // and two windows a few days apart can easily be one of each.
         return $title . ' ' . sprintf(
             \_m('Measured %1$s to %2$s, its freshest whole days.'),
-            date('Y-m-d H:i', $interval['measure_from']),
-            date('Y-m-d H:i', $interval['measure_to']),
+            date('D Y-m-d H:i', $interval['measure_from']),
+            date('D Y-m-d H:i', $interval['measure_to']),
         );
     }
 

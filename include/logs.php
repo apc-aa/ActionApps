@@ -391,7 +391,7 @@ abstract class AA_Logentry extends AA_Serializable
     /** log.params is varbinary(128) and the server runs STRICT_TRANS_TABLES, so
      *  an over-long row fails the INSERT instead of being truncated - and those
      *  INSERTs sit on the mail-sending and queue-run paths. */
-    protected const PARAMS_MAX = 128;
+    public const PARAMS_MAX = 128;
 
     public function getPrintRow(): string
     {
@@ -589,26 +589,35 @@ class AA_Logentry_W extends AA_Logentry
     }
 }
 
-/** System status log entry
+/** System status log entry, written by AA\Later\LogSystemstatus when something
+ *  in it changed; AA\Util\ConfigTimeline reads the rows back as the install's
+ *  deployment history.
+ *
+ *  `server` is a few database settings in ConfigTimeline::SERVER_VARS form
+ *  ("f1 s1 c0 d0 b40G"): a change of them opens a measurement window like a
+ *  release does. It is the one optional field - empty on rows from before it
+ *  existed, and left out when the row would not fit PARAMS_MAX otherwise.
  */
 class AA_Logentry_Sys extends AA_Logentry
 {
-    public string $aa  = '';
-    public string $svn = '';
-    public string $php = '';
-    public string $db  = '';
-    public string $mem = '';
-    public string $cpu = '';
+    public string $aa     = '';
+    public string $svn    = '';
+    public string $php    = '';
+    public string $db     = '';
+    public string $mem    = '';
+    public string $cpu    = '';
+    public string $server = '';
 
     public static function getClassProperties(): array
     {
         return [
-            'aa'  => new AA_Property('aa', _m('AA'), 'string'),
-            'svn' => new AA_Property('svn', _m('SVN AA (util.php)'), 'string'),
-            'php' => new AA_Property('php', _m('PHP'), 'string'),
-            'db'  => new AA_Property('db', _m('DB'), 'string'),
-            'mem' => new AA_Property('mem', _m('Memory'), 'string'),
-            'cpu' => new AA_Property('cpu', _m('CPU'), 'string'),
+            'aa'     => new AA_Property('aa', _m('AA'), 'string'),
+            'svn'    => new AA_Property('svn', _m('SVN AA (util.php)'), 'string'),
+            'php'    => new AA_Property('php', _m('PHP'), 'string'),
+            'db'     => new AA_Property('db', _m('DB'), 'string'),
+            'mem'    => new AA_Property('mem', _m('Memory'), 'string'),
+            'cpu'    => new AA_Property('cpu', _m('CPU'), 'string'),
+            'server' => new AA_Property('server', _m('Server settings'), 'string'),
         ];
     }
 }

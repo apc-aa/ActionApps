@@ -709,8 +709,10 @@ final class VersionProgress
         $h .= '<summary>' . \safe(\_m('Day by day, relative to each item\'s own average')) . '</summary>';
         $h .= '<p class="aa-ver-axis">' . \safe(\_m('100% is the item\'s own average over the whole period. Below 100 is faster than that average.')) . '</p>';
         // The series varies around 100, so an axis anchored at zero would flatten every
-        // real move into a straight line.
-        $h .= HitcounterDisplay::getGraph($datasets, $daily['labels'], 'line', 'aa-stat-chart-pct', ['beginAtZero' => false]);
+        // real move into a straight line. The weekday is on the label: a quiet weekend
+        // reads as a faster site, and the label is where the reader can see it was one.
+        $labels = array_map(static fn(string $day) => date('D m-d', (int) strtotime($day)), $daily['labels']);
+        $h .= HitcounterDisplay::getGraph($datasets, $labels, 'line', 'aa-stat-chart-pct', ['beginAtZero' => false]);
         $h .= '</details>';
         return $h;
     }

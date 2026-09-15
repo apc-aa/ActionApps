@@ -71,20 +71,37 @@ final class TaskProgressTest extends TestCase
         ));
     }
 
-    public function testTheSameTaskLoggedByTwoAaVersionsIsOneTask(): void
+    public function testARunBelongsToItsTaskFamily(): void
     {
-        // Real data from a live install: the selector gained a ::Obj suffix mid-period
-        // when AA started writing it through AA_Logentry_Obj. Read literally, every
-        // task splits in two exactly at the upgrade being measured.
-        self::assertSame('HitcounterUpdate', TaskProgress::taskName('HitcounterUpdate::Obj'));
-        self::assertSame('HitcounterUpdate', TaskProgress::taskName('HitcounterUpdate'));
-        self::assertSame('PlannedtaskSchedule', TaskProgress::taskName('PlannedtaskSchedule::Obj'));
+        // The class before the first colon. On a production install the RSS feeds
+        // alone were 194 selectors of ~200, so counted one by one they were the whole
+        // vote. The ::Obj suffix a newer AA appends (the selector gained it mid-period
+        // when AA started writing through AA_Logentry_Obj) falls off with the rest,
+        // so an upgrade does not split a task in two at the very moment being measured.
+        self::assertSame('HitcounterUpdate', TaskProgress::taskFamily('HitcounterUpdate::Obj'));
+        self::assertSame('HitcounterUpdate', TaskProgress::taskFamily('HitcounterUpdate'));
+        self::assertSame('Importer', TaskProgress::taskFamily('Importer:feed&id=56&type=RSS:Obj'));
+        self::assertSame('HitcounterStats', TaskProgress::taskFamily('HitcounterStats:04280ba4a79b46a6dd802607a3b0edd9/hit_1...........'));
+        self::assertSame('AA_Mail', TaskProgress::taskFamily('AA_Mail:::toexecute.php>stringexpand.php#:10178:Mailid'));
+        self::assertSame('', TaskProgress::taskFamily('  '));
+    }
 
-        // Everything that is not that suffix is left exactly as the operator sees it
-        // in the log, including a task whose own name ends in a colon.
-        self::assertSame('Importer:feed&id=56&type=RSS', TaskProgress::taskName('Importer:feed&id=56&type=RSS'));
-        self::assertSame('AA_Mail::', TaskProgress::taskName('AA_Mail::'));
-        self::assertSame('', TaskProgress::taskName('  '));
+    public function testNetworkBoundFamiliesCountInQueueTimeButDoNotVote(): void
+    {
+        // A feed import takes as long as the remote server takes. Its seconds are
+        // real queue time; its moves say nothing about AA.
+        $runs = self::runs(array_merge(
+            self::repeat('2026-07-01', 'alpha', 1.0, 25),
+            self::repeat('2026-07-05', 'alpha', 1.0, 25),
+            self::repeat('2026-07-01', 'Importer', 10.0, 25),
+            self::repeat('2026-07-05', 'Importer', 20.0, 25),
+        ));
+
+        $summary = TaskProgress::summarize($runs, self::twoWindows());
+
+        self::assertSame(['alpha'], $summary['cohort']);
+        self::assertEqualsWithDelta((25 + 250) / 2, $summary['rows'][0]['seconds'], 0.01, 'the imports\' seconds are in the queue time');
+        self::assertEqualsWithDelta(0.0, $summary['rows'][1]['d_typical'], 0.01, 'and their doubling is not a slower queue');
     }
 
     public function testABusyQueueIsSampledRatherThanTruncated(): void
