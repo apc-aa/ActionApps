@@ -112,7 +112,7 @@ class LdapPermsToSql extends AbstractOptimize
             }
             $this->runMigration();
         } catch (Throwable $e) {
-            $this->message(_m("Test failed: %1", [$e->getMessage()]));
+            $this->message(_m("Test failed: %1", [safe($e->getMessage())]));
             return false;
         }
         $this->message(_m("Test finished (dry run - no changes made)."));
@@ -131,7 +131,7 @@ class LdapPermsToSql extends AbstractOptimize
             }
             $this->runMigration();
         } catch (Throwable $e) {
-            $this->message(_m("Repair failed: %1", [$e->getMessage()]));
+            $this->message(_m("Repair failed: %1", [safe($e->getMessage())]));
             return false;
         }
         $this->message(_m("Repair finished."));
@@ -150,7 +150,7 @@ class LdapPermsToSql extends AbstractOptimize
             }
             $this->runRevert();
         } catch (Throwable $e) {
-            $this->message(_m("Revert failed: %1", [$e->getMessage()]));
+            $this->message(_m("Revert failed: %1", [safe($e->getMessage())]));
             return false;
         }
         $this->message(_m("Revert finished."));
@@ -174,7 +174,7 @@ class LdapPermsToSql extends AbstractOptimize
     {
         $ldap_users = $this->ldap->findUsernames('');
         if (!is_array($ldap_users)) {
-            $this->message(_m("LDAP findUsernames failed or returned: %1", [(string) $ldap_users]));
+            $this->message(_m("LDAP findUsernames failed or returned: %1", [safe(print_r($ldap_users, true))]));
             return;
         }
         $this->message(_m("LDAP users found: %1", [count($ldap_users)]));
@@ -193,7 +193,7 @@ class LdapPermsToSql extends AbstractOptimize
             }
             $login = $info['login'] ?: $this->extractUidFromDn($dn);
             if (!$login) {
-                $this->message(_m("Skipping user %1 - cannot determine login", [$dn]));
+                $this->message(_m("Skipping user %1 - cannot determine login", [safe($dn)]));
                 $failed++;
                 continue;
             }
@@ -202,7 +202,7 @@ class LdapPermsToSql extends AbstractOptimize
             $existing = DB_AA::select1('', "SELECT id, password FROM `users`", [['uid', $login], ['type', 'User']]);
             if (is_array($existing)) {
                 $sql_id = (int) $existing['id'];
-                $this->message(_m("User %1 already exists in SQL (id %2), reusing", [$login, $sql_id]));
+                $this->message(_m("User %1 already exists in SQL (id %2), reusing", [safe($login), $sql_id]));
                 if (!$this->dry_run) {
                     $this->mapPut($dn, $sql_id, 'user', $login);
                     // If row holds our placeholder hash, overwrite with the
@@ -216,7 +216,7 @@ class LdapPermsToSql extends AbstractOptimize
             }
 
             if ($this->dry_run) {
-                $this->message(_m("Would create SQL user: %1 (from %2)", [$login, $dn]));
+                $this->message(_m("Would create SQL user: %1 (from %2)", [safe($login), safe($dn)]));
                 $created++;
                 continue;
             }
@@ -224,7 +224,7 @@ class LdapPermsToSql extends AbstractOptimize
             $pwd_hash = $this->readLdapUserPassword($dn) ?: $this->placeholderHash();
             $sql_id = $this->sqlInsertUser($login, $info, $pwd_hash);
             if (!$sql_id) {
-                $this->message(_m("Failed to create SQL user %1", [$login]));
+                $this->message(_m("Failed to create SQL user %1", [safe($login)]));
                 $failed++;
                 continue;
             }
@@ -260,7 +260,7 @@ class LdapPermsToSql extends AbstractOptimize
             $existing = DB_AA::select1('', "SELECT id FROM `users`", [['name', $gname], ['type', 'Group']]);
             if (is_array($existing)) {
                 $sql_id = (int) $existing['id'];
-                $this->message(_m("Group %1 already exists in SQL (id %2), reusing", [$gname, $sql_id]));
+                $this->message(_m("Group %1 already exists in SQL (id %2), reusing", [safe($gname), $sql_id]));
                 if (!$this->dry_run) {
                     $this->mapPut($dn, $sql_id, 'group', $gname);
                 }
@@ -269,14 +269,14 @@ class LdapPermsToSql extends AbstractOptimize
             }
 
             if ($this->dry_run) {
-                $this->message(_m("Would create SQL group: %1 (from %2)", [$gname, $dn]));
+                $this->message(_m("Would create SQL group: %1 (from %2)", [safe($gname), safe($dn)]));
                 $created++;
                 continue;
             }
 
             $sql_id = $this->sqlInsertGroup($gname, $gdesc);
             if (!$sql_id) {
-                $this->message(_m("Failed to create SQL group %1", [$gname]));
+                $this->message(_m("Failed to create SQL group %1", [safe($gname)]));
                 $failed++;
                 continue;
             }

@@ -47,10 +47,11 @@ class FixContentColumn extends AbstractOptimize
         }
         $statistic = [];
         foreach ($bad_rows as $index => $row) {
-            $statistic[$row['name'] . ' ' . $row['field_id']]++;
+            $key             = $row['name'] . ' ' . $row['field_id'];
+            $statistic[$key] = ($statistic[$key] ?? 0) + 1;
 
             if ($index < 240) {
-                $this->message(_m('slice %1: field_id: %2 item_id: %3', [safe($row['name']), unpack_id($row['item_id']), $row['field_id']]));
+                $this->message(_m('slice %1: field_id: %2 item_id: %3', [safe($row['name']), safe($row['field_id']), unpack_id($row['item_id'])]));
             }
             if ($index == 240) {
                 $this->message(_m('and more...'));
@@ -74,8 +75,8 @@ class FixContentColumn extends AbstractOptimize
         foreach ($bad_rows as $index => $row) {
             $SQL = "UPDATE content SET flag = flag | 64 WHERE item_id = '" . quote($row['item_id']) . "' AND field_id = '" . quote($row['field_id']) . "'";
             $db->query($SQL);
-            $this->message(_m('fixed (id-field): %1 - %2 (%3)', [unpack_id($row['item_id']), $row['field_id'], $SQL]));
-            if ($index > 240) {
+            $this->message(_m('fixed (id-field): %1 - %2 (%3)', [unpack_id($row['item_id']), safe($row['field_id']), safe($SQL)]));
+            if ($index == 240) {   // == , not > : once, not for every row past it
                 $this->message(_m('and more...'));
             }
         }
