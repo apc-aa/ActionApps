@@ -1,0 +1,12 @@
+# No "* text=auto" on purpose: some third-party files (javascript/prototype, misc/htmleditor, WSDLs, a few
+# docs) are stored with CRLF and must stay byte-exact. New files are LF by convention (doc/coding.html).
+*.png binary
+*.gif binary
+*.jpg binary
+*.jpeg binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary
+*.pdf binary

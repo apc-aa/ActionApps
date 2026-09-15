@@ -1,0 +1,25 @@
+# vendor/ is not versioned: developers run `composer install`; servers get it built into the `dist` branch
+# by dev/release/build-dist.sh (see dev/release/README.md).
+/vendor/
+# nested git working copy of github.com/honzito/MissCache (composer pulls the package from GitHub)
+/misc/missCache/
+# per-install configuration
+/include/config.php
+/include/config.php3
+# editor typings (package.json is versioned, its install is not)
+/node_modules/
+# tool caches
+/.phpstan.cache/
+/.phpstan-tmp/
+/.phpunit.cache/
+/.php-cs-fixer.cache
+# IDE, OS, agents
+/.idea/
+/.vscode/
+.DS_Store
+Thumbs.db
+*~
+*.swp
+.claude/
+# SVN working copy metadata left next to .git during the migration week
+/.svn/
