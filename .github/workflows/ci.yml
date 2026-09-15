@@ -3,6 +3,7 @@ on:
   push:
     branches: [main]
   pull_request:
+  workflow_dispatch:   # manual run, e.g. to rebuild dist after a change to the exclude lists' inputs
 
 env:
   PHP_EXTENSIONS: ctype, curl, dom, fileinfo, gd, iconv, intl, mbstring, pdo, pdo_mysql, simplexml, sodium, xml, xsl, zlib
