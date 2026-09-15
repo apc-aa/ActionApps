@@ -1,0 +1,53 @@
+# Names removed from every package under vendor/ by build-dist.sh (find -name inside vendor/<owner>/<package>/).
+# One per line. LICENSE files stay (part of the licence terms); the rest is dev tooling, docs, demos, tests
+# or package metadata that nothing needs at runtime. index.php/public/demo also keep stray demo entry
+# points out of the web-served tree.
+tests
+test
+Tests
+docs
+doc
+examples
+example
+example.php
+demo
+demo.php
+test.php
+public
+index.php
+.github
+.git
+.travis.yml
+.editorconfig
+.gitattributes
+.gitignore
+.php-cs-fixer.dist.php
+.php-cs-fixer.php
+.php_cs
+.phpstorm.meta.php
+phpunit.xml
+phpunit.xml.dist
+phpcs.xml
+phpcs.xml.dist
+phpstan.neon
+phpstan.neon.dist
+docker-compose.yml
+Makefile
+composer.json
+composer.lock
+package.xml
+package.json
+README
+README.md
+README.rst
+CHANGELOG
+CHANGELOG.md
+CHANGES
+CHANGES.md
+UPGRADING
+UPGRADING.md
+CONTRIBUTING.md
+CODE_OF_CONDUCT.md
+SECURITY.md
+RMT
+generate-api.sh

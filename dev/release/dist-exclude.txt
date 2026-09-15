@@ -1,0 +1,33 @@
+# rsync filter file used by build-dist.sh: everything a running installation does not need.
+# "- pattern" excludes; a leading "/" anchors the pattern at the tree root; a trailing "/" means directory.
+- .git
+- .git*
+- .github/
+- .claude/
+- .impeccable/
+- .idea/
+- .phpstan.cache/
+- .phpstan-tmp/
+- .phpunit.cache/
+- .php-cs-fixer.cache
+- /node_modules/
+- /package.json
+- /package-lock.json
+- /dev/
+- /doc/
+- /tests/
+- /misc/test/
+- /misc/mgettext/
+- /misc/missCache/
+- /misc/smtp_smoketest.php
+- /PRODUCT.md
+- /DESIGN.md
+- /FILEMAP.md
+- /files.txt
+- /phpunit.xml
+- /phpstan*.neon
+- /.php-cs-fixer*
+- /.editorconfig
+- /.browserslistrc
+- /include/config.php
+- /include/config.php3
