@@ -1,8 +1,7 @@
 <?php
 
-use AA\IO\DB\DB_AA;
 use AA\IO\Feed;
-use AA\Later\Toexecute;
+use AA\Later\FeedsRun;
 use AA\Util\InputVars;
 
 /** Cross-Server Networking - client module
@@ -111,46 +110,6 @@ if ($feed_id) {          // just one specified APC feed
     $feed->loadRSSFeed($rssfeed_id, $_GET['url']);
     ($debugfeed > 8) && huhl('rssfeed', $fire, $feed);
     xmlclient_show($feed->feed($fire), $fire);
-} else {                 // all RSS and APC and general feeds
-    $rssfeeds     = GetTable2Array('SELECT feed_id FROM rssfeeds', 'NoCoLuMn', 'feed_id');
-    $aafeeds      = GetTable2Array('SELECT feed_id FROM external_feeds', 'NoCoLuMn', 'feed_id');
-    $generalfeeds = AA_Object::getNameArray('AA\IO\Feed', [AA_ID]);
-
-    // we put all the feeds into an array and then we shuffle it
-    // that makes the feeding in random order, so broken feeds do not stale
-    // whole feeding
-    $todo_feed = [];
-    if (is_array($rssfeeds)) {
-        foreach ($rssfeeds as $v) {
-            $todo_feed[] = ['type' => 'rss', 'id' => $v];
-        }
-    }
-    if (is_array($aafeeds)) {
-        foreach ($aafeeds as $v) {
-            $todo_feed[] = ['type' => 'aarss', 'id' => $v];
-        }
-    }
-    if (is_array($generalfeeds)) {
-        foreach (array_keys($generalfeeds) as $id) {
-            $todo_feed[] = ['type' => 'general', 'id' => $id];
-        }
-    }
-
-    shuffle($todo_feed);
-    foreach ($todo_feed as $feed_seting) {
-        switch ($feed_seting['type']) {
-            case 'aarss':
-                $feed = new Feed();
-                $feed->loadAAFeed($feed_seting['id']);
-                break;
-            case 'rss':
-                $feed = new Feed();
-                $feed->loadRSSFeed($feed_seting['id']);
-                break;
-            default:
-                $feed = AA_Object::load($feed_seting['id']);
-        }
-
-        xmlclient_show($feed->feed($fire), $fire);
-    }
+} else {                 // all RSS and APC and general feeds - the same run the queue does every 15 minutes
+    xmlclient_show((new FeedsRun())->run($fire), $fire);
 }

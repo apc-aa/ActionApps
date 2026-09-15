@@ -369,13 +369,17 @@ final class ToexecuteQueueRaceTest extends TestCase
 
     public function testRunnerTouchesFallbackGateBeforeProcessingQueue(): void
     {
-        $src = file_get_contents(self::RUNNER_SOURCE);
-        $this->assertNotFalse($src, 'cannot read ' . self::RUNNER_SOURCE);
+        $runner = file_get_contents(self::RUNNER_SOURCE);
+        $this->assertNotFalse($runner, 'cannot read ' . self::RUNNER_SOURCE);
+        $this->assertStringContainsString("Toexecute::runQueue('toexecute.php')", $runner, 'misc/toexecute.php runs the queue through the shared runQueue()');
 
+        // the run itself lives in Toexecute::runQueue() since 2026-09
+        $src = file_get_contents(self::SOURCE);
+        $this->assertNotFalse($src, 'cannot read ' . self::SOURCE);
         $touch   = strpos($src, 'touch(CronFallback::lockFile())');
-        $execute = strpos($src, '$toexecute->execute()');
-        $this->assertNotFalse($touch, 'misc/toexecute.php must touch the CronFallback gate file');
-        $this->assertNotFalse($execute, 'misc/toexecute.php must run the queue');
+        $execute = strpos($src, '(new self())->execute()');
+        $this->assertNotFalse($touch, 'runQueue() must touch the CronFallback gate file');
+        $this->assertNotFalse($execute, 'runQueue() must run the queue');
         $this->assertLessThan(
             $execute,
             $touch,

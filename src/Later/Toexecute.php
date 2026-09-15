@@ -34,6 +34,7 @@ namespace AA\Later;
 
 use AA;
 use AA\IO\DB\DB_AA;
+use AA\Util\FileLock;
 use AA\Util\ReportTrait;
 use AA_Log;
 use AA_Logentry_X;
@@ -188,7 +189,51 @@ class Toexecute
         $varset->doDeleteWhere('toexecute', "selector='" . quote($selector) . "'");
     }
 
-    /** execute function - function called periodically from /misc/toexecute.php
+    /** One queue run as the cron entry points do it: plan the AA maintenance
+     *  tasks, then execute what is due. The single code path behind cron.php,
+     *  misc/toexecute.php and CronFallback, single-flight on the fallback's
+     *  lock file - OS cron, a second OS cron line and the fallback may arrive
+     *  at once, and the CAS claim in _exeOne() should stay the safety net,
+     *  not the rule.
+     * @param string|null   $caller  script name logged as the TOEXECUTE start row; the
+     *                               fallback passes null, so the start rows tell whether
+     *                               OS cron is alive (CheckQueue)
+     * @param callable|null $gate    evaluated under the lock; false = nothing to do
+     *                               (the fallback's interval check)
+     * @return bool false when another runner holds the lock or the gate said no
+     */
+    public static function runQueue(?string $caller = null, ?callable $gate = null): bool
+    {
+        $lock = new FileLock(CronFallback::lockFile());
+        if (!$lock->Trylock()) {
+            return false;
+        }
+        try {
+            if ($gate !== null && !$gate()) {
+                return false;
+            }
+            // queued objects of legacy classes are not autoloaded - unserialize() needs them declared
+            require_once constant('AA_BASE_PATH') . 'include/mail.php';
+            require_once constant('AA_BASE_PATH') . 'modules/links/cattree.php';
+
+            if ($caller !== null) {
+                AA_Log::write('TOEXECUTE', $caller, 'start');
+            }
+            // the lock file mtime is the fallback's suppression gate - touched before the
+            // run too, so web traffic does not fire the fallback runner meanwhile
+            touch(CronFallback::lockFile());
+            (new ScheduleAaTasks())->planAaTasks();
+            class_exists('AA_Perm');          // include/perm_core.php sets AA::$perm at file scope - loaded on demand
+            AA::$perm->setPermMode('cron');   // tasks may edit under the ANONYMOUS_EDIT_CRON permission
+            (new self())->execute();
+            touch(CronFallback::lockFile());
+            return true;
+        } finally {
+            $lock->Unlock();
+        }
+    }
+
+    /** execute function - one run over the due tasks, see runQueue()
      */
     public function execute(): void
     {

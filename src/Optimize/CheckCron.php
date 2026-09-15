@@ -5,11 +5,10 @@ declare(strict_types=1);
 namespace AA\Optimize;
 
 use AA\IO\DB\DB_AA;
-use AA_Components;
 
 /** The `cron` table as cron.php reads it: rows it cannot parse, scripts scheduled
- *  twice (.php3 next to .php), rows that stopped running, and the standard
- *  entries the Add*CronEntry optimizers install.
+ *  twice (.php3 next to .php), rows that stopped running, and AA's own jobs
+ *  left there although they run from the queue (RemoveAaCronEntries).
  */
 class CheckCron extends AbstractOptimize
 {
@@ -27,7 +26,7 @@ class CheckCron extends AbstractOptimize
 
     public static function description(): string
     {
-        return _m('Checks the AA cron table: unreadable schedules, scripts scheduled twice, rows that have not run for twice their period, and missing standard entries.');
+        return _m('Checks the AA cron table: unreadable schedules, scripts scheduled twice, rows that have not run for twice their period, and AA jobs that belong to the queue.');
     }
 
     public static function types(): array
@@ -73,13 +72,9 @@ class CheckCron extends AbstractOptimize
             $findings[] = new Finding(Finding::WARNING, _m('%1 cron rows have not run for longer than twice their period', [count($stale)]), count: count($stale), since: min(array_map(static fn(array $row) => (int) $row['last_run'], $stale)), evidence: $evidence, advice: _m('cron.php runs (see the task queue) but skipped these rows, or their schedule means something else than you expect.'), links: $link, key: 'stale');
         }
 
-        // the optimizers that install the standard rows know best whether their row is there
-        foreach (AA_Components::getClassNames('AA\\Optimize\\', static fn(string $class) => str_ends_with($class, 'CronEntry'), false) as $class) {
-            /** @var AbstractOptimize $entry */
-            $entry = new $class();
-            if (!$entry->test()) {
-                $findings[] = new Finding(Finding::WARNING, _m('Cron entry check failed: %1', [$class::name()]), evidence: array_map(static fn(array $row) => array_map('safe', $row), $entry->reportRows()), advice: $class::description(), links: [_m('Optimize') => get_admin_url('aa_optimize.php')], key: 'entry:' . get_class_name($class));
-            }
+        $aa_jobs = new RemoveAaCronEntries();
+        if (!$aa_jobs->test()) {
+            $findings[] = new Finding(Finding::WARNING, _m('AA jobs are still in the cron table and run twice'), evidence: array_map(static fn(array $row) => array_map('safe', $row), $aa_jobs->reportRows()), advice: RemoveAaCronEntries::description() . ' ' . _m('Run service/sql_update.php.'), links: [_m('Optimize') => get_admin_url('aa_optimize.php')], key: 'aajobs');
         }
 
         if (!$findings) {

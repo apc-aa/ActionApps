@@ -100,7 +100,9 @@ $fallback_last   = is_file($fallback_lock) ? date('j.n.Y H:i:s', filemtime($fall
 $fallback_status = \AA\Later\CronFallback::isDisabled() ? _m('disabled') : _m('enabled');
 
 $managed->setAbout(
-    _m("For help see FAQ: ") . "<a href=\"$doc_url\">$doc_url</a><br>"
+    _m("AA's own jobs (alerts, feeding, link check, table optimization) run from the task queue since 2026-09; this table is only for scripts you added yourself.") . ' '
+    . _m("For a new periodic task prefer %1 - they run from the queue too, with no system cron row to keep.", [a_href(get_admin_url('aa_tasks.php'), _m('Planned Tasks'))]) . '<br>'
+    . _m("For help see FAQ: ") . "<a href=\"$doc_url\">$doc_url</a><br>"
     . _m("To run cron manually now: ") . "<a href=\"$run_url\">$run_url</a><br>"
     . _m("Post-response cron fallback") . " ($fallback_status), " . _m("last run") . ": $fallback_last",
 );

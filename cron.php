@@ -1,7 +1,9 @@
 <?php
 
 /**
- * PHP cron: reads items from database and runs them. The item format is UNIX-cron-like.
+ * PHP cron: the entry point for the system crontab. Runs the task queue
+ * (Toexecute::runQueue() - all AA maintenance jobs live there since 2026-09)
+ * and then the admin's own rows of the `cron` table, UNIX-cron-like.
  *
  * DOCUMENTATION: See cron.php documentation in {@link https://actionapps.org/faq/#401 FAQ pages}.
  *
@@ -45,6 +47,7 @@ https://www.apc.org/
 /** APC-AA configuration file */
 
 use AA\IO\DB\DB_AA;
+use AA\Later\Toexecute;
 
 // Real cron entry — suppress the post-response fallback in locsess.php.
 define('AA_NO_CRON_FALLBACK_THIS_REQUEST', true);
@@ -56,6 +59,13 @@ require_once __DIR__ . "/include/locsess.php";
 require_once __DIR__ . "/include/util.php";
 /** Defines class for inserting and updating database fields */
 require_once __DIR__ . "/include/varset.php";
+
+// AA's own periodic jobs are queue tasks (AA\Later\ScheduleAaTasks) - run the
+// queue first, within its own time limit (TOEXECUTE_ALLOWED_TIME); the cron
+// table below only carries scripts the admin added by hand.
+if (empty($_GET['debug'])) {
+    Toexecute::runQueue('cron.php');
+}
 
 // to complete all the tasks (send all mails...)
 MoreTimeLimit(3600); // set_time_limit to 1 hour (at least)
@@ -187,9 +197,9 @@ function cron($time = 0): void
 
         if ($_GET['debug']) {
             if ($nearest_part > -1 && $nearest_time > $db->f("last_run")) {
-                echo "<br><b>$url</b> will be run now<br>";
+                echo "<br><b>" . safe($url) . "</b> will be run now<br>";
             } else {
-                echo "<br><small>$url will not start now - will be run on " . date("d.m.Y H:i", $nearest_time) . " ($nearest_time)</small><br><small>nearest_part: $nearest_part, db->last_run:" . $db->f("last_run") . "</small><br>";
+                echo "<br><small>" . safe($url) . " will not start now - will be run on " . date("d.m.Y H:i", $nearest_time) . " ($nearest_time)</small><br><small>nearest_part: $nearest_part, db->last_run:" . $db->f("last_run") . "</small><br>";
             }
             //echo "Nearest time: "; print_r ($nearest);
             // DB_AA::sql("UPDATE cron SET last_run=".$time." WHERE id=".$db->f("id"));

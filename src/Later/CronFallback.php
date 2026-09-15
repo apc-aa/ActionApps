@@ -33,7 +33,8 @@ namespace AA\Later;
  *
  * Lock file mtime is both the "last-run" timestamp (gate) and (with flock)
  * the inter-worker mutex. cron.php / misc/toexecute.php touch the same
- * file, so configured OS cron suppresses the fallback automatically.
+ * file (Toexecute::runQueue()), so configured OS cron suppresses the
+ * fallback automatically.
  *
  * @package AA\Later
  */
@@ -120,30 +121,16 @@ class CronFallback
         @ignore_user_abort(true);
 
         $lock_file = self::lockFile();
-        $lock = new \AA\Util\FileLock($lock_file);
-        if (!$lock->Trylock()) {
-            return;
-        }
-
         try {
-            // Anti-DoS: re-check gate inside the lock — covers concurrent callers in the open window.
-            clearstatcache(true, $lock_file);
-            if ((time() - (int) filemtime($lock_file)) < self::interval()) {
-                return;
-            }
-            touch($lock_file);
-
-            if (isset(\AA::$perm)) {
-                \AA::$perm->setPermMode('cron');
-            }
-            (new ScheduleAaTasks())->planAaTasks();
-            (new Toexecute())->execute();
+            // Anti-DoS: the gate is re-checked under runQueue()'s lock - covers concurrent callers in the open window.
+            Toexecute::runQueue(null, static function () use ($lock_file): bool {
+                clearstatcache(true, $lock_file);
+                return (time() - (int) filemtime($lock_file)) >= self::interval();
+            });
         } catch (\Throwable $e) {
             if (class_exists('AA_Log')) {
                 \AA_Log::write('CRON_FALLB', 'CronFallback', $e->getMessage());   // log.type is 10 bytes, longer names get cut
             }
-        } finally {
-            $lock->Unlock();
         }
     }
 

@@ -33,9 +33,7 @@ https://www.apc.org/
 
 /** APC-AA configuration file */
 
-use AA\IO\DB\DB_AA;
-use AA\Later\CronFallback;
-use AA\Later\ScheduleAaTasks;
+use AA\IO\DB\DB_PDO;
 use AA\Later\Toexecute;
 
 // Real cron runner — suppress the post-response fallback in locsess.php.
@@ -46,8 +44,6 @@ require_once __DIR__ . "/../include/config.php";
 require_once __DIR__ . "/../include/locsess.php";
 require_once __DIR__ . "/../include/varset.php";
 require_once __DIR__ . "/../include/util.php";
-require_once __DIR__ . "/../include/mail.php";
-require_once __DIR__ . "/../modules/links/cattree.php";
 
 /** This script is possible to run from commandline (so also from cron). The
  * benefit is, that the script then can run as long as you want - it is not
@@ -60,35 +56,7 @@ require_once __DIR__ . "/../modules/links/cattree.php";
  */
 
 
-AA_Log::write('TOEXECUTE', 'toexecute.php', 'start');
-
-// Touch the CronFallback gate right away (not only after the run) so web
-// traffic does not fire the fallback runner while this run is processing
-// the queue - the file mtime is the fallback's suppression gate.
-touch(CronFallback::lockFile());
-
-// first of all - make sure all AA maintenance tasks are scheduled
-(new ScheduleAaTasks())->planAaTasks();
-
-$toexecute = new Toexecute();
-
-/*
-$mail = new AA_Mail;
-$mail->setText("toto je mail 10");
-$mail->setSubject('subject');
-//$mail->setBasicHeaders(ecord, "");
-$mail->setTextCharset('utf-8');
-$mail->setHtmlCharset('utf-8');
-huhl($mail);
-$toexecute->later($mail,array(array('rrrrrrrrrrrx@ecn.cz')));
-*/
-
-// notify functions based on ANONYMOUS_EDIT_CRON permission
-AA::$perm->setPermMode('cron');
-
-$toexecute->execute();
-
-touch(CronFallback::lockFile());
+Toexecute::runQueue('toexecute.php');
 
 if (AA::$debug) {
     echo '<br>Dababase instances: ' . DB_PDO::$_instances_no;

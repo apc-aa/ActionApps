@@ -8,7 +8,7 @@ use AA\IO\DB\DB_AA;
 use AA\Later\Toexecute;
 use AA_Log;
 
-/** Is the task queue (misc/toexecute.php) alive, who drives it and does it keep up.
+/** Is the task queue (cron.php / misc/toexecute.php) alive, who drives it and does it keep up.
  *  Reads the TOEXECUTE rows of the log: one `Xrun:done:started:duration:allowed`
  *  row per queue run (AA_Logentry_Xrun), one `X:time:...` row per task.
  */
@@ -18,6 +18,8 @@ class CheckQueue extends AbstractOptimize
     private const STALE_SECONDS = 600;
     /** cron.php not called for an hour while the queue still runs = the fallback carries it */
     private const CRON_STALE_SECONDS = 3600;
+    /** the OS cron entry points log a TOEXECUTE start row under their name (Toexecute::runQueue()); the fallback logs none */
+    private const CRON_CALLERS = ['cron.php', 'toexecute.php'];
     private const WINDOW_SECONDS = 7 * 86400;
     /** share of runs over the time limit that counts as overload */
     private const OVERLOAD_RATIO = 0.10;
@@ -60,13 +62,12 @@ class CheckQueue extends AbstractOptimize
         // newest run first: ORDER BY time DESC walks the type_time index from the end and stops at once
         $last_run = (int) DB_AA::select1('time', 'SELECT `time` FROM `log`', $runs_of, ['time-']);
         if ($last_run === 0) {
-            $findings[] = new Finding(Finding::ERROR, _m('The task queue has never run'), advice: _m('Mails, alerts and feeds wait in the queue until cron.php runs misc/toexecute.php or a visit triggers the post-response fallback.'), links: $links, key: 'never');
+            $findings[] = new Finding(Finding::ERROR, _m('The task queue has never run'), advice: _m('Mails, alerts and feeds wait in the queue until OS cron calls cron.php or a visit triggers the post-response fallback.'), links: $links, key: 'never');
         } elseif ($now - $last_run > self::STALE_SECONDS) {
             $findings[] = new Finding(Finding::ERROR, _m('The task queue has not run since %1', [date('Y-m-d H:i', $last_run)]), since: $last_run, advice: _m('Mails, alerts and feeds are waiting. Check the system crontab (cron.php every minute) and the post-response fallback (DISABLE_CRON_FALLBACK in config.php).'), links: $links, key: 'stale');
         }
 
-        // the fallback runs the queue directly and never touches cron.last_run
-        $cron_last = (int) DB_AA::select1('t', 'SELECT MAX(`last_run`) AS t FROM `cron`');
+        $cron_last = (int) DB_AA::select1('time', 'SELECT `time` FROM `log`', [['type', 'TOEXECUTE'], ['selector', self::CRON_CALLERS], ['params', 'start']], ['time-']);
         if ($last_run > 0 && ($now - $last_run) <= self::STALE_SECONDS && ($now - $cron_last) > self::CRON_STALE_SECONDS) {
             $findings[] = new Finding(
                 Finding::WARNING,

@@ -10,7 +10,7 @@
 | auth_maintain.php | Deprecated daily auth table maintenance (now via AA\Later\ScheduleAaTasks) | (deprecated) | S |
 | cached.php | Serve cached content (JS files) with client-side caching headers | (cache retrieval) | S |
 | calendar.php | Calendar view helper - month/year selection for calendar views | (calendar UI) | S |
-| cron.php | Execute UNIX-cron-like scheduled tasks from database | cron() | M |
+| cron.php | System crontab entry point: runs the task queue (Toexecute::runQueue), then the admin's own UNIX-cron-like `cron` rows | cron() | M |
 | discussion.php | Display discussions, parse search conditions from cache | Cacheentry, CacheStr2find, PageCache | S |
 | export.php | Export functionality (License: GPL-2.0+) | (export) | S |
 | filldisc.php | Write discussion items to database from form data | DB_AA, InputVars | M |
@@ -87,13 +87,16 @@ Feeding/import back-ends; each declares `name()` + `description()` shown in the 
 
 | File | Purpose | Key API | Size |
 |------|---------|---------|------|
+| Later/AlertsSweep.php | Alerts sending sweep per frequency (instant every 5 min, daily/weekly/monthly digests at night) - was the alerts.php cron row | AlertsSweep | S |
 | Later/ComputedfieldsItemUpdater.php | Plan computed field updates for items | ComputedfieldsItemUpdater | S |
 | Later/ComputedfieldsUpdater.php | Computed field updater scheduler | ComputedfieldsUpdater | S |
 | Later/CronFallback.php | Post-response cron runner for installs without OS cron | CronFallback | M |
+| Later/FeedsRun.php | Queue the import of every feed (was the admin/xmlclient.php cron row); xmlclient.php delegates its "all feeds" run here | FeedsRun | S |
 | Later/HitcounterGroup.php | Group hit data by day in hit_archive table | HitcounterGroup | M |
 | Later/HitcounterStats.php | Hit counter statistics | HitcounterStats | S |
 | Later/HitcounterUpdate.php | Update hit counters | HitcounterUpdate | M |
 | Later/LaterInterface.php | Deferred task execution interface | LaterInterface | S |
+| Later/LinkcheckRun.php | Hourly links module URL validation (was the modules/links/linkcheck.php cron row) | LinkcheckRun | S |
 | Later/LogCleanup.php | Clean up log tables | LogCleanup | S |
 | Later/LogSystemstatus.php | Log system status tracking | LogSystemstatus | S |
 | Later/MissCachePurge.php | Deferred purge of MissCache entries | MissCachePurge | S |
@@ -102,7 +105,7 @@ Feeding/import back-ends; each declares `name()` + `description()` shown in the 
 | Later/PagecachePurge.php | Purge page cache | PagecachePurge | S |
 | Later/PlannedtaskSchedule.php | Schedule planned tasks | PlannedtaskSchedule | S |
 | Later/Post2shtmlCleanup.php | Post-SHTML cleanup | Post2shtmlCleanup | S |
-| Later/ScheduleAaTasks.php | Schedule AA tasks | ScheduleAaTasks | S |
+| Later/ScheduleAaTasks.php | Plans every periodic AA task into the queue (called by Toexecute::runQueue) | ScheduleAaTasks | S |
 | Later/TableCleaner.php | Clean database tables | TableCleaner | S |
 | Later/Toexecute.php | Deferred task execution | Toexecute | M |
 | Later/ToexecuteCleanup.php | Cleanup executed tasks | ToexecuteCleanup | S |
@@ -156,7 +159,6 @@ Feeding/import back-ends; each declares `name()` + `description()` shown in the 
 | Optimize/AbstractOptimize.php | Base class for database optimizations | AbstractOptimize | M |
 | Optimize/AbstractOptimizeById.php | Base class for ID-based optimizations | AbstractOptimizeById | S |
 | Optimize/AddAddressFieldTemplate.php | Add address field template | AddAddressFieldTemplate | S |
-| Optimize/AddAlertsCronEntry.php | Add alerts cron entry | AddAlertsCronEntry | S |
 | Optimize/AddAuthGroupFieldTemplate.php | Add auth group field template | AddAuthGroupFieldTemplate | S |
 | Optimize/AddBitsetFieldTemplate.php | Add bitset field template | AddBitsetFieldTemplate | S |
 | Optimize/AddCityFieldTemplate.php | Add city field template | AddCityFieldTemplate | S |
@@ -168,14 +170,12 @@ Feeding/import back-ends; each declares `name()` + `description()` shown in the 
 | Optimize/AddDurationLog.php | Add duration logging | AddDurationLog | S |
 | Optimize/AddEmailTemplatesCronEntry.php | Add email templates cron | AddEmailTemplatesCronEntry | S |
 | Optimize/AddFaxFieldTemplate.php | Add fax field template | AddFaxFieldTemplate | S |
-| Optimize/AddFeedingCronEntry.php | Add feeding cron entry | AddFeedingCronEntry | S |
 | Optimize/AddHit1FieldTemplate.php | Add 1-day hit field template | AddHit1FieldTemplate | S |
 | Optimize/AddHit30FieldTemplate.php | Add 30-day hit field template | AddHit30FieldTemplate | S |
 | Optimize/AddHit7FieldTemplate.php | Add 7-day hit field template | AddHit7FieldTemplate | S |
 | Optimize/AddIntegerFieldTemplate.php | Add integer field template | AddIntegerFieldTemplate | S |
 | Optimize/AddIpBannedFieldTemplate.php | Add IP banned field template | AddIpBannedFieldTemplate | S |
 | Optimize/AddIpFieldTemplate.php | Add IP field template | AddIpFieldTemplate | S |
-| Optimize/AddLinkcheckCronEntry.php | Add linkcheck cron entry | AddLinkcheckCronEntry | S |
 | Optimize/AddLocationFieldTemplate.php | Add location field template | AddLocationFieldTemplate | S |
 | Optimize/AddMailListsFieldTemplate.php | Add mail lists field template | AddMailListsFieldTemplate | S |
 | Optimize/AddMandatoryDiscApp.php | Add mandatory discussion app field | AddMandatoryDiscApp | S |
@@ -194,7 +194,6 @@ Feeding/import back-ends; each declares `name()` + `description()` shown in the 
 | Optimize/AddRealFieldTemplate.php | Add real/float field template | AddRealFieldTemplate | S |
 | Optimize/AddSecretFieldTemplate.php | Add secret field template | AddSecretFieldTemplate | S |
 | Optimize/AddSeoFieldTemplate.php | Add SEO field template | AddSeoFieldTemplate | M |
-| Optimize/AddToexecuteCronEntry.php | Add toexecute cron entry | AddToexecuteCronEntry | S |
 | Optimize/AddUploadUrlFieldTemplate.php | Add upload URL field template | AddUploadUrlFieldTemplate | S |
 | Optimize/AddUrlPreviewFieldTemplate.php | Add URL preview field template | AddUrlPreviewFieldTemplate | S |
 | Optimize/BackupTables.php | Backup database tables | BackupTables | S |
@@ -246,7 +245,7 @@ Feeding/import back-ends; each declares `name()` + `description()` shown in the 
 | Optimize/RedefineViewRssTemplates.php | Redefine RSS view templates | RedefineViewRssTemplates | S |
 | Optimize/RedefineViewStaticTemplates.php | Redefine static view templates | RedefineViewStaticTemplates | S |
 | Optimize/RedefineViewUrlsTemplates.php | Redefine URLs view templates | RedefineViewUrlsTemplates | S |
-| Optimize/RemoveOptimizeCronEntry.php | Remove the obsolete misc/optimize.php cron entry | RemoveOptimizeCronEntry | S |
+| Optimize/RemoveAaCronEntries.php | sql_update: delete the AA jobs (alerts, xmlclient, linkcheck, toexecute, optimize, mysql_auth) from the `cron` table - they are queue tasks now | RemoveAaCronEntries | S |
 | Optimize/RemoveUndefineAlias.php | Remove undefined aliases | RemoveUndefineAlias | M |
 | Optimize/RequiredChecboxes.php | Handle required checkboxes | RequiredChecboxes | S |
 | Optimize/RestoreBckTables.php | Restore backup tables | RestoreBckTables | S |
@@ -363,7 +362,7 @@ Feeding/import back-ends; each declares `name()` + `description()` shown in the 
 
 | File | Purpose | Key API | Size |
 |------|---------|---------|------|
-| aa_cron.php | Cron job execution for slice | Procedural | M |
+| aa_cron.php | Manager of the admin's own `cron` table rows (menu item shown only when the table is not empty) | Procedural | M |
 | aa_emails.php | Email configuration for slice | Procedural | M |
 | aa_log.php | Log viewing for slice | Procedural | M |
 | aa_optimize.php | Database optimization utility | Procedural | M |
@@ -449,7 +448,7 @@ Feeding/import back-ends; each declares `name()` + `description()` shown in the 
 | um_uedit.php | User account editor | Procedural | L |
 | usershow.php | User information display | Procedural | M |
 | write_mail.php | Email compose form | Procedural | M |
-| xmlclient.php | Cross-server XML client | DB_AA, Feed, Toexecute | M |
+| xmlclient.php | Feeding entry point: one feed by id (run/test/source buttons) or all feeds via AA\Later\FeedsRun | Feed, FeedsRun | M |
 <!-- /SECTION:admin -->
 
 <!-- SECTION:include -->
@@ -575,7 +574,6 @@ Note: *.php3 files are legacy wrappers that include the .php version.
 | links/link.class.php | Core link object class | linkobj, linkassignment | XL |
 | links/linkedit.php | Link editor with approval workflow | Link editor form | L |
 | links/linkedit2.php | Process link edit form submission | Link update | M |
-| links/linkcheck.php | Link validation/verification | Link verification | S |
 | links/linksearch.php | Link search functionality | Link search | M |
 | links/menu.php | Links module menu | Menu UI | M |
 | links/moddelete.php | Delete module confirmation | Module deletion | S |

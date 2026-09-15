@@ -125,6 +125,17 @@ inputs and can be deleted on a server (see INSTALL); the built files stay in
   _No longer maintained. Removed 2026-09-11 - honzam (see older apc-aa branches to get the code)_
 
 /misc/**optimize.php** - OPTIMIZE TABLE over the AA tables, fetched weekly over HTTP by the AA cron with `key=<first five characters of DB_PASSWORD>`
-  The key was stored in `cron.params`, shown on admin/aa_cron.php and written into the web server's access log on every run. Replaced by the queue task src/Later/OptimizeTables.php (planned weekly from src/Later/ScheduleAaTasks.php, no HTTP, no key, work split into 30 s runs so it never blocks the queue). The cron row is removed by src/Optimize/RemoveOptimizeCronEntry.php (renamed from AddOptimizeCronEntry.php, which used to install it).
+  The key was stored in `cron.params`, shown on admin/aa_cron.php and written into the web server's access log on every run. Replaced by the queue task src/Later/OptimizeTables.php (planned weekly from src/Later/ScheduleAaTasks.php, no HTTP, no key, work split into 30 s runs so it never blocks the queue). The cron row is removed by src/Optimize/RemoveAaCronEntries.php (2026-09-15; before that by RemoveOptimizeCronEntry.php, renamed from AddOptimizeCronEntry.php, which used to install it).
   _No longer maintained. Removed 2026-09-11 - honzam (see older apc-aa branches to get the code)_
 
+/modules/links/**linkcheck.php** - hourly link validation, fetched over HTTP by the AA cron
+  Had been failing on every run since AA\Util\Linkcheck moved to src/ (it still required the removed include/linkcheck.class.php). Replaced by the queue task src/Later/LinkcheckRun.php (planned hourly from src/Later/ScheduleAaTasks.php); Linkcheck::checking() itself is fixed in the same change (it read the row list instead of the row).
+  _No longer maintained. Removed 2026-09-15 - honzam (see older apc-aa branches to get the code)_
+
+/src/Optimize/**AddAlertsCronEntry.php**
+/src/Optimize/**AddFeedingCronEntry.php**
+/src/Optimize/**AddLinkcheckCronEntry.php**
+/src/Optimize/**AddToexecuteCronEntry.php**
+/src/Optimize/**RemoveOptimizeCronEntry.php** - sql_update optimizers that installed (or, the last one, removed) AA's own rows of the `cron` table
+  All AA periodic jobs are queue tasks since 2026-09 (AA\Later\AlertsSweep, FeedsRun, LinkcheckRun, OptimizeTables, AA_Mysqlauth_Maintain; cron.php runs the queue itself through Toexecute::runQueue()), so nothing installs cron rows any more. The one class src/Optimize/RemoveAaCronEntries.php deletes whatever of those rows is left (.php3 and hand-renamed variants included); the `cron` table stays for the admin's own scripts. AddEmailTemplatesCronEntry.php stays - despite the name it installs the alerts e-mail templates, not a cron row.
+  _No longer maintained. Removed 2026-09-15 - honzam (see older apc-aa branches to get the code)_

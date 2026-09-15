@@ -72,6 +72,14 @@ class ScheduleAaTasks implements LaterInterface
 
         $toexecute->laterOnce(new ToexecuteCleanup(), [], "ToexecuteCleanup", 10, now() + (60 * 60 * 24));
 
+        // the sweeps that were cron table rows until 2026-09: alerts (instant + digests), feeds, link check
+        foreach (AlertsSweep::SCHEDULE as $howoften => $when) {
+            $priority = ($howoften === 'instant') ? 100 : 10;   // readers wait for the instant sweep; the digests may queue behind mails
+            $toexecute->laterOnce(new AlertsSweep($howoften), [], "AlertsSweep:$howoften", $priority, (int) strtotime($when));
+        }
+        $toexecute->laterOnce(new FeedsRun(), [], 'FeedsRun', 100, time() + 900);
+        $toexecute->laterOnce(new LinkcheckRun(), [], 'LinkcheckRun', 10, time() + 3600);
+
         // purge MissCache forge-on-miss image cache: files unused > 30 days, plus a 2 GB size cap
         $toexecute->laterOnce(new MissCachePurge(), [], "MissCachePurge", 10, now() + (60 * 60 * 24));
 

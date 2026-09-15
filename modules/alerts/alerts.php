@@ -30,7 +30,7 @@ https://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-use AA\IO\DB\DB_AA;
+use AA\Later\AlertsSweep;
 
 if (!defined("AA_ID")) {
     require_once __DIR__ . "/../../include/config.php";
@@ -38,71 +38,20 @@ if (!defined("AA_ID")) {
 require_once __DIR__ . "/../../include/locsess.php";
 require_once __DIR__ . "/../../include/util.php";
 require_once __DIR__ . "/../../include/varset.php";
-// mini gettext language environment (the _m() function)
-require_once __DIR__ . "/../../include/mgettext.php";
 
-if (!$lang) {
-    $lang = "en";
-}
-mgettext_bind($lang, 'alerts');
-require_once __DIR__ . "/util.php";
-
-
-require_once __DIR__ . "/../../modules/alerts/lang.php";
-require_once __DIR__ . "/../../include/item.php";
-require_once __DIR__ . "/../../include/view.php";
-
-require_once __DIR__ . "/../../include/searchlib.php";
-require_once __DIR__ . "/../../modules/alerts/alerts_sending.php";
-
-
-/** This script is possible to run from commandline (so also from cron). The
- * benefit is, that the script then can run as long as you want - it is not
- * stoped be Apache after 2 minutes or whatever is set in TimeOut
- * The commandline could look like:
- *   # php alert.php3 howoften=weekly
- * or with 'nice' and skiping to right directory for example:
+/** Manual run of one alerts sweep from the command line - the periodic ones
+ *  are AA\Later\AlertsSweep tasks in the queue. Parameters
+ *  howoften=instant|daily|weekly|twoweeks|monthly and fix=1 (only the
+ *  collections not processed within their period):
  *   # cd /var/www/example.org/apc-aa/modules/alerts && nice php alerts.php howoften=weekly
- * The command above could be used from cron.
+ *  Not over HTTP any more: until 2026-09 cron.php fetched it that way, which
+ *  let anyone trigger a mail-sending sweep.
  */
-
-// get 'howoften' parameter from comandline, if it is specified.
-
-if (isset($_SERVER["argv"])) {
-    $cmd_parameters = [];
-    parse_str(implode('&', $_SERVER["argv"]), $cmd_parameters);
-    if ($cmd_parameters['howoften']) {
-        $howoften = $cmd_parameters['howoften'];
-    }
-    // $fix - if set, then send only e-mail to not processed collections
-    if ($cmd_parameters['fix']) {
-        $fix      = $cmd_parameters['fix'];
-    }
+if (PHP_SAPI !== 'cli') {
+    http_response_code(403);
+    exit;
 }
-
-$frequency['daily']     = 24 * 60 * 60;
-$frequency['weekly']    =  7 * $frequency['daily'];
-$frequency['twoweeks']  = 14 * $frequency['daily'];
-$frequency['monthly']   = 31 * $frequency['daily'];
-//$frequency['irregular']  = ...;   // not specified - used for irregular sending - see AA_Response('Alertitem', ...
-
-if (!is_object($db)) {
-    $db = getDB();
-}
-
-$howoften_options = get_howoften_options();
-
-if ($howoften_options[$howoften]) {
-    initialize_last();
-    if ($fix == 1) {
-        // send only e-mail to not processed collections
-        $SQL = "SELECT collectionid FROM alerts_collection_howoften WHERE howoften = '$howoften' AND last < " . (time() - $frequency[$howoften]);
-        $colections = GetTable2Array($SQL, '', 'collectionid');
-    } else {
-        $colections = 'all';
-    }
-    AA_Log::write("ALERTS", $howoften, new AA_Logentry_Alerts(['phase' => 'start', 'detail' => $fix ? ('fix ' . implode(',', $colections)) : 'all']));
-    $mail_count = send_emails($howoften, $colections, "all", true, "");
-    AA_Log::write("ALERTS", $howoften, new AA_Logentry_Alerts(['phase' => 'sent', 'count' => $mail_count + 0]));
-    //echo "<br>Count of emails sent is <b>".($mail_count+0)."</b><br>";
-}
+$args = [];
+parse_str(implode('&', $_SERVER['argv'] ?? []), $args);
+$sweep = new AlertsSweep((string) ($args['howoften'] ?? ''), !empty($args['fix']));
+echo safe($sweep->toexecutelater());
