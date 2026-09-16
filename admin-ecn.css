@@ -1111,7 +1111,7 @@ li.aa-leftmenu-header {
     /* user-initiated one-shot collapse; width is layout, so it's guarded by
        prefers-reduced-motion below. ease-out-quint, no bounce. */
     transition: max-width 0.18s cubic-bezier(0.22, 1, 0.36, 1),
-                flex-basis 0.18s cubic-bezier(0.22, 1, 0.36, 1);
+    flex-basis 0.18s cubic-bezier(0.22, 1, 0.36, 1);
 }
 /* Quiet, flat chevron — borderless, native to the rail (echoes .leftmenu a:hover),
    not a floating app button. Colour tints toward press-black, never #000. */
@@ -2379,8 +2379,11 @@ summary.aa-ad-filter {
     flex-direction: column;    /* searchline (row 0 + chip), then the advanced block */
     align-items: stretch;      /* rows fill the column width */
     row-gap: 4px;
-    flex: 1 1 auto;
+    flex: 0 1 550px;
     min-width: 0;
+}
+.aa-filter.expanded {
+    flex: 1 1 auto;
 }
 .aa-sb-searchline {
     display: flex;
@@ -2441,6 +2444,7 @@ summary.aa-ad-filter {
 .aa-filter.expanded .aa-sbrow-fld {
     min-width: 160px;
     max-width: 260px;
+    margin-right: 2px;
 }
 .aa-filter.expanded .aa-sbrow-fld select {
     width: 100%;
