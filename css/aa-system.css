@@ -507,6 +507,11 @@ i.ico.aa-tool-edit:hover {
 /* <aa-code> - CodeMirror 6. Grows with content, like the CodeMirror 5 block above. */
 aa-code {
     display: block;
+    /* fills the row in a flex parent (.aa-langtrans on multilingual fields) - it would
+       shrink to its content there, i.e. to nothing when the field is empty;
+       min-width: 0 keeps an open search panel from pushing a narrow row wider */
+    flex: 1;
+    min-width: 0;
 }
 aa-code .cm-editor {
     margin: 2px;
