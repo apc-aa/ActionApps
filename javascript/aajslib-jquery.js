@@ -409,7 +409,7 @@ async function AA_Translate(text, from, to) {
 /** Direct call to the translation service. Returns null on any failure - never
  *  throws - so AA_Translate() can just try the server instead. POST, not GET:
  *  over GET the text hits a ~16 kB URL limit.
- *  @returns {Promise<?string>} */
+ *  @returns {Promise<string|null>} */
 async function AA__TranslateDirect(text, from, to) {
     const url = 'https://translate.googleapis.com/translate_a/single?client=gtx&dt=t'
               + '&sl=' + encodeURIComponent(from) + '&tl=' + encodeURIComponent(to);
