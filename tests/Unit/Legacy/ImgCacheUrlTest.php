@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Legacy;
 
+use AA\Cache\ImgCache;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
@@ -20,10 +21,10 @@ use PHPUnit\Framework\TestCase;
  * a session and a database), so the class is extracted from the file and evaluated
  * without its parent. The test therefore runs the real, current source.
  *
- * Its configuration constants are renamed to test-only ones on the way in: other test
- * files define AA_INSTAL_PATH & co. at file scope, so whichever of them loads first would
- * otherwise decide the values here. It also makes the AA_MISSCACHE_IMG_DISABLE opt-out
- * testable at all - a second copy of the same source is evaluated with it defined.
+ * The constants it reads directly are renamed to test-only ones on the way in: other test
+ * files define AA_INSTAL_URL & co. at file scope, so whichever of them loads first would
+ * otherwise decide the values here. The image cache settings it gets from ImgCache, which
+ * reads config.php once per request - the test hands them in there, the opt-out included.
  *
  * The eval() below is the technique, not a defect: its input is this repository's own
  * source plus a strtr() of constant names, never anything external, and tests/ is deleted
@@ -31,19 +32,23 @@ use PHPUnit\Framework\TestCase;
  */
 final class ImgCacheUrlTest extends TestCase
 {
-    /** the class under test, and a second copy of it with the opt-out constant set */
+    /** the class under test */
     private const CLS = 'AA_Test_Stringexpand_Img';
-    private const CLS_OFF = 'AA_Test_Stringexpand_Img_Off';
-    private const CLS_OLD = 'AA_Test_Stringexpand_Img_OldConfig';
 
     /** config.php constants the class reads -> the test-only ones defined below */
     private const CONSTANTS = [
-        'AA_HTTP_DOMAIN'      => 'AA_T_HTTP_DOMAIN',
-        'AA_INSTAL_PATH'      => 'AA_T_INSTAL_PATH',
-        'AA_INSTAL_URL'       => 'AA_T_INSTAL_URL',
-        'IMG_UPLOAD_URL'      => 'AA_T_IMG_UPLOAD_URL',
-        'IMG_UPLOAD_PATH'     => 'AA_T_IMG_UPLOAD_PATH',
-        'IMG_UPLOAD_DIR_MODE' => 'AA_T_IMG_UPLOAD_DIR_MODE',
+        'AA_HTTP_DOMAIN' => 'AA_T_HTTP_DOMAIN',
+        'AA_INSTAL_PATH' => 'AA_T_INSTAL_PATH',
+        'AA_INSTAL_URL'  => 'AA_T_INSTAL_URL',
+    ];
+
+    /** what config.php defines for the image cache, as ImgCache holds it */
+    private const CACHE_CONFIG = [
+        'IMG_UPLOAD_URL'           => 'https://example.org/img_upload/',
+        'IMG_UPLOAD_PATH'          => '/nonexistent/aa-img-cache-test/img_upload/',   // never touched: the render reads no file, which is the point
+        'IMG_UPLOAD_DIR_MODE'      => 0o775,
+        'AA_INSTAL_URL'            => 'https://example.org/apc-aa/',
+        'AA_MISSCACHE_IMG_DISABLE' => false,
     ];
 
     public static function setUpBeforeClass(): void
@@ -59,28 +64,30 @@ final class ImgCacheUrlTest extends TestCase
         \define('AA_T_HTTP_DOMAIN', 'https://example.org/');
         \define('AA_T_INSTAL_PATH', '/apc-aa/');
         \define('AA_T_INSTAL_URL', 'https://example.org/apc-aa/');
-        \define('AA_T_IMG_UPLOAD_URL', 'https://example.org/img_upload/');
-        // never touched: the render reads no file, which is the point
-        \define('AA_T_IMG_UPLOAD_PATH', '/nonexistent/aa-img-cache-test/img_upload/');
-        \define('AA_T_IMG_UPLOAD_DIR_MODE', octdec('0775'));
-        \define('AA_T_MISSCACHE_OFF', true);
 
         $source = file_get_contents(__DIR__ . '/../../../include/stringexpand.php');
         self::assertIsString($source);
-        $class = self::extractClass($source, 'AA_Stringexpand_Img');
+        $class = preg_replace('~^class \w+ extends \w+~', 'class ' . self::CLS, self::extractClass($source, 'AA_Stringexpand_Img'), 1);
+        eval(strtr($class, self::CONSTANTS));
+    }
 
-        // the same source twice: once as an install has it, once with the cache turned off
-        $rename = static fn(string $to): string => preg_replace('~^class \w+ extends \w+~', "class {$to}", $class, 1);
-        eval(strtr($rename(self::CLS), self::CONSTANTS + ['AA_MISSCACHE_IMG_DISABLE' => 'AA_T_MISSCACHE_UNDEFINED']));
-        eval(strtr($rename(self::CLS_OFF), self::CONSTANTS + ['AA_MISSCACHE_IMG_DISABLE' => 'AA_T_MISSCACHE_OFF']));
-        // and once as a config.php3 predating IMG_UPLOAD_URL - nothing may dereference it
-        eval(strtr($rename(self::CLS_OLD), ['IMG_UPLOAD_URL' => 'AA_T_UNDEFINED_CONSTANT'] + self::CONSTANTS + ['AA_MISSCACHE_IMG_DISABLE' => 'AA_T_MISSCACHE_UNDEFINED']));
+    public static function tearDownAfterClass(): void
+    {
+        self::cacheConfig(null);   // ImgCache reads the real config again
     }
 
     protected function setUp(): void
     {
         $_SERVER['HTTP_HOST'] = 'example.org';
+        self::cacheConfig(self::CACHE_CONFIG);
         $this->resetMemos();
+    }
+
+    /** What ImgCache holds as read from config.php - false as when a constant is missing. */
+    private static function cacheConfig(array|false|null $config): void
+    {
+        (new \ReflectionProperty(ImgCache::class, 'config'))->setValue(null, $config);
+        (new \ReflectionProperty(ImgCache::class, 'instances'))->setValue(null, []);
     }
 
     /** Source of one class, from "class X" to its closing brace (comments/strings safe). */
@@ -110,13 +117,10 @@ final class ImgCacheUrlTest extends TestCase
         self::fail("class $name not found in include/stringexpand.php");
     }
 
-    /** The class computes its cache setup once per request - drop it between cases. */
-    private function resetMemos(string $cls = self::CLS): void
+    /** The class computes whether urls are relative once per request - drop it between cases. */
+    private function resetMemos(): void
     {
-        $class = new \ReflectionClass($cls);
-        foreach (['cache_src_base' => null, 'cache_url_relative' => null, 'miss_cache' => []] as $name => $value) {
-            $class->getProperty($name)->setValue(null, $value);
-        }
+        (new \ReflectionProperty(self::CLS, 'cache_url_relative'))->setValue(null, null);
     }
 
     private function url(string $image, string $params, string $type = 'rel_escaped'): string
@@ -130,12 +134,9 @@ final class ImgCacheUrlTest extends TestCase
      */
     public function testConfigWithoutTheCacheConstantsFallsBackInsteadOfDying(): void
     {
-        $this->resetMemos(self::CLS_OLD);
+        self::cacheConfig(false);
 
-        self::assertSame(
-            '/apc-aa/img.php?src=/img_upload/a/p.jpg&amp;w=150',
-            \call_user_func([self::CLS_OLD, 'getUrl'], 'img_upload/a/p.jpg', 'w=150', 'rel_escaped'),
-        );
+        self::assertSame('/apc-aa/img.php?src=/img_upload/a/p.jpg&amp;w=150', $this->url('img_upload/a/p.jpg', 'w=150'));
     }
 
     /** The img.php fallback lands in <img src="...">, so the source must not break out. */
@@ -150,12 +151,17 @@ final class ImgCacheUrlTest extends TestCase
     /** An install which set AA_MISSCACHE_IMG_DISABLE keeps every image on img.php. */
     public function testOptOutConstantKeepsEverythingOnImgPhp(): void
     {
-        $this->resetMemos(self::CLS_OFF);
+        self::cacheConfig(['AA_MISSCACHE_IMG_DISABLE' => true] + self::CACHE_CONFIG);
 
-        self::assertSame(
-            '/apc-aa/img.php?src=/img_upload/a/p.jpg&amp;w=150',
-            \call_user_func([self::CLS_OFF, 'getUrl'], 'img_upload/a/p.jpg', 'w=150', 'rel_escaped'),
-        );
+        self::assertSame('/apc-aa/img.php?src=/img_upload/a/p.jpg&amp;w=150', $this->url('img_upload/a/p.jpg', 'w=150'));
+    }
+
+    /** With the uploads at the domain root no url prefix tells an uploaded image from any other file. */
+    public function testUploadsAtTheDomainRootKeepEverythingOnImgPhp(): void
+    {
+        self::cacheConfig(['IMG_UPLOAD_URL' => 'https://example.org/'] + self::CACHE_CONFIG);
+
+        self::assertSame('/apc-aa/img.php?src=/a/p.jpg&amp;w=150', $this->url('a/p.jpg', 'w=150'));
     }
 
     /** Sources under IMG_UPLOAD, in every spelling a template may hand over. */

@@ -145,7 +145,8 @@ class MissCacheRouting extends AbstractOptimize
      *  @return ?Finding null when img.php makes the image */
     private static function imgPhpFinding(): ?Finding
     {
-        $img_php                    = constant('AA_INSTAL_URL') . 'img.php?src=/' . ImgCache::srcBase(constant('IMG_UPLOAD_URL')) . ImgCache::SEGMENT . '/' . self::PROBE_IMAGE . '&w=1';
+        $img_php                    = constant('AA_INSTAL_URL') . 'img.php?src=/' . ImgCache::srcBase()
+ . ImgCache::SEGMENT . '/' . self::PROBE_IMAGE . '&w=1';
         [$status, $type, $location] = self::probe($img_php, false);
         if (self::isImage($status, $type)) {
             return null;

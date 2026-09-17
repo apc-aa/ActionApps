@@ -8627,7 +8627,7 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
             // MissCache splits the query on '&', so hand it the raw form. useCache() lets only
             // plain directory names through and the library encodes the file name, so safe()
             // changes nothing today - it is here so that no later change can open the <img src="">
-            $url = self::missCache(($type !== 'abs_raw') && self::cacheUrlIsRelative())
+            $url = \AA\Cache\ImgCache::get(($type !== 'abs_raw') && self::cacheUrlIsRelative())
                        ->getCachedUrl('pT', $image . '?' . str_replace('&amp;', '&', $phpthumb_params));
             return ($type === 'abs_raw') ? $url : safe($url);
         }
@@ -8665,14 +8665,10 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
      */
     protected static function useCache(string $image, string $phpthumb_params): bool
     {
-        if (!self::cacheConfigured()) {
+        if (!\AA\Cache\ImgCache::enabled()) {   // also false for IMG_UPLOAD at the domain root, where the prefix gate below could not work
             return false;
         }
-        // with IMG_UPLOAD at the domain root there is no prefix that tells an uploaded
-        // image from any other file on the server, so the gate below cannot do its job
-        if (($base = self::cacheSrcBase()) === '') {
-            return false;
-        }
+        $base = \AA\Cache\ImgCache::srcBase();
         // 'new', 'phpThumbDebug', 'down', a second 'src', ... - the dispatcher refuses them, so a cache url would only ever show its blank
         if (array_intersect_key(\AA\Util\PhpThumbParams::parse($phpthumb_params), \MissCache\Plugins\PhpThumbPlugin::FOREIGN_PARAMS)) {
             return false;
@@ -8702,26 +8698,13 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
      */
     protected static function isOwnHost(string $image): bool
     {
-        if (!self::cacheConfigured()) {
+        if (!\AA\Cache\ImgCache::enabled()) {
             return false;
         }
         $host = self::stripWww((string) parse_url($image, PHP_URL_HOST));
         return ($host === '')
-            || ($host === self::stripWww((string) parse_url(IMG_UPLOAD_URL, PHP_URL_HOST)))
+            || ($host === self::stripWww((string) parse_url(\AA\Cache\ImgCache::uploadUrl(), PHP_URL_HOST)))
             || ($host === self::stripWww((string) parse_url(AA_HTTP_DOMAIN, PHP_URL_HOST)));
-    }
-
-    /** Whether the cache may be used at all: not switched off, and every constant it
-     *  needs really defined - a config.php3 older than them must not be guessed at, and
-     *  dereferencing one that is missing is a fatal error on every page with an image.
-     */
-    protected static function cacheConfigured(): bool
-    {
-        if (defined('AA_MISSCACHE_IMG_DISABLE') && AA_MISSCACHE_IMG_DISABLE) {
-            return false;
-        }
-        return defined('IMG_UPLOAD_URL') && defined('IMG_UPLOAD_PATH')
-            && defined('IMG_UPLOAD_DIR_MODE') && defined('AA_INSTAL_URL') && defined('AA_HTTP_DOMAIN');
     }
 
     /** www.example.org and example.org are one host here - as in PageCache::globalKeyArray() */
@@ -8730,19 +8713,8 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
         return str_starts_with($host, 'www.') ? substr($host, 4) : $host;
     }
 
-    /** Everything below is the same for every {img:} on the page, so it is computed once.
-     *  Separate properties (not function statics) so a test can reset them.
-     */
-    protected static ?string $cache_src_base = null;
+    /** the same for every {img:} on the page, so computed once - a property, so a test can reset it */
     protected static ?bool $cache_url_relative = null;
-    /** @var array<int, \MissCache\MissCache> */
-    protected static array $miss_cache = [];
-
-    /** document-root relative path of IMG_UPLOAD with a trailing slash ("img_upload/") */
-    protected static function cacheSrcBase(): string
-    {
-        return self::$cache_src_base ??= \AA\Cache\ImgCache::srcBase(IMG_UPLOAD_URL);
-    }
 
     /** True when IMG_UPLOAD_URL is served by the host of this request, so a document-root
      *  relative url reaches the very same file - then we emit one, exactly like the img.php
@@ -8754,24 +8726,11 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
     protected static function cacheUrlIsRelative(): bool
     {
         if (self::$cache_url_relative === null) {
-            $img_host     = self::stripWww((string) parse_url(IMG_UPLOAD_URL, PHP_URL_HOST));
+            $img_host     = self::stripWww((string) parse_url(\AA\Cache\ImgCache::uploadUrl(), PHP_URL_HOST));
             $request_host = self::stripWww((string) ($_SERVER['HTTP_HOST'] ?? ''));
             self::$cache_url_relative = $img_host === $request_host;
         }
         return self::$cache_url_relative;
-    }
-
-    /** {img:} is expanded once per listed item, so build the object once per request.
-     *  build(), not ImgCache::get(): the unit test of this class evaluates it with renamed
-     *  config constants, which get() would not see. */
-    protected static function missCache(bool $relative): \MissCache\MissCache
-    {
-        return self::$miss_cache[(int) $relative] ??= \AA\Cache\ImgCache::build(
-            $relative ? '/'.self::cacheSrcBase() : IMG_UPLOAD_URL,
-            IMG_UPLOAD_PATH,
-            (int) IMG_UPLOAD_DIR_MODE,
-            AA_INSTAL_URL
-        );
     }
 
 }
