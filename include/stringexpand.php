@@ -8456,9 +8456,10 @@ class AA_Stringexpand_Avatar extends AA_Stringexpand {
  *  Performance: every <info> which prints the size ('img', 'imgb', 'picture', 'width',
  *  'height', 'hw', 'html') normally has to measure the generated image over HTTP, which
  *  also forces phpThumb to render it (70-110 ms). That is skipped whenever the size
- *  follows from the parameters alone - see pinnedSize() - i.e. when both w and h are
- *  given together with iar, far or zc (aoe=1 is added to zc automatically). Prefer those
- *  combinations; 'im' and 'url' never measure at all.
+ *  follows from the parameters alone - see AA\Util\PhpThumbParams::pinnedSize() - i.e.
+ *  when both w and h are given together with iar, far or zc (aoe=1 is added to zc
+ *  automatically). Prefer those combinations; 'im' and 'url' never measure at all. The
+ *  extended State Check (AA\Optimize\ImgMeasuring) lists the templates which do measure.
  *
  *  The emitted url points at the MissCache forge-on-miss cache, so the thumbnail is
  *  generated once and every later request is served by the web server without touching
@@ -8502,16 +8503,9 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
         }
 
         // all remaining $info values need the size of the generated image - 'width' and
-        // 'height' just one of the two. 'imgtype' and 'mime' need the output format as
-        // well, which no parameter combination tells us, so those always have to measure
-        $size = (($info === 'imgtype') || ($info === 'mime')) ? [null, null] : self::pinnedSize($phpthumb_params);
-        $known = match ($info) {
-            'width'  => isset($size[0]),
-            'height' => isset($size[1]),
-            default  => isset($size[0], $size[1]),   // $a[3] below is only read by these
-        };
-        if ($known) {
-            $a = [$size[0], $size[1], 0, 'width="'.$size[0].'" height="'.$size[1].'"'];  // same shape as getimagesize()
+        // 'height' just one of the two, 'imgtype' and 'mime' the output format as well
+        if (($size = \AA\Util\PhpThumbParams::knownSize($info, $phpthumb_params)) !== null) {
+            $a = [$size[0], $size[1], 0, 'width="'.$size[0].'" height="'.$size[1].'"'];  // same shape as getimagesize(); $a[3] is read only when both are known
         } else {
             $a = @getimagesize(self::getUrl($image, $phpthumb_params, 'measure'));      // slow - self-HTTP request which also renders the thumbnail
             if (! $a) {
@@ -8538,101 +8532,6 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
         return '';
     }
 
-    /** Parameters which make the output size depend on the source image, so it can't
-     *  be predicted from the parameters alone:
-     *    wp,hp,wl,hl,ws,hs - replace w/h based on the orientation of the source
-     *    sx,sy,sw,sh       - source crop takes precedence over iar/far (ImageMagick backend)
-     *    fltr              - 'crop' shrinks the output, 'bord'/'drop'/'fram' grow it (GD backend)
-     *    ra,ar             - rotation (90° swaps w and h, other angles grow the canvas)
-     *    xto               - outputs the EXIF thumbnail instead of a generated one
-     *    new               - generates an image instead of resizing <src>
-     */
-    protected const SIZE_UNPREDICTABLE_PARAMS = ['wp' => true, 'hp' => true, 'wl' => true, 'hl' => true, 'ws' => true, 'hs' => true, 'sx' => true, 'sy' => true, 'sw' => true, 'sh' => true, 'fltr' => true, 'ra' => true, 'ar' => true, 'xto' => true, 'new' => true, 'phpThumbDebug' => true];
-
-    /** parseParams() results, keyed by the raw parameter string. {img:} is typically
-     *  expanded once per listed item with the very same parameters, and every expansion
-     *  parses them repeatedly (pinnedSize() plus addAoe4ZoomCrop() in each getUrl()) */
-    protected static array $parsed_params = [];
-
-    /** Parses a phpThumb parameter string (either '&' or '&amp;' separated) into an array */
-    protected static function parseParams(string $phpthumb_params): array
-    {
-        if (isset(self::$parsed_params[$phpthumb_params])) {
-            return self::$parsed_params[$phpthumb_params];
-        }
-        $params = [];
-        parse_str(str_replace('&amp;', '&', $phpthumb_params), $params);
-        if (count(self::$parsed_params) > 64) {   // a page uses a handful of distinct parameter
-            self::$parsed_params = [];            // strings - guard against templates interpolating values into them
-        }
-        return self::$parsed_params[$phpthumb_params] = $params;
-    }
-
-    /** phpThumb's zoom crop (zc) fills the whole w × h box only when enlargement is
-     *  allowed - without aoe=1 its ImageMagick backend silently returns the (smaller)
-     *  source size instead. Adding aoe=1 makes the result deterministic, which lets
-     *  pinnedSize() skip the expensive measuring below. Idempotent.
-     */
-    protected static function addAoe4ZoomCrop(string $phpthumb_params): string
-    {
-        $params = self::parseParams($phpthumb_params);
-        if (empty($params['zc']) || empty($params['w']) || empty($params['h']) || isset($params['aoe'])) {
-            return $phpthumb_params;
-        }
-        return $phpthumb_params . (str_contains($phpthumb_params, '&amp;') ? '&amp;' : '&') . 'aoe=1';
-    }
-
-    /** Output dimensions for the parameter combinations where phpThumb always renders
-     *  exactly w × h. For those we can skip @getimagesize() on the generated image -
-     *  that is a self-HTTP request which also forces the thumbnail to be rendered
-     *  (70-110 ms measured), just to learn a size we already know.
-     *
-     *  The rule is the intersection of both phpThumb backends - GD
-     *  (CalculateThumbnailDimensions) and ImageMagick (ImageMagickThumbnailToGD) -
-     *  so it holds no matter which one the install uses.
-     *
-     *  @return array  [width|null, height|null] - null for a dimension which has to be measured
-     */
-    protected static function pinnedSize(string $phpthumb_params): array
-    {
-        $params = self::parseParams($phpthumb_params);
-        $w      = (int)($params['w'] ?? 0);
-        $h      = (int)($params['h'] ?? 0);
-        // ImageMagick tests aoe == 1 literally, so aoe=2 does not enable enlargement
-        $enlarge = ($params['aoe'] ?? null) == 1;
-
-        if ($w && $h) {
-            // iar (ignore aspect ratio) and far (fixed aspect ratio) always fill the whole
-            // box. zc (zoom crop) does so only with aoe=1, which getUrl() adds whenever aoe
-            // is missing - so only an explicit, different aoe breaks it.
-            $fills_box = !empty($params['iar']) || !empty($params['far'])
-                      || (!empty($params['zc']) && (!isset($params['aoe']) || $enlarge));
-            // when both are given without filling the box the image is fitted inside it,
-            // so which of the two is met depends on the aspect ratio of the source
-            return ($fills_box && !self::hasUnpredictableParam($params)) ? [$w, $h] : [null, null];
-        }
-
-        // Only one dimension asked for: with enlargement allowed it is always met exactly,
-        // the other one then follows the aspect ratio of the source. iar/far need both
-        // dimensions and are no-ops here, but zc turns the missing one into a square box
-        // which the source can cap ('h=100&zc=1&aoe=1' gives 50x50 for a 106x50 source).
-        if ($enlarge && empty($params['zc']) && !self::hasUnpredictableParam($params)) {
-            if ($w) {
-                return [$w, null];
-            }
-            if ($h) {
-                return [null, $h];
-            }
-        }
-        return [null, null];
-    }
-
-    /** True when any parameter makes the output size depend on the source image */
-    protected static function hasUnpredictableParam(array $params): bool
-    {
-        return (bool)array_intersect_key($params, self::SIZE_UNPREDICTABLE_PARAMS);
-    }
-
     protected static function getPicture(string $image, string $phpthumb_params, int $w, int $h, string $title='', string $add=''): string
     {
         if (!$w || !$h) {
@@ -8646,7 +8545,7 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
         // the alternative format is a different image, so it needs its own url - appending
         // "&f=..." to the first one would silently produce a cache url with no effect
         $src        = self::getUrl($image, $phpthumb_params, 'rel_escaped');
-        $format_src = self::getUrl($image, self::setFormat($phpthumb_params, $format), 'rel_escaped');
+        $format_src = self::getUrl($image, \AA\Util\PhpThumbParams::setFormat($phpthumb_params, $format), 'rel_escaped');
 
         return "<picture class=aa-picture>"
              . "\n  <source srcset=\"$format_src\" type=\"image/$format\">"
@@ -8707,7 +8606,7 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
         if (empty($phpthumb_params)) {
             return $image;
         }
-        $phpthumb_params = self::addAoe4ZoomCrop($phpthumb_params);  // keeps every emitted url (and cache key) consistent with pinnedSize()
+        $phpthumb_params = \AA\Util\PhpThumbParams::addAoe4ZoomCrop($phpthumb_params);  // keeps every emitted url (and cache key) consistent with pinnedSize()
         $own_host        = self::isOwnHost($image);                  // the normalisation below deletes the host, so ask now
 
         // it is much better for phpThumb to access the files as files relative
@@ -8781,7 +8680,7 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
         if (($base = self::cacheSrcBase()) === '') {
             return false;
         }
-        if (array_intersect_key(self::parseParams($phpthumb_params), self::UNCACHEABLE_PARAMS)) {
+        if (array_intersect_key(\AA\Util\PhpThumbParams::parse($phpthumb_params), self::UNCACHEABLE_PARAMS)) {
             return false;
         }
         if (!str_starts_with($image = ltrim($image, '/'), $base)) {
@@ -8877,16 +8776,6 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
         );
     }
 
-    /** Sets (or replaces) the phpThumb output format in a parameter string, keeping
-     *  whichever separator it uses - '&' or the HTML escaped '&amp;'.
-     */
-    protected static function setFormat(string $phpthumb_params, string $format): string
-    {
-        if (!isset(self::parseParams($phpthumb_params)['f'])) {
-            return $phpthumb_params . (str_contains($phpthumb_params, '&amp;') ? '&amp;' : '&') . "f=$format";
-        }
-        return preg_replace('~(^|&(?:amp;)?)f=[^&]*~', "\\1f=$format", $phpthumb_params);
-    }
 }
 
 /** Creates image with the specified text:

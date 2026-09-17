@@ -281,6 +281,7 @@ Feeding/import back-ends; each declares `name()` + `description()` shown in the 
 | Util/LogarithmIndex.php | Logarithmic indexing | LogarithmIndex | S |
 | Util/NamedInterface.php | Named object interface | NamedInterface | S |
 | Util/Paramwizard.php | Parameter wizard utility | Paramwizard | S |
+| Util/PhpThumbParams.php | What a phpThumb parameter string says about the image: size known without measuring, aoe for zc, output format | PhpThumbParams::knownSize(), pinnedSize(), parse(), setFormat() | S |
 | Util/ReportTrait.php | Reporting trait | ReportTrait | S |
 | Util/Searchfields.php | Search field management | Searchfields | M |
 | Util/SerializerTrait.php | __unserialize helper stripping legacy property prefixes | SerializerTrait | S |

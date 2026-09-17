@@ -368,23 +368,4 @@ final class ImgCacheUrlTest extends TestCase
     {
         self::assertStringStartsWith('https://example.org/img_upload/mC/', $this->url('img_upload/a/p.jpg', 'w=150', 'abs_raw'));
     }
-
-    /** @return array<string, array{0: string, 1: string, 2: string}> */
-    public static function formatProvider(): array
-    {
-        return [
-            'appended'             => ['w=150&h=99',        'avif', 'w=150&h=99&f=avif'],
-            'replaced'             => ['w=150&f=png&h=99',  'avif', 'w=150&f=avif&h=99'],
-            'replaced at the end'  => ['w=150&f=png',       'webp', 'w=150&f=webp'],
-            'escaped separator'    => ['w=150&amp;h=99',    'avif', 'w=150&amp;h=99&amp;f=avif'],
-            'escaped and replaced' => ['w=150&amp;f=png',   'avif', 'w=150&amp;f=avif'],
-        ];
-    }
-
-    #[DataProvider('formatProvider')]
-    public function testSetFormatKeepsOneOutputFormatAndTheSeparator(string $params, string $format, string $expected): void
-    {
-        $method = new \ReflectionMethod(self::CLS, 'setFormat');
-        self::assertSame($expected, $method->invoke(null, $params, $format));
-    }
 }
