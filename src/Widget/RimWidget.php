@@ -196,11 +196,7 @@ class RimWidget extends Widget
                            <input type="hidden" name="$input_name" id="$input_id" value="">
                            $downbuttons
                          </footer>
-                         <section class="itemselect" id=flt$base_id style="visibility:hidden">
-                           <section class="itemgroup">
-                               {$this->getFilterSelection('', 10)}
-                           </section>
-                         </section>
+                         <section class="itemselect" id=flt$base_id style="visibility:hidden"></section>
                        </section>
                      </article>
                    HTML;
