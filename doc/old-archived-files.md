@@ -144,3 +144,7 @@ inputs and can be deleted on a server (see INSTALL); the built files stay in
 /images/**ico-users-xs.png** - 16px person / people icons for the searchbar bookmark filters
   Dead since the searchbar redesign: the only rules loading them (`input[type="text"].aa-fiter-user`, `.aa-fiter-users` in admin-ecn.css) selected an input, while the class has always been rendered on the bookmark `<button class="aa-bm-name aa-fiter-user">` (include/searchbar.class.php). The button draws both icons as inline SVG data URIs, so nothing referenced the files.
   _No longer maintained. Removed 2026-09-15 - honzam (see older apc-aa branches to get the code)_
+
+/misc/**phpThumb/** - phpthumb.class.php, phpthumb.functions.php, phpthumb.filters.php, phpthumb.bmp.php, phpthumb.gif.php, phpthumb.ico.php, phpthumb.unsharp.php, phpthumb.config.php, phpThumb.config.php.default, cache/index.php, cache/source/index.php, fonts/readme.txt, images/readme.txt - the phpThumb library copied into AA in 2007
+  Left behind when phpThumb became a composer package in 2023 (honzito/phpthumb, installed to vendor/honzito/phpthumb): img.php loads it from there (AA_PHPTHUMB__DIR__), composer autoloads its class, and nothing included the copy any more - it only travelled with every install as dead, web-reachable code.
+  _No longer maintained. Removed 2026-09-17 - honzam (see older apc-aa branches to get the code)_
