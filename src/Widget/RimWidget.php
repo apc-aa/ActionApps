@@ -45,10 +45,11 @@ class RimWidget extends Widget
 
     protected function requireLibs($aa_property, $winfo): array
     {
+        $libs = array_merge(['aa-jslib'], parent::requireLibs($aa_property, $winfo));   // AA_$, AA_GetConf, AA_Response
         if (str_contains($this->getProperty('show_buttons', 'MRND'), 'M')) {
-            return array_merge(['orderable'], parent::requireLibs($aa_property, $winfo));
+            return array_merge(['orderable'], $libs);
         }
-        return parent::requireLibs($aa_property, $winfo);
+        return $libs;
     }
 
     /** script to run after the page DOM is loaded */
@@ -63,7 +64,9 @@ class RimWidget extends Widget
     protected function requireCssCode($aa_property, $winfo): string
     {
         /** @lang CSS */
-        return '.orderableghost  { opacity: 0.5; }';
+        return '.orderableghost  { opacity: 0.5; }
+                .aa-rim .itemselect[aria-busy] { opacity: 0.6; }
+                .aa-rim .itemselect .aa-rim-none { padding: 0 4px 5px; }';
     }
 
     protected function requireLibCode($aa_property, $winfo): string
@@ -89,6 +92,51 @@ class RimWidget extends Widget
                   }
               }
            })
+        }
+        /* Filters on each pause in typing. A newer query aborts the older request, so a slow answer
+           to "b" (50 items) never overwrites "bob". Old results stay dimmed while the new ones load,
+           so the list does not blink on every key. A single space lists the first items. */
+        function AA_RimSearch(input, base_id, sid, fid) {
+            const box = document.getElementById('flt' + base_id);
+            const q   = input.value;
+            if (q === (input.dataset.aaQuery ?? '')) {
+                return;
+            }
+            input.dataset.aaQuery = q;
+            clearTimeout(input.aaTimer);
+            input.aaAbort?.abort();
+            AA_RimSearchShow(input, base_id);
+            if (q === '') {
+                box.removeAttribute('aria-busy');
+                box.replaceChildren();
+                return;
+            }
+            box.setAttribute('aria-busy', 'true');
+            if (!box.firstElementChild) {
+                box.innerHTML = AA_GetConf('loader');
+            }
+            input.aaTimer = setTimeout(() => {
+                const abort = input.aaAbort = new AbortController();
+                fetch(AA_GetConf('path') + 'central/responder.php?command=Widget_Selection', {method: 'POST', body: new URLSearchParams({s: sid, f: fid, q: q}), headers: {'X-Requested-With': 'XMLHttpRequest'}, signal: abort.signal})
+                    .then(resp => resp.ok ? resp.text() : Promise.reject(new Error(resp.status + ' ' + resp.statusText)))
+                    .then(html => AA_RimSearchFill(box, html.trim()), err => abort.signal.aborted || AA_RimSearchFill(box, '', err.message));
+            }, 200);
+        }
+        /* the list is open only while the user is in the field and has typed something */
+        function AA_RimSearchShow(input, base_id) {
+            document.getElementById('flt' + base_id).style.visibility = ((input === document.activeElement) && input.dataset.aaQuery) ? 'visible' : 'hidden';
+        }
+        function AA_RimSearchFill(box, html, error = '') {
+            box.removeAttribute('aria-busy');
+            if (html && !html.startsWith('Error')) {
+                box.innerHTML = html;
+                return;
+            }
+            const msg = document.createElement('div');
+            msg.className = 'aa-rim-none';
+            msg.setAttribute('role', 'status');
+            msg.textContent = html || error || box.dataset.aaNone;
+            box.replaceChildren(msg);
         }
         JS;
     }
@@ -187,6 +235,7 @@ class RimWidget extends Widget
         // default value - in order something is sent when no chbox is checked
         $input_name = $base_name_add . "[def]";
         $input_id = FormArray::formName2Id($input_name);
+        $no_match = safe(_m('No record matches your search condition.'));
 
 
         $widget .= <<<HTML
@@ -196,7 +245,7 @@ class RimWidget extends Widget
                            <input type="hidden" name="$input_name" id="$input_id" value="">
                            $downbuttons
                          </footer>
-                         <section class="itemselect" id=flt$base_id style="visibility:hidden"></section>
+                         <section class="itemselect" id=flt$base_id style="visibility:hidden" data-aa-none="$no_match"></section>
                        </section>
                      </article>
                    HTML;
@@ -230,7 +279,8 @@ class RimWidget extends Widget
         if (str_contains($actions2show, 'R')) {
             //            $actbuttonsdown['R'] = "<article><!--i class=\"ico insert\">add</i--><input type=search placeholder='"._m('search in existing')."' value onkeyup=\"DisplayAaResponse('flt$base_id', 'Widget_Selection', {s:'$def_slice_id',f:'$def_field_id',q:this.value})\"></article>";
             // we use setTimeout here - we do not want to close the section before the user click on the selected item is prossecced (copied to the itemgroup). 100 ms was too low, sometimes (the click just closed the selection and did not add the item)
-            $actbuttonsdown['R'] = "<article><!--i class=\"ico insert\">add</i--><input type=search placeholder='" . _m('search in existing') . "' value onkeyup=\"AA_$('#flt$base_id').style.visibility='visible'; DisplayAaResponse('flt$base_id',   'Widget_Selection', {s:'$def_slice_id',f:'$def_field_id',q:this.value})\" onblur=\"setTimeout(() => AA_$('#flt$base_id').style.visibility=(this === document.activeElement) ? 'visible':'hidden', 500)\"></article>";
+            $label = safe(_m('search in existing'));
+            $actbuttonsdown['R'] = "<article><!--i class=\"ico insert\">add</i--><input type=search placeholder=\"$label\" aria-label=\"$label\" value oninput=\"AA_RimSearch(this, '$base_id', '$def_slice_id', '$def_field_id')\" onfocus=\"AA_RimSearchShow(this, '$base_id')\" onblur=\"setTimeout(() => AA_RimSearchShow(this, '$base_id'), 500)\"></article>";
         }
         if (str_contains($actions2show, 'N')) {
             $actbuttonsdown['N'] = "<article><i class=\"ico new\" onclick=\"OpenWindowTop('" . Inputform_url(true, null, $sid, 'close_dialog', null, "/rim/$def_slice_id/$def_field_id/$base_id") . "');\">" . _m('new') . '</i></article>';
