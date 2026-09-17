@@ -2,3 +2,4 @@
 # Per-install files: created by the administrator, never part of dist (see INSTALL).
 /include/config.php
 /include/config.php3
+/include/config.*.php
