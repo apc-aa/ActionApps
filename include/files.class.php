@@ -411,7 +411,10 @@ class Files
         if (!mkdir($newFolder, $perms) && !is_dir($newFolder)) {
             return false;
         }
-        return chmod($newFolder, $perms);
+        // chmod: the umask must not strip the group write bit. Keep the setgid bit the new
+        // directory inherited, though - it hands the upload group down to what goes inside,
+        // and the other PHP users sharing the uploads write there through that group
+        return chmod($newFolder, $perms | (fileperms($newFolder) & 0o2000));
     }
 
 
