@@ -81,7 +81,7 @@ Feeding/import back-ends; each declares `name()` + `description()` shown in the 
 |------|---------|---------|------|
 | Cache/Cacheentry.php | Input form class for item add/edit form utility | Cacheentry | S |
 | Cache/CacheStr2find.php | Search strings for cache input form | CacheStr2find | S |
-| Cache/ImgCache.php | The MissCache of resized images (IMG_UPLOAD_PATH/mC/): one setup for the {img} render, the miss dispatcher, the purge and State Check | ImgCache::get(), build(), enabled(), configured(), srcBase() | S |
+| Cache/ImgCache.php | The MissCache of resized images (IMG_UPLOAD_PATH/mC/): one setup for the {img} render, the miss dispatcher, the purge and State Check | ImgCache::get(), enabled(), configured(), srcBase(), root() | S |
 | Cache/PageCache.php | Caching for item add/edit and form utilities | PageCache | M |
 
 ### Later (Deferred Tasks)
@@ -229,7 +229,7 @@ Feeding/import back-ends; each declares `name()` + `description()` shown in the 
 | Optimize/ImgMeasuring.php | State Check: {img} expressions in the templates which measure their image over HTTP on every render, with the reason | ImgMeasuring::measuringCalls(), calls() | S |
 | Optimize/ItemDiscussion.php | Item discussion management | ItemDiscussion | S |
 | Optimize/LdapPermsToSql.php | Migrate LDAP users/groups/permissions into the SQL backend | LdapPermsToSql | M |
-| Optimize/MissCacheRouting.php | Image cache miss routing: writes IMG_UPLOAD_PATH/mC/.htaccess when missing (sql_update, every queue tick via ScheduleAaTasks); State Check HTTP-probes that a miss reaches the dispatcher and img.php is reachable | MissCacheRouting::ensure(), rule(), isAaRule(), verdict() | S |
+| Optimize/MissCacheRouting.php | Image cache miss routing: writes IMG_UPLOAD_PATH/mC/.htaccess when missing (sql_update, every queue tick via ScheduleAaTasks); State Check HTTP-probes that a miss reaches the dispatcher and img.php is reachable | MissCacheRouting::ensure(), write(), rule(), verdict(), imgPhpRuns() | S |
 | Optimize/MultivalueDuplicates.php | Find multivalue field duplicates | MultivalueDuplicates | S |
 | Optimize/ReadersLogin2id.php | Migrate readers login to ID | ReadersLogin2id | S |
 | Optimize/RedefineCoreConstants.php | Recreate core constants | RedefineCoreConstants | M |
