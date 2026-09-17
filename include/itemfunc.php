@@ -1491,11 +1491,7 @@ class AA_Inserter_Fil extends AA_Inserter
         // determine filename ----
         $filename = null;
         if (strlen($this->nametemplate)) {
-            $template = str_replace(['_#name', '_#ext', '_#full'], [
-                pathinfo($up_file['name'], PATHINFO_FILENAME),
-                pathinfo($up_file['name'], PATHINFO_EXTENSION),
-                pathinfo($up_file['name'], PATHINFO_BASENAME),
-            ], $this->nametemplate);
+            $template = strtr($this->nametemplate, Files::nameTemplateAliases((string) $up_file['name']));
             if ($item_id and ($item = AA_Items::getItem(new zids($item_id)))) {
                 $filename = AA::Un($template, '', $item);
             } else {

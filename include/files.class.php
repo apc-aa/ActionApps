@@ -411,9 +411,27 @@ class Files
         if (!mkdir($newFolder, $perms) && !is_dir($newFolder)) {
             return false;
         }
-        return chmod($newFolder, $perms);
+        // chmod: the umask must not strip the group write bit. Keep the setgid bit the new
+        // directory inherited, though - it hands the upload group down to what goes inside,
+        // and the other PHP users sharing the uploads write there through that group
+        return chmod($newFolder, $perms | (fileperms($newFolder) & 0o2000));
     }
 
+
+    /** The _#name, _#ext and _#full aliases of a "Filename template" (AA_Inserter_Fil) for an
+     *  uploaded file - escaped before they reach the template: the name is whatever the
+     *  uploader sent (filler.php takes anonymous uploads), and "{...}" in it would otherwise
+     *  be expanded as an AA expression by AA::Un()
+     * @return array<string, string>
+     */
+    public static function nameTemplateAliases(string $file_name): array
+    {
+        return [
+            '_#name' => self::escape(pathinfo($file_name, PATHINFO_FILENAME)),
+            '_#ext'  => self::escape(pathinfo($file_name, PATHINFO_EXTENSION)),
+            '_#full' => self::escape(pathinfo($file_name, PATHINFO_BASENAME)),
+        ];
+    }
 
     /** escape function
      * Escape the filenames, any non-word characters will be

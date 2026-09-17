@@ -247,12 +247,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/honzito/MissCache.git",
-                "reference": "6a43ed1cbd385b772d20ffd65585b86a87ad03b8"
+                "reference": "584080b733dd64acaf38340a6a22880013954a04"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/honzito/MissCache/zipball/6a43ed1cbd385b772d20ffd65585b86a87ad03b8",
-                "reference": "6a43ed1cbd385b772d20ffd65585b86a87ad03b8",
+                "url": "https://api.github.com/repos/honzito/MissCache/zipball/584080b733dd64acaf38340a6a22880013954a04",
+                "reference": "584080b733dd64acaf38340a6a22880013954a04",
                 "shasum": ""
             },
             "require": {
@@ -298,7 +298,7 @@
                 "source": "https://github.com/honzito/MissCache/tree/master",
                 "issues": "https://github.com/honzito/MissCache/issues"
             },
-            "time": "2026-09-04T13:21:52+00:00"
+            "time": "2026-09-17T08:47:26+00:00"
         },
         {
             "name": "honzito/phpthumb",

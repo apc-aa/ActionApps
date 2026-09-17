@@ -31,15 +31,23 @@ final class MissCache
 {
     /**
      * Output extensions a cache artifact may have (gate against writing .php/.htaccess/... into the public cache).
-     * Kept in sync with what a plugin can actually emit — currently only raster images
-     * ({@see outExtFromParams}). A wider list (svg/css/js/pdf) would let a hand-crafted URL
-     * cache real image bytes under a mismatched content-type (e.g. JPEG served as text/css);
-     * add an extension here only when a plugin genuinely produces that type.
+     * Exactly the spellings {@see getCachedUrl()} emits ({@see outExtFromParams}: lowercase, never
+     * "jpeg") and compared case-sensitively: ".JPG" or ".jpeg" would be a second storable path
+     * for the same artifact, i.e. free disk fill from a hand-crafted URL. A wider list (svg/css/js/pdf)
+     * would let such a URL cache real image bytes under a mismatched content-type (JPEG served as
+     * text/css); add an extension here only when a plugin genuinely produces that type.
      */
-    private const ALLOWED_EXT = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'avif', 'bmp', 'ico'];
+    private const ALLOWED_EXT = ['jpg', 'png', 'gif', 'webp', 'avif', 'bmp', 'ico'];
 
     /** max-age (seconds) advertised on the one PHP miss-serve; later hits are static (web-server controlled). */
     private const CACHE_MAX_AGE = 604800; // 7 days
+
+    /**
+     * max-age of a plugin's fallback (served when nothing could be forged). Long enough
+     * that a page full of broken images does not hit PHP on every scroll, short enough
+     * that a source which becomes readable again (or gets uploaded) shows up promptly.
+     */
+    private const FALLBACK_MAX_AGE = 60;
 
     /**
      * Segment that announces the filename occupying the following N path
@@ -119,6 +127,8 @@ final class MissCache
         if ($this->srcBase !== '' && str_starts_with($srcPath, $this->srcBase . '/')) {
             $srcPath = substr($srcPath, strlen($this->srcBase) + 1);
         }
+        // below the base (spelled as configured) "a//b" and "a/./b" are "a/b" - the only spelling parseRequest() accepts
+        $srcPath = trim(self::collapseSegments("/$srcPath"), '/');
 
         $slash   = strrpos($srcPath, '/');
         $srcDir  = $slash === false ? '' : substr($srcPath, 0, $slash);
@@ -140,8 +150,8 @@ final class MissCache
      * Request-time: handle a request for a (missing) cache artifact. Generates it
      * via the matching plugin and streams it to the client.
      *
-     * @return bool true if the request was a MissCache URL and was handled
-     *              (generated & served, or answered with an error status);
+     * @return bool true if the request was a MissCache URL and was handled (generated &
+     *              served, the plugin's fallback served, or answered with an error status);
      *              false if $requestUri is not a MissCache URL (caller continues).
      */
     public function handleRequest(string $requestUri): bool
@@ -162,9 +172,19 @@ final class MissCache
             return true;
         }
 
-        $bytes = $plugin->generate($req);
+        // A source which is not there - deleted, not uploaded yet, or a filesystem refusing
+        // PHP for a moment - cannot yield an artifact, so the plugin is not even asked
+        $version = self::sourceVersion($req->sourceFsPath);
+        $bytes   = ($version === null) ? null : $plugin->generate($req);
         if ($bytes === null || $bytes === '') {
-            http_response_code(500);
+            // Nothing could be forged: send the plugin's stand-in, unstored and briefly
+            // cacheable - see PluginInterface::fallback() for why it must never be stored.
+            $fallback = $plugin->fallback($req);
+            if ($fallback === null || $fallback === '') {
+                http_response_code(500);
+                return true;
+            }
+            self::serveUnstored($fallback, $req->outExt, self::FALLBACK_MAX_AGE);
             return true;
         }
 
@@ -172,12 +192,98 @@ final class MissCache
         // (full disk, read-only mount, a name over the filesystem's NAME_MAX, wrong
         // permissions) must still answer with the artifact it just forged. Failing
         // to store costs performance — this miss will recur — never a broken image.
-        if (is_file($req->filesystemPath)) {
-            $this->serve($req->filesystemPath, $req->outExt);
+        $stored = self::store($req, $bytes, $version);
+        if ($stored === true) {
+            self::serve($req->filesystemPath, $req->outExt, $bytes);
         } else {
-            self::serveUnstored($bytes, $req->outExt);
+            // the same artifact on the next miss - unless its source changed meanwhile: then these bytes are the old content
+            self::serveUnstored($bytes, $req->outExt, ($stored === null) ? self::FALLBACK_MAX_AGE : self::CACHE_MAX_AGE);
         }
         return true;
+    }
+
+    /**
+     * Store the artifact at $req->filesystemPath, atomically: written to a temp file in the
+     * same directory and renamed, so a concurrent request never serves half of it.
+     *
+     * The temp name is short and independent of the target ("mc<hex>.tmp"): a suffix on a
+     * name already at NAME_MAX would fail to write an artifact whose own name fits. ".tmp"
+     * is outside ALLOWED_EXT, so it is never served, and the purge reaps what a crash leaves.
+     *
+     * Stored first and the source checked after: an application replacing the source calls
+     * purgeSource() after the replacement, so either that purge finds this file, or this
+     * check finds the source changed and drops the artifact of the old content - checking
+     * before the store would leave a gap.
+     *
+     * @param list<int> $version sourceVersion() of the source before the artifact was generated
+     * @return bool|null true stored; false could not store; null the source changed, nothing kept
+     */
+    private static function store(CacheRequest $req, string $bytes, array $version): ?bool
+    {
+        $dir = \dirname($req->filesystemPath);
+        if (!self::makeDirectory($dir, $req->dirMode)) {
+            return false;
+        }
+        $tmp = $dir . '/mc' . bin2hex(random_bytes(8)) . '.tmp';
+        if ((@file_put_contents($tmp, $bytes) !== \strlen($bytes)) || !self::sizeIs($tmp, \strlen($bytes)) || !@rename($tmp, $req->filesystemPath)) {
+            @unlink($tmp);
+            return false;
+        }
+        if (self::sourceVersion($req->sourceFsPath) !== $version) {
+            @unlink($req->filesystemPath);
+            return null;
+        }
+        return true;
+    }
+
+    /**
+     * Whether $file has $size bytes on disk. NFS and GlusterFS report a full disk only when the
+     * file is closed, which file_put_contents() does not tell - and a truncated artifact renamed
+     * into place would be served statically, broken, for as long as it is visited.
+     */
+    private static function sizeIs(string $file, int $size): bool
+    {
+        clearstatcache(true, $file);
+        return @filesize($file) === $size;
+    }
+
+    /**
+     * mkdir -p which applies $mode whatever the umask of the process and keeps the setgid bit
+     * a new directory inherits: PHP users sharing the cache (two application trees, cron)
+     * store into each other's directories through the group, and a umask of 022 would take
+     * that away. Silent on failure - a warning here would land in front of the artifact bytes.
+     */
+    private static function makeDirectory(string $dir, int $mode): bool
+    {
+        if (is_dir($dir)) {
+            return true;
+        }
+        $parent = \dirname($dir);
+        if (($parent === $dir) || !self::makeDirectory($parent, $mode)) {
+            return false;
+        }
+        if (!@mkdir($dir, $mode) && !is_dir($dir)) {   // is_dir() again: a parallel forge may have made it meanwhile
+            return false;
+        }
+        @chmod($dir, $mode | (@fileperms($dir) & 0o2000));   // best-effort: one made by another user needs no chmod from us
+        return true;
+    }
+
+    /**
+     * What tells a replaced (or deleted) source from the one before - one stat.
+     *
+     * @return list<int>|null inode, size and mtime; [] when the request names no source file
+     *                        (nothing to look at, nothing to compare); null when the source
+     *                        is not a file PHP can see right now
+     */
+    private static function sourceVersion(?string $path): ?array
+    {
+        if ($path === null) {
+            return [];
+        }
+        clearstatcache(true, $path);
+        $stat = @stat($path);
+        return (($stat === false) || (($stat['mode'] & 0o170000) !== 0o100000)) ? null : [$stat['ino'], $stat['size'], $stat['mtime']];
     }
 
     /**
@@ -197,17 +303,20 @@ final class MissCache
      *
      * Nothing outside those directories is ever touched — see {@see routeDirs()}.
      *
-     * @param array{maxAge?:int,maxBytes?:?int,lowWatermark?:float,tmpMaxAge?:int,dryRun?:bool} $options
-     * @return array{scanned:int,deleted_age:int,deleted_size:int,deleted_tmp:int,bytes_freed:int,dirs_removed:int,total_after:int}
+     * @param array{maxAge?:int,maxBytes?:?int,lowWatermark?:float,tmpMaxAge?:int,stale?:callable,dryRun?:bool} $options
+     * @return array{scanned:int,deleted_age:int,deleted_size:int,deleted_tmp:int,deleted_stale:int,bytes_freed:int,dirs_removed:int,total_after:int}
      */
     public function purge(array $options = []): array
     {
         $stats = [
-            'scanned' => 0, 'deleted_age' => 0, 'deleted_size' => 0, 'deleted_tmp' => 0,
+            'scanned' => 0, 'deleted_age' => 0, 'deleted_size' => 0, 'deleted_tmp' => 0, 'deleted_stale' => 0,
             'bytes_freed' => 0, 'dirs_removed' => 0, 'total_after' => 0,
         ];
 
         $cacheRoot = $this->basePath . '/' . $this->cacheSegment;
+        if (is_link($cacheRoot)) {
+            return $stats;   // planted, or somebody's own layout - either way no directory of ours to delete from
+        }
         foreach (self::routeDirs($cacheRoot) as $prefix) {
             $plugin = $this->plugins[$prefix] ?? null;
             $opts   = $plugin === null ? $options : array_merge($options, $plugin->getPurgeOptions());
@@ -218,6 +327,100 @@ final class MissCache
         }
 
         return $stats;
+    }
+
+    /**
+     * Delete every artifact made from one source file, whatever plugin or parameters -
+     * call it when the source is overwritten or deleted. A cache URL carries no version
+     * of its source, so an artifact of the old content would otherwise be served until
+     * the purge's max age, and forever while something keeps hitting it.
+     *
+     * Only the source's own directory is listed (plus its twin under each "+N" split
+     * marker), and a branch of a split name is entered only while it can still spell the
+     * source's name - so the cost follows the variants of that directory, never the
+     * whole cache.
+     *
+     * @param string $sourcePath absolute path of the source file; a path outside the base
+     *                           path is not a source of this cache and deletes nothing
+     * @return int number of artifacts deleted
+     */
+    public function purgeSource(string $sourcePath): int
+    {
+        $sourcePath = self::collapseSegments($sourcePath);
+        $basePath   = self::collapseSegments($this->basePath);   // both spelled alike, whatever the config wrote
+        $relative   = str_starts_with($sourcePath, $basePath . '/') ? substr($sourcePath, strlen($basePath) + 1) : '';
+        if ($relative === '' || str_contains($relative, "\0") || preg_match('~(^|/)\.{0,2}(/|$)~', $relative)) {
+            return 0;   // not under the base, or a ".." (or empty) segment which could leave the cache tree
+        }
+        $slash   = strrpos($relative, '/');
+        $srcDir  = $slash === false ? '' : '/' . substr($relative, 0, $slash);
+        $srcName = $slash === false ? $relative : substr($relative, $slash + 1);
+
+        $cacheRoot = $this->basePath . '/' . $this->cacheSegment;
+        $rootReal  = is_link($cacheRoot) ? false : realpath($cacheRoot);   // a symlinked cache root is not ours to delete in, see purge()
+        if ($rootReal === false) {
+            return 0;   // nothing cached yet
+        }
+        $deleted = 0;
+        foreach (self::routeDirs($cacheRoot) as $prefix) {
+            $routeDir = $cacheRoot . '/' . $prefix;
+            // a directory which looks like a split marker never holds its artifacts unmarked:
+            // there "+2/<dir>" is the split tree of other sources
+            if (!preg_match(self::AMBIGUOUS_SRCDIR, ltrim($srcDir, '/'))) {
+                $deleted += $this->purgeNames($routeDir . $srcDir, 1, '', $srcName, $rootReal);
+            }
+            foreach (@scandir($routeDir) ?: [] as $entry) {
+                if (preg_match('~^\+([1-9][0-9]*+)$~', $entry, $m)) {   // the filename occupies the last N path components
+                    $deleted += $this->purgeNames($routeDir . '/' . $entry . $srcDir, (int) $m[1], '', $srcName, $rootReal);
+                }
+            }
+        }
+        return $deleted;
+    }
+
+    /**
+     * Delete the artifacts of $srcName among the filenames spelled by $levels path
+     * components below $dir ($spelled = the components above, joined).
+     *
+     * @param ?string $rootReal the resolved cache root, for the first level only: a directory
+     *                          of the source path may be a symlink, which must not take the
+     *                          deleting out of the cache tree (deeper levels skip links)
+     */
+    private function purgeNames(string $dir, int $levels, string $spelled, string $srcName, ?string $rootReal = null): int
+    {
+        if (($rootReal !== null) && !str_starts_with((string) realpath($dir) . '/', $rootReal . '/')) {
+            return 0;
+        }
+        $encoded = CacheRequest::encode($srcName);
+        $deleted = 0;
+        foreach (@scandir($dir) ?: [] as $entry) {
+            $name = $spelled . $entry;
+            // every artifact of the source starts with its encoded name - skip what cannot
+            if (($entry === '.') || ($entry === '..') || (!str_starts_with($name, $encoded) && !str_starts_with($encoded, $name))) {
+                continue;
+            }
+            $path = $dir . '/' . $entry;
+            if ($levels > 1) {
+                if (is_dir($path) && !is_link($path)) {
+                    $deleted += $this->purgeNames($path, $levels - 1, $name, $srcName);
+                }
+            } elseif (is_file($path) && self::isArtifactOf($name, $srcName) && @unlink($path)) {
+                $deleted++;
+            }
+        }
+        return $deleted;
+    }
+
+    /** Whether $filename is a cache artifact of the source named $srcName - not merely a name
+     *  sharing its prefix, nor "index.html" or "README.txt" next to a source named "index". */
+    private static function isArtifactOf(string $filename, string $srcName): bool
+    {
+        try {
+            [$name, , $ext] = CacheRequest::parseFilename($filename);
+        } catch (\RuntimeException) {
+            return false;   // not a cache filename at all
+        }
+        return ($name === $srcName) && in_array($ext, self::ALLOWED_EXT, true);
     }
 
     /**
@@ -312,6 +515,17 @@ final class MissCache
         $dir  = implode('/', $segments);
         $file = CacheRequest::joinFilename($chunks);
 
+        // getCachedUrl() never emits an empty or "." directory segment; accepting "./+5" or
+        // "//+5" would store an artifact inside the tree of a split marker
+        if (preg_match('~(^|/)\.?(/|$)~', $dir) && ($dir !== '')) {
+            throw new \RuntimeException('Illegal cache path: empty or "." segment');
+        }
+        // an artifact is no source: its own artifacts would nest without end, and no
+        // purgeSource() of the original would ever find them
+        if (($dir === $this->cacheSegment) || str_starts_with($dir, $this->cacheSegment . '/')) {
+            throw new \RuntimeException('Illegal cache path: the source lies in the cache');
+        }
+
         // Accept only the split we would have emitted ourselves. Without this, one
         // artifact is reachable under many paths — "+2" vs "+02", a split that was
         // never needed, or chunks cut anywhere — and each of them forges and stores
@@ -329,10 +543,24 @@ final class MissCache
         if ($srcName === '' || strpbrk($srcName, "/\\\0") !== false || str_contains($srcName, '..')) {
             throw new \RuntimeException('Illegal source name');
         }
+        // getCachedUrl() never encodes a control byte into the params (they come from a
+        // template, not from a user), so one is a hand-crafted URL - and CR/LF would
+        // reach the backend query string and the error log as-is.
+        if (preg_match('/[\x00-\x1F\x7F]/', (string) $params)) {
+            throw new \RuntimeException('Illegal parameter');
+        }
 
         // Only ever write known static-asset extensions into the public cache.
-        if (!in_array(strtolower($outExt), self::ALLOWED_EXT, true)) {
+        if (!in_array($outExt, self::ALLOWED_EXT, true)) {
             throw new \RuntimeException('Illegal output extension');
+        }
+
+        // Only the spelling getCachedUrl() emits: "ph~6Fto.jpg" decodes to the same name as
+        // "photo.jpg", and a ".png" without f=png makes the same image as ".jpg" - each such
+        // alias would be forged and stored as a copy of its own, which purgeSource() never
+        // finds and an anonymous client can multiply at will
+        if ((CacheRequest::buildFilename($srcName, $params, $outExt) !== $file) || ($outExt !== self::outExtFromParams((string) $params))) {
+            throw new \RuntimeException('Non-canonical cache path');
         }
 
         $cacheRoot      = $this->basePath . '/' . $this->cacheSegment . '/';
@@ -343,12 +571,19 @@ final class MissCache
             throw new \RuntimeException('Resolved path escapes cache root');
         }
 
-        // Absolute path of the source on disk (sources mirror the cache under basePath).
-        // Only correct for sources that actually live under basePath; a plugin must
-        // treat it as a hint (e.g. gate on the parent dir existing), not as truth.
+        // Absolute path of the source on disk. Sources mirror the cache under basePath by
+        // construction - the artifact is written under basePath and served under baseUrl,
+        // so if the two did not name the same tree the cache itself would not work - which
+        // makes this exactly as reliable as $filesystemPath.
         $sourceFsPath = $this->basePath . '/' . ($dir !== '' ? $dir . '/' : '') . $srcName;
 
         return new CacheRequest($routePrefix, $dir, $srcName, $params, $outExt, $filesystemPath, $this->dirMode, $this->srcBase, $sourceFsPath);
+    }
+
+    /** "a//b" and "a/./b" name the same file as "a/b" */
+    private static function collapseSegments(string $path): string
+    {
+        return (string) preg_replace('~/(?:\.?/)+~', '/', $path);
     }
 
     /**
@@ -367,7 +602,7 @@ final class MissCache
     }
 
     /**
-     * Stream the forged artifact with caching headers. This runs only for the
+     * Send the artifact just stored at $path with caching headers. This runs only for the
      * single miss response; every later request is served statically by the web
      * server. We emit Last-Modified + Cache-Control (and honour If-Modified-Since
      * with a 304) so this first response is as cacheable as the static hits that
@@ -377,25 +612,26 @@ final class MissCache
      * do NOT emit an ETag: the static server computes its own (inode/size/mtime)
      * ETag that we cannot portably reproduce, so a PHP-issued ETag would simply
      * fail to match on the next revalidation and force a needless full download.
+     *
+     * The body is $bytes, not the file: a purge or a concurrent miss may delete the file
+     * right after the store, and reading it again would put a warning in front of the image.
      */
-    private function serve(string $path, string $ext): void
+    private static function serve(string $path, string $ext, string $bytes): void
     {
         clearstatcache(true, $path);
-        $mtime = filemtime($path);
-        $size  = filesize($path);
-        if ($mtime === false || $size === false) {
-            // The artifact vanished between handleRequest()'s is_file() check and
-            // here (e.g. a concurrent purge) — don't serve a mangled response.
-            http_response_code(500);
+        $mtime = @filemtime($path);
+        if ($mtime === false) {
+            self::serveUnstored($bytes, $ext);   // deleted already - the bytes are still the artifact
             return;
         }
-        $headers = self::cacheHeaders($ext, $mtime, $size);
+        $headers = self::cacheHeaders($ext, $mtime, \strlen($bytes), time());
 
         if (self::isClientCacheFresh($mtime)) {
             if (!headers_sent()) {
                 http_response_code(304);
-                header('Last-Modified: ' . $headers['Last-Modified']);
-                header('Cache-Control: ' . $headers['Cache-Control']);
+                foreach (['Last-Modified', 'Cache-Control', 'Expires'] as $name) {
+                    header($name . ': ' . $headers[$name]);
+                }
             }
             return; // 304: no body
         }
@@ -405,42 +641,71 @@ final class MissCache
                 header($name . ': ' . $value);
             }
         }
-        readfile($path);
+        echo $bytes;
     }
 
     /**
-     * Send an artifact that was forged but could NOT be stored.
+     * Send bytes that have no file behind them: an artifact that was forged but could
+     * NOT be stored (reusable as long as a stored one - the bytes are a pure function
+     * of the URL, so the default max-age applies), or a plugin's fallback (briefly).
      *
      * No Last-Modified and no 304 handling: those validators exist to line up with
      * the ones the web server will issue for the static file, and here there is no
-     * static file to line up with. Cache-Control is still worth sending — the bytes
-     * are a pure function of the URL, so a client may reuse them exactly as long as
-     * it would a stored artifact, and every client that does spares us a re-forge.
+     * static file to line up with.
      */
-    private static function serveUnstored(string $bytes, string $ext): void
+    private static function serveUnstored(string $bytes, string $ext, int $maxAge = self::CACHE_MAX_AGE): void
     {
         if (!headers_sent()) {
-            header('Content-Type: ' . self::mimeForExt($ext));
-            header('Content-Length: ' . strlen($bytes));
-            header('Cache-Control: public, max-age=' . self::CACHE_MAX_AGE);
+            foreach (self::unstoredHeaders($ext, strlen($bytes), $maxAge, time()) as $name => $value) {
+                header($name . ': ' . $value);
+            }
         }
         echo $bytes;
     }
 
     /**
-     * Cache headers for a forged artifact. Pure (no I/O, no globals) so it is
-     * unit-testable.
+     * Headers for {@see serveUnstored()}. Pure (no I/O, no globals) so it is unit-testable.
      *
-     * @return array{Content-Type:string, Content-Length:string, Last-Modified:string, Cache-Control:string}
+     * Expires rides along with Cache-Control on purpose: Apache's mod_expires leaves a
+     * response alone only when it already carries Expires. Without it, a vhost with
+     * "ExpiresByType image/jpeg access plus 1 week" appends a second Cache-Control
+     * (max-age=604800) - measured on actionapps.org - and a browser may keep the
+     * 60-second fallback for a week.
+     *
+     * @return array{Content-Type:string, Content-Length:string, Cache-Control:string, Expires:string, X-Content-Type-Options:string}
      */
-    private static function cacheHeaders(string $ext, int $mtime, int $size): array
+    private static function unstoredHeaders(string $ext, int $length, int $maxAge, int $now): array
+    {
+        return [
+            'Content-Type'   => self::mimeForExt($ext),
+            'Content-Length' => (string) $length,
+            'Cache-Control'  => 'public, max-age=' . $maxAge,
+            'Expires'        => self::httpDate($now + $maxAge),
+            'X-Content-Type-Options' => 'nosniff',
+        ];
+    }
+
+    /**
+     * Cache headers for a forged artifact. Pure (no I/O, no globals) so it is
+     * unit-testable. Expires: see {@see unstoredHeaders()}.
+     *
+     * @return array{Content-Type:string, Content-Length:string, Last-Modified:string, Cache-Control:string, Expires:string, X-Content-Type-Options:string}
+     */
+    private static function cacheHeaders(string $ext, int $mtime, int $size, int $now): array
     {
         return [
             'Content-Type'   => self::mimeForExt($ext),
             'Content-Length' => (string) $size,
-            'Last-Modified'  => gmdate('D, d M Y H:i:s', $mtime) . ' GMT',
+            'Last-Modified'  => self::httpDate($mtime),
             'Cache-Control'  => 'public, max-age=' . self::CACHE_MAX_AGE,
+            'Expires'        => self::httpDate($now + self::CACHE_MAX_AGE),
+            'X-Content-Type-Options' => 'nosniff',
         ];
+    }
+
+    private static function httpDate(int $timestamp): string
+    {
+        return gmdate('D, d M Y H:i:s', $timestamp) . ' GMT';
     }
 
     /**

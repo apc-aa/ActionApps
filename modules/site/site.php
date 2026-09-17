@@ -23,30 +23,27 @@ https://www.apc.org/
 // APC AA site Module main administration page
 use AA\Cache\Cacheentry;
 use AA\Cache\CacheStr2find;
+use AA\Cache\ImgCache;
 use AA\Cache\PageCache;
 use AA\IO\DB\DB_AA;
 use AA\IO\OnPageChanger;
 use AA\Util\Langs;
-use MissCache\MissCache;
-use MissCache\Plugins\PhpThumbPlugin;
 
 require_once __DIR__ . "/../../include/config.php";
 require_once __DIR__ . "/../../include/locsess.php";
 require_once __DIR__ . "/../../include/zids.php";
-require_once __DIR__ . "/../../include/locauth.php";
 require_once __DIR__ . "/../../include/locauth.php";
 
 // MissCache forge-on-miss: requests for a missing cached file under IMG_UPLOAD/mC/
 // are routed here by the web server (try_files / RewriteCond !-f — see
 // misc/missCache/README). Generate the artifact once and serve it; every later
 // request is served statically by the web server, never reaching PHP.
-// rtrim: MissCache rtrim()s the base too, so an IMG_UPLOAD_URL without a trailing
-// slash still renders ".../img_upload/mC/..." — concatenating "mC/" onto the raw
-// path would build "/img_uploadmC/" and the guard would silently never match.
-$mc_dir = rtrim((string) parse_url(IMG_UPLOAD_URL, PHP_URL_PATH), '/') . '/mC/';  // e.g. /img_upload/mC/
-if (str_starts_with($_SERVER['REQUEST_URI'], $mc_dir)) {
-    $mC = new MissCache(IMG_UPLOAD_URL, IMG_UPLOAD_PATH, 'mC', IMG_UPLOAD_DIR_MODE, [new PhpThumbPlugin(AA_INSTAL_URL . "img.php")]);
-    $mC->handleRequest($_SERVER['REQUEST_URI']);
+// srcBase() is the upload path trimmed of its slashes plus one ("img_upload/"), as MissCache
+// trims the base of the urls it renders - an IMG_UPLOAD_URL without the trailing slash must
+// not build "/img_uploadmC/", which would silently never match. configured() first: an
+// incomplete config.php must not break every page of the site module.
+if (ImgCache::configured() && str_starts_with($_SERVER['REQUEST_URI'], '/' . ImgCache::srcBase() . ImgCache::SEGMENT . '/')) {
+    ImgCache::get()->handleRequest($_SERVER['REQUEST_URI']);
     exit;
 }
 

@@ -244,9 +244,10 @@ $PHPTHUMB_CONFIG['error_image_height']          = 100;      // default height fo
 // Redirect ANY thumbnailing failure (missing/corrupt/unsupported/too-large source)
 // to a blank 1×1 pixel instead of rendering phpThumb's error image. On production
 // this avoids leaking error text/paths into the image response, and it gives the
-// MissCache forge-on-miss client a clean non-2xx signal to negative-cache a typed
-// placeholder (instead of caching an error image forever). phpThumb turns a set
-// error_message_image_default into an HTTP redirect to that URL (see ErrorImage()).
+// MissCache forge-on-miss client a clean non-2xx signal that nothing usable came
+// out - it then answers its own blank and stores nothing, instead of caching the
+// error image forever. phpThumb turns a set error_message_image_default into an
+// HTTP redirect to that URL (see ErrorImage()).
 $PHPTHUMB_CONFIG['error_message_image_default'] = AA_INSTAL_URL . 'images/blank.gif'; // generic error image; overridden by the 'err' GET parameter
 $PHPTHUMB_CONFIG['error_bgcolor']               = 'CCCCFF'; // background color of error message images
 $PHPTHUMB_CONFIG['error_textcolor']             = 'FF0000'; // color of text in error messages

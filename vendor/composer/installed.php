@@ -66,7 +66,7 @@
         'honzito/misscache' => array(
             'pretty_version' => 'dev-master',
             'version' => 'dev-master',
-            'reference' => '6a43ed1cbd385b772d20ffd65585b86a87ad03b8',
+            'reference' => '584080b733dd64acaf38340a6a22880013954a04',
             'type' => 'library',
             'install_path' => __DIR__ . '/../honzito/misscache',
             'aliases' => array(

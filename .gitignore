@@ -2,3 +2,11 @@
 # Per-install files: created by the administrator, never part of dist (see INSTALL).
 /include/config.php
 /include/config.php3
+/include/config.*.php
+/include/config.*.php3
+/include/usr_aliasfnc.php
+/include/usr_aliasfnc.php3
+/include/custom/
+/modules/site/sites/site_*.php
+/misc/file2slice/*
+/config/certs/*

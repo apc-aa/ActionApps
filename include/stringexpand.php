@@ -8456,9 +8456,10 @@ class AA_Stringexpand_Avatar extends AA_Stringexpand {
  *  Performance: every <info> which prints the size ('img', 'imgb', 'picture', 'width',
  *  'height', 'hw', 'html') normally has to measure the generated image over HTTP, which
  *  also forces phpThumb to render it (70-110 ms). That is skipped whenever the size
- *  follows from the parameters alone - see pinnedSize() - i.e. when both w and h are
- *  given together with iar, far or zc (aoe=1 is added to zc automatically). Prefer those
- *  combinations; 'im' and 'url' never measure at all.
+ *  follows from the parameters alone - see AA\Util\PhpThumbParams::pinnedSize() - i.e.
+ *  when both w and h are given together with iar, far or zc (aoe=1 is added to zc
+ *  automatically). Prefer those combinations; 'im' and 'url' never measure at all. The
+ *  extended State Check (AA\Optimize\ImgMeasuring) lists the templates which do measure.
  *
  *  The emitted url points at the MissCache forge-on-miss cache, so the thumbnail is
  *  generated once and every later request is served by the web server without touching
@@ -8489,6 +8490,7 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
         if (!$image) {
             return '';
         }
+        $phpthumb_params = \AA\Util\PhpThumbParams::clean((string) $phpthumb_params);
 
         switch ( $info ) {
             case '':
@@ -8502,16 +8504,9 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
         }
 
         // all remaining $info values need the size of the generated image - 'width' and
-        // 'height' just one of the two. 'imgtype' and 'mime' need the output format as
-        // well, which no parameter combination tells us, so those always have to measure
-        $size = (($info === 'imgtype') || ($info === 'mime')) ? [null, null] : self::pinnedSize($phpthumb_params);
-        $known = match ($info) {
-            'width'  => isset($size[0]),
-            'height' => isset($size[1]),
-            default  => isset($size[0], $size[1]),   // $a[3] below is only read by these
-        };
-        if ($known) {
-            $a = [$size[0], $size[1], 0, 'width="'.$size[0].'" height="'.$size[1].'"'];  // same shape as getimagesize()
+        // 'height' just one of the two, 'imgtype' and 'mime' the output format as well
+        if (($size = \AA\Util\PhpThumbParams::knownSize($info, $phpthumb_params)) !== null) {
+            $a = [$size[0], $size[1], 0, 'width="'.$size[0].'" height="'.$size[1].'"'];  // same shape as getimagesize(); $a[3] is read only when both are known
         } else {
             $a = @getimagesize(self::getUrl($image, $phpthumb_params, 'measure'));      // slow - self-HTTP request which also renders the thumbnail
             if (! $a) {
@@ -8538,101 +8533,6 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
         return '';
     }
 
-    /** Parameters which make the output size depend on the source image, so it can't
-     *  be predicted from the parameters alone:
-     *    wp,hp,wl,hl,ws,hs - replace w/h based on the orientation of the source
-     *    sx,sy,sw,sh       - source crop takes precedence over iar/far (ImageMagick backend)
-     *    fltr              - 'crop' shrinks the output, 'bord'/'drop'/'fram' grow it (GD backend)
-     *    ra,ar             - rotation (90° swaps w and h, other angles grow the canvas)
-     *    xto               - outputs the EXIF thumbnail instead of a generated one
-     *    new               - generates an image instead of resizing <src>
-     */
-    protected const SIZE_UNPREDICTABLE_PARAMS = ['wp' => true, 'hp' => true, 'wl' => true, 'hl' => true, 'ws' => true, 'hs' => true, 'sx' => true, 'sy' => true, 'sw' => true, 'sh' => true, 'fltr' => true, 'ra' => true, 'ar' => true, 'xto' => true, 'new' => true, 'phpThumbDebug' => true];
-
-    /** parseParams() results, keyed by the raw parameter string. {img:} is typically
-     *  expanded once per listed item with the very same parameters, and every expansion
-     *  parses them repeatedly (pinnedSize() plus addAoe4ZoomCrop() in each getUrl()) */
-    protected static array $parsed_params = [];
-
-    /** Parses a phpThumb parameter string (either '&' or '&amp;' separated) into an array */
-    protected static function parseParams(string $phpthumb_params): array
-    {
-        if (isset(self::$parsed_params[$phpthumb_params])) {
-            return self::$parsed_params[$phpthumb_params];
-        }
-        $params = [];
-        parse_str(str_replace('&amp;', '&', $phpthumb_params), $params);
-        if (count(self::$parsed_params) > 64) {   // a page uses a handful of distinct parameter
-            self::$parsed_params = [];            // strings - guard against templates interpolating values into them
-        }
-        return self::$parsed_params[$phpthumb_params] = $params;
-    }
-
-    /** phpThumb's zoom crop (zc) fills the whole w × h box only when enlargement is
-     *  allowed - without aoe=1 its ImageMagick backend silently returns the (smaller)
-     *  source size instead. Adding aoe=1 makes the result deterministic, which lets
-     *  pinnedSize() skip the expensive measuring below. Idempotent.
-     */
-    protected static function addAoe4ZoomCrop(string $phpthumb_params): string
-    {
-        $params = self::parseParams($phpthumb_params);
-        if (empty($params['zc']) || empty($params['w']) || empty($params['h']) || isset($params['aoe'])) {
-            return $phpthumb_params;
-        }
-        return $phpthumb_params . (str_contains($phpthumb_params, '&amp;') ? '&amp;' : '&') . 'aoe=1';
-    }
-
-    /** Output dimensions for the parameter combinations where phpThumb always renders
-     *  exactly w × h. For those we can skip @getimagesize() on the generated image -
-     *  that is a self-HTTP request which also forces the thumbnail to be rendered
-     *  (70-110 ms measured), just to learn a size we already know.
-     *
-     *  The rule is the intersection of both phpThumb backends - GD
-     *  (CalculateThumbnailDimensions) and ImageMagick (ImageMagickThumbnailToGD) -
-     *  so it holds no matter which one the install uses.
-     *
-     *  @return array  [width|null, height|null] - null for a dimension which has to be measured
-     */
-    protected static function pinnedSize(string $phpthumb_params): array
-    {
-        $params = self::parseParams($phpthumb_params);
-        $w      = (int)($params['w'] ?? 0);
-        $h      = (int)($params['h'] ?? 0);
-        // ImageMagick tests aoe == 1 literally, so aoe=2 does not enable enlargement
-        $enlarge = ($params['aoe'] ?? null) == 1;
-
-        if ($w && $h) {
-            // iar (ignore aspect ratio) and far (fixed aspect ratio) always fill the whole
-            // box. zc (zoom crop) does so only with aoe=1, which getUrl() adds whenever aoe
-            // is missing - so only an explicit, different aoe breaks it.
-            $fills_box = !empty($params['iar']) || !empty($params['far'])
-                      || (!empty($params['zc']) && (!isset($params['aoe']) || $enlarge));
-            // when both are given without filling the box the image is fitted inside it,
-            // so which of the two is met depends on the aspect ratio of the source
-            return ($fills_box && !self::hasUnpredictableParam($params)) ? [$w, $h] : [null, null];
-        }
-
-        // Only one dimension asked for: with enlargement allowed it is always met exactly,
-        // the other one then follows the aspect ratio of the source. iar/far need both
-        // dimensions and are no-ops here, but zc turns the missing one into a square box
-        // which the source can cap ('h=100&zc=1&aoe=1' gives 50x50 for a 106x50 source).
-        if ($enlarge && empty($params['zc']) && !self::hasUnpredictableParam($params)) {
-            if ($w) {
-                return [$w, null];
-            }
-            if ($h) {
-                return [null, $h];
-            }
-        }
-        return [null, null];
-    }
-
-    /** True when any parameter makes the output size depend on the source image */
-    protected static function hasUnpredictableParam(array $params): bool
-    {
-        return (bool)array_intersect_key($params, self::SIZE_UNPREDICTABLE_PARAMS);
-    }
-
     protected static function getPicture(string $image, string $phpthumb_params, int $w, int $h, string $title='', string $add=''): string
     {
         if (!$w || !$h) {
@@ -8646,7 +8546,7 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
         // the alternative format is a different image, so it needs its own url - appending
         // "&f=..." to the first one would silently produce a cache url with no effect
         $src        = self::getUrl($image, $phpthumb_params, 'rel_escaped');
-        $format_src = self::getUrl($image, self::setFormat($phpthumb_params, $format), 'rel_escaped');
+        $format_src = self::getUrl($image, \AA\Util\PhpThumbParams::setFormat($phpthumb_params, $format), 'rel_escaped');
 
         return "<picture class=aa-picture>"
              . "\n  <source srcset=\"$format_src\" type=\"image/$format\">"
@@ -8704,10 +8604,10 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
      */
     public static function getUrl($image, $phpthumb_params, string $type): string
     {
-        if (empty($phpthumb_params)) {
+        if (empty($phpthumb_params = \AA\Util\PhpThumbParams::clean((string) $phpthumb_params))) {
             return $image;
         }
-        $phpthumb_params = self::addAoe4ZoomCrop($phpthumb_params);  // keeps every emitted url (and cache key) consistent with pinnedSize()
+        $phpthumb_params = \AA\Util\PhpThumbParams::addAoe4ZoomCrop($phpthumb_params);  // keeps every emitted url (and cache key) consistent with pinnedSize()
         $own_host        = self::isOwnHost($image);                  // the normalisation below deletes the host, so ask now
 
         // it is much better for phpThumb to access the files as files relative
@@ -8724,10 +8624,12 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
         // render (91 ms vs 72 ms measured), while this way it warms phpThumb's own cache, so
         // the browser's later request for the cache url only has to copy the bytes.
         if (($type !== 'measure') && $own_host && self::useCache($image, $phpthumb_params)) {
-            // MissCache splits the query on '&', so hand it the raw form; the result carries
-            // no '&' (CacheRequest::encode escapes it), so it needs no HTML escaping either
-            return self::missCache(($type !== 'abs_raw') && self::cacheUrlIsRelative())
+            // MissCache splits the query on '&', so hand it the raw form. useCache() lets only
+            // plain directory names through and the library encodes the file name, so safe()
+            // changes nothing today - it is here so that no later change can open the <img src="">
+            $url = \AA\Cache\ImgCache::get(($type !== 'abs_raw') && self::cacheUrlIsRelative())
                        ->getCachedUrl('pT', $image . '?' . str_replace('&amp;', '&', $phpthumb_params));
+            return ($type === 'abs_raw') ? $url : safe($url);
         }
 
         if (($type === 'abs_raw') || ($type === 'measure')) {
@@ -8739,20 +8641,22 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
         return AA_INSTAL_PATH. 'img.php?src=/'.safe($image)."&amp;$phpthumb_params";  // safe(): this url is put straight into <img src="...">
     }
 
-    /** phpThumb parameters a static cache file cannot stand for: 'new' generates an image
-     *  instead of resizing <src> (there is no source file, so the plugin would cache a
-     *  placeholder), 'phpThumbDebug' returns text, 'nocache' explicitly asks for a fresh
-     *  render, and 'down'/'sia' only set Content-Disposition, which a file served by the
-     *  web server cannot send.
-     */
-    protected const UNCACHEABLE_PARAMS = ['new' => true, 'phpThumbDebug' => true, 'nocache' => true, 'down' => true, 'sia' => true];
-
-    /** Whether the resized image may be served from MissCache instead of img.php.
+    /** Whether the resized image may be served from MissCache instead of img.php - decided
+     *  from the url and the parameters alone. The render reads no file: a listing expands
+     *  dozens of images, and a filesystem which is slow or refuses PHP for a moment must
+     *  not turn them all into img.php links (which need the very same file). Whether the
+     *  source exists is the dispatcher's question at request time, and that a miss reaches
+     *  the dispatcher at all is kept by AA\Optimize\MissCacheRouting.
      *
      *  The source has to live under IMG_UPLOAD: the dispatcher rebuilds the phpThumb src
      *  as "/<img_upload>/<dir>/<name>" ({@see \MissCache\Util\CacheRequest::toRawQueryString}),
      *  so anything else - the file manager, the install's own images/, a foreign domain -
-     *  would resolve to a missing file and get a placeholder cached in its place.
+     *  would resolve to a missing file and only ever get the blank fallback.
+     *
+     *  The library encodes the file name but mirrors the directories as they are, so only
+     *  directory names of the kind AA creates may pass: a quote would break out of
+     *  <img src="">, and a "%", "?" or "#" never names the file on disk as written (img.php
+     *  decodes its query, so it finds "a%20b.jpg" - the cache would look for it literally).
      *
      *  Everything else falls back to img.php, which works everywhere. Define
      *  AA_MISSCACHE_IMG_DISABLE in config.php3 to turn the cache off for the whole install.
@@ -8761,54 +8665,46 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
      */
     protected static function useCache(string $image, string $phpthumb_params): bool
     {
-        if (!self::cacheConfigured()) {
+        if (!\AA\Cache\ImgCache::enabled()) {   // also false for IMG_UPLOAD at the domain root, where the prefix gate below could not work
             return false;
         }
-        // with IMG_UPLOAD at the domain root there is no prefix that tells an uploaded
-        // image from any other file on the server, so the gate below cannot do its job
-        if (($base = self::cacheSrcBase()) === '') {
+        $base = \AA\Cache\ImgCache::srcBase();
+        // 'new', 'phpThumbDebug', 'down', a second 'src', ... - the dispatcher refuses them, so a cache url would only ever show its blank
+        if (array_intersect_key(\AA\Util\PhpThumbParams::parse($phpthumb_params), \MissCache\Plugins\PhpThumbPlugin::FOREIGN_PARAMS)) {
             return false;
         }
-        if (array_intersect_key(self::parseParams($phpthumb_params), self::UNCACHEABLE_PARAMS)) {
+        if (!str_starts_with($image = ltrim($image, '/'), $base)) {
             return false;
         }
-        if (!str_starts_with($image = ltrim($image, '/'), $base) || !self::ensureRouting()) {
+        // the base itself comes from the config and is not mirrored, only what follows it -
+        // and never a thumbnail used as a source: the dispatcher refuses a source in the cache
+        $rest = substr($image, strlen($base));
+        if (str_starts_with($rest, \AA\Cache\ImgCache::SEGMENT . '/')) {
             return false;
         }
-        // A source which is not there (yet) would be negative-cached as a 1x1 placeholder
-        // that the daily purge never reclaims - every hit refreshes its recency. img.php
-        // shows a blank image too, but recovers on its own once the file appears.
-        return is_file(rtrim(IMG_UPLOAD_PATH, '/').'/'.substr($image, strlen($base)));
+        $slash = strrpos($rest, '/');
+        $dir   = ($slash === false) ? '' : substr($rest, 0, $slash);
+        $name  = ($slash === false) ? $rest : substr($rest, $slash + 1);
+        return (($slash === false) || (preg_match('~^[A-Za-z0-9._/-]+$~D', $dir) && !preg_match('~(^|/)\.{0,2}(/|$)~', $dir)))
+            // the dispatcher refuses "..", "\" or a NUL in a name, and the request to img.php a space or a control byte
+            && ($name !== '') && !preg_match('~[%?#\\\\\x00-\x20\x7F]|\.\.~', $name);
     }
 
     /** True when the url carries no host (a path on this server) or names a host this
      *  install serves its images from. Content feeding brings in items whose image url
      *  points at ANOTHER AA, and the normalisation in getUrl() turns such a url into a
-     *  local looking path - a cache url built from it would forge a placeholder for a
-     *  file this server does not have, and keep serving it.
+     *  local looking path - a cache url built from it would point at a file this server
+     *  does not have, and the image would only ever get the blank fallback.
      */
     protected static function isOwnHost(string $image): bool
     {
-        if (!self::cacheConfigured()) {
+        if (!\AA\Cache\ImgCache::enabled()) {
             return false;
         }
         $host = self::stripWww((string) parse_url($image, PHP_URL_HOST));
         return ($host === '')
-            || ($host === self::stripWww((string) parse_url(IMG_UPLOAD_URL, PHP_URL_HOST)))
+            || ($host === self::stripWww((string) parse_url(\AA\Cache\ImgCache::uploadUrl(), PHP_URL_HOST)))
             || ($host === self::stripWww((string) parse_url(AA_HTTP_DOMAIN, PHP_URL_HOST)));
-    }
-
-    /** Whether the cache may be used at all: not switched off, and every constant it
-     *  needs really defined - a config.php3 older than them must not be guessed at, and
-     *  dereferencing one that is missing is a fatal error on every page with an image.
-     */
-    protected static function cacheConfigured(): bool
-    {
-        if (defined('AA_MISSCACHE_IMG_DISABLE') && AA_MISSCACHE_IMG_DISABLE) {
-            return false;
-        }
-        return defined('IMG_UPLOAD_URL') && defined('IMG_UPLOAD_PATH')
-            && defined('IMG_UPLOAD_DIR_MODE') && defined('AA_INSTAL_URL') && defined('AA_HTTP_DOMAIN');
     }
 
     /** www.example.org and example.org are one host here - as in PageCache::globalKeyArray() */
@@ -8817,24 +8713,8 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
         return str_starts_with($host, 'www.') ? substr($host, 4) : $host;
     }
 
-    /** Everything below is the same for every {img:} on the page, so it is computed once.
-     *  Separate properties (not function statics) so a test can reset them.
-     */
-    protected static ?string $cache_src_base = null;
+    /** the same for every {img:} on the page, so computed once - a property, so a test can reset it */
     protected static ?bool $cache_url_relative = null;
-    protected static ?bool $cache_routing_ready = null;
-    /** @var array<int, \MissCache\MissCache> */
-    protected static array $miss_cache = [];
-
-    /** document-root relative path of IMG_UPLOAD with a trailing slash ("img_upload/") */
-    protected static function cacheSrcBase(): string
-    {
-        if (self::$cache_src_base === null) {
-            $path = trim((string) parse_url(IMG_UPLOAD_URL, PHP_URL_PATH), '/');
-            self::$cache_src_base = ($path === '') ? '' : "$path/";
-        }
-        return self::$cache_src_base;
-    }
 
     /** True when IMG_UPLOAD_URL is served by the host of this request, so a document-root
      *  relative url reaches the very same file - then we emit one, exactly like the img.php
@@ -8846,69 +8726,13 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
     protected static function cacheUrlIsRelative(): bool
     {
         if (self::$cache_url_relative === null) {
-            $img_host     = self::stripWww((string) parse_url(IMG_UPLOAD_URL, PHP_URL_HOST));
+            $img_host     = self::stripWww((string) parse_url(\AA\Cache\ImgCache::uploadUrl(), PHP_URL_HOST));
             $request_host = self::stripWww((string) ($_SERVER['HTTP_HOST'] ?? ''));
             self::$cache_url_relative = $img_host === $request_host;
         }
         return self::$cache_url_relative;
     }
 
-    /** {img:} is expanded once per listed item, so build the object once per request */
-    protected static function missCache(bool $relative): \MissCache\MissCache
-    {
-        return self::$miss_cache[(int) $relative] ??= new \MissCache\MissCache(
-            $relative ? '/'.self::cacheSrcBase() : IMG_UPLOAD_URL,
-            IMG_UPLOAD_PATH,
-            'mC',
-            (int) IMG_UPLOAD_DIR_MODE,
-            [new \MissCache\Plugins\PhpThumbPlugin(AA_INSTAL_URL.'img.php')]
-        );
-    }
-
-    /** A cache url only works when a request for a file which is not there yet reaches the
-     *  dispatcher in modules/site/site.php. Installs whose rewrite is a catch-all with
-     *  "!-f" ({@see AA_Router_Seo}) already do that, the ones routing only language prefixes
-     *  answer 404 - so AA writes its own .htaccess into the cache root, where nothing has to
-     *  be configured by hand. It is honoured only where AllowOverride permits it and ignored
-     *  by nginx; both keep working through the rewrite they already have.
-     *
-     *  Returns false when the cache root cannot be prepared - then img.php stays in charge,
-     *  which is invisible to the visitor, unlike a url nothing answers.
-     */
-    protected static function ensureRouting(): bool
-    {
-        if (self::$cache_routing_ready !== null) {
-            return self::$cache_routing_ready;
-        }
-        $dir  = rtrim(IMG_UPLOAD_PATH, '/').'/mC';
-        $rule = "# Generated by APC-AA - routes a request for a not yet generated file to the\n"
-              . "# dispatcher; files already in the cache are served by the web server and never\n"
-              . "# reach PHP. Delete this file and AA writes it again (e.g. after moving AA).\n"
-              . "<IfModule mod_rewrite.c>\n"
-              . "RewriteEngine On\n"
-              . "RewriteCond %{REQUEST_FILENAME} !-f\n"
-              . "RewriteRule ^ ".AA_INSTAL_PATH."modules/site/site.php [L,QSA]\n"
-              . "</IfModule>\n";
-        if (@file_get_contents("$dir/.htaccess") === $rule) {
-            return self::$cache_routing_ready = true;
-        }
-        // is_dir() twice: mkdir() also fails when a parallel request created the directory meanwhile
-        if (!is_dir($dir) && !@mkdir($dir, (int) IMG_UPLOAD_DIR_MODE, true) && !is_dir($dir)) {
-            return self::$cache_routing_ready = false;
-        }
-        return self::$cache_routing_ready = (bool) @file_put_contents("$dir/.htaccess", $rule, LOCK_EX);
-    }
-
-    /** Sets (or replaces) the phpThumb output format in a parameter string, keeping
-     *  whichever separator it uses - '&' or the HTML escaped '&amp;'.
-     */
-    protected static function setFormat(string $phpthumb_params, string $format): string
-    {
-        if (!isset(self::parseParams($phpthumb_params)['f'])) {
-            return $phpthumb_params . (str_contains($phpthumb_params, '&amp;') ? '&amp;' : '&') . "f=$format";
-        }
-        return preg_replace('~(^|&(?:amp;)?)f=[^&]*~', "\\1f=$format", $phpthumb_params);
-    }
 }
 
 /** Creates image with the specified text:
