@@ -80,7 +80,8 @@ class MissCacheRouting extends AbstractOptimize
         }
         $has_rule = self::hasRule();
         $linked   = is_link(ImgCache::root());
-        $can_repair = !$linked && ImgCacheWritable::canStore(ImgCache::root());   // Repair renames over the file, as the cache stores
+        $this_rule  = self::thisRule();
+        $can_repair = !$linked && ($this_rule !== null) && ImgCacheWritable::canStore(ImgCache::root());   // Repair renames over the file, as the cache stores
         // a source which is never there: the dispatcher answers its blank and stores nothing
         $url             = ImgCache::get()->getCachedUrl('pT', 'aa-routing-probe/none.jpg?w=1');
         [$status, $type] = self::probe($url, true);
@@ -95,7 +96,7 @@ class MissCacheRouting extends AbstractOptimize
             'ok'          => new Finding(Finding::OK, _m('A request for an image which is not generated yet reaches AA'), key: 'routing'),
             'missing'     => new Finding(Finding::ERROR, $title, evidence: $evidence, advice: _m('Every image which is not generated yet shows broken. Repair writes the .htaccess into the cache directory (service/sql_update.php does the same); on nginx add the rule from config.php.default to the server configuration.'), repairable: $can_repair, key: 'routing'),
             'unreachable' => new Finding(Finding::ERROR, _m('The server cannot load its own image url'), evidence: $evidence, advice: _m('Check that the server resolves and reaches the host of IMG_UPLOAD_URL.'), key: 'routing'),
-            'ignored'     => new Finding(Finding::ERROR, $title, evidence: $evidence, advice: _m('The .htaccess in the cache directory has no effect: AllowOverride does not allow it, the server runs nginx, or it routes to an AA tree which does not answer on this host - Repair then points it at this one. Otherwise add the rule from config.php.default to the server configuration.'), repairable: $can_repair, key: 'routing'),
+            'ignored'     => new Finding(Finding::ERROR, $title, evidence: $evidence, advice: _m('The .htaccess in the cache directory has no effect: AllowOverride does not allow it, the server runs nginx, or it routes to an AA tree which does not answer on this host - Repair then points it at this one. Otherwise add the rule from config.php.default to the server configuration.'), repairable: $can_repair && (@file_get_contents(self::ruleFile()) !== $this_rule), key: 'routing'),   // this tree's rule again would change nothing
         }];
         if (($img_php = self::imgPhpFinding()) !== null) {
             $findings[] = $img_php;
