@@ -8641,16 +8641,6 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
         return AA_INSTAL_PATH. 'img.php?src=/'.safe($image)."&amp;$phpthumb_params";  // safe(): this url is put straight into <img src="...">
     }
 
-    /** phpThumb parameters a static cache file cannot stand for: 'new' generates an image
-     *  instead of resizing <src> (there is no source file, so the dispatcher could only
-     *  answer its blank fallback), 'phpThumbDebug' returns text, 'nocache' explicitly asks
-     *  for a fresh render, 'down'/'sia' only set Content-Disposition, which a file served
-     *  by the web server cannot send, 'md5s' answers a text hash, and a second 'src' (phpThumb
-     *  takes the last) renders another file. The dispatcher refuses all of them
-     *  (PhpThumbPlugin::FOREIGN_PARAMS), so a cache url would only ever show its blank.
-     */
-    protected const UNCACHEABLE_PARAMS = ['src' => true, 'new' => true, 'phpThumbDebug' => true, 'nocache' => true, 'down' => true, 'sia' => true, 'md5s' => true];
-
     /** Whether the resized image may be served from MissCache instead of img.php - decided
      *  from the url and the parameters alone. The render reads no file: a listing expands
      *  dozens of images, and a filesystem which is slow or refuses PHP for a moment must
@@ -8683,7 +8673,8 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
         if (($base = self::cacheSrcBase()) === '') {
             return false;
         }
-        if (array_intersect_key(\AA\Util\PhpThumbParams::parse($phpthumb_params), self::UNCACHEABLE_PARAMS)) {
+        // 'new', 'phpThumbDebug', 'down', a second 'src', ... - the dispatcher refuses them, so a cache url would only ever show its blank
+        if (array_intersect_key(\AA\Util\PhpThumbParams::parse($phpthumb_params), \MissCache\Plugins\PhpThumbPlugin::FOREIGN_PARAMS)) {
             return false;
         }
         if (!str_starts_with($image = ltrim($image, '/'), $base)) {
