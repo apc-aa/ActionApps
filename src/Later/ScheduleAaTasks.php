@@ -84,8 +84,12 @@ class ScheduleAaTasks implements LaterInterface
         // purge MissCache forge-on-miss image cache: files unused > 30 days, plus a 2 GB size cap
         $toexecute->laterOnce(new MissCachePurge(), [], "MissCachePurge", 10, now() + (60 * 60 * 24));
         // {img} emits cache urls without checking that a miss reaches the dispatcher - put the
-        // routing .htaccess back within minutes of an update, not a day (one stat when it is there)
-        MissCacheRouting::ensure();
+        // routing .htaccess back within minutes of an update, not a day (one stat when it is there).
+        // Nothing it could throw may stop the queue; State Check reports a routing that fails.
+        try {
+            MissCacheRouting::ensure();
+        } catch (\Throwable) {
+        }
 
         // invalidate cached pages after items expire / get published by the clock - AA\Later\PagecacheDateSweep
         if (PagecacheDateSweep::isEnabled()) {

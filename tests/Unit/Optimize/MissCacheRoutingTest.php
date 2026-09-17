@@ -41,12 +41,13 @@ final class MissCacheRoutingTest extends TestCase
         $rule = (string) MissCacheRouting::rule('/aa-dev/');
         $this->assertStringContainsString("RewriteCond %{REQUEST_FILENAME} !-f\n", $rule, 'a file already in the cache is served by the web server');
         $this->assertStringContainsString("RewriteRule ^ /aa-dev/modules/site/site.php [L,QSA]\n", $rule);
+        $this->assertStringContainsString("RewriteRule ^ /modules/site/site.php [L,QSA]\n", (string) MissCacheRouting::rule('/'), 'AA at the domain root');
     }
 
     /** @return array<string, array{0: string}> */
     public static function unsafeInstallPaths(): array
     {
-        return ['space' => ['/a a/'], 'newline' => ["/aaa/\n"], 'relative' => ['aaa/'], 'no trailing slash' => ['/aaa'], 'quote' => ['/a"a/']];
+        return ['space' => ['/a a/'], 'newline' => ["/aaa/\n"], 'relative' => ['aaa/'], 'no trailing slash' => ['/aaa'], 'quote' => ['/a"a/'], 'parent' => ['/../'], 'empty segment' => ['//']];
     }
 
     /** Apache parses the file: a space or a newline in the target answers 500 for every cached image */
@@ -64,7 +65,7 @@ final class MissCacheRoutingTest extends TestCase
         $this->assertTrue(MissCacheRouting::writeIfMissing($dir, $rule, 0o775));
         $this->assertStringEqualsFile("$dir/.htaccess", $rule);
         $this->assertSame(["$dir/.htaccess"], glob("$dir/.htaccess*"), 'no temp file left behind');
-        $this->assertSame(0o1775, fileperms($dir) & 0o7777, 'sticky: in the group-writable directory only the owner may replace the rule');
+        $this->assertSame(0o775, fileperms($dir) & 0o7777, 'the mode asked for, whatever the umask - the other PHP user of the uploads writes here too');
         $this->assertSame(0o644, fileperms("$dir/.htaccess") & 0o777);
     }
 
@@ -76,6 +77,28 @@ final class MissCacheRoutingTest extends TestCase
 
         $this->assertTrue(MissCacheRouting::writeIfMissing($dir, (string) MissCacheRouting::rule('/aa-dev/'), 0o775), 'a rule in place is success');
         $this->assertStringEqualsFile("$dir/.htaccess", (string) MissCacheRouting::rule('/aaa/'));
+    }
+
+    /** a writer killed between creating and writing leaves an empty file - it must not stand for a rule */
+    public function test_empty_rule_file_is_replaced_once_nobody_is_writing_it(): void
+    {
+        $dir = $this->tmp . '/mC';
+        mkdir($dir);
+        touch("$dir/.htaccess", time() - 3600);
+        $rule = (string) MissCacheRouting::rule('/aaa/');
+
+        $this->assertTrue(MissCacheRouting::writeIfMissing($dir, $rule, 0o775));
+        $this->assertStringEqualsFile("$dir/.htaccess", $rule);
+    }
+
+    public function test_empty_rule_file_just_created_is_left_to_its_writer(): void
+    {
+        $dir = $this->tmp . '/mC';
+        mkdir($dir);
+        touch("$dir/.htaccess");
+
+        $this->assertTrue(MissCacheRouting::writeIfMissing($dir, (string) MissCacheRouting::rule('/aaa/'), 0o775));
+        $this->assertSame(0, filesize("$dir/.htaccess"));
     }
 
     public function test_unwritable_upload_directory_is_reported(): void
@@ -95,6 +118,9 @@ final class MissCacheRoutingTest extends TestCase
             'this version, any tree'        => [(string) MissCacheRouting::rule('/aaa/'), true],
             'written by the render 11. 9.'  => [self::RULE_2026_09_11, true],
             'comment edited'                => ["# moved by hand\n" . self::RULE_2026_09_11, true],
+            'saved with CRLF and a BOM'     => ["\xEF\xBB\xBF" . str_replace("\n", "\r\n", self::RULE_2026_09_11), true],
+            'indented'                      => [str_replace("\nRewrite", "\n    Rewrite", self::RULE_2026_09_11), true],
+            'AA at the domain root'         => [(string) MissCacheRouting::rule('/'), true],
             'extra directive'               => [str_replace('</IfModule>', "Header set X-Frame-Options DENY\n</IfModule>", self::RULE_2026_09_11), false],
             'another script'                => [str_replace('site/site.php', 'site/other.php', self::RULE_2026_09_11), false],
             'empty'                         => ['', false],

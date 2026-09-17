@@ -8787,11 +8787,14 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
         if (!str_starts_with($image = ltrim($image, '/'), $base)) {
             return false;
         }
-        $slash = strrpos($image, '/');   // there is one: $base ends with it
-        $dir   = substr($image, 0, $slash);
-        $name  = substr($image, $slash + 1);
-        return preg_match('~^[A-Za-z0-9._/-]+$~', $dir) && !preg_match('~(^|/)\.{0,2}(/|$)~', $dir)
-            && ($name !== '') && (strpbrk($name, '%?#') === false);
+        // the base itself comes from the config and is not mirrored, only what follows it
+        $rest  = substr($image, strlen($base));
+        $slash = strrpos($rest, '/');
+        $dir   = ($slash === false) ? '' : substr($rest, 0, $slash);
+        $name  = ($slash === false) ? $rest : substr($rest, $slash + 1);
+        return (($slash === false) || (preg_match('~^[A-Za-z0-9._/-]+$~D', $dir) && !preg_match('~(^|/)\.{0,2}(/|$)~', $dir)))
+            // the dispatcher refuses "..", "\" or a NUL in a name, and the request to img.php a space or a control byte
+            && ($name !== '') && !preg_match('~[%?#\\\\\x00-\x20\x7F]|\.\.~', $name);
     }
 
     /** True when the url carries no host (a path on this server) or names a host this

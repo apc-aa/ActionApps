@@ -222,7 +222,19 @@ final class ImgCacheUrlTest extends TestCase
             'parent directory'        => ['img_upload/../etc/a.jpg', 'w=150'],
             'empty directory segment' => ['img_upload//a.jpg', 'w=150'],
             'no file name'            => ['img_upload/abc/', 'w=150'],
+            'newline after directory' => ["img_upload/abc\n/a.jpg", 'w=150'],
+            // names the dispatcher refuses, or the request to img.php cannot carry
+            'dots in the name'        => ['img_upload/abc/foto...jpg', 'w=150'],
+            'backslash in the name'   => ['img_upload/abc/a\\b.jpg', 'w=150'],
+            'space in the name'       => ['img_upload/abc/my photo.jpg', 'w=150'],
+            'control byte in name'    => ["img_upload/abc/a\tb.jpg", 'w=150'],
         ];
+    }
+
+    /** The base comes from config.php and is not mirrored - odd characters there must not cost the cache */
+    public function testImageDirectlyInTheUploadDirectoryUsesTheCache(): void
+    {
+        self::assertSame('/img_upload/mC/pT/photo.jpg!w=150.jpg', $this->url('img_upload/photo.jpg', 'w=150'));
     }
 
     /** A value stored through the anonymous filler.php reaches <img src="{img:...}"> - it must not open the attribute. */
