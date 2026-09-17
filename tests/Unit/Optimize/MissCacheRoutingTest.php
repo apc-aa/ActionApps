@@ -98,6 +98,19 @@ final class MissCacheRoutingTest extends TestCase
         rmdir("$dir/.htaccess");
     }
 
+    /** a symlinked cache root is not written into: planted, it would take the rule into another directory */
+    public function test_symlinked_cache_directory_is_not_written_into(): void
+    {
+        $elsewhere = $this->tmp . '/elsewhere';
+        mkdir($elsewhere);
+        symlink($elsewhere, $this->tmp . '/mC');
+
+        $this->assertFalse(MissCacheRouting::write($this->tmp . '/mC', (string) MissCacheRouting::rule('/aaa/'), 0o775));
+        $this->assertSame(['.', '..'], scandir($elsewhere), 'neither the rule nor a temp file');
+        unlink($this->tmp . '/mC');
+        rmdir($elsewhere);
+    }
+
     public function test_unwritable_upload_directory_is_reported(): void
     {
         if (function_exists('posix_geteuid') && posix_geteuid() === 0) {

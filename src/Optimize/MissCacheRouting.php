@@ -79,15 +79,16 @@ class MissCacheRouting extends AbstractOptimize
             return [new Finding(Finding::INFO, _m('The image cache routing cannot be checked without the PHP curl extension'))];
         }
         $has_rule = self::hasRule();
+        $linked   = is_link(ImgCache::root());
         // Repair renames over the file, which takes a writable directory - or creates the cache root first
-        $can_repair = is_writable(is_dir(ImgCache::root()) ? ImgCache::root() : \dirname(ImgCache::root()));
+        $can_repair = !$linked && is_writable(is_dir(ImgCache::root()) ? ImgCache::root() : \dirname(ImgCache::root()));
         // a source which is never there: the dispatcher answers its blank and stores nothing
         $url             = ImgCache::get()->getCachedUrl('pT', 'aa-routing-probe/none.jpg?w=1');
         [$status, $type] = self::probe($url, true);
         $evidence        = [[
             _m('Probe')     => safe($url),
             _m('Answer')    => $status ? safe("$status $type") : _m('none'),
-            _m('.htaccess') => $has_rule ? _m('present') : _m('missing'),
+            _m('.htaccess') => ($has_rule ? _m('present') : _m('missing')) . ($linked ? ' - ' . _m('the cache directory is a symbolic link, AA does not write there') : ''),
         ]];
         $title = _m('A request for an image which is not generated yet does not reach AA');
 
@@ -139,6 +140,11 @@ class MissCacheRouting extends AbstractOptimize
      *  half of it (a truncated rule answers 500 for every image in the cache). */
     public static function write(string $dir, string $rule, int $dir_mode): bool
     {
+        // a symlinked cache root is none of ours (MissCache does not purge there either) - and one
+        // planted by another user of the uploads would take the rule over someone else's .htaccess
+        if (is_link($dir)) {
+            return false;
+        }
         if (!is_dir($dir) && !@\Files::createFolder($dir, $dir_mode) && !is_dir($dir)) {
             return false;
         }
