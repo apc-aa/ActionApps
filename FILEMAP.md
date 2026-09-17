@@ -226,6 +226,7 @@ Feeding/import back-ends; each declares `name()` + `description()` shown in the 
 | Optimize/FixPagecache.php | Fix page cache | FixPagecache | S |
 | Optimize/GenerateJslibsArray.php | Generate JS libs array | GenerateJslibsArray | S |
 | Optimize/GenerateMetabase.php | Generate metabase | GenerateMetabase | S |
+| Optimize/ImgCacheWritable.php | State Check (basic): whether PHP can write the image cache root - a cache which cannot store regenerates every image on every request | ImgCacheWritable::canStore() | S |
 | Optimize/ImgMeasuring.php | State Check: {img} expressions in the templates which measure their image over HTTP on every render, with the reason | ImgMeasuring::measuringCalls(), calls() | S |
 | Optimize/ItemDiscussion.php | Item discussion management | ItemDiscussion | S |
 | Optimize/LdapPermsToSql.php | Migrate LDAP users/groups/permissions into the SQL backend | LdapPermsToSql | M |
