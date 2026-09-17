@@ -25,6 +25,7 @@ final class MissCacheRoutingTest extends TestCase
     protected function tearDown(): void
     {
         (new \ReflectionProperty(ImgCache::class, 'config'))->setValue(null, null);
+        (new \ReflectionProperty(ImgCache::class, 'instances'))->setValue(null, []);
         @chmod($this->tmp, 0o775);
         array_map('unlink', glob($this->tmp . '/mC/.htaccess*') ?: []);
         @rmdir($this->tmp . '/mC');

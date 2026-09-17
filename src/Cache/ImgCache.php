@@ -62,6 +62,12 @@ final class ImgCache
         return rtrim((string) self::value('IMG_UPLOAD_PATH'), '/') . '/' . self::SEGMENT;
     }
 
+    /** IMG_UPLOAD_DIR_MODE - for a configured() cache only */
+    public static function dirMode(): int
+    {
+        return (int) self::value('IMG_UPLOAD_DIR_MODE');
+    }
+
     /** The cache - for a configured() one only.
      *  @param bool $relative  urls without the host (the upload directory's path only), for a
      *                         page served by the host of IMG_UPLOAD_URL */
@@ -71,7 +77,7 @@ final class ImgCache
             $relative ? '/' . self::srcBase() : self::uploadUrl(),
             (string) self::value('IMG_UPLOAD_PATH'),
             self::SEGMENT,
-            (int) self::value('IMG_UPLOAD_DIR_MODE'),
+            self::dirMode(),
             [new PhpThumbPlugin((string) self::value('AA_INSTAL_URL') . 'img.php')],
         );
     }

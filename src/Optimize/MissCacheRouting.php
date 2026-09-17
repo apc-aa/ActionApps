@@ -63,7 +63,7 @@ class MissCacheRouting extends AbstractOptimize
             $this->message(_m('AA_INSTAL_PATH %1 cannot go into a rewrite rule', [safe(constant('AA_INSTAL_PATH'))]));
             return false;
         }
-        if (!self::write(ImgCache::root(), $rule, (int) constant('IMG_UPLOAD_DIR_MODE'))) {
+        if (!self::write(ImgCache::root(), $rule, ImgCache::dirMode())) {
             $this->message(_m('Cannot write %1', [safe(self::ruleFile())]));
             return false;
         }
@@ -80,8 +80,7 @@ class MissCacheRouting extends AbstractOptimize
         }
         $has_rule = self::hasRule();
         $linked   = is_link(ImgCache::root());
-        // Repair renames over the file, which takes a writable directory - or creates the cache root first
-        $can_repair = !$linked && is_writable(is_dir(ImgCache::root()) ? ImgCache::root() : \dirname(ImgCache::root()));
+        $can_repair = !$linked && ImgCacheWritable::canStore(ImgCache::root());   // Repair renames over the file, as the cache stores
         // a source which is never there: the dispatcher answers its blank and stores nothing
         $url             = ImgCache::get()->getCachedUrl('pT', 'aa-routing-probe/none.jpg?w=1');
         [$status, $type] = self::probe($url, true);
@@ -129,11 +128,7 @@ class MissCacheRouting extends AbstractOptimize
      *  @return bool whether the routing file is in place */
     public static function ensure(): bool
     {
-        if (!ImgCache::enabled() || self::hasRule()) {
-            return true;
-        }
-        $rule = self::thisRule();
-        return ($rule !== null) && self::write(ImgCache::root(), $rule, (int) constant('IMG_UPLOAD_DIR_MODE'));
+        return !ImgCache::enabled() || self::hasRule() || (new self())->repair();
     }
 
     /** Writes $rule as $dir/.htaccess, creating $dir - aside and renamed, so no request ever sees
@@ -196,8 +191,9 @@ class MissCacheRouting extends AbstractOptimize
     /** one stat - an empty file is a leftover and routes nothing */
     private static function hasRule(): bool
     {
-        clearstatcache(true, self::ruleFile());
-        return is_file(self::ruleFile()) && (filesize(self::ruleFile()) > 0);
+        $file = self::ruleFile();
+        clearstatcache(true, $file);
+        return is_file($file) && (filesize($file) > 0);
     }
 
     private static function ruleFile(): string

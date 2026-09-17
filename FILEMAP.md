@@ -81,7 +81,7 @@ Feeding/import back-ends; each declares `name()` + `description()` shown in the 
 |------|---------|---------|------|
 | Cache/Cacheentry.php | Input form class for item add/edit form utility | Cacheentry | S |
 | Cache/CacheStr2find.php | Search strings for cache input form | CacheStr2find | S |
-| Cache/ImgCache.php | The MissCache of resized images (IMG_UPLOAD_PATH/mC/): one setup for the {img} render, the miss dispatcher, the purge and State Check | ImgCache::get(), enabled(), configured(), srcBase(), root() | S |
+| Cache/ImgCache.php | The MissCache of resized images (IMG_UPLOAD_PATH/mC/): one setup for the {img} render, the miss dispatcher, the purge and State Check | ImgCache::get(), enabled(), configured(), uploadUrl(), srcBase(), root(), dirMode() | S |
 | Cache/PageCache.php | Caching for item add/edit and form utilities | PageCache | M |
 
 ### Later (Deferred Tasks)
