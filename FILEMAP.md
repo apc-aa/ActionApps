@@ -226,6 +226,7 @@ Feeding/import back-ends; each declares `name()` + `description()` shown in the 
 | Optimize/FixPagecache.php | Fix page cache | FixPagecache | S |
 | Optimize/GenerateJslibsArray.php | Generate JS libs array | GenerateJslibsArray | S |
 | Optimize/GenerateMetabase.php | Generate metabase | GenerateMetabase | S |
+| Optimize/ImgMeasuring.php | State Check: {img} expressions in the templates which measure their image over HTTP on every render, with the reason | ImgMeasuring::measuringCalls(), calls() | S |
 | Optimize/ItemDiscussion.php | Item discussion management | ItemDiscussion | S |
 | Optimize/LdapPermsToSql.php | Migrate LDAP users/groups/permissions into the SQL backend | LdapPermsToSql | M |
 | Optimize/MissCacheRouting.php | Image cache miss routing: writes IMG_UPLOAD_PATH/mC/.htaccess when missing (sql_update, every queue tick via ScheduleAaTasks); State Check HTTP-probes that a miss reaches the dispatcher and img.php is reachable | MissCacheRouting::ensure(), rule(), isAaRule(), verdict() | S |
