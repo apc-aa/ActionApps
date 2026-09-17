@@ -1,8 +1,12 @@
 # Paths removed from vendor/ by build-dist.sh after the name-based pruning (vendor-prune.txt): package data
 # that nothing loads at runtime but that no generic name rule can single out. One glob per line, relative
 # to vendor/. Only the registry PhpRegistryLoader.php requires stays in iban-validation.
+# Assets a package does load stay: misscache/assets (blank images), phpthumb/fonts (img.php's ttf_directory).
 honzito/iban-validation/Resource/*.txt
 honzito/iban-validation/Resource/iban_registry_202009r88.php
 honzito/phpthumb/phpThumb.config.php.default
+honzito/phpthumb/images
 honzito/qr-platba/logo.png
+# src/Util/Difftext.php renders in English only
+jfcherng/php-diff/src/languages/[!e]*.json
 mobiledetect/mobiledetectlib/Mobile_Detect.json
