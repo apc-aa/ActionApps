@@ -232,6 +232,12 @@ final class ImgCacheUrlTest extends TestCase
         ];
     }
 
+    /** a parameter list broken over lines gives the same thumbnail as the one-line list */
+    public function testLineBreaksInTheParametersAreDropped(): void
+    {
+        self::assertSame($this->url('img_upload/abc/photo.jpg', 'w=300&h=200&zc=1'), $this->url('img_upload/abc/photo.jpg', "w=300&h=200\n\t&zc=1"));
+    }
+
     /** The base comes from config.php and is not mirrored - odd characters there must not cost the cache */
     public function testImageDirectlyInTheUploadDirectoryUsesTheCache(): void
     {

@@ -141,6 +141,25 @@ final class MissCacheRoutingTest extends TestCase
         ];
     }
 
+    /** @return array<string, array{0: int, 1: string, 2: string, 3: bool}> */
+    public static function imgPhpAnswers(): array
+    {
+        $error_image = 'https://example.org/aa/images/blank.gif';
+        return [
+            'a thumbnail'                          => [200, 'image/jpeg', '', true],
+            'cannot read the probe, still answers' => [302, 'text/html', $error_image, true],   // AA tree outside the docroot
+            'redirected elsewhere'                 => [301, 'text/html', 'https://example.org/aa/img.php?src=x', false],
+            'no answer'                            => [0, '', '', false],
+            'a page instead of an image'           => [200, 'text/html', '', false],
+        ];
+    }
+
+    #[DataProvider('imgPhpAnswers')]
+    public function test_img_php_answer(int $status, string $content_type, string $location, bool $expected): void
+    {
+        $this->assertSame($expected, MissCacheRouting::imgPhpAnswers($status, $content_type, $location, 'https://example.org/aa/images/blank.gif'));
+    }
+
     #[DataProvider('answers')]
     public function test_verdict_on_the_probe_answer(int $status, string $content_type, bool $has_rule, string $expected): void
     {

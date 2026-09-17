@@ -8490,6 +8490,7 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
         if (!$image) {
             return '';
         }
+        $phpthumb_params = self::cleanParams((string) $phpthumb_params);
 
         switch ( $info ) {
             case '':
@@ -8603,7 +8604,7 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
      */
     public static function getUrl($image, $phpthumb_params, string $type): string
     {
-        if (empty($phpthumb_params)) {
+        if (empty($phpthumb_params = self::cleanParams((string) $phpthumb_params))) {
             return $image;
         }
         $phpthumb_params = \AA\Util\PhpThumbParams::addAoe4ZoomCrop($phpthumb_params);  // keeps every emitted url (and cache key) consistent with pinnedSize()
@@ -8638,6 +8639,14 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
             $phpthumb_params = str_replace('&', '&amp;', $phpthumb_params);
         }
         return AA_INSTAL_PATH. 'img.php?src=/'.safe($image)."&amp;$phpthumb_params";  // safe(): this url is put straight into <img src="...">
+    }
+
+    /** A parameter list broken over lines: the expansion trims only its ends, and a browser drops
+     *  line breaks from an img.php url - but a cache url would carry them encoded, and the
+     *  dispatcher refuses control bytes, so the thumbnail would never show. */
+    protected static function cleanParams(string $phpthumb_params): string
+    {
+        return (string) preg_replace('/[\x00-\x1F\x7F]/', '', $phpthumb_params);
     }
 
     /** phpThumb parameters a static cache file cannot stand for: 'new' generates an image
