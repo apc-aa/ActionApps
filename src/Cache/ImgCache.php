@@ -67,6 +67,15 @@ final class ImgCache
         return (int) self::value('IMG_UPLOAD_DIR_MODE');
     }
 
+    /** Drops every cached thumbnail of $file - call it when the file is overwritten or deleted.
+     *  A cache url carries no version of its source, so thumbnails of the old content would
+     *  stay served. A file outside IMG_UPLOAD_PATH has none.
+     *  @return int thumbnails deleted */
+    public static function forget(string $file): int
+    {
+        return self::configured() ? self::get()->purgeSource($file) : 0;
+    }
+
     /** The cache - for a configured() one only.
      *  @param bool $relative  urls without the host (the upload directory's path only), for a
      *                         page served by the host of IMG_UPLOAD_URL */
