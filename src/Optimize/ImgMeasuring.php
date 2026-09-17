@@ -74,7 +74,7 @@ class ImgMeasuring extends AbstractOptimize
     {
         $found = [];
         foreach (self::calls($code) as [$expression, $args]) {
-            $params = trim($args[1] ?? '');   // {img} trims its parameters, a line break around them included
+            $params = PhpThumbParams::clean(trim($args[1] ?? ''));   // what {img} reads: trimmed, line breaks inside dropped
             $info   = trim($args[2] ?? '');
             if (isset(PhpThumbParams::URL_INFOS[$info]) || self::isComputed($info)) {
                 continue;   // prints the url only - or cannot be told, so better not guessed

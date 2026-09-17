@@ -78,6 +78,7 @@ final class ImgMeasuringTest extends TestCase
             'computed parameters'            => ['{img:_#this:{ifeq:{x}:1:w=10:w=20}:img}', true],
             'computed info cannot be told'   => ['{img:_#this:w=1:{_#INFO____}}', false],
             'parameters on their own line'   => ["{img:_#this:\n  w=200&h=200&zc=1\n:img}", false],
+            'line break inside parameters'   => ["{img:_#this:w=200&\nh=200&zc=1:img}", false],
         ];
     }
 

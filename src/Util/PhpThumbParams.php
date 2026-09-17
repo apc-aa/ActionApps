@@ -45,6 +45,14 @@ final class PhpThumbParams
         return self::$parsed[$params] = $parsed;
     }
 
+    /** A parameter list broken over lines: the expansion trims only its ends, and a browser drops
+     *  line breaks from an img.php url - but a cache url would carry them encoded, and the
+     *  dispatcher refuses control bytes, so the thumbnail would never show. */
+    public static function clean(string $params): string
+    {
+        return (string) preg_replace('/[\x00-\x1F\x7F]/', '', $params);
+    }
+
     /** phpThumb's zoom crop (zc) fills the whole w × h box only when enlargement is
      *  allowed - without aoe=1 its ImageMagick backend silently returns the (smaller)
      *  source size instead. Adding aoe=1 makes the result deterministic, which lets

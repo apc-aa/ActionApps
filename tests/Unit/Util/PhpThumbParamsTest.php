@@ -101,6 +101,12 @@ final class PhpThumbParamsTest extends TestCase
         $this->assertSame($expected, PhpThumbParams::setFormat($params, $format));
     }
 
+    public function test_clean_drops_control_bytes_only(): void
+    {
+        $this->assertSame('w=300&h=200&zc=1', PhpThumbParams::clean("w=300&h=200\r\n\t&zc=1\x00\x7F"));
+        $this->assertSame('w=300&fltr[]=wmt|Ahoj světe', PhpThumbParams::clean('w=300&fltr[]=wmt|Ahoj světe'));
+    }
+
     public function test_parse_reads_either_separator(): void
     {
         $this->assertSame(['w' => '150', 'h' => '99'], PhpThumbParams::parse('w=150&amp;h=99'));

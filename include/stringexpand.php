@@ -8490,7 +8490,7 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
         if (!$image) {
             return '';
         }
-        $phpthumb_params = self::cleanParams((string) $phpthumb_params);
+        $phpthumb_params = \AA\Util\PhpThumbParams::clean((string) $phpthumb_params);
 
         switch ( $info ) {
             case '':
@@ -8604,7 +8604,7 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
      */
     public static function getUrl($image, $phpthumb_params, string $type): string
     {
-        if (empty($phpthumb_params = self::cleanParams((string) $phpthumb_params))) {
+        if (empty($phpthumb_params = \AA\Util\PhpThumbParams::clean((string) $phpthumb_params))) {
             return $image;
         }
         $phpthumb_params = \AA\Util\PhpThumbParams::addAoe4ZoomCrop($phpthumb_params);  // keeps every emitted url (and cache key) consistent with pinnedSize()
@@ -8641,21 +8641,15 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
         return AA_INSTAL_PATH. 'img.php?src=/'.safe($image)."&amp;$phpthumb_params";  // safe(): this url is put straight into <img src="...">
     }
 
-    /** A parameter list broken over lines: the expansion trims only its ends, and a browser drops
-     *  line breaks from an img.php url - but a cache url would carry them encoded, and the
-     *  dispatcher refuses control bytes, so the thumbnail would never show. */
-    protected static function cleanParams(string $phpthumb_params): string
-    {
-        return (string) preg_replace('/[\x00-\x1F\x7F]/', '', $phpthumb_params);
-    }
-
     /** phpThumb parameters a static cache file cannot stand for: 'new' generates an image
      *  instead of resizing <src> (there is no source file, so the dispatcher could only
      *  answer its blank fallback), 'phpThumbDebug' returns text, 'nocache' explicitly asks
-     *  for a fresh render, and 'down'/'sia' only set Content-Disposition, which a file
-     *  served by the web server cannot send.
+     *  for a fresh render, 'down'/'sia' only set Content-Disposition, which a file served
+     *  by the web server cannot send, 'md5s' answers a text hash, and a second 'src' (phpThumb
+     *  takes the last) renders another file. The dispatcher refuses all of them
+     *  (PhpThumbPlugin::FOREIGN_PARAMS), so a cache url would only ever show its blank.
      */
-    protected const UNCACHEABLE_PARAMS = ['new' => true, 'phpThumbDebug' => true, 'nocache' => true, 'down' => true, 'sia' => true];
+    protected const UNCACHEABLE_PARAMS = ['src' => true, 'new' => true, 'phpThumbDebug' => true, 'nocache' => true, 'down' => true, 'sia' => true, 'md5s' => true];
 
     /** Whether the resized image may be served from MissCache instead of img.php - decided
      *  from the url and the parameters alone. The render reads no file: a listing expands

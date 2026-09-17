@@ -211,6 +211,8 @@ final class ImgCacheUrlTest extends TestCase
             'phpThumb debug'    => ['img_upload/abc/photo.jpg', 'w=150&phpThumbDebug=9'],
             'explicit nocache'  => ['img_upload/abc/photo.jpg', 'w=150&nocache=1'],
             'forced download'   => ['img_upload/abc/photo.jpg', 'w=150&down=photo.jpg'],
+            'second source'     => ['img_upload/abc/photo.jpg', 'w=150&src=/img_upload/abc/other.jpg'],
+            'hash of the source' => ['img_upload/abc/photo.jpg', 'w=150&md5s='],
             // the library mirrors directories as they are, and only a file on disk under its
             // literal name can be forged - img.php decodes its query and copes with these
             'quote in directory'      => ['img_upload/x"onerror="alert(1)/a.jpg', 'w=150'],
