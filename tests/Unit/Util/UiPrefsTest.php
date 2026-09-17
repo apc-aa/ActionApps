@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Unit\Util;
 
 use AA\Util\UiPrefs;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 
 // Constants normally provided by config.php. The DB-backed methods
@@ -17,9 +18,7 @@ if (!defined('DEFAULT_LANG_INCLUDE')) {
     define('DEFAULT_LANG_INCLUDE', 'en-utf8_news_lang.php');
 }
 
-/**
- * @covers \AA\Util\UiPrefs
- */
+#[CoversClass(UiPrefs::class)]
 final class UiPrefsTest extends TestCase
 {
     private array $cookieBackup;

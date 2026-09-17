@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Unit\Optimize;
 
 use AA\Optimize\RemoveAaCronEntries;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 /** matches() is the one rule deciding which `cron` rows are AA's own jobs;
@@ -26,7 +27,7 @@ final class RemoveAaCronEntriesTest extends TestCase
         }
     }
 
-    /** @dataProvider aaScripts */
+    #[DataProvider('aaScripts')]
     public function test_every_aa_job_seen_on_a_live_install_matches(string $script): void
     {
         $this->assertTrue(RemoveAaCronEntries::matches($script));
