@@ -37,7 +37,7 @@
     "phpgangsta/googleauthenticator": "dev-master",
     "softcreatr/jsonpath": "*",
     "honzito/qr-platba": "@dev",
-    "honzito/phpthumb": "dev-justcode",
+    "honzito/phpthumb": "dev-master",
     "honzito/misscache": "@dev",
     "jfcherng/php-diff": "^6.0",
     "ext-iconv": "*",

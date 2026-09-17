@@ -75,12 +75,14 @@
             'dev_requirement' => false,
         ),
         'honzito/phpthumb' => array(
-            'pretty_version' => 'dev-justcode',
-            'version' => 'dev-justcode',
-            'reference' => 'cd782d6d4d931dfa1c89dfabe863a2155e44e4f0',
+            'pretty_version' => 'dev-master',
+            'version' => 'dev-master',
+            'reference' => '76c6bf39f787deed27da39ea463b6e7fa1e43152',
             'type' => 'library',
             'install_path' => __DIR__ . '/../honzito/phpthumb',
-            'aliases' => array(),
+            'aliases' => array(
+                0 => '9999999-dev',
+            ),
             'dev_requirement' => false,
         ),
         'honzito/qr-platba' => array(

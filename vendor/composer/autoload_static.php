@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit6b7243eaf2ac927454fa507ba7416acc
+class ComposerStaticInit549a0516f4ced1636fd22ee7d63cc983
 {
     public static $files = array (
         '54aec3685e4de0091a2019c4c75df577' => __DIR__ . '/..' . '/honzito/phpthumb/phpthumb.class.php',
@@ -1030,10 +1030,10 @@ class ComposerStaticInit6b7243eaf2ac927454fa507ba7416acc
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit6b7243eaf2ac927454fa507ba7416acc::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit6b7243eaf2ac927454fa507ba7416acc::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInit6b7243eaf2ac927454fa507ba7416acc::$prefixesPsr0;
-            $loader->classMap = ComposerStaticInit6b7243eaf2ac927454fa507ba7416acc::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit549a0516f4ced1636fd22ee7d63cc983::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit549a0516f4ced1636fd22ee7d63cc983::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInit549a0516f4ced1636fd22ee7d63cc983::$prefixesPsr0;
+            $loader->classMap = ComposerStaticInit549a0516f4ced1636fd22ee7d63cc983::$classMap;
 
         }, null, ClassLoader::class);
     }

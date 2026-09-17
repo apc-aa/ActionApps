@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6b7243eaf2ac927454fa507ba7416acc",
+    "content-hash": "549a0516f4ced1636fd22ee7d63cc983",
     "packages": [
         {
             "name": "dasprid/enum",
@@ -302,16 +302,16 @@
         },
         {
             "name": "honzito/phpthumb",
-            "version": "dev-justcode",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/honzito/phpthumb.git",
-                "reference": "cd782d6d4d931dfa1c89dfabe863a2155e44e4f0"
+                "reference": "76c6bf39f787deed27da39ea463b6e7fa1e43152"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/honzito/phpthumb/zipball/cd782d6d4d931dfa1c89dfabe863a2155e44e4f0",
-                "reference": "cd782d6d4d931dfa1c89dfabe863a2155e44e4f0",
+                "url": "https://api.github.com/repos/honzito/phpthumb/zipball/76c6bf39f787deed27da39ea463b6e7fa1e43152",
+                "reference": "76c6bf39f787deed27da39ea463b6e7fa1e43152",
                 "shasum": ""
             },
             "require": {
@@ -321,6 +321,7 @@
                 "ext-gd": "PHP GD library",
                 "ext-imagick": "PHP ImageMagick"
             },
+            "default-branch": true,
             "type": "library",
             "autoload": {
                 "files": [
@@ -363,9 +364,9 @@
                 "thumbnail"
             ],
             "support": {
-                "source": "https://github.com/honzito/phpthumb/tree/justcode"
+                "source": "https://github.com/honzito/phpthumb/tree/master"
             },
-            "time": "2026-09-09T13:43:54+00:00"
+            "time": "2026-09-17T15:49:14+00:00"
         },
         {
             "name": "honzito/qr-platba",

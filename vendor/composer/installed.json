@@ -311,17 +311,17 @@
         },
         {
             "name": "honzito/phpthumb",
-            "version": "dev-justcode",
-            "version_normalized": "dev-justcode",
+            "version": "dev-master",
+            "version_normalized": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/honzito/phpthumb.git",
-                "reference": "cd782d6d4d931dfa1c89dfabe863a2155e44e4f0"
+                "reference": "76c6bf39f787deed27da39ea463b6e7fa1e43152"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/honzito/phpthumb/zipball/cd782d6d4d931dfa1c89dfabe863a2155e44e4f0",
-                "reference": "cd782d6d4d931dfa1c89dfabe863a2155e44e4f0",
+                "url": "https://api.github.com/repos/honzito/phpthumb/zipball/76c6bf39f787deed27da39ea463b6e7fa1e43152",
+                "reference": "76c6bf39f787deed27da39ea463b6e7fa1e43152",
                 "shasum": ""
             },
             "require": {
@@ -331,7 +331,8 @@
                 "ext-gd": "PHP GD library",
                 "ext-imagick": "PHP ImageMagick"
             },
-            "time": "2026-09-09T13:43:54+00:00",
+            "time": "2026-09-17T15:49:14+00:00",
+            "default-branch": true,
             "type": "library",
             "installation-source": "dist",
             "autoload": {
@@ -375,7 +376,7 @@
                 "thumbnail"
             ],
             "support": {
-                "source": "https://github.com/honzito/phpthumb/tree/justcode"
+                "source": "https://github.com/honzito/phpthumb/tree/master"
             },
             "install-path": "../honzito/phpthumb"
         },
