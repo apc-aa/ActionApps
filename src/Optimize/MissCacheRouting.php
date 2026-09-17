@@ -47,7 +47,7 @@ class MissCacheRouting extends AbstractOptimize
     public function test(): bool
     {
         clearstatcache(true, self::ruleFile());
-        if (!ImgCache::enabled() || (@filesize(self::ruleFile()) > 0)) {
+        if (!ImgCache::enabled() || (!is_link(self::ruleFile()) && (@filesize(self::ruleFile()) > 0))) {
             return true;
         }
         $this->message(_m('%1 is missing', [safe(self::ruleFile())]));
@@ -66,7 +66,7 @@ class MissCacheRouting extends AbstractOptimize
             return false;
         }
         $file = self::ruleFile();
-        $done = (is_file($file) && (@file_get_contents($file) !== $rule))
+        $done = (is_link($file) || (is_file($file) && (@file_get_contents($file) !== $rule)))
             ? self::replace($file, $rule)
             : self::writeIfMissing(ImgCache::root(), $rule, (int) constant('IMG_UPLOAD_DIR_MODE'));
         if (!$done) {
@@ -83,8 +83,9 @@ class MissCacheRouting extends AbstractOptimize
         if (!function_exists('curl_init')) {
             return [new Finding(Finding::INFO, _m('The image cache routing cannot be checked without the PHP curl extension'))];
         }
-        $file = self::ruleFile();
-        $rule = is_file($file) ? (string) @file_get_contents($file) : null;
+        $file    = self::ruleFile();
+        $is_link = is_link($file);   // never read through one: it could point at config.php
+        $rule    = (!$is_link && is_file($file)) ? (string) @file_get_contents($file) : null;
         // Repair renames over the file, which takes a writable directory, whoever owns the rule
         $can_repair = is_writable(ImgCache::root());
         // a fresh name every time: a probe some dispatcher stored would be answered statically ever after
@@ -93,7 +94,7 @@ class MissCacheRouting extends AbstractOptimize
         $evidence        = [[
             _m('Probe')     => safe($url),
             _m('Answer')    => $status ? safe("$status $type") : _m('none'),
-            _m('.htaccess') => ($rule === null) ? _m('missing') : '<pre>' . safe($rule) . '</pre>',
+            _m('.htaccess') => $is_link ? _m('symbolic link') : (($rule === null) ? _m('missing') : '<pre>' . safe($rule) . '</pre>'),
         ]];
         $title = _m('A request for an image which is not generated yet does not reach AA');
 
@@ -111,7 +112,9 @@ class MissCacheRouting extends AbstractOptimize
             $findings[] = new Finding(Finding::ERROR, _m('img.php does not make an image for the server itself'), evidence: [[_m('Url') => safe($img_php), _m('Answer') => $status ? safe("$status $type") : _m('none')]], advice: _m('Images which are not in the cache yet cannot be generated. No answer: check that the server resolves and reaches the host of AA_INSTAL_URL. A redirect: set AA_INSTAL_URL to the address it redirects to (https, www) - the generator does not follow redirects.'), key: 'img.php');
         }
         // write-if-missing leaves any rule alone, a hand edited or planted one too
-        if (($rule !== null) && !self::isAaRule($rule)) {
+        if ($is_link) {
+            $findings[] = new Finding(Finding::WARNING, _m('The .htaccess in the image cache is a symbolic link'), advice: _m('AA never writes through it. Somebody with access to the upload directory placed it there; Repair replaces the link with the rule of this AA tree.'), repairable: $can_repair, key: 'rule');
+        } elseif (($rule !== null) && !self::isAaRule($rule)) {
             $findings[] = new Finding(Finding::WARNING, _m('The .htaccess in the image cache is not the one AA writes'), evidence: $evidence, advice: _m('Somebody changed it, or it does not come from AA. Repair replaces it with the rule of this AA tree.'), repairable: $can_repair, key: 'rule');
         }
         return $findings;
@@ -132,28 +135,23 @@ class MissCacheRouting extends AbstractOptimize
     public static function writeIfMissing(string $dir, string $rule, int $dir_mode): bool
     {
         $file = "$dir/.htaccess";
-        clearstatcache(true, $file);
+        if (is_link($file)) {
+            return false;   // planted - never written through; State Check reports it
+        }
         if (is_file($file)) {
-            // an empty one is what a writer killed between creating and writing leaves - unless it is still writing
-            return (filesize($file) > 0) || (filemtime($file) > time() - 60) || self::replace($file, $rule);
+            return true;
         }
         if (!is_dir($dir) && !@\Files::createFolder($dir, $dir_mode) && !is_dir($dir)) {
             return false;
         }
-        // 'x' creates or fails - a rule another tree wrote in the meantime stays
-        if (!($handle = @fopen($file, 'x'))) {
-            return is_file($file);
-        }
-        $written = @fwrite($handle, $rule) === strlen($rule);
-        fclose($handle);
-        clearstatcache(true, $file);
-        // NFS reports a full disk only when the file is closed, and fclose() says true regardless
-        if (!$written || (@filesize($file) !== strlen($rule))) {
-            @unlink($file);   // a truncated rule answers 500 for every image in the cache
-            return false;
-        }
-        @chmod($file, 0o644);
-        return true;
+        // Written in full aside, then link()ed into place: link() fails when the name exists (a
+        // rule another tree wrote meanwhile stays) and never follows a symlink, and no request
+        // reads half a rule - which answers 500 for every image in the cache.
+        $tmp  = "$file." . bin2hex(random_bytes(4));
+        $done = (@file_put_contents($tmp, $rule) === strlen($rule)) && self::sizeIs($tmp, strlen($rule))
+            && @chmod($tmp, 0o644) && @link($tmp, $file);
+        @unlink($tmp);
+        return $done || (is_file($file) && !is_link($file));
     }
 
     /** the rule routing a miss to the dispatcher of the AA installed at $install_path, null for a path which cannot go into it */
@@ -211,11 +209,18 @@ class MissCacheRouting extends AbstractOptimize
     private static function replace(string $file, string $rule): bool
     {
         $tmp = "$file." . bin2hex(random_bytes(4));
-        if ((@file_put_contents($tmp, $rule) !== strlen($rule)) || !@chmod($tmp, 0o644) || !@rename($tmp, $file)) {
+        if ((@file_put_contents($tmp, $rule) !== strlen($rule)) || !self::sizeIs($tmp, strlen($rule)) || !@chmod($tmp, 0o644) || !@rename($tmp, $file)) {
             @unlink($tmp);
             return false;
         }
         return true;
+    }
+
+    /** NFS reports a full disk only when the file is closed, which file_put_contents() does not tell */
+    private static function sizeIs(string $file, int $size): bool
+    {
+        clearstatcache(true, $file);
+        return @filesize($file) === $size;
     }
 
     /** @return array{0:int,1:string} HTTP status (0 = no answer at all) and content type */

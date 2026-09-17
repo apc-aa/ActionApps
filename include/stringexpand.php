@@ -8686,8 +8686,12 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
         if (!str_starts_with($image = ltrim($image, '/'), $base)) {
             return false;
         }
-        // the base itself comes from the config and is not mirrored, only what follows it
-        $rest  = substr($image, strlen($base));
+        // the base itself comes from the config and is not mirrored, only what follows it -
+        // and never a thumbnail used as a source: the dispatcher refuses a source in the cache
+        $rest = substr($image, strlen($base));
+        if (str_starts_with($rest, \AA\Cache\ImgCache::SEGMENT . '/')) {
+            return false;
+        }
         $slash = strrpos($rest, '/');
         $dir   = ($slash === false) ? '' : substr($rest, 0, $slash);
         $name  = ($slash === false) ? $rest : substr($rest, $slash + 1);

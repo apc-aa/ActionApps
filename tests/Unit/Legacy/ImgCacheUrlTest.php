@@ -223,6 +223,7 @@ final class ImgCacheUrlTest extends TestCase
             'empty directory segment' => ['img_upload//a.jpg', 'w=150'],
             'no file name'            => ['img_upload/abc/', 'w=150'],
             'newline after directory' => ["img_upload/abc\n/a.jpg", 'w=150'],
+            'thumbnail as the source' => ['img_upload/mC/pT/abc/a.jpg!w=300.jpg', 'w=150'],
             // names the dispatcher refuses, or the request to img.php cannot carry
             'dots in the name'        => ['img_upload/abc/foto...jpg', 'w=150'],
             'backslash in the name'   => ['img_upload/abc/a\\b.jpg', 'w=150'],

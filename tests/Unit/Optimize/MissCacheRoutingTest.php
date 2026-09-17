@@ -79,26 +79,18 @@ final class MissCacheRoutingTest extends TestCase
         $this->assertStringEqualsFile("$dir/.htaccess", (string) MissCacheRouting::rule('/aaa/'));
     }
 
-    /** a writer killed between creating and writing leaves an empty file - it must not stand for a rule */
-    public function test_empty_rule_file_is_replaced_once_nobody_is_writing_it(): void
+    /** a symlink planted in its place is never written through - it could point at any file of the PHP user */
+    public function test_planted_symlink_is_not_written_through(): void
     {
-        $dir = $this->tmp . '/mC';
+        $dir    = $this->tmp . '/mC';
+        $target = $this->tmp . '/target';
         mkdir($dir);
-        touch("$dir/.htaccess", time() - 3600);
-        $rule = (string) MissCacheRouting::rule('/aaa/');
+        symlink($target, "$dir/.htaccess");
 
-        $this->assertTrue(MissCacheRouting::writeIfMissing($dir, $rule, 0o775));
-        $this->assertStringEqualsFile("$dir/.htaccess", $rule);
-    }
-
-    public function test_empty_rule_file_just_created_is_left_to_its_writer(): void
-    {
-        $dir = $this->tmp . '/mC';
-        mkdir($dir);
-        touch("$dir/.htaccess");
-
-        $this->assertTrue(MissCacheRouting::writeIfMissing($dir, (string) MissCacheRouting::rule('/aaa/'), 0o775));
-        $this->assertSame(0, filesize("$dir/.htaccess"));
+        $this->assertFalse(MissCacheRouting::writeIfMissing($dir, (string) MissCacheRouting::rule('/aaa/'), 0o775));
+        $this->assertFileDoesNotExist($target);
+        $this->assertSame([], glob("$dir/.htaccess.*"), 'no temp file left behind');
+        unlink("$dir/.htaccess");
     }
 
     public function test_unwritable_upload_directory_is_reported(): void
