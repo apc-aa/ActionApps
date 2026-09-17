@@ -33,7 +33,6 @@ require_once __DIR__ . "/../../include/config.php";
 require_once __DIR__ . "/../../include/locsess.php";
 require_once __DIR__ . "/../../include/zids.php";
 require_once __DIR__ . "/../../include/locauth.php";
-require_once __DIR__ . "/../../include/locauth.php";
 
 // MissCache forge-on-miss: requests for a missing cached file under IMG_UPLOAD/mC/
 // are routed here by the web server (try_files / RewriteCond !-f — see
