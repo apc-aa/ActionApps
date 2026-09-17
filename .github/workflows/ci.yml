@@ -14,14 +14,14 @@ jobs:
   check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: shivammathur/setup-php@v2
         with:
           php-version: '8.2'
           extensions: ${{ env.PHP_EXTENSIONS }}
           tools: composer:v2
           coverage: none
-      - uses: actions/cache@v4
+      - uses: actions/cache@v6
         with:
           path: ~/.cache/composer
           key: composer-${{ hashFiles('composer.lock') }}
@@ -40,7 +40,7 @@ jobs:
     outputs:
       changed: ${{ steps.commit.outputs.changed }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           path: src
       - uses: shivammathur/setup-php@v2
@@ -79,7 +79,7 @@ jobs:
       - if: steps.key.outputs.present != 'true'
         run: echo "SF_SVN_SSH_KEY is not set - SVN mirror sync skipped"
       - if: steps.key.outputs.present == 'true'
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           path: src
       - if: steps.key.outputs.present == 'true'
