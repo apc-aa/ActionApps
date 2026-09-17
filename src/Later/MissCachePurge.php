@@ -28,8 +28,7 @@
 
 namespace AA\Later;
 
-use MissCache\MissCache;
-use MissCache\Plugins\PhpThumbPlugin;
+use AA\Cache\ImgCache;
 
 /**
  * Daily purge of the MissCache forge-on-miss image cache (IMG_UPLOAD_PATH/mC/).
@@ -53,17 +52,12 @@ class MissCachePurge implements LaterInterface
     /** @see \AA\Later\LaterInterface */
     public function toexecutelater($params = []): string
     {
-        // Guard against running outside an initialised AA context (locsess.php),
-        // where these constants would be undefined and the cache root bogus.
-        if (!defined('IMG_UPLOAD_PATH') || IMG_UPLOAD_PATH === ''
-            || !defined('IMG_UPLOAD_URL') || !defined('IMG_UPLOAD_DIR_MODE') || !defined('AA_INSTAL_URL')) {
+        // outside an initialised AA context the constants are undefined and the cache root bogus
+        if (!ImgCache::configured()) {
             return 'MissCache purge skipped: AA config constants are not defined';
         }
 
-        $mc = new MissCache(IMG_UPLOAD_URL, IMG_UPLOAD_PATH, 'mC', IMG_UPLOAD_DIR_MODE, [
-            new PhpThumbPlugin(AA_INSTAL_URL . 'img.php'),
-        ]);
-        $s = $mc->purge(['maxAge' => $this->maxAge, 'maxBytes' => $this->maxBytes]);
+        $s = ImgCache::get()->purge(['maxAge' => $this->maxAge, 'maxBytes' => $this->maxBytes]);
 
         return sprintf(
             'MissCache purge: scanned %d, deleted %d (age) + %d (size cap) + %d (stray tmp), freed %s, pruned %d dirs, %s remains',

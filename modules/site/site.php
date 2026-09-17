@@ -23,12 +23,11 @@ https://www.apc.org/
 // APC AA site Module main administration page
 use AA\Cache\Cacheentry;
 use AA\Cache\CacheStr2find;
+use AA\Cache\ImgCache;
 use AA\Cache\PageCache;
 use AA\IO\DB\DB_AA;
 use AA\IO\OnPageChanger;
 use AA\Util\Langs;
-use MissCache\MissCache;
-use MissCache\Plugins\PhpThumbPlugin;
 
 require_once __DIR__ . "/../../include/config.php";
 require_once __DIR__ . "/../../include/locsess.php";
@@ -45,8 +44,7 @@ require_once __DIR__ . "/../../include/locauth.php";
 // path would build "/img_uploadmC/" and the guard would silently never match.
 $mc_dir = rtrim((string) parse_url(IMG_UPLOAD_URL, PHP_URL_PATH), '/') . '/mC/';  // e.g. /img_upload/mC/
 if (str_starts_with($_SERVER['REQUEST_URI'], $mc_dir)) {
-    $mC = new MissCache(IMG_UPLOAD_URL, IMG_UPLOAD_PATH, 'mC', IMG_UPLOAD_DIR_MODE, [new PhpThumbPlugin(AA_INSTAL_URL . "img.php")]);
-    $mC->handleRequest($_SERVER['REQUEST_URI']);
+    ImgCache::get()->handleRequest($_SERVER['REQUEST_URI']);
     exit;
 }
 
