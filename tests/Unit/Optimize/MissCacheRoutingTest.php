@@ -24,8 +24,7 @@ final class MissCacheRoutingTest extends TestCase
 
     protected function tearDown(): void
     {
-        (new \ReflectionProperty(ImgCache::class, 'config'))->setValue(null, null);
-        (new \ReflectionProperty(ImgCache::class, 'instances'))->setValue(null, []);
+        ImgCache::useConfig(null);
         @chmod($this->tmp, 0o775);
         array_map('unlink', glob($this->tmp . '/mC/.htaccess*') ?: []);
         @rmdir($this->tmp . '/mC');
@@ -78,7 +77,7 @@ final class MissCacheRoutingTest extends TestCase
     /** /aaa/ and /aa-dev/ share the upload directory; the task queue of either leaves the rule the other wrote */
     public function test_ensure_never_replaces_an_existing_rule(): void
     {
-        (new \ReflectionProperty(ImgCache::class, 'config'))->setValue(null, [
+        ImgCache::useConfig([
             'IMG_UPLOAD_URL' => 'https://example.org/img_upload/', 'IMG_UPLOAD_PATH' => $this->tmp, 'IMG_UPLOAD_DIR_MODE' => 0o775,
             'AA_INSTAL_URL' => 'https://example.org/aaa/', 'AA_MISSCACHE_IMG_DISABLE' => false,
         ]);

@@ -20,7 +20,7 @@ final class ImgCache
     /** config.php constants the cache cannot do without */
     private const REQUIRED = ['IMG_UPLOAD_URL', 'IMG_UPLOAD_PATH', 'IMG_UPLOAD_DIR_MODE', 'AA_INSTAL_URL'];
 
-    /** @var array<string, mixed>|false|null  the config.php values by constant name, false when one is missing, null until read */
+    /** @var array<string, mixed>|false|null  the config.php values by constant name, with what derive() adds - false when one is missing, null until read */
     private static array|false|null $config = null;
 
     /** @var array<int, MissCache>  get() by its $relative argument */
@@ -39,7 +39,7 @@ final class ImgCache
      *  tells an uploaded image from any other file on the server. */
     public static function enabled(): bool
     {
-        return self::configured() && !self::value('AA_MISSCACHE_IMG_DISABLE') && (self::srcBase() !== '');
+        return self::configured() && self::value('enabled');
     }
 
     /** IMG_UPLOAD_URL - for a configured() cache only */
@@ -52,8 +52,7 @@ final class ImgCache
      *  '' when it is the domain root */
     public static function srcBase(): string
     {
-        $path = trim((string) parse_url(self::uploadUrl(), PHP_URL_PATH), '/');
-        return ($path === '') ? '' : "$path/";
+        return (string) self::value('src_base');
     }
 
     /** absolute path of the cache root, without the trailing slash */
@@ -82,6 +81,14 @@ final class ImgCache
         );
     }
 
+    /** @internal Tests only: $config (constant name => value, as config.php defines them) instead of
+     *  config.php - false as when a constant is missing, null to read config.php again. */
+    public static function useConfig(array|false|null $config): void
+    {
+        self::$config    = \is_array($config) ? self::derive($config) : $config;
+        self::$instances = [];
+    }
+
     private static function value(string $name): mixed
     {
         $config = self::config();
@@ -104,8 +111,22 @@ final class ImgCache
                 $config[$name] = constant($name);
             }
             $config['AA_MISSCACHE_IMG_DISABLE'] = defined('AA_MISSCACHE_IMG_DISABLE') && constant('AA_MISSCACHE_IMG_DISABLE');
-            self::$config = ($config['IMG_UPLOAD_PATH'] === '') ? false : $config;
+            self::$config = self::derive($config);
         }
         return self::$config;
+    }
+
+    /** $config with what {img} asks about every image, computed once: src_base, enabled
+     *  @param array<string, mixed> $config
+     *  @return array<string, mixed>|false */
+    private static function derive(array $config): array|false
+    {
+        if ((string) $config['IMG_UPLOAD_PATH'] === '') {
+            return false;
+        }
+        $path               = trim((string) parse_url((string) $config['IMG_UPLOAD_URL'], PHP_URL_PATH), '/');
+        $config['src_base'] = ($path === '') ? '' : "$path/";
+        $config['enabled']  = !$config['AA_MISSCACHE_IMG_DISABLE'] && ($config['src_base'] !== '');
+        return $config;
     }
 }

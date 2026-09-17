@@ -73,21 +73,14 @@ final class ImgCacheUrlTest extends TestCase
 
     public static function tearDownAfterClass(): void
     {
-        self::cacheConfig(null);   // ImgCache reads the real config again
+        ImgCache::useConfig(null);   // ImgCache reads the real config again
     }
 
     protected function setUp(): void
     {
         $_SERVER['HTTP_HOST'] = 'example.org';
-        self::cacheConfig(self::CACHE_CONFIG);
+        ImgCache::useConfig(self::CACHE_CONFIG);
         $this->resetMemos();
-    }
-
-    /** What ImgCache holds as read from config.php - false as when a constant is missing. */
-    private static function cacheConfig(array|false|null $config): void
-    {
-        (new \ReflectionProperty(ImgCache::class, 'config'))->setValue(null, $config);
-        (new \ReflectionProperty(ImgCache::class, 'instances'))->setValue(null, []);
     }
 
     /** Source of one class, from "class X" to its closing brace (comments/strings safe). */
@@ -134,7 +127,7 @@ final class ImgCacheUrlTest extends TestCase
      */
     public function testConfigWithoutTheCacheConstantsFallsBackInsteadOfDying(): void
     {
-        self::cacheConfig(false);
+        ImgCache::useConfig(false);
 
         self::assertSame('/apc-aa/img.php?src=/img_upload/a/p.jpg&amp;w=150', $this->url('img_upload/a/p.jpg', 'w=150'));
     }
@@ -151,7 +144,7 @@ final class ImgCacheUrlTest extends TestCase
     /** An install which set AA_MISSCACHE_IMG_DISABLE keeps every image on img.php. */
     public function testOptOutConstantKeepsEverythingOnImgPhp(): void
     {
-        self::cacheConfig(['AA_MISSCACHE_IMG_DISABLE' => true] + self::CACHE_CONFIG);
+        ImgCache::useConfig(['AA_MISSCACHE_IMG_DISABLE' => true] + self::CACHE_CONFIG);
 
         self::assertSame('/apc-aa/img.php?src=/img_upload/a/p.jpg&amp;w=150', $this->url('img_upload/a/p.jpg', 'w=150'));
     }
@@ -159,7 +152,7 @@ final class ImgCacheUrlTest extends TestCase
     /** With the uploads at the domain root no url prefix tells an uploaded image from any other file. */
     public function testUploadsAtTheDomainRootKeepEverythingOnImgPhp(): void
     {
-        self::cacheConfig(['IMG_UPLOAD_URL' => 'https://example.org/'] + self::CACHE_CONFIG);
+        ImgCache::useConfig(['IMG_UPLOAD_URL' => 'https://example.org/'] + self::CACHE_CONFIG);
 
         self::assertSame('/apc-aa/img.php?src=/a/p.jpg&amp;w=150', $this->url('a/p.jpg', 'w=150'));
     }
