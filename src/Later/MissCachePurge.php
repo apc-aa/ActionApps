@@ -33,7 +33,7 @@ use AA\Cache\ImgCache;
 /**
  * Daily purge of the MissCache forge-on-miss image cache (IMG_UPLOAD_PATH/mC/).
  *
- * The cache grows with every distinct {img:...:cache} URL. Because a deleted
+ * The cache grows with every distinct {img:...} URL. Because a deleted
  * artifact is re-forged on the next request, eviction is safe and self-healing:
  * we delete files unused for $maxAge, and enforce a hard size cap $maxBytes
  * (oldest-first). Scheduled once a day from {@see ScheduleAaTasks}.
@@ -60,11 +60,12 @@ class MissCachePurge implements LaterInterface
         $s = ImgCache::get()->purge(['maxAge' => $this->maxAge, 'maxBytes' => $this->maxBytes]);
 
         return sprintf(
-            'MissCache purge: scanned %d, deleted %d (age) + %d (size cap) + %d (stray tmp), freed %s, pruned %d dirs, %s remains',
+            'MissCache purge: scanned %d, deleted %d (age) + %d (size cap) + %d (stray tmp) + %d (stored blank), freed %s, pruned %d dirs, %s remains',
             $s['scanned'],
             $s['deleted_age'],
             $s['deleted_size'],
             $s['deleted_tmp'],
+            $s['deleted_stale'],
             self::humanBytes($s['bytes_freed']),
             $s['dirs_removed'],
             self::humanBytes($s['total_after']),

@@ -8724,10 +8724,12 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
         // render (91 ms vs 72 ms measured), while this way it warms phpThumb's own cache, so
         // the browser's later request for the cache url only has to copy the bytes.
         if (($type !== 'measure') && $own_host && self::useCache($image, $phpthumb_params)) {
-            // MissCache splits the query on '&', so hand it the raw form; the result carries
-            // no '&' (CacheRequest::encode escapes it), so it needs no HTML escaping either
-            return self::missCache(($type !== 'abs_raw') && self::cacheUrlIsRelative())
+            // MissCache splits the query on '&', so hand it the raw form. useCache() lets only
+            // plain directory names through and the library encodes the file name, so safe()
+            // changes nothing today - it is here so that no later change can open the <img src="">
+            $url = self::missCache(($type !== 'abs_raw') && self::cacheUrlIsRelative())
                        ->getCachedUrl('pT', $image . '?' . str_replace('&amp;', '&', $phpthumb_params));
+            return ($type === 'abs_raw') ? $url : safe($url);
         }
 
         if (($type === 'abs_raw') || ($type === 'measure')) {
@@ -8740,19 +8742,29 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
     }
 
     /** phpThumb parameters a static cache file cannot stand for: 'new' generates an image
-     *  instead of resizing <src> (there is no source file, so the plugin would cache a
-     *  placeholder), 'phpThumbDebug' returns text, 'nocache' explicitly asks for a fresh
-     *  render, and 'down'/'sia' only set Content-Disposition, which a file served by the
-     *  web server cannot send.
+     *  instead of resizing <src> (there is no source file, so the dispatcher could only
+     *  answer its blank fallback), 'phpThumbDebug' returns text, 'nocache' explicitly asks
+     *  for a fresh render, and 'down'/'sia' only set Content-Disposition, which a file
+     *  served by the web server cannot send.
      */
     protected const UNCACHEABLE_PARAMS = ['new' => true, 'phpThumbDebug' => true, 'nocache' => true, 'down' => true, 'sia' => true];
 
-    /** Whether the resized image may be served from MissCache instead of img.php.
+    /** Whether the resized image may be served from MissCache instead of img.php - decided
+     *  from the url and the parameters alone. The render reads no file: a listing expands
+     *  dozens of images, and a filesystem which is slow or refuses PHP for a moment must
+     *  not turn them all into img.php links (which need the very same file). Whether the
+     *  source exists is the dispatcher's question at request time, and that a miss reaches
+     *  the dispatcher at all is kept by AA\Optimize\MissCacheRouting.
      *
      *  The source has to live under IMG_UPLOAD: the dispatcher rebuilds the phpThumb src
      *  as "/<img_upload>/<dir>/<name>" ({@see \MissCache\Util\CacheRequest::toRawQueryString}),
      *  so anything else - the file manager, the install's own images/, a foreign domain -
-     *  would resolve to a missing file and get a placeholder cached in its place.
+     *  would resolve to a missing file and only ever get the blank fallback.
+     *
+     *  The library encodes the file name but mirrors the directories as they are, so only
+     *  directory names of the kind AA creates may pass: a quote would break out of
+     *  <img src="">, and a "%", "?" or "#" never names the file on disk as written (img.php
+     *  decodes its query, so it finds "a%20b.jpg" - the cache would look for it literally).
      *
      *  Everything else falls back to img.php, which works everywhere. Define
      *  AA_MISSCACHE_IMG_DISABLE in config.php3 to turn the cache off for the whole install.
@@ -8772,20 +8784,21 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
         if (array_intersect_key(self::parseParams($phpthumb_params), self::UNCACHEABLE_PARAMS)) {
             return false;
         }
-        if (!str_starts_with($image = ltrim($image, '/'), $base) || !self::ensureRouting()) {
+        if (!str_starts_with($image = ltrim($image, '/'), $base)) {
             return false;
         }
-        // A source which is not there (yet) would be negative-cached as a 1x1 placeholder
-        // that the daily purge never reclaims - every hit refreshes its recency. img.php
-        // shows a blank image too, but recovers on its own once the file appears.
-        return is_file(rtrim(IMG_UPLOAD_PATH, '/').'/'.substr($image, strlen($base)));
+        $slash = strrpos($image, '/');   // there is one: $base ends with it
+        $dir   = substr($image, 0, $slash);
+        $name  = substr($image, $slash + 1);
+        return preg_match('~^[A-Za-z0-9._/-]+$~', $dir) && !preg_match('~(^|/)\.{0,2}(/|$)~', $dir)
+            && ($name !== '') && (strpbrk($name, '%?#') === false);
     }
 
     /** True when the url carries no host (a path on this server) or names a host this
      *  install serves its images from. Content feeding brings in items whose image url
      *  points at ANOTHER AA, and the normalisation in getUrl() turns such a url into a
-     *  local looking path - a cache url built from it would forge a placeholder for a
-     *  file this server does not have, and keep serving it.
+     *  local looking path - a cache url built from it would point at a file this server
+     *  does not have, and the image would only ever get the blank fallback.
      */
     protected static function isOwnHost(string $image): bool
     {
@@ -8822,18 +8835,13 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
      */
     protected static ?string $cache_src_base = null;
     protected static ?bool $cache_url_relative = null;
-    protected static ?bool $cache_routing_ready = null;
     /** @var array<int, \MissCache\MissCache> */
     protected static array $miss_cache = [];
 
     /** document-root relative path of IMG_UPLOAD with a trailing slash ("img_upload/") */
     protected static function cacheSrcBase(): string
     {
-        if (self::$cache_src_base === null) {
-            $path = trim((string) parse_url(IMG_UPLOAD_URL, PHP_URL_PATH), '/');
-            self::$cache_src_base = ($path === '') ? '' : "$path/";
-        }
-        return self::$cache_src_base;
+        return self::$cache_src_base ??= \AA\Cache\ImgCache::srcBase(IMG_UPLOAD_URL);
     }
 
     /** True when IMG_UPLOAD_URL is served by the host of this request, so a document-root
@@ -8853,50 +8861,17 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
         return self::$cache_url_relative;
     }
 
-    /** {img:} is expanded once per listed item, so build the object once per request */
+    /** {img:} is expanded once per listed item, so build the object once per request.
+     *  build(), not ImgCache::get(): the unit test of this class evaluates it with renamed
+     *  config constants, which get() would not see. */
     protected static function missCache(bool $relative): \MissCache\MissCache
     {
-        return self::$miss_cache[(int) $relative] ??= new \MissCache\MissCache(
+        return self::$miss_cache[(int) $relative] ??= \AA\Cache\ImgCache::build(
             $relative ? '/'.self::cacheSrcBase() : IMG_UPLOAD_URL,
             IMG_UPLOAD_PATH,
-            'mC',
             (int) IMG_UPLOAD_DIR_MODE,
-            [new \MissCache\Plugins\PhpThumbPlugin(AA_INSTAL_URL.'img.php')]
+            AA_INSTAL_URL
         );
-    }
-
-    /** A cache url only works when a request for a file which is not there yet reaches the
-     *  dispatcher in modules/site/site.php. Installs whose rewrite is a catch-all with
-     *  "!-f" ({@see AA_Router_Seo}) already do that, the ones routing only language prefixes
-     *  answer 404 - so AA writes its own .htaccess into the cache root, where nothing has to
-     *  be configured by hand. It is honoured only where AllowOverride permits it and ignored
-     *  by nginx; both keep working through the rewrite they already have.
-     *
-     *  Returns false when the cache root cannot be prepared - then img.php stays in charge,
-     *  which is invisible to the visitor, unlike a url nothing answers.
-     */
-    protected static function ensureRouting(): bool
-    {
-        if (self::$cache_routing_ready !== null) {
-            return self::$cache_routing_ready;
-        }
-        $dir  = rtrim(IMG_UPLOAD_PATH, '/').'/mC';
-        $rule = "# Generated by APC-AA - routes a request for a not yet generated file to the\n"
-              . "# dispatcher; files already in the cache are served by the web server and never\n"
-              . "# reach PHP. Delete this file and AA writes it again (e.g. after moving AA).\n"
-              . "<IfModule mod_rewrite.c>\n"
-              . "RewriteEngine On\n"
-              . "RewriteCond %{REQUEST_FILENAME} !-f\n"
-              . "RewriteRule ^ ".AA_INSTAL_PATH."modules/site/site.php [L,QSA]\n"
-              . "</IfModule>\n";
-        if (@file_get_contents("$dir/.htaccess") === $rule) {
-            return self::$cache_routing_ready = true;
-        }
-        // is_dir() twice: mkdir() also fails when a parallel request created the directory meanwhile
-        if (!is_dir($dir) && !@mkdir($dir, (int) IMG_UPLOAD_DIR_MODE, true) && !is_dir($dir)) {
-            return self::$cache_routing_ready = false;
-        }
-        return self::$cache_routing_ready = (bool) @file_put_contents("$dir/.htaccess", $rule, LOCK_EX);
     }
 
     /** Sets (or replaces) the phpThumb output format in a parameter string, keeping

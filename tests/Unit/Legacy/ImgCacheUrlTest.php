@@ -46,14 +46,8 @@ final class ImgCacheUrlTest extends TestCase
         'IMG_UPLOAD_DIR_MODE' => 'AA_T_IMG_UPLOAD_DIR_MODE',
     ];
 
-    /** IMG_UPLOAD_PATH for this run - ensureRouting() really writes into it */
-    private static string $upload_path;
-
     public static function setUpBeforeClass(): void
     {
-        // unique, not guessable: the fixtures and the generated .htaccess are written here
-        self::$upload_path = sys_get_temp_dir() . '/aa-img-cache-test-' . bin2hex(random_bytes(8)) . '/';
-
         // include/util.php cannot be loaded here either, so stub what the class calls
         if (!\function_exists('safe')) {
             eval('function safe($var = "") { return htmlspecialchars((string) ($var ?? ""), ENT_QUOTES | ENT_HTML5, "ISO-8859-1"); }');
@@ -66,15 +60,10 @@ final class ImgCacheUrlTest extends TestCase
         \define('AA_T_INSTAL_PATH', '/apc-aa/');
         \define('AA_T_INSTAL_URL', 'https://example.org/apc-aa/');
         \define('AA_T_IMG_UPLOAD_URL', 'https://example.org/img_upload/');
-        \define('AA_T_IMG_UPLOAD_PATH', self::$upload_path);
+        // never touched: the render reads no file, which is the point
+        \define('AA_T_IMG_UPLOAD_PATH', '/nonexistent/aa-img-cache-test/img_upload/');
         \define('AA_T_IMG_UPLOAD_DIR_MODE', octdec('0775'));
         \define('AA_T_MISSCACHE_OFF', true);
-
-        // useCache() stats the source, so the fixtures have to exist on disk
-        foreach (['abc/photo.jpg', 'photo.jpg', 'a/p.jpg', 'a/p.pdf'] as $file) {
-            @mkdir(\dirname(self::$upload_path . $file), 0o775, true);
-            file_put_contents(self::$upload_path . $file, 'x');
-        }
 
         $source = file_get_contents(__DIR__ . '/../../../include/stringexpand.php');
         self::assertIsString($source);
@@ -86,17 +75,6 @@ final class ImgCacheUrlTest extends TestCase
         eval(strtr($rename(self::CLS_OFF), self::CONSTANTS + ['AA_MISSCACHE_IMG_DISABLE' => 'AA_T_MISSCACHE_OFF']));
         // and once as a config.php3 predating IMG_UPLOAD_URL - nothing may dereference it
         eval(strtr($rename(self::CLS_OLD), ['IMG_UPLOAD_URL' => 'AA_T_UNDEFINED_CONSTANT'] + self::CONSTANTS + ['AA_MISSCACHE_IMG_DISABLE' => 'AA_T_MISSCACHE_UNDEFINED']));
-    }
-
-    public static function tearDownAfterClass(): void
-    {
-        foreach (['abc/photo.jpg', 'photo.jpg', 'a/p.jpg', 'a/p.pdf', 'mC/.htaccess'] as $file) {
-            @unlink(self::$upload_path . $file);
-        }
-        foreach (['abc', 'a', 'mC'] as $dir) {
-            @rmdir(self::$upload_path . $dir);
-        }
-        @rmdir(self::$upload_path);
     }
 
     protected function setUp(): void
@@ -136,7 +114,7 @@ final class ImgCacheUrlTest extends TestCase
     private function resetMemos(string $cls = self::CLS): void
     {
         $class = new \ReflectionClass($cls);
-        foreach (['cache_src_base' => null, 'cache_url_relative' => null, 'cache_routing_ready' => null, 'miss_cache' => []] as $name => $value) {
+        foreach (['cache_src_base' => null, 'cache_url_relative' => null, 'miss_cache' => []] as $name => $value) {
             $class->getProperty($name)->setValue(null, $value);
         }
     }
@@ -221,7 +199,7 @@ final class ImgCacheUrlTest extends TestCase
 
     /**
      * Sources MissCache cannot serve: the dispatcher rebuilds the phpThumb src under
-     * IMG_UPLOAD, so anything else would cache a placeholder in place of the image.
+     * IMG_UPLOAD, so anything else would only ever get the blank fallback.
      */
     public static function uncachedProvider(): array
     {
@@ -233,7 +211,32 @@ final class ImgCacheUrlTest extends TestCase
             'phpThumb debug'    => ['img_upload/abc/photo.jpg', 'w=150&phpThumbDebug=9'],
             'explicit nocache'  => ['img_upload/abc/photo.jpg', 'w=150&nocache=1'],
             'forced download'   => ['img_upload/abc/photo.jpg', 'w=150&down=photo.jpg'],
+            // the library mirrors directories as they are, and only a file on disk under its
+            // literal name can be forged - img.php decodes its query and copes with these
+            'quote in directory'      => ['img_upload/x"onerror="alert(1)/a.jpg', 'w=150'],
+            'space in directory'      => ['img_upload/my photos/a.jpg', 'w=150'],
+            'percent-encoded name'    => ['img_upload/abc/a%20b.jpg', 'w=150'],
+            'percent in directory'    => ['img_upload/a%20b/c.jpg', 'w=150'],
+            'query in the source'     => ['img_upload/abc/a.jpg?v=2', 'w=150'],
+            'fragment in the source'  => ['img_upload/abc/a.jpg#top', 'w=150'],
+            'parent directory'        => ['img_upload/../etc/a.jpg', 'w=150'],
+            'empty directory segment' => ['img_upload//a.jpg', 'w=150'],
+            'no file name'            => ['img_upload/abc/', 'w=150'],
         ];
+    }
+
+    /** A value stored through the anonymous filler.php reaches <img src="{img:...}"> - it must not open the attribute. */
+    public function testQuoteInTheSourceNeverReachesThePageRaw(): void
+    {
+        foreach (['img_upload/x"onerror="alert(1)/a.jpg', 'img_upload/abc/a"onerror="alert(1).jpg'] as $image) {
+            self::assertStringNotContainsString('"', $this->url($image, 'w=150'), $image);
+        }
+    }
+
+    /** The file name may hold anything - the library encodes it - so an odd but real upload name keeps the cache. */
+    public function testOddFileNameStillUsesTheCache(): void
+    {
+        self::assertSame('/img_upload/mC/pT/abc/k~C5~AF~C5~88~2B1.jpg!w=150.jpg', $this->url('img_upload/abc/kůň+1.jpg', 'w=150'));
     }
 
     #[DataProvider('uncachedProvider')]
@@ -245,8 +248,8 @@ final class ImgCacheUrlTest extends TestCase
     /**
      * A url on ANOTHER server must never reach the cache. getUrl() strips the host from
      * every domain, so after the normalisation an image fed in from a second AA looks
-     * exactly like a local one - and the cache would forge a placeholder for a file this
-     * server does not have, which the recency-based purge then never reclaims.
+     * exactly like a local one - and the cache url would point at a file this server does
+     * not have, so the image would only ever get the blank fallback.
      *
      * @return array<string, array{0: string}>
      */
@@ -272,10 +275,17 @@ final class ImgCacheUrlTest extends TestCase
         self::assertStringStartsWith('/img_upload/mC/pT/', $this->url('img_upload/abc/photo.jpg', 'w=150'));
     }
 
-    /** A source which is not on disk yet must keep using img.php, which heals by itself. */
-    public function testMissingSourceIsNotCached(): void
+    /**
+     * The render decides from the url alone - IMG_UPLOAD_PATH above does not even exist.
+     * A source which is missing (or unreadable for a moment) is the dispatcher's business
+     * at request time: it answers a short-lived blank and stores nothing.
+     */
+    public function testSourceIsNeverLookedUpOnDisk(): void
     {
-        self::assertStringContainsString('img.php?src=', $this->url('img_upload/abc/not-uploaded-yet.jpg', 'w=150'));
+        self::assertSame(
+            '/img_upload/mC/pT/abc/not-uploaded-yet.jpg!w=150.jpg',
+            $this->url('img_upload/abc/not-uploaded-yet.jpg', 'w=150'),
+        );
     }
 
     /** Characterization: the img.php fallback is exactly what AA emitted before. */
@@ -345,30 +355,6 @@ final class ImgCacheUrlTest extends TestCase
     public function testRawUrlIsAbsoluteEvenOnTheOwnHost(): void
     {
         self::assertStringStartsWith('https://example.org/img_upload/mC/', $this->url('img_upload/a/p.jpg', 'w=150', 'abs_raw'));
-    }
-
-    /** Routing for the miss is written where an install has none of its own. */
-    public function testRoutingRuleIsWrittenIntoTheCacheRoot(): void
-    {
-        $file = self::$upload_path . 'mC/.htaccess';
-        @unlink($file);
-        $this->resetMemos();
-
-        $this->url('img_upload/a/p.jpg', 'w=150');
-
-        self::assertFileExists($file);
-        $rule = (string) file_get_contents($file);
-        self::assertStringContainsString('RewriteCond %{REQUEST_FILENAME} !-f', $rule);
-        self::assertStringContainsString('RewriteRule ^ /apc-aa/modules/site/site.php [L,QSA]', $rule);
-    }
-
-    /** Without a usable cache root there is nothing to serve from, so img.php stays. */
-    public function testUnusableCacheRootFallsBackToImgPhp(): void
-    {
-        $class = new \ReflectionClass(self::CLS);
-        $class->getProperty('cache_routing_ready')->setValue(null, false);
-
-        self::assertStringContainsString('img.php?src=', $this->url('img_upload/a/p.jpg', 'w=150'));
     }
 
     /** @return array<string, array{0: string, 1: string, 2: string}> */

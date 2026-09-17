@@ -81,7 +81,7 @@ Feeding/import back-ends; each declares `name()` + `description()` shown in the 
 |------|---------|---------|------|
 | Cache/Cacheentry.php | Input form class for item add/edit form utility | Cacheentry | S |
 | Cache/CacheStr2find.php | Search strings for cache input form | CacheStr2find | S |
-| Cache/ImgCache.php | The MissCache of resized images (IMG_UPLOAD_PATH/mC/) as the dispatcher, purge and checks need it | ImgCache::get(), ImgCache::configured() | S |
+| Cache/ImgCache.php | The MissCache of resized images (IMG_UPLOAD_PATH/mC/): one setup for the {img} render, the miss dispatcher, the purge and State Check | ImgCache::get(), build(), enabled(), configured(), srcBase() | S |
 | Cache/PageCache.php | Caching for item add/edit and form utilities | PageCache | M |
 
 ### Later (Deferred Tasks)
@@ -100,7 +100,7 @@ Feeding/import back-ends; each declares `name()` + `description()` shown in the 
 | Later/LinkcheckRun.php | Hourly links module URL validation (was the modules/links/linkcheck.php cron row) | LinkcheckRun | S |
 | Later/LogCleanup.php | Clean up log tables | LogCleanup | S |
 | Later/LogSystemstatus.php | Log system status tracking | LogSystemstatus | S |
-| Later/MissCachePurge.php | Deferred purge of MissCache entries | MissCachePurge | S |
+| Later/MissCachePurge.php | Daily MissCache purge (TTL, size cap, stored blanks) | MissCachePurge | S |
 | Later/OptimizeTables.php | Weekly OPTIMIZE TABLE queue task (replaces misc/optimize.php) | OptimizeTables | S |
 | Later/PagecacheDateSweep.php | Invalidate cached pages after item publish/expiry dates pass (periodic sweep) | PagecacheDateSweep | S |
 | Later/PagecachePurge.php | Purge page cache | PagecachePurge | S |
@@ -227,6 +227,7 @@ Feeding/import back-ends; each declares `name()` + `description()` shown in the 
 | Optimize/GenerateMetabase.php | Generate metabase | GenerateMetabase | S |
 | Optimize/ItemDiscussion.php | Item discussion management | ItemDiscussion | S |
 | Optimize/LdapPermsToSql.php | Migrate LDAP users/groups/permissions into the SQL backend | LdapPermsToSql | M |
+| Optimize/MissCacheRouting.php | Image cache miss routing: writes IMG_UPLOAD_PATH/mC/.htaccess when missing (sql_update, every queue tick via ScheduleAaTasks); State Check HTTP-probes that a miss reaches the dispatcher and img.php is reachable | MissCacheRouting::ensure(), rule(), isAaRule(), verdict() | S |
 | Optimize/MultivalueDuplicates.php | Find multivalue field duplicates | MultivalueDuplicates | S |
 | Optimize/ReadersLogin2id.php | Migrate readers login to ID | ReadersLogin2id | S |
 | Optimize/RedefineCoreConstants.php | Recreate core constants | RedefineCoreConstants | M |

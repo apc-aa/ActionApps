@@ -147,10 +147,11 @@ final class SiteMissCacheDispatchPrefixTest extends TestCase
         $this->assertNotFalse($src, 'cannot read ' . self::SOURCE);
 
         $this->assertMatchesRegularExpression(
-            '/\$mc_dir\s*=\s*rtrim\(\(string\)\s*parse_url\(IMG_UPLOAD_URL,\s*PHP_URL_PATH\),\s*[\'"]\/[\'"]\)\s*\.\s*[\'"]\/mC\/[\'"]/',
+            '/\$mc_dir\s*=\s*rtrim\(\(string\)\s*parse_url\(IMG_UPLOAD_URL,\s*PHP_URL_PATH\),\s*[\'"]\/[\'"]\)\s*\.\s*[\'"]\/[\'"]\s*\.\s*ImgCache::SEGMENT\s*\.\s*[\'"]\/[\'"]/',
             $src,
-            'site.php must rtrim the base path before appending "/mC/"',
+            'site.php must rtrim the base path before appending "/" . ImgCache::SEGMENT . "/"',
         );
+        $this->assertSame(self::CACHE_SEGMENT, \AA\Cache\ImgCache::SEGMENT, 'the segment the render and the purge use');
         $this->assertDoesNotMatchRegularExpression(
             '/parse_url\(IMG_UPLOAD_URL,\s*PHP_URL_PATH\)\s*\.\s*[\'"]mC\/[\'"]/',
             $src,

@@ -228,8 +228,9 @@ define("IMG_UPLOAD_DIR_MODE",  octdec('0774'));
  *  each of them once. Nothing has to be configured: a request for a file which is
  *  not there yet has to reach modules/site/site.php, which the usual site module
  *  rewrite already does, and AA additionally writes <IMG_UPLOAD_PATH>/mC/.htaccess
- *  with the rule. Add it by hand only on nginx (or where AllowOverride forbids
- *  .htaccess):
+ *  with the rule (service/sql_update.php and the daily task queue write it when it
+ *  is missing; the extended State Check verifies a miss really gets through). Add
+ *  it by hand only on nginx (or where AllowOverride forbids .htaccess):
  *
  *      location ^~ /img_upload/mC/ { try_files $uri @aa; }
  *      location @aa { include fastcgi_params;
