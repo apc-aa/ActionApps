@@ -38,7 +38,7 @@ final class FilesCreateFolderTest extends TestCase
         chmod($this->parent, 0o775);
 
         $this->assertTrue(\Files::createFolder($this->parent . '/new', 0o774));
-        $this->assertSame(0o774, fileperms($this->parent . '/new') & 0o7777);
+        $this->assertSame(0o774, $this->newFolderMode());
     }
 
     /** chmod() with a mode lacking the setgid bit used to clear the one the directory inherited */
@@ -50,6 +50,13 @@ final class FilesCreateFolderTest extends TestCase
         }
 
         $this->assertTrue(\Files::createFolder($this->parent . '/new', 0o774));
-        $this->assertSame(0o2774, fileperms($this->parent . '/new') & 0o7777);
+        $this->assertSame(0o2774, $this->newFolderMode());
+    }
+
+    /** the mode on disk: PHP 8.2 keeps the one mkdir() made in its stat cache after chmod() (8.4 clears it) */
+    private function newFolderMode(): int
+    {
+        clearstatcache(true, $this->parent . '/new');
+        return fileperms($this->parent . '/new') & 0o7777;
     }
 }
