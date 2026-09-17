@@ -93,6 +93,43 @@ final class MissCacheRoutingTest extends TestCase
         unlink("$dir/.htaccess");
     }
 
+    /** an empty file is no rule - left over by a full disk or a hand edit - and routes nothing */
+    public function test_empty_rule_is_replaced(): void
+    {
+        $dir  = $this->tmp . '/mC';
+        $rule = (string) MissCacheRouting::rule('/aaa/');
+        mkdir($dir);
+        touch("$dir/.htaccess");
+
+        $this->assertTrue(MissCacheRouting::writeIfMissing($dir, $rule, 0o775));
+        $this->assertStringEqualsFile("$dir/.htaccess", $rule);
+        $this->assertSame(["$dir/.htaccess"], glob("$dir/.htaccess*"), 'no temp file left behind');
+    }
+
+    /** a symlinked cache root is somebody's own layout or a planted one - AA writes nothing there */
+    public function test_symlinked_cache_directory_is_not_written_into(): void
+    {
+        $elsewhere = $this->tmp . '/elsewhere';
+        mkdir($elsewhere);
+        symlink($elsewhere, $this->tmp . '/mC');
+
+        $this->assertFalse(MissCacheRouting::writeIfMissing($this->tmp . '/mC', (string) MissCacheRouting::rule('/aaa/'), 0o775));
+        $this->assertSame(['.', '..'], scandir($elsewhere), 'neither the rule nor a temp file');
+        unlink($this->tmp . '/mC');
+        rmdir($elsewhere);
+    }
+
+    /** neither link() nor rename() puts a file where a directory is - the temp file goes either way */
+    public function test_temp_file_is_removed_when_the_rule_cannot_be_placed(): void
+    {
+        $dir = $this->tmp . '/mC';
+        mkdir("$dir/.htaccess", 0o775, true);
+
+        $this->assertFalse(MissCacheRouting::writeIfMissing($dir, (string) MissCacheRouting::rule('/aaa/'), 0o775));
+        $this->assertSame(["$dir/.htaccess"], glob("$dir/.htaccess*"), 'no temp file left behind');
+        rmdir("$dir/.htaccess");
+    }
+
     public function test_unwritable_upload_directory_is_reported(): void
     {
         if (function_exists('posix_geteuid') && posix_geteuid() === 0) {
@@ -141,23 +178,25 @@ final class MissCacheRoutingTest extends TestCase
         ];
     }
 
-    /** @return array<string, array{0: int, 1: string, 2: string, 3: bool}> */
+    /** @return array<string, array{0: int, 1: string, 2: string, 3: bool, 4: string}> */
     public static function imgPhpAnswers(): array
     {
         $error_image = 'https://example.org/aa/images/blank.gif';
         return [
-            'a thumbnail'                          => [200, 'image/jpeg', '', true],
-            'cannot read the probe, still answers' => [302, 'text/html', $error_image, true],   // AA tree outside the docroot
-            'redirected elsewhere'                 => [301, 'text/html', 'https://example.org/aa/img.php?src=x', false],
-            'no answer'                            => [0, '', '', false],
-            'a page instead of an image'           => [200, 'text/html', '', false],
+            'a thumbnail of the probe image'     => [200, 'image/jpeg', '', false, 'ok'],
+            'probe image not written yet'        => [302, 'text/html', $error_image, false, 'unplaced'],
+            'served, but img.php cannot read it' => [302, 'text/html', $error_image, true, 'unreadable'],
+            'redirected elsewhere'               => [301, 'text/html', 'https://example.org/aa/img.php?src=x', true, 'broken'],
+            'no answer'                          => [0, '', '', false, 'broken'],
+            'a page instead of an image'         => [200, 'text/html', '', true, 'broken'],
+            'redirect without a location'        => [302, 'text/html', '', true, 'broken'],
         ];
     }
 
     #[DataProvider('imgPhpAnswers')]
-    public function test_img_php_answer(int $status, string $content_type, string $location, bool $expected): void
+    public function test_img_php_verdict(int $status, string $content_type, string $location, bool $probe_served, string $expected): void
     {
-        $this->assertSame($expected, MissCacheRouting::imgPhpAnswers($status, $content_type, $location, 'https://example.org/aa/images/blank.gif'));
+        $this->assertSame($expected, MissCacheRouting::imgPhpVerdict($status, $content_type, $location, 'https://example.org/aa/images/blank.gif', $probe_served));
     }
 
     #[DataProvider('answers')]
