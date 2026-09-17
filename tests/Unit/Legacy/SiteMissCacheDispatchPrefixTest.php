@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Legacy;
 
+use AA\Cache\ImgCache;
 use MissCache\MissCache;
 use MissCache\Plugins\PhpThumbPlugin;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -13,7 +14,7 @@ use PHPUnit\Framework\TestCase;
  * Regression tests for the MissCache dispatch guard in modules/site/site.php.
  *
  * site.php routes a cache miss to MissCache only when REQUEST_URI starts with the
- * cache prefix, computed inline as $mc_dir. The rendered URLs come from
+ * cache prefix, built from ImgCache::srcBase(). The rendered URLs come from
  * MissCache::getCachedUrl() (via AA_Stringexpand_Img::getUrl()), whose
  * constructor rtrim()s the base URL — so a base without a trailing slash still
  * yields "/upload/mC/...", while the original guard built "/uploadmC/". The two
@@ -21,11 +22,16 @@ use PHPUnit\Framework\TestCase;
  * anywhere: the URLs are emitted correctly and the dispatcher is simply never
  * entered (biom.cz, 2026-09-03).
  *
- * The invariant these tests pin: for ANY IMG_UPLOAD_URL shape, $mc_dir must be a
+ * The invariant these tests pin: for ANY IMG_UPLOAD_URL shape, the guard prefix must be a
  * prefix of the path of the URL the library actually emits.
  */
 final class SiteMissCacheDispatchPrefixTest extends TestCase
 {
+    protected function tearDown(): void
+    {
+        ImgCache::useConfig(null);
+    }
+
     /** absolute path to the file under test */
     private const SOURCE = __DIR__ . '/../../../modules/site/site.php';
 
@@ -35,14 +41,15 @@ final class SiteMissCacheDispatchPrefixTest extends TestCase
     /**
      * The dispatch guard of site.php, in both variants.
      *
-     * @param string $variant 'old' (naive concatenation) or 'new' (the fix)
+     * @param string $variant 'old' (naive concatenation) or 'new' (what site.php builds from ImgCache)
      */
     private function mcDir(string $variant, string $imgUploadUrl): string
     {
-        return match ($variant) {
-            'old' => parse_url($imgUploadUrl, PHP_URL_PATH) . self::CACHE_SEGMENT . '/',
-            'new' => rtrim((string) parse_url($imgUploadUrl, PHP_URL_PATH), '/') . '/' . self::CACHE_SEGMENT . '/',
-        };
+        if ($variant === 'old') {
+            return parse_url($imgUploadUrl, PHP_URL_PATH) . self::CACHE_SEGMENT . '/';
+        }
+        ImgCache::useConfig(['IMG_UPLOAD_URL' => $imgUploadUrl, 'IMG_UPLOAD_PATH' => '/srv/site/upload', 'IMG_UPLOAD_DIR_MODE' => 0o775, 'AA_INSTAL_URL' => 'https://example.org/aaa/', 'AA_MISSCACHE_IMG_DISABLE' => false]);
+        return '/' . ImgCache::srcBase() . ImgCache::SEGMENT . '/';
     }
 
     /** Path part of the URL the library emits for a thumbnail under $imgUploadUrl. */
@@ -141,15 +148,15 @@ final class SiteMissCacheDispatchPrefixTest extends TestCase
         $this->assertTrue(str_starts_with('/upload/mC/pT/x.jpg', $mc_dir));
     }
 
-    public function testProductionGuardRtrimsTheBasePath(): void
+    public function testProductionGuardUsesTheTrimmedBasePath(): void
     {
         $src = file_get_contents(self::SOURCE);
         $this->assertNotFalse($src, 'cannot read ' . self::SOURCE);
 
         $this->assertMatchesRegularExpression(
-            '/\$mc_dir\s*=\s*rtrim\(\(string\)\s*parse_url\(IMG_UPLOAD_URL,\s*PHP_URL_PATH\),\s*[\'"]\/[\'"]\)\s*\.\s*[\'"]\/[\'"]\s*\.\s*ImgCache::SEGMENT\s*\.\s*[\'"]\/[\'"]/',
+            '/ImgCache::configured\(\)\s*&&\s*str_starts_with\(\$_SERVER\[\'REQUEST_URI\'\],\s*\'\/\'\s*\.\s*ImgCache::srcBase\(\)\s*\.\s*ImgCache::SEGMENT\s*\.\s*\'\/\'\)/',
             $src,
-            'site.php must rtrim the base path before appending "/" . ImgCache::SEGMENT . "/"',
+            'site.php must build the guard as "/" . ImgCache::srcBase() . ImgCache::SEGMENT . "/", after configured()',
         );
         $this->assertSame(self::CACHE_SEGMENT, \AA\Cache\ImgCache::SEGMENT, 'the segment the render and the purge use');
         $this->assertDoesNotMatchRegularExpression(
