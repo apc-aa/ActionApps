@@ -42,7 +42,7 @@ require_once __DIR__ . "/../../include/locauth.php";
 // slash still renders ".../img_upload/mC/..." — concatenating "mC/" onto the raw
 // path would build "/img_uploadmC/" and the guard would silently never match.
 $mc_dir = rtrim((string) parse_url(IMG_UPLOAD_URL, PHP_URL_PATH), '/') . '/' . ImgCache::SEGMENT . '/';  // e.g. /img_upload/mC/
-if (str_starts_with($_SERVER['REQUEST_URI'], $mc_dir)) {
+if (str_starts_with($_SERVER['REQUEST_URI'], $mc_dir) && ImgCache::configured()) {
     ImgCache::get()->handleRequest($_SERVER['REQUEST_URI']);
     exit;
 }
