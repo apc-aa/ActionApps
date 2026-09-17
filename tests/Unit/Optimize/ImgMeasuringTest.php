@@ -46,6 +46,12 @@ final class ImgMeasuringTest extends TestCase
                 [['{img:{img:x:w=10:url}:w=5:img}', ['{img:x:w=10:url}', 'w=5', 'img']], ['{img:x:w=10:url}', ['x', 'w=10', 'url']]],
             ],
             'unclosed is not a call' => ['{img:x:w=1', []],
+            'unclosed does not hide a later call' => [
+                "{img:{_#IMG_URL_}:w=100:img\n<p>text</p>\n{img:_#this:w=300:img}",
+                [['{img:_#this:w=300:img}', ['_#this', 'w=300', 'img']]],
+            ],
+            'command name in capitals' => ['{IMG:x:w=1}', [['{IMG:x:w=1}', ['x', 'w=1']]]],
+            'comment inside an argument' => ['{img:_#this:w=300:img{# measured}}', [['{img:_#this:w=300:img}', ['_#this', 'w=300', 'img']]]],
             'field reference is not a call' => ['{img_upload......}', []],
         ];
     }
@@ -71,6 +77,7 @@ final class ImgMeasuringTest extends TestCase
             'format'                         => ['{img:_#this:w=200&h=200&zc=1:mime}', true],
             'computed parameters'            => ['{img:_#this:{ifeq:{x}:1:w=10:w=20}:img}', true],
             'computed info cannot be told'   => ['{img:_#this:w=1:{_#INFO____}}', false],
+            'parameters on their own line'   => ["{img:_#this:\n  w=200&h=200&zc=1\n:img}", false],
         ];
     }
 

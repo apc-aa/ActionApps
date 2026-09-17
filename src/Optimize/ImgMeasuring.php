@@ -74,7 +74,7 @@ class ImgMeasuring extends AbstractOptimize
     {
         $found = [];
         foreach (self::calls($code) as [$expression, $args]) {
-            $params = $args[1] ?? '';
+            $params = trim($args[1] ?? '');   // {img} trims its parameters, a line break around them included
             $info   = trim($args[2] ?? '');
             if (isset(PhpThumbParams::URL_INFOS[$info]) || self::isComputed($info)) {
                 continue;   // prints the url only - or cannot be told, so better not guessed
@@ -93,15 +93,17 @@ class ImgMeasuring extends AbstractOptimize
     }
 
     /** Every {img:...} in $code with its arguments, split the way the expansion splits them:
-     *  on ":" outside nested {...}, except "#:" and the colon of "http://" / "https://".
-     *  A nested {img:...} inside the arguments is listed on its own, too.
+     *  on ":" outside nested {...}, except "#:" and the colon of "http://" / "https://". The
+     *  command name in any case, {# comments} dropped - the expansion does both. A nested
+     *  {img:...} inside the arguments is listed on its own, too.
      *  @return list<array{0: string, 1: list<string>}> [expression, arguments] */
     public static function calls(string $code): array
     {
         $calls  = [];
+        $code   = (string) preg_replace('~\{#[^{}]*\}~', '', $code);
         $length = strlen($code);
         $offset = 0;
-        while (($start = strpos($code, '{img:', $offset)) !== false) {
+        while (($start = stripos($code, '{img:', $offset)) !== false) {
             $offset = $start + 5;
             $args   = [];
             $arg    = '';
@@ -121,7 +123,7 @@ class ImgMeasuring extends AbstractOptimize
                 $depth += ($char === '{') ? 1 : (($char === '}') ? -1 : 0);
                 $arg   .= $char;
             }
-            break;   // unclosed - the expansion leaves it as text, and so does every later one
+            // unclosed: the expansion leaves this one as text, but still expands every later one
         }
         return $calls;
     }
