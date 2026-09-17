@@ -90,7 +90,7 @@
     "stan": "phpstan analyse --no-progress --memory-limit=1G",
     "cs": "php-cs-fixer check",
     "fix": "php-cs-fixer fix",
-    "test": "phpunit",
+    "test": "@php -d opcache.enable_cli=0 vendor/bin/phpunit",
     "check": [
       "@lint",
       "@cs",
