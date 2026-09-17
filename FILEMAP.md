@@ -204,6 +204,7 @@ Feeding/import back-ends; each declares `name()` + `description()` shown in the 
 | Optimize/ChangeF_t2F__.php | Change field type mapping | ChangeF_t2F__ | S |
 | Optimize/ChangeModuleId.php | Change module ID | ChangeModuleId | S |
 | Optimize/ClearPagecache.php | Clear page cache | ClearPagecache | S |
+| Optimize/CodePoints.php | Where template code lives (views, fields, spots, object_text, Code slice items): every code value containing a string, for checks that search it | CodePoints::containing() | S |
 | Optimize/Convert2innodb.php | Convert tables to InnoDB | Convert2innodb | S |
 | Optimize/Convert2utf8mb4.php | Convert database to UTF-8 MB4 | Convert2utf8mb4 | S |
 | Optimize/Convertlatin2Utf8Mb4.php | Convert Latin1 to UTF8MB4 | Convertlatin2Utf8Mb4 | S |
