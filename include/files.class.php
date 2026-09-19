@@ -1670,7 +1670,7 @@ class AA_Directory_Wrapper
             $wrapper = new AA_File_Wrapper($url, $info);
         } else {*/
 
-        switch (@$info['scheme']) {
+        switch ($info['scheme'] ?? '') {   // a local path has no scheme
             case 'ftp':
                 echo "ftp directory not yet implemented\n";
                 //$wrapper = new AA_FTP_Directory_Wrapper($url, $info);
