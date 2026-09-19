@@ -1,5 +1,10 @@
 ### List of removed, no longer maintained files in ActionApps
 
+/**INSTALL**  
+/doc/**install.html**, **install-1.html** … **install-8.html**, **install-3-old.html**  
+Installation guide from 2000–2003 (RedHat 7, PHP 4, register_globals, SSI, LDAP setup) and a short plain-text pointer to it.  
+_Outdated. Replaced by INSTALL.md (install from the git dist branch) and UPDATE.md (update, SVN → git). Removed 2026-09-19 - honzam_
+
 /**ac1.php3**  
 Shortcut for alerts confirmation to make the URL shorter (Location: $self/misc/alerts/unsubscribe.php3?id=$id)   
 _No longer maintained. Removed 2025-08-13 - honzam

@@ -27,8 +27,8 @@ use PHPUnit\Framework\TestCase;
  * reads config.php once per request - the test hands them in there, the opt-out included.
  *
  * The eval() below is the technique, not a defect: its input is this repository's own
- * source plus a strtr() of constant names, never anything external, and tests/ is deleted
- * on a server (see INSTALL).
+ * source plus a strtr() of constant names, never anything external, and tests/ is not
+ * part of the dist tree servers run (dev/release/dist-exclude.txt).
  */
 final class ImgCacheUrlTest extends TestCase
 {

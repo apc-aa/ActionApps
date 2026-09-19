@@ -32,7 +32,7 @@ git switch dist && git pull --ff-only && git branch -D fix/short-name           
 
 ## Per-install files
 `include/config.php` (and the legacy `include/config.php3`) are never part of `main` or `dist`; each
-installation creates them from `include/config.php.default` (see INSTALL) and dist's `.gitignore` hides
+installation creates them from `include/config.php.default` (see INSTALL.md) and dist's `.gitignore` hides
 them from `git status`. `sync-svn.sh` deliberately leaves the `include/config.php` shim that SVN trunk has
 always shipped in place, because SVN installations `require_once` it.
 
