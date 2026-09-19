@@ -26,6 +26,7 @@ https://www.apc.org/
 
 use AA\IO\DB\DB_AA;
 use AA\Optimize\AbstractOptimize;
+use AA\Optimize\CheckRunner;
 use AA\Optimize\RestoreBckTables;
 use AA\Util\ReportTrait;
 
@@ -185,12 +186,12 @@ class AA_SQL_Updater
     }
 
     /** getOptimizers function
-     *  Return names of all known AA classes, which begins with AA\Optimize\AA_Optimize
+     *  Return instances of all sql_update optimizers, ordered by priority
      */
     public function getOptimizers(): array
     {
         $optimizers = [];
-        foreach (AA_Components::getClassNames('AA\\Optimize\\', static fn($class) => in_array('sql_update', $class::types(), true)) as $optimize_class) {
+        foreach (CheckRunner::classes(['sql_update']) as $optimize_class) {
             $optimizers[sprintf("%05s", $optimize_class::priority()) . $optimize_class] = AA_Serializable::factory($optimize_class);
         }
         ksort($optimizers);
