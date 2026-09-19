@@ -5,6 +5,10 @@
 Installation guide from 2000–2003 (RedHat 7, PHP 4, register_globals, SSI, LDAP setup) and a short plain-text pointer to it.  
 _Outdated. Replaced by INSTALL.md (install from the git dist branch) and UPDATE.md (update, SVN → git). Removed 2026-09-19 - honzam_
 
+/modules/module_TEMPLATE/**readme.txt**  
+How to create a new module type (2002): add the type to the `$MODULES` array in include/constants.php, tables to doc/aadb.sql and sql_update.php3, language files to /include/.  
+_Outdated - none of those places exists any more. Replaced by modules/module_TEMPLATE/README.md (module class found by AA_Moduleregistry, permission letters, module switcher, the four module pages, language section, Metabase schema, tests). Removed 2026-09-19 - honzam_
+
 /**ac1.php3**  
 Shortcut for alerts confirmation to make the URL shorter (Location: $self/misc/alerts/unsubscribe.php3?id=$id)   
 _No longer maintained. Removed 2025-08-13 - honzam

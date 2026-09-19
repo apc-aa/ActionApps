@@ -626,6 +626,7 @@ Note: *.php3 files are legacy wrappers that include the .php version.
 |------|---------|---------|------|
 | jump/index.php | Jump module entry point | Module redirect | S |
 | jump/modedit.php | Edit mode for jump module | Jump config | M |
+| module_TEMPLATE/README.md | How to create a new module type: checklist of touch points, page skeletons, traps | (guide) | M |
 | module_TEMPLATE/index.php | Template module entry point | Module template | S |
 | module_TEMPLATE/util.php | Template module utilities | Template utilities | S |
 <!-- /SECTION:modules -->
