@@ -20,48 +20,43 @@ https://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-// APC AA - Module main administration page
-
-// used in init_page.php script to include config.php from the right directory
+// APC AA - Module main administration page. A template to copy - the whole checklist for a new
+// module type (class, permissions, the other pages, translations, tests) is in README.md here.
 
 use AA\Util\InputVars;
 
-require_once __DIR__ . "/../../include/init_page.php";
-require_once __DIR__ . "/../../include/varset.php";
-require_once __DIR__ . "/../../include/formutil.php";
+require_once __DIR__ . "/../../include/init_page.php";   // session, login, perm_core.php, AA::$module_id
 
+// read the input only through InputVars
 try {
-    $cancel = InputVars::boolPOST('cancel');
+    $update = InputVars::boolPOST('update');
 } catch (Exception $e) {
     AA_Adminpageutil::pageParameterError($e);
 }
 
-// id of the editted module
-$module_id   = AA::$module_id;        // id in long form (32-digit hexadecimal number)
-
-// Check permissions for this page.
-// You should change PS_MODW_EDIT_CODE permission to match the permission in your
-// module. See /include/perm_core.php for more details
+// id of the edited module
+$module_id = AA::$module_id;        // id in long form (32-digit hexadecimal number)
 
 // getOwnModule(), not getModule(): the latter follows the module type in the database, so an id of
 // another type gives an object without this module's methods ("Call to undefined method")
-if (!($module = AA_Module_XX::getOwnModule($module_id))) {
-    MsgPage(_m("Module XX not found"));
+if (!($module = AA_Module_Xxx::getOwnModule($module_id))) {
+    MsgPage(_m("Xxx module not found"));   // MsgPage() never returns
 }
 
-if (!IfSlPerm(PS_MODX_EDIT_CODE)) {
-    MsgPage(_m("You do not have permission to edit items in this module"));
-    exit;
+// Change PS_XXX_VIEW to the permission letter of your module - see include/perm_core.php
+if (!IfSlPerm(PS_XXX_VIEW)) {
+    MsgPage(_m("You do not have permission to see this module"));
 }
 
+$err = [];   // error messages for the top of the page: $err[] = MsgErr(_m("..."));
 
-// fill code for handling the operations managed on this page
+if ($update) {
+    // fill code for handling the operations managed on this page
+}
 
-
-
-
-$apage = new AA_Adminpageutil('modadmin', 'xxmanager');
-$apage->setTitle(_m("Editor window - xx manager"));
+$apage = new AA_Adminpageutil('xxx', 'main');   // keys of the main menu and of its submenu item in menu.php
+$apage->setTitle(_m("Xxx - main page"));
+// $apage->setForm();   // no default <form name="f" method="post"> around the page (own forms, application shell)
 
 // possible other imports
 // $apage->addRequire('aa-jslib');   // {htmltoggle in helpbox}
@@ -72,16 +67,8 @@ $apage->setTitle(_m("Editor window - xx manager"));
 //    ';
 // $apage->addRequire($script2run, 'AA_Req_Load');
 
-$apage->printHead($err, $Msg);
-
-
-
-
+$apage->printHead($err);   // never pass Msg from the request here - it is printed unescaped
 
 // fill code for the main admin page layout
-
-
-
-
 
 $apage->printFoot();
