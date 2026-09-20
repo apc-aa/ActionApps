@@ -322,6 +322,15 @@ Feeding/import back-ends; each declares `name()` + `description()` shown in the 
 |------|---------|---------|------|
 | Module/Poll/Menu.php | Polls module admin menu | Menu | S |
 
+### Http (everything AA fetches from outside)
+
+| File | Purpose | Key API | Size |
+|------|---------|---------|------|
+| Http/Client.php | AA's one HTTP client, over symfony/http-client | Client, Client::agent() | S |
+| Http/ClientInterface.php | What a caller may ask of it; hand one in to test | request() | S |
+| Http/Response.php | One answer: status, body, headers, redirect target | ok(), json(), excerpt() | S |
+| Http/TransportException.php | No answer at all - not a status | Exception | S |
+
 ### Doit & Expand
 
 | File | Purpose | Key API | Size |
