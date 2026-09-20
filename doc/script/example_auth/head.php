@@ -1,6 +1,10 @@
 <?php
 
-require_once __DIR__."/request.class.php";
+// This example used to say: copy include/request.class.php next to this file and you are done.
+// That stopped being true years ago - the file needs AA's autoloader - and since 2026-09 it also
+// takes its transport from AA\Http\Client. Load a whole AA instead; on your own site, replace
+// this with the path to the installation you are authenticating against.
+require_once __DIR__ . "/../../../include/init_page.php";
 
 $options = [
     'aa_url'          => 'https://example.org/apc-aa/',

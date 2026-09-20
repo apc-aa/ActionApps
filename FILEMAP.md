@@ -524,7 +524,7 @@ Note: *.php3 files are legacy wrappers that include the .php version.
 | phplib.php | PHPLib session support wrapper | | L |
 | profile.class.php | User profile settings class | AA_Profile | M |
 | profile.php | User profile handler | | M |
-| request.class.php | HTTP client request class | AA_ClientAuth | L |
+| request.class.php | Central wire protocol (AA_Request/AA_Response) and AA_ClientAuth | AA_ClientAuth | L |
 | scroller.php | Pagination/scroller widget | | L |
 | se_users.php | User management admin page | | M |
 | searchbar.class.php | Search and sort interface | AA_Searchbar | XL |

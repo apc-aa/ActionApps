@@ -153,7 +153,6 @@ spl_autoload_register(static function ($class_name) {
             return;
         case 'response':
         case 'clientauth':
-        case 'http':
             require_once __DIR__ . '/request.class.php';
             return;
         case 'scroller':

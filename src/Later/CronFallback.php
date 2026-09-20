@@ -80,7 +80,7 @@ class CronFallback
 
     /** Fire-and-forget HTTP request to the runner endpoint. Silent on any
      *  failure - cron will catch up next cycle. Same pattern as WP-Cron;
-     *  AA_Http::request() blocks until response and so cannot be used here.
+     *  AA\Http\Client blocks until the answer and so cannot be used here.
      */
     private static function fireAsyncRunner(): void
     {

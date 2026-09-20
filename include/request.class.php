@@ -3,7 +3,6 @@
 use AA\Http\Client;
 use AA\Http\ClientInterface;
 use AA\Http\TransportException;
-use AA\Util\LastErrTrait;
 
 /**
  * How one AA installation talks to another: Central's wire protocol, and client authentization
@@ -43,118 +42,6 @@ https://www.apc.org/
     along with this program (LICENSE); if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
-
-class AA_Http
-{
-    use LastErrTrait;
-
-    /** Move to another page
-     *  new version of go_url() - could use POST redirect
-     *  static function - called like AA_Http::go("https://ecn.cz", ['a'=>'my string'], 'POST')
-     *  @param string $url - destination url
-     *  @param array  $parameters = array('a' => 1, 'b' => 'OK boy')
-     *  @param string $type  - preferred type. Could be GET or POST, but if headers
-     *                 are already sent, then we use javascript for redirection
-     *  @param bool   $sess_close - try to close session, if the session is set
-     *                      we do not want to try it, when database connection
-     *                      error occurs, for example
-     */
-    public static function go(string $url, array $parameters, string $type = 'GET', bool $sess_close = true): never
-    {
-        global $sess;
-
-        if (is_object($sess) && $sess_close) {
-            Session::page_close();
-        }
-
-        // if headers are already sent, we have to use javascript redirect
-        if (headers_sent()) {
-            self::_goJs($url, $parameters);
-            exit;
-        }
-        if ($type === 'POST') {
-            $response = self::request($url, $parameters, [], 'POST');
-            if ($response !== false) {
-                // POST request OK
-                echo $response;
-                exit;
-            }
-        }
-        // get request
-        $url = get_url($url, $parameters);
-        header("HTTP/1.1 Status: 302 Moved Temporarily");
-        header("Location: $url");
-        exit;
-    }
-
-    /** Move (redirect) to page $url using javascript */
-    private static function _goJs($url, array $parameters = []): never
-    {
-        $url = get_url($url, $parameters);
-        echo '
-        <script>
-            window.location = "' . $url . '";
-        </script>
-        ';
-        exit;
-    }
-
-
-    /** Request to the url (using POST request or other methods and returns resulted data)
-     *
-     * @param                $url
-     * @param  string|array  $data    - parameters
-     * @param  array         $headers
-     * @param  string  $method  - default is POST
-     * @param  string  $err     -
-     *
-     * @return false|string $result[]
-     * inspired by http://netevil.org/blog/2006/nov/http-post-from-php-without-curl
-     */
-    public static function request($url, string|array $data = [], array $headers = [], string $method = '', string $err = ''): false|string
-    {
-        $opts = [];
-        if ($data || $headers || $method) {
-            $method = in_array($method, ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS', 'HEAD'], true) ? $method : 'POST';  // all possible HTTP methods
-            if ($data && is_array($data)) {
-                $opts['content'] = http_build_query($data);
-                $headers['Content-Length'] = strlen($opts['content']);
-            } elseif (is_string($data) && $data !== '') {
-                $opts['content'] = $data;
-                $headers['Content-Length'] = strlen($opts['content']);
-            }
-
-            if ($headers) {
-                $header = '';
-                foreach ($headers as $k => $v) {
-                    $header .= "$k: $v\r\n";
-                }
-                $opts['header'] = $header;
-            }
-            if ($opts || $method !== 'GET') {
-                $opts['method'] = $method;
-            }
-        }
-
-        $ctx = $opts ? stream_context_create(['http' => $opts]) : null;
-        $ret = file_get_contents($url, false, $ctx);
-
-        if ($ret === false) {
-            self::lastErr(2, sprintf("Problem reading data from url: %s (%s)", $url, error_get_last()["message"]));  // set error code
-            if ($err) {
-                if (str_contains($err, '_#')) {
-                    $statusCode = (isset($http_response_header) && preg_match('{HTTP\/\S*\s(\d{3})}', $http_response_header[0], $match)) ? $match[1] : '';
-                    $ret = str_replace(['_#status', '_#errmsg'], [$statusCode, error_get_last()["message"]], $err);
-                } else {
-                    $ret = $err;
-                }
-            }
-            return $ret;
-        }
-        return $ret;
-    }
-
-}
 
 class AA_Response
 {

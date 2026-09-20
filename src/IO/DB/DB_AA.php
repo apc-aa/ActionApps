@@ -3,7 +3,6 @@
 namespace AA\IO\DB;
 
 use AA;
-use AA_Http;
 
 /** proxy class for other db engines */
 final class DB_AA
