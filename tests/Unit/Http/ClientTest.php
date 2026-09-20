@@ -64,6 +64,57 @@ final class ClientTest extends TestCase
         $client->request('GET', 'https://example.org/x')->json();
     }
 
+    public function test_redirectsAreNotFollowedUnlessAsked(): void
+    {
+        $seen = [];
+        $mock = new MockHttpClient(static function (string $method, string $url, array $options) use (&$seen): MockResponse {
+            $seen[] = $options['max_redirects'];
+            return new MockResponse('{}');
+        });
+
+        (new Client(http: $mock))->request('GET', 'https://example.org/a');
+        (new Client(redirects: 3, http: $mock))->request('GET', 'https://example.org/b');
+
+        self::assertSame([0, 3], $seen, 'an API answer is never a detour; whoever has to follow says so');
+    }
+
+    /**
+     * There is no "send no User-Agent": left out, the library fills in its own name, and a blank
+     * one is not neutral either - Google's keyless translate endpoint answers it with a 302.
+     */
+    public function test_everyRequestSaysWhoIsAsking(): void
+    {
+        $seen = [];
+        $mock = new MockHttpClient(static function (string $method, string $url, array $options) use (&$seen): MockResponse {
+            $seen[] = $options['headers'] ?? [];
+            return new MockResponse('{}');
+        });
+
+        (new Client(http: $mock))->request('GET', 'https://example.org/a');
+        (new Client(agent: Client::agent('link checker'), http: $mock))->request('GET', 'https://example.org/b');
+
+        self::assertContains('User-Agent: ActionApps (+https://actionapps.org)', $seen[0]);
+        self::assertContains('User-Agent: ActionApps (+https://actionapps.org; link checker)', $seen[1]);
+    }
+
+    /**
+     * A 3xx is an answer, not a detour - so the caller gets to see where it points. The link
+     * checker walks the chain hop by hop on this, and State Check compares the target.
+     */
+    public function test_aRedirectWeDidNotFollowSaysWhereItPoints(): void
+    {
+        $client = new Client(http: new MockHttpClient([
+            new MockResponse('Moved', ['http_code' => 301, 'redirect_url' => 'https://example.org/new']),
+            new MockResponse('{}', ['http_code' => 200]),
+        ]));
+
+        $moved = $client->request('GET', 'https://example.org/old');
+        self::assertSame(301, $moved->status);
+        self::assertSame('https://example.org/new', $moved->redirect);
+
+        self::assertSame('', $client->request('GET', 'https://example.org/new')->redirect, 'an answer that is not a 3xx points nowhere');
+    }
+
     public function test_theExcerptIsShortEnoughForALogLine(): void
     {
         $client = new Client(http: new MockHttpClient([new MockResponse(str_repeat('x', 5000), ['http_code' => 500])]));

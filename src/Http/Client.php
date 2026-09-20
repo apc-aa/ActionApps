@@ -17,24 +17,46 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
  * and get wrong: timeouts, decompression, and - when the crawler arrives - NoPrivateNetworkHttpClient
  * against SSRF, RetryableHttpClient and ThrottlingHttpClient.
  *
- * Redirects are off: an API that sends us somewhere else is not an API answer.
+ * Redirects are off by default: an API that sends us somewhere else is not an API answer. The
+ * callers that do have to follow - a template including a page, a link checker - say so.
  */
 final class Client implements ClientInterface
 {
     private readonly HttpClientInterface $http;
 
     /**
-     * @param int $timeout      whole call, seconds - a nightly run must not hang on one service
-     * @param int $connect      reaching the host at all
+     * How AA introduces itself: one name and one contact address, so a site owner reading their
+     * access log can tell who is fetching them and a bot-filter rule written against one of AA's
+     * fetchers covers them all.
+     *
+     * No version. It would help whoever we are fetching diagnose us, but a template can include
+     * any address, so it would announce the exact release to anyone who asks for it.
      */
-    public function __construct(int $timeout = 30, int $connect = 10, string $agent = 'ActionApps SEO', ?HttpClientInterface $http = null)
+    public static function agent(string $purpose = ''): string
     {
-        $this->http = $http ?? HttpClient::create([
-            'max_duration' => $timeout,
-            'timeout'      => $connect,
-            'max_redirects' => 0,
-            'headers'      => ['User-Agent' => $agent],
-        ]);
+        return 'ActionApps (+https://actionapps.org' . ($purpose === '' ? '' : '; ' . $purpose) . ')';
+    }
+
+    /**
+     * @param int $timeout   whole call, seconds - a nightly run must not hang on one service
+     * @param int $idle      seconds of silence before giving up; this is what the library calls
+     *                       "timeout", and it restarts with every byte that arrives, so it is not
+     *                       a ceiling on the call - $timeout is
+     * @param string $agent  '' takes AA's own name. There is no way to send none: left out, the
+     *                       library fills in its own name
+     * @param int $redirects how many 3xx hops to follow; 0 means the 3xx itself is the answer
+     */
+    public function __construct(int $timeout = 30, int $idle = 10, string $agent = '', int $redirects = 0, ?HttpClientInterface $http = null)
+    {
+        $options = [
+            'max_duration'  => $timeout,
+            'timeout'       => $idle,
+            'max_redirects' => $redirects,
+            'headers'       => ['User-Agent' => $agent === '' ? self::agent() : $agent],
+        ];
+        // the policy is AA's, not the transport's: a caller who hands us a client - a test with a
+        // mock, later a throttled or SSRF-guarded one - still gets our timeouts and redirect rule
+        $this->http = is_null($http) ? HttpClient::create($options) : $http->withOptions($options);
     }
 
     public function request(string $method, string $url, ?string $body = null, array $headers = []): Response
@@ -53,10 +75,13 @@ final class Client implements ClientInterface
             foreach ($answer->getHeaders(false) as $name => $values) {
                 $out[strtolower($name)] = (string) ($values[0] ?? '');
             }
+            // where a 3xx we did not follow points, resolved against the request - the link
+            // checker records the whole chain and State Check compares the target
+            $redirect = (string) ($answer->getInfo('redirect_url') ?? '');
         } catch (TransportExceptionInterface $e) {
             throw new TransportException('No answer from ' . $url . ' - ' . $e->getMessage(), 0, $e);
         }
 
-        return new Response($status, $content, $out);
+        return new Response($status, $content, $out, $redirect);
     }
 }

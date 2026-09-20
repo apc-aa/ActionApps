@@ -9,8 +9,12 @@ use JsonException;
 /** One answer from an outside service: what came back, and what the service said about it */
 final readonly class Response
 {
-    /** @param array<string, string> $headers lower-cased names */
-    public function __construct(public int $status, public string $body, public array $headers = []) {}
+    /**
+     * @param array<string, string> $headers  lower-cased names
+     * @param string                $redirect absolute target of a 3xx the client did not follow,
+     *                                        '' when there was none or it was followed
+     */
+    public function __construct(public int $status, public string $body, public array $headers = [], public string $redirect = '') {}
 
     public function ok(): bool
     {
