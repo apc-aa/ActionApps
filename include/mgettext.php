@@ -121,15 +121,15 @@ function _m($id, $params = []): string
         return $retval;
     }
 
-    $s = ['\%'];
-    $r = ['#$&*'];
+    // strtr(), not str_replace(): str_replace() works through the list one pass at a time, so it
+    // also substitutes inside what it just inserted - a page address holding "%20" had its "%2"
+    // replaced by the next parameter. strtr() scans once and prefers the longest key, which also
+    // makes %10 win over %1.
+    $map = ['\%' => '%'];
     foreach ($params as $i => $iValue) {
-        $s[] = '%' . ($i + 1);
-        $r[] = $iValue;
+        $map['%' . ($i + 1)] = (string) $iValue;
     }
-    $s[] = '#$&*';
-    $r[] = '%';
-    return str_replace($s, $r, $retval);
+    return strtr($retval, $map);
 }
 
 /** _mdelayed function
