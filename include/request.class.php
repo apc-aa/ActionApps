@@ -1,24 +1,25 @@
 <?php
 
+use AA\Http\Client;
+use AA\Http\ClientInterface;
+use AA\Http\TransportException;
 use AA\Util\LastErrTrait;
 
 /**
- * This file could be used inside AA as well as outside of the AA.
- * You can just copy the file to your website and use it for client
- * authentization. The example of the "client authentization" you can find
- * in apc-aa/doc/script/example_auth directory.
- *
- * The fiel has no external requires - it si standalone library
+ * How one AA installation talks to another: Central's wire protocol, and client authentization
+ * (@see /doc/script/example_auth).
  *
  * It provides:
  *
- *   AA_ClientAuth - for client authentization (@see /doc/script/example_auth)
+ *   AA_Request / AA_Response - a command travels as a serialized AA_Request in the form field
+ *                    "request", the answer comes back as a serialized AA_Response. Both ends may
+ *                    run different AA versions, so neither the class names nor the shape may drift.
  *
- *   AA_Request
- *   AA_Response
- *   AA_Http        - three classes used for communication with (and between)
- *                    AA installations. Used for "client auth" as well as for
- *                    Central.
+ *   AA_ClientAuth  - for client authentization
+ *
+ * The header used to say this file was a standalone library to copy onto your own website. It has
+ * not been one for a long time - it needs AA's autoloader - and the transport now comes from
+ * AA\Http\Client, so it needs AA proper.
  *
  * @version $Id$
  * @author Honza Malik <honza.malik@ecn.cz>
@@ -223,6 +224,11 @@ class AA_Request
     public $command;
     public $params;
 
+    /** One per process: a sync makes several calls to the same Central and curl keeps the
+     *  connection open across them. Static, not a property - ask() serialises $this onto the
+     *  wire (_requestVal()), so a client in a field would travel to the remote side. */
+    private static ?ClientInterface $shared_http = null;
+
     public function __construct($command, $params = [])
     {
         $this->command = $command;
@@ -268,26 +274,38 @@ class AA_Request
     /** Sends request to remote AA
      * @param $url - url of remote AA
      * @param $parameters - optional array of additional url parameters 'k'=>'v'
-     * @return AA_Response|mixed
+     * @param ?ClientInterface $http - tests hand in a fake
+     * @return AA_Response|mixed   error 3 when the remote AA did not answer, or answered
+     *                             anything but a serialized AA_Response
      */
-    public function ask($url, $parameters = [], $headers = [])
+    public function ask($url, $parameters = [], $headers = [], ?ClientInterface $http = null)
     {
         $ask_arr = $this->_requestArr();
         if (is_array($parameters)) {
             $ask_arr = array_merge($ask_arr, $parameters);
         }
+        // responder.php reads $_POST['request'], which PHP fills only for a form-encoded body.
+        // The old path never set this header - PHP's http wrapper added it by itself.
+        $headers['Content-Type'] = 'application/x-www-form-urlencoded';
 
-        //       if (!strpos($ask_arr['request'], 'Get_Sessionid')) {
-        //           $r = unserialize($ask_arr['request']);
-        //           huhl($ask_arr, unserialize($ask_arr['request']), $r->params['sync'][0], unserialize($r->params['sync'][0]), unserialize(str_replace("'", "\'", $r->params['sync'][0])), $url);
-        //       }
-        $result = AA_Http::request($url, $ask_arr, $headers);
-
-        if ($result === false) {
-            //echo "<br>Error - response: ". AA_Http::lastErrMsg();
-            return new AA_Response('No response recieved (' . AA_Http::lastErr() . ' - ' . AA_Http::lastErrMsg() . ')', 3);
+        try {
+            // a synchronize or a module import runs for minutes on the remote side (copyslice2.php
+            // gives itself five); 60 s of silence is what the old default_socket_timeout allowed.
+            // No redirects: the Central url has to be exact, and a redirected POST loses its body.
+            $answer = ($http ?? self::$shared_http ??= new Client(timeout: 300, idle: 60))->request('POST', $url, http_build_query($ask_arr), $headers);
+        } catch (TransportException $e) {
+            return new AA_Response('No response received from ' . $url . ' (' . $e->getMessage() . ')', 3);
         }
-        $response  = unserialize(trim($result), ['allowed_classes' => [
+        if (!$answer->ok()) {
+            // The status and, for a 3xx, where it pointed - but not a word of the remote body.
+            // Central_Optimize joins these messages with <br> and the Manager renders them as HTML
+            // in a superadmin's page, so a remote install behind a captive portal or a compromised
+            // one could put a script there. The redirect target is ours to read and is what an
+            // admin needs: it names the address AA_Request should have been configured with.
+            $where = $answer->redirect === '' ? '' : ' - it points at ' . $answer->redirect;
+            return new AA_Response('Remote AA answered HTTP ' . $answer->status . $where, 3);
+        }
+        $response  = unserialize(trim($answer->body), ['allowed_classes' => [
             AA_Response::class,
             // Central module Get_Module_Defs returns these wrapped in AA_Response, so we need to allow them for unserialization as wellS
             AA_Definition_Module::class,
