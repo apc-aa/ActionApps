@@ -55,11 +55,12 @@ function DefineBaseAliases(&$aliases, $module_id): void
         $aliases["_#SITEM_ID"] = GetAliasDef("f_1", "short_id........");
     }
     if (!isset($aliases["_#HEADLINE"])) {
-        $headline_field = AA_Slice::getModule($module_id)?->getFields()->firstOfTypeFieldId('headline') ?? '';
+        // getOwnModule(), not getModule(): managers run under site/polls/... modules, too, and only a slice has fields
+        $headline_field = AA_Slice::getOwnModule($module_id)?->getFields()->firstOfTypeFieldId('headline') ?? '';
         $aliases["_#HEADLINE"] = GetAliasDef("f_t::safe", $headline_field);
     }
     if (!isset($aliases["_#JS_HEAD_"])) {
-        $headline_field ??= AA_Slice::getModule($module_id)?->getFields()->firstOfTypeFieldId('headline') ?? '';
+        $headline_field ??= AA_Slice::getOwnModule($module_id)?->getFields()->firstOfTypeFieldId('headline') ?? '';
         $aliases["_#JS_HEAD_"] = GetAliasDef("f_t", $headline_field ?: 'short_id........');
     }
 }
