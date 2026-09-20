@@ -407,8 +407,20 @@ abstract class AA_Module
                 $modulesetings->save();
             }
 
-            $form       = AA_Form::factoryForm($class, $modulesetings_id, $module_id);
-            $form_state = $form->process($_POST['aa']);
+            // This form owns exactly one object, but the grabber (AA\IO\Grabber\ObjectForm) reads
+            // $_POST['aa'] itself and writes whatever object the key names - and AA_Object::save()
+            // starts by deleting that object's rows. Ids are derived from the module id, so they
+            // are guessable; hide everything but our own key while the form is processed.
+            $posted       = $_POST['aa'] ?? null;
+            $own          = $posted['u' . $modulesetings_id] ?? null;
+            $_POST['aa']  = is_null($own) ? [] : ['u' . $modulesetings_id => $own];
+            $form         = AA_Form::factoryForm($class, $modulesetings_id, $module_id);
+            $form_state   = $form->process($_POST['aa']);
+            if (is_null($posted)) {
+                unset($_POST['aa']);
+            } else {
+                $_POST['aa'] = $posted;
+            }
         }
     }
 
