@@ -203,6 +203,7 @@ Feeding/import back-ends; each declares `name()` + `description()` shown in the 
 | Optimize/ChangeF_t2F_1.php | Change field type to 1 | ChangeF_t2F_1 | S |
 | Optimize/ChangeF_t2F__.php | Change field type mapping | ChangeF_t2F__ | S |
 | Optimize/ChangeModuleId.php | Change module ID | ChangeModuleId | S |
+| Optimize/CheckHttp.php | State Check (extended): can this server fetch over HTTP at all, and does AA_INSTAL_URL lead to it | findings() | S |
 | Optimize/ClearPagecache.php | Clear page cache | ClearPagecache | S |
 | Optimize/CodePoints.php | Where template code lives (views, fields, spots, object_text, Code slice items): every code value containing a string, for checks that search it | CodePoints::containing() | S |
 | Optimize/Convert2innodb.php | Convert tables to InnoDB | Convert2innodb | S |
