@@ -291,6 +291,7 @@ Feeding/import back-ends; each declares `name()` + `description()` shown in the 
 | Util/SingletonTrait.php | Singleton pattern trait | SingletonTrait | S |
 | Util/Txt.php | Text formatting utilities | Txt | S |
 | Util/UiPrefs.php | Per-user admin UI preferences (skin + interface language) | UiPrefs | M |
+| Util/Url.php | Facts about the request being served: is it https, lift http urls | Url::isHttps() | S |
 
 ### Api (REST front controller)
 

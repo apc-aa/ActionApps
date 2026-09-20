@@ -153,21 +153,6 @@ class AA_Http
         return $ret;
     }
 
-    public static function isHttps(): bool
-    {
-        return match (true) {
-            !empty($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) !== 'off' => true,
-            ($_SERVER['SERVER_PORT'] ?? null) == 443 => true,
-            ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https' => true,
-            default => false,
-        };
-    }
-
-    /** Converts $http url to https if current page is loaded by HTTPS for framesets to allow display... */
-    public static function makeProtocolCompatible(string $url): string
-    {
-        return (str_starts_with($url, 'http://') && self::isHttps()) ? 'https://' . substr($url, 7) : $url;
-    }
 }
 
 class AA_Response
