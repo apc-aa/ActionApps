@@ -963,7 +963,7 @@ class AA_File_Wrapper
         if (ini_get('allow_url_fopen')) {
             return new AA_File_Wrapper($url, $info);
         }
-        return match (@$info['scheme']) {
+        return match ($info['scheme'] ?? '') {   // a local path has no scheme - null coalescing needs no @
             'http'  => new AA_File_HTTP_Wrapper($url, $info),
             'https' => new AA_File_HTTPS_Wrapper($url, $info),
             'ftp'   => new AA_File_FTP_Wrapper($url, $info),
@@ -1670,14 +1670,9 @@ class AA_Directory_Wrapper
             $wrapper = new AA_File_Wrapper($url, $info);
         } else {*/
 
-        switch ($info['scheme'] ?? '') {   // a local path has no scheme
-            case 'ftp':
-                echo "ftp directory not yet implemented\n";
-                //$wrapper = new AA_FTP_Directory_Wrapper($url, $info);
-                break;
-            default:
-                $wrapper = new AA_Directory_Wrapper($url, $info);
-        }
+        // ftp directory listing is not implemented; the old 'ftp' case left $wrapper unset and the
+        // return then hit a TypeError. A local wrapper at least keeps the return type honest.
+        $wrapper = new AA_Directory_Wrapper($url, $info);   // a variable, so the by-reference return stays clean
         return $wrapper;
     }
 }
