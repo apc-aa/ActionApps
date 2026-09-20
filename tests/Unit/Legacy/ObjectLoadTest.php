@@ -240,7 +240,6 @@ namespace Tests\Unit\Legacy {
             self::assertCount(1, RecordingDb::$log, 'one look-up is enough to tell the object is not there');
         }
 
-        #[\PHPUnit\Framework\Attributes\WithoutErrorHandler]   // the legacy autoloader warns about an unknown class name
         public function testUnknownClassIsNull(): void
         {
             self::rows(['object_text' => [['aa_type', 'No_Such_Class_' . md5(__FUNCTION__), 0]]]);
