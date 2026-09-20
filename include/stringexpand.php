@@ -34,6 +34,7 @@
 // Code by Mitra based on code in existing other files
 
 use AA\Cache\CacheStr2find;
+use AA\Expand\HttpInclude;
 use AA\FormArray;
 use AA\IO\DB\DB_AA;
 use AA\Later\LaterInterface;
@@ -6258,14 +6259,11 @@ class AA_Stringexpand_Include extends AA_Stringexpand {
             case 'PATCH':
             case 'OPTIONS':
             case 'HEAD':
-                if (false === ($ret = AA_Http::request($fn, $data, $headers, $type, $err))) {
-                    warn(AA_Http::lastErrMsg());
-                }
-                return (string)$ret;
+                return HttpInclude::fetch($type, $fn, (string)$data, $headers, (string)$err);
             case "http":
-                return (string)expandFilenameWithHttp($fn, '', $headers, $data, $err);
+                return expandFilenameWithHttp($fn, '', $headers, $data, $err);
             case "ajax":
-                return (string)expandFilenameWithHttp($fn, 'ajax', $headers, $data, $err);
+                return expandFilenameWithHttp($fn, 'ajax', $headers, $data, $err);
             case "fileman":
                 // Note this won't work if called from a Static view because no slice_id available
                 // This should be fixed.
@@ -6305,9 +6303,9 @@ class AA_Stringexpand_Include extends AA_Stringexpand {
 /** Expand any quotes in the parturl, and fetch via http
  * @param string $parturl
  * @param string $type
- * @return false|string
+ * @return string
  */
-function expandFilenameWithHttp($parturl, string $type='', array $headers=[], $data='', $err=''): false|string
+function expandFilenameWithHttp($parturl, string $type='', array $headers=[], $data='', $err='', int $seconds=0): string
 {
     $filename = str_replace( 'URL_PARAMETERS', DeBackslash(shtml_query_string()), $parturl);
     // filename do not use colons as separators => dequote before callig
@@ -6328,7 +6326,10 @@ function expandFilenameWithHttp($parturl, string $type='', array $headers=[], $d
         }
     }
 
-    return AA_Http::request($filename, $data, $headers, '', $err);
+    // a body makes it a POST as before; headers alone no longer do. The old code forced POST for
+    // any header, and a local include always gets a Cookie header, so every {include:/local/path}
+    // rendered for a visitor with cookies was a POST nobody asked for (request.class.php:116).
+    return HttpInclude::fetch(((string)$data === '') ? 'GET' : 'POST', $filename, (string)$data, $headers, (string)$err, $seconds);
 }
 
 /** Get $_SERVER[<variable>] value
@@ -10547,28 +10548,28 @@ class AA_Stringexpand_File2text extends AA_Stringexpand_Nevercache {
         $file_name  = Files::getTmpFilename('importFile2text');
         if (preg_match('/.doc$/i',$url)) {
             if ( defined('CONV_TEXTFILTERS_DOC')) {
-                $dest_file = Files::createFileFromString(expandFilenameWithHttp($url), Files::aadestinationDir(), $file_name);
+                $dest_file = Files::createFileFromString(expandFilenameWithHttp($url, '', [], '', '', HttpInclude::DOWNLOAD_SECONDS), Files::aadestinationDir(), $file_name);
                 $safe_file_name=escapeshellcmd($dest_file);
                 exec(str_replace('%1',$safe_file_name,CONV_TEXTFILTERS_DOC),$out);
                 unlink($dest_file);
             }
         } elseif (preg_match('/.docx$/i',$url)){
             if ( defined('CONV_TEXTFILTERS_DOCX')) {
-                $dest_file = Files::createFileFromString(expandFilenameWithHttp($url), Files::aadestinationDir(), $file_name);
+                $dest_file = Files::createFileFromString(expandFilenameWithHttp($url, '', [], '', '', HttpInclude::DOWNLOAD_SECONDS), Files::aadestinationDir(), $file_name);
                 $safe_file_name=escapeshellcmd($dest_file);
                 exec(str_replace('%1',$safe_file_name,CONV_TEXTFILTERS_DOCX),$out);
                 unlink($dest_file);
             }
         } elseif (preg_match('/.odt$/i',$url)){
             if ( defined('CONV_TEXTFILTERS_ODT')) {
-                $dest_file = Files::createFileFromString(expandFilenameWithHttp($url), Files::aadestinationDir(), $file_name);
+                $dest_file = Files::createFileFromString(expandFilenameWithHttp($url, '', [], '', '', HttpInclude::DOWNLOAD_SECONDS), Files::aadestinationDir(), $file_name);
                 $safe_file_name=escapeshellcmd($dest_file);
                 exec(str_replace('%1',$safe_file_name,CONV_TEXTFILTERS_ODT),$out);
                 unlink($dest_file);
             }
         } elseif (preg_match('/.pdf$/i',$url)){
             if ( defined('CONV_TEXTFILTERS_PDF')) {
-                $dest_file = Files::createFileFromString(expandFilenameWithHttp($url), Files::aadestinationDir(), $file_name);
+                $dest_file = Files::createFileFromString(expandFilenameWithHttp($url, '', [], '', '', HttpInclude::DOWNLOAD_SECONDS), Files::aadestinationDir(), $file_name);
                 $safe_file_name=escapeshellcmd($dest_file);
                 exec(str_replace('%1',$safe_file_name,CONV_TEXTFILTERS_PDF),$out);
                 unlink($dest_file);

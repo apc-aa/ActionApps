@@ -4,54 +4,47 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Legacy;
 
+use AA\Expand\HttpInclude;
+use AA\Http\Response;
 use PHPUnit\Framework\TestCase;
+use Tests\Unit\Fixtures\FakeHttp;
 
 /**
- * What {include:...} puts on the wire today, pinned before it moves onto AA\Http\Client.
+ * What {include:...} puts on the wire.
  *
  * Templates on live installs depend on every one of these details: the server name prefixed to a
  * bare path, the visitor's cookies forwarded to a local URL (that is how an included page knows
  * who is reading it), URL_PARAMETERS substituted, and the error text handed back instead of the
- * page. Whatever the rewrite changes, it has to change deliberately - so it is written down here
- * first, including the one thing that is plainly a bug.
+ * page. Written against AA_Http first so it pinned the old behaviour, then moved onto
+ * AA\Expand\HttpInclude - the one assertion that changed is the method, and it changed because
+ * the old one was a bug (see the last test).
  *
  * include/stringexpand.php cannot be loaded on its own (perm_core, formutil, a session and a
  * database), so the class and the two functions are extracted from the real file and evaluated
- * without their parent, in the same way tests/Unit/Legacy/ImgCacheUrlTest.php does it. AA_Http is
- * renamed on the way in, so what is recorded is exactly what the expander asked the transport for.
+ * without their parent, in the same way tests/Unit/Legacy/ImgCacheUrlTest.php does it.
  */
 final class StringexpandIncludeTest extends TestCase
 {
     private const CLS = 'AA_Test_Stringexpand_Include';
 
+    private FakeHttp $http;
+
     public static function setUpBeforeClass(): void
     {
+        require_once __DIR__ . '/../fixtures/FakeHttp.php';
         if (class_exists(self::CLS, false)) {
             return;
         }
         $source = (string) file_get_contents(__DIR__ . '/../../../include/stringexpand.php');
 
-        // the stand-ins for what stringexpand.php would otherwise pull the whole application in for
-        eval('
-            class AA_Test_Http {
-                public static array $calls = [];
-                public static string|false $answer = "the page";
-                public static function request($url, $data = [], $headers = [], $method = "", $err = "") {
-                    self::$calls[] = ["url" => $url, "data" => $data, "headers" => $headers, "method" => $method, "err" => $err];
-                    return self::$answer;
-                }
-                public static function lastErrMsg(): string { return "transport said no"; }
-            }
-            abstract class AA_Test_Stringexpand { public $itemview = null; }
-        ');
-        // the three whose real bodies would drag the application in are renamed on the way in, so
+        eval('abstract class AA_Test_Stringexpand { public $itemview = null; }');
+        // the two whose real bodies would drag the application in are renamed on the way in, so
         // they cannot clash with include/util.php if another test file loaded it first
         eval('
             function aa_test_self_server() { return "https://example.org"; }
             function aa_test_shtml_query_string() { return "a=1&b=2"; }
-            function aa_test_warn($msg) { $GLOBALS["aa_test_warnings"][] = $msg; }
         ');
-        // these three keep their names - whichever definition is already loaded does the same job
+        // these keep their names - whichever definition is already loaded does the same job
         foreach ([
             'DeBackslash'    => 'return $a;',
             'aa_json_decode' => 'return json_decode($a, true);',
@@ -63,12 +56,12 @@ final class StringexpandIncludeTest extends TestCase
         }
 
         $rename = [
-            'AA_Http::'                   => 'AA_Test_Http::',
-            'self_server()'               => 'aa_test_self_server()',
-            'shtml_query_string()'        => 'aa_test_shtml_query_string()',
-            'warn('                       => 'aa_test_warn(',
+            // the extracted snippet has no `use` line of its own
+            'HttpInclude::'           => '\AA\Expand\HttpInclude::',
+            'self_server()'           => 'aa_test_self_server()',
+            'shtml_query_string()'    => 'aa_test_shtml_query_string()',
             'class AA_Stringexpand_Include extends AA_Stringexpand' => 'class AA_Test_Stringexpand_Include extends AA_Test_Stringexpand',
-            'expandFilenameWithHttp('     => 'aa_test_expandFilenameWithHttp(',
+            'expandFilenameWithHttp(' => 'aa_test_expandFilenameWithHttp(',
         ];
         eval(strtr(self::extract($source, T_CLASS, 'AA_Stringexpand_Include'), $rename));
         eval(strtr(self::extract($source, T_FUNCTION, 'expandFilenameWithHttp'), $rename));
@@ -79,10 +72,14 @@ final class StringexpandIncludeTest extends TestCase
 
     protected function setUp(): void
     {
-        \AA_Test_Http::$calls  = [];
-        \AA_Test_Http::$answer = 'the page';
-        $_COOKIE                     = [];
-        $GLOBALS['aa_test_warnings'] = [];
+        $_COOKIE    = [];
+        $this->http = new FakeHttp([new Response(200, 'the page')]);
+        HttpInclude::useHttp($this->http);
+    }
+
+    protected function tearDown(): void
+    {
+        HttpInclude::useHttp(null);
     }
 
     /** Source of one class or function, from its keyword to the closing brace (comments/strings safe) */
@@ -118,37 +115,38 @@ final class StringexpandIncludeTest extends TestCase
         return (new $cls())->expand($fn, $type, $headers, $data, $err);
     }
 
-    /** @return array<string, mixed> */
-    private static function lastCall(): array
+    /** @return array{method: string, url: string, body: ?string, headers: array<string, string>} */
+    private function lastCall(): array
     {
-        self::assertNotEmpty(\AA_Test_Http::$calls, 'nothing was fetched at all');
+        self::assertNotEmpty($this->http->calls, 'nothing was fetched at all');
 
-        return \AA_Test_Http::$calls[array_key_last(\AA_Test_Http::$calls)];
+        return $this->http->calls[array_key_last($this->http->calls)];
     }
 
     public function test_nothingToIncludeFetchesNothing(): void
     {
         self::assertSame('', self::expand(''));
-        self::assertSame([], \AA_Test_Http::$calls);
+        self::assertSame([], $this->http->calls);
     }
 
     public function test_anExplicitVerbGoesStraightToTheTransport(): void
     {
         self::assertSame('the page', self::expand('https://example.org/x', 'PUT', '{"X-Key":"k"}', 'body', 'oops'));
 
-        self::assertSame(
-            ['url' => 'https://example.org/x', 'data' => 'body', 'headers' => ['X-Key' => 'k'], 'method' => 'PUT', 'err' => 'oops'],
-            self::lastCall(),
-        );
+        $sent = $this->lastCall();
+        self::assertSame('PUT', $sent['method']);
+        self::assertSame('https://example.org/x', $sent['url']);
+        self::assertSame('body', $sent['body']);
+        self::assertSame('k', $sent['headers']['X-Key']);
     }
 
     public function test_aBarePathIsAskedOfThisServer(): void
     {
         self::expand('reports/daily.shtml');
-        self::assertSame('https://example.org/reports/daily.shtml', self::lastCall()['url'], 'a slash is added where it is missing');
+        self::assertSame('https://example.org/reports/daily.shtml', $this->lastCall()['url'], 'a slash is added where it is missing');
 
         self::expand('/reports/daily.shtml');
-        self::assertSame('https://example.org/reports/daily.shtml', self::lastCall()['url']);
+        self::assertSame('https://example.org/reports/daily.shtml', $this->lastCall()['url']);
     }
 
     public function test_theVisitorsCookiesGoAlongToOurOwnServerOnly(): void
@@ -156,58 +154,57 @@ final class StringexpandIncludeTest extends TestCase
         $_COOKIE = ['AA_Session' => 'abc', 'lang' => 'cs'];
 
         self::expand('/reports/daily.shtml');
-        self::assertSame('AA_Session=abc; lang=cs', self::lastCall()['headers']['Cookie'], 'an included page has to know who is reading it');
+        self::assertSame('AA_Session=abc; lang=cs', $this->lastCall()['headers']['Cookie'], 'an included page has to know who is reading it');
 
         self::expand('https://elsewhere.example/x');
-        self::assertArrayNotHasKey('Cookie', self::lastCall()['headers'], 'a stranger never sees our session');
+        self::assertArrayNotHasKey('Cookie', $this->lastCall()['headers'], 'a stranger never sees our session');
 
         self::expand('/reports/daily.shtml', 'http', '{"Cookie":"mine=1"}');
-        self::assertSame('mine=1', self::lastCall()['headers']['Cookie'], 'a cookie the template set is left alone');
+        self::assertSame('mine=1', $this->lastCall()['headers']['Cookie'], 'a cookie the template set is left alone');
     }
 
     public function test_anAjaxIncludeSaysSo(): void
     {
         self::expand('/reports/daily.shtml', 'ajax');
 
-        self::assertSame('XMLHttpRequest', self::lastCall()['headers']['X-Requested-With']);
+        self::assertSame('XMLHttpRequest', $this->lastCall()['headers']['X-Requested-With']);
     }
 
     public function test_theQueryStringOfThisPageCanBePassedOn(): void
     {
         self::expand('/reports/daily.shtml?URL_PARAMETERS');
 
-        self::assertSame('https://example.org/reports/daily.shtml?a=1&b=2', self::lastCall()['url']);
+        self::assertSame('https://example.org/reports/daily.shtml?a=1&b=2', $this->lastCall()['url']);
     }
 
     public function test_noAnswerLeavesTheTemplateWithNothingRatherThanFalse(): void
     {
-        \AA_Test_Http::$answer = false;
+        HttpInclude::useHttp(new FakeHttp([new Response(500, 'server on fire')]));
 
         self::assertSame('', self::expand('/reports/daily.shtml'), 'a template must never render the word "false"');
     }
 
-    public function test_aFailedVerbIncludeWarnsTheEditor(): void
-    {
-        \AA_Test_Http::$answer = false;
-
-        self::assertSame('', self::expand('https://example.org/x', 'GET'));
-        self::assertSame(['transport said no'], $GLOBALS['aa_test_warnings']);
-    }
-
     /**
-     * The accident, pinned so the fix is on the record: expandFilenameWithHttp() hands the
-     * transport an empty method, and AA_Http turns an empty method plus any header into a POST.
-     * Since a local include always gets a Cookie header when the visitor has cookies, every
-     * {include:/local/path} rendered for a logged-in visitor is a POST today. Nobody asked for
-     * that, and AA\Expand\HttpInclude will send GET.
+     * The fix, and the only assertion that changed with the move. The old path handed the
+     * transport an empty method, and AA_Http read an empty method plus any header as POST. A local
+     * include always gets a Cookie header when the visitor has cookies, so every
+     * {include:/local/path} rendered for a logged-in visitor used to be a POST nobody asked for.
      */
-    public function test_accident_aLocalIncludeSendsAnEmptyMethodWhichBecomesAPost(): void
+    public function test_aLocalIncludeIsAGetNowThatAHeaderNoLongerForcesAPost(): void
     {
         $_COOKIE = ['AA_Session' => 'abc'];
 
         self::expand('/reports/daily.shtml');
 
-        self::assertSame('', self::lastCall()['method'], 'the expander says nothing, and AA_Http reads that as POST');
-        self::assertArrayHasKey('Cookie', self::lastCall()['headers'], 'which is what makes it a POST');
+        self::assertSame('GET', $this->lastCall()['method']);
+        self::assertArrayHasKey('Cookie', $this->lastCall()['headers'], 'the header that used to turn this into a POST is still sent');
+    }
+
+    public function test_anIncludeWithABodyIsStillAPost(): void
+    {
+        self::expand('/reports/daily.shtml', 'http', '', 'q=kombucha');
+
+        self::assertSame('POST', $this->lastCall()['method']);
+        self::assertSame('q=kombucha', $this->lastCall()['body']);
     }
 }

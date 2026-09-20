@@ -337,6 +337,7 @@ Feeding/import back-ends; each declares `name()` + `description()` shown in the 
 | File | Purpose | Key API | Size |
 |------|---------|---------|------|
 | Doit/RequestMonitor.php | Developer tool for catching REQUEST variables | RequestMonitor | M |
+| Expand/HttpInclude.php | What {include:url:type:headers:body:err} promises a template | HttpInclude::fetch() | S |
 | Expand/InternalExpandInterface.php | Internal expand aliases interface for admin | Interface only | S |
 
 ### Widget (UI Components)
