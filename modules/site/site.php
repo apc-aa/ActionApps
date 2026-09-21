@@ -245,12 +245,10 @@ if ($module->getProperty('flag') == 1) {    // 1 - Use AA_Router_Seo
 
     if (!($hit_lid = $router->xid())) {
         if ($module->getProperty('page404') == '2') {
-            Die404();
-            exit;
+            Die404();  // calls exit
         }
         if ($module->getProperty('page404') == '3') {
-            Die404($module->getProperty('page404_code'));
-            exit;
+            Die404($module->getProperty('page404_code'));  // calls exit
         }
         // else - older behavior - site cares
     }
@@ -279,8 +277,7 @@ if ($module->getProperty('flag') == 1) {    // 1 - Use AA_Router_Seo
 }
 
 if (!isset($apc_state)) {
-    Die404(($module->getProperty('page404') == '3') ? $module->getProperty('page404_code') : null);
-    exit;
+    Die404(($module->getProperty('page404') == '3') ? $module->getProperty('page404_code') : null); // calls exit
 }
 
 require_once __DIR__ . "/../../modules/site/sitetree.php";
