@@ -589,6 +589,12 @@ class AA_Item
         return $this->content4id->isActive($bin);
     }
 
+    /** @return int bin the item sits in (AA_BIN_*) - see ItemContent::getBin() */
+    public function getBin(): int
+    {
+        return $this->content4id->getBin();
+    }
+
     public function getStatusCode(): int
     {
         return $this->content4id->getStatusCode();
