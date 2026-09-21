@@ -113,12 +113,13 @@ function IsInDomain($domain): bool
     return (($_SERVER['HTTP_HOST'] === $domain)  || ($_SERVER['HTTP_HOST'] === 'www.' . $domain));
 }
 
-/** Send 404 header and optionally output custom page content, then exit.
- * @param null $page
+/** Send the status header (404, or 410 Gone for a deleted item) and optionally output custom page content, then exit.
+ * @param ?string $page       content of the error page, null = empty body
+ * @param int     $http_code  404 | 410
  */
-function Die404($page = null): never
+function Die404($page = null, int $http_code = 404): never
 {
-    http_response_code(404);
+    http_response_code($http_code);
 
     // If client doesn't accept HTML, return empty body
     // (avoids content-type mismatch that triggers antivirus false positives)
@@ -243,17 +244,23 @@ if ($module->getProperty('flag') == 1) {    // 1 - Use AA_Router_Seo
 
     // count hit for current page - deferred after the page is sent to user
 
-    if (!($hit_lid = $router->xid())) {
-        if ($module->getProperty('page404') == '2') {
-            Die404();
-            exit;
+    $hit_lid      = $router->xid();
+    $page404      = (string) $module->getProperty('page404');
+    $page404_page = ($page404 === '3') ? $module->getProperty('page404_code') : null;
+
+    // The router resolves expired and pending items too, so the item itself decides whether the page may
+    // show: only an active item (status_code 1, dates in range) does. Its own slice may switch the expiry
+    // or publish check off (nocheck_expired/nocheck_pending) - ItemContent::getBin() asks it. Independent
+    // of page404, which only says what to do when the URL resolves to nothing at all.
+    if ($hit_lid) {
+        $bin = ($hit_item = AA_Items::getItem($hit_lid)) ? $hit_item->getBin() : 0;
+        if ($bin !== AA_BIN_ACTIVE) {
+            Die404($page404_page, ($bin === AA_BIN_TRASH) ? 410 : 404);   // deleted = Gone, anything else = Not Found; calls exit
         }
-        if ($module->getProperty('page404') == '3') {
-            Die404($module->getProperty('page404_code'));
-            exit;
-        }
-        // else - older behavior - site cares
+    } elseif ($page404 === '2' || $page404 === '3') {
+        Die404($page404_page);  // calls exit
     }
+    // else - older behavior - site cares
 
     //    } elseif ( $uri AND $router->xid(null, "/$lang_file/_404-not-found")) {  // item not found => 404
     //        $apc_state = $router->parse("/$lang_file/_404-not-found");
@@ -279,8 +286,7 @@ if ($module->getProperty('flag') == 1) {    // 1 - Use AA_Router_Seo
 }
 
 if (!isset($apc_state)) {
-    Die404(($module->getProperty('page404') == '3') ? $module->getProperty('page404_code') : null);
-    exit;
+    Die404(($module->getProperty('page404') == '3') ? $module->getProperty('page404_code') : null); // calls exit
 }
 
 require_once __DIR__ . "/../../modules/site/sitetree.php";

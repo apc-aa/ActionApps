@@ -83,7 +83,8 @@ class AddPolls extends \AA\Optimize\AbstractOptimize
         $this->query("DROP TABLE IF EXISTS `polls_log`");
         $this->query($metabase->getCreateSql('polls_log'));
 
-        AA::Metabase()->doReplace('log', self::POLLS_DEFAULT_VALUES);
+        // Metabase packs ids from 32 hex chars - the template ids are raw 16-byte strings.
+        AA::Metabase()->doReplace('module', ['id' => unpack_id('PollsTemplate...'), 'owner' => unpack_id('AA_Core.........')] + self::POLLS_DEFAULT_VALUES);
         //$this->query("REPLACE INTO module (".join(',',$keys).") VALUES ('PollsTemplate...', 'Polls Template', 0, 'P', '', 'en_polls_lang.php', 1043151515, '', 'AA_Core.........', 0)");
         $this->query("REPLACE INTO `polls` (`id`, `module_id`, `status_code`, `headline`, `publish_date`, `expiry_date`, `locked`, `logging`, `ip_locking`, `ip_lock_timeout`, `set_cookies`, `cookies_prefix`, `design_id`, `aftervote_design_id`, `params`) VALUES('506f6c6c73467273744578616d706c65', 'PollsTemplate...', 0, 'Do you like ActionApps', 1194217200, 1500000000, 0, 0, 0, 0, 0, 'AA_POLLS', '506f6c6c7344657369676e4578616d70', '', '')");
         $this->query("REPLACE INTO `polls_answer` (`id`, `poll_id`, `answer`, `votes`, `priority`) VALUES('506f6c6c73416e73776572312e2e2e2e', '506f6c6c73467273744578616d706c65', 'Yes', 0, 1)");

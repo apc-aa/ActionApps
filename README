@@ -21,9 +21,10 @@ Features
   Japan included (easy to add new languages)
 
 
-Update
-======
-To upgrade or just check database use /service/sql_update.php script.
+Install and update
+==================
+See INSTALL.md (new installation from git) and UPDATE.md (updating, and moving
+an SVN installation to git).
 
 
 Contact

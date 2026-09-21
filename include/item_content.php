@@ -947,23 +947,36 @@ class ItemContent extends AA_Content
     }
 
     /** Without $bin returns true if the item is visible - not expired/trashed/pending/...
-     *  You can specify bin AA_BIN_ACTIVE or AA_BIN_HOLDING or AA_BIN_TRASH or AA_BIN_ALL or its bitwise combination (the trash and pending is not supported, now)
+     *  You can specify bin AA_BIN_ACTIVE or AA_BIN_PENDING or AA_BIN_EXPIRED or AA_BIN_HOLDING
+     *  or AA_BIN_TRASH or AA_BIN_ALL or its bitwise combination.
+     *  getBin() is the single classifier - keep the answer here derived from it, never a second predicate.
      */
     public function isActive($bin = AA_BIN_ACTIVE): bool
     {
-        if (($status = $this->getStatusCode()) === 1 && $bin & AA_BIN_ACTIVE) {
-            $now = now('step');
-            if (($this->getPublishDate() <= $now) or (($slice = AA_Slice::getModule($this->getSliceID())) and $slice->isPendingContentAllowed())) {
-                if (($this->getExpiryDate() > $now) or (($slice = $slice ?: AA_Slice::getModule($this->getSliceID())) and $slice->isExpiredContentAllowed())) {
-                    return true;
-                }
-            }
-        } elseif ($status === 2 && $bin & AA_BIN_HOLDING) {
-            return true;
-        } elseif ($status === 3 && $bin & AA_BIN_TRASH) {
-            return true;
+        return (bool) ($bin & $this->getBin());
+    }
+
+    /** Bin the item sits in: AA_BIN_ACTIVE | AA_BIN_EXPIRED | AA_BIN_PENDING | AA_BIN_HOLDING | AA_BIN_TRASH,
+     *  or 0 for a status_code the bins do not cover (0 is the column default, so an item written without
+     *  a status is in no bin at all - it must never show on the web).
+     */
+    public function getBin(): int
+    {
+        if (($status = $this->getStatusCode()) !== 1) {
+            return match ($status) { 2 => AA_BIN_HOLDING, 3 => AA_BIN_TRASH, default => 0 };
         }
-        return false;
+        $now     = now('step');
+        $expired = $this->getExpiryDate()  <= $now;
+        $pending = $this->getPublishDate() > $now;
+        if (!$expired && !$pending) {
+            return AA_BIN_ACTIVE;       // the common case - no slice lookup needed
+        }
+        // a slice may switch either check off; unknown slice = nothing switched off
+        $slice = AA_Slice::getModule($this->getSliceID());
+        if ($expired && !$slice?->isExpiredContentAllowed()) {
+            return AA_BIN_EXPIRED;      // expired wins over pending, as in CreateBinCondition()
+        }
+        return ($pending && !$slice?->isPendingContentAllowed()) ? AA_BIN_PENDING : AA_BIN_ACTIVE;
     }
 
     /** matches function

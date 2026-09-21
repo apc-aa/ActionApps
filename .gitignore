@@ -1,5 +1,5 @@
 # Installed as .gitignore of the dist branch by dev/release/build-dist.sh.
-# Per-install files: created by the administrator, never part of dist (see INSTALL).
+# Per-install files: created by the administrator, never part of dist (see INSTALL.md).
 /include/config.php
 /include/config.php3
 /include/config.*.php

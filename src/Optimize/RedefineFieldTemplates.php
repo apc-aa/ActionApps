@@ -57,6 +57,13 @@ class RedefineFieldTemplates extends \AA\Optimize\AbstractOptimize
         return ['sql_update'];
     }
 
+    /** Before the Add*FieldTemplate classes (100): repair() deletes every AA_Core_Fields.. field,
+     *  so running later it would wipe the templates they add. After UpdateDbStructure (50). */
+    public static function priority(): int
+    {
+        return 60;
+    }
+
 
     /** Test function
      * @return bool
