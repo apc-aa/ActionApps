@@ -11401,6 +11401,7 @@ class AA_Stringexpand_Linkcheck extends AA_Stringexpand_Nevercache {
         if ($format==='') {
             $format = '_#code';
         }
-        return str_replace(['_#span', '_#code', '_#text', '_#weight', '_#color', '_#redir', '_#hops', '_#mime', '_#charset', '_#duration'], ['<span style="background-color:_#color" title="_#text">_#code</span>', $status['code'], $status['comment'], $status['weight'], self::STATUCOLORS[$status['weight']], $status['redir'], count($status['redir_chain']) ?: '', $status['mime'], $status['charset'], $time], $format);
+        // the checked server controls the comment (it carries the curl error), the redirect target and the content type
+        return str_replace(['_#span', '_#code', '_#text', '_#weight', '_#color', '_#redir', '_#hops', '_#mime', '_#charset', '_#duration'], ['<span style="background-color:_#color" title="_#text">_#code</span>', safe($status['code']), safe($status['comment']), $status['weight'], self::STATUCOLORS[$status['weight']], safe($status['redir']), count($status['redir_chain']) ?: '', safe($status['mime']), safe($status['charset']), $time], $format);
     }
 }

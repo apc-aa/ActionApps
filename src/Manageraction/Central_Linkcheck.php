@@ -40,7 +40,8 @@ class Central_Linkcheck extends AbstractManageraction
             $results[] = [$aa->getName(), $url, $status['code'], $status['comment'], print_r($resp, true)];
             // $ret[] = $aa->doOptimize($this->optimize_class, $this->optimize_method);
         }
-        return GetHtmlTable($results) . "<br>";                                     // OK - no error
+        // 'th' keeps the header row markup, 'td' escapes the data - the checked AA controls the comment and the response
+        return GetHtmlTable($results, 'th', '', 'td') . "<br>";                     // OK - no error
     }
 
     /** Checks if the user have enough permission to perform the action
