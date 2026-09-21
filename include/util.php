@@ -1981,7 +1981,7 @@ function arrval(array|ArrayAccess $arr, string|int $key, mixed $default = null):
  */
 function aa_version($format = 'full'): string
 {
-    $version = '2026.6';
+    $version = '2026.9';
     $release = is_file(__DIR__ . '/release.php') ? include __DIR__ . '/release.php' : [];
     $commit  = substr((string) ($release['commit'] ?? ''), 0, 7);
     $build   = trim($commit . ' ' . ($release['date'] ?? ''));

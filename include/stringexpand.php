@@ -8297,7 +8297,7 @@ class AA_Stringexpand_Gethostbyaddr extends AA_Stringexpand {
     }
 }
 
-/** Prints a version of AA as full-string, AA version (2026.6), build stamp (main commit and date,
+/** Prints a version of AA as full-string, AA version (2026.9), build stamp (main commit and date,
  *  empty in a source checkout) or php version
  *  {version[:aa|build|php|full]}   (svn and svn2 still work: both give the commit)
  */
