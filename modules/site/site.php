@@ -250,12 +250,22 @@ if ($module->getProperty('flag') == 1) {    // 1 - Use AA_Router_Seo
 
     // The router resolves expired and pending items too, so the item itself decides whether the page may
     // show: only an active item (status_code 1, dates in range) does. Its own slice may switch the expiry
-    // or publish check off (nocheck_expired/nocheck_pending) - ItemContent::getBin() asks it. Independent
-    // of page404, which only says what to do when the URL resolves to nothing at all.
+    // or publish check off (nocheck_expired/nocheck_pending) - ItemContent::getBin() asks it. What to send
+    // instead follows page404, the same as for a URL that resolves to nothing.
     if ($hit_lid) {
         $bin = ($hit_item = AA_Items::getItem($hit_lid)) ? $hit_item->getBin() : 0;
         if ($bin !== AA_BIN_ACTIVE) {
-            Die404($page404_page, ($bin === AA_BIN_TRASH) ? 410 : 404);   // deleted = Gone, anything else = Not Found; calls exit
+            $gone = ($bin === AA_BIN_TRASH);   // deleted = Gone, anything else = Not Found (expiry is reversible)
+            if ($page404 === '2' || $page404 === '3') {
+                Die404($page404_page, $gone ? 410 : 404);   // calls exit
+            }
+            // "Do not care" - the site keeps rendering its own page, exactly as before this check ({item:}
+            // filters by AA_BIN_ACTIVE, so the article itself never appeared); only the status changes, so
+            // a soft 404 becomes a real one. It travels in the cache entry, hence a cached hit answers it too.
+            AA::$headers['status'] = $gone ? 'HTTP/1.1 410 Gone' : 'HTTP/1.0 404 Not Found';
+            if ($hit_item) {
+                AA_Module::mark4cache([$hit_item->getSliceID()]);   // publishing the item again must drop this page
+            }
         }
     } elseif ($page404 === '2' || $page404 === '3') {
         Die404($page404_page);  // calls exit
