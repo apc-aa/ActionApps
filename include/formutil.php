@@ -3025,13 +3025,15 @@ function getFrmTabRow( $row, $mode='td', $attrs=[], $safe=false): string
         if ($safe) {
             // the same as below, just htmlspecialchars() is used
             foreach ($row as $col) {
-                $ret .= (!is_array($col) ? "<$mode><pre>".safe($col)."</pre></$mode>" : "<$mode " . safe($col['attr']) . '><pre>' . safe($col['text']) . "</pre></$mode>");
+                // an array of attributes goes through htmlattr(), which quotes and escapes each value;
+                // safe() alone fits only a one-word attribute like class=x - a title would break at its first space
+                $ret .= (!is_array($col) ? "<$mode><pre>".safe($col)."</pre></$mode>" : "<$mode" . (is_array($col['attr']) ? htmlattr($col['attr']) : ' ' . safe($col['attr'])) . '><pre>' . safe($col['text']) . "</pre></$mode>");
             }
         } else {
             foreach ($row as $col) {
                 $ret .= (!is_array(
                     $col
-                ) ? "<$mode>$col</$mode>" : "<$mode " . $col['attr'] . '>' . $col['text'] . "</$mode>");
+                ) ? "<$mode>$col</$mode>" : "<$mode" . (is_array($col['attr']) ? htmlattr($col['attr']) : ' ' . $col['attr']) . '>' . $col['text'] . "</$mode>");
             }
         }
         $ret .= "</tr>";

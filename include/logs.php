@@ -3,6 +3,7 @@
 use AA\Expand\InternalExpandInterface;
 use AA\IO\DB\DB_AA;
 use AA\Later\Toexecute;
+use AA\Util\ConfigTimeline;
 use AA\Util\Txt;
 
 /** Logging functions
@@ -271,6 +272,7 @@ class AA_Log implements InternalExpandInterface
         if ($mark_changes) {
             $tab = self::markChanges($tab);
         }
+        $tab       = self::explainServerColumn($tab);
         $link_div  = $show_log_link ? '<div>' . a_href(self::getAdminUrl($event, $selector), _m('Log'), ['class' => 'aa-button-show']) . '</div>' : '';
 
         // 'all' escapes both the header and the cells. extendTable() puts raw
@@ -296,12 +298,29 @@ class AA_Log implements InternalExpandInterface
             }
             foreach ($row as $col => $value) {
                 if (!in_array($col, ['time', 'user'], true) && (string) ($older[$col] ?? '') !== (string) $value) {
-                    // unquoted on purpose: GetHtmlTable()'s escaping branch passes the attribute through safe()
-                    $out[$k][$col] = ['attr' => 'class=aa-log-changed', 'text' => $value];
+                    $out[$k][$col] = ['attr' => ['class' => 'aa-log-changed'], 'text' => $value];
                 }
             }
         }
         return $out;
+    }
+
+    /** The SYS_STAT `server` column is packed ("f1 s1 c0 d0 b40G") so the row fits log.params;
+     *  the letters mean nothing to a reader, so the settings they stand for go in a tooltip.
+     */
+    public static function explainServerColumn(array $tab): array
+    {
+        foreach ($tab as $k => $row) {
+            $cell  = $row['server'] ?? null;
+            $value = is_array($cell) ? ($cell['text'] ?? '') : $cell;
+            if (!is_string($value) || $value === '' || !($settings = ConfigTimeline::decodeServer($value))) {
+                continue;
+            }
+            $attr  = is_array($cell) && is_array($cell['attr'] ?? null) ? $cell['attr'] : [];
+            $attr['title'] = implode(', ', array_map(static fn($name, $val) => "$name $val", array_keys($settings), $settings));
+            $tab[$k]['server'] = ['attr' => $attr, 'text' => $value];
+        }
+        return $tab;
     }
 
     /** parse Params row and extract columns based on AA_Logentry structure */
