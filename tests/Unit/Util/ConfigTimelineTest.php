@@ -64,6 +64,15 @@ namespace Tests\Unit\Util {
             ));
         }
 
+        /** Labels only - describeDiff() returns [label, tooltip] pairs.
+         * @param list<array{0:string,1:string}> $diff
+         * @return list<string>
+         */
+        private static function labels(array $diff): array
+        {
+            return array_column($diff, 0);
+        }
+
         private static function day(string $date): int
         {
             return (int) strtotime($date . ' 00:00:00');
@@ -140,7 +149,7 @@ namespace Tests\Unit\Util {
             // open is dropped as unmeasurable and their labels fold into this one.
             $intervals = ConfigTimeline::buildIntervals($changes, $rows[0][0], $rows[0][0] + (10 * 86400));
             self::assertCount(1, $intervals);
-            self::assertSame(['r5321M, r5338M'], ConfigTimeline::describeDiff($intervals[0]['changes'], null));
+            self::assertSame(['r5321M, r5338M'], self::labels(ConfigTimeline::describeDiff($intervals[0]['changes'], null)));
         }
 
         public function testAConfigurationThatStoodForADayIsNotTreatedAsFlapping(): void
@@ -347,7 +356,7 @@ namespace Tests\Unit\Util {
             $before = self::fold([[1000, self::sys('3919#:5208M', '5314')]])[0];
             $after  = self::fold([[2000, self::sys('3919#:5208M', '5332')]])[0];
 
-            self::assertSame(['util.php r5332'], ConfigTimeline::describeDiff([$after], $before));
+            self::assertSame(['util.php r5332'], self::labels(ConfigTimeline::describeDiff([$after], $before)));
         }
 
         public function testDiffNamesAMemoryChange(): void
@@ -355,7 +364,7 @@ namespace Tests\Unit\Util {
             $before = self::fold([[1000, self::sys('5348M', '5345')]])[0];
             $after  = self::fold([[2000, self::sys('5348M', '5345', mem: '256000 MB')]])[0];
 
-            self::assertSame(['memory 256000 MB'], ConfigTimeline::describeDiff([$after], $before));
+            self::assertSame(['memory 256000 MB'], self::labels(ConfigTimeline::describeDiff([$after], $before)));
         }
 
         public function testServerSettingsReadShortAndRoundTrip(): void
@@ -387,7 +396,7 @@ namespace Tests\Unit\Util {
             self::assertSame('f1 s1 c0 d0 b40G', $changes[0]['server']);
             self::assertSame(
                 ['innodb_flush_log_at_trx_commit 1 → 2', 'sync_binlog 1 → 0', 'log_bin_compress 0 → 1'],
-                ConfigTimeline::describeDiff([$changes[1]], $changes[0]),
+                self::labels(ConfigTimeline::describeDiff([$changes[1]], $changes[0])),
             );
         }
 
@@ -503,7 +512,7 @@ namespace Tests\Unit\Util {
             $before = self::fold([[1000, self::sys('5313M', '5297', '8.2.32', '10.11.16-MariaDB-log/DB_PDO')]])[0];
             $after  = self::fold([[2000, self::sys('5313M', '5297', '8.2.32', '10.11.18-MariaDB-log/DB_PDO')]])[0];
 
-            self::assertSame(['MariaDB 10.11.18'], ConfigTimeline::describeDiff([$after], $before));
+            self::assertSame(['MariaDB 10.11.18'], self::labels(ConfigTimeline::describeDiff([$after], $before)));
         }
 
         public function testDiffNamesEveryRevisionAWindowSwallowed(): void
@@ -514,15 +523,36 @@ namespace Tests\Unit\Util {
                 [3000, self::sys('5245M', '5242')],
             ]);
 
-            self::assertSame(['r5242M, r5245M'], ConfigTimeline::describeDiff($rows, $before));
+            self::assertSame(['r5242M, r5245M'], self::labels(ConfigTimeline::describeDiff($rows, $before)));
         }
 
         public function testDiffOfTheFirstWindowHasNothingToCompareAgainst(): void
         {
             $change = self::fold([[1000, self::sys('5348M', '5345')]])[0];
 
-            self::assertSame(['r5348M'], ConfigTimeline::describeDiff([$change], null));
-            self::assertSame([], ConfigTimeline::describeDiff([], null));
+            self::assertSame(['r5348M'], self::labels(ConfigTimeline::describeDiff([$change], null)));
+            self::assertSame([], self::labels(ConfigTimeline::describeDiff([], null)));
+        }
+
+        public function testAGitCommitIsLabelledByDateAndKeepsTheCommitAsTooltip(): void
+        {
+            // "ra1b2c3d" tells a reader nothing; when the deployment appeared does.
+            $time   = (int) strtotime('2026-09-21 10:04:00');
+            $change = self::fold([[$time, self::sys('334df41', '334df41')]])[0];
+
+            self::assertSame([['26-09-21-10-04', '334df41']], ConfigTimeline::describeDiff([$change], null));
+        }
+
+        public function testTwoGitCommitsInOneWindowJoinLabelsAndTooltips(): void
+        {
+            $first  = (int) strtotime('2026-09-21 10:04:00');
+            $second = (int) strtotime('2026-09-21 14:30:00');
+            $changes = self::fold([[$first, self::sys('334df41', '334df41')], [$second, self::sys('c4ec56e', 'c4ec56e')]]);
+
+            self::assertSame(
+                [['26-09-21-10-04, 26-09-21-14-30', '334df41, c4ec56e']],
+                ConfigTimeline::describeDiff($changes, null),
+            );
         }
 
         public function testDatabaseVersionReadsAsAName(): void

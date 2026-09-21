@@ -139,11 +139,11 @@ final class ProgressPanel
         // Nothing to name: the leading window of an install without history, or a
         // window cut at a time, which measures the deployment before it cleanly.
         if (!$diff) {
-            $diff = [$previous ? \_m('unchanged') : \_m('first window')];
+            $diff = [[$previous ? \_m('unchanged') : \_m('first window'), '']];
         }
         $h .= '<td class="aa-ver-changed">';
-        foreach ($diff as $tag) {
-            $h .= '<span class="aa-ver-tag">' . \safe($tag) . '</span>';
+        foreach ($diff as [$tag, $tag_title]) {
+            $h .= '<span class="aa-ver-tag"' . ($tag_title === '' ? '' : ' title="' . \safe($tag_title) . '"') . '>' . \safe($tag) . '</span>';
         }
         return $h . '</td>';
     }
