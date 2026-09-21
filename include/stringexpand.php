@@ -2087,16 +2087,17 @@ class AA_Stringexpand_Daterange extends AA_Stringexpand_Nevercachenotrim {
         $endtime    = ( ($time = date("G:i", $end_timestamp)) !== "0:00" && $time !== "23:59" ) ? $time : '';
         $hendtime   = $endtime==='' ? '' : $hour_delimiter. $endtime;
 
+        $year_format_esc = ($year_format!=='') ? "_$year_format" : '';
 
         if ( date("j.n.$year_format", $start_timestamp) === date("j.n.$year_format", $end_timestamp) ) {
-            $ret = date("j._n._$year_format", $start_timestamp). $hstarttime;
+            $ret = date("j._n.$year_format_esc", $start_timestamp). $hstarttime;
             if ($endtime && $starttime !== $endtime) {
                 $ret .= $starttime ? "-$endtime" : " 0:00-$endtime";
             }
         } elseif ( date("Y", $start_timestamp) === date("Y", $end_timestamp) ) {
-            $ret = date("j._n.", $start_timestamp). ' '.$starttime. ' - '. date("j._n._$year_format", $end_timestamp). $hendtime;
+            $ret = date("j._n.", $start_timestamp). ' '.$starttime. ' - '. date("j._n.$year_format_esc", $end_timestamp). $hendtime;
         } else {
-            $ret = date("j._n._$year_format", $start_timestamp). $hstarttime. ' - '. date("j._n._$year_format", $end_timestamp). $hendtime;
+            $ret = date("j._n.$year_format_esc", $start_timestamp). $hstarttime. ' - '. date("j._n.$year_format_esc", $end_timestamp). $hendtime;
         }
 
         return str_replace([' ','_','-'], ["\u{00A0}", "\u{202F}","\u{2013}"], trim($ret));  // use &nnbsp; (narrow non-breaking space) and @ndash; UTF characters - possible also use &#8239;
