@@ -1985,13 +1985,14 @@ function aa_version($format = 'full'): string
     $release = is_file(__DIR__ . '/release.php') ? include __DIR__ . '/release.php' : [];
     $commit  = substr((string) ($release['commit'] ?? ''), 0, 7);
     $build   = trim($commit . ' ' . ($release['date'] ?? ''));
-    $full    = 'ActionApps ' . $version . ' (' . ($build ?: 'source checkout') . '), PHP ' . PHP_VERSION . ', REMOTE_ADDR: ' . $_SERVER['REMOTE_ADDR'];
     return match ($format) {
         'svn', 'svn2' => $commit,     // were the SVN revision of util.php / `svnversion` of the tree; '' in a source checkout
         'build'       => $build,      // commit and its date, for humans
         'aa'          => $version,
         'php'         => PHP_VERSION,
-        default       => $full,
+        // built here, not above: it reads REMOTE_ADDR, which does not exist on the command line,
+        // so every cron and queue call used to warn for a string it did not ask for
+        default       => 'ActionApps ' . $version . ' (' . ($build ?: 'source checkout') . '), PHP ' . PHP_VERSION . ', REMOTE_ADDR: ' . ($_SERVER['REMOTE_ADDR'] ?? 'cli'),
     };
 }
 
