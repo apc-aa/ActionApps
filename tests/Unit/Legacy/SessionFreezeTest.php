@@ -71,6 +71,18 @@ final class SessionFreezeTest extends TestCase
         $this->assertArrayNotHasKey('rusr', $_SESSION);
     }
 
+    /** session_start() may fail (headers already sent, a forged SID) and leave $_SESSION unset -
+     *  production site.php fataled on array_key_exists() with a null array, 2026-09-23 */
+    public function test_freeze_without_a_session_array_does_nothing(): void
+    {
+        unset($_SESSION);
+        $GLOBALS['r_state'] = ['module_id' => 'x'];
+
+        $this->session()->freeze();
+
+        $this->assertFalse(isset($_SESSION));
+    }
+
     public function test_register_of_an_unlisted_name_is_reported(): void
     {
         $GLOBALS['aa_ui_csrf'] = 'tok';
