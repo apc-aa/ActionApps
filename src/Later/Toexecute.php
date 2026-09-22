@@ -74,6 +74,9 @@ class Toexecute
      *  task retries after the lease expires. */
     public const CLAIM_LEASE = 1800;
 
+    /** log.type of a task that threw (log.type is 10 bytes); CheckQueue reports them */
+    public const FAILED_EVENT = 'TOEXEC_ERR';
+
     /** later function
      *  Stores the object and params to the database for later execution.
      *  Such task is called from cron (the order depends on priority)
@@ -323,8 +326,9 @@ class Toexecute
         AA_Log::write('TOEXECUTE', 'AA\Later\Toexecute', new AA_Logentry_Xrun(['done' => $count, 'started' => $started, 'duration' => sprintf('%.3g', microtime(true) - $execute_start), 'allowed' => $allowed_time]));
     }
 
-    /** @return int 1 = task executed, 0 = out of allowed time (caller stops),
-     *              -1 = lost the claim to a concurrent runner (caller skips) */
+    /** @return int 1 = task executed (or failed and left for a retry), 0 = out of
+     *              allowed time (caller stops), -1 = lost the claim to a concurrent
+     *              runner (caller skips) */
     public function _exeOne($task, &$execute_times, $execute_start, $allowed_time): int
     {
         $task_type = get_if($task['selector'], 'aa_unspecified');
@@ -361,16 +365,27 @@ class Toexecute
             return -1;
         }
 
-        $object = unserialize($task['object']);
-        $params = unserialize((string) $task['params']);   // also fed to the log row below, so unserialize once
-        if (is_object($object) && !($object instanceof \__PHP_Incomplete_Class)) {
-            $retcode = $this->execute_one($object, $params);
-            $this->message($retcode);
-            $selector = AA_Log::selector($object);
-        } else {
-            $this->message('Toexecute:execute - unserialize err:' . $task['object']);
-            $retcode = 'no execute, removed from queue';
-            $selector = AA_Log::selector('no object', $task['object']);
+        try {
+            $object = unserialize($task['object']);   // __wakeup() is task code too
+            $params = unserialize((string) $task['params']);   // also fed to the log row below, so unserialize once
+            if (is_object($object) && !($object instanceof \__PHP_Incomplete_Class)) {
+                $retcode = $this->execute_one($object, $params);
+                $this->message($retcode);
+                $selector = AA_Log::selector($object);
+            } else {
+                $this->message('Toexecute:execute - unserialize err:' . $task['object']);
+                $retcode = 'no execute, removed from queue';
+                $selector = AA_Log::selector('no object', $task['object']);
+            }
+        } catch (\Throwable $e) {
+            // One broken task must not end the round for the tasks behind it. Its row
+            // stays as the claim above left it - that is the queue's retry: again after
+            // the lease, one priority lower, given up at 0. Only the class is logged and
+            // shown - an exception message may carry passwords or personal data.
+            $execute_times[$task_type] = microtime(true) - $task_start;
+            $this->message("#{$task['id']}: " . _m('the task failed with %1', [$e::class]));
+            AA_Log::write(self::FAILED_EVENT, $task_type, "#{$task['id']} " . $e::class);
+            return 1;
         }
 
         // Task is done - remove it from queue

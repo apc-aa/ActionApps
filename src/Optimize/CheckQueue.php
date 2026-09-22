@@ -10,7 +10,8 @@ use AA_Log;
 
 /** Is the task queue (cron.php / misc/toexecute.php) alive, who drives it and does it keep up.
  *  Reads the TOEXECUTE rows of the log: one `Xrun:done:started:duration:allowed`
- *  row per queue run (AA_Logentry_Xrun), one `X:time:...` row per task.
+ *  row per queue run (AA_Logentry_Xrun), one `X:time:...` row per task; and the
+ *  Toexecute::FAILED_EVENT row of every task that threw.
  */
 class CheckQueue extends AbstractOptimize
 {
@@ -86,6 +87,16 @@ class CheckQueue extends AbstractOptimize
             $rows     = DB_AA::select([], 'SELECT `time`, `params` FROM `log`', $fallback_of, ['time-'], null, 5);
             $evidence = array_map(static fn(array $row) => [_m('Time') => date('Y-m-d H:i', (int) $row['time']), _m('Error') => safe((string) $row['params'])], $rows);
             $findings[] = new Finding(Finding::WARNING, _m('The post-response cron fallback failed %1 times in the last 7 days', [$failures]), count: $failures, since: (int) $fallback['first'], evidence: $evidence, links: [_m('Log rows') => AA_Log::getAdminUrl('CRON_FALLB')], key: 'fallback', last: (int) $fallback['last']);
+        }
+
+        // a task that throws no longer ends the run with a PHP fatal - its log row is the only trace
+        $failed_of = [['type', Toexecute::FAILED_EVENT], ['time', $now - self::WINDOW_SECONDS, '>=']];
+        $failed    = DB_AA::select1('', 'SELECT COUNT(*) AS cnt, MIN(`time`) AS first, MAX(`time`) AS last FROM `log`', $failed_of);
+        $failed_n  = (int) ($failed['cnt'] ?? 0);
+        if ($failed_n > 0) {
+            $rows     = DB_AA::select([], 'SELECT `time`, `selector`, `params` FROM `log`', $failed_of, ['time-'], null, 5);
+            $evidence = array_map(static fn(array $row) => [_m('Time') => date('Y-m-d H:i', (int) $row['time']), _m('Task') => safe((string) $row['selector']), _m('Error') => safe((string) $row['params'])], $rows);
+            $findings[] = new Finding(Finding::WARNING, _m('Queued tasks failed %1 times in the last 7 days', [$failed_n]), count: $failed_n, since: (int) $failed['first'], evidence: $evidence, advice: _m('A failed task runs again after 30 minutes with a lower priority and is given up after repeated failures. Only the error class is logged - its message may hold passwords.'), links: [_m('Log rows') => AA_Log::getAdminUrl(Toexecute::FAILED_EVENT)] + $queue_link, key: 'failed', last: (int) $failed['last']);
         }
 
         $stats = self::runStats(DB_AA::select('params', 'SELECT `params` FROM `log`', array_merge($runs_of, [['time', $now - self::WINDOW_SECONDS, '>=']])));
