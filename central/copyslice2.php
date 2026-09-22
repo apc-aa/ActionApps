@@ -21,6 +21,7 @@ https://www.apc.org/
 */
 
 use AA\Later\Toexecute;
+use AA\Util\InputVars;
 
 require_once __DIR__ . "/include/init_central.php";
 require_once __DIR__ . "/../include/formutil.php";
@@ -37,6 +38,11 @@ MoreTimeLimit(); // set_time_limit to 5 minutes (at least)
 
 // ActionApps to synchronize
 $aas = AA_Actionapps::getArray();
+
+// Checkboxes posted by the form below - read explicitly, the register_globals
+// emulation which used to fill them is gone (see include/init_central.php).
+$sync_defs  = InputVars::boolPOST('sync_defs');
+$sync_items = InputVars::boolPOST('sync_items');
 
 if ($_POST['copy']) {
     $toexecute = new Toexecute();
@@ -71,7 +77,9 @@ if ($_POST['copy']) {
 
         if (is_array($_POST['sync_slices']) && count($limit)) {
             foreach ($_POST['sync_slices'] as $sid) {
-                if ($sid) {
+                // the template AA may not send a definition for every selected
+                // slice - without the check the missing one fatals on null
+                if ($sid && isset($template_slice_defs[$sid])) {
                     // plan the synchronization action to for execution via Task Manager
                     $module_def     = $template_slice_defs[$sid];
                     $no_sync_tasks += ($dest_aa === 'thisAA') ? $module_def->moduleImport($changed_ids) : $module_def->planModuleImport($aas[$dest_aa], $changed_ids);
