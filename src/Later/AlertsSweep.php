@@ -19,14 +19,30 @@ class AlertsSweep implements LaterInterface
      *  Digests at night, so the readers find them in the morning; the exact
      *  minutes only avoid the other nightly tasks. */
     public const SCHEDULE = [
-        'instant' => '+5 minutes',
-        'daily'   => 'tomorrow 01:00',
-        'weekly'  => 'next monday 01:30',
-        'monthly' => 'first day of next month 02:00',
+        'instant'  => '+5 minutes',
+        'daily'    => 'tomorrow 01:00',
+        'weekly'   => 'next monday 01:30',
+        'twoweeks' => '+14 days 01:45',
+        'monthly'  => 'first day of next month 02:00',
     ];
 
     /** seconds between two sendings of a collection with this frequency (the `fix` mode) */
-    private const FREQUENCY = ['daily' => 86400, 'weekly' => 7 * 86400, 'twoweeks' => 14 * 86400, 'monthly' => 31 * 86400];
+    public const FREQUENCY = ['daily' => 86400, 'weekly' => 7 * 86400, 'twoweeks' => 14 * 86400, 'monthly' => 31 * 86400];
+
+    /** The earliest moment a sweep of this frequency may reach back to. A sweep that stopped -
+     *  a missing cron row, a moved install - must not mail years of backlog: on toolkit the
+     *  daily sweep resumed on 2026-09-22 after 13 years and sent 52 readers items from 2014.
+     *  Two periods, so one skipped run still catches up.
+     *
+     *  A frequency without a period of its own (instant, irregular) gets the tightest cap,
+     *  never none: the instant sweep reads `last` exactly like a digest does - toexecutelater()
+     *  calls send_emails() with an empty $item_id - and toolkit has instant rows sitting on
+     *  2012 and 2016. An unknown name is capped for the same reason.
+     */
+    public static function earliestBacklog(string $howoften, int $now): int
+    {
+        return $now - (2 * (self::FREQUENCY[$howoften] ?? min(self::FREQUENCY)));
+    }
 
     /** the legacy alerts module - functions in files, not autoloaded classes */
     private const REQUIRED_FILES = [
@@ -51,7 +67,7 @@ class AlertsSweep implements LaterInterface
         initialize_last();
 
         $collections = $this->fix ? $this->overdueCollections() : 'all';
-        $detail      = is_array($collections) ? 'fix ' . implode(',', $collections) : 'all';
+        $detail      = is_array($collections) ? 'fix ' . count($collections) : 'all';   // the id list overflows log.params(128)
         AA_Log::write('ALERTS', $this->howoften, new AA_Logentry_Alerts(['phase' => 'start', 'detail' => $detail]));
 
         $count = send_emails($this->howoften, $collections, 'all', true, '');

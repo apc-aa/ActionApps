@@ -44,7 +44,7 @@ final class CronEntryPointsTest extends TestCase
 
     public function test_alerts_schedule_covers_the_subscription_frequencies_and_points_to_the_future(): void
     {
-        $this->assertSame(['instant', 'daily', 'weekly', 'monthly'], array_keys(AlertsSweep::SCHEDULE));
+        $this->assertSame(['instant', 'daily', 'weekly', 'twoweeks', 'monthly'], array_keys(AlertsSweep::SCHEDULE));
         $now = time();
         foreach (AlertsSweep::SCHEDULE as $howoften => $when) {
             $time = strtotime($when, $now);

@@ -124,4 +124,26 @@ final class AlertsSendingWindowTest extends TestCase
             'the both-inclusive BETWEEN window (the double-send bug) must not return',
         );
     }
+
+    /** The window's lower bound is capped (2026-09-22): a sweep that stopped for years
+     *  would otherwise mail the whole backlog. Without the call the cap is dead code. */
+    public function testProductionSqlCapsTheBacklogWindow(): void
+    {
+        $this->assertStringContainsString(
+            'AlertsSweep::earliestBacklog(',
+            php_strip_whitespace(self::SOURCE),
+            'createFilterText() must clamp $last, or a stalled sweep mails everything since it stopped',
+        );
+    }
+
+    /** $ho is interpolated into the howoften SQL unescaped and comes from POST on the
+     *  admin "send now" forms, so send_emails() lets only the known frequencies through. */
+    public function testOnlyKnownFrequenciesReachTheUnescapedSql(): void
+    {
+        $this->assertStringContainsString(
+            'if (!is_string($ho) || !isset(get_howoften_options()[$ho])) {',
+            php_strip_whitespace(self::SOURCE),
+            'send_emails() must reject an unknown frequency before it reaches the SQL',
+        );
+    }
 }
