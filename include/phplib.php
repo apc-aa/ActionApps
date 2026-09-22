@@ -285,11 +285,18 @@ class Session
     */
     public function freeze(): void
     {
-        foreach (self::LEGACY_GLOBAL_VARS as $key) {
-            if (array_key_exists($key, $_SESSION)) {
-                $_SESSION[$key] = $GLOBALS[$key] ?? null;
-            }
+        foreach (self::legacyKeysInSession() as $key) {
+            $_SESSION[$key] = $GLOBALS[$key] ?? null;
         }
+    }
+
+    /** LEGACY_GLOBAL_VARS present in $_SESSION. $_SESSION is not set at all when session_start()
+     *  failed (headers already sent, a forged SID) - production site.php fataled on that, 2026-09-23.
+     *  @return string[]
+     */
+    private static function legacyKeysInSession(): array
+    {
+        return is_array($_SESSION ?? null) ? array_intersect(self::LEGACY_GLOBAL_VARS, array_keys($_SESSION)) : [];
     }
 
     /** lifetime in seconds
@@ -439,10 +446,8 @@ class Session
         }
 
         // restore the legacy session variables to global scope (the counterpart of freeze())
-        foreach (self::LEGACY_GLOBAL_VARS as $key) {
-            if (array_key_exists($key, $_SESSION)) {
-                $GLOBALS[$key] = $_SESSION[$key];
-            }
+        foreach (self::legacyKeysInSession() as $key) {
+            $GLOBALS[$key] = $_SESSION[$key];
         }
 
         if ($this->forgery_check_enabled && $this->session_ip) {
