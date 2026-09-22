@@ -581,7 +581,8 @@ class AA_Item
     }
 
     /** Without $bin returns true if the item is visible - not expired/trashed/pending/...
-     *  You can specify bin AA_BIN_ACTIVE or AA_BIN_HOLDING or AA_BIN_TRASH or AA_BIN_ALL or its bitwise combination (the trash and pending is not supported, now)
+     *  You can specify bin AA_BIN_ACTIVE or AA_BIN_PENDING or AA_BIN_EXPIRED or AA_BIN_HOLDING
+     *  or AA_BIN_TRASH or AA_BIN_ALL or its bitwise combination - see ItemContent::getBin()
      * @return bool
      */
     public function isActive($bin = AA_BIN_ACTIVE): bool
@@ -2015,7 +2016,9 @@ class AA_Items
     }
 
     /** returns output of Active items
-     * @param $bin - AA_BIN_ACTIVE or AA_BIN_HOLDING or AA_BIN_TRASH or AA_BIN_ALL or its bitwise combination (the trash and pending is not supported, now)
+     * @param $bin - AA_BIN_ACTIVE or AA_BIN_PENDING or AA_BIN_EXPIRED or AA_BIN_HOLDING or AA_BIN_TRASH
+     *               or AA_BIN_ALL or its bitwise combination; AA_BIN_ALL formats every item, even one
+     *               with a status_code in no bin at all (see ItemContent::getBin())
      * @return array
      */
     public static function getFormatted($zids, $expression, $bin = AA_BIN_ACTIVE): array

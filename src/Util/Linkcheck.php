@@ -11,7 +11,7 @@ use AA\IO\DB\DB_AA;
  *      check_url($url) - checks url (http and mailto), retunrs array with status
  *                        code, content-type, ...
  *      checking() - run checking of urls from table links_links, number of checked
- *                   links defined in LINKS_VALIDATION_CHECK
+ *                   links defined in LINKS_VALIDATION_COUNT
  *      add_check($arr, $valid_codes) - add new check values to string valid_codes
  *      remove_old($valid_codes) - removes old check values from valid_codes
  *      count_weight($valid_codes) - count valid_rank from valid_codes
@@ -122,6 +122,9 @@ class Linkcheck
         '510'   => [ "comment" => "Not Extended",                     "weight" => 5 ], // RFC2774
         '511'   => [ "comment" => "Network Authentication Required",  "weight" => 5 ], // RFC6585
     ];
+
+    /** how many checks the history keeps - count_weight() weights exactly these */
+    private const MAX_CHECKS = 10;
 
     private static function get_empty_ressult(): array
     {
@@ -258,7 +261,7 @@ class Linkcheck
 
             // last value of http_codes is the last code
             $last_code         = end($http_codes);
-            $result['weight']  = min(5, max($result['weight'], self::HTTP_ERROR_CODES[$last_code]['weight']));  // weight not 0 but taken from last code
+            $result['weight']  = min(5, max($result['weight'], self::HTTP_ERROR_CODES[$last_code]['weight'] ?? 5));  // weight not 0 but taken from last code
             $result['comment'] .= " - Redirected [$last_code]";
             return $result;
         }
@@ -291,66 +294,52 @@ class Linkcheck
 
     /** add_check function
      *  creates new valid_codes string (new is added as first)
-     * @param $arr
-     * @param $valid_codes
+     * @param array       $arr          result of check_url()
+     * @param string|null $valid_codes  history so far - NULL for a never checked link
      * @return string
      */
-    public function add_check($arr, $valid_codes): string
+    public function add_check(array $arr, ?string $valid_codes): string
     {
-        return $arr["timestamp"] . "," . $arr["code"] . ":" . $this->remove_old($valid_codes);
+        // remove_old() sorts the new check in and cuts the history back to MAX_CHECKS
+        return $this->remove_old($arr["timestamp"] . "," . $arr["code"] . ":" . $valid_codes);
     }
 
     /** remove_old function
-     *  remove old checks - more than 10
-     * @param $valid_codes
+     *  remove old checks - keeps the MAX_CHECKS newest
+     * @param string|null $valid_codes  NULL for a never checked link (links_links.valid_codes is nullable)
      * @return string
      */
-    public function remove_old($valid_codes): string
+    public function remove_old(?string $valid_codes): string
     {
-        $dummy = explode(":", $valid_codes);
-        rsort($dummy);
-        $valid_codes2 = "";
-        if (count($dummy) > 9) {
-            for ($i = 0; $i < 10; ++$i) {
-                $valid_codes2 .= $dummy[$i] . ($i === 9 ? "" : ":");
-            }
-        } else {
-            $valid_codes2 = $valid_codes;
-        }
-        return $valid_codes2;
+        return implode(":", self::sortedChecks($valid_codes));
+    }
+
+    /** the stored history as "timestamp,code" entries, newest first, at most MAX_CHECKS of them
+     *  anything else is dropped - older releases stored a trailing ":" on the first check
+     * @param string|null $valid_codes  NULL for a never checked link (links_links.valid_codes is nullable)
+     * @return array
+     */
+    private static function sortedChecks(?string $valid_codes): array
+    {
+        $checks = array_filter(explode(":", (string) $valid_codes), static fn($check) => preg_match('/^\d+,./', $check) === 1);
+        // compare the timestamps as numbers - a string sort would misorder them the day they grow a digit
+        usort($checks, static fn($a, $b) => (int) $b <=> (int) $a);
+        return array_slice($checks, 0, self::MAX_CHECKS);
     }
 
     /** count_weight function
-     *  counts weight of link from it's http error codes
-     * @param $valid_codes
+     *  counts weight of link from it's http error codes - the older the check, the less it counts
+     * @param string $valid_codes
      * @return float
      */
-    public function count_weight($valid_codes): float
+    public function count_weight(string $valid_codes): float
     {
-        $dummy = explode(":", $valid_codes);
-        rsort($dummy); // sort descend (newest is first)
-        foreach ($dummy as $i => $singleDummy) {
-            [$arr[$i]["time"], $arr[$i]["code"]] = explode(",", $singleDummy);
-            // split to array
-            /*
-            if ($i == 0) { // latest timestamp
-                $latest = $arr[$i]["time"];
-            }
-            $arr[$i]["reltime"] = abs($arr[$i]["time"] - $latest);
-            */
-        }
-        $count = count($arr);
-        if ($count > 10) { // take only last 10
-            $count = 10;
-        }
         $num = 0;
-        for ($i = 0; $i < $count; ++$i) {
-            /* exponential function - too fast near zero :(
-            // $num =  exp((-1)*($arr[$i]["reltime"]/60/60/24))*self::HTTP_ERROR_CODES[$arr[$i]["code"]]["weight"];
-            */
-            // linear function
-            $n1  = (self::HTTP_ERROR_CODES[$arr[$i]["code"]]["weight"] / ($i + 1));
-            $num += $n1;
+        // linear function (an exponential decay by the check age was tried too - too fast near zero)
+        foreach (self::sortedChecks($valid_codes) as $i => $check) {
+            $code = explode(",", $check, 2)[1];
+            // unknown code counts as an error, just like in check_url()
+            $num += (self::HTTP_ERROR_CODES[$code]["weight"] ?? 5) / ($i + 1);
         }
         // returned number - 1000 is the biggest number, with the worst error codes, we want to return
         // 14.64... is the count of linear function with the worst error code weights

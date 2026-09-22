@@ -256,6 +256,7 @@ class ComposerStaticInit549a0516f4ced1636fd22ee7d63cc983
         'AA\\Optimize\\ChangeF_t2F_1' => __DIR__ . '/../..' . '/src/Optimize/ChangeF_t2F_1.php',
         'AA\\Optimize\\ChangeF_t2F__' => __DIR__ . '/../..' . '/src/Optimize/ChangeF_t2F__.php',
         'AA\\Optimize\\ChangeModuleId' => __DIR__ . '/../..' . '/src/Optimize/ChangeModuleId.php',
+        'AA\\Optimize\\CheckAlerts' => __DIR__ . '/../..' . '/src/Optimize/CheckAlerts.php',
         'AA\\Optimize\\CheckCron' => __DIR__ . '/../..' . '/src/Optimize/CheckCron.php',
         'AA\\Optimize\\CheckEnvironment' => __DIR__ . '/../..' . '/src/Optimize/CheckEnvironment.php',
         'AA\\Optimize\\CheckPhpFatals' => __DIR__ . '/../..' . '/src/Optimize/CheckPhpFatals.php',

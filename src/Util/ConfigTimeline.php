@@ -360,11 +360,12 @@ final class ConfigTimeline
 
     /**
      * What a window changed against the one before it, as short display labels
-     * ("r5345", "PHP 8.2.33"). An empty list means nothing identifiable changed.
+     * ("r5345", "PHP 8.2.33"), each with the tooltip that spells it out - the git
+     * commit behind a date label. An empty list means nothing identifiable changed.
      *
      * @param  list<array<string,mixed>> $changes   the window's deployments
      * @param  array<string,mixed>|null  $previous  the last deployment of the previous window
-     * @return list<string>
+     * @return list<array{0:string,1:string}>  label, tooltip
      */
     public static function describeDiff(array $changes, ?array $previous): array
     {
@@ -375,16 +376,17 @@ final class ConfigTimeline
 
         // Every revision the window brought, so a window that swallowed short-lived
         // deployments still names them all.
-        $was  = $previous ? self::revLabel($previous) : '';
+        $was  = $previous ? self::revKey($previous) : '';
         $revs = [];
         foreach ($changes as $change) {
-            $rev = self::revLabel($change);
-            if ($rev !== '' && $rev !== $was) {
-                $revs[$rev] = true;
+            $key = self::revKey($change);
+            if ($key !== '' && $key !== $was && !isset($revs[$key])) {
+                $revs[$key] = self::revLabel($change);
             }
         }
         if ($revs) {
-            $parts[] = implode(', ', array_keys($revs));
+            // one tag per window, so the labels join and so do the commits behind them
+            $parts[] = [implode(', ', array_column($revs, 0)), implode(', ', array_filter(array_column($revs, 1)))];
         }
         if (!$previous) {
             return $parts;   // the leading window has nothing to have changed against
@@ -394,24 +396,25 @@ final class ConfigTimeline
         // A checkout synced by rsync keeps one svnversion for months while util.php
         // moves with every release: then the util.php revision is the deployment.
         if (!$revs && $now['rev'] !== '' && $now['rev'] !== $previous['rev']) {
-            $parts[] = 'util.php r' . $now['rev'];
+            $parts[] = ['util.php r' . $now['rev'], ''];
         }
         if ($now['aa'] !== $previous['aa'] && $now['aa'] !== '') {
-            $parts[] = 'AA ' . $now['aa'];
+            $parts[] = ['AA ' . $now['aa'], ''];
         }
         if ($now['php'] !== $previous['php'] && $now['php'] !== '') {
-            $parts[] = 'PHP ' . $now['php'];
+            $parts[] = ['PHP ' . $now['php'], ''];
         }
         if ($now['db'] !== $previous['db'] && $now['db'] !== '') {
-            $parts[] = self::dbLabel($now['db']);
+            $parts[] = [self::dbLabel($now['db']), ''];
         }
         if ($now['cpu'] !== $previous['cpu'] && $now['cpu'] !== '') {
-            $parts[] = \_m('new hardware');
+            $parts[] = [\_m('new hardware'), ''];
         }
         if ($now['mem'] !== $previous['mem'] && $now['mem'] !== '') {
-            $parts[] = \_m('memory') . ' ' . $now['mem'];
+            $parts[] = [\_m('memory') . ' ' . $now['mem'], ''];
         }
-        return array_merge($parts, self::serverDiff((string) ($previous['server'] ?? ''), (string) ($now['server'] ?? '')));
+        $server = array_map(static fn(string $change) => [$change, ''], self::serverDiff((string) ($previous['server'] ?? ''), (string) ($now['server'] ?? '')));
+        return array_merge($parts, $server);
     }
 
     /**
@@ -457,13 +460,27 @@ final class ConfigTimeline
         return (int) mktime(0, 0, 0, (int) date('n', $time), (int) date('j', $time) + 1, (int) date('Y', $time));
     }
 
-    /** Short revision label of a change: the tree version when it is readable, else the util.php revision. */
-    private static function revLabel(array $change): string
+    /** What makes two deployments the same code: the tree version when it is readable, else the util.php revision. */
+    private static function revKey(array $change): string
     {
-        if ($change['tree'] !== '') {
-            return 'r' . $change['tree'];
+        return $change['tree'] !== '' ? $change['tree'] : (string) $change['rev'];
+    }
+
+    /** How a revision is shown. An svnversion number reads by itself ("r5345"); a git commit does not,
+     *  so there the label is when the configuration first appeared and the commit stays as the tooltip.
+     *
+     * @return array{0:string,1:string} label, tooltip
+     */
+    private static function revLabel(array $change): array
+    {
+        $rev = self::revKey($change);
+        if ($rev === '') {
+            return ['', ''];
         }
-        return $change['rev'] !== '' ? 'r' . $change['rev'] : '';
+        if (preg_match('/^\d[\d:]*[MSP]*$/', $rev)) {
+            return ['r' . $rev, ''];
+        }
+        return [date('y-m-d-H-i', (int) $change['time']), $rev];
     }
 
     /**

@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace AA\Util;
 
-/** CSRF token for admin POST forms, derived from the session instead of stored
- *  in it: Session::freeze() rewrites every bare $_SESSION key at the end of an
- *  admin page, so a stored token would not survive to the POST. The purpose
- *  keeps a token of one form from being replayed on another.
+/** CSRF token for admin POST forms, derived from the session id instead of
+ *  stored in it - nothing to lose or clean up. The purpose keeps a token of
+ *  one form from being replayed on another.
  */
 final class FormToken
 {

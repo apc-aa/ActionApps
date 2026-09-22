@@ -162,6 +162,7 @@ return array(
     'AA\\Optimize\\ChangeF_t2F_1' => $baseDir . '/src/Optimize/ChangeF_t2F_1.php',
     'AA\\Optimize\\ChangeF_t2F__' => $baseDir . '/src/Optimize/ChangeF_t2F__.php',
     'AA\\Optimize\\ChangeModuleId' => $baseDir . '/src/Optimize/ChangeModuleId.php',
+    'AA\\Optimize\\CheckAlerts' => $baseDir . '/src/Optimize/CheckAlerts.php',
     'AA\\Optimize\\CheckCron' => $baseDir . '/src/Optimize/CheckCron.php',
     'AA\\Optimize\\CheckEnvironment' => $baseDir . '/src/Optimize/CheckEnvironment.php',
     'AA\\Optimize\\CheckPhpFatals' => $baseDir . '/src/Optimize/CheckPhpFatals.php',

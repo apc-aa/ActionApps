@@ -136,11 +136,8 @@ class UiPrefs
 
     /** Token protecting the admin/aa_uiprefs.php posts (theme / language / feedback).
      *
-     *  Derived from the session id instead of being stored in the session: the
-     *  legacy Session::freeze() - run by AA_Adminpageutil::printFoot() through
-     *  Session::page_close() - rewrites every $_SESSION key from the same-named
-     *  global, so a plain session key with no global counterpart is nulled at the
-     *  end of every admin page and would never survive to the next request.
+     *  Derived from the session id instead of being stored in the session -
+     *  stateless, nothing to lose or clean up.
      *  The session id is httponly and same-origin, so a cross-site attacker can
      *  neither read it nor derive the token; the hash never exposes it.
      *

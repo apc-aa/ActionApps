@@ -70,6 +70,20 @@ class Session
     */
     protected $session_ip = '__session_ip';
 
+    /**
+     * register_globals leftover: session variables still written as globals
+     * ($r_state[...] = ...), which freeze() copies back into $_SESSION at page
+     * end. Every other key belongs to $_SESSION alone. Rewrite a variable to
+     * direct $_SESSION access and remove it here; empty list = freeze() can go.
+     * ('auth' is an object - same handle in both arrays - listed only for fidelity.)
+     */
+    public const LEGACY_GLOBAL_VARS = [
+        'auth', '__session_ip',
+        'r_state', 'r_hidden', 'r_err', 'r_msg',                        // Manager, admin pages, links module
+        'permission_uid', 'permission_to', 'r_superuser',               // perm_core.php cache
+        'rusr', 'rgrp', 'r_wm_state', 'r_userstate', 'r_sr_state', 'recover',
+        'r_packed_state_vars', 'slices', 'scr',                         // slice.php
+    ];
 
     /**
      * Store domain for which the session cookie is set.
@@ -93,7 +107,8 @@ class Session
     }
 
     /**
-    * Register the variable(s) that should become persistent.
+    * Register the variable(s) that should become persistent - legacy, only for
+    * names in LEGACY_GLOBAL_VARS; new code writes $_SESSION['key'] directly.
     *
     * @param   array|string $var_names  String with the name of one or more variables seperated by comma
     *                             or a list of variables names: "foo"/"foo,bar,baz"/{"foo","bar","baz"}
@@ -109,6 +124,10 @@ class Session
 
         // If register_globals is off -> store session variables values
         foreach ($var_names as $var_name) {
+            if (!in_array($var_name, self::LEGACY_GLOBAL_VARS, true)) {
+                // registered but never frozen - the global would be lost at page end
+                trigger_error("Session::register('$var_name') is not in Session::LEGACY_GLOBAL_VARS - write to \$_SESSION directly, or add it to the list", E_USER_WARNING);
+            }
             if (!isset($_SESSION[$var_name])) {
                 $_SESSION[$var_name] = $GLOBALS[$var_name];
             }
@@ -260,17 +279,16 @@ class Session
     } // end func id
 
     /**
-    * freezes all registered things ( scalar variables, arrays, objects )
-    * by saving all registered things to $_SESSION.
-    *
-    * @access public
-    *
-    *
+    * Copies the legacy global-scope session variables back into $_SESSION
+    * (see LEGACY_GLOBAL_VARS). Keys written straight into $_SESSION are left
+    * untouched - PHP saves them itself at request end.
     */
     public function freeze(): void
     {
-        foreach (array_keys($_SESSION) as $key) {
-            $_SESSION[$key] = $GLOBALS[$key];
+        foreach (self::LEGACY_GLOBAL_VARS as $key) {
+            if (array_key_exists($key, $_SESSION)) {
+                $_SESSION[$key] = $GLOBALS[$key] ?? null;
+            }
         }
     }
 
@@ -420,10 +438,10 @@ class Session
             }
         }
 
-        // restore session variables to global scope
-        if (!empty($_SESSION)) {
-            foreach ($_SESSION as $key => $value) {
-                $GLOBALS[$key] = $value;
+        // restore the legacy session variables to global scope (the counterpart of freeze())
+        foreach (self::LEGACY_GLOBAL_VARS as $key) {
+            if (array_key_exists($key, $_SESSION)) {
+                $GLOBALS[$key] = $_SESSION[$key];
             }
         }
 

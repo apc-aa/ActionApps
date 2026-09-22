@@ -28,6 +28,7 @@ https://www.apc.org/
 */
 
 use AA\IO\DB\DB_AA;
+use AA\Later\AlertsSweep;
 
 require_once __DIR__ . "/../../include/item.php";
 require_once __DIR__ . "/../../include/view.php";
@@ -241,9 +242,10 @@ class AA_Collection
                  alerts_collection_filter CF ON CF.filterid = F.id INNER JOIN
                  alerts_collection_howoften CH ON CF.collectionid = CH.collectionid INNER JOIN
                  view ON view.id = F.vid INNER JOIN
-                 slice ON slice.id = view.slice_id
-            WHERE CH.howoften='$ho'
-            AND CH.collectionid='" . $this->id . "'";
+                 slice ON slice.id = view.slice_id ";
+        // Values through makeWhere, not into the string: $ho comes from POST on the admin
+        // "send now" forms and $this->id from a remote request (central/responder.php).
+        $where = [['CH.howoften', $ho, 's'], ['CH.collectionid', $this->id, 's']];
         $db = getDB();
         if ($item_id) {
             $db->query("SELECT slice_id FROM item WHERE id=" . xpack_id($item_id));
@@ -251,17 +253,18 @@ class AA_Collection
                 freeDB($db);
                 return [];
             }
-            $SQL .= " AND slice.id='" . quote($db->f("slice_id")) . "'";
+            $where[] = ['slice.id', $db->f("slice_id"), 's'];
         }
 
         // fill alerts_collection_howoften.last in cases the row for this period
         // (= how_often) not exist, yet
         initialize_last();
         $slices = [];
+        $last   = 0;
 
-        $db->query($SQL);
+        $db->query($SQL . DB_AA::makeWhere($where));
         while ($db->next_record()) {
-            $last                                  = $db->f("last");
+            $last                                  = (int) $db->f("last");   // goes into the item query unquoted
             $sid                                   = unpack_id($db->f("slice_id"));
             $slices[$sid]["name"]                  = $db->f("slicename");
             $slices[$sid]["lang"]                  = substr($db->f("lang_file"), 0, 2);
@@ -283,6 +286,15 @@ class AA_Collection
 
         $now    = time();
         $retval = [];
+
+        // A sweep that has not run for ages must not mail the whole backlog (2026-09-22).
+        // Capping drops items silently, so say so - that incident was read out of this log.
+        $earliest = AlertsSweep::earliestBacklog($ho, $now);
+        if ($last < $earliest) {
+            AA_Log::write('ALERTS', $ho, new AA_Logentry_Alerts(['phase' => 'capped', 'collection' => $this->id,
+                'detail' => 'last ' . date('Y-m-d H:i', $last) . ' -> ' . date('Y-m-d H:i', $earliest)]));
+            $last = $earliest;
+        }
 
         foreach ($slices as $slice_id => $slice) {
             $p_slice_id   = xpack_id($slice_id);
@@ -520,6 +532,12 @@ class AA_Collection
  */
 function send_emails($ho, $collection_ids, $emails, $update, $item_id, $reader_id = null): int
 {
+    // $ho reaches the SQL below unescaped and comes straight from POST on the admin
+    // "send now" forms (modules/alerts/send.php), so only the known frequencies pass.
+    // is_string() first: isset($arr[$array]) is itself a TypeError.
+    if (!is_string($ho) || !isset(get_howoften_options()[$ho])) {
+        return 0;
+    }
 
     /* get all (or just some, if $collection_ids specified) collections and put
        the infop into $colls array */
