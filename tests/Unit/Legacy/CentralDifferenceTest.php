@@ -22,7 +22,6 @@ final class CentralDifferenceTest extends TestCase
     public static function setUpBeforeClass(): void
     {
         require_once __DIR__ . '/../fixtures/util_shims.php';
-        require_once __DIR__ . '/fixtures/central_shims.php';
         // class declarations only - no side effect on load
         require_once dirname(__DIR__, 3) . '/central/include/actionapps.class.php';
     }

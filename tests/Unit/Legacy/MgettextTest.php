@@ -21,11 +21,24 @@ final class MgettextTest extends TestCase
         require_once __DIR__ . '/../../../include/mgettext.php';
     }
 
+    /** the translation globals before the test - a bound Czech file would otherwise leak into later tests */
+    private array $saved_globals = [];
+
     protected function setUp(): void
     {
+        foreach (['_m', 'mgettext_lang', 'mgettext_domain'] as $name) {
+            $this->saved_globals[$name] = $GLOBALS[$name] ?? null;
+        }
         $GLOBALS['_m'] = [];
         $GLOBALS['mgettext_lang'] = null;
         $GLOBALS['mgettext_domain'] = null;
+    }
+
+    protected function tearDown(): void
+    {
+        foreach ($this->saved_globals as $name => $value) {
+            $GLOBALS[$name] = $value;
+        }
     }
 
     // --- _m(): lookup and fallback ---

@@ -153,3 +153,7 @@ inputs and can be deleted on a server (see INSTALL); the built files stay in
 /misc/**phpThumb/** - phpthumb.class.php, phpthumb.functions.php, phpthumb.filters.php, phpthumb.bmp.php, phpthumb.gif.php, phpthumb.ico.php, phpthumb.unsharp.php, phpthumb.config.php, phpThumb.config.php.default, cache/index.php, cache/source/index.php, fonts/readme.txt, images/readme.txt - the phpThumb library copied into AA in 2007
   Left behind when phpThumb became a composer package in 2023 (honzito/phpthumb, installed to vendor/honzito/phpthumb): img.php loads it from there (AA_PHPTHUMB__DIR__), composer autoloads its class, and nothing included the copy any more - it only travelled with every install as dead, web-reachable code.
   _No longer maintained. Removed 2026-09-17 - honzam (see older apc-aa branches to get the code)_
+
+/tests/Unit/Legacy/fixtures/**central_shims.php** - test stand-in for FrmChBoxEasy() from include/formutil.php, used by CentralDifferenceTest and CentralSynchronizeTest
+  tests/Unit/fixtures/util_shims.php now loads the real include/util.php, which pulls in formutil.php, so the stand-in could never be declared any more. The shims clashed with the real files: whichever test loaded first made the other die with "Cannot redeclare function".
+  _No longer maintained. Removed 2026-09-23 - honzam_

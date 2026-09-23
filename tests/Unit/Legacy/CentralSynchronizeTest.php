@@ -24,9 +24,7 @@ final class CentralSynchronizeTest extends TestCase
 {
     public static function setUpBeforeClass(): void
     {
-        // not at file level: the shims must not beat include/util.php if another test loads it
-        require_once __DIR__ . '/../fixtures/util_shims.php';
-        require_once __DIR__ . '/fixtures/central_shims.php';
+        require_once __DIR__ . '/../fixtures/util_shims.php';    // the real util.php, FrmChBoxEasy() included
     }
 
     /** AA::$metabase before a test replaced it; false = not replaced */
@@ -41,13 +39,9 @@ final class CentralSynchronizeTest extends TestCase
         }
     }
 
-    /** Makes a write that got past the guard fail loudly. Only needed when another test in the run
-     *  already loaded locsess.php (class AA) - on its own AA::Metabase() cannot load and errors anyway. */
+    /** Makes a write that got past the guard fail loudly. */
     private function failOnMetabaseWrite(): void
     {
-        if (!class_exists(\AA::class, false)) {
-            return;
-        }
         $property             = new \ReflectionProperty(\AA::class, 'metabase');
         $this->saved_metabase = $property->getValue();
         $property->setValue(null, new class extends \AA_Metabase {
