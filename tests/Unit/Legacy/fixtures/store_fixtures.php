@@ -51,6 +51,8 @@ final class RecordingDb extends DB_PDO
     public static $answer = null;
     /** a statement starting with this string throws - simulates a failing write mid-transaction */
     public static ?string $fail_on = null;
+    /** @var array<string, array> table => columns as DB_PDO::metadata() lists them (name, type) */
+    public static array $metadata = [];
 
     private array $rows = [];
     private int $pos    = 0;
@@ -68,6 +70,7 @@ final class RecordingDb extends DB_PDO
         self::$snapshot = [];
         self::$answer   = null;
         self::$fail_on  = null;
+        self::$metadata = [];
     }
 
     /** number of statements of one kind sent so far */
@@ -93,14 +96,11 @@ final class RecordingDb extends DB_PDO
     /** Applies a `content` statement to the table; null when the statement is about another table. */
     private static function applyToContent(string $sql): ?array
     {
-        if (preg_match('/^INSERT INTO `content` \((.*?)\) VALUES (.*)$/s', $sql, $m)) {
-            $cols = explode('`,`', trim($m[1], '`'));
-            preg_match_all('/\((?:[^()\']|\'(?:[^\'\\\\]|\\\\.)*\')*\)/', $m[2], $tuples);
-            foreach ($tuples[0] as $tuple) {
-                preg_match_all('/\'(?:[^\'\\\\]|\\\\.)*\'|NULL|0x[0-9a-fA-F]+|-?\d+(?:\.\d+)?/', $tuple, $vals);
+        if (($inserted = self::parseInsert($sql, 'content')) !== null) {
+            foreach ($inserted as $values) {
                 $row = ['item' => null, 'field' => null, 'number' => null, 'text' => null, 'flag' => null];
-                foreach (array_combine($cols, $vals[0]) as $col => $val) {
-                    $row[self::COLUMN_NAMES[$col] ?? $col] = self::decode($val);
+                foreach ($values as $col => $val) {
+                    $row[self::COLUMN_NAMES[$col] ?? $col] = $val;
                 }
                 self::$content[] = $row;
             }
@@ -117,6 +117,32 @@ final class RecordingDb extends DB_PDO
             return $hits ? [['item_id' => reset($hits)['item']]] : [];
         }
         return null;
+    }
+
+    /** Rows the INSERTs so far sent into $table, each [column => value as decode() gives it]. */
+    public static function inserts(string $table): array
+    {
+        $rows = [];
+        foreach (self::$log as $sql) {
+            array_push($rows, ...(self::parseInsert($sql, $table) ?? []));
+        }
+        return $rows;
+    }
+
+    /** The rows of an INSERT into $table; null when the statement is anything else. */
+    private static function parseInsert(string $sql, string $table): ?array
+    {
+        if (!preg_match('/^INSERT INTO `' . preg_quote($table, '/') . '` \((.*?)\) VALUES (.*)$/s', $sql, $m)) {
+            return null;
+        }
+        $cols = explode('`,`', trim($m[1], '`'));
+        preg_match_all('/\((?:[^()\']|\'(?:[^\'\\\\]|\\\\.)*\')*\)/', $m[2], $tuples);
+        $rows = [];
+        foreach ($tuples[0] as $tuple) {
+            preg_match_all('/\'(?:[^\'\\\\]|\\\\.)*\'|NULL|0x[0-9a-fA-F]+|-?\d+(?:\.\d+)?/', $tuple, $vals);
+            $rows[] = array_map(self::decode(...), array_combine($cols, $vals[0]));
+        }
+        return $rows;
     }
 
     /** WHERE → [column => value | value list] for the shapes the store path emits */
@@ -162,6 +188,12 @@ final class RecordingDb extends DB_PDO
             return stripslashes(substr($sql_value, 1, -1));
         }
         return (int) $sql_value;
+    }
+
+    /** column list of a table - DB_PDO would ask the database (CopyTableRows() does) */
+    public function metadata(string $table = ""): array|false
+    {
+        return self::$metadata[$table] ?? [];
     }
 
     public function query_halt(string $Query_String, string $mode): bool
