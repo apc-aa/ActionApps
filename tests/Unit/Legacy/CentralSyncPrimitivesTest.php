@@ -378,18 +378,21 @@ final class CentralSyncPrimitivesTest extends TestCase
 
     // --- tasks queued in toexecute ---------------------------------------------------------------
 
-    private static function aa(): \AA_Actionapps
+    /** an AA as AA_Actionapps::getArray() loads it - with its central_conf id */
+    private static function aa(string $pwd = 'jwt:TOKEN'): \AA_Actionapps
     {
         $content = new \ItemContent();
+        $content->setValue('id', '12');
         $content->setValue('ORG_NAME', 'Remote');
         $content->setValue('AA_HTTP_DOMAIN', 'https://r.example.org/');
         $content->setValue('AA_BASE_DIR', 'aa/');
-        $content->setValue('AA_ADMIN_PWD', 'jwt:TOKEN');
+        $content->setValue('AA_ADMIN_USER', 'central');
+        $content->setValue('AA_ADMIN_PWD', $pwd);
         return new \AA_Actionapps($content);
     }
 
-    /** the objects Toexecute stored, unserialized as misc/toexecute.php does (no class filter) */
-    private static function queued(object $task, string $selector): object
+    /** the object column of the row Toexecute stored */
+    private static function queuedRow(object $task, string $selector): string
     {
         RecordingDb::reset();
         $GLOBALS['spareDBs'] = [new RecordingDb()];
@@ -397,22 +400,49 @@ final class CentralSyncPrimitivesTest extends TestCase
         $rows = RecordingDb::inserts('toexecute');
         self::assertCount(1, $rows);
         self::assertSame($selector, $rows[0]['selector']);
-        return unserialize($rows[0]['object']);
+        return $rows[0]['object'];
     }
 
-    public function test_task_sync_round_trips_through_the_queue(): void
+    public function test_task_sync_queues_the_id_of_the_aa_not_its_login(): void
     {
         // as synchronize3.php queues it: the action serialized, the AA as an object
         $action = new AA_Sync_Action('UPDATE_ROW', new AA_Identifier(self::MOD, 'field', 'headline........'), ['name' => 'Headline']);
         $task   = new AA_Task_Sync(serialize($action), self::aa());
 
-        $copy = self::queued($task, 'AA_Task_Sync');
+        $row  = self::queuedRow($task, 'AA_Task_Sync');   // the selector keeps the old name
+        $copy = unserialize($row);                         // misc/toexecute.php: no class filter
 
+        $this->assertStringNotContainsString('TOKEN', $row);
+        $this->assertStringNotContainsString('Actionapps', $row, 'no AA object in the queue');
+        $this->assertStringStartsWith('O:20:"AA\Central\Task\Sync":2:{', $row);
         $this->assertInstanceOf(AA_Task_Sync::class, $copy);
-        $this->assertEquals($task, $copy);
         $this->assertSame(serialize($action), $copy->sync_action);
-        $this->assertSame('Remote (https://r.example.org/aa/)', $copy->actionapps->getName());
-        $this->assertSame('TOKEN', $copy->actionapps->getAuthToken(), 'pinned; phase 4 may change - the login travels with the task');
+        $this->assertSame(12, $copy->aa_id);
+        $this->assertNull($copy->actionapps, 'read from central_conf when the task runs');
+    }
+
+    public function test_task_for_an_aa_removed_from_central_logs_an_error(): void
+    {
+        $task = unserialize(serialize(new AA_Task_Sync('cmd', 9902)));
+        $GLOBALS['spareDBs'] = [new RecordingDb()];   // no central_conf row
+
+        $ret = $task->toexecutelater();
+
+        $this->assertStringStartsWith('Err: ', $ret);
+        $this->assertStringContainsString('9902', $ret);
+        $this->assertSame(["SELECT * FROM central_conf WHERE id   = '9902' "], RecordingDb::$log, 'nothing sent anywhere');
+    }
+
+    /** rows queued before the tasks carried aa_id embed the AA - one with its id is read again from central_conf */
+    public function test_old_row_with_an_aa_with_id_reads_the_aa_again(): void
+    {
+        $row  = 'O:12:"AA_Task_Sync":2:{s:11:"sync_action";s:3:"cmd";s:10:"actionapps";' . serialize(self::aa('secret')) . '}';
+        $task = unserialize($row);
+
+        $this->assertInstanceOf(AA_Task_Sync::class, $task);
+        $this->assertSame(12, $task->aa_id);
+        $this->assertNull($task->actionapps);
+        $this->assertStringNotContainsString('secret', serialize($task), 'queued again, it drops the login');
     }
 
     public function test_task_sync_sends_its_one_action_to_the_remote(): void
@@ -450,15 +480,54 @@ final class CentralSyncPrimitivesTest extends TestCase
         $this->assertSame('3', (new AA_Task_Sync('cmd', $aa))->toexecutelater());
     }
 
-    public function test_task_import_module_chunk_round_trips_through_the_queue(): void
+    public function test_task_of_an_aa_without_central_conf_id_is_not_queued(): void
+    {
+        $task = new AA_Task_Sync('cmd', new \AA_Actionapps(new \ItemContent()));
+
+        $this->expectException(\LogicException::class);   // it would run as "no central_conf row"
+        serialize($task);
+    }
+
+    public function test_tasks_for_one_aa_read_its_central_conf_row_once(): void
+    {
+        $GLOBALS['spareDBs'] = [new RecordingDb()];
+
+        (new AA_Task_Sync('cmd', 9903))->toexecutelater();
+        (new AA_Task_Sync('cmd', 9903))->toexecutelater();
+
+        $this->assertCount(1, RecordingDb::$log, 'cached for the request - the id is unique to this test');
+    }
+
+    public function test_task_manager_log_keeps_the_old_task_names(): void
+    {
+        $chunk = new AA_Definition_Module_Chunk(self::MOD, 'view', []);
+
+        $this->assertSame('AA_Task_Sync', \AA_Log::selector(new AA_Task_Sync('cmd', 12))->cls);
+        $this->assertSame('AA_Task_Import_Module_Chunk', \AA_Log::selector(new AA_Task_Import_Module_Chunk($chunk, 12))->cls);
+    }
+
+    public function test_queued_import_task_without_chunk_logs_an_error(): void
+    {
+        $task = unserialize('O:27:"AA_Task_Import_Module_Chunk":0:{}');
+        $task->actionapps = self::recordingAa();
+
+        $this->assertStringStartsWith('Err: ', $task->toexecutelater());
+        $this->assertSame([], $task->actionapps->sent, 'nothing sent');
+    }
+
+    public function test_task_import_module_chunk_queues_the_id_of_the_aa_not_its_login(): void
     {
         $chunk = new AA_Definition_Module_Chunk(self::MOD, 'view', [12 => ['id' => 12, 'slice_id' => self::MOD, 'name' => 'List']]);
-        $task  = new AA_Task_Import_Module_Chunk($chunk, self::aa());
+        $task  = new AA_Task_Import_Module_Chunk($chunk, self::aa('secret'));
 
-        $copy = self::queued($task, 'AA_Task_Import_Module_Chunk');
+        $row  = self::queuedRow($task, 'AA_Task_Import_Module_Chunk');
+        $copy = unserialize($row);
 
+        $this->assertStringNotContainsString('secret', $row);
+        $this->assertStringNotContainsString('Actionapps', $row, 'no AA object in the queue');
         $this->assertInstanceOf(AA_Task_Import_Module_Chunk::class, $copy);
-        $this->assertEquals($task, $copy);
+        $this->assertSame(12, $copy->aa_id);
+        $this->assertNull($copy->actionapps);
         $this->assertEquals($chunk, self::prop($copy, 'module_definition_chunk'));
         $this->assertSame(['view' => [12 => ['id' => 12, 'slice_id' => self::MOD, 'name' => 'List']]], self::prop(self::prop($copy, 'module_definition_chunk'), 'data'));
     }

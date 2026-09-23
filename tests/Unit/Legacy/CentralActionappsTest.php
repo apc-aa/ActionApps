@@ -461,8 +461,8 @@ final class CentralActionappsTest extends TestCase
         $aa = self::aa(['ORG_NAME' => 'Org', 'AA_ADMIN_USER' => 'central', 'AA_ADMIN_PWD' => 'secret']);
         self::setPrivate($aa, '_remote_session_id', 'sess1');
 
-        // pinned; phase 4 may change - AA_Task_Sync / AA_Task_Import_Module_Chunk put this object
-        // (password or JWT included) into the toexecute table
+        // pinned; phase 4 may change - the serialized AA holds the password or JWT; the Central tasks
+        // queue only its central_conf id since C3.2, only rows queued before hold this object
         $this->assertStringContainsString('secret', serialize($aa));
         $this->assertStringContainsString('sess1', serialize($aa));
     }

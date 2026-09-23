@@ -1,8 +1,8 @@
 <?php
 
 /**
- * Central's classes which travel between AAs (module definitions, sync actions) and the
- * tasks Central queues in toexecute. One AA installation is AA\Central\Actionapps.
+ * Central's classes which travel between AAs (module definitions, sync actions). One AA
+ * installation is AA\Central\Actionapps, the tasks Central queues in toexecute are AA\Central\Task\*.
  *
  * Should be included to other scripts (as /admin/index.php)
  *
@@ -31,7 +31,8 @@ https://www.apc.org/
 
 use AA\Central\Actionapps;
 use AA\Central\ResponderPolicy;
-use AA\Later\LaterInterface;
+use AA\Central\Task\ImportModuleChunk;
+use AA\Central\Task\Sync;
 use AA\Later\Toexecute;
 
 // AA_Actionapps moved to AA\Central\Actionapps (src/Central/Actionapps.php). The old name stays
@@ -39,10 +40,20 @@ use AA\Later\Toexecute;
 // which the queue runner (misc/toexecute.php) unserializes without requiring this file. The class
 // below is never declared - it only puts the old name into the composer classmap, so that
 // autoloading AA_Actionapps includes this file and so registers the alias.
+// The same for the Central tasks, now in AA\Central\Task - rows queued before hold AA_Task_Sync /
+// AA_Task_Import_Module_Chunk (with the AA embedded; the tasks take both shapes).
 class_alias(Actionapps::class, 'AA_Actionapps');
+class_alias(Sync::class, 'AA_Task_Sync');
+class_alias(ImportModuleChunk::class, 'AA_Task_Import_Module_Chunk');
 if (false) {   // @phpstan-ignore if.alwaysFalse (never runs - for the classmap only)
     /** @deprecated use AA\Central\Actionapps */
     class AA_Actionapps extends Actionapps {}
+
+    /** @deprecated use AA\Central\Task\Sync */
+    class AA_Task_Sync extends Sync {}
+
+    /** @deprecated use AA\Central\Task\ImportModuleChunk */
+    class AA_Task_Import_Module_Chunk extends ImportModuleChunk {}
 }
 
 
@@ -115,13 +126,13 @@ class AA_Definition_Module
         quicker. Also, there was some problem when there was different encoding
         in the modules.
     */
-    public function planModuleImport($aa, $replaces = null): int
+    public function planModuleImport(Actionapps|int $aa, $replaces = null): int
     {
         $chunks    = $this->_getChunks($replaces);
         $toexecute = new Toexecute();
         foreach ($chunks as $chunk) {
-            $import_task = new AA_Task_Import_Module_Chunk($chunk, $aa);
-            $toexecute->userQueue($import_task, [], 'AA_Task_Import_Module_Chunk');
+            // the queue row keeps the id of the AA, not its login; the selector keeps its old name
+            $toexecute->userQueue(new ImportModuleChunk($chunk, $aa), [], 'AA_Task_Import_Module_Chunk');
         }
         return count($chunks);
     }
@@ -650,62 +661,5 @@ class AA_Sync_Action
                 : _m('%1 %2 deleted from slice %3', [$table, $row, $module_id]);
         }
         return _m("Unknown action (%1) for field %2 in slice %3", [$this->type, $row, $module_id]);
-    }
-}
-
-
-/** Stores the synchronization action which should be performed on remote AA
- *  Objects are stored into AA\Later\Toexecute queue for running from Task Manager
- */
-class AA_Task_Sync implements LaterInterface
-{
-    public function __construct(
-        /** AA_Sync_Action object - Action to do */
-        public $sync_action,
-        /** Actionapps object  - In which AA we have to do the action */
-        public Actionapps $actionapps,
-    ) {}
-
-    /**
-     * @param array $params - numeric array of additional parameters for the execution passed in time of call
-     * @return string - message about execution to be logged
-     */
-    public function toexecutelater($params = []): string
-    {
-        // synchronize accepts array of sync_actions, so it is possible
-        // to do more action by one call
-        $ret = $this->actionapps->synchronize([$this->sync_action]);
-        return implode("\n", array_filter((array) $ret, 'is_scalar'));  // one report line per action
-    }
-}
-
-/** Stores the synchronization action which should be performed on remote AA
- *  Objects are stored into AA\Later\Toexecute queue for running from Task Manager
- */
-class AA_Task_Import_Module_Chunk implements LaterInterface
-{
-    /** @var AA_Definition_Module_Chunk $module_definition_chunk -  object or similar for import */
-    protected AA_Definition_Module_Chunk $module_definition_chunk;
-
-    /** @var Actionapps $actionapps object in which AA we have to do the action */
-    protected $actionapps;
-
-    public function __construct(AA_Definition_Module_Chunk $module_definition_chunk, Actionapps $actionapps)
-    {
-        $this->module_definition_chunk = $module_definition_chunk;
-        $this->actionapps              = $actionapps;
-    }
-
-    /**
-     * @param array $params - numeric array of additional parameters for the execution passed in time of call
-     * @return string - message about execution to be logged
-     * @see \AA\Later\LaterInterface
-     */
-    public function toexecutelater($params = []): string
-    {
-        // the remote answers with the report lines (or an error string); the return type is string and
-        // a TypeError here would leave the task in the queue and import the chunk again next run
-        $ret = $this->actionapps->importModuleChunk($this->module_definition_chunk);
-        return implode("\n", array_filter((array) $ret, 'is_scalar'));
     }
 }

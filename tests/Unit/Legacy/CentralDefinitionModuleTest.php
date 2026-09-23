@@ -380,7 +380,7 @@ final class CentralDefinitionModuleTest extends TestCase
     private static function plannedChunks(AA_Definition_Module $def): int
     {
         $GLOBALS['spareDBs'] = [new RecordingDb()];
-        $count               = $def->planModuleImport(new \AA_Actionapps(new \ItemContent()));
+        $count               = $def->planModuleImport(new \AA_Actionapps(new \ItemContent(['id' => [['value' => '12']]])));   // a queued task needs the central_conf id
         self::assertCount($count, RecordingDb::inserts('toexecute'));
         return $count;
     }

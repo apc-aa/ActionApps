@@ -177,7 +177,7 @@ final class CentralCopySliceTest extends TestCase
         RecordingDb::reset();
         $GLOBALS['spareDBs'] = [new RecordingDb()];
         $def = self::template();
-        $aa  = new \AA_Actionapps(new \ItemContent());
+        $aa  = new \AA_Actionapps(new \ItemContent(['id' => [['value' => '12']]]));   // a queued task needs the central_conf id
 
         $this->assertSame(2, $def->planModuleImport($aa, [self::TEMPLATE_ID => self::FIRST_ID]));
         $this->assertSame(2, $def->planModuleImport($aa, [self::TEMPLATE_ID => self::SECOND_ID]));

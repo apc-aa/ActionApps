@@ -66,9 +66,7 @@ class Actionapps
      *  it was serialized with. */
     public function __unserialize(array $data): void
     {
-        foreach ($data as $key => $value) {
-            $pos  = strrpos((string) $key, "\0");
-            $name = ($pos === false) ? (string) $key : substr((string) $key, $pos + 1);
+        foreach (SerializedProps::bare($data) as $name => $value) {
             // a subclass's own private property can't be written from here (Error) - no such subclass is serialized
             if (property_exists($this, $name)) {
                 $this->$name = $value;
@@ -90,6 +88,26 @@ class Actionapps
             $aas[$aa_id] = new Actionapps(new ItemContent($aa_ic[$aa_id]));
         }
         return $aas[$aa_id];
+    }
+
+    /** The AA of the central_conf row (whatever its bin), or null when there is no such row - unlike
+     *  getActionapps() it never makes an AA of nothing. Cached for the request, so the tasks for one AA
+     *  in one queue run share the AA and its remote session. */
+    public static function find(int $aa_id): ?Actionapps
+    {
+        static $aas = [];
+        if (!array_key_exists($aa_id, $aas)) {
+            $aa_ic       = self::loadContent(new zids((string) $aa_id, 's'));
+            $aas[$aa_id] = isset($aa_ic[$aa_id]) ? new Actionapps(new ItemContent($aa_ic[$aa_id])) : null;
+        }
+        return $aas[$aa_id];
+    }
+
+    /** central_conf.id of this AA; null for an AA not loaded from central_conf */
+    public function getId(): ?int
+    {
+        $id = isset($this->local_data) ? $this->getValue('id') : null;   // unset in an AA unserialized from nothing
+        return (is_numeric($id) && ((int) $id > 0)) ? (int) $id : null;
     }
 
     /** url of remote AAs - like "https://example.org/apc-aa/"  */
@@ -375,7 +393,9 @@ class Actionapps
         // it is unordered, so we have to sort it:
         for ($i = 0, $ino = $zids->count(); $i < $ino; $i++) {
             $id = $zids->id($i);
-            $ret[(string) $id] = $content[$id];
+            if (isset($content[$id])) {   // a missing row stays missing
+                $ret[(string) $id] = $content[$id];
+            }
         }
         return $ret;
     }

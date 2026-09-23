@@ -20,6 +20,7 @@ https://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+use AA\Central\Task\Sync;
 use AA\Later\Toexecute;
 
 require_once __DIR__ . "/include/init_central.php";
@@ -93,8 +94,9 @@ if (!empty($_POST['synchronize'])) {
                     }
                     // plan the synchronization action to for execution via Task Manager;
                     // the remote AA gets the serialized string, as it always did
-                    $sync_task = new AA_Task_Sync(serialize($sync_action), $aas[$dest_aa]);
-                    $toexecute->userQueue($sync_task, [], 'AA_Task_Sync');
+                    // the queue row keeps the central_conf id of the AA, not its login
+                    $sync_task = new Sync(serialize($sync_action), $aas[$dest_aa]);
+                    $toexecute->userQueue($sync_task, [], 'AA_Task_Sync');   // the selector keeps its old name
                     ++$no_sync_tasks;
                 }
             }
