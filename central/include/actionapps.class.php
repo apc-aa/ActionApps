@@ -237,14 +237,37 @@ class AA_Actionapps
     /** This command calls optimize method
      *  return the report on the optimize
      */
-    public function doOptimize($optimize_class, $optimize_method)
+    public function doOptimize($optimize_class, $optimize_method): string
     {
-        $response = $this->getResponse(new AA_Request('Do_Optimize', ['class' => $optimize_class, 'method' => $optimize_method]));
-        if (!$response->isError()) {
-            return $response->getResponse();
+        return self::responseText($this->getResponse(new AA_Request('Do_Optimize', ['class' => $optimize_class, 'method' => $optimize_method])));
+    }
+
+    /** Runs all Optimize classes of the type ('sql_update') on the remote AA - the remote picks
+     *  the classes of its own version (AA\Optimize\Chain)
+     *  @param string $method 'test' | 'repair'
+     *  @return string the remote report (HTML, 'OK ' or 'Err ' first) or the error
+     */
+    public function doOptimizeType(string $type, string $method): string
+    {
+        $response = $this->getResponse(new AA_Request('Do_Optimize_Type', ['type' => $type, 'method' => $method]));
+        $text     = self::responseText($response);
+        if ($response->getError() === 3) {   // AA_Request::ask(): timed out or unreadable - the remote run goes on
+            $text .= ' - ' . _m('the update may still be running on the remote AA - wait, then run Test before retrying');
         }
-        // the remote decides the type of the detail - concatenating an object would throw
+        return $text;
+    }
+
+    /** The answer of a remote command as text for a report: the response, or the error code and detail */
+    public static function responseText(AA_Response $response): string
+    {
         $detail = $response->getResponse();
+        if (!$response->isError()) {
+            // the remote decides the type - concatenating an object would throw
+            return is_scalar($detail) ? (string) $detail : _m('Unexpected response from remote AA');
+        }
+        if ($response->getError() === ResponderPolicy::ERR_UNKNOWN_COMMAND) {
+            return _m('This AA does not support this command (update it first)');
+        }
         return $response->getError() . (is_scalar($detail) ? ' ' . $detail : '');
     }
 

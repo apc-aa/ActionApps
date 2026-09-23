@@ -120,7 +120,7 @@ Feeding/import back-ends; each declares `name()` + `description()` shown in the 
 | Manageraction/Central_Linkcheck.php | Check links in central | Central_Linkcheck | S |
 | Manageraction/Central_MoveItem.php | Move items to another slice | Central_MoveItem | S |
 | Manageraction/Central_Optimize.php | Run optimizations | Central_Optimize | S |
-| Manageraction/Central_Sqlupdate.php | SQL update handler | Central_Sqlupdate | S |
+| Manageraction/Central_OptimizeType.php | Run all optimizers of a type (sql_update) on remote AAs | Central_OptimizeType | S |
 | Manageraction/Central_Tab.php | Central tab action | Central_Tab | S |
 | Manageraction/Item_DeleteTrash.php | Delete item to trash | Item_DeleteTrash | S |
 | Manageraction/Item_Duplicate.php | Duplicate item | Item_Duplicate | S |
@@ -199,6 +199,7 @@ Feeding/import back-ends; each declares `name()` + `description()` shown in the 
 | Optimize/AddUrlPreviewFieldTemplate.php | Add URL preview field template | AddUrlPreviewFieldTemplate | S |
 | Optimize/BackupTables.php | Backup database tables | BackupTables | S |
 | Optimize/CategorySort2groupBy.php | Convert category sort to group by | CategorySort2groupBy | S |
+| Optimize/Chain.php | Runs all optimizers of a type (sql_update) in priority order - service/sql_update.php and Central's Do_Optimize_Type | Chain::optimizers(), run(), tryLock() | S |
 | Optimize/ChangeF_h2F_1.php | Change field mapping | ChangeF_h2F_1 | M |
 | Optimize/ChangeF_t2F_1.php | Change field type to 1 | ChangeF_t2F_1 | S |
 | Optimize/ChangeF_t2F__.php | Change field type mapping | ChangeF_t2F__ | S |

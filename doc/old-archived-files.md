@@ -161,3 +161,7 @@ inputs and can be deleted on a server (see INSTALL); the built files stay in
 /central/include/**config.php** - example list of Central installs (`$ACTIONAPPS`) with sample superuser logins ('superuser1' / 'superpassword1' ...)
   Central reads its installs from the `central_conf` table since 2007, when synchronize.php and synchronize2.php switched to AA_Actionapps::getArray(); nothing included the file after that (every config.php include under central/ goes to the main include/config.php). It only shipped a credentials-shaped file in the web tree of every install.
   _No longer maintained. Removed 2026-09-23 - honzam_
+
+/src/Manageraction/**Central_Sqlupdate.php** - Central → Manager actions "Update DB (sql_update) - dotest/update"
+  Fetched `<AA>/service/sql_update.php?dbpw5=<first 5 characters of the DB password>&silent=1&fire=1&dotest|update=1`, so it never worked (the script needs the hand-set ACCESS_CODE, nobody read `dbpw5`) and it left a piece of the DB password in the target's access log. Replaced by src/Manageraction/Central_OptimizeType.php (same action ids Sqlupdate_Test / Sqlupdate_Update), which runs the target's own sql_update chain through the responder command Do_Optimize_Type with the stored Central login; the chain itself moved from service/sql_update.php to src/Optimize/Chain.php, which both use.
+  _No longer maintained. Removed 2026-09-23 - honzam_

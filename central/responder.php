@@ -235,8 +235,51 @@ class AA_Responder_Do_Optimize extends AA_Responder
         if (!$optimizer->hasAction($this->method)) {
             return new AA_Response("Unsupported method '$this->method' for $this->class", 5);
         }
-        $optimizer->{$this->method}();
+        // a repair (UpdateDbStructure, ...) must not run next to a whole sql_update
+        $release = null;
+        if (($this->method === 'repair') && !($release = \AA\Optimize\Chain::tryLock('sql_update', $holder))) {
+            return new AA_Response(\AA\Optimize\Chain::runningMessage('sql_update', $holder), ResponderPolicy::ERR_OPTIMIZE_TYPE_RUNNING);
+        }
+        try {
+            $optimizer->{$this->method}();
+        } finally {
+            $release && $release();
+        }
         return new AA_Response($optimizer->report());
+    }
+}
+
+/** Run all Optimize classes of a type on this AA, as service/sql_update.php does - used by Central's
+ *  "Update DB (sql_update)" actions. This AA picks the classes of its own version (AA\Optimize\Chain).
+ *  $param['type']   - 'sql_update'
+ *  $param['method'] - 'test' (sql_update.php "Test") or 'repair' ("Install / Update")
+ */
+class AA_Responder_Do_Optimize_Type extends AA_Responder
+{
+    protected string $type;
+    protected string $method;
+
+    public function __construct($param = null)
+    {
+        $this->type   = (string) ($param['type']   ?? '');
+        $this->method = (string) ($param['method'] ?? '');
+    }
+
+    public function run(): AA_Response
+    {
+        if ($refusal = ResponderPolicy::optimizeTypeRefusal($this->type, $this->method)) {
+            return new AA_Response(...$refusal);
+        }
+        if (!($release = \AA\Optimize\Chain::tryLock($this->type, $holder))) {
+            return new AA_Response(\AA\Optimize\Chain::runningMessage($this->type, $holder), ResponderPolicy::ERR_OPTIMIZE_TYPE_RUNNING);
+        }
+        try {
+            MoreTimeLimit(360);   // a whole update (table rebuilds) takes minutes
+            [, $report] = \AA\Optimize\Chain::run($this->method, \AA\Optimize\Chain::optimizers($this->type));
+        } finally {
+            $release();
+        }
+        return new AA_Response($report);
     }
 }
 
@@ -677,7 +720,7 @@ if (!is_object($request)) {
 
 $responder = AA_Responder::factoryByName($request->getCommand(), $request->getParameters());
 if (empty($responder)) {
-    AA_Response::error(_m("Bad request sent for responder.php - %1", [$request->getCommand()]), 103);  // error code > 0
+    AA_Response::error(_m("Bad request sent for responder.php - %1", [$request->getCommand()]), ResponderPolicy::ERR_UNKNOWN_COMMAND);
     exit;
 }
 

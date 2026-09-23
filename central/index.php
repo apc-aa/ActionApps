@@ -29,13 +29,15 @@
 // @todo only_action option which prints on the output the result of the action
 // Then it could be used as AJAX call for this action!
 
+use AA\Central\ManagerActionPolicy;
+use AA\Central\ResponderPolicy;
 use AA\IO\DB\DB_AA;
 use AA\Manager;
 use AA\Manageraction\Central_DeleteTrash;
 use AA\Manageraction\Central_Linkcheck;
 use AA\Manageraction\Central_MoveItem;
 use AA\Manageraction\Central_Optimize;
-use AA\Manageraction\Central_Sqlupdate;
+use AA\Manageraction\Central_OptimizeType;
 use AA\Manageraction\Central_Tab;
 use AA\Manageraction\Manageractions;
 
@@ -68,7 +70,10 @@ if ( !IsSuperadmin() ) {
 
 // Handle JWT authentication request for a remote AA
 $auth_aa_id = InputVars::stringPOST('authenticate_aa');
-if ($auth_aa_id) {
+if ($auth_aa_id && ResponderPolicy::isForeignBrowserRequest($_SERVER)) {
+    // a forged form would store the attacker's token for the AA
+    $err = _m('The authentication was not performed - start it from the ActionApps Central page');
+} elseif ($auth_aa_id) {
     $auth_username = InputVars::stringPOST('auth_username');
     $auth_password = InputVars::stringPOST('auth_password');
     if ($auth_username && $auth_password) {
@@ -93,8 +98,8 @@ $actions   = new Manageractions;
 $actions->addAction(new Central_MoveItem('Activate', 1));
 $actions->addAction(new Central_MoveItem('Folder2',  2));
 $actions->addAction(new Central_MoveItem('Folder3',  3));
-$actions->addAction(new Central_Sqlupdate('Sqlupdate_Test',   'dotest'));
-$actions->addAction(new Central_Sqlupdate('Sqlupdate_Update', 'update'));
+$actions->addAction(new Central_OptimizeType('Sqlupdate_Test',   'sql_update', 'test'));
+$actions->addAction(new Central_OptimizeType('Sqlupdate_Update', 'sql_update', 'repair'));
 $actions->addAction(new Central_Linkcheck('AA\Util\Linkcheck'));
 $actions->addAction(new Central_Optimize('Update_Db_Structure_Test', 'AA\Optimize\UpdateDbStructure', 'test'));
 $actions->addAction(new Central_Optimize('Update_Db_Structure_Repair', 'AA\Optimize\UpdateDbStructure', 'repair'));
@@ -111,21 +116,6 @@ $switches->addAction(new Central_Tab('Tab3', 'trash'));
 $switches->addAction(new Central_DeleteTrash('DeleteTrash',false));
 
 $managed = AA::Metabase()->getManagerConf('central_conf', $actions, $switches);
-//$manager_settings['itemview']['format']['compact_top'] = '
-//                                          <table>';
-//$manager_settings['itemview']['format']['odd_row_format'] = '
-//                                    <tr>
-//                                      <td width="30"><input type="checkbox" name="chb[_#ID______]" value=""></td>
-//                                      <td><a href="'.StateUrl('tabledit.php?cmd[centraledit][edit][_#ID______]=1').'"> {ifset:{_#ORG_NAME}:_#1:--} </a></td>
-//                                      <td>_#AA_ID___</td>
-//                                      <td>_#DB_SERVE - _#DB_NAME_</td>
-//                                      <td>_#AA_HTTP__#AA_BASE_</td>
-//                                    </tr>
-//                                    <tr>
-//                                      <td>&nbsp;</td>
-//                                      <td colspan="4"><a href="{sessurl:?akce=Sqlupdate_Test&chb[_#ID______]=1}">'._m('sql_upadte TEST') .'</a> &nbsp; &nbsp; <a href="{sessurl:?akce=Sqlupdate_Update&chb[_#ID______]=1}">'._m('sql_upadte NOW!') .'</a></td>
-//                                    </tr>
-//                                   ';
 // $manager_settings['itemview']['query_funct'] = 'Central_QueryZids';
 $managed->setTitle(_m('ActionApps Central'));
 //         'get_content_funct'    => 'Central_GetAaContent'
@@ -165,6 +155,20 @@ $managed->setPriorityFields(['ORG_NAME', 'AA_HTTP_DOMAIN', 'AA_BASE_DIR']);
 // status_code: 1 = active, 2 = hold, 3 = trash — render as a select, default 1 on Add.
 $managed->setWidgetSetting('status_code', ['enum' => ['1' => '1', '2' => '2', '3' => '3'], 'default' => '1']);
 $manager = new Manager('central', $managed);
+
+// Manager takes akce from GET too; here actions reach remote AAs with the stored superadmin login.
+// Manager reads $_REQUEST - pinned to POST/GET, so a cookie named akce cannot pass the check below.
+$akce_id           = (string) ($_POST['akce'] ?? $_GET['akce'] ?? '');
+$_REQUEST['akce']  = $akce_id;
+if ($akce_id !== '' && ($akce = $actions->getAction($akce_id)) && !ManagerActionPolicy::mayPerform($_SERVER, (bool) $akce->getButton('', '', ''))) {
+    unset($_GET['akce'], $_POST['akce'], $_REQUEST['akce']);
+    $err = _m('The action was not performed - start it from the ActionApps Central page');
+}
+// the Empty trash switch deletes by a GET link of this page - like a row button
+if (isset($_GET['DeleteTrash']) && !ManagerActionPolicy::mayPerform($_SERVER, true)) {
+    unset($_GET['DeleteTrash'], $_REQUEST['DeleteTrash']);
+    $err = _m('The action was not performed - start it from the ActionApps Central page');
+}
 $manager->performActions();
 
 // need for menu

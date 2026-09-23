@@ -23,6 +23,7 @@ final class ResponderPolicyTest extends TestCase
             'Get_Module_Defs'        => ['Get_Module_Defs', true, false],
             'Do_Synchronize'         => ['Do_Synchronize', true, false],
             'Do_Optimize'            => ['Do_Optimize', true, false],
+            'Do_Optimize_Type'       => ['Do_Optimize_Type', true, false],
             'Do_Import_Module_Chunk' => ['Do_Import_Module_Chunk', true, false],
             'Get_Widget'             => ['Get_Widget', false, false],
             'Tags'                   => ['Tags', false, false],
@@ -47,6 +48,47 @@ final class ResponderPolicyTest extends TestCase
     public function test_isPostOnlyCommand_matches_table(string $name, bool $remote, bool $post_only): void
     {
         $this->assertSame($post_only, ResponderPolicy::isPostOnlyCommand($name));
+    }
+
+    /** [type, method, expected error code or null]
+     *  @return array<string, array{string, string, ?int}> */
+    public static function optimizeTypeRequests(): array
+    {
+        return [
+            'sql_update test'        => ['sql_update', 'test', null],
+            'sql_update repair'      => ['sql_update', 'repair', null],
+            'unknown type'           => ['foo', 'test', 9],
+            'empty type'             => ['', 'test', 9],
+            'type other case'        => ['SQL_UPDATE', 'test', 9],
+            'check type, no chain'   => ['check_basic', 'test', 9],
+            'site specific fixes'    => ['private_fix', 'repair', 9],
+            'optional features'      => ['opt_feature', 'repair', 9],
+            'method revert'          => ['sql_update', 'revert', 10],
+            'method repair4ids'      => ['sql_update', 'repair4ids', 10],
+            'method sql_update name' => ['sql_update', 'update', 10],
+            'empty method'           => ['sql_update', '', 10],
+            'both unknown, type 1st' => ['foo', 'bar', 9],
+        ];
+    }
+
+    #[DataProvider('optimizeTypeRequests')]
+    public function test_optimizeTypeRefusal_allows_only_known_type_and_method(string $type, string $method, ?int $code): void
+    {
+        $refusal = ResponderPolicy::optimizeTypeRefusal($type, $method);
+        if ($code === null) {
+            $this->assertNull($refusal);
+            return;
+        }
+        $this->assertNotNull($refusal);
+        [$message, $error] = $refusal;
+        $this->assertSame($code, $error);
+        $this->assertNotSame('', $message);
+    }
+
+    public function test_unknown_command_code_is_what_every_older_aa_sends(): void
+    {
+        // Central tells "update it first" by this code, also from AAs that predate the constant
+        $this->assertSame(103, ResponderPolicy::ERR_UNKNOWN_COMMAND);
     }
 
     /** @return array<string, array{array<string, string>, bool}> */
