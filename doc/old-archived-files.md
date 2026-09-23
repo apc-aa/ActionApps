@@ -157,3 +157,7 @@ inputs and can be deleted on a server (see INSTALL); the built files stay in
 /tests/Unit/Legacy/fixtures/**central_shims.php** - test stand-in for FrmChBoxEasy() from include/formutil.php, used by CentralDifferenceTest and CentralSynchronizeTest
   tests/Unit/fixtures/util_shims.php now loads the real include/util.php, which pulls in formutil.php, so the stand-in could never be declared any more. The shims clashed with the real files: whichever test loaded first made the other die with "Cannot redeclare function".
   _No longer maintained. Removed 2026-09-23 - honzam_
+
+/central/include/**config.php** - example list of Central installs (`$ACTIONAPPS`) with sample superuser logins ('superuser1' / 'superpassword1' ...)
+  Central reads its installs from the `central_conf` table since 2007, when synchronize.php and synchronize2.php switched to AA_Actionapps::getArray(); nothing included the file after that (every config.php include under central/ goes to the main include/config.php). It only shipped a credentials-shaped file in the web tree of every install.
+  _No longer maintained. Removed 2026-09-23 - honzam_
