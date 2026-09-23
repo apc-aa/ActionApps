@@ -321,7 +321,7 @@ class AA_Actionapps
     public static function getArray(): array
     {
         $ret    = [];
-        $set = new AA_Set(null, null, ['ORG_NAME' => 'a'], AA_BIN_APPROVED);
+        $set = new AA_Set(null, null, [['ORG_NAME' => 'a']], AA_BIN_APPROVED);  // list of sort specs - a bare map sorts by field "a"
         $zids   = Central_QueryZids($set);
         $aa_ic  = Central_GetAaContent($zids);
 

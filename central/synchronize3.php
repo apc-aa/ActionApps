@@ -60,7 +60,7 @@ $aas = AA_Actionapps::getArray();
 $slices4template = [];
 $slices2compare  = [];
 
-if ($_POST['compare']) {
+if (!empty($_POST['compare'])) {
 
     foreach ($_POST['sync_slices'] as $slice_tmp => $slice_cmp) {
         if ($slice_cmp) {
@@ -80,13 +80,13 @@ if ($_POST['compare']) {
     }
 }
 
-if ($_POST['synchronize']) {
+if (!empty($_POST['synchronize'])) {
     $toexecute     = new Toexecute();
     $no_sync_tasks = 0;
 
     if (is_array($_POST['destination_aa'])) {
         foreach ($_POST['destination_aa'] as $dest_aa) {
-            if (is_array($_POST['sync']) && isset($aas[$dest_aa])) {
+            if (is_array($_POST['sync'] ?? null) && isset($aas[$dest_aa])) {
                 foreach ($_POST['sync'] as $form_value) {
                     if (!($sync_action = AA_Sync_Action::fromFormValue((string) $form_value))) {
                         continue;
@@ -173,18 +173,18 @@ if (isset($differences)) {
 FrmTabSeparator(_m('Synchronize'));
 FrmStaticText(_m('Template ActionApps'), $aas[$_POST['template_aa']]->getName());
 FrmStaticText(_m('Compared and Updated ActionApps'), $aas[$_POST['comparation_aa']]->getName());
-$aa2update = $_POST['destination_aa'] ?? $_POST['comparation_aa'];
-FrmHidden("destination_aa[]", $aa2update);
+// posted back to this page, where Synchronize reads a list of AA ids - after a Synchronize it also arrives as one
+foreach ((array) ($_POST['destination_aa'] ?? $_POST['comparation_aa']) as $aa2update) {
+    if (is_string($aa2update)) {
+        FrmHidden('destination_aa[]', $aa2update);
+    }
+}
 
-//FrmInputMultiSelect('destination_aa[]', _m('AA to update'), $aas_array, $aa2update, 20, false, true, _m('ActionApps installation to update'));
-//FrmInputMultiChBox('sync_slices[]', _m('Slices to synchronize'), $template_slices, $_POST['sync_slices'], false, '', '', 3);
-foreach ($_POST['sync_slices'] as $k => $v) {
-    if ($v && is_long_id((string) $k)) {   // FrmHidden() escapes the value, not the name
+foreach ((array) ($_POST['sync_slices'] ?? []) as $k => $v) {
+    if ($v && is_string($v) && is_long_id((string) $k)) {   // FrmHidden() escapes the value, not the name
         FrmHidden("sync_slices[$k]", $v);
     }
 }
-//FrmInputMultiChBox('sync_slices[]', _m('Slices to synchronize'), $template_slices, $_POST['sync_slices'], false, '', '', 3);
-// prepared for multiple update
 FrmTabEnd($form_buttons);
 
 $apage->printFoot();

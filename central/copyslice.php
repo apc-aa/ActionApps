@@ -48,7 +48,7 @@ foreach ($aas as $k => $aa) {
 
 $form_buttons = ["submit"];
 FrmTabCaption('', $form_buttons);
-FrmInputSelect('template_aa', _m('Template ActionApps'), $aas_array, $_POST['template_aa'], true, _m('ActionApps installation used as template'));
+FrmInputSelect('template_aa', _m('Template ActionApps'), $aas_array, $_POST['template_aa'] ?? '', true, _m('ActionApps installation used as template'));
 FrmTabEnd($form_buttons);
 
 $apage->printFoot();

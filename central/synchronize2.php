@@ -71,7 +71,9 @@ FrmStaticText($aas[$_POST['template_aa']]->getName(), $aas[$_POST['comparation_a
 foreach ($tmplate_slices as $sid => $name) {
     // the remote AA answered with both; FrmInputSelect() escapes the options, not the name and label
     if (is_long_id((string) $sid)) {
-        FrmInputSelect('sync_slices[' . $sid . ']', safe($name), $cmp_slices, $_POST['sync_slices'], true);
+        // sync_slices[<template slice id>] = compared slice id
+        $picked = $_POST['sync_slices'][$sid] ?? '';
+        FrmInputSelect('sync_slices[' . $sid . ']', safe($name), $cmp_slices, is_string($picked) ? $picked : '', true);
     }
 }
 FrmTabEnd($form_buttons);

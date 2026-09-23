@@ -819,7 +819,7 @@ class AA_Set extends AA_Object
                             next($srt);
                         }
                         $tmp[key($srt)] = (strtolower(current($srt)) === "d" ? 'd' : 'a');
-                        if ($srt['limit']) {
+                        if (!empty($srt['limit'])) {
                             $tmp['limit'] = $srt['limit'];
                         }
                         $this->sort[] = new AA_Sortorder($tmp);
