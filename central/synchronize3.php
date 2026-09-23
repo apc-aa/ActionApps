@@ -20,6 +20,7 @@ https://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+use AA\Central\Actionapps;
 use AA\Central\Difference;
 use AA\Central\Task\Sync;
 use AA\Later\Toexecute;
@@ -54,11 +55,10 @@ pageOpen();
 
 if (!IsSuperadmin()) {
     AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php", _m("You don't have permissions to synchronize slices."), "admin");
-    exit;
 }
 
 // ActionApps to synchronize
-$aas = AA_Actionapps::getArray();
+$aas = Actionapps::getArray();
 $slices4template = [];
 $slices2compare  = [];
 
@@ -110,7 +110,7 @@ if (!empty($_POST['synchronize'])) {
 $apage = new AA_Adminpageutil('central', 'synchronize');
 $apage->setTitle(_m("Central - Synchronize ActionApps (3/3) - Synchronize Slices"));
 $apage->addRequire('aa-jslib@1');
-$apage->printHead($err, $Msg);
+$apage->printHead();
 
 // ActionApps to synchronize
 $aas_array = [];

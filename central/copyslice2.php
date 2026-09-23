@@ -20,6 +20,7 @@ https://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+use AA\Central\Actionapps;
 use AA\Util\InputVars;
 
 require_once __DIR__ . "/include/init_central.php";
@@ -30,18 +31,16 @@ pageOpen();
 
 if (!IsSuperadmin()) {
     AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php", _m("You don't have permissions to synchronize slices."), "admin");
-    exit;
 }
 
 MoreTimeLimit(); // set_time_limit to 5 minutes (at least)
 
 // ActionApps to synchronize
-$aas = AA_Actionapps::getArray();
+$aas = Actionapps::getArray();
 
 // both the copy and the form below need the template AA
 if (!isset($aas[$_POST['template_aa'] ?? ''])) {
     AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . 'copyslice.php', _m('Unknown template ActionApps'), 'admin');
-    exit;
 }
 
 // Checkboxes posted by the form below - read explicitly, the register_globals

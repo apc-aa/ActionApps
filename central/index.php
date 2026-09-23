@@ -29,6 +29,7 @@
 // @todo only_action option which prints on the output the result of the action
 // Then it could be used as AJAX call for this action!
 
+use AA\Central\Actionapps;
 use AA\Central\ManagerActionPolicy;
 use AA\Central\ResponderPolicy;
 use AA\IO\DB\DB_AA;
@@ -53,6 +54,7 @@ try {
     
     $Msg = InputVars::stringGETPOST('Msg');
 } catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
+$err = '';
 
 
 /**
@@ -65,7 +67,6 @@ function CountItemsInBins(): array
 
 if ( !IsSuperadmin() ) {
     MsgPage(_m("You do not have permission to manage ActionApps installations"));
-    exit;
 }
 
 // Handle JWT authentication request for a remote AA
@@ -77,16 +78,14 @@ if ($auth_aa_id && ResponderPolicy::isForeignBrowserRequest($_SERVER)) {
     $auth_username = InputVars::stringPOST('auth_username');
     $auth_password = InputVars::stringPOST('auth_password');
     if ($auth_username && $auth_password) {
-        $aa = AA_Actionapps::getActionapps($auth_aa_id);
-        if ($aa) {
-            $jwt = $aa->requestJwt($auth_username, $auth_password);
-            if ($jwt) {
-                AA_Actionapps::saveAuthToken($auth_aa_id, 'jwt:' . $jwt);
-                $Msg = _m("Successfully authenticated to %1", [$aa->getName()]);
-            } else {
-                $err = _m("Authentication failed for %1: %2",
-                    [$aa->getName(), $aa->getLastError()]);
-            }
+        $aa  = Actionapps::getActionapps($auth_aa_id);
+        $jwt = $aa->requestJwt($auth_username, $auth_password);
+        if ($jwt) {
+            Actionapps::saveAuthToken($auth_aa_id, 'jwt:' . $jwt);
+            $Msg = _m("Successfully authenticated to %1", [$aa->getName()]);
+        } else {
+            $err = _m("Authentication failed for %1: %2",
+                [$aa->getName(), $aa->getLastError()]);
         }
     }
 }

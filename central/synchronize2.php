@@ -19,6 +19,8 @@ https://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+use AA\Central\Actionapps;
+
 require_once __DIR__."/include/init_central.php";
 require_once __DIR__ . "/../include/formutil.php";
 
@@ -27,18 +29,17 @@ pageOpen();
 
 if (!IsSuperadmin()) {
   AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php", _m("You don't have permissions to synchronize slices."), "admin");
-  exit;
 }
 
 $apage = new AA_Adminpageutil('central', 'synchronize');
 $apage->setTitle(_m("Central - Synchronize ActionApps (2/3) - Slices to Compare"));
 $apage->addRequire('aa-jslib@1');
 $apage->setForm();
-$apage->printHead($err, $Msg);
+$apage->printHead();
 
 
 // ActionApps to synchronize
-$aas = AA_Actionapps::getArray();
+$aas = Actionapps::getArray();
 $aas_array = [];
 foreach ( $aas as $k => $aa ) {
     $aas_array[$k] = $aa->getName();

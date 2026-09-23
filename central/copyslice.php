@@ -20,6 +20,7 @@ https://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+use AA\Central\Actionapps;
 
 require_once __DIR__ . "/include/init_central.php";
 require_once __DIR__ . "/../include/formutil.php";
@@ -29,16 +30,15 @@ pageOpen();
 
 if (!IsSuperadmin()) {
     AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php", _m("You don't have permissions to synchronize slices."), "admin");
-    exit;
 }
 
-$aas = AA_Actionapps::getArray();
+$aas = Actionapps::getArray();
 
 
 $apage = new AA_Adminpageutil('central', 'copyslice');
 $apage->setTitle(_m("Central - Copy Slice (1/2) - Select Source ActionApps"));
 $apage->setForm(['action' => 'copyslice2.php']);
-$apage->printHead($err, $Msg);
+$apage->printHead();
 
 
 $aas_array = [];

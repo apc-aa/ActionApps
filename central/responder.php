@@ -57,7 +57,7 @@ class AA_Responder extends AA_Object
  */
 class AA_Responder_Get_Sessionid extends AA_Responder
 {
-    public function __construct($param = null) {}
+    public function __construct() {}
 
     /** every authenticated user can get his/her session_id */
     public function isPerm(): bool
@@ -78,7 +78,7 @@ class AA_Responder_Get_Sessionid extends AA_Responder
  */
 class AA_Responder_Get_Jwt extends AA_Responder
 {
-    public function __construct($param = null) {}
+    public function __construct() {}
 
     /** Only superadmins can get JWT tokens */
     // isPerm() inherited — returns IsSuperadmin()
@@ -101,7 +101,7 @@ class AA_Responder_Get_Jwt extends AA_Responder
  */
 class AA_Responder_Logout extends AA_Responder
 {
-    public function __construct($param = null) {}
+    public function __construct() {}
 
     /** every authenticated user can get his/her session_id */
     public function isPerm(): bool
@@ -123,7 +123,7 @@ class AA_Responder_Logout extends AA_Responder
 /** @return array of information about AA - org_name, domaun */
 class AA_Responder_Get_Aaname extends AA_Responder
 {
-    public function __construct($param = null) {}
+    public function __construct() {}
 
     public function run(): AA_Response
     {
@@ -392,7 +392,7 @@ class AA_Responder_Optimize4id extends AA_Responder
 
     public function run(): AA_Response
     {
-        /** @var \AA\Optimize\AbstractOptimize $optimizer */
+        /** @var ?\AA\Optimize\AbstractOptimize $optimizer */
         $optimizer = AA_Serializable::factory('AA\\Optimize\\' . $this->class);
         $ret = 'no repair4ids';
         if ($optimizer?->hasAction('repair4ids')) {

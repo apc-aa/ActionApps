@@ -31,7 +31,6 @@ pageOpen();
 
 if (!IsSuperadmin()) {
   AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php", _m("You don't have permissions to import sites from CSV."), "admin");
-  exit;
 }
 
 $err     = [];

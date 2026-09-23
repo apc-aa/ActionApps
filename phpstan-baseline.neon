@@ -1,6 +1,24 @@
 parameters:
 	ignoreErrors:
 		-
+			message: '#^Constant AA_HTTP_DOMAIN not found\.$#'
+			identifier: constant.notFound
+			count: 1
+			path: central/responder.php
+
+		-
+			message: '#^Constant AA_ID not found\.$#'
+			identifier: constant.notFound
+			count: 1
+			path: central/responder.php
+
+		-
+			message: '#^Constant ORG_NAME not found\.$#'
+			identifier: constant.notFound
+			count: 1
+			path: central/responder.php
+
+		-
 			message: '#^Call to an undefined method AA_Object\:\:nexttime\(\)\.$#'
 			identifier: method.notFound
 			count: 1
