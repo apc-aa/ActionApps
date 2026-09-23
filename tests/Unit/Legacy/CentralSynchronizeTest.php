@@ -12,6 +12,7 @@ use AA_Identifier;
 use AA_Sync_Action;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use Tests\Unit\Legacy\Fixtures\RecordingDb;
 
 // class declarations only - file level, since the data providers below build these objects
 require_once dirname(__DIR__, 3) . '/central/include/actionapps.class.php';
@@ -25,6 +26,8 @@ final class CentralSynchronizeTest extends TestCase
     public static function setUpBeforeClass(): void
     {
         require_once __DIR__ . '/../fixtures/util_shims.php';    // the real util.php, FrmChBoxEasy() included
+        require_once __DIR__ . '/fixtures/store_fixtures.php';   // RecordingDb
+        require_once __DIR__ . '/../../../include/varset.php';   // Cvarset of the Metabase do*()
     }
 
     /** AA::$metabase before a test replaced it; false = not replaced */
@@ -33,6 +36,7 @@ final class CentralSynchronizeTest extends TestCase
     protected function tearDown(): void
     {
         unset($_POST['sync']);
+        $GLOBALS['spareDBs'] = [];
         if ($this->saved_metabase !== false) {
             (new \ReflectionProperty(\AA::class, 'metabase'))->setValue(null, $this->saved_metabase);
             $this->saved_metabase = false;
@@ -271,5 +275,217 @@ final class CentralSynchronizeTest extends TestCase
         // guards the fixture above: without the identifier it still unserializes to AA_Sync_Action
         $value = self::invalidFormValues()['identifier missing'][0];
         $this->assertInstanceOf(AA_Sync_Action::class, unserialize(base64_decode($value), ['allowed_classes' => ResponderPolicy::syncAllowedClasses()]));
+    }
+
+    /** a constant id - `constant` is the one synchronized table whose packed key is not the module column */
+    private const CONSTANT_ID = '00112233445566778899aabbccddeeff';
+    /** a constant two levels deep: the ids of its parent and grandparent, concatenated */
+    private const ANCESTORS   = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb';
+
+    /** A `constant` row as AA_Definition_Module_Slice::loadForId() gives it; short_id is the installation's own */
+    private static function constantRow(int $short_id): array
+    {
+        return ['id' => self::CONSTANT_ID, 'group_id' => 'yes_no', 'name' => 'Yes', 'value' => '1', 'class' => '', 'pri' => 100,
+            'ancestors' => self::ANCESTORS, 'description' => '', 'short_id' => $short_id];
+    }
+
+    /** @return array<string, array{AA_Sync_Action, string}> action => the SQL it must send to the destination DB */
+    public static function destinationWrites(): array
+    {
+        $dest   = '0x' . self::DEST_ID;
+        $field  = new AA_Identifier(self::DEST_ID, 'field', 'headline........');
+        $slice  = new AA_Identifier(self::DEST_ID, 'slice', self::DEST_ID);
+        $const  = new AA_Identifier(self::DEST_ID, 'constant', self::CONSTANT_ID);
+        return [
+            'field UPDATE_ROW'    => [new AA_Sync_Action('UPDATE_ROW', $field, ['id' => 'headline........', 'slice_id' => self::TEMPLATE_ID, 'name' => 'Headline', 'input_pri' => 100]),
+                "UPDATE `field` SET `name`='Headline', `input_pri`='100' WHERE id='headline........' AND slice_id=$dest"],
+            'field UPDATE_VALUE'  => [new AA_Sync_Action('UPDATE_VALUE', new AA_Identifier(self::DEST_ID, 'field', 'headline........', 'name'), 'Headline'),
+                "UPDATE `field` SET `name`='Headline' WHERE id='headline........' AND slice_id=$dest"],
+            'field INSERT'        => [new AA_Sync_Action('INSERT', $field, ['id' => 'headline........', 'slice_id' => self::TEMPLATE_ID, 'name' => 'Headline', 'input_pri' => 100]),
+                "INSERT INTO `field` (`id`,`slice_id`,`name`,`input_pri`) VALUES ('headline........',$dest,'Headline',100)"],
+            'field DELETE'        => [new AA_Sync_Action('DELETE', $field),
+                "DELETE FROM `field` WHERE id='headline........' AND slice_id=$dest"],
+            'view UPDATE_ROW'     => [new AA_Sync_Action('UPDATE_ROW', new AA_Identifier(self::DEST_ID, 'view', '12'), ['id' => 12, 'slice_id' => self::TEMPLATE_ID, 'name' => 'List']),
+                "UPDATE `view` SET `slice_id`=$dest, `name`='List' WHERE id='12'"],
+            'slice UPDATE_ROW'    => [new AA_Sync_Action('UPDATE_ROW', $slice, ['id' => self::TEMPLATE_ID, 'name' => 'News']),
+                "UPDATE `slice` SET `name`='News' WHERE id=$dest"],
+            // as a Central (or a queued task) from before INSTALLATION_COLUMNS sends it
+            'slice UPDATE_ROW, old Central' => [new AA_Sync_Action('UPDATE_ROW', $slice, ['id' => self::TEMPLATE_ID, 'name' => 'News', 'owner' => self::TEMPLATE_OWNER,
+                'deleted' => 1, 'slice_url' => 'https://template.example.org/', 'reading_password' => '', 'created_by' => 'user1']),
+                "UPDATE `slice` SET `name`='News' WHERE id=$dest"],
+            'slice INSERT'        => [new AA_Sync_Action('INSERT', $slice, ['id' => self::TEMPLATE_ID, 'name' => 'News', 'deleted' => 1]),
+                "INSERT INTO `slice` (`id`,`name`,`deleted`) VALUES ($dest,'News',0)"],
+            'module INSERT'       => [new AA_Sync_Action('INSERT', new AA_Identifier(self::DEST_ID, 'module', self::DEST_ID), ['id' => self::TEMPLATE_ID, 'name' => 'News', 'deleted' => 1, 'type' => 'S']),
+                "INSERT INTO `module` (`id`,`name`,`deleted`,`type`) VALUES ($dest,'News',0,'S')"],
+            'slice DELETE'        => [new AA_Sync_Action('DELETE', $slice),
+                "DELETE FROM `slice` WHERE id=$dest"],
+            'constant UPDATE_ROW' => [new AA_Sync_Action('UPDATE_ROW', $const, self::constantRow(57)),
+                "UPDATE `constant` SET `group_id`='yes_no', `name`='Yes', `value`='1', `class`='', `pri`='100', `ancestors`=0x" . self::ANCESTORS . ", `description`='' WHERE id=0x" . self::CONSTANT_ID],
+            'constant INSERT'     => [new AA_Sync_Action('INSERT', $const, self::constantRow(57)),
+                "INSERT INTO `constant` (`id`,`group_id`,`name`,`value`,`class`,`pri`,`ancestors`,`description`) VALUES (0x" . self::CONSTANT_ID . ",'yes_no','Yes','1','',100,0x" . self::ANCESTORS . ",'')"],
+            'constant DELETE'     => [new AA_Sync_Action('DELETE', $const),
+                'DELETE FROM `constant` WHERE id=0x' . self::CONSTANT_ID],
+        ];
+    }
+
+    /** The keys and the module column used to reach the Metabase do*() packed, which pack them
+     *  again - every write hit '' instead of the destination slice (and INSERT stored orphans). */
+    #[DataProvider('destinationWrites')]
+    public function test_doAction_writes_the_destination_row(AA_Sync_Action $action, string $sql): void
+    {
+        RecordingDb::reset();
+        $GLOBALS['spareDBs'] = [new RecordingDb()];
+
+        $ret = $action->doAction();
+
+        $this->assertSame([$sql], RecordingDb::$log);
+        $this->assertStringNotContainsString('Error', $ret);
+    }
+
+    /** A failed write (DB error, key missing) used to be reported as done; a DB error must not
+     *  die() mid-batch either. */
+    public function test_doAction_reports_a_failed_write(): void
+    {
+        $property             = new \ReflectionProperty(\AA::class, 'metabase');
+        $this->saved_metabase = $property->getValue();
+        $metabase             = new class extends \AA_Metabase {
+            /** @var list<array{string, string, ?string}> */
+            public array $calls = [];
+
+            public function __construct()
+            {
+                $this->tables = \AA_Metabase::singleton()->tables;
+            }
+
+            public function doUpdate($tablename, $data, ?string $nohalt = null): bool|int
+            {
+                $this->calls[] = ['update', $tablename, $nohalt];
+                return false;
+            }
+
+            public function doInsert(string $tablename, array $data, ?string $nohalt = null): bool|int
+            {
+                $this->calls[] = ['insert', $tablename, $nohalt];
+                return false;
+            }
+
+            public function doDelete(string $tablename, array $keydata, ?string $nohalt = null): bool|int
+            {
+                $this->calls[] = ['delete', $tablename, $nohalt];
+                return false;
+            }
+        };
+        $property->setValue(null, $metabase);
+
+        $field = new AA_Identifier(self::DEST_ID, 'field', 'headline........');
+        foreach (['UPDATE_ROW' => ['name' => 'Headline'], 'INSERT' => ['id' => 'headline........', 'name' => 'Headline'], 'DELETE' => null] as $type => $params) {
+            $ret = (new AA_Sync_Action($type, $field, $params))->doAction();
+            $this->assertStringStartsWith('Error', $ret, $type);
+        }
+        $this->assertSame([['update', 'field', 'nohalt'], ['insert', 'field', 'nohalt'], ['delete', 'field', 'nohalt']], $metabase->calls);
+    }
+
+    /** Halting is off for the sync writes: a DB error is reported, it does not die() mid-batch. */
+    /** An old Central may still send an installation column alone - nothing is written. */
+    public function test_doAction_skips_an_update_of_installation_column(): void
+    {
+        RecordingDb::reset();
+        $GLOBALS['spareDBs'] = [new RecordingDb()];
+
+        $ret = (new AA_Sync_Action('UPDATE_VALUE', new AA_Identifier(self::DEST_ID, 'slice', self::DEST_ID, 'owner'), self::TEMPLATE_OWNER))->doAction();
+
+        $this->assertSame([], RecordingDb::$log);
+        $this->assertStringContainsString('nothing to update', $ret);
+        $this->assertStringNotContainsString('Error', $ret);
+    }
+
+    /** doInsertMulti() builds its VALUES by getSQLData() - several ids concatenated are one 0x… literal
+     *  there too, not the hex digits as text */
+    public function test_getSQLData_writes_packed_columns_as_hex_literal(): void
+    {
+        $sql = \AA::Metabase()->tables['constant']->getSQLData(['id' => self::CONSTANT_ID, 'ancestors' => self::ANCESTORS, 'class' => 'abc']);
+
+        $this->assertSame('0x' . self::CONSTANT_ID, $sql['id']);
+        $this->assertSame('0x' . self::ANCESTORS, $sql['ancestors']);
+        $this->assertSame("'abc'", $sql['class'], 'not a packed column');
+    }
+
+    public function test_doAction_reports_a_database_error(): void
+    {
+        RecordingDb::reset();
+        RecordingDb::$fail_on = 'UPDATE `field`';
+        $GLOBALS['spareDBs']  = [new RecordingDb()];
+
+        $ret = (new AA_Sync_Action('UPDATE_VALUE', new AA_Identifier(self::DEST_ID, 'field', 'headline........', 'name'), 'Headline'))->doAction();
+
+        $this->assertStringStartsWith('Error', $ret);
+    }
+
+    private const TEMPLATE_OWNER = '11111111111111111111111111111111';
+    private const DEST_OWNER     = '22222222222222222222222222222222';
+
+    /** module, slice and constant rows of one slice as two installations hold them - the same
+     *  definition, but each with its own owner, URLs, creator, view ids, numbering */
+    private static function installationDef(string $id, string $owner, string $url, int $short_id, string $name): AA_Definition_Module_Slice
+    {
+        $created = ['created_at' => $short_id * 1000, 'created_by' => "user$short_id"];
+        return self::sliceDef($id, [
+            'module'   => [$id => ['id' => $id, 'name' => $name, 'deleted' => 0, 'type' => 'S', 'slice_url' => $url, 'lang_file' => 'en_news_lang.php',
+                'owner' => $owner, 'app_id' => '', 'priority' => $short_id, 'flag' => 0] + $created],
+            'slice'    => [$id => ['id' => $id, 'name' => $name, 'owner' => $owner, 'deleted' => 0, 'slice_url' => $url, 'vid' => $short_id,
+                'mlxctrl' => $owner, 'fileman_dir' => "dir$short_id", 'reading_password' => "secret$short_id", 'd_listlen' => 10, 'lang_file' => 'en_news_lang.php'] + $created],
+            'constant' => [self::CONSTANT_ID => self::constantRow($short_id)],
+        ]);
+    }
+
+    /** A pre-checked UPDATE_ROW used to overwrite what belongs to the destination installation:
+     *  its owner, creator, URLs, view and MLX slice ids, menu order, deleted state, and the
+     *  auto_increment constant.short_id. Only the definition (here the name) is synchronized. */
+    public function test_compareWith_leaves_installation_columns_alone(): void
+    {
+        $template = self::installationDef(self::TEMPLATE_ID, self::TEMPLATE_OWNER, 'https://template.example.org/news/', 57, 'News');
+        $dest     = self::installationDef(self::DEST_ID, self::DEST_OWNER, 'https://dest.example.org/zpravy/', 1204, 'Old news');
+
+        $actions = [];
+        foreach ($template->compareWith($dest) as $diff) {
+            foreach ((new \ReflectionProperty($diff, 'actions'))->getValue($diff) as $action) {
+                $actions[] = $action;
+            }
+        }
+        $this->assertSame(['UPDATE_ROW', 'UPDATE_VALUE', 'UPDATE_ROW', 'UPDATE_VALUE'], array_map(static fn($a) => (new \ReflectionProperty($a, 'type'))->getValue($a), $actions), 'module and slice: the name only');
+
+        RecordingDb::reset();
+        $GLOBALS['spareDBs'] = [new RecordingDb()];
+        foreach ($actions as $action) {
+            $action->doAction();
+        }
+        $this->assertSame([
+            "UPDATE `module` SET `name`='News', `type`='S', `lang_file`='en_news_lang.php', `app_id`='', `flag`='0' WHERE id=0x" . self::DEST_ID,
+            "UPDATE `module` SET `name`='News' WHERE id=0x" . self::DEST_ID,
+            "UPDATE `slice` SET `name`='News', `d_listlen`='10', `lang_file`='en_news_lang.php' WHERE id=0x" . self::DEST_ID,
+            "UPDATE `slice` SET `name`='News' WHERE id=0x" . self::DEST_ID,
+        ], RecordingDb::$log);
+    }
+
+    /** loadForId() adds the lt_groupNames rows of the used constant groups; their `ancestors`
+     *  stayed packed, while the other constant rows (and the do*() writes) have them unpacked. */
+    public function test_loadForId_unpacks_the_constant_group_names_like_other_constants(): void
+    {
+        $group_id = '33333333333333333333333333333333';
+        $packed   = static fn(array $row): array => ['id' => pack_id($row['id']), 'ancestors' => pack_id($row['ancestors'])] + $row;
+        RecordingDb::reset();
+        RecordingDb::$answer = static fn(string $sql): array => match (true) {
+            str_contains($sql, "group_id='lt_groupNames'")        => [$packed(['id' => $group_id, 'group_id' => 'lt_groupNames', 'name' => 'yes_no', 'value' => 'yes_no', 'ancestors' => self::ANCESTORS])],
+            str_starts_with($sql, 'SELECT constant.* FROM constant') => [$packed(self::constantRow(57))],
+            default                                                => [],
+        };
+        $GLOBALS['spareDBs'] = [new RecordingDb()];
+
+        $def = new AA_Definition_Module_Slice();
+        $def->loadForId(self::TEMPLATE_ID, ['definitions' => true]);
+
+        $constants = (new \ReflectionProperty($def, 'data'))->getValue($def)['constant'];
+        $this->assertSame([self::CONSTANT_ID, $group_id], array_column($constants, 'id'));
+        $this->assertSame([self::ANCESTORS, self::ANCESTORS], array_column($constants, 'ancestors'));
     }
 }

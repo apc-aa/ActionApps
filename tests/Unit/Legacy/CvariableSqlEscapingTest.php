@@ -25,6 +25,11 @@ final class CvariableSqlEscapingTest extends TestCase
     /** an apostrophe closes the SQL string literal; the rest is the injected tail */
     private const PAYLOAD = "O'Brien'), ((SELECT 1))-- -";
 
+    public static function setUpBeforeClass(): void
+    {
+        require_once __DIR__ . '/../fixtures/util_shims.php';   // huhe(), which reports a rejected "unpacked" value
+    }
+
     public function testTextTypeEscapesTheApostrophe(): void
     {
         $sql = (new Cvariable('subject', 'text', self::PAYLOAD))->getSQLValue();
@@ -51,5 +56,21 @@ final class CvariableSqlEscapingTest extends TestCase
         // so the stored value is byte-identical — no behaviour change for real traffic.
         $sql = (new Cvariable('remote_addr', 'text', '192.168.1.9'))->getSQLValue();
         self::assertSame("'192.168.1.9'", $sql);
+    }
+
+    /** "unpacked" ids go out as a 0x… literal; constant.ancestors holds several ids concatenated */
+    public function testUnpackedTypeWritesWholeIdsAsHexLiteral(): void
+    {
+        $id = '0123456789abcdef0123456789abcdef';
+        self::assertSame("0x$id", (new Cvariable('id', 'unpacked', $id))->getSQLValue());
+        self::assertSame("0x$id$id", (new Cvariable('ancestors', 'unpacked', "$id$id"))->getSQLValue());
+    }
+
+    public function testUnpackedTypeRejectsAnythingElse(): void
+    {
+        $id = '0123456789abcdef0123456789abcdef';
+        foreach (['', substr($id, 0, 16), $id . '0123', 'x' . substr($id, 1), "$id' OR 1 -- " . substr($id, 0, 18)] as $value) {
+            self::assertSame("''", (new Cvariable('id', 'unpacked', $value))->getSQLValue(), $value);
+        }
     }
 }

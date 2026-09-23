@@ -599,6 +599,12 @@ function is_short_id($id): bool
 {
     return !empty($id) && strlen($id) < 12 && ctype_digit((string) $id);
 }
+/** one or more long ids concatenated - constant.ancestors holds the ids of all ancestors */
+function is_long_ids($ids): bool
+{
+    $ids = (string) $ids;
+    return $ids !== '' && strlen($ids) % 32 === 0 && ctype_xdigit($ids);
+}
 function is_long_id($id): bool
 {
     return !empty($id) && (strlen($id) === 32 && ctype_xdigit($id));

@@ -578,9 +578,7 @@ class AA_Definition_Module_Slice extends AA_Definition_Module
                 if (!is_array($groups)) {
                     $groups = [];
                 }
-                foreach ($groups as $k => $v) {
-                    $groups[$k]['id'] = unpack_id($v['id']);
-                }
+                $metabase->unpackIds('constant', $groups);   // id and ancestors, as getModuleRows() does
                 $this->data['constant'] = array_merge($this->data['constant'], $groups);
             }
         }
@@ -615,7 +613,8 @@ class AA_Definition_Module_Slice extends AA_Definition_Module
                 $destination = is_array($destination) ? reset($destination) : null;
                 $identifier  = new AA_Identifier($dest_module_id, $table, $dest_module_id);
             }
-            $diff = array_merge($diff, AA_Difference::_compareArray($template, $destination, $identifier, [AA_Metabase::getModuleFields()[$table] ?? null]));
+            $ignore = array_merge([AA_Metabase::getModuleFields()[$table] ?? null], AA_Sync_Action::INSTALLATION_COLUMNS[$table] ?? []);
+            $diff   = array_merge($diff, AA_Difference::_compareArray($template, $destination, $identifier, $ignore));
         }
         return $diff;
     }
@@ -736,7 +735,9 @@ class AA_Difference
             }
         }
         if ($is_different) {
-            array_unshift($diff, new AA_Difference('DIFFERENT_ROW', _m('The record for %1 is different', [$idf]), new AA_Sync_Action('UPDATE_ROW', $identifier, $template_arr)));
+            // the ignored columns are not the template's to set (the module column is set by fillKeys())
+            $row_data = array_diff_key($template_arr, array_flip(array_filter($ignore)));
+            array_unshift($diff, new AA_Difference('DIFFERENT_ROW', _m('The record for %1 is different', [$idf]), new AA_Sync_Action('UPDATE_ROW', $identifier, $row_data)));
         }
 
         foreach ($destination_arr as $key => $value) {
@@ -827,6 +828,16 @@ class AA_Sync_Action
      *  would accept ~50, including toexecute (unserialized later), users and central_conf. */
     public const TABLES = ['module', 'slice', 'field', 'view', 'email', 'constant_slice', 'constant'];
 
+    /** Columns of the installation, not of the slice definition: ids of its users and of its other
+     *  rows (slice_owner, view, the MLX control slice), its URLs and paths, its menu order and
+     *  deleted state, its reading password, its own numbering. compareWith() skips them and
+     *  doAction() does not update them. */
+    public const INSTALLATION_COLUMNS = [
+        'module'   => ['owner', 'created_by', 'created_at', 'slice_url', 'deleted', 'priority'],
+        'slice'    => ['owner', 'created_by', 'created_at', 'slice_url', 'deleted', 'mlxctrl', 'vid', 'fileman_dir', 'reading_password'],
+        'constant' => ['short_id'],
+    ];
+
     /** action type  - DELETE | INSERT | UPDATE_ROW | UPDATE_VALUE */
     private string $type;
 
@@ -887,15 +898,25 @@ class AA_Sync_Action
         return $column ? [$column => $this->params] : $this->params;
     }
 
+    /** $data without the auto_increment columns which are not keys (constant.short_id) - each
+     *  installation numbers its rows itself */
+    private static function withoutOwnNumbering(string $table, array $data): array
+    {
+        foreach (AA::Metabase()->getColumns($table) as $colname => $column) {
+            if ($column->isAutoIncrement() && !$column->isKey()) {
+                unset($data[$colname]);
+            }
+        }
+        return $data;
+    }
+
     /** do synchronization action in destination slice */
     public function doAction()
     {
 
         // commands are stored as tree - like:
         // 6353636737->field->category........
-        // 6353636737 is id of slice - we use slice name as identifier
-        // here, because slice_id is different in remote slices and we want
-        // to synchronize the slices of the same name
+        // 6353636737 is the id of the destination slice (compareWith() builds the actions for it)
         $idf         = $this->identifier;
         $module_id   = $idf->getModuleId();
         $table       = $idf->getTable();
@@ -910,23 +931,34 @@ class AA_Sync_Action
         if (!$row) {
             return _m('Wrong command - row is not defined - %1', [$idf->toString()]);
         }
+        // nohalt: a DB error must not die() in the middle of the batch - it is reported instead
         if ($this->type === 'UPDATE_ROW' || $this->type === 'UPDATE_VALUE') {
-            $data = $this->_getDataArray();
+            // an older Central (or a queued AA_Task_Sync) still sends the installation columns
+            $data = array_diff_key(self::withoutOwnNumbering($table, (array) $this->_getDataArray()), array_flip(self::INSTALLATION_COLUMNS[$table] ?? []));
             $metabase->fillKeys($data, $idf);
-            $metabase->doUpdate($table, $data);
-            return _m('%1 %2 in slice %3 updated', [$table, $row, $module_id]);
+            if (!array_diff_key($data, array_flip($metabase->getKeys($table)))) {
+                return _m('%1 %2 in slice %3: nothing to update', [$table, $row, $module_id]);
+            }
+            return !$metabase->doUpdate($table, $data, 'nohalt')
+                ? _m('Error: %1 %2 in slice %3 not updated', [$table, $row, $module_id])
+                : _m('%1 %2 in slice %3 updated', [$table, $row, $module_id]);
         }
         if ($this->type === 'INSERT') {
-            $data = $this->params;
+            $data = self::withoutOwnNumbering($table, (array) $this->params);
+            if ($table === 'module' || $table === 'slice') {
+                $data['deleted'] = 0;   // a template flagged deleted must not create a deleted slice
+            }
             $metabase->fillKeys($data, $idf);
-            $metabase->doInsert($table, $data);
-            return _m('%1 %2 inserted into slice %3', [$table, $row, $module_id]);  // field xy inserted into slice yz
+            return !$metabase->doInsert($table, $data, 'nohalt')
+                ? _m('Error: %1 %2 not inserted into slice %3', [$table, $row, $module_id])
+                : _m('%1 %2 inserted into slice %3', [$table, $row, $module_id]);  // field xy inserted into slice yz
         }
         if ($this->type === 'DELETE') {
             $data = [];
             $metabase->fillKeys($data, $idf);
-            $metabase->doDelete($table, $data);
-            return _m('%1 %2 deleted from slice %3', [$table, $row, $module_id]);
+            return !$metabase->doDelete($table, $data, 'nohalt')
+                ? _m('Error: %1 %2 not deleted from slice %3', [$table, $row, $module_id])
+                : _m('%1 %2 deleted from slice %3', [$table, $row, $module_id]);
         }
         return _m("Unknown action (%1) for field %2 in slice %3", [$this->type, $row, $module_id]);
     }

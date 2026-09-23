@@ -86,8 +86,8 @@ class Cvariable
                 $ret = ($this->value == "") ? 0 : $this->value;
                 break;
             case "unpacked":
-                if (is_long_id($this->value)) {
-                    $ret = '0x' . quote($this->value);
+                if (is_long_ids($this->value)) {   // one id, or several concatenated (constant.ancestors)
+                    $ret = '0x' . $this->value;
                     $quote = false;
                 } else {
                     huhe('There should be unpacked long id: ' . $this->value . "(in $this->name)");

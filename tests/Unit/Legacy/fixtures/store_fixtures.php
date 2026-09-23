@@ -49,7 +49,8 @@ final class RecordingDb extends DB_PDO
     public static array $content = [];
     /** @var null|callable(string): array  rows for SELECTs on OTHER tables (constant, item, ...) */
     public static $answer = null;
-    /** a statement starting with this string throws - simulates a failing write mid-transaction */
+    /** a statement starting with this string throws - simulates a failing write mid-transaction
+     *  (with halting off it returns false instead) */
     public static ?string $fail_on = null;
     /** @var array<string, array> table => columns as DB_PDO::metadata() lists them (name, type) */
     public static array $metadata = [];
@@ -196,8 +197,12 @@ final class RecordingDb extends DB_PDO
         return self::$metadata[$table] ?? [];
     }
 
+    /** with halting off a failing statement returns false, as DB_PDO does */
     public function query_halt(string $Query_String, string $mode): bool
     {
+        if ($mode === 'no' && self::$fail_on !== null && str_starts_with($Query_String, self::$fail_on)) {
+            return false;
+        }
         return $this->query($Query_String);
     }
 
