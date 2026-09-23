@@ -110,6 +110,8 @@ class ComposerStaticInit549a0516f4ced1636fd22ee7d63cc983
         'AA\\Cache\\Cacheentry' => __DIR__ . '/../..' . '/src/Cache/Cacheentry.php',
         'AA\\Cache\\ImgCache' => __DIR__ . '/../..' . '/src/Cache/ImgCache.php',
         'AA\\Cache\\PageCache' => __DIR__ . '/../..' . '/src/Cache/PageCache.php',
+        'AA\\Central\\RemoteHtml' => __DIR__ . '/../..' . '/src/Central/RemoteHtml.php',
+        'AA\\Central\\ResponderPolicy' => __DIR__ . '/../..' . '/src/Central/ResponderPolicy.php',
         'AA\\Doit\\RequestMonitor' => __DIR__ . '/../..' . '/src/Doit/RequestMonitor.php',
         'AA\\Expand\\InternalExpandInterface' => __DIR__ . '/../..' . '/src/Expand/InternalExpandInterface.php',
         'AA\\FormArray' => __DIR__ . '/../..' . '/src/FormArray.php',

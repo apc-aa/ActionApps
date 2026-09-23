@@ -33,10 +33,14 @@ function CompareSliceDefs($template_slice_defs, $comp_slice_defs, $mapping): arr
     $differences = [];
     if (is_array($template_slice_defs)) {
         foreach ($template_slice_defs as $tmp_slice_name => $slice_def) {
+            // the key comes from the remote AA and is printed into ids and javascript: links below
+            if (!is_long_id((string) $tmp_slice_name)) {
+                continue;
+            }
             $cmp_slice_name = $mapping[$tmp_slice_name];
             $differences[$tmp_slice_name] = [];
             if (empty($comp_slice_defs[$cmp_slice_name])) {
-                $differences[$tmp_slice_name][] = new AA_Difference('INFO', _m("Comparison slice (%1) does not exist", [$tmp_slice_name]));
+                $differences[$tmp_slice_name][] = new AA_Difference('INFO', _m("Comparison slice (%1) does not exist", [safe($tmp_slice_name)]));
             }
             $differences[$tmp_slice_name] = array_merge($differences[$tmp_slice_name], $slice_def->compareWith($comp_slice_defs[$cmp_slice_name]));
         }
@@ -127,7 +131,7 @@ if (isset($differences)) {
     // and print diffs out
     foreach ($differences as $sid => $diffs) {
         $sync_sid = $_POST['sync_slices'][$sid];
-        FrmTabSeparator(AA_Slice::getModuleNameSafe($sid) . " ($sid) x " . AA_Slice::getModuleNameSafe($sync_sid) . " ($sync_sid)");
+        FrmTabSeparator(AA_Slice::getModuleNameSafe($sid) . ' (' . safe($sid) . ') x ' . AA_Slice::getModuleNameSafe($sync_sid) . ' (' . safe($sync_sid) . ')');
 
         echo '<tr><td  colspan="2">
         <script>

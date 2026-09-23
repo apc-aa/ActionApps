@@ -40,6 +40,7 @@
 
 namespace AA\Manageraction;
 
+use AA\Central\RemoteHtml;
 use AA\IO\DB\DB_AA;
 use AA\Manager;
 use AA\Manageraction\AbstractManageraction;
@@ -80,9 +81,13 @@ class Central_Optimize extends AbstractManageraction
 
         foreach ($item_zids as $aa_id) {
             $aa    = AA_Actionapps::getActionapps($aa_id);
-            $ret[] = $aa->doOptimize($this->optimize_class, $this->optimize_method);
+            // the report (or error text) is the remote AA's HTML - render it, but inert
+            $report = $aa->doOptimize($this->optimize_class, $this->optimize_method);
+            // a (string) cast of an object throws and would kill the page for all selected AAs
+            $report = (is_scalar($report) || $report === null) ? (string) $report : '<p>' . safe(_m('Unexpected response from remote AA')) . '</p>';
+            $ret[]  = RemoteHtml::sandboxed($aa->getName(), $report);
         }
-        return implode('<br>', $ret);   // @todo we should rewrite outputs from AA\Manageraction\.. to some standard messages() system
+        return implode('', $ret);   // @todo we should rewrite outputs from AA\Manageraction\.. to some standard messages() system
     }
 
     /** Checks if the user have enough permission to perform the action

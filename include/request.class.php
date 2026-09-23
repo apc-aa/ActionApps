@@ -8,7 +8,7 @@ use AA\Util\LastErrTrait;
  * authentization. The example of the "client authentization" you can find
  * in apc-aa/doc/script/example_auth directory.
  *
- * The fiel has no external requires - it si standalone library
+ * Not standalone: it needs the AA autoloader (AA\Util\LastErrTrait, AA\Util\Txt).
  *
  * It provides:
  *
@@ -204,15 +204,29 @@ class AA_Response
         return ($this->error > 0);
     }
 
+    /** Content-Type for the current $Response_type; null keeps PHP's default text/html (html mode renders widget HTML). */
+    public static function contentType(): ?string
+    {
+        return self::$Response_type === 'serialize' ? 'text/plain; charset=utf-8' : null;
+    }
+
     public function respond(): void
     {
+        if (!headers_sent()) {
+            // serialized responses may carry request input (e.g. a cross-site POSTed command) - never let a browser render them
+            if ($ct = self::contentType()) {
+                header("Content-Type: $ct");
+            }
+            header('X-Content-Type-Options: nosniff');
+        }
         switch (self::$Response_type) {
             case 'serialize':
                 echo serialize($this);
                 break;
             case 'html':
                 if ($this->isError()) {
-                    echo "Error $this->error: " . $this->response;
+                    // error text may carry request input (e.g. the command name)
+                    echo "Error $this->error: " . \AA\Util\Txt::safe($this->response);
                 } else {
                     echo is_scalar($this->response) ? $this->response : _m('Array returned');
                 }

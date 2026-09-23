@@ -16,6 +16,8 @@ return array(
     'AA\\Cache\\Cacheentry' => $baseDir . '/src/Cache/Cacheentry.php',
     'AA\\Cache\\ImgCache' => $baseDir . '/src/Cache/ImgCache.php',
     'AA\\Cache\\PageCache' => $baseDir . '/src/Cache/PageCache.php',
+    'AA\\Central\\RemoteHtml' => $baseDir . '/src/Central/RemoteHtml.php',
+    'AA\\Central\\ResponderPolicy' => $baseDir . '/src/Central/ResponderPolicy.php',
     'AA\\Doit\\RequestMonitor' => $baseDir . '/src/Doit/RequestMonitor.php',
     'AA\\Expand\\InternalExpandInterface' => $baseDir . '/src/Expand/InternalExpandInterface.php',
     'AA\\FormArray' => $baseDir . '/src/FormArray.php',
