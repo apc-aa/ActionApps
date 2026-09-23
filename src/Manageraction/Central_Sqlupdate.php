@@ -2,7 +2,7 @@
 
 namespace AA\Manageraction;
 
-use AA;
+use AA\Central\RemoteHtml;
 use AA\Manager;
 use zids;
 
@@ -45,9 +45,9 @@ class Central_Sqlupdate extends AbstractManageraction
             $params   = 'dbpw5=' . substr($db->f('db_pwd'), 0, 5) . '&silent=1&fire=1&' . $this->update_action . '=1';
             $file     = $db->f('AA_HTTP_DOMAIN') . $db->f('AA_BASE_DIR') . "service/sql_update.php?$params";
             $response = file_get_contents($file);
-            $status   = substr($response, 0, 3);
-            $toggle   = '{htmltoggle:&gt;&gt;:' . QuoteColons($file) . ':&lt;&lt;:' . QuoteColons($response) . '}';
-            $ret      .= AA::Un($status . ' ' . $toggle);
+            $response = ($response === false) ? '<p>' . safe(_m('Request failed')) . '</p>' : $response;
+            // the remote answer is untrusted HTML - never through AA::Un() or into the page itself
+            $ret      .= RemoteHtml::sandboxed($db->f('ORG_NAME') . ' (' . $db->f('AA_HTTP_DOMAIN') . $db->f('AA_BASE_DIR') . ')', $response);
         }
         freeDB($db);
         return $ret;                                     // OK - no error

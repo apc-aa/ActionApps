@@ -239,7 +239,12 @@ class AA_Actionapps
     public function doOptimize($optimize_class, $optimize_method)
     {
         $response = $this->getResponse(new AA_Request('Do_Optimize', ['class' => $optimize_class, 'method' => $optimize_method]));
-        return ($response->isError()) ? $response->getError() . ' ' . $response->getResponse() : $response->getResponse();
+        if (!$response->isError()) {
+            return $response->getResponse();
+        }
+        // the remote decides the type of the detail - concatenating an object would throw
+        $detail = $response->getResponse();
+        return $response->getError() . (is_scalar($detail) ? ' ' . $detail : '');
     }
 
     /** Imports slice to the current AA. The id of slice is the same as in
@@ -652,17 +657,20 @@ class AA_Difference
 
     /// Static
 
+    /** Remote data (keys, row ids, values) goes into the descriptions escaped - never as HTML
+     *  or as an AA template, since the remote AA may be compromised. */
     public static function _compareArray($template_arr, $destination_arr, $identifier, $ignore)
     {
         $diff       = [];
+        $idf        = safe($identifier->toString());
         if (! is_array($template_arr) && is_array($destination_arr)) {
-            return [0 => new AA_Difference('DELETED', _m('%1 is not array in template slice', [$identifier->toString()]), new AA_Sync_Action('DELETE', $identifier))];
+            return [0 => new AA_Difference('DELETED', _m('%1 is not array in template slice', [$idf]), new AA_Sync_Action('DELETE', $identifier))];
         }
         if (is_array($template_arr) && !is_array($destination_arr)) {
-            return [0 => new AA_Difference('NEW', _m('%1 is not array in destination slice', [$identifier->toString()]), new AA_Sync_Action('INSERT', $identifier, $template_arr))];
+            return [0 => new AA_Difference('NEW', _m('%1 is not array in destination slice', [$idf]), new AA_Sync_Action('INSERT', $identifier, $template_arr))];
         }
         if (!is_array($template_arr) && !is_array($destination_arr)) {
-            return [0 => new AA_Difference('INFO', _m('%1 is not defined for both AAs', [$identifier->toString()]))];
+            return [0 => new AA_Difference('INFO', _m('%1 is not defined for both AAs', [$idf]))];
         }
 
         // if we're comparing row values, we can also update whole row at once - so we mark it
@@ -684,16 +692,16 @@ class AA_Difference
                 // that there are some additional keys in it (compated to template)
                 unset($destination_arr[$key]);
             } elseif (!array_key_exists($key, $destination_arr)) {
-                $diff[] = new AA_Difference('DIFFERENT_VALUE', '&nbsp;&nbsp;&nbsp;-&nbsp;' . _m('There is no such key (%1) in destination slice for %2', [$key, $identifier->toString()]), new AA_Sync_Action('UPDATE_VALUE', $sub_identifier, $value));
+                $diff[] = new AA_Difference('DIFFERENT_VALUE', '&nbsp;&nbsp;&nbsp;-&nbsp;' . _m('There is no such key (%1) in destination slice for %2', [safe($key), $idf]), new AA_Sync_Action('UPDATE_VALUE', $sub_identifier, $value));
             } elseif ($value != $destination_arr[$key] && !(empty($value) && empty($destination_arr[$key]))) {  // '' and 0 is considered equal
                 // if we're comparing row values, we can also update whole row at once - so we mark it
                 $is_different = true;
 
-                $code = '{htmltoggle:&gt;&gt;::&lt;&lt;:' . QuoteColons('
+                $code = '<details><summary>&gt;&gt;</summary>
                        <div style="background-color:#FFE0E0;border: solid 1px #F88;">' . _m('Destination') . ':<br>' . safe($destination_arr[$key]) . '</div>
                        <br>
-                       <div style="background-color:#E0E0FF;border: solid 1px #88F;">' . _m('Template') . ':<br>' . safe($value) . '</div>') . '}';
-                $diff[] = new AA_Difference('DIFFERENT_VALUE', '&nbsp;&nbsp;&nbsp;-&nbsp;' . _m('The value for key %1 in %2 array is different %3', [$key, $identifier->toString(), AA::Un($code)]), new AA_Sync_Action('UPDATE_VALUE', $sub_identifier, $value));
+                       <div style="background-color:#E0E0FF;border: solid 1px #88F;">' . _m('Template') . ':<br>' . safe($value) . '</div></details>';
+                $diff[] = new AA_Difference('DIFFERENT_VALUE', '&nbsp;&nbsp;&nbsp;-&nbsp;' . _m('The value for key %1 in %2 array is different %3', [safe($key), $idf, $code]), new AA_Sync_Action('UPDATE_VALUE', $sub_identifier, $value));
                 // we need to clear the destination array in order we can know,
                 // that there are some additional keys in it (compated to template)
                 unset($destination_arr[$key]);
@@ -702,7 +710,7 @@ class AA_Difference
             }
         }
         if ($is_different) {
-            array_unshift($diff, new AA_Difference('DIFFERENT_ROW', _m('The record for %1 is different', [$identifier->toString()]), new AA_Sync_Action('UPDATE_ROW', $identifier, $template_arr)));
+            array_unshift($diff, new AA_Difference('DIFFERENT_ROW', _m('The record for %1 is different', [$idf]), new AA_Sync_Action('UPDATE_ROW', $identifier, $template_arr)));
         }
 
         foreach ($destination_arr as $key => $value) {
@@ -714,11 +722,11 @@ class AA_Difference
                 // I know - we can define the difference right here, but it is better to use the same method as above
                 $diff = array_merge($diff, self::_compareArray('', $destination_arr[$key], $sub_identifier, $ignore));
             } else {
-                $diff[] = new AA_Difference('DELETED', '&nbsp;&nbsp;&nbsp;-&nbsp;' . _m('There is no such key (%1) in template slice for %2', [$key, $sub_identifier->toString()]), new AA_Sync_Action('UPDATE_VALUE', $sub_identifier, ''));
+                $diff[] = new AA_Difference('DELETED', '&nbsp;&nbsp;&nbsp;-&nbsp;' . _m('There is no such key (%1) in template slice for %2', [safe($key), safe($sub_identifier->toString())]), new AA_Sync_Action('UPDATE_VALUE', $sub_identifier, ''));
             }
         }
         if (count($diff) < 1) {
-            $diff[] = new AA_Difference('INFO', _m('%1 are identical', [$identifier->toString()]));
+            $diff[] = new AA_Difference('INFO', _m('%1 are identical', [$idf]));
         }
         return $diff;
     }
