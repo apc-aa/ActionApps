@@ -20,6 +20,7 @@ https://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+use AA\Central\Difference;
 use AA\Central\Task\Sync;
 use AA\Later\Toexecute;
 
@@ -39,7 +40,7 @@ function CompareSliceDefs($template_slice_defs, $comp_slice_defs, $mapping): arr
                 continue;
             }
             if (!($slice_def instanceof AA_Definition_Module_Slice)) {
-                $differences[$tmp_slice_name] = [new AA_Difference('INFO', _m('Template AA sent no definition for slice %1', [safe($tmp_slice_name)]))];
+                $differences[$tmp_slice_name] = [new Difference('INFO', _m('Template AA sent no definition for slice %1', [safe($tmp_slice_name)]))];
                 continue;
             }
             // a missing comparison slice gives the "does not exist" row

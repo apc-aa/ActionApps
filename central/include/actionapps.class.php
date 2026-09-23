@@ -30,6 +30,7 @@ https://www.apc.org/
 */
 
 use AA\Central\Actionapps;
+use AA\Central\Difference;
 use AA\Central\ResponderPolicy;
 use AA\Central\Task\ImportModuleChunk;
 use AA\Central\Task\Sync;
@@ -42,12 +43,17 @@ use AA\Later\Toexecute;
 // autoloading AA_Actionapps includes this file and so registers the alias.
 // The same for the Central tasks, now in AA\Central\Task - rows queued before hold AA_Task_Sync /
 // AA_Task_Import_Module_Chunk (with the AA embedded; the tasks take both shapes).
+// AA_Difference (now AA\Central\Difference) is not queued - the old name is for callers only.
 class_alias(Actionapps::class, 'AA_Actionapps');
+class_alias(Difference::class, 'AA_Difference');
 class_alias(Sync::class, 'AA_Task_Sync');
 class_alias(ImportModuleChunk::class, 'AA_Task_Import_Module_Chunk');
 if (false) {   // @phpstan-ignore if.alwaysFalse (never runs - for the classmap only)
     /** @deprecated use AA\Central\Actionapps */
     class AA_Actionapps extends Actionapps {}
+
+    /** @deprecated use AA\Central\Difference */
+    class AA_Difference extends Difference {}
 
     /** @deprecated use AA\Central\Task\Sync */
     class AA_Task_Sync extends Sync {}
@@ -290,33 +296,10 @@ class AA_Definition_Module_Slice extends AA_Definition_Module
         }
     }
 
-    /** @return AA_Difference[] - an INFO row alone when a side is missing; an empty destination gives NEW rows */
+    /** @return Difference[] - an INFO row alone when a side is missing; an empty destination gives NEW rows */
     public function compareWith($dest_def): array
     {
-        // nothing loaded (unknown id, remote error) - comparing would offer pre-checked DELETEs of the destination slice
-        if (empty($this->data['module']) || empty($this->data['slice'])) {
-            return [new AA_Difference('INFO', _m('Template slice %1 has no definition', [safe((string) $this->module_id)]))];
-        }
-        if (!($dest_def instanceof AA_Definition_Module)) {
-            return [new AA_Difference('INFO', _m("Comparison slice (%1) does not exist", [safe((string) $this->module_id)]))];
-        }
-        /** @todo check the state, when the name contains "->" */
-        $dest_module_id = $dest_def->getId();
-        $dest_data      = $dest_def->getArray();
-        $diff           = [];
-        foreach (AA_Sync_Action::TABLES as $table) {
-            $template    = $this->data[$table] ?? null;
-            $destination = $dest_data[$table] ?? null;
-            $identifier  = new AA_Identifier($dest_module_id, $table);
-            if ($table === 'module' || $table === 'slice') {  // one row per module - compare just its data
-                $template    = is_array($template) ? reset($template) : null;
-                $destination = is_array($destination) ? reset($destination) : null;
-                $identifier  = new AA_Identifier($dest_module_id, $table, $dest_module_id);
-            }
-            $ignore = array_merge([AA_Metabase::getModuleFields()[$table] ?? null], AA_Sync_Action::INSTALLATION_COLUMNS[$table] ?? []);
-            $diff   = array_merge($diff, AA_Difference::_compareArray($template, $destination, $identifier, $ignore));
-        }
-        return $diff;
+        return Difference::compareSlice($this->data, $this->module_id, $dest_def);
     }
 }
 
@@ -353,110 +336,6 @@ class AA_Definition_Module_Alerts extends AA_Definition_Module
     }
 
     public function compareWith($dest_def) {}
-}
-
-
-class AA_Difference
-{
-    private string $description;
-    private string $type;           // INFO | DIFFERENT_ROW | DIFFERENT_VALUE | NEW | DELETED
-    /** array of AA_Sync_Actions defining, what we can do with this difference */
-    private array $actions;
-
-    /** */
-    public function __construct(string $type, string $description, $actions = [])
-    {
-        $this->type        = $type;
-        $this->description = $description;
-        $this->actions     = empty($actions) ? [] : (is_array($actions) ? $actions : [$actions]);
-    }
-
-    public function printOut(): void
-    {
-        echo "\n<tr class=\"diff_" . strtolower($this->type) . "\"><td>" . $this->description . '</td><td>';
-        foreach ($this->actions as $action) {
-            $action->printToForm();
-        }
-        echo '</td></tr>';
-    }
-
-    /// Static
-
-    /** Remote data (keys, row ids, values) goes into the descriptions escaped - never as HTML
-     *  or as an AA template, since the remote AA may be compromised. */
-    public static function _compareArray($template_arr, $destination_arr, $identifier, $ignore)
-    {
-        $diff       = [];
-        $idf        = safe($identifier->toString());
-        if (! is_array($template_arr) && is_array($destination_arr)) {
-            return [0 => new AA_Difference('DELETED', _m('%1 is not array in template slice', [$idf]), new AA_Sync_Action('DELETE', $identifier))];
-        }
-        if (is_array($template_arr) && !is_array($destination_arr)) {
-            return [0 => new AA_Difference('NEW', _m('%1 is not array in destination slice', [$idf]), new AA_Sync_Action('INSERT', $identifier, $template_arr))];
-        }
-        if (!is_array($template_arr) && !is_array($destination_arr)) {
-            return [0 => new AA_Difference('INFO', _m('%1 is not defined for both AAs', [$idf]))];
-        }
-
-        // if we're comparing row values, we can also update whole row at once - so we mark it
-        $is_different = false;
-        foreach ($template_arr as $key => $value) {
-            $sub_identifier = clone($identifier);
-            $sub_identifier->sub($key);
-
-            // some fields we do not want to compare (like slice_ids)
-            if (in_array($key, $ignore)) {
-                // we need to clear the destination array in order we can know,
-                // that there are some additional keys in it (compated to template)
-                unset($destination_arr[$key]);
-                continue;
-            }
-            if (is_array($value)) {
-                $diff = array_merge($diff, self::_compareArray($value, $destination_arr[$key], $sub_identifier, $ignore));
-                // we need to clear the destination array in order we can know,
-                // that there are some additional keys in it (compated to template)
-                unset($destination_arr[$key]);
-            } elseif (!array_key_exists($key, $destination_arr)) {
-                $diff[] = new AA_Difference('DIFFERENT_VALUE', '&nbsp;&nbsp;&nbsp;-&nbsp;' . _m('There is no such key (%1) in destination slice for %2', [safe($key), $idf]), new AA_Sync_Action('UPDATE_VALUE', $sub_identifier, $value));
-            } elseif ($value != $destination_arr[$key] && !(empty($value) && empty($destination_arr[$key]))) {  // '' and 0 is considered equal
-                // if we're comparing row values, we can also update whole row at once - so we mark it
-                $is_different = true;
-
-                $code = '<details><summary>&gt;&gt;</summary>
-                       <div style="background-color:#FFE0E0;border: solid 1px #F88;">' . _m('Destination') . ':<br>' . safe($destination_arr[$key]) . '</div>
-                       <br>
-                       <div style="background-color:#E0E0FF;border: solid 1px #88F;">' . _m('Template') . ':<br>' . safe($value) . '</div></details>';
-                $diff[] = new AA_Difference('DIFFERENT_VALUE', '&nbsp;&nbsp;&nbsp;-&nbsp;' . _m('The value for key %1 in %2 array is different %3', [safe($key), $idf, $code]), new AA_Sync_Action('UPDATE_VALUE', $sub_identifier, $value));
-                // we need to clear the destination array in order we can know,
-                // that there are some additional keys in it (compated to template)
-                unset($destination_arr[$key]);
-            } else {
-                unset($destination_arr[$key]);
-            }
-        }
-        if ($is_different) {
-            // the ignored columns are not the template's to set (the module column is set by fillKeys())
-            $row_data = array_diff_key($template_arr, array_flip(array_filter($ignore)));
-            array_unshift($diff, new AA_Difference('DIFFERENT_ROW', _m('The record for %1 is different', [$idf]), new AA_Sync_Action('UPDATE_ROW', $identifier, $row_data)));
-        }
-
-        foreach ($destination_arr as $key => $value) {
-            $sub_identifier = clone($identifier);
-            $sub_identifier->sub($key);
-
-            // there are no such keys in template
-            if (is_array($value)) {
-                // I know - we can define the difference right here, but it is better to use the same method as above
-                $diff = array_merge($diff, self::_compareArray('', $destination_arr[$key], $sub_identifier, $ignore));
-            } else {
-                $diff[] = new AA_Difference('DELETED', '&nbsp;&nbsp;&nbsp;-&nbsp;' . _m('There is no such key (%1) in template slice for %2', [safe($key), safe($sub_identifier->toString())]), new AA_Sync_Action('UPDATE_VALUE', $sub_identifier, ''));
-            }
-        }
-        if (count($diff) < 1) {
-            $diff[] = new AA_Difference('INFO', _m('%1 are identical', [$idf]));
-        }
-        return $diff;
-    }
 }
 
 class AA_Identifier
