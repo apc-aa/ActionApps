@@ -58,6 +58,8 @@ $hcCol = [
 function getHierConstInitJavaScript($hcid, $group_id, $levelCount = 3, $formName = 'f', $admin = true): string
 {
     global $hcCol;
+    $hcid       = (int)$hcid;
+    $levelCount = (int)$levelCount;
     $js = "
         hcEasyDelete[$hcid] = 0;     // if set to 1, doesn't uncheck the confirmation check box
         // consts columns: name, value, priority, description, ID, dirty flag, children
@@ -73,7 +75,7 @@ function getHierConstInitJavaScript($hcid, $group_id, $levelCount = 3, $formName
         hcLevelCount[$hcid] = $levelCount;
 
         // name of form in which are the fields
-        hcForm = '$formName';";
+        hcForm = " . hcJsString((string)$formName) . ";";
 
     // this will be supplied by the database
     $js .= "
@@ -179,8 +181,7 @@ function showHierConstBoxes($hcid, int $levelCount, bool $horizontal = false, st
  */
 function createConstsJavaScript($group_id, $admin): string
 {
-    createConstsArray($group_id, $admin, $myconsts);
-    eval('$data = ' . $myconsts . ';');
+    $data = createConstsArray($group_id, $admin);
     hcSortArray($data);
 
     $consts = "new Array(";
@@ -195,12 +196,15 @@ function createConstsJavaScript($group_id, $admin): string
 }
 
 /** createConstsArray function
- *  creates string forming PHP array definition
+ *  The constants of the group as a tree of nodes [name, value, pri, desc, short_id, false, children]
+ *  (columns in $hcCol, children only when there are some). The tree follows the `ancestors` paths;
+ *  rows whose ancestors do not fit into it are added to the top level, or next to the preceding node.
+ *  Built as data, never as PHP code - the texts are the constants' own (C1.11).
  *  @param $group_id
- *  @param $admin
- *  @param $consts (by link)
+ *  @param $admin - with descriptions
+ *  @return array
  */
-function createConstsArray($group_id, $admin, &$consts): void
+function createConstsArray($group_id, $admin): array
 {
     global $get_method;
     $dbc = getDB();
@@ -208,46 +212,46 @@ function createConstsArray($group_id, $admin, &$consts): void
     $data = [];
     $dbc->query("SELECT * FROM constant WHERE group_id = " . qquote($group_id));
     while ($dbc->next_record()) {
+        $name  = str_replace(["\r", "\n"], '', (string)$dbc->f("name"));
+        $value = str_replace(["\r", "\n"], '', (string)$dbc->f("value"));
         // & in from _GET is taken as parameter delimiter, so we replace it
         // with %26. We do not replace it, if it is called from editing form
-        $value = ($get_method ? str_replace("&", "%26", ff($dbc->f("value")))
-                                                        : ff($dbc->f("value")));
-
-        if (ff($dbc->f("name")) == $value) {
+        if ($get_method) {
+            $value = str_replace("&", "%26", $value);
+        }
+        if ($name == $value) {   // loose, as always: '1.0' == '1'
             $value = '#';
         }
-        $data[$dbc->f("ancestors") . $dbc->f("id")] = "'"
-                . ff($dbc->f("name")) . "','"
-                . $value . "',"
-                . ff($dbc->f("pri")) . ",'"
-                . ($admin ? ff($dbc->f("description")) : "") . "',"
-                . ff($dbc->f("short_id")) . ","
-                . "false";
+        $data[$dbc->f("ancestors") . $dbc->f("id")] = [
+            $name,
+            $value,
+            (int)$dbc->f("pri"),
+            $admin ? str_replace(["\r", "\n"], '', (string)$dbc->f("description")) : "",
+            (int)$dbc->f("short_id"),
+            false,
+        ];
     }
 
     freeDB($dbc);
     ksort($data);
 
+    $levels     = [];   // node lists of the branch being built, top level first - the last node of each list is the parent of the next one
     $path       = "";
-    $consts     = "array(";
     $error_data = [];
-    $ok_data    = 0;
-    $depth      = 0;
-    foreach ($data as $ancestors => $col) {
+    foreach ($data as $ancestors => $node) {
         $error = false;
         if (!$path) {
             if (strlen($ancestors) !== 16) {
                 $error = true;
             } else {
-                $consts .= "array($col";
+                $levels = [[$node]];
             }
         } elseif (strlen($ancestors) % 16) {
             $error = true;
             // step over one layer
         } elseif (strlen($ancestors) > strlen($path) && str_starts_with($ancestors, $path)) {
             if (strlen($ancestors) - strlen($path) === 16) {
-                $consts .= ",array(array($col";
-                $depth++;
+                $levels[] = [$node];
             } else {
                 $error = true; // error: missing layer, jump over
             }
@@ -255,42 +259,39 @@ function createConstsArray($group_id, $admin, &$consts): void
             if (!str_starts_with($ancestors, substr($path, 0, -16))) {
                 $error = true;
             } else {
-                $consts .= "),array($col";
+                $levels[count($levels) - 1][] = $node;
             }
         } else {
-            $consts .= ")";
             $level = 0;
             while (substr($ancestors, 0, $level * 16) === substr($path, 0, $level * 16)) {
                 ++$level;
             }
-            for ($i = 0, $ino = strlen($path); $i < $ino / 16 - $level && $depth > 0; ++$i) {
-                $consts .= "))";
-                $depth--;
+            for ($i = 0, $ino = strlen($path); $i < $ino / 16 - $level && count($levels) > 1; ++$i) {
+                hcCloseLevel($levels);
             }
-            $consts .= ",array($col";
+            $levels[count($levels) - 1][] = $node;
         }
         if ($error) {
-            $error_data[] = $col;
+            $error_data[] = $node;
         } else {
             $path = $ancestors;
-            ++$ok_data;
         }
     }
-    if ($ok_data) {
-        $consts .= ")";
+    while (count($levels) > 1) {
+        hcCloseLevel($levels);
     }
-    $consts .= str_repeat("))", $depth);
-    if (count($error_data)) {
-        if ($ok_data) {
-            $consts .= ",";
-        }
-        foreach ($error_data as $col) {
-            $consts .= "array($col),";
-        }
-        $consts = substr($consts, 0, -1);
-    }
+    return array_merge($levels[0] ?? [], $error_data);
+}
 
-    $consts .= ")";
+/** Hangs the deepest node list of the branch under its parent - the last node one level up.
+ *  @param $levels (by link) - see createConstsArray()
+ */
+function hcCloseLevel(array &$levels): void
+{
+    global $hcCol;
+    $children = array_pop($levels);
+    $parent   = count($levels) - 1;
+    $levels[$parent][array_key_last($levels[$parent])][$hcCol["Child"]] = $children;
 }
 
 /** hcCompareConstants function
@@ -324,13 +325,19 @@ function hcSortArray(&$arr): void
     }
 }
 
-/** ff function
+/** A text as a single-quoted JavaScript string for hcConsts[] inside <script>: \ and ' escaped,
+ *  CR/LF dropped, < as \x3C (no </script> nor <!-- can appear), U+2028/U+2029 escaped
+ *  (they end a string in older engines). Ordinary text comes out as it is.
  * @param $str
- * @return mixed
+ * @return string
  */
-function ff($str)
+function hcJsString($str): string
 {
-    return str_replace(["\r","\n","'"], ['','',"\\'"], $str);
+    return "'" . str_replace(
+        ["\\", "'", "\r", "\n", "<", "\u{2028}", "\u{2029}"],
+        ["\\\\", "\\'", "", "", "\\x3C", "\\u2028", "\\u2029"],
+        (string)$str
+    ) . "'";
 }
 
 /** printConstsArray function
@@ -341,17 +348,17 @@ function ff($str)
 function printConstsArray(&$arr, $admin): string
 {
     global $hcCol;
-    $value = ff($arr[$hcCol["Value"]]);
-    if (ff($arr[$hcCol["Name"]]) == $value) {
+    $value = $arr[$hcCol["Value"]];
+    if ($arr[$hcCol["Name"]] == $value) {
         $value = '#';
     }
-    $retval = "new Array('"
-            . ff($arr[$hcCol["Name"]]) . "','"
-            . $value . "'"
+    $retval = "new Array("
+            . hcJsString($arr[$hcCol["Name"]]) . ","
+            . hcJsString($value)
             . ($admin ? ","
-            . ff($arr[$hcCol["Prior"]]) . ",'"
-            . ff($arr[$hcCol["Desc"]]) . "',"
-            . ff($arr[$hcCol["ID"]]) . ","
+            . (int)$arr[$hcCol["Prior"]] . ","
+            . hcJsString($arr[$hcCol["Desc"]]) . ","
+            . (int)$arr[$hcCol["ID"]] . ","
             . "false"
             : "");
     if (count($arr) > $hcCol["Child"]) {
