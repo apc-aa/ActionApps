@@ -23,6 +23,9 @@ https://www.apc.org/
 require_once __DIR__."/include/init_central.php";
 require_once __DIR__ . "/../include/formutil.php";
 
+use AA\Central\CsvImport;
+use AA\IO\DB\DB_AA;
+
 
 pageOpen();
 
@@ -31,28 +34,62 @@ if (!IsSuperadmin()) {
   exit;
 }
 
-if (is_array($_FILES['csv_filex'])) {
-
-    if ($_FILES["csv_filex"]["error"] == UPLOAD_ERR_OK) {
-        $varset = new CVarset;
-        $handle = fopen($_FILES["csv_filex"]["tmp_name"], 'rb');
-
-        $keys = false;
-        while (($data = fgetcsv($handle, 10000)) !== FALSE) {
-            if (!$keys) {
-                // must be first row with field names
-                $keys = $data;
-                continue;
-            }
-            $varset->clear();
-            $data_array = array_combine($keys, $data);
-            $data_array['status_code'] = 1;
-            $varset->resetFromRecord($data_array);
-            $varset->doInsert('central_conf');
-            $Msg .=  '<br>'. $data_array['ORG_NAME']. ' (' .$data_array['AA_HTTP_DOMAIN'] .') '. _m('inserted');
-        }
+$err     = [];
+$Msg     = '';
+$columns = AA::Metabase()->getColumnNames('central_conf');
+$upload  = $_FILES['csv_filex'] ?? null;   // FrmInputFile('csv_file') names its file input csv_file + 'x'
+if (is_array($upload)) {
+    if (($upload['error'] !== UPLOAD_ERR_OK) || !is_uploaded_file($upload['tmp_name']) || !($handle = fopen($upload['tmp_name'], 'rb'))) {
+        $err[] = _m('No CSV file received (upload error %1).', [(int) $upload['error']]);
+    } else {
+        $records = CsvImport::readRecords($handle);
         fclose($handle);
-        $Msg .=  '<br>'. _m('Done');
+        $import  = CsvImport::parse(array_shift($records) ?? [], $records, $columns);
+    }
+}
+if (isset($import)) {
+    // never print CSV values other than ORG_NAME and AA_HTTP_DOMAIN - the file holds passwords
+    switch ($import['error']) {
+        case CsvImport::ERR_BLANK_HEADER:
+            $err[] = _m('The first line is empty. It must hold the column names.');
+            break;
+        case CsvImport::ERR_SEMICOLON:
+            $err[] = _m('The file looks semicolon-separated. Separate the fields by comma.');
+            break;
+        case CsvImport::ERR_NO_HEADER:
+            $err[] = _m('The first line must hold the column names (see below), none of them was found.');
+            break;
+        case CsvImport::ERR_DUPLICATE:
+            $err[] = _m('Column %1 is in the first line twice, nothing was imported.', [safe($import['error_arg'])]);
+            break;
+        default:
+            try {
+                $failed_row = 0;
+                DB_AA::transaction(static function () use ($import, &$failed_row) {
+                    foreach ($import['rows'] as $row_no => $row) {
+                        // nohalt: a DB error must not die() printing the INSERT, passwords included
+                        if (!AA::Metabase()->doInsert('central_conf', $row, 'nohalt')) {
+                            $failed_row = $row_no;
+                            throw new RuntimeException('central_conf insert failed');
+                        }
+                    }
+                });
+                foreach ($import['rows'] as $row) {
+                    $Msg .= '<br>' . safe($row['ORG_NAME'] ?? '') . ' (' . safe($row['AA_HTTP_DOMAIN'] ?? '') . ') ' . _m('inserted');
+                }
+                if ($import['ignored']) {
+                    $Msg .= '<br>' . _m('Ignored columns') . ': ' . safe(implode(', ', $import['ignored']));
+                }
+                foreach ($import['rejected'] as $rejected) {
+                    $err[] = _m('Row %1 skipped - it has %2 fields, the first row has a different number.', [$rejected['row'], $rejected['fields']]);
+                }
+                $Msg .= '<br>' . _m('Done');
+            } catch (RuntimeException) {
+                // an insert or DB_AA's commit failed; the exception text is not shown
+                $err[] = $failed_row
+                    ? _m('Database error at row %1 - import rolled back, nothing was inserted.', [$failed_row])
+                    : _m('Database error - import rolled back, nothing was inserted.');
+            }
     }
 }
 
@@ -67,45 +104,11 @@ $form_buttons = ["submit"];
 <form name=f method=post enctype="multipart/form-data" action="<?php echo StateUrl(self_base() ."import_csv.php") ?>">
 <?php
 FrmTabCaption('', $form_buttons);
-FrmInputFile('csv_file', _m('CSV file'), '', true, "*/*", _m("CSV file for upload. Each AA on its own row, fields separated by comma, the fields must be in following order (just like in central_conf table):<br>dns_conf, dns_serial, dns_web, dns_mx, dns_db, dns_prim, dns_sec, web_conf, web_path, db_server, db_name, db_user, db_pwd, AA_SITE_PATH, AA_BASE_DIR, AA_HTTP_DOMAIN, AA_ID, ORG_NAME, ERROR_REPORTING_EMAIL, ALERTS_EMAIL, IMG_UPLOAD_MAX_SIZE, IMG_UPLOAD_URL, IMG_UPLOAD_PATH, SCROLLER_LENGTH, FILEMAN_BASE_DIR, FILEMAN_BASE_URL, FILEMAN_UPLOAD_TIME_LIMIT, AA_ADMIN_USER, AA_ADMIN_PWD"));
+FrmInputFile('csv_file', _m('CSV file'), '', true, "*/*", _m("CSV file for upload, fields separated by comma. The first row holds the column names, in any order; each following row is one AA. Accepted column names (others are ignored):<br>%1", [implode(', ', array_diff($columns, CsvImport::NOT_IMPORTED))]));
 FrmTabEnd($form_buttons);
 ?>
 </form>
 <?php
 
-/*
-require($_REQUEST['file']);
-$conf = array( 'dns_conf'                  => '',
-               'dns_serial'                => '',
-               'dns_web'                   => '',
-               'dns_mx'                    => '',
-               'dns_db'                    => '',
-               'dns_prim'                  => '',
-               'dns_sec'                   => '',
-               'web_conf'                  => $_REQUEST['file'],
-               'web_path'                  => THIS_AA_FILES_PATH,
-               'db_server'                 => DB_HOST,
-               'db_name'                   => DB_NAME,
-               'db_user'                   => DB_USER,
-               'db_pwd'                    => DB_PASSWORD,
-               'AA_SITE_PATH'              => AA_SITE_PATH,
-               'AA_BASE_DIR'               => AA_BASE_DIR,
-               'AA_HTTP_DOMAIN'            => AA_HTTP_DOMAIN,
-               'AA_ID'                     => AA_ID,
-               'ORG_NAME'                  => ORG_NAME,
-               'ERROR_REPORTING_EMAIL'     => ERROR_REPORTING_EMAIL,
-               'ALERTS_EMAIL'              => ALERTS_EMAIL,
-               'IMG_UPLOAD_MAX_SIZE'       => IMG_UPLOAD_MAX_SIZE,
-               'IMG_UPLOAD_URL'            => IMG_UPLOAD_URL,
-               'IMG_UPLOAD_PATH'           => IMG_UPLOAD_PATH,
-               'SCROLLER_LENGTH'           => SCROLLER_LENGTH,
-               'FILEMAN_BASE_DIR'          => FILEMAN_BASE_DIR,
-               'FILEMAN_BASE_URL'          => FILEMAN_BASE_URL,
-               'FILEMAN_UPLOAD_TIME_LIMIT' => FILEMAN_UPLOAD_TIME_LIMIT,
-               'AA_ADMIN_USER'             => AA_ADMIN_USER,
-               'AA_ADMIN_PWD'              => AA_ADMIN_PWD,
-               'status_code'               => 1
-             );
-*/
 
 $apage->printFoot();
