@@ -145,7 +145,7 @@ $destination_aa = $_POST['destination_aa'] ?? [];
 
 FrmTabCaption('', $form_buttons);
 FrmStaticText(_m('Template ActionApps'), $aas[$_POST['template_aa']]->getName());
-FrmTabSeparator(_m('Modules to Copy from %1', [$aas[$_POST['template_aa']]->getName()]));
+FrmTabSeparator(_m('Modules to Copy from %1', [safe($aas[$_POST['template_aa']]->getName())]));
 FrmInputMultiSelect('sync_slices[]', _m('Slices to copy'), $template_slices, reset($sync_slices), 10);
 FrmInputChBox('sync_defs', _m('Copy definitions'), $sync_defs, false, '', 1, false, _m('Copy slice, fields, views, .... of selected slices above'));
 FrmInputChBox('sync_items', _m('Copy also items'), $sync_items, false, '', 1, false, _m('Copy also item data (items, content, discussions tables) of selected slices above - You can also check only this checkbox to copy the content of the slice into previously prepared (and empty) slice'));

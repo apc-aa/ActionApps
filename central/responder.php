@@ -156,13 +156,13 @@ class AA_Responder_Get_Modules extends AA_Responder
 class AA_Responder_Get_Module_Defs extends AA_Responder
 {
     private array $ids;
-    private array $limited;  // array - limits the definitions sent
+    private array $limited;  // parts to send - see AA_Definition_Module::normalizeLimited()
     private string $type;     // module type
 
     public function __construct($param)
     {
         $this->ids     = is_array($param['ids']) ? $param['ids'] : [];
-        $this->limited = is_array($param['limited']) ? $param['limited'] : [];
+        $this->limited = AA_Definition_Module::normalizeLimited($param['limited'] ?? []);  // Central before 2008 sent bool
         $this->type    = (string) $param['type'];
     }
 
@@ -196,8 +196,14 @@ class AA_Responder_Do_Synchronize extends AA_Responder
     {
         $ret = [];
         foreach ($this->sync_commands as $serialized_command) {
-            $cmd   = unserialize((string) $serialized_command, ['allowed_classes' => ResponderPolicy::syncAllowedClasses()]);
-            $ret[] = ($cmd instanceof AA_Sync_Action) ? $cmd->doAction() : _m('Wrong command - not a synchronization action');
+            try {
+                $cmd   = unserialize((string) $serialized_command, ['allowed_classes' => ResponderPolicy::syncAllowedClasses()]);
+                $ret[] = ($cmd instanceof AA_Sync_Action) ? $cmd->doAction() : _m('Wrong command - not a synchronization action');
+            } catch (\Throwable $e) {
+                // one bad command must not cost the rest of the batch; the message may name server
+                // paths or SQL, so only the error class goes back
+                $ret[] = _m('Wrong command - %1', [get_class($e)]);
+            }
         }
         return new AA_Response($ret);
     }

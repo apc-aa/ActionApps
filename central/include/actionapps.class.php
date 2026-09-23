@@ -29,6 +29,7 @@ https://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+use AA\Central\ResponderPolicy;
 use AA\IO\DB\DB_AA;
 use AA\Later\LaterInterface;
 use AA\Later\Toexecute;
@@ -386,6 +387,23 @@ class AA_Definition_Module
         return $this->data;
     }
 
+    /** Parts loadForId() loads: ['definitions' => true, 'items' => true]. Bool true is the pre-2008
+     *  form (= definitions only); anything else loads nothing.
+     *  @return array<string, true> */
+    public static function normalizeLimited($limited): array
+    {
+        if ($limited === true) {
+            return ['definitions' => true];
+        }
+        $ret = [];
+        foreach (['definitions', 'items'] as $part) {
+            if (is_array($limited) && !empty($limited[$part])) {
+                $ret[$part] = true;
+            }
+        }
+        return $ret;
+    }
+
     public function getId()
     {
         return $this->module_id;
@@ -538,8 +556,9 @@ class AA_Definition_Module_Slice extends AA_Definition_Module
         $this->clear();
         $this->module_id = $module_id;
         $metabase        = AA::Metabase();
+        $limited         = self::normalizeLimited($limited);
 
-        if ($limited['definitions']) {
+        if (isset($limited['definitions'])) {
             $this->data['module']       = $metabase->getModuleRows('module', $module_id);
             $this->data['slice']        = $metabase->getModuleRows('slice', $module_id);
             $this->data['field']        = $metabase->getModuleRows('field', $module_id);
@@ -571,26 +590,38 @@ class AA_Definition_Module_Slice extends AA_Definition_Module
             }
         }
 
-        if ($limited['items']) {
+        if (isset($limited['items'])) {
             $this->data['item']       = $metabase->getModuleRows('item', $module_id);
             $this->data['content']    = $metabase->getModuleRows('content', $module_id);
             $this->data['discussion'] = $metabase->getModuleRows('discussion', $module_id);
         }
     }
 
-    public function compareWith($dest_def)
+    /** @return AA_Difference[] - an INFO row alone when a side is missing; an empty destination gives NEW rows */
+    public function compareWith($dest_def): array
     {
+        // nothing loaded (unknown id, remote error) - comparing would offer pre-checked DELETEs of the destination slice
+        if (empty($this->data['module']) || empty($this->data['slice'])) {
+            return [new AA_Difference('INFO', _m('Template slice %1 has no definition', [safe((string) $this->module_id)]))];
+        }
+        if (!($dest_def instanceof AA_Definition_Module)) {
+            return [new AA_Difference('INFO', _m("Comparison slice (%1) does not exist", [safe((string) $this->module_id)]))];
+        }
         /** @todo check the state, when the name contains "->" */
         $dest_module_id = $dest_def->getId();
-        $metabase       = AA::Metabase();
-
-        $diff =                    AA_Difference::_compareArray(reset($this->data['module']), reset($dest_def->data['module']), new AA_Identifier($dest_module_id, 'module', $dest_module_id), [$metabase::getModuleField('module')]); // just module data
-        $diff = array_merge($diff, AA_Difference::_compareArray(reset($this->data['slice']), reset($dest_def->data['slice']), new AA_Identifier($dest_module_id, 'slice', $dest_module_id), [$metabase::getModuleField('slice')]));  // just slice data
-        $diff = array_merge($diff, AA_Difference::_compareArray($this->data['field'], $dest_def->data['field'], new AA_Identifier($dest_module_id, 'field'), [$metabase::getModuleField('field')]));
-        $diff = array_merge($diff, AA_Difference::_compareArray($this->data['view'], $dest_def->data['view'], new AA_Identifier($dest_module_id, 'view'), [$metabase::getModuleField('view')]));
-        $diff = array_merge($diff, AA_Difference::_compareArray($this->data['email'], $dest_def->data['email'], new AA_Identifier($dest_module_id, 'email'), [$metabase::getModuleField('email')]));
-        $diff = array_merge($diff, AA_Difference::_compareArray($this->data['constant_slice'], $dest_def->data['constant_slice'], new AA_Identifier($dest_module_id, 'constant_slice'), [$metabase::getModuleField('constant_slice')]));
-        $diff = array_merge($diff, AA_Difference::_compareArray($this->data['constant'], $dest_def->data['constant'], new AA_Identifier($dest_module_id, 'constant'), [$metabase::getModuleField('constant')]));
+        $dest_data      = $dest_def->getArray();
+        $diff           = [];
+        foreach (AA_Sync_Action::TABLES as $table) {
+            $template    = $this->data[$table] ?? null;
+            $destination = $dest_data[$table] ?? null;
+            $identifier  = new AA_Identifier($dest_module_id, $table);
+            if ($table === 'module' || $table === 'slice') {  // one row per module - compare just its data
+                $template    = is_array($template) ? reset($template) : null;
+                $destination = is_array($destination) ? reset($destination) : null;
+                $identifier  = new AA_Identifier($dest_module_id, $table, $dest_module_id);
+            }
+            $diff = array_merge($diff, AA_Difference::_compareArray($template, $destination, $identifier, [AA_Metabase::getModuleFields()[$table] ?? null]));
+        }
         return $diff;
     }
 }
@@ -755,19 +786,19 @@ class AA_Identifier
 
     public function getModuleId()
     {
-        return $this->path[0];
+        return $this->path[0] ?? null;
     }
     public function getTable()
     {
-        return $this->path[1];
+        return $this->path[1] ?? null;
     }
     public function getRow()
     {
-        return $this->path[2];
+        return $this->path[2] ?? null;
     }
     public function getColumn()
     {
-        return $this->path[3];
+        return $this->path[3] ?? null;
     }
 
     /** Parses the identifier string (like "Configuraci�n->field->category........")
@@ -797,6 +828,10 @@ class AA_Identifier
 /** Class which defines synchronization actions */
 class AA_Sync_Action
 {
+    /** The only tables an action may write - the ones compareWith() compares. Metabase itself
+     *  would accept ~50, including toexecute (unserialized later), users and central_conf. */
+    public const TABLES = ['module', 'slice', 'field', 'view', 'email', 'constant_slice', 'constant'];
+
     /** action type  - DELETE | INSERT | UPDATE_ROW | UPDATE_VALUE */
     private string $type;
 
@@ -813,12 +848,14 @@ class AA_Sync_Action
         $this->params     = $params;
     }
 
+    /** The checkbox value is base64: serialize() wraps private property names in NUL bytes, which
+     *  browsers post back as U+FFFD - the action would no longer unserialize. */
     public function printToForm(): void
     {
-        $packed_action = serialize($this);
+        $form_value = base64_encode(serialize($this));
         echo '<div>';
-        $state = isset($_POST['sync']) ? in_array($packed_action, (array) $_POST['sync']) : ($this->type !== 'UPDATE_VALUE');
-        FrmChBoxEasy('sync[]', $state, '', $packed_action);
+        $state = isset($_POST['sync']) ? in_array($form_value, (array) $_POST['sync'], true) : ($this->type !== 'UPDATE_VALUE');
+        FrmChBoxEasy('sync[]', $state, '', $form_value);
         switch ($this->type) {
             case 'DELETE': echo _m("Delete");
                 break;
@@ -829,6 +866,22 @@ class AA_Sync_Action
                 break;
         }
         echo '</div>';
+    }
+
+    /** Action from a printToForm() checkbox value; null for anything else - the value is request input. */
+    public static function fromFormValue(string $form_value): ?AA_Sync_Action
+    {
+        $serialized = base64_decode($form_value, true);
+        if ($serialized === false) {
+            return null;
+        }
+        try {
+            // @: malformed data only warns and returns false, rejected below
+            $action = @unserialize($serialized, ['allowed_classes' => ResponderPolicy::syncAllowedClasses()]);
+        } catch (\Throwable) {  // e.g. a foreign object in the typed $identifier
+            return null;
+        }
+        return ($action instanceof self && isset($action->type, $action->identifier)) ? $action : null;
     }
 
     /** returns data array as we need it for $metabase->doInsert/Update */
@@ -854,6 +907,9 @@ class AA_Sync_Action
         $row         = $idf->getRow();
         //$column      = $idf->getColumn();
 
+        if (!in_array($table, self::TABLES, true)) {
+            return _m('Wrong command - this table is not synchronized');
+        }
         $metabase    = AA::Metabase();
 
         if (!$row) {
@@ -902,7 +958,8 @@ class AA_Task_Sync implements LaterInterface
     {
         // synchronize accepts array of sync_actions, so it is possible
         // to do more action by one call
-        return (string) $this->actionapps->synchronize([$this->sync_action]);
+        $ret = $this->actionapps->synchronize([$this->sync_action]);
+        return implode("\n", array_filter((array) $ret, 'is_scalar'));  // one report line per action
     }
 }
 

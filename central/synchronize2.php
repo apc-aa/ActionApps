@@ -68,8 +68,11 @@ FrmTabCaption('', $form_buttons);
 FrmStaticText(_m('Template ActionApps'), $aas[$_POST['template_aa']]->getName());
 FrmTabSeparator(_m('Slice Mapping'));
 FrmStaticText($aas[$_POST['template_aa']]->getName(), $aas[$_POST['comparation_aa']]->getName());
-foreach($tmplate_slices as $sid => $name) {
-    FrmInputSelect('sync_slices['.$sid.']', $name, $cmp_slices, $_POST['sync_slices'], true);
+foreach ($tmplate_slices as $sid => $name) {
+    // the remote AA answered with both; FrmInputSelect() escapes the options, not the name and label
+    if (is_long_id((string) $sid)) {
+        FrmInputSelect('sync_slices[' . $sid . ']', safe($name), $cmp_slices, $_POST['sync_slices'], true);
+    }
 }
 FrmTabEnd($form_buttons);
 ?>

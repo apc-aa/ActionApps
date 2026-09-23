@@ -37,12 +37,12 @@ function CompareSliceDefs($template_slice_defs, $comp_slice_defs, $mapping): arr
             if (!is_long_id((string) $tmp_slice_name)) {
                 continue;
             }
-            $cmp_slice_name = $mapping[$tmp_slice_name];
-            $differences[$tmp_slice_name] = [];
-            if (empty($comp_slice_defs[$cmp_slice_name])) {
-                $differences[$tmp_slice_name][] = new AA_Difference('INFO', _m("Comparison slice (%1) does not exist", [safe($tmp_slice_name)]));
+            if (!($slice_def instanceof AA_Definition_Module_Slice)) {
+                $differences[$tmp_slice_name] = [new AA_Difference('INFO', _m('Template AA sent no definition for slice %1', [safe($tmp_slice_name)]))];
+                continue;
             }
-            $differences[$tmp_slice_name] = array_merge($differences[$tmp_slice_name], $slice_def->compareWith($comp_slice_defs[$cmp_slice_name]));
+            // a missing comparison slice gives the "does not exist" row
+            $differences[$tmp_slice_name] = $slice_def->compareWith($comp_slice_defs[$mapping[$tmp_slice_name] ?? ''] ?? null);
         }
     }
     return $differences;
@@ -71,24 +71,29 @@ if ($_POST['compare']) {
         }
     }
 
-    $template_slice_defs = $aas[$_POST['template_aa']]->requestDefinitions('Slice', $slices4template, true);
+    // bool true arrives as [] in the responder - it loaded nothing and the comparison failed
+    $template_slice_defs = $aas[$_POST['template_aa']]->requestDefinitions('Slice', $slices4template, ['definitions' => true]);
     if (isset($_POST['comparation_aa'])) {
-        $comp_slice_defs = $aas[$_POST['comparation_aa']]->requestDefinitions('Slice', $slices2compare, true);
+        $comp_slice_defs = $aas[$_POST['comparation_aa']]->requestDefinitions('Slice', $slices2compare, ['definitions' => true]);
         // now compare slices
         $differences = CompareSliceDefs($template_slice_defs, $comp_slice_defs, $_POST['sync_slices']);
     }
 }
 
 if ($_POST['synchronize']) {
-    $toexecute = new Toexecute();
+    $toexecute     = new Toexecute();
+    $no_sync_tasks = 0;
 
     if (is_array($_POST['destination_aa'])) {
-        $no_sync_tasks = 0;
         foreach ($_POST['destination_aa'] as $dest_aa) {
-            if (is_array($_POST['sync'])) {
-                foreach ($_POST['sync'] as $sync_action) {
-                    // plan the synchronization action to for execution via Task Manager
-                    $sync_task = new AA_Task_Sync($sync_action, $aas[$dest_aa]);
+            if (is_array($_POST['sync']) && isset($aas[$dest_aa])) {
+                foreach ($_POST['sync'] as $form_value) {
+                    if (!($sync_action = AA_Sync_Action::fromFormValue((string) $form_value))) {
+                        continue;
+                    }
+                    // plan the synchronization action to for execution via Task Manager;
+                    // the remote AA gets the serialized string, as it always did
+                    $sync_task = new AA_Task_Sync(serialize($sync_action), $aas[$dest_aa]);
                     $toexecute->userQueue($sync_task, [], 'AA_Task_Sync');
                     ++$no_sync_tasks;
                 }
@@ -124,8 +129,8 @@ $form_buttons = [
 ];
 
 FrmTabCaption(_m('Slice Comparison - %1 x %2', [
-    $aas[$_POST['template_aa']]->getName(),
-    $aas[$_POST['comparation_aa']]->getName(),
+    safe($aas[$_POST['template_aa']]->getName()),
+    safe($aas[$_POST['comparation_aa']]->getName()),
 ]), $form_buttons);
 if (isset($differences)) {
     // and print diffs out
@@ -174,7 +179,7 @@ FrmHidden("destination_aa[]", $aa2update);
 //FrmInputMultiSelect('destination_aa[]', _m('AA to update'), $aas_array, $aa2update, 20, false, true, _m('ActionApps installation to update'));
 //FrmInputMultiChBox('sync_slices[]', _m('Slices to synchronize'), $template_slices, $_POST['sync_slices'], false, '', '', 3);
 foreach ($_POST['sync_slices'] as $k => $v) {
-    if ($v) {
+    if ($v && is_long_id((string) $k)) {   // FrmHidden() escapes the value, not the name
         FrmHidden("sync_slices[$k]", $v);
     }
 }
