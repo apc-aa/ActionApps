@@ -554,8 +554,8 @@ function Event_ConstantBeforeUpdate($type, $slice_id, $slice_type, &$newvalue, $
  * @param $type
  * @param $slice_id
  * @param $slice_type
- * @param string $newvalue, $oldvalue Both have added slashes (e.g. from a form).
- * @param $oldvalue
+ * @param string $newvalue raw (not escaped) - propagateChanges() in include/constedit_util.php
+ * @param string $oldvalue raw (not escaped)
  * @param string $constant_id Unpacked ID of constant from the constant table.
  */
 function Event_ConstantUpdated($type, $slice_id, $slice_type, $newvalue, $oldvalue, $constant_id): bool

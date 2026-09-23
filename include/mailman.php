@@ -107,12 +107,13 @@ class AA_Mailman
         if (!($group_id = DB_AA::select1('group_id', 'SELECT group_id FROM `constant`', [['id', $constant_id, 'l']]))) {
             return;
         }
+        $like = constant_group_like($group_id);
         $db = getDB();
         $db->query("SELECT slice.id FROM slice
             INNER JOIN field ON field.slice_id = slice.id
             WHERE slice.type = 'ReaderManagement'
-            AND (field.input_show_func LIKE '___:$group_id:%'
-            OR  field.input_show_func LIKE '___:$group_id')");
+            AND (field.input_show_func LIKE '___:$like:%'
+            OR  field.input_show_func LIKE '___:$like')");
         $slices = [];
         while ($db->next_record()) {
             $slices[] = unpack_id($db->f("id"));

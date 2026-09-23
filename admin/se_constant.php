@@ -89,27 +89,41 @@ if (!IfSlPerm(PS_FIELDS)) {
 }
 
 // as_new and $group_id is varname4form()-ed (for easier parameter passing)
-$as_new    = (strlen($as_new) > 1)   ? pack_id(substr($as_new,1)) : null;
-$group_id  = (strlen($group_id) > 1) ? pack_id(substr($group_id,1)) : null;
+$as_new    = constant_group_from_form($as_new);
+$group_id  = constant_group_from_form($group_id);
+if (($as_new === null) || ($group_id === null)) {
+    AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php", _m('Wrong constant group id'), "admin");
+    exit;
+}
 $back_url  = ($return_url ? ($fid    ? con_url($return_url,"fid=".$fid) : $return_url) : "index.php");
 $from_form = false;  // display the values from form (after unsucessful update)
+$may_edit_slice = static fn(string $slice_id): bool => CheckPerms(AuthGetUid(), "slice", $slice_id, PS_FIELDS);
+$constant_info  = $group_id ? constant_group_owner($group_id) : false;
+
+$superadmin     = IsSuperadmin();
+
+// Check permissions - before anything is changed. Some groups may be only viewed (core, shared).
+$readonly = '';     // why the group can't be changed
+if ($group_id) {
+    $changes  = $update || $deleteGroup || ($hcalldata !== '') || ($new_owner_id !== '');
+    $denied   = constant_group_denied($group_id, $constant_info, $may_edit_slice, false, $superadmin, false);
+    $readonly = $denied ?: constant_group_denied($group_id, $constant_info, $may_edit_slice, $deleteGroup, $superadmin);
+    if ($denied || ($changes && $readonly)) {
+        AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php", $denied ?: $readonly, "admin");
+        exit;
+    }
+}
 
 if ($deleteGroup && $group_id) {
-    delete_constant_group($group_id);
+    if (!delete_constant_group($group_id)) {
+        AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php", _m("Can't delete constant group"), "admin");
+        exit;
+    }
     go_url(StateUrl($back_url));
 }
 
 $err = [];          // error array (Init - just for initializing variable
 $varset      = new Cvarset();
-
-// Check permissions
-if ( $group_id ) {
-    $constant_info = DB_AA::select1('', 'SELECT  LOWER(HEX(`slice_id`)) AS owner_id, name, propagate FROM constant_slice, slice', [['constant_slice.slice_id', 'slice.id', 'j'], ['group_id', $group_id]]);
-    if ($constant_info && !CheckPerms( AuthGetUid(), "slice", $constant_info["owner_id"], PS_FIELDS)) {
-        AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php", _m("You do not have permissions to change fields settings for the slice owning this group") . " (" . $constant_info['name'] . ")", "admin");
-        exit;
-    }
-}
 
 /** ShowConstant function
  *
@@ -145,63 +159,6 @@ function ShowConstant($id, $name, $value, $desc, $cid, $pri, ?array $using_slice
     echo "</tr>\n";
 }
 
-/** propagateChanges function
- * Propagates changes to a constant value to the items which contain this value.
- * @param string $group_id packed id of constant group
- * @param        $constant_id
- * @param string $newvalue The new value with added slashes (e.g. from a form)
- * @param        $oldvalue
- */
-function propagateChanges($group_id, $constant_id, $newvalue, $oldvalue): void
-{
-    global $Msg;
-
-    if ($oldvalue == $newvalue) {
-        return;
-    }
-
-    $event = aaevent::singleton();
-    $event->comes('CONSTANT_BEFORE_UPDATE', AA::$module_id, 'S', $newvalue, $oldvalue, $constant_id);
-
-    $cnt = 0;
-    $items2update = [];
-    $db = getDB();
-
-    if ($oldvalue) {
-        $qgroup_id = quote($group_id);
-
-        // we have to join also item table in order we make sure field is in right slice
-        $db->query("
-        SELECT item_id,field_id
-          FROM content, item, field
-         WHERE content.item_id=item.id
-           AND item.slice_id = field.slice_id
-           AND content.field_id = field.id
-           AND (field.input_show_func LIKE '___:$qgroup_id:%'
-            OR  field.input_show_func LIKE '___:$qgroup_id')
-           AND content.text = '$oldvalue'");
-        while ($db->next_record()) {
-            ++$cnt;
-            if ( !$items2update[$db->f("field_id")] ) {
-                $items2update[$db->f("field_id")] = new zids( null, 'p');
-            }
-            $items2update[$db->f("field_id")]->add($db->f("item_id"));
-        }
-    }
-    foreach ( $items2update as $field => $zids ) {
-        $SQL = "UPDATE content SET text='$newvalue' WHERE ". $zids->sqlin('item_id') ." AND field_id='".addslashes($field)."' AND text='$oldvalue'";
-        $db->query($SQL);
-    }
-    freeDB($db);
-
-    if ($cnt) {
-        $Msg .= $cnt . _m(" items changed to new value ") . "'$newvalue'<br>";
-    }
-
-    $event->comes('CONSTANT_UPDATED', AA::$module_id, 'S', $newvalue, $oldvalue, $constant_id);
-}
-
-
 if ($hcalldata || $hierarch) {
     hcUpdate();
 }
@@ -225,11 +182,16 @@ if ($update) {
             $new_group_id = substr(ConvertEncoding(str_replace(':','-',$new_group_id),'','us-ascii'),0,16);  // we don't need ':' nor UTF characters - we have 16 Bytes
                                                                  // in id (parameter separator)
             ValidateInput("new_group_id", _m("Constant Group"), $new_group_id, $err, true, "text");
+            if (!count($err) && !constant_group_id_valid($new_group_id)) {
+                $err["new_group_id"] = _m('Wrong constant group id');
+            }
             if (count($err)) {
                 break;
             }
             if (DB_AA::test('constant', [['group_id',$new_group_id]])) {
                 $err["DB"] = _m("This constant group already exists");
+            } elseif ($denied = constant_group_denied($new_group_id, constant_group_owner($new_group_id), $may_edit_slice, false, $superadmin)) {
+                $err["DB"] = $denied;    // an orphan constant_slice row may still name its owner
             } else {
                 $add_new_group = true;
                 $group_id = $new_group_id;
@@ -248,6 +210,10 @@ if ($update) {
                 AA::Metabase()->doInsert('constant_slice', $data_constant_slice);
             } else {
                 if ($new_owner_id) {
+                    if (!is_long_id($new_owner_id) || !$may_edit_slice($new_owner_id)) {
+                        $err["DB"] = _m("You do not have permissions to change fields settings in the new owner slice");
+                        break;
+                    }
                     $data_constant_slice['slice_id'] = $new_owner_id;
                     $chown = false;
                 }
@@ -272,15 +238,16 @@ if ($update) {
             // if name is empty, delete the constant
             if (($foonam == "")) {
                 if (!$new_constant) {
-                    if (!DB_AA::delete('constant', [['id',$category_id, 'l']])) {
-                        $err["DB"] .= MsgErr("Can't delete constant $category_id");
+                    // only constants of this group - the ids come from the form
+                    if (!DB_AA::delete('constant', [['id',$category_id, 'l'], ['group_id', $group_id]])) {
+                        $err["DB"] .= MsgErr("Can't delete constant " . safe($category_id));
                         break;
                     }
                 }
                 continue;
             }
             $data_constant = ['id'=> $category_id, 'name' => $name[$key], 'value' => $value[$key], 'description' => $desc[$key], 'pri' => ( $pri[$key] ?: 1000)];
-            if (false !== ($oldval = DB_AA::select1('value', 'SELECT `value` FROM `constant`',[['id',$category_id,'l']]))) {
+            if (false !== ($oldval = DB_AA::select1('value', 'SELECT `value` FROM `constant`',[['id',$category_id,'l'], ['group_id', $group_id]]))) {
                 if ($propagate_changes) {
                     propagateChanges($group_id, $category_id, $value[$key], $oldval);
                 }
@@ -289,6 +256,9 @@ if ($update) {
                     $err["DB"] .= MsgErr("Can't update constant");
                     break;
                 }
+            } elseif (DB_AA::test('constant', [['id', $category_id, 'l']])) {
+                $err["DB"] .= MsgErr("Can't update constant");   // the id belongs to another group
+                break;
             } else {
                 $data_constant['group_id'] = $group_id;
                 if (!AA::Metabase()->doInsert('constant', $data_constant)) {
@@ -314,6 +284,9 @@ $s_constants = ($group_id || $as_new) ? DB_AA::select([], 'SELECT `id`, `name`, 
 
 $apage = new AA_Adminpageutil('sliceadmin','fields');
 $apage->setTitle(_m("Admin - Constants Setting"));
+if ($readonly) {
+    $Msg .= MsgErr(_m('The constant group can be only viewed here') . ': ' . $readonly);
+}
 $apage->printHead($err, $Msg);
 
 $form_buttons = [
@@ -330,6 +303,9 @@ $form_buttons = [
         "title"  => _m("Edit in Hierarchical editor (allows to create constant hierarchy)")
     ]
 ];
+if ($readonly) {
+    $form_buttons = ["cancel" => ["url" => $back_url]];
+}
 ?>
  <input type="hidden" name="group_id" value="<?php echo varname4form($group_id); /* do not move it to $form_buttons - we need it also in hierarchical editor, which do not use $form_buttons!!! */ ?>">
 <?php
@@ -362,7 +338,7 @@ echo "\n     </td>\n</tr>";
 
 // Find slices, where the constant group is used
 if ($group_id) {
-    $using_slices_arr =  DB_AA::select([], "SELECT LOWER(HEX(module.id)) AS unpackid, module.deleted, module.name as sname, field.id as fid, field.name as fname FROM `module`, `field` WHERE module.id = field.slice_id AND (field.input_show_func LIKE '%:$group_id' OR field.input_show_func LIKE '%:$group_id:%')");
+    $using_slices_arr = constant_group_fields($group_id);
     echo "
       <tr><th>"._m("Constants used in slice")."</th>
         <td colspan=\"4\">".implode(
@@ -389,8 +365,8 @@ if (!$constant_info["owner_id"] || !$group_id) {
     }
     echo "</select>\n";
 } else {
-    echo $constant_info["name"]."&nbsp;&nbsp;&nbsp;&nbsp;
-    <input type=\"submit\" name=\"chown\" value=\""._m("Change owner")."\">";
+    echo safe($constant_info["name"]). ($readonly ? '' : "&nbsp;&nbsp;&nbsp;&nbsp;
+    <input type=\"submit\" name=\"chown\" value=\""._m("Change owner")."\">");
 }
 
 $propagate_ch = ( $group_id ? $constant_info["propagate"] : 1);   // default is checked for new constant group;

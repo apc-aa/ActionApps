@@ -54,6 +54,8 @@ final class RecordingDb extends DB_PDO
     public static ?string $fail_on = null;
     /** @var array<string, array> table => columns as DB_PDO::metadata() lists them (name, type) */
     public static array $metadata = [];
+    /** @var null|callable(string): int  affected rows of the last statement - 1 when not set */
+    public static $affected = null;
 
     private array $rows = [];
     private int $pos    = 0;
@@ -72,6 +74,7 @@ final class RecordingDb extends DB_PDO
         self::$answer   = null;
         self::$fail_on  = null;
         self::$metadata = [];
+        self::$affected = null;
     }
 
     /** number of statements of one kind sent so far */
@@ -226,7 +229,7 @@ final class RecordingDb extends DB_PDO
 
     public function affected_rows(): int
     {
-        return 1;
+        return self::$affected ? (self::$affected)((string) end(self::$log)) : 1;
     }
 
     public function num_rows(): int
