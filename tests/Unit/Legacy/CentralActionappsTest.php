@@ -1,0 +1,469 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Tests\Unit\Legacy;
+
+use AA_Actionapps;
+use AA_Definition_Module_Chunk;
+use AA_Request;
+use AA_Response;
+use ItemContent;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\TestCase;
+use Tests\Unit\Legacy\Fixtures\CentralTestHelpers;
+use Tests\Unit\Legacy\Fixtures\RecordingDb;
+
+// class declarations only
+require_once dirname(__DIR__, 3) . '/central/include/actionapps.class.php';
+require_once __DIR__ . '/fixtures/central_fixtures.php';   // the trait must exist before the class
+
+/** A request which answers without the network and keeps what it was asked with. */
+class CentralFakeRequest extends AA_Request
+{
+    /** @var list<array{mixed, mixed, mixed}> url, parameters, headers of each ask() */
+    public array $asked = [];
+
+    public function __construct(private AA_Response $answer)
+    {
+        parent::__construct('Fake_Command');
+    }
+
+    public function ask($url, $parameters = [], $headers = [])
+    {
+        $this->asked[] = [$url, $parameters, $headers];
+        return $this->answer;
+    }
+}
+
+/** An AA whose getResponse() answers from a script and keeps the requests. */
+class CentralScriptedAa extends AA_Actionapps
+{
+    /** @var AA_Request[] */
+    public array $requests = [];
+
+    /** @param AA_Response[] $answers  one per request, the last one repeats */
+    public function __construct(private array $answers)
+    {
+        parent::__construct(new ItemContent());
+    }
+
+    public function getResponse($request)
+    {
+        $this->requests[] = $request;
+        return count($this->answers) > 1 ? array_shift($this->answers) : $this->answers[0];
+    }
+}
+
+/**
+ * Characterization of AA_Actionapps (central/include/actionapps.class.php) - one AA installation as
+ * Central sees it: its central_conf row, the remote commands it sends, the session/JWT login.
+ * No DB (RecordingDb answers the SELECTs) and no network: the request methods run against a scripted
+ * getResponse(), getResponse() itself against a fake AA_Request, and the login requests which
+ * getResponse() builds itself read a local file as the "responder URL" (AA_Http::request() is plain
+ * file_get_contents()).
+ *
+ * Pins today's behaviour ahead of the move to src/Central/; "pinned; phase 4 may change" marks
+ * behaviour that is questionable rather than wanted.
+ */
+final class CentralActionappsTest extends TestCase
+{
+    use CentralTestHelpers;
+
+    public static function setUpBeforeClass(): void
+    {
+        require_once __DIR__ . '/../fixtures/util_shims.php';    // _m(), now(), safe()
+        require_once __DIR__ . '/fixtures/store_fixtures.php';   // RecordingDb
+        require_once __DIR__ . '/../../../include/varset.php';   // Cvarset of DB_AA::update()
+    }
+
+    protected function setUp(): void
+    {
+        RecordingDb::reset();   // other tests leave their statements and answers behind
+    }
+
+    protected function tearDown(): void
+    {
+        $GLOBALS['spareDBs'] = [];
+        RecordingDb::reset();
+        $this->removeLocalResponder();
+    }
+
+    /** @param array<string, string> $values  central_conf column => value */
+    private static function aa(array $values): AA_Actionapps
+    {
+        $content = new ItemContent();
+        foreach ($values as $column => $value) {
+            $content->setValue($column, $value);
+        }
+        return new AA_Actionapps($content);
+    }
+
+    /** An AA whose responder URL is a local file answering every request with $answer (null: no file). */
+    private function localAa(?AA_Response $answer, array $values = []): AA_Actionapps
+    {
+        $domain = $this->localResponder($answer === null ? null : serialize($answer));
+        return self::aa(['AA_HTTP_DOMAIN' => $domain, 'AA_BASE_DIR' => ''] + $values);
+    }
+
+    private static function setPrivate(object $object, string $property, mixed $value): void
+    {
+        (new \ReflectionProperty(AA_Actionapps::class, $property))->setValue($object, $value);
+    }
+
+    // --- local data (central_conf) --------------------------------------------------------------
+
+    /** @return array<string, array{string, string, string, string}> domain, base dir => name, responder URL */
+    public static function locations(): array
+    {
+        return [
+            'usual'                     => ['https://example.org/', 'apc-aa/', 'Org (https://example.org/apc-aa/)', 'https://example.org/apc-aa/central/responder.php'],
+            'base dir without slash'    => ['https://example.org/', 'aa', 'Org (https://example.org/aa)', 'https://example.org/aa/central/responder.php'],
+            'both with slash'           => ['https://example.org/', '/aa/', 'Org (https://example.org//aa/)', 'https://example.org//aa/central/responder.php'],
+            // pinned; phase 4 may change - plain concatenation, the host runs into the path
+            'domain without slash'      => ['https://example.org', 'aa/', 'Org (https://example.orgaa/)', 'https://example.orgaa/central/responder.php'],
+            'empty base dir'            => ['https://example.org/', '', 'Org (https://example.org/)', 'https://example.org/central/responder.php'],
+        ];
+    }
+
+    #[DataProvider('locations')]
+    public function test_getName_and_getComunicatorUrl_concatenate_domain_and_base_dir(string $domain, string $base, string $name, string $url): void
+    {
+        $aa = self::aa(['ORG_NAME' => 'Org', 'AA_HTTP_DOMAIN' => $domain, 'AA_BASE_DIR' => $base]);
+
+        $this->assertSame($name, $aa->getName());
+        $this->assertSame($url, $aa->getComunicatorUrl());
+    }
+
+    public function test_getName_does_not_escape(): void
+    {
+        // pinned; phase 4 may change - the callers escape (synchronize3.php safe()s it), the select boxes do not
+        $this->assertSame('<b>Org</b> (x/y/)', self::aa(['ORG_NAME' => '<b>Org</b>', 'AA_HTTP_DOMAIN' => 'x/', 'AA_BASE_DIR' => 'y/'])->getName());
+    }
+
+    /** @return array<string, array{?string, ?string}> AA_ADMIN_PWD => auth token */
+    public static function passwords(): array
+    {
+        return [
+            'jwt'            => ['jwt:eyJ.abc.def', 'eyJ.abc.def'],
+            'plain password' => ['secret', null],
+            'empty'          => ['', null],
+            'jwt prefix only' => ['jwt:', ''],
+            'upper case'     => ['JWT:x', null],
+        ];
+    }
+
+    #[DataProvider('passwords')]
+    public function test_getAuthToken_reads_the_jwt_prefix(string $pwd, ?string $token): void
+    {
+        $aa = self::aa(['AA_ADMIN_USER' => 'central', 'AA_ADMIN_PWD' => $pwd]);
+
+        $this->assertSame($token, $aa->getAuthToken());
+        $this->assertSame($pwd, $aa->getAccessPassword());
+        $this->assertSame('central', $aa->getAccessUsername());
+    }
+
+    public function test_setAuthToken_stores_it_as_the_password(): void
+    {
+        $aa = self::aa(['AA_ADMIN_PWD' => 'secret']);
+
+        $aa->setAuthToken('tok');
+
+        $this->assertSame('jwt:tok', $aa->getAccessPassword());
+        $this->assertSame('tok', $aa->getAuthToken());
+    }
+
+    public function test_saveAuthToken_updates_central_conf_by_numeric_id(): void
+    {
+        $GLOBALS['spareDBs'] = [new RecordingDb()];
+
+        self::collectingWarnings(static fn() => AA_Actionapps::saveAuthToken('12', 'jwt:abc'), $warnings);
+
+        $this->assertSame(["UPDATE `central_conf` SET  AA_ADMIN_PWD = 'jwt:abc' WHERE id = 12"], RecordingDb::$log);
+        // pinned; phase 4 may change - the SET pair has no type, DB_AA reads it anyway (and addslashes the value)
+        $this->assertCount(1, $warnings);
+        $this->assertStringContainsString('Undefined array key', $warnings[0]);
+    }
+
+    // --- loading from central_conf ---------------------------------------------------------------
+
+    /** central_conf rows as the DB returns them - in id order, not by name */
+    private static function answerCentralConf(): void
+    {
+        RecordingDb::$answer = static fn(string $sql): array => match (true) {
+            str_starts_with($sql, 'SELECT DISTINCT `id` FROM `central_conf`') => [['id' => '12'], ['id' => '7']],
+            str_starts_with($sql, 'SELECT * FROM central_conf')             => [
+                ['id' => '7', 'ORG_NAME' => 'Beta', 'AA_HTTP_DOMAIN' => 'https://b.example.org/', 'AA_BASE_DIR' => 'apc-aa/', 'AA_ADMIN_PWD' => 'secret'],
+                ['id' => '12', 'ORG_NAME' => 'Alpha', 'AA_HTTP_DOMAIN' => 'https://a.example.org/', 'AA_BASE_DIR' => 'aa/', 'AA_ADMIN_PWD' => 'jwt:tok'],
+            ],
+            default => [],
+        };
+        $GLOBALS['spareDBs'] = [new RecordingDb(), new RecordingDb()];
+    }
+
+    public function test_getArray_returns_approved_aas_in_the_order_of_the_name_query(): void
+    {
+        self::answerCentralConf();
+
+        // MakeSQLOrderBy() warns about the central_conf search fields having no 'table' - not the engine's
+        $aas = self::collectingWarnings(static fn() => AA_Actionapps::getArray());
+
+        $this->assertSame([
+            'SELECT DISTINCT `id` FROM `central_conf` WHERE  central_conf.status_code=1  ORDER BY ORG_NAME',
+            "SELECT * FROM central_conf WHERE id   IN ('12','7') ",
+        ], RecordingDb::$log);
+        $this->assertSame([12, 7], array_keys($aas), 'keyed by central_conf.id (int keys), ordered as the id query returned');
+        $this->assertContainsOnlyInstancesOf(AA_Actionapps::class, $aas);
+        $this->assertSame('Alpha (https://a.example.org/aa/)', $aas[12]->getName());
+        $this->assertSame('tok', $aas[12]->getAuthToken());
+        $this->assertSame('7', $aas[7]->getValue('id'));
+        $this->assertSame('secret', $aas[7]->getAccessPassword());
+    }
+
+    public function test_getArray_without_approved_aa_is_empty_after_one_query(): void
+    {
+        $GLOBALS['spareDBs'] = [new RecordingDb()];
+
+        $this->assertSame([], self::collectingWarnings(static fn() => AA_Actionapps::getArray()));
+        $this->assertCount(1, RecordingDb::$log, 'no content query for no ids');
+    }
+
+    public function test_getActionapps_loads_once_per_id(): void
+    {
+        RecordingDb::$answer = static fn(string $sql): array => [['id' => '9901', 'ORG_NAME' => 'Cached']];
+        $GLOBALS['spareDBs'] = [new RecordingDb()];
+
+        $first  = AA_Actionapps::getActionapps('9901');
+        $second = AA_Actionapps::getActionapps('9901');
+
+        $this->assertSame($first, $second);   // a static cache for the whole request - the id is unique to this test
+        $this->assertSame(["SELECT * FROM central_conf WHERE id   = '9901' "], RecordingDb::$log);
+        $this->assertSame('Cached', $first->getValue('ORG_NAME'));
+    }
+
+    // --- remote commands (getResponse() scripted) ------------------------------------------------
+
+    public function test_requestModules_sends_the_types_and_returns_the_answer(): void
+    {
+        $modules = ['0123456789abcdef0123456789abcdef' => 'News', 'fedcba9876543210fedcba9876543210' => 'Events'];
+        $aa      = new CentralScriptedAa([new AA_Response($modules)]);
+
+        $this->assertSame($modules, $aa->requestModules(['S', 'W']));
+        $this->assertSame('Get_Modules', $aa->requests[0]->getCommand());
+        $this->assertSame(['types' => ['S', 'W']], $aa->requests[0]->getParameters());
+    }
+
+    public function test_requestSlices_asks_for_type_S(): void
+    {
+        $aa = new CentralScriptedAa([new AA_Response(['x' => 'News'])]);
+
+        $this->assertSame(['x' => 'News'], $aa->requestSlices());
+        $this->assertSame(['types' => ['S']], $aa->requests[0]->getParameters());
+    }
+
+    /** @return array<string, array{AA_Response, array}> */
+    public static function moduleAnswers(): array
+    {
+        return [
+            'error'        => [new AA_Response('No response recieved', 3), []],
+            'scalar'       => [new AA_Response('odd'), ['odd']],   // pinned; phase 4 may change - cast, not rejected
+            'null'         => [new AA_Response(null), []],
+        ];
+    }
+
+    #[DataProvider('moduleAnswers')]
+    public function test_requestModules_casts_any_answer_to_array(AA_Response $answer, array $expected): void
+    {
+        $this->assertSame($expected, (new CentralScriptedAa([$answer]))->requestModules(['S']));
+    }
+
+    public function test_requestDefinitions_sends_type_ids_and_limited(): void
+    {
+        $defs = ['a' => new \AA_Definition_Module_Slice()];
+        $aa   = new CentralScriptedAa([new AA_Response($defs)]);
+
+        $this->assertSame($defs, $aa->requestDefinitions('Slice', ['a'], ['definitions' => true]));
+        $this->assertSame('Get_Module_Defs', $aa->requests[0]->getCommand());
+        $this->assertSame(['type' => 'Slice', 'ids' => ['a'], 'limited' => ['definitions' => true]], $aa->requests[0]->getParameters());
+
+        $aa->requestDefinitions('Site', ['b']);
+        $this->assertSame(['type' => 'Site', 'ids' => ['b'], 'limited' => []], $aa->requests[1]->getParameters(), 'limited defaults to []');
+    }
+
+    public function test_requestDefinitions_error_is_empty(): void
+    {
+        $this->assertSame([], (new CentralScriptedAa([new AA_Response('Unknown module type', 6)]))->requestDefinitions('Foo', ['a']));
+    }
+
+    public function test_requestDefinitions_non_array_answer_throws(): void
+    {
+        // pinned; phase 4 may change - unlike requestModules() there is no cast; the array return type throws
+        $this->expectException(\TypeError::class);
+        (new CentralScriptedAa([new AA_Response('odd')]))->requestDefinitions('Slice', ['a']);
+    }
+
+    public function test_synchronize_sends_the_commands_and_returns_the_report(): void
+    {
+        $aa = new CentralScriptedAa([new AA_Response(['field x updated'])]);
+
+        $this->assertSame(['field x updated'], $aa->synchronize(['cmd1', 'cmd2']));
+        $this->assertSame('Do_Synchronize', $aa->requests[0]->getCommand());
+        $this->assertSame(['sync' => ['cmd1', 'cmd2']], $aa->requests[0]->getParameters());
+    }
+
+    public function test_importModuleChunk_sends_the_chunk_and_returns_the_report(): void
+    {
+        $chunk = new AA_Definition_Module_Chunk('m', 'field', []);
+        $aa    = new CentralScriptedAa([new AA_Response(['OK: 1 field ([x]); '])]);
+
+        $this->assertSame(['OK: 1 field ([x]); '], $aa->importModuleChunk($chunk));
+        $this->assertSame('Do_Import_Module_Chunk', $aa->requests[0]->getCommand());
+        $this->assertSame(['definition_chunk' => $chunk], $aa->requests[0]->getParameters());
+    }
+
+    public function test_synchronize_and_importModuleChunk_return_only_the_error_code(): void
+    {
+        // pinned; phase 4 may change - the error text (why it failed) is dropped, the task log shows "3"
+        $aa = new CentralScriptedAa([new AA_Response('No response recieved (2 - timeout)', 3)]);
+
+        $this->assertSame(3, $aa->synchronize(['cmd']));
+        $this->assertSame(3, $aa->importModuleChunk(new AA_Definition_Module_Chunk('m', 'field', [])));
+    }
+
+    public function test_requestAAName_asks_once_and_caches_the_name(): void
+    {
+        $aa = new CentralScriptedAa([new AA_Response(['org_name' => 'Remote org', 'domain' => 'https://r.example.org/'])]);
+
+        // pinned; phase 4 may change - the first call reads the not yet set cache key (a warning)
+        $name = self::collectingWarnings(static fn() => $aa->requestAAName(), $warnings);
+
+        $this->assertSame('Remote org', $name);
+        $this->assertCount(1, $warnings);
+        $this->assertStringContainsString('org_name', $warnings[0]);
+        $this->assertSame('Remote org', $aa->requestAAName());
+        $this->assertCount(1, $aa->requests);
+        $this->assertSame('Get_Aaname', $aa->requests[0]->getCommand());
+    }
+
+    public function test_requestAAName_caches_the_error_code_as_the_name(): void
+    {
+        $aa   = new CentralScriptedAa([new AA_Response('timeout', 3), new AA_Response(['org_name' => 'Later'])]);
+        $name = self::collectingWarnings(static fn() => $aa->requestAAName());
+
+        // pinned; phase 4 may change - an error is never retried, and it names the code, not the text
+        $this->assertSame("Can't get org_name - 3", $name);
+        $this->assertSame("Can't get org_name - 3", $aa->requestAAName());
+        $this->assertCount(1, $aa->requests);
+    }
+
+    // --- getResponse(): JWT or session login -----------------------------------------------------
+
+    public function test_getResponse_with_jwt_sends_bearer_and_no_session(): void
+    {
+        $aa      = self::aa(['AA_HTTP_DOMAIN' => 'https://r.example.org/', 'AA_BASE_DIR' => 'aa/', 'AA_ADMIN_PWD' => 'jwt:TOKEN']);
+        $answer  = new AA_Response(['ok']);
+        $request = new CentralFakeRequest($answer);
+
+        $this->assertSame($answer, $aa->getResponse($request));
+        $this->assertSame([['https://r.example.org/aa/central/responder.php', [], ['Authorization' => 'Bearer TOKEN']]], $request->asked);
+        $this->assertNull($aa->getLastError());
+    }
+
+    public function test_getResponse_with_jwt_error_keeps_the_code_and_does_not_fall_back_to_login(): void
+    {
+        $aa      = self::aa(['AA_ADMIN_USER' => 'central', 'AA_ADMIN_PWD' => 'jwt:EXPIRED']);
+        $answer  = new AA_Response('expired', 101);
+        $request = new CentralFakeRequest($answer);
+
+        $this->assertSame($answer, $aa->getResponse($request));
+        $this->assertCount(1, $request->asked);
+        $this->assertSame(101, $aa->getLastError());
+        $this->assertSame([], $request->asked[0][1], 'no session parameter - no login happened');
+    }
+
+    public function test_getResponse_with_fresh_session_sends_it_as_parameter_and_cookie(): void
+    {
+        $aa = self::aa(['AA_HTTP_DOMAIN' => 'https://r.example.org/', 'AA_BASE_DIR' => 'aa/', 'AA_ADMIN_PWD' => 'secret']);
+        self::setPrivate($aa, '_remote_session_id', 'sess1');
+        self::setPrivate($aa, '_remote_session_id_time', now() - 9 * 60);
+        $request = new CentralFakeRequest(new AA_Response(['ok']));
+
+        $aa->getResponse($request);
+
+        // the parameter is AA_CP_Session, the cookie AA_Session
+        $this->assertSame([['https://r.example.org/aa/central/responder.php', ['AA_CP_Session' => 'sess1'], ['Cookie' => 'AA_Session=sess1']]], $request->asked);
+    }
+
+    public function test_getResponse_without_session_logs_in_first(): void
+    {
+        // the "remote" answers the Get_Sessionid login with [session id, auth]
+        $aa      = $this->localAa(new AA_Response(['sess42', 'auth']), ['AA_ADMIN_USER' => 'central', 'AA_ADMIN_PWD' => 'secret']);
+        $request = new CentralFakeRequest(new AA_Response(['ok']));
+
+        $aa->getResponse($request);
+        $this->removeLocalResponder();   // a second login would now fail
+        $aa->getResponse($request);
+
+        $this->assertSame(['AA_CP_Session' => 'sess42'], $request->asked[0][1]);
+        $this->assertSame(['AA_CP_Session' => 'sess42'], $request->asked[1][1], 'the session is kept for the next request');
+    }
+
+    public function test_getResponse_session_older_than_ten_minutes_logs_in_again(): void
+    {
+        $aa = $this->localAa(new AA_Response(['new-sess']), ['AA_ADMIN_PWD' => 'secret']);
+        self::setPrivate($aa, '_remote_session_id', 'old-sess');
+        self::setPrivate($aa, '_remote_session_id_time', now() - 10 * 60 - 5);
+        $request = new CentralFakeRequest(new AA_Response(['ok']));
+
+        $aa->getResponse($request);
+
+        $this->assertSame(['AA_CP_Session' => 'new-sess'], $request->asked[0][1]);
+    }
+
+    public function test_getResponse_failed_login_returns_its_error_without_asking(): void
+    {
+        $aa      = $this->localAa(null, ['AA_ADMIN_PWD' => 'secret']);   // no responder - unreadable URL
+        $request = new CentralFakeRequest(new AA_Response(['ok']));
+
+        $response = self::collectingWarnings(static fn() => $aa->getResponse($request));
+
+        $this->assertTrue($response->isError());
+        $this->assertSame(3, $response->getError());
+        $this->assertSame(3, $aa->getLastError());
+        $this->assertSame([], $request->asked);
+    }
+
+    public function test_requestJwt_returns_the_token(): void
+    {
+        $this->assertSame('eyJ.x.y', $this->localAa(new AA_Response('eyJ.x.y'))->requestJwt('central', 'secret'));
+    }
+
+    public function test_requestJwt_failure_is_empty_with_the_error_code(): void
+    {
+        $aa = $this->localAa(null);
+
+        $this->assertSame('', self::collectingWarnings(static fn() => $aa->requestJwt('central', 'secret')));
+        $this->assertSame(3, $aa->getLastError());
+    }
+
+    public function test_requestJwt_non_string_answer_is_cast(): void
+    {
+        $aa = $this->localAa(new AA_Response(['not', 'a token']));
+
+        // pinned; phase 4 may change - an array answer becomes the "token" 'Array'
+        $this->assertSame('Array', self::collectingWarnings(static fn() => $aa->requestJwt('central', 'secret')));
+    }
+
+    // --- queued with the tasks -------------------------------------------------------------------
+
+    public function test_serialized_aa_carries_its_login_and_session(): void
+    {
+        $aa = self::aa(['ORG_NAME' => 'Org', 'AA_ADMIN_USER' => 'central', 'AA_ADMIN_PWD' => 'secret']);
+        self::setPrivate($aa, '_remote_session_id', 'sess1');
+
+        // pinned; phase 4 may change - AA_Task_Sync / AA_Task_Import_Module_Chunk put this object
+        // (password or JWT included) into the toexecute table
+        $this->assertStringContainsString('secret', serialize($aa));
+        $this->assertStringContainsString('sess1', serialize($aa));
+    }
+}

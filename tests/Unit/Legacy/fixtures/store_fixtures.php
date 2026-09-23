@@ -216,6 +216,14 @@ final class RecordingDb extends DB_PDO
         return false;
     }
 
+    /** the first column of the remaining rows, as DB_PDO::fetch_first_column() returns it */
+    public function fetch_first_column(): array
+    {
+        $column    = array_map(static fn(array $row) => reset($row), array_slice($this->rows, $this->pos));
+        $this->pos = count($this->rows);
+        return $column;
+    }
+
     public function affected_rows(): int
     {
         return 1;
