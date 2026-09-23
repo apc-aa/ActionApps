@@ -86,7 +86,6 @@ if (defined('AA_LOG_PHP_FATALS') && AA_LOG_PHP_FATALS) {
 
 spl_autoload_register(static function ($class_name) {
     $PAIRS = [
-        'AA_Actionapps'      => 'central/include/actionapps.class.php',
         'AA_Auth'            => 'include/locauth.php',
         'AA_Components'      => 'include/statestore.php',
         'AA_Fields'          => 'include/field.class.php',

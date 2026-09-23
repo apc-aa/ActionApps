@@ -22,7 +22,7 @@ parameters:
     phpVersion:
         min: 80200
         max: 80500
-    # Neither dir is in the composer classmap (that is include/ + src/ only), yet
+    # Neither dir is in the composer classmap (that is include/ + src/ + central/include/ only), yet
     # src/ calls into both: module classes AA autoloads through its own map in
     # include/locsess.php ('sitetree' => modules/site/sitetree.php), and admin
     # entry points define globals like GetHistoryFields() (admin/se_history.php).

@@ -79,7 +79,8 @@
   "autoload": {
     "classmap": [
       "include/",
-      "src/"
+      "src/",
+      "central/include/"
     ],
     "exclude-from-classmap": [
       "include/custom/"
