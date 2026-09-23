@@ -569,19 +569,19 @@ class AA_Responder_Alertitem extends AA_Responder
     /** array of module types to get */
     protected $item_id;
     protected $collection_id;
-    protected $test_email;
+    /** raw request value - validated in run(), where the alerts code is loaded */
+    protected mixed $test_email;
 
     public function __construct($param = null)
     {
-        // the slice id and the field id defines the field, where the widget is DEFINED
-        $this->item_id       = $param['item_id'];
-        $this->collection_id = $param['collection_id'];
-        $this->test_email    = strpos($param['test_email'], '@') ? [$param['test_email']] : [];
+        $this->item_id       = $param['item_id'] ?? null;
+        $this->collection_id = $param['collection_id'] ?? null;
+        $this->test_email    = $param['test_email'] ?? null;
     }
 
     public function isPerm()
     {
-        if (!is_long_id($this->item_id)) {
+        if (!is_string($this->item_id) || !is_long_id($this->item_id)) {   // an array would be a TypeError in strlen()
             return false;
         }
         if ($item = AA_Items::getItem(new zids($this->item_id, 'l'))) {
@@ -593,15 +593,17 @@ class AA_Responder_Alertitem extends AA_Responder
 
     public function run(): AA_Response
     {
-        $ret = '0';
-        if (is_long_id($this->item_id) && strlen($this->collection_id) === 5) {
-            //initialize_last();
-            //MoreTimeLimit(); // This can take a while
-            $ret = send_emails("irregular", [$this->collection_id], $this->test_email, true, $this->item_id);
-            // We must reset moved2active so that the item is not re-sent on update.
-            //$db->query ("UPDATE item SET moved2active = 0 WHERE id='" .q_pack_id($item_id)."'");    }
+        // send_emails() trusts the ids it gets and fatals on an unknown one; errors do not echo the input back
+        if (!AA_Collection::isValidId($this->collection_id) || !DB_AA::test('alerts_collection', [['id', $this->collection_id]])) {
+            return new AA_Response('Invalid collection id', 7);
         }
-        return new AA_Response($ret);
+        // null = an address was given but is not valid - never read that as "none" (= a live send to all readers)
+        $test_emails = AA_Collection::testEmails($this->test_email);
+        if ($test_emails === null) {
+            return new AA_Response('Invalid test e-mail address', 8);
+        }
+        // item_id is a long id - isPerm() checked it
+        return new AA_Response(send_emails("irregular", [$this->collection_id], $test_emails, true, $this->item_id));
     }
 }
 
