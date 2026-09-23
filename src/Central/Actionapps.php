@@ -1,0 +1,404 @@
+<?php
+
+declare(strict_types=1);
+
+namespace AA\Central;
+
+use AA;
+use AA\IO\DB\DB_AA;
+use AA_Definition_Module_Chunk;
+use AA_Request;
+use AA_Response;
+use AA_Set;
+use Files;
+use ItemContent;
+use zids;
+
+/**
+ * One AA installation as Central sees it - its central_conf row and the commands Central sends
+ * to its responder (central/responder.php).
+ *
+ * Was the global AA_Actionapps (central/include/actionapps.class.php), which stays as an alias:
+ * callers use it and rows queued in toexecute before the move hold it (see __unserialize()).
+ */
+class Actionapps
+{
+    /** username of "access" user
+     *  We use the access user acount to get information about remote AA and
+     *  to update the remote AA slices/setting. You should create such user on
+     *  remote AA (superuser is enough :-)
+     */
+
+    /** local data (central_conf table) in ItemContent structure */
+    private ItemContent $local_data;
+
+    private $last_error = null;
+
+    /** cached remote session ID */
+    private ?string $_remote_session_id = null;
+
+    /** time when we get remote session ID. We do not use sessions older than ...*/
+    private int $_remote_session_id_time = 0;
+
+    /** cached remote data - like AA name, ... */
+    private array $_cached = [];
+
+    /** constructor - create Actionapps object from ItemContent object
+     *  grabbed from central_conf table.
+     *  There are following fields:
+     *    'id', 'dns_conf', 'dns_serial', 'dns_web', 'dns_mx', 'dns_db',
+     *    'dns_prim', 'dns_sec', 'web_conf', 'web_path', 'db_server', 'db_name',
+     *    'db_user', 'db_pwd', 'AA_SITE_PATH', 'AA_BASE_DIR', 'AA_HTTP_DOMAIN',
+     *    'AA_ID', 'ORG_NAME', 'ERROR_REPORTING_EMAIL', 'ALERTS_EMAIL',
+     *    'IMG_UPLOAD_MAX_SIZE', 'IMG_UPLOAD_URL', 'IMG_UPLOAD_PATH',
+     *    'SCROLLER_LENGTH', 'FILEMAN_BASE_DIR', 'FILEMAN_BASE_URL',
+     *    'FILEMAN_UPLOAD_TIME_LIMIT', 'AA_ADMIN_USER', 'AA_ADMIN_PWD',
+     *    'status_code'));
+     */
+    public function __construct(ItemContent $content4id)
+    {
+        $this->local_data          = $content4id;
+    }
+
+    /** Rows queued in toexecute before the move hold O:13:"AA_Actionapps" with the private
+     *  properties named for that class ("\0AA_Actionapps\0local_data"), which PHP would not match
+     *  to the properties of this class. Takes each value by its bare name, whichever class name
+     *  it was serialized with. */
+    public function __unserialize(array $data): void
+    {
+        foreach ($data as $key => $value) {
+            $pos  = strrpos((string) $key, "\0");
+            $name = ($pos === false) ? (string) $key : substr((string) $key, $pos + 1);
+            // a subclass's own private property can't be written from here (Error) - no such subclass is serialized
+            if (property_exists($this, $name)) {
+                $this->$name = $value;
+            }
+        }
+    }
+
+    /** getActionapps function
+     *  main factory static method called like:
+     *     $aa = Actionapps::getActionapps($aa_id);
+     * @param $aa_id
+     * @return Actionapps
+     */
+    public static function getActionapps($aa_id)
+    {
+        static $aas = [];
+        if (!isset($aas[$aa_id])) {
+            $aa_ic       = self::loadContent(new zids($aa_id, 's'));
+            $aas[$aa_id] = new Actionapps(new ItemContent($aa_ic[$aa_id]));
+        }
+        return $aas[$aa_id];
+    }
+
+    /** url of remote AAs - like "https://example.org/apc-aa/"  */
+    public function getComunicatorUrl(): string
+    {
+        return Files::makeFile($this->getValue('AA_HTTP_DOMAIN') . $this->getValue('AA_BASE_DIR'), 'central/responder.php');
+    }
+
+    /** username of access user */
+    public function getAccessUsername()
+    {
+        return $this->getValue('AA_ADMIN_USER');
+    }
+
+    /** password of access user */
+    public function getAccessPassword()
+    {
+        return $this->getValue('AA_ADMIN_PWD');
+    }
+
+    /** Get JWT auth token if available (stored with 'jwt:' prefix in AA_ADMIN_PWD) */
+    public function getAuthToken(): ?string
+    {
+        $pwd = $this->getValue('AA_ADMIN_PWD');
+        if ($pwd && str_starts_with($pwd, 'jwt:')) {
+            return substr($pwd, 4);
+        }
+        return null;
+    }
+
+    /** Store JWT auth token (with 'jwt:' prefix) in local_data */
+    public function setAuthToken(string $jwt): void
+    {
+        $this->local_data->setValue('AA_ADMIN_PWD', 'jwt:' . $jwt);
+    }
+
+    /** Authenticate to remote AA and get JWT token
+     *  @return string JWT token on success, empty string on failure
+     */
+    public function requestJwt(string $username, string $password): string
+    {
+        $request  = new AA_Request('Get_Jwt');
+        $response = $request->ask(
+            $this->getComunicatorUrl(),
+            ['username' => $username, 'password' => $password],
+        );
+        if (!$response->isError()) {
+            return (string) $response->getResponse();
+        }
+        $this->last_error = $response->getError();
+        return '';
+    }
+
+    /** Persist auth token to central_conf database
+     *  central_conf.id is int(10) unsigned, not a long-id, so use type 'i' for the WHERE clause.
+     */
+    public static function saveAuthToken(string $aa_id, string $token): void
+    {
+        DB_AA::update(
+            'central_conf',
+            [['AA_ADMIN_PWD', $token]],
+            [['id', $aa_id, 'i']],
+        );
+    }
+
+    /** get value from locally stored data (central_conf) */
+    public function getValue($field)
+    {
+        return $this->local_data->getValue($field);
+    }
+
+    /** Get last communication error code */
+    public function getLastError()
+    {
+        return $this->last_error;
+    }
+
+
+    /** name of AA as in local table*/
+    public function getName(): string
+    {
+        return $this->getValue('ORG_NAME') . ' (' . $this->getValue('AA_HTTP_DOMAIN') . $this->getValue('AA_BASE_DIR') . ')';
+    }
+
+    /** @return string ORG_NAME of remote AAs
+     *  Currently this function is not needed, since name of AA is pased
+     *  by constructor (which is much quicker)
+     */
+    public function requestAAName(): string
+    {
+        if (is_null($this->_cached['org_name'])) {
+            $response = $this->getResponse(new AA_Request('Get_Aaname'));
+            if ($response->isError()) {
+                $this->_cached['org_name'] = _m("Can't get org_name - ") . $response->getError();
+            } else {
+                $response_arr = $response->getResponse();
+                $this->_cached['org_name'] = $response_arr['org_name'];
+                $this->_cached['domain']   = $response_arr['domain'];
+            }
+        }
+        return $this->_cached['org_name'];
+    }
+
+
+    /** @return array - all slice names form remote AA
+     *  mention, that the slices are identified by !name! not id for synchronization
+     */
+    public function requestSlices(): array
+    {
+        return $this->requestModules(['S']);
+    }
+
+    /** @return array - all module names form remote AA
+     *  @param $types array of requested module types (A|Alerts|J|Lins|P|S|W)
+     */
+    public function requestModules(array $types): array
+    {
+        $response = $this->getResponse(new AA_Request('Get_Modules', ['types' => $types]));
+        return ($response->isError()) ? [] : (array) $response->getResponse();
+    }
+
+    /** @return array - structure which define all the definition of the slice
+     *  (like slice properties, fields, views, ...). It is returned for all the
+     *  slices in array
+     */
+    public function requestDefinitions($type, $ids, $limited = []): array
+    {
+        // We will use rather one call which returns all the data for all the
+        // slices, since it is much quicker than separate call for each slice
+        $response = $this->getResponse(new AA_Request('Get_Module_Defs', ['type' => $type, 'ids' => $ids, 'limited' => $limited]));
+        return ($response->isError()) ? [] : $response->getResponse();
+    }
+
+    /** This command synchronizes the slices base on sync[] array
+     *  return the report on the synchronization
+     */
+    public function synchronize($sync_commands)
+    {
+        // We will use rather one call which returns all the data for all the
+        // slices, since it is much quicker than separate call for each slice
+        $response = $this->getResponse(new AA_Request('Do_Synchronize', ['sync' => $sync_commands]));
+        return ($response->isError()) ? $response->getError() : $response->getResponse();
+    }
+
+    /** This command calls optimize method
+     *  return the report on the optimize
+     */
+    public function doOptimize($optimize_class, $optimize_method): string
+    {
+        return self::responseText($this->getResponse(new AA_Request('Do_Optimize', ['class' => $optimize_class, 'method' => $optimize_method])));
+    }
+
+    /** Runs all Optimize classes of the type ('sql_update') on the remote AA - the remote picks
+     *  the classes of its own version (AA\Optimize\Chain)
+     *  @param string $method 'test' | 'repair'
+     *  @return string the remote report (HTML, 'OK ' or 'Err ' first) or the error
+     */
+    public function doOptimizeType(string $type, string $method): string
+    {
+        $response = $this->getResponse(new AA_Request('Do_Optimize_Type', ['type' => $type, 'method' => $method]));
+        $text     = self::responseText($response);
+        if ($response->getError() === 3) {   // AA_Request::ask(): timed out or unreadable - the remote run goes on
+            $text .= ' - ' . _m('the update may still be running on the remote AA - wait, then run Test before retrying');
+        }
+        return $text;
+    }
+
+    /** The answer of a remote command as text for a report: the response, or the error code and detail */
+    public static function responseText(AA_Response $response): string
+    {
+        $detail = $response->getResponse();
+        if (!$response->isError()) {
+            // the remote decides the type - concatenating an object would throw
+            return is_scalar($detail) ? (string) $detail : _m('Unexpected response from remote AA');
+        }
+        if ($response->getError() === ResponderPolicy::ERR_UNKNOWN_COMMAND) {
+            return _m('This AA does not support this command (update it first)');
+        }
+        return $response->getError() . (is_scalar($detail) ? ' ' . $detail : '');
+    }
+
+    /** Imports slice to the current AA. The id of slice is the same as in
+     *  definition
+     */
+    public function importModuleChunk(AA_Definition_Module_Chunk $definition_chunk)
+    {
+        // We will use rather one call which returns all the data for all the
+        // slices, since it is much quicker than separate call for each slice
+
+        $response = $this->getResponse(new AA_Request('Do_Import_Module_Chunk', ['definition_chunk' => $definition_chunk]));
+        return ($response->isError()) ? $response->getError() : $response->getResponse();
+    }
+
+    /** Main communication function - returns AA_Response object */
+    public function getResponse($request)
+    {
+        $jwt = $this->getAuthToken();
+        if ($jwt) {
+            // Stateless JWT auth — send token with every request
+            $response = $request->ask(
+                $this->getComunicatorUrl(),
+                [],
+                ['Authorization' => 'Bearer ' . $jwt],
+            );
+            if (!$response->isError()) {
+                return $response;
+            }
+            // JWT might be expired — store error for reporting
+            $this->last_error = $response->getError();
+            return $response;
+        }
+
+        // Legacy: session-based auth with username/password
+        if (!$this->_remote_session_id || $this->_remote_session_id_time < (now() - 10 * 60)) {
+            $response = $this->_authenticate();
+            if ($response->isError()) {
+                $this->last_error = $response->getError();
+                return $response;
+            }
+        }
+        return $request->ask(
+            $this->getComunicatorUrl(),
+            ['AA_CP_Session' => $this->_remote_session_id],
+            ['Cookie' => 'AA_Session=' . $this->_remote_session_id],
+        );
+    }
+
+    public function _authenticate()
+    {
+        $request  = new AA_Request('Get_Sessionid');
+        // $response = $request->ask($this->getComunicatorUrl(), array('free' => $this->getAccessUsername(), 'freepwd' =>$this->getAccessPassword()));
+        $response = $request->ask($this->getComunicatorUrl(), ['username' => $this->getAccessUsername(), 'password' => $this->getAccessPassword()]);
+        if (!$response->isError()) {
+            $arr = $response->getResponse();
+            $this->setSession((string) $arr[0]);
+        } else {
+            $this->last_error = $response->getError();
+        }
+        return $response;
+    }
+
+    private function setSession(string $session_id): void
+    {
+        $this->_remote_session_id      = $session_id;
+        $this->_remote_session_id_time = now();
+    }
+
+    /// Static methods
+    /** create array of all Approved AAs from central database
+     * @return Actionapps[]
+     */
+    public static function getArray(): array
+    {
+        $ret    = [];
+        $set = new AA_Set(null, null, [['ORG_NAME' => 'a']], AA_BIN_APPROVED);  // list of sort specs - a bare map sorts by field "a"
+        $zids   = self::queryIds($set);
+        $aa_ic  = self::loadContent($zids);
+
+        foreach ($aa_ic as $k => $content4id) {
+            $ret[$k] = new Actionapps(new ItemContent($content4id));
+        }
+        return $ret;
+    }
+
+    /** Loads the central_conf rows of the ids (was Central_GetAaContent())
+     *
+     * Stores them in the 'Abstract Data Structure' for use with ItemContent, in the order of $zids
+     * @return array - Abstract Data Structure {@link https://actionapps.org/faq/#1337}
+     */
+    private static function loadContent(zids $zids): array
+    {
+        $content = [];
+        $ret     = [];
+
+        if ($zids->isEmpty()) {
+            return $ret;
+        }
+
+        // construct WHERE clausule
+        $sel_in = $zids->sqlin('');
+        $SQL = "SELECT * FROM central_conf WHERE id $sel_in";
+        StoreTable2Content($content, $SQL, '', 'id');
+        // it is unordered, so we have to sort it:
+        for ($i = 0, $ino = $zids->count(); $i < $ino; $i++) {
+            $id = $zids->id($i);
+            $ret[(string) $id] = $content[$id];
+        }
+        return $ret;
+    }
+
+    /** Finds the central_conf ids for the conditions, sort and bins of the set (was Central_QueryZids()) */
+    private static function queryIds(AA_Set $set): zids
+    {
+        $conds = $set->getConds();
+        $sort  = $set->getSort();
+        $type  = $set->getBins();
+
+        if ($type === AA_BIN_ACTIVE) {
+            $type = AA_BIN_APPROVED;   // we do not work with dates, here
+        }
+
+        $fields      = AA::Metabase()->getSearchArray('central_conf');
+        $join_tables = [];   // not used in this function
+
+        $SQL  = 'SELECT DISTINCT `id` FROM `central_conf` WHERE ';
+        $SQL .= CreateBinCondition($type, 'central_conf');
+        $SQL .= MakeSQLConditions($fields, $conds, $fields, $join_tables);
+        $SQL .= MakeSQLOrderBy($fields, $sort, $join_tables);
+
+        return GetZidsFromSQL($SQL, 's');
+    }
+}

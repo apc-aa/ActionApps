@@ -606,18 +606,6 @@ parameters:
 			path: src/Manager.php
 
 		-
-			message: '#^Call to static method getActionapps\(\) on an unknown class AA_Actionapps\.$#'
-			identifier: class.notFound
-			count: 1
-			path: src/Manageraction/Central_Linkcheck.php
-
-		-
-			message: '#^Call to static method getActionapps\(\) on an unknown class AA_Actionapps\.$#'
-			identifier: class.notFound
-			count: 1
-			path: src/Manageraction/Central_Optimize.php
-
-		-
 			message: '#^Ternary operator condition is always true\.$#'
 			identifier: ternary.alwaysTrue
 			count: 1

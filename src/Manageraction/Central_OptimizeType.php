@@ -2,9 +2,9 @@
 
 namespace AA\Manageraction;
 
+use AA\Central\Actionapps;
 use AA\Central\RemoteHtml;
 use AA\Manager;
-use AA_Actionapps;
 use zids;
 
 /** Manager action Central_OptimizeType - runs all Optimize classes of a type (like 'sql_update')
@@ -54,9 +54,9 @@ class Central_OptimizeType extends AbstractManageraction
     }
 
     /** the AA of the central_conf row */
-    protected function actionapps($aa_id): AA_Actionapps
+    protected function actionapps($aa_id): Actionapps
     {
-        return AA_Actionapps::getActionapps($aa_id);
+        return Actionapps::getActionapps($aa_id);
     }
 
     /** Checks if the user have enough permission to perform the action

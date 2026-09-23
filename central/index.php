@@ -116,9 +116,9 @@ $switches->addAction(new Central_Tab('Tab3', 'trash'));
 $switches->addAction(new Central_DeleteTrash('DeleteTrash',false));
 
 $managed = AA::Metabase()->getManagerConf('central_conf', $actions, $switches);
-// $manager_settings['itemview']['query_funct'] = 'Central_QueryZids';
+// $manager_settings['itemview']['query_funct'] = 'Central_QueryZids' (now AA\Central\Actionapps::queryIds());
 $managed->setTitle(_m('ActionApps Central'));
-//         'get_content_funct'    => 'Central_GetAaContent'
+//         'get_content_funct'    => 'Central_GetAaContent' (now AA\Central\Actionapps::loadContent())
 
 $managed->addColumn('admin_link', _m('Admin Link'), '<a href="_#AA_HTTP_/_#AA_BASE_/admin">Admin</a>');
 
