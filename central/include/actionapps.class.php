@@ -30,11 +30,13 @@ https://www.apc.org/
 */
 
 use AA\Central\Actionapps;
+use AA\Central\ChunkImporter;
+use AA\Central\DefinitionStore;
 use AA\Central\Difference;
 use AA\Central\ResponderPolicy;
+use AA\Central\SyncExecutor;
 use AA\Central\Task\ImportModuleChunk;
 use AA\Central\Task\Sync;
-use AA\Later\Toexecute;
 
 // AA_Actionapps moved to AA\Central\Actionapps (src/Central/Actionapps.php). The old name stays
 // for the callers and for the rows queued in toexecute before the move (O:13:"AA_Actionapps"),
@@ -134,36 +136,19 @@ class AA_Definition_Module
     */
     public function planModuleImport(Actionapps|int $aa, $replaces = null): int
     {
-        $chunks    = $this->_getChunks($replaces);
-        $toexecute = new Toexecute();
-        foreach ($chunks as $chunk) {
-            // the queue row keeps the id of the AA, not its login; the selector keeps its old name
-            $toexecute->userQueue(new ImportModuleChunk($chunk, $aa), [], 'AA_Task_Import_Module_Chunk');
-        }
-        return count($chunks);
+        return DefinitionStore::queueImport($this->_getChunks($replaces), $aa);
     }
 
     /** special import - to this AA - no need to plan, no need to chunk
      *  @return list<string> report lines of the chunks ('OK: ...', 'Err: ...') */
     public function moduleImport($replaces = null): array
     {
-        $report = [];
-        foreach ($this->_getChunks($replaces) as $chunk) {
-            $report[] = $chunk->importModuleChunk();
-        }
-        return array_merge(...$report);
+        return DefinitionStore::import($this->_getChunks($replaces));
     }
 
     protected function _getChunks($replaces): array
     {
-        $chunks = [];
-        // replaced on a copy - the same definition is imported to more AAs, each with its own new module ids
-        $data   = is_array($replaces) ? recursive_array_replace(array_keys($replaces), array_values($replaces), $this->data) : $this->data;
-
-        foreach ($data as $table => $rows) {
-            $chunks[] = AA_Definition_Module_Chunk::factoryArray($this->module_id, $table, $rows);
-        }
-        return array_merge(...$chunks);  // avoiding array_merge() in loop
+        return DefinitionStore::chunks($this->module_id, $this->data, $replaces);
     }
 }
 
@@ -198,55 +183,12 @@ class AA_Definition_Module_Chunk
 
     public function importModuleChunk(): array
     {
-
-        $metabase    = AA::Metabase();
-
-        // a table gets into ok/err with its first row there - no "Err: 0 field ()" for a clean import
-        $msgs = ['ok' => [], 'err' => []];
-
-        foreach ($this->data as $table => $records) {
-            if (empty($records)) {
-                continue;
-            }
-
-            $keys = $metabase->getKeys($table);   // just for reporting
-            // now we packing the data in the AA_Metabase::do*() functions
-            // $metabase->packIds($table, $records);    // pack ids ...
-            foreach ($records as $data) {
-                $ident = [];
-                foreach ($keys as $col) {
-                    $ident[] = $data[$col];
-                }
-
-                if ($res = $metabase->doInsert($table, $data, 'nohalt')) {
-                    $msgs['ok'][$table][] = $ident;
-                } else {
-                    $msgs['err'][$table][] = $ident;
-                }
-
-            }
-        }
-        $ret = [];
-        if ($msg = $this->_formatReport($msgs['ok'])) {
-            $ret[] = 'OK: ' . $msg;
-        }
-        if ($msg = $this->_formatReport($msgs['err'])) {
-            $ret[] = 'Err: ' . $msg;
-        }
-        return $ret;
+        return ChunkImporter::import($this->data);
     }
 
     public function _formatReport($arr): string
     {
-        $ret = '';
-        foreach ($arr as $table => $idents) {
-            $ret .= count($idents) . " $table (";
-            foreach ($idents as $ident) {
-                $ret .= '[' . implode(',', $ident) . ']';
-            }
-            $ret .= '); ';
-        }
-        return $ret;
+        return ChunkImporter::formatReport($arr);
     }
 }
 
@@ -256,44 +198,7 @@ class AA_Definition_Module_Slice extends AA_Definition_Module
     {
         $this->clear();
         $this->module_id = $module_id;
-        $metabase        = AA::Metabase();
-        $limited         = self::normalizeLimited($limited);
-
-        if (isset($limited['definitions'])) {
-            $this->data['module']       = $metabase->getModuleRows('module', $module_id);
-            $this->data['slice']        = $metabase->getModuleRows('slice', $module_id);
-            $this->data['field']        = $metabase->getModuleRows('field', $module_id);
-            $this->data['view']         = $metabase->getModuleRows('view', $module_id);
-            $this->data['email']        = $metabase->getModuleRows('email', $module_id);
-            $this->data['email_notify'] = $metabase->getModuleRows('email_notify', $module_id);
-            $this->data['profile']      = $metabase->getModuleRows('profile', $module_id);
-            $this->data['rssfeeds']     = $metabase->getModuleRows('rssfeeds', $module_id);
-
-            // @todo - do it better - check the fields setting, and get all the constants used
-            $this->data['constant_slice'] = $metabase->getModuleRows('constant_slice', $module_id);
-            $this->data['constant']       = $metabase->getModuleRows('constant', $module_id);
-            if (is_array($this->data['constant'])) {
-                $constant_groups = [];
-                foreach ($this->data['constant'] as $k => $v) {
-                    $constant_groups[$v['group_id']] = true;   // get list of all groups
-                }
-
-                $SQL = "SELECT * FROM constant WHERE group_id='lt_groupNames' AND " . Cvarset::sqlin('value', array_keys($constant_groups));
-
-                $groups = GetTable2Array($SQL, "unpack:id", 'aa_fields');
-                if (!is_array($groups)) {
-                    $groups = [];
-                }
-                $metabase->unpackIds('constant', $groups);   // id and ancestors, as getModuleRows() does
-                $this->data['constant'] = array_merge($this->data['constant'], $groups);
-            }
-        }
-
-        if (isset($limited['items'])) {
-            $this->data['item']       = $metabase->getModuleRows('item', $module_id);
-            $this->data['content']    = $metabase->getModuleRows('content', $module_id);
-            $this->data['discussion'] = $metabase->getModuleRows('discussion', $module_id);
-        }
+        $this->data      = DefinitionStore::sliceRows($module_id, self::normalizeLimited($limited));
     }
 
     /** @return Difference[] - an INFO row alone when a side is missing; an empty destination gives NEW rows */
@@ -309,11 +214,7 @@ class AA_Definition_Module_Site extends AA_Definition_Module
     {
         $this->clear();
         $this->module_id = $module_id;
-        $metabase        = AA::Metabase();
-
-        $this->data['module']    = $metabase->getModuleRows('module', $module_id);
-        $this->data['site']      = $metabase->getModuleRows('site', $module_id);
-        $this->data['site_spot'] = $metabase->getModuleRows('site_spot', $module_id);
+        $this->data      = DefinitionStore::siteRows($module_id);
     }
 
     public function compareWith($dest_def) {}
@@ -325,14 +226,7 @@ class AA_Definition_Module_Alerts extends AA_Definition_Module
     {
         $this->clear();
         $this->module_id = $module_id;
-        $metabase        = AA::Metabase();
-
-        $this->data['module']                     = $metabase->getModuleRows('module', $module_id);
-        $this->data['alerts_collection']          = $metabase->getModuleRows('alerts_collection', $module_id);
-        $this->data['alerts_collection_filter']   = $metabase->getModuleRows('alerts_collection_filter', $module_id);
-        $this->data['alerts_collection_howoften'] = $metabase->getModuleRows('alerts_collection_howoften', $module_id);
-        // @todo - filter is not copied since it need double jopined tabled in metabase's  getModuleRows()
-        // $this->data['alerts_filter']              = $metabase->getModuleRows('alerts_filter', $module_id);
+        $this->data      = DefinitionStore::alertsRows($module_id);
     }
 
     public function compareWith($dest_def) {}
@@ -472,73 +366,12 @@ class AA_Sync_Action
     /** returns data array as we need it for $metabase->doInsert/Update */
     public function _getDataArray()
     {
-        $idf    = $this->identifier;
-        $column = $idf->getColumn();
-        return $column ? [$column => $this->params] : $this->params;
-    }
-
-    /** $data without the auto_increment columns which are not keys (constant.short_id) - each
-     *  installation numbers its rows itself */
-    private static function withoutOwnNumbering(string $table, array $data): array
-    {
-        foreach (AA::Metabase()->getColumns($table) as $colname => $column) {
-            if ($column->isAutoIncrement() && !$column->isKey()) {
-                unset($data[$colname]);
-            }
-        }
-        return $data;
+        return SyncExecutor::dataArray($this->identifier, $this->params);
     }
 
     /** do synchronization action in destination slice */
     public function doAction()
     {
-
-        // commands are stored as tree - like:
-        // 6353636737->field->category........
-        // 6353636737 is the id of the destination slice (compareWith() builds the actions for it)
-        $idf         = $this->identifier;
-        $module_id   = $idf->getModuleId();
-        $table       = $idf->getTable();
-        $row         = $idf->getRow();
-        //$column      = $idf->getColumn();
-
-        if (!in_array($table, self::TABLES, true)) {
-            return _m('Wrong command - this table is not synchronized');
-        }
-        $metabase    = AA::Metabase();
-
-        if (!$row) {
-            return _m('Wrong command - row is not defined - %1', [$idf->toString()]);
-        }
-        // nohalt: a DB error must not die() in the middle of the batch - it is reported instead
-        if ($this->type === 'UPDATE_ROW' || $this->type === 'UPDATE_VALUE') {
-            // an older Central (or a queued AA_Task_Sync) still sends the installation columns
-            $data = array_diff_key(self::withoutOwnNumbering($table, (array) $this->_getDataArray()), array_flip(self::INSTALLATION_COLUMNS[$table] ?? []));
-            $metabase->fillKeys($data, $idf);
-            if (!array_diff_key($data, array_flip($metabase->getKeys($table)))) {
-                return _m('%1 %2 in slice %3: nothing to update', [$table, $row, $module_id]);
-            }
-            return !$metabase->doUpdate($table, $data, 'nohalt')
-                ? _m('Error: %1 %2 in slice %3 not updated', [$table, $row, $module_id])
-                : _m('%1 %2 in slice %3 updated', [$table, $row, $module_id]);
-        }
-        if ($this->type === 'INSERT') {
-            $data = self::withoutOwnNumbering($table, (array) $this->params);
-            if ($table === 'module' || $table === 'slice') {
-                $data['deleted'] = 0;   // a template flagged deleted must not create a deleted slice
-            }
-            $metabase->fillKeys($data, $idf);
-            return !$metabase->doInsert($table, $data, 'nohalt')
-                ? _m('Error: %1 %2 not inserted into slice %3', [$table, $row, $module_id])
-                : _m('%1 %2 inserted into slice %3', [$table, $row, $module_id]);  // field xy inserted into slice yz
-        }
-        if ($this->type === 'DELETE') {
-            $data = [];
-            $metabase->fillKeys($data, $idf);
-            return !$metabase->doDelete($table, $data, 'nohalt')
-                ? _m('Error: %1 %2 not deleted from slice %3', [$table, $row, $module_id])
-                : _m('%1 %2 deleted from slice %3', [$table, $row, $module_id]);
-        }
-        return _m("Unknown action (%1) for field %2 in slice %3", [$this->type, $row, $module_id]);
+        return SyncExecutor::run($this->type, $this->identifier, $this->params);
     }
 }
