@@ -35,6 +35,8 @@ namespace AA\Later;
  * the inter-worker mutex. cron.php / misc/toexecute.php touch the same
  * file (Toexecute::runQueue()), so configured OS cron suppresses the
  * fallback automatically.
+ * The shot stamp (SHOT_FILENAME) only throttles how often requests fire the
+ * runner; it never gates the run itself, so it needs no cleanup.
  *
  * @package AA\Later
  */
@@ -42,11 +44,17 @@ class CronFallback
 {
     private const DEFAULT_INTERVAL = 120;
     private const LOCK_FILENAME    = 'cron-fallback.lock';
+    private const SHOT_FILENAME    = 'cron-fallback.shot';
     private const CONNECT_TIMEOUT  = 0.3;
 
     public static function lockFile(): string
     {
         return constant('IMG_UPLOAD_PATH') . self::LOCK_FILENAME;
+    }
+
+    private static function shotFile(): string
+    {
+        return constant('IMG_UPLOAD_PATH') . self::SHOT_FILENAME;
     }
 
     public static function isDisabled(): bool
@@ -64,7 +72,9 @@ class CronFallback
         $mtime     = @filemtime($lock_file);
         // REQUEST_TIME avoids a per-request time() syscall on this hot path -
         // request-handling drift (<1s) is negligible against the 120s gate.
-        if ($mtime !== false && (($_SERVER['REQUEST_TIME'] ?? time()) - $mtime) < self::interval()) {
+        $now      = $_SERVER['REQUEST_TIME'] ?? time();
+        $interval = self::interval();
+        if ($mtime !== false && ($now - $mtime) < $interval) {
             return;
         }
 
@@ -72,10 +82,34 @@ class CronFallback
         if (PHP_SAPI === 'cli') {
             return;
         }
-        // Concurrent requests in the gate-open window may all fire the runner;
-        // flock + gate re-check inside runDeferred() coalesce to one effective
-        // run per interval.
+        // A run longer than the interval (HitcounterStats took 853 s on aadb) holds
+        // the lock and leaves its mtime old - without the shot stamp every request
+        // would fire a runner that only loses Trylock(). A few concurrent requests
+        // may still fire at once; runDeferred() coalesces them to one run.
+        $shot_file = self::shotFile();
+        if (!self::isShotDue($now, @filemtime($shot_file), $interval)) {
+            return;
+        }
+        // explicit $now: the stamp is compared with REQUEST_TIME, not with the file server's clock;
+        // a failed touch just means we fire every time, as before the stamp
+        @touch($shot_file, $now);
         self::fireAsyncRunner();
+    }
+
+    /** May a request fire the runner, given the mtime of the last shot?
+     *  Fails open: a missing/unreadable stamp or one more than an interval in the
+     *  future (a manual touch) fires, so the stamp can delay the fallback by one
+     *  interval at most, never stop it. A few seconds ahead (clock skew between
+     *  the GlusterFS nodes) counts as fresh - firing on it would fire on every
+     *  request of the slower node.
+     */
+    public static function isShotDue(int $now, int|false $shot_mtime, int $interval): bool
+    {
+        if ($shot_mtime === false) {
+            return true;
+        }
+        $age = $now - $shot_mtime;
+        return ($age >= $interval) || ($age < -$interval);
     }
 
     /** Fire-and-forget HTTP request to the runner endpoint. Silent on any
