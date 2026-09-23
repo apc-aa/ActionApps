@@ -437,24 +437,24 @@ class AA_Definition_Module
         return count($chunks);
     }
 
-    /** special import - to this AA - no need to plan, no need to chunk */
-    public function moduleImport($replaces = null): int
+    /** special import - to this AA - no need to plan, no need to chunk
+     *  @return list<string> report lines of the chunks ('OK: ...', 'Err: ...') */
+    public function moduleImport($replaces = null): array
     {
-        $chunks = $this->_getChunks($replaces);
-        foreach ($chunks as $chunk) {
-            $chunk->importModuleChunk();
+        $report = [];
+        foreach ($this->_getChunks($replaces) as $chunk) {
+            $report[] = $chunk->importModuleChunk();
         }
-        return count($chunks);
+        return array_merge(...$report);
     }
 
     protected function _getChunks($replaces): array
     {
         $chunks = [];
-        if (is_array($replaces)) {
-            $this->data = recursive_array_replace(array_keys($replaces), array_values($replaces), $this->data);
-        }
+        // replaced on a copy - the same definition is imported to more AAs, each with its own new module ids
+        $data   = is_array($replaces) ? recursive_array_replace(array_keys($replaces), array_values($replaces), $this->data) : $this->data;
 
-        foreach ($this->data as $table => $rows) {
+        foreach ($data as $table => $rows) {
             $chunks[] = AA_Definition_Module_Chunk::factoryArray($this->module_id, $table, $rows);
         }
         return array_merge(...$chunks);  // avoiding array_merge() in loop
@@ -495,25 +495,20 @@ class AA_Definition_Module_Chunk
 
         $metabase    = AA::Metabase();
 
+        // a table gets into ok/err with its first row there - no "Err: 0 field ()" for a clean import
         $msgs = ['ok' => [], 'err' => []];
-        $keys = [];
 
         foreach ($this->data as $table => $records) {
             if (empty($records)) {
                 continue;
             }
 
-            // just for reporting
-            if (!isset($msgs['ok'][$table])) {
-                $msgs['ok'][$table]  = [];
-                $msgs['err'][$table] = [];
-                $keys[$table] = $metabase->getKeys($table);
-            }
+            $keys = $metabase->getKeys($table);   // just for reporting
             // now we packing the data in the AA_Metabase::do*() functions
             // $metabase->packIds($table, $records);    // pack ids ...
             foreach ($records as $data) {
                 $ident = [];
-                foreach ($keys[$table] as $col) {
+                foreach ($keys as $col) {
                     $ident[] = $data[$col];
                 }
 
@@ -987,9 +982,10 @@ class AA_Task_Import_Module_Chunk implements LaterInterface
      */
     public function toexecutelater($params = []): string
     {
-        // synchronize accepts array of sync_actions, so it is possible
-        // to do more action by one call
-        return $this->actionapps->importModuleChunk($this->module_definition_chunk);
+        // the remote answers with the report lines (or an error string); the return type is string and
+        // a TypeError here would leave the task in the queue and import the chunk again next run
+        $ret = $this->actionapps->importModuleChunk($this->module_definition_chunk);
+        return implode("\n", array_filter((array) $ret, 'is_scalar'));
     }
 }
 

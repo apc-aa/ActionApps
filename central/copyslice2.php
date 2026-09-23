@@ -20,7 +20,6 @@ https://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-use AA\Later\Toexecute;
 use AA\Util\InputVars;
 
 require_once __DIR__ . "/include/init_central.php";
@@ -39,13 +38,29 @@ MoreTimeLimit(); // set_time_limit to 5 minutes (at least)
 // ActionApps to synchronize
 $aas = AA_Actionapps::getArray();
 
+// both the copy and the form below need the template AA
+if (!isset($aas[$_POST['template_aa'] ?? ''])) {
+    AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . 'copyslice.php', _m('Unknown template ActionApps'), 'admin');
+    exit;
+}
+
 // Checkboxes posted by the form below - read explicitly, the register_globals
 // emulation which used to fill them is gone (see include/init_central.php).
 $sync_defs  = InputVars::boolPOST('sync_defs');
 $sync_items = InputVars::boolPOST('sync_items');
 
+// multiselects of the form below; ids only - anything else would be an illegal array offset,
+// and without the empty option FrmInputMultiSelect() adds
+$posted_ids     = static fn(string $name): array => array_values(array_filter(InputVars::arrayPOST($name), static fn($v) => is_string($v) && ($v !== '')));
+$sync_slices    = $posted_ids('sync_slices');
+$sync_sites     = $posted_ids('sync_sites');
+$sync_alerts    = $posted_ids('sync_alerts');
+$destination_aa = $posted_ids('destination_aa');
+
+$err = [];
+$Msg = '';
+
 if ($_POST['copy']) {
-    $toexecute = new Toexecute();
     $no_sync_tasks = 0;
 
     $limit = [];
@@ -55,56 +70,58 @@ if ($_POST['copy']) {
     if ($sync_defs) {
         $limit['definitions'] = true;
     }
-    if (count($limit)) {
-        $template_slice_defs = $aas[$_POST['template_aa']]->requestDefinitions('Slice', $_POST['sync_slices'], $limit);
-    }
-    $template_site_defs   = $aas[$_POST['template_aa']]->requestDefinitions('Site', $_POST['sync_sites']);
-    $template_alerts_defs  = $aas[$_POST['template_aa']]->requestDefinitions('Alerts', $_POST['sync_alerts']);
-
-    foreach ($_POST['destination_aa'] as $dest_aa) {
-
-        // import with changed module ids
-        $changed_ids = [];
-        foreach ($_POST['sync_slices'] as $mid) {
-            $changed_ids[$mid] = new_id();
-        }
-        foreach ($_POST['sync_sites'] as $mid) {
-            $changed_ids[$mid] = new_id();
-        }
-        foreach ($_POST['sync_alerts'] as $mid) {
-            $changed_ids[$mid] = new_id();
-        }
-
-        if (is_array($_POST['sync_slices']) && count($limit)) {
-            foreach ($_POST['sync_slices'] as $sid) {
-                // the template AA may not send a definition for every selected
-                // slice - without the check the missing one fatals on null
-                if ($sid && isset($template_slice_defs[$sid])) {
-                    // plan the synchronization action to for execution via Task Manager
-                    $module_def     = $template_slice_defs[$sid];
-                    $no_sync_tasks += ($dest_aa === 'thisAA') ? $module_def->moduleImport($changed_ids) : $module_def->planModuleImport($aas[$dest_aa], $changed_ids);
-                }
-            }
-        }
-        if (is_array($_POST['sync_sites'])) {
-            foreach ($_POST['sync_sites'] as $sid) {
-                if ($sid) {
-                    $module_def     = $template_site_defs[$sid];
-                    $no_sync_tasks += ($dest_aa === 'thisAA') ? $module_def->moduleImport($changed_ids) : $module_def->planModuleImport($aas[$dest_aa], $changed_ids);
-                }
-            }
-        }
-        if (is_array($_POST['sync_alerts'])) {
-            foreach ($_POST['sync_alerts'] as $aid) {
-                if ($aid) {
-                    $module_def     = $template_alerts_defs[$aid];
-                    $no_sync_tasks += ($dest_aa === 'thisAA') ? $module_def->moduleImport($changed_ids) : $module_def->planModuleImport($aas[$dest_aa], $changed_ids);
-                }
+    $requested = [
+        'Slice'  => $limit ? $sync_slices : [],
+        'Site'   => $sync_sites,
+        'Alerts' => $sync_alerts,
+    ];
+    $module_defs = [];
+    foreach ($requested as $type => $ids) {
+        $defs = $ids ? $aas[$_POST['template_aa']]->requestDefinitions($type, $ids, ($type === 'Slice') ? $limit : []) : [];
+        foreach ($ids as $mid) {
+            // the template AA may not send a definition for every selected module
+            if (($defs[$mid] ?? null) instanceof AA_Definition_Module) {
+                $module_defs[$mid] = $defs[$mid];
             }
         }
     }
-    echo _m("%1 import actions planned. See", [$no_sync_tasks]) . ' ';
-    echo a_href(get_admin_url('se_taskmanager.php'), _m('Task Manager'));
+
+    $local_report = [];  // this AA imports right away; the remote imports report to Task Manager log
+    $remote_dest  = false;
+    foreach ($destination_aa as $dest_aa) {
+        if (($dest_aa !== 'thisAA') && !isset($aas[$dest_aa])) {
+            $err[] = _m('Unknown destination ActionApps %1 skipped.', [safe($dest_aa)]);
+            continue;
+        }
+        $remote_dest = $remote_dest || ($dest_aa !== 'thisAA');
+
+        // each destination gets its own new module ids - a second copy into the same AA must not collide
+        $changed_ids = array_map(static fn($def) => new_id(), $module_defs);
+        foreach ($module_defs as $module_def) {
+            if ($dest_aa === 'thisAA') {
+                $local_report[] = $module_def->moduleImport($changed_ids);
+            } else {
+                $no_sync_tasks += $module_def->planModuleImport($aas[$dest_aa], $changed_ids);
+            }
+        }
+    }
+
+    $local_report = array_merge(...$local_report);
+    $msgs         = [];
+    foreach ($local_report as $line) {
+        $text = _m('This ActionApps') . ': ' . safe($line);   // the ids in the report come from the template AA
+        if (str_starts_with($line, 'Err: ')) {
+            $err[]  = $text;
+        } else {
+            $msgs[] = $text;
+        }
+    }
+    if ($remote_dest) {
+        $msgs[] = _m("%1 import actions planned. See", [$no_sync_tasks]) . ' ' . a_href(get_admin_url('se_taskmanager.php'), _m('Task Manager'));
+    } elseif (!$local_report) {
+        $msgs[] = _m('Nothing was imported.');
+    }
+    $Msg = implode('<br>', $msgs);
 } else {
     // init values for form
     $sync_defs  = true;
@@ -137,11 +154,6 @@ $form_buttons = [
     ],
     "template_aa"     => ["value"     =>  $_POST['template_aa']],
 ];
-
-$sync_slices    = $_POST['sync_slices']    ?? [];
-$sync_sites     = $_POST['sync_sites']     ?? [];
-$sync_alerts    = $_POST['sync_alerts']    ?? [];
-$destination_aa = $_POST['destination_aa'] ?? [];
 
 FrmTabCaption('', $form_buttons);
 FrmStaticText(_m('Template ActionApps'), $aas[$_POST['template_aa']]->getName());
