@@ -21,6 +21,7 @@ https://www.apc.org/
 */
 
 // anonymous authentication - locauth calls extauthnobody
+use AA\Central\ResponderPolicy;
 use AA\IO\DB\DB_AA;
 use AA\Util\Langs;
 
@@ -168,7 +169,9 @@ class AA_Responder_Get_Module_Defs extends AA_Responder
     public function run(): AA_Response
     {
         $ret        = [];
-        $class_name = 'AA_Definition_Module_' . $this->type;
+        if (!($class_name = ResponderPolicy::moduleDefinitionClass($this->type))) {
+            return new AA_Response(_m('Unknown module type'), 6);
+        }
         foreach ($this->ids as $sid) {
             $ret[$sid] = new $class_name();
             $ret[$sid]->loadForId($sid, $this->limited);
@@ -193,8 +196,8 @@ class AA_Responder_Do_Synchronize extends AA_Responder
     {
         $ret = [];
         foreach ($this->sync_commands as $serialized_command) {
-            $cmd = unserialize($serialized_command);
-            $ret[] = $cmd->doAction();
+            $cmd   = unserialize((string) $serialized_command, ['allowed_classes' => ResponderPolicy::syncAllowedClasses()]);
+            $ret[] = ($cmd instanceof AA_Sync_Action) ? $cmd->doAction() : _m('Wrong command - not a synchronization action');
         }
         return new AA_Response($ret);
     }
@@ -645,11 +648,13 @@ $GLOBALS['apc_state']['xuser'] = AuthGetUname();
 $GLOBALS['apc_state']['xuid']  = AuthGetUid();
 
 $request = null;
+$via_url = false;  // command named in the URL (admin AJAX) rather than the serialized POST `request`
 
 // we use primarily POST, but manager class actions needs to send GET request
 if ($_POST['request']) {
     $request = AA_Request::decode($_POST['request']);
 } elseif ($_GET['command']) {  // ajax call (html output expected)
+    $via_url = true;
 
     // switch responses to plain output
     AA_Response::$Response_type = 'html';
@@ -668,6 +673,23 @@ if (empty($responder)) {
     exit;
 }
 
+// Remote-management commands only via the POST `request` - a URL one is forgeable by any cross-site link.
+// Checked on the resolved class, so a case variant of the name cannot slip past.
+if ($via_url && ResponderPolicy::isRemoteCommand($responder::name())) {
+    AA_Response::error(_m("This command is not accepted in the URL"), 104);  // error code > 0
+    exit;
+}
+if ($via_url && ResponderPolicy::isPostOnlyCommand($responder::name()) && ($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST') {
+    AA_Response::error(_m("This command must be sent by POST"), 105);  // error code > 0
+    exit;
+}
+// Live-editing AJAX (Get_Widget, Tags, ...) is called from public sites on other domains, so the origin
+// check covers only the POST `request` and the POST-only commands.
+if ((!$via_url || ResponderPolicy::isPostOnlyCommand($responder::name())) && ResponderPolicy::isForeignBrowserRequest($_SERVER)) {
+    AA_Response::error(_m("Request from another site refused"), 106);  // error code > 0
+    exit;
+}
+
 if (!$responder->isPerm()) {
     AA_Response::error(_m("You (%2) don't have permissions to run %1", [$responder::name(),AuthGetUid()]), 101);  // error code > 0
     exit;
@@ -675,7 +697,7 @@ if (!$responder->isPerm()) {
 
 $response = $responder->run();
 
-if ($request->getCommand() !== 'Logout') {
+if ($responder::name() !== 'Logout') {  // resolved name - a 'logout' variant also deleted the session
     Session::page_close();
 }
 
