@@ -29,6 +29,7 @@ namespace Tests\Unit\Later {
     use AA\IO\DB\DB_PDO;
     use AA\Later\Toexecute;
     use AA\Optimize\CheckQueue;
+    use AA_Logentry;
     use PDO;
     use PHPUnit\Framework\Attributes\DataProvider;
     use PHPUnit\Framework\TestCase;
@@ -80,10 +81,11 @@ namespace Tests\Unit\Later {
             return $db;
         }
 
-        private function seed(object $task, string $selector, int $priority, ?int $execute_after = null): int
+        /** @param object|string $task  the task, or its already serialized form */
+        private function seed(object|string $task, string $selector, int $priority, ?int $execute_after = null): int
         {
             $this->pdo->prepare('INSERT INTO toexecute (execute_after, priority, selector, object, params) VALUES (?, ?, ?, ?, ?)')
-                ->execute([$execute_after ?? time() - 60, $priority, $selector, serialize($task), serialize([])]);
+                ->execute([$execute_after ?? time() - 60, $priority, $selector, is_string($task) ? $task : serialize($task), serialize([])]);
             return (int) $this->pdo->lastInsertId();
         }
 
@@ -129,7 +131,7 @@ namespace Tests\Unit\Later {
             $this->assertGreaterThan(time() + Toexecute::CLAIM_LEASE - 60, $left[$failing]['execute_after'], 'retried only after the claim lease');
 
             $failed = $this->logRows(Toexecute::FAILED_EVENT);
-            $this->assertSame([['selector' => 'test-failing', 'params' => "#$failing $throwable"]], $failed, 'task, id and error class - nothing else');
+            $this->assertSame([['selector' => 'test-failing', 'params' => "#$failing $throwable tests/Unit/Later/ToexecuteTest.php:" . ThrowingTask::$line]], $failed, 'task, id, error class and where it was thrown - never the message');
             $this->assertCount(1, array_filter($this->logRows('TOEXECUTE'), static fn(array $r) => str_starts_with($r['params'], 'Xrun:3:3:')), 'the round finished and logged its run row');
         }
 
@@ -146,6 +148,32 @@ namespace Tests\Unit\Later {
             $this->assertStringNotContainsString(self::SECRET, $report);
         }
 
+        public function test_failureParams_cuts_a_long_path_from_the_left(): void
+        {
+            $params = Toexecute::failureParams(123, new LongPathException());
+
+            $this->assertLessThanOrEqual(AA_Logentry::PARAMS_MAX, strlen($params), 'log.params is 128 bytes - a longer row would be cut from the end');
+            $this->assertStringStartsWith('#123 ' . LongPathException::class . ' ', $params);
+            $this->assertStringEndsWith('/Task.php:4242', $params, 'the file name and line survive, the path loses its head');
+            $this->assertStringNotContainsString(self::SECRET, $params);
+        }
+
+        public function test_execute_unreadable_task_is_removed_without_logging_its_payload(): void
+        {
+            // the class is gone (renamed, module removed) - unserialize() yields __PHP_Incomplete_Class
+            $payload = 'O:16:"MissingTaskClass":1:{s:8:"password";s:' . strlen(self::SECRET) . ':"' . self::SECRET . '";}';
+            $broken  = $this->seed($payload, 'test-broken', 100);
+
+            $toexecute = new Toexecute();
+            $toexecute->execute();
+
+            $this->assertSame([], $this->queue(), 'an unreadable task is dropped, as before');
+            $log = $this->logRows('TOEXECUTE');
+            $this->assertCount(1, array_filter($log, static fn(array $r) => str_contains($r['selector'], "#$broken MissingTaskClass")), 'the row names the task and its class');
+            $this->assertStringNotContainsString(self::SECRET, json_encode($log), 'a task object may hold credentials - its payload stays out of the log');
+            $this->assertStringNotContainsString(self::SECRET, json_encode($toexecute->reportRows()), 'and out of the report');
+        }
+
         public function test_check_queue_reports_the_failures(): void
         {
             $failing = $this->seed(new ThrowingTask(\RuntimeException::class), 'test-failing', 100);
@@ -157,6 +185,8 @@ namespace Tests\Unit\Later {
             $this->assertSame(1, $findings[0]->count);
             $this->assertStringContainsString('test-failing', json_encode($findings[0]->evidence));
             $this->assertStringContainsString("#$failing RuntimeException", json_encode($findings[0]->evidence));
+            $this->assertStringContainsString(intdiv(Toexecute::CLAIM_LEASE, 60) . ' minutes', $findings[0]->advice, 'the retry delay comes from the lease');
+            $this->assertStringContainsString('Task Manager', $findings[0]->advice, 'a user-queue task is not retried on its own - the advice must say so');
         }
     }
 
@@ -173,12 +203,27 @@ namespace Tests\Unit\Later {
 
     final class ThrowingTask
     {
+        /** the line of the throw below - the log row must point at it */
+        public static int $line = 0;
+
         /** @param class-string<\Throwable> $throwable */
         public function __construct(public string $throwable = \RuntimeException::class) {}
 
         public function toexecutelater(array $params): string
         {
+            self::$line = __LINE__ + 1;
             throw new ($this->throwable)(ToexecuteTest::SECRET);
+        }
+    }
+
+    /** thrown from a file deep enough that "#id Class file:line" overflows log.params */
+    final class LongPathException extends \RuntimeException
+    {
+        public function __construct()
+        {
+            parent::__construct(ToexecuteTest::SECRET);
+            $this->file = AA_BASE_PATH . str_repeat('deep/', 30) . 'Task.php';
+            $this->line = 4242;
         }
     }
 }

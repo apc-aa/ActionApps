@@ -34,9 +34,11 @@ namespace AA\Later;
 
 use AA;
 use AA\IO\DB\DB_AA;
+use AA\Util\FatalLogger;
 use AA\Util\FileLock;
 use AA\Util\ReportTrait;
 use AA_Log;
+use AA_Logentry;
 use AA_Logentry_X;
 use AA_Logentry_Xrun;
 use Cvarset;
@@ -373,18 +375,20 @@ class Toexecute
                 $this->message($retcode);
                 $selector = AA_Log::selector($object);
             } else {
-                $this->message('Toexecute:execute - unserialize err:' . $task['object']);
+                // id + class + size only - the serialized object may hold credentials
+                $what = "#{$task['id']} " . (preg_match('/^[OC]:\d+:"([^"]+)"/', (string) $task['object'], $m) ? $m[1] : '?') . ' (' . strlen((string) $task['object']) . ' B)';
+                $this->message('Toexecute:execute - unserialize err: ' . $what);
                 $retcode = 'no execute, removed from queue';
-                $selector = AA_Log::selector('no object', $task['object']);
+                $selector = AA_Log::selector('no object', $what);
             }
         } catch (\Throwable $e) {
             // One broken task must not end the round for the tasks behind it. Its row
             // stays as the claim above left it - that is the queue's retry: again after
-            // the lease, one priority lower, given up at 0. Only the class is logged and
-            // shown - an exception message may carry passwords or personal data.
+            // the lease, one priority lower, given up at 0. Never the exception message -
+            // it may carry passwords or personal data.
             $execute_times[$task_type] = microtime(true) - $task_start;
             $this->message("#{$task['id']}: " . _m('the task failed with %1', [$e::class]));
-            AA_Log::write(self::FAILED_EVENT, $task_type, "#{$task['id']} " . $e::class);
+            AA_Log::write(self::FAILED_EVENT, $task_type, self::failureParams((int) $task['id'], $e));
             return 1;
         }
 
@@ -397,6 +401,18 @@ class Toexecute
 
         AA_Log::write('TOEXECUTE', $selector, AA_Logentry_X::make(sprintf('%.3g', $execute_times[$task_type]), $mem_usage, $mem_peak, (string) $retcode, $params));
         return 1;
+    }
+
+    /** The FAILED_EVENT row: "#id Class file:line", never the message (it may carry
+     *  passwords). The AA-relative path gives up its head first, so the file name and
+     *  line survive the log.params width.
+     */
+    public static function failureParams(int $id, \Throwable $e): string
+    {
+        $head  = "#$id " . $e::class . ' ';
+        $where = FatalLogger::format('', $e->getFile(), $e->getLine(), defined('AA_BASE_PATH') ? (string) constant('AA_BASE_PATH') : '')['selector'];
+        $row   = $head . mb_strcut($where, max(0, strlen($head) + strlen($where) - AA_Logentry::PARAMS_MAX));
+        return mb_strcut($row, 0, AA_Logentry::PARAMS_MAX);   // still over only for a huge class name or a multibyte cut
     }
 
     /** execute_one function

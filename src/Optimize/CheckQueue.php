@@ -96,7 +96,7 @@ class CheckQueue extends AbstractOptimize
         if ($failed_n > 0) {
             $rows     = DB_AA::select([], 'SELECT `time`, `selector`, `params` FROM `log`', $failed_of, ['time-'], null, 5);
             $evidence = array_map(static fn(array $row) => [_m('Time') => date('Y-m-d H:i', (int) $row['time']), _m('Task') => safe((string) $row['selector']), _m('Error') => safe((string) $row['params'])], $rows);
-            $findings[] = new Finding(Finding::WARNING, _m('Queued tasks failed %1 times in the last 7 days', [$failed_n]), count: $failed_n, since: (int) $failed['first'], evidence: $evidence, advice: _m('A failed task runs again after 30 minutes with a lower priority and is given up after repeated failures. Only the error class is logged - its message may hold passwords.'), links: [_m('Log rows') => AA_Log::getAdminUrl(Toexecute::FAILED_EVENT)] + $queue_link, key: 'failed', last: (int) $failed['last']);
+            $findings[] = new Finding(Finding::WARNING, _m('Queued tasks failed %1 times in the last 7 days', [$failed_n]), count: $failed_n, since: (int) $failed['first'], evidence: $evidence, advice: _m("A failed task runs again after %1 minutes with a lower priority and is given up after repeated failures. A task from a user's queue in the Task Manager is not retried - it waits there until someone runs it again. Only the error class and where it was thrown are logged - the message may hold passwords.", [intdiv(Toexecute::CLAIM_LEASE, 60)]), links: [_m('Log rows') => AA_Log::getAdminUrl(Toexecute::FAILED_EVENT)] + $queue_link, key: 'failed', last: (int) $failed['last']);
         }
 
         $stats = self::runStats(DB_AA::select('params', 'SELECT `params` FROM `log`', array_merge($runs_of, [['time', $now - self::WINDOW_SECONDS, '>=']])));
