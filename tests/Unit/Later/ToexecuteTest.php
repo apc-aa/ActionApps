@@ -150,12 +150,24 @@ namespace Tests\Unit\Later {
 
         public function test_failureParams_cuts_a_long_path_from_the_left(): void
         {
-            $params = Toexecute::failureParams(123, new LongPathException());
+            $params = Toexecute::failureParams(123, new LongPathException(str_repeat('deep/', 30)));
 
             $this->assertLessThanOrEqual(AA_Logentry::PARAMS_MAX, strlen($params), 'log.params is 128 bytes - a longer row would be cut from the end');
             $this->assertStringStartsWith('#123 ' . LongPathException::class . ' ', $params);
             $this->assertStringEndsWith('/Task.php:4242', $params, 'the file name and line survive, the path loses its head');
             $this->assertStringNotContainsString(self::SECRET, $params);
+        }
+
+        public function test_failureParams_cuts_a_multibyte_path_on_a_character_boundary(): void
+        {
+            // the pad after the 3-byte characters shifts the cut through all three alignments
+            foreach (['', 'a', 'aa'] as $pad) {
+                $params = Toexecute::failureParams(123, new LongPathException(str_repeat('€', 50) . $pad . '/'));
+
+                $this->assertLessThanOrEqual(AA_Logentry::PARAMS_MAX, strlen($params), "pad '$pad'");
+                $this->assertTrue(mb_check_encoding($params, 'UTF-8'), "pad '$pad': valid UTF-8");
+                $this->assertStringEndsWith('/Task.php:4242', $params, "pad '$pad': the line survives");
+            }
         }
 
         public function test_execute_unreadable_task_is_removed_without_logging_its_payload(): void
@@ -219,10 +231,10 @@ namespace Tests\Unit\Later {
     /** thrown from a file deep enough that "#id Class file:line" overflows log.params */
     final class LongPathException extends \RuntimeException
     {
-        public function __construct()
+        public function __construct(string $dir)
         {
             parent::__construct(ToexecuteTest::SECRET);
-            $this->file = AA_BASE_PATH . str_repeat('deep/', 30) . 'Task.php';
+            $this->file = constant('AA_BASE_PATH') . $dir . 'Task.php';
             $this->line = 4242;
         }
     }

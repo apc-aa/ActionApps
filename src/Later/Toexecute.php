@@ -411,8 +411,10 @@ class Toexecute
     {
         $head  = "#$id " . $e::class . ' ';
         $where = FatalLogger::format('', $e->getFile(), $e->getLine(), defined('AA_BASE_PATH') ? (string) constant('AA_BASE_PATH') : '')['selector'];
-        $row   = $head . mb_strcut($where, max(0, strlen($head) + strlen($where) - AA_Logentry::PARAMS_MAX));
-        return mb_strcut($row, 0, AA_Logentry::PARAMS_MAX);   // still over only for a huge class name or a multibyte cut
+        // cut forward to a character boundary (drop UTF-8 continuation bytes); backing
+        // up would overflow the column and the final cut would eat the line number
+        $row   = $head . ltrim(substr($where, max(0, strlen($head) + strlen($where) - AA_Logentry::PARAMS_MAX)), "\x80..\xBF");
+        return mb_strcut($row, 0, AA_Logentry::PARAMS_MAX);   // over only when the class name alone does not fit
     }
 
     /** execute_one function
