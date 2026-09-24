@@ -33,7 +33,7 @@ final class WriterTest extends TestCase
 
     /** The package of design balicek-v1.md § 4 (fixtures/aa-app-example.xml) as a model - rows and
      *  properties deliberately NOT in the output order. */
-    private static function example(): Package
+    public static function example(): Package
     {
         $spot_content = "<!DOCTYPE html>\r\n<html>{view:12::listlen-5}\r\n{view.php?vid=12&cmd[12]=x-12-{xid}}\r\n<script>if (a[b[0]]>1) {}</script>\r\n{_:Hlavicka:Central Test}\r\n</html>";
         $site         = new Module(Module::SITE, self::SITE, [
@@ -384,8 +384,8 @@ final class WriterTest extends TestCase
         $this->assertSame(self::xml(self::example()), self::xml(self::example()));
     }
 
-    /** the example with items - translations, multi-values */
-    private static function exampleWithItems(): Package
+    /** the example with items - translations, multi-values (ReaderTest round-trips it too) */
+    public static function exampleWithItems(): Package
     {
         $p       = self::example();
         $modules = array_map(static fn(Module $m): Module => $m->type !== Module::SLICE ? $m : new Module($m->type, $m->id, $m->rows, $m->settings, $m->objects, $m->spotTree, [

@@ -13,8 +13,8 @@ use LogicException;
  *
  *  A table row is an element named after the table, a column its child element. What a column is
  *  NOT in the XSD, a package cannot carry: installation columns, the module column (F4) and
- *  AUTO_INCREMENT numbers. The reader validates against the repo copy FILE (§ 3.1 step 8);
- *  SchemaTest keeps it equal to xsd() - regenerate with `php dev/central/aa-app-xsd.php`.
+ *  AUTO_INCREMENT numbers. The reader validates against xsd(); SchemaTest keeps the repo copy FILE
+ *  equal to it - regenerate with `php dev/central/aa-app-xsd.php`.
  */
 final class Schema
 {
@@ -197,6 +197,14 @@ final class Schema
     public function rowTables(): array
     {
         return array_map(static fn(array $row): string => $row[0], self::ROWS);
+    }
+
+    /** Every column of the row element's table in this AA - carried or not. The reader prunes a column
+     *  only when it is not here (§ 3.2); a known one the package must not carry is left to the XSD.
+     *  @return list<string> */
+    public function tableColumns(string $element): array
+    {
+        return array_keys($this->metabase->getColumns(self::ROWS[$element][0]));
     }
 
     /** Columns a row element carries as child elements, in metabase_schema.php order (design § 2.5).
