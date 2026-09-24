@@ -10,3 +10,6 @@
 *.ttf binary
 *.eot binary
 *.pdf binary
+# byte-compared by SchemaTest (generated XSD) and substring-edited by it (fixture) - LF on every checkout
+src/Central/Package/aa-app-1.xsd text eol=lf
+tests/Unit/Central/Package/fixtures/*.xml text eol=lf

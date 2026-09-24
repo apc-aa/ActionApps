@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Central Test: web + slice; komentáře autora smějí být kdekoli, čtenář je ignoruje -->
+<aa-app xmlns="https://actionapps.org/ns/aa-app" format="1.0">
+  <meta>
+    <name>Central Test</name>
+    <description>Testovací appka Centralu - web, články, kategorie.</description>
+    <version>0.1.0</version>
+    <publish>no</publish>
+    <source url="https://actionapps.org/aadev/" aa-version="2026.9" aa-build="d2a1efe 2026-09-24 00:30"
+            site="1a2b3c4d5e6f708192a3b4c5d6e7f801" exported="2026-09-24T10:00:00Z"/>
+    <requires aa-version="2026.9"/>
+    <contents items="false"/>
+    <tables>                                      <!-- sloupce, které znala exportující AA (zkráceno) -->
+      <table name="view" columns="name type before even odd even_odd_differ row_delimiter after remove_string group_title order1 o1_direction listlen field1 field2 field3 noitem_msg"/>
+      <table name="slice" columns="name type vid mlxctrl fulltext_format fulltext_format_top"/>
+    </tables>
+  </meta>
+
+  <site-module id="1a2b3c4d5e6f708192a3b4c5d6e7f801">
+    <doc>Web appky. Spot 1 = kostra stránky.</doc>
+    <module>
+      <name>Central Test - web</name>
+      <lang_file>cz-utf8_site_lang.php</lang_file>
+    </module>
+    <site>
+      <state_file>/cz/home</state_file>          <!-- domovská cesta routeru = kód appky -->
+      <flag>1</flag>
+    </site>
+    <spot-tree start="1">
+      <spot id="1" name="start" parent="1">
+        <var>x</var>
+        <positions>1 2</positions>
+        <choices>3</choices>
+      </spot>
+      <spot id="2" name="clanek" parent="1"/>
+      <spot id="3" name="rubrika" parent="1">
+        <cond var="x">rubrika</cond>
+      </spot>
+    </spot-tree>
+    <site_spot spot_id="1">
+      <content crlf="true"><![CDATA[<!DOCTYPE html>
+<html>{view:12::listlen-5}
+{view.php?vid=12&cmd[12]=x-12-{xid}}
+<script>if (a[b[0]]]]><![CDATA[>1) {}</script>
+{_:Hlavicka:Central Test}
+</html>]]></content>
+    </site_spot>
+    <site_spot spot_id="2">
+      <content><![CDATA[{item:{xid}:_#HEADLINE}]]></content>
+      <flag>0</flag>
+    </site_spot>
+    <uses module="0f1e2d3c4b5a69788796a5b4c3d2e1f0"/>
+    <settings class="AA_Modulesettings_Site">
+      <p n="web_languages" i="0">cz</p>
+      <p n="translate_slice">0f1e2d3c4b5a69788796a5b4c3d2e1f0</p>
+      <p n="page404">2</p>
+    </settings>
+    <object id="99aa88bb77cc66dd55ee44ff33aa22bb" class="AA_Aliasfunc">
+      <p n="alias">Hlavicka</p>
+      <p n="code"><![CDATA[<header><h1>_#P1</h1></header>]]></p>
+    </object>
+  </site-module>
+
+  <slice-module id="0f1e2d3c4b5a69788796a5b4c3d2e1f0">
+    <module>
+      <name>Central Test - články</name>
+      <lang_file>cz-utf8_news_lang.php</lang_file>
+    </module>
+    <slice>
+      <name>Central Test - články</name>
+      <type>S</type>
+      <vid>12</vid>                                <!-- strukturovaný odkaz → mapa pohledů -->
+      <mlxctrl null="true"/>
+      <fulltext_format><![CDATA[<h1>_#HEADLINE</h1>]]></fulltext_format>
+    </slice>
+    <settings class="AA_Modulesettings_Slice">
+      <p n="translations" i="0">cz</p>
+      <p n="translations" i="1">en</p>
+    </settings>
+    <field id="headline........">
+      <type>headline</type>
+      <name>Titulek</name>
+      <input_pri>100</input_pri>
+      <input_show_func>fld:</input_show_func>
+      <alias1>_#HEADLINE</alias1>
+      <alias1_func>f_h:</alias1_func>
+    </field>
+    <field id="category.......1">
+      <type>category</type>
+      <name>Rubrika</name>
+      <input_show_func>sel:ct_rubriky:</input_show_func>  <!-- skupina konstant → mapa skupin -->
+    </field>
+    <!-- nastavení appky (R3): pole nastavení slice, hodnotu vyplní instalující -->
+    <field id="_email..........">
+      <type>email</type>
+      <name>E-mail redakce</name>
+      <input_help>Kam chodí upozornění</input_help>
+      <input_default>txt:redakce@example.org</input_default>
+      <required>1</required>
+    </field>
+    <view id="12">
+      <name>Seznam článků</name>
+      <type>digest</type>
+      <odd><![CDATA[<li><a href="{view.php?vid=13&cmd[13]=x-13-_#ITEM_ID_}">_#HEADLINE</a></li>]]></odd>
+      <field3>clanky</field3>                      <!-- jméno pohledu: {view:clanky} -->
+    </view>
+    <view id="13">
+      <name>Detail</name>
+      <type>full</type>
+      <odd><![CDATA[{constant:ct_rubriky:{category.......1}:name}]]></odd>
+    </view>
+    <email id="5">
+      <description>Upozornění redakci</description>
+      <subject>Nový článek</subject>
+      <body><![CDATA[{modulefield:0f1e2d3c4b5a69788796a5b4c3d2e1f0:_email..........}]]></body>
+    </email>
+    <profile>                                     <!-- výchozí profil (uid='*') -->
+      <property>input_view</property>
+      <value>13</value>                            <!-- strukturovaný odkaz → mapa pohledů -->
+    </profile>
+    <object id="cc11bb22cc33dd44ee55ff6677889900" class="AA_Set">  <!-- {set:cc11…} -->
+      <p n="slices">0f1e2d3c4b5a69788796a5b4c3d2e1f0</p>
+      <object id="dd11bb22cc33dd44ee55ff6677889900" class="AA_Condition" n="conds" i="0">
+        <p n="fields">category.......1</p>
+        <p n="operator">=</p>
+        <p n="value">zpravy</p>
+      </object>
+      <object id="ee11bb22cc33dd44ee55ff6677889900" class="AA_Sortorder" n="sort" i="0">
+        <p n="field">publish_date....</p>
+        <p n="desc">1</p>
+      </object>
+    </object>
+  </slice-module>
+
+  <alerts-module id="5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a">
+    <module><name>Upozornění</name></module>
+    <email id="7"><description>Vítejte</description></email>
+    <alerts_collection id="AbC12"><emailid_welcome>7</emailid_welcome><slice_id>0f1e2d3c4b5a69788796a5b4c3d2e1f0</slice_id></alerts_collection>
+    <alerts_collection_filter collection="AbC12" filter="3"/>
+    <alerts_collection_howoften collection="AbC12" howoften="daily"/>
+    <alerts_filter id="3"><vid>12</vid><description>Všechny články</description></alerts_filter>
+  </alerts-module>
+  <constant-group name="ct_rubriky" owner="0f1e2d3c4b5a69788796a5b4c3d2e1f0">
+    <constant_slice>
+      <hierarch>1</hierarch>
+    </constant_slice>
+    <constant id="aa11bb22cc33dd44ee55ff6677889900">
+      <name>Zprávy</name>
+      <value>zpravy</value>
+      <pri>100</pri>
+    </constant>
+    <constant id="bb11bb22cc33dd44ee55ff6677889900">
+      <name>Domácí</name>
+      <value>domaci</value>
+      <pri>110</pri>
+      <ancestors>aa11bb22cc33dd44ee55ff6677889900</ancestors>
+    </constant>
+  </constant-group>
+
+  <signature/>
+</aa-app>
