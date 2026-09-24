@@ -34,10 +34,22 @@ namespace Tests\Unit\Legacy {
      * AA_Collection (modules/alerts/alerts_sending.php): the id check for ids arriving from
      * a request (AA_Responder_Alertitem) and the filter lookup that used to splice the id into
      * its SQL - `xx' #` there mailed the filters of every collection to the caller - and the
-     * test-address rule, where a bad address used to mean "none", i.e. a live send to all readers.
+     * test-address rule, where a bad address used to mean "none", i.e. a live send to all readers -
+     * and the relation of a collection to the slice whose item is sent through it.
      */
     final class AlertsCollectionTest extends TestCase
     {
+        private const SLICE = '0123456789abcdef0123456789abcdef';
+
+        // RecordingDb is a SQLite handle, so DB_AA quotes the table names with "" (MySQL: ``)
+
+        /** the slice is the collection's reader slice (alerts_collection.slice_id) */
+        private const READER_SQL = "SELECT id FROM \"alerts_collection\" WHERE id = 'sQjwa' AND slice_id = 0x0123456789abcdef0123456789abcdef LIMIT  1";
+        /** a filter of the collection whose view belongs to the slice */
+        private const FILTER_SQL = "SELECT alerts_collection_filter.collectionid FROM \"alerts_collection_filter\",\"alerts_filter\",\"view\""
+            . " WHERE alerts_collection_filter.collectionid = 'sQjwa' AND alerts_collection_filter.filterid = alerts_filter.id"
+            . " AND alerts_filter.vid = view.id AND view.slice_id = 0x0123456789abcdef0123456789abcdef LIMIT  1";
+
         public static function setUpBeforeClass(): void
         {
             require_once __DIR__ . '/fixtures/store_fixtures.php';
@@ -129,6 +141,49 @@ namespace Tests\Unit\Legacy {
                 "SELECT filterid FROM alerts_collection_filter WHERE collectionid = 'xx\\' #' ORDER BY myindex",
                 RecordingDb::$log[0],
             );
+        }
+
+        public function test_relatesToSlice_viaTheReaderSlice(): void
+        {
+            RecordingDb::$answer = static fn(string $sql) => str_contains($sql, 'FROM "alerts_collection" ') ? [['id' => 'sQjwa']] : [];
+
+            $this->assertTrue(AA_Collection::relatesToSlice('sQjwa', self::SLICE));
+            $this->assertSame([self::READER_SQL], RecordingDb::$log, 'the reader slice is enough - no filter lookup');
+        }
+
+        public function test_relatesToSlice_viaAFilterOnTheSlice(): void
+        {
+            RecordingDb::$answer = static fn(string $sql) => str_contains($sql, '"view"') ? [['collectionid' => 'sQjwa']] : [];
+
+            $this->assertTrue(AA_Collection::relatesToSlice('sQjwa', self::SLICE));
+            $this->assertSame([self::READER_SQL, self::FILTER_SQL], RecordingDb::$log);
+        }
+
+        public function test_relatesToSlice_unrelatedCollection(): void
+        {
+            $this->assertFalse(AA_Collection::relatesToSlice('sQjwa', self::SLICE));
+            $this->assertSame([self::READER_SQL, self::FILTER_SQL], RecordingDb::$log);
+        }
+
+        public static function malformedRelationIds(): array
+        {
+            return [
+                'sql in collection'  => ["xx' #", self::SLICE],
+                'long collection'    => ['sQjwaX', self::SLICE],
+                'short slice'        => ['sQjwa', '0123'],
+                'slice not hex'      => ['sQjwa', str_repeat('g', 32)],
+                'sql in slice'       => ['sQjwa', "0123456789abcdef0123456789abc' #"],
+                'empty slice'        => ['sQjwa', ''],
+            ];
+        }
+
+        #[DataProvider('malformedRelationIds')]
+        public function test_relatesToSlice_malformedIdsAskNothing(string $collection_id, string $slice_id): void
+        {
+            RecordingDb::$answer = static fn(string $sql) => [['x' => 'x']];   // a match for anything that got through
+
+            $this->assertFalse(AA_Collection::relatesToSlice($collection_id, $slice_id));
+            $this->assertSame([], RecordingDb::$log);
         }
     }
 }

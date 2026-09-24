@@ -634,7 +634,7 @@ class AA_Responder_Alertitem extends AA_Responder
             return false;
         }
         if ($item = AA_Items::getItem(new zids($this->item_id, 'l'))) {
-            // @todo should we check also collection_id???
+            // the collection is checked in run() - it must be related to this slice (AA_Collection::relatesToSlice())
             return IfSlPerm(PS_EDIT_ALL_ITEMS, $item->getSliceID());
         }
         return false;
@@ -645,6 +645,11 @@ class AA_Responder_Alertitem extends AA_Responder
         // send_emails() trusts the ids it gets and fatals on an unknown one; errors do not echo the input back
         if (!AA_Collection::isValidId($this->collection_id) || !DB_AA::test('alerts_collection', [['id', $this->collection_id]])) {
             return new AA_Response('Invalid collection id', 7);
+        }
+        // an editor of the slice may send its item only to the readers of the slice's own collections
+        $item = AA_Items::getItem(new zids($this->item_id, 'l'));   // isPerm() found it
+        if (!$item || !AA_Collection::relatesToSlice($this->collection_id, $item->getSliceID())) {
+            return new AA_Response("Collection is not related to the item's slice", 9);
         }
         // null = an address was given but is not valid - never read that as "none" (= a live send to all readers)
         $test_emails = AA_Collection::testEmails($this->test_email);

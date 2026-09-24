@@ -72,6 +72,27 @@ class AA_Collection
         return (is_string($test_email) && filter_var($test_email, FILTER_VALIDATE_EMAIL) !== false) ? [$test_email] : null;
     }
 
+    /** May an item of the slice be sent through the collection (AA_Responder_Alertitem)? Only when they
+     *  belong together: the slice is the collection's reader slice (alerts_collection.slice_id - set by
+     *  the Alerts admin only, unlike the alerts1....<id> field a slice admin could name after any collection)
+     *  or a filter of the collection is a view of the slice.
+     *  A real send to the readers always needs the filter: createFilterText() keeps only the filters on
+     *  the item's slice, so with the reader slice alone nothing reaches the readers - only a test send works.
+     *  @param string $slice_id long (unpacked) id */
+    public static function relatesToSlice(string $collection_id, string $slice_id): bool
+    {
+        if (!self::isValidId($collection_id) || !is_long_id($slice_id)) {
+            return false;
+        }
+        return DB_AA::test('alerts_collection', [['id', $collection_id], ['slice_id', $slice_id, 'l']])
+            || DB_AA::test(['alerts_collection_filter', 'alerts_filter', 'view'], [
+                ['alerts_collection_filter.collectionid', $collection_id],
+                ['alerts_collection_filter.filterid', 'alerts_filter.id', 'j'],
+                ['alerts_filter.vid', 'view.id', 'j'],
+                ['view.slice_id', $slice_id, 'l'],
+            ]);
+    }
+
     /** @return string[] filter ids of this collection, in the collection's order */
     public function getFilterIds(): array
     {
