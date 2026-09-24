@@ -325,6 +325,169 @@ class sitetree
         $this->current_id  = $data[$this->getSerializedProperty('current_id')]  ??  $this->start_id;
     }
 
+    /** Limits of a tree fromArray() accepts - it is the gate of the aa-app import, the data untrusted */
+    public const MAX_SPOTS = 5000;       // spots of a tree
+    public const MAX_DEPTH = 64;         // nested choices - walkTree() recurses once per level
+    public const MAX_TEXT  = 65536;      // bytes of a spot name, variable, condition
+
+    /** The tree as plain data - the canonical form of the aa-app package (design balicek-v1.md § 6.3):
+     *  {start_id, spots: list by number of {id, n, p, f, v, c, po, ch}}. Ids (also p, po, ch, start_id)
+     *  are strings, f an int, n a string; v (name => name) and c (variable => condition) keyed arrays
+     *  of strings or null; po and ch lists or null. A falsy scalar (`false` of addInSequence(), the 0 of
+     *  a site_spot.flag the constructor passes as choices) is null; empty positions and choices are left
+     *  out and an empty list is null - walkTree() skips them and treats both alike; choices in key order
+     *  (walkTree() ksort()s them). NULL entries of the tree are no spots. The current spot of the editor
+     *  is no data.
+     *  @throws UnexpectedValueException a spot property of a type no tree has */
+    public function toArray(): array
+    {
+        $spots = [];
+        foreach ($this->tree as $spot) {
+            if (!($spot instanceof spot)) {
+                continue;       // NULL of `& $this->tree[$id]` for an id no longer there (get(), set(), move())
+            }
+            $ch = self::canonicalArray($spot->ch, 'ch');
+            if ($ch) {
+                ksort($ch);
+            }
+            $spots[] = [
+                'id' => (string) $spot->id,
+                'n'  => (string) $spot->n,
+                'p'  => (string) $spot->p,
+                'f'  => (int) $spot->f,
+                'v'  => self::canonicalArray($spot->v, 'v'),
+                'c'  => self::canonicalArray($spot->c, 'c'),
+                'po' => self::canonicalIds(self::canonicalArray($spot->po, 'po')),
+                'ch' => self::canonicalIds($ch),
+            ];
+        }
+        usort($spots, static fn(array $a, array $b): int => (int) $a['id'] <=> (int) $b['id']);
+        return ['start_id' => (string) $this->start_id, 'spots' => $spots];
+    }
+
+    /** The tree of toArray() data - also as a reader gives it (numbers for ids, keys left out = null).
+     *  Ids (id, p, po, ch, start_id) become ints, as new_id() makes them: isOption() compares choices
+     *  strictly with the int getCurrentId().
+     *
+     *  The gate of the import: only a tree walkTree() walks - the start is spot 1 (walkTree(), getSite()
+     *  hard-wire it), its own parent, heading its sequence (po starts with the spot itself, as the
+     *  constructor and addChoice() build it, so does every option); every other id in a po or ch is a
+     *  spot whose parent is the listing spot, listed once; every spot reachable from spot 1 (no cycle);
+     *  MAX_SPOTS, MAX_DEPTH, MAX_TEXT.
+     *  @throws InvalidArgumentException anything else */
+    public static function fromArray(array $data): sitetree
+    {
+        $spots = $data['spots'] ?? null;
+        if (!is_array($spots) || !$spots || (count($spots) > self::MAX_SPOTS)) {
+            throw new InvalidArgumentException('sitetree: 1 to ' . self::MAX_SPOTS . ' spots');
+        }
+        $id   = static fn(mixed $v): int => ((is_int($v) || is_string($v)) && preg_match('/^[1-9][0-9]{0,9}\z/', (string) $v))
+            ? (int) $v
+            : throw new InvalidArgumentException('sitetree: spot id ' . var_export($v, true));
+        $ids  = static fn(mixed $list): ?array => is_array($list)
+            ? (array_map($id, array_values($list)) ?: null)
+            : self::canonicalArray($list, 'po', InvalidArgumentException::class);
+        $tree = (new ReflectionClass(self::class))->newInstanceWithoutConstructor();
+        $tree->tree = [];
+        foreach ($spots as $s) {
+            $spot_id = $id($s['id'] ?? null);
+            if (isset($tree->tree[$spot_id])) {
+                throw new InvalidArgumentException("sitetree: duplicate spot $spot_id");
+            }
+            $v = self::canonicalArray($s['v'] ?? null, 'v', InvalidArgumentException::class);
+            $c = self::canonicalArray($s['c'] ?? null, 'c', InvalidArgumentException::class);
+            $n = (string) (is_scalar($s['n'] ?? null) ? $s['n'] : '');
+            foreach ([$n, ...array_keys($v ?? []), ...array_keys($c ?? []), ...($c ?? [])] as $text) {
+                if (strlen((string) $text) > self::MAX_TEXT) {
+                    throw new InvalidArgumentException("sitetree: a text of spot $spot_id is longer than " . self::MAX_TEXT . ' bytes');
+                }
+            }
+            foreach ($v ?? [] as $key => $name) {
+                if ((string) $key !== $name) {
+                    throw new InvalidArgumentException("sitetree: variable key $key of spot $spot_id is not its name");
+                }
+            }
+            $tree->tree[$spot_id] = new spot($spot_id, $n, $c, $v, $id($s['p'] ?? null), $ids($s['po'] ?? null), $ids($s['ch'] ?? null), (int) ($s['f'] ?? 0));
+        }
+        $tree->start_id = $id($data['start_id'] ?? null);
+        self::checkStructure($tree->tree, $tree->start_id);
+        $tree->current_id = $tree->start_id;
+        return $tree;
+    }
+
+    /** fromArray(): the tree is one walkTree() walks @param spot[] $spots @throws InvalidArgumentException */
+    private static function checkStructure(array $spots, int $start): void
+    {
+        $fail = static fn(string $message): never => throw new InvalidArgumentException("sitetree: $message");
+        if (($start !== 1) || !isset($spots[1]) || ($spots[1]->p !== 1)) {
+            $fail('the start is spot 1, its own parent');
+        }
+        $listed = [];
+        foreach ($spots as $spot_id => $spot) {
+            if (!isset($spots[$spot->p]) || (($spot->p === $spot_id) && ($spot_id !== 1))) {
+                $fail("spot $spot_id: no parent");
+            }
+            if (($spot_id === 1) && (($spot->po[0] ?? null) !== 1)) {
+                $fail('spot 1 heads its sequence');
+            }
+            foreach (['po' => $spot->po, 'ch' => $spot->ch] as $what => $list) {
+                foreach ($list ?? [] as $k => $child) {
+                    if (($what === 'po') && ($k === 0) && ($child === $spot_id)) {
+                        continue;       // the spot heading its sequence
+                    }
+                    if (($child === $spot_id) || !isset($spots[$child]) || ($spots[$child]->p !== $spot_id) || isset($listed[$child])) {
+                        $fail("spot $spot_id: $what $child is no spot of its own, or listed twice");
+                    }
+                    $listed[$child] = true;
+                    if (($what === 'ch') && (($spots[$child]->po[0] ?? null) !== $child)) {
+                        $fail("spot $child: an option heads its sequence");
+                    }
+                }
+            }
+        }
+        $seen  = [1 => true];
+        $queue = [[1, 0]];
+        while ($queue) {
+            [$spot_id, $depth] = array_pop($queue);
+            if ($depth > self::MAX_DEPTH) {
+                $fail('choices nested deeper than ' . self::MAX_DEPTH);
+            }
+            $children = [
+                ...array_map(static fn(int $c): array => [$c, $depth], array_slice($spots[$spot_id]->po ?? [], 1)),   // the sequence
+                ...array_map(static fn(int $c): array => [$c, $depth + 1], $spots[$spot_id]->ch ?? []),             // one level down
+            ];
+            foreach ($children as [$child, $child_depth]) {
+                if (isset($seen[$child])) {
+                    $fail("spot $child: reached twice");
+                }
+                $seen[$child] = true;
+                $queue[]      = [$child, $child_depth];
+            }
+        }
+        if (count($seen) !== count($spots)) {
+            $fail('spots unreachable from spot 1: ' . implode(' ', array_keys(array_diff_key($spots, $seen))));
+        }
+    }
+
+    /** v, c (keyed) or po, ch as an array of strings; a falsy scalar (null, false, '', 0, '0') is null
+     *  @param class-string<\Throwable> $error */
+    private static function canonicalArray(mixed $value, string $what, string $error = UnexpectedValueException::class): ?array
+    {
+        if (!is_array($value)) {
+            return ((is_scalar($value) || ($value === null)) && !$value) ? null : throw new $error("sitetree: $what is no array");
+        }
+        foreach ($value as $key => $v) {
+            $value[$key] = is_scalar($v) || ($v === null) ? (string) $v : throw new $error("sitetree: $what holds a nested value");
+        }
+        return $value;
+    }
+
+    /** po, ch: the ids that walkTree() does not skip, as a list of strings; none = null */
+    private static function canonicalIds(?array $ids): ?array
+    {
+        return ($ids === null) ? null : (array_values(array_filter($ids)) ?: null);
+    }
+
     public function setCurrentId(int $id): void
     {
         $this->current_id = $id;
