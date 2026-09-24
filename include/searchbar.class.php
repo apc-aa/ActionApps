@@ -665,7 +665,7 @@ class AA_Searchbar extends AA_Storable
         // full set of fields); otherwise it stays compact - a single field
         $expanded = $this->hasActiveSearch();
 
-        $ret  = '<div class="flex f-between aa-searchbar-row"><input type="hidden" name="srchbr_akce" value="1">';
+        $ret  = '<div class="flex aa-searchbar-row"><input type="hidden" name="srchbr_akce" value="1">';
         $ret .= '<div class="aa-filter relative' . ($expanded ? ' expanded' : '') . '">';
 
         // print searchbars

@@ -70,7 +70,7 @@ final class Notes
                   . '<option value="' . Note::AUDIENCE_ME . '">' . _m('only for me') . '</option>'
                   . '</select>';
         $popover = '<div popover id="' . $id . '" class="aa-overflow-menu aa-notes-pop">' . $list
-                 . self::form('add', $resource, $return_url, $textarea, _m('Add note'), 'btn', $audience) . '</div>';
+                 . self::form('add', $resource, $return_url, $textarea, _m('Add note'), 'btn btn-s', $audience) . '</div>';
         return '<div class="aa-notes">' . $trigger . $popover . '</div>';
     }
 
@@ -102,7 +102,7 @@ final class Notes
             $actions .= self::form('unresolve', $note->resource, $return_url, $id_field, _m('Unresolve'), 'aa-button-run');
         }
         if ($superadmin || ($note->author === AuthGetUid())) {
-            $actions .= self::form('delete', $note->resource, $return_url, $id_field, _m('Delete'), 'aa-button-delete');
+            $actions .= self::form('delete', $note->resource, $return_url, $id_field, '✕', 'ico delete');
         }
         return '<div class="aa-note"><div class="aa-note-head">' . $head . '</div><div class="aa-note-text">' . $note->textHtml() . '</div>'
              . ($actions ? '<div class="aa-note-actions">' . $actions . '</div>' : '') . '</div>';
