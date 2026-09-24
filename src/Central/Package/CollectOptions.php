@@ -19,8 +19,10 @@ final readonly class CollectOptions
     /**
      * @param array<string, string> $source   meta/source attributes: url, aa-version, exported; aa-build
      *                                        optional (`site` is added by fromSite())
-     * @param bool                  $items    carry items (§ 6.2) - never of a published app, never of a
-     *                                        ReaderManagement slice
+     * @param bool                  $items    carry items (§ 6.2) - for moving a site between AAs by its
+     *                                        admins: may hold personal data and password hashes, so never
+     *                                        in a public package (publish = all is an error); the caller
+     *                                        must not publish it
      * @param bool                  $allBins  items of all bins; false = the active bin, status_code 1 -
      *                                        pending and expired items included (their dates decide)
      * @param int                   $maxItems at most this many items in the package, more = an error
@@ -46,6 +48,13 @@ final readonly class CollectOptions
         }
     }
 
+    /** publish = all: the public catalogue - no items */
+    public function public(): bool
+    {
+        return $this->publish === 'all';
+    }
+
+    /** publish = users | all: every W finding is an error (D2) */
     public function published(): bool
     {
         return in_array($this->publish, ['users', 'all'], true);

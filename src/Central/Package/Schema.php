@@ -616,7 +616,7 @@ final class Schema
               <xs:element name="description" type="xs:string" minOccurs="0"/>
               <!-- app version as the author writes it (R5), e.g. 1.2.0 -->
               <xs:element name="version"     type="xs:string" minOccurs="0"/>
-              <!-- R5 at the source; the importer sets it to "no" on the new site (design § 9.1, Q-H1) -->
+              <!-- R5 at the source; the importer sets it to "users" on the new site (design § 9.1, Q-H1) -->
               <xs:element name="publish"     type="publish"   minOccurs="0"/>
               <xs:element name="source"      type="source"/>
               <xs:element name="requires"    type="requires"  minOccurs="0"/>

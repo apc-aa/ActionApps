@@ -69,6 +69,8 @@ namespace Tests\Unit\Central\Package {
         public static function setUpBeforeClass(): void
         {
             class_exists(AA_Module_Site::class);   // include/slice.class.php brings include/constants.php
+            require_once __DIR__ . '/../../Legacy/fixtures/store_fixtures.php';
+            require_once __DIR__ . '/../../../../include/util.php';      // string2id() for ObjectExport
         }
 
         private static function module(string $id, string $type, string $name, string $lang_file, int $deleted = 0): array
@@ -612,6 +614,7 @@ namespace Tests\Unit\Central\Package {
                 'headline........' => [['value' => 'First', 'flag' => 1]],
                 'number..........' => [['value' => '', 'flag' => 0]],        // NULL => '' (Model\Module)
                 'category.......1' => self::v('news', 'home'),
+                'password.......1' => self::v('$2y$10$hash'),                 // readers must log in after a transfer
                 'status_code.....' => self::v('1'),
                 'post_date.......' => self::v('1700000000'),
                 'publish_date....' => self::v('1700000000'),
@@ -620,7 +623,7 @@ namespace Tests\Unit\Central\Package {
                 'last_edit.......' => self::v('1700000100'),
                 'flags...........' => self::v('0'),
                 'moved2active....' => self::v('0'),
-            ], $items[0]['content']);   // no users, counters or feeding of the source AA, no password hash
+            ], $items[0]['content']);   // no users, counters or feeding of the source AA
             $this->assertCount(1, self::xml($on)->getElementsByTagName('item'));
         }
 
@@ -639,18 +642,35 @@ namespace Tests\Unit\Central\Package {
             $this->assertContains('E ' . Collector::ITEMS_LIMIT . ' 1 @ slice-module[' . self::SLICE_A . ']/item', self::findings($result));
         }
 
-        public function test_items_of_a_reader_management_slice_never_travel(): void
+        public function test_items_of_a_reader_management_slice_travel_like_any_other(): void
         {
-            $source                                = self::source();
+            // moving a whole site between installations takes its readers too (Honza, 24. 9.)
+            $source                             = self::source();
             $source->tables['slice'][0]['type'] = 'ReaderManagement';
-            $result                                = (new Collector($source))->fromModules([self::SLICE_A], new CollectOptions(self::SOURCE, items: true));
+            $result                             = (new Collector($source))->fromModules([self::SLICE_A], new CollectOptions(self::SOURCE, items: true));
 
-            $this->assertSame([], self::moduleOf($result, self::SLICE_A)->items);
-            $this->assertContains('E ' . Collector::READER_ITEMS . ' ' . self::SLICE_A . ' @ slice-module[' . self::SLICE_A . ']/item', self::findings($result));
-            $this->assertNotContains('item', array_column($source->log, 0));
+            $items = self::moduleOf($result, self::SLICE_A)->items;
+            $this->assertSame([self::ITEM], array_column($items, 'id'));
+            $this->assertSame(self::v('$2y$10$hash'), $items[0]['content']['password.......1']);
+            $this->assertFalse($result->failed());
         }
 
-        public function test_a_published_app_carries_no_items(): void
+        /** @return array<string, array{string}> */
+        public static function notPublic(): array
+        {
+            return ['no' => ['no'], 'users (admins of the site only, Q-H1)' => ['users']];
+        }
+
+        #[DataProvider('notPublic')]
+        public function test_items_may_travel_in_a_package_that_is_not_public(string $publish): void
+        {
+            $result = (new Collector(self::source()))->fromModules([self::SLICE_A], new CollectOptions(self::SOURCE, items: true, publish: $publish));
+
+            $this->assertSame([self::ITEM], array_column(self::moduleOf($result, self::SLICE_A)->items, 'id'));
+            $this->assertSame([], array_filter(self::findings($result), static fn(string $f): bool => str_contains($f, Collector::ITEMS_PUBLISHED)));
+        }
+
+        public function test_a_public_app_carries_no_items(): void
         {
             $source = self::source();
             $result = (new Collector($source))->fromModules([self::SLICE_A], new CollectOptions(self::SOURCE, items: true, publish: 'all'));

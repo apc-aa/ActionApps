@@ -26,6 +26,10 @@ use InvalidArgumentException;
  *  modules, including the "uses" modules fromSite() resolved itself, and the owners of foreign
  *  constant groups. An anonymous download may only serve a package already published.
  *
+ *  ITEMS (CollectOptions::$items) are for moving a site between AAs by its admins: the package may
+ *  hold personal data and password hashes (readers of a ReaderManagement slice). The caller must not
+ *  publish it - publish = all with items is an error, users (admins of the site, Q-H1) or no is fine.
+ *
  *  Objects and the site tree (§ 5.4, § 6.3; C4.3 part 4): ObjectExport reads the settings and the
  *  allowlisted objects of a site / slice, site.structure becomes sitetree::toArray(); both in UTF-8.
  *
@@ -52,9 +56,7 @@ final class Collector
     public const ROW_MISSING = 'row-missing';
     /** W: a field widget names a constant group that does not exist */
     public const GROUP_MISSING = 'group-missing';
-    /** E: items of a ReaderManagement slice (readers' logins and e-mails) never travel */
-    public const READER_ITEMS = 'reader-items';
-    /** E: a published app carries no items */
+    /** E: a public app (publish = all, the catalogue) carries no items */
     public const ITEMS_PUBLISHED = 'items-published';
     /** E: more items than CollectOptions::$maxItems - the rest is left out */
     public const ITEMS_LIMIT = 'items-limit';
@@ -139,8 +141,8 @@ final class Collector
         if (!ModuleCharset::works()) {
             $this->add('meta', LintFinding::ERROR, self::CHARSET_BROKEN, 'iconv windows-1250');
         }
-        $with_items = $options->items && !$options->published();
-        if ($options->items && $options->published()) {
+        $with_items = $options->items && !$options->public();
+        if ($options->items && $options->public()) {
             $this->add('meta/contents', LintFinding::ERROR, self::ITEMS_PUBLISHED, (string) $options->publish);
         }
         $first = (string) array_key_first($app);
@@ -167,7 +169,7 @@ final class Collector
                 $rows[$id][$element] = $this->clean($element, $list, $charsets[$id], $path);
             }
             if ($with_items && ($module['type'] === 'S')) {
-                $items[$id] = $this->items($id, $raw[$id], $charsets[$id], $path, $options, $count);
+                $items[$id] = $this->items($id, $charsets[$id], $path, $options, $count);
             }
             if (isset(Schema::SETTINGS_CLASSES[self::TYPES[$module['type']]])) {      // site, slice: alerts own none
                 [$settings, $list, $findings] = $this->objects->collect($id, self::TYPES[$module['type']], $path);
@@ -316,16 +318,12 @@ final class Collector
     }
 
     /** Items {id, content}, values in UTF-8, NULL as '' (Model\Module), without the state of the source
-     *  AA and the values of password fields; none of a ReaderManagement slice; at most maxItems in all.
-     *  @param array<string, list<array<string, mixed>>> $raw the slice's rows @return list<array<string, mixed>> */
-    private function items(string $slice_id, array $raw, string $charset, string $path, CollectOptions $options, int &$count): array
+     *  AA (users, counters, feeding); at most maxItems in all. Every slice alike - ReaderManagement
+     *  too, password hashes included: a site moved to another AA keeps its readers able to log in.
+     *  @return list<array<string, mixed>> */
+    private function items(string $slice_id, string $charset, string $path, CollectOptions $options, int &$count): array
     {
-        if (($raw['slice'][0]['type'] ?? '') === 'ReaderManagement') {
-            $this->add("$path/item", LintFinding::ERROR, self::READER_ITEMS, $slice_id);
-            return [];
-        }
-        $secret = array_column(array_filter($raw['field'], static fn(array $f): bool => str_starts_with(strtolower(trim((string) ($f['input_insert_func'] ?? ''))), 'pwd')), 'id');
-        $drop   = array_flip([...self::ITEM_LEFT_OUT, ...$secret]);
+        $drop   = array_flip(self::ITEM_LEFT_OUT);
         $items  = [];
         foreach ($this->source->items($slice_id, $options->allBins) as $item) {
             if ($count++ >= $options->maxItems) {
