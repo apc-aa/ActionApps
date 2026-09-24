@@ -548,6 +548,9 @@
           <xs:simpleContent>
             <xs:extension base="xs:string">
               <xs:attribute name="f"    type="fieldId"    use="required"/>
+              <!-- key of the value in GetItemContent(): the position of a multi-value, or
+                   the translation number (>= AA_Value::MAX_INDEX) -->
+              <xs:attribute name="i"    type="xs:nonNegativeInteger" default="0"/>
               <xs:attribute name="flag" type="xs:integer" default="0"/>
               <xs:attribute name="enc"  type="encoding"   default="text"/>
               <xs:attribute name="crlf" type="xs:boolean" default="false"/>

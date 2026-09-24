@@ -28,6 +28,9 @@ final class Schema
     public const TOP_CLASSES = ['AA_Aliasfunc', 'AA_Set'];
     public const SUB_CLASSES = ['AA_Condition', 'AA_Sortorder'];
 
+    /** module wrapper => the class of its <settings> (fixed by the module type) */
+    public const SETTINGS_CLASSES = ['site-module' => 'AA_Modulesettings_Site', 'slice-module' => 'AA_Modulesettings_Slice'];
+
     /** row element => [table, key columns written as attributes: column => [attribute, type, default],
      *  columns left out, note]. Left out as well: the module column (AA_Metabase::getModuleField() -
      *  the importer sets it) and AUTO_INCREMENT columns that are no attribute (new numbers on the target).
@@ -114,7 +117,7 @@ final class Schema
         'object'    => ['id', 'class', 'name', 'n', 'i'],
         'p'         => ['n', 'i', 'enc', 'crlf'],
         'item'      => ['id'],
-        'v'         => ['f', 'flag', 'enc', 'crlf'],
+        'v'         => ['f', 'i', 'flag', 'enc', 'crlf'],
     ];
 
     /** attributes of a column by its value type (TEMPLATE); the others have just `null` */
@@ -143,6 +146,8 @@ final class Schema
             '{{containers}}' => $containers,
             '{{classes}}'    => self::enumeration('topObjectClass', self::TOP_CLASSES) . self::enumeration('subObjectClass', self::SUB_CLASSES),
             '{{rows}}'       => rtrim($rows),
+            '{{class_site}}'  => self::SETTINGS_CLASSES['site-module'],
+            '{{class_slice}}' => self::SETTINGS_CLASSES['slice-module'],
         ]);
     }
 
@@ -192,6 +197,20 @@ final class Schema
     public function rowTables(): array
     {
         return array_map(static fn(array $row): string => $row[0], self::ROWS);
+    }
+
+    /** Columns a row element carries as child elements, in metabase_schema.php order (design § 2.5).
+     *  @return array<string, string> column => value type: textValue | intValue | floatValue | idValue | idsValue */
+    public function rowColumns(string $element): array
+    {
+        return $this->columns($element)[0];
+    }
+
+    /** Key columns a row element carries as attributes, in XSD order.
+     *  @return array<string, array<int, string>> column => [attribute, XSD type, default] - no default = required */
+    public function rowAttributes(string $element): array
+    {
+        return self::ROWS[$element][1];
     }
 
     /** @return array{array<string, string>, list<string>} [column => value type, columns left out] */
@@ -706,14 +725,14 @@ final class Schema
             <xs:sequence>
               <xs:element name="p" type="property" minOccurs="0" maxOccurs="unbounded"/>
             </xs:sequence>
-            <xs:attribute name="class" type="xs:string" use="required" fixed="AA_Modulesettings_Site"/>
+            <xs:attribute name="class" type="xs:string" use="required" fixed="{{class_site}}"/>
           </xs:complexType>
 
           <xs:complexType name="sliceSettings">
             <xs:sequence>
               <xs:element name="p" type="property" minOccurs="0" maxOccurs="unbounded"/>
             </xs:sequence>
-            <xs:attribute name="class" type="xs:string" use="required" fixed="AA_Modulesettings_Slice"/>
+            <xs:attribute name="class" type="xs:string" use="required" fixed="{{class_slice}}"/>
           </xs:complexType>
 
           <!-- an object owned by the module (AA_Aliasfunc, AA_Set). An object-valued property (AA_Set.conds,
@@ -756,6 +775,9 @@ final class Schema
                   <xs:simpleContent>
                     <xs:extension base="xs:string">
                       <xs:attribute name="f"    type="fieldId"    use="required"/>
+                      <!-- key of the value in GetItemContent(): the position of a multi-value, or
+                           the translation number (>= AA_Value::MAX_INDEX) -->
+                      <xs:attribute name="i"    type="xs:nonNegativeInteger" default="0"/>
                       <xs:attribute name="flag" type="xs:integer" default="0"/>
                       <xs:attribute name="enc"  type="encoding"   default="text"/>
                       <xs:attribute name="crlf" type="xs:boolean" default="false"/>
