@@ -208,6 +208,9 @@ namespace Tests\Unit\Central\Package {
                     $o['props']['sort'][0]['id'] = self::SITE;
                     return $o;
                 }), ["E duplicate-id $S/object[" . self::SET . ']/sort[0]']],
+                'object id = settings id'    => [static fn(Package $p): Package => self::object($p, self::SITE, 0, static fn(array $o): array => ['id' => string2id('AA_Modulesettings_Slice' . self::SLICE)] + $o), ['E duplicate-id ' . self::S . '/settings']],
+                'group name with a space'    => [static fn(Package $p): Package => self::with($p, ['constantGroups' => [...$p->constantGroups, new ConstantGroup('grp ', self::SLICE)]]), ['E group-name constant-group[grp ]']],
+                'group name, leading space'  => [static fn(Package $p): Package => self::with($p, ['constantGroups' => [...$p->constantGroups, new ConstantGroup(' grp', self::SLICE)]]), ['E group-name constant-group[ grp]']],
                 'item id = module id'        => [static fn(Package $p): Package => self::items($p, [self::item(self::SLICE)]), ["E duplicate-id $S/item[" . self::SLICE . ']']],
                 // ---- references inside the package
                 'uses outside'               => [static fn(Package $p): Package => self::cell($p, self::SITE, 'uses', 0, ['destination_id' => self::OTHER]), ["E dangling-ref $W/uses[" . self::OTHER . ']']],

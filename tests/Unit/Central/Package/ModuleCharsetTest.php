@@ -112,4 +112,51 @@ final class ModuleCharsetTest extends TestCase
 
         $this->assertSame([$offset, substr($value, $offset, 16)], [$finding?->offset, $finding?->ref]);
     }
+
+    /** @return array<string, array{string, string, ?string}> UTF-8 value, charset, the bytes (null = cannot hold) */
+    public static function fromUtf8Cases(): array
+    {
+        return [
+            'windows-1250'            => ['Příliš Še', 'windows-1250', "P\xF8\xEDli\x9A \x8Ae"],
+            'iso-8859-2'              => ['Škoda', 'iso-8859-2', "\xA9koda"],
+            'EUC-JP'                  => ['あ', 'EUC-JP', "\xA4\xA2"],
+            'utf-8 is a no-op'        => ['€ 漢', 'utf-8', '€ 漢'],
+            'ascii in any charset'    => ["a\r\nb\x07", 'windows-1251', "a\r\nb\x07"],
+            'euro sign in iso-8859-2' => ['cena 5 €', 'iso-8859-2', null],
+            'CJK in windows-1250'     => ['漢字', 'windows-1250', null],
+            'cyrillic in iso-8859-1'  => ['При', 'iso-8859-1', null],
+            'no UTF-8'                => ["a\xE1", 'windows-1250', null],
+            'broken UTF-8 into utf-8' => ["a\xC3", 'utf-8', null],
+            'unknown charset'         => ['á', 'x-no-such-charset', null],
+            'upper-case charset name' => ['Škoda', 'ISO-8859-2', "\xA9koda"],
+            // not stateless ASCII supersets: ASCII bytes inside characters or shift states - fail closed
+            'Shift_JIS'               => ['abc', 'Shift_JIS', null],
+            'GBK'                     => ['abc', 'GBK', null],
+            'Big5'                    => ['abc', 'Big5', null],
+            'ISO-2022-JP'             => ['あ', 'ISO-2022-JP', null],
+        ];
+    }
+
+    #[DataProvider('fromUtf8Cases')]
+    public function test_fromUtf8_converts_strictly_with_a_round_trip(string $value, string $charset, ?string $expected): void
+    {
+        $this->assertSame($expected, ModuleCharset::fromUtf8($value, $charset));
+    }
+
+    public function test_unconvertible_points_at_the_first_character_the_charset_lacks(): void
+    {
+        $this->assertSame(7, ModuleCharset::unconvertible('Škoda €5 漢', 'iso-8859-2'));
+        $this->assertNull(ModuleCharset::unconvertible('Škoda', 'iso-8859-2'));
+        $this->assertSame(1, ModuleCharset::unconvertible("a\xE1", 'windows-1250'), 'no UTF-8: the first bad byte');
+        $this->assertSame(0, ModuleCharset::unconvertible('€', 'iso-8859-2'));
+        $this->assertSame(0, ModuleCharset::unconvertible('abc', 'Shift_JIS'), 'a charset off the list');
+        $this->assertSame(12, ModuleCharset::unconvertible('ščřžýá€€', 'iso-8859-2'), 'after six two-byte characters');
+    }
+
+    public function test_unconvertible_finds_the_character_in_a_long_value(): void
+    {
+        $value = str_repeat('Příliš ', 100000) . '漢' . str_repeat('x', 1000);
+        $this->assertSame(strlen(str_repeat('Příliš ', 100000)), ModuleCharset::unconvertible($value, 'windows-1250'));
+        $this->assertSame(1, ModuleCharset::unconvertible('a€', 'iso-8859-1'));
+    }
 }

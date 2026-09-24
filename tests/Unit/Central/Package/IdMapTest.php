@@ -75,6 +75,23 @@ final class IdMapTest extends TestCase
         $this->assertSame(self::SLICE_NEW, $full->module(self::SLICE_OLD));
     }
 
+    public function test_withFilters_keeps_the_original_unchanged(): void
+    {
+        $plan = new IdMap(collections: ['AbC12' => 'XyZ98']);
+        $full = $plan->withFilters([3 => 41]);
+
+        $this->assertSame([], $plan->filters());
+        $this->assertSame(41, $full->filter(3));
+        $this->assertNull($full->view(3), 'filters are a map of their own');
+        $this->assertSame('XyZ98', $full->collection('AbC12'));
+    }
+
+    public function test_withFilters_rejects_invalid_ids(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        (new IdMap())->withFilters([3 => 0]);
+    }
+
     /** @return array<string, array{array<string, mixed>}> */
     public static function invalidMaps(): array
     {

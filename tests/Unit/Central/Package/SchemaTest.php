@@ -241,6 +241,23 @@ final class SchemaTest extends TestCase
         $this->assertArrayNotHasKey('slice-module', $tables);
     }
 
+    public function test_lengthLimits_of_the_columns(): void
+    {
+        $schema = new Schema();
+        $field  = $schema->lengthLimits('field');
+        $this->assertSame([255, true], $field['name'], 'varchar(255): characters');
+        $this->assertSame([16, false], $field['type'], 'varbinary(16): bytes');
+        $this->assertSame([10, true], $field['alias1'], 'varchar(10)');
+        $this->assertSame([16777215, false], $field['input_show_func'], 'mediumtext: bytes');
+        $this->assertArrayNotHasKey('input_pri', $field, 'no limit for an integer');
+        $this->assertSame([100, true], $schema->lengthLimits('module')['name'], 'char(100)');
+        $this->assertSame([4000, false], $schema->lengthLimits('email')['attachments']);
+        $this->assertArrayNotHasKey('structure', $schema->lengthLimits('site'), 'longblob');
+        $this->assertSame([255, true], $schema->lengthLimits('constant')['value'], 'char(255)');
+        $this->assertSame([320, false], $schema->lengthLimits('constant')['ancestors'], 'packed varbinary(160): 320 hex digits');
+        $this->assertSame([32, false], $schema->lengthLimits('alerts_collection')['slice_id'], 'packed varbinary(16)');
+    }
+
     public function test_new_metabase_column_appears_in_xsd_and_knownElements(): void
     {
         $schema = self::schemaWithNewColumns();

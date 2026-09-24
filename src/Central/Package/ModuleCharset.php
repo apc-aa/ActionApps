@@ -74,6 +74,64 @@ final class ModuleCharset
         return [$value, new LintFinding(LintFinding::WARNING, ValueCodec::INVALID_BYTES, substr($value, $offset, ValueCodec::REF_BYTES), $offset)];
     }
 
+    /** charsets fromUtf8() converts to: stateless ASCII supersets (an ASCII byte is always that
+     *  character, never part of another) - the rewrite of references on UTF-8 before the conversion and
+     *  on RawBytes relies on it. Langs has exactly these; a new one (Shift_JIS, GBK, Big5, ISO-2022-JP:
+     *  ASCII bytes inside characters or shift states) fails closed until it is checked and added. */
+    public const STATELESS = ['utf-8', 'windows-1250', 'windows-1251', 'iso-8859-1', 'iso-8859-2', 'euc-jp'];
+
+    /** The UTF-8 value in the charset (§ 2.4, import): strict iconv (no //IGNORE, no //TRANSLIT) and
+     *  a round trip back to the same UTF-8. Null = the charset cannot hold the value, the value is no
+     *  UTF-8, or the charset is not in STATELESS. ASCII is the same in every STATELESS charset and stays
+     *  as it is; a text that converts still converts after ASCII runs in it were replaced by other ASCII
+     *  (the reference rewrite - TargetCharset). */
+    public static function fromUtf8(string $value, string $charset): ?string
+    {
+        $charset = strtolower($charset);
+        if (!in_array($charset, self::STATELESS, true) || !mb_check_encoding($value, 'UTF-8')) {
+            return null;
+        }
+        if (($charset === 'utf-8') || mb_check_encoding($value, 'ASCII')) {
+            return $value;
+        }
+        $bytes = @iconv('UTF-8', $charset, $value);     // false on any loss; the notice is the finding
+        return (($bytes !== false) && (@iconv($charset, 'UTF-8', $bytes) === $value)) ? $bytes : null;
+    }
+
+    /** byte offset of the first character of the UTF-8 value the charset cannot hold (fromUtf8()) - of
+     *  the first invalid byte when the value is no UTF-8; 0 for a charset off STATELESS; null = it
+     *  converts. A binary search on prefixes (a prefix that fails fails longer, the charsets being
+     *  stateless): O(n log n), no array of characters. */
+    public static function unconvertible(string $value, string $charset): ?int
+    {
+        if (self::fromUtf8($value, $charset) !== null) {
+            return null;
+        }
+        if (!mb_check_encoding($value, 'UTF-8')) {
+            return ValueCodec::encode($value)['finding']->offset ?? 0;
+        }
+        if (!in_array(strtolower($charset), self::STATELESS, true)) {
+            return 0;
+        }
+        [$lo, $hi] = [0, strlen($value)];      // the prefix of $lo bytes converts, of $hi bytes not
+        while (($next = $lo + self::charLength($value[$lo])) < $hi) {
+            $mid = max($next, strlen(mb_strcut($value, 0, intdiv($lo + $hi, 2), 'UTF-8')));
+            if (self::fromUtf8(substr($value, 0, $mid), $charset) !== null) {
+                $lo = $mid;
+            } else {
+                $hi = $mid;
+            }
+        }
+        return $lo;
+    }
+
+    /** bytes of the UTF-8 character with this lead byte */
+    private static function charLength(string $lead): int
+    {
+        $byte = ord($lead);
+        return ($byte < 0xC0) ? 1 : (($byte < 0xE0) ? 2 : (($byte < 0xF0) ? 3 : 4));
+    }
+
     /** The bytes the charset does not define on their own - exact for the single-byte charsets of
      *  Langs; for EUC-JP every lead byte, so the offset is the first non-ASCII character there. */
     private static function undefinedBytes(string $charset): string

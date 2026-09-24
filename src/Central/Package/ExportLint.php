@@ -56,32 +56,28 @@ final class ExportLint
             }
             return $values;
         };
-        $ident  = static fn(array $ids): array => $ids ? array_combine($ids, $ids) : [];
         $values = $object_ids = [];
         foreach ($objects as $id => [$settings, $list]) {
             array_push($values, ...ObjectExport::values($types[$id], $settings, $list, "$types[$id][$id]"));
             array_push($object_ids, ...ObjectExport::ids($list));
         }
         $constants = $all(array_map(static fn(ConstantGroup $g): array => $g->rows, $groups), 'constant', 'id');
-        $longs     = [...$constants, ...$item_ids, ...$object_ids];
-        $map    = new IdMap(
-            $ident(array_keys($types)),
-            $ident(array_values(preg_grep('/^[0-9a-f]{32}\z/', $longs))),
-            $ident(array_map('intval', $all($rows, 'view', 'id'))),
-            $ident(array_map('intval', $all($rows, 'email', 'id'))),
-            $ident(array_map(static fn(ConstantGroup $g): string => $g->name, $groups)),
-            $ident(array_map('strval', $all($rows, 'alerts_collection', 'id'))),
+        $map       = LintTexts::identity(
+            array_keys($types),
+            [...$constants, ...$item_ids, ...$object_ids],
+            $all($rows, 'view', 'id'),
+            $all($rows, 'email', 'id'),
+            array_map(static fn(ConstantGroup $g): string => $g->name, $groups),
+            $all($rows, 'alerts_collection', 'id'),
         );
-        $lint   = new ReferenceLint($map);
-        $texts  = array_map(fn(string $id): Generator => $this->texts("$types[$id][$id]", $rows[$id]), array_keys($rows));
+        $lint      = new ReferenceLint($map);
+        $texts     = array_map(fn(string $id): Generator => $this->texts("$types[$id][$id]", $rows[$id]), array_keys($rows));
         foreach ($groups as $group) {
             $texts[] = $this->texts("constant-group[$group->name]", $group->rows);
         }
-        // object properties that are code (ObjectExport::isCode()) - no names or enum values
-        $code    = array_filter($values, static fn(array $v): bool => ObjectExport::isCode($v[1], $v[2]) && is_string($v[3]) && ($v[3] !== ''));
-        $texts[] = array_map(static fn(array $v): array => [$v[0], $v[3]], $code);
+        $texts[] = LintTexts::code($values);      // properties that are code - no names or enum values
         foreach ($trees as $id => $tree) {
-            $texts[] = self::conditions("$types[$id][$id]/spot-tree", $tree);
+            $texts[] = LintTexts::conditions("$types[$id][$id]/spot-tree", $tree['spots']);
             foreach ($tree['spots'] as $spot) {          // the tag start the import reports (SecurityLint::SPOT_MARKUP)
                 foreach (SecurityLint::spotTexts("$types[$id][$id]/spot-tree/spot[{$spot['id']}]", $spot) as $at => $spot_text) {
                     if (preg_match(SecurityLint::SPOT_TAG, $spot_text)) {
@@ -92,11 +88,8 @@ final class ExportLint
         }
         foreach ($texts as $generator) {
             foreach ($generator as [$path, $text]) {
-                foreach ($lint->lint($text) as $finding) {
-                    // the group of a widget is a structured reference (rewriteInputShowFunc())
-                    if (($finding->code !== ReferenceLint::GROUP_OTHER) || !str_ends_with($path, '/input_show_func') || ($finding->ref !== ReferenceRewriter::inputShowFuncGroup($text))) {
-                        $this->findings[] = [$path, $finding];
-                    }
+                foreach (LintTexts::lint($lint, $path, $text) as $finding) {
+                    $this->findings[] = [$path, $finding];
                 }
             }
         }
@@ -126,35 +119,12 @@ final class ExportLint
         return array_map(static fn(array $f): array => ($f[1]->level === LintFinding::WARNING) ? [$f[0], new LintFinding(LintFinding::ERROR, $f[1]->code, $f[1]->ref, $f[1]->offset)] : $f, $findings);
     }
 
-    /** Text columns of rows - [path, text]; the input_view of the profile is a structured reference,
-     *  RawBytes (not converted to UTF-8) are not linted.
+    /** Text columns of rows - [path, text] (LintTexts::rows()); RawBytes (not converted to UTF-8) are not linted.
      *  @param array<string, list<array<string, mixed>>> $elements
      *  @return Generator<int, array{string, string}> */
     public function texts(string $path, array $elements): Generator
     {
-        foreach ($elements as $element => $list) {
-            $columns = array_keys($this->schema->rowColumns($element), 'textValue', true);
-            foreach ($list as $i => $row) {
-                foreach ($columns as $column) {
-                    $text = $row[$column] ?? '';
-                    if (is_string($text) && ($text !== '') && !(($element === 'profile') && ($row['property'] === 'input_view'))) {
-                        yield [$this->rowPath($path, $element, $row, $i) . "/$column", $text];
-                    }
-                }
-            }
-        }
-    }
-
-    /** the condition variables and values of the spots - [path, text]; the n-th condition of a spot `cond[#n]`
-     *  @param array<string, mixed> $tree sitetree::toArray() @return Generator<int, array{string, string}> */
-    private static function conditions(string $path, array $tree): Generator
-    {
-        foreach ($tree['spots'] as $spot) {
-            foreach (array_keys($spot['c'] ?? []) as $k => $var) {
-                yield ["$path/spot[{$spot['id']}]/cond[#$k]@var", (string) $var];
-                yield ["$path/spot[{$spot['id']}]/cond[#$k]", $spot['c'][$var]];
-            }
-        }
+        return (new LintTexts($this->schema))->rows($path, $elements);
     }
 
     /** Schema::rowPath() @param array<string, mixed> $row */

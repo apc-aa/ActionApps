@@ -26,6 +26,12 @@ final class FindingList
         }
     }
 
+    /** true: findings of the level and code are no longer kept - a caller may skip the work of making one */
+    public function full(string $level, string $code): bool
+    {
+        return ($this->count["$level $code"] ?? 0) >= self::MAX_PER_CODE;
+    }
+
     /** $n more findings of the level and code, found but not made (SecurityLint::lint() stops making them) */
     public function skipped(string $level, string $code, int $n): void
     {
@@ -42,6 +48,14 @@ final class FindingList
                 $list[]         = ['', new LintFinding($level, $code, '+' . ($n - self::MAX_PER_CODE) . " more ($code)", 0)];
             }
         }
+        return self::sort($list);
+    }
+
+    /** findings by danger S, E, W, I - stable, so lists of two checks (Validator, ImportPlan) merge
+     *  without counting a `+N more` again
+     *  @param list<array{string, LintFinding}> $list @return list<array{string, LintFinding}> */
+    public static function sort(array $list): array
+    {
         usort($list, static fn(array $a, array $b): int => (self::RANK[$a[1]->level] ?? 4) <=> (self::RANK[$b[1]->level] ?? 4));
         return $list;
     }

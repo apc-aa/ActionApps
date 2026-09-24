@@ -239,6 +239,32 @@ final class Schema
         }, $this->metabase->getColumns(self::ROWS[$element][0])));
     }
 
+    /** Columns of a row element's table with a length limit: [N, true] for char(N) / varchar(N) -
+     *  N CHARACTERS of the column charset (single-byte on most AA databases: bytes); [N, false] for
+     *  N BYTES - binary(N), varbinary(N), tinytext/blob, text/blob, mediumtext/blob. A packed id column
+     *  (AA_Metabase::isPacked()) holds 2N hex digits of the unpacked ids a package carries. Long types
+     *  have none worth checking (4 GB).
+     *  @return array<string, array{int, bool}> column => [limit, counts characters] */
+    public function lengthLimits(string $element): array
+    {
+        $table  = self::ROWS[$element][0];
+        $limits = [];
+        foreach ($this->metabase->getColumns($table) as $name => $column) {
+            $type  = strtolower((string) $column->c[1]);
+            $limit = match (true) {
+                (bool) preg_match('/^(var)?(char|binary)\((\d+)\)/', $type, $m) => [(int) $m[3], $m[2] === 'char'],
+                (bool) preg_match('/^tiny(?:text|blob)\b/', $type)               => [255, false],
+                (bool) preg_match('/^(?:text|blob)\b/', $type)                   => [65535, false],
+                (bool) preg_match('/^medium(?:text|blob)\b/', $type)             => [16777215, false],
+                default                                                          => null,
+            };
+            if ($limit !== null) {
+                $limits[(string) $name] = AA_Metabase::isPacked($table, (string) $name) ? [2 * $limit[0], false] : $limit;
+            }
+        }
+        return $limits;
+    }
+
     /** A row in a finding path: by its key attributes (`view[12]`), a keyless row or one of an element
      *  unknown here by its position (`profile[#0]`) @param array<mixed> $row */
     public function rowPath(string $path, string $element, array $row, int $i): string

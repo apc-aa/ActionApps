@@ -32,7 +32,8 @@ final class Validator
     /** E: an id of the wrong shape: long ids 32 lower-case hex, field ids 16 chars, view / e-mail / filter /
      *  spot ids 1-10 digits without a leading 0, collection ids 5 letters or digits */
     public const INVALID_ID = 'invalid-id';
-    /** E: an id twice - long ids across modules, constants, objects, subobjects and items (one map, § 7.1),
+    /** E: an id twice - long ids across modules, their settings objects (string2id(class . module id)),
+     *  constants, objects, subobjects and items (one map, § 7.1),
      *  views, e-mails, groups, collections across the package; fields, spots, uses, filters per module; a
      *  filter id of several Alerts modules with other content */
     public const DUPLICATE = 'duplicate-id';
@@ -53,7 +54,8 @@ final class Validator
     public const LANG_FILE = Collector::LANG_FILE;
     /** W: slice.lang_file (the old copy) non-empty and not of the list - the importer writes the module's lang_file instead */
     public const LANG_FILE_REPLACED = 'lang-file-replaced';
-    /** E: no constant_group_id_valid() name (1-16 BYTES, IdMap::GROUP_RE), or a core group (never mapped - the import would fill the target's) */
+    /** E: no constant_group_id_valid() name (1-16 BYTES, IdMap::GROUP_RE), spaces around it (AA trims the
+     *  name where it reads it - such a group cannot be addressed), or a core group (never mapped - the import would fill the target's) */
     public const GROUP_NAME = 'group-name';
     /** W: a field widget names a group neither in the package nor a core group */
     public const GROUP_MISSING = Collector::GROUP_MISSING;
@@ -148,6 +150,9 @@ final class Validator
     {
         $path = "$m->type[$m->id]";
         $this->id('long', $m->id, $path, self::LONG_RE);
+        if (isset(Schema::SETTINGS_CLASSES[$m->type]) && preg_match(self::LONG_RE, $m->id)) {    // the settings object: one long map (§ 7.1)
+            $this->id('long', string2id(Schema::SETTINGS_CLASSES[$m->type] . $m->id), "$path/settings");
+        }
         $this->rows($path, $m->type, $m->rows);
         $objects = isset(Schema::SETTINGS_CLASSES[$m->type]);
         foreach (['settings' => $objects || ($m->settings === null), 'object' => $objects || !$m->objects,
@@ -398,7 +403,7 @@ final class Validator
     private function group(ConstantGroup $g): void
     {
         $path = "constant-group[$g->name]";
-        if (!preg_match(IdMap::GROUP_RE, $g->name) || in_array($g->name, IdMap::CORE_GROUPS, true)) {
+        if (!preg_match(IdMap::GROUP_RE, $g->name) || in_array($g->name, IdMap::CORE_GROUPS, true) || (trim($g->name) !== $g->name)) {
             $this->add($path, LintFinding::ERROR, self::GROUP_NAME, $g->name);
         }
         $this->id('group', $g->name, $path);

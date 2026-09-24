@@ -10,8 +10,8 @@ use InvalidArgumentException;
 /** Source id => target id maps of one package import (design balicek-v1.md § 7.1). Immutable.
  *
  *  Keys are the ids the package carries (§ 0.4), values the ids on the target. The import plan
- *  (C4.4 step 3) knows every map except views and e-mails - those get their numbers from
- *  AUTO_INCREMENT only when the rows are written, hence withViews()/withEmails().
+ *  (C4.4 step 3) knows every map except views, e-mails and alerts filters - those get their numbers
+ *  from AUTO_INCREMENT only when the rows are written, hence withViews()/withEmails()/withFilters().
  *  For an export lint pass an identity map of the app (old id => same id).
  */
 final class IdMap
@@ -36,6 +36,8 @@ final class IdMap
     private array $views;
     /** @var array<int, int> */
     private array $emails;
+    /** @var array<int, int> */
+    private array $filters = [];
 
     /**
      * @param array<string, string> $modules     module ids (32 hex, any case; stored lower case)
@@ -89,6 +91,15 @@ final class IdMap
         return $clone;
     }
 
+    /** alerts_filter.id - no text refers to a filter; alerts_collection_filter.filterid does
+     *  @param array<int, int> $filters */
+    public function withFilters(array $filters): self
+    {
+        $clone          = clone $this;
+        $clone->filters = self::numberMap($filters);
+        return $clone;
+    }
+
     public function module(string $old): ?string
     {
         return $this->modules[strtolower($old)] ?? null;
@@ -107,6 +118,11 @@ final class IdMap
     public function email(int $old): ?int
     {
         return $this->emails[$old] ?? null;
+    }
+
+    public function filter(int $old): ?int
+    {
+        return $this->filters[$old] ?? null;
     }
 
     public function group(string $old): ?string
@@ -141,6 +157,12 @@ final class IdMap
     public function emails(): array
     {
         return $this->emails;
+    }
+
+    /** @return array<int, int> */
+    public function filters(): array
+    {
+        return $this->filters;
     }
 
     /** @return array<string, string> */
