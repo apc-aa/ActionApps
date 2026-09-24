@@ -20,7 +20,7 @@ final class IdMap
     public const CORE_GROUPS = ['lt_groupNames', ...RedefineCoreConstants::GROUPS];
 
     /** source group names: constant_group_id_valid(), include/constedit_util.php:706 (that file needs the AA boot) */
-    private const GROUP_RE = '/^[^\x00-\x1F\x7F:\'"`\\\\%]{1,16}\z/';
+    public const GROUP_RE = '/^[^\x00-\x1F\x7F:\'"`\\\\%]{1,16}\z/';
 
     /** a NEW group name is spliced into templates and input_show_func: no `}`, `#`, `:`, spaces */
     private const NEW_GROUP_RE = '/^[A-Za-z0-9_.-]{1,16}\z/';

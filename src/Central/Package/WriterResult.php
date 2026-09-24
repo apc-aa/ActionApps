@@ -9,8 +9,8 @@ final readonly class WriterResult
 {
     /**
      * @param string                     $xml      the package, valid against the XSD
-     * @param array<string, LintFinding> $findings value path (e.g. `slice-module[<id>]/view[12]/odd`)
-     *                                             => finding; `ref` holds raw bytes - escape them when shown
+     * @param list<array{string, LintFinding}> $findings [value path (e.g. `slice-module[<id>]/view[12]/odd`),
+     *                                                   finding]; `ref` holds raw bytes - escape them when shown
      */
     public function __construct(
         public string $xml,

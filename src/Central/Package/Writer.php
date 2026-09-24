@@ -48,7 +48,7 @@ final class Writer
     /** @var array<string, list<string>> */
     private readonly array $attributes;
     private DOMDocument $dom;
-    /** @var array<string, LintFinding> */
+    /** @var list<array{string, LintFinding}> */
     private array $findings = [];
 
     public function __construct(?Schema $schema = null)
@@ -326,7 +326,7 @@ final class Writer
     {
         $enc = ValueCodec::encode($value);
         if ($enc['finding']) {
-            $this->findings[$path] = $enc['finding'];
+            $this->findings[] = [$path, $enc['finding']];
         }
         if ($enc['enc'] !== ValueCodec::TEXT) {
             $el->setAttribute('enc', $enc['enc']);

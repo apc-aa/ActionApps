@@ -283,8 +283,8 @@ final class WriterTest extends TestCase
         $writer = new Writer();
         $result = $writer->toXml(self::slicePackage(['view' => [['id' => 12, 'odd' => "ok \xC3\x28 rest"]]]));
         $this->assertSame(base64_encode("ok \xC3\x28 rest"), self::viewOdd($result->xml)?->textContent);
-        $this->assertSame(['slice-module[' . self::SLICE . ']/view[12]/odd'], array_keys($result->findings));
-        $finding = $result->findings['slice-module[' . self::SLICE . ']/view[12]/odd'];
+        $this->assertSame(['slice-module[' . self::SLICE . ']/view[12]/odd'], array_column($result->findings, 0));
+        $finding = $result->findings[0][1];
         $this->assertSame([LintFinding::WARNING, ValueCodec::INVALID_BYTES, 3], [$finding->level, $finding->code, $finding->offset]);
         $this->assertStringStartsWith("\xC3\x28", $finding->ref);
 
@@ -295,7 +295,8 @@ final class WriterTest extends TestCase
     {
         $value  = str_repeat('ž', 600_000) . "\xFF";
         $result = (new Writer())->toXml(self::slicePackage(['view' => [['id' => 12, 'odd' => $value]]]));
-        $this->assertSame(1_200_000, $result->findings['slice-module[' . self::SLICE . ']/view[12]/odd']->offset);
+        $this->assertSame(['slice-module[' . self::SLICE . ']/view[12]/odd'], array_column($result->findings, 0));
+        $this->assertSame(1_200_000, $result->findings[0][1]->offset);
         $this->assertSame($value, self::decode(self::viewOdd($result->xml)));
     }
 
@@ -308,7 +309,7 @@ final class WriterTest extends TestCase
         $this->assertSame([
             'slice-module[' . self::SLICE . ']/profile[#0]/value',
             'slice-module[' . self::SLICE . ']/profile[#1]/value',
-        ], array_keys($findings));
+        ], array_column($findings, 0));
     }
 
     public function test_control_chars_are_base64_without_a_finding(): void

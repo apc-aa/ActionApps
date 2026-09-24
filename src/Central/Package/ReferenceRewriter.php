@@ -148,12 +148,28 @@ final class ReferenceRewriter
         }
     }
 
+    /** widget code => index of its `const` parameter among getClassProperties() - the widgets with a
+     *  constant group (src/Widget/*Widget.php); the code is case-insensitive (constructClassName()) */
+    public const CONST_POSITION = [
+        'sel' => 0, 'mch' => 0, 'rio' => 0, 'mse' => 0, 'wi2' => 0, 'hco' => 0,
+        'pre' => 0, 'tag' => 0, 'rim' => 0, 'mng' => 0, 'iso' => 0, 'tpr' => 2,
+    ];
+
+    /** § 5.3 the constant group of field.input_show_func, split as rewriteInputShowFunc() does; null
+     *  when the widget has no group or it is empty. `#sLiCe-<id>` (items of a slice) comes back as it is. */
+    public static function inputShowFuncGroup(string $input_show_func): ?string
+    {
+        $parts    = RewriteFailed::check(preg_split('/(?<!#):/', $input_show_func));
+        $position = self::CONST_POSITION[strtolower(trim($parts[0]))] ?? null;
+        $name     = ($position === null) ? '' : trim($parts[$position + 1] ?? '');
+        return ($name === '') ? null : $name;
+    }
+
     /** § 8.3 the constant group parameter of field.input_show_func, replaced in place: the rest of
      *  the string (other parameters, their `#:` escapes, spaces) stays byte for byte.
      *  Parameters split like AA_Statestore::parseProperties() (include/statestore.php:190) - on `:`
      *  not preceded by `#`, values trimmed.
-     *  @param int $position index of `const` among the widget's parameters - 0 for sel, mch, rio,
-     *                       mse, wi2, hco, pre, tag, rim, mng, iso; 2 for tpr (getClassProperties()) */
+     *  @param int $position index of `const` among the widget's parameters - CONST_POSITION */
     public function rewriteInputShowFunc(string $input_show_func, int $position = 0): string
     {
         $parts = RewriteFailed::check(preg_split('/(?<!#):/', $input_show_func, -1, PREG_SPLIT_OFFSET_CAPTURE));

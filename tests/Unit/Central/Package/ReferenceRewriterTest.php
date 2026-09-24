@@ -259,6 +259,27 @@ final class ReferenceRewriterTest extends TestCase
         $this->assertSame($expected, $this->rewriter()->rewriteInputShowFunc($isf, $position));
     }
 
+    /** @return array<string, array{string, ?string}> */
+    public static function inputShowFuncGroups(): array
+    {
+        return [
+            'select'          => ['sel:ct_rubriky:', 'ct_rubriky'],
+            'spaces, case'    => ['MCH: ct_x :3:', 'ct_x'],
+            'tpr: third'      => ['tpr:5:40:ct_w', 'ct_w'],
+            'items of slice'  => ['mse:#sLiCe-0f1e2d3c4b5a69788796a5b4c3d2e1f0:', '#sLiCe-0f1e2d3c4b5a69788796a5b4c3d2e1f0'],
+            'no group widget' => ['fld:ct_x', null],
+            'empty'           => ['sel::', null],
+            'no parameter'    => ['sel', null],
+            'escaped colon'   => ['tpr:5#:1:40:ct_w', 'ct_w'],
+        ];
+    }
+
+    #[DataProvider('inputShowFuncGroups')]
+    public function test_inputShowFuncGroup_finds_the_const_parameter(string $isf, ?string $expected): void
+    {
+        $this->assertSame($expected, ReferenceRewriter::inputShowFuncGroup($isf));
+    }
+
     /** @return array<string, array{string}> */
     public static function methods(): array
     {
