@@ -19,6 +19,7 @@ https://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+use AA\Central\Actionapps;
 
 require_once __DIR__."/include/init_central.php";
 require_once __DIR__ . "/../include/formutil.php";
@@ -28,15 +29,14 @@ pageOpen();
 
 if (!IsSuperadmin()) {
   AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php", _m("You don't have permissions to synchronize slices."), "admin");
-  exit;
 }
 
 $apage = new AA_Adminpageutil('central', 'synchronize');
 $apage->setTitle(_m("Central - Synchronize ActionApps (1/3) - Select ActionApps for Comparison"));
 $apage->setForm();
-$apage->printHead($err, $Msg);
+$apage->printHead();
 
-$aas       = AA_Actionapps::getArray();
+$aas       = Actionapps::getArray();
 $aas_array = [];
 foreach ( $aas as $k => $aa ) {
     $aas_array[$k] = $aa->getName();
@@ -47,8 +47,8 @@ $form_buttons = ["submit"];
 <form name=f method=post action="<?php echo StateUrl(self_base() ."synchronize2.php") ?>">
 <?php
 FrmTabCaption('', $form_buttons);
-FrmInputSelect('template_aa', _m('Template ActionApps'), $aas_array, $_POST['template_aa'], true, _m('ActionApps installation used as template'));
-FrmInputSelect('comparation_aa', _m('AA to compare'),    $aas_array, $_POST['comparation_aa'], true, _m('ActionApps installation to check for differences (just checking right now - noting is changed by this step)'));
+FrmInputSelect('template_aa', _m('Template ActionApps'), $aas_array, $_POST['template_aa'] ?? '', true, _m('ActionApps installation used as template'));
+FrmInputSelect('comparation_aa', _m('AA to compare'),    $aas_array, $_POST['comparation_aa'] ?? '', true, _m('ActionApps installation to check for differences (just checking right now - noting is changed by this step)'));
 FrmTabEnd($form_buttons);
 ?>
 </form>

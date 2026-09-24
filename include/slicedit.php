@@ -358,7 +358,7 @@ function SliceEditProcess($slice_id, $user_firstname, $user_surname, $err, $add_
                     if (!CopyTableRows(
                         "view",
                         "slice_id=" . xpack_id($set_template_id),
-                        ["slice_id" => q_pack_id($slice_id)],
+                        ["slice_id" => pack_id($slice_id)],   // raw - CopyTableRows() escapes
                         ["id"],
                     )) {
                         $err[] = _m("Error when copying views.");

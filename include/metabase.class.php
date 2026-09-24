@@ -99,6 +99,11 @@ class AA_MbC
         return str_contains($this->c[3], 'PRI');
     }
 
+    public function isAutoIncrement(): bool
+    {
+        return str_contains((string) $this->c[5], 'auto_increment');
+    }
+
     public function getName()
     {
         return $this->c[0];
@@ -674,7 +679,7 @@ class AA_MbT implements IteratorAggregate, ArrayAccess, Countable
                     $ret[$colname] = (int) $value;
                 } elseif ($type === 'float') {
                     $ret[$colname] = (float) $value;
-                } elseif (AA_Metabase::isPacked($this->t, $colname) && is_long_id($value)) {
+                } elseif (AA_Metabase::isPacked($this->t, $colname) && is_long_ids($value)) {
                     $ret[$colname] = '0x' . $value;
                 } else {
                     $ret[$colname] = qquote(($maxlen = $coldef->getMaxLength()) ? substr($value, 0, $maxlen) : $value);
@@ -865,9 +870,10 @@ class AA_Metabase
         return $this->tables[$tablename]->getColumns();
     }
 
-    /**
-     * @param $data
-     * @param $identifier
+    /** Sets the key columns (and the module column) of $data to the row (and module) of $identifier.
+     *  The values are UNPACKED ids, as doUpdate()/doInsert()/doDelete() expect - they pack them.
+     * @param array         $data
+     * @param AA_Identifier $identifier
      */
     public function fillKeys(&$data, $identifier): void
     {
@@ -892,20 +898,19 @@ class AA_Metabase
                 // we will assign it in next step - reassignModule()
                 continue;
             }
-            $data[$key] = self::isPacked($tablename, $key) ? pack_id($row) : $row;
+            $data[$key] = $row;
         }
         $this->reassignModule($data, $tablename, $module_id);
     }
 
     /** changes the column of the table which identifies to which module it
      *  belongs. That way you just move the data to another module
-     *  It modifies $data parameter
+     *  It modifies $data parameter - sets the UNPACKED $module_id (the do*() methods pack it)
      */
     public function reassignModule(&$data, $tablename, $module_id): void
     {
-        $module_field = self::getModuleField($tablename);
-        if ($module_field) {
-            $data[$module_field] = self::isPacked($tablename, $module_field) ? pack_id($module_id) : $module_id;
+        if ($module_field = self::getModuleField($tablename)) {
+            $data[$module_field] = $module_id;
         }
     }
 
@@ -1024,8 +1029,7 @@ class AA_Metabase
     /** static method */
     public static function getModuleField($tablename): ?string
     {
-        $fields = self::getModuleFields();
-        return $fields[$tablename];
+        return self::getModuleFields()[$tablename] ?? null;   // null for tables without it (constant)
     }
 
     /** static method
@@ -1075,12 +1079,13 @@ class AA_Metabase
      *  usage: AA::Metabase()->doUpdate(...);
      * @param  string   $tablename table, where to store data
      * @param  string[] $data[]    data array - all data unpacked. The values are converted to correct ones
+     * @param  string|null $nohalt  'nohalt' - do not halt on database error
      * @return bool|int   0|false on error
      */
-    public function doUpdate($tablename, $data): bool|int
+    public function doUpdate($tablename, $data, ?string $nohalt = null): bool|int
     {
         if (($varset = $this->getVarset4Data($tablename, $data)) && $this->isKeysFilled($tablename, $varset)) {
-            return $varset->doUpdate($tablename);
+            return $varset->doUpdate($tablename, $nohalt);
         }
         return false;
     }
@@ -1173,12 +1178,13 @@ class AA_Metabase
      *  usage: AA::Metabase()->doDelete(...);
      * @param string   $tablename
      * @param string[] $keydata
+     * @param string|null $nohalt  'nohalt' - do not halt on database error
      * @return bool|int   0|false on error
      */
-    public function doDelete(string $tablename, array $keydata): bool|int
+    public function doDelete(string $tablename, array $keydata, ?string $nohalt = null): bool|int
     {
         if (($varset = $this->getVarset4Data($tablename, $keydata)) && $this->isKeysFilled($tablename, $varset)) {
-            return $varset->doDelete($tablename);
+            return $varset->doDelete($tablename, $nohalt);
         }
         return false;
     }

@@ -880,7 +880,7 @@ class AA_Inputfield {
     {
         // fill selected array from value
         $this->_fillSelected();
-        return $this->selected[(string)$option] ? $ret_val : '';
+        return isset($this->selected[(string)$option]) ? $ret_val : '';
     }
     /** _fillSelected function
      *
@@ -1633,7 +1633,7 @@ class AA_Inputfield {
                 }
 
                 // ignore pairs (key=>value) we already used
-                if ($pair_used[$k."aa~$v"]) {
+                if (isset($pair_used[$k."aa~$v"])) {
                     continue;
                 }
                 $pair_used[$k."aa~$v"] = true;   // mark this pair - do not use it again
@@ -1657,7 +1657,7 @@ class AA_Inputfield {
         // (this is slice inconsistence, which could go from feeding, ...)
         if ( isset( $this->selected ) && is_array( $this->selected ) && ($restrict !== 'unselected')) {
             foreach ( $this->selected as $k =>$v ) {
-                if ( !$already_selected[$k] ) {
+                if ( !isset($already_selected[$k]) ) {
                     $ret .= "<option value=\"". safe($k) ."\" selected class=\"sel_missing\">".safe($k);
                     $selectedused = true;
                 }
@@ -2495,7 +2495,7 @@ function FrmDate($name, $txt, $val, $needed=false, $hlp="", $morehlp="", $displa
  * @param        $name
  * @param        $txt
  * @param        $arr
- * @param string $selected
+ * @param string|array<string|array{value: string}> $selected  one value, a list of values or an AA_Inputfield value array
  * @param int    $rows
  * @param bool   $needed
  * @param string $hlp
@@ -2504,6 +2504,10 @@ function FrmDate($name, $txt, $val, $needed=false, $hlp="", $morehlp="", $displa
 function getFrmInputMultiSelect($name, $txt, $arr, $selected="", $rows=5, $needed=false, $hlp="", $morehlp=""): string {
     $html  = false;   // in parameter, but never filled. Honza 24.4.2013
     $add   = false;   // in parameter, but never filled. Honza 24.4.2013
+    if (is_array($selected)) {
+        // AA_Inputfield takes a list as its [['value' => ...], ...] value array (as FrmTwoBox() does)
+        $selected = array_map(static fn($v) => is_array($v) ? $v : ['value' => $v], $selected);
+    }
     $input = new AA_Inputfield($selected, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp, $arr);
     $input->inputMultiSelect($rows);
     return $input->get_result();

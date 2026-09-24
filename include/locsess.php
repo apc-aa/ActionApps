@@ -86,7 +86,6 @@ if (defined('AA_LOG_PHP_FATALS') && AA_LOG_PHP_FATALS) {
 
 spl_autoload_register(static function ($class_name) {
     $PAIRS = [
-        'AA_Actionapps'      => 'central/include/actionapps.class.php',
         'AA_Auth'            => 'include/locauth.php',
         'AA_Components'      => 'include/statestore.php',
         'AA_Fields'          => 'include/field.class.php',
@@ -591,22 +590,27 @@ function getDB() {
         return $tx_db;
     }
     if (!($db = array_pop($spareDBs))) {
-        $type = DB_TYPE;
-        //$type = ($_GET['mysqli']==1) ? 'db_mysgl': 'db_pdo:mysql'; //DB_TYPE; // : 'db_pdo:mysql';,
-        //$type = ($_GET['mysqli']==1) ? 'db_mysgl': DB_TYPE;        //DB_TYPE; // : 'db_pdo:mysql';
-        $connection = [
-            'type'          => $type,
-            'host'          => DB_HOST,
-            'database'      => DB_NAME,
-            'user'          => DB_USER,
-            'password'      => DB_PASSWORD,
-            'charset'       => (defined('DB_CHARACTER_SET') && DB_CHARACTER_SET) ? DB_CHARACTER_SET : '',
-            'collation'     => (defined('DB_COLLATION_CONNECTION') && DB_COLLATION_CONNECTION && DB_COLLATION_CONNECTION !== 'latin1') ? DB_COLLATION_CONNECTION : '',   // for some old AAs there was latin1, which is not valid in PDO - use latin1_swedish_ci or we take the default
-            'persistent'    => (defined('AA_USE_NON_PERSISTENT_CONNECT') && AA_USE_NON_PERSISTENT_CONNECT) ? false : true
-        ];
-        $db = new DB_PDO($connection);
+        $db = new DB_PDO(dbConnectionParams());
     }
     return $db;
+}
+
+/** DB_PDO connection settings of the AA database (config.php) */
+function dbConnectionParams(): array
+{
+    $type = DB_TYPE;
+    //$type = ($_GET['mysqli']==1) ? 'db_mysgl': 'db_pdo:mysql'; //DB_TYPE; // : 'db_pdo:mysql';,
+    //$type = ($_GET['mysqli']==1) ? 'db_mysgl': DB_TYPE;        //DB_TYPE; // : 'db_pdo:mysql';
+    return [
+        'type'          => $type,
+        'host'          => DB_HOST,
+        'database'      => DB_NAME,
+        'user'          => DB_USER,
+        'password'      => DB_PASSWORD,
+        'charset'       => (defined('DB_CHARACTER_SET') && DB_CHARACTER_SET) ? DB_CHARACTER_SET : '',
+        'collation'     => (defined('DB_COLLATION_CONNECTION') && DB_COLLATION_CONNECTION && DB_COLLATION_CONNECTION !== 'latin1') ? DB_COLLATION_CONNECTION : '',   // for some old AAs there was latin1, which is not valid in PDO - use latin1_swedish_ci or we take the default
+        'persistent'    => (defined('AA_USE_NON_PERSISTENT_CONNECT') && AA_USE_NON_PERSISTENT_CONNECT) ? false : true
+    ];
 }
 
 /** store the db to db storage and disallow to use it further

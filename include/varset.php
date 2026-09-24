@@ -86,8 +86,8 @@ class Cvariable
                 $ret = ($this->value == "") ? 0 : $this->value;
                 break;
             case "unpacked":
-                if (is_long_id($this->value)) {
-                    $ret = '0x' . quote($this->value);
+                if (is_long_ids($this->value)) {   // one id, or several concatenated (constant.ancestors)
+                    $ret = '0x' . $this->value;
                     $quote = false;
                 } else {
                     huhe('There should be unpacked long id: ' . $this->value . "(in $this->name)");
@@ -621,7 +621,8 @@ function is_field_type_numerical($field_type): bool
  *
  *   @param string $table    table name
  *   @param string $where    where condition (filter)
- *   @param array  $set_columns  array ($column_name => $value, ...) - fields the value of which will be changed
+ *   @param array  $set_columns  array ($column_name => $value, ...) - fields the value of which will be changed;
+ *                               RAW values (pack_id(), not q_pack_id()) - they are escaped here
  *   @param array  $omit_columns [optional] array ($column_name, ...) - fields to be omitted
  *   @param array  $id_columns   [optional] array ($column_name, ...) - fields with the 16 byte ID to be generated for each row a new one
  */
@@ -660,7 +661,8 @@ function CopyTableRows(string $table, $where, $set_columns, $omit_columns = "", 
             if (isset($set_columns[$col["name"]])) {
                 $val = $set_columns[$col["name"]];
             } elseif (in_array($col["name"], $id_columns)) {
-                $val = q_pack_id(new_id());
+                $val  = new_id();
+                $type = 'unpacked';   // sent as a 0x… literal, so no byte of the id needs escaping
             } else {
                 $val = $datarow[$col["name"]];
             }

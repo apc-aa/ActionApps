@@ -19,6 +19,8 @@ https://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+use AA\Central\Actionapps;
+
 require_once __DIR__."/include/init_central.php";
 require_once __DIR__ . "/../include/formutil.php";
 
@@ -27,18 +29,17 @@ pageOpen();
 
 if (!IsSuperadmin()) {
   AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php", _m("You don't have permissions to synchronize slices."), "admin");
-  exit;
 }
 
 $apage = new AA_Adminpageutil('central', 'synchronize');
 $apage->setTitle(_m("Central - Synchronize ActionApps (2/3) - Slices to Compare"));
 $apage->addRequire('aa-jslib@1');
 $apage->setForm();
-$apage->printHead($err, $Msg);
+$apage->printHead();
 
 
 // ActionApps to synchronize
-$aas = AA_Actionapps::getArray();
+$aas = Actionapps::getArray();
 $aas_array = [];
 foreach ( $aas as $k => $aa ) {
     $aas_array[$k] = $aa->getName();
@@ -68,8 +69,13 @@ FrmTabCaption('', $form_buttons);
 FrmStaticText(_m('Template ActionApps'), $aas[$_POST['template_aa']]->getName());
 FrmTabSeparator(_m('Slice Mapping'));
 FrmStaticText($aas[$_POST['template_aa']]->getName(), $aas[$_POST['comparation_aa']]->getName());
-foreach($tmplate_slices as $sid => $name) {
-    FrmInputSelect('sync_slices['.$sid.']', $name, $cmp_slices, $_POST['sync_slices'], true);
+foreach ($tmplate_slices as $sid => $name) {
+    // the remote AA answered with both; FrmInputSelect() escapes the options, not the name and label
+    if (is_long_id((string) $sid)) {
+        // sync_slices[<template slice id>] = compared slice id
+        $picked = $_POST['sync_slices'][$sid] ?? '';
+        FrmInputSelect('sync_slices[' . $sid . ']', safe($name), $cmp_slices, is_string($picked) ? $picked : '', true);
+    }
 }
 FrmTabEnd($form_buttons);
 ?>

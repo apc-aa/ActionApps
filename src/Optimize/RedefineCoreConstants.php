@@ -7,6 +7,9 @@ use AA\IO\DB\DB_AA;
 /** Recreates the "ActionApps Core" constants (delete and insert). */
 class RedefineCoreConstants extends \AA\Optimize\AbstractOptimize
 {
+    /** the constant groups this class (re)defines - AA_CONSTANT_GROUPS_CORE in include/constedit_util.php */
+    public const GROUPS = ['lt_codepages', 'lt_languages', 'AA_Core_Bins....', 'lt_apcCategories'];
+
     /** Name function
      * @return string - a name
      */
@@ -76,7 +79,7 @@ class RedefineCoreConstants extends \AA\Optimize\AbstractOptimize
 
 
         $this->message(_m("Deleting Code-pages, Language Constants, AA Bins constants and APC-wide categories"));
-        $this->query("DELETE FROM constant WHERE group_id IN ('lt_codepages', 'lt_languages', 'AA_Core_Bins....', 'lt_apcCategories')");
+        $this->query("DELETE FROM constant WHERE group_id IN ('" . implode("', '", self::GROUPS) . "')");
 
         $this->message(_m('Recreate Code-pages'));
         $this->query("INSERT INTO constant (id, group_id, name, value, class, pri) VALUES( 'AA-predefined000', 'lt_codepages', 'iso8859-1', 'iso8859-1', '', '100')");

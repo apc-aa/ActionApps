@@ -40,12 +40,12 @@
 
 namespace AA\Manageraction;
 
+use AA\Central\Actionapps;
 use AA\Central\RemoteHtml;
 use AA\IO\DB\DB_AA;
 use AA\Manager;
 use AA\Manageraction\AbstractManageraction;
 use AA\Util\Linkcheck;
-use AA_Actionapps;
 use zids;
 
 /** Call remote AA_Optimize_* function
@@ -80,11 +80,9 @@ class Central_Optimize extends AbstractManageraction
         $ret = [];
 
         foreach ($item_zids as $aa_id) {
-            $aa    = AA_Actionapps::getActionapps($aa_id);
+            $aa    = Actionapps::getActionapps($aa_id);
             // the report (or error text) is the remote AA's HTML - render it, but inert
-            $report = $aa->doOptimize($this->optimize_class, $this->optimize_method);
-            // a (string) cast of an object throws and would kill the page for all selected AAs
-            $report = (is_scalar($report) || $report === null) ? (string) $report : '<p>' . safe(_m('Unexpected response from remote AA')) . '</p>';
+            $report = $aa->doOptimize($this->optimize_class, $this->optimize_method);   // text even for an object answer (responseText())
             $ret[]  = RemoteHtml::sandboxed($aa->getName(), $report);
         }
         return implode('', $ret);   // @todo we should rewrite outputs from AA\Manageraction\.. to some standard messages() system

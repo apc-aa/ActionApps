@@ -2236,13 +2236,14 @@ function get_authorization_header(): string
     return trim($ret);
 }
 
-/** Increase the time limit for the script by x seconds
- * @param int $seconds - increase time by $seconds - default 300 seconds
+/** Raise the time limit of the script to $seconds - never lowers it
+ * @param int $seconds - default 300 seconds
  * @return void
  */
 function MoreTimeLimit(int $seconds = 300): void
 {
-    if (ini_get('max_execution_time') < $seconds) {
+    $limit = (int) ini_get('max_execution_time');
+    if ($limit > 0 && $limit < $seconds) {   // 0 = unlimited - set_time_limit() would limit it
         set_time_limit($seconds);
     }
 }

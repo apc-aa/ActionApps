@@ -2,9 +2,9 @@
 
 namespace AA\Manageraction;
 
+use AA\Central\Actionapps;
 use AA\Manager;
 use AA\Util\Linkcheck;
-use AA_Actionapps;
 use zids;
 
 /** AA\Manageraction\Central_Linkcheck - checks if the AA are acessible */
@@ -33,7 +33,7 @@ class Central_Linkcheck extends AbstractManageraction
         $linkcheck = new Linkcheck();
 
         foreach ($item_zids as $aa_id) {
-            $aa        = AA_Actionapps::getActionapps($aa_id);
+            $aa        = Actionapps::getActionapps($aa_id);
             $url       = $aa->getComunicatorUrl();
             $status    = $linkcheck->check_url($url);
             $resp      = $aa->_authenticate();

@@ -54,6 +54,30 @@ class AA_Collection
         $this->id               = $collection_id;
     }
 
+    /** A collection id as new_collection_id() makes it: gensalt(5), i.e. five ASCII letters or digits.
+     *  For ids arriving from a request - send_emails() trusts the ids it gets. */
+    public static function isValidId(mixed $collection_id): bool
+    {
+        return is_string($collection_id) && preg_match('/\A[A-Za-z0-9]{5}\z/', $collection_id) === 1;
+    }
+
+    /** The test address of a trial send, as a request gives it.
+     *  @return string[]|null  [] when none is given (the real send to all readers), [$address] when valid,
+     *                         null when given but not a valid address - the caller must refuse, not send to all */
+    public static function testEmails(mixed $test_email): ?array
+    {
+        if ($test_email === null || $test_email === '') {
+            return [];
+        }
+        return (is_string($test_email) && filter_var($test_email, FILTER_VALIDATE_EMAIL) !== false) ? [$test_email] : null;
+    }
+
+    /** @return string[] filter ids of this collection, in the collection's order */
+    public function getFilterIds(): array
+    {
+        return DB_AA::select('filterid', 'SELECT filterid FROM alerts_collection_filter', [['collectionid', $this->id]], ['myindex']);
+    }
+
     protected function getProp($property)
     {
         if (is_null($this->reader_slice_id)) {
@@ -135,13 +159,9 @@ class AA_Collection
         $email_count       = 0;
 
         // find filters for this collection
-        $filter_ids = GetTable2Array("SELECT filterid FROM alerts_collection_filter WHERE collectionid = '" . $this->id . "' ORDER BY myindex", 'NoCoLuMn', 'filterid');
-
         $filters = [];
-        if (is_array($filter_ids)) {
-            foreach ($filter_ids as $filter_id) {
-                $filters[$filter_id] = &$unordered_filters[$filter_id];
-            }
+        foreach ($this->getFilterIds() as $filter_id) {
+            $filters[$filter_id] = &$unordered_filters[$filter_id];
         }
         $aliases    = [];
 

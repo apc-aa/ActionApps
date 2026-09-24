@@ -92,6 +92,13 @@ if ($update) {
             $constants2import[] = ['name' => $name, 'value' => $value];
         }
 
+        // an orphan constant_slice row may still name the owner of the group
+        $may_edit_slice = static fn(string $slice_id): bool => CheckPerms(AuthGetUid(), "slice", $slice_id, PS_FIELDS);
+        if (constant_group_id_valid($new_group_id) && ($denied = constant_group_denied($new_group_id, constant_group_owner($new_group_id), $may_edit_slice, false, IsSuperadmin()))) {
+            $err[] = $denied;
+            break;
+        }
+
         $ok = add_constant_group($new_group_id, $constants2import);
 
         if ($ok !== true) {

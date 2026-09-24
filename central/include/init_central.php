@@ -1,8 +1,8 @@
 <?php
 
 /**
- * File contains definition of AA_Actionapps class - holding information about
- * one AA installation.
+ * Bootstrap of the Central pages - loads the Central classes (central/include/actionapps.class.php;
+ * one AA installation is AA\Central\Actionapps).
  *
  * Should be included to other scripts (as /admin/index.php)
  *

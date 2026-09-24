@@ -136,9 +136,9 @@ $r_state['bin_cnt']['folder3'] = AA_Metabase::queryCount(['table' => 'polls'], $
 
 $zids  = AA::Metabase()->queryZids(['table' => 'polls'], $bin_sets[$manager->getBin()]);
 
-//$manager_settings['itemview']['query_funct'] = 'Central_QueryZids';
+//$manager_settings['itemview']['query_funct'] = 'Central_QueryZids' (now AA\Central\Actionapps::queryIds());
 //$manager_settings['messages']['title'] = _m('ActionApps Central');
-//         'get_content_funct'    => 'Central_GetAaContent'
+//         'get_content_funct'    => 'Central_GetAaContent' (now AA\Central\Actionapps::loadContent())
 
 $apage = new AA_Adminpageutil('pollsmanager', $manager->getBin());
 $apage->setForm();

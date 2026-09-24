@@ -57,7 +57,7 @@ class AA_Responder extends AA_Object
  */
 class AA_Responder_Get_Sessionid extends AA_Responder
 {
-    public function __construct($param = null) {}
+    public function __construct() {}
 
     /** every authenticated user can get his/her session_id */
     public function isPerm(): bool
@@ -78,7 +78,7 @@ class AA_Responder_Get_Sessionid extends AA_Responder
  */
 class AA_Responder_Get_Jwt extends AA_Responder
 {
-    public function __construct($param = null) {}
+    public function __construct() {}
 
     /** Only superadmins can get JWT tokens */
     // isPerm() inherited — returns IsSuperadmin()
@@ -101,7 +101,7 @@ class AA_Responder_Get_Jwt extends AA_Responder
  */
 class AA_Responder_Logout extends AA_Responder
 {
-    public function __construct($param = null) {}
+    public function __construct() {}
 
     /** every authenticated user can get his/her session_id */
     public function isPerm(): bool
@@ -123,7 +123,7 @@ class AA_Responder_Logout extends AA_Responder
 /** @return array of information about AA - org_name, domaun */
 class AA_Responder_Get_Aaname extends AA_Responder
 {
-    public function __construct($param = null) {}
+    public function __construct() {}
 
     public function run(): AA_Response
     {
@@ -156,13 +156,13 @@ class AA_Responder_Get_Modules extends AA_Responder
 class AA_Responder_Get_Module_Defs extends AA_Responder
 {
     private array $ids;
-    private array $limited;  // array - limits the definitions sent
+    private array $limited;  // parts to send - see AA_Definition_Module::normalizeLimited()
     private string $type;     // module type
 
     public function __construct($param)
     {
         $this->ids     = is_array($param['ids']) ? $param['ids'] : [];
-        $this->limited = is_array($param['limited']) ? $param['limited'] : [];
+        $this->limited = AA_Definition_Module::normalizeLimited($param['limited'] ?? []);  // Central before 2008 sent bool
         $this->type    = (string) $param['type'];
     }
 
@@ -196,8 +196,14 @@ class AA_Responder_Do_Synchronize extends AA_Responder
     {
         $ret = [];
         foreach ($this->sync_commands as $serialized_command) {
-            $cmd   = unserialize((string) $serialized_command, ['allowed_classes' => ResponderPolicy::syncAllowedClasses()]);
-            $ret[] = ($cmd instanceof AA_Sync_Action) ? $cmd->doAction() : _m('Wrong command - not a synchronization action');
+            try {
+                $cmd   = unserialize((string) $serialized_command, ['allowed_classes' => ResponderPolicy::syncAllowedClasses()]);
+                $ret[] = ($cmd instanceof AA_Sync_Action) ? $cmd->doAction() : _m('Wrong command - not a synchronization action');
+            } catch (\Throwable $e) {
+                // one bad command must not cost the rest of the batch; the message may name server
+                // paths or SQL, so only the error class goes back
+                $ret[] = _m('Wrong command - %1', [get_class($e)]);
+            }
         }
         return new AA_Response($ret);
     }
@@ -229,8 +235,51 @@ class AA_Responder_Do_Optimize extends AA_Responder
         if (!$optimizer->hasAction($this->method)) {
             return new AA_Response("Unsupported method '$this->method' for $this->class", 5);
         }
-        $optimizer->{$this->method}();
+        // a repair (UpdateDbStructure, ...) must not run next to a whole sql_update
+        $release = null;
+        if (($this->method === 'repair') && !($release = \AA\Optimize\Chain::tryLock('sql_update', $holder))) {
+            return new AA_Response(\AA\Optimize\Chain::runningMessage('sql_update', $holder), ResponderPolicy::ERR_OPTIMIZE_TYPE_RUNNING);
+        }
+        try {
+            $optimizer->{$this->method}();
+        } finally {
+            $release && $release();
+        }
         return new AA_Response($optimizer->report());
+    }
+}
+
+/** Run all Optimize classes of a type on this AA, as service/sql_update.php does - used by Central's
+ *  "Update DB (sql_update)" actions. This AA picks the classes of its own version (AA\Optimize\Chain).
+ *  $param['type']   - 'sql_update'
+ *  $param['method'] - 'test' (sql_update.php "Test") or 'repair' ("Install / Update")
+ */
+class AA_Responder_Do_Optimize_Type extends AA_Responder
+{
+    protected string $type;
+    protected string $method;
+
+    public function __construct($param = null)
+    {
+        $this->type   = (string) ($param['type']   ?? '');
+        $this->method = (string) ($param['method'] ?? '');
+    }
+
+    public function run(): AA_Response
+    {
+        if ($refusal = ResponderPolicy::optimizeTypeRefusal($this->type, $this->method)) {
+            return new AA_Response(...$refusal);
+        }
+        if (!($release = \AA\Optimize\Chain::tryLock($this->type, $holder))) {
+            return new AA_Response(\AA\Optimize\Chain::runningMessage($this->type, $holder), ResponderPolicy::ERR_OPTIMIZE_TYPE_RUNNING);
+        }
+        try {
+            MoreTimeLimit(360);   // a whole update (table rebuilds) takes minutes
+            [, $report] = \AA\Optimize\Chain::run($this->method, \AA\Optimize\Chain::optimizers($this->type));
+        } finally {
+            $release();
+        }
+        return new AA_Response($report);
     }
 }
 
@@ -343,7 +392,7 @@ class AA_Responder_Optimize4id extends AA_Responder
 
     public function run(): AA_Response
     {
-        /** @var \AA\Optimize\AbstractOptimize $optimizer */
+        /** @var ?\AA\Optimize\AbstractOptimize $optimizer */
         $optimizer = AA_Serializable::factory('AA\\Optimize\\' . $this->class);
         $ret = 'no repair4ids';
         if ($optimizer?->hasAction('repair4ids')) {
@@ -569,19 +618,19 @@ class AA_Responder_Alertitem extends AA_Responder
     /** array of module types to get */
     protected $item_id;
     protected $collection_id;
-    protected $test_email;
+    /** raw request value - validated in run(), where the alerts code is loaded */
+    protected mixed $test_email;
 
     public function __construct($param = null)
     {
-        // the slice id and the field id defines the field, where the widget is DEFINED
-        $this->item_id       = $param['item_id'];
-        $this->collection_id = $param['collection_id'];
-        $this->test_email    = strpos($param['test_email'], '@') ? [$param['test_email']] : [];
+        $this->item_id       = $param['item_id'] ?? null;
+        $this->collection_id = $param['collection_id'] ?? null;
+        $this->test_email    = $param['test_email'] ?? null;
     }
 
     public function isPerm()
     {
-        if (!is_long_id($this->item_id)) {
+        if (!is_string($this->item_id) || !is_long_id($this->item_id)) {   // an array would be a TypeError in strlen()
             return false;
         }
         if ($item = AA_Items::getItem(new zids($this->item_id, 'l'))) {
@@ -593,15 +642,17 @@ class AA_Responder_Alertitem extends AA_Responder
 
     public function run(): AA_Response
     {
-        $ret = '0';
-        if (is_long_id($this->item_id) && strlen($this->collection_id) === 5) {
-            //initialize_last();
-            //MoreTimeLimit(); // This can take a while
-            $ret = send_emails("irregular", [$this->collection_id], $this->test_email, true, $this->item_id);
-            // We must reset moved2active so that the item is not re-sent on update.
-            //$db->query ("UPDATE item SET moved2active = 0 WHERE id='" .q_pack_id($item_id)."'");    }
+        // send_emails() trusts the ids it gets and fatals on an unknown one; errors do not echo the input back
+        if (!AA_Collection::isValidId($this->collection_id) || !DB_AA::test('alerts_collection', [['id', $this->collection_id]])) {
+            return new AA_Response('Invalid collection id', 7);
         }
-        return new AA_Response($ret);
+        // null = an address was given but is not valid - never read that as "none" (= a live send to all readers)
+        $test_emails = AA_Collection::testEmails($this->test_email);
+        if ($test_emails === null) {
+            return new AA_Response('Invalid test e-mail address', 8);
+        }
+        // item_id is a long id - isPerm() checked it
+        return new AA_Response(send_emails("irregular", [$this->collection_id], $test_emails, true, $this->item_id));
     }
 }
 
@@ -669,7 +720,7 @@ if (!is_object($request)) {
 
 $responder = AA_Responder::factoryByName($request->getCommand(), $request->getParameters());
 if (empty($responder)) {
-    AA_Response::error(_m("Bad request sent for responder.php - %1", [$request->getCommand()]), 103);  // error code > 0
+    AA_Response::error(_m("Bad request sent for responder.php - %1", [$request->getCommand()]), ResponderPolicy::ERR_UNKNOWN_COMMAND);
     exit;
 }
 

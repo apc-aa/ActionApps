@@ -20,6 +20,9 @@ https://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+use AA\Central\Actionapps;
+use AA\Central\Difference;
+use AA\Central\Task\Sync;
 use AA\Later\Toexecute;
 
 require_once __DIR__ . "/include/init_central.php";
@@ -37,12 +40,12 @@ function CompareSliceDefs($template_slice_defs, $comp_slice_defs, $mapping): arr
             if (!is_long_id((string) $tmp_slice_name)) {
                 continue;
             }
-            $cmp_slice_name = $mapping[$tmp_slice_name];
-            $differences[$tmp_slice_name] = [];
-            if (empty($comp_slice_defs[$cmp_slice_name])) {
-                $differences[$tmp_slice_name][] = new AA_Difference('INFO', _m("Comparison slice (%1) does not exist", [safe($tmp_slice_name)]));
+            if (!($slice_def instanceof AA_Definition_Module_Slice)) {
+                $differences[$tmp_slice_name] = [new Difference('INFO', _m('Template AA sent no definition for slice %1', [safe($tmp_slice_name)]))];
+                continue;
             }
-            $differences[$tmp_slice_name] = array_merge($differences[$tmp_slice_name], $slice_def->compareWith($comp_slice_defs[$cmp_slice_name]));
+            // a missing comparison slice gives the "does not exist" row
+            $differences[$tmp_slice_name] = $slice_def->compareWith($comp_slice_defs[$mapping[$tmp_slice_name] ?? ''] ?? null);
         }
     }
     return $differences;
@@ -52,15 +55,14 @@ pageOpen();
 
 if (!IsSuperadmin()) {
     AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php", _m("You don't have permissions to synchronize slices."), "admin");
-    exit;
 }
 
 // ActionApps to synchronize
-$aas = AA_Actionapps::getArray();
+$aas = Actionapps::getArray();
 $slices4template = [];
 $slices2compare  = [];
 
-if ($_POST['compare']) {
+if (!empty($_POST['compare'])) {
 
     foreach ($_POST['sync_slices'] as $slice_tmp => $slice_cmp) {
         if ($slice_cmp) {
@@ -71,25 +73,31 @@ if ($_POST['compare']) {
         }
     }
 
-    $template_slice_defs = $aas[$_POST['template_aa']]->requestDefinitions('Slice', $slices4template, true);
+    // bool true arrives as [] in the responder - it loaded nothing and the comparison failed
+    $template_slice_defs = $aas[$_POST['template_aa']]->requestDefinitions('Slice', $slices4template, ['definitions' => true]);
     if (isset($_POST['comparation_aa'])) {
-        $comp_slice_defs = $aas[$_POST['comparation_aa']]->requestDefinitions('Slice', $slices2compare, true);
+        $comp_slice_defs = $aas[$_POST['comparation_aa']]->requestDefinitions('Slice', $slices2compare, ['definitions' => true]);
         // now compare slices
         $differences = CompareSliceDefs($template_slice_defs, $comp_slice_defs, $_POST['sync_slices']);
     }
 }
 
-if ($_POST['synchronize']) {
-    $toexecute = new Toexecute();
+if (!empty($_POST['synchronize'])) {
+    $toexecute     = new Toexecute();
+    $no_sync_tasks = 0;
 
     if (is_array($_POST['destination_aa'])) {
-        $no_sync_tasks = 0;
         foreach ($_POST['destination_aa'] as $dest_aa) {
-            if (is_array($_POST['sync'])) {
-                foreach ($_POST['sync'] as $sync_action) {
-                    // plan the synchronization action to for execution via Task Manager
-                    $sync_task = new AA_Task_Sync($sync_action, $aas[$dest_aa]);
-                    $toexecute->userQueue($sync_task, [], 'AA_Task_Sync');
+            if (is_array($_POST['sync'] ?? null) && isset($aas[$dest_aa])) {
+                foreach ($_POST['sync'] as $form_value) {
+                    if (!($sync_action = AA_Sync_Action::fromFormValue((string) $form_value))) {
+                        continue;
+                    }
+                    // plan the synchronization action to for execution via Task Manager;
+                    // the remote AA gets the serialized string, as it always did
+                    // the queue row keeps the central_conf id of the AA, not its login
+                    $sync_task = new Sync(serialize($sync_action), $aas[$dest_aa]);
+                    $toexecute->userQueue($sync_task, [], 'AA_Task_Sync');   // the selector keeps its old name
                     ++$no_sync_tasks;
                 }
             }
@@ -102,7 +110,7 @@ if ($_POST['synchronize']) {
 $apage = new AA_Adminpageutil('central', 'synchronize');
 $apage->setTitle(_m("Central - Synchronize ActionApps (3/3) - Synchronize Slices"));
 $apage->addRequire('aa-jslib@1');
-$apage->printHead($err, $Msg);
+$apage->printHead();
 
 // ActionApps to synchronize
 $aas_array = [];
@@ -124,8 +132,8 @@ $form_buttons = [
 ];
 
 FrmTabCaption(_m('Slice Comparison - %1 x %2', [
-    $aas[$_POST['template_aa']]->getName(),
-    $aas[$_POST['comparation_aa']]->getName(),
+    safe($aas[$_POST['template_aa']]->getName()),
+    safe($aas[$_POST['comparation_aa']]->getName()),
 ]), $form_buttons);
 if (isset($differences)) {
     // and print diffs out
@@ -168,18 +176,18 @@ if (isset($differences)) {
 FrmTabSeparator(_m('Synchronize'));
 FrmStaticText(_m('Template ActionApps'), $aas[$_POST['template_aa']]->getName());
 FrmStaticText(_m('Compared and Updated ActionApps'), $aas[$_POST['comparation_aa']]->getName());
-$aa2update = $_POST['destination_aa'] ?? $_POST['comparation_aa'];
-FrmHidden("destination_aa[]", $aa2update);
+// posted back to this page, where Synchronize reads a list of AA ids - after a Synchronize it also arrives as one
+foreach ((array) ($_POST['destination_aa'] ?? $_POST['comparation_aa']) as $aa2update) {
+    if (is_string($aa2update)) {
+        FrmHidden('destination_aa[]', $aa2update);
+    }
+}
 
-//FrmInputMultiSelect('destination_aa[]', _m('AA to update'), $aas_array, $aa2update, 20, false, true, _m('ActionApps installation to update'));
-//FrmInputMultiChBox('sync_slices[]', _m('Slices to synchronize'), $template_slices, $_POST['sync_slices'], false, '', '', 3);
-foreach ($_POST['sync_slices'] as $k => $v) {
-    if ($v) {
+foreach ((array) ($_POST['sync_slices'] ?? []) as $k => $v) {
+    if ($v && is_string($v) && is_long_id((string) $k)) {   // FrmHidden() escapes the value, not the name
         FrmHidden("sync_slices[$k]", $v);
     }
 }
-//FrmInputMultiChBox('sync_slices[]', _m('Slices to synchronize'), $template_slices, $_POST['sync_slices'], false, '', '', 3);
-// prepared for multiple update
 FrmTabEnd($form_buttons);
 
 $apage->printFoot();

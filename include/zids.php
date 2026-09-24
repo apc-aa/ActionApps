@@ -599,6 +599,12 @@ function is_short_id($id): bool
 {
     return !empty($id) && strlen($id) < 12 && ctype_digit((string) $id);
 }
+/** one or more long ids concatenated - constant.ancestors holds the ids of all ancestors */
+function is_long_ids($ids): bool
+{
+    $ids = (string) $ids;
+    return $ids !== '' && strlen($ids) % 32 === 0 && ctype_xdigit($ids);
+}
 function is_long_id($id): bool
 {
     return !empty($id) && (strlen($id) === 32 && ctype_xdigit($id));
@@ -715,6 +721,14 @@ function q_pack_id($unpacked_id): string
 function qquote($str): string
 {
     return "'" . quote($str) . "'";
+}
+
+/** A constant group id (or any string) escaped for the inside of a quoted LIKE pattern -
+ *  '_' and '%' match themselves. Here, not in constedit_util.php: the autoloaded
+ *  AA_Mysqlauth and AA_Mailman need it too. */
+function constant_group_like(string $group_id): string
+{
+    return addcslashes(quote($group_id), '_%');
 }
 
 

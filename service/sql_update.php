@@ -24,9 +24,8 @@ https://www.apc.org/
 // this script updates the database to last structure, create all tables, ...
 // can be used for upgrade from apc-aa v. >= 1.5 or for create new database
 
-use AA\IO\DB\DB_AA;
 use AA\Optimize\AbstractOptimize;
-use AA\Optimize\CheckRunner;
+use AA\Optimize\Chain;
 use AA\Optimize\RestoreBckTables;
 use AA\Util\ReportTrait;
 
@@ -136,19 +135,7 @@ class AA_SQL_Updater
 
     public function test(): bool
     {
-        $optimizers = $this->getOptimizers();
-        $msg        = '<table>';
-        $result     = true;
-        foreach ($optimizers as $optimizer) {
-            $msg .= '<tr><td>' . $optimizer->name() . '</td>';
-            $res  = $optimizer->test();
-            if (!$res) {
-                $result = false;
-            }
-            $msg .= '<td>' . ($res ? 'OK' : 'Problem') . '</td>';
-            $msg .= '<td>' . $optimizer->report() . '</td></tr>';
-        }
-        $msg .= "</table>";
+        [$result, $msg] = Chain::test($this->getOptimizers());
         $this->message($msg);
         return $result;
     }
@@ -163,24 +150,7 @@ class AA_SQL_Updater
 
     public function update(): bool
     {
-        $optimizers = $this->getOptimizers();
-        $msg        = '<table>';
-        $result     = true;
-        foreach ($optimizers as $optimizer) {
-            $msg .= '<tr><td>' . $optimizer->name() . '</td>';
-
-            if ($optimizer->test()) {
-                $msg .= '<td>test passed - skipping</td></tr>';
-            } else {
-                $optimizer->clear_report();
-                $res  = $optimizer->repair();
-                if (!$res) {
-                    $result = false;
-                }
-                $msg .= '<td>' . $optimizer->report() . '</td></tr>';
-            }
-        }
-        $msg .= "</table>";
+        [$result, $msg] = Chain::repair($this->getOptimizers());
         $this->message($msg);
         return $result;
     }
@@ -190,12 +160,7 @@ class AA_SQL_Updater
      */
     public function getOptimizers(): array
     {
-        $optimizers = [];
-        foreach (CheckRunner::classes(['sql_update']) as $optimize_class) {
-            $optimizers[sprintf("%05s", $optimize_class::priority()) . $optimize_class] = AA_Serializable::factory($optimize_class);
-        }
-        ksort($optimizers);
-        return $optimizers;
+        return Chain::optimizers('sql_update');
     }
 }
 
@@ -205,14 +170,31 @@ if ($_GET['update']) {
     if (!$_GET['fire']) {
         AbstractOptimize::justPrint(true);
     }
-    $status = $updater->update();
-    echo ($status ? 'OK ' : 'Err ') . $updater->report();
+    // the same lock as Central's Do_Optimize_Type - two updates at once would rebuild the same tables
+    if (!($release = Chain::tryLock('sql_update', $holder))) {
+        echo 'Err ' . Chain::runningMessage('sql_update', $holder);
+    } else {
+        try {
+            $status = $updater->update();
+        } finally {
+            $release();
+        }
+        echo ($status ? 'OK ' : 'Err ') . $updater->report();
+    }
 } elseif ($_GET['restore']) {
     if (!$_GET['fire']) {
         AbstractOptimize::justPrint(true);
     }
-    $status = $updater->restore();
-    echo ($status ? 'OK ' : 'Err ') . $updater->report();
+    if (!($release = Chain::tryLock('sql_update', $holder))) {   // restores the tables an update rebuilds
+        echo 'Err ' . Chain::runningMessage('sql_update', $holder);
+    } else {
+        try {
+            $status = $updater->restore();
+        } finally {
+            $release();
+        }
+        echo ($status ? 'OK ' : 'Err ') . $updater->report();
+    }
 } elseif ($_GET['dotest']) {
     $status = $updater->test();
     echo ($status ? 'OK ' : 'Err ') . $updater->report();

@@ -215,7 +215,7 @@ class AA_Mysqlauth
      */
     public static function updateReader($username, $password, $groups): void
     {
-        DB_AA::sql("REPLACE INTO auth_user (username, passwd, last_changed) VALUES ('" . addslashes($username) . "', '" . addslashes($password) . "', " . time() . ")");
+        DB_AA::sql("REPLACE INTO auth_user (username, passwd, last_changed) VALUES (" . qquote($username) . ", " . qquote($password) . ", " . time() . ")");
         self::updateGroups($username, $groups);
     }
 
@@ -251,7 +251,7 @@ class AA_Mysqlauth
 
         foreach ($final_groups as $group) {
             if ($group) {
-                DB_AA::sql("INSERT INTO auth_group (username, `groups`, last_changed) VALUES ('$username','" . addslashes($group) . "'," . time() . ")");
+                DB_AA::sql("INSERT INTO auth_group (username, `groups`, last_changed) VALUES (" . qquote($username) . "," . qquote($group) . "," . time() . ")");
             }
         }
     }
@@ -275,10 +275,10 @@ class AA_Mysqlauth
     // --------------------------------------------------------------------------
 
     /** AA_Mysqlauth::changeGroups function
-     * Called from Event_ItemsAfterPropagateConstantChanges().
-     * @param $constant_id
-     * @param $oldvalue
-     * @param $newvalue
+     * Called from Event_ConstantUpdated().
+     * @param string $constant_id  unpacked
+     * @param string $oldvalue     raw (not escaped)
+     * @param string $newvalue     raw (not escaped)
      */
     public static function changeGroups($constant_id, $oldvalue, $newvalue): void
     {
@@ -289,6 +289,7 @@ class AA_Mysqlauth
             return;
         }
 
+        $like = constant_group_like($group_id);
         $usernames = DB_AA::select(
             'text',
             "SELECT username.text as text FROM slice
@@ -298,16 +299,18 @@ class AA_Mysqlauth
             INNER JOIN content AS username ON username.item_id=item.id
             WHERE slice.type = 'ReaderManagement'
             AND slice.auth_field_group = field.id
-            AND (field.input_show_func LIKE '___:$group_id:%'
-            OR  field.input_show_func LIKE '___:$group_id')
-            AND content.text = '$newvalue'
+            AND (field.input_show_func LIKE '___:$like:%'
+            OR  field.input_show_func LIKE '___:$like')
+            AND content.text = " . qquote($newvalue) . "
             AND username.field_id='" . FIELDID_USERNAME . "'",
         );
 
-        $newvalue = stripslashes($newvalue);
-
+        // just the renamed group - the reader keeps the others
         foreach ($usernames as $name) {
-            self::updateGroups($name, $newvalue);
+            DB_AA::delete('auth_group', [['username', $name], ['`groups`', $oldvalue]]);
+            foreach (array_filter(explode(';', $newvalue)) as $group) {
+                DB_AA::sql("INSERT IGNORE INTO auth_group (username, `groups`, last_changed) VALUES (" . qquote($name) . ", " . qquote($group) . ", " . time() . ")");
+            }
         }
     }
 }

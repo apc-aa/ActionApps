@@ -118,10 +118,10 @@ class AA_Perm_Resource {
     /** Array which defines permission path
      *  Each member of this array is class-id pair - like
      *  AA_Item-7fe5b5646b08af4c3b5295a0186629cc
-     *  The first is always AA_Actionapps class, second is of AA_Module class
+     *  The first is always AA\Central\Actionapps class, second is of AA_Module class
      *
      *  Example:
-     *    $path[0] - array( AA_Actionapps, '37a4b5646b08af4c3b5295a018662e6e' )
+     *    $path[0] - array( AA\Central\Actionapps, '37a4b5646b08af4c3b5295a018662e6e' )
      *    $path[1] - array( AA_Module,     '6ba4b366690bac2d3b9295607866654a' ) // slice_id
      *    $path[2] - array( AA_Item,       '7fe5b5646b08af4e3d58d5a3596629cc' ) // or 'AA_View', 'AA_Field', ...
      *    $path[3] - array( AA_Field,      '4356782eab08af4cce5295a018662563' )
