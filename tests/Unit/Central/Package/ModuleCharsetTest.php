@@ -57,24 +57,49 @@ final class ModuleCharsetTest extends TestCase
         $this->assertTrue(ModuleCharset::works());
     }
 
-    /** @return array<string, array{string, string, ?string}> type, lang_file, charset (null = not allowed) */
+    /** @return array<string, array{string, string, ?array{string, string}}> type, lang_file, [lang_file as carried, charset] (null = unknown) */
     public static function langFiles(): array
     {
         return [
-            'utf-8 slice'           => ['S', 'cz-utf8_news_lang.php', 'utf-8'],
-            'windows-1250 slice'    => ['S', 'cz_news_lang.php', 'windows-1250'],
-            'site'                  => ['W', 'en-utf8_site_lang.php', 'utf-8'],
-            'alerts'                => ['Alerts', 'sk_alerts_lang.php', 'windows-1250'],
-            'unknown language'      => ['S', 'xx_news_lang.php', null],
-            'other module type'     => ['S', 'cz-utf8_site_lang.php', null],
-            'not a module of v1'    => ['P', 'en_polls_lang.php', null],
-            'empty'                 => ['S', '', null],
+            'utf-8 slice'              => ['S', 'cz-utf8_news_lang.php', ['cz-utf8_news_lang.php', 'utf-8']],
+            'windows-1250 slice'       => ['S', 'cz_news_lang.php', ['cz_news_lang.php', 'windows-1250']],
+            'site'                     => ['W', 'en-utf8_site_lang.php', ['en-utf8_site_lang.php', 'utf-8']],
+            'alerts'                   => ['Alerts', 'sk_alerts_lang.php', ['sk_alerts_lang.php', 'windows-1250']],
+            // most of production aadb.module: the old .php3 names (modules/alerts/modedit.php:168 trims them)
+            'php3 slice'               => ['S', 'cz-utf8_news_lang.php3', ['cz-utf8_news_lang.php', 'utf-8']],
+            'php3 site'                => ['W', 'cz_site_lang.php3', ['cz_site_lang.php', 'windows-1250']],
+            'php3 iso-8859-2'          => ['S', 'hu_news_lang.php3', ['hu_news_lang.php', 'iso-8859-2']],
+            // a known language, the file of another type: AA takes the charset from the language code
+            'language of another type' => ['S', 'cz-utf8_site_lang.php', ['cz-utf8_news_lang.php', 'utf-8']],
+            'odd name'                 => ['Alerts', 'en_polls_lang.inc', ['en_alerts_lang.php', 'iso-8859-1']],
+            'unknown language'         => ['S', 'xx_news_lang.php', null],
+            'not a module of v1'       => ['P', 'en_polls_lang.php', null],
+            'empty'                    => ['S', '', null],
         ];
     }
 
     #[DataProvider('langFiles')]
-    public function test_ofModule_takes_only_the_lang_files_of_the_type(string $type, string $lang_file, ?string $charset): void
+    public function test_ofModule_normalises_the_lang_file_of_the_type(string $type, string $lang_file, ?array $expected): void
     {
-        $this->assertSame($charset, ModuleCharset::ofModule(['type' => $type, 'lang_file' => $lang_file]));
+        $this->assertSame($expected, ModuleCharset::ofModule(['type' => $type, 'lang_file' => $lang_file]));
+    }
+
+    /** @return array<string, array{string, string, int}> value, charset, offset of the byte that failed */
+    public static function failingBytes(): array
+    {
+        return [
+            'windows-1250' => ["ab\x81cd\x81", 'windows-1250', 2],
+            'first byte'   => ["\x98x", 'windows-1250', 0],
+            'after a good one' => ["\x8A\x81", 'windows-1250', 1],
+            'utf-8'        => ["žž\xC3", 'utf-8', 4],
+        ];
+    }
+
+    #[DataProvider('failingBytes')]
+    public function test_the_finding_points_at_the_byte_that_failed(string $value, string $charset, int $offset): void
+    {
+        $finding = ModuleCharset::toUtf8($value, $charset)[1];
+
+        $this->assertSame([$offset, substr($value, $offset, 16)], [$finding?->offset, $finding?->ref]);
     }
 }

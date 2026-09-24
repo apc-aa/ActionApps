@@ -7,6 +7,7 @@ namespace AA\Central\Package;
 use AA\Central\Package\Model\ConstantGroup;
 use AA\Central\Package\Model\Module;
 use AA\Central\Package\Model\Package;
+use AA\Central\Package\Model\RawBytes;
 use AA_Module_Site;
 use InvalidArgumentException;
 
@@ -37,6 +38,11 @@ final class Collector
     public const STATE_FILE = 'state-file';
     /** E: module.lang_file not in Langs::getFiles(<type>) - the charset, so the conversion, is unknown (§ 2.4) */
     public const LANG_FILE = 'lang-file';
+    /** I: lang_file off the list of its type, of a known language - the package carries the language's
+     *  file of the type (the charset is the same: AA takes it from the language code) */
+    public const LANG_FILE_NORMALISED = 'lang-file-normalised';
+    /** W: the owner of a constant group (constant_slice.slice_id) is no module - its user's charset is used */
+    public const OWNER_MISSING = 'owner-missing';
     /** E: this iconv converts windows-1250 wrongly - no text can be trusted */
     public const CHARSET_BROKEN = 'charset-broken';
     /** E: the slice / site row of a module is missing */
@@ -133,14 +139,19 @@ final class Collector
         $count    = 0;
         foreach ($app as $id => $module) {
             $path          = self::TYPES[$module['type']] . "[$id]";
-            $charsets[$id] = $this->charset($module, "$path/module[#0]/lang_file");
-            $raw[$id]      = ['module' => [$module]] + match ($module['type']) {
+            [$charsets[$id], $module['lang_file']] = $this->charset($module, "$path/module[#0]/lang_file");
+            $raw[$id] = ['module' => [$module]] + match ($module['type']) {
                 'W'     => $this->siteRows($id, array_keys($app)),
                 'S'     => $this->sliceRows($id),
                 default => $this->alertsRows($id),
             };
             if (isset(self::ROW[$module['type']]) && !$raw[$id][self::ROW[$module['type']]]) {
                 $this->add("$path/" . self::ROW[$module['type']], LintFinding::ERROR, self::ROW_MISSING, self::ROW[$module['type']]);
+            }
+            foreach ($raw[$id]['slice'] ?? [] as $i => $slice) {     // the old copy of module.lang_file, normalised alike
+                if (isset($slice['lang_file'])) {
+                    $raw[$id]['slice'][$i]['lang_file'] = (ModuleCharset::ofModule(['type' => 'S'] + $slice) ?? [$slice['lang_file']])[0];
+                }
             }
             foreach (array_filter($raw[$id]) as $element => $list) {
                 $rows[$id][$element] = $this->clean($element, $list, $charsets[$id], $path);
@@ -161,7 +172,7 @@ final class Collector
             $modules[] = new Module($types[$id], $id, $elements, items: $items[$id] ?? []);
         }
         $package = new Package(
-            $options->name ?? (string) ($rows[$first]['module'][0]['name'] ?? ''),
+            $options->name ?? self::text($rows[$first]['module'][0]['name'] ?? ''),
             $options->source + ($site_id === null ? [] : ['site' => $site_id]),
             $modules,
             $groups,
@@ -285,8 +296,7 @@ final class Collector
         foreach ($names ? $this->source->select('constant', [['group_id', $names, 's']]) : [] as $row) {
             $consts[$row['group_id']][] = $row;
         }
-        $foreign   = array_values(array_diff(array_filter(array_map('strval', array_column($slices, 'slice_id'))), array_keys($app)));
-        $modules   = $this->modules($foreign);
+        $modules   = $this->modules(array_values(array_diff(array_filter(array_map('strval', array_column($slices, 'slice_id'))), array_keys($app))));
         $app_slice = array_key_first(array_filter($app, static fn(array $m): bool => $m['type'] === 'S'));
         $groups    = [];
         foreach ($used as $name => $user) {
@@ -305,7 +315,10 @@ final class Collector
                 continue;
             }
             // the charset of the owning slice (§ 2.4) - never a silent utf-8; an unowned group has its user's
-            $charset = $charsets[$owner] ?? ($owner === '' ? $charsets[$user] : $this->charset($modules[$owner] ?? ['lang_file' => '?'], $path, $charsets[$user]));
+            if (($owner !== '') && !isset($charsets[$owner]) && !isset($modules[$owner])) {
+                $this->add($path, LintFinding::WARNING, self::OWNER_MISSING, $owner);
+            }
+            $charset = $charsets[$owner] ?? (isset($modules[$owner]) ? $this->charset($modules[$owner], $path, $charsets[$user])[0] : $charsets[$user]);
             $rows    = [];
             foreach (array_filter(['constant_slice' => isset($slices[$name]) ? [$slices[$name]] : [], 'constant' => $consts[$name] ?? []]) as $element => $list) {
                 $rows[$element] = $this->clean($element, $list, $charset, $path);
@@ -314,7 +327,7 @@ final class Collector
             $at       = isset($charsets[$owner]) ? $owner : (($owner === '') ? '' : (($app[$user]['type'] === 'S') ? $user : (string) $app_slice));
             $groups[] = new ConstantGroup($utf_name, $at, $rows);
         }
-        return [$groups, $foreign];
+        return [$groups, array_keys($modules)];
     }
 
     /** Only the columns a package carries (Schema), strings in UTF-8.
@@ -334,25 +347,31 @@ final class Collector
         return $rows;
     }
 
-    /** § 2.4 the value in UTF-8; a value the charset cannot hold stays raw, with a finding */
-    private function utf8(string $value, string $charset, string $path): string
+    /** § 2.4 the value in UTF-8; a value the charset cannot hold stays as the source bytes - RawBytes,
+     *  which Writer carries as base64 - with a finding */
+    private function utf8(string $value, string $charset, string $path): string|RawBytes
     {
         [$utf, $finding] = ModuleCharset::toUtf8($value, $charset);
         if ($finding !== null) {
             $this->findings[] = [$path, $finding];
+            return new RawBytes($value);
         }
         return $utf;
     }
 
-    /** the charset of the module; lang_file off the allowlist is an error at $path, $fallback is used
-     *  @param array<string, mixed> $module module row */
-    private function charset(array $module, string $path, string $fallback = 'utf-8'): string
+    /** The charset of the module and the lang_file the package carries (ModuleCharset::ofModule()):
+     *  a normalised one is an I at $path, an unknown language an E - and $fallback is used.
+     *  @param array<string, mixed> $module module row @return array{string, string} */
+    private function charset(array $module, string $path, string $fallback = 'utf-8'): array
     {
-        $charset = ModuleCharset::ofModule($module);
+        $file = (string) ($module['lang_file'] ?? '');
+        [$lang_file, $charset] = ModuleCharset::ofModule($module) ?? [$file, null];
         if ($charset === null) {
-            $this->add($path, LintFinding::ERROR, self::LANG_FILE, (string) ($module['lang_file'] ?? ''));
+            $this->add($path, LintFinding::ERROR, self::LANG_FILE, $file);
+        } elseif ($lang_file !== preg_replace('/\.php3$/', '.php', $file)) {
+            $this->add($path, LintFinding::INFO, self::LANG_FILE_NORMALISED, $file);
         }
-        return $charset ?? $fallback;
+        return [$charset ?? $fallback, $lang_file];
     }
 
     /** @param list<string> $ids @return array<string, array<string, mixed>> id => module row */
@@ -364,6 +383,12 @@ final class Collector
     private function add(string $path, string $level, string $code, string $ref): void
     {
         $this->findings[] = [$path, new LintFinding($level, $code, substr($ref, 0, ReferenceLint::MAX_REF), 0)];
+    }
+
+    /** a text for meta: RawBytes cut to valid UTF-8 (the name is shown, not imported) */
+    private static function text(mixed $value): string
+    {
+        return ($value instanceof RawBytes) ? mb_scrub($value->bytes, 'UTF-8') : (string) $value;
     }
 
     private static function id(string $id): string

@@ -21,7 +21,8 @@ final readonly class CollectOptions
      *                                        optional (`site` is added by fromSite())
      * @param bool                  $items    carry items (§ 6.2) - never of a published app, never of a
      *                                        ReaderManagement slice
-     * @param bool                  $allBins  items of all bins, not only the active one
+     * @param bool                  $allBins  items of all bins; false = the active bin, status_code 1 -
+     *                                        pending and expired items included (their dates decide)
      * @param int                   $maxItems at most this many items in the package, more = an error
      * @param string|null           $name     meta/name; null = the name of the site / first module
      * @param string|null           $publish  no | users | all - users/all turn every W finding into E (D2)

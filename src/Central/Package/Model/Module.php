@@ -9,7 +9,8 @@ namespace AA\Central\Package\Model;
  *
  *  A row is `DB column => value` with only the columns a package carries - Schema::rowColumns() plus
  *  the key columns of Schema::rowAttributes() (`view.id`, `relation.destination_id`, ...); the module
- *  column and installation columns are the collector's to drop. Value null = SQL NULL.
+ *  column and installation columns are the collector's to drop. Value null = SQL NULL;
+ *  RawBytes = source bytes the collector could not convert to UTF-8 (text columns, item values) - base64.
  *
  *  Object properties and item values cannot be NULL (<p>, <v> have no null="true"): Writer throws.
  *  Decision for the collector (C4.3 part 3): NULL item values of old rows (GetItemContent(),
@@ -23,7 +24,7 @@ final readonly class Module
     /**
      * @param string                                                  $type     self::SITE | SLICE | ALERTS
      * @param string                                                  $id       32 hex, unpacked
-     * @param array<string, list<array<string, string|int|float|null>>> $rows   row element (a key of
+     * @param array<string, list<array<string, string|int|float|RawBytes|null>>> $rows   row element (a key of
      *                                                                          Schema::rowTables(), e.g. module, slice, view, uses)
      *                                                                          => rows; `module` and `slice`/`site` have one row
      * @param array<string, mixed>|null                               $settings AA_Modulesettings_* properties (see $objects

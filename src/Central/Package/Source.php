@@ -17,7 +17,7 @@ interface Source
 
     /** Items of a slice in the GetItemContent() form, one at a time (a slice may be big), reading
      *  password ignored - the caller has checked the exporter's permissions (Collector).
-     *  @param bool $all_bins false = the active bin only (status_code 1)
+     *  @param bool $all_bins false = the active bin only: status_code 1, pending and expired included
      *  @return iterable<array{id: string, content: array<string, list<array<string, mixed>>>}> */
     public function items(string $slice_id, bool $all_bins): iterable;
 }

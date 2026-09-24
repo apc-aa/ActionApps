@@ -6,6 +6,7 @@ namespace AA\Central\Package;
 
 use AA\Central\Package\Model\ConstantGroup;
 use AA\Central\Package\Model\Module;
+use AA\Central\Package\Model\RawBytes;
 use Generator;
 
 /** The export lint of a collected app (design balicek-v1.md § 8.4, § 5.2): ReferenceLint over every
@@ -95,7 +96,8 @@ final class ExportLint
         return array_map(static fn(array $f): array => ($f[1]->level === LintFinding::WARNING) ? [$f[0], new LintFinding(LintFinding::ERROR, $f[1]->code, $f[1]->ref, $f[1]->offset)] : $f, $findings);
     }
 
-    /** Text columns of rows - [path, text]; the input_view of the profile is a structured reference.
+    /** Text columns of rows - [path, text]; the input_view of the profile is a structured reference,
+     *  RawBytes (not converted to UTF-8) are not linted.
      *  @param array<string, list<array<string, mixed>>> $elements
      *  @return Generator<int, array{string, string}> */
     public function texts(string $path, array $elements): Generator
@@ -135,20 +137,21 @@ final class ExportLint
                 $this->add("$path/slice[#$i]/mlxctrl", LintFinding::WARNING, ReferenceLint::MODULE_OUTSIDE, $mlx);
             }
         }
+        $text = static fn(mixed $value): string => ($value instanceof RawBytes) ? $value->bytes : (string) $value;
         foreach ($elements['profile'] ?? [] as $i => $profile) {
             if ($profile['property'] === 'input_view') {
-                $view($profile['value'], "$path/profile[#$i]/value");
+                $view($text($profile['value']), "$path/profile[#$i]/value");
             }
         }
         foreach ($elements['alerts_filter'] ?? [] as $filter) {
             $view($filter['vid'], "$path/alerts_filter[{$filter['id']}]/vid");
         }
         foreach ($elements['email'] ?? [] as $email) {
-            if ((string) ($email['attachments'] ?? '') !== '') {
-                $this->add("$path/email[{$email['id']}]/attachments", LintFinding::INFO, self::EMAIL_ATTACHMENTS, (string) $email['attachments']);
+            if (($attachments = $text($email['attachments'] ?? '')) !== '') {
+                $this->add("$path/email[{$email['id']}]/attachments", LintFinding::INFO, self::EMAIL_ATTACHMENTS, $attachments);
             }
             foreach (self::EMAIL_HEADERS as $column) {
-                $value = (string) ($email[$column] ?? '');
+                $value = $text($email[$column] ?? '');
                 if (str_contains($value, '@') && !str_contains($value, '{') && !str_contains($value, '_#')) {
                     $this->add("$path/email[{$email['id']}]/$column", LintFinding::INFO, self::EMAIL_ADDRESS, $value);
                 }

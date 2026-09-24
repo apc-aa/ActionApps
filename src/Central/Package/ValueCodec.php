@@ -30,14 +30,18 @@ final class ValueCodec
     private const NOT_XML = '/[\x00-\x08\x0B\x0C\x0E-\x1F\x{FFFE}\x{FFFF}]/u';
 
     /** LintFinding::$ref of INVALID_BYTES: this many bytes from the first invalid one */
-    private const REF_BYTES = 16;
+    public const REF_BYTES = 16;
 
-    /** @return array{text: string, enc: string, crlf: bool, cdata: bool, finding: ?LintFinding} */
-    public static function encode(string $value): array
+    /** @param bool $raw bytes of a module charset that could not be converted (Model\RawBytes): base64
+     *                  with no finding - the collector reported them
+     *  @return array{text: string, enc: string, crlf: bool, cdata: bool, finding: ?LintFinding} */
+    public static function encode(string $value, bool $raw = false): array
     {
         $finding = null;
         $crlf    = 0;
-        if (!mb_check_encoding($value, 'UTF-8')) {
+        if ($raw) {
+            $base64 = true;
+        } elseif (!mb_check_encoding($value, 'UTF-8')) {
             $offset  = self::firstInvalidByte($value);
             $finding = new LintFinding(LintFinding::WARNING, self::INVALID_BYTES, substr($value, $offset, self::REF_BYTES), $offset);
             $base64  = true;

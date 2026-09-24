@@ -6,6 +6,7 @@ namespace AA\Central\Package;
 
 use AA\Central\Package\Model\Module;
 use AA\Central\Package\Model\Package;
+use AA\Central\Package\Model\RawBytes;
 use DOMDocument;
 use DOMElement;
 use DOMNode;
@@ -195,8 +196,9 @@ final class Writer
             throw new InvalidArgumentException("$path: column $element." . implode(", $element.", array_keys($extra)) . ' is not carried by a package (Schema::rowColumns())');
         }
         foreach ($row as $column => $value) {
-            if ($value !== null && !is_scalar($value)) {
-                throw new InvalidArgumentException("$path/$element: column $column must be a scalar or null, " . get_debug_type($value) . ' given');
+            $raw_ok = ($value instanceof RawBytes) && (($columns[$column] ?? '') === 'textValue');
+            if ($value !== null && !is_scalar($value) && !$raw_ok) {
+                throw new InvalidArgumentException("$path/$element: column $column must be a scalar or null (RawBytes in a text column), " . get_debug_type($value) . ' given');
             }
         }
         $attrs = [];
@@ -210,6 +212,8 @@ final class Writer
             $value = $row[$column];
             if ($value === null) {
                 $this->el($el, $column, ['null' => 'true']);
+            } elseif ($value instanceof RawBytes) {
+                $this->value($this->el($el, $column), $value, "$path/$column");
             } elseif (!ValueCodec::isEmpty($type, $value = (string) $value)) {
                 if ($type === 'textValue') {
                     $this->value($this->el($el, $column), $value, "$path/$column");
@@ -232,8 +236,8 @@ final class Writer
                 $attrs = ['n' => (string) $name, 'i' => $i === 0 ? null : (string) $i];
                 if (is_array($value)) {
                     $this->object($el, $value, $attrs, "$path/{$name}[$i]");
-                } elseif (is_scalar($value)) {
-                    $this->value($this->el($el, 'p', $attrs, path: "$path/{$name}[$i]"), (string) $value, "$path/{$name}[$i]");
+                } elseif (is_scalar($value) || ($value instanceof RawBytes)) {
+                    $this->value($this->el($el, 'p', $attrs, path: "$path/{$name}[$i]"), is_scalar($value) ? (string) $value : $value, "$path/{$name}[$i]");
                 } else {
                     throw new InvalidArgumentException("$path/{$name}[$i]: a property value must be a scalar or a subobject");
                 }
@@ -315,16 +319,16 @@ final class Writer
                     $value = $v['value'] ?? throw new InvalidArgumentException("$at/{$field}[$i]: an item value cannot be NULL");
                     $flag  = (int) ($v['flag'] ?? 0);
                     $attrs = ['f' => (string) $field, 'i' => $i === 0 ? null : (string) $i, 'flag' => $flag ? (string) $flag : null];
-                    $this->value($this->el($el, 'v', $attrs, path: $at), (string) $value, "$at/{$field}[$i]");
+                    $this->value($this->el($el, 'v', $attrs, path: $at), ($value instanceof RawBytes) ? $value : (string) $value, "$at/{$field}[$i]");
                 }
             }
         }
     }
 
-    /** a text value encoded by ValueCodec into its (empty) element */
-    private function value(DOMElement $el, string $value, string $path): void
+    /** a text value encoded by ValueCodec into its (empty) element; RawBytes always as base64 */
+    private function value(DOMElement $el, string|RawBytes $value, string $path): void
     {
-        $enc = ValueCodec::encode($value);
+        $enc = ($value instanceof RawBytes) ? ValueCodec::encode($value->bytes, raw: true) : ValueCodec::encode($value);
         if ($enc['finding']) {
             $this->findings[] = [$path, $enc['finding']];
         }
@@ -383,6 +387,8 @@ final class Writer
     /** A total order: NULL first; in a number column numbers by value before other strings; the rest bytewise */
     private static function compare(mixed $x, mixed $y, bool $numeric): int
     {
+        $x  = ($x instanceof RawBytes) ? $x->bytes : $x;
+        $y  = ($y instanceof RawBytes) ? $y->bytes : $y;
         $nx = $numeric && is_numeric($x);
         $ny = $numeric && is_numeric($y);
         return [$x !== null, !$nx, $nx ? +$x : 0] <=> [$y !== null, !$ny, $ny ? +$y : 0] ?: strcmp((string) $x, (string) $y);

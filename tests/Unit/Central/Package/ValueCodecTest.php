@@ -78,6 +78,12 @@ final class ValueCodecTest extends TestCase
         }
     }
 
+    public function test_raw_bytes_are_always_base64_without_a_finding(): void
+    {
+        $this->assertSame(['text' => base64_encode("\xC3\x81"), 'enc' => ValueCodec::BASE64, 'crlf' => false, 'cdata' => false, 'finding' => null], ValueCodec::encode("\xC3\x81", raw: true));
+        $this->assertSame(ValueCodec::BASE64, ValueCodec::encode("a\xFF", raw: true)['enc']);
+    }
+
     public function test_only_invalid_utf8_is_a_finding(): void
     {
         foreach (self::randomValues() as $value) {

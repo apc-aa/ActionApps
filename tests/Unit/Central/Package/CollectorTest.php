@@ -25,11 +25,14 @@ namespace Tests\Unit\Central\Package {
     use AA\Central\Package\LintFinding;
     use AA\Central\Package\Model\ConstantGroup;
     use AA\Central\Package\Model\Module;
+    use AA\Central\Package\Model\RawBytes;
     use AA\Central\Package\ReferenceLint;
+    use AA\Central\Package\Schema;
     use AA\Central\Package\ValueCodec;
     use AA\Central\Package\Writer;
     use AA_Module_Site;
     use DOMDocument;
+    use DOMXPath;
     use InvalidArgumentException;
     use PHPUnit\Framework\Attributes\DataProvider;
     use PHPUnit\Framework\TestCase;
@@ -133,8 +136,9 @@ namespace Tests\Unit\Central\Package {
                 . '{form:abc}{constant:ct_text:x:name}{constant:ct_b:x:name}</html>';
             return new FakeSource([
                 'module'   => [
-                    self::module(self::SITE, 'W', 'Test web', 'cz-utf8_site_lang.php'),
-                    self::module(self::SLICE_A, 'S', 'Articles', 'cz-utf8_news_lang.php'),
+                    // .php3: most lang_file values of production aadb.module
+                    self::module(self::SITE, 'W', 'Test web', 'cz-utf8_site_lang.php3'),
+                    self::module(self::SLICE_A, 'S', 'Articles', 'cz-utf8_news_lang.php3'),
                     self::module(self::SLICE_B, 'S', 'Other', 'cz-utf8_news_lang.php'),
                     self::module(self::ALERTS, 'Alerts', 'Alerts', 'cz-utf8_alerts_lang.php'),
                     self::module(self::POLL, 'P', 'Poll', 'en_polls_lang.php'),
@@ -157,7 +161,7 @@ namespace Tests\Unit\Central\Package {
                 ],
                 'slice'     => [
                     // auth_field_group names a FIELD (include/auth.php:81), not a group
-                    self::slice(self::SLICE_A, 'Articles', ['vid' => 11, 'auth_field_group' => 'category.......3']),
+                    self::slice(self::SLICE_A, 'Articles', ['vid' => 11, 'auth_field_group' => 'category.......3', 'lang_file' => 'cz-utf8_news_lang.php3']),
                     self::slice(self::SLICE_B, 'Other'),
                     self::slice(self::SLICE_W, "\x8Akoly", ['lang_file' => 'cz_news_lang.php', 'fulltext_format' => "a\x81b", 'odd_row_format' => "\xC3\x81"]),
                     self::slice(self::SLICE_J, "\xA4\xA2", ['lang_file' => 'ja_news_lang.php']),
@@ -410,6 +414,9 @@ namespace Tests\Unit\Central\Package {
                 $this->assertArrayNotHasKey($scrubbed, $slice->rows['slice'][0], $scrubbed);
             }
             $this->assertSame(11, $slice->rows['slice'][0]['vid']);
+            $this->assertSame('cz-utf8_news_lang.php', $slice->rows['slice'][0]['lang_file']);     // the .php3 trimmed, as in module
+            $this->assertSame('cz-utf8_site_lang.php', self::moduleOf($result, self::SITE)->rows['module'][0]['lang_file']);
+            $this->assertSame([], array_filter(self::findings($result), static fn(string $f): bool => str_contains($f, 'lang-file')));
             $this->assertNull($slice->rows['slice'][0]['mlxctrl']);
             $this->assertSame([10, 11], array_column($slice->rows['view'], 'id'));
             $this->assertArrayNotHasKey('slice_id', $slice->rows['view'][0]);
@@ -491,6 +498,19 @@ namespace Tests\Unit\Central\Package {
             $this->assertArrayNotHasKey('constant_slice', self::groupOf($result, 'ct_text')->rows);
         }
 
+        public function test_a_missing_owner_of_a_group_is_a_warning(): void
+        {
+            $source                                        = self::source();
+            $source->tables['constant_slice'][0]['slice_id'] = self::GONE;       // ct_foreign, owned by no module
+            $result                                        = (new Collector($source))->fromModules([self::SLICE_A], new CollectOptions(self::SOURCE));
+
+            $this->assertContains('W ' . Collector::OWNER_MISSING . ' ' . self::GONE . ' @ constant-group[ct_foreign]', self::findings($result));
+            $this->assertSame([], array_filter(self::findings($result), static fn(string $f): bool => str_contains($f, 'lang-file')));
+            $this->assertNotContains(self::GONE, $result->checkPermissions);
+            $this->assertSame(self::SLICE_A, self::groupOf($result, 'ct_foreign')->owner);
+            $this->assertSame('News', self::groupOf($result, 'ct_foreign')->rows['constant'][0]['name']);
+        }
+
         public function test_a_foreign_owner_of_an_unknown_language_is_an_error(): void
         {
             $source                                  = self::source();
@@ -522,10 +542,14 @@ namespace Tests\Unit\Central\Package {
             $slice  = self::moduleOf($result, self::SLICE_W)->rows['slice'][0];
             $path   = 'slice-module[' . self::SLICE_W . ']/slice[#0]';
 
-            $this->assertSame(["a\x81b", "\xC3\x81"], [$slice['fulltext_format'], $slice['odd_row_format']]);
+            $this->assertEquals([new RawBytes("a\x81b"), new RawBytes("\xC3\x81")], [$slice['fulltext_format'], $slice['odd_row_format']]);
             $findings = self::findings($result);
-            $this->assertContains('W ' . ValueCodec::INVALID_BYTES . " a\x81b @ $path/fulltext_format", $findings);
-            $this->assertContains('W ' . ValueCodec::INVALID_BYTES . " \xC3\x81 @ $path/odd_row_format", $findings);   // valid UTF-8, still lost
+            $this->assertContains('W ' . ValueCodec::INVALID_BYTES . " \x81b @ $path/fulltext_format", $findings);       // at the byte that failed
+            $this->assertContains('W ' . ValueCodec::INVALID_BYTES . " \x81 @ $path/odd_row_format", $findings);          // valid UTF-8, still lost
+            // written as base64, both - "\xC3\x81" must never be read as the UTF-8 "Á"
+            $odd = new DOMXPath(self::xml($result));
+            $odd->registerNamespace('a', Schema::NS);
+            $this->assertSame('base64', $odd->query('//a:slice/a:odd_row_format')->item(0)?->attributes?->getNamedItem('enc')?->nodeValue);
             // the writer finds the invalid one again - withWriter() reports it once
             $all = $result->withWriter((new Writer())->toXml($result->package));
             $this->assertCount(2, array_filter($all, static fn(array $f): bool => $f[1]->code === ValueCodec::INVALID_BYTES));
@@ -539,13 +563,24 @@ namespace Tests\Unit\Central\Package {
             $this->assertSame([], self::findings($result));
         }
 
-        public function test_a_lang_file_off_the_allowlist_fails_the_export(): void
+        public function test_a_lang_file_of_another_type_is_normalised(): void
         {
             $source                                  = self::source();
             $source->tables['module'][1]['lang_file'] = 'cz-utf8_site_lang.php';   // a site language for a slice
             $result                                  = (new Collector($source))->fromModules([self::SLICE_A], new CollectOptions(self::SOURCE));
 
-            $this->assertContains('E ' . Collector::LANG_FILE . ' cz-utf8_site_lang.php @ slice-module[' . self::SLICE_A . ']/module[#0]/lang_file', self::findings($result));
+            $this->assertContains('I ' . Collector::LANG_FILE_NORMALISED . ' cz-utf8_site_lang.php @ slice-module[' . self::SLICE_A . ']/module[#0]/lang_file', self::findings($result));
+            $this->assertSame('cz-utf8_news_lang.php', self::moduleOf($result, self::SLICE_A)->rows['module'][0]['lang_file']);
+            $this->assertFalse($result->failed());
+        }
+
+        public function test_an_unknown_language_fails_the_export(): void
+        {
+            $source                                  = self::source();
+            $source->tables['module'][1]['lang_file'] = 'xx_news_lang.php';
+            $result                                  = (new Collector($source))->fromModules([self::SLICE_A], new CollectOptions(self::SOURCE));
+
+            $this->assertContains('E ' . Collector::LANG_FILE . ' xx_news_lang.php @ slice-module[' . self::SLICE_A . ']/module[#0]/lang_file', self::findings($result));
             $this->assertTrue($result->failed());
         }
 

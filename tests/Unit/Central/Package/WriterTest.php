@@ -8,6 +8,7 @@ use AA\Central\Package\LintFinding;
 use AA\Central\Package\Model\ConstantGroup;
 use AA\Central\Package\Model\Module;
 use AA\Central\Package\Model\Package;
+use AA\Central\Package\Model\RawBytes;
 use AA\Central\Package\Schema;
 use AA\Central\Package\ValueCodec;
 use AA\Central\Package\Writer;
@@ -310,6 +311,20 @@ final class WriterTest extends TestCase
             'slice-module[' . self::SLICE . ']/profile[#0]/value',
             'slice-module[' . self::SLICE . ']/profile[#1]/value',
         ], array_column($findings, 0));
+    }
+
+    public function test_raw_bytes_are_base64_even_when_they_look_like_utf8(): void
+    {
+        // bytes a module charset could not convert (Collector): "\xC3\x81" would read as "Á", so never as text
+        $result = (new Writer())->toXml(self::slicePackage(['view' => [['id' => 12, 'odd' => new RawBytes("\xC3\x81")]]], items: [
+            ['id' => '0123456789abcdef0123456789abcdef', 'content' => ['headline........' => [['value' => new RawBytes("\xC3\x81x")]]]],
+        ]));
+        $odd = self::viewOdd($result->xml);
+
+        $this->assertSame([ValueCodec::BASE64, "\xC3\x81"], [$odd?->getAttribute('enc'), self::decode($odd)]);
+        $v = self::load($result->xml)->query('//a:item/a:v')->item(0);
+        $this->assertSame([ValueCodec::BASE64, base64_encode("\xC3\x81x")], [$v?->getAttribute('enc'), $v?->textContent]);
+        $this->assertSame([], $result->findings);    // the collector reported them
     }
 
     public function test_control_chars_are_base64_without_a_finding(): void
