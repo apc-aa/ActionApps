@@ -84,6 +84,16 @@ final class ModuleCharsetTest extends TestCase
         $this->assertSame($expected, ModuleCharset::ofModule(['type' => $type, 'lang_file' => $lang_file]));
     }
 
+    public function test_accepts_the_lang_files_of_the_type(): void
+    {
+        $this->assertTrue(ModuleCharset::accepts('slice-module', 'cz-utf8_news_lang.php'));
+        $this->assertTrue(ModuleCharset::accepts('S', 'cz-utf8_news_lang.php3'), '.php3 read as .php');
+        $this->assertTrue(ModuleCharset::accepts('alerts-module', 'en_alerts_lang.php'));
+        $this->assertFalse(ModuleCharset::accepts('slice-module', 'cz-utf8_site_lang.php'), 'another type');
+        $this->assertFalse(ModuleCharset::accepts('site-module', ''));
+        $this->assertFalse(ModuleCharset::accepts('P', 'cz_news_lang.php'), 'no type of v1');
+    }
+
     /** @return array<string, array{string, string, int}> value, charset, offset of the byte that failed */
     public static function failingBytes(): array
     {

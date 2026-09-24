@@ -124,6 +124,12 @@ final class ObjectExport
         return [$settings, $objects, $this->findings];
     }
 
+    /** true: a settings property of the source installation, never carried (LEFT_OUT, `app_*`) */
+    public static function isLeftOut(string $class, string $property): bool
+    {
+        return in_array($property, self::LEFT_OUT[$class] ?? [], true) || (isset(self::LEFT_OUT[$class]) && str_starts_with($property, self::LEFT_OUT_PREFIX));
+    }
+
     /** true: the property of the class is code - the lint reads it */
     public static function isCode(string $class, string $property): bool
     {

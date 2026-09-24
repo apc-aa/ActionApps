@@ -76,6 +76,12 @@ final class ValueCodec
         return $crlf ? str_replace("\n", "\r\n", $text) : $text;
     }
 
+    /** the bytes of a model value: RawBytes as they are, other scalars as strings, anything else '' */
+    public static function bytes(mixed $value): string
+    {
+        return ($value instanceof Model\RawBytes) ? $value->bytes : (is_scalar($value) ? (string) $value : '');
+    }
+
     /** the value of a column the row leaves out (§ 2.3) @param string $type Schema::rowColumns() type */
     public static function emptyValue(string $type): string
     {

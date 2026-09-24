@@ -43,6 +43,7 @@
       <spot id="2" name="clanek" parent="1"/>
       <spot id="3" name="rubrika" parent="1">
         <cond var="x">rubrika</cond>
+        <positions>3</positions>
       </spot>
     </spot-tree>
     <site_spot spot_id="1">
@@ -139,6 +140,7 @@
   <alerts-module id="5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a">
     <module>
       <name>Upozornění</name>
+      <lang_file>cz-utf8_alerts_lang.php</lang_file>
     </module>
     <email id="7">
       <description>Vítejte</description>

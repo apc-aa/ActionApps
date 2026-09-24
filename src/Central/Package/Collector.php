@@ -73,7 +73,7 @@ final class Collector
 
     /** GetItemContent() pseudo fields and the item columns that are state of the source AA - users,
      *  counters, feeding (§ 6.2; the id is the attribute) */
-    private const ITEM_LEFT_OUT = [
+    public const ITEM_LEFT_OUT = [
         'u_slice_id......', 'unpacked_id.....', 'id..............', 'short_id........', 'slice_id........', 'posted_by.......',
         'edited_by.......', 'externally_fed..', 'disc_count......', 'disc_app........', 'display_count...',
     ];

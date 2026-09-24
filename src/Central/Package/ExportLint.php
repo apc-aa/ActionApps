@@ -22,7 +22,7 @@ final class ExportLint
     public const READER_OUTSIDE = 'reader-outside';
     /** I: an alerts module outside the app reads a slice of the app (§ 5.2) */
     public const ALERTS_OUTSIDE = 'alerts-outside';
-    /** I: email.attachments - files of the source installation */
+    /** email.attachments as the import sees them (SecurityLint::attachments()): S URLs or a field, W dropped */
     public const EMAIL_ATTACHMENTS = 'email-attachments';
     /** I: a literal address in the e-mail headers - the source organisation's address travels */
     public const EMAIL_ADDRESS = 'email-address';
@@ -82,6 +82,13 @@ final class ExportLint
         $texts[] = array_map(static fn(array $v): array => [$v[0], $v[3]], $code);
         foreach ($trees as $id => $tree) {
             $texts[] = self::conditions("$types[$id][$id]/spot-tree", $tree);
+            foreach ($tree['spots'] as $spot) {          // the tag start the import reports (SecurityLint::SPOT_MARKUP)
+                foreach (SecurityLint::spotTexts("$types[$id][$id]/spot-tree/spot[{$spot['id']}]", $spot) as $at => $spot_text) {
+                    if (preg_match(SecurityLint::SPOT_TAG, $spot_text)) {
+                        $this->add($at, LintFinding::WARNING, SecurityLint::SPOT_MARKUP, $spot_text);
+                    }
+                }
+            }
         }
         foreach ($texts as $generator) {
             foreach ($generator as [$path, $text]) {
@@ -150,11 +157,10 @@ final class ExportLint
         }
     }
 
-    /** a row by its key attributes, a keyless row by its position (`profile[#0]`) @param array<string, mixed> $row */
+    /** Schema::rowPath() @param array<string, mixed> $row */
     public function rowPath(string $path, string $element, array $row, int $i): string
     {
-        $keys = array_keys($this->schema->rowAttributes($element));
-        return "{$path}/{$element}[" . ($keys ? implode(',', array_map(static fn(string $k): string => (string) ($row[$k] ?? ''), $keys)) : "#$i") . ']';
+        return $this->schema->rowPath($path, $element, $row, $i);
     }
 
     /** references in columns the import maps directly (§ 8.2 "strukturované", § 6), e-mail headers
@@ -172,7 +178,7 @@ final class ExportLint
                 $this->add("$path/slice[#$i]/mlxctrl", LintFinding::WARNING, ReferenceLint::MODULE_OUTSIDE, $mlx);
             }
         }
-        $text = static fn(mixed $value): string => ($value instanceof RawBytes) ? $value->bytes : (string) $value;
+        $text = ValueCodec::bytes(...);
         foreach ($elements['profile'] ?? [] as $i => $profile) {
             if ($profile['property'] === 'input_view') {
                 $view($text($profile['value']), "$path/profile[#$i]/value");
@@ -182,8 +188,8 @@ final class ExportLint
             $view($filter['vid'], "$path/alerts_filter[{$filter['id']}]/vid");
         }
         foreach ($elements['email'] ?? [] as $email) {
-            if (($attachments = $text($email['attachments'] ?? '')) !== '') {
-                $this->add("$path/email[{$email['id']}]/attachments", LintFinding::INFO, self::EMAIL_ATTACHMENTS, $attachments);
+            if (($finding = SecurityLint::attachments($text($email['attachments'] ?? ''))) !== null) {   // as the import sees them
+                $this->findings[] = ["$path/email[{$email['id']}]/attachments", $finding];
             }
             foreach (self::EMAIL_HEADERS as $column) {
                 $value = $text($email[$column] ?? '');

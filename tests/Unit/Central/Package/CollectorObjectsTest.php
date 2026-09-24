@@ -41,6 +41,7 @@ namespace Tests\Unit\Central\Package {
     use AA\Central\Package\ObjectExport;
     use AA\Central\Package\ReferenceLint;
     use AA\Central\Package\Schema;
+    use AA\Central\Package\SecurityLint;
     use AA\Central\Package\ValueCodec;
     use AA\Central\Package\Writer;
     use AA_Module_Site;
@@ -423,6 +424,19 @@ namespace Tests\Unit\Central\Package {
             $this->assertContains('W ' . ReferenceLint::COMPUTED . " vid={ @ $spot/cond[#2]", self::findings($result));
             $this->assertContains("$spot/cond[#1]@var", $result->outside[self::SLICE_B]);
             $this->assertSame([], array_filter(self::findings($result), static fn(string $f): bool => str_contains($f, "$spot/cond[#0]")));
+        }
+
+        /** the site tree admin prints spot names, variables and conditions unescaped - as the import (SecurityLint) */
+        public function test_markup_in_spots_is_reported(): void
+        {
+            $tree = self::tree();
+            $tree->set('name', 2, '<b>Home</b>');
+            $tree->set('conditions', 4, ['x' => '{if:{x}:<:3:a:b}']);
+            $source                                 = self::source();
+            $source->tables['site'][0]['structure'] = serialize($tree);
+            $spots = array_values(array_filter(self::findings(self::site($source)), static fn(string $f): bool => str_contains($f, SecurityLint::SPOT_MARKUP)));
+
+            $this->assertSame(['W ' . SecurityLint::SPOT_MARKUP . ' <b>Home</b> @ site-module[' . self::SITE . ']/spot-tree/spot[2]@name'], $spots);
         }
 
         /** rows of removed spots (the editor keeps them unless it cleans the tree): the import could give a

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace AA\Central\Package;
 
+use AA_MbC;
 use AA_Metabase;
 use LogicException;
 
@@ -219,6 +220,31 @@ final class Schema
     public function rowAttributes(string $element): array
     {
         return self::ROWS[$element][1];
+    }
+
+    /** Integer columns of a row element (key attributes included) and their ranges in MySQL
+     *  @return array<string, array{int, int}> column => [min, max] */
+    public function intRanges(string $element): array
+    {
+        return array_filter(array_map(static function (AA_MbC $column): ?array {
+            if (!preg_match('/^(tiny|small|medium|big|)int\b(.*unsigned)?/i', (string) $column->c[1], $m)) {
+                return null;
+            }
+            $bits = ['tiny' => 8, 'small' => 16, 'medium' => 24, '' => 32, 'big' => 64][strtolower($m[1])];
+            return match (true) {
+                $bits === 64 => [empty($m[2]) ? PHP_INT_MIN : 0, PHP_INT_MAX],
+                empty($m[2]) => [-(2 ** ($bits - 1)), 2 ** ($bits - 1) - 1],
+                default      => [0, 2 ** $bits - 1],
+            };
+        }, $this->metabase->getColumns(self::ROWS[$element][0])));
+    }
+
+    /** A row in a finding path: by its key attributes (`view[12]`), a keyless row or one of an element
+     *  unknown here by its position (`profile[#0]`) @param array<mixed> $row */
+    public function rowPath(string $path, string $element, array $row, int $i): string
+    {
+        $keys = array_keys(self::ROWS[$element][1] ?? []);
+        return "{$path}/{$element}[" . ($keys ? implode(',', array_map(static fn(string $k): string => ValueCodec::bytes($row[$k] ?? ''), $keys)) : "#$i") . ']';
     }
 
     /** @return array{array<string, string>, list<string>} [column => value type, columns left out] */

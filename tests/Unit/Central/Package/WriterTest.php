@@ -53,7 +53,7 @@ final class WriterTest extends TestCase
         ], spotTree: [
             'start_id' => '1',
             'spots'    => [
-                ['id' => '3', 'n' => 'rubrika', 'p' => '1', 'f' => 0, 'v' => null, 'c' => ['x' => 'rubrika'], 'po' => null, 'ch' => null],
+                ['id' => '3', 'n' => 'rubrika', 'p' => '1', 'f' => 0, 'v' => null, 'c' => ['x' => 'rubrika'], 'po' => ['3'], 'ch' => null],
                 ['id' => '1', 'n' => 'start', 'p' => '1', 'f' => 0, 'v' => ['x' => 'x'], 'c' => null, 'po' => ['1', '2'], 'ch' => ['3']],
                 ['id' => '2', 'n' => 'clanek', 'p' => '1'],
             ],
@@ -84,7 +84,7 @@ final class WriterTest extends TestCase
         ]]);
 
         $alerts = new Module(Module::ALERTS, self::ALERTS, [
-            'module'                     => [['name' => 'Upozornění']],
+            'module'                     => [['name' => 'Upozornění', 'lang_file' => 'cz-utf8_alerts_lang.php']],
             'email'                      => [['id' => 7, 'description' => 'Vítejte']],
             'alerts_collection'          => [['id' => 'AbC12', 'emailid_welcome' => 7, 'emailid_alert' => 0, 'slice_id' => self::SLICE]],
             'alerts_collection_filter'   => [['collectionid' => 'AbC12', 'filterid' => 3, 'myindex' => 0]],

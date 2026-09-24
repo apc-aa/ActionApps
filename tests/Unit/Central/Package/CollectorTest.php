@@ -28,6 +28,7 @@ namespace Tests\Unit\Central\Package {
     use AA\Central\Package\Model\RawBytes;
     use AA\Central\Package\ReferenceLint;
     use AA\Central\Package\Schema;
+    use AA\Central\Package\SecurityLint;
     use AA\Central\Package\ValueCodec;
     use AA\Central\Package\Writer;
     use AA_Module_Site;
@@ -306,6 +307,7 @@ namespace Tests\Unit\Central\Package {
 
             $this->assertEqualsCanonicalizing([
                 'W ' . Collector::MODULE_TYPE . ' ' . self::POLL . ' @ site-module[' . self::SITE . ']/uses[' . self::POLL . ']',
+                'W ' . SecurityLint::ATTACHMENTS_DROPPED . ' files/terms.pdf @ slice-module[' . self::SLICE_A . ']/email[5]/attachments',
                 'W ' . ReferenceLint::VIEW_OUTSIDE . ' 20 @ ' . self::SPOT,
                 'W ' . ReferenceLint::VIEW_OUTSIDE . ' 30 @ ' . self::SPOT,                  // no such view: no module to report
                 'W ' . ReferenceLint::MODULE_OUTSIDE . ' ' . self::SLICE_B . ' @ ' . self::SPOT,
@@ -447,10 +449,11 @@ namespace Tests\Unit\Central\Package {
 
         public function test_the_source_organisation_of_emails_is_reported(): void
         {
-            $findings = self::findings((new Collector(self::source()))->fromModules([self::SLICE_A], new CollectOptions(self::SOURCE)), LintFinding::INFO);
+            $findings = self::findings((new Collector(self::source()))->fromModules([self::SLICE_A], new CollectOptions(self::SOURCE)));
             $email    = 'slice-module[' . self::SLICE_A . ']/email[5]';
 
-            $this->assertContains('I ' . ExportLint::EMAIL_ATTACHMENTS . " files/terms.pdf @ $email/attachments", $findings);
+            // as the import sees it (SecurityLint::attachments()): a local path is dropped there
+            $this->assertContains('W ' . SecurityLint::ATTACHMENTS_DROPPED . " files/terms.pdf @ $email/attachments", $findings);
             $this->assertContains('I ' . ExportLint::EMAIL_ADDRESS . " office@source.example @ $email/header_from", $findings);
             $this->assertNotContains('I ' . ExportLint::EMAIL_ADDRESS . " {_#E_MAIL__} @ $email/reply_to", $findings);   // an expression
         }

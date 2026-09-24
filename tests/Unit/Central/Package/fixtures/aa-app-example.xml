@@ -35,6 +35,7 @@
       <spot id="2" name="clanek" parent="1"/>
       <spot id="3" name="rubrika" parent="1">
         <cond var="x">rubrika</cond>
+        <positions>3</positions>                <!-- spot volby vede svou sekvenci -->
       </spot>
     </spot-tree>
     <site_spot spot_id="1">
@@ -133,7 +134,7 @@
   </slice-module>
 
   <alerts-module id="5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a">
-    <module><name>Upozornění</name></module>
+    <module><name>Upozornění</name><lang_file>cz-utf8_alerts_lang.php</lang_file></module>
     <email id="7"><description>Vítejte</description></email>
     <alerts_collection id="AbC12"><emailid_welcome>7</emailid_welcome><slice_id>0f1e2d3c4b5a69788796a5b4c3d2e1f0</slice_id></alerts_collection>
     <alerts_collection_filter collection="AbC12" filter="3"/>
