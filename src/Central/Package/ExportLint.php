@@ -10,9 +10,11 @@ use AA\Central\Package\Model\RawBytes;
 use Generator;
 
 /** The export lint of a collected app (design balicek-v1.md § 8.4, § 5.2): ReferenceLint over every
- *  definition text with the identity map of the app, the structured references (§ 6), what e-mails
- *  carry of the source organisation, and the closure - the modules outside the app the references
- *  lead to. Item values are not linted: article texts link anywhere.
+ *  definition text - rows, object properties, spot conditions (code: a `{..}` variable is expanded,
+ *  spot::conditionMatches()) - with the identity map of the app, the structured
+ *  references (§ 6, module ids in object properties - ObjectExport::MODULE_PROPS), what e-mails carry
+ *  of the source organisation, and the closure - the modules outside the app the references lead to.
+ *  Item values are not linted: article texts link anywhere.
  *  @throws RewriteFailed from check() - a regex failed; the export failed */
 final class ExportLint
 {
@@ -39,9 +41,12 @@ final class ExportLint
      * @param array<string, string>                                     $types    app module id => Module::SITE | SLICE | ALERTS
      * @param list<ConstantGroup>                                       $groups
      * @param list<string>                                              $item_ids
+     * @param array<string, array{?array<string, mixed>, list<array<string, mixed>>}> $objects app module id =>
+     *                                                                     [settings, objects] (ObjectExport, UTF-8)
+     * @param array<string, array<string, mixed>>                        $trees    site id => sitetree::toArray() (UTF-8)
      * @return array{list<array{string, LintFinding}>, array<string, list<string>>} findings, outside (CollectResult)
      */
-    public function check(array $rows, array $types, array $groups, array $item_ids): array
+    public function check(array $rows, array $types, array $groups, array $item_ids, array $objects = [], array $trees = []): array
     {
         $this->findings = $this->outside = [];
         $all            = static function (array $lists, string $element, string $column): array {
@@ -51,9 +56,15 @@ final class ExportLint
             }
             return $values;
         };
-        $ident = static fn(array $ids): array => $ids ? array_combine($ids, $ids) : [];
-        $longs = [...$all(array_map(static fn(ConstantGroup $g): array => $g->rows, $groups), 'constant', 'id'), ...$item_ids];
-        $map   = new IdMap(
+        $ident  = static fn(array $ids): array => $ids ? array_combine($ids, $ids) : [];
+        $values = $object_ids = [];
+        foreach ($objects as $id => [$settings, $list]) {
+            array_push($values, ...ObjectExport::values($types[$id], $settings, $list, "$types[$id][$id]"));
+            array_push($object_ids, ...ObjectExport::ids($list));
+        }
+        $constants = $all(array_map(static fn(ConstantGroup $g): array => $g->rows, $groups), 'constant', 'id');
+        $longs     = [...$constants, ...$item_ids, ...$object_ids];
+        $map    = new IdMap(
             $ident(array_keys($types)),
             $ident(array_values(preg_grep('/^[0-9a-f]{32}\z/', $longs))),
             $ident(array_map('intval', $all($rows, 'view', 'id'))),
@@ -61,10 +72,16 @@ final class ExportLint
             $ident(array_map(static fn(ConstantGroup $g): string => $g->name, $groups)),
             $ident(array_map('strval', $all($rows, 'alerts_collection', 'id'))),
         );
-        $lint  = new ReferenceLint($map);
-        $texts = array_map(fn(string $id): Generator => $this->texts("$types[$id][$id]", $rows[$id]), array_keys($rows));
+        $lint   = new ReferenceLint($map);
+        $texts  = array_map(fn(string $id): Generator => $this->texts("$types[$id][$id]", $rows[$id]), array_keys($rows));
         foreach ($groups as $group) {
             $texts[] = $this->texts("constant-group[$group->name]", $group->rows);
+        }
+        // object properties that are code (ObjectExport::isCode()) - no names or enum values
+        $code    = array_filter($values, static fn(array $v): bool => ObjectExport::isCode($v[1], $v[2]) && is_string($v[3]) && ($v[3] !== ''));
+        $texts[] = array_map(static fn(array $v): array => [$v[0], $v[3]], $code);
+        foreach ($trees as $id => $tree) {
+            $texts[] = self::conditions("$types[$id][$id]/spot-tree", $tree);
         }
         foreach ($texts as $generator) {
             foreach ($generator as [$path, $text]) {
@@ -78,6 +95,12 @@ final class ExportLint
         }
         foreach ($rows as $id => $elements) {
             $this->structured("$types[$id][$id]", $elements, $types, $map);
+        }
+        foreach ($values as [$at, $class, $name, $value]) {
+            $module_id = in_array($name, ObjectExport::MODULE_PROPS[$class] ?? [], true) && is_string($value) && preg_match('/^[0-9a-f]{32}\z/i', $value);
+            if ($module_id && ($map->module($value) === null)) {
+                $this->add($at, LintFinding::WARNING, ReferenceLint::MODULE_OUTSIDE, $value);
+            }
         }
         $slices = array_keys($types, Module::SLICE, true);
         foreach ($slices ? $this->source->select('alerts_collection', [['slice_id', $slices, 'l']]) : [] as $c) {
@@ -111,6 +134,18 @@ final class ExportLint
                         yield [$this->rowPath($path, $element, $row, $i) . "/$column", $text];
                     }
                 }
+            }
+        }
+    }
+
+    /** the condition variables and values of the spots - [path, text]; the n-th condition of a spot `cond[#n]`
+     *  @param array<string, mixed> $tree sitetree::toArray() @return Generator<int, array{string, string}> */
+    private static function conditions(string $path, array $tree): Generator
+    {
+        foreach ($tree['spots'] as $spot) {
+            foreach (array_keys($spot['c'] ?? []) as $k => $var) {
+                yield ["$path/spot[{$spot['id']}]/cond[#$k]@var", (string) $var];
+                yield ["$path/spot[{$spot['id']}]/cond[#$k]", $spot['c'][$var]];
             }
         }
     }

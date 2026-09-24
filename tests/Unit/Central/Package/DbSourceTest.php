@@ -80,6 +80,52 @@ namespace Tests\Unit\Central\Package {
             $this->assertSame(['SELECT LOWER(HEX("id")) AS unpackid FROM "item" WHERE slice_id = 0x' . self::SLICE], RecordingDb::$log);
         }
 
+        public function test_objectIds_are_the_objects_the_module_owns(): void
+        {
+            RecordingDb::$answer = static fn(string $sql): array => [['object_id' => 'aaaa']];
+
+            $this->assertSame(['aaaa'], (new DbSource())->objectIds(self::SLICE));
+            $this->assertSame(['SELECT object_id FROM "object_text" WHERE property = \'aa_owner\' AND value = \'' . self::SLICE . '\''], RecordingDb::$log);
+        }
+
+        public function test_objectRows_reads_the_three_object_tables(): void
+        {
+            RecordingDb::$answer = static fn(string $sql): array => match (true) {
+                str_contains($sql, 'object_text')    => [['object_id' => 'aaaa', 'property' => 'aa_type', 'priority' => 0, 'value' => 'AA_Set']],
+                str_contains($sql, 'object_integer') => [['object_id' => 'aaaa', 'property' => 'x', 'priority' => 1, 'value' => 5]],
+                default                              => [],
+            };
+
+            $rows = (new DbSource())->objectRows(['aaaa', 'bbbb'], ['aa_type', 'x']);
+
+            $this->assertSame([
+                ['table' => 'object_text', 'object_id' => 'aaaa', 'property' => 'aa_type', 'priority' => 0, 'value' => 'AA_Set'],
+                ['table' => 'object_integer', 'object_id' => 'aaaa', 'property' => 'x', 'priority' => 1, 'value' => 5],
+            ], $rows);
+            $where = " WHERE object_id IN ('aaaa','bbbb') AND property IN ('aa_type','x')";
+            $this->assertSame([
+                'SELECT object_id, property, priority, value FROM "object_text"' . $where,
+                'SELECT object_id, property, priority, value FROM "object_integer"' . $where,
+                'SELECT object_id, property, priority, value FROM "object_float"' . $where,
+            ], RecordingDb::$log);
+        }
+
+        public function test_the_helper_properties_are_read_from_object_text_only(): void
+        {
+            (new DbSource())->objectRows(['aaaa'], ['aa_type', 'aa_subobjects']);
+
+            $this->assertSame(['SELECT object_id, property, priority, value FROM "object_text" WHERE object_id = \'aaaa\' AND property IN (\'aa_type\',\'aa_subobjects\')'], RecordingDb::$log);
+        }
+
+        public function test_objectRows_chunks_the_ids_and_reads_nothing_for_none(): void
+        {
+            $this->assertSame([], (new DbSource())->objectRows([]));
+            $this->assertSame([], RecordingDb::$log);
+
+            (new DbSource())->objectRows(array_map(static fn(int $i): string => sprintf('%032x', $i), range(1, DbSource::OBJECT_CHUNK + 1)));
+            $this->assertCount(6, RecordingDb::$log);        // two chunks x three tables
+        }
+
         /** @return array<string, array{string, list<array{string, mixed, string}>}> */
         public static function refused(): array
         {

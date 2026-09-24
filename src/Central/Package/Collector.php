@@ -26,7 +26,10 @@ use InvalidArgumentException;
  *  modules, including the "uses" modules fromSite() resolved itself, and the owners of foreign
  *  constant groups. An anonymous download may only serve a package already published.
  *
- *  Not yet: objects and the spot tree (C4.3 part 4); the export option "unused groups too" (§ 5.3).
+ *  Objects and the site tree (§ 5.4, § 6.3; C4.3 part 4): ObjectExport reads the settings and the
+ *  allowlisted objects of a site / slice, site.structure becomes sitetree::toArray(); both in UTF-8.
+ *
+ *  Not yet: the export option "unused groups too" (§ 5.3).
  *  @throws RewriteFailed from both entry points - a regex of the lint failed: a failed export */
 final class Collector
 {
@@ -55,6 +58,11 @@ final class Collector
     public const ITEMS_PUBLISHED = 'items-published';
     /** E: more items than CollectOptions::$maxItems - the rest is left out */
     public const ITEMS_LIMIT = 'items-limit';
+    /** E: site.structure is no site tree, or a text of it cannot be carried (charset, control character) */
+    public const SPOT_TREE = 'spot-tree';
+    /** I: site_spot rows of spots the tree no longer has - left out, ref = the count (on the target new_id()
+     *  could give a new spot their id, so their content); a row {sitespot:N} includes stays */
+    public const SPOT_UNUSED = 'spot-unused';
 
     private const TYPES = ['W' => Module::SITE, 'S' => Module::SLICE, 'Alerts' => Module::ALERTS];
 
@@ -70,13 +78,15 @@ final class Collector
 
     private readonly Schema $schema;
     private readonly ExportLint $lint;
+    private readonly ObjectExport $objects;
     /** @var list<array{string, LintFinding}> */
     private array $findings = [];
 
     public function __construct(private readonly Source $source, ?Schema $schema = null)
     {
         $this->schema = $schema ?? new Schema();
-        $this->lint   = new ExportLint($source, $this->schema);
+        $this->lint    = new ExportLint($source, $this->schema);
+        $this->objects = new ObjectExport($source);
     }
 
     /** The site and its "uses modules". The caller checks CollectResult::$checkPermissions (class doc).
@@ -135,7 +145,7 @@ final class Collector
         }
         $first = (string) array_key_first($app);
         ksort($app, SORT_STRING);           // "the first slice using a group" does not depend on the order given
-        $charsets = $raw = $rows = $items = [];
+        $charsets = $raw = $rows = $items = $objects = $trees = [];
         $count    = 0;
         foreach ($app as $id => $module) {
             $path          = self::TYPES[$module['type']] . "[$id]";
@@ -159,17 +169,33 @@ final class Collector
             if ($with_items && ($module['type'] === 'S')) {
                 $items[$id] = $this->items($id, $raw[$id], $charsets[$id], $path, $options, $count);
             }
+            if (isset(Schema::SETTINGS_CLASSES[self::TYPES[$module['type']]])) {      // site, slice: alerts own none
+                [$settings, $list, $findings] = $this->objects->collect($id, self::TYPES[$module['type']], $path);
+                $objects[$id]                 = [$settings, $list];
+                array_push($this->findings, ...$findings);
+            }
+            if ($module['type'] === 'W') {
+                $structure  = (string) ($raw[$id]['site'][0]['structure'] ?? '');
+                $trees[$id] = $this->spotTree($structure, $charsets[$id], $path);
+                if ($trees[$id] !== null) {
+                    $rows[$id]['site_spot'] = $this->usedSpots($rows[$id]['site_spot'] ?? [], $trees[$id], $path);
+                }
+            }
         }
-        [$groups, $owners] = $this->groups($raw, $app, $charsets);
         $types             = array_map(static fn(array $m): string => self::TYPES[$m['type']], $app);
+        [$groups, $owners] = $this->groups($raw, $app, $charsets, $objects);   // object texts as stored, like the rows
+        foreach ($objects as $id => [$settings, $list]) {      // a name that stays RawBytes is dropped (map())
+            $utf8         = fn(mixed $v, string $at): mixed => is_string($v) ? $this->utf8($v, $charsets[$id], $at) : $v;
+            $objects[$id] = ObjectExport::map($types[$id], $settings, $list, "$types[$id][$id]", $utf8);
+        }
         $item_ids          = array_merge([], ...array_values(array_map(static fn(array $list): array => array_column($list, 'id'), $items)));
-        [$findings, $outside] = $this->lint->check($rows, $types, $groups, $item_ids);
+        [$findings, $outside] = $this->lint->check($rows, $types, $groups, $item_ids, $objects, array_filter($trees));
         $findings = [...$this->findings, ...$findings];
 
         $modules = [];
         foreach ($rows as $id => $elements) {
-            // TODO C4.3 part 4: objects (<settings>, AA_Aliasfunc, AA_Set) and the spot tree (sitetree::toArray())
-            $modules[] = new Module($types[$id], $id, $elements, items: $items[$id] ?? []);
+            [$settings, $list] = $objects[$id] ?? [null, []];
+            $modules[]         = new Module($types[$id], $id, $elements, $settings, $list, $trees[$id] ?? null, $items[$id] ?? []);
         }
         $package = new Package(
             $options->name ?? self::text($rows[$first]['module'][0]['name'] ?? ''),
@@ -202,6 +228,64 @@ final class Collector
             'site_spot' => $this->source->select('site_spot', [['site_id', $id, 'l']]),
             'uses'      => array_map(static fn(string $m): array => ['destination_id' => $m], array_values(array_diff($app_ids, [$id]))),
         ];
+    }
+
+    /** § 6.3 site.structure as sitetree::toArray() with its texts in UTF-8; null = no structure - AA
+     *  builds the tree from spot 1 then (AA_Module_Site::getTree()), and so will the imported site.
+     *  Unserialized as AA does (allowed_classes sitetree, spot); fromArray() checks it is a tree. */
+    private function spotTree(string $structure, string $charset, string $path): ?array
+    {
+        if (trim($structure) === '') {
+            return null;
+        }
+        if (!class_exists(\sitetree::class)) {      // AA's autoloader has it (include/locsess.php), composer's not
+            require_once __DIR__ . '/../../../modules/site/sitetree.php';
+        }
+        try {
+            $tree = @unserialize($structure, ['allowed_classes' => ['sitetree', 'spot']]);
+            $tree = ($tree instanceof \sitetree) ? \sitetree::fromArray($tree->toArray())->toArray() : null;
+        } catch (\Throwable) {
+            $tree = null;
+        }
+        $bad  = ($tree === null) ? 'structure' : null;
+        $text = static function (string $value) use ($charset, &$bad): string {
+            [$utf, $finding] = ModuleCharset::toUtf8($value, $charset);
+            if (($finding !== null) || !ValueCodec::isPlain($utf)) {
+                $bad ??= bin2hex(substr($value, 0, 64));      // the bytes as they are - not text for a report
+            }
+            return $utf;
+        };
+        foreach ($tree['spots'] ?? [] as $i => $spot) {
+            $tree['spots'][$i]['n'] = $text($spot['n']);
+            foreach (['v', 'c'] as $key) {
+                if ($spot[$key] !== null) {
+                    $keys                    = array_map(static fn($k): string => $text((string) $k), array_keys($spot[$key]));
+                    $tree['spots'][$i][$key] = array_combine($keys, array_map($text, $spot[$key]));
+                }
+            }
+        }
+        if ($bad !== null) {
+            $this->add("$path/spot-tree", LintFinding::ERROR, self::SPOT_TREE, $bad);
+            return null;
+        }
+        return $tree;
+    }
+
+    /** the site_spot rows of the tree's spots and of the spots {sitespot:N} includes
+     *  @param list<array<string, mixed>> $rows @param array<string, mixed> $tree @return list<array<string, mixed>> */
+    private function usedSpots(array $rows, array $tree, string $path): array
+    {
+        $used = array_flip(array_column($tree['spots'], 'id'));
+        foreach ($rows as $row) {
+            $content = ($row['content'] ?? '') instanceof RawBytes ? $row['content']->bytes : (string) ($row['content'] ?? '');
+            RewriteFailed::check(preg_match_all('/\{sitespot:\s*(\d+)\s*\}/i', $content, $m));
+            $used += array_flip($m[1]);
+        }
+        $kept = array_values(array_filter($rows, static fn(array $row): bool => isset($used[(string) $row['spot_id']])));
+        if (($left_out = count($rows) - count($kept)) > 0) {
+            $this->add("$path/site_spot", LintFinding::INFO, self::SPOT_UNUSED, (string) $left_out);
+        }
+        return $kept;
     }
 
     /** @return array<string, list<array<string, mixed>>> */
@@ -265,9 +349,9 @@ final class Collector
      *  slice) are none. slice.auth_field_group / mailman_field_lists name FIELDS (include/auth.php:81,
      *  include/mailman.php:53) - their groups come with the field.
      *  @param array<string, array<string, list<array<string, mixed>>>> $raw  @param array<string, array<string, mixed>> $app
-     *  @param array<string, string> $charsets
+     *  @param array<string, string> $charsets @param array<string, array{?array<string, mixed>, list<array<string, mixed>>}> $objects as stored
      *  @return array{list<ConstantGroup>, list<string>} the groups, the owners outside the app */
-    private function groups(array $raw, array $app, array $charsets): array
+    private function groups(array $raw, array $app, array $charsets, array $objects): array
     {
         $used = $widgets = [];     // raw name => the first app slice naming it, else the first module; => field paths
         foreach ($raw as $id => $elements) {
@@ -279,7 +363,14 @@ final class Collector
                     $widgets[$name][] = $this->lint->rowPath($path, 'field', $field, $i) . '/input_show_func';
                 }
             }
-            foreach ($this->lint->texts('', array_diff_key($elements, ['module' => 1])) as [, $text]) {
+            $texts = iterator_to_array($this->lint->texts('', array_diff_key($elements, ['module' => 1])), false);
+            $values = isset($objects[$id]) ? ObjectExport::values(self::TYPES[$app[$id]['type']], $objects[$id][0], $objects[$id][1], '') : [];
+            foreach ($values as [$at, $class, $property, $value]) {
+                if (ObjectExport::isCode($class, $property) && is_string($value)) {
+                    $texts[] = [$at, $value];
+                }
+            }
+            foreach ($texts as [, $text]) {
                 RewriteFailed::check(preg_match_all(ReferenceRewriter::GROUP_RE, $text, $m));
                 array_push($names, ...array_map('trim', $m[0]));
             }

@@ -60,6 +60,12 @@ namespace Tests\Unit\Central\Package {
 
         private const SPOT = 'site-module[' . self::SITE . ']/site_spot[1]/content';
 
+        /** site.structure as the stock Site Template has it (src/Optimize/RedefineSiteTemplates.php), with spot 2 */
+        private const TREE = 'O:8:"sitetree":2:{s:4:"tree";a:2:{'
+            . 'i:1;O:4:"spot":8:{s:2:"id";s:1:"1";s:1:"n";s:5:"start";s:1:"c";N;s:1:"v";N;s:1:"p";s:1:"1";s:2:"po";a:2:{i:0;s:1:"1";i:1;s:1:"2";}s:2:"ch";N;s:1:"f";i:0;}'
+            . 'i:2;O:4:"spot":8:{s:2:"id";s:1:"2";s:1:"n";s:4:"text";s:1:"c";N;s:1:"v";N;s:1:"p";s:1:"1";s:2:"po";N;s:2:"ch";N;s:1:"f";i:0;}'
+            . '}s:8:"start_id";s:1:"1";}';
+
         public static function setUpBeforeClass(): void
         {
             class_exists(AA_Module_Site::class);   // include/slice.class.php brings include/constants.php
@@ -146,7 +152,7 @@ namespace Tests\Unit\Central\Package {
                     self::module(self::SLICE_J, 'S', "\xA4\xA2", 'ja_news_lang.php'),
                     self::module(self::DELETED, 'S', 'Old', 'cz-utf8_news_lang.php', 1),
                 ],
-                'site'      => [['id' => self::SITE, 'state_file' => '/cz/home', 'structure' => 'O:8:"sitetree":0:{}', 'flag' => 1]],
+                'site'      => [['id' => self::SITE, 'state_file' => '/cz/home', 'structure' => self::TREE, 'flag' => 1]],
                 'site_spot' => [
                     ['id' => 101, 'site_id' => self::SITE, 'spot_id' => 1, 'content' => $spot, 'flag' => 0],
                     ['id' => 102, 'site_id' => self::SITE, 'spot_id' => 2, 'content' => '{mailtemplate:5}', 'flag' => 1],
@@ -429,7 +435,11 @@ namespace Tests\Unit\Central\Package {
             $this->assertSame([['state_file' => '/cz/home', 'flag' => 1]], $site->rows['site']);
             $this->assertSame([[1, 0], [2, 1]], array_map(static fn(array $r): array => [$r['spot_id'], $r['flag']], $site->rows['site_spot']));
             $this->assertArrayNotHasKey('id', $site->rows['site_spot'][0]);
-            $this->assertNull($site->spotTree);          // C4.3 part 4
+            $this->assertSame(['start_id' => '1', 'spots' => [
+                ['id' => '1', 'n' => 'start', 'p' => '1', 'f' => 0, 'v' => null, 'c' => null, 'po' => ['1', '2'], 'ch' => null],
+                ['id' => '2', 'n' => 'text', 'p' => '1', 'f' => 0, 'v' => null, 'c' => null, 'po' => null, 'ch' => null],
+            ]], $site->spotTree);
+            $this->assertNull($site->settings);      // objects: CollectorObjectsTest
             $this->assertSame([], $site->objects);
         }
 

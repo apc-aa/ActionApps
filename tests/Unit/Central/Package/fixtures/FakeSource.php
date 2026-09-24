@@ -43,6 +43,33 @@ final class FakeSource implements Source
         }));
     }
 
+    public function objectIds(string $owner_id): array
+    {
+        $this->log[] = ['objectIds', [$owner_id]];
+        $ids         = [];
+        foreach ($this->tables['object_text'] ?? [] as $row) {
+            if (($row['property'] === 'aa_owner') && ($row['value'] === $owner_id)) {
+                $ids[] = $row['object_id'];
+            }
+        }
+        return $ids;
+    }
+
+    /** from the tables object_text, object_integer, object_float, as DbSource reads them */
+    public function objectRows(array $ids, array $properties = []): array
+    {
+        $this->log[] = ['objectRows', [$ids, $properties]];
+        $rows        = [];
+        foreach (['object_text', 'object_integer', 'object_float'] as $table) {
+            foreach ($this->tables[$table] ?? [] as $row) {
+                if (in_array($row['object_id'], $ids, true) && (!$properties || in_array($row['property'], $properties, true))) {
+                    $rows[] = ['table' => $table] + $row;
+                }
+            }
+        }
+        return $rows;
+    }
+
     public function items(string $slice_id, bool $all_bins): Generator
     {
         $this->log[] = ['item', [$slice_id, $all_bins]];

@@ -20,4 +20,15 @@ interface Source
      *  @param bool $all_bins false = the active bin only: status_code 1, pending and expired included
      *  @return iterable<array{id: string, content: array<string, list<array<string, mixed>>>}> */
     public function items(string $slice_id, bool $all_bins): iterable;
+
+    /** The ids of the objects the module owns (aa_owner) - its settings, objects and, as
+     *  AA_Property::save() gives them the owner of the parent, their subobjects.
+     *  @return list<string> */
+    public function objectIds(string $owner_id): array;
+
+    /** The rows of the object store (object_text, object_integer, object_float) of the objects, in no
+     *  particular order; only the given properties, all if none.
+     *  @param list<string> $ids @param list<string> $properties
+     *  @return list<array{table: string, object_id: string, property: string, priority: int|string|null, value: mixed}> */
+    public function objectRows(array $ids, array $properties = []): array;
 }

@@ -10,11 +10,18 @@ use Generator;
 use InvalidArgumentException;
 use zids;
 
-/** Source over this AA's database - DB_AA for rows, GetItemContent() for items (the one item path). */
+/** Source over this AA's database - DB_AA for rows and the object store, GetItemContent() for items
+ *  (the one item path). */
 final class DbSource implements Source
 {
     /** GetItemContent() ids per call - bounds the IN list and the memory of one call */
     private const ITEM_CHUNK = 500;
+
+    /** object ids per statement (IN list) */
+    public const OBJECT_CHUNK = 500;
+
+    /** properties AA_Object::save() writes as strings - to object_text only */
+    private const HELPER_PROPERTIES = ['aa_type', 'aa_owner', 'aa_name', 'aa_subobjects'];
 
     /** @throws InvalidArgumentException a table no package is made of, or no condition (a whole table) */
     public function select(string $table, array $where): array
@@ -43,5 +50,27 @@ final class DbSource implements Source
                 yield ['id' => (string) $id, 'content' => $content];
             }
         }
+    }
+
+    public function objectIds(string $owner_id): array
+    {
+        $sql = 'SELECT object_id FROM ' . DB_AA::quoteIdentifier('object_text');
+        return array_map('strval', DB_AA::select('', $sql, [['property', 'aa_owner', 's'], ['value', $owner_id, 's']]));
+    }
+
+    public function objectRows(array $ids, array $properties = []): array
+    {
+        $rows    = [];
+        $helpers = $properties && !array_diff($properties, self::HELPER_PROPERTIES);
+        foreach (array_chunk(array_values(array_unique($ids)), self::OBJECT_CHUNK) as $chunk) {
+            $where = [['object_id', $chunk, 's'], ...($properties ? [['property', $properties, 's']] : [])];
+            foreach ($helpers ? ['object_text'] : ObjectExport::TABLES as $table) {
+                $sql = 'SELECT object_id, property, priority, value FROM ' . DB_AA::quoteIdentifier($table);
+                foreach (DB_AA::select([], $sql, $where) as $row) {
+                    $rows[] = ['table' => $table] + $row;
+                }
+            }
+        }
+        return $rows;
     }
 }
