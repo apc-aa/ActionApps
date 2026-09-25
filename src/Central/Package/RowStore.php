@@ -9,26 +9,17 @@ use AA_MbC;
 use AA_Metabase;
 use LogicException;
 
-/** One row of an import to the database (C4.4 part 4a, RowWriter; part 4c, ObjectWriter and ItemWriter
- *  through tableRow()): its values through the contract of ImportPlan / TargetCharset, completed to every
- *  column of the local table, written by AA_Metabase with `nohalt` on the handle getDB() gives - inside
- *  DB_AA::transaction() the transaction's - a refused statement throws (WriteError::DB), never a silent false.
+/** One row of an import to the database (RowWriter; ObjectWriter and ItemWriter through tableRow()),
+ *  completed to every column of the local table, written by AA_Metabase with `nohalt` on the handle getDB()
+ *  gives - inside DB_AA::transaction() the transaction's; a refused statement throws WriteError::DB.
  *
- *  A value (string or RawBytes; numbers and NULL stay): ImportRewrite numeric(known()) on the UTF-8 text
- *  or on the bytes, then TargetCharset::measure() - fromUtf8() to the charset LAST, RawBytes as they are -
- *  a text that does not convert throws WriteError::CHARSET (the plan proved it converts: a bug); then the
- *  length, TargetCharset::tooLong() - characters and BYTES: AA_MbT::getVarset4Data() cuts every value of
- *  an (N) column to N bytes, so a UTF-8 text of N characters but more bytes would be cut inside a character
- *  (the plan's E) - and after numeric() the numbers (the plan's W): WriteError::TOO_LONG.
- *  Columns the writer sets ($fixed: the module column, mapped structured references, installation values)
- *  are written as they are - one longer than its column is a bug (LogicException), never cut.
- *  NULL: getVarset4Data() skips a NULL (isset()), so the DB default would land - for field.text_stored
- *  that flips NULL (number) to 1 (text). An explicit NULL is therefore written as the empty value of the
- *  type (0, ''). A column the row lacks (meta/tables did not list it, § 2.3) gets the default of the local
- *  schema, else the empty value of its type; one without a default that may be NULL is left to the DB
- *  (NULL - the same). AUTO_INCREMENT columns never - the DB numbers the row. All SQL is Cvarset's:
- *  values quoted by quote(), packed ids checked by is_long_ids() (the Validator: E for other values).
- *  written() counts the inserted rows by table - the report of the import (ImportReport::$rows). */
+ *  A value (string or RawBytes): ImportRewrite numeric(known()), then TargetCharset::measure() - the charset
+ *  LAST. A text that does not convert is WriteError::CHARSET, one too long for its column (characters and
+ *  bytes - AA_MbT::getVarset4Data() cuts an (N) column to N bytes) WriteError::TOO_LONG. Columns the writer
+ *  sets ($fixed) are written as they are - one too long is a LogicException, never cut.
+ *  An explicit NULL is written as the empty value of the type: getVarset4Data() skips NULL, and the DB
+ *  default would flip field.text_stored NULL (number) to 1 (text). A missing column gets the local default,
+ *  else the empty value; AUTO_INCREMENT columns never. All SQL is Cvarset's (quote(), is_long_ids()). */
 final class RowStore
 {
     /** @var array<string, array<string, array{int, bool}>> table => Schema::tableLimits() */

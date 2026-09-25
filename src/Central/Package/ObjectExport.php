@@ -6,23 +6,17 @@ namespace AA\Central\Package;
 
 use AA_Property;
 
-/** The objects a module owns, as a package carries them (design balicek-v1.md § 5.4; C4.3 part 4):
- *  the module settings (<settings>, the class fixed by the module type, read by the derived id as AA
- *  reads them - string2id(class . module id)), AA_Aliasfunc and AA_Set with its AA_Condition /
- *  AA_Sortorder as nested subobjects. Nothing else ever travels - AA_Form (v1), AA_Plannedtask, tokens
- *  and access of AA\Util\Note, AA_Actionapps, Datovka, AA_Exportsetings, ... Of the owned objects only
- *  the class is read (aa_type, aa_subobjects); the rows of the others are never loaded, and what is left
- *  out is one I finding per class with the count.
- *
- *  Read as AA_Object::load() reads: only the properties of the class (getClassProperties()), a
- *  multi-value property as a list in priority order, a single one as its first value, the object
- *  tables of the class merged text -> integer -> float; an object-typed property holds subobject ids,
- *  read by id (whoever owns them) and carried only when stored as the property's type. Values stay as
- *  stored (the module charset) - map() converts them; object_text.value NULL is ''.
- *
+/** The objects a module owns, as a package carries them (design balicek-v1.md § 5.4): the module settings
+ *  (the class fixed by the module type, id string2id(class . module id) as AA reads them), AA_Aliasfunc and
+ *  AA_Set with its AA_Condition / AA_Sortorder as nested subobjects. Nothing else ever travels (AA_Form,
+ *  AA_Plannedtask, tokens, Note, AA_Actionapps, Datovka, ...): of the other owned objects only the class is
+ *  read, one I finding per class.
+ *  Read as AA_Object::load() reads: only the properties of the class, multi-values in priority order;
+ *  subobjects by id (whoever owns them), only when stored as the property's type. Values as stored - map()
+ *  converts them.
  *  A NEW PROPERTY of a settings class may hold a secret or a state of the installation (as ga_id,
- *  alternate_url): CollectorObjectsTest pins the property names, so it fails until someone decides
- *  whether the property travels (LEFT_OUT). */
+ *  alternate_url): CollectorObjectsTest pins the property names, so it fails until someone decides whether
+ *  the property travels (LEFT_OUT). */
 final class ObjectExport
 {
     /** I: owned objects v1 does not carry (class outside the allowlist, a settings object AA does not

@@ -7,13 +7,9 @@ namespace AA\Central\Package;
 use AA\Optimize\RedefineCoreConstants;
 use InvalidArgumentException;
 
-/** Source id => target id maps of one package import (design balicek-v1.md § 7.1). Immutable.
- *
- *  Keys are the ids the package carries (§ 0.4), values the ids on the target. The import plan
- *  (C4.4 step 3) knows every map except views, e-mails and alerts filters - those get their numbers
- *  from AUTO_INCREMENT only when the rows are written, hence withViews()/withEmails()/withFilters().
- *  For an export lint pass an identity map of the app (old id => same id).
- */
+/** Source id => target id maps of one package import (design balicek-v1.md § 7.1). Immutable. The plan knows
+ *  every map but views, e-mails and alerts filters - AUTO_INCREMENT numbers them when the rows are written
+ *  (withNumbers()). The export lint uses an identity map of the app. */
 final class IdMap
 {
     /** AA_CONSTANT_GROUPS_CORE, include/constedit_util.php:674 - exist on every AA, never renamed */
@@ -32,12 +28,8 @@ final class IdMap
     private array $modules;
     /** @var array<string, string> modules + constants + objects + items + settings ids */
     private array $longIds;
-    /** @var array<int, int> */
-    private array $views;
-    /** @var array<int, int> */
-    private array $emails;
-    /** @var array<int, int> */
-    private array $filters = [];
+    /** @var array<string, array<int, int>> 'view' | 'email' | 'filter' => old => new */
+    private array $numbers;
 
     /**
      * @param array<string, string> $modules     module ids (32 hex, any case; stored lower case)
@@ -64,8 +56,7 @@ final class IdMap
             }
             $this->longIds[$old] = $new;
         }
-        $this->views  = self::numberMap($views);
-        $this->emails = self::numberMap($emails);
+        $this->numbers = ['view' => self::numberMap($views), 'email' => self::numberMap($emails), 'filter' => []];
         self::check($groups, self::GROUP_RE, 'constant group');
         foreach ($groups as $old => $new) {
             if (($new !== (string) $old) && (!preg_match(self::NEW_GROUP_RE, $new) || in_array((string) $old, self::CORE_GROUPS, true) || in_array($new, self::CORE_GROUPS, true))) {
@@ -75,28 +66,22 @@ final class IdMap
         self::check($collections, self::COLLECTION_RE, 'alerts collection');
     }
 
-    /** @param array<int, int> $views */
-    public function withViews(array $views): self
+    /** a group name an app may carry: no `[`-list, no `#sLiCe-<id>` (items of a slice), no core group */
+    public static function isAppGroup(string $name): bool
     {
-        $clone        = clone $this;
-        $clone->views = self::numberMap($views);
-        return $clone;
+        return ($name !== '') && ($name[0] !== '[') && !str_starts_with($name, '#sLiCe-') && !in_array($name, self::CORE_GROUPS, true);
     }
 
-    /** @param array<int, int> $emails */
-    public function withEmails(array $emails): self
+    /** the numbers the rows got from AUTO_INCREMENT; `filter`: alerts_filter.id - no text refers to a
+     *  filter, alerts_collection_filter.filterid does
+     *  @param string $kind 'view' | 'email' | 'filter' @param array<int, int> $numbers */
+    public function withNumbers(string $kind, array $numbers): self
     {
-        $clone         = clone $this;
-        $clone->emails = self::numberMap($emails);
-        return $clone;
-    }
-
-    /** alerts_filter.id - no text refers to a filter; alerts_collection_filter.filterid does
-     *  @param array<int, int> $filters */
-    public function withFilters(array $filters): self
-    {
-        $clone          = clone $this;
-        $clone->filters = self::numberMap($filters);
+        if (!isset($this->numbers[$kind])) {
+            throw new InvalidArgumentException("Unknown number map $kind");
+        }
+        $clone                 = clone $this;
+        $clone->numbers[$kind] = self::numberMap($numbers);
         return $clone;
     }
 
@@ -112,17 +97,17 @@ final class IdMap
 
     public function view(int $old): ?int
     {
-        return $this->views[$old] ?? null;
+        return $this->numbers['view'][$old] ?? null;
     }
 
     public function email(int $old): ?int
     {
-        return $this->emails[$old] ?? null;
+        return $this->numbers['email'][$old] ?? null;
     }
 
     public function filter(int $old): ?int
     {
-        return $this->filters[$old] ?? null;
+        return $this->numbers['filter'][$old] ?? null;
     }
 
     public function group(string $old): ?string
@@ -150,19 +135,19 @@ final class IdMap
     /** @return array<int, int> */
     public function views(): array
     {
-        return $this->views;
+        return $this->numbers['view'];
     }
 
     /** @return array<int, int> */
     public function emails(): array
     {
-        return $this->emails;
+        return $this->numbers['email'];
     }
 
     /** @return array<int, int> */
     public function filters(): array
     {
-        return $this->filters;
+        return $this->numbers['filter'];
     }
 
     /** @return array<string, string> */

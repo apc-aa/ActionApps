@@ -4,11 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Central\Package\Fixtures;
 
-use AA\Central\Package\ImportAuthority;
-
-/** ImportAuthority for the writer tests: $may answers (default yes), $error is thrown instead; $asked logs
- *  every user asked about */
-final class FakeImportAuthority implements ImportAuthority
+/** Importer's $mayInstall for the writer tests (mayInstall(...)): $may answers (default yes), $error is
+ *  thrown instead; $asked logs every user asked about */
+final class FakeInstallPermission
 {
     /** @var list<string> */
     public array $asked = [];

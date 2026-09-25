@@ -73,7 +73,7 @@ final class SecurityLint
      *  ({file............}, _#ALIAS___ - anonymous posting can fill it), ref = the hosts and fields */
     public const ATTACHMENTS = ExportLint::EMAIL_ATTACHMENTS;
     /** W: a literal local path (another scheme) or another computed value - AA_File_Wrapper would read the
-     *  target's files; the importer clears the value (C4.4 part 4), so legacy transfers still import */
+     *  target's files; the importer clears the value (FixUps), so legacy transfers still import */
     public const ATTACHMENTS_DROPPED = 'email-attachments-dropped';
     /** W: a tag start SPOT_TAG in a spot name, variable or condition - the site tree admin prints them
      *  unescaped (sitetree.php); the importer strip_tags() the name, conditions stay; `<` of a comparison
@@ -90,33 +90,14 @@ final class SecurityLint
 
     /** S and I findings of one text, by offset, at most FindingList::MAX_PER_CODE of a level and code;
      *  `ref` is raw package text
-     *  @param-out array<string, int> $skipped "<level> <code>" => findings found but not made
      *  @return list<LintFinding> */
-    public function lint(string $text, ?array &$skipped = null): array
+    public function lint(string $text): array
     {
-        $findings = $count = [];
-        $skipped  = [];
-        $failed   = false;
-        foreach (self::rules() as [$re, $level, $code]) {
-            try {
-                for ($at = 0; RewriteFailed::check(preg_match($re, $text, $m, PREG_OFFSET_CAPTURE, $at)); $at = $m[0][1] + max(1, strlen($m[0][0]))) {
-                    $lvl = ($level instanceof Closure) ? $level(substr($text, $m[0][1], 300)) : $level;
-                    $key = $lvl . ' ' . ($code ?? strtolower($m[1][0]));
-                    if (($count[$key] = ($count[$key] ?? 0) + 1) > FindingList::MAX_PER_CODE) {
-                        $skipped[$key] = ($skipped[$key] ?? 0) + 1;
-                        continue;
-                    }
-                    $findings[] = new LintFinding($lvl, $code ?? strtolower($m[1][0]), substr($m[0][0], 0, ReferenceLint::MAX_REF), $m[0][1]);
-                }
-            } catch (RewriteFailed) {
-                $failed = true;
-            }
-        }
-        if ($failed) {      // once per text, a fixed ref - the text itself is what the regex choked on
-            $findings[] = new LintFinding(LintFinding::SECURITY, self::LINT_FAILED, 'regular expression limit', 0);
-        }
-        usort($findings, static fn(LintFinding $a, LintFinding $b): int => $a->offset <=> $b->offset);
-        return $findings;
+        $list = new FindingList();
+        $this->text($list, 'text', $text);
+        $found = array_column(array_filter($list->all(), static fn(array $f): bool => $f[0] === 'text'), 1);     // no `+N more` ('')
+        usort($found, static fn(LintFinding $a, LintFinding $b): int => $a->offset <=> $b->offset);
+        return $found;
     }
 
     /** [regex, level or fn(text from the match): level, code (null = group 1 in lower case)] - AA matches
@@ -158,7 +139,7 @@ final class SecurityLint
                 $values = [];
             }
             foreach ($values as [$at, , , $value]) {
-                $this->text($at, $value);
+                $this->text($this->findings, $at, $value);
             }
             foreach (self::arr($m->spotTree['spots'] ?? null) as $spot) {
                 $this->spot("$path/spot-tree/spot[" . ValueCodec::bytes($spot['id'] ?? '') . ']', self::arr($spot));
@@ -166,7 +147,7 @@ final class SecurityLint
             foreach ($m->items as $item) {
                 foreach (self::arr($item['content'] ?? null) as $field => $values) {
                     foreach (self::arr($values) as $i => $value) {
-                        $this->text("$path/item[" . ValueCodec::bytes($item['id'] ?? '') . "]/{$field}[$i]", self::arr($value)['value'] ?? '');
+                        $this->text($this->findings, "$path/item[" . ValueCodec::bytes($item['id'] ?? '') . "]/{$field}[$i]", self::arr($value)['value'] ?? '');
                     }
                 }
             }
@@ -184,10 +165,10 @@ final class SecurityLint
             foreach (self::arr($rows) as $i => $row) {
                 $at = $this->schema->rowPath($path, (string) $element, self::arr($row), (int) $i);
                 foreach (self::arr($row) as $column => $value) {
-                    $this->text("$at/$column", $value);
+                    $this->text($this->findings, "$at/$column", $value);
                     if (($element === 'field') && preg_match('/^alias\d+_func\z/', (string) $column) && preg_match('/^\s*(f_[uz])(?![a-z0-9_])/i', ValueCodec::bytes($value), $f)) {
                         $level = preg_match('~^\s*' . self::USER_FUNCTION . '~', ValueCodec::bytes($value)) ? LintFinding::INFO : LintFinding::SECURITY;
-                        $this->add("$at/$column", $level, strtolower($f[1]), ValueCodec::bytes($value));
+                        $this->add($this->findings, "$at/$column", $level, strtolower($f[1]), ValueCodec::bytes($value));
                     }
                 }
                 if (($element === 'email') && ($finding = self::attachments(ValueCodec::bytes($row['attachments'] ?? ''))) !== null) {
@@ -200,28 +181,12 @@ final class SecurityLint
     /** @param array<mixed> $spot the canonical form of sitetree::toArray() */
     private function spot(string $at, array $spot): void
     {
-        foreach (self::spotTexts($at, $spot) as $path => $text) {
+        foreach (LintTexts::spotTexts($at, $spot) as $path => $text) {
             if (preg_match(self::SPOT_TAG, $text)) {
-                $this->add($path, LintFinding::WARNING, self::SPOT_MARKUP, $text);
+                $this->add($this->findings, $path, LintFinding::WARNING, self::SPOT_MARKUP, $text);
             }
-            $this->text($path, $text);
+            $this->text($this->findings, $path, $text);
         }
-    }
-
-    /** the name, variables and conditions of a spot: path => text (also ExportLint)
-     *  @param array<mixed> $spot the canonical form of sitetree::toArray() @return array<string, string> */
-    public static function spotTexts(string $at, array $spot): array
-    {
-        $texts = ["$at@name" => ValueCodec::bytes($spot['n'] ?? '')];
-        foreach (array_values(self::arr($spot['v'] ?? null)) as $k => $var) {
-            $texts["$at/var[#$k]"] = ValueCodec::bytes($var);
-        }
-        foreach (array_keys(self::arr($spot['c'] ?? null)) as $k => $var) {
-            $cond                       = $spot['c'][$var];
-            $texts["$at/cond[#$k]@var"] = (string) $var;
-            $texts["$at/cond[#$k]"]     = ValueCodec::bytes($cond);
-        }
-        return $texts;
     }
 
     /** The finding of an email.attachments value (ATTACHMENTS, ATTACHMENTS_DROPPED), null = fine; the value
@@ -251,21 +216,34 @@ final class SecurityLint
         return $refs ? new LintFinding(LintFinding::SECURITY, self::ATTACHMENTS, substr(implode(', ', array_unique($refs)), 0, ReferenceLint::MAX_REF), 0) : null;
     }
 
-    private function text(string $path, mixed $value): void
+    /** the findings of a text - past FindingList::MAX_PER_CODE of a level and code only counted: a hostile
+     *  text of a million matches makes no million objects */
+    private function text(FindingList $into, string $path, mixed $value): void
     {
-        $text = ValueCodec::bytes($value);
-        foreach (($text === '') ? [] : $this->lint($text, $skipped) as $finding) {
-            $this->findings->add($path, $finding);
+        $text   = ValueCodec::bytes($value);
+        $failed = false;
+        foreach (($text === '') ? [] : self::rules() as [$re, $level, $code]) {
+            try {
+                for ($at = 0; RewriteFailed::check(preg_match($re, $text, $m, PREG_OFFSET_CAPTURE, $at)); $at = $m[0][1] + max(1, strlen($m[0][0]))) {
+                    $lvl = ($level instanceof Closure) ? $level(substr($text, $m[0][1], 300)) : $level;
+                    $this->add($into, $path, $lvl, $code ?? strtolower($m[1][0]), $m[0][0], $m[0][1]);
+                }
+            } catch (RewriteFailed) {
+                $failed = true;
+            }
         }
-        foreach ($skipped ?? [] as $key => $n) {
-            [$level, $code] = explode(' ', $key, 2);
-            $this->findings->skipped($level, $code, $n);
+        if ($failed) {      // once per text, a fixed ref - the text itself is what the regex choked on
+            $this->add($into, $path, LintFinding::SECURITY, self::LINT_FAILED, 'regular expression limit');
         }
     }
 
-    private function add(string $path, string $level, string $code, string $ref): void
+    private function add(FindingList $into, string $path, string $level, string $code, string $ref, int $offset = 0): void
     {
-        $this->findings->add($path, new LintFinding($level, $code, substr($ref, 0, ReferenceLint::MAX_REF), 0));
+        if ($into->full($level, $code)) {
+            $into->skipped($level, $code, 1);
+        } else {
+            $into->add($path, new LintFinding($level, $code, substr($ref, 0, ReferenceLint::MAX_REF), $offset));
+        }
     }
 
     /** @return array<mixed> */

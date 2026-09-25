@@ -8,36 +8,19 @@ use AA\Central\Package\Model\Module;
 use AA\Central\Package\Model\Package;
 use AA\Central\Package\Model\RawBytes;
 
-/** The import plan's findings about the items a package carries (C4.4 part 4c; Planner) - what ItemWriter
- *  writes past storeItem() and its checks, shown in the preview before anything is written:
- *  - E READER_TAKEN: a reader of a Reader Management slice of the package whose login name
- *    (FIELDID_USERNAME) or e-mail (FIELDID_EMAIL) is already taken on the target (ImportTarget::
- *    usernameTaken(), emailTaken() - the registration's isUsernameFree()). The direct insert skips that
- *    check; two accounts of one login would let whichever the login finds first in - or the package's
- *    password hash log into the target's account. EVERY value is asked (ItemWriter writes them all, the
- *    login lookup matches any), in the charset of the target slice (ModuleCharset::fromUtf8() - the
- *    bytes the target stores and compares; RawBytes as they are);
- *  - E READER_MULTIVALUE: more than one value of the login name or e-mail of a reader - one account
- *    would answer to several logins;
- *  - E READER_DUPLICATE: a login name or e-mail twice in the package (all its Reader Management slices -
- *    the login looks in all of them), compared as the usual *_ci collation with PAD SPACE (case, trailing
- *    spaces) - the lookup would be ambiguous;
- *    AT PLAN TIME ONLY: a reader registering between the preview and the write is not seen. Acceptable -
- *    a check inside the write would narrow the window, not close it (the registration locks nothing the
- *    import reads; only a unique key would); the preview is shown just before the write, and the check
- *    inside the transaction would cost two AA_Set queries per reader there;
- *  - I READER_ACCOUNTS: how many login accounts with a password hash (FIELDID_PASSWORD) the package brings;
- *  - W READER_2FA: an item carries a 2FA secret (FIELDID_2FA_SECRET). The seeds travel as PLAINTEXT, like
- *    the hashes (the default until Honza decides otherwise) - anyone holding the package can generate the
- *    readers' codes. The Collector never exports them (GetItemContent() leaves `secret*` fields out), so
- *    such a package was made elsewhere;
- *  - I ALERTS_FILTER_KEPT: a value `f<filter id>` of an alerts2 field (a reader's subscriptions,
- *    AA_Collection::getFilterText4Reader()) of a collection in the package naming a filter the package does
- *    not carry - written as it is (ItemWriter maps the others); inert, the new collection has no such filter;
- *  - W ITEM_OUTSIDE: a relation field (AA_Field::getType() `id`: insert `ids`, validate `id`/`packedid`)
- *    naming an item the package does not carry - it stays as it is: on the target an item of that id, if
- *    any, is another's. (Module ids in object properties - AA_Set.slices, fieldslice, translate_slice,
- *    add_aliases - are the Validator's W module-outside.)
+/** The plan's findings about the items a package carries - what ItemWriter writes past storeItem() and its
+ *  checks, shown in the preview:
+ *  - READER_TAKEN: a reader's login name or e-mail is taken on the target (isUsernameFree(), which the direct
+ *    insert skips) - two accounts of one login would let whichever the login finds first in, or the
+ *    package's password hash log into the target's account. Every value is asked, in the target slice's charset.
+ *  - READER_MULTIVALUE, READER_DUPLICATE: the login lookup would be ambiguous (compared as *_ci with PAD SPACE,
+ *    across all Reader Management slices of the package).
+ *    At plan time only: a reader registering between the preview and the write is not seen - a check inside
+ *    the write would narrow the window, not close it (the registration locks nothing the import reads).
+ *  - READER_2FA: 2FA seeds travel as PLAINTEXT - anyone holding the package can generate the readers' codes;
+ *    the Collector never exports them, so such a package was made elsewhere.
+ *  - READER_ACCOUNTS, ALERTS_FILTER_KEPT (inert: the new collection has no such filter), ITEM_OUTSIDE (on the
+ *    target an item of that id, if any, is another's).
  *  Pure except for the ImportTarget questions. Findings quote package text - safe(). */
 final class ItemLint
 {

@@ -6,20 +6,12 @@ namespace AA\Central\Package;
 
 use AA\Central\Package\Model\RawBytes;
 
-/** The reference rewrite of an imported value (design balicek-v1.md § 7.2 step 5, § 8) - ONE function
- *  per step for the plan's checks (TargetCharset) and the writer (part 4), so what the plan proved is
- *  what the writer writes:
- *  - known():   what the plan knows - long ids and alerts field ids (the same length), group names in
- *               texts, the group of field.input_show_func (rewriteInputShowFunc(), `$widget`);
- *  - numeric(): views and e-mails, once the writer has their AUTO_INCREMENT numbers (IdMap::withViews()
- *               / withEmails()) - the length grows, the writer checks it again (TargetCharset).
- *  The writer: numeric(known($value)), then ModuleCharset::fromUtf8() for a text; RawBytes as they are.
- *  Texts (UTF-8) and RawBytes alike: every regex of ReferenceRewriter is byte-wise and matches ASCII
- *  delimiters and ASCII runs, and puts ASCII in (new group names are [A-Za-z0-9_.-]). In the charsets of
- *  ModuleCharset::STATELESS an ASCII byte is always that character, never a byte of another, so the
- *  rewrite of the source bytes of RawBytes changes only what it changes in a text. Structured columns
- *  (slice.vid, emailid_*, uses, ...) the writer maps directly; serialised text never occurs (site.structure
- *  is built from the tree). */
+/** The reference rewrite of an imported value (design balicek-v1.md § 7.2 step 5, § 8) - one function per step
+ *  for the plan (TargetCharset) and the writer, so what the plan proved is what the writer writes:
+ *  known() - long ids, alerts field ids, group names, the group of field.input_show_func ($widget); numeric() -
+ *  views and e-mails once the writer has their numbers (the length grows: checked again).
+ *  RawBytes alike: every regex is byte-wise at ASCII delimiters and puts ASCII in, and in the charsets of
+ *  ModuleCharset::STATELESS an ASCII byte is always that character - so the bytes change as a text would. */
 final class ImportRewrite
 {
     private readonly ReferenceRewriter $rewriter;

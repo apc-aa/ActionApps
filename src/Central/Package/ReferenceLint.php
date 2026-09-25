@@ -14,9 +14,6 @@ use Generator;
  *
  *  The lint is best-effort help for package authors and importers, not a security boundary - the
  *  trust boundary is who may install a package (design § 3.3, Q-H2).
- *
- *  Deviation from § 8.4: BARE_NUMBER is I, not W - small view ids match colspan, substr arguments,
- *  dates…, and a W would block the export of a published app on such noise (decided 2026-09-24).
  */
 final class ReferenceLint
 {
@@ -34,7 +31,8 @@ final class ReferenceLint
      *  ending in `vid` (`covid=12` - AA's `/vid=\s*(\w+)/` has no left boundary, view.class.php:422).
      *  The last one is I outside view.php/f_v: parameters (`?covid=19` in a link is no view). */
     public const UNKNOWN_FORM = 'unknown-form';
-    /** I: a number equal to an app view/e-mail id outside the known forms (§ 8.2, `\b3072\b`) */
+    /** I: a number equal to an app view/e-mail id outside the known forms (§ 8.2, `\b3072\b`) - not W: small
+     *  view ids match colspan, substr arguments, dates, and a W would block the export of a published app */
     public const BARE_NUMBER = 'bare-number';
     /** W: {ids:<sid>, {modulefield:<sid>, #sLiCe-<sid> of a module outside the app (§ 5.2, D11) */
     public const MODULE_OUTSIDE = 'module-outside';
@@ -211,7 +209,7 @@ final class ReferenceLint
             $name   = trim($raw);
             $offset += (int) strpos($raw, $name);
             $known[$offset] = true;
-            if (($name !== '') && ($name[0] !== '[') && !in_array($name, IdMap::CORE_GROUPS, true) && ($this->map->group($name) === null)) {
+            if (IdMap::isAppGroup($name) && ($this->map->group($name) === null)) {
                 $this->add($findings, LintFinding::INFO, self::GROUP_OUTSIDE, $name, $offset);
             }
         }

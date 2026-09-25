@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /**
- * After the commit, C4.4 part 5 (design balicek-v1.md § 7.2 steps 8, 9): ImportFinish - the log entry, the
+ * After the commit, C4.4 part 5 (design balicek-v1.md § 7.2 steps 8, 9): Importer::finish() - the log entry, the
  * ACL objects, ConstantsChanged(), the page cache, each step isolated, none undone - and the report
  * Importer::write() returns for the example package. AaAfterCommit's log entry over TableDb.
  */
@@ -14,69 +14,17 @@ use AA\Central\Package\AaAfterCommit;
 use AA\Central\Package\FixUp;
 use AA\Central\Package\ImportFailed;
 use AA\Central\Package\Importer;
-use AA\Central\Package\ImportPlan;
 use AA\Central\Package\ImportReport;
-use AA\Central\Package\Model\Package;
-use AA\Central\Package\Planner;
-use AA\Central\Package\Validator;
 use AA_Logentry_App;
 use PHPUnit\Framework\TestCase;
-use Tests\Unit\Central\Package\Fixtures\FakeAfterCommit;
-use Tests\Unit\Central\Package\Fixtures\FakeImportAuthority;
-use Tests\Unit\Central\Package\Fixtures\FakeImportTarget;
-use Tests\Unit\Central\Package\Fixtures\PackageMutations;
+use Tests\Unit\Central\Package\Fixtures\ImportFixture;
 use Tests\Unit\Central\Package\Fixtures\TableDb;
 
-require_once __DIR__ . '/fixtures/PackageMutations.php';
+require_once __DIR__ . '/fixtures/ImportFixture.php';
 
 final class ImportReportTest extends TestCase
 {
-    use PackageMutations;
-
-    private const NEXT = ['view' => 1000, 'email' => 2000, 'alerts_filter' => 3000, 'site_spot' => 4000, 'profile' => 5000, 'constant' => 6000];
-
-    private FakeImportTarget $target;
-    private FakeAfterCommit $after;
-
-    public static function setUpBeforeClass(): void
-    {
-        self::bootAa();
-        require_once __DIR__ . '/fixtures/TableDb.php';
-    }
-
-    protected function setUp(): void
-    {
-        TableDb::reset();
-        TableDb::$next       = self::NEXT;
-        $GLOBALS['spareDBs'] = [new TableDb(), new TableDb()];
-        $this->target        = new FakeImportTarget();
-        $this->after         = new FakeAfterCommit();
-    }
-
-    protected function tearDown(): void
-    {
-        $GLOBALS['spareDBs'] = [];
-        TableDb::reset();
-    }
-
-    private function plan(?Package $package = null): ImportPlan
-    {
-        $package ??= self::example();
-        $plan      = (new Planner($this->target))->plan($package, (new Validator())->validate($package));
-        self::assertTrue($plan->importable());
-        return $plan;
-    }
-
-    private function importer(): Importer
-    {
-        return new Importer($this->target, 'importer-uid', null, 1_790_000_000, authority: new FakeImportAuthority(), afterCommit: $this->after);
-    }
-
-    /** n-th id of FakeImportTarget::newId() - modules 1-3, objects 4-7, constants 8-9 */
-    private static function id(int $n): string
-    {
-        return sprintf('%032x', 0xa000 + $n);
-    }
+    use ImportFixture;
 
     // ---------------------------------------------------------------- finishing (§ 7.2 step 8)
 
@@ -97,8 +45,8 @@ final class ImportReportTest extends TestCase
         self::assertSame([
             ['log', []], ["permissions[$w]", []], ["permissions[$s]", []], ["permissions[$a]", []], ['constants', []],
             ["pagecache[$w]", []], ["pagecache[$s]", []], ["pagecache[$a]", []],
-        ], $report->finish->steps());
-        self::assertSame([], $report->finish->failures());
+        ], $report->finish);
+        self::assertSame([], $report->failures());
     }
 
     public function test_a_failed_commit_fails_the_import_and_runs_no_step(): void
@@ -139,7 +87,7 @@ final class ImportReportTest extends TestCase
             ["permissions[$s]", ["RuntimeException: permissions $s importer-uid failed"]],
             ['constants', ['RuntimeException: constantsChanged failed']],
             ["pagecache[$w]", ["RuntimeException: invalidatePagecache $w failed"]],
-        ], $report->finish->failures());
+        ], $report->failures());
         self::assertSame('COMMIT', end(TableDb::$log), 'nothing undone: not a statement after the commit');
         self::assertCount(3, TableDb::rows('module'), 'the import stays');
         self::assertCount(3, TableDb::rows('constant'));

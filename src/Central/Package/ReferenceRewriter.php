@@ -6,21 +6,12 @@ namespace AA\Central\Package;
 
 use Generator;
 
-/** Rewrites references in the texts of a package to the target ids (design balicek-v1.md § 8).
- *  Pure: text in, text out; nothing is evaluated, ids missing in the map stay as they are.
- *  Any regex failure throws RewriteFailed - a half-rewritten text is never returned.
- *
- *  Passes (the import runs them in § 7.2 step 5: long ids and groups with the plan, numbers after
- *  the view/email rows got their AUTO_INCREMENT ids):
- *  - rewriteLongIds()  long ids + alerts field ids; keeps the length, so it is the ONLY pass allowed
- *                      on serialize()d text (site.structure of the old chunk mode);
- *  - rewriteGroups()   group names in {constant:/constants:/options:} - changes the length;
- *  - rewriteNumeric()  views and e-mails - changes the length.
- *  Each pass maps every id exactly once, a result is never looked up again (12 -> 13, 13 -> 14 turns
- *  12 into 13). The kinds cannot produce each other (32-hex runs, 16-char alerts field ids, names and
- *  decimals after fixed prefixes), so running the passes one after another does not chain either.
- *  Command names match in any case - AA lower-cases them (constructClassName(), include/statestore.php:153).
- */
+/** Rewrites references in the texts of a package to the target ids (design balicek-v1.md § 8). Pure: ids
+ *  missing in the map stay; a regex failure throws RewriteFailed - never a half-rewritten text.
+ *  Three passes (ImportRewrite runs them): rewriteLongIds() keeps the length - the only one allowed on
+ *  serialize()d text; rewriteGroups() and rewriteNumeric() change it. Each maps every id once (12 -> 13,
+ *  13 -> 14 turns 12 into 13) and the kinds cannot produce each other, so the passes do not chain.
+ *  Command names match in any case - AA lower-cases them (constructClassName()). */
 final class ReferenceRewriter
 {
     /** Known numeric forms (§ 8.2). Numbers are 1-10 significant digits (int view.id) ending at a
@@ -80,12 +71,6 @@ final class ReferenceRewriter
                 $this->alerts[self::alertsField($field, $old)] = self::alertsField($field, $new);
             }
         }
-    }
-
-    /** all passes - for a text that is not serialized */
-    public function rewrite(string $text): string
-    {
-        return $this->rewriteNumeric($this->rewriteGroups($this->rewriteLongIds($text)));
     }
 
     /** § 8.1 long ids and § 6.4 alerts field ids. The length never changes: serialized text and

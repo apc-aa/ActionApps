@@ -64,6 +64,7 @@ final class ReferenceLintTest extends TestCase
             'computed group'              => ['{constants:{var:g}}', []],
             'Constant any case'           => ['{CONSTANTS:unknown_grp}', ['I group-outside unknown_grp']],
             'group with spaces'           => ['{constants: unknown_grp :x}', ['I group-outside unknown_grp']],
+            '#sLiCe- is no group'         => ['{constants:#sLiCe-' . self::S . '}', []],
             // command names in any case - constructClassName(), include/statestore.php:153
             '{VIEW:} outside the app'     => ['{VIEW:999}', ['W view-outside 999']],
             '{Form:}'                     => ['{Form:' . self::F . '}', ['W form {Form:']],

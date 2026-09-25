@@ -8,11 +8,10 @@ use AA;
 use AA\Central\Package\Schema;
 use AA\Central\Package\SecurityLint;
 use AA_Metabase;
-use AA_Module_Site;
 
 /** Imports a chunk of a module definition (AA_Definition_Module_Chunk: one table of one module, at most 1000
  *  rows) into this AA - Central Copy Slice (responder Do_Import_Module_Chunk, the local import); the wire
- *  class delegates here. The chunk mode of design balicek-v1.md § 10.1 (C4.4 part 6):
+ *  class delegates here. The chunk mode of design balicek-v1.md § 10.1:
  *  - only the tables of the module's type; installation state and profiles of users are skipped;
  *  - F4: every row belongs to the chunk's module_id - by its module column, the owner of its constant group
  *    (a new group becomes the module's), the slice of its item, the module of its collection - and the module
@@ -230,7 +229,7 @@ final class ChunkImporter
                 }
                 break;
             case 'site':
-                if (((int) ($data['flag'] ?? 0) !== 1) && (AA_Module_Site::stateFileName(self::text($data['state_file'] ?? '')) !== '')) {
+                if (Schema::controlFile($data)) {
                     unset($data['state_file']);
                     $this->notes[] = "site $module: control file state_file dropped";
                 }

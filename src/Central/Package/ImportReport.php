@@ -6,15 +6,15 @@ namespace AA\Central\Package;
 
 use AA\Central\Package\Model\Module;
 
-/** The report of a written import (design balicek-v1.md § 7.2 step 9; C4.4 part 5) - plain data, no HTML.
+/** The report of a written import (design balicek-v1.md § 7.2 step 9) - plain data, no HTML.
  *  EVERY string in it is package text or derived from it (names, paths, refs, fix-ups, errors quoting
  *  them): the UI escapes all of it (safe()).
  *
  *  A failed import is no report: ImportFailed (the cause; nothing was written). Here all rows were
  *  written - $rows counts them by table; what the import changed or dropped on the way is $ignored
  *  (the FixUps: e-mail attachments, lang_file, dropped site settings, spot markup, publish = users, a shared
- *  filter); what AA did after the commit is $finish, each step OK or its errors (FinishReport::failures():
- *  what is left to do by hand - the import itself stays). The Reader's pruning findings (§ 3.2) are not in the plan: the
+ *  filter); what AA did after the commit is $finish, each step OK or its errors (failures(): what is left
+ *  to do by hand - the import itself stays). The Reader's pruning findings (§ 3.2) are not in the plan: the
  *  caller adds them from ReadResult::$findings. */
 final readonly class ImportReport
 {
@@ -31,7 +31,7 @@ final readonly class ImportReport
      *              collections: array<string, string>, objects: array<string, string>, items: array<string, int>} $maps
      *                                                       old => new; items: new slice => items written
      * @param list<array{string, LintFinding}>     $findings validator + planner, by danger S, E, W, I
-     * @param FinishReport                         $finish   the steps after the commit: steps() [step, errors], none = OK
+     * @param list<array{string, list<string>}>    $finish   the steps after the commit (Importer): [step, errors], none = OK
      * @param list<array{module: string, name: string, fields: array<string, string>, url: string}> $settings
      *                                                       new slices with settings fields to fill: its new
      *                                                       id and name, field id => field name, the admin page
@@ -43,12 +43,12 @@ final readonly class ImportReport
         public array $ignored,
         public array $maps,
         public array $findings,
-        public FinishReport $finish,
+        public array $finish,
         public array $settings,
     ) {}
 
-    /** @param array<string, int> $written RowStore::written() - table => rows inserted */
-    public static function of(ImportPlan $plan, IdMap $map, array $written, FinishReport $finish): self
+    /** @param array<string, int> $written RowStore::written() - table => rows inserted @param list<array{string, list<string>}> $finish */
+    public static function of(ImportPlan $plan, IdMap $map, array $written, array $finish): self
     {
         $p = $plan->package;
         [$modules, $items, $objects, $settings] = [[], [], [], []];
@@ -78,6 +78,12 @@ final readonly class ImportReport
             $finish,
             $settings,
         );
+    }
+
+    /** @return list<array{string, list<string>}> the steps after the commit with errors - what is left to do by hand */
+    public function failures(): array
+    {
+        return array_values(array_filter($this->finish, static fn(array $s): bool => (bool) $s[1]));
     }
 
     /** "N settings to fill" - the settings fields of the new slices; the package carries no values (§ 9.2) */

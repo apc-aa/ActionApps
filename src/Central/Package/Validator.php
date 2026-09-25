@@ -8,19 +8,14 @@ use AA\Central\Package\Model\ConstantGroup;
 use AA\Central\Package\Model\Module;
 use AA\Central\Package\Model\Package;
 use AA_Metabase;
-use AA_Module_Site;
 use AA_Property;
 use InvalidArgumentException;
 use Throwable;
 
-/** The semantic checks of a read package (design balicek-v1.md § 3.1 step 9, C4.4 part 2): what the
- *  XSD cannot say, and again what it says of structure and ids - the model may come from elsewhere than
- *  Reader (the chunk mode, § 10.1). Pure: collisions with the target, existing modules, the charset
- *  conversion and the text lint against the plan's map (ReferenceLint) are the planner's (part 3).
+/** The semantic checks of a read package (design balicek-v1.md § 3.1 step 9): what the XSD cannot say, and
+ *  again what it says of structure and ids - the model may come from elsewhere than Reader. Pure: the target,
+ *  the charsets and the reference lint are the planner's.
  *  E = the package must not be imported; S (SecurityLint) = confirm in the preview; W, I = report.
- *  meta/publish needs no check: the importer sets `users` on the target (Q-H1).
- *  For the importer (part 4): an alerts_filter shared by several Alerts modules is created once; site
- *  settings of `settings-dropped` and email.attachments of SecurityLint::ATTACHMENTS_DROPPED are cleared.
  *  Findings quote package text - escape them (safe()) when shown. */
 final class Validator
 {
@@ -83,14 +78,6 @@ final class Validator
     public const PERM_MODE = 'perm-mode';
     /** E: an integer out of the range of its column (strict sql_mode would fail the insert) */
     public const INT_RANGE = 'int-range';
-
-    /** row elements of each container: 1 = exactly one, ? = at most one, * = any */
-    private const TABLES = [
-        Module::SITE     => ['module' => '1', 'site' => '1', 'site_spot' => '*', 'uses' => '*'],
-        Module::SLICE    => ['module' => '1', 'slice' => '1', 'field' => '*', 'view' => '*', 'email' => '*', 'profile' => '*'],
-        Module::ALERTS   => ['module' => '1', 'email' => '*', 'alerts_collection' => '?', 'alerts_collection_filter' => '*', 'alerts_collection_howoften' => '*', 'alerts_filter' => '*'],
-        'constant-group' => ['constant_slice' => '?', 'constant' => '*'],
-    ];
 
     /** keyed rows => [id pool (`module` = per module), the key's shape]; long ids share the pool `long` */
     private const UNIQUE = ['field' => ['module', '/^[A-Za-z0-9_.]{16}\z/'], 'view' => ['view', self::NUMBER_RE], 'email' => ['email', self::NUMBER_RE],
@@ -194,7 +181,7 @@ final class Validator
      *  @param array<string, list<array<string, mixed>>> $elements */
     private function rows(string $path, string $container, array $elements): void
     {
-        $tables = self::TABLES[$container] ?? [];
+        $tables = Schema::rowCounts($container);
         foreach (array_keys($tables + $elements) as $element) {
             $need = $tables[$element] ?? null;
             if ($need === null) {
@@ -311,7 +298,7 @@ final class Validator
     private function site(Module $m, string $path): void
     {
         $site = $m->rows['site'][0] ?? [];
-        if (((int) ValueCodec::bytes($site['flag'] ?? '') !== 1) && (AA_Module_Site::stateFileName(ValueCodec::bytes($site['state_file'] ?? '')) !== '')) {
+        if (Schema::controlFile($site)) {
             $this->add("$path/site[#0]/state_file", LintFinding::ERROR, self::STATE_FILE, ValueCodec::bytes($site['state_file']));
         }
         $mode = ValueCodec::bytes($m->settings['perm_mode'] ?? '');
@@ -371,7 +358,7 @@ final class Validator
         foreach ($m->rows['field'] ?? [] as $i => $row) {
             $fields[ValueCodec::bytes($row['id'] ?? '')] = true;
             $group = ReferenceRewriter::inputShowFuncGroup(ValueCodec::bytes($row['input_show_func'] ?? ''));
-            if (($group !== null) && !str_starts_with($group, '#sLiCe-') && ($group[0] !== '[') && !in_array($group, IdMap::CORE_GROUPS, true) && !isset($this->has['group'][$group])) {
+            if (($group !== null) && IdMap::isAppGroup($group) && !isset($this->has['group'][$group])) {
                 $this->add($this->schema->rowPath($path, 'field', $row, $i) . '/input_show_func', LintFinding::WARNING, self::GROUP_MISSING, $group);
             }
         }

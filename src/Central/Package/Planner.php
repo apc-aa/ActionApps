@@ -10,32 +10,12 @@ use AA\Optimize\Convert2innodb;
 use AA_Metabase;
 use InvalidArgumentException;
 
-/** The import planner (design balicek-v1.md § 7.2 step 3; C4.4 part 3): a package that passed the
- *  Validator + a target => ImportPlan, with no write. Pure except for ImportTarget - the questions to
- *  the target (group names taken, new ids) - so tests run without a DB.
- *
- *  1. FixUps: what the importer changes (attachments, lang_file, settings, spot markup, structure,
- *     a shared alerts filter once, publish = users) - applied to a copy, listed for the preview.
- *  2. The charset of each module: its lang_file (ModuleCharset::ofModule(); the target module gets the
- *     package's lang_file - normalised, $langFiles - § 2.4); of a constant group: the export's rule
- *     (GroupPlan: the owner's, else the first module naming it in a widget or a text, a slice preferred).
- *  3. The maps (§ 7.1) - modules, then per module its objects and subobjects and items, then the
- *     constants: new_id(), none twice in the plan; settings objects: string2id(class . new module id),
- *     old => new in the long map too (a package id equal to a new settings id = E; to an old one: the
- *     Validator's E); alerts collections: new_collection_id(); group names: GroupPlan. Views, e-mails
- *     and filters: the writer.
- *  4. TargetCharset: every value converts to its target charset and fits its column (E, W).
- *  5. ImportLint: references the rewrite cannot map or that lead outside the package (W, I); ItemLint:
- *     readers whose login or e-mail the target has (E), the login accounts and 2FA seeds the package
- *     brings (I, W), relations and alerts subscriptions leading outside it (W, I).
- *  6. The engine (§ 7.2 step 4): the tables the import writes that are not InnoDB (ImportTarget::
- *     nonTransactional()) - E NO_TRANSACTION: the rollback is the only cleanup of a failed import, so
- *     such a plan is never written (Importer). Here, not in the writer, so the preview shows it.
- *
- *  Not here (they plug in around plan()): the "keep module ids" restore mode (§ 7.1: would replace
- *  the module part of the map after its checks), rights (PS_INSTALL_APP, Q-H2) and the S confirmation
- *  (Importer::write(): ImportAuthority, ImportConfirmation), writing, the re-check of the names and ids
- *  inside the transaction (part 4, ImportPlan), the chunk mode (part 6). */
+/** The import planner (design balicek-v1.md § 7.2 step 3): a package that passed the Validator + a target =>
+ *  ImportPlan, with no write. Pure except for ImportTarget, so tests run without a DB. In order: FixUps; the
+ *  charset of each module (its lang_file) and group (GroupPlan); the maps (§ 7.1) - new ids none twice, the
+ *  derived settings ids, collections, group names; TargetCharset, ImportLint, ItemLint; the engine - E
+ *  NO_TRANSACTION here, so the preview shows it: the rollback is the only cleanup of a failed import.
+ *  The rights and the S confirmation are the writer's (Importer::write()). */
 final class Planner
 {
     /** I: a constant group gets another name on the target; ref = "old => new" */
@@ -56,9 +36,8 @@ final class Planner
     /** the path of a finding about the target AA, not the package */
     public const TARGET = 'target';
 
-    /** tables of the objects (§ 5.4, ObjectWriter) and of the items (ItemWriter), beside the rows of Schema */
-    private const OBJECT_TABLES = ['object_text', 'object_integer', 'object_float'];
-    private const ITEM_TABLES   = ['item', 'content'];
+    /** tables of the items (ItemWriter), beside the rows of Schema and the objects */
+    private const ITEM_TABLES = ['item', 'content'];
 
     /** an alerts field id: FIELDID_HOWOFTEN / FIELDID_FILTERS padded with dots, then the collection id */
     private const ALERTS_FIELD_RE = '/^alerts[12]\.+([A-Za-z0-9]{1,9})\z/';
@@ -147,7 +126,7 @@ final class Planner
      *  @return list<string> */
     public static function tables(Schema $schema, Package $package): array
     {
-        $tables = array_values(array_unique([...array_values($schema->rowTables()), ...self::OBJECT_TABLES]));
+        $tables = array_values(array_unique([...array_values($schema->rowTables()), ...ObjectExport::TABLES]));
         if (array_filter($package->modules, static fn(Module $m): bool => (bool) $m->items)) {
             $tables = [...$tables, ...self::ITEM_TABLES];
         }

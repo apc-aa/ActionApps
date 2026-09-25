@@ -6,7 +6,6 @@ namespace AA\Central\Package;
 
 use AA\Central\Package\Model\Package;
 use Generator;
-use Throwable;
 
 /** The reference lint of an import (design balicek-v1.md § 8.4; the Validator leaves it to the plan):
  *  ReferenceLint over the definition texts of the package as ExportLint reads them (LintTexts) - text
@@ -69,10 +68,7 @@ final class ImportLint
         foreach ($package->modules as $m) {
             $path = "$m->type[$m->id]";
             yield from $this->texts->rows($path, $m->rows, true);
-            try {       // a malformed object is Validator's E
-                yield from LintTexts::code(isset(Schema::SETTINGS_CLASSES[$m->type]) ? ObjectExport::values($m->type, $m->settings, $m->objects, $path) : [], true);
-            } catch (Throwable) {
-            }
+            yield from LintTexts::code(isset(Schema::SETTINGS_CLASSES[$m->type]) ? ObjectExport::values($m->type, $m->settings, $m->objects, $path) : [], true);
             yield from LintTexts::conditions("$path/spot-tree", $m->spotTree['spots'] ?? null);
         }
         foreach ($package->constantGroups as $group) {

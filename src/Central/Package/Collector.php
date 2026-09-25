@@ -8,32 +8,22 @@ use AA\Central\Package\Model\ConstantGroup;
 use AA\Central\Package\Model\Module;
 use AA\Central\Package\Model\Package;
 use AA\Central\Package\Model\RawBytes;
-use AA_Module_Site;
 use InvalidArgumentException;
 
-/** Collects an app from the source AA into the package model (design balicek-v1.md § 5, § 6; C4.3
- *  part 3): the rows of each module type scrubbed to the columns Schema carries, the constant groups
- *  the app uses, texts in UTF-8 (ModuleCharset, § 2.4), items on request and the export lint
- *  (ExportLint, § 8.4).
+/** Collects an app from the source AA into the package model (design balicek-v1.md § 5, § 6): the rows of
+ *  each module type scrubbed to the columns Schema carries, the constant groups the app uses, objects and the
+ *  spot tree, texts in UTF-8 (ModuleCharset, § 2.4), items on request, the export lint (ExportLint, § 8.4).
+ *  fromSite() = the site + its "uses modules" of type S and Alerts; fromModules() = the given ones. A module
+ *  the app refers to from outside is a finding and lands in CollectResult::$outside - never pulled in.
  *
- *  App boundary (§ 5.1, § 5.2): fromSite() = the site + its "uses modules" (relation with
- *  REL_FLAG_MODULE_DEPEND) of type S and Alerts; fromModules() = the given slices / alerts modules.
- *  Nothing else is pulled in: a module the app refers to from outside is a finding and lands in
- *  CollectResult::$outside - the author adds it to "uses" and exports again.
+ *  PERMISSIONS - the caller's job: the collector reads with no check. Before offering the package the caller
+ *  must check PS_EDIT on EVERY module of CollectResult::$checkPermissions - the app modules, including the
+ *  "uses" modules fromSite() resolved itself, and the owners of foreign constant groups. An anonymous
+ *  download may only serve a package already published.
  *
- *  PERMISSIONS - the caller's job: the collector reads with no check. Before offering the package
- *  the caller must check PS_EDIT on EVERY module of CollectResult::$checkPermissions - the app
- *  modules, including the "uses" modules fromSite() resolved itself, and the owners of foreign
- *  constant groups. An anonymous download may only serve a package already published.
- *
- *  ITEMS (CollectOptions::$items) are for moving a site between AAs by its admins: the package may
- *  hold personal data and password hashes (readers of a ReaderManagement slice). The caller must not
- *  publish it - publish = all with items is an error, users (admins of the site, Q-H1) or no is fine.
- *
- *  Objects and the site tree (§ 5.4, § 6.3; C4.3 part 4): ObjectExport reads the settings and the
- *  allowlisted objects of a site / slice, site.structure becomes sitetree::toArray(); both in UTF-8.
- *
- *  Not yet: the export option "unused groups too" (§ 5.3).
+ *  ITEMS (CollectOptions::$items) are for moving a site between AAs by its admins: the package may hold
+ *  personal data and password hashes (readers of a ReaderManagement slice). The caller must not publish it -
+ *  publish = all with items is an error.
  *  @throws RewriteFailed from both entry points - a regex of the lint failed: a failed export */
 final class Collector
 {
@@ -66,8 +56,6 @@ final class Collector
      *  could give a new spot their id, so their content); a row {sitespot:N} includes stays */
     public const SPOT_UNUSED = 'spot-unused';
 
-    private const TYPES = ['W' => Module::SITE, 'S' => Module::SLICE, 'Alerts' => Module::ALERTS];
-
     /** the one row a module of the type must have */
     private const ROW = ['W' => 'site', 'S' => 'slice'];
 
@@ -80,6 +68,7 @@ final class Collector
 
     private readonly Schema $schema;
     private readonly ExportLint $lint;
+    private readonly LintTexts $texts;
     private readonly ObjectExport $objects;
     /** @var list<array{string, LintFinding}> */
     private array $findings = [];
@@ -88,6 +77,7 @@ final class Collector
     {
         $this->schema = $schema ?? new Schema();
         $this->lint    = new ExportLint($source, $this->schema);
+        $this->texts   = new LintTexts($this->schema);
         $this->objects = new ObjectExport($source);
     }
 
@@ -150,7 +140,7 @@ final class Collector
         $charsets = $raw = $rows = $items = $objects = $trees = [];
         $count    = 0;
         foreach ($app as $id => $module) {
-            $path          = self::TYPES[$module['type']] . "[$id]";
+            $path          = Module::TYPES[$module['type']] . "[$id]";
             [$charsets[$id], $module['lang_file']] = $this->charset($module, "$path/module[#0]/lang_file");
             $raw[$id] = ['module' => [$module]] + match ($module['type']) {
                 'W'     => $this->siteRows($id, array_keys($app)),
@@ -171,8 +161,8 @@ final class Collector
             if ($with_items && ($module['type'] === 'S')) {
                 $items[$id] = $this->items($id, $charsets[$id], $path, $options, $count);
             }
-            if (isset(Schema::SETTINGS_CLASSES[self::TYPES[$module['type']]])) {      // site, slice: alerts own none
-                [$settings, $list, $findings] = $this->objects->collect($id, self::TYPES[$module['type']], $path);
+            if (isset(Schema::SETTINGS_CLASSES[Module::TYPES[$module['type']]])) {      // site, slice: alerts own none
+                [$settings, $list, $findings] = $this->objects->collect($id, Module::TYPES[$module['type']], $path);
                 $objects[$id]                 = [$settings, $list];
                 array_push($this->findings, ...$findings);
             }
@@ -184,7 +174,7 @@ final class Collector
                 }
             }
         }
-        $types             = array_map(static fn(array $m): string => self::TYPES[$m['type']], $app);
+        $types             = array_map(static fn(array $m): string => Module::TYPES[$m['type']], $app);
         [$groups, $owners] = $this->groups($raw, $app, $charsets, $objects);   // object texts as stored, like the rows
         foreach ($objects as $id => [$settings, $list]) {      // a name that stays RawBytes is dropped (map())
             $utf8         = fn(mixed $v, string $at): mixed => is_string($v) ? $this->utf8($v, $charsets[$id], $at) : $v;
@@ -219,8 +209,7 @@ final class Collector
     {
         $site = $this->source->select('site', [['id', $id, 'l']]);
         foreach ($site as $i => $row) {
-            // a control file of the source installation, included by site.php - never code of the app (§ 6.3)
-            if (((int) ($row['flag'] ?? 0) !== 1) && (AA_Module_Site::stateFileName((string) $row['state_file']) !== '')) {
+            if (Schema::controlFile($row)) {
                 unset($site[$i]['state_file']);
                 $this->add(Module::SITE . "[$id]/site[#$i]/state_file", LintFinding::WARNING, self::STATE_FILE, (string) $row['state_file']);
             }
@@ -258,13 +247,7 @@ final class Collector
             return $utf;
         };
         foreach ($tree['spots'] ?? [] as $i => $spot) {
-            $tree['spots'][$i]['n'] = $text($spot['n']);
-            foreach (['v', 'c'] as $key) {
-                if ($spot[$key] !== null) {
-                    $keys                    = array_map(static fn($k): string => $text((string) $k), array_keys($spot[$key]));
-                    $tree['spots'][$i][$key] = array_combine($keys, array_map($text, $spot[$key]));
-                }
-            }
+            $tree['spots'][$i] = LintTexts::mapSpot('', $spot, static fn(mixed $value): string => $text((string) $value));
         }
         if ($bad !== null) {
             $this->add("$path/spot-tree", LintFinding::ERROR, self::SPOT_TREE, $bad);
@@ -353,16 +336,16 @@ final class Collector
     {
         $used = $widgets = [];     // raw name => the first app slice naming it, else the first module; => field paths
         foreach ($raw as $id => $elements) {
-            $path  = self::TYPES[$app[$id]['type']] . "[$id]";
+            $path  = Module::TYPES[$app[$id]['type']] . "[$id]";
             $names = [];
             foreach ($elements['field'] ?? [] as $i => $field) {
                 if (($name = ReferenceRewriter::inputShowFuncGroup((string) ($field['input_show_func'] ?? ''))) !== null) {
                     $names[]          = $name;
-                    $widgets[$name][] = $this->lint->rowPath($path, 'field', $field, $i) . '/input_show_func';
+                    $widgets[$name][] = $this->schema->rowPath($path, 'field', $field, $i) . '/input_show_func';
                 }
             }
-            $texts = iterator_to_array($this->lint->texts('', array_diff_key($elements, ['module' => 1])), false);
-            $values = isset($objects[$id]) ? ObjectExport::values(self::TYPES[$app[$id]['type']], $objects[$id][0], $objects[$id][1], '') : [];
+            $texts = iterator_to_array($this->texts->rows('', array_diff_key($elements, ['module' => 1])), false);
+            $values = isset($objects[$id]) ? ObjectExport::values(Module::TYPES[$app[$id]['type']], $objects[$id][0], $objects[$id][1], '') : [];
             foreach ($values as [$at, $class, $property, $value]) {
                 if (ObjectExport::isCode($class, $property) && is_string($value)) {
                     $texts[] = [$at, $value];
@@ -373,8 +356,7 @@ final class Collector
                 array_push($names, ...array_map('trim', $m[0]));
             }
             foreach ($names as $name) {
-                if (($name !== '') && preg_match(IdMap::GROUP_RE, $name) && !str_starts_with($name, '#sLiCe-') && ($name[0] !== '[') && !in_array($name, IdMap::CORE_GROUPS, true)
-                    && (!isset($used[$name]) || (($app[$used[$name]]['type'] !== 'S') && ($app[$id]['type'] === 'S')))) {
+                if (IdMap::isAppGroup($name) && preg_match(IdMap::GROUP_RE, $name) && (!isset($used[$name]) || (($app[$used[$name]]['type'] !== 'S') && ($app[$id]['type'] === 'S')))) {
                     $used[$name] = $id;
                 }
             }
@@ -428,7 +410,7 @@ final class Collector
             $row = array_intersect_key($row, $carried);
             foreach ($row as $column => $value) {
                 if (is_string($value)) {
-                    $row[$column] = $this->utf8($value, $charset, $this->lint->rowPath($path, $element, $row, $i) . "/$column");
+                    $row[$column] = $this->utf8($value, $charset, $this->schema->rowPath($path, $element, $row, $i) . "/$column");
                 }
             }
             $rows[$i] = $row;

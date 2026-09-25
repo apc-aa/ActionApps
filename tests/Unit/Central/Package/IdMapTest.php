@@ -63,10 +63,10 @@ final class IdMapTest extends TestCase
         $this->assertSame([self::SLICE_OLD => self::SLICE_NEW], $this->map()->modules());
     }
 
-    public function test_withViews_and_withEmails_keep_the_original_unchanged(): void
+    public function test_withNumbers_of_views_and_emails_keeps_the_original_unchanged(): void
     {
         $plan = new IdMap(modules: [self::SLICE_OLD => self::SLICE_NEW]);
-        $full = $plan->withViews([12 => 13])->withEmails([5 => 7]);
+        $full = $plan->withNumbers('view', [12 => 13])->withNumbers('email', [5 => 7]);
 
         $this->assertSame([], $plan->views());
         $this->assertSame([], $plan->emails());
@@ -75,10 +75,10 @@ final class IdMapTest extends TestCase
         $this->assertSame(self::SLICE_NEW, $full->module(self::SLICE_OLD));
     }
 
-    public function test_withFilters_keeps_the_original_unchanged(): void
+    public function test_withNumbers_of_filters_keeps_the_original_unchanged(): void
     {
         $plan = new IdMap(collections: ['AbC12' => 'XyZ98']);
-        $full = $plan->withFilters([3 => 41]);
+        $full = $plan->withNumbers('filter', [3 => 41]);
 
         $this->assertSame([], $plan->filters());
         $this->assertSame(41, $full->filter(3));
@@ -86,10 +86,10 @@ final class IdMapTest extends TestCase
         $this->assertSame('XyZ98', $full->collection('AbC12'));
     }
 
-    public function test_withFilters_rejects_invalid_ids(): void
+    public function test_withNumbers_rejects_invalid_ids(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        (new IdMap())->withFilters([3 => 0]);
+        (new IdMap())->withNumbers('filter', [3 => 0]);
     }
 
     /** @return array<string, array{array<string, mixed>}> */

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace AA\Central\Package;
 
+use Closure;
 use Generator;
 
 /** What ExportLint and ImportLint share (design balicek-v1.md § 8.4): the identity map of an app, the
@@ -51,15 +52,52 @@ final class LintTexts
         }
     }
 
-    /** the condition variables and values of the spots - [path, text]; the n-th condition `cond[#n]`
+    /** The texts of a spot (sitetree::toArray() form), each through $fn(text, path) and back into the spot:
+     *  the name `<at>@name`, the variables `<at>/var[#k]` (keyed by their name), the conditions - variable
+     *  `<at>/cond[#k]@var` and value `<at>/cond[#k]`.
+     *  @param array<mixed> $spot @param Closure(mixed, string): mixed $fn @return array<mixed> */
+    public static function mapSpot(string $at, array $spot, Closure $fn): array
+    {
+        $spot['n'] = $fn($spot['n'] ?? '', "$at@name");
+        if (is_array($spot['v'] ?? null)) {
+            $vars = [];
+            foreach (array_values($spot['v']) as $k => $var) {
+                $name                           = $fn($var, "$at/var[#$k]");
+                $vars[ValueCodec::bytes($name)] = $name;
+            }
+            $spot['v'] = $vars;
+        }
+        if (is_array($spot['c'] ?? null)) {
+            $conds = [];
+            foreach (array_keys($spot['c']) as $k => $var) {
+                $conds[ValueCodec::bytes($fn((string) $var, "$at/cond[#$k]@var"))] = $fn($spot['c'][$var], "$at/cond[#$k]");
+            }
+            $spot['c'] = $conds;
+        }
+        return $spot;
+    }
+
+    /** the texts of a spot (mapSpot()): path => text @param array<mixed> $spot @return array<string, string> */
+    public static function spotTexts(string $at, array $spot): array
+    {
+        $texts = [];
+        self::mapSpot($at, $spot, static function (mixed $text, string $path) use (&$texts): mixed {
+            $texts[$path] = ValueCodec::bytes($text);
+            return $text;
+        });
+        return $texts;
+    }
+
+    /** the condition variables and values of the spots - [path, text]
      *  @param mixed $spots sitetree::toArray()['spots'] @return Generator<int, array{string, string}> */
     public static function conditions(string $path, mixed $spots): Generator
     {
         foreach (is_array($spots) ? $spots : [] as $spot) {
-            foreach (array_keys(is_array($spot['c'] ?? null) ? $spot['c'] : []) as $k => $var) {
-                $at = "$path/spot[" . ValueCodec::bytes($spot['id'] ?? '') . "]/cond[#$k]";
-                yield ["$at@var", (string) $var];
-                yield [$at, ValueCodec::bytes($spot['c'][$var])];
+            $at = "$path/spot[" . ValueCodec::bytes($spot['id'] ?? '') . ']';
+            foreach (self::spotTexts($at, (array) $spot) as $text_at => $text) {
+                if (str_starts_with($text_at, "$at/cond[")) {
+                    yield [$text_at, $text];
+                }
             }
         }
     }

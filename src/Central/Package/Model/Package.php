@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace AA\Central\Package\Model;
 
-/** An aa-app package in memory (design balicek-v1.md § 4): what the export collects (C4.3 part 3),
+/** An aa-app package in memory (design balicek-v1.md § 4): what the export collects,
  *  Writer turns into XML and the reader returns. Plain data - all texts already in UTF-8 (the
  *  collector converts from the module charset, § 2.4), ids unpacked. The order of the lists does not
  *  matter: Writer sorts everything (§ 2.5). `meta/tables` is not here - Writer derives it from Schema. */

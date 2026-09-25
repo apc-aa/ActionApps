@@ -32,7 +32,7 @@ final class FindingList
         return ($this->count["$level $code"] ?? 0) >= self::MAX_PER_CODE;
     }
 
-    /** $n more findings of the level and code, found but not made (SecurityLint::lint() stops making them) */
+    /** $n more findings of the level and code, found but not made (full()) */
     public function skipped(string $level, string $code, int $n): void
     {
         $this->count["$level $code"] = ($this->count["$level $code"] ?? 0) + $n;

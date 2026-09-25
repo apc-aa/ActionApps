@@ -6,10 +6,10 @@ namespace AA\Central\Package;
 
 use AA\Central\Package\Model\Package;
 
-/** What AA does after an import committed (design balicek-v1.md § 7.2 step 8) - the seam of ImportFinish
- *  to the AA routines that may take a DB handle of their own or clear caches, so none of them runs inside
- *  the transaction (§ 7.2 step 7). AaAfterCommit calls AA; tests use a fake. Each method throws when it
- *  did not do its job - ImportFinish makes that a row of its report. */
+/** What AA does after an import committed (design balicek-v1.md § 7.2 step 8) - the AA routines that may
+ *  take a DB handle of their own or clear caches, so none of them runs inside the transaction (§ 7.2 step 7).
+ *  AaAfterCommit calls AA; tests use a fake. Each method throws when it did not do its job - a row of the
+ *  report (Importer::finish()). */
 interface AfterCommit
 {
     /** the rights to a new module: its ACL object - what AA does for a module it creates (AddPermObject()) -

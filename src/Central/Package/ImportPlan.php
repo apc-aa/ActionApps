@@ -6,23 +6,15 @@ namespace AA\Central\Package;
 
 use AA\Central\Package\Model\Package;
 
-/** The plan of one import (design balicek-v1.md § 7.2 step 3; C4.4 part 3, Planner): everything the
- *  writer (part 4) needs and the preview shows - computed with no write.
- *
- *  For the writer:
- *  - write $package (the FixUps applied; texts UTF-8, source ids) with $map; module.lang_file = $langFiles;
- *  - rewrite each value with ImportRewrite - numeric(known($value)), RawBytes too - then convert a text
- *    with ModuleCharset::fromUtf8() to $charsets[module] / $groupCharsets[group] and THROW on null
- *    (the plan proved it converts - a null is a bug); check the length again after numeric()
- *    (TargetCharset: the contract) and fail before the write;
- *  - the view, e-mail and filter maps are empty: withViews() / withEmails() / withFilters() after the inserts.
- *  THE PLAN IS NO RESERVATION. Between the preview and the write another import or an admin may take a
- *  group name or a collection id; constant.group_id is not unique, so nothing in the DB would stop a
- *  merge (§ 7.1). The writer re-checks ImportTarget::groupTaken() for every mapped group name and that
- *  every collection id is free inside the transaction and aborts when one is taken.
- *
- *  Everything here quotes package text - names, docs, paths, finding refs, fix-ups: the UI must
- *  escape all of it (safe()). */
+/** The plan of one import (design balicek-v1.md § 7.2 step 3; Planner): everything the writer needs and the
+ *  preview shows - computed with no write. The writer writes $package (the FixUps applied; texts UTF-8,
+ *  source ids) with $map, rewriting each value with ImportRewrite and converting it to $charsets /
+ *  $groupCharsets (TargetCharset: the contract); the view, e-mail and filter maps come after the inserts.
+ *  THE PLAN IS NO RESERVATION: another import or an admin may take a group name or a collection id before
+ *  the write (constant.group_id is not unique - nothing in the DB would stop a merge), so the writer checks
+ *  them again inside the transaction.
+ *  Everything here quotes package text - names, docs, paths, finding refs, fix-ups: the UI must escape all
+ *  of it (safe()). */
 final readonly class ImportPlan
 {
     /**
@@ -51,7 +43,7 @@ final readonly class ImportPlan
     ) {}
 
     /** no E of the validator (there is no plan then) or of the planner: the writer may start - once the
-     *  S findings were confirmed in the preview (ImportConfirmation) and the rights checked (ImportAuthority);
+     *  S findings were confirmed in the preview (ImportConfirmation) and the rights checked (PS_INSTALL_APP);
      *  Importer::write() refuses without them */
     public function importable(): bool
     {

@@ -13,13 +13,15 @@ namespace AA\Central\Package\Model;
  *  RawBytes = source bytes the collector could not convert to UTF-8 (text columns, item values) - base64.
  *
  *  Object properties and item values cannot be NULL (<p>, <v> have no null="true"): Writer throws.
- *  Decision for the collector (C4.3 part 3): NULL item values of old rows (GetItemContent(),
- *  include/util.php:1080 - `number` NULL) are mapped to ''. */
+ *  NULL item values of old rows (GetItemContent() of `number` NULL) the collector maps to ''. */
 final readonly class Module
 {
     public const SITE   = 'site-module';
     public const SLICE  = 'slice-module';
     public const ALERTS = 'alerts-module';
+
+    /** module.type in AA => the wrapper */
+    public const TYPES = ['W' => self::SITE, 'S' => self::SLICE, 'Alerts' => self::ALERTS];
 
     /**
      * @param string                                                  $type     self::SITE | SLICE | ALERTS

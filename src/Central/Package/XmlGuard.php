@@ -94,6 +94,19 @@ final class XmlGuard
         });
     }
 
+    /** validate() of XML this AA wrote (Writer): parsed inside the same guard, without the limits of load()
+     *  @throws PackageRejected */
+    public function validateXml(string $xml, string $xsd): void
+    {
+        self::libxml(function () use ($xml, $xsd): void {
+            $dom = new DOMDocument();
+            if (!$dom->loadXML($xml, LIBXML_NONET) || self::errors()) {
+                throw self::rejected('The package is not well-formed XML');
+            }
+            $this->validate($dom, $xsd);
+        });
+    }
+
     /** package text for a message */
     public static function quote(string $text, int $bytes = 64): string
     {

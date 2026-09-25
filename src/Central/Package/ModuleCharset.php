@@ -4,17 +4,17 @@ declare(strict_types=1);
 
 namespace AA\Central\Package;
 
+use AA\Central\Package\Model\Module;
 use AA\Util\Langs;
 
 /** The charset of a module and the conversion of its texts to UTF-8 (design balicek-v1.md § 2.4).
  *
- *  Deviation from § 2.4 ("ConvertCharset as .aaxml"): strict iconv. ConvertCharset has no table for
- *  EUC-JP (MakeConvertTable() then calls exit), drops undefined bytes silently and is ~250x slower;
- *  iconv gives the same characters for windows-1250/1251 and iso-8859-1/2 (checked by the review). */
+ *  Strict iconv, not ConvertCharset: that one has no table for EUC-JP (then exit()s) and drops undefined
+ *  bytes silently (design § 15, C4.3(3)). */
 final class ModuleCharset
 {
-    /** module.type or package wrapper => the type of Langs::getFiles() - the list the import checks lang_file against */
-    private const LANG_TYPES = ['S' => 'news', 'W' => 'site', 'Alerts' => 'alerts', 'slice-module' => 'news', 'site-module' => 'site', 'alerts-module' => 'alerts'];
+    /** module.type => the type of Langs::getFiles() - the list the import checks lang_file against */
+    private const LANG_TYPES = ['S' => 'news', 'W' => 'site', 'Alerts' => 'alerts'];
 
     /** an old `.php3` lang_file read as `.php` (as modules/alerts/modedit.php:168) */
     public static function langFile(string $file): string
@@ -32,7 +32,8 @@ final class ModuleCharset
      *  Langs::getFiles(<type>); [] for another type @return array<string, string> file => name */
     public static function langFiles(string $type): array
     {
-        return isset(self::LANG_TYPES[$type]) ? Langs::getFiles(self::LANG_TYPES[$type]) : [];
+        $type = self::langType($type);
+        return ($type === null) ? [] : Langs::getFiles($type);
     }
 
     /** The lang_file a package carries for the module and its charset - the one AA uses at run time,
@@ -45,12 +46,18 @@ final class ModuleCharset
     public static function ofModule(array $module): ?array
     {
         $file = self::langFile((string) ($module['lang_file'] ?? ''));
-        $type = self::LANG_TYPES[$module['type'] ?? ''] ?? null;
+        $type = self::langType((string) ($module['type'] ?? ''));
         $lang = substr($file, 0, (int) strpos($file . '_', '_'));
         if (($type === null) || !isset(Langs::getNames()[$lang])) {
             return null;
         }
         return [isset(self::langFiles($module['type'])[$file]) ? $file : "{$lang}_{$type}_lang.php", Langs::getCharset($lang)];
+    }
+
+    /** the Langs type of a module.type or a package wrapper */
+    private static function langType(string $type): ?string
+    {
+        return self::LANG_TYPES[array_search($type, Module::TYPES, true) ?: $type] ?? null;
     }
 
     /** The value in UTF-8. A value the charset cannot hold (a byte it does not define, broken UTF-8,

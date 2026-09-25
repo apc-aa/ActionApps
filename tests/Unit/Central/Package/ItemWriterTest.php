@@ -45,11 +45,6 @@ final class ItemWriterTest extends TestCase
         $this->before = self::foreign();
     }
 
-    /** n-th id of FakeImportTarget::newId() - modules 1-3, objects 4-7, items 8-9, constants 10-11 */
-    private static function id(int $n): string
-    {
-        return sprintf('%032x', 0xa000 + $n);
-    }
 
     /** @param array<string, mixed> $values field => value or [key => value] @return array<string, array<int, array{value: string, flag: int}>> */
     private static function content(array $values, int $flag = 0): array

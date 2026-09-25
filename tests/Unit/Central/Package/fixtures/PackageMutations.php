@@ -24,6 +24,8 @@ trait PackageMutations
     private const SORT   = 'ee11bb22cc33dd44ee55ff6677889900';
     private const C1     = 'aa11bb22cc33dd44ee55ff6677889900';
     private const C2     = 'bb11bb22cc33dd44ee55ff6677889900';
+    /** a second Alerts module (alerts2()) */
+    private const ALERTS2 = '6b6b6b6b6b6b6b6b6b6b6b6b6b6b6b6b';
 
     private const W = 'site-module[' . self::SITE . ']';
     private const S = 'slice-module[' . self::SLICE . ']';
@@ -31,6 +33,7 @@ trait PackageMutations
     private const G = 'constant-group[ct_rubriky]';
 
     private static ?Package $example = null;
+    private static ?Package $written = null;
 
     private static function bootAa(): void
     {
@@ -53,7 +56,7 @@ trait PackageMutations
         require_once __DIR__ . '/../../../../../include/util.php';
         require_once __DIR__ . '/../../../../../modules/site/sitetree.php';
         require_once __DIR__ . '/FakeImportTarget.php';
-        require_once __DIR__ . '/FakeImportAuthority.php';
+        require_once __DIR__ . '/FakeInstallPermission.php';
         require_once __DIR__ . '/FakeAfterCommit.php';
         class_exists(\AA_Module_Site::class);
     }
@@ -61,6 +64,18 @@ trait PackageMutations
     private static function example(): Package
     {
         return self::$example ??= (new Reader())->read((string) file_get_contents(__DIR__ . '/aa-app-example.xml'))->package;
+    }
+
+    /** the example as Writer writes it (aa-app-example.written.xml) - other row order */
+    private static function written(): Package
+    {
+        return self::$written ??= (new Reader())->read((string) file_get_contents(__DIR__ . '/aa-app-example.written.xml'))->package;
+    }
+
+    /** n-th id of FakeImportTarget::newId() - of the example: modules 1-3, objects 4-7, items, constants */
+    private static function id(int $n): string
+    {
+        return sprintf('%032x', 0xa000 + $n);
     }
 
     /** a readonly model object with some constructor arguments changed */

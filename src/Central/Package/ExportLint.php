@@ -71,15 +71,16 @@ final class ExportLint
             $all($rows, 'alerts_collection', 'id'),
         );
         $lint      = new ReferenceLint($map);
-        $texts     = array_map(fn(string $id): Generator => $this->texts("$types[$id][$id]", $rows[$id]), array_keys($rows));
+        $of        = new LintTexts($this->schema);       // RawBytes (not converted to UTF-8) are not linted
+        $texts     = array_map(static fn(string $id): Generator => $of->rows("$types[$id][$id]", $rows[$id]), array_keys($rows));
         foreach ($groups as $group) {
-            $texts[] = $this->texts("constant-group[$group->name]", $group->rows);
+            $texts[] = $of->rows("constant-group[$group->name]", $group->rows);
         }
         $texts[] = LintTexts::code($values);      // properties that are code - no names or enum values
         foreach ($trees as $id => $tree) {
             $texts[] = LintTexts::conditions("$types[$id][$id]/spot-tree", $tree['spots']);
             foreach ($tree['spots'] as $spot) {          // the tag start the import reports (SecurityLint::SPOT_MARKUP)
-                foreach (SecurityLint::spotTexts("$types[$id][$id]/spot-tree/spot[{$spot['id']}]", $spot) as $at => $spot_text) {
+                foreach (LintTexts::spotTexts("$types[$id][$id]/spot-tree/spot[{$spot['id']}]", $spot) as $at => $spot_text) {
                     if (preg_match(SecurityLint::SPOT_TAG, $spot_text)) {
                         $this->add($at, LintFinding::WARNING, SecurityLint::SPOT_MARKUP, $spot_text);
                     }
@@ -117,20 +118,6 @@ final class ExportLint
     public static function published(array $findings): array
     {
         return array_map(static fn(array $f): array => ($f[1]->level === LintFinding::WARNING) ? [$f[0], new LintFinding(LintFinding::ERROR, $f[1]->code, $f[1]->ref, $f[1]->offset)] : $f, $findings);
-    }
-
-    /** Text columns of rows - [path, text] (LintTexts::rows()); RawBytes (not converted to UTF-8) are not linted.
-     *  @param array<string, list<array<string, mixed>>> $elements
-     *  @return Generator<int, array{string, string}> */
-    public function texts(string $path, array $elements): Generator
-    {
-        return (new LintTexts($this->schema))->rows($path, $elements);
-    }
-
-    /** Schema::rowPath() @param array<string, mixed> $row */
-    public function rowPath(string $path, string $element, array $row, int $i): string
-    {
-        return $this->schema->rowPath($path, $element, $row, $i);
     }
 
     /** references in columns the import maps directly (§ 8.2 "strukturované", § 6), e-mail headers

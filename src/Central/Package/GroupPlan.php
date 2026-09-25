@@ -6,26 +6,16 @@ namespace AA\Central\Package;
 
 use AA\Central\Package\Model\Module;
 use AA\Central\Package\Model\Package;
-use Throwable;
 
-/** The constant groups of an import plan (design balicek-v1.md § 5.3, § 7.1; Planner): their names on
- *  the target and the charset of their constants.
- *
- *  Names: kept when free, else `name_1`, `_2`, ... cut to 16 bytes as CopyConstants()
- *  (include/constedit_util.php:520-530) - never merged. Taken = on the target (ImportTarget::groupTaken(),
- *  which compares in the collation of lt_groupNames), given earlier in this plan, or another group name
- *  of the package; in the plan compared as strtolower(rtrim()) - as that collation does, so `Foo` and
- *  `foo` of one package do not meet in one group. A new name is [A-Za-z0-9_.-] (IdMap: it is spliced
- *  into templates) - other characters become `_`. A non-ASCII name is renamed even when free: its bytes
- *  would differ between constant.group_id (the group's charset) and field.input_show_func (each
- *  module's); so no non-ASCII name ever reaches groupTaken(). Core groups are not mapped.
- *
- *  Charset: the export rule of Collector::groups() - the owner's (a slice of the package); an unowned
- *  group has the charset of its user: the first module naming it in a field widget or in a text
- *  ({constant(s)/options:<g>} in rows other than `module` and in object code), a slice preferred.
- *  "First" is package order - the export walked the app in its own order, which the package does not
- *  keep; only an unowned group used by two slices of different charsets can differ. A group no module
- *  names (exported "unused"): the first slice, else utf-8. */
+/** The constant groups of an import plan (design balicek-v1.md § 5.3, § 7.1): their names on the target and
+ *  the charset of their constants. Core groups are not mapped.
+ *  Names: kept when free, else `name_1`, `_2`, ... cut to 16 bytes as CopyConstants() - never merged. Taken =
+ *  on the target (ImportTarget::groupTaken()), given earlier in the plan, or another group of the package,
+ *  compared as strtolower(rtrim()) like the collation of lt_groupNames. A new name is [A-Za-z0-9_.-] (it is
+ *  spliced into templates); a non-ASCII name is renamed even when free - its bytes would differ between
+ *  constant.group_id and field.input_show_func of modules of other charsets.
+ *  Charset: the export rule of Collector::groups() - the owner's, else the first module naming it (a slice
+ *  preferred), in package order; a group no module names: the first slice, else utf-8. */
 final class GroupPlan
 {
     /** I: a constant group gets another name on the target; ref = "old => new" */
@@ -104,16 +94,12 @@ final class GroupPlan
             }
         }
         $texts = iterator_to_array($this->texts->rows('', array_diff_key($m->rows, ['module' => 1]), true), false);
-        try {
-            array_push($texts, ...iterator_to_array(LintTexts::code(isset(Schema::SETTINGS_CLASSES[$m->type]) ? ObjectExport::values($m->type, $m->settings, $m->objects, '') : [], true), false));
-        } catch (Throwable) {       // a malformed object is Validator's E
-        }
+        array_push($texts, ...iterator_to_array(LintTexts::code(isset(Schema::SETTINGS_CLASSES[$m->type]) ? ObjectExport::values($m->type, $m->settings, $m->objects, '') : [], true), false));
         foreach ($texts as [, $text]) {
             RewriteFailed::check(preg_match_all(ReferenceRewriter::GROUP_RE, $text, $found));
             array_push($names, ...array_map('trim', $found[0]));
         }
-        return array_values(array_filter($names, static fn(string $n): bool => ($n !== '') && preg_match(IdMap::GROUP_RE, $n)
-            && !str_starts_with($n, '#sLiCe-') && ($n[0] !== '[') && !in_array($n, IdMap::CORE_GROUPS, true)));
+        return array_values(array_filter($names, static fn(string $n): bool => IdMap::isAppGroup($n) && preg_match(IdMap::GROUP_RE, $n)));
     }
 
     /** the first free of: the name with other characters as `_` (if that differs), then `<base>_1`, `_2`, ...

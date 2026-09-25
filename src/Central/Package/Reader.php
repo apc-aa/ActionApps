@@ -11,34 +11,21 @@ use AA\Central\Package\Model\RawBytes;
 use DOMElement;
 use InvalidArgumentException;
 
-/** aa-app XML of an untrusted source => package model (design balicek-v1.md § 3.1 steps 1-8, § 3.2;
- *  C4.4 part 1). XmlGuard parses safely, then: root and major version, pruning, XSD, model. The
- *  semantic checks of § 3.1 step 9 (lang_file, state_file, references inside the package, ...) come
- *  after, in the validator of C4.4 part 2 - so does sitetree::fromArray(), the gate of the spot tree.
+/** aa-app XML of an untrusted source => package model (design balicek-v1.md § 3.1 steps 1-8, § 3.2).
+ *  XmlGuard parses safely, then: root and major version, pruning, XSD, model. The semantic checks of § 3.1
+ *  step 9 and sitetree::fromArray() are the Validator's.
  *
- *  Pruning (§ 3.2), by the parent element: a column unknown to this AA's metabase is always dropped;
- *  a column this AA knows but a package never carries (reading_password, slice_id, view.id) stays for
- *  the XSD to reject. Elements, attributes and object classes unknown to format 1.0 are dropped only
- *  when the package has a higher minor version, otherwise the XSD rejects them. Each drop = a finding.
+ *  Pruning (§ 3.2): a column unknown to this AA's metabase is always dropped; one this AA knows but a package
+ *  never carries (reading_password) stays for the XSD to reject. Elements, attributes and object classes
+ *  unknown to format 1.0 are dropped only in a higher minor version, else the XSD rejects them. Each drop =
+ *  a finding.
  *
- *  The model - exact for any input:
- *  - column and key values are strings, SQL NULL null; integers (intValue columns, integer keys, spot
- *    ids) in the shortest decimal form ('007' => '7'); a key attribute left out is its XSD default;
- *  - a column the row leaves out (or leaves empty): ValueCodec::emptyValue() if meta/tables lists it for
- *    the row element, else absent = the importer takes this AA's default (§ 2.3); metabase order;
- *  - base64 that is valid UTF-8 is a string, else RawBytes (the format does not say which charset raw
- *    bytes have - valid UTF-8 cannot be told from converted text);
- *  - properties: name => scalar when the only value is index 0, else [index => scalar | subobject
- *    {id, class, props}]; items: {id, content: field => [index => {value, flag}]}; maps sorted by key
- *    as the writer sorts them, lists (rows, objects, items, spots, modules) in document order;
- *  - the spot tree in the form of sitetree::toArray(): ids strings, f int, v/c keyed or null, po/ch
- *    lists or null, [] where the `empty` attribute says so.
- *  It is a canonical form only for packages of THIS AA's Writer (every local column in meta/tables,
- *  lists sorted): for them Writer(Reader(x)) === x and Reader(Writer(Reader(x))) === Reader(x). A package
- *  of another AA version or a hand-edited one reads exactly, but absent columns and document order
- *  stay. The importer writes the model to the DB and must not serialise it again - Writer lists every
- *  local column in meta/tables, so "absent = this AA's default" would turn into "empty". Carrying
- *  meta/tables in the model would only serve that re-serialisation, which nothing needs.
+ *  The model: values strings, SQL NULL null, integers in the shortest decimal form; a column the row leaves
+ *  out is ValueCodec::emptyValue() when meta/tables lists it, else absent = this AA's default (§ 2.3);
+ *  base64 that is valid UTF-8 a string, else RawBytes; properties name => scalar (index 0 only) or
+ *  [index => scalar | subobject]; the spot tree as sitetree::toArray(). For packages of this AA's Writer
+ *  Writer(Reader(x)) === x; any other reads exactly, but the importer must not serialise the model again
+ *  ("absent = default" would become "empty").
  *
  *  Messages and findings quote package text (cut, XmlGuard::quote()) - escape them (safe()) when shown. */
 final class Reader

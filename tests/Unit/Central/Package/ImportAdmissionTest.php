@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 /**
  * Importer::write() before anything else, C4.4 part 5 (design balicek-v1.md § 3.3, § 7.2 step 2, Q-H2):
- * the right to install (ImportAuthority, PS_INSTALL_APP) and the confirmation of the S findings
+ * the right to install (PS_INSTALL_APP) and the confirmation of the S findings
  * (ImportConfirmation) - refused = ImportFailed before any statement.
  */
 
@@ -15,71 +15,27 @@ use AA\Central\Package\ImportFailed;
 use AA\Central\Package\Importer;
 use AA\Central\Package\ImportPlan;
 use AA\Central\Package\LintFinding;
-use AA\Central\Package\PermImportAuthority;
 use AA\Central\Package\Model\Package;
-use AA\Central\Package\Planner;
-use AA\Central\Package\Validator;
 use AA\Central\Package\WriteError;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
-use Tests\Unit\Central\Package\Fixtures\FakeAfterCommit;
-use Tests\Unit\Central\Package\Fixtures\FakeImportAuthority;
 use Tests\Unit\Central\Package\Fixtures\FakeImportTarget;
-use Tests\Unit\Central\Package\Fixtures\PackageMutations;
+use Tests\Unit\Central\Package\Fixtures\ImportFixture;
 use Tests\Unit\Central\Package\Fixtures\TableDb;
 
-require_once __DIR__ . '/fixtures/PackageMutations.php';
+require_once __DIR__ . '/fixtures/ImportFixture.php';
 
 final class ImportAdmissionTest extends TestCase
 {
-    use PackageMutations;
+    use ImportFixture;
 
-    private const USER   = 'importer-uid';
     private const SECRET = 'the secret of this AA';
-
-    private FakeImportTarget $target;
-    private FakeImportAuthority $authority;
-    private FakeAfterCommit $after;
-
-    public static function setUpBeforeClass(): void
-    {
-        self::bootAa();
-        require_once __DIR__ . '/fixtures/TableDb.php';
-    }
-
-    protected function setUp(): void
-    {
-        TableDb::reset();
-        $GLOBALS['spareDBs'] = [new TableDb(), new TableDb()];
-        $this->target        = new FakeImportTarget();
-        $this->authority     = new FakeImportAuthority();
-        $this->after         = new FakeAfterCommit();
-    }
-
-    protected function tearDown(): void
-    {
-        $GLOBALS['spareDBs'] = [];
-        TableDb::reset();
-    }
-
-    private function plan(?Package $package = null, ?FakeImportTarget $target = null): ImportPlan
-    {
-        $package ??= self::example();
-        $plan      = (new Planner($target ?? $this->target))->plan($package, (new Validator())->validate($package));
-        self::assertTrue($plan->importable());
-        return $plan;
-    }
 
     /** the example with code the security lint reports: a view reading $_SERVER, a spot including a file */
     private static function risky(): Package
     {
         $package = self::cell(self::example(), self::SLICE, 'view', 0, ['odd' => '{server:REMOTE_ADDR}']);
         return self::cell($package, self::SITE, 'site_spot', 1, ['content' => '{include:../../etc/passwd:readfile}']);
-    }
-
-    private function importer(?ImportConfirmation $confirmation = null): Importer
-    {
-        return new Importer($this->target, self::USER, null, 1_790_000_000, authority: $this->authority, confirmation: $confirmation ?? self::confirmation(), afterCommit: $this->after);
     }
 
     private static function confirmation(): ImportConfirmation
@@ -91,7 +47,7 @@ final class ImportAdmissionTest extends TestCase
     private function refused(ImportPlan $plan, ?string $token, string $reason, ?ImportConfirmation $confirmation = null): WriteError
     {
         try {
-            $this->importer($confirmation)->write($plan, $token);
+            $this->importer(confirmation: $confirmation ?? self::confirmation())->write($plan, $token);
             self::fail('the write was not refused');
         } catch (ImportFailed $e) {
             $cause = $e->getPrevious();
@@ -151,18 +107,17 @@ final class ImportAdmissionTest extends TestCase
         class_exists(\AA_Perm::class);
         $saved = [$GLOBALS['permission_uid'] ?? null, $GLOBALS['permission_to'] ?? null, $GLOBALS['auth'] ?? null];
         try {
-            $authority = new PermImportAuthority();
-            self::assertFalse($authority->mayInstall(''), 'nobody');
+            self::assertFalse(Importer::hasInstallPermission(''), 'nobody');
             $GLOBALS['auth'] = new class {
                 public function getUid(): string
                 {
                     return 'u1';
                 }
             };
-            $may = static function (string $aa, string $slice = '') use ($authority): bool {
+            $may = static function (string $aa, string $slice = ''): bool {
                 $GLOBALS['permission_uid'] = 'u1';        // the perms of u1 as AA_Perm::cache() leaves them
                 $GLOBALS['permission_to']  = ['aa' => [AA_ID => $aa], 'slice' => $slice ? [str_repeat('a', 32) => $slice] : []];
-                return $authority->mayInstall('u1');
+                return Importer::hasInstallPermission('u1');
             };
             self::assertTrue($may(\AA_Perm::ROLES['SUPER']['perm']), 'superadmin');
             self::assertTrue($may('U'), 'the letter granted alone');
@@ -170,7 +125,7 @@ final class ImportAdmissionTest extends TestCase
             self::assertFalse($may(\PS_ADD . \PS_NEW_USER . \PS_MANAGE_ALL_SLICES), 'PS_ADD is not enough (Q-H2)');
 
             $may(\AA_Perm::ROLES['SUPER']['perm']);
-            self::assertFalse($authority->mayInstall('u2'), 'only the logged-in user - no perms of another cached into the session');
+            self::assertFalse(Importer::hasInstallPermission('u2'), 'only the logged-in user - no perms of another cached into the session');
             self::assertSame('u1', $GLOBALS['permission_uid']);
         } finally {
             [$GLOBALS['permission_uid'], $GLOBALS['permission_to'], $GLOBALS['auth']] = $saved;
@@ -227,11 +182,12 @@ final class ImportAdmissionTest extends TestCase
         self::assertMatchesRegularExpression('/^[0-9a-f]{64}\z/', (string) $token);
 
         // the write plans again (another request): other new ids, the same package and findings - the same token
-        $plan = $this->plan(self::risky(), new FakeImportTarget([], [str_repeat('b', 31) . '1', str_repeat('b', 31) . '2', str_repeat('b', 31) . '3']));
+        $this->target = new FakeImportTarget([], [str_repeat('b', 31) . '1', str_repeat('b', 31) . '2', str_repeat('b', 31) . '3']);
+        $plan         = $this->plan(self::risky());
         self::assertNotSame($preview->map->modules(), $plan->map->modules());
         self::assertSame($token, self::confirmation()->token($plan, self::USER));
 
-        $report = $this->importer()->write($plan, $token);
+        $report = $this->importer(confirmation: self::confirmation())->write($plan, $token);
         self::assertCount(3, TableDb::rows('module'));
         self::assertSame(['{server:REMOTE_ADDR}'], array_column(array_filter(TableDb::rows('view'), static fn(array $r): bool => $r['odd'] === '{server:REMOTE_ADDR}'), 'odd'));
         $levels = array_map(static fn(array $f): string => $f[1]->level, $report->findings);

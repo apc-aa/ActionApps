@@ -6,6 +6,7 @@ namespace AA\Central\Package;
 
 use AA_MbC;
 use AA_Metabase;
+use AA_Module_Site;
 use LogicException;
 
 /** The aa-app package format 1.x as THIS AA knows it (design balicek-v1.md § 3.2, § 6): the XSD and
@@ -192,6 +193,27 @@ final class Schema
             }
         }
         return $known;
+    }
+
+    /** the row elements of a container (Validator): 1 = exactly one row, ? = at most one, * = any
+     *  @return array<string, string> */
+    public static function rowCounts(string $container): array
+    {
+        $counts = [];
+        foreach (self::CONTAINERS[$container][1] ?? [] as $child) {
+            $element = rtrim($child, '?*');
+            if (isset(self::ROWS[$element])) {
+                $counts[$element] = ($element === $child) ? '1' : substr($child, -1);
+            }
+        }
+        return $counts;
+    }
+
+    /** true: site.state_file names a control file of the source AA (flag ≠ 1, stateFileName() ≠ '') - site.php
+     *  would include it; never code of an app (§ 6.3) @param array<string, mixed> $site a site row */
+    public static function controlFile(array $site): bool
+    {
+        return ((int) ValueCodec::bytes($site['flag'] ?? '') !== 1) && (AA_Module_Site::stateFileName(ValueCodec::bytes($site['state_file'] ?? '')) !== '');
     }
 
     /** @return array<string, string> row element => its table in metabase_schema.php */

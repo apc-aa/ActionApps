@@ -30,59 +30,15 @@ use LogicException;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
-use Tests\Unit\Central\Package\Fixtures\FakeAfterCommit;
-use Tests\Unit\Central\Package\Fixtures\FakeImportAuthority;
 use Tests\Unit\Central\Package\Fixtures\FakeImportTarget;
-use Tests\Unit\Central\Package\Fixtures\PackageMutations;
+use Tests\Unit\Central\Package\Fixtures\ImportFixture;
 use Tests\Unit\Central\Package\Fixtures\TableDb;
 
-require_once __DIR__ . '/fixtures/PackageMutations.php';
+require_once __DIR__ . '/fixtures/ImportFixture.php';
 
 final class ImporterTest extends TestCase
 {
-    use PackageMutations;
-
-    private const USER = 'importer-uid';
-    private const NOW  = 1_790_000_000;
-    /** AUTO_INCREMENT starts - far from the source numbers (views 12, 13; e-mails 5, 7; filter 3) */
-    private const NEXT = ['view' => 1000, 'email' => 2000, 'alerts_filter' => 3000, 'site_spot' => 4000, 'profile' => 5000, 'constant' => 6000];
-
-    private FakeImportTarget $target;
-
-    public static function setUpBeforeClass(): void
-    {
-        self::bootAa();
-        require_once __DIR__ . '/fixtures/TableDb.php';
-    }
-
-    protected function setUp(): void
-    {
-        TableDb::reset();
-        TableDb::$next       = self::NEXT;
-        $GLOBALS['spareDBs'] = [new TableDb(), new TableDb()];      // a second handle is there - and must not be used
-        $this->target        = new FakeImportTarget();
-    }
-
-    protected function tearDown(): void
-    {
-        $GLOBALS['spareDBs'] = [];
-        TableDb::reset();
-    }
-
-    private function plan(?Package $package = null): ImportPlan
-    {
-        $package  ??= self::example();
-        $validation = (new Validator())->validate($package);
-        self::assertTrue($validation->importable());
-        $plan = (new Planner($this->target))->plan($package, $validation);
-        self::assertTrue($plan->importable(), json_encode(array_map(static fn(array $f): string => "{$f[1]->code} $f[0]", $plan->ofLevel(LintFinding::ERROR))));
-        return $plan;
-    }
-
-    private function importer(?ImportTarget $target = null): Importer
-    {
-        return new Importer($target ?? $this->target, self::USER, null, self::NOW, authority: new FakeImportAuthority(), afterCommit: new FakeAfterCommit());
-    }
+    use ImportFixture;
 
     /** DbImportTarget over TableDb for the questions, FakeImportTarget for the new ids (predictable) */
     private function dbTarget(): ImportTarget
@@ -131,13 +87,6 @@ final class ImporterTest extends TestCase
     private static function forced(ImportPlan $plan, \Closure $package): ImportPlan
     {
         return new ImportPlan(...array_merge(get_object_vars($plan), ['package' => $package($plan->package), 'findings' => []]));
-    }
-
-    /** n-th id of FakeImportTarget::newId() - the plan: modules 1-3, objects 4-7, constants 8-9; the
-     *  lt_groupNames row 10 (the writer) */
-    private static function id(int $n): string
-    {
-        return sprintf('%032x', 0xa000 + $n);
     }
 
     /** the rows of a table, only the named columns */
@@ -298,7 +247,7 @@ final class ImporterTest extends TestCase
     {
         $plan = self::forced($this->plan(), static fn(Package $p): Package => self::cell($p, self::SITE, 'site_spot', 1, ['spot_id' => '1']));
 
-        $e = $this->failure($plan);
+        $e = $this->rolledBack($plan);
 
         self::assertSame([WriteError::DB, 'site-module[' . self::SITE . ']/site_spot[1]'], [$e->getPrevious()->reason, $e->getPrevious()->path]);
     }
@@ -365,7 +314,7 @@ final class ImporterTest extends TestCase
 
     public function test_a_filter_shared_by_two_alerts_modules_is_written_once(): void
     {
-        $this->importer()->write($this->plan(self::alerts2(self::example(), '6b6b6b6b6b6b6b6b6b6b6b6b6b6b6b6b', 'XyZ98')));
+        $this->importer()->write($this->plan(self::alerts2(self::example(), self::ALERTS2, 'XyZ98')));
 
         self::assertSame([['id' => 3000, 'vid' => 1000]], self::cols('alerts_filter', 'id', 'vid'));
         self::assertSame([['collectionid' => 'K0001', 'filterid' => 3000], ['collectionid' => 'K0002', 'filterid' => 3000]], self::cols('alerts_collection_filter', 'collectionid', 'filterid'));
@@ -452,7 +401,7 @@ final class ImporterTest extends TestCase
         $plan                    = $this->plan();
         $this->target->groups[] = 'ct_rubriky';         // another import or an admin, between preview and write
 
-        $e = $this->failure($plan);
+        $e = $this->rolledBack($plan);
 
         self::assertSame([WriteError::TAKEN, 'constant-group[ct_rubriky]'], [$e->getPrevious()->reason, $e->getPrevious()->path]);
         self::assertSame(['BEGIN', 'ROLLBACK'], TableDb::$log);
@@ -463,7 +412,7 @@ final class ImporterTest extends TestCase
         $plan                         = $this->plan();
         $this->target->collections[] = 'K0001';
 
-        $e = $this->failure($plan);
+        $e = $this->rolledBack($plan);
 
         self::assertSame([WriteError::TAKEN, 'alerts_collection[AbC12]'], [$e->getPrevious()->reason, $e->getPrevious()->path]);
         self::assertSame(['BEGIN', 'ROLLBACK'], TableDb::$log);
@@ -490,7 +439,7 @@ final class ImporterTest extends TestCase
         $plan          = (new Planner($target))->plan(self::example(), (new Validator())->validate(self::example()));
         TableDb::$fail = static fn(string $sql): bool => str_ends_with($sql, 'FOR UPDATE');
 
-        $e = $this->failure($plan, $target, RuntimeException::class);
+        $e = $this->rolledBack($plan, $target, RuntimeException::class);
 
         self::assertStringContainsString('the locking read of the constant group ct_rubriky failed', $e->getMessage());
         self::assertSame('ROLLBACK', end(TableDb::$log));
@@ -505,7 +454,7 @@ final class ImporterTest extends TestCase
         TableDb::$tables['constant'][] = ['id' => str_repeat('e', 32), 'group_id' => 'lt_groupNames', 'name' => 'CT_rubriky ', 'value' => 'CT_rubriky '];
         TableDb::$log = [];
 
-        $e = $this->failure($plan, $target);
+        $e = $this->rolledBack($plan, $target);
 
         self::assertSame(WriteError::TAKEN, $e->getPrevious()->reason);
         self::assertSame([], TableDb::writes());
@@ -517,7 +466,7 @@ final class ImporterTest extends TestCase
         $plan   = (new Planner($target))->plan(self::example(), (new Validator())->validate(self::example()));
         TableDb::$tables['alerts_collection'][] = ['id' => 'K0001', 'module_id' => str_repeat('e', 32)];
 
-        $e = $this->failure($plan, $target);
+        $e = $this->rolledBack($plan, $target);
 
         self::assertSame([WriteError::TAKEN, 'alerts_collection[AbC12]'], [$e->getPrevious()->reason, $e->getPrevious()->path]);
     }
@@ -564,7 +513,7 @@ final class ImporterTest extends TestCase
             }
         };
 
-        $e = $this->failure($plan, $target);
+        $e = $this->rolledBack($plan, $target);
 
         self::assertSame([WriteError::TAKEN, 'constant-group[ct_rubriky]/lt_groupNames'], [$e->getPrevious()->reason, $e->getPrevious()->path]);
         self::assertSame(['BEGIN', 'ROLLBACK'], [TableDb::$log[0], end(TableDb::$log)]);
@@ -578,7 +527,7 @@ final class ImporterTest extends TestCase
         $plan = $this->plan();
         $bad  = new ImportPlan(...array_merge(get_object_vars($plan), ['charsets' => [self::SLICE => 'iso-8859-1'] + $plan->charsets]));    // `č`
 
-        $e = $this->failure($bad);
+        $e = $this->rolledBack($bad);
 
         self::assertSame([WriteError::CHARSET, 'slice-module[' . self::SLICE . ']/view[12]/name'], [$e->getPrevious()->reason, $e->getPrevious()->path]);
         self::assertSame([], array_filter(TableDb::$tables));
@@ -590,7 +539,7 @@ final class ImporterTest extends TestCase
         $plan = $this->plan(self::cell(self::example(), self::SLICE, 'view', 0, ['name' => $name]));
         self::assertContains('may-be-too-long', array_map(static fn(array $f): string => $f[1]->code, $plan->findings), 'the plan warned');
 
-        $e = $this->failure($plan);
+        $e = $this->rolledBack($plan);
 
         self::assertSame([WriteError::TOO_LONG, 'slice-module[' . self::SLICE . ']/view[12]/name'], [$e->getPrevious()->reason, $e->getPrevious()->path]);
         self::assertStringContainsString('122 characters > 120', $e->getMessage());
@@ -606,14 +555,14 @@ final class ImporterTest extends TestCase
         self::assertFalse($plan->importable());
         self::assertSame(['E too-long 140 bytes > 120'], array_map(static fn(array $f): string => "{$f[1]->level} {$f[1]->code} {$f[1]->ref}", $plan->ofLevel(LintFinding::ERROR)));
 
-        $e = $this->failure(self::forced($plan, static fn(Package $p): Package => $p));
+        $e = $this->rolledBack(self::forced($plan, static fn(Package $p): Package => $p));
 
         self::assertSame([WriteError::TOO_LONG, 'slice-module[' . self::SLICE . ']/view[13]/name'], [$e->getPrevious()->reason, $e->getPrevious()->path]);
         self::assertStringContainsString('140 bytes > 120', $e->getMessage());
     }
 
     /** @param class-string<\Throwable> $cause */
-    private function failure(ImportPlan $plan, ?ImportTarget $target = null, string $cause = WriteError::class): ImportFailed
+    private function rolledBack(ImportPlan $plan, ?ImportTarget $target = null, string $cause = WriteError::class): ImportFailed
     {
         try {
             $this->importer($target)->write($plan);

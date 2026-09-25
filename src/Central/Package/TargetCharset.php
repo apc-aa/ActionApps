@@ -7,35 +7,20 @@ namespace AA\Central\Package;
 use AA\Central\Package\Model\Module;
 use AA\Central\Package\Model\Package;
 use AA\Central\Package\Model\RawBytes;
-use Throwable;
 
-/** § 2.4 of design balicek-v1.md, the import side (C4.4 part 3): every value the importer writes -
- *  row columns, settings and object properties (object names included), spot names, variables and
- *  conditions, item values, constants - converts from UTF-8 to the charset of its target module
- *  (ModuleCharset::fromUtf8(): strict iconv + round trip, STATELESS charsets only) and fits its column
- *  (Schema::lengthLimits(); item values: the item columns carried as pseudo fields - `flags...........`,
- *  char(30) - Schema::tableLimits('item'), content.text has none). An unconvertible value or a definite overflow is an E: the import stops
- *  before any write.
+/** The charset and length check of an import plan (design balicek-v1.md § 2.4): every value the importer
+ *  writes converts from UTF-8 to the charset of its target module (ModuleCharset::fromUtf8()) and fits its
+ *  column (Schema::lengthLimits(); item pseudo fields: the item table). An unconvertible value or an
+ *  overflow is an E: the import stops before any write.
  *
- *  THE CONTRACT WITH THE WRITER (part 4). The plan stores no converted value. The writer rewrites
- *  with ImportRewrite - numeric(known($value)) - on the UTF-8 text and converts LAST with the plan's
- *  charset and the same ModuleCharset::fromUtf8(); a null there is a bug: throw (rollback).
- *  - Both checks here run on known($value) - what the writer converts but the view / e-mail numbers.
- *    The rewrite replaces ASCII runs by ASCII at ASCII delimiters and the charsets are stateless ASCII
- *    supersets, so the numbers cannot make a convertible value unconvertible.
- *  - The numbers come from AUTO_INCREMENT only when the writer inserts the rows: each number in a known
- *    form (ReferenceRewriter::numericRefs()) may grow to ID_DIGITS digits. A worst case over the limit is
- *    a W MAY_BE_TOO_LONG - the only W here; the writer MUST check the length again after numeric() and
- *    fail before the commit.
- *  - Every limit is in BYTES too: AA_Metabase writes through AA_MbT::getVarset4Data(), which cuts a value
- *    of any (N) column to N bytes - a utf-8 / EUC-JP text of at most N characters but more bytes would be
- *    cut inside a character. So more than N characters of a char(N) / varchar(N) = E "<n> characters > N",
- *    else more than N bytes = E "<n> bytes > N" (tooLong(); binary/varbinary/text/blob count bytes anyway).
- *  RawBytes (source bytes the export could not convert) are written as they are - the target module gets
- *  the package's lang_file, so the charset they were read in - after the same ImportRewrite (safe on
- *  bytes, see there); their length is checked, and in a utf-8 module they must be valid UTF-8 (E CHARSET):
- *  MySQL outside strict mode cuts a utf-8 column at the first invalid byte - after the SecurityLint saw
- *  the whole text.
+ *  The contract with the writer (RowStore): the plan stores no converted value; both run measure() and
+ *  tooLong() on the same rewritten text. Here known($value) - the view and e-mail numbers come only when the
+ *  writer inserts the rows, so each may grow to ID_DIGITS digits: over the limit is the only W
+ *  (MAY_BE_TOO_LONG), and the writer checks the length again after numeric(). The rewrite puts ASCII at
+ *  ASCII delimiters and the charsets are stateless ASCII supersets, so it cannot make a value unconvertible.
+ *  Limits count BYTES too: AA_MbT::getVarset4Data() cuts an (N) column to N bytes, inside a character.
+ *  RawBytes are written as they are (the module keeps the package's lang_file); in a utf-8 module they must
+ *  be valid UTF-8 - MySQL outside strict mode cuts at the first invalid byte, after the SecurityLint saw it.
  *  Findings quote package text - escape them (safe()) when shown. */
 final class TargetCharset
 {
@@ -76,16 +61,11 @@ final class TargetCharset
             $charset = $charsets[$m->id];
             $path    = "$m->type[$m->id]";
             $this->rows($path, $m->rows, $charset);
-            try {       // a malformed object is Validator's E
-                $values = isset(Schema::SETTINGS_CLASSES[$m->type]) ? ObjectExport::values($m->type, $m->settings, $m->objects, $path) : [];
-            } catch (Throwable) {
-                $values = [];
-            }
-            foreach ($values as [$at, , , $value]) {
+            foreach (isset(Schema::SETTINGS_CLASSES[$m->type]) ? ObjectExport::values($m->type, $m->settings, $m->objects, $path) : [] as [$at, , , $value]) {
                 $this->value($at, $value, $charset);
             }
             foreach (($m->type === Module::SITE) && is_array($m->spotTree['spots'] ?? null) ? $m->spotTree['spots'] : [] as $spot) {
-                foreach (SecurityLint::spotTexts("$path/spot-tree/spot[" . ValueCodec::bytes($spot['id'] ?? '') . ']', (array) $spot) as $at => $text) {
+                foreach (LintTexts::spotTexts("$path/spot-tree/spot[" . ValueCodec::bytes($spot['id'] ?? '') . ']', (array) $spot) as $at => $text) {
                     $this->value($at, $text, $charset);
                 }
             }

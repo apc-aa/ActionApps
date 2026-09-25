@@ -45,15 +45,9 @@ final class ObjectWriterTest extends TestCase
     protected function setUp(): void
     {
         $this->fixtureSetUp();
-        TableDb::$next['object_integer'] = 100;
-        $this->before                    = self::foreign();
+        $this->before = self::foreign();
     }
 
-    /** n-th id of FakeImportTarget::newId() - modules 1-3, objects 4-7 */
-    private static function id(int $n): string
-    {
-        return sprintf('%032x', 0xa000 + $n);
-    }
 
     /** [object_id, property, priority, value] of a table's rows (the value as a string) */
     private static function objectRows(string $table = 'object_text', ?array $of = null): array

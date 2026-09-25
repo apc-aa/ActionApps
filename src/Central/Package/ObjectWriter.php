@@ -7,44 +7,22 @@ namespace AA\Central\Package;
 use AA_Property;
 use LogicException;
 
-/** Writes the objects of an import plan (design balicek-v1.md § 5.4, § 7.2 step 5.6; C4.4 part 4c) -
- *  inside the transaction Importer opens, after RowWriter (the map has the view and e-mail numbers).
+/** Writes the objects of an import plan (design balicek-v1.md § 5.4, § 7.2 step 5.6) inside the transaction
+ *  Importer opens, after RowWriter: per module its settings (id ImportPlan::$settingsIds), then its top-level
+ *  objects with their subobjects. Every id is the plan's - never one of the package or the target as it is
+ *  (AA_Object::deleteObjects() deletes by `aa_subobjects`); aa_owner = the new module. Values go through
+ *  RowStore::value() as the rows (module ids and `{set:<id>}` become the new ones).
  *
- *  Per module in package order: its settings (<settings>, the class of the module type, id = the derived
- *  ImportPlan::$settingsIds - string2id(class . new module id)), then its top-level objects (AA_Aliasfunc,
- *  AA_Set) with their subobjects (AA_Condition in AA_Set.conds, AA_Sortorder in .sort). Every id is the
- *  plan's: the settings id, or IdMap::longId() of the package id - never an id of the package or of the
- *  target as it is (AA_Object::deleteObjects() deletes by `aa_subobjects`).
- *  Owner (aa_owner) = the new module, subobjects too. Every value goes through RowStore::value() -
- *  numeric(known()), the module charset last, as the rows and as the plan measured it (ObjectExport::map()
- *  gives the same paths) - so module ids in translate_slice, fieldslice, AA_Set.slices and `{set:<id>}` in
- *  code are the new ones; the property holding a subobject gets the subobject's NEW id.
+ *  The rows AA_Object::save() writes, not save() itself (design § 15, C4.4(4c)): save() first DELETEs the
+ *  rows of the ids its stored aa_subobjects lists, die()s on a refused statement and reports no failed row.
+ *  ObjectWriterTest proves the rows equal to save()'s: a row per class property the object has (a missing
+ *  one gets none - load() reads ''), aa_type, aa_owner, aa_name, aa_subobjects (computed from what is
+ *  written, never taken from the package).
  *
- *  THE ROWS AA_Object::save() WRITES, NOT save() ITSELF (a deviation from § 5.4 "through the AA_Object
- *  API", confirmed in the C4.4(4c) review): save() first deletes every row of its id and of the ids its stored aa_subobjects lists
- *  (delete() - DELETE on the target), writes through Cvarset without `nohalt` (a refused statement die()s
- *  the request instead of throwing) and AA_Property::_saveRow() reports nothing - a half-written object
- *  would go unnoticed. So the rows are built here in save()'s format and inserted through RowStore
- *  (`nohalt`, WriteError, the transaction's handle), ObjectWriterTest proves them equal to what
- *  save() writes (AA saves, ObjectExport exports, this writes back):
- *  - each class property the object has, in getClassProperties() order, in AA_Property::storageType($type)
- *    (object_text, object_integer for bool/int, object_float); a multi-value property one row per value,
- *    priority = its index; a subobject first with all its rows, then the parent's row with its id;
- *  - aa_type (the class), aa_owner, aa_name (a @name PHP takes for true - save() skips '' and '0'), aa_subobjects (the ids of the subobjects
- *    written here, in save()'s order - computed, never taken from the package).
- *  A property the package lacks gets no row - load() reads it as '' (as an object stored before the
- *  property existed); save() would write '' for a missing single-valued one.
- *
- *  Only allowlisted classes (Schema::TOP_CLASSES, SUB_CLASSES in their property, SETTINGS_CLASSES by the
- *  module type) and only properties of the class (never aa_*, never the installation's settings of
- *  ObjectExport::isLeftOut() - ga_id, alternate_url, app_*, which FixUps drop): the Validator's E, here a
- *  LogicException before the first row of the object - the whole object tree is built before it is
- *  written.
- *
- *  Follow-up for part 6: once a "keep module ids" restore mode exists (§ 7.1), the derived settings ids
- *  are no longer those of fresh modules - check them free inside the transaction (object_text has no key
- *  that would refuse a second object of the id).
- *
+ *  Only allowlisted classes and their own properties (never aa_*, never ObjectExport::isLeftOut()): the
+ *  Validator's E, here a LogicException before the first row of the object tree.
+ *  A "keep module ids" restore mode (§ 7.1) must check the derived settings ids free inside the transaction:
+ *  object_text has no key that would refuse a duplicate.
  *  @internal only Importer calls it - the rights and the S confirmation are checked there (Importer::write()). */
 final class ObjectWriter
 {

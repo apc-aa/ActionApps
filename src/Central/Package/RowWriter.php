@@ -9,42 +9,20 @@ use AA\Central\Package\Model\Module;
 use AA_Metabase;
 use LogicException;
 
-/** Writes the table rows of an import plan (design balicek-v1.md § 7.2 step 5.1-5.5, § 6; C4.4 part 4a)
- *  - inside the transaction Importer opens; objects and items are part 4c.
+/** Writes the table rows of an import plan (design balicek-v1.md § 7.2 steps 5.1-5.5, § 6) inside the
+ *  transaction Importer opens: views and e-mails first without id (AUTO_INCREMENT => their maps), the
+ *  alerts filters, the numbers into the texts (UPDATE); then per module `module` and the rows of its type;
+ *  then the constant groups after a locking re-check of the name. Every value through RowStore.
  *
- *  1. view and email rows of every module WITHOUT id (AUTO_INCREMENT), their texts known()-rewritten
- *     (long ids, alerts field ids, groups) => the view and e-mail maps;
- *  2. alerts_filter rows once all views have numbers (`vid` is a view; FixUps left a shared filter in
- *     its first module only) => the filter map; no text names a filter;
- *  3. the numbers into the texts of step 1: UPDATE of the columns numeric() changed;
- *  4. per module in package order: `module`, then the rows of its type -
- *     slice, field, profile (uid '*'); site (structure = serialize(sitetree::fromArray()) of the
- *     rewritten tree, or the '' of FixUps), site_spot, relation (`uses`); alerts_collection and its
- *     filter / howoften rows;
- *  5. constant groups: a locking re-check of the name (ImportTarget::groupTaken($lock)), lt_groupNames
- *     (name = value = the new name), constant_slice, constant.
- *  Every value through RowStore (numeric(known()), the charset last, the lengths).
- *
- *  Structured references are mapped here, not rewritten: slice.vid, profile input_view, alerts_filter.vid
- *  (views), emailid_* (e-mails), filterid (filters), collection ids, uses / slice_id / mlxctrl / group
- *  owner (modules), constant ids. Outside the package:
- *  - slice.vid, profile input_view: the number stays (the Validator's W - as the rewrite leaves unknown
- *    numbers in texts);
- *  - slice.mlxctrl: '' (§ 6.2 - a slice of the target would control this one's languages);
- *  - alerts_filter.vid, emailid_*, filterid, uses, alerts_collection.slice_id, a group owner: never - the
- *    Validator's E (a new collection mailing a view or template of the target to readers the package
- *    brings); here a LogicException. A 0 / empty view or e-mail is "none" and stays.
- *
- *  Alerts field ids (`alerts1....<cid>`) of a collection the package does not carry stay as they are
- *  (the planner's I Planner::ALERTS_FIELD_KEPT): AA looks such a field up only through a collection whose
- *  reader slice (alerts_collection.slice_id) is this new slice, so it is an inert definition; dropping it
- *  would change the package after the preview and lose the field's item values.
- *
+ *  Structured references are mapped, not rewritten. Outside the package: slice.vid and profile input_view
+ *  stay (the Validator's W); slice.mlxctrl = '' (a slice of the target would control this one's languages);
+ *  alerts_filter.vid, emailid_*, filterid, uses, alerts_collection.slice_id and a group owner never - the
+ *  Validator's E (a new collection mailing a view or template of the target to readers the package brings),
+ *  here a LogicException. 0 / empty is "none".
+ *  Alerts fields of a collection the package does not carry stay (Planner::ALERTS_FIELD_KEPT): inert.
  *  @internal only Importer calls it - the rights and the S confirmation are checked there (Importer::write()). */
 final class RowWriter
 {
-    /** module.type of a package wrapper */
-    private const MODULE_TYPES = [Module::SLICE => 'S', Module::SITE => 'W', Module::ALERTS => 'Alerts'];
     /** relation.flag of "uses modules" - REL_FLAG_MODULE_DEPEND, include/constants.php */
     private const USES_FLAG = 1;
 
@@ -77,7 +55,7 @@ final class RowWriter
                 }
             }
         }
-        $this->map     = $this->map->withViews($numbers['view'])->withEmails($numbers['email']);
+        $this->map     = $this->map->withNumbers('view', $numbers['view'])->withNumbers('email', $numbers['email']);
         $this->rewrite = new ImportRewrite($this->map);
         $filters       = [];
         foreach ($plan->package->modules as $m) {
@@ -87,7 +65,7 @@ final class RowWriter
                 $filters[(int) ValueCodec::bytes($row['id'] ?? '')] = $number;
             }
         }
-        $this->map = $this->map->withFilters($filters);
+        $this->map = $this->map->withNumbers('filter', $filters);
         $this->renumber();
         foreach ($plan->package->modules as $m) {
             $this->module($m);
@@ -126,7 +104,7 @@ final class RowWriter
         $id = $this->moduleId($m);
         $this->insert($m, 'module', $m->rows['module'][0] ?? [], 0, [
             'id'         => $id,
-            'type'       => self::MODULE_TYPES[$m->type],
+            'type'       => array_search($m->type, Module::TYPES, true),
             'lang_file'  => $this->plan->langFiles[$m->id] ?? throw new LogicException("No lang_file for module $m->id"),
             'deleted'    => 0,
             'created_by' => $this->user,
@@ -177,24 +155,7 @@ final class RowWriter
         $tree = $m->spotTree ?? throw new LogicException("Site $m->id has neither a spot tree nor site.structure");
         $text = fn(mixed $value, string $at): string => (string) $this->store->value(ValueCodec::bytes($value), $this->charset($m), $this->rewrite, $at);
         foreach (is_array($tree['spots'] ?? null) ? $tree['spots'] : [] as $k => $spot) {
-            $at        = "$m->type[$m->id]/spot-tree/spot[" . ValueCodec::bytes($spot['id'] ?? '') . ']';
-            $spot['n'] = $text($spot['n'] ?? '', "$at@name");
-            if (is_array($spot['v'] ?? null)) {
-                $vars = [];
-                foreach (array_values($spot['v']) as $j => $var) {
-                    $name        = $text($var, "$at/var[#$j]");
-                    $vars[$name] = $name;           // keyed by its name (sitetree::fromArray())
-                }
-                $spot['v'] = $vars;
-            }
-            if (is_array($spot['c'] ?? null)) {
-                $conds = [];
-                foreach (array_keys($spot['c']) as $j => $var) {
-                    $conds[$text((string) $var, "$at/cond[#$j]@var")] = $text($spot['c'][$var], "$at/cond[#$j]");
-                }
-                $spot['c'] = $conds;
-            }
-            $tree['spots'][$k] = $spot;
+            $tree['spots'][$k] = LintTexts::mapSpot("$m->type[$m->id]/spot-tree/spot[" . ValueCodec::bytes($spot['id'] ?? '') . ']', $spot, $text);
         }
         return serialize(\sitetree::fromArray($tree));
     }

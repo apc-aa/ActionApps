@@ -8,53 +8,21 @@ use AA\Central\Package\Model\Module;
 use AA_Metabase;
 use LogicException;
 
-/** Writes the items of an import plan (design balicek-v1.md § 6.2, § 7.2 step 5.7; C4.4 part 4c) - only
- *  when the package carries them - inside the transaction Importer opens, after the objects.
- *
- *  Per item: the `item` row (item.id is the PRIMARY key - a colliding id fails there), then its `content`
- *  rows.
- *  - id: the plan's new id (IdMap::longId()), slice_id: the new slice. The item columns the package
- *    carries as pseudo fields (GetItemContent(): `status_code.....`, `publish_date....`, `post_date.......`,
- *    `flags...........`, ...) are the columns of the row as they are; the ones it never carries
- *    (Collector::ITEM_LEFT_OUT - state of the source AA) get: posted_by = the importing user, the rest the
- *    local default (counters 0, externally_fed '', edited_by NULL); short_id is AUTO_INCREMENT.
- *  - content rows as AA_Field_Writer::contentRow() builds them: a field with text_stored (its row in the
- *    package; a column the row lacks: the local default 1; a field the slice lacks - the Validator's W -
- *    too) keeps the value in `text`, `number` = its key (a position, or a translation >= AA_Value::
- *    MAX_INDEX), flag | FLAG_TEXT_STORED; any other field the value in `number`, flag without it, `text`
- *    NULL (contentRow()). GetItemContent() reads a number row with FLAG_HTML added - it stays set here,
- *    the read is the same.
- *  - values through RowStore - numeric(known()) and the module charset last: the ids of package items in
- *    relation fields (and anywhere in a text) are the new ones, a relation to an item outside the package
- *    stays (ItemLint: W). Password fields (input_insert_func `pwd`, as AA_Field::getType()) carry HASHES:
- *    written byte for byte, no rewrite, no conversion (ASCII anyway) - readers of a moved ReaderManagement
- *    slice log in. Their logins must be free on the target: ItemLint's E in the plan (the direct insert
- *    skips isUsernameFree()).
- *  - field_id through ImportRewrite::known(): an alerts field `alerts1....<cid>` / `alerts2....<cid>` of a
- *    collection in the package gets the new collection id, as RowWriter renames field.id (§ 6.4); the
- *    values of such an alerts2 field - the reader's subscriptions `f<alerts_filter.id>` (alerts_sending.php)
- *    - go through the filter map; one naming a filter outside the package stays (ItemLint: I).
- *
- *  Confirmed in the C4.4(4c) review (the design doc records the deviation):
- *
- *  A DIRECT, SCHEMA-DRIVEN INSERT, NOT ItemContent::storeItem() (a deviation from § 6.2 / § 7.2 5.7):
- *  storeItem() stores what a user enters, not a stored state -
- *  - the inserters (AA_Inserter::factoryByField()) run per field: `pwd` hashes the hash again (every
- *    reader locked out), `uid` puts the importer in, `2fa` makes a new secret, `ids` with `y`/`z` writes
- *    the other item's reverse relation and with `t` creates tag items, `pre` with add2constant adds
- *    constants to a group (maybe of the target), the file inserter moves files;
- *  - an insert sets post_date = now, posted_by = the importer, publish/expiry defaults, hit_* = 0;
- *  - computed fields evaluate the package's AA expressions at install time, ITEM_NEW runs the target's
- *    planned tasks and events (e-mails), FeedItem() feeds other slices, AA_Log / ChangesMonitor write,
- *    AA::Pagecache() and the item caches are touched, AA_Slice::getModule() caches the uncommitted slice;
- *  - its statements halt (die()) instead of throwing, and it re-reads every item.
- *  Nothing here takes a second handle: every statement is RowStore's AA_Metabase::doInsert('nohalt') on
- *  the transaction's handle. What storeItem() would do after the store and an import still needs (the
- *  page cache of the new slice) is a step of ImportFinish after the commit.
- *
- *  Follow-up for part 6 (chunk mode): one multi-row INSERT per item (or per chunk) for its content rows
- *  instead of one statement per value.
- *
+/** Writes the items of an import plan (design balicek-v1.md § 6.2, § 7.2 step 5.7) inside the transaction
+ *  Importer opens, after the objects: per item the `item` row (a colliding id fails on its PRIMARY key),
+ *  then its `content` rows as AA_Field_Writer::contentRow() builds them.
+ *  - id and slice_id are the new ones; the item columns carried as pseudo fields (`status_code.....`, ...)
+ *    are written as they are, of the others (Collector::ITEM_LEFT_OUT) posted_by = the importing user, the
+ *    rest the local default.
+ *  - Values go through RowStore (numeric(known()), the charset last): relations to package items get the
+ *    new ids, one outside stays (ItemLint: W). Password fields (`pwd`) carry HASHES - written byte for byte,
+ *    so readers of a moved ReaderManagement slice log in; their logins must be free on the target (ItemLint's
+ *    E: the direct insert skips isUsernameFree()).
+ *  - Alerts fields `alertsN....<cid>` get the new collection id, subscriptions `f<filter id>` the new filter.
+ *  Not ItemContent::storeItem() (design § 15, C4.4(4c)): it stores user input - hashes the hashes again,
+ *  sets author and 2FA secrets, writes reverse relations and tags, feeds, runs events and computed fields,
+ *  die()s on a DB error and may take a second handle. Every statement here is RowStore's on the
+ *  transaction's handle.
  *  @internal only Importer calls it - the rights and the S confirmation are checked there (Importer::write()). */
 final class ItemWriter
 {

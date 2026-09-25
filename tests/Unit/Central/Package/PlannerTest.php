@@ -33,7 +33,6 @@ final class PlannerTest extends TestCase
 {
     use PackageMutations;
 
-    private const ALERTS2 = '6b6b6b6b6b6b6b6b6b6b6b6b6b6b6b6b';
     private const SLICE_B = '7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c';
 
     public static function setUpBeforeClass(): void
@@ -48,11 +47,6 @@ final class PlannerTest extends TestCase
         return (new Planner($target ?? new FakeImportTarget()))->plan($package, $validation);
     }
 
-    /** n-th id of FakeImportTarget::newId() */
-    private static function id(int $n): string
-    {
-        return sprintf('%032x', 0xa000 + $n);
-    }
 
     /** @return list<string> "<level> <code> <path>" of the planner, sorted; only codes starting with $prefix */
     private static function findings(ImportPlan $plan, string $prefix = ''): array

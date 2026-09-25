@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Central\Package\Fixtures;
 
+use AA\Central\Package\ImportConfirmation;
 use AA\Central\Package\ImportFailed;
 use AA\Central\Package\Importer;
 use AA\Central\Package\ImportPlan;
+use AA\Central\Package\ImportTarget;
+use AA\Central\Package\LintFinding;
 use AA\Central\Package\Model\Package;
 use AA\Central\Package\Planner;
 use AA\Central\Package\Validator;
@@ -14,8 +17,8 @@ use RuntimeException;
 
 require_once __DIR__ . '/PackageMutations.php';
 
-/** What the writer tests share (ImportGuardTest, ObjectWriterTest, ItemWriterTest): TableDb with rows
- *  the target had before the import (foreign()), the example planned and written, a failing statement. */
+/** What the writer tests share: TableDb with rows the target had before the import (foreign()), the
+ *  example planned and written, a failing statement. */
 trait ImportFixture
 {
     use PackageMutations;
@@ -30,7 +33,12 @@ trait ImportFixture
     /** a foreign item of the foreign slice */
     private const FITEM = 'f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3';
 
+    private const USER = 'importer-uid';
+    private const NOW  = 1_790_000_000;
+
     private FakeImportTarget $target;
+    private FakeInstallPermission $authority;
+    private FakeAfterCommit $after;
 
     public static function setUpBeforeClass(): void
     {
@@ -41,11 +49,14 @@ trait ImportFixture
     protected function setUp(): void
     {
         TableDb::reset();
-        TableDb::$next       = ['view' => 1000, 'email' => 2000, 'alerts_filter' => 3000, 'site_spot' => 4000, 'profile' => 5000, 'object_text' => 100, 'object_integer' => 100, 'item' => 100];
+        // AUTO_INCREMENT starts - far from the source numbers (views 12, 13; e-mails 5, 7; filter 3)
+        TableDb::$next       = ['view' => 1000, 'email' => 2000, 'alerts_filter' => 3000, 'site_spot' => 4000, 'profile' => 5000, 'constant' => 6000, 'object_text' => 100, 'object_integer' => 100, 'item' => 100];
         // spare handles: a statement that throws inside DB_AA::sql() never gives its handle back (freeDB()) -
         // AA opens a new connection then; here an empty pool would try a real one
         $GLOBALS['spareDBs'] = [new TableDb(), new TableDb(), new TableDb(), new TableDb()];
         $this->target        = new FakeImportTarget();
+        $this->authority     = new FakeInstallPermission();
+        $this->after         = new FakeAfterCommit();
     }
 
     protected function tearDown(): void
@@ -99,13 +110,13 @@ trait ImportFixture
     {
         $package  ??= self::example();
         $plan       = (new Planner($this->target))->plan($package, (new Validator())->validate($package));
-        self::assertTrue($plan->importable());
+        self::assertTrue($plan->importable(), (string) json_encode(array_map(static fn(array $f): string => "{$f[1]->code} $f[0]", $plan->ofLevel(LintFinding::ERROR))));
         return $plan;
     }
 
-    private function importer(): Importer
+    private function importer(?ImportTarget $target = null, ?ImportConfirmation $confirmation = null): Importer
     {
-        return new Importer($this->target, 'importer-uid', null, 1_790_000_000, authority: new FakeImportAuthority(), afterCommit: new FakeAfterCommit());
+        return new Importer($target ?? $this->target, self::USER, null, self::NOW, mayInstall: $this->authority->mayInstall(...), confirmation: $confirmation, afterCommit: $this->after);
     }
 
     private function failure(ImportPlan $plan, ?Importer $importer = null): ImportFailed

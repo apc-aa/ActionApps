@@ -11,24 +11,12 @@ use DOMDocument;
 use DOMElement;
 use DOMNode;
 use InvalidArgumentException;
-use LibXMLError;
 
-/** Package model => aa-app XML (design balicek-v1.md § 2, § 4; C4.3 part 2). Pure: no DB, no clock;
- *  toXml() works on a clone, so no state survives a call.
- *
- *  Values (§ 2.2): a text value - textValue column, object property <p>, item value <v> - is
- *  encoded by ValueCodec (CDATA, crlf, base64, INVALID_BYTES finding). SQL NULL of a column =>
- *  `<col null="true"/>`; a property or item value cannot be NULL (throws). A column with the empty
- *  value of its type is left out - meta/tables lists it, so the reader restores it (§ 2.3); properties
- *  and item values are always written. Other texts (meta, doc, spot tree, attributes, number and id
- *  columns) have no enc/crlf in the XSD: a value XML 1.0 cannot carry throws.
- *
- *  Deterministic output (§ 2.5): modules site -> slice -> alerts, then by id; rows by their key
- *  attributes (constants by pri, id; keyless rows by all columns) - integer columns and attributes
- *  numerically, everything else (ids, names, texts) bytewise; columns in metabase_schema.php order;
- *  properties by name and index; objects, items, groups by id/name, spots by number, item values by
- *  field id and key; 2-space indentation, LF. The result is validated against the XSD - an invalid
- *  model throws InvalidArgumentException. */
+/** Package model => aa-app XML (design balicek-v1.md § 2, § 4). Pure; toXml() works on a clone.
+ *  Values as § 2.2 (ValueCodec: CDATA, crlf, base64, the INVALID_BYTES finding; SQL NULL of a column =>
+ *  `null="true"`, of a property or item value throws), a column with the empty value of its type left out
+ *  (§ 2.3). Other texts have no enc/crlf: a value XML 1.0 cannot carry throws. Deterministic output (§ 2.5).
+ *  The result is validated against the XSD - an invalid model throws InvalidArgumentException. */
 final class Writer
 {
     public const FORMAT = '1.0';
@@ -394,24 +382,13 @@ final class Writer
         return [$x !== null, !$nx, $nx ? +$x : 0] <=> [$y !== null, !$ny, $ny ? +$y : 0] ?: strcmp((string) $x, (string) $y);
     }
 
-    /** as the reader will (§ 3.1): schema as a string, no external entity may load */
+    /** as the reader will (§ 3.1) */
     private function validate(string $xml): void
     {
-        $internal = libxml_use_internal_errors(true);
-        $loader   = libxml_get_external_entity_loader();
-        libxml_set_external_entity_loader(static fn() => null);
-        libxml_clear_errors();
         try {
-            $dom = new DOMDocument();
-            if ($dom->loadXML($xml, LIBXML_NONET) && $dom->schemaValidateSource($this->schema->xsd())) {
-                return;
-            }
-            $errors = array_map(static fn(LibXMLError $e): string => "line $e->line: " . trim($e->message), array_slice(libxml_get_errors(), 0, 5));
-            throw new InvalidArgumentException('The package does not match the aa-app schema: ' . implode('; ', $errors));
-        } finally {
-            libxml_clear_errors();
-            libxml_set_external_entity_loader($loader);
-            libxml_use_internal_errors($internal);
+            (new XmlGuard())->validateXml($xml, $this->schema->xsd());
+        } catch (PackageRejected $e) {
+            throw new InvalidArgumentException($e->getMessage(), 0, $e);
         }
     }
 }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Unit\Central\Package;
 
 use AA\Central\Package\IdMap;
+use AA\Central\Package\ImportRewrite;
 use AA\Central\Package\ReferenceRewriter;
 use AA\Central\Package\RewriteFailed;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -221,7 +222,9 @@ final class ReferenceRewriterTest extends TestCase
         $text     = '{view:12:{ids:' . self::SLICE_OLD . '}}{constants:cat_a}{mailtemplate:874:x@y.cz}';
         $expected = '{view:13:{ids:' . self::SLICE_NEW . '}}{constants:cat_b}{mailtemplate:900:x@y.cz}';
 
-        $this->assertSame($expected, $this->rewriter()->rewrite($text));
+        $rewrite  = new ImportRewrite(self::map());
+
+        $this->assertSame($expected, $rewrite->numeric($rewrite->known($text)));
     }
 
     public function test_numeric_rewrite_without_numeric_maps_changes_nothing(): void
