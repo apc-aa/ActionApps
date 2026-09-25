@@ -132,6 +132,26 @@ class AA_Field implements ArrayAccess, Countable, IteratorAggregate
         // @todo mark all secure and password fields as FIELD_UNREADABLE
     }
 
+    /** password, 2FA secret, a copy of a password or an unreadable field - its value never goes into a widget */
+    public function isProtected(): bool
+    {
+        $type     = AA_Fields::getFieldType($this->getId());
+        [$insert] = explode(':', strtolower((string) $this->data['input_insert_func']), 2);
+        return str_starts_with($type, 'password') || str_starts_with($type, 'secret') || in_array($insert, ['pwd', '2fa'], true) || $this->isSafeStored() || $this->isPasswordCopy();
+    }
+
+    /** the field is the bck_field (copy of the password) of a pwd inserter in its slice */
+    protected function isPasswordCopy(): bool
+    {
+        foreach (AA_Slice::getModule($this->getSliceId())?->getFields() ?? [] as $field) {
+            $insert = (string) $field->getProperty('input_insert_func');
+            if (str_starts_with(strtolower($insert), 'pwd:') && ((AA_Inserter::parseClassProperties($insert)['bck_field'] ?? '') === $this->getId())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /** getProperty function
      * @param string $property
      * @return mixed - field data
@@ -462,29 +482,29 @@ class AA_Field implements ArrayAccess, Countable, IteratorAggregate
 
 
 
-    /** getWidgetAjaxHtml function
-     * @param $item_id
-     * @param $required - redefine default settings of required
-     * @param $function - js function to call after the update
-     * @param $widget_type - wi2|sel|...
-     *                       used, when we want to use another widget, than the default one
-     * @param $widget_properties - array of properties to redefine for $widget_type - array('columns' => 1)
-     * @return string
+    /** widget for in place editing ({ajax}) of this field in $content
+     *  A protected field shows only its own pwd/tfa widget, which never gets the value, or nothing.
+     * @param string|null $widget_type       another widget than the field's own - wi2|sel|...
+     * @param array       $widget_properties properties to redefine for the widget - ['columns' => 1]
      */
-    public function getWidgetAjaxHtml($item_id, $required = null, $function = null, $widget_type = null, $widget_properties = []): string
+    public function getWidgetAjaxHtml(AA_Content $content, ?string $widget_type = null, array $widget_properties = []): string
     {
-        return $this->_getWidget('getAjaxHtml', $item_id, $required, $function, $widget_type, $widget_properties);
-    }
-
-    protected function _getWidget($type, $item_id, $required, $function, $widget_type, $widget_properties)
-    {
-        $widget      = $this->getWidget($widget_type, $widget_properties);
-        $itemcontent = new ItemContent($item_id);
-        $widget_properties['multiple'] =  $widget::multiple();
-        $widget_properties['required'] =  $required;
-        //$widget_properties['name'], $widget_properties['input_help'], ... could be set already in the $widget_properties array
-        $aa_property = $this->getAaProperty($widget_properties);
-        return $widget->$type($aa_property, $itemcontent, $function);
+        if ($this->isProtected()) {
+            $widget = $this->getWidget();
+            if (!($widget instanceof AA\Widget\PwdWidget) && !($widget instanceof AA\Widget\TfaWidget)) {
+                return '';
+            }
+            $widget_properties = [];
+            // pwd only needs to know there is a value (it asks for the current password then) - note: this
+            // overwrites the value in the caller's $content
+            if (!$content->getAaValue($this->getId())->isEmpty()) {
+                $content->setAaValue($this->getId(), new AA_Value('*'));
+            }
+        } else {
+            $widget = $this->getWidget($widget_type, $widget_properties)->setLiteral(array_diff(array_keys($widget_properties), ['const', 'bin_filter', 'filter_conds']));
+        }
+        $widget_properties['multiple'] = $widget::multiple();
+        return $widget->getAjaxHtml($this->getAaProperty($widget_properties), $content);
     }
 
     /** getWidgetNewHtml function

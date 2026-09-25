@@ -5345,7 +5345,6 @@ class AA_Stringexpand_Ajax extends AA_Stringexpand_Nevercache {
                         }
                     }
 
-                    $widget_properties = str_replace(["'", '"',"\r\n", "\r", "\n"], ["\'", "&quot;", " ", " ", " "], (string)$widget_properties);
                     $iid         = $item->getItemID();
                     $input_name  = FormArray::getName4Form($field_id, $item);
                     $input_id    = FormArray::formName2Id($input_name);
@@ -5353,7 +5352,10 @@ class AA_Stringexpand_Ajax extends AA_Stringexpand_Nevercache {
                     $enc_credentials = AA_Credentials::singleton()->getAsToken();
 
                     // the whole content works as button by default. You can redefine it using _#AA_AJAX_ alias like:   The text which works with value <button _#AA_AJAX_>Change it</button>
-                    $ajax_on     = "onclick=\"displayInput('ajaxv_$input_id', '$iid', '$field_id', '$widget_type', '$widget_properties', '$enc_credentials')\"";
+                    // signed - Get_Widget trusts the widget type and properties only with the signature
+                    // newlines as spaces, as always - a newline inside a JSON string breaks json2asoc()
+                    $widget_properties = str_replace(["\r\n", "\r", "\n"], ' ', (string)$widget_properties);
+                    $ajax_on     = AA\Widget\AjaxSignature::onclick("ajaxv_$input_id", $iid, $field_id, (string)$widget_type, $widget_properties, $enc_credentials, AA::$encoding ?: $slice->getCharset());
                     if (str_contains($repre_value, '_#AA_AJAX_')) {
                         $repre_value = str_replace('_#AA_AJAX_', $ajax_on, $repre_value);
                         $show_alias  = str_replace('_#AA_AJAX_', $ajax_on, $show_alias);

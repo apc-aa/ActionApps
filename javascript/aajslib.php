@@ -191,7 +191,7 @@ function AA_Response(method, resp_params, ok_func, err_func) {
     });
 }
 
-function displayInput(valdivid, item_id, fid, widget_type, widget_properties, context) {
+function displayInput(valdivid, item_id, fid, widget_type, widget_properties, context, sig) {
     // already editing ?
     switch ($(valdivid).readAttribute('data-aa-edited')) {
        case '1': return;
@@ -204,7 +204,7 @@ function displayInput(valdivid, item_id, fid, widget_type, widget_properties, co
     var width = $(valdivid).getWidth();
 
     $(valdivid).update(AA_GetConf('loader'));
-    AA_Response('Get_Widget', { "field_id": fid, "item_id": item_id, "widget_type": widget_type, "widget_properties": widget_properties, context: context}, function(responseText) {
+    AA_Response('Get_Widget', { "field_id": fid, "item_id": item_id, "widget_type": widget_type, "widget_properties": widget_properties, context: context, sig: sig || ''}, function(responseText) {
             // var style = 'position:absolute;background:#f6f6f6;padding:10px;border:solid 1px #c7c7c7;box-shadow:0 0 8px rgba(0,0,0,0.19);z-index:100;';
             if (width>200) {
                 responseText = responseText.replace('class="ajax_widget aa-widget aa-ajax-open"', 'class="ajax_widget aa-widget aa-ajax-open" style="width:'+width+'px;"');

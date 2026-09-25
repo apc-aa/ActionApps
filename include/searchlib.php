@@ -517,6 +517,13 @@ class AA_Set extends AA_Object
         return new zids(array_slice($sorted_ids, 0, $limit), 'l');
     }
 
+    /** removes the alias (_#...) sort orders - they expand the alias for each item */
+    public function dropPostsort(): static
+    {
+        $this->postsort = [];
+        return $this;
+    }
+
     /** clear function
      *
      */

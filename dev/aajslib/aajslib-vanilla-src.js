@@ -290,7 +290,7 @@ function AA_AjaxSendForm(form_id, url) {
     });
 }
 
-function displayInput(valdivid, item_id, fid, widget_type, widget_properties, context) {
+function displayInput(valdivid, item_id, fid, widget_type, widget_properties, context, sig) {
     var valdiv = jqid(valdivid);
 
     // already editing?
@@ -305,7 +305,7 @@ function displayInput(valdivid, item_id, fid, widget_type, widget_properties, co
     $(valdiv).html(AA_GetConf('loader'));
 
     var lang = AA_GetConf('lang');
-    AA_Response('Get_Widget', { field_id: fid, item_id: item_id, widget_type: widget_type, widget_properties: widget_properties, lang: lang, context: context}, function(data) {
+    AA_Response('Get_Widget', { field_id: fid, item_id: item_id, widget_type: widget_type, widget_properties: widget_properties, lang: lang, context: context, sig: sig || ''}, function(data) {
             var valdiv = jqid(valdivid);
             $(valdiv).attr('data-aa-edited', '1');
             if (width>200) {   

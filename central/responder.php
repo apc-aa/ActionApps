@@ -307,6 +307,7 @@ class AA_Responder_Get_Widget extends AA_Responder
     protected string $widget_properties;
     protected string $lang;
     protected string $context;   // slice_pwd (spwd) for now
+    protected string $sig;       // AA\Widget\AjaxSignature of the widget type and properties
 
     public function __construct($param = null)
     {
@@ -316,6 +317,7 @@ class AA_Responder_Get_Widget extends AA_Responder
         $this->widget_properties    = (string) $param['widget_properties'];
         $this->lang                 = (string) $param['lang'];
         $this->context              = (string) $param['context'];
+        $this->sig                  = (string) ($param['sig'] ?? '');
     }
 
     public function isPerm(): bool
@@ -360,8 +362,12 @@ class AA_Responder_Get_Widget extends AA_Responder
             AA_Credentials::singleton()->importFromToken($this->context);
         }
 
-        $field = $slice->getField($this->field_id);
-        $widget_html = $field ? $field->getWidgetAjaxHtml($iid, null, null, $this->widget_type, json2asoc($this->widget_properties)) : '';
+        $widget_html = '';
+        if ($field = $slice->getField($this->field_id)) {
+            // widget type and properties only as signed by {ajax} - the request is anonymous
+            [$widget_type, $widget_properties] = \AA\Widget\AjaxSignature::widgetArgs($field, $iid, $this->widget_type, $this->widget_properties, $this->sig);
+            $widget_html = $field->getWidgetAjaxHtml(new ItemContent($iid), $widget_type, $widget_properties);
+        }
 
         // @todo for TagWidget the CSS is loaded this way, but the select2.js do not work by this way. Check it.
         if ($widget_script = AA::Stringexpander()->getRequireScript()) {
