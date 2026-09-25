@@ -337,6 +337,24 @@ final class PlannerTest extends TestCase
         self::assertFalse($plan->importable());
     }
 
+    /** § 7.2 step 4: the preview says which tables the import writes without a transaction */
+    public function test_tables_without_transactions_are_a_warning_of_the_preview(): void
+    {
+        $target          = new FakeImportTarget();
+        $target->engines = ['view' => 'MyISAM', 'object_float' => 'Aria', 'content' => 'MyISAM', 'item' => 'MyISAM', 'nothing' => 'MyISAM'];
+
+        $plan = self::plan(self::example(), $target);
+
+        $found = array_values(array_filter($plan->findings, static fn(array $f): bool => $f[1]->code === Planner::NO_TRANSACTION));
+        self::assertSame([[Planner::TARGET, 'W', 'view (MyISAM), object_float (Aria)']], array_map(static fn(array $f): array => [$f[0], $f[1]->level, $f[1]->ref], $found), 'the item tables only with items');
+        self::assertTrue($plan->importable(), 'a warning');
+        self::assertContains('W no-transaction', array_map(static fn(array $f): string => "{$f[1]->level} {$f[1]->code}", $plan->preview()['findings']));
+
+        $items = self::plan(self::items(self::example(), [self::item('1234567890abcdef1234567890abcdef')]), $target);
+        self::assertStringEndsWith('item (MyISAM), content (MyISAM)', array_values(array_filter($items->findings, static fn(array $f): bool => $f[1]->code === Planner::NO_TRANSACTION))[0][1]->ref);
+        self::assertSame([], array_filter(self::plan(self::example())->findings, static fn(array $f): bool => $f[1]->code === Planner::NO_TRANSACTION), 'all InnoDB: nothing');
+    }
+
     /** @return list<array{string, string, string, string}> */
     private static function fixUps(ImportPlan $plan): array
     {

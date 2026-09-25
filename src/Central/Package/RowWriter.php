@@ -44,7 +44,7 @@ final class RowWriter
     /** module.type of a package wrapper */
     private const MODULE_TYPES = [Module::SLICE => 'S', Module::SITE => 'W', Module::ALERTS => 'Alerts'];
     /** relation.flag of "uses modules" - REL_FLAG_MODULE_DEPEND, include/constants.php */
-    private const USES_FLAG = 1;
+    public const USES_FLAG = 1;
 
     private ImportPlan $plan;
     private ImportJournal $journal;
@@ -215,7 +215,7 @@ final class RowWriter
                 + self::mapped($collection, 'emailid_welcome', $email) + self::mapped($collection, 'emailid_alert', $email)
                 + self::mapped($collection, 'slice_id', fn(string $v): string => ($v === '') ? '' : $this->packageModule($v));
             $this->insert($m, 'alerts_collection', $collection, 0, $fixed);
-            $this->journal->collection($cid);
+            $this->journal->collection($cid, $id);
         }
         foreach ($m->rows['alerts_collection_filter'] ?? [] as $i => $row) {
             $filter = fn(string $v): int|string => $this->inPackage($v, $this->map->filter((int) $v), 'Filter');
@@ -247,6 +247,7 @@ final class RowWriter
         $owner = ($g->owner === '') ? [] : ['slice_id' => $this->packageModule($g->owner)];
         foreach ($g->rows['constant_slice'] ?? [] as $i => $row) {
             $this->writeRow($path, 'constant_slice', $row, $i, ['group_id' => $name] + $owner, $charset);
+            $this->journal->groupSlice($name);
         }
         foreach ($g->rows['constant'] ?? [] as $i => $row) {
             $id = ValueCodec::bytes($row['id'] ?? '');

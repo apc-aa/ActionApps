@@ -25,11 +25,14 @@ use InvalidArgumentException;
  *     and filters: the writer.
  *  4. TargetCharset: every value converts to its target charset and fits its column (E, W).
  *  5. ImportLint: references the rewrite cannot map or that lead outside the package (W, I).
+ *  6. The engine (§ 7.2 step 4): the tables the import writes that are not InnoDB (ImportTarget::
+ *     nonTransactional()) - W NO_TRANSACTION: no rollback there, a failure is cleaned up by the
+ *     compensation (Importer) only. Here, not in the writer, so the preview shows it before the write.
  *
  *  Not here (they plug in around plan()): the "keep module ids" restore mode (§ 7.1: would replace
  *  the module part of the map after its checks), rights (PS_INSTALL_APP, Q-H2) and the S confirmation
- *  (UI, part 5), the engine / MyISAM check (§ 7.2 step 4, part 4), writing, the re-check of the names
- *  and ids inside the transaction and compensation (part 4, ImportPlan), the chunk mode (part 6). */
+ *  (UI, part 5), writing, the re-check of the names and ids inside the transaction and compensation
+ *  (part 4, ImportPlan), the chunk mode (part 6). */
 final class Planner
 {
     /** I: a constant group gets another name on the target; ref = "old => new" */
@@ -44,6 +47,15 @@ final class Planner
      *  is written as it is - AA reads it only through a collection whose reader slice is this new slice, so
      *  it is an inert definition; ref = the collection id */
     public const ALERTS_FIELD_KEPT = 'alerts-field-kept';
+    /** W: tables the import writes are not InnoDB - no transaction; after a failure the compensation removes
+     *  what the import wrote there; ref = "table (engine), ..." (engine '' = no such table) */
+    public const NO_TRANSACTION = 'no-transaction';
+    /** the path of a finding about the target AA, not the package */
+    public const TARGET = 'target';
+
+    /** tables of AA_Object (§ 5.4, part 4c) and of storeItem() (items), beside the rows of Schema */
+    private const OBJECT_TABLES = ['object_text', 'object_integer', 'object_float'];
+    private const ITEM_TABLES   = ['item', 'content'];
 
     /** an alerts field id: FIELDID_HOWOFTEN / FIELDID_FILTERS padded with dots, then the collection id */
     private const ALERTS_FIELD_RE = '/^alerts[12]\.+([A-Za-z0-9]{1,9})\z/';
@@ -112,7 +124,22 @@ final class Planner
         $this->alertsFields($fixed, $map);
         (new TargetCharset($this->schema, $map))->check($fixed, $charsets, $group_charsets, $this->findings);
         (new ImportLint($this->schema))->check($fixed, $this->findings);
+        $this->engines($fixed);
         return new ImportPlan($fixed, $map, $charsets, $lang_files, $group_charsets, $settings, $fix_ups, $validation->findings, $this->findings->all());
+    }
+
+    /** W NO_TRANSACTION for the tables the import writes without a transaction */
+    private function engines(Package $package): void
+    {
+        $tables = array_values(array_unique([...array_values($this->schema->rowTables()), ...self::OBJECT_TABLES]));
+        if (array_filter($package->modules, static fn(Module $m): bool => (bool) $m->items)) {
+            $tables = [...$tables, ...self::ITEM_TABLES];
+        }
+        $not = $this->target->nonTransactional($tables);
+        if ($not) {
+            $list = implode(', ', array_map(static fn(string $t, string $e): string => "$t ($e)", array_keys($not), $not));
+            $this->add(self::TARGET, LintFinding::WARNING, self::NO_TRANSACTION, $list);
+        }
     }
 
     /** I ALERTS_FIELD_KEPT for the alerts fields of collections outside the package */

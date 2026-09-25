@@ -98,6 +98,21 @@ final class ImporterTest extends TestCase
                 return (new DbImportTarget())->collectionTaken($id);
             }
 
+            public function nonTransactional(array $tables): array
+            {
+                return (new DbImportTarget())->nonTransactional($tables);
+            }
+
+            public function lock(string $name, int $timeout): bool
+            {
+                return $this->ids->lock($name, $timeout);       // in memory: the tests count the statements of the handle
+            }
+
+            public function unlock(string $name): void
+            {
+                $this->ids->unlock($name);
+            }
+
             public function newId(): string
             {
                 return $this->ids->newId();
@@ -425,25 +440,37 @@ final class ImporterTest extends TestCase
                 self::assertInstanceOf(($mode === 'false') ? WriteError::class : RuntimeException::class, $e->getPrevious(), $mode);
                 self::assertSame($journal, self::journal($e->journal), $mode);
             }
-            self::assertSame('ROLLBACK', end(TableDb::$log), $mode);
+            self::assertSame([], self::afterRollback(), "$mode: after the rollback only the compensation (CompensationTest)");
             self::assertNotContains('COMMIT', TableDb::$log, $mode);
             self::assertSame([], array_filter(TableDb::$tables), "$mode: nothing stays");
         }
     }
 
-    /** without a transaction (MyISAM, § 13.5) the rows stay - every one of them is found through the
-     *  journal, which is what the compensation (part 4b) needs */
+    /** statements after the ROLLBACK that are no DELETE or SELECT (the compensation's) @return list<string> */
+    private static function afterRollback(): array
+    {
+        $at = array_search('ROLLBACK', TableDb::$log, true);
+        self::assertIsInt($at, 'rolled back');
+        return array_values(array_filter(array_slice(TableDb::$log, $at + 1), static fn(string $q): bool => !preg_match('/^(DELETE|SELECT) /', $q)));
+    }
+
+    /** without a transaction (MyISAM, § 13.5) the rows stay until the compensation - every one of them is
+     *  found through the journal, which is what the compensation needs (the tables as the failure left them) */
     #[DataProvider('failures')]
     public function test_without_a_transaction_the_journal_covers_every_row_written(string $statement, array $journal): void
     {
         TableDb::$transactions = false;
-        TableDb::$fail         = static fn(string $sql): bool => (bool) preg_match($statement, $sql);
+        $failed                = null;
+        TableDb::$fail         = static function (string $sql) use ($statement, &$failed): bool {
+            $failed ??= preg_match($statement, $sql) ? TableDb::$tables : null;
+            return (bool) preg_match($statement, $sql);
+        };
         try {
             $this->importer()->write($this->plan());
             self::fail('no failure');
         } catch (ImportFailed $e) {
             self::assertSame($journal, self::journal($e->journal));
-            self::assertSame([], self::uncovered($e->journal));
+            self::assertSame([], self::uncovered($e->journal, $failed));
         }
         self::assertNotContains('BEGIN', TableDb::$log);
     }
@@ -451,11 +478,11 @@ final class ImporterTest extends TestCase
     public function test_the_journal_covers_a_complete_write(): void
     {
         $result = $this->importer()->write($this->plan());
-        self::assertSame([], self::uncovered($result->journal));
+        self::assertSame([], self::uncovered($result->journal, TableDb::$tables));
     }
 
-    /** @return list<string> rows no journal entry leads to */
-    private static function uncovered(ImportJournal $j): array
+    /** @param array<string, list<array<string, mixed>>> $tables @return list<string> rows no journal entry leads to */
+    private static function uncovered(ImportJournal $j, array $tables): array
     {
         $modules = array_keys($j->modules());
         $in      = static fn(mixed $v, array $list): bool => in_array($v, $list, true);
@@ -473,7 +500,7 @@ final class ImporterTest extends TestCase
             $by[$table] = fn(array $r): bool => $in($r['id'], $j->numbers()[$table] ?? []);
         }
         $left = [];
-        foreach (TableDb::$tables as $table => $rows) {
+        foreach ($tables as $table => $rows) {
             foreach ($rows as $row) {
                 if (!isset($by[$table]) || !$by[$table]($row)) {
                     $left[] = "$table " . json_encode($row);
@@ -568,6 +595,21 @@ final class ImporterTest extends TestCase
                 return false;
             }
 
+            public function nonTransactional(array $tables): array
+            {
+                return [];
+            }
+
+            public function lock(string $name, int $timeout): bool
+            {
+                return $this->ids->lock($name, $timeout);
+            }
+
+            public function unlock(string $name): void
+            {
+                $this->ids->unlock($name);
+            }
+
             public function newId(): string
             {
                 return $this->ids->newId();
@@ -610,7 +652,7 @@ final class ImporterTest extends TestCase
 
         self::assertSame([WriteError::TOO_LONG, 'slice-module[' . self::SLICE . ']/view[12]/name'], [$e->getPrevious()->reason, $e->getPrevious()->path]);
         self::assertStringContainsString('122 characters > 120', $e->getMessage());
-        self::assertSame('ROLLBACK', end(TableDb::$log));
+        self::assertSame([], self::afterRollback());
         self::assertSame([], array_filter(TableDb::$tables));
     }
 

@@ -8,7 +8,8 @@ namespace AA\Central\Package;
  *  the input of the compensation (§ 7.2 step 6, C4.4 part 4b) and of the report. Only what surely is
  *  ours goes in, and only once its row is written: a module after its `module` row (a colliding id
  *  must never lead the compensation to someone else's module), a group after its lt_groupNames row
- *  (with that row's id), a collection after its alerts_collection row. Rows found by those (field, slice, profile, site,
+ *  (with that row's id), its constant_slice row after its insert (an unowned one is found by nothing
+ *  else), a collection after its alerts_collection row (with its Alerts module). Rows found by those (field, slice, profile, site,
  *  constants, alerts_collection_*) are deleted through them; the AUTO_INCREMENT rows by their numbers -
  *  view and email rows are written before their module (their numbers go into the texts), alerts_filter
  *  and Alerts e-mails have no module column the module routines would find.
@@ -21,7 +22,10 @@ final class ImportJournal
     private array $numbers = [];
     /** @var array<string, string> constant group name created on the target => id of its lt_groupNames row */
     private array $groups = [];
-    /** @var list<string> alerts collection ids created on the target */
+    /** @var array<string, true> groups whose constant_slice row this import inserted (it may fail: the name
+     *                           is taken since the check - a foreign row of the name then stays) */
+    private array $groupSlices = [];
+    /** @var array<string, string> alerts collection id created on the target => its new Alerts module */
     private array $collections = [];
     /** @var list<array{string, string}> relation rows [source site, destination module] */
     private array $relations = [];
@@ -45,9 +49,14 @@ final class ImportJournal
         $this->groups[$name] = $row;
     }
 
-    public function collection(string $id): void
+    public function groupSlice(string $name): void
     {
-        $this->collections[] = $id;
+        $this->groupSlices[$name] = true;
+    }
+
+    public function collection(string $id, string $module): void
+    {
+        $this->collections[$id] = $module;
     }
 
     public function relation(string $source, string $destination): void
@@ -84,8 +93,20 @@ final class ImportJournal
         return $this->groups;
     }
 
+    /** @return list<string> groups with our constant_slice row */
+    public function groupSlices(): array
+    {
+        return array_map('strval', array_keys($this->groupSlices));
+    }
+
     /** @return list<string> */
     public function collections(): array
+    {
+        return array_map('strval', array_keys($this->collections));
+    }
+
+    /** @return array<string, string> collection id => its Alerts module */
+    public function collectionModules(): array
     {
         return $this->collections;
     }

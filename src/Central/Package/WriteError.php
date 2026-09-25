@@ -17,6 +17,8 @@ final class WriteError extends RuntimeException
     public const CHARSET = 'charset';
     /** a value is longer than its column once the view / e-mail numbers are in (the plan's W MAY_BE_TOO_LONG) */
     public const TOO_LONG = 'too-long';
+    /** another import holds the import lock (Importer, GET_LOCK) - nothing was written; try again later */
+    public const LOCKED = 'locked';
     /** the database refused a statement (AA_Metabase::do*() returned false) */
     public const DB = 'db';
 

@@ -14,6 +14,9 @@ final class DB_AA
     /** is the transaction's handle currently checked out by getDB()? */
     private static bool $tx_db_out = false;
 
+    /** a shutdown handler of atShutdown() runs - abandonTransaction() is allowed */
+    private static bool $at_shutdown = false;
+
     /* private: constructor - NO INSTANCES! */
     private function __construct(array $connection) {}
 
@@ -62,6 +65,66 @@ final class DB_AA
             self::$tx_db_out = false;
             freeDB($db);
         }
+    }
+
+    /** true inside transaction() - a caller that must own its transaction (a commit of its own) refuses to join */
+    public static function inTransaction(): bool
+    {
+        return self::$tx_db !== null;
+    }
+
+    /** Registers $handler as a shutdown function; while it runs, abandonTransaction() is allowed.
+     *  @return \Closure the registered function - it returns what $handler returns (tests call it to
+     *                  play the end of a request) */
+    public static function atShutdown(\Closure $handler): \Closure
+    {
+        $registered = static function () use ($handler): mixed {
+            $was              = self::$at_shutdown;
+            self::$at_shutdown = true;
+            try {
+                return $handler();
+            } finally {
+                self::$at_shutdown = $was;
+            }
+        };
+        register_shutdown_function($registered);
+        return $registered;
+    }
+
+    /** @internal for a shutdown handler registered by atShutdown() only (LogicException elsewhere): the
+     *  request died inside transaction() (a fatal error, exit()) and its catch/finally never ran - the
+     *  transaction is still open and its handle pinned, so getDB() would hand out that handle (or refuse a
+     *  second one). Rolls the transaction back and unpins the handle; it does not go back to the pool.
+     *  A rollback() that fails: a ROLLBACK statement, then the handle's connection dropped - a non-persistent
+     *  one closes and the server rolls back and frees the row locks. A persistent one stays open in PHP: when
+     *  the ROLLBACK statement failed too, its transaction may still be open, and the next use of the
+     *  connection (with persistent connections every DB_PDO shares it - the caller's cleanup too) joins it.
+     *  @return bool false = that case: what runs after it on the connection may be rolled back at the end -
+     *               the caller must not trust its cleanup. true = rolled back (or nothing was open). */
+    public static function abandonTransaction(): bool
+    {
+        if (!self::$at_shutdown) {
+            throw new \LogicException('DB_AA::abandonTransaction() is for a shutdown handler registered by DB_AA::atShutdown()');
+        }
+        if (!($db = self::$tx_db)) {
+            return true;
+        }
+        self::$tx_db     = null;
+        self::$tx_db_out = false;
+        try {
+            if ($db->rollback()) {
+                return true;
+            }
+        } catch (\Throwable) {
+            // PDO may not know of the transaction (or the connection is gone) - the statement below still may
+        }
+        try {
+            $rolled_back = $db->query_halt('ROLLBACK', 'no');
+        } catch (\Throwable) {
+            $rolled_back = false;
+        }
+        $db->disconnect();
+        return $rolled_back || !$db->isPersistent();
     }
 
     /** Handle getDB() must use, or null when no transaction runs. Marks it as checked
