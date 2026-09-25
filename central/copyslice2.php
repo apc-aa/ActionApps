@@ -78,8 +78,9 @@ if (!empty($_POST['copy'])) {
     foreach ($requested as $type => $ids) {
         $defs = $ids ? $aas[$_POST['template_aa']]->requestDefinitions($type, $ids, ($type === 'Slice') ? $limit : []) : [];
         foreach ($ids as $mid) {
-            // the template AA may not send a definition for every selected module
-            if (($defs[$mid] ?? null) instanceof AA_Definition_Module) {
+            // the template AA may not send a definition for every selected module; one of another module id
+            // would escape $changed_ids below - its chunks would name that module (maybe a slice of this AA)
+            if ((($defs[$mid] ?? null) instanceof AA_Definition_Module) && ($defs[$mid]->getId() === $mid)) {
                 $module_defs[$mid] = $defs[$mid];
             }
         }

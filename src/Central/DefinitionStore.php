@@ -86,13 +86,16 @@ final class DefinitionStore
         return $data;
     }
 
-    /** the definition split into chunks for import, with the ids in $replaces replaced
+    /** the definition split into chunks for import, with the ids in $replaces replaced - in the rows and in
+     *  the module the chunks name (the chunk mode writes only into it; an older Central named the template -
+     *  such chunks are refused now)
      *  @return AA_Definition_Module_Chunk[] */
     public static function chunks($module_id, $data, $replaces): array
     {
         $chunks = [];
         // replaced on a copy - the same definition is imported to more AAs, each with its own new module ids
-        $data   = is_array($replaces) ? recursive_array_replace(array_keys($replaces), array_values($replaces), $data) : $data;
+        $data      = is_array($replaces) ? recursive_array_replace(array_keys($replaces), array_values($replaces), $data) : $data;
+        $module_id = (is_array($replaces) && is_scalar($module_id)) ? ($replaces[$module_id] ?? $module_id) : $module_id;
 
         foreach ($data as $table => $rows) {
             $chunks[] = AA_Definition_Module_Chunk::factoryArray($module_id, $table, $rows);
@@ -111,12 +114,12 @@ final class DefinitionStore
         return count($chunks);
     }
 
-    /** imports the chunks to this AA; @return list<string> report lines of the chunks ('OK: ...', 'Err: ...') */
-    public static function import(array $chunks): array
+    /** imports the chunks to this AA (chunk mode, each into its module; $target: tests only) @return list<string> report lines */
+    public static function import(array $chunks, ?ChunkTarget $target = null): array
     {
         $report = [];
         foreach ($chunks as $chunk) {
-            $report[] = $chunk->importModuleChunk();
+            $report[] = $chunk->importModuleChunk($target);
         }
         return array_merge(...$report);
     }

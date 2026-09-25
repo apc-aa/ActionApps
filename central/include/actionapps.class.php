@@ -31,6 +31,7 @@ https://www.apc.org/
 
 use AA\Central\Actionapps;
 use AA\Central\ChunkImporter;
+use AA\Central\ChunkTarget;
 use AA\Central\DefinitionStore;
 use AA\Central\Difference;
 use AA\Central\ResponderPolicy;
@@ -139,11 +140,11 @@ class AA_Definition_Module
         return DefinitionStore::queueImport($this->_getChunks($replaces), $aa);
     }
 
-    /** special import - to this AA - no need to plan, no need to chunk
-     *  @return list<string> report lines of the chunks ('OK: ...', 'Err: ...') */
-    public function moduleImport($replaces = null): array
+    /** special import - to this AA - no need to plan, no need to chunk; the chunk mode (ChunkImporter), each
+     *  chunk only into its module - the one $replaces names; $target: tests only @return list<string> report lines */
+    public function moduleImport($replaces = null, ?ChunkTarget $target = null): array
     {
-        return DefinitionStore::import($this->_getChunks($replaces));
+        return DefinitionStore::import($this->_getChunks($replaces), $target);
     }
 
     protected function _getChunks($replaces): array
@@ -181,9 +182,10 @@ class AA_Definition_Module_Chunk
         $this->data      = [$table => $rows];
     }
 
-    public function importModuleChunk(): array
+    /** the chunk mode (ChunkImporter): only into the chunk's module; $target: tests only */
+    public function importModuleChunk(?ChunkTarget $target = null): array
     {
-        return ChunkImporter::import($this->data);
+        return ChunkImporter::import($this->data, $this->module_id, $target);
     }
 
     public function _formatReport($arr): string

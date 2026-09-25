@@ -13,6 +13,8 @@ use AA_Difference;
 use AA_Sync_Action;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use Tests\Unit\Central\Fixtures\FakeChunkTarget;
+use Tests\Unit\Central\Fixtures\RecordingMetabase;
 use Tests\Unit\Legacy\Fixtures\CentralTestHelpers;
 use Tests\Unit\Legacy\Fixtures\RecordingDb;
 
@@ -42,6 +44,14 @@ final class CentralDefinitionModuleTest extends TestCase
         require_once __DIR__ . '/../fixtures/util_shims.php';    // _m(), safe(), recursive_array_replace()
         require_once __DIR__ . '/fixtures/store_fixtures.php';   // RecordingDb
         require_once __DIR__ . '/../../../include/varset.php';   // Cvarset::sqlin() of loadForId()
+        require_once __DIR__ . '/../Central/fixtures/ChunkFixtures.php';   // FakeChunkTarget
+    }
+
+    /** this AA as the chunk mode (ChunkImporter, C4.4 part 6) sees it: the template and the destination
+     *  slices exist, no view number is taken */
+    private static function target(): FakeChunkTarget
+    {
+        return new FakeChunkTarget([self::TEMPLATE_ID => 'S', self::DEST_ID => 'S']);
     }
 
     protected function setUp(): void
@@ -345,25 +355,11 @@ final class CentralDefinitionModuleTest extends TestCase
     private mixed $saved_metabase = false;
 
     /** Metabase which records the inserts of moduleImport() instead of writing */
-    private function fakeMetabase(): \AA_Metabase
+    private function fakeMetabase(): RecordingMetabase
     {
         $property             = new \ReflectionProperty(\AA::class, 'metabase');
         $this->saved_metabase = $property->getValue();
-        $metabase             = new class extends \AA_Metabase {
-            /** @var list<array{string, array}> */
-            public array $inserted = [];
-
-            public function getKeys($tablename): array
-            {
-                return ['id'];
-            }
-
-            public function doInsert(string $tablename, array $data, ?string $nohalt = null): bool|int
-            {
-                $this->inserted[] = [$tablename, $data];
-                return true;
-            }
-        };
+        $metabase             = new RecordingMetabase();   // real keys; a row named 'bad' fails
         $property->setValue(null, $metabase);
         return $metabase;
     }
@@ -390,26 +386,29 @@ final class CentralDefinitionModuleTest extends TestCase
         $def = self::def(AA_Definition_Module_Slice::class, self::TEMPLATE_ID, [
             'module' => [self::TEMPLATE_ID => ['id' => self::TEMPLATE_ID]],
             'view'   => [],
-            'field'  => ['a' => ['id' => 'a'], 'b' => ['id' => 'b']],
+            'field'  => ['a' => ['id' => 'a', 'slice_id' => self::TEMPLATE_ID], 'b' => ['id' => 'b', 'slice_id' => self::TEMPLATE_ID]],
         ]);
 
         $this->assertSame(2, self::plannedChunks($def), 'an empty table gives no chunk');
         $metabase = $this->fakeMetabase();   // after planning - Toexecute writes through the real one
-        $this->assertSame(['OK: 1 module ([' . self::TEMPLATE_ID . ']); ', 'OK: 2 field ([a][b]); '], $def->moduleImport());
-        $this->assertSame([['module', ['id' => self::TEMPLATE_ID]], ['field', ['id' => 'a']], ['field', ['id' => 'b']]], $metabase->inserted);
+        $this->assertSame(['OK: 1 module ([' . self::TEMPLATE_ID . ']); ', 'OK: 2 field ([a,' . self::TEMPLATE_ID . '][b,' . self::TEMPLATE_ID . ']); '], $def->moduleImport(null, self::target()));
+        // changed in C4.4 part 6 (chunk mode, design § 10.1): rows name their module (F4), the new module gets
+        // the installation columns (ChunkImporterTest)
+        $module = ['id' => self::TEMPLATE_ID, 'deleted' => 0, 'created_by' => 'importer', 'created_at' => 1700000000];
+        $this->assertSame([['module', $module], ['field', ['id' => 'a', 'slice_id' => self::TEMPLATE_ID]], ['field', ['id' => 'b', 'slice_id' => self::TEMPLATE_ID]]], $metabase->inserted);
     }
 
     public function test_a_table_is_split_by_1000_rows(): void
     {
         $rows = [];
         for ($i = 0; $i < 2001; $i++) {
-            $rows["item$i"] = ['id' => "item$i"];
+            $rows["item$i"] = ['id' => "item$i", 'slice_id' => self::TEMPLATE_ID];   // F4 since C4.4 part 6
         }
         $def = self::def(AA_Definition_Module_Slice::class, self::TEMPLATE_ID, ['item' => $rows]);
 
         $this->assertSame(3, self::plannedChunks($def));
         $this->fakeMetabase();
-        $report = $def->moduleImport();
+        $report = $def->moduleImport(null, self::target());
         $this->assertCount(3, $report, 'one report line per chunk');
         $this->assertStringStartsWith('OK: 1000 item ([item0][item1]', $report[0]);
         $this->assertStringStartsWith('OK: 1000 item ([item1000][item1001]', $report[1]);
@@ -427,7 +426,7 @@ final class CentralDefinitionModuleTest extends TestCase
         $metabase = $this->fakeMetabase();
         $row      = ['id' => 12, 'slice_id' => self::TEMPLATE_ID, 'name' => null, 'even' => 1.5];
 
-        self::def(AA_Definition_Module_Slice::class, self::TEMPLATE_ID, ['view' => [12 => $row]])->moduleImport();
+        self::def(AA_Definition_Module_Slice::class, self::TEMPLATE_ID, ['view' => [12 => $row]])->moduleImport(null, self::target());
 
         $this->assertSame([['view', $row]], $metabase->inserted);
     }
@@ -439,7 +438,7 @@ final class CentralDefinitionModuleTest extends TestCase
             'view' => [12 => ['id' => 12, 'slice_id' => self::TEMPLATE_ID, 'name' => null, 'even' => '{view.php3?vid=' . self::TEMPLATE_ID . '}']],
         ]);
 
-        self::collectingWarnings(static fn() => $def->moduleImport([self::TEMPLATE_ID => self::DEST_ID]), $warnings);
+        self::collectingWarnings(static fn() => $def->moduleImport([self::TEMPLATE_ID => self::DEST_ID], self::target()), $warnings);
 
         // pinned; phase 4 may change - every value goes through str_replace(): ints become strings, NULL becomes ''
         $this->assertSame([['view', ['id' => '12', 'slice_id' => self::DEST_ID, 'name' => '', 'even' => '{view.php3?vid=' . self::DEST_ID . '}']]], $metabase->inserted, 'inside texts, too');
@@ -530,7 +529,7 @@ final class CentralDefinitionModuleTest extends TestCase
         $this->assertSame('Do_Import_Module_Chunk', $request->getCommand());
         $chunk = $request->getParameters()['definition_chunk'];
         $this->assertInstanceOf(AA_Definition_Module_Chunk::class, $chunk);
-        $this->assertSame(['OK: 1 view ([12]); '], $chunk->importModuleChunk());
+        $this->assertSame(['OK: 1 view ([12]); '], $chunk->importModuleChunk(self::target()));
         $this->assertSame([['view', ['id' => 12, 'slice_id' => self::TEMPLATE_ID, 'name' => 'List']]], $metabase->inserted);
     }
 }

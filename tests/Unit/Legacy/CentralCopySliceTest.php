@@ -9,13 +9,16 @@ use AA_Definition_Module_Chunk;
 use AA_Definition_Module_Slice;
 use AA_Task_Import_Module_Chunk;
 use PHPUnit\Framework\TestCase;
+use Tests\Unit\Central\Fixtures\FakeChunkTarget;
+use Tests\Unit\Central\Fixtures\RecordingMetabase;
 use Tests\Unit\Legacy\Fixtures\RecordingDb;
 
 /**
  * Central - Copy Slice (central/copyslice2.php) imports one template definition into several
  * destination AAs, each time with freshly generated module ids. The definition object is shared
  * by all destinations, so the id replacement must not consume it. No DB: the metabase is a fake
- * which records the inserts, the toexecute queue a RecordingDb.
+ * which records the inserts, the toexecute queue a RecordingDb, the destination AA of the chunk mode
+ * (ChunkImporter, C4.4 part 6) a FakeChunkTarget with the two destination slices.
  */
 final class CentralCopySliceTest extends TestCase
 {
@@ -28,6 +31,13 @@ final class CentralCopySliceTest extends TestCase
         require_once __DIR__ . '/../fixtures/util_shims.php';        // recursive_array_replace()
         require_once __DIR__ . '/fixtures/store_fixtures.php';       // RecordingDb
         require_once __DIR__ . '/../../../include/varset.php';       // Cvarset of Toexecute::later()
+        require_once __DIR__ . '/../Central/fixtures/ChunkFixtures.php';   // FakeChunkTarget
+    }
+
+    /** this AA as the chunk mode sees it - the destination slices exist (the module chunk came first) */
+    private static function target(): FakeChunkTarget
+    {
+        return new FakeChunkTarget([self::FIRST_ID => 'S', self::SECOND_ID => 'S']);
     }
 
     /** AA::$metabase before a test replaced it; false = not replaced */
@@ -43,25 +53,11 @@ final class CentralCopySliceTest extends TestCase
     }
 
     /** Metabase which records the inserts instead of writing; rows named 'bad' fail. */
-    private function fakeMetabase(): \AA_Metabase
+    private function fakeMetabase(): RecordingMetabase
     {
         $property             = new \ReflectionProperty(\AA::class, 'metabase');
         $this->saved_metabase = $property->getValue();
-        $metabase             = new class extends \AA_Metabase {
-            /** @var list<array{string, array}> */
-            public array $inserted = [];
-
-            public function getKeys($tablename): array
-            {
-                return $tablename === 'field' ? ['id', 'slice_id'] : ['id'];   // order as in metabase_schema.php
-            }
-
-            public function doInsert(string $tablename, array $data, ?string $nohalt = null): bool|int
-            {
-                $this->inserted[] = [$tablename, $data];
-                return ($data['name'] ?? '') !== 'bad';
-            }
-        };
+        $metabase             = new RecordingMetabase();   // real keys; a row named 'bad' fails
         $property->setValue(null, $metabase);
         return $metabase;
     }
@@ -111,10 +107,12 @@ final class CentralCopySliceTest extends TestCase
         $this->assertSame(self::templateData(), $def->getArray(), 'the template definition must stay untouched');
     }
 
+    /** changed in C4.4 part 6: the chunks name the destination module (DefinitionStore::chunks()) - one naming
+     *  the template, as an older Central sent them, is refused (ChunkImporterTest) */
     public function test_importModuleChunk_reports_ok_and_failed_rows(): void
     {
         $this->fakeMetabase();
-        $chunk = new AA_Definition_Module_Chunk(self::TEMPLATE_ID, 'field', [
+        $chunk = new AA_Definition_Module_Chunk(self::FIRST_ID, 'field', [
             ['id' => 'headline........', 'slice_id' => self::FIRST_ID, 'name' => 'Headline'],
             ['id' => 'text...........1', 'slice_id' => self::FIRST_ID, 'name' => 'bad'],
             ['id' => 'text...........2', 'slice_id' => self::FIRST_ID, 'name' => 'Text'],
@@ -123,23 +121,23 @@ final class CentralCopySliceTest extends TestCase
         $this->assertSame([
             'OK: 2 field ([headline........,' . self::FIRST_ID . '][text...........2,' . self::FIRST_ID . ']); ',
             'Err: 1 field ([text...........1,' . self::FIRST_ID . ']); ',
-        ], $chunk->importModuleChunk());
+        ], $chunk->importModuleChunk(self::target()));
     }
 
     public function test_importModuleChunk_all_ok_has_no_err_line(): void
     {
         $this->fakeMetabase();
-        $chunk = new AA_Definition_Module_Chunk(self::TEMPLATE_ID, 'module', [['id' => self::FIRST_ID, 'name' => 'News']]);
+        $chunk = new AA_Definition_Module_Chunk(self::FIRST_ID, 'module', [['id' => self::FIRST_ID, 'name' => 'News']]);
 
-        $this->assertSame(['OK: 1 module ([' . self::FIRST_ID . ']); '], $chunk->importModuleChunk());
+        $this->assertSame(['OK: 1 module ([' . self::FIRST_ID . ']); '], $chunk->importModuleChunk(self::target()));
     }
 
     public function test_importModuleChunk_all_failed_has_no_ok_line(): void
     {
         $this->fakeMetabase();
-        $chunk = new AA_Definition_Module_Chunk(self::TEMPLATE_ID, 'module', [['id' => self::FIRST_ID, 'name' => 'bad']]);
+        $chunk = new AA_Definition_Module_Chunk(self::FIRST_ID, 'module', [['id' => self::FIRST_ID, 'name' => 'bad']]);
 
-        $this->assertSame(['Err: 1 module ([' . self::FIRST_ID . ']); '], $chunk->importModuleChunk());
+        $this->assertSame(['Err: 1 module ([' . self::FIRST_ID . ']); '], $chunk->importModuleChunk(self::target()));
     }
 
     public function test_importModuleChunk_empty_chunk_reports_nothing(): void
@@ -155,8 +153,8 @@ final class CentralCopySliceTest extends TestCase
         $metabase = $this->fakeMetabase();
         $def      = self::template();
 
-        $first  = $def->moduleImport([self::TEMPLATE_ID => self::FIRST_ID]);
-        $second = $def->moduleImport([self::TEMPLATE_ID => self::SECOND_ID]);
+        $first  = $def->moduleImport([self::TEMPLATE_ID => self::FIRST_ID], self::target());
+        $second = $def->moduleImport([self::TEMPLATE_ID => self::SECOND_ID], self::target());
 
         $this->assertSame([
             'OK: 1 module ([' . self::FIRST_ID . ']); ',
