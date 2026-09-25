@@ -23,14 +23,18 @@ namespace Tests\Unit\Central\Package {
     use AA\Central\Package\Collector;
     use AA\Central\Package\ExportLint;
     use AA\Central\Package\LintFinding;
+    use AA\Central\Package\Model\Batch;
     use AA\Central\Package\Model\ConstantGroup;
     use AA\Central\Package\Model\Module;
     use AA\Central\Package\Model\RawBytes;
+    use AA\Central\Package\Reader;
     use AA\Central\Package\ReferenceLint;
     use AA\Central\Package\Schema;
     use AA\Central\Package\SecurityLint;
+    use AA\Central\Package\Validator;
     use AA\Central\Package\ValueCodec;
     use AA\Central\Package\Writer;
+    use AA\Central\Package\XmlGuard;
     use AA_Module_Site;
     use DOMDocument;
     use DOMXPath;
@@ -54,6 +58,9 @@ namespace Tests\Unit\Central\Package {
         private const GONE    = '0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f';   // no such module
         private const ITEM    = '0123456789abcdef0123456789abcdef';
         private const ITEM2   = '1123456789abcdef0123456789abcdef';   // in the trash
+        private const ITEM3   = '2123456789abcdef0123456789abcdef';
+        private const ITEM_W  = '3123456789abcdef0123456789abcdef';
+        private const OWNER   = '99999999999999999999999999999999';
         private const C1      = 'aa11bb22cc33dd44ee55ff6677889900';
         private const C2      = 'bb11bb22cc33dd44ee55ff6677889900';
 
@@ -77,7 +84,7 @@ namespace Tests\Unit\Central\Package {
         private static function module(string $id, string $type, string $name, string $lang_file, int $deleted = 0): array
         {
             return ['id' => $id, 'type' => $type, 'name' => $name, 'lang_file' => $lang_file, 'flag' => 0, 'deleted' => $deleted,
-                'owner' => '99999999999999999999999999999999', 'created_by' => 'uid-17', 'created_at' => 1700000000,
+                'owner' => self::OWNER, 'created_by' => 'uid-17', 'created_at' => 1700000000,
                 'slice_url' => 'https://source.example/x.shtml', 'priority' => 5, 'app_id' => null];
         }
 
@@ -227,6 +234,7 @@ namespace Tests\Unit\Central\Package {
                     self::constant('ab11bb22cc33dd44ee55ff6677889900', 'ct_b', 'B', 100),
                     self::constant('ac11bb22cc33dd44ee55ff6677889900', "ct_\xE8", "\xE8", 100),
                 ],
+                'slice_owner' => [['id' => self::OWNER, 'name' => 'Ekologický institut', 'email' => 'office@source.example']],
             ], [
                 self::SLICE_A => [
                     self::item(self::ITEM, self::SLICE_A, '1', [
@@ -234,10 +242,12 @@ namespace Tests\Unit\Central\Package {
                         'number..........' => self::v(null),
                         'category.......1' => self::v('news', 'home'),
                         'password.......1' => self::v('$2y$10$hash'),
+                        'secret..........' => self::v('JBSWY3DPEHPK3PXP'),     // 2FA - GetItemContent() leaves it out
                     ]),
+                    self::item(self::ITEM3, self::SLICE_A, '1', ['headline........' => self::v('Third')]),
                     self::item(self::ITEM2, self::SLICE_A, '3', ['headline........' => self::v('Trashed')]),
                 ],
-                self::SLICE_W => [self::item(self::ITEM, self::SLICE_W, '1', ['headline........' => self::v("\xC8esko")])],
+                self::SLICE_W => [self::item(self::ITEM_W, self::SLICE_W, '1', ['headline........' => self::v("\xC8esko")])],
             ]);
         }
 
@@ -539,13 +549,14 @@ namespace Tests\Unit\Central\Package {
 
         public function test_texts_of_a_windows_1250_module_are_converted_to_utf8(): void
         {
-            $result = (new Collector(self::source()))->fromModules([self::SLICE_W], new CollectOptions(self::SOURCE, items: true));
+            $result = (new Collector(self::source()))->fromModules([self::SLICE_W], new CollectOptions(self::SOURCE));
             $slice  = self::moduleOf($result, self::SLICE_W);
+            $batch  = (new Collector(self::source()))->itemBatch(self::SLICE_W, '', self::transfer());
 
             $this->assertSame('Školy', $result->package->name);
             $this->assertSame('Školy', $slice->rows['slice'][0]['name']);
             $this->assertSame('Číslo', $slice->rows['field'][0]['name']);
-            $this->assertSame('Česko', $slice->items[0]['content']['headline........'][0]['value']);
+            $this->assertSame('Česko', $batch->package->modules[0]->items[0]['content']['headline........'][0]['value']);
             $this->assertSame('škola', self::groupOf($result, 'ct_w')->rows['constant'][0]['name']);   // tpr: the group is the third parameter
             // the group name is looked up as stored (windows-1250), the package has it in UTF-8
             $this->assertSame('č', self::groupOf($result, 'ct_č')?->rows['constant'][0]['name']);
@@ -599,88 +610,383 @@ namespace Tests\Unit\Central\Package {
             $this->assertTrue($result->failed());
         }
 
-        // --- items -----------------------------------------------------------------------------------
+        // --- items: batches of a transfer --------------------------------------------------------------
 
-        public function test_items_only_on_request(): void
+        private static function transfer(bool $all_bins = false): CollectOptions
+        {
+            return new CollectOptions(self::SOURCE, mode: CollectOptions::TRANSFER, allBins: $all_bins);
+        }
+
+        /** the one slice of a batch */
+        private static function batchSlice(CollectResult $result): Module
+        {
+            self::assertCount(1, $result->package->modules);
+            return $result->package->modules[0];
+        }
+
+        /** a source with one slice of these items, ids from $first on
+         *  @param list<string> $headlines */
+        private static function bigSlice(array $headlines, int $first = 1): FakeSource
         {
             $source = self::source();
-            $off    = (new Collector($source))->fromModules([self::SLICE_A], new CollectOptions(self::SOURCE));
-            $this->assertFalse($off->package->withItems);
-            $this->assertSame([], self::moduleOf($off, self::SLICE_A)->items);
-            $this->assertNotContains('item', array_column($source->log, 0));
+            $source->items[self::SLICE_B] = [];
+            foreach ($headlines as $i => $headline) {
+                $id                             = sprintf('%032x', $first + $i);
+                $source->items[self::SLICE_B][] = self::item($id, self::SLICE_B, '1', ['headline........' => self::v($headline)]);
+            }
+            return $source;
+        }
 
-            $on    = (new Collector($source))->fromModules([self::SLICE_A], new CollectOptions(self::SOURCE, items: true));
-            $items = self::moduleOf($on, self::SLICE_A)->items;
-            $this->assertTrue($on->package->withItems);
-            $this->assertSame([self::ITEM], array_column($items, 'id'));      // the active bin only
+        public function test_definitions_carry_no_items(): void
+        {
+            $source = self::source();
+            $result = (new Collector($source))->fromSite(self::SITE, self::transfer(true));
+
+            $this->assertFalse($result->package->withItems);
+            $this->assertNull($result->package->batch);
+            $this->assertSame([], self::moduleOf($result, self::SLICE_A)->items);
+            $this->assertSame([], array_values(array_intersect(['itemIds', 'item'], array_column($source->log, 0))));
+        }
+
+        public function test_a_batch_is_one_slice_with_its_items_only(): void
+        {
+            $result = (new Collector(self::source()))->itemBatch(strtoupper(self::SLICE_A), '', self::transfer());
+            $slice  = self::batchSlice($result);
+
+            $this->assertSame([Module::SLICE, self::SLICE_A, []], [$slice->type, $slice->id, $slice->rows]);
+            $this->assertSame([null, [], null, []], [$slice->settings, $slice->objects, $slice->spotTree, $slice->transfer]);
+            $this->assertSame([], $result->package->constantGroups);
+            $this->assertTrue($result->package->withItems);
+            $this->assertSame('Articles', $result->package->name);
+            $this->assertSame([self::SLICE_A], $result->checkPermissions);
+            $this->assertSame([self::ITEM, self::ITEM3], array_column($slice->items, 'id'));      // the active bin, by id
+            $this->assertEquals(new Batch('', self::ITEM3, true), $result->package->batch);
+            $this->assertFalse($result->failed());
+        }
+
+        public function test_a_batch_continues_after_the_cursor(): void
+        {
+            $result = (new Collector(self::source()))->itemBatch(self::SLICE_A, self::ITEM, self::transfer());
+
+            $this->assertSame([self::ITEM3], array_column(self::batchSlice($result)->items, 'id'));
+            $this->assertEquals(new Batch(self::ITEM, self::ITEM3, true), $result->package->batch);
+        }
+
+        public function test_a_batch_of_all_bins(): void
+        {
+            $result = (new Collector(self::source()))->itemBatch(self::SLICE_A, self::ITEM, self::transfer(true));
+
+            $this->assertSame([self::ITEM2, self::ITEM3], array_column(self::batchSlice($result)->items, 'id'));
+        }
+
+        public function test_the_batch_after_the_last_item_is_empty_and_finished(): void
+        {
+            $result = (new Collector(self::source()))->itemBatch(self::SLICE_A, self::ITEM3, self::transfer());
+
+            $this->assertSame([], self::batchSlice($result)->items);
+            $this->assertEquals(new Batch(self::ITEM3, self::ITEM3, true), $result->package->batch);
+            $this->assertFalse($result->failed());
+        }
+
+        public function test_a_batch_takes_at_most_MAX_ITEMS(): void
+        {
+            $source = self::bigSlice(array_fill(0, CollectOptions::MAX_ITEMS + 1, 'x'));
+            $first  = (new Collector($source))->itemBatch(self::SLICE_B, '', self::transfer());
+
+            $this->assertCount(CollectOptions::MAX_ITEMS, self::batchSlice($first)->items);
+            $last = sprintf('%032x', CollectOptions::MAX_ITEMS);
+            $this->assertEquals(new Batch('', $last, false), $first->package->batch);
+            $this->assertContains(['itemIds', [self::SLICE_B, false, '', CollectOptions::MAX_ITEMS + 1]], $source->log);   // one more tells "not finished"
+
+            $second = (new Collector($source))->itemBatch(self::SLICE_B, $last, self::transfer());
+            $this->assertSame([sprintf('%032x', CollectOptions::MAX_ITEMS + 1)], array_column(self::batchSlice($second)->items, 'id'));
+            $this->assertTrue($second->package->batch->finished);
+        }
+
+        public function test_exactly_MAX_ITEMS_are_finished(): void
+        {
+            $result = (new Collector(self::bigSlice(array_fill(0, CollectOptions::MAX_ITEMS, 'x'))))->itemBatch(self::SLICE_B, '', self::transfer());
+
+            $this->assertCount(CollectOptions::MAX_ITEMS, self::batchSlice($result)->items);
+            $this->assertTrue($result->package->batch->finished);
+        }
+
+        public function test_a_batch_stops_before_MAX_BATCH_BYTES(): void
+        {
+            $big    = str_repeat('x', (int) (CollectOptions::MAX_BATCH_BYTES * 0.4));
+            $result = (new Collector(self::bigSlice([$big, $big, $big])))->itemBatch(self::SLICE_B, '', self::transfer());
+
+            $this->assertSame([sprintf('%032x', 1), sprintf('%032x', 2)], array_column(self::batchSlice($result)->items, 'id'));
+            $this->assertEquals(new Batch('', sprintf('%032x', 2), false), $result->package->batch);
+            $this->assertFalse($result->failed());
+        }
+
+        public function test_an_item_over_MAX_BATCH_BYTES_is_an_error_with_its_id(): void
+        {
+            $id     = sprintf('%032x', 2);
+            $source = self::bigSlice(['small', str_repeat('x', CollectOptions::MAX_BATCH_BYTES)]);
+
+            $first = (new Collector($source))->itemBatch(self::SLICE_B, '', self::transfer());
+            $this->assertEquals(new Batch('', sprintf('%032x', 1), false), $first->package->batch);     // the batch before it goes
+            $this->assertFalse($first->failed());
+
+            $result = (new Collector($source))->itemBatch(self::SLICE_B, sprintf('%032x', 1), self::transfer());
+            $this->assertTrue($result->failed());
+            $this->assertSame(['E ' . Collector::ITEM_TOO_BIG . " $id @ slice-module[" . self::SLICE_B . "]/item[$id]"], self::findings($result));
+            $this->assertSame([], self::batchSlice($result)->items);                                      // never cut
+            $this->assertEquals(new Batch(sprintf('%032x', 1), sprintf('%032x', 1), false), $result->package->batch);
+        }
+
+        public function test_the_byte_limit_keeps_a_batch_within_the_reader_limits(): void
+        {
+            // a <v> is an element, up to 3 nodes and 4 attributes (f, i, flag, enc|crlf)
+            $values = intdiv(CollectOptions::MAX_BATCH_BYTES, Collector::VALUE_MARKUP);
+            $this->assertLessThan(XmlGuard::MAX_ELEMENTS - 2 * CollectOptions::MAX_ITEMS - 1000, $values);
+            $this->assertLessThan(XmlGuard::MAX_ATTRIBUTES - 1000, 4 * $values + CollectOptions::MAX_ITEMS);
+            $this->assertLessThan(XmlGuard::MAX_NODES - 10000, 3 * $values + 3 * CollectOptions::MAX_ITEMS);
+            // the limit counts the values as written (escaped, CDATA, base64); meta and <item> tags on top
+            $this->assertLessThan(XmlGuard::MAX_BYTES, CollectOptions::MAX_BATCH_BYTES + 200 * CollectOptions::MAX_ITEMS + 100_000);
+        }
+
+        /** @return array<string, array{string}> */
+        public static function growingValues(): array
+        {
+            return [
+                'escaped > (4 bytes each)'  => [str_repeat('>', 300_000)],
+                'CDATA split ]]> (x4)'      => [str_repeat('<]]>', 75_000)],
+                'base64 of control chars'   => [str_repeat("\x01\x02\x03", 300_000)],
+            ];
+        }
+
+        #[DataProvider('growingValues')]
+        public function test_the_byte_limit_counts_the_value_as_written(string $value): void
+        {
+            $source = self::bigSlice(array_fill(0, 20, $value));
+            $result = (new Collector($source))->itemBatch(self::SLICE_B, '', self::transfer());
+            $xml    = (new Writer())->toXml($result->package)->xml;
+
+            $this->assertCount(3, self::batchSlice($result)->items);        // 3 x ~1.2 MB written, not 13 x 300 kB
+            $this->assertLessThan(CollectOptions::MAX_BATCH_BYTES + 100_000, strlen($xml));
+            $this->assertCount(3, (new Reader())->read($xml)->package->modules[0]->items);
+        }
+
+        public function test_items_are_read_in_chunks_until_the_byte_limit(): void
+        {
+            $source = self::bigSlice(array_fill(0, CollectOptions::MAX_ITEMS, 'x'));
+            (new Collector($source))->itemBatch(self::SLICE_B, '', self::transfer());
+            $reads = array_values(array_filter($source->log, static fn(array $l): bool => $l[0] === 'item'));
+            $this->assertCount(CollectOptions::MAX_ITEMS / Collector::ITEM_CHUNK, $reads);
+            $this->assertSame([sprintf('%032x', 1)], array_slice($reads[0][1], 0, 1));    // in id order
+
+            $big    = str_repeat('x', (int) (CollectOptions::MAX_BATCH_BYTES * 0.4));
+            $source = self::bigSlice(array_fill(0, 2 * Collector::ITEM_CHUNK, $big));
+            (new Collector($source))->itemBatch(self::SLICE_B, '', self::transfer());
+            $this->assertCount(1, array_filter($source->log, static fn(array $l): bool => $l[0] === 'item'));
+        }
+
+        public function test_an_item_deleted_meanwhile_is_skipped_and_no_cursor(): void
+        {
+            $source           = self::source();
+            $source->vanished = [self::ITEM3];
+            $result           = (new Collector($source))->itemBatch(self::SLICE_A, '', self::transfer());
+
+            $this->assertSame([self::ITEM], array_column(self::batchSlice($result)->items, 'id'));
+            $this->assertEquals(new Batch('', self::ITEM, true), $result->package->batch);
+            $this->assertTrue((new Validator())->validate($result->package, true)->importable());
+
+            $source->vanished = [self::ITEM, self::ITEM3];
+            $result           = (new Collector($source))->itemBatch(self::SLICE_A, '', self::transfer());
+            $this->assertEquals(new Batch('', '', true), $result->package->batch);
+            $this->assertTrue((new Validator())->validate($result->package, true)->importable());
+        }
+
+        public function test_findings_never_quote_passwords_or_secrets(): void
+        {
+            $source                                 = self::source();
+            $source->tables['slice'][2]['reading_password'] = "pw\x81x";
+            $source->items[self::SLICE_W][0]['content'] += ['password.......1' => self::v("ab\x81cd"), 'secret..........' => self::v("s\x81t"), 'text...........1' => self::v("t\x81u")];
+            $findings = [
+                ...(new Collector($source))->fromModules([self::SLICE_W], self::transfer())->findings,
+                ...(new Collector($source))->itemBatch(self::SLICE_W, '', self::transfer())->findings,
+            ];
+            $refs = [];
+            foreach ($findings as [$path, $f]) {
+                $refs[preg_replace('/.*\//', '', $path)] = [$f->ref, $f->offset];
+            }
+
+            $this->assertSame(['', 2], $refs['reading-password']);
+            $this->assertSame(['', 2], $refs['password.......1[0]']);
+            $this->assertSame(['', 1], $refs['secret..........[0]']);
+            $this->assertSame(["\x81u", 1], $refs['text...........1[0]']);     // other values say where
+        }
+
+        public function test_a_batch_carries_2fa_secrets_and_authors_never_the_state_of_the_source(): void
+        {
+            $source = self::source();
+            $items  = self::batchSlice((new Collector($source))->itemBatch(self::SLICE_A, '', self::transfer()))->items;
+            $this->assertSame([true], array_values(array_unique(array_column(array_filter($source->log, static fn(array $l): bool => $l[0] === 'item'), 2))));
+
             $this->assertSame([
                 'headline........' => [['value' => 'First', 'flag' => 1]],
                 'number..........' => [['value' => '', 'flag' => 0]],        // NULL => '' (Model\Module)
                 'category.......1' => self::v('news', 'home'),
                 'password.......1' => self::v('$2y$10$hash'),                 // readers must log in after a transfer
+                'secret..........' => self::v('JBSWY3DPEHPK3PXP'),            // and with their second factor
                 'status_code.....' => self::v('1'),
                 'post_date.......' => self::v('1700000000'),
                 'publish_date....' => self::v('1700000000'),
                 'expiry_date.....' => self::v('2000000000'),
                 'highlight.......' => self::v('0'),
+                'posted_by.......' => self::v('uid-17'),                      // as text - no user of the target
+                'edited_by.......' => self::v('uid-18'),
                 'last_edit.......' => self::v('1700000100'),
                 'flags...........' => self::v('0'),
                 'moved2active....' => self::v('0'),
-            ], $items[0]['content']);   // no users, counters or feeding of the source AA
-            $this->assertCount(1, self::xml($on)->getElementsByTagName('item'));
+            ], $items[0]['content']);   // no short_id, counters or feeding of the source AA
         }
 
-        public function test_items_of_all_bins_on_request(): void
+        public function test_a_batch_is_a_package_the_reader_reads(): void
         {
-            $result = (new Collector(self::source()))->fromModules([self::SLICE_A], new CollectOptions(self::SOURCE, items: true, allBins: true));
+            $result = (new Collector(self::source()))->itemBatch(self::SLICE_A, '', self::transfer());
+            $xml    = (new Writer())->toXml($result->package)->xml;      // XSD-validated
+            $read   = (new Reader())->read($xml);
 
-            $this->assertSame([self::ITEM, self::ITEM2], array_column(self::moduleOf($result, self::SLICE_A)->items, 'id'));
+            $this->assertSame([], $read->findings);
+            $this->assertEquals($result->package->batch, $read->package->batch);
+            $this->assertSame([[Module::SLICE, self::SLICE_A, []]], array_map(static fn(Module $m): array => [$m->type, $m->id, $m->rows], $read->package->modules));
+            $this->assertSame(array_column(self::batchSlice($result)->items, 'id'), array_column($read->package->modules[0]->items, 'id'));
+            $this->assertSame('JBSWY3DPEHPK3PXP', $read->package->modules[0]->items[0]['content']['secret..........'][0]['value']);
         }
 
-        public function test_more_items_than_the_limit_fail_the_export(): void
+        public function test_item_batches_belong_to_a_transfer(): void
         {
-            $result = (new Collector(self::source()))->fromModules([self::SLICE_A], new CollectOptions(self::SOURCE, items: true, allBins: true, maxItems: 1));
-
-            $this->assertCount(1, self::moduleOf($result, self::SLICE_A)->items);
-            $this->assertContains('E ' . Collector::ITEMS_LIMIT . ' 1 @ slice-module[' . self::SLICE_A . ']/item', self::findings($result));
+            $this->expectException(InvalidArgumentException::class);
+            (new Collector(self::source()))->itemBatch(self::SLICE_A, '', new CollectOptions(self::SOURCE));
         }
 
-        public function test_items_of_a_reader_management_slice_travel_like_any_other(): void
+        /** @return array<string, array{string, string}> */
+        public static function wrongBatches(): array
         {
-            // moving a whole site between installations takes its readers too
-            $source                             = self::source();
-            $source->tables['slice'][0]['type'] = 'ReaderManagement';
-            $result                             = (new Collector($source))->fromModules([self::SLICE_A], new CollectOptions(self::SOURCE, items: true));
+            return [
+                'a site'           => [self::SITE, ''],
+                'a deleted slice'  => [self::DELETED, ''],
+                'no such module'   => [self::GONE, ''],
+                'a cursor of 31'   => [self::SLICE_A, substr(self::ITEM, 1)],
+                'a cursor of text' => [self::SLICE_A, "' OR 1=1 --                     "],
+            ];
+        }
 
-            $items = self::moduleOf($result, self::SLICE_A)->items;
-            $this->assertSame([self::ITEM], array_column($items, 'id'));
-            $this->assertSame(self::v('$2y$10$hash'), $items[0]['content']['password.......1']);
-            $this->assertFalse($result->failed());
+        #[DataProvider('wrongBatches')]
+        public function test_a_wrong_batch_is_rejected(string $slice, string $after): void
+        {
+            try {
+                (new Collector(self::source()))->itemBatch($slice, $after, self::transfer());
+                $this->fail('no exception');
+            } catch (InvalidArgumentException $e) {
+                $this->addToAssertionCount(1);
+                if ($after !== '') {
+                    $this->assertStringNotContainsString($after, $e->getMessage());     // no input echoed
+                }
+            }
         }
 
         /** @return array<string, array{string}> */
-        public static function notPublic(): array
+        public static function published(): array
         {
-            return ['no' => ['no'], 'users (admins of the site only)' => ['users']];
+            return ['users' => ['users'], 'all' => ['all']];
         }
 
-        #[DataProvider('notPublic')]
-        public function test_items_may_travel_in_a_package_that_is_not_public(string $publish): void
+        #[DataProvider('published')]
+        public function test_a_transfer_is_never_published(string $publish): void
         {
-            $result = (new Collector(self::source()))->fromModules([self::SLICE_A], new CollectOptions(self::SOURCE, items: true, publish: $publish));
-
-            $this->assertSame([self::ITEM], array_column(self::moduleOf($result, self::SLICE_A)->items, 'id'));
-            $this->assertSame([], array_filter(self::findings($result), static fn(string $f): bool => str_contains($f, Collector::ITEMS_PUBLISHED)));
+            $this->assertSame('no', (new CollectOptions(self::SOURCE, mode: CollectOptions::TRANSFER, publish: 'no'))->publish);
+            $this->expectException(InvalidArgumentException::class);
+            new CollectOptions(self::SOURCE, mode: CollectOptions::TRANSFER, publish: $publish);
         }
 
-        public function test_a_public_app_carries_no_items(): void
-        {
-            $source = self::source();
-            $result = (new Collector($source))->fromModules([self::SLICE_A], new CollectOptions(self::SOURCE, items: true, publish: 'all'));
+        // --- transfer: state of the installation ---------------------------------------------------
 
-            $this->assertContains('E ' . Collector::ITEMS_PUBLISHED . ' all @ meta/contents', self::findings($result));
-            $this->assertSame([], self::moduleOf($result, self::SLICE_A)->items);
-            $this->assertNotContains('item', array_column($source->log, 0));
+        public function test_a_transfer_carries_the_owner_and_the_reading_password(): void
+        {
+            $result = (new Collector(self::source()))->fromSite(self::SITE, self::transfer());
+            $owner  = ['owner' => ['name' => 'Ekologický institut', 'email' => 'office@source.example']];
+
+            $this->assertSame($owner, self::moduleOf($result, self::SITE)->transfer);
+            $this->assertSame($owner + ['reading-password' => 'secret'], self::moduleOf($result, self::SLICE_A)->transfer);
+            $this->assertSame($owner, self::moduleOf($result, self::ALERTS)->transfer);
+            $this->assertArrayNotHasKey('reading_password', self::moduleOf($result, self::SLICE_A)->rows['slice'][0]);
+            $this->assertArrayNotHasKey('owner', self::moduleOf($result, self::SLICE_A)->rows['module'][0]);
+
+            $read = (new Reader())->read((new Writer())->toXml($result->package)->xml);     // XSD-validated both ways
+            $this->assertSame([], $read->findings);
+            $this->assertSame($owner + ['reading-password' => 'secret'], self::moduleOf(new CollectResult($read->package), self::SLICE_A)->transfer);
+        }
+
+        public function test_an_owner_of_another_charset_is_converted_and_a_missing_one_left_out(): void
+        {
+            $source                                   = self::source();
+            $source->tables['slice_owner'][0]['name'] = "\x8Akola";
+            $source->tables['module'][0]['owner']     = '';           // the site has none
+            $result                                   = (new Collector($source))->fromModules([self::SLICE_W], self::transfer());
+
+            $this->assertSame(['owner' => ['name' => 'Škola', 'email' => 'office@source.example'], 'reading-password' => 'secret'], self::moduleOf($result, self::SLICE_W)->transfer);
+            $this->assertSame([], self::moduleOf((new Collector($source))->fromSite(self::SITE, self::transfer()), self::SITE)->transfer);
+        }
+
+        public function test_an_install_carries_no_state_of_the_installation(): void
+        {
+            $result = (new Collector(self::source()))->fromSite(self::SITE, new CollectOptions(self::SOURCE));
+
+            foreach ($result->package->modules as $module) {
+                $this->assertSame([], $module->transfer, $module->id);
+            }
+            $xpath = new DOMXPath(self::xml($result));
+            $xpath->registerNamespace('a', Schema::NS);
+            $this->assertSame(0, $xpath->query('//a:owner|//a:reading-password|//a:alternate-url|//a:reading_password|//a:item')->length);
+        }
+
+        // --- readers' login names ------------------------------------------------------------------
+
+        private static function readers(): FakeSource
+        {
+            $source                             = self::source();
+            $source->tables['slice'][0]['type'] = 'ReaderManagement';
+            $source->items[self::SLICE_A][]     = self::item('4123456789abcdef0123456789abcdef', self::SLICE_A, '1', ['headline........' => self::v('first')]);
+            return $source;
+        }
+
+        public function test_readerLogins_are_the_login_names_only(): void
+        {
+            $collector = new Collector(self::readers());
+
+            $this->assertSame([['First', 'Third', 'first'], []], $collector->readerLogins([self::SLICE_A], false));
+            $this->assertSame([['First', 'Third', 'Trashed', 'first'], []], $collector->readerLogins([self::SLICE_A], true));
+        }
+
+        public function test_readerLogins_of_another_charset_are_utf8(): void
+        {
+            $source                             = self::readers();
+            $source->tables['slice'][2]['type'] = 'ReaderManagement';
+
+            $source->items[self::SLICE_W][] = self::item('5123456789abcdef0123456789abcdef', self::SLICE_W, '1', ['headline........' => self::v("x\x81")]);
+
+            [$logins, $findings] = (new Collector($source))->readerLogins([self::SLICE_W], false);
+            $this->assertSame(['Česko'], $logins);                   // valid UTF-8 only
+            $this->assertCount(1, $findings);                        // the other one is no silent loss
+            $this->assertSame(['slice-module[' . self::SLICE_W . ']/item', LintFinding::ERROR, Collector::LOGIN_CHARSET, '1'], [$findings[0][0], $findings[0][1]->level, $findings[0][1]->code, $findings[0][1]->ref]);
+        }
+
+        /** @return array<string, array{string}> */
+        public static function noReaderSlices(): array
+        {
+            return ['a slice of articles' => [self::SLICE_B], 'a site' => [self::SITE], 'a deleted module' => [self::DELETED], 'no module' => [self::GONE]];
+        }
+
+        #[DataProvider('noReaderSlices')]
+        public function test_readerLogins_refuse_other_modules(string $id): void
+        {
+            $this->expectException(InvalidArgumentException::class);
+            (new Collector(self::readers()))->readerLogins([self::SLICE_A, $id], false);
         }
 
         public function test_the_collected_site_is_a_valid_package(): void

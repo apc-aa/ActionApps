@@ -70,13 +70,43 @@ final class FakeSource implements Source
         return $rows;
     }
 
-    public function items(string $slice_id, bool $all_bins): Generator
+    public function itemIds(string $slice_id, bool $all_bins, string $after, int $limit): array
     {
-        $this->log[] = ['item', [$slice_id, $all_bins]];
-        foreach ($this->items[$slice_id] ?? [] as $item) {
-            if ($all_bins || (($item['content']['status_code.....'][0]['value'] ?? '') === '1')) {
-                yield $item;
+        $this->log[] = ['itemIds', [$slice_id, $all_bins, $after, $limit]];
+        $ids         = array_column(array_filter($this->items[$slice_id] ?? [], static fn(array $item): bool => self::inBins($item, $all_bins) && (strcmp($item['id'], $after) > 0)), 'id');
+        sort($ids, SORT_STRING);
+        return array_slice($ids, 0, $limit);
+    }
+
+    /** @var list<string> items itemIds() still lists, items() no more (deleted meanwhile) */
+    public array $vanished = [];
+
+    /** as DbSource: GetItemContent() (no secret* field), the 2FA secrets on request; any order */
+    public function items(array $ids, bool $with_secrets): Generator
+    {
+        $this->log[] = ['item', $ids, $with_secrets];
+        foreach (array_reverse(array_merge([], ...array_values($this->items))) as $item) {
+            if (in_array($item['id'], $ids, true) && !in_array($item['id'], $this->vanished, true)) {
+                $secrets = array_filter(array_keys($item['content']), static fn($f): bool => str_starts_with((string) $f, 'secret'));
+                yield $with_secrets ? $item : ['id' => $item['id'], 'content' => array_diff_key($item['content'], array_flip($secrets))];
             }
         }
+    }
+
+    public function logins(string $slice_id, bool $all_bins): array
+    {
+        $this->log[] = ['logins', [$slice_id, $all_bins]];
+        $logins      = [];
+        foreach ($this->items[$slice_id] ?? [] as $item) {
+            if (self::inBins($item, $all_bins)) {
+                array_push($logins, ...array_column($item['content']['headline........'] ?? [], 'value'));
+            }
+        }
+        return $logins;
+    }
+
+    private static function inBins(array $item, bool $all_bins): bool
+    {
+        return $all_bins || (($item['content']['status_code.....'][0]['value'] ?? '') === '1');
     }
 }

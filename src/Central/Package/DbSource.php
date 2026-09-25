@@ -17,6 +17,13 @@ final class DbSource implements Source
     /** GetItemContent() ids per call - bounds the IN list and the memory of one call */
     private const ITEM_CHUNK = 500;
 
+    /** GetItemContent() leaves out every field starting so (include/util.php) - FIELDID_2FA_SECRET and any
+     *  other secret; the items take back exactly those, so none is lost */
+    private const SECRET_PREFIX = 'secret';
+
+    /** tables read beside Schema::rowTables(): the owner of a module travels in a transfer */
+    private const OTHER_TABLES = ['slice_owner'];
+
     /** object ids per statement (IN list) */
     public const OBJECT_CHUNK = 500;
 
@@ -26,7 +33,7 @@ final class DbSource implements Source
     /** @throws InvalidArgumentException a table no package is made of, or no condition (a whole table) */
     public function select(string $table, array $where): array
     {
-        if (!in_array($table, (new Schema())->rowTables(), true) || !$where) {
+        if (!in_array($table, [...(new Schema())->rowTables(), ...self::OTHER_TABLES], true) || !$where) {
             throw new InvalidArgumentException("DbSource: no rows of `$table` " . ($where ? 'in a package' : 'without a condition'));
         }
         $rows = DB_AA::select([], 'SELECT * FROM ' . DB_AA::quoteIdentifier($table), $where);
@@ -40,16 +47,41 @@ final class DbSource implements Source
         return $rows;
     }
 
-    /** @return Generator<int, array{id: string, content: array<string, list<array<string, mixed>>>}> */
-    public function items(string $slice_id, bool $all_bins): Generator
+    /** @throws InvalidArgumentException a cursor that is no unpacked id */
+    public function itemIds(string $slice_id, bool $all_bins, string $after, int $limit): array
     {
-        $where = [['slice_id', $slice_id, 'l'], ...($all_bins ? [] : [['status_code', 1, 'i']])];
-        $ids   = DB_AA::select('unpackid', 'SELECT LOWER(HEX(' . DB_AA::quoteIdentifier('id') . ')) AS unpackid FROM ' . DB_AA::quoteIdentifier('item'), $where);
+        if (($after !== '') && !is_long_id($after)) {
+            throw new InvalidArgumentException('DbSource: the cursor is no item id');
+        }
+        $id    = DB_AA::quoteIdentifier('id');
+        $where = DB_AA::makeWhere([['slice_id', $slice_id, 'l'], ...($all_bins ? [] : [['status_code', 1, 'i']])])
+            . (($after === '') ? '' : " AND $id > " . xpack_id($after));
+        return DB_AA::select('unpackid', "SELECT LOWER(HEX($id)) AS unpackid FROM " . DB_AA::quoteIdentifier('item') . " $where ORDER BY $id LIMIT " . max(0, $limit));
+    }
+
+    /** @return Generator<int, array{id: string, content: array<string, list<array<string, mixed>>>}> */
+    public function items(array $ids, bool $with_secrets): Generator
+    {
         foreach (array_chunk($ids, self::ITEM_CHUNK) as $chunk) {
-            foreach (GetItemContent(new zids($chunk, 'l'), false, true) as $id => $content) {
+            $contents = GetItemContent(new zids($chunk, 'l'), false, true);
+            $sql      = 'SELECT LOWER(HEX(' . DB_AA::quoteIdentifier('item_id') . ')) AS item_id, field_id, text, flag FROM ' . DB_AA::quoteIdentifier('content');
+            foreach ($with_secrets ? DB_AA::select([], $sql, [['item_id', $chunk, 'l'], ['field_id', self::SECRET_PREFIX, 'BEGIN']], ['item_id', 'number']) : [] as $row) {
+                if (isset($contents[$row['item_id']])) {
+                    $contents[$row['item_id']][$row['field_id']][] = ['value' => $row['text'], 'flag' => (int) $row['flag']];
+                }
+            }
+            foreach ($contents as $id => $content) {
                 yield ['id' => (string) $id, 'content' => $content];
             }
         }
+    }
+
+    public function logins(string $slice_id, bool $all_bins): array
+    {
+        $sql = 'SELECT ' . DB_AA::quoteIdentifier('content.text') . ' FROM ' . DB_AA::quoteIdentifier('content') . ' INNER JOIN ' . DB_AA::quoteIdentifier('item')
+            . ' ON ' . DB_AA::quoteIdentifier('item.id') . ' = ' . DB_AA::quoteIdentifier('content.item_id');
+        $where = [['item.slice_id', $slice_id, 'l'], ['content.field_id', ItemLint::USERNAME, 's'], ...($all_bins ? [] : [['item.status_code', 1, 'i']])];
+        return array_map('strval', DB_AA::select('', $sql, $where));
     }
 
     public function objectIds(string $owner_id): array

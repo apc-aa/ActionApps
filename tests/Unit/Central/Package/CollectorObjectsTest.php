@@ -496,6 +496,17 @@ namespace Tests\Unit\Central\Package {
             $this->assertSame('Záhlaví', self::moduleOf(self::site($source), self::SITE)->spotTree['spots'][1]['n']);
         }
 
+        public function test_a_transfer_carries_the_domains_of_the_site(): void
+        {
+            $options = new CollectOptions(self::SOURCE, mode: CollectOptions::TRANSFER);
+            $site    = self::moduleOf((new Collector(self::source()))->fromSite(self::SITE, $options), self::SITE);
+
+            $this->assertSame(['www.source.example'], $site->transfer['alternate-url']);
+            $this->assertArrayNotHasKey('alternate_url', $site->settings);     // its own element, not a setting
+            $this->assertArrayNotHasKey('ga_id', $site->settings);
+            $this->assertArrayNotHasKey('alternate-url', self::moduleOf(self::site(), self::SITE)->transfer);
+        }
+
         // --- the package -----------------------------------------------------------------------------
 
         public function test_the_package_with_objects_and_tree_is_valid(): void

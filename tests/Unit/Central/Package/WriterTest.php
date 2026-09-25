@@ -201,8 +201,9 @@ final class WriterTest extends TestCase
             sort($out);
             return $out;
         };
-        $design = array_values(array_diff($leaves((string) file_get_contents(__DIR__ . '/fixtures/aa-app-example.xml')), [
-            "aa-app[format=1.0]/site-module[id=" . self::SITE . "]/site_spot[spot_id=2]/flag[]/ => '0'",
+        $example = str_replace('format="1.0"', 'format="' . Writer::FORMAT . '"', (string) file_get_contents(__DIR__ . '/fixtures/aa-app-example.xml'));
+        $design  = array_values(array_diff($leaves($example), [
+            'aa-app[format=' . Writer::FORMAT . "]/site-module[id=" . self::SITE . "]/site_spot[spot_id=2]/flag[]/ => '0'",
         ]));
         $this->assertSame($design, $leaves(self::xml(self::example())));
     }

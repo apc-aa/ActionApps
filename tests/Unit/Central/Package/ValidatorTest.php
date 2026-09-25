@@ -11,6 +11,7 @@ namespace Tests\Unit\Central\Package;
 
 use AA\Central\Package\FindingList;
 use AA\Central\Package\LintFinding;
+use AA\Central\Package\Model\Batch;
 use AA\Central\Package\Model\ConstantGroup;
 use AA\Central\Package\Model\Module;
 use AA\Central\Package\Model\Package;
@@ -21,6 +22,7 @@ use AA\Central\Package\Schema;
 use AA\Central\Package\SecurityLint;
 use AA\Central\Package\ValidationResult;
 use AA\Central\Package\Validator;
+use AA\Central\Package\Writer;
 use Closure;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
@@ -44,9 +46,9 @@ final class ValidatorTest extends TestCase
     }
 
     /** @return list<string> "<level> <code> <path>", sorted */
-    private static function findings(Package $package): array
+    private static function findings(Package $package, bool $transfer = false): array
     {
-        $list = array_map(static fn(array $f): string => "{$f[1]->level} {$f[1]->code} $f[0]", (new Validator())->validate($package)->findings);
+        $list = array_map(static fn(array $f): string => "{$f[1]->level} {$f[1]->code} $f[0]", (new Validator())->validate($package, $transfer)->findings);
         sort($list);
         return $list;
     }
@@ -66,7 +68,7 @@ final class ValidatorTest extends TestCase
     #[DataProvider('mutations')]
     public function test_mutation(Closure $mutate, array $expected): void
     {
-        $found = self::findings($mutate(self::written()));
+        $found = self::findings($mutate(self::written()), true);      // the checks of a transfer: items allowed
         sort($expected);
         self::assertSame($expected, array_values(array_diff($found, self::BASELINE)));
     }
@@ -203,15 +205,16 @@ final class ValidatorTest extends TestCase
             'anonymous posting'          => [static fn(Package $p): Package => self::cell($p, self::SLICE, 'slice', 0, ['permit_anonymous_post' => '1', 'permit_anonymous_edit' => '3']), ["W permission $S/slice[#0]/permit_anonymous_edit", "W permission $S/slice[#0]/permit_anonymous_post"]],
             'permissions NULL'           => [static fn(Package $p): Package => self::cell($p, self::SLICE, 'slice', 0, ['permit_anonymous_post' => null, 'permit_anonymous_edit' => null, 'fileman_access' => null]), []],
             'fileman and auth'           => [static fn(Package $p): Package => self::cell($p, self::SLICE, 'slice', 0, ['fileman_access' => 'EDITOR', 'auth_field_group' => 'headline........']), ["W permission $S/slice[#0]/auth_field_group", "W permission $S/slice[#0]/fileman_access"]],
-            'item pseudo field'          => [static fn(Package $p): Package => self::items($p, [['id' => self::OTHER, 'content' => ['posted_by.......' => [0 => ['value' => 'uid', 'flag' => 0]], 'u_slice_id......' => [0 => ['value' => self::SLICE, 'flag' => 0]], 'status_code.....' => [0 => ['value' => '2', 'flag' => 0]]]]]), ["E item-key $S/item[" . self::OTHER . ']/posted_by.......', "E item-key $S/item[" . self::OTHER . ']/u_slice_id......']],
+            'item pseudo field'          => [static fn(Package $p): Package => self::items($p, [['id' => self::OTHER, 'content' => ['posted_by.......' => [0 => ['value' => 'uid', 'flag' => 0]], 'u_slice_id......' => [0 => ['value' => self::SLICE, 'flag' => 0]], 'status_code.....' => [0 => ['value' => '2', 'flag' => 0]]]]]), ["E item-key $S/item[" . self::OTHER . ']/u_slice_id......']],     // posted_by in an install: test_the_authors_of_items_travel_only_in_a_transfer
             'item of no field'           => [static fn(Package $p): Package => self::items($p, [['id' => self::OTHER, 'content' => ['nofield........1' => [0 => ['value' => 'x', 'flag' => 0]], 'status_code.....' => [0 => ['value' => '1', 'flag' => 0]]]]]), ["W item-field $S/item[" . self::OTHER . ']/nofield........1']],
             'item without a status'      => [static fn(Package $p): Package => self::items($p, [['id' => self::OTHER, 'content' => ['headline........' => [0 => ['value' => 'x', 'flag' => 0]]]]]), ["W item-status $S/item[" . self::OTHER . ']/status_code.....']],
             'item in no bin'             => [static fn(Package $p): Package => self::items($p, [['id' => self::OTHER, 'content' => ['status_code.....' => [0 => ['value' => '4', 'flag' => 1]]]]]), ["W item-status $S/item[" . self::OTHER . ']/status_code.....']],
-            // ---- items: only publish = all forbids them
+            // ---- items (a transfer): never published
             'items without the flag'     => [static fn(Package $p): Package => self::with(self::items($p, [self::item(self::OTHER)]), ['withItems' => false]), ["E items $S/item"]],
             'items of a published app'   => [static fn(Package $p): Package => self::with(self::items($p, [self::item(self::OTHER)]), ['publish' => 'all']), ['E items-published meta/publish']],
             'item flag, publish all'     => [static fn(Package $p): Package => self::with($p, ['withItems' => true, 'publish' => 'all']), ['E items-published meta/publish']],
-            'items, publish users'       => [static fn(Package $p): Package => self::with(self::items($p, [self::item(self::OTHER)]), ['publish' => 'users']), []],
+            'items, publish users'       => [static fn(Package $p): Package => self::with(self::items($p, [self::item(self::OTHER)]), ['publish' => 'users']), ['E items-published meta/publish']],
+            'state, publish users'       => [static fn(Package $p): Package => self::with(self::module($p, self::SLICE, static fn(Module $m): Module => self::with($m, ['transfer' => ['reading-password' => 'x']])), ['publish' => 'users']), ['E items-published meta/publish']],
             'publish all, no items'      => [static fn(Package $p): Package => self::with($p, ['publish' => 'all']), []],
             // ---- security lint: every text of the package
             'include in a view'          => [static fn(Package $p): Package => self::cell($p, self::SLICE, 'view', 0, ['odd' => '{include:../../etc/passwd:readfile}']), ["S include $S/view[12]/odd"]],
@@ -275,6 +278,143 @@ final class ValidatorTest extends TestCase
         $rows                      = $group->rows;
         $rows['constant'][$k]      = $values + $rows['constant'][$k];
         return new ConstantGroup($group->name, $group->owner, $rows);
+    }
+
+    // ---------------------------------------------------------------- transfer: state of the installation
+
+    /** the example with the state of the installation a transfer carries */
+    private static function transferred(): Package
+    {
+        $owner = ['owner' => ['name' => 'Ekologický institut', 'email' => 'office@example.org']];
+        $p     = self::module(self::written(), self::SITE, static fn(Module $m): Module => self::with($m, ['transfer' => $owner + ['alternate-url' => ['example.org', 'www.example.org']]]));
+        $p     = self::module($p, self::SLICE, static fn(Module $m): Module => self::with($m, ['transfer' => $owner + ['reading-password' => 'tajne']]));
+        return self::module($p, self::ALERTS, static fn(Module $m): Module => self::with($m, ['transfer' => $owner]));
+    }
+
+    public function test_only_a_transfer_may_carry_the_state_of_the_installation(): void
+    {
+        $expected = ['E transfer-only ' . self::W . '/owner', 'E transfer-only ' . self::W . '/alternate-url', 'E transfer-only ' . self::S . '/owner',
+            'E transfer-only ' . self::S . '/reading-password', 'E transfer-only ' . self::A . '/owner'];
+        sort($expected);
+        self::assertSame($expected, array_values(array_diff(self::findings(self::transferred()), self::BASELINE)));
+        self::assertSame(self::BASELINE, self::findings(self::transferred(), true));
+    }
+
+    public function test_the_xsd_takes_the_state_the_validator_refuses_it_in_an_install(): void
+    {
+        $read = (new Reader())->read((new Writer())->toXml(self::transferred())->xml);
+
+        self::assertSame([], $read->findings);
+        self::assertFalse((new Validator())->validate($read->package)->importable());
+        self::assertTrue((new Validator())->validate($read->package, true)->importable());
+    }
+
+    /** @return array<string, array{string, array<string, mixed>}> */
+    public static function misplacedState(): array
+    {
+        return [
+            'reading password of a site' => [self::SITE, ['reading-password' => 'x']],
+            'domains of a slice'         => [self::SLICE, ['alternate-url' => ['example.org']]],
+            'domains of alerts'          => [self::ALERTS, ['alternate-url' => ['example.org']]],
+            'owner without its e-mail'   => [self::SLICE, ['owner' => ['name' => 'x']]],
+            'an unknown part'            => [self::SLICE, ['password' => 'x']],
+        ];
+    }
+
+    /** @param array<string, mixed> $transfer */
+    #[DataProvider('misplacedState')]
+    public function test_misplaced_state_is_an_error_in_a_transfer_too(string $id, array $transfer): void
+    {
+        $package = self::module(self::written(), $id, static fn(Module $m): Module => self::with($m, ['transfer' => $transfer]));
+
+        self::assertFalse((new Validator())->validate($package, true)->importable());
+    }
+
+    // ---------------------------------------------------------------- item batches
+
+    private const I1 = '000000000000000000000000000000a1';
+    private const I2 = '000000000000000000000000000000a2';
+
+    /** a batch of the example's slice: I1, I2 after nothing */
+    private static function batch(?Batch $batch = null, ?array $items = null): Package
+    {
+        return new Package(
+            'Články',
+            self::written()->source,
+            [new Module(Module::SLICE, self::SLICE, [], items: $items ?? [self::item(self::I1), self::item(self::I2)])],
+            withItems: true,
+            batch: $batch ?? new Batch('', self::I2, false),
+        );
+    }
+
+    public function test_a_batch_is_valid_without_the_slice_definition(): void
+    {
+        self::assertSame([], self::findings(self::batch(), true));
+        self::assertSame([], self::findings(self::batch(new Batch(self::I2, self::I2, true), []), true));
+    }
+
+    public function test_the_authors_of_items_travel_only_in_a_transfer(): void
+    {
+        $author = ['posted_by.......' => [['value' => 'uid-17', 'flag' => 0]], 'edited_by.......' => [['value' => 'uid-18', 'flag' => 0]]];
+        $items  = [['id' => self::I1, 'content' => $author + self::item(self::I1)['content']], self::item(self::I2)];
+        $at     = self::S . '/item[' . self::I1 . ']/';
+
+        self::assertSame([], self::findings(self::batch(null, $items), true));
+        self::assertSame(["E item-key {$at}edited_by.......", "E item-key {$at}posted_by.......", 'E transfer-only meta/batch'], self::findings(self::batch(null, $items)));
+        self::assertSame(["E item-key {$at}edited_by.......", "E item-key {$at}posted_by.......", 'E items meta/contents'], array_values(array_diff(self::findings(self::items(self::written(), $items)), self::BASELINE)));
+    }
+
+    /** @return array<string, array{Closure(): Package}> */
+    public static function installProbes(): array
+    {
+        $hash = static fn(string $id): array => ['id' => $id, 'content' => ['password........' => [['value' => '$2y$10$hash', 'flag' => 0]], 'secret..........' => [['value' => 'JBSWY3DP', 'flag' => 0]]] + self::item($id)['content']];
+        return [
+            'items with a hash and a secret' => [static fn(): Package => self::items(self::written(), [$hash(self::OTHER)])],
+            'the item flag alone'            => [static fn(): Package => self::with(self::written(), ['withItems' => true])],
+            'items without the flag'         => [static fn(): Package => self::with(self::items(self::written(), [self::item(self::OTHER)]), ['withItems' => false])],
+            'a batch'                        => [static fn(): Package => self::batch()],
+            'a batch of readers'             => [static fn(): Package => self::batch(new Batch('', self::I1, true), [$hash(self::I1)])],
+        ];
+    }
+
+    /** @param Closure(): Package $package */
+    #[DataProvider('installProbes')]
+    public function test_an_install_takes_no_items(Closure $package): void
+    {
+        self::assertFalse((new Validator())->validate($package())->importable());
+    }
+
+    public function test_a_published_batch_is_an_error(): void
+    {
+        self::assertSame(['E items-published meta/publish'], self::findings(self::with(self::batch(), ['publish' => 'users']), true));
+    }
+
+    /** @return array<string, array{Closure(): Package, list<string>}> */
+    public static function badBatches(): array
+    {
+        $S = self::S;
+        return [
+            'the slice row'            => [static fn(): Package => self::rows(self::batch(), self::SLICE, 'slice', static fn(): array => [['name' => 'x']]), ["E batch $S"]],
+            'settings'                 => [static fn(): Package => self::module(self::batch(), self::SLICE, static fn(Module $m): Module => self::with($m, ['settings' => []])), ["E batch $S"]],
+            'the owner'                => [static fn(): Package => self::module(self::batch(), self::SLICE, static fn(Module $m): Module => self::with($m, ['transfer' => ['owner' => ['name' => 'x', 'email' => 'y']]])), ["E batch $S"]],
+            'two slices'               => [static fn(): Package => self::with(self::batch(), ['modules' => [...self::batch()->modules, new Module(Module::SLICE, self::OTHER, [])]]), ['E batch aa-app']],
+            'a site'                   => [static fn(): Package => self::with(self::batch(), ['modules' => [new Module(Module::SITE, self::SITE, [])]]), ['E batch aa-app']],
+            'a constant group'         => [static fn(): Package => self::with(self::batch(), ['constantGroups' => self::written()->constantGroups]), ['E batch aa-app']],
+            'no item flag'             => [static fn(): Package => self::with(self::batch(), ['withItems' => false]), ["E items $S/item"]],
+            'an item at the cursor'    => [static fn(): Package => self::batch(new Batch(self::I1, self::I2, false)), ["E batch $S/item[" . self::I1 . ']']],
+            'an item after next'       => [static fn(): Package => self::batch(new Batch('', self::I1, false)), ["E batch $S/item[" . self::I2 . ']']],
+            'next is no item of it'    => [static fn(): Package => self::batch(new Batch('', self::OTHER, false)), ['E batch meta/batch']],
+            'empty, next moved'        => [static fn(): Package => self::batch(new Batch('', self::I1, true), []), ['E batch meta/batch']],
+            'a cursor of no id'        => [static fn(): Package => self::batch(new Batch('x', self::I2, false)), ['E batch meta/batch']],
+            'a short_id'               => [static fn(): Package => self::batch(null, [self::item(self::I1), ['id' => self::I2, 'content' => ['short_id........' => [['value' => '7', 'flag' => 0]]] + self::item(self::I2)['content']]]), ["E item-key $S/item[" . self::I2 . ']/short_id........']],
+        ];
+    }
+
+    /** @param Closure(): Package $package @param list<string> $expected */
+    #[DataProvider('badBatches')]
+    public function test_a_bad_batch(Closure $package, array $expected): void
+    {
+        self::assertSame($expected, self::findings($package(), true));
     }
 
     public function test_perm_mode(): void

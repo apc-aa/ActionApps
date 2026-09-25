@@ -56,6 +56,14 @@ final class ValueCodec
         return ['text' => $text, 'enc' => self::TEXT, 'crlf' => $crlf > 0, 'cdata' => strpbrk($text, "<&\n") !== false, 'finding' => null];
     }
 
+    /** Bytes of the element text Writer makes of the value: base64, CDATA with its `]]>` splits, or a
+     *  text node, where DOM escapes `>` (encode() takes `<` and `&` to CDATA) */
+    public static function xmlLength(string $value, bool $raw = false): int
+    {
+        $enc = self::encode($value, $raw);
+        return strlen($enc['text']) + ($enc['cdata'] ? 12 * (1 + substr_count($enc['text'], ']]>')) : 3 * substr_count($enc['text'], '>'));
+    }
+
     /** The value of an element: its textContent and attributes enc, crlf, null.
      *  @throws InvalidArgumentException null with text, broken base64, base64 with crlf */
     public static function decode(string $text, string $enc = self::TEXT, bool $crlf = false, bool $null = false): ?string

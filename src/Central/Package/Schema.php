@@ -77,29 +77,32 @@ final class Schema
     /** value types other than by the column type: packed ids joined without a separator */
     private const VALUE_TYPES = ['constant.ancestors' => 'idsValue'];
 
-    /** container => [attributes, children]; child suffix ? = optional, * = any number; a child
-     *  missing in CHILD_TYPES is a row (ROWS) */
+    /** container => [attributes, children]; child suffix ? = optional, * = any number, ! = exactly one but
+     *  in an item batch (meta/batch) none - the XSD cannot tell, the Validator checks it; a child missing
+     *  in CHILD_TYPES is a row (ROWS). owner, reading-password, alternate-url: only in a transfer (format 1.1) */
     private const CONTAINERS = [
-        'site-module'    => [[['id', 'longId']], ['doc?', 'module', 'site', 'spot-tree?', 'site_spot*', 'uses*', 'settings?', 'object*']],
-        'slice-module'   => [[['id', 'longId']], ['doc?', 'module', 'slice', 'settings?', 'field*', 'view*', 'email*', 'profile*', 'object*', 'item*']],
-        'alerts-module'  => [[['id', 'longId']], ['doc?', 'module', 'email*', 'alerts_collection?', 'alerts_collection_filter*', 'alerts_collection_howoften*', 'alerts_filter*']],
+        'site-module'    => [[['id', 'longId']], ['doc?', 'module', 'owner?', 'site', 'spot-tree?', 'site_spot*', 'uses*', 'settings?', 'alternate-url*', 'object*']],
+        'slice-module'   => [[['id', 'longId']], ['doc?', 'module!', 'owner?', 'slice!', 'reading-password?', 'settings?', 'field*', 'view*', 'email*', 'profile*', 'object*', 'item*']],
+        'alerts-module'  => [[['id', 'longId']], ['doc?', 'module', 'owner?', 'email*', 'alerts_collection?', 'alerts_collection_filter*', 'alerts_collection_howoften*', 'alerts_filter*']],
         'constant-group' => [[['name', 'groupId'], ['owner', 'longIdOrEmpty', '', 'owning slice (constant_slice.slice_id) - a slice of the package, or empty']], ['constant_slice?', 'constant*']],
     ];
 
     /** settings: "<site|slice>Settings", the class fixed by the module type */
-    private const CHILD_TYPES = ['doc' => 'xs:string', 'spot-tree' => 'spotTree', 'object' => 'topObject', 'item' => 'item'];
+    private const CHILD_TYPES = ['doc' => 'xs:string', 'spot-tree' => 'spotTree', 'object' => 'topObject', 'item' => 'item',
+        'owner' => 'owner', 'reading-password' => 'text', 'alternate-url' => 'text'];
 
     /** children of the elements written out in TEMPLATE (SchemaTest checks them against the XSD);
      *  `signature` has any content and is not pruned */
     private const FIXED_CHILDREN = [
         'aa-app'    => ['meta', 'site-module', 'slice-module', 'alerts-module', 'constant-group', 'signature'],
-        'meta'      => ['name', 'description', 'version', 'publish', 'source', 'requires', 'contents', 'tables', 'doc'],
+        'meta'      => ['name', 'description', 'version', 'publish', 'source', 'requires', 'contents', 'batch', 'tables', 'doc'],
         'tables'    => ['table'],
         'spot-tree' => ['spot'],
         'spot'      => ['var', 'cond', 'positions', 'choices'],
         'settings'  => ['p'],
         'object'    => ['p', 'object'],
         'item'      => ['v'],
+        'owner'     => ['name', 'email'],
     ];
 
     /** attributes of the elements written out in TEMPLATE (SchemaTest checks them against the XSD) */
@@ -108,6 +111,7 @@ final class Schema
         'source'    => ['url', 'aa-version', 'aa-build', 'site', 'exported'],
         'requires'  => ['aa-version'],
         'contents'  => ['items'],
+        'batch'     => ['after', 'next', 'finished'],
         'table'     => ['name', 'columns'],
         'spot-tree' => ['start'],
         'spot'      => ['id', 'name', 'parent', 'flag', 'empty'],
@@ -117,6 +121,9 @@ final class Schema
         'p'         => ['n', 'i', 'enc', 'crlf'],
         'item'      => ['id'],
         'v'         => ['f', 'i', 'flag', 'enc', 'crlf'],
+        'reading-password' => ['enc', 'crlf'],
+        'alternate-url'    => ['enc', 'crlf'],
+        'email'     => ['enc', 'crlf'],
     ];
 
     /** attributes of a column by its value type (TEMPLATE); the others have just `null` */
@@ -159,7 +166,7 @@ final class Schema
     {
         $known = self::FIXED_CHILDREN;
         foreach (self::CONTAINERS as $element => [, $children]) {
-            $known[$element] = array_map(static fn(string $child): string => rtrim($child, '?*'), $children);
+            $known[$element] = array_map(static fn(string $child): string => rtrim($child, '?*!'), $children);
         }
         foreach (array_keys(self::ROWS) as $element) {
             $known[$element] = array_keys($this->columns($element)[0]);
@@ -196,9 +203,9 @@ final class Schema
     {
         $counts = [];
         foreach (self::CONTAINERS[$container][1] ?? [] as $child) {
-            $element = rtrim($child, '?*');
+            $element = rtrim($child, '?*!');
             if (isset(self::ROWS[$element])) {
-                $counts[$element] = ($element === $child) ? '1' : substr($child, -1);
+                $counts[$element] = in_array(substr($child, -1), ['?', '*'], true) ? substr($child, -1) : '1';
             }
         }
         return $counts;
@@ -353,9 +360,10 @@ final class Schema
         [$prefix, $kind] = explode('-', $element);
         $xsd             = '  <xs:complexType name="' . $prefix . ucfirst($kind) . "\">\n    <xs:sequence>\n";
         foreach ($children as $child) {
-            $name   = rtrim($child, '?*');
+            $name   = rtrim($child, '?*!');
             $type   = $name === 'settings' ? "{$prefix}Settings" : (self::CHILD_TYPES[$name] ?? "row_$name");
-            $occurs = ['?' => ' minOccurs="0"', '*' => ' minOccurs="0" maxOccurs="unbounded"'][substr($child, -1)] ?? '';
+            $occurs = ['?' => ' minOccurs="0"', '!' => ' minOccurs="0"', '*' => ' minOccurs="0" maxOccurs="unbounded"'][substr($child, -1)] ?? '';
+            $xsd   .= str_ends_with($child, '!') ? "      <!-- exactly one, none in an item batch (meta/batch) - the Validator checks it -->\n" : '';
             $xsd   .= "      <xs:element name=\"$name\" type=\"$type\"$occurs";
             if ($name !== 'settings' && $name !== 'object') {
                 $xsd .= "/>\n";
@@ -700,6 +708,8 @@ final class Schema
               <xs:element name="source"      type="source"/>
               <xs:element name="requires"    type="requires"  minOccurs="0"/>
               <xs:element name="contents"    type="contents"/>
+              <!-- format 1.1: the package is one batch of a slice's items -->
+              <xs:element name="batch"       type="batch"     minOccurs="0"/>
               <!-- columns the exporting AA knew per table (decides "missing = empty" vs "missing = unknown") -->
               <xs:element name="tables"      type="tables"/>
               <xs:element name="doc"         type="xs:string" minOccurs="0"/>
@@ -726,6 +736,14 @@ final class Schema
             <xs:attribute name="items" type="xs:boolean" default="false"/>
           </xs:complexType>
 
+          <!-- one slice-module with its id and items only; items in id order after the cursor `after`, up to
+               `next`; finished = no item of the slice after `next` -->
+          <xs:complexType name="batch">
+            <xs:attribute name="after"    type="longIdOrEmpty" default=""/>
+            <xs:attribute name="next"     type="longIdOrEmpty" default=""/>
+            <xs:attribute name="finished" type="xs:boolean"    use="required"/>
+          </xs:complexType>
+
           <xs:complexType name="tables">
             <xs:sequence>
               <xs:element name="table" maxOccurs="unbounded">
@@ -745,6 +763,26 @@ final class Schema
           </xs:complexType>
 
           <!-- ================================================================ modules -->
+
+          <!-- a text that is no column: enc and crlf as in textValue -->
+          <xs:complexType name="text">
+            <xs:simpleContent>
+              <xs:extension base="xs:string">
+                <xs:attribute name="enc"  type="encoding"   default="text"/>
+                <xs:attribute name="crlf" type="xs:boolean" default="false"/>
+              </xs:extension>
+            </xs:simpleContent>
+          </xs:complexType>
+
+          <!-- format 1.1, only in a transfer (the importer's mode - the Validator refuses them in an install):
+               owner = the module owner (slice_owner) by name and e-mail, reading-password = slice.reading_password,
+               alternate-url = the site's domains (AA_Modulesettings_Site.alternate_url) -->
+          <xs:complexType name="owner">
+            <xs:sequence>
+              <xs:element name="name"  type="text"/>
+              <xs:element name="email" type="text"/>
+            </xs:sequence>
+          </xs:complexType>
 
         {{containers}}  <!-- ================================================================ site tree -->
           <!-- site.structure (serialized sitetree/spot) as data - the package never carries PHP serialize();
@@ -844,7 +882,7 @@ final class Schema
             <xs:attribute name="i"     type="xs:nonNegativeInteger" default="0"/>
           </xs:complexType>
 
-          <!-- ================================================================ items (explicit request only) -->
+          <!-- ================================================================ items (the batches of a transfer) -->
 
           <!-- only when meta/contents/@items = true -->
           <xs:complexType name="item">

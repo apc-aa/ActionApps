@@ -303,6 +303,8 @@
       <xs:element name="source"      type="source"/>
       <xs:element name="requires"    type="requires"  minOccurs="0"/>
       <xs:element name="contents"    type="contents"/>
+      <!-- format 1.1: the package is one batch of a slice's items -->
+      <xs:element name="batch"       type="batch"     minOccurs="0"/>
       <!-- columns the exporting AA knew per table (decides "missing = empty" vs "missing = unknown") -->
       <xs:element name="tables"      type="tables"/>
       <xs:element name="doc"         type="xs:string" minOccurs="0"/>
@@ -329,6 +331,14 @@
     <xs:attribute name="items" type="xs:boolean" default="false"/>
   </xs:complexType>
 
+  <!-- one slice-module with its id and items only; items in id order after the cursor `after`, up to
+       `next`; finished = no item of the slice after `next` -->
+  <xs:complexType name="batch">
+    <xs:attribute name="after"    type="longIdOrEmpty" default=""/>
+    <xs:attribute name="next"     type="longIdOrEmpty" default=""/>
+    <xs:attribute name="finished" type="xs:boolean"    use="required"/>
+  </xs:complexType>
+
   <xs:complexType name="tables">
     <xs:sequence>
       <xs:element name="table" maxOccurs="unbounded">
@@ -349,10 +359,31 @@
 
   <!-- ================================================================ modules -->
 
+  <!-- a text that is no column: enc and crlf as in textValue -->
+  <xs:complexType name="text">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="enc"  type="encoding"   default="text"/>
+        <xs:attribute name="crlf" type="xs:boolean" default="false"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <!-- format 1.1, only in a transfer (the importer's mode - the Validator refuses them in an install):
+       owner = the module owner (slice_owner) by name and e-mail, reading-password = slice.reading_password,
+       alternate-url = the site's domains (AA_Modulesettings_Site.alternate_url) -->
+  <xs:complexType name="owner">
+    <xs:sequence>
+      <xs:element name="name"  type="text"/>
+      <xs:element name="email" type="text"/>
+    </xs:sequence>
+  </xs:complexType>
+
   <xs:complexType name="siteModule">
     <xs:sequence>
       <xs:element name="doc" type="xs:string" minOccurs="0"/>
       <xs:element name="module" type="row_module"/>
+      <xs:element name="owner" type="owner" minOccurs="0"/>
       <xs:element name="site" type="row_site"/>
       <xs:element name="spot-tree" type="spotTree" minOccurs="0"/>
       <xs:element name="site_spot" type="row_site_spot" minOccurs="0" maxOccurs="unbounded"/>
@@ -364,6 +395,7 @@
           <xs:field xpath="@i"/>
         </xs:unique>
       </xs:element>
+      <xs:element name="alternate-url" type="text" minOccurs="0" maxOccurs="unbounded"/>
       <xs:element name="object" type="topObject" minOccurs="0" maxOccurs="unbounded">
         <xs:unique name="uniqueSiteObjectProp">
           <xs:selector xpath="a:p|a:object"/>
@@ -378,8 +410,12 @@
   <xs:complexType name="sliceModule">
     <xs:sequence>
       <xs:element name="doc" type="xs:string" minOccurs="0"/>
-      <xs:element name="module" type="row_module"/>
-      <xs:element name="slice" type="row_slice"/>
+      <!-- exactly one, none in an item batch (meta/batch) - the Validator checks it -->
+      <xs:element name="module" type="row_module" minOccurs="0"/>
+      <xs:element name="owner" type="owner" minOccurs="0"/>
+      <!-- exactly one, none in an item batch (meta/batch) - the Validator checks it -->
+      <xs:element name="slice" type="row_slice" minOccurs="0"/>
+      <xs:element name="reading-password" type="text" minOccurs="0"/>
       <xs:element name="settings" type="sliceSettings" minOccurs="0">
         <xs:unique name="uniqueSliceSettingsProp">
           <xs:selector xpath="a:p"/>
@@ -407,6 +443,7 @@
     <xs:sequence>
       <xs:element name="doc" type="xs:string" minOccurs="0"/>
       <xs:element name="module" type="row_module"/>
+      <xs:element name="owner" type="owner" minOccurs="0"/>
       <xs:element name="email" type="row_email" minOccurs="0" maxOccurs="unbounded"/>
       <xs:element name="alerts_collection" type="row_alerts_collection" minOccurs="0"/>
       <xs:element name="alerts_collection_filter" type="row_alerts_collection_filter" minOccurs="0" maxOccurs="unbounded"/>
@@ -538,7 +575,7 @@
     <xs:attribute name="i"     type="xs:nonNegativeInteger" default="0"/>
   </xs:complexType>
 
-  <!-- ================================================================ items (explicit request only) -->
+  <!-- ================================================================ items (the batches of a transfer) -->
 
   <!-- only when meta/contents/@items = true -->
   <xs:complexType name="item">

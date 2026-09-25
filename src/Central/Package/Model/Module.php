@@ -19,6 +19,13 @@ final readonly class Module
     public const SLICE  = 'slice-module';
     public const ALERTS = 'alerts-module';
 
+    /** the parts of $transfer each wrapper may have (format 1.1) */
+    public const TRANSFER = [
+        self::SITE   => ['owner', 'alternate-url'],
+        self::SLICE  => ['owner', 'reading-password'],
+        self::ALERTS => ['owner'],
+    ];
+
     /** module.type in AA => the wrapper */
     public const TYPES = ['W' => self::SITE, 'S' => self::SLICE, 'Alerts' => self::ALERTS];
 
@@ -41,6 +48,10 @@ final readonly class Module
      *                                                                          field id => [key => {value, flag?}]}, the key a
      *                                                                          position or a translation number (>= AA_Value::MAX_INDEX)
      * @param string|null                                             $doc      author's note shown before installation
+     * @param array<string, mixed>                                    $transfer state of the source installation, only in a
+     *                                                                          transfer (self::TRANSFER): owner {name, email},
+     *                                                                          reading-password, alternate-url (list); texts
+     *                                                                          string or RawBytes
      */
     public function __construct(
         public string $type,
@@ -51,5 +62,6 @@ final readonly class Module
         public ?array $spotTree = null,
         public array $items = [],
         public ?string $doc = null,
+        public array $transfer = [],
     ) {}
 }

@@ -42,7 +42,7 @@ final class TargetCharsetTest extends TestCase
     /** @param list<string> $taken groups taken on the target */
     private static function plan(Package $package, array $taken = []): ImportPlan
     {
-        $validation = (new Validator())->validate($package);
+        $validation = (new Validator())->validate($package, $package->withItems);     // items come only in a transfer
         self::assertTrue($validation->importable(), 'the mutation must stay valid');
         return (new Planner(new FakeImportTarget($taken)))->plan($package, $validation);
     }

@@ -38,13 +38,12 @@ final class ExportLint
      * @param array<string, array<string, list<array<string, mixed>>>> $rows     app module id => element => rows (UTF-8)
      * @param array<string, string>                                     $types    app module id => Module::SITE | SLICE | ALERTS
      * @param list<ConstantGroup>                                       $groups
-     * @param list<string>                                              $item_ids
      * @param array<string, array{?array<string, mixed>, list<array<string, mixed>>}> $objects app module id =>
      *                                                                     [settings, objects] (ObjectExport, UTF-8)
      * @param array<string, array<string, mixed>>                        $trees    site id => sitetree::toArray() (UTF-8)
      * @return array{list<array{string, LintFinding}>, array<string, list<string>>} findings, outside (CollectResult)
      */
-    public function check(array $rows, array $types, array $groups, array $item_ids, array $objects = [], array $trees = []): array
+    public function check(array $rows, array $types, array $groups, array $objects = [], array $trees = []): array
     {
         $this->findings = $this->outside = [];
         $all            = static function (array $lists, string $element, string $column): array {
@@ -62,7 +61,7 @@ final class ExportLint
         $constants = $all(array_map(static fn(ConstantGroup $g): array => $g->rows, $groups), 'constant', 'id');
         $map       = LintTexts::identity(
             array_keys($types),
-            [...$constants, ...$item_ids, ...$object_ids],
+            [...$constants, ...$object_ids],
             $all($rows, 'view', 'id'),
             $all($rows, 'email', 'id'),
             array_map(static fn(ConstantGroup $g): string => $g->name, $groups),

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace AA\Central\Package;
 
+use AA\Central\Package\Model\Batch;
 use AA\Central\Package\Model\ConstantGroup;
 use AA\Central\Package\Model\Module;
 use AA\Central\Package\Model\Package;
@@ -12,7 +13,7 @@ use InvalidArgumentException;
 
 /** Collects an app from the source AA into the package model: the rows of each module type scrubbed to
  *  the columns Schema carries, the constant groups the app uses, objects and the spot tree, texts in UTF-8
- *  (ModuleCharset), items on request, the export lint (ExportLint).
+ *  (ModuleCharset), the export lint (ExportLint); in a transfer also the state of the source installation.
  *  fromSite() = the site + its "uses modules" of type S and Alerts; fromModules() = the given ones. A module
  *  the app refers to from outside is a finding and lands in CollectResult::$outside - never pulled in.
  *
@@ -21,9 +22,9 @@ use InvalidArgumentException;
  *  "uses" modules fromSite() resolved itself, and the owners of foreign constant groups. An anonymous
  *  download may only serve a package already published.
  *
- *  ITEMS (CollectOptions::$items) are for moving a site between AAs by its admins: the package may hold
- *  personal data and password hashes (readers of a ReaderManagement slice). The caller must not publish it -
- *  publish = all with items is an error.
+ *  ITEMS travel only in a transfer, in batches of one slice (itemBatch()): they may hold personal data,
+ *  password hashes and 2FA secrets (readers of a ReaderManagement slice); a transfer is never published
+ *  (CollectOptions).
  *  @throws RewriteFailed from both entry points - a regex of the lint failed: a failed export */
 final class Collector
 {
@@ -46,25 +47,38 @@ final class Collector
     public const ROW_MISSING = 'row-missing';
     /** W: a field widget names a constant group that does not exist */
     public const GROUP_MISSING = 'group-missing';
-    /** E: a public app (publish = all, the catalogue) carries no items */
+    /** E (Validator): items, a batch or the state of the installation in a published package */
     public const ITEMS_PUBLISHED = 'items-published';
-    /** E: more items than CollectOptions::$maxItems - the rest is left out */
-    public const ITEMS_LIMIT = 'items-limit';
+    /** E: an item larger than CollectOptions::MAX_BATCH_BYTES alone - no batch can take it; ref = its id */
+    public const ITEM_TOO_BIG = 'item-too-big';
+    /** E: login names of readers that do not convert to UTF-8 - the target cannot check them for collisions */
+    public const LOGIN_CHARSET = 'login-charset';
     /** E: site.structure is no site tree, or a text of it cannot be carried (charset, control character) */
     public const SPOT_TREE = 'spot-tree';
     /** I: site_spot rows of spots the tree no longer has - left out, ref = the count (on the target new_id()
      *  could give a new spot their id, so their content); a row {sitespot:N} includes stays */
     public const SPOT_UNUSED = 'spot-unused';
 
+    /** bytes an item value counts beyond its own: its <v> markup, rounded up so that MAX_BATCH_BYTES also
+     *  keeps a batch within XmlGuard's element, node and attribute limits */
+    public const VALUE_MARKUP = 100;
+
+    /** items read at a time - the byte limit stops the reading, so a batch of big items holds few in memory */
+    public const ITEM_CHUNK = 50;
+
     /** the one row a module of the type must have */
     private const ROW = ['W' => 'site', 'S' => 'slice'];
 
-    /** GetItemContent() pseudo fields and the item columns that are state of the source AA - users,
-     *  counters, feeding (the id is the attribute) */
+    /** GetItemContent() pseudo fields and the item columns that are state of the source AA - counters,
+     *  feeding, short_id (the target numbers it; the id is the attribute) */
     public const ITEM_LEFT_OUT = [
-        'u_slice_id......', 'unpacked_id.....', 'id..............', 'short_id........', 'slice_id........', 'posted_by.......',
-        'edited_by.......', 'externally_fed..', 'disc_count......', 'disc_app........', 'display_count...',
+        'u_slice_id......', 'unpacked_id.....', 'id..............', 'short_id........', 'slice_id........',
+        'externally_fed..', 'disc_count......', 'disc_app........', 'display_count...',
     ];
+
+    /** the users of the source AA who wrote the item, as text: they travel with the items, so only in a
+     *  transfer - an install carries no users of its source */
+    public const ITEM_TRANSFER_ONLY = ['posted_by.......', 'edited_by.......'];
 
     private readonly Schema $schema;
     private readonly ExportLint $lint;
@@ -131,14 +145,9 @@ final class Collector
         if (!ModuleCharset::works()) {
             $this->add('meta', LintFinding::ERROR, self::CHARSET_BROKEN, 'iconv windows-1250');
         }
-        $with_items = $options->items && !$options->public();
-        if ($options->items && $options->public()) {
-            $this->add('meta/contents', LintFinding::ERROR, self::ITEMS_PUBLISHED, (string) $options->publish);
-        }
         $first = (string) array_key_first($app);
         ksort($app, SORT_STRING);           // "the first slice using a group" does not depend on the order given
-        $charsets = $raw = $rows = $items = $objects = $trees = [];
-        $count    = 0;
+        $charsets = $raw = $rows = $objects = $trees = $transfer = [];
         foreach ($app as $id => $module) {
             $path          = Module::TYPES[$module['type']] . "[$id]";
             [$charsets[$id], $module['lang_file']] = $this->charset($module, "$path/module[#0]/lang_file");
@@ -158,8 +167,8 @@ final class Collector
             foreach (array_filter($raw[$id]) as $element => $list) {
                 $rows[$id][$element] = $this->clean($element, $list, $charsets[$id], $path);
             }
-            if ($with_items && ($module['type'] === 'S')) {
-                $items[$id] = $this->items($id, $charsets[$id], $path, $options, $count);
+            if ($options->transfer()) {
+                $transfer[$id] = $this->installation($id, $module, $raw[$id], $charsets[$id], $path);
             }
             if (isset(Schema::SETTINGS_CLASSES[Module::TYPES[$module['type']]])) {      // site, slice: alerts own none
                 [$settings, $list, $findings] = $this->objects->collect($id, Module::TYPES[$module['type']], $path);
@@ -180,14 +189,13 @@ final class Collector
             $utf8         = fn(mixed $v, string $at): mixed => is_string($v) ? $this->utf8($v, $charsets[$id], $at) : $v;
             $objects[$id] = ObjectExport::map($types[$id], $settings, $list, "$types[$id][$id]", $utf8);
         }
-        $item_ids          = array_merge([], ...array_values(array_map(static fn(array $list): array => array_column($list, 'id'), $items)));
-        [$findings, $outside] = $this->lint->check($rows, $types, $groups, $item_ids, $objects, array_filter($trees));
+        [$findings, $outside] = $this->lint->check($rows, $types, $groups, $objects, array_filter($trees));
         $findings = [...$this->findings, ...$findings];
 
         $modules = [];
         foreach ($rows as $id => $elements) {
             [$settings, $list] = $objects[$id] ?? [null, []];
-            $modules[]         = new Module($types[$id], $id, $elements, $settings, $list, $trees[$id] ?? null, $items[$id] ?? []);
+            $modules[]         = new Module($types[$id], $id, $elements, $settings, $list, $trees[$id] ?? null, transfer: $transfer[$id] ?? []);
         }
         $package = new Package(
             $options->name ?? self::text($rows[$first]['module'][0]['name'] ?? ''),
@@ -198,7 +206,6 @@ final class Collector
             $options->version,
             $options->publish,
             $options->requires,
-            $options->items,
         );
         $check = array_values(array_unique([...array_keys($app), ...$owners]));
         return new CollectResult($package, $options->published() ? ExportLint::published($findings) : $findings, $outside, $check);
@@ -300,29 +307,134 @@ final class Collector
         ];
     }
 
-    /** Items {id, content}, values in UTF-8, NULL as '' (Model\Module), without the state of the source
-     *  AA (users, counters, feeding); at most maxItems in all. Every slice alike - ReaderManagement
-     *  too, password hashes included: a site moved to another AA keeps its readers able to log in.
-     *  @return list<array<string, mixed>> */
-    private function items(string $slice_id, string $charset, string $path, CollectOptions $options, int &$count): array
+    /** One batch of the slice's items after the cursor, in id order: at most CollectOptions::MAX_ITEMS
+     *  items and MAX_BATCH_BYTES of their values; package->batch tells the next cursor and whether the
+     *  slice is finished. An item over the byte limit alone is an E (never cut) and the batch is empty.
+     *  Values in UTF-8, NULL as '' (Model\Module), posted_by/edited_by as text, without the state of the
+     *  source AA (counters, feeding, short_id). Every slice alike - ReaderManagement too, password hashes and 2FA secrets
+     *  included: readers of a moved site must log in on the target. The caller checks PS_EDIT on the slice
+     *  (CollectResult::$checkPermissions) and lets only the source's superadmin transfer (CollectOptions).
+     *  @param string $after '' or the last item id of the previous batch
+     *  @throws InvalidArgumentException not a transfer, not a slice, a cursor of no id */
+    public function itemBatch(string $slice_id, string $after, CollectOptions $options): CollectResult
     {
-        $drop   = array_flip(self::ITEM_LEFT_OUT);
-        $items  = [];
-        foreach ($this->source->items($slice_id, $options->allBins) as $item) {
-            if ($count++ >= $options->maxItems) {
-                $this->add("$path/item", LintFinding::ERROR, self::ITEMS_LIMIT, (string) $options->maxItems);
-                break;
+        $slice_id = self::id($slice_id);
+        $module   = $this->modules([$slice_id])[$slice_id] ?? [];
+        if (!$options->transfer() || (($module['type'] ?? '') !== 'S') || $module['deleted'] || (($after !== '') && !preg_match('/^[0-9a-f]{32}\z/', $after))) {
+            throw new InvalidArgumentException("No item batch of $slice_id in mode $options->mode (a slice, a cursor of an item id)");
+        }
+        $this->findings = [];
+        $path           = Module::SLICE . "[$slice_id]";
+        $charset        = self::itemCharset($module);
+        $items          = [];
+        $next           = $after;           // the last item carried - a vanished one is no cursor
+        $ids            = $this->source->itemIds($slice_id, $options->allBins, $after, CollectOptions::MAX_ITEMS + 1);
+        $finished       = count($ids) <= CollectOptions::MAX_ITEMS;
+        $drop           = array_flip(self::ITEM_LEFT_OUT);
+        $bytes          = 0;
+        foreach (array_chunk(array_slice($ids, 0, CollectOptions::MAX_ITEMS), self::ITEM_CHUNK) as $chunk) {
+            $contents = [];
+            foreach ($this->source->items($chunk, $options->transfer()) as $item) {
+                $contents[$item['id']] = $item['content'];
             }
-            $content = array_diff_key($item['content'], $drop);
-            foreach ($content as $field => $values) {
-                foreach ($values as $i => $v) {
-                    $value                        = $v['value'] ?? '';
-                    $content[$field][$i]['value'] = is_string($value) ? $this->utf8($value, $charset, "$path/item[{$item['id']}]/{$field}[$i]") : $value;
+            foreach ($chunk as $id) {
+                if (!isset($contents[$id])) {
+                    continue;               // deleted meanwhile
+                }
+                $content = array_diff_key($contents[$id], $drop);
+                $size    = 0;
+                foreach ($content as $field => $values) {
+                    $secret = str_starts_with((string) $field, 'password') || str_starts_with((string) $field, 'secret');
+                    foreach ($values as $i => $v) {
+                        $value                        = $v['value'] ?? '';
+                        $value                        = is_string($value) ? $this->utf8($value, $charset, "$path/item[$id]/{$field}[$i]", $secret) : $value;
+                        $content[$field][$i]['value'] = $value;
+                        $size                        += ValueCodec::xmlLength(ValueCodec::bytes($value), $value instanceof RawBytes) + self::VALUE_MARKUP;
+                    }
+                }
+                if ($bytes + $size > CollectOptions::MAX_BATCH_BYTES) {
+                    if (!$items) {
+                        $this->add("$path/item[$id]", LintFinding::ERROR, self::ITEM_TOO_BIG, $id);
+                    }
+                    $finished = false;
+                    break 2;
+                }
+                $bytes  += $size;
+                $next    = $id;
+                $items[] = ['id' => $id, 'content' => $content];
+            }
+        }
+        $package = new Package(
+            $options->name ?? mb_scrub(ModuleCharset::toUtf8((string) $module['name'], $charset)[0], 'UTF-8'),
+            $options->source,
+            [new Module(Module::SLICE, $slice_id, [], items: $items)],
+            publish: $options->publish,
+            withItems: true,
+            batch: new Batch($after, $next, $finished),
+        );
+        return new CollectResult($package, $this->findings, [], [$slice_id]);
+    }
+
+    /** The login names of the readers of Reader Management slices in UTF-8, sorted, nothing else - the
+     *  target checks them against its users before any definition is written. The caller checks PS_EDIT
+     *  on the slices. A name that does not convert to UTF-8 cannot be checked: E per slice, ref = their count.
+     *  @param list<string> $slice_ids
+     *  @return array{list<string>, list<array{string, LintFinding}>} the names, the findings
+     *  @throws InvalidArgumentException a module that is no Reader Management slice (its headlines are no logins) */
+    public function readerLogins(array $slice_ids, bool $all_bins): array
+    {
+        $slice_ids = array_map(self::id(...), $slice_ids);
+        $modules   = $this->modules($slice_ids);
+        $slices    = $slice_ids ? array_column($this->source->select('slice', [['id', $slice_ids, 'l']]), 'type', 'id') : [];
+        $logins    = $findings = [];
+        foreach ($slice_ids as $id) {
+            if ((($modules[$id]['type'] ?? '') !== 'S') || $modules[$id]['deleted'] || (($slices[$id] ?? '') !== ItemLint::READER_SLICE)) {
+                throw new InvalidArgumentException("Module $id is no Reader Management slice");
+            }
+            $charset = self::itemCharset($modules[$id]);
+            $bad     = 0;
+            foreach ($this->source->logins($id, $all_bins) as $login) {
+                [$utf, $finding] = ModuleCharset::toUtf8($login, $charset);
+                if ($finding === null) {
+                    $logins[] = $utf;
+                } else {
+                    $bad++;
                 }
             }
-            $items[] = ['id' => $item['id'], 'content' => $content];
+            if ($bad) {
+                $findings[] = [Module::SLICE . "[$id]/item", new LintFinding(LintFinding::ERROR, self::LOGIN_CHARSET, (string) $bad, 0)];
+            }
         }
-        return $items;
+        $logins = array_values(array_unique($logins));
+        sort($logins, SORT_STRING);
+        return [$logins, $findings];
+    }
+
+    /** The state of the source installation a transfer carries (Model\Module::$transfer): the owner as
+     *  name and e-mail (the slice_owner id means nothing on the target), the slice's reading password,
+     *  the site's domains (alternate_url of the settings; ObjectExport never carries it).
+     *  @param array<string, mixed> $module module row @param array<string, list<array<string, mixed>>> $raw rows as stored
+     *  @return array<string, mixed> */
+    private function installation(string $id, array $module, array $raw, string $charset, string $path): array
+    {
+        $parts = [];
+        $owner = (string) ($module['owner'] ?? '');
+        if (($owner !== '') && ($row = $this->source->select('slice_owner', [['id', $owner, 'l']])[0] ?? null)) {
+            $parts['owner'] = ['name' => $this->utf8((string) $row['name'], $charset, "$path/owner/name"), 'email' => $this->utf8((string) $row['email'], $charset, "$path/owner/email")];
+        }
+        if (($password = (string) ($raw['slice'][0]['reading_password'] ?? '')) !== '') {
+            $parts['reading-password'] = $this->utf8($password, $charset, "$path/reading-password", true);
+        }
+        if ($module['type'] === 'W') {
+            $rows = $this->source->objectRows([string2id(Schema::SETTINGS_CLASSES[Module::SITE] . $id)], ['alternate_url']);
+            usort($rows, static fn(array $a, array $b): int => (int) $a['priority'] <=> (int) $b['priority']);
+            foreach ($rows as $row) {
+                if (($url = (string) $row['value']) !== '') {
+                    $parts['alternate-url'][] = $this->utf8($url, $charset, "$path/alternate-url");
+                }
+            }
+        }
+        return $parts;
     }
 
     /** The groups of field widgets and of {constant(s)/options:<g>} in the texts, looked up as
@@ -420,11 +532,12 @@ final class Collector
 
     /** the value in UTF-8; a value the charset cannot hold stays as the source bytes - RawBytes,
      *  which Writer carries as base64 - with a finding */
-    private function utf8(string $value, string $charset, string $path): string|RawBytes
+    /** @param bool $secret a password or secret: the finding tells only the offset, never the bytes */
+    private function utf8(string $value, string $charset, string $path, bool $secret = false): string|RawBytes
     {
         [$utf, $finding] = ModuleCharset::toUtf8($value, $charset);
         if ($finding !== null) {
-            $this->findings[] = [$path, $finding];
+            $this->findings[] = [$path, $secret ? new LintFinding($finding->level, $finding->code, '', $finding->offset) : $finding];
             return new RawBytes($value);
         }
         return $utf;
@@ -443,6 +556,13 @@ final class Collector
             $this->add($path, LintFinding::INFO, self::LANG_FILE_NORMALISED, $file);
         }
         return [$charset ?? $fallback, $lang_file];
+    }
+
+    /** the charset of a module's items; the export of the definitions reports an unknown language (E),
+     *  so no transfer gets to the items @param array<string, mixed> $module module row */
+    private static function itemCharset(array $module): string
+    {
+        return ModuleCharset::ofModule($module)[1] ?? 'utf-8';
     }
 
     /** @param list<string> $ids @return array<string, array<string, mixed>> id => module row */

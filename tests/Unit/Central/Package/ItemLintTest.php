@@ -61,7 +61,7 @@ final class ItemLintTest extends TestCase
 
     private static function plan(Package $package, ?FakeImportTarget $target = null): ImportPlan
     {
-        $validation = (new Validator())->validate($package);
+        $validation = (new Validator())->validate($package, $package->withItems);     // items come only in a transfer
         self::assertTrue($validation->importable(), json_encode(array_map(static fn(array $f): string => "{$f[1]->code} $f[0]", $validation->ofLevel(LintFinding::ERROR))));
         return (new Planner($target ?? new FakeImportTarget()))->plan($package, $validation);
     }

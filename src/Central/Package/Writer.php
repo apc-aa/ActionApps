@@ -18,7 +18,7 @@ use InvalidArgumentException;
  *  XML 1.0 cannot carry throws. The output is deterministic and validated against the XSD. */
 final class Writer
 {
-    public const FORMAT = '1.0';
+    public const FORMAT = '1.1';
 
     private const MODULE_ORDER = [Module::SITE, Module::SLICE, Module::ALERTS];
 
@@ -80,7 +80,7 @@ final class Writer
             $el   = $this->el($root, 'constant-group', ['name' => $group->name, 'owner' => $group->owner === '' ? null : $group->owner], path: $path);
             $this->container($el, 'constant-group', $group->rows, [], $path);
         }
-        $this->el($root, 'signature');   // reserved, empty in format 1.0
+        $this->el($root, 'signature');   // reserved, empty in format 1.x
 
         $xml = (string) $this->dom->saveXML();
         $this->validate($xml);
@@ -112,6 +112,7 @@ final class Writer
                 'source'   => $this->el($meta, 'source', array_map(static fn(string $a): ?string => $source[$a] ?? null, array_combine($this->attributes['source'], $this->attributes['source'])), path: 'meta/source'),
                 'requires' => $p->requires === null ? null : $this->el($meta, 'requires', ['aa-version' => $p->requires], path: 'meta/requires'),
                 'contents' => $this->el($meta, 'contents', ['items' => $p->withItems ? 'true' : 'false']),
+                'batch'    => $p->batch === null ? null : $this->el($meta, 'batch', ['after' => $p->batch->after ?: null, 'next' => $p->batch->next ?: null, 'finished' => $p->batch->finished ? 'true' : 'false'], path: 'meta/batch'),
                 'tables'   => $this->tables($this->el($meta, 'tables')),
                 default    => $text === null ? null : $this->el($meta, $child, text: $text, path: "meta/$child"),
             };
@@ -141,7 +142,7 @@ final class Writer
             'settings'  => $m->settings,
             'object'    => $m->objects ?: null,
             'item'      => $m->items ?: null,
-        ], static fn($part): bool => $part !== null), $path);
+        ] + $m->transfer, static fn($part): bool => $part !== null), $path);
     }
 
     /** Children of a module or constant group in XSD order: the rows and the other parts.
@@ -169,6 +170,9 @@ final class Writer
                 'settings'  => $this->props($this->el($el, 'settings', ['class' => Schema::SETTINGS_CLASSES[$container]]), $part, "$path/settings"),
                 'object'    => $this->objects($el, $part, $path),
                 'item'      => $this->items($el, $part, $path),
+                'owner'     => $this->owner($this->el($el, 'owner'), $part, "$path/owner"),
+                'reading-password' => $this->value($this->el($el, 'reading-password'), $part, "$path/reading-password"),
+                'alternate-url'    => array_map(fn(string|RawBytes $url) => $this->value($this->el($el, 'alternate-url'), $url, "$path/alternate-url"), $part),
                 default     => null,
             };
         }
@@ -286,6 +290,14 @@ final class Writer
                     $this->el($s, $name, text: implode(' ', $spot[$key]), path: "$at/$name");
                 }
             }
+        }
+    }
+
+    /** @param array<string, string|RawBytes> $owner {name, email} */
+    private function owner(DOMElement $el, array $owner, string $path): void
+    {
+        foreach (['name', 'email'] as $child) {
+            $this->value($this->el($el, $child), $owner[$child] ?? throw new InvalidArgumentException("$path: no $child"), "$path/$child");
         }
     }
 

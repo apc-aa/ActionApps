@@ -109,7 +109,7 @@ trait ImportFixture
     private function plan(?Package $package = null): ImportPlan
     {
         $package  ??= self::example();
-        $plan       = (new Planner($this->target))->plan($package, (new Validator())->validate($package));
+        $plan       = (new Planner($this->target))->plan($package, (new Validator())->validate($package, $package->withItems));     // items come only in a transfer
         self::assertTrue($plan->importable(), (string) json_encode(array_map(static fn(array $f): string => "{$f[1]->code} $f[0]", $plan->ofLevel(LintFinding::ERROR))));
         return $plan;
     }

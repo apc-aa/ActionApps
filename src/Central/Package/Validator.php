@@ -7,6 +7,7 @@ namespace AA\Central\Package;
 use AA\Central\Package\Model\ConstantGroup;
 use AA\Central\Package\Model\Module;
 use AA\Central\Package\Model\Package;
+use AA\Central\Package\Model\RawBytes;
 use AA_Metabase;
 use AA_Property;
 use InvalidArgumentException;
@@ -59,11 +60,14 @@ final class Validator
     public const GROUP_MISSING = Collector::GROUP_MISSING;
     /** E: site.state_file names a control file (flag ≠ 1, stateFileName() ≠ '') - site.php would include it */
     public const STATE_FILE = Collector::STATE_FILE;
-    /** E: items without meta/contents/@items, or items in a module other than a slice */
+    /** E: items without meta/contents/@items, items in a module other than a slice, or items (the flag) in
+     *  an install - items travel only in a transfer */
     public const ITEMS = 'items';
-    /** E: items (or the item flag) with meta/publish = all - the public catalogue carries no data */
+    /** E: items, the item flag, a batch or the state of the installation with meta/publish = users | all -
+     *  a transfer is never published */
     public const ITEMS_PUBLISHED = Collector::ITEMS_PUBLISHED;
-    /** E: an item value of a pseudo field or of source state (Collector::ITEM_LEFT_OUT) */
+    /** E: an item value of a pseudo field or of source state (Collector::ITEM_LEFT_OUT), or of the source's
+     *  users (Collector::ITEM_TRANSFER_ONLY) in an install */
     public const ITEM_KEY = 'item-key';
     /** W: an item value of a field the slice does not have */
     public const ITEM_FIELD = 'item-field';
@@ -78,6 +82,12 @@ final class Validator
     public const PERM_MODE = 'perm-mode';
     /** E: an integer out of the range of its column (strict sql_mode would fail the insert) */
     public const INT_RANGE = 'int-range';
+    /** E: the state of the source installation (owner, reading password, domains) or an item batch in an
+     *  install - the target decides by its mode, whatever the source sent */
+    public const TRANSFER_ONLY = 'transfer-only';
+    /** E: an item batch (meta/batch) other than one slice with items only, an item outside (after, next],
+     *  a cursor that is no item id of the batch */
+    public const BATCH = 'batch';
 
     /** keyed rows => [id pool (`module` = per module), the key's shape]; long ids share the pool `long` */
     private const UNIQUE = ['field' => ['module', '/^[A-Za-z0-9_.]{16}\z/'], 'view' => ['view', self::NUMBER_RE], 'email' => ['email', self::NUMBER_RE],
@@ -117,11 +127,26 @@ final class Validator
         $this->lint     = new SecurityLint($this->schema);
     }
 
-    public function validate(Package $package): ValidationResult
+    /** @param bool $transfer the importer's mode is a transfer: the package may carry the state of the
+     *                        source installation (Module::$transfer) */
+    public function validate(Package $package, bool $transfer = false): ValidationResult
     {
         $this->findings = new FindingList();
         $this->seen     = $this->types = [];
         $this->has      = ['view' => [], 'email' => [], 'group' => [], 'filter' => []];
+        $items          = $package->withItems || array_filter($package->modules, static fn(Module $m): bool => $m->items !== []);
+        if (in_array($package->publish, ['users', 'all'], true) && ($items || ($package->batch !== null) || array_filter($package->modules, static fn(Module $m): bool => $m->transfer !== []))) {
+            $this->add('meta/publish', LintFinding::ERROR, self::ITEMS_PUBLISHED, (string) $package->publish);
+        }
+        if (!$transfer && ($package->batch !== null)) {
+            $this->add('meta/batch', LintFinding::ERROR, self::TRANSFER_ONLY, 'batch');
+        } elseif (!$transfer && $items) {
+            $this->add('meta/contents', LintFinding::ERROR, self::ITEMS, 'install');
+        }
+        if ($package->batch !== null) {
+            $this->batch($package, $transfer);
+            return new ValidationResult($this->lint->package($package, $this->findings));
+        }
         foreach ($package->modules as $m) {
             $this->types[$m->id] ??= $m->type;
             foreach (['view', 'email'] as $element) {
@@ -134,18 +159,15 @@ final class Validator
             $this->has['group'][$group->name] = true;
         }
         foreach ($package->modules as $m) {
-            $this->module($m, $package->withItems);
+            $this->module($m, $package->withItems, $transfer);
         }
         foreach ($package->constantGroups as $group) {
             $this->group($group);
         }
-        if (($package->publish === 'all') && ($package->withItems || array_filter($package->modules, static fn(Module $m): bool => $m->items !== []))) {
-            $this->add('meta/publish', LintFinding::ERROR, self::ITEMS_PUBLISHED, 'all');
-        }
         return new ValidationResult($this->lint->package($package, $this->findings));
     }
 
-    private function module(Module $m, bool $with_items): void
+    private function module(Module $m, bool $with_items, bool $transfer): void
     {
         $path = "$m->type[$m->id]";
         $this->id('long', $m->id, $path, self::LONG_RE);
@@ -163,6 +185,13 @@ final class Validator
         if ($m->items && !$with_items) {
             $this->add("$path/item", LintFinding::ERROR, self::ITEMS, (string) count($m->items));
         }
+        foreach ($m->transfer as $part => $value) {
+            if (!in_array($part, Module::TRANSFER[$m->type] ?? [], true) || !self::transferValue((string) $part, $value)) {
+                $this->add("$path/$part", LintFinding::ERROR, self::TABLE, (string) $part);
+            } elseif (!$transfer) {
+                $this->add("$path/$part", LintFinding::ERROR, self::TRANSFER_ONLY, (string) $part);
+            }
+        }
         if ($objects) {
             $this->objects($m, $path);
         }
@@ -171,7 +200,7 @@ final class Validator
         }
         match ($m->type) {
             Module::SITE   => $this->site($m, $path),
-            Module::SLICE  => $this->slice($m, $path),
+            Module::SLICE  => $this->slice($m, $path, $transfer),
             Module::ALERTS => $this->alerts($m, $path),
             default        => null,
         };
@@ -333,7 +362,7 @@ final class Validator
         }
     }
 
-    private function slice(Module $m, string $path): void
+    private function slice(Module $m, string $path, bool $transfer): void
     {
         $slice = $m->rows['slice'][0] ?? [];
         $this->viewRef($slice['vid'] ?? '', "$path/slice[#0]/vid");
@@ -362,21 +391,70 @@ final class Validator
                 $this->add($this->schema->rowPath($path, 'field', $row, $i) . '/input_show_func', LintFinding::WARNING, self::GROUP_MISSING, $group);
             }
         }
+        $this->items($m, $path, $fields, $transfer);
+    }
+
+    /** the items' ids, bins and fields @param array<string, true>|null $fields of the slice, null = not
+     *  in the package (a batch: the target checks its own) @return list<string> the item ids */
+    private function items(Module $m, string $path, ?array $fields, bool $transfer): array
+    {
+        $ids = [];
         foreach ($m->items as $item) {
-            $id = ValueCodec::bytes($item['id'] ?? '');
+            $id    = $ids[] = ValueCodec::bytes($item['id'] ?? '');
             $this->id('long', $id, "$path/item[$id]", self::LONG_RE);
             $status = ValueCodec::bytes(((array) (array_values((array) ($item['content']['status_code.....'] ?? []))[0] ?? []))['value'] ?? '');
             if (!in_array($status, ['1', '2', '3'], true)) {
                 $this->add("$path/item[$id]/status_code.....", LintFinding::WARNING, self::ITEM_STATUS, $status);
             }
             foreach (array_keys((array) ($item['content'] ?? [])) as $field) {
-                if (in_array((string) $field, Collector::ITEM_LEFT_OUT, true)) {
+                if (in_array((string) $field, Collector::ITEM_LEFT_OUT, true) || (!$transfer && in_array((string) $field, Collector::ITEM_TRANSFER_ONLY, true))) {
                     $this->add("$path/item[$id]/$field", LintFinding::ERROR, self::ITEM_KEY, (string) $field);
-                } elseif (!isset($fields[$field]) && !$this->metabase->isColumn('item', rtrim((string) $field, '.'))) {
+                } elseif (($fields !== null) && !isset($fields[$field]) && !$this->metabase->isColumn('item', rtrim((string) $field, '.'))) {
                     $this->add("$path/item[$id]/$field", LintFinding::WARNING, self::ITEM_FIELD, (string) $field);
                 }
             }
         }
+        return $ids;
+    }
+
+    /** one slice with its id and items only, the items in (after, next] */
+    private function batch(Package $package, bool $transfer): void
+    {
+        $m = $package->modules[0] ?? null;
+        if (($m === null) || (count($package->modules) !== 1) || ($m->type !== Module::SLICE) || $package->constantGroups) {
+            $this->add('aa-app', LintFinding::ERROR, self::BATCH, count($package->modules) . ' modules, ' . count($package->constantGroups) . ' groups');
+            return;
+        }
+        $path = "$m->type[$m->id]";
+        $this->id('long', $m->id, $path, self::LONG_RE);
+        if ($m->rows || ($m->settings !== null) || $m->objects || ($m->spotTree !== null) || $m->transfer || ($m->doc !== null)) {
+            $this->add($path, LintFinding::ERROR, self::BATCH, 'definition');
+        }
+        if ($m->items && !$package->withItems) {
+            $this->add("$path/item", LintFinding::ERROR, self::ITEMS, (string) count($m->items));
+        }
+        $ids   = $this->items($m, $path, null, $transfer);
+        $batch = $package->batch;
+        if (!preg_match('/^([0-9a-f]{32})?\z/', $batch->after) || !($ids ? in_array($batch->next, $ids, true) : ($batch->next === $batch->after))) {
+            $this->add('meta/batch', LintFinding::ERROR, self::BATCH, "$batch->after $batch->next");
+            return;
+        }
+        foreach ($ids as $id) {
+            if ((strcmp($id, $batch->after) <= 0) || (strcmp($id, $batch->next) > 0)) {
+                $this->add("$path/item[$id]", LintFinding::ERROR, self::BATCH, $id);
+            }
+        }
+    }
+
+    /** the shape of a part of Module::$transfer */
+    private static function transferValue(string $part, mixed $value): bool
+    {
+        $text = static fn(mixed $v): bool => is_string($v) || ($v instanceof RawBytes);
+        return match ($part) {
+            'owner'         => is_array($value) && (array_keys($value) === ['name', 'email']) && $text($value['name']) && $text($value['email']),
+            'alternate-url' => is_array($value) && array_is_list($value) && $value && !array_filter($value, static fn(mixed $v): bool => !$text($v)),
+            default         => $text($value),
+        };
     }
 
     private function alerts(Module $m, string $path): void

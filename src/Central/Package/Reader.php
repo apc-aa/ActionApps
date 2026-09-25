@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace AA\Central\Package;
 
+use AA\Central\Package\Model\Batch;
 use AA\Central\Package\Model\ConstantGroup;
 use AA\Central\Package\Model\Module;
 use AA\Central\Package\Model\Package;
@@ -17,8 +18,8 @@ use InvalidArgumentException;
  *
  *  Pruning: a column unknown to this AA's metabase is always dropped; one this AA knows but a package
  *  never carries (reading_password) stays for the XSD to reject. Elements, attributes and object classes
- *  unknown to format 1.0 are dropped only in a higher minor version, else the XSD rejects them. Each drop =
- *  a finding.
+ *  unknown to this AA's format (Writer::FORMAT) are dropped only in a higher minor version, else the XSD
+ *  rejects them. Each drop = a finding.
  *
  *  The model: values strings, SQL NULL null, integers in the shortest decimal form; a column the row leaves
  *  out is ValueCodec::emptyValue() when meta/tables lists it, else absent = this AA's default;
@@ -170,7 +171,7 @@ final class Reader
     {
         $children = self::children($root);
         $meta     = $source = $modules = $groups = [];
-        $requires = null;
+        $requires = $batch = null;
         $items    = false;
         foreach (self::children(array_shift($children)) as $el) {   // meta first (XSD): meta/tables before the rows
             if ($el->localName === 'source') {
@@ -183,6 +184,8 @@ final class Reader
                 $requires = $el->hasAttribute('aa-version') ? $el->getAttribute('aa-version') : null;
             } elseif ($el->localName === 'contents') {
                 $items = $this->withItems = self::bool($el->getAttribute('items'));
+            } elseif ($el->localName === 'batch') {
+                $batch = new Batch($el->getAttribute('after'), $el->getAttribute('next'), self::bool($el->getAttribute('finished')));
             } elseif ($el->localName === 'tables') {
                 foreach (self::children($el) as $table) {
                     $name                = $table->getAttribute('name');
@@ -199,28 +202,32 @@ final class Reader
                 $modules[] = $this->module($el);
             }
         }
-        return new Package($meta['name'] ?? '', $source, $modules, $groups, $meta['description'] ?? null, $meta['version'] ?? null, $meta['publish'] ?? null, $requires, $items, $meta['doc'] ?? null);
+        return new Package($meta['name'] ?? '', $source, $modules, $groups, $meta['description'] ?? null, $meta['version'] ?? null, $meta['publish'] ?? null, $requires, $items, $meta['doc'] ?? null, $batch);
     }
 
     private function module(DOMElement $el): Module
     {
         $path     = self::step($el);
         $settings = $tree = $doc = null;
-        $objects  = $items = [];
+        $objects  = $items = $transfer = [];
         foreach (self::children($el) as $child) {
+            $at = "$path/" . $child->localName;
             match ($child->localName) {
                 'doc'       => $doc = $child->textContent,
                 'spot-tree' => $tree = $this->spotTree($child, "$path/spot-tree"),
                 'settings'  => $settings = $this->props($child, "$path/settings"),
                 'object'    => $objects[] = $this->object($child, $path . '/' . self::step($child), true),
                 'item'      => $items[] = $this->item($child, $path . '/' . self::step($child)),
+                'owner'     => $transfer['owner'] = array_combine(['name', 'email'], array_map(fn(DOMElement $v): string|RawBytes|null => $this->value($v, "$at/$v->localName"), self::children($child))),
+                'reading-password' => $transfer['reading-password'] = $this->value($child, $at),
+                'alternate-url'    => $transfer['alternate-url'][] = $this->value($child, $at),
                 default     => null,
             };
         }
         if ($items && !$this->withItems) {    // the flag gates the item import
             throw new PackageRejected("$path: items in a package without items (meta/contents/@items)");
         }
-        return new Module($el->localName, $el->getAttribute('id'), $this->rows($el, $path), $settings, $objects, $tree, $items, $doc);
+        return new Module($el->localName, $el->getAttribute('id'), $this->rows($el, $path), $settings, $objects, $tree, $items, $doc, $transfer);
     }
 
     /** @return array<string, list<array<string, string|RawBytes|null>>> row element => rows, document order */

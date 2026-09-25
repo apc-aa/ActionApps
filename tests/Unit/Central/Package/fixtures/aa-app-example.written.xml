@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- ActionApps app package, format aa-app 1.0 -->
-<aa-app xmlns="https://actionapps.org/ns/aa-app" format="1.0">
+<!-- ActionApps app package, format aa-app 1.1 -->
+<aa-app xmlns="https://actionapps.org/ns/aa-app" format="1.1">
   <meta>
     <name>Central Test</name>
     <description>Testovací appka Centralu - web, články, kategorie.</description>

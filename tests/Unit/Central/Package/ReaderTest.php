@@ -124,7 +124,7 @@ final class ReaderTest extends TestCase
         $xml  = (string) file_get_contents(__DIR__ . '/fixtures/aa-app-example.written.xml');
         $read = self::read($xml);
         $this->assertSame([], $read->findings);
-        $this->assertSame('1.0', $read->format);
+        $this->assertSame(Writer::FORMAT, $read->format);
         $this->assertSame($xml, self::xml($read->package));
     }
 
@@ -401,7 +401,7 @@ final class ReaderTest extends TestCase
             'other namespace'           => [str_replace(Schema::NS, 'urn:x', self::doc()), 'not an aa-app package'],
             'view without id'           => [self::doc('<view><name>x</name></view>'), "'id' is required"],
             'object without class'      => [self::doc('<object id="' . self::OBJECT . '"/>'), "'class' is required"],
-            'no module row'             => [str_replace('<module><name>M</name></module>', '', self::doc()), 'module'],
+            'no module row'             => [str_replace('<slice-module', '<site-module id="' . self::SITE . '"><site/></site-module><slice-module', self::doc()), 'module'],
             'null with a text'          => [self::doc('<view id="1"><odd null="true">x</odd></view>'), 'view[1]/odd: null="true" with a text'],
             'broken base64'             => [self::doc('<view id="1"><odd enc="base64">%%%</odd></view>'), 'view[1]/odd: Broken base64'],
             'duplicate item value'      => [self::doc('<item id="' . self::ITEM . '"><v f="headline........">a</v><v f="headline........" i="0">b</v></item>'), 'headline........[0] twice'],

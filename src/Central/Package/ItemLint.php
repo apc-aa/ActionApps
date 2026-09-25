@@ -14,7 +14,7 @@ use AA\Central\Package\Model\RawBytes;
  *  - READER_MULTIVALUE, READER_DUPLICATE: the login lookup would be ambiguous (*_ci, PAD SPACE).
  *    Checked at plan time only: a check inside the write would narrow the window, not close it - the
  *    registration locks nothing the import reads.
- *  - READER_2FA: seeds travel as plaintext; the Collector never exports them, so the package was made elsewhere.
+ *  - READER_2FA: seeds travel as plaintext.
  *  Findings quote package text - escape them. */
 final class ItemLint
 {

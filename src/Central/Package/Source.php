@@ -15,11 +15,23 @@ interface Source
      *  @return list<array<string, mixed>> */
     public function select(string $table, array $where): array;
 
-    /** Items of a slice in the GetItemContent() form, one at a time (a slice may be big), reading
-     *  password ignored - the caller has checked the exporter's permissions (Collector).
+    /** Ids of the slice's items after $after (unpacked; '' = from the first) in id order, at most $limit -
+     *  the cursor of an item batch.
      *  @param bool $all_bins false = the active bin only: status_code 1, pending and expired included
+     *  @return list<string> */
+    public function itemIds(string $slice_id, bool $all_bins, string $after, int $limit): array;
+
+    /** The items in the GetItemContent() form, reading password ignored - the caller has checked the
+     *  exporter's permissions (Collector). Any order.
+     *  @param list<string> $ids unpacked
+     *  @param bool $with_secrets add the 2FA secrets GetItemContent() leaves out - a transfer only: readers
+     *                            must log in after it
      *  @return iterable<array{id: string, content: array<string, list<array<string, mixed>>>}> */
-    public function items(string $slice_id, bool $all_bins): iterable;
+    public function items(array $ids, bool $with_secrets): iterable;
+
+    /** The login names (FIELDID_USERNAME) of the slice's items, as stored.
+     *  @return list<string> */
+    public function logins(string $slice_id, bool $all_bins): array;
 
     /** The ids of the objects the module owns (aa_owner) - its settings, objects and, as
      *  AA_Property::save() gives them the owner of the parent, their subobjects.

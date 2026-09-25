@@ -19,6 +19,7 @@ final readonly class Package
      * @param string|null           $publish        no | users | all
      * @param string|null           $requires       meta/requires/@aa-version
      * @param bool                  $withItems      meta/contents/@items - modules may carry items only then
+     * @param Batch|null            $batch          meta/batch: one slice with items only
      */
     public function __construct(
         public string $name,
@@ -31,5 +32,6 @@ final readonly class Package
         public ?string $requires = null,
         public bool $withItems = false,
         public ?string $doc = null,
+        public ?Batch $batch = null,
     ) {}
 }
