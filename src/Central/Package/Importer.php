@@ -22,8 +22,11 @@ use Throwable;
  *  1. the re-check: every group name and collection id of the plan still free (ImportTarget) - the plan
  *     is no reservation; taken = WriteError::TAKEN before any write (plan again);
  *  2. the rows - RowWriter (part 4a);
- *  3. objects through the AA_Object API and items through storeItem() - part 4c, here, with the map
- *     RowWriter returns.
+ *  3. the objects - ObjectWriter, then the items (only a package with items) - ItemWriter (part 4c), with
+ *     the map RowWriter returns (the view and e-mail numbers). Both write the rows AA_Object::save() and
+ *     storeItem() would leave, through RowStore - not those routines (die() on a refused statement, a
+ *     DELETE before save(), storeItem()'s inserters, events, feeding and caches; see there), so nothing
+ *     inside the transaction asks for a second handle.
  *  Any failure: DB_AA::transaction() rolls back and rethrows; then the Compensation from the journal -
  *  always, the rollback does nothing to MyISAM tables (§ 13.5) - still under the lock, with the user abort
  *  ignored and the time limit raised to at least 60 s (0 = none, CLI: left), the shutdown handler still armed
@@ -99,7 +102,10 @@ final class Importer
             throw new LogicException('Importer::write() inside DB_AA::transaction() - the import needs a transaction of its own');
         }
         $journal = new ImportJournal();
-        $rows    = new RowWriter(new RowStore($this->metabase, $this->schema), $this->schema, $this->target, $this->user, $this->now ?? time());
+        $store   = new RowStore($this->metabase, $this->schema);
+        $rows    = new RowWriter($store, $this->schema, $this->target, $this->user, $this->now ?? time());
+        $objects = new ObjectWriter($store);
+        $items   = new ItemWriter($store, $this->metabase, $this->user);
         try {
             $locked = $this->target->lock($this->lock, $this->wait);
         } catch (Throwable $e) {
@@ -110,10 +116,12 @@ final class Importer
         }
         try {
             $this->arm($plan, $journal);
-            $map = DB_AA::transaction(function () use ($plan, $journal, $rows): IdMap {
+            $map = DB_AA::transaction(function () use ($plan, $journal, $rows, $objects, $items): IdMap {
                 $this->recheck($plan, $journal);
-                // part 4c: objects (AA_Object API, § 5.4) and items (storeItem()) after the rows, with their map
-                return $rows->write($plan, $journal);
+                $map = $rows->write($plan, $journal);
+                $objects->write($plan, $map, $journal);
+                $items->write($plan, $map, $journal);
+                return $map;
             });
         } catch (Throwable $e) {
             self::keepAlive();
@@ -125,6 +133,7 @@ final class Importer
             $this->target->unlock($this->lock);
         }
         // part 4d: after the commit - the importer's roles (AddPerm...), ConstantsChanged(), AA::Pagecache()->invalidateFor()
+        // of every new module (the items were written past storeItem() and its cache invalidation)
         return new ImportResult($map, $journal);
     }
 

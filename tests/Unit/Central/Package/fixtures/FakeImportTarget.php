@@ -26,6 +26,10 @@ final class FakeImportTarget implements ImportTarget
     public ?\Closure $onLock = null;
     /** @var null|\Closure(): void */
     public ?\Closure $onUnlock = null;
+    /** @var list<string> login names taken on the target (users, readers) */
+    public array $usernames = [];
+    /** @var list<string> reader e-mails taken on the target */
+    public array $emails = [];
     private ?string $held = null;
     private int $ids = 0;
     private int $collectionCount = 0;
@@ -47,6 +51,16 @@ final class FakeImportTarget implements ImportTarget
     {
         $this->asked[] = $name;
         return in_array($name, $this->groups, true);
+    }
+
+    public function usernameTaken(string $username): bool
+    {
+        return in_array($username, $this->usernames, true);
+    }
+
+    public function emailTaken(string $email): bool
+    {
+        return in_array($email, $this->emails, true);
     }
 
     public function newId(): string

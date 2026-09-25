@@ -248,7 +248,13 @@ final class Schema
      *  @return array<string, array{int, bool}> column => [limit, counts characters] */
     public function lengthLimits(string $element): array
     {
-        $table  = self::ROWS[$element][0];
+        return $this->tableLimits(self::ROWS[$element][0]);
+    }
+
+    /** lengthLimits() of any AA table - the ones outside the row elements too (item, content, object_*)
+     *  @return array<string, array{int, bool}> column => [limit, counts characters] */
+    public function tableLimits(string $table): array
+    {
         $limits = [];
         foreach ($this->metabase->getColumns($table) as $name => $column) {
             $type  = strtolower((string) $column->c[1]);

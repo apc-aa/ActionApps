@@ -123,7 +123,7 @@ trait PackageMutations
 
     private static function item(string $id, string $value = 'x'): array
     {
-        return ['id' => $id, 'content' => ['headline........' => [0 => ['value' => $value, 'flag' => 0]]]];
+        return ['id' => $id, 'content' => ['headline........' => [0 => ['value' => $value, 'flag' => 0]], 'status_code.....' => [0 => ['value' => '1', 'flag' => 1]]]];
     }
 
     /** the example's group, its constants changed @param Closure(ConstantGroup): array<string, mixed> $fn constructor args */

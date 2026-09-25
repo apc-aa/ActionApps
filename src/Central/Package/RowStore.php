@@ -9,9 +9,10 @@ use AA_MbC;
 use AA_Metabase;
 use LogicException;
 
-/** One row of an import to the database (C4.4 part 4a, RowWriter): its values through the contract of
- *  ImportPlan / TargetCharset, completed to every column of the local table, written by AA_Metabase with
- *  `nohalt` - a refused statement throws (WriteError::DB), never a silent false.
+/** One row of an import to the database (C4.4 part 4a, RowWriter; part 4c, ObjectWriter and ItemWriter
+ *  through tableRow()): its values through the contract of ImportPlan / TargetCharset, completed to every
+ *  column of the local table, written by AA_Metabase with `nohalt` on the handle getDB() gives - inside
+ *  DB_AA::transaction() the transaction's - a refused statement throws (WriteError::DB), never a silent false.
  *
  *  A value (string or RawBytes; numbers and NULL stay): ImportRewrite numeric(known()) on the UTF-8 text
  *  or on the bytes, then TargetCharset::measure() - fromUtf8() to the charset LAST, RawBytes as they are -
@@ -29,7 +30,7 @@ use LogicException;
  *  values quoted by quote(), packed ids checked by is_long_ids() (the Validator: E for other values). */
 final class RowStore
 {
-    /** @var array<string, array<string, array{int, bool}>> element => Schema::lengthLimits() */
+    /** @var array<string, array<string, array{int, bool}>> table => Schema::tableLimits() */
     private array $limits = [];
 
     public function __construct(private readonly AA_Metabase $metabase, private readonly Schema $schema) {}
@@ -41,7 +42,25 @@ final class RowStore
      *  @throws WriteError|RewriteFailed */
     public function row(string $element, array $row, array $fixed, string $charset, ImportRewrite $rewrite, string $path): array
     {
-        $limits = $this->limits[$element] ??= $this->schema->lengthLimits($element);
+        $widget = static fn(string $column): bool => ImportRewrite::isWidget($element, $column);
+        return $this->values($this->schema->rowTables()[$element], $row, $fixed, $charset, $rewrite, $path, $widget);
+    }
+
+    /** row() for a table that is no row element of the package - item, content (ItemWriter), object_*
+     *  (ObjectWriter): $row as its values, $fixed as they are, completed to every column of the table
+     *  @param array<string, mixed> $row @param array<string, int|string|null> $fixed
+     *  @return array<string, int|float|string|null>
+     *  @throws WriteError|RewriteFailed */
+    public function tableRow(string $table, array $row, array $fixed, string $charset, ImportRewrite $rewrite, string $path): array
+    {
+        return $this->values($table, $row, $fixed, $charset, $rewrite, $path, static fn(): bool => false);
+    }
+
+    /** @param array<string, mixed> $row @param array<string, int|string|null> $fixed @param callable(string): bool $widget
+     *  @return array<string, int|float|string|null> */
+    private function values(string $table, array $row, array $fixed, string $charset, ImportRewrite $rewrite, string $path, callable $widget): array
+    {
+        $limits = $this->limits[$table] ??= $this->schema->tableLimits($table);
         foreach ($fixed as $column => $value) {
             if (is_string($value) && isset($limits[$column]) && (strlen($value) > $limits[$column][0])) {
                 throw new LogicException("The writer's value of $path/$column is longer than its column");
@@ -50,11 +69,10 @@ final class RowStore
         $values = $fixed;
         foreach ($row as $column => $value) {
             if (!array_key_exists($column, $fixed)) {
-                $widget          = ImportRewrite::isWidget($element, (string) $column);
-                $values[$column] = $this->value($value, $charset, $rewrite, "$path/$column", $limits[$column] ?? null, $widget);
+                $values[$column] = $this->value($value, $charset, $rewrite, "$path/$column", $limits[$column] ?? null, $widget((string) $column));
             }
         }
-        foreach ($this->metabase->getColumns($this->schema->rowTables()[$element]) as $name => $column) {
+        foreach ($this->metabase->getColumns($table) as $name => $column) {
             if ($column->isAutoIncrement()) {
                 unset($values[$name]);
             } elseif (!array_key_exists($name, $values)) {

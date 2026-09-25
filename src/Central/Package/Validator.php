@@ -72,6 +72,9 @@ final class Validator
     public const ITEM_KEY = 'item-key';
     /** W: an item value of a field the slice does not have */
     public const ITEM_FIELD = 'item-field';
+    /** W: an item without a status_code of a bin (1 active, 2 holding, 3 trash) - ItemWriter writes it as it
+     *  is (a missing one: the column default 0), and no bin shows it; ref = the value ('' = none) */
+    public const ITEM_STATUS = 'item-status';
     /** W: a default profile property AA does not know (admin/se_profile.php) - ignored by AA */
     public const PROFILE = 'profile-property';
     /** W: a switch who may write or log in - slice.permit_anonymous_post/_edit, fileman_access, auth_field_group */
@@ -375,6 +378,10 @@ final class Validator
         foreach ($m->items as $item) {
             $id = ValueCodec::bytes($item['id'] ?? '');
             $this->id('long', $id, "$path/item[$id]", self::LONG_RE);
+            $status = ValueCodec::bytes(((array) (array_values((array) ($item['content']['status_code.....'] ?? []))[0] ?? []))['value'] ?? '');
+            if (!in_array($status, ['1', '2', '3'], true)) {
+                $this->add("$path/item[$id]/status_code.....", LintFinding::WARNING, self::ITEM_STATUS, $status);
+            }
             foreach (array_keys((array) ($item['content'] ?? [])) as $field) {
                 if (in_array((string) $field, Collector::ITEM_LEFT_OUT, true)) {
                     $this->add("$path/item[$id]/$field", LintFinding::ERROR, self::ITEM_KEY, (string) $field);

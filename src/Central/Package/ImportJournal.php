@@ -13,7 +13,12 @@ namespace AA\Central\Package;
  *  constants, alerts_collection_*) are deleted through them; the AUTO_INCREMENT rows by their numbers -
  *  view and email rows are written before their module (their numbers go into the texts), alerts_filter
  *  and Alerts e-mails have no module column the module routines would find.
- *  Mutable, filled by RowWriter inside the transaction; after a failure ImportFailed carries it. */
+ *  Objects (ObjectWriter) by their ids once their first row is written - object_text has no unique key, so
+ *  no insert proves an id ours: they are the plan's new_id()s and the derived settings ids of new modules,
+ *  never an id of the package or the target; items (ItemWriter) once their `item` row is written (PRIMARY:
+ *  a colliding id fails there), their content rows after it - found by the item id.
+ *  Mutable, filled by RowWriter, ObjectWriter and ItemWriter inside the transaction; after a failure
+ *  ImportFailed carries it. */
 final class ImportJournal
 {
     /** @var array<string, string> new module id => package wrapper (Module::SLICE, SITE, ALERTS) */
@@ -29,6 +34,10 @@ final class ImportJournal
     private array $collections = [];
     /** @var list<array{string, string}> relation rows [source site, destination module] */
     private array $relations = [];
+    /** @var array<string, array<string, true>> owner module => ids of the objects with a row written */
+    private array $objects = [];
+    /** @var array<string, array<string, true>> slice => ids of the items whose `item` row is written */
+    private array $items = [];
     /** what the writer was doing last - a finding path (package text: safe()) */
     private string $step = '';
 
@@ -62,6 +71,18 @@ final class ImportJournal
     public function relation(string $source, string $destination): void
     {
         $this->relations[] = [$source, $destination];
+    }
+
+    /** an object (or subobject) of the new module $owner - once one of its rows is written; again = nothing */
+    public function object(string $id, string $owner): void
+    {
+        $this->objects[$owner][$id] = true;
+    }
+
+    /** an item of the new slice - once its `item` row is written */
+    public function item(string $id, string $slice): void
+    {
+        $this->items[$slice][$id] = true;
     }
 
     public function step(string $path): void
@@ -117,6 +138,18 @@ final class ImportJournal
         return $this->relations;
     }
 
+    /** @return array<string, list<string>> owner module => object ids, in the order of their first row */
+    public function objects(): array
+    {
+        return array_map(static fn(array $ids): array => array_map('strval', array_keys($ids)), $this->objects);
+    }
+
+    /** @return array<string, list<string>> slice => item ids, in write order */
+    public function items(): array
+    {
+        return array_map(static fn(array $ids): array => array_map('strval', array_keys($ids)), $this->items);
+    }
+
     public function lastStep(): string
     {
         return $this->step;
@@ -125,6 +158,6 @@ final class ImportJournal
     /** true: nothing was written - there is nothing to compensate */
     public function isEmpty(): bool
     {
-        return !$this->modules && !$this->numbers && !$this->groups && !$this->collections && !$this->relations;
+        return !$this->modules && !$this->numbers && !$this->groups && !$this->collections && !$this->relations && !$this->objects && !$this->items;
     }
 }

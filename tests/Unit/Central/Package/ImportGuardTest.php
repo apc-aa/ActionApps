@@ -204,7 +204,7 @@ final class ImportGuardTest extends TestCase
         self::assertSame($foreign, array_filter(TableDb::$tables));
         self::assertNull(($importer->shutdownHandler())(), 'once');
         self::assertCount(1, $lines, 'one line - the package text cannot forge another');
-        self::assertStringContainsString('AA Central: the import died at constant-group[ct_rubriky]/constant[bb11bb22cc33dd44ee55ff6677889900] (forged AA Central: all is well) - compensated', $lines[0]);
+        self::assertStringContainsString('AA Central: the import died at slice-module[' . self::SLICE . ']/object[' . self::SET . ']@aa_subobjects[1] (forged AA Central: all is well) - compensated', $lines[0]);
     }
 
     /** a persistent connection whose rollback fails keeps its transaction open - the compensation's deletes

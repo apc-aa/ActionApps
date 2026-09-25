@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace AA\Central\Package;
 
+use AA;
 use AA\IO\DB\DB_AA;
 use AA\IO\DB\DB_PDO;
 use AA\Optimize\Chain;
+use AA_Reader;
 use Closure;
 use LogicException;
 use RuntimeException;
@@ -48,6 +50,17 @@ final class DbImportTarget implements ImportTarget
             }
         }
         return false;
+    }
+
+    /** AA::$perm - the permission systems of this AA (users, LDAP, readers); the AA boot (locsess.php) sets it */
+    public function usernameTaken(string $username): bool
+    {
+        return !AA::$perm->isUsernameFree($username);
+    }
+
+    public function emailTaken(string $email): bool
+    {
+        return AA_Reader::email2Id($email, null, AA_BIN_ALL) !== null;
     }
 
     public function newId(): string

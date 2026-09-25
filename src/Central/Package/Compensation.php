@@ -42,7 +42,17 @@ use Throwable;
  *     slice_id IS NULL only when the journal holds our insert of it: the insert fails when a foreign row of
  *     the name came first (MyISAM, no lock of the group admin), and that row stays. Never by the name
  *     otherwise: lt_groupNames.value compares case-insensitively with PAD SPACE, and after a rollback a
- *     foreign group of the name may exist.
+ *     foreign group of the name may exist;
+ *  6. objects (ObjectWriter) by the ids the journal holds, per owner, from object_text, object_integer and
+ *     object_float - also one whose aa_owner row was never written (step 1 finds objects by aa_owner, and
+ *     AA_Object::deleteObjects() adds what their aa_subobjects list: the writer computes that list, the
+ *     package never sets it - Validator E, ObjectWriter LogicException - so it names only ours);
+ *  7. items (ItemWriter) by the ids the journal holds: their content rows by the item id, their item rows
+ *     by the id AND the new slice. Step 1 already ran AA_Items::deleteItems() for every item of the new
+ *     slice (AA_Slice::_deleteModules(): item, content, discussion, offline, feed relations, hit_* - and an
+ *     ITEM_DEL row of the `log` table, ChangesMonitor::deleteChanges()); this step is the check by the
+ *     journal and the cleanup when that routine failed. Inside the failed transaction deleteItems() would
+ *     be rolled back with the rest - it runs after, as all of this.
  *  Each step runs every action on its own (an exception or a failed statement stops none of the others)
  *  and then counts what is left of it: the report row lists it with its WHERE for a manual action. A
  *  step that cannot even be built (a group not in the map - a bug) is a report row too; run() never throws.
@@ -52,10 +62,8 @@ use Throwable;
  *  give it back - the pool is LIFO, they get these). A routine that nests a second handle while the pool is
  *  empty would get a fresh, halting one. The compensation's own statements are always query_halt('no').
  *
- *  For part 4c (objects, items): they must get fresh ids (the map's new_id()s - an id of the target would
- *  be deleted here with its owner's objects), the package must not set `aa_subobjects` (deleteObjects()
- *  deletes every id that property lists - a package naming a foreign object would delete it), and the item
- *  row goes before its content (AA_Items::deleteItems() of the slice routine finds content by the item). */
+ *  Objects and items carry fresh ids only (the plan's new_id()s, the derived settings ids of new modules):
+ *  an id of the target would be deleted here. */
 final class Compensation
 {
     /** the module class of a package wrapper - its _deleteModules() */
@@ -103,6 +111,13 @@ final class Compensation
                     $slice = in_array($name, $journal->groupSlices(), true);
                     $this->guarded("constant-group[$name]", fn() => $this->group($g, $name, $rows[$name], $slice));
                 }
+            }
+            foreach ($journal->objects() as $owner => $ids) {
+                $where = [['object_id', $ids]];
+                $this->remove("objects of $owner", [['object_text', $where], ['object_integer', $where], ['object_float', $where]]);
+            }
+            foreach ($journal->items() as $slice => $ids) {
+                $this->remove("items of $slice", [['content', [['item_id', $ids, 'l']]], ['item', [['id', $ids, 'l'], ['slice_id', $slice, 'l']]]]);
             }
         } finally {
             $restore();

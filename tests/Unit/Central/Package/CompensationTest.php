@@ -35,7 +35,7 @@ final class CompensationTest extends TestCase
         'transaction' => [true, []],
         'MyISAM'      => [false, []],
         'mixed'       => [true, ['constant' => 'InnoDB', 'constant_slice' => 'MyISAM', 'view' => 'MyISAM', 'site_spot' => 'MyISAM',
-            'alerts_collection_howoften' => 'MyISAM', 'module' => 'MyISAM']],
+            'alerts_collection_howoften' => 'MyISAM', 'module' => 'MyISAM', 'object_text' => 'MyISAM', 'item' => 'MyISAM']],
     ];
 
     // ---------------------------------------------------------------- every failure point
@@ -69,7 +69,8 @@ final class CompensationTest extends TestCase
         if (!$e->journal->isEmpty()) {
             self::assertNotEmpty(self::compensationStatements(), 'the compensation runs also after a successful rollback');
             $j = $e->journal;
-            self::assertCount(count($j->modules()) + count($j->numbers()) + count($j->relations()) + count($j->collections()) + count($j->groups()), $e->cleanup->steps());
+            self::assertCount(count($j->modules()) + count($j->numbers()) + count($j->relations()) + count($j->collections()) + count($j->groups())
+                + count($j->objects()) + count($j->items()), $e->cleanup->steps());
         }
         self::assertSame(['lock ' . self::LOCK . ' 3', 'unlock ' . self::LOCK], $this->target->locks);
     }
@@ -85,7 +86,7 @@ final class CompensationTest extends TestCase
         self::assertSame([
             Module::SITE . "[$w]", Module::SLICE . "[$s]", Module::ALERTS . "[$a]",
             'view 1000, 1001', 'email 2000, 2001', 'alerts_filter 3000', 'site_spot 4000, 4001', 'profile 5000',
-            "relation $w $s", 'alerts_collection K0001', 'constant-group[ct_rubriky]',
+            "relation $w $s", 'alerts_collection K0001', 'constant-group[ct_rubriky]', "objects of $w", "objects of $s",
         ], array_column($e->cleanup->steps(), 0));
         self::assertSame([], array_merge(...array_column($e->cleanup->steps(), 1)));
     }

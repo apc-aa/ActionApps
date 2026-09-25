@@ -25,8 +25,13 @@ trait CompensationFixture
     private const FS = 'f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5';
     private const FW = 'f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1';
     private const FA = 'fafafafafafafafafafafafafafafafa';
-    /** the last failure point of ImporterTest::failures() - everything but one constant is written */
-    private const LAST = "/^INSERT INTO `constant` .*'Domácí'/s";
+    /** the last failure point of ImporterTest::failures() - everything but the last object row is written */
+    private const LAST = "/^INSERT INTO `object_text` .*'aa_subobjects',1,/";
+    /** a foreign set and its condition (owner: the foreign slice) - the set lists the condition in aa_subobjects */
+    private const FSET  = 'f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0';
+    private const FCOND = 'f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2';
+    /** a foreign item of the foreign slice */
+    private const FITEM = 'f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3';
 
     private FakeImportTarget $target;
 
@@ -40,7 +45,7 @@ trait CompensationFixture
     protected function setUp(): void
     {
         TableDb::reset();
-        TableDb::$next       = ['view' => 1000, 'email' => 2000, 'alerts_filter' => 3000, 'site_spot' => 4000, 'profile' => 5000, 'object_text' => 100];
+        TableDb::$next       = ['view' => 1000, 'email' => 2000, 'alerts_filter' => 3000, 'site_spot' => 4000, 'profile' => 5000, 'object_text' => 100, 'object_integer' => 100, 'item' => 100];
         // spare handles: a statement that throws inside DB_AA::sql() never gives its handle back (freeDB()) -
         // AA opens a new connection then; here an empty pool would try a real one
         $GLOBALS['spareDBs'] = [new TableDb(), new TableDb(), new TableDb(), new TableDb()];
@@ -79,7 +84,18 @@ trait CompensationFixture
                 ['id' => str_repeat('c', 32), 'group_id' => 'ct_rubrikY', 'name' => 'No group row', 'value' => 'y'],
             ],
             'constant_slice' => [['group_id' => $group, 'slice_id' => $s], ['group_id' => 'CT_RUBRIKY', 'slice_id' => null]],
-            'object_text'    => [['id' => 1, 'object_id' => str_repeat('b', 32), 'property' => 'aa_owner', 'value' => $s]],
+            'object_text'    => [
+                ['id' => 1, 'object_id' => str_repeat('b', 32), 'property' => 'aa_owner', 'value' => $s],
+                ['id' => 2, 'object_id' => self::FSET, 'property' => 'aa_type', 'priority' => 0, 'value' => 'AA_Set'],
+                ['id' => 3, 'object_id' => self::FSET, 'property' => 'aa_owner', 'priority' => 0, 'value' => $s],
+                ['id' => 4, 'object_id' => self::FSET, 'property' => 'conds', 'priority' => 0, 'value' => self::FCOND],
+                ['id' => 5, 'object_id' => self::FSET, 'property' => 'aa_subobjects', 'priority' => 0, 'value' => self::FCOND],
+                ['id' => 6, 'object_id' => self::FCOND, 'property' => 'aa_type', 'priority' => 0, 'value' => 'AA_Condition'],
+                ['id' => 7, 'object_id' => self::FCOND, 'property' => 'aa_owner', 'priority' => 0, 'value' => $s],
+            ],
+            'object_integer' => [['id' => 1, 'object_id' => self::FSET, 'property' => 'x', 'priority' => 0, 'value' => 1]],
+            'item'           => [['id' => self::FITEM, 'short_id' => 1, 'slice_id' => $s, 'status_code' => 1]],
+            'content'        => [['item_id' => self::FITEM, 'field_id' => 'headline........', 'number' => 0, 'text' => 'Foreign item', 'flag' => 64]],
         ];
     }
 

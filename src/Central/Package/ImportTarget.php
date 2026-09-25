@@ -25,6 +25,14 @@ interface ImportTarget
      *  counts) - the writer asks again inside its transaction, the plan is no reservation (ImportPlan) */
     public function collectionTaken(string $id): bool;
 
+    /** true: a login name of this AA - a user (users.uid, LDAP) or a reader of any Reader Management slice,
+     *  any bin (AA::$perm->isUsernameFree(), which registration asks) - so a reader of the package with it
+     *  would share the login (ItemLint, E) */
+    public function usernameTaken(string $username): bool;
+
+    /** true: a reader of a Reader Management slice of this AA has this e-mail, any bin (AA_Reader::email2Id()) */
+    public function emailTaken(string $email): bool;
+
     /** The tables of $tables (the ones an import writes) that are not InnoDB - no transaction covers them:
      *  a rolled back import leaves their rows until the compensation (Importer) removes them.
      *  @param list<string> $tables @return array<string, string> table => its engine ('' = no such table) */

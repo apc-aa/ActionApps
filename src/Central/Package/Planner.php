@@ -24,7 +24,9 @@ use InvalidArgumentException;
  *     Validator's E); alerts collections: new_collection_id(); group names: GroupPlan. Views, e-mails
  *     and filters: the writer.
  *  4. TargetCharset: every value converts to its target charset and fits its column (E, W).
- *  5. ImportLint: references the rewrite cannot map or that lead outside the package (W, I).
+ *  5. ImportLint: references the rewrite cannot map or that lead outside the package (W, I); ItemLint:
+ *     readers whose login or e-mail the target has (E), the login accounts and 2FA seeds the package
+ *     brings (I, W), relations and alerts subscriptions leading outside it (W, I).
  *  6. The engine (§ 7.2 step 4): the tables the import writes that are not InnoDB (ImportTarget::
  *     nonTransactional()) - W NO_TRANSACTION: no rollback there, a failure is cleaned up by the
  *     compensation (Importer) only. Here, not in the writer, so the preview shows it before the write.
@@ -53,7 +55,7 @@ final class Planner
     /** the path of a finding about the target AA, not the package */
     public const TARGET = 'target';
 
-    /** tables of AA_Object (§ 5.4, part 4c) and of storeItem() (items), beside the rows of Schema */
+    /** tables of the objects (§ 5.4, ObjectWriter) and of the items (ItemWriter), beside the rows of Schema */
     private const OBJECT_TABLES = ['object_text', 'object_integer', 'object_float'];
     private const ITEM_TABLES   = ['item', 'content'];
 
@@ -124,6 +126,7 @@ final class Planner
         $this->alertsFields($fixed, $map);
         (new TargetCharset($this->schema, $map))->check($fixed, $charsets, $group_charsets, $this->findings);
         (new ImportLint($this->schema))->check($fixed, $this->findings);
+        (new ItemLint($this->target))->check($fixed, $charsets, $this->findings);
         $this->engines($fixed);
         return new ImportPlan($fixed, $map, $charsets, $lang_files, $group_charsets, $settings, $fix_ups, $validation->findings, $this->findings->all());
     }

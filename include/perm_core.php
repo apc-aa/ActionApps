@@ -1322,7 +1322,7 @@ class AA_Reader {
     /**
      * @param $email
      * @param null|string[] $slices
-     * @param null $bin
+     * @param int|null $bin     AA_BIN_* bits; null = the active bin
      */
     static function email2Id($email, array $slices=null, $bin=null): ?string
     {

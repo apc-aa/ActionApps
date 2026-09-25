@@ -146,7 +146,7 @@ namespace Tests\Unit\Central\Package {
 
         private static function item(string $id, string $value = 'x'): array
         {
-            return ['id' => $id, 'content' => ['headline........' => [0 => ['value' => $value, 'flag' => 0]]]];
+            return ['id' => $id, 'content' => ['headline........' => [0 => ['value' => $value, 'flag' => 0]], 'status_code.....' => [0 => ['value' => '1', 'flag' => 1]]]];
         }
 
         // ---------------------------------------------------------------- tests
@@ -301,8 +301,10 @@ namespace Tests\Unit\Central\Package {
                 'anonymous posting'          => [static fn(Package $p): Package => self::cell($p, self::SLICE, 'slice', 0, ['permit_anonymous_post' => '1', 'permit_anonymous_edit' => '3']), ["W permission $S/slice[#0]/permit_anonymous_edit", "W permission $S/slice[#0]/permit_anonymous_post"]],
                 'permissions NULL'           => [static fn(Package $p): Package => self::cell($p, self::SLICE, 'slice', 0, ['permit_anonymous_post' => null, 'permit_anonymous_edit' => null, 'fileman_access' => null]), []],
                 'fileman and auth'           => [static fn(Package $p): Package => self::cell($p, self::SLICE, 'slice', 0, ['fileman_access' => 'EDITOR', 'auth_field_group' => 'headline........']), ["W permission $S/slice[#0]/auth_field_group", "W permission $S/slice[#0]/fileman_access"]],
-                'item pseudo field'          => [static fn(Package $p): Package => self::items($p, [['id' => self::OTHER, 'content' => ['posted_by.......' => [0 => ['value' => 'uid', 'flag' => 0]], 'u_slice_id......' => [0 => ['value' => self::SLICE, 'flag' => 0]]]]]), ["E item-key $S/item[" . self::OTHER . ']/posted_by.......', "E item-key $S/item[" . self::OTHER . ']/u_slice_id......']],
+                'item pseudo field'          => [static fn(Package $p): Package => self::items($p, [['id' => self::OTHER, 'content' => ['posted_by.......' => [0 => ['value' => 'uid', 'flag' => 0]], 'u_slice_id......' => [0 => ['value' => self::SLICE, 'flag' => 0]], 'status_code.....' => [0 => ['value' => '2', 'flag' => 0]]]]]), ["E item-key $S/item[" . self::OTHER . ']/posted_by.......', "E item-key $S/item[" . self::OTHER . ']/u_slice_id......']],
                 'item of no field'           => [static fn(Package $p): Package => self::items($p, [['id' => self::OTHER, 'content' => ['nofield........1' => [0 => ['value' => 'x', 'flag' => 0]], 'status_code.....' => [0 => ['value' => '1', 'flag' => 0]]]]]), ["W item-field $S/item[" . self::OTHER . ']/nofield........1']],
+                'item without a status'      => [static fn(Package $p): Package => self::items($p, [['id' => self::OTHER, 'content' => ['headline........' => [0 => ['value' => 'x', 'flag' => 0]]]]]), ["W item-status $S/item[" . self::OTHER . ']/status_code.....']],
+                'item in no bin'             => [static fn(Package $p): Package => self::items($p, [['id' => self::OTHER, 'content' => ['status_code.....' => [0 => ['value' => '4', 'flag' => 1]]]]]), ["W item-status $S/item[" . self::OTHER . ']/status_code.....']],
                 // ---- items (§ 4, Q-H1 decision: only publish = all forbids them)
                 'items without the flag'     => [static fn(Package $p): Package => self::items($p, [self::item(self::OTHER)], false), ["E items $S/item"]],
                 'items of a published app'   => [static fn(Package $p): Package => self::with(self::items($p, [self::item(self::OTHER)]), ['publish' => 'all']), ['E items-published meta/publish']],

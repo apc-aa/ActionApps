@@ -7,7 +7,8 @@ declare(strict_types=1);
  * validated, planned and written into TableDb - in-memory tables behind the real DB_AA::transaction(),
  * getDB() and AA_Metabase SQL. New ids, rewritten references, the journal; a failure at every statement
  * (rollback, journal), a name taken since the plan, an unconvertible value, a length overflow after the
- * view numbers.
+ * view numbers. The example's objects (part 4c) are written too - their details: ObjectWriterTest; items:
+ * ItemWriterTest.
  */
 
 namespace Tests\Unit\Central\Package;
@@ -113,6 +114,16 @@ final class ImporterTest extends TestCase
                 $this->ids->unlock($name);
             }
 
+            public function usernameTaken(string $username): bool
+            {
+                return $this->ids->usernameTaken($username);
+            }
+
+            public function emailTaken(string $email): bool
+            {
+                return $this->ids->emailTaken($email);
+            }
+
             public function newId(): string
             {
                 return $this->ids->newId();
@@ -131,7 +142,8 @@ final class ImporterTest extends TestCase
         return new ImportPlan(...array_merge(get_object_vars($plan), ['package' => $package($plan->package), 'findings' => []]));
     }
 
-    /** n-th id of FakeImportTarget::newId() - the plan: modules 1-3, objects 4-7, constants 8-9 */
+    /** n-th id of FakeImportTarget::newId() - the plan: modules 1-3, objects 4-7, constants 8-9; the
+     *  lt_groupNames row 10 (the writer) */
     private static function id(int $n): string
     {
         return sprintf('%032x', 0xa000 + $n);
@@ -218,6 +230,13 @@ final class ImporterTest extends TestCase
         self::assertSame(['ct_rubriky' => self::id(10)], $result->journal->groupRows(), 'its lt_groupNames row by id - a name matches case-insensitively');
         self::assertSame(['K0001'], $result->journal->collections());
         self::assertSame([[$w, $s]], $result->journal->relations());
+        [$sw, $ss] = [string2id('AA_Modulesettings_Site' . $w), string2id('AA_Modulesettings_Slice' . $s)];
+        self::assertSame([$w => [$sw, self::id(4)], $s => [$ss, self::id(6), self::id(5), self::id(7)]], $result->journal->objects(), 'a subobject before its set');
+        self::assertSame([], $result->journal->items());
+        $objects = array_keys(array_filter(TableDb::$log, static fn(string $q): bool => str_starts_with($q, 'INSERT INTO `object_text`')));
+        $rows    = array_keys(array_filter(TableDb::$log, static fn(string $q): bool => (bool) preg_match('/^(INSERT|UPDATE) (INTO )?`(?!object_)/', $q)));
+        self::assertGreaterThan(end($rows), $objects[0], 'the objects after the rows');
+        self::assertCount(29, $objects, 'ObjectWriterTest has them row by row');
     }
 
     public function test_every_column_of_the_local_schema_is_written(): void
@@ -225,7 +244,7 @@ final class ImporterTest extends TestCase
         $this->importer()->write($this->plan());
 
         $tables = ['module', 'slice', 'field', 'view', 'email', 'profile', 'site', 'site_spot', 'relation', 'alerts_collection',
-            'alerts_collection_filter', 'alerts_collection_howoften', 'alerts_filter', 'constant_slice', 'constant'];
+            'alerts_collection_filter', 'alerts_collection_howoften', 'alerts_filter', 'constant_slice', 'constant', 'object_text'];
         foreach ($tables as $table) {
             $columns = \AA_Metabase::singleton()->getColumns($table);
             self::assertNotEmpty(TableDb::$sent[$table] ?? [], $table);
@@ -386,11 +405,12 @@ final class ImporterTest extends TestCase
 
     // ---------------------------------------------------------------- failures
 
-    /** @return array<string, array{string, array{modules: array<string, string>, numbers: array<string, list<int>>, groups: list<string>, collections: list<string>, relations: list<array{string, string}>}}> */
+    /** @return array<string, array{string, array{modules: array<string, string>, numbers: array<string, list<int>>, groups: list<string>, collections: list<string>, relations: list<array{string, string}>, objects: array<string, list<string>>, items: array<string, list<string>>}}> */
     public static function failures(): array
     {
+        self::bootAa();         // string2id() - a provider runs before setUpBeforeClass()
         [$w, $s, $a] = [self::id(1), self::id(2), self::id(3)];
-        $none     = ['modules' => [], 'numbers' => [], 'groups' => [], 'collections' => [], 'relations' => []];
+        $none     = ['modules' => [], 'numbers' => [], 'groups' => [], 'collections' => [], 'relations' => [], 'objects' => [], 'items' => []];
         $j        = static fn(array ...$parts): array => array_replace($none, ...$parts);
         $numbered = ['view' => [1000, 1001], 'email' => [2000, 2001], 'alerts_filter' => [3000]];
         $spots    = ['site_spot' => [4000, 4001]];
@@ -399,6 +419,9 @@ final class ImporterTest extends TestCase
         $slice    = $j($sites, ['modules' => [$w => Module::SITE, $s => Module::SLICE]]);
         $alerts   = $j($sites, ['modules' => [$w => Module::SITE, $s => Module::SLICE, $a => Module::ALERTS], 'numbers' => $numbered + $spots + ['profile' => [5000]]]);
         $all      = $j($alerts, ['collections' => ['K0001']]);
+        $group    = $j($all, ['groups' => ['ct_rubriky']]);
+        [$sw, $ss] = [string2id('AA_Modulesettings_Site' . $w), string2id('AA_Modulesettings_Slice' . $s)];
+        $site_objects = [$w => [$sw, self::id(4)]];
         return [
             'first view'          => ['/^INSERT INTO `view`/', $none],
             'first e-mail'        => ['/^INSERT INTO `email`/', $j(['numbers' => ['view' => [1000, 1001]]])],
@@ -415,8 +438,16 @@ final class ImporterTest extends TestCase
             'collection filter'   => ['/^INSERT INTO `alerts_collection_filter`/', $all],
             'collection period'   => ['/^INSERT INTO `alerts_collection_howoften`/', $all],
             'group name'          => ['/^INSERT INTO `constant` /', $all],
-            'group owner'         => ['/^INSERT INTO `constant_slice`/', $j($all, ['groups' => ['ct_rubriky']])],
-            'second constant'     => ["/^INSERT INTO `constant` .*'Domácí'/s", $j($all, ['groups' => ['ct_rubriky']])],
+            'group owner'         => ['/^INSERT INTO `constant_slice`/', $group],
+            'second constant'     => ["/^INSERT INTO `constant` .*'Domácí'/s", $group],
+            'site settings'       => ['/^INSERT INTO `object_text`/', $group],
+            'settings owner'      => ["/^INSERT INTO `object_text` .*'aa_owner'/", $j($group, ['objects' => [$w => [$sw]]])],
+            'alias'               => ["/^INSERT INTO `object_text` .*'alias'/", $j($group, ['objects' => [$w => [$sw]]])],
+            'slice settings'      => ["/^INSERT INTO `object_text` .*'translations'/", $j($group, ['objects' => $site_objects])],
+            'subobject'           => ["/^INSERT INTO `object_text` .*'AA_Condition'/", $j($group, ['objects' => $site_objects + [$s => [$ss, self::id(6)]]])],
+            'set'                 => ["/^INSERT INTO `object_text` .*'conds'/", $j($group, ['objects' => $site_objects + [$s => [$ss, self::id(6)]]])],
+            'second subobject'    => ["/^INSERT INTO `object_text` .*'AA_Sortorder'/", $j($group, ['objects' => $site_objects + [$s => [$ss, self::id(6), self::id(5), self::id(7)]]])],
+            'last subobject id'   => ["/^INSERT INTO `object_text` .*'aa_subobjects',1,/", $j($group, ['objects' => $site_objects + [$s => [$ss, self::id(6), self::id(5), self::id(7)]]])],
         ];
     }
 
@@ -486,7 +517,12 @@ final class ImporterTest extends TestCase
     {
         $modules = array_keys($j->modules());
         $in      = static fn(mixed $v, array $list): bool => in_array($v, $list, true);
+        $objects = array_merge([], ...array_values($j->objects()));
+        $items   = array_merge([], ...array_values($j->items()));
         $by      = [
+            'object_text'    => fn(array $r): bool => $in($r['object_id'], $objects), 'object_integer' => fn(array $r): bool => $in($r['object_id'], $objects),
+            'object_float'   => fn(array $r): bool => $in($r['object_id'], $objects),
+            'item'           => fn(array $r): bool => $in($r['id'], $items), 'content' => fn(array $r): bool => $in($r['item_id'], $items),
             'module'   => fn(array $r): bool => $in($r['id'], $modules), 'slice' => fn(array $r): bool => $in($r['id'], $modules),
             'site'     => fn(array $r): bool => $in($r['id'], $modules), 'field' => fn(array $r): bool => $in($r['slice_id'], $modules),
             'relation' => fn(array $r): bool => $in([$r['source_id'], $r['destination_id']], $j->relations()),
@@ -512,7 +548,8 @@ final class ImporterTest extends TestCase
 
     private static function journal(ImportJournal $j): array
     {
-        return ['modules' => $j->modules(), 'numbers' => $j->numbers(), 'groups' => $j->groups(), 'collections' => $j->collections(), 'relations' => $j->relations()];
+        return ['modules' => $j->modules(), 'numbers' => $j->numbers(), 'groups' => $j->groups(), 'collections' => $j->collections(), 'relations' => $j->relations(),
+            'objects' => $j->objects(), 'items' => $j->items()];
     }
 
     // ---------------------------------------------------------------- the plan is no reservation
@@ -608,6 +645,16 @@ final class ImporterTest extends TestCase
             public function unlock(string $name): void
             {
                 $this->ids->unlock($name);
+            }
+
+            public function usernameTaken(string $username): bool
+            {
+                return $this->ids->usernameTaken($username);
+            }
+
+            public function emailTaken(string $email): bool
+            {
+                return $this->ids->emailTaken($email);
             }
 
             public function newId(): string

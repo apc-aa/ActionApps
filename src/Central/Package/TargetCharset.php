@@ -13,7 +13,8 @@ use Throwable;
  *  row columns, settings and object properties (object names included), spot names, variables and
  *  conditions, item values, constants - converts from UTF-8 to the charset of its target module
  *  (ModuleCharset::fromUtf8(): strict iconv + round trip, STATELESS charsets only) and fits its column
- *  (Schema::lengthLimits()). An unconvertible value or a definite overflow is an E: the import stops
+ *  (Schema::lengthLimits(); item values: the item columns carried as pseudo fields - `flags...........`,
+ *  char(30) - Schema::tableLimits('item'), content.text has none). An unconvertible value or a definite overflow is an E: the import stops
  *  before any write.
  *
  *  THE CONTRACT WITH THE WRITER (part 4). The plan stores no converted value. The writer rewrites
@@ -54,7 +55,7 @@ final class TargetCharset
 
     private readonly ImportRewrite $rewrite;
     private FindingList $findings;
-    /** @var array<string, array<string, array{int, bool}>> element => Schema::lengthLimits() */
+    /** @var array<string, array<string, array{int, bool}>> element => Schema::lengthLimits(); '#item' => of the item table */
     private array $limits = [];
 
     public function __construct(private readonly Schema $schema, IdMap $map)
@@ -88,10 +89,13 @@ final class TargetCharset
                     $this->value($at, $text, $charset);
                 }
             }
+            $item_limits = $m->items ? ($this->limits['#item'] ??= $this->schema->tableLimits('item')) : [];
             foreach ($m->items as $item) {
                 foreach ((array) ($item['content'] ?? []) as $field => $list) {
+                    $column = rtrim((string) $field, '.');       // an item column as a pseudo field: `flags...........` - char(30)
+                    $limit  = ((string) $field === str_pad($column, 16, '.')) ? ($item_limits[$column] ?? null) : null;
                     foreach ((array) $list as $i => $value) {
-                        $this->value("$path/item[" . ValueCodec::bytes($item['id'] ?? '') . "]/{$field}[$i]", ((array) $value)['value'] ?? '', $charset);
+                        $this->value("$path/item[" . ValueCodec::bytes($item['id'] ?? '') . "]/{$field}[$i]", ((array) $value)['value'] ?? '', $charset, $limit);
                     }
                 }
             }
