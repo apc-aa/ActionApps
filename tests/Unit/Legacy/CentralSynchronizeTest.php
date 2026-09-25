@@ -471,7 +471,7 @@ final class CentralSynchronizeTest extends TestCase
     }
 
     /** template and destination slice: the module renamed, the slice changed otherwise, a field
-     *  renamed, a view on each side, an email in the template only */
+     *  renamed, another view on each side, an email in the template only */
     private static function renamedSlice(): array
     {
         $template = self::sliceDef(self::TEMPLATE_ID, [
@@ -485,14 +485,14 @@ final class CentralSynchronizeTest extends TestCase
             'module' => [self::DEST_ID => ['id' => self::DEST_ID, 'name' => 'Old news', 'type' => 'S']],
             'slice'  => [self::DEST_ID => ['id' => self::DEST_ID, 'name' => 'Old news', 'd_listlen' => 20]],
             'field'  => ['headline........' => ['id' => 'headline........', 'slice_id' => self::DEST_ID, 'name' => 'Title']],
-            'view'   => [30 => ['id' => 30, 'slice_id' => self::DEST_ID, 'name' => 'List']],
+            'view'   => [30 => ['id' => 30, 'slice_id' => self::DEST_ID, 'name' => 'Archive']],
             'email'  => [],
         ]);
         return $template->compareWith($dest);
     }
 
-    /** Deleting a row, renaming the destination slice and inserting a view or an email (matched by
-     *  their numbers, so a re-run would insert them again) are offered, not pre-checked. */
+    /** Deleting a row, renaming the destination slice and inserting a view or an email (new to
+     *  this slice) are offered, not pre-checked. */
     public function test_compareWith_prechecks_only_safe_actions(): void
     {
         $states = [];

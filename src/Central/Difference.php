@@ -16,9 +16,10 @@ class Difference
 {
     private string $description;
     private string $type;           // INFO | DIFFERENT_ROW | DIFFERENT_VALUE | NEW | DELETED
-    /** Rows matched by their auto_increment number, which differs between AAs - a new row is
-     *  inserted under a new number, so a re-run would offer (and insert) it again. */
-    private const NUMBERED_TABLES = ['view', 'email'];
+    /** Views and e-mails are numbered by each AA itself, so the number pairs nothing - they are
+     *  paired by the first non-empty of these columns (field3 is the name {view.php?vid=} finds),
+     *  case-sensitively, as AA finds a named view. */
+    private const MATCH_COLUMNS = ['view' => ['field3', 'name'], 'email' => ['description']];
 
     /** array of AA_Sync_Actions defining, what we can do with this difference */
     private array $actions;
@@ -70,9 +71,72 @@ class Difference
                 $identifier  = new AA_Identifier($dest_module_id, $table, $dest_module_id);
             }
             $ignore = array_merge([AA_Metabase::getModuleFields()[$table] ?? null], AA_Sync_Action::INSTALLATION_COLUMNS[$table] ?? []);
-            $diff   = array_merge($diff, self::compareArray($template, $destination, $identifier, $ignore));
+            $diff   = array_merge($diff, isset(self::MATCH_COLUMNS[$table])
+                ? self::compareByName($template, $destination, $identifier, $ignore)
+                : self::compareArray($template, $destination, $identifier, $ignore));
         }
         return $diff;
+    }
+
+    /** Compares the rows of a MATCH_COLUMNS table pair by pair - each pair under the destination's
+     *  number (the one an UPDATE writes), a template-only row under its template number - an INSERT
+     *  needs one, but it is not a number in the destination (a current AA numbers the row itself,
+     *  an older one fails when the number is taken).
+     *  A row without a name, or with a name repeated on either side, could pair with the wrong
+     *  row - it is not offered at all, just reported. */
+    private static function compareByName($template, $destination, AA_Identifier $identifier, array $ignore): array
+    {
+        if (!is_array($template) && !is_array($destination)) {
+            return self::compareArray($template, $destination, $identifier, $ignore);
+        }
+        $table    = $identifier->getTable();
+        $diff     = [];
+        if (!is_array($template)) {
+            // a failed load must not look like a slice whose rows are all to be deleted
+            $diff[] = new Difference('INFO', _m('The template sent no %1 rows', [$table]));
+        }
+        $t_ids    = self::idsByName($table, is_array($template) ? $template : []);
+        $d_ids    = self::idsByName($table, is_array($destination) ? $destination : []);
+        $ignore[] = 'id';
+        foreach (array_keys($t_ids + $d_ids) as $name) {
+            $t_id = $t_ids[$name] ?? [];
+            $d_id = $d_ids[$name] ?? [];
+            if ($name === '' || count($t_id) > 1 || count($d_id) > 1) {
+                $why = ($table === 'view') ? _m('no unique named view or name') : _m('no unique description');
+                foreach ([[_m('Template'), $t_id], [_m('Destination'), $d_id]] as [$side, $ids]) {
+                    foreach ($ids as $id) {
+                        $diff[] = new Difference('INFO', _m("%1: %2 %3 '%4' not compared - %5", [$side, $table, safe((string) $id), safe((string) $name), $why]));
+                    }
+                }
+                continue;
+            }
+            $row  = new AA_Identifier($identifier->getModuleId(), $table, $d_id[0] ?? $t_id[0]);
+            $diff = array_merge($diff, self::compareArray($t_id ? $template[$t_id[0]] : null, $d_id ? $destination[$d_id[0]] : null, $row, $ignore));
+        }
+        if (!$diff) {
+            $idf    = safe($identifier->toString());
+            $diff[] = new Difference('INFO', is_array($destination) ? _m('%1 are identical', [$idf]) : _m('%1 is not array in destination slice', [$idf]));
+        }
+        return $diff;
+    }
+
+    /** @return array<string, list<int|string>> the row ids by their name - "column:value", so that a
+     *  named view never pairs with a view named only by its name ('' for no name) */
+    private static function idsByName(string $table, array $rows): array
+    {
+        $ids = [];
+        foreach ($rows as $id => $row) {
+            $name = '';
+            foreach (self::MATCH_COLUMNS[$table] as $column) {
+                $value = (is_array($row) && is_scalar($row[$column] ?? null)) ? (string) $row[$column] : '';
+                if ($value !== '') {
+                    $name = "$column:$value";
+                    break;
+                }
+            }
+            $ids[$name][] = $id;
+        }
+        return $ids;
     }
 
     /** @deprecated use compareArray() */
@@ -91,7 +155,8 @@ class Difference
             return [0 => new Difference('DELETED', _m('%1 is not array in template slice', [$idf]), new AA_Sync_Action('DELETE', $identifier))];
         }
         if (is_array($template_arr) && !is_array($destination_arr)) {
-            return [0 => new Difference('NEW', _m('%1 is not array in destination slice', [$idf]), new AA_Sync_Action('INSERT', $identifier, $template_arr), !in_array($identifier->getTable(), self::NUMBERED_TABLES, true))];
+            // a template-only view or e-mail may be a renamed destination row (shown as INSERT + DELETE)
+            return [0 => new Difference('NEW', _m('%1 is not array in destination slice', [$idf]), new AA_Sync_Action('INSERT', $identifier, $template_arr), !isset(self::MATCH_COLUMNS[$identifier->getTable()]))];
         }
         if (!is_array($template_arr)) {   // and no destination array either - see the first condition
             return [0 => new Difference('INFO', _m('%1 is not defined for both AAs', [$idf]))];
