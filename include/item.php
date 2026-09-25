@@ -31,6 +31,7 @@ use AA\Util\AbstractAliasgenerator;
 use AA\Util\Langs;
 use AA\Util\ChangesMonitor;
 use AA\Util\SingletonTrait;
+use AA\Util\UserAliasFunction;
 
 require_once __DIR__ . "/stringexpand.php";
 if (file_exists(__DIR__ . "/usr_aliasfnc.php")) {
@@ -1596,22 +1597,26 @@ class AA_Item
     }
 
     /** f_u function
-     * Calls user defined function in file /include/usr_aliasfnc.php
+     * Calls a user defined function - usually defined in include/usr_aliasfnc.php, the file is not checked
+     * Only a defined usr_* user function (UserAliasFunction::resolve()). The name is taken before alias
+     * substitution of $param, so in a field alias definition (get_alias_subst()) it is literal - neither
+     * an alias nor a field value can choose it. In {alias:<field>:f_u:...} the inner {..} are expanded
+     * before f_u gets $param, so there item data can choose WHICH usr_* function runs - accepted, it is
+     * still only usr_*
      * @param $col
      * @param $param
      * @return string
      */
     public function f_u($col, $param = ""): string
     {
-        // first we substitute alias on whole param string
-        // (it will be passed to usr_function already substituted
-        $param = $this->subst_alias($param);
-        $p = ParamExplode($param);
-        $fnc = $p[0];
-        if (!is_callable($fnc)) {
-            huhl("Field $col is defined with f_u and function '$fnc', but '$fnc' is not defined in apc-aa/include/usr_aliasfnc.php");
+        $name = (string) ParamExplode((string) $param)[0];
+        if (($fnc = UserAliasFunction::resolve($name)) === null) {
+            huhl('Field ' . safe($col) . " is defined with f_u and function '" . safe(substr($name, 0, 80)) . "', but only a defined usr_* user function (apc-aa/include/usr_aliasfnc.php) can be called");
             return '';
         }
+        // then we substitute alias on whole param string
+        // (it will be passed to usr_function already substituted
+        $param = $this->subst_alias($param);
         return (string) $fnc($this->content4id->getContent(), $col, $param);
     }
 

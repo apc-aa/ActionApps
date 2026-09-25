@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace AA\Central\Package;
 
 use AA\Central\Package\Model\Package;
+use AA\Util\UserAliasFunction;
 use Closure;
 use Throwable;
 
@@ -35,9 +36,26 @@ final class SecurityLint
     /** S `img`: a first argument with a scheme or `//` (a fetch by the target), or computed other than one
      *  bare field reference; a relative path or a field is I */
     private const IMG_S = '~^\s*(?:[a-z][a-z0-9+.-]*#?:)?//|^[^:)}]*(?:\{|_#|\x1E)~i';
-    /** S: alias functions f_u (calls a PHP callable, include/item.php f_u()) and f_z (= {fileinfo}) in
-     *  field.alias*_func or {alias:<field>:f_u:..} - code = the function in lower case */
+    /** S: alias functions f_u (calls a user function, include/item.php f_u()) and f_z (= {fileinfo}) in
+     *  field.alias*_func or {alias:<field>:f_u:..} - code = the function in lower case. f_u naming a literal
+     *  usr_* function (UserAliasFunction::NAME) is I: AA calls only such a user function the target
+     *  defines (in its include/usr_aliasfnc.php) - which ones the target has the lint cannot know */
     public const ALIAS_FUNCTIONS = ['f_u', 'f_z'];
+    /** I: f_u and a literal usr_* name, then `:` or the end (`}` in {alias:..}) */
+    private const USER_FUNCTION = '(?i:f_u):' . UserAliasFunction::NAME . '(?=:|\}|\z)';
+    /** `{alias:<field>:` as AA splits it (stringexpand.php expand_bracketed(): /^alias:([^:]*):([a-zA-Z0-9_]{1,3}):?(.*)$/
+     *  on the text with the inner {..} already expanded - their colons are quoted, `#:` is no escape there):
+     *  the field part is literal text or balanced {..} (computed) up to the first `:` outside them. The
+     *  function is then the next 1-3 word characters - `f_zhttp://..` calls f_z. Needs (?&br) of BRACES */
+    private const ALIAS_HEAD = '\{alias:(?:[^:{}]++|(?&br)){0,200}+:';
+    private const BRACES     = '(?(DEFINE)(?<br>\{(?:[^{}]++|(?&br))*+\}))';
+    /** S: {alias:<field>:..} whose function is not a literal item function (a letter, `_`, a letter or digit:
+     *  f_h, i_s, l_b) - built by an inner {..} (`f_{x}`, `{concat:f_:z}`), an alias (_#FNC) or \x1E, so it
+     *  could be any f_*; also a field part longer than ALIAS_HEAD reads (201+ pieces), where it cannot tell */
+    public const ALIAS_COMPUTED = 'alias-computed';
+    /** S: a regular expression of the lint failed on the text (PCRE backtrack/recursion/JIT limit - e.g.
+     *  thousands of nested braces); the rules after it still run, the text is not linted completely */
+    public const LINT_FAILED = 'lint-failed';
     /** S: a command name built at run time - `{` right after `{` or inside the name (`{{..}include}`, `{inc{x}`) */
     public const COMPOSED = 'composed-command';
     /** S: a placeholder as the command name - {foreach} and {_:Alias} put in _#1, _#P1, _#loop, _#<json key>
@@ -77,16 +95,24 @@ final class SecurityLint
     {
         $findings = $count = [];
         $skipped  = [];
+        $failed   = false;
         foreach (self::rules() as [$re, $level, $code]) {
-            for ($at = 0; RewriteFailed::check(preg_match($re, $text, $m, PREG_OFFSET_CAPTURE, $at)); $at = $m[0][1] + max(1, strlen($m[0][0]))) {
-                $lvl = ($level instanceof Closure) ? $level(substr($text, $m[0][1], 300)) : $level;
-                $key = $lvl . ' ' . ($code ?? strtolower($m[1][0]));
-                if (($count[$key] = ($count[$key] ?? 0) + 1) > FindingList::MAX_PER_CODE) {
-                    $skipped[$key] = ($skipped[$key] ?? 0) + 1;
-                    continue;
+            try {
+                for ($at = 0; RewriteFailed::check(preg_match($re, $text, $m, PREG_OFFSET_CAPTURE, $at)); $at = $m[0][1] + max(1, strlen($m[0][0]))) {
+                    $lvl = ($level instanceof Closure) ? $level(substr($text, $m[0][1], 300)) : $level;
+                    $key = $lvl . ' ' . ($code ?? strtolower($m[1][0]));
+                    if (($count[$key] = ($count[$key] ?? 0) + 1) > FindingList::MAX_PER_CODE) {
+                        $skipped[$key] = ($skipped[$key] ?? 0) + 1;
+                        continue;
+                    }
+                    $findings[] = new LintFinding($lvl, $code ?? strtolower($m[1][0]), substr($m[0][0], 0, ReferenceLint::MAX_REF), $m[0][1]);
                 }
-                $findings[] = new LintFinding($lvl, $code ?? strtolower($m[1][0]), substr($m[0][0], 0, ReferenceLint::MAX_REF), $m[0][1]);
+            } catch (RewriteFailed) {
+                $failed = true;
             }
+        }
+        if ($failed) {      // once per text, a fixed ref - the text itself is what the regex choked on
+            $findings[] = new LintFinding(LintFinding::SECURITY, self::LINT_FAILED, 'regular expression limit', 0);
         }
         usort($findings, static fn(LintFinding $a, LintFinding $b): int => $a->offset <=> $b->offset);
         return $findings;
@@ -105,7 +131,10 @@ final class SecurityLint
             [$command(['user']), $s_or_i(self::USER_S, 0), null],
             [$command(['img']), static fn(string $at): string => preg_match('~^.{5}\s*(?:\{[A-Za-z0-9_.]{16}\}|_#[A-Z0-9_]{8})\s*[:)}]~s', $at)
                 ? LintFinding::INFO : $s_or_i(self::IMG_S, 5)($at), null],
-            ['~\{alias:[^:{}]{0,200}+:(' . implode('|', self::ALIAS_FUNCTIONS) . ')(?![a-z0-9_])~i', LintFinding::SECURITY, null],
+            ['~' . self::ALIAS_HEAD . '(' . implode('|', self::ALIAS_FUNCTIONS) . ')' . self::BRACES . '~i', static fn(string $at): string => preg_match('~^' . self::ALIAS_HEAD . self::USER_FUNCTION . self::BRACES . '~', $at)
+                ? LintFinding::INFO : LintFinding::SECURITY, null],
+            ['~' . self::ALIAS_HEAD . '(?![a-z]_[a-z0-9])' . self::BRACES . '~i', LintFinding::SECURITY, self::ALIAS_COMPUTED],
+            ['~\{alias:(?:[^:{}]++|(?&br)){201}' . self::BRACES . '~i', LintFinding::SECURITY, self::ALIAS_COMPUTED],
             ['~\{\w{0,40}+\{~', LintFinding::SECURITY, self::COMPOSED],
             ['~\{_#(?:P?\d+|loop\d*|[a-z]\w*)[:(]~', LintFinding::SECURITY, self::PLACEHOLDER],
             ['~\\\\u00(?:7[bd])~i', LintFinding::SECURITY, self::JSON_BRACE],
@@ -156,7 +185,8 @@ final class SecurityLint
                 foreach (self::arr($row) as $column => $value) {
                     $this->text("$at/$column", $value);
                     if (($element === 'field') && preg_match('/^alias\d+_func\z/', (string) $column) && preg_match('/^\s*(f_[uz])(?![a-z0-9_])/i', ValueCodec::bytes($value), $f)) {
-                        $this->add("$at/$column", LintFinding::SECURITY, strtolower($f[1]), ValueCodec::bytes($value));
+                        $level = preg_match('~^\s*' . self::USER_FUNCTION . '~', ValueCodec::bytes($value)) ? LintFinding::INFO : LintFinding::SECURITY;
+                        $this->add("$at/$column", $level, strtolower($f[1]), ValueCodec::bytes($value));
                     }
                 }
                 if (($element === 'email') && ($finding = self::attachments(ValueCodec::bytes($row['attachments'] ?? ''))) !== null) {

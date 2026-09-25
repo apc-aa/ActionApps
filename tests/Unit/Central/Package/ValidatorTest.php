@@ -36,6 +36,7 @@ namespace Tests\Unit\Central\Package {
     use AA\Central\Package\Model\Package;
     use AA\Central\Package\Model\RawBytes;
     use AA\Central\Package\Reader;
+    use AA\Central\Package\ReferenceLint;
     use AA\Central\Package\Schema;
     use AA\Central\Package\SecurityLint;
     use AA\Central\Package\ValidationResult;
@@ -322,8 +323,12 @@ namespace Tests\Unit\Central\Package {
                 'attachment computed'        => [static fn(Package $p): Package => self::cell($p, self::SLICE, 'email', 0, ['attachments' => '{concat:/etc:/passwd}']), ["W email-attachments-dropped $S/email[5]/attachments"]],
                 'attachment computed in list' => [static fn(Package $p): Package => self::cell($p, self::SLICE, 'email', 0, ['attachments' => '/x.pdf:{file............}x']), ["W email-attachments-dropped $S/email[5]/attachments"]],
                 'attachment include'         => [static fn(Package $p): Package => self::cell($p, self::SLICE, 'email', 0, ['attachments' => '{include:http://x/}']), ["S include $S/email[5]/attachments", "W email-attachments-dropped $S/email[5]/attachments"]],
-                // ---- alias functions: f_u calls a PHP callable, f_z fetches like {fileinfo}
+                // ---- alias functions: f_u calls a usr_* function of the target (I), anything else is S; f_z fetches like {fileinfo}
                 'f_u in a field'             => [static fn(Package $p): Package => self::cell($p, self::SLICE, 'field', 2, ['alias1_func' => 'f_u:phpinfo']), ["S f_u $S/field[headline........]/alias1_func"]],
+                'f_u usr_ in a field'        => [static fn(Package $p): Package => self::cell($p, self::SLICE, 'field', 2, ['alias1_func' => 'F_U:usr_print_uid:_#HEADLINE']), ["I f_u $S/field[headline........]/alias1_func"]],
+                'f_u usr_ alone in a field'  => [static fn(Package $p): Package => self::cell($p, self::SLICE, 'field', 2, ['alias1_func' => 'f_u:usr_cz_date']), ["I f_u $S/field[headline........]/alias1_func"]],
+                'f_u usr_ computed in a field' => [static fn(Package $p): Package => self::cell($p, self::SLICE, 'field', 2, ['alias1_func' => 'f_u:usr_x_#HEADLINE']), ["S f_u $S/field[headline........]/alias1_func"]],
+                'f_u USR_ in a field'        => [static fn(Package $p): Package => self::cell($p, self::SLICE, 'field', 2, ['alias1_func' => 'f_u:USR_print_uid']), ["S f_u $S/field[headline........]/alias1_func"]],
                 'f_z in a field'             => [static fn(Package $p): Package => self::cell($p, self::SLICE, 'field', 2, ['alias2_func' => ' F_Z:size']), ["S f_z $S/field[headline........]/alias2_func"]],
             ];
         }
@@ -422,6 +427,24 @@ namespace Tests\Unit\Central\Package {
             self::assertSame($expected, $found);
         }
 
+        /** a regex that hits a PCRE limit (here thousands of nested braces) is an S finding, not an exception
+         *  out of Validator::validate(); the limit is lowered so the test does not depend on the stack size */
+        public function test_security_lint_failing_regex_is_a_finding(): void
+        {
+            $ini = ['pcre.jit' => ini_get('pcre.jit'), 'pcre.recursion_limit' => ini_get('pcre.recursion_limit')];
+            ini_set('pcre.jit', '0');
+            ini_set('pcre.recursion_limit', '1000');
+            try {
+                $found = (new SecurityLint(new Schema()))->lint('{alias:' . str_repeat('{', 5000) . str_repeat('}', 5000) . ':f_z}');
+            } finally {
+                foreach ($ini as $k => $v) {
+                    ini_set($k, (string) $v);
+                }
+            }
+            self::assertSame('S lint-failed regular expression limit @0', "{$found[0]->level} {$found[0]->code} {$found[0]->ref} @{$found[0]->offset}");
+            self::assertCount(1, array_filter($found, static fn(LintFinding $f): bool => $f->code === SecurityLint::LINT_FAILED));
+        }
+
         /** @return array<string, array{string, list<string>}> */
         public static function texts(): array
         {
@@ -458,6 +481,16 @@ namespace Tests\Unit\Central\Package {
                 'composed name'        => ['{{ifeq:1:1:include}:x} {inc{x}:y}', ['S composed-command {{ @0', 'S composed-command {inc{ @23']],
                 'quote map byte'       => ["a\x1Eb", ["S quote-map \x1E @1"]],
                 'alias f_u, f_z'       => ['{alias:headline........:f_u:fn} {alias::F_Z:size} {alias:x:f_h}', ['S f_u {alias:headline........:f_u @0', 'S f_z {alias::F_Z @32']],
+                'alias f_u usr_'       => ['{alias:headline........:f_u:usr_print_uid}{alias::F_U:usr_cz_date:j.n.Y}{alias::f_u:usr_{x}}{alias::f_u:usr_x#:y}{alias::f_z:usr_x}',
+                    ['I f_u {alias:headline........:f_u @0', 'I f_u {alias::F_U @42', 'S f_u {alias::f_u @72', 'S f_u {alias::f_u @92', 'S f_z {alias::f_z @113']],
+                'alias literal f_c'    => ['{alias:x:f_c:a}{alias::F_H}{alias:{x}:f_h}', []],
+                'alias item functions' => ['{alias:x:i_s}{alias:x:l_b:1}{alias:x:L_G}{alias:x:l_o}{alias:x:l_p}', []],
+                'alias field 200 pieces' => ['{alias:' . str_repeat('a{b}', 100) . ':f_z:http://evil/}', ['S f_z ' . substr('{alias:' . str_repeat('a{b}', 100) . ':f_z', 0, ReferenceLint::MAX_REF) . ' @0']],
+                'alias field 201+ pieces' => ['{alias:' . str_repeat('a{b}', 101) . ':f_z:http://evil/}', ['S alias-computed ' . substr('{alias:' . str_repeat('a{b}', 101), 0, ReferenceLint::MAX_REF) . ' @0']],
+                'alias f_z glued'      => ['{alias::f_zhttp://10.0.0.1/}', ['S f_z {alias::f_z @0']],
+                'alias computed field' => ['{alias:{concat:head:line}:f_z:size}', ['S f_z {alias:{concat:head:line}:f_z @0']],
+                'alias computed fnc'   => ['{alias:x:f_{y}:a}{alias:x:{concat:f_:z}:a}{alias:x:_#FNC}{alias:x:' . "\x1E" . '}{alias:{x}:{y}}',
+                    ['S alias-computed {alias:x: @0', 'S alias-computed {alias:x: @17', 'S alias-computed {alias:x: @42', 'S alias-computed {alias:x: @57', "S quote-map \x1E @66", 'S alias-computed {alias:{x}: @68']],
             ];
         }
     }
