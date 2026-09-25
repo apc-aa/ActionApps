@@ -303,6 +303,11 @@ final class CentralSynchronizeTest extends TestCase
                 "UPDATE `field` SET `name`='Headline' WHERE id='headline........' AND slice_id=$dest"],
             'field INSERT'        => [new AA_Sync_Action('INSERT', $field, ['id' => 'headline........', 'slice_id' => self::TEMPLATE_ID, 'name' => 'Headline', 'input_pri' => 100]),
                 "INSERT INTO `field` (`id`,`slice_id`,`name`,`input_pri`) VALUES ('headline........',$dest,'Headline',100)"],
+            // the new row gets its own number - the template's id may be taken on the destination
+            'view INSERT'         => [new AA_Sync_Action('INSERT', new AA_Identifier(self::DEST_ID, 'view', '12'), ['id' => 12, 'slice_id' => self::TEMPLATE_ID, 'name' => 'List']),
+                "INSERT INTO `view` (`slice_id`,`name`) VALUES ($dest,'List')"],
+            'email INSERT'        => [new AA_Sync_Action('INSERT', new AA_Identifier(self::DEST_ID, 'email', '7'), ['id' => 7, 'description' => 'Welcome', 'owner_module_id' => self::TEMPLATE_ID]),
+                "INSERT INTO `email` (`description`,`owner_module_id`) VALUES ('Welcome',$dest)"],
             'field DELETE'        => [new AA_Sync_Action('DELETE', $field),
                 "DELETE FROM `field` WHERE id='headline........' AND slice_id=$dest"],
             'view UPDATE_ROW'     => [new AA_Sync_Action('UPDATE_ROW', new AA_Identifier(self::DEST_ID, 'view', '12'), ['id' => 12, 'slice_id' => self::TEMPLATE_ID, 'name' => 'List']),
@@ -465,6 +470,83 @@ final class CentralSynchronizeTest extends TestCase
             "UPDATE `slice` SET `name`='News', `d_listlen`='10', `lang_file`='en_news_lang.php' WHERE id=0x" . self::DEST_ID,
             "UPDATE `slice` SET `name`='News' WHERE id=0x" . self::DEST_ID,
         ], RecordingDb::$log);
+    }
+
+    /** template and destination slice: the module renamed, the slice changed otherwise, a field
+     *  renamed, a view on each side, an email in the template only */
+    private static function renamedSlice(): array
+    {
+        $template = self::sliceDef(self::TEMPLATE_ID, [
+            'module' => [self::TEMPLATE_ID => ['id' => self::TEMPLATE_ID, 'name' => 'News', 'type' => 'S']],
+            'slice'  => [self::TEMPLATE_ID => ['id' => self::TEMPLATE_ID, 'name' => 'Old news', 'd_listlen' => 10]],
+            'field'  => ['headline........' => ['id' => 'headline........', 'slice_id' => self::TEMPLATE_ID, 'name' => 'Headline']],
+            'view'   => [12 => ['id' => 12, 'slice_id' => self::TEMPLATE_ID, 'name' => 'List']],
+            'email'  => [7 => ['id' => 7, 'owner_module_id' => self::TEMPLATE_ID, 'description' => 'Welcome']],
+        ]);
+        $dest     = self::sliceDef(self::DEST_ID, [
+            'module' => [self::DEST_ID => ['id' => self::DEST_ID, 'name' => 'Old news', 'type' => 'S']],
+            'slice'  => [self::DEST_ID => ['id' => self::DEST_ID, 'name' => 'Old news', 'd_listlen' => 20]],
+            'field'  => ['headline........' => ['id' => 'headline........', 'slice_id' => self::DEST_ID, 'name' => 'Title']],
+            'view'   => [30 => ['id' => 30, 'slice_id' => self::DEST_ID, 'name' => 'List']],
+            'email'  => [],
+        ]);
+        return $template->compareWith($dest);
+    }
+
+    /** Deleting a row, renaming the destination slice and inserting a view or an email (matched by
+     *  their numbers, so a re-run would insert them again) are offered, not pre-checked. */
+    public function test_compareWith_prechecks_only_safe_actions(): void
+    {
+        $states = [];
+        foreach (self::renamedSlice() as $diff) {
+            foreach ((new \ReflectionProperty($diff, 'actions'))->getValue($diff) as $action) {
+                $idf      = (new \ReflectionProperty($action, 'identifier'))->getValue($action);
+                $path     = implode('->', array_filter([$idf->getTable(), $idf->getRow(), $idf->getColumn()]));
+                $states[] = (new \ReflectionProperty($action, 'type'))->getValue($action) . " $path" . (str_contains(self::render([$diff]), ' checked>') ? ' checked' : '');
+            }
+        }
+        $this->assertSame([
+            'UPDATE_ROW module->' . self::DEST_ID,                 // renames the destination
+            'UPDATE_VALUE module->' . self::DEST_ID . '->name',
+            'UPDATE_ROW slice->' . self::DEST_ID . ' checked',     // the same name
+            'UPDATE_VALUE slice->' . self::DEST_ID . '->d_listlen',
+            'UPDATE_ROW field->headline........ checked',          // a field name is not the slice's
+            'UPDATE_VALUE field->headline........->name',
+            'INSERT view->12',
+            'DELETE view->30',
+            'INSERT email->7',
+        ], $states);
+    }
+
+    /** a re-posted form shows the user's choice, also where the default is unchecked */
+    public function test_compareWith_posted_choice_wins_over_the_default(): void
+    {
+        $diffs = self::renamedSlice();
+        preg_match_all('/name="sync\[\]"[^>]*value="([^"]*)"/', self::render($diffs), $m);
+        $_POST['sync'] = array_map(static fn($v) => html_entity_decode($v, ENT_QUOTES | ENT_HTML5), $m[1]);
+
+        $this->assertStringContainsString(' checked>', self::render([$diffs[0]]), 'the rename UPDATE_ROW');
+        $this->assertSame(count($m[1]), substr_count(self::render($diffs), ' checked>'));
+    }
+
+    public function test_doAction_reports_the_number_of_an_inserted_view(): void
+    {
+        RecordingDb::reset();
+        $GLOBALS['spareDBs'] = [new RecordingDb()];   // its last_insert_id() is 1
+
+        $ret = (new AA_Sync_Action('INSERT', new AA_Identifier(self::DEST_ID, 'view', '12'), ['id' => 12, 'name' => 'List']))->doAction();
+
+        $this->assertSame('view 12 inserted into slice ' . self::DEST_ID . ' as 1', $ret);
+    }
+
+    public function test_doAction_reports_an_inserted_field_without_number(): void
+    {
+        RecordingDb::reset();
+        $GLOBALS['spareDBs'] = [new RecordingDb()];
+
+        $ret = (new AA_Sync_Action('INSERT', new AA_Identifier(self::DEST_ID, 'field', 'headline........'), ['id' => 'headline........', 'name' => 'Headline']))->doAction();
+
+        $this->assertSame('field headline........ inserted into slice ' . self::DEST_ID, $ret);
     }
 
     /** loadForId() adds the lt_groupNames rows of the used constant groups; their `ancestors`

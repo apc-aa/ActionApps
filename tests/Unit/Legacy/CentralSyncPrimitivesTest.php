@@ -225,9 +225,7 @@ final class CentralSyncPrimitivesTest extends TestCase
             ['NEW', [['INSERT', 'm->view->3', ['name' => 'C']]]],                         // 3 only in template
             ['DELETED', [['DELETE', 'm->view->4', null]]],                                // 4 only in destination
         ], self::summary($diffs));
-        // pinned; phase 4 may change - a row missing in the destination is read anyway (a warning per new row)
-        $this->assertCount(1, $warnings);
-        $this->assertStringContainsString('Undefined array key', $warnings[0]);
+        $this->assertSame([], $warnings, 'a row missing in the destination is no warning');
     }
 
     /** @return array<string, array{mixed, mixed, bool}> template value, destination value, considered equal */
@@ -285,7 +283,7 @@ final class CentralSyncPrimitivesTest extends TestCase
         (new AA_Difference('DELETED', 'd', [new AA_Sync_Action('DELETE', self::row()), new AA_Sync_Action('UPDATE_VALUE', self::row())]))->printOut();
         $html = (string) ob_get_clean();
 
-        $this->assertMatchesRegularExpression('~^\n<tr class="diff_deleted"><td>d</td><td><div><input [^>]+ checked>Delete</div><div><input [^>]+[^d]>Update</div></td></tr>$~', $html);
+        $this->assertMatchesRegularExpression('~^\n<tr class="diff_deleted"><td>d</td><td><div><input [^>]+[^d]>Delete</div><div><input [^>]+[^d]>Update</div></td></tr>$~', $html);
     }
 
     // --- AA_Sync_Action --------------------------------------------------------------------------
@@ -319,7 +317,8 @@ final class CentralSyncPrimitivesTest extends TestCase
     public static function formTypes(): array
     {
         return [
-            'DELETE'       => ['DELETE', 'Delete', true],
+            // deleting is the user's choice
+            'DELETE'       => ['DELETE', 'Delete', false],
             'INSERT'       => ['INSERT', 'Create new', true],
             'UPDATE_ROW'   => ['UPDATE_ROW', 'Update', true],
             // a single value is not pre-checked - the whole row is
@@ -340,18 +339,18 @@ final class CentralSyncPrimitivesTest extends TestCase
 
     public function test_printToForm_after_submit_checks_only_the_posted_values(): void
     {
-        $delete = new AA_Sync_Action('DELETE', self::row());
+        $insert = new AA_Sync_Action('INSERT', self::row(), ['x' => 1]);
         $update = new AA_Sync_Action('UPDATE_VALUE', new AA_Identifier('m', 'field', 'r', 'name'), 'x');
 
         $_POST['sync'] = [base64_encode(serialize($update))];
-        $this->assertStringNotContainsString(' checked', self::form($delete), 'a pre-checked type unchecked by the user stays unchecked');
+        $this->assertStringNotContainsString(' checked', self::form($insert), 'a pre-checked type unchecked by the user stays unchecked');
         $this->assertStringContainsString(' checked', self::form($update));
 
-        $_POST['sync'] = base64_encode(serialize($delete));   // a single value, not an array
-        $this->assertStringContainsString(' checked', self::form($delete));
+        $_POST['sync'] = base64_encode(serialize($insert));   // a single value, not an array
+        $this->assertStringContainsString(' checked', self::form($insert));
 
         $_POST['sync'] = [];
-        $this->assertStringNotContainsString(' checked', self::form($delete), 'posted but nothing chosen');
+        $this->assertStringNotContainsString(' checked', self::form($insert), 'posted but nothing chosen');
     }
 
     /** Do_Synchronize sends serialize($action) to the remote AA, which unserializes it with

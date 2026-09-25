@@ -330,12 +330,16 @@ class AA_Sync_Action
     }
 
     /** The checkbox value is base64: serialize() wraps private property names in NUL bytes, which
-     *  browsers post back as U+FFFD - the action would no longer unserialize. */
-    public function printToForm(): void
+     *  browsers post back as U+FFFD - the action would no longer unserialize.
+     *  @param bool $preselect  false: unchecked by default (the caller knows both rows, the action
+     *                          does not - and it is serialized to the remote AA, so no flag in it) */
+    public function printToForm(bool $preselect = true): void
     {
         $form_value = base64_encode(serialize($this));
         echo '<div>';
-        $state = isset($_POST['sync']) ? in_array($form_value, (array) $_POST['sync'], true) : ($this->type !== 'UPDATE_VALUE');
+        // a single value is updated with its row; deleting is the user's choice
+        $default = $preselect && !in_array($this->type, ['UPDATE_VALUE', 'DELETE'], true);
+        $state   = isset($_POST['sync']) ? in_array($form_value, (array) $_POST['sync'], true) : $default;
         FrmChBoxEasy('sync[]', $state, '', $form_value);
         switch ($this->type) {
             case 'DELETE': echo _m("Delete");

@@ -16,22 +16,29 @@ class Difference
 {
     private string $description;
     private string $type;           // INFO | DIFFERENT_ROW | DIFFERENT_VALUE | NEW | DELETED
+    /** Rows matched by their auto_increment number, which differs between AAs - a new row is
+     *  inserted under a new number, so a re-run would offer (and insert) it again. */
+    private const NUMBERED_TABLES = ['view', 'email'];
+
     /** array of AA_Sync_Actions defining, what we can do with this difference */
     private array $actions;
+    /** false - the actions are offered unchecked (see AA_Sync_Action::printToForm()) */
+    private bool $preselect;
 
     /** */
-    public function __construct(string $type, string $description, $actions = [])
+    public function __construct(string $type, string $description, $actions = [], bool $preselect = true)
     {
         $this->type        = $type;
         $this->description = $description;
         $this->actions     = empty($actions) ? [] : (is_array($actions) ? $actions : [$actions]);
+        $this->preselect   = $preselect;
     }
 
     public function printOut(): void
     {
         echo "\n<tr class=\"diff_" . strtolower($this->type) . "\"><td>" . $this->description . '</td><td>';
         foreach ($this->actions as $action) {
-            $action->printToForm();
+            $action->printToForm($this->preselect);
         }
         echo '</td></tr>';
     }
@@ -85,7 +92,7 @@ class Difference
             return [0 => new Difference('DELETED', _m('%1 is not array in template slice', [$idf]), new AA_Sync_Action('DELETE', $identifier))];
         }
         if (is_array($template_arr) && !is_array($destination_arr)) {
-            return [0 => new Difference('NEW', _m('%1 is not array in destination slice', [$idf]), new AA_Sync_Action('INSERT', $identifier, $template_arr))];
+            return [0 => new Difference('NEW', _m('%1 is not array in destination slice', [$idf]), new AA_Sync_Action('INSERT', $identifier, $template_arr), !in_array($identifier->getTable(), self::NUMBERED_TABLES, true))];
         }
         if (!is_array($template_arr)) {   // and no destination array either - see the first condition
             return [0 => new Difference('INFO', _m('%1 is not defined for both AAs', [$idf]))];
@@ -93,6 +100,7 @@ class Difference
 
         // if we're comparing row values, we can also update whole row at once - so we mark it
         $is_different = false;
+        $renames      = false;
         foreach ($template_arr as $key => $value) {
             $sub_identifier = clone($identifier);
             $sub_identifier->sub($key);
@@ -105,7 +113,7 @@ class Difference
                 continue;
             }
             if (is_array($value)) {
-                $diff = array_merge($diff, self::compareArray($value, $destination_arr[$key], $sub_identifier, $ignore));
+                $diff = array_merge($diff, self::compareArray($value, $destination_arr[$key] ?? null, $sub_identifier, $ignore));
                 // we need to clear the destination array in order we can know,
                 // that there are some additional keys in it (compated to template)
                 unset($destination_arr[$key]);
@@ -114,6 +122,7 @@ class Difference
             } elseif ($value != $destination_arr[$key] && !(empty($value) && empty($destination_arr[$key]))) {  // '' and 0 is considered equal
                 // if we're comparing row values, we can also update whole row at once - so we mark it
                 $is_different = true;
+                $renames      = $renames || ($key === 'name' && in_array($identifier->getTable(), ['module', 'slice'], true));
 
                 $code = '<details><summary>&gt;&gt;</summary>
                        <div style="background-color:#FFE0E0;border: solid 1px #F88;">' . _m('Destination') . ':<br>' . safe($destination_arr[$key]) . '</div>
@@ -130,7 +139,8 @@ class Difference
         if ($is_different) {
             // the ignored columns are not the template's to set (the module column is set by fillKeys())
             $row_data = array_diff_key($template_arr, array_flip(array_filter($ignore)));
-            array_unshift($diff, new Difference('DIFFERENT_ROW', _m('The record for %1 is different', [$idf]), new AA_Sync_Action('UPDATE_ROW', $identifier, $row_data)));
+            // renaming the destination slice is the user's choice - offered unchecked
+            array_unshift($diff, new Difference('DIFFERENT_ROW', _m('The record for %1 is different', [$idf]), new AA_Sync_Action('UPDATE_ROW', $identifier, $row_data), !$renames));
         }
 
         foreach ($destination_arr as $key => $value) {
