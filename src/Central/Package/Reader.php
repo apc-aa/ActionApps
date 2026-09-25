@@ -11,17 +11,17 @@ use AA\Central\Package\Model\RawBytes;
 use DOMElement;
 use InvalidArgumentException;
 
-/** aa-app XML of an untrusted source => package model (design balicek-v1.md § 3.1 steps 1-8, § 3.2).
- *  XmlGuard parses safely, then: root and major version, pruning, XSD, model. The semantic checks of § 3.1
- *  step 9 and sitetree::fromArray() are the Validator's.
+/** aa-app XML of an untrusted source => package model.
+ *  XmlGuard parses safely, then: root and major version, pruning, XSD, model. The semantic checks and
+ *  sitetree::fromArray() are the Validator's.
  *
- *  Pruning (§ 3.2): a column unknown to this AA's metabase is always dropped; one this AA knows but a package
+ *  Pruning: a column unknown to this AA's metabase is always dropped; one this AA knows but a package
  *  never carries (reading_password) stays for the XSD to reject. Elements, attributes and object classes
  *  unknown to format 1.0 are dropped only in a higher minor version, else the XSD rejects them. Each drop =
  *  a finding.
  *
  *  The model: values strings, SQL NULL null, integers in the shortest decimal form; a column the row leaves
- *  out is ValueCodec::emptyValue() when meta/tables lists it, else absent = this AA's default (§ 2.3);
+ *  out is ValueCodec::emptyValue() when meta/tables lists it, else absent = this AA's default;
  *  base64 that is valid UTF-8 a string, else RawBytes; properties name => scalar (index 0 only) or
  *  [index => scalar | subobject]; the spot tree as sitetree::toArray(). For packages of this AA's Writer
  *  Writer(Reader(x)) === x; any other reads exactly, but the importer must not serialise the model again
@@ -115,7 +115,7 @@ final class Reader
         return new ReadResult($this->package($root), $this->findings, $format);
     }
 
-    // ---------------------------------------------------------------- pruning (§ 3.2)
+    // ---------------------------------------------------------------- pruning
 
     /** @param bool $row $el is a table row - its children are columns */
     private function prune(DOMElement $el, string $path, bool $row, bool $newer): void
@@ -153,7 +153,7 @@ final class Reader
             if ($code !== null) {
                 $el->removeChild($child);
                 $this->found(LintFinding::WARNING, $code, $at, $ref);
-            } elseif ($child_name !== 'signature') {    // any content, not read in v1 (§ 9.4)
+            } elseif ($child_name !== 'signature') {    // any content, not read in format 1.0
                 $this->prune($child, $at, in_array($name, self::CONTAINERS, true) && isset($this->columns[$child_name]), $newer);
             }
         }
@@ -217,7 +217,7 @@ final class Reader
                 default     => null,
             };
         }
-        if ($items && !$this->withItems) {    // the flag gates the item import (§ 4, § 9.1)
+        if ($items && !$this->withItems) {    // the flag gates the item import
             throw new PackageRejected("$path: items in a package without items (meta/contents/@items)");
         }
         return new Module($el->localName, $el->getAttribute('id'), $this->rows($el, $path), $settings, $objects, $tree, $items, $doc);
@@ -254,7 +254,7 @@ final class Reader
         return $rows;
     }
 
-    /** a value element (column, <p>, <v>) decoded by ValueCodec (§ 2.2) */
+    /** a value element (column, <p>, <v>) decoded by ValueCodec */
     private function value(DOMElement $el, string $path, string $type = 'textValue'): string|RawBytes|null
     {
         $enc = $el->getAttribute('enc') ?: ValueCodec::TEXT;

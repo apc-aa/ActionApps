@@ -3,8 +3,8 @@
 declare(strict_types=1);
 
 /**
- * Planner, C4.4 part 3 (design balicek-v1.md § 7.1, § 7.2 step 3): the maps of the example package
- * and of its mutations, group collisions, the shared alerts filter, the preview. No DB - a fake target.
+ * Planner: the maps of the example package and its mutations, group collisions, the shared alerts
+ * filter, the preview. No DB - a fake target.
  */
 
 namespace Tests\Unit\Central\Package;
@@ -117,7 +117,7 @@ final class PlannerTest extends TestCase
         self::assertSame(['AbC12' => 'Dup01', 'XyZ98' => 'New02'], $plan->map->collections());
     }
 
-    // ---------------------------------------------------------------- constant groups (§ 7.1)
+    // ---------------------------------------------------------------- constant groups
 
     /** @return array<string, array{list<string>, list<string>, array<string, string>}> package groups,
      *          taken on the target, expected map */
@@ -238,7 +238,7 @@ final class PlannerTest extends TestCase
         self::assertContains(['alerts-module[' . self::ALERTS2 . ']/alerts_filter[3]', FixUp::FILTER_SHARED, '3', self::A], self::fixUps($plan));
     }
 
-    // ---------------------------------------------------------------- the reference lint (§ 8.4)
+    // ---------------------------------------------------------------- the reference lint
 
     /** @return array<string, array{Closure(Package): Package, list<string>}> */
     public static function references(): array
@@ -331,8 +331,7 @@ final class PlannerTest extends TestCase
         self::assertFalse($plan->importable());
     }
 
-    /** § 7.2 step 4: tables the import writes without a transaction are an error - the rollback is the only
-     *  cleanup of a failed import; the finding names them and the optimization that converts them */
+    /** tables without transactions are an error - the rollback is the only cleanup of a failed import */
     public function test_tables_without_transactions_are_an_error_of_the_plan(): void
     {
         $target          = new FakeImportTarget();

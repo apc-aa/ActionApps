@@ -124,7 +124,7 @@ final class CentralSynchronizeTest extends TestCase
         ];
     }
 
-    /** A template that loaded nothing (unknown id, remote error) used to offer pre-checked
+    /** A template that loaded nothing (unknown id, remote error) must not offer pre-checked
      *  DELETEs of the destination's module and slice rows. */
     #[DataProvider('anyDestination')]
     public function test_compareWith_empty_template_offers_no_action(mixed $dest): void
@@ -314,7 +314,7 @@ final class CentralSynchronizeTest extends TestCase
                 "UPDATE `view` SET `slice_id`=$dest, `name`='List' WHERE id='12'"],
             'slice UPDATE_ROW'    => [new AA_Sync_Action('UPDATE_ROW', $slice, ['id' => self::TEMPLATE_ID, 'name' => 'News']),
                 "UPDATE `slice` SET `name`='News' WHERE id=$dest"],
-            // as a Central (or a queued task) from before INSTALLATION_COLUMNS sends it
+            // as an older Central (or an older queued task) sends it
             'slice UPDATE_ROW, old Central' => [new AA_Sync_Action('UPDATE_ROW', $slice, ['id' => self::TEMPLATE_ID, 'name' => 'News', 'owner' => self::TEMPLATE_OWNER,
                 'deleted' => 1, 'slice_url' => 'https://template.example.org/', 'reading_password' => '', 'created_by' => 'user1']),
                 "UPDATE `slice` SET `name`='News' WHERE id=$dest"],
@@ -333,8 +333,8 @@ final class CentralSynchronizeTest extends TestCase
         ];
     }
 
-    /** The keys and the module column used to reach the Metabase do*() packed, which pack them
-     *  again - every write hit '' instead of the destination slice (and INSERT stored orphans). */
+    /** The Metabase do*() pack the keys and the module column themselves - packed twice, every write
+     *  would hit '' instead of the destination slice. */
     #[DataProvider('destinationWrites')]
     public function test_doAction_writes_the_destination_row(AA_Sync_Action $action, string $sql): void
     {
@@ -347,8 +347,7 @@ final class CentralSynchronizeTest extends TestCase
         $this->assertStringNotContainsString('Error', $ret);
     }
 
-    /** A failed write (DB error, key missing) used to be reported as done; a DB error must not
-     *  die() mid-batch either. */
+    /** A failed write (DB error, key missing) is reported as failed; a DB error does not die() mid-batch. */
     public function test_doAction_reports_a_failed_write(): void
     {
         $property             = new \ReflectionProperty(\AA::class, 'metabase');
@@ -390,7 +389,6 @@ final class CentralSynchronizeTest extends TestCase
         $this->assertSame([['update', 'field', 'nohalt'], ['insert', 'field', 'nohalt'], ['delete', 'field', 'nohalt']], $metabase->calls);
     }
 
-    /** Halting is off for the sync writes: a DB error is reported, it does not die() mid-batch. */
     /** An old Central may still send an installation column alone - nothing is written. */
     public function test_doAction_skips_an_update_of_installation_column(): void
     {
@@ -443,7 +441,7 @@ final class CentralSynchronizeTest extends TestCase
         ]);
     }
 
-    /** A pre-checked UPDATE_ROW used to overwrite what belongs to the destination installation:
+    /** A pre-checked UPDATE_ROW must not overwrite what belongs to the destination installation:
      *  its owner, creator, URLs, view and MLX slice ids, menu order, deleted state, and the
      *  auto_increment constant.short_id. Only the definition (here the name) is synchronized. */
     public function test_compareWith_leaves_installation_columns_alone(): void
@@ -549,8 +547,8 @@ final class CentralSynchronizeTest extends TestCase
         $this->assertSame('field headline........ inserted into slice ' . self::DEST_ID, $ret);
     }
 
-    /** loadForId() adds the lt_groupNames rows of the used constant groups; their `ancestors`
-     *  stayed packed, while the other constant rows (and the do*() writes) have them unpacked. */
+    /** loadForId() adds the lt_groupNames rows of the used constant groups; their `ancestors` are
+     *  unpacked like those of the other constant rows (and the do*() writes). */
     public function test_loadForId_unpacks_the_constant_group_names_like_other_constants(): void
     {
         $group_id = '33333333333333333333333333333333';

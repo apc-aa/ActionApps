@@ -13,17 +13,13 @@ use InvalidArgumentException;
 use LogicException;
 use Throwable;
 
-/** The import writer (design balicek-v1.md § 7.2 steps 2, 5-9): an importable ImportPlan => the app on this
- *  AA, or nothing.
+/** Writes an importable ImportPlan to this AA - all of it or nothing.
  *
- *  Before any statement: the user may install (PS_INSTALL_APP - WriteError::DENIED; what the check throws is
- *  a no), the S findings are confirmed by the token of the preview (ImportConfirmation - UNCONFIRMED), every
- *  table is InnoDB (ENGINE - the rollback is the only cleanup). Then ONE DB_AA::transaction(), every
- *  statement on its handle (getDB() refuses a second one): the group names and collection ids re-checked
- *  (the plan is no reservation - TAKEN), RowWriter, ObjectWriter, ItemWriter. Any failure rolls back:
- *  ImportFailed. A PHP fatal inside leaves the transaction open - PDO rolls it back when the request ends.
- *  After the commit finish() (§ 7.2 steps 8, 9). Inside the caller's transaction write() is a LogicException:
- *  it would join it - no commit of its own, finish() before the commit.
+ *  Before any statement: PS_INSTALL_APP, the S findings confirmed (ImportConfirmation), every table InnoDB
+ *  (the rollback is the only cleanup). Then one DB_AA::transaction(); the group names and collection ids are
+ *  checked again, as the plan reserves nothing. A PHP fatal inside leaves the transaction open - PDO rolls it
+ *  back when the request ends. Inside the caller's transaction write() would have no commit of its own, so
+ *  it refuses.
  *  Two imports at once: DbImportTarget::groupTaken() locks; a duplicate collection id fails its PRIMARY key. */
 final class Importer
 {
@@ -59,29 +55,22 @@ final class Importer
         $this->aa           = $afterCommit ?? new AaAfterCommit();
     }
 
-    /** PS_INSTALL_APP on the `aa` object of this AA (include/perm_core.php). The letter is part of the SUPER
-     *  role only (AA_Perm::ROLES), so today a superadmin may install (Q-H2); a user with the letter granted
-     *  directly may too. Not IfSlPerm(): a module's perms must not decide an installation.
-     *  Only the logged-in user (AuthGetUid()) may be asked about: CheckPerms() keeps the perms of the user it
-     *  asks about in the session (AA_Perm::cache()) - asking about another would put their perms into this
-     *  session. Any other user is a no. */
+    /** PS_INSTALL_APP on the `aa` object (part of the SUPER role). Not IfSlPerm(): a module's perms must not
+     *  decide an installation. Only the logged-in user: CheckPerms() caches the perms it asks about in the
+     *  session, so asking about another user would put their perms into this session. */
     public static function hasInstallPermission(string $user): bool
     {
-        class_exists(AA_Perm::class);           // include/perm_core.php: PS_INSTALL_APP, CheckPerms()
+        class_exists(AA_Perm::class);           // loads PS_INSTALL_APP and CheckPerms()
         return ($user !== '') && ($user === \AuthGetUid()) && \CheckPerms($user, 'aa', constant('AA_ID'), \PS_INSTALL_APP);
     }
 
-    /** The caller checks the admin FormToken of the posting form first (CSRF) - neither the right nor the
-     *  confirmation token protects against a forged request of the user's browser.
-     *  @param string|null $confirmation the token of ImportConfirmation::token() for this plan and user - the
-     *                                  preview's (this session), passed only once the user confirmed the S
-     *                                  findings; null = none
-     *  @throws InvalidArgumentException the plan has an E - it is never written
+    /** The caller checks the admin FormToken first (CSRF) - neither the right nor the confirmation token
+     *  protects against a forged request of the user's browser.
+     *  @param string|null $confirmation ImportConfirmation::token(), passed once the user confirmed the S findings
+     *  @throws InvalidArgumentException the plan has an E
      *  @throws LogicException inside DB_AA::transaction()
-     *  @return ImportReport the report of the written import - its maps with the view, e-mail and filter
-     *                      numbers AUTO_INCREMENT gave
-     *  @throws ImportFailed nothing was written: refused before the transaction (WriteError::DENIED, UNCONFIRMED,
-     *                       ENGINE), or rolled back */
+     *  @return ImportReport with the view, e-mail and filter numbers AUTO_INCREMENT gave
+     *  @throws ImportFailed nothing was written: refused, or rolled back */
     public function write(ImportPlan $plan, ?string $confirmation = null): ImportReport
     {
         if (!$plan->importable()) {
@@ -140,12 +129,9 @@ final class Importer
         }
     }
 
-    /** § 7.2 step 8, after the commit - none of it may run inside the transaction (§ 7.2 step 7) and none is
-     *  undone. Each step isolated: what it throws is its row's error, the next step runs. A request that dies
-     *  here misses the steps after - the log entry is first for that reason. The settings values of the new
-     *  slices are C6.1 (a step `settings[<slice>]` before the page cache); until then ImportReport::$settings.
-     *  @return list<array{string, list<string>}> [step, errors] - `log`, `permissions[<module>]`, `constants`
-     *                                           (a new group only), `pagecache[<module>]` */
+    /** The steps after the commit - none can be undone. A failing step does not stop the next ones. The log
+     *  entry goes first, so a request dying here still leaves a trace.
+     *  @return list<array{string, list<string>}> [step, errors] */
     private function finish(ImportPlan $plan): array
     {
         $steps   = [];

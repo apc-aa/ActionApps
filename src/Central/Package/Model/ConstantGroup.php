@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace AA\Central\Package\Model;
 
-/** A constant group of a package (design balicek-v1.md § 5.3, § 6.5). Rows as in Module: element
+/** A constant group of a package. Rows as in Module: element
  *  `constant_slice` (at most one row) and `constant` => rows of DB columns, `constant.id` included. */
 final readonly class ConstantGroup
 {

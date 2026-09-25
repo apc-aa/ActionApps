@@ -6,22 +6,17 @@ namespace AA\Central\Package;
 
 use AA\Central\Package\Model\Package;
 
-/** What Collector gathered: the package, the export lint (design balicek-v1.md § 8.4) and the modules
- *  whose permissions the caller must check. */
+/** What Collector gathered: the package, the export lint and the modules whose permissions the caller
+ *  must check. */
 final readonly class CollectResult
 {
     /**
-     * @param list<array{string, LintFinding}> $findings [value path, finding] as WriterResult - the path
-     *                                                   in Writer's form (`site-module[<id>]/site_spot[1]/content`),
-     *                                                   a keyless row by its position in the source
-     *                                                   (`profile[#0]`); `ref` is raw text - escape (safe()) it
-     * @param array<string, list<string>>     $outside  modules the app refers to but does not contain -
-     *                                                   the closure left to the author (§ 5.2): module id
-     *                                                   => paths of the references
-     * @param list<string>                    $checkPermissions every module the package takes data from:
-     *                                                   the app modules (with the "uses" modules fromSite()
-     *                                                   found) and the owners of foreign constant groups,
-     *                                                   also when the package writes owner ''
+     * @param list<array{string, LintFinding}> $findings [value path, finding] as WriterResult; `ref` is raw
+     *                                                   text - escape it
+     * @param array<string, list<string>>     $outside  modules the app refers to but does not contain:
+     *                                                   module id => paths of the references
+     * @param list<string>                    $checkPermissions every module the package takes data from, also
+     *                                                   the owners of foreign constant groups
      */
     public function __construct(
         public Package $package,
@@ -41,8 +36,7 @@ final readonly class CollectResult
         return false;
     }
 
-    /** The findings of the export: these + what Writer found in the package, without Writer's
-     *  invalid-bytes - the collector reported every value it converted already.
+    /** these + Writer's findings, without Writer's invalid-bytes - the collector reported them already
      *  @return list<array{string, LintFinding}> */
     public function withWriter(WriterResult $written): array
     {

@@ -3,8 +3,8 @@
 declare(strict_types=1);
 
 /**
- * Validator and SecurityLint, C4.4 part 2 (design balicek-v1.md § 3.1 step 9, § 3.3, § 6): the written
- * example package read by Reader passes; each mutation of it gives exactly the expected findings.
+ * Validator and SecurityLint: the example package read by Reader passes; each mutation of it gives
+ * exactly the expected findings.
  */
 
 namespace Tests\Unit\Central\Package;
@@ -91,7 +91,7 @@ final class ValidatorTest extends TestCase
             'spot tree in a slice'       => [static fn(Package $p): Package => self::module($p, self::SLICE, static fn(Module $m): Module => self::with($m, ['spotTree' => ['start_id' => '1', 'spots' => []]])), ["E table-not-allowed $S/spot-tree"]],
             'settings of alerts'         => [static fn(Package $p): Package => self::module($p, self::ALERTS, static fn(Module $m): Module => self::with($m, ['settings' => ['x' => '1']])), ["E table-not-allowed $A/settings"]],
             'items of alerts'            => [static fn(Package $p): Package => self::with(self::module($p, self::ALERTS, static fn(Module $m): Module => self::with($m, ['items' => [self::item(self::OTHER)]])), ['withItems' => true]), ["E table-not-allowed $A/item"]],
-            // ---- ids: shape and uniqueness (long ids share one map, § 7.1)
+            // ---- ids: shape and uniqueness (long ids share one map)
             'upper case module id'       => [static fn(Package $p): Package => self::module($p, self::ALERTS, static fn(Module $m): Module => self::with($m, ['id' => strtoupper(self::ALERTS)])), ['E invalid-id alerts-module[' . strtoupper(self::ALERTS) . ']']],
             'field id not 16 chars'      => [static fn(Package $p): Package => self::cell($p, self::SLICE, 'field', 0, ['id' => 'headline']), ["E invalid-id $S/field[headline]"]],
             'e-mail id 0-padded'         => [static fn(Package $p): Package => self::cell($p, self::SLICE, 'email', 0, ['id' => '05']), ["E invalid-id $S/email[05]"]],
@@ -161,8 +161,8 @@ final class ValidatorTest extends TestCase
                 $t['spots'][2]['c'] = ['x' => '<script>'];
                 return $t;
             }), ["W spot-markup $W/spot-tree/spot[3]/cond[#0]"]],
-            // ---- structured references leaving the package (§ 8.4 W); Alerts: E - the new collection would mail a
-            //      view or template of the target to readers the package brings (and relate to a foreign slice)
+            // ---- structured references leaving the package (W); Alerts: E - the new collection would mail a
+            //      view or template of the target to readers the package brings
             'slice.vid outside'          => [static fn(Package $p): Package => self::cell($p, self::SLICE, 'slice', 0, ['vid' => '99']), ["W view-outside $S/slice[#0]/vid"]],
             'input_view outside'         => [static fn(Package $p): Package => self::cell($p, self::SLICE, 'profile', 0, ['value' => '99']), ["W view-outside $S/profile[#0]/value"]],
             'filter view outside'        => [static fn(Package $p): Package => self::cell($p, self::ALERTS, 'alerts_filter', 0, ['vid' => '99']), ["E view-outside $A/alerts_filter[3]/vid"]],
@@ -207,13 +207,13 @@ final class ValidatorTest extends TestCase
             'item of no field'           => [static fn(Package $p): Package => self::items($p, [['id' => self::OTHER, 'content' => ['nofield........1' => [0 => ['value' => 'x', 'flag' => 0]], 'status_code.....' => [0 => ['value' => '1', 'flag' => 0]]]]]), ["W item-field $S/item[" . self::OTHER . ']/nofield........1']],
             'item without a status'      => [static fn(Package $p): Package => self::items($p, [['id' => self::OTHER, 'content' => ['headline........' => [0 => ['value' => 'x', 'flag' => 0]]]]]), ["W item-status $S/item[" . self::OTHER . ']/status_code.....']],
             'item in no bin'             => [static fn(Package $p): Package => self::items($p, [['id' => self::OTHER, 'content' => ['status_code.....' => [0 => ['value' => '4', 'flag' => 1]]]]]), ["W item-status $S/item[" . self::OTHER . ']/status_code.....']],
-            // ---- items (§ 4, Q-H1 decision: only publish = all forbids them)
+            // ---- items: only publish = all forbids them
             'items without the flag'     => [static fn(Package $p): Package => self::with(self::items($p, [self::item(self::OTHER)]), ['withItems' => false]), ["E items $S/item"]],
             'items of a published app'   => [static fn(Package $p): Package => self::with(self::items($p, [self::item(self::OTHER)]), ['publish' => 'all']), ['E items-published meta/publish']],
             'item flag, publish all'     => [static fn(Package $p): Package => self::with($p, ['withItems' => true, 'publish' => 'all']), ['E items-published meta/publish']],
             'items, publish users'       => [static fn(Package $p): Package => self::with(self::items($p, [self::item(self::OTHER)]), ['publish' => 'users']), []],
             'publish all, no items'      => [static fn(Package $p): Package => self::with($p, ['publish' => 'all']), []],
-            // ---- security lint (§ 3.3): every text of the package
+            // ---- security lint: every text of the package
             'include in a view'          => [static fn(Package $p): Package => self::cell($p, self::SLICE, 'view', 0, ['odd' => '{include:../../etc/passwd:readfile}']), ["S include $S/view[12]/odd"]],
             'server in a spot'           => [static fn(Package $p): Package => self::cell($p, self::SITE, 'site_spot', 0, ['content' => 'a {server:DB_PASSWORD} b']), ["S server $W/site_spot[1]/content"]],
             'credentials in an alias'    => [static fn(Package $p): Package => self::object($p, self::SITE, 0, static fn(array $o): array => ['props' => ['code' => '{credentials:x}'] + $o['props']] + $o), ["S credentials $W/object[" . self::ALIAS . ']/code[0]']],

@@ -8,21 +8,14 @@ use AA\Central\Package\Model\Module;
 use AA_Metabase;
 use LogicException;
 
-/** Writes the items of an import plan (design balicek-v1.md § 6.2, § 7.2 step 5.7) inside the transaction
- *  Importer opens, after the objects: per item the `item` row (a colliding id fails on its PRIMARY key),
- *  then its `content` rows as AA_Field_Writer::contentRow() builds them.
- *  - id and slice_id are the new ones; the item columns carried as pseudo fields (`status_code.....`, ...)
- *    are written as they are, of the others (Collector::ITEM_LEFT_OUT) posted_by = the importing user, the
- *    rest the local default.
- *  - Values go through RowStore (numeric(known()), the charset last): relations to package items get the
- *    new ids, one outside stays (ItemLint: W). Password fields (`pwd`) carry HASHES - written byte for byte,
- *    so readers of a moved ReaderManagement slice log in; their logins must be free on the target (ItemLint's
- *    E: the direct insert skips isUsernameFree()).
- *  - Alerts fields `alertsN....<cid>` get the new collection id, subscriptions `f<filter id>` the new filter.
- *  Not ItemContent::storeItem() (design § 15, C4.4(4c)): it stores user input - hashes the hashes again,
- *  sets author and 2FA secrets, writes reverse relations and tags, feeds, runs events and computed fields,
- *  die()s on a DB error and may take a second handle. Every statement here is RowStore's on the
- *  transaction's handle.
+/** Writes the items of an import plan inside the transaction Importer opens, after the objects: per item
+ *  the `item` row (a colliding id fails on its PRIMARY key), then its `content` rows as
+ *  AA_Field_Writer::contentRow() builds them. posted_by = the importing user.
+ *  Password fields (`pwd`) carry HASHES - written byte for byte, so readers of a moved ReaderManagement
+ *  slice log in; ItemLint checks their logins are free, as the direct insert skips isUsernameFree().
+ *  Not ItemContent::storeItem(): it stores user input - hashes the hashes again, sets author and 2FA
+ *  secrets, writes reverse relations, feeds, runs events and computed fields, die()s on a DB error and may
+ *  take a second handle outside the transaction.
  *  @internal only Importer calls it - the rights and the S confirmation are checked there (Importer::write()). */
 final class ItemWriter
 {

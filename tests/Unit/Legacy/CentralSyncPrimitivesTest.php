@@ -30,8 +30,7 @@ require_once __DIR__ . '/fixtures/central_fixtures.php';   // the trait must exi
  * CentralSynchronizeTest / CentralDifferenceTest / CentralCopySliceTest cover doAction(),
  * fromFormValue(), escaping and the import report; this file does not repeat them.
  *
- * Pins today's behaviour ahead of the move to src/Central/; "pinned; phase 4 may change" marks
- * behaviour that is questionable rather than wanted.
+ * Pins today's behaviour; "pinned:" marks behaviour that is questionable rather than wanted.
  */
 final class CentralSyncPrimitivesTest extends TestCase
 {
@@ -78,7 +77,7 @@ final class CentralSyncPrimitivesTest extends TestCase
             // each part needs the one before - a gap drops the rest
             'column without row'      => [['m', 'field', null, 'name'], 'm->field', ['m', 'field', null, null]],
             'row without table'       => [['m', null, 'r', 'c'], 'm', ['m', null, null, null]],
-            // pinned; phase 4 may change - truthiness, not null: a row (or module) "0" is dropped
+            // pinned: truthiness, not null: a row (or module) "0" is dropped
             'row "0"'                 => [['m', 'view', '0', 'name'], 'm->view', ['m', 'view', null, null]],
             'int row 0'               => [['m', 'view', 0], 'm->view', ['m', 'view', null, null]],
             'module "0"'              => [['0', 'field', 'r'], '', [null, null, null, null]],
@@ -137,7 +136,7 @@ final class CentralSyncPrimitivesTest extends TestCase
     {
         $idf = self::collectingWarnings(static fn() => (new AA_Identifier())->factoryFromString('m->view->12'), $warnings);
 
-        // pinned; phase 4 may change
+        // pinned
         $this->assertSame('m->view->12', $idf->toString());
         $this->assertCount(1, $warnings);
         $this->assertStringContainsString('Undefined array key', $warnings[0]);
@@ -145,7 +144,7 @@ final class CentralSyncPrimitivesTest extends TestCase
 
     public function test_factoryFromString_does_not_round_trip_everything(): void
     {
-        // pinned; phase 4 may change - a fifth level is dropped, a row "0" loses row and column,
+        // pinned: a fifth level is dropped, a row "0" loses row and column,
         // "->" inside a part splits it
         $this->assertSame('m->t->r->c', (new AA_Identifier())->factoryFromString('m->t->r->c->x')->toString());
         $this->assertSame('m->t', (new AA_Identifier())->factoryFromString('m->t->0->c')->toString());
@@ -189,15 +188,15 @@ final class CentralSyncPrimitivesTest extends TestCase
                 [['NEW', [['INSERT', 'm->field->r', ['a' => '1']]]]]],
             'different value - whole row first, then the value' => [['a' => '1', 'b' => 'new'], ['a' => '1', 'b' => 'old'], [],
                 [['DIFFERENT_ROW', [['UPDATE_ROW', 'm->field->r', ['a' => '1', 'b' => 'new']]]], ['DIFFERENT_VALUE', [['UPDATE_VALUE', 'm->field->r->b', 'new']]]]],
-            // pinned; phase 4 may change - a missing column alone offers no whole-row update
+            // pinned: a missing column alone offers no whole-row update
             'key missing in destination' => [['a' => '1', 'b' => 'x'], ['a' => '1'], [],
                 [['DIFFERENT_VALUE', [['UPDATE_VALUE', 'm->field->r->b', 'x']]]]],
-            // pinned; phase 4 may change - "DELETED" for an extra column blanks it (UPDATE_VALUE ''), it is not dropped
+            // pinned: "DELETED" for an extra column blanks it (UPDATE_VALUE ''), it is not dropped
             'extra key in destination' => [['a' => '1'], ['a' => '1', 'z' => 'extra'], [],
                 [['DELETED', [['UPDATE_VALUE', 'm->field->r->z', '']]]]],
             'ignored keys are skipped and left out of the row' => [['slice_id' => 'T', 'a' => '1', 'b' => 'new'], ['slice_id' => 'D', 'b' => 'old'], ['slice_id', null, 'owner'],
                 [['DIFFERENT_ROW', [['UPDATE_ROW', 'm->field->r', ['a' => '1', 'b' => 'new']]]], ['DIFFERENT_VALUE', [['UPDATE_VALUE', 'm->field->r->a', '1']]], ['DIFFERENT_VALUE', [['UPDATE_VALUE', 'm->field->r->b', 'new']]]]],
-            // pinned; phase 4 may change - an ignored key is skipped only when the template has it;
+            // pinned: an ignored key is skipped only when the template has it;
             // in the destination alone it is offered for blanking (doAction() then refuses the installation columns)
             'ignored key only in destination' => [['a' => '1'], ['a' => '1', 'owner' => 'x'], ['owner'],
                 [['DELETED', [['UPDATE_VALUE', 'm->field->r->owner', '']]]]],
@@ -239,9 +238,9 @@ final class CentralSyncPrimitivesTest extends TestCase
             // '' and 0 are considered equal, and so is anything empty()
             'empty and 0'         => ['', 0, true],
             'empty and null'      => ['', null, true],
-            // pinned; phase 4 may change - "0" in the template is never synchronized over ''
+            // pinned: "0" in the template is never synchronized over ''
             'string 0 and empty'  => ['0', '', true],
-            // pinned; phase 4 may change - loose comparison: numeric strings compare as numbers
+            // pinned: loose comparison: numeric strings compare as numbers
             'leading zero'        => ['1', '01', true],
             'float notation'      => ['10', '1e1', true],
             'trailing space'      => ['1', '1 ', true],
@@ -323,7 +322,7 @@ final class CentralSyncPrimitivesTest extends TestCase
             'UPDATE_ROW'   => ['UPDATE_ROW', 'Update', true],
             // a single value is not pre-checked - the whole row is
             'UPDATE_VALUE' => ['UPDATE_VALUE', 'Update', false],
-            // pinned; phase 4 may change - an unknown type is pre-checked, with no label
+            // pinned: an unknown type is pre-checked, with no label
             'unknown'      => ['RENAME', '', true],
         ];
     }
@@ -475,7 +474,7 @@ final class CentralSyncPrimitivesTest extends TestCase
             }
         };
 
-        // pinned; phase 4 may change - the task log says "3", and the task counts as done
+        // pinned: the task log says "3", and the task counts as done
         $this->assertSame('3', (new AA_Task_Sync('cmd', $aa))->toexecutelater());
     }
 
@@ -564,7 +563,7 @@ final class CentralSyncPrimitivesTest extends TestCase
 
         $this->assertInstanceOf(AA_Task_Sync::class, $task);
         $this->assertSame('Remote (https://r.example.org/aa/)', $task->actionapps->getName());
-        // pinned; phase 4 may change - the login is stored in the queue
+        // pinned: the login is stored in the queue
         $this->assertSame('secret', $task->actionapps->getAccessPassword());
 
         $fake             = self::recordingAa();

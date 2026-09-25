@@ -9,17 +9,14 @@ use AA_MbC;
 use AA_Metabase;
 use LogicException;
 
-/** One row of an import to the database (RowWriter; ObjectWriter and ItemWriter through tableRow()),
- *  completed to every column of the local table, written by AA_Metabase with `nohalt` on the handle getDB()
- *  gives - inside DB_AA::transaction() the transaction's; a refused statement throws WriteError::DB.
+/** One row of an import to the database, completed to every column of the local table, written by
+ *  AA_Metabase with `nohalt` (inside DB_AA::transaction() on its handle); a refused statement throws
+ *  WriteError::DB.
  *
- *  A value (string or RawBytes): ImportRewrite numeric(known()), then TargetCharset::measure() - the charset
- *  LAST. A text that does not convert is WriteError::CHARSET, one too long for its column (characters and
- *  bytes - AA_MbT::getVarset4Data() cuts an (N) column to N bytes) WriteError::TOO_LONG. Columns the writer
- *  sets ($fixed) are written as they are - one too long is a LogicException, never cut.
+ *  A value is rewritten first and converted to the charset LAST. A value too long for its column is
+ *  WriteError::TOO_LONG, never cut: AA_MbT::getVarset4Data() would cut an (N) column to N bytes.
  *  An explicit NULL is written as the empty value of the type: getVarset4Data() skips NULL, and the DB
- *  default would flip field.text_stored NULL (number) to 1 (text). A missing column gets the local default,
- *  else the empty value; AUTO_INCREMENT columns never. All SQL is Cvarset's (quote(), is_long_ids()). */
+ *  default would flip field.text_stored NULL (number) to 1 (text). AUTO_INCREMENT columns are never set. */
 final class RowStore
 {
     /** @var array<string, array<string, array{int, bool}>> table => Schema::tableLimits() */
@@ -131,7 +128,7 @@ final class RowStore
         }
     }
 
-    /** 0 or '' by the type of the column (§ 2.3) */
+    /** 0 or '' by the type of the column */
     private static function emptyValue(AA_MbC $column): int|string
     {
         return in_array($column->getFieldType(), ['int', 'float'], true) ? 0 : '';

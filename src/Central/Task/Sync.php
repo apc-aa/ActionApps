@@ -7,7 +7,7 @@ namespace AA\Central\Task;
 use AA\Central\Actionapps;
 use AA\Central\SerializedProps;
 
-/** Sends one synchronization action to a remote AA (Central Synchronize) - was AA_Task_Sync */
+/** Sends one synchronization action to a remote AA (Central Synchronize) */
 class Sync extends RemoteAaTask
 {
     protected const LOG_NAME = 'AA_Task_Sync';
@@ -34,7 +34,6 @@ class Sync extends RemoteAaTask
 
     protected function send(Actionapps $aa): mixed
     {
-        // synchronize accepts array of sync_actions, so it is possible to do more action by one call
         return $aa->synchronize([$this->sync_action]);   // one report line per action
     }
 }

@@ -6,26 +6,16 @@ namespace AA\Central\Package;
 
 use LogicException;
 
-/** The explicit confirmation of the S findings (design balicek-v1.md § 3.3 point 3, § 7.2 step 2): a
- *  package with code that reads files, calls URLs or carries passwords is written only with the token the
- *  preview handed out, in this admin session, for exactly these findings in exactly this package to
- *  exactly this user.
+/** The explicit confirmation of the S findings: a package with code that reads files, calls URLs or
+ *  carries passwords is written only with the token the preview handed out, in this admin session, for
+ *  exactly these findings in exactly this package to exactly this user.
  *
- *  token() = HMAC-SHA256 under session_id() . AA_ID (as FormToken; the preview and the write run in one
- *  admin session) of
- *  - the user;
- *  - SHA-256 of the package as planned (serialize() of ImportPlan::$package: the reader's model with the
- *    FixUps applied - the same bytes read again give the same model; the new ids are NOT in: the UI may
- *    plan again for the write, the ids then differ);
- *  - the S findings: level, code, path, ref and offset of each, sorted (a `+N more` row counts too).
- *  AA_ID alone is no secret (config.php.default ships one, Centrals store it);
- *  the session id is: a token is good in the session of the preview only. No session (CLI) and no
- *  explicit secret: token() throws - a package with S findings is not installed there.
- *  A plan without S findings needs none: token() null, confirms() true for any token.
- *  The token binds the confirmation to the findings the user saw in this session. It is NO protection
- *  against CSRF: that is the admin FormToken of the form posting the install, which the caller checks.
- *  Nor does it prove the user read the findings: the UI passes it to Importer::write() only when the
- *  confirmation box of the preview was ticked. */
+ *  token() = HMAC-SHA256 under session_id() . AA_ID of the user, SHA-256 of serialize(ImportPlan::$package)
+ *  and the sorted S findings. The new ids are not in: the UI may plan again for the write.
+ *  AA_ID alone is no secret (config.php.default ships one, Centrals store it); the session id is.
+ *  No session (CLI) and no explicit secret: token() throws - no package with S findings installs there.
+ *  It is NO protection against CSRF (the caller checks the admin FormToken), nor proof the user read the
+ *  findings (the UI passes it only when the confirmation box was ticked). */
 final class ImportConfirmation
 {
     /** @param string|null $secret the HMAC key; null = session_id() . AA_ID (tests pass their own) */

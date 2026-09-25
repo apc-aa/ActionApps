@@ -3,8 +3,7 @@
 declare(strict_types=1);
 
 /**
- * FixUps, C4.4 part 3: what the importer changes in a package (design balicek-v1.md, "Odchylky při
- * implementaci", C4.4(2) and Q-H1) - each change applied to a copy and listed for the preview.
+ * FixUps: what the importer changes in a package - each change applied to a copy and listed for the preview.
  */
 
 namespace Tests\Unit\Central\Package;
@@ -154,7 +153,7 @@ final class FixUpsTest extends TestCase
                 [],
                 static fn(Package $p): mixed => self::of($p, self::SITE)->spotTree['spots'][1]['n'], 'a < b, x<3',
             ],
-            // design "Pro C4.4": no <spot-tree> = site.structure ''
+            // no <spot-tree> = site.structure ''
             'no spot tree'            => [
                 static fn(Package $p): Package => self::tree($p, static fn(): ?array => null),
                 [["$W/site[#0]/structure", FixUp::NO_TREE, '', '']],

@@ -9,18 +9,16 @@ use AA\Central\Package\Model\Module;
 use AA\Central\Package\Model\RawBytes;
 use Generator;
 
-/** The export lint of a collected app (design balicek-v1.md § 8.4, § 5.2): ReferenceLint over every
- *  definition text - rows, object properties, spot conditions (code: a `{..}` variable is expanded,
- *  spot::conditionMatches()) - with the identity map of the app, the structured
- *  references (§ 6, module ids in object properties - ObjectExport::MODULE_PROPS), what e-mails carry
- *  of the source organisation, and the closure - the modules outside the app the references lead to.
+/** The export lint of a collected app: ReferenceLint over every definition text (spot conditions too - a
+ *  `{..}` in them is expanded), the structured references, what e-mails carry of the source organisation,
+ *  and the modules outside the app the references lead to.
  *  Item values are not linted: article texts link anywhere.
- *  @throws RewriteFailed from check() - a regex failed; the export failed */
+ *  @throws RewriteFailed from check() - a regex failed */
 final class ExportLint
 {
     /** E: the alerts collection reads a slice outside the app */
     public const READER_OUTSIDE = 'reader-outside';
-    /** I: an alerts module outside the app reads a slice of the app (§ 5.2) */
+    /** I: an alerts module outside the app reads a slice of the app */
     public const ALERTS_OUTSIDE = 'alerts-outside';
     /** email.attachments as the import sees them (SecurityLint::attachments()): S URLs or a field, W dropped */
     public const EMAIL_ATTACHMENTS = 'email-attachments';
@@ -71,7 +69,7 @@ final class ExportLint
             $all($rows, 'alerts_collection', 'id'),
         );
         $lint      = new ReferenceLint($map);
-        $of        = new LintTexts($this->schema);       // RawBytes (not converted to UTF-8) are not linted
+        $of        = new LintTexts($this->schema);       // RawBytes (not UTF-8) are not linted
         $texts     = array_map(static fn(string $id): Generator => $of->rows("$types[$id][$id]", $rows[$id]), array_keys($rows));
         foreach ($groups as $group) {
             $texts[] = $of->rows("constant-group[$group->name]", $group->rows);
@@ -113,14 +111,14 @@ final class ExportLint
         return [$this->findings, $this->outside];
     }
 
-    /** D2: a published app has no warnings - each W becomes E
+    /** a published app has no warnings - each W becomes E
      *  @param list<array{string, LintFinding}> $findings @return list<array{string, LintFinding}> */
     public static function published(array $findings): array
     {
         return array_map(static fn(array $f): array => ($f[1]->level === LintFinding::WARNING) ? [$f[0], new LintFinding(LintFinding::ERROR, $f[1]->code, $f[1]->ref, $f[1]->offset)] : $f, $findings);
     }
 
-    /** references in columns the import maps directly (§ 8.2 "strukturované", § 6), e-mail headers
+    /** references in columns the import maps directly, e-mail headers
      *  @param array<string, list<array<string, mixed>>> $elements @param array<string, string> $types */
     private function structured(string $path, array $elements, array $types, IdMap $map): void
     {
@@ -169,8 +167,8 @@ final class ExportLint
         }
     }
 
-    /** § 5.2: the modules owning the views and e-mails referred to from outside the app, and the
-     *  referred modules that exist. `+N more` (ReferenceLint's summary) is no reference. */
+    /** the modules owning the views and e-mails referred to outside the app, and the referred modules that
+     *  exist. `+N more` (ReferenceLint's summary) is no reference. */
     private function closure(): void
     {
         $refs = ['view' => [], 'email' => [], 'module' => []];

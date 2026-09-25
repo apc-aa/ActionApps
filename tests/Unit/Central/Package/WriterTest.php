@@ -31,8 +31,8 @@ final class WriterTest extends TestCase
 
     private const SOURCE = ['url' => 'https://actionapps.org/aadev/', 'aa-version' => '2026.9', 'aa-build' => 'd2a1efe 2026-09-24 00:30', 'site' => self::SITE, 'exported' => '2026-09-24T10:00:00Z'];
 
-    /** The package of design balicek-v1.md § 4 (fixtures/aa-app-example.xml) as a model - rows and
-     *  properties deliberately NOT in the output order. */
+    /** The example package (fixtures/aa-app-example.xml) as a model - rows and properties deliberately
+     *  NOT in the output order. */
     public static function example(): Package
     {
         $spot_content = "<!DOCTYPE html>\r\n<html>{view:12::listlen-5}\r\n{view.php?vid=12&cmd[12]=x-12-{xid}}\r\n<script>if (a[b[0]]>1) {}</script>\r\n{_:Hlavicka:Central Test}\r\n</html>";
@@ -118,7 +118,7 @@ final class WriterTest extends TestCase
         return $xp;
     }
 
-    /** Validates like the reader will (§ 3.1): schema as a string, no external entity may load.
+    /** Validates like the reader will: schema as a string, no external entity may load.
      *  @return list<string> libxml errors, [] = valid */
     private static function validate(string $xml): array
     {
@@ -142,7 +142,7 @@ final class WriterTest extends TestCase
         return (new Writer())->toXml($package)->xml;
     }
 
-    /** What the reader will do with a value element (§ 2.2); a missing column listed in meta/tables
+    /** What the reader will do with a value element; a missing column listed in meta/tables
      *  = the empty value ('' for a text) */
     private static function decode(?DOMElement $el): ?string
     {
@@ -160,7 +160,7 @@ final class WriterTest extends TestCase
         return $el instanceof DOMElement ? $el : null;
     }
 
-    // ---------------------------------------------------------------- the design example
+    // ---------------------------------------------------------------- the example package
 
     public function test_example_equals_the_golden_file(): void
     {
@@ -177,12 +177,10 @@ final class WriterTest extends TestCase
         $this->assertSame([], self::validate(self::xml(self::example())));
     }
 
-    /** Every value of the design example (fixtures/aa-app-example.xml) and nothing else. Documented
-     *  differences, not in this comparison: the example abbreviates meta/tables (the writer lists all
-     *  columns of this AA), writes `<flag>0</flag>` of site_spot 2 (an empty value, § 2.2) and the
-     *  default `i="0"` of web_languages / translations[0]. Formatting (blank lines, one-line alerts
-     *  rows, order of properties, CDATA of texts without < & newline) differs as well - leaves are
-     *  compared by path, not by position. */
+    /** Every value of fixtures/aa-app-example.xml and nothing else. Not compared: the example abbreviates
+     *  meta/tables (the writer lists all columns of this AA), writes `<flag>0</flag>` of site_spot 2 (an
+     *  empty value) and the default `i="0"` of web_languages / translations[0]; formatting differs as
+     *  well - leaves are compared by path, not by position. */
     public function test_example_carries_the_values_of_the_design_example(): void
     {
         $leaves = static function (string $xml): array {
@@ -223,7 +221,7 @@ final class WriterTest extends TestCase
         $this->assertArrayNotHasKey('alerts_collection_filter', $tables);
     }
 
-    // ---------------------------------------------------------------- value encoding (§ 2.2)
+    // ---------------------------------------------------------------- value encoding
 
     /** @return array<string, array{string|null, string}> value => how it must be written */
     public static function values(): array
@@ -377,7 +375,7 @@ final class WriterTest extends TestCase
         $this->assertSame("x\r\ny", self::decode($el('//a:item/a:v')));
     }
 
-    // ---------------------------------------------------------------- determinism (§ 2.5)
+    // ---------------------------------------------------------------- determinism
 
     public function test_output_is_byte_stable(): void
     {

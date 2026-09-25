@@ -6,12 +6,10 @@ namespace AA\Central\Package;
 
 use AA\Central\Package\Model\RawBytes;
 
-/** The reference rewrite of an imported value (design balicek-v1.md § 7.2 step 5, § 8) - one function per step
- *  for the plan (TargetCharset) and the writer, so what the plan proved is what the writer writes:
- *  known() - long ids, alerts field ids, group names, the group of field.input_show_func ($widget); numeric() -
- *  views and e-mails once the writer has their numbers (the length grows: checked again).
+/** The reference rewrite of an imported value, shared by the plan and the writer, so what the plan proved
+ *  is what the writer writes. numeric() runs once the writer has the view and e-mail numbers.
  *  RawBytes alike: every regex is byte-wise at ASCII delimiters and puts ASCII in, and in the charsets of
- *  ModuleCharset::STATELESS an ASCII byte is always that character - so the bytes change as a text would. */
+ *  ModuleCharset::STATELESS an ASCII byte is always that character. */
 final class ImportRewrite
 {
     private readonly ReferenceRewriter $rewriter;

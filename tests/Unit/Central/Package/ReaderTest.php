@@ -22,9 +22,8 @@ use PHPUnit\Framework\TestCase;
 
 require_once __DIR__ . '/WriterTest.php';     // its example models (tests have no autoloader)
 
-/** Reader, C4.4 part 1 (design balicek-v1.md § 3.1, § 3.2): safe parsing of an untrusted package,
- *  pruning by version, XSD validation and the canonical model - and the round trip of C4.3 part 2,
- *  model -> Writer -> Reader -> model. */
+/** Reader: safe parsing of an untrusted package, pruning by version, XSD validation and the canonical
+ *  model - and the round trip model -> Writer -> Reader -> model. */
 final class ReaderTest extends TestCase
 {
     private const SITE   = '1a2b3c4d5e6f708192a3b4c5d6e7f801';
@@ -118,7 +117,7 @@ final class ReaderTest extends TestCase
         return array_map(static fn(array $f): array => [$f[0], $f[1]->level, $f[1]->code, $f[1]->ref], $result->findings);
     }
 
-    // ---------------------------------------------------------------- round trip (C4.3 part 2 "done when")
+    // ---------------------------------------------------------------- round trip
 
     public function test_written_fixture_round_trips(): void
     {
@@ -167,7 +166,7 @@ final class ReaderTest extends TestCase
         $this->assertSame(self::dump($expected), self::dump($read->package->modules[0]->rows['view'][0]['odd']), $how);
     }
 
-    /** base64 carries no charset (§ 2.4): raw bytes that happen to be valid UTF-8 read back as text */
+    /** base64 carries no charset: raw bytes that happen to be valid UTF-8 read back as text */
     public function test_raw_bytes_valid_as_utf8_read_back_as_text(): void
     {
         $read = self::read(self::xml(self::slicePackage(['view' => [['id' => 12, 'odd' => new RawBytes("\xC3\x81")]]])));
@@ -214,7 +213,7 @@ final class ReaderTest extends TestCase
         ]], $tree);
     }
 
-    /** § 2.3: a column meta/tables lists but the row leaves out = empty value; an unlisted one stays absent
+    /** a column meta/tables lists but the row leaves out = empty value; an unlisted one stays absent
      *  (the importing AA's default) */
     public function test_missing_columns_follow_meta_tables(): void
     {
@@ -274,7 +273,7 @@ final class ReaderTest extends TestCase
         $this->assertNull(self::read(self::doc('<view id="1"><odd null="1"/></view>'))->package->modules[0]->rows['view'][0]['odd']);
     }
 
-    // ---------------------------------------------------------------- pruning (§ 3.2)
+    // ---------------------------------------------------------------- pruning
 
     public function test_unknown_column_is_always_pruned(): void
     {
@@ -356,7 +355,7 @@ final class ReaderTest extends TestCase
         $this->assertSame([['aa-app', LintFinding::INFO, Reader::NEWER_FORMAT, '1.2']], self::findings($read));
     }
 
-    // ---------------------------------------------------------------- bad inputs (§ 3.1, § 14 C4.4 part 1)
+    // ---------------------------------------------------------------- bad inputs
 
     /** @return array<string, array{string, string}> xml, expected message */
     public static function badInputs(): array

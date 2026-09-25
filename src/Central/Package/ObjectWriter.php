@@ -7,23 +7,18 @@ namespace AA\Central\Package;
 use AA_Property;
 use LogicException;
 
-/** Writes the objects of an import plan (design balicek-v1.md § 5.4, § 7.2 step 5.6) inside the transaction
- *  Importer opens, after RowWriter: per module its settings (id ImportPlan::$settingsIds), then its top-level
- *  objects with their subobjects. Every id is the plan's - never one of the package or the target as it is
- *  (AA_Object::deleteObjects() deletes by `aa_subobjects`); aa_owner = the new module. Values go through
- *  RowStore::value() as the rows (module ids and `{set:<id>}` become the new ones).
+/** Writes the objects of an import plan inside the Importer's transaction, after RowWriter. Every id is the
+ *  plan's, never the package's: AA_Object::deleteObjects() deletes by `aa_subobjects`.
  *
- *  The rows AA_Object::save() writes, not save() itself (design § 15, C4.4(4c)): save() first DELETEs the
- *  rows of the ids its stored aa_subobjects lists, die()s on a refused statement and reports no failed row.
- *  ObjectWriterTest proves the rows equal to save()'s: a row per class property the object has (a missing
- *  one gets none - load() reads ''), aa_type, aa_owner, aa_name, aa_subobjects (computed from what is
- *  written, never taken from the package).
+ *  The rows AA_Object::save() writes, not save() itself: save() first DELETEs the rows of the ids its stored
+ *  aa_subobjects lists, die()s on a refused statement and reports no failed row. aa_subobjects is computed
+ *  from what is written, never taken from the package.
  *
- *  Only allowlisted classes and their own properties (never aa_*, never ObjectExport::isLeftOut()): the
- *  Validator's E, here a LogicException before the first row of the object tree.
- *  A "keep module ids" restore mode (§ 7.1) must check the derived settings ids free inside the transaction:
+ *  Only allowlisted classes and their own properties - the Validator refuses others; here they are a
+ *  LogicException before the first row of the object tree.
+ *  Keeping the source module ids would need the derived settings ids checked inside the transaction:
  *  object_text has no key that would refuse a duplicate.
- *  @internal only Importer calls it - the rights and the S confirmation are checked there (Importer::write()). */
+ *  @internal only Importer calls it - the rights and the S confirmation are checked there. */
 final class ObjectWriter
 {
     private IdMap $map;

@@ -7,18 +7,14 @@ namespace AA\Central\Package;
 use AA\Central\Package\Model\Module;
 use AA\Central\Package\Model\Package;
 
-/** What the importer changes in a package before it writes it (design balicek-v1.md § 15), each one a FixUp:
- *  - email.attachments of SecurityLint::ATTACHMENTS_DROPPED (a local path or a computed value AA_File_Wrapper
- *    would read from the target's disk) => '';
- *  - an unknown slice.lang_file (the old copy) => the module's lang_file;
- *  - ga_id, alternate_url, app_* of the site settings => dropped (ObjectExport::isLeftOut());
- *  - a tag start (SecurityLint::SPOT_TAG) in a spot text => strip_tags() - the site tree admin prints them
- *    unescaped (modules/site/sitetree.php); `{if:..:<:3..}` stays;
+/** What the importer changes in a package before it writes it, each one a FixUp:
+ *  - email.attachments AA_File_Wrapper would read from the target's disk => '';
+ *  - an unknown slice.lang_file => the module's lang_file;
+ *  - ga_id, alternate_url, app_* of the site settings => dropped;
+ *  - a tag start in a spot text => strip_tags() - the site tree admin prints spot texts unescaped;
  *  - no <spot-tree> => site.structure = '';
- *  - an alerts_filter several Alerts modules carry (the same row) => kept in the first module only, the
- *    others get its new number from the filter map;
- *  - meta/publish => `users` (Q-H1).
- *  Pure: a changed copy and the list come back. */
+ *  - an alerts_filter several Alerts modules carry => kept in the first module only;
+ *  - meta/publish => `users`. */
 final class FixUps
 {
     /** @var list<FixUp> */

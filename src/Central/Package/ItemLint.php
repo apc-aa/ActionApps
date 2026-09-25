@@ -8,20 +8,14 @@ use AA\Central\Package\Model\Module;
 use AA\Central\Package\Model\Package;
 use AA\Central\Package\Model\RawBytes;
 
-/** The plan's findings about the items a package carries - what ItemWriter writes past storeItem() and its
- *  checks, shown in the preview:
- *  - READER_TAKEN: a reader's login name or e-mail is taken on the target (isUsernameFree(), which the direct
- *    insert skips) - two accounts of one login would let whichever the login finds first in, or the
- *    package's password hash log into the target's account. Every value is asked, in the target slice's charset.
- *  - READER_MULTIVALUE, READER_DUPLICATE: the login lookup would be ambiguous (compared as *_ci with PAD SPACE,
- *    across all Reader Management slices of the package).
- *    At plan time only: a reader registering between the preview and the write is not seen - a check inside
- *    the write would narrow the window, not close it (the registration locks nothing the import reads).
- *  - READER_2FA: 2FA seeds travel as PLAINTEXT - anyone holding the package can generate the readers' codes;
- *    the Collector never exports them, so such a package was made elsewhere.
- *  - READER_ACCOUNTS, ALERTS_FILTER_KEPT (inert: the new collection has no such filter), ITEM_OUTSIDE (on the
- *    target an item of that id, if any, is another's).
- *  Pure except for the ImportTarget questions. Findings quote package text - safe(). */
+/** The plan's findings about the items a package carries - ItemWriter bypasses storeItem() and its checks.
+ *  - READER_TAKEN: two accounts of one login would let the package's password hash into the target's
+ *    account (the direct insert skips isUsernameFree()).
+ *  - READER_MULTIVALUE, READER_DUPLICATE: the login lookup would be ambiguous (*_ci, PAD SPACE).
+ *    Checked at plan time only: a check inside the write would narrow the window, not close it - the
+ *    registration locks nothing the import reads.
+ *  - READER_2FA: seeds travel as plaintext; the Collector never exports them, so the package was made elsewhere.
+ *  Findings quote package text - escape them. */
 final class ItemLint
 {
     /** E: a reader's login name or e-mail is taken on the target; ref = the value */
@@ -39,7 +33,7 @@ final class ItemLint
     /** W: a relation to an item outside the package; ref = the item id */
     public const ITEM_OUTSIDE = 'item-outside';
 
-    /** FIELDID_USERNAME, FIELDID_EMAIL, FIELDID_PASSWORD, FIELDID_2FA_SECRET - include/constants.php */
+    /** FIELDID_USERNAME, FIELDID_EMAIL, FIELDID_PASSWORD, FIELDID_2FA_SECRET */
     public const USERNAME = 'headline........';
     public const EMAIL    = 'con_email.......';
     public const PASSWORD = 'password........';

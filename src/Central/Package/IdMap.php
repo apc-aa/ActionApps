@@ -7,7 +7,7 @@ namespace AA\Central\Package;
 use AA\Optimize\RedefineCoreConstants;
 use InvalidArgumentException;
 
-/** Source id => target id maps of one package import (design balicek-v1.md § 7.1). Immutable. The plan knows
+/** Source id => target id maps of one package import. Immutable. The plan knows
  *  every map but views, e-mails and alerts filters - AUTO_INCREMENT numbers them when the rows are written
  *  (withNumbers()). The export lint uses an identity map of the app. */
 final class IdMap

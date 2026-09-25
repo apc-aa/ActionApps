@@ -181,7 +181,7 @@ final class CentralOptimizeTypeTest extends TestCase
     {
         $this->assertStringEndsWith(' - test', (new Central_OptimizeType('Sqlupdate_Test', 'sql_update', 'test'))->getName());
         $this->assertStringEndsWith(' - update', (new Central_OptimizeType('Sqlupdate_Update', 'sql_update', 'repair'))->getName());
-        // the translated label of the former Central_Sqlupdate
+        // the label keeps its existing translation
         $this->assertStringStartsWith(_m('Update DB (sql_update)'), (new Central_OptimizeType('Sqlupdate_Test', 'sql_update', 'test'))->getName());
     }
 }

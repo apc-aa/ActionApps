@@ -32,7 +32,6 @@ final class SyncExecutor
         $module_id   = $idf->getModuleId();
         $table       = $idf->getTable();
         $row         = $idf->getRow();
-        //$column      = $idf->getColumn();
 
         if (!in_array($table, AA_Sync_Action::TABLES, true)) {
             return _m('Wrong command - this table is not synchronized');

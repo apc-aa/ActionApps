@@ -3,10 +3,9 @@
 declare(strict_types=1);
 
 /**
- * What guards the import writer (design balicek-v1.md § 7.2 steps 4-5): the rollback is the only cleanup of
- * a failed import, so the plan refuses tables that are not InnoDB (E) and write() refuses such a plan, asks
- * the engines again, refuses to join a caller's transaction and to write without one; the engine question
- * and the locking read of DbImportTarget.
+ * What guards the import writer: the rollback is the only cleanup of a failed import, so the plan refuses
+ * tables that are not InnoDB (E) and write() refuses such a plan, asks the engines again, refuses to join
+ * a caller's transaction and to write without one; the engine question and the locking read of DbImportTarget.
  */
 
 namespace Tests\Unit\Central\Package;

@@ -3,9 +3,8 @@
 declare(strict_types=1);
 
 /**
- * Importer::write() before anything else, C4.4 part 5 (design balicek-v1.md § 3.3, § 7.2 step 2, Q-H2):
- * the right to install (PS_INSTALL_APP) and the confirmation of the S findings
- * (ImportConfirmation) - refused = ImportFailed before any statement.
+ * Importer::write() before anything else: the right to install (PS_INSTALL_APP) and the confirmation
+ * of the S findings (ImportConfirmation) - refused = ImportFailed before any statement.
  */
 
 namespace Tests\Unit\Central\Package;

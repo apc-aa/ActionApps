@@ -9,9 +9,9 @@ namespace AA\Central\Package;
 interface ImportTarget
 {
     /** true: a constant group of this name exists on the target - in lt_groupNames, constant_slice or
-     *  as the group of any constant (design balicek-v1.md § 7.1: never merge into it).
-     *  $lock (the writer, inside its transaction, just before it creates the group): a locking read
-     *  (SELECT ... FOR UPDATE) - InnoDB keeps a concurrent insert of the name out until the commit.
+     *  as the group of any constant (an import never merges into it).
+     *  $lock: a locking read (SELECT ... FOR UPDATE) - InnoDB keeps a concurrent insert of the name out
+     *  until the commit.
      *  @throws \RuntimeException the read failed (a lock wait timeout) - never "free" */
     public function groupTaken(string $name, bool $lock = false): bool;
 

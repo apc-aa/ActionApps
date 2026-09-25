@@ -10,14 +10,12 @@ use AA_Reader;
 use RuntimeException;
 
 /** ImportTarget over this AA's database: parameterised DB_AA reads (as DbSource), no writes.
- *  groupTaken() reads without halting: a failed read (a lock wait timeout, 1205) throws - never "free", never
- *  die() inside the import's transaction. Its locking read (InnoDB - the planner and the writer refuse other
- *  engines) holds the X-locks of the lt_groupNames rows (gap locks for a free name): two imports with
- *  constant groups wait on each other and the second fails cleanly after innodb_lock_wait_timeout (or
- *  a deadlock). READ COMMITTED takes no gap locks - two imports could then both create one free name
- *  (accepted: REPEATABLE READ is the default).
- *  lt_groupNames.value is a char column, compared in its collation (case-insensitive in the usual
- *  latin1/utf8 ones): a name differing only in case counts as taken - one rename too many, never a merge. */
+ *  groupTaken() reads without halting: a failed read (lock wait timeout) throws - never "free", never die()
+ *  inside the import's transaction. Its locking read holds the X-locks (gap locks for a free name), so two
+ *  imports with constant groups wait on each other and the second fails cleanly. READ COMMITTED takes no
+ *  gap locks - two imports could then both create one free name (accepted: REPEATABLE READ is the default).
+ *  lt_groupNames.value compares case-insensitively in the usual collations: a name differing only in case
+ *  counts as taken - one rename too many, never a merge. */
 final class DbImportTarget implements ImportTarget
 {
     /** InnoDB: the one engine of this AA's tables with transactions (MyISAM, Aria, MEMORY: none) */

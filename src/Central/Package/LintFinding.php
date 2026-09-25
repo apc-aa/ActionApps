@@ -4,15 +4,12 @@ declare(strict_types=1);
 
 namespace AA\Central\Package;
 
-/** One finding of ReferenceLint. Where the text came from (table, column, row) adds the caller.
- *  `ref` is raw package text (at most ReferenceLint::MAX_REF bytes) - escape it (safe()) when shown. */
+/** One lint finding. `ref` is raw package text - escape it when shown. */
 final readonly class LintFinding
 {
-    /** Levels of design balicek-v1.md § 8.4: I = info (report), W = warning (error of a published export),
-     *  E = error - the export fails (Collector: a W of a published app, a reader slice outside the app, ...),
-     *  the import does not start (Validator); S = security (§ 3.3, SecurityLint) - code that reads files,
-     *  calls URLs or carries passwords: the import preview lists it and the installation needs an explicit
-     *  confirmation. S is no error: it blocks nothing by itself. */
+    /** I = info; W = warning (an error in a published export); E = error - the export fails, the import
+     *  does not start; S = security - code that reads files, calls URLs or carries passwords: the import
+     *  needs an explicit confirmation, but S blocks nothing by itself. */
     public const INFO     = 'I';
     public const WARNING  = 'W';
     public const ERROR    = 'E';

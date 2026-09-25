@@ -12,43 +12,43 @@ use AA_Property;
 use InvalidArgumentException;
 use Throwable;
 
-/** The semantic checks of a read package (design balicek-v1.md § 3.1 step 9): what the XSD cannot say, and
- *  again what it says of structure and ids - the model may come from elsewhere than Reader. Pure: the target,
- *  the charsets and the reference lint are the planner's.
+/** The semantic checks of a read package: what the XSD cannot say, and again what it says of structure
+ *  and ids - the model may come from elsewhere than Reader. Pure: the target, the charsets and the
+ *  reference lint are the planner's.
  *  E = the package must not be imported; S (SecurityLint) = confirm in the preview; W, I = report.
  *  Findings quote package text - escape them (safe()) when shown. */
 final class Validator
 {
     /** E: a row a module type needs is missing or there twice (module; slice / site; constant_slice at
-     *  most once); W: an Alerts module without its collection (deleting the reader slice deletes it, slice.class.php:756) */
+     *  most once); W: an Alerts module without its collection (deleting the reader slice deletes it) */
     public const MODULE_ROWS = 'module-rows';
-    /** E: a table, settings, objects, spot tree or items the container does not have (§ 6.1) */
+    /** E: a table, settings, objects, spot tree or items the container does not have */
     public const TABLE = 'table-not-allowed';
     /** E: an id of the wrong shape: long ids 32 lower-case hex, field ids 16 chars, view / e-mail / filter /
      *  spot ids 1-10 digits without a leading 0, collection ids 5 letters or digits; a packed column
      *  (slice.mlxctrl, alerts_collection.slice_id, constant.ancestors: several) not empty and no long id */
     public const INVALID_ID = 'invalid-id';
     /** E: an id twice - long ids across modules, their settings objects (string2id(class . module id)),
-     *  constants, objects, subobjects and items (one map, § 7.1),
+     *  constants, objects, subobjects and items (one id map),
      *  views, e-mails, groups, collections across the package; fields, spots, uses, filters per module; a
      *  filter id of several Alerts modules with other content */
     public const DUPLICATE = 'duplicate-id';
     /** E: uses, a group owner (a slice), a collection filter / howoften outside the package;
      *  W: an ancestor constant not in the group (se_constant.php leaves them when deleting a parent) */
     public const DANGLING = 'dangling-ref';
-    /** E: the alerts collection reads a slice outside the package (§ 6.4). Also E (ReferenceLint codes): an
+    /** E: the alerts collection reads a slice outside the package. Also E (ReferenceLint codes): an
      *  alerts_filter.vid or alerts_collection.emailid_* outside the package (0 / empty = none, allowed) - the
      *  new collection would mail a view or template of the target to readers the package brings */
     public const READER_OUTSIDE = ExportLint::READER_OUTSIDE;
-    /** E: an object class off the allowlist, a property its class lacks, a subobject off its property (§ 5.4), a malformed object */
+    /** E: an object class off the allowlist, a property its class lacks, a subobject off its property, a malformed object */
     public const OBJECT = 'object';
-    /** W: ga_id, alternate_url, app_* of the site settings (§ 5.4) - the importer drops them */
+    /** W: ga_id, alternate_url, app_* of the site settings - the importer drops them */
     public const SETTINGS_DROPPED = 'settings-dropped';
     /** E: sitetree::fromArray() refused the spot tree; ref = its message */
     public const SPOT_TREE = Collector::SPOT_TREE;
     /** W: site_spot of a spot the tree lacks - a new spot could get its id and content on the target */
     public const SPOT_UNUSED = Collector::SPOT_UNUSED;
-    /** E: module.lang_file not in Langs::getFiles(<type>) (§ 2.4) */
+    /** E: module.lang_file not in Langs::getFiles(<type>) */
     public const LANG_FILE = Collector::LANG_FILE;
     /** W: slice.lang_file (the old copy) non-empty and not of the list - the importer writes the module's lang_file instead */
     public const LANG_FILE_REPLACED = 'lang-file-replaced';
@@ -57,7 +57,7 @@ final class Validator
     public const GROUP_NAME = 'group-name';
     /** W: a field widget names a group neither in the package nor a core group */
     public const GROUP_MISSING = Collector::GROUP_MISSING;
-    /** E: site.state_file names a control file (flag ≠ 1, stateFileName() ≠ '') - site.php would include it (§ 3.1) */
+    /** E: site.state_file names a control file (flag ≠ 1, stateFileName() ≠ '') - site.php would include it */
     public const STATE_FILE = Collector::STATE_FILE;
     /** E: items without meta/contents/@items, or items in a module other than a slice */
     public const ITEMS = 'items';
@@ -74,7 +74,7 @@ final class Validator
     public const PROFILE = 'profile-property';
     /** W: a switch who may write or log in - slice.permit_anonymous_post/_edit, fileman_access, auth_field_group */
     public const PERMISSION = 'permission';
-    /** W: site perm_mode not 1/2 - AA + all Reader Management slices of the target may log in (site.php:192) */
+    /** W: site perm_mode not 1/2 - AA + all Reader Management slices of the target may log in */
     public const PERM_MODE = 'perm-mode';
     /** E: an integer out of the range of its column (strict sql_mode would fail the insert) */
     public const INT_RANGE = 'int-range';
@@ -149,7 +149,7 @@ final class Validator
     {
         $path = "$m->type[$m->id]";
         $this->id('long', $m->id, $path, self::LONG_RE);
-        if (isset(Schema::SETTINGS_CLASSES[$m->type]) && preg_match(self::LONG_RE, $m->id)) {    // the settings object: one long map (§ 7.1)
+        if (isset(Schema::SETTINGS_CLASSES[$m->type]) && preg_match(self::LONG_RE, $m->id)) {    // the settings object id shares the long id pool
             $this->id('long', string2id(Schema::SETTINGS_CLASSES[$m->type] . $m->id), "$path/settings");
         }
         $this->rows($path, $m->type, $m->rows);
@@ -236,7 +236,7 @@ final class Validator
         $this->seen[$pool][$id] = true;
     }
 
-    /** settings and objects: allowlisted classes (§ 5.4), module ids of their properties (§ 5.2) */
+    /** settings and objects: allowlisted classes, module ids of their properties */
     private function objects(Module $m, string $path): void
     {
         if ($m->settings !== null) {

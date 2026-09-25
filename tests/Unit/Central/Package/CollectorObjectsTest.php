@@ -3,10 +3,9 @@
 declare(strict_types=1);
 
 /**
- * Collector, C4.3 part 4 (design balicek-v1.md § 5.4, § 6.3): the objects a module owns - module
- * settings, AA_Aliasfunc, AA_Set with its conditions and sort orders - and the site tree, over a
- * FakeSource of object_text/integer/float rows as AA_Object::save() writes them. The package then goes
- * through Writer (XSD-validated).
+ * Collector: the objects a module owns - module settings, AA_Aliasfunc, AA_Set with its conditions and
+ * sort orders - and the site tree, over a FakeSource of object_text/integer/float rows as
+ * AA_Object::save() writes them. The package then goes through Writer (XSD-validated).
  */
 
 namespace {
@@ -142,7 +141,7 @@ namespace Tests\Unit\Central\Package {
                     'page404_code'    => "<h1>Not found</h1>\r\n{view:20}",
                     'ga_id'           => 'UA-12345-1',
                     'alternate_url'   => ['www.source.example'],
-                    'app_publish'     => 'all',     // R5 - meta carries it
+                    'app_publish'     => 'all',     // meta carries it
                     'spamprotect'     => 'x',       // no property of the class (any more): AA_Object::load() ignores it
                 ]),
                 self::object(string2id('AA_Modulesettings_Slice' . self::SLICE_A), 'AA_Modulesettings_Slice', self::SLICE_A, [

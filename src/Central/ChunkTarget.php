@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace AA\Central;
 
-/** What the chunk mode (ChunkImporter, design balicek-v1.md § 10.1) asks of the AA it imports into - the
- *  one seam to it: DbChunkTarget reads this AA's database, tests use a fake. Reads only;
- *  the rows are written through AA_Metabase. Ids are unpacked, 32 lower-case hex. */
+/** What the chunk mode (ChunkImporter) reads from the AA it imports into - DbChunkTarget, or a fake in
+ *  tests. The rows are written through AA_Metabase. Ids are unpacked, 32 lower-case hex. */
 interface ChunkTarget
 {
     /** module.type of the module (S, W, Alerts, ...), null = no such module */

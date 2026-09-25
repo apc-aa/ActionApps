@@ -315,7 +315,7 @@ namespace Tests\Unit\Central\Package {
                 'W ' . ReferenceLint::FORM . ' {form: @ ' . self::SPOT,
                 'W ' . Collector::GROUP_MISSING . ' ct_nowhere @ slice-module[' . self::SLICE_A . ']/field[category.......4]/input_show_func',
             ], self::findings($result, LintFinding::WARNING));
-            // slice B is not pulled in - it is the closure the author has to decide about (§ 5.2)
+            // slice B is not pulled in - the author has to decide about it
             $this->assertNull(self::moduleOf($result, self::SLICE_B));
             $this->assertSame([self::SLICE_B => [self::SPOT]], $result->outside);
             $this->assertSame([], self::findings($result, LintFinding::ERROR));
@@ -362,7 +362,7 @@ namespace Tests\Unit\Central\Package {
             $this->assertSame([self::SLICE_A], array_map(static fn(Module $m): string => $m->id, $result->package->modules));
             $this->assertSame(['My app', '1.0'], [$result->package->name, $result->package->version]);
             $this->assertArrayNotHasKey('site', $result->package->source);
-            // the alerts module reading slice A is not in the app - an info for the author (§ 5.2)
+            // the alerts module reading slice A is not in the app - an info for the author
             $this->assertContains('I ' . ExportLint::ALERTS_OUTSIDE . ' ' . self::ALERTS . ' @ slice-module[' . self::SLICE_A . ']', self::findings($result));
             self::xml($result);
         }
@@ -501,7 +501,7 @@ namespace Tests\Unit\Central\Package {
             $this->assertSame(['ct_auth', 'ct_b', 'ct_foreign', 'ct_text'], $names);
 
             $foreign = self::groupOf($result, 'ct_foreign');
-            $this->assertSame(self::SLICE_A, $foreign->owner);   // owned outside the app: the first app slice using it (D3)
+            $this->assertSame(self::SLICE_A, $foreign->owner);   // owned outside the app: the first app slice using it
             $this->assertSame([['propagate' => 1, 'levelcount' => 2, 'horizontal' => 0, 'hidevalue' => 0, 'hierarch' => 1]], $foreign->rows['constant_slice']);
             $this->assertSame(
                 ['id' => self::C2, 'name' => 'Home', 'value' => 'home', 'class' => '', 'pri' => 110, 'ancestors' => self::C1, 'description' => ''],
@@ -647,7 +647,7 @@ namespace Tests\Unit\Central\Package {
 
         public function test_items_of_a_reader_management_slice_travel_like_any_other(): void
         {
-            // moving a whole site between installations takes its readers too (Honza, 24. 9.)
+            // moving a whole site between installations takes its readers too
             $source                             = self::source();
             $source->tables['slice'][0]['type'] = 'ReaderManagement';
             $result                             = (new Collector($source))->fromModules([self::SLICE_A], new CollectOptions(self::SOURCE, items: true));

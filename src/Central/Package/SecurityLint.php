@@ -9,15 +9,12 @@ use AA\Util\UserAliasFunction;
 use Closure;
 use Throwable;
 
-/** The security lint of an imported package (design balicek-v1.md § 3.3, § 8.4 level S): the package
- *  is code that runs with the rights of the target AA. Every text is linted - columns of all rows (the
- *  router home in site.state_file included), object and settings properties, spot names, variables and
- *  conditions (AA expressions, spot::conditionMatches()), constants, item values, RawBytes as they are.
+/** The security lint (level S) of an imported package: the package is code that runs with the rights of
+ *  the target AA, so every text is linted - row columns, object properties, spot texts, constants, items.
  *  A help for the preview, not a sandbox: the template language is too rich to be cleaned statically
- *  (a command name can be built at run time - composed names and placeholders are only flagged). It
- *  knows the commands of AA itself, not those a target adds by STRINGEXPAND_INC - the preview says so
- *  (ImportPlan::preview() `customCommands`). The trust boundary is who may install (PS_INSTALL_APP, Q-H2,
- *  checked by Importer::write()); its S findings need the confirmation there (ImportConfirmation). */
+ *  (a command name can be built at run time - such names are only flagged), and commands a target adds
+ *  by STRINGEXPAND_INC are unknown here. The trust boundary is who may install (PS_INSTALL_APP); the S
+ *  findings need an explicit confirmation (ImportConfirmation). */
 final class SecurityLint
 {
     /** S: AA commands (AA_Stringexpand_*) - code = the command name in lower case. Read files or URLs
@@ -59,8 +56,8 @@ final class SecurityLint
     public const LINT_FAILED = 'lint-failed';
     /** S: a command name built at run time - `{` right after `{` or inside the name (`{{..}include}`, `{inc{x}`) */
     public const COMPOSED = 'composed-command';
-    /** S: a placeholder as the command name - {foreach} and {_:Alias} put in _#1, _#P1, _#loop, _#<json key>
-     *  by str_replace and expand the result (stringexpand.php:10070-10085, 9157); `{_#ALIAS___}` is an alias */
+    /** S: a placeholder as the command name - {foreach} and {_:Alias} str_replace _#1, _#P1, _#loop,
+     *  _#<json key> and expand the result; `{_#ALIAS___}` is an alias */
     public const PLACEHOLDER = 'placeholder-command';
     /** S: `\u007b` / `\u007d` - braces {foreach:..:json} decodes into real ones */
     public const JSON_BRACE = 'json-brace';

@@ -7,7 +7,7 @@ namespace AA\Central\Package;
 use AA\Central\Package\Model\Module;
 use AA\Central\Package\Model\Package;
 
-/** The constant groups of an import plan (design balicek-v1.md § 5.3, § 7.1): their names on the target and
+/** The constant groups of an import plan: their names on the target and
  *  the charset of their constants. Core groups are not mapped.
  *  Names: kept when free, else `name_1`, `_2`, ... cut to 16 bytes as CopyConstants() - never merged. Taken =
  *  on the target (ImportTarget::groupTaken()), given earlier in the plan, or another group of the package,

@@ -3,12 +3,10 @@
 declare(strict_types=1);
 
 /**
- * Importer + RowWriter, C4.4 part 4a (design balicek-v1.md § 7.2 step 5, § 6): the example package read,
- * validated, planned and written into TableDb - in-memory tables behind the real DB_AA::transaction(),
- * getDB() and AA_Metabase SQL. New ids, rewritten references; a failure at every statement (rolled
- * back, nothing stays), a name taken since the plan, an unconvertible value, a length overflow after the
- * view numbers. The example's objects (part 4c) are written too - their details: ObjectWriterTest; items:
- * ItemWriterTest.
+ * Importer + RowWriter: the example package read, validated, planned and written into TableDb - in-memory
+ * tables behind the real DB_AA::transaction(), getDB() and AA_Metabase SQL. New ids, rewritten references;
+ * a failure at every statement (rolled back, nothing stays), a name taken since the plan, an unconvertible
+ * value, a length overflow after the view numbers. Objects in detail: ObjectWriterTest; items: ItemWriterTest.
  */
 
 namespace Tests\Unit\Central\Package;

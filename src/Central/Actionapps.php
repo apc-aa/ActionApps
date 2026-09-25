@@ -18,17 +18,10 @@ use zids;
  * One AA installation as Central sees it - its central_conf row and the commands Central sends
  * to its responder (central/responder.php).
  *
- * Was the global AA_Actionapps (central/include/actionapps.class.php), which stays as an alias:
- * callers use it and rows queued in toexecute before the move hold it (see __unserialize()).
+ * AA_Actionapps stays an alias: old callers use it and older toexecute rows hold it (see __unserialize()).
  */
 class Actionapps
 {
-    /** username of "access" user
-     *  We use the access user acount to get information about remote AA and
-     *  to update the remote AA slices/setting. You should create such user on
-     *  remote AA (superuser is enough :-)
-     */
-
     /** local data (central_conf table) in ItemContent structure */
     private ItemContent $local_data;
 
@@ -37,33 +30,20 @@ class Actionapps
     /** cached remote session ID */
     private ?string $_remote_session_id = null;
 
-    /** time when we get remote session ID. We do not use sessions older than ...*/
+    /** when the remote session was opened - getResponse() opens a new one after 10 minutes */
     private int $_remote_session_id_time = 0;
 
     /** cached remote data - like AA name, ... */
     private array $_cached = [];
 
-    /** constructor - create Actionapps object from ItemContent object
-     *  grabbed from central_conf table.
-     *  There are following fields:
-     *    'id', 'dns_conf', 'dns_serial', 'dns_web', 'dns_mx', 'dns_db',
-     *    'dns_prim', 'dns_sec', 'web_conf', 'web_path', 'db_server', 'db_name',
-     *    'db_user', 'db_pwd', 'AA_SITE_PATH', 'AA_BASE_DIR', 'AA_HTTP_DOMAIN',
-     *    'AA_ID', 'ORG_NAME', 'ERROR_REPORTING_EMAIL', 'ALERTS_EMAIL',
-     *    'IMG_UPLOAD_MAX_SIZE', 'IMG_UPLOAD_URL', 'IMG_UPLOAD_PATH',
-     *    'SCROLLER_LENGTH', 'FILEMAN_BASE_DIR', 'FILEMAN_BASE_URL',
-     *    'FILEMAN_UPLOAD_TIME_LIMIT', 'AA_ADMIN_USER', 'AA_ADMIN_PWD',
-     *    'status_code'));
-     */
+    /** @param ItemContent $content4id a central_conf row */
     public function __construct(ItemContent $content4id)
     {
         $this->local_data          = $content4id;
     }
 
-    /** Rows queued in toexecute before the move hold O:13:"AA_Actionapps" with the private
-     *  properties named for that class ("\0AA_Actionapps\0local_data"), which PHP would not match
-     *  to the properties of this class. Takes each value by its bare name, whichever class name
-     *  it was serialized with. */
+    /** Older toexecute rows hold O:13:"AA_Actionapps" with private names like "\0AA_Actionapps\0local_data",
+     *  which PHP would not match to this class - each value is taken by its bare name. */
     public function __unserialize(array $data): void
     {
         foreach (SerializedProps::bare($data) as $name => $value) {
@@ -74,9 +54,7 @@ class Actionapps
         }
     }
 
-    /** getActionapps function
-     *  main factory static method called like:
-     *     $aa = Actionapps::getActionapps($aa_id);
+    /** the AA of the central_conf row, cached; an AA with no data when there is no such row
      * @param $aa_id
      * @return Actionapps
      */
@@ -235,8 +213,7 @@ class Actionapps
      */
     public function requestDefinitions($type, $ids, $limited = []): array
     {
-        // We will use rather one call which returns all the data for all the
-        // slices, since it is much quicker than separate call for each slice
+        // one call for all the slices - much quicker than a call per slice
         $response = $this->getResponse(new AA_Request('Get_Module_Defs', ['type' => $type, 'ids' => $ids, 'limited' => $limited]));
         return ($response->isError()) ? [] : $response->getResponse();
     }
@@ -246,8 +223,6 @@ class Actionapps
      */
     public function synchronize($sync_commands)
     {
-        // We will use rather one call which returns all the data for all the
-        // slices, since it is much quicker than separate call for each slice
         $response = $this->getResponse(new AA_Request('Do_Synchronize', ['sync' => $sync_commands]));
         return ($response->isError()) ? $response->getError() : $response->getResponse();
     }
@@ -294,9 +269,6 @@ class Actionapps
      */
     public function importModuleChunk(AA_Definition_Module_Chunk $definition_chunk)
     {
-        // We will use rather one call which returns all the data for all the
-        // slices, since it is much quicker than separate call for each slice
-
         $response = $this->getResponse(new AA_Request('Do_Import_Module_Chunk', ['definition_chunk' => $definition_chunk]));
         return ($response->isError()) ? $response->getError() : $response->getResponse();
     }
@@ -338,7 +310,6 @@ class Actionapps
     public function _authenticate()
     {
         $request  = new AA_Request('Get_Sessionid');
-        // $response = $request->ask($this->getComunicatorUrl(), array('free' => $this->getAccessUsername(), 'freepwd' =>$this->getAccessPassword()));
         $response = $request->ask($this->getComunicatorUrl(), ['username' => $this->getAccessUsername(), 'password' => $this->getAccessPassword()]);
         if (!$response->isError()) {
             $arr = $response->getResponse();
@@ -372,7 +343,7 @@ class Actionapps
         return $ret;
     }
 
-    /** Loads the central_conf rows of the ids (was Central_GetAaContent())
+    /** Loads the central_conf rows of the ids
      *
      * Stores them in the 'Abstract Data Structure' for use with ItemContent, in the order of $zids
      * @return array - Abstract Data Structure {@link https://actionapps.org/faq/#1337}
@@ -386,7 +357,6 @@ class Actionapps
             return $ret;
         }
 
-        // construct WHERE clausule
         $sel_in = $zids->sqlin('');
         $SQL = "SELECT * FROM central_conf WHERE id $sel_in";
         StoreTable2Content($content, $SQL, '', 'id');
@@ -400,7 +370,7 @@ class Actionapps
         return $ret;
     }
 
-    /** Finds the central_conf ids for the conditions, sort and bins of the set (was Central_QueryZids()) */
+    /** Finds the central_conf ids for the conditions, sort and bins of the set */
     private static function queryIds(AA_Set $set): zids
     {
         $conds = $set->getConds();

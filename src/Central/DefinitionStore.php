@@ -38,7 +38,7 @@ final class DefinitionStore
             // and the rows of their groups (getModuleRows() gives an array)
             $constant_groups = [];
             foreach ($data['constant'] as $k => $v) {
-                $constant_groups[$v['group_id']] = true;   // get list of all groups
+                $constant_groups[$v['group_id']] = true;
             }
 
             $SQL = "SELECT * FROM constant WHERE group_id='lt_groupNames' AND " . Cvarset::sqlin('value', array_keys($constant_groups));
@@ -87,8 +87,7 @@ final class DefinitionStore
     }
 
     /** the definition split into chunks for import, with the ids in $replaces replaced - in the rows and in
-     *  the module the chunks name (the chunk mode writes only into it; an older Central named the template -
-     *  such chunks are refused now)
+     *  the module the chunks name (the chunk mode writes only into it)
      *  @return AA_Definition_Module_Chunk[] */
     public static function chunks($module_id, $data, $replaces): array
     {

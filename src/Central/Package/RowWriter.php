@@ -9,17 +9,14 @@ use AA\Central\Package\Model\Module;
 use AA_Metabase;
 use LogicException;
 
-/** Writes the table rows of an import plan (design balicek-v1.md § 7.2 steps 5.1-5.5, § 6) inside the
- *  transaction Importer opens: views and e-mails first without id (AUTO_INCREMENT => their maps), the
- *  alerts filters, the numbers into the texts (UPDATE); then per module `module` and the rows of its type;
- *  then the constant groups after a locking re-check of the name. Every value through RowStore.
+/** Writes the table rows of an import plan inside the transaction Importer opens: views and e-mails
+ *  first without id (AUTO_INCREMENT numbers them, the texts are then updated), the alerts filters; then
+ *  per module `module` and the rows of its type; then the constant groups. Every value through RowStore.
  *
  *  Structured references are mapped, not rewritten. Outside the package: slice.vid and profile input_view
- *  stay (the Validator's W); slice.mlxctrl = '' (a slice of the target would control this one's languages);
- *  alerts_filter.vid, emailid_*, filterid, uses, alerts_collection.slice_id and a group owner never - the
- *  Validator's E (a new collection mailing a view or template of the target to readers the package brings),
- *  here a LogicException. 0 / empty is "none".
- *  Alerts fields of a collection the package does not carry stay (Planner::ALERTS_FIELD_KEPT): inert.
+ *  stay (W); slice.mlxctrl = '' (a target slice would control this one's languages); alerts references
+ *  to the target are the Validator's E - a new collection must not mail target views to the package's
+ *  readers - here a LogicException. 0 / empty is "none".
  *  @internal only Importer calls it - the rights and the S confirmation are checked there (Importer::write()). */
 final class RowWriter
 {
@@ -30,7 +27,7 @@ final class RowWriter
     private IdMap $map;
     private ImportRewrite $rewrite;
     /** @var list<array{string, int, array<string, mixed>, array<string, int|string|null>, string, string, array<string, mixed>}>
-     *       step 1 rows: [element, number, package row, fixed, charset, path, values written] */
+     *       rows numbered() wrote: [element, number, package row, fixed, charset, path, values written] */
     private array $numbered = [];
 
     public function __construct(
@@ -46,7 +43,7 @@ final class RowWriter
     public function write(ImportPlan $plan): IdMap
     {
         [$this->plan, $this->map, $this->numbered] = [$plan, $plan->map, []];
-        $this->rewrite = new ImportRewrite($this->map);          // no numbers yet: numeric() changes nothing
+        $this->rewrite = new ImportRewrite($this->map);          // no numbers yet; renumber() fixes the texts
         $numbers       = ['view' => [], 'email' => []];
         foreach ($plan->package->modules as $m) {
             foreach (array_keys($numbers) as $element) {
@@ -76,7 +73,7 @@ final class RowWriter
         return $this->map;
     }
 
-    /** step 1: a view or e-mail row without its id; its number */
+    /** a view or e-mail row without its id; its new number */
     private function numbered(Module $m, string $element, array $row, int $i): int
     {
         $table  = $this->schema->rowTables()[$element];
@@ -89,7 +86,7 @@ final class RowWriter
         return $number;
     }
 
-    /** step 3: the view and e-mail numbers into the texts of the step 1 rows */
+    /** the new view and e-mail numbers into the texts of the rows numbered() wrote */
     private function renumber(): void
     {
         foreach ($this->numbered as [$element, $number, $source, $fixed, $charset, $path, $written]) {
@@ -148,8 +145,7 @@ final class RowWriter
         }
     }
 
-    /** site.structure: the spot tree with its texts through RowStore (names, variables, conditions -
-     *  AA expressions, § 6.3), serialize()d as the site admin stores it */
+    /** site.structure: the spot tree with its texts through RowStore, serialize()d as the site admin stores it */
     private function structure(Module $m): string
     {
         $tree = $m->spotTree ?? throw new LogicException("Site $m->id has neither a spot tree nor site.structure");
@@ -182,9 +178,8 @@ final class RowWriter
         }
     }
 
-    /** lt_groupNames, constant_slice, constants of a group - in the charset of the group. The name is read
-     *  again with a lock right before it is created: the plan is no reservation, the start of the
-     *  transaction (Importer) read without one. */
+    /** lt_groupNames, constant_slice, constants of a group - in the charset of the group. The name is
+     *  re-checked with a lock: the plan reserves nothing. */
     private function group(ConstantGroup $g): void
     {
         $name    = $this->map->group($g->name) ?? throw new LogicException("Constant group $g->name is not mapped");
@@ -224,7 +219,7 @@ final class RowWriter
         return $this->store->insert($table, $this->store->row($element, $row, $fixed, $charset, $this->rewrite, $at), $at);
     }
 
-    /** [column => $fn(value)] when the row has the column, NULL staying NULL - a structured reference
+    /** [column => $fn(value)] when the row has the column, NULL staying NULL
      *  @param array<string, mixed> $row @param callable(string): (int|string) $fn @return array<string, int|string|null> */
     private static function mapped(array $row, string $column, callable $fn): array
     {

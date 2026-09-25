@@ -10,9 +10,9 @@ use AA\Central\Package\Model\Package;
 use AA\Central\Package\Model\RawBytes;
 use InvalidArgumentException;
 
-/** Collects an app from the source AA into the package model (design balicek-v1.md § 5, § 6): the rows of
- *  each module type scrubbed to the columns Schema carries, the constant groups the app uses, objects and the
- *  spot tree, texts in UTF-8 (ModuleCharset, § 2.4), items on request, the export lint (ExportLint, § 8.4).
+/** Collects an app from the source AA into the package model: the rows of each module type scrubbed to
+ *  the columns Schema carries, the constant groups the app uses, objects and the spot tree, texts in UTF-8
+ *  (ModuleCharset), items on request, the export lint (ExportLint).
  *  fromSite() = the site + its "uses modules" of type S and Alerts; fromModules() = the given ones. A module
  *  the app refers to from outside is a finding and lands in CollectResult::$outside - never pulled in.
  *
@@ -27,13 +27,13 @@ use InvalidArgumentException;
  *  @throws RewriteFailed from both entry points - a regex of the lint failed: a failed export */
 final class Collector
 {
-    /** W: a "uses" module of a type v1 does not carry - P, Links, J, W (§ 5.2, D1) */
+    /** W: a "uses" module of a type a package does not carry - P, Links, J, W */
     public const MODULE_TYPE = 'module-type';
     /** I: a "uses" module deleted or missing - AA ignores it too (AA_Module_Site::getRelatedModules()) */
     public const MODULE_MISSING = 'module-missing';
-    /** W: site.state_file names a control file of the source installation - left out (§ 6.3) */
+    /** W: site.state_file names a control file of the source installation - left out */
     public const STATE_FILE = 'state-file';
-    /** E: module.lang_file not in Langs::getFiles(<type>) - the charset, so the conversion, is unknown (§ 2.4) */
+    /** E: module.lang_file not in Langs::getFiles(<type>) - the charset, so the conversion, is unknown */
     public const LANG_FILE = 'lang-file';
     /** I: lang_file off the list of its type, of a known language - the package carries the language's
      *  file of the type (the charset is the same: AA takes it from the language code) */
@@ -60,7 +60,7 @@ final class Collector
     private const ROW = ['W' => 'site', 'S' => 'slice'];
 
     /** GetItemContent() pseudo fields and the item columns that are state of the source AA - users,
-     *  counters, feeding (§ 6.2; the id is the attribute) */
+     *  counters, feeding (the id is the attribute) */
     public const ITEM_LEFT_OUT = [
         'u_slice_id......', 'unpacked_id.....', 'id..............', 'short_id........', 'slice_id........', 'posted_by.......',
         'edited_by.......', 'externally_fed..', 'disc_count......', 'disc_app........', 'display_count...',
@@ -221,7 +221,7 @@ final class Collector
         ];
     }
 
-    /** § 6.3 site.structure as sitetree::toArray() with its texts in UTF-8; null = no structure - AA
+    /** site.structure as sitetree::toArray() with its texts in UTF-8; null = no structure - AA
      *  builds the tree from spot 1 then (AA_Module_Site::getTree()), and so will the imported site.
      *  Unserialized as AA does (allowed_classes sitetree, spot); fromArray() checks it is a tree. */
     private function spotTree(string $structure, string $charset, string $path): ?array
@@ -281,7 +281,7 @@ final class Collector
             'field'   => $this->source->select('field', [['slice_id', $id, 'l']]),
             'view'    => $this->source->select('view', [['slice_id', $id, 'l']]),
             'email'   => $this->source->select('email', [['owner_module_id', $id, 'l']]),
-            'profile' => $this->source->select('profile', [['slice_id', $id, 'l'], ['uid', '*', 's']]),   // the default profile only (§ 6.2)
+            'profile' => $this->source->select('profile', [['slice_id', $id, 'l'], ['uid', '*', 's']]),   // the default profile only
         ];
     }
 
@@ -325,10 +325,10 @@ final class Collector
         return $items;
     }
 
-    /** § 5.3: the groups of field widgets and of {constant(s)/options:<g>} in the texts, looked up as
+    /** The groups of field widgets and of {constant(s)/options:<g>} in the texts, looked up as
      *  stored - in the charset of the module that names them. Core groups and `#sLiCe-` (items of a
-     *  slice) are none. slice.auth_field_group / mailman_field_lists name FIELDS (include/auth.php:81,
-     *  include/mailman.php:53) - their groups come with the field.
+     *  slice) are none. slice.auth_field_group / mailman_field_lists name FIELDS - their groups come with
+     *  the field.
      *  @param array<string, array<string, list<array<string, mixed>>>> $raw  @param array<string, array<string, mixed>> $app
      *  @param array<string, string> $charsets @param array<string, array{?array<string, mixed>, list<array<string, mixed>>}> $objects as stored
      *  @return array{list<ConstantGroup>, list<string>} the groups, the owners outside the app */
@@ -385,7 +385,7 @@ final class Collector
                 $this->findings[] = [$path, new LintFinding(LintFinding::ERROR, $bad->code, $bad->ref, $bad->offset)];
                 continue;
             }
-            // the charset of the owning slice (§ 2.4) - never a silent utf-8; an unowned group has its user's
+            // the charset of the owning slice - never a silent utf-8; an unowned group has its user's
             if (($owner !== '') && !isset($charsets[$owner]) && !isset($modules[$owner])) {
                 $this->add($path, LintFinding::WARNING, self::OWNER_MISSING, $owner);
             }
@@ -394,7 +394,7 @@ final class Collector
             foreach (array_filter(['constant_slice' => isset($slices[$name]) ? [$slices[$name]] : [], 'constant' => $consts[$name] ?? []]) as $element => $list) {
                 $rows[$element] = $this->clean($element, $list, $charset, $path);
             }
-            // owned outside the app: the first app slice using it, else the first app slice (D3); unowned stays unowned
+            // owned outside the app: the first app slice using it, else the first app slice; unowned stays unowned
             $at       = isset($charsets[$owner]) ? $owner : (($owner === '') ? '' : (($app[$user]['type'] === 'S') ? $user : (string) $app_slice));
             $groups[] = new ConstantGroup($utf_name, $at, $rows);
         }
@@ -418,7 +418,7 @@ final class Collector
         return $rows;
     }
 
-    /** § 2.4 the value in UTF-8; a value the charset cannot hold stays as the source bytes - RawBytes,
+    /** the value in UTF-8; a value the charset cannot hold stays as the source bytes - RawBytes,
      *  which Writer carries as base64 - with a finding */
     private function utf8(string $value, string $charset, string $path): string|RawBytes
     {

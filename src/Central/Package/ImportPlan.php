@@ -6,26 +6,20 @@ namespace AA\Central\Package;
 
 use AA\Central\Package\Model\Package;
 
-/** The plan of one import (design balicek-v1.md § 7.2 step 3; Planner): everything the writer needs and the
- *  preview shows - computed with no write. The writer writes $package (the FixUps applied; texts UTF-8,
- *  source ids) with $map, rewriting each value with ImportRewrite and converting it to $charsets /
- *  $groupCharsets (TargetCharset: the contract); the view, e-mail and filter maps come after the inserts.
- *  THE PLAN IS NO RESERVATION: another import or an admin may take a group name or a collection id before
+/** The plan of one import: everything the writer needs and the preview shows, computed with no write.
+ *  The plan reserves nothing: another import or an admin may take a group name or a collection id before
  *  the write (constant.group_id is not unique - nothing in the DB would stop a merge), so the writer checks
  *  them again inside the transaction.
- *  Everything here quotes package text - names, docs, paths, finding refs, fix-ups: the UI must escape all
- *  of it (safe()). */
+ *  Everything here quotes package text - the UI must escape all of it. */
 final readonly class ImportPlan
 {
     /**
      * @param Package                           $package       the package to write: FixUps applied, still UTF-8 and source ids
      * @param IdMap                             $map           source => target ids; views, e-mails, filters empty
      * @param array<string, string>             $charsets      source module id => target charset (its lang_file)
-     * @param array<string, string>             $langFiles     source module id => module.lang_file to write (ModuleCharset::ofModule():
-     *                                                         `.php3` read as `.php`)
+     * @param array<string, string>             $langFiles     source module id => module.lang_file to write
      * @param array<string, string>             $groupCharsets source group name => charset of its constants
      * @param array<string, string>             $settingsIds   source module id => id of its new settings object
-     *                                                         (string2id(class . new module id)); site and slice modules
      * @param list<FixUp>                       $fixUps        what FixUps changed, in package order
      * @param list<array{string, LintFinding}>  $validation    Validator's findings (no E - or there is no plan)
      * @param list<array{string, LintFinding}>  $findings      the planner's: group renames (I), charset and length (E, W)
@@ -42,9 +36,7 @@ final readonly class ImportPlan
         public array $findings,
     ) {}
 
-    /** no E of the validator (there is no plan then) or of the planner: the writer may start - once the
-     *  S findings were confirmed in the preview (ImportConfirmation) and the rights checked (PS_INSTALL_APP);
-     *  Importer::write() refuses without them */
+    /** no E: the writer may start once the S findings were confirmed and the rights checked */
     public function importable(): bool
     {
         return !$this->ofLevel(LintFinding::ERROR);
@@ -62,12 +54,9 @@ final readonly class ImportPlan
         return FindingList::sort([...$this->validation, ...$this->findings]);
     }
 
-    /** The data of the import preview (§ 7.2 step 3) - no HTML. ALL strings are package text: safe().
-     *  `confirm`: S findings - the preview asks for an explicit confirmation and hands the token of
-     *  ImportConfirmation::token() to the write only when it was given (§ 3.3 point 3). The preview also
-     *  says that the package installs code running with the rights of this AA, where it comes from
-     *  (`source`), and - `customCommands` - that the SecurityLint does not know the commands this AA adds
-     *  by STRINGEXPAND_INC (include/custom/<dir>/stringexpand.php).
+    /** The data of the import preview - no HTML; all strings are package text, escape them.
+     *  `confirm`: there are S findings, so the write needs ImportConfirmation::token().
+     *  `customCommands`: SecurityLint does not know the commands this AA adds by STRINGEXPAND_INC.
      *  @return array{name: string, description: ?string, version: ?string, doc: ?string, source: array<string, string>,
      *                modules: list<array{type: string, name: string, old: string, new: string, charset: string, doc: ?string}>,
      *                groups: list<array{old: string, new: string}>, fixUps: list<FixUp>, findings: list<array{string, LintFinding}>,

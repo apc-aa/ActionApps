@@ -141,7 +141,7 @@ final class ReferenceRewriterTest extends TestCase
     public static function longIdForms(): array
     {
         return [
-            // long ids - § 8.1
+            // long ids
             'ids of a slice'              => ['{ids:' . self::SLICE_OLD . ':d-category........-==-Env}', '{ids:' . self::SLICE_NEW . ':d-category........-==-Env}'],
             'upper case'                  => ['{ids:' . strtoupper(self::SLICE_OLD) . '}', '{ids:' . strtoupper(self::SLICE_NEW) . '}'],
             'mixed case -> lower case'    => ['{ids:0F1e2d3c4b5a69788796a5b4c3d2e1f0}', '{ids:' . self::SLICE_NEW . '}'],
@@ -172,7 +172,7 @@ final class ReferenceRewriterTest extends TestCase
     public static function groupForms(): array
     {
         return [
-            // constant groups - § 8.3, stringexpand.php:4411, 4451, 4489
+            // constant groups - stringexpand.php:4411, 4451, 4489
             '{constant:g:...}'            => ['{constant:biom__categories:{@category........:|}:name:|:, }', '{constant:biom__categori_1:{@category........:|}:name:|:, }'],
             '{constants:g}'               => ['{constants:ekolist-category}', '{constants:ekolist-catego_1}'],
             '{options:g:selected}'        => ['<select name="t">{options:ekolist-category:{qs:t}}</select>', '<select name="t">{options:ekolist-catego_1:{qs:t}}</select>'],

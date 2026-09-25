@@ -12,18 +12,17 @@ use DOMElement;
 use DOMNode;
 use InvalidArgumentException;
 
-/** Package model => aa-app XML (design balicek-v1.md § 2, § 4). Pure; toXml() works on a clone.
- *  Values as § 2.2 (ValueCodec: CDATA, crlf, base64, the INVALID_BYTES finding; SQL NULL of a column =>
- *  `null="true"`, of a property or item value throws), a column with the empty value of its type left out
- *  (§ 2.3). Other texts have no enc/crlf: a value XML 1.0 cannot carry throws. Deterministic output (§ 2.5).
- *  The result is validated against the XSD - an invalid model throws InvalidArgumentException. */
+/** Package model => aa-app XML. Pure; toXml() works on a clone.
+ *  Text values go through ValueCodec; SQL NULL of a column => `null="true"`, of a property or item value
+ *  throws; a column with the empty value of its type is left out. Other texts have no enc/crlf, so a value
+ *  XML 1.0 cannot carry throws. The output is deterministic and validated against the XSD. */
 final class Writer
 {
     public const FORMAT = '1.0';
 
     private const MODULE_ORDER = [Module::SITE, Module::SLICE, Module::ALERTS];
 
-    /** row order other than by the key attributes (§ 2.5) */
+    /** row order other than by the key attributes */
     private const SORT = ['constant' => ['pri', 'id']];
 
     /** XSD types of key attributes compared as numbers */
@@ -81,7 +80,7 @@ final class Writer
             $el   = $this->el($root, 'constant-group', ['name' => $group->name, 'owner' => $group->owner === '' ? null : $group->owner], path: $path);
             $this->container($el, 'constant-group', $group->rows, [], $path);
         }
-        $this->el($root, 'signature');   // reserved, written empty in v1 (§ 9.4)
+        $this->el($root, 'signature');   // reserved, empty in format 1.0
 
         $xml = (string) $this->dom->saveXML();
         $this->validate($xml);
@@ -119,7 +118,7 @@ final class Writer
         }
     }
 
-    /** meta/tables: the columns this AA knows per row element (§ 2.3) */
+    /** meta/tables: the columns this AA knows per row element */
     private function tables(DOMElement $tables): void
     {
         foreach (array_keys($this->schema->rowTables()) as $element) {
@@ -382,7 +381,7 @@ final class Writer
         return [$x !== null, !$nx, $nx ? +$x : 0] <=> [$y !== null, !$ny, $ny ? +$y : 0] ?: strcmp((string) $x, (string) $y);
     }
 
-    /** as the reader will (§ 3.1) */
+    /** the same check the reader makes */
     private function validate(string $xml): void
     {
         try {

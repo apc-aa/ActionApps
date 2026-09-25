@@ -11,15 +11,15 @@ use AA_Metabase;
 
 /** Imports a chunk of a module definition (AA_Definition_Module_Chunk: one table of one module, at most 1000
  *  rows) into this AA - Central Copy Slice (responder Do_Import_Module_Chunk, the local import); the wire
- *  class delegates here. The chunk mode of design balicek-v1.md § 10.1:
+ *  class delegates here:
  *  - only the tables of the module's type; installation state and profiles of users are skipped;
- *  - F4: every row belongs to the chunk's module_id - by its module column, the owner of its constant group
+ *  - every row belongs to the chunk's module_id - by its module column, the owner of its constant group
  *    (a new group becomes the module's), the slice of its item, the module of its collection - and the module
  *    exists here (items only into a prepared slice). An older Central names the template module: refused;
  *  - only the columns a package carries, installation columns reset, references out of the module cleared;
  *    an AUTO_INCREMENT number taken here: inserted again without it (references are not rewritten).
- *  Rights: both entry points are superadmin-only, and SUPER includes PS_INSTALL_APP (Q-H2).
- *  Report: today's `OK: ...` / `Err: ...`, then `Err: refused, <reason>: ...`, `Skipped, ...`, `Note: ...`. */
+ *  Rights: both entry points are superadmin-only (SUPER includes PS_INSTALL_APP).
+ *  Report: `OK: ...` / `Err: ...`, then `Err: refused, <reason>: ...`, `Skipped, ...`, `Note: ...`. */
 final class ChunkImporter
 {
     private const TABLES = [
@@ -28,10 +28,10 @@ final class ChunkImporter
         'Alerts' => ['module', 'alerts_collection', 'alerts_collection_filter', 'alerts_collection_howoften'],
     ];
 
-    /** state of the source AA (subscribers, feeds; § 6.2) */
+    /** state of the source AA (subscribers, feeds) */
     private const DROPPED = ['email_notify', 'rssfeeds'];
 
-    /** the raw items keep every column (R10) */
+    /** the raw items keep every column */
     private const ITEM_TABLES = ['item', 'content', 'discussion'];
 
     /** columns kept besides the ones a package carries (Schema): the module column, keys chunk mode does not map */
@@ -168,7 +168,7 @@ final class ChunkImporter
         }
     }
 
-    /** F4 (see the class doc), and only scalar values */
+    /** the row belongs to the module (see the class doc) and holds only scalar values */
     private function belongs(string $table, mixed $row, string $module): bool
     {
         if (!is_array($row) || array_filter($row, static fn($v): bool => !is_scalar($v) && ($v !== null))) {
@@ -274,7 +274,7 @@ final class ChunkImporter
         return null;
     }
 
-    /** the row by its table keys, as today's report; a table unknown to Central by the row's key @return array<int, mixed> */
+    /** the row by its table keys; a table unknown to Central by the row's key @return array<int, mixed> */
     private function ident(string $table, mixed $row, int|string $key): array
     {
         if (!in_array($table, [...self::DROPPED, ...array_merge(...array_values(self::TABLES))], true)) {

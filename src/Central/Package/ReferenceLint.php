@@ -6,43 +6,41 @@ namespace AA\Central\Package;
 
 use Generator;
 
-/** References ReferenceRewriter cannot rewrite, or that lead outside the app (design balicek-v1.md
- *  § 8.4). Pure text analysis of the SOURCE text (before any rewrite) against the map: for the
- *  export an identity map of the app, for the import the plan. Any regex failure throws
- *  RewriteFailed - an empty list always means "nothing found". The security lint (§ 3.3, level S)
- *  and the checks that need rows (reader slice, charset, allowlist) are not here.
+/** References ReferenceRewriter cannot rewrite, or that lead outside the app: text analysis of the
+ *  SOURCE text (before any rewrite) against the map - for the export an identity map of the app, for
+ *  the import the plan. Any regex failure throws RewriteFailed, so an empty list always means
+ *  "nothing found".
  *
- *  The lint is best-effort help for package authors and importers, not a security boundary - the
- *  trust boundary is who may install a package (design § 3.3, Q-H2).
+ *  Best-effort help, not a security boundary - that is who may install a package.
  */
 final class ReferenceLint
 {
-    /** W: a known numeric form (§ 8.2) whose view is not in the app */
+    /** W: a known numeric form whose view is not in the app */
     public const VIEW_OUTSIDE = 'view-outside';
     /** W: {mailtemplate:N} whose e-mail is not in the app */
     public const EMAIL_OUTSIDE = 'email-outside';
-    /** W: computed view/e-mail - `vid={..}`, `vid=_#ALIAS`, `{view:{..}}`, `cmd[{..}]`, ... (§ 8.2) */
+    /** W: computed view/e-mail - `vid={..}`, `vid=_#ALIAS`, `{view:{..}}`, `cmd[{..}]`, ... */
     public const COMPUTED = 'computed';
     /** W: a form AA reads, but the rewriter does not: a number of more than 10 significant digits in
      *  a known slot, URL-encoded `cmd%5B`/`set%5B` or keys of view.php/f_v: (`v%69d=`), `%` or `+`
      *  (parse_str() decodes them) anywhere in a set[] value and in the part of a cmd[] value that picks
      *  the view - the command letter, or the first parameter of v/x/o/i (`%76-12`, `v-%312`, `+v-12`;
-     *  the `%22` of `c-1-%22..` in {livesearch:} stays fine), a quoted index `cmd['12']` (NormalizeArrayIndex(), include/util.php:322), a key
-     *  ending in `vid` (`covid=12` - AA's `/vid=\s*(\w+)/` has no left boundary, view.class.php:422).
+     *  the `%22` of `c-1-%22..` in {livesearch:} stays fine), a quoted index `cmd['12']` (NormalizeArrayIndex()),
+     *  a key ending in `vid` (`covid=12` - AA's `/vid=\s*(\w+)/` in view.class.php has no left boundary).
      *  The last one is I outside view.php/f_v: parameters (`?covid=19` in a link is no view). */
     public const UNKNOWN_FORM = 'unknown-form';
-    /** I: a number equal to an app view/e-mail id outside the known forms (§ 8.2, `\b3072\b`) - not W: small
+    /** I: a number equal to an app view/e-mail id outside the known forms - not W: small
      *  view ids match colspan, substr arguments, dates, and a W would block the export of a published app */
     public const BARE_NUMBER = 'bare-number';
-    /** W: {ids:<sid>, {modulefield:<sid>, #sLiCe-<sid> of a module outside the app (§ 5.2, D11) */
+    /** W: {ids:<sid>, {modulefield:<sid>, #sLiCe-<sid> of a module outside the app */
     public const MODULE_OUTSIDE = 'module-outside';
-    /** W: {form:..} - AA_Form is not transferred in v1 (§ 5.4, D14) */
+    /** W: {form:..} - AA_Form does not travel in a package */
     public const FORM = 'form';
-    /** I: {constant(s)/options:<g> - the group is neither in the package nor a core group (§ 5.3) */
+    /** I: {constant(s)/options:<g> - the group is neither in the package nor a core group */
     public const GROUP_OUTSIDE = 'group-outside';
-    /** I: a mapped long id glued to other hex chars (`#d<id>`, `<id>f`) - not rewritten (§ 8.1) */
+    /** I: a mapped long id glued to other hex chars (`#d<id>`, `<id>f`) - not rewritten */
     public const GLUED_ID = 'glued-id';
-    /** I: a mapped group name outside the rewritten forms stays unchanged (§ 8.3) */
+    /** I: a mapped group name outside the rewritten forms stays unchanged */
     public const GROUP_OTHER = 'group-other';
 
     /** LintFinding::$ref is cut to this many bytes */

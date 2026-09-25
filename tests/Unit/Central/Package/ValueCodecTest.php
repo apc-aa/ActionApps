@@ -14,7 +14,7 @@ use PHPUnit\Framework\TestCase;
 
 final class ValueCodecTest extends TestCase
 {
-    /** pieces the random values are made of - the edge cases of § 2.2 and some plain text */
+    /** pieces the random values are made of - the edge cases and some plain text */
     private const PIECES = [
         "\r", "\n", "\r\n", ']]>', ']]', ']', '>', '<', '&', '&amp;', "\t", ' ', "\x00", "\x01", "\x0B", "\x1F", "\x7F",
         'a', 'Zprávy', '🙂', "\u{FFFE}", "\u{FFFF}", "\u{FDD0}", "\xC3", "\xFF", "\xED\xA0\x80", "\xF4\x90\x80\x80", "\xC0\xAF",

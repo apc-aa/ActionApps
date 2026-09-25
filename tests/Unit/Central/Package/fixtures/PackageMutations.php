@@ -10,7 +10,7 @@ use AA\Central\Package\Model\Package;
 use AA\Central\Package\Reader;
 use Closure;
 
-/** The example package of design balicek-v1.md § 4 (fixtures/aa-app-example.xml) read by Reader, and
+/** The example package (fixtures/aa-app-example.xml) read by Reader, and
  *  helpers that return a changed copy of the readonly model (as ValidatorTest). The AA boot the
  *  Validator needs: bootAa() in setUpBeforeClass(). */
 trait PackageMutations

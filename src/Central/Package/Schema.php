@@ -9,14 +9,12 @@ use AA_Metabase;
 use AA_Module_Site;
 use LogicException;
 
-/** The aa-app package format 1.x as THIS AA knows it (design balicek-v1.md § 3.2, § 6): the XSD and
- *  the known child elements per parent, both generated from include/metabase_schema.php + the rules
- *  below - so a column added to the AA schema lands in both in the same commit.
+/** The aa-app package format 1.x as THIS AA knows it: the XSD and the known child elements per parent,
+ *  both generated from include/metabase_schema.php + the rules below, so a new AA column lands in both.
  *
- *  A table row is an element named after the table, a column its child element. What a column is
- *  NOT in the XSD, a package cannot carry: installation columns, the module column (F4) and
- *  AUTO_INCREMENT numbers. The reader validates against xsd(); SchemaTest keeps the repo copy FILE
- *  equal to it - regenerate with `php dev/central/aa-app-xsd.php`.
+ *  A table row is an element named after the table, a column its child element. A column missing in
+ *  the XSD cannot travel: installation columns, the module column and AUTO_INCREMENT numbers.
+ *  SchemaTest keeps FILE equal to xsd() - regenerate with `php dev/central/aa-app-xsd.php`.
  */
 final class Schema
 {
@@ -25,8 +23,8 @@ final class Schema
     /** the generated XSD, validated with DOMDocument::schemaValidateSource() (schemaValidate() would load a file) */
     public const FILE = __DIR__ . '/aa-app-1.xsd';
 
-    /** object classes of format 1.0 (§ 5.4). Settings objects travel only as <settings>, subobjects
-     *  only inside an AA_Set; AA_Form, AA_Plannedtask and tokens never. */
+    /** object classes of format 1.0. Settings objects travel only as <settings>, subobjects only inside
+     *  an AA_Set; AA_Form, AA_Plannedtask and tokens never. */
     public const TOP_CLASSES = ['AA_Aliasfunc', 'AA_Set'];
     public const SUB_CLASSES = ['AA_Condition', 'AA_Sortorder'];
 
@@ -34,9 +32,9 @@ final class Schema
     public const SETTINGS_CLASSES = ['site-module' => 'AA_Modulesettings_Site', 'slice-module' => 'AA_Modulesettings_Slice'];
 
     /** row element => [table, key columns written as attributes: column => [attribute, type, default],
-     *  columns left out, note]. Left out as well: the module column (AA_Metabase::getModuleField() -
-     *  the importer sets it) and AUTO_INCREMENT columns that are no attribute (new numbers on the target).
-     *  A new column of a definition table (field, view, ...) is carried automatically; see CARRIED. */
+     *  columns left out, note]. Also left out: the module column (the importer sets it) and AUTO_INCREMENT
+     *  columns that are no attribute (the target numbers them). New columns of definition tables travel
+     *  automatically; see CARRIED. */
     private const ROWS = [
         'module'                     => ['module', [], ['type', 'owner', 'created_by', 'created_at', 'slice_url', 'deleted', 'priority', 'app_id']],
         'slice'                      => ['slice', [], ['owner', 'created_by', 'created_at', 'slice_url', 'deleted', 'fileman_dir', 'reading_password', 'export_to_all']],
@@ -55,10 +53,9 @@ final class Schema
         'alerts_filter'              => ['alerts_filter', ['id' => ['id', 'xs:positiveInteger']], []],
     ];
 
-    /** Rows of installation state: every column is classified by hand - carried here, or left out in
-     *  ROWS (or an attribute / the module column). A new metabase column in them stops the generator
-     *  (and the sync test) until someone decides whether a package may carry it - it may be a path,
-     *  a password or a permission of the source AA. */
+    /** Tables of installation state: every column is classified by hand (here, or left out in ROWS).
+     *  A new column stops the generator until someone decides - it may be a path, a password or a
+     *  permission of the source AA. */
     private const CARRIED = [
         'module'            => ['name', 'lang_file', 'flag'],
         'slice'             => [
@@ -81,7 +78,7 @@ final class Schema
     private const VALUE_TYPES = ['constant.ancestors' => 'idsValue'];
 
     /** container => [attributes, children]; child suffix ? = optional, * = any number; a child
-     *  missing in CHILD_TYPES is a row (ROWS). The wrapper decides which tables a module has (§ 6.1). */
+     *  missing in CHILD_TYPES is a row (ROWS) */
     private const CONTAINERS = [
         'site-module'    => [[['id', 'longId']], ['doc?', 'module', 'site', 'spot-tree?', 'site_spot*', 'uses*', 'settings?', 'object*']],
         'slice-module'   => [[['id', 'longId']], ['doc?', 'module', 'slice', 'settings?', 'field*', 'view*', 'email*', 'profile*', 'object*', 'item*']],
@@ -154,10 +151,9 @@ final class Schema
     }
 
     /** Known child elements per parent element name (declarations of one name merged), in XSD order.
-     *  The reader prunes by it (§ 3.2): an element unknown here only when the package has a higher
-     *  minor format version. Row children are columns - there the rule is the local AA schema
-     *  (rowTables()): unknown columns are always pruned, known but left-out ones (reading_password)
-     *  stay for the XSD to reject. An element that is no key has no element children.
+     *  The reader prunes unknown elements only for a higher minor format version. Columns are checked
+     *  against the local AA schema instead: unknown ones are always pruned, known but left-out ones
+     *  (reading_password) stay for the XSD to reject.
      *  @return array<string, list<string>> */
     public function knownElements(): array
     {
@@ -172,8 +168,7 @@ final class Schema
     }
 
     /** Known attributes per element name (declarations of one name merged: a column `name` has
-     *  null/enc/crlf, so <meta><name> "knows" them too - the XSD then decides). The reader prunes an
-     *  unknown attribute only when the package has a higher minor format version (§ 3.2).
+     *  null/enc/crlf, so <meta><name> "knows" them too - the XSD then decides).
      *  @return array<string, list<string>> */
     public function knownAttributes(): array
     {
@@ -209,8 +204,8 @@ final class Schema
         return $counts;
     }
 
-    /** true: site.state_file names a control file of the source AA (flag ≠ 1, stateFileName() ≠ '') - site.php
-     *  would include it; never code of an app (§ 6.3) @param array<string, mixed> $site a site row */
+    /** true: site.state_file names a control file of the source AA, which site.php would include -
+     *  never code of an app @param array<string, mixed> $site a site row */
     public static function controlFile(array $site): bool
     {
         return ((int) ValueCodec::bytes($site['flag'] ?? '') !== 1) && (AA_Module_Site::stateFileName(ValueCodec::bytes($site['state_file'] ?? '')) !== '');
@@ -222,15 +217,14 @@ final class Schema
         return array_map(static fn(array $row): string => $row[0], self::ROWS);
     }
 
-    /** Every column of the row element's table in this AA - carried or not. The reader prunes a column
-     *  only when it is not here (§ 3.2); a known one the package must not carry is left to the XSD.
+    /** Every column of the row element's table in this AA - carried or not
      *  @return list<string> */
     public function tableColumns(string $element): array
     {
         return array_keys($this->metabase->getColumns(self::ROWS[$element][0]));
     }
 
-    /** Columns a row element carries as child elements, in metabase_schema.php order (design § 2.5).
+    /** Columns a row element carries as child elements, in metabase_schema.php order
      *  @return array<string, string> column => value type: textValue | intValue | floatValue | idValue | idsValue */
     public function rowColumns(string $element): array
     {
@@ -261,12 +255,9 @@ final class Schema
         }, $this->metabase->getColumns(self::ROWS[$element][0])));
     }
 
-    /** Columns of a row element's table with a length limit: [N, true] for char(N) / varchar(N) -
-     *  N CHARACTERS of the column charset (single-byte on most AA databases: bytes); [N, false] for
-     *  N BYTES - binary(N), varbinary(N), tinytext/blob, text/blob, mediumtext/blob. A packed id column
-     *  (AA_Metabase::isPacked()) holds 2N hex digits of the unpacked ids a package carries. Long types
-     *  have none worth checking (4 GB). An import writing through AA_Metabase has N BYTES in every (N)
-     *  column as well - AA_MbT::getVarset4Data() cuts there (TargetCharset::tooLong()).
+    /** Length limits of a row element's table: [N, true] = N characters (char, varchar), [N, false] =
+     *  N bytes (binary, *text, *blob). A packed id column holds 2N hex digits of the unpacked ids.
+     *  AA_MbT::getVarset4Data() cuts every (N) column at N bytes too (TargetCharset::tooLong()).
      *  @return array<string, array{int, bool}> column => [limit, counts characters] */
     public function lengthLimits(string $element): array
     {
@@ -402,8 +393,7 @@ final class Schema
         return "$xsd    </xs:restriction>\n  </xs:simpleType>\n\n";
     }
 
-    /** The fixed part of the format; {{…}} are generated. Row types, module wrappers and the object
-     *  classes come from the PHP above - edit them there. */
+    /** The fixed part of the format; {{…}} are generated from the constants above */
     private const TEMPLATE = <<<'XSD'
         <?xml version="1.0" encoding="UTF-8"?>
         <!--

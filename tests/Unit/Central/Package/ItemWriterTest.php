@@ -3,12 +3,9 @@
 declare(strict_types=1);
 
 /**
- * ItemWriter, C4.4 part 4c (design balicek-v1.md § 6.2, § 7.2 step 5.7): the example with two items - a
- * relation field (to a package item and to one outside), a password field (hashes), a number field, a
- * translation - written by the Importer into TableDb: new ids, the item row before its content, the rows
- * AA_Field_Writer::contentRow() builds, references rewritten, the charset converted, the hash byte for byte,
- * nothing of storeItem() (no log, feeding, counters), one handle; a failure at every item statement is
- * rolled back - nothing of the import stays, the target's item untouched.
+ * ItemWriter: two items (a relation in and out of the package, a password hash, a number, a translation)
+ * written into TableDb - new ids, the rows AA_Field_Writer::contentRow() builds, references rewritten,
+ * the hash byte for byte, nothing of storeItem(); a failure at any item statement rolls everything back.
  */
 
 namespace Tests\Unit\Central\Package;

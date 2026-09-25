@@ -8,26 +8,22 @@ use DOMDocument;
 use LibXMLError;
 use XMLReader;
 
-/** Parses an untrusted package safely (design balicek-v1.md § 3.1 steps 1-5 and 8). All limits hold
- *  BEFORE a DOM is built - a DOM of a small file can be huge (measured, 8 MB of input: 900 000 empty
- *  attributes = 690 MB, `a<!---->` x 1M = 356 MB; libxml allocates outside PHP's memory_limit):
- *  1. bytes: size, UTF-8, the declared encoding; a scan without libxml refuses `<!` markup other than a
- *     comment or CDATA (DOCTYPE - libxml parses a DTD before it returns the node), counts the nodes
- *     (XMLReader keeps comments and PIs of an open element and parses ahead: `a<!---->` x 1M = 330 MB
- *     before its 400 000th node) and the attributes of each start tag (libxml allocates them all
- *     before it returns the tag: 937 000 in one tag = 320 MB);
- *  2. a streaming XMLReader pass: every node before the root, DOCTYPE/entities anywhere, nodes,
- *     elements, attributes, depth;
- *  3. the DOM. No DTD, no entity, nothing is loaded from outside - the external entity loader returns
- *     null while libxml works. Forbidden libxml flags: NOENT, DTDLOAD, DTDATTR, DTDVALID, XINCLUDE,
- *     PARSEHUGE, NOBLANKS (a value of only spaces, e.g. view.row_delimiter, would vanish).
- *  Messages quote at most MAX_QUOTE bytes of package text per quote - escape them when shown. */
+/** Parses an untrusted package safely. All limits hold BEFORE a DOM is built - a DOM of a small file can
+ *  be huge (8 MB of input: 900 000 empty attributes = 690 MB; libxml allocates outside memory_limit):
+ *  1. bytes, without libxml: size, UTF-8, the declared encoding; `<!` markup other than a comment or CDATA
+ *     is refused (libxml parses a DTD before it returns the node); nodes are counted (XMLReader parses
+ *     ahead: `a<!---->` x 1M = 330 MB before its 400 000th node) and so are the attributes of each start
+ *     tag (libxml allocates them all before it returns the tag);
+ *  2. a streaming XMLReader pass: prolog, DOCTYPE/entities, nodes, elements, attributes, depth;
+ *  3. the DOM, with nothing loadable from outside. Never use the libxml flags NOENT, DTDLOAD, DTDATTR,
+ *     DTDVALID, XINCLUDE, PARSEHUGE, NOBLANKS (a value of only spaces, e.g. view.row_delimiter, would vanish).
+ *  Messages quote package text - escape them when shown. */
 final class XmlGuard
 {
     public const MAX_BYTES      = 8 * 1024 * 1024;
     public const MAX_ELEMENTS   = 100_000;
-    /** every node XMLReader returns but an end tag: elements, text, whitespace, CDATA, comments, PIs.
-     *  Writer output has ~2.9 nodes per element (the design example); 400 000 nodes = 100 MB of DOM */
+    /** every node XMLReader returns but an end tag. Writer output has ~2.9 nodes per element;
+     *  400 000 nodes = 100 MB of DOM */
     public const MAX_NODES      = 400_000;
     public const MAX_ATTRIBUTES = 200_000;
     /** the format needs 6 (source: 5 + a namespace declaration) */
@@ -138,9 +134,8 @@ final class XmlGuard
         }
     }
 
-    /** Step 1 on the bytes (see the class): strpos/strcspn jumps, linear, no regex. A well-formed
-     *  document has `<` only in markup, comments, CDATA and PIs; malformed input may be misread here,
-     *  libxml refuses it anyway. @throws PackageRejected */
+    /** Step 1: linear, no regex. Malformed input may be misread here - libxml refuses it anyway.
+     *  @throws PackageRejected */
     private function scan(string $xml): void
     {
         $nodes = 0;

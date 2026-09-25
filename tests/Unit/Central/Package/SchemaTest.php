@@ -17,13 +17,13 @@ final class SchemaTest extends TestCase
 {
     private const XS = 'http://www.w3.org/2001/XMLSchema';
 
-    /** the valid package of design balicek-v1.md § 4 */
+    /** a valid package */
     private static function example(): string
     {
         return (string) file_get_contents(__DIR__ . '/fixtures/aa-app-example.xml');
     }
 
-    /** Validates like the reader will (§ 3.1): schema as a string, no external entity may load.
+    /** Validates as Reader does: schema as a string, no external entity may load.
      *  @return list<string> libxml errors, [] = valid */
     private static function validate(string $xml, string $xsd): array
     {
@@ -190,7 +190,7 @@ final class SchemaTest extends TestCase
     public static function scrubbedColumns(): array
     {
         $rows = [];
-        // design § 6.2-6.4 "Vynechá se"; slice.export_to_all = feeding permission (coordinator's decision)
+        // columns a package leaves out; slice.export_to_all is a feeding permission
         foreach (['id', 'type', 'owner', 'created_by', 'created_at', 'slice_url', 'deleted', 'priority', 'app_id'] as $column) {
             $rows["module $column"] = ['module', $column];
         }

@@ -6,15 +6,14 @@ namespace AA\Central\Package;
 
 use AA\Central\Package\Model\Module;
 
-/** The report of a written import (design balicek-v1.md § 7.2 step 9) - plain data, no HTML.
+/** The report of a written import - plain data, no HTML.
  *  EVERY string in it is package text or derived from it (names, paths, refs, fix-ups, errors quoting
  *  them): the UI escapes all of it (safe()).
  *
  *  A failed import is no report: ImportFailed (the cause; nothing was written). Here all rows were
  *  written - $rows counts them by table; what the import changed or dropped on the way is $ignored
- *  (the FixUps: e-mail attachments, lang_file, dropped site settings, spot markup, publish = users, a shared
- *  filter); what AA did after the commit is $finish, each step OK or its errors (failures(): what is left
- *  to do by hand - the import itself stays). The Reader's pruning findings (§ 3.2) are not in the plan: the
+ *  (the FixUps); what AA did after the commit is $finish, each step OK or its errors (failures(): what is
+ *  left to do by hand - the import itself stays). The Reader's pruning findings are not in the plan: the
  *  caller adds them from ReadResult::$findings. */
 final readonly class ImportReport
 {
@@ -86,7 +85,7 @@ final readonly class ImportReport
         return array_values(array_filter($this->finish, static fn(array $s): bool => (bool) $s[1]));
     }
 
-    /** "N settings to fill" - the settings fields of the new slices; the package carries no values (§ 9.2) */
+    /** "N settings to fill" - the settings fields of the new slices; the package carries no values */
     public function settingsToFill(): int
     {
         return array_sum(array_map(static fn(array $s): int => count($s['fields']), $this->settings));

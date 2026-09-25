@@ -35,12 +35,12 @@ final class ReferenceLintTest extends TestCase
         return [
             'clean app template'          => ['{view.php?vid=12&cmd[12]=x-12-{ids:' . self::S . '}&set[12]=listlen-5}{mailtemplate:874:a@b.cz}{constants:cat_a}', []],
             'numbers in known forms only' => ['vid=12 cmd[3072]=c-12-On 12px 112 1.12 listlen-5', []],
-            // numeric reference outside the app - § 8.2, § 5.2
+            // numeric reference outside the app
             'view outside the app'        => ['{view.php?vid=999&cmd[999]=x-998-1}', ['W view-outside 999', 'W view-outside 999', 'W view-outside 998']],
             '{view:} outside the app'     => ['{view:999::listlen-5}', ['W view-outside 999']],
             'banner outside the app'      => ['set[12]=banner-2-777', ['W view-outside 777']],
             'e-mail outside the app'      => ['{mailtemplate:12:a@b.cz}', ['W email-outside 12']],
-            // computed - § 8.2 "Nepřepsatelné"
+            // computed - cannot be rewritten
             'computed vid'                => ['{view.php3?vid={ifeq:{xseo1}:nase-aktivity:3072:3061}', ['W computed vid={', 'I bare-number 3072', 'I bare-number 3061']],
             'computed vid and cmd'        => ['{view.php3?vid={var:pohled}&cmd[{var:pohled}]=x-1}', ['W computed vid={', 'W computed cmd[{']],
             'alias vid'                   => ['f_v:vid=_#VIEW_ID_', ['W computed vid=_#']],
@@ -50,14 +50,14 @@ final class ReferenceLintTest extends TestCase
             // bare numbers equal to an app view / e-mail id
             'bare view id in an attr'     => ['<a data-view="3072">', ['I bare-number 3072']],
             'bare number not an app id'   => ['<td width="3000">', []],
-            // modules outside the app - § 5.2, D11
+            // modules outside the app
             'ids of a foreign slice'      => ['{ids:' . self::F . ':d-x-=-1}', ['W module-outside ' . self::F]],
             'modulefield foreign'         => ['{modulefield:' . strtoupper(self::F) . ':name}', ['W module-outside ' . strtoupper(self::F)]],
             '#sLiCe- foreign'             => ['sel:#sLiCe-' . self::F, ['W module-outside ' . self::F]],
             'app slice upper case'        => ['{ids:' . strtoupper(self::S) . '}', []],
-            // AA_Form - § 5.4, D14
+            // AA_Form
             'form'                        => ['{form:' . self::F . '}', ['W form {form:']],
-            // constant groups - § 5.3, § 8.3
+            // constant groups
             'group outside the package'   => ['{constants:unknown_grp}', ['I group-outside unknown_grp']],
             'core group'                  => ['{options:lt_languages:{qs:l}}{constant:AA_Core_Bins....:1}', []],
             'json list'                   => ['{options:[1,2]:1}', []],

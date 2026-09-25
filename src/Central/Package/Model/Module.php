@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace AA\Central\Package\Model;
 
-/** One module of a package: a wrapper element of design balicek-v1.md § 4, its table rows (§ 6),
- *  objects (§ 5.4), site tree (§ 6.3) and items.
+/** One module of a package: its wrapper element, table rows, objects, site tree and items.
  *
  *  A row is `DB column => value` with only the columns a package carries - Schema::rowColumns() plus
  *  the key columns of Schema::rowAttributes() (`view.id`, `relation.destination_id`, ...); the module

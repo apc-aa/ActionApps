@@ -63,8 +63,7 @@ class CentralScriptedAa extends AA_Actionapps
  * getResponse() builds itself read a local file as the "responder URL" (AA_Http::request() is plain
  * file_get_contents()).
  *
- * Pins today's behaviour ahead of the move to src/Central/; "pinned; phase 4 may change" marks
- * behaviour that is questionable rather than wanted.
+ * Pins today's behaviour; "pinned:" marks behaviour that is questionable rather than wanted.
  */
 final class CentralActionappsTest extends TestCase
 {
@@ -120,7 +119,7 @@ final class CentralActionappsTest extends TestCase
             'usual'                     => ['https://example.org/', 'apc-aa/', 'Org (https://example.org/apc-aa/)', 'https://example.org/apc-aa/central/responder.php'],
             'base dir without slash'    => ['https://example.org/', 'aa', 'Org (https://example.org/aa)', 'https://example.org/aa/central/responder.php'],
             'both with slash'           => ['https://example.org/', '/aa/', 'Org (https://example.org//aa/)', 'https://example.org//aa/central/responder.php'],
-            // pinned; phase 4 may change - plain concatenation, the host runs into the path
+            // pinned: plain concatenation, the host runs into the path
             'domain without slash'      => ['https://example.org', 'aa/', 'Org (https://example.orgaa/)', 'https://example.orgaa/central/responder.php'],
             'empty base dir'            => ['https://example.org/', '', 'Org (https://example.org/)', 'https://example.org/central/responder.php'],
         ];
@@ -137,7 +136,7 @@ final class CentralActionappsTest extends TestCase
 
     public function test_getName_does_not_escape(): void
     {
-        // pinned; phase 4 may change - the callers escape (synchronize3.php safe()s it), the select boxes do not
+        // pinned: the callers escape (synchronize3.php safe()s it), the select boxes do not
         $this->assertSame('<b>Org</b> (x/y/)', self::aa(['ORG_NAME' => '<b>Org</b>', 'AA_HTTP_DOMAIN' => 'x/', 'AA_BASE_DIR' => 'y/'])->getName());
     }
 
@@ -180,7 +179,7 @@ final class CentralActionappsTest extends TestCase
         self::collectingWarnings(static fn() => AA_Actionapps::saveAuthToken('12', 'jwt:abc'), $warnings);
 
         $this->assertSame(["UPDATE `central_conf` SET  AA_ADMIN_PWD = 'jwt:abc' WHERE id = 12"], RecordingDb::$log);
-        // pinned; phase 4 may change - the SET pair has no type, DB_AA reads it anyway (and addslashes the value)
+        // pinned: the SET pair has no type, DB_AA reads it anyway (and addslashes the value)
         $this->assertCount(1, $warnings);
         $this->assertStringContainsString('Undefined array key', $warnings[0]);
     }
@@ -266,7 +265,7 @@ final class CentralActionappsTest extends TestCase
     {
         return [
             'error'        => [new AA_Response('No response recieved', 3), []],
-            'scalar'       => [new AA_Response('odd'), ['odd']],   // pinned; phase 4 may change - cast, not rejected
+            'scalar'       => [new AA_Response('odd'), ['odd']],   // pinned: cast, not rejected
             'null'         => [new AA_Response(null), []],
         ];
     }
@@ -297,7 +296,7 @@ final class CentralActionappsTest extends TestCase
 
     public function test_requestDefinitions_non_array_answer_throws(): void
     {
-        // pinned; phase 4 may change - unlike requestModules() there is no cast; the array return type throws
+        // pinned: unlike requestModules() there is no cast; the array return type throws
         $this->expectException(\TypeError::class);
         (new CentralScriptedAa([new AA_Response('odd')]))->requestDefinitions('Slice', ['a']);
     }
@@ -323,7 +322,7 @@ final class CentralActionappsTest extends TestCase
 
     public function test_synchronize_and_importModuleChunk_return_only_the_error_code(): void
     {
-        // pinned; phase 4 may change - the error text (why it failed) is dropped, the task log shows "3"
+        // pinned: the error text (why it failed) is dropped, the task log shows "3"
         $aa = new CentralScriptedAa([new AA_Response('No response recieved (2 - timeout)', 3)]);
 
         $this->assertSame(3, $aa->synchronize(['cmd']));
@@ -334,7 +333,7 @@ final class CentralActionappsTest extends TestCase
     {
         $aa = new CentralScriptedAa([new AA_Response(['org_name' => 'Remote org', 'domain' => 'https://r.example.org/'])]);
 
-        // pinned; phase 4 may change - the first call reads the not yet set cache key (a warning)
+        // pinned: the first call reads the not yet set cache key (a warning)
         $name = self::collectingWarnings(static fn() => $aa->requestAAName(), $warnings);
 
         $this->assertSame('Remote org', $name);
@@ -350,7 +349,7 @@ final class CentralActionappsTest extends TestCase
         $aa   = new CentralScriptedAa([new AA_Response('timeout', 3), new AA_Response(['org_name' => 'Later'])]);
         $name = self::collectingWarnings(static fn() => $aa->requestAAName());
 
-        // pinned; phase 4 may change - an error is never retried, and it names the code, not the text
+        // pinned: an error is never retried, and it names the code, not the text
         $this->assertSame("Can't get org_name - 3", $name);
         $this->assertSame("Can't get org_name - 3", $aa->requestAAName());
         $this->assertCount(1, $aa->requests);
@@ -458,7 +457,7 @@ final class CentralActionappsTest extends TestCase
     {
         $aa = $this->localAa(new AA_Response(['not', 'a token']));
 
-        // pinned; phase 4 may change - an array answer becomes the "token" 'Array'
+        // pinned: an array answer becomes the "token" 'Array'
         $this->assertSame('Array', self::collectingWarnings(static fn() => $aa->requestJwt('central', 'secret')));
     }
 
@@ -469,8 +468,8 @@ final class CentralActionappsTest extends TestCase
         $aa = self::aa(['ORG_NAME' => 'Org', 'AA_ADMIN_USER' => 'central', 'AA_ADMIN_PWD' => 'secret']);
         self::setPrivate($aa, '_remote_session_id', 'sess1');
 
-        // pinned; phase 4 may change - the serialized AA holds the password or JWT; the Central tasks
-        // queue only its central_conf id since C3.2, only rows queued before hold this object
+        // pinned: the serialized AA holds the password or JWT; the Central tasks queue only its
+        // central_conf id, only older queued rows hold this object
         $this->assertStringContainsString('secret', serialize($aa));
         $this->assertStringContainsString('sess1', serialize($aa));
     }

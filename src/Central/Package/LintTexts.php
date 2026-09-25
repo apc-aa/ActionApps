@@ -7,7 +7,7 @@ namespace AA\Central\Package;
 use Closure;
 use Generator;
 
-/** What ExportLint and ImportLint share (design balicek-v1.md § 8.4): the identity map of an app, the
+/** What ExportLint and ImportLint share: the identity map of an app, the
  *  definition texts ReferenceLint reads - text columns of rows, spot conditions - and the one finding
  *  that is no finding: the group of a field widget, a structured reference (rewriteInputShowFunc()).
  *  Also the texts Collector::groups() searches for {constant(s)/options:<g>} and Planner mirrors. */

@@ -3,11 +3,8 @@
 declare(strict_types=1);
 
 /**
- * ItemLint and the item checks of the plan, C4.4 part 4c: readers of a Reader Management slice whose login
- * name or e-mail the target has (E - the direct insert skips isUsernameFree()), the login accounts and 2FA
- * seeds a package brings (I, W), relations to items outside the package (W), alerts subscriptions to
- * filters outside it (I); the item columns measured against their limits (E); an item without a bin
- * (Validator W). No DB - a fake target.
+ * ItemLint: readers whose login or e-mail the target has (E - the direct insert skips isUsernameFree()),
+ * accounts and 2FA seeds (I, W), references leaving the package (W, I), column limits (E). No DB - a fake target.
  */
 
 namespace Tests\Unit\Central\Package;

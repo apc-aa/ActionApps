@@ -8,7 +8,7 @@ use AA\Central\Actionapps;
 use AA\Central\SerializedProps;
 use AA_Definition_Module_Chunk;
 
-/** Imports one chunk of a module definition to a remote AA (Central Copy Slice) - was AA_Task_Import_Module_Chunk */
+/** Imports one chunk of a module definition to a remote AA (Central Copy Slice) */
 class ImportModuleChunk extends RemoteAaTask
 {
     protected const LOG_NAME = 'AA_Task_Import_Module_Chunk';

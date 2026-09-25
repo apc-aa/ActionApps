@@ -3,9 +3,9 @@
 declare(strict_types=1);
 
 /**
- * After the commit, C4.4 part 5 (design balicek-v1.md § 7.2 steps 8, 9): Importer::finish() - the log entry, the
- * ACL objects, ConstantsChanged(), the page cache, each step isolated, none undone - and the report
- * Importer::write() returns for the example package. AaAfterCommit's log entry over TableDb.
+ * After the commit: Importer::finish() - the log entry, the ACL objects, ConstantsChanged(), the page cache,
+ * each step isolated, none undone - and the report Importer::write() returns for the example package.
+ * AaAfterCommit's log entry over TableDb.
  */
 
 namespace Tests\Unit\Central\Package;
@@ -26,7 +26,7 @@ final class ImportReportTest extends TestCase
 {
     use ImportFixture;
 
-    // ---------------------------------------------------------------- finishing (§ 7.2 step 8)
+    // ---------------------------------------------------------------- finishing
 
     public function test_the_steps_run_after_the_commit(): void
     {
@@ -160,7 +160,7 @@ final class ImportReportTest extends TestCase
         self::assertSame('1.0', $entry->version);
     }
 
-    // ---------------------------------------------------------------- the report (§ 7.2 step 9)
+    // ---------------------------------------------------------------- the report
 
     public function test_the_report_of_the_example(): void
     {

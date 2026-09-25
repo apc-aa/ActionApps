@@ -18,7 +18,7 @@ use Tests\Unit\Legacy\Fixtures\RecordingDb;
  * destination AAs, each time with freshly generated module ids. The definition object is shared
  * by all destinations, so the id replacement must not consume it. No DB: the metabase is a fake
  * which records the inserts, the toexecute queue a RecordingDb, the destination AA of the chunk mode
- * (ChunkImporter, C4.4 part 6) a FakeChunkTarget with the two destination slices.
+ * (ChunkImporter) a FakeChunkTarget with the two destination slices.
  */
 final class CentralCopySliceTest extends TestCase
 {
@@ -107,8 +107,8 @@ final class CentralCopySliceTest extends TestCase
         $this->assertSame(self::templateData(), $def->getArray(), 'the template definition must stay untouched');
     }
 
-    /** changed in C4.4 part 6: the chunks name the destination module (DefinitionStore::chunks()) - one naming
-     *  the template, as an older Central sent them, is refused (ChunkImporterTest) */
+    /** the chunks name the destination module (DefinitionStore::chunks()); one naming the template is
+     *  refused (ChunkImporterTest) */
     public function test_importModuleChunk_reports_ok_and_failed_rows(): void
     {
         $this->fakeMetabase();

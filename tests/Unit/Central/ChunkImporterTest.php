@@ -3,11 +3,11 @@
 declare(strict_types=1);
 
 /**
- * The chunk mode of Central Copy Slice (design balicek-v1.md § 10.1, C4.4 part 6): a chunk is imported only
- * into its module - the tables of the module's type, every row of the module (F4), items only into a slice
- * prepared here, content only of its items, constant groups new or of the module, installation columns and
- * foreign references cleaned, a taken AUTO_INCREMENT number replaced. No DB: FakeChunkTarget answers what
- * the importer asks, RecordingMetabase records the inserts.
+ * The chunk mode of Central Copy Slice: a chunk is imported only into its module - the tables of the
+ * module's type, every row of the module, items only into a slice prepared here, content only of its items,
+ * constant groups new or of the module, installation columns and foreign references cleaned, a taken
+ * AUTO_INCREMENT number replaced. No DB: FakeChunkTarget answers what the importer asks, RecordingMetabase
+ * records the inserts.
  */
 
 namespace Tests\Unit\Central;
@@ -182,7 +182,7 @@ final class ChunkImporterTest extends TestCase
         self::assertSame(['Err: 1 field ([t,' . self::SLICE . ']); '], $this->import('field', [['id' => 't', 'slice_id' => self::SLICE, 'name' => 'bad']]), 'today\'s Err line');
     }
 
-    // --- F4: every row of the chunk's module ----------------------------------------------------
+    // --- every row of the chunk's module --------------------------------------------------------
 
     public function test_a_row_of_another_module_or_with_a_non_scalar_value_is_refused(): void
     {

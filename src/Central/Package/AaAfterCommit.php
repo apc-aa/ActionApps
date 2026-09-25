@@ -14,19 +14,14 @@ use RuntimeException;
 
 /** AfterCommit on this AA.
  *
- *  Rights: AA gives a module it creates (AA_Module / modutils.php, slicedit.php) its ACL object -
- *  AddPermObject($id, 'slice'), "no special permission added - only superuser can access"; the import does
- *  the same. A superadmin (SUPER on the `aa` object) reaches every module (AA_Perm::joinSliceAndAAPerm()).
- *  An importer below SUPER - PS_INSTALL_APP ("U") granted directly - gets the ADMINISTRATOR role on each
- *  new module (AddPerm(), as admin/se_users.php), or (s)he could not open what (s)he installed. Whether
- *  (s)he is a superadmin tells IsSuperadmin() - of the logged-in user only; another user (CLI) gets the
- *  role. With perm_sql.php AddPermObject() is a no-op, with LDAP it creates the object. None of it is ever
- *  undone: it runs after the commit only. AddPerm() writes through CVarset without nohalt - a DB error
- *  there ends the request (the import stays; the later steps are missed).
+ *  Rights: as AA does for a module it creates (modutils.php, slicedit.php), AddPermObject($id, 'slice') -
+ *  a superadmin reaches every module. An importer below SUPER (PS_INSTALL_APP granted directly) also gets
+ *  the ADMINISTRATOR role on each new module, or could not open what (s)he installed; IsSuperadmin() knows
+ *  the logged-in user only, so another user (CLI) gets the role. Never undone: it runs after the commit.
+ *  AddPerm() writes without nohalt - a DB error there ends the request (the import stays).
  *
- *  The log entry: the rows AA_Log::write() makes (time, user = AuthGetUid() - the logged-in user, type,
- *  selector, params), inserted here with nohalt - AA_Log::write() halts (die()) on a DB error and reports
- *  true otherwise, so it cannot tell a failed insert; here that is an exception (a row of the report). */
+ *  The log entry: the rows AA_Log::write() makes, inserted with nohalt - AA_Log::write() die()s on a DB
+ *  error, here a failed insert is an exception (a row of the report). */
 final class AaAfterCommit implements AfterCommit
 {
     /** log.type of the entry (AA_Log::TYPE_MAX) */

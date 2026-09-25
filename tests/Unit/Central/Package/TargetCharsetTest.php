@@ -3,9 +3,8 @@
 declare(strict_types=1);
 
 /**
- * TargetCharset, C4.4 part 3 (design balicek-v1.md § 2.4): every value the importer writes converts
- * from UTF-8 to the charset of its target module and fits its column - checked in the plan, before
- * any write. Through the Planner: the charsets come from the modules' lang_file.
+ * TargetCharset: every value the importer writes converts from UTF-8 to the charset of its target module
+ * and fits its column - checked in the plan, before any write. The charsets come from the modules' lang_file.
  */
 
 namespace Tests\Unit\Central\Package;
@@ -94,9 +93,8 @@ final class TargetCharsetTest extends TestCase
             // the rename takes a non-ASCII group name out of the text before the conversion
             'non-ASCII group in a text'        => [static fn(Package $p): Package => self::cell(self::latin2(self::with($p, ['constantGroups' => [new ConstantGroup('druhy_漢', self::SLICE)]])), self::SLICE, 'view', 1, ['odd' => '{constant:druhy_漢:x}']), ['I group-renamed constant-group[druhy_漢] druhy_漢 => druhy__']],
             'raw bytes go as they are'         => [static fn(Package $p): Package => self::cell(self::latin2($p), self::SLICE, 'view', 0, ['odd' => new RawBytes("\xA9\xFF")]), []],
-            // ---- length: the converted value against the column (Schema::lengthLimits())
-            // ---- length: char(N) / varchar(N) count characters, the others bytes (Schema::lengthLimits()); AA_Metabase
-            //      cuts every (N) value to N BYTES (AA_MbT::getVarset4Data()), so more bytes are an E as well
+            // ---- length: char(N) / varchar(N) count characters, the others bytes; AA_Metabase cuts every (N)
+            //      value to N BYTES (AA_MbT::getVarset4Data()), so more bytes are an E as well
             'module name 101 characters'       => [static fn(Package $p): Package => self::cell($p, self::SLICE, 'module', 0, ['name' => str_repeat('a', 101)]), ["E too-long $S/module[#0]/name 101 characters > 100"]],
             'module name 100 bytes'            => [static fn(Package $p): Package => self::cell($p, self::SLICE, 'module', 0, ['name' => str_repeat('a', 100)]), []],
             // 90 Czech characters, 126 bytes in utf-8: AA_Metabase would cut it inside a character

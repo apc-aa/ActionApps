@@ -3,12 +3,9 @@
 declare(strict_types=1);
 
 /**
- * ObjectWriter, C4.4 part 4c (design balicek-v1.md § 5.4, § 7.2 step 5.6): the example's settings, alias
- * and set with its subobjects written by the Importer into TableDb - new ids, the owner, rewritten and
- * converted properties, subobject references and aa_subobjects computed; the rows equal to what
- * AA_Object::save() writes (AA saves, ObjectExport exports, ObjectWriter writes back); a package that tries
- * to set aa_subobjects or a class off the allowlist is never written, and the foreign objects of the target
- * are never touched - after a success or a rolled back failure.
+ * ObjectWriter: the example's objects written into TableDb - new ids, the owner, rewritten properties,
+ * aa_subobjects computed; the rows equal those of AA_Object::save(); aa_subobjects or a class off the
+ * allowlist is never written, and the target's own objects are never touched.
  */
 
 namespace Tests\Unit\Central\Package;

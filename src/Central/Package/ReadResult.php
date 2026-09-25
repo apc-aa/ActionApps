@@ -12,7 +12,7 @@ final readonly class ReadResult
     /**
      * @param Package                          $package  in the canonical form of Reader
      * @param list<array{string, LintFinding}> $findings [path (e.g. `slice-module[<id>]/view[12]/colour`),
-     *                                                   finding] - what was pruned (§ 3.2); `ref` is package
+     *                                                   finding] - what was pruned; `ref` is package
      *                                                   text, escape it when shown
      * @param string                           $format   format version of the package (aa-app/@format), e.g. `1.1`
      */

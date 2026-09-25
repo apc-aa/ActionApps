@@ -8,19 +8,17 @@ use AA\Central\Package\Model\Module;
 use AA\Central\Package\Model\Package;
 use AA\Central\Package\Model\RawBytes;
 
-/** The charset and length check of an import plan (design balicek-v1.md § 2.4): every value the importer
- *  writes converts from UTF-8 to the charset of its target module (ModuleCharset::fromUtf8()) and fits its
- *  column (Schema::lengthLimits(); item pseudo fields: the item table). An unconvertible value or an
- *  overflow is an E: the import stops before any write.
+/** The charset and length check of an import plan: every value the importer writes converts from UTF-8
+ *  to the charset of its target module and fits its column. An unconvertible value or an overflow is an E:
+ *  the import stops before any write.
  *
- *  The contract with the writer (RowStore): the plan stores no converted value; both run measure() and
- *  tooLong() on the same rewritten text. Here known($value) - the view and e-mail numbers come only when the
- *  writer inserts the rows, so each may grow to ID_DIGITS digits: over the limit is the only W
- *  (MAY_BE_TOO_LONG), and the writer checks the length again after numeric(). The rewrite puts ASCII at
- *  ASCII delimiters and the charsets are stateless ASCII supersets, so it cannot make a value unconvertible.
+ *  The writer (RowStore) runs the same measure() and tooLong(). The view and e-mail numbers are known only
+ *  when the writer inserts the rows, so each may grow to ID_DIGITS digits: that is the only W, and the
+ *  writer checks the length again. The rewrite puts ASCII at ASCII delimiters and the charsets are ASCII
+ *  supersets, so it cannot make a value unconvertible.
  *  Limits count BYTES too: AA_MbT::getVarset4Data() cuts an (N) column to N bytes, inside a character.
- *  RawBytes are written as they are (the module keeps the package's lang_file); in a utf-8 module they must
- *  be valid UTF-8 - MySQL outside strict mode cuts at the first invalid byte, after the SecurityLint saw it.
+ *  RawBytes in a utf-8 module must be valid UTF-8 - MySQL outside strict mode cuts at the first invalid
+ *  byte, after the SecurityLint saw it.
  *  Findings quote package text - escape them (safe()) when shown. */
 final class TargetCharset
 {

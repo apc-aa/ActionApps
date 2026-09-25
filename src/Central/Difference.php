@@ -10,7 +10,7 @@ use AA_Metabase;
 use AA_Sync_Action;
 
 /** One difference Central found between a template slice and a destination slice (a row of
- *  central/synchronize3.php), with the AA_Sync_Actions offered for it - was AA_Difference.
+ *  central/synchronize3.php), with the AA_Sync_Actions offered for it.
  *  Built and printed on Central only - never sent to another AA nor queued. */
 class Difference
 {
@@ -25,7 +25,6 @@ class Difference
     /** false - the actions are offered unchecked (see AA_Sync_Action::printToForm()) */
     private bool $preselect;
 
-    /** */
     public function __construct(string $type, string $description, $actions = [], bool $preselect = true)
     {
         $this->type        = $type;
@@ -107,20 +106,16 @@ class Difference
 
             // some fields we do not want to compare (like slice_ids)
             if (in_array($key, $ignore)) {
-                // we need to clear the destination array in order we can know,
-                // that there are some additional keys in it (compated to template)
+                // unset, so that only the keys the template lacks stay in $destination_arr
                 unset($destination_arr[$key]);
                 continue;
             }
             if (is_array($value)) {
                 $diff = array_merge($diff, self::compareArray($value, $destination_arr[$key] ?? null, $sub_identifier, $ignore));
-                // we need to clear the destination array in order we can know,
-                // that there are some additional keys in it (compated to template)
                 unset($destination_arr[$key]);
             } elseif (!array_key_exists($key, $destination_arr)) {
                 $diff[] = new Difference('DIFFERENT_VALUE', '&nbsp;&nbsp;&nbsp;-&nbsp;' . _m('There is no such key (%1) in destination slice for %2', [safe($key), $idf]), new AA_Sync_Action('UPDATE_VALUE', $sub_identifier, $value));
             } elseif ($value != $destination_arr[$key] && !(empty($value) && empty($destination_arr[$key]))) {  // '' and 0 is considered equal
-                // if we're comparing row values, we can also update whole row at once - so we mark it
                 $is_different = true;
                 $renames      = $renames || ($key === 'name' && in_array($identifier->getTable(), ['module', 'slice'], true));
 
@@ -129,8 +124,6 @@ class Difference
                        <br>
                        <div style="background-color:#E0E0FF;border: solid 1px #88F;">' . _m('Template') . ':<br>' . safe($value) . '</div></details>';
                 $diff[] = new Difference('DIFFERENT_VALUE', '&nbsp;&nbsp;&nbsp;-&nbsp;' . _m('The value for key %1 in %2 array is different %3', [safe($key), $idf, $code]), new AA_Sync_Action('UPDATE_VALUE', $sub_identifier, $value));
-                // we need to clear the destination array in order we can know,
-                // that there are some additional keys in it (compated to template)
                 unset($destination_arr[$key]);
             } else {
                 unset($destination_arr[$key]);
@@ -149,7 +142,6 @@ class Difference
 
             // there are no such keys in template
             if (is_array($value)) {
-                // I know - we can define the difference right here, but it is better to use the same method as above
                 $diff = array_merge($diff, self::compareArray('', $destination_arr[$key], $sub_identifier, $ignore));
             } else {
                 $diff[] = new Difference('DELETED', '&nbsp;&nbsp;&nbsp;-&nbsp;' . _m('There is no such key (%1) in template slice for %2', [safe($key), safe($sub_identifier->toString())]), new AA_Sync_Action('UPDATE_VALUE', $sub_identifier, ''));

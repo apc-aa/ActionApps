@@ -10,11 +10,9 @@ use AA\Optimize\Convert2innodb;
 use AA_Metabase;
 use InvalidArgumentException;
 
-/** The import planner (design balicek-v1.md § 7.2 step 3): a package that passed the Validator + a target =>
- *  ImportPlan, with no write. Pure except for ImportTarget, so tests run without a DB. In order: FixUps; the
- *  charset of each module (its lang_file) and group (GroupPlan); the maps (§ 7.1) - new ids none twice, the
- *  derived settings ids, collections, group names; TargetCharset, ImportLint, ItemLint; the engine - E
- *  NO_TRANSACTION here, so the preview shows it: the rollback is the only cleanup of a failed import.
+/** The import planner: a package that passed the Validator + a target => ImportPlan, with no write. Pure
+ *  except for ImportTarget, so tests run without a DB. The engine check (E NO_TRANSACTION) is here so the
+ *  preview shows it: the rollback is the only cleanup of a failed import.
  *  The rights and the S confirmation are the writer's (Importer::write()). */
 final class Planner
 {

@@ -29,8 +29,7 @@ require_once __DIR__ . '/fixtures/central_fixtures.php';   // the trait must exi
  * which travels between installations (Get_Module_Defs answer, toexecute queue).
  * No DB: RecordingDb answers the SELECTs (see CentralSynchronizeTest for the same scaffolding).
  *
- * Pins today's behaviour ahead of the move to src/Central/; "pinned; phase 4 may change" marks
- * behaviour that is questionable rather than wanted.
+ * Pins today's behaviour; "pinned:" marks behaviour that is questionable rather than wanted.
  */
 final class CentralDefinitionModuleTest extends TestCase
 {
@@ -47,8 +46,8 @@ final class CentralDefinitionModuleTest extends TestCase
         require_once __DIR__ . '/../Central/fixtures/ChunkFixtures.php';   // FakeChunkTarget
     }
 
-    /** this AA as the chunk mode (ChunkImporter, C4.4 part 6) sees it: the template and the destination
-     *  slices exist, no view number is taken */
+    /** this AA as the chunk mode (ChunkImporter) sees it: the template and the destination slices exist,
+     *  no view number is taken */
     private static function target(): FakeChunkTarget
     {
         return new FakeChunkTarget([self::TEMPLATE_ID => 'S', self::DEST_ID => 'S']);
@@ -180,7 +179,7 @@ final class CentralDefinitionModuleTest extends TestCase
         $def = new AA_Definition_Module();
         $def->loadForId(self::TEMPLATE_ID, true);
 
-        // pinned; phase 4 may change - it sets the id and then clear()s it
+        // pinned: it sets the id and then clear()s it
         $this->assertNull($def->getId());
         $this->assertSame([], $def->getArray());
     }
@@ -210,7 +209,7 @@ final class CentralDefinitionModuleTest extends TestCase
         self::collectingWarnings(static fn() => self::load($def, ['definitions' => true]), $warnings);
         $data = $def->getArray();
 
-        // pinned; phase 4 may change - a packed column the row does not have comes back as '' (module.owner)
+        // pinned: a packed column the row does not have comes back as '' (module.owner)
         $this->assertSame([self::TEMPLATE_ID => ['id' => self::TEMPLATE_ID, 'name' => 'News', 'type' => 'S', 'owner' => '']], $data['module']);
         $this->assertCount(2, $warnings);   // the missing column is read, then unpacked as null
         $this->assertStringContainsString('owner', $warnings[0]);
@@ -237,7 +236,7 @@ final class CentralDefinitionModuleTest extends TestCase
 
     public function test_getName_of_a_loaded_definition_is_null(): void
     {
-        // pinned; phase 4 may change - loadForId() keys the module row by id ([module][id][name]),
+        // pinned: loadForId() keys the module row by id ([module][id][name]),
         // getName() reads [module][name]: null and a warning (no caller uses it today)
         $def = self::def(AA_Definition_Module_Slice::class, self::TEMPLATE_ID, ['module' => [self::TEMPLATE_ID => ['id' => self::TEMPLATE_ID, 'name' => 'News']]]);
         $name = self::collectingWarnings(static fn() => $def->getName(), $warnings);
@@ -265,7 +264,7 @@ final class CentralDefinitionModuleTest extends TestCase
         $data     = ['module' => [self::TEMPLATE_ID => ['id' => self::TEMPLATE_ID, 'name' => 'A']]];
         $template = self::def($class, self::TEMPLATE_ID, $data);
 
-        // pinned; phase 4 may change - only slices can be synchronized; the others answer null
+        // pinned: only slices can be synchronized; the others answer null
         $this->assertNull($template->compareWith(self::def($class, self::DEST_ID, [])));
         $this->assertNull($template->compareWith(null));
     }
@@ -345,7 +344,7 @@ final class CentralDefinitionModuleTest extends TestCase
         $identifiers = array_map(static fn($a) => (new \ReflectionProperty($a, 'identifier'))->getValue($a)->toString(), $inserts);
         $this->assertSame([self::DEST_ID . '->module->' . self::DEST_ID, self::DEST_ID . '->slice->' . self::DEST_ID, self::DEST_ID . '->field'], $identifiers);
 
-        // pinned; phase 4 may change - offered pre-checked as "Create new", but doAction() needs a row
+        // pinned: offered pre-checked as "Create new", but doAction() needs a row
         $this->assertSame('Wrong command - row is not defined - ' . self::DEST_ID . '->field', $inserts[2]->doAction());
     }
 
@@ -392,8 +391,7 @@ final class CentralDefinitionModuleTest extends TestCase
         $this->assertSame(2, self::plannedChunks($def), 'an empty table gives no chunk');
         $metabase = $this->fakeMetabase();   // after planning - Toexecute writes through the real one
         $this->assertSame(['OK: 1 module ([' . self::TEMPLATE_ID . ']); ', 'OK: 2 field ([a,' . self::TEMPLATE_ID . '][b,' . self::TEMPLATE_ID . ']); '], $def->moduleImport(null, self::target()));
-        // changed in C4.4 part 6 (chunk mode, design § 10.1): rows name their module (F4), the new module gets
-        // the installation columns (ChunkImporterTest)
+        // rows name their module, the new module gets the installation columns (ChunkImporterTest)
         $module = ['id' => self::TEMPLATE_ID, 'deleted' => 0, 'created_by' => 'importer', 'created_at' => 1700000000];
         $this->assertSame([['module', $module], ['field', ['id' => 'a', 'slice_id' => self::TEMPLATE_ID]], ['field', ['id' => 'b', 'slice_id' => self::TEMPLATE_ID]]], $metabase->inserted);
     }
@@ -402,7 +400,7 @@ final class CentralDefinitionModuleTest extends TestCase
     {
         $rows = [];
         for ($i = 0; $i < 2001; $i++) {
-            $rows["item$i"] = ['id' => "item$i", 'slice_id' => self::TEMPLATE_ID];   // F4 since C4.4 part 6
+            $rows["item$i"] = ['id' => "item$i", 'slice_id' => self::TEMPLATE_ID];   // each row names its module
         }
         $def = self::def(AA_Definition_Module_Slice::class, self::TEMPLATE_ID, ['item' => $rows]);
 
@@ -440,7 +438,7 @@ final class CentralDefinitionModuleTest extends TestCase
 
         self::collectingWarnings(static fn() => $def->moduleImport([self::TEMPLATE_ID => self::DEST_ID], self::target()), $warnings);
 
-        // pinned; phase 4 may change - every value goes through str_replace(): ints become strings, NULL becomes ''
+        // pinned: every value goes through str_replace(): ints become strings, NULL becomes ''
         $this->assertSame([['view', ['id' => '12', 'slice_id' => self::DEST_ID, 'name' => '', 'even' => '{view.php3?vid=' . self::DEST_ID . '}']]], $metabase->inserted, 'inside texts, too');
         $this->assertCount(1, $warnings);
         $this->assertStringContainsString('str_replace', $warnings[0]);
