@@ -162,6 +162,29 @@ final class IdMap
         return $this->collections;
     }
 
+    /** the map for a record that outlives the request (the install run); fromJson() reads it back */
+    public function toJson(): string
+    {
+        return json_encode([
+            'modules'     => $this->modules,
+            'longIds'     => array_diff_key($this->longIds, $this->modules),
+            'views'       => $this->numbers['view'],
+            'emails'      => $this->numbers['email'],
+            'filters'     => $this->numbers['filter'],
+            'groups'      => $this->groups,
+            'collections' => $this->collections,
+        ], JSON_THROW_ON_ERROR);
+    }
+
+    /** checked as a new map - the stored text is no more trusted than a package */
+    public static function fromJson(string $json): self
+    {
+        $data = json_decode($json, true, 4, JSON_THROW_ON_ERROR);
+        $part = static fn(string $key): array => is_array($data[$key] ?? null) ? $data[$key] : throw new InvalidArgumentException("Id map without $key");
+        return (new self($part('modules'), $part('longIds'), $part('views'), $part('emails'), $part('groups'), $part('collections')))
+            ->withNumbers('filter', $part('filters'));
+    }
+
     /** Lower case both sides. Exactly 32 hex on both sides - the rewrite must not change the
      *  length, or serialize()d texts (site.structure) break.
      *  @param array<mixed, mixed> $map

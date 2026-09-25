@@ -150,4 +150,42 @@ final class IdMapTest extends TestCase
 
         $this->assertSame([self::SLICE_OLD => self::SLICE_NEW], $map->longIds());
     }
+
+    public function test_json_round_trip_keeps_every_map(): void
+    {
+        $map  = $this->map()->withNumbers('filter', [3 => 3000]);
+        $back = IdMap::fromJson($map->toJson());
+
+        $this->assertSame($map->modules(), $back->modules());
+        $this->assertSame($map->longIds(), $back->longIds());
+        $this->assertSame([12 => 13], $back->views(), 'number keys stay integers');
+        $this->assertSame([874 => 900], $back->emails());
+        $this->assertSame([3 => 3000], $back->filters());
+        $this->assertSame($map->groups(), $back->groups());
+        $this->assertSame($map->collections(), $back->collections());
+        $this->assertSame([], IdMap::fromJson((new IdMap())->toJson())->longIds());
+    }
+
+    /** @return array<string, array{string}> */
+    public static function brokenJson(): array
+    {
+        return [
+            'empty object'       => ['{}'],
+            'null'               => ['null'],
+            'a part not a map'   => ['{"modules":"x","longIds":[],"views":[],"emails":[],"filters":[],"groups":[],"collections":[]}'],
+        ];
+    }
+
+    #[DataProvider('brokenJson')]
+    public function test_fromJson_rejects_a_record_without_every_map(string $json): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        IdMap::fromJson($json);
+    }
+
+    public function test_fromJson_validates_like_the_constructor(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        IdMap::fromJson('{"modules":{"x":"y"},"longIds":[],"views":[],"emails":[],"filters":[],"groups":[],"collections":[]}');
+    }
 }

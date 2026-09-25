@@ -1,0 +1,345 @@
+<?php
+
+declare(strict_types=1);
+
+namespace AA\Central;
+
+use AA\Central\Package\IdMap;
+use AA\Util\Crypt;
+use AA\Util\Secret;
+use AA_Object;
+use AA_Property;
+use AA\IO\DB\DB_AA;
+use InvalidArgumentException;
+use LogicException;
+use RuntimeException;
+
+/** One install or transfer of an app on this (the target) AA: what the preview chose, the id map of the
+ *  written definitions and how far the item batches got. An AA_Object owned by AA_ID.
+ *
+ *  preview -> items (definitions written) -> items (batch) ... -> done
+ *                                   items <-> error (Continue);  items | error -> ended (End)
+ *
+ *  Every property is text, so the whole record is rows of object_text: one locking read of them
+ *  (lockForUpdate()) serializes the batches of a run. It needs object_text InnoDB - the import's engine
+ *  check (Planner::tables(), ObjectExport::TABLES) refuses to run without it.
+ *  Transitions work only on a locked instance inside a transaction; get() gives a read-only one. */
+final class InstallRun extends AA_Object
+{
+    public const PREVIEW = 'preview';
+    public const ITEMS   = 'items';
+    public const ERROR   = 'error';
+    public const DONE    = 'done';
+    public const ENDED   = 'ended';
+
+    public const INSTALL  = 'install';
+    public const TRANSFER = 'transfer';
+
+    /** the source is this AA; any other source is the id of its central_conf row */
+    public const LOCAL = 'local';
+
+    /** a preview nobody confirmed is forgotten after a day */
+    private const PREVIEW_LIFETIME = 86400;
+
+    protected $state = '';
+    protected $mode = '';
+    /** '1' = items of all bins, '' = active only */
+    protected $all_bins = '';
+    protected $source = '';
+    protected $user = '';
+    protected $started = '';
+    protected $id_map = '';
+    /** sha256 of the definitions package */
+    protected $fingerprint = '';
+    /** JSON list of the source slice ids, in the order the batches go */
+    protected $slices = '';
+    /** position: the slice of the next batch and the last source item id written in it ('' = none yet) */
+    protected $slice = '';
+    protected $cursor = '';
+    /** JSON slice => items written / items on the source */
+    protected $written = '';
+    protected $on_source = '';
+    protected $error_code = '';
+    protected $error_path = '';
+    /** the source's login token, encrypted */
+    protected $token = '';
+
+    /** read by lockForUpdate() - only such an instance may change the run */
+    private bool $locked = false;
+
+    public static function getClassProperties(): array
+    {
+        $props = [];
+        foreach (['state', 'mode', 'all_bins', 'source', 'user', 'started', 'fingerprint', 'slice', 'cursor', 'error_code', 'error_path', 'token'] as $id) {
+            $props[$id] = new AA_Property($id, $id, 'string', false, true, 'string');
+        }
+        foreach (['id_map', 'slices', 'written', 'on_source'] as $id) {
+            $props[$id] = new AA_Property($id, $id, 'text', false, true, 'text');
+        }
+        return $props;
+    }
+
+    /** a new run in the preview state; forgotten previews go away on the way */
+    public static function preview(string $mode, bool $allBins, string $source, string $user, string $token, int $now): self
+    {
+        if (!in_array($mode, [self::INSTALL, self::TRANSFER], true)) {
+            throw new InvalidArgumentException("Unknown mode $mode");
+        }
+        if (($source !== self::LOCAL) && !preg_match('/^[1-9]\d{0,9}\z/', $source)) {
+            throw new InvalidArgumentException('The source is "local" or a central_conf id');
+        }
+        self::deleteOldPreviews($now);
+        $run = new self();
+        $run->setOwnerId((string) constant('AA_ID'));
+        $run->state    = self::PREVIEW;
+        $run->mode     = $mode;
+        $run->all_bins = $allBins ? '1' : '';
+        $run->source   = $source;
+        $run->user     = $user;
+        $run->started  = (string) $now;
+        $run->token    = ($token === '') ? '' : Crypt::encryptAesGcm($token, Secret::key('install-run'));
+        $run->save();
+        return $run;
+    }
+
+    /** the run, or null when $id is no install run */
+    public static function get(string $id): ?self
+    {
+        return self::read($id, false);
+    }
+
+    /** get() with SELECT ... FOR UPDATE on the record's rows: call it inside the caller's
+     *  DB_AA::transaction() - the lock holds until it commits, so two batches cannot both pass at().
+     *  A waiting reader resumes at the aa_owner row (first in the index), which update() never rewrites,
+     *  so it goes on to read every row the other transaction re-inserted. */
+    public static function lockForUpdate(string $id): ?self
+    {
+        $run = self::read($id, true);
+        if ($run) {
+            $run->locked = true;
+        }
+        return $run;
+    }
+
+    /** Deletes previews started a day or more before $now. Other classes may have a state "preview" too,
+     *  so the class is checked on the candidates. */
+    private static function deleteOldPreviews(int $now): void
+    {
+        $previews = DB_AA::select('object_id', 'SELECT object_id FROM `object_text`', [['property', 'state'], ['value', self::PREVIEW]]);
+        if (!$previews) {
+            return;
+        }
+        $props = [];
+        foreach (DB_AA::select([], 'SELECT object_id, property, value FROM `object_text`', [['object_id', $previews], ['property', ['aa_type', 'started']]]) as $row) {
+            $props[$row['object_id']][$row['property']] = $row['value'];
+        }
+        $old = array_keys(array_filter($props, static fn(array $p): bool => (($p['aa_type'] ?? '') === self::class) && ((int) ($p['started'] ?? 0) <= $now - self::PREVIEW_LIFETIME)));
+        if ($old) {
+            AA_Object::deleteObjects($old);
+        }
+    }
+
+    /** Call it inside the definitions transaction: the run reaches the items only with its definitions.
+     *  @param string   $definitions the definitions package as downloaded (its fingerprint is kept)
+     *  @param string[] $slices      source slice ids in the order their items are transferred */
+    public function definitionsWritten(IdMap $map, string $definitions, array $slices): void
+    {
+        $slices = array_values($slices);
+        foreach ($slices as $slice) {
+            if (!preg_match('/^[0-9a-f]{32}\z/', $slice)) {
+                throw new InvalidArgumentException('A slice id is 32 lower-case hex');
+            }
+        }
+        $this->move([self::PREVIEW], self::ITEMS);
+        $this->id_map      = $map->toJson();
+        $this->fingerprint = hash('sha256', $definitions);
+        $this->slices      = json_encode($slices, JSON_THROW_ON_ERROR);
+        $this->slice       = $slices[0] ?? '';
+        $this->cursor      = '';
+        $this->written     = $this->on_source = json_encode((object) array_fill_keys($slices, 0), JSON_THROW_ON_ERROR);
+        $this->update(['state', 'id_map', 'fingerprint', 'slices', 'slice', 'cursor', 'written', 'on_source']);
+    }
+
+    /** The batch read from $expected may be written: the run is in items and still at that position.
+     *  False = a second tab, a double click or a retry got there first. Ask on a lockForUpdate() instance.
+     *  @param array{string, string} $expected [slice, cursor] */
+    public function at(array $expected): bool
+    {
+        return ($this->state === self::ITEMS) && ($expected === $this->position());
+    }
+
+    /** Moves the position after the batch read from $expected was written; a position other than
+     *  $expected throws, so the transaction rolls the batch back.
+     *  @param array{string, string} $expected [slice, cursor] the batch was read from - its counts belong to that slice
+     *  @param array{string, string} $new      [slice, cursor] of the next batch - the same or a later slice
+     *  @param int $written  items this batch wrote
+     *  @param int $onSource items of the slice on the source now */
+    public function advance(array $expected, array $new, int $written, int $onSource): void
+    {
+        $this->move([self::ITEMS], self::ITEMS);
+        $order = array_flip($this->slices());
+        if (!isset($order[$new[0]]) || ($order[$new[0]] < ($order[$this->slice] ?? 0)) || !preg_match('/^([0-9a-f]{32})?\z/', $new[1]) || ($written < 0) || ($onSource < 0)) {
+            throw new InvalidArgumentException('The new position or counts are outside the run');
+        }
+        if (!$this->at($expected)) {
+            throw new LogicException('The install run is not at the position of the batch');
+        }
+        $counts                = $this->written();
+        $counts[$expected[0]] += $written;
+        $source                = $this->onSource();
+        $source[$expected[0]]  = $onSource;
+        [$this->slice, $this->cursor] = $new;
+        $this->written   = json_encode($counts, JSON_THROW_ON_ERROR);
+        $this->on_source = json_encode($source, JSON_THROW_ON_ERROR);
+        $this->update(['slice', 'cursor', 'written', 'on_source']);
+    }
+
+    /** a batch failed: $code a finding / error code, $path where - never the raw DB message, which
+     *  would show table and column names on the progress page */
+    public function fail(string $code, string $path): void
+    {
+        if (!preg_match('/^[A-Z][A-Z0-9_]{0,63}\z/', $code)) {
+            throw new InvalidArgumentException('An error code is an upper-case identifier');
+        }
+        $this->move([self::ITEMS], self::ERROR);
+        $this->error_code = $code;
+        $this->error_path = $path;
+        $this->update(['state', 'error_code', 'error_path']);
+    }
+
+    /** Continue after an error - from the stored position */
+    public function resume(): void
+    {
+        $this->move([self::ERROR], self::ITEMS);
+        $this->update(['state']);
+    }
+
+    public function finish(): void
+    {
+        $this->move([self::ITEMS], self::DONE);
+        $this->token = '';
+        $this->update(['state', 'token']);
+    }
+
+    /** End: what is written stays, the rest is not transferred */
+    public function end(): void
+    {
+        $this->move([self::ITEMS, self::ERROR], self::ENDED);
+        $this->token = '';
+        $this->update(['state', 'token']);
+    }
+
+    /** the source's login token; '' when there is none (a local source, a finished run) */
+    public function token(): string
+    {
+        if ($this->token === '') {
+            return '';
+        }
+        $token = Crypt::decryptAesGcm($this->token, Secret::key('install-run'));
+        if (!is_string($token)) {
+            throw new RuntimeException('The source token cannot be decrypted - AA_SECRET changed? Log in to the source again.');
+        }
+        return $token;
+    }
+
+    public function state(): string
+    {
+        return $this->state;
+    }
+
+    public function mode(): string
+    {
+        return $this->mode;
+    }
+
+    public function allBins(): bool
+    {
+        return $this->all_bins === '1';
+    }
+
+    public function source(): string
+    {
+        return $this->source;
+    }
+
+    public function user(): string
+    {
+        return $this->user;
+    }
+
+    public function started(): int
+    {
+        return (int) $this->started;
+    }
+
+    public function idMap(): IdMap
+    {
+        return IdMap::fromJson($this->id_map);
+    }
+
+    public function fingerprint(): string
+    {
+        return $this->fingerprint;
+    }
+
+    /** @return string[] */
+    public function slices(): array
+    {
+        return ($this->slices === '') ? [] : json_decode($this->slices, true, 2, JSON_THROW_ON_ERROR);
+    }
+
+    /** @return array{string, string} [slice, cursor] */
+    public function position(): array
+    {
+        return [$this->slice, $this->cursor];
+    }
+
+    /** @return array<string, int> slice => items written */
+    public function written(): array
+    {
+        return ($this->written === '') ? [] : json_decode($this->written, true, 2, JSON_THROW_ON_ERROR);
+    }
+
+    /** @return array<string, int> slice => items on the source */
+    public function onSource(): array
+    {
+        return ($this->on_source === '') ? [] : json_decode($this->on_source, true, 2, JSON_THROW_ON_ERROR);
+    }
+
+    /** @return array{string, string}|null [code, path] of the last error */
+    public function error(): ?array
+    {
+        return ($this->error_code === '') ? null : [$this->error_code, $this->error_path];
+    }
+
+    /** @param string[] $from */
+    private function move(array $from, string $to): void
+    {
+        if (!$this->locked || !DB_AA::inTransaction()) {
+            throw new LogicException('An install run changes only after lockForUpdate() inside a transaction');
+        }
+        if (!in_array($this->state, $from, true)) {
+            throw new LogicException("An install run cannot go from $this->state to $to");
+        }
+        $this->state = $to;
+    }
+
+    /** AA_Object::load() caches per request - a batch must see the rows as they are now */
+    private static function read(string $id, bool $lock): ?self
+    {
+        if (!preg_match('/^[0-9a-f]{32}\z/', $id)) {
+            return null;
+        }
+        $rows = DB_AA::select(['property' => 'value'], 'SELECT property, value FROM `object_text` ' . DB_AA::makeWhere([['object_id', $id]]) . ($lock ? ' FOR UPDATE' : ''));
+        if (($rows['aa_type'] ?? '') !== self::class) {
+            return null;
+        }
+        $run = new self();
+        $run->setId($id);
+        $run->setOwnerId($rows['aa_owner'] ?? '');
+        foreach (array_keys(self::getClassProperties()) as $property) {
+            $run->$property = (string) ($rows[$property] ?? '');
+        }
+        return $run;
+    }
+}
