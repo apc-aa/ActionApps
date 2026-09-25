@@ -38,7 +38,6 @@ final class DbAaTransactionTest extends TestCase
         FakeDb::$begin_fails = false;
         FakeDb::$commit_fails = false;
         FakeDb::$rollback_throws = false;
-        FakeDb::$query_fails = false;
         $GLOBALS['spareDBs'] = [new FakeDb()];
     }
 
@@ -224,68 +223,6 @@ final class DbAaTransactionTest extends TestCase
         $this->assertCount(1, $GLOBALS['spareDBs'], 'the handle is still released');
     }
 
-    public function test_a_shutdown_handler_can_abandon_a_transaction_the_request_died_in(): void
-    {
-        $spare   = new FakeDb();
-        $handler = DB_AA::atShutdown(static function (): string {
-            return DB_AA::abandonTransaction() ? 'done' : 'unreliable';     // nothing open at the end of the test run: true
-        });
-        DB_AA::transaction(function () use ($spare, $handler) {
-            $this->assertTrue(DB_AA::inTransaction());
-            $db = getDB();                      // checked out, as when a fatal error strikes mid-statement
-            $db->query('INSERT INTO x');
-            $GLOBALS['spareDBs'][] = $spare;
-
-            $this->assertSame('done', $handler(), 'the registered function returns what the handler does');
-            $this->assertFalse(DB_AA::inTransaction(), 'unpinned');
-            $other = getDB();
-            $this->assertSame($spare, $other, 'getDB() serves the pool again, no "second handle" refusal');
-            freeDB($other);
-        });
-
-        $this->assertSame(['begin', 'INSERT INTO x', 'rollback', 'commit'], FakeDb::$log, 'rolled back (the later commit is the test closure returning)');
-        $this->assertFalse(DB_AA::inTransaction());
-    }
-
-    /** @return array<string, array{bool, bool, list<string>, bool}> persistent, ROLLBACK statement fails, log, reliable */
-    public static function failedRollbacks(): array
-    {
-        return [
-            'explicit ROLLBACK'             => [false, false, ['begin', 'rollback', 'ROLLBACK', 'disconnect'], true],
-            'connection closed'             => [false, true, ['begin', 'rollback', 'ROLLBACK', 'disconnect'], true],
-            'persistent, explicit ROLLBACK' => [true, false, ['begin', 'rollback', 'ROLLBACK', 'disconnect'], true],
-            'persistent, nothing works'     => [true, true, ['begin', 'rollback', 'ROLLBACK', 'disconnect'], false],
-        ];
-    }
-
-    /** a failed rollback(): a ROLLBACK statement, then the connection dropped - reliable unless a persistent
-     *  connection (it stays open, its next use would join the transaction) refused both */
-    #[\PHPUnit\Framework\Attributes\DataProvider('failedRollbacks')]
-    public function test_a_failed_rollback(bool $persistent, bool $statement_fails, array $log, bool $reliable): void
-    {
-        $GLOBALS['spareDBs']     = [new FakeDb($persistent)];
-        FakeDb::$rollback_throws = true;
-        FakeDb::$query_fails     = $statement_fails;
-        $handler                 = DB_AA::atShutdown(static fn(): bool => DB_AA::abandonTransaction());
-        $result                  = null;
-        try {
-            DB_AA::transaction(static function () use ($handler, &$result) {
-                $result = $handler();
-                throw new RuntimeException('the request goes on in the test');
-            });
-        } catch (RuntimeException) {
-        }
-        FakeDb::$query_fails = false;
-        $this->assertSame([...$log, 'rollback'], FakeDb::$log, '(the last rollback: the test request going on)');
-        $this->assertSame($reliable, $result);
-    }
-
-    public function test_abandon_is_only_for_a_shutdown_handler(): void
-    {
-        $this->expectException(\LogicException::class);
-        DB_AA::abandonTransaction();
-    }
-
     public function test_runs_without_a_transaction_when_it_cannot_be_started(): void
     {
         FakeDb::$begin_fails = true;
@@ -309,11 +246,10 @@ final class FakeDb extends DB_PDO
     public static bool $begin_fails = false;
     public static bool $commit_fails = false;
     public static bool $rollback_throws = false;
-    public static bool $query_fails = false;
 
-    public function __construct(bool $persistent = false)
+    public function __construct()
     {
-        parent::__construct(['type' => 'db_pdo:sqlite', 'database' => ':memory:', 'persistent' => $persistent]);
+        parent::__construct(['type' => 'db_pdo:sqlite', 'database' => ':memory:']);
     }
 
     public function beginTransaction(): bool
@@ -343,11 +279,6 @@ final class FakeDb extends DB_PDO
     public function query($Query_String): bool
     {
         self::$log[] = $Query_String;
-        return !self::$query_fails;
-    }
-
-    public function disconnect(): void
-    {
-        self::$log[] = 'disconnect';
+        return true;
     }
 }

@@ -8,10 +8,9 @@ use Closure;
 use Throwable;
 
 /** The finishing of a committed import (design balicek-v1.md § 7.2 step 8; C4.4 part 5) - Importer::write()
- *  runs it after the commit and the release of the lock. Each step is isolated: what it throws is a row of
- *  the FinishReport, the next step runs. Nothing is undone - the import committed: no compensation runs for
- *  a failure here (the shutdown handler is disarmed by then too; a request that dies here leaves the import
- *  and misses the steps after - the log entry is the first step for that reason). In order:
+ *  runs it after the commit. Each step is isolated: what it throws is a row of the FinishReport, the next
+ *  step runs. Nothing is undone - the import committed (a request that dies here leaves the import and
+ *  misses the steps after - the log entry is the first step for that reason). In order:
  *  1. `log` - one `log` row "app installed" per new module (AaAfterCommit::EVENT): name, version, source;
  *  2. `permissions[<module>]` - the ACL object of every new module, as AA does for a module it creates,
  *     and the ADMINISTRATOR role of the importer unless (s)he is a superadmin (AaAfterCommit);
@@ -25,16 +24,17 @@ final class ImportFinish
 {
     public function __construct(private readonly AfterCommit $aa) {}
 
-    /** @param string $user the importing user - (s)he gets the rights to the new modules */
-    public function run(ImportPlan $plan, ImportJournal $journal, string $user): FinishReport
+    /** @param ImportPlan $plan the plan written - its new modules and groups
+     *  @param string $user the importing user - (s)he gets the rights to the new modules */
+    public function run(ImportPlan $plan, string $user): FinishReport
     {
         $report  = new FinishReport();
-        $modules = array_map('strval', array_keys($journal->modules()));
+        $modules = array_values($plan->map->modules());
         self::step($report, 'log', fn() => $this->aa->logInstall($plan->package, $modules));
         foreach ($modules as $id) {
             self::step($report, "permissions[$id]", fn() => $this->aa->permissions($id, $user));
         }
-        if ($journal->groups()) {
+        if ($plan->map->groups()) {
             self::step($report, 'constants', fn() => $this->aa->constantsChanged());
         }
         foreach ($modules as $id) {

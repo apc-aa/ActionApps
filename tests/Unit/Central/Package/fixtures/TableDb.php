@@ -14,19 +14,18 @@ use RuntimeException;
  *  Why no SQLite: AA's SQL is MySQL - packed ids as 0x<32 hex> (SQLite reads a 128-bit hex integer
  *  literal: "hex literal too big") and addslashes() escapes (\' is no SQLite escape). So this parses the
  *  statement shapes Cvarset and DB_AA::makeWhere() produce - INSERT (one row or doInsertMulti()'s several), UPDATE ... WHERE, DELETE ... WHERE
- *  with conditions joined by AND (`col = literal`, `col IN (...)`, `col IS NULL`, `((col & n) = n)`, the
- *  `2=1` of an empty IN list) - and SELECT ... WHERE the same way (or from $answer); SELECT COUNT(*) AS x.
+ *  with conditions joined by AND (`col = literal`, `col IN (...)`) - and SELECT ... WHERE the same way
+ *  (or from $answer).
  *  Beyond the tables: information_schema.tables from $engines (table => ENGINE; a table not there does
- *  not exist), GET_LOCK() / RELEASE_LOCK() per handle as MySQL's named locks ($locks).
+ *  not exist).
  *
  *  As MySQL: a column the INSERT leaves out gets its default (include/metabase_schema.php), AUTO_INCREMENT
  *  columns numbers from $next (per table; default 1); PRIMARY and UNIQUE indexes hold (a duplicate fails);
  *  conditions compare binary columns byte for byte, the others case-insensitively without trailing spaces
- *  (the usual *_ci collations, PAD SPACE). $sent keeps each INSERT as the statement had it. A transaction snapshots the tables and a
- *  rollback restores them - except the tables $engines names with another engine than InnoDB (mixed engines); $transactions = false makes beginTransaction() fail (DB_AA::transaction() then
- *  runs the block without one - the MyISAM case). $fail decides which statement fails: with halting
- *  (query() of a handle whose halt mode is not 'no') it throws and is kept in $halted - a real DB_PDO
- *  would die() there; with query_halt(.., 'no') or halt mode 'no' it returns false - as DB_PDO. The real handle pool of
+ *  (the usual *_ci collations, PAD SPACE). $sent keeps each INSERT as the statement had it. A transaction
+ *  snapshots the tables and a rollback restores them (InnoDB); $transactions = false makes
+ *  beginTransaction() fail, $commitFails commit(). $fail decides which statement fails: with halting (query()) it throws, with
+ *  query_halt(.., 'no') it returns false - as DB_PDO. The real handle pool of
  *  include/locsess.php serves these: $GLOBALS['spareDBs'] = [new TableDb(), ...]. */
 final class TableDb extends DB_PDO
 {
@@ -45,14 +44,10 @@ final class TableDb extends DB_PDO
     /** @var null|callable(string): list<array<string, mixed>> rows of a SELECT */
     public static $answer = null;
     public static bool $transactions = true;
-    /** rollback() and a ROLLBACK statement fail - the transaction stays open (a live persistent connection) */
-    public static bool $rollbackFails = false;
-    /** @var list<string> statements that failed on a halting handle - a real DB_PDO die()s there */
-    public static array $halted = [];
+    /** commit() fails (returns false, as PDO in silent mode) */
+    public static bool $commitFails = false;
     /** @var array<string, string> information_schema.tables: table => ENGINE */
     public static array $engines = [];
-    /** @var array<string, int> named lock => spl_object_id of the handle holding it */
-    public static array $locks = [];
 
     /** @var array<string, list<array<string, int|float|string|null>>>|null tables at BEGIN */
     private static ?array $snapshot = null;
@@ -63,9 +58,9 @@ final class TableDb extends DB_PDO
     private array $rows = [];
     private int $pos = 0;
 
-    public function __construct(bool $persistent = false)
+    public function __construct()
     {
-        parent::__construct(['type' => 'db_pdo:sqlite', 'database' => ':memory:', 'persistent' => $persistent]);
+        parent::__construct(['type' => 'db_pdo:sqlite', 'database' => ':memory:']);
     }
 
     public static function reset(): void
@@ -78,11 +73,9 @@ final class TableDb extends DB_PDO
         self::$fail         = null;
         self::$answer       = null;
         self::$transactions = true;
-        self::$rollbackFails = false;
+        self::$commitFails  = false;
         self::$snapshot     = null;
-        self::$halted       = [];
         self::$engines      = [];
-        self::$locks        = [];
     }
 
     /** @return list<array<string, int|float|string|null>> */
@@ -99,14 +92,10 @@ final class TableDb extends DB_PDO
 
     public function query($Query_String): bool
     {
-        if ($this->run($Query_String)) {
-            return true;
+        if (!$this->run($Query_String)) {
+            throw new RuntimeException('TableDb: failed ' . substr($Query_String, 0, 60));
         }
-        if ($this->get_halt() === 'no') {
-            return false;
-        }
-        self::$halted[] = $Query_String;
-        throw new RuntimeException('TableDb: failed ' . substr($Query_String, 0, 60));
+        return true;
     }
 
     public function query_halt(string $Query_String, string $mode): bool
@@ -126,9 +115,6 @@ final class TableDb extends DB_PDO
         $this->affected  = 0;
         if (self::$fail && (self::$fail)($sql)) {
             return false;
-        }
-        if ($sql === 'ROLLBACK') {
-            return $this->rollback();
         }
         if (preg_match('/^INSERT INTO `(\w+)` \((.*?)\) VALUES \(/s', $sql, $m)) {
             $scan     = new SqlScanner($sql, strlen($m[0]));
@@ -154,42 +140,15 @@ final class TableDb extends DB_PDO
             $this->rows = (self::$answer)($sql);
             return true;
         }
-        if (preg_match('/^SELECT (GET_LOCK|RELEASE_LOCK)\(/', $sql, $m)) {
-            $this->rows = [['result' => $this->namedLock($m[1], (new SqlScanner($sql, strlen($m[0])))->values())]];
-            return true;
-        }
         if (preg_match('/^SELECT (.+?) FROM (?:[`"]?(\w+)[`"]?|(information_schema\.tables))(?: WHERE |\s*$)/i', $sql, $m)) {
             $table = $m[2] ?: 'information_schema';
             $where = str_ends_with($m[0], 'WHERE ') ? (new SqlScanner($sql, strlen($m[0])))->conditions() : [];
             $rows  = ($table === 'information_schema') ? self::informationSchema() : (self::$tables[$table] ?? []);
             $rows  = array_values(array_filter($rows, static fn(array $row): bool => self::matches($table, $row, $where)));
-            $this->rows = preg_match('/^COUNT\(\*\) AS (\w+)$/i', $m[1], $count) ? [[$count[1] => count($rows)]] : $rows;
+            $this->rows = $rows;
             return true;
         }
         throw new RuntimeException("TableDb: unknown statement $sql");
-    }
-
-    /** GET_LOCK(name, timeout): 1 when free or this handle's (no waiting), else 0; RELEASE_LOCK(name): 1 when
-     *  this handle held it, 0 another's, NULL none - MySQL's answers @param list<int|float|string|null> $args */
-    private function namedLock(string $function, array $args): ?int
-    {
-        $name   = (string) $args[0];
-        $holder = self::$locks[$name] ?? null;
-        if ($function === 'GET_LOCK') {
-            if (($holder !== null) && ($holder !== spl_object_id($this))) {
-                return 0;
-            }
-            self::$locks[$name] = spl_object_id($this);
-            return 1;
-        }
-        if ($holder === null) {
-            return null;
-        }
-        if ($holder !== spl_object_id($this)) {
-            return 0;
-        }
-        unset(self::$locks[$name]);
-        return 1;
     }
 
     /** @return list<array<string, string>> rows of information_schema.tables, both spellings of the columns */
@@ -266,13 +225,8 @@ final class TableDb extends DB_PDO
         };
         foreach ($where as [$op, $name, $value]) {
             $ok = match ($op) {
-                '='     => $equal($name, $value),
-                '<>'    => !$equal($name, $value),
-                'in'    => (bool) array_filter($value, static fn($v): bool => $equal($name, $v)),
-                'not in' => !array_filter($value, static fn($v): bool => $equal($name, $v)),
-                'null'  => !isset($row[$name]),
-                'set'   => (((int) ($row[$name] ?? 0)) & $value) === $value,
-                'false' => false,
+                '='  => $equal($name, $value),
+                'in' => (bool) array_filter($value, static fn($v): bool => $equal($name, $v)),
             };
             if (!$ok) {
                 return false;
@@ -317,27 +271,19 @@ final class TableDb extends DB_PDO
     {
         self::$log[]     = 'COMMIT';
         self::$handles[] = spl_object_id($this);
-        self::$snapshot  = null;
+        if (self::$commitFails) {
+            return false;
+        }
+        self::$snapshot = null;
         return true;
     }
 
     public function rollback(): bool
     {
-        if (self::$rollbackFails) {
-            return false;
-        }
         self::$log[]     = 'ROLLBACK';
         self::$handles[] = spl_object_id($this);
-        if (self::$snapshot !== null) {
-            $restored = self::$snapshot;
-            foreach (self::$engines as $table => $engine) {
-                if (strtolower($engine) !== 'innodb') {
-                    $restored[$table] = self::$tables[$table] ?? [];     // no transaction: its rows stay
-                }
-            }
-            self::$tables = $restored;
-        }
-        self::$snapshot = null;
+        self::$tables    = self::$snapshot ?? self::$tables;
+        self::$snapshot  = null;
         return true;
     }
 }
@@ -359,36 +305,23 @@ final class SqlScanner
     }
 
     /** conditions joined by AND, up to anything else (LIMIT, FOR UPDATE, the end): `col = literal`,
-     *  `col <> literal`, `col [NOT] IN (literals)`, `col IS NULL`, `((col & n) = n)`, `2=1` (makeWhere() of an empty list), `0`
-     *  @return list<array{string, string, mixed}> [operator (= in null set false), column, value] */
+     *  `col IN (literals)`
+     *  @return list<array{string, string, mixed}> [operator (= in), column, value] */
     public function conditions(): array
     {
         $conditions = [];
         do {
             $this->space();
-            if (preg_match('/\G(?:2=1|0\b)/', $this->sql, $m, 0, $this->pos)) {
-                $conditions[] = ['false', '', null];
-            } elseif (preg_match('/\G\(\(`?(\w+)`? & (\d+)\) = \2\)/', $this->sql, $m, 0, $this->pos)) {
-                $conditions[] = ['set', $m[1], (int) $m[2]];
-            } elseif (preg_match('/\G`?([\w.]+)`? <> /', $this->sql, $m, 0, $this->pos)) {
+            if (preg_match('/\G`?([\w.]+)`? IN \(/', $this->sql, $m, 0, $this->pos)) {
                 $this->pos   += strlen($m[0]);
-                $conditions[] = ['<>', preg_replace('/^\w+\./', '', $m[1]), $this->literal()];
-                continue;
-            } elseif (preg_match('/\G`?([\w.]+)`? IS NULL/', $this->sql, $m, 0, $this->pos)) {
-                $conditions[] = ['null', preg_replace('/^\w+\./', '', $m[1]), null];
-            } elseif (preg_match('/\G`?([\w.]+)`? (NOT )?IN \(/', $this->sql, $m, 0, $this->pos)) {
-                $this->pos   += strlen($m[0]);
-                $conditions[] = [($m[2] ?? '') ? 'not in' : 'in', preg_replace('/^\w+\./', '', $m[1]), $this->values()];
+                $conditions[] = ['in', preg_replace('/^\w+\./', '', $m[1]), $this->values()];
                 $this->space();
                 $this->eat(')') || throw new RuntimeException('SqlScanner: no ) at ' . substr($this->sql, $this->pos, 40));
-                continue;
             } else {
                 foreach ($this->pairs('AND', null, true) as $name => $value) {
                     $conditions[] = ['=', $name, $value];
                 }
-                continue;
             }
-            $this->pos += strlen($m[0]);
         } while ($this->andNext());
         return $conditions;
     }

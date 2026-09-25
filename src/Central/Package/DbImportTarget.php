@@ -6,34 +6,22 @@ namespace AA\Central\Package;
 
 use AA;
 use AA\IO\DB\DB_AA;
-use AA\IO\DB\DB_PDO;
-use AA\Optimize\Chain;
 use AA_Reader;
-use Closure;
-use LogicException;
 use RuntimeException;
 
 /** ImportTarget over this AA's database: parameterised DB_AA reads (as DbSource), no writes.
- *  The locking read of groupTaken() locks nothing on MyISAM tables (§ 13.5): there two imports at once
- *  may still create one group name twice - the residual risk until the tables are InnoDB. On InnoDB it
- *  blocks a concurrent insert of a free name only by gap locks, i.e. under REPEATABLE READ (the default),
- *  not READ COMMITTED; two imports claiming the same free name may deadlock - one fails and rolls back.
+ *  groupTaken() reads without halting: a failed read (a lock wait timeout, 1205) throws - never "free", never
+ *  die() inside the import's transaction. Its locking read (InnoDB - the planner and the writer refuse other
+ *  engines) holds the X-locks of the lt_groupNames rows (gap locks for a free name): two imports with
+ *  constant groups wait on each other and the second fails cleanly after innodb_lock_wait_timeout (or
+ *  a deadlock). READ COMMITTED takes no gap locks - two imports could then both create one free name
+ *  (accepted: REPEATABLE READ is the default).
  *  lt_groupNames.value is a char column, compared in its collation (case-insensitive in the usual
  *  latin1/utf8 ones): a name differing only in case counts as taken - one rename too many, never a merge. */
 final class DbImportTarget implements ImportTarget
 {
     /** InnoDB: the one engine of this AA's tables with transactions (MyISAM, Aria, MEMORY: none) */
     private const TRANSACTIONAL = 'innodb';
-
-    /** the connection holding the named lock. A MySQL named lock belongs to its connection (session):
-     *  RELEASE_LOCK() must run there, and a pooled or persistent connection (persistent: all DB_PDO share
-     *  one) would keep the lock past a request that died - so a connection of its own, never persistent,
-     *  never pooled, as AA\Optimize\Chain::tryLock(): the end of the script closes it and frees the lock */
-    private ?DB_PDO $lockDb = null;
-
-    /** @param Closure(): DB_PDO|null $lockConnection opens the lock connection (tests); null = Chain::lockConnectionParams() -
-     *                                     config.php, never persistent */
-    public function __construct(private readonly ?Closure $lockConnection = null) {}
 
     public function groupTaken(string $name, bool $lock = false): bool
     {
@@ -42,12 +30,20 @@ final class DbImportTarget implements ImportTarget
             ['constant', [['group_id', $name]]],
             ['constant_slice', [['group_id', $name]]],
         ];
-        foreach ($places as [$table, $where]) {
-            // the values quoted by makeWhere(); FOR UPDATE after the LIMIT - DB_AA::test() cannot append it
-            $query = 'SELECT group_id FROM ' . DB_AA::quoteIdentifier($table) . ' ' . DB_AA::makeWhere($where) . ' LIMIT 1';
-            if (DB_AA::select('', $query . ($lock ? ' FOR UPDATE' : ''))) {
-                return true;
+        $db = getDB();
+        try {
+            foreach ($places as [$table, $where]) {
+                // the values quoted by makeWhere(); FOR UPDATE after the LIMIT - DB_AA::test() cannot append it
+                $query = 'SELECT group_id FROM ' . DB_AA::quoteIdentifier($table) . ' ' . DB_AA::makeWhere($where) . ' LIMIT 1' . ($lock ? ' FOR UPDATE' : '');
+                if (!$db->query_halt($query, 'no')) {
+                    throw new RuntimeException('the ' . ($lock ? 'locking ' : '') . "read of the constant group $name failed");
+                }
+                if ($db->next_record()) {
+                    return true;
+                }
             }
+        } finally {
+            freeDB($db);
         }
         return false;
     }
@@ -106,30 +102,5 @@ final class DbImportTarget implements ImportTarget
             }
         }
         return $not;
-    }
-
-    /** GET_LOCK() on a connection of its own (see $lockDb)
-     *  @throws RuntimeException no connection, or GET_LOCK() gave no 0 / 1 (NULL: an error of the server) */
-    public function lock(string $name, int $timeout): bool
-    {
-        if ($this->lockDb !== null) {
-            throw new LogicException('DbImportTarget holds a lock already');
-        }
-        $db = $this->lockConnection ? ($this->lockConnection)() : new DB_PDO(Chain::lockConnectionParams());
-        if (!$db->query_halt('SELECT GET_LOCK(' . qquote($name) . ', ' . max(0, $timeout) . ') AS result', 'no')) {
-            throw new RuntimeException('no connection to the database for the import lock');
-        }
-        $result = $db->next_record() ? $db->record('result') : null;
-        if (($result === null) || !in_array((string) $result, ['0', '1'], true)) {
-            throw new RuntimeException('GET_LOCK() of the import lock failed (NULL)');
-        }
-        $this->lockDb = ((string) $result === '1') ? $db : null;         // not got: the last reference - closes the connection
-        return $this->lockDb !== null;
-    }
-
-    public function unlock(string $name): void
-    {
-        $this->lockDb?->query_halt('SELECT RELEASE_LOCK(' . qquote($name) . ') AS result', 'no');
-        $this->lockDb = null;
     }
 }

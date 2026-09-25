@@ -21,7 +21,7 @@ use RuntimeException;
  *  new module (AddPerm(), as admin/se_users.php), or (s)he could not open what (s)he installed. Whether
  *  (s)he is a superadmin tells IsSuperadmin() - of the logged-in user only; another user (CLI) gets the
  *  role. With perm_sql.php AddPermObject() is a no-op, with LDAP it creates the object. None of it is ever
- *  compensated: it runs after the commit only. AddPerm() writes through CVarset without nohalt - a DB error
+ *  undone: it runs after the commit only. AddPerm() writes through CVarset without nohalt - a DB error
  *  there ends the request (the import stays; the later steps are missed).
  *
  *  The log entry: the rows AA_Log::write() makes (time, user = AuthGetUid() - the logged-in user, type,

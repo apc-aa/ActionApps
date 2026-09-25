@@ -5,7 +5,7 @@ declare(strict_types=1);
 /**
  * Importer::write() before anything else, C4.4 part 5 (design balicek-v1.md § 3.3, § 7.2 step 2, Q-H2):
  * the right to install (ImportAuthority, PS_INSTALL_APP) and the confirmation of the S findings
- * (ImportConfirmation) - refused = ImportFailed before any statement and before the lock.
+ * (ImportConfirmation) - refused = ImportFailed before any statement.
  */
 
 namespace Tests\Unit\Central\Package;
@@ -87,7 +87,7 @@ final class ImportAdmissionTest extends TestCase
         return new ImportConfirmation(self::SECRET);
     }
 
-    /** write() refused: the reason, and nothing happened - no statement, no lock, no step after it */
+    /** write() refused: the reason, and nothing happened - no statement, no step after it */
     private function refused(ImportPlan $plan, ?string $token, string $reason, ?ImportConfirmation $confirmation = null): WriteError
     {
         try {
@@ -98,10 +98,7 @@ final class ImportAdmissionTest extends TestCase
             self::assertInstanceOf(WriteError::class, $cause);
             self::assertSame($reason, $cause->reason);
             self::assertSame('import', $cause->path);
-            self::assertTrue($e->journal->isEmpty());
-            self::assertTrue($e->cleanup->clean());
             self::assertSame([], TableDb::$log, 'no statement');
-            self::assertSame([], $this->target->locks, 'not even the lock');
             self::assertSame([], $this->after->calls);
             return $cause;
         }
@@ -234,10 +231,10 @@ final class ImportAdmissionTest extends TestCase
         self::assertNotSame($preview->map->modules(), $plan->map->modules());
         self::assertSame($token, self::confirmation()->token($plan, self::USER));
 
-        $result = $this->importer()->write($plan, $token);
+        $report = $this->importer()->write($plan, $token);
         self::assertCount(3, TableDb::rows('module'));
         self::assertSame(['{server:REMOTE_ADDR}'], array_column(array_filter(TableDb::rows('view'), static fn(array $r): bool => $r['odd'] === '{server:REMOTE_ADDR}'), 'odd'));
-        $levels = array_map(static fn(array $f): string => $f[1]->level, $result->report->findings);
+        $levels = array_map(static fn(array $f): string => $f[1]->level, $report->findings);
         self::assertSame([LintFinding::SECURITY, LintFinding::SECURITY], array_slice($levels, 0, 2), 'the report lists them first');
     }
 

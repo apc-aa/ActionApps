@@ -23,8 +23,8 @@ use AA\Central\Package\Model\RawBytes;
  *    the login looks in all of them), compared as the usual *_ci collation with PAD SPACE (case, trailing
  *    spaces) - the lookup would be ambiguous;
  *    AT PLAN TIME ONLY: a reader registering between the preview and the write is not seen. Acceptable -
- *    the registration does not take the import lock, so a check inside the write would narrow the window,
- *    not close it (only a unique key would); the preview is shown just before the write, and the check
+ *    a check inside the write would narrow the window, not close it (the registration locks nothing the
+ *    import reads; only a unique key would); the preview is shown just before the write, and the check
  *    inside the transaction would cost two AA_Set queries per reader there;
  *  - I READER_ACCOUNTS: how many login accounts with a password hash (FIELDID_PASSWORD) the package brings;
  *  - W READER_2FA: an item carries a 2FA secret (FIELDID_2FA_SECRET). The seeds travel as PLAINTEXT, like

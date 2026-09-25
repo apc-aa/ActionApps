@@ -10,8 +10,8 @@ use AA\Central\Package\Model\Module;
  *  EVERY string in it is package text or derived from it (names, paths, refs, fix-ups, errors quoting
  *  them): the UI escapes all of it (safe()).
  *
- *  A failed import is no report: ImportFailed (the cause, the journal, the compensation). Here all rows
- *  were written - $rows counts them by table; what the import changed or dropped on the way is $ignored
+ *  A failed import is no report: ImportFailed (the cause; nothing was written). Here all rows were
+ *  written - $rows counts them by table; what the import changed or dropped on the way is $ignored
  *  (the FixUps: e-mail attachments, lang_file, dropped site settings, spot markup, publish = users, a shared
  *  filter); what AA did after the commit is $finish, each step OK or its errors (FinishReport::failures():
  *  what is left to do by hand - the import itself stays). The Reader's pruning findings (§ 3.2) are not in the plan: the
@@ -25,8 +25,7 @@ final readonly class ImportReport
     /**
      * @param array{name: string, version: ?string, description: ?string, source: array<string, string>} $package
      * @param list<array{type: string, name: string, old: string, new: string}> $modules the package's modules, old => new id
-     * @param array<string, int>                   $rows     table => rows written (from the package; the
-     *                                                       AUTO_INCREMENT tables from the journal)
+     * @param array<string, int>                   $rows     table => rows written (RowStore::written()), by table name
      * @param list<FixUp>                          $ignored  what the import changed or dropped
      * @param array{views: array<int, int>, emails: array<int, int>, filters: array<int, int>, groups: array<string, string>,
      *              collections: array<string, string>, objects: array<string, string>, items: array<string, int>} $maps
@@ -48,43 +47,24 @@ final readonly class ImportReport
         public array $settings,
     ) {}
 
-    /** @param array<string, string> $rowTables Schema::rowTables() - row element => table */
-    public static function of(ImportPlan $plan, IdMap $map, ImportJournal $journal, FinishReport $finish, array $rowTables): self
+    /** @param array<string, int> $written RowStore::written() - table => rows inserted */
+    public static function of(ImportPlan $plan, IdMap $map, array $written, FinishReport $finish): self
     {
         $p = $plan->package;
-        [$modules, $rows, $objects, $settings] = [[], [], [], []];
+        [$modules, $items, $objects, $settings] = [[], [], [], []];
         foreach ($p->modules as $m) {
             $new       = (string) $map->module($m->id);
             $name      = ValueCodec::bytes($m->rows['module'][0]['name'] ?? '');
             $modules[] = ['type' => $m->type, 'name' => $name, 'old' => $m->id, 'new' => $new];
-            foreach ($m->rows as $element => $list) {
-                $table        = $rowTables[$element] ?? $element;
-                $rows[$table] = ($rows[$table] ?? 0) + count($list);
+            if ($m->items) {
+                $items[$new] = count($m->items);            // ItemWriter writes every item of the package or fails
             }
             $objects += self::objects($m->objects, $map);
             if (($m->type === Module::SLICE) && ($fields = self::settingsFields($m))) {
                 $settings[] = ['module' => $new, 'name' => $name, 'fields' => $fields, 'url' => self::SETTINGS_URL . $new];
             }
         }
-        foreach ($p->constantGroups as $g) {
-            foreach ($g->rows as $element => $list) {
-                $table        = $rowTables[$element] ?? $element;
-                $rows[$table] = ($rows[$table] ?? 0) + count($list);
-            }
-        }
-        if ($journal->groups()) {
-            $rows['constant'] = ($rows['constant'] ?? 0) + count($journal->groups());     // the lt_groupNames rows
-        }
-        foreach ($journal->numbers() as $table => $numbers) {
-            $rows[$table] = count($numbers);            // exact: a filter shared by Alerts modules is one row
-        }
-        $items = array_map('count', $journal->items());
-        if ($items) {
-            $rows['item'] = array_sum($items);
-        }
-        if ($journal->contentRows()) {
-            $rows['content'] = $journal->contentRows();
-        }
+        $rows = $written;
         ksort($rows);
 
         return new self(

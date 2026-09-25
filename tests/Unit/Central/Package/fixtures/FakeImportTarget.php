@@ -9,28 +9,17 @@ use AA\Central\Package\ImportTarget;
 /** An in-memory target AA for the planner and writer tests: the constant groups and alerts collections
  *  it has, the ids it hands out (scripted first, then counted: 00..0a001, 00..0a002, ...; K0001, K0002, ...).
  *  $groups and $collections are public: a test takes a name "between the plan and the write".
- *  $engines: table => engine of the tables that are not InnoDB. The named lock: $lockFree = false = held
- *  by someone else; $locks logs lock / unlock calls, $onLock / $onUnlock run when it is taken / released. */
+ *  $engines: table => engine of the tables that are not InnoDB. */
 final class FakeImportTarget implements ImportTarget
 {
     /** @var list<string> every name asked about */
     public array $asked = [];
     /** @var array<string, string> table => engine, the tables that are not InnoDB */
     public array $engines = [];
-    public bool $lockFree = true;
-    /** thrown by lock() - it could not be asked for */
-    public ?\Throwable $lockError = null;
-    /** @var list<string> "lock <name> <timeout>" / "unlock <name>" */
-    public array $locks = [];
-    /** @var null|\Closure(): void */
-    public ?\Closure $onLock = null;
-    /** @var null|\Closure(): void */
-    public ?\Closure $onUnlock = null;
     /** @var list<string> login names taken on the target (users, readers) */
     public array $usernames = [];
     /** @var list<string> reader e-mails taken on the target */
     public array $emails = [];
-    private ?string $held = null;
     private int $ids = 0;
     private int $collectionCount = 0;
 
@@ -87,33 +76,5 @@ final class FakeImportTarget implements ImportTarget
             }
         }
         return $not;
-    }
-
-    public function lock(string $name, int $timeout): bool
-    {
-        $this->locks[] = "lock $name $timeout";
-        if ($this->lockError) {
-            throw $this->lockError;
-        }
-        if (!$this->lockFree || ($this->held !== null)) {
-            return false;
-        }
-        $this->held = $name;
-        $this->onLock && ($this->onLock)();
-        return true;
-    }
-
-    public function unlock(string $name): void
-    {
-        $this->locks[] = "unlock $name";
-        if ($this->held === $name) {
-            $this->held = null;
-            $this->onUnlock && ($this->onUnlock)();
-        }
-    }
-
-    public function holds(): ?string
-    {
-        return $this->held;
     }
 }

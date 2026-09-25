@@ -7,8 +7,8 @@ declare(strict_types=1);
  * relation field (to a package item and to one outside), a password field (hashes), a number field, a
  * translation - written by the Importer into TableDb: new ids, the item row before its content, the rows
  * AA_Field_Writer::contentRow() builds, references rewritten, the charset converted, the hash byte for byte,
- * nothing of storeItem() (no log, feeding, counters), one handle; a failure at every item statement (with a
- * transaction, without one, mixed engines) leaves nothing and the target's item untouched.
+ * nothing of storeItem() (no log, feeding, counters), one handle; a failure at every item statement is
+ * rolled back - nothing of the import stays, the target's item untouched.
  */
 
 namespace Tests\Unit\Central\Package;
@@ -18,14 +18,14 @@ use AA\Central\Package\Model\Package;
 use AA\Central\Package\WriteError;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use Tests\Unit\Central\Package\Fixtures\CompensationFixture;
+use Tests\Unit\Central\Package\Fixtures\ImportFixture;
 use Tests\Unit\Central\Package\Fixtures\TableDb;
 
-require_once __DIR__ . '/fixtures/CompensationFixture.php';
+require_once __DIR__ . '/fixtures/ImportFixture.php';
 
 final class ItemWriterTest extends TestCase
 {
-    use CompensationFixture {
+    use ImportFixture {
         setUp as private fixtureSetUp;
     }
 
@@ -101,7 +101,7 @@ final class ItemWriterTest extends TestCase
 
     public function test_items_are_written_with_new_ids_and_their_content_as_stored(): void
     {
-        $result = $this->importer()->write($this->plan(self::withItems()));
+        $report = $this->importer()->write($this->plan(self::withItems()));
         [$s, $a, $b] = [self::id(2), self::id(8), self::id(9)];
 
         $item = ['short_id' => null, 'slice_id' => $s, 'status_code' => 1, 'post_date' => 1690000000, 'publish_date' => 1700000000, 'expiry_date' => 2145913200,
@@ -131,7 +131,8 @@ final class ItemWriterTest extends TestCase
             ['item_id' => $b, 'field_id' => 'alerts2....Zz999', 'number' => 0, 'text' => 'f3', 'flag' => 64],          // field and value as they are
         ], self::ours('content', 'item_id'));
 
-        self::assertSame([$s => [$a, $b]], $result->journal->items());
+        self::assertSame([$s => 2], $report->maps['items']);
+        self::assertSame([2, 12], [$report->rows['item'], $report->rows['content']], 'the report counts what was written');
         self::assertSame(array_values($this->before['item']), array_values(array_filter(TableDb::rows('item'), static fn(array $r): bool => $r['id'] === self::FITEM)));
         self::assertCount(1, array_unique(TableDb::$handles), 'every statement on the transaction handle');
     }
@@ -176,9 +177,9 @@ final class ItemWriterTest extends TestCase
 
     public function test_a_package_without_items_writes_no_item(): void
     {
-        $result = $this->importer()->write($this->plan());
+        $report = $this->importer()->write($this->plan());
 
-        self::assertSame([], $result->journal->items());
+        self::assertSame([], $report->maps['items']);
         self::assertSame($this->before['item'], TableDb::rows('item'));
         self::assertSame($this->before['content'], TableDb::rows('content'));
     }
@@ -202,58 +203,31 @@ final class ItemWriterTest extends TestCase
 
     // ---------------------------------------------------------------- failures
 
-    /** @return iterable<string, array{string, array{bool, array<string, string>}, string, list<int>}> */
+    /** @return iterable<string, array{string, string}> */
     public static function failurePoints(): iterable
     {
-        $points = [                       // the statement, the items journaled (FakeImportTarget::newId() numbers)
-            'first item'    => ['/^INSERT INTO `item`/', []],
-            'first content' => ['/^INSERT INTO `content`/', [8]],
-            'second item'   => ['/^INSERT INTO `item` .*0x0{28}a009/', [8]],
-            'last content'  => ["/^INSERT INTO `content` .*'" . self::OUTSIDE . "'/", [8, 9]],
+        $points = [
+            'first item'    => '/^INSERT INTO `item`/',
+            'first content' => '/^INSERT INTO `content`/',
+            'second item'   => '/^INSERT INTO `item` .*0x0{28}a009/',
+            'last content'  => "/^INSERT INTO `content` .*'" . self::OUTSIDE . "'/",
         ];
-        $engines = ['transaction' => [true, []], 'MyISAM' => [false, []], 'mixed' => [true, ['item' => 'MyISAM', 'object_text' => 'MyISAM', 'module' => 'MyISAM']]];
-        foreach ($points as $name => [$statement, $items]) {
-            foreach ($engines as $engine => $setting) {
-                foreach (['false', 'throw'] as $mode) {
-                    yield "$name, $engine, $mode" => [$statement, $setting, $mode, $items];
-                }
+        foreach ($points as $name => $statement) {
+            foreach (['false', 'throw'] as $mode) {
+                yield "$name, $mode" => [$statement, $mode];
             }
         }
     }
 
-    /** @param array{bool, array<string, string>} $engine @param list<int> $items */
     #[DataProvider('failurePoints')]
-    public function test_after_a_failure_at_an_item_nothing_of_the_import_remains(string $statement, array $engine, string $mode, array $items): void
+    public function test_after_a_failure_at_an_item_nothing_of_the_import_remains(string $statement, string $mode): void
     {
-        [TableDb::$transactions, TableDb::$engines] = $engine;
         $plan = $this->plan(self::withItems());
         self::failAt($statement, $mode);
 
-        $e = $this->failure($plan);
+        $this->failure($plan);
 
+        self::assertSame('ROLLBACK', end(TableDb::$log));
         self::assertSame($this->before, array_filter(TableDb::$tables), 'the rows of the target - its item and content too');
-        self::assertTrue($e->cleanup->clean(), $e->cleanup->summary());
-        self::assertSame([], TableDb::$halted);
-        self::assertSame($items ? [self::id(2) => array_map(self::id(...), $items)] : [], $e->journal->items());
-        self::assertSame((bool) $items, in_array('items of ' . self::id(2), array_column($e->cleanup->steps(), 0), true));
-    }
-
-    /** the item step: content by the journaled item ids, the items by id and the new slice. (The slice routine
-     *  before it - AA_Items::deleteItems() of the slice's items - finds none in TableDb: DB_AA::select() gives
-     *  the packed id column as the hex TableDb keeps, zids('p') reads that as binary; on MySQL it deletes them
-     *  first and this step deletes nothing.) */
-    public function test_the_item_step_deletes_by_the_journal(): void
-    {
-        TableDb::$transactions = false;
-        $plan                  = $this->plan(self::withItems());
-        self::failAt("/^INSERT INTO `content` .*'" . self::OUTSIDE . "'/");
-
-        $e = $this->failure($plan);
-
-        self::assertTrue($e->cleanup->clean(), $e->cleanup->summary());
-        self::assertSame($this->before, array_filter(TableDb::$tables));
-        $ids = '0x' . self::id(8) . ',0x' . self::id(9);
-        self::assertContains("DELETE FROM \"content\" WHERE item_id IN ($ids)", TableDb::$log);
-        self::assertContains("DELETE FROM \"item\" WHERE id IN ($ids) AND slice_id = 0x" . self::id(2), TableDb::$log);
     }
 }

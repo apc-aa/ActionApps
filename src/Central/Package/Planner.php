@@ -6,6 +6,7 @@ namespace AA\Central\Package;
 
 use AA\Central\Package\Model\Module;
 use AA\Central\Package\Model\Package;
+use AA\Optimize\Convert2innodb;
 use AA_Metabase;
 use InvalidArgumentException;
 
@@ -28,13 +29,13 @@ use InvalidArgumentException;
  *     readers whose login or e-mail the target has (E), the login accounts and 2FA seeds the package
  *     brings (I, W), relations and alerts subscriptions leading outside it (W, I).
  *  6. The engine (§ 7.2 step 4): the tables the import writes that are not InnoDB (ImportTarget::
- *     nonTransactional()) - W NO_TRANSACTION: no rollback there, a failure is cleaned up by the
- *     compensation (Importer) only. Here, not in the writer, so the preview shows it before the write.
+ *     nonTransactional()) - E NO_TRANSACTION: the rollback is the only cleanup of a failed import, so
+ *     such a plan is never written (Importer). Here, not in the writer, so the preview shows it.
  *
  *  Not here (they plug in around plan()): the "keep module ids" restore mode (§ 7.1: would replace
  *  the module part of the map after its checks), rights (PS_INSTALL_APP, Q-H2) and the S confirmation
- *  (Importer::write(): ImportAuthority, ImportConfirmation), writing, the re-check of the names and ids inside the transaction and compensation
- *  (part 4, ImportPlan), the chunk mode (part 6). */
+ *  (Importer::write(): ImportAuthority, ImportConfirmation), writing, the re-check of the names and ids
+ *  inside the transaction (part 4, ImportPlan), the chunk mode (part 6). */
 final class Planner
 {
     /** I: a constant group gets another name on the target; ref = "old => new" */
@@ -49,8 +50,8 @@ final class Planner
      *  is written as it is - AA reads it only through a collection whose reader slice is this new slice, so
      *  it is an inert definition; ref = the collection id */
     public const ALERTS_FIELD_KEPT = 'alerts-field-kept';
-    /** W: tables the import writes are not InnoDB - no transaction; after a failure the compensation removes
-     *  what the import wrote there; ref = "table (engine), ..." (engine '' = no such table) */
+    /** E: tables the import writes are not InnoDB - no transaction would roll a failed import back; ref =
+     *  noTransaction(): "table (engine), ... - ..." (engine '' = no such table), naming the AA optimization for it */
     public const NO_TRANSACTION = 'no-transaction';
     /** the path of a finding about the target AA, not the package */
     public const TARGET = 'target';
@@ -131,18 +132,34 @@ final class Planner
         return new ImportPlan($fixed, $map, $charsets, $lang_files, $group_charsets, $settings, $fix_ups, $validation->findings, $this->findings->all());
     }
 
-    /** W NO_TRANSACTION for the tables the import writes without a transaction */
+    /** E NO_TRANSACTION for the tables the import writes without a transaction - the whole list (a short
+     *  one: the tables of AA), not cut to ReferenceLint::MAX_REF */
     private function engines(Package $package): void
     {
-        $tables = array_values(array_unique([...array_values($this->schema->rowTables()), ...self::OBJECT_TABLES]));
+        $not = $this->target->nonTransactional(self::tables($this->schema, $package));
+        if ($not) {
+            $this->findings->add(self::TARGET, new LintFinding(LintFinding::ERROR, self::NO_TRANSACTION, self::noTransaction($not), 0));
+        }
+    }
+
+    /** The tables an import of $package writes - what must be InnoDB: the planner's E and the writer's check
+     *  (Importer::write()) ask ImportTarget::nonTransactional() about these
+     *  @return list<string> */
+    public static function tables(Schema $schema, Package $package): array
+    {
+        $tables = array_values(array_unique([...array_values($schema->rowTables()), ...self::OBJECT_TABLES]));
         if (array_filter($package->modules, static fn(Module $m): bool => (bool) $m->items)) {
             $tables = [...$tables, ...self::ITEM_TABLES];
         }
-        $not = $this->target->nonTransactional($tables);
-        if ($not) {
-            $list = implode(', ', array_map(static fn(string $t, string $e): string => "$t ($e)", array_keys($not), $not));
-            $this->add(self::TARGET, LintFinding::WARNING, self::NO_TRANSACTION, $list);
-        }
+        return $tables;
+    }
+
+    /** the text of the E NO_TRANSACTION (and of the writer's WriteError::ENGINE): the tables, what to do
+     *  @param array<string, string> $not ImportTarget::nonTransactional() - table => engine */
+    public static function noTransaction(array $not): string
+    {
+        $list = implode(', ', array_map(static fn(string $t, string $e): string => "$t ($e)", array_keys($not), $not));
+        return "$list - no transaction would roll a failed import back: run \"" . Convert2innodb::name() . '" (State Check, Optimize) and plan again';
     }
 
     /** I ALERTS_FIELD_KEPT for the alerts fields of collections outside the package */

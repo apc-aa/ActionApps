@@ -14,7 +14,7 @@ use LogicException;
  *  ImportPlan::$settingsIds - string2id(class . new module id)), then its top-level objects (AA_Aliasfunc,
  *  AA_Set) with their subobjects (AA_Condition in AA_Set.conds, AA_Sortorder in .sort). Every id is the
  *  plan's: the settings id, or IdMap::longId() of the package id - never an id of the package or of the
- *  target as it is (Compensation deletes by these ids, and AA_Object::deleteObjects() by `aa_subobjects`).
+ *  target as it is (AA_Object::deleteObjects() deletes by `aa_subobjects`).
  *  Owner (aa_owner) = the new module, subobjects too. Every value goes through RowStore::value() -
  *  numeric(known()), the module charset last, as the rows and as the plan measured it (ObjectExport::map()
  *  gives the same paths) - so module ids in translate_slice, fieldslice, AA_Set.slices and `{set:<id>}` in
@@ -39,18 +39,17 @@ use LogicException;
  *  module type) and only properties of the class (never aa_*, never the installation's settings of
  *  ObjectExport::isLeftOut() - ga_id, alternate_url, app_*, which FixUps drop): the Validator's E, here a
  *  LogicException before the first row of the object - the whole object tree is built before it is
- *  written. Each object goes to the journal once one of its rows is written.
+ *  written.
  *
  *  Follow-up for part 6: once a "keep module ids" restore mode exists (§ 7.1), the derived settings ids
  *  are no longer those of fresh modules - check them free inside the transaction (object_text has no key
- *  that would refuse a second object of the id, and the compensation deletes by it).
+ *  that would refuse a second object of the id).
  *
  *  @internal only Importer calls it - the rights and the S confirmation are checked there (Importer::write()). */
 final class ObjectWriter
 {
     private IdMap $map;
     private ImportRewrite $rewrite;
-    private ImportJournal $journal;
     private string $charset;
     private string $owner;
 
@@ -58,9 +57,9 @@ final class ObjectWriter
 
     /** @param IdMap $map the map RowWriter returned - with the view and e-mail numbers
      *  @throws WriteError|RewriteFailed|LogicException */
-    public function write(ImportPlan $plan, IdMap $map, ImportJournal $journal): void
+    public function write(ImportPlan $plan, IdMap $map): void
     {
-        [$this->map, $this->journal, $this->rewrite] = [$map, $journal, new ImportRewrite($map)];
+        [$this->map, $this->rewrite] = [$map, new ImportRewrite($map)];
         foreach ($plan->package->modules as $m) {
             if (($m->settings === null) && !$m->objects) {
                 continue;
@@ -91,7 +90,7 @@ final class ObjectWriter
      *  @param class-string        $class an allowlisted class
      *  @param array<string, mixed> $props converted values; a subobject {id (package), class, props}
      *  @param bool                $top  a top-level object - only it may hold subobjects
-     *  @return list<array{string, string, array<string, int|string>, string}> [table, object id, row, path] */
+     *  @return list<array{string, array<string, int|string>, string}> [table, row, path] */
     private function rows(string $class, string $id, array $props, mixed $name, string $path, bool $top): array
     {
         /** @var array<string, AA_Property> $properties */
@@ -140,19 +139,17 @@ final class ObjectWriter
         return $rows;
     }
 
-    /** @return array{string, string, array<string, int|string>, string} */
+    /** @return array{string, array<string, int|string>, string} */
     private static function row(string $table, string $id, string $property, int $priority, mixed $value, string $path): array
     {
-        return [$table, $id, ['object_id' => $id, 'property' => $property, 'priority' => $priority, 'value' => is_int($value) ? $value : ValueCodec::bytes($value)], $path];
+        return [$table, ['object_id' => $id, 'property' => $property, 'priority' => $priority, 'value' => is_int($value) ? $value : ValueCodec::bytes($value)], $path];
     }
 
-    /** @param list<array{string, string, array<string, int|string>, string}> $rows */
+    /** @param list<array{string, array<string, int|string>, string}> $rows */
     private function insert(array $rows): void
     {
-        foreach ($rows as [$table, $id, $row, $at]) {
-            $this->journal->step($at);
+        foreach ($rows as [$table, $row, $at]) {
             $this->store->insert($table, $this->store->tableRow($table, [], $row, $this->charset, $this->rewrite, $at), $at);
-            $this->journal->object($id, $this->owner);
         }
     }
 

@@ -132,20 +132,6 @@ class DB_PDO
         return $this->dbh->rollback();
     }
 
-    /** Drops the connection: the last reference to its PDO closes it - a persistent one stays open in PHP
-     *  (with its session and an open transaction) for the next DB_PDO of the same settings. The next
-     *  statement connects again. */
-    public function isPersistent(): bool
-    {
-        return (bool) $this->persistent;
-    }
-
-    public function disconnect(): void
-    {
-        $this->sth = false;
-        $this->dbh = false;
-    }
-
     public function execute(array $param = []): bool
     {
         if (!$this->connect()) {

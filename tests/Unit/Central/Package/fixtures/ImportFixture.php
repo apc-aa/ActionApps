@@ -14,19 +14,16 @@ use RuntimeException;
 
 require_once __DIR__ . '/PackageMutations.php';
 
-/** What CompensationTest and ImportGuardTest share: TableDb with rows the target had before the import
- *  (foreign()), the example planned and written, a failing statement. */
-trait CompensationFixture
+/** What the writer tests share (ImportGuardTest, ObjectWriterTest, ItemWriterTest): TableDb with rows
+ *  the target had before the import (foreign()), the example planned and written, a failing statement. */
+trait ImportFixture
 {
     use PackageMutations;
 
-    private const LOCK = 'aa_central_import.aa_test';
     /** foreign modules on the target: a slice, a site, an Alerts module */
     private const FS = 'f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5';
     private const FW = 'f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1';
     private const FA = 'fafafafafafafafafafafafafafafafa';
-    /** the last failure point of ImporterTest::failures() - everything but the last object row is written */
-    private const LAST = "/^INSERT INTO `object_text` .*'aa_subobjects',1,/";
     /** a foreign set and its condition (owner: the foreign slice) - the set lists the condition in aa_subobjects */
     private const FSET  = 'f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0';
     private const FCOND = 'f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2';
@@ -125,12 +122,5 @@ trait CompensationFixture
     private static function failAt(string $statement, string $mode = 'false'): void
     {
         TableDb::$fail = static fn(string $sql): bool => preg_match($statement, $sql) && (($mode === 'false') ?: throw new RuntimeException('connection lost'));
-    }
-
-    /** @return list<string> the statements after the import's end (ROLLBACK, or its last write) */
-    private static function compensationStatements(): array
-    {
-        $at = array_search('ROLLBACK', TableDb::$log, true);
-        return array_values(array_filter(array_slice(TableDb::$log, ($at === false) ? 0 : $at + 1), static fn(string $q): bool => str_starts_with($q, 'DELETE')));
     }
 }

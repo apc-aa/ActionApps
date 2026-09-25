@@ -5,8 +5,8 @@ declare(strict_types=1);
 /**
  * Importer + RowWriter, C4.4 part 4a (design balicek-v1.md § 7.2 step 5, § 6): the example package read,
  * validated, planned and written into TableDb - in-memory tables behind the real DB_AA::transaction(),
- * getDB() and AA_Metabase SQL. New ids, rewritten references, the journal; a failure at every statement
- * (rollback, journal), a name taken since the plan, an unconvertible value, a length overflow after the
+ * getDB() and AA_Metabase SQL. New ids, rewritten references; a failure at every statement (rolled
+ * back, nothing stays), a name taken since the plan, an unconvertible value, a length overflow after the
  * view numbers. The example's objects (part 4c) are written too - their details: ObjectWriterTest; items:
  * ItemWriterTest.
  */
@@ -16,7 +16,6 @@ namespace Tests\Unit\Central\Package;
 use AA\Central\Package\DbImportTarget;
 use AA\Central\Package\ImportFailed;
 use AA\Central\Package\Importer;
-use AA\Central\Package\ImportJournal;
 use AA\Central\Package\ImportPlan;
 use AA\Central\Package\ImportTarget;
 use AA\Central\Package\LintFinding;
@@ -103,17 +102,7 @@ final class ImporterTest extends TestCase
 
             public function nonTransactional(array $tables): array
             {
-                return (new DbImportTarget())->nonTransactional($tables);
-            }
-
-            public function lock(string $name, int $timeout): bool
-            {
-                return $this->ids->lock($name, $timeout);       // in memory: the tests count the statements of the handle
-            }
-
-            public function unlock(string $name): void
-            {
-                $this->ids->unlock($name);
+                return [];          // TableDb has no engines - the engine question: ImportGuardTest
             }
 
             public function usernameTaken(string $username): bool
@@ -161,12 +150,12 @@ final class ImporterTest extends TestCase
 
     public function test_the_example_is_written_with_new_ids_and_rewritten_references(): void
     {
-        $result = $this->importer()->write($this->plan());
+        $report = $this->importer()->write($this->plan());
         [$w, $s, $a] = [self::id(1), self::id(2), self::id(3)];
 
-        self::assertSame([12 => 1000, 13 => 1001], $result->map->views());
-        self::assertSame([5 => 2000, 7 => 2001], $result->map->emails());
-        self::assertSame([3 => 3000], $result->map->filters());
+        self::assertSame([12 => 1000, 13 => 1001], $report->maps['views']);
+        self::assertSame([5 => 2000, 7 => 2001], $report->maps['emails']);
+        self::assertSame([3 => 3000], $report->maps['filters']);
 
         self::assertSame([
             ['id' => $w, 'name' => 'Central Test - web', 'type' => 'W', 'lang_file' => 'cz-utf8_site_lang.php', 'deleted' => 0, 'created_by' => self::USER, 'created_at' => self::NOW],
@@ -226,15 +215,6 @@ final class ImporterTest extends TestCase
         self::assertNotContains('ROLLBACK', TableDb::$log);
         self::assertCount(1, array_unique(TableDb::$handles), 'every statement on the transaction handle');
 
-        self::assertSame([$w => Module::SITE, $s => Module::SLICE, $a => Module::ALERTS], $result->journal->modules());
-        self::assertSame(['view' => [1000, 1001], 'email' => [2000, 2001], 'alerts_filter' => [3000], 'site_spot' => [4000, 4001], 'profile' => [5000]], $result->journal->numbers());
-        self::assertSame(['ct_rubriky'], $result->journal->groups());
-        self::assertSame(['ct_rubriky' => self::id(10)], $result->journal->groupRows(), 'its lt_groupNames row by id - a name matches case-insensitively');
-        self::assertSame(['K0001'], $result->journal->collections());
-        self::assertSame([[$w, $s]], $result->journal->relations());
-        [$sw, $ss] = [string2id('AA_Modulesettings_Site' . $w), string2id('AA_Modulesettings_Slice' . $s)];
-        self::assertSame([$w => [$sw, self::id(4)], $s => [$ss, self::id(6), self::id(5), self::id(7)]], $result->journal->objects(), 'a subobject before its set');
-        self::assertSame([], $result->journal->items());
         $objects = array_keys(array_filter(TableDb::$log, static fn(string $q): bool => str_starts_with($q, 'INSERT INTO `object_text`')));
         $rows    = array_keys(array_filter(TableDb::$log, static fn(string $q): bool => (bool) preg_match('/^(INSERT|UPDATE) (INTO )?`(?!object_)/', $q)));
         self::assertGreaterThan(end($rows), $objects[0], 'the objects after the rows');
@@ -407,55 +387,41 @@ final class ImporterTest extends TestCase
 
     // ---------------------------------------------------------------- failures
 
-    /** @return array<string, array{string, array{modules: array<string, string>, numbers: array<string, list<int>>, groups: list<string>, collections: list<string>, relations: list<array{string, string}>, objects: array<string, list<string>>, items: array<string, list<string>>}}> */
+    /** @return array<string, array{string}> a statement of each step of the write */
     public static function failures(): array
     {
-        self::bootAa();         // string2id() - a provider runs before setUpBeforeClass()
-        [$w, $s, $a] = [self::id(1), self::id(2), self::id(3)];
-        $none     = ['modules' => [], 'numbers' => [], 'groups' => [], 'collections' => [], 'relations' => [], 'objects' => [], 'items' => []];
-        $j        = static fn(array ...$parts): array => array_replace($none, ...$parts);
-        $numbered = ['view' => [1000, 1001], 'email' => [2000, 2001], 'alerts_filter' => [3000]];
-        $spots    = ['site_spot' => [4000, 4001]];
-        $site     = $j(['modules' => [$w => Module::SITE], 'numbers' => $numbered]);
-        $sites    = $j($site, ['numbers' => $numbered + $spots, 'relations' => [[$w, $s]]]);
-        $slice    = $j($sites, ['modules' => [$w => Module::SITE, $s => Module::SLICE]]);
-        $alerts   = $j($sites, ['modules' => [$w => Module::SITE, $s => Module::SLICE, $a => Module::ALERTS], 'numbers' => $numbered + $spots + ['profile' => [5000]]]);
-        $all      = $j($alerts, ['collections' => ['K0001']]);
-        $group    = $j($all, ['groups' => ['ct_rubriky']]);
-        [$sw, $ss] = [string2id('AA_Modulesettings_Site' . $w), string2id('AA_Modulesettings_Slice' . $s)];
-        $site_objects = [$w => [$sw, self::id(4)]];
         return [
-            'first view'          => ['/^INSERT INTO `view`/', $none],
-            'first e-mail'        => ['/^INSERT INTO `email`/', $j(['numbers' => ['view' => [1000, 1001]]])],
-            'filter'              => ['/^INSERT INTO `alerts_filter`/', $j(['numbers' => ['view' => [1000, 1001], 'email' => [2000, 2001]]])],
-            'view numbers'        => ['/^UPDATE `view`/', $j(['numbers' => $numbered])],
-            'first module'        => ['/^INSERT INTO `module`/', $j(['numbers' => $numbered])],
-            'site'                => ['/^INSERT INTO `site` /', $site],
-            'first spot'          => ['/^INSERT INTO `site_spot`/', $site],
-            'uses'                => ['/^INSERT INTO `relation`/', $j($site, ['numbers' => $numbered + $spots])],
-            'slice'               => ['/^INSERT INTO `slice`/', $slice],
-            'first field'         => ['/^INSERT INTO `field`/', $slice],
-            'profile'             => ['/^INSERT INTO `profile`/', $slice],
-            'collection'          => ['/^INSERT INTO `alerts_collection` /', $alerts],
-            'collection filter'   => ['/^INSERT INTO `alerts_collection_filter`/', $all],
-            'collection period'   => ['/^INSERT INTO `alerts_collection_howoften`/', $all],
-            'group name'          => ['/^INSERT INTO `constant` /', $all],
-            'group owner'         => ['/^INSERT INTO `constant_slice`/', $group],
-            'second constant'     => ["/^INSERT INTO `constant` .*'Domácí'/s", $group],
-            'site settings'       => ['/^INSERT INTO `object_text`/', $group],
-            'settings owner'      => ["/^INSERT INTO `object_text` .*'aa_owner'/", $j($group, ['objects' => [$w => [$sw]]])],
-            'alias'               => ["/^INSERT INTO `object_text` .*'alias'/", $j($group, ['objects' => [$w => [$sw]]])],
-            'slice settings'      => ["/^INSERT INTO `object_text` .*'translations'/", $j($group, ['objects' => $site_objects])],
-            'subobject'           => ["/^INSERT INTO `object_text` .*'AA_Condition'/", $j($group, ['objects' => $site_objects + [$s => [$ss, self::id(6)]]])],
-            'set'                 => ["/^INSERT INTO `object_text` .*'conds'/", $j($group, ['objects' => $site_objects + [$s => [$ss, self::id(6)]]])],
-            'second subobject'    => ["/^INSERT INTO `object_text` .*'AA_Sortorder'/", $j($group, ['objects' => $site_objects + [$s => [$ss, self::id(6), self::id(5), self::id(7)]]])],
-            'last subobject id'   => ["/^INSERT INTO `object_text` .*'aa_subobjects',1,/", $j($group, ['objects' => $site_objects + [$s => [$ss, self::id(6), self::id(5), self::id(7)]]])],
+            'first view'        => ['/^INSERT INTO `view`/'],
+            'first e-mail'      => ['/^INSERT INTO `email`/'],
+            'filter'            => ['/^INSERT INTO `alerts_filter`/'],
+            'view numbers'      => ['/^UPDATE `view`/'],
+            'first module'      => ['/^INSERT INTO `module`/'],
+            'site'              => ['/^INSERT INTO `site` /'],
+            'first spot'        => ['/^INSERT INTO `site_spot`/'],
+            'uses'              => ['/^INSERT INTO `relation`/'],
+            'slice'             => ['/^INSERT INTO `slice`/'],
+            'first field'       => ['/^INSERT INTO `field`/'],
+            'profile'           => ['/^INSERT INTO `profile`/'],
+            'collection'        => ['/^INSERT INTO `alerts_collection` /'],
+            'collection filter' => ['/^INSERT INTO `alerts_collection_filter`/'],
+            'collection period' => ['/^INSERT INTO `alerts_collection_howoften`/'],
+            'group name'        => ['/^INSERT INTO `constant` /'],
+            'group owner'       => ['/^INSERT INTO `constant_slice`/'],
+            'second constant'   => ["/^INSERT INTO `constant` .*'Domácí'/s"],
+            'site settings'     => ['/^INSERT INTO `object_text`/'],
+            'settings owner'    => ["/^INSERT INTO `object_text` .*'aa_owner'/"],
+            'alias'             => ["/^INSERT INTO `object_text` .*'alias'/"],
+            'slice settings'    => ["/^INSERT INTO `object_text` .*'translations'/"],
+            'subobject'         => ["/^INSERT INTO `object_text` .*'AA_Condition'/"],
+            'set'               => ["/^INSERT INTO `object_text` .*'conds'/"],
+            'second subobject'  => ["/^INSERT INTO `object_text` .*'AA_Sortorder'/"],
+            'last subobject id' => ["/^INSERT INTO `object_text` .*'aa_subobjects',1,/"],
         ];
     }
 
-    /** a refused statement (nohalt: false) and a DB exception alike: rollback, nothing left, the journal */
+    /** a refused statement (nohalt: false) and a DB exception alike: rolled back, nothing stays */
     #[DataProvider('failures')]
-    public function test_a_failure_rolls_back_and_keeps_the_journal(string $statement, array $journal): void
+    public function test_a_failure_at_any_step_rolls_everything_back(string $statement): void
     {
         foreach (['false', 'throw'] as $mode) {
             $this->setUp();
@@ -471,87 +437,12 @@ final class ImporterTest extends TestCase
                 self::fail("$mode: no failure");
             } catch (ImportFailed $e) {
                 self::assertInstanceOf(($mode === 'false') ? WriteError::class : RuntimeException::class, $e->getPrevious(), $mode);
-                self::assertSame($journal, self::journal($e->journal), $mode);
+                self::assertStringStartsWith('The import failed, nothing was written: ', $e->getMessage(), $mode);
             }
-            self::assertSame([], self::afterRollback(), "$mode: after the rollback only the compensation (CompensationTest)");
+            self::assertSame('ROLLBACK', end(TableDb::$log), "$mode: the rollback is the last statement");
             self::assertNotContains('COMMIT', TableDb::$log, $mode);
             self::assertSame([], array_filter(TableDb::$tables), "$mode: nothing stays");
         }
-    }
-
-    /** statements after the ROLLBACK that are no DELETE or SELECT (the compensation's) @return list<string> */
-    private static function afterRollback(): array
-    {
-        $at = array_search('ROLLBACK', TableDb::$log, true);
-        self::assertIsInt($at, 'rolled back');
-        return array_values(array_filter(array_slice(TableDb::$log, $at + 1), static fn(string $q): bool => !preg_match('/^(DELETE|SELECT) /', $q)));
-    }
-
-    /** without a transaction (MyISAM, § 13.5) the rows stay until the compensation - every one of them is
-     *  found through the journal, which is what the compensation needs (the tables as the failure left them) */
-    #[DataProvider('failures')]
-    public function test_without_a_transaction_the_journal_covers_every_row_written(string $statement, array $journal): void
-    {
-        TableDb::$transactions = false;
-        $failed                = null;
-        TableDb::$fail         = static function (string $sql) use ($statement, &$failed): bool {
-            $failed ??= preg_match($statement, $sql) ? TableDb::$tables : null;
-            return (bool) preg_match($statement, $sql);
-        };
-        try {
-            $this->importer()->write($this->plan());
-            self::fail('no failure');
-        } catch (ImportFailed $e) {
-            self::assertSame($journal, self::journal($e->journal));
-            self::assertSame([], self::uncovered($e->journal, $failed));
-        }
-        self::assertNotContains('BEGIN', TableDb::$log);
-    }
-
-    public function test_the_journal_covers_a_complete_write(): void
-    {
-        $result = $this->importer()->write($this->plan());
-        self::assertSame([], self::uncovered($result->journal, TableDb::$tables));
-    }
-
-    /** @param array<string, list<array<string, mixed>>> $tables @return list<string> rows no journal entry leads to */
-    private static function uncovered(ImportJournal $j, array $tables): array
-    {
-        $modules = array_keys($j->modules());
-        $in      = static fn(mixed $v, array $list): bool => in_array($v, $list, true);
-        $objects = array_merge([], ...array_values($j->objects()));
-        $items   = array_merge([], ...array_values($j->items()));
-        $by      = [
-            'object_text'    => fn(array $r): bool => $in($r['object_id'], $objects), 'object_integer' => fn(array $r): bool => $in($r['object_id'], $objects),
-            'object_float'   => fn(array $r): bool => $in($r['object_id'], $objects),
-            'item'           => fn(array $r): bool => $in($r['id'], $items), 'content' => fn(array $r): bool => $in($r['item_id'], $items),
-            'module'   => fn(array $r): bool => $in($r['id'], $modules), 'slice' => fn(array $r): bool => $in($r['id'], $modules),
-            'site'     => fn(array $r): bool => $in($r['id'], $modules), 'field' => fn(array $r): bool => $in($r['slice_id'], $modules),
-            'relation' => fn(array $r): bool => $in([$r['source_id'], $r['destination_id']], $j->relations()),
-            'constant' => fn(array $r): bool => $in(($r['group_id'] === 'lt_groupNames') ? $r['value'] : $r['group_id'], $j->groups()),
-            'constant_slice'    => fn(array $r): bool => $in($r['group_id'], $j->groups()),
-            'alerts_collection' => fn(array $r): bool => $in($r['id'], $j->collections()),
-            'alerts_collection_filter'   => fn(array $r): bool => $in($r['collectionid'], $j->collections()),
-            'alerts_collection_howoften' => fn(array $r): bool => $in($r['collectionid'], $j->collections()),
-        ];
-        foreach (['view', 'email', 'alerts_filter', 'site_spot', 'profile'] as $table) {
-            $by[$table] = fn(array $r): bool => $in($r['id'], $j->numbers()[$table] ?? []);
-        }
-        $left = [];
-        foreach ($tables as $table => $rows) {
-            foreach ($rows as $row) {
-                if (!isset($by[$table]) || !$by[$table]($row)) {
-                    $left[] = "$table " . json_encode($row);
-                }
-            }
-        }
-        return $left;
-    }
-
-    private static function journal(ImportJournal $j): array
-    {
-        return ['modules' => $j->modules(), 'numbers' => $j->numbers(), 'groups' => $j->groups(), 'collections' => $j->collections(), 'relations' => $j->relations(),
-            'objects' => $j->objects(), 'items' => $j->items()];
     }
 
     // ---------------------------------------------------------------- the plan is no reservation
@@ -564,7 +455,6 @@ final class ImporterTest extends TestCase
         $e = $this->failure($plan);
 
         self::assertSame([WriteError::TAKEN, 'constant-group[ct_rubriky]'], [$e->getPrevious()->reason, $e->getPrevious()->path]);
-        self::assertTrue($e->journal->isEmpty());
         self::assertSame(['BEGIN', 'ROLLBACK'], TableDb::$log);
     }
 
@@ -591,6 +481,20 @@ final class ImporterTest extends TestCase
         $insert = array_search(array_values(array_filter(TableDb::$log, static fn(string $q): bool => str_contains($q, "'lt_groupNames'") && str_starts_with($q, 'INSERT')))[0], TableDb::$log, true);
         self::assertStringEndsWith('FOR UPDATE', TableDb::$log[$insert - 1], 'a locking read just before the lt_groupNames row');
         self::assertStringContainsString("group_id = 'ct_rubriky'", TableDb::$log[$insert - 1]);
+    }
+
+    /** the locking read fails (a lock wait timeout, 1205 - another import holds the name): an error, never "free" */
+    public function test_a_failed_locking_read_of_a_group_name_fails_the_import(): void
+    {
+        $target        = $this->dbTarget();
+        $plan          = (new Planner($target))->plan(self::example(), (new Validator())->validate(self::example()));
+        TableDb::$fail = static fn(string $sql): bool => str_ends_with($sql, 'FOR UPDATE');
+
+        $e = $this->failure($plan, $target, RuntimeException::class);
+
+        self::assertStringContainsString('the locking read of the constant group ct_rubriky failed', $e->getMessage());
+        self::assertSame('ROLLBACK', end(TableDb::$log));
+        self::assertSame([], array_filter(TableDb::$tables));
     }
 
     public function test_a_group_created_in_the_db_since_the_plan_stops_the_write(): void
@@ -639,16 +543,6 @@ final class ImporterTest extends TestCase
                 return [];
             }
 
-            public function lock(string $name, int $timeout): bool
-            {
-                return $this->ids->lock($name, $timeout);
-            }
-
-            public function unlock(string $name): void
-            {
-                $this->ids->unlock($name);
-            }
-
             public function usernameTaken(string $username): bool
             {
                 return $this->ids->usernameTaken($username);
@@ -673,9 +567,8 @@ final class ImporterTest extends TestCase
         $e = $this->failure($plan, $target);
 
         self::assertSame([WriteError::TAKEN, 'constant-group[ct_rubriky]/lt_groupNames'], [$e->getPrevious()->reason, $e->getPrevious()->path]);
-        self::assertSame([], $e->journal->groups());
-        self::assertCount(3, $e->journal->modules());
-        self::assertSame([], array_filter(TableDb::$tables));
+        self::assertSame(['BEGIN', 'ROLLBACK'], [TableDb::$log[0], end(TableDb::$log)]);
+        self::assertSame([], array_filter(TableDb::$tables), 'the modules written before: rolled back');
     }
 
     // ---------------------------------------------------------------- values
@@ -701,7 +594,7 @@ final class ImporterTest extends TestCase
 
         self::assertSame([WriteError::TOO_LONG, 'slice-module[' . self::SLICE . ']/view[12]/name'], [$e->getPrevious()->reason, $e->getPrevious()->path]);
         self::assertStringContainsString('122 characters > 120', $e->getMessage());
-        self::assertSame([], self::afterRollback());
+        self::assertSame('ROLLBACK', end(TableDb::$log));
         self::assertSame([], array_filter(TableDb::$tables));
     }
 
@@ -719,12 +612,13 @@ final class ImporterTest extends TestCase
         self::assertStringContainsString('140 bytes > 120', $e->getMessage());
     }
 
-    private function failure(ImportPlan $plan, ?ImportTarget $target = null): ImportFailed
+    /** @param class-string<\Throwable> $cause */
+    private function failure(ImportPlan $plan, ?ImportTarget $target = null, string $cause = WriteError::class): ImportFailed
     {
         try {
             $this->importer($target)->write($plan);
         } catch (ImportFailed $e) {
-            self::assertInstanceOf(WriteError::class, $e->getPrevious());
+            self::assertInstanceOf($cause, $e->getPrevious());
             self::assertNotContains('COMMIT', TableDb::$log);
             return $e;
         }

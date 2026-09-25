@@ -11,9 +11,8 @@ use LogicException;
 /** Writes the items of an import plan (design balicek-v1.md § 6.2, § 7.2 step 5.7; C4.4 part 4c) - only
  *  when the package carries them - inside the transaction Importer opens, after the objects.
  *
- *  Per item: the `item` row, then (only then - Compensation and AA_Items::deleteItems() find content by
- *  the item) its `content` rows; the item goes to the journal once its row is written (item.id is the
- *  PRIMARY key - a colliding id fails there).
+ *  Per item: the `item` row (item.id is the PRIMARY key - a colliding id fails there), then its `content`
+ *  rows.
  *  - id: the plan's new id (IdMap::longId()), slice_id: the new slice. The item columns the package
  *    carries as pseudo fields (GetItemContent(): `status_code.....`, `publish_date....`, `post_date.......`,
  *    `flags...........`, ...) are the columns of the row as they are; the ones it never carries
@@ -61,16 +60,15 @@ final class ItemWriter
 {
     private IdMap $map;
     private ImportRewrite $rewrite;
-    private ImportJournal $journal;
     private string $charset;
 
     public function __construct(private readonly RowStore $store, private readonly AA_Metabase $metabase, private readonly string $user) {}
 
     /** @param IdMap $map the map RowWriter returned - with the filter numbers
      *  @throws WriteError|RewriteFailed|LogicException */
-    public function write(ImportPlan $plan, IdMap $map, ImportJournal $journal): void
+    public function write(ImportPlan $plan, IdMap $map): void
     {
-        [$this->map, $this->journal, $this->rewrite] = [$map, $journal, new ImportRewrite($map)];
+        [$this->map, $this->rewrite] = [$map, new ImportRewrite($map)];
         foreach ($plan->package->modules as $m) {
             if (!$m->items) {
                 continue;
@@ -86,9 +84,7 @@ final class ItemWriter
                 $path = "$m->type[$m->id]/item[$old]";
                 $id   = $map->longId($old) ?? throw new LogicException("$path: the item is not mapped");
                 [$columns, $content] = $this->split((array) ($item['content'] ?? []), $path);
-                $journal->step($path);
                 $this->store->insert('item', $this->store->tableRow('item', $columns, ['id' => $id, 'slice_id' => $slice, 'posted_by' => $this->user], $this->charset, $this->rewrite, $path), $path);
-                $journal->item($id, $slice);
                 foreach ($content as $field => $values) {
                     $this->field($id, (string) $field, (array) $values, $fields[$field] ?? [true, false], "$path/$field");
                 }
@@ -113,9 +109,7 @@ final class ItemWriter
                 $value = $this->store->value($value, $this->charset, $this->rewrite, "$at/text");
             }
             $row = self::contentRow($id, $field_id, $text_stored, ValueCodec::bytes($value), (int) $key, (int) (((array) $v)['flag'] ?? 0));
-            $this->journal->step($at);
             $this->store->insert('content', $this->store->tableRow('content', [], $row, $this->charset, $this->rewrite, $at), $at);
-            $this->journal->contentRow();
         }
     }
 

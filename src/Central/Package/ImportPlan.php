@@ -19,7 +19,7 @@ use AA\Central\Package\Model\Package;
  *  THE PLAN IS NO RESERVATION. Between the preview and the write another import or an admin may take a
  *  group name or a collection id; constant.group_id is not unique, so nothing in the DB would stop a
  *  merge (§ 7.1). The writer re-checks ImportTarget::groupTaken() for every mapped group name and that
- *  every collection id is free inside the transaction (or under GET_LOCK) and aborts when one is taken.
+ *  every collection id is free inside the transaction and aborts when one is taken.
  *
  *  Everything here quotes package text - names, docs, paths, finding refs, fix-ups: the UI must
  *  escape all of it (safe()). */

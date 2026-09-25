@@ -4,8 +4,12 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Util;
 
+use AA\IO\DB\DB_AA;
+use AA\IO\DB\DB_PDO;
 use AA\Util\FatalLogger;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunInSeparateProcess;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -29,6 +33,34 @@ final class FatalLoggerTest extends TestCase
             'E_NOTICE'            => [E_NOTICE, false],
             'E_DEPRECATED'        => [E_DEPRECATED, false],
         ];
+    }
+
+    /** a fatal inside DB_AA::transaction(): its `log` row would go to the transaction's handle and be rolled
+     *  back with it (the request died there) - error_log() instead. A booted AA played in its own process. */
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
+    public function testNoDbRowInsideATransaction(): void
+    {
+        require_once __DIR__ . '/fixtures/booted_aa_stub.php';
+        require_once __DIR__ . '/../IO/DB/fixtures/locsess_pool_stub.php';
+        $this->assertTrue(FatalLogger::toDb(), 'booted, no transaction: the log table');
+        $GLOBALS['spareDBs'] = [new class (['type' => 'db_pdo:sqlite', 'database' => ':memory:']) extends DB_PDO {
+            public function beginTransaction(): bool
+            {
+                return true;
+            }
+
+            public function commit(): bool
+            {
+                return true;
+            }
+        }];
+        try {
+            $inside = DB_AA::transaction(static fn(): bool => FatalLogger::toDb());
+        } finally {
+            $GLOBALS['spareDBs'] = [];
+        }
+        $this->assertFalse($inside);
     }
 
     #[DataProvider('errorTypes')]

@@ -19,7 +19,7 @@ use Throwable;
  *
  *  THE CONTRACT WITH THE WRITER (part 4). The plan stores no converted value. The writer rewrites
  *  with ImportRewrite - numeric(known($value)) - on the UTF-8 text and converts LAST with the plan's
- *  charset and the same ModuleCharset::fromUtf8(); a null there is a bug: throw (compensation).
+ *  charset and the same ModuleCharset::fromUtf8(); a null there is a bug: throw (rollback).
  *  - Both checks here run on known($value) - what the writer converts but the view / e-mail numbers.
  *    The rewrite replaces ASCII runs by ASCII at ASCII delimiters and the charsets are stateless ASCII
  *    supersets, so the numbers cannot make a convertible value unconvertible.

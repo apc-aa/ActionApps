@@ -8,16 +8,13 @@ use AA\Central\Package\AfterCommit;
 use AA\Central\Package\Model\Package;
 
 /** AfterCommit for the writer tests: $calls logs "<method> <argument>" in order, with the number of
- *  statements of TableDb at the call ($at - after the commit?); $probe runs at each call (the lock still
- *  held?); a call named in $fail throws. */
+ *  statements of TableDb at the call ($at - after the commit?); a call named in $fail throws. */
 final class FakeAfterCommit implements AfterCommit
 {
     /** @var list<string> */
     public array $calls = [];
     /** @var list<int> count(TableDb::$log) at each call */
     public array $at = [];
-    /** @var null|\Closure(): void */
-    public ?\Closure $probe = null;
 
     /** @param list<string> $fail calls ("<method> <argument>") that throw */
     public function __construct(public array $fail = []) {}
@@ -46,7 +43,6 @@ final class FakeAfterCommit implements AfterCommit
     {
         $this->calls[] = $call;
         $this->at[]    = count(TableDb::$log);
-        $this->probe && ($this->probe)();
         if (in_array($call, $this->fail, true)) {
             throw new \RuntimeException("$call failed");
         }

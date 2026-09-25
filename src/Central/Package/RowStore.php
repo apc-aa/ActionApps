@@ -27,11 +27,14 @@ use LogicException;
  *  type (0, ''). A column the row lacks (meta/tables did not list it, § 2.3) gets the default of the local
  *  schema, else the empty value of its type; one without a default that may be NULL is left to the DB
  *  (NULL - the same). AUTO_INCREMENT columns never - the DB numbers the row. All SQL is Cvarset's:
- *  values quoted by quote(), packed ids checked by is_long_ids() (the Validator: E for other values). */
+ *  values quoted by quote(), packed ids checked by is_long_ids() (the Validator: E for other values).
+ *  written() counts the inserted rows by table - the report of the import (ImportReport::$rows). */
 final class RowStore
 {
     /** @var array<string, array<string, array{int, bool}>> table => Schema::tableLimits() */
     private array $limits = [];
+    /** @var array<string, int> table => rows inserted */
+    private array $written = [];
 
     public function __construct(private readonly AA_Metabase $metabase, private readonly Schema $schema) {}
 
@@ -112,6 +115,7 @@ final class RowStore
         if (!is_int($id)) {
             throw new WriteError(WriteError::DB, $path, "INSERT INTO $table failed");
         }
+        $this->written[$table] = ($this->written[$table] ?? 0) + 1;
         if (!array_filter($this->metabase->getColumns($table), static fn(AA_MbC $c): bool => $c->isAutoIncrement())) {
             return 0;
         }
@@ -119,6 +123,12 @@ final class RowStore
             throw new WriteError(WriteError::DB, $path, "INSERT INTO $table gave no AUTO_INCREMENT number");
         }
         return $id;
+    }
+
+    /** @return array<string, int> table => rows inserted so far */
+    public function written(): array
+    {
+        return $this->written;
     }
 
     /** UPDATE of the $changes of the row with the (primary) $keys; nothing to change = no statement

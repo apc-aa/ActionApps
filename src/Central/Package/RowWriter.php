@@ -17,12 +17,12 @@ use LogicException;
  *  2. alerts_filter rows once all views have numbers (`vid` is a view; FixUps left a shared filter in
  *     its first module only) => the filter map; no text names a filter;
  *  3. the numbers into the texts of step 1: UPDATE of the columns numeric() changed;
- *  4. per module in package order: `module` (then the journal knows it), then the rows of its type -
+ *  4. per module in package order: `module`, then the rows of its type -
  *     slice, field, profile (uid '*'); site (structure = serialize(sitetree::fromArray()) of the
  *     rewritten tree, or the '' of FixUps), site_spot, relation (`uses`); alerts_collection and its
  *     filter / howoften rows;
  *  5. constant groups: a locking re-check of the name (ImportTarget::groupTaken($lock)), lt_groupNames
- *     (name = value = the new name; its id to the journal), constant_slice, constant.
+ *     (name = value = the new name), constant_slice, constant.
  *  Every value through RowStore (numeric(known()), the charset last, the lengths).
  *
  *  Structured references are mapped here, not rewritten: slice.vid, profile input_view, alerts_filter.vid
@@ -46,10 +46,9 @@ final class RowWriter
     /** module.type of a package wrapper */
     private const MODULE_TYPES = [Module::SLICE => 'S', Module::SITE => 'W', Module::ALERTS => 'Alerts'];
     /** relation.flag of "uses modules" - REL_FLAG_MODULE_DEPEND, include/constants.php */
-    public const USES_FLAG = 1;
+    private const USES_FLAG = 1;
 
     private ImportPlan $plan;
-    private ImportJournal $journal;
     private IdMap $map;
     private ImportRewrite $rewrite;
     /** @var list<array{string, int, array<string, mixed>, array<string, int|string|null>, string, string, array<string, mixed>}>
@@ -66,9 +65,9 @@ final class RowWriter
 
     /** @return IdMap the plan's map with the view, e-mail and filter numbers
      *  @throws WriteError|RewriteFailed|LogicException|\InvalidArgumentException (sitetree::fromArray()) */
-    public function write(ImportPlan $plan, ImportJournal $journal): IdMap
+    public function write(ImportPlan $plan): IdMap
     {
-        [$this->plan, $this->journal, $this->map, $this->numbered] = [$plan, $journal, $plan->map, []];
+        [$this->plan, $this->map, $this->numbered] = [$plan, $plan->map, []];
         $this->rewrite = new ImportRewrite($this->map);          // no numbers yet: numeric() changes nothing
         $numbers       = ['view' => [], 'email' => []];
         foreach ($plan->package->modules as $m) {
@@ -85,7 +84,6 @@ final class RowWriter
             foreach ($m->rows['alerts_filter'] ?? [] as $i => $row) {
                 $fixed  = self::mapped($row, 'vid', fn(string $v): int|string => $this->inPackage($v, $this->map->view((int) $v), 'View'));
                 $number = $this->insert($m, 'alerts_filter', array_diff_key($row, ['id' => 1]), $i, $fixed, $row);
-                $this->journal->number('alerts_filter', $number);
                 $filters[(int) ValueCodec::bytes($row['id'] ?? '')] = $number;
             }
         }
@@ -107,10 +105,8 @@ final class RowWriter
         $path   = $this->schema->rowPath("$m->type[$m->id]", $element, $row, $i);
         $fixed  = [(string) AA_Metabase::getModuleField($table) => $this->moduleId($m)];
         $source = array_diff_key($row, ['id' => 1]);
-        $this->journal->step($path);
         $values = $this->store->row($element, $source, $fixed, $this->charset($m), $this->rewrite, $path);
         $number = $this->store->insert($table, $values, $path);
-        $this->journal->number($table, $number);
         $this->numbered[] = [$element, $number, $source, $fixed, $this->charset($m), $path, $values];
         return $number;
     }
@@ -119,7 +115,6 @@ final class RowWriter
     private function renumber(): void
     {
         foreach ($this->numbered as [$element, $number, $source, $fixed, $charset, $path, $written]) {
-            $this->journal->step($path);
             $values  = $this->store->row($element, $source, $fixed, $charset, $this->rewrite, $path);
             $changed = array_filter($values, static fn($v, $k): bool => $v !== ($written[$k] ?? null), ARRAY_FILTER_USE_BOTH);
             $this->store->update($this->schema->rowTables()[$element], ['id' => $number], $changed, $path);
@@ -137,7 +132,6 @@ final class RowWriter
             'created_by' => $this->user,
             'created_at' => $this->now,
         ]);
-        $this->journal->module($id, $m->type);
         match ($m->type) {
             Module::SLICE  => $this->slice($m, $id),
             Module::SITE   => $this->site($m, $id),
@@ -158,7 +152,7 @@ final class RowWriter
         }
         foreach ($m->rows['profile'] ?? [] as $i => $row) {
             $view = (ValueCodec::bytes($row['property'] ?? '') === 'input_view') ? self::mapped($row, 'value', $this->view(...)) : [];
-            $this->journal->number('profile', $this->insert($m, 'profile', $row, $i, ['slice_id' => $id, 'uid' => '*'] + $view));
+            $this->insert($m, 'profile', $row, $i, ['slice_id' => $id, 'uid' => '*'] + $view);
         }
     }
 
@@ -168,12 +162,11 @@ final class RowWriter
         $fixed = ['id' => $id] + (array_key_exists('structure', $site) ? [] : ['structure' => $this->structure($m)]);
         $this->insert($m, 'site', $site, 0, $fixed);
         foreach ($m->rows['site_spot'] ?? [] as $i => $row) {
-            $this->journal->number('site_spot', $this->insert($m, 'site_spot', $row, $i, ['site_id' => $id]));
+            $this->insert($m, 'site_spot', $row, $i, ['site_id' => $id]);
         }
         foreach ($m->rows['uses'] ?? [] as $i => $row) {
             $destination = $this->packageModule(ValueCodec::bytes($row['destination_id'] ?? ''));
             $this->insert($m, 'uses', $row, $i, ['source_id' => $id, 'destination_id' => $destination, 'flag' => self::USES_FLAG]);
-            $this->journal->relation($id, $destination);
         }
     }
 
@@ -203,7 +196,6 @@ final class RowWriter
             }
             $tree['spots'][$k] = $spot;
         }
-        $this->journal->step("$m->type[$m->id]/spot-tree");
         return serialize(\sitetree::fromArray($tree));
     }
 
@@ -217,7 +209,6 @@ final class RowWriter
                 + self::mapped($collection, 'emailid_welcome', $email) + self::mapped($collection, 'emailid_alert', $email)
                 + self::mapped($collection, 'slice_id', fn(string $v): string => ($v === '') ? '' : $this->packageModule($v));
             $this->insert($m, 'alerts_collection', $collection, 0, $fixed);
-            $this->journal->collection($cid, $id);
         }
         foreach ($m->rows['alerts_collection_filter'] ?? [] as $i => $row) {
             $filter = fn(string $v): int|string => $this->inPackage($v, $this->map->filter((int) $v), 'Filter');
@@ -238,18 +229,15 @@ final class RowWriter
         $name    = $this->map->group($g->name) ?? throw new LogicException("Constant group $g->name is not mapped");
         $charset = $this->plan->groupCharsets[$g->name] ?? throw new LogicException("No charset for constant group $g->name");
         $path    = "constant-group[$g->name]";
-        $this->journal->step("$path/lt_groupNames");
         if ($this->target->groupTaken($name, true)) {
             throw new WriteError(WriteError::TAKEN, "$path/lt_groupNames", "the constant group $name was created since the plan");
         }
         $row_id = strtolower($this->target->newId());
         $fixed  = ['id' => $row_id, 'group_id' => 'lt_groupNames', 'name' => $name, 'value' => $name, 'pri' => 100];
         $this->store->insert('constant', $this->store->row('constant', [], $fixed, $charset, $this->rewrite, $path), "$path/lt_groupNames");
-        $this->journal->group($name, $row_id);
         $owner = ($g->owner === '') ? [] : ['slice_id' => $this->packageModule($g->owner)];
         foreach ($g->rows['constant_slice'] ?? [] as $i => $row) {
             $this->writeRow($path, 'constant_slice', $row, $i, ['group_id' => $name] + $owner, $charset);
-            $this->journal->groupSlice($name);
         }
         foreach ($g->rows['constant'] ?? [] as $i => $row) {
             $id = ValueCodec::bytes($row['id'] ?? '');
@@ -271,7 +259,6 @@ final class RowWriter
     private function writeRow(string $path, string $element, array $row, int $i, array $fixed, string $charset, ?array $keyed = null): int
     {
         $at = $this->schema->rowPath($path, $element, $keyed ?? $row, $i);
-        $this->journal->step($at);
         $table = $this->schema->rowTables()[$element];
         return $this->store->insert($table, $this->store->row($element, $row, $fixed, $charset, $this->rewrite, $at), $at);
     }

@@ -8,13 +8,12 @@ declare(strict_types=1);
  * converted properties, subobject references and aa_subobjects computed; the rows equal to what
  * AA_Object::save() writes (AA saves, ObjectExport exports, ObjectWriter writes back); a package that tries
  * to set aa_subobjects or a class off the allowlist is never written, and the foreign objects of the target
- * are never touched - after a success or a compensated failure.
+ * are never touched - after a success or a rolled back failure.
  */
 
 namespace Tests\Unit\Central\Package;
 
 use AA\Central\Package\IdMap;
-use AA\Central\Package\ImportJournal;
 use AA\Central\Package\ImportPlan;
 use AA\Central\Package\LintFinding;
 use AA\Central\Package\Model\Module;
@@ -27,16 +26,16 @@ use AA\Central\Package\Validator;
 use LogicException;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use Tests\Unit\Central\Package\Fixtures\CompensationFixture;
+use Tests\Unit\Central\Package\Fixtures\ImportFixture;
 use Tests\Unit\Central\Package\Fixtures\FakeSource;
 use Tests\Unit\Central\Package\Fixtures\TableDb;
 
-require_once __DIR__ . '/fixtures/CompensationFixture.php';
+require_once __DIR__ . '/fixtures/ImportFixture.php';
 require_once __DIR__ . '/fixtures/FakeSource.php';
 
 final class ObjectWriterTest extends TestCase
 {
-    use CompensationFixture {
+    use ImportFixture {
         setUp as private fixtureSetUp;
     }
 
@@ -67,7 +66,7 @@ final class ObjectWriterTest extends TestCase
 
     public function test_the_example_objects_get_new_ids_their_owner_and_rewritten_properties(): void
     {
-        $result = $this->importer()->write($this->plan());
+        $this->importer()->write($this->plan());
         [$w, $s]   = [self::id(1), self::id(2)];
         [$sw, $ss] = [string2id('AA_Modulesettings_Site' . $w), string2id('AA_Modulesettings_Slice' . $s)];
         [$alias, $set, $cond, $sort] = [self::id(4), self::id(5), self::id(6), self::id(7)];
@@ -105,7 +104,6 @@ final class ObjectWriterTest extends TestCase
         ], self::objectRows('object_text', [$sw, $ss, $alias, $set, $cond, $sort]));
         self::assertSame($this->before['object_text'], array_values(array_filter(TableDb::rows('object_text'), static fn(array $r): bool => $r['id'] < 100)), 'the target\'s objects');
         self::assertSame([], array_filter(array_column(TableDb::rows('object_text'), 'value'), static fn(string $v): bool => in_array($v, [self::SITE, self::SLICE, self::ALIAS, self::SET, self::COND, self::SORT], true)), 'no package id is written');
-        self::assertSame([$w => [$sw, $alias], $s => [$ss, $cond, $set, $sort]], $result->journal->objects());
         self::assertCount(1, array_unique(TableDb::$handles), 'every statement on the transaction handle');
     }
 
@@ -139,9 +137,8 @@ final class ObjectWriterTest extends TestCase
     {
         $package = self::module(self::example(), self::SITE, static fn(Module $m): Module => self::with($m, ['settings' => null, 'objects' => []]));
 
-        $result = $this->importer()->write($this->plan($package));
+        $this->importer()->write($this->plan($package));
 
-        self::assertArrayNotHasKey(self::id(1), $result->journal->objects());
         self::assertSame([], self::objectRows('object_text', [string2id('AA_Modulesettings_Site' . self::id(1))]));
     }
 
@@ -192,7 +189,7 @@ final class ObjectWriterTest extends TestCase
             [],
         );
         TableDb::reset();
-        (new ObjectWriter(new RowStore(\AA_Metabase::singleton(), new Schema())))->write($plan, $plan->map, new ImportJournal());
+        (new ObjectWriter(new RowStore(\AA_Metabase::singleton(), new Schema())))->write($plan, $plan->map);
 
         self::assertSame([], array_intersect(array_column(TableDb::rows('object_text'), 'object_id'), $ids), 'no id of the source');
         $back = array_flip($new) + [$settings => $ids['s'], $slice => $source];
@@ -238,22 +235,19 @@ final class ObjectWriterTest extends TestCase
     }
 
     /** The Validator refuses such a package (E); a plan forced past it: the writer throws before the object's
-     *  first row, the compensation (MyISAM: it has to delete) leaves the foreign objects - also the ones the
-     *  package named - as they were */
+     *  first row, the rollback leaves the foreign objects - also the ones the package named - as they were */
     #[DataProvider('smuggled')]
-    public function test_a_smuggled_property_or_class_is_never_written_and_nothing_foreign_is_deleted(\Closure $mutate): void
+    public function test_a_smuggled_property_or_class_is_never_written_and_nothing_foreign_is_touched(\Closure $mutate): void
     {
         $bad = $mutate(self::example());
         self::assertContains(LintFinding::ERROR, array_map(static fn(array $f): string => $f[1]->level, (new Validator())->validate($bad)->findings));
-        TableDb::$transactions = false;
-        $foreign               = TableDb::$tables;
-        $plan                  = $this->plan();
-        $forced                = new ImportPlan(...array_merge(get_object_vars($plan), ['package' => $bad]));
+        $foreign = TableDb::$tables;
+        $plan    = $this->plan();
+        $forced  = new ImportPlan(...array_merge(get_object_vars($plan), ['package' => $bad]));
 
         $e = $this->failure($forced);
 
         self::assertInstanceOf(LogicException::class, $e->getPrevious());
-        self::assertTrue($e->cleanup->clean(), $e->cleanup->summary());
         self::assertSame($foreign, array_filter(TableDb::$tables), 'the foreign set, its condition and the rest');
         $sent = array_merge(TableDb::$sent['object_text'] ?? [], TableDb::$sent['object_integer'] ?? []);
         self::assertSame([], array_filter($sent, static fn(array $r): bool => in_array($r['value'], [self::FSET, self::FCOND, self::FS], true) || in_array($r['object_id'], [self::FSET, self::FCOND], true)));
@@ -264,8 +258,7 @@ final class ObjectWriterTest extends TestCase
      *  past that - the writer refuses them as it refuses aa_* */
     public function test_a_left_out_setting_is_never_written(): void
     {
-        TableDb::$transactions = false;
-        $plan                  = $this->plan();
+        $plan = $this->plan();
         foreach (['ga_id' => 'UA-1', 'alternate_url' => ['https://source.example.org'], 'app_version' => '1'] as $name => $value) {
             $forced = new ImportPlan(...array_merge(get_object_vars($plan), ['package' => self::setting($plan->package, self::SITE, $name, $value)]));
 
@@ -286,8 +279,8 @@ final class ObjectWriterTest extends TestCase
     }
 
     /** package object ids that are ids of objects on the target (and the old derived settings id): written
-     *  under the plan's new ids; the target's objects stay - after the import, and after a failure too */
-    public function test_package_ids_of_target_objects_are_never_written_or_deleted(): void
+     *  under the plan's new ids; the target's objects stay */
+    public function test_package_ids_of_target_objects_are_written_under_new_ids(): void
     {
         $old_settings = string2id('AA_Modulesettings_Slice' . self::SLICE);
         foreach ([self::ALIAS, self::SET, self::COND, self::SORT, $old_settings] as $k => $id) {
@@ -300,15 +293,5 @@ final class ObjectWriterTest extends TestCase
 
         $theirs = static fn(): array => array_values(array_filter(TableDb::rows('object_text'), static fn(array $r): bool => $r['id'] < 100));
         self::assertSame($foreign['object_text'], $theirs());
-
-        TableDb::reset();
-        TableDb::$next         = ['object_text' => 100];
-        TableDb::$tables       = $foreign;
-        TableDb::$transactions = false;
-        self::failAt(self::LAST);
-        $e = $this->failure($this->plan());
-
-        self::assertTrue($e->cleanup->clean(), $e->cleanup->summary());
-        self::assertSame($foreign, array_filter(TableDb::$tables));
     }
 }
