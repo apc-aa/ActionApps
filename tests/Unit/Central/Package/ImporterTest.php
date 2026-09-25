@@ -206,7 +206,7 @@ final class ImporterTest extends TestCase
 
         $this->importer()->write($this->plan($package));
 
-        self::assertSame([99, ''], [TableDb::rows('slice')[0]['vid'], TableDb::rows('slice')[0]['mlxctrl']], 'a view number stays (W); a module outside: "" (§ 6.2)');
+        self::assertSame([99, ''], [TableDb::rows('slice')[0]['vid'], TableDb::rows('slice')[0]['mlxctrl']], 'a view number stays (W); a module outside: ""');
         self::assertSame('98', TableDb::rows('profile')[0]['value']);
     }
 

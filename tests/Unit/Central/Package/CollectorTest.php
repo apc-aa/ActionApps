@@ -661,7 +661,7 @@ namespace Tests\Unit\Central\Package {
         /** @return array<string, array{string}> */
         public static function notPublic(): array
         {
-            return ['no' => ['no'], 'users (admins of the site only, Q-H1)' => ['users']];
+            return ['no' => ['no'], 'users (admins of the site only)' => ['users']];
         }
 
         #[DataProvider('notPublic')]

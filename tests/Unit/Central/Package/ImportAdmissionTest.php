@@ -121,7 +121,7 @@ final class ImportAdmissionTest extends TestCase
             self::assertTrue($may(\AA_Perm::ROLES['SUPER']['perm']), 'superadmin');
             self::assertTrue($may('U'), 'the letter granted alone');
             self::assertFalse($may(\AA_Perm::ROLES['ADMINISTRATOR']['perm'], \AA_Perm::ROLES['SUPER']['perm']), 'a module perm does not count');
-            self::assertFalse($may(\PS_ADD . \PS_NEW_USER . \PS_MANAGE_ALL_SLICES), 'PS_ADD is not enough (Q-H2)');
+            self::assertFalse($may(\PS_ADD . \PS_NEW_USER . \PS_MANAGE_ALL_SLICES), 'PS_ADD is not enough');
 
             $may(\AA_Perm::ROLES['SUPER']['perm']);
             self::assertFalse(Importer::hasInstallPermission('u2'), 'only the logged-in user - no perms of another cached into the session');

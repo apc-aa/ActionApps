@@ -66,7 +66,7 @@ final class FixUpsTest extends TestCase
     {
         [$fixed, $fixUps] = self::apply(self::with(self::example(), ['publish' => $publish]));
 
-        self::assertSame('users', $fixed->publish, 'Q-H1');
+        self::assertSame('users', $fixed->publish, 'only the admins of the new site');
         self::assertSame($expected, $fixUps);
     }
 
