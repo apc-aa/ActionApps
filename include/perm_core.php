@@ -68,6 +68,10 @@ const PS_MANAGE_ALL_SLICES   = "S";   // aa    | edit all slices (this
 //         permission is usable, when
 //         you want credit some rights
 const PS_HISTORY             = "T";   // slice | access history log
+const PS_INSTALL_APP         = "U";   // aa    | install an app package (Central aa-app, AA\Central\Package\Importer) -
+//         SUPER only: a package is code running with the rights of this AA
+//         (design central/balicek-v1.md § 3.3, Q-H2); check it on the 'aa'
+//         object (CheckPerms(uid, 'aa', AA_ID, PS_INSTALL_APP)), not IfSlPerm()
 
 //---------- Polls -----------------
 // author        - possibly letters 'abcdefg'
@@ -210,7 +214,7 @@ function IsSuperadmin(): bool {
     if (!$permission_to || $permission_uid != AuthGetUid()) {
         AA::$perm->cache(AuthGetUid());
     }
-    return (bool)$r_superuser[AA_ID] ?: false;
+    return (bool) ($r_superuser[AA_ID] ?? false);
 }
 
 /** IsCatPerm function
@@ -810,6 +814,7 @@ class AA_Perm {
             $sess->register('r_superuser');
         }
 
+        $r_superuser            = [];         // of $user_id only - the flag of the user cached before must not stay
         $permission_uid         = $user_id;
         $permission_to["slice"] = $this->getUserPerms($permission_uid, "slice");
         $permission_to["aa"]    = $this->getUserPerms($permission_uid, "aa");     // aa is parent of all slices

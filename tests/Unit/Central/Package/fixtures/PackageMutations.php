@@ -53,6 +53,8 @@ trait PackageMutations
         require_once __DIR__ . '/../../../../../include/util.php';
         require_once __DIR__ . '/../../../../../modules/site/sitetree.php';
         require_once __DIR__ . '/FakeImportTarget.php';
+        require_once __DIR__ . '/FakeImportAuthority.php';
+        require_once __DIR__ . '/FakeAfterCommit.php';
         class_exists(\AA_Module_Site::class);
     }
 

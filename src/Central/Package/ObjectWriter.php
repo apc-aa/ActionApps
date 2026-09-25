@@ -43,7 +43,9 @@ use LogicException;
  *
  *  Follow-up for part 6: once a "keep module ids" restore mode exists (§ 7.1), the derived settings ids
  *  are no longer those of fresh modules - check them free inside the transaction (object_text has no key
- *  that would refuse a second object of the id, and the compensation deletes by it). */
+ *  that would refuse a second object of the id, and the compensation deletes by it).
+ *
+ *  @internal only Importer calls it - the rights and the S confirmation are checked there (Importer::write()). */
 final class ObjectWriter
 {
     private IdMap $map;

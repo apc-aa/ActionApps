@@ -15,8 +15,9 @@ use Throwable;
  *  conditions (AA expressions, spot::conditionMatches()), constants, item values, RawBytes as they are.
  *  A help for the preview, not a sandbox: the template language is too rich to be cleaned statically
  *  (a command name can be built at run time - composed names and placeholders are only flagged). It
- *  knows the commands of AA itself, not those a target adds by STRINGEXPAND_INC - the preview (part 5)
- *  must say so. The trust boundary is who may install (PS_INSTALL_APP, Q-H2). */
+ *  knows the commands of AA itself, not those a target adds by STRINGEXPAND_INC - the preview says so
+ *  (ImportPlan::preview() `customCommands`). The trust boundary is who may install (PS_INSTALL_APP, Q-H2,
+ *  checked by Importer::write()); its S findings need the confirmation there (ImportConfirmation). */
 final class SecurityLint
 {
     /** S: AA commands (AA_Stringexpand_*) - code = the command name in lower case. Read files or URLs

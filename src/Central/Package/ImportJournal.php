@@ -38,6 +38,8 @@ final class ImportJournal
     private array $objects = [];
     /** @var array<string, array<string, true>> slice => ids of the items whose `item` row is written */
     private array $items = [];
+    /** content rows written - a count for the report only: the compensation finds them by the item ids */
+    private int $contentRows = 0;
     /** what the writer was doing last - a finding path (package text: safe()) */
     private string $step = '';
 
@@ -83,6 +85,17 @@ final class ImportJournal
     public function item(string $id, string $slice): void
     {
         $this->items[$slice][$id] = true;
+    }
+
+    /** a content row of an item is written */
+    public function contentRow(): void
+    {
+        ++$this->contentRows;
+    }
+
+    public function contentRows(): int
+    {
+        return $this->contentRows;
     }
 
     public function step(string $path): void

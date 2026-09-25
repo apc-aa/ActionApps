@@ -13,7 +13,7 @@ use RuntimeException;
  *
  *  Why no SQLite: AA's SQL is MySQL - packed ids as 0x<32 hex> (SQLite reads a 128-bit hex integer
  *  literal: "hex literal too big") and addslashes() escapes (\' is no SQLite escape). So this parses the
- *  statement shapes Cvarset and DB_AA::makeWhere() produce - INSERT, UPDATE ... WHERE, DELETE ... WHERE
+ *  statement shapes Cvarset and DB_AA::makeWhere() produce - INSERT (one row or doInsertMulti()'s several), UPDATE ... WHERE, DELETE ... WHERE
  *  with conditions joined by AND (`col = literal`, `col IN (...)`, `col IS NULL`, `((col & n) = n)`, the
  *  `2=1` of an empty IN list) - and SELECT ... WHERE the same way (or from $answer); SELECT COUNT(*) AS x.
  *  Beyond the tables: information_schema.tables from $engines (table => ENGINE; a table not there does
@@ -131,7 +131,16 @@ final class TableDb extends DB_PDO
             return $this->rollback();
         }
         if (preg_match('/^INSERT INTO `(\w+)` \((.*?)\) VALUES \(/s', $sql, $m)) {
-            return $this->insert($m[1], explode('`,`', trim($m[2], '`')), new SqlScanner($sql, strlen($m[0])));
+            $scan     = new SqlScanner($sql, strlen($m[0]));
+            $affected = 0;
+            do {                                    // AA_Metabase::doInsertMulti(): (...), (...) - row by row
+                if (!$this->insert($m[1], explode('`,`', trim($m[2], '`')), $scan->values())) {
+                    return false;
+                }
+                ++$affected;
+            } while ($scan->nextTuple());
+            $this->affected = $affected;
+            return true;
         }
         if (preg_match('/^UPDATE `(\w+)` SET /', $sql, $m)) {
             $scan = new SqlScanner($sql, strlen($m[0]));
@@ -193,10 +202,10 @@ final class TableDb extends DB_PDO
         return $rows;
     }
 
-    /** @param list<string> $columns */
-    private function insert(string $table, array $columns, SqlScanner $scan): bool
+    /** @param list<string> $columns @param list<int|float|string|null> $values */
+    private function insert(string $table, array $columns, array $values): bool
     {
-        $row                   = array_combine($columns, $scan->values());
+        $row                   = array_combine($columns, $values);
         self::$sent[$table][]  = $row;
         $this->lastId          = 0;
         foreach (AA_Metabase::singleton()->getColumns($table) as $name => $column) {
@@ -450,6 +459,19 @@ final class SqlScanner
             isset($m[2])                  => (float) $m[0],
             default                       => (int) $m[0],
         };
+    }
+
+    /** after the values of a row of INSERT: true = another row follows, `, (` eaten */
+    public function nextTuple(): bool
+    {
+        $this->space();
+        $this->eat(')');
+        $this->space();
+        if (!$this->eat(',')) {
+            return false;
+        }
+        $this->space();
+        return $this->eat('(');
     }
 
     private function space(): void

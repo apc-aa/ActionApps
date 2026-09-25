@@ -19,6 +19,11 @@ final class WriteError extends RuntimeException
     public const TOO_LONG = 'too-long';
     /** another import holds the import lock (Importer, GET_LOCK) - nothing was written; try again later */
     public const LOCKED = 'locked';
+    /** the user may not install packages (ImportAuthority: PS_INSTALL_APP) - nothing was written */
+    public const DENIED = 'denied';
+    /** the plan has S findings and no confirmation token of them came, or another one (ImportConfirmation) -
+     *  nothing was written; show the preview again */
+    public const UNCONFIRMED = 'unconfirmed';
     /** the database refused a statement (AA_Metabase::do*() returned false) */
     public const DB = 'db';
 

@@ -38,7 +38,9 @@ use LogicException;
  *  Alerts field ids (`alerts1....<cid>`) of a collection the package does not carry stay as they are
  *  (the planner's I Planner::ALERTS_FIELD_KEPT): AA looks such a field up only through a collection whose
  *  reader slice (alerts_collection.slice_id) is this new slice, so it is an inert definition; dropping it
- *  would change the package after the preview and lose the field's item values. */
+ *  would change the package after the preview and lose the field's item values.
+ *
+ *  @internal only Importer calls it - the rights and the S confirmation are checked there (Importer::write()). */
 final class RowWriter
 {
     /** module.type of a package wrapper */

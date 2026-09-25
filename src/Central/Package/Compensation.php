@@ -26,8 +26,9 @@ use Throwable;
  *  1. per new module, by its type IN THE PACKAGE (the journal's; AA_Module::getModuleInfo() caches the
  *     module table per request and takes an unknown id for a slice - a new site would go to the slice
  *     routine): AA_Slice / AA_Module_Site / AA_Module_Alerts::_deleteModules() for that one id, its
- *     objects (AA_Object::getOwnersObjects()), DelPermObject() (a no-op with perm_sql.php:242 - the
- *     rights come after the commit, part 4d; LDAP deletes the ACL object), its `module` row. Not
+ *     objects (AA_Object::getOwnersObjects()), its `module` row - no DelPermObject(): the ACL object and
+ *     the rights come after the commit only (ImportFinish), there is none to delete (on LDAP the call
+ *     would fail - a false row of the report). Not
  *     AA_Module::deleteModules(): it stops at the first error and misses e-mails of Alerts, alerts_filter;
  *  2. AUTO_INCREMENT rows by the numbers of the journal: view, email (Alerts' too), alerts_filter,
  *     site_spot, profile - view and email rows are written before their module row;
@@ -63,7 +64,9 @@ use Throwable;
  *  empty would get a fresh, halting one. The compensation's own statements are always query_halt('no').
  *
  *  Objects and items carry fresh ids only (the plan's new_id()s, the derived settings ids of new modules):
- *  an id of the target would be deleted here. */
+ *  an id of the target would be deleted here.
+ *
+ *  @internal only Importer calls it - after its own failed write, with the journal of that write. */
 final class Compensation
 {
     /** the module class of a package wrapper - its _deleteModules() */
@@ -135,9 +138,6 @@ final class Compensation
         $this->step($type . "[$id]", [
             static fn(): bool => ($class ?? throw new LogicException("Unknown module type $type"))::_deleteModules([$id]),
             static fn(): bool => AA_Object::deleteObjects(AA_Object::getOwnersObjects($id)),
-            static fn(): bool => function_exists('DelPermObject')
-                ? \DelPermObject($id, 'slice')
-                : throw new LogicException('No permission library loaded - DelPermObject() did not run'),
             static fn(): bool => self::delete('module', [['id', $id, 'l']]),
         ], [...$left, ['object_text', [['property', 'aa_owner'], ['value', $id]]], ['module', [['id', $id, 'l']]]]);
     }

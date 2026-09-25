@@ -31,6 +31,8 @@ use LogicException;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
+use Tests\Unit\Central\Package\Fixtures\FakeAfterCommit;
+use Tests\Unit\Central\Package\Fixtures\FakeImportAuthority;
 use Tests\Unit\Central\Package\Fixtures\FakeImportTarget;
 use Tests\Unit\Central\Package\Fixtures\PackageMutations;
 use Tests\Unit\Central\Package\Fixtures\TableDb;
@@ -80,7 +82,7 @@ final class ImporterTest extends TestCase
 
     private function importer(?ImportTarget $target = null): Importer
     {
-        return new Importer($target ?? $this->target, self::USER, null, self::NOW);
+        return new Importer($target ?? $this->target, self::USER, null, self::NOW, authority: new FakeImportAuthority(), afterCommit: new FakeAfterCommit());
     }
 
     /** DbImportTarget over TableDb for the questions, FakeImportTarget for the new ids (predictable) */

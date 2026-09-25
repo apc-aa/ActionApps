@@ -59,6 +59,7 @@ LOGIN           module_id:field_id              msg:url                        /
 STATE_CHK       {CheckClass} | summary          Sc:severity:count:title | Scs:errors:warnings:infos:checks   // daily State Check snapshot (AA\Later\StateCheck)
 ALIAS_FU        level:slice_id:field_id:function  reason:file                   // f_u not calling a usr_* function, once a day (AA\Util\UserAliasFunction, LogOnce)
 ALERT_DENY      collection:slice_id:user        item_id                        // Alertitem send refused, once a day (AA_Collection::logRefusal(), LogOnce)
+APP_INST        module_id (a row per new module; none: AA_ID)  App:name:version:source_url  // aa-app package installed (AA\Central\Package\AaAfterCommit)
 AA_WARN
 */
 
@@ -991,6 +992,33 @@ class AA_Logentry_Import extends AA_Logentry
         return [
             'phase'  => new AA_Property('phase', _m('Phase'), 'string'),    // start | result
             'detail' => new AA_Property('detail', _m('Detail'), 'string'),
+        ];
+    }
+}
+
+/** APP_INST params log entry - an aa-app package installed (AA\Central\Package\AaAfterCommit), one row per
+ *  new module (the selector). Short tag `App`. The values are package text: trimmed to PARAMS_MAX (the
+ *  source URL first, then the name), control characters replaced - escape them when shown. */
+class AA_Logentry_App extends AA_Logentry
+{
+    public string $name    = '';
+    public string $version = '';
+    public string $source  = '';
+
+    public static function make(string $name, string $version, string $source): self
+    {
+        $line  = static fn(string $s): string => (string) preg_replace('/[\x00-\x1F\x7F]+/', ' ', $s);
+        $entry = new self(['name' => $line($name), 'version' => $line($version), 'source' => $line($source)]);
+        $entry->trimToFit(['source', 'name', 'version'], self::PARAMS_MAX);
+        return $entry;
+    }
+
+    public static function getClassProperties(): array
+    {
+        return [
+            'name'    => new AA_Property('name', _m('Name'), 'string'),
+            'version' => new AA_Property('version', _m('Version'), 'string'),
+            'source'  => new AA_Property('source', _m('Source'), 'string'),
         ];
     }
 }

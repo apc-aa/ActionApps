@@ -51,10 +51,12 @@ use LogicException;
  *  - its statements halt (die()) instead of throwing, and it re-reads every item.
  *  Nothing here takes a second handle: every statement is RowStore's AA_Metabase::doInsert('nohalt') on
  *  the transaction's handle. What storeItem() would do after the store and an import still needs (the
- *  page cache of the new slice) is Importer's step after the commit (part 4d).
+ *  page cache of the new slice) is a step of ImportFinish after the commit.
  *
  *  Follow-up for part 6 (chunk mode): one multi-row INSERT per item (or per chunk) for its content rows
- *  instead of one statement per value. */
+ *  instead of one statement per value.
+ *
+ *  @internal only Importer calls it - the rights and the S confirmation are checked there (Importer::write()). */
 final class ItemWriter
 {
     private IdMap $map;
@@ -113,6 +115,7 @@ final class ItemWriter
             $row = self::contentRow($id, $field_id, $text_stored, ValueCodec::bytes($value), (int) $key, (int) (((array) $v)['flag'] ?? 0));
             $this->journal->step($at);
             $this->store->insert('content', $this->store->tableRow('content', [], $row, $this->charset, $this->rewrite, $at), $at);
+            $this->journal->contentRow();
         }
     }
 

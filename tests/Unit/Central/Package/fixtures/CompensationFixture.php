@@ -39,7 +39,6 @@ trait CompensationFixture
     {
         self::bootAa();
         require_once __DIR__ . '/TableDb.php';
-        require_once __DIR__ . '/../../../../../include/perm_sql.php';        // DelPermObject()
     }
 
     protected function setUp(): void
@@ -109,7 +108,7 @@ trait CompensationFixture
 
     private function importer(): Importer
     {
-        return new Importer($this->target, 'importer-uid', null, 1_790_000_000);
+        return new Importer($this->target, 'importer-uid', null, 1_790_000_000, authority: new FakeImportAuthority(), afterCommit: new FakeAfterCommit());
     }
 
     private function failure(ImportPlan $plan, ?Importer $importer = null): ImportFailed

@@ -33,7 +33,7 @@ use InvalidArgumentException;
  *
  *  Not here (they plug in around plan()): the "keep module ids" restore mode (§ 7.1: would replace
  *  the module part of the map after its checks), rights (PS_INSTALL_APP, Q-H2) and the S confirmation
- *  (UI, part 5), writing, the re-check of the names and ids inside the transaction and compensation
+ *  (Importer::write(): ImportAuthority, ImportConfirmation), writing, the re-check of the names and ids inside the transaction and compensation
  *  (part 4, ImportPlan), the chunk mode (part 6). */
 final class Planner
 {

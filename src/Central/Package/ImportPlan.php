@@ -51,7 +51,8 @@ final readonly class ImportPlan
     ) {}
 
     /** no E of the validator (there is no plan then) or of the planner: the writer may start - once the
-     *  S findings were confirmed in the preview and the rights checked (part 5) */
+     *  S findings were confirmed in the preview (ImportConfirmation) and the rights checked (ImportAuthority);
+     *  Importer::write() refuses without them */
     public function importable(): bool
     {
         return !$this->ofLevel(LintFinding::ERROR);
@@ -70,11 +71,15 @@ final readonly class ImportPlan
     }
 
     /** The data of the import preview (§ 7.2 step 3) - no HTML. ALL strings are package text: safe().
-     *  S findings need an explicit confirmation; the SecurityLint does not know the commands of this AA's
-     *  STRINGEXPAND_INC - the preview has to say so (part 5).
+     *  `confirm`: S findings - the preview asks for an explicit confirmation and hands the token of
+     *  ImportConfirmation::token() to the write only when it was given (§ 3.3 point 3). The preview also
+     *  says that the package installs code running with the rights of this AA, where it comes from
+     *  (`source`), and - `customCommands` - that the SecurityLint does not know the commands this AA adds
+     *  by STRINGEXPAND_INC (include/custom/<dir>/stringexpand.php).
      *  @return array{name: string, description: ?string, version: ?string, doc: ?string, source: array<string, string>,
      *                modules: list<array{type: string, name: string, old: string, new: string, charset: string, doc: ?string}>,
-     *                groups: list<array{old: string, new: string}>, fixUps: list<FixUp>, findings: list<array{string, LintFinding}>} */
+     *                groups: list<array{old: string, new: string}>, fixUps: list<FixUp>, findings: list<array{string, LintFinding}>,
+     *                confirm: bool, customCommands: bool} */
     public function preview(): array
     {
         $modules = [];
@@ -90,6 +95,7 @@ final readonly class ImportPlan
         }
         $p = $this->package;
         return ['name' => $p->name, 'description' => $p->description, 'version' => $p->version, 'doc' => $p->doc, 'source' => $p->source,
-            'modules' => $modules, 'groups' => $groups, 'fixUps' => $this->fixUps, 'findings' => $this->allFindings()];
+            'modules' => $modules, 'groups' => $groups, 'fixUps' => $this->fixUps, 'findings' => $this->allFindings(),
+            'confirm' => (bool) $this->ofLevel(LintFinding::SECURITY), 'customCommands' => defined('STRINGEXPAND_INC')];
     }
 }

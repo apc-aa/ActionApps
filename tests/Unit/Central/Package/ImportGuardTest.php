@@ -20,6 +20,8 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 use Tests\Unit\Central\Package\Fixtures\CompensationFixture;
+use Tests\Unit\Central\Package\Fixtures\FakeAfterCommit;
+use Tests\Unit\Central\Package\Fixtures\FakeImportAuthority;
 use Tests\Unit\Central\Package\Fixtures\TableDb;
 
 require_once __DIR__ . '/fixtures/CompensationFixture.php';
@@ -65,7 +67,7 @@ final class ImportGuardTest extends TestCase
         self::assertNull($this->target->holds());
 
         TableDb::$fail = null;
-        $importer      = new Importer($this->target, 'u', null, 1, 'my_lock', 7);
+        $importer      = new Importer($this->target, 'u', null, 1, 'my_lock', 7, new FakeImportAuthority(), afterCommit: new FakeAfterCommit());
         $importer->write($this->plan());
         self::assertSame(['lock my_lock 7', 'unlock my_lock'], array_slice($this->target->locks, -2), 'released after a success too');
     }

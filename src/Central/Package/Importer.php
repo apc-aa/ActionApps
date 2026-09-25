@@ -12,9 +12,13 @@ use InvalidArgumentException;
 use LogicException;
 use Throwable;
 
-/** The import writer (design balicek-v1.md § 7.2 steps 5-8; C4.4 part 4): an importable ImportPlan =>
+/** The import writer (design balicek-v1.md § 7.2 steps 2, 5-9; C4.4 parts 4, 5): an importable ImportPlan =>
  *  the app on this AA, or nothing (as far as the compensation reaches).
  *
+ *  Before anything else - no statement, no lock (ImportFailed with an empty journal): the user may install
+ *  (ImportAuthority, PS_INSTALL_APP - WriteError::DENIED; what the authority throws is a no), and the S
+ *  findings of the plan are confirmed by the token of the preview (ImportConfirmation - WriteError::UNCONFIRMED;
+ *  a plan without S needs none).
  *  Under the named lock (ImportTarget::lock(), GET_LOCK - one import at a time: two imports claiming one
  *  free group name would deadlock on InnoDB and merge on MyISAM; held by another = WriteError::LOCKED, not
  *  asked (no connection, GET_LOCK() NULL) = WriteError::DB, both before any statement), inside ONE
@@ -31,8 +35,10 @@ use Throwable;
  *  always, the rollback does nothing to MyISAM tables (§ 13.5) - still under the lock, with the user abort
  *  ignored and the time limit raised to at least 60 s (0 = none, CLI: left), the shutdown handler still armed
  *  (the compensation is idempotent - a request dying in it is compensated again), and ImportFailed with the
- *  journal, the cause and the compensation's report (a compensation that throws is a row of it). After the commit (part 4d): the importer's
- *  rights, ConstantsChanged(), the pagecache - none of them may run inside the transaction (§ 7.2 step 7).
+ *  journal, the cause and the compensation's report (a compensation that throws is a row of it).
+ *  After the commit and the release of the lock: ImportFinish (§ 7.2 step 8) - the log entry, the ACL objects,
+ *  ConstantsChanged(), the page cache; none of them may run inside the transaction (§ 7.2 step 7), and none
+ *  is compensated: a failure there is a row of the report (ImportResult::$report, § 7.2 step 9).
  *
  *  A request that dies inside write() (a fatal error, the time limit, exit() in legacy code, the client
  *  gone) never reaches the catch: a shutdown handler (DB_AA::atShutdown()), armed for the duration of
@@ -46,10 +52,9 @@ use Throwable;
  *  of the `log` table goes to the transaction's handle and the rollback here removes it again (or, the
  *  handle checked out, it falls back to error_log()); the importer's own error_log() line keeps the message.
  *
- *  The engine check (§ 7.2 step 4) is the planner's W Planner::NO_TRANSACTION in the preview. Not here:
- *  rights (PS_INSTALL_APP) and the S confirmation (part 5, the caller), the report (part 5).
+ *  The engine check (§ 7.2 step 4) is the planner's W Planner::NO_TRANSACTION in the preview.
  *  write() inside DB_AA::transaction() is a LogicException: its transaction would join the caller's - no
- *  commit of its own, a rollback of the caller's work, part 4d before the commit.
+ *  commit of its own, a rollback of the caller's work, ImportFinish before the commit.
  *
  *  Two imports at once: the lock. Besides, RowWriter reads each group name again with SELECT ... FOR
  *  UPDATE right before it creates the group (InnoDB: a concurrent insert of the name waits for the commit),
@@ -63,6 +68,9 @@ final class Importer
     private readonly AA_Metabase $metabase;
     private readonly Schema $schema;
     private readonly string $lock;
+    private readonly ImportAuthority $authority;
+    private readonly ImportConfirmation $confirmation;
+    private readonly ImportFinish $finish;
     /** @var array{ImportPlan, ImportJournal}|null the write in progress - what the shutdown handler compensates */
     private ?array $running = null;
     /** @var null|Closure(): ?CompensationReport the registered shutdown function (DB_AA::atShutdown()), once per Importer */
@@ -75,6 +83,9 @@ final class Importer
      * @param int|null         $now      module.created_at, alerts_collection_howoften.last; null = time()
      * @param string|null      $lock     the name of the import lock; null = LOCK . '.' . DB_NAME (MySQL: 64 characters)
      * @param int              $wait     seconds to wait for the lock
+     * @param ImportAuthority|null    $authority    null = PermImportAuthority (PS_INSTALL_APP) - another one for tests only
+     * @param ImportConfirmation|null $confirmation null = keyed by the session (ImportConfirmation) - another key for tests only
+     * @param AfterCommit|null        $afterCommit  null = AaAfterCommit - another one for tests only
      */
     public function __construct(
         private readonly ImportTarget $target,
@@ -83,17 +94,28 @@ final class Importer
         private readonly ?int $now = null,
         ?string $lock = null,
         private readonly int $wait = 3,
+        ?ImportAuthority $authority = null,
+        ?ImportConfirmation $confirmation = null,
+        ?AfterCommit $afterCommit = null,
     ) {
-        $this->metabase = $metabase ?? AA::Metabase();
-        $this->schema   = new Schema($this->metabase);
-        $this->lock     = $lock ?? substr(self::LOCK . '.' . constant('DB_NAME'), 0, 64);
+        $this->metabase     = $metabase ?? AA::Metabase();
+        $this->schema       = new Schema($this->metabase);
+        $this->lock         = $lock ?? substr(self::LOCK . '.' . constant('DB_NAME'), 0, 64);
+        $this->authority    = $authority ?? new PermImportAuthority();
+        $this->confirmation = $confirmation ?? new ImportConfirmation();
+        $this->finish       = new ImportFinish($afterCommit ?? new AaAfterCommit());
     }
 
-    /** @throws InvalidArgumentException the plan has an E - it is never written
+    /** The caller checks the admin FormToken of the posting form first (CSRF) - neither the right nor the
+     *  confirmation token protects against a forged request of the user's browser.
+     *  @param string|null $confirmation the token of ImportConfirmation::token() for this plan and user - the
+     *                                  preview's (this session), passed only once the user confirmed the S
+     *                                  findings; null = none
+     *  @throws InvalidArgumentException the plan has an E - it is never written
      *  @throws LogicException inside DB_AA::transaction()
-     *  @throws ImportFailed nothing was written (WriteError::LOCKED, DB at `import`), or it was rolled back and
-     *                       compensated - ImportFailed::$cleanup lists what is left for a manual action */
-    public function write(ImportPlan $plan): ImportResult
+     *  @throws ImportFailed nothing was written (WriteError::DENIED, UNCONFIRMED, LOCKED, DB at `import`), or it was
+     *                       rolled back and compensated - ImportFailed::$cleanup lists what is left for a manual action */
+    public function write(ImportPlan $plan, ?string $confirmation = null): ImportResult
     {
         if (!$plan->importable()) {
             throw new InvalidArgumentException('The import plan has errors - it is not written');
@@ -102,6 +124,7 @@ final class Importer
             throw new LogicException('Importer::write() inside DB_AA::transaction() - the import needs a transaction of its own');
         }
         $journal = new ImportJournal();
+        $this->admit($plan, $confirmation, $journal);
         $store   = new RowStore($this->metabase, $this->schema);
         $rows    = new RowWriter($store, $this->schema, $this->target, $this->user, $this->now ?? time());
         $objects = new ObjectWriter($store);
@@ -132,9 +155,32 @@ final class Importer
             $this->running = null;
             $this->target->unlock($this->lock);
         }
-        // part 4d: after the commit - the importer's roles (AddPerm...), ConstantsChanged(), AA::Pagecache()->invalidateFor()
-        // of every new module (the items were written past storeItem() and its cache invalidation)
-        return new ImportResult($map, $journal);
+        $finish = $this->finish->run($plan, $journal, $this->user);     // committed: nothing of it is compensated
+        return new ImportResult($map, $journal, ImportReport::of($plan, $map, $journal, $finish, $this->schema->rowTables()));
+    }
+
+    /** the user may install and confirmed the S findings - or ImportFailed before any statement and the lock */
+    private function admit(ImportPlan $plan, ?string $confirmation, ImportJournal $journal): void
+    {
+        try {
+            $may = $this->authority->mayInstall($this->user);
+        } catch (Throwable $e) {                    // its message may tell about the perm system: the log, not the UI
+            error_log('AA Central: the install permission could not be checked: ' . self::oneLine(get_class($e) . ': ' . $e->getMessage()));
+            throw new ImportFailed($journal, new WriteError(WriteError::DENIED, 'import', 'the install permission could not be checked'));
+        }
+        if (!$may) {
+            throw new ImportFailed($journal, new WriteError(WriteError::DENIED, 'import', 'the user may not install app packages (PS_INSTALL_APP)'));
+        }
+        try {
+            $confirmed = $this->confirmation->confirms($plan, $this->user, $confirmation);
+        } catch (Throwable) {                       // no session: nothing can be confirmed
+            $confirmed = false;
+        }
+        if (!$confirmed) {
+            $n = count($plan->ofLevel(LintFinding::SECURITY));
+            throw new ImportFailed($journal, new WriteError(WriteError::UNCONFIRMED, 'import', "the $n security findings (S) of the package were not confirmed in the preview"
+                . (($confirmation === null) ? '' : ' - the confirmation is of another package, findings, user or session')));
+        }
     }
 
     /** The registered shutdown function - null before the first write(). Tests call it to play a request
