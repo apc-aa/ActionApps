@@ -57,6 +57,7 @@ ITEM_DEL        item_id
 M_FLDI_VLD      module_id:field_id              msg:url                        // insert form field validation
 LOGIN           module_id:field_id              msg:url                        // insert form field validation
 STATE_CHK       {CheckClass} | summary          Sc:severity:count:title | Scs:errors:warnings:infos:checks   // daily State Check snapshot (AA\Later\StateCheck)
+ALIAS_FU        level:slice_id:field_id:function  reason:file                   // f_u not calling a usr_* function, once a day (AA\Util\UserAliasFunction, LogOnce)
 AA_WARN
 */
 
@@ -230,7 +231,10 @@ class AA_Log implements InternalExpandInterface
      *        as `selector LIKE 'prefix%'`. 'LIKE' would be a substring match. */
     public static function getAdminUrl(string $event, string $selector = "", string $oper = '='): string
     {
-        return get_admin_url("aa_log.php", ['srchbr_akce' => 1, 'srchbr_field[0]' => 'selector', 'srchbr_oper[0]' => $oper, "srchbr_value[0]=$selector", 'srchbr_field[1]' => 'type', 'srchbr_oper[1]' => '=', 'srchbr_value[1]' => $event, 'srchbr_order[0]' => 'time', 'srchbr_order_dir[0]' => 'on']);
+        $url = get_admin_url("aa_log.php", ['srchbr_akce' => 1, 'srchbr_field[0]' => 'selector', 'srchbr_oper[0]' => $oper, 'srchbr_value[0]' => $selector, 'srchbr_field[1]' => 'type', 'srchbr_oper[1]' => '=', 'srchbr_value[1]' => $event, 'srchbr_order[0]' => 'time', 'srchbr_order_dir[0]' => 'on']);
+        // the selector is encoded (a logged value may carry " & < ...), but an AA alias in it (_#AA_ID___ in
+        // AA_Plannedtask's manager row) must survive to be substituted - a raw # only starts the fragment
+        return str_replace('_%23', '_#', $url);
     }
 
     /** Get events from log
@@ -374,12 +378,12 @@ class AA_Log implements InternalExpandInterface
                 if ($content && ($logEntry = AA_Logentry::factoryByString($content->getValue('params')))) {
                     return $logEntry->getPrintRow(); // also adds CSS to header
                 }
-                return (string) $content->getValue('params');
+                return safe((string) $content?->getValue('params'));   // not an AA_Logentry - a logged value, printed as text
             case 'context':  // special format of selector logentry - param is first
                 if ($content && ($logEntry = AA_Logentry::factoryByStringReversed($content->getValue('selector')))) {
                     return $logEntry->getPrintRow(); // also adds CSS to header
                 }
-                return (string) $content->getValue('selector');
+                return safe((string) $content?->getValue('selector'));
         }
         return '';
     }

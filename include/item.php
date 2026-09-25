@@ -34,11 +34,16 @@ use AA\Util\SingletonTrait;
 use AA\Util\UserAliasFunction;
 
 require_once __DIR__ . "/stringexpand.php";
+// what the installation's alias functions file defines - with the files it includes, from anywhere - f_u may
+// still call without the usr_ prefix (UserAliasFunction::INSTALLATION)
+$aa_user_functions_before = get_defined_functions()['user'];
 if (file_exists(__DIR__ . "/usr_aliasfnc.php")) {
     require_once __DIR__ . "/usr_aliasfnc.php";
 } elseif (file_exists(__DIR__ . "/usr_aliasfnc.php3")) {   // for compatibility with old AAs
     require_once __DIR__ . "/usr_aliasfnc.php3";
 }
+UserAliasFunction::addInstallationFunctions(array_diff(get_defined_functions()['user'], $aa_user_functions_before));
+unset($aa_user_functions_before);
 
 require_once __DIR__ . "/item_content.php";
 require_once __DIR__ . "/../modules/links/constants.php";
@@ -1598,26 +1603,45 @@ class AA_Item
 
     /** f_u function
      * Calls a user defined function - usually defined in include/usr_aliasfnc.php, the file is not checked
-     * Only a defined usr_* user function (UserAliasFunction::resolve()). The name is taken before alias
-     * substitution of $param, so in a field alias definition (get_alias_subst()) it is literal - neither
-     * an alias nor a field value can choose it. In {alias:<field>:f_u:...} the inner {..} are expanded
-     * before f_u gets $param, so there item data can choose WHICH usr_* function runs - accepted, it is
-     * still only usr_*
+     * Only a function of the installation (UserAliasFunction::classify()): a usr_* function, or - for old
+     * sites, logged as deprecated - another function the installation defines (include/usr_aliasfnc.php,
+     * include/custom/, outside AA). Never PHP's own or AA's. The name is taken before alias substitution
+     * of $param, so in a field alias definition (get_alias_subst()) it is literal - neither an alias nor a
+     * field value can choose it. In {alias:<field>:f_u:...} the inner {..} are expanded before f_u gets
+     * $param, so there item data can choose WHICH of the installation's functions runs - accepted.
+     * Anything but a usr_* call is logged once a day (AA\Util\LogOnce) and shown by State Check.
      * @param $col
      * @param $param
      * @return string
      */
     public function f_u($col, $param = ""): string
     {
-        $name = (string) ParamExplode((string) $param)[0];
-        if (($fnc = UserAliasFunction::resolve($name)) === null) {
-            huhl('Field ' . safe($col) . " is defined with f_u and function '" . safe(substr($name, 0, 80)) . "', but only a defined usr_* user function (apc-aa/include/usr_aliasfnc.php) can be called");
+        $name    = (string) ParamExplode((string) $param)[0];
+        $verdict = UserAliasFunction::classify($name);
+        if ($verdict['level'] !== UserAliasFunction::USER) {
+            UserAliasFunction::log($verdict, $name, (string) $col, $this->sliceIdForLog());
+        }
+        if (($fnc = $verdict['function']) === null) {
+            huhl('Field ' . safe($col) . " is defined with f_u and function '" . safe(substr($name, 0, 80)) . "', but only a function of the installation (usr_* in apc-aa/include/usr_aliasfnc.php) can be called");
             return '';
         }
         // then we substitute alias on whole param string
         // (it will be passed to usr_function already substituted
         $param = $this->subst_alias($param);
-        return (string) $fnc($this->content4id->getContent(), $col, $param);
+        try {
+            return (string) $fnc($this->content4id->getContent(), $col, $param);
+        } catch (\TypeError $e) {
+            // ArgumentCountError included: other parameters (an old helper, a name typed by mistake) or a failure
+            // inside the function must not kill the page - logged with what was thrown where
+            UserAliasFunction::log(['level' => UserAliasFunction::REJECTED, 'function' => null, 'reason' => UserAliasFunction::CALL_FAILED, 'file' => UserAliasFunction::callFailure($e)], $name, (string) $col, $this->sliceIdForLog());
+            return '';
+        }
+    }
+
+    /** as getSliceID(), but an item built without its slice (no unpack_id(null) deprecation) gives '' */
+    private function sliceIdForLog(): string
+    {
+        return (string) ($this->getval('u_slice_id......') ?: unpack_id((string) $this->getval('slice_id........')));
     }
 
     /** f_v function
