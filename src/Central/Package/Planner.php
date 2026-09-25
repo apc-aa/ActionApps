@@ -40,6 +40,13 @@ final class Planner
     public const LANG_FILE = Validator::LANG_FILE;
     /** E: an object, item or constant id of the package equals a new settings object id */
     public const SETTINGS_ID = Validator::DUPLICATE;
+    /** I: an alerts field (`alerts1....<cid>`, getAlertsField()) of a collection the package does not carry
+     *  is written as it is - AA reads it only through a collection whose reader slice is this new slice, so
+     *  it is an inert definition; ref = the collection id */
+    public const ALERTS_FIELD_KEPT = 'alerts-field-kept';
+
+    /** an alerts field id: FIELDID_HOWOFTEN / FIELDID_FILTERS padded with dots, then the collection id */
+    private const ALERTS_FIELD_RE = '/^alerts[12]\.+([A-Za-z0-9]{1,9})\z/';
 
     private readonly Schema $schema;
     private FindingList $findings;
@@ -102,9 +109,22 @@ final class Planner
         }
         $map = new IdMap(modules: $modules, longIds: $long, groups: $groups->names($fixed, $this->findings), collections: $collections);
 
+        $this->alertsFields($fixed, $map);
         (new TargetCharset($this->schema, $map))->check($fixed, $charsets, $group_charsets, $this->findings);
         (new ImportLint($this->schema))->check($fixed, $this->findings);
         return new ImportPlan($fixed, $map, $charsets, $lang_files, $group_charsets, $settings, $fix_ups, $validation->findings, $this->findings->all());
+    }
+
+    /** I ALERTS_FIELD_KEPT for the alerts fields of collections outside the package */
+    private function alertsFields(Package $package, IdMap $map): void
+    {
+        foreach ($package->modules as $m) {
+            foreach ($m->rows['field'] ?? [] as $i => $row) {
+                if (preg_match(self::ALERTS_FIELD_RE, ValueCodec::bytes($row['id'] ?? ''), $match) && ($map->collection($match[1]) === null)) {
+                    $this->add($this->schema->rowPath("$m->type[$m->id]", 'field', $row, $i), LintFinding::INFO, self::ALERTS_FIELD_KEPT, $match[1]);
+                }
+            }
+        }
     }
 
     /** the package id; E when it equals a new settings object id (the map would send it there)

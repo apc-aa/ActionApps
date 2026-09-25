@@ -24,19 +24,23 @@ use Throwable;
  *    supersets, so the numbers cannot make a convertible value unconvertible.
  *  - The numbers come from AUTO_INCREMENT only when the writer inserts the rows: each number in a known
  *    form (ReferenceRewriter::numericRefs()) may grow to ID_DIGITS digits. A worst case over the limit is
- *    a W MAY_BE_TOO_LONG; the writer MUST check the length again after numeric() and fail before the write.
- *  - char(N) / varchar(N) count characters: more than N characters = E; more than N BYTES (a multi-byte
- *    charset: utf-8, EUC-JP) with at most N characters = W - the limit then depends on the column charset
- *    of the target DB (latin1 counts bytes). binary/varbinary/text/blob: bytes, exact.
+ *    a W MAY_BE_TOO_LONG - the only W here; the writer MUST check the length again after numeric() and
+ *    fail before the commit.
+ *  - Every limit is in BYTES too: AA_Metabase writes through AA_MbT::getVarset4Data(), which cuts a value
+ *    of any (N) column to N bytes - a utf-8 / EUC-JP text of at most N characters but more bytes would be
+ *    cut inside a character. So more than N characters of a char(N) / varchar(N) = E "<n> characters > N",
+ *    else more than N bytes = E "<n> bytes > N" (tooLong(); binary/varbinary/text/blob count bytes anyway).
  *  RawBytes (source bytes the export could not convert) are written as they are - the target module gets
  *  the package's lang_file, so the charset they were read in - after the same ImportRewrite (safe on
- *  bytes, see there); only their length is checked.
+ *  bytes, see there); their length is checked, and in a utf-8 module they must be valid UTF-8 (E CHARSET):
+ *  MySQL outside strict mode cuts a utf-8 column at the first invalid byte - after the SecurityLint saw
+ *  the whole text.
  *  Findings quote package text - escape them (safe()) when shown. */
 final class TargetCharset
 {
     /** E: the value has a character the target charset cannot hold; ref = from that character */
     public const CHARSET = 'charset';
-    /** E: the converted value is longer than its column; ref = "<n> characters|bytes > <limit>" */
+    /** E: the converted value is longer than its column - in characters or in bytes; ref = "<n> characters|bytes > <limit>" */
     public const TOO_LONG = 'too-long';
     /** W: it may not fit - more bytes than a char(N) column has characters, or once the views / e-mails it
      *  names get 10-digit numbers; ref = "<worst> bytes > <limit>" */
@@ -117,34 +121,58 @@ final class TargetCharset
         if (!(is_string($value) || ($value instanceof RawBytes)) || ($value === '')) {
             return;     // null, numbers: ASCII
         }
-        $known = $this->rewrite->known($value, $widget);
-        if ($known instanceof RawBytes) {
-            $bytes = $known->bytes;
-            $chars = in_array(strtolower($charset), self::MULTIBYTE, true) ? mb_strlen($bytes, $charset) : strlen($bytes);
-        } else {
-            $bytes = ModuleCharset::fromUtf8($known, $charset);
-            if ($bytes === null) {
-                $this->unconvertible($path, $known, $charset);
-                return;
-            }
-            $chars = mb_strlen($known, 'UTF-8');
+        $known    = $this->rewrite->known($value, $widget);
+        $measured = self::measure($known, $charset);
+        if ($measured === null) {
+            $this->unconvertible($path, ValueCodec::bytes($known), $charset);
+            return;
         }
         if ($limit === null) {
             return;
         }
-        [$max, $counts_chars] = $limit;
-        $length = $counts_chars ? $chars : strlen($bytes);
-        if ($length > $max) {
-            $this->add($path, LintFinding::ERROR, self::TOO_LONG, "$length " . ($counts_chars ? 'characters' : 'bytes') . " > $max");
+        if (($too_long = self::tooLong($measured, $limit)) !== null) {
+            $this->add($path, LintFinding::ERROR, self::TOO_LONG, $too_long);
             return;
         }
-        $worst = strlen($bytes);        // the bytes of a char(N) column in a DB counting them; the numbers
+        [$bytes]  = $measured;
+        $worst    = strlen($bytes);        // the bytes of a char(N) column in a DB counting them; the numbers
         foreach (ReferenceRewriter::numericRefs($bytes) as [, $number]) {
             $worst += max(0, self::ID_DIGITS - strlen($number));
         }
-        if ($worst > $max) {
-            $this->add($path, LintFinding::WARNING, self::MAY_BE_TOO_LONG, "$worst bytes > $max");
+        if ($worst > $limit[0]) {
+            $this->add($path, LintFinding::WARNING, self::MAY_BE_TOO_LONG, "$worst bytes > $limit[0]");
         }
+    }
+
+    /** The bytes to write and the characters to count of a rewritten value - the plan (known()) and the
+     *  writer (numeric(known()), RowStore) use this one function: a text converted from UTF-8 with
+     *  ModuleCharset::fromUtf8(), RawBytes as they are.
+     *  @return array{string, int}|null [bytes in the charset, characters]; null = the text does not convert,
+     *                                  or RawBytes of a utf-8 module are no UTF-8 */
+    public static function measure(string|RawBytes $value, string $charset): ?array
+    {
+        if ($value instanceof RawBytes) {
+            $bytes = $value->bytes;
+            if ((strtolower($charset) === 'utf-8') && !mb_check_encoding($bytes, 'UTF-8')) {
+                return null;
+            }
+            return [$bytes, in_array(strtolower($charset), self::MULTIBYTE, true) ? mb_strlen($bytes, $charset) : strlen($bytes)];
+        }
+        $bytes = ModuleCharset::fromUtf8($value, $charset);
+        return ($bytes === null) ? null : [$bytes, mb_strlen($value, 'UTF-8')];
+    }
+
+    /** "<n> characters|bytes > <limit>" when the measured value overflows its column, else null: the
+     *  characters of a char(N) / varchar(N), then the bytes of any column - AA_Metabase cuts to N bytes
+     *  @param array{string, int} $measured measure() @param array{int, bool} $limit Schema::lengthLimits() */
+    public static function tooLong(array $measured, array $limit): ?string
+    {
+        [$max, $counts_chars] = $limit;
+        return match (true) {
+            $counts_chars && ($measured[1] > $max) => "$measured[1] characters > $max",
+            strlen($measured[0]) > $max            => strlen($measured[0]) . " bytes > $max",
+            default                                => null,
+        };
     }
 
     /** E CHARSET from the first character the charset lacks - found only while the findings of the code are kept */

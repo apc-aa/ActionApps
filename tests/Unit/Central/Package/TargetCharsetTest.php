@@ -95,11 +95,12 @@ final class TargetCharsetTest extends TestCase
             'non-ASCII group in a text'        => [static fn(Package $p): Package => self::cell(self::latin2(self::with($p, ['constantGroups' => [new ConstantGroup('druhy_漢', self::SLICE)]])), self::SLICE, 'view', 1, ['odd' => '{constant:druhy_漢:x}']), ['I group-renamed constant-group[druhy_漢] druhy_漢 => druhy__']],
             'raw bytes go as they are'         => [static fn(Package $p): Package => self::cell(self::latin2($p), self::SLICE, 'view', 0, ['odd' => new RawBytes("\xA9\xFF")]), []],
             // ---- length: the converted value against the column (Schema::lengthLimits())
-            // ---- length: char(N) / varchar(N) count characters, the others bytes (Schema::lengthLimits())
+            // ---- length: char(N) / varchar(N) count characters, the others bytes (Schema::lengthLimits()); AA_Metabase
+            //      cuts every (N) value to N BYTES (AA_MbT::getVarset4Data()), so more bytes are an E as well
             'module name 101 characters'       => [static fn(Package $p): Package => self::cell($p, self::SLICE, 'module', 0, ['name' => str_repeat('a', 101)]), ["E too-long $S/module[#0]/name 101 characters > 100"]],
             'module name 100 bytes'            => [static fn(Package $p): Package => self::cell($p, self::SLICE, 'module', 0, ['name' => str_repeat('a', 100)]), []],
-            // 90 Czech characters, 180 bytes in utf-8: fits a column counting characters, not one counting bytes
-            '90 Czech characters in utf-8'     => [static fn(Package $p): Package => self::cell($p, self::SLICE, 'module', 0, ['name' => str_repeat('Žluťoučký ', 9)]), ["W may-be-too-long $S/module[#0]/name 126 bytes > 100"]],
+            // 90 Czech characters, 126 bytes in utf-8: AA_Metabase would cut it inside a character
+            '90 Czech characters in utf-8'     => [static fn(Package $p): Package => self::cell($p, self::SLICE, 'module', 0, ['name' => str_repeat('Žluťoučký ', 9)]), ["E too-long $S/module[#0]/name 126 bytes > 100"]],
             '101 Czech characters in utf-8'    => [static fn(Package $p): Package => self::cell($p, self::SLICE, 'module', 0, ['name' => str_repeat('ž', 101)]), ["E too-long $S/module[#0]/name 101 characters > 100"]],
             '90 Czech characters, iso-8859-2'  => [static fn(Package $p): Package => self::cell(self::latin2($p), self::SLICE, 'module', 0, ['name' => str_repeat('Žluťoučký ', 9)]), []],
             '101 x š in iso-8859-2'            => [static fn(Package $p): Package => self::cell(self::latin2($p), self::SLICE, 'module', 0, ['name' => str_repeat('š', 101)]), ["E too-long $S/module[#0]/name 101 characters > 100"]],
@@ -107,7 +108,10 @@ final class TargetCharsetTest extends TestCase
             'raw template, module id'          => [static fn(Package $p): Package => self::cell(self::latin2($p), self::SLICE, 'view', 0, ['cond1cond' => new RawBytes("\xA9{ids:" . self::SLICE . '}' . str_repeat('y', 216))]), []],
             'raw template, group renamed'      => [static fn(Package $p): Package => self::cell(self::latin2($p), self::SLICE, 'view', 0, ['cond1cond' => new RawBytes("\xA9{constant:ct_rubriky:x}" . str_repeat('y', 231))]), ["E too-long $S/view[12]/cond1cond 257 characters > 255"], ['ct_rubriky']],
             'varbinary counts bytes'           => [static fn(Package $p): Package => self::cell($p, self::SLICE, 'field', 0, ['type' => str_repeat('x', 17)]), ["E too-long $S/field[headline........]/type 17 bytes > 16"]],
-            'raw bytes too long'               => [static fn(Package $p): Package => self::cell($p, self::SLICE, 'field', 0, ['alias1' => new RawBytes(str_repeat("\xFF", 11))]), ["E too-long $S/field[headline........]/alias1 11 characters > 10"]],
+            'raw bytes too long'               => [static fn(Package $p): Package => self::cell(self::latin2($p), self::SLICE, 'field', 0, ['alias1' => new RawBytes(str_repeat("\xFF", 11))]), ["E too-long $S/field[headline........]/alias1 11 characters > 10"]],
+            // MySQL (non-strict) cuts a utf-8 column at the first invalid byte - after the security lint saw the whole text
+            'raw bytes no UTF-8 in utf-8'      => [static fn(Package $p): Package => self::cell($p, self::SLICE, 'view', 0, ['odd' => new RawBytes("ok\xFF{include:x}")]), ["E charset $S/view[12]/odd \xFF{include:x}"]],
+            'raw bytes UTF-8 in utf-8'         => [static fn(Package $p): Package => self::cell($p, self::SLICE, 'view', 0, ['odd' => new RawBytes('ok č')]), []],
             // after the rewrite with the planned maps: a renamed group is longer
             'text group renamed'               => [static fn(Package $p): Package => self::cell($p, self::SLICE, 'view', 0, ['cond1cond' => '{constant:ct_rubriky:x}' . str_repeat('y', 232)]), ["E too-long $S/view[12]/cond1cond 257 characters > 255"], ['ct_rubriky']],
             // views and e-mails are numbered by the writer: up to 10 digits - a warning, the writer checks again

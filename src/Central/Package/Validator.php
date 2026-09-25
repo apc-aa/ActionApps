@@ -30,7 +30,8 @@ final class Validator
     /** E: a table, settings, objects, spot tree or items the container does not have (§ 6.1) */
     public const TABLE = 'table-not-allowed';
     /** E: an id of the wrong shape: long ids 32 lower-case hex, field ids 16 chars, view / e-mail / filter /
-     *  spot ids 1-10 digits without a leading 0, collection ids 5 letters or digits */
+     *  spot ids 1-10 digits without a leading 0, collection ids 5 letters or digits; a packed column
+     *  (slice.mlxctrl, alerts_collection.slice_id, constant.ancestors: several) not empty and no long id */
     public const INVALID_ID = 'invalid-id';
     /** E: an id twice - long ids across modules, their settings objects (string2id(class . module id)),
      *  constants, objects, subobjects and items (one map, § 7.1),
@@ -40,7 +41,9 @@ final class Validator
     /** E: uses, a group owner (a slice), a collection filter / howoften outside the package;
      *  W: an ancestor constant not in the group (se_constant.php leaves them when deleting a parent) */
     public const DANGLING = 'dangling-ref';
-    /** E: the alerts collection reads a slice outside the package (§ 6.4) */
+    /** E: the alerts collection reads a slice outside the package (§ 6.4). Also E (ReferenceLint codes): an
+     *  alerts_filter.vid or alerts_collection.emailid_* outside the package (0 / empty = none, allowed) - the
+     *  new collection would mail a view or template of the target to readers the package brings */
     public const READER_OUTSIDE = ExportLint::READER_OUTSIDE;
     /** E: an object class off the allowlist, a property its class lacks, a subobject off its property (§ 5.4), a malformed object */
     public const OBJECT = 'object';
@@ -99,6 +102,12 @@ final class Validator
         'fill', 'predefine', 'bookmark', 'ui_manager', 'ui_manager_hide', 'ui_inputform', 'ui_inputform_hide'];
 
     private const PERMISSIONS = ['permit_anonymous_post', 'permit_anonymous_edit', 'fileman_access', 'auth_field_group'];
+
+    /** a packed id, any case (pack_id() takes any) */
+    private const LONG_ID_RE = '/^[0-9a-f]{32}\z/i';
+    /** packed columns holding several ids joined (AA_Metabase::getPacked(): "ancestors are multiple") */
+    private const PACKED_LISTS = ['constant.ancestors' => true];
+    private const LONG_IDS_RE  = '/^(?:[0-9a-f]{32})+\z/i';
 
     private readonly AA_Metabase $metabase;
     private readonly Schema $schema;
@@ -207,6 +216,21 @@ final class Validator
                     [$pool, $re] = self::UNIQUE[$element];
                     $this->id(($pool === 'module') ? "$path/$element" : $pool, ValueCodec::bytes($row[$key] ?? ''), $at, $re);
                 }
+                $this->packed($element, $row, (string) $key, $at);
+            }
+        }
+    }
+
+    /** E: a packed column (AA_Metabase::getPacked()) with a value that is no long id - Cvariable writes '' for
+     *  it (include/varset.php); constant.ancestors holds several joined. '' and NULL are fine. The key column
+     *  is id()'s (uses: DANGLING). */
+    private function packed(string $element, array $row, string $key, string $at): void
+    {
+        $table = $this->schema->rowTables()[$element] ?? '';
+        foreach (array_diff(AA_Metabase::getPacked($table), [$key]) as $column) {
+            $value = ValueCodec::bytes($row[$column] ?? '');
+            if (($value !== '') && !preg_match((isset(self::PACKED_LISTS["$table.$column"]) ? self::LONG_IDS_RE : self::LONG_ID_RE), $value)) {
+                $this->add("$at/$column", LintFinding::ERROR, self::INVALID_ID, $value);
             }
         }
     }
@@ -373,7 +397,7 @@ final class Validator
             }
             $this->has['filter'][$id] ??= $row;
             $filters[$id] = true;
-            $this->viewRef($row['vid'] ?? '', "$at/vid");
+            $this->viewRef($row['vid'] ?? '', "$at/vid", LintFinding::ERROR);
         }
         foreach (['alerts_collection_filter', 'alerts_collection_howoften'] as $element) {
             foreach ($m->rows[$element] ?? [] as $i => $row) {
@@ -395,7 +419,7 @@ final class Validator
         foreach (['emailid_welcome', 'emailid_alert'] as $column) {
             $email = (int) ValueCodec::bytes($collection[$column] ?? '');
             if (($email > 0) && !isset($this->has['email'][(string) $email])) {
-                $this->add("$at/$column", LintFinding::WARNING, ReferenceLint::EMAIL_OUTSIDE, (string) $email);
+                $this->add("$at/$column", LintFinding::ERROR, ReferenceLint::EMAIL_OUTSIDE, (string) $email);
             }
         }
     }
@@ -422,12 +446,12 @@ final class Validator
         }
     }
 
-    /** W: a structured view reference (slice.vid, profile input_view, alerts_filter.vid) outside the package */
-    private function viewRef(mixed $vid, string $at): void
+    /** a structured view reference (slice.vid, profile input_view: W; alerts_filter.vid: E) outside the package */
+    private function viewRef(mixed $vid, string $at, string $level = LintFinding::WARNING): void
     {
         $vid = (int) ValueCodec::bytes($vid);
         if (($vid > 0) && !isset($this->has['view'][(string) $vid])) {
-            $this->add($at, LintFinding::WARNING, ReferenceLint::VIEW_OUTSIDE, (string) $vid);
+            $this->add($at, $level, ReferenceLint::VIEW_OUTSIDE, (string) $vid);
         }
     }
 

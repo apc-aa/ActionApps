@@ -243,7 +243,8 @@ final class Schema
      *  N CHARACTERS of the column charset (single-byte on most AA databases: bytes); [N, false] for
      *  N BYTES - binary(N), varbinary(N), tinytext/blob, text/blob, mediumtext/blob. A packed id column
      *  (AA_Metabase::isPacked()) holds 2N hex digits of the unpacked ids a package carries. Long types
-     *  have none worth checking (4 GB).
+     *  have none worth checking (4 GB). An import writing through AA_Metabase has N BYTES in every (N)
+     *  column as well - AA_MbT::getVarset4Data() cuts there (TargetCharset::tooLong()).
      *  @return array<string, array{int, bool}> column => [limit, counts characters] */
     public function lengthLimits(string $element): array
     {

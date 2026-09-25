@@ -217,6 +217,7 @@ namespace Tests\Unit\Central\Package {
                 'uses outside'               => [static fn(Package $p): Package => self::cell($p, self::SITE, 'uses', 0, ['destination_id' => self::OTHER]), ["E dangling-ref $W/uses[" . self::OTHER . ']']],
                 'group owner is a site'      => [static fn(Package $p): Package => self::with($p, ['constantGroups' => [new ConstantGroup('ct_rubriky', self::SITE, $p->constantGroups[0]->rows)]]), ["E dangling-ref $G@owner"]],
                 'reader slice outside'       => [static fn(Package $p): Package => self::cell($p, self::ALERTS, 'alerts_collection', 0, ['slice_id' => self::SITE]), ["E reader-outside $A/alerts_collection[AbC12]/slice_id"]],
+                'reader slice not packaged'  => [static fn(Package $p): Package => self::cell($p, self::ALERTS, 'alerts_collection', 0, ['slice_id' => self::OTHER]), ["E reader-outside $A/alerts_collection[AbC12]/slice_id"]],
                 'collection filter unknown'  => [static fn(Package $p): Package => self::cell($p, self::ALERTS, 'alerts_collection_filter', 0, ['filterid' => '4']), ["E dangling-ref $A/alerts_collection_filter[AbC12,4,0]"]],
                 'howoften of no collection'  => [static fn(Package $p): Package => self::cell($p, self::ALERTS, 'alerts_collection_howoften', 0, ['collectionid' => 'XyZ98']), ["E dangling-ref $A/alerts_collection_howoften[XyZ98,daily]"]],
                 'ancestor of another group'  => [static fn(Package $p): Package => self::with($p, ['constantGroups' => [self::constants($p, 1, ['ancestors' => self::SET])]]), ["W dangling-ref $G/constant[" . self::C2 . ']/ancestors']],
@@ -258,12 +259,24 @@ namespace Tests\Unit\Central\Package {
                     $t['spots'][2]['c'] = ['x' => '<script>'];
                     return $t;
                 }), ["W spot-markup $W/spot-tree/spot[3]/cond[#0]"]],
-                // ---- structured references leaving the package (§ 8.4 W)
+                // ---- structured references leaving the package (§ 8.4 W); Alerts: E - the new collection would mail a
+                //      view or template of the target to readers the package brings (and relate to a foreign slice)
                 'slice.vid outside'          => [static fn(Package $p): Package => self::cell($p, self::SLICE, 'slice', 0, ['vid' => '99']), ["W view-outside $S/slice[#0]/vid"]],
                 'input_view outside'         => [static fn(Package $p): Package => self::cell($p, self::SLICE, 'profile', 0, ['value' => '99']), ["W view-outside $S/profile[#0]/value"]],
-                'filter view outside'        => [static fn(Package $p): Package => self::cell($p, self::ALERTS, 'alerts_filter', 0, ['vid' => '99']), ["W view-outside $A/alerts_filter[3]/vid"]],
-                'welcome e-mail outside'     => [static fn(Package $p): Package => self::cell($p, self::ALERTS, 'alerts_collection', 0, ['emailid_alert' => '8']), ["W email-outside $A/alerts_collection[AbC12]/emailid_alert"]],
+                'filter view outside'        => [static fn(Package $p): Package => self::cell($p, self::ALERTS, 'alerts_filter', 0, ['vid' => '99']), ["E view-outside $A/alerts_filter[3]/vid"]],
+                'filter without a view'      => [static fn(Package $p): Package => self::cell($p, self::ALERTS, 'alerts_filter', 0, ['vid' => '0']), []],
+                'alert e-mail outside'       => [static fn(Package $p): Package => self::cell($p, self::ALERTS, 'alerts_collection', 0, ['emailid_alert' => '8']), ["E email-outside $A/alerts_collection[AbC12]/emailid_alert"]],
+                'welcome e-mail outside'     => [static fn(Package $p): Package => self::cell($p, self::ALERTS, 'alerts_collection', 0, ['emailid_welcome' => '8']), ["E email-outside $A/alerts_collection[AbC12]/emailid_welcome"]],
+                'welcome e-mail of a slice'  => [static fn(Package $p): Package => self::cell($p, self::ALERTS, 'alerts_collection', 0, ['emailid_welcome' => '5']), []],
+                'no welcome e-mail'          => [static fn(Package $p): Package => self::cell($p, self::ALERTS, 'alerts_collection', 0, ['emailid_welcome' => '0', 'emailid_alert' => null]), []],
                 'mlxctrl outside'            => [static fn(Package $p): Package => self::cell($p, self::SLICE, 'slice', 0, ['mlxctrl' => self::OTHER]), ["W module-outside $S/slice[#0]/mlxctrl"]],
+                // ---- packed columns (AA_Metabase::getPacked()): a value no long id would be written as '' (include/varset.php)
+                'mlxctrl no long id'         => [static fn(Package $p): Package => self::cell($p, self::SLICE, 'slice', 0, ['mlxctrl' => 'cz']), ["E invalid-id $S/slice[#0]/mlxctrl"]],
+                'mlxctrl two ids'            => [static fn(Package $p): Package => self::cell($p, self::SLICE, 'slice', 0, ['mlxctrl' => self::SLICE . self::SLICE]), ["E invalid-id $S/slice[#0]/mlxctrl"]],
+                'mlxctrl empty'              => [static fn(Package $p): Package => self::cell($p, self::SLICE, 'slice', 0, ['mlxctrl' => '']), []],
+                'ancestors, two ids'         => [static fn(Package $p): Package => self::with($p, ['constantGroups' => [self::constants($p, 1, ['ancestors' => self::C2 . self::C2])]]), []],
+                'ancestors no ids'           => [static fn(Package $p): Package => self::with($p, ['constantGroups' => [self::constants($p, 1, ['ancestors' => 'x' . self::C2])]]), ["E invalid-id $G/constant[" . self::C2 . ']/ancestors', "W dangling-ref $G/constant[" . self::C2 . ']/ancestors']],
+                'reader slice no long id'    => [static fn(Package $p): Package => self::cell($p, self::ALERTS, 'alerts_collection', 0, ['slice_id' => 'abc']), ["E invalid-id $A/alerts_collection[AbC12]/slice_id", "E reader-outside $A/alerts_collection[AbC12]/slice_id"]],
                 'translate_slice outside'    => [static fn(Package $p): Package => self::setting($p, self::SITE, 'translate_slice', self::OTHER), ["W module-outside $W/settings/translate_slice[0]"]],
                 // ---- values
                 'lang_file .php3'            => [static fn(Package $p): Package => self::cell($p, self::SLICE, 'module', 0, ['lang_file' => 'cz-utf8_news_lang.php3']), []],

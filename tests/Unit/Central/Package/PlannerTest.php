@@ -266,7 +266,7 @@ final class PlannerTest extends TestCase
                 return $o;
             }), ["W view-outside $W/object[" . self::ALIAS . ']/code[0]']],
             'widget group is no text reference' => [static fn(Package $p): Package => $p, []],
-            'raw bytes are linted as bytes' => [static fn(Package $p): Package => self::cell($p, self::SLICE, 'view', 1, ['odd' => new RawBytes("\xA9 {ids:ffffffffffffffffffffffffffffffff} {ids:" . self::SLICE . '}')]), ["W module-outside $S/view[13]/odd"]],
+            'raw bytes are linted as bytes' => [static fn(Package $p): Package => self::cell(self::lang($p, self::SLICE, 'cz_news_lang.php'), self::SLICE, 'view', 1, ['odd' => new RawBytes("\xA9 {ids:ffffffffffffffffffffffffffffffff} {ids:" . self::SLICE . '}')]), ["W module-outside $S/view[13]/odd"]],
             'item values are not linted' => [static fn(Package $p): Package => self::items($p, [self::item('1234567890abcdef1234567890abcdef', '{view:99}')]), []],
         ];
     }
@@ -279,6 +279,19 @@ final class PlannerTest extends TestCase
     }
 
     // ---------------------------------------------------------------- the plan and its preview
+
+    public function test_an_alerts_field_of_a_collection_outside_the_package_is_kept_with_a_note(): void
+    {
+        $plan = self::plan(self::rows(self::example(), self::SLICE, 'field', static fn(array $rows): array => [...$rows,
+            ['id' => 'alerts1....AbC12', 'type' => 'alerts', 'name' => 'Of the package'],
+            ['id' => 'alerts2....Zz999', 'type' => 'alerts', 'name' => 'Of a collection not in the package'],
+            ['id' => 'alerts1.........', 'type' => 'alerts', 'name' => 'No collection id'],
+        ]));
+
+        self::assertTrue($plan->importable());
+        self::assertSame(['I alerts-field-kept ' . self::S . '/field[alerts2....Zz999]'], self::findings($plan, 'alerts-'));
+        self::assertSame(['Zz999'], array_values(array_map(static fn(array $f): string => $f[1]->ref, array_filter($plan->findings, static fn(array $f): bool => $f[1]->code === Planner::ALERTS_FIELD_KEPT))));
+    }
 
     public function test_a_package_with_errors_is_not_planned(): void
     {
