@@ -58,6 +58,7 @@ M_FLDI_VLD      module_id:field_id              msg:url                        /
 LOGIN           module_id:field_id              msg:url                        // insert form field validation
 STATE_CHK       {CheckClass} | summary          Sc:severity:count:title | Scs:errors:warnings:infos:checks   // daily State Check snapshot (AA\Later\StateCheck)
 ALIAS_FU        level:slice_id:field_id:function  reason:file                   // f_u not calling a usr_* function, once a day (AA\Util\UserAliasFunction, LogOnce)
+ALERT_DENY      collection:slice_id:user        item_id                        // Alertitem send refused, once a day (AA_Collection::logRefusal(), LogOnce)
 AA_WARN
 */
 

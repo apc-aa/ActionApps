@@ -29,6 +29,8 @@ https://www.apc.org/
 
 use AA\IO\DB\DB_AA;
 use AA\Later\AlertsSweep;
+use AA\Optimize\CheckAlertitemRefusals;
+use AA\Util\LogOnce;
 
 require_once __DIR__ . "/../../include/item.php";
 require_once __DIR__ . "/../../include/view.php";
@@ -74,8 +76,11 @@ class AA_Collection
 
     /** May an item of the slice be sent through the collection (AA_Responder_Alertitem)? Only when they
      *  belong together: the slice is the collection's reader slice (alerts_collection.slice_id - set by
-     *  the Alerts admin only, unlike the alerts1....<id> field a slice admin could name after any collection)
-     *  or a filter of the collection is a view of the slice.
+     *  the Alerts admin only, unlike the alerts1....<id> field a slice admin could name after any collection),
+     *  a filter of the collection is a view of the slice, or one site uses both the slice and the collection's
+     *  reader slice or Alerts module (site "Uses modules" - relation, source = the site, flag
+     *  REL_FLAG_MODULE_DEPEND) - the sender may have no access to the Reader Management slice of their own
+     *  site. A deleted site does not count.
      *  A real send to the readers always needs the filter: createFilterText() keeps only the filters on
      *  the item's slice, so with the reader slice alone nothing reaches the readers - only a test send works.
      *  @param string $slice_id long (unpacked) id */
@@ -90,7 +95,32 @@ class AA_Collection
                 ['alerts_collection_filter.filterid', 'alerts_filter.id', 'j'],
                 ['alerts_filter.vid', 'view.id', 'j'],
                 ['view.slice_id', $slice_id, 'l'],
-            ]);
+            ])
+            || (false !== DB_AA::select1('source_id', 'SELECT r1.source_id FROM `relation` AS r1'
+                . ' JOIN `relation` AS r2 ON r2.source_id = r1.source_id'
+                . ' JOIN `alerts_collection` AS c ON r2.destination_id IN (c.slice_id, c.module_id)'
+                . ' JOIN `module` AS m ON m.id = r1.source_id', [
+                    ['c.id', $collection_id],
+                    ['r1.destination_id', $slice_id, 'l'],
+                    ['r1.flag', REL_FLAG_MODULE_DEPEND, 'i'],
+                    ['r2.flag', REL_FLAG_MODULE_DEPEND, 'i'],
+                    ['m.type', 'W'],
+                    ['m.deleted', 0, 'i'],
+                ]));
+    }
+
+    /** Records a send relatesToSlice() refused, for State Check (AA\Optimize\CheckAlertitemRefusals) - at
+     *  most one log row a day per collection, slice and user (AA\Util\LogOnce). The row keeps the item of
+     *  the first refusal that day; State Check shows the highest item id among the grouped rows
+     *  (MAX(params)) - an example, not the latest one.
+     *  @param string $slice_id long (unpacked) id
+     *  @return bool a row was written */
+    public static function logRefusal(string $collection_id, string $slice_id, string $item_id): bool
+    {
+        if (!self::isValidId($collection_id) || !is_long_id($slice_id)) {
+            return false;
+        }
+        return LogOnce::daily(CheckAlertitemRefusals::EVENT, ParamImplode([$collection_id, $slice_id, mb_strcut(AuthGetUid(), 0, 120)]), is_long_id($item_id) ? $item_id : '');
     }
 
     /** @return string[] filter ids of this collection, in the collection's order */

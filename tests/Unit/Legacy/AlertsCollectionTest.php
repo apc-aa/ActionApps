@@ -25,6 +25,8 @@ namespace {
 
 namespace Tests\Unit\Legacy {
 
+    use AA\Optimize\CheckAlertitemRefusals;
+    use AA\Util\LogOnce;
     use AA_Collection;
     use PHPUnit\Framework\Attributes\DataProvider;
     use PHPUnit\Framework\TestCase;
@@ -50,6 +52,16 @@ namespace Tests\Unit\Legacy {
             . " WHERE alerts_collection_filter.collectionid = 'sQjwa' AND alerts_collection_filter.filterid = alerts_filter.id"
             . " AND alerts_filter.vid = view.id AND view.slice_id = 0x0123456789abcdef0123456789abcdef LIMIT  1";
 
+        /** a site module uses both the item's slice and the collection's reader slice or Alerts module
+         *  (relation, flag REL_FLAG_MODULE_DEPEND = 1, source = the site) */
+        private const SITE_SQL = "SELECT r1.source_id FROM `relation` AS r1"
+            . " JOIN `relation` AS r2 ON r2.source_id = r1.source_id"
+            . " JOIN `alerts_collection` AS c ON r2.destination_id IN (c.slice_id, c.module_id)"
+            . " JOIN `module` AS m ON m.id = r1.source_id"
+            . " WHERE c.id = 'sQjwa' AND r1.destination_id = 0x0123456789abcdef0123456789abcdef AND r1.flag = 1 AND r2.flag = 1 AND m.type = 'W' AND m.deleted = 0 LIMIT  1";
+
+        private const ITEM = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa';
+
         public static function setUpBeforeClass(): void
         {
             require_once __DIR__ . '/fixtures/store_fixtures.php';
@@ -59,6 +71,7 @@ namespace Tests\Unit\Legacy {
         protected function setUp(): void
         {
             RecordingDb::reset();
+            LogOnce::reset();
             $GLOBALS['spareDBs'] = [new RecordingDb()];
         }
 
@@ -66,6 +79,7 @@ namespace Tests\Unit\Legacy {
         {
             $GLOBALS['spareDBs'] = [];
             RecordingDb::reset();
+            LogOnce::reset();
         }
 
         public static function validIds(): array
@@ -159,10 +173,54 @@ namespace Tests\Unit\Legacy {
             $this->assertSame([self::READER_SQL, self::FILTER_SQL], RecordingDb::$log);
         }
 
+        /** the sender may have no access to the Reader Management slice - a site using both is enough */
+        public function test_relatesToSlice_viaASiteUsingBoth(): void
+        {
+            RecordingDb::$answer = static fn(string $sql) => str_contains($sql, 'FROM `relation` AS r1') ? [['source_id' => 'x']] : [];
+
+            $this->assertTrue(AA_Collection::relatesToSlice('sQjwa', self::SLICE));
+            $this->assertSame([self::READER_SQL, self::FILTER_SQL, self::SITE_SQL], RecordingDb::$log);
+        }
+
         public function test_relatesToSlice_unrelatedCollection(): void
         {
             $this->assertFalse(AA_Collection::relatesToSlice('sQjwa', self::SLICE));
-            $this->assertSame([self::READER_SQL, self::FILTER_SQL], RecordingDb::$log);
+            $this->assertSame([self::READER_SQL, self::FILTER_SQL, self::SITE_SQL], RecordingDb::$log);
+        }
+
+        /** @return string[] the INSERTs into the log */
+        private static function logInserts(): array
+        {
+            return array_values(array_filter(RecordingDb::$log, static fn(string $sql) => str_starts_with($sql, 'INSERT INTO `log`')));
+        }
+
+        public function test_logRefusal_writesOneRowPerCollectionSliceAndUser(): void
+        {
+            $this->assertTrue(AA_Collection::logRefusal('sQjwa', self::SLICE, self::ITEM));
+            $this->assertFalse(AA_Collection::logRefusal('sQjwa', self::SLICE, self::ITEM), 'the same refusal again - no row, no query');
+            $this->assertFalse(AA_Collection::logRefusal('sQjwa', self::SLICE, 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb'), 'another item of the same slice is the same problem');
+
+            $inserts = self::logInserts();
+            $this->assertCount(1, $inserts);
+            $this->assertStringContainsString("'" . CheckAlertitemRefusals::EVENT . "'", $inserts[0]);
+            $this->assertStringContainsString("'sQjwa:" . self::SLICE . ":'", $inserts[0], 'selector: collection, slice, user (none here)');
+            $this->assertStringContainsString("'" . self::ITEM . "'", $inserts[0], 'params: the item');
+            $this->assertSame(1, RecordingDb::count('SELECT'));
+        }
+
+        public function test_logRefusal_anotherSliceIsAnotherRow(): void
+        {
+            AA_Collection::logRefusal('sQjwa', self::SLICE, self::ITEM);
+            AA_Collection::logRefusal('sQjwa', 'fedcba9876543210fedcba9876543210', self::ITEM);
+
+            $this->assertCount(2, self::logInserts());
+        }
+
+        public function test_logRefusal_malformedIdsAreNotLogged(): void
+        {
+            $this->assertFalse(AA_Collection::logRefusal("xx' #", self::SLICE, self::ITEM));
+            $this->assertFalse(AA_Collection::logRefusal('sQjwa', 'x', self::ITEM));
+            $this->assertSame([], RecordingDb::$log);
         }
 
         public static function malformedRelationIds(): array

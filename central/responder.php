@@ -648,7 +648,12 @@ class AA_Responder_Alertitem extends AA_Responder
         }
         // an editor of the slice may send its item only to the readers of the slice's own collections
         $item = AA_Items::getItem(new zids($this->item_id, 'l'));   // isPerm() found it
-        if (!$item || !AA_Collection::relatesToSlice($this->collection_id, $item->getSliceID())) {
+        if (!$item) {
+            return new AA_Response("Collection is not related to the item's slice", 9);
+        }
+        if (!AA_Collection::relatesToSlice($this->collection_id, $item->getSliceID())) {
+            // an old send button may name an unrelated collection - State Check shows it (CheckAlertitemRefusals)
+            AA_Collection::logRefusal($this->collection_id, $item->getSliceID(), $this->item_id);
             return new AA_Response("Collection is not related to the item's slice", 9);
         }
         // null = an address was given but is not valid - never read that as "none" (= a live send to all readers)
