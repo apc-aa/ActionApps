@@ -331,9 +331,12 @@ class AA_Responder_Get_Widget extends AA_Responder
     {
 
         $item         = AA_Item::getItem(new zids($this->item_id));
+        $slice_id     = $item?->getSliceID() ?? '';
+        $slice        = AA_Slice::getOwnModule($slice_id);
+        if (!$slice) {   // unknown item id gives an item with no slice
+            return new AA_Response('Item not found', ResponderPolicy::ERR_UNKNOWN_ITEM);
+        }
         $iid          = $item->getItemID();
-        $slice_id     = $item->getSliceID();
-        $slice        = AA_Slice::getModule($slice_id);
 
         // we need to fill AA::$site_id in order we can use translations for example
         $site_ids     = AA_Module::belongsToSites($slice_id);

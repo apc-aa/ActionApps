@@ -35,6 +35,9 @@ class ResponderPolicy
     public const ERR_UNKNOWN_OPTIMIZE_METHOD = 10;
     public const ERR_OPTIMIZE_TYPE_RUNNING   = 11;
 
+    /** Get_Widget: the item (or its slice) does not exist */
+    public const ERR_UNKNOWN_ITEM = 12;
+
     /** Optimize types Do_Optimize_Type runs as a chain (AA\Optimize\Chain). The State Check tags
      *  report through findings(), private_fix and opt_feature are one-off, site-chosen repairs. */
     private const OPTIMIZE_TYPES = ['sql_update'];

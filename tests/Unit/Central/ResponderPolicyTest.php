@@ -91,6 +91,12 @@ final class ResponderPolicyTest extends TestCase
         $this->assertSame(103, ResponderPolicy::ERR_UNKNOWN_COMMAND);
     }
 
+    public function test_unknown_item_code_is_not_taken_by_other_responders(): void
+    {
+        // responder.php uses 1-11 and 101-106; live editing shows "Error <code>: ..." in place of the widget
+        $this->assertSame(12, ResponderPolicy::ERR_UNKNOWN_ITEM);
+    }
+
     /** @return array<string, array{array<string, string>, bool}> */
     public static function browserRequests(): array
     {
