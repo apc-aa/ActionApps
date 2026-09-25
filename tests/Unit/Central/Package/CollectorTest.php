@@ -304,6 +304,18 @@ namespace Tests\Unit\Central\Package {
             $this->assertContains('I ' . Collector::MODULE_MISSING . ' ' . self::DELETED . ' @ site-module[' . self::SITE . ']/uses[' . self::DELETED . ']', $findings);
         }
 
+        /** the preview stores only the fingerprint of the XML; the write collects again and compares -
+         *  the rows may come in another order the second time (no ORDER BY) */
+        public function test_the_same_selection_gives_the_same_xml(): void
+        {
+            $source   = self::source();
+            $reversed = new FakeSource(array_map('array_reverse', $source->tables), array_map('array_reverse', $source->items));
+            $options  = new CollectOptions(self::SOURCE, CollectOptions::TRANSFER);
+            $xml      = static fn(FakeSource $s): string => (new Writer())->toXml((new Collector($s))->fromSite(self::SITE, $options)->package)->xml;
+
+            $this->assertSame($xml($source), $xml($reversed));
+        }
+
         public function test_the_caller_checks_the_app_modules_and_the_owners_of_foreign_groups(): void
         {
             $result = (new Collector(self::source()))->fromSite(self::SITE, new CollectOptions(self::SOURCE));

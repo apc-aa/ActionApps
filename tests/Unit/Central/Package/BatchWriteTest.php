@@ -13,6 +13,9 @@ namespace Tests\Unit\Central\Package;
 
 use AA\Central\InstallRun;
 use AA\Central\Package\BatchResult;
+use AA\Central\Package\Collector;
+use AA\Central\Package\LintFinding;
+use AA\Central\Package\ValueCodec;
 use AA\Central\Package\ImportConfirmation;
 use AA\Central\Package\ImportFailed;
 use AA\Central\Package\Importer;
@@ -182,6 +185,7 @@ final class BatchWriteTest extends TestCase
         $this->import($this->plan(), run: $run);
 
         self::assertSame([], InstallRun::get($run)->slices());
+        self::assertSame(InstallRun::DONE, InstallRun::get($run)->state(), 'nothing to wait for');
     }
 
     public function test_the_definitions_go_to_a_run_only_once(): void
@@ -235,6 +239,21 @@ final class BatchWriteTest extends TestCase
         $back = InstallRun::get($run);
         self::assertSame([InstallRun::ITEMS, [self::SLICE, self::ITEM_B], [self::SLICE => 2]], [$back->state(), $back->position(), $back->written()]);
         self::assertCount(1, array_unique(TableDb::$handles), 'one handle - the run and the items in one transaction');
+    }
+
+    public function test_the_warnings_the_source_found_are_counted_in_the_run_and_its_error_stops_the_batch(): void
+    {
+        $run    = $this->transferred();
+        $path   = 'slice-module[' . self::SLICE . ']/item[' . self::ITEM_A . ']';
+        $source = [[$path, new LintFinding(LintFinding::WARNING, ValueCodec::INVALID_BYTES, 'x', 0)]];
+
+        $this->importer($this->db)->writeBatch($run, self::batch([self::entry(self::ITEM_A, ['headline........' => 'A'])]), [self::SLICE, ''], $source);
+
+        self::assertSame([self::SLICE => [ValueCodec::INVALID_BYTES => 1]], InstallRun::get($run)->warnings());
+
+        $result = $this->importer($this->db)->writeBatch($run, self::batch([], self::ITEM_A), [self::SLICE, self::ITEM_A], [[$path, new LintFinding(LintFinding::ERROR, Collector::ITEM_TOO_BIG, self::ITEM_B, 0)]]);
+
+        self::assertSame([BatchResult::FAILED, ['ITEM_TOO_BIG', $path]], [$result->status, $result->error]);
     }
 
     public function test_the_next_batch_continues_from_the_position(): void

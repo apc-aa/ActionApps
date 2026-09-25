@@ -15,7 +15,9 @@ use RuntimeException;
  *  literal: "hex literal too big") and addslashes() escapes (\' is no SQLite escape). So this parses the
  *  statement shapes Cvarset and DB_AA::makeWhere() produce - INSERT (one row or doInsertMulti()'s several), UPDATE ... WHERE, DELETE ... WHERE
  *  with conditions joined by AND (`col = literal`, `col IN (...)`) - and SELECT ... WHERE the same way
- *  (or from $answer).
+ *  (or from $answer); `SELECT count(*) as x` (DB_AA::count()) counts the matching rows. A count over
+ *  INNER / LEFT JOINs (join()) takes ON `a`.`c` = `b`.`d` [AND ...], UNHEX(`b`.`d`) too, and WHERE
+ *  conditions of qualified columns: = 0x.., IN (0x..), LIKE '..', > '', IS NULL.
  *  Beyond the tables: information_schema.tables from $engines (table => ENGINE; a table not there does
  *  not exist).
  *
@@ -140,15 +142,70 @@ final class TableDb extends DB_PDO
             $this->rows = $rows;
             return true;
         }
+        if (str_contains($sql, ' JOIN ')) {
+            $this->rows = self::join($sql);
+            return true;
+        }
         if (preg_match('/^SELECT (.+?) FROM (?:[`"]?(\w+)[`"]?|(information_schema\.tables))(?: WHERE |\s*$)/i', $sql, $m)) {
             $table = $m[2] ?: 'information_schema';
             $where = str_ends_with($m[0], 'WHERE ') ? (new SqlScanner($sql, strlen($m[0])))->conditions() : [];
             $rows  = ($table === 'information_schema') ? self::informationSchema() : (self::$tables[$table] ?? []);
             $rows  = array_values(array_filter($rows, static fn(array $row): bool => self::matches($table, $row, $where)));
-            $this->rows = $rows;
+            $this->rows = preg_match('/^count\(\*\) as (\w+)$/i', $m[1], $count) ? [[$count[1] => count($rows)]] : $rows;
             return true;
         }
         throw new RuntimeException("TableDb: unknown statement $sql");
+    }
+
+    /** `SELECT COUNT(*) AS x FROM t JOIN ... WHERE ...` over the tables: rows are alias => row while joining
+     *  @return list<array<string, int>> */
+    private static function join(string $sql): array
+    {
+        if (!preg_match('/^SELECT COUNT\(\*\) AS (\w+) FROM `(\w+)`(.*?) WHERE (.*?)(?:\s+LIMIT\s+\d+)?\s*$/is', $sql, $m)) {
+            throw new RuntimeException("TableDb: unknown join $sql");
+        }
+        $rows = array_map(static fn(array $row): array => [$m[2] => $row], self::$tables[$m[2]] ?? []);
+        preg_match_all('/ (INNER|LEFT) JOIN `(\w+)`(?: AS `(\w+)`)? ON (.*?)(?= (?:INNER|LEFT) JOIN |$)/s', $m[3], $joins, PREG_SET_ORDER);
+        foreach ($joins as [, $kind, $table, $alias, $on]) {
+            $alias = $alias ?: $table;
+            $conds = array_map(static fn(string $c): array => preg_match('/^`(\w+)`\.`(\w+)` = (UNHEX\()?`(\w+)`\.`(\w+)`\)?$/', trim($c), $p) ? $p : throw new RuntimeException("TableDb: ON $c"), explode(' AND ', $on));
+            $joined = [];
+            foreach ($rows as $row) {
+                $found = false;
+                foreach (self::$tables[$table] ?? [] as $other) {
+                    $ok = true;
+                    foreach ($conds as [, $a, $ac, $unhex, $b, $bc]) {
+                        [$mine, $theirs] = ($a === $alias) ? [$other[$ac] ?? null, $row[$b][$bc] ?? null] : [$row[$a][$ac] ?? null, $other[$bc] ?? null];
+                        $theirs = $unhex ? (preg_match('/^[0-9a-f]{32}$/i', (string) $theirs) ? strtolower((string) $theirs) : null) : $theirs;
+                        $ok     = $ok && ($theirs !== null) && ((string) $mine === (string) $theirs);
+                    }
+                    if ($ok) {
+                        $joined[] = $row + [$alias => $other];
+                        $found    = true;
+                    }
+                }
+                if (!$found && ($kind === 'LEFT')) {
+                    $joined[] = $row + [$alias => null];
+                }
+            }
+            $rows = $joined;
+        }
+        foreach (explode(' AND ', $m[4]) as $cond) {
+            if (!preg_match("/^(\w+)\.(\w+) (=|IN|LIKE|>|IS NULL)\s*(.*)$/s", trim($cond), $c)) {
+                throw new RuntimeException("TableDb: WHERE $cond");
+            }
+            [, $alias, $column, $op, $arg] = $c;
+            $rows = array_filter($rows, static function (array $row) use ($alias, $column, $op, $arg): bool {
+                $value = ($row[$alias] ?? null) === null ? null : ($row[$alias][$column] ?? null);
+                return match ($op) {
+                    'IS NULL' => $value === null,
+                    '>'       => trim((string) $value) !== '',
+                    'LIKE'    => (bool) preg_match('/^' . str_replace(['%', '_'], ['.*', '.'], preg_quote(trim($arg, "'"), '/')) . '$/is', (string) $value),
+                    default   => in_array(strtolower((string) $value), array_map(static fn(string $h): string => strtolower(substr(trim($h), 2)), explode(',', trim($arg, '()'))), true),
+                };
+            });
+        }
+        return [[$m[1] => count($rows)]];
     }
 
     /** @return list<array<string, string>> rows of information_schema.tables, both spellings of the columns */

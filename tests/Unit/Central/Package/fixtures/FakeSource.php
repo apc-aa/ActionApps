@@ -78,6 +78,13 @@ final class FakeSource implements Source
         return array_slice($ids, 0, $limit);
     }
 
+    public function itemCount(string $slice_id, bool $all_bins, int $edited_after = 0): int
+    {
+        $this->log[] = ['itemCount', [$slice_id, $all_bins, $edited_after]];
+        return count(array_filter($this->items[$slice_id] ?? [], static fn(array $item): bool => self::inBins($item, $all_bins)
+            && (($edited_after === 0) || ((int) ($item['last_edit'] ?? 0) > $edited_after))));
+    }
+
     /** @var list<string> items itemIds() still lists, items() no more (deleted meanwhile) */
     public array $vanished = [];
 

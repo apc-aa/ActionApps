@@ -59,6 +59,12 @@ final class DbSource implements Source
         return DB_AA::select('unpackid', "SELECT LOWER(HEX($id)) AS unpackid FROM " . DB_AA::quoteIdentifier('item') . " $where ORDER BY $id LIMIT " . max(0, $limit));
     }
 
+    public function itemCount(string $slice_id, bool $all_bins, int $edited_after = 0): int
+    {
+        $where = [['slice_id', $slice_id, 'l'], ...($all_bins ? [] : [['status_code', 1, 'i']]), ...($edited_after ? [['last_edit', $edited_after, '>']] : [])];
+        return DB_AA::count('item', $where);
+    }
+
     /** @return Generator<int, array{id: string, content: array<string, list<array<string, mixed>>>}> */
     public function items(array $ids, bool $with_secrets): Generator
     {

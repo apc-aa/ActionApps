@@ -18,6 +18,7 @@ use RuntimeException;
  *  written definitions and how far the item batches got. An AA_Object owned by AA_ID.
  *
  *  preview -> items (definitions written) -> items (batch) ... -> done
+ *  preview -> done (definitions written, no items follow: an install, a transfer of no slice)
  *                                   items <-> error (Continue);  items | error -> ended (End)
  *
  *  Every property is text, so the whole record is rows of object_text: one locking read of them
@@ -41,6 +42,9 @@ final class InstallRun extends AA_Object
     /** a preview nobody confirmed is forgotten after a day */
     private const PREVIEW_LIFETIME = 86400;
 
+    /** the states a run can still go on from */
+    public const UNFINISHED = [self::ITEMS, self::ERROR];
+
     protected $state = '';
     protected $mode = '';
     /** '1' = items of all bins, '' = active only */
@@ -48,8 +52,10 @@ final class InstallRun extends AA_Object
     protected $source = '';
     protected $user = '';
     protected $started = '';
+    /** unixtime the run last moved on (definitions, a batch, Continue) - State Check finds stuck runs */
+    protected $moved = '';
     protected $id_map = '';
-    /** sha256 of the definitions package */
+    /** sha256 of the definitions package - of the preview's until they are written */
     protected $fingerprint = '';
     /** JSON list of the source slice ids, in the order the batches go */
     protected $slices = '';
@@ -64,6 +70,8 @@ final class InstallRun extends AA_Object
     protected $error_path = '';
     /** the source's login token, encrypted */
     protected $token = '';
+    /** JSON of the check when the transfer finished (TransferCheck), for the report */
+    protected $report = '';
 
     /** read by lockForUpdate() - only such an instance may change the run */
     private bool $locked = false;
@@ -71,17 +79,18 @@ final class InstallRun extends AA_Object
     public static function getClassProperties(): array
     {
         $props = [];
-        foreach (['state', 'mode', 'all_bins', 'source', 'user', 'started', 'fingerprint', 'slice', 'cursor', 'error_code', 'error_path', 'token'] as $id) {
+        foreach (['state', 'mode', 'all_bins', 'source', 'user', 'started', 'moved', 'fingerprint', 'slice', 'cursor', 'error_code', 'error_path', 'token'] as $id) {
             $props[$id] = new AA_Property($id, $id, 'string', false, true, 'string');
         }
-        foreach (['id_map', 'slices', 'written', 'warnings'] as $id) {
+        foreach (['id_map', 'slices', 'written', 'warnings', 'report'] as $id) {
             $props[$id] = new AA_Property($id, $id, 'text', false, true, 'text');
         }
         return $props;
     }
 
-    /** a new run in the preview state; forgotten previews go away on the way */
-    public static function preview(string $mode, bool $allBins, string $source, string $user, string $token, int $now): self
+    /** a new run in the preview state; forgotten previews go away on the way
+     *  @param string $fingerprint sha256 of the definitions package the preview showed - the write compares it */
+    public static function preview(string $mode, bool $allBins, string $source, string $user, string $token, int $now, string $fingerprint = ''): self
     {
         if (!in_array($mode, [self::INSTALL, self::TRANSFER], true)) {
             throw new InvalidArgumentException("Unknown mode $mode");
@@ -92,13 +101,14 @@ final class InstallRun extends AA_Object
         self::deleteOldPreviews($now);
         $run = new self();
         $run->setOwnerId((string) constant('AA_ID'));
-        $run->state    = self::PREVIEW;
-        $run->mode     = $mode;
-        $run->all_bins = $allBins ? '1' : '';
-        $run->source   = $source;
-        $run->user     = $user;
-        $run->started  = (string) $now;
-        $run->token    = ($token === '') ? '' : Crypt::encryptAesGcm($token, Secret::key('install-run'));
+        $run->state       = self::PREVIEW;
+        $run->mode        = $mode;
+        $run->all_bins    = $allBins ? '1' : '';
+        $run->source      = $source;
+        $run->user        = $user;
+        $run->started     = (string) $now;
+        $run->fingerprint = $fingerprint;
+        $run->token       = ($token === '') ? '' : Crypt::encryptAesGcm($token, Secret::key('install-run'));
         $run->save();
         return $run;
     }
@@ -107,6 +117,15 @@ final class InstallRun extends AA_Object
     public static function get(string $id): ?self
     {
         return self::read($id, false);
+    }
+
+    /** the runs that can still go on (items, error), read-only
+     *  @return list<self> */
+    public static function unfinished(): array
+    {
+        $ids  = DB_AA::select('object_id', 'SELECT object_id FROM `object_text`', [['property', 'state'], ['value', self::UNFINISHED]]);
+        $runs = array_map(self::get(...), array_values(array_unique(array_map('strval', $ids))));
+        return array_values(array_filter($runs));      // another class may have such a state too
     }
 
     /** get() with SELECT ... FOR UPDATE on the record's rows: call it inside the caller's
@@ -140,7 +159,8 @@ final class InstallRun extends AA_Object
         }
     }
 
-    /** Call it inside the definitions transaction: the run reaches the items only with its definitions.
+    /** Call it inside the definitions transaction: the run reaches the items only with its definitions -
+     *  or is done at once when none follow (it has no position a batch could wait for).
      *  @param string   $definitions the definitions package as downloaded (its fingerprint is kept)
      *  @param string[] $slices      source slice ids in the order their items are transferred */
     public function definitionsWritten(IdMap $map, string $definitions, array $slices): void
@@ -151,7 +171,10 @@ final class InstallRun extends AA_Object
                 throw new InvalidArgumentException('A slice id is 32 lower-case hex');
             }
         }
-        $this->move([self::PREVIEW], self::ITEMS);
+        $this->move([self::PREVIEW], $slices ? self::ITEMS : self::DONE);
+        if (!$slices) {
+            $this->token = '';
+        }
         $this->id_map      = $map->toJson();
         $this->fingerprint = hash('sha256', $definitions);
         $this->slices      = json_encode($slices, JSON_THROW_ON_ERROR);
@@ -159,7 +182,8 @@ final class InstallRun extends AA_Object
         $this->cursor      = '';
         $this->written     = json_encode((object) array_fill_keys($slices, 0), JSON_THROW_ON_ERROR);
         $this->warnings    = '{}';
-        $this->update(['state', 'id_map', 'fingerprint', 'slices', 'slice', 'cursor', 'written', 'warnings']);
+        $this->moved       = (string) time();
+        $this->update(['state', 'moved', 'id_map', 'fingerprint', 'slices', 'slice', 'cursor', 'written', 'warnings', 'token']);
     }
 
     /** The batch read from $expected may be written: the run is in items and still at that position.
@@ -196,7 +220,8 @@ final class InstallRun extends AA_Object
         [$this->slice, $this->cursor] = $new;
         $this->written   = json_encode($counts, JSON_THROW_ON_ERROR);
         $this->warnings  = json_encode((object) $all, JSON_THROW_ON_ERROR);
-        $this->update(['slice', 'cursor', 'written', 'warnings']);
+        $this->moved     = (string) time();
+        $this->update(['slice', 'cursor', 'written', 'warnings', 'moved']);
     }
 
     /** a batch failed: $code a finding / error code, $path where - never the raw DB message, which
@@ -216,14 +241,17 @@ final class InstallRun extends AA_Object
     public function resume(): void
     {
         $this->move([self::ERROR], self::ITEMS);
-        $this->update(['state']);
+        $this->moved = (string) time();
+        $this->update(['state', 'moved']);
     }
 
-    public function finish(): void
+    /** @param array<string, mixed> $report the check of the finished transfer (TransferCheck), plain data */
+    public function finish(array $report = []): void
     {
         $this->move([self::ITEMS], self::DONE);
-        $this->token = '';
-        $this->update(['state', 'token']);
+        $this->token  = '';
+        $this->report = $report ? json_encode($report, JSON_THROW_ON_ERROR | JSON_INVALID_UTF8_SUBSTITUTE) : '';
+        $this->update(['state', 'token', 'report']);
     }
 
     /** End: what is written stays, the rest is not transferred */
@@ -277,6 +305,12 @@ final class InstallRun extends AA_Object
         return (int) $this->started;
     }
 
+    /** unixtime of the last move on; the start before the definitions */
+    public function moved(): int
+    {
+        return (int) ($this->moved ?: $this->started);
+    }
+
     public function idMap(): IdMap
     {
         return IdMap::fromJson($this->id_map);
@@ -309,6 +343,12 @@ final class InstallRun extends AA_Object
     public function warnings(): array
     {
         return ($this->warnings === '') ? [] : json_decode($this->warnings, true, 3, JSON_THROW_ON_ERROR);
+    }
+
+    /** @return array<string, mixed> finish()'s report; [] = none */
+    public function report(): array
+    {
+        return ($this->report === '') ? [] : json_decode($this->report, true, 16, JSON_THROW_ON_ERROR);
     }
 
     /** @return array{string, string}|null [code, path] of the last error */

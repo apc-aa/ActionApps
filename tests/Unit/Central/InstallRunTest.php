@@ -163,6 +163,44 @@ namespace Tests\Unit\Central {
             $this->assertSame([self::SLICE1 => 0, self::SLICE2 => 0], $back->written());
         }
 
+        public function test_the_preview_keeps_the_fingerprint_it_showed(): void
+        {
+            $run = InstallRun::preview(InstallRun::INSTALL, false, InstallRun::LOCAL, self::USER, '', self::NOW, hash('sha256', self::DEFINITIONS));
+
+            $this->assertSame(hash('sha256', self::DEFINITIONS), InstallRun::get($run->getId())->fingerprint());
+        }
+
+        public function test_definitions_with_no_items_to_follow_finish_the_run_and_clear_the_token(): void
+        {
+            $id = self::preview()->getId();
+
+            self::locked($id, static fn(InstallRun $run) => $run->definitionsWritten(self::map(), self::DEFINITIONS, []));
+
+            $this->assertSame(InstallRun::DONE, InstallRun::get($id)->state());
+            $this->assertSame('', InstallRun::get($id)->token());
+        }
+
+        public function test_the_finish_keeps_its_report(): void
+        {
+            $id = self::runIn(InstallRun::ITEMS);
+
+            self::locked($id, static fn(InstallRun $run) => $run->finish(['checked' => 5, 'findings' => [['level' => 'W', 'code' => 'x', 'path' => 'p', 'ref' => '<b>']]]));
+
+            $this->assertSame(['checked' => 5, 'findings' => [['level' => 'W', 'code' => 'x', 'path' => 'p', 'ref' => '<b>']]], InstallRun::get($id)->report());
+        }
+
+        public function test_moved_is_the_start_until_the_run_moves_on(): void
+        {
+            $id = self::preview()->getId();
+            $this->assertSame(self::NOW, InstallRun::get($id)->moved());
+
+            $before = time();
+            self::locked($id, static fn(InstallRun $run) => $run->definitionsWritten(self::map(), self::DEFINITIONS, [self::SLICE1]));
+
+            $this->assertGreaterThanOrEqual($before, InstallRun::get($id)->moved());
+            $this->assertSame([$id], array_map(static fn(InstallRun $run): string => $run->getId(), InstallRun::unfinished()));
+        }
+
         // ---------------------------------------------------------------- transitions
 
         /** @return array<string, array{string, string, ?string}> state, action, the state after it (null = LogicException) */

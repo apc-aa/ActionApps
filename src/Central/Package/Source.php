@@ -21,6 +21,10 @@ interface Source
      *  @return list<string> */
     public function itemIds(string $slice_id, bool $all_bins, string $after, int $limit): array;
 
+    /** How many items of the slice there are, in the bins as itemIds() - the check after a transfer.
+     *  @param int $edited_after only those with last_edit after this unixtime; 0 = all */
+    public function itemCount(string $slice_id, bool $all_bins, int $edited_after = 0): int;
+
     /** The items in the GetItemContent() form, reading password ignored - the caller has checked the
      *  exporter's permissions (Collector). Any order.
      *  @param list<string> $ids unpacked

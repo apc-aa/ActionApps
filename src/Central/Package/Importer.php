@@ -79,8 +79,8 @@ final class Importer
         return ($user !== '') && ($user === \AuthGetUid()) && \CheckPerms($user, 'aa', constant('AA_ID'), \PS_INSTALL_APP);
     }
 
-    /** The definitions of $run - the run moves to its items in the same transaction, so it never has
-     *  items without definitions, nor definitions written twice. A transfer brings the state of the source
+    /** The definitions of $run - the run moves to its items (or is done, when none follow) in the same
+     *  transaction, so it never has items without definitions, nor definitions written twice. A transfer brings the state of the source
      *  installation (owner, reading password, domains), an install never has it (the Validator's E).
      *  The caller checks the admin FormToken first (CSRF) - neither the right nor the confirmation token
      *  protects against a forged request of the user's browser.
@@ -152,10 +152,12 @@ final class Importer
      *  the run is at $expected - the position the batch was read from. A failure rolls the batch back and
      *  puts the run in error at its position (a transaction of its own): Continue sends the batch again.
      *  The caller checks the admin FormToken first (CSRF).
-     *  @param array{string, string} $expected [source slice, cursor]
+     *  @param array{string, string}           $expected [source slice, cursor]
+     *  @param list<array{string, LintFinding}> $source   what the source found making the batch (Collector, Writer,
+     *                                                   Reader): its W are counted in the run, an E stops the batch
      *  @throws ImportFailed the user may not install - the run stays as it is
      *  @throws LogicException inside DB_AA::transaction() */
-    public function writeBatch(string $run, Package $batch, array $expected): BatchResult
+    public function writeBatch(string $run, Package $batch, array $expected, array $source = []): BatchResult
     {
         if (DB_AA::inTransaction()) {
             throw new LogicException('Importer::writeBatch() inside DB_AA::transaction() - a batch needs a transaction of its own');
@@ -165,6 +167,9 @@ final class Importer
             throw new ImportFailed(new WriteError(WriteError::DENIED, 'batch', 'the install run is another user\'s'));
         }
         $findings = new FindingList();
+        foreach ($source as [$path, $finding]) {
+            $findings->add($path, $finding);
+        }
         try {
             return DB_AA::transaction(fn(): BatchResult => $this->batch($run, $batch, $expected, $findings));
         } catch (Throwable $e) {
