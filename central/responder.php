@@ -24,10 +24,14 @@ https://www.apc.org/
 use AA\Central\ResponderPolicy;
 use AA\IO\DB\DB_AA;
 use AA\Util\Langs;
+use AA\Util\LoginToken;
 
 if (!empty($_REQUEST['free'])) {   // can't be just POST - we use it in live Tags, which sends GET request
     $nobody = true;
 }
+
+// the only page that accepts Authorization: Bearer (AA_Auth::auth_preauth())
+define('AA_TOKEN_ENTRY', true);
 
 require_once __DIR__ . "/include/init_central.php";
 
@@ -72,27 +76,19 @@ class AA_Responder_Get_Sessionid extends AA_Responder
     }
 }
 
-/** Issue a JWT token for authenticated superadmin
- *  Used by Central to obtain long-lived auth token
+/** A long-lived login token (AA\Util\LoginToken) of a superadmin for Central, which stores it instead of the password
  *  @return JWT string
  */
 class AA_Responder_Get_Jwt extends AA_Responder
 {
     public function __construct() {}
 
-    /** Only superadmins can get JWT tokens */
-    // isPerm() inherited — returns IsSuperadmin()
-
     public function run(): AA_Response
     {
-        $token = [
-            'sub'  => AuthGetUid(),
-            'name' => AuthGetUname(),
-            'iat'  => time(),
-            'exp'  => time() + 30 * 24 * 3600,  // 30 days
-        ];
-        $jwt = \Firebase\JWT\JWT::encode($token, AA_ID, 'HS256');
-        return new AA_Response($jwt);
+        LoginToken::forgetSession();   // Central never uses the session of this login
+        // only for the password sent with this very request - a stolen cookie or token must not renew itself
+        $jwt = (AA_Auth::login() === 'password') ? LoginToken::issue(AuthGetUid()) : '';
+        return ($jwt === '') ? new AA_Response(_m('A token needs a login by the password of a user in the AA users table (not LDAP, not a reader)'), ResponderPolicy::ERR_TOKEN_NEEDS_PASSWORD) : new AA_Response($jwt);
     }
 }
 
@@ -706,6 +702,13 @@ class AA_Responder_Item_History_Diff extends AA_Responder
 }
 
 pageOpen('nobody');
+if (in_array(AA_Auth::login(), ['token', 'bad-token'], true)) {
+    LoginToken::forgetSession();   // a token login lives for this request only
+    if (AA_Auth::login() === 'bad-token') {
+        AA_Response::error(_m('Login token refused - authenticate this AA again in Central'), ResponderPolicy::ERR_TOKEN_REFUSED);
+        exit;
+    }
+}
 
 // in order {xuser:id} alias works in widgets, for example
 $GLOBALS['apc_state']['xuser'] = AuthGetUname();

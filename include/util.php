@@ -1638,12 +1638,12 @@ class AA_Credentials
     /** we are sending collected slice passwords to {ajax...} */
     public function getAsToken(): string
     {
-        return AA_Stringexpand_Encrypt::get_time_token(['spwd' => array_keys($this->_pwd)]);
+        return AA_Stringexpand_Encrypt::get_time_token(['spwd' => array_keys($this->_pwd)], 'slice-pwd');
     }
 
     public function importFromToken(string $timetoken): void
     {
-        $arr = AA_Stringexpand_Encrypt::decrypt_time_token($timetoken);
+        $arr = AA_Stringexpand_Encrypt::decrypt_time_token($timetoken, 'slice-pwd');
         if (is_array($arr) && is_array($arr['spwd'])) {
             foreach ($arr['spwd'] as $crypted_slice_pwd) {
                 $this->register($crypted_slice_pwd);

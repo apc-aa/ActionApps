@@ -157,7 +157,7 @@ class Actionapps
         if (!$response->isError()) {
             return (string) $response->getResponse();
         }
-        $this->last_error = $response->getError();
+        $this->last_error = self::responseText($response);
         return '';
     }
 

@@ -18,7 +18,7 @@ use LogicException;
  *    FixUps applied - the same bytes read again give the same model; the new ids are NOT in: the UI may
  *    plan again for the write, the ids then differ);
  *  - the S findings: level, code, path, ref and offset of each, sorted (a `+N more` row counts too).
- *  AA_ID alone is no secret (templates print it - {aa_id}, _#AA_ID___ -, config.php.default ships one);
+ *  AA_ID alone is no secret (config.php.default ships one, Centrals store it);
  *  the session id is: a token is good in the session of the preview only. No session (CLI) and no
  *  explicit secret: token() throws - a package with S findings is not installed there.
  *  A plan without S findings needs none: token() null, confirms() true for any token.

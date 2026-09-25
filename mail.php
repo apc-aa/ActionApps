@@ -33,7 +33,7 @@ if (!$_POST['aa_mailconf']) {
     exit;
 }
 
-$config_arr = AA_Stringexpand_Encrypt::decrypt_time_token($_POST['aa_mailconf'], 24);
+$config_arr = AA_Stringexpand_Encrypt::decrypt_time_token($_POST['aa_mailconf'], 'mail-form', 24);
 if (!$config_arr) {
     echo '<!-- wrong token (old?) -->';
     exit;

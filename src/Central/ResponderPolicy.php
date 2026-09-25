@@ -38,6 +38,12 @@ class ResponderPolicy
     /** Get_Widget: the item (or its slice) does not exist */
     public const ERR_UNKNOWN_ITEM = 12;
 
+    /** Get_Jwt: no username and password of an AA user in the request */
+    public const ERR_TOKEN_NEEDS_PASSWORD = 13;
+
+    /** a Bearer token was sent and refused - Central has to authenticate again */
+    public const ERR_TOKEN_REFUSED = 14;
+
     /** Optimize types Do_Optimize_Type runs as a chain (AA\Optimize\Chain). The State Check tags
      *  report through findings(), private_fix and opt_feature are one-off, site-chosen repairs. */
     private const OPTIMIZE_TYPES = ['sql_update'];

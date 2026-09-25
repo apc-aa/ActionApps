@@ -42,6 +42,7 @@ use AA\Util\ChangesMonitor;
 use AA\Util\Langs;
 use AA\Util\LogarithmIndex;
 use AA\Util\NamedInterface;
+use AA\Util\Secret;
 use AA\Util\Txt;
 use BaconQrCode\Common\ErrorCorrectionLevel;
 use BaconQrCode\Renderer\GDLibRenderer;
@@ -9240,22 +9241,23 @@ class AA_Stringexpand_Encrypt extends AA_Stringexpand {
 
     /**
      * @param $data
+     * @param string $purpose Secret::key() label - 'mail-form', 'slice-pwd'
      * @return string
      */
-    static function get_time_token($data): string {
-        /** @todo use other constant form config.php - like AA_ENCRYPT_CREDENTIALS if defined instead of AA_ID */
-        return AA\Util\Crypt::encryptAesGcm(serialize($data), 'aa-sul'.AA_ID.date('j.n.y H'));
+    static function get_time_token($data, string $purpose): string {
+        return AA\Util\Crypt::encryptAesGcm(serialize($data), Secret::key($purpose).date('j.n.y H'));
     }
 
     /** Try to decode sent token - not older than $hours
      *  $hours must count with cache - the tokens on the form could be in the cache
      * @param string $token
+     * @param string $purpose the label get_time_token() got
      * @param int    $hours
      * @throws Exception
      */
-    static function decrypt_time_token(string $token, int $hours=24): mixed {
+    static function decrypt_time_token(string $token, string $purpose, int $hours=24): mixed {
         for ($i=0; $i<$hours; ++$i) {
-            if (strlen($serialized = AA\Util\Crypt::decryptAesGcm($token, 'aa-sul'.AA_ID.date('j.n.y H',strtotime("-$i hour"))))) {
+            if (strlen($serialized = AA\Util\Crypt::decryptAesGcm($token, Secret::key($purpose).date('j.n.y H',strtotime("-$i hour"))))) {
                 return unserialize($serialized, ['allowed_classes' => false]);
             }
         }
@@ -9400,7 +9402,7 @@ class AA_Stringexpand_Jwtdecode extends AA_Stringexpand {
                         return '';
                     }
                     return $uid;
-                } catch ( Exception $e ) {
+                } catch (Throwable) {   // a malformed token throws TypeError, too
                 }
             }
             // wrong Auth header
@@ -9775,9 +9777,8 @@ class AA_Password_Manager_Reader {
         }
         $user_info = AA_Reader::getReaderItemContent($user_id);
 
-        // generate MD5 hash
-        $email     = $user_info->getValue(FIELDID_EMAIL);
-        $pwdkey    = md5($user_id.$email.AA_ID.round(now()/60));
+        $email     = (string) $user_info->getValue(FIELDID_EMAIL);
+        $pwdkey    = self::resetKey($user_id, $email, (int) round(now()/60));
         $pwd_param = "aapwd2=$pwdkey-$user_id";
 
         // send it via email
@@ -9872,15 +9873,22 @@ class AA_Password_Manager_Reader {
         if (($user_info = AA_Reader::getReaderItemContent($user_id))->isEmpty()) {
             return false;
         }
-        // Check the key
-        $email    = $user_info->getValue(FIELDID_EMAIL);
-        $key_base = $user_id.$email.AA_ID;
+        return self::keyMatches((string) $key, $user_id, (string) $user_info->getValue(FIELDID_EMAIL), (int) round(now()/60));
+    }
+
+    /** the key was issued for this user and e-mail in one of the last KEY_TIMEOUT minutes */
+    public static function keyMatches(string $key, string $user_id, string $email, int $minute): bool {
         for ($i=0; $i< self::KEY_TIMEOUT; $i++) {
-            if (hash('md5', $key_base.round(round(now()/60)-$i)) == $key) {
+            if (hash_equals(self::resetKey($user_id, $email, $minute - $i), $key)) {
                 return true;
             }
         }
         return false;
+    }
+
+    /** the key of the password reset link, valid in the minute it names */
+    private static function resetKey(string $user_id, string $email, int $minute): string {
+        return hash_hmac('sha256', "$user_id\0$email\0$minute", Secret::key('reader-reset'));
     }
 
     private static function bad($text) : string {
@@ -10268,7 +10276,7 @@ class AA_Stringexpand_Mailform extends AA_Stringexpand_Nevercache {
             'from' => $from,
         ];
         $form_id  = 'form'.new_id();
-        $mailconf = AA_Stringexpand_Encrypt::get_time_token($config_arr);
+        $mailconf = AA_Stringexpand_Encrypt::get_time_token($config_arr, 'mail-form');
 
         $ret = "<form id=\"$form_id\" onsubmit=\"AA_AjaxSendForm('$form_id', '".AA_INSTAL_PATH."/mail.php'); return false;\">
         <input type=hidden name=aa_mailconf value=\"$mailconf\">".

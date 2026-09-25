@@ -443,7 +443,15 @@ final class CentralActionappsTest extends TestCase
         $aa = $this->localAa(null);
 
         $this->assertSame('', self::collectingWarnings(static fn() => $aa->requestJwt('central', 'secret')));
-        $this->assertSame(3, $aa->getLastError());
+        $this->assertStringStartsWith('3 ', $aa->getLastError());
+    }
+
+    public function test_requestJwt_failure_keeps_the_text_of_the_remote(): void
+    {
+        $aa = $this->localAa(new AA_Response('Needs a login by password', 13));
+
+        $this->assertSame('', $aa->requestJwt('central', 'secret'));
+        $this->assertSame('13 Needs a login by password', $aa->getLastError());
     }
 
     public function test_requestJwt_non_string_answer_is_cast(): void
