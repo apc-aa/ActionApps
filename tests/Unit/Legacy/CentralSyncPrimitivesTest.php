@@ -530,8 +530,8 @@ final class CentralSyncPrimitivesTest extends TestCase
         $this->assertSame(['view' => [12 => ['id' => 12, 'slice_id' => self::MOD, 'name' => 'List']]], self::prop(self::prop($copy, 'module_definition_chunk'), 'data'));
     }
 
-    /** Rows waiting in toexecute, as today's code queues them (captured literally): the AA with
-     *  a password login, the action / chunk to send */
+    /** Rows an older AA left waiting in toexecute (captured literally): the AA with a password login
+     *  and the remote session fields Actionapps no longer has, the action / chunk to send */
     private const QUEUED_TASK_SYNC = "O:12:\"AA_Task_Sync\":2:{s:11:\"sync_action\";s:314:\"O:14:\"AA_Sync_Action\":3:{s:20:\"\0AA_Sync_Action\0type"
         . "\";s:10:\"UPDATE_ROW\";s:26:\"\0AA_Sync_Action\0identifier\";O:13:\"AA_Identifier\":1:{s:19:\"\0AA_Identifier\0p"
         . "ath\";a:3:{i:0;s:32:\"0123456789abcdef0123456789abcdef\";i:1;s:5:\"field\";i:2;s:16:\"headline........\";}}"
@@ -565,6 +565,8 @@ final class CentralSyncPrimitivesTest extends TestCase
         $this->assertSame('Remote (https://r.example.org/aa/)', $task->actionapps->getName());
         // pinned: the login is stored in the queue
         $this->assertSame('secret', $task->actionapps->getAccessPassword());
+        $this->assertFalse(property_exists($task->actionapps, '_remote_session_id'), 'the old session fields are dropped');
+        $this->assertNull($task->actionapps->getLastError());
 
         $fake             = self::recordingAa();
         $task->actionapps = $fake;

@@ -573,6 +573,16 @@ class AA_Perm {
         return false;
     }
 
+    /** What changes when the user's password changes, from the backend the id belongs to
+     *  @return ?string null for an id no backend knows as a user, or whose backend cannot tell */
+    public function credentialStamp($uid): ?string
+    {
+        if ($uid && ($ps = $this->_whichUsersystem($uid))) {
+            return $ps->credentialStamp((string) $uid);
+        }
+        return null;
+    }
+
     /** Grabs User name from LDAP/SQL/AA
      *  @param $user_id (uid=peterf,ou=People,ou=AA for LDAP, 24 for SQL, c7626ea.. for AA Reader )
      *  @return string name of the user ('Peter Fiala' in our example)
@@ -943,6 +953,10 @@ abstract class AA_Permsystem {
 
     function findGroups($pattern): array { return []; }
 
+    /** What changes when the user's password changes - a long-lived login (AA\Util\LoginToken) dies with it.
+     *  @return ?string null: not a user of this backend, or the backend cannot tell */
+    public function credentialStamp(string $uid): ?string { return null; }
+
     /** getGroup function
      * @param $group_id
      * @return false|array [uid, name, description] or false if not found
@@ -1047,6 +1061,17 @@ class AA_Permsystem_Reader extends AA_Permsystem {
             return $user_id;
         }
         return false;       
+    }
+
+    /** The stored password hash of the reader - only of one authenticateUsername() would find by the
+     *  username, so a reader moved out of the active bin or of the allowed slices has none */
+    public function credentialStamp(string $uid): ?string
+    {
+        $user_info = AA_Reader::getReaderItemContent($uid);
+        if ($user_info->isEmpty() || (AA_Reader::name2Id($user_info->getValue(FIELDID_USERNAME), $this->rm_slices) !== $uid)) {
+            return null;
+        }
+        return ((string) $user_info->getValue(FIELDID_PASSWORD)) ?: null;
     }
 
     /** Do not call this function!!!

@@ -77,6 +77,9 @@ if (!empty($_POST['copy'])) {
     $module_defs = [];
     foreach ($requested as $type => $ids) {
         $defs = $ids ? $aas[$_POST['template_aa']]->requestDefinitions($type, $ids, ($type === 'Slice') ? $limit : []) : [];
+        if ($ids && ($e = $aas[$_POST['template_aa']]->lastErrorHtml())) {
+            $err[] = $e;
+        }
         foreach ($ids as $mid) {
             // the template AA may not send a definition for every selected module; one of another module id
             // would escape $changed_ids below - its chunks would name that module (maybe a slice of this AA)
@@ -128,20 +131,24 @@ if (!empty($_POST['copy'])) {
     $sync_items = false;
 }
 
+// Template slice (and site) - grab from remote AA
+$template_slices = $aas[$_POST['template_aa']]->requestModules(['S']);
+$template_sites  = $aas[$_POST['template_aa']]->requestModules(['W']);
+$template_alerts = $aas[$_POST['template_aa']]->requestModules(['Alerts']);
+// an AA without a valid token answers nothing - say why instead of an empty list
+if ($e = $aas[$_POST['template_aa']]->lastErrorHtml()) {
+    $err[] = $e;
+}
+
 $apage = new AA_Adminpageutil('central', 'copyslice');
 $apage->setTitle(_m("Central - Copy Slice (2/2) - Slices to Copy"));
-$apage->printHead($err, $Msg);
+$apage->printHead(array_unique($err), $Msg);
 
 // ActionApps to synchronize
 $aas_array = ['thisAA' => _m('* this ActionApps')];
 foreach ($aas as $k => $aa) {
     $aas_array[$k] = $aa->getName();
 }
-
-// Template slice (and site) - grab from remote AA
-$template_slices = $aas[$_POST['template_aa']]->requestModules(['S']);
-$template_sites  = $aas[$_POST['template_aa']]->requestModules(['W']);
-$template_alerts = $aas[$_POST['template_aa']]->requestModules(['Alerts']);
 
 
 //huhl($aas[$_POST['template_aa']], $template_slices, $template_sites, $template_alerts);

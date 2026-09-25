@@ -23,6 +23,7 @@ https://www.apc.org/
 // anonymous authentication - locauth calls extauthnobody
 use AA\Central\ResponderPolicy;
 use AA\IO\DB\DB_AA;
+use AA\Optimize\CheckSessionidUse;
 use AA\Util\Langs;
 use AA\Util\LoginToken;
 
@@ -56,7 +57,8 @@ class AA_Responder extends AA_Object
     }
 }
 
-/** Used for autentication
+/** The session of this login - only AA_ClientAuth (the reader login of external sites) still uses it;
+ *  State Check lists the callers (CheckSessionidUse)
  *  @return Session ID
  */
 class AA_Responder_Get_Sessionid extends AA_Responder
@@ -72,6 +74,7 @@ class AA_Responder_Get_Sessionid extends AA_Responder
     public function run(): AA_Response
     {
         global $sess, $auth;
+        CheckSessionidUse::record($_SERVER, $_REQUEST, AuthGetUid(), AA_Auth::login());
         return new AA_Response([$sess->id(), $auth]);
     }
 }
@@ -86,9 +89,10 @@ class AA_Responder_Get_Jwt extends AA_Responder
     public function run(): AA_Response
     {
         LoginToken::forgetSession();   // Central never uses the session of this login
-        // only for the password sent with this very request - a stolen cookie or token must not renew itself
-        $jwt = (AA_Auth::login() === 'password') ? LoginToken::issue(AuthGetUid()) : '';
-        return ($jwt === '') ? new AA_Response(_m('A token needs a login by the password of a user in the AA users table (not LDAP, not a reader)'), ResponderPolicy::ERR_TOKEN_NEEDS_PASSWORD) : new AA_Response($jwt);
+        // only for the password sent with this very request - a stolen cookie or token must not renew itself;
+        // superadmin checked here too, so the token never depends on isPerm() alone
+        $jwt = ((AA_Auth::login() === 'password') && IsSuperadmin()) ? LoginToken::issue(AuthGetUid()) : '';
+        return ($jwt === '') ? new AA_Response(_m('A token needs a login by the username and password in this request, of a user whose password change this AA can detect'), ResponderPolicy::ERR_TOKEN_NEEDS_PASSWORD) : new AA_Response($jwt);
     }
 }
 

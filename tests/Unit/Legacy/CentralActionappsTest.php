@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Legacy;
 
+use AA\Central\ResponderPolicy;
 use AA_Actionapps;
 use AA_Definition_Module_Chunk;
 use AA_Request;
@@ -57,10 +58,10 @@ class CentralScriptedAa extends AA_Actionapps
 
 /**
  * Characterization of AA_Actionapps (central/include/actionapps.class.php) - one AA installation as
- * Central sees it: its central_conf row, the remote commands it sends, the session/JWT login.
+ * Central sees it: its central_conf row, the remote commands it sends, the JWT login.
  * No DB (RecordingDb answers the SELECTs) and no network: the request methods run against a scripted
- * getResponse(), getResponse() itself against a fake AA_Request, and the login requests which
- * getResponse() builds itself read a local file as the "responder URL" (AA_Http::request() is plain
+ * getResponse(), getResponse() itself against a fake AA_Request, and the Get_Jwt login which
+ * requestJwt() builds itself reads a local file as the "responder URL" (AA_Http::request() is plain
  * file_get_contents()).
  *
  * Pins today's behaviour; "pinned:" marks behaviour that is questionable rather than wanted.
@@ -103,11 +104,6 @@ final class CentralActionappsTest extends TestCase
     {
         $domain = $this->localResponder($answer === null ? null : serialize($answer));
         return self::aa(['AA_HTTP_DOMAIN' => $domain, 'AA_BASE_DIR' => ''] + $values);
-    }
-
-    private static function setPrivate(object $object, string $property, mixed $value): void
-    {
-        (new \ReflectionProperty(AA_Actionapps::class, $property))->setValue($object, $value);
     }
 
     // --- local data (central_conf) --------------------------------------------------------------
@@ -320,13 +316,13 @@ final class CentralActionappsTest extends TestCase
         $this->assertSame(['definition_chunk' => $chunk], $aa->requests[0]->getParameters());
     }
 
-    public function test_synchronize_and_importModuleChunk_return_only_the_error_code(): void
+    public function test_synchronize_and_importModuleChunk_return_the_error_code_and_text(): void
     {
-        // pinned: the error text (why it failed) is dropped, the task log shows "3"
+        // the task log says why it failed
         $aa = new CentralScriptedAa([new AA_Response('No response recieved (2 - timeout)', 3)]);
 
-        $this->assertSame(3, $aa->synchronize(['cmd']));
-        $this->assertSame(3, $aa->importModuleChunk(new AA_Definition_Module_Chunk('m', 'field', [])));
+        $this->assertSame('3 No response recieved (2 - timeout)', $aa->synchronize(['cmd']));
+        $this->assertSame('3 No response recieved (2 - timeout)', $aa->importModuleChunk(new AA_Definition_Module_Chunk('m', 'field', [])));
     }
 
     public function test_requestAAName_asks_once_and_caches_the_name(): void
@@ -355,7 +351,7 @@ final class CentralActionappsTest extends TestCase
         $this->assertCount(1, $aa->requests);
     }
 
-    // --- getResponse(): JWT or session login -----------------------------------------------------
+    // --- getResponse(): the JWT login -------------------------------------------------------------
 
     public function test_getResponse_with_jwt_sends_bearer_and_no_session(): void
     {
@@ -376,60 +372,41 @@ final class CentralActionappsTest extends TestCase
 
         $this->assertSame($answer, $aa->getResponse($request));
         $this->assertCount(1, $request->asked);
-        $this->assertSame(101, $aa->getLastError());
-        $this->assertSame([], $request->asked[0][1], 'no session parameter - no login happened');
+        $this->assertSame('101 expired', $aa->getLastError(), 'the text too - a refused token (14) says to authenticate again');
+        $this->assertSame([], $request->asked[0][1], 'no parameters - no login happened');
     }
 
-    public function test_getResponse_with_fresh_session_sends_it_as_parameter_and_cookie(): void
+    /** @return array<string, array{0: string}> AA_ADMIN_PWD without a token */
+    public static function noToken(): array
     {
-        $aa = self::aa(['AA_HTTP_DOMAIN' => 'https://r.example.org/', 'AA_BASE_DIR' => 'aa/', 'AA_ADMIN_PWD' => 'secret']);
-        self::setPrivate($aa, '_remote_session_id', 'sess1');
-        self::setPrivate($aa, '_remote_session_id_time', now() - 9 * 60);
-        $request = new CentralFakeRequest(new AA_Response(['ok']));
-
-        $aa->getResponse($request);
-
-        // the parameter is AA_CP_Session, the cookie AA_Session
-        $this->assertSame([['https://r.example.org/aa/central/responder.php', ['AA_CP_Session' => 'sess1'], ['Cookie' => 'AA_Session=sess1']]], $request->asked);
+        return ['a password' => ['secret'], 'empty' => ['']];
     }
 
-    public function test_getResponse_without_session_logs_in_first(): void
+    #[DataProvider('noToken')]
+    public function test_getResponse_without_jwt_asks_to_authenticate_and_sends_nothing(string $pwd): void
     {
-        // the "remote" answers the Get_Sessionid login with [session id, auth]
-        $aa      = $this->localAa(new AA_Response(['sess42', 'auth']), ['AA_ADMIN_USER' => 'central', 'AA_ADMIN_PWD' => 'secret']);
+        $aa      = self::aa(['AA_ADMIN_USER' => 'central', 'AA_ADMIN_PWD' => $pwd]);
         $request = new CentralFakeRequest(new AA_Response(['ok']));
 
-        $aa->getResponse($request);
-        $this->removeLocalResponder();   // a second login would now fail
-        $aa->getResponse($request);
-
-        $this->assertSame(['AA_CP_Session' => 'sess42'], $request->asked[0][1]);
-        $this->assertSame(['AA_CP_Session' => 'sess42'], $request->asked[1][1], 'the session is kept for the next request');
-    }
-
-    public function test_getResponse_session_older_than_ten_minutes_logs_in_again(): void
-    {
-        $aa = $this->localAa(new AA_Response(['new-sess']), ['AA_ADMIN_PWD' => 'secret']);
-        self::setPrivate($aa, '_remote_session_id', 'old-sess');
-        self::setPrivate($aa, '_remote_session_id_time', now() - 10 * 60 - 5);
-        $request = new CentralFakeRequest(new AA_Response(['ok']));
-
-        $aa->getResponse($request);
-
-        $this->assertSame(['AA_CP_Session' => 'new-sess'], $request->asked[0][1]);
-    }
-
-    public function test_getResponse_failed_login_returns_its_error_without_asking(): void
-    {
-        $aa      = $this->localAa(null, ['AA_ADMIN_PWD' => 'secret']);   // no responder - unreadable URL
-        $request = new CentralFakeRequest(new AA_Response(['ok']));
-
-        $response = self::collectingWarnings(static fn() => $aa->getResponse($request));
+        $response = $aa->getResponse($request);
 
         $this->assertTrue($response->isError());
-        $this->assertSame(3, $response->getError());
-        $this->assertSame(3, $aa->getLastError());
-        $this->assertSame([], $request->asked);
+        $this->assertSame(ResponderPolicy::ERR_NOT_AUTHENTICATED, $response->getError());
+        $this->assertStringContainsString('Authenticate this AA on the ActionApps Central page', (string) $response->getResponse());
+        $this->assertSame($response->getError() . ' ' . $response->getResponse(), $aa->getLastError());
+        $this->assertSame([], $request->asked, 'no password or session login');
+    }
+
+    public function test_lastErrorHtml_names_the_aa_and_is_cleared_by_a_success(): void
+    {
+        $aa = self::aa(['ORG_NAME' => '<b>Org</b>', 'AA_HTTP_DOMAIN' => 'https://r.example.org/', 'AA_BASE_DIR' => 'aa/']);
+        $aa->getResponse(new CentralFakeRequest(new AA_Response(['ok'])));
+        $this->assertStringStartsWith('&lt;b&gt;Org&lt;/b&gt; (https://r.example.org/aa/): 15 ', $aa->lastErrorHtml(), 'escaped - Central pages print it as HTML');
+
+        $aa->setAuthToken('TOKEN');
+        $aa->getResponse(new CentralFakeRequest(new AA_Response(['ok'])));
+        $this->assertSame('', $aa->lastErrorHtml());
+        $this->assertNull($aa->getLastError());
     }
 
     public function test_requestJwt_returns_the_token(): void
@@ -463,14 +440,12 @@ final class CentralActionappsTest extends TestCase
 
     // --- queued with the tasks -------------------------------------------------------------------
 
-    public function test_serialized_aa_carries_its_login_and_session(): void
+    public function test_serialized_aa_carries_its_login(): void
     {
         $aa = self::aa(['ORG_NAME' => 'Org', 'AA_ADMIN_USER' => 'central', 'AA_ADMIN_PWD' => 'secret']);
-        self::setPrivate($aa, '_remote_session_id', 'sess1');
 
         // pinned: the serialized AA holds the password or JWT; the Central tasks queue only its
         // central_conf id, only older queued rows hold this object
         $this->assertStringContainsString('secret', serialize($aa));
-        $this->assertStringContainsString('sess1', serialize($aa));
     }
 }

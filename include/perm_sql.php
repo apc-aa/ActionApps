@@ -346,6 +346,17 @@ class AA_Permsystem_Sql extends AA_Permsystem {
         return false;
     }
 
+    /** The stored password hash - exactly users.password, so tokens tagged with it stay valid */
+    public function credentialStamp(string $uid): ?string
+    {
+        // MySQL would compare a reader's hex id equal to its leading digits
+        if (!$this->userIdFormatMatches($uid)) {
+            return null;
+        }
+        $hash = DB_AA::select1('password', 'SELECT password FROM `users`', [['id', $uid, 'i'], ['type', 'User']]);
+        return (is_string($hash) && ($hash !== '')) ? $hash : null;
+    }
+
     /** isUsernameFree function
      *  Looks whether the username name is not yet used.
      * @param $username

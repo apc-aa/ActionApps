@@ -132,7 +132,7 @@ $auth_format = ''
     .   '<div>{switch:{substr:{_#AA_ADMI2}:0:3}:^jwt$:'
     .       QuoteColons(_m('Authenticated'))
     .     ':.:'
-    .       QuoteColons(_m('Legacy password'))
+    .       QuoteColons(_m('Not authenticated - get a token'))
     .     ':'
     .       QuoteColons(_m('Not configured'))
     .   '}</div>'

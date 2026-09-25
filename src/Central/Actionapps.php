@@ -27,12 +27,6 @@ class Actionapps
 
     private $last_error = null;
 
-    /** cached remote session ID */
-    private ?string $_remote_session_id = null;
-
-    /** when the remote session was opened - getResponse() opens a new one after 10 minutes */
-    private int $_remote_session_id_time = 0;
-
     /** cached remote data - like AA name, ... */
     private array $_cached = [];
 
@@ -70,7 +64,7 @@ class Actionapps
 
     /** The AA of the central_conf row (whatever its bin), or null when there is no such row - unlike
      *  getActionapps() it never makes an AA of nothing. Cached for the request, so the tasks for one AA
-     *  in one queue run share the AA and its remote session. */
+     *  in one queue run share the AA. */
     public static function find(int $aa_id): ?Actionapps
     {
         static $aas = [];
@@ -157,7 +151,7 @@ class Actionapps
         return $this->local_data->getValue($field);
     }
 
-    /** Get last communication error code */
+    /** Get last communication error - the code and the text */
     public function getLastError()
     {
         return $this->last_error;
@@ -224,7 +218,7 @@ class Actionapps
     public function synchronize($sync_commands)
     {
         $response = $this->getResponse(new AA_Request('Do_Synchronize', ['sync' => $sync_commands]));
-        return ($response->isError()) ? $response->getError() : $response->getResponse();
+        return ($response->isError()) ? self::responseText($response) : $response->getResponse();
     }
 
     /** This command calls optimize method
@@ -270,60 +264,24 @@ class Actionapps
     public function importModuleChunk(AA_Definition_Module_Chunk $definition_chunk)
     {
         $response = $this->getResponse(new AA_Request('Do_Import_Module_Chunk', ['definition_chunk' => $definition_chunk]));
-        return ($response->isError()) ? $response->getError() : $response->getResponse();
+        return ($response->isError()) ? self::responseText($response) : $response->getResponse();
     }
 
-    /** Main communication function - returns AA_Response object */
+    /** Main communication function - returns AA_Response object; getLastError() tells why this call failed */
     public function getResponse($request)
     {
         $jwt = $this->getAuthToken();
-        if ($jwt) {
-            // Stateless JWT auth — send token with every request
-            $response = $request->ask(
-                $this->getComunicatorUrl(),
-                [],
-                ['Authorization' => 'Bearer ' . $jwt],
-            );
-            if (!$response->isError()) {
-                return $response;
-            }
-            // JWT might be expired — store error for reporting
-            $this->last_error = $response->getError();
-            return $response;
-        }
-
-        // Legacy: session-based auth with username/password
-        if (!$this->_remote_session_id || $this->_remote_session_id_time < (now() - 10 * 60)) {
-            $response = $this->_authenticate();
-            if ($response->isError()) {
-                $this->last_error = $response->getError();
-                return $response;
-            }
-        }
-        return $request->ask(
-            $this->getComunicatorUrl(),
-            ['AA_CP_Session' => $this->_remote_session_id],
-            ['Cookie' => 'AA_Session=' . $this->_remote_session_id],
-        );
-    }
-
-    public function _authenticate()
-    {
-        $request  = new AA_Request('Get_Sessionid');
-        $response = $request->ask($this->getComunicatorUrl(), ['username' => $this->getAccessUsername(), 'password' => $this->getAccessPassword()]);
-        if (!$response->isError()) {
-            $arr = $response->getResponse();
-            $this->setSession((string) $arr[0]);
-        } else {
-            $this->last_error = $response->getError();
-        }
+        $response = $jwt
+            ? $request->ask($this->getComunicatorUrl(), [], ['Authorization' => 'Bearer ' . $jwt])
+            : new AA_Response(_m('No login token for this AA - Authenticate this AA on the ActionApps Central page'), ResponderPolicy::ERR_NOT_AUTHENTICATED);
+        $this->last_error = $response->isError() ? self::responseText($response) : null;
         return $response;
     }
 
-    private function setSession(string $session_id): void
+    /** the error of the last call as a line for $err of a Central page, '' after a success */
+    public function lastErrorHtml(): string
     {
-        $this->_remote_session_id      = $session_id;
-        $this->_remote_session_id_time = now();
+        return ($this->last_error === null) ? '' : safe($this->getName() . ': ' . $this->last_error);
     }
 
     /// Static methods
