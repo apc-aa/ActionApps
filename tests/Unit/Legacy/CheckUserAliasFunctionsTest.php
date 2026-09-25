@@ -193,7 +193,7 @@ namespace Tests\Unit\Legacy {
             $this->assertSame('include/usr_aliasfnc.php', $legacy->evidence[0]['File']);
             $this->assertArrayHasKey('Field settings', $legacy->links);
             $this->assertArrayHasKey('Log rows', $legacy->links);
-            $this->assertSame('f_u names huhl, a function of AA itself - not called - field text...........2 of slice NSZM', $core->title);
+            $this->assertSame('f_u names huhl, a function of AA itself (include/util.php) - not called - field text...........2 of slice NSZM', $core->title);
             $this->assertSame(self::SLICE2, $findings[2]->evidence[0]['Slice'], 'no name known - the id');
         }
 

@@ -14,7 +14,7 @@ use ReflectionFunction;
  *  - INSTALLATION: another function the installation defines - one defined while include/item.php
  *    requires include/usr_aliasfnc.php(3) (with the helper files that one includes, from anywhere -
  *    addInstallationFunctions()), or one declared in include/usr_aliasfnc.php(3), under include/custom/,
- *    in modules/site/sites/ (legacy site control files) or in include/config*.php - still called, so old
+ *    or in modules/site/sites/ (legacy site control files) - still called, so old
  *    sites keep working (NSZM's nszm_prava_conds), but logged as deprecated: rename it to usr_*;
  *  - REJECTED: empty, not a plain function name (an alias, a field id, an expression, a method), not
  *    defined, internal (PHP's own or an extension's), AA core (declared in any other file of the AA base -
@@ -55,8 +55,8 @@ final class UserAliasFunction
 
     /** the installation's files, relative to the AA base: include/usr_aliasfnc.php(3) (include/item.php),
      *  include/custom/ (AA_CUSTOM_DIR - include/locsess.php, include/stringexpand.php), the legacy site
-     *  control files modules/site/sites/site_*.php and include/config*.php */
-    private const INSTALLATION_FILES = '~^(?:include/usr_aliasfnc\.php3?|include/custom/.+|modules/site/sites/site_[^/]+\.php|include/config[^/]*\.php)\z~';
+     *  control files modules/site/sites/site_*.php. Not include/config*.php - no user function belongs there */
+    private const INSTALLATION_FILES = '~^(?:include/usr_aliasfnc\.php3?|include/custom/.+|modules/site/sites/site_[^/]+\.php)\z~';
 
     /** @var array<string, true> lower-case names defined by the require of include/usr_aliasfnc.php(3) */
     private static array $installation = [];

@@ -54,7 +54,7 @@ namespace {
     /** Functions in files AA does not ship: a temporary directory outside the AA base - a function a
      *  helper file of include/usr_aliasfnc.php defines (registered as the require of usr_aliasfnc.php
      *  registers it, UserAliasFunction::addInstallationFunctions()) and one a host application defines
-     *  (not registered) - and a fake AA base with include/custom/, modules/site/sites/, include/config*.php
+     *  (not registered) - and a fake AA base with include/custom/, modules/site/sites/, include/config.php
      *  and a core file; UserAliasFunction::classify() takes the base. */
     function aa_test_fu_fixture_dir(): string
     {
@@ -283,7 +283,8 @@ namespace Tests\Unit\Legacy {
 
             $this->assertSame(UserAliasFunction::INSTALLATION, UserAliasFunction::classify('aa_test_custom_fu', $base)['level'], 'include/custom/');
             $this->assertSame(UserAliasFunction::INSTALLATION, UserAliasFunction::classify('aa_test_sitefile_fu', $base)['level'], 'modules/site/sites/');
-            $this->assertSame(UserAliasFunction::INSTALLATION, UserAliasFunction::classify('aa_test_config_fu', $base)['level'], 'include/config.php');
+            $config = UserAliasFunction::classify('aa_test_config_fu', $base);
+            $this->assertSame([UserAliasFunction::REJECTED, UserAliasFunction::CORE, 'include/config.php'], [$config['level'], $config['reason'], $config['file']], 'include/config.php holds no user functions - AA itself');
             $this->assertSame(UserAliasFunction::INSTALLATION, UserAliasFunction::classify('aa_test_legacy_fu', $base)['level'], 'registered by the usr_aliasfnc.php require - wherever its file is');
             $core = UserAliasFunction::classify('aa_test_core_fu', $base);
             $this->assertSame([UserAliasFunction::REJECTED, null, UserAliasFunction::CORE], [$core['level'], $core['function'], $core['reason']], 'any other file of the AA base is AA itself');
@@ -307,9 +308,8 @@ namespace Tests\Unit\Legacy {
             $this->assertTrue(UserAliasFunction::isInstallationFile('/srv/aa/include/usr_aliasfnc.php3', $base));
             $this->assertTrue(UserAliasFunction::isInstallationFile('/srv/aa/include/custom/nszm/stringexpand.php', $base));
             $this->assertTrue(UserAliasFunction::isInstallationFile('/srv/aa/modules/site/sites/site_nszm.php', $base));
-            $this->assertTrue(UserAliasFunction::isInstallationFile('/srv/aa/include/config.php', $base));
-            $this->assertTrue(UserAliasFunction::isInstallationFile('/srv/aa/include/config_local.php', $base));
-            $this->assertFalse(UserAliasFunction::isInstallationFile('/srv/aa/include/config/x.php', $base), 'include/config*.php, no subdirectory');
+            $this->assertFalse(UserAliasFunction::isInstallationFile('/srv/aa/include/config.php', $base), 'no user functions in the configuration');
+            $this->assertFalse(UserAliasFunction::isInstallationFile('/srv/aa/include/config_local.php', $base));
             $this->assertFalse(UserAliasFunction::isInstallationFile('/srv/aa/modules/site/site.php', $base));
             $this->assertFalse(UserAliasFunction::isInstallationFile('/srv/aa/modules/site/sites/index.php', $base), 'site control files are site_*.php');
             $this->assertFalse(UserAliasFunction::isInstallationFile('/srv/sites/nszm/functions.php', $base), 'outside AA: a host application, auto_prepend_file, include_path - not the installation');

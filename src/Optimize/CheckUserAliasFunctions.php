@@ -132,7 +132,7 @@ class CheckUserAliasFunctions extends AbstractOptimize
             $reason === UserAliasFunction::EMPTY        => _m('f_u without a function name'),
             $reason === UserAliasFunction::UNDEFINED    => _m('f_u names %1, which is not defined', [$name]),
             $reason === UserAliasFunction::INTERNAL     => _m('f_u names %1, a PHP function - not called', [$name]),
-            $reason === UserAliasFunction::CORE         => _m('f_u names %1, a function of AA itself - not called', [$name]),
+            $reason === UserAliasFunction::CORE         => _m('f_u names %1, a function of AA itself (%2) - not called', [$name, $file]),
             $reason === UserAliasFunction::FOREIGN      => _m('f_u names %1, defined outside AA in %2 - not called', [$name, $file]),
             $reason === UserAliasFunction::CALL_FAILED  => _m('f_u call of %1 failed', [$name]),
             default                                      => _m('f_u names "%1", which is not a function name - not called', [$name]),
@@ -147,7 +147,7 @@ class CheckUserAliasFunctions extends AbstractOptimize
             $reason === UserAliasFunction::EMPTY        => _m('The alias shows nothing (it never did). Remove it or name a usr_* function.'),
             $static && $reason === UserAliasFunction::UNDEFINED => _m('The function is not defined on this admin page. A site may still define it (a site control file, a file only its pages load) - the check "f_u calls on pages" says what pages really called; trust that one. If it is not there either, define usr_%1 in include/usr_aliasfnc.php or remove the alias.', [$name]),
             $reason === UserAliasFunction::UNDEFINED    => _m('The page had no such function, the alias showed nothing. Define usr_%1 in include/usr_aliasfnc.php or remove the alias.', [$name]),
-            $reason === UserAliasFunction::FOREIGN      => _m('Only functions of the installation are called: usr_* ones, ones defined by include/usr_aliasfnc.php (and the files it includes), include/custom/, modules/site/sites/ or include/config*.php. Define the function there as usr_%1.', [$name]),
+            $reason === UserAliasFunction::FOREIGN      => _m('Only functions of the installation are called: usr_* ones, ones defined by include/usr_aliasfnc.php (and the files it includes), include/custom/ or modules/site/sites/. Define the function there as usr_%1.', [$name]),
             $reason === UserAliasFunction::CALL_FAILED  => _m('The call failed: %1. Either the function does not take what f_u passes (array content, string field id, string parameters) or it failed inside. Until it is fixed the alias shows nothing.', [$file]),
             default                                      => _m('The alias shows nothing: f_u calls only functions of the installation (usr_* in include/usr_aliasfnc.php), never PHP or AA functions. Write a usr_* function that does what is needed, or use an AA expression instead.'),
         };
