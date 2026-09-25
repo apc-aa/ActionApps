@@ -23,6 +23,7 @@ https://www.apc.org/
 // anonymous authentication - locauth calls extauthnobody
 use AA\Central\ResponderPolicy;
 use AA\IO\DB\DB_AA;
+use AA\Optimize\CheckSessionidUse;
 use AA\Util\Langs;
 use AA\Util\LoginToken;
 
@@ -56,8 +57,8 @@ class AA_Responder extends AA_Object
     }
 }
 
-/** Login for scripts: username and password in, the session id out - used as the AA_Session cookie
- *  for the admin pages (and by AA_ClientAuth)
+/** Login for scripts: username and password in, the session id out (used as the AA_Session cookie);
+ *  also AA_ClientAuth. State Check lists the callers (CheckSessionidUse)
  *  @return Session ID
  */
 class AA_Responder_Get_Sessionid extends AA_Responder
@@ -73,6 +74,7 @@ class AA_Responder_Get_Sessionid extends AA_Responder
     public function run(): AA_Response
     {
         global $sess, $auth;
+        CheckSessionidUse::record($_SERVER, $_REQUEST, AuthGetUid(), AA_Auth::login());
         return new AA_Response([$sess->id(), $auth]);
     }
 }

@@ -60,6 +60,7 @@ STATE_CHK       {CheckClass} | summary          Sc:severity:count:title | Scs:er
 ALIAS_FU        level:slice_id:field_id:function  reason:file                   // f_u not calling a usr_* function, once a day (AA\Util\UserAliasFunction, LogOnce)
 ALERT_DENY      collection:slice_id:user        item_id                        // Alertitem send refused, once a day (AA_Collection::logRefusal(), LogOnce)
 JWT_DENY        client IP                       reason                         // Bearer token refused on central/responder.php, once a day (AA_Auth, LogOnce)
+SESSID_USE      client IP:reader|password|session                              // Get_Sessionid answered to a login, once a day (AA\Optimize\CheckSessionidUse, LogOnce)
 APP_INST        module_id (a row per new module; none: AA_ID)  App:name:version:source_url  // aa-app package installed (AA\Central\Package\AaAfterCommit)
 AA_WARN
 */
