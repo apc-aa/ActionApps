@@ -77,6 +77,13 @@ final class ReferenceRewriter
         return $this->alerts ? strtr($text, $this->alerts) : $text;
     }
 
+    /** the long ids rewriteLongIds() would look up in $text, lower case @return list<string> */
+    public static function longIdsIn(string $text): array
+    {
+        RewriteFailed::check(preg_match_all(self::LONG_ID_RE, $text, $m));
+        return $m[0] ? str_split(strtolower(implode('', $m[0])), 32) : [];
+    }
+
     /** Group names in texts. Changes the length - never on serialize()d text. */
     public function rewriteGroups(string $text): string
     {

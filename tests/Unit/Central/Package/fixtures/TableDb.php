@@ -41,7 +41,7 @@ final class TableDb extends DB_PDO
     public static array $next = [];
     /** @var null|callable(string): bool true = the statement fails */
     public static $fail = null;
-    /** @var null|callable(string): list<array<string, mixed>> rows of a SELECT */
+    /** @var null|callable(string): (list<array<string, mixed>>|null) rows of a SELECT; null = read the tables */
     public static $answer = null;
     public static bool $transactions = true;
     /** commit() fails (returns false, as PDO in silent mode) */
@@ -136,8 +136,8 @@ final class TableDb extends DB_PDO
         if (preg_match('/^DELETE (?:LOW_PRIORITY )?FROM [`"](\w+)[`"]\s+WHERE /', $sql, $m)) {
             return $this->apply($m[1], (new SqlScanner($sql, strlen($m[0])))->conditions(), null);
         }
-        if (self::$answer && str_starts_with($sql, 'SELECT')) {
-            $this->rows = (self::$answer)($sql);
+        if (self::$answer && str_starts_with($sql, 'SELECT') && (($rows = (self::$answer)($sql)) !== null)) {
+            $this->rows = $rows;
             return true;
         }
         if (preg_match('/^SELECT (.+?) FROM (?:[`"]?(\w+)[`"]?|(information_schema\.tables))(?: WHERE |\s*$)/i', $sql, $m)) {

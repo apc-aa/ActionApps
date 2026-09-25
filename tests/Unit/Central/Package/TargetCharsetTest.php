@@ -10,11 +10,15 @@ declare(strict_types=1);
 namespace Tests\Unit\Central\Package;
 
 use AA\Central\Package\FindingList;
+use AA\Central\Package\IdMap;
 use AA\Central\Package\ImportPlan;
+use AA\Central\Package\Model\Batch;
+use AA\Central\Package\Model\Module;
 use AA\Central\Package\Model\ConstantGroup;
 use AA\Central\Package\Model\Package;
 use AA\Central\Package\Model\RawBytes;
 use AA\Central\Package\Planner;
+use AA\Central\Package\Schema;
 use AA\Central\Package\TargetCharset;
 use AA\Central\Package\ValidationResult;
 use AA\Central\Package\Validator;
@@ -42,7 +46,7 @@ final class TargetCharsetTest extends TestCase
     /** @param list<string> $taken groups taken on the target */
     private static function plan(Package $package, array $taken = []): ImportPlan
     {
-        $validation = (new Validator())->validate($package, $package->withItems);     // items come only in a transfer
+        $validation = (new Validator())->validate($package);
         self::assertTrue($validation->importable(), 'the mutation must stay valid');
         return (new Planner(new FakeImportTarget($taken)))->plan($package, $validation);
     }
@@ -89,7 +93,6 @@ final class TargetCharsetTest extends TestCase
                 return $t;
             }), ["E charset $W/spot-tree/spot[1]/var[#0] 漢", "E charset $W/spot-tree/spot[3]/cond[#1] 字"]],
             'site spot content'                => [static fn(Package $p): Package => self::cell(self::lang($p, self::SITE, self::CP1250), self::SITE, 'site_spot', 1, ['content' => 'Приём']), ["E charset $W/site_spot[2]/content Приём"]],
-            'item value'                       => [static fn(Package $p): Package => self::items(self::latin2($p), [self::item(self::OTHER_ITEM, 'Cena €')]), ["E charset $S/item[" . self::OTHER_ITEM . ']/headline........[0] €']],
             // the rename takes a non-ASCII group name out of the text before the conversion
             'non-ASCII group in a text'        => [static fn(Package $p): Package => self::cell(self::latin2(self::with($p, ['constantGroups' => [new ConstantGroup('druhy_漢', self::SLICE)]])), self::SLICE, 'view', 1, ['odd' => '{constant:druhy_漢:x}']), ['I group-renamed constant-group[druhy_漢] druhy_漢 => druhy__']],
             'raw bytes go as they are'         => [static fn(Package $p): Package => self::cell(self::latin2($p), self::SLICE, 'view', 0, ['odd' => new RawBytes("\xA9\xFF")]), []],
@@ -136,6 +139,25 @@ final class TargetCharsetTest extends TestCase
         $plan = (new Planner(new FakeImportTarget()))->plan(self::lang(self::example(), self::SLICE, 'xx_news_lang.php'), new ValidationResult([]));
 
         self::assertContains('E lang-file ' . self::S . '/module[#0]/lang_file xx_news_lang.php', self::findings($plan));
+    }
+
+    /** the items of a batch in the charset of the target slice; an item column (item.flags char(30)) has its limit, content.text none */
+    public function test_item_values_of_a_batch(): void
+    {
+        $item  = ['id' => self::OTHER_ITEM, 'content' => [
+            'headline........' => [0 => ['value' => 'Cena € ' . str_repeat('y', 300), 'flag' => 0]],
+            'flags...........' => [0 => ['value' => str_repeat('x', 31), 'flag' => 0]],
+        ]];
+        $batch = new Package('B', [], [new Module(Module::SLICE, self::SLICE, [], items: [$item])], withItems: true, batch: new Batch('', self::OTHER_ITEM, true));
+        $found = new FindingList();
+
+        (new TargetCharset(new Schema(), new IdMap()))->check($batch, [self::SLICE => 'iso-8859-2'], [], $found);
+
+        $at = self::S . '/item[' . self::OTHER_ITEM . ']';
+        self::assertSame(
+            ["E charset $at/headline........[0] € " . str_repeat('y', 12), "E too-long $at/flags...........[0] 31 characters > 30"],
+            array_map(static fn(array $f): string => "{$f[1]->level} {$f[1]->code} $f[0] {$f[1]->ref}", $found->all()),
+        );
     }
 
     public function test_findings_are_limited_per_code(): void

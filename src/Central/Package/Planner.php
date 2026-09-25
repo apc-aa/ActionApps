@@ -22,7 +22,7 @@ final class Planner
     public const GROUP_NAME_EXHAUSTED = GroupPlan::EXHAUSTED;
     /** E: the module's lang_file names no language - its charset is unknown (Validator's E already) */
     public const LANG_FILE = Validator::LANG_FILE;
-    /** E: an object, item or constant id of the package equals a new settings object id */
+    /** E: an object or constant id of the package equals a new settings object id */
     public const SETTINGS_ID = Validator::DUPLICATE;
     /** I: an alerts field (`alerts1....<cid>`, getAlertsField()) of a collection the package does not carry
      *  is written as it is - AA reads it only through a collection whose reader slice is this new slice, so
@@ -33,9 +33,14 @@ final class Planner
     public const NO_TRANSACTION = 'no-transaction';
     /** the path of a finding about the target AA, not the package */
     public const TARGET = 'target';
+    /** S: a domain of the source site a transfer gives the new site - confirm it is to move; ref = the URL */
+    public const DOMAIN_KEPT = 'domain-kept';
+    /** W: a domain of the source site left out - a site of this AA answers to it, it is this AA's own
+     *  host, or it names no host; ref = the URL */
+    public const DOMAIN_DROPPED = 'domain-dropped';
 
-    /** tables of the items (ItemWriter), beside the rows of Schema and the objects */
-    private const ITEM_TABLES = ['item', 'content'];
+    /** tables only a transfer writes: the item batches, the owners of the modules */
+    private const TRANSFER_TABLES = ['item', 'content', 'slice_owner'];
 
     /** an alerts field id: FIELDID_HOWOFTEN / FIELDID_FILTERS padded with dots, then the collection id */
     private const ALERTS_FIELD_RE = '/^alerts[12]\.+([A-Za-z0-9]{1,9})\z/';
@@ -50,9 +55,12 @@ final class Planner
         $this->schema = new Schema($metabase);
     }
 
-    /** @throws InvalidArgumentException the validation has an E - such a package is never planned
+    /** @param bool         $transfer     the importer's mode is a transfer (the Validator was asked the same)
+     *  @param list<string> $readerLogins the login names of the readers the transfer brings (Collector::readerLogins()) -
+     *                                    E for those of a user, or of a reader with AA permissions, of this AA
+     *  @throws InvalidArgumentException the validation has an E - such a package is never planned
      *  @throws RewriteFailed a regex of the length check failed */
-    public function plan(Package $package, ValidationResult $validation): ImportPlan
+    public function plan(Package $package, ValidationResult $validation, bool $transfer = false, array $readerLogins = []): ImportPlan
     {
         if (!$validation->importable()) {
             throw new InvalidArgumentException('The package did not pass the validation - no import plan');
@@ -60,6 +68,7 @@ final class Planner
         $this->findings = new FindingList();
         $this->used     = [];
         [$fixed, $fix_ups] = (new FixUps($this->schema))->apply($package);
+        $fixed             = $this->domains($fixed);
 
         $charsets = $lang_files = [];
         foreach ($fixed->modules as $m) {
@@ -87,7 +96,7 @@ final class Planner
         }
         $settings_of = array_flip($settings);
         foreach ($fixed->modules as $m) {
-            foreach ([...ObjectExport::ids($m->objects), ...array_map(static fn(array $item): string => ValueCodec::bytes($item['id'] ?? ''), $m->items)] as $id) {
+            foreach (ObjectExport::ids($m->objects) as $id) {
                 $long[$this->sourceId($id, $settings_of, "$m->type[$m->id]")] = $this->newId();
             }
             if (($id = ValueCodec::bytes($m->rows['alerts_collection'][0]['id'] ?? '')) !== '') {
@@ -104,31 +113,78 @@ final class Planner
         $this->alertsFields($fixed, $map);
         (new TargetCharset($this->schema, $map))->check($fixed, $charsets, $group_charsets, $this->findings);
         (new ImportLint($this->schema))->check($fixed, $this->findings);
-        (new ItemLint($this->target))->check($fixed, $charsets, $this->findings);
-        $this->engines($fixed);
+        $this->readers($readerLogins);
+        $this->engines($transfer);
         return new ImportPlan($fixed, $map, $charsets, $lang_files, $group_charsets, $settings, $fix_ups, $validation->findings, $this->findings->all());
     }
 
     /** E NO_TRANSACTION for the tables the import writes without a transaction - the whole list (a short
      *  one: the tables of AA), not cut to ReferenceLint::MAX_REF */
-    private function engines(Package $package): void
+    private function engines(bool $transfer): void
     {
-        $not = $this->target->nonTransactional(self::tables($this->schema, $package));
+        $not = $this->target->nonTransactional(self::tables($this->schema, $transfer));
         if ($not) {
             $this->findings->add(self::TARGET, new LintFinding(LintFinding::ERROR, self::NO_TRANSACTION, self::noTransaction($not), 0));
         }
     }
 
-    /** The tables an import of $package writes - what must be InnoDB: the planner's E and the writer's check
+    /** The tables an import writes - what must be InnoDB: the planner's E and the writer's check
      *  (Importer::write()) ask ImportTarget::nonTransactional() about these
      *  @return list<string> */
-    public static function tables(Schema $schema, Package $package): array
+    public static function tables(Schema $schema, bool $transfer): array
     {
-        $tables = array_values(array_unique([...array_values($schema->rowTables()), ...ObjectExport::TABLES]));
-        if (array_filter($package->modules, static fn(Module $m): bool => (bool) $m->items)) {
-            $tables = [...$tables, ...self::ITEM_TABLES];
+        return array_values(array_unique([...array_values($schema->rowTables()), ...ObjectExport::TABLES, ...($transfer ? self::TRANSFER_TABLES : [])]));
+    }
+
+    /** the host a site domain of a package names, lower case; null = none @param string $url a URL or a bare host */
+    public static function domainHost(string $url): ?string
+    {
+        $host = parse_url(str_contains($url, '://') ? $url : "http://$url", PHP_URL_HOST);
+        return (is_string($host) && ($host !== '')) ? strtolower($host) : null;
+    }
+
+    /** a domain the site would take over from another site of this AA, or from AA itself */
+    public function domainTaken(string $host): bool
+    {
+        $bare = static fn(string $h): string => str_starts_with($h, 'www.') ? substr($h, 4) : $h;
+        return in_array($bare(strtolower($host)), array_map($bare, $this->target->ownHosts()), true) || $this->target->domainTaken($host);
+    }
+
+    /** The domains a transfer brings (alternate-url) that no site of this AA answers to and that are not
+     *  this AA's own host - the rest dropped (W): the new site would take a live domain over. A kept one is
+     *  S, confirmed in the preview. */
+    private function domains(Package $package): Package
+    {
+        $modules = [];
+        foreach ($package->modules as $m) {
+            $kept = [];
+            foreach ($m->transfer['alternate-url'] ?? [] as $i => $url) {
+                $text = ValueCodec::bytes($url);
+                $host = self::domainHost($text);
+                $keep = ($host !== null) && !$this->domainTaken($host);
+                $this->add("$m->type[$m->id]/alternate-url[$i]", $keep ? LintFinding::SECURITY : LintFinding::WARNING, $keep ? self::DOMAIN_KEPT : self::DOMAIN_DROPPED, $text);
+                if ($keep) {
+                    $kept[] = $url;
+                }
+            }
+            $transfer = array_diff_key($m->transfer, ['alternate-url' => true]) + ($kept ? ['alternate-url' => $kept] : []);
+            $modules[] = isset($m->transfer['alternate-url']) ? new Module($m->type, $m->id, $m->rows, $m->settings, $m->objects, $m->spotTree, $m->items, $m->doc, $transfer) : $m;
         }
-        return $tables;
+        return new Package(...array_merge(get_object_vars($package), ['modules' => $modules]));
+    }
+
+    /** E for the reader logins a transfer brings that a user of this AA, or a reader holding AA
+     *  permissions, has - before any definition is written; the batches check again @param list<string> $logins */
+    private function readers(array $logins): void
+    {
+        $readers = $this->target->readerLogins(ItemLint::USERNAME, $logins);
+        foreach ($logins as $login) {
+            if ($this->target->adminLoginTaken($login)) {
+                $this->add(self::TARGET, LintFinding::ERROR, ItemLint::READER_ADMIN, $login);
+            } elseif ($readers[ItemLint::loginKey($login)] ?? false) {
+                $this->add(self::TARGET, LintFinding::ERROR, ItemLint::READER_PERMS, $login);
+            }
+        }
     }
 
     /** the text of the E NO_TRANSACTION (and of the writer's WriteError::ENGINE): the tables, what to do

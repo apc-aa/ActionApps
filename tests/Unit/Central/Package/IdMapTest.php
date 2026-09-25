@@ -8,13 +8,27 @@ use AA\Central\Package\IdMap;
 use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use Tests\Unit\Central\Package\Fixtures\PackageMutations;
+
+require_once __DIR__ . '/fixtures/PackageMutations.php';
 
 final class IdMapTest extends TestCase
 {
+    use PackageMutations;
+
     private const SLICE_OLD = '0f1e2d3c4b5a69788796a5b4c3d2e1f0';
     private const SLICE_NEW = 'abcdef0123456789abcdef0123456789';
     private const CONST_OLD = '0497ac46076bf257d15f3e030170da92';
     private const CONST_NEW = 'fedcba9876543210fedcba9876543210';
+    private const ITEM      = '1234567890abcdef1234567890abcdef';
+    private const OTHER     = '2234567890abcdef1234567890abcdef';
+    /** the item key: an install run id */
+    private const KEY       = '99999999999999999999999999999999';
+
+    public static function setUpBeforeClass(): void
+    {
+        self::bootAa();             // string2id()
+    }
 
     private function map(): IdMap
     {
@@ -164,6 +178,41 @@ final class IdMapTest extends TestCase
         $this->assertSame($map->groups(), $back->groups());
         $this->assertSame($map->collections(), $back->collections());
         $this->assertSame([], IdMap::fromJson((new IdMap())->toJson())->longIds());
+    }
+
+    public function test_item_ids_stay_without_an_item_key(): void
+    {
+        $map = $this->map();
+
+        $this->assertSame(self::ITEM, $map->item(strtoupper(self::ITEM)));
+        $this->assertNull($map->longId(self::ITEM), 'no text rewrite: the id is the same');
+    }
+
+    /** a copy in the same AA: new = string2id(key . old), for the ids known as items of the package */
+    public function test_an_item_key_derives_the_ids_of_the_package_items(): void
+    {
+        $map = $this->map()->withItemKey(self::KEY)->withPackageItems([strtoupper(self::ITEM), self::CONST_OLD]);
+
+        $this->assertSame(string2id(self::KEY . self::ITEM), $map->item(self::ITEM));
+        $this->assertSame($map->item(self::ITEM), $map->longId(self::ITEM));
+        $this->assertSame(self::CONST_NEW, $map->longId(self::CONST_OLD), 'a mapped id stays mapped');
+        $this->assertNull($map->longId(self::OTHER), 'an id not known as a package item stays');
+        $this->assertSame([self::SLICE_OLD, self::CONST_OLD, self::ITEM], array_keys($map->longIds()));
+    }
+
+    public function test_json_keeps_the_item_key_not_the_package_items(): void
+    {
+        $back = IdMap::fromJson($this->map()->withItemKey(self::KEY)->withPackageItems([self::ITEM])->toJson());
+
+        $this->assertSame(self::KEY, $back->itemKey());
+        $this->assertNull($back->longId(self::ITEM), 'looked up again by each write');
+        $this->assertSame('', IdMap::fromJson($this->map()->toJson())->itemKey());
+    }
+
+    public function test_an_item_key_is_a_long_id(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->map()->withItemKey('run 7');
     }
 
     /** @return array<string, array{string}> */

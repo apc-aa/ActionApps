@@ -504,6 +504,23 @@ class AA_Perm {
         return true;
     }
 
+    /** No user of AA logs in with $login - as the login name or the e-mail, in any case, with trailing
+     *  spaces or not. The readers of Reader Management slices are left out. Without a user system
+     *  (restrictPermsTo()) it throws: "free" would be a guess.
+     *  @throws LogicException */
+    public function isAdminUsernameFree(string $login): bool {
+        $systems = array_diff_key($this->perm_systems, ['AA_Permsystem_Reader' => true]);
+        if (!$systems) {
+            throw new LogicException('No permission system of users to ask - only the readers are there');
+        }
+        foreach ($systems as $perm_sys) {
+            if (!$perm_sys->isLoginFree($login)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     /**
      * @param string $pattern
      * @param int    $limit
@@ -945,6 +962,9 @@ abstract class AA_Permsystem {
     public function authenticateUsername($username, $password, $code2fa = ''): false|string { return false; }
 
     function isUsernameFree($username): bool                                  { return false; }
+
+    /** no user has $login as the login name or the e-mail - case and trailing spaces ignored */
+    public function isLoginFree(string $login): bool                        { return false; }
 
     /** @return string|array - string "too much" if too many users should be listed (LDAP returns it sometimes) */
     function findUsernames($pattern): array|string { return []; }

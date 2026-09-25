@@ -161,7 +161,6 @@ namespace Tests\Unit\Central {
             $this->assertSame([self::SLICE1, self::SLICE2], $back->slices());
             $this->assertSame([self::SLICE1, ''], $back->position(), 'nothing written yet');
             $this->assertSame([self::SLICE1 => 0, self::SLICE2 => 0], $back->written());
-            $this->assertSame([self::SLICE1 => 0, self::SLICE2 => 0], $back->onSource());
         }
 
         // ---------------------------------------------------------------- transitions
@@ -189,7 +188,7 @@ namespace Tests\Unit\Central {
         {
             match ($action) {
                 'definitionsWritten' => $run->definitionsWritten(self::map(), self::DEFINITIONS, [self::SLICE1]),
-                'advance'            => $run->advance([self::SLICE1, ''], [self::SLICE1, self::ITEM1], 1, 10),
+                'advance'            => $run->advance([self::SLICE1, ''], [self::SLICE1, self::ITEM1], 1, []),
                 'fail'               => $run->fail('WRITE_FAILED', 'item[1]'),
                 'resume'             => $run->resume(),
                 'finish'             => $run->finish(),
@@ -286,38 +285,39 @@ namespace Tests\Unit\Central {
         {
             $id = self::runIn(InstallRun::ITEMS);
 
-            self::locked($id, static fn(InstallRun $run) => $run->advance([self::SLICE1, ''], [self::SLICE1, self::ITEM1], 500, 1200));
-            self::locked($id, static fn(InstallRun $run) => $run->advance([self::SLICE1, self::ITEM1], [self::SLICE2, ''], 700, 1200));   // the last batch of the first slice
-            self::locked($id, static fn(InstallRun $run) => $run->advance([self::SLICE2, ''], [self::SLICE2, self::ITEM2], 3, 3));
+            self::locked($id, static fn(InstallRun $run) => $run->advance([self::SLICE1, ''], [self::SLICE1, self::ITEM1], 500, ['reader-taken' => 2]));
+            self::locked($id, static fn(InstallRun $run) => $run->advance([self::SLICE1, self::ITEM1], [self::SLICE2, ''], 700, ['reader-taken' => 1, 'reader-2fa' => 3]));   // the last batch of the first slice
+            self::locked($id, static fn(InstallRun $run) => $run->advance([self::SLICE2, ''], [self::SLICE2, self::ITEM2], 3, []));
 
             $back = InstallRun::get($id);
             $this->assertSame([self::SLICE2, self::ITEM2], $back->position());
             $this->assertSame([self::SLICE1 => 1200, self::SLICE2 => 3], $back->written());
-            $this->assertSame([self::SLICE1 => 1200, self::SLICE2 => 3], $back->onSource());
+            $this->assertSame([self::SLICE1 => ['reader-taken' => 3, 'reader-2fa' => 3]], $back->warnings(), 'summed per slice');
         }
 
-        /** @return array<string, array{array{string, string}, int, int}> */
+        /** @return array<string, array{array{string, string}, int, array<mixed>}> */
         public static function badAdvances(): array
         {
             return [
-                'a slice outside the run'   => [[str_repeat('9', 32), ''], 1, 1],
-                'an earlier slice'          => [[self::SLICE1, self::ITEM1], 1, 1],
-                'a cursor that is no id'    => [[self::SLICE2, "x' OR 1"], 1, 1],
-                'an upper-case cursor'      => [[self::SLICE2, strtoupper(self::ITEM1)], 1, 1],
-                'negative written'          => [[self::SLICE2, self::ITEM1], -1, 1],
-                'negative on the source'    => [[self::SLICE2, self::ITEM1], 1, -1],
+                'a slice outside the run'   => [[str_repeat('9', 32), ''], 1, []],
+                'an earlier slice'          => [[self::SLICE1, self::ITEM1], 1, []],
+                'a cursor that is no id'    => [[self::SLICE2, "x' OR 1"], 1, []],
+                'an upper-case cursor'      => [[self::SLICE2, strtoupper(self::ITEM1)], 1, []],
+                'negative written'          => [[self::SLICE2, self::ITEM1], -1, []],
+                'no warning counted'        => [[self::SLICE2, self::ITEM1], 1, ['reader-taken' => 0]],
+                'a warning of no code'      => [[self::SLICE2, self::ITEM1], 1, ['<b>' => 1]],
             ];
         }
 
-        /** @param array{string, string} $new */
+        /** @param array{string, string} $new @param array<mixed> $warnings */
         #[DataProvider('badAdvances')]
-        public function test_advance_outside_the_run_is_refused(array $new, int $written, int $onSource): void
+        public function test_advance_outside_the_run_is_refused(array $new, int $written, array $warnings): void
         {
             $id = self::runIn(InstallRun::ITEMS);
-            self::locked($id, static fn(InstallRun $run) => $run->advance([self::SLICE1, ''], [self::SLICE2, ''], 0, 0));
+            self::locked($id, static fn(InstallRun $run) => $run->advance([self::SLICE1, ''], [self::SLICE2, ''], 0, []));
             $before = TableDb::rows('object_text');
             try {
-                self::locked($id, static fn(InstallRun $run) => $run->advance([self::SLICE2, ''], $new, $written, $onSource));
+                self::locked($id, static fn(InstallRun $run) => $run->advance([self::SLICE2, ''], $new, $written, $warnings));
                 $this->fail('refused');
             } catch (InvalidArgumentException) {
             }
@@ -328,7 +328,7 @@ namespace Tests\Unit\Central {
         {
             $id     = self::runIn(InstallRun::ITEMS);
             $failed = self::runIn(InstallRun::ERROR);
-            self::locked($id, static fn(InstallRun $run) => $run->advance([self::SLICE1, ''], [self::SLICE1, self::ITEM1], 500, 1200));
+            self::locked($id, static fn(InstallRun $run) => $run->advance([self::SLICE1, ''], [self::SLICE1, self::ITEM1], 500, []));
             $before = TableDb::rows('object_text');
 
             $this->assertTrue(self::locked($id, static fn(InstallRun $run) => $run->at([self::SLICE1, self::ITEM1])));
@@ -339,7 +339,7 @@ namespace Tests\Unit\Central {
             try {
                 self::locked($id, static function (InstallRun $run): void {
                     TableDb::$tables['item'][] = ['id' => self::ITEM2];      // the batch's own writes
-                    $run->advance([self::SLICE1, ''], [self::SLICE1, self::ITEM2], 500, 1200);
+                    $run->advance([self::SLICE1, ''], [self::SLICE1, self::ITEM2], 500, []);
                 });
                 $this->fail('a stale advance throws');
             } catch (LogicException) {
@@ -352,12 +352,12 @@ namespace Tests\Unit\Central {
         public function test_fail_after_a_rolled_back_batch_keeps_the_position_and_counts(): void
         {
             $id = self::runIn(InstallRun::ITEMS);
-            self::locked($id, static fn(InstallRun $run) => $run->advance([self::SLICE1, ''], [self::SLICE1, self::ITEM1], 500, 1200));
+            self::locked($id, static fn(InstallRun $run) => $run->advance([self::SLICE1, ''], [self::SLICE1, self::ITEM1], 500, []));
             $run = null;
             try {
                 self::locked($id, static function (InstallRun $locked) use (&$run): void {
                     $run = $locked;
-                    $locked->advance([self::SLICE1, self::ITEM1], [self::SLICE1, self::ITEM2], 500, 1200);
+                    $locked->advance([self::SLICE1, self::ITEM1], [self::SLICE1, self::ITEM2], 500, []);
                     throw new \RuntimeException('the item write failed');
                 });
             } catch (\RuntimeException) {

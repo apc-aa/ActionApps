@@ -40,7 +40,7 @@ final class ImportGuardTest extends TestCase
 
         $this->expectException(InvalidArgumentException::class);
         try {
-            $this->importer()->write($plan);
+            $this->import($plan);
         } finally {
             self::assertSame([], TableDb::$log, 'no statement');
         }
@@ -57,7 +57,7 @@ final class ImportGuardTest extends TestCase
         self::assertInstanceOf(WriteError::class, $e->getPrevious());
         self::assertSame([WriteError::ENGINE, 'import'], [$e->getPrevious()->reason, $e->getPrevious()->path]);
         self::assertStringContainsString('object_text (MyISAM) - ', $e->getMessage());
-        self::assertSame([], TableDb::$log, 'no statement');
+        self::assertSame([], array_filter(TableDb::$log, static fn(string $q): bool => !str_starts_with($q, 'SELECT property, value FROM `object_text`')), 'no statement but the read of the run');
     }
 
     public function test_the_db_target_names_the_tables_without_transactions(): void
@@ -83,10 +83,10 @@ final class ImportGuardTest extends TestCase
 
     public function test_write_refuses_to_join_a_transaction(): void
     {
-        $plan = $this->plan();
+        [$plan, $run] = [$this->plan(), $this->newRun()];
         try {
-            DB_AA::transaction(function () use ($plan): void {
-                $this->importer()->write($plan);
+            DB_AA::transaction(function () use ($plan, $run): void {
+                $this->import($plan, run: $run);
             });
             self::fail('written inside a transaction');
         } catch (LogicException $e) {
@@ -105,7 +105,7 @@ final class ImportGuardTest extends TestCase
         self::assertInstanceOf(WriteError::class, $e->getPrevious());
         self::assertSame([WriteError::DB, 'import'], [$e->getPrevious()->reason, $e->getPrevious()->path]);
         self::assertStringContainsString('nothing was written: db at import: no database transaction could be started', $e->getMessage());
-        self::assertSame([], TableDb::$log, 'no statement');
-        self::assertSame($foreign, array_filter(TableDb::$tables));
+        self::assertSame([], array_filter(TableDb::$log, static fn(string $q): bool => !str_starts_with($q, 'SELECT property, value FROM `object_text`')), 'no statement but the read of the run');
+        self::assertSame($foreign, self::tables());
     }
 }

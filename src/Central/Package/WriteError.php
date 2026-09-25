@@ -25,6 +25,10 @@ final class WriteError extends RuntimeException
     /** the plan has S findings and no confirmation token of them came, or another one (ImportConfirmation) -
      *  nothing was written; show the preview again */
     public const UNCONFIRMED = 'unconfirmed';
+    /** the install run is not where the write needs it - its definitions written already, ended, forgotten */
+    public const RUN = 'run';
+    /** a module the run wrote is not on the target any more (deleted since) */
+    public const GONE = 'gone';
     /** the database refused a statement (AA_Metabase::do*() returned false), or no transaction could be started */
     public const DB = 'db';
 

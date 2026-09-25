@@ -83,16 +83,28 @@ final class RowStore
         if (!(is_string($value) || ($value instanceof RawBytes)) || ($value === '')) {
             return $value;
         }
-        $measured = TargetCharset::measure($rewrite->numeric($rewrite->known($value, $widget)), $charset);
+        return $this->plain($rewrite->numeric($rewrite->known($value, $widget)), $charset, $path, $limit);
+    }
+
+    /** value() without the reference rewrite - a password or a name is no template
+     *  @param array{int, bool}|null $limit Schema::lengthLimits() of its column
+     *  @throws WriteError */
+    public function plain(string|RawBytes $value, string $charset, string $path, ?array $limit = null): string
+    {
+        $measured = TargetCharset::measure($value, $charset);
         if ($measured === null) {
             throw new WriteError(WriteError::CHARSET, $path, "the value does not convert to $charset");
         }
-        if ($limit !== null) {
-            if (($too_long = TargetCharset::tooLong($measured, $limit)) !== null) {
-                throw new WriteError(WriteError::TOO_LONG, $path, $too_long);
-            }
+        if (($limit !== null) && (($too_long = TargetCharset::tooLong($measured, $limit)) !== null)) {
+            throw new WriteError(WriteError::TOO_LONG, $path, $too_long);
         }
         return $measured[0];
+    }
+
+    /** Schema::tableLimits() of a column of a table @return array{int, bool}|null */
+    public function limit(string $table, string $column): ?array
+    {
+        return ($this->limits[$table] ??= $this->schema->tableLimits($table))[$column] ?? null;
     }
 
     /** INSERT; the AUTO_INCREMENT number of the new row, 0 for a table without one

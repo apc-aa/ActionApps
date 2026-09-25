@@ -9,7 +9,12 @@ use InvalidArgumentException;
 
 /** Source id => target id maps of one package import. Immutable. The plan knows
  *  every map but views, e-mails and alerts filters - AUTO_INCREMENT numbers them when the rows are written
- *  (withNumbers()). The export lint uses an identity map of the app. */
+ *  (withNumbers()). The export lint uses an identity map of the app.
+ *
+ *  Item ids are a function, not a list - a transfer has too many items to keep: item() keeps an id, or,
+ *  with an item key (a copy in the same AA, where the source items stay), derives the new id from the key.
+ *  Which ids of a text are items of the package's slices only the DB knows: withPackageItems() takes those
+ *  the caller looked up, for one write, and never stores them (toJson()). */
 final class IdMap
 {
     /** AA_CONSTANT_GROUPS_CORE, include/constedit_util.php:674 - exist on every AA, never renamed */
@@ -30,6 +35,10 @@ final class IdMap
     private array $longIds;
     /** @var array<string, array<int, int>> 'view' | 'email' | 'filter' => old => new */
     private array $numbers;
+    /** '' = item ids stay; else new = string2id(key . old) */
+    private string $itemKey = '';
+    /** @var array<string, string> items of the package's slices named in what is written now: old => item() */
+    private array $items = [];
 
     /**
      * @param array<string, string> $modules     module ids (32 hex, any case; stored lower case)
@@ -85,6 +94,48 @@ final class IdMap
         return $clone;
     }
 
+    /** the map of a copy in the same AA: item ids derived from $key - one key per run, so a second copy
+     *  of the same items gets other ids */
+    public function withItemKey(string $key): self
+    {
+        if (!preg_match('/^[0-9a-f]{32}\z/', $key)) {
+            throw new InvalidArgumentException('An item key is 32 lower-case hex');
+        }
+        $clone          = clone $this;
+        $clone->itemKey = $key;
+        $clone->items   = [];
+        return $clone;
+    }
+
+    /** the key of the item ids; '' = they stay */
+    public function itemKey(): string
+    {
+        return $this->itemKey;
+    }
+
+    /** the target id of an item of the package's slices */
+    public function item(string $old): string
+    {
+        $old = strtolower($old);
+        return ($this->itemKey === '') ? $old : string2id($this->itemKey . $old);
+    }
+
+    /** the map with these source ids known as items of the package's slices - longId() maps them by item()
+     *  @param list<string> $ids */
+    public function withPackageItems(array $ids): self
+    {
+        $clone = clone $this;
+        foreach ($ids as $id) {
+            if (!preg_match('/^[0-9a-f]{32}\z/i', $id)) {
+                throw new InvalidArgumentException("Invalid item id $id");
+            }
+            if (!isset($this->longIds[strtolower($id)])) {
+                $clone->items[strtolower($id)] = $this->item($id);
+            }
+        }
+        return $clone;
+    }
+
     public function module(string $old): ?string
     {
         return $this->modules[strtolower($old)] ?? null;
@@ -92,7 +143,7 @@ final class IdMap
 
     public function longId(string $old): ?string
     {
-        return $this->longIds[strtolower($old)] ?? null;
+        return $this->longIds[strtolower($old)] ?? $this->items[strtolower($old)] ?? null;
     }
 
     public function view(int $old): ?int
@@ -126,10 +177,10 @@ final class IdMap
         return $this->modules;
     }
 
-    /** @return array<string, string> all long ids, modules included, lower case */
+    /** @return array<string, string> all long ids, modules and the package items included, lower case */
     public function longIds(): array
     {
-        return $this->longIds;
+        return $this->longIds + $this->items;
     }
 
     /** @return array<int, int> */
@@ -173,6 +224,7 @@ final class IdMap
             'filters'     => $this->numbers['filter'],
             'groups'      => $this->groups,
             'collections' => $this->collections,
+            'itemKey'     => $this->itemKey,
         ], JSON_THROW_ON_ERROR);
     }
 
@@ -181,8 +233,10 @@ final class IdMap
     {
         $data = json_decode($json, true, 4, JSON_THROW_ON_ERROR);
         $part = static fn(string $key): array => is_array($data[$key] ?? null) ? $data[$key] : throw new InvalidArgumentException("Id map without $key");
-        return (new self($part('modules'), $part('longIds'), $part('views'), $part('emails'), $part('groups'), $part('collections')))
+        $map  = (new self($part('modules'), $part('longIds'), $part('views'), $part('emails'), $part('groups'), $part('collections')))
             ->withNumbers('filter', $part('filters'));
+        $key  = is_string($data['itemKey'] ?? null) ? $data['itemKey'] : throw new InvalidArgumentException('Id map without itemKey');
+        return ($key === '') ? $map : $map->withItemKey($key);
     }
 
     /** Lower case both sides. Exactly 32 hex on both sides - the rewrite must not change the

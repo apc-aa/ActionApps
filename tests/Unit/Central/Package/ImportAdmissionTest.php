@@ -46,7 +46,7 @@ final class ImportAdmissionTest extends TestCase
     private function refused(ImportPlan $plan, ?string $token, string $reason, ?ImportConfirmation $confirmation = null): WriteError
     {
         try {
-            $this->importer(confirmation: $confirmation ?? self::confirmation())->write($plan, $token);
+            $this->import($plan, $this->importer(confirmation: $confirmation ?? self::confirmation()), $token);
             self::fail('the write was not refused');
         } catch (ImportFailed $e) {
             $cause = $e->getPrevious();
@@ -186,7 +186,7 @@ final class ImportAdmissionTest extends TestCase
         self::assertNotSame($preview->map->modules(), $plan->map->modules());
         self::assertSame($token, self::confirmation()->token($plan, self::USER));
 
-        $report = $this->importer(confirmation: self::confirmation())->write($plan, $token);
+        $report = $this->import($plan, $this->importer(confirmation: self::confirmation()), $token);
         self::assertCount(3, TableDb::rows('module'));
         self::assertSame(['{server:REMOTE_ADDR}'], array_column(array_filter(TableDb::rows('view'), static fn(array $r): bool => $r['odd'] === '{server:REMOTE_ADDR}'), 'odd'));
         $levels = array_map(static fn(array $f): string => $f[1]->level, $report->findings);
@@ -201,7 +201,7 @@ final class ImportAdmissionTest extends TestCase
         self::assertNull(self::confirmation()->token($plan, self::USER));
         self::assertTrue(self::confirmation()->confirms($plan, self::USER, 'anything'));
 
-        $this->importer()->write($plan);
+        $this->import($plan);
         self::assertCount(3, TableDb::rows('module'));
     }
 

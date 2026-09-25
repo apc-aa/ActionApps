@@ -57,7 +57,7 @@ final class ObjectWriterTest extends TestCase
 
     public function test_the_example_objects_get_new_ids_their_owner_and_rewritten_properties(): void
     {
-        $this->importer()->write($this->plan());
+        $this->import($this->plan());
         [$w, $s]   = [self::id(1), self::id(2)];
         [$sw, $ss] = [string2id('AA_Modulesettings_Site' . $w), string2id('AA_Modulesettings_Slice' . $s)];
         [$alias, $set, $cond, $sort] = [self::id(4), self::id(5), self::id(6), self::id(7)];
@@ -107,7 +107,7 @@ final class ObjectWriterTest extends TestCase
             'ussage' => ['{_:Hlavicka:a}', '{_:Hlavicka:b}'],
         ]]));
 
-        $this->importer()->write($this->plan($package));
+        $this->import($this->plan($package));
 
         $ss = string2id('AA_Modulesettings_Slice' . self::id(2));
         self::assertSame([[$ss, 'autofields', 0, '1']], self::objectRows('object_integer', [$ss]));
@@ -128,7 +128,7 @@ final class ObjectWriterTest extends TestCase
     {
         $package = self::module(self::example(), self::SITE, static fn(Module $m): Module => self::with($m, ['settings' => null, 'objects' => []]));
 
-        $this->importer()->write($this->plan($package));
+        $this->import($this->plan($package));
 
         self::assertSame([], self::objectRows('object_text', [string2id('AA_Modulesettings_Site' . self::id(1))]));
     }
@@ -239,7 +239,7 @@ final class ObjectWriterTest extends TestCase
         $e = $this->failure($forced);
 
         self::assertInstanceOf(LogicException::class, $e->getPrevious());
-        self::assertSame($foreign, array_filter(TableDb::$tables), 'the foreign set, its condition and the rest');
+        self::assertSame($foreign, self::tables(), 'the foreign set, its condition and the rest');
         $sent = array_merge(TableDb::$sent['object_text'] ?? [], TableDb::$sent['object_integer'] ?? []);
         self::assertSame([], array_filter($sent, static fn(array $r): bool => in_array($r['value'], [self::FSET, self::FCOND, self::FS], true) || in_array($r['object_id'], [self::FSET, self::FCOND], true)));
         self::assertNotContains('AA_Plannedtask', array_column($sent, 'value'));
@@ -257,14 +257,14 @@ final class ObjectWriterTest extends TestCase
 
             self::assertInstanceOf(LogicException::class, $e->getPrevious(), $name);
             self::assertStringContainsString("settings/$name: AA_Modulesettings_Site has no such property", $e->getPrevious()->getMessage());
-            self::assertSame($this->before, array_filter(TableDb::$tables), $name);
+            self::assertSame($this->before, self::tables(), $name);
         }
     }
 
     /** save() writes aa_name only when PHP takes it for true: not '' nor '0' */
     public function test_an_object_named_0_gets_no_aa_name(): void
     {
-        $this->importer()->write($this->plan(self::object(self::example(), self::SITE, 0, static fn(array $o): array => ['name' => '0'] + $o)));
+        $this->import($this->plan(self::object(self::example(), self::SITE, 0, static fn(array $o): array => ['name' => '0'] + $o)));
 
         self::assertNotContains('aa_name', array_column(self::objectRows('object_text', [self::id(4)]), 1));
     }
@@ -280,7 +280,7 @@ final class ObjectWriterTest extends TestCase
         }
         $foreign = TableDb::$tables;
 
-        $this->importer()->write($this->plan());
+        $this->import($this->plan());
 
         $theirs = static fn(): array => array_values(array_filter(TableDb::rows('object_text'), static fn(array $r): bool => $r['id'] < 100));
         self::assertSame($foreign['object_text'], $theirs());

@@ -30,6 +30,7 @@ use PHPUnit\Framework\TestCase;
 use RuntimeException;
 use Tests\Unit\Central\Package\Fixtures\FakeImportTarget;
 use Tests\Unit\Central\Package\Fixtures\ImportFixture;
+use Tests\Unit\Central\Package\Fixtures\TableDbTarget;
 use Tests\Unit\Central\Package\Fixtures\TableDb;
 
 require_once __DIR__ . '/fixtures/ImportFixture.php';
@@ -38,47 +39,9 @@ final class ImporterTest extends TestCase
 {
     use ImportFixture;
 
-    /** DbImportTarget over TableDb for the questions, FakeImportTarget for the new ids (predictable) */
     private function dbTarget(): ImportTarget
     {
-        return new class ($this->target) implements ImportTarget {
-            public function __construct(private readonly FakeImportTarget $ids) {}
-
-            public function groupTaken(string $name, bool $lock = false): bool
-            {
-                return (new DbImportTarget())->groupTaken($name, $lock);
-            }
-
-            public function collectionTaken(string $id): bool
-            {
-                return (new DbImportTarget())->collectionTaken($id);
-            }
-
-            public function nonTransactional(array $tables): array
-            {
-                return [];          // TableDb has no engines - the engine question: ImportGuardTest
-            }
-
-            public function usernameTaken(string $username): bool
-            {
-                return $this->ids->usernameTaken($username);
-            }
-
-            public function emailTaken(string $email): bool
-            {
-                return $this->ids->emailTaken($email);
-            }
-
-            public function newId(): string
-            {
-                return $this->ids->newId();
-            }
-
-            public function newCollectionId(): string
-            {
-                return $this->ids->newCollectionId();
-            }
-        };
+        return new TableDbTarget($this->target);
     }
 
     /** a plan changed after the planning - what the Validator / planner would refuse, to reach the writer's own checks */
@@ -97,7 +60,7 @@ final class ImporterTest extends TestCase
 
     public function test_the_example_is_written_with_new_ids_and_rewritten_references(): void
     {
-        $report = $this->importer()->write($this->plan());
+        $report = $this->import($this->plan());
         [$w, $s, $a] = [self::id(1), self::id(2), self::id(3)];
 
         self::assertSame([12 => 1000, 13 => 1001], $report->maps['views']);
@@ -157,12 +120,13 @@ final class ImporterTest extends TestCase
         self::assertSame([['group_id' => 'ct_rubriky', 'slice_id' => $s, 'hierarch' => 1]], self::cols('constant_slice', 'group_id', 'slice_id', 'hierarch'));
 
         // one transaction on one handle
-        self::assertSame('BEGIN', TableDb::$log[0]);
+        self::assertStringStartsWith('SELECT property, value FROM `object_text`', TableDb::$log[0], 'the mode of the run');
+        self::assertSame('BEGIN', TableDb::$log[1]);
         self::assertSame('COMMIT', end(TableDb::$log));
         self::assertNotContains('ROLLBACK', TableDb::$log);
         self::assertCount(1, array_unique(TableDb::$handles), 'every statement on the transaction handle');
 
-        $objects = array_keys(array_filter(TableDb::$log, static fn(string $q): bool => str_starts_with($q, 'INSERT INTO `object_text`')));
+        $objects = array_keys(array_filter(TableDb::$log, fn(string $q): bool => str_starts_with($q, 'INSERT INTO `object_text`') && !str_contains($q, $this->lastRun)));
         $rows    = array_keys(array_filter(TableDb::$log, static fn(string $q): bool => (bool) preg_match('/^(INSERT|UPDATE) (INTO )?`(?!object_)/', $q)));
         self::assertGreaterThan(end($rows), $objects[0], 'the objects after the rows');
         self::assertCount(29, $objects, 'ObjectWriterTest has them row by row');
@@ -170,7 +134,7 @@ final class ImporterTest extends TestCase
 
     public function test_every_column_of_the_local_schema_is_written(): void
     {
-        $this->importer()->write($this->plan());
+        $this->import($this->plan());
 
         $tables = ['module', 'slice', 'field', 'view', 'email', 'profile', 'site', 'site_spot', 'relation', 'alerts_collection',
             'alerts_collection_filter', 'alerts_collection_howoften', 'alerts_filter', 'constant_slice', 'constant', 'object_text'];
@@ -193,7 +157,7 @@ final class ImporterTest extends TestCase
         $package = self::cell(self::example(), self::SLICE, 'field', 0, ['text_stored' => null]);
         $package = self::cell($package, self::SLICE, 'slice', 0, ['permit_anonymous_post' => null]);
 
-        $this->importer()->write($this->plan($package));
+        $this->import($this->plan($package));
 
         self::assertSame([0, 1, 1], array_column(TableDb::rows('field'), 'text_stored'), 'the others get the local default');
         self::assertSame(0, TableDb::rows('slice')[0]['permit_anonymous_post']);
@@ -204,7 +168,7 @@ final class ImporterTest extends TestCase
         $package = self::cell(self::example(), self::SLICE, 'slice', 0, ['vid' => '99', 'mlxctrl' => 'ffffffffffffffffffffffffffffffff']);
         $package = self::cell($package, self::SLICE, 'profile', 0, ['value' => '98']);
 
-        $this->importer()->write($this->plan($package));
+        $this->import($this->plan($package));
 
         self::assertSame([99, ''], [TableDb::rows('slice')[0]['vid'], TableDb::rows('slice')[0]['mlxctrl']], 'a view number stays (W); a module outside: ""');
         self::assertSame('98', TableDb::rows('profile')[0]['value']);
@@ -212,7 +176,7 @@ final class ImporterTest extends TestCase
 
     public function test_mlxctrl_of_the_package_is_mapped(): void
     {
-        $this->importer()->write($this->plan(self::cell(self::example(), self::SLICE, 'slice', 0, ['mlxctrl' => self::SITE])));
+        $this->import($this->plan(self::cell(self::example(), self::SLICE, 'slice', 0, ['mlxctrl' => self::SITE])));
 
         self::assertSame(self::id(1), TableDb::rows('slice')[0]['mlxctrl']);
     }
@@ -232,13 +196,13 @@ final class ImporterTest extends TestCase
     public function test_an_alerts_reference_outside_the_package_is_never_written(\Closure $mutate, string $message): void
     {
         try {
-            $this->importer()->write(self::forced($this->plan(), $mutate));
+            $this->import(self::forced($this->plan(), $mutate));
             self::fail('written');
         } catch (ImportFailed $e) {
             self::assertInstanceOf(LogicException::class, $e->getPrevious());
             self::assertStringContainsString($message, $e->getMessage());
         }
-        self::assertSame([], array_filter(TableDb::$tables));
+        self::assertSame([], self::tables());
     }
 
     public function test_a_unique_index_of_the_target_holds(): void
@@ -257,7 +221,7 @@ final class ImporterTest extends TestCase
         $plan    = $this->plan($package);
         self::assertSame('windows-1250', $plan->charsets[self::SLICE]);
 
-        $this->importer()->write($plan);
+        $this->import($plan);
 
         $cp = static fn(string $utf): string => (string) iconv('UTF-8', 'windows-1250', $utf);
         self::assertSame($cp('Central Test - články'), TableDb::rows('slice')[0]['name']);
@@ -274,7 +238,7 @@ final class ImporterTest extends TestCase
         $package = self::module(self::example(), self::SITE, static fn(Module $m): Module => self::with($m, ['spotTree' => null]));
         $package = self::cell($package, self::SLICE, 'email', 0, ['attachments' => '/etc/aa/config.php']);
 
-        $this->importer()->write($this->plan($package));
+        $this->import($this->plan($package));
 
         self::assertSame('', TableDb::rows('site')[0]['structure'], 'no spot tree: structure = ""');
         self::assertSame('', TableDb::rows('email')[0]['attachments'], 'a local file is never attached');
@@ -289,7 +253,7 @@ final class ImporterTest extends TestCase
             return $tree;
         });
 
-        $this->importer()->write($this->plan($package));
+        $this->import($this->plan($package));
 
         $tree = unserialize((string) TableDb::rows('site')[0]['structure'], ['allowed_classes' => [\sitetree::class, \spot::class]])->toArray();
         self::assertSame(['x' => '{ifin:' . self::id(2) . ':1:{view:1001}}'], $tree['spots'][2]['c']);
@@ -304,7 +268,7 @@ final class ImporterTest extends TestCase
         ]);
         $package = self::cell($package, self::SLICE, 'view', 1, ['odd' => '{alerts1....AbC12}{alerts2....Zz999}']);
 
-        $this->importer()->write($this->plan($package));
+        $this->import($this->plan($package));
 
         self::assertSame(['headline........', 'category.......1', '_email..........', 'alerts1....K0001', 'alerts2....Zz999'], array_column(TableDb::rows('field'), 'id'));
         self::assertSame('{alerts1....K0001}{alerts2....Zz999}', TableDb::rows('view')[1]['odd']);
@@ -312,7 +276,7 @@ final class ImporterTest extends TestCase
 
     public function test_a_filter_shared_by_two_alerts_modules_is_written_once(): void
     {
-        $this->importer()->write($this->plan(self::alerts2(self::example(), self::ALERTS2, 'XyZ98')));
+        $this->import($this->plan(self::alerts2(self::example(), self::ALERTS2, 'XyZ98')));
 
         self::assertSame([['id' => 3000, 'vid' => 1000]], self::cols('alerts_filter', 'id', 'vid'));
         self::assertSame([['collectionid' => 'K0001', 'filterid' => 3000], ['collectionid' => 'K0002', 'filterid' => 3000]], self::cols('alerts_collection_filter', 'collectionid', 'filterid'));
@@ -326,7 +290,7 @@ final class ImporterTest extends TestCase
 
         $this->expectException(InvalidArgumentException::class);
         try {
-            $this->importer()->write($bad);
+            $this->import($bad);
         } finally {
             self::assertSame([], TableDb::$log);
         }
@@ -372,7 +336,7 @@ final class ImporterTest extends TestCase
     {
         foreach (['false', 'throw'] as $mode) {
             $this->setUp();
-            $plan         = $this->plan();
+            [$plan, $run]  = [$this->plan(), $this->newRun()];
             TableDb::$fail = static function (string $sql) use ($statement, $mode): bool {
                 if (!preg_match($statement, $sql)) {
                     return false;
@@ -380,7 +344,7 @@ final class ImporterTest extends TestCase
                 return ($mode === 'false') ?: throw new RuntimeException('connection lost');
             };
             try {
-                $this->importer()->write($plan);
+                $this->import($plan, run: $run);
                 self::fail("$mode: no failure");
             } catch (ImportFailed $e) {
                 self::assertInstanceOf(($mode === 'false') ? WriteError::class : RuntimeException::class, $e->getPrevious(), $mode);
@@ -388,7 +352,7 @@ final class ImporterTest extends TestCase
             }
             self::assertSame('ROLLBACK', end(TableDb::$log), "$mode: the rollback is the last statement");
             self::assertNotContains('COMMIT', TableDb::$log, $mode);
-            self::assertSame([], array_filter(TableDb::$tables), "$mode: nothing stays");
+            self::assertSame([], self::tables(), "$mode: nothing stays");
         }
     }
 
@@ -402,7 +366,8 @@ final class ImporterTest extends TestCase
         $e = $this->rolledBack($plan);
 
         self::assertSame([WriteError::TAKEN, 'constant-group[ct_rubriky]'], [$e->getPrevious()->reason, $e->getPrevious()->path]);
-        self::assertSame(['BEGIN', 'ROLLBACK'], TableDb::$log);
+        self::assertSame([], TableDb::writes());
+        self::assertSame('ROLLBACK', end(TableDb::$log));
     }
 
     public function test_a_collection_taken_since_the_plan_stops_the_write_before_any_row(): void
@@ -413,7 +378,8 @@ final class ImporterTest extends TestCase
         $e = $this->rolledBack($plan);
 
         self::assertSame([WriteError::TAKEN, 'alerts_collection[AbC12]'], [$e->getPrevious()->reason, $e->getPrevious()->path]);
-        self::assertSame(['BEGIN', 'ROLLBACK'], TableDb::$log);
+        self::assertSame([], TableDb::writes());
+        self::assertSame('ROLLBACK', end(TableDb::$log));
     }
 
     public function test_the_db_target_answers_inside_the_transaction_and_locks_the_group_name(): void
@@ -422,7 +388,7 @@ final class ImporterTest extends TestCase
         $plan   = (new Planner($target))->plan(self::example(), (new Validator())->validate(self::example()));
         [TableDb::$log, TableDb::$handles] = [[], []];
 
-        $this->importer($target)->write($plan);
+        $this->import($plan, $this->importer($target));
 
         self::assertCount(1, array_unique(TableDb::$handles), 'the re-checks run on the transaction handle');
         $insert = array_search(array_values(array_filter(TableDb::$log, static fn(string $q): bool => str_contains($q, "'lt_groupNames'") && str_starts_with($q, 'INSERT')))[0], TableDb::$log, true);
@@ -435,13 +401,13 @@ final class ImporterTest extends TestCase
     {
         $target        = $this->dbTarget();
         $plan          = (new Planner($target))->plan(self::example(), (new Validator())->validate(self::example()));
-        TableDb::$fail = static fn(string $sql): bool => str_ends_with($sql, 'FOR UPDATE');
+        TableDb::$fail = static fn(string $sql): bool => str_ends_with($sql, 'FOR UPDATE') && str_contains($sql, 'group_id');
 
         $e = $this->rolledBack($plan, $target, RuntimeException::class);
 
         self::assertStringContainsString('the locking read of the constant group ct_rubriky failed', $e->getMessage());
         self::assertSame('ROLLBACK', end(TableDb::$log));
-        self::assertSame([], array_filter(TableDb::$tables));
+        self::assertSame([], self::tables());
     }
 
     public function test_a_group_created_in_the_db_since_the_plan_stops_the_write(): void
@@ -472,50 +438,18 @@ final class ImporterTest extends TestCase
     public function test_the_locking_re_check_before_the_group_row_stops_the_write(): void
     {
         $plan   = $this->plan();
-        $target = new class ($this->target) implements ImportTarget {
-            public function __construct(private readonly FakeImportTarget $ids) {}
-
+        $target = new class extends FakeImportTarget {
             public function groupTaken(string $name, bool $lock = false): bool
             {
                 return $lock;       // free at the start, taken once locked - a concurrent import in between
-            }
-
-            public function collectionTaken(string $id): bool
-            {
-                return false;
-            }
-
-            public function nonTransactional(array $tables): array
-            {
-                return [];
-            }
-
-            public function usernameTaken(string $username): bool
-            {
-                return $this->ids->usernameTaken($username);
-            }
-
-            public function emailTaken(string $email): bool
-            {
-                return $this->ids->emailTaken($email);
-            }
-
-            public function newId(): string
-            {
-                return $this->ids->newId();
-            }
-
-            public function newCollectionId(): string
-            {
-                return $this->ids->newCollectionId();
             }
         };
 
         $e = $this->rolledBack($plan, $target);
 
         self::assertSame([WriteError::TAKEN, 'constant-group[ct_rubriky]/lt_groupNames'], [$e->getPrevious()->reason, $e->getPrevious()->path]);
-        self::assertSame(['BEGIN', 'ROLLBACK'], [TableDb::$log[0], end(TableDb::$log)]);
-        self::assertSame([], array_filter(TableDb::$tables), 'the modules written before: rolled back');
+        self::assertSame(['BEGIN', 'ROLLBACK'], [TableDb::$log[1], end(TableDb::$log)]);
+        self::assertSame([], self::tables(), 'the modules written before: rolled back');
     }
 
     // ---------------------------------------------------------------- values
@@ -528,7 +462,7 @@ final class ImporterTest extends TestCase
         $e = $this->rolledBack($bad);
 
         self::assertSame([WriteError::CHARSET, 'slice-module[' . self::SLICE . ']/view[12]/name'], [$e->getPrevious()->reason, $e->getPrevious()->path]);
-        self::assertSame([], array_filter(TableDb::$tables));
+        self::assertSame([], self::tables());
     }
 
     public function test_a_value_too_long_once_the_view_numbers_are_in_throws_before_the_commit(): void
@@ -542,7 +476,7 @@ final class ImporterTest extends TestCase
         self::assertSame([WriteError::TOO_LONG, 'slice-module[' . self::SLICE . ']/view[12]/name'], [$e->getPrevious()->reason, $e->getPrevious()->path]);
         self::assertStringContainsString('122 characters > 120', $e->getMessage());
         self::assertSame('ROLLBACK', end(TableDb::$log));
-        self::assertSame([], array_filter(TableDb::$tables));
+        self::assertSame([], self::tables());
     }
 
     public function test_more_bytes_than_a_char_column_has_characters_is_an_error_of_the_plan_and_of_the_writer(): void
@@ -563,7 +497,7 @@ final class ImporterTest extends TestCase
     private function rolledBack(ImportPlan $plan, ?ImportTarget $target = null, string $cause = WriteError::class): ImportFailed
     {
         try {
-            $this->importer($target)->write($plan);
+            $this->import($plan, $this->importer($target));
         } catch (ImportFailed $e) {
             self::assertInstanceOf($cause, $e->getPrevious());
             self::assertNotContains('COMMIT', TableDb::$log);

@@ -18,6 +18,8 @@ use LogicException;
  *  LogicException before the first row of the object tree.
  *  Keeping the source module ids would need the derived settings ids checked inside the transaction:
  *  object_text has no key that would refuse a duplicate.
+ *  A transfer brings the site's domains (Module::$transfer alternate-url) into its settings - the one
+ *  property of them no package carries.
  *  @internal only Importer calls it - the rights and the S confirmation are checked there. */
 final class ObjectWriter
 {
@@ -34,7 +36,8 @@ final class ObjectWriter
     {
         [$this->map, $this->rewrite] = [$map, new ImportRewrite($map)];
         foreach ($plan->package->modules as $m) {
-            if (($m->settings === null) && !$m->objects) {
+            $domains = array_values($m->transfer['alternate-url'] ?? []);
+            if (($m->settings === null) && !$m->objects && !$domains) {
                 continue;
             }
             $settings_class = Schema::SETTINGS_CLASSES[$m->type] ?? throw new LogicException("A $m->type carries no objects (the Validator's E)");
@@ -47,10 +50,14 @@ final class ObjectWriter
                     throw new LogicException("$path/object: the class " . ValueCodec::bytes($object['class'] ?? '') . " is not allowed (the Validator's E)");
                 }
             }
-            [$settings, $objects] = ObjectExport::map($m->type, $m->settings, $m->objects, $path, $convert);
+            [$settings, $objects] = ObjectExport::map($m->type, $m->settings ?? ($domains ? [] : null), $m->objects, $path, $convert);
             if ($settings !== null) {
-                $id = $plan->settingsIds[$m->id] ?? throw new LogicException("No settings id for module $m->id");
-                $this->insert($this->rows($settings_class, $id, $settings, null, "$path/settings", false));
+                $id   = $plan->settingsIds[$m->id] ?? throw new LogicException("No settings id for module $m->id");
+                $rows = $this->rows($settings_class, $id, $settings, null, "$path/settings", false);
+                foreach ($domains as $i => $url) {        // only a site has them (Module::TRANSFER)
+                    $rows[] = self::row(AA_Property::storageType($settings_class::getClassProperties()['alternate_url']->getType()), $id, 'alternate_url', $i, $this->store->plain($url, $this->charset, "$path/alternate-url[$i]"), "$path/alternate-url[$i]");
+                }
+                $this->insert($rows);
             }
             foreach ($objects as $object) {
                 $at = "$path/object[" . ValueCodec::bytes($object['id'] ?? '') . ']';

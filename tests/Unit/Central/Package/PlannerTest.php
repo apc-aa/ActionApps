@@ -12,6 +12,7 @@ namespace Tests\Unit\Central\Package;
 use AA\Central\Package\FixUp;
 use AA\Central\Package\GroupPlan;
 use AA\Central\Package\ImportPlan;
+use AA\Central\Package\ItemLint;
 use AA\Central\Package\LintFinding;
 use AA\Central\Package\Model\ConstantGroup;
 use AA\Central\Package\Model\Module;
@@ -42,7 +43,7 @@ final class PlannerTest extends TestCase
 
     private static function plan(Package $package, ?FakeImportTarget $target = null): ImportPlan
     {
-        $validation = (new Validator())->validate($package, $package->withItems);     // items come only in a transfer
+        $validation = (new Validator())->validate($package);
         self::assertTrue($validation->importable(), 'the mutation must stay valid: ' . json_encode(array_map(static fn(array $f): string => "{$f[1]->code} $f[0]", $validation->ofLevel(LintFinding::ERROR))));
         return (new Planner($target ?? new FakeImportTarget()))->plan($package, $validation);
     }
@@ -90,17 +91,6 @@ final class PlannerTest extends TestCase
         self::assertSame($site, $long[string2id('AA_Modulesettings_Site' . self::SITE)]);
         self::assertSame($slice, $long[string2id('AA_Modulesettings_Slice' . self::SLICE)]);
         self::assertCount(3 + 2 + 4 + 2, $long);
-    }
-
-    public function test_items_get_new_ids(): void
-    {
-        $item1 = '1234567890abcdef1234567890abcdef';
-        $item2 = 'fedcba0987654321fedcba0987654321';
-        $plan  = self::plan(self::with(self::items(self::example(), [self::item($item1), self::item($item2)]), ['publish' => 'no']));
-
-        self::assertSame(self::id(8), $plan->map->longId($item1), 'after the slice objects');
-        self::assertSame(self::id(9), $plan->map->longId($item2));
-        self::assertSame(self::id(10), $plan->map->longId(self::C1), 'constants last');
     }
 
     public function test_a_new_id_handed_out_twice_is_asked_again(): void
@@ -261,7 +251,6 @@ final class PlannerTest extends TestCase
             }), ["W view-outside $W/object[" . self::ALIAS . ']/code[0]']],
             'widget group is no text reference' => [static fn(Package $p): Package => $p, []],
             'raw bytes are linted as bytes' => [static fn(Package $p): Package => self::cell(self::lang($p, self::SLICE, 'cz_news_lang.php'), self::SLICE, 'view', 1, ['odd' => new RawBytes("\xA9 {ids:ffffffffffffffffffffffffffffffff} {ids:" . self::SLICE . '}')]), ["W module-outside $S/view[13]/odd"]],
-            'item values are not linted' => [static fn(Package $p): Package => self::items($p, [self::item('1234567890abcdef1234567890abcdef', '{view:99}')]), []],
         ];
     }
 
@@ -335,19 +324,58 @@ final class PlannerTest extends TestCase
     public function test_tables_without_transactions_are_an_error_of_the_plan(): void
     {
         $target          = new FakeImportTarget();
-        $target->engines = ['view' => 'MyISAM', 'object_float' => 'Aria', 'content' => 'MyISAM', 'item' => 'MyISAM', 'nothing' => 'MyISAM'];
+        $target->engines = ['view' => 'MyISAM', 'object_float' => 'Aria', 'content' => 'MyISAM', 'item' => 'MyISAM', 'slice_owner' => 'MyISAM', 'nothing' => 'MyISAM'];
         $advice          = ' - no transaction would roll a failed import back: run "Convert database engine to InnoDB" (State Check, Optimize) and plan again';
 
         $plan = self::plan(self::example(), $target);
 
         $found = array_values(array_filter($plan->findings, static fn(array $f): bool => $f[1]->code === Planner::NO_TRANSACTION));
-        self::assertSame([[Planner::TARGET, 'E', 'view (MyISAM), object_float (Aria)' . $advice]], array_map(static fn(array $f): array => [$f[0], $f[1]->level, $f[1]->ref], $found), 'the item tables only with items');
+        self::assertSame([[Planner::TARGET, 'E', 'view (MyISAM), object_float (Aria)' . $advice]], array_map(static fn(array $f): array => [$f[0], $f[1]->level, $f[1]->ref], $found), 'an install writes no items, no owners');
         self::assertFalse($plan->importable(), 'an error');
         self::assertContains('E no-transaction', array_map(static fn(array $f): string => "{$f[1]->level} {$f[1]->code}", $plan->preview()['findings']));
 
-        $items = self::plan(self::items(self::example(), [self::item('1234567890abcdef1234567890abcdef')]), $target);
-        self::assertStringEndsWith('item (MyISAM), content (MyISAM)' . $advice, array_values(array_filter($items->findings, static fn(array $f): bool => $f[1]->code === Planner::NO_TRANSACTION))[0][1]->ref);
         self::assertSame([], array_filter(self::plan(self::example())->findings, static fn(array $f): bool => $f[1]->code === Planner::NO_TRANSACTION), 'all InnoDB: nothing');
+
+        $transfer = (new Planner($target))->plan(self::example(), (new Validator())->validate(self::example(), true), true);
+        $found    = array_values(array_filter($transfer->findings, static fn(array $f): bool => $f[1]->code === Planner::NO_TRANSACTION));
+        self::assertSame('view (MyISAM), object_float (Aria), item (MyISAM), content (MyISAM), slice_owner (MyISAM)' . $advice, $found[0][1]->ref, 'a transfer: its batches and owners too');
+    }
+
+    /** the domains of the source site: kept (S, confirmed in the preview) only where no site of this AA
+     *  answers to them and they are not this AA's own host */
+    public function test_the_site_domains_a_transfer_brings(): void
+    {
+        $target          = new FakeImportTarget();
+        $target->domains = ['taken.example'];
+        $target->hosts   = ['aa.target.example'];
+        $urls            = ['https://www.new.example/', 'http://taken.example', 'www.aa.target.example', 'https://', 'new2.example'];
+        $package         = self::module(self::example(), self::SITE, static fn(Module $m): Module => self::with($m, ['transfer' => ['alternate-url' => $urls]]));
+
+        $plan = (new Planner($target))->plan($package, (new Validator())->validate($package, true), true);
+
+        $at = static fn(int $i): string => self::W . "/alternate-url[$i]";
+        self::assertSame([
+            "S domain-kept {$at(0)}", "S domain-kept {$at(4)}",
+            "W domain-dropped {$at(1)}", "W domain-dropped {$at(2)}", "W domain-dropped {$at(3)}",       // taken, this AA's host (www. or not), no host
+        ], array_values(array_map(static fn(array $f): string => "{$f[1]->level} {$f[1]->code} $f[0]", array_filter($plan->findings, static fn(array $f): bool => str_starts_with($f[1]->code, 'domain-')))));
+        self::assertSame(['https://www.new.example/', 'new2.example'], $plan->package->modules[0]->transfer['alternate-url'], 'what the writer gets');
+        self::assertTrue((bool) $plan->ofLevel(LintFinding::SECURITY), 'to be confirmed');
+    }
+
+    /** before any definition: the reader logins the source sends, against the users and the readers
+     *  holding rights of this AA */
+    public function test_reader_logins_of_users_or_readers_with_rights_are_errors_of_the_plan(): void
+    {
+        $target          = new FakeImportTarget();
+        $target->admins  = ['editor', 'boss@target.example'];
+        $target->readers = [ItemLint::USERNAME => ['Jana' => true, 'petr' => false]];
+
+        $plan = (new Planner($target))->plan(self::example(), (new Validator())->validate(self::example(), true), true, ['Editor ', 'boss@target.example', 'jana', 'petr', 'free']);
+
+        self::assertSame([
+            'E reader-admin target Editor ', 'E reader-admin target boss@target.example', 'E reader-perms target jana',
+        ], array_values(array_map(static fn(array $f): string => "{$f[1]->level} {$f[1]->code} $f[0] {$f[1]->ref}", array_filter($plan->findings, static fn(array $f): bool => str_starts_with($f[1]->code, 'reader-')))), 'another reader: the batch warns');
+        self::assertFalse($plan->importable());
     }
 
     /** @return list<array{string, string, string, string}> */

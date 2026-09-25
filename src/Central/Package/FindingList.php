@@ -38,6 +38,19 @@ final class FindingList
         $this->count["$level $code"] = ($this->count["$level $code"] ?? 0) + $n;
     }
 
+    /** @return array<string, int> code => findings of the level, kept or not */
+    public function counts(string $level): array
+    {
+        $counts = [];
+        foreach ($this->count as $key => $n) {
+            [$of, $code] = explode(' ', $key, 2);
+            if ($of === $level) {
+                $counts[$code] = $n;
+            }
+        }
+        return $counts;
+    }
+
     /** @return list<array{string, LintFinding}> by danger (stable), a code's `+N more` after its findings */
     public function all(): array
     {

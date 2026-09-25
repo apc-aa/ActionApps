@@ -30,7 +30,7 @@ final class ImportReportTest extends TestCase
 
     public function test_the_steps_run_after_the_commit(): void
     {
-        $report = $this->importer()->write($this->plan());
+        $report = $this->import($this->plan());
         [$w, $s, $a] = [self::id(1), self::id(2), self::id(3)];
 
         self::assertSame([
@@ -53,14 +53,14 @@ final class ImportReportTest extends TestCase
     {
         TableDb::$commitFails = true;
         try {
-            $this->importer()->write($this->plan());
+            $this->import($this->plan());
             self::fail('a failed commit passed');
         } catch (ImportFailed $e) {
             self::assertStringContainsString('commit failed', $e->getMessage());
         }
         self::assertSame([], $this->after->calls, 'nothing after a commit that did not happen');
         self::assertSame(['COMMIT', 'ROLLBACK'], array_slice(TableDb::$log, -2));
-        self::assertSame([], array_filter(TableDb::$tables));
+        self::assertSame([], self::tables());
     }
 
     public function test_no_new_group_no_constants_changed(): void
@@ -68,7 +68,7 @@ final class ImportReportTest extends TestCase
         $package = self::with(self::example(), ['constantGroups' => []]);
         $package = self::cell($package, self::SLICE, 'field', 1, ['input_show_func' => 'fld:']);
         $package = self::cell($package, self::SLICE, 'view', 1, ['odd' => '']);
-        $this->importer()->write($this->plan($package));
+        $this->import($this->plan($package));
 
         self::assertNotContains('constantsChanged', $this->after->calls);
         self::assertCount(7, $this->after->calls);
@@ -79,7 +79,7 @@ final class ImportReportTest extends TestCase
         [$w, $s, $a] = [self::id(1), self::id(2), self::id(3)];
         $this->after->fail = ["logInstall Central Test $w,$s,$a", "permissions $s importer-uid", 'constantsChanged', "invalidatePagecache $w"];
 
-        $report = $this->importer()->write($this->plan());
+        $report = $this->import($this->plan());
 
         self::assertCount(8, $this->after->calls, 'the steps after a failed one run');
         self::assertSame([
@@ -165,7 +165,7 @@ final class ImportReportTest extends TestCase
     public function test_the_report_of_the_example(): void
     {
         $plan   = $this->plan();
-        $report = $this->importer()->write($plan);
+        $report = $this->import($plan);
         [$w, $s, $a] = [self::id(1), self::id(2), self::id(3)];
 
         self::assertSame(['name' => 'Central Test', 'version' => '0.1.0', 'description' => self::example()->description, 'source' => self::example()->source], $report->package);
@@ -176,7 +176,7 @@ final class ImportReportTest extends TestCase
         ], $report->modules);
 
         // every row written, by table - the same as the tables hold
-        $written = array_map('count', TableDb::$tables);
+        $written = array_map('count', self::tables());
         ksort($written);
         self::assertSame($written, $report->rows);
         self::assertSame(3, $report->rows['module']);
@@ -191,7 +191,6 @@ final class ImportReportTest extends TestCase
             'groups'      => ['ct_rubriky' => 'ct_rubriky'],
             'collections' => $plan->map->collections(),
             'objects'     => [self::ALIAS => self::id(4), self::SET => self::id(5), self::COND => self::id(6), self::SORT => self::id(7)],
-            'items'       => [],
         ], $report->maps);
         self::assertSame($plan->allFindings(), $report->findings);
 
@@ -201,23 +200,10 @@ final class ImportReportTest extends TestCase
         self::assertSame(ImportReport::SETTINGS_URL, 'admin/slicefieldsedit.php?edit=1&change_id=');
     }
 
-    public function test_the_report_counts_the_items_by_slice(): void
-    {
-        $a      = str_repeat('1', 32);
-        $b      = str_repeat('2', 32);
-        $report = $this->importer()->write($this->plan(self::items(self::example(), [self::item($a), self::item($b)])));
-
-        self::assertSame([self::id(2) => 2], $report->maps['items']);
-        self::assertSame(2, $report->rows['item']);
-        self::assertCount(2, TableDb::rows('item'));
-        self::assertSame(2, $report->rows['content'], 'the headline of each (status_code is a column of item)');
-        self::assertCount(2, TableDb::rows('content'));
-    }
-
     public function test_the_report_quotes_package_text_as_it_is(): void
     {
         $package = self::cell(self::example(), self::SLICE, 'module', 0, ['name' => '<script>x</script>']);
-        $report  = $this->importer()->write($this->plan($package));
+        $report  = $this->import($this->plan($package));
         self::assertSame('<script>x</script>', $report->modules[1]['name'], 'the UI escapes (safe())');
         self::assertSame('<script>x</script>', $report->settings[0]['name']);
     }

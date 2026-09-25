@@ -60,8 +60,8 @@ final class Validator
     public const GROUP_MISSING = Collector::GROUP_MISSING;
     /** E: site.state_file names a control file (flag ≠ 1, stateFileName() ≠ '') - site.php would include it */
     public const STATE_FILE = Collector::STATE_FILE;
-    /** E: items without meta/contents/@items, items in a module other than a slice, or items (the flag) in
-     *  an install - items travel only in a transfer */
+    /** E: items without meta/contents/@items, items in a module other than a slice, or items (the flag)
+     *  outside a batch - items travel only in the batches of a transfer */
     public const ITEMS = 'items';
     /** E: items, the item flag, a batch or the state of the installation with meta/publish = users | all -
      *  a transfer is never published */
@@ -140,8 +140,8 @@ final class Validator
         }
         if (!$transfer && ($package->batch !== null)) {
             $this->add('meta/batch', LintFinding::ERROR, self::TRANSFER_ONLY, 'batch');
-        } elseif (!$transfer && $items) {
-            $this->add('meta/contents', LintFinding::ERROR, self::ITEMS, 'install');
+        } elseif ($items && ($package->batch === null)) {
+            $this->add('meta/contents', LintFinding::ERROR, self::ITEMS, $transfer ? 'definitions' : 'install');
         }
         if ($package->batch !== null) {
             $this->batch($package, $transfer);

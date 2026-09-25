@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Central\Package\Fixtures;
 
+use AA\Central\InstallRun;
 use AA\Central\Package\ImportConfirmation;
 use AA\Central\Package\ImportFailed;
 use AA\Central\Package\Importer;
 use AA\Central\Package\ImportPlan;
+use AA\Central\Package\ImportReport;
 use AA\Central\Package\ImportTarget;
 use AA\Central\Package\LintFinding;
 use AA\Central\Package\Model\Package;
@@ -18,7 +20,7 @@ use RuntimeException;
 require_once __DIR__ . '/PackageMutations.php';
 
 /** What the writer tests share: TableDb with rows the target had before the import (foreign()), the
- *  example planned and written, a failing statement. */
+ *  example planned and written for an install run, a failing statement. */
 trait ImportFixture
 {
     use PackageMutations;
@@ -36,9 +38,16 @@ trait ImportFixture
     private const USER = 'importer-uid';
     private const NOW  = 1_790_000_000;
 
+    /** the definitions package as downloaded - the run keeps its fingerprint */
+    private const DEFINITIONS = '<aa-app>definitions</aa-app>';
+
     private FakeImportTarget $target;
     private FakeInstallPermission $authority;
     private FakeAfterCommit $after;
+    /** object_text ids of the install runs - far from the import's objects */
+    private int $runRows = 900_000;
+    /** the id of the last run newRun() made */
+    private string $lastRun = '';
 
     public static function setUpBeforeClass(): void
     {
@@ -106,10 +115,10 @@ trait ImportFixture
         ];
     }
 
-    private function plan(?Package $package = null): ImportPlan
+    private function plan(?Package $package = null, bool $transfer = false): ImportPlan
     {
         $package  ??= self::example();
-        $plan       = (new Planner($this->target))->plan($package, (new Validator())->validate($package, $package->withItems));     // items come only in a transfer
+        $plan       = (new Planner($this->target))->plan($package, (new Validator())->validate($package, $transfer));
         self::assertTrue($plan->importable(), (string) json_encode(array_map(static fn(array $f): string => "{$f[1]->code} $f[0]", $plan->ofLevel(LintFinding::ERROR))));
         return $plan;
     }
@@ -119,10 +128,38 @@ trait ImportFixture
         return new Importer($target ?? $this->target, self::USER, null, self::NOW, mayInstall: $this->authority->mayInstall(...), confirmation: $confirmation, afterCommit: $this->after);
     }
 
+    /** A new run in preview, as the preview page leaves it; its id. The statement log starts after it. */
+    private function newRun(string $mode = InstallRun::INSTALL, string $source = '7'): string
+    {
+        [$next, TableDb::$next['object_text']] = [TableDb::$next['object_text'] ?? 1, $this->runRows];
+        $id                                    = InstallRun::preview($mode, false, $source, self::USER, '', self::NOW)->getId();
+        [$this->runRows, TableDb::$next['object_text']] = [TableDb::$next['object_text'], $next];
+        [TableDb::$log, TableDb::$sent, TableDb::$handles] = [[], [], []];
+        return $this->lastRun = $id;
+    }
+
+    /** the plan written for $run - a new install run when none is given */
+    private function import(ImportPlan $plan, ?Importer $importer = null, ?string $confirmation = null, ?string $run = null): ImportReport
+    {
+        return ($importer ?? $this->importer())->write($plan, $run ?? $this->newRun(), self::DEFINITIONS, $confirmation);
+    }
+
+    /** the tables without the rows of install runs and without empty tables
+     *  @return array<string, list<array<string, mixed>>> */
+    private static function tables(): array
+    {
+        $runs   = array_column(array_filter(TableDb::rows('object_text'), static fn(array $r): bool => ($r['property'] === 'aa_type') && ($r['value'] === InstallRun::class)), 'object_id');
+        $tables = TableDb::$tables;
+        if (isset($tables['object_text'])) {
+            $tables['object_text'] = array_values(array_filter($tables['object_text'], static fn(array $r): bool => !in_array($r['object_id'], $runs, true)));
+        }
+        return array_filter($tables);
+    }
+
     private function failure(ImportPlan $plan, ?Importer $importer = null): ImportFailed
     {
         try {
-            ($importer ?? $this->importer())->write($plan);
+            $this->import($plan, $importer);
         } catch (ImportFailed $e) {
             return $e;
         }

@@ -56,9 +56,10 @@ final class InstallRun extends AA_Object
     /** position: the slice of the next batch and the last source item id written in it ('' = none yet) */
     protected $slice = '';
     protected $cursor = '';
-    /** JSON slice => items written / items on the source */
+    /** JSON slice => items written */
     protected $written = '';
-    protected $on_source = '';
+    /** JSON slice => finding code => warnings of its batches */
+    protected $warnings = '';
     protected $error_code = '';
     protected $error_path = '';
     /** the source's login token, encrypted */
@@ -73,7 +74,7 @@ final class InstallRun extends AA_Object
         foreach (['state', 'mode', 'all_bins', 'source', 'user', 'started', 'fingerprint', 'slice', 'cursor', 'error_code', 'error_path', 'token'] as $id) {
             $props[$id] = new AA_Property($id, $id, 'string', false, true, 'string');
         }
-        foreach (['id_map', 'slices', 'written', 'on_source'] as $id) {
+        foreach (['id_map', 'slices', 'written', 'warnings'] as $id) {
             $props[$id] = new AA_Property($id, $id, 'text', false, true, 'text');
         }
         return $props;
@@ -156,8 +157,9 @@ final class InstallRun extends AA_Object
         $this->slices      = json_encode($slices, JSON_THROW_ON_ERROR);
         $this->slice       = $slices[0] ?? '';
         $this->cursor      = '';
-        $this->written     = $this->on_source = json_encode((object) array_fill_keys($slices, 0), JSON_THROW_ON_ERROR);
-        $this->update(['state', 'id_map', 'fingerprint', 'slices', 'slice', 'cursor', 'written', 'on_source']);
+        $this->written     = json_encode((object) array_fill_keys($slices, 0), JSON_THROW_ON_ERROR);
+        $this->warnings    = '{}';
+        $this->update(['state', 'id_map', 'fingerprint', 'slices', 'slice', 'cursor', 'written', 'warnings']);
     }
 
     /** The batch read from $expected may be written: the run is in items and still at that position.
@@ -173,12 +175,13 @@ final class InstallRun extends AA_Object
      *  @param array{string, string} $expected [slice, cursor] the batch was read from - its counts belong to that slice
      *  @param array{string, string} $new      [slice, cursor] of the next batch - the same or a later slice
      *  @param int $written  items this batch wrote
-     *  @param int $onSource items of the slice on the source now */
-    public function advance(array $expected, array $new, int $written, int $onSource): void
+     *  @param array<string, int> $warnings finding code => warnings of the batch */
+    public function advance(array $expected, array $new, int $written, array $warnings): void
     {
         $this->move([self::ITEMS], self::ITEMS);
         $order = array_flip($this->slices());
-        if (!isset($order[$new[0]]) || ($order[$new[0]] < ($order[$this->slice] ?? 0)) || !preg_match('/^([0-9a-f]{32})?\z/', $new[1]) || ($written < 0) || ($onSource < 0)) {
+        if (!isset($order[$new[0]]) || ($order[$new[0]] < ($order[$this->slice] ?? 0)) || !preg_match('/^([0-9a-f]{32})?\z/', $new[1]) || ($written < 0)
+            || array_filter($warnings, static fn(int $n, int|string $code): bool => ($n < 1) || !preg_match('/^[a-z0-9-]{1,64}\z/', (string) $code), ARRAY_FILTER_USE_BOTH)) {
             throw new InvalidArgumentException('The new position or counts are outside the run');
         }
         if (!$this->at($expected)) {
@@ -186,12 +189,14 @@ final class InstallRun extends AA_Object
         }
         $counts                = $this->written();
         $counts[$expected[0]] += $written;
-        $source                = $this->onSource();
-        $source[$expected[0]]  = $onSource;
+        $all                   = $this->warnings();
+        foreach ($warnings as $code => $n) {
+            $all[$expected[0]][$code] = ($all[$expected[0]][$code] ?? 0) + $n;
+        }
         [$this->slice, $this->cursor] = $new;
         $this->written   = json_encode($counts, JSON_THROW_ON_ERROR);
-        $this->on_source = json_encode($source, JSON_THROW_ON_ERROR);
-        $this->update(['slice', 'cursor', 'written', 'on_source']);
+        $this->warnings  = json_encode((object) $all, JSON_THROW_ON_ERROR);
+        $this->update(['slice', 'cursor', 'written', 'warnings']);
     }
 
     /** a batch failed: $code a finding / error code, $path where - never the raw DB message, which
@@ -300,10 +305,10 @@ final class InstallRun extends AA_Object
         return ($this->written === '') ? [] : json_decode($this->written, true, 2, JSON_THROW_ON_ERROR);
     }
 
-    /** @return array<string, int> slice => items on the source */
-    public function onSource(): array
+    /** @return array<string, array<string, int>> slice => finding code => warnings of its batches */
+    public function warnings(): array
     {
-        return ($this->on_source === '') ? [] : json_decode($this->on_source, true, 2, JSON_THROW_ON_ERROR);
+        return ($this->warnings === '') ? [] : json_decode($this->warnings, true, 3, JSON_THROW_ON_ERROR);
     }
 
     /** @return array{string, string}|null [code, path] of the last error */

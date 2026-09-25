@@ -27,8 +27,8 @@ final readonly class ImportReport
      * @param array<string, int>                   $rows     table => rows written (RowStore::written()), by table name
      * @param list<FixUp>                          $ignored  what the import changed or dropped
      * @param array{views: array<int, int>, emails: array<int, int>, filters: array<int, int>, groups: array<string, string>,
-     *              collections: array<string, string>, objects: array<string, string>, items: array<string, int>} $maps
-     *                                                       old => new; items: new slice => items written
+     *              collections: array<string, string>, objects: array<string, string>} $maps
+     *                                                       old => new
      * @param list<array{string, LintFinding}>     $findings validator + planner, by danger S, E, W, I
      * @param list<array{string, list<string>}>    $finish   the steps after the commit (Importer): [step, errors], none = OK
      * @param list<array{module: string, name: string, fields: array<string, string>, url: string}> $settings
@@ -50,14 +50,11 @@ final readonly class ImportReport
     public static function of(ImportPlan $plan, IdMap $map, array $written, array $finish): self
     {
         $p = $plan->package;
-        [$modules, $items, $objects, $settings] = [[], [], [], []];
+        [$modules, $objects, $settings] = [[], [], []];
         foreach ($p->modules as $m) {
             $new       = (string) $map->module($m->id);
             $name      = ValueCodec::bytes($m->rows['module'][0]['name'] ?? '');
             $modules[] = ['type' => $m->type, 'name' => $name, 'old' => $m->id, 'new' => $new];
-            if ($m->items) {
-                $items[$new] = count($m->items);            // ItemWriter writes every item of the package or fails
-            }
             $objects += self::objects($m->objects, $map);
             if (($m->type === Module::SLICE) && ($fields = self::settingsFields($m))) {
                 $settings[] = ['module' => $new, 'name' => $name, 'fields' => $fields, 'url' => self::SETTINGS_URL . $new];
@@ -72,7 +69,7 @@ final readonly class ImportReport
             $rows,
             $plan->fixUps,
             ['views' => $map->views(), 'emails' => $map->emails(), 'filters' => $map->filters(), 'groups' => $map->groups(),
-                'collections' => $map->collections(), 'objects' => $objects, 'items' => $items],
+                'collections' => $map->collections(), 'objects' => $objects],
             $plan->allFindings(),
             $finish,
             $settings,

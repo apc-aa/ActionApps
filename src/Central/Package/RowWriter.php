@@ -6,6 +6,7 @@ namespace AA\Central\Package;
 
 use AA\Central\Package\Model\ConstantGroup;
 use AA\Central\Package\Model\Module;
+use AA\IO\DB\DB_AA;
 use AA_Metabase;
 use LogicException;
 
@@ -17,6 +18,8 @@ use LogicException;
  *  stay (W); slice.mlxctrl = '' (a target slice would control this one's languages); alerts references
  *  to the target are the Validator's E - a new collection must not mail target views to the package's
  *  readers - here a LogicException. 0 / empty is "none".
+ *  A transfer brings the state of the source installation (Module::$transfer): the owner, found on the
+ *  target by name and e-mail or created, and the reading password.
  *  @internal only Importer calls it - the rights and the S confirmation are checked there (Importer::write()). */
 final class RowWriter
 {
@@ -38,11 +41,12 @@ final class RowWriter
         private readonly int $now,
     ) {}
 
-    /** @return IdMap the plan's map with the view, e-mail and filter numbers
+    /** @param IdMap $map the plan's map, in a copy in the same AA with the package items the texts name
+     *  @return IdMap $map with the view, e-mail and filter numbers
      *  @throws WriteError|RewriteFailed|LogicException|\InvalidArgumentException (sitetree::fromArray()) */
-    public function write(ImportPlan $plan): IdMap
+    public function write(ImportPlan $plan, IdMap $map): IdMap
     {
-        [$this->plan, $this->map, $this->numbered] = [$plan, $plan->map, []];
+        [$this->plan, $this->map, $this->numbered] = [$plan, $map, []];
         $this->rewrite = new ImportRewrite($this->map);          // no numbers yet; renumber() fixes the texts
         $numbers       = ['view' => [], 'email' => []];
         foreach ($plan->package->modules as $m) {
@@ -106,7 +110,7 @@ final class RowWriter
             'deleted'    => 0,
             'created_by' => $this->user,
             'created_at' => $this->now,
-        ]);
+        ] + (isset($m->transfer['owner']) ? ['owner' => $this->owner($m, $m->transfer['owner'])] : []));
         match ($m->type) {
             Module::SLICE  => $this->slice($m, $id),
             Module::SITE   => $this->site($m, $id),
@@ -121,6 +125,9 @@ final class RowWriter
         $fixed = ['id' => $id, 'deleted' => 0, 'created_by' => $this->user, 'created_at' => $this->now]
             + self::mapped($slice, 'vid', $this->view(...))
             + self::mapped($slice, 'mlxctrl', fn(string $v): string => $this->map->module($v) ?? '');
+        if (isset($m->transfer['reading-password'])) {
+            $fixed['reading_password'] = $this->store->plain($m->transfer['reading-password'], $this->charset($m), "$m->type[$m->id]/reading-password", $this->store->limit('slice', 'reading_password'));
+        }
         $this->insert($m, 'slice', $slice, 0, $fixed);
         foreach ($m->rows['field'] ?? [] as $i => $row) {
             $this->insert($m, 'field', $row, $i, ['slice_id' => $id]);
@@ -143,6 +150,24 @@ final class RowWriter
             $destination = $this->packageModule(ValueCodec::bytes($row['destination_id'] ?? ''));
             $this->insert($m, 'uses', $row, $i, ['source_id' => $id, 'destination_id' => $destination, 'flag' => self::USES_FLAG]);
         }
+    }
+
+    /** module.owner: the target's slice_owner of the name and e-mail, or a new one - the source's id means
+     *  nothing here @param array{name: mixed, email: mixed} $owner */
+    private function owner(Module $m, array $owner): string
+    {
+        $path   = "$m->type[$m->id]/owner";
+        $values = [];
+        foreach (['name', 'email'] as $column) {
+            $values[$column] = $this->store->plain($owner[$column], $this->charset($m), "$path/$column", $this->store->limit('slice_owner', $column));
+        }
+        $id = DB_AA::select1('id', 'SELECT LOWER(HEX(`id`)) AS id FROM `slice_owner`', [['name', $values['name']], ['email', $values['email']]]);
+        if (is_string($id) && ($id !== '')) {
+            return $id;
+        }
+        $id = strtolower($this->target->newId());
+        $this->store->insert('slice_owner', $this->store->tableRow('slice_owner', [], ['id' => $id] + $values, $this->charset($m), $this->rewrite, $path), $path);
+        return $id;
     }
 
     /** site.structure: the spot tree with its texts through RowStore, serialize()d as the site admin stores it */

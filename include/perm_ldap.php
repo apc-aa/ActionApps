@@ -621,7 +621,24 @@ class AA_Permsystem_Ldap extends AA_Permsystem
     {
         $aa_default_ldap = self::getLdap();
         // search not only Active bin, but also Holding bin, Pending, ...
-        return ! $this->getIDsInfo("uid=$username," . $aa_default_ldap['people']);
+        return ! $this->getIDsInfo('uid=' . ldap_escape((string) $username, '', LDAP_ESCAPE_DN) . ',' . $aa_default_ldap['people']);
+    }
+
+    /** uid and mail match case-insensitively in LDAP; an unreachable server is no answer - it throws */
+    public function isLoginFree(string $login): bool
+    {
+        $aa_default_ldap = self::getLdap();
+        if (!($ds = InitLDAP())) {
+            throw new RuntimeException('LDAP is not reachable - the login cannot be checked');
+        }
+        $value = ldap_escape(rtrim($login, ' '), '', LDAP_ESCAPE_FILTER);
+        $res   = @ldap_search($ds, $aa_default_ldap['people'], "(|(uid=$value)(mail=$value))", ['uid'], 0, 1);
+        $found = $res ? ldap_count_entries($ds, $res) : false;
+        ldap_unbind($ds);
+        if ($found === false) {
+            throw new RuntimeException('The LDAP search of a login failed');
+        }
+        return $found === 0;
     }
 
     /** findUsers function
