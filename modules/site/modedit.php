@@ -134,6 +134,18 @@ if ($add || $update) {
         ValidateInput("router",       _m("Router"),      $router,       $err, false, "number");
         ValidateInput("uses_modules", _m("Uses modules"), $uses_modules, $err, false, "id");
 
+        // only modules the user may use (the offered list - $g_modules) - a site using a module grants it
+        // Alertitem's same-site rule. A module related already may stay, whoever added it (the form shows
+        // it selected, also one the user has no rights to); dropping any is fine
+        if (!isset($err['uses_modules'])) {
+            $uses_modules    = array_map('strtolower', (array) $uses_modules);
+            $related_modules = ($update && $module_id) ? DB_AA::select('', 'SELECT LOWER(HEX(`destination_id`)) AS unpackid FROM relation', [['source_id', $module_id, 'l'], ['flag', REL_FLAG_MODULE_DEPEND, 'i']]) : [];
+            $refused         = array_filter($uses_modules, static fn($id) => (($g_modules[$id]['type'] ?? 'W') === 'W') && !in_array($id, $related_modules, true));
+            if ($refused) {
+                $err['uses_modules'] = MsgErr(_m('You can not use these modules in the site - you have no permission to them: %1', [safe(implode(', ', $refused))]));
+            }
+        }
+
         if (count($err)) {
             break;
         }
