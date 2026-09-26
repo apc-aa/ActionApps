@@ -1,0 +1,11 @@
+{
+  "name": "aa-tinymce8-bundle",
+  "private": true,
+  "type": "module",
+  "description": "Build input for javascript/tinymce8.min.js - see build.sh",
+  "devDependencies": {
+    "esbuild": "0.28.2",
+    "tinymce": "8.9.2",
+    "tinymce-i18n": "26.9.21"
+  }
+}
