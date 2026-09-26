@@ -134,7 +134,8 @@ function uploadOptions({ image, imageTypes, file, pick, documentTypes }, onEdit)
 
 /**
  * @param {HTMLElement} target  an unnamed textarea (never the one a form submits), or with
- *                              inline: true the element edited in place
+ *                              inline: true the element edited in place - only for content the
+ *                              page already shows, as the iframe's CSP does not guard it
  * @param {object} [options]    see the task description above
  */
 export async function createRichEditor(target, { uiLang, inline = false, height = 300, sourceLabel = 'Source', onEdit, onBlur, onSource, upload = null } = {}) {
@@ -176,6 +177,9 @@ export async function createRichEditor(target, { uiLang, inline = false, height 
         // iframes, video and audio as placeholders, as in CKEditor 4: nothing embedded loads
         // or plays in the edit view
         media_live_embeds: false,
+        // the edit iframe shares the admin's origin: whatever slips past guardEditView() (an unclosed
+        // SVG, an iframe in an embed wrapper, mXSS on re-parse) must still not run
+        content_security_policy: "script-src 'none'; object-src 'none'; frame-src 'none'",
         paste_data_images: !!upload,
         ...(upload ? uploadOptions(upload, onEdit) : {}),
         setup: (ed) => {
