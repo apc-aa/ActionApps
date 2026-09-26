@@ -186,6 +186,21 @@ final class DbImportTarget implements ImportTarget
         return \IsSuperadmin() || \IfSlPerm(\PS_EDIT, $id);
     }
 
+    /** Ids trimmed of their trailing NUL bytes (DbBinaryTrailingZeros) are left out - no form could post
+     *  them back. Sorted here: the ORDER BY of the admin's owner list is beyond the test DB. */
+    public function owners(): array
+    {
+        $owners = array_map('strval', DB_AA::select(['id' => 'name'], 'SELECT LOWER(HEX(`id`)) AS id, `name` FROM `slice_owner`'));
+        $owners = array_filter($owners, static fn(int|string $id): bool => strlen((string) $id) === 32, ARRAY_FILTER_USE_KEY);
+        uasort($owners, strcasecmp(...));
+        return $owners;
+    }
+
+    public function moduleOwners(): array
+    {
+        return array_map('strval', DB_AA::select(['id' => 'owner'], 'SELECT LOWER(HEX(`id`)) AS id, LOWER(HEX(`owner`)) AS owner FROM `module`', [['deleted', 0, 'i']]));
+    }
+
     public function slicesOfType(string $type): array
     {
         $ids = array_map('strval', DB_AA::select('id', 'SELECT LOWER(HEX(`id`)) AS id FROM `slice`', [['type', $type], ['deleted', 0, 'i']]));

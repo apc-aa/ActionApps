@@ -16,7 +16,7 @@
  *                   app goes into a new slice or an existing one of this AA (into[<source id>]); the preview
  *                   offers the choice and is sent again with it. The first preview chooses by the role of the
  *                   slice (SliceRoles)
- * POST write        writes the definitions
+ * POST write        writes the definitions; an install gives its new modules the owner its form chose (owner)
  * POST batch|continue|end   JSON for the progress page
  *
  * PHP version 8.2+
@@ -96,6 +96,7 @@ try {
     $login    = [InputVars::stringPOST('source_username'), InputVars::stringPOST('source_password'), InputVars::stringPOST('source_code2fa')];
     $into     = InstallRun::targetsFrom(InputVars::arrayPOST('into'));
     $choice   = InstallRun::choiceMade(InputVars::arrayPOST('into'));
+    $owner    = strtolower(InputVars::idPOST('owner'));       // the planner refuses an id of no owner
 } catch (Exception $e) {
     AA_Adminpageutil::pageParameterError($e);
 }
@@ -177,10 +178,11 @@ switch ($action) {
         installapp_connect($aa, $mode, $all_bins, $login, $uid);
         break;
     case 'preview':
-        ($run_id !== '') ? installapp_remote_preview($run_id, $site, $modules, $into, !$choice, $uid) : installapp_preview($site, $modules, $mode, $all_bins, $into, !$choice, $uid);
+        $kept = ($owner === '') ? null : $owner;         // a preview sent again keeps the owner chosen
+        ($run_id !== '') ? installapp_remote_preview($run_id, $site, $modules, $into, !$choice, $kept, $uid) : installapp_preview($site, $modules, $mode, $all_bins, $into, !$choice, $kept, $uid);
         break;
     case 'write':
-        installapp_write($run_id, $site, $modules, $into, ($confirm === '') ? null : $confirm, $uid);
+        installapp_write($run_id, $site, $modules, $into, $owner, ($confirm === '') ? null : $confirm, $uid);
         break;
     default:
         ($run_id !== '') ? installapp_progress($run_id, $uid) : installapp_form($aa, $uid);
@@ -431,11 +433,12 @@ function installapp_slice_choices(): array
  *  @param list<string>          $modules
  *  @param array<string, string> $into    source slice => slice of this AA it goes into; the others get new slices
  *  @param bool                  $preselect no choice made yet: SliceRoles makes it
+ *  @param string|null           $owner   the owner of the new modules of an install; null = Planner::defaultOwner()
  *  @return array{error: string, login: bool, xml: string, now: int, same: bool, findings: list<array{string, LintFinding}>, plan: ?ImportPlan,
  *                into: array<string, string>, roles: array<string, string>, package: ?\AA\Central\Package\Model\Package}
  *          login: the source refused its token; now: the time of the source; same: the source is this AA;
  *          roles: source slice => the role its target was preselected by */
-function installapp_prepare(AppSource $from, string $site, array $modules, string $mode, bool $all_bins, int $started, array $into = [], bool $preselect = false): array
+function installapp_prepare(AppSource $from, string $site, array $modules, string $mode, bool $all_bins, int $started, array $into = [], bool $preselect = false, ?string $owner = null): array
 {
     $out      = ['error' => '', 'login' => false, 'xml' => '', 'now' => 0, 'same' => false, 'findings' => [], 'plan' => null, 'into' => [], 'roles' => [], 'package' => null];
     $transfer = ($mode === InstallRun::TRANSFER);
@@ -459,7 +462,8 @@ function installapp_prepare(AppSource $from, string $site, array $modules, strin
             return $out;
         }
         $planner = new Planner(new DbImportTarget());
-        $plan    = static fn(array $targets): ImportPlan => $planner->plan($read->package, $validation, $transfer, $logins, $targets, $out['same']);
+        $owner   = $transfer ? '' : ($owner ?? $planner->defaultOwner());
+        $plan    = static fn(array $targets): ImportPlan => $planner->plan($read->package, $validation, $transfer, $logins, $targets, $out['same'], $owner);
         if ($preselect) {           // stored with the preview as any choice - the write writes what it showed
             [$out['plan'], $out['into'], $preselected, $out['roles']] = SliceRoles::plan($read->package, new DbImportTarget(), $out['same'], $transfer, $plan);
             $out['findings'] = [...$out['findings'], ...$preselected];
@@ -495,8 +499,8 @@ function installapp_importable(array $prepared): bool
 }
 
 /** the preview of an app of this AA: the run is created with it
- *  @param list<string> $modules @param array<string, string> $into */
-function installapp_preview(string $site, array $modules, string $mode, bool $all_bins, array $into, bool $preselect, string $uid): void
+ *  @param list<string> $modules @param array<string, string> $into @param string|null $owner null = the default */
+function installapp_preview(string $site, array $modules, string $mode, bool $all_bins, array $into, bool $preselect, ?string $owner, string $uid): void
 {
     if (($site === '') === !$modules) {
         echo '<div class="aa-err">' . _m('Choose a site, or slices and Alerts modules - not both.') . '</div>';
@@ -505,7 +509,7 @@ function installapp_preview(string $site, array $modules, string $mode, bool $al
     }
     $now      = time();
     $from     = installapp_local_source();
-    $prepared = installapp_prepare($from, $site, $modules, $mode, $all_bins, $now, $into, $preselect);
+    $prepared = installapp_prepare($from, $site, $modules, $mode, $all_bins, $now, $into, $preselect, $owner);
     if (installapp_show_preview($from, $prepared, $mode, $all_bins, installapp_hidden('preview', $site, $modules) . installapp_mode_hidden($mode, $all_bins))) {
         $run = InstallRun::preview($mode, $all_bins, InstallRun::LOCAL, $uid, '', $now, hash('sha256', $prepared['xml']), $prepared['into']);
         installapp_write_form($run, $site, $modules, $prepared['plan'], $uid);
@@ -513,8 +517,8 @@ function installapp_preview(string $site, array $modules, string $mode, bool $al
 }
 
 /** the preview of an app of another AA: the run of the login takes its fingerprint
- *  @param list<string> $modules @param array<string, string> $into */
-function installapp_remote_preview(string $run_id, string $site, array $modules, array $into, bool $preselect, string $uid): void
+ *  @param list<string> $modules @param array<string, string> $into @param string|null $owner null = the default */
+function installapp_remote_preview(string $run_id, string $site, array $modules, array $into, bool $preselect, ?string $owner, string $uid): void
 {
     $run = InstallRun::get($run_id);
     if (($run === null) || ($run->user() !== $uid) || ($run->state() !== InstallRun::PREVIEW) || ($run->source() === InstallRun::LOCAL)) {
@@ -532,7 +536,7 @@ function installapp_remote_preview(string $run_id, string $site, array $modules,
         echo '<div class="aa-err">' . safe($e->getMessage()) . '</div>';
         return;
     }
-    $prepared = installapp_prepare($from, $site, $modules, $run->mode(), $run->allBins(), $run->started(), $into, $preselect);
+    $prepared = installapp_prepare($from, $site, $modules, $run->mode(), $run->allBins(), $run->started(), $into, $preselect, $owner);
     if (!installapp_show_preview($from, $prepared, $run->mode(), $run->allBins(), installapp_hidden('preview', $site, $modules, $run_id))) {
         echo '<p>' . ($prepared['login'] ? installapp_relogin($run) : a_href(installapp_url(['run' => $run_id]), _m('Choose another app'))) . '</p>';
         return;
@@ -573,6 +577,9 @@ function installapp_show_preview(AppSource $from, array $prepared, string $mode,
         $choices = $slices ? installapp_slice_choices() : [];
         echo '<h2>' . safe($preview['name']) . ' - ' . safe(($mode === InstallRun::TRANSFER) ? _m('transfer with the items') : _m('install, no items')) . '</h2>';
         echo '<form method="post" action="' . safe(installapp_url()) . '">' . $again;
+        if ($plan->owner !== '') {          // kept in step with the owner select of the write form
+            echo '<input type="hidden" name="owner" value="' . safe($plan->owner) . '" data-role="installapp-owner">';
+        }
         echo '<table class="aa-installapp-findings"><tr><th>' . _m('Module') . '</th><th>' . _m('Type') . '</th><th>' . _m('Source id') . '</th><th>' . _m('Into') . '</th>'
             . (($mode === InstallRun::TRANSFER) ? '<th class="aa-num">' . _m('Items') . '</th>' : '') . '</tr>';
         foreach ($preview['modules'] as $m) {
@@ -630,6 +637,9 @@ function installapp_write_form(InstallRun $run, string $site, array $modules, Im
     foreach ($run->targets() as $old => $new) {         // compared with the run: a form of an older preview is refused
         echo '<input type="hidden" name="into[' . safe($old) . ']" value="' . safe($new) . '">';
     }
+    if (($run->mode() === InstallRun::INSTALL) && array_diff_key($plan->map->modules(), $plan->existing)) {
+        echo installapp_owner_select($plan->owner, (bool) $plan->existing);
+    }
     if ($plan->preview()['confirm']) {
         echo '<p><label><input type="checkbox" name="confirm" value="' . safe((string) (new ImportConfirmation())->token($plan, $uid)) . '" required> '
             . _m('I have read the security findings (S) and want to install the app with them.') . '</label></p>';
@@ -640,8 +650,28 @@ function installapp_write_form(InstallRun $run, string $site, array $modules, Im
     echo '<p><button class="btn-l" type="submit" data-role="installapp-write">' . (($run->mode() === InstallRun::TRANSFER) ? _m('Write the definitions and transfer the items') : _m('Install')) . '</button></p></form>';
 }
 
-/** @param list<string> $modules @param array<string, string> $into the targets the write form sends */
-function installapp_write(string $run_id, string $site, array $modules, array $into, ?string $confirm, string $uid): void
+/** the owner of the new modules of an install: in the write form, as it changes no finding of the preview;
+ *  none to offer - a note, the modules get none
+ *  @param bool $existing some slice of the app goes into an existing slice */
+function installapp_owner_select(string $chosen, bool $existing): string
+{
+    $owners = (new DbImportTarget())->owners();
+    if (!$owners) {
+        return '<div class="aa-info">' . safe(_m('This AA has no module owners - the new modules get none. To give them one, add an owner in the settings of a module and preview the app again.')) . '</div>';
+    }
+    $html = '<p><label for="installapp-owner">' . safe(_m('Owner of the new modules')) . '</label> <select name="owner" id="installapp-owner">';
+    foreach ($owners as $id => $name) {
+        $html .= '<option value="' . safe((string) $id) . '"' . (((string) $id === $chosen) ? ' selected' : '') . '>' . safe((string) $name) . '</option>';
+    }
+    $html .= '</select></p>' . ($existing ? '<div class="tabhlp">' . safe(_m('A slice going into an existing slice keeps the owner of that slice.')) . '</div>' : '');
+    // "Preview again with these slices" is another form
+    return $html . '<script>document.getElementById(\'installapp-owner\').addEventListener(\'change\', e => {'
+        . ' const kept = document.querySelector(\'.aa-installapp input[data-role="installapp-owner"]\'); if (kept) { kept.value = e.target.value; } });</script>';
+}
+
+/** @param list<string> $modules @param array<string, string> $into the targets the write form sends
+ *  @param string $owner the owner the write form chose for the new modules of an install */
+function installapp_write(string $run_id, string $site, array $modules, array $into, string $owner, ?string $confirm, string $uid): void
 {
     $run = InstallRun::get($run_id);
     if (($run === null) || ($run->user() !== $uid) || ($run->state() !== InstallRun::PREVIEW)) {
@@ -652,7 +682,7 @@ function installapp_write(string $run_id, string $site, array $modules, array $i
         return;
     }
     try {
-        $prepared = installapp_prepare(installapp_run_source($run), $site, $modules, $run->mode(), $run->allBins(), $run->started(), $run->targets());
+        $prepared = installapp_prepare(installapp_run_source($run), $site, $modules, $run->mode(), $run->allBins(), $run->started(), $run->targets(), false, $owner);
     } catch (SourceFailed $e) {
         $prepared = ['error' => $e->getMessage(), 'login' => false, 'xml' => '', 'same' => false];
     }

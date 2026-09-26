@@ -69,6 +69,16 @@ final class TableDbTarget implements ImportTarget
         return $this->ids->mayEditSlice($id);
     }
 
+    public function owners(): array
+    {
+        return $this->db->owners();
+    }
+
+    public function moduleOwners(): array
+    {
+        return $this->db->moduleOwners();
+    }
+
     public function slicesOfType(string $type): array
     {
         return $this->db->slicesOfType($type);

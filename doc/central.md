@@ -80,7 +80,8 @@ modules chosen without a site. Its constant groups go with it.
 |---|---|---|
 | What | a clean app: definitions only | a copy or move: definitions + items + the state of the source |
 | Items, readers (hashes, 2FA) | no | yes, in batches; active bin or all bins |
-| Owner, reading password, domains, setting values | no (setting defaults, below) | yes |
+| Owner | one of this AA's, chosen in the preview (below) | the source's |
+| Reading password, domains, setting values | no (setting defaults, below) | yes |
 | Who | `PS_INSTALL_APP` (+ `PS_EDIT` on the exported modules) | superadmin on both AAs |
 
 A move is a transfer followed by deleting the source by hand after checking the copy; Central never
@@ -204,6 +205,20 @@ values instead; a slice going into an existing one keeps its own.
 
 The preview and the report list "*N* settings to fill in" per slice (the settings fields left empty),
 linked to the slice's Setting page once it exists.
+
+### Owner of the new modules
+
+An install gives every module it creates an owner (`module.owner`, and `slice.owner` of a slice) - the
+module settings cannot be saved without one. The write form offers this AA's owners (`slice_owner`);
+preselected is the owner most of the modules the user may edit have, else the first by name. Owners
+whose id lost its trailing zero bytes (an old repair) are not offered. Changing the owner needs no new
+preview, and "Preview again with these slices" keeps it. The id is checked on the server: E
+`owner-unknown` for an id of no owner, and for no owner while this AA has some; the writer checks it
+again in its transaction. With no owner on this AA the form says so and the modules get none - once
+an owner exists, preview again; Central creates no owner for an install. A slice going into an
+existing one keeps that slice's owner; with no new module no owner is asked for. A transfer brings the
+source's owner instead (found by name and e-mail, or created) and writes it to `slice.owner` too.
+New modules get `slice_url` = `''`, not NULL.
 
 ## The package format
 

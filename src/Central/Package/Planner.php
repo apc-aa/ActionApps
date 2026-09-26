@@ -39,6 +39,10 @@ final class Planner
      *  host, or it names no host; ref = the URL */
     public const DOMAIN_DROPPED = 'domain-dropped';
 
+    /** E: the owner chosen for the new modules of an install is none of this AA's (slice_owner), or none
+     *  was chosen though it has some; ref = the id */
+    public const OWNER_UNKNOWN = 'owner-unknown';
+
     /** tables only a transfer writes: the item batches, the owners of the modules */
     private const TRANSFER_TABLES = ['item', 'content', 'slice_owner'];
 
@@ -60,12 +64,18 @@ final class Planner
      *                                    E for those of a user, or of a reader with AA permissions, of this AA
      *  @param array<string, string> $into slices of the package going into existing slices of this AA: source id => id here
      *  @param bool         $sameAa       the source is this AA (AppSource::sameAa())
-     *  @throws InvalidArgumentException the validation has an E - such a package is never planned
+     *  @param string       $owner        slice_owner id for the modules an install creates (defaultOwner());
+     *                                    E unless it is one of this AA's - '' only when it has none; the plan
+     *                                    keeps '' when no module is created
+     *  @throws InvalidArgumentException the validation has an E - such a package is never planned; an owner in a transfer
      *  @throws RewriteFailed a regex of the length check failed */
-    public function plan(Package $package, ValidationResult $validation, bool $transfer = false, array $readerLogins = [], array $into = [], bool $sameAa = false): ImportPlan
+    public function plan(Package $package, ValidationResult $validation, bool $transfer = false, array $readerLogins = [], array $into = [], bool $sameAa = false, string $owner = ''): ImportPlan
     {
         if (!$validation->importable()) {
             throw new InvalidArgumentException('The package did not pass the validation - no import plan');
+        }
+        if ($transfer && ($owner !== '')) {
+            throw new InvalidArgumentException('A transfer brings the owners of the source - no owner is chosen');
         }
         $this->findings = new FindingList();
         $this->used     = [];
@@ -129,6 +139,11 @@ final class Planner
         (new TargetCharset($this->schema, $map))->check($fixed, $charsets, $group_charsets, $this->findings);
         (new ImportLint($this->schema))->check($fixed, $this->findings, $whole);
         $this->readers($readerLogins);
+        if (!$transfer && array_diff_key($modules, $targets)) {
+            $this->owner($owner);
+        } else {
+            $owner = '';            // no module gets it - the writer need not check it
+        }
         $defaults = [];
         if (!$transfer) {           // a transfer brings the values of the source
             foreach ($fixed->modules as $m) {
@@ -139,7 +154,36 @@ final class Planner
             }
         }
         $this->engines($transfer, (bool) $defaults);
-        return new ImportPlan($fixed, $map, $charsets, $lang_files, $group_charsets, $settings, $fix_ups, $validation->findings, $this->findings->all(), $targets, $defaults);
+        return new ImportPlan($fixed, $map, $charsets, $lang_files, $group_charsets, $settings, $fix_ups, $validation->findings, $this->findings->all(), $targets, $defaults, $owner);
+    }
+
+    /** The owner the preview offers first: the one most of the modules the user may edit have; with none
+     *  such, the first by name; '' = this AA has no owner */
+    public function defaultOwner(): string
+    {
+        $owners = $this->target->owners();
+        $counts = [];
+        foreach ($this->target->moduleOwners() as $module => $owner) {
+            if (isset($owners[$owner]) && $this->target->mayEditSlice((string) $module)) {
+                $counts[$owner] = ($counts[$owner] ?? 0) + 1;
+            }
+        }
+        $best = (string) array_key_first($owners);
+        foreach (array_keys($owners) as $id) {          // by name: the first of a tie wins
+            if (($counts[$id] ?? 0) > ($counts[$best] ?? 0)) {
+                $best = (string) $id;
+            }
+        }
+        return $best;
+    }
+
+    /** E OWNER_UNKNOWN: the id comes from the request */
+    private function owner(string $owner): void
+    {
+        $owners = $this->target->owners();
+        if (($owner === '') ? (bool) $owners : !isset($owners[$owner])) {
+            $this->add(self::TARGET, LintFinding::ERROR, self::OWNER_UNKNOWN, $owner);
+        }
     }
 
     /** E NO_TRANSACTION for the tables the import writes without a transaction - the whole list (a short

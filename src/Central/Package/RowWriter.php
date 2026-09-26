@@ -21,7 +21,7 @@ use LogicException;
  *  A transfer brings the state of the source installation (Module::$transfer): the owner, found on the
  *  target by name and e-mail or created, the reading password and the values of the settings fields.
  *  An install gives the settings fields of a new slice, and those it adds to an existing one, their
- *  defaults (ImportPlan::$settingDefaults).
+ *  defaults (ImportPlan::$settingDefaults), and its new modules the owner the preview chose (ImportPlan::$owner).
  *  A slice going into an existing slice (ImportPlan::$existing) gets only its new fields here - the plan
  *  left out the rest; views and e-mails the slice has are numbered in the plan's map already.
  *  @internal only Importer calls it - the rights and the S confirmation are checked there (Importer::write()). */
@@ -112,6 +112,7 @@ final class RowWriter
             $this->settingValues($m, $id, $this->plan->settingDefaults[$m->id] ?? []);
             return;
         }
+        $owner = isset($m->transfer['owner']) ? $this->owner($m, $m->transfer['owner']) : $this->plan->owner;
         $this->insert($m, 'module', $m->rows['module'][0] ?? [], 0, [
             'id'         => $id,
             'type'       => array_search($m->type, Module::TYPES, true),
@@ -119,19 +120,22 @@ final class RowWriter
             'deleted'    => 0,
             'created_by' => $this->user,
             'created_at' => $this->now,
-        ] + (isset($m->transfer['owner']) ? ['owner' => $this->owner($m, $m->transfer['owner'])] : []));
+            'owner'      => $owner,
+            'slice_url'  => '',          // as the module settings save "no URL"
+        ]);
         match ($m->type) {
-            Module::SLICE  => $this->slice($m, $id),
+            Module::SLICE  => $this->slice($m, $id, $owner),
             Module::SITE   => $this->site($m, $id),
             Module::ALERTS => $this->alerts($m, $id),
             default        => throw new LogicException("Unknown module type $m->type"),
         };
     }
 
-    private function slice(Module $m, string $id): void
+    /** @param string $owner module.owner - the slice settings write it to both tables */
+    private function slice(Module $m, string $id, string $owner): void
     {
         $slice = $m->rows['slice'][0] ?? [];
-        $fixed = ['id' => $id, 'deleted' => 0, 'created_by' => $this->user, 'created_at' => $this->now]
+        $fixed = ['id' => $id, 'deleted' => 0, 'created_by' => $this->user, 'created_at' => $this->now, 'owner' => $owner, 'slice_url' => '']
             + self::mapped($slice, 'vid', $this->view(...))
             + self::mapped($slice, 'mlxctrl', fn(string $v): string => $this->map->module($v) ?? '');
         if (isset($m->transfer['reading-password'])) {

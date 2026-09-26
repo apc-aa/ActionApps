@@ -32,6 +32,10 @@ class FakeImportTarget implements ImportTarget
     public array $slices = [];
     /** @var list<string> slices the importing user may not edit */
     public array $notEditable = [];
+    /** @var array<string, string> owner id => name, by name */
+    public array $owners = [];
+    /** @var array<string, string> module id => owner id */
+    public array $moduleOwners = [];
     /** @var int how many times readerLogins() was asked */
     public int $readerQueries = 0;
     private int $ids = 0;
@@ -120,6 +124,16 @@ class FakeImportTarget implements ImportTarget
     public function mayEditSlice(string $id): bool
     {
         return !in_array($id, $this->notEditable, true);
+    }
+
+    public function owners(): array
+    {
+        return $this->owners;
+    }
+
+    public function moduleOwners(): array
+    {
+        return $this->moduleOwners;
     }
 
     public function slicesOfType(string $type): array

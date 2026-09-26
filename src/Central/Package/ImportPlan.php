@@ -31,6 +31,8 @@ final readonly class ImportPlan
      *                                                         source slice id => the values an install gives the
      *                                                         settings fields it writes (SettingDefaults): all of
      *                                                         a new slice, the new ones of an existing slice
+     * @param string                            $owner         slice_owner id of the modules an install creates;
+     *                                                         '' = none (a transfer brings the source's)
      */
     public function __construct(
         public Package $package,
@@ -44,6 +46,7 @@ final readonly class ImportPlan
         public array $findings,
         public array $existing = [],
         public array $settingDefaults = [],
+        public string $owner = '',
     ) {}
 
     /** no E: the writer may start once the S findings were confirmed and the rights checked */

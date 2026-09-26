@@ -226,6 +226,21 @@ final class BatchWriteTest extends TestCase
         self::assertSame([0 => 'www.source.example', 1 => 'source.example'], array_column($domains, 'value', 'priority'));
     }
 
+    /** the owner of the source, in module and slice alike - the owners of this AA, which an install
+     *  offers, play no part in a transfer */
+    public function test_a_transfer_gives_the_new_slice_the_owner_of_the_source(): void
+    {
+        $this->target->owners = [str_repeat('ab', 16) => 'Owner of this AA'];     // ignored
+        $package = self::module(self::definitions(), self::SLICE, static fn(Module $m): Module => self::with($m, ['transfer' => ['owner' => ['name' => 'Nová', 'email' => 'nova@source.example']]]));
+
+        $this->transferred(definitions: $package);
+
+        $created = array_column(TableDb::rows('slice_owner'), 'id', 'name')['Nová'] ?? null;
+        self::assertNotNull($created, 'the source owner is created here');
+        self::assertSame([$created, $created], [array_column(TableDb::rows('module'), 'owner', 'id')[self::id(2)], array_column(TableDb::rows('slice'), 'owner', 'id')[self::id(2)]]);
+        self::assertSame(['', ''], [array_column(TableDb::rows('module'), 'owner', 'id')[self::id(1)], array_column(TableDb::rows('module'), 'owner', 'id')[self::id(3)]], 'a module of no source owner gets none');
+    }
+
     /** the settings fields' values: content of the new slice id, their texts rewritten as any definition */
     public function test_a_transfer_brings_the_values_of_the_settings_fields(): void
     {

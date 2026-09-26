@@ -58,8 +58,16 @@ interface ImportTarget
      *  @throws \RuntimeException the read failed */
     public function existingSlice(string $id, bool $lock = false): ?ExistingSlice;
 
-    /** the importing user may change the slice (PS_EDIT, or a superadmin) - only such a slice takes a package */
+    /** the importing user may change the slice (PS_EDIT, or a superadmin) - only such a slice takes a package;
+     *  asked of any module when the planner picks the default owner */
     public function mayEditSlice(string $id): bool;
+
+    /** the owners of this AA (slice_owner) by name, any case - those of a 16-byte id only
+     *  @return array<string, string> id => name */
+    public function owners(): array;
+
+    /** the owner of each module of this AA, none deleted @return array<string, string> module id => owner id ('' = none) */
+    public function moduleOwners(): array;
 
     /** the slices of this AA (none deleted) of the slice.type @return list<string> ids, lower case */
     public function slicesOfType(string $type): array;

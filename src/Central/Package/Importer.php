@@ -114,6 +114,9 @@ final class Importer
         if ($transfer && $plan->settingDefaults) {
             throw new LogicException('Defaults of settings fields in a transfer - it brings the values of the source (Planner)');
         }
+        if ($transfer && ($plan->owner !== '')) {
+            throw new LogicException('An owner chosen for a transfer - it brings the owners of the source (Planner)');
+        }
         if ($transfer && $record->sameAa()) {
             $plan = self::withoutDomains($plan);            // they are the source site's - still in use here
         }
@@ -409,9 +412,12 @@ final class Importer
     /** every group name, collection id and site domain of the plan is still free on the target, every
      *  existing slice still there in its charset, locked and editable by the user, with no value in a
      *  setting the plan gives a default, every group its fields
-     *  name still there @throws WriteError */
+     *  name still there, the owner of the new modules one of the target's @throws WriteError */
     private function recheck(ImportPlan $plan): void
     {
+        if (($plan->owner !== '') && !isset($this->target->owners()[$plan->owner])) {
+            throw new WriteError(WriteError::GONE, 'owner', 'the owner chosen for the new modules is none of this AA\'s');
+        }
         foreach ($plan->existing as $old => $slice) {
             $now = $this->target->existingSlice($slice->id, true);
             if ($now?->charset !== $slice->charset) {

@@ -604,6 +604,39 @@ final class IntoExistingTest extends TestCase
         self::assertNull(array_values(array_filter(TableDb::rows('slice'), static fn(array $r): bool => $r['id'] === self::T))[0]['reading_password'] ?? null);
     }
 
+    public function test_the_existing_slice_keeps_its_owner_and_the_new_modules_get_the_chosen_one(): void
+    {
+        [$mine, $chosen] = [str_repeat('a1', 16), str_repeat('b2', 16)];
+        TableDb::$tables['slice_owner'] = [['id' => $mine, 'name' => 'Existing owner', 'email' => 'e@example.org'], ['id' => $chosen, 'name' => 'Chosen', 'email' => 'c@example.org']];
+        foreach (['module', 'slice'] as $table) {
+            foreach (TableDb::$tables[$table] as $k => $row) {
+                if ($row['id'] === self::T) {
+                    TableDb::$tables[$table][$k] += ['owner' => $mine, 'slice_url' => 'https://existing.example/'];
+                }
+            }
+        }
+        $package = self::example();
+        $plan    = (new Planner($this->db()))->plan($package, (new Validator())->validate($package), false, [], [self::SLICE => self::T], false, $chosen);
+
+        $this->import(...$this->confirmed($plan));
+
+        $owners = array_column(TableDb::rows('module'), 'owner', 'id');
+        self::assertSame([$mine, $chosen, $chosen], [$owners[self::T], $owners[self::id(1)], $owners[self::id(2)]], 'the existing slice, the new site, the new Alerts module');
+        self::assertSame([$mine, 'https://existing.example/'], [array_column(TableDb::rows('slice'), 'owner', 'id')[self::T], array_column(TableDb::rows('slice'), 'slice_url', 'id')[self::T]]);
+    }
+
+    /** only the slice, into an existing one: no module is created, so no owner is asked for nor kept */
+    public function test_no_new_module_needs_no_owner(): void
+    {
+        TableDb::$tables['slice_owner'] = [['id' => str_repeat('b2', 16), 'name' => 'Chosen', 'email' => 'c@example.org']];
+        $package = self::with(self::example(), ['modules' => array_values(array_filter(self::example()->modules, static fn(Module $m): bool => $m->id === self::SLICE))]);
+        $planner = new Planner($this->db());
+        $plan    = static fn(string $owner): ImportPlan => $planner->plan($package, (new Validator())->validate($package), false, [], [self::SLICE => self::T], false, $owner);
+
+        self::assertSame([], self::codes($plan('')->findings, Planner::OWNER_UNKNOWN), 'no E for no owner');
+        self::assertSame('', $plan(str_repeat('b2', 16))->owner, 'the plan keeps no owner the writer would check');
+    }
+
     public function test_the_items_go_into_the_existing_slice(): void
     {
         $run = $this->newRun(InstallRun::TRANSFER);
