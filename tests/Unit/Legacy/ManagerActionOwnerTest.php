@@ -24,6 +24,7 @@ namespace Tests\Unit\Legacy {
     use Tests\Unit\Legacy\Fixtures\FakeStore;
     use Tests\Unit\Legacy\Fixtures\FormTarget;
     use Tests\Unit\Legacy\Fixtures\RecordingDb;
+    use Tests\Unit\Legacy\Fixtures\RecordingItemFeed;
     use Tests\Unit\Legacy\Fixtures\SearchlessManager;
     use zids;
 
@@ -47,6 +48,14 @@ namespace Tests\Unit\Legacy {
         private const POLL_OWN   = 'e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2';
         private const POLL_OTHER = 'e3e3e3e3e3e3e3e3e3e3e3e3e3e3e3e3';
 
+        /** a slice where the user may add items only to the holding bin */
+        private const HOLD       = 'f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2';
+        private const ITEM_OWN   = 'a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3';
+        private const ITEM_OTHER = 'b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3';
+        /** a polls module and a deleted slice - no targets of an export */
+        private const POLLS      = 'f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3';
+        private const DELETED    = 'f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4';
+
         /** object id => [aa_owner, aa_type] as stored */
         private const OBJECTS = [
             self::OWN    => [self::MODULE, FormTarget::class],
@@ -64,7 +73,19 @@ namespace Tests\Unit\Legacy {
                 ['id' => self::POLL_OTHER, 'module_id' => self::OTHER, 'status_code' => 3],
             ],
             'email'    => [['id' => 298, 'owner_module_id' => self::OTHER, 'subject' => 'welcome']],
+            'item'     => [
+                ['id' => self::ITEM_OWN, 'slice_id' => self::MODULE],
+                ['id' => self::ITEM_OTHER, 'slice_id' => self::OTHER],
+            ],
             'rssfeeds' => [],
+            'module'   => [
+                ['id' => self::MODULE, 'type' => 'S', 'deleted' => 0, 'name' => 'Module'],
+                ['id' => self::OTHER, 'type' => 'S', 'deleted' => 0, 'name' => 'Other'],
+                ['id' => self::DEST, 'type' => 'S', 'deleted' => 0, 'name' => 'Dest'],
+                ['id' => self::HOLD, 'type' => '', 'deleted' => 0, 'name' => 'Hold'],
+                ['id' => self::POLLS, 'type' => 'P', 'deleted' => 0, 'name' => 'Polls'],
+                ['id' => self::DELETED, 'type' => 'S', 'deleted' => 1, 'name' => 'Deleted'],
+            ],
         ];
 
         public static function setUpBeforeClass(): void
@@ -76,6 +97,7 @@ namespace Tests\Unit\Legacy {
         {
             RecordingDb::reset();
             LogOnce::reset();
+            RecordingItemFeed::$fed = [];
             $GLOBALS['spareDBs'] = [new RecordingDb()];
             AA::$module_id = self::MODULE;
             self::perms([self::MODULE => PS_FULLTEXT . PS_EDIT . PS_FORMS, self::OTHER => '', self::DEST => PS_FULLTEXT]);
@@ -117,7 +139,7 @@ namespace Tests\Unit\Legacy {
         }
 
         /** the page posts the checked rows with an action (performActions()) */
-        private static function act(Manager $manager, string $akce, array $ids, array $param = []): string
+        private static function act(Manager $manager, string $akce, array $ids, array|string $param = []): string
         {
             $chb = array_fill_keys(array_map(static fn($id) => "x$id", $ids), '');
             self::request([], ['chb' => $chb], ['chb' => $chb, 'akce' => $akce, 'akce_param' => $param]);
@@ -464,6 +486,140 @@ namespace Tests\Unit\Legacy {
             $this->assertCount(1, $deletes);
             $this->assertStringContainsString(self::POLL_OWN, $deletes[0]);
             $this->assertStringNotContainsString(self::POLL_OTHER, $deletes[0]);
+        }
+
+        // ------------------------------------------------------------------ export to slice (admin/index.php)
+
+        /** the Item Manager of MODULE; the user may add approved items to DEST, to HOLD only to its holding bin */
+        private static function itemManager(): Manager
+        {
+            self::perms([self::MODULE => PS_EDIT_SELF_ITEMS, self::OTHER => '', self::DEST => PS_EDIT_SELF_ITEMS . PS_ITEMS2ACT, self::HOLD => PS_EDIT_SELF_ITEMS]);
+            $actions = new Manageractions();
+            $actions->addAction(new RecordingItemFeed('Feed', self::MODULE));
+            return self::manager(new Managed(), $actions);
+        }
+
+        public function test_feed_exports_the_own_item_to_the_allowed_slices(): void
+        {
+            $msg = self::act(self::itemManager(), 'Feed', [self::ITEM_OWN], '1-' . self::DEST . ',2-' . self::HOLD);
+
+            $this->assertSame('', $msg);
+            $this->assertSame([[self::ITEM_OWN, self::DEST, 'y'], [self::ITEM_OWN, self::HOLD, 'n']], RecordingItemFeed::$fed);
+            $this->assertSame([], self::refusals());
+        }
+
+        /** the item ids come from the POST - an item of another slice would be copied out of it */
+        public function test_feed_skips_an_item_of_another_slice(): void
+        {
+            $msg = self::act(self::itemManager(), 'Feed', [self::ITEM_OWN, self::ITEM_OTHER], '1-' . self::DEST);
+
+            $this->assertNotSame('', $msg, 'the page tells some were left');
+            $this->assertSame([[self::ITEM_OWN, self::DEST, 'y']], RecordingItemFeed::$fed);
+            $this->assertSame([[self::MODULE, self::ITEM_OTHER]], self::refusals());
+        }
+
+        public function test_feed_skips_a_missing_item_silently(): void
+        {
+            $this->assertSame('', self::act(self::itemManager(), 'Feed', [self::MISSING], '1-' . self::DEST));
+
+            $this->assertSame([], RecordingItemFeed::$fed);
+            $this->assertSame([], self::refusals());
+        }
+
+        /** the targets come from the POST too - feed_to.php offers only the slices the user may add to */
+        public function test_feed_refuses_a_slice_without_the_right(): void
+        {
+            $msg = self::act(self::itemManager(), 'Feed', [self::ITEM_OWN], '1-' . self::OTHER . ',2-' . self::OTHER . ',1-' . self::HOLD . ',2-' . self::DEST);
+
+            $this->assertNotSame('', $msg);
+            $this->assertSame([[self::ITEM_OWN, self::DEST, 'n']], RecordingItemFeed::$fed, 'no right in OTHER, HOLD only to the holding bin');
+        }
+
+        public function test_feed_refuses_a_malformed_slice(): void
+        {
+            foreach (['1-not-a-slice', '1-', 'x', '1-' . self::DEST . "' OR 1=1", ['1-' . self::DEST]] as $param) {
+                $this->assertNotSame('', self::act(self::itemManager(), 'Feed', [self::ITEM_OWN], $param), var_export($param, true));
+            }
+            $this->assertSame([], RecordingItemFeed::$fed);
+        }
+
+        public function test_feed_is_offered_to_who_may_edit_items_of_the_slice(): void
+        {
+            $action = new RecordingItemFeed('Feed', self::MODULE);
+            $manager = self::itemManager();
+            $this->assertTrue($action->isPerm4Action($manager));
+
+            self::perms([self::MODULE => PS_EDIT_ALL_ITEMS]);
+            $this->assertTrue($action->isPerm4Action($manager), 'the Item Manager opens also for this right');
+
+            self::perms([self::MODULE => '', self::DEST => PS_EDIT_SELF_ITEMS . PS_ITEMS2ACT]);
+            $this->assertFalse($action->isPerm4Action($manager));
+            self::act($manager, 'Feed', [self::ITEM_OWN], '1-' . self::DEST);
+            $this->assertSame([], RecordingItemFeed::$fed);
+        }
+
+        /** AA-wide rights pass any module id - the slice must exist, feed_to.php lists only those */
+        public function test_feed_refuses_an_unknown_or_deleted_slice_even_with_aa_wide_rights(): void
+        {
+            $manager = self::itemManager();
+            $GLOBALS['permission_to']['aa'][AA_ID] = \AA_Perm::ROLES['SUPER']['perm'];
+
+            $this->assertNotSame('', self::act($manager, 'Feed', [self::ITEM_OWN], '1-' . self::MISSING . ',1-' . self::DELETED));
+            $this->assertSame([], RecordingItemFeed::$fed);
+
+            $this->assertSame('', self::act($manager, 'Feed', [self::ITEM_OWN], '1-' . self::DEST));
+            $this->assertSame([[self::ITEM_OWN, self::DEST, 'y']], RecordingItemFeed::$fed);
+        }
+
+        /** 'a' and 'h' are the rights to add and approve polls in a polls module */
+        public function test_feed_refuses_a_module_which_is_not_a_slice(): void
+        {
+            $manager = self::itemManager();
+            $GLOBALS['permission_to']['slice'][self::POLLS] = PS_MODP_ADD_POLL . PS_MODP_POLLS2ACT;
+
+            $this->assertNotSame('', self::act($manager, 'Feed', [self::ITEM_OWN], '1-' . self::POLLS . ',2-' . self::POLLS));
+            $this->assertSame([], RecordingItemFeed::$fed);
+        }
+
+        /** feed_to.php posts 1 - active, 2 - holding bin; 0 means "do not export" */
+        public function test_feed_skips_other_statuses(): void
+        {
+            $msg = self::act(self::itemManager(), 'Feed', [self::ITEM_OWN], '0-' . self::DEST . ',3-' . self::DEST . ',-' . self::DEST);
+
+            $this->assertNotSame('', $msg, 'no slice selected');
+            $this->assertSame([], RecordingItemFeed::$fed);
+        }
+
+        /** State Check tells an export from a write */
+        public function test_a_refused_export_is_reported_as_one(): void
+        {
+            self::act(self::itemManager(), 'Feed', [self::ITEM_OTHER], '1-' . self::DEST);
+            $row = RecordingDb::inserts('log')[0];
+
+            [$finding] = CheckObjectFormRefusals::findingsFor([['days' => '1', 'first' => '1758000000', 'last' => '1758000000'] + $row], []);
+            $this->assertStringContainsString('export', $finding->title);
+            $this->assertStringContainsString(self::ITEM_OTHER, $finding->title);
+        }
+
+        // ------------------------------------------------------------------ poll edit page (modules/polls/polledit.php)
+
+        public function test_is_own_row_takes_the_own_poll(): void
+        {
+            $this->assertTrue((new Managed_Table('polls'))->isOwnRow(self::MODULE, self::POLL_OWN));
+            $this->assertSame([], self::refusals());
+        }
+
+        /** the poll id comes from the request - its update would move the poll to this module */
+        public function test_is_own_row_refuses_and_logs_a_poll_of_another_module(): void
+        {
+            $this->assertFalse((new Managed_Table('polls'))->isOwnRow(self::MODULE, self::POLL_OTHER));
+            $this->assertSame([[self::MODULE, self::POLL_OTHER]], self::refusals());
+        }
+
+        public function test_is_own_row_does_not_find_a_missing_poll(): void
+        {
+            $this->assertNull((new Managed_Table('polls'))->isOwnRow(self::MODULE, self::MISSING));
+            $this->assertSame([], self::refusals());
         }
     }
 }

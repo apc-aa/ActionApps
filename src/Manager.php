@@ -115,7 +115,7 @@ class Managed
 
     public function isAction(string $action): bool
     {
-        return (bool) $this->add_action[$action];
+        return (bool) ($this->add_action[$action] ?? false);   // a plain Managed sets none
     }
 
     /** Generates AA_Form for the managed data
@@ -146,7 +146,7 @@ class Managed
      *  and a long one would cut the user off the selector and each new one would add a log row, so
      *  only a stored object or row is named there.
      */
-    protected static function logRefusal(string $module, string $id, string $type, string $stored_type, string $stored_owner): void
+    public static function logRefusal(string $module, string $id, string $type, string $stored_type, string $stored_owner): void
     {
         $logged = ($stored_type !== '') ? $id : CheckObjectFormRefusals::NO_OBJECT;
         LogOnce::daily(CheckObjectFormRefusals::EVENT, ParamImplode([$module, $logged, mb_strcut(AuthGetUid(), 0, 120)]), [$type, $stored_type, $stored_owner]);
@@ -662,6 +662,26 @@ class Managed_Table extends Managed
             }
         }
         return [$allowed, $refused];
+    }
+
+    /** Whether a page of $module may work on the row $key the request names (poll edit page): true -
+     *  the module's row, false - a row of another module (refused and logged) or a table without a
+     *  module column, null - no such row.
+     */
+    public function isOwnRow(string $module, string $key): ?bool
+    {
+        $module = strtolower($module);
+        if (!is_long_id($module) || !AA_Metabase::getModuleField($this->table)) {
+            return false;
+        }
+        if (null === ($owner = $this->rowOwners([$key])[$key] ?? null)) {
+            return null;
+        }
+        if ($owner !== $module) {
+            self::logRefusal($module, $key, $this->getType(), $this->getType(), $owner);
+            return false;
+        }
+        return true;
     }
 
     /** @return array<string, string> the module column of the stored rows of $keys - key => module id */

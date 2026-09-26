@@ -11,10 +11,11 @@ use AA_Log;
 /** Object forms AA refused in the last 30 days: a settings or Manager form of a module (site and slice
  *  settings, tasks, forms, exports, aliases) posted an object that is not the one the form was built
  *  for, or not the module's own or of another class (AA\Managed_Object::save()). Also the Manager
- *  actions (delete, move to slice) and table forms (views, feeds, poll designs) posting objects or rows
- *  of another module - the form class of a table is _T<table>; not the actions of the pages over all
- *  modules, which list objects the user can not change. Logged once a day per module, object and
- *  user. Index-only, hence basic.
+ *  actions (delete, move to slice) and table forms (views, feeds, poll designs, the poll edit page)
+ *  posting objects or rows of another module - the form class of a table is _T<table>; not the actions
+ *  of the pages over all modules, which list objects the user can not change. And the Item Manager's
+ *  export to slice posting items of another slice (_Titem) - to be copied out of it, not written.
+ *  Logged once a day per module, object and user. Index-only, hence basic.
  */
 class CheckObjectFormRefusals extends AbstractOptimize
 {
@@ -22,6 +23,8 @@ class CheckObjectFormRefusals extends AbstractOptimize
     public const EVENT = 'OBJ_DENY';
     /** the object_id of the selector when no object is stored at the posted id - it may be any string */
     public const NO_OBJECT = '-';
+    /** the form class of the refused item exports (AA\Manageraction\Item_Feed) */
+    public const ITEM_EXPORT = '_Titem';
 
     private const WINDOW_SECONDS = 30 * 86400;
     private const GROUPS = 50;
@@ -83,9 +86,10 @@ class CheckObjectFormRefusals extends AbstractOptimize
             // two modules may share a name
             $owner_name  = isset($module_names[$owner]) ? "{$module_names[$owner]} ($owner)" : $owner;
             $object      = ($object === self::NO_OBJECT) ? _m('(no such object)') : $object;
+            $export      = ($class === self::ITEM_EXPORT);
             $findings[] = new Finding(
                 Finding::WARNING,
-                _m('A form of %1 tried to write the object %2', [$module_name, $object]),
+                $export ? _m('The Item Manager of %1 tried to export the item %2 of another slice', [$module_name, $object]) : _m('A form of %1 tried to write the object %2', [$module_name, $object]),
                 count: (int) $row['days'],
                 since: (int) $row['first'],
                 evidence: [[
@@ -98,7 +102,7 @@ class CheckObjectFormRefusals extends AbstractOptimize
                     _m('Days seen')   => (string) (int) $row['days'],
                     _m('Last')        => date('Y-m-d', (int) $row['last']),
                 ]],
-                advice: _m('The form or action posted an object or row other than the one it was opened for, one that belongs to another module (Owner) or one of another type; it was left untouched. The pages post only the edited objects and those of the listed module, so unless the object was moved or deleted meanwhile (an empty owner - it does not exist), the user edited the request, most likely to change the settings of another site or slice. Find out who the user is.'),
+                advice: $export ? _m('The export to slice posted an item of another slice (Owner) to copy it out of there; it was not exported. The Item Manager lists only the items of its slice, so unless the item was moved meanwhile, the user edited the request, most likely to read or copy the items of a slice he has no rights to. Find out who the user is.') : _m('The form or action posted an object or row other than the one it was opened for, one that belongs to another module (Owner) or one of another type; it was left untouched. The pages post only the edited objects and those of the listed module, so unless the object was moved or deleted meanwhile (an empty owner - it does not exist), the user edited the request, most likely to change the settings of another site or slice. Find out who the user is.'),
                 links: [_m('Log rows') => AA_Log::getAdminUrl(self::EVENT, $selector)],
                 key: $selector,
                 last: (int) $row['last'],

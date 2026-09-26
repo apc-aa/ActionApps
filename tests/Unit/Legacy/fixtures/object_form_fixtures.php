@@ -33,6 +33,7 @@ namespace {
 namespace Tests\Unit\Legacy\Fixtures {
 
     use AA\Manager;
+    use AA\Manageraction\Item_Feed;
     use AA_Metabase;
     use AA_Object;
     use AA_Property;
@@ -55,6 +56,18 @@ namespace Tests\Unit\Legacy\Fixtures {
     final class SearchlessManager extends Manager
     {
         protected ?AA_Searchbar $searchbar = null;
+    }
+
+    /** "Export to slice" noting what it would feed - FeedItemTo() needs the whole slice setup */
+    final class RecordingItemFeed extends Item_Feed
+    {
+        /** @var list<array{0: string, 1: string, 2: string}> [item, destination slice, approved y|n] */
+        public static array $fed = [];
+
+        protected function feed(string $item_id, string $destination_id, string $approved): void
+        {
+            self::$fed[] = [$item_id, $destination_id, $approved];
+        }
     }
 
     /**
@@ -108,6 +121,20 @@ namespace Tests\Unit\Legacy\Fixtures {
                     if (!in_array((string) $val, $wanted, true)) {
                         continue 2;
                     }
+                }
+                // SELECT LOWER(HEX(<column>)) AS <alias>, <column>, ... - the ids read unpacked, the
+                // other columns as stored; other expressions are not answered
+                if (preg_match('/^SELECT\s+(.*?LOWER\(HEX\(.*?)\s+FROM\b/is', $sql, $list)) {
+                    $out = [];
+                    foreach (preg_split('/\s*,\s*/', trim($list[1])) as $term) {
+                        if (preg_match('/^LOWER\(HEX\(`?(\w+)`?\)\)(?:\s+AS\s+`?(\w+)`?)?$/i', $term, $h)) {
+                            $out[$h[2] ?? $term] = strtolower((string) ($row[$h[1]] ?? ''));
+                        } elseif (preg_match('/^`?(\w+)`?$/', $term, $c) && array_key_exists($c[1], $row)) {
+                            $out[$c[1]] = AA_Metabase::isPacked($table, $c[1]) ? pack_id((string) $row[$c[1]]) : $row[$c[1]];
+                        }
+                    }
+                    $ret[] = $out;
+                    continue;
                 }
                 foreach (AA_Metabase::getPacked($table) as $col) {
                     if (isset($row[$col])) {
