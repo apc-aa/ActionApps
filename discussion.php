@@ -91,7 +91,7 @@ if (!is_object($db)) {
 $disc_starttime = ((float) $usec + (float) $sec);
 
 $view_param              = AA_View::parseViewParameters();
-$view_param["disc_ids"]  = QueryDiscIDs($slice_id, is_array($conds) ? AA_Dbcondition::unslashLiteralConds($conds) : $conds, $sort, $slices);   // $conds come addslashed
+$view_param["disc_ids"]  = QueryDiscIDs($slice_id, $conds, $sort, $slices);
 $view_param["disc_type"] = "list";
 // special url parameter disc_url - tell us, where we have to show
 // discussion fulltext (good for discussion search)

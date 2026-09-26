@@ -1057,7 +1057,14 @@ class AA_Dbcondition
 
         $this->field = ($table ? "$table." : '') . trim((string) $field);
 
-        $this->operator    = self::normalizeOperator($operator);
+        // normalize operator
+        // we allow modifiers without ':' - like d>, e>=, ... (which bring administrators the possibility to not deal with escaping ':' in some cases)
+        // we are also trying to fix administrators mistakes, when they convert > to &gt; so &gt;, ... are valid operator, now
+        $this->operator = str_replace(['#:', ':', '&gt;', '&lt;', '&amp;'], ['', '', '>', '<','&'], trim((string) $operator)); // #: - fix mistaken escaping of d#:>...
+        if (strlen($this->operator) < 4) {
+            $this->operator = AA_Operators::normalize($this->operator);  // d-highlight.......-lt-5  - lt, gt, le, ge, ne are allowed as well
+        }
+
         $this->querystring = $querystring;
         $this->type        = $type;
         $this->joined      = $joined;
@@ -1069,35 +1076,6 @@ class AA_Dbcondition
         //  could be id or expression like 49d94e8e3379dc951eac78c2cd0f9f65 OR 78d89ac8dd0de0967a6f50ee5408ccdd OR ae076560dd8674b169e7d493d23ca8f2
         $this->condition = ($table === 'item' && AA_Metabase::isPacked('item', $field)) ? preg_replace("/'([0-9a-f]{32})'/i", "0x\\1", $arr[2]) : $arr[2];
         $this->table = $table;
-    }
-
-    public static function normalizeOperator($operator): string
-    {
-        // we allow modifiers without ':' - like d>, e>=, ... (which bring administrators the possibility to not deal with escaping ':' in some cases)
-        // we are also trying to fix administrators mistakes, when they convert > to &gt; so &gt;, ... are valid operator, now
-        $operator = str_replace(['#:', ':', '&gt;', '&lt;', '&amp;'], ['', '', '>', '<','&'], trim((string) $operator)); // #: - fix mistaken escaping of d#:>...
-        if (strlen($operator) < 4) {
-            $operator = AA_Operators::normalize($operator);  // d-highlight.......-lt-5  - lt, gt, le, ge, ne are allowed as well
-        }
-        return $operator;
-    }
-
-    /** Unslashes the values of BEGIN and CONTAIN conds from a page that imports the request
-     *  addslashed (register_globals emulation). Those operators match the text literally;
-     *  the others unslash here by themselves. A value add_vars() imported from the query
-     *  string is not slashed - what could not come from addslashes() is kept, as in
-     *  AA_Set::addFromCommand().
-     */
-    public static function unslashLiteralConds(array $conds): array
-    {
-        foreach ($conds as $k => $cond) {
-            if (is_array($cond) && is_string($cond['value'] ?? null) && is_string($cond['operator'] ?? null)
-                    && in_array(self::normalizeOperator($cond['operator']), ['BEGIN', 'CONTAIN'], true)
-                    && (addslashes(stripslashes($cond['value'])) === $cond['value'])) {
-                $conds[$k]['value'] = stripslashes($cond['value']);
-            }
-        }
-        return $conds;
     }
 
     public function getWhereExp(): string
@@ -1191,9 +1169,9 @@ class AA_Dbcondition
             case '==':
                 return ['INNER', '', "($qfield = '" . quote($querystring) . "')",];  // exact match (we added this because SQL Syntax parser in AA have problems with packed ids)
             case 'BEGIN':
-                return ['INNER', '', "($qfield LIKE " . qquote(DB_AA::likeLiteral($querystring) . '%') . ")"];
+                return ['INNER', '', "($qfield LIKE '" . addcslashes(quote($querystring), "_%") . "%')"];
             case 'CONTAIN':
-                return ['INNER', '', "($qfield LIKE " . qquote('%' . DB_AA::likeLiteral($querystring) . '%') . ")"];
+                return ['INNER', '', "($qfield LIKE '%" . addcslashes(quote($querystring), "_%") . "%')"];
             case 'BITSET':
                 return ['INNER', '', "($qfield & " . (int) $querystring . " = " . (int) $querystring . ")"];
             case 'XLIKE':

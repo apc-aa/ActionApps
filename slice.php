@@ -476,7 +476,6 @@ if (is_array($conds)) {
             $conds[$k]['value'] = strtr($v['value'], $als);
         }
     }
-    $conds = AA_Dbcondition::unslashLiteralConds($conds);   // $conds and $als come addslashed
 } elseif (is_string($conds) && strlen($conds)) {
     // we can use also conds=d-switch..........-=-1
     $tmp_set = new AA_Set(null, $conds);

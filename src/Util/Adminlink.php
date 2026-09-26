@@ -125,24 +125,6 @@ class Adminlink
         return $item_id . Txt::additionalInfo($info);
     }
 
-    /** Cells of a `SELECT slice_id, discussion.*` row, as HTML. Comments are posted by anonymous
-     *  visitors, so every value is escaped - only the item link is markup.
-     *  @param callable|null $itemLink  fn(string $item_id, string $slice_id): string - itemLink() by default
-     *  @return string[]
-     */
-    public static function discussionCells(array $row, ?callable $itemLink = null): array
-    {
-        $itemLink ??= self::itemLink(...);
-        foreach (['slice_id', 'id', 'parent', 'item_id'] as $packed) {
-            $row[$packed] = unpack_id($row[$packed] ?? '');
-        }
-        $row['date'] = date('Y-m-d H:i:s', (int) ($row['date'] ?? 0));
-
-        $cells = array_map(Txt::safe(...), $row);
-        $cells['item_id'] = $itemLink($row['item_id'], $row['slice_id']);
-        return $cells;
-    }
-
     public static function searchLink(string $searchtext, string $label = "🔍"): string
     {
         return a_href(
