@@ -222,7 +222,7 @@ if ((($key != $lock) || $scrl) && is_array($r_state_vars)) {  // command is for 
 
 // url posted command to display specified text instead of slice content -------
 if ($slicetext) {
-    echo $slicetext;
+    echo safe($slicetext);        // it comes from the URL
     ExitPage();
 }
 
