@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace Tests\Unit\Central\Package\Fixtures;
 
 use AA\Central\Package\DbImportTarget;
+use AA\Central\Package\ExistingSlice;
 use AA\Central\Package\ImportTarget;
 
 /** DbImportTarget over TableDb for the questions - its SQL on the DB handle of the transaction - and
- *  FakeImportTarget for the new ids (predictable). TableDb has no engines: nonTransactional() is empty. */
+ *  FakeImportTarget for the new ids (predictable) and the user's rights (TableDb has no perms). TableDb has no engines: nonTransactional() is empty. */
 final class TableDbTarget implements ImportTarget
 {
     private readonly DbImportTarget $db;
@@ -56,6 +57,16 @@ final class TableDbTarget implements ImportTarget
     public function domainTaken(string $host): bool
     {
         return $this->db->domainTaken($host);
+    }
+
+    public function existingSlice(string $id, bool $lock = false): ?ExistingSlice
+    {
+        return $this->db->existingSlice($id, $lock);
+    }
+
+    public function mayEditSlice(string $id): bool
+    {
+        return $this->ids->mayEditSlice($id);
     }
 
     public function ownHosts(): array

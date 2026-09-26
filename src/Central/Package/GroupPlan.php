@@ -83,6 +83,16 @@ final class GroupPlan
         return $ret;
     }
 
+    /** the groups the modules of the package use @return array<string, true> */
+    public function usedNames(Package $package): array
+    {
+        $names = [];
+        foreach ($package->modules as $m) {
+            $names += array_fill_keys($this->used($m), true);
+        }
+        return $names;
+    }
+
     /** the group names a module uses: field widgets and const views, then {constant(s)/options:<g>} in its texts
      *  @return list<string> */
     private function used(Module $m): array

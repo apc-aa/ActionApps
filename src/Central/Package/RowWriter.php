@@ -20,6 +20,8 @@ use LogicException;
  *  readers - here a LogicException. 0 / empty is "none".
  *  A transfer brings the state of the source installation (Module::$transfer): the owner, found on the
  *  target by name and e-mail or created, the reading password and the values of the settings fields.
+ *  A slice going into an existing slice (ImportPlan::$existing) gets only its new fields here - the plan
+ *  left out the rest; views and e-mails the slice has are numbered in the plan's map already.
  *  @internal only Importer calls it - the rights and the S confirmation are checked there (Importer::write()). */
 final class RowWriter
 {
@@ -48,7 +50,7 @@ final class RowWriter
     {
         [$this->plan, $this->map, $this->numbered] = [$plan, $map, []];
         $this->rewrite = new ImportRewrite($this->map);          // no numbers yet; renumber() fixes the texts
-        $numbers       = ['view' => [], 'email' => []];
+        $numbers       = ['view' => $map->views(), 'email' => $map->emails()];      // those an existing slice has
         foreach ($plan->package->modules as $m) {
             foreach (array_keys($numbers) as $element) {
                 foreach ($m->rows[$element] ?? [] as $i => $row) {
@@ -103,6 +105,10 @@ final class RowWriter
     private function module(Module $m): void
     {
         $id = $this->moduleId($m);
+        if (isset($this->plan->existing[$m->id])) {         // the slice stays as it is; it gets only the fields it lacks
+            $this->fields($m, $id);
+            return;
+        }
         $this->insert($m, 'module', $m->rows['module'][0] ?? [], 0, [
             'id'         => $id,
             'type'       => array_search($m->type, Module::TYPES, true),
@@ -129,14 +135,19 @@ final class RowWriter
             $fixed['reading_password'] = $this->store->plain($m->transfer['reading-password'], $this->charset($m), "$m->type[$m->id]/reading-password", $this->store->limit('slice', 'reading_password'));
         }
         $this->insert($m, 'slice', $slice, 0, $fixed);
-        foreach ($m->rows['field'] ?? [] as $i => $row) {
-            $this->insert($m, 'field', $row, $i, ['slice_id' => $id]);
-        }
+        $this->fields($m, $id);
         foreach ($m->rows['profile'] ?? [] as $i => $row) {
             $view = (ValueCodec::bytes($row['property'] ?? '') === 'input_view') ? self::mapped($row, 'value', $this->view(...)) : [];
             $this->insert($m, 'profile', $row, $i, ['slice_id' => $id, 'uid' => '*'] + $view);
         }
         $this->settingValues($m, $id);
+    }
+
+    private function fields(Module $m, string $id): void
+    {
+        foreach ($m->rows['field'] ?? [] as $i => $row) {
+            $this->insert($m, 'field', $row, $i, ['slice_id' => $id]);
+        }
     }
 
     /** the values of the settings fields a transfer brings: content rows of the slice id with the keys and

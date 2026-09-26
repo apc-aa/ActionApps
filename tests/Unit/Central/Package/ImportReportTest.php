@@ -170,9 +170,9 @@ final class ImportReportTest extends TestCase
 
         self::assertSame(['name' => 'Central Test', 'version' => '0.1.0', 'description' => self::example()->description, 'source' => self::example()->source], $report->package);
         self::assertSame([
-            ['type' => 'site-module', 'name' => 'Central Test - web', 'old' => self::SITE, 'new' => $w],
-            ['type' => 'slice-module', 'name' => 'Central Test - články', 'old' => self::SLICE, 'new' => $s],
-            ['type' => 'alerts-module', 'name' => 'Upozornění', 'old' => self::ALERTS, 'new' => $a],
+            ['type' => 'site-module', 'name' => 'Central Test - web', 'old' => self::SITE, 'new' => $w, 'existing' => false],
+            ['type' => 'slice-module', 'name' => 'Central Test - články', 'old' => self::SLICE, 'new' => $s, 'existing' => false],
+            ['type' => 'alerts-module', 'name' => 'Upozornění', 'old' => self::ALERTS, 'new' => $a, 'existing' => false],
         ], $report->modules);
 
         // every row written, by table - the same as the tables hold

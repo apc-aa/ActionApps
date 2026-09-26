@@ -263,6 +263,13 @@ final class Schema
         }, $this->metabase->getColumns(self::ROWS[$element][0])));
     }
 
+    /** the default of a column of the row element's table - what a row without the column gets; null = none */
+    public function columnDefault(string $element, string $column): ?string
+    {
+        $default = ($this->metabase->getColumns(self::ROWS[$element][0])[$column] ?? null)?->c[4];
+        return ($default === null) ? null : (string) $default;
+    }
+
     /** Length limits of a row element's table: [N, true] = N characters (char, varchar), [N, false] =
      *  N bytes (binary, *text, *blob). A packed id column holds 2N hex digits of the unpacked ids.
      *  AA_MbT::getVarset4Data() cuts every (N) column at N bytes too (TargetCharset::tooLong()).

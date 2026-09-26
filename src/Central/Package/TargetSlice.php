@@ -37,9 +37,15 @@ final readonly class TargetSlice
         }
         $fields = [];
         foreach (DB_AA::select([], 'SELECT `id`, `input_insert_func`, `text_stored` FROM `field`', [['slice_id', $id, 'l']]) as $row) {
-            $fields[(string) $row['id']] = [(int) $row['text_stored'] !== 0, explode(':', (string) $row['input_insert_func'], 2)[0] === 'pwd'];
+            $fields[(string) $row['id']] = [(int) $row['text_stored'] !== 0, self::isPassword((string) $row['input_insert_func'])];
         }
         return new self($id, $type === ItemLint::READER_SLICE, $charset, $fields);
+    }
+
+    /** a password field: its input_insert_func stores a hash */
+    public static function isPassword(string $insertFunc): bool
+    {
+        return explode(':', $insertFunc, 2)[0] === 'pwd';
     }
 
     /** [text stored, password] of a field; a field the slice lacks is stored as text @return array{bool, bool} */

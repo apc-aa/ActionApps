@@ -81,6 +81,8 @@ final class InstallRun extends AA_Object
     protected $token = '';
     /** JSON of the check when the transfer finished (TransferCheck), for the report */
     protected $report = '';
+    /** JSON source slice => slice of this AA it goes into, as the preview chose; the write plans with it */
+    protected $targets = '';
 
     /** read by lockForUpdate() - only such an instance may change the run */
     private bool $locked = false;
@@ -91,15 +93,16 @@ final class InstallRun extends AA_Object
         foreach (['state', 'mode', 'all_bins', 'source', 'user', 'started', 'moved', 'source_time', 'same_aa', 'fingerprint', 'slice', 'cursor', 'error_code', 'error_path', 'token'] as $id) {
             $props[$id] = new AA_Property($id, $id, 'string', false, true, 'string');
         }
-        foreach (['id_map', 'slices', 'written', 'warnings', 'report'] as $id) {
+        foreach (['id_map', 'slices', 'written', 'warnings', 'report', 'targets'] as $id) {
             $props[$id] = new AA_Property($id, $id, 'text', false, true, 'text');
         }
         return $props;
     }
 
     /** a new run in the preview state; forgotten previews go away on the way
-     *  @param string $fingerprint sha256 of the definitions package the preview showed - the write compares it */
-    public static function preview(string $mode, bool $allBins, string $source, string $user, string $token, int $now, string $fingerprint = ''): self
+     *  @param string $fingerprint sha256 of the definitions package the preview showed - the write compares it
+     *  @param array<string, string> $targets source slice => slice of this AA it goes into */
+    public static function preview(string $mode, bool $allBins, string $source, string $user, string $token, int $now, string $fingerprint = '', array $targets = []): self
     {
         if (!in_array($mode, [self::INSTALL, self::TRANSFER], true)) {
             throw new InvalidArgumentException("Unknown mode $mode");
@@ -120,6 +123,7 @@ final class InstallRun extends AA_Object
         $run->same_aa     = ($source === self::LOCAL) ? '1' : '';       // another AA says it at the preview (previewed())
         $run->fingerprint = $fingerprint;
         $run->token       = ($token === '') ? '' : Crypt::encryptAesGcm($token, Secret::key('install-run'));
+        $run->targets     = self::targetsJson($targets);
         $run->save();
         return $run;
     }
@@ -224,15 +228,28 @@ final class InstallRun extends AA_Object
     }
 
     /** The preview of a run opened at the login to another AA: the definitions package it showed, which
-     *  the write compares. The run stays in preview. */
-    /** @param bool $sameAa the source reported the AA_ID of this AA (AppSource::sameAa()) */
-    public function previewed(string $fingerprint, int $sourceNow, bool $sameAa): void
+     *  the write compares. The run stays in preview.
+     *  @param bool $sameAa the source reported the AA_ID of this AA (AppSource::sameAa())
+     *  @param array<string, string> $targets source slice => slice of this AA it goes into */
+    public function previewed(string $fingerprint, int $sourceNow, bool $sameAa, array $targets = []): void
     {
         $this->move([self::PREVIEW], self::PREVIEW);
         $this->fingerprint = $fingerprint;
         $this->source_time = (string) $sourceNow;
         $this->same_aa     = $sameAa ? '1' : '';
-        $this->update(['fingerprint', 'source_time', 'same_aa']);
+        $this->targets     = self::targetsJson($targets);
+        $this->update(['fingerprint', 'source_time', 'same_aa', 'targets']);
+    }
+
+    /** @param array<string, string> $targets */
+    private static function targetsJson(array $targets): string
+    {
+        foreach ($targets as $old => $new) {
+            if (!preg_match('/^[0-9a-f]{32}\z/', (string) $old) || !preg_match('/^[0-9a-f]{32}\z/', $new)) {
+                throw new InvalidArgumentException('A target is a slice id to a slice id, 32 lower-case hex');
+            }
+        }
+        return $targets ? json_encode($targets, JSON_THROW_ON_ERROR) : '';
     }
 
     /** The batch read from $expected may be written: the run is in items and still at that position.
@@ -387,10 +404,29 @@ final class InstallRun extends AA_Object
     }
 
     /** the write reads the source again; the same package from what now is (or is not) this AA would
-     *  keep (or renew) other item ids than the preview checked */
-    public function matchesPreview(string $definitions, bool $sameAa): bool
+     *  keep (or renew) other item ids than the preview checked; a write form of an older preview names
+     *  other targets than the run keeps
+     *  @param array<string, string> $targets the targets the write form sends */
+    public function matchesPreview(string $definitions, bool $sameAa, array $targets): bool
     {
-        return hash_equals($this->fingerprint, hash('sha256', $definitions)) && ($this->sameAa() === $sameAa);
+        ksort($targets);
+        $mine = $this->targets();
+        ksort($mine);
+        return hash_equals($this->fingerprint, hash('sha256', $definitions)) && ($this->sameAa() === $sameAa) && ($mine === $targets);
+    }
+
+    /** The targets a form sends (into[<source slice>] = slice of this AA): pairs of long ids, lower case;
+     *  '' - a new slice - and anything else left out
+     *  @param array<mixed, mixed> $posted @return array<string, string> */
+    public static function targetsFrom(array $posted): array
+    {
+        $targets = [];
+        foreach ($posted as $old => $new) {
+            if (preg_match('/^[0-9a-f]{32}\z/i', (string) $old) && is_string($new) && preg_match('/^[0-9a-f]{32}\z/i', $new)) {
+                $targets[strtolower((string) $old)] = strtolower($new);
+            }
+        }
+        return $targets;
     }
 
     /** @return string[] */
@@ -415,6 +451,13 @@ final class InstallRun extends AA_Object
     public function warnings(): array
     {
         return ($this->warnings === '') ? [] : json_decode($this->warnings, true, 3, JSON_THROW_ON_ERROR);
+    }
+
+    /** @return array<string, string> source slice => slice of this AA it goes into */
+    public function targets(): array
+    {
+        $targets = ($this->targets === '') ? [] : json_decode($this->targets, true, 2, JSON_THROW_ON_ERROR);
+        return array_map('strval', array_combine(array_map('strval', array_keys($targets)), $targets));
     }
 
     /** @return array<string, mixed> finish()'s report; [] = none */

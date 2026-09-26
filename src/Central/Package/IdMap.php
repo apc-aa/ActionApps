@@ -68,11 +68,19 @@ final class IdMap
         $this->numbers = ['view' => self::numberMap($views), 'email' => self::numberMap($emails), 'filter' => []];
         self::check($groups, self::GROUP_RE, 'constant group');
         foreach ($groups as $old => $new) {
-            if (($new !== (string) $old) && (!preg_match(self::NEW_GROUP_RE, $new) || in_array((string) $old, self::CORE_GROUPS, true) || in_array($new, self::CORE_GROUPS, true))) {
+            if (!self::renamable((string) $old, $new)) {
                 throw new InvalidArgumentException("Constant group $old cannot be renamed to $new");
             }
         }
         self::check($collections, self::COLLECTION_RE, 'alerts collection');
+    }
+
+    /** the group may be mapped to $new: the same name, or a new name spliced safely into templates, core
+     *  groups never */
+    public static function renamable(string $old, string $new): bool
+    {
+        return ($new === $old) || (preg_match(self::GROUP_RE, $old) && preg_match(self::NEW_GROUP_RE, $new)
+            && !in_array($old, self::CORE_GROUPS, true) && !in_array($new, self::CORE_GROUPS, true));
     }
 
     /** a group name an app may carry: no `[`-list, no `#sLiCe-<id>` (items of a slice), no core group */

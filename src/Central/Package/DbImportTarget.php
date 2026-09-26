@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace AA\Central\Package;
 
 use AA;
+use AA\Central\Package\Model\RawBytes;
 use AA\IO\DB\DB_AA;
 use RuntimeException;
 
@@ -131,6 +132,57 @@ final class DbImportTarget implements ImportTarget
             $id = gensalt(5);
         } while (DB_AA::test('alerts_collection', [['id', $id]]));
         return $id;
+    }
+
+    public function existingSlice(string $id, bool $lock = false): ?ExistingSlice
+    {
+        if ($lock) {         // FOR UPDATE after the WHERE - DB_AA::select() cannot append it
+            DB_AA::select('id', 'SELECT LOWER(HEX(`id`)) AS id FROM `slice` ' . DB_AA::makeWhere([['id', $id, 'l']]) . ' FOR UPDATE');
+        }
+        $module = DB_AA::select1([], 'SELECT `name`, `type`, `lang_file`, `deleted` FROM `module`', [['id', $id, 'l']]);
+        $slice  = DB_AA::select1([], 'SELECT `type`, `deleted` FROM `slice`', [['id', $id, 'l']]);
+        if (!is_array($module) || !is_array($slice) || !$module || !$slice || ($module['type'] !== 'S') || (int) $module['deleted'] || (int) $slice['deleted']) {
+            return null;
+        }
+        $charset = ModuleCharset::ofModule(['type' => 'S', 'lang_file' => $module['lang_file']])[1] ?? '';
+        // a value the charset cannot read stays its bytes - as text it would differ from the package's
+        $utf8    = static function (mixed $v) use ($charset): mixed {
+            if (!is_string($v) || ($charset === '')) {
+                return $v;
+            }
+            [$text, $finding] = ModuleCharset::toUtf8($v, $charset);
+            return ($finding === null) ? $text : new RawBytes($v);
+        };
+        $rows    = static fn(string $key, string $sql, array $where): array => array_map(static fn(array $row): array => array_map($utf8, $row), DB_AA::select([$key => []], $sql, $where));
+        $objects = [];
+        $owned   = array_map('strval', DB_AA::select('object_id', 'SELECT object_id FROM `object_text`', [['property', 'aa_owner'], ['value', $id]]));
+        $props   = [];
+        foreach ($owned ? DB_AA::select([], 'SELECT object_id, property, value FROM `object_text`', [['object_id', $owned], ['property', ['aa_type', 'aa_name', 'alias']]]) : [] as $row) {
+            $props[(string) $row['object_id']][(string) $row['property']] = ValueCodec::bytes($utf8((string) $row['value']));
+        }
+        foreach ($props as $object => $p) {
+            if (in_array($p['aa_type'] ?? '', Schema::TOP_CLASSES, true)) {
+                $objects[$object] = [$p['aa_type'], ExistingSlices::objectName($p['aa_type'], $p['aa_name'] ?? '', $p['alias'] ?? '')];
+            }
+        }
+        return new ExistingSlice(
+            strtolower($id),
+            ValueCodec::bytes($utf8((string) $module['name'])),
+            (string) $slice['type'],
+            (string) $module['lang_file'],
+            (string) $charset,
+            $rows('id', 'SELECT * FROM `field`', [['slice_id', $id, 'l']]),
+            $rows('id', 'SELECT `id`, `name`, `field3`, `type`, `odd` FROM `view`', [['slice_id', $id, 'l']]),
+            $rows('id', 'SELECT `id`, `description` FROM `email`', [['owner_module_id', $id, 'l']]),
+            $objects,
+        );
+    }
+
+    /** the logged-in user - CheckPerms() caches what it asks in the session */
+    public function mayEditSlice(string $id): bool
+    {
+        class_exists(\AA_Perm::class);           // loads PS_EDIT, IfSlPerm()
+        return \IsSuperadmin() || \IfSlPerm(\PS_EDIT, $id);
     }
 
     /** information_schema.tables of this AA's database (DB_NAME), values quoted by makeWhere() */

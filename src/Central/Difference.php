@@ -121,8 +121,9 @@ class Difference
     }
 
     /** @return array<string, list<int|string>> the row ids by their name - "column:value", so that a
-     *  named view never pairs with a view named only by its name ('' for no name) */
-    private static function idsByName(string $table, array $rows): array
+     *  named view never pairs with a view named only by its name ('' for no name). The import into an
+     *  existing slice pairs by it too (ExistingSlices). */
+    public static function idsByName(string $table, array $rows): array
     {
         $ids = [];
         foreach ($rows as $id => $row) {

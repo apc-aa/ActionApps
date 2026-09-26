@@ -53,6 +53,14 @@ interface ImportTarget
     /** the hosts this AA itself runs at - AA_INSTAL_URL and the admin's (lower case) @return list<string> */
     public function ownHosts(): array;
 
+    /** A slice of this AA a slice of the package may go into; null = no such slice, or it is deleted.
+     *  $lock: a locking read of the slice row - the writer's, so nobody deletes it until the commit.
+     *  @throws \RuntimeException the read failed */
+    public function existingSlice(string $id, bool $lock = false): ?ExistingSlice;
+
+    /** the importing user may change the slice (PS_EDIT, or a superadmin) - only such a slice takes a package */
+    public function mayEditSlice(string $id): bool;
+
     /** The tables of $tables (the ones an import writes) that are not InnoDB - no transaction covers them,
      *  a failed import would leave its rows there: the planner refuses to plan for them (E).
      *  @param list<string> $tables @return array<string, string> table => its engine ('' = no such table) */

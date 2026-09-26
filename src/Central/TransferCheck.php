@@ -13,7 +13,8 @@ use AA\IO\DB\DB_AA;
  *  relations of the new items that point nowhere. Only reads - it may run again for the report. */
 final class TransferCheck
 {
-    /** W: the slice has another number of items on the target than on the source; ref = "source => target" */
+    /** W: the slice has another number of items on the target than on the source - an existing slice the
+     *  package went into: another number written; ref = "source => target" */
     public const COUNT_DIFFERS = 'count-differs';
     /** W: items of the source edited after the run started - their change may have missed its batch; ref = the count */
     public const EDITED_DURING = 'edited-during-transfer';
@@ -43,12 +44,14 @@ final class TransferCheck
             $edited     = 0;
             $findings[] = ['source', new LintFinding(LintFinding::WARNING, self::SOURCE_UNKNOWN, ($e instanceof SourceFailed) ? $e->reason : TransferProgress::SOURCE_DENIED, 0)];
         }
+        $into    = $run->targets();
         foreach ($run->slices() as $slice) {
             $target   = (string) $map->module($slice);
             $counts   = [($onSource === null) ? null : (int) ($onSource[$slice] ?? 0), ($target === '') ? 0 : DB_AA::count('item', [['slice_id', $target, 'l']])];
             $slices[] = ['source' => $slice, 'target' => $target, 'written' => (int) ($written[$slice] ?? 0), 'sourceCount' => $counts[0], 'targetCount' => $counts[1]];
-            if (($counts[0] !== null) && ($counts[0] !== $counts[1])) {
-                $findings[] = [Module::SLICE . "[$slice]", new LintFinding(LintFinding::WARNING, self::COUNT_DIFFERS, "$counts[0] => $counts[1]", 0)];
+            $arrived  = isset($into[$slice]) ? (int) ($written[$slice] ?? 0) : $counts[1];       // an existing slice had items before
+            if (($counts[0] !== null) && ($counts[0] !== $arrived)) {
+                $findings[] = [Module::SLICE . "[$slice]", new LintFinding(LintFinding::WARNING, self::COUNT_DIFFERS, "$counts[0] => $arrived", 0)];
             }
         }
         if ($edited) {

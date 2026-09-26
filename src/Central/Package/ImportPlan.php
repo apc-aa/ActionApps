@@ -15,7 +15,8 @@ final readonly class ImportPlan
 {
     /**
      * @param Package                           $package       the package to write: FixUps applied, still UTF-8 and source ids
-     * @param IdMap                             $map           source => target ids; views, e-mails, filters empty
+     * @param IdMap                             $map           source => target ids; of views and e-mails only
+     *                                                         those an existing slice has, no filters
      * @param array<string, string>             $charsets      source module id => target charset (its lang_file)
      * @param array<string, string>             $langFiles     source module id => module.lang_file to write
      * @param array<string, string>             $groupCharsets source group name => charset of its constants
@@ -23,6 +24,8 @@ final readonly class ImportPlan
      * @param list<FixUp>                       $fixUps        what FixUps changed, in package order
      * @param list<array{string, LintFinding}>  $validation    Validator's findings (no E - or there is no plan)
      * @param list<array{string, LintFinding}>  $findings      the planner's: group renames (I), charset and length (E, W)
+     * @param array<string, ExistingSlice>      $existing      source slice id => the slice of the target it goes
+     *                                                         into ($package holds only what that slice lacks)
      */
     public function __construct(
         public Package $package,
@@ -34,6 +37,7 @@ final readonly class ImportPlan
         public array $fixUps,
         public array $validation,
         public array $findings,
+        public array $existing = [],
     ) {}
 
     /** no E: the writer may start once the S findings were confirmed and the rights checked */
@@ -65,7 +69,8 @@ final readonly class ImportPlan
     {
         $modules = [];
         foreach ($this->package->modules as $m) {
-            $modules[] = ['type' => $m->type, 'name' => ValueCodec::bytes($m->rows['module'][0]['name'] ?? ''), 'old' => $m->id,
+            $name      = isset($this->existing[$m->id]) ? $this->existing[$m->id]->name : ValueCodec::bytes($m->rows['module'][0]['name'] ?? '');
+            $modules[] = ['type' => $m->type, 'name' => $name, 'old' => $m->id,
                 'new' => (string) $this->map->module($m->id), 'charset' => $this->charsets[$m->id] ?? '', 'doc' => $m->doc];
         }
         $groups = [];

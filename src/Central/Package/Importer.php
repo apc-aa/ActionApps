@@ -366,7 +366,7 @@ final class Importer
         };
         $modules = array_values($plan->map->modules());
         $step('log', fn() => $this->aa->logInstall($plan->package, $modules));
-        foreach ($modules as $id) {
+        foreach (array_diff_key($plan->map->modules(), $plan->existing) as $id) {      // an existing slice keeps its rights
             $step("permissions[$id]", fn() => $this->aa->permissions($id, $this->user));
         }
         if ($plan->map->groups()) {
@@ -403,9 +403,19 @@ final class Importer
         ]));
     }
 
-    /** every group name, collection id and site domain of the plan is still free on the target @throws WriteError */
+    /** every group name, collection id and site domain of the plan is still free on the target, every
+     *  existing slice still there in its charset, locked and editable by the user, every group its fields
+     *  name still there @throws WriteError */
     private function recheck(ImportPlan $plan): void
     {
+        foreach ($plan->existing as $old => $slice) {
+            if ($this->target->existingSlice($slice->id, true)?->charset !== $slice->charset) {
+                throw new WriteError(WriteError::GONE, Module::SLICE . "[$old]", 'the slice it goes into is gone or has another language since the plan');
+            }
+            if (!$this->target->mayEditSlice($slice->id)) {
+                throw new WriteError(WriteError::DENIED, Module::SLICE . "[$old]", 'the user may not edit the slice it goes into any more');
+            }
+        }
         $planner = new Planner($this->target, $this->metabase);
         foreach ($plan->package->modules as $m) {
             foreach ($m->transfer['alternate-url'] ?? [] as $i => $url) {
@@ -414,9 +424,16 @@ final class Importer
                 }
             }
         }
-        foreach ($plan->map->groups() as $old => $new) {
-            if ($this->target->groupTaken($new)) {
-                throw new WriteError(WriteError::TAKEN, "constant-group[$old]", "the constant group $new was created since the plan");
+        $written = array_map(static fn($g): string => $g->name, $plan->package->constantGroups);
+        foreach (array_diff_key($plan->map->groups(), array_flip($written)) as $old => $new) {     // mapped to a group an existing slice names
+            if (!$this->target->groupTaken($new, true)) {
+                throw new WriteError(WriteError::GONE, "constant-group[$old]", "the constant group $new is gone since the plan");
+            }
+        }
+        foreach ($plan->package->constantGroups as $group) {
+            $new = $plan->map->group($group->name);
+            if (($new !== null) && $this->target->groupTaken($new)) {
+                throw new WriteError(WriteError::TAKEN, "constant-group[$group->name]", "the constant group $new was created since the plan");
             }
         }
         foreach ($plan->map->collections() as $old => $new) {

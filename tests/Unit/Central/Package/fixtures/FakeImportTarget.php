@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Central\Package\Fixtures;
 
+use AA\Central\Package\ExistingSlice;
 use AA\Central\Package\ImportTarget;
 use AA\Central\Package\ItemLint;
 
@@ -27,6 +28,10 @@ class FakeImportTarget implements ImportTarget
     public array $domains = [];
     /** @var list<string> the hosts the target runs at */
     public array $hosts = ['aa.target.example'];
+    /** @var array<string, ExistingSlice> the slices a package slice may go into */
+    public array $slices = [];
+    /** @var list<string> slices the importing user may not edit */
+    public array $notEditable = [];
     /** @var int how many times readerLogins() was asked */
     public int $readerQueries = 0;
     private int $ids = 0;
@@ -105,6 +110,16 @@ class FakeImportTarget implements ImportTarget
     public function newCollectionId(): string
     {
         return array_shift($this->scriptedCollections) ?? sprintf('K%04d', ++$this->collectionCount);
+    }
+
+    public function existingSlice(string $id, bool $lock = false): ?ExistingSlice
+    {
+        return $this->slices[$id] ?? null;
+    }
+
+    public function mayEditSlice(string $id): bool
+    {
+        return !in_array($id, $this->notEditable, true);
     }
 
     public function nonTransactional(array $tables): array

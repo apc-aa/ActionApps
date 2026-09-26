@@ -349,9 +349,9 @@ namespace Tests\Unit\Central {
             self::locked($id, static fn(InstallRun $run) => $run->previewed(hash('sha256', self::DEFINITIONS), self::NOW, false));
             $run = InstallRun::get($id);
 
-            $this->assertTrue($run->matchesPreview(self::DEFINITIONS, false));
-            $this->assertFalse($run->matchesPreview(self::DEFINITIONS . ' ', false), 'another package');
-            $this->assertFalse($run->matchesPreview(self::DEFINITIONS, true), 'the Central row names this AA now');
+            $this->assertTrue($run->matchesPreview(self::DEFINITIONS, false, []));
+            $this->assertFalse($run->matchesPreview(self::DEFINITIONS . ' ', false, []), 'another package');
+            $this->assertFalse($run->matchesPreview(self::DEFINITIONS, true, []), 'the Central row names this AA now');
         }
 
         public function test_only_a_preview_takes_a_fingerprint(): void

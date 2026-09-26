@@ -23,7 +23,8 @@ final readonly class ImportReport
 
     /**
      * @param array{name: string, version: ?string, description: ?string, source: array<string, string>} $package
-     * @param list<array{type: string, name: string, old: string, new: string}> $modules the package's modules, old => new id
+     * @param list<array{type: string, name: string, old: string, new: string, existing: bool}> $modules the package's modules,
+     *                                                       old => new id; existing: a slice the package went into
      * @param array<string, int>                   $rows     table => rows written (RowStore::written()), by table name
      * @param list<FixUp>                          $ignored  what the import changed or dropped
      * @param array{views: array<int, int>, emails: array<int, int>, filters: array<int, int>, groups: array<string, string>,
@@ -53,8 +54,9 @@ final readonly class ImportReport
         [$modules, $objects, $settings] = [[], [], []];
         foreach ($p->modules as $m) {
             $new       = (string) $map->module($m->id);
-            $name      = ValueCodec::bytes($m->rows['module'][0]['name'] ?? '');
-            $modules[] = ['type' => $m->type, 'name' => $name, 'old' => $m->id, 'new' => $new];
+            $existing  = isset($plan->existing[$m->id]);
+            $name      = $existing ? $plan->existing[$m->id]->name : ValueCodec::bytes($m->rows['module'][0]['name'] ?? '');
+            $modules[] = ['type' => $m->type, 'name' => $name, 'old' => $m->id, 'new' => $new, 'existing' => $existing];
             $objects += self::objects($m->objects, $map);
             if (($m->type === Module::SLICE) && ($fields = self::settingsFields($m))) {
                 $settings[] = ['module' => $new, 'name' => $name, 'fields' => $fields, 'url' => self::SETTINGS_URL . $new];

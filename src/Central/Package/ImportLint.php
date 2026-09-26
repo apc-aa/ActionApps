@@ -21,10 +21,12 @@ final class ImportLint
         $this->texts = new LintTexts($schema);
     }
 
-    /** @throws RewriteFailed a regex failed */
-    public function check(Package $package, FindingList $into): void
+    /** @param Package|null $ids the package whose ids the rewrite maps - the whole one, when $package leaves
+     *                           out what an existing slice keeps; null = $package
+     *  @throws RewriteFailed a regex failed */
+    public function check(Package $package, FindingList $into, ?Package $ids = null): void
     {
-        $lint = new ReferenceLint(self::identity($package));
+        $lint = new ReferenceLint(self::identity($ids ?? $package));
         foreach ($this->texts($package) as $entry) {
             foreach (LintTexts::lint($lint, ...$entry) as $finding) {
                 $into->add($entry[0], $finding);

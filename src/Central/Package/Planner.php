@@ -58,9 +58,11 @@ final class Planner
     /** @param bool         $transfer     the importer's mode is a transfer (the Validator was asked the same)
      *  @param list<string> $readerLogins the login names of the readers the transfer brings (Collector::readerLogins()) -
      *                                    E for those of a user, or of a reader with AA permissions, of this AA
+     *  @param array<string, string> $into slices of the package going into existing slices of this AA: source id => id here
+     *  @param bool         $sameAa       the source is this AA (AppSource::sameAa())
      *  @throws InvalidArgumentException the validation has an E - such a package is never planned
      *  @throws RewriteFailed a regex of the length check failed */
-    public function plan(Package $package, ValidationResult $validation, bool $transfer = false, array $readerLogins = []): ImportPlan
+    public function plan(Package $package, ValidationResult $validation, bool $transfer = false, array $readerLogins = [], array $into = [], bool $sameAa = false): ImportPlan
     {
         if (!$validation->importable()) {
             throw new InvalidArgumentException('The package did not pass the validation - no import plan');
@@ -68,10 +70,17 @@ final class Planner
         $this->findings = new FindingList();
         $this->used     = [];
         [$fixed, $fix_ups] = (new FixUps($this->schema))->apply($package);
-        $fixed             = $this->domains($fixed);
+        $whole             = $this->domains($fixed);
+        $existing          = new ExistingSlices($this->target, $this->schema, $this->findings);
+        $fixed             = $existing->prune($whole, $into, $transfer, $sameAa);
+        $targets           = $existing->targets();
 
         $charsets = $lang_files = [];
         foreach ($fixed->modules as $m) {
+            if (isset($targets[$m->id])) {
+                [$charsets[$m->id], $lang_files[$m->id]] = [$targets[$m->id]->charset, $targets[$m->id]->langFile];
+                continue;
+            }
             [$lang_file, $charset] = ModuleCharset::ofModule(['type' => $m->type] + ($m->rows['module'][0] ?? [])) ?? [null, null];
             if ($charset === null) {
                 $this->add("$m->type[$m->id]/module[#0]/lang_file", LintFinding::ERROR, self::LANG_FILE, ValueCodec::bytes($m->rows['module'][0]['lang_file'] ?? ''));
@@ -80,14 +89,18 @@ final class Planner
             }
         }
         $groups         = new GroupPlan($this->target, new LintTexts($this->schema));
+        $fixed          = $existing->groups($whole, $fixed, $groups);
         $group_charsets = $groups->charsets($fixed, $charsets);
 
         $modules = $long = $settings = $collections = [];
         foreach ($fixed->modules as $m) {
-            $modules[$m->id] = $this->newId();
+            $modules[$m->id] = isset($targets[$m->id]) ? $targets[$m->id]->id : $this->newId();
         }
         foreach ($fixed->modules as $m) {       // before any other new id - none may equal one
-            if (isset(Schema::SETTINGS_CLASSES[$m->type])) {
+            if (isset($targets[$m->id])) {      // its settings stay; references to them go there
+                $class = Schema::SETTINGS_CLASSES[$m->type];
+                $long[string2id($class . strtolower($m->id))] = string2id($class . $targets[$m->id]->id);
+            } elseif (isset(Schema::SETTINGS_CLASSES[$m->type])) {
                 $class                      = Schema::SETTINGS_CLASSES[$m->type];
                 $settings[$m->id]           = string2id($class . strtolower($modules[$m->id]));
                 $long[string2id($class . strtolower($m->id))] = $settings[$m->id];     // the Validator: no package id
@@ -108,14 +121,16 @@ final class Planner
                 $long[$this->sourceId(ValueCodec::bytes($row['id'] ?? ''), $settings_of, "constant-group[$group->name]")] = $this->newId();
             }
         }
-        $map = new IdMap(modules: $modules, longIds: $long, groups: $groups->names($fixed, $this->findings), collections: $collections);
+        $long += $existing->objects();
+        $map   = new IdMap($modules, $long, $existing->views(), $existing->emails(), $groups->names($fixed, $this->findings) + $existing->groupMap(), $collections);
 
+        $existing->differences($map, $transfer);
         $this->alertsFields($fixed, $map);
         (new TargetCharset($this->schema, $map))->check($fixed, $charsets, $group_charsets, $this->findings);
-        (new ImportLint($this->schema))->check($fixed, $this->findings);
+        (new ImportLint($this->schema))->check($fixed, $this->findings, $whole);
         $this->readers($readerLogins);
         $this->engines($transfer);
-        return new ImportPlan($fixed, $map, $charsets, $lang_files, $group_charsets, $settings, $fix_ups, $validation->findings, $this->findings->all());
+        return new ImportPlan($fixed, $map, $charsets, $lang_files, $group_charsets, $settings, $fix_ups, $validation->findings, $this->findings->all(), $targets);
     }
 
     /** E NO_TRANSACTION for the tables the import writes without a transaction - the whole list (a short
