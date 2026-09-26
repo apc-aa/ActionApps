@@ -28,6 +28,9 @@ final class ImgfuncReencodeTest extends TestCase
 
     protected function tearDown(): void
     {
+        if (!isset($this->dir)) {
+            return;                             // skipped before setUp() made it
+        }
         array_map('unlink', glob($this->dir . '/*') ?: []);
         @rmdir($this->dir);
     }
