@@ -157,7 +157,7 @@ export async function createRichEditor(target, { uiLang, inline = false, height 
         style_formats: STYLE_FORMATS,
         browser_spellcheck: true,
         image_caption: true,
-        content_style: 'body { font-family: Arial, Helvetica, sans-serif; font-size: 13px; }',
+        content_style: 'body { font: 13px/1.6 Arial, Helvetica, Tahoma, Verdana, sans-serif; margin: 20px; color: #333; } table[border] td { border: 1px solid #333; }',
         // keep what AA stores: any element, any attribute, URLs as written, entities only where they were
         valid_elements: '*[*]',
         extended_valid_elements: '*[*]',
@@ -181,7 +181,7 @@ export async function createRichEditor(target, { uiLang, inline = false, height 
         setup: (ed) => {
             ed.on('PreInit', () => guardEditView(ed));
             if (onSource) {
-                ed.ui.registry.addButton('aasource', { icon: 'sourcecode', tooltip: sourceLabel, onAction: () => onSource() });
+                ed.ui.registry.addButton('aasource', { icon: 'sourcecode', text: sourceLabel, tooltip: sourceLabel, onAction: () => onSource() });
             }
             // typing makes TinyMCE dirty only with its next undo level; the textarea needs it now
             ed.on('input', () => ed.setDirty(true));
