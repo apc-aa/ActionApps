@@ -159,7 +159,7 @@ if ($encap) {
     add_vars();        // adds values from QUERY_STRING_UNESCAPED
 }                      // and REDIRECT_STRING_UNESCAPED - from url
 
-InputVars::QuoteVars("post", ['encap' => 1]);  // quote variables to global space, but skip (already edited) encap variable
+InputVars::QuoteVars("post", ['encap' => 1, 'slice_id' => 1]);  // encap is already read; slice_id stays the one init_page checked
 AA::setEncoding(Langs::getCharset());
 
 $insert  = false;

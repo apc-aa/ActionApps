@@ -70,7 +70,7 @@ try {
 // Allow edit current slice without slice_pwd
 AA_Credentials::singleton()->loadFromSlice(AA::$module_id);
 
-InputVars::QuoteVars("post");  // if magicquotes are not set, quote variables
+InputVars::QuoteVars("post", ['slice_id' => 1]);  // slice_id stays the one init_page checked - the fields are stored to it
 
 AA::setEncoding(Langs::getCharset());
 

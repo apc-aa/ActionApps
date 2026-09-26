@@ -30,6 +30,7 @@
 //
 
 use AA\IO\DB\DB_AA;
+use AA\Util\InputVars;
 use AA\Util\Langs;
 use AA\Util\SingletonTrait;
 
@@ -377,6 +378,9 @@ function array_merge_append(array &$array, $newValues): array
 function array_merge_append_global($newValues): void
 {
     foreach ($newValues as $key => $value) {
+        if (InputVars::isProtectedGlobal((string) $key)) {
+            continue;
+        }
         if (!isset($GLOBALS[$key]) || !is_array($GLOBALS[$key]) || !is_array($value)) {
             $GLOBALS[$key] = $value;
         } else {
