@@ -47,6 +47,30 @@ final class TxtWidgetViewTest extends TestCase
         $this->assertSame([], $this->libs(new TxtWidget(), 0, 0));
     }
 
+    public function test_a_stored_html_value_gets_codemirror_even_when_the_default_is_plain_text(): void
+    {
+        $this->assertSame(['aa-code@1'], $this->libs(new TxtWidget(), 0, 0, ['view' => 'code']));
+        $this->assertSame([], $this->libs(new TxtWidget(), 0, 1, ['view' => '']));
+    }
+
+    /** @return array<string, array{0: string, 1: string, 2: bool}> */
+    public static function editors(): array
+    {
+        return [
+            'edt, live'                   => ['rich', 'live', true],
+            'switch, normal form'         => ['switch-plain', 'normal', true],
+            // ajax and live carry the format hidden and only for HTML - the editor could not set it
+            'switch, ajax'                => ['switch-plain', 'ajax', false],
+            'switch, live'                => ['switch-code', 'live', false],
+        ];
+    }
+
+    #[DataProvider('editors')]
+    public function test_editor_link_only_where_the_format_can_follow(string $view, string $type, bool $expected): void
+    {
+        $this->assertSame($expected, TxtWidget::editorAllowed($view, $type));
+    }
+
     public function test_edt_asks_for_aa_richtext_and_runs_no_init_code(): void
     {
         $this->assertContains('aa-richtext@1', $this->libs(new EdtWidget(), 0, 1));
@@ -55,7 +79,7 @@ final class TxtWidgetViewTest extends TestCase
     }
 
     /** @return string[] */
-    private function libs(TxtWidget $widget, int $switches, int $default): array
+    private function libs(TxtWidget $widget, int $switches, int $default, ?array $winfo = null): array
     {
         $property = new class ($switches, $default) {
             public function __construct(private int $switches, private int $default) {}
@@ -72,6 +96,6 @@ final class TxtWidgetViewTest extends TestCase
                 return $this->default;
             }
         };
-        return (new ReflectionMethod($widget, 'requireLibs'))->invoke($widget, $property, null);
+        return (new ReflectionMethod($widget, 'requireLibs'))->invoke($widget, $property, $winfo);
     }
 }

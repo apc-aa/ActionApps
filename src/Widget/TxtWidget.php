@@ -65,9 +65,11 @@ class TxtWidget extends Widget
     protected function requireLibs($aa_property, $winfo): array
     {
         $ret = (count($aa_property->getTranslations()) > 1) ? ['aa-jslib@3'] : [];
+        // the view follows the stored value (_getRawHtml() passes it); the default flag only without one
+        $view = $winfo['view'] ?? (($aa_property->getContentTypeDefault() & FLAG_HTML) ? 'code' : '');
         if ($aa_property->getContentTypeSwitches()) {
             $ret[] = 'aa-richtext@1';
-        } elseif ($aa_property->getContentTypeDefault() & FLAG_HTML) {
+        } elseif ($view === 'code') {
             $ret[] = 'aa-code@1';
         }
         if ($this->speechEnabled()) {
@@ -193,12 +195,12 @@ class TxtWidget extends Widget
                     $attrs['data-aa-speech-lang'] = $per_lang;
                 }
             }
-            $widget .= $this->getOneInput($input_name, $i, $val, $attrs, $required, !$aa_property->getContentTypeSwitches() || $type === 'live', $base, $view, $rich_attrs);
+            $widget .= $this->getOneInput($input_name, $i, $val, $attrs, $required, !self::editorAllowed($view, $type), $base, $view, $rich_attrs);
             $required = ''; // only one is required
             unset($attrs['autofocus']);
         }
 
-        return ['html' => $widget, 'last_input_name' => $input_name, 'base_name' => $base_name, 'base_id' => $base_id, 'required' => $aa_property->isRequired()];
+        return ['html' => $widget, 'last_input_name' => $input_name, 'base_name' => $base_name, 'base_id' => $base_id, 'required' => $aa_property->isRequired(), 'view' => $view];
     }
 
     /**
@@ -265,11 +267,20 @@ class TxtWidget extends Widget
         };
     }
 
+    /**
+     * Whether TinyMCE may open: edt is the editor in every mode; Edit in Editor of a switch only
+     * in the normal form - ajax and live carry the format in a hidden input, and only for HTML,
+     * so a plain-text value opened in the editor would be saved as plain text.
+     */
+    public static function editorAllowed(string $view, string $type): bool
+    {
+        return ($view === 'rich') || ($type === 'normal');
+    }
+
     /** @return array<string, string> attributes of <aa-richtext> for this field and viewer */
     private function richtextAttrs(string $base_name, AA_Content $content, string $type, string $view): array
     {
-        // no Edit in Editor in live mode, as before; edt is the editor in every mode
-        $editor = ($view === 'rich') || ($type !== 'live');
+        $editor = self::editorAllowed($view, $type);
         $attrs  = RichtextMarkup::contextAttrs((string) $content->getOwnerID(), $editor);   // no editor, nothing to upload with
         if ($view !== 'rich') {
             $attrs['switch-name'] = $base_name . '[flag]';
