@@ -17,9 +17,169 @@ const BUNDLE_URL = (() => {
     return url;
 })();
 
+/** the value last announced by a change event, per textarea - <aa-richtext> puts the
+ *  same textarea into an <aa-code> for its source view, and one edit must announce once */
+const announced = new WeakMap();
+
+const NATIVE_VALUE = Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, 'value');
+
+/** who shows a textarea's value, per textarea - in the source view of <aa-richtext> both
+ *  it and the <aa-code> inside listen, only the one showing an editor acts */
+const watchers = new WeakMap();
+
+/**
+ * Scripts write textarea.value (templates, jQuery .val(), the translate button) and the
+ * editor over the textarea has to show it. There is no event for that, so the textarea
+ * gets its own value property that tells the watchers after the native write.
+ * @return {Function} stops watching
+ */
+function watchValue(textarea, fn) {
+    let fns = watchers.get(textarea);
+    if (!fns) {
+        fns = new Set();
+        watchers.set(textarea, fns);
+        const all = fns;
+        Object.defineProperty(textarea, 'value', {
+            configurable: true,
+            get() { return NATIVE_VALUE.get.call(this); },
+            set(v) {
+                NATIVE_VALUE.set.call(this, v);
+                const now = NATIVE_VALUE.get.call(this);
+                all.forEach(f => f(now));
+            },
+        });
+    }
+    fns.add(fn);
+    return () => {
+        fns.delete(fn);
+        if (!fns.size) {
+            delete textarea.value;          // the prototype's property again
+            watchers.delete(textarea);
+        }
+    };
+}
+
+/**
+ * Keeps the named <textarea> an editor stands in for right - it is what forms,
+ * AA__Serialize() and AA_SendWidgetLive() read:
+ *  - write() on every edit: AA calls form.submit() in many places, which fires no
+ *    submit event, so there is no later moment to copy the value;
+ *  - commit() fires change once per edit, when focus leaves the editor, as a native
+ *    textarea does - in live mode change is a save to the server;
+ *  - a value a script writes into the textarea, or form.reset(), goes to onExternal;
+ *  - a hidden required textarea gets no browser bubble and the submit would just not
+ *    happen: the host shows the message and the editor takes the focus.
+ */
+export class TextareaSync {
+    #textarea;
+    #host;
+    #focus;
+    #message = null;
+    #abort = new AbortController();
+    #unwatch = null;
+
+    /**
+     * @param {HTMLTextAreaElement} textarea
+     * @param {{host?: HTMLElement, onExternal?: (value: string) => void, focus?: () => void}} [options]
+     */
+    constructor(textarea, { host = null, onExternal = null, focus = null } = {}) {
+        this.#textarea = textarea;
+        this.#host     = host;
+        this.#focus    = focus;
+        if (!announced.has(textarea)) {
+            announced.set(textarea, textarea.value);
+        }
+        const signal = this.#abort.signal;
+        // a native change (the bare textarea of the plain view) announces too
+        textarea.addEventListener('change', () => announced.set(textarea, textarea.value), { signal });
+        // leaving without a blur (keyboard, history); AA_SendWidgetLive sends with keepalive
+        window.addEventListener('pagehide', () => this.commit(), { signal });
+        if (textarea.classList.contains('live')) {
+            window.AA_LiveGuard?.();
+        }
+        if (onExternal) {
+            this.#unwatch = watchValue(textarea, (value) => {
+                onExternal(value);
+                this.#checkValid();
+            });
+            // the reset event comes before the form resets its controls
+            textarea.form?.addEventListener('reset', () => setTimeout(() => onExternal(textarea.value)), { signal });
+        }
+        if (host) {
+            textarea.addEventListener('invalid', e => this.#onInvalid(e), { signal });
+        }
+    }
+
+    /** @param {string} value */
+    write(value) {
+        if (NATIVE_VALUE.get.call(this.#textarea) !== value) {
+            NATIVE_VALUE.set.call(this.#textarea, value);   // not the watchers: the editor already shows it
+        }
+        this.#checkValid();
+    }
+
+    commit() {
+        const value = this.#textarea.value;
+        if (!this.#textarea.isConnected || announced.get(this.#textarea) === value) {
+            return;
+        }
+        announced.set(this.#textarea, value);
+        // on the textarea: AA hangs onchange="AA_SendWidgetLive(...)" there, and events bubble up, not down
+        this.#textarea.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+
+    destroy() {
+        this.#abort.abort();
+        this.#unwatch?.();
+        this.#clearInvalid();
+    }
+
+    #onInvalid(e) {
+        const ta = this.#textarea;
+        // only while an editor of this host stands in for the textarea; a visible one gets the browser's bubble
+        if (!ta.hidden || (ta.closest('aa-code, aa-richtext') !== this.#host)) {
+            return;
+        }
+        e.preventDefault();
+        this.#host.setAttribute('invalid', '');
+        if (!this.#message) {
+            this.#message = document.createElement('p');
+            this.#message.className = 'aa-invalid-msg';
+            this.#message.setAttribute('role', 'alert');
+            this.#host.after(this.#message);
+        }
+        this.#message.textContent = ta.validationMessage;
+        // the first invalid field of a submitted form takes the focus, as the browser does
+        // it; live fields (form="") only show the message
+        if (ta.form && ([...ta.form.elements].find(el => el.willValidate && !el.validity.valid) === ta)) {
+            this.#host.scrollIntoView({ block: 'center' });
+            this.#focus?.();
+        }
+    }
+
+    #checkValid() {
+        if (this.#message && this.#textarea.validity.valid) {
+            this.#clearInvalid();
+        }
+    }
+
+    #clearInvalid() {
+        this.#message?.remove();
+        this.#message = null;
+        this.#host?.removeAttribute('invalid');
+    }
+}
+
 class AaCodeElement extends HTMLElement {
     #editor = null;
     #textarea = null;
+    #sync = null;
+    #onFocusout = (e) => {
+        // moving inside the element (the search panel) does not end the edit
+        if (!this.contains(e.relatedTarget)) {
+            this.#sync?.commit();
+        }
+    };
 
     async connectedCallback() {
         if (this.#editor || this.#textarea) {
@@ -43,16 +203,21 @@ class AaCodeElement extends HTMLElement {
             return;                         // removed or raced while importing
         }
 
-        this.#editor = createEditor(this.#textarea, {
-            // "syntax" here, "language" in the bundle (CodeMirror's own term): on
-            // multilingual fields "language" would sit next to real cs/en/de codes.
-            language: this.getAttribute('syntax') || 'html',
-            onChange: () => {
-                // Must originate on the textarea - that is where AA hangs
-                // onchange="AA_SendWidgetLive(...)", and events bubble up, not down.
-                this.#textarea.dispatchEvent(new Event('change', { bubbles: true }));
+        this.#sync = new TextareaSync(this.#textarea, {
+            host:       this,
+            focus:      () => this.focus(),
+            // the bundle mirrors its own edits into the textarea too - those match already
+            onExternal: (value) => {
+                if (this.#editor && (this.#editor.getValue() !== value)) {
+                    this.#editor.setValue(value);
+                }
             },
         });
+        // "syntax" here, "language" in the bundle (CodeMirror's own term): on
+        // multilingual fields "language" would sit next to real cs/en/de codes.
+        // The bundle writes every change into the textarea itself.
+        this.#editor = createEditor(this.#textarea, { language: this.getAttribute('syntax') || 'html' });
+        this.addEventListener('focusout', this.#onFocusout);
         this.#textarea.hidden = true;
         // Bare attribute: a custom element owns its own attribute set. Becomes
         // states.add('ready') once :state() is Baseline Widely Available.
@@ -60,8 +225,15 @@ class AaCodeElement extends HTMLElement {
     }
 
     disconnectedCallback() {
+        this.#sync?.commit();
+        this.#sync?.destroy();
         this.#editor?.destroy();
+        this.removeEventListener('focusout', this.#onFocusout);
+        if (this.#textarea) {
+            this.#textarea.hidden = false;  // <aa-richtext> takes the textarea out again
+        }
         this.#editor = null;
+        this.#sync = null;
         this.#textarea = null;
         this.removeAttribute('ready');
     }
@@ -71,15 +243,23 @@ class AaCodeElement extends HTMLElement {
         return this.#editor ? this.#editor.getValue() : (this.#textarea?.value ?? this.querySelector('textarea')?.value ?? '');
     }
 
+    /** A finished edit (the translate button) - announced at once, live mode saves it. */
     set value(value) {
         if (this.#editor) {
-            this.#editor.setValue(value);   // the editor mirrors it into the textarea
+            this.#editor.setValue(value);   // the bundle mirrors it into the textarea
+            this.#sync.commit();
             return;
         }
         const ta = this.#textarea ?? this.querySelector('textarea');
         if (ta) {
             ta.value = value;
+            ta.dispatchEvent(new Event('change', { bubbles: true }));
         }
+    }
+
+    /** Announces the pending edit - AA_LiveGuard() calls it before the page is left. */
+    flush() {
+        this.#sync?.commit();
     }
 
     focus() {

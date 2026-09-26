@@ -544,6 +544,8 @@ aa-code .cm-content:hover {
 aa-code .cm-scroller {
     overflow-x: auto;
 }
+aa-code[invalid], aa-richtext[invalid] { outline: 2px solid #c00; outline-offset: 1px; }
+.aa-invalid-msg { color: #c00; margin: .25em 0; }
 
 /* tlkt widget */
 .aa-widget-wi2 .aa-input, .aa-widget-iso .aa-input {

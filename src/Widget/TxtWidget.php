@@ -243,11 +243,6 @@ class TxtWidget extends Widget
                 $this->ids_4_editor[] = '#' . $input_id;
             }
 
-            // we do not mark base textarea as required for CodeMirror, since it causes "An invalid form control with name='' is not focusable."
-            if ($showcodeeditor) {
-                $required = '';
-            }
-
         } elseif (!$no_htmleditor_link) {
             $htmlareaedit = "<a href=\"javascript:;\" class=\"btn aa-arealink\" style=\"display:none\" onclick=\"this.parentNode.parentNode.querySelector('input[value=\'1\']').checked=true;this.parentNode.parentNode.querySelector('.aa-formatters').style.display='none'; this.style.display='none';CKEDITOR.replace('$input_id');\">" . _m("Edit in Editor") . "</a>"; // used for HTMLArea
             // conversions menu
