@@ -678,6 +678,53 @@ class AA_Views
         return $this->a[$vid];
     }
 
+    /** Stores the top part of the edit form of an Alerts digest view: the grouping and sort[]
+     *  (view.aditional, view.aditional3) and its selections (alerts_filter rows).
+     *  $filters are posted as [rowid => ['description' => ..., 'conds' => ...]], where rowid is the id
+     *  of a stored selection or "new<n>" for a new one; an empty description deletes the selection.
+     *  The row ids come from the request, so only the selections of this view can change.
+     * @param int    $vid       the edited view - nothing is stored unless it is a view of $slice_id
+     * @param string $slice_id  unpacked id of the slice the page works on
+     * @param bool   $created   the view was just created ("Save as new" posts the rows of the source
+     *                          view) - every posted selection becomes a new row of it
+     * @return bool  false - the view is not in the slice, or a selection could not be inserted
+     */
+    public static function storeDigestFilters(int $vid, string $slice_id, int $group, string $sort, array $filters, bool $created): bool
+    {
+        $view = [['id', $vid, 'i'], ['slice_id', $slice_id, 'l']];
+        if (!DB_AA::test('view', $view)) {
+            return false;
+        }
+        DB_AA::update('view', [['aditional', $group, 'i'], ['aditional3', $sort, 's']], $view);
+
+        $ok = true;
+        foreach ($filters as $rowid => $filter) {
+            $rowid  = (string) $rowid;
+            $is_new = (bool) preg_match('/^new\d+$/D', $rowid);
+            if ((!$is_new && !preg_match('/^[1-9]\d*$/D', $rowid)) || !is_array($filter)) {
+                continue;
+            }
+            $description = $filter['description'] ?? '';
+            $conds       = $filter['conds'] ?? '';
+            if (!is_string($description) || !is_string($conds)) {
+                continue;
+            }
+            if ($is_new || $created) {
+                if (($description !== '') && !AA::Metabase()->doInsert('alerts_filter', ['vid' => $vid, 'description' => $description, 'conds' => $conds])) {
+                    $ok = false;
+                }
+                continue;
+            }
+            $where = [['id', (int) $rowid, 'i'], ['vid', $vid, 'i']];
+            if ($description === '') {
+                DB_AA::delete('alerts_filter', $where);
+            } else {
+                DB_AA::update('alerts_filter', [['description', $description, 's'], ['conds', $conds, 's']], $where);
+            }
+        }
+        return $ok;
+    }
+
     /** Returns an array of slice views, caching results in allknownviews
      * @param $slice_id
      * @return AA_View[]
