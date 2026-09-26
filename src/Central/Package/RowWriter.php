@@ -135,7 +135,15 @@ final class RowWriter
     private function slice(Module $m, string $id, string $owner): void
     {
         $slice = $m->rows['slice'][0] ?? [];
-        $fixed = ['id' => $id, 'deleted' => 0, 'created_by' => $this->user, 'created_at' => $this->now, 'owner' => $owner, 'slice_url' => '']
+        $fixed = [
+            'id'          => $id,
+            'deleted'     => 0,
+            'created_by'  => $this->user,
+            'created_at'  => $this->now,
+            'owner'       => $owner,
+            'slice_url'   => '',
+            'fileman_dir' => '',         // as the slice settings save "no directory"
+        ]
             + self::mapped($slice, 'vid', $this->view(...))
             + self::mapped($slice, 'mlxctrl', fn(string $v): string => $this->map->module($v) ?? '');
         if (isset($m->transfer['reading-password'])) {

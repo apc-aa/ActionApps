@@ -6,8 +6,8 @@ declare(strict_types=1);
  * The owner of the modules an install creates: one of this AA's owners (slice_owner), chosen in the
  * preview - by default the one most of the modules the user may edit have. It goes to module.owner and
  * slice.owner; an id of no owner is an E of the plan and the writer refuses it. A new module's slice_url
- * is '', not NULL. A transfer brings the owner of the source (BatchWriteTest), a slice going into an
- * existing one keeps its own (IntoExistingTest).
+ * and a new slice's fileman_dir are '', not NULL. A transfer brings the owner of the source
+ * (BatchWriteTest), a slice going into an existing one keeps its own (IntoExistingTest).
  */
 
 namespace Tests\Unit\Central\Package;
@@ -68,12 +68,13 @@ final class ModuleOwnerTest extends TestCase
         self::assertSame([], TableDb::rows('slice_owner'), 'no owner created');
     }
 
-    public function test_a_new_module_has_an_empty_slice_url_not_null(): void
+    public function test_a_new_module_has_an_empty_slice_url_and_fileman_dir_not_null(): void
     {
         $this->import($this->plan());
 
         self::assertSame(['', '', ''], array_column(TableDb::rows('module'), 'slice_url'));
         self::assertSame([''], array_column(TableDb::rows('slice'), 'slice_url'));
+        self::assertSame([''], array_column(TableDb::rows('slice'), 'fileman_dir'), 'as the slice settings save "no directory"');
     }
 
     public function test_an_aa_with_no_owner_leaves_the_owner_empty(): void
