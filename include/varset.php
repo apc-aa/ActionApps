@@ -82,8 +82,9 @@ class Cvariable
         switch ($this->type) {
             case "integer":
             case "number":
-                // grrr: if $var=0 then $var=""!!!
-                $ret = ($this->value == "") ? 0 : $this->value;
+                // goes inside the quotes unescaped, so nothing but a number may get there;
+                // a number is kept - in UPDATE and WHERE MySQL rounds '1.9', (int) would truncate it
+                $ret = is_numeric($this->value) ? $this->value : (int) $this->value;
                 break;
             case "unpacked":
                 if (is_long_ids($this->value)) {   // one id, or several concatenated (constant.ancestors)

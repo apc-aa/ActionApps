@@ -397,9 +397,9 @@ final class DB_AA
      *     NOTNULL  -                   IS NOT NULL                         ['number', '', 'NOTNULL']
      *     LIKE     -                   LIKE             single             ['id', '\_%', 'LIKE']
      *     RLIKE    -                   LIKE             single             ['selector', $item_id, 'RLIKE']
-     *     BEGIN    -                   LIKE             single or array    ['selector', $item_id, 'BEGIN'] // similar to RLIKE, but the value must begin with exact match of the string (including "%" and "_" characters)
+     *     BEGIN    -                   LIKE             single or array    ['selector', $item_id, 'BEGIN'] // similar to RLIKE, but the value must begin with exact match of the string (including "%", "_" and backslash)
      *     NOT BEGIN-                   LIKE             single or array    ['selector', $item_id, 'BEGIN']
-     *     CONTAIN  -                   LIKE             single             ['selector', $item_id, 'CONTAIN'] // similar to LIKE, but the value must contain exact match of the string (including "%" and "_" characters)
+     *     CONTAIN  -                   LIKE             single             ['selector', $item_id, 'CONTAIN'] // similar to LIKE, but the value must contain exact match of the string (including "%", "_" and backslash)
      *     NOT LIKE -                   NOT LIKE         single             ['id', '\_%', 'NOT LIKE']
      *     FILLED   -                   > ''             single             ['field3', '', 'FILLED']     // not null, not empty, not any whitespace character(s)
      *
@@ -416,7 +416,8 @@ final class DB_AA
                 $operator = $type === 'i<>' ? '<>' : $type;
                 $type = 'i';
             } elseif ($type === 'LIKE' || $type === 'NOT LIKE') {
-                $where[] = "$name $type '" . addcslashes($value, "'") . "'";    // see field LIKE '\_%'
+                // '%' and '_' stay wildcards; a caller wanting them literal escapes them - see likeLiteral()
+                $where[] = "$name $type " . qquote($value);
                 continue;
             } elseif ($type === 'RLIKE') {
                 $where[] = "$name LIKE " . qquote($value . '%');
@@ -424,21 +425,20 @@ final class DB_AA
             } elseif ($type === 'BEGIN') {
                 if (is_array($value)) {
                     // join conditions by OR
-                    $where[] = '(' . implode(' OR ', array_map(fn($v) => "$name LIKE '" . addcslashes(quote($v), "_%") . "%'", $value)) . ')';
+                    $where[] = '(' . implode(' OR ', array_map(fn($v) => "$name LIKE " . qquote(self::likeLiteral((string) $v) . '%'), $value)) . ')';
                 } else {
-                    $where[] = "$name LIKE '" . addcslashes(quote($value), "_%") . "%'";
+                    $where[] = "$name LIKE " . qquote(self::likeLiteral((string) $value) . '%');
                 }
                 continue;
             } elseif ($type === 'NOT BEGIN') {
                 if (is_array($value)) {
-                    // join conditions by OR
-                    $where[] = '(' . implode(' AND ', array_map(fn($v) => "$name NOT LIKE '" . addcslashes(quote($v), "_%") . "%'", $value)) . ')';
+                    $where[] = '(' . implode(' AND ', array_map(fn($v) => "$name NOT LIKE " . qquote(self::likeLiteral((string) $v) . '%'), $value)) . ')';
                 } else {
-                    $where[] = "$name NOT LIKE '" . addcslashes(quote($value), "_%") . "%'";
+                    $where[] = "$name NOT LIKE " . qquote(self::likeLiteral((string) $value) . '%');
                 }
                 continue;
             } elseif ($type === 'CONTAIN') {
-                $where[] = "$name LIKE '%" . addcslashes(quote($value), "_%") . "%'";
+                $where[] = "$name LIKE " . qquote('%' . self::likeLiteral((string) $value) . '%');
                 continue;
             } elseif ($type === 's<>' || $type === 's!=') {
                 if (is_array($value)) {
@@ -534,6 +534,13 @@ final class DB_AA
             };
         }
         return $order ? 'ORDER BY ' . implode(',', $order) : '';
+    }
+
+    /** The text as a LIKE pattern matching only itself - '%', '_' and the backslash lose their
+     *  meaning. Still to be quoted: qquote(), or makeWhere()'s 'LIKE' type does it. */
+    public static function likeLiteral(string $text): string
+    {
+        return addcslashes($text, '\\%_');
     }
 
     /** generate GROUP BY phrase

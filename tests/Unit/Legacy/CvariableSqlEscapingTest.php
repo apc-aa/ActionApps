@@ -73,4 +73,42 @@ final class CvariableSqlEscapingTest extends TestCase
             self::assertSame("''", (new Cvariable('id', 'unpacked', $value))->getSQLValue(), $value);
         }
     }
+
+    /** "number" and "integer" go inside the quotes unescaped - only a number may get there */
+    public function testNumberTypesTurnNonNumericValuesIntoAPureNumber(): void
+    {
+        foreach (['number', 'integer'] as $type) {
+            foreach (["x'y" => "'0'", 'a\\b' => "'0'", '1 OR 1=1' => "'1'", "1', x='y" => "'1'", "12\\' OR '1" => "'12'", 'abc' => "'0'", '' => "'0'"] as $value => $sql) {
+                self::assertSame($sql, (new Cvariable('n', $type, (string) $value))->getSQLValue(), "$type: $value");
+            }
+        }
+    }
+
+    /** a cast would change them: MySQL rounds '1.9', PHP truncates it */
+    public function testNumberTypesKeepNumericValuesAsTheyAre(): void
+    {
+        foreach (['1.9', '-3', '1e3', '007', ' 5', '0', 42, 1.5, -7] as $value) {
+            self::assertSame("'$value'", (new Cvariable('n', 'number', $value))->getSQLValue(), var_export($value, true));
+        }
+    }
+
+    public function testNumberTypesCastNullBooleansAndArrays(): void
+    {
+        foreach ([[null, "'0'"], [false, "'0'"], [true, "'1'"], [[], "'0'"], [['x'], "'1'"]] as [$value, $sql]) {
+            self::assertSame($sql, (new Cvariable('n', 'number', $value))->getSQLValue(), var_export($value, true));
+        }
+    }
+
+    /** a typed column still casts, the value never reaches it as text */
+    public function testNumberTypeWithAnIntColumnCasts(): void
+    {
+        $column = new class {
+            public function getFieldType(): string
+            {
+                return 'int';
+            }
+        };
+        self::assertSame(1, (new Cvariable('n', 'number', "1' OR '1"))->getSQLValue($column));
+        self::assertSame(1, (new Cvariable('n', 'number', '1.9'))->getSQLValue($column));
+    }
 }
