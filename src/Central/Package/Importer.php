@@ -111,7 +111,7 @@ final class Importer
         if (!$transfer && array_filter($plan->package->modules, static fn(Module $m): bool => $m->transfer !== [])) {
             throw new LogicException("The state of the source installation in an install (the Validator's E)");
         }
-        if ($transfer && ($record->source() === InstallRun::LOCAL)) {
+        if ($transfer && $record->sameAa()) {
             $plan = self::withoutDomains($plan);            // they are the source site's - still in use here
         }
         $not = $this->target->nonTransactional(Planner::tables($this->schema, $transfer));
@@ -133,7 +133,7 @@ final class Importer
                 $this->recheck($plan);
                 $slices = $transfer ? self::slices($plan->package) : [];
                 $map    = $plan->map;
-                if ($transfer && ($record->source() === InstallRun::LOCAL)) {
+                if ($transfer && $record->sameAa()) {             // the source items are here: new ids
                     $map = $map->withItemKey($run);
                     $map = $map->withPackageItems(self::packageItems(self::definitionIds($plan->package), $slices));
                 }

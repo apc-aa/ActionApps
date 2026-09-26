@@ -41,6 +41,7 @@ use AA\Central\AppExport;
 use AA\Central\AppSource;
 use AA\Central\ExportRefused;
 use AA\Central\InstallRun;
+use AA\Central\ItemIdCheck;
 use AA\Central\Package\AaAfterCommit;
 use AA\Central\Package\DbImportTarget;
 use AA\Central\Package\DbSource;
@@ -379,14 +380,15 @@ function installapp_login_rows(): string
 
 /** Reads the app from its source and plans it on this AA.
  *  @param list<string> $modules
- *  @return array{error: string, login: bool, xml: string, now: int, findings: list<array{string, LintFinding}>, plan: ?ImportPlan}
- *          login: the source refused its token; now: the time of the source */
+ *  @return array{error: string, login: bool, xml: string, now: int, same: bool, findings: list<array{string, LintFinding}>, plan: ?ImportPlan}
+ *          login: the source refused its token; now: the time of the source; same: the source is this AA */
 function installapp_prepare(AppSource $from, string $site, array $modules, string $mode, bool $all_bins, int $started): array
 {
-    $out      = ['error' => '', 'login' => false, 'xml' => '', 'now' => 0, 'findings' => [], 'plan' => null];
+    $out      = ['error' => '', 'login' => false, 'xml' => '', 'now' => 0, 'same' => false, 'findings' => [], 'plan' => null];
     $transfer = ($mode === InstallRun::TRANSFER);
     try {
         [$out['xml'], $out['findings'], $out['now']] = $from->definitions(($site !== '') ? [$site] : $modules, $transfer, $all_bins, $started);
+        $out['same']     = $from->sameAa();
         $read            = (new Reader())->read($out['xml']);
         $out['findings'] = [...$out['findings'], ...$read->findings];
         $readers         = [];
@@ -403,6 +405,10 @@ function installapp_prepare(AppSource $from, string $site, array $modules, strin
         }
         $out['plan']     = (new Planner(new DbImportTarget()))->plan($read->package, $validation, $transfer, $logins);
         $out['findings'] = [...$out['findings'], ...$out['plan']->allFindings()];
+        if ($transfer && !$out['same']) {        // another AA keeps the item ids: none may be here already
+            $slices          = array_values(array_map(static fn(Module $m): string => $m->id, array_filter($read->package->modules, static fn(Module $m): bool => $m->type === Module::SLICE)));
+            $out['findings'] = [...$out['findings'], ...(new ItemIdCheck($from, new DbImportTarget()))->check($slices, $all_bins)];
+        }
     } catch (ExportRefused $e) {
         if ($e->isDenied()) {
             $out['error'] = ($e->module !== '') ? _m('You may not change the module %1 - it cannot be exported.', [AA_Module::getModuleName($e->module) ?: $e->module])
@@ -470,7 +476,7 @@ function installapp_remote_preview(string $run_id, string $site, array $modules,
         return;
     }
     try {
-        DB_AA::transaction(static fn() => (InstallRun::lockForUpdate($run_id) ?? throw new LogicException('The run is gone'))->previewed(hash('sha256', $prepared['xml']), $prepared['now']));
+        DB_AA::transaction(static fn() => (InstallRun::lockForUpdate($run_id) ?? throw new LogicException('The run is gone'))->previewed(hash('sha256', $prepared['xml']), $prepared['now'], $prepared['same']));
     } catch (LogicException) {              // another tab wrote it meanwhile
         echo '<div class="aa-err">' . _m('The run has moved on meanwhile.') . ' ' . a_href(installapp_url(['run' => $run_id]), _m('Show the run')) . '</div>';
         return;
@@ -537,13 +543,13 @@ function installapp_write(string $run_id, string $site, array $modules, ?string 
     try {
         $prepared = installapp_prepare(installapp_run_source($run), $site, $modules, $run->mode(), $run->allBins(), $run->started());
     } catch (SourceFailed $e) {
-        $prepared = ['error' => $e->getMessage(), 'login' => false, 'xml' => ''];
+        $prepared = ['error' => $e->getMessage(), 'login' => false, 'xml' => '', 'same' => false];
     }
     if ($prepared['error'] !== '') {
         echo '<div class="aa-err">' . safe($prepared['error']) . ($prepared['login'] ? ' ' . installapp_relogin($run) : '') . '</div>';
         return;
     }
-    if (!hash_equals($run->fingerprint(), hash('sha256', $prepared['xml']))) {
+    if (!$run->matchesPreview($prepared['xml'], $prepared['same'])) {
         echo '<div class="aa-err">' . _m('The source changed since the preview - preview again.') . '</div>';
         return;
     }

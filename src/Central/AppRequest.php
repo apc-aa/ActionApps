@@ -15,7 +15,8 @@ use Throwable;
  *  the same XML.
  *
  *  part definitions (modules: a site id, or slices and Alerts modules) | batch (slice, after) |
- *  logins (slices) | counts (slices, edited_after); mode install | transfer; bins active | all.
+ *  logins (slices) | counts (slices, edited_after) | item_ids (slice, after); mode install | transfer;
+ *  bins active | all.
  *
  *  Answers plain data only - package XML as a string (with the source's time for the definitions),
  *  logins as strings, counts as integers - so the
@@ -23,7 +24,7 @@ use Throwable;
  *  log. Every transfer export is logged: who, which modules, how many - never what. */
 final class AppRequest
 {
-    private const PARTS = ['definitions', 'batch', 'logins', 'counts'];
+    private const PARTS = ['definitions', 'batch', 'logins', 'counts', 'item_ids'];
     private const MODES = ['install', 'transfer'];
 
     /** lines of an ERR_APP_EXPORT answer - an export fails at its first errors, so these are enough */
@@ -31,14 +32,18 @@ final class AppRequest
 
     /** @var Closure(string, string): mixed */
     private readonly Closure $log;
+    private readonly string $aa;
 
     /**
      * @param AppExport                     $export over this AA, with the rights of the user
      * @param (Closure(string, string): mixed)|null $log (selector, params) of a transfer export; null = AA_Log APP_EXPORT
+     * @param ?string $aa AA_ID of this AA (public) - a target reached through a Central row naming itself
+     *                    knows it copies within one installation; null = AA_ID
      */
-    public function __construct(private readonly AppExport $export, private readonly string $user, ?Closure $log = null)
+    public function __construct(private readonly AppExport $export, private readonly string $user, ?Closure $log = null, ?string $aa = null)
     {
         $this->log = $log ?? static fn(string $selector, string $params): bool => \AA_Log::write('APP_EXPORT', $selector, $params);
+        $this->aa  = $aa ?? (string) constant('AA_ID');
     }
 
     /** @param array<mixed> $param the request parameters */
@@ -58,6 +63,7 @@ final class AppRequest
                 'batch'       => $this->batch($param, $transfer, $allBins, $started),
                 'logins'      => $this->logins($param, $transfer, $allBins),
                 'counts'      => $this->counts($param, $allBins),
+                'item_ids'    => $this->itemIds($param, $transfer, $allBins),
             };
         } catch (ExportRefused $e) {
             return $e->isDenied() ? self::denied() : new AA_Response(self::lines($e->errors()), ResponderPolicy::ERR_APP_EXPORT);
@@ -80,7 +86,7 @@ final class AppRequest
         if ($transfer) {
             $this->logged('transfer definitions ' . implode(',', $modules), 'modules=' . count($modules));
         }
-        return new AA_Response(['package' => $xml, 'now' => $now]);
+        return new AA_Response(['package' => $xml, 'now' => $now, 'aa' => $this->aa]);
     }
 
     /** @param array<mixed> $param */
@@ -106,6 +112,17 @@ final class AppRequest
         $logins = $this->export->logins($slices, $allBins);
         $this->logged('transfer logins ' . implode(',', $slices), 'logins=' . count($logins));
         return new AA_Response($logins);
+    }
+
+    /** @param array<mixed> $param */
+    private function itemIds(array $param, bool $transfer, bool $allBins): AA_Response
+    {
+        $slice = self::ids([$param['slice'] ?? null]);
+        $after = $param['after'] ?? '';
+        if (!$transfer || !$slice || (($after !== '') && !self::ids([$after]))) {
+            return self::bad('a transfer, slice and after');
+        }
+        return new AA_Response($this->export->itemIds($slice[0], $allBins, $after));
     }
 
     /** @param array<mixed> $param */

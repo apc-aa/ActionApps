@@ -42,6 +42,10 @@ interface ImportTarget
      *  @param list<string> $ids @return list<string> */
     public function itemIdsInUse(array $ids): array;
 
+    /** how many of the ids (unpacked) are items of this AA - another AA keeps the item ids, so these cannot come
+     *  @param list<string> $ids */
+    public function existingItems(array $ids): int;
+
     /** true: a site of this AA answers to $host - a module's slice_url or a site's alternate_url is one of
      *  the URLs AA_Module_Site::getIdFromUrl() matches for it (http/https, with and without www., slash) */
     public function domainTaken(string $host): bool;

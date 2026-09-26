@@ -68,6 +68,19 @@ final class AppExport implements AppSource
         return $logins;
     }
 
+    public function sameAa(): bool
+    {
+        return true;
+    }
+
+    /** @throws InvalidArgumentException a cursor of no id */
+    public function itemIds(string $slice, bool $allBins, string $after): array
+    {
+        $this->admit(true);
+        $this->check([$slice]);
+        return $this->source->itemIds($slice, $allBins, $after, self::ID_PAGE);
+    }
+
     public function itemCounts(array $slices, bool $allBins, int $editedAfter = 0): array
     {
         $this->check($slices);

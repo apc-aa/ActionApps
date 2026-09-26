@@ -48,6 +48,14 @@ final class DbAaMakeWhereTest extends TestCase
         );
     }
 
+    /** the cursor of an item batch: ids in order, packed as they are stored */
+    public function test_long_id_after_the_cursor(): void
+    {
+        $valid = str_repeat('b', 32);
+        $this->assertSame("WHERE id > 0x{$valid}", DB_AA::makeWhere([['id', $valid, 'l>']]));
+        $this->assertSame('WHERE id > 0x00', DB_AA::makeWhere([['id', '0x0 OR 1=1', 'l>']]));
+    }
+
     public function test_comparison_operator(): void
     {
         $this->assertSame('WHERE age > 18', DB_AA::makeWhere([['age', 18, '>']]));

@@ -130,6 +130,16 @@ final class TransferCheckTest extends TestCase
     {
         self::targetItems(2);
         $source = new class implements AppSource {
+            public function sameAa(): bool
+            {
+                return false;
+            }
+
+            public function itemIds(string $slice, bool $allBins, string $after): array
+            {
+                throw new \LogicException('not asked');
+            }
+
             public function definitions(array $modules, bool $transfer, bool $allBins, int $started): array
             {
                 throw new \LogicException('not asked');

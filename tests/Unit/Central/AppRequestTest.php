@@ -37,6 +37,7 @@ final class AppRequestTest extends TestCase
     private const HASH    = '$2y$10$readerpasswordhashreaderpasswordhash';
     private const SECRET  = 'JBSWY3DPEHPK3PXP';
     private const STARTED = 1_790_000_000;
+    private const SOURCE_AA = '5ource000000000000000000000000aa';
 
     private FakeSource|FailingSource $source;
     /** @var list<string> modules the user may edit (PS_EDIT) */
@@ -71,7 +72,7 @@ final class AppRequestTest extends TestCase
         $export = new AppExport($this->source, ['url' => 'https://source.example/aa/', 'aa-version' => '2026.9'], fn(string $module): bool => in_array($module, $this->editable, true), $this->superadmin);
         return (new AppRequest($export, $user, function (string $selector, string $params): void {
             $this->log[] = [$selector, $params];
-        }))->answer($param);
+        }, self::SOURCE_AA))->answer($param);
     }
 
     private static function definitions(string $mode, array $modules = [self::SLICE_A]): array
@@ -96,7 +97,8 @@ final class AppRequestTest extends TestCase
         $response = $this->answer(self::definitions('install'));
 
         self::assertFalse($response->isError(), (string) json_encode($response->getResponse()));
-        self::assertSame(['package', 'now'], array_keys($response->getResponse()));
+        self::assertSame(['package', 'now', 'aa'], array_keys($response->getResponse()));
+        self::assertSame(self::SOURCE_AA, $response->getResponse()['aa'], 'the target knows a Central row naming itself');
         self::assertIsString($response->getResponse()['package']);
         self::assertGreaterThanOrEqual($before, $response->getResponse()['now']);
         self::assertSame([self::SLICE_A], array_map(static fn($m): string => $m->id, (new Reader())->read($response->getResponse()['package'])->package->modules));
@@ -209,6 +211,20 @@ final class AppRequestTest extends TestCase
 
         self::assertSame(ResponderPolicy::ERR_APP_REQUEST, $response->getError());
         self::assertIsString($response->getResponse());
+    }
+
+    /** the target checks them against its items before anything is written */
+    public function test_item_ids_come_a_page_after_the_cursor(): void
+    {
+        self::assertSame([self::ITEM_1, self::ITEM_2], $this->answer(['part' => 'item_ids', 'mode' => 'transfer', 'slice' => self::READERS, 'after' => ''])->getResponse());
+        self::assertSame([self::ITEM_2], $this->answer(['part' => 'item_ids', 'mode' => 'transfer', 'slice' => self::READERS, 'after' => self::ITEM_1])->getResponse());
+    }
+
+    public function test_item_ids_need_a_transfer_and_a_superadmin(): void
+    {
+        self::assertSame(ResponderPolicy::ERR_APP_REQUEST, $this->answer(['part' => 'item_ids', 'mode' => 'install', 'slice' => self::READERS, 'after' => ''])->getError());
+        $this->superadmin = false;
+        self::assertSame(ResponderPolicy::ERR_APP_DENIED, $this->answer(['part' => 'item_ids', 'mode' => 'transfer', 'slice' => self::READERS, 'after' => ''])->getError());
     }
 
     public function test_counts_are_integers_per_slice(): void

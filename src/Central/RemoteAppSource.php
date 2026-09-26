@@ -19,14 +19,36 @@ final class RemoteAppSource implements AppSource
     /** bytes of a path or ref of such an error */
     private const MAX_TEXT = 255;
 
-    public function __construct(private readonly RemoteSource $remote, private readonly string $token) {}
+    private readonly string $ownAa;
+    /** the source reported the AA_ID of this AA with the definitions */
+    private bool $same = false;
+
+    /** @param ?string $ownAa AA_ID of this AA; null = AA_ID */
+    public function __construct(private readonly RemoteSource $remote, private readonly string $token, ?string $ownAa = null)
+    {
+        $this->ownAa = $ownAa ?? (string) constant('AA_ID');
+    }
+
+    public function sameAa(): bool
+    {
+        return $this->same;
+    }
+
+    public function itemIds(string $slice, bool $allBins, string $after): array
+    {
+        $ids = $this->get('item_ids', ['slice' => $slice, 'after' => $after], true, $allBins);
+        $bad = !is_array($ids) || !array_is_list($ids) || (count($ids) > self::ID_PAGE)
+            || array_filter($ids, static fn(mixed $id): bool => !is_string($id) || !preg_match('/^[0-9a-f]{32}\z/', $id) || (strcmp($id, $after) <= 0));
+        return $bad ? throw new SourceFailed(SourceFailed::FAILED, 'The source AA gave no list of item ids - update the source AA') : $ids;
+    }
 
     public function definitions(array $modules, bool $transfer, bool $allBins, int $started): array
     {
         $answer = $this->get('definitions', ['modules' => $modules, 'started' => $started], $transfer, $allBins, RemoteSource::MAX_BYTES);
-        if (!is_array($answer) || !is_int($answer['now'] ?? null)) {
+        if (!is_array($answer) || !is_int($answer['now'] ?? null) || !is_string($answer['aa'] ?? null)) {
             throw new SourceFailed(SourceFailed::FAILED, 'The source AA gave no package - update the source AA');
         }
+        $this->same = hash_equals($this->ownAa, $answer['aa']);
         return [self::xml($answer['package'] ?? null), [], $answer['now']];
     }
 

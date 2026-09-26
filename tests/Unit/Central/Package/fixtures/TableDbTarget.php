@@ -48,6 +48,11 @@ final class TableDbTarget implements ImportTarget
         return $this->db->itemIdsInUse($ids);
     }
 
+    public function existingItems(array $ids): int
+    {
+        return $this->db->existingItems($ids);
+    }
+
     public function domainTaken(string $host): bool
     {
         return $this->db->domainTaken($host);

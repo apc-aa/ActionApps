@@ -6,6 +6,7 @@ namespace AA\Central\Package;
 
 use AA\Central\Package\Model\Module;
 use AA\Central\Package\Model\RawBytes;
+use AA\IO\DB\DB_AA;
 use AA_Metabase;
 use LogicException;
 
@@ -38,7 +39,15 @@ final class ItemWriter
             $path = "$m->type[$m->id]/item[$old]";
             $id   = $map->item($old);
             [$columns, $content] = $this->split((array) ($item['content'] ?? []), $path);
-            $this->store->insert('item', $this->store->tableRow('item', $columns, ['id' => $id, 'slice_id' => $slice->id], $this->charset, $this->rewrite, $path), $path);
+            try {
+                $this->store->insert('item', $this->store->tableRow('item', $columns, ['id' => $id, 'slice_id' => $slice->id], $this->charset, $this->rewrite, $path), $path);
+            } catch (WriteError $e) {
+                // a locking read: the plain one would read the transaction's snapshot, older than the other run's commit
+                if (($e->reason === WriteError::DB) && DB_AA::select('id', 'SELECT id FROM `item` ' . DB_AA::makeWhere([['id', $id, 'l']]) . ' FOR UPDATE')) {
+                    throw new WriteError(WriteError::ITEM_ID_EXISTS, $path, 'an item of the id is on this AA already');
+                }
+                throw $e;
+            }
             foreach ($content as $field => $values) {
                 $field_id = ValueCodec::bytes($this->rewrite->known((string) $field));       // alerts1/2....<cid>: the new collection (same length)
                 [$text_stored, $password] = $slice->field($field_id);

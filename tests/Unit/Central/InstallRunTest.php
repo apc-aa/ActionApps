@@ -324,11 +324,34 @@ namespace Tests\Unit\Central {
 
             $this->assertSame(self::NOW, InstallRun::get($id)->sourceStarted(), 'before the preview: its own start');
 
-            self::locked($id, static fn(InstallRun $run) => $run->previewed(hash('sha256', self::DEFINITIONS), self::NOW - 3600));
+            self::locked($id, static fn(InstallRun $run) => $run->previewed(hash('sha256', self::DEFINITIONS), self::NOW - 3600, false));
 
             $run = InstallRun::get($id);
             $this->assertSame([InstallRun::PREVIEW, hash('sha256', self::DEFINITIONS), self::TOKEN], [$run->state(), $run->fingerprint(), $run->token()]);
             $this->assertSame(self::NOW - 3600, $run->sourceStarted(), 'the clock of the source');
+        }
+
+        public function test_the_same_aa_is_known_by_its_identity_not_by_the_transport(): void
+        {
+            $local  = InstallRun::preview(InstallRun::TRANSFER, false, InstallRun::LOCAL, self::USER, '', self::NOW)->getId();
+            $remote = self::preview()->getId();
+            $self   = self::preview()->getId();
+            self::locked($remote, static fn(InstallRun $run) => $run->previewed(hash('sha256', 'a'), self::NOW, false));
+            self::locked($self, static fn(InstallRun $run) => $run->previewed(hash('sha256', 'a'), self::NOW, true));
+
+            $this->assertSame([true, false, true], [InstallRun::get($local)->sameAa(), InstallRun::get($remote)->sameAa(), InstallRun::get($self)->sameAa()]);
+        }
+
+        /** the write reads the source again: another package, or another answer to "is it this AA?", is another source */
+        public function test_the_write_matches_the_preview_in_package_and_identity(): void
+        {
+            $id = self::preview()->getId();
+            self::locked($id, static fn(InstallRun $run) => $run->previewed(hash('sha256', self::DEFINITIONS), self::NOW, false));
+            $run = InstallRun::get($id);
+
+            $this->assertTrue($run->matchesPreview(self::DEFINITIONS, false));
+            $this->assertFalse($run->matchesPreview(self::DEFINITIONS . ' ', false), 'another package');
+            $this->assertFalse($run->matchesPreview(self::DEFINITIONS, true), 'the Central row names this AA now');
         }
 
         public function test_only_a_preview_takes_a_fingerprint(): void
@@ -336,7 +359,7 @@ namespace Tests\Unit\Central {
             $id = self::runIn(InstallRun::ITEMS);
 
             $this->expectException(LogicException::class);
-            self::locked($id, static fn(InstallRun $run) => $run->previewed(hash('sha256', 'other'), self::NOW));
+            self::locked($id, static fn(InstallRun $run) => $run->previewed(hash('sha256', 'other'), self::NOW, false));
         }
 
         public function test_continue_after_a_new_login_keeps_the_new_token_encrypted(): void

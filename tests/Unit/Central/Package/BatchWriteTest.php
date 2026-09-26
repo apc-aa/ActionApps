@@ -493,6 +493,19 @@ final class BatchWriteTest extends TestCase
         self::assertNotContains(Planner::DOMAIN_KEPT, array_map(static fn(array $f): string => $f[1]->code, $report->findings));
     }
 
+    /** a Central row that names this AA: the source is this installation, whatever the transport */
+    public function test_a_remote_source_that_is_this_aa_leaves_the_domains_out_and_derives_the_item_ids(): void
+    {
+        $run = $this->newRun(InstallRun::TRANSFER, '7');
+        self::locked($run, static fn(InstallRun $r) => $r->previewed(hash('sha256', 'definitions'), self::NOW, true));
+
+        $this->import(...$this->confirmed($this->plan(self::withDomains('https://www.source.example/'), true)), run: $run);
+        $this->write($run, self::batch([self::entry(self::ITEM_A, ['headline........' => 'A'])]));
+
+        self::assertSame([], self::domains());
+        self::assertSame([string2id($run . self::ITEM_A)], self::itemsOfTheSlice(), 'the source item stays - the copy gets another id');
+    }
+
     public function test_a_domain_a_site_took_since_the_plan_stops_the_write(): void
     {
         $run  = $this->newRun(InstallRun::TRANSFER);
@@ -556,6 +569,23 @@ final class BatchWriteTest extends TestCase
         $view = array_values(array_filter(TableDb::rows('view'), static fn(array $r): bool => $r['slice_id'] === self::id(2)))[0];
         self::assertSame('Top: {item:' . $new(self::ITEM_C) . ':_#HEADLINE} {item:' . self::FITEM . ':_#HEADLINE}', $view['before']);
         self::assertCount(1 + 3 + 2, TableDb::rows('item'), 'the foreign item and the source items stay beside the copies');
+    }
+
+    /** another run wrote the same id between the checks and the INSERT: the run tells so, not "DB" */
+    public function test_an_item_id_taken_during_the_batch_is_its_own_error(): void
+    {
+        $run = $this->transferred();
+        TableDb::$fail = static function (string $sql): bool {
+            if (str_starts_with($sql, 'INSERT INTO `item`') && !array_filter(TableDb::$tables['item'] ?? [], static fn(array $r): bool => $r['id'] === self::ITEM_A)) {
+                TableDb::$tables['item'][] = ['id' => self::ITEM_A, 'short_id' => 90, 'slice_id' => self::FS, 'status_code' => 1];
+            }
+            return false;                   // the statement runs - into the PRIMARY key
+        };
+
+        $result = $this->write($run, self::batch([self::entry(self::ITEM_A, ['headline........' => 'A'])]));
+
+        self::assertSame([BatchResult::FAILED, ['ITEM_ID_EXISTS', 'slice-module[' . self::SLICE . ']/item[' . self::ITEM_A . ']']], [$result->status, $result->error]);
+        self::assertSame([InstallRun::ERROR, 'ITEM_ID_EXISTS'], [InstallRun::get($run)->state(), InstallRun::get($run)->error()[0]]);
     }
 
     // ---------------------------------------------------------------- readers

@@ -13,6 +13,9 @@ namespace Tests\Unit\Central;
 
 use AA\Central\AppExport;
 use AA\Central\AppRequest;
+use AA\Central\AppSource;
+use AA\Central\ItemIdCheck;
+use AA\Central\Package\DbImportTarget;
 use AA\Central\ExportRefused;
 use AA\Central\InstallRun;
 use AA\Central\Package\ImportConfirmation;
@@ -53,6 +56,8 @@ final class RemoteTransferTest extends TestCase
     private array $asked = [];
     /** answers instead of the source's own: (request) => response, null = its own */
     private ?\Closure $answer = null;
+    /** the AA_ID the source reports - another AA by default */
+    private string $sourceAa = '5ource000000000000000000000000aa';
 
     protected function setUp(): void
     {
@@ -90,7 +95,7 @@ final class RemoteTransferTest extends TestCase
                 $bearer !== $this->accepted          => new AA_Response('Login token refused', ResponderPolicy::ERR_TOKEN_REFUSED),
                 $request->getCommand() === 'Get_Modules' => new AA_Response(array_column(array_filter($this->source->tables['module'], static fn(array $m): bool => in_array($m['type'], $request->getParameters()['types'], true)), 'name', 'id')),
                 $request->getCommand() !== 'Get_App' => new AA_Response('Bad request', ResponderPolicy::ERR_UNKNOWN_COMMAND),
-                default                              => (new AppRequest($export, 'source-admin', static function (): void {}))->answer($request->getParameters()),
+                default                              => (new AppRequest($export, 'source-admin', static function (): void {}, $this->sourceAa))->answer($request->getParameters()),
             };
             $stream = fopen('php://memory', 'w+b');
             fwrite($stream, serialize($response));
@@ -367,5 +372,87 @@ final class RemoteTransferTest extends TestCase
         $report = InstallRun::get($run)->report();
         self::assertSame([null, 2], [$report['slices'][0]['sourceCount'], $report['slices'][0]['targetCount']]);
         self::assertSame([TransferCheck::SOURCE_UNKNOWN, SourceFailed::UNREACHABLE], [$report['findings'][0]['code'], $report['findings'][0]['ref']]);
+    }
+
+    /** a Central row may name this very AA (over https as any other) - its identity says so */
+    public function test_a_source_reporting_the_id_of_this_aa_is_the_same_aa(): void
+    {
+        $foreign = new RemoteAppSource($this->remote(), self::TOKEN);
+        $foreign->definitions([self::SLICE], true, false, self::NOW);
+        self::assertFalse($foreign->sameAa());
+
+        $this->sourceAa = (string) constant('AA_ID');
+        $self           = new RemoteAppSource($this->remote(), self::TOKEN);
+        $self->definitions([self::SLICE], true, false, self::NOW);
+        self::assertTrue($self->sameAa());
+    }
+
+    /** another AA keeps the item ids: the ones this AA has already refuse the preview, before anything is written */
+    public function test_item_ids_existing_here_refuse_the_preview(): void
+    {
+        $ids = array_map(static fn(int $i): string => sprintf('%032x', 0xd0000 + $i), range(1, AppSource::ID_PAGE + 2));
+        $this->source->items[self::SLICE] = array_map(static fn(string $id): array => ['id' => $id, 'content' => ['status_code.....' => [['value' => '1', 'flag' => 0]]]], $ids);
+        TableDb::$tables['item'][] = ['id' => $ids[3], 'short_id' => 50, 'slice_id' => self::FS, 'status_code' => 1];
+        TableDb::$tables['item'][] = ['id' => end($ids), 'short_id' => 51, 'slice_id' => self::FS, 'status_code' => 1];
+        [TableDb::$log, $before] = [[], TableDb::$tables];
+
+        $findings = (new ItemIdCheck(new RemoteAppSource($this->remote(), self::TOKEN), new DbImportTarget()))->check([self::SLICE], false);
+
+        self::assertSame(['E ' . ItemIdCheck::ITEM_ID_EXISTS . ' slice-module[' . self::SLICE . '] 2'], array_map(static fn(array $f): string => "{$f[1]->level} {$f[1]->code} $f[0] {$f[1]->ref}", $findings), 'the second page too');
+        self::assertSame(['Get_App', 'Get_App', 'Get_App'], $this->asked, 'the count, then a page of ids a request');
+        self::assertSame($before, TableDb::$tables, 'nothing written');
+    }
+
+    public function test_a_source_without_the_items_here_passes_the_check(): void
+    {
+        self::assertSame([], (new ItemIdCheck(new RemoteAppSource($this->remote(), self::TOKEN), new DbImportTarget()))->check([self::SLICE], false));
+    }
+
+    /** a source may page on forever (ids ascending, the space is 2^128) - pages beyond its own count are its error */
+    public function test_item_id_pages_beyond_the_count_of_the_source_are_refused(): void
+    {
+        $page   = 0;
+        $source = new class ($page) implements AppSource {
+            public function __construct(private int &$page) {}
+
+            public function sameAa(): bool
+            {
+                return false;
+            }
+
+            public function itemIds(string $slice, bool $allBins, string $after): array
+            {
+                $start = ++$this->page * AppSource::ID_PAGE;
+                return array_map(static fn(int $i): string => sprintf('%032x', $start + $i), range(1, AppSource::ID_PAGE));
+            }
+
+            public function itemCounts(array $slices, bool $allBins, int $editedAfter = 0): array
+            {
+                return array_fill_keys($slices, 3);
+            }
+
+            public function definitions(array $modules, bool $transfer, bool $allBins, int $started): array
+            {
+                throw new \LogicException('not asked');
+            }
+
+            public function batch(string $slice, string $after, bool $allBins, int $started): array
+            {
+                throw new \LogicException('not asked');
+            }
+
+            public function logins(array $slices, bool $allBins): array
+            {
+                throw new \LogicException('not asked');
+            }
+        };
+
+        try {
+            (new ItemIdCheck($source, new DbImportTarget()))->check([self::SLICE], false);
+            self::fail('endless pages');
+        } catch (SourceFailed $e) {
+            self::assertSame(SourceFailed::FAILED, $e->reason);
+        }
+        self::assertSame(2, $page, 'ceil(3 / page) + 1 pages at most');
     }
 }

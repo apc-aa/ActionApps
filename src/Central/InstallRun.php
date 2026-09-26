@@ -60,6 +60,9 @@ final class InstallRun extends AA_Object
     protected $moved = '';
     /** unixtime of the preview on the clock of the source; '' = the source is this AA (started) */
     protected $source_time = '';
+    /** '1' = the source is this installation (its AA_ID) - by this AA or by a Central row naming it: the
+     *  copy's items get new ids and the site's domains stay with the source */
+    protected $same_aa = '';
     protected $id_map = '';
     /** sha256 of the definitions package - of the preview's until they are written */
     protected $fingerprint = '';
@@ -85,7 +88,7 @@ final class InstallRun extends AA_Object
     public static function getClassProperties(): array
     {
         $props = [];
-        foreach (['state', 'mode', 'all_bins', 'source', 'user', 'started', 'moved', 'source_time', 'fingerprint', 'slice', 'cursor', 'error_code', 'error_path', 'token'] as $id) {
+        foreach (['state', 'mode', 'all_bins', 'source', 'user', 'started', 'moved', 'source_time', 'same_aa', 'fingerprint', 'slice', 'cursor', 'error_code', 'error_path', 'token'] as $id) {
             $props[$id] = new AA_Property($id, $id, 'string', false, true, 'string');
         }
         foreach (['id_map', 'slices', 'written', 'warnings', 'report'] as $id) {
@@ -114,6 +117,7 @@ final class InstallRun extends AA_Object
         $run->source      = $source;
         $run->user        = $user;
         $run->started     = (string) $now;
+        $run->same_aa     = ($source === self::LOCAL) ? '1' : '';       // another AA says it at the preview (previewed())
         $run->fingerprint = $fingerprint;
         $run->token       = ($token === '') ? '' : Crypt::encryptAesGcm($token, Secret::key('install-run'));
         $run->save();
@@ -221,12 +225,14 @@ final class InstallRun extends AA_Object
 
     /** The preview of a run opened at the login to another AA: the definitions package it showed, which
      *  the write compares. The run stays in preview. */
-    public function previewed(string $fingerprint, int $sourceNow): void
+    /** @param bool $sameAa the source reported the AA_ID of this AA (AppSource::sameAa()) */
+    public function previewed(string $fingerprint, int $sourceNow, bool $sameAa): void
     {
         $this->move([self::PREVIEW], self::PREVIEW);
         $this->fingerprint = $fingerprint;
         $this->source_time = (string) $sourceNow;
-        $this->update(['fingerprint', 'source_time']);
+        $this->same_aa     = $sameAa ? '1' : '';
+        $this->update(['fingerprint', 'source_time', 'same_aa']);
     }
 
     /** The batch read from $expected may be written: the run is in items and still at that position.
@@ -352,6 +358,12 @@ final class InstallRun extends AA_Object
         return (int) $this->started;
     }
 
+    /** the source is this installation, whatever the transport - see $same_aa */
+    public function sameAa(): bool
+    {
+        return $this->same_aa === '1';
+    }
+
     /** the start of the run on the clock of the source - items it edited after it may have missed their batch */
     public function sourceStarted(): int
     {
@@ -372,6 +384,13 @@ final class InstallRun extends AA_Object
     public function fingerprint(): string
     {
         return $this->fingerprint;
+    }
+
+    /** the write reads the source again; the same package from what now is (or is not) this AA would
+     *  keep (or renew) other item ids than the preview checked */
+    public function matchesPreview(string $definitions, bool $sameAa): bool
+    {
+        return hash_equals($this->fingerprint, hash('sha256', $definitions)) && ($this->sameAa() === $sameAa);
     }
 
     /** @return string[] */

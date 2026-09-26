@@ -29,6 +29,9 @@ final class WriteError extends RuntimeException
     public const RUN = 'run';
     /** a module the run wrote is not on the target any more (deleted since) */
     public const GONE = 'gone';
+    /** an item of the id came to the target after the preview (another run of the same items) - the
+     *  batch is rolled back; End the run, delete those items or let them be, and install again */
+    public const ITEM_ID_EXISTS = 'item-id-exists';
     /** the database refused a statement (AA_Metabase::do*() returned false), or no transaction could be started */
     public const DB = 'db';
 

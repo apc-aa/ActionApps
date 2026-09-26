@@ -11,6 +11,18 @@ use AA\Central\Package\LintFinding;
  *  Importer - is one path. */
 interface AppSource
 {
+    /** item ids a page of itemIds() */
+    public const ID_PAGE = 5000;
+
+    /** The source is this installation: this AA, or a Central row naming it - known after definitions()
+     *  (the source tells its AA_ID). A copy here gets new item ids and leaves the site's domains out. */
+    public function sameAa(): bool;
+
+    /** The ids of the slice's items after the cursor, in id order, ID_PAGE at most - a transfer only:
+     *  another AA keeps the item ids, so the preview checks them before anything is written.
+     *  @return list<string> @throws ExportRefused|SourceFailed */
+    public function itemIds(string $slice, bool $allBins, string $after): array;
+
     /** The definitions package: a site with its modules, or slices and Alerts modules.
      *  @param list<string> $modules a site id, or slice and Alerts ids
      *  @param int          $started unixtime the run started - the package's export time, so the same

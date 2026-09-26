@@ -81,6 +81,11 @@ final class DbImportTarget implements ImportTarget
         return array_values(array_unique(array_map('strval', DB_AA::select('id', "$perms UNION $content"))));
     }
 
+    public function existingItems(array $ids): int
+    {
+        return $ids ? DB_AA::count('item', [['id', $ids, 'l']]) : 0;
+    }
+
     public function domainTaken(string $host): bool
     {
         $urls = self::urls($host);

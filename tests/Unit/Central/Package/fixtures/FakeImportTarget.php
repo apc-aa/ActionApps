@@ -73,6 +73,14 @@ class FakeImportTarget implements ImportTarget
         return array_values(array_intersect($ids, $this->inUse));
     }
 
+    /** @var list<string> ids of items this AA has */
+    public array $items = [];
+
+    public function existingItems(array $ids): int
+    {
+        return count(array_intersect($ids, $this->items));
+    }
+
     public function domainTaken(string $host): bool
     {
         $bare = static fn(string $h): string => str_starts_with($h, 'www.') ? substr($h, 4) : $h;
