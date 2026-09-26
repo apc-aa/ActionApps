@@ -42,6 +42,7 @@ use AA\Manageraction\Central_OptimizeType;
 use AA\Manageraction\Central_Tab;
 use AA\Manageraction\Manageractions;
 
+use AA\Util\FormToken;
 use AA\Util\InputVars;
 
 require_once __DIR__ . "/../include/init_page.php";
@@ -49,6 +50,8 @@ require_once __DIR__ . "/../include/varset.php";
 require_once __DIR__ . "/../include/formutil.php";
 require_once __DIR__ . "/../include/item.php";
 require_once __DIR__."/../central/include/actionapps.class.php";
+
+const CENTRAL_AUTH_TOKEN = 'central-authenticate';
 
 try {
     
@@ -71,7 +74,7 @@ if ( !IsSuperadmin() ) {
 
 // Handle JWT authentication request for a remote AA
 $auth_aa_id = InputVars::stringPOST('authenticate_aa');
-if ($auth_aa_id && ResponderPolicy::isForeignBrowserRequest($_SERVER)) {
+if ($auth_aa_id && (ResponderPolicy::isForeignBrowserRequest($_SERVER) || !FormToken::check(CENTRAL_AUTH_TOKEN, InputVars::stringPOST('token')))) {
     // a forged form would store the attacker's token for the AA
     $err = _m('The authentication was not performed - start it from the ActionApps Central page');
 } elseif ($auth_aa_id) {
@@ -80,12 +83,17 @@ if ($auth_aa_id && ResponderPolicy::isForeignBrowserRequest($_SERVER)) {
     if ($auth_username && $auth_password) {
         $aa  = Actionapps::getActionapps($auth_aa_id);
         $jwt = $aa->requestJwt($auth_username, $auth_password);
+        unset($auth_password, $_POST['auth_password']);   // used once, kept nowhere
         if ($jwt) {
-            Actionapps::saveAuthToken($auth_aa_id, 'jwt:' . $jwt);
-            $Msg = _m("Successfully authenticated to %1", [$aa->getName()]);
+            try {
+                $aa->saveAuthToken($jwt);
+                $Msg = _m("Successfully authenticated to %1", [safe($aa->getName())]);
+            } catch (RuntimeException|LogicException $e) {
+                $err = _m("Authentication failed for %1: %2", [safe($aa->getName()), safe($e->getMessage())]);
+            }
         } else {
-            $err = _m("Authentication failed for %1: %2",
-                [$aa->getName(), $aa->getLastError()]);
+            // the text comes from the remote AA
+            $err = _m("Authentication failed for %1: %2", [safe($aa->getName()), safe((string) $aa->getLastError())]);
         }
     }
 }
@@ -121,20 +129,19 @@ $managed->setTitle(_m('ActionApps Central'));
 
 $managed->addColumn('admin_link', _m('Admin Link'), '<a href="_#AA_HTTP_/_#AA_BASE_/admin">Admin</a>');
 
-// Auth column: status badge + collapsible Authenticate form. AA_ADMI2 is the
-// alias for AA_ADMIN_PWD (AA_ADMIN_USER takes _#AA_ADMIN first).
+// Auth column: status badge + collapsible Authenticate form. The list shows in AA_ADMIN_PWD its
+// Actionapps::credentialState() (listContent()), never the stored value; AA_ADMI2 is its alias.
 //   - Wrapping the alias as {_#AA_ADMI2} makes the engine evaluate it first
-//     and pass the value as a single parameter (safe with ':' inside a JWT).
-//   - {substr:...:0:3} extracts "jwt" / first-3-chars / "" so we can branch in {switch}.
+//     and pass the value as a single parameter.
 //   - QuoteColons on the translated labels keeps any future translation containing ':' safe.
 $auth_format = ''
     . '<div class="aa-auth-cell">'
-    .   '<div>{switch:{substr:{_#AA_ADMI2}:0:3}:^jwt$:'
+    .   '<div>{switch:{_#AA_ADMI2}:^(token|legacy)$:'
     .       QuoteColons(_m('Authenticated'))
+    .     ':^none$:'
+    .       QuoteColons(_m('Not configured'))
     .     ':.:'
     .       QuoteColons(_m('Not authenticated - get a token'))
-    .     ':'
-    .       QuoteColons(_m('Not configured'))
     .   '}</div>'
     .   '<details>'
     .     '<summary>'._m('Authenticate').'</summary>'
@@ -156,6 +163,9 @@ $managed->setColumns2show(['ORG_NAME','AA_HTTP_DOMAIN','AA_BASE_DIR', 'admin_lin
 $managed->setPriorityFields(['ORG_NAME', 'AA_HTTP_DOMAIN', 'AA_BASE_DIR']);
 // status_code: 1 = active, 2 = hold, 3 = trash — render as a select, default 1 on Add.
 $managed->setWidgetSetting('status_code', ['enum' => ['1' => '1', '2' => '2', '3' => '3'], 'default' => '1']);
+$settings = $managed->getSettings();
+$settings['itemview']['get_content_funct'] = [[Actionapps::class, 'listContent'], ['table' => 'central_conf']];
+$managed->setSettings($settings);
 $manager = new Manager('central', $managed);
 
 // Manager takes akce from GET too; here actions reach remote AAs with the stored superadmin login.
@@ -187,7 +197,7 @@ $html = $manager->getDisplayPage();
 
 // JS helper for the per-row Authenticate button: builds & POSTs a hidden form.
 // Required because the manager already wraps rows in <form>, and HTML5 disallows nested forms.
-$html .= <<<'HTML'
+$script = <<<'HTML'
 <script>
 function aaCentralAuth(btn, aaId) {
     var box  = btn.closest('details');
@@ -201,6 +211,7 @@ function aaCentralAuth(btn, aaId) {
         i.name = name; i.value = value;
         f.appendChild(i);
     }
+    add('token',           '__TOKEN__');
     add('authenticate_aa', aaId);
     add('auth_username',   user);
     add('auth_password',   pass);
@@ -209,6 +220,7 @@ function aaCentralAuth(btn, aaId) {
 }
 </script>
 HTML;
+$html .= str_replace('__TOKEN__', FormToken::get(CENTRAL_AUTH_TOKEN), $script);   // hex - safe in the JS string
 
 // this allows to automatically load codemirror in the head (printHead is called after $form->getObjectEditHtml)
 $apage->printAllPage($html, $err, $Msg);

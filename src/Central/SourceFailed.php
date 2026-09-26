@@ -6,7 +6,7 @@ namespace AA\Central;
 
 use RuntimeException;
 
-/** The source AA of an app could not be asked: it refused the login, it cannot be reached safely, or it
+/** Another AA could not be asked: it refused the login, it cannot be reached safely, or it
  *  gave no usable answer. $reason is also the error code of the install run. The message never holds a
  *  token or a password. */
 final class SourceFailed extends RuntimeException

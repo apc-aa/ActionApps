@@ -29,6 +29,22 @@ final class CryptTest extends TestCase
         $this->assertFalse(Crypt::decryptAesGcm($cipher, 'wrong password'));
     }
 
+    public function test_additional_data_must_match_to_decrypt(): void
+    {
+        $cipher = Crypt::encryptAesGcm('token', self::PASSWORD, 'https://a.example/');
+
+        $this->assertSame('token', Crypt::decryptAesGcm($cipher, self::PASSWORD, 'https://a.example/'));
+        $this->assertFalse(Crypt::decryptAesGcm($cipher, self::PASSWORD, 'https://b.example/'));
+        $this->assertFalse(Crypt::decryptAesGcm($cipher, self::PASSWORD));
+        $this->assertSame(strlen(Crypt::encryptAesGcm('token', self::PASSWORD)), strlen($cipher), 'the data is not stored');
+    }
+
+    public function test_no_additional_data_reads_what_was_encrypted_before_it_existed(): void
+    {
+        // a value of an InstallRun in flight - encrypted with no additional data
+        $this->assertSame('x', Crypt::decryptAesGcm(Crypt::encryptAesGcm('x', self::PASSWORD, ''), self::PASSWORD));
+    }
+
     public function test_decrypt_of_too_short_input_returns_false(): void
     {
         // shorter than the 12-byte nonce prefix → must short-circuit to false

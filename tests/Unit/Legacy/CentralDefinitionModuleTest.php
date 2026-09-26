@@ -14,6 +14,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Tests\Unit\Legacy\Fixtures\CentralTestHelpers;
 use Tests\Unit\Legacy\Fixtures\RecordingDb;
+use Tests\Unit\Legacy\Fixtures\StubbedActionapps;
 
 // class declarations only - file level, since the data providers below build these objects
 require_once dirname(__DIR__, 3) . '/central/include/actionapps.class.php';
@@ -51,7 +52,6 @@ final class CentralDefinitionModuleTest extends TestCase
     {
         $GLOBALS['spareDBs'] = [];
         RecordingDb::reset();
-        $this->removeLocalResponder();
     }
 
     private static function def(string $class, ?string $id, array $data): AA_Definition_Module
@@ -389,15 +389,16 @@ final class CentralDefinitionModuleTest extends TestCase
     }
 
     #[DataProvider('wireDefinitions')]
-    public function test_requestDefinitions_reads_a_literal_answer_through_the_real_ask(string $answer, string $class, array $data): void
+    public function test_requestDefinitions_reads_a_literal_answer_through_the_transport(string $answer, string $class, array $data): void
     {
         // JWT: no login request, the one request reads the answer
         $content = new \ItemContent();
-        $content->setValue('AA_HTTP_DOMAIN', $this->localResponder($answer));
+        $content->setValue('AA_HTTP_DOMAIN', 'https://r.example.org/');
         $content->setValue('AA_BASE_DIR', '');
-        $content->setValue('AA_ADMIN_PWD', 'jwt:T');
+        $aa = new StubbedActionapps($content, [$answer]);
+        $aa->setAuthToken('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI3In0.c2lnbmF0dXJl');
 
-        $defs = (new \AA_Actionapps($content))->requestDefinitions('Slice', [self::TEMPLATE_ID]);
+        $defs = $aa->requestDefinitions('Slice', [self::TEMPLATE_ID]);
 
         $this->assertSame([self::TEMPLATE_ID], array_keys($defs));
         $def = $defs[self::TEMPLATE_ID];

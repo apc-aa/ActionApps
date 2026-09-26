@@ -184,6 +184,13 @@ final class RemoteSourceTest extends TestCase
         self::assertSame('', (new RemoteSource(self::URL))->unseal(self::TOKEN), 'a bare token');
     }
 
+    public function test_a_row_of_no_utf8_gets_no_token(): void
+    {
+        $remote = new RemoteSource("https://r\xFF.example/aa/central/responder.php");
+
+        self::assertSame('', $remote->unseal($remote->seal(self::TOKEN)));
+    }
+
     /** @return array<string, array{string}> */
     public static function tokensNotKept(): array
     {
@@ -246,7 +253,7 @@ final class RemoteSourceTest extends TestCase
             self::fail('reached');
         } catch (SourceFailed $e) {
             self::assertSame(SourceFailed::UNREACHABLE, $e->reason);
-            self::assertSame('The source AA cannot be reached - the details are in the PHP error log', $e->getMessage());
+            self::assertSame('The remote AA cannot be reached - the details are in the PHP error log', $e->getMessage());
         } finally {
             ini_set('error_log', (string) $old);
             $logged = (string) file_get_contents($log);

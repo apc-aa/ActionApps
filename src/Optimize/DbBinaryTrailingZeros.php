@@ -117,7 +117,7 @@ class DbBinaryTrailingZeros extends AbstractOptimize
         $this->_fixTable('central_conf', 'FILEMAN_BASE_DIR', "varbinary(255) NOT NULL default ''");
         $this->_fixTable('central_conf', 'FILEMAN_BASE_URL', "varbinary(255) NOT NULL default ''");
         $this->_fixTable('central_conf', 'AA_ADMIN_USER', "varbinary(30)  NOT NULL default ''");
-        $this->_fixTable('central_conf', 'AA_ADMIN_PWD', "varbinary(30)  NOT NULL default ''");
+        $this->_fixTable('central_conf', 'AA_ADMIN_PWD', "varbinary(1024) NOT NULL default ''");   // an encrypted login token
         $this->_fixTable('content', 'item_id', "varbinary(16)  NOT NULL default ''");
         $this->_fixTable('content', 'field_id', "varbinary(16)  NOT NULL default ''");
         $this->_fixTable('discussion', 'id', "varbinary(16)  NOT NULL default ''");

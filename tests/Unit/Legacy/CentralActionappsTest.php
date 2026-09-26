@@ -11,30 +11,14 @@ use AA_Response;
 use ItemContent;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use Tests\Unit\Legacy\Fixtures\CentralConfDb;
 use Tests\Unit\Legacy\Fixtures\CentralTestHelpers;
 use Tests\Unit\Legacy\Fixtures\RecordingDb;
+use Tests\Unit\Legacy\Fixtures\StubbedActionapps;
 
 // class declarations only
 require_once dirname(__DIR__, 3) . '/central/include/actionapps.class.php';
 require_once __DIR__ . '/fixtures/central_fixtures.php';   // the trait must exist before the class
-
-/** A request which answers without the network and keeps what it was asked with. */
-class CentralFakeRequest extends AA_Request
-{
-    /** @var list<array{mixed, mixed, mixed}> url, parameters, headers of each ask() */
-    public array $asked = [];
-
-    public function __construct(private AA_Response $answer)
-    {
-        parent::__construct('Fake_Command');
-    }
-
-    public function ask($url, $parameters = [], $headers = [])
-    {
-        $this->asked[] = [$url, $parameters, $headers];
-        return $this->answer;
-    }
-}
 
 /** An AA whose getResponse() answers from a script and keeps the requests. */
 class CentralScriptedAa extends AA_Actionapps
@@ -59,9 +43,8 @@ class CentralScriptedAa extends AA_Actionapps
  * Characterization of AA_Actionapps (central/include/actionapps.class.php) - one AA installation as
  * Central sees it: its central_conf row, the remote commands it sends, the JWT login.
  * No DB (RecordingDb answers the SELECTs) and no network: the request methods run against a scripted
- * getResponse(), getResponse() itself against a fake AA_Request, and the Get_Jwt login which
- * requestJwt() builds itself reads a local file as the "responder URL" (AA_Http::request() is plain
- * file_get_contents()).
+ * getResponse(), getResponse() and the Get_Jwt login against a stubbed responder behind the real
+ * RemoteSource (StubbedActionapps).
  *
  * Pins today's behaviour; "pinned:" marks behaviour that is questionable rather than wanted.
  */
@@ -85,7 +68,6 @@ final class CentralActionappsTest extends TestCase
     {
         $GLOBALS['spareDBs'] = [];
         RecordingDb::reset();
-        $this->removeLocalResponder();
     }
 
     /** @param array<string, string> $values  central_conf column => value */
@@ -98,11 +80,15 @@ final class CentralActionappsTest extends TestCase
         return new AA_Actionapps($content);
     }
 
-    /** An AA whose responder URL is a local file answering every request with $answer (null: no file). */
-    private function localAa(?AA_Response $answer, array $values = []): AA_Actionapps
+    /** An AA whose responder answers every request with $answer
+     *  @param array<string, string> $values central_conf column => value */
+    private static function stubbedAa(AA_Response $answer, array $values = []): StubbedActionapps
     {
-        $domain = $this->localResponder($answer === null ? null : serialize($answer));
-        return self::aa(['AA_HTTP_DOMAIN' => $domain, 'AA_BASE_DIR' => ''] + $values);
+        $content = new ItemContent();
+        foreach ($values + ['AA_HTTP_DOMAIN' => 'https://r.example.org/', 'AA_BASE_DIR' => 'aa/'] as $column => $value) {
+            $content->setValue($column, $value);
+        }
+        return StubbedActionapps::answering($content, [$answer]);
     }
 
     // --- local data (central_conf) --------------------------------------------------------------
@@ -173,48 +159,49 @@ final class CentralActionappsTest extends TestCase
         $this->assertSame('https://example.org/aa/', self::aa(['ORG_NAME' => ' ', 'AA_HTTP_DOMAIN' => 'https://example.org/', 'AA_BASE_DIR' => 'aa/'])->getName());
     }
 
-    /** @return array<string, array{?string, ?string}> AA_ADMIN_PWD => auth token */
+    private const TOKEN = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI3In0.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';
+
+    /** @return array<string, array{string, ?string}> AA_ADMIN_PWD => auth token */
     public static function passwords(): array
     {
         return [
-            'jwt'            => ['jwt:eyJ.abc.def', 'eyJ.abc.def'],
-            'plain password' => ['secret', null],
-            'empty'          => ['', null],
-            'jwt prefix only' => ['jwt:', ''],
-            'upper case'     => ['JWT:x', null],
+            'jwt'             => ['jwt:' . self::TOKEN, self::TOKEN],
+            'jwt cut short'   => ['jwt:eyJ.abc.def', null],
+            'plain password'  => ['secret', null],
+            'empty'           => ['', null],
+            'jwt prefix only' => ['jwt:', null],
+            'upper case'      => ['JWT:x', null],
         ];
     }
 
     #[DataProvider('passwords')]
-    public function test_getAuthToken_reads_the_jwt_prefix(string $pwd, ?string $token): void
+    public function test_getAuthToken_reads_a_whole_legacy_token(string $pwd, ?string $token): void
     {
         $aa = self::aa(['AA_ADMIN_USER' => 'central', 'AA_ADMIN_PWD' => $pwd]);
 
         $this->assertSame($token, $aa->getAuthToken());
-        $this->assertSame($pwd, $aa->getAccessPassword());
+        $this->assertSame($pwd, $aa->getValue('AA_ADMIN_PWD'));
         $this->assertSame('central', $aa->getAccessUsername());
     }
 
-    public function test_setAuthToken_stores_it_as_the_password(): void
+    public function test_setAuthToken_stores_it_encrypted_as_the_password(): void
     {
-        $aa = self::aa(['AA_ADMIN_PWD' => 'secret']);
+        $aa = self::aa(['AA_HTTP_DOMAIN' => 'https://example.org/', 'AA_BASE_DIR' => 'aa/', 'AA_ADMIN_PWD' => 'secret']);
 
         $aa->setAuthToken('tok');
 
-        $this->assertSame('jwt:tok', $aa->getAccessPassword());
+        $this->assertStringStartsWith('v1:', $aa->getValue('AA_ADMIN_PWD'));
         $this->assertSame('tok', $aa->getAuthToken());
     }
 
     public function test_saveAuthToken_updates_central_conf_by_numeric_id(): void
     {
-        $GLOBALS['spareDBs'] = [new RecordingDb()];
+        CentralConfDb::install([['id' => '12', 'AA_ADMIN_PWD' => '']], static fn() => 1024);
 
-        self::collectingWarnings(static fn() => AA_Actionapps::saveAuthToken('12', 'jwt:abc'), $warnings);
+        self::collectingWarnings(static fn() => self::aa(['id' => '12', 'AA_HTTP_DOMAIN' => 'https://example.org/', 'AA_BASE_DIR' => 'aa/'])->saveAuthToken('abc'), $warnings);
 
-        $this->assertSame(["UPDATE `central_conf` SET  AA_ADMIN_PWD = 'jwt:abc' WHERE id = 12"], RecordingDb::$log);
-        // pinned: the SET pair has no type, DB_AA reads it anyway (and addslashes the value)
-        $this->assertCount(1, $warnings);
-        $this->assertStringContainsString('Undefined array key', $warnings[0]);
+        $this->assertMatchesRegularExpression("/^UPDATE `central_conf` SET  AA_ADMIN_PWD = 'v1:[\\w-]+' WHERE id = 12$/", CentralConfDb::updates()[0]);
+        $this->assertSame([], $warnings);
     }
 
     // --- loading from central_conf ---------------------------------------------------------------
@@ -226,7 +213,7 @@ final class CentralActionappsTest extends TestCase
             str_starts_with($sql, 'SELECT DISTINCT `id` FROM `central_conf`') => [['id' => '12'], ['id' => '7']],
             str_starts_with($sql, 'SELECT * FROM central_conf')             => [
                 ['id' => '7', 'ORG_NAME' => 'Beta', 'AA_HTTP_DOMAIN' => 'https://b.example.org/', 'AA_BASE_DIR' => 'apc-aa/', 'AA_ADMIN_PWD' => 'secret'],
-                ['id' => '12', 'ORG_NAME' => 'Alpha', 'AA_HTTP_DOMAIN' => 'https://a.example.org/', 'AA_BASE_DIR' => 'aa/', 'AA_ADMIN_PWD' => 'jwt:tok'],
+                ['id' => '12', 'ORG_NAME' => 'Alpha', 'AA_HTTP_DOMAIN' => 'https://a.example.org/', 'AA_BASE_DIR' => 'aa/', 'AA_ADMIN_PWD' => 'jwt:' . self::TOKEN],
             ],
             default => [],
         };
@@ -247,9 +234,9 @@ final class CentralActionappsTest extends TestCase
         $this->assertSame([12, 7], array_keys($aas), 'keyed by central_conf.id (int keys), ordered as the id query returned');
         $this->assertContainsOnlyInstancesOf(AA_Actionapps::class, $aas);
         $this->assertSame('Alpha (https://a.example.org/aa/)', $aas[12]->getName());
-        $this->assertSame('tok', $aas[12]->getAuthToken());
+        $this->assertSame(self::TOKEN, $aas[12]->getAuthToken());
         $this->assertSame('7', $aas[7]->getValue('id'));
-        $this->assertSame('secret', $aas[7]->getAccessPassword());
+        $this->assertSame('secret', $aas[7]->getValue('AA_ADMIN_PWD'));
     }
 
     public function test_listed_is_a_row_of_getArray_only(): void
@@ -393,25 +380,28 @@ final class CentralActionappsTest extends TestCase
 
     public function test_getResponse_with_jwt_sends_bearer_and_no_session(): void
     {
-        $aa      = self::aa(['AA_HTTP_DOMAIN' => 'https://r.example.org/', 'AA_BASE_DIR' => 'aa/', 'AA_ADMIN_PWD' => 'jwt:TOKEN']);
-        $answer  = new AA_Response(['ok']);
-        $request = new CentralFakeRequest($answer);
+        $aa = self::stubbedAa(new AA_Response(['ok']));
+        $aa->setAuthToken(self::TOKEN);
 
-        $this->assertSame($answer, $aa->getResponse($request));
-        $this->assertSame([['https://r.example.org/aa/central/responder.php', [], ['Authorization' => 'Bearer TOKEN']]], $request->asked);
+        $this->assertEquals(new AA_Response(['ok']), $aa->getResponse(new AA_Request('Get_Aaname')));
+        $this->assertSame('https://r.example.org/aa/central/responder.php', $aa->opened[0]['url']);
+        $this->assertStringContainsString('Authorization: Bearer ' . self::TOKEN, $aa->opened[0]['options']['http']['header']);
+        $this->assertStringNotContainsString('Cookie', $aa->opened[0]['options']['http']['header']);
+        $this->assertSame(['request'], array_keys($aa->posted()));
         $this->assertNull($aa->getLastError());
     }
 
     public function test_getResponse_with_jwt_error_keeps_the_code_and_does_not_fall_back_to_login(): void
     {
-        $aa      = self::aa(['AA_ADMIN_USER' => 'central', 'AA_ADMIN_PWD' => 'jwt:EXPIRED']);
-        $answer  = new AA_Response('expired', 101);
-        $request = new CentralFakeRequest($answer);
+        $aa = self::stubbedAa(new AA_Response('expired', 101), ['AA_ADMIN_USER' => 'central']);
+        $aa->setAuthToken(self::TOKEN);
 
-        $this->assertSame($answer, $aa->getResponse($request));
-        $this->assertCount(1, $request->asked);
+        $response = $aa->getResponse(new AA_Request('Get_Aaname'));
+
+        $this->assertSame(101, $response->getError());
+        $this->assertCount(1, $aa->opened);
         $this->assertSame('101 expired', $aa->getLastError(), 'the text too - a refused token (14) says to authenticate again');
-        $this->assertSame([], $request->asked[0][1], 'no parameters - no login happened');
+        $this->assertSame(['request'], array_keys($aa->posted()), 'no login happened');
     }
 
     /** @return array<string, array{0: string}> AA_ADMIN_PWD without a token */
@@ -423,57 +413,57 @@ final class CentralActionappsTest extends TestCase
     #[DataProvider('noToken')]
     public function test_getResponse_without_jwt_asks_to_authenticate_and_sends_nothing(string $pwd): void
     {
-        $aa      = self::aa(['AA_ADMIN_USER' => 'central', 'AA_ADMIN_PWD' => $pwd]);
-        $request = new CentralFakeRequest(new AA_Response(['ok']));
+        $aa = self::stubbedAa(new AA_Response(['ok']), ['AA_ADMIN_USER' => 'central', 'AA_ADMIN_PWD' => $pwd]);
 
-        $response = $aa->getResponse($request);
+        $response = $aa->getResponse(new AA_Request('Get_Aaname'));
 
         $this->assertTrue($response->isError());
         $this->assertSame(ResponderPolicy::ERR_NOT_AUTHENTICATED, $response->getError());
         $this->assertStringContainsString('Authenticate this AA on the ActionApps Central page', (string) $response->getResponse());
         $this->assertSame($response->getError() . ' ' . $response->getResponse(), $aa->getLastError());
-        $this->assertSame([], $request->asked, 'no password or session login');
+        $this->assertSame([], $aa->opened, 'no password or session login');
     }
 
     public function test_lastErrorHtml_names_the_aa_and_is_cleared_by_a_success(): void
     {
-        $aa = self::aa(['ORG_NAME' => '<b>Org</b>', 'AA_HTTP_DOMAIN' => 'https://r.example.org/', 'AA_BASE_DIR' => 'aa/']);
-        $aa->getResponse(new CentralFakeRequest(new AA_Response(['ok'])));
+        $aa = self::stubbedAa(new AA_Response(['ok']), ['ORG_NAME' => '<b>Org</b>']);
+        $aa->getResponse(new AA_Request('Get_Aaname'));
         $this->assertStringStartsWith('&lt;b&gt;Org&lt;/b&gt; (https://r.example.org/aa/): 15 ', $aa->lastErrorHtml(), 'escaped - Central pages print it as HTML');
 
-        $aa->setAuthToken('TOKEN');
-        $aa->getResponse(new CentralFakeRequest(new AA_Response(['ok'])));
+        $aa->setAuthToken(self::TOKEN);
+        $aa->getResponse(new AA_Request('Get_Aaname'));
         $this->assertSame('', $aa->lastErrorHtml());
         $this->assertNull($aa->getLastError());
     }
 
     public function test_requestJwt_returns_the_token(): void
     {
-        $this->assertSame('eyJ.x.y', $this->localAa(new AA_Response('eyJ.x.y'))->requestJwt('central', 'secret'));
+        $this->assertSame(self::TOKEN, self::stubbedAa(new AA_Response(self::TOKEN))->requestJwt('central', 'secret'));
     }
 
     public function test_requestJwt_failure_is_empty_with_the_error_code(): void
     {
-        $aa = $this->localAa(null);
+        $aa = StubbedActionapps::answering(new ItemContent(), []);   // no address at all: refused before any connection
 
-        $this->assertSame('', self::collectingWarnings(static fn() => $aa->requestJwt('central', 'secret')));
+        $this->assertSame('', $aa->requestJwt('central', 'secret'));
         $this->assertStringStartsWith('3 ', $aa->getLastError());
+        $this->assertSame([], $aa->opened);
     }
 
     public function test_requestJwt_failure_keeps_the_text_of_the_remote(): void
     {
-        $aa = $this->localAa(new AA_Response('Needs a login by password', 13));
+        $aa = self::stubbedAa(new AA_Response('Needs a login by password', 13));
 
         $this->assertSame('', $aa->requestJwt('central', 'secret'));
         $this->assertSame('13 Needs a login by password', $aa->getLastError());
     }
 
-    public function test_requestJwt_non_string_answer_is_cast(): void
+    public function test_requestJwt_non_token_answer_is_refused(): void
     {
-        $aa = $this->localAa(new AA_Response(['not', 'a token']));
+        $aa = self::stubbedAa(new AA_Response(['not', 'a token']));
 
-        // pinned: an array answer becomes the "token" 'Array'
-        $this->assertSame('Array', self::collectingWarnings(static fn() => $aa->requestJwt('central', 'secret')));
+        $this->assertSame('', $aa->requestJwt('central', 'secret'));
+        $this->assertSame('The remote AA gave no login token - update it', $aa->getLastError());
     }
 
     // --- queued with the tasks -------------------------------------------------------------------

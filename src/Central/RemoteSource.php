@@ -9,10 +9,11 @@ use AA_Response;
 use Closure;
 use Throwable;
 
-/** The client the install page talks to a source AA with - it carries a token of the source's superadmin,
- *  and the answer carries password hashes, so: https only, no redirect followed (it would take the token
- *  elsewhere), the peer's certificate verified, the answer cut off while it is read, a timeout, and only an
- *  AA_Response of plain data accepted. The URL comes only from a central_conf row (forAa()). */
+/** The client Central talks to another AA with - to its central/responder.php. A request carries a
+ *  superadmin's token or password, an answer may carry password hashes, so: https only, no redirect followed
+ *  (it would take the token elsewhere), the peer's certificate verified, the answer cut off while it is
+ *  read, a timeout, and only an AA_Response of plain data accepted. The URL comes only from a central_conf
+ *  row. */
 final class RemoteSource
 {
     /** a package is at most 8 MB of XML (XmlGuard) - with the serialized envelope around it */
@@ -29,6 +30,8 @@ final class RemoteSource
     public const TOKEN_TTL = 24 * 3600;
 
     private const CHUNK = 65536;
+    /** nesting of an answer; the module definitions are some five levels deep */
+    private const MAX_DEPTH = 64;
 
     /** @var Closure(string, resource): array{resource, list<string>} */
     private readonly Closure $open;
@@ -84,7 +87,7 @@ final class RemoteSource
      *  meanwhile cannot send the token to another server. */
     public function seal(string $token): string
     {
-        return json_encode(['u' => $this->url, 't' => $token], JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES);
+        return json_encode(['u' => $this->url, 't' => $token], JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_INVALID_UTF8_SUBSTITUTE);   // a row of no UTF-8 gets a token unseal() refuses
     }
 
     /** the token of seal() when it was given for this address; '' otherwise - the source refuses the
@@ -97,12 +100,13 @@ final class RemoteSource
 
     /** @param array<string, string> $post more POST fields (the login of jwt()) @param string $token Bearer, '' = none
      *  @param int $maxBytes the answer at most - MAX_BYTES only for a package
-     *  @throws SourceFailed the source cannot be asked safely or gave no plain AA_Response */
-    public function ask(AA_Request $request, array $post = [], string $token = '', int $maxBytes = self::SMALL_BYTES): AA_Response
+     *  @param list<class-string> $classes objects the answer may hold besides plain data (the module definitions of Central)
+     *  @throws SourceFailed the AA cannot be asked safely or gave no plain AA_Response */
+    public function ask(AA_Request $request, array $post = [], string $token = '', int $maxBytes = self::SMALL_BYTES, array $classes = []): AA_Response
     {
         $limit = min($maxBytes, $this->maxBytes);
         if (strncasecmp($this->url, 'https://', 8) !== 0) {
-            throw new SourceFailed(SourceFailed::UNREACHABLE, 'The source AA is not on https - its row in the Central list must use https');
+            throw new SourceFailed(SourceFailed::UNREACHABLE, 'The remote AA is not on https - its row in the Central list must use https');
         }
         if (($token !== '') && !self::isToken($token)) {
             throw new SourceFailed(SourceFailed::LOGIN, 'The login token is no token');       // a header line of its own
@@ -126,14 +130,14 @@ final class RemoteSource
         } finally {
             fclose($stream);
         }
-        return self::response($body);
+        return self::response($body, $classes);
     }
 
     /** @param list<string> $headers @throws SourceFailed */
     private function status(array $headers, int $limit): void
     {
         if (count($headers) > self::MAX_HEADERS) {
-            throw new SourceFailed(SourceFailed::FAILED, 'The source AA answered with too many header lines');
+            throw new SourceFailed(SourceFailed::FAILED, 'The remote AA answered with too many header lines');
         }
         $status = 0;
         $length = null;
@@ -146,11 +150,11 @@ final class RemoteSource
         }
         if ($status !== 200) {
             throw new SourceFailed(SourceFailed::UNREACHABLE, (($status >= 300) && ($status < 400))
-                ? "The source AA redirects (HTTP $status) - its row in the Central list must name the final address"
-                : "The source AA answered HTTP $status");
+                ? "The remote AA redirects (HTTP $status) - its row in the Central list must name the final address"
+                : "The remote AA answered HTTP $status");
         }
         if (($length !== null) && ($length > $limit)) {
-            throw new SourceFailed(SourceFailed::FAILED, 'The answer of the source AA is too big');
+            throw new SourceFailed(SourceFailed::FAILED, 'The answer of the remote AA is too big');
         }
     }
 
@@ -163,48 +167,61 @@ final class RemoteSource
         while (!feof($stream)) {
             $chunk = fread($stream, self::CHUNK);
             if ($chunk === false) {
-                throw new SourceFailed(SourceFailed::UNREACHABLE, 'The answer of the source AA broke off');
+                throw new SourceFailed(SourceFailed::UNREACHABLE, 'The answer of the remote AA broke off');
             }
             $body .= $chunk;
             if (strlen($body) > $limit) {
-                throw new SourceFailed(SourceFailed::FAILED, 'The answer of the source AA is too big');
+                throw new SourceFailed(SourceFailed::FAILED, 'The answer of the remote AA is too big');
             }
             if ((microtime(true) > $deadline) || (($chunk === '') && stream_get_meta_data($stream)['timed_out'])) {
-                throw new SourceFailed(SourceFailed::UNREACHABLE, 'The source AA did not answer in time');
+                throw new SourceFailed(SourceFailed::UNREACHABLE, 'The remote AA did not answer in time');
             }
         }
         return $body;
     }
 
-    /** @throws SourceFailed */
-    private static function response(string $body): AA_Response
+    /** @param list<class-string> $classes @throws SourceFailed */
+    private static function response(string $body, array $classes): AA_Response
     {
         try {
-            $response = @unserialize(trim($body), ['allowed_classes' => [AA_Response::class], 'max_depth' => 64]);
+            $response = @unserialize(trim($body), ['allowed_classes' => [AA_Response::class, ...$classes], 'max_depth' => self::MAX_DEPTH]);
         } catch (Throwable) {                       // e.g. a property of the wrong type
             $response = null;
         }
-        if (!($response instanceof AA_Response) || !self::plain($response->getResponse())) {
-            throw new SourceFailed(SourceFailed::FAILED, 'The source AA gave no answer of plain data - is it an AA new enough?');
+        $budget = strlen($body);                    // each value takes some bytes of the answer
+        if (!($response instanceof AA_Response) || !self::plain($response->getResponse(), $classes, $budget)) {
+            throw new SourceFailed(SourceFailed::FAILED, 'The remote AA gave no answer of plain data - is it an AA new enough?');
         }
         return $response;
     }
 
-    /** no object anywhere - a class the target does not know becomes __PHP_Incomplete_Class */
-    private static function plain(mixed $value): bool
+    /** no object anywhere but of $classes, and those of plain data inside - a class the target does not
+     *  know becomes __PHP_Incomplete_Class
+     *  @param list<class-string> $classes
+     *  @param int $budget values left to visit: references (R:) could make a short answer visit forever */
+    private static function plain(mixed $value, array $classes, int &$budget, int $depth = 0): bool
     {
+        if ((--$budget < 0) || ($depth > self::MAX_DEPTH)) {
+            return false;
+        }
+        if (is_object($value)) {
+            if (!in_array(get_class($value), $classes, true)) {
+                return false;
+            }
+            $value = (array) $value;               // the protected and private properties too
+        }
         if (is_array($value)) {
             foreach ($value as $v) {
-                if (!self::plain($v)) {
+                if (!self::plain($v, $classes, $budget, $depth + 1)) {
                     return false;
                 }
             }
-            return true;
         }
-        return !is_object($value);
+        return true;
     }
 
-    private static function isToken(string $token): bool
+    /** the form of a JWT - it goes to a header line of its own */
+    public static function isToken(string $token): bool
     {
         return (bool) preg_match('/^[\w-]+\.[\w-]+\.[\w-]+\z/', $token);
     }
@@ -216,8 +233,8 @@ final class RemoteSource
         $stream = @fopen($url, 'rb', false, $context);
         if ($stream === false) {
             // the page gets no detail; the log no login a URL may carry (user:password@)
-            error_log('AA Central: the source AA cannot be reached: ' . preg_replace(['~//[^/@\s]*@~', '/[\x00-\x1F\x7F]+/'], ['//', ' '], (string) (error_get_last()['message'] ?? '')));
-            throw new SourceFailed(SourceFailed::UNREACHABLE, 'The source AA cannot be reached - the details are in the PHP error log');
+            error_log('AA Central: the remote AA cannot be reached: ' . preg_replace(['~//[^/@\s]*@~', '/[\x00-\x1F\x7F]+/'], ['//', ' '], (string) (error_get_last()['message'] ?? '')));
+            throw new SourceFailed(SourceFailed::UNREACHABLE, 'The remote AA cannot be reached - the details are in the PHP error log');
         }
         $headers = stream_get_meta_data($stream)['wrapper_data'] ?? [];
         return [$stream, is_array($headers) ? array_values(array_map('strval', array_slice($headers, 0, self::MAX_HEADERS + 1))) : []];

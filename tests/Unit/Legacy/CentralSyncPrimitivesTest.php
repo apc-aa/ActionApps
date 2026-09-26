@@ -534,7 +534,7 @@ final class CentralSyncPrimitivesTest extends TestCase
         $this->assertInstanceOf(AA_Task_Sync::class, $task);
         $this->assertSame('Remote (https://r.example.org/aa/)', $task->actionapps->getName());
         // pinned: the login is stored in the queue
-        $this->assertSame('secret', $task->actionapps->getAccessPassword());
+        $this->assertSame('secret', $task->actionapps->getValue('AA_ADMIN_PWD'));
         $this->assertFalse(property_exists($task->actionapps, '_remote_session_id'), 'the old session fields are dropped');
         $this->assertNull($task->actionapps->getLastError());
 

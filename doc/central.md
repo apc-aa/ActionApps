@@ -14,8 +14,9 @@ AA: `ORG_NAME`, `AA_HTTP_DOMAIN`, `AA_BASE_DIR` and a login token. The responder
 Columns and actions:
 
 - **Auth** - "Get Token": the username and password of a superadmin of that AA. Central calls
-  `Get_Jwt` there and stores the year-long `admin` token as `jwt:<token>` in `AA_ADMIN_PWD`; the
-  password is not stored. A row without a valid token answers nothing (the pages say why). The form
+  `Get_Jwt` there and stores the year-long `admin` token in `AA_ADMIN_PWD` as `v1:` + AES-256-GCM
+  (key `Secret::key('central-credential')`, the responder URL bound as additional data); the
+  password is not stored. A token stored for another URL (an edited row) is not sent. A row without a valid token answers nothing (the pages say why). The form
   sends no 2FA code, so a superadmin with two-factor login cannot get a row token this way.
 - **Apps** - "Install an app from this AA..." opens `installapp.php?aa=<row id>` (approved bin only).
   The link carries the row id, never a URL.
@@ -295,8 +296,10 @@ confirmation help the admin; the boundary is who may install.
 
 **Tokens**
 
-- `admin` (Central's own login to a row): a year; stored as `jwt:<token>` in `central_conf`. Anyone
-  who holds it controls that AA (`Do_Optimize`, `Do_Synchronize`). Give each Central its own account.
+- `admin` (Central's own login to a row): a year; stored encrypted in `central_conf` (`v1:`, bound to
+  the row's responder URL; a plain `jwt:` of older Central is encrypted on its first use, State Check
+  "Central logins" lists and repairs the rest). Anyone who holds it controls that AA (`Do_Optimize`,
+  `Do_Synchronize`). Give each Central its own account.
 - `apps` (another AA pulling an app): at most a day, runs only `Get_App` and `Get_Modules` (else 20).
   The target keeps it only in the run, AES-GCM encrypted with a key derived from `AA_SECRET`, sealed
   with the responder URL it was issued for. It is erased when the run is done or ended, and when a run
@@ -305,17 +308,18 @@ confirmation help the admin; the boundary is who may install.
   user stops working (for LDAP users, any change of the entry). Deleting the user, or changing
   `AA_SECRET`, revokes the rest. A single token cannot be revoked.
 
-**Hardened client rules** (`RemoteSource`, used by the install page for another AA): the URL comes
+**Hardened client rules** (`RemoteSource`, used by every Central request to another AA - the install
+page, Get Token, Synchronize, Optimize, the Task Manager tasks): the URL comes
 only from a Central row, never from the request (the row must be approved when you log in; the later
 steps read it in any bin - the token is sealed with the URL it was issued for, so a changed row cannot
 redirect it); `https://` only; redirects not followed
 (a redirect is an error); `verify_peer` and peer name, no self-signed certificates; 120 s timeout;
-the answer is capped while it is read (1 MB, 16 MB for a package) and at 64 header lines; only an
-`AA_Response` of plain data is unserialized. The token's claims are checked before it is kept: scope
+the answer is capped while it is read (1 MB; 4 MB for a `Do_*` report; 16 MB for a package and for
+the module definitions of Synchronize) and at 64 header lines; only an `AA_Response` of plain data is
+unserialized (plus the `AA_Definition_Module*` objects of `Get_Module_Defs`). The token's claims are checked before it is kept: scope
 `apps` and a lifetime of a day (an older source that ignores `scope`/`ttl` and gives its year-long
-admin token is refused - update it). The fleet-management requests of the Central list (Get Token,
-Synchronize, Optimize) use the older `AA_Http` client, which has none of these rules - keep the rows
-on their final `https://` address.
+admin token is refused - update it). A row on `http://` or on an address that redirects gets no
+request at all - keep the rows on their final `https://` address.
 
 **What is logged**
 

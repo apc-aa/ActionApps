@@ -118,7 +118,7 @@ class ResponderPolicy
 
     /** A browser request sent by a page of another origin. SameSite=Lax cookies still ride POSTs
      *  from sibling subdomains (*.ecn.cz share a registrable domain), so Lax alone is no CSRF guard.
-     *  Server-to-server calls (Central's AA_Http) send neither header, so they pass. */
+     *  Server-to-server calls (Central's RemoteSource) send neither header, so they pass. */
     public static function isForeignBrowserRequest(array $server): bool
     {
         if (isset($server['HTTP_SEC_FETCH_SITE'])) {
