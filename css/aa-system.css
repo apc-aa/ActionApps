@@ -591,6 +591,27 @@ aa-code[invalid], aa-richtext[invalid] { outline: 2px solid #c00; outline-offset
     font-size: 11px;
     overflow-wrap: anywhere;
 }
+/* <aa-richtext> - TinyMCE; fills the row like aa-code */
+aa-richtext {
+    display: block;
+    flex: 1;
+    min-width: 0;
+}
+aa-richtext .tox-tinymce {
+    margin: 2px;
+    border: 1px solid var(--clr-border, #ccc);
+    border-radius: 4px;
+}
+aa-richtext .tox .tox-toolbar__group {
+    padding: 0 3px;
+}
+aa-richtext .tox .tox-tbtn {
+    height: 26px;
+    margin: 1px 0;
+}
+.aa-richtext-editor {
+    margin: 2px;
+}
 
 /* tlkt widget */
 .aa-widget-wi2 .aa-input, .aa-widget-iso .aa-input {

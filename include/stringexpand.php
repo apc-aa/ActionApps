@@ -7673,6 +7673,7 @@ class AA_Requires {
             'aa-fillform@1'               => new AA_Req_Lib(get_aa_url('javascript/fillform.min.js', ['v'=>AA_JS_VERSION],false)),
             'aa-constedit@1'              => new AA_Req_Lib(get_aa_url('javascript/constedit.min.js', ['v'=>AA_JS_VERSION],false)),
             'aa-code@1'                   => new AA_Req_Lib(get_aa_url('javascript/widgets/aa-code.js', ['v'=>AA_JS_VERSION],false).' module', '', ['css-aa-system@1']),
+            'aa-richtext@1'               => new AA_Req_Lib(get_aa_url('javascript/widgets/aa-richtext.js', ['v'=>AA_JS_VERSION],false).' module', '', ['css-aa-system@1']),
             'aa-speech@1'                 => new AA_Req_Lib(get_aa_url('javascript/aa-speech/aa-speech.js', ['v'=>AA_JS_VERSION],false), '', ['_css-aa-speech@1']),
             '_css-aa-speech@1'            => new AA_Req_Css(get_aa_url('javascript/aa-speech/aa-speech.css', ['v'=>AA_JS_VERSION],false)),
             'aa-jslib@3'                  => new AA_Req_Lib(get_aa_url('javascript/aajslib-jquery.min.js', ['v'=>AA_JS_VERSION],false), '', ['jquery@3']),
