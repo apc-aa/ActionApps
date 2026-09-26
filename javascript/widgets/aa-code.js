@@ -96,7 +96,8 @@ function watchSubmit(form) {
  *    not announced - a script that wants it saved fires change itself, as it must on a
  *    bare textarea;
  *  - a hidden required textarea gets no browser bubble and the submit would just not
- *    happen: the host shows the message and the editor takes the focus.
+ *    happen: the host shows the message and the editor takes the focus;
+ *  - focus entering and leaving the host fires focus / blur on the textarea.
  */
 export class TextareaSync {
     #textarea;
@@ -108,10 +109,11 @@ export class TextareaSync {
 
     /**
      * @param {HTMLTextAreaElement} textarea
-     * @param {{host?: HTMLElement, onExternal?: (value: string) => boolean, focus?: () => void}} [options]
-     *        onExternal returns whether the value came from outside the editor (not its own mirror)
+     * @param {{host?: HTMLElement, onExternal?: (value: string) => boolean, focus?: () => void, focusEvents?: boolean}} [options]
+     *        onExternal returns whether the value came from outside the editor (not its own mirror);
+     *        focusEvents: false when the host fires focus / blur itself (an editor in an iframe)
      */
-    constructor(textarea, { host = null, onExternal = null, focus = null } = {}) {
+    constructor(textarea, { host = null, onExternal = null, focus = null, focusEvents = true } = {}) {
         this.#textarea = textarea;
         this.#host     = host;
         this.#focus    = focus;
@@ -141,6 +143,20 @@ export class TextareaSync {
             watchSubmit(textarea.form);
             textarea.addEventListener('invalid', e => this.#onInvalid(e), { signal });
             textarea.addEventListener('input', () => this.#checkValid(), { signal });   // typed into the bare textarea
+        }
+        if (host && focusEvents) {
+            // focus handlers on the textarea (aa_onFocus of the slice's field JavaScript) hear the editor;
+            // the innermost host speaks, a bare textarea fires its own
+            const forward = type => (e) => {
+                if ((e.target !== textarea) && !host.contains(e.relatedTarget) && (textarea.closest('aa-code, aa-richtext') === host)) {
+                    if (type === 'blur') {
+                        this.commit();              // change comes before blur, as on a textarea
+                    }
+                    textarea.dispatchEvent(new FocusEvent(type));
+                }
+            };
+            host.addEventListener('focusin', forward('focus'), { signal });
+            host.addEventListener('focusout', forward('blur'), { signal });
         }
     }
 

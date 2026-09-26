@@ -169,7 +169,8 @@ class JsTriggers
                         function aa_runevent(e) {
                             const fnc = `aa_on${e.type.charAt(0).toUpperCase()}${e.type.slice(1)}`;
                             const match = e.target.name.match(/aa\[[^\]]*\]\[([a-z0-9_]*)\]/);
-                            const fld = match ? match[1].replaceAll('_', '.') : null;
+                            // as AA_Fields::getFieldIdFromVar(): only the padding was dots - full_text_______ is full_text.......
+                            const fld = match ? match[1].replaceAll('__', '..').replaceAll('._', '..') : null;
                             if (fld && typeof window[fnc] === "function") {
                                 window[fnc](fld);
                             }

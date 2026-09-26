@@ -217,9 +217,45 @@ function TabWidgetToggle(class2togle) {
 
 
 
-/** "Edit in Editor" of the legacy textarea - <aa-richtext> (widgets/aa-richtext.js) does the work */
+// aa-richtext.js next to this file - for text areas of hand-written forms, which come without <aa-richtext>
+if (document.currentScript?.src && !window.AA__richtextUrl) {
+    const url = new URL('widgets/aa-richtext.js', document.currentScript.src);
+    url.search = new URL(document.currentScript.src).search;
+    window.AA__richtextUrl = url.href;
+}
+
+/** "Edit in Editor" of a text area: <aa-richtext> (widgets/aa-richtext.js) does the work */
 function openHTMLAreaFullscreen(name) {
-    document.getElementById(name)?.closest('aa-richtext')?.showEditor();
+    const textarea = document.getElementById(name);
+    if (!textarea) {
+        return;
+    }
+    let box = textarea.closest('aa-richtext');
+    if (!box) {
+        box = document.createElement('aa-richtext');
+        box.setAttribute('editor', '');
+        box.setAttribute('switch-name', name + 'html');
+        box.setAttribute('switch-html', 'h');
+        textarea.before(box);
+        box.append(textarea);
+        if (!customElements.get('aa-richtext') && window.AA__richtextUrl) {
+            import(window.AA__richtextUrl).catch(e => console.error('openHTMLAreaFullscreen', e));
+        }
+    }
+    customElements.whenDefined('aa-richtext').then(() => box.showEditor());
+}
+
+/** Shows the "Edit in Editor" link - hand-written forms call it after the textarea */
+function showHTMLAreaLink(name) {
+    const link = document.getElementById('arealinkspan' + name);
+    if (link) {
+        link.style.display = 'inline';
+    }
+}
+
+/** @deprecated the same as openHTMLAreaFullscreen() */
+function OLDopenHTMLAreaFullscreen(name) {
+    openHTMLAreaFullscreen(name);
 }
 
 

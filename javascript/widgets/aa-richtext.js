@@ -43,6 +43,7 @@ class AaRichtextElement extends HTMLElement {
     #l10n = {};
     #writeQueued = false;
     #connection = null;         // a removal and reconnect while loading starts a new one
+    #editorAsked = false;       // showEditor() before the element was set up
 
     async connectedCallback() {
         if (this.#textarea) {
@@ -69,6 +70,7 @@ class AaRichtextElement extends HTMLElement {
         this.#sync  = new TextareaSync(textarea, {
             host:       this,                   // in the source view the inner <aa-code> reports instead
             focus:      () => this.#rich?.api?.focus(),
+            focusEvents: false,                 // focus in TinyMCE's iframe does not reach this document: its own events
             onExternal: (value) => {
                 if (this.#code?.hasAttribute('ready')) {
                     return false;               // <aa-code> shows it and counts it itself
@@ -87,7 +89,12 @@ class AaRichtextElement extends HTMLElement {
         }
         this.#bindSwitch();
         this.#bindEditorLinks();
-        await this.#setMode(this.getAttribute('mode') || 'plain');
+        if (this.#editorAsked) {
+            this.#editorAsked = false;
+            await this.showEditor();
+        } else {
+            await this.#setMode(this.getAttribute('mode') || 'plain');
+        }
         this.setAttribute('ready', '');
     }
 
@@ -136,6 +143,10 @@ class AaRichtextElement extends HTMLElement {
 
     /** The "Edit in Editor" link: HTML format, the switch and the link hidden - as with CKEditor 4. */
     showEditor() {
+        if (!this.#sync) {
+            this.#editorAsked = true;           // a link clicked while the element loads
+            return Promise.resolve();
+        }
         const done = this.#setMode('rich');
         const html = this.getAttribute('switch-html') ?? '1';
         this.#switches.forEach((el) => {
@@ -146,11 +157,8 @@ class AaRichtextElement extends HTMLElement {
                 // the other translations of the field follow into the HTML view
                 el.dispatchEvent(new Event('change', { bubbles: true }));
             }
-            const box = el.closest('.aa-formatters');
-            if (box) {
-                box.style.display = 'none';
-            }
         });
+        this.#formatBoxes().forEach((box) => { box.style.display = 'none'; });
         this.#links.forEach((link) => { link.style.display = 'none'; });
         return done;
     }
@@ -161,14 +169,17 @@ class AaRichtextElement extends HTMLElement {
         }
         const html    = this.getAttribute('switch-html') ?? '1';
         const checked = this.#switches.find(el => (el.type === 'hidden') || el.checked);
-        this.#switches.forEach((el) => {
-            const box = el.closest('.aa-formatters');
-            if (box) {
-                box.style.display = '';
-            }
-        });
+        this.#formatBoxes().forEach((box) => { box.style.display = ''; });
         this.#links.forEach((link) => { link.style.display = ''; });
         this.#setMode((checked?.value === html) ? 'code' : 'plain');
+    }
+
+    /** what holds the HTML / Plain text switch; hand-written forms name it htmlplainspan<textarea id> */
+    #formatBoxes() {
+        const boxes = new Set(this.#switches.map(el => el.closest('.aa-formatters')));
+        boxes.add(this.#textarea?.id ? document.getElementById(`htmlplainspan${this.#textarea.id}`) : null);
+        boxes.delete(null);
+        return [...boxes];
     }
 
     #bindSwitch() {
@@ -194,7 +205,9 @@ class AaRichtextElement extends HTMLElement {
         if (!this.hasAttribute('editor') || !this.#textarea.id) {
             return;
         }
-        this.#links = [...document.querySelectorAll(`[data-aa-editor-for="${CSS.escape(this.#textarea.id)}"]`)];
+        // hand-written forms (custom input forms, old anonymous forms) have only arealinkspan<textarea id>
+        const legacy = document.getElementById(`arealinkspan${this.#textarea.id}`);
+        this.#links = [...new Set([...document.querySelectorAll(`[data-aa-editor-for="${CSS.escape(this.#textarea.id)}"]`), legacy].filter(Boolean))];
         this.#links.forEach((link) => {
             link.style.display = '';            // rendered hidden: without this element it opens nothing
             link.addEventListener('click', (e) => {
@@ -291,7 +304,12 @@ class AaRichtextElement extends HTMLElement {
             height: Math.min(700, Math.max(300, (this.#textarea.rows || 10) * 20 + 120)),
             sourceLabel: this.#l10n.source ?? 'Source',
             onEdit: () => this.#scheduleWrite(),
-            onBlur: () => this.flush(),
+            // as a textarea: change before blur; aa_onFocus / aa_onBlur of the slice's field JavaScript hear them
+            onFocus: () => this.#textarea?.dispatchEvent(new FocusEvent('focus')),
+            onBlur: () => {
+                this.flush();
+                this.#textarea?.dispatchEvent(new FocusEvent('blur'));
+            },
             onSource: () => this.#setMode('code'),
             upload: this.#uploadOptions(),
         });
