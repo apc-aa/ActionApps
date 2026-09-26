@@ -336,34 +336,6 @@ function AA_ReloadAjaxResponse(id, responseText) {
 }
 
 
-/** This function replaces the older one - proposeChange
- *  The main chane is, that now we use standard AA input names:
- *   aa[i<item_id>][<field_id>][]
- */
-function AA_SendWidgetLive(base_id, liveinput, fnc) {
-    AA_StateChange(base_id, 'updating');
-    var valdivid   = jqid('widget-' + base_id);
-
-    // browser supports HTML5 validation
-    if (typeof liveinput.checkValidity === 'function') {
-        if (!liveinput.checkValidity()) {
-            AA_StateChange(base_id, 'invalid');
-            return;
-        }
-    }
-
-    var code = $(valdivid + ' *').serialize();
-
-    code += '&inline=1';  // do not send us whole page as result
-
-    $.post(AA_GetConf('path') + 'filler.php', code, function(data) {
-        AA_StateChange(base_id, 'normal');
-        if (typeof fnc === 'function') {
-            fnc();
-        }
-    });
-}
-
 /** rotates the element - hide/show .rot-hide, add/remove class "active" for .rot-active
  *  called as:
  * <div id="mydiv">

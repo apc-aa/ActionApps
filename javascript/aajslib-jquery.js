@@ -103,17 +103,18 @@ function AA__Serialize(root) {
     // content would reach the server one byte per line shorter than it used to
     const add = (name, value) => params.append(name, String(value).replace(/\r?\n/g, '\r\n'));
     AA_$$('input, select, textarea', root).forEach(el => {
-        if (!el.name || el.disabled || ['submit', 'button', 'image', 'reset', 'file'].includes(el.type)) {
+        if (!el.name || el.matches(':disabled') || ['submit', 'button', 'image', 'reset', 'file'].includes(el.type)) {
             return;
         }
         if ((el.type === 'checkbox' || el.type === 'radio') && !el.checked) {
             return;
         }
-        if (el.multiple && el.selectedOptions) {
-            [...el.selectedOptions].forEach(opt => add(el.name, opt.value));
-        } else {
-            add(el.name, el.value);
+        if (el.tagName === 'SELECT') {
+            // as jQuery: only enabled selected options, nothing for a select with none
+            [...el.selectedOptions].filter(opt => !opt.matches(':disabled')).forEach(opt => add(el.name, opt.value));
+            return;
         }
+        add(el.name, el.value);
     });
     return params.toString();
 }
@@ -288,6 +289,75 @@ function AA_WindowUnloadQ(e) {
     e.preventDefault();
     // The text is not displayed in most modern browsers, but the value must be set;
     e.returnValue = "Changes are not saved. Do you really want to exit this page?";
+}
+
+/** Live widgets whose last save would be lost on leaving the page: sent without
+ *  keepalive (too big for it) or failed. */
+if (!window.AA__LiveUnsaved) {
+    window.AA__LiveUnsaved = new Set();
+}
+
+/** Asks before leaving a page with an unsaved live edit. Registered on first use:
+ *  Firefox keeps no page with a beforeunload listener in its back/forward cache. */
+function AA_LiveGuard() {
+    if (window.AA__LiveGuarded) {
+        return;
+    }
+    window.AA__LiveGuarded = true;
+    window.addEventListener('beforeunload', e => {
+        // an editor keeps the last edit until focus leaves it - send it now
+        AA_$$('aa-code, aa-richtext').forEach(el => el.flush?.());
+        if (window.AA__LiveUnsaved.size) {
+            AA_WindowUnloadQ(e);
+        }
+    });
+}
+
+/** Saves one live widget - all controls in #widget-<base_id> - through filler.php.
+ *  keepalive lets the save finish when the click that ended the edit leaves the page.
+ *  @param {string}   base_id
+ *  @param {Element}  liveinput  the control that changed (validated first)
+ *  @param {Function} fnc        called after a successful save
+ */
+function AA_SendWidgetLive(base_id, liveinput, fnc) {
+    AA_LiveGuard();
+    AA_StateChange(base_id, 'updating');
+    if (typeof liveinput.checkValidity === 'function' && !liveinput.checkValidity()) {
+        AA_StateChange(base_id, 'invalid');
+        return;
+    }
+    const unsaved = window.AA__LiveUnsaved;
+    const body    = AA__Serialize(document.getElementById('widget-' + base_id)) + '&inline=1';
+    const send    = keepalive => fetch(AA_GetConf('path') + 'filler.php', {
+        method:  'POST',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8', 'X-Requested-With': 'XMLHttpRequest'},
+        body,
+        keepalive,
+    });
+    let request;
+    // browsers give all keepalive requests of a page 64 kB together
+    if (body.length <= 60000) {
+        request = send(true).catch(() => {
+            unsaved.add(base_id);
+            return send(false);
+        });
+    } else {
+        unsaved.add(base_id);
+        request = send(false);
+    }
+    request.then(response => {
+        if (!response.ok) {
+            throw new Error('HTTP ' + response.status);
+        }
+        unsaved.delete(base_id);
+        AA_StateChange(base_id, 'normal');
+        if (typeof fnc === 'function') {
+            fnc();
+        }
+    }).catch(() => {
+        unsaved.add(base_id);
+        AA_StateChange(base_id, 'dirty');
+    });
 }
 
 function AA_SiteUpdate(item, field, value, action) {
@@ -902,34 +972,6 @@ function AA_ReloadAjaxResponse(id, responseText) {
     }
 }
 
-
-/** This function replaces the older one - proposeChange
- *  The main chane is, that now we use standard AA input names:
- *   aa[i<item_id>][<field_id>][]
- */
-function AA_SendWidgetLive(base_id, liveinput, fnc) {
-    AA_StateChange(base_id, 'updating');
-    var valdivid   = jqid('widget-' + base_id);
-
-    // browser supports HTML5 validation
-    if (typeof liveinput.checkValidity === 'function') {
-        if (!liveinput.checkValidity()) {
-            AA_StateChange(base_id, 'invalid');
-            return;
-        }
-    }
-
-    var code = $(valdivid + ' *').serialize();
-
-    code += '&inline=1';  // do not send us whole page as result
-
-    $.post(AA_GetConf('path') + 'filler.php', code, function(data) {
-        AA_StateChange(base_id, 'normal');
-        if (typeof fnc === 'function') {
-            fnc();
-        }
-    });
-}
 
 /** rotates the element - hide/show .rot-hide, add/remove class "active" for .rot-active
  *  called as:
