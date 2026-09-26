@@ -546,6 +546,51 @@ aa-code .cm-scroller {
 }
 aa-code[invalid], aa-richtext[invalid] { outline: 2px solid #c00; outline-offset: 1px; }
 .aa-invalid-msg { color: #c00; margin: .25em 0; }
+/* file picker of the rich-text editor */
+.aa-filepicker {
+    width: min(90vw, 760px);
+    max-height: 80vh;
+    padding: 12px;
+}
+.aa-filepicker-head {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+.aa-filepicker-head input[type=search] {
+    flex: 1;
+}
+.aa-filepicker-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 8px;
+    list-style: none;
+    margin: 8px 0 0;
+    padding: 0;
+    max-height: 60vh;
+    overflow: auto;
+}
+.aa-filepicker-list button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    width: 100%;
+    padding: 4px;
+    background: none;
+    border: 1px solid var(--clr-border, #ccc);
+    border-radius: 4px;
+    cursor: pointer;
+}
+.aa-filepicker-list img {
+    width: 100%;
+    height: 90px;
+    object-fit: contain;
+}
+.aa-filepicker-list span {
+    font-size: 11px;
+    overflow-wrap: anywhere;
+}
 
 /* tlkt widget */
 .aa-widget-wi2 .aa-input, .aa-widget-iso .aa-input {
