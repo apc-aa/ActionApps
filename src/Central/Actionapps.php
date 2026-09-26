@@ -7,6 +7,7 @@ namespace AA\Central;
 use AA;
 use AA\IO\DB\DB_AA;
 use AA\Util\Crypt;
+use AA\Util\LoginToken;
 use AA\Util\Secret;
 use AA_Definition_Module;
 use AA_Definition_Module_Alerts;
@@ -196,15 +197,17 @@ class Actionapps
         return function_exists('sodium_crypto_aead_aes256gcm_is_available') && sodium_crypto_aead_aes256gcm_is_available();
     }
 
-    /** what the Central list says of the login: the exp of the token is read unverified - a display only */
+    /** What the Central list says of the login. The claims are read unverified - a display only. A token
+     *  dies by its exp or by its age (LoginToken::verify()), whichever comes first. */
     public function credentialBadge(?int $now = null): string
     {
         [$state, $jwt] = $this->credential();
-        if ($jwt === null) {
+        $claims        = ($jwt === null) ? null : RemoteSource::claims($jwt);
+        if (!is_int($claims['iat'] ?? null) || !is_int($claims['exp'] ?? null)) {
             return ($state === self::CREDENTIAL_NONE) ? _m('Not configured') : _m('Not authenticated - get a token');
         }
-        $exp = RemoteSource::claims($jwt)['exp'] ?? null;
-        return (is_int($exp) && ($exp > ($now ?? time()))) ? _m('Authenticated until %1', [date('Y-m-d H:i', $exp)]) : _m('Expired - get a token');
+        $until = min($claims['exp'], LoginToken::ageLimit($claims['iat']));
+        return ($until > ($now ?? time())) ? _m('Authenticated until %1', [date('Y-m-d H:i', $until)]) : _m('Expired - get a token');
     }
 
     /** The central_conf rows for the list of the Central page: AA_ADMIN_PWD holds its credentialBadge(),

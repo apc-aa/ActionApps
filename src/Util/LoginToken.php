@@ -53,13 +53,19 @@ final class LoginToken
         $scope  = $claims->scp ?? self::SCOPE_ADMIN;
         // by iat, not exp: a token signed with a longer exp (older AAs gave a year) dies after a day as well
         $now = time();
-        if (!is_int($claims->iat ?? null) || ($claims->iat < $now - self::LIFETIME_MAX - self::CLOCK_SKEW) || ($claims->iat > $now + self::CLOCK_SKEW)) {
+        if (!is_int($claims->iat ?? null) || ($now > self::ageLimit($claims->iat)) || ($claims->iat > $now + self::CLOCK_SKEW)) {
             throw new UnexpectedValueException('Token without iat, issued more than a day ago or in the future');
         }
         if (!isset($claims->exp) || ($stamp === null) || !hash_equals(self::pwdTag($stamp), (string) ($claims->pwd ?? '')) || !in_array($scope, [self::SCOPE_ADMIN, self::SCOPE_APPS], true)) {
             throw new UnexpectedValueException('Token without exp or pwd, of an unknown user or scope, or of a changed password');
         }
         return [$uid, (string) ($user['login'] ?? ''), $scope];
+    }
+
+    /** the last moment a token issued at $iat is accepted, whatever its exp */
+    public static function ageLimit(int $iat): int
+    {
+        return $iat + self::LIFETIME_MAX + self::CLOCK_SKEW;
     }
 
     /** A token login lives for one request - its session is neither saved nor sent as a cookie. */
