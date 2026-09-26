@@ -98,6 +98,11 @@ class AA_Responder_Get_Jwt extends AA_Responder
         $this->request = ResponderPolicy::jwtParams($param);
     }
 
+    public function isPerm(): bool
+    {
+        return ResponderPolicy::centralPerm(static::name(), AA_Auth::login(), IsSuperadmin(), AppStore::isPublic((string) AuthGetUid()));
+    }
+
     public function run(): AA_Response
     {
         LoginToken::forgetSession();   // Central never uses the session of this login
@@ -106,8 +111,8 @@ class AA_Responder_Get_Jwt extends AA_Responder
         }
         // only for the password sent with this very request - a stolen cookie or token must not renew itself;
         // superadmin checked here too, so the token never depends on isPerm() alone
-        $may = IsSuperadmin() || (AppStore::isPublic((string) AuthGetUid()) && ($this->request['scope'] === LoginToken::SCOPE_APPS));
-        $jwt = ((AA_Auth::login() === 'password') && $may) ? LoginToken::issue(AuthGetUid(), null, $this->request['ttl'], $this->request['scope']) : '';
+        $may = ResponderPolicy::mayIssueJwt(AA_Auth::login(), IsSuperadmin(), AppStore::isPublic((string) AuthGetUid()), $this->request['scope']);
+        $jwt = $may ? LoginToken::issue(AuthGetUid(), null, $this->request['ttl'], $this->request['scope']) : '';
         return ($jwt === '') ? new AA_Response(_m('A token needs a login by the username and password in this request, of a user whose password change this AA can detect'), ResponderPolicy::ERR_TOKEN_NEEDS_PASSWORD) : new AA_Response($jwt);
     }
 }
@@ -314,7 +319,7 @@ class AA_Responder_Get_App extends AA_Responder
 
     public function isPerm(): bool
     {
-        return AA_Auth::login() === 'token';
+        return ResponderPolicy::centralPerm(static::name(), AA_Auth::login(), IsSuperadmin(), AppStore::isPublic((string) AuthGetUid()));
     }
 
     public function run(): AA_Response
@@ -340,7 +345,7 @@ class AA_Responder_Get_Apps extends AA_Responder
 
     public function isPerm(): bool
     {
-        return AA_Auth::login() === 'token';
+        return ResponderPolicy::centralPerm(static::name(), AA_Auth::login(), IsSuperadmin(), AppStore::isPublic((string) AuthGetUid()));
     }
 
     public function run(): AA_Response
@@ -821,26 +826,24 @@ if ((!$via_url || ResponderPolicy::isPostOnlyCommand($responder::name())) && Res
     exit;
 }
 
-// an apps token (another AA pulling an app) runs only the commands of its scope - whatever the transport
-if ((AA_Auth::login() === 'token') && !ResponderPolicy::scopeAllows(AA_Auth::scope(), $responder::name())) {
-    AA_Response::error(_m("The login token does not allow %1", [$responder::name()]), ResponderPolicy::ERR_TOKEN_SCOPE);
-    exit;
-}
-
-if ($public_account) {
-    $scope = ($responder::name() === 'Get_Jwt') ? (ResponderPolicy::jwtParams($request->getParameters())['scope'] ?? '') : AA_Auth::scope();
-    if (!ResponderPolicy::publicAllows($responder::name(), AA_Auth::login(), $scope)) {
-        AA_Response::error(_m("The app store account may not run %1", [$responder::name()]), ResponderPolicy::ERR_PUBLIC_ACCOUNT);
-        exit;
-    }
-    if (!AppStore::admit($responder::name(), (string) ($_SERVER['REMOTE_ADDR'] ?? ''), (string) AuthGetUid())) {
-        AA_Response::error(_m("The app store is busy - try again later"), ResponderPolicy::ERR_RATE_LIMIT);
-        exit;
-    }
-}
-
-if (!$responder->isPerm()) {
-    AA_Response::error(_m("You (%2) don't have permissions to run %1", [$responder::name(),AuthGetUid()]), 101);  // error code > 0
+// an apps token (another AA pulling an app) runs only the commands of its scope - whatever the transport;
+// the public account of the app store only its commands, counted before anything runs
+$refused = ResponderPolicy::dispatchRefusal(
+    $responder::name(),
+    is_array($params = $request->getParameters()) ? $params : [],
+    AA_Auth::login(),
+    AA_Auth::scope(),
+    $public_account,
+    static fn(): bool => AppStore::admit($responder::name(), (string) ($_SERVER['REMOTE_ADDR'] ?? ''), (string) AuthGetUid()),
+    static fn(): bool => (bool) $responder->isPerm(),
+);
+if ($refused !== null) {
+    AA_Response::error(match ($refused) {
+        ResponderPolicy::ERR_TOKEN_SCOPE    => _m("The login token does not allow %1", [$responder::name()]),
+        ResponderPolicy::ERR_PUBLIC_ACCOUNT => _m("The app store account may not run %1", [$responder::name()]),
+        ResponderPolicy::ERR_RATE_LIMIT     => _m("The app store is busy - try again later"),
+        default                             => _m("You (%2) don't have permissions to run %1", [$responder::name(), AuthGetUid()]),
+    }, $refused);
     exit;
 }
 

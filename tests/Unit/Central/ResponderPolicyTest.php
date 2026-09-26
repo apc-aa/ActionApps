@@ -246,4 +246,85 @@ final class ResponderPolicyTest extends TestCase
     {
         $this->assertSame($expected, ResponderPolicy::jwtParams($param));
     }
+
+    // ------------------------------------------------ the dispatch of central/responder.php
+
+    /** What central/responder.php does after the transport checks, in its order: the token's scope, the
+     *  public account's commands and its limit, then the command's isPerm() - here the permission the
+     *  responder classes of the store commands delegate to - then, for Get_Jwt, the issuing check of run().
+     *  @param array<string, mixed> $params @return int|string the refusing code, or 'token' / 'run' */
+    private static function dispatch(string $command, array $params, string $login, string $tokenScope, bool $public, bool $superadmin = false, bool $admitted = true): int|string
+    {
+        $admits = 0;
+        $code   = ResponderPolicy::dispatchRefusal($command, $params, $login, $tokenScope, $public, static function () use ($admitted, &$admits): bool {
+            $admits++;
+            return $admitted;
+        }, static fn(): bool => ResponderPolicy::centralPerm($command, $login, $superadmin, $public));
+        if ($public && ($code !== ResponderPolicy::ERR_PUBLIC_ACCOUNT) && ($code !== ResponderPolicy::ERR_TOKEN_SCOPE)) {
+            self::assertSame(1, $admits, 'every request of the public account is counted');
+        }
+        if ($code !== null) {
+            return $code;
+        }
+        if ($command === 'Get_Jwt') {
+            $scope = ResponderPolicy::jwtParams($params)['scope'] ?? '';
+            return ResponderPolicy::mayIssueJwt($login, $superadmin, $public, $scope) ? 'token' : ResponderPolicy::ERR_TOKEN_NEEDS_PASSWORD;
+        }
+        return 'run';
+    }
+
+    public function test_the_public_account_gets_an_apps_token(): void
+    {
+        $this->assertSame('token', self::dispatch('Get_Jwt', ['scope' => 'apps', 'ttl' => 86400], 'password', '', true));
+    }
+
+    public function test_the_public_account_gets_no_admin_token(): void
+    {
+        $this->assertSame(ResponderPolicy::ERR_PUBLIC_ACCOUNT, self::dispatch('Get_Jwt', ['scope' => 'admin'], 'password', '', true));
+        $this->assertSame(ResponderPolicy::ERR_PUBLIC_ACCOUNT, self::dispatch('Get_Jwt', [], 'password', '', true), 'admin by default');
+    }
+
+    public function test_the_public_account_runs_get_apps_and_get_app_with_its_token(): void
+    {
+        $this->assertSame('run', self::dispatch('Get_Apps', [], 'token', 'apps', true));
+        $this->assertSame('run', self::dispatch('Get_App', ['part' => 'definitions'], 'token', 'apps', true));
+    }
+
+    public function test_the_public_account_runs_nothing_else(): void
+    {
+        $this->assertSame(ResponderPolicy::ERR_PUBLIC_ACCOUNT, self::dispatch('Get_Modules', [], 'token', 'apps', true));
+        $this->assertSame(ResponderPolicy::ERR_PUBLIC_ACCOUNT, self::dispatch('Get_Apps', [], 'password', '', true), 'by the password - only Get_Jwt');
+        $this->assertSame(ResponderPolicy::ERR_TOKEN_SCOPE, self::dispatch('Do_Optimize', [], 'token', 'apps', true));
+    }
+
+    public function test_the_public_account_over_its_limit_runs_nothing(): void
+    {
+        $this->assertSame(ResponderPolicy::ERR_RATE_LIMIT, self::dispatch('Get_Jwt', ['scope' => 'apps'], 'password', '', true, admitted: false));
+        $this->assertSame(ResponderPolicy::ERR_RATE_LIMIT, self::dispatch('Get_App', [], 'token', 'apps', true, admitted: false));
+    }
+
+    public function test_a_superadmin_is_as_before(): void
+    {
+        $this->assertSame('token', self::dispatch('Get_Jwt', ['scope' => 'admin'], 'password', '', false, true));
+        $this->assertSame('token', self::dispatch('Get_Jwt', ['scope' => 'apps'], 'password', '', false, true));
+        $this->assertSame(ResponderPolicy::ERR_TOKEN_NEEDS_PASSWORD, self::dispatch('Get_Jwt', ['scope' => 'apps'], 'session', '', false, true), 'a cookie renews nothing');
+        $this->assertSame('run', self::dispatch('Get_App', [], 'token', 'apps', false, true));
+        $this->assertSame(ResponderPolicy::ERR_NO_PERMISSION, self::dispatch('Get_App', [], 'password', '', false, true), 'Get_App needs a token');
+    }
+
+    public function test_another_user_gets_no_token(): void
+    {
+        $this->assertSame(ResponderPolicy::ERR_NO_PERMISSION, self::dispatch('Get_Jwt', ['scope' => 'apps'], 'password', '', false));
+        $this->assertSame(ResponderPolicy::ERR_NO_PERMISSION, self::dispatch('Get_Apps', [], 'session', '', false));
+    }
+
+    /** the responder classes of these commands take their isPerm() from centralPerm() - an inherited
+     *  isPerm() (superadmin only) once shut the public account out of Get_Jwt */
+    public function test_the_store_commands_of_the_responder_use_the_central_permission(): void
+    {
+        $source = (string) file_get_contents(dirname(__DIR__, 3) . '/central/responder.php');
+        foreach (['Get_Jwt', 'Get_App', 'Get_Apps'] as $command) {
+            $this->assertMatchesRegularExpression('/class AA_Responder_' . $command . ' extends AA_Responder\s*\{(?:(?!\nclass ).)*?function isPerm\(\): bool\s*\{\s*return ResponderPolicy::centralPerm\(static::name\(\)/s', $source, $command);
+        }
+    }
 }

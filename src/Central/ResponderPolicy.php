@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace AA\Central;
 
 use AA\Util\LoginToken;
+use Closure;
 
 /** What central/responder.php may run, and from which transport. Pure rules, no state. */
 class ResponderPolicy
@@ -66,6 +67,8 @@ class ResponderPolicy
     public const ERR_PUBLIC_ACCOUNT = 22;
     /** the public account sent too many requests from the address this hour (AppStore::admit()) */
     public const ERR_RATE_LIMIT = 23;
+    /** no permission - isPerm() of the command refused the login */
+    public const ERR_NO_PERMISSION = 101;
 
     /** what a token of the scope apps may run: what another AA needs to pull an app */
     private const APPS_SCOPE_COMMANDS = ['Get_App', 'Get_Modules', 'Get_Apps'];
@@ -112,6 +115,46 @@ class ResponderPolicy
             'token'    => ($scope === LoginToken::SCOPE_APPS) && in_array($name, self::PUBLIC_COMMANDS, true),
             default    => false,
         };
+    }
+
+    /** isPerm() of the commands another AA runs on its login (Get_Jwt, Get_App, Get_Apps): a token of a
+     *  superadmin, or the app store's public account (ResponderPolicy::publicAllows() limits what it runs)
+     *  @param string $login AA_Auth::login() */
+    public static function centralPerm(string $command, string $login, bool $superadmin, bool $public): bool
+    {
+        return match ($command) {
+            'Get_Jwt'             => $superadmin || $public,
+            'Get_App', 'Get_Apps' => $login === 'token',
+            default               => $superadmin,
+        };
+    }
+
+    /** Get_Jwt issues a token only for the password of this very request - a stolen cookie or token must
+     *  not renew itself; the public account an apps token only */
+    public static function mayIssueJwt(string $login, bool $superadmin, bool $public, string $scope): bool
+    {
+        return ($login === 'password') && ($superadmin || ($public && ($scope === LoginToken::SCOPE_APPS)));
+    }
+
+    /** The checks of central/responder.php after the transport ones, in this order: the token's scope, the
+     *  commands and the limit of the public account (counted before anything runs), then isPerm().
+     *  @param array<string, mixed> $params the request's @param Closure(): bool $admit AppStore::admit()
+     *  @param Closure(): bool $isPerm the command's @return ?int the refusing error code; null = run it */
+    public static function dispatchRefusal(string $command, array $params, string $login, string $tokenScope, bool $public, Closure $admit, Closure $isPerm): ?int
+    {
+        if (($login === 'token') && !self::scopeAllows($tokenScope, $command)) {
+            return self::ERR_TOKEN_SCOPE;
+        }
+        if ($public) {
+            $scope = ($command === 'Get_Jwt') ? (self::jwtParams($params)['scope'] ?? '') : $tokenScope;
+            if (!self::publicAllows($command, $login, $scope)) {
+                return self::ERR_PUBLIC_ACCOUNT;
+            }
+            if (!$admit()) {
+                return self::ERR_RATE_LIMIT;
+            }
+        }
+        return $isPerm() ? null : self::ERR_NO_PERMISSION;
     }
 
     /** The parameters of Get_Jwt; null = one of a wrong form - an error, never a silent admin token.
