@@ -165,3 +165,7 @@ inputs and can be deleted on a server (see INSTALL); the built files stay in
 /src/Manageraction/**Central_Sqlupdate.php** - Central → Manager actions "Update DB (sql_update) - dotest/update"
   Fetched `<AA>/service/sql_update.php?dbpw5=<first 5 characters of the DB password>&silent=1&fire=1&dotest|update=1`, so it never worked (the script needs the hand-set ACCESS_CODE, nobody read `dbpw5`) and it left a piece of the DB password in the target's access log. Replaced by src/Manageraction/Central_OptimizeType.php (same action ids Sqlupdate_Test / Sqlupdate_Update), which runs the target's own sql_update chain through the responder command Do_Optimize_Type with the stored Central login; the chain itself moved from service/sql_update.php to src/Optimize/Chain.php, which both use.
   _No longer maintained. Removed 2026-09-23 - honzam_
+
+/misc/**filebrowser/** - KCFinder 3.12 (2014), the file browser and uploader of CKEditor 4 (browse.php, upload.php, integration/actionapps.php, js/, themes/, …)
+  It checked no login (CheckAuthentication() returned true for everybody), so anyone could upload into IMG_UPLOAD_PATH, list, rename and move files there and make the server fetch any URL (act_dragUrl). Replaced by api/files.php (AA\Api\Controller\FilesController; who may upload what: AA\Upload\UploadPolicy) and the picker javascript/widgets/aa-filepicker.js, which TinyMCE (javascript/widgets/aa-richtext.js) uses. The session variable r_last_module_id, which told KCFinder the slice, went with it.
+  _No longer maintained. Removed 2026-09-26 - honzam_

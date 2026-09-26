@@ -121,7 +121,7 @@ $GLOBAL_EXCLUDES = [
     'vendor/', 'tests/', 'doc/', 'embed/', 'css/', 'javascript/', 'images/',
     'include/lang/', 'include/htmlMimeMail/', 'include/ConvertTables/', 'include/custom/',
     'include/mgettext.php',         // its only _m() call is the _mdelayed() wrapper
-    'misc/mgettext/', 'misc/htmleditor/', 'misc/filebrowser/',
+    'misc/mgettext/', 'misc/htmleditor/',
     'modules/module_TEMPLATE/',
 ];
 
