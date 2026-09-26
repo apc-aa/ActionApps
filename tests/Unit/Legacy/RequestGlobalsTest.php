@@ -25,6 +25,7 @@ namespace {
 namespace Tests\Unit\Legacy {
 
     use AA\Util\InputVars;
+    use AA_Perm;
     use PHPUnit\Framework\Attributes\DataProvider;
     use PHPUnit\Framework\TestCase;
     use Session;
@@ -37,13 +38,14 @@ namespace Tests\Unit\Legacy {
      */
     final class RequestGlobalsTest extends TestCase
     {
-        private const TOUCHED = ['r_superuser', 'permission_uid', 'permission_to', 'auth', 'sess', 'slices', 'plain', 'encap', 'slice_id'];
+        private const TOUCHED = ['r_superuser', 'permission_uid', 'permission_to', 'auth', 'sess', 'slices', 'plain', 'encap', 'slice_id', 'x', 'r_packed_state_vars'];
 
         public static function setUpBeforeClass(): void
         {
             require_once __DIR__ . '/fixtures/store_fixtures.php';
             require_once __DIR__ . '/../../../include/constants.php';
             require_once __DIR__ . '/../../../include/util.php';
+            require_once __DIR__ . '/../../../include/locauth.php';
         }
 
         protected function setUp(): void
@@ -150,6 +152,107 @@ namespace Tests\Unit\Legacy {
                 unset($GLOBALS['post2shtml_id']);
             }
             $this->assertSame([], $db->queries);
+        }
+
+        public function test_perm_cache_keeps_in_the_session_its_own_values_not_the_request_ones(): void
+        {
+            $session = $_SESSION ?? null;
+            $_SESSION = [];
+            // the same as Session::register(): a missing key is taken from the global
+            $GLOBALS['sess'] = new class {
+                public function register(string $name): void
+                {
+                    if (!isset($_SESSION[$name])) {
+                        $_SESSION[$name] = $GLOBALS[$name];
+                    }
+                }
+            };
+            $GLOBALS['r_superuser']    = ['aa' => true];
+            $GLOBALS['permission_uid'] = 'u1';
+            $GLOBALS['permission_to']  = ['aa' => ['aa' => 'A'], 'other' => 1];
+            $perm = new class ([]) extends AA_Perm {
+                public function getUserPerms($uid, $objectType, $flags = 0): array
+                {
+                    return [];
+                }
+            };
+            try {
+                $perm->cache('u1');
+                $this->assertSame([], $_SESSION['r_superuser']);
+                $this->assertSame('u1', $_SESSION['permission_uid']);
+                $this->assertSame(['slice' => [], 'aa' => []], $_SESSION['permission_to']);
+            } finally {
+                $_SESSION = $session;
+            }
+        }
+
+        public function test_restored_state_does_not_set_the_permission_cache(): void
+        {
+            RestoreVariables(['r_superuser' => ['aa' => true], 'permission_uid' => '1', 'x' => '5']);
+
+            $this->assertArrayNotHasKey('r_superuser', $GLOBALS);
+            $this->assertArrayNotHasKey('permission_uid', $GLOBALS);
+            $this->assertSame('5', $GLOBALS['x']);
+        }
+
+        public function test_stored_post_does_not_set_the_permission_cache(): void
+        {
+            $vars = serialize(['post' => ['r_superuser' => ['aa' => true], 'permission_uid' => '1', 'plain' => 'x'], 'get' => [], 'files' => [], 'cookie' => []]);
+            $db = new class ($vars) {
+                public function __construct(private string $vars) {}
+
+                public function query(string $sql): void {}
+
+                public function next_record(): bool
+                {
+                    return true;
+                }
+
+                public function f(string $name): string
+                {
+                    return $this->vars;
+                }
+            };
+            $spare = $GLOBALS['spareDBs'] ?? null;
+            $uri   = $_SERVER['REQUEST_URI'] ?? null;
+            $GLOBALS['spareDBs']    = [$db];
+            $_SERVER['REQUEST_URI'] = '/page.shtml?post2shtml_id=' . str_repeat('ab', 16);
+            try {
+                add_post2shtml_vars();
+            } finally {
+                $GLOBALS['spareDBs']    = $spare;
+                $_SERVER['REQUEST_URI'] = $uri;
+                unset($GLOBALS['post2shtml_id']);
+            }
+            $this->assertArrayNotHasKey('r_superuser', $GLOBALS);
+            $this->assertArrayNotHasKey('permission_uid', $GLOBALS);
+            $this->assertSame('x', $GLOBALS['plain']);
+        }
+
+        /** @return array<string, array{string}> */
+        public static function requestLoopScripts(): array
+        {
+            return [
+                'view.php'       => ['view.php'],
+                'slice.php'      => ['slice.php'],
+                'jsview.php'     => ['jsview.php'],
+                'discussion.php' => ['discussion.php'],
+                'filler.php'     => ['filler.php'],
+                'getxml.php'     => ['admin/getxml.php'],
+                'msconvert'      => ['misc/msconvert/index.php'],
+            ];
+        }
+
+        /** The public scripts copy $_REQUEST into globals before the autoloader exists, so each loop must skip the protected names itself. */
+        #[DataProvider('requestLoopScripts')]
+        public function test_request_loops_skip_protected_names(string $script): void
+        {
+            $src = (string) file_get_contents(__DIR__ . '/../../../' . $script);
+            $loops   = preg_match_all('/foreach \(\$_REQUEST as \$k => \$v\)/', $src);
+            $guarded = preg_match_all('/foreach \(\$_REQUEST as \$k => \$v\) \{\s*if \(!\\\\AA\\\\Util\\\\InputVars::isProtectedGlobal\(\(string\) \$k\)\)/', $src);
+            $this->assertGreaterThan(0, $loops);
+            $this->assertSame($loops, $guarded);
+            $this->assertMatchesRegularExpression('#require_once __DIR__ \. \'[./]*/src/Util/InputVars\.php\';#', $src);
         }
     }
 }

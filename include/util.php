@@ -1495,6 +1495,9 @@ function add_post2shtml_vars($delete = true): void
     foreach ($var_types as $var_type) {
         if (is_array($vars[$var_type])) {
             foreach ($vars[$var_type] as $var => $value) {
+                if (InputVars::isProtectedGlobal((string) $var)) {   // any visitor can store the vars
+                    continue;
+                }
                 global $$var;
                 $$var = $value;
             }
@@ -2126,7 +2129,9 @@ function IsStringable($var): bool // like function is_signed(),function is_numbe
 function RestoreVariables(array $r_state_vars): void
 {
     foreach ($r_state_vars as $k => $v) {
-        $GLOBALS[$k] = $v;
+        if (!InputVars::isProtectedGlobal((string) $k)) {   // the packed state can come from the request
+            $GLOBALS[$k] = $v;
+        }
     }
 }
 

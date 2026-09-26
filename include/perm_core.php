@@ -835,14 +835,9 @@ class AA_Perm {
     {
         global $permission_uid, $permission_to, $sess, $r_superuser;
 
-        if (is_object($sess)) {
-            $sess->register('permission_uid');
-            $sess->register('permission_to');
-            $sess->register('r_superuser');
-        }
-
         $r_superuser            = [];         // of $user_id only - the flag of the user cached before must not stay
         $permission_uid         = $user_id;
+        $permission_to          = [];
         $permission_to["slice"] = $this->getUserPerms($permission_uid, "slice");
         $permission_to["aa"]    = $this->getUserPerms($permission_uid, "aa");     // aa is parent of all slices
 
@@ -856,6 +851,13 @@ class AA_Perm {
                 $r_superuser[$key] = true;
             }
             $permission_to["aa"][$key] = self::_resolve($val);
+        }
+
+        // after the values are set - register() copies the global into a session which does not have it yet
+        if (is_object($sess)) {
+            $sess->register('permission_uid');
+            $sess->register('permission_to');
+            $sess->register('r_superuser');
         }
     }
 

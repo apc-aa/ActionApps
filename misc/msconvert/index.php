@@ -1,8 +1,11 @@
 <?php
 
 function AddslashesDeep($value): array|string { return is_array($value) ? array_map('AddslashesDeep',   $value) : addslashes($value);   }
+require_once __DIR__ . '/../../src/Util/InputVars.php';   // the autoloader comes later
 foreach ($_REQUEST as $k => $v) {
-    $$k = AddslashesDeep($v);
+    if (!\AA\Util\InputVars::isProtectedGlobal((string) $k)) {   // the session and permission globals
+        $$k = AddslashesDeep($v);
+    }
 }
 
 require_once __DIR__."/./../../include/config.php";

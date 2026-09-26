@@ -70,8 +70,11 @@ use AA\Util\InputVars;
 // We are trying to remove any dependecy on the point 2) and use only $_* superglobals
 function AddslashesDeep($value): array|string { return is_array($value) ? array_map('AddslashesDeep',   $value) : addslashes($value);   }
 
+require_once __DIR__ . '/src/Util/InputVars.php';   // the autoloader comes later
 foreach ($_REQUEST as $k => $v) {
-    $$k = AddslashesDeep($v);
+    if (!\AA\Util\InputVars::isProtectedGlobal((string) $k)) {   // the session and permission globals
+        $$k = AddslashesDeep($v);
+    }
 }
 
 $notshown = (array)($_REQUEST['notshown'] ?? []);
@@ -340,7 +343,9 @@ if ( isset($_POST['aa']) || isset($_FILES['aa']) ) {
 // global variables should be quoted (since old AA code rely on that fact),
 // however the new code should use $_POST, which are NOT quoted
 foreach ($_REQUEST as $k => $v) {
-    $$k = AddslashesDeep($v);
+    if (!\AA\Util\InputVars::isProtectedGlobal((string) $k)) {   // the session and permission globals
+        $$k = AddslashesDeep($v);
+    }
 }
 
 // init used objects
