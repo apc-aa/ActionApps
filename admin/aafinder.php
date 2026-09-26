@@ -309,10 +309,9 @@ if (strlen($findtext)) {
     if ($findindiscus) {
         $fields = ['subject', 'author', 'e_mail', 'body', 'url_address', 'url_description', 'remote_addr', 'free1', 'free2'];
 
-        $like = qquote('%' . DB_AA::likeLiteral($findtext) . '%');
-        $SQL  = "SELECT slice_id, discussion.* FROM discussion, item WHERE discussion.item_id = item.id AND (";
+        $SQL = "SELECT slice_id, discussion.* FROM discussion, item WHERE discussion.item_id = item.id AND (";
         foreach ($fields as $field) {
-            $SQL .= "discussion.$field LIKE $like OR ";
+            $SQL .= "discussion.$field LIKE '%" . addcslashes(quote($findtext), '_%') . "%' OR ";
         }
         $SQL .= "0) ORDER BY date";
         $db->query($SQL);
@@ -342,7 +341,8 @@ if ($go_finditem && $finditem) {
 if ($go_finditem_edit && $finditem_edit && $finditem_edit_op) {
     switch ($finditem_edit_op) {
         case 'LIKE':
-            print query_search([['content.text', $finditem_edit, 'CONTAIN']], "LIKE $finditem_edit");
+            $qstring =  '%' . addcslashes(quote($finditem_edit), '_%') . '%';
+            print query_search([['content.text', $qstring, 'LIKE']], "LIKE $qstring");
             break;
         case '=':
             print query_search([['content.text', $finditem_edit]], $finditem_edit);
