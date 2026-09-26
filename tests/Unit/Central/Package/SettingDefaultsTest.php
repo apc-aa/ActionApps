@@ -5,13 +5,15 @@ declare(strict_types=1);
 /**
  * The settings fields (id `_...`) of a slice an install creates start from their input_default, evaluated as
  * the item form evaluates the default of a new item - only the defaults that depend on no user or request.
- * The report counts what is left to fill; a transfer keeps its values; an existing slice keeps its own.
+ * The report counts what is left to fill; a transfer keeps its values; an existing slice keeps its own, the
+ * settings fields it gets start from their defaults too.
  */
 
 namespace Tests\Unit\Central\Package;
 
 use AA\Central\InstallRun;
 use AA\Central\Package\ImportConfirmation;
+use AA\Central\Package\ImportFailed;
 use AA\Central\Package\ImportPlan;
 use AA\Central\Package\LintFinding;
 use AA\Central\Package\Model\Module;
@@ -195,7 +197,8 @@ final class SettingDefaultsTest extends TestCase
         self::assertSame(['_title..........' => 'Name of _title..........'], $report->settings[0]['fields']);
     }
 
-    public function test_a_slice_into_an_existing_slice_keeps_its_settings(): void
+    /** the existing slice T with only the headline and a value of a setting it has no field of @return string T */
+    private static function existingSlice(): string
     {
         $t = 'e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0';
         self::foreign();
@@ -204,17 +207,75 @@ final class SettingDefaultsTest extends TestCase
         TableDb::$tables['field'][]  = ['id' => 'headline........', 'slice_id' => $t, 'type' => 'headline', 'name' => 'Titulek', 'input_pri' => 100, 'input_show_func' => 'fld:',
             'alias1' => '_#HEADLINE', 'alias1_func' => 'f_h:', 'text_stored' => 1, 'input_insert_func' => ''];
         TableDb::$tables['content'][] = ['item_id' => $t, 'field_id' => '_other..........', 'number' => 0, 'text' => 'mine', 'flag' => 64];
+        TableDb::$tables['content'][] = ['item_id' => $t, 'field_id' => '_title..........', 'number' => 0, 'text' => 'kept', 'flag' => 64];
+        return $t;
+    }
+
+    public function test_the_settings_fields_added_to_an_existing_slice_get_their_defaults(): void
+    {
+        $t       = self::existingSlice();
         $before  = TableDb::rows('content');
-        $package = self::withSettings(['_title..........' => ['txt:Hello', []]]);
+        $package = self::withSettings(['_title..........' => ['txt:Hello', []], '_uid............' => ['uid', []]]);
         $db      = new TableDbTarget($this->target);
         $plan    = (new Planner($db))->plan($package, (new Validator())->validate($package), false, [], [self::SLICE => $t]);
         $confirm = new ImportConfirmation('preview-session');
 
         $report = $this->import($plan, $this->importer($db, $confirm), $confirm->token($plan, self::USER));
 
-        self::assertSame([], $plan->settingDefaults, 'the existing slice is not new');
-        self::assertSame($before, TableDb::rows('content'));
-        self::assertSame(['_email..........', '_title..........'], array_keys($report->settings[0]['fields']), 'its new settings fields are to fill');
+        self::assertSame(['_email..........'], array_keys($plan->settingDefaults[self::SLICE] ?? []), 'a new field with no value; _title has one already');
+        self::assertSame(
+            [...$before, ['item_id' => $t, 'field_id' => '_email..........', 'number' => 0, 'text' => 'redakce@example.org', 'flag' => 64]],
+            array_map(static fn(array $r): array => array_intersect_key($r, array_flip(['item_id', 'field_id', 'number', 'text', 'flag'])), TableDb::rows('content')),
+            'the values there stay as they are',
+        );
+        self::assertSame([self::S . '/field[_uid............]/input_default uid'], self::skipped($plan));
+        self::assertSame(['_uid............'], array_keys($report->settings[0]['fields']), 'only the new field that got no value is to fill');
         self::assertSame("admin/slicefieldsedit.php?edit=1&change_id=$t", $report->settings[0]['url']);
+    }
+
+    public function test_a_default_added_to_an_existing_slice_is_in_its_charset(): void
+    {
+        $t = self::existingSlice();
+        TableDb::$tables['module'][array_key_last(TableDb::$tables['module'])]['lang_file'] = 'cz_news_lang.php';
+        TableDb::$tables['content'] = [];
+        $package = self::withSettings(['_title..........' => ['txt:Příliš žluťoučký', []]]);
+        $db      = new TableDbTarget($this->target);
+        $plan    = (new Planner($db))->plan($package, (new Validator())->validate($package), false, [], [self::SLICE => $t]);
+        $confirm = new ImportConfirmation('preview-session');
+        self::assertSame('windows-1250', $plan->charsets[self::SLICE]);
+
+        $this->import($plan, $this->importer($db, $confirm), $confirm->token($plan, self::USER));
+
+        self::assertSame([[0, (string) iconv('UTF-8', 'windows-1250', 'Příliš žluťoučký'), 64]], self::settings($t)['_title..........']);
+    }
+
+    public function test_a_transfer_into_an_existing_slice_writes_no_defaults(): void
+    {
+        $t       = self::existingSlice();
+        $before  = TableDb::rows('content');
+        $db      = new TableDbTarget($this->target);
+        $plan    = (new Planner($db))->plan(self::example(), (new Validator())->validate(self::example(), true), true, [], [self::SLICE => $t]);
+        $confirm = new ImportConfirmation('preview-session');
+
+        $this->import($plan, $this->importer($db, $confirm), $confirm->token($plan, self::USER), $this->newRun(InstallRun::TRANSFER));
+
+        self::assertSame([], $plan->settingDefaults);
+        self::assertSame($before, TableDb::rows('content'), 'no default next to the items of the source');
+    }
+
+    public function test_a_value_given_to_an_added_setting_since_the_plan_stops_the_write(): void
+    {
+        $t       = self::existingSlice();
+        $db      = new TableDbTarget($this->target);
+        $plan    = (new Planner($db))->plan(self::example(), (new Validator())->validate(self::example()), false, [], [self::SLICE => $t]);
+        $confirm = new ImportConfirmation('preview-session');
+        TableDb::$tables['content'][] = ['item_id' => $t, 'field_id' => '_email..........', 'number' => 0, 'text' => 'typed meanwhile', 'flag' => 64];
+
+        try {
+            $this->import($plan, $this->importer($db, $confirm), $confirm->token($plan, self::USER));
+            self::fail('the default written next to the value');
+        } catch (ImportFailed $e) {
+            self::assertSame(['taken', self::S . '/setting-values/_email..........'], [$e->getPrevious()->reason, $e->getPrevious()->path]);
+        }
     }
 }

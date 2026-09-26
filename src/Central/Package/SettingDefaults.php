@@ -8,8 +8,9 @@ use AA\Central\Package\Model\Module;
 use AA_Generator;
 use Throwable;
 
-/** The values an install gives the settings fields (id `_...`) of a slice it creates: their input_default,
- *  evaluated as the item form evaluates the default of a new item (AA_Field::getDefault(), no profile).
+/** The values an install gives the settings fields (id `_...`) of a slice it creates, or adds to an existing
+ *  slice: their input_default, evaluated as the item form evaluates the default of a new item
+ *  (AA_Field::getDefault(), no profile). A value the slice has stays.
  *  An install carries no values, so without this every setting of a new app starts empty.
  *
  *  Only defaults that give the same value whoever installs: a user id or login would be the installer's,
@@ -25,14 +26,15 @@ final class SettingDefaults
     /** input_insert_func that store the value as it is; boo only turns it into 0 or 1 */
     private const PLAIN_INSERT = ['', 'qte', 'dte', 'num', 'boo'];
 
-    /** @return array<string, array<int, array{value: string, flag: int}>> field id => values, keyed as
+    /** @param list<string> $valued fields that have a value already - it stays
+     *  @return array<string, array<int, array{value: string, flag: int}>> field id => values, keyed as
      *          Module::$transfer['setting-values'] - fields with no value left out */
-    public static function of(Module $m, Schema $schema, FindingList $findings): array
+    public static function of(Module $m, Schema $schema, FindingList $findings, array $valued = []): array
     {
         $values = [];
         foreach ($m->rows['field'] ?? [] as $i => $row) {
             $id = ValueCodec::bytes($row['id'] ?? '');
-            if (!str_starts_with($id, '_')) {
+            if (!str_starts_with($id, '_') || in_array($id, $valued, true)) {
                 continue;
             }
             $column  = static fn(string $c): string => ValueCodec::bytes(array_key_exists($c, $row) ? $row[$c] : $schema->columnDefault('field', $c));

@@ -436,6 +436,13 @@ final class InstallRun extends AA_Object
         return $targets;
     }
 
+    /** the form chose the targets - the preview is sent again, "a new slice" ('') is a choice too; the first
+     *  preview posts none @param array<mixed, mixed> $posted into[] */
+    public static function choiceMade(array $posted): bool
+    {
+        return $posted !== [];
+    }
+
     /** @return string[] */
     public function slices(): array
     {

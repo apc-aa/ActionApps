@@ -29,6 +29,7 @@ use AA\Central\Package\Model\Module;
 use AA\Central\Package\Model\Package;
 use AA\Central\Package\Model\RawBytes;
 use AA\Central\Package\Planner;
+use AA\Central\Package\SliceRoles;
 use AA\Central\Package\Validator;
 use AA\IO\DB\DB_AA;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -371,6 +372,122 @@ final class IntoExistingTest extends TestCase
             'W ' . ExistingSlices::EMAIL_UNMATCHED . ' ' . self::S . '/email[5] ',
             'W ' . ExistingSlices::VIEW_UNMATCHED . ' ' . self::S . '/view[12] field3:clanky',
         ], [...self::codes($plan->findings, ExistingSlices::EMAIL_UNMATCHED), ...self::codes($plan->findings, ExistingSlices::VIEW_UNMATCHED)]);
+    }
+
+    // ---------------------------------------------------------------- the choice preselected by the role of the slice
+
+    /** the example with its slice of $role; T of $role too */
+    private static function ofRole(string $role): Package
+    {
+        TableDb::$tables['slice'][array_key_last(TableDb::$tables['slice'])]['type'] = $role;
+        return self::cell(self::example(), self::SLICE, 'slice', 0, ['type' => $role]);
+    }
+
+    /** a slice of $role besides T */
+    private static function another(string $id, string $role, int $deleted = 0, int $moduleDeleted = 0): void
+    {
+        TableDb::$tables['module'][] = ['id' => $id, 'type' => 'S', 'name' => 'Another', 'lang_file' => 'cz-utf8_news_lang.php', 'deleted' => $moduleDeleted];
+        TableDb::$tables['slice'][]  = ['id' => $id, 'name' => 'Another', 'type' => $role, 'deleted' => $deleted];
+    }
+
+    /** SliceRoles::plan() over the DB target, an install unless $transfer
+     *  @return array{ImportPlan, array<string, string>, list<array{string, LintFinding}>, array<string, string>} */
+    private function planByRole(Package $package, bool $sameAa = false, bool $transfer = false): array
+    {
+        return SliceRoles::plan($package, $this->db(), $sameAa, $transfer, fn(array $into): ImportPlan => $this->planInto($package, $into, $transfer, $sameAa));
+    }
+
+    public function test_a_slice_is_preselected_into_the_one_editable_slice_of_its_role(): void
+    {
+        $package = self::ofRole('___CodeView');
+        self::another(str_repeat('3', 32), '___CodePage');
+        self::another(str_repeat('4', 32), '___CodeView', 1);
+        self::another(str_repeat('5', 32), '___CodeView', 0, 1);
+        self::another(str_repeat('6', 32), '___CodeView');
+        $this->target->notEditable[] = str_repeat('6', 32);
+
+        self::assertSame([self::SLICE => [self::T, '___CodeView']], SliceRoles::preselect($package, $this->db(), false, false));
+        [$plan, $into, $findings, $roles] = $this->planByRole($package);
+
+        self::assertSame([self::SLICE => self::T], $into);
+        self::assertSame([self::SLICE => '___CodeView'], $roles);
+        self::assertSame(['I ' . SliceRoles::PRESELECTED . ' ' . self::S . ' ___CodeView'], self::codes($findings));
+        self::assertContains('I ' . ExistingSlices::INTO_EXISTING . ' ' . self::S . ' ' . self::T, self::codes($plan->findings), 'planned as a choice of the importer');
+    }
+
+    public function test_a_reader_slice_preselected_is_a_warning(): void
+    {
+        [, $into, $findings] = $this->planByRole(self::ofRole(ItemLint::READER_SLICE));
+
+        self::assertSame([self::SLICE => self::T], $into);
+        self::assertSame(['W ' . SliceRoles::PRESELECTED_READERS . ' ' . self::S . ' ' . ItemLint::READER_SLICE], self::codes($findings), 'the views and fields of the app work on live reader data');
+    }
+
+    public function test_a_preselected_slice_the_plan_refuses_stays_new(): void
+    {
+        $package = self::ofRole('___CodeView');
+        TableDb::$tables['module'][array_key_last(TableDb::$tables['module'])]['lang_file'] = 'xx_unknown_lang.php';      // T: no charset
+
+        [$plan, $into, $findings, $roles] = $this->planByRole($package);
+
+        self::assertSame([[], []], [$into, $roles]);
+        self::assertTrue($plan->importable(), 'planned again into a new slice');
+        self::assertSame(['I ' . SliceRoles::PRESELECT_DROPPED . ' ' . self::S . ' ___CodeView => ' . self::T], self::codes($findings));
+    }
+
+    /** @return array<string, array{string, ?string}> the role of the package slice and T, a second slice of the role */
+    public static function notPreselected(): array
+    {
+        return [
+            'several slices of the role' => ['News_EN_tmpl....', str_repeat('3', 32)],
+            'no role'                    => ['', null],
+        ];
+    }
+
+    #[DataProvider('notPreselected')]
+    public function test_a_slice_stays_new_unless_one_slice_has_its_role(string $role, ?string $second): void
+    {
+        $package = self::ofRole($role);
+        if ($second !== null) {
+            self::another($second, $role);
+        }
+
+        self::assertSame([], SliceRoles::preselect($package, $this->db(), false, false));
+    }
+
+    public function test_no_slice_is_preselected_where_none_of_its_role_is_editable(): void
+    {
+        $package = self::ofRole('___CodeView');
+        $this->target->notEditable[] = self::T;
+
+        self::assertSame([], SliceRoles::preselect($package, $this->db(), false, false));
+    }
+
+    public function test_nothing_is_preselected_in_a_copy_in_the_same_aa(): void
+    {
+        self::assertSame([], SliceRoles::preselect(self::ofRole('___CodeView'), $this->db(), true, false), 'the slice of the role may be the source itself');
+    }
+
+    public function test_nothing_is_preselected_in_a_transfer(): void
+    {
+        [, $into, $findings] = $this->planByRole(self::ofRole('___CodeView'), false, true);
+
+        self::assertSame([[], []], [$into, $findings], 'the items would go into a live slice');
+    }
+
+    public function test_two_slices_of_the_package_of_one_role_are_not_preselected(): void
+    {
+        $package = self::ofRole('___CodeView');
+        $package = self::with($package, ['modules' => [...$package->modules, new Module(Module::SLICE, str_repeat('3', 32), ['module' => [['name' => 'Druhá', 'lang_file' => 'cz-utf8_news_lang.php']], 'slice' => [['name' => 'Druhá', 'type' => '___CodeView']]])]]);
+
+        self::assertSame([], SliceRoles::preselect($package, $this->db(), false, false), 'both into one slice - chosen twice');
+    }
+
+    public function test_only_the_first_preview_is_preselected(): void
+    {
+        self::assertFalse(InstallRun::choiceMade([]), 'the first preview posts no choice');
+        self::assertTrue(InstallRun::choiceMade([self::SLICE => '']), 'a new slice is a choice too');
+        self::assertTrue(InstallRun::choiceMade([self::SLICE => self::T]));
     }
 
     // ---------------------------------------------------------------- the choice refused

@@ -61,6 +61,9 @@ interface ImportTarget
     /** the importing user may change the slice (PS_EDIT, or a superadmin) - only such a slice takes a package */
     public function mayEditSlice(string $id): bool;
 
+    /** the slices of this AA (none deleted) of the slice.type @return list<string> ids, lower case */
+    public function slicesOfType(string $type): array;
+
     /** The tables of $tables (the ones an import writes) that are not InnoDB - no transaction covers them,
      *  a failed import would leave its rows there: the planner refuses to plan for them (E).
      *  @param list<string> $tables @return array<string, string> table => its engine ('' = no such table) */

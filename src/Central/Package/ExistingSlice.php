@@ -19,6 +19,8 @@ final readonly class ExistingSlice
      * @param array<int, array<string, mixed>>    $views    view id => {name, field3, type, odd}
      * @param array<int, array<string, mixed>>    $emails   e-mail id => {description}
      * @param array<string, array{string, string}> $objects top-level objects the slice owns: id => [class, name]
+     * @param list<string>                        $settings the settings fields (`_...`) with a value - a field the
+     *                                                      slice has not, too: a value outlives its field
      */
     public function __construct(
         public string $id,
@@ -30,5 +32,6 @@ final readonly class ExistingSlice
         public array $views,
         public array $emails,
         public array $objects,
+        public array $settings = [],
     ) {}
 }

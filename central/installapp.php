@@ -13,7 +13,8 @@
  * POST connect      logs in to another AA: the run opens in preview with its token, the choice of the app follows
  * POST preview      the preview; creates the InstallRun (this AA) or fills the one of the login. Each slice of the
  *                   app goes into a new slice or an existing one of this AA (into[<source id>]); the preview
- *                   offers the choice and is sent again with it
+ *                   offers the choice and is sent again with it. The first preview chooses by the role of the
+ *                   slice (SliceRoles)
  * POST write        writes the definitions
  * POST batch|continue|end   JSON for the progress page
  *
@@ -58,6 +59,7 @@ use AA\Central\Package\LintFinding;
 use AA\Central\Package\Model\Module;
 use AA\Central\Package\Planner;
 use AA\Central\Package\Reader;
+use AA\Central\Package\SliceRoles;
 use AA\Central\Package\Validator;
 use AA\Central\Package\ValueCodec;
 use AA\Central\Package\WriteError;
@@ -91,6 +93,7 @@ try {
     // not username/password: those would log this session in as the user of the other AA
     $login    = [InputVars::stringPOST('source_username'), InputVars::stringPOST('source_password'), InputVars::stringPOST('source_code2fa')];
     $into     = InstallRun::targetsFrom(InputVars::arrayPOST('into'));
+    $choice   = InstallRun::choiceMade(InputVars::arrayPOST('into'));
 } catch (Exception $e) {
     AA_Adminpageutil::pageParameterError($e);
 }
@@ -172,7 +175,7 @@ switch ($action) {
         installapp_connect($aa, $mode, $all_bins, $login, $uid);
         break;
     case 'preview':
-        ($run_id !== '') ? installapp_remote_preview($run_id, $site, $modules, $into, $uid) : installapp_preview($site, $modules, $mode, $all_bins, $into, $uid);
+        ($run_id !== '') ? installapp_remote_preview($run_id, $site, $modules, $into, !$choice, $uid) : installapp_preview($site, $modules, $mode, $all_bins, $into, !$choice, $uid);
         break;
     case 'write':
         installapp_write($run_id, $site, $modules, $into, ($confirm === '') ? null : $confirm, $uid);
@@ -417,12 +420,14 @@ function installapp_slice_choices(): array
 /** Reads the app from its source and plans it on this AA.
  *  @param list<string>          $modules
  *  @param array<string, string> $into    source slice => slice of this AA it goes into; the others get new slices
+ *  @param bool                  $preselect no choice made yet: SliceRoles makes it
  *  @return array{error: string, login: bool, xml: string, now: int, same: bool, findings: list<array{string, LintFinding}>, plan: ?ImportPlan,
- *                into: array<string, string>, package: ?\AA\Central\Package\Model\Package}
- *          login: the source refused its token; now: the time of the source; same: the source is this AA */
-function installapp_prepare(AppSource $from, string $site, array $modules, string $mode, bool $all_bins, int $started, array $into = []): array
+ *                into: array<string, string>, roles: array<string, string>, package: ?\AA\Central\Package\Model\Package}
+ *          login: the source refused its token; now: the time of the source; same: the source is this AA;
+ *          roles: source slice => the role its target was preselected by */
+function installapp_prepare(AppSource $from, string $site, array $modules, string $mode, bool $all_bins, int $started, array $into = [], bool $preselect = false): array
 {
-    $out      = ['error' => '', 'login' => false, 'xml' => '', 'now' => 0, 'same' => false, 'findings' => [], 'plan' => null, 'into' => [], 'package' => null];
+    $out      = ['error' => '', 'login' => false, 'xml' => '', 'now' => 0, 'same' => false, 'findings' => [], 'plan' => null, 'into' => [], 'roles' => [], 'package' => null];
     $transfer = ($mode === InstallRun::TRANSFER);
     try {
         [$out['xml'], $out['findings'], $out['now']] = $from->definitions(($site !== '') ? [$site] : $modules, $transfer, $all_bins, $started);
@@ -443,7 +448,14 @@ function installapp_prepare(AppSource $from, string $site, array $modules, strin
             $out['findings'] = [...$out['findings'], ...$validation->findings];
             return $out;
         }
-        $out['plan']     = (new Planner(new DbImportTarget()))->plan($read->package, $validation, $transfer, $logins, $out['into'], $out['same']);
+        $planner = new Planner(new DbImportTarget());
+        $plan    = static fn(array $targets): ImportPlan => $planner->plan($read->package, $validation, $transfer, $logins, $targets, $out['same']);
+        if ($preselect) {           // stored with the preview as any choice - the write writes what it showed
+            [$out['plan'], $out['into'], $preselected, $out['roles']] = SliceRoles::plan($read->package, new DbImportTarget(), $out['same'], $transfer, $plan);
+            $out['findings'] = [...$out['findings'], ...$preselected];
+        } else {
+            $out['plan'] = $plan($into);
+        }
         $out['findings'] = [...$out['findings'], ...$out['plan']->allFindings()];
         if ($transfer && !$out['same']) {        // another AA keeps the item ids: none may be here already
             $slices          = array_values(array_map(static fn(Module $m): string => $m->id, array_filter($read->package->modules, static fn(Module $m): bool => $m->type === Module::SLICE)));
@@ -474,7 +486,7 @@ function installapp_importable(array $prepared): bool
 
 /** the preview of an app of this AA: the run is created with it
  *  @param list<string> $modules @param array<string, string> $into */
-function installapp_preview(string $site, array $modules, string $mode, bool $all_bins, array $into, string $uid): void
+function installapp_preview(string $site, array $modules, string $mode, bool $all_bins, array $into, bool $preselect, string $uid): void
 {
     if (($site === '') === !$modules) {
         echo '<div class="aa-err">' . _m('Choose a site, or slices and Alerts modules - not both.') . '</div>';
@@ -483,7 +495,7 @@ function installapp_preview(string $site, array $modules, string $mode, bool $al
     }
     $now      = time();
     $from     = installapp_local_source();
-    $prepared = installapp_prepare($from, $site, $modules, $mode, $all_bins, $now, $into);
+    $prepared = installapp_prepare($from, $site, $modules, $mode, $all_bins, $now, $into, $preselect);
     if (installapp_show_preview($from, $prepared, $mode, $all_bins, installapp_hidden('preview', $site, $modules) . installapp_mode_hidden($mode, $all_bins))) {
         $run = InstallRun::preview($mode, $all_bins, InstallRun::LOCAL, $uid, '', $now, hash('sha256', $prepared['xml']), $prepared['into']);
         installapp_write_form($run, $site, $modules, $prepared['plan'], $uid);
@@ -492,7 +504,7 @@ function installapp_preview(string $site, array $modules, string $mode, bool $al
 
 /** the preview of an app of another AA: the run of the login takes its fingerprint
  *  @param list<string> $modules @param array<string, string> $into */
-function installapp_remote_preview(string $run_id, string $site, array $modules, array $into, string $uid): void
+function installapp_remote_preview(string $run_id, string $site, array $modules, array $into, bool $preselect, string $uid): void
 {
     $run = InstallRun::get($run_id);
     if (($run === null) || ($run->user() !== $uid) || ($run->state() !== InstallRun::PREVIEW) || ($run->source() === InstallRun::LOCAL)) {
@@ -510,7 +522,7 @@ function installapp_remote_preview(string $run_id, string $site, array $modules,
         echo '<div class="aa-err">' . safe($e->getMessage()) . '</div>';
         return;
     }
-    $prepared = installapp_prepare($from, $site, $modules, $run->mode(), $run->allBins(), $run->started(), $into);
+    $prepared = installapp_prepare($from, $site, $modules, $run->mode(), $run->allBins(), $run->started(), $into, $preselect);
     if (!installapp_show_preview($from, $prepared, $run->mode(), $run->allBins(), installapp_hidden('preview', $site, $modules, $run_id))) {
         echo '<p>' . ($prepared['login'] ? installapp_relogin($run) : a_href(installapp_url(['run' => $run_id]), _m('Choose another app'))) . '</p>';
         return;
@@ -555,7 +567,7 @@ function installapp_show_preview(AppSource $from, array $prepared, string $mode,
             . (($mode === InstallRun::TRANSFER) ? '<th class="aa-num">' . _m('Items') . '</th>' : '') . '</tr>';
         foreach ($preview['modules'] as $m) {
             echo '<tr><td>' . safe($names[$m['old']] ?? $m['name']) . '</td><td>' . safe($m['type']) . '</td><td><code>' . safe($m['old']) . '</code></td><td>'
-                . ((($m['type'] === Module::SLICE) && $choices) ? installapp_into_select($m['old'], $prepared['into'][strtolower($m['old'])] ?? '', $choices) : safe(_m('a new module'))) . '</td>'
+                . ((($m['type'] === Module::SLICE) && $choices) ? installapp_into_select($m['old'], $prepared['into'][strtolower($m['old'])] ?? '', $choices) . installapp_role_note($prepared['roles'][strtolower($m['old'])] ?? null) : safe(_m('a new module'))) . '</td>'
                 . (($mode === InstallRun::TRANSFER) ? '<td class="aa-num">' . (($m['type'] === Module::SLICE) ? (isset($counts[$m['old']]) ? (int) $counts[$m['old']] : '?') : '') . '</td>' : '') . '</tr>';
         }
         echo '</table>';
@@ -586,6 +598,18 @@ function installapp_into_select(string $old, string $chosen, array $choices): st
         $html .= '<option value="' . safe((string) $id) . '"' . (((string) $id === $chosen) ? ' selected' : '') . '>' . safe(_m('existing: %1', [ExistingSlices::choiceLabel((string) $name, (string) $id)])) . '</option>';
     }
     return $html . '</select>';
+}
+
+/** why the preview chose the slice: its role; a Reader Management slice warns - the app works on its live readers */
+function installapp_role_note(?string $role): string
+{
+    if ($role === null) {
+        return '';
+    }
+    $note = _m('chosen by its role: %1', [AA_Slice::getSliceTypes()[$role] ?? $role]);
+    return ($role === ItemLint::READER_SLICE)
+        ? '<div class="aa-info">W: ' . safe($note . ' - ' . _m('the views and fields of the app will work on its live reader data')) . '</div>'
+        : '<div class="tabhlp">' . safe($note) . '</div>';
 }
 
 /** @param list<string> $modules */

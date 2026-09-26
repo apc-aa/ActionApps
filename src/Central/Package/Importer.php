@@ -407,13 +407,18 @@ final class Importer
     }
 
     /** every group name, collection id and site domain of the plan is still free on the target, every
-     *  existing slice still there in its charset, locked and editable by the user, every group its fields
+     *  existing slice still there in its charset, locked and editable by the user, with no value in a
+     *  setting the plan gives a default, every group its fields
      *  name still there @throws WriteError */
     private function recheck(ImportPlan $plan): void
     {
         foreach ($plan->existing as $old => $slice) {
-            if ($this->target->existingSlice($slice->id, true)?->charset !== $slice->charset) {
+            $now = $this->target->existingSlice($slice->id, true);
+            if ($now?->charset !== $slice->charset) {
                 throw new WriteError(WriteError::GONE, Module::SLICE . "[$old]", 'the slice it goes into is gone or has another language since the plan');
+            }
+            if ($valued = array_intersect(array_keys($plan->settingDefaults[$old] ?? []), $now->settings)) {      // its value stays
+                throw new WriteError(WriteError::TAKEN, Module::SLICE . "[$old]/setting-values/" . reset($valued), 'the setting has a value since the plan');
             }
             if (!$this->target->mayEditSlice($slice->id)) {
                 throw new WriteError(WriteError::DENIED, Module::SLICE . "[$old]", 'the user may not edit the slice it goes into any more');

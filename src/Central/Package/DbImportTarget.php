@@ -175,6 +175,7 @@ final class DbImportTarget implements ImportTarget
             $rows('id', 'SELECT `id`, `name`, `field3`, `type`, `odd` FROM `view`', [['slice_id', $id, 'l']]),
             $rows('id', 'SELECT `id`, `description` FROM `email`', [['owner_module_id', $id, 'l']]),
             $objects,
+            array_values(array_unique(array_map('strval', DB_AA::select('field_id', 'SELECT `field_id` FROM `content`', [['item_id', $id, 'l']])))),
         );
     }
 
@@ -183,6 +184,12 @@ final class DbImportTarget implements ImportTarget
     {
         class_exists(\AA_Perm::class);           // loads PS_EDIT, IfSlPerm()
         return \IsSuperadmin() || \IfSlPerm(\PS_EDIT, $id);
+    }
+
+    public function slicesOfType(string $type): array
+    {
+        $ids = array_map('strval', DB_AA::select('id', 'SELECT LOWER(HEX(`id`)) AS id FROM `slice`', [['type', $type], ['deleted', 0, 'i']]));
+        return $ids ? array_values(array_map('strval', DB_AA::select('id', 'SELECT LOWER(HEX(`id`)) AS id FROM `module`', [['id', $ids, 'l'], ['type', 'S'], ['deleted', 0, 'i']]))) : [];
     }
 
     /** information_schema.tables of this AA's database (DB_NAME), values quoted by makeWhere() */

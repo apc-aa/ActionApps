@@ -20,7 +20,8 @@ use LogicException;
  *  readers - here a LogicException. 0 / empty is "none".
  *  A transfer brings the state of the source installation (Module::$transfer): the owner, found on the
  *  target by name and e-mail or created, the reading password and the values of the settings fields.
- *  An install gives the settings fields of a new slice their defaults (ImportPlan::$settingDefaults).
+ *  An install gives the settings fields of a new slice, and those it adds to an existing one, their
+ *  defaults (ImportPlan::$settingDefaults).
  *  A slice going into an existing slice (ImportPlan::$existing) gets only its new fields here - the plan
  *  left out the rest; views and e-mails the slice has are numbered in the plan's map already.
  *  @internal only Importer calls it - the rights and the S confirmation are checked there (Importer::write()). */
@@ -108,6 +109,7 @@ final class RowWriter
         $id = $this->moduleId($m);
         if (isset($this->plan->existing[$m->id])) {         // the slice stays as it is; it gets only the fields it lacks
             $this->fields($m, $id);
+            $this->settingValues($m, $id, $this->plan->settingDefaults[$m->id] ?? []);
             return;
         }
         $this->insert($m, 'module', $m->rows['module'][0] ?? [], 0, [

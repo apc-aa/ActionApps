@@ -28,8 +28,9 @@ final readonly class ImportPlan
      * @param array<string, ExistingSlice>      $existing      source slice id => the slice of the target it goes
      *                                                         into ($package holds only what that slice lacks)
      * @param array<string, array<string, array<int, array{value: string, flag: int}>>> $settingDefaults
-     *                                                         source slice id => the values an install gives its
-     *                                                         settings fields (SettingDefaults) - new slices only
+     *                                                         source slice id => the values an install gives the
+     *                                                         settings fields it writes (SettingDefaults): all of
+     *                                                         a new slice, the new ones of an existing slice
      */
     public function __construct(
         public Package $package,
@@ -101,7 +102,7 @@ final readonly class ImportPlan
     }
 
     /** The settings fields (id starts with `_`) of a slice left empty by the import - neither a value of a
-     *  transfer nor a default of an install; a slice going into an existing one: its new fields
+     *  transfer nor a default of an install; a slice going into an existing one: its new fields with no value there
      *  @return array<string, string> field id => name */
     public function settingsToFill(Module $m): array
     {
@@ -111,7 +112,8 @@ final readonly class ImportPlan
         $fields = [];
         foreach ($m->rows['field'] ?? [] as $row) {
             $id = ValueCodec::bytes($row['id'] ?? '');
-            if (str_starts_with($id, '_') && !isset($m->transfer['setting-values'][$id]) && !isset($this->settingDefaults[$m->id][$id])) {
+            if (str_starts_with($id, '_') && !isset($m->transfer['setting-values'][$id]) && !isset($this->settingDefaults[$m->id][$id])
+                && !in_array($id, $this->existing[$m->id]->settings ?? [], true)) {
                 $fields[$id] = ValueCodec::bytes($row['name'] ?? '');
             }
         }

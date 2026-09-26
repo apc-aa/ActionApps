@@ -132,7 +132,8 @@ final class Planner
         $defaults = [];
         if (!$transfer) {           // a transfer brings the values of the source
             foreach ($fixed->modules as $m) {
-                if (($m->type === Module::SLICE) && !isset($targets[$m->id]) && ($values = SettingDefaults::of($m, $this->schema, $this->findings))) {
+                // an existing slice: $m holds only the fields it lacks
+                if (($m->type === Module::SLICE) && ($values = SettingDefaults::of($m, $this->schema, $this->findings, $targets[$m->id]->settings ?? []))) {
                     $defaults[$m->id] = $values;
                 }
             }

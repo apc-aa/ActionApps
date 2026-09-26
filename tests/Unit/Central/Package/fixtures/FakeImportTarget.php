@@ -122,6 +122,11 @@ class FakeImportTarget implements ImportTarget
         return !in_array($id, $this->notEditable, true);
     }
 
+    public function slicesOfType(string $type): array
+    {
+        return array_values(array_map('strval', array_keys(array_filter($this->slices, static fn(ExistingSlice $s): bool => $s->type === $type))));
+    }
+
     public function nonTransactional(array $tables): array
     {
         $not = [];
