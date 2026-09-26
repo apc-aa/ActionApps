@@ -20,6 +20,7 @@ use LogicException;
  *  readers - here a LogicException. 0 / empty is "none".
  *  A transfer brings the state of the source installation (Module::$transfer): the owner, found on the
  *  target by name and e-mail or created, the reading password and the values of the settings fields.
+ *  An install gives the settings fields of a new slice their defaults (ImportPlan::$settingDefaults).
  *  A slice going into an existing slice (ImportPlan::$existing) gets only its new fields here - the plan
  *  left out the rest; views and e-mails the slice has are numbered in the plan's map already.
  *  @internal only Importer calls it - the rights and the S confirmation are checked there (Importer::write()). */
@@ -140,7 +141,7 @@ final class RowWriter
             $view = (ValueCodec::bytes($row['property'] ?? '') === 'input_view') ? self::mapped($row, 'value', $this->view(...)) : [];
             $this->insert($m, 'profile', $row, $i, ['slice_id' => $id, 'uid' => '*'] + $view);
         }
-        $this->settingValues($m, $id);
+        $this->settingValues($m, $id, ($m->transfer['setting-values'] ?? []) + ($this->plan->settingDefaults[$m->id] ?? []));
     }
 
     private function fields(Module $m, string $id): void
@@ -150,11 +151,13 @@ final class RowWriter
         }
     }
 
-    /** the values of the settings fields a transfer brings: content rows of the slice id with the keys and
-     *  flags Collector::settingValues() gave - FLAG_TEXT_STORED says text or number */
-    private function settingValues(Module $m, string $id): void
+    /** the values of the settings fields a transfer brings (keyed as Collector::settingValues() gave them),
+     *  or the defaults of an install (SettingDefaults): content rows of the slice id - FLAG_TEXT_STORED says
+     *  text or number
+     *  @param array<string, array<int, array{value: mixed, flag?: int}>> $settings */
+    private function settingValues(Module $m, string $id, array $settings): void
     {
-        foreach ($m->transfer['setting-values'] ?? [] as $field => $values) {
+        foreach ($settings as $field => $values) {
             foreach ($values as $key => $v) {
                 $at    = "$m->type[$m->id]/setting-values/{$field}[$key]";
                 $flag  = (int) ($v['flag'] ?? 0);

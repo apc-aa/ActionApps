@@ -129,15 +129,23 @@ final class Planner
         (new TargetCharset($this->schema, $map))->check($fixed, $charsets, $group_charsets, $this->findings);
         (new ImportLint($this->schema))->check($fixed, $this->findings, $whole);
         $this->readers($readerLogins);
-        $this->engines($transfer);
-        return new ImportPlan($fixed, $map, $charsets, $lang_files, $group_charsets, $settings, $fix_ups, $validation->findings, $this->findings->all(), $targets);
+        $defaults = [];
+        if (!$transfer) {           // a transfer brings the values of the source
+            foreach ($fixed->modules as $m) {
+                if (($m->type === Module::SLICE) && !isset($targets[$m->id]) && ($values = SettingDefaults::of($m, $this->schema, $this->findings))) {
+                    $defaults[$m->id] = $values;
+                }
+            }
+        }
+        $this->engines($transfer, (bool) $defaults);
+        return new ImportPlan($fixed, $map, $charsets, $lang_files, $group_charsets, $settings, $fix_ups, $validation->findings, $this->findings->all(), $targets, $defaults);
     }
 
     /** E NO_TRANSACTION for the tables the import writes without a transaction - the whole list (a short
      *  one: the tables of AA), not cut to ReferenceLint::MAX_REF */
-    private function engines(bool $transfer): void
+    private function engines(bool $transfer, bool $settingValues): void
     {
-        $not = $this->target->nonTransactional(self::tables($this->schema, $transfer));
+        $not = $this->target->nonTransactional(self::tables($this->schema, $transfer, $settingValues));
         if ($not) {
             $this->findings->add(self::TARGET, new LintFinding(LintFinding::ERROR, self::NO_TRANSACTION, self::noTransaction($not), 0));
         }
@@ -145,10 +153,11 @@ final class Planner
 
     /** The tables an import writes - what must be InnoDB: the planner's E and the writer's check
      *  (Importer::write()) ask ImportTarget::nonTransactional() about these
+     *  @param bool $settingValues an install writes the defaults of settings fields (ImportPlan::$settingDefaults)
      *  @return list<string> */
-    public static function tables(Schema $schema, bool $transfer): array
+    public static function tables(Schema $schema, bool $transfer, bool $settingValues = false): array
     {
-        return array_values(array_unique([...array_values($schema->rowTables()), ...ObjectExport::TABLES, ...($transfer ? self::TRANSFER_TABLES : [])]));
+        return array_values(array_unique([...array_values($schema->rowTables()), ...ObjectExport::TABLES, ...($transfer ? self::TRANSFER_TABLES : []), ...($settingValues ? ['content'] : [])]));
     }
 
     /** the host a site domain of a package names, lower case; null = none @param string $url a URL or a bare host */

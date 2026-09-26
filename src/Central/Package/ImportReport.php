@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace AA\Central\Package;
 
-use AA\Central\Package\Model\Module;
-
 /** The report of a written import - plain data, no HTML.
  *  EVERY string in it is package text or derived from it (names, paths, refs, fix-ups, errors quoting
  *  them): the UI escapes all of it (safe()).
@@ -33,8 +31,8 @@ final readonly class ImportReport
      * @param list<array{string, LintFinding}>     $findings validator + planner, by danger S, E, W, I
      * @param list<array{string, list<string>}>    $finish   the steps after the commit (Importer): [step, errors], none = OK
      * @param list<array{module: string, name: string, fields: array<string, string>, url: string}> $settings
-     *                                                       new slices with settings fields to fill: its new
-     *                                                       id and name, field id => field name, the admin page
+     *                                                       slices with settings fields left empty (ImportPlan::settingsToFill()):
+     *                                                       its new id and name, field id => field name, the admin page
      */
     public function __construct(
         public array $package,
@@ -54,11 +52,10 @@ final readonly class ImportReport
         [$modules, $objects, $settings] = [[], [], []];
         foreach ($p->modules as $m) {
             $new       = (string) $map->module($m->id);
-            $existing  = isset($plan->existing[$m->id]);
-            $name      = $existing ? $plan->existing[$m->id]->name : ValueCodec::bytes($m->rows['module'][0]['name'] ?? '');
-            $modules[] = ['type' => $m->type, 'name' => $name, 'old' => $m->id, 'new' => $new, 'existing' => $existing];
+            $name      = $plan->moduleName($m);
+            $modules[] = ['type' => $m->type, 'name' => $name, 'old' => $m->id, 'new' => $new, 'existing' => isset($plan->existing[$m->id])];
             $objects += self::objects($m->objects, $map);
-            if (($m->type === Module::SLICE) && ($fields = self::settingsFields($m))) {
+            if ($fields = $plan->settingsToFill($m)) {
                 $settings[] = ['module' => $new, 'name' => $name, 'fields' => $fields, 'url' => self::SETTINGS_URL . $new];
             }
         }
@@ -84,23 +81,10 @@ final readonly class ImportReport
         return array_values(array_filter($this->finish, static fn(array $s): bool => (bool) $s[1]));
     }
 
-    /** "N settings to fill" - the settings fields of the new slices; the package carries no values */
+    /** "N settings to fill in" - the settings fields the import left empty */
     public function settingsToFill(): int
     {
         return array_sum(array_map(static fn(array $s): int => count($s['fields']), $this->settings));
-    }
-
-    /** @return array<string, string> the slice's settings fields (id starts with `_`) with no value: id => name */
-    private static function settingsFields(Module $m): array
-    {
-        $fields = [];
-        foreach ($m->rows['field'] ?? [] as $row) {
-            $id = ValueCodec::bytes($row['id'] ?? '');
-            if (str_starts_with($id, '_') && !isset($m->transfer['setting-values'][$id])) {      // a transfer brings its value
-                $fields[$id] = ValueCodec::bytes($row['name'] ?? '');
-            }
-        }
-        return $fields;
     }
 
     /** objects and their subobjects: old id => new id

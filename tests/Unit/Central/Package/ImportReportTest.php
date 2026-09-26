@@ -194,18 +194,20 @@ final class ImportReportTest extends TestCase
         ], $report->maps);
         self::assertSame($plan->allFindings(), $report->findings);
 
-        self::assertSame([['module' => $s, 'name' => 'Central Test - články', 'fields' => ['_email..........' => $this->fieldName('_email..........')],
-            'url' => "admin/slicefieldsedit.php?edit=1&change_id=$s"]], $report->settings);
-        self::assertSame(1, $report->settingsToFill());
+        self::assertSame([], $report->settings, 'the settings field got its default');
+        self::assertSame(0, $report->settingsToFill());
         self::assertSame(ImportReport::SETTINGS_URL, 'admin/slicefieldsedit.php?edit=1&change_id=');
     }
 
     public function test_the_report_quotes_package_text_as_it_is(): void
     {
         $package = self::cell(self::example(), self::SLICE, 'module', 0, ['name' => '<script>x</script>']);
+        $package = self::cell($package, self::SLICE, 'field', 2, ['input_default' => 'uid']);         // no default: left to fill
         $report  = $this->import($this->plan($package));
         self::assertSame('<script>x</script>', $report->modules[1]['name'], 'the UI escapes (safe())');
         self::assertSame('<script>x</script>', $report->settings[0]['name']);
+        self::assertSame(['_email..........' => $this->fieldName('_email..........')], $report->settings[0]['fields']);
+        self::assertSame('admin/slicefieldsedit.php?edit=1&change_id=' . self::id(2), $report->settings[0]['url']);
     }
 
     private function fieldName(string $id): string

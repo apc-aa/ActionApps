@@ -330,7 +330,7 @@ final class PlannerTest extends TestCase
         $plan = self::plan(self::example(), $target);
 
         $found = array_values(array_filter($plan->findings, static fn(array $f): bool => $f[1]->code === Planner::NO_TRANSACTION));
-        self::assertSame([[Planner::TARGET, 'E', 'view (MyISAM), object_float (Aria)' . $advice]], array_map(static fn(array $f): array => [$f[0], $f[1]->level, $f[1]->ref], $found), 'an install writes no items, no owners');
+        self::assertSame([[Planner::TARGET, 'E', 'view (MyISAM), object_float (Aria), content (MyISAM)' . $advice]], array_map(static fn(array $f): array => [$f[0], $f[1]->level, $f[1]->ref], $found), 'an install writes no items, no owners - only the defaults of the settings fields');
         self::assertFalse($plan->importable(), 'an error');
         self::assertContains('E no-transaction', array_map(static fn(array $f): string => "{$f[1]->level} {$f[1]->code}", $plan->preview()['findings']));
 

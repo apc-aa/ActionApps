@@ -111,10 +111,13 @@ final class Importer
         if (!$transfer && array_filter($plan->package->modules, static fn(Module $m): bool => $m->transfer !== [])) {
             throw new LogicException("The state of the source installation in an install (the Validator's E)");
         }
+        if ($transfer && $plan->settingDefaults) {
+            throw new LogicException('Defaults of settings fields in a transfer - it brings the values of the source (Planner)');
+        }
         if ($transfer && $record->sameAa()) {
             $plan = self::withoutDomains($plan);            // they are the source site's - still in use here
         }
-        $not = $this->target->nonTransactional(Planner::tables($this->schema, $transfer));
+        $not = $this->target->nonTransactional(Planner::tables($this->schema, $transfer, (bool) $plan->settingDefaults));
         if ($not) {
             throw new ImportFailed(new WriteError(WriteError::ENGINE, 'import', Planner::noTransaction($not)));
         }

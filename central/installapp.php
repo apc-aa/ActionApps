@@ -559,6 +559,7 @@ function installapp_show_preview(AppSource $from, array $prepared, string $mode,
                 . (($mode === InstallRun::TRANSFER) ? '<td class="aa-num">' . (($m['type'] === Module::SLICE) ? (isset($counts[$m['old']]) ? (int) $counts[$m['old']] : '?') : '') . '</td>' : '') . '</tr>';
         }
         echo '</table>';
+        installapp_settings($preview['settings']);
         if ($choices) {
             echo '<p><button class="btn" type="submit">' . _m('Preview again with these slices') . '</button></p>';
         }
@@ -662,13 +663,23 @@ function installapp_report(ImportReport $report): void
         echo '<tr><td>' . safe($m['name'] . ($m['existing'] ? ' (' . _m('existing slice') . ')' : '')) . '</td><td>' . safe($m['type']) . '</td><td><code>' . safe($m['new']) . '</code></td></tr>';
     }
     echo '</table>';
-    foreach ($report->settings as $s) {
-        echo '<p>' . a_href(get_aa_url($s['url']), safe(_m('Fill %1 settings of %2', [count($s['fields']), $s['name']]))) . '</p>';
-    }
+    installapp_settings($report->settings);
     foreach ($report->failures() as [$step, $errors]) {
         echo '<div class="aa-err">' . safe($step . ': ' . implode('; ', $errors)) . '</div>';
     }
     installapp_findings($report->findings);
+}
+
+/** the slices with settings fields left empty: "N settings to fill in", linked to the settings page once
+ *  the slice exists; the names are package text
+ *  @param list<array{name: string, fields: array<string, string>, url?: string}> $settings */
+function installapp_settings(array $settings): void
+{
+    foreach ($settings as $s) {
+        $label = safe(_m('%1 settings to fill in', [count($s['fields'])]));
+        echo '<p>' . safe($s['name']) . ': ' . (isset($s['url']) ? a_href(get_aa_url($s['url']), $label) : $label)
+            . ' <small>(' . safe(implode(', ', array_map(static fn(string $id, string $name): string => ($name !== '') ? $name : $id, array_keys($s['fields']), $s['fields']))) . ')</small></p>';
+    }
 }
 
 /** findings by level; every text is package text
