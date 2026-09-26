@@ -17,6 +17,11 @@ const BUNDLE_URL = (() => {
     return url;
 })();
 
+// CKEditor 4 loaded by an old template would make every contenteditable its own inline editor as well
+if (window.CKEDITOR) {
+    window.CKEDITOR.disableAutoInline = true;
+}
+
 const changed = el => document.dispatchEvent(new CustomEvent('aa-editable-change', { detail: el }));
 
 function plainEditor(el) {

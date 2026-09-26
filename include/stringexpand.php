@@ -7509,7 +7509,7 @@ class AA_Requires {
         } else {
             $hash = $require;   // must be system require
             if (strtok($require, '@') === 'ckeditor') {
-                CheckCkeditorUse::record($_SERVER, (string) AA::$module_id);   // who still needs it
+                CheckCkeditorUse::record($_SERVER, (string) (AA::$site_id ?: AA::$slice_id ?: AA::$module_id));   // who still needs it
             }
         }
 
