@@ -6,6 +6,7 @@ use AA;
 use AA\Managed_Object;
 use AA\Manager;
 use AA_Object;
+use AA_Slice;
 use zids;
 
 /** Manager action Object_Move2slice - quickly adapted Item_Move2slice (for AA_Plannedtask)
@@ -26,8 +27,13 @@ class Object_Move2slice extends \AA\Manageraction\Item_Move2Slice
     /** @inheritDoc */
     public function perform(Manager $manager, zids $item_zids, $action_param): string|false
     {
-        if (!is_long_id($dest_slice_id = $action_param['dest_slice_id'])) {
+        $dest_slice_id = is_array($action_param) ? ($action_param['dest_slice_id'] ?? '') : '';
+        if (!is_string($dest_slice_id) || !is_long_id($dest_slice_id)) {
             return _m('No slice selected');
+        }
+        $dest_slice_id = strtolower($dest_slice_id);
+        if (!AA_Slice::isStoredSlice($dest_slice_id)) {    // the letters of the rights mean other things in other module types
+            return _m('Tasks can be moved only to a slice.');
         }
 
         if (!IfSlPerm(PS_FULLTEXT, $this->slice_id) || !IfSlPerm(PS_FULLTEXT, $dest_slice_id)) {    // permission to delete items and add items in destination slice?

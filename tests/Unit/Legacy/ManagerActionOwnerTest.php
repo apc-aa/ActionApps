@@ -18,6 +18,7 @@ namespace Tests\Unit\Legacy {
     use AA\Manageraction\Polls_DeleteTrash;
     use AA\Manageraction\Polls_MoveItem;
     use AA\Manageraction\Table_Row_Delete;
+    use AA\Manageraction\View_Move2slice;
     use AA\Optimize\CheckObjectFormRefusals;
     use AA\Util\LogOnce;
     use AA_Condition;
@@ -260,6 +261,16 @@ namespace Tests\Unit\Legacy {
             $this->assertSame([[self::MODULE, self::VICTIM]], self::refusals());
         }
 
+        /** the letters of the rights are shared by all module types - a task has to stay in a slice */
+        public function test_move_to_slice_refuses_a_module_which_is_not_a_slice(): void
+        {
+            $GLOBALS['permission_to']['slice'][self::POLLS] = PS_FULLTEXT;
+
+            $this->assertNotSame('', self::act(self::objectManager(true), 'Move2slice', [self::OWN], ['dest_slice_id' => self::POLLS]));
+            $this->assertNotSame('', self::act(self::objectManager(true), 'Move2slice', [self::OWN], ['dest_slice_id' => self::DELETED]));
+            $this->assertSame([], self::objectWrites());
+        }
+
         public function test_move_to_slice_skips_a_missing_task_silently(): void
         {
             $this->assertSame('', self::act(self::objectManager(true), 'Move2slice', [self::MISSING], ['dest_slice_id' => self::DEST]));
@@ -286,6 +297,29 @@ namespace Tests\Unit\Legacy {
             $actions = new Manageractions();
             $actions->addAction(new Table_Row_Delete('DeleteTRow'));
             return self::manager((new Managed_Table('view'))->setAction('add', false), $actions);
+        }
+
+        /** the views of MODULE with the action se_views.php offers to move them */
+        private static function viewMoveManager(): Manager
+        {
+            $actions = new Manageractions();
+            $actions->addAction(new View_Move2slice('Move2slice', self::MODULE));
+            return self::manager((new Managed_Table('view'))->setAction('add', false), $actions);
+        }
+
+        public function test_view_move_moves_the_own_view_to_a_slice(): void
+        {
+            $this->assertSame('', self::act(self::viewMoveManager(), 'Move2slice', ['7'], ['dest_slice_id' => self::DEST]));
+            $this->assertCount(1, self::writes('view'));
+        }
+
+        public function test_view_move_refuses_a_target_which_is_not_a_stored_slice(): void
+        {
+            $GLOBALS['permission_to']['slice'][self::POLLS] = PS_FULLTEXT;
+            foreach ([self::POLLS, self::DELETED, self::MISSING, 'x', ['a'], ''] as $dest) {
+                $this->assertNotSame('', self::act(self::viewMoveManager(), 'Move2slice', ['7'], ['dest_slice_id' => $dest]), var_export($dest, true));
+            }
+            $this->assertSame([], self::writes('view'));
         }
 
         public function test_the_own_view_is_updated(): void
