@@ -41,6 +41,7 @@ class AaRichtextElement extends HTMLElement {
     #abort = null;
     #l10n = {};
     #writeQueued = false;
+    #connection = null;         // a removal and reconnect while loading starts a new one
 
     async connectedCallback() {
         if (this.#textarea) {
@@ -51,6 +52,8 @@ class AaRichtextElement extends HTMLElement {
             return;
         }
         this.#textarea = textarea;
+        const connection = {};
+        this.#connection = connection;
         let TextareaSync;
         try {
             ({ TextareaSync } = await import(sibling('./aa-code.js')));   // defines <aa-code> too
@@ -59,22 +62,23 @@ class AaRichtextElement extends HTMLElement {
             this.#textarea = null;
             return;
         }
-        if (!this.isConnected || (this.#textarea !== textarea)) {
-            return;                             // removed or raced while importing
+        if (this.#connection !== connection) {
+            return;                             // removed (and maybe put back) while importing
         }
         this.#sync  = new TextareaSync(textarea, {
             host:       this,                   // in the source view the inner <aa-code> reports instead
             focus:      () => this.#rich?.api?.focus(),
-            // in the source view the inner <aa-code> shows it; in plain view the textarea is the view
             onExternal: (value) => {
-                if (this.#mode === 'code') {
-                    return false;
+                if (this.#code?.hasAttribute('ready')) {
+                    return false;               // <aa-code> shows it and counts it itself
                 }
-                this.#rich?.api?.load(value);
+                this.#rich?.api?.load(value);   // a TinyMCE still starting catches up once ready
                 return true;
             },
         });
         this.#abort = new AbortController();
+        // Reset puts the format radios back without a change event
+        textarea.form?.addEventListener('reset', () => setTimeout(() => this.#afterReset()), { signal: this.#abort.signal });
         try {
             this.#l10n = JSON.parse(this.getAttribute('l10n') || '{}');
         } catch {
@@ -87,8 +91,10 @@ class AaRichtextElement extends HTMLElement {
     }
 
     disconnectedCallback() {
+        this.#connection = null;
         this.#abort?.abort();
         this.#leave();                          // the textarea back in place, for a reconnect
+        this.#queue = Promise.resolve();        // a TinyMCE starting on the removed copy never finishes
         this.#sync?.destroy();
         this.#textarea = null;
         this.#sync = null;
@@ -113,6 +119,8 @@ class AaRichtextElement extends HTMLElement {
         if (this.#rich?.api) {
             this.#rich.api.setContent(value);
             this.#flushRich();
+        } else if (this.#sync) {
+            this.#sync.write(value);            // past the watcher, which would count it as announced
         } else if (this.#textarea) {
             this.#textarea.value = value;
         }
@@ -144,6 +152,22 @@ class AaRichtextElement extends HTMLElement {
         });
         this.#links.forEach((link) => { link.style.display = 'none'; });
         return done;
+    }
+
+    #afterReset() {
+        if (!this.#switches.length) {
+            return;
+        }
+        const html    = this.getAttribute('switch-html') ?? '1';
+        const checked = this.#switches.find(el => (el.type === 'hidden') || el.checked);
+        this.#switches.forEach((el) => {
+            const box = el.closest('.aa-formatters');
+            if (box) {
+                box.style.display = '';
+            }
+        });
+        this.#links.forEach((link) => { link.style.display = ''; });
+        this.#setMode((checked?.value === html) ? 'code' : 'plain');
     }
 
     #bindSwitch() {
@@ -200,6 +224,7 @@ class AaRichtextElement extends HTMLElement {
     }
 
     #leave() {
+        this.#sync?.clearInvalid();             // its message points at the view going away
         if (this.#rich) {
             this.#flushRich();
             this.#rich.api?.destroy();
@@ -241,7 +266,8 @@ class AaRichtextElement extends HTMLElement {
         // TinyMCE writes into its target by itself (on submit, on save()), so it gets a copy
         // without a name: the named textarea changes only after a real edit
         const copy = document.createElement('textarea');
-        copy.value = this.#textarea.value;
+        const start = this.#textarea.value;
+        copy.value = start;
         copy.placeholder = this.#textarea.placeholder;
         this.#textarea.after(copy);
         this.#textarea.hidden = true;
@@ -255,6 +281,9 @@ class AaRichtextElement extends HTMLElement {
             this.#leave();
             this.#setMode('code');              // the HTML stays editable
             return;
+        }
+        if (this.#rich !== state) {
+            return;                             // left while loading - never start on a removed copy
         }
         const api = await createRichEditor(copy, {
             uiLang: this.getAttribute('ui-lang') || document.documentElement.lang,
@@ -271,6 +300,9 @@ class AaRichtextElement extends HTMLElement {
         }
         state.api = api;
         this.#wasRich = true;
+        if (this.#textarea.value !== start) {
+            api.load(this.#textarea.value);     // a script or Reset wrote it while TinyMCE was starting
+        }
     }
 
     #scheduleWrite() {
@@ -307,8 +339,8 @@ class AaRichtextElement extends HTMLElement {
             body.append('slice', slice);
             const response = await fetch(url, { method: 'POST', body, headers: { 'X-AA-Upload-Token': token }, credentials: 'same-origin' });
             const json = await response.json().catch(() => ({}));
-            if (!response.ok) {
-                throw new Error(json.error || response.statusText);
+            if (!response.ok || (typeof json.url !== 'string')) {
+                throw new Error(json.error || (response.ok ? (this.#l10n.failed ?? 'Upload failed') : response.statusText));
             }
             return json;
         };

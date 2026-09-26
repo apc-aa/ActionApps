@@ -73,6 +73,7 @@ final class RichtextMarkup
             'loading'   => _m('Loading...'),
             'empty'     => _m('No files'),
             'uploading' => _m('Uploading...'),
+            'failed'    => _m('Upload failed'),
         ];
     }
 }

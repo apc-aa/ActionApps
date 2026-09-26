@@ -96,7 +96,11 @@ export function openFilePicker({ url, token, slice, kind = 'all', upload, l10n =
             }
             msg.textContent = t('uploading', 'Uploading...');
             try {
-                choose(await upload(picked, picked.name));
+                const stored = await upload(picked, picked.name);
+                if (typeof stored?.url !== 'string') {
+                    throw new Error(t('failed', 'Upload failed'));
+                }
+                choose(stored);
             } catch (e) {
                 msg.textContent = e.message;
             }

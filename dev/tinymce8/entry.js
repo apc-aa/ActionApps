@@ -150,7 +150,8 @@ function dropOverriddenSides(html) {
 
 function uploadOptions({ image, imageTypes, file, pick, documentTypes }, onEdit) {
     return {
-        automatic_uploads: true,
+        // pasted and dropped images go up (the SetContent handler); a data: image already stored stays
+        automatic_uploads: false,
         ...(imageTypes?.length ? { images_file_types: imageTypes.join(',') } : {}),
         images_upload_handler: blobInfo => image(blobInfo.blob(), blobInfo.filename()).then(
             (stored) => {
@@ -243,6 +244,13 @@ export async function createRichEditor(target, { uiLang, inline = false, height 
             }
             // typing makes TinyMCE dirty only with its next undo level; the textarea needs it now
             ed.on('input', () => ed.setDirty(true));
+            if (upload) {
+                ed.on('SetContent', (e) => {
+                    if (!e.initial) {
+                        ed.uploadImages();
+                    }
+                });
+            }
             ed.on('input change undo redo ExecCommand SetContent keyup', (e) => {
                 if (!e.initial && ed.isDirty()) {
                     onEdit?.();
@@ -259,10 +267,7 @@ export async function createRichEditor(target, { uiLang, inline = false, height 
             onEdit?.();
         },
         // what a script wrote into the textarea: shown, not an edit - the textarea keeps it as written
-        load: (html) => {
-            editor.setContent(html);
-            editor.setDirty(false);
-        },
+        load: html => editor.resetContent(html),     // the undo stack too: a blur must not turn it into an edit
         isDirty: () => editor.isDirty(),
         markSaved: () => editor.setDirty(false),
         focus: () => editor.focus(),

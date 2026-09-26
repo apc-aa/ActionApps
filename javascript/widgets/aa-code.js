@@ -140,6 +140,7 @@ export class TextareaSync {
         if (host) {
             watchSubmit(textarea.form);
             textarea.addEventListener('invalid', e => this.#onInvalid(e), { signal });
+            textarea.addEventListener('input', () => this.#checkValid(), { signal });   // typed into the bare textarea
         }
     }
 
@@ -164,7 +165,7 @@ export class TextareaSync {
     destroy() {
         this.#abort.abort();
         this.#unwatch?.();
-        this.#clearInvalid();
+        this.clearInvalid();
     }
 
     #onInvalid(e) {
@@ -195,11 +196,12 @@ export class TextareaSync {
 
     #checkValid() {
         if (this.#message && this.#textarea.validity.valid) {
-            this.#clearInvalid();
+            this.clearInvalid();
         }
     }
 
-    #clearInvalid() {
+    /** The message of a failed submit away - when the view it points at is gone. */
+    clearInvalid() {
         this.#message?.remove();
         this.#message = null;
         this.#host?.removeAttribute('invalid');
