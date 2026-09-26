@@ -508,6 +508,10 @@ $slice = AA_Slice::getModule($slice_id);
 
 $GLOBALS['g_slice_encoding'] = $slice->getCharset();
 
+if (is_array($conds)) {
+    $conds = AA_Dbcondition::unslashLiteralConds($conds);   // $conds come addslashed
+}
+
 if ($exact && !$ids) {
 
     /** newer - 'exact' feeding mode based on conditions

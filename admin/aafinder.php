@@ -100,7 +100,7 @@ function query_search(array $where, string $phrase): string
 
     $items = [[_m('Item'), 'short_id', 'status_code', 'publish_date', 'last_edit', 'edited_by']];
     foreach ($arr as $f) {
-        $items[]    = [Adminlink::itemLink($f['iid'], $f['slice_id']), $f['short_id'], $f['status_code'], date('Y-m-d H:i', (int) $f['post_date']), date('Y-m-d H:i', (int) $f['last_edit']), $f['edited_by']];
+        $items[]    = [Adminlink::itemLink($f['iid'], $f['slice_id']), $f['short_id'], $f['status_code'], date('Y-m-d H:i', (int) $f['post_date']), date('Y-m-d H:i', (int) $f['last_edit']), safe($f['edited_by'])];
     }
 
     return $output . GetHtmlTable($items, 'th') . '<br><br>';
@@ -183,6 +183,7 @@ function PrintSeoSearch($q): void
 }
 
 if (strlen($findtext)) {
+    $like = qquote('%' . DB_AA::likeLiteral($findtext) . '%');
 
     if ($findinseo) {
         PrintSeoSearch($findtext);
@@ -193,7 +194,7 @@ if (strlen($findtext)) {
 
         $SQL = "SELECT `view`.`id`, `view`.`type`, `view`.`slice_id`, `slice`.`name` FROM `view` INNER JOIN `slice` ON `view`.`slice_id` = `slice`.`id` WHERE ";
         foreach ($fields as $field) {
-            $SQL .= "(`view`.`$field` LIKE '%" . addcslashes(quote($findtext), '_%') . "%') OR ";
+            $SQL .= "(`view`.`$field` LIKE $like) OR ";
         }
         $SQL .= "0";
         $db->query($SQL);
@@ -229,13 +230,13 @@ if (strlen($findtext)) {
 
         $SQL = 'SELECT slice.name, slice.id FROM slice LEFT JOIN email_notify ON email_notify.slice_id = slice.id WHERE ';
         foreach ($fields as $field) {
-            $SQL .= "$field LIKE '%" . addcslashes(quote($findtext), '_%') . "%' OR ";
+            $SQL .= "$field LIKE $like OR ";
         }
         $SQL .= "0";
         $db->query($SQL);
         echo "<b>slices</b> <small>(" . $db->num_rows() . " matching found)</small><br>";
         while ($db->next_record()) {
-            echo $db->f("name") . " "
+            echo safe($db->f("name")) . " "
                     . "<a href=\"" . StateUrl("se_fulltext.php?change_id=" . unpack_id($db->f("id")))
                     . "\">" . _m("Jump") . "</a><br>";
         }
@@ -247,28 +248,26 @@ if (strlen($findtext)) {
 
         $SQL = "SELECT slice_id, id, name FROM field WHERE ";
         foreach ($fields as $field) {
-            $SQL .= "$field LIKE '%" . addcslashes(quote($findtext), '_%') . "%' OR ";
+            $SQL .= "$field LIKE $like OR ";
         }
         $SQL .= '0';
         $db->query($SQL);
         echo "<b>fields</b> <small>(" . $db->num_rows() . " matching found)</small><br>";
 
         while ($db->next_record()) {
-            echo $db->f("name") . " " . Adminlink::fieldLink($db->f("id"), unpack_id($db->f("slice_id"))) . "<br>";
+            echo safe($db->f("name")) . " " . Adminlink::fieldLink($db->f("id"), unpack_id($db->f("slice_id"))) . "<br>";
         }
         echo '<br><br>';
     }
 
     if ($findinspot) {
-        $like_text = addcslashes(quote($findtext), '_%');
-
         $fields = [
             'content',
         ];
 
         $SQL = "SELECT site_id, spot_id FROM site_spot WHERE ";
         foreach ($fields as $field) {
-            $SQL .= "$field LIKE '%$like_text%' OR ";
+            $SQL .= "$field LIKE $like OR ";
         }
         $SQL .= "0";
         $db->query($SQL);
@@ -299,26 +298,21 @@ if (strlen($findtext)) {
     if ($findindiscus) {
         $fields = ['subject', 'author', 'e_mail', 'body', 'url_address', 'url_description', 'remote_addr', 'free1', 'free2'];
 
-        $like = qquote('%' . DB_AA::likeLiteral($findtext) . '%');
-        $SQL  = "SELECT slice_id, discussion.* FROM discussion, item WHERE discussion.item_id = item.id AND (";
+        $SQL = "SELECT slice_id, discussion.* FROM discussion, item WHERE discussion.item_id = item.id AND (";
         foreach ($fields as $field) {
             $SQL .= "discussion.$field LIKE $like OR ";
         }
         $SQL .= "0) ORDER BY date";
         $db->query($SQL);
         echo "<b>comments</b> <small>(" . $db->num_rows() . " matching found)</small><br>";
-        $head = '';
+        echo '<table>';
+        $head = false;
         while ($db->next_record()) {
             if (!$head) {
-                echo($head = '<table><tr><td>' . implode('</td><td>', array_keys($db->record())) . '</td></tr>');
+                echo '<tr><td>' . implode('</td><td>', array_map('safe', array_keys($db->record()))) . '</td></tr>';
+                $head = true;
             }
-            $print = $db->record();
-            $print['slice_id'] = unpack_id($print['slice_id']);
-            $print['id'] = unpack_id($print['id']);
-            $print['parent']  = unpack_id($print['parent']);
-            $print['item_id'] = Adminlink::itemLink(unpack_id($print['item_id']), $print['slice_id']);
-            $print['date'] = date('Y-m-d H:i:s', (int) $print['date']);
-            echo '<tr><td>' . implode('</td><td>', $print) . '</td></tr>';
+            echo '<tr><td>' . implode('</td><td>', Adminlink::discussionCells($db->record())) . '</td></tr>';
         }
         echo '</table>';
         echo '<br><br>';

@@ -353,20 +353,21 @@ class AA_Log implements InternalExpandInterface
         return $tab;
     }
 
-    /** Render a log row's `params` and `selector` cells as inline AA_Logentry
-     *  key-value tables, matching the display used by `admin/aa_log.php`.
-     *  Cells that are not AA_Logentry-serialized are returned unchanged.
+    /** Render a log row as HTML cells, matching the display used by `admin/aa_log.php`:
+     *  `params` and `selector` as inline AA_Logentry key-value tables, every other value
+     *  as text - a log row carries whatever was logged.
      */
     public static function renderLogentryCells(array $row): array
     {
+        $cells = array_map('safe', $row);
         if (!empty($row['params']) && str_contains($row['params'], ':')
                 && ($entry = AA_Logentry::factoryByString($row['params']))) {
-            $row['params'] = $entry->getPrintRow();
+            $cells['params'] = $entry->getPrintRow();
         }
         if (!empty($row['selector']) && ($entry = AA_Logentry::factoryByStringReversed($row['selector']))) {
-            $row['selector'] = $entry->getPrintRow();
+            $cells['selector'] = $entry->getPrintRow();
         }
-        return $row;
+        return $cells;
     }
 
     /** Internal aliases for Admin interface
