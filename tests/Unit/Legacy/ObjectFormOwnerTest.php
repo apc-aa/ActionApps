@@ -2,27 +2,7 @@
 
 declare(strict_types=1);
 
-// AA_Form and AA_Object live in include/form.class.php and include/statestore.php, whose require chain
-// reaches include/locsess.php and needs the constants include/config.php normally provides.
-
-namespace {
-    foreach ([
-        'AA_INSTAL_URL'   => 'http://localhost/aa/',
-        'AA_INSTAL_PATH'  => '/aa/',
-        'IMG_UPLOAD_PATH' => sys_get_temp_dir() . '/',
-        'AA_BASE_PATH'    => dirname(__DIR__, 3) . '/',
-        'PERM_LIB'        => 'sql',
-        'DB_HOST'         => 'localhost',
-        'DB_NAME'         => 'aa_test',
-        'DB_USER'         => 'aa',
-        'DB_PASSWORD'     => '',
-        'SCROLLER_LENGTH' => 3,
-    ] as $k => $v) {
-        if (!defined($k)) {
-            define($k, $v);
-        }
-    }
-}
+// The constants the legacy boot needs come with fixtures/object_form_fixtures.php.
 
 namespace Tests\Unit\Legacy {
 
@@ -36,29 +16,13 @@ namespace Tests\Unit\Legacy {
     use AA_Module_Site;
     use AA_Modulesettings_Site;
     use AA_Modulesettings_Slice;
-    use AA_Object;
-    use AA_Property;
     use AA_Searchbar;
     use AA_Slice;
     use PHPUnit\Framework\TestCase;
+    use Tests\Unit\Legacy\Fixtures\FakeStore;
+    use Tests\Unit\Legacy\Fixtures\FormTarget;
     use Tests\Unit\Legacy\Fixtures\RecordingDb;
-
-    /** an object edited on an AA form - like the settings of a module or a planned task */
-    final class FormTarget extends AA_Object
-    {
-        public $code;
-
-        public static function getClassProperties(): array
-        {
-            return ['code' => new AA_Property('code', 'Code', 'string', false)];
-        }
-    }
-
-    /** a Manager page without a searchbar - the Manager itself leaves the property unset then */
-    final class SearchlessManager extends Manager
-    {
-        protected ?AA_Searchbar $searchbar = null;
-    }
+    use Tests\Unit\Legacy\Fixtures\SearchlessManager;
 
     /**
      * An object form (AA_Form::process() -> Managed_Object::save()) writes only the object it was built
@@ -81,7 +45,7 @@ namespace Tests\Unit\Legacy {
 
         public static function setUpBeforeClass(): void
         {
-            require_once __DIR__ . '/fixtures/store_fixtures.php';
+            require_once __DIR__ . '/fixtures/object_form_fixtures.php';
         }
 
         protected function setUp(): void
@@ -103,19 +67,7 @@ namespace Tests\Unit\Legacy {
         /** answers the look-ups of aa_owner / aa_type and the loads of $objects; nothing else is stored */
         private static function stored(array $objects): void
         {
-            RecordingDb::$answer = static function (string $sql) use ($objects): array {
-                if (!preg_match("/object_id = '([0-9a-f]{32})'/", $sql, $m) || !isset($objects[$m[1]])) {
-                    return [];
-                }
-                [$owner, $type] = $objects[$m[1]];
-                if (str_contains($sql, "'aa_owner'")) {
-                    return [['property' => 'aa_owner', 'value' => $owner], ['property' => 'aa_type', 'value' => $type]];
-                }
-                if (str_contains($sql, 'AS tbl')) {     // AA_Object::load()
-                    return [['tbl' => 'object_text', 'property' => 'aa_owner', 'value' => $owner, 'priority' => 0], ['tbl' => 'object_text', 'property' => 'aa_type', 'value' => $type, 'priority' => 0]];
-                }
-                return [];
-            };
+            FakeStore::install($objects);
         }
 
         /** the form of a page working on MODULE, built for the object $id ('' - a new one), posted with $aa */
@@ -314,7 +266,7 @@ namespace Tests\Unit\Legacy {
         /** the edit form posted to the Manager (performActions()) */
         private static function postToManager(Manager $manager, array $aa): void
         {
-            $_GET     = ['id' => self::OWN, 'display_params' => '', 'listlen' => ''];
+            $_GET     = ['id' => self::OWN, 'display_params' => '', 'listlen' => '', 'scr_st_Go' => '', 'scr_st_Mv' => ''];
             $_POST    = ['aa' => $aa, 'aa_akce_all' => ''];
             $_REQUEST = ['chb' => [], 'akce' => '', 'srchbr_akce' => ''];
             $manager->performActions();
@@ -347,7 +299,7 @@ namespace Tests\Unit\Legacy {
             $this->assertSame(Finding::WARNING, $finding->severity);
             $this->assertStringContainsString('My site', $finding->title);
             $this->assertSame(2, $finding->count);
-            $this->assertSame('&lt;Other&gt;', $finding->evidence[0]['Owner']);
+            $this->assertSame('&lt;Other&gt; (' . self::OTHER . ')', $finding->evidence[0]['Owner'], 'the id too - two modules may share a name');
             $this->assertSame(self::VICTIM, $finding->evidence[0]['Object']);
 
             $row['selector'] = ParamImplode([self::MODULE, CheckObjectFormRefusals::NO_OBJECT, 'editor1']);

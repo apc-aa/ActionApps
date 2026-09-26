@@ -470,7 +470,10 @@ function GetFeedManaged(bool $extended = false): Managed
 
     $managed->setColumn('server_url', '<a href="{server_url}">{shorten:{server_url}:60:3}</a>');
 
-    $managed->setModule(AA::$module_id);
+    // the superadmin list of all feeds edits the feeds of any slice; else only those of this one
+    if (!$extended) {
+        $managed->setModule(AA::$module_id);
+    }
     $managed->setWidgetSetting('slice_id', ['enum' => AA_Module::getUserModules(), 'name' => _m('Local slice')]);
     if ($extended) {
         $managed->setColumns2show(['name','server_url','feed_id', 'warnings', 'slice_id']);

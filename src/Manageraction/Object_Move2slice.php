@@ -3,10 +3,9 @@
 namespace AA\Manageraction;
 
 use AA;
-use AA\IO\DB\DB_AA;
+use AA\Managed_Object;
 use AA\Manager;
 use AA_Object;
-use AA_Set;
 use zids;
 
 /** Manager action Object_Move2slice - quickly adapted Item_Move2slice (for AA_Plannedtask)
@@ -39,16 +38,18 @@ class Object_Move2slice extends \AA\Manageraction\Item_Move2Slice
             return false;     // OK
         }
 
-        if ($class = $manager->getManaged()?->getClass()) {    // AA_Plannedtask
-            if ($zids2change = $class::querySet($class, new AA_Set(), $item_zids)) {  // test if all zids are of correct type
-                foreach ($zids2change as $id) {
-                    AA_Object::load($id, $class)?->setOwnerId($dest_slice_id)->update(['aa_owner']);
-                }
-            }
+        $managed = $manager->getManaged();
+        if (!($managed instanceof Managed_Object) || !is_long_id($manager->getModuleId())) {
+            return _m('This action does not work on this page.');
+        }
+        $class = $managed->getClass();    // AA_Plannedtask
+        [$zids2change, $refused] = $managed->actionable($manager, $item_zids, PS_FULLTEXT);
+        foreach ($zids2change as $id) {
+            AA_Object::load($id, $class)?->setOwnerId($dest_slice_id)->update(['aa_owner']);
         }
 
         AA::Pagecache()->invalidateFor([$this->slice_id, $dest_slice_id]);  // invalidate old cached values
-        return false;                                  // OK - no error
+        return $refused ? _m('Some of the selected objects were not moved - they belong to a module you can not change them in.') : false;
     }
 
     /** Checks if the user have enough permission to perform the action

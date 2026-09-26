@@ -126,7 +126,7 @@ if ($template['W']) {        // add module
 
 // additional settings - just make sure it is set
 if (!$add && ($settings_error = AA_Module_Site::processModuleObject($module_id))) {
-    $err['settings'] = MsgErr($settings_error);
+    $err['settings'] = MsgErr($settings_error . ' ' . _m('The settings and the other fields of this page were not saved.'));
 }
 
 if ($add || $update) {

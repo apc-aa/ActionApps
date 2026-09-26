@@ -160,7 +160,7 @@ function SliceEditProcess($slice_id, $user_firstname, $user_surname, $err, $add_
 
     // additional settings
     if ($settings_error = AA_Slice::processModuleObject($slice_id)) {
-        $err['settings'] = MsgErr($settings_error);
+        $err['settings'] = MsgErr($settings_error . ' ' . _m('The settings and the other fields of this page were not saved.'));
     }
 
     if ($add || $update) {

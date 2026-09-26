@@ -387,12 +387,14 @@ class AA_Form extends AA_Object implements NamedInterface
         return $form;
     }
 
-    /** saves the posted data into the object the form was built for (a new one, when none) - see getError() */
-    public function process($aa): int
+    /** saves the posted data into the object the form was built for (a new one, when none) - see getError()
+     *  @param Managed|null $managed  the managed data of the page, with the actions it allows; without one, a
+     *                               fresh Managed allowing edit and add */
+    public function process($aa, ?Managed $managed = null): int
     {
         if (!empty($aa)) {
             // update or insert
-            $managed     = Managed::factoryFromType($this->object_type);
+            $managed   ??= Managed::factoryFromType($this->object_type);
             $this->error = (string) $managed->save($this->object_owner, $this->object_id);
             return ($this->error === '') ? self::SAVED : self::REFUSED;
         }

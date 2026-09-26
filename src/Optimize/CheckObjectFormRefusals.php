@@ -10,8 +10,11 @@ use AA_Log;
 
 /** Object forms AA refused in the last 30 days: a settings or Manager form of a module (site and slice
  *  settings, tasks, forms, exports, aliases) posted an object that is not the one the form was built
- *  for, or not the module's own or of another class (AA\Managed_Object::save()). Logged once a day per
- *  module, object and user. Index-only, hence basic.
+ *  for, or not the module's own or of another class (AA\Managed_Object::save()). Also the Manager
+ *  actions (delete, move to slice) and table forms (views, feeds, poll designs) posting objects or rows
+ *  of another module - the form class of a table is _T<table>; not the actions of the pages over all
+ *  modules, which list objects the user can not change. Logged once a day per module, object and
+ *  user. Index-only, hence basic.
  */
 class CheckObjectFormRefusals extends AbstractOptimize
 {
@@ -30,7 +33,7 @@ class CheckObjectFormRefusals extends AbstractOptimize
 
     public static function description(): string
     {
-        return _m('Lists the settings and Manager forms refused in the last 30 days because they posted an object of another module, of another type or other than the edited one.');
+        return _m('Lists the settings and Manager forms and actions refused in the last 30 days because they posted an object or row of another module, of another type or other than the edited one.');
     }
 
     public static function types(): array
@@ -77,7 +80,8 @@ class CheckObjectFormRefusals extends AbstractOptimize
             [$module, $object, $user] = array_pad(ParamExplode($selector), 3, '');
             [$class, $stored, $owner] = array_pad(ParamExplode((string) $row['params']), 3, '');
             $module_name = (string) ($module_names[$module] ?? '') ?: $module;
-            $owner_name  = (string) ($module_names[$owner] ?? '') ?: $owner;
+            // two modules may share a name
+            $owner_name  = isset($module_names[$owner]) ? "{$module_names[$owner]} ($owner)" : $owner;
             $object      = ($object === self::NO_OBJECT) ? _m('(no such object)') : $object;
             $findings[] = new Finding(
                 Finding::WARNING,
@@ -94,7 +98,7 @@ class CheckObjectFormRefusals extends AbstractOptimize
                     _m('Days seen')   => (string) (int) $row['days'],
                     _m('Last')        => date('Y-m-d', (int) $row['last']),
                 ]],
-                advice: _m('The form posted an object other than the one it was opened for, one that belongs to another module (Owner) or one of another type - nothing was saved. The pages post only the edited object, so unless the object was moved or deleted meanwhile (an empty owner - it does not exist), the user edited the request, most likely to change the settings of another site or slice. Find out who the user is.'),
+                advice: _m('The form or action posted an object or row other than the one it was opened for, one that belongs to another module (Owner) or one of another type; it was left untouched. The pages post only the edited objects and those of the listed module, so unless the object was moved or deleted meanwhile (an empty owner - it does not exist), the user edited the request, most likely to change the settings of another site or slice. Find out who the user is.'),
                 links: [_m('Log rows') => AA_Log::getAdminUrl(self::EVENT, $selector)],
                 key: $selector,
                 last: (int) $row['last'],

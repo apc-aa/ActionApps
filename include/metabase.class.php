@@ -1115,7 +1115,7 @@ class AA_Metabase
      */
     public function autoInsertKey($tablename, array &$data): array
     {
-        if (($fld = self::AUTO_KEYS[$tablename]) ?? false) {
+        if ($fld = self::AUTO_KEYS[$tablename] ?? false) {
             $data[$fld] = new_id();
         }
         return $data;
