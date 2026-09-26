@@ -19,19 +19,13 @@ final class ImportRewrite
         $this->rewriter = new ReferenceRewriter($map);
     }
 
-    /** true: the column is a field widget definition - its group parameter is rewritten in place */
-    public static function isWidget(string $element, string $column): bool
-    {
-        return ($element === 'field') && ($column === 'input_show_func');
-    }
-
-    /** @throws RewriteFailed */
-    public function known(string|RawBytes $value, bool $widget = false): string|RawBytes
+    /** @param string|null $groupColumn the value is of this ReferenceRewriter::groupColumn() - its group is rewritten in place
+     *  @throws RewriteFailed */
+    public function known(string|RawBytes $value, ?string $groupColumn = null): string|RawBytes
     {
         $text = $this->rewriter->rewriteGroups($this->rewriter->rewriteLongIds(ValueCodec::bytes($value)));
-        if ($widget) {
-            $position = ReferenceRewriter::CONST_POSITION[strtolower(trim(explode(':', $text, 2)[0]))] ?? null;
-            $text     = ($position === null) ? $text : $this->rewriter->rewriteInputShowFunc($text, $position);
+        if ($groupColumn !== null) {
+            $text = $this->rewriter->rewriteGroupColumn($groupColumn, $text);
         }
         return ($value instanceof RawBytes) ? new RawBytes($text) : $text;
     }

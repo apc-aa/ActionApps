@@ -73,7 +73,7 @@ final class ItemWriter
     /** AA_Field_Writer::contentRow() (include/itemfunc.php): a text stored field keeps the value in `text`
      *  (flag gains FLAG_TEXT_STORED, `number` is the value index), any other in `number` (flag loses it,
      *  `text` stays NULL) @return array<string, int|string> */
-    private static function contentRow(string $item_id, string $field_id, bool $text_stored, string $value, int $order, int $flag): array
+    public static function contentRow(string $item_id, string $field_id, bool $text_stored, string $value, int $order, int $flag): array
     {
         if ($text_stored) {
             return ['item_id' => $item_id, 'field_id' => $field_id, 'number' => $order, 'text' => $value, 'flag' => $flag | FLAG_TEXT_STORED];

@@ -193,6 +193,7 @@ final class ValidatorTest extends TestCase
             'group name with colon'      => [static fn(Package $p): Package => self::with($p, ['constantGroups' => [...$p->constantGroups, new ConstantGroup('a:b')]]), ['E group-name constant-group[a:b]']],
             'core group in the package'  => [static fn(Package $p): Package => self::with($p, ['constantGroups' => [...$p->constantGroups, new ConstantGroup('lt_languages')]]), ['E group-name constant-group[lt_languages]']],
             'widget group missing'       => [static fn(Package $p): Package => self::cell($p, self::SLICE, 'field', 1, ['input_show_func' => 'sel:ct_jine:']), ["W group-missing $S/field[category.......1]/input_show_func"]],
+            'const view group missing'   => [static fn(Package $p): Package => self::cell($p, self::SLICE, 'view', 0, ['type' => 'const', 'parameter' => 'ct_jine']), ["W group-missing $S/view[12]/parameter"]],
             'widget core group'          => [static fn(Package $p): Package => self::cell($p, self::SLICE, 'field', 1, ['input_show_func' => 'sel:lt_languages:']), []],
             'widget relation'            => [static fn(Package $p): Package => self::cell($p, self::SLICE, 'field', 1, ['input_show_func' => 'mse:#sLiCe-' . self::SLICE . ':']), []],
             'control file'               => [static fn(Package $p): Package => self::cell($p, self::SITE, 'site', 0, ['flag' => '0', 'state_file' => 'apc.php']), ["E state-file $W/site[#0]/state_file"]],
@@ -287,14 +288,15 @@ final class ValidatorTest extends TestCase
     {
         $owner = ['owner' => ['name' => 'Ekologický institut', 'email' => 'office@example.org']];
         $p     = self::module(self::written(), self::SITE, static fn(Module $m): Module => self::with($m, ['transfer' => $owner + ['alternate-url' => ['example.org', 'www.example.org']]]));
-        $p     = self::module($p, self::SLICE, static fn(Module $m): Module => self::with($m, ['transfer' => $owner + ['reading-password' => 'tajne']]));
+        $p     = self::module($p, self::SLICE, static fn(Module $m): Module => self::with($m, ['transfer' => $owner + ['reading-password' => 'tajne',
+            'setting-values' => ['_email..........' => [['value' => 'redakce@example.org', 'flag' => 64]]]]]));
         return self::module($p, self::ALERTS, static fn(Module $m): Module => self::with($m, ['transfer' => $owner]));
     }
 
     public function test_only_a_transfer_may_carry_the_state_of_the_installation(): void
     {
         $expected = ['E transfer-only ' . self::W . '/owner', 'E transfer-only ' . self::W . '/alternate-url', 'E transfer-only ' . self::S . '/owner',
-            'E transfer-only ' . self::S . '/reading-password', 'E transfer-only ' . self::A . '/owner'];
+            'E transfer-only ' . self::S . '/reading-password', 'E transfer-only ' . self::S . '/setting-values', 'E transfer-only ' . self::A . '/owner'];
         sort($expected);
         self::assertSame($expected, array_values(array_diff(self::findings(self::transferred()), self::BASELINE)));
         self::assertSame(self::BASELINE, self::findings(self::transferred(), true));
@@ -309,6 +311,18 @@ final class ValidatorTest extends TestCase
         self::assertTrue((new Validator())->validate($read->package, true)->importable());
     }
 
+    /** a setting value names a settings field of the slice; its text is a template, checked as any other */
+    public function test_setting_values_of_a_transfer_are_checked(): void
+    {
+        $values  = ['_email..........' => [['value' => '{server:X}', 'flag' => 64]], '_nowhere........' => [['value' => 'x', 'flag' => 64]]];
+        $package = self::module(self::transferred(), self::SLICE, static fn(Module $m): Module => self::with($m, ['transfer' => ['setting-values' => $values] + $m->transfer]));
+
+        self::assertSame(
+            ['E setting-field ' . self::S . '/setting-values/_nowhere........', 'S server ' . self::S . '/setting-values/_email..........[0]'],
+            array_values(array_diff(self::findings($package, true), self::BASELINE)),
+        );
+    }
+
     /** @return array<string, array{string, array<string, mixed>}> */
     public static function misplacedState(): array
     {
@@ -318,6 +332,9 @@ final class ValidatorTest extends TestCase
             'domains of alerts'          => [self::ALERTS, ['alternate-url' => ['example.org']]],
             'owner without its e-mail'   => [self::SLICE, ['owner' => ['name' => 'x']]],
             'an unknown part'            => [self::SLICE, ['password' => 'x']],
+            'setting values of a site'   => [self::SITE, ['setting-values' => ['_email..........' => [['value' => 'x', 'flag' => 0]]]]],
+            'a value of no settings field' => [self::SLICE, ['setting-values' => ['headline........' => [['value' => 'x', 'flag' => 0]]]]],
+            'no setting value'           => [self::SLICE, ['setting-values' => ['_email..........' => []]]],
         ];
     }
 

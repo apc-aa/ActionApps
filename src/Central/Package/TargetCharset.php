@@ -38,7 +38,7 @@ final class TargetCharset
 
     private readonly ImportRewrite $rewrite;
     private FindingList $findings;
-    /** @var array<string, array<string, array{int, bool}>> element => Schema::lengthLimits(); '#item' => of the item table */
+    /** @var array<string, array<string, array{int, bool}>> element => Schema::lengthLimits(); '#<table>' => of the table */
     private array $limits = [];
 
     public function __construct(private readonly Schema $schema, IdMap $map)
@@ -67,6 +67,7 @@ final class TargetCharset
                     $this->value($at, $text, $charset);
                 }
             }
+            $this->transfer($m, $path, $charset);
             $item_limits = $m->items ? ($this->limits['#item'] ??= $this->schema->tableLimits('item')) : [];
             foreach ($m->items as $item) {
                 foreach ((array) ($item['content'] ?? []) as $field => $list) {
@@ -89,24 +90,43 @@ final class TargetCharset
         foreach ($elements as $element => $rows) {
             $limits = $this->limits[$element] ??= $this->schema->lengthLimits($element);
             foreach ($rows as $i => $row) {
-                $at = $this->schema->rowPath($path, $element, $row, $i);
+                $at    = $this->schema->rowPath($path, $element, $row, $i);
+                $group = ReferenceRewriter::groupColumn($element, $row);
                 foreach ($row as $column => $value) {
-                    $this->value("$at/$column", $value, $charset, $limits[$column] ?? null, ImportRewrite::isWidget($element, (string) $column));
+                    $this->value("$at/$column", $value, $charset, $limits[$column] ?? null, ($column === $group) ? $group : null);
                 }
             }
         }
     }
 
-    /** @param array{int, bool}|null $limit Schema::lengthLimits() of the column, null = none */
-    private function value(string $path, mixed $value, string $charset, ?array $limit = null, bool $widget = false): void
+    /** the reading password and the setting values a transfer brings, as RowWriter writes them */
+    private function transfer(Module $m, string $path, string $charset): void
+    {
+        if (isset($m->transfer['reading-password'])) {
+            $limit = ($this->limits['#slice'] ??= $this->schema->tableLimits('slice'))['reading_password'] ?? null;
+            $this->value("$path/reading-password", $m->transfer['reading-password'], $charset, $limit, secret: true);
+        }
+        $text_limit = ($this->limits['#content'] ??= $this->schema->tableLimits('content'))['text'] ?? null;
+        foreach ((array) ($m->transfer['setting-values'] ?? []) as $field => $values) {
+            foreach ((array) $values as $key => $v) {
+                if (((int) (((array) $v)['flag'] ?? 0)) & FLAG_TEXT_STORED) {
+                    $this->value("$path/setting-values/{$field}[$key]", ((array) $v)['value'] ?? '', $charset, $text_limit);
+                }
+            }
+        }
+    }
+
+    /** @param array{int, bool}|null $limit Schema::lengthLimits() of the column, null = none
+     *  @param bool $secret a password: written as it is (RowStore::plain()), a finding quotes none of it */
+    private function value(string $path, mixed $value, string $charset, ?array $limit = null, ?string $groupColumn = null, bool $secret = false): void
     {
         if (!(is_string($value) || ($value instanceof RawBytes)) || ($value === '')) {
             return;     // null, numbers: ASCII
         }
-        $known    = $this->rewrite->known($value, $widget);
+        $known    = $secret ? $value : $this->rewrite->known($value, $groupColumn);
         $measured = self::measure($known, $charset);
         if ($measured === null) {
-            $this->unconvertible($path, ValueCodec::bytes($known), $charset);
+            $secret ? $this->add($path, LintFinding::ERROR, self::CHARSET, '') : $this->unconvertible($path, ValueCodec::bytes($known), $charset);
             return;
         }
         if ($limit === null) {

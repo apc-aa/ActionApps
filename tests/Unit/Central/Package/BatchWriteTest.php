@@ -226,6 +226,24 @@ final class BatchWriteTest extends TestCase
         self::assertSame([0 => 'www.source.example', 1 => 'source.example'], array_column($domains, 'value', 'priority'));
     }
 
+    /** the settings fields' values: content of the new slice id, their texts rewritten as any definition */
+    public function test_a_transfer_brings_the_values_of_the_settings_fields(): void
+    {
+        $values  = ['_email..........' => [['value' => 'office@example.org {view:12}', 'flag' => 64], ['value' => '42', 'flag' => 1], 1000001 => ['value' => 'second', 'flag' => 64]]];
+        $package = self::module(self::definitions(), self::SLICE, static fn(Module $m): Module => self::with($m, ['transfer' => ['setting-values' => $values]]));
+        $run     = $this->newRun(InstallRun::TRANSFER);
+
+        $report = $this->import(...$this->confirmed($this->plan($package, true)), run: $run);
+
+        $rows = array_values(array_filter(TableDb::rows('content'), static fn(array $r): bool => $r['item_id'] === self::id(2)));
+        self::assertSame(
+            // a number value in the number column, a translation under its number
+            [['_email..........', 0, 'office@example.org {view:1000}', 64], ['_email..........', 42, null, 1], ['_email..........', 1000001, 'second', 64]],
+            array_map(static fn(array $r): array => [$r['field_id'], $r['number'], $r['text'] ?? null, $r['flag']], $rows),
+        );
+        self::assertSame(0, $report->settingsToFill(), 'nothing left to fill');
+    }
+
     // ---------------------------------------------------------------- batches
 
     public function test_a_batch_is_written_and_the_run_advances(): void

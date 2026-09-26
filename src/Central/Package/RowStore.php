@@ -33,8 +33,8 @@ final class RowStore
      *  @throws WriteError|RewriteFailed */
     public function row(string $element, array $row, array $fixed, string $charset, ImportRewrite $rewrite, string $path): array
     {
-        $widget = static fn(string $column): bool => ImportRewrite::isWidget($element, $column);
-        return $this->values($this->schema->rowTables()[$element], $row, $fixed, $charset, $rewrite, $path, $widget);
+        $group = ReferenceRewriter::groupColumn($element, $row);
+        return $this->values($this->schema->rowTables()[$element], $row, $fixed, $charset, $rewrite, $path, $group);
     }
 
     /** row() for a table that is no row element of the package - item, content (ItemWriter), object_*
@@ -44,12 +44,12 @@ final class RowStore
      *  @throws WriteError|RewriteFailed */
     public function tableRow(string $table, array $row, array $fixed, string $charset, ImportRewrite $rewrite, string $path): array
     {
-        return $this->values($table, $row, $fixed, $charset, $rewrite, $path, static fn(): bool => false);
+        return $this->values($table, $row, $fixed, $charset, $rewrite, $path, null);
     }
 
-    /** @param array<string, mixed> $row @param array<string, int|string|null> $fixed @param callable(string): bool $widget
+    /** @param array<string, mixed> $row @param array<string, int|string|null> $fixed @param string|null $group ReferenceRewriter::groupColumn() of the row
      *  @return array<string, int|float|string|null> */
-    private function values(string $table, array $row, array $fixed, string $charset, ImportRewrite $rewrite, string $path, callable $widget): array
+    private function values(string $table, array $row, array $fixed, string $charset, ImportRewrite $rewrite, string $path, ?string $group): array
     {
         $limits = $this->limits[$table] ??= $this->schema->tableLimits($table);
         foreach ($fixed as $column => $value) {
@@ -60,7 +60,7 @@ final class RowStore
         $values = $fixed;
         foreach ($row as $column => $value) {
             if (!array_key_exists($column, $fixed)) {
-                $values[$column] = $this->value($value, $charset, $rewrite, "$path/$column", $limits[$column] ?? null, $widget((string) $column));
+                $values[$column] = $this->value($value, $charset, $rewrite, "$path/$column", $limits[$column] ?? null, ($column === $group) ? $group : null);
             }
         }
         foreach ($this->metabase->getColumns($table) as $name => $column) {
@@ -78,12 +78,12 @@ final class RowStore
     /** A value to write (see the class) - a row column, a spot text.
      *  @param array{int, bool}|null $limit Schema::lengthLimits() of its column
      *  @throws WriteError|RewriteFailed */
-    public function value(mixed $value, string $charset, ImportRewrite $rewrite, string $path, ?array $limit = null, bool $widget = false): mixed
+    public function value(mixed $value, string $charset, ImportRewrite $rewrite, string $path, ?array $limit = null, ?string $groupColumn = null): mixed
     {
         if (!(is_string($value) || ($value instanceof RawBytes)) || ($value === '')) {
             return $value;
         }
-        return $this->plain($rewrite->numeric($rewrite->known($value, $widget)), $charset, $path, $limit);
+        return $this->plain($rewrite->numeric($rewrite->known($value, $groupColumn)), $charset, $path, $limit);
     }
 
     /** value() without the reference rewrite - a password or a name is no template

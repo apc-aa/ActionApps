@@ -71,6 +71,10 @@ final class Validator
     public const ITEM_KEY = 'item-key';
     /** W: an item value of a field the slice does not have */
     public const ITEM_FIELD = 'item-field';
+    /** E: a setting value of a field the slice of the package does not have; ref = the field id */
+    public const SETTING_FIELD = 'setting-field';
+    /** a settings field id: `_`, then the rest of the XSD fieldId */
+    private const SETTING_FIELD_RE = '/^_[A-Za-z0-9_.]{15}\z/';
     /** W: an item without a status_code of a bin (1 active, 2 holding, 3 trash) - ItemWriter writes it as it
      *  is (a missing one: the column default 0), and no bin shows it; ref = the value ('' = none) */
     public const ITEM_STATUS = 'item-status';
@@ -384,11 +388,20 @@ final class Validator
             }
         }
         $fields = [];
-        foreach ($m->rows['field'] ?? [] as $i => $row) {
+        foreach ($m->rows['field'] ?? [] as $row) {
             $fields[ValueCodec::bytes($row['id'] ?? '')] = true;
-            $group = ReferenceRewriter::inputShowFuncGroup(ValueCodec::bytes($row['input_show_func'] ?? ''));
-            if (($group !== null) && IdMap::isAppGroup($group) && !isset($this->has['group'][$group])) {
-                $this->add($this->schema->rowPath($path, 'field', $row, $i) . '/input_show_func', LintFinding::WARNING, self::GROUP_MISSING, $group);
+        }
+        foreach (is_array($m->transfer['setting-values'] ?? null) ? array_keys($m->transfer['setting-values']) : [] as $field) {
+            if (!isset($fields[(string) $field])) {
+                $this->add("$path/setting-values/$field", LintFinding::ERROR, self::SETTING_FIELD, (string) $field);
+            }
+        }
+        foreach ($m->rows as $element => $rows) {
+            foreach ($rows as $i => $row) {
+                $group = ReferenceRewriter::rowGroup((string) $element, $row);
+                if (($group !== null) && IdMap::isAppGroup($group) && !isset($this->has['group'][$group])) {
+                    $this->add($this->schema->rowPath($path, (string) $element, $row, $i) . '/' . ReferenceRewriter::groupColumn((string) $element, $row), LintFinding::WARNING, self::GROUP_MISSING, $group);
+                }
             }
         }
         $this->items($m, $path, $fields, $transfer);
@@ -453,8 +466,26 @@ final class Validator
         return match ($part) {
             'owner'         => is_array($value) && (array_keys($value) === ['name', 'email']) && $text($value['name']) && $text($value['email']),
             'alternate-url' => is_array($value) && array_is_list($value) && $value && !array_filter($value, static fn(mixed $v): bool => !$text($v)),
+            'setting-values' => is_array($value) && $value && !array_filter($value, self::settingField(...), ARRAY_FILTER_USE_BOTH),
             default         => $text($value),
         };
+    }
+
+    /** true: not a field of setting-values - a settings field id (`_`, the XSD fieldId), values keyed by
+     *  their number, each {value: text, flag: int}. Settings fields only: no item field of the new slice gets
+     *  content this way. @param mixed $values */
+    private static function settingField(mixed $values, int|string $field): bool
+    {
+        if (!preg_match(self::SETTING_FIELD_RE, (string) $field) || !is_array($values) || !$values) {
+            return true;
+        }
+        foreach ($values as $key => $v) {
+            $value = is_array($v) ? ($v['value'] ?? null) : null;
+            if (!is_int($key) || ($key < 0) || !(is_string($value) || ($value instanceof RawBytes)) || !is_int($v['flag'] ?? 0)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private function alerts(Module $m, string $path): void

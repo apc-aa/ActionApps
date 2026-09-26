@@ -79,17 +79,17 @@ final class Schema
 
     /** container => [attributes, children]; child suffix ? = optional, * = any number, ! = exactly one but
      *  in an item batch (meta/batch) none - the XSD cannot tell, the Validator checks it; a child missing
-     *  in CHILD_TYPES is a row (ROWS). owner, reading-password, alternate-url: only in a transfer (format 1.1) */
+     *  in CHILD_TYPES is a row (ROWS). owner, reading-password, setting-values, alternate-url: only in a transfer (format 1.1) */
     private const CONTAINERS = [
         'site-module'    => [[['id', 'longId']], ['doc?', 'module', 'owner?', 'site', 'spot-tree?', 'site_spot*', 'uses*', 'settings?', 'alternate-url*', 'object*']],
-        'slice-module'   => [[['id', 'longId']], ['doc?', 'module!', 'owner?', 'slice!', 'reading-password?', 'settings?', 'field*', 'view*', 'email*', 'profile*', 'object*', 'item*']],
+        'slice-module'   => [[['id', 'longId']], ['doc?', 'module!', 'owner?', 'slice!', 'reading-password?', 'setting-values?', 'settings?', 'field*', 'view*', 'email*', 'profile*', 'object*', 'item*']],
         'alerts-module'  => [[['id', 'longId']], ['doc?', 'module', 'owner?', 'email*', 'alerts_collection?', 'alerts_collection_filter*', 'alerts_collection_howoften*', 'alerts_filter*']],
         'constant-group' => [[['name', 'groupId'], ['owner', 'longIdOrEmpty', '', 'owning slice (constant_slice.slice_id) - a slice of the package, or empty']], ['constant_slice?', 'constant*']],
     ];
 
     /** settings: "<site|slice>Settings", the class fixed by the module type */
     private const CHILD_TYPES = ['doc' => 'xs:string', 'spot-tree' => 'spotTree', 'object' => 'topObject', 'item' => 'item',
-        'owner' => 'owner', 'reading-password' => 'text', 'alternate-url' => 'text'];
+        'owner' => 'owner', 'reading-password' => 'text', 'setting-values' => 'settingValues', 'alternate-url' => 'text'];
 
     /** children of the elements written out in TEMPLATE (SchemaTest checks them against the XSD);
      *  `signature` has any content and is not pruned */
@@ -102,6 +102,7 @@ final class Schema
         'settings'  => ['p'],
         'object'    => ['p', 'object'],
         'item'      => ['v'],
+        'setting-values' => ['v'],
         'owner'     => ['name', 'email'],
     ];
 
@@ -884,26 +885,35 @@ final class Schema
 
           <!-- ================================================================ items (the batches of a transfer) -->
 
+          <!-- a value of an item or of the slice settings (content) -->
+          <xs:complexType name="contentValue">
+            <xs:simpleContent>
+              <xs:extension base="xs:string">
+                <xs:attribute name="f"    type="fieldId"    use="required"/>
+                <!-- key of the value in GetItemContent(): the position of a multi-value, or
+                     the translation number (>= AA_Value::MAX_INDEX) -->
+                <xs:attribute name="i"    type="xs:nonNegativeInteger" default="0"/>
+                <xs:attribute name="flag" type="xs:integer" default="0"/>
+                <xs:attribute name="enc"  type="encoding"   default="text"/>
+                <xs:attribute name="crlf" type="xs:boolean" default="false"/>
+              </xs:extension>
+            </xs:simpleContent>
+          </xs:complexType>
+
           <!-- only when meta/contents/@items = true -->
           <xs:complexType name="item">
             <xs:sequence>
-              <xs:element name="v" maxOccurs="unbounded">
-                <xs:complexType>
-                  <xs:simpleContent>
-                    <xs:extension base="xs:string">
-                      <xs:attribute name="f"    type="fieldId"    use="required"/>
-                      <!-- key of the value in GetItemContent(): the position of a multi-value, or
-                           the translation number (>= AA_Value::MAX_INDEX) -->
-                      <xs:attribute name="i"    type="xs:nonNegativeInteger" default="0"/>
-                      <xs:attribute name="flag" type="xs:integer" default="0"/>
-                      <xs:attribute name="enc"  type="encoding"   default="text"/>
-                      <xs:attribute name="crlf" type="xs:boolean" default="false"/>
-                    </xs:extension>
-                  </xs:simpleContent>
-                </xs:complexType>
-              </xs:element>
+              <xs:element name="v" type="contentValue" maxOccurs="unbounded"/>
             </xs:sequence>
             <xs:attribute name="id" type="longId" use="required"/>
+          </xs:complexType>
+
+          <!-- format 1.1, only in a transfer: the values of the slice's settings fields (`_...`, the
+               content of the slice id - admin/slicefieldsedit.php) -->
+          <xs:complexType name="settingValues">
+            <xs:sequence>
+              <xs:element name="v" type="contentValue" maxOccurs="unbounded"/>
+            </xs:sequence>
           </xs:complexType>
 
           <!-- ================================================================ table rows (from metabase_schema.php) -->

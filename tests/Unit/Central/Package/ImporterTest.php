@@ -356,6 +356,24 @@ final class ImporterTest extends TestCase
         }
     }
 
+    /** a const view lists the constants of the group in view.parameter - it follows the renamed group,
+     *  as the widget does, and is no "group named in a text" note */
+    public function test_the_group_of_a_const_view_follows_the_renamed_group(): void
+    {
+        $this->target->groups[] = 'ct_rubriky';
+        $package                = self::rows(self::example(), self::SLICE, 'view', static fn(array $rows): array => [...$rows,
+            ['id' => '14', 'type' => 'const', 'name' => 'Rubriky', 'parameter' => 'ct_rubriky', 'odd' => '_#NAME###_']]);
+        $plan                   = $this->plan($package);
+        $new                    = $plan->map->group('ct_rubriky');
+
+        $this->import($plan);
+
+        self::assertNotSame('ct_rubriky', $new);
+        self::assertSame([$new], array_values(array_column(array_filter(TableDb::rows('view'), static fn(array $r): bool => $r['type'] === 'const'), 'parameter')));
+        self::assertSame(['sel:' . $new . ':'], array_values(array_unique(array_column(array_filter(TableDb::rows('field'), static fn(array $r): bool => $r['id'] === 'category.......1'), 'input_show_func'))));
+        self::assertSame([], array_filter($plan->allFindings(), static fn(array $f): bool => str_contains($f[0], '/view[14]')));
+    }
+
     // ---------------------------------------------------------------- the plan is no reservation
 
     public function test_a_group_name_taken_since_the_plan_stops_the_write_before_any_row(): void

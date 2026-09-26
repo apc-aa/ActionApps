@@ -21,8 +21,8 @@ final class DbSource implements Source
      *  other secret; the items take back exactly those, so none is lost */
     private const SECRET_PREFIX = 'secret';
 
-    /** tables read beside Schema::rowTables(): the owner of a module travels in a transfer */
-    private const OTHER_TABLES = ['slice_owner'];
+    /** tables read beside Schema::rowTables(): the owner and the setting values of a module travel in a transfer */
+    private const OTHER_TABLES = ['slice_owner', 'content'];
 
     /** object ids per statement (IN list) */
     public const OBJECT_CHUNK = 500;

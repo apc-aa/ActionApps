@@ -172,6 +172,7 @@ final class Writer
                 'item'      => $this->items($el, $part, $path),
                 'owner'     => $this->owner($this->el($el, 'owner'), $part, "$path/owner"),
                 'reading-password' => $this->value($this->el($el, 'reading-password'), $part, "$path/reading-password"),
+                'setting-values'   => $this->content($this->el($el, 'setting-values'), $part, "$path/setting-values"),
                 'alternate-url'    => array_map(fn(string|RawBytes $url) => $this->value($this->el($el, 'alternate-url'), $url, "$path/alternate-url"), $part),
                 default     => null,
             };
@@ -309,17 +310,22 @@ final class Writer
         usort($items, static fn(array $a, array $b): int => strcmp((string) ($a['id'] ?? ''), (string) ($b['id'] ?? '')));
         foreach ($items as $item) {
             $at      = "$path/item[" . ($item['id'] ?? '') . ']';
-            $el      = $this->el($parent, 'item', ['id' => (string) ($item['id'] ?? '')], path: $at);
-            $content = $item['content'] ?? [];
-            ksort($content, SORT_STRING);
-            foreach ($content as $field => $values) {
-                ksort($values, SORT_NUMERIC);
-                foreach ($values as $i => $v) {
-                    $value = $v['value'] ?? throw new InvalidArgumentException("$at/{$field}[$i]: an item value cannot be NULL");
-                    $flag  = (int) ($v['flag'] ?? 0);
-                    $attrs = ['f' => (string) $field, 'i' => $i === 0 ? null : (string) $i, 'flag' => $flag ? (string) $flag : null];
-                    $this->value($this->el($el, 'v', $attrs, path: $at), ($value instanceof RawBytes) ? $value : (string) $value, "$at/{$field}[$i]");
-                }
+            $this->content($this->el($parent, 'item', ['id' => (string) ($item['id'] ?? '')], path: $at), $item['content'] ?? [], $at);
+        }
+    }
+
+    /** <v> of each value of GetItemContent() form: fields by id, values by key
+     *  @param array<string, array<int, array<string, mixed>>> $content */
+    private function content(DOMElement $el, array $content, string $at): void
+    {
+        ksort($content, SORT_STRING);
+        foreach ($content as $field => $values) {
+            ksort($values, SORT_NUMERIC);
+            foreach ($values as $i => $v) {
+                $value = $v['value'] ?? throw new InvalidArgumentException("$at/{$field}[$i]: a content value cannot be NULL");
+                $flag  = (int) ($v['flag'] ?? 0);
+                $attrs = ['f' => (string) $field, 'i' => $i === 0 ? null : (string) $i, 'flag' => $flag ? (string) $flag : null];
+                $this->value($this->el($el, 'v', $attrs, path: $at), ($value instanceof RawBytes) ? $value : (string) $value, "$at/{$field}[$i]");
             }
         }
     }

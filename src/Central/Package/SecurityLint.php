@@ -141,6 +141,9 @@ final class SecurityLint
             foreach (self::arr($m->spotTree['spots'] ?? null) as $spot) {
                 $this->spot("$path/spot-tree/spot[" . ValueCodec::bytes($spot['id'] ?? '') . ']', self::arr($spot));
             }
+            foreach (LintTexts::settingValues($path, $m->transfer['setting-values'] ?? null, true) as [$at, $text]) {
+                $this->text($this->findings, $at, $text);
+            }
             foreach ($m->items as $item) {
                 foreach (self::arr($item['content'] ?? null) as $field => $values) {
                     foreach (self::arr($values) as $i => $value) {

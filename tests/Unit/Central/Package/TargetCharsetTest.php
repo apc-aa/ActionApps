@@ -160,6 +160,25 @@ final class TargetCharsetTest extends TestCase
         );
     }
 
+    /** the reading password as it is (no rewrite, never quoted) and the text setting values of a transfer; a number value is ASCII */
+    public function test_the_state_a_transfer_brings(): void
+    {
+        $transfer = ['reading-password' => str_repeat('€', 101), 'setting-values' => [
+            '_title..........' => [0 => ['value' => 'ok', 'flag' => 64], 1000001 => ['value' => '漢', 'flag' => 64]],
+            '_count..........' => [0 => ['value' => '漢', 'flag' => 0]],
+        ]];
+        $module   = new Module(Module::SLICE, self::SLICE, [], transfer: $transfer);
+        $found    = new FindingList();
+
+        (new TargetCharset(new Schema(), new IdMap()))->check(new Package('T', [], [$module]), [self::SLICE => 'utf-8'], [], $found);
+        (new TargetCharset(new Schema(), new IdMap()))->check(new Package('T', [], [$module]), [self::SLICE => 'iso-8859-2'], [], $found);
+
+        self::assertSame(
+            ['E too-long ' . self::S . '/reading-password 101 characters > 100', 'E charset ' . self::S . '/reading-password ', 'E charset ' . self::S . '/setting-values/_title..........[1000001] 漢'],
+            array_map(static fn(array $f): string => "{$f[1]->level} {$f[1]->code} $f[0] {$f[1]->ref}", $found->all()),
+        );
+    }
+
     public function test_findings_are_limited_per_code(): void
     {
         $package = self::rows(self::latin2(self::example()), self::SLICE, 'view', static fn(): array => array_map(static fn(int $i): array => ['id' => (string) (100 + $i), 'name' => '€'], range(1, 60)));

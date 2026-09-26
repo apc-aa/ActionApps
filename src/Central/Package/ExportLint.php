@@ -41,9 +41,11 @@ final class ExportLint
      * @param array<string, array{?array<string, mixed>, list<array<string, mixed>>}> $objects app module id =>
      *                                                                     [settings, objects] (ObjectExport, UTF-8)
      * @param array<string, array<string, mixed>>                        $trees    site id => sitetree::toArray() (UTF-8)
+     * @param array<string, array<string, mixed>>                        $settingValues slice id => the values of its settings
+     *                                                                     fields a transfer carries (Collector::settingValues())
      * @return array{list<array{string, LintFinding}>, array<string, list<string>>} findings, outside (CollectResult)
      */
-    public function check(array $rows, array $types, array $groups, array $objects = [], array $trees = []): array
+    public function check(array $rows, array $types, array $groups, array $objects = [], array $trees = [], array $settingValues = []): array
     {
         $this->findings = $this->outside = [];
         $all            = static function (array $lists, string $element, string $column): array {
@@ -74,6 +76,9 @@ final class ExportLint
             $texts[] = $of->rows("constant-group[$group->name]", $group->rows);
         }
         $texts[] = LintTexts::code($values);      // properties that are code - no names or enum values
+        foreach ($settingValues as $id => $list) {
+            $texts[] = LintTexts::settingValues("$types[$id][$id]", $list);
+        }
         foreach ($trees as $id => $tree) {
             $texts[] = LintTexts::conditions("$types[$id][$id]/spot-tree", $tree['spots']);
             foreach ($tree['spots'] as $spot) {          // the tag start the import reports (SecurityLint::SPOT_MARKUP)
@@ -85,9 +90,9 @@ final class ExportLint
             }
         }
         foreach ($texts as $generator) {
-            foreach ($generator as [$path, $text]) {
-                foreach (LintTexts::lint($lint, $path, $text) as $finding) {
-                    $this->findings[] = [$path, $finding];
+            foreach ($generator as $entry) {
+                foreach (LintTexts::lint($lint, ...$entry) as $finding) {
+                    $this->findings[] = [$entry[0], $finding];
                 }
             }
         }

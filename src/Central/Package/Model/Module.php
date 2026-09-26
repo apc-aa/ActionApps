@@ -22,7 +22,7 @@ final readonly class Module
     /** the parts of $transfer each wrapper may have (format 1.1) */
     public const TRANSFER = [
         self::SITE   => ['owner', 'alternate-url'],
-        self::SLICE  => ['owner', 'reading-password'],
+        self::SLICE  => ['owner', 'reading-password', 'setting-values'],
         self::ALERTS => ['owner'],
     ];
 
@@ -50,8 +50,9 @@ final readonly class Module
      * @param string|null                                             $doc      author's note shown before installation
      * @param array<string, mixed>                                    $transfer state of the source installation, only in a
      *                                                                          transfer (self::TRANSFER): owner {name, email},
-     *                                                                          reading-password, alternate-url (list); texts
-     *                                                                          string or RawBytes
+     *                                                                          reading-password, alternate-url (list),
+     *                                                                          setting-values (the slice's settings fields,
+     *                                                                          GetItemContent() form); texts string or RawBytes
      */
     public function __construct(
         public string $type,

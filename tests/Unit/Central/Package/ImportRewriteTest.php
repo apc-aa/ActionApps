@@ -7,6 +7,7 @@ namespace Tests\Unit\Central\Package;
 use AA\Central\Package\IdMap;
 use AA\Central\Package\ImportRewrite;
 use AA\Central\Package\Model\RawBytes;
+use AA\Central\Package\ReferenceRewriter;
 use PHPUnit\Framework\TestCase;
 
 /** ImportRewrite: the one rewrite of the plan's checks and the writer, texts and RawBytes alike */
@@ -27,11 +28,21 @@ final class ImportRewriteTest extends TestCase
 
     public function test_the_group_of_a_widget_only_as_one(): void
     {
-        self::assertSame('sel:ct_1:ct', self::rewrite()->known('sel:ct:ct', true));
-        self::assertSame('sel:ct:ct', self::rewrite()->known('sel:ct:ct'), 'no widget: no structured group');
-        self::assertSame('fld:ct', self::rewrite()->known('fld:ct', true), 'a widget without a group');
-        self::assertTrue(ImportRewrite::isWidget('field', 'input_show_func'));
-        self::assertFalse(ImportRewrite::isWidget('view', 'input_show_func'));
+        self::assertSame('sel:ct_1:ct', self::rewrite()->known('sel:ct:ct', 'input_show_func'));
+        self::assertSame('sel:ct:ct', self::rewrite()->known('sel:ct:ct'), 'no group column: no structured group');
+        self::assertSame('fld:ct', self::rewrite()->known('fld:ct', 'input_show_func'), 'a widget without a group');
+    }
+
+    /** a const view lists the constants of the group in view.parameter (view.php) */
+    public function test_the_group_of_a_const_view(): void
+    {
+        self::assertSame(' ct_1 ', self::rewrite()->known(' ct ', 'parameter'));
+        self::assertSame('other', self::rewrite()->known('other', 'parameter'), 'a group outside the package stays');
+        self::assertSame('parameter', ReferenceRewriter::groupColumn('view', ['type' => 'const', 'parameter' => 'ct']));
+        self::assertNull(ReferenceRewriter::groupColumn('view', ['type' => 'list', 'parameter' => 'ct']), 'a list view: a search parameter');
+        self::assertSame('input_show_func', ReferenceRewriter::groupColumn('field', []));
+        self::assertSame('ct', ReferenceRewriter::rowGroup('view', ['type' => 'const', 'parameter' => ' ct']));
+        self::assertNull(ReferenceRewriter::rowGroup('view', ['type' => 'const', 'parameter' => '']));
     }
 
     /** a template the export could not convert (windows-1250 bytes) still names the modules of the app */

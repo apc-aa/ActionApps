@@ -83,14 +83,16 @@ final class GroupPlan
         return $ret;
     }
 
-    /** the group names a module uses: field widgets, then {constant(s)/options:<g>} in its texts
+    /** the group names a module uses: field widgets and const views, then {constant(s)/options:<g>} in its texts
      *  @return list<string> */
     private function used(Module $m): array
     {
         $names = [];
-        foreach ($m->rows['field'] ?? [] as $row) {
-            if (($name = ReferenceRewriter::inputShowFuncGroup(ValueCodec::bytes($row['input_show_func'] ?? ''))) !== null) {
-                $names[] = $name;
+        foreach ($m->rows as $element => $rows) {
+            foreach ($rows as $row) {
+                if (($name = ReferenceRewriter::rowGroup((string) $element, $row)) !== null) {
+                    $names[] = $name;
+                }
             }
         }
         $texts = iterator_to_array($this->texts->rows('', array_diff_key($m->rows, ['module' => 1]), true), false);

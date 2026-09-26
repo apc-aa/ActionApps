@@ -9,7 +9,7 @@ use Generator;
 
 /** What ExportLint and ImportLint share: the identity map of an app, the
  *  definition texts ReferenceLint reads - text columns of rows, spot conditions - and the one finding
- *  that is no finding: the group of a field widget, a structured reference (rewriteInputShowFunc()).
+ *  that is no finding: the group of a group column, a structured reference (ReferenceRewriter::groupColumn()).
  *  Also the texts Collector::groups() searches for {constant(s)/options:<g>} and Planner mirrors. */
 final class LintTexts
 {
@@ -31,22 +31,40 @@ final class LintTexts
         );
     }
 
-    /** Text columns of rows - [path, text]; the input_view of the profile is a structured reference.
+    /** Text columns of rows - [path, text, the group of a group column (ReferenceRewriter::groupColumn()) or
+     *  null]; the input_view of the profile is a structured reference.
      *  RawBytes: skipped, or with $raw their bytes (the import lints what it writes; the regexes are
      *  byte-wise and ASCII-anchored, ModuleCharset::STATELESS).
      *  @param array<string, list<array<string, mixed>>> $elements
-     *  @return Generator<int, array{string, string}> */
+     *  @return Generator<int, array{string, string, ?string}> */
     public function rows(string $path, array $elements, bool $raw = false): Generator
     {
         foreach ($elements as $element => $list) {
             $columns = array_keys($this->schema->rowColumns((string) $element), 'textValue', true);
             foreach ($list as $i => $row) {
+                $group = ReferenceRewriter::groupColumn((string) $element, $row);
                 foreach ($columns as $column) {
                     $text = $row[$column] ?? '';
                     $text = ($raw && ($text instanceof Model\RawBytes)) ? $text->bytes : $text;
                     if (is_string($text) && ($text !== '') && !(($element === 'profile') && (($row['property'] ?? '') === 'input_view'))) {
-                        yield [$this->schema->rowPath($path, (string) $element, $row, $i) . "/$column", $text];
+                        yield [$this->schema->rowPath($path, (string) $element, $row, $i) . "/$column", $text, ($column === $group) ? ReferenceRewriter::rowGroup((string) $element, $row) : null];
                     }
+                }
+            }
+        }
+    }
+
+    /** The text values of the settings fields a transfer brings (Module::$transfer['setting-values']) - templates
+     *  like any definition; RawBytes as rows() - [path, text]
+     *  @return Generator<int, array{string, string}> */
+    public static function settingValues(string $path, mixed $values, bool $raw = false): Generator
+    {
+        foreach (is_array($values) ? $values : [] as $field => $list) {
+            foreach (is_array($list) ? $list : [] as $key => $v) {
+                $text = is_array($v) ? ($v['value'] ?? '') : '';
+                $text = ($raw && ($text instanceof Model\RawBytes)) ? $text->bytes : $text;
+                if (is_string($text) && ($text !== '')) {
+                    yield ["$path/setting-values/{$field}[$key]", $text];
                 }
             }
         }
@@ -115,11 +133,11 @@ final class LintTexts
         }
     }
 
-    /** ReferenceLint of one text - without the group of a field widget, a structured reference
+    /** ReferenceLint of one text - without the group of a group column, a structured reference the import rewrites
+     *  @param string|null $group rows()' third value
      *  @return list<LintFinding> */
-    public static function lint(ReferenceLint $lint, string $path, string $text): array
+    public static function lint(ReferenceLint $lint, string $path, string $text, ?string $group = null): array
     {
-        return array_values(array_filter($lint->lint($text), static fn(LintFinding $f): bool => ($f->code !== ReferenceLint::GROUP_OTHER)
-            || !str_ends_with($path, '/input_show_func') || ($f->ref !== ReferenceRewriter::inputShowFuncGroup($text))));
+        return array_values(array_filter($lint->lint($text), static fn(LintFinding $f): bool => ($f->code !== ReferenceLint::GROUP_OTHER) || ($f->ref !== $group)));
     }
 }

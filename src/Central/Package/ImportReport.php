@@ -88,13 +88,13 @@ final readonly class ImportReport
         return array_sum(array_map(static fn(array $s): int => count($s['fields']), $this->settings));
     }
 
-    /** @return array<string, string> the slice's settings fields (id starts with `_`): id => name */
+    /** @return array<string, string> the slice's settings fields (id starts with `_`) with no value: id => name */
     private static function settingsFields(Module $m): array
     {
         $fields = [];
         foreach ($m->rows['field'] ?? [] as $row) {
             $id = ValueCodec::bytes($row['id'] ?? '');
-            if (str_starts_with($id, '_')) {
+            if (str_starts_with($id, '_') && !isset($m->transfer['setting-values'][$id])) {      // a transfer brings its value
                 $fields[$id] = ValueCodec::bytes($row['name'] ?? '');
             }
         }

@@ -330,6 +330,22 @@ final class ReaderTest extends TestCase
         $this->assertSame('12', $module->rows['view'][0]['id']);
     }
 
+    public function test_newer_minor_prunes_inside_the_setting_values(): void
+    {
+        $body = str_replace('</slice>', '</slice><setting-values><v f="_email.........." colour="red">a@example.org</v><v f="_email.........." i="1000001" flag="64">b</v><w/></setting-values>', self::doc(format: '1.7'));
+        $read = self::read($body);
+        $at   = 'slice-module[' . self::SLICE . ']/setting-values';
+        $this->assertSame([
+            ['aa-app', LintFinding::INFO, Reader::NEWER_FORMAT, '1.7'],
+            ["$at/v", LintFinding::WARNING, Reader::UNKNOWN_ATTRIBUTE, 'colour'],
+            ["$at/w", LintFinding::WARNING, Reader::UNKNOWN_ELEMENT, 'w'],
+        ], self::findings($read));
+        $this->assertSame(
+            ['_email..........' => [0 => ['value' => 'a@example.org', 'flag' => 0], 1000001 => ['value' => 'b', 'flag' => 64]]],
+            $read->package->modules[0]->transfer['setting-values'],
+        );
+    }
+
     /** @return array<string, array{string, string, string}> body, meta, expected message */
     public static function unknownInThisVersion(): array
     {

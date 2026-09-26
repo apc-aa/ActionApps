@@ -286,7 +286,7 @@ final class Importer
     /** the long ids in the texts of the definitions @return list<string> */
     private static function definitionIds(Package $package): array
     {
-        $data = array_map(static fn(Module $m): array => [$m->rows, $m->settings, $m->objects, $m->spotTree], $package->modules);
+        $data = array_map(static fn(Module $m): array => [$m->rows, $m->settings, $m->objects, $m->spotTree, $m->transfer['setting-values'] ?? []], $package->modules);
         foreach ($package->constantGroups as $group) {
             $data[] = $group->rows;
         }

@@ -19,7 +19,7 @@ use LogicException;
  *  to the target are the Validator's E - a new collection must not mail target views to the package's
  *  readers - here a LogicException. 0 / empty is "none".
  *  A transfer brings the state of the source installation (Module::$transfer): the owner, found on the
- *  target by name and e-mail or created, and the reading password.
+ *  target by name and e-mail or created, the reading password and the values of the settings fields.
  *  @internal only Importer calls it - the rights and the S confirmation are checked there (Importer::write()). */
 final class RowWriter
 {
@@ -135,6 +135,23 @@ final class RowWriter
         foreach ($m->rows['profile'] ?? [] as $i => $row) {
             $view = (ValueCodec::bytes($row['property'] ?? '') === 'input_view') ? self::mapped($row, 'value', $this->view(...)) : [];
             $this->insert($m, 'profile', $row, $i, ['slice_id' => $id, 'uid' => '*'] + $view);
+        }
+        $this->settingValues($m, $id);
+    }
+
+    /** the values of the settings fields a transfer brings: content rows of the slice id with the keys and
+     *  flags Collector::settingValues() gave - FLAG_TEXT_STORED says text or number */
+    private function settingValues(Module $m, string $id): void
+    {
+        foreach ($m->transfer['setting-values'] ?? [] as $field => $values) {
+            foreach ($values as $key => $v) {
+                $at    = "$m->type[$m->id]/setting-values/{$field}[$key]";
+                $flag  = (int) ($v['flag'] ?? 0);
+                $text  = ($flag & FLAG_TEXT_STORED) !== 0;
+                $value = $text ? $this->store->value($v['value'], $this->charset($m), $this->rewrite, $at, $this->store->limit('content', 'text')) : $v['value'];
+                $row   = ItemWriter::contentRow($id, (string) $field, $text, ValueCodec::bytes($value), (int) $key, $flag);
+                $this->store->insert('content', $this->store->tableRow('content', [], $row, $this->charset($m), $this->rewrite, $at), $at);
+            }
         }
     }
 

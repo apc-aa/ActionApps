@@ -390,8 +390,12 @@ function installapp_report(ImportReport $report): void
 function installapp_findings(array $findings): void
 {
     $levels = [LintFinding::SECURITY => _m('Security findings (S)'), LintFinding::ERROR => _m('Errors (E)'), LintFinding::WARNING => _m('Warnings (W)'), LintFinding::INFO => _m('Notes (I)')];
+    $unique = [];
+    foreach ($findings as $f) {                  // the export lint and the import lint read the same texts
+        $unique[implode("\0", [$f[1]->level, $f[1]->code, $f[0], $f[1]->ref])] ??= $f;
+    }
     foreach ($levels as $level => $label) {
-        $of = array_filter($findings, static fn(array $f): bool => $f[1]->level === $level);
+        $of = array_filter($unique, static fn(array $f): bool => $f[1]->level === $level);
         if (!$of) {
             continue;
         }
@@ -416,6 +420,10 @@ function installapp_progress(string $run_id, string $uid, bool $start = false): 
     $run = InstallRun::get($run_id);
     if (($run === null) || ($run->user() !== $uid)) {
         echo '<div class="aa-err">' . _m('No such install run of yours.') . '</div>';
+        return;
+    }
+    if ($run->state() === InstallRun::PREVIEW) {
+        echo '<div class="aa-info">' . _m('This app was previewed, but not installed yet.') . ' ' . a_href(installapp_url(), _m('Preview it again')) . '</div>';
         return;
     }
     if ($run->mode() !== InstallRun::TRANSFER) {

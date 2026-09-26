@@ -25,9 +25,9 @@ final class ImportLint
     public function check(Package $package, FindingList $into): void
     {
         $lint = new ReferenceLint(self::identity($package));
-        foreach ($this->texts($package) as [$path, $text]) {
-            foreach (LintTexts::lint($lint, $path, $text) as $finding) {
-                $into->add($path, $finding);
+        foreach ($this->texts($package) as $entry) {
+            foreach (LintTexts::lint($lint, ...$entry) as $finding) {
+                $into->add($entry[0], $finding);
             }
         }
     }
@@ -59,7 +59,7 @@ final class ImportLint
         );
     }
 
-    /** @return Generator<int, array{string, string}> [path, text] */
+    /** @return Generator<int, array{0: string, 1: string, 2?: ?string}> [path, text, group of a group column] */
     private function texts(Package $package): Generator
     {
         foreach ($package->modules as $m) {
@@ -67,6 +67,7 @@ final class ImportLint
             yield from $this->texts->rows($path, $m->rows, true);
             yield from LintTexts::code(isset(Schema::SETTINGS_CLASSES[$m->type]) ? ObjectExport::values($m->type, $m->settings, $m->objects, $path) : [], true);
             yield from LintTexts::conditions("$path/spot-tree", $m->spotTree['spots'] ?? null);
+            yield from LintTexts::settingValues($path, $m->transfer['setting-values'] ?? null, true);
         }
         foreach ($package->constantGroups as $group) {
             yield from $this->texts->rows("constant-group[$group->name]", $group->rows, true);

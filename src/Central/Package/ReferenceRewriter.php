@@ -139,6 +139,41 @@ final class ReferenceRewriter
         'pre' => 0, 'tag' => 0, 'rim' => 0, 'mng' => 0, 'iso' => 0, 'tpr' => 2,
     ];
 
+    /** The column of a row AA reads as a constant group - no template, so no {constant:} reference finds
+     *  it: field.input_show_func (the widget's `const` parameter), view.parameter of a const view (the
+     *  whole value, view.php QueryConstantZIDs()). null = the row has none.
+     *  @param array<string, mixed> $row */
+    public static function groupColumn(string $element, array $row): ?string
+    {
+        return match (true) {
+            $element === 'field' => 'input_show_func',
+            ($element === 'view') && (strtolower(trim(ValueCodec::bytes($row['type'] ?? ''))) === 'const') => 'parameter',
+            default => null,
+        };
+    }
+
+    /** the group the row names in its groupColumn(); null = none. `#sLiCe-<id>` comes back as it is.
+     *  @param array<string, mixed> $row */
+    public static function rowGroup(string $element, array $row): ?string
+    {
+        $column = self::groupColumn($element, $row);
+        $value  = ($column === null) ? '' : ValueCodec::bytes($row[$column] ?? '');
+        $name   = ($column === 'input_show_func') ? (self::inputShowFuncGroup($value) ?? '') : trim($value);
+        return ($name === '') ? null : $name;
+    }
+
+    /** the group in the value of a groupColumn() replaced in place (IdMap); the rest stays byte for byte */
+    public function rewriteGroupColumn(string $column, string $value): string
+    {
+        if ($column === 'input_show_func') {
+            $position = self::CONST_POSITION[strtolower(trim(explode(':', $value, 2)[0]))] ?? null;
+            return ($position === null) ? $value : $this->rewriteInputShowFunc($value, $position);
+        }
+        $name = trim($value);
+        $new  = ($name === '') ? null : $this->map->group($name);
+        return ($new === null) ? $value : substr_replace($value, $new, (int) strpos($value, $name), strlen($name));
+    }
+
     /** the constant group of field.input_show_func; null when the widget has none. `#sLiCe-<id>` (items of
      *  a slice) comes back as it is. */
     public static function inputShowFuncGroup(string $input_show_func): ?string

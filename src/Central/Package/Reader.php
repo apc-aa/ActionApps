@@ -220,6 +220,7 @@ final class Reader
                 'item'      => $items[] = $this->item($child, $path . '/' . self::step($child)),
                 'owner'     => $transfer['owner'] = array_combine(['name', 'email'], array_map(fn(DOMElement $v): string|RawBytes|null => $this->value($v, "$at/$v->localName"), self::children($child))),
                 'reading-password' => $transfer['reading-password'] = $this->value($child, $at),
+                'setting-values'   => $transfer['setting-values'] = $this->item($child, $at)['content'],
                 'alternate-url'    => $transfer['alternate-url'][] = $this->value($child, $at),
                 default     => null,
             };

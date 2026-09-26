@@ -189,7 +189,7 @@ final class Collector
             $utf8         = fn(mixed $v, string $at): mixed => is_string($v) ? $this->utf8($v, $charsets[$id], $at) : $v;
             $objects[$id] = ObjectExport::map($types[$id], $settings, $list, "$types[$id][$id]", $utf8);
         }
-        [$findings, $outside] = $this->lint->check($rows, $types, $groups, $objects, array_filter($trees));
+        [$findings, $outside] = $this->lint->check($rows, $types, $groups, $objects, array_filter($trees), array_filter(array_map(static fn(array $t): array => $t['setting-values'] ?? [], $transfer)));
         $findings = [...$this->findings, ...$findings];
 
         $modules = [];
@@ -411,7 +411,8 @@ final class Collector
     }
 
     /** The state of the source installation a transfer carries (Model\Module::$transfer): the owner as
-     *  name and e-mail (the slice_owner id means nothing on the target), the slice's reading password,
+     *  name and e-mail (the slice_owner id means nothing on the target), the slice's reading password and
+     *  the values of its settings fields,
      *  the site's domains (alternate_url of the settings; ObjectExport never carries it).
      *  @param array<string, mixed> $module module row @param array<string, list<array<string, mixed>>> $raw rows as stored
      *  @return array<string, mixed> */
@@ -425,6 +426,9 @@ final class Collector
         if (($password = (string) ($raw['slice'][0]['reading_password'] ?? '')) !== '') {
             $parts['reading-password'] = $this->utf8($password, $charset, "$path/reading-password", true);
         }
+        if (($module['type'] === 'S') && ($values = $this->settingValues($id, $charset, $path))) {
+            $parts['setting-values'] = $values;
+        }
         if ($module['type'] === 'W') {
             $rows = $this->source->objectRows([string2id(Schema::SETTINGS_CLASSES[Module::SITE] . $id)], ['alternate_url']);
             usort($rows, static fn(array $a, array $b): int => (int) $a['priority'] <=> (int) $b['priority']);
@@ -437,7 +441,41 @@ final class Collector
         return $parts;
     }
 
-    /** The groups of field widgets and of {constant(s)/options:<g>} in the texts, looked up as
+    /** The values of the slice's settings fields: the content of the slice id, keyed as GetItemContent()
+     *  keys item values - in `number` order, a translation (number > 999999) by its number; a value is
+     *  `text` when it has one or FLAG_TEXT_STORED, else `number`. The flag says which, so the writer
+     *  stores it back the same way.
+     *  @return array<string, array<int, array{value: string|RawBytes, flag: int}>> field id => values */
+    private function settingValues(string $id, string $charset, string $path): array
+    {
+        $rows = $this->source->select('content', [['item_id', $id, 'l']]);
+        usort($rows, static fn(array $a, array $b): int => (int) $a['number'] <=> (int) $b['number']);
+        $values = [];
+        foreach ($rows as $row) {
+            $field = (string) $row['field_id'];
+            if (!str_starts_with($field, '_')) {
+                continue;
+            }
+            $flag = (int) $row['flag'];
+            $text = ((string) $row['text'] !== '') || ($flag & FLAG_TEXT_STORED);
+            if ($text && (($values[$field][0]['value'] ?? null) === (string) $row['text'])) {
+                continue;               // a duplicate GetItemContent() skips too
+            }
+            // a finding quotes the bytes it could not convert - never those of a password
+            $value = $this->utf8((string) ($text ? $row['text'] : $row['number']), $charset, "$path/setting-values/$field", (bool) preg_match('/pass|secret/i', $field));
+            $entry = ['value' => $value, 'flag' => $text ? ($flag | FLAG_TEXT_STORED) : ($flag & ~FLAG_TEXT_STORED)];
+            if ($text && ((int) $row['number'] > 999999)) {
+                $values[$field][(int) $row['number']] = $entry;
+            } else {
+                $values[$field][] = $entry;
+            }
+        }
+        ksort($values, SORT_STRING);
+        return $values;
+    }
+
+    /** The groups of field widgets and const views (ReferenceRewriter::groupColumn()) and of
+     *  {constant(s)/options:<g>} in the texts, looked up as
      *  stored - in the charset of the module that names them. Core groups and `#sLiCe-` (items of a
      *  slice) are none. slice.auth_field_group / mailman_field_lists name FIELDS - their groups come with
      *  the field.
@@ -446,14 +484,16 @@ final class Collector
      *  @return array{list<ConstantGroup>, list<string>} the groups, the owners outside the app */
     private function groups(array $raw, array $app, array $charsets, array $objects): array
     {
-        $used = $widgets = [];     // raw name => the first app slice naming it, else the first module; => field paths
+        $used = $widgets = [];     // raw name => the first app slice naming it, else the first module; => paths of the group columns
         foreach ($raw as $id => $elements) {
             $path  = Module::TYPES[$app[$id]['type']] . "[$id]";
             $names = [];
-            foreach ($elements['field'] ?? [] as $i => $field) {
-                if (($name = ReferenceRewriter::inputShowFuncGroup((string) ($field['input_show_func'] ?? ''))) !== null) {
-                    $names[]          = $name;
-                    $widgets[$name][] = $this->schema->rowPath($path, 'field', $field, $i) . '/input_show_func';
+            foreach ($elements as $element => $rows) {
+                foreach ($rows as $i => $row) {
+                    if (($name = ReferenceRewriter::rowGroup((string) $element, $row)) !== null) {
+                        $names[]          = $name;
+                        $widgets[$name][] = $this->schema->rowPath($path, (string) $element, $row, $i) . '/' . ReferenceRewriter::groupColumn((string) $element, $row);
+                    }
                 }
             }
             $texts = iterator_to_array($this->texts->rows('', array_diff_key($elements, ['module' => 1])), false);

@@ -535,6 +535,18 @@ namespace Tests\Unit\Central\Package {
             $this->assertArrayNotHasKey('constant_slice', self::groupOf($result, 'ct_text')->rows);
         }
 
+        /** a const view lists the constants of the group in view.parameter (view.php) */
+        public function test_a_group_only_a_const_view_lists_travels(): void
+        {
+            $source                   = self::source();
+            $source->tables['view'][] = ['id' => 12, 'slice_id' => self::SLICE_A, 'name' => 'Rubriky', 'type' => 'const', 'parameter' => 'ct_unused', 'odd' => '_#NAME###_'];
+
+            $result = (new Collector($source))->fromSite(self::SITE, new CollectOptions(self::SOURCE));
+
+            $this->assertSame(self::SLICE_A, self::groupOf($result, 'ct_unused')?->owner);
+            $this->assertSame([], array_filter(self::findings($result), static fn(string $f): bool => str_contains($f, '/view[12]')));
+        }
+
         public function test_a_missing_owner_of_a_group_is_a_warning(): void
         {
             $source                                        = self::source();
@@ -932,6 +944,50 @@ namespace Tests\Unit\Central\Package {
             $read = (new Reader())->read((new Writer())->toXml($result->package)->xml);     // XSD-validated both ways
             $this->assertSame([], $read->findings);
             $this->assertSame($owner + ['reading-password' => 'secret'], self::moduleOf(new CollectResult($read->package), self::SLICE_A)->transfer);
+        }
+
+        /** the settings fields' values are the content of the slice id (admin/slicefieldsedit.php) */
+        public function test_a_transfer_carries_the_values_of_the_slice_settings_fields(): void
+        {
+            $source                   = self::source();
+            $source->tables['content'] = [
+                ['item_id' => self::SLICE_A, 'field_id' => '_category.......', 'number' => 1, 'text' => 'red', 'flag' => 64],
+                ['item_id' => self::SLICE_A, 'field_id' => '_category.......', 'number' => 0, 'text' => 'blue', 'flag' => 64],
+                ['item_id' => self::SLICE_A, 'field_id' => '_count..........', 'number' => 5, 'text' => null, 'flag' => 0],
+                ['item_id' => self::SLICE_A, 'field_id' => 'headline........', 'number' => 0, 'text' => 'no setting', 'flag' => 64],
+                ['item_id' => self::ITEM2, 'field_id' => '_category.......', 'number' => 0, 'text' => 'of an item', 'flag' => 64],
+            ];
+            $values = ['_category.......' => [['value' => 'blue', 'flag' => 64], ['value' => 'red', 'flag' => 64]], '_count..........' => [['value' => '5', 'flag' => 0]]];
+
+            $result = (new Collector($source))->fromModules([self::SLICE_A], self::transfer());
+
+            $this->assertSame($values, self::moduleOf($result, self::SLICE_A)->transfer['setting-values']);
+            $read = (new Reader())->read((new Writer())->toXml($result->package)->xml);
+            $this->assertSame($values, self::moduleOf(new CollectResult($read->package), self::SLICE_A)->transfer['setting-values']);
+            $this->assertArrayNotHasKey('setting-values', self::moduleOf((new Collector($source))->fromModules([self::SLICE_A], new CollectOptions(self::SOURCE)), self::SLICE_A)->transfer, 'an install: defaults and "fill settings"');
+        }
+
+        /** keyed as GetItemContent() keys them: a translation by its number, a duplicate of the first text left out;
+         *  their texts are templates - linted as any definition */
+        public function test_setting_values_are_keyed_as_get_item_content_keys_them(): void
+        {
+            $source                   = self::source();
+            $source->tables['content'] = [
+                ['item_id' => self::SLICE_A, 'field_id' => '_title..........', 'number' => 1000002, 'text' => 'Titre {view:20}', 'flag' => 64],
+                ['item_id' => self::SLICE_A, 'field_id' => '_title..........', 'number' => 0, 'text' => 'Title', 'flag' => 0],
+                ['item_id' => self::SLICE_A, 'field_id' => '_title..........', 'number' => 3, 'text' => 'Title', 'flag' => 64],
+                ['item_id' => self::SLICE_A, 'field_id' => '_count..........', 'number' => 7, 'text' => '', 'flag' => 64 | 1],
+                ['item_id' => self::SLICE_A, 'field_id' => '_count..........', 'number' => 8, 'text' => '', 'flag' => 1],
+            ];
+
+            $result = (new Collector($source))->fromModules([self::SLICE_A], self::transfer());
+
+            $this->assertSame([
+                '_count..........' => [['value' => '', 'flag' => 64 | 1], ['value' => '8', 'flag' => 1]],
+                '_title..........' => [0 => ['value' => 'Title', 'flag' => 64], 1000002 => ['value' => 'Titre {view:20}', 'flag' => 64]],
+            ], self::moduleOf($result, self::SLICE_A)->transfer['setting-values']);
+            $at = 'slice-module[' . self::SLICE_A . ']/setting-values/_title..........[1000002]';
+            $this->assertNotSame([], array_filter(self::findings($result), static fn(string $f): bool => str_ends_with($f, "@ $at")), 'a view outside the app');
         }
 
         public function test_an_owner_of_another_charset_is_converted_and_a_missing_one_left_out(): void

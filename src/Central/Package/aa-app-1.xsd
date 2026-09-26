@@ -416,6 +416,7 @@
       <!-- exactly one, none in an item batch (meta/batch) - the Validator checks it -->
       <xs:element name="slice" type="row_slice" minOccurs="0"/>
       <xs:element name="reading-password" type="text" minOccurs="0"/>
+      <xs:element name="setting-values" type="settingValues" minOccurs="0"/>
       <xs:element name="settings" type="sliceSettings" minOccurs="0">
         <xs:unique name="uniqueSliceSettingsProp">
           <xs:selector xpath="a:p"/>
@@ -577,26 +578,35 @@
 
   <!-- ================================================================ items (the batches of a transfer) -->
 
+  <!-- a value of an item or of the slice settings (content) -->
+  <xs:complexType name="contentValue">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="f"    type="fieldId"    use="required"/>
+        <!-- key of the value in GetItemContent(): the position of a multi-value, or
+             the translation number (>= AA_Value::MAX_INDEX) -->
+        <xs:attribute name="i"    type="xs:nonNegativeInteger" default="0"/>
+        <xs:attribute name="flag" type="xs:integer" default="0"/>
+        <xs:attribute name="enc"  type="encoding"   default="text"/>
+        <xs:attribute name="crlf" type="xs:boolean" default="false"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
   <!-- only when meta/contents/@items = true -->
   <xs:complexType name="item">
     <xs:sequence>
-      <xs:element name="v" maxOccurs="unbounded">
-        <xs:complexType>
-          <xs:simpleContent>
-            <xs:extension base="xs:string">
-              <xs:attribute name="f"    type="fieldId"    use="required"/>
-              <!-- key of the value in GetItemContent(): the position of a multi-value, or
-                   the translation number (>= AA_Value::MAX_INDEX) -->
-              <xs:attribute name="i"    type="xs:nonNegativeInteger" default="0"/>
-              <xs:attribute name="flag" type="xs:integer" default="0"/>
-              <xs:attribute name="enc"  type="encoding"   default="text"/>
-              <xs:attribute name="crlf" type="xs:boolean" default="false"/>
-            </xs:extension>
-          </xs:simpleContent>
-        </xs:complexType>
-      </xs:element>
+      <xs:element name="v" type="contentValue" maxOccurs="unbounded"/>
     </xs:sequence>
     <xs:attribute name="id" type="longId" use="required"/>
+  </xs:complexType>
+
+  <!-- format 1.1, only in a transfer: the values of the slice's settings fields (`_...`, the
+       content of the slice id - admin/slicefieldsedit.php) -->
+  <xs:complexType name="settingValues">
+    <xs:sequence>
+      <xs:element name="v" type="contentValue" maxOccurs="unbounded"/>
+    </xs:sequence>
   </xs:complexType>
 
   <!-- ================================================================ table rows (from metabase_schema.php) -->
