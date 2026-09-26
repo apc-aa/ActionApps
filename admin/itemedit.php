@@ -320,9 +320,7 @@ if (($insert || $update) && count($fields)) {
         $added_to_db = $content4id->storeItem($insert ? 'insert' : 'update');     // invalidatecache, feed
 
         Session::page_close();
-        if ($preview) {
-            $preview_url = get_admin_url("preview.php", ["slice_id" => $slice_id, "sh_itm" => $id, "return_url" => $return_url]);
-        }
+        $preview_url = $preview ? get_admin_url("preview.php", ["slice_id" => $slice_id, "sh_itm" => $id, "return_url" => $return_url]) : null;  // not from the form
         if ($anonymous) { // anonymous login
             go_url($r_slice_view_url, '', $encap);
         } elseif ($return_url === 'close_dialog') {
@@ -381,6 +379,7 @@ if ($edit) {
 }
 
 // mimo changes
+$mlx_formheading = '';   // printed in the form, so not from the request
 if ($lang_control) {
     if (is_null($mlx)) {
         $mlx = new MLX($slice);

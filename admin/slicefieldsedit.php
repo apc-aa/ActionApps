@@ -89,6 +89,7 @@ if ($_POST['upd_edit']) {
 $action = $update ? "update" : "edit";
 
 $slice = AA_Slice::getModule(AA::$module_id);
+$err = [];   // printed as messages, so not from the request
 $oldcontent4id = ValidateContent4Id($err, $slice, $action, $id);
 $fields = $slice->getFields(true);
 
