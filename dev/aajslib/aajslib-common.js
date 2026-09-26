@@ -341,6 +341,30 @@ function AA_SendWidgetLive(base_id, liveinput, fnc) {
     });
 }
 
+/** Saves every changed {editable} field of the page in one request (widgets/aa-editable.js). */
+function AA_SaveEditors() {
+    const params = new URLSearchParams({ inline: '1' });
+    const saved  = [];
+    AA_$$('[contenteditable][data-aa-field]').forEach((el) => {
+        if (!el.aaEditor?.isDirty()) {
+            return;
+        }
+        const field = `aa[u${el.dataset.aaId}][${el.dataset.aaField}]`;
+        params.append(`${field}[${el.dataset.aaIndex ?? 0}]`, el.aaEditor.getContent());
+        params.append(`${field}[flag]`, '1');
+        saved.push(el.aaEditor);
+    });
+    fetch(AA_GetConf('path') + 'filler.php', { method: 'POST', body: params, headers: { Accept: 'application/json' } })
+        .then(response => response.json())
+        .then((data) => {
+            saved.forEach(editor => editor.markSaved());
+            AA_Toolbar('');
+            window.removeEventListener('beforeunload', AA_WindowUnloadQ);
+            const n = Object.keys(data).length;
+            AA_Message((n === 1) ? 'Zmeny ulozeny' : ('Ulozeno ' + n + ' zmen'));
+        });
+}
+
 function AA_SiteUpdate(item, field, value, action) {
     if (['u','i','r'].indexOf(action) === -1) {
         action = 'u';

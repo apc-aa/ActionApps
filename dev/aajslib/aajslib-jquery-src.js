@@ -466,25 +466,6 @@ function AA_StateChange(id, state) {
 }
 
 
-function AA_SaveEditors() {
-    var params = {'inline':1};
-
-    for(var i in CKEDITOR.instances) {   // for each
-        if (CKEDITOR.instances[i].checkDirty()) {
-            params['aa[u'+$(jqid(i)).attr('data-aa-id')+']['+$(jqid(i)).attr('data-aa-field')+']['+$(jqid(i)).attr('data-aa-index')+']'] = CKEDITOR.instances[i].getData();
-            params['aa[u'+$(jqid(i)).attr('data-aa-id')+']['+$(jqid(i)).attr('data-aa-field')+'][flag]'] = 1;
-        }
-    }
-
-    $.post(AA_GetConf('path') + 'filler.php', params, function(data) {
-        AA_Toolbar('');
-        window.removeEventListener("beforeunload", AA_WindowUnloadQ);
-        AA_Message((Object.keys(data).length === 1) ? 'Zmeny ulozeny' : ('Ulozeno ' + Object.keys(data).length +' zmen'));
-    }, 'json');
-}
-
-
-
 function aa_maketags(id, slice_id, field_id, max_values, item_id ) {
     var responder = AA_GetConf('path') + 'central/responder.php';
     var conf = {

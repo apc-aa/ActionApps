@@ -8163,27 +8163,6 @@ function AA_StateChange(id, state) {
 
 
 
-function AA_SaveEditors() {
-  var params = {'inline':1};
-
-  for(var i in CKEDITOR.instances) {   // for each
-    if (CKEDITOR.instances[i].checkDirty()) {
-        params['aa[u'+$(i).readAttribute('data-aa-id')+']['+$(i).readAttribute('data-aa-field')+'][0]'] = CKEDITOR.instances[i].getData();
-        params['aa[u'+$(i).readAttribute('data-aa-id')+']['+$(i).readAttribute('data-aa-field')+'][flag]'] = 1;
-    }
-  }
-
-  new Ajax.Request(AA_GetConf('path') + 'filler.php', {
-      parameters: params,
-      requestHeaders: {Accept: 'application/json'},
-      onSuccess: function(transport) {
-          AA_Toolbar('');
-          window.removeEventListener("beforeunload", AA_WindowUnloadQ);
-          AA_Message((Object.keys(transport.responseJSON).length == 1) ? 'Zmeny ulozeny' : ('Ulozeno ' + Object.keys(transport.responseJSON).length +' zmen'));
-      }
-  });
-}
-
 /** Deprecated
  *  For backward compatibility only. Use $(element).update('text') from
  *  aajslib.php instead.

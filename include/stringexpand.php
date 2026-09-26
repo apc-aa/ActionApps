@@ -5423,17 +5423,13 @@ class AA_Stringexpand_Editable extends AA_Stringexpand_Nevercache {
                     // do not change the string: contenteditable=true id=... we are using it in AA__SiteUpdateParts() (aajslib-jquery.php)
                     $ret     = AA::Un("<$tag contenteditable=true id=\"". str_replace('.','_', "au-$iid-$field_id-$index")."\" $pholder data-aa-id=\"$iid\" data-aa-field=\"$field_id\" data-aa-index=\"$index\">{". $field_id ."}</$tag>", '', $item);
 
-                    AA::Stringexpander()->addRequire('ckeditor');
-
-                    // '_aa_url = "'.AA_INSTAL_PATH.'";' . "\n" .
-                    $script2run = 'CKEDITOR.on( "instanceCreated", function( event ) {' . "\n" .   // The "instanceCreated" event is fired for every editor instance created.
-                        '  var editor = event.editor;' . "\n" .                          // var toolbarcreated = false;
-                        '  editor.on( "change", function() {' . "\n" .                   // if (!toolbarcreated) { toolbarcreated = true; }     // not necessary to run the code on each change
-                        '    window.addEventListener("beforeunload", AA_WindowUnloadQ);' . "\n" .
-                        '    AA_Toolbar(\'<input type="button" value="'. _m('save changes').'" onclick="AA_SaveEditors();">\');' . "\n" .
-                        '  });' . "\n" .
-                        '});' . "\n";
-                    AA::Stringexpander()->addRequire('aa-jslib');  // for AA_Toolbar(),...
+                    AA::Stringexpander()->addRequire('aa-editable@1');
+                    AA::Stringexpander()->addRequire('aa-jslib');  // AA_Toolbar(), AA_SaveEditors()
+                    // any change of an {editable} field offers the save button and guards leaving the page
+                    $script2run = "document.addEventListener('aa-editable-change', function() {\n" .
+                        "  window.addEventListener('beforeunload', AA_WindowUnloadQ);\n" .
+                        "  AA_Toolbar('<input type=\"button\" value=\"" . _m('save changes') . "\" onclick=\"AA_SaveEditors();\">');\n" .
+                        "});\n";
                     AA::Stringexpander()->addRequire($script2run, 'AA_Req_Run');
                 }
             }
@@ -7674,6 +7670,7 @@ class AA_Requires {
             'aa-constedit@1'              => new AA_Req_Lib(get_aa_url('javascript/constedit.min.js', ['v'=>AA_JS_VERSION],false)),
             'aa-code@1'                   => new AA_Req_Lib(get_aa_url('javascript/widgets/aa-code.js', ['v'=>AA_JS_VERSION],false).' module', '', ['css-aa-system@1']),
             'aa-richtext@1'               => new AA_Req_Lib(get_aa_url('javascript/widgets/aa-richtext.js', ['v'=>AA_JS_VERSION],false).' module', '', ['css-aa-system@1']),
+            'aa-editable@1'               => new AA_Req_Lib(get_aa_url('javascript/widgets/aa-editable.js', ['v'=>AA_JS_VERSION],false).' module', '', ['aa-jslib@3|aa-jslib@2|aa-jslib@1']),
             'aa-speech@1'                 => new AA_Req_Lib(get_aa_url('javascript/aa-speech/aa-speech.js', ['v'=>AA_JS_VERSION],false), '', ['_css-aa-speech@1']),
             '_css-aa-speech@1'            => new AA_Req_Css(get_aa_url('javascript/aa-speech/aa-speech.css', ['v'=>AA_JS_VERSION],false)),
             'aa-jslib@3'                  => new AA_Req_Lib(get_aa_url('javascript/aajslib-jquery.min.js', ['v'=>AA_JS_VERSION],false), '', ['jquery@3']),
