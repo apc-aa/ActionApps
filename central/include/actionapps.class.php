@@ -30,13 +30,10 @@ https://www.apc.org/
 */
 
 use AA\Central\Actionapps;
-use AA\Central\ChunkImporter;
-use AA\Central\ChunkTarget;
 use AA\Central\DefinitionStore;
 use AA\Central\Difference;
 use AA\Central\ResponderPolicy;
 use AA\Central\SyncExecutor;
-use AA\Central\Task\ImportModuleChunk;
 use AA\Central\Task\Sync;
 
 // AA_Actionapps moved to AA\Central\Actionapps (src/Central/Actionapps.php). The old name stays
@@ -44,13 +41,12 @@ use AA\Central\Task\Sync;
 // which the queue runner (misc/toexecute.php) unserializes without requiring this file. The class
 // below is never declared - it only puts the old name into the composer classmap, so that
 // autoloading AA_Actionapps includes this file and so registers the alias.
-// The same for the Central tasks, now in AA\Central\Task - rows queued before hold AA_Task_Sync /
-// AA_Task_Import_Module_Chunk (with the AA embedded; the tasks take both shapes).
+// The same for the Central task, now in AA\Central\Task - rows queued before hold AA_Task_Sync
+// (with the AA embedded; the task takes both shapes).
 // AA_Difference (now AA\Central\Difference) is not queued - the old name is for callers only.
 class_alias(Actionapps::class, 'AA_Actionapps');
 class_alias(Difference::class, 'AA_Difference');
 class_alias(Sync::class, 'AA_Task_Sync');
-class_alias(ImportModuleChunk::class, 'AA_Task_Import_Module_Chunk');
 if (false) {   // @phpstan-ignore if.alwaysFalse (never runs - for the classmap only)
     /** @deprecated use AA\Central\Actionapps */
     class AA_Actionapps extends Actionapps {}
@@ -60,9 +56,6 @@ if (false) {   // @phpstan-ignore if.alwaysFalse (never runs - for the classmap 
 
     /** @deprecated use AA\Central\Task\Sync */
     class AA_Task_Sync extends Sync {}
-
-    /** @deprecated use AA\Central\Task\ImportModuleChunk */
-    class AA_Task_Import_Module_Chunk extends ImportModuleChunk {}
 }
 
 
@@ -127,70 +120,6 @@ class AA_Definition_Module
     public function compareWith($dest_def)
     {
         // should be overloaded in childs
-    }
-
-    /** used when you want to export module to another AA
-        - could be used for the same AA as well, but we instead now have
-        moduleImport() method, which do not need special http requests and is
-        quicker. Also, there was some problem when there was different encoding
-        in the modules.
-    */
-    public function planModuleImport(Actionapps|int $aa, $replaces = null): int
-    {
-        return DefinitionStore::queueImport($this->_getChunks($replaces), $aa);
-    }
-
-    /** special import - to this AA - no need to plan, no need to chunk; the chunk mode (ChunkImporter), each
-     *  chunk only into its module - the one $replaces names; $target: tests only @return list<string> report lines */
-    public function moduleImport($replaces = null, ?ChunkTarget $target = null): array
-    {
-        return DefinitionStore::import($this->_getChunks($replaces), $target);
-    }
-
-    protected function _getChunks($replaces): array
-    {
-        return DefinitionStore::chunks($this->module_id, $this->data, $replaces);
-    }
-}
-
-/** AA_Definition_Module could be splited to more pieces (chunks) for easier
- *  transmission and import
- */
-class AA_Definition_Module_Chunk
-{
-    /** module id is unpacked */
-    protected $module_id;
-    /** part of the data for the module definition */
-    protected $data;
-
-    /** Creates array of chunks from given data. The data are split to more chunks, if it is bigger than limit. */
-    public static function factoryArray($module_id, $table, $rows): array
-    {
-        $chunks = [];
-
-        // maximum 1000 rows in one chunk
-        $chunks_data = array_chunk($rows, 1000, true);
-        foreach ($chunks_data as $chunk_data) {
-            $chunks[] = new AA_Definition_Module_Chunk($module_id, $table, $chunk_data);
-        }
-        return $chunks;
-    }
-
-    public function __construct($module_id, $table, $rows)
-    {
-        $this->module_id = $module_id;
-        $this->data      = [$table => $rows];
-    }
-
-    /** the chunk mode (ChunkImporter): only into the chunk's module; $target: tests only */
-    public function importModuleChunk(?ChunkTarget $target = null): array
-    {
-        return ChunkImporter::import($this->data, $this->module_id, $target);
-    }
-
-    public function _formatReport($arr): string
-    {
-        return ChunkImporter::formatReport($arr);
     }
 }
 

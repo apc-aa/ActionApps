@@ -986,7 +986,7 @@ class AA_Logentry_Csn extends AA_Logentry
     }
 }
 
-/** IMPORT log entry - module-chunk import (central/responder.php) */
+/** IMPORT log entry - written by older AAs importing module chunks; kept so the log page still reads their rows */
 class AA_Logentry_Import extends AA_Logentry
 {
     public static function getClassProperties(): array

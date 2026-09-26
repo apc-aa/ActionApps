@@ -22,7 +22,6 @@ class ResponderPolicy
         'Do_Synchronize',
         'Do_Optimize',
         'Do_Optimize_Type',
-        'Do_Import_Module_Chunk',
         'Get_App',
     ];
 

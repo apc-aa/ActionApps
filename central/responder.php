@@ -296,25 +296,6 @@ class AA_Responder_Do_Optimize_Type extends AA_Responder
     }
 }
 
-/** imports the slice to the database */
-class AA_Responder_Do_Import_Module_Chunk extends AA_Responder
-{
-    private ?AA_Definition_Module_Chunk $definition_chunk;
-
-    public function __construct($param)
-    {
-        $this->definition_chunk = $param['definition_chunk'];
-    }
-
-    public function run(): AA_Response
-    {
-        AA_Log::write('IMPORT', AA_Log::context(), new AA_Logentry_Import(['phase' => 'start', 'detail' => serialize($this->definition_chunk)]));
-        $ret = $this->definition_chunk->importModuleChunk();
-        AA_Log::write('IMPORT', AA_Log::context(), new AA_Logentry_Import(['phase' => 'result', 'detail' => $ret]));
-        return new AA_Response($ret);
-    }
-}
-
 /** An app of this AA for the AA that installs it: package XML of the definitions or of an item batch,
  *  the logins of the readers, item counts (AA\Central\AppRequest). Only with a Bearer token - the
  *  other AA holds a short one of a user of this AA; the rights by the mode in AA\Central\AppExport.

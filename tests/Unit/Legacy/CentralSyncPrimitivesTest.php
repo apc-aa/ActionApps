@@ -6,11 +6,9 @@ namespace Tests\Unit\Legacy;
 
 use AA\Central\ResponderPolicy;
 use AA\Later\Toexecute;
-use AA_Definition_Module_Chunk;
 use AA_Difference;
 use AA_Identifier;
 use AA_Sync_Action;
-use AA_Task_Import_Module_Chunk;
 use AA_Task_Sync;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
@@ -25,10 +23,10 @@ require_once __DIR__ . '/fixtures/central_fixtures.php';   // the trait must exi
  * Characterization of the small pieces of Central Synchronize (central/include/actionapps.class.php):
  * AA_Identifier (the "module->table->row->column" path), AA_Difference::_compareArray() (what
  * difference and which action each case gives), AA_Sync_Action outside doAction() (its form
- * checkbox and data array), and the tasks queued in toexecute (AA_Task_Sync,
- * AA_Task_Import_Module_Chunk) with the serialized forms remote AAs and the queue depend on.
- * CentralSynchronizeTest / CentralDifferenceTest / CentralCopySliceTest cover doAction(),
- * fromFormValue(), escaping and the import report; this file does not repeat them.
+ * checkbox and data array), and the tasks queued in toexecute (AA_Task_Sync) with the serialized
+ * forms remote AAs and the queue depend on - and how the queue drops a task of a class AA no longer has.
+ * CentralSynchronizeTest / CentralDifferenceTest cover doAction(), fromFormValue() and escaping;
+ * this file does not repeat them.
  *
  * Pins today's behaviour; "pinned:" marks behaviour that is questionable rather than wanted.
  */
@@ -498,40 +496,12 @@ final class CentralSyncPrimitivesTest extends TestCase
 
     public function test_task_manager_log_keeps_the_old_task_names(): void
     {
-        $chunk = new AA_Definition_Module_Chunk(self::MOD, 'view', []);
-
         $this->assertSame('AA_Task_Sync', \AA_Log::selector(new AA_Task_Sync('cmd', 12))->cls);
-        $this->assertSame('AA_Task_Import_Module_Chunk', \AA_Log::selector(new AA_Task_Import_Module_Chunk($chunk, 12))->cls);
-    }
-
-    public function test_queued_import_task_without_chunk_logs_an_error(): void
-    {
-        $task = unserialize('O:27:"AA_Task_Import_Module_Chunk":0:{}');
-        $task->actionapps = self::recordingAa();
-
-        $this->assertStringStartsWith('Err: ', $task->toexecutelater());
-        $this->assertSame([], $task->actionapps->sent, 'nothing sent');
-    }
-
-    public function test_task_import_module_chunk_queues_the_id_of_the_aa_not_its_login(): void
-    {
-        $chunk = new AA_Definition_Module_Chunk(self::MOD, 'view', [12 => ['id' => 12, 'slice_id' => self::MOD, 'name' => 'List']]);
-        $task  = new AA_Task_Import_Module_Chunk($chunk, self::aa('secret'));
-
-        $row  = self::queuedRow($task, 'AA_Task_Import_Module_Chunk');
-        $copy = unserialize($row);
-
-        $this->assertStringNotContainsString('secret', $row);
-        $this->assertStringNotContainsString('Actionapps', $row, 'no AA object in the queue');
-        $this->assertInstanceOf(AA_Task_Import_Module_Chunk::class, $copy);
-        $this->assertSame(12, $copy->aa_id);
-        $this->assertNull($copy->actionapps);
-        $this->assertEquals($chunk, self::prop($copy, 'module_definition_chunk'));
-        $this->assertSame(['view' => [12 => ['id' => 12, 'slice_id' => self::MOD, 'name' => 'List']]], self::prop(self::prop($copy, 'module_definition_chunk'), 'data'));
     }
 
     /** Rows an older AA left waiting in toexecute (captured literally): the AA with a password login
-     *  and the remote session fields Actionapps no longer has, the action / chunk to send */
+     *  and the remote session fields Actionapps no longer has, the action / chunk to send; the import
+     *  task is of the Copy Slice this AA no longer has */
     private const QUEUED_TASK_SYNC = "O:12:\"AA_Task_Sync\":2:{s:11:\"sync_action\";s:314:\"O:14:\"AA_Sync_Action\":3:{s:20:\"\0AA_Sync_Action\0type"
         . "\";s:10:\"UPDATE_ROW\";s:26:\"\0AA_Sync_Action\0identifier\";O:13:\"AA_Identifier\":1:{s:19:\"\0AA_Identifier\0p"
         . "ath\";a:3:{i:0;s:32:\"0123456789abcdef0123456789abcdef\";i:1;s:5:\"field\";i:2;s:16:\"headline........\";}}"
@@ -576,19 +546,70 @@ final class CentralSyncPrimitivesTest extends TestCase
         $this->assertSame(['name' => 'Headline'], $action->_getDataArray());
     }
 
-    public function test_literal_queued_import_task_still_runs(): void
+    /** @return string[] the statements of one kind on toexecute */
+    private static function toexecuteStatements(string $verb): array
     {
-        $task = unserialize(self::QUEUED_TASK_IMPORT);
-
-        $this->assertInstanceOf(AA_Task_Import_Module_Chunk::class, $task);
-        $fake = self::recordingAa();
-        (new \ReflectionProperty($task, 'actionapps'))->setValue($task, $fake);   // protected, no setter
-
-        $this->assertSame('sent', $task->toexecutelater());
-        $this->assertEquals([new AA_Definition_Module_Chunk(self::MOD, 'view', [12 => ['id' => 12, 'slice_id' => self::MOD, 'name' => 'List']])], $fake->sent);
+        return array_values(array_filter(RecordingDb::$log, static fn(string $sql) => str_starts_with($sql, "$verb `toexecute`")));
     }
 
-    /** an AA which keeps what synchronize() / importModuleChunk() would send */
+    /** runs the rows through _exeOne() as the queue does; @return list<int> what it returned for each */
+    private static function runRows(Toexecute $toexecute, string $object, array $ids): array
+    {
+        $GLOBALS['spareDBs'] = [new RecordingDb()];
+        \AA\Util\LogOnce::reset();
+        $times = [];
+        $ret   = [];
+        foreach ($ids as $id) {
+            $row   = ['id' => $id, 'selector' => 'sel', 'priority' => 100, 'execute_after' => 1, 'object' => $object, 'params' => 'a:0:{}'];
+            $ret[] = $toexecute->_exeOne($row, $times, microtime(true), 60.0);
+        }
+        \AA\Util\LogOnce::reset();
+        return $ret;
+    }
+
+    /** such rows may still be queued: each is removed, the log gets one row a day for the class */
+    public function test_queued_task_of_a_removed_class_is_dropped_and_logged_once(): void
+    {
+        $toexecute = new Toexecute();
+
+        $this->assertSame([1, 1], self::runRows($toexecute, self::QUEUED_TASK_IMPORT, [7, 8]), 'done - the runner goes on');
+
+        $deletes = self::toexecuteStatements('DELETE FROM');
+        $this->assertCount(2, $deletes);
+        $this->assertStringContainsString('7', $deletes[0]);
+        $this->assertStringContainsString('8', $deletes[1]);
+        $logs = RecordingDb::inserts('log');
+        $this->assertCount(1, $logs, 'one row for the class, no TOEXECUTE row per task');
+        $this->assertSame(Toexecute::LOG_CLASS_GONE, $logs[0]['type']);
+        $this->assertSame('AA_Task_Import_Module_Chunk', $logs[0]['selector']);
+        $this->assertStringContainsString('AA_Task_Import_Module_Chunk no longer exists', $toexecute->report());
+    }
+
+    public function test_queued_task_of_the_namespaced_removed_class_is_dropped(): void
+    {
+        $this->assertSame([1], self::runRows(new Toexecute(), 'O:33:"AA\\Central\\Task\\ImportModuleChunk":0:{}', [7]));
+        $this->assertCount(1, self::toexecuteStatements('DELETE FROM'));
+    }
+
+    /** a live class may be missing for a moment (a deploy, a stale classmap) - its tasks must survive it */
+    public function test_queued_task_of_an_unknown_class_stays_and_is_logged_once(): void
+    {
+        $toexecute = new Toexecute();
+
+        $this->assertSame([-1, -1], self::runRows($toexecute, 'O:15:"AA_Task_Unknown":0:{}', [7, 8]), 'skipped - the runner goes on');
+
+        $this->assertSame([], self::toexecuteStatements('DELETE FROM'));
+        $updates = self::toexecuteStatements('UPDATE');
+        $this->assertCount(2, $updates, 'only the claims - the priority sinks by one, so the row retires after ~100 leases');
+        $this->assertMatchesRegularExpression('/priority[`"]?\\s*=\\s*\'?99\\b/', $updates[0]);
+        $logs = RecordingDb::inserts('log');
+        $this->assertCount(1, $logs);
+        $this->assertSame(Toexecute::LOG_CLASS_MISSING, $logs[0]['type']);
+        $this->assertSame('AA_Task_Unknown', $logs[0]['selector']);
+        $this->assertStringContainsString('AA_Task_Unknown is missing', $toexecute->report());
+    }
+
+    /** an AA which keeps what synchronize() would send */
     private static function recordingAa(): \AA_Actionapps
     {
         return new class extends \AA_Actionapps {
@@ -600,12 +621,6 @@ final class CentralSyncPrimitivesTest extends TestCase
             public function synchronize($sync_commands)
             {
                 $this->sent[] = $sync_commands;
-                return ['sent'];
-            }
-
-            public function importModuleChunk(AA_Definition_Module_Chunk $definition_chunk)
-            {
-                $this->sent[] = $definition_chunk;
                 return ['sent'];
             }
         };

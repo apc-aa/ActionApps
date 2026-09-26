@@ -29,10 +29,10 @@ https://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-// The central pages that include this bootstrap (responder / import_csv / copyslice /
+// The central pages that include this bootstrap (responder / import_csv /
 // synchronize and their variants) read their inputs explicitly from $_POST/$_GET/$param,
-// so the old $$k = AddslashesDeep() register_globals emulation was removed (finding N14,
-// 2026-09). It was also unsafe here: it let a request key overwrite $nobody, set by
+// so the old $$k = AddslashesDeep() register_globals emulation was removed. It
+// was also unsafe here: it let a request key overwrite $nobody, set by
 // responder.php just before this include.
 
 require_once __DIR__ . "/../../include/config.php";

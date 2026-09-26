@@ -24,7 +24,6 @@ final class ResponderPolicyTest extends TestCase
             'Do_Synchronize'         => ['Do_Synchronize', true, false],
             'Do_Optimize'            => ['Do_Optimize', true, false],
             'Do_Optimize_Type'       => ['Do_Optimize_Type', true, false],
-            'Do_Import_Module_Chunk' => ['Do_Import_Module_Chunk', true, false],
             'Get_App'                => ['Get_App', true, false],
             'Get_Widget'             => ['Get_Widget', false, false],
             'Tags'                   => ['Tags', false, false],
@@ -35,6 +34,7 @@ final class ResponderPolicyTest extends TestCase
             'Optimize4id'            => ['Optimize4id', false, true],
             'Alertitem'              => ['Alertitem', false, true],
             'unknown'                => ['Foo_Bar', false, false],
+            'removed'                => ['Do_Import_Module_Chunk', false, false],
             'empty'                  => ['', false, false],
         ];
     }

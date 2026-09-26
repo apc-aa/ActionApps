@@ -6,7 +6,6 @@ namespace Tests\Unit\Legacy;
 
 use AA\Central\ResponderPolicy;
 use AA_Actionapps;
-use AA_Definition_Module_Chunk;
 use AA_Request;
 use AA_Response;
 use ItemContent;
@@ -356,23 +355,12 @@ final class CentralActionappsTest extends TestCase
         $this->assertSame(['sync' => ['cmd1', 'cmd2']], $aa->requests[0]->getParameters());
     }
 
-    public function test_importModuleChunk_sends_the_chunk_and_returns_the_report(): void
-    {
-        $chunk = new AA_Definition_Module_Chunk('m', 'field', []);
-        $aa    = new CentralScriptedAa([new AA_Response(['OK: 1 field ([x]); '])]);
-
-        $this->assertSame(['OK: 1 field ([x]); '], $aa->importModuleChunk($chunk));
-        $this->assertSame('Do_Import_Module_Chunk', $aa->requests[0]->getCommand());
-        $this->assertSame(['definition_chunk' => $chunk], $aa->requests[0]->getParameters());
-    }
-
-    public function test_synchronize_and_importModuleChunk_return_the_error_code_and_text(): void
+    public function test_synchronize_returns_the_error_code_and_text(): void
     {
         // the task log says why it failed
         $aa = new CentralScriptedAa([new AA_Response('No response recieved (2 - timeout)', 3)]);
 
         $this->assertSame('3 No response recieved (2 - timeout)', $aa->synchronize(['cmd']));
-        $this->assertSame('3 No response recieved (2 - timeout)', $aa->importModuleChunk(new AA_Definition_Module_Chunk('m', 'field', [])));
     }
 
     public function test_requestAAName_asks_once_and_caches_the_name(): void

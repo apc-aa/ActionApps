@@ -278,10 +278,7 @@ class AA_Request
      */
     public static function decode(string $posted_data)
     {
-        return unserialize($posted_data, ['allowed_classes' => [
-            AA_Request::class,
-            AA_Definition_Module_Chunk::class,    // Do_Import_Module_Chunk carries a chunk in params
-        ]]);
+        return unserialize($posted_data, ['allowed_classes' => [AA_Request::class]]);
     }
 
     public function getCommand()
@@ -323,7 +320,6 @@ class AA_Request
             AA_Definition_Module_Slice::class,
             AA_Definition_Module_Site::class,
             AA_Definition_Module_Alerts::class,
-            AA_Definition_Module_Chunk::class,
         ]]);
         if ($response === false) {
             return new AA_Response("Bad response", 3);

@@ -6,7 +6,6 @@ namespace AA\Central;
 
 use AA;
 use AA\IO\DB\DB_AA;
-use AA_Definition_Module_Chunk;
 use AA_Request;
 use AA_Response;
 use AA_Set;
@@ -276,15 +275,6 @@ class Actionapps
             return _m('This AA does not support this command (update it first)');
         }
         return $response->getError() . (is_scalar($detail) ? ' ' . $detail : '');
-    }
-
-    /** Imports slice to the current AA. The id of slice is the same as in
-     *  definition
-     */
-    public function importModuleChunk(AA_Definition_Module_Chunk $definition_chunk)
-    {
-        $response = $this->getResponse(new AA_Request('Do_Import_Module_Chunk', ['definition_chunk' => $definition_chunk]));
-        return ($response->isError()) ? self::responseText($response) : $response->getResponse();
     }
 
     /** Main communication function - returns AA_Response object; getLastError() tells why this call failed */

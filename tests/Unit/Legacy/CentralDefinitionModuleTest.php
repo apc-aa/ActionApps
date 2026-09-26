@@ -6,15 +6,12 @@ namespace Tests\Unit\Legacy;
 
 use AA_Definition_Module;
 use AA_Definition_Module_Alerts;
-use AA_Definition_Module_Chunk;
 use AA_Definition_Module_Site;
 use AA_Definition_Module_Slice;
 use AA_Difference;
 use AA_Sync_Action;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use Tests\Unit\Central\Fixtures\FakeChunkTarget;
-use Tests\Unit\Central\Fixtures\RecordingMetabase;
 use Tests\Unit\Legacy\Fixtures\CentralTestHelpers;
 use Tests\Unit\Legacy\Fixtures\RecordingDb;
 
@@ -25,8 +22,8 @@ require_once __DIR__ . '/fixtures/central_fixtures.php';   // the trait must exi
 /**
  * Characterization of the module definitions Central copies and compares between AAs
  * (AA_Definition_Module and its Slice / Site / Alerts kinds): what loadForId() reads, the shape
- * of the loaded data, compareWith() per kind, the chunking of an import, and the serialized form
- * which travels between installations (Get_Module_Defs answer, toexecute queue).
+ * of the loaded data, compareWith() per kind, and the serialized form which travels between
+ * installations (Get_Module_Defs answer).
  * No DB: RecordingDb answers the SELECTs (see CentralSynchronizeTest for the same scaffolding).
  *
  * Pins today's behaviour; "pinned:" marks behaviour that is questionable rather than wanted.
@@ -40,17 +37,9 @@ final class CentralDefinitionModuleTest extends TestCase
 
     public static function setUpBeforeClass(): void
     {
-        require_once __DIR__ . '/../fixtures/util_shims.php';    // _m(), safe(), recursive_array_replace()
+        require_once __DIR__ . '/../fixtures/util_shims.php';    // _m(), safe()
         require_once __DIR__ . '/fixtures/store_fixtures.php';   // RecordingDb
         require_once __DIR__ . '/../../../include/varset.php';   // Cvarset::sqlin() of loadForId()
-        require_once __DIR__ . '/../Central/fixtures/ChunkFixtures.php';   // FakeChunkTarget
-    }
-
-    /** this AA as the chunk mode (ChunkImporter) sees it: the template and the destination slices exist,
-     *  no view number is taken */
-    private static function target(): FakeChunkTarget
-    {
-        return new FakeChunkTarget([self::TEMPLATE_ID => 'S', self::DEST_ID => 'S']);
     }
 
     protected function setUp(): void
@@ -62,7 +51,6 @@ final class CentralDefinitionModuleTest extends TestCase
     {
         $GLOBALS['spareDBs'] = [];
         RecordingDb::reset();
-        $this->restoreMetabase();
         $this->removeLocalResponder();
     }
 
@@ -348,106 +336,10 @@ final class CentralDefinitionModuleTest extends TestCase
         $this->assertSame('Wrong command - row is not defined - ' . self::DEST_ID . '->field', $inserts[2]->doAction());
     }
 
-    // --- _getChunks() seen through planModuleImport() and moduleImport() -----------------------
-
-    /** AA::$metabase before a test replaced it; false = not replaced */
-    private mixed $saved_metabase = false;
-
-    /** Metabase which records the inserts of moduleImport() instead of writing */
-    private function fakeMetabase(): RecordingMetabase
-    {
-        $property             = new \ReflectionProperty(\AA::class, 'metabase');
-        $this->saved_metabase = $property->getValue();
-        $metabase             = new RecordingMetabase();   // real keys; a row named 'bad' fails
-        $property->setValue(null, $metabase);
-        return $metabase;
-    }
-
-    private function restoreMetabase(): void
-    {
-        if ($this->saved_metabase !== false) {
-            (new \ReflectionProperty(\AA::class, 'metabase'))->setValue(null, $this->saved_metabase);
-            $this->saved_metabase = false;
-        }
-    }
-
-    /** number of import tasks planModuleImport() queued - one per chunk */
-    private static function plannedChunks(AA_Definition_Module $def): int
-    {
-        $GLOBALS['spareDBs'] = [new RecordingDb()];
-        $count               = $def->planModuleImport(new \AA_Actionapps(new \ItemContent(['id' => [['value' => '12']]])));   // a queued task needs the central_conf id
-        self::assertCount($count, RecordingDb::inserts('toexecute'));
-        return $count;
-    }
-
-    public function test_one_chunk_per_non_empty_table(): void
-    {
-        $def = self::def(AA_Definition_Module_Slice::class, self::TEMPLATE_ID, [
-            'module' => [self::TEMPLATE_ID => ['id' => self::TEMPLATE_ID]],
-            'view'   => [],
-            'field'  => ['a' => ['id' => 'a', 'slice_id' => self::TEMPLATE_ID], 'b' => ['id' => 'b', 'slice_id' => self::TEMPLATE_ID]],
-        ]);
-
-        $this->assertSame(2, self::plannedChunks($def), 'an empty table gives no chunk');
-        $metabase = $this->fakeMetabase();   // after planning - Toexecute writes through the real one
-        $this->assertSame(['OK: 1 module ([' . self::TEMPLATE_ID . ']); ', 'OK: 2 field ([a,' . self::TEMPLATE_ID . '][b,' . self::TEMPLATE_ID . ']); '], $def->moduleImport(null, self::target()));
-        // rows name their module, the new module gets the installation columns (ChunkImporterTest)
-        $module = ['id' => self::TEMPLATE_ID, 'deleted' => 0, 'created_by' => 'importer', 'created_at' => 1700000000];
-        $this->assertSame([['module', $module], ['field', ['id' => 'a', 'slice_id' => self::TEMPLATE_ID]], ['field', ['id' => 'b', 'slice_id' => self::TEMPLATE_ID]]], $metabase->inserted);
-    }
-
-    public function test_a_table_is_split_by_1000_rows(): void
-    {
-        $rows = [];
-        for ($i = 0; $i < 2001; $i++) {
-            $rows["item$i"] = ['id' => "item$i", 'slice_id' => self::TEMPLATE_ID];   // each row names its module
-        }
-        $def = self::def(AA_Definition_Module_Slice::class, self::TEMPLATE_ID, ['item' => $rows]);
-
-        $this->assertSame(3, self::plannedChunks($def));
-        $this->fakeMetabase();
-        $report = $def->moduleImport(null, self::target());
-        $this->assertCount(3, $report, 'one report line per chunk');
-        $this->assertStringStartsWith('OK: 1000 item ([item0][item1]', $report[0]);
-        $this->assertStringStartsWith('OK: 1000 item ([item1000][item1001]', $report[1]);
-        $this->assertSame('OK: 1 item ([item2000]); ', $report[2]);
-    }
-
-    public function test_nothing_to_import_without_data(): void
-    {
-        $this->assertSame(0, self::plannedChunks(new AA_Definition_Module_Slice()));
-        $this->assertSame([], (new AA_Definition_Module_Slice())->moduleImport(), 'nothing imported, nothing reported');
-    }
-
-    public function test_without_replaces_the_values_are_imported_as_they_are(): void
-    {
-        $metabase = $this->fakeMetabase();
-        $row      = ['id' => 12, 'slice_id' => self::TEMPLATE_ID, 'name' => null, 'even' => 1.5];
-
-        self::def(AA_Definition_Module_Slice::class, self::TEMPLATE_ID, ['view' => [12 => $row]])->moduleImport(null, self::target());
-
-        $this->assertSame([['view', $row]], $metabase->inserted);
-    }
-
-    public function test_replaces_go_into_every_value_and_stringify_it(): void
-    {
-        $metabase = $this->fakeMetabase();
-        $def      = self::def(AA_Definition_Module_Slice::class, self::TEMPLATE_ID, [
-            'view' => [12 => ['id' => 12, 'slice_id' => self::TEMPLATE_ID, 'name' => null, 'even' => '{view.php3?vid=' . self::TEMPLATE_ID . '}']],
-        ]);
-
-        self::collectingWarnings(static fn() => $def->moduleImport([self::TEMPLATE_ID => self::DEST_ID], self::target()), $warnings);
-
-        // pinned: every value goes through str_replace(): ints become strings, NULL becomes ''
-        $this->assertSame([['view', ['id' => '12', 'slice_id' => self::DEST_ID, 'name' => '', 'even' => '{view.php3?vid=' . self::DEST_ID . '}']]], $metabase->inserted, 'inside texts, too');
-        $this->assertCount(1, $warnings);
-        $this->assertStringContainsString('str_replace', $warnings[0]);
-    }
-
     // --- serialized form: exchanged with remote AAs of other versions ----------------------------
 
     /** The classes keep their global names and property names: remote AAs of other versions
-     *  unserialize them by these names (AA_Request::ask() and ::decode() allow exactly them). */
+     *  unserialize them by these names (AA_Request::ask() allows exactly them). */
     public function test_serialized_definition_names_the_class_and_protected_properties(): void
     {
         $def = self::def(AA_Definition_Module_Slice::class, 'm', ['module' => ['m' => ['id' => 'm']]]);
@@ -455,10 +347,6 @@ final class CentralDefinitionModuleTest extends TestCase
         $this->assertSame(
             "O:26:\"AA_Definition_Module_Slice\":2:{s:12:\"\0*\0module_id\";s:1:\"m\";s:7:\"\0*\0data\";a:1:{s:6:\"module\";a:1:{s:1:\"m\";a:1:{s:2:\"id\";s:1:\"m\";}}}}",
             serialize($def),
-        );
-        $this->assertSame(
-            "O:26:\"AA_Definition_Module_Chunk\":2:{s:12:\"\0*\0module_id\";s:1:\"m\";s:7:\"\0*\0data\";a:1:{s:5:\"field\";a:1:{s:1:\"r\";a:1:{s:2:\"id\";s:1:\"r\";}}}}",
-            serialize(new AA_Definition_Module_Chunk('m', 'field', ['r' => ['id' => 'r']])),
         );
     }
 
@@ -483,7 +371,7 @@ final class CentralDefinitionModuleTest extends TestCase
         . "9abcdef0123456789abcdef\";s:4:\"name\";s:4:\"News\";s:8:\"priority\";i:3;}}s:17:\"alerts_collection\";a:0:{}}"
         . "}}s:18:\"\0AA_Response\0error\";i:0;}";
 
-    /** a Do_Import_Module_Chunk request as today's Central sends it (captured literally) */
+    /** a Do_Import_Module_Chunk request as an older Central sends it (captured literally) */
     private const WIRE_CHUNK_REQUEST = "O:10:\"AA_Request\":2:{s:7:\"command\";s:22:\"Do_Import_Module_Chunk\";s:6:\"params\";a:1:{s:16:\"definition_"
         . "chunk\";O:26:\"AA_Definition_Module_Chunk\":2:{s:12:\"\0*\0module_id\";s:32:\"0123456789abcdef0123456789abcd"
         . "ef\";s:7:\"\0*\0data\";a:1:{s:4:\"view\";a:1:{i:12;a:3:{s:2:\"id\";i:12;s:8:\"slice_id\";s:32:\"0123456789abcdef"
@@ -518,16 +406,14 @@ final class CentralDefinitionModuleTest extends TestCase
         $this->assertSame($data, $def->getArray(), 'types kept (int stays int)');
     }
 
-    public function test_decode_reads_a_literal_import_chunk_request_and_imports_it(): void
+    /** the chunk stays inert, and no responder of that name exists - responder.php answers
+     *  ERR_UNKNOWN_COMMAND, which the older Central shows as an error of the remote AA */
+    public function test_decode_of_an_import_chunk_request_names_no_responder(): void
     {
-        $metabase = $this->fakeMetabase();
-
         $request = \AA_Request::decode(self::WIRE_CHUNK_REQUEST);
 
         $this->assertSame('Do_Import_Module_Chunk', $request->getCommand());
-        $chunk = $request->getParameters()['definition_chunk'];
-        $this->assertInstanceOf(AA_Definition_Module_Chunk::class, $chunk);
-        $this->assertSame(['OK: 1 view ([12]); '], $chunk->importModuleChunk(self::target()));
-        $this->assertSame([['view', ['id' => 12, 'slice_id' => self::TEMPLATE_ID, 'name' => 'List']]], $metabase->inserted);
+        $this->assertInstanceOf(\__PHP_Incomplete_Class::class, $request->getParameters()['definition_chunk']);
+        $this->assertFalse(class_exists(\AA_Object::constructClassName('Do_Import_Module_Chunk', 'AA_Responder')));
     }
 }

@@ -8,8 +8,8 @@ use PHPUnit\Framework\TestCase;
 
 /**
  * getFrmInputMultiSelect() (include/formutil.php) re-selects what the user picked - all of it.
- * Central Copy Slice used to pass only the first posted value (reset($ids)), because a plain
- * list of values ended in a TypeError inside AA_Inputfield, which wants [['value' => ...], ...].
+ * A plain list of values ended in a TypeError inside AA_Inputfield, which wants
+ * [['value' => ...], ...], so callers passed only the first posted value.
  */
 final class FrmInputMultiSelectTest extends TestCase
 {

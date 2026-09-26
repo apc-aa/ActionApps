@@ -35,6 +35,7 @@ namespace AA\Later;
 use AA;
 use AA\IO\DB\DB_AA;
 use AA\Util\FileLock;
+use AA\Util\LogOnce;
 use AA\Util\ReportTrait;
 use AA_Log;
 use AA_Logentry_X;
@@ -73,6 +74,16 @@ class Toexecute
      *  (executeTask() allows 360 s); if the claiming runner dies mid-task, the
      *  task retries after the lease expires. */
     public const CLAIM_LEASE = 1800;
+
+    /** Task classes AA no longer has: their queued rows can never run and are removed. Only these -
+     *  during a deploy or with a stale classmap a live class may be missing for a moment. */
+    public const REMOVED_TASK_CLASSES = ['AA_Task_Import_Module_Chunk', 'AA\\Central\\Task\\ImportModuleChunk'];
+
+    /** log.type of the removed-class tasks dropped from the queue */
+    public const LOG_CLASS_GONE = 'TASK_GONE';
+
+    /** log.type of the tasks left in the queue because their class is missing */
+    public const LOG_CLASS_MISSING = 'TASK_MISS';
 
     /** later function
      *  Stores the object and params to the database for later execution.
@@ -264,8 +275,9 @@ class Toexecute
             } elseif ($ret === 0) {
                 break;
             }
-            // $ret < 0: a concurrent runner claimed the task - its execute_after
-            // moved ahead, so the next SELECT skips it; just carry on
+            // $ret < 0: a concurrent runner claimed the task, or its class is missing and
+            // it stays queued - either way its execute_after moved ahead, so the next
+            // SELECT skips it; just carry on
         }
         AA_Log::write('TOEXECUTE', 'AA\Later\Toexecute', new AA_Logentry_Xrun(['done' => $count, 'started' => $started, 'duration' => sprintf('%.3g', microtime(true) - $execute_start), 'allowed' => $allowed_time]));
     }
@@ -318,17 +330,18 @@ class Toexecute
             } elseif ($ret === 0) {
                 break;
             }
-            // $ret < 0: claimed by a concurrent runner meanwhile - skip it
+            // $ret < 0: claimed by a concurrent runner meanwhile, or its class is missing - skip it
         }
         AA_Log::write('TOEXECUTE', 'AA\Later\Toexecute', new AA_Logentry_Xrun(['done' => $count, 'started' => $started, 'duration' => sprintf('%.3g', microtime(true) - $execute_start), 'allowed' => $allowed_time]));
     }
 
     /** @return int 1 = task executed, 0 = out of allowed time (caller stops),
-     *              -1 = lost the claim to a concurrent runner (caller skips) */
+     *              -1 = lost the claim to a concurrent runner, or the task's class is
+     *                   missing and the task stays queued (caller skips) */
     public function _exeOne($task, &$execute_times, $execute_start, $allowed_time): int
     {
         $task_type = get_if($task['selector'], 'aa_unspecified');
-        $expected_time = (float) get_if($execute_times[$task_type], 1.0);  // default time expected for one task is 1 second
+        $expected_time = (float) get_if($execute_times[$task_type] ?? null, 1.0);  // default time expected for one task is 1 second
         $task_start = microtime(true);
 
         // can we run next task? Does it (most probably) fit in allowed_time?
@@ -362,8 +375,11 @@ class Toexecute
         }
 
         $object = unserialize($task['object']);
+        if ($object instanceof \__PHP_Incomplete_Class) {
+            return $this->taskOfMissingClass($task, $object);
+        }
         $params = unserialize((string) $task['params']);   // also fed to the log row below, so unserialize once
-        if (is_object($object) && !($object instanceof \__PHP_Incomplete_Class)) {
+        if (is_object($object)) {
             $retcode = $this->execute_one($object, $params);
             $this->message($retcode);
             $selector = AA_Log::selector($object);
@@ -382,6 +398,25 @@ class Toexecute
 
         AA_Log::write('TOEXECUTE', $selector, AA_Logentry_X::make(sprintf('%.3g', $execute_times[$task_type]), $mem_usage, $mem_peak, (string) $retcode, $params));
         return 1;
+    }
+
+    /** A task whose class is not declared. Of a removed class it is dropped; of any other it stays
+     *  queued - the claim's lease delays the retry and its lowered priority retires the row after about
+     *  100 attempts, long enough to survive a deploy. The log gets one row a day per class, not one per
+     *  task - there may be thousands of them (State Check: CheckQueuedClassMissing).
+     *  @return int 1 = dropped, -1 = left in the queue (the caller goes on) */
+    private function taskOfMissingClass(array $task, \__PHP_Incomplete_Class $object): int
+    {
+        $class = (string) (((array) $object)['__PHP_Incomplete_Class_Name'] ?? '');
+        if (in_array($class, self::REMOVED_TASK_CLASSES, true)) {
+            DB_AA::delete('toexecute', [['id', $task['id'], 'i']]);
+            LogOnce::daily(self::LOG_CLASS_GONE, $class, (string) $task['selector']);
+            $this->message("Toexecute: class $class no longer exists - task removed from the queue");
+            return 1;
+        }
+        LogOnce::daily(self::LOG_CLASS_MISSING, $class, (string) $task['selector']);
+        $this->message("Toexecute: class $class is missing - task left in the queue");
+        return -1;
     }
 
     /** execute_one function

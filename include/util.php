@@ -386,18 +386,6 @@ function array_merge_append_global($newValues): void
     }
 }
 
-function recursive_array_replace($find, $replace, $array): array|string
-{
-    if (!is_array($array)) {
-        return str_replace($find, $replace, $array);
-    }
-    $newArray = [];
-    foreach ($array as $key => $value) {
-        $newArray[$key] = recursive_array_replace($find, $replace, $value);
-    }
-    return $newArray;
-}
-
 /** new_id function
  *  returns new unpacked md5 unique id, except these which can  force unexpected end of string
  * @param $mark
