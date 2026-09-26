@@ -164,8 +164,14 @@ export class TextareaSync {
     write(value) {
         if (NATIVE_VALUE.get.call(this.#textarea) !== value) {
             NATIVE_VALUE.set.call(this.#textarea, value);   // not the watchers: the editor already shows it
+            this.typed();
         }
         this.#checkValid();
+    }
+
+    /** Typing in the editor presses no key on the textarea - a live field marks itself unsaved on keypress. */
+    typed() {
+        this.#textarea.dispatchEvent(new KeyboardEvent('keypress'));
     }
 
     commit() {
@@ -228,6 +234,7 @@ class AaCodeElement extends HTMLElement {
     #editor = null;
     #textarea = null;
     #sync = null;
+    #showing = false;                       // a script's value going into the editor, not typing
     #onFocusout = (e) => {
         // moving inside the element (the search panel) does not end the edit
         if (!this.contains(e.relatedTarget)) {
@@ -266,9 +273,17 @@ class AaCodeElement extends HTMLElement {
                     return true;
                 }
                 if (this.#editor.getValue() === value) {
+                    if (!this.#showing) {
+                        this.#sync?.typed();    // the bundle mirroring an edit
+                    }
                     return false;
                 }
-                this.#editor.setValue(value);
+                this.#showing = true;
+                try {
+                    this.#editor.setValue(value);
+                } finally {
+                    this.#showing = false;
+                }
                 return true;
             },
         });
