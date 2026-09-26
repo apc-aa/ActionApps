@@ -82,6 +82,24 @@ class Actionapps
         return (is_numeric($id) && ((int) $id > 0)) ? (int) $id : null;
     }
 
+    /** The address of a page of that AA, like "central/installapp.php" - from the row, never from a request.
+     *  null when the domain is no absolute http(s) address, or when a domain without a trailing slash is glued
+     *  to a relative base dir ("https://example.org" + "aa/" names another host): the row is edited by hand
+     *  and "javascript:" would run in our page. */
+    public function getPageUrl(string $page): ?string
+    {
+        $domain = (string) $this->getValue('AA_HTTP_DOMAIN');
+        $base   = (string) $this->getValue('AA_BASE_DIR');
+        if (!preg_match('~^https?://[^/?#\s@\\\\]+(/[^?#\s]*)?$~iD', $domain)) {
+            return null;
+        }
+        if (!str_ends_with($domain, '/') && ($base !== '') && !str_starts_with($base, '/')) {
+            return null;
+        }
+        $dir = trim($base, '/');
+        return rtrim($domain, '/') . '/' . (($dir === '') ? '' : "$dir/") . ltrim($page, '/');
+    }
+
     /** url of remote AAs - like "https://example.org/apc-aa/"  */
     public function getComunicatorUrl(): string
     {

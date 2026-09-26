@@ -282,12 +282,33 @@ function installapp_form(int $aa, string $uid): void
         installapp_login_form($aa);
         return;
     }
+    installapp_source_form();
     echo '<form method="post" action="' . safe(installapp_url()) . '">' . FormToken::field(INSTALLAPP_TOKEN) . '<input type="hidden" name="action" value="preview">';
     FrmTabCaption(_m('What to install from this AA'));
     installapp_module_rows(AA_Module::getModules('W', true), AA_Module::getModules('S', true) + AA_Module::getModules('Alerts', true));
     installapp_mode_rows();
     FrmTabEnd();
     echo '<p><button class="btn-l" type="submit">' . _m('Preview') . '</button></p></form>';
+}
+
+/** The choice of the source: this AA, or another one of the Central list, which leads to its login.
+ *  Superadmins only - the login to another AA is theirs anyway. */
+function installapp_source_form(): void
+{
+    $aas = IsSuperadmin() ? Actionapps::getArray() : [];
+    if (!$aas) {
+        return;
+    }
+    $options = [0 => _m('This AA')];
+    foreach ($aas as $id => $aa) {
+        $options[$id] = $aa->getName();
+    }
+    // a GET form drops the query of its action - the state goes in a hidden field too
+    echo '<form method="get" action="' . safe(installapp_url()) . '">' . StateHidden();
+    FrmTabCaption(_m('Source'));
+    FrmInputSelect('aa', _m('Install from'), $options, '0', true, _m('Another AA asks for the login of its superadmin.'));
+    FrmTabEnd();
+    echo '<p><button class="btn" type="submit">' . _m('Choose the source') . '</button></p></form>';
 }
 
 /** the first step for another AA: the mode and the login of its superadmin - the app is chosen after it,

@@ -125,6 +125,7 @@ function GetCommonMenu(AA_Profile $profile): array {
             "synchronize" => ["cond"=>IsSuperadmin(),              "href"=>"central/synchronize.php",                                    "label"=>_m("Synchronize...")],
             "copyslice"   => ["cond"=>IsSuperadmin(),              "href"=>"central/copyslice.php",                                      "label"=>_m("Copy Slice...")],
             "installapp"  => ["cond"=>\AA\Central\Package\Importer::hasInstallPermission((string) AuthGetUid()), "href"=>"central/installapp.php",   "label"=>_m("Install an app...")],
+            "copyapp"     => ["cond"=>IsSuperadmin(),              "href"=>"central/copyapp.php",                                       "label"=>_m("Copy an app between AAs...")],
             "item6"       => ["cond"=>IsSuperadmin(),              "href"=>"central/index.php?DeleteTrash=1",                           "label"=>_m("Empty trash"), "js"=>"EmptyTrashQuestion('{href}','"._m("Are you sure you want to empty trash?")."')"],
             "importcsv"   => ["cond"=>IsSuperadmin(),              "href"=>"central/import_csv.php",                                     "label"=>_m("Import conf from CSV...")],
         ]

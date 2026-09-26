@@ -130,6 +130,38 @@ final class CentralActionappsTest extends TestCase
         $this->assertSame($url, $aa->getComunicatorUrl());
     }
 
+    /** @return array<string, array{string, string, ?string}> domain, base dir => URL of another page, null: refused */
+    public static function pageLocations(): array
+    {
+        return [
+            'usual'                => ['https://example.org/', 'apc-aa/', 'https://example.org/apc-aa/central/installapp.php'],
+            'base dir without slash' => ['https://example.org/', 'aa', 'https://example.org/aa/central/installapp.php'],
+            'both with slash'      => ['https://example.org/', '/aa/', 'https://example.org/aa/central/installapp.php'],
+            'empty base dir'       => ['https://example.org/', '', 'https://example.org/central/installapp.php'],
+            'upper case scheme'    => ['HTTP://example.org/', 'aa/', 'HTTP://example.org/aa/central/installapp.php'],
+            'bare host, base dir from root' => ['https://actionapps.org', '/aadev', 'https://actionapps.org/aadev/central/installapp.php'],
+            'bare host, empty base dir' => ['https://360re.ecn.cz', '', 'https://360re.ecn.cz/central/installapp.php'],
+            'path in the domain'   => ['https://example.org/fff', '', 'https://example.org/fff/central/installapp.php'],
+            'bare host glued to base dir' => ['https://example.org', 'aa/', null],
+            'user info'            => ['https://user:pw@example.org/', '', null],
+            'path in the domain, base dir from root' => ['https://example.org/fff', '/aa', 'https://example.org/fff/aa/central/installapp.php'],
+            'path in the domain glued to base dir' => ['https://example.org/fff', 'aa', null],
+            'trailing newline'     => ["https://example.org\n", '', null],
+            'empty domain'         => ['', 'aa/', null],
+            'relative domain'      => ['example.org/', 'aa/', null],
+            'no host'              => ['https://', '/aa/', null],
+            'other scheme'         => ['javascript:alert(1)//', '', null],
+        ];
+    }
+
+    #[DataProvider('pageLocations')]
+    public function test_getPageUrl_joins_domain_and_base_dir_or_refuses(string $domain, string $base, ?string $url): void
+    {
+        $aa = self::aa(['AA_HTTP_DOMAIN' => $domain, 'AA_BASE_DIR' => $base]);
+
+        $this->assertSame($url, $aa->getPageUrl('central/installapp.php'));
+    }
+
     public function test_getName_does_not_escape(): void
     {
         // pinned: the callers escape (synchronize3.php safe()s it), the select boxes do not
