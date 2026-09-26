@@ -409,10 +409,17 @@ final class InstallRun extends AA_Object
      *  @param array<string, string> $targets the targets the write form sends */
     public function matchesPreview(string $definitions, bool $sameAa, array $targets): bool
     {
-        ksort($targets);
+        return hash_equals($this->fingerprint, hash('sha256', $definitions)) && ($this->sameAa() === $sameAa) && $this->chose($targets);
+    }
+
+    /** the run keeps these targets - a write form of an older preview chose others
+     *  @param array<string, string> $targets */
+    public function chose(array $targets): bool
+    {
         $mine = $this->targets();
         ksort($mine);
-        return hash_equals($this->fingerprint, hash('sha256', $definitions)) && ($this->sameAa() === $sameAa) && ($mine === $targets);
+        ksort($targets);
+        return $mine === $targets;
     }
 
     /** The targets a form sends (into[<source slice>] = slice of this AA): pairs of long ids, lower case;

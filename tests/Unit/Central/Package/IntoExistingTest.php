@@ -591,6 +591,35 @@ final class IntoExistingTest extends TestCase
         self::assertTrue($run->matchesPreview(self::DEFINITIONS, false, []));
     }
 
+    public function test_a_kept_relation_to_another_slice_is_named(): void
+    {
+        TableDb::$tables['field'][] = ['id' => 'relation.......1', 'slice_id' => self::T, 'type' => 'relation', 'name' => 'Vazba', 'input_show_func' => 'mse:#sLiCe-' . self::FS . ':', 'text_stored' => 1, 'input_insert_func' => ''];
+        $package = self::rows(self::example(), self::SLICE, 'field', static fn(array $rows): array => [...$rows, ['id' => 'relation.......1', 'type' => 'relation', 'name' => 'Vazba', 'input_show_func' => 'mse:#sLiCe-' . self::SLICE . ':']]);
+        $at      = self::S . '/field[relation.......1]';
+
+        $transfer = self::codes($this->planInto($package, [self::SLICE => self::T], true)->findings);
+        $install  = self::codes($this->planInto($package)->findings);
+
+        self::assertContains('W ' . ExistingSlices::RELATION_TARGET . " $at the slice selects from " . self::FS . ', the items will point to ' . self::T, $transfer);
+        self::assertNotContains('W ' . ExistingSlices::FIELD_DIFFERS . " $at input_show_func", $transfer, 'the specific warning replaces it');
+        self::assertContains('W ' . ExistingSlices::FIELD_DIFFERS . " $at input_show_func", $install, 'no items come');
+    }
+
+    public function test_a_choice_shows_the_slice_with_its_short_id(): void
+    {
+        self::assertSame('Central Test - Articles (e0e0e0e0)', ExistingSlices::choiceLabel('Central Test - Articles', self::T));
+    }
+
+    public function test_the_run_tells_a_changed_choice_from_a_changed_source(): void
+    {
+        $id  = InstallRun::preview(InstallRun::INSTALL, false, InstallRun::LOCAL, self::USER, '', self::NOW, hash('sha256', self::DEFINITIONS), [self::SLICE => self::T])->getId();
+        $run = InstallRun::get($id);
+
+        self::assertTrue($run->chose([self::SLICE => self::T]));
+        self::assertFalse($run->chose([]));
+        self::assertFalse($run->chose([self::SLICE => self::FS]));
+    }
+
     public function test_the_targets_of_the_form(): void
     {
         self::assertSame([self::SLICE => self::T], InstallRun::targetsFrom([

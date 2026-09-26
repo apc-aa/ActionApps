@@ -47,6 +47,7 @@ use AA\Central\ItemIdCheck;
 use AA\Central\Package\AaAfterCommit;
 use AA\Central\Package\DbImportTarget;
 use AA\Central\Package\DbSource;
+use AA\Central\Package\ExistingSlices;
 use AA\Central\Package\ImportConfirmation;
 use AA\Central\Package\ImportFailed;
 use AA\Central\Package\Importer;
@@ -581,7 +582,7 @@ function installapp_into_select(string $old, string $chosen, array $choices): st
 {
     $html = '<select name="into[' . safe($old) . ']" aria-label="' . safe(_m('Into')) . '"><option value="">' . safe(_m('a new slice')) . '</option>';
     foreach ($choices as $id => $name) {
-        $html .= '<option value="' . safe((string) $id) . '"' . (((string) $id === $chosen) ? ' selected' : '') . '>' . safe(_m('existing: %1', [(string) $name])) . '</option>';
+        $html .= '<option value="' . safe((string) $id) . '"' . (((string) $id === $chosen) ? ' selected' : '') . '>' . safe(_m('existing: %1', [ExistingSlices::choiceLabel((string) $name, (string) $id)])) . '</option>';
     }
     return $html . '</select>';
 }
@@ -622,6 +623,10 @@ function installapp_write(string $run_id, string $site, array $modules, array $i
     }
     if ($prepared['error'] !== '') {
         echo '<div class="aa-err">' . safe($prepared['error']) . ($prepared['login'] ? ' ' . installapp_relogin($run) : '') . '</div>';
+        return;
+    }
+    if (!$run->chose($into)) {
+        echo '<div class="aa-err">' . _m('The choice changed since the preview - preview again.') . '</div>';
         return;
     }
     if (!$run->matchesPreview($prepared['xml'], $prepared['same'], $into)) {

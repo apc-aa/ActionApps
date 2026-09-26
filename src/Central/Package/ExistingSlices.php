@@ -27,6 +27,9 @@ final class ExistingSlices
     public const SLICE_TYPE = 'slice-type-differs';
     /** W: a field the slice has differs from the package's - the slice's stays; ref = the columns */
     public const FIELD_DIFFERS = 'field-differs';
+    /** W: a transfer, and a relation field of the slice selects from another slice than the package's points
+     *  to - the items' values name items of that one; ref = "the slice selects from X, the items will point to Y" */
+    public const RELATION_TARGET = 'relation-target-differs';
     /** E: a transfer, and the slice's field stores its values otherwise (text / number, a password hash) - the items would be broken; ref = the columns */
     public const FIELD_TYPE = 'field-type-differs';
     /** I: the slice has a view of the name - it stays, the package's references go to it; ref = its id */
@@ -181,6 +184,11 @@ final class ExistingSlices
                         $differ[] = $column;
                     }
                 }
+                $relation = $transfer ? self::relation($rewrite->known(self::column($row, 'input_show_func', null)), self::column($have, 'input_show_func', null)) : null;
+                if ($relation !== null) {
+                    $this->add($this->schema->rowPath(Module::SLICE . "[$old]", 'field', $row, $i), LintFinding::WARNING, self::RELATION_TARGET, "the slice selects from $relation[1], the items will point to $relation[0]");
+                    $differ = array_values(array_diff($differ, ['input_show_func']));
+                }
                 if ($differ) {
                     $breaks = $transfer && ($this->storage($row) !== $this->storage($have));
                     $this->add($this->schema->rowPath(Module::SLICE . "[$old]", 'field', $row, $i), $breaks ? LintFinding::ERROR : LintFinding::WARNING, $breaks ? self::FIELD_TYPE : self::FIELD_DIFFERS, implode(', ', $differ));
@@ -203,6 +211,12 @@ final class ExistingSlices
                 }
             }
         }
+    }
+
+    /** "name (short id)" of a slice to choose - several slices may share a name */
+    public static function choiceLabel(string $name, string $id): string
+    {
+        return "$name (" . substr($id, 0, 8) . ')';
     }
 
     /** The name an object is paired by: its aa_name; an alias function without one by its alias - two of
@@ -364,6 +378,18 @@ final class ExistingSlices
             }
         }
         return $add;
+    }
+
+    /** [the package's, the slice's] slices two relation widgets select from, when they differ; null = no two relations
+     *  @return array{string, string}|null */
+    private static function relation(string|RawBytes $mine, string|RawBytes $theirs): ?array
+    {
+        $of = static function (string|RawBytes $value): ?string {
+            $group = ReferenceRewriter::rowGroup('field', ['input_show_func' => ValueCodec::bytes($value)]);
+            return (($group !== null) && str_starts_with($group, '#sLiCe-')) ? strtolower(substr($group, 7)) : null;
+        };
+        [$to, $from] = [$of($mine), $of($theirs)];
+        return (($to !== null) && ($from !== null) && ($to !== $from)) ? [$to, $from] : null;
     }
 
     /** [text stored, a password] of a field row */
