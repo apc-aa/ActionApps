@@ -552,6 +552,19 @@ class AA_Slice extends AA_Module
     protected const SETTING_CLASS = 'AA_Modulesettings_Slice';
     protected const SETTING_TABLE = 'slice';
 
+    /** a stored, not deleted slice - unlike getOwnModule() (a class check, an unknown id still builds
+     *  an AA_Slice) and AA_Module::getModuleType() (an unknown id is 'S'). The letters of the rights mean
+     *  other things in other module types, so a right on an id says nothing about it being a slice.
+     */
+    public static function isStoredSlice(string $id): bool
+    {
+        if (!is_long_id($id)) {
+            return false;
+        }
+        $type = DB_AA::select1('type', 'SELECT `type` FROM `module`', [['id', $id, 'l'], ['deleted', 0, 'i']]);
+        return ($type !== false) && (((string) $type ?: 'S') === 'S');   // no type - an old slice
+    }
+
     // computed values form slice fields
     public $show_func_used; // used show functions in the input form
 

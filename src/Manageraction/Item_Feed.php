@@ -46,7 +46,7 @@ class Item_Feed extends AbstractManageraction
             }
             $sid      = strtolower($sid);
             $approved = ($status === '1') ? 'y' : 'n';
-            if (!self::isSlice($sid)) {
+            if (!AA_Slice::isStoredSlice($sid)) {
                 $msg[] = _m('Items can be exported only to a slice.');
             } elseif (!self::mayFeedTo($sid, $approved)) {
                 $msg[] = _m('You do not have permission to export items to the slice %1.', [AA_Slice::getModuleNameSafe($sid) ?: $sid]);
@@ -68,18 +68,6 @@ class Item_Feed extends AbstractManageraction
             $msg[] = _m('Some of the selected items were not exported - they are not items of this slice.');
         }
         return $msg ? implode(' ', array_unique($msg)) : false;
-    }
-
-    /** an existing slice - AA_Module::getModuleType() takes an unknown id for a slice, and the letters
-     *  of the rights mean other things in other modules
-     */
-    private static function isSlice(string $sid): bool
-    {
-        if (!is_long_id($sid)) {
-            return false;
-        }
-        $type = DB_AA::select1('type', 'SELECT `type` FROM `module`', [['id', $sid, 'l'], ['deleted', 0, 'i']]);
-        return ($type !== false) && (((string) $type ?: 'S') === 'S');   // no type - an old slice
     }
 
     /** the same rights feed_to.php offers the slice for: an author there, an editor for the approved items */

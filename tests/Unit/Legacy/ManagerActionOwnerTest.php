@@ -11,6 +11,7 @@ namespace Tests\Unit\Legacy {
     use AA\Managed_Object;
     use AA\Managed_Table;
     use AA\Manager;
+    use AA\Manageraction\Item_Move2Slice;
     use AA\Manageraction\Manageractions;
     use AA\Manageraction\Object_Delete;
     use AA\Manageraction\Object_Move2slice;
@@ -599,6 +600,92 @@ namespace Tests\Unit\Legacy {
             [$finding] = CheckObjectFormRefusals::findingsFor([['days' => '1', 'first' => '1758000000', 'last' => '1758000000'] + $row], []);
             $this->assertStringContainsString('export', $finding->title);
             $this->assertStringContainsString(self::ITEM_OTHER, $finding->title);
+        }
+
+        // ------------------------------------------------------------------ move to another slice (admin/index.php)
+
+        /** the Item Manager of MODULE; the user may move items out of it and approve items in DEST and HOLD */
+        private static function moveManager(): Manager
+        {
+            self::perms([self::MODULE => PS_DELETE_ITEMS, self::OTHER => '', self::DEST => PS_ITEMS2ACT, self::HOLD => PS_ITEMS2ACT]);
+            $actions = new Manageractions();
+            $actions->addAction(new Item_Move2Slice('Move2slice', self::MODULE));
+            return self::manager(new Managed(), $actions);
+        }
+
+        /** @return string the writes of the items in lowercase - the ids as the SQL names them */
+        private static function moved(): string
+        {
+            return strtolower(implode("\n", self::writes('item')));
+        }
+
+        public function test_move_moves_the_own_item_to_a_slice(): void
+        {
+            $this->assertSame('', self::act(self::moveManager(), 'Move2slice', [self::ITEM_OWN], ['dest_slice_id' => self::DEST]));
+
+            $this->assertCount(1, self::writes('item'));
+            $this->assertStringContainsString('0x' . self::DEST, self::moved());
+            $this->assertStringContainsString(self::ITEM_OWN, self::moved());
+        }
+
+        /** a module without a type is a slice of an old AA */
+        public function test_move_moves_to_an_old_slice_without_a_type(): void
+        {
+            $this->assertSame('', self::act(self::moveManager(), 'Move2slice', [self::ITEM_OWN], ['dest_slice_id' => self::HOLD]));
+
+            $this->assertStringContainsString('0x' . self::HOLD, self::moved());
+        }
+
+        public function test_move_leaves_an_item_of_another_slice(): void
+        {
+            self::act(self::moveManager(), 'Move2slice', [self::ITEM_OWN, self::ITEM_OTHER], ['dest_slice_id' => self::DEST]);
+
+            $this->assertStringContainsString(self::ITEM_OWN, self::moved());
+            $this->assertStringNotContainsString(self::ITEM_OTHER, self::moved());
+        }
+
+        public function test_move_refuses_a_slice_without_the_right(): void
+        {
+            $this->assertNotSame('', self::act(self::moveManager(), 'Move2slice', [self::ITEM_OWN], ['dest_slice_id' => self::OTHER]));
+            $this->assertSame([], self::writes('item'));
+        }
+
+        /** the letters of the rights are shared by all module types ('h' approves polls in a polls module) */
+        public function test_move_refuses_a_polls_module_with_the_same_letter(): void
+        {
+            $this->assertSame(PS_ITEMS2ACT, PS_MODP_POLLS2ACT);
+            $manager = self::moveManager();
+            $GLOBALS['permission_to']['slice'][self::POLLS] = PS_MODP_POLLS2ACT;
+
+            $this->assertNotSame('', self::act($manager, 'Move2slice', [self::ITEM_OWN], ['dest_slice_id' => self::POLLS]));
+            $this->assertSame([], self::writes('item'));
+        }
+
+        /** AA-wide rights pass any module id - the target must be a stored slice */
+        public function test_move_refuses_a_deleted_slice(): void
+        {
+            $manager = self::moveManager();
+            $GLOBALS['permission_to']['aa'][AA_ID] = \AA_Perm::ROLES['SUPER']['perm'];
+
+            $this->assertNotSame('', self::act($manager, 'Move2slice', [self::ITEM_OWN], ['dest_slice_id' => self::DELETED]));
+            $this->assertSame([], self::writes('item'));
+        }
+
+        public function test_move_refuses_an_unknown_module(): void
+        {
+            $manager = self::moveManager();
+            $GLOBALS['permission_to']['aa'][AA_ID] = \AA_Perm::ROLES['SUPER']['perm'];
+
+            $this->assertNotSame('', self::act($manager, 'Move2slice', [self::ITEM_OWN], ['dest_slice_id' => self::MISSING]));
+            $this->assertSame([], self::writes('item'));
+        }
+
+        public function test_move_refuses_a_malformed_target(): void
+        {
+            foreach (['', self::DEST, ['dest_slice_id' => [self::DEST]], ['dest_slice_id' => 'not-a-slice'], ['dest_slice_id' => self::DEST . "' OR 1=1"]] as $param) {
+                $this->assertNotSame('', self::act(self::moveManager(), 'Move2slice', [self::ITEM_OWN], $param), var_export($param, true));
+            }
+            $this->assertSame([], self::writes('item'));
         }
 
         // ------------------------------------------------------------------ poll edit page (modules/polls/polledit.php)

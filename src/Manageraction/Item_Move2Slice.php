@@ -5,6 +5,7 @@ namespace AA\Manageraction;
 use AA;
 use AA\IO\DB\DB_AA;
 use AA\Manager;
+use AA_Slice;
 use AA_Property;
 use zids;
 
@@ -63,7 +64,7 @@ class Item_Move2Slice extends AbstractManageraction
         if (is_array($g_modules) && count($g_modules) > 1) {
             foreach ($g_modules as $sid => $v) {
                 //  we can feed just between slices ('S')                                                 // we must have autor or editor perms in destination slices
-                if ($v['type'] === 'S' && (string) $this->slice_id !== (string) $sid && IfSlPerm(PS_ITEMS2ACT, $sid)) {
+                if ($v['type'] === 'S' && (string) $this->slice_id !== (string) $sid && IfSlPerm(PS_ITEMS2ACT, $sid) && AA_Slice::isStoredSlice((string) $sid)) {
                     $options[$sid] = $v['name'];
                 }
             }
@@ -79,8 +80,13 @@ class Item_Move2Slice extends AbstractManageraction
     /** @inheritDoc */
     public function perform(Manager $manager, zids $item_zids, $action_param): string|false
     {
-        if (!is_long_id($dest_slice_id = $action_param['dest_slice_id'])) {
+        $dest_slice_id = is_array($action_param) ? ($action_param['dest_slice_id'] ?? '') : '';
+        if (!is_string($dest_slice_id) || !is_long_id($dest_slice_id)) {
             return _m('No slice selected');
+        }
+        $dest_slice_id = strtolower($dest_slice_id);
+        if (!AA_Slice::isStoredSlice($dest_slice_id)) {
+            return _m('Items can be moved only to a slice.');
         }
 
         if (!IfSlPerm(PS_DELETE_ITEMS, $this->slice_id) || !IfSlPerm(PS_ITEMS2ACT, $dest_slice_id)) {    // permission to delete items and add items in destination slice?
