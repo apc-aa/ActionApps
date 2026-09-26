@@ -62,7 +62,7 @@ $link = null;
 $err  = '';
 if ($chosen) {
     try {
-        $link = TransferLink::resolve($source, $target, static fn(int $id): ?Actionapps => Actionapps::find($id), $here);
+        $link = TransferLink::resolve($source, $target, Actionapps::listed(...), $here);
     } catch (InvalidArgumentException) {
         $err = _m('No such AA in the Central list.');
     } catch (UnexpectedValueException) {
@@ -96,8 +96,9 @@ if ($link) {
 // a GET form drops the query of its action - the state goes in a hidden field too
 echo '<form method="get" action="' . safe(copyapp_url()) . '">' . StateHidden();
 FrmTabCaption(_m('Copy an app between AAs'));
-FrmInputSelect('source', _m('Source'), $aas, (string) $source, true, _m('The AA the app comes from.'));
-FrmInputSelect('target', _m('Target'), $aas, (string) $target, true, _m('The AA the app is installed to. The same AA as the source makes a copy inside it.'));
+// an id not offered is not echoed back as an option
+FrmInputSelect('source', _m('Source'), $aas, isset($aas[$source]) ? (string) $source : '0', true, _m('The AA the app comes from.'));
+FrmInputSelect('target', _m('Target'), $aas, isset($aas[$target]) ? (string) $target : '0', true, _m('The AA the app is installed to. The same AA as the source makes a copy inside it.'));
 FrmTabEnd();
 echo '<p><button class="btn-l" type="submit">' . _m('Continue') . '</button></p></form>';
 

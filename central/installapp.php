@@ -315,7 +315,7 @@ function installapp_source_form(): void
  *  from the modules that login sees */
 function installapp_login_form(int $aa): void
 {
-    $remote = Actionapps::find($aa);
+    $remote = Actionapps::listed($aa);
     if (!$remote) {
         echo '<div class="aa-err">' . _m('No such AA in the Central list.') . '</div>';
         return;
@@ -359,6 +359,10 @@ function installapp_mode_rows(): void
  *  @param array{string, string, string} $login username, password, 2FA code of the source */
 function installapp_connect(int $aa, string $mode, bool $all_bins, array $login, string $uid): void
 {
+    if (!Actionapps::listed($aa)) {
+        echo '<div class="aa-err">' . _m('No such AA in the Central list.') . '</div>';
+        return;
+    }
     try {
         $remote = RemoteSource::forAa($aa);
         $sealed = $remote->seal($remote->jwt(...$login));

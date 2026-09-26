@@ -179,6 +179,10 @@ $r_state['bin_cnt'] = CountItemsInBins();
 $apage = new AA_Adminpageutil('central',$manager->getBin());
 $apage->setForm();
 
+// installapp.php takes only approved rows - no dead link in the hold and trash bins
+if (!in_array($manager->getBin(), ['app', 'appb', 'appc'], true)) {
+    $managed->setColumns2show(['ORG_NAME','AA_HTTP_DOMAIN','AA_BASE_DIR', 'admin_link', 'auth']);
+}
 $html = $manager->getDisplayPage();
 
 // JS helper for the per-row Authenticate button: builds & POSTs a hidden form.

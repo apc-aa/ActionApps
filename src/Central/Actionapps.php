@@ -179,7 +179,9 @@ class Actionapps
     /** name of AA as in local table*/
     public function getName(): string
     {
-        return $this->getValue('ORG_NAME') . ' (' . $this->getValue('AA_HTTP_DOMAIN') . $this->getValue('AA_BASE_DIR') . ')';
+        $address = $this->getValue('AA_HTTP_DOMAIN') . $this->getValue('AA_BASE_DIR');
+        $name    = (string) $this->getValue('ORG_NAME');
+        return (trim($name) === '') ? $address : "$name ($address)";
     }
 
     /** @return string ORG_NAME of remote AAs
@@ -317,6 +319,13 @@ class Actionapps
             $ret[$k] = new Actionapps(new ItemContent($content4id));
         }
         return $ret;
+    }
+
+    /** The AA of the row when getArray() lists it (the approved bin), else null - the pages that take
+     *  a row id from a request accept only what their pickers offer. */
+    public static function listed(int $id): ?Actionapps
+    {
+        return self::getArray()[$id] ?? null;
     }
 
     /** Loads the central_conf rows of the ids

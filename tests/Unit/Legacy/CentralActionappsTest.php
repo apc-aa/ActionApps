@@ -168,6 +168,12 @@ final class CentralActionappsTest extends TestCase
         $this->assertSame('<b>Org</b> (x/y/)', self::aa(['ORG_NAME' => '<b>Org</b>', 'AA_HTTP_DOMAIN' => 'x/', 'AA_BASE_DIR' => 'y/'])->getName());
     }
 
+    public function test_getName_without_org_name_is_the_address(): void
+    {
+        $this->assertSame('https://example.org/aa/', self::aa(['ORG_NAME' => '', 'AA_HTTP_DOMAIN' => 'https://example.org/', 'AA_BASE_DIR' => 'aa/'])->getName());
+        $this->assertSame('https://example.org/aa/', self::aa(['ORG_NAME' => ' ', 'AA_HTTP_DOMAIN' => 'https://example.org/', 'AA_BASE_DIR' => 'aa/'])->getName());
+    }
+
     /** @return array<string, array{?string, ?string}> AA_ADMIN_PWD => auth token */
     public static function passwords(): array
     {
@@ -245,6 +251,18 @@ final class CentralActionappsTest extends TestCase
         $this->assertSame('tok', $aas[12]->getAuthToken());
         $this->assertSame('7', $aas[7]->getValue('id'));
         $this->assertSame('secret', $aas[7]->getAccessPassword());
+    }
+
+    public function test_listed_is_a_row_of_getArray_only(): void
+    {
+        self::answerCentralConf();
+
+        $aa = self::collectingWarnings(static fn() => AA_Actionapps::listed(12));
+        $this->assertSame('Alpha (https://a.example.org/aa/)', $aa?->getName());
+        $this->assertStringContainsString('central_conf.status_code=1', RecordingDb::$log[0], 'the approved bin, as the pickers');
+
+        self::answerCentralConf();
+        $this->assertNull(self::collectingWarnings(static fn() => AA_Actionapps::listed(2)), 'a row in no bin, or no row at all');
     }
 
     public function test_getArray_without_approved_aa_is_empty_after_one_query(): void
