@@ -220,8 +220,9 @@ function TabWidgetToggle(class2togle) {
 // aa-richtext.js next to this file - for text areas of hand-written forms, which come without <aa-richtext>;
 // kept on the function, where no element id of the page can stand in for it (window.<id> could)
 if (document.currentScript?.src) {
-    const url = new URL('widgets/aa-richtext.js', document.currentScript.src);
-    url.search = new URL(document.currentScript.src).search;
+    const self = new URL(document.currentScript.src);
+    const url  = new URL('widgets/aa-richtext.js', self);
+    url.search = self.search;
     openHTMLAreaFullscreen.richtextUrl = url.href;
 }
 
@@ -237,8 +238,10 @@ function openHTMLAreaFullscreen(name) {
         box.setAttribute('editor', '');
         box.setAttribute('switch-name', name + 'html');
         box.setAttribute('switch-html', 'h');
-        textarea.before(box);
+        // the textarea goes in first: a defined element looks for it when connected
+        const [parent, next] = [textarea.parentNode, textarea.nextSibling];
         box.append(textarea);
+        parent.insertBefore(box, next);
         if (!customElements.get('aa-richtext') && openHTMLAreaFullscreen.richtextUrl) {
             import(openHTMLAreaFullscreen.richtextUrl).catch(e => console.error('openHTMLAreaFullscreen', e));
         }

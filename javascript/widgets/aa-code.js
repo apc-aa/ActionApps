@@ -146,9 +146,9 @@ export class TextareaSync {
         }
         if (host && focusEvents) {
             // focus handlers on the textarea (aa_onFocus of the slice's field JavaScript) hear the editor;
-            // the innermost host speaks, a bare textarea fires its own
+            // moving inside the host (the search panel) is not leaving it
             const forward = type => (e) => {
-                if ((e.target !== textarea) && !host.contains(e.relatedTarget) && (textarea.closest('aa-code, aa-richtext') === host)) {
+                if ((e.target !== textarea) && !host.contains(e.relatedTarget)) {
                     if (type === 'blur') {
                         this.commit();              // change comes before blur, as on a textarea
                     }
@@ -235,12 +235,6 @@ class AaCodeElement extends HTMLElement {
     #textarea = null;
     #sync = null;
     #showing = false;                       // a script's value going into the editor, not typing
-    #onFocusout = (e) => {
-        // moving inside the element (the search panel) does not end the edit
-        if (!this.contains(e.relatedTarget)) {
-            this.#sync?.commit();
-        }
-    };
 
     async connectedCallback() {
         if (this.#editor || this.#textarea) {
@@ -291,7 +285,6 @@ class AaCodeElement extends HTMLElement {
         // multilingual fields "language" would sit next to real cs/en/de codes.
         // The bundle writes every change into the textarea itself.
         this.#editor = createEditor(this.#textarea, { language: this.getAttribute('syntax') || 'html' });
-        this.addEventListener('focusout', this.#onFocusout);
         this.#textarea.hidden = true;
         // Bare attribute: a custom element owns its own attribute set. Becomes
         // states.add('ready') once :state() is Baseline Widely Available.
@@ -303,7 +296,6 @@ class AaCodeElement extends HTMLElement {
         this.#sync?.commit();
         this.#sync?.destroy();
         this.#editor?.destroy();
-        this.removeEventListener('focusout', this.#onFocusout);
         if (this.#textarea) {
             this.#textarea.hidden = false;  // <aa-richtext> takes the textarea out again
         }

@@ -193,8 +193,8 @@ export async function createRichEditor(target, { uiLang, inline = false, height 
         inline,
         height,
         license_key: 'gpl',
-        // the named textarea: the focus / blur <aa-richtext> fires on it for the page's handlers is not leaving the editor
-        custom_ui_selector: 'aa-richtext > textarea',
+        // the page's handlers hear focus / blur on the hidden named textarea - that is not leaving the editor
+        custom_ui_selector: 'aa-richtext > textarea[hidden]',
         branding: false,
         promotion: false,
         menubar: false,

@@ -44,6 +44,7 @@ class AaRichtextElement extends HTMLElement {
     #writeQueued = false;
     #connection = null;         // a removal and reconnect while loading starts a new one
     #editorAsked = false;       // showEditor() before the element was set up
+    #focused = false;           // the editor announced focus on the textarea
 
     async connectedCallback() {
         if (this.#textarea) {
@@ -100,6 +101,7 @@ class AaRichtextElement extends HTMLElement {
 
     disconnectedCallback() {
         this.#connection = null;
+        this.#editorAsked = false;
         this.#abort?.abort();
         this.#leave();                          // the textarea back in place, for a reconnect
         this.#queue = Promise.resolve();        // a TinyMCE starting on the removed copy never finishes
@@ -176,10 +178,8 @@ class AaRichtextElement extends HTMLElement {
 
     /** what holds the HTML / Plain text switch; hand-written forms name it htmlplainspan<textarea id> */
     #formatBoxes() {
-        const boxes = new Set(this.#switches.map(el => el.closest('.aa-formatters')));
-        boxes.add(this.#textarea?.id ? document.getElementById(`htmlplainspan${this.#textarea.id}`) : null);
-        boxes.delete(null);
-        return [...boxes];
+        const id = this.#textarea?.id;
+        return [...new Set([...this.#switches.map(el => el.closest('.aa-formatters')), id && document.getElementById(`htmlplainspan${id}`)].filter(Boolean))];
     }
 
     #bindSwitch() {
@@ -298,13 +298,16 @@ class AaRichtextElement extends HTMLElement {
                 height: Math.min(700, Math.max(300, (this.#textarea.rows || 10) * 20 + 120)),
                 sourceLabel: this.#l10n.source ?? 'Source',
                 onEdit: () => this.#scheduleWrite(),
-                // as a textarea: change before blur; aa_onFocus / aa_onBlur of the slice's field JavaScript hear them
-                onFocus: () => this.#textarea?.dispatchEvent(new FocusEvent('focus')),
-                onBlur: () => {
-                    this.flush();
-                    this.#textarea?.dispatchEvent(new FocusEvent('blur'));
+                // aa_onFocus / aa_onBlur of the slice's field JavaScript hear them
+                onFocus: () => {
+                    this.#focused = true;
+                    this.#textarea?.dispatchEvent(new FocusEvent('focus'));
                 },
-                onSource: () => this.#setMode('code'),
+                onBlur: () => this.#leftEditor(),
+                onSource: () => {
+                    this.#leftEditor();         // TinyMCE removed while focused says no blur
+                    this.#setMode('code');
+                },
                 upload: this.#uploadOptions(),
             });
         } catch (e) {
@@ -324,6 +327,15 @@ class AaRichtextElement extends HTMLElement {
         this.#wasRich = true;
         if (this.#textarea.value !== start) {
             api.load(this.#textarea.value);     // a script or Reset wrote it while TinyMCE was starting
+        }
+    }
+
+    /** as a textarea: change before blur */
+    #leftEditor() {
+        this.flush();
+        if (this.#focused) {
+            this.#focused = false;
+            this.#textarea?.dispatchEvent(new FocusEvent('blur'));
         }
     }
 

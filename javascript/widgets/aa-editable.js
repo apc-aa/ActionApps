@@ -24,8 +24,7 @@ if (window.CKEDITOR) {
 
 const changed = el => document.dispatchEvent(new CustomEvent('aa-editable-change', { detail: el }));
 
-function plainEditor(el) {
-    let saved = el.innerHTML;
+function plainEditor(el, saved = el.innerHTML) {
     el.addEventListener('input', () => changed(el));
     return {
         isDirty: () => el.innerHTML !== saved,
@@ -44,6 +43,7 @@ document.addEventListener('focusin', async (e) => {
         return;
     }
     el.aaEditorLoading = true;
+    const before = el.innerHTML;               // what is typed while the editor loads is an edit too
     try {
         const { createRichEditor } = await import(BUNDLE_URL);
         el.aaEditor = await createRichEditor(el, {
@@ -54,7 +54,10 @@ document.addEventListener('focusin', async (e) => {
         el.aaEditor.focus();
     } catch (error) {
         console.error('aa-editable: could not start the editor', error);
-        el.aaEditor = plainEditor(el);          // still editable and saved, without the toolbar
+        el.aaEditor = plainEditor(el, before);  // still editable and saved, without the toolbar
+        if (el.aaEditor.isDirty()) {
+            changed(el);
+        }
     } finally {
         el.aaEditorLoading = false;
     }

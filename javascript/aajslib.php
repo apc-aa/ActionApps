@@ -37,11 +37,10 @@ https://www.apc.org/
 // headers copied from include/extsess.php3 file
 $allowcache_expire = 24*3600; // 1 day
 $exp_gmt           = gmdate("D, d M Y H:i:s", time() + $allowcache_expire) . " GMT";
-$mod_gmt           = gmdate("D, d M Y H:i:s", getlastmod()) . " GMT";
+$mod_gmt           = gmdate("D, d M Y H:i:s", filemtime(__DIR__ . '/aajslib-legacy.min.js')) . " GMT";
 header('Expires: '       . $exp_gmt);
 header('Last-Modified: ' . $mod_gmt);
-header('Cache-Control: public');
-header('Cache-Control: max-age=' . $allowcache_expire);
+header('Cache-Control: public, max-age=' . $allowcache_expire);
 header('Content-Type: application/javascript');
 
 readfile(__DIR__. '/aajslib-legacy.min.js');

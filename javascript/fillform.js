@@ -360,8 +360,11 @@ function getFieldControl(fieldID) {
 
 function getField(fieldID) {
     const val = getControlOrAADate('inputform', 'v' + unpackID(fieldID), 'tdctr_', ''); // old AA forms
-    const control = (val != null) ? null : getFieldControl(fieldID);
-    return control ? getControlValue('inputform', control.getAttribute('name')) : val;
+    if (val != null) {
+        return val;
+    }
+    const control = getFieldControl(fieldID);
+    return control ? getControlValue('inputform', control.getAttribute('name')) : null;
 }
 
 function setField(fieldID, newValue) {
