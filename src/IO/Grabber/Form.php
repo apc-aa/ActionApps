@@ -10,16 +10,11 @@
 namespace AA\IO\Grabber;
 
 use AA\FormArray;
-use AA\Optimize\CheckHtmlFlagRefusals;
-use AA\Util\LogOnce;
-use AA\Widget\EdtWidget;
 use AA\Widget\Widget;
 use AA_Content;
-use AA_Field;
 use AA_Fields;
 use AA_Item;
 use AA_Slice;
-use AA_Value;
 use Exception;
 use ItemContent;
 use RuntimeException;
@@ -64,13 +59,6 @@ class Form extends AbstractGrabber
 {
     private $_items = [];
     private $_last_store_mode;
-    /** @var array<string, array{0: bool, 1: bool}> slice id => the current user edits [all items, own items] */
-    private array $editor_perms = [];
-    /** @var array<string, bool> slice id:field id => anyone may choose HTML there */
-    private array $allows_html = [];
-
-    /** the fields holding the item's own ids - never taken from the request */
-    private const ITEM_IDS = ['slice_id........', 'u_slice_id......', 'id..............', 'unpacked_id.....'];
 
     public function __construct() {}
 
@@ -263,18 +251,19 @@ class Form extends AbstractGrabber
             // 'u': edited item - update = field content is changed to new value
             // 'r': edited item - remove value from field
             // 'i': edited item - insert = field content is added to the existing content of the field
-            $stored = null;
-            if ($store_mode = ($UPDATE_MODES[$dirty_item_id[0]] ?? null)) {
+            if ($store_mode = $UPDATE_MODES[$dirty_item_id[0]]) {
                 $item_id                         = substr($dirty_item_id, 1);
                 if (! ($item_slice_id = AA_Slice::getSliceIdFromItemId($item_id))) {
                     continue;
                 }
-                $oldcontent4id = $this->storedItem($item_id);
+                $item_fields['slice_id________'] = [pack_id($item_slice_id)];
+
+                $oldcontent4id = new ItemContent();
+                $oldcontent4id->setByItemID(new zids($item_id), true);     // ignore password
                 // if ($dirty_item_id[0] === 'r') {
                 if (!$oldcontent4id->getSliceID() || !$oldcontent4id->getItemID()) {
                     continue;
                 }
-                $stored = $oldcontent4id;
 
             } // new items
             elseif ($dirty_item_id[0] === 'n') {
@@ -283,6 +272,8 @@ class Form extends AbstractGrabber
 
                 //grab slice_id of new item
                 $item_slice_id = substr($dirty_item_id, strpos($dirty_item_id, '_') + 1);
+                // and add slice_id field to the item
+                $item_fields['slice_id________'] = [pack_id($item_slice_id)];
             } else {
                 continue;
             }
@@ -302,16 +293,10 @@ class Form extends AbstractGrabber
             if (!($slice = AA_Slice::getModule($item_slice_id))) {
                 continue;
             }
-            $editor = null;   // asked only when a field needs it
 
             foreach ($item_fields as $dirty_field_id => $val_array) {
                 // create full_text......1 from full_text______1
                 $field_id = AA_Fields::getFieldIdFromVar($dirty_field_id);
-
-                // the ids are set by the key of the item - a posted one would move it to another slice
-                if (in_array($field_id, self::ITEM_IDS, true)) {
-                    continue;
-                }
 
                 // if field is not found, skip it
                 // This is new - 2025-02-25 - see if it do not break something, but it should not
@@ -329,81 +314,14 @@ class Form extends AbstractGrabber
                 $aa_value = Widget::getValue((array) $val_array, $default_val);
                 $aa_value->replaceInValues($trans_item_alias, $trans_item_ids);
 
-                if ($stored && $dirty_item_id[0] === 'r') {
-                    // removing values leaves the stored value with its flag - it adds no content
-                    $aa_value = $stored->getAaValue($field_id)->removeValues($aa_value->getValues());
-                } elseif (!$this->allowsHtml($item_slice_id, $field) && !($editor ??= $this->editsItem($item_slice_id, $stored))) {
-                    if (!self::useDefaultHtmlFlag($aa_value, $field, $item_slice_id, $stored, $dirty_item_id[0] === 'i', (array) $val_array)) {
-                        continue;
-                    }
+                if ($dirty_item_id[0] === 'r' && $field_id !== 'slice_id........') {
+                    $aa_value = $oldcontent4id->getAaValue($field_id)->removeValues($aa_value->getValues());
                 }
                 $item->setAaValue($field_id, $aa_value);
             }
-            $item->setAaValue('slice_id........', new AA_Value(pack_id($item_slice_id)));
             $this->_items[] = [$item, $store_mode];
         }
         reset($this->_items);
-        return true;
-    }
-
-    /** the item as stored - an empty ItemContent when there is none */
-    protected function storedItem(string $item_id): ItemContent
-    {
-        $oldcontent4id = new ItemContent();
-        $oldcontent4id->setByItemID(new zids($item_id), true);     // ignore password
-        return $oldcontent4id;
-    }
-
-    /** May the current user choose HTML for the fields of the item? Editors of the slice may - the
-     *  inline editing of {editable} posts [flag] for plain-text fields, too.
-     *  @param ?ItemContent $stored  the item as stored; null for a new item
-     */
-    private function editsItem(string $slice_id, ?ItemContent $stored): bool
-    {
-        // nobody logged in - IfSlPerm() would just load the (empty) permissions of such user from the database
-        if (in_array($uid = AuthGetUid(), ['', 'nobody'], true)) {
-            return false;
-        }
-        class_exists('AA_Perm');   // IfSlPerm() is in include/perm_core.php, which filler.php need not load
-        [$all, $own] = $this->editor_perms[$slice_id] ??= [IfSlPerm(PS_EDIT_ALL_ITEMS, $slice_id), IfSlPerm(PS_EDIT_SELF_ITEMS, $slice_id)];
-        return $all || ($own && (!$stored || ((string) $stored->getValue('posted_by.......') === $uid)));
-    }
-
-    /** Anyone may choose HTML in the field - by its HTML/plain switch, or by the rich-text editor as
-     *  its widget, which always posts HTML. The configured widget counts, not the one the request names.
-     */
-    private function allowsHtml(string $slice_id, AA_Field $field): bool
-    {
-        return $this->allows_html[$slice_id . ':' . $field->getId()] ??= ($field->getProperty('html_show') || is_a(Widget::parseClassProperties((string) $field->getProperty('input_show_func'))['class'], EdtWidget::class, true));
-    }
-
-    /** Gives the value the HTML flag of the field default, as the old input format does. Each widget
-     *  sets the flag its own way (the file one always HTML), so the grabbed value is corrected, not the
-     *  request.
-     *  @param ?ItemContent $stored      the item as stored; null for a new item
-     *  @param bool         $add         the value is added to the stored one
-     *  @param array        $data4field  the posted data of the field
-     *  @return bool  false - the value must not be stored
-     */
-    private static function useDefaultHtmlFlag(AA_Value $aa_value, AA_Field $field, string $slice_id, ?ItemContent $stored, bool $add, array $data4field): bool
-    {
-        $html         = $field->getDefaultFormatterFlag() & FLAG_HTML;
-        $stored_value = $stored?->getAaValue($field->getId());
-        $before       = ($stored_value && !$stored_value->isEmpty()) ? ($stored_value->getFlag() & FLAG_HTML) : $html;
-        $log          = static fn(string $mode) => LogOnce::daily(CheckHtmlFlagRefusals::EVENT, ParamImplode([$slice_id, $field->getId()]), [mb_strcut(AuthGetUid(), 0, 120), $mode]);
-
-        // all the values of a field are shown with the flag of the first one
-        if ($add && ($before !== $html)) {
-            $log('insert');
-            return false;
-        }
-        $aa_value->setFlag(($aa_value->getFlag() & ~FLAG_HTML) | $html);
-
-        // AA's own forms post the stored flag back - only another one means a wrong form or a forgery
-        $asked = is_scalar($data4field['flag'] ?? null) ? ((int) $data4field['flag'] & FLAG_HTML) : 0;
-        if ($asked && !$html && ($asked !== $before)) {
-            $log($stored ? 'update' : 'new');
-        }
         return true;
     }
 
