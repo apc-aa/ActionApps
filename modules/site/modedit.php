@@ -125,8 +125,8 @@ if ($template['W']) {        // add module
 
 
 // additional settings - just make sure it is set
-if (!$add) {
-    AA_Module_Site::processModuleObject($module_id);
+if (!$add && ($settings_error = AA_Module_Site::processModuleObject($module_id))) {
+    $err['settings'] = MsgErr($settings_error);
 }
 
 if ($add || $update) {
@@ -220,7 +220,10 @@ if ($add || $update) {
                 $varset->doInsert('site_spot');
             }
 
-            AA_Module_Site::processModuleObject($module_id);
+            if ($settings_error = AA_Module_Site::processModuleObject($module_id)) {
+                $err['settings'] = MsgErr($settings_error);
+                break;
+            }
         }
         if ($update && $superadmin && ($app_store !== '')) {
             if (!FormToken::check(MODEDIT_APP_TOKEN, $app_store)) {

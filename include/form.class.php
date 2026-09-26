@@ -314,6 +314,10 @@ class AA_Form extends AA_Object implements NamedInterface
 
     public const PREPARED = 1;
     public const SAVED    = 2;
+    public const REFUSED  = 3;
+
+    /** why process() did not save the posted data */
+    protected string $error = '';
 
     /** allows storing form in database
      *  AA_Object's method
@@ -383,16 +387,22 @@ class AA_Form extends AA_Object implements NamedInterface
         return $form;
     }
 
+    /** saves the posted data into the object the form was built for (a new one, when none) - see getError() */
     public function process($aa): int
     {
         if (!empty($aa)) {
             // update or insert
-            $managed = Managed::factoryFromType($this->object_type);
-            $managed->save($this->object_owner);
-            // @todo check permissions, validation, $store_mode state (see readFromForm)
-            return self::SAVED;
+            $managed     = Managed::factoryFromType($this->object_type);
+            $this->error = (string) $managed->save($this->object_owner, $this->object_id);
+            return ($this->error === '') ? self::SAVED : self::REFUSED;
         }
         return self::PREPARED;
+    }
+
+    /** why the last process() refused the posted data; '' - it did not */
+    public function getError(): string
+    {
+        return $this->error;
     }
 
     /**

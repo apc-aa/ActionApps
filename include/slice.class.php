@@ -394,7 +394,9 @@ abstract class AA_Module
         return $this->moduleobject_setting?->getProperty($prop);
     }
 
-    public static function processModuleObject($module_id): void
+    /** saves the posted module settings form
+     *  @return string|null  why the settings were not saved; null - saved or nothing posted */
+    public static function processModuleObject($module_id): ?string
     {
         /** @var class-string<AA_AbstractModulesettings> $class name - it is string name of class */
         $class = static::SETTING_CLASS;
@@ -407,9 +409,12 @@ abstract class AA_Module
                 $modulesetings->save();
             }
 
-            $form       = AA_Form::factoryForm($class, $modulesetings_id, $module_id);
-            $form_state = $form->process($_POST['aa']);
+            $form = AA_Form::factoryForm($class, $modulesetings_id, $module_id);
+            if ($form->process($_POST['aa']) === AA_Form::REFUSED) {
+                return $form->getError();
+            }
         }
+        return null;
     }
 
     public static function getModuleObjectForm($module_id): string
@@ -1659,8 +1664,8 @@ class AA_Modulesettings_Site extends AA_AbstractModulesettings
             : _m('The app version is at most 32 letters, digits and . + - (like 1.2.0), the description at most %1 characters.', [self::APP_DESCRIPTION_MAX]);
     }
 
-    /** the app store settings of $stored when they are the site's own; else none - a form can write any
-     *  object id, also the settings id of the site with another owner
+    /** the app store settings of $stored when they are the site's own; else none - an object at the
+     *  settings id of the site with another owner is not the site's
      *  @return array{publish: bool, description: string, version: string, modules: list<string>} */
     public static function appOf(?AA_Object $stored, string $site): array
     {

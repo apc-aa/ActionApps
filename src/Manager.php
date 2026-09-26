@@ -38,8 +38,11 @@ namespace AA;
 
 // require_once __DIR__ . "/menu_util.php";  // for showMenu()
 use AA;
+use AA\IO\DB\DB_AA;
 use AA\IO\Grabber\ObjectForm;
 use AA\Manageraction\Manageractions;
+use AA\Optimize\CheckObjectFormRefusals;
+use AA\Util\LogOnce;
 use AA\Widget\Widget;
 use AA_Condition;
 use AA_Content;
@@ -128,10 +131,15 @@ class Managed
 
     /** Grabs and saves the data submitted by the AA_Form
      *  necessary for Edit and Add
-     * @param string|null $owner
-     * @return void
+     * @param string|null $owner  the module the page works on
+     * @param string|null $id     the record the form was built for; empty - a new one. A subclass
+     *                            which does not check it saves whatever record the POST names
+     * @return string|null  why the data was not saved; null - saved
      */
-    public function save(?string $owner): void {}
+    public function save(?string $owner, ?string $id = null): ?string
+    {
+        return null;
+    }
 
     /** Get content for zids from the storage
      *  necessary for Edit and Add
@@ -384,13 +392,54 @@ class Managed_Object extends Managed
         return AA_Form::factoryForm($this->getType(), $id, $module_id);
     }
 
-    /** @inheritDoc */
-    public function save(?string $owner): void
+    /** Saves the object the form was built for - the object id comes from the POSTed keys, so it is
+     *  checked: an edit writes only the object $id, stored owned by $owner and of this class; a new
+     *  object gets a fresh id. Otherwise the form could overwrite any object of any module by its id.
+     *  @inheritDoc
+     */
+    public function save(?string $owner, ?string $id = null): ?string
     {
+        $owner = strtolower((string) $owner);    // module ids are stored lowercase
+        $id    = (string) $id;
+        if (!is_long_id($owner) || !$this->isAction(($id === '') ? 'add' : 'edit')) {
+            return _m('You can not save this object here.');
+        }
         /** @var AA_Object $object */
         $object = call_user_func_array([$this->class, 'factoryFromForm'], [$owner, $this->class]);
-        // @todo check permissions, validation, $store_mode state (see readFromForm)
+        if ($id === '') {
+            $object->setId(new_id());
+        } elseif ((string) $object->getId() !== $id) {
+            return $this->refuse($owner, (string) $object->getId());
+        } elseif (!self::isOwn($id, $owner, $this->class)) {
+            return $this->refuse($owner, $id);
+        }
         $object->save();
+        return null;
+    }
+
+    /** the object $id is stored, owned by $owner and of $class */
+    private static function isOwn(string $id, string $owner, string $class): bool
+    {
+        $stored = self::stored($id);
+        return ($stored['aa_owner'] === $owner) && ($stored['aa_type'] === $class);
+    }
+
+    /** @return array{aa_owner: string, aa_type: string} of the stored object $id; '' - none stored */
+    private static function stored(string $id): array
+    {
+        $rows = DB_AA::select(['property' => 'value'], 'SELECT property, value FROM `object_text`', [['object_id', $id], ['property', ['aa_owner', 'aa_type']]]);
+        return ['aa_owner' => (string) ($rows['aa_owner'] ?? ''), 'aa_type' => (string) ($rows['aa_type'] ?? '')];
+    }
+
+    /** a form of $module posted another object - a forged request, or a page with a stale id */
+    private function refuse(string $module, string $object_id): string
+    {
+        $stored = self::stored($object_id);
+        // the posted id may be any string or a fresh id - a long one would cut the user off the
+        // selector and each new one would add a log row, so only a stored object is named there
+        $logged = (is_long_id($object_id) && ($stored['aa_type'] !== '')) ? $object_id : CheckObjectFormRefusals::NO_OBJECT;
+        LogOnce::daily(CheckObjectFormRefusals::EVENT, ParamImplode([$module, $logged, mb_strcut(AuthGetUid(), 0, 120)]), [$this->class, $stored['aa_type'], $stored['aa_owner']]);
+        return _m('The object was not saved - it is not the object of this form in this module.');
     }
 
     /** @inheritDoc */
@@ -499,8 +548,12 @@ class Managed_Table extends Managed
         return $form;
     }
 
-    /** @inheritDoc */
-    public function save(?string $owner): void
+    /** Updates the row named by the posted key, or inserts one (owned by $owner, when the table has
+     *  a module column) - the updated row is not checked against $id nor $owner, so the posted key
+     *  alone picks it
+     *  @inheritDoc
+     */
+    public function save(?string $owner, ?string $id = null): ?string
     {
         ($grabber = new ObjectForm())->prepare();    // maybe some initialization in grabber
         // we expect just one form - no need to loop through contents
@@ -523,6 +576,7 @@ class Managed_Table extends Managed
             AA::Metabase()->autoInsertKey($this->table, $data);
             AA::Metabase()->doInsert($this->table, $data);
         }
+        return null;
     }
 
     /** @inheritDoc */
@@ -585,6 +639,8 @@ class Manager extends AA_Storable
     protected $all_modules = false; // do not restrict for one module
 
     protected $module_id;          // for which module is manager used (slice_id, ...)
+    /** the edit form was posted in this request - the list is shown then, not the form again */
+    private bool $form_posted = false;
 
     /** @var Managed */
     protected $managed;            // object describing managed data ['class'=>.., 'table'=>, settings...]
@@ -690,6 +746,9 @@ class Manager extends AA_Storable
             }
         } else {        // do not set state for the first time calling
             $this->setFromState($r_state['manager'][$manager_id]);
+            // one manager id may serve more modules (the tasks of all modules) - the stored one
+            // would be the module of the first visit, not the one the page works on now
+            $this->module_id = $settings['module_id'];
         }
     }
 
@@ -931,13 +990,10 @@ class Manager extends AA_Storable
         if ($this->managed->isAction('edit') || $this->managed->isAction('add')) {
             if ($_POST['aa']) {
                 $form = $this->managed->getForm($_GET['id'], $this->module_id);
-
-                $err        = [];          // error array (Init - just for initializing variable
-                $form_state = $form->process($_POST['aa']);
-
-                if ($form_state == AA_Form::SAVED) {
-                    // go_url($ret_url);
+                if ($form->process($_POST['aa']) === AA_Form::REFUSED) {
+                    $this->msg[] = MsgErr($form->getError());
                 }
+                $this->form_posted = true;
             }
         }
     }
@@ -992,13 +1048,14 @@ class Manager extends AA_Storable
 
         $zids = $zids ?? $this->getZids();
 
-        if (($_GET['id'] && $this->managed->isAction('edit')) || ($_GET['add'] && $this->managed->isAction('add'))) {
+        if (!$this->form_posted && (($_GET['id'] && $this->managed->isAction('edit')) || ($_GET['add'] && $this->managed->isAction('add')))) {
 
             $form = $this->managed->getForm($_GET['id'], $this->module_id);
             $form_buttons = [ "update", "cancel"];
 
             try {
-                $html = '<form name="f" method="post" action="' . StateUrl() . '">';
+                // the id goes back with the post - the form saves only the object it was built for
+                $html = '<form name="f" method="post" action="' . safe(StateUrl(get_url('', $_GET['id'] ? ['id' => $_GET['id']] : []))) . '">';
                 $html .= getFrmTabCaption(_m("Edit id") . ': ' . safe($_GET['id']), $form_buttons);
                 $html .= '<tr><td colspan="2">';
                 $html .= $form->getObjectEditHtml();//            $html .= $form->getEditFormHtml();

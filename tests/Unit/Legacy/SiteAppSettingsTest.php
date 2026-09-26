@@ -122,7 +122,7 @@ namespace Tests\Unit\Legacy {
             $this->assertSame($ok, AA_Modulesettings_Site::appInputError($description, $version) === null);
         }
 
-        /** a form can write any object id: the settings count only when they are the site's own */
+        /** the settings count only when they are the site's own */
         public function test_the_settings_of_another_owner_are_not_the_sites(): void
         {
             $stored = new AA_Modulesettings_Site();
