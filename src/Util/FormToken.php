@@ -20,6 +20,14 @@ final class FormToken
         return ($token !== '') && hash_equals(self::get($purpose), $token);
     }
 
+    /** Gate of a write: a POST carrying this form's token. A link from another site is a GET
+     *  (the SameSite=Lax cookie rides it), and a cross-site POST cannot know the token.
+     *  @param array $server $_SERVER */
+    public static function checkPost(string $purpose, string $token, array $server): bool
+    {
+        return (($server['REQUEST_METHOD'] ?? '') === 'POST') && self::check($purpose, $token);
+    }
+
     /** the hidden input for a form */
     public static function field(string $purpose): string
     {
