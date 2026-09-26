@@ -17,6 +17,14 @@ final class RichtextMarkupTest extends TestCase
     public static function setUpBeforeClass(): void
     {
         require_once __DIR__ . '/../fixtures/util_shims.php';   // htmlattr(), safe(), constants for Secret::key()
+        if (!defined('CACHE_TTL')) {
+            define('CACHE_TTL', 600);                               // AA::Pagecache()
+        }
+    }
+
+    public static function tearDownAfterClass(): void
+    {
+        (new \ReflectionProperty(\AA::class, 'pagecache'))->setValue(null, null);   // no nostore left for other tests
     }
 
     public function test_wrap_escapes_the_attributes_and_keeps_the_textarea(): void
@@ -39,6 +47,19 @@ final class RichtextMarkupTest extends TestCase
         $this->assertSame(UploadPolicy::USER, UploadToken::verify($attrs['upload-token'], self::SLICE, 'u1', self::NOW + 60));
         $this->assertSame(UploadPolicy::documentTypes(), json_decode($attrs['upload-types'], true));
         $this->assertSame('jpg,jpeg,png,gif,webp,avif', $attrs['upload-images']);
+    }
+
+    public function test_an_editors_token_keeps_the_page_out_of_the_shared_cache(): void
+    {
+        $this->assertTrue($this->nostoreAfter(UploadPolicy::USER, 'u1'));
+        $this->assertFalse($this->nostoreAfter(UploadPolicy::ANON, ''));    // the same token for every visitor
+    }
+
+    private function nostoreAfter(string $mode, string $uid): bool
+    {
+        (new \ReflectionProperty(\AA::class, 'pagecache'))->setValue(null, null);
+        RichtextMarkup::uploadAttrs(self::SLICE, $mode, $uid, self::NOW, '/aa/api/files.php');
+        return (new \ReflectionProperty(\AA\Cache\PageCache::class, 'cache_nostore'))->getValue(\AA::Pagecache());
     }
 
     public function test_anonymous_gets_images_only(): void

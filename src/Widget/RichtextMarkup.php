@@ -42,6 +42,8 @@ final class RichtextMarkup
         $attrs['upload-images'] = implode(',', UploadPolicy::imageTypes($mode));
         if ($mode === UploadPolicy::USER) {
             $attrs['upload-types'] = (string) json_encode(UploadPolicy::documentTypes(), JSON_UNESCAPED_SLASHES);
+            // the token is this user's - a cached page would hand it to everybody after him
+            \AA::Pagecache()->switchCacheNostore();
         }
         return $attrs;
     }
@@ -50,9 +52,9 @@ final class RichtextMarkup
      * What depends on the request: who views the slice, the UI language, the texts.
      * @return array<string, string>
      */
-    public static function contextAttrs(string $slice_id): array
+    public static function contextAttrs(string $slice_id, bool $upload = true): array
     {
-        $viewer = is_long_id($slice_id) ? UploadPolicy::viewer($slice_id) : null;
+        $viewer = ($upload && is_long_id($slice_id)) ? UploadPolicy::viewer($slice_id) : null;
         $mode   = $viewer ? UploadPolicy::mode($viewer['editor'], $viewer['anonymous']) : UploadPolicy::NONE;
         $api    = (defined('AA_INSTAL_PATH') ? AA_INSTAL_PATH : '/') . 'api/files.php';
         return self::uploadAttrs($slice_id, $mode, AuthGetUid(), time(), $api) + [

@@ -268,13 +268,14 @@ class TxtWidget extends Widget
     /** @return array<string, string> attributes of <aa-richtext> for this field and viewer */
     private function richtextAttrs(string $base_name, AA_Content $content, string $type, string $view): array
     {
-        $attrs = RichtextMarkup::contextAttrs((string) $content->getOwnerID());
+        // no Edit in Editor in live mode, as before; edt is the editor in every mode
+        $editor = ($view === 'rich') || ($type !== 'live');
+        $attrs  = RichtextMarkup::contextAttrs((string) $content->getOwnerID(), $editor);   // no editor, nothing to upload with
         if ($view !== 'rich') {
             $attrs['switch-name'] = $base_name . '[flag]';
             $attrs['switch-html'] = (string) FLAG_HTML;
         }
-        // no Edit in Editor in live mode, as before; edt is the editor in every mode
-        if (($view === 'rich') || ($type !== 'live')) {
+        if ($editor) {
             $attrs['editor'] = 'editor';
         }
         return $attrs;
