@@ -110,7 +110,7 @@ function query_search(array $where, string $phrase): string
 
     $items = [[_m('Item'), 'short_id', 'status_code', 'publish_date', 'last_edit', 'edited_by']];
     foreach ($arr as $f) {
-        $items[]    = [Adminlink::itemLink($f['iid'], $f['slice_id']), $f['short_id'], $f['status_code'], date('Y-m-d H:i', (int) $f['post_date']), date('Y-m-d H:i', (int) $f['last_edit']), $f['edited_by']];
+        $items[]    = [Adminlink::itemLink($f['iid'], $f['slice_id']), $f['short_id'], $f['status_code'], date('Y-m-d H:i', (int) $f['post_date']), date('Y-m-d H:i', (int) $f['last_edit']), safe($f['edited_by'])];
     }
 
     return $output . GetHtmlTable($items, 'th') . '<br><br>';
@@ -245,7 +245,7 @@ if (strlen($findtext)) {
         $db->query($SQL);
         echo "<b>slices</b> <small>(" . $db->num_rows() . " matching found)</small><br>";
         while ($db->next_record()) {
-            echo $db->f("name") . " "
+            echo safe($db->f("name")) . " "
                     . "<a href=\"" . StateUrl("se_fulltext.php?change_id=" . unpack_id($db->f("id")))
                     . "\">" . _m("Jump") . "</a><br>";
         }
@@ -264,7 +264,7 @@ if (strlen($findtext)) {
         echo "<b>fields</b> <small>(" . $db->num_rows() . " matching found)</small><br>";
 
         while ($db->next_record()) {
-            echo $db->f("name") . " " . Adminlink::fieldLink($db->f("id"), unpack_id($db->f("slice_id"))) . "<br>";
+            echo safe($db->f("name")) . " " . Adminlink::fieldLink($db->f("id"), unpack_id($db->f("slice_id"))) . "<br>";
         }
         echo '<br><br>';
     }
@@ -325,8 +325,11 @@ if (strlen($findtext)) {
             $print['slice_id'] = unpack_id($print['slice_id']);
             $print['id'] = unpack_id($print['id']);
             $print['parent']  = unpack_id($print['parent']);
-            $print['item_id'] = Adminlink::itemLink(unpack_id($print['item_id']), $print['slice_id']);
+            $print['item_id'] = unpack_id($print['item_id']);
             $print['date'] = date('Y-m-d H:i:s', (int) $print['date']);
+            $item_link = Adminlink::itemLink($print['item_id'], $print['slice_id']);
+            $print = array_map('safe', $print);  // comments come from anonymous visitors
+            $print['item_id'] = $item_link;
             echo '<tr><td>' . implode('</td><td>', $print) . '</td></tr>';
         }
         echo '</table>';
