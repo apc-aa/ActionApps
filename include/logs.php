@@ -61,6 +61,7 @@ ALIAS_FU        level:slice_id:field_id:function  reason:file                   
 ALERT_DENY      collection:slice_id:user        item_id                        // Alertitem send refused, once a day (AA_Collection::logRefusal(), LogOnce)
 JWT_DENY        client IP                       reason                         // Bearer token refused on central/responder.php, once a day (AA_Auth, LogOnce)
 OBJ_DENY        module_id:object_id|-:user      form_class:stored_class:stored_owner  // object form or Manager action refused - not its object or table row (-: none stored at the posted id; form_class of a table: _T<table>), once a day (AA\Managed_Object, AA\Managed_Table, LogOnce)
+HTML_DENY       slice_id:field_id               user:new|update|insert         // aa[...] form input asked for HTML in a field without the HTML/plain switch or rich-text widget, not by an editor - stored plain (insert: added to a value of the other format - not stored), once a day (AA\IO\Grabber\Form, LogOnce)
 SESSID_USE      client IP:reader|password|session                              // Get_Sessionid answered to a login, once a day (AA\Optimize\CheckSessionidUse, LogOnce)
 APP_INST        module_id (a row per new module; none: AA_ID)  App:name:version:source_url  // aa-app package installed (AA\Central\Package\AaAfterCommit)
 APPSTORE        command:client (IPv4; IPv6 "/48 /64")  command               // a request of the app store's public account - the hourly limits count them, keep it logged (AA\Central\AppStore::admit())
