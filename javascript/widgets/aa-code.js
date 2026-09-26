@@ -38,14 +38,13 @@ function watchValue(textarea, fn) {
     if (!fns) {
         fns = new Set();
         watchers.set(textarea, fns);
-        const all = fns;
         Object.defineProperty(textarea, 'value', {
             configurable: true,
             get() { return NATIVE_VALUE.get.call(this); },
             set(v) {
                 NATIVE_VALUE.set.call(this, v);
                 const now = NATIVE_VALUE.get.call(this);
-                all.forEach(f => f(now));
+                fns.forEach(f => f(now));
             },
         });
     }
@@ -59,6 +58,33 @@ function watchValue(textarea, fn) {
     };
 }
 
+/** forms whose submit the user is starting - only then an invalid editor takes the focus;
+ *  checkValidity() from a script shows nothing, as with a native control */
+const submitting = new WeakSet();
+const watchedForms = new WeakSet();
+const SUBMITTER = 'button:not([type]), button[type=submit], input[type=submit], input[type=image]';
+
+function watchSubmit(form) {
+    if (!form || watchedForms.has(form)) {
+        return;
+    }
+    watchedForms.add(form);
+    const mark = () => {
+        submitting.add(form);
+        setTimeout(() => submitting.delete(form));   // validation runs in the same task
+    };
+    form.addEventListener('click', (e) => {
+        if (e.target.closest?.(SUBMITTER)) {
+            mark();
+        }
+    }, true);
+    form.addEventListener('keydown', (e) => {
+        if ((e.key === 'Enter') && (e.target.tagName === 'INPUT')) {
+            mark();                             // implicit submission
+        }
+    }, true);
+}
+
 /**
  * Keeps the named <textarea> an editor stands in for right - it is what forms,
  * AA__Serialize() and AA_SendWidgetLive() read:
@@ -66,7 +92,9 @@ function watchValue(textarea, fn) {
  *    submit event, so there is no later moment to copy the value;
  *  - commit() fires change once per edit, when focus leaves the editor, as a native
  *    textarea does - in live mode change is a save to the server;
- *  - a value a script writes into the textarea, or form.reset(), goes to onExternal;
+ *  - a value a script writes into the textarea, or form.reset(), goes to onExternal; it is
+ *    not announced - a script that wants it saved fires change itself, as it must on a
+ *    bare textarea;
  *  - a hidden required textarea gets no browser bubble and the submit would just not
  *    happen: the host shows the message and the editor takes the focus.
  */
@@ -80,7 +108,8 @@ export class TextareaSync {
 
     /**
      * @param {HTMLTextAreaElement} textarea
-     * @param {{host?: HTMLElement, onExternal?: (value: string) => void, focus?: () => void}} [options]
+     * @param {{host?: HTMLElement, onExternal?: (value: string) => boolean, focus?: () => void}} [options]
+     *        onExternal returns whether the value came from outside the editor (not its own mirror)
      */
     constructor(textarea, { host = null, onExternal = null, focus = null } = {}) {
         this.#textarea = textarea;
@@ -98,14 +127,18 @@ export class TextareaSync {
             window.AA_LiveGuard?.();
         }
         if (onExternal) {
-            this.#unwatch = watchValue(textarea, (value) => {
-                onExternal(value);
+            const external = (value) => {
+                if (onExternal(value)) {
+                    announced.set(textarea, value);
+                }
                 this.#checkValid();
-            });
+            };
+            this.#unwatch = watchValue(textarea, external);
             // the reset event comes before the form resets its controls
-            textarea.form?.addEventListener('reset', () => setTimeout(() => onExternal(textarea.value)), { signal });
+            textarea.form?.addEventListener('reset', () => setTimeout(() => external(textarea.value)), { signal });
         }
         if (host) {
+            watchSubmit(textarea.form);
             textarea.addEventListener('invalid', e => this.#onInvalid(e), { signal });
         }
     }
@@ -140,6 +173,9 @@ export class TextareaSync {
         if (!ta.hidden || (ta.closest('aa-code, aa-richtext') !== this.#host)) {
             return;
         }
+        if (ta.form && !submitting.has(ta.form)) {
+            return;
+        }
         e.preventDefault();
         this.#host.setAttribute('invalid', '');
         if (!this.#message) {
@@ -149,8 +185,8 @@ export class TextareaSync {
             this.#host.after(this.#message);
         }
         this.#message.textContent = ta.validationMessage;
-        // the first invalid field of a submitted form takes the focus, as the browser does
-        // it; live fields (form="") only show the message
+        // the first invalid field of the form takes the focus, as the browser does it;
+        // live fields (form="") only show the message
         if (ta.form && ([...ta.form.elements].find(el => el.willValidate && !el.validity.valid) === ta)) {
             this.#host.scrollIntoView({ block: 'center' });
             this.#focus?.();
@@ -208,9 +244,14 @@ class AaCodeElement extends HTMLElement {
             focus:      () => this.focus(),
             // the bundle mirrors its own edits into the textarea too - those match already
             onExternal: (value) => {
-                if (this.#editor && (this.#editor.getValue() !== value)) {
-                    this.#editor.setValue(value);
+                if (!this.#editor) {
+                    return true;
                 }
+                if (this.#editor.getValue() === value) {
+                    return false;
+                }
+                this.#editor.setValue(value);
+                return true;
             },
         });
         // "syntax" here, "language" in the bundle (CodeMirror's own term): on
@@ -225,6 +266,7 @@ class AaCodeElement extends HTMLElement {
     }
 
     disconnectedCallback() {
+        // matters when <aa-richtext> takes the textarea out first; a removed textarea announces nothing
         this.#sync?.commit();
         this.#sync?.destroy();
         this.#editor?.destroy();
@@ -253,6 +295,7 @@ class AaCodeElement extends HTMLElement {
         const ta = this.#textarea ?? this.querySelector('textarea');
         if (ta) {
             ta.value = value;
+            announced.set(ta, value);
             ta.dispatchEvent(new Event('change', { bubbles: true }));
         }
     }

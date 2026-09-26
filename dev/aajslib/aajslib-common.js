@@ -260,9 +260,17 @@ function AA_WindowUnloadQ(e) {
 }
 
 /** Live widgets whose last save would be lost on leaving the page: sent without
- *  keepalive (too big for it) or failed. */
+ *  keepalive (no room left for it) or failed. */
 if (!window.AA__LiveUnsaved) {
     window.AA__LiveUnsaved = new Set();
+}
+/** number of the newest save per widget - only its answer may set the widget's state */
+if (!window.AA__LiveSeq) {
+    window.AA__LiveSeq = new Map();
+}
+/** keepalive bytes on their way - browsers give all keepalive requests of a page 64 kB together */
+if (typeof window.AA__LiveKeepalive !== 'number') {
+    window.AA__LiveKeepalive = 0;
 }
 
 /** Asks before leaving a page with an unsaved live edit. Registered on first use:
@@ -275,7 +283,8 @@ function AA_LiveGuard() {
     window.addEventListener('beforeunload', e => {
         // an editor keeps the last edit until focus leaves it - send it now
         AA_$$('aa-code, aa-richtext').forEach(el => el.flush?.());
-        if (window.AA__LiveUnsaved.size) {
+        // a widget an AJAX refresh replaced has nothing left to lose
+        if ([...window.AA__LiveUnsaved].some(id => document.getElementById('widget-' + id))) {
             AA_WindowUnloadQ(e);
         }
     });
@@ -295,36 +304,40 @@ function AA_SendWidgetLive(base_id, liveinput, fnc) {
         return;
     }
     const unsaved = window.AA__LiveUnsaved;
+    const mine    = (window.AA__LiveSeq.get(base_id) ?? 0) + 1;
+    window.AA__LiveSeq.set(base_id, mine);
     const body    = AA__Serialize(document.getElementById('widget-' + base_id)) + '&inline=1';
-    const send    = keepalive => fetch(AA_GetConf('path') + 'filler.php', {
+    const bytes   = new Blob([body]).size;
+    // decided before sending: a rejected keepalive request is not sent again - while the
+    // page is being left it may still arrive, and a second copy would save twice
+    const keepalive = (window.AA__LiveKeepalive + bytes) <= 60000;
+    if (keepalive) {
+        window.AA__LiveKeepalive += bytes;
+    } else {
+        unsaved.add(base_id);
+    }
+    fetch(AA_GetConf('path') + 'filler.php', {
         method:  'POST',
         headers: {'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8', 'X-Requested-With': 'XMLHttpRequest'},
         body,
         keepalive,
-    });
-    let request;
-    // browsers give all keepalive requests of a page 64 kB together
-    if (body.length <= 60000) {
-        request = send(true).catch(() => {
+    }).then(response => response.ok, () => false).then(ok => {
+        if (keepalive) {
+            window.AA__LiveKeepalive -= bytes;
+        }
+        if (window.AA__LiveSeq.get(base_id) !== mine) {
+            return;                 // a newer save of this widget is on its way
+        }
+        if (!ok) {
             unsaved.add(base_id);
-            return send(false);
-        });
-    } else {
-        unsaved.add(base_id);
-        request = send(false);
-    }
-    request.then(response => {
-        if (!response.ok) {
-            throw new Error('HTTP ' + response.status);
+            AA_StateChange(base_id, 'dirty');
+            return;
         }
         unsaved.delete(base_id);
         AA_StateChange(base_id, 'normal');
         if (typeof fnc === 'function') {
-            fnc();
+            fnc();                  // after the state: an error in it is its own, not a failed save
         }
-    }).catch(() => {
-        unsaved.add(base_id);
-        AA_StateChange(base_id, 'dirty');
     });
 }
 
