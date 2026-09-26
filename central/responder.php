@@ -516,10 +516,14 @@ class AA_Responder_Get_Fields extends AA_Responder
     {
         // AA Core Fields slice must be readable by any slice Administrator (for field template picking)
         if ($this->slice_id === '41415f436f72655f4669656c64732e2e') {
+            if (IfSlPerm(PS_FIELDS)) {
+                return true;
+            }
             $slices = GetUserSlices(PS_FIELDS);
             return $slices === 'all' || !empty($slices);
         }
-        return IfSlPerm(PS_FIELDS);
+        // the listed slice, not the current one - the list discloses its fields
+        return IfSlPerm(PS_FIELDS, $this->slice_id);
     }
 
     public function run(): AA_Response

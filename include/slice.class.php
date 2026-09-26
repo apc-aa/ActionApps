@@ -504,16 +504,17 @@ abstract class AA_Module
 
     /**
      * @param  string  $module_type
+     * @param  string  $perm         the permission the user must have in the module
      *
      * @return array id => name of current user's modules
      */
-    public static function getUserModules($module_type = ''): array
+    public static function getUserModules($module_type = '', string $perm = PS_EDIT_SELF_ITEMS): array
     {
 
         $all_modules = self::getModules($module_type, true);
         $user_id     =  AuthGetUid();
 
-        return array_filter($all_modules, static fn($mid) => CheckPerms($user_id, 'slice', $mid, PS_EDIT_SELF_ITEMS), ARRAY_FILTER_USE_KEY);
+        return array_filter($all_modules, static fn($mid) => CheckPerms($user_id, 'slice', $mid, $perm), ARRAY_FILTER_USE_KEY);
     }
 
     /**
