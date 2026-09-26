@@ -38,6 +38,7 @@ use AA\FormArray;
 use AA\IO\DB\DB_AA;
 use AA\Later\LaterInterface;
 use AA\Optimize\AddDurationLog;
+use AA\Optimize\CheckCkeditorUse;
 use AA\Util\ChangesMonitor;
 use AA\Util\Langs;
 use AA\Util\LogarithmIndex;
@@ -7507,6 +7508,9 @@ class AA_Requires {
             $hash = $this->addUsrRequire($require, 'AA_Req_Lib');
         } else {
             $hash = $require;   // must be system require
+            if (strtok($require, '@') === 'ckeditor') {
+                CheckCkeditorUse::record($_SERVER, (string) AA::$module_id);   // who still needs it
+            }
         }
 
         $this->_outputs    = null; // be sure it will be recomputed after adding
