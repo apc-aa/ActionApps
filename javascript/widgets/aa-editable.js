@@ -49,6 +49,7 @@ document.addEventListener('focusin', async (e) => {
         el.aaEditor.focus();
     } catch (error) {
         console.error('aa-editable: could not start the editor', error);
+        el.aaEditor = plainEditor(el);          // still editable and saved, without the toolbar
     } finally {
         el.aaEditorLoading = false;
     }

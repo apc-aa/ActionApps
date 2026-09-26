@@ -263,6 +263,10 @@ export async function createRichEditor(target, { uiLang, inline = false, height 
             ed.on('blur', () => onBlur?.());
         },
     });
+    if (!editor) {
+        // TinyMCE refuses a page in quirks mode (no <!DOCTYPE html>, or HTML 4 without the DTD URL)
+        throw new Error((document.compatMode === 'CSS1Compat') ? 'TinyMCE did not start' : 'TinyMCE needs a page in standards mode - <!DOCTYPE html>');
+    }
     return {
         getContent: () => editor.getContent(),
         setContent: (html) => {

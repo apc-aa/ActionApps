@@ -287,32 +287,35 @@ class AaRichtextElement extends HTMLElement {
         this.#textarea.hidden = true;
         const state = { copy, api: null };
         this.#rich = state;
-        let createRichEditor;
+        let api;
         try {
-            ({ createRichEditor } = await import(sibling('../tinymce8.min.js')));
+            const { createRichEditor } = await import(sibling('../tinymce8.min.js'));
+            if (this.#rich !== state) {
+                return;                         // left while loading - never start on a removed copy
+            }
+            api = await createRichEditor(copy, {
+                uiLang: this.getAttribute('ui-lang') || document.documentElement.lang,
+                height: Math.min(700, Math.max(300, (this.#textarea.rows || 10) * 20 + 120)),
+                sourceLabel: this.#l10n.source ?? 'Source',
+                onEdit: () => this.#scheduleWrite(),
+                // as a textarea: change before blur; aa_onFocus / aa_onBlur of the slice's field JavaScript hear them
+                onFocus: () => this.#textarea?.dispatchEvent(new FocusEvent('focus')),
+                onBlur: () => {
+                    this.flush();
+                    this.#textarea?.dispatchEvent(new FocusEvent('blur'));
+                },
+                onSource: () => this.#setMode('code'),
+                upload: this.#uploadOptions(),
+            });
         } catch (e) {
-            console.error('aa-richtext: could not load the editor bundle', e);
-            this.#leave();
-            this.#setMode('code');              // the HTML stays editable
+            // the bundle did not load, or TinyMCE refused the page (quirks mode)
+            console.error('aa-richtext: the editor did not start', e);
+            if (this.#rich === state) {
+                this.#leave();
+                this.#setMode('code');          // the HTML stays editable
+            }
             return;
         }
-        if (this.#rich !== state) {
-            return;                             // left while loading - never start on a removed copy
-        }
-        const api = await createRichEditor(copy, {
-            uiLang: this.getAttribute('ui-lang') || document.documentElement.lang,
-            height: Math.min(700, Math.max(300, (this.#textarea.rows || 10) * 20 + 120)),
-            sourceLabel: this.#l10n.source ?? 'Source',
-            onEdit: () => this.#scheduleWrite(),
-            // as a textarea: change before blur; aa_onFocus / aa_onBlur of the slice's field JavaScript hear them
-            onFocus: () => this.#textarea?.dispatchEvent(new FocusEvent('focus')),
-            onBlur: () => {
-                this.flush();
-                this.#textarea?.dispatchEvent(new FocusEvent('blur'));
-            },
-            onSource: () => this.#setMode('code'),
-            upload: this.#uploadOptions(),
-        });
         if (this.#rich !== state) {
             api.destroy();                      // left while TinyMCE was starting
             return;
