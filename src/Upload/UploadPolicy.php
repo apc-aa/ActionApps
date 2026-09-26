@@ -22,6 +22,9 @@ final class UploadPolicy
 
     public const ANON_MAX_BYTES = 5 * 1024 * 1024;
     public const ANON_MAX_PX    = 2000;
+    /** a decoded canvas takes 4 bytes a pixel of memory PHP's memory_limit does not see;
+     *  a phone photo has 12 Mpx */
+    public const ANON_MAX_PIXELS = 16_000_000;
 
     public const IMAGES = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'avif'];
 
@@ -77,10 +80,18 @@ final class UploadPolicy
         };
     }
 
-    /** permit_anonymous_post 1-3 (3 = with an antispam token); permit_anonymous_edit 1-5 (6 = cron only) */
+    /** permit_anonymous_post 1-3 (the bin the item goes to); permit_anonymous_edit 1-3 -
+     *  4 and 5 ask for a password or HTTP authentication an upload does not carry, 6 is cron only */
     public static function anonymousAllowed(int $anonymous_post, int $anonymous_edit): bool
     {
-        return ($anonymous_post > 0) || (($anonymous_edit >= 1) && ($anonymous_edit <= 5));
+        return ($anonymous_post > 0) || (($anonymous_edit >= 1) && ($anonymous_edit <= 3));
+    }
+
+    /** width x height from the header - checked before GD decodes anything */
+    public static function pixelsAllowed(string $file): bool
+    {
+        $info = @getimagesize($file);
+        return is_array($info) && (($info[0] * $info[1]) <= self::ANON_MAX_PIXELS);
     }
 
     /** @return ?string why not - 'type', 'mime' or 'size' - null when allowed */

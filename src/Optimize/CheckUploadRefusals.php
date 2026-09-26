@@ -68,23 +68,28 @@ class CheckUploadRefusals extends AbstractOptimize
             $selector = (string) $row['selector'];
             [$slice_id, $reason] = array_pad(ParamExplode($selector), 2, '');
             $slice_name = (string) ($slice_names[$slice_id] ?? '') ?: $slice_id;
-            $kind       = explode(' ', $reason)[0];
+            [$address, $detail] = array_pad(ParamExplode((string) $row['params']), 2, '');
+            $kind       = in_array($reason, ['dir', 'store'], true) ? 'dir' : $reason;
             $findings[] = new Finding(
                 ($kind === 'dir') ? Finding::ERROR : Finding::WARNING,
-                ($kind === 'dir')
-                    ? _m('Slice %1 cannot store uploads - its directory is not writable', [$slice_name])
-                    : _m('Uploads to slice %1 refused: %2', [$slice_name, $reason]),
+                match ($reason) {
+                    'dir'   => _m('Slice %1 cannot store uploads - its directory is not writable', [$slice_name]),
+                    'store' => _m('Slice %1 could not store an upload', [$slice_name]),
+                    default => _m('Uploads to slice %1 refused: %2', [$slice_name, $reason]),
+                },
                 count: (int) $row['days'],
                 since: (int) $row['first'],
                 evidence: [[
                     _m('Slice')     => safe($slice_name),
                     _m('Reason')    => safe($reason),
-                    _m('Address')   => safe((string) $row['params']),
+                    _m('Address')   => safe($address),
+                    _m('Detail')    => safe($detail),
                     _m('Days seen') => (string) (int) $row['days'],
                     _m('Last')      => date('Y-m-d', (int) $row['last']),
                 ]],
                 advice: match ($kind) {
                     'dir'    => _m('PHP cannot write the upload directory of the slice (IMG_UPLOAD_PATH/<slice id>, or its file manager directory). Fix the owner or the permissions on the server.'),
+                    'rate'   => _m('An address uploaded more anonymous images in an hour than AA allows (20 an address, 200 a slice). A robot, most likely - the address is in the log.'),
                     'rights' => _m('Somebody tried to upload without the right to: an editor whose login expired (reloading the page helps), or a probe - many days from one address.'),
                     'size'   => _m('Anonymous visitors may upload images up to 5 MB; editors are limited by upload_max_filesize and post_max_size of PHP.'),
                     default  => _m('The editor refused a file type, or a file whose content did not match its extension. The allowed types are fixed in AA\Upload\UploadPolicy; nothing a browser or PHP would run ever passes.'),

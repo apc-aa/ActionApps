@@ -18,9 +18,9 @@ final class CheckUploadRefusalsTest extends TestCase
     }
 
     /** @return array<string, ?string> */
-    private function row(string $reason, int $days = 2): array
+    private function row(string $reason, string $detail = '', int $days = 2): array
     {
-        return ['selector' => ParamImplode([self::SLICE, $reason]), 'days' => (string) $days, 'first' => '1790000000', 'last' => '1790086400', 'params' => '192.0.2.1'];
+        return ['selector' => ParamImplode([self::SLICE, $reason]), 'days' => (string) $days, 'first' => '1790000000', 'last' => '1790086400', 'params' => ParamImplode(['192.0.2.1', $detail])];
     }
 
     public function test_no_refusals_is_ok(): void
@@ -32,11 +32,19 @@ final class CheckUploadRefusalsTest extends TestCase
 
     public function test_refused_types_are_warnings_named_by_slice(): void
     {
-        [$finding] = CheckUploadRefusals::findingsFor([$this->row('type html')], [self::SLICE => 'News']);
+        [$finding] = CheckUploadRefusals::findingsFor([$this->row('type', 'html')], [self::SLICE => 'News']);
         $this->assertSame(Finding::WARNING, $finding->severity);
         $this->assertStringContainsString('News', $finding->title);
-        $this->assertStringContainsString('type html', $finding->title);
+        $this->assertStringContainsString('type', $finding->title);
         $this->assertSame(2, $finding->count);
+        $this->assertSame('192.0.2.1', $finding->evidence[0][_m('Address')]);
+        $this->assertSame('html', $finding->evidence[0][_m('Detail')]);
+    }
+
+    public function test_a_failed_store_is_an_error(): void
+    {
+        [$finding] = CheckUploadRefusals::findingsFor([$this->row('store', "Can't move /tmp/x")], []);
+        $this->assertSame(Finding::ERROR, $finding->severity);
     }
 
     public function test_unwritable_directory_is_an_error(): void

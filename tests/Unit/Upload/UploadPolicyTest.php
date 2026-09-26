@@ -42,7 +42,10 @@ final class UploadPolicyTest extends TestCase
         $this->assertFalse(UploadPolicy::anonymousAllowed(0, 0));
         $this->assertTrue(UploadPolicy::anonymousAllowed(1, 0));
         $this->assertTrue(UploadPolicy::anonymousAllowed(3, 0));
-        $this->assertTrue(UploadPolicy::anonymousAllowed(0, 4));
+        $this->assertTrue(UploadPolicy::anonymousAllowed(0, 3));
+        // a password or HTTP authentication the upload request does not carry
+        $this->assertFalse(UploadPolicy::anonymousAllowed(0, 4));
+        $this->assertFalse(UploadPolicy::anonymousAllowed(0, 5));
         $this->assertFalse(UploadPolicy::anonymousAllowed(0, 6));
     }
 

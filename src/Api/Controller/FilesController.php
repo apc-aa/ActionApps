@@ -15,6 +15,7 @@ namespace AA\Api\Controller;
 
 use AA\Api\JsonResponse;
 use AA\Api\SameHostGate;
+use AA\IO\DB\DB_AA;
 use AA\Upload\UploadPolicy;
 use AA\Upload\UploadToken;
 use AA\Util\Imgfunc;
@@ -36,6 +37,10 @@ class FilesController
     public const EVENT_ANON = 'UPLOAD_ANO';
     /** the picker shows the newest files - a slice directory can hold thousands */
     public const LIST_MAX = 500;
+    /** anonymous uploads an hour: the token of a public page is public, and every
+     *  re-encode costs a decoded canvas of server memory */
+    public const ANON_PER_IP_HOUR    = 20;
+    public const ANON_PER_SLICE_HOUR = 200;
 
     public function upload(): JsonResponse
     {
@@ -50,9 +55,17 @@ class FilesController
         if (!is_long_id($slice_id)) {
             return JsonResponse::error(400, 'Bad request');
         }
-        $mode = $this->mode($slice_id);
+        $viewer = $this->viewer($slice_id);
+        if ($viewer === null) {
+            // not logged: random ids would fill the log and push real findings out of State Check
+            return JsonResponse::error(404, 'Unknown slice');
+        }
+        $mode = $this->mode($slice_id, $viewer);
         if ($mode === UploadPolicy::NONE) {
             return $this->refuse($slice_id, 'rights', 403, _m('You may not upload files here. If you were editing, your login may have expired - reload the page.'));
+        }
+        if (($mode === UploadPolicy::ANON) && $this->anonLimited($slice_id)) {
+            return $this->refuse($slice_id, 'rate', 429, _m('Too many uploads - try again in an hour'), $this->ip());
         }
         $file  = $_FILES['file'] ?? null;
         $error = is_array($file) ? (int) ($file['error'] ?? UPLOAD_ERR_NO_FILE) : UPLOAD_ERR_NO_FILE;
@@ -68,13 +81,16 @@ class FilesController
         $ext    = pathinfo($name, PATHINFO_EXTENSION);
         $reason = UploadPolicy::refusal($mode, $name, $mime, (int) $file['size']);
         if ($reason === 'type') {
-            return $this->refuse($slice_id, "type $ext", 415, _m('Files of this type cannot be uploaded here: %1', [$ext]));
+            return $this->refuse($slice_id, 'type', 415, _m('Files of this type cannot be uploaded here: %1', [$ext]), $ext);
         }
         if ($reason === 'mime') {
-            return $this->refuse($slice_id, "mime $mime", 415, _m('The content of the file does not match its extension %1', [$ext]));
+            return $this->refuse($slice_id, 'mime', 415, _m('The content of the file does not match its extension %1', [$ext]), "$ext $mime");
         }
         if ($reason === 'size') {
             return $this->refuse($slice_id, 'size', 413, _m('The image is bigger than %1 MB', [UploadPolicy::ANON_MAX_BYTES >> 20]));
+        }
+        if (($mode === UploadPolicy::ANON) && !UploadPolicy::pixelsAllowed((string) $file['tmp_name'])) {
+            return $this->refuse($slice_id, 'size', 413, _m('The image has more than %1 megapixels', [UploadPolicy::ANON_MAX_PIXELS / 1000000]));
         }
 
         $dir = $this->destinationDir($slice_id);
@@ -82,11 +98,14 @@ class FilesController
             return $this->refuse($slice_id, 'dir', 500, _m('The upload directory of the slice is not writable'));
         }
         try {
+            // an anonymous file gets a name its uploader cannot choose - no password-reset.jpg
+            // on the organisation's domain
             $path = ($mode === UploadPolicy::ANON)
-                ? $this->storeReencoded((string) $file['tmp_name'], $dir, pathinfo($name, PATHINFO_FILENAME) . '.' . UploadPolicy::anonExtension($mime))
+                ? $this->storeReencoded((string) $file['tmp_name'], $dir, bin2hex(random_bytes(8)) . '.' . UploadPolicy::anonExtension($mime))
                 : $this->store($file, $dir, $name);
         } catch (RuntimeException $e) {
-            return JsonResponse::error(500, $e->getMessage());
+            // the message names server paths: for State Check, not for the browser
+            return $this->refuse($slice_id, 'store', 500, _m('The file could not be stored'), $e->getMessage());
         }
         $stored = basename($path);
         $size   = (int) filesize($path);
@@ -106,7 +125,8 @@ class FilesController
         if (!is_long_id($slice_id)) {
             return JsonResponse::error(400, 'Bad request');
         }
-        if ($this->mode($slice_id) !== UploadPolicy::USER) {
+        $viewer = $this->viewer($slice_id);
+        if (($viewer === null) || ($this->mode($slice_id, $viewer) !== UploadPolicy::USER)) {
             return JsonResponse::error(403, _m('Only editors of the slice can browse its files'));
         }
         $dir   = $this->destinationDir($slice_id);
@@ -128,7 +148,8 @@ class FilesController
         $files = [];
         foreach (scandir($dir) ?: [] as $name) {
             $path = rtrim($dir, '/') . '/' . $name;
-            if (str_starts_with($name, '.') || !is_file($path)) {
+            // a name from an old cp1250 upload would break the JSON of the whole list
+            if (str_starts_with($name, '.') || !mb_check_encoding($name, 'UTF-8') || !is_file($path)) {
                 continue;
             }
             $type = strtolower(pathinfo($name, PATHINFO_EXTENSION));
@@ -141,21 +162,33 @@ class FilesController
         return array_slice($files, 0, $limit);
     }
 
-    /** what this request may do: what its token offered, if the viewer may still do it */
-    private function mode(string $slice_id): string
+    /**
+     * what this request may do: what its token offered, if the viewer may still do it
+     * @param array{editor: bool, anonymous: bool} $viewer
+     */
+    private function mode(string $slice_id, array $viewer): string
     {
-        $viewer = $this->viewer($slice_id);
-        if ($viewer === null) {
-            return UploadPolicy::NONE;
-        }
         $granted = UploadToken::verify((string) ($_SERVER['HTTP_X_AA_UPLOAD_TOKEN'] ?? ''), $slice_id, $this->uid(), time());
         return UploadPolicy::effective($granted, $viewer['editor'], $viewer['anonymous']);
     }
 
-    private function refuse(string $slice_id, string $reason, int $status, string $message): JsonResponse
+    /** $reason is one of a few words, so a flood of odd names cannot open new State Check rows */
+    private function refuse(string $slice_id, string $reason, int $status, string $message, string $detail = ''): JsonResponse
     {
-        $this->logRefusal($slice_id, $reason);
+        $this->logRefusal($slice_id, $reason, $detail);
         return JsonResponse::error($status, $message);
+    }
+
+    private function anonLimited(string $slice_id): bool
+    {
+        $ip       = $this->ip();
+        $by_ip    = 0;
+        $by_slice = 0;
+        foreach ($this->anonUploadsLastHour() as $row) {
+            $by_slice += (int) ($row['selector'] === $slice_id);
+            $by_ip    += (int) ((ParamExplode($row['params'])[2] ?? '') === $ip);
+        }
+        return ($by_ip >= self::ANON_PER_IP_HOUR) || ($by_slice >= self::ANON_PER_SLICE_HOUR);
     }
 
     /** @return ?array{editor: bool, anonymous: bool} */
@@ -207,7 +240,7 @@ class FilesController
             throw new RuntimeException(_m('No file received'));
         }
         $path  = Files::generateUnusedFilename(Files::makeFile($dir, $name));
-        $error = Imgfunc::reencode($tmp, $path, UploadPolicy::ANON_MAX_PX);
+        $error = Imgfunc::reencode($tmp, $path, UploadPolicy::ANON_MAX_PX, UploadPolicy::ANON_MAX_PIXELS);
         if ($error !== null) {
             throw new RuntimeException($error);
         }
@@ -235,8 +268,14 @@ class FilesController
         AA_Log::write($event, $selector, $params);
     }
 
-    protected function logRefusal(string $slice_id, string $reason): void
+    protected function logRefusal(string $slice_id, string $reason, string $detail): void
     {
-        LogOnce::daily(self::EVENT_REFUSED, ParamImplode([$slice_id, $reason]), $this->ip());
+        LogOnce::daily(self::EVENT_REFUSED, ParamImplode([$slice_id, $reason]), ParamImplode([$this->ip(), $detail]));
+    }
+
+    /** @return list<array{selector: string, params: string}> */
+    protected function anonUploadsLastHour(): array
+    {
+        return DB_AA::select([], 'SELECT `selector`, `params` FROM `log`', [['type', self::EVENT_ANON], ['time', time() - 3600, '>=']]);
     }
 }

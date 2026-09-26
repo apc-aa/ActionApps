@@ -206,7 +206,7 @@ class Imgfunc
      *
      * @return ?string null on success, otherwise the error
      */
-    public static function reencode(string $src, string $dest, int $max_px): ?string
+    public static function reencode(string $src, string $dest, int $max_px, int $max_pixels = self::REENCODE_MAX_PIXELS): ?string
     {
         $info  = @getimagesize($src);
         $type  = is_array($info) ? (int) $info[2] : 0;
@@ -214,7 +214,7 @@ class Imgfunc
         if (!is_array($info) || !in_array($type, $types, true)) {
             return _m('This type of image cannot be uploaded here');
         }
-        if ($info[0] * $info[1] > self::REENCODE_MAX_PIXELS) {
+        if ($info[0] * $info[1] > $max_pixels) {
             return _m('The image has too many pixels');
         }
         $img = @imagecreatefromstring((string) file_get_contents($src));

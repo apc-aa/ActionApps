@@ -19,8 +19,11 @@ final class FakeFilesController extends FilesController
     public ?string $dir = null;
     /** @var list<array{0: string, 1: string, 2: list<string>}> */
     public array $logged = [];
-    /** @var list<array{0: string, 1: string}> */
+    /** @var list<array{0: string, 1: string, 2: string}> */
     public array $refused = [];
+    /** @var list<array{selector: string, params: string}> */
+    public array $anonLastHour = [];
+    public bool $storeFails = false;
 
     protected function viewer(string $slice_id): ?array
     {
@@ -44,12 +47,15 @@ final class FakeFilesController extends FilesController
     }
     protected function store(array $file, string $dir, string $name): string
     {
+        if ($this->storeFails) {
+            throw new \RuntimeException("Can't move /srv/secret/path/$name");
+        }
         copy((string) $file['tmp_name'], $path = "$dir/$name");
         return $path;
     }
     protected function storeReencoded(string $tmp, string $dir, string $name): string
     {
-        $error = \AA\Util\Imgfunc::reencode($tmp, $path = "$dir/$name", UploadPolicy::ANON_MAX_PX);
+        $error = \AA\Util\Imgfunc::reencode($tmp, $path = "$dir/$name", UploadPolicy::ANON_MAX_PX, UploadPolicy::ANON_MAX_PIXELS);
         if ($error !== null) {
             throw new \RuntimeException($error);
         }
@@ -67,9 +73,13 @@ final class FakeFilesController extends FilesController
     {
         $this->logged[] = [$event, $selector, $params];
     }
-    protected function logRefusal(string $slice_id, string $reason): void
+    protected function logRefusal(string $slice_id, string $reason, string $detail): void
     {
-        $this->refused[] = [$slice_id, $reason];
+        $this->refused[] = [$slice_id, $reason, $detail];
+    }
+    protected function anonUploadsLastHour(): array
+    {
+        return $this->anonLastHour;
     }
 }
 
@@ -148,7 +158,7 @@ final class FilesControllerTest extends TestCase
         $this->token(UploadPolicy::USER, 'someone-else');
         $this->file('a.pdf', self::PDF);
         $this->assertSame(403, $this->read($this->c->upload())['status']);
-        $this->assertSame([[self::SLICE, 'rights']], $this->c->refused);
+        $this->assertSame([[self::SLICE, 'rights', '']], $this->c->refused);
     }
 
     /** @return array<string, array{0: string, 1: string}> */
@@ -166,7 +176,7 @@ final class FilesControllerTest extends TestCase
     {
         $this->file($name, $content);
         $this->assertSame(415, $this->read($this->c->upload())['status']);
-        $this->assertStringStartsWith('type ', $this->c->refused[0][1]);
+        $this->assertSame([self::SLICE, 'type', pathinfo($name, PATHINFO_EXTENSION)], $this->c->refused[0]);
         $this->assertSame([], glob("$this->dir/*"));
     }
 
@@ -174,7 +184,7 @@ final class FilesControllerTest extends TestCase
     {
         $this->file('a.jpg', self::PDF);
         $this->assertSame(415, $this->read($this->c->upload())['status']);
-        $this->assertSame([[self::SLICE, 'mime application/pdf']], $this->c->refused);
+        $this->assertSame([[self::SLICE, 'mime', 'jpg application/pdf']], $this->c->refused);
     }
 
     public function test_a_double_extension_keeps_one_dot(): void
@@ -196,10 +206,75 @@ final class FilesControllerTest extends TestCase
         $this->file('Foto.png', (string) ob_get_clean() . '<?php junk');
         $r = $this->read($this->c->upload());
         $this->assertSame(200, $r['status']);
-        $this->assertSame('Foto.png', $r['body']['name']);
-        $this->assertStringNotContainsString('<?php', (string) file_get_contents("$this->dir/Foto.png"));
+        // a name the uploader cannot choose: no password-reset.jpg on the organisation's domain
+        $this->assertMatchesRegularExpression('/^[0-9a-f]{16}\.png$/', $r['body']['name']);
+        $this->assertStringNotContainsString('<?php', (string) file_get_contents("$this->dir/" . $r['body']['name']));
         $this->assertSame(FilesController::EVENT_ANON, $this->c->logged[0][0]);
-        $this->assertSame(['Foto.png', (string) $r['body']['size'], '192.0.2.1'], $this->c->logged[0][2]);
+        $this->assertSame([$r['body']['name'], (string) $r['body']['size'], '192.0.2.1'], $this->c->logged[0][2]);
+    }
+
+    private function anonymous(): void
+    {
+        $this->c->viewer = ['editor' => false, 'anonymous' => true];
+        $this->token(UploadPolicy::ANON);
+    }
+
+    /** @return list<array{selector: string, params: string}> */
+    private function uploads(int $n, string $slice, string $ip): array
+    {
+        return array_fill(0, $n, ['selector' => $slice, 'params' => ParamImplode(['x.png', '10', $ip])]);
+    }
+
+    public function test_anonymous_uploads_are_limited_per_address(): void
+    {
+        $this->anonymous();
+        $this->c->anonLastHour = $this->uploads(FilesController::ANON_PER_IP_HOUR, str_repeat('f', 32), '192.0.2.1');
+        $this->file('a.png', 'x');
+        $this->assertSame(429, $this->read($this->c->upload())['status']);
+        $this->assertSame([[self::SLICE, 'rate', '192.0.2.1']], $this->c->refused);
+    }
+
+    public function test_anonymous_uploads_are_limited_per_slice(): void
+    {
+        $this->anonymous();
+        $this->c->anonLastHour = $this->uploads(FilesController::ANON_PER_SLICE_HOUR, self::SLICE, '198.51.100.7');
+        $this->file('a.png', 'x');
+        $this->assertSame(429, $this->read($this->c->upload())['status']);
+    }
+
+    public function test_anonymous_image_with_too_many_pixels_is_refused_before_decoding(): void
+    {
+        $this->anonymous();
+        $ihdr = 'IHDR' . pack('NNCCCCC', 5000, 4000, 8, 2, 0, 0, 0);
+        $this->file('big.png', "\x89PNG\r\n\x1a\n" . pack('N', 13) . $ihdr . pack('N', crc32($ihdr)));
+        $this->assertSame(413, $this->read($this->c->upload())['status']);
+        $this->assertSame([], glob("$this->dir/*"));
+    }
+
+    public function test_unknown_slice_is_refused_without_a_log_row(): void
+    {
+        $this->c->viewer = null;
+        $this->file('a.pdf', self::PDF);
+        $this->assertSame(404, $this->read($this->c->upload())['status']);
+        $this->assertSame([], $this->c->refused);
+    }
+
+    public function test_a_failed_store_hides_server_paths_and_logs_them(): void
+    {
+        $this->c->storeFails = true;
+        $this->file('a.pdf', self::PDF);
+        $r = $this->read($this->c->upload());
+        $this->assertSame(500, $r['status']);
+        $this->assertStringNotContainsString('/srv/secret', (string) json_encode($r['body']));
+        $this->assertSame('store', $this->c->refused[0][1]);
+        $this->assertStringContainsString('/srv/secret', $this->c->refused[0][2]);
+    }
+
+    public function test_files_with_names_that_are_not_utf8_are_left_out_of_the_list(): void
+    {
+        touch("$this->dir/ok.pdf");
+        touch("$this->dir/" . "\xE8ern\xE1.pdf");        // cp1250 "černá" from an old upload
+        $this->assertSame(['ok.pdf'], array_column(FilesController::filesIn($this->dir, false, '', 10), 'name'));
     }
 
     public function test_anonymous_cannot_upload_a_pdf(): void
@@ -230,7 +305,7 @@ final class FilesControllerTest extends TestCase
         $this->c->dir = null;
         $this->file('a.pdf', self::PDF);
         $this->assertSame(500, $this->read($this->c->upload())['status']);
-        $this->assertSame([[self::SLICE, 'dir']], $this->c->refused);
+        $this->assertSame([[self::SLICE, 'dir', '']], $this->c->refused);
     }
 
     public function test_list_for_editors_newest_first_filtered(): void
