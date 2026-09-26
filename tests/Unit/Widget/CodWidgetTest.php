@@ -72,6 +72,11 @@ final class CodWidgetTest extends TestCase
             {
                 return false;
             }
+
+            public function getContentTypeDefault(): int
+            {
+                return 0;
+            }
         };
     }
 }
