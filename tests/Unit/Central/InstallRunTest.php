@@ -141,6 +141,15 @@ namespace Tests\Unit\Central {
             InstallRun::preview(InstallRun::INSTALL, true, 'https://evil.example/aa/', self::USER, '', self::NOW);
         }
 
+        /** the app store: its address comes from the code or the config, never from the request */
+        public function test_the_app_store_is_a_source_of_installs_only(): void
+        {
+            $this->assertSame(InstallRun::STORE, InstallRun::preview(InstallRun::INSTALL, false, InstallRun::STORE, self::USER, self::TOKEN, self::NOW)->source());
+
+            $this->expectException(InvalidArgumentException::class);
+            InstallRun::preview(InstallRun::TRANSFER, false, InstallRun::STORE, self::USER, self::TOKEN, self::NOW);
+        }
+
         public function test_get_of_another_class_or_no_record_is_null(): void
         {
             $note = str_repeat('c', 32);

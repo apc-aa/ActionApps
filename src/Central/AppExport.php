@@ -16,7 +16,9 @@ use InvalidArgumentException;
 /** An app of this AA as package XML (Collector -> Writer) - for the install page of this AA and for
  *  Get_App, which serves it to the AA that installs it. The rights of the user are checked here, so both
  *  get the same: PS_EDIT on every module the package takes data from; a transfer hands out password
- *  hashes and 2FA secrets of the readers, so it needs a superadmin as well. */
+ *  hashes and 2FA secrets of the readers, so it needs a superadmin as well. The export the app store gives
+ *  ($store) is the install of one site as a published package: strict - no warnings, no constant group
+ *  of a slice outside the published sites. Any other export is not published, of a published site too. */
 final class AppExport implements AppSource
 {
     /**
@@ -28,16 +30,24 @@ final class AppExport implements AppSource
         private readonly array $attributes,
         private readonly Closure $mayEdit,
         private readonly bool $superadmin,
+        private readonly bool $store = false,
     ) {}
 
-    /** @throws InvalidArgumentException no such site, slice or Alerts module */
+    /** @throws InvalidArgumentException no such site, slice or Alerts module
+     *  @throws ExportRefused the user may not export it, or the export found errors */
     public function definitions(array $modules, bool $transfer, bool $allBins, int $started): array
     {
         $this->admit($transfer);
         $collector = new Collector($this->source);
-        $options   = $this->options($transfer, $allBins, $started);
         $site      = $this->site($modules);
-        [$xml, $findings] = $this->xml(($site === null) ? $collector->fromModules($modules, $options) : $collector->fromSite($site, $options));
+        if ($this->store && ($transfer || ($site === null))) {
+            throw ExportRefused::denied();
+        }
+        $store     = new AppStore($this->source);
+        $app       = ($site === null) ? null : $store->site($site);
+        $options   = $this->options($transfer, $allBins, $started, $this->store, ($app['description'] ?? '') ?: null, ($app['version'] ?? '') ?: null);
+        $collected = ($site === null) ? $collector->fromModules($modules, $options) : $collector->fromSite($site, $options);
+        [$xml, $findings] = $this->xml($collected, $this->store ? $store->unpublishedGroups($collected) : []);
         return [$xml, $findings, time()];
     }
 
@@ -120,15 +130,18 @@ final class AppExport implements AppSource
         return (($row['type'] ?? '') === 'W') ? (string) reset($modules) : null;
     }
 
-    private function options(bool $transfer, bool $allBins, int $started): CollectOptions
+    private function options(bool $transfer, bool $allBins, int $started, bool $published = false, ?string $description = null, ?string $version = null): CollectOptions
     {
-        return new CollectOptions($this->attributes + ['exported' => gmdate('Y-m-d\TH:i:s\Z', $started)], $transfer ? CollectOptions::TRANSFER : CollectOptions::INSTALL, $allBins);
+        $source = $this->attributes + ['exported' => gmdate('Y-m-d\TH:i:s\Z', $started)];
+        return new CollectOptions($source, $transfer ? CollectOptions::TRANSFER : CollectOptions::INSTALL, $allBins, description: $description, version: $version, published: $published);
     }
 
-    /** @return array{string, list<array{string, \AA\Central\Package\LintFinding}>, int} @throws ExportRefused */
-    private function xml(CollectResult $collected): array
+    /** @param list<array{string, \AA\Central\Package\LintFinding}> $more findings beside the collector's
+     *  @return array{string, list<array{string, \AA\Central\Package\LintFinding}>, int} @throws ExportRefused */
+    private function xml(CollectResult $collected, array $more = []): array
     {
         $this->check($collected->checkPermissions);
+        $collected = $more ? new CollectResult($collected->package, [...$collected->findings, ...$more], $collected->outside, $collected->checkPermissions) : $collected;
         if ($collected->failed()) {
             throw ExportRefused::failed($collected->findings);
         }

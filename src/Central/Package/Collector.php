@@ -204,11 +204,11 @@ final class Collector
             $groups,
             $options->description,
             $options->version,
-            $options->publish,
+            $options->published,
             $options->requires,
         );
         $check = array_values(array_unique([...array_keys($app), ...$owners]));
-        return new CollectResult($package, $options->published() ? ExportLint::published($findings) : $findings, $outside, $check);
+        return new CollectResult($package, $options->published ? ExportLint::published($findings) : $findings, $outside, $check);
     }
 
     /** @param list<string> $app_ids @return array<string, list<array<string, mixed>>> */
@@ -368,7 +368,7 @@ final class Collector
             $options->name ?? mb_scrub(ModuleCharset::toUtf8((string) $module['name'], $charset)[0], 'UTF-8'),
             $options->source,
             [new Module(Module::SLICE, $slice_id, [], items: $items)],
-            publish: $options->publish,
+            published: $options->published,
             withItems: true,
             batch: new Batch($after, $next, $finished),
         );

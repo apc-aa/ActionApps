@@ -26,6 +26,7 @@
 * @link      https://www.apc.org/ APC
 */
 
+use AA\Central\ManagerActionPolicy;
 use AA\Manageraction\AbstractManageraction;
 use AA\Manageraction\Manageractions;
 use AA\Optimize\AbstractOptimize;
@@ -186,6 +187,20 @@ $managed = AA_Components::getManagerConf('AA\\Optimize\\', 'AA\\Optimize\\Abstra
 $managed->setColumn('name', '<b class="{ifeq:{result}:OK:aa-ok:ERR:aa-err}">{name}</b><div>{description}</div>{ifset:{resulttxt}:<div><em>_#1</em></div>}');
 $managed->setColumns2show(['name','types']);
 
-$apage->printWithManager(new Manager('optimize' . AA::$module_id, $managed));
+$manager = new Manager('optimize' . AA::$module_id, $managed);
+
+// Manager takes akce from GET too, and a repair changes this AA (e.g. creates the app store account):
+// a link on another site must not run it. Pinned to POST/GET, so a cookie named akce cannot pass the check.
+$err              = '';
+$akce_id          = (string) ($_POST['akce'] ?? $_GET['akce'] ?? '');
+$_REQUEST['akce'] = $akce_id;
+if (($akce_id !== '') && ($akce = $actions->getAction($akce_id)) && !ManagerActionPolicy::mayPerform($_SERVER, (bool) $akce->getButton('', '', ''))) {
+    unset($_GET['akce'], $_POST['akce'], $_REQUEST['akce']);
+    $err = _m('The action was not performed - start it from the Optimize page');
+}
+$manager->performActions();
+$html = $manager->getDisplayPage();
+$apage->setForm();
+$apage->printAllPage($html, $err, '');
 
 //    AA::Pagecache()->invalidateFor($invalidatefor);

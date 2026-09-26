@@ -57,6 +57,18 @@ final class RemoteSource
         return new self($aa->getComunicatorUrl());
     }
 
+    /** the responder of a remote source of an install run (InstallRun::source()): the store or a
+     *  central_conf row - never an address of the request
+     *  @throws SourceFailed anything else, or no such row */
+    public static function forSource(string $source): self
+    {
+        return match (true) {
+            $source === InstallRun::STORE                    => new self(AppStore::responderUrl()),
+            (bool) preg_match('/^[1-9]\d{0,9}\z/', $source) => self::forAa((int) $source),
+            default                                           => throw new SourceFailed(SourceFailed::UNREACHABLE, 'No such remote source'),
+        };
+    }
+
     /** Logs in to the source by the username and password (+ 2FA code) of this one request and returns a
      *  token of the scope apps for TOKEN_TTL. The source gives it only to its superadmin.
      *  @throws SourceFailed */

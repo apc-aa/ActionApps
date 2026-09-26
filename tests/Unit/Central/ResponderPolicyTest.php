@@ -25,6 +25,7 @@ final class ResponderPolicyTest extends TestCase
             'Do_Optimize'            => ['Do_Optimize', true, false],
             'Do_Optimize_Type'       => ['Do_Optimize_Type', true, false],
             'Get_App'                => ['Get_App', true, false],
+            'Get_Apps'               => ['Get_Apps', true, false],
             'Get_Widget'             => ['Get_Widget', false, false],
             'Tags'                   => ['Tags', false, false],
             'Widget_Selection'       => ['Widget_Selection', false, false],
@@ -168,6 +169,7 @@ final class ResponderPolicyTest extends TestCase
             'admin: Get_App'           => ['admin', 'Get_App', true],
             'apps: Get_App'            => ['apps', 'Get_App', true],
             'apps: Get_Modules'        => ['apps', 'Get_Modules', true],
+            'apps: Get_Apps'           => ['apps', 'Get_Apps', true],
             'apps: Do_Optimize'        => ['apps', 'Do_Optimize', false],
             'apps: Do_Synchronize'     => ['apps', 'Do_Synchronize', false],
             'apps: Get_Jwt'            => ['apps', 'Get_Jwt', false],
@@ -181,6 +183,41 @@ final class ResponderPolicyTest extends TestCase
     public function test_a_token_scope_allows_its_commands_only(string $scope, string $name, bool $allowed): void
     {
         $this->assertSame($allowed, ResponderPolicy::scopeAllows($scope, $name));
+    }
+
+    /** @return array<string, array{string, string, string, bool}> command, login, scope (asked by Get_Jwt, of the token else), allowed */
+    public static function publicAccount(): array
+    {
+        return [
+            'Get_Jwt apps by password'   => ['Get_Jwt', 'password', 'apps', true],
+            'Get_Jwt admin by password'  => ['Get_Jwt', 'password', 'admin', false],
+            'Get_Jwt by a token'         => ['Get_Jwt', 'token', 'apps', false],
+            'Get_App by an apps token'   => ['Get_App', 'token', 'apps', true],
+            'Get_Apps by an apps token'  => ['Get_Apps', 'token', 'apps', true],
+            'Get_App by an admin token'  => ['Get_App', 'token', 'admin', false],
+            'Get_App by password'        => ['Get_App', 'password', 'apps', false],
+            'Get_Apps by password'       => ['Get_Apps', 'password', 'apps', false],
+            'Get_Modules'                => ['Get_Modules', 'token', 'apps', false],
+            'Get_Sessionid'              => ['Get_Sessionid', 'password', '', false],
+            'Logout'                     => ['Logout', 'password', '', false],
+            'Do_Optimize'                => ['Do_Optimize', 'token', 'apps', false],
+            'an AJAX command'            => ['Get_Widget', 'password', '', false],
+            'a session login'            => ['Get_App', '', '', false],
+        ];
+    }
+
+    /** the public account of the app store: a token for the store, the store with it, nothing else */
+    #[DataProvider('publicAccount')]
+    public function test_the_public_account_runs_only_the_store(string $name, string $login, string $scope, bool $allowed): void
+    {
+        $this->assertSame($allowed, ResponderPolicy::publicAllows($name, $login, $scope));
+    }
+
+    public function test_the_store_codes_are_not_taken(): void
+    {
+        $this->assertSame([22, 23], [ResponderPolicy::ERR_PUBLIC_ACCOUNT, ResponderPolicy::ERR_RATE_LIMIT]);
+        $taken = array_filter((new \ReflectionClass(ResponderPolicy::class))->getConstants(), static fn($v, string $k): bool => str_starts_with($k, 'ERR_') && in_array($v, [22, 23], true), ARRAY_FILTER_USE_BOTH);
+        $this->assertCount(2, $taken, 'one meaning per code');
     }
 
     /** @return array<string, array{mixed, ?array{ttl: ?int, scope: string}}> */

@@ -173,6 +173,28 @@ final class ReaderTest extends TestCase
         $this->assertSame('Á', $read->package->modules[0]->rows['view'][0]['odd']);
     }
 
+    /** @return array<string, array{?string, bool}> meta/publish as written, published */
+    public static function publishValues(): array
+    {
+        return [
+            'all'                 => ['all', true],
+            'no'                  => ['no', false],
+            'users (older AAs)'   => ['users', false],
+            'none'                => [null, false],
+        ];
+    }
+
+    /** publishing is yes or no; the three values of older packages still read */
+    #[DataProvider('publishValues')]
+    public function test_meta_publish_is_yes_or_no(?string $value, bool $published): void
+    {
+        $xml = self::xml(self::slicePackage());
+        $xml = ($value === null) ? $xml : (string) preg_replace('~(<meta>\s*<name>[^<]*</name>)~', "$1<publish>$value</publish>", $xml, 1);
+
+        $this->assertSame($published, self::read($xml)->package->published);
+        $this->assertSame($published ? 1 : 0, substr_count(self::xml(self::read($xml)->package), '<publish>all</publish>'), 'written back: all, or nothing');
+    }
+
     // ---------------------------------------------------------------- canonical form
 
     public function test_canonical_form(): void

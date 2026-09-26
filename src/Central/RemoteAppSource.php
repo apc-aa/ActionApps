@@ -81,13 +81,52 @@ final class RemoteAppSource implements AppSource
     {
         $response = $this->remote->ask(new AA_Request('Get_Modules', ['types' => $types]), [], $this->token);
         if ($response->isError()) {
-            throw in_array($response->getError(), [ResponderPolicy::ERR_TOKEN_REFUSED, self::NO_PERMISSION], true)
-                ? new SourceFailed(SourceFailed::LOGIN, 'The source AA refused the login token - log in to it again')
-                : new SourceFailed(SourceFailed::FAILED, 'The source AA answered error ' . $response->getError());
+            throw self::failed($response->getError());
         }
         $modules = $response->getResponse();
         $valid   = is_array($modules) && !array_filter($modules, static fn(mixed $name, int|string $id): bool => !is_string($name) || !preg_match('/^[0-9a-f]{32}\z/', (string) $id), ARRAY_FILTER_USE_BOTH);
         return $valid ? $modules : throw new SourceFailed(SourceFailed::FAILED, 'The source AA gave no module list');
+    }
+
+    /** The apps the source lists for the token (Get_Apps, AppStore::apps()).
+     *  @return list<array{id: string, name: string, description: string, version: string, published: bool, slices: int, alerts: int}>
+     *  @throws SourceFailed */
+    public function apps(): array
+    {
+        $response = $this->remote->ask(new AA_Request('Get_Apps', []), [], $this->token);
+        if ($response->isError()) {
+            throw self::failed($response->getError());
+        }
+        $apps  = $response->getResponse();
+        $types = ['id' => 'string', 'name' => 'string', 'description' => 'string', 'version' => 'string', 'published' => 'boolean', 'slices' => 'integer', 'alerts' => 'integer'];
+        if (!is_array($apps) || !array_is_list($apps)) {
+            throw new SourceFailed(SourceFailed::FAILED, 'The source AA gave no list of apps');
+        }
+        $known = [];
+        foreach ($apps as $app) {
+            // a newer store may tell more - only the keys this AA knows are kept, each of its type
+            if (!is_array($app) || array_diff_key($types, $app)) {
+                throw new SourceFailed(SourceFailed::FAILED, 'The source AA gave no list of apps');
+            }
+            $app = array_merge($types, array_intersect_key($app, $types));     // in the order of $types
+            if ((array_map('gettype', $app) !== $types) || !preg_match('/^[0-9a-f]{32}\z/', $app['id'])) {
+                throw new SourceFailed(SourceFailed::FAILED, 'The source AA gave no list of apps');
+            }
+            $known[] = $app;
+        }
+        return $known;
+    }
+
+    /** an error answer the page can tell */
+    private static function failed(int $code): SourceFailed
+    {
+        return match ($code) {
+            ResponderPolicy::ERR_TOKEN_REFUSED, self::NO_PERMISSION => new SourceFailed(SourceFailed::LOGIN, 'The source AA refused the login token - log in to it again'),
+            ResponderPolicy::ERR_UNKNOWN_COMMAND => new SourceFailed(SourceFailed::FAILED, 'The source AA cannot give apps - update it first'),
+            ResponderPolicy::ERR_PUBLIC_ACCOUNT  => new SourceFailed(SourceFailed::FAILED, 'The app store account may not do this'),
+            ResponderPolicy::ERR_RATE_LIMIT      => new SourceFailed(SourceFailed::FAILED, 'The app store is busy - try again later'),
+            default => new SourceFailed(SourceFailed::FAILED, "The source AA answered error $code"),
+        };
     }
 
     /** @param array<string, mixed> $params @throws ExportRefused|SourceFailed */
@@ -99,11 +138,9 @@ final class RemoteAppSource implements AppSource
             return $response->getResponse();
         }
         throw match ($response->getError()) {
-            ResponderPolicy::ERR_TOKEN_REFUSED, self::NO_PERMISSION => new SourceFailed(SourceFailed::LOGIN, 'The source AA refused the login token - log in to it again'),
             ResponderPolicy::ERR_APP_DENIED   => ExportRefused::denied(),
             ResponderPolicy::ERR_APP_EXPORT   => ExportRefused::failed(self::findings($response->getResponse())),
-            ResponderPolicy::ERR_UNKNOWN_COMMAND => new SourceFailed(SourceFailed::FAILED, 'The source AA cannot give apps - update it first'),
-            default => new SourceFailed(SourceFailed::FAILED, 'The source AA answered error ' . $response->getError()),
+            default => self::failed($response->getError()),
         };
     }
 

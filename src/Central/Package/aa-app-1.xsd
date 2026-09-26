@@ -298,7 +298,8 @@
       <xs:element name="description" type="xs:string" minOccurs="0"/>
       <!-- app version as the author writes it, e.g. 1.2.0 -->
       <xs:element name="version"     type="xs:string" minOccurs="0"/>
-      <!-- who may fetch the app at the source; the importer sets "users" on the new site -->
+      <!-- all = published, an app store offers it to anyone; no = not published (so is "users" of
+           older packages); an installed copy is never published -->
       <xs:element name="publish"     type="publish"   minOccurs="0"/>
       <xs:element name="source"      type="source"/>
       <xs:element name="requires"    type="requires"  minOccurs="0"/>

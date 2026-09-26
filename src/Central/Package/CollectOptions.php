@@ -6,12 +6,10 @@ namespace AA\Central\Package;
 
 use InvalidArgumentException;
 
-/** What Collector puts into meta and what the package is for. AA stores no app_description, app_version
- *  or app_publish, so the caller passes them; the source attributes too, so the collector reads no clock. */
+/** What Collector puts into meta and what the package is for. The caller passes the app settings of the
+ *  site (AppExport) and the source attributes, so the collector reads no settings and no clock. */
 final readonly class CollectOptions
 {
-    public const PUBLISH = ['no', 'users', 'all'];
-
     /** a clean app: definitions only */
     public const INSTALL = 'install';
     /** a copy or move of the modules with their data: items in batches (Collector::itemBatch()) and the
@@ -32,8 +30,8 @@ final readonly class CollectOptions
      * @param bool                  $allBins  items of all bins; false = the active bin, status_code 1 -
      *                                        pending and expired items included (their dates decide)
      * @param string|null           $name     meta/name; null = the name of the site / first module
-     * @param string|null           $publish  no | users | all - users/all turn every W finding into E; a
-     *                                        transfer carries passwords and personal data: null or no only
+     * @param bool                  $published the app is published - every W finding is an E then; a
+     *                                        transfer carries passwords and personal data: never published
      */
     public function __construct(
         public array $source,
@@ -42,16 +40,13 @@ final readonly class CollectOptions
         public ?string $name = null,
         public ?string $description = null,
         public ?string $version = null,
-        public ?string $publish = null,
+        public bool $published = false,
         public ?string $requires = null,
     ) {
-        if (($publish !== null) && !in_array($publish, self::PUBLISH, true)) {
-            throw new InvalidArgumentException("Unknown publish value $publish");
-        }
         if (!in_array($mode, [self::INSTALL, self::TRANSFER], true)) {
             throw new InvalidArgumentException("Unknown mode $mode");
         }
-        if (($mode === self::TRANSFER) && $this->published()) {
+        if (($mode === self::TRANSFER) && $published) {
             throw new InvalidArgumentException('A transfer is never published');
         }
     }
@@ -59,11 +54,5 @@ final readonly class CollectOptions
     public function transfer(): bool
     {
         return $this->mode === self::TRANSFER;
-    }
-
-    /** publish = users | all: every W finding is an error */
-    public function published(): bool
-    {
-        return in_array($this->publish, ['users', 'all'], true);
     }
 }

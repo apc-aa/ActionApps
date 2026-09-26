@@ -104,7 +104,7 @@ final class Writer
                 'name'        => $p->name,
                 'description' => $p->description,
                 'version'     => $p->version,
-                'publish'     => $p->publish,
+                'publish'     => $p->published ? 'all' : null,
                 'doc'         => $p->doc,
                 default       => null,
             };

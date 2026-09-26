@@ -23,6 +23,7 @@ class ResponderPolicy
         'Do_Optimize',
         'Do_Optimize_Type',
         'Get_App',
+        'Get_Apps',
     ];
 
     /** Admin AJAX commands with a side effect, sent only by the JS AA_Response() helper, which POSTs;
@@ -61,9 +62,15 @@ class ResponderPolicy
     public const ERR_TOKEN_SCOPE = 20;
     /** Get_Jwt: ttl or scope of a form this AA cannot read */
     public const ERR_TOKEN_REQUEST = 21;
+    /** the public account of the app store may not run the command (publicAllows()) */
+    public const ERR_PUBLIC_ACCOUNT = 22;
+    /** the public account sent too many requests from the address this hour (AppStore::admit()) */
+    public const ERR_RATE_LIMIT = 23;
 
     /** what a token of the scope apps may run: what another AA needs to pull an app */
-    private const APPS_SCOPE_COMMANDS = ['Get_App', 'Get_Modules'];
+    private const APPS_SCOPE_COMMANDS = ['Get_App', 'Get_Modules', 'Get_Apps'];
+    /** what the public account runs with its apps token - no module list: the store lists its apps */
+    private const PUBLIC_COMMANDS = ['Get_App', 'Get_Apps'];
 
     /** Optimize types Do_Optimize_Type runs as a chain (AA\Optimize\Chain). The State Check tags
      *  report through findings(), private_fix and opt_feature are one-off, site-chosen repairs. */
@@ -92,6 +99,18 @@ class ResponderPolicy
             LoginToken::SCOPE_ADMIN => true,
             LoginToken::SCOPE_APPS  => in_array($name, self::APPS_SCOPE_COMMANDS, true),
             default                 => false,
+        };
+    }
+
+    /** The public account of the app store (AppStore::isPublic()) - its password is public: by it only an
+     *  apps token (Get_Jwt), by the token only the store. Never a session, never an admin token.
+     *  @param string $login AA_Auth::login() @param string $scope asked by Get_Jwt, else of the token */
+    public static function publicAllows(string $name, string $login, string $scope): bool
+    {
+        return match ($login) {
+            'password' => ($name === 'Get_Jwt') && ($scope === LoginToken::SCOPE_APPS),
+            'token'    => ($scope === LoginToken::SCOPE_APPS) && in_array($name, self::PUBLIC_COMMANDS, true),
+            default    => false,
         };
     }
 

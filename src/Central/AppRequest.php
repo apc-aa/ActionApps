@@ -21,7 +21,10 @@ use Throwable;
  *  Answers plain data only - package XML as a string (with the source's time for the definitions),
  *  logins as strings, counts as integers - so the
  *  target unserializes no object. Errors are a code and a short text; the detail goes to the PHP error
- *  log. Every transfer export is logged: who, which modules, how many - never what. */
+ *  log. Every transfer export is logged: who, which modules, how many - never what.
+ *
+ *  The public account of the app store (a $store given) gets only the definitions of one published site
+ *  for an install; publishing is read on every request, so a site taken back is refused at once. */
 final class AppRequest
 {
     private const PARTS = ['definitions', 'batch', 'logins', 'counts', 'item_ids'];
@@ -39,8 +42,10 @@ final class AppRequest
      * @param (Closure(string, string): mixed)|null $log (selector, params) of a transfer export; null = AA_Log APP_EXPORT
      * @param ?string $aa AA_ID of this AA (public) - a target reached through a Central row naming itself
      *                    knows it copies within one installation; null = AA_ID
+     * @param ?AppStore $store the request is the public account's; $export then may read the published
+     *                    modules only (AppStore::publishedModules())
      */
-    public function __construct(private readonly AppExport $export, private readonly string $user, ?Closure $log = null, ?string $aa = null)
+    public function __construct(private readonly AppExport $export, private readonly string $user, ?Closure $log = null, ?string $aa = null, private readonly ?AppStore $store = null)
     {
         $this->log = $log ?? static fn(string $selector, string $params): bool => \AA_Log::write('APP_EXPORT', $selector, $params);
         $this->aa  = $aa ?? (string) constant('AA_ID');
@@ -57,6 +62,15 @@ final class AppRequest
         }
         $transfer = ($mode === 'transfer');
         $allBins  = (($param['bins'] ?? '') === 'all');
+        if ($this->store !== null) {
+            $modules = self::ids($param['modules'] ?? null);
+            if (($part !== 'definitions') || $transfer) {
+                return self::bad('the definitions of an install');
+            }
+            if (($modules === null) || (count($modules) !== 1) || !$this->store->published($modules[0])) {
+                return self::denied();
+            }
+        }
         try {
             return match ($part) {
                 'definitions' => $this->definitions($param, $transfer, $allBins, $started),
@@ -66,7 +80,11 @@ final class AppRequest
                 'item_ids'    => $this->itemIds($param, $transfer, $allBins),
             };
         } catch (ExportRefused $e) {
-            return $e->isDenied() ? self::denied() : new AA_Response(self::lines($e->errors()), ResponderPolicy::ERR_APP_EXPORT);
+            if ($e->isDenied()) {
+                return self::denied();
+            }
+            // the public account is anyone: what is wrong inside the app stays here, for its publisher
+            return new AA_Response(($this->store === null) ? self::lines($e->errors()) : ['export-failed app'], ResponderPolicy::ERR_APP_EXPORT);
         } catch (InvalidArgumentException) {        // no such module, or not of the type: answered as a denied one
             return self::denied();
         } catch (Throwable $e) {

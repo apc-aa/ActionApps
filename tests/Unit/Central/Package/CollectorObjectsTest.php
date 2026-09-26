@@ -347,11 +347,12 @@ namespace Tests\Unit\Central\Package {
         }
 
         /** A new property of the settings classes may hold a secret or a state of the installation (as
-         *  ga_id, alternate_url): it fails here until someone decides whether it travels (ObjectExport) */
+         *  ga_id, alternate_url): it fails here until someone decides whether it travels (ObjectExport).
+         *  app_* never travel: the store settings of the source (meta carries the description and version) */
         public function test_the_properties_of_the_settings_classes_are_reviewed(): void
         {
             $this->assertSame(
-                ['translate_slice', 'add_aliases', 'web_languages', 'page404', 'page404_code', 'sitemap_alias', 'perm_alias', 'loginpage_code', 'perm_mode', 'ga_id', 'alternate_url'],
+                ['translate_slice', 'add_aliases', 'web_languages', 'page404', 'page404_code', 'sitemap_alias', 'perm_alias', 'loginpage_code', 'perm_mode', 'ga_id', 'alternate_url', 'app_publish', 'app_description', 'app_version', 'app_modules'],
                 array_keys(\AA_Modulesettings_Site::getClassProperties()),
             );
             $this->assertSame(

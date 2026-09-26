@@ -100,7 +100,7 @@ final class WriterTest extends TestCase
             ],
         ]);
 
-        return new Package('Central Test', self::SOURCE, [$alerts, $slice, $site], [$group], description: 'Testovací appka Centralu - web, články, kategorie.', version: '0.1.0', publish: 'no', requires: '2026.9');
+        return new Package('Central Test', self::SOURCE, [$alerts, $slice, $site], [$group], description: 'Testovací appka Centralu - web, články, kategorie.', version: '0.1.0', requires: '2026.9');
     }
 
     /** a package with one slice of the given rows */
@@ -204,6 +204,7 @@ final class WriterTest extends TestCase
         $example = str_replace('format="1.0"', 'format="' . Writer::FORMAT . '"', (string) file_get_contents(__DIR__ . '/fixtures/aa-app-example.xml'));
         $design  = array_values(array_diff($leaves($example), [
             'aa-app[format=' . Writer::FORMAT . "]/site-module[id=" . self::SITE . "]/site_spot[spot_id=2]/flag[]/ => '0'",
+            'aa-app[format=' . Writer::FORMAT . "]/meta[]/publish[]/ => 'no'",        // not published is no element
         ]));
         $this->assertSame($design, $leaves(self::xml(self::example())));
     }
@@ -394,7 +395,7 @@ final class WriterTest extends TestCase
                 'category.......1' => [['value' => 'zpravy'], ['value' => 'domaci', 'flag' => 64]],
             ]],
         ], $m->doc), $p->modules);
-        return new Package($p->name, $p->source, $modules, $p->constantGroups, $p->description, $p->version, $p->publish, $p->requires, true, $p->doc);
+        return new Package($p->name, $p->source, $modules, $p->constantGroups, $p->description, $p->version, $p->published, $p->requires, true, $p->doc);
     }
 
     public function test_output_does_not_depend_on_the_input_order(): void
@@ -419,7 +420,7 @@ final class WriterTest extends TestCase
                 $modules[] = new Module($m->type, $m->id, $rows, $m->settings === null ? null : $props($m->settings), $objects, $tree, $items, $m->doc);
             }
             $groups = array_map(static fn(ConstantGroup $g): ConstantGroup => new ConstantGroup($g->name, $g->owner, array_map('array_reverse', $reverse($g->rows))), $p->constantGroups);
-            return new Package($p->name, $reverse($p->source), $modules, $groups, $p->description, $p->version, $p->publish, $p->requires, $p->withItems, $p->doc);
+            return new Package($p->name, $reverse($p->source), $modules, $groups, $p->description, $p->version, $p->published, $p->requires, $p->withItems, $p->doc);
         };
         $this->assertSame(self::xml(self::example()), self::xml($shuffle(self::example())));
         $this->assertSame(self::xml(self::exampleWithItems()), self::xml($shuffle(self::exampleWithItems())));

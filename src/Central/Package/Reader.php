@@ -202,7 +202,7 @@ final class Reader
                 $modules[] = $this->module($el);
             }
         }
-        return new Package($meta['name'] ?? '', $source, $modules, $groups, $meta['description'] ?? null, $meta['version'] ?? null, $meta['publish'] ?? null, $requires, $items, $meta['doc'] ?? null, $batch);
+        return new Package($meta['name'] ?? '', $source, $modules, $groups, $meta['description'] ?? null, $meta['version'] ?? null, self::published($meta['publish'] ?? ''), $requires, $items, $meta['doc'] ?? null, $batch);
     }
 
     private function module(DOMElement $el): Module
@@ -371,6 +371,12 @@ final class Reader
             }
         }
         return $children;
+    }
+
+    /** meta/publish: `all` = published; `no`, and `users` of older packages, are not */
+    private static function published(string $publish): bool
+    {
+        return $publish === 'all';
     }
 
     /** an element in a finding path: its name and key, e.g. `view[12]` */

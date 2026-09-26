@@ -42,31 +42,30 @@ final class FixUpsTest extends TestCase
         return array_values(array_filter($p->modules, static fn(Module $m): bool => $m->id === $id))[0];
     }
 
-    public function test_the_example_only_gets_publish_users(): void
+    public function test_the_example_needs_no_fix_up(): void
     {
         [$fixed, $fixUps] = self::apply(self::example());
 
-        self::assertSame([['meta/publish', FixUp::PUBLISH, 'no', 'users']], $fixUps);
-        self::assertSame('users', $fixed->publish);
-        self::assertEquals(self::with(self::example(), ['publish' => 'users']), $fixed, 'nothing else changes');
+        self::assertSame([], $fixUps);
+        self::assertEquals(self::example(), $fixed, 'nothing changes');
     }
 
-    /** @return array<string, array{?string, list<array{string, string, string, string}>}> */
+    /** @return array<string, array{bool, list<array{string, string, string, string}>}> */
     public static function publish(): array
     {
         return [
-            'all'   => ['all', [['meta/publish', FixUp::PUBLISH, 'all', 'users']]],
-            'none'  => [null, [['meta/publish', FixUp::PUBLISH, '', 'users']]],
-            'users' => ['users', []],
+            'published'     => [true, [['meta/publish', FixUp::PUBLISH, 'all', 'no']]],
+            'not published' => [false, []],
         ];
     }
 
+    /** a store offers the source, never an installed copy */
     #[DataProvider('publish')]
-    public function test_publish_is_users_on_the_target(?string $publish, array $expected): void
+    public function test_an_installed_app_is_not_published(bool $published, array $expected): void
     {
-        [$fixed, $fixUps] = self::apply(self::with(self::example(), ['publish' => $publish]));
+        [$fixed, $fixUps] = self::apply(self::with(self::example(), ['published' => $published]));
 
-        self::assertSame('users', $fixed->publish, 'only the admins of the new site');
+        self::assertFalse($fixed->published);
         self::assertSame($expected, $fixUps);
     }
 
@@ -168,7 +167,7 @@ final class FixUpsTest extends TestCase
     {
         [$fixed, $fixUps] = self::apply($mutate(self::example()));
 
-        self::assertSame([...$expected, ['meta/publish', FixUp::PUBLISH, 'no', 'users']], $fixUps);
+        self::assertSame($expected, $fixUps);
         self::assertSame($value, $read($fixed));
     }
 

@@ -23,6 +23,7 @@ https://www.apc.org/
 // anonymous authentication - locauth calls extauthnobody
 use AA\Central\AppExport;
 use AA\Central\AppRequest;
+use AA\Central\AppStore;
 use AA\Central\Package\DbSource;
 use AA\Central\ResponderPolicy;
 use AA\IO\DB\DB_AA;
@@ -82,8 +83,9 @@ class AA_Responder_Get_Sessionid extends AA_Responder
     }
 }
 
-/** A login token (AA\Util\LoginToken) of a superadmin: long-lived for Central, which stores it instead of
- *  the password; short (ttl in seconds, a day at most) for an AA that installs an app of this one
+/** A login token (AA\Util\LoginToken) of a superadmin, a day at most (ttl in seconds): admin for Central,
+ *  apps for an AA that installs an app of this one. The public account of the app store gets an apps
+ *  token only (AppStore).
  *  @return JWT string
  */
 class AA_Responder_Get_Jwt extends AA_Responder
@@ -104,7 +106,8 @@ class AA_Responder_Get_Jwt extends AA_Responder
         }
         // only for the password sent with this very request - a stolen cookie or token must not renew itself;
         // superadmin checked here too, so the token never depends on isPerm() alone
-        $jwt = ((AA_Auth::login() === 'password') && IsSuperadmin()) ? LoginToken::issue(AuthGetUid(), null, $this->request['ttl'], $this->request['scope']) : '';
+        $may = IsSuperadmin() || (AppStore::isPublic((string) AuthGetUid()) && ($this->request['scope'] === LoginToken::SCOPE_APPS));
+        $jwt = ((AA_Auth::login() === 'password') && $may) ? LoginToken::issue(AuthGetUid(), null, $this->request['ttl'], $this->request['scope']) : '';
         return ($jwt === '') ? new AA_Response(_m('A token needs a login by the username and password in this request, of a user whose password change this AA can detect'), ResponderPolicy::ERR_TOKEN_NEEDS_PASSWORD) : new AA_Response($jwt);
     }
 }
@@ -317,8 +320,33 @@ class AA_Responder_Get_App extends AA_Responder
     public function run(): AA_Response
     {
         MoreTimeLimit(120);
-        $export = new AppExport(new DbSource(), ['url' => (string) constant('AA_INSTAL_URL'), 'aa-version' => aa_version('aa')], static fn(string $module): bool => IfSlPerm(PS_EDIT, $module), IsSuperadmin());
+        $attributes = ['url' => (string) constant('AA_INSTAL_URL'), 'aa-version' => aa_version('aa')];
+        if (AppStore::isPublic((string) AuthGetUid())) {        // no rights: only what the store publishes
+            $store  = new AppStore(new DbSource());
+            $export = new AppExport(new DbSource(), $attributes, static fn(string $module): bool => in_array($module, $store->publishedModules(), true), false, true);
+            return (new AppRequest($export, (string) AuthGetUid(), null, null, $store))->answer($this->param);
+        }
+        $export = new AppExport(new DbSource(), $attributes, static fn(string $module): bool => IfSlPerm(PS_EDIT, $module), IsSuperadmin());
         return (new AppRequest($export, (string) AuthGetUid()))->answer($this->param);
+    }
+}
+
+/** The apps of this AA for the AA that installs one (AA\Central\AppStore::apps()): the published sites, and
+ *  for a superadmin's token also the sites whose modules it may edit. Only with a Bearer token, as Get_App.
+ */
+class AA_Responder_Get_Apps extends AA_Responder
+{
+    public function __construct() {}
+
+    public function isPerm(): bool
+    {
+        return AA_Auth::login() === 'token';
+    }
+
+    public function run(): AA_Response
+    {
+        $public = AppStore::isPublic((string) AuthGetUid());
+        return new AA_Response((new AppStore(new DbSource()))->apps($public ? null : static fn(string $module): bool => IfSlPerm(PS_EDIT, $module)));
     }
 }
 
@@ -739,6 +767,12 @@ if (in_array(AA_Auth::login(), ['token', 'bad-token'], true)) {
         exit;
     }
 }
+// the public account of the app store: anyone knows its password, so it never keeps a session - not even
+// when the request ends in an error below (it logs in nowhere else, so a session login is never it)
+$public_account = in_array(AA_Auth::login(), ['password', 'token'], true) && AppStore::isPublic((string) AuthGetUid());
+if ($public_account) {
+    LoginToken::forgetSession();
+}
 
 // in order {xuser:id} alias works in widgets, for example
 $GLOBALS['apc_state']['xuser'] = AuthGetUname();
@@ -791,6 +825,18 @@ if ((!$via_url || ResponderPolicy::isPostOnlyCommand($responder::name())) && Res
 if ((AA_Auth::login() === 'token') && !ResponderPolicy::scopeAllows(AA_Auth::scope(), $responder::name())) {
     AA_Response::error(_m("The login token does not allow %1", [$responder::name()]), ResponderPolicy::ERR_TOKEN_SCOPE);
     exit;
+}
+
+if ($public_account) {
+    $scope = ($responder::name() === 'Get_Jwt') ? (ResponderPolicy::jwtParams($request->getParameters())['scope'] ?? '') : AA_Auth::scope();
+    if (!ResponderPolicy::publicAllows($responder::name(), AA_Auth::login(), $scope)) {
+        AA_Response::error(_m("The app store account may not run %1", [$responder::name()]), ResponderPolicy::ERR_PUBLIC_ACCOUNT);
+        exit;
+    }
+    if (!AppStore::admit($responder::name(), (string) ($_SERVER['REMOTE_ADDR'] ?? ''), (string) AuthGetUid())) {
+        AA_Response::error(_m("The app store is busy - try again later"), ResponderPolicy::ERR_RATE_LIMIT);
+        exit;
+    }
 }
 
 if (!$responder->isPerm()) {

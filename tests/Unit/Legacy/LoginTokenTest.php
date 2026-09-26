@@ -29,6 +29,7 @@ namespace Tests\Unit\Legacy {
     use AA_Permsystem;
     use AA_Permsystem_Reader;
     use AA_Permsystem_Sql;
+    use AA\Central\AppStore;
     use AA\Util\LoginToken;
     use AA\Util\LogOnce;
     use AA\Util\Secret;
@@ -478,12 +479,7 @@ namespace Tests\Unit\Legacy {
 
         public function test_password_login_is_flagged_for_this_request_only(): void
         {
-            AA::$perm = new class {
-                public function authenticateUsername($username, $password, $code2fa = ''): false|string
-                {
-                    return ($username === 'central' && $password === 'pw') ? '7' : false;
-                }
-            };
+            AA::$perm = self::oneUser('central');
             $auth  = new AA_Auth();
             $_POST = ['username' => 'central', 'password' => 'pw', 'code2fa' => ''];
             $this->assertSame('7', $auth->auth_preauth());
@@ -492,6 +488,71 @@ namespace Tests\Unit\Legacy {
             $_POST = ['username' => 'central', 'password' => 'wrong', 'code2fa' => ''];
             $this->assertFalse($auth->auth_preauth());
             $this->assertSame('', AA_Auth::login(), 'a failed login does not keep the state of the previous one');
+        }
+
+        /** AA_Perm of one user, 7, of the login $login - a reader when $reader */
+        private static function oneUser(string $login, bool $reader = false): object
+        {
+            return new class ($login, $reader) {
+                public function __construct(private string $login, private bool $reader) {}
+
+                public function authenticateUsername($username, $password, $code2fa = ''): false|string
+                {
+                    return ($username === $this->login && $password === 'pw') ? '7' : false;
+                }
+
+                public function isUserEditable($uid): bool
+                {
+                    return ($uid === '7') && !$this->reader;
+                }
+
+                public function getUserLoginName($uid): string
+                {
+                    return ($uid === '7') ? $this->login : '';
+                }
+            };
+        }
+
+        public function test_the_store_account_is_the_user_of_its_login(): void
+        {
+            AA::$perm = self::oneUser(AppStore::PUBLIC_USER);
+            $this->assertTrue(AppStore::isPublic('7'));
+            $this->assertFalse(AppStore::isPublic('8'));
+            $this->assertFalse(AppStore::isPublic(''));
+
+            AA::$perm = self::oneUser(AppStore::PUBLIC_USER, true);
+            $this->assertFalse(AppStore::isPublic('7'), 'a reader of the same login is no store account');
+
+            AA::$perm = self::oneUser('central');
+            $this->assertFalse(AppStore::isPublic('7'));
+        }
+
+        /** its password is public: it must not open the administration, nor a session anywhere */
+        public function test_the_store_account_logs_in_nowhere_but_the_token_entry(): void
+        {
+            $this->assertFalse(defined('AA_TOKEN_ENTRY'));
+            AA::$perm = self::oneUser(AppStore::PUBLIC_USER);
+            $_POST    = ['username' => AppStore::PUBLIC_USER, 'password' => 'pw', 'code2fa' => ''];
+
+            $this->assertFalse((new AA_Auth())->auth_preauth());
+            $this->assertSame('', AA_Auth::login());
+            $this->assertFalse((new AA_Auth())->auth_validatelogin(), 'the login form');
+
+            AA::$perm = self::oneUser('central');
+            $_POST    = ['username' => 'central', 'password' => 'pw', 'code2fa' => ''];
+            $this->assertSame('7', (new AA_Auth())->auth_preauth(), 'any other user logs in');
+        }
+
+        #[RunInSeparateProcess]
+        #[PreserveGlobalState(false)]
+        public function test_the_store_account_logs_in_at_the_token_entry(): void
+        {
+            define('AA_TOKEN_ENTRY', true);
+            AA::$perm = self::oneUser(AppStore::PUBLIC_USER);
+            $_POST    = ['username' => AppStore::PUBLIC_USER, 'password' => 'pw', 'code2fa' => ''];
+
+            $this->assertSame('7', (new AA_Auth())->auth_preauth(), 'the responder lets it only ask for a token of the store (ResponderPolicy::publicAllows())');
+            $this->assertSame('password', AA_Auth::login());
         }
 
         /** a real request to the built-in server: the session a token login opened sends no cookie and stores nothing */

@@ -27,6 +27,7 @@
 *
 */
 
+use AA\Central\AppStore;
 use AA\IO\DB\DB_AA;
 use AA\Util\LoginToken;
 use AA\Util\LogOnce;
@@ -124,7 +125,12 @@ class AA_Auth extends Auth
 
     protected function _validatelogin($username, $password, $code2fa = ''): false|string
     {
-        $this->auth['uname'] = ($uid = AA::$perm->authenticateUsername($username, $password, $code2fa)) ? $username : '';
+        $uid = AA::$perm->authenticateUsername($username, $password, $code2fa);
+        // its password is public: only central/responder.php takes it, and gives it only a store token there
+        if ($uid && !defined('AA_TOKEN_ENTRY') && AppStore::isPublic((string) $uid)) {
+            $uid = false;
+        }
+        $this->auth['uname'] = $uid ? $username : '';
         $this->auth['uid']   = $uid ?: '';
         AA_Log::write('LOGIN', AA_Log::context($uid), $username);
         return $uid;

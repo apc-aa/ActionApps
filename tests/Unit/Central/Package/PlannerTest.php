@@ -72,7 +72,7 @@ final class PlannerTest extends TestCase
         self::assertSame([[], [], []], [$plan->map->views(), $plan->map->emails(), $plan->map->filters()], 'numbers come from AUTO_INCREMENT - the writer');
         self::assertSame([self::SITE => 'utf-8', self::SLICE => 'utf-8', self::ALERTS => 'utf-8'], $plan->charsets);
         self::assertSame(['ct_rubriky' => 'utf-8'], $plan->groupCharsets);
-        self::assertSame([['meta/publish', FixUp::PUBLISH, 'no', 'users']], self::fixUps($plan));
+        self::assertSame([], self::fixUps($plan), 'an unpublished app needs no change');
     }
 
     public function test_long_ids_of_objects_subobjects_constants_and_settings(): void
@@ -282,6 +282,16 @@ final class PlannerTest extends TestCase
         (new Planner(new FakeImportTarget()))->plan(self::example(), new ValidationResult([['x', new LintFinding(LintFinding::ERROR, 'y', '', 0)]]));
     }
 
+    /** an installed copy is never offered further by a store */
+    public function test_a_published_app_is_installed_unpublished(): void
+    {
+        $e    = self::example();
+        $plan = self::plan(new Package($e->name, $e->source, $e->modules, $e->constantGroups, $e->description, $e->version, true, $e->requires, $e->withItems, $e->doc));
+
+        self::assertFalse($plan->package->published);
+        self::assertSame([['meta/publish', FixUp::PUBLISH, 'all', 'no']], self::fixUps($plan));
+    }
+
     public function test_the_planner_changes_a_copy(): void
     {
         $package = self::setting(self::example(), self::SITE, 'ga_id', 'G-1');
@@ -289,7 +299,7 @@ final class PlannerTest extends TestCase
 
         self::assertSame('G-1', $package->modules[0]->settings['ga_id'] ?? null, 'the model passed in stays');
         self::assertArrayNotHasKey('ga_id', $plan->package->modules[0]->settings ?? []);
-        self::assertSame('users', $plan->package->publish);
+        self::assertFalse($plan->package->published);
     }
 
     public function test_preview(): void

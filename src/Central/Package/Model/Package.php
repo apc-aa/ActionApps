@@ -16,7 +16,7 @@ final readonly class Package
      *                                              aa-build, site optional
      * @param list<Module>          $modules        at least one (XSD)
      * @param list<ConstantGroup>   $constantGroups
-     * @param string|null           $publish        no | users | all
+     * @param bool                  $published      meta/publish: a store may offer the app to anyone
      * @param string|null           $requires       meta/requires/@aa-version
      * @param bool                  $withItems      meta/contents/@items - modules may carry items only then
      * @param Batch|null            $batch          meta/batch: one slice with items only
@@ -28,7 +28,7 @@ final readonly class Package
         public array $constantGroups = [],
         public ?string $description = null,
         public ?string $version = null,
-        public ?string $publish = null,
+        public bool $published = false,
         public ?string $requires = null,
         public bool $withItems = false,
         public ?string $doc = null,

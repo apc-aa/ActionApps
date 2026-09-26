@@ -238,7 +238,9 @@ A package (`aa-app`) is one UTF-8 XML document:
   (site domains), `setting-values` (slice);
 - items in a transfer carry 2FA secrets and `posted_by`/`edited_by` as text; never `short_id`.
 
-A published package with items, a batch or transfer parts is E `items-published`. An AA reading 1.0
+`meta/publish` is `all` in a package of a published app (see App store) and absent otherwise; an older
+package's `users` or `no` reads as not published. An installed copy is never published. A published
+package with items, a batch or transfer parts is E `items-published`. An AA reading 1.0
 prunes the 1.1 parts (W `unknown-element`) and refuses batches.
 
 ## Responder commands for Central
@@ -249,13 +251,17 @@ params))`; the answer is a serialized `AA_Response`. `Authorization: Bearer <tok
 
 **`Get_Jwt`** - POST fields `username`, `password`, optional `code2fa`; params `scope` (`admin`
 default | `apps`) and `ttl` (seconds). Only a **superadmin** logged in by the password in this very
-request gets a token. **Every token lives at most a day**, of either scope: without ttl a day, any ttl
+request gets a token - and the app store's public account, an `apps` token only. **Every token lives at most a day**, of either scope: without ttl a day, any ttl
 is kept within 60 s .. 1 day. A token whose `iat` is more than a day (+ 5 min of clock skew) old is
 refused whatever its `exp` says, so the year-long tokens of older AAs no longer work. Claims: `sub`, `iat`, `exp`, `pwd` (a keyed tag of the password), `scp`
 (`apps` only; no claim = admin). HS256 with a key derived from `AA_SECRET`.
 
 **`Get_Modules`** - param `types` (e.g. `['W']`, `['S','Alerts']`) -> `id => name` of the
 non-deleted modules. Superadmin.
+
+**`Get_Apps`** - only with a Bearer token -> a list of apps (`id`, `name`, `description`, `version`,
+`published`, `slices`, `alerts`), sorted by name: the published sites, and for a superadmin's token also
+the sites whose modules it may edit.
 
 **`Get_App`** - only with a Bearer token. Params `part`, `mode` (`install` | `transfer`), `bins`
 (`active` | `all`), `started` (unixtime of the run) and per part:
@@ -285,6 +291,8 @@ Error codes (`AA\Central\ResponderPolicy`, plus the responder's own):
 | 19 | `Get_App`: the source failed - details in its PHP error log |
 | 20 | the token's scope does not allow the command |
 | 21 | `Get_Jwt`: `ttl` or `scope` of a wrong form |
+| 22 | the app store's public account may not run the command |
+| 23 | the app store is busy: too many requests of the public account (client, IPv6 /48, or all) - try again later; also when this AA does not log `APPSTORE` |
 
 ## Security model
 
@@ -296,6 +304,8 @@ Error codes (`AA\Central\ResponderPolicy`, plus the responder's own):
 | Install an app from this AA | `PS_INSTALL_APP` (letter `U`, superadmin by default) + `PS_EDIT` on the exported modules |
 | Install from another AA | superadmin here and a superadmin login of the source |
 | Transfer (items, readers, hashes, 2FA) | superadmin here and on the source |
+| Publish a site in the app store | superadmin |
+| Install from the app store | superadmin with `PS_INSTALL_APP` here; the store's public account |
 | Batches, Continue, End | the user who started the run, a superadmin with `PS_INSTALL_APP` |
 
 A package is code: its templates run with all rights of the target AA. The S lint and its
@@ -307,7 +317,8 @@ confirmation help the admin; the boundary is who may install.
   one AA reach the others. Stored encrypted in `central_conf` (`v1:`, bound to the row's responder
   URL); anything else in the column is never sent. Anyone who holds it controls that AA
   (`Do_Optimize`, `Do_Synchronize`). Give each Central its own account.
-- `apps` (another AA pulling an app): at most a day, runs only `Get_App` and `Get_Modules` (else 20).
+- `apps` (another AA pulling an app): at most a day, runs only `Get_App`, `Get_Apps` and `Get_Modules`
+  (else 20).
   The target keeps it only in the run, AES-GCM encrypted with a key derived from `AA_SECRET`, sealed
   with the responder URL it was issued for. It is erased when the run is done or ended, and when a run
   has not moved on for a day. The source password is never stored.
@@ -336,7 +347,52 @@ request at all - keep the rows on their final `https://` address.
 - Target, `APP_INST`: one row per new module (or one with `AA_ID`): app name, version, source URL.
 - `JWT_DENY`: a refused Bearer token, once a day per client IP, with the reason.
 - `SESSID_USE`: `Get_Sessionid` logins, once a day per IP and kind.
+- `APPSTORE`: every request of the app store's public account, `command:client` (IPv4, or IPv6
+  `/48 /64`) - the hourly limits count them.
 - Failures of the install page and of `Get_App` go to the PHP error log; pages show codes only.
+
+## App store
+
+Any AA can be a store: it offers its **published** sites to every other AA, without a login of the
+installer on the store.
+
+- **Publishing** - a superadmin only, on the site's edit page (`modules/site/modedit.php`, part "App store"):
+  published yes/no, a description and a version. Before saving, the site is exported as the store
+  gives it - strict: every W is an E, and E `group-unpublished` for a constant group of a slice no
+  published site carries (its values would go public). Any error refuses the save and is listed.
+  Publishing records the site and the modules it uses (`app_modules`). "Uses" is edited by any
+  admin of the site: while the site uses a module not recorded, the store does not serve it and the
+  site form names the added modules. Only a superadmin's save with "Approve the changed modules"
+  ticked records them - a save for another reason does not. A module taken away is dropped from the
+  record.
+  The strict export is the store's only - a superadmin still copies a published site as any other,
+  and no copy is published.
+- **Public account** - the user `aa-app-store` with the password in `AA\Central\AppStore` (public by
+  design: it is in every AA's code). Create it on the store by Optimize "App store account"
+  (superadmin); it must have no rights or groups. It cannot log in to the administration; on the
+  responder it gets only an `apps` token (`Get_Jwt`) and runs only `Get_Apps` and `Get_App` with it
+  (else 22), and never keeps a session. The account exists only with `PERM_LIB` `sql` (in LDAP the
+  name may be anyone's): elsewhere the Optimize refuses and no user is the public account. `Get_App`
+  then answers only the `definitions` of an install of one published site (else 16/18), checked on
+  every request; an export error is answered as a bare `export-failed` - the findings stay on the
+  store.
+- **Limits** - per hour and client (an IPv4 address, or the /64 of an IPv6 one): 30 `Get_Jwt`, 120
+  `Get_App`, 120 `Get_Apps`; per IPv6 /48: 120, 480, 480; from all clients together: 500 `Get_Jwt`,
+  2000 `Get_App`, 2000 `Get_Apps` (else 23, "the app store is busy - try again later"). They count the
+  `APPSTORE` log rows, so with `APPSTORE` in `$DO_NOT_LOG` (or when its row cannot be written) the
+  store refuses every request of the account - better closed than without a limit.
+  **Trade-off:** the global cap fails closed too - a flood from many addresses closes the store for
+  everyone for up to an hour (installed apps and the rest of the AA are not affected). Put nginx
+  `limit_req` on `central/responder.php` in front of AA, so that a flood is cut before it reaches
+  the cap.
+- **Installing** - `central/appstore.php` (superadmin with `PS_INSTALL_APP`, menu "App store...")
+  logs in to the store by the public account (no password asked), lists its apps and hands one to the
+  preview of "Install an app" - the same preview, S lint and write. A store run logs in again by
+  itself when its token runs out. The store is
+  `https://actionapps.org/apc-aa/` unless `AA_APP_STORE_URL` in `config.php` names another, or a row
+  of the Central list; the address never comes from the request, and the hardened client rules apply.
+- An unpublished site reaches another AA only by a login of a superadmin of the source (Install from
+  another AA).
 
 ## State Check entries
 

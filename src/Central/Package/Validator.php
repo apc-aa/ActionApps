@@ -63,8 +63,8 @@ final class Validator
     /** E: items without meta/contents/@items, items in a module other than a slice, or items (the flag)
      *  outside a batch - items travel only in the batches of a transfer */
     public const ITEMS = 'items';
-    /** E: items, the item flag, a batch or the state of the installation with meta/publish = users | all -
-     *  a transfer is never published */
+    /** E: items, the item flag, a batch or the state of the installation in a published package - a transfer
+     *  is never published */
     public const ITEMS_PUBLISHED = Collector::ITEMS_PUBLISHED;
     /** E: an item value of a pseudo field or of source state (Collector::ITEM_LEFT_OUT), or of the source's
      *  users (Collector::ITEM_TRANSFER_ONLY) in an install */
@@ -139,8 +139,8 @@ final class Validator
         $this->seen     = $this->types = [];
         $this->has      = ['view' => [], 'email' => [], 'group' => [], 'filter' => []];
         $items          = $package->withItems || array_filter($package->modules, static fn(Module $m): bool => $m->items !== []);
-        if (in_array($package->publish, ['users', 'all'], true) && ($items || ($package->batch !== null) || array_filter($package->modules, static fn(Module $m): bool => $m->transfer !== []))) {
-            $this->add('meta/publish', LintFinding::ERROR, self::ITEMS_PUBLISHED, (string) $package->publish);
+        if ($package->published && ($items || ($package->batch !== null) || array_filter($package->modules, static fn(Module $m): bool => $m->transfer !== []))) {
+            $this->add('meta/publish', LintFinding::ERROR, self::ITEMS_PUBLISHED, 'all');
         }
         if (!$transfer && ($package->batch !== null)) {
             $this->add('meta/batch', LintFinding::ERROR, self::TRANSFER_ONLY, 'batch');

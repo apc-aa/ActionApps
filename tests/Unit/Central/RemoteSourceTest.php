@@ -184,6 +184,79 @@ final class RemoteSourceTest extends TestCase
         self::assertSame('', (new RemoteSource(self::URL))->unseal(self::TOKEN), 'a bare token');
     }
 
+    /** the store's address is AppStore's - the request names only "store" */
+    public function test_the_store_source_asks_the_store(): void
+    {
+        $store = RemoteSource::forSource(\AA\Central\InstallRun::STORE);
+
+        self::assertSame(self::TOKEN, (new RemoteSource(\AA\Central\AppStore::responderUrl()))->unseal($store->seal(self::TOKEN)));
+    }
+
+    /** @return array<string, array{string}> */
+    public static function noSources(): array
+    {
+        return ['a URL' => ['https://evil.example/aa/'], 'this AA' => ['local'], 'zero' => ['0'], 'empty' => [''], 'a word' => ['shop']];
+    }
+
+    #[DataProvider('noSources')]
+    public function test_no_other_source_is_asked(string $source): void
+    {
+        $this->expectException(SourceFailed::class);
+        RemoteSource::forSource($source);
+    }
+
+    public function test_the_apps_of_a_store_are_read_by_the_token(): void
+    {
+        $app  = ['id' => str_repeat('a', 32), 'name' => 'Web', 'description' => 'A web', 'version' => '1.2', 'published' => true, 'slices' => 2, 'alerts' => 0];
+        $apps = (new \AA\Central\RemoteAppSource($this->remote(serialize(new AA_Response([$app]))), self::TOKEN))->apps();
+
+        self::assertSame([$app], $apps);
+        self::assertEquals(new AA_Request('Get_Apps', []), AA_Request::decode($this->posted()['request']));
+        self::assertStringContainsString('Authorization: Bearer ' . self::TOKEN, $this->opened[0]['options']['http']['header']);
+    }
+
+    /** @return array<string, array{mixed}> */
+    public static function noAppLists(): array
+    {
+        $app = ['id' => str_repeat('a', 32), 'name' => 'Web', 'description' => '', 'version' => '', 'published' => true, 'slices' => 1, 'alerts' => 0];
+        return [
+            'no list'          => ['apps'],
+            'a keyed list'     => [['x' => $app]],
+            'an id of no hex'  => [[['id' => '../x'] + $app]],
+            'a name of no text' => [[['name' => ['x']] + $app]],
+            'a count of text'  => [[['slices' => '1'] + $app]],
+            'published as 1'   => [[['published' => 1] + $app]],
+            'a key missing'    => [[array_diff_key($app, ['version' => 1])]],
+        ];
+    }
+
+    /** a newer store may tell more of an app - what this AA does not know it leaves out */
+    public function test_more_keys_of_an_app_are_left_out(): void
+    {
+        $app  = ['id' => str_repeat('a', 32), 'name' => 'Web', 'description' => 'A web', 'version' => '1.2', 'published' => true, 'slices' => 2, 'alerts' => 0];
+        $apps = (new \AA\Central\RemoteAppSource($this->remote(serialize(new AA_Response([['icon' => 'x.png', 'rating' => 5] + array_reverse($app, true)]))), self::TOKEN))->apps();
+
+        self::assertSame([$app], $apps);
+    }
+
+    #[DataProvider('noAppLists')]
+    public function test_a_store_answer_of_another_form_is_refused(mixed $answer): void
+    {
+        $this->expectException(SourceFailed::class);
+        (new \AA\Central\RemoteAppSource($this->remote(serialize(new AA_Response($answer))), self::TOKEN))->apps();
+    }
+
+    public function test_the_store_limit_is_told(): void
+    {
+        try {
+            (new \AA\Central\RemoteAppSource($this->remote(serialize(new AA_Response('Too many requests', ResponderPolicy::ERR_RATE_LIMIT))), self::TOKEN))->apps();
+            self::fail('no error');
+        } catch (SourceFailed $e) {
+            self::assertStringContainsString('busy', $e->getMessage());
+            self::assertStringContainsString('later', $e->getMessage());
+        }
+    }
+
     public function test_a_row_of_no_utf8_gets_no_token(): void
     {
         $remote = new RemoteSource("https://r\xFF.example/aa/central/responder.php");

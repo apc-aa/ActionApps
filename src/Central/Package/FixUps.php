@@ -14,7 +14,7 @@ use AA\Central\Package\Model\Package;
  *  - a tag start in a spot text => strip_tags() - the site tree admin prints spot texts unescaped;
  *  - no <spot-tree> => site.structure = '';
  *  - an alerts_filter several Alerts modules carry => kept in the first module only;
- *  - meta/publish => `users`. */
+ *  - a published app => not published: an installed copy is never offered further. */
 final class FixUps
 {
     /** @var list<FixUp> */
@@ -41,10 +41,10 @@ final class FixUps
             }
             $modules[] = self::with($m, $args);
         }
-        if ($package->publish !== 'users') {
-            $this->fixUps[] = new FixUp('meta/publish', FixUp::PUBLISH, (string) $package->publish, 'users');
+        if ($package->published) {
+            $this->fixUps[] = new FixUp('meta/publish', FixUp::PUBLISH, 'all', 'no');
         }
-        return [self::with($package, ['modules' => $modules, 'publish' => 'users']), $this->fixUps];
+        return [self::with($package, ['modules' => $modules, 'published' => false]), $this->fixUps];
     }
 
     /** @param array<string, list<array<string, mixed>>> $rows @return array<string, list<array<string, mixed>>> */

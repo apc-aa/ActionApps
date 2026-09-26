@@ -368,13 +368,14 @@ namespace Tests\Unit\Central\Package {
         {
             $collector = new Collector(self::source());
             $draft     = $collector->fromSite(self::SITE, new CollectOptions(self::SOURCE));
-            $published = $collector->fromSite(self::SITE, new CollectOptions(self::SOURCE, publish: 'users'));
+            $published = $collector->fromSite(self::SITE, new CollectOptions(self::SOURCE, published: true));
 
             $this->assertSame([], self::findings($published, LintFinding::WARNING));
             $this->assertCount(count(self::findings($draft, LintFinding::WARNING)), self::findings($published, LintFinding::ERROR));
             $this->assertSame(self::findings($draft, LintFinding::INFO), self::findings($published, LintFinding::INFO));
             $this->assertTrue($published->failed());
-            $this->assertSame('users', $published->package->publish);
+            $this->assertTrue($published->package->published);
+            $this->assertFalse($draft->package->published);
         }
 
         public function test_fromModules_takes_only_the_given_modules(): void
@@ -426,12 +427,6 @@ namespace Tests\Unit\Central\Package {
             $source->tables['module'][0]['deleted'] = 1;
             $this->expectException(InvalidArgumentException::class);
             (new Collector($source))->fromSite(self::SITE, new CollectOptions(self::SOURCE));
-        }
-
-        public function test_an_unknown_publish_value_is_rejected(): void
-        {
-            $this->expectException(InvalidArgumentException::class);
-            new CollectOptions(self::SOURCE, publish: 'everyone');
         }
 
         // --- rows ------------------------------------------------------------------------------------
@@ -914,18 +909,11 @@ namespace Tests\Unit\Central\Package {
             }
         }
 
-        /** @return array<string, array{string}> */
-        public static function published(): array
+        public function test_a_transfer_is_never_published(): void
         {
-            return ['users' => ['users'], 'all' => ['all']];
-        }
-
-        #[DataProvider('published')]
-        public function test_a_transfer_is_never_published(string $publish): void
-        {
-            $this->assertSame('no', (new CollectOptions(self::SOURCE, mode: CollectOptions::TRANSFER, publish: 'no'))->publish);
+            $this->assertFalse((new CollectOptions(self::SOURCE, mode: CollectOptions::TRANSFER))->published);
             $this->expectException(InvalidArgumentException::class);
-            new CollectOptions(self::SOURCE, mode: CollectOptions::TRANSFER, publish: $publish);
+            new CollectOptions(self::SOURCE, mode: CollectOptions::TRANSFER, published: true);
         }
 
         // --- transfer: state of the installation ---------------------------------------------------
@@ -1059,7 +1047,7 @@ namespace Tests\Unit\Central\Package {
 
         public function test_the_collected_site_is_a_valid_package(): void
         {
-            $dom = self::xml((new Collector(self::source()))->fromSite(self::SITE, new CollectOptions(self::SOURCE, description: 'A test app', publish: 'no')));
+            $dom = self::xml((new Collector(self::source()))->fromSite(self::SITE, new CollectOptions(self::SOURCE, description: 'A test app')));
 
             $this->assertSame(1, $dom->getElementsByTagName('site-module')->length);
             $this->assertSame(4, $dom->getElementsByTagName('constant-group')->length);

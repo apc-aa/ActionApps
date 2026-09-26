@@ -19,7 +19,7 @@ final readonly class FixUp
     public const SPOT_MARKUP = 'spot-markup-stripped';
     /** a site without <spot-tree>: site.structure = '' */
     public const NO_TREE = 'no-spot-tree';
-    /** meta/publish is `users` on the target */
+    /** a published app is installed unpublished */
     public const PUBLISH = 'publish';
     /** an alerts_filter shared by Alerts modules (the same row, Validator) is created once - by the
      *  first module; `old` = the filter id, `new` = the path of the module that creates it */

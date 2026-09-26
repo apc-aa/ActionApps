@@ -183,7 +183,7 @@ final class ImportReportTest extends TestCase
         self::assertSame(3, $report->rows['constant'], 'two constants and the lt_groupNames row');
 
         self::assertSame($plan->fixUps, $report->ignored);
-        self::assertContains(FixUp::PUBLISH, array_map(static fn(FixUp $f): string => $f->code, $report->ignored), 'publish = users');
+        self::assertNotContains(FixUp::PUBLISH, array_map(static fn(FixUp $f): string => $f->code, $report->ignored), 'the example is not published');
         self::assertSame([
             'views'       => [12 => 1000, 13 => 1001],
             'emails'      => [5 => 2000, 7 => 2001],

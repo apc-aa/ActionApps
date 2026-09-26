@@ -212,11 +212,10 @@ final class ValidatorTest extends TestCase
             'item in no bin'             => [static fn(Package $p): Package => self::items($p, [['id' => self::OTHER, 'content' => ['status_code.....' => [0 => ['value' => '4', 'flag' => 1]]]]]), ["W item-status $S/item[" . self::OTHER . ']/status_code.....', 'E items meta/contents']],
             // ---- items (a transfer): never published
             'items without the flag'     => [static fn(Package $p): Package => self::with(self::items($p, [self::item(self::OTHER)]), ['withItems' => false]), ["E items $S/item", 'E items meta/contents']],
-            'items of a published app'   => [static fn(Package $p): Package => self::with(self::items($p, [self::item(self::OTHER)]), ['publish' => 'all']), ['E items-published meta/publish', 'E items meta/contents']],
-            'item flag, publish all'     => [static fn(Package $p): Package => self::with($p, ['withItems' => true, 'publish' => 'all']), ['E items-published meta/publish', 'E items meta/contents']],
-            'items, publish users'       => [static fn(Package $p): Package => self::with(self::items($p, [self::item(self::OTHER)]), ['publish' => 'users']), ['E items-published meta/publish', 'E items meta/contents']],
-            'state, publish users'       => [static fn(Package $p): Package => self::with(self::module($p, self::SLICE, static fn(Module $m): Module => self::with($m, ['transfer' => ['reading-password' => 'x']])), ['publish' => 'users']), ['E items-published meta/publish']],
-            'publish all, no items'      => [static fn(Package $p): Package => self::with($p, ['publish' => 'all']), []],
+            'items of a published app'   => [static fn(Package $p): Package => self::with(self::items($p, [self::item(self::OTHER)]), ['published' => true]), ['E items-published meta/publish', 'E items meta/contents']],
+            'item flag, published'       => [static fn(Package $p): Package => self::with($p, ['withItems' => true, 'published' => true]), ['E items-published meta/publish', 'E items meta/contents']],
+            'state, published'           => [static fn(Package $p): Package => self::with(self::module($p, self::SLICE, static fn(Module $m): Module => self::with($m, ['transfer' => ['reading-password' => 'x']])), ['published' => true]), ['E items-published meta/publish']],
+            'published, no items'        => [static fn(Package $p): Package => self::with($p, ['published' => true]), []],
             // ---- security lint: every text of the package
             'include in a view'          => [static fn(Package $p): Package => self::cell($p, self::SLICE, 'view', 0, ['odd' => '{include:../../etc/passwd:readfile}']), ["S include $S/view[12]/odd"]],
             'server in a spot'           => [static fn(Package $p): Package => self::cell($p, self::SITE, 'site_spot', 0, ['content' => 'a {server:DB_PASSWORD} b']), ["S server $W/site_spot[1]/content"]],
@@ -403,7 +402,7 @@ final class ValidatorTest extends TestCase
 
     public function test_a_published_batch_is_an_error(): void
     {
-        self::assertSame(['E items-published meta/publish'], self::findings(self::with(self::batch(), ['publish' => 'users']), true));
+        self::assertSame(['E items-published meta/publish'], self::findings(self::with(self::batch(), ['published' => true]), true));
     }
 
     /** @return array<string, array{Closure(): Package, list<string>}> */

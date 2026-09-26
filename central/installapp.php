@@ -1,7 +1,8 @@
 <?php
 
 /**
- * Install an app of this AA or of another one (aa=<central_conf id>): a site with its modules, or slices
+ * Install an app of this AA or of another one (aa=<central_conf id>, or the app store - appstore.php opens
+ * its runs): a site with its modules, or slices
  * and Alerts modules, as a clean app (install) or with their items (transfer). One path for both: the
  * source makes XML (AppExport here, Get_App there), this AA reads it (Reader -> Validator -> Planner ->
  * Importer). A transfer then moves the items in batches, one request each, driven by the progress page -
@@ -42,6 +43,7 @@
 use AA\Central\Actionapps;
 use AA\Central\AppExport;
 use AA\Central\AppSource;
+use AA\Central\AppStore;
 use AA\Central\ExportRefused;
 use AA\Central\InstallRun;
 use AA\Central\ItemIdCheck;
@@ -74,7 +76,7 @@ use AA\Util\InputVars;
 require_once __DIR__ . "/include/init_central.php";
 require_once __DIR__ . "/../include/formutil.php";
 
-const INSTALLAPP_TOKEN = 'central-installapp';
+const INSTALLAPP_TOKEN = InstallRun::FORM_TOKEN;
 const INSTALLAPP_JSON  = ['batch', 'continue', 'end'];
 
 pageOpen();
@@ -132,7 +134,7 @@ if ($json) {
         $renewed  = '';
         if (($action === 'continue') && $run && ($run->source() !== InstallRun::LOCAL) && ($run->user() === $uid) && ($run->state() === InstallRun::ERROR)) {
             if ($login[0] !== '') {
-                $remote  = RemoteSource::forAa((int) $run->source());
+                $remote  = RemoteSource::forSource($run->source());
                 $renewed = $remote->seal($remote->jwt(...$login));
             } elseif (($run->error()[0] ?? '') === SourceFailed::LOGIN) {
                 installapp_json(TransferProgress::state($run, 'login'));
@@ -222,8 +224,9 @@ function installapp_local_source(): AppExport
     return new AppExport(new DbSource(), $attributes, static fn(string $module): bool => IfSlPerm(PS_EDIT, $module), IsSuperadmin());
 }
 
-/** the AA of the run's central_conf row, with the token of its superadmin the run keeps sealed
- *  @throws SourceFailed no such row */
+/** the AA of the run's central_conf row or the app store, with the token the run keeps sealed (the store
+ *  logs in again by itself)
+ *  @throws SourceFailed no such row, the store refused its login */
 function installapp_remote_source(InstallRun $run): RemoteAppSource
 {
     try {
@@ -231,8 +234,8 @@ function installapp_remote_source(InstallRun $run): RemoteAppSource
     } catch (RuntimeException) {            // AA_SECRET changed: the source refuses the empty token, Continue logs in again
         $sealed = '';
     }
-    $remote = RemoteSource::forAa((int) $run->source());
-    return new RemoteAppSource($remote, $remote->unseal($sealed));
+    $remote = RemoteSource::forSource($run->source());
+    return ($run->source() === InstallRun::STORE) ? AppStore::source($remote, $remote->unseal($sealed)) : new RemoteAppSource($remote, $remote->unseal($sealed));
 }
 
 /** the source of a run; no run - this AA (the progress requests then refuse it anyway)
@@ -242,10 +245,12 @@ function installapp_run_source(?InstallRun $run): AppSource
     return (($run === null) || ($run->source() === InstallRun::LOCAL)) ? installapp_local_source() : installapp_remote_source($run);
 }
 
-/** the link back to the login to the source AA of the run */
+/** the link back to the login to the source AA of the run; the store logs in by itself */
 function installapp_relogin(InstallRun $run): string
 {
-    return a_href(installapp_url(['aa' => $run->source()]), _m('Log in to the source AA again'));
+    return ($run->source() === InstallRun::STORE)
+        ? a_href(StateUrl(get_url(self_base() . 'appstore.php')), _m('Open the app store again'))
+        : a_href(installapp_url(['aa' => $run->source()]), _m('Log in to the source AA again'));
 }
 
 /** the items of the slices on the source; [] when it cannot tell
@@ -381,15 +386,20 @@ function installapp_connect(int $aa, string $mode, bool $all_bins, array $login,
     installapp_choose(InstallRun::preview($mode, $all_bins, (string) $aa, $uid, $sealed, time()));
 }
 
-/** the choice of the app of a run opened at the login to another AA */
+/** the choice of the app of a run opened at the login to another AA; the store lists its apps itself */
 function installapp_choose(InstallRun $run): void
 {
+    $store = a_href(StateUrl(get_url(self_base() . 'appstore.php', ['run' => $run->getId()])), _m('Choose the app from the list of its apps'));
+    if ($run->source() === InstallRun::STORE) {
+        echo "<p>$store</p>";
+        return;
+    }
     try {
         $from   = installapp_remote_source($run);
         $sites  = $from->modules(['W']);
         $others = $from->modules(['S', 'Alerts']);
-    } catch (SourceFailed $e) {
-        echo '<div class="aa-err">' . safe($e->getMessage()) . ' ' . installapp_relogin($run) . '</div>';
+    } catch (SourceFailed $e) {         // the app store account of a Central row lists no modules
+        echo '<div class="aa-err">' . safe($e->getMessage()) . ' ' . installapp_relogin($run) . "</div><p>$store</p>";
         return;
     }
     echo '<form method="post" action="' . safe(installapp_url()) . '">' . FormToken::field(INSTALLAPP_TOKEN)

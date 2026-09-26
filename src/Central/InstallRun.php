@@ -36,8 +36,12 @@ final class InstallRun extends AA_Object
     public const INSTALL  = 'install';
     public const TRANSFER = 'transfer';
 
-    /** the source is this AA; any other source is the id of its central_conf row */
+    /** the source is this AA; any other source is the id of its central_conf row, or the store */
     public const LOCAL = 'local';
+    /** the app store (AppStore::url()) - installs only, it gives nothing else */
+    public const STORE = 'store';
+    /** the form token of the install page (central/installapp.php) - the app store page posts to it too */
+    public const FORM_TOKEN = 'central-installapp';
 
     /** a preview nobody confirmed is forgotten after a day */
     private const PREVIEW_LIFETIME = 86400;
@@ -107,8 +111,11 @@ final class InstallRun extends AA_Object
         if (!in_array($mode, [self::INSTALL, self::TRANSFER], true)) {
             throw new InvalidArgumentException("Unknown mode $mode");
         }
-        if (($source !== self::LOCAL) && !preg_match('/^[1-9]\d{0,9}\z/', $source)) {
-            throw new InvalidArgumentException('The source is "local" or a central_conf id');
+        if (!in_array($source, [self::LOCAL, self::STORE], true) && !preg_match('/^[1-9]\d{0,9}\z/', $source)) {
+            throw new InvalidArgumentException('The source is "local", "store" or a central_conf id');
+        }
+        if (($source === self::STORE) && ($mode !== self::INSTALL)) {
+            throw new InvalidArgumentException('The app store gives installs only');
         }
         self::deleteOldPreviews($now);
         self::forgetOldTokens($now);
