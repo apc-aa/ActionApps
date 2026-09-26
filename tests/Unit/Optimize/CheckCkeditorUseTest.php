@@ -17,15 +17,15 @@ final class CheckCkeditorUseTest extends TestCase
         require_once __DIR__ . '/../fixtures/util_shims.php';   // _m(), safe(), ParamImplode()
     }
 
-    public function test_selector_is_the_module_and_the_page_without_query(): void
+    public function test_page_is_host_and_path_without_query(): void
     {
         $server = ['HTTP_HOST' => 'www.example.org', 'REQUEST_URI' => '/formular/mail?x=1&token=secret'];
-        $this->assertSame([self::MODULE, 'www.example.org/formular/mail'], ParamExplode(CheckCkeditorUse::selector($server, self::MODULE)));
+        $this->assertSame('www.example.org/formular/mail', CheckCkeditorUse::page($server));
     }
 
-    public function test_selector_survives_a_missing_request(): void
+    public function test_page_survives_a_missing_request(): void
     {
-        $this->assertSame(['', ''], ParamExplode(CheckCkeditorUse::selector([], '')));
+        $this->assertSame('', CheckCkeditorUse::page([]));
     }
 
     public function test_no_use_is_ok(): void
@@ -35,13 +35,20 @@ final class CheckCkeditorUseTest extends TestCase
         $this->assertSame(Finding::OK, $findings[0]->severity);
     }
 
-    public function test_a_use_is_a_warning_naming_the_page_and_the_module(): void
+    public function test_a_use_is_a_warning_naming_the_site_with_a_page(): void
     {
-        $row = ['selector' => ParamImplode([self::MODULE, 'www.example.org/formular']), 'days' => '3', 'first' => '1790000000', 'last' => '1790086400', 'params' => ''];
+        $row = ['selector' => self::MODULE, 'days' => '3', 'first' => '1790000000', 'last' => '1790086400', 'params' => 'www.example.org/formular'];
         [$finding] = CheckCkeditorUse::findingsFor([$row], [self::MODULE => 'Web']);
         $this->assertSame(Finding::WARNING, $finding->severity);
-        $this->assertStringContainsString('www.example.org/formular', $finding->title);
-        $this->assertSame('Web', $finding->evidence[0][_m('Module')]);
+        $this->assertStringContainsString('Web', $finding->title);
+        $this->assertSame('www.example.org/formular', $finding->evidence[0][_m('Page')]);
         $this->assertSame(3, $finding->count);
+    }
+
+    public function test_without_a_site_the_page_names_it(): void
+    {
+        $row = ['selector' => '', 'days' => '1', 'first' => '1790000000', 'last' => '1790000000', 'params' => 'www.example.org/view.php'];
+        [$finding] = CheckCkeditorUse::findingsFor([$row], []);
+        $this->assertStringContainsString('www.example.org/view.php', $finding->title);
     }
 }

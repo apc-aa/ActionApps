@@ -217,11 +217,12 @@ function TabWidgetToggle(class2togle) {
 
 
 
-// aa-richtext.js next to this file - for text areas of hand-written forms, which come without <aa-richtext>
-if (document.currentScript?.src && !window.AA__richtextUrl) {
+// aa-richtext.js next to this file - for text areas of hand-written forms, which come without <aa-richtext>;
+// kept on the function, where no element id of the page can stand in for it (window.<id> could)
+if (document.currentScript?.src) {
     const url = new URL('widgets/aa-richtext.js', document.currentScript.src);
     url.search = new URL(document.currentScript.src).search;
-    window.AA__richtextUrl = url.href;
+    openHTMLAreaFullscreen.richtextUrl = url.href;
 }
 
 /** "Edit in Editor" of a text area: <aa-richtext> (widgets/aa-richtext.js) does the work */
@@ -238,8 +239,8 @@ function openHTMLAreaFullscreen(name) {
         box.setAttribute('switch-html', 'h');
         textarea.before(box);
         box.append(textarea);
-        if (!customElements.get('aa-richtext') && window.AA__richtextUrl) {
-            import(window.AA__richtextUrl).catch(e => console.error('openHTMLAreaFullscreen', e));
+        if (!customElements.get('aa-richtext') && openHTMLAreaFullscreen.richtextUrl) {
+            import(openHTMLAreaFullscreen.richtextUrl).catch(e => console.error('openHTMLAreaFullscreen', e));
         }
     }
     customElements.whenDefined('aa-richtext').then(() => box.showEditor());
