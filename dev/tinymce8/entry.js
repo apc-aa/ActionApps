@@ -82,6 +82,8 @@ const SCRIPT_URL = /^\s*(javascript|vbscript|data:text\/html)/i;
 /** shown as placeholders (media_live_embeds: false), so they load nothing - and the media
  *  plugin keeps their attributes itself, a parked one would be lost */
 const PLACEHOLDERS = new Set(['iframe', 'video', 'audio', 'object', 'embed']);
+/** marks media stored without width / height */
+const NO_SIZE = 'data-aa-nosize-';
 
 /**
  * With a schema this permissive TinyMCE would run what stored HTML carries - an onerror
@@ -100,6 +102,50 @@ function guardEditView(editor) {
     editor.parser.addAttributeFilter([...EVENT_ATTRS, 'srcdoc'].join(','), park);
     editor.parser.addAttributeFilter(URL_ATTRS.join(','), (nodes, name) => park(nodes.filter(node => !PLACEHOLDERS.has(node.name) && SCRIPT_URL.test(node.attr(name) ?? '')), name));
     editor.serializer.addAttributeFilter([...EVENT_ATTRS, 'srcdoc', ...URL_ATTRS].map(name => PARKED + name).join(','), unpark);
+
+    // a placeholder needs a size and TinyMCE writes it back to the media - 300x150 would
+    // shrink a video; remember which had none (runs before the media plugin's filters)
+    editor.parser.addNodeFilter([...PLACEHOLDERS].join(','), nodes => nodes.forEach((node) => {
+        for (const dim of ['width', 'height']) {
+            if (node.attr(dim) === undefined) {
+                node.attr(NO_SIZE + dim, '1');
+            }
+        }
+    }));
+    editor.serializer.addAttributeFilter('data-mce-object', nodes => nodes.forEach((node) => {
+        for (const dim of ['width', 'height']) {
+            if (node.attr('data-mce-p-' + NO_SIZE + dim) !== undefined) {
+                node.attr(dim, null);
+                node.attr('data-mce-p-' + NO_SIZE + dim, null);
+            }
+        }
+    }));
+    editor.serializer.addAttributeFilter(NO_SIZE + 'width,' + NO_SIZE + 'height', (nodes, name) => nodes.forEach(node => node.attr(name, null)));
+}
+
+/** the side properties a shorthand overrides when it comes after them */
+const SIDES = {
+    margin:         /^margin-(top|right|bottom|left)$/,
+    padding:        /^padding-(top|right|bottom|left)$/,
+    border:         /^border-((top|right|bottom|left)(-(width|style|color))?|width|style|color)$/,
+    'border-width': /^border-(top|right|bottom|left)-width$/,
+    'border-style': /^border-(top|right|bottom|left)-style$/,
+    'border-color': /^border-(top|right|bottom|left)-color$/,
+};
+
+/**
+ * Word writes "margin-top: 6pt; …; margin: 0 0 8pt" - the browser applies the shorthand,
+ * TinyMCE merges the four sides back over it. Dropping the sides it overrides keeps the look;
+ * a style without such a pair stays untouched.
+ */
+function dropOverriddenSides(html) {
+    return html.replace(/(\sstyle\s*=\s*)(?:"([^"]*)"|'([^']*)')/gi, (all, attr, dq, sq) => {
+        const [quote, css] = (dq !== undefined) ? ['"', dq] : ["'", sq];
+        const decls = css.split(';');
+        const names = decls.map(decl => decl.split(':')[0].trim().toLowerCase());
+        const keep  = decls.filter((decl, i) => !names.slice(i + 1).some(name => SIDES[name]?.test(names[i])));
+        return (keep.length === decls.length) ? all : attr + quote + keep.join(';') + quote;
+    });
 }
 
 function uploadOptions({ image, imageTypes, file, pick, documentTypes }, onEdit) {
@@ -164,6 +210,8 @@ export async function createRichEditor(target, { uiLang, inline = false, height 
         extended_valid_elements: '*[*]',
         valid_children: '+body[style|script|iframe|video|center|form|a],+p[iframe|video]',
         convert_urls: false,
+        allow_html_in_named_anchor: true,   // <a name="x">Title</a> stays, not <a name="x"></a>Title
+        allow_unsafe_link_target: true,     // no rel="noopener" added to target="_blank" links
         convert_fonts_to_spans: false,
         entity_encoding: 'named',
         entities: '160,nbsp,173,shy',
@@ -172,8 +220,9 @@ export async function createRichEditor(target, { uiLang, inline = false, height 
         xss_sanitization: false,
         allow_script_urls: true,
         // SVG would render - and run - in the edit view, and a script at the top level would
-        // get wrapped in <p>; protected, both are kept as written, not shown
-        protect: [/<svg[\s\S]*?<\/svg>/gi, /<script[\s\S]*?<\/script>/gi],
+        // get wrapped in <p>; the head of a pasted page TinyMCE drops. Protected, all are kept
+        // as written, not shown
+        protect: [/<svg[\s\S]*?<\/svg>/gi, /<script[\s\S]*?<\/script>/gi, /<(meta|link)\b[^>]*>/gi, /<title>[\s\S]*?<\/title>/gi],
         // iframes, video and audio as placeholders, as in CKEditor 4: nothing embedded loads
         // or plays in the edit view
         media_live_embeds: false,
@@ -184,6 +233,11 @@ export async function createRichEditor(target, { uiLang, inline = false, height 
         ...(upload ? uploadOptions(upload, onEdit) : {}),
         setup: (ed) => {
             ed.on('PreInit', () => guardEditView(ed));
+            ed.on('BeforeSetContent', (e) => {
+                if (typeof e.content === 'string') {
+                    e.content = dropOverriddenSides(e.content);
+                }
+            });
             if (onSource) {
                 ed.ui.registry.addButton('aasource', { icon: 'sourcecode', text: sourceLabel, tooltip: sourceLabel, onAction: () => onSource() });
             }
