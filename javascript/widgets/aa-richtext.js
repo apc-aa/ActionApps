@@ -3,7 +3,8 @@
  * source in CodeMirror 6 (<aa-code>).
  *
  *   <aa-richtext mode="rich|code|plain" editor switch-name="…" switch-html="1"
- *                upload="user|anon" upload-url="…" upload-token="…" slice="…" upload-types='[…]'
+ *                upload="user|anon" upload-url="…" upload-token="…" slice="…"
+ *                upload-images="jpg,png,…" upload-types='[…]'
  *                ui-lang="cs" l10n='{"editor":"Editor","source":"Zdroj",…}'>
  *     <textarea name="…">…</textarea>
  *   </aa-richtext>

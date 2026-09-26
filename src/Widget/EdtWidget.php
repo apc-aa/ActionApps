@@ -32,6 +32,6 @@ class EdtWidget extends TxtWidget
 
     protected function requireLibs($aa_property, $winfo): array
     {
-        return array_values(array_unique(array_merge(['aa-richtext@1'], parent::requireLibs($aa_property, $winfo))));
+        return array_merge(['aa-richtext@1'], parent::requireLibs($aa_property, $winfo));
     }
 }

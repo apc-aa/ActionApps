@@ -183,7 +183,8 @@ function uploadOptions({ image, imageTypes, file, pick, documentTypes }, onEdit)
  * @param {HTMLElement} target  an unnamed textarea (never the one a form submits), or with
  *                              inline: true the element edited in place - only for content the
  *                              page already shows, as the iframe's CSP does not guard it
- * @param {object} [options]    see the task description above
+ * @param {object} [options]    uiLang, inline, height, sourceLabel (the Source button), onEdit (every
+ *                              edit), onBlur, onSource (the Source button pressed), upload
  */
 export async function createRichEditor(target, { uiLang, inline = false, height = 300, sourceLabel = 'Source', onEdit, onBlur, onSource, upload = null } = {}) {
     const language = LANGS[String(uiLang ?? '').slice(0, 2).toLowerCase()];

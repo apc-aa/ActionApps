@@ -6,6 +6,7 @@ namespace AA\Optimize;
 
 use AA\Api\Controller\FilesController;
 use AA\IO\DB\DB_AA;
+use AA\Upload\UploadPolicy;
 use AA\Util\LogOnce;
 use AA_Log;
 
@@ -89,9 +90,9 @@ class CheckUploadRefusals extends AbstractOptimize
                 ]],
                 advice: match ($kind) {
                     'dir'    => _m('PHP cannot write the upload directory of the slice (IMG_UPLOAD_PATH/<slice id>, or its file manager directory). Fix the owner or the permissions on the server.'),
-                    'rate'   => _m('An address uploaded more anonymous images in an hour than AA allows (20 an address, 200 a slice). A robot, most likely - the address is in the log.'),
+                    'rate'   => _m('An address uploaded more anonymous images in an hour than AA allows (%1 an address, %2 a slice). A robot, most likely - the address is in the log.', [FilesController::ANON_PER_IP_HOUR, FilesController::ANON_PER_SLICE_HOUR]),
                     'rights' => _m('Somebody tried to upload without the right to: an editor whose login expired (reloading the page helps), or a probe - many days from one address.'),
-                    'size'   => _m('Anonymous visitors may upload images up to 5 MB; editors are limited by upload_max_filesize and post_max_size of PHP.'),
+                    'size'   => _m('Anonymous visitors may upload images up to %1 MB; editors are limited by upload_max_filesize and post_max_size of PHP.', [UploadPolicy::ANON_MAX_BYTES >> 20]),
                     default  => _m('The editor refused a file type, or a file whose content did not match its extension. The allowed types are fixed in AA\Upload\UploadPolicy; nothing a browser or PHP would run ever passes.'),
                 },
                 links: [_m('Log rows') => AA_Log::getAdminUrl(FilesController::EVENT_REFUSED, $selector)],

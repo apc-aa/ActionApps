@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 /**
  * Files of a slice for the rich-text editor: upload one, list them for the picker.
- * Replaces KCFinder, which let anybody upload, list and rename. Who may do what
- * decides AA\Upload\UploadPolicy; the X-AA-Upload-Token header (AA\Upload\UploadToken)
+ * Who may do what decides AA\Upload\UploadPolicy; the X-AA-Upload-Token header (AA\Upload\UploadToken)
  * proves AA rendered the editor.
  *
  * @package Api
@@ -132,8 +131,9 @@ class FilesController
         $dir   = $this->destinationDir($slice_id);
         $files = ($dir === null) ? [] : self::filesIn($dir, ($_GET['kind'] ?? '') === 'image', (string) ($_GET['q'] ?? ''), self::LIST_MAX);
         $out   = [];
+        $base  = $this->urlOf($slice_id, '');  // once - the slice lookup is not free, the list can hold 500 files
         foreach ($files as $f) {
-            $url   = $this->urlOf($slice_id, $f['name']);
+            $url   = $base . rawurlencode($f['name']);
             $out[] = $f + ['url' => $url, 'thumb' => in_array($f['type'], UploadPolicy::IMAGES, true) ? $this->thumbOf($url) : ''];
         }
         return JsonResponse::ok(['files' => $out]);
