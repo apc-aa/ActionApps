@@ -41,6 +41,10 @@ final class InstallRun extends AA_Object
 
     /** a preview nobody confirmed is forgotten after a day */
     private const PREVIEW_LIFETIME = 86400;
+    /** the source's token lives a day (RemoteSource::TOKEN_TTL) - a run that did not move on keeps it no longer */
+    private const TOKEN_LIFETIME = 86400;
+    /** bytes of the path of an error - it may name source text */
+    private const ERROR_PATH_BYTES = 255;
 
     /** the states a run can still go on from */
     public const UNFINISHED = [self::ITEMS, self::ERROR];
@@ -54,6 +58,8 @@ final class InstallRun extends AA_Object
     protected $started = '';
     /** unixtime the run last moved on (definitions, a batch, Continue) - State Check finds stuck runs */
     protected $moved = '';
+    /** unixtime of the preview on the clock of the source; '' = the source is this AA (started) */
+    protected $source_time = '';
     protected $id_map = '';
     /** sha256 of the definitions package - of the preview's until they are written */
     protected $fingerprint = '';
@@ -79,7 +85,7 @@ final class InstallRun extends AA_Object
     public static function getClassProperties(): array
     {
         $props = [];
-        foreach (['state', 'mode', 'all_bins', 'source', 'user', 'started', 'moved', 'fingerprint', 'slice', 'cursor', 'error_code', 'error_path', 'token'] as $id) {
+        foreach (['state', 'mode', 'all_bins', 'source', 'user', 'started', 'moved', 'source_time', 'fingerprint', 'slice', 'cursor', 'error_code', 'error_path', 'token'] as $id) {
             $props[$id] = new AA_Property($id, $id, 'string', false, true, 'string');
         }
         foreach (['id_map', 'slices', 'written', 'warnings', 'report'] as $id) {
@@ -99,6 +105,7 @@ final class InstallRun extends AA_Object
             throw new InvalidArgumentException('The source is "local" or a central_conf id');
         }
         self::deleteOldPreviews($now);
+        self::forgetOldTokens($now);
         $run = new self();
         $run->setOwnerId((string) constant('AA_ID'));
         $run->state       = self::PREVIEW;
@@ -139,6 +146,32 @@ final class InstallRun extends AA_Object
             $run->locked = true;
         }
         return $run;
+    }
+
+    /** Forgets the source's token of the runs that did not move on for a day: it has expired then (a token
+     *  renewed by Continue moves the run on), and a live transfer moves on with every batch. */
+    public static function forgetOldTokens(int $now): void
+    {
+        $states = [self::PREVIEW, ...self::UNFINISHED];
+        $ids    = array_values(array_unique(array_map('strval', DB_AA::select('object_id', 'SELECT object_id FROM `object_text`', [['property', 'state'], ['value', $states]]))));
+        if (!$ids) {
+            return;
+        }
+        $props = [];            // one query for all of them, not a read per run
+        foreach (DB_AA::select([], 'SELECT object_id, property, value FROM `object_text`', [['object_id', $ids], ['property', ['aa_type', 'token', 'moved', 'started']]]) as $row) {
+            $props[$row['object_id']][$row['property']] = (string) $row['value'];
+        }
+        $old = static fn(array $p): bool => (($p['aa_type'] ?? '') === self::class) && (($p['token'] ?? '') !== '')
+            && ((int) (($p['moved'] ?? '') ?: ($p['started'] ?? 0)) <= $now - self::TOKEN_LIFETIME);
+        foreach (array_keys(array_filter($props, $old)) as $id) {
+            DB_AA::transaction(static function () use ($id, $now, $states): void {
+                $run = self::lockForUpdate((string) $id);
+                if ($run && in_array($run->state, $states, true) && ($run->moved() <= $now - self::TOKEN_LIFETIME)) {
+                    $run->token = '';
+                    $run->update(['token']);
+                }
+            });
+        }
     }
 
     /** Deletes previews started a day or more before $now. Other classes may have a state "preview" too,
@@ -184,6 +217,16 @@ final class InstallRun extends AA_Object
         $this->warnings    = '{}';
         $this->moved       = (string) time();
         $this->update(['state', 'moved', 'id_map', 'fingerprint', 'slices', 'slice', 'cursor', 'written', 'warnings', 'token']);
+    }
+
+    /** The preview of a run opened at the login to another AA: the definitions package it showed, which
+     *  the write compares. The run stays in preview. */
+    public function previewed(string $fingerprint, int $sourceNow): void
+    {
+        $this->move([self::PREVIEW], self::PREVIEW);
+        $this->fingerprint = $fingerprint;
+        $this->source_time = (string) $sourceNow;
+        $this->update(['fingerprint', 'source_time']);
     }
 
     /** The batch read from $expected may be written: the run is in items and still at that position.
@@ -233,16 +276,20 @@ final class InstallRun extends AA_Object
         }
         $this->move([self::ITEMS], self::ERROR);
         $this->error_code = $code;
-        $this->error_path = $path;
+        $this->error_path = mb_strcut($path, 0, self::ERROR_PATH_BYTES);
         $this->update(['state', 'error_code', 'error_path']);
     }
 
-    /** Continue after an error - from the stored position */
-    public function resume(): void
+    /** Continue after an error - from the stored position
+     *  @param string $token a new login token of the source, when it refused the old one; '' = keep it */
+    public function resume(string $token = ''): void
     {
         $this->move([self::ERROR], self::ITEMS);
         $this->moved = (string) time();
-        $this->update(['state', 'moved']);
+        if ($token !== '') {
+            $this->token = Crypt::encryptAesGcm($token, Secret::key('install-run'));
+        }
+        $this->update(['state', 'moved', ...(($token === '') ? [] : ['token'])]);
     }
 
     /** @param array<string, mixed> $report the check of the finished transfer (TransferCheck), plain data */
@@ -303,6 +350,12 @@ final class InstallRun extends AA_Object
     public function started(): int
     {
         return (int) $this->started;
+    }
+
+    /** the start of the run on the clock of the source - items it edited after it may have missed their batch */
+    public function sourceStarted(): int
+    {
+        return ($this->source_time === '') ? $this->started() : (int) $this->source_time;
     }
 
     /** unixtime of the last move on; the start before the definitions */

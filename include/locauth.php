@@ -42,6 +42,8 @@ class AA_Auth extends Auth
 {
     /** how this request logged in: 'password', 'token', 'bad-token' (refused) or '' - static, as the object itself is saved in the session */
     private static string $login = '';
+    /** the scope of the token of this request (LoginToken::SCOPE_*); '' for any other login */
+    private static string $scope = '';
 
     public function __construct()
     {
@@ -143,6 +145,7 @@ class AA_Auth extends Auth
     public function auth_preauth(): false|string
     {
         self::$login = '';
+        self::$scope = '';
         if (isset($_POST['username']) && isset($_POST['password'])) {
             $uid = $this->_validatelogin($_POST['username'], $_POST['password'], $_POST['code2fa']);
             self::$login = $uid ? 'password' : '';
@@ -163,10 +166,16 @@ class AA_Auth extends Auth
         return self::$login;
     }
 
+    /** the scope of the token this request logged in with - see $scope */
+    public static function scope(): string
+    {
+        return self::$scope;
+    }
+
     protected function _validateJwt(string $jwt): false|string
     {
         try {
-            [$this->auth['uid'], $this->auth['uname']] = LoginToken::verify($jwt);
+            [$this->auth['uid'], $this->auth['uname'], self::$scope] = LoginToken::verify($jwt);
             return $this->auth['uid'];
         } catch (\Throwable $e) {   // a malformed token throws TypeError, too
             LogOnce::daily('JWT_DENY', (string) ($_SERVER['REMOTE_ADDR'] ?? ''), $e->getMessage());

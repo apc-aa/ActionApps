@@ -6,16 +6,12 @@ namespace AA\Central;
 
 use AA\Central\Package\AfterCommit;
 use AA\Central\Package\BatchResult;
-use AA\Central\Package\CollectOptions;
-use AA\Central\Package\Collector;
 use AA\Central\Package\ImportFailed;
 use AA\Central\Package\Importer;
 use AA\Central\Package\LintFinding;
 use AA\Central\Package\Model\Module;
 use AA\Central\Package\Reader;
-use AA\Central\Package\Source;
 use AA\Central\Package\WriteError;
-use AA\Central\Package\Writer;
 use AA\IO\DB\DB_AA;
 use Closure;
 use Throwable;
@@ -23,8 +19,8 @@ use Throwable;
 /** The requests of the progress page of a transfer: the next item batch, Continue, End - each answers
  *  with the state of the run as plain data for JSON. The run record is the only state: every request
  *  names the position it expects, so a double click or a second tab finds the run moved on (stale) and
- *  does nothing. A batch travels as a package XML - read by Reader like a package from elsewhere; here
- *  the source makes it with Collector + Writer. When the last slice is finished it compares source and
+ *  does nothing. A batch travels as a package XML - read by Reader like a package from elsewhere, whether
+ *  this AA made it (AppExport) or another one (RemoteAppSource). When the last slice is finished it compares source and
  *  target (TransferCheck), clears the caches of the new modules and finishes the run with that report.
  *  Answers quote package text (finding refs, paths) - the page escapes them. The caller checks the admin
  *  FormToken and PS_INSTALL_APP first. */
@@ -37,26 +33,24 @@ final class TransferProgress
 
     /** the error code of a batch the source could not read */
     public const COLLECT_FAILED = 'COLLECT_FAILED';
+    /** the source gives no batch of the slice: the user may not export it, or it is gone there */
+    public const SOURCE_DENIED = 'SOURCE_DENIED';
 
-    /** @var Closure(string): bool */
-    private readonly Closure $mayExport;
+    /** @var Closure(): AppSource */
+    private readonly Closure $from;
 
     /**
-     * @param Source                $from       the source of the run (DbSource for this AA)
-     * @param array<string, string> $attributes meta/source attributes of the batches (CollectOptions)
-     * @param string                $user       the logged-in user - only the run's user drives it
-     * @param (Closure(string): bool)|null $mayExport may the user export the module (Collector's contract:
-     *                                                 PS_EDIT); null = IfSlPerm() - another one for tests only
+     * @param AppSource|(Closure(): AppSource) $from the source of the run, with the rights of its user there;
+     *        a closure is called only by the steps that ask the source, so End works with the source gone
+     * @param string $user the logged-in user - only the run's user drives it
      */
     public function __construct(
         private readonly Importer $importer,
-        private readonly Source $from,
+        AppSource|Closure $from,
         private readonly AfterCommit $after,
-        private readonly array $attributes,
         private readonly string $user,
-        ?Closure $mayExport = null,
     ) {
-        $this->mayExport = $mayExport ?? static fn(string $module): bool => \IfSlPerm(\PS_EDIT, $module);
+        $this->from = ($from instanceof AppSource) ? static fn(): AppSource => $from : $from;
     }
 
     /** Reads the batch at $expected from the source and writes it.
@@ -69,14 +63,19 @@ final class TransferProgress
         if (!$run->at($expected)) {
             return self::state($run, BatchResult::STALE);
         }
+        $path = Module::SLICE . "[$expected[0]]";
         try {
-            [$xml, $found] = $this->batchXml($expected, $run->allBins());
+            [$xml, $found] = ($this->from)()->batch($expected[0], $expected[1], $run->allBins(), $run->started());
             $read          = (new Reader())->read($xml);
-        } catch (ImportFailed $e) {
-            throw $e;
+        } catch (ExportRefused $e) {
+            $first = $e->errors()[0] ?? null;
+            return $first ? $this->fail($id, $expected, Importer::errorCode($first[1]->code), $first[0], $e->findings) : $this->fail($id, $expected, self::SOURCE_DENIED, $path);
+        } catch (SourceFailed $e) {              // SOURCE_LOGIN: Continue logs in again; else Continue retries
+            error_log('AA Central: the source of a transfer failed: ' . self::oneLine($e->getMessage()));
+            return $this->fail($id, $expected, $e->reason, 'source');
         } catch (Throwable $e) {            // e.g. the source slice was deleted meanwhile
             error_log('AA Central: an item batch could not be read: ' . self::oneLine(get_class($e) . ': ' . $e->getMessage()));
-            return $this->fail($id, $expected, self::COLLECT_FAILED, Module::SLICE . "[$expected[0]]");
+            return $this->fail($id, $expected, self::COLLECT_FAILED, $path);
         }
         $result = $this->importer->writeBatch($id, $read->package, $expected, [...$found, ...$read->findings]);
         $batch  = $read->package->batch;
@@ -87,32 +86,18 @@ final class TransferProgress
         return self::state(self::reread($id), $result->status, $result->findings);
     }
 
-    /** The batch at $expected as the source sends it: package XML and what the source found making it.
-     *  @param array{string, string} $expected @return array{string, list<array{string, LintFinding}>}
-     *  @throws ImportFailed the user may not export the slice */
-    private function batchXml(array $expected, bool $allBins): array
-    {
-        $collected = (new Collector($this->from))->itemBatch($expected[0], $expected[1], new CollectOptions($this->attributes, CollectOptions::TRANSFER, $allBins));
-        foreach ($collected->checkPermissions as $module) {
-            if (!($this->mayExport)($module)) {
-                throw new ImportFailed(new WriteError(WriteError::DENIED, Module::SLICE . "[$module]", 'the user may not export the slice'));
-            }
-        }
-        $written = (new Writer())->toXml($collected->package);
-        return [$written->xml, $collected->withWriter($written)];
-    }
-
     /** Continue after an error - from the position of the run
+     *  @param string $token a new login token of the source (its old one was refused); '' = keep it
      *  @return array<string, mixed> state() @throws ImportFailed */
-    public function resume(string $id): array
+    public function resume(string $id, string $token = ''): array
     {
         $this->own($id);
-        $moved = DB_AA::transaction(static function () use ($id): bool {
+        $moved = DB_AA::transaction(static function () use ($id, $token): bool {
             $run = InstallRun::lockForUpdate($id);
             if ($run?->state() !== InstallRun::ERROR) {
                 return false;
             }
-            $run->resume();
+            $run->resume($token);
             return true;
         });
         return self::state(self::reread($id), $moved ? self::RESUMED : BatchResult::STALE);
@@ -165,7 +150,12 @@ final class TransferProgress
     private function finish(string $id, array $at, array $findings): array
     {
         $run     = self::reread($id);
-        $check   = (new TransferCheck($this->from))->check($run);
+        try {
+            $source = ($this->from)();
+        } catch (SourceFailed) {                 // the Central row is gone: the check without the source
+            $source = null;
+        }
+        $check   = (new TransferCheck($source))->check($run);
         $report  = ['checked' => time(), 'slices' => $check['slices'], 'findings' => self::plain($check['findings'])];
         $cleanup = $this->cleanup($run);
         $done    = DB_AA::transaction(static function () use ($id, $at, $report): bool {
@@ -186,8 +176,9 @@ final class TransferProgress
     }
 
     /** a batch that never reached the importer puts the run in error at its position, as a failed write
-     *  @param array{string, string} $expected @return array<string, mixed> */
-    private function fail(string $id, array $expected, string $code, string $path): array
+     *  @param array{string, string} $expected @param list<array{string, LintFinding}> $findings of the source
+     *  @return array<string, mixed> */
+    private function fail(string $id, array $expected, string $code, string $path, array $findings = []): array
     {
         DB_AA::transaction(static function () use ($id, $expected, $code, $path): void {
             $run = InstallRun::lockForUpdate($id);
@@ -195,7 +186,7 @@ final class TransferProgress
                 $run->fail($code, $path);
             }
         });
-        return self::state(self::reread($id), BatchResult::FAILED);
+        return self::state(self::reread($id), BatchResult::FAILED, $findings);
     }
 
     /** the page cache of every new module and the constants - each step on its own

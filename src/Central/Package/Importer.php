@@ -259,10 +259,16 @@ final class Importer
     private static function failure(Throwable $e): array
     {
         if ($e instanceof WriteError) {
-            return [strtoupper(strtr($e->reason, '-', '_')), $e->path];
+            return [self::errorCode($e->reason), $e->path];
         }
         error_log('AA Central: an item batch failed: ' . self::oneLine(get_class($e) . ': ' . $e->getMessage()));
         return ['WRITE_FAILED', 'batch'];
+    }
+
+    /** a finding code as the error code of a run (InstallRun::fail()): item-too-big -> ITEM_TOO_BIG */
+    public static function errorCode(string $reason): string
+    {
+        return strtoupper(strtr($reason, '-', '_'));
     }
 
     /** the source slices whose items follow, in package order @return list<string> */

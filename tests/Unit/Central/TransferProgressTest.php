@@ -10,6 +10,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Central;
 
+use AA\Central\AppExport;
 use AA\Central\InstallRun;
 use AA\Central\Package\BatchResult;
 use AA\Central\Package\CollectOptions;
@@ -35,7 +36,7 @@ final class TransferProgressTest extends TestCase
     private const ITEM_B = '2234567890abcdef1234567890abcdef';
     private const ITEM_C = '3234567890abcdef1234567890abcdef';
     private const SLICE2 = '7f1e2d3c4b5a69788796a5b4c3d2e1f0';
-    private const SOURCE = ['url' => 'https://source.example/aa/', 'aa-version' => '2026.9', 'exported' => '2026-09-26T10:00:00Z'];
+    private const SOURCE = ['url' => 'https://source.example/aa/', 'aa-version' => '2026.9'];
 
     private FakeSource $source;
 
@@ -68,7 +69,8 @@ final class TransferProgressTest extends TestCase
     /** @param list<string> $denied modules the user may not export */
     private function progress(string $user = self::USER, array $denied = []): TransferProgress
     {
-        return new TransferProgress($this->importer(), $this->source, $this->after, self::SOURCE, $user, static fn(string $module): bool => !in_array($module, $denied, true));
+        $export = new AppExport($this->source, self::SOURCE, static fn(string $module): bool => !in_array($module, $denied, true), true);
+        return new TransferProgress($this->importer(), $export, $this->after, $user);
     }
 
     /** a transfer run of the example with a second slice after its own */
@@ -160,13 +162,12 @@ final class TransferProgressTest extends TestCase
     {
         $run = $this->transferred();
 
-        try {
-            $this->progress(denied: [self::SLICE])->next($run, [self::SLICE, '']);
-            self::fail('denied');
-        } catch (ImportFailed) {
-        }
+        $state = $this->progress(denied: [self::SLICE])->next($run, [self::SLICE, '']);
+
+        self::assertSame([BatchResult::FAILED, InstallRun::ERROR], [$state['status'], $state['state']]);
+        self::assertSame(['code' => TransferProgress::SOURCE_DENIED, 'path' => Module::SLICE . '[' . self::SLICE . ']'], $state['error']);
         self::assertSame([], self::itemsOfTheSlice());
-        self::assertSame([InstallRun::ITEMS, [self::SLICE, '']], [InstallRun::get($run)->state(), InstallRun::get($run)->position()]);
+        self::assertSame([self::SLICE, ''], InstallRun::get($run)->position());
     }
 
     public function test_a_batch_that_does_not_finish_the_slice_moves_the_position_only(): void

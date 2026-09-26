@@ -25,6 +25,7 @@ final class ResponderPolicyTest extends TestCase
             'Do_Optimize'            => ['Do_Optimize', true, false],
             'Do_Optimize_Type'       => ['Do_Optimize_Type', true, false],
             'Do_Import_Module_Chunk' => ['Do_Import_Module_Chunk', true, false],
+            'Get_App'                => ['Get_App', true, false],
             'Get_Widget'             => ['Get_Widget', false, false],
             'Tags'                   => ['Tags', false, false],
             'Widget_Selection'       => ['Widget_Selection', false, false],
@@ -157,5 +158,55 @@ final class ResponderPolicyTest extends TestCase
         $this->assertSame('abc->field->x->name', $identifier->toString());
         $params = (new \ReflectionProperty($cmd, 'params'))->getValue($cmd);
         $this->assertInstanceOf(\__PHP_Incomplete_Class::class, $params['k']);
+    }
+
+    /** @return array<string, array{string, string, bool}> scope, command, allowed */
+    public static function scopes(): array
+    {
+        return [
+            'admin: anything'          => ['admin', 'Do_Optimize', true],
+            'admin: Get_App'           => ['admin', 'Get_App', true],
+            'apps: Get_App'            => ['apps', 'Get_App', true],
+            'apps: Get_Modules'        => ['apps', 'Get_Modules', true],
+            'apps: Do_Optimize'        => ['apps', 'Do_Optimize', false],
+            'apps: Do_Synchronize'     => ['apps', 'Do_Synchronize', false],
+            'apps: Get_Jwt'            => ['apps', 'Get_Jwt', false],
+            'apps: an AJAX command'    => ['apps', 'Get_Widget', false],
+            'apps: a case variant'     => ['apps', 'get_app', false],
+            'an unknown scope'         => ['root', 'Get_App', false],
+        ];
+    }
+
+    #[DataProvider('scopes')]
+    public function test_a_token_scope_allows_its_commands_only(string $scope, string $name, bool $allowed): void
+    {
+        $this->assertSame($allowed, ResponderPolicy::scopeAllows($scope, $name));
+    }
+
+    /** @return array<string, array{mixed, ?array{ttl: ?int, scope: string}}> */
+    public static function jwtParams(): array
+    {
+        return [
+            'none'                => [null, ['ttl' => null, 'scope' => 'admin']],
+            'empty'               => [[], ['ttl' => null, 'scope' => 'admin']],
+            'ttl int'             => [['ttl' => 3600], ['ttl' => 3600, 'scope' => 'admin']],
+            'ttl string'          => [['ttl' => '86400'], ['ttl' => 86400, 'scope' => 'admin']],
+            'ttl negative'        => [['ttl' => -5], ['ttl' => -5, 'scope' => 'admin']],
+            'ttl negative string' => [['ttl' => '-5'], ['ttl' => -5, 'scope' => 'admin']],
+            'ttl word'            => [['ttl' => 'day'], null],
+            'ttl float'           => [['ttl' => 1.5], null],
+            'ttl array'           => [['ttl' => [1]], null],
+            'scope apps'          => [['ttl' => 86400, 'scope' => 'apps'], ['ttl' => 86400, 'scope' => 'apps']],
+            'scope admin'         => [['scope' => 'admin'], ['ttl' => null, 'scope' => 'admin']],
+            'scope unknown'       => [['scope' => 'root'], null],
+            'scope array'         => [['scope' => ['apps']], null],
+        ];
+    }
+
+    /** a ttl or scope the AA cannot read is an error - never a silent 1-year admin token */
+    #[DataProvider('jwtParams')]
+    public function test_get_jwt_reads_ttl_and_scope(mixed $param, ?array $expected): void
+    {
+        $this->assertSame($expected, ResponderPolicy::jwtParams($param));
     }
 }

@@ -317,6 +317,94 @@ namespace Tests\Unit\Central {
             }
         }
 
+        public function test_a_run_opened_at_the_login_takes_the_fingerprint_of_its_preview(): void
+        {
+            $id = InstallRun::preview(InstallRun::TRANSFER, true, '7', self::USER, self::TOKEN, self::NOW)->getId();
+            $this->assertSame('', InstallRun::get($id)->fingerprint());
+
+            $this->assertSame(self::NOW, InstallRun::get($id)->sourceStarted(), 'before the preview: its own start');
+
+            self::locked($id, static fn(InstallRun $run) => $run->previewed(hash('sha256', self::DEFINITIONS), self::NOW - 3600));
+
+            $run = InstallRun::get($id);
+            $this->assertSame([InstallRun::PREVIEW, hash('sha256', self::DEFINITIONS), self::TOKEN], [$run->state(), $run->fingerprint(), $run->token()]);
+            $this->assertSame(self::NOW - 3600, $run->sourceStarted(), 'the clock of the source');
+        }
+
+        public function test_only_a_preview_takes_a_fingerprint(): void
+        {
+            $id = self::runIn(InstallRun::ITEMS);
+
+            $this->expectException(LogicException::class);
+            self::locked($id, static fn(InstallRun $run) => $run->previewed(hash('sha256', 'other'), self::NOW));
+        }
+
+        public function test_continue_after_a_new_login_keeps_the_new_token_encrypted(): void
+        {
+            $id = self::runIn(InstallRun::ERROR);
+
+            self::locked($id, static fn(InstallRun $run) => $run->resume('eyJhbGciOiJIUzI1NiJ9.renewed-token'));
+
+            $this->assertSame(InstallRun::ITEMS, InstallRun::get($id)->state());
+            $this->assertSame('eyJhbGciOiJIUzI1NiJ9.renewed-token', InstallRun::get($id)->token());
+            $this->assertStringNotContainsString('renewed-token', self::stored($id)['token']);
+        }
+
+        public function test_a_token_older_than_a_day_is_forgotten_in_every_unfinished_state(): void
+        {
+            $preview = self::preview()->getId();
+            $error   = self::runIn(InstallRun::ERROR);
+            $items   = self::runIn(InstallRun::ITEMS);
+            $fresh   = InstallRun::preview(InstallRun::TRANSFER, false, '7', self::USER, self::TOKEN, time() + 3600)->getId();
+
+            InstallRun::forgetOldTokens(time() + 86400 + 1);       // the error run moved last now (its definitions)
+
+            $this->assertSame('', self::stored($preview)['token'] ?? '');
+            $this->assertSame('', self::stored($error)['token'] ?? '');
+            $this->assertSame('', self::stored($items)['token'] ?? '', 'a live transfer moves on with every batch - a day without one is abandoned');
+            $this->assertSame(InstallRun::ITEMS, InstallRun::get($items)->state());
+            $this->assertSame(self::TOKEN, InstallRun::get($fresh)->token());
+            $this->assertSame(InstallRun::ERROR, InstallRun::get($error)->state());
+        }
+
+        public function test_a_transfer_that_moved_on_today_keeps_its_token(): void
+        {
+            $id = self::runIn(InstallRun::ITEMS);
+
+            InstallRun::forgetOldTokens(time() + 3600);
+
+            $this->assertSame(self::TOKEN, InstallRun::get($id)->token());
+        }
+
+        public function test_a_renewed_token_is_kept_for_its_day(): void
+        {
+            $id = self::runIn(InstallRun::ERROR);
+            self::locked($id, static fn(InstallRun $run) => $run->resume('eyJhbGciOiJIUzI1NiJ9.renewed-token'));
+            self::locked($id, static fn(InstallRun $run) => $run->fail('SOURCE_LOGIN', 'source'));
+
+            InstallRun::forgetOldTokens(time() + 3600);
+
+            $this->assertSame('eyJhbGciOiJIUzI1NiJ9.renewed-token', InstallRun::get($id)->token(), 'renewed now, not at the start of the run');
+        }
+
+        public function test_a_long_error_path_is_cut(): void
+        {
+            $id = self::runIn(InstallRun::ITEMS);
+
+            self::locked($id, static fn(InstallRun $run) => $run->fail('EXPORT_FAILED', str_repeat('š', 400)));
+
+            $this->assertSame(254, strlen(InstallRun::get($id)->error()[1]), 'within 255 bytes, no character cut in half');
+        }
+
+        public function test_continue_without_a_login_keeps_the_token(): void
+        {
+            $id = self::runIn(InstallRun::ERROR);
+
+            self::locked($id, static fn(InstallRun $run) => $run->resume());
+
+            $this->assertSame(self::TOKEN, InstallRun::get($id)->token());
+        }
+
         // ---------------------------------------------------------------- batches
 
         public function test_advance_moves_the_position_and_counts(): void

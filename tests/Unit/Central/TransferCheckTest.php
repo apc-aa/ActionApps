@@ -9,6 +9,9 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Central;
 
+use AA\Central\AppExport;
+use AA\Central\AppSource;
+use AA\Central\SourceFailed;
 use AA\Central\InstallRun;
 use AA\Central\Package\ImportConfirmation;
 use AA\Central\Package\Model\Module;
@@ -58,7 +61,7 @@ final class TransferCheckTest extends TestCase
     /** "<level> <code> <path> <ref>" @return list<string> */
     private function findings(): array
     {
-        return array_map(static fn(array $f): string => "{$f[1]->level} {$f[1]->code} $f[0] {$f[1]->ref}", (new TransferCheck($this->source))->check(InstallRun::get($this->run))['findings']);
+        return array_map(static fn(array $f): string => "{$f[1]->level} {$f[1]->code} $f[0] {$f[1]->ref}", (new TransferCheck(new AppExport($this->source, [], static fn(): bool => true, true)))->check(InstallRun::get($this->run))['findings']);
     }
 
     public function test_equal_counts_and_no_edits_are_no_finding(): void
@@ -66,7 +69,7 @@ final class TransferCheckTest extends TestCase
         self::targetItems(2);
         $this->source->items[self::SLICE][1]['last_edit'] = self::NOW - 5;     // the active bin: a and b
 
-        $check = (new TransferCheck($this->source))->check(InstallRun::get($this->run));
+        $check = (new TransferCheck(new AppExport($this->source, [], static fn(): bool => true, true)))->check(InstallRun::get($this->run));
 
         self::assertSame([['source' => self::SLICE, 'target' => self::id(2), 'written' => 0, 'sourceCount' => 2, 'targetCount' => 2]], $check['slices']);
         self::assertSame([], $check['findings']);
@@ -111,5 +114,47 @@ final class TransferCheckTest extends TestCase
 
         self::assertSame(['W ' . TransferCheck::DANGLING . ' target 2'], $this->findings());
         self::assertSame(0, TransferCheck::dangling([]), 'no slice, no query');
+    }
+
+    /** the source may run another clock: its own time of the preview decides */
+    public function test_edits_are_counted_from_the_time_of_the_source(): void
+    {
+        self::targetItems(2);
+        $this->source->items[self::SLICE][0]['last_edit'] = self::NOW - 500;
+        TableDb::$tables['object_text'][] = ['id' => 999_999, 'object_id' => $this->run, 'property' => 'source_time', 'priority' => 0, 'value' => (string) (self::NOW - 1000)];
+
+        self::assertSame(['W ' . TransferCheck::EDITED_DURING . ' source 2'], $this->findings(), 'a and b are after the source time');
+    }
+
+    public function test_a_source_that_cannot_count_leaves_the_counts_unknown(): void
+    {
+        self::targetItems(2);
+        $source = new class implements AppSource {
+            public function definitions(array $modules, bool $transfer, bool $allBins, int $started): array
+            {
+                throw new \LogicException('not asked');
+            }
+
+            public function batch(string $slice, string $after, bool $allBins, int $started): array
+            {
+                throw new \LogicException('not asked');
+            }
+
+            public function logins(array $slices, bool $allBins): array
+            {
+                throw new \LogicException('not asked');
+            }
+
+            public function itemCounts(array $slices, bool $allBins, int $editedAfter = 0): array
+            {
+                throw new SourceFailed(SourceFailed::UNREACHABLE, 'down');
+            }
+        };
+
+        $check = (new TransferCheck($source))->check(InstallRun::get($this->run));
+
+        self::assertNull($check['slices'][0]['sourceCount']);
+        self::assertSame(2, $check['slices'][0]['targetCount']);
+        self::assertSame(['W ' . TransferCheck::SOURCE_UNKNOWN . ' source ' . SourceFailed::UNREACHABLE], array_map(static fn(array $f): string => "{$f[1]->level} {$f[1]->code} $f[0] {$f[1]->ref}", $check['findings']));
     }
 }

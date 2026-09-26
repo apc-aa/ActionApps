@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace AA\Central;
 
+use AA\Util\LoginToken;
+
 /** What central/responder.php may run, and from which transport. Pure rules, no state. */
 class ResponderPolicy
 {
@@ -21,6 +23,7 @@ class ResponderPolicy
         'Do_Optimize',
         'Do_Optimize_Type',
         'Do_Import_Module_Chunk',
+        'Get_App',
     ];
 
     /** Admin AJAX commands with a side effect, sent only by the JS AA_Response() helper, which POSTs;
@@ -47,6 +50,22 @@ class ResponderPolicy
     /** Central side, never sent by a responder: no token stored for the AA, so nothing was asked */
     public const ERR_NOT_AUTHENTICATED = 15;
 
+    /** Get_App: no such app, or the user may not export it - one answer, so it tells no module ids */
+    public const ERR_APP_DENIED = 16;
+    /** Get_App: the export found errors (E); the answer lists them as "code path ref" */
+    public const ERR_APP_EXPORT = 17;
+    /** Get_App: a parameter is missing or of a wrong form */
+    public const ERR_APP_REQUEST = 18;
+    /** Get_App: the source failed - the detail is in its PHP error log */
+    public const ERR_APP_FAILED = 19;
+    /** the token of the request is of a scope that does not allow the command */
+    public const ERR_TOKEN_SCOPE = 20;
+    /** Get_Jwt: ttl or scope of a form this AA cannot read */
+    public const ERR_TOKEN_REQUEST = 21;
+
+    /** what a token of the scope apps may run: what another AA needs to pull an app */
+    private const APPS_SCOPE_COMMANDS = ['Get_App', 'Get_Modules'];
+
     /** Optimize types Do_Optimize_Type runs as a chain (AA\Optimize\Chain). The State Check tags
      *  report through findings(), private_fix and opt_feature are one-off, site-chosen repairs. */
     private const OPTIMIZE_TYPES = ['sql_update'];
@@ -65,6 +84,32 @@ class ResponderPolicy
     public static function isRemoteCommand(string $name): bool
     {
         return in_array($name, self::REMOTE_COMMANDS, true);
+    }
+
+    /** $name = AA_Responder::name(); an admin token runs anything (isPerm() still decides) */
+    public static function scopeAllows(string $scope, string $name): bool
+    {
+        return match ($scope) {
+            LoginToken::SCOPE_ADMIN => true,
+            LoginToken::SCOPE_APPS  => in_array($name, self::APPS_SCOPE_COMMANDS, true),
+            default                 => false,
+        };
+    }
+
+    /** The parameters of Get_Jwt; null = one of a wrong form - an error, never a silent year-long admin token.
+     *  @return array{ttl: ?int, scope: string}|null ttl null = the long token */
+    public static function jwtParams(mixed $param): ?array
+    {
+        $param = is_array($param) ? $param : [];
+        $ttl   = $param['ttl'] ?? null;
+        $scope = $param['scope'] ?? LoginToken::SCOPE_ADMIN;
+        if (is_string($ttl) && preg_match('/^-?\d{1,10}\z/', $ttl)) {
+            $ttl = (int) $ttl;
+        }
+        if ((($ttl !== null) && !is_int($ttl)) || !in_array($scope, [LoginToken::SCOPE_ADMIN, LoginToken::SCOPE_APPS], true)) {
+            return null;
+        }
+        return ['ttl' => $ttl, 'scope' => $scope];
     }
 
     public static function isPostOnlyCommand(string $name): bool

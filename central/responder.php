@@ -21,6 +21,9 @@ https://www.apc.org/
 */
 
 // anonymous authentication - locauth calls extauthnobody
+use AA\Central\AppExport;
+use AA\Central\AppRequest;
+use AA\Central\Package\DbSource;
 use AA\Central\ResponderPolicy;
 use AA\IO\DB\DB_AA;
 use AA\Optimize\CheckSessionidUse;
@@ -79,19 +82,29 @@ class AA_Responder_Get_Sessionid extends AA_Responder
     }
 }
 
-/** A long-lived login token (AA\Util\LoginToken) of a superadmin for Central, which stores it instead of the password
+/** A login token (AA\Util\LoginToken) of a superadmin: long-lived for Central, which stores it instead of
+ *  the password; short (ttl in seconds, a day at most) for an AA that installs an app of this one
  *  @return JWT string
  */
 class AA_Responder_Get_Jwt extends AA_Responder
 {
-    public function __construct() {}
+    /** @var array{ttl: ?int, scope: string}|null */
+    private ?array $request;
+
+    public function __construct($param = null)
+    {
+        $this->request = ResponderPolicy::jwtParams($param);
+    }
 
     public function run(): AA_Response
     {
         LoginToken::forgetSession();   // Central never uses the session of this login
+        if ($this->request === null) {
+            return new AA_Response(_m('Get_Jwt needs ttl as seconds and scope admin or apps'), ResponderPolicy::ERR_TOKEN_REQUEST);
+        }
         // only for the password sent with this very request - a stolen cookie or token must not renew itself;
         // superadmin checked here too, so the token never depends on isPerm() alone
-        $jwt = ((AA_Auth::login() === 'password') && IsSuperadmin()) ? LoginToken::issue(AuthGetUid()) : '';
+        $jwt = ((AA_Auth::login() === 'password') && IsSuperadmin()) ? LoginToken::issue(AuthGetUid(), null, $this->request['ttl'], $this->request['scope']) : '';
         return ($jwt === '') ? new AA_Response(_m('A token needs a login by the username and password in this request, of a user whose password change this AA can detect'), ResponderPolicy::ERR_TOKEN_NEEDS_PASSWORD) : new AA_Response($jwt);
     }
 }
@@ -299,6 +312,32 @@ class AA_Responder_Do_Import_Module_Chunk extends AA_Responder
         $ret = $this->definition_chunk->importModuleChunk();
         AA_Log::write('IMPORT', AA_Log::context(), new AA_Logentry_Import(['phase' => 'result', 'detail' => $ret]));
         return new AA_Response($ret);
+    }
+}
+
+/** An app of this AA for the AA that installs it: package XML of the definitions or of an item batch,
+ *  the logins of the readers, item counts (AA\Central\AppRequest). Only with a Bearer token - the
+ *  other AA holds a short one of a user of this AA; the rights by the mode in AA\Central\AppExport.
+ */
+class AA_Responder_Get_App extends AA_Responder
+{
+    private array $param;
+
+    public function __construct($param = null)
+    {
+        $this->param = is_array($param) ? $param : [];
+    }
+
+    public function isPerm(): bool
+    {
+        return AA_Auth::login() === 'token';
+    }
+
+    public function run(): AA_Response
+    {
+        MoreTimeLimit(120);
+        $export = new AppExport(new DbSource(), ['url' => (string) constant('AA_INSTAL_URL'), 'aa-version' => aa_version('aa')], static fn(string $module): bool => IfSlPerm(PS_EDIT, $module), IsSuperadmin());
+        return (new AppRequest($export, (string) AuthGetUid()))->answer($this->param);
     }
 }
 
@@ -764,6 +803,12 @@ if ($via_url && ResponderPolicy::isPostOnlyCommand($responder::name()) && ($_SER
 // check covers only the POST `request` and the POST-only commands.
 if ((!$via_url || ResponderPolicy::isPostOnlyCommand($responder::name())) && ResponderPolicy::isForeignBrowserRequest($_SERVER)) {
     AA_Response::error(_m("Request from another site refused"), 106);  // error code > 0
+    exit;
+}
+
+// an apps token (another AA pulling an app) runs only the commands of its scope - whatever the transport
+if ((AA_Auth::login() === 'token') && !ResponderPolicy::scopeAllows(AA_Auth::scope(), $responder::name())) {
+    AA_Response::error(_m("The login token does not allow %1", [$responder::name()]), ResponderPolicy::ERR_TOKEN_SCOPE);
     exit;
 }
 

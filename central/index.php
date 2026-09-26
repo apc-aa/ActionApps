@@ -147,7 +147,10 @@ $auth_format = ''
     . '</div>';
 $managed->addColumn('auth', _m('Auth'), $auth_format);
 
-$managed->setColumns2show(['ORG_NAME','AA_HTTP_DOMAIN','AA_BASE_DIR', 'admin_link', 'auth']);
+// the row id only - installapp.php takes the address from the row, never from the link
+$managed->addColumn('install', _m('Apps'), '<a href="installapp.php?aa=_#ID______">' . QuoteColons(_m('Install an app from this AA...')) . '</a>');
+
+$managed->setColumns2show(['ORG_NAME','AA_HTTP_DOMAIN','AA_BASE_DIR', 'admin_link', 'auth', 'install']);
 
 // Edit form: keep ORG_NAME and the URL fields visible at top, hide the rest under "Optional".
 $managed->setPriorityFields(['ORG_NAME', 'AA_HTTP_DOMAIN', 'AA_BASE_DIR']);

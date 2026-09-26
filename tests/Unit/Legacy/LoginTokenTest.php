@@ -180,7 +180,7 @@ namespace Tests\Unit\Legacy {
 
         public function test_a_token_logs_in_its_user(): void
         {
-            $this->assertSame(['7', 'central'], LoginToken::verify(LoginToken::issue('7')));
+            $this->assertSame(['7', 'central', LoginToken::SCOPE_ADMIN], LoginToken::verify(LoginToken::issue('7')));
         }
 
         public function test_the_token_carries_the_user_a_year_and_a_tag_of_the_password(): void
@@ -190,6 +190,70 @@ namespace Tests\Unit\Legacy {
             $this->assertSame('7', $claims['sub']);
             $this->assertSame(365 * 24 * 3600, $claims['exp'] - $claims['iat']);
             $this->assertSame(substr(hash_hmac('sha256', $this->hash, Secret::key('jwt-pwd')), 0, 16), $claims['pwd'], 'keyed - a leaked token does not help to crack the hash');
+        }
+
+        /** @return array<string, array{0: int, 1: int}> asked lifetime, the one the token gets */
+        public static function shortLifetimes(): array
+        {
+            return [
+                'an hour'           => [3600, 3600],
+                'a day'             => [24 * 3600, 24 * 3600],
+                'a week is capped'  => [7 * 24 * 3600, 24 * 3600],
+                'a year is capped'  => [365 * 24 * 3600, 24 * 3600],
+                'zero is a minute'  => [0, 60],
+                'negative'          => [-5, 60],
+            ];
+        }
+
+        #[DataProvider('shortLifetimes')]
+        public function test_a_short_token_lives_at_most_a_day(int $asked, int $lifetime): void
+        {
+            $claims = self::claims(LoginToken::issue('7', null, $asked));
+            $this->assertSame($lifetime, $claims['exp'] - $claims['iat']);
+        }
+
+        public function test_a_short_token_logs_in_like_a_long_one(): void
+        {
+            $this->assertSame(['7', 'central', LoginToken::SCOPE_ADMIN], LoginToken::verify(LoginToken::issue('7', null, 3600)));
+        }
+
+        public function test_an_expired_short_token_is_refused(): void
+        {
+            $this->expectException(UnexpectedValueException::class);
+            LoginToken::verify(LoginToken::issue('7', time() - 25 * 3600, 24 * 3600));
+        }
+
+        public function test_an_apps_token_carries_its_scope(): void
+        {
+            $jwt = LoginToken::issue('7', null, 3600, LoginToken::SCOPE_APPS);
+
+            $this->assertSame('apps', self::claims($jwt)['scp']);
+            $this->assertSame(['7', 'central', LoginToken::SCOPE_APPS], LoginToken::verify($jwt));
+        }
+
+        public function test_an_apps_token_never_lives_longer_than_a_day(): void
+        {
+            foreach ([null, 365 * 24 * 3600] as $ttl) {
+                $claims = self::claims(LoginToken::issue('7', null, $ttl, LoginToken::SCOPE_APPS));
+                $this->assertSame(24 * 3600, $claims['exp'] - $claims['iat'], 'ttl ' . var_export($ttl, true));
+            }
+        }
+
+        public function test_an_admin_token_has_no_scope_claim(): void
+        {
+            $this->assertArrayNotHasKey('scp', self::claims(LoginToken::issue('7', null, 3600, LoginToken::SCOPE_ADMIN)));
+        }
+
+        public function test_an_unknown_scope_gives_no_token(): void
+        {
+            $this->assertSame('', LoginToken::issue('7', null, 3600, 'root'));
+        }
+
+        public function test_a_token_of_an_unknown_scope_is_refused(): void
+        {
+            $pwd = substr(hash_hmac('sha256', $this->hash, Secret::key('jwt-pwd')), 0, 16);
+            $this->expectException(UnexpectedValueException::class);
+            LoginToken::verify(JWT::encode(['sub' => '7', 'iat' => time(), 'exp' => time() + 3600, 'pwd' => $pwd, 'scp' => 'root'], Secret::key('jwt'), 'HS256'));
         }
 
         /** @return array<string, array{0: string, 1: string}> user id, login name */
@@ -205,7 +269,7 @@ namespace Tests\Unit\Legacy {
         #[DataProvider('usersOfEveryBackend')]
         public function test_a_token_logs_in_a_user_of_every_backend(string $uid, string $login): void
         {
-            $this->assertSame([$uid, $login], LoginToken::verify(LoginToken::issue($uid)));
+            $this->assertSame([$uid, $login, LoginToken::SCOPE_ADMIN], LoginToken::verify(LoginToken::issue($uid)));
         }
 
         #[DataProvider('usersOfEveryBackend')]
@@ -279,7 +343,7 @@ namespace Tests\Unit\Legacy {
         {
             $this->others['7'] = ['login' => 'reader-seven', 'stamp' => $this->hash];
             AA::$perm = $this->perm(['reader', 'ldap', 'sql']);
-            $this->assertSame(['7', 'central'], LoginToken::verify(LoginToken::issue('7')));
+            $this->assertSame(['7', 'central', LoginToken::SCOPE_ADMIN], LoginToken::verify(LoginToken::issue('7')));
             $this->assertNull((new AA_Permsystem_Reader())->credentialStamp('7'), 'not an item id - no lookup');
         }
 
@@ -335,6 +399,17 @@ namespace Tests\Unit\Legacy {
             $this->assertSame('7', $auth->auth_preauth());
             $this->assertSame('central', $auth->getUname());
             $this->assertSame('token', AA_Auth::login(), 'not "password" - a token login never mints another token');
+            $this->assertSame(LoginToken::SCOPE_ADMIN, AA_Auth::scope());
+        }
+
+        #[RunInSeparateProcess]
+        #[PreserveGlobalState(false)]
+        public function test_bearer_of_an_apps_token_logs_in_with_its_scope(): void
+        {
+            define('AA_TOKEN_ENTRY', true);
+            $_SERVER['HTTP_AUTHORIZATION'] = 'Bearer ' . LoginToken::issue('7', null, 3600, LoginToken::SCOPE_APPS);
+            $this->assertSame('7', (new AA_Auth())->auth_preauth());
+            $this->assertSame(LoginToken::SCOPE_APPS, AA_Auth::scope());
         }
 
         /** @return array<string, array{0: string}> */

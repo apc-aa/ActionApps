@@ -6,7 +6,6 @@ namespace AA\Central;
 
 use AA\Central\Package\LintFinding;
 use AA\Central\Package\Model\Module;
-use AA\Central\Package\Source;
 use AA\IO\DB\DB_AA;
 
 /** What the end of a transfer checks: the items of each slice on the source and on the target, the items
@@ -20,28 +19,37 @@ final class TransferCheck
     public const EDITED_DURING = 'edited-during-transfer';
     /** W: relation values of the new items naming no item of this AA; ref = the count */
     public const DANGLING = 'relation-dangling';
+    /** W: the source did not tell its counts (unreachable, its login expired); ref = why */
+    public const SOURCE_UNKNOWN = 'source-count-unknown';
 
     /** input_show_func of a field that selects items (AA_Field::getRelation()): its constants are `#sLiCe-<slice id>` */
     private const RELATION_MARK = '#sLiCe-';
 
-    public function __construct(private readonly Source $source) {}
+    /** @param ?AppSource $source null = it cannot be asked any more (its Central row is gone) */
+    public function __construct(private readonly ?AppSource $source) {}
 
-    /** @return array{slices: list<array{source: string, target: string, written: int, sourceCount: int, targetCount: int}>,
+    /** @return array{slices: list<array{source: string, target: string, written: int, sourceCount: ?int, targetCount: int}>,
      *                findings: list<array{string, LintFinding}>} */
     public function check(InstallRun $run): array
     {
         $map     = $run->idMap();
         $written = $run->written();
         $slices  = $findings = [];
-        $edited  = 0;
+        try {
+            $onSource = ($this->source ?? throw new SourceFailed(SourceFailed::UNREACHABLE, 'no source'))->itemCounts($run->slices(), $run->allBins());
+            $edited   = array_sum($this->source->itemCounts($run->slices(), $run->allBins(), $run->sourceStarted()));
+        } catch (SourceFailed|ExportRefused $e) {        // the items are written - the run finishes, the counts stay unknown
+            $onSource   = null;
+            $edited     = 0;
+            $findings[] = ['source', new LintFinding(LintFinding::WARNING, self::SOURCE_UNKNOWN, ($e instanceof SourceFailed) ? $e->reason : TransferProgress::SOURCE_DENIED, 0)];
+        }
         foreach ($run->slices() as $slice) {
             $target   = (string) $map->module($slice);
-            $counts   = [$this->source->itemCount($slice, $run->allBins()), ($target === '') ? 0 : DB_AA::count('item', [['slice_id', $target, 'l']])];
+            $counts   = [($onSource === null) ? null : (int) ($onSource[$slice] ?? 0), ($target === '') ? 0 : DB_AA::count('item', [['slice_id', $target, 'l']])];
             $slices[] = ['source' => $slice, 'target' => $target, 'written' => (int) ($written[$slice] ?? 0), 'sourceCount' => $counts[0], 'targetCount' => $counts[1]];
-            if ($counts[0] !== $counts[1]) {
+            if (($counts[0] !== null) && ($counts[0] !== $counts[1])) {
                 $findings[] = [Module::SLICE . "[$slice]", new LintFinding(LintFinding::WARNING, self::COUNT_DIFFERS, "$counts[0] => $counts[1]", 0)];
             }
-            $edited += $this->source->itemCount($slice, $run->allBins(), $run->started());
         }
         if ($edited) {
             $findings[] = ['source', new LintFinding(LintFinding::WARNING, self::EDITED_DURING, (string) $edited, 0)];
