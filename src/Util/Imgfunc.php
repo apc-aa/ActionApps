@@ -190,6 +190,68 @@ class Imgfunc
         return false;
     }
 
+    /** GD needs ~4 bytes a pixel: 40 Mpx is 160 MB, bigger canvases are refused before decoding */
+    public const REENCODE_MAX_PIXELS = 40_000_000;
+
+    /** GD reads and writes AVIF only when PHP was built with libavif */
+    public static function avifSupported(): bool
+    {
+        return function_exists('imageavif') && !empty(gd_info()['AVIF Support']);
+    }
+
+    /**
+     * Writes $src again as a new image of the same type, at most $max_px on the longer side.
+     * Decoding and encoding drops EXIF (the GPS position of a phone photo) and anything
+     * hidden after the image data - what an anonymous upload must not keep.
+     *
+     * @return ?string null on success, otherwise the error
+     */
+    public static function reencode(string $src, string $dest, int $max_px): ?string
+    {
+        $info  = @getimagesize($src);
+        $type  = is_array($info) ? (int) $info[2] : 0;
+        $types = self::avifSupported() ? [IMAGETYPE_JPEG, IMAGETYPE_PNG, IMAGETYPE_WEBP, IMAGETYPE_AVIF] : [IMAGETYPE_JPEG, IMAGETYPE_PNG, IMAGETYPE_WEBP];
+        if (!is_array($info) || !in_array($type, $types, true)) {
+            return _m('This type of image cannot be uploaded here');
+        }
+        if ($info[0] * $info[1] > self::REENCODE_MAX_PIXELS) {
+            return _m('The image has too many pixels');
+        }
+        $img = @imagecreatefromstring((string) file_get_contents($src));
+        if (!$img) {
+            return _m('The image cannot be read');
+        }
+        // the rotation of a phone photo lives in EXIF, which is about to be dropped
+        if (($type === IMAGETYPE_JPEG) && function_exists('exif_read_data')) {
+            $exif    = @exif_read_data($src);
+            $rotated = match ((int) (is_array($exif) ? ($exif['Orientation'] ?? 1) : 1)) {
+                3       => imagerotate($img, 180, 0),
+                6       => imagerotate($img, -90, 0),
+                8       => imagerotate($img, 90, 0),
+                default => $img,
+            };
+            if ($rotated) {
+                $img = $rotated;
+            }
+        }
+        $w     = imagesx($img);
+        $h     = imagesy($img);
+        $scale = min(1, $max_px / max($w, $h));
+        $out   = imagecreatetruecolor(max(1, (int) round($w * $scale)), max(1, (int) round($h * $scale)));
+        if ($type !== IMAGETYPE_JPEG) {
+            imagealphablending($out, false);
+            imagesavealpha($out, true);
+        }
+        imagecopyresampled($out, $img, 0, 0, 0, 0, imagesx($out), imagesy($out), $w, $h);
+        $ok = match ($type) {
+            IMAGETYPE_JPEG => imagejpeg($out, $dest, 85),
+            IMAGETYPE_PNG  => imagepng($out, $dest),
+            IMAGETYPE_AVIF => imageavif($out, $dest),
+            default        => imagewebp($out, $dest, 85),
+        };
+        return $ok ? null : _m('Cannot write %1', [$dest]);
+    }
+
     public static function printSupportedTypes(): void
     {
         $it = imagetypes();
