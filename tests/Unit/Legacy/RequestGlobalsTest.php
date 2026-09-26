@@ -116,5 +116,40 @@ namespace Tests\Unit\Legacy {
             $this->assertSame('abc', $GLOBALS['slices']);
             $this->assertSame('x', $GLOBALS['plain']);
         }
+
+        public function test_post2shtml_id_other_than_an_id_does_not_reach_the_database(): void
+        {
+            $db = new class {
+                /** @var list<string> */
+                public array $queries = [];
+
+                public function query(string $sql): void
+                {
+                    $this->queries[] = $sql;
+                }
+
+                public function next_record(): bool
+                {
+                    return false;
+                }
+
+                public function f(string $name): string
+                {
+                    return '';
+                }
+            };
+            $spare = $GLOBALS['spareDBs'] ?? null;
+            $uri   = $_SERVER['REQUEST_URI'] ?? null;
+            $GLOBALS['spareDBs']    = [$db];
+            $_SERVER['REQUEST_URI'] = '/page.shtml?post2shtml_id=' . rawurlencode("x' OR '1'='1");
+            try {
+                add_post2shtml_vars();
+            } finally {
+                $GLOBALS['spareDBs']    = $spare;
+                $_SERVER['REQUEST_URI'] = $uri;
+                unset($GLOBALS['post2shtml_id']);
+            }
+            $this->assertSame([], $db->queries);
+        }
     }
 }

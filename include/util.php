@@ -1479,7 +1479,7 @@ function add_post2shtml_vars($delete = true): void
 {
     global $post2shtml_id;
     add_vars();
-    if (!$post2shtml_id) {
+    if (!is_string($post2shtml_id) || !is_long_id($post2shtml_id)) {   // it comes from the URL and goes to SQL
         return;
     }
     $db = getDB();
