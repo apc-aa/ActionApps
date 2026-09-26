@@ -33,17 +33,12 @@ class Actionapps
     /** what AA_ADMIN_PWD holds (credentialState()) */
     public const CREDENTIAL_NONE       = 'none';
     public const CREDENTIAL_TOKEN      = 'token';
-    /** a whole token in plain text, "jwt:" - encrypted on its first use */
-    public const CREDENTIAL_LEGACY     = 'legacy';
-    /** "jwt:" and a token cut short by a narrow column - never sent */
-    public const CREDENTIAL_CUT        = 'cut';
-    /** a password of the remote AA - Central logs in only by a token */
-    public const CREDENTIAL_PASSWORD   = 'password';
+    /** anything but v1: - a password or a token in plain text (older Central); never sent */
+    public const CREDENTIAL_PLAIN      = 'plain';
     /** encrypted by another key (AA_SECRET changed) or for another address (the row was edited) */
     public const CREDENTIAL_UNREADABLE = 'unreadable';
 
     private const SEALED = 'v1:';
-    private const LEGACY = 'jwt:';
 
     /** no usable answer */
     private const ERR_TRANSPORT = 3;
@@ -144,28 +139,16 @@ class Actionapps
         return $this->getValue('AA_ADMIN_USER');
     }
 
-    /** The login token for this AA; null when there is none or it cannot be used here (credentialState()).
-     *  A legacy plain token is stored encrypted on the way. */
+    /** The login token for this AA; null when there is none or it cannot be used here (credentialState()) */
     public function getAuthToken(): ?string
     {
-        return $this->usableCredential()[1];
+        return $this->credential()[1];
     }
 
     /** what AA_ADMIN_PWD holds - one of the CREDENTIAL_* constants */
     public function credentialState(): string
     {
         return $this->credential()[0];
-    }
-
-    /** credential(), a legacy token encrypted when it can be
-     *  @return array{string, ?string} */
-    private function usableCredential(): array
-    {
-        $credential = $this->credential();
-        if ($credential[0] === self::CREDENTIAL_LEGACY) {
-            $this->upgradeLegacyCredential();
-        }
-        return $credential;
     }
 
     /** @return array{string, ?string} the state and the token usable for getComunicatorUrl() */
@@ -175,13 +158,8 @@ class Actionapps
         if ($stored === '') {
             return [self::CREDENTIAL_NONE, null];
         }
-        if (str_starts_with($stored, self::LEGACY)) {
-            $token = substr($stored, strlen(self::LEGACY));
-            // LoginToken signs by HS256: 43 characters of signature - fewer is a value cut by the column
-            return preg_match('/^[\w-]+\.[\w-]+\.[\w-]{43}\z/', $token) ? [self::CREDENTIAL_LEGACY, $token] : [self::CREDENTIAL_CUT, null];
-        }
         if (!str_starts_with($stored, self::SEALED)) {
-            return [self::CREDENTIAL_PASSWORD, null];
+            return [self::CREDENTIAL_PLAIN, null];
         }
         try {
             // the address as additional data: a token of one AA never goes to the server an edited row names
@@ -203,84 +181,13 @@ class Actionapps
     }
 
     /** setAuthToken() and the central_conf row of this AA
-     *  @throws RuntimeException no AES-GCM, a column too narrow, a row that does not hold it
+     *  @throws RuntimeException no AES-GCM in this PHP
      *  @throws LogicException an AA of no central_conf row */
     public function saveAuthToken(string $jwt): void
     {
         $id = $this->getId() ?? throw new LogicException('The AA has no central_conf row - the token cannot be saved');
         $this->setAuthToken($jwt);
-        $this->store($id, (string) $this->getValue('AA_ADMIN_PWD'));
-    }
-
-    /** Stores a legacy plain "jwt:" token encrypted - on its first use, and by CheckCentralCredentials.
-     *  @return bool true when converted; false for anything else, an AA of no row, no AES-GCM or no room */
-    public function upgradeLegacyCredential(): bool
-    {
-        [$state, $token] = $this->credential();
-        $id              = $this->getId();
-        if (($state !== self::CREDENTIAL_LEGACY) || ($id === null) || !static::aesGcmAvailable()) {
-            return false;
-        }
-        $legacy = (string) $this->getValue('AA_ADMIN_PWD');
-        try {
-            $this->setAuthToken((string) $token);
-            $this->store($id, (string) $this->getValue('AA_ADMIN_PWD'), $legacy);
-        } catch (RuntimeException) {                // a narrow column or a concurrent login - the check shows it
-            $this->local_data->setValue('AA_ADMIN_PWD', $legacy);
-            return false;
-        }
-        return true;
-    }
-
-    /** Empties a token cut short by a narrow column - it can never be used
-     *  @return bool true when cleared */
-    public function clearCutCredential(): bool
-    {
-        $id  = $this->getId();
-        $cut = (string) $this->getValue('AA_ADMIN_PWD');
-        if (($this->credentialState() !== self::CREDENTIAL_CUT) || ($id === null)) {
-            return false;
-        }
-        try {
-            $this->store($id, '', $cut);
-        } catch (RuntimeException) {
-            return false;
-        }
-        $this->local_data->setValue('AA_ADMIN_PWD', '');
-        return true;
-    }
-
-    /** Writes AA_ADMIN_PWD of the row, only when the column holds it whole; reads it back
-     *  @param ?string $over write only over this value, so a Get Token meanwhile is kept
-     *  @throws RuntimeException not written, or not held as written */
-    private function store(int $id, string $value, ?string $over = null): void
-    {
-        // an unknown width (information_schema not readable) leaves it to the read-back
-        if (strlen($value) > (self::storedWidth() ?? PHP_INT_MAX)) {
-            throw new RuntimeException(_m('The column central_conf.AA_ADMIN_PWD is too narrow for the login token - run Repair of "Central logins" on the State Check page'));
-        }
-        DB_AA::update('central_conf', [['AA_ADMIN_PWD', $value, 's']], [['id', $id, 'i'], ...(($over === null) ? [] : [['AA_ADMIN_PWD', $over]])]);
-        if (DB_AA::select1('AA_ADMIN_PWD', 'SELECT AA_ADMIN_PWD FROM central_conf', [['id', $id, 'i']]) !== $value) {
-            throw new RuntimeException(_m('The login token was not stored whole - check central_conf.AA_ADMIN_PWD on the State Check page'));
-        }
-    }
-
-    /** the width of central_conf.AA_ADMIN_PWD in the database; null when unknown */
-    public static function storedWidth(): ?int
-    {
-        $width = DB_AA::select1('w', "SELECT CHARACTER_MAXIMUM_LENGTH AS w FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'central_conf' AND COLUMN_NAME = 'AA_ADMIN_PWD'");
-        return is_numeric($width) ? (int) $width : null;
-    }
-
-    /** the width of central_conf.AA_ADMIN_PWD the AA schema asks for */
-    public static function schemaWidth(): int
-    {
-        return AA::Metabase()->getColumns('central_conf')['AA_ADMIN_PWD']->getMaxLength();
-    }
-
-    public static function canEncrypt(): bool
-    {
-        return static::aesGcmAvailable();
+        DB_AA::update('central_conf', [['AA_ADMIN_PWD', (string) $this->getValue('AA_ADMIN_PWD'), 's']], [['id', $id, 'i']]);
     }
 
     /** AES-256-GCM of sodium needs the CPU's AES instructions */
@@ -289,14 +196,25 @@ class Actionapps
         return function_exists('sodium_crypto_aead_aes256gcm_is_available') && sodium_crypto_aead_aes256gcm_is_available();
     }
 
-    /** The central_conf rows for the list of the Central page: AA_ADMIN_PWD holds its credentialState(),
+    /** what the Central list says of the login: the exp of the token is read unverified - a display only */
+    public function credentialBadge(?int $now = null): string
+    {
+        [$state, $jwt] = $this->credential();
+        if ($jwt === null) {
+            return ($state === self::CREDENTIAL_NONE) ? _m('Not configured') : _m('Not authenticated - get a token');
+        }
+        $exp = RemoteSource::claims($jwt)['exp'] ?? null;
+        return (is_int($exp) && ($exp > ($now ?? time()))) ? _m('Authenticated until %1', [date('Y-m-d H:i', $exp)]) : _m('Expired - get a token');
+    }
+
+    /** The central_conf rows for the list of the Central page: AA_ADMIN_PWD holds its credentialBadge(),
      *  never the stored value
      *  @param array{table: string} $settings @return array<string, \AA_Content> */
     public static function listContent(zids $zids, array $settings): array
     {
         $content = \AA_Metabase::getContent($zids, $settings);
         foreach ($content as $row) {
-            $row->setValue('AA_ADMIN_PWD', (new self(new ItemContent($row->getContent())))->credentialState());
+            $row->setValue('AA_ADMIN_PWD', (new self(new ItemContent($row->getContent())))->credentialBadge());
         }
         return $content;
     }
@@ -308,12 +226,13 @@ class Actionapps
     {
         $response = $this->send(new AA_Request('Get_Jwt'), ['username' => $username, 'password' => $password], '');
         $jwt      = $response->getResponse();
-        if (!$response->isError() && is_string($jwt) && RemoteSource::isToken($jwt)) {
-            $this->last_error = null;
-            return $jwt;
-        }
-        $this->last_error = $response->isError() ? self::responseText($response) : _m('The remote AA gave no login token - update it');
-        return '';
+        $this->last_error = match (true) {
+            $response->isError()                                 => self::responseText($response),
+            !is_string($jwt) || !RemoteSource::isToken($jwt)     => _m('The remote AA gave no login token - update it'),
+            !RemoteSource::livesADay(RemoteSource::claims($jwt)) => _m('The remote AA gave a token for longer than a day - update the remote AA'),
+            default                                              => null,
+        };
+        return ($this->last_error === null) ? $jwt : '';
     }
 
     /** get value from locally stored data (central_conf) */
@@ -434,11 +353,10 @@ class Actionapps
     /** Main communication function - returns AA_Response object; getLastError() tells why this call failed */
     public function getResponse($request)
     {
-        [$state, $jwt] = $this->usableCredential();
+        [$state, $jwt] = $this->credential();
         $response = match (true) {
             $jwt !== null => $this->send($request, [], $jwt),
             $state === self::CREDENTIAL_UNREADABLE => new AA_Response(_m('The stored login token cannot be used (AA_SECRET, the database password or the address of this AA changed) - authenticate this AA again on the ActionApps Central page'), ResponderPolicy::ERR_NOT_AUTHENTICATED),
-            $state === self::CREDENTIAL_CUT => new AA_Response(_m('The stored login token is cut short (the column was too narrow) - authenticate this AA again on the ActionApps Central page'), ResponderPolicy::ERR_NOT_AUTHENTICATED),
             default => new AA_Response(_m('No login token for this AA - Authenticate this AA on the ActionApps Central page'), ResponderPolicy::ERR_NOT_AUTHENTICATED),
         };
         $this->last_error = $response->isError() ? self::responseText($response) : null;

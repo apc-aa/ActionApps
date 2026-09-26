@@ -129,20 +129,11 @@ $managed->setTitle(_m('ActionApps Central'));
 
 $managed->addColumn('admin_link', _m('Admin Link'), '<a href="_#AA_HTTP_/_#AA_BASE_/admin">Admin</a>');
 
-// Auth column: status badge + collapsible Authenticate form. The list shows in AA_ADMIN_PWD its
-// Actionapps::credentialState() (listContent()), never the stored value; AA_ADMI2 is its alias.
-//   - Wrapping the alias as {_#AA_ADMI2} makes the engine evaluate it first
-//     and pass the value as a single parameter.
-//   - QuoteColons on the translated labels keeps any future translation containing ':' safe.
+// Auth column: status badge + collapsible Authenticate form. The list shows in AA_ADMIN_PWD (alias
+// AA_ADMI2, escaped) Actionapps::credentialBadge() (listContent()), never the stored value.
 $auth_format = ''
     . '<div class="aa-auth-cell">'
-    .   '<div>{switch:{_#AA_ADMI2}:^(token|legacy)$:'
-    .       QuoteColons(_m('Authenticated'))
-    .     ':^none$:'
-    .       QuoteColons(_m('Not configured'))
-    .     ':.:'
-    .       QuoteColons(_m('Not authenticated - get a token'))
-    .   '}</div>'
+    .   '<div>_#AA_ADMI2</div>'
     .   '<details>'
     .     '<summary>'._m('Authenticate').'</summary>'
     .     '<div>'

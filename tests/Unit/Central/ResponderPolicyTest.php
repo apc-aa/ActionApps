@@ -203,7 +203,7 @@ final class ResponderPolicyTest extends TestCase
         ];
     }
 
-    /** a ttl or scope the AA cannot read is an error - never a silent 1-year admin token */
+    /** a ttl or scope the AA cannot read is an error - never a silent admin token */
     #[DataProvider('jwtParams')]
     public function test_get_jwt_reads_ttl_and_scope(mixed $param, ?array $expected): void
     {

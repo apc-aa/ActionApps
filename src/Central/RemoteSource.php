@@ -78,9 +78,23 @@ final class RemoteSource
      *  ttl and scope and would give its year-long admin token). */
     private static function shortAppsToken(string $token): bool
     {
-        $claims = json_decode((string) base64_decode(strtr(explode('.', $token)[1], '-_', '+/'), true), true);
-        return is_array($claims) && (($claims['scp'] ?? null) === 'apps') && is_int($claims['iat'] ?? null) && is_int($claims['exp'] ?? null)
-            && ($claims['exp'] - $claims['iat'] <= self::TOKEN_TTL + self::CLOCK_SLACK);
+        $claims = self::claims($token);
+        return (($claims['scp'] ?? null) === 'apps') && self::livesADay($claims);
+    }
+
+    /** the claims of a JWT, not verified - only its issuer can check the signature; null when unreadable
+     *  @return ?array<string, mixed> */
+    public static function claims(string $token): ?array
+    {
+        $claims = json_decode((string) base64_decode(strtr(explode('.', $token . '..')[1], '-_', '+/'), true), true);
+        return is_array($claims) ? $claims : null;
+    }
+
+    /** issued for a day at most - an older AA ignores ttl and gives a year
+     *  @param ?array<string, mixed> $claims */
+    public static function livesADay(?array $claims): bool
+    {
+        return is_int($claims['iat'] ?? null) && is_int($claims['exp'] ?? null) && ($claims['exp'] - $claims['iat'] <= self::TOKEN_TTL + self::CLOCK_SLACK);
     }
 
     /** The token with the address it was given for - what a run keeps, so that a Central row changed

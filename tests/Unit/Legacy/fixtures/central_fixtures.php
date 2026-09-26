@@ -79,23 +79,17 @@ final class StubbedActionapps extends \AA\Central\Actionapps
     }
 }
 
-/** central_conf for RecordingDb: the rows, the width of AA_ADMIN_PWD, and AA_ADMIN_PWD read back as the
- *  UPDATEs so far left it - cut to the real width of the column, as MySQL does without strict mode. */
+/** central_conf for RecordingDb: the rows as SELECT gives them, the UPDATEs recorded */
 final class CentralConfDb
 {
-    /** @param list<array<string, string>> $rows @param \Closure(): ?int $width what information_schema says, null = unreadable
-     *  @param ?int $real the width the values are cut to, null = $width */
-    public static function install(array $rows, \Closure $width, ?int $real = null): void
+    /** @param list<array<string, string>> $rows */
+    public static function install(array $rows): void
     {
         RecordingDb::reset();
-        RecordingDb::$answer = static function (string $sql) use ($rows, $width, $real): array {
-            return match (true) {
-                str_contains($sql, 'information_schema.COLUMNS')          => [['w' => (string) $width()]],
-                (bool) preg_match('/^SELECT AA_ADMIN_PWD FROM `?central_conf`? WHERE id = (\d+)/', $sql, $m) => [['AA_ADMIN_PWD' => self::current($rows, $m[1], $real ?? $width())]],
-                str_starts_with($sql, 'SELECT id FROM central_conf')       => array_map(static fn(array $r) => ['id' => $r['id']], $rows),
-                str_starts_with($sql, 'SELECT * FROM central_conf')        => $rows,
-                default                                                    => [],
-            };
+        RecordingDb::$answer = static fn(string $sql): array => match (true) {
+            str_starts_with($sql, 'SELECT id FROM central_conf') => array_map(static fn(array $r) => ['id' => $r['id']], $rows),
+            str_starts_with($sql, 'SELECT * FROM central_conf')  => $rows,
+            default                                              => [],
         };
         $GLOBALS['spareDBs'] = array_map(static fn() => new RecordingDb(), range(1, 30));
     }
@@ -104,20 +98,5 @@ final class CentralConfDb
     public static function updates(): array
     {
         return array_values(array_filter(RecordingDb::$log, static fn(string $sql) => str_starts_with($sql, 'UPDATE')));
-    }
-
-    /** @param list<array<string, string>> $rows */
-    private static function current(array $rows, string $id, ?int $width): string
-    {
-        $value = '';
-        foreach ($rows as $row) {
-            $value = ($row['id'] === $id) ? (string) ($row['AA_ADMIN_PWD'] ?? '') : $value;
-        }
-        foreach (self::updates() as $sql) {
-            if (preg_match("/SET  AA_ADMIN_PWD = '([^']*)' WHERE id = $id(?: AND AA_ADMIN_PWD = '([^']*)')?$/", $sql, $m) && (!isset($m[2]) || ($m[2] === $value))) {
-                $value = ($width === null) ? $m[1] : substr($m[1], 0, $width);
-            }
-        }
-        return $value;
     }
 }

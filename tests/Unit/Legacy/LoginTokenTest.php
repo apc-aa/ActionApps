@@ -183,17 +183,17 @@ namespace Tests\Unit\Legacy {
             $this->assertSame(['7', 'central', LoginToken::SCOPE_ADMIN], LoginToken::verify(LoginToken::issue('7')));
         }
 
-        public function test_the_token_carries_the_user_a_year_and_a_tag_of_the_password(): void
+        public function test_the_token_carries_the_user_a_day_and_a_tag_of_the_password(): void
         {
             $claims = self::claims(LoginToken::issue('7'));
             $this->assertSame(['sub', 'iat', 'exp', 'pwd'], array_keys($claims));
             $this->assertSame('7', $claims['sub']);
-            $this->assertSame(365 * 24 * 3600, $claims['exp'] - $claims['iat']);
+            $this->assertSame(24 * 3600, $claims['exp'] - $claims['iat'], 'no ttl - the longest a token lives');
             $this->assertSame(substr(hash_hmac('sha256', $this->hash, Secret::key('jwt-pwd')), 0, 16), $claims['pwd'], 'keyed - a leaked token does not help to crack the hash');
         }
 
         /** @return array<string, array{0: int, 1: int}> asked lifetime, the one the token gets */
-        public static function shortLifetimes(): array
+        public static function lifetimes(): array
         {
             return [
                 'an hour'           => [3600, 3600],
@@ -205,22 +205,56 @@ namespace Tests\Unit\Legacy {
             ];
         }
 
-        #[DataProvider('shortLifetimes')]
-        public function test_a_short_token_lives_at_most_a_day(int $asked, int $lifetime): void
+        #[DataProvider('lifetimes')]
+        public function test_a_token_lives_at_most_a_day(int $asked, int $lifetime): void
         {
             $claims = self::claims(LoginToken::issue('7', null, $asked));
             $this->assertSame($lifetime, $claims['exp'] - $claims['iat']);
         }
 
-        public function test_a_short_token_logs_in_like_a_long_one(): void
+        public function test_a_shorter_token_logs_in_like_a_full_one(): void
         {
             $this->assertSame(['7', 'central', LoginToken::SCOPE_ADMIN], LoginToken::verify(LoginToken::issue('7', null, 3600)));
         }
 
-        public function test_an_expired_short_token_is_refused(): void
+        public function test_an_expired_token_of_a_day_is_refused(): void
         {
             $this->expectException(UnexpectedValueException::class);
-            LoginToken::verify(LoginToken::issue('7', time() - 25 * 3600, 24 * 3600));
+            LoginToken::verify(LoginToken::issue('7', time() - 25 * 3600));
+        }
+
+        /** a token of a longer life, as AAs issued them before - whatever its exp says */
+        private function signedToken(int $iat, int $exp): string
+        {
+            return JWT::encode(['sub' => '7', 'iat' => $iat, 'exp' => $exp, 'pwd' => substr(hash_hmac('sha256', $this->hash, Secret::key('jwt-pwd')), 0, 16)], Secret::key('jwt'), 'HS256');
+        }
+
+        public function test_a_token_issued_more_than_a_day_ago_is_refused_whatever_its_exp(): void
+        {
+            $this->expectException(UnexpectedValueException::class);
+            LoginToken::verify($this->signedToken(time() - 25 * 3600, time() + 300 * 24 * 3600));
+        }
+
+        public function test_a_token_of_a_year_issued_just_now_logs_in_until_a_day_passes(): void
+        {
+            $this->assertSame(['7', 'central', LoginToken::SCOPE_ADMIN], LoginToken::verify($this->signedToken(time() - 3600, time() + 365 * 24 * 3600)));
+        }
+
+        public function test_a_day_old_token_passes_within_the_clock_skew(): void
+        {
+            $this->assertSame(['7', 'central', LoginToken::SCOPE_ADMIN], LoginToken::verify($this->signedToken(time() - 24 * 3600 - 60, time() + 3600)));
+        }
+
+        public function test_a_token_issued_in_the_future_is_refused(): void
+        {
+            $this->expectException(UnexpectedValueException::class);
+            LoginToken::verify($this->signedToken(time() + 600, time() + 3600));
+        }
+
+        public function test_a_token_without_iat_is_refused(): void
+        {
+            $this->expectException(UnexpectedValueException::class);
+            LoginToken::verify(JWT::encode(['sub' => '7', 'exp' => time() + 3600, 'pwd' => substr(hash_hmac('sha256', $this->hash, Secret::key('jwt-pwd')), 0, 16)], Secret::key('jwt'), 'HS256'));
         }
 
         public function test_an_apps_token_carries_its_scope(): void
@@ -357,7 +391,7 @@ namespace Tests\Unit\Legacy {
         public function test_an_expired_token_is_refused(): void
         {
             $this->expectException(UnexpectedValueException::class);
-            LoginToken::verify(LoginToken::issue('7', time() - 366 * 24 * 3600));
+            LoginToken::verify(LoginToken::issue('7', time() - 366 * 24 * 3600, 365 * 24 * 3600));
         }
 
         public function test_a_token_without_pwd_is_refused(): void

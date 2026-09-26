@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 /**
  * Actionapps: the login token of a connected AA is stored encrypted, bound to the responder URL it was
- * given for; a legacy plain "jwt:" row is converted on its first use, a cut one is never sent; the column
- * must hold the value whole; every call that carries the token or a password goes through RemoteSource -
+ * given for; any other value (a password, a plain token) is never sent; every call that carries the
+ * token or a password goes through RemoteSource -
  * https only, no redirect, the peer verified, the answer capped, only plain data (or the module
  * definitions) unserialized.
  */
@@ -50,7 +50,7 @@ final class ActionappsCredentialTest extends TestCase
 {
     private const DOMAIN = 'https://r.example.org/';
     private const URL    = 'https://r.example.org/aa/central/responder.php';
-    /** a JWT of the form LoginToken issues - HS256, a signature of 43 characters */
+    /** a JWT of the form LoginToken issues */
     private const TOKEN  = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI3In0.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';
 
     public static function setUpBeforeClass(): void
@@ -95,6 +95,18 @@ final class ActionappsCredentialTest extends TestCase
         return StubbedActionapps::answering(self::content($values), $answers);
     }
 
+    /** a token of these claims, signed by nobody - Central never checks the signature */
+    private static function jwt(array $claims): string
+    {
+        return 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.' . rtrim(strtr(base64_encode(json_encode($claims)), '+/', '-_'), '=') . '.' . str_repeat('x', 43);
+    }
+
+    /** a token issued now for $lifetime seconds */
+    private static function tokenFor(int $lifetime): string
+    {
+        return self::jwt(['sub' => '7', 'iat' => time(), 'exp' => time() + $lifetime, 'pwd' => 'abc']);
+    }
+
     /** an AA with the token stored as setAuthToken() stores it */
     private static function authenticated(array $answers, array $values = []): StubbedActionapps
     {
@@ -111,10 +123,10 @@ final class ActionappsCredentialTest extends TestCase
         return (string) $aa->getValue('AA_ADMIN_PWD');
     }
 
-    /** central_conf row 12 holding $stored, its column $width bytes wide */
-    private static function row(string $stored, int $width = 1024): void
+    /** central_conf row 12 holding $stored */
+    private static function row(string $stored): void
     {
-        CentralConfDb::install([['id' => '12', 'AA_ADMIN_PWD' => $stored]], static fn() => $width);
+        CentralConfDb::install([['id' => '12', 'AA_ADMIN_PWD' => $stored]]);
     }
 
     // --- stored encrypted ----------------------------------------------------------------------
@@ -171,11 +183,9 @@ final class ActionappsCredentialTest extends TestCase
     {
         return [
             'empty'           => ['', Actionapps::CREDENTIAL_NONE],
-            'a password'      => ['secret', Actionapps::CREDENTIAL_PASSWORD],
-            'legacy token'    => ['jwt:' . self::TOKEN, Actionapps::CREDENTIAL_LEGACY],
-            'legacy, cut'     => [substr('jwt:' . self::TOKEN, 0, 30), Actionapps::CREDENTIAL_CUT],
-            'cut in the sign' => [substr('jwt:' . self::TOKEN, 0, -5), Actionapps::CREDENTIAL_CUT],
-            'upper case'      => ['JWT:x', Actionapps::CREDENTIAL_PASSWORD],
+            'a password'      => ['secret', Actionapps::CREDENTIAL_PLAIN],
+            'plain token'     => ['jwt:' . self::TOKEN, Actionapps::CREDENTIAL_PLAIN],
+            'upper case'      => ['V1:x', Actionapps::CREDENTIAL_PLAIN],
             'v1 garbage'      => ['v1:', Actionapps::CREDENTIAL_UNREADABLE],
         ];
     }
@@ -202,39 +212,6 @@ final class ActionappsCredentialTest extends TestCase
         self::assertSame(self::TOKEN, self::aa(['AA_ADMIN_PWD' => (string) $aa->getValue('AA_ADMIN_PWD')])->getAuthToken());
     }
 
-    public function test_saveAuthToken_refuses_a_column_too_narrow(): void
-    {
-        self::row('', 30);
-
-        try {
-            self::aa(['id' => '12'])->saveAuthToken(self::TOKEN);
-            self::fail('saved');
-        } catch (RuntimeException $e) {
-            self::assertStringContainsString('State Check', $e->getMessage());
-        }
-        self::assertSame([], CentralConfDb::updates(), 'nothing written that would be cut');
-    }
-
-    public function test_saveAuthToken_with_an_unknown_width_relies_on_the_read_back(): void
-    {
-        CentralConfDb::install([['id' => '12', 'AA_ADMIN_PWD' => '']], static fn() => null);
-        self::aa(['id' => '12'])->saveAuthToken(self::TOKEN);
-        self::assertCount(1, CentralConfDb::updates(), 'written');
-
-        CentralConfDb::install([['id' => '12', 'AA_ADMIN_PWD' => '']], static fn() => null, 30);
-        $this->expectException(RuntimeException::class);
-        self::aa(['id' => '12'])->saveAuthToken(self::TOKEN);
-    }
-
-    public function test_saveAuthToken_fails_when_the_row_does_not_hold_the_value(): void
-    {
-        // the schema claims enough, the column cuts anyway
-        CentralConfDb::install([['id' => '12', 'AA_ADMIN_PWD' => '']], static fn() => 1024, 100);
-
-        $this->expectException(RuntimeException::class);
-        self::aa(['id' => '12'])->saveAuthToken(self::TOKEN);
-    }
-
     public function test_saveAuthToken_without_aes_gcm_is_refused(): void
     {
         self::row('');
@@ -248,107 +225,51 @@ final class ActionappsCredentialTest extends TestCase
         self::assertSame([], CentralConfDb::updates());
     }
 
-    // --- a legacy plain token --------------------------------------------------------------------
+    // --- anything else ----------------------------------------------------------------------------
 
-    public function test_a_legacy_token_is_sent_and_saved_encrypted_on_its_first_use(): void
+    /** @return array<string, array{string}> */
+    public static function plainValues(): array
     {
-        self::row('jwt:' . self::TOKEN);
-        $aa = self::stubbed([new AA_Response(['org_name' => 'R'])], ['id' => '12', 'AA_ADMIN_PWD' => 'jwt:' . self::TOKEN]);
+        return ['a plain token of older Central' => ['jwt:' . self::TOKEN], 'a password' => ['hunter2']];
+    }
+
+    #[DataProvider('plainValues')]
+    public function test_a_plain_value_is_not_authenticated_and_never_sent(string $stored): void
+    {
+        self::row($stored);
+        $aa = self::stubbed([new AA_Response(['ok'])], ['id' => '12', 'AA_ADMIN_PWD' => $stored]);
 
         $response = $aa->getResponse(new AA_Request('Get_Aaname'));
 
-        self::assertFalse($response->isError());
-        self::assertStringContainsString('Authorization: Bearer ' . self::TOKEN . "\r\n", $aa->opened[0]['options']['http']['header']);
-        $updates = CentralConfDb::updates();
-        self::assertCount(1, $updates);
-        self::assertMatchesRegularExpression("/^UPDATE `central_conf` SET  AA_ADMIN_PWD = 'v1:[\\w-]+' WHERE id = 12 AND AA_ADMIN_PWD = 'jwt:/", $updates[0], 'only over the value it read');
-        self::assertSame(Actionapps::CREDENTIAL_TOKEN, $aa->credentialState());
-
-        $aa->getResponse(new AA_Request('Get_Aaname'));
-        self::assertCount(1, CentralConfDb::updates(), 'converted once');
-    }
-
-    public function test_a_legacy_token_is_still_used_when_the_column_is_too_narrow_for_it_encrypted(): void
-    {
-        $legacy = 'jwt:' . self::TOKEN;
-        self::row($legacy, strlen($legacy));
-        $aa = self::aa(['id' => '12', 'AA_ADMIN_PWD' => $legacy]);
-
-        self::assertSame(self::TOKEN, $aa->getAuthToken());
-        self::assertSame([], CentralConfDb::updates());
-        self::assertSame(Actionapps::CREDENTIAL_LEGACY, $aa->credentialState());
-    }
-
-    public function test_a_legacy_token_of_an_aa_without_row_is_used_as_it_is(): void
-    {
-        $aa = self::aa(['AA_ADMIN_PWD' => 'jwt:' . self::TOKEN]);
-
-        self::assertSame(self::TOKEN, $aa->getAuthToken());
-        self::assertSame([], RecordingDb::$log, 'no row to write');
-    }
-
-    public function test_a_legacy_token_without_aes_gcm_is_used_as_it_is(): void
-    {
-        self::row('jwt:' . self::TOKEN);
-        $aa = new NoAesActionapps(self::content(['id' => '12', 'AA_ADMIN_PWD' => 'jwt:' . self::TOKEN]));
-
-        self::assertSame(self::TOKEN, $aa->getAuthToken());
-        self::assertFalse($aa->upgradeLegacyCredential());
-        self::assertSame([], CentralConfDb::updates());
-    }
-
-    public function test_a_cut_legacy_token_is_not_authenticated_and_never_sent(): void
-    {
-        $cut = substr('jwt:' . self::TOKEN, 0, 30);
-        self::row($cut);
-        $aa = self::stubbed([new AA_Response(['ok'])], ['id' => '12', 'AA_ADMIN_PWD' => $cut]);
-
-        $response = $aa->getResponse(new AA_Request('Get_Aaname'));
-
+        self::assertNull($aa->getAuthToken());
         self::assertSame(ResponderPolicy::ERR_NOT_AUTHENTICATED, $response->getError());
-        self::assertStringContainsString('authenticate this AA again', (string) $response->getResponse());
-        self::assertSame([], $aa->opened);
-        self::assertFalse($aa->upgradeLegacyCredential(), 'never encrypted');
-        self::assertSame([], CentralConfDb::updates());
-    }
-
-    public function test_clearCutCredential_empties_only_a_cut_token(): void
-    {
-        $cut = substr('jwt:' . self::TOKEN, 0, 30);
-        self::row($cut);
-
-        self::assertTrue(self::aa(['id' => '12', 'AA_ADMIN_PWD' => $cut])->clearCutCredential());
-        self::assertSame(["UPDATE `central_conf` SET  AA_ADMIN_PWD = '' WHERE id = 12 AND AA_ADMIN_PWD = '$cut'"], CentralConfDb::updates());
-
-        foreach (['', 'secret', 'jwt:' . self::TOKEN] as $stored) {
-            self::assertFalse(self::aa(['id' => '12', 'AA_ADMIN_PWD' => $stored])->clearCutCredential());
-        }
-        self::assertCount(1, CentralConfDb::updates());
-    }
-
-    public function test_upgradeLegacyCredential_leaves_other_values(): void
-    {
-        self::row('');
-        foreach (['', 'secret', 'v1:x'] as $stored) {
-            self::assertFalse(self::aa(['id' => '12', 'AA_ADMIN_PWD' => $stored])->upgradeLegacyCredential());
-        }
-        self::assertSame([], CentralConfDb::updates());
+        self::assertStringContainsString('Authenticate this AA', (string) $response->getResponse());
+        self::assertSame([], $aa->opened, 'nothing sent');
+        self::assertSame([], CentralConfDb::updates(), 'nothing rewritten');
     }
 
     // --- the list on the Central page -------------------------------------------------------------
 
-    public function test_the_list_shows_the_state_instead_of_the_stored_value(): void
+    public function test_the_list_shows_the_state_and_the_expiry_instead_of_the_stored_value(): void
     {
+        $sealed = static function (string $token, string $domain = self::DOMAIN): string {
+            $aa = self::aa(['AA_HTTP_DOMAIN' => $domain]);
+            $aa->setAuthToken($token);
+            return (string) $aa->getValue('AA_ADMIN_PWD');
+        };
+        $valid = self::tokenFor(3600);
         CentralConfDb::install([
-            ['id' => '1', 'AA_HTTP_DOMAIN' => self::DOMAIN, 'AA_BASE_DIR' => 'aa/', 'AA_ADMIN_PWD' => self::sealed()],
-            ['id' => '2', 'AA_HTTP_DOMAIN' => 'https://moved.example/', 'AA_BASE_DIR' => 'aa/', 'AA_ADMIN_PWD' => self::sealed()],
+            ['id' => '1', 'AA_HTTP_DOMAIN' => self::DOMAIN, 'AA_BASE_DIR' => 'aa/', 'AA_ADMIN_PWD' => $sealed($valid)],
+            ['id' => '2', 'AA_HTTP_DOMAIN' => 'https://moved.example/', 'AA_BASE_DIR' => 'aa/', 'AA_ADMIN_PWD' => $sealed($valid)],
             ['id' => '3', 'AA_HTTP_DOMAIN' => self::DOMAIN, 'AA_BASE_DIR' => 'aa/', 'AA_ADMIN_PWD' => 'hunter2'],
-        ], static fn() => 1024);
+            ['id' => '4', 'AA_HTTP_DOMAIN' => self::DOMAIN, 'AA_BASE_DIR' => 'aa/', 'AA_ADMIN_PWD' => $sealed(self::jwt(['iat' => time() - 90000, 'exp' => time() - 3600]))],
+            ['id' => '5', 'AA_HTTP_DOMAIN' => self::DOMAIN, 'AA_BASE_DIR' => 'aa/', 'AA_ADMIN_PWD' => ''],
+        ]);
 
-        $content = Actionapps::listContent(new \zids(['1', '2', '3'], 's'), ['table' => 'central_conf']);
+        $content = Actionapps::listContent(new \zids(['1', '2', '3', '4', '5'], 's'), ['table' => 'central_conf']);
 
         self::assertSame(
-            ['1' => Actionapps::CREDENTIAL_TOKEN, '2' => Actionapps::CREDENTIAL_UNREADABLE, '3' => Actionapps::CREDENTIAL_PASSWORD],
+            ['1' => 'Authenticated until ' . date('Y-m-d H:i', time() + 3600), '2' => 'Not authenticated - get a token', '3' => 'Not authenticated - get a token', '4' => 'Expired - get a token', '5' => 'Not configured'],
             array_map(static fn($c) => $c->getValue('AA_ADMIN_PWD'), $content),
         );
     }
@@ -467,9 +388,10 @@ final class ActionappsCredentialTest extends TestCase
 
     public function test_requestJwt_sends_the_login_through_the_transport(): void
     {
-        $aa = self::stubbed([new AA_Response(self::TOKEN)]);
+        $token = self::tokenFor(24 * 3600);
+        $aa    = self::stubbed([new AA_Response($token)]);
 
-        self::assertSame(self::TOKEN, $aa->requestJwt('central', 'pw'));
+        self::assertSame($token, $aa->requestJwt('central', 'pw'));
         $options = $aa->opened[0]['options'];
         self::assertSame(0, $options['http']['follow_location']);
         self::assertTrue($options['ssl']['verify_peer']);
@@ -486,6 +408,33 @@ final class ActionappsCredentialTest extends TestCase
 
         self::assertSame('', $aa->requestJwt('central', 'pw'));
         self::assertStringContainsString('https', (string) $aa->getLastError());
+    }
+
+    /** @return array<string, array{string}> */
+    public static function longTokens(): array
+    {
+        return [
+            'a year (an older AA ignores ttl)' => [self::tokenFor(365 * 24 * 3600)],
+            'a day and ten minutes'            => [self::tokenFor(24 * 3600 + 600)],
+            'no iat'                           => [self::jwt(['sub' => '7', 'exp' => time() + 3600])],
+            'no claims'                        => ['eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.bm90IGpzb24.' . str_repeat('x', 43)],
+        ];
+    }
+
+    #[DataProvider('longTokens')]
+    public function test_requestJwt_refuses_a_token_of_more_than_a_day(string $token): void
+    {
+        $aa = self::stubbed([new AA_Response($token)], ['id' => '12']);
+
+        self::assertSame('', $aa->requestJwt('central', 'pw'));
+        self::assertStringContainsString('update the remote AA', (string) $aa->getLastError());
+        self::assertStringNotContainsString($token, (string) $aa->getLastError());
+    }
+
+    public function test_requestJwt_accepts_a_day_and_the_clock_slack(): void
+    {
+        $token = self::tokenFor(24 * 3600 + 300);
+        self::assertSame($token, self::stubbed([new AA_Response($token)])->requestJwt('central', 'pw'));
     }
 
     public function test_requestJwt_refuses_an_answer_of_no_token(): void

@@ -735,7 +735,7 @@ pageOpen('nobody');
 if (in_array(AA_Auth::login(), ['token', 'bad-token'], true)) {
     LoginToken::forgetSession();   // a token login lives for this request only
     if (AA_Auth::login() === 'bad-token') {
-        AA_Response::error(_m('Login token refused - authenticate this AA again in Central'), ResponderPolicy::ERR_TOKEN_REFUSED);
+        AA_Response::error(_m('Login token refused (it lives a day, and a password change ends it) - authenticate this AA again in Central'), ResponderPolicy::ERR_TOKEN_REFUSED);
         exit;
     }
 }

@@ -14,9 +14,15 @@ AA: `ORG_NAME`, `AA_HTTP_DOMAIN`, `AA_BASE_DIR` and a login token. The responder
 Columns and actions:
 
 - **Auth** - "Get Token": the username and password of a superadmin of that AA. Central calls
-  `Get_Jwt` there and stores the year-long `admin` token in `AA_ADMIN_PWD` as `v1:` + AES-256-GCM
+  `Get_Jwt` there and stores the `admin` token in `AA_ADMIN_PWD` as `v1:` + AES-256-GCM
   (key `Secret::key('central-credential')`, the responder URL bound as additional data); the
-  password is not stored. A token stored for another URL (an edited row) is not sent. A row without a valid token answers nothing (the pages say why). The form
+  password is not stored. The token lives **24 hours** and is not renewed: Central is for one-off
+  work - log in to the AAs you need, work, go; the next day Get Token again. The column shows
+  "Authenticated until <time>" or "Expired" (the token's `exp`, read unverified). A remote AA that gives
+  a longer token (an older one ignores `ttl`) is refused - update it. A token stored for another
+  URL (an edited row) is not sent; any value other than `v1:` (a plain `jwt:` token or a password of
+  older Central) is "not authenticated" and never sent - Get Token overwrites it. A row without a
+  valid token answers nothing (the pages say why). The form
   sends no 2FA code, so a superadmin with two-factor login cannot get a row token this way.
 - **Apps** - "Install an app from this AA..." opens `installapp.php?aa=<row id>` (approved bin only).
   The link carries the row id, never a URL.
@@ -243,8 +249,9 @@ params))`; the answer is a serialized `AA_Response`. `Authorization: Bearer <tok
 
 **`Get_Jwt`** - POST fields `username`, `password`, optional `code2fa`; params `scope` (`admin`
 default | `apps`) and `ttl` (seconds). Only a **superadmin** logged in by the password in this very
-request gets a token. `admin` without ttl: a year; `apps`: a day by default and at most; any ttl is
-kept within 60 s .. 1 day. Claims: `sub`, `iat`, `exp`, `pwd` (a keyed tag of the password), `scp`
+request gets a token. **Every token lives at most a day**, of either scope: without ttl a day, any ttl
+is kept within 60 s .. 1 day. A token whose `iat` is more than a day (+ 5 min of clock skew) old is
+refused whatever its `exp` says, so the year-long tokens of older AAs no longer work. Claims: `sub`, `iat`, `exp`, `pwd` (a keyed tag of the password), `scp`
 (`apps` only; no claim = admin). HS256 with a key derived from `AA_SECRET`.
 
 **`Get_Modules`** - param `types` (e.g. `['W']`, `['S','Alerts']`) -> `id => name` of the
@@ -270,7 +277,7 @@ Error codes (`AA\Central\ResponderPolicy`, plus the responder's own):
 | 103 | unknown command (also what an older AA answers to a new command) |
 | 104 / 105 / 106 | remote command in the URL / POST-only command by GET / request from another site |
 | 13 | `Get_Jwt` of a superadmin logged in otherwise than by the password in this request (cookie, token), or whose password change AA cannot detect |
-| 14 | Bearer token refused (expired, password changed, bad signature) - authenticate again |
+| 14 | Bearer token refused (older than a day, password changed, bad signature) - authenticate again |
 | 15 | Central side only: no token stored for the row, nothing was asked |
 | 16 | `Get_App`: no such app, or you may not export it (one answer for both) |
 | 17 | `Get_App`: the export found errors; the answer lists up to 50 lines `code path ref` |
@@ -296,10 +303,10 @@ confirmation help the admin; the boundary is who may install.
 
 **Tokens**
 
-- `admin` (Central's own login to a row): a year; stored encrypted in `central_conf` (`v1:`, bound to
-  the row's responder URL; a plain `jwt:` of older Central is encrypted on its first use, State Check
-  "Central logins" lists and repairs the rest). Anyone who holds it controls that AA (`Do_Optimize`,
-  `Do_Synchronize`). Give each Central its own account.
+- `admin` (Central's own login to a row): a day, no renewal - a long token would let a compromise of
+  one AA reach the others. Stored encrypted in `central_conf` (`v1:`, bound to the row's responder
+  URL); anything else in the column is never sent. Anyone who holds it controls that AA
+  (`Do_Optimize`, `Do_Synchronize`). Give each Central its own account.
 - `apps` (another AA pulling an app): at most a day, runs only `Get_App` and `Get_Modules` (else 20).
   The target keeps it only in the run, AES-GCM encrypted with a key derived from `AA_SECRET`, sealed
   with the responder URL it was issued for. It is erased when the run is done or ended, and when a run
@@ -338,6 +345,9 @@ On `admin/aa_statecheck.php`:
 - **App transfers** - W for a transfer that has not moved on for an hour, E for one stopped by an
   error; links to its progress page.
 - **Required slice settings** - W for slices whose required settings fields (`_` ids) have no value.
+- **Central logins** - W for `central_conf` rows holding anything but an encrypted token (a password
+  or a plain `jwt:` token of older Central lying in the database). Central never sends them; press
+  Get Token for that AA (it overwrites the value). No repair action.
 - **Server secret** - `AA_SECRET` missing (tokens are then keyed by a fallback derived from the
   DB password, `AA_ID` and DB name).
 - **Get_Sessionid use** - who logged in by `Get_Sessionid` in the last 30 days.

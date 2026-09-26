@@ -95,8 +95,8 @@ class ResponderPolicy
         };
     }
 
-    /** The parameters of Get_Jwt; null = one of a wrong form - an error, never a silent year-long admin token.
-     *  @return array{ttl: ?int, scope: string}|null ttl null = the long token */
+    /** The parameters of Get_Jwt; null = one of a wrong form - an error, never a silent admin token.
+     *  @return array{ttl: ?int, scope: string}|null ttl null = a day; LoginToken::issue() keeps any ttl within a minute and a day */
     public static function jwtParams(mixed $param): ?array
     {
         $param = is_array($param) ? $param : [];

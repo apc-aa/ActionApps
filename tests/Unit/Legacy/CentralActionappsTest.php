@@ -161,25 +161,23 @@ final class CentralActionappsTest extends TestCase
 
     private const TOKEN = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI3In0.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';
 
-    /** @return array<string, array{string, ?string}> AA_ADMIN_PWD => auth token */
+    /** @return array<string, array{string}> AA_ADMIN_PWD of no encrypted token */
     public static function passwords(): array
     {
         return [
-            'jwt'             => ['jwt:' . self::TOKEN, self::TOKEN],
-            'jwt cut short'   => ['jwt:eyJ.abc.def', null],
-            'plain password'  => ['secret', null],
-            'empty'           => ['', null],
-            'jwt prefix only' => ['jwt:', null],
-            'upper case'      => ['JWT:x', null],
+            'plain token'     => ['jwt:' . self::TOKEN],
+            'plain password'  => ['secret'],
+            'empty'           => [''],
+            'jwt prefix only' => ['jwt:'],
         ];
     }
 
     #[DataProvider('passwords')]
-    public function test_getAuthToken_reads_a_whole_legacy_token(string $pwd, ?string $token): void
+    public function test_getAuthToken_gives_no_token_of_a_plain_value(string $pwd): void
     {
         $aa = self::aa(['AA_ADMIN_USER' => 'central', 'AA_ADMIN_PWD' => $pwd]);
 
-        $this->assertSame($token, $aa->getAuthToken());
+        $this->assertNull($aa->getAuthToken());
         $this->assertSame($pwd, $aa->getValue('AA_ADMIN_PWD'));
         $this->assertSame('central', $aa->getAccessUsername());
     }
@@ -196,7 +194,7 @@ final class CentralActionappsTest extends TestCase
 
     public function test_saveAuthToken_updates_central_conf_by_numeric_id(): void
     {
-        CentralConfDb::install([['id' => '12', 'AA_ADMIN_PWD' => '']], static fn() => 1024);
+        CentralConfDb::install([['id' => '12', 'AA_ADMIN_PWD' => '']]);
 
         self::collectingWarnings(static fn() => self::aa(['id' => '12', 'AA_HTTP_DOMAIN' => 'https://example.org/', 'AA_BASE_DIR' => 'aa/'])->saveAuthToken('abc'), $warnings);
 
@@ -234,7 +232,7 @@ final class CentralActionappsTest extends TestCase
         $this->assertSame([12, 7], array_keys($aas), 'keyed by central_conf.id (int keys), ordered as the id query returned');
         $this->assertContainsOnlyInstancesOf(AA_Actionapps::class, $aas);
         $this->assertSame('Alpha (https://a.example.org/aa/)', $aas[12]->getName());
-        $this->assertSame(self::TOKEN, $aas[12]->getAuthToken());
+        $this->assertSame('jwt:' . self::TOKEN, $aas[12]->getValue('AA_ADMIN_PWD'));
         $this->assertSame('7', $aas[7]->getValue('id'));
         $this->assertSame('secret', $aas[7]->getValue('AA_ADMIN_PWD'));
     }
@@ -438,7 +436,9 @@ final class CentralActionappsTest extends TestCase
 
     public function test_requestJwt_returns_the_token(): void
     {
-        $this->assertSame(self::TOKEN, self::stubbedAa(new AA_Response(self::TOKEN))->requestJwt('central', 'secret'));
+        $claims = rtrim(strtr(base64_encode((string) json_encode(['sub' => '7', 'iat' => time(), 'exp' => time() + 86400])), '+/', '-_'), '=');
+        $token  = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.' . $claims . '.' . str_repeat('x', 43);
+        $this->assertSame($token, self::stubbedAa(new AA_Response($token))->requestJwt('central', 'secret'));
     }
 
     public function test_requestJwt_failure_is_empty_with_the_error_code(): void
