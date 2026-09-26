@@ -217,48 +217,9 @@ function TabWidgetToggle(class2togle) {
 
 
 
-// APC-AA javascript 3 functions for HTMLArea -- was in htmlarea/aafunc.js
-function showHTMLAreaLink(name) {
-    var elem;
-    if (CKEDITOR.env.isCompatible) {
-        if ( elem = document.getElementById("arealinkspan"+name) ) {
-            elem.style.display = "inline";
-        }
-    }
-}
-
-function OLDopenHTMLAreaFullscreen(name) {    // open HTMLArea in popupwindow
-    if (CKEDITOR.env.isCompatible) {
-        let elem = document.body.querySelectorAll('input[name="' + name + "html" + '"]');
-        for (let i=0; i<elem.length; i++) {
-            if (elem[i].value === "h") {
-                elem[i].checked = true;
-            }
-        }
-        if ( elem = document.getElementById("htmlplainspan"+name) ) {
-            elem.style.display = "none";
-        }
-        if ( elem = document.getElementById("arealinkspan"+name) ) {
-            elem.style.display = "none";
-        }
-        CKEDITOR.replace(name);
-    }
-}
-
-function openHTMLAreaFullscreen(name) {    //
-    let el;
-    if (CKEDITOR.env.isCompatible) {
-        if (el = document.body.querySelector('input[name="' + name + 'html' + '"][value="h"]')) {
-            el.checked = true;
-        }
-        if (el = document.getElementById("htmlplainspan" + name)) {
-            el.style.display = "none";
-        }
-        if (el = document.getElementById("arealinkspan" + name)) {
-            el.style.display = "none";
-        }
-        CKEDITOR.replace(name);
-    }
+/** "Edit in Editor" of the legacy textarea - <aa-richtext> (widgets/aa-richtext.js) does the work */
+function openHTMLAreaFullscreen(name) {
+    document.getElementById(name)?.closest('aa-richtext')?.showEditor();
 }
 
 

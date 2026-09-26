@@ -34,6 +34,7 @@ use AA\Util\Langs;
 use AA\Util\JsTriggers;
 use AA\Util\Txt;
 use AA\Widget\Widget;
+use AA\Widget\RichtextMarkup;
 
 
 /**
@@ -1226,7 +1227,7 @@ class AA_Inputfield {
             $this->echovar($radio_plain, 'plain_rb');
             $this->echoo(_m("Plain text"));
             $this->echoo('</label></span>');
-            $this->echoo('<span id="arealinkspan'.$varname.'" class="btn aa-arealink" style="display:none">'); // used for hiding "Edit in Editor" link, don't remove
+            $this->echoo('<span id="arealinkspan'.$varname.'" class="btn aa-arealink" style="display:none" data-aa-editor-for="'.$varname.'">'); // shown and wired by <aa-richtext>
             $this->echovar($htmlareaedit, 'htmlarea_edit_link');
             $this->echoo('</span>');
 
@@ -1489,10 +1490,13 @@ class AA_Inputfield {
         $this->echoo(' <td>');
         $this->html_radio(!$showhtmlarea);
 
-        if (!$showhtmlarea && $showrich_href ) {
-            AA::Stringexpander()->addRequire('ckeditor');
-            AA::Stringexpander()->addRequire("if (CKEDITOR.env.isCompatible) { [].forEach.call(document.querySelectorAll('.aa-arealink'), function(e) { e.style.display=''; }); }", 'AA_Req_Run');
-//                    $widg .= getFrmJavascript( 'showHTMLAreaLink("'.$id2.'");');
+        // HTML / Plain text switch with the Edit in Editor link: <aa-richtext>; HTML without a switch: CodeMirror
+        $richtext = !$showhtmlarea && $showrich_href && $this->html_rb_show;
+        $codeview = !$showhtmlarea && !$this->html_rb_show && $this->html_flag;
+        if ($richtext) {
+            AA::Stringexpander()->addRequire('aa-richtext@1');
+        } elseif ($codeview) {
+            AA::Stringexpander()->addRequire('aa-code@1');
         }
 
         // fix for IE - where the textarea icons are too big so there is
@@ -1529,10 +1533,6 @@ class AA_Inputfield {
                 $widg .= "<label class=\"aa-langtrans aa-lang-$lang\" id=\"part$id2\" ".($first ? '' : ' style="display:none;"')."><strong class=\"aa-langtrans-label\">$lang</strong>";
                 $widg .= "<textarea id=\"$id2\" name=\"$name2\"$areaclass rows=\"$rows\" ".$GLOBALS['mlxFormControlExtra']."$colsy$maxlen class=aa-w-full style=\"height:{$rows_css}em;\" $triggers>$value</textarea>\n";
                 $widg .= "</label>";
-                if (!$showhtmlarea && $showrich_href ) {
-                    AA::Stringexpander()->addRequire("if (CKEDITOR.env.isCompatible) { [].forEach.call(document.querySelectorAll('.aa-arealink'), function(e) { e.style.display=''; }); }", 'AA_Req_Run');
-//                    $widg .= getFrmJavascript( 'showHTMLAreaLink("'.$id2.'");');
-                }
                 $first = false;
             }
             $widg .= self::getLangSwitch($parts);
@@ -1544,6 +1544,11 @@ class AA_Inputfield {
             $rows_css = $rows*1.3;  // firefox adds extra line, so we specify the height in css as well. Not so important, can be changed later.
 
             $widg    = "<textarea id=\"$name\" name=\"$name\"$areaclass". ($this->required ? " required": '') ." rows=\"$rows\" ".$GLOBALS['mlxFormControlExtra']."$colsy$maxlen class=aa-w-full style=\"height:{$rows_css}em;\" $triggers>$value</textarea>\n";
+            if ($richtext) {
+                $widg = RichtextMarkup::wrap($widg, $this->html_flag ? 'code' : 'plain', RichtextMarkup::contextAttrs((string) ($this->use_triggers_4_slice ?: AA::$module_id)) + ['switch-name' => $this->varname . 'html', 'switch-html' => 'h', 'editor' => 'editor']);
+            } elseif ($codeview) {
+                $widg = '<aa-code syntax="html">' . $widg . '</aa-code>';
+            }
         }
         $this->echovar($widg);
         $this->helps('plus');
