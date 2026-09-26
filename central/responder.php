@@ -529,7 +529,7 @@ class AA_Responder_Get_Fields extends AA_Responder
     public function run(): AA_Response
     {
         $ret = '';
-        if ($slice = AA_Slice::getModule($this->slice_id)) {
+        if ($slice = AA_Slice::getOwnModule($this->slice_id)) {
             $encoder = new ConvertCharset();
 
             // AA_Core_Fields.. holds also templates for special slice fields, like _upload_url.....
@@ -578,7 +578,7 @@ class AA_Responder_Tags extends AA_Responder
     {
         $ret    = [];
         $trimed = trim($this->input);
-        $slice  = AA_Slice::getModule($this->slice_id);
+        $slice  = AA_Slice::getOwnModule($this->slice_id);
         $field  = $slice ? $slice->getField($this->field_id) : null;
         $found  = false;
         $widget = null;
@@ -632,7 +632,7 @@ class AA_Responder_Widget_Selection extends AA_Responder
     public function run(): AA_Response
     {
         $ret   = '';
-        $slice = AA_Slice::getModule($this->slice_id);
+        $slice = AA_Slice::getOwnModule($this->slice_id);
         if ($slice && ($widget = $slice->getWidget($this->field_id)) && $this->input !== '') {
             $ret = $widget->getFilterSelection(trim($this->input), $this->limit);
         }
@@ -667,7 +667,7 @@ class AA_Responder_Formatted_By_Widget extends AA_Responder
     public function run(): AA_Response
     {
         $ret   = '';
-        $slice = AA_Slice::getModule($this->slice_id);
+        $slice = AA_Slice::getOwnModule($this->slice_id);
 
         if ($slice && ($widget = $slice->getWidget($this->field_id))) {
             mgettext_bind($slice->getLang(), 'output');

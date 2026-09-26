@@ -327,4 +327,27 @@ final class ResponderPolicyTest extends TestCase
             $this->assertMatchesRegularExpression('/class AA_Responder_' . $command . ' extends AA_Responder\s*\{(?:(?!\nclass ).)*?function isPerm\(\): bool\s*\{\s*return ResponderPolicy::centralPerm\(static::name\(\)/s', $source, $command);
         }
     }
+
+    /** getModule() of a site or other module id gives that module, and getField()/getWidget() of it is a fatal
+     *  "undefined method" - the ids come from the request, so only getOwnModule() */
+    public function test_the_responder_loads_request_modules_by_their_own_class(): void
+    {
+        $code = (string) preg_replace('~^\s*//.*$~m', '', self::responderSource());
+        $this->assertDoesNotMatchRegularExpression('/::getModule\(/', $code, 'use getOwnModule() - the ids come from the request');
+    }
+
+    /** an unknown item id gives an item with no slice, so the check has to come before any use of the slice */
+    public function test_get_widget_answers_an_unknown_item_before_it_uses_the_slice(): void
+    {
+        $this->assertSame(1, preg_match('/\nclass AA_Responder_Get_Widget extends AA_Responder\s*\{(.*?)\nclass /s', self::responderSource(), $m));
+        $guard = strpos($m[1], 'ResponderPolicy::ERR_UNKNOWN_ITEM');
+        $this->assertNotFalse($guard);
+        $this->assertMatchesRegularExpression('/\$slice\s*=\s*AA_Slice::getOwnModule\([^;]*\);\s*if \(!\$slice\)\s*\{[^\n]*\s*return new AA_Response\([^;]*ResponderPolicy::ERR_UNKNOWN_ITEM\);/', $m[1]);
+        $this->assertGreaterThan($guard, strpos($m[1], '$slice->'), 'no call on the slice before the check');
+    }
+
+    private static function responderSource(): string
+    {
+        return (string) file_get_contents(dirname(__DIR__, 3) . '/central/responder.php');
+    }
 }
