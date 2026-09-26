@@ -99,7 +99,7 @@ try {
     $grp1_flt = InputVars::stringPOST('grp1_flt'); // empty
     $cancel = InputVars::boolPOST('cancel');
     
-    $Msg = InputVars::stringGETPOST('Msg');
+    $Msg = InputVars::messageGETPOST();
 } catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
 
 if ($cancel) {
@@ -180,8 +180,8 @@ if ($add_submit || $submit_action === "update_submit") {
     $err = ProcessUser($submit_action, $selected_user, $err, $add_submit, $user_login, $user_surname, $user_firstname, $user_password1, $user_password2, $user_mail1, $user_mail2, $user_mail3, $user_super, $um_uedit_no_go_url, $posted_groups, $sel_groups, $perm_mod, $new_module, $new_module_role);
 
     if (!count($err) ) {
-        $Msg = MsgOk( $add_submit ? _m("User successfully added to permission system") : _m("User data modified"));
-        go_url(get_admin_url('', ['usr_edit'=>1, 'selected_user'=>$selected_user, 'Msg'=>$Msg])); // @todo Mssg
+        $done = $add_submit ? _m("User successfully added to permission system") : _m("User data modified");
+        go_url(get_admin_url('', ['usr_edit'=>1, 'selected_user'=>$selected_user, 'Msg'=>$done])); // @todo Mssg
     }
 }
 

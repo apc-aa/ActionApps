@@ -41,7 +41,7 @@ try {
     $from_slice_id = InputVars::idGET('from_slice_id');
     $rssfeed_id    = InputVars::intGET('rssfeed_id'); // optional - for link from rss admin apge
 
-    $Msg = InputVars::stringGETPOST('Msg');
+    $Msg = InputVars::messageGETPOST();
 } catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
 
 if (!IfSlPerm(PS_FEEDING)) {

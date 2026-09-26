@@ -70,7 +70,7 @@ try {
     $export_slices = InputVars::arrayPOST('export_slices');
     $cancel = InputVars::boolPOST('cancel');
     
-    $Msg = InputVars::stringGETPOST('Msg');
+    $Msg = InputVars::messageGETPOST();
 } catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
 
 // Make sure you have permissions to do this

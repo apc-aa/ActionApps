@@ -178,6 +178,14 @@ class InputVars
         return self::inputCheck($name, $_GET[$name] ?? $_POST[$name], 'array', $required);
     }
 
+    /** Status message passed in the URL after a redirect, as HTML ready to print ('' if none).
+     *  Senders pass plain text, but anyone can craft the link, so it is escaped here.
+     */
+    public static function messageGETPOST(): string
+    {
+        $msg = $_GET['Msg'] ?? $_POST['Msg'] ?? '';
+        return (is_string($msg) && trim($msg) !== '') ? \MsgOk(Txt::safe($msg)) : '';
+    }
 
     // --- General function ---
 

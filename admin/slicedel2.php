@@ -43,8 +43,6 @@ try {
     // array ( 'todelete' => 1, )
     $slices2show = InputVars::stringPOST('slices2show'); // alpha
     $cancel = InputVars::boolPOST('cancel');
-
-    $Msg = InputVars::stringGETPOST('Msg');
 } catch (Exception $e) {
     AA_Adminpageutil::pageParameterError($e);
 }
@@ -69,7 +67,7 @@ $err = [];      // error array (Init - just for initializing variable
 //AA::$debug = 127;
 
 if (!AA_Module::deleteModules($deletearr)) {
-    go_url(get_admin_url("slicedel.php", ['Msg' => _m("No such module.")]));
+    MsgPage(_m("No such module."), get_admin_url('slicedel.php'));
 }
 //echo AA::$dbg->duration_stat();
 //exit;

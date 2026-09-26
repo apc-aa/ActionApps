@@ -21,8 +21,6 @@ try {
     // url to check
     $url = InputVars::stringGET('url', true);
     $cancel = InputVars::boolPOST('cancel');
-
-    $Msg = InputVars::stringGETPOST('Msg');
 } catch (Exception $e) {
     AA_Adminpageutil::pageParameterError($e);
 }

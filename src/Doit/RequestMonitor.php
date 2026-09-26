@@ -71,7 +71,7 @@ class RequestMonitor
                 }
                 $detail .= "<h4>$t</h4>";
                 foreach ($vars as $name => $vals) {
-                    if (in_array($name, ['slice_id', 'module_id', 'username', 'password', 'code2fa'])) {
+                    if (in_array($name, ['slice_id', 'module_id', 'username', 'password', 'code2fa', 'Msg'])) {
                         continue;
                     }
                     $detail .= "<br><b>$name</b>";
@@ -103,7 +103,7 @@ class RequestMonitor
                 $detail  .= "<br><small><em>" . safe(implode('|', $def['vals'])) . "$sum</em></small>";
             }
             $code .= '<br>  &nbsp;   &nbsp;$cancel = InputVars::boolPOST(\'cancel\');';
-            $code .= '<br>  &nbsp;   &nbsp;$Msg = InputVars::stringGETPOST(\'Msg\');';
+            $code .= '<br>  &nbsp;   &nbsp;$Msg = InputVars::messageGETPOST();';
             $ret .= "<h3 style=\"background-color:#FCE19A\">$page **************************************</h3>try { $code<br>} catch (Exception \$e) {}<br><hr><br><div style=\"background-color:#ccc\">$detail</div>";
         }
         return $ret;

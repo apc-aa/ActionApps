@@ -272,7 +272,7 @@ function GetModuleFields($source_id): array
 function ExitIfCantDelete($del): void
 {
     if (DB_AA::select1('', 'SELECT deleted FROM `module`', [['id', $del, 'l']]) === false) {
-        go_url(get_admin_url("slicedel.php", ['Msg' => _m("No such module.")]));
+        MsgPage(_m("No such module."), get_admin_url('slicedel.php'));
     }
 }
 

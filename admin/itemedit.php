@@ -97,8 +97,6 @@ try {
     $post_preview = $_REQUEST['post_preview'] ?? true;
 
     $cancel = InputVars::boolGET('cancel');
-
-    $Msg = InputVars::stringGETPOST('Msg');
 } catch (Exception $e) {
     AA_Adminpageutil::pageParameterError($e);
 }
@@ -358,7 +356,7 @@ if ($edit) {
     // fill content array from item and content tables
     $content = GetItemContent($id);
     if (!$content) {
-        $err["DB"] = MsgErr(_m("Bad item ID id=%1", [$id]));
+        $err["DB"] = MsgErr(_m("Bad item ID id=%1", [safe((string) $id)]));
         MsgPage($err);
         exit;
     }

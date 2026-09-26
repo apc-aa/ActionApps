@@ -47,7 +47,7 @@ require_once __DIR__ . "/../../modules/polls/include/util.php";
 try {
     $cancel = InputVars::boolPOST('cancel');
 
-    $Msg = InputVars::stringGETPOST('Msg');
+    $Msg = InputVars::messageGETPOST();
 } catch (Exception $e) {
     AA_Adminpageutil::pageParameterError($e);
 }

@@ -93,7 +93,7 @@ try {
     $app_version     = InputVars::stringPOST('app_version');
     $app_approve     = InputVars::boolPOST('app_approve');
     
-    $Msg = InputVars::stringGETPOST('Msg');
+    $Msg = InputVars::messageGETPOST();
 } catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
 
 $template_id = $template['W'] ? substr($template['W'],1) : unpack_id('SiteTemplate....');

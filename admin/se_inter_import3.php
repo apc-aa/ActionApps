@@ -56,13 +56,14 @@ try {
 $l_categs = FeedUtil::GetGroupConstants(AA::$module_id);        // get all categories belong to local slice
 
 $catVS = new Cvarset();
+$msg   = '';
 foreach ($f_slices as $f_slice) {
     $channel = $aa_rss['channels'][$f_slice];
 
     $remote_slice_id = $f_slice;
     if (DB_AA::test('external_feeds', [['slice_id', AA::$module_id, 'l'], ['remote_slice_id', $remote_slice_id, 'l']])) {
         // feed from $remote_slice_id to $slice_id is already contained in the table
-        $msg = rawurlencode(MsgOk(_m("The import was already created")));
+        $msg = rawurlencode(_m("The import was already created"));
         continue;
     }
 
@@ -112,7 +113,7 @@ foreach ($f_slices as $f_slice) {
             $err["DB"] .= MsgErr("Can't add external import");
         }
     }
-    $msg = rawurlencode(MsgOk(_m("The import was successfully created")));
+    $msg = rawurlencode(_m("The import was successfully created"));
 }
 
 go_url(StateUrl(self_base() . "se_inter_import.php") . "&Msg=" . $msg);

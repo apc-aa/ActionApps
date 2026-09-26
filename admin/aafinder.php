@@ -77,7 +77,7 @@ try {
     // array ( 'Jeď!' => 1, )
     $go_finditem_edit = InputVars::boolGET('go_finditem_edit'); // convert submit to bool
 
-    $Msg = InputVars::stringGETPOST('Msg');
+    $Msg = InputVars::messageGETPOST();
 } catch (Exception $e) {
     AA_Adminpageutil::pageParameterError($e);
 }

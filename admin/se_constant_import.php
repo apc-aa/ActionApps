@@ -50,7 +50,7 @@ try {
     $update = InputVars::boolPOST('update');
     $cancel = InputVars::boolPOST('cancel');
 
-    $Msg = InputVars::stringGETPOST('Msg');
+    $Msg = InputVars::messageGETPOST();
 } catch (Exception $e) {
     AA_Adminpageutil::pageParameterError($e);
 }
@@ -64,7 +64,7 @@ if (!IfSlPerm(PS_FIELDS)) {
     exit;
 }
 
-$back_url = ($return_url ? ($fid ? con_url($return_url, "fid=" . $fid) : $return_url) : "index.php");
+$back_url = ($return_url ? ($fid ? get_url($return_url, ['fid' => $fid]) : $return_url) : "index.php");
 
 if ($update) {
     do {
@@ -106,8 +106,7 @@ if ($update) {
             break;
         }
 
-        $Msg .= MsgOk(_m("Constants update successful"));
-        go_url(get_url($back_url, ['Msg' => $Msg], true));  // @todo Mssg
+        go_url(get_url($back_url, ['Msg' => _m("Constants update successful")], true));  // @todo Mssg
     } while (0);           // in order we can use "break;" statement
 }
 

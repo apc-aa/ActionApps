@@ -55,7 +55,7 @@ const CENTRAL_AUTH_TOKEN = 'central-authenticate';
 
 try {
     
-    $Msg = InputVars::stringGETPOST('Msg');
+    $Msg = InputVars::messageGETPOST();
 } catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
 $err = '';
 

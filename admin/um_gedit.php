@@ -84,7 +84,7 @@ try {
     $usr1_flt = InputVars::stringPOST('usr1_flt'); // empty
     $cancel = InputVars::boolGETPOST('cancel');
     
-    $Msg = InputVars::stringGETPOST('Msg');
+    $Msg = InputVars::messageGETPOST();
 } catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
 
 if ($cancel) {

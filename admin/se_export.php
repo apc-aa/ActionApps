@@ -67,7 +67,7 @@ try {
     $cancel = InputVars::boolPOST('cancel');
     
     $expressions = InputVars::stringGET('expressions');
-    $Msg = InputVars::stringGETPOST('Msg');
+    $Msg = InputVars::messageGETPOST();
 } catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
 
 if (!IfSlPerm(PS_FEEDING)) {

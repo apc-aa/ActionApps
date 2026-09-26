@@ -86,7 +86,7 @@ try {
     $url = InputVars::stringPOST('url'); // empty
     $cancel = InputVars::boolPOST('cancel');
 
-    $Msg = InputVars::stringGETPOST('Msg');
+    $Msg = InputVars::messageGETPOST();
 } catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
 
 

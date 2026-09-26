@@ -45,7 +45,7 @@ try {
     $user_name = InputVars::stringSlashedPOST('user_name'); // empty
     $cancel = InputVars::boolPOST('cancel');
 
-    $Msg = InputVars::stringGETPOST('Msg');
+    $Msg = InputVars::messageGETPOST();
 } catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
 
 if (!IfSlPerm(PS_FEEDING)) {

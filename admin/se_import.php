@@ -36,7 +36,7 @@ require_once __DIR__ . "/../include/formutil.php";
 try {
     $cancel = InputVars::boolPOST('cancel');
 
-    $Msg = InputVars::stringGETPOST('Msg');
+    $Msg = InputVars::messageGETPOST();
 } catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
 
 if ($cancel) {

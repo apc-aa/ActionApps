@@ -154,7 +154,7 @@ function SendErrorPage(array $txt): never
         echo '<?xml version="1.0" encoding="iso-8859-1"?>
         <!DOCTYPE wml PUBLIC "-//WAPFORUM//DTD WML 1.3//EN" "http://www.wapforum.org/DTD/wml13.dtd" >
         <wml>
-          <card id="carta1" title="apc.org" ontimer="'.$_REQUEST["err_url"].'">
+          <card id="carta1" title="apc.org" ontimer="'.safe($_REQUEST["err_url"]).'">
             <timer value="1"/>
             </card>
         </wml>
@@ -187,7 +187,7 @@ function SendOkPage($txt, $new_ids = []): void
         echo '<?xml version="1.0" encoding="iso-8859-1"?>
         <!DOCTYPE wml PUBLIC "-//WAPFORUM//DTD WML 1.3//EN" "http://www.wapforum.org/DTD/wml13.dtd" >
         <wml>
-          <card id="carta1" title="apc.org" ontimer="'.$_REQUEST["ok_url"].'">
+          <card id="carta1" title="apc.org" ontimer="'.safe($_REQUEST["ok_url"]).'">
             <timer value="1"/>
           </card>
         </wml>

@@ -47,8 +47,6 @@ try {
     // array ( )
     $fval = InputVars::arrayPOST('fval', true);
     $cancel = InputVars::boolPOST('cancel');
-
-    $Msg = InputVars::stringGETPOST('Msg');
 } catch (Exception $e) {
     AA_Adminpageutil::pageParameterError($e);
 }
@@ -127,5 +125,5 @@ if ($map_to && is_array($map_to)) {
     }
 }
 
-go_url(StateUrl(self_base() . "se_mapping.php") . "&from_slice_id=" . rawurlencode($from_slice_id) . "&Msg=" . rawurlencode(MsgOk(_m("Fields' mapping update successful"))));  // @todo Mssg
+go_url(StateUrl(self_base() . "se_mapping.php") . "&from_slice_id=" . rawurlencode($from_slice_id) . "&Msg=" . rawurlencode(_m("Fields' mapping update successful")));  // @todo Mssg
 Session::page_close();

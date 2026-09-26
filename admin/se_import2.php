@@ -43,8 +43,6 @@ try {
     // array ( 0 => 3, )
     $to_all = InputVars::boolGET('to_all', true);
     $cancel = InputVars::boolPOST('cancel');
-
-    $Msg = InputVars::stringGETPOST('Msg');
 } catch (Exception $e) {
     AA_Adminpageutil::pageParameterError($e);
 }
@@ -143,9 +141,9 @@ do {
 
 if ($err === []) {
     if (isset($I) && is_array($I)) {   // slice imports some slices
-        go_url(StateUrl(self_base() . "se_filters.php") . "&Msg=" . rawurlencode(MsgOk(_m("Content Pooling update successful"))));
+        go_url(StateUrl(self_base() . "se_filters.php") . "&Msg=" . rawurlencode(_m("Content Pooling update successful")));
     } else {
-        go_url(StateUrl(self_base() . "se_import.php") . "&Msg=" . rawurlencode(MsgOk(_m("Content Pooling update successful"))));
+        go_url(StateUrl(self_base() . "se_import.php") . "&Msg=" . rawurlencode(_m("Content Pooling update successful")));
     }
 } else {
     MsgPage($err, StateUrl(self_base() . "se_import.php"));
