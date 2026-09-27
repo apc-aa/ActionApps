@@ -1,0 +1,91 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Tests\Unit\Util;
+
+use AA\Util\Url;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\TestCase;
+
+/**
+ * Facts about the request that is being served, which is why these two never belonged to the
+ * outgoing HTTP client. Written against AA_Http first so it pinned today's behaviour, then the
+ * class name was flipped here - the bodies moved unchanged.
+ *
+ * Why it matters: makeProtocolCompatible() decides whether a preview frame loads at all. Get
+ * isHttps() wrong behind a proxy and the browser refuses the http:// frame on an https:// page.
+ */
+final class UrlTest extends TestCase
+{
+    private array $server_backup = [];
+
+    protected function setUp(): void
+    {
+        $this->server_backup = $_SERVER;
+    }
+
+    protected function tearDown(): void
+    {
+        $_SERVER = $this->server_backup;
+    }
+
+    /** @return array<string, array{array<string, string|int>, bool}> */
+    public static function requests(): array
+    {
+        return [
+            'plain http'                 => [[], false],
+            'HTTPS=on'                   => [['HTTPS' => 'on'], true],
+            'HTTPS=off means off'        => [['HTTPS' => 'off'], false],
+            'HTTPS=OFF, any case'        => [['HTTPS' => 'OFF'], false],
+            'IIS sends HTTPS=1'          => [['HTTPS' => '1'], true],
+            'port 443 alone is enough'   => [['SERVER_PORT' => 443], true],
+            'port 443 as a string'       => [['SERVER_PORT' => '443'], true],
+            'port 80'                    => [['SERVER_PORT' => 80], false],
+            'proxy says https'           => [['HTTP_X_FORWARDED_PROTO' => 'https'], true],
+            'proxy says http'            => [['HTTP_X_FORWARDED_PROTO' => 'http'], false],
+        ];
+    }
+
+    /** @param array<string, string|int> $server */
+    #[DataProvider('requests')]
+    public function test_whetherThePageIsBeingServedOverHttps(array $server, bool $expected): void
+    {
+        self::assertSame($expected, self::isHttps($server));
+    }
+
+    public function test_anHttpUrlIsLiftedToHttpsOnlyOnAnHttpsPage(): void
+    {
+        self::withServer(['HTTPS' => 'on']);
+        self::assertSame('https://example.org/a', Url::makeProtocolCompatible('http://example.org/a'));
+
+        self::withServer([]);
+        self::assertSame('http://example.org/a', Url::makeProtocolCompatible('http://example.org/a'), 'an http page may keep its http frames');
+    }
+
+    public function test_everythingThatIsNotAnHttpUrlIsLeftAlone(): void
+    {
+        self::withServer(['HTTPS' => 'on']);
+
+        foreach (['https://example.org/a', '/relative/path', '//example.org/a', 'ftp://example.org/a', ''] as $url) {
+            self::assertSame($url, Url::makeProtocolCompatible($url));
+        }
+    }
+
+    /** @param array<string, string|int> $server */
+    private static function isHttps(array $server): bool
+    {
+        self::withServer($server);
+
+        return Url::isHttps();
+    }
+
+    /** @param array<string, string|int> $server */
+    private static function withServer(array $server): void
+    {
+        foreach (['HTTPS', 'SERVER_PORT', 'HTTP_X_FORWARDED_PROTO'] as $key) {
+            unset($_SERVER[$key]);
+        }
+        $_SERVER = array_merge($_SERVER, $server);
+    }
+}

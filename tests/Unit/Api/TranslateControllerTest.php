@@ -6,8 +6,11 @@ namespace Tests\Unit\Api;
 
 use AA\Api\Controller\TranslateController;
 use AA\Api\JsonResponse;
+use AA\Http\Client;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\HttpClient\MockHttpClient;
+use Symfony\Component\HttpClient\Response\MockResponse;
 
 /**
  * Fake controller that bypasses the real network call and the AA session, so the
@@ -43,6 +46,18 @@ class FakeTranslateController extends TranslateController
             return array_shift($this->fakeQueue);
         }
         return $this->fakeResponse ?? ['ok' => true, 'text' => mb_strtoupper($text)];
+    }
+}
+
+/** Reaches the real provider call, so what goes on the wire can be checked without a network */
+final class WiredTranslateController extends TranslateController
+{
+    /** pinned here so the parent's retry policy cannot change what these tests exercise */
+    protected const RETRIES = 0;
+
+    public function ask(string $text, string $from, string $to): array
+    {
+        return $this->callProvider($text, $from, $to);
     }
 }
 
@@ -292,5 +307,47 @@ final class TranslateControllerTest extends TestCase
         foreach ($controller->calls as $call) {
             $this->assertSame($call['text'], mb_convert_encoding($call['text'], 'UTF-8', 'UTF-8'));
         }
+    }
+
+    /**
+     * The provider is asked by POST with a form body: the query-string form caps out at about
+     * 16 kB of URL, which a page of text passes easily.
+     */
+    public function test_theTextIsPostedAsAFormWithItsCharsetDeclared(): void
+    {
+        $seen = [];
+        $controller = new WiredTranslateController(new Client(http: new MockHttpClient(static function (string $method, string $url, array $options) use (&$seen): MockResponse {
+            $seen = ['method' => $method, 'url' => $url, 'body' => $options['body'], 'headers' => $options['headers']];
+            return new MockResponse('[[["ahoj","hello",null,null,10]],null,"en"]');
+        })));
+
+        $answer = $controller->ask('hello', 'en', 'cs');
+
+        $this->assertSame('POST', $seen['method']);
+        $this->assertSame('q=hello', $seen['body']);
+        $this->assertContains('Content-Type: application/x-www-form-urlencoded; charset=UTF-8', $seen['headers']);
+        $this->assertStringContainsString('sl=en', $seen['url']);
+        $this->assertSame(['ok' => true, 'text' => 'ahoj'], $answer);
+    }
+
+    public function test_throttlingIsReportedRatherThanShownAsAnEmptyTranslation(): void
+    {
+        $controller = new WiredTranslateController(new Client(http: new MockHttpClient([new MockResponse('', ['http_code' => 429])])));
+
+        $answer = $controller->ask('hello', 'en', 'cs');
+
+        $this->assertFalse($answer['ok']);
+        $this->assertSame(502, $answer['status']);
+        $this->assertStringContainsString('HTTP 429', $answer['message']);
+    }
+
+    public function test_aServiceThatDoesNotAnswerIsReportedWithoutNamingOurProxy(): void
+    {
+        $controller = new WiredTranslateController(new Client(http: new MockHttpClient([new MockResponse('', ['error' => 'Connection refused by proxy.internal'])])));
+
+        $answer = $controller->ask('hello', 'en', 'cs');
+
+        $this->assertFalse($answer['ok']);
+        $this->assertSame('Translation service is unreachable', $answer['message'], 'the reason goes to the log, not to the editor');
     }
 }

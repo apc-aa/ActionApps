@@ -815,14 +815,12 @@ class DB_PDO
         // in config.php file. You can use following variables on that page
         // (in case you will use php page):
         // $_POST['Err'], $_POST['ErrMsg'] and $_POST['Msg'] variables
-        // --- Disabled -- AA_Http::go() for POST works in the way, that the
-        // page content is grabbed into variable and printed on current page.
-        // It works pretty well, but if you link the external css on that page,
-        // then it is not found, which is unexpected behavior. So, you can't use
-        // the variables on that page. Honza, 2007-12-05
+        // --- Disabled -- posting them to the error page grabbed its content into a
+        // variable and printed it on the current page. It worked, but an external css
+        // linked from that page was then not found, which is unexpected. So, you can't
+        // use the variables on that page. Honza, 2007-12-05
         if (defined('DB_ERROR_PAGE') && $this->get_halt() === "yes") {
             ob_end_clean();
-            // AA_Http::go(DB_ERROR_PAGE, array('Err'=>$this->Errno, 'ErrMsg'=>$this->Error, 'Msg'=>$msg), 'POST', false);
             // sending variables disabled - see the comment above
             if (headers_sent()) {
                 echo sprintf('<script>window.location = "%s";</script>', DB_ERROR_PAGE);

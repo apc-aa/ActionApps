@@ -204,6 +204,7 @@ Feeding/import back-ends; each declares `name()` + `description()` shown in the 
 | Optimize/ChangeF_t2F_1.php | Change field type to 1 | ChangeF_t2F_1 | S |
 | Optimize/ChangeF_t2F__.php | Change field type mapping | ChangeF_t2F__ | S |
 | Optimize/ChangeModuleId.php | Change module ID | ChangeModuleId | S |
+| Optimize/CheckHttp.php | State Check (extended): can this server fetch over HTTP at all, and does AA_INSTAL_URL lead to it | findings() | S |
 | Optimize/ClearPagecache.php | Clear page cache | ClearPagecache | S |
 | Optimize/CodePoints.php | Where template code lives (views, fields, spots, object_text, Code slice items): every code value containing a string, for checks that search it | CodePoints::containing() | S |
 | Optimize/Convert2innodb.php | Convert tables to InnoDB | Convert2innodb | S |
@@ -292,6 +293,7 @@ Feeding/import back-ends; each declares `name()` + `description()` shown in the 
 | Util/SingletonTrait.php | Singleton pattern trait | SingletonTrait | S |
 | Util/Txt.php | Text formatting utilities | Txt | S |
 | Util/UiPrefs.php | Per-user admin UI preferences (skin + interface language) | UiPrefs | M |
+| Util/Url.php | Facts about the request being served: is it https, lift http urls | Url::isHttps() | S |
 
 ### Api (REST front controller)
 
@@ -323,11 +325,21 @@ Feeding/import back-ends; each declares `name()` + `description()` shown in the 
 |------|---------|---------|------|
 | Module/Poll/Menu.php | Polls module admin menu | Menu | S |
 
+### Http (everything AA fetches from outside)
+
+| File | Purpose | Key API | Size |
+|------|---------|---------|------|
+| Http/Client.php | AA's one HTTP client, over symfony/http-client | Client, Client::agent() | S |
+| Http/ClientInterface.php | What a caller may ask of it; hand one in to test | request() | S |
+| Http/Response.php | One answer: status, body, headers, redirect target | ok(), json(), excerpt() | S |
+| Http/TransportException.php | No answer at all - not a status | Exception | S |
+
 ### Doit & Expand
 
 | File | Purpose | Key API | Size |
 |------|---------|---------|------|
 | Doit/RequestMonitor.php | Developer tool for catching REQUEST variables | RequestMonitor | M |
+| Expand/HttpInclude.php | What {include:url:type:headers:body:err} promises a template | HttpInclude::fetch() | S |
 | Expand/InternalExpandInterface.php | Internal expand aliases interface for admin | Interface only | S |
 
 ### Widget (UI Components)
@@ -513,7 +525,7 @@ Note: *.php3 files are legacy wrappers that include the .php version.
 | phplib.php | PHPLib session support wrapper | | L |
 | profile.class.php | User profile settings class | AA_Profile | M |
 | profile.php | User profile handler | | M |
-| request.class.php | HTTP client request class | AA_ClientAuth | L |
+| request.class.php | Central wire protocol (AA_Request/AA_Response) and AA_ClientAuth | AA_ClientAuth | L |
 | scroller.php | Pagination/scroller widget | | L |
 | se_users.php | User management admin page | | M |
 | searchbar.class.php | Search and sort interface | AA_Searchbar | XL |

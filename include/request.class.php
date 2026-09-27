@@ -1,24 +1,26 @@
 <?php
 
-use AA\Util\LastErrTrait;
+use AA\Http\Client;
+use AA\Http\ClientInterface;
+use AA\Http\TransportException;
 
 /**
- * This file could be used inside AA as well as outside of the AA.
- * You can just copy the file to your website and use it for client
- * authentization. The example of the "client authentization" you can find
- * in apc-aa/doc/script/example_auth directory.
+ * How one AA installation talks to another: Central's wire protocol, and client authentization
+ * (@see /doc/script/example_auth).
  *
  * Not standalone: it needs the AA autoloader (AA\Util\LastErrTrait, AA\Util\Txt).
  *
  * It provides:
  *
- *   AA_ClientAuth - for client authentization (@see /doc/script/example_auth)
+ *   AA_Request / AA_Response - a command travels as a serialized AA_Request in the form field
+ *                    "request", the answer comes back as a serialized AA_Response. Both ends may
+ *                    run different AA versions, so neither the class names nor the shape may drift.
  *
- *   AA_Request
- *   AA_Response
- *   AA_Http        - three classes used for communication with (and between)
- *                    AA installations. Used for "client auth" as well as for
- *                    Central.
+ *   AA_ClientAuth  - for client authentization
+ *
+ * The header used to say this file was a standalone library to copy onto your own website. It has
+ * not been one for a long time - it needs AA's autoloader - and the transport now comes from
+ * AA\Http\Client, so it needs AA proper.
  *
  * @version $Id$
  * @author Honza Malik <honza.malik@ecn.cz>
@@ -42,133 +44,6 @@ https://www.apc.org/
     along with this program (LICENSE); if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
-
-class AA_Http
-{
-    use LastErrTrait;
-
-    /** Move to another page
-     *  new version of go_url() - could use POST redirect
-     *  static function - called like AA_Http::go("https://ecn.cz", ['a'=>'my string'], 'POST')
-     *  @param string $url - destination url
-     *  @param array  $parameters = array('a' => 1, 'b' => 'OK boy')
-     *  @param string $type  - preferred type. Could be GET or POST, but if headers
-     *                 are already sent, then we use javascript for redirection
-     *  @param bool   $sess_close - try to close session, if the session is set
-     *                      we do not want to try it, when database connection
-     *                      error occurs, for example
-     */
-    public static function go(string $url, array $parameters, string $type = 'GET', bool $sess_close = true): never
-    {
-        global $sess;
-
-        if (is_object($sess) && $sess_close) {
-            Session::page_close();
-        }
-
-        // if headers are already sent, we have to use javascript redirect
-        if (headers_sent()) {
-            self::_goJs($url, $parameters);
-            exit;
-        }
-        if ($type === 'POST') {
-            $response = self::request($url, $parameters, [], 'POST');
-            if ($response !== false) {
-                // POST request OK
-                echo $response;
-                exit;
-            }
-        }
-        // get request
-        $url = get_url($url, $parameters);
-        header("HTTP/1.1 Status: 302 Moved Temporarily");
-        header("Location: $url");
-        exit;
-    }
-
-    /** Move (redirect) to page $url using javascript */
-    private static function _goJs($url, array $parameters = []): never
-    {
-        $url = get_url($url, $parameters);
-        echo '
-        <script>
-            window.location = "' . $url . '";
-        </script>
-        ';
-        exit;
-    }
-
-
-    /** Request to the url (using POST request or other methods and returns resulted data)
-     *
-     * @param                $url
-     * @param  string|array  $data    - parameters
-     * @param  array         $headers
-     * @param  string  $method  - default is POST
-     * @param  string  $err     -
-     *
-     * @return false|string $result[]
-     * inspired by http://netevil.org/blog/2006/nov/http-post-from-php-without-curl
-     */
-    public static function request($url, string|array $data = [], array $headers = [], string $method = '', string $err = ''): false|string
-    {
-        $opts = [];
-        if ($data || $headers || $method) {
-            $method = in_array($method, ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS', 'HEAD'], true) ? $method : 'POST';  // all possible HTTP methods
-            if ($data && is_array($data)) {
-                $opts['content'] = http_build_query($data);
-                $headers['Content-Length'] = strlen($opts['content']);
-            } elseif (is_string($data) && $data !== '') {
-                $opts['content'] = $data;
-                $headers['Content-Length'] = strlen($opts['content']);
-            }
-
-            if ($headers) {
-                $header = '';
-                foreach ($headers as $k => $v) {
-                    $header .= "$k: $v\r\n";
-                }
-                $opts['header'] = $header;
-            }
-            if ($opts || $method !== 'GET') {
-                $opts['method'] = $method;
-            }
-        }
-
-        $ctx = $opts ? stream_context_create(['http' => $opts]) : null;
-        $ret = file_get_contents($url, false, $ctx);
-
-        if ($ret === false) {
-            self::lastErr(2, sprintf("Problem reading data from url: %s (%s)", $url, error_get_last()["message"]));  // set error code
-            if ($err) {
-                if (str_contains($err, '_#')) {
-                    $statusCode = (isset($http_response_header) && preg_match('{HTTP\/\S*\s(\d{3})}', $http_response_header[0], $match)) ? $match[1] : '';
-                    $ret = str_replace(['_#status', '_#errmsg'], [$statusCode, error_get_last()["message"]], $err);
-                } else {
-                    $ret = $err;
-                }
-            }
-            return $ret;
-        }
-        return $ret;
-    }
-
-    public static function isHttps(): bool
-    {
-        return match (true) {
-            !empty($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) !== 'off' => true,
-            ($_SERVER['SERVER_PORT'] ?? null) == 443 => true,
-            ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https' => true,
-            default => false,
-        };
-    }
-
-    /** Converts $http url to https if current page is loaded by HTTPS for framesets to allow display... */
-    public static function makeProtocolCompatible(string $url): string
-    {
-        return (str_starts_with($url, 'http://') && self::isHttps()) ? 'https://' . substr($url, 7) : $url;
-    }
-}
 
 class AA_Response
 {
@@ -252,6 +127,11 @@ class AA_Request
     public $command;
     public $params;
 
+    /** One per process: a sync makes several calls to the same Central and curl keeps the
+     *  connection open across them. Static, not a property - ask() serialises $this onto the
+     *  wire (_requestVal()), so a client in a field would travel to the remote side. */
+    private static ?ClientInterface $shared_http = null;
+
     public function __construct($command, $params = [])
     {
         $this->command = $command;
@@ -294,26 +174,38 @@ class AA_Request
     /** Sends request to remote AA
      * @param $url - url of remote AA
      * @param $parameters - optional array of additional url parameters 'k'=>'v'
-     * @return AA_Response|mixed
+     * @param ?ClientInterface $http - tests hand in a fake
+     * @return AA_Response|mixed   error 3 when the remote AA did not answer, or answered
+     *                             anything but a serialized AA_Response
      */
-    public function ask($url, $parameters = [], $headers = [])
+    public function ask($url, $parameters = [], $headers = [], ?ClientInterface $http = null)
     {
         $ask_arr = $this->_requestArr();
         if (is_array($parameters)) {
             $ask_arr = array_merge($ask_arr, $parameters);
         }
+        // responder.php reads $_POST['request'], which PHP fills only for a form-encoded body.
+        // The old path never set this header - PHP's http wrapper added it by itself.
+        $headers['Content-Type'] = 'application/x-www-form-urlencoded';
 
-        //       if (!strpos($ask_arr['request'], 'Get_Sessionid')) {
-        //           $r = unserialize($ask_arr['request']);
-        //           huhl($ask_arr, unserialize($ask_arr['request']), $r->params['sync'][0], unserialize($r->params['sync'][0]), unserialize(str_replace("'", "\'", $r->params['sync'][0])), $url);
-        //       }
-        $result = AA_Http::request($url, $ask_arr, $headers);
-
-        if ($result === false) {
-            //echo "<br>Error - response: ". AA_Http::lastErrMsg();
-            return new AA_Response('No response recieved (' . AA_Http::lastErr() . ' - ' . AA_Http::lastErrMsg() . ')', 3);
+        try {
+            // a synchronize or a module import runs for minutes on the remote side (copyslice2.php
+            // gives itself five); 60 s of silence is what the old default_socket_timeout allowed.
+            // No redirects: the Central url has to be exact, and a redirected POST loses its body.
+            $answer = ($http ?? self::$shared_http ??= new Client(timeout: 300, idle: 60))->request('POST', $url, http_build_query($ask_arr), $headers);
+        } catch (TransportException $e) {
+            return new AA_Response('No response received from ' . $url . ' (' . $e->getMessage() . ')', 3);
         }
-        $response  = unserialize(trim($result), ['allowed_classes' => [
+        if (!$answer->ok()) {
+            // The status and, for a 3xx, where it pointed - but not a word of the remote body.
+            // Central_Optimize joins these messages with <br> and the Manager renders them as HTML
+            // in a superadmin's page, so a remote install behind a captive portal or a compromised
+            // one could put a script there. The redirect target is ours to read and is what an
+            // admin needs: it names the address AA_Request should have been configured with.
+            $where = $answer->redirect === '' ? '' : ' - it points at ' . $answer->redirect;
+            return new AA_Response('Remote AA answered HTTP ' . $answer->status . $where, 3);
+        }
+        $response  = unserialize(trim($answer->body), ['allowed_classes' => [
             AA_Response::class,
             // Central module Get_Module_Defs returns these wrapped in AA_Response, so we need to allow them for unserialization as wellS
             AA_Definition_Module::class,

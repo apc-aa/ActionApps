@@ -28,10 +28,10 @@ use Tests\Unit\Legacy\Fixtures\CentralConfDb;
 use Tests\Unit\Legacy\Fixtures\RecordingDb;
 use Tests\Unit\Legacy\Fixtures\StubbedActionapps;
 
-/** a request whose own ask() - the AA_Http client - must never run */
+/** a request whose own ask() - the HTTP client - must never run */
 final class ForbiddenAskRequest extends AA_Request
 {
-    public function ask($url, $parameters = [], $headers = [])
+    public function ask($url, $parameters = [], $headers = [], ?\AA\Http\ClientInterface $http = null)
     {
         throw new \LogicException('AA_Request::ask() used');
     }

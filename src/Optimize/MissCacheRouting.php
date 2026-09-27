@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace AA\Optimize;
 
 use AA\Cache\ImgCache;
+use AA\Http\Client;
+use AA\Http\ClientInterface;
+use AA\Http\TransportException;
 
 /** A resized image is served from IMG_UPLOAD/mC/ by the web server; a request for one which
  *  is not generated yet has to reach the dispatcher in modules/site/site.php. AA puts its own
@@ -17,6 +20,14 @@ use AA\Cache\ImgCache;
  */
 class MissCacheRouting extends AbstractOptimize
 {
+    private static ?ClientInterface $http = null;
+
+    /** tests hand in a fake; null goes back to the real client */
+    public static function useHttp(?ClientInterface $http): void
+    {
+        self::$http = $http;
+    }
+
     /** what may go into the RewriteRule target, "/" for an AA at the domain root - Apache parses
      *  the file, and a space or a newline there answers 500 for every image in the cache */
     private const INSTALL_PATH = '/(?:(?!\.\.?/)[A-Za-z0-9._~-]+/)*';
@@ -74,9 +85,6 @@ class MissCacheRouting extends AbstractOptimize
     {
         if (!ImgCache::enabled()) {
             return [new Finding(Finding::INFO, _m('The image cache is switched off or not configured - {img} uses img.php'))];
-        }
-        if (!function_exists('curl_init')) {
-            return [new Finding(Finding::INFO, _m('The image cache routing cannot be checked without the PHP curl extension'))];
         }
         $has_rule = self::hasRule();
         $linked   = is_link(ImgCache::root());
@@ -208,20 +216,18 @@ class MissCacheRouting extends AbstractOptimize
     }
 
     /** @return array{0:int,1:string,2:string} HTTP status (0 = no answer at all), content type and the redirect target of a 3xx */
-    private static function probe(string $url, bool $follow): array
+    public static function probe(string $url, bool $follow): array
     {
-        $ch = curl_init($url);
-        curl_setopt_array($ch, [
-            CURLOPT_FOLLOWLOCATION  => $follow,   // a browser follows http -> https or www -> bare; the generator does not
-            CURLOPT_MAXREDIRS       => 3,
-            CURLOPT_PROTOCOLS       => CURLPROTO_HTTP | CURLPROTO_HTTPS,
-            CURLOPT_REDIR_PROTOCOLS => CURLPROTO_HTTP | CURLPROTO_HTTPS,
-            CURLOPT_CONNECTTIMEOUT  => 5,
-            CURLOPT_TIMEOUT         => 10,
-            CURLOPT_USERAGENT       => 'APC-AA State Check',
-            CURLOPT_WRITEFUNCTION   => static fn($handle, string $data): int => 0,   // the headers tell all - stop at the first byte of a body
-        ]);
-        curl_exec($ch);
-        return [(int) curl_getinfo($ch, CURLINFO_RESPONSE_CODE), (string) curl_getinfo($ch, CURLINFO_CONTENT_TYPE), (string) curl_getinfo($ch, CURLINFO_REDIRECT_URL)];
+        // $follow: a browser follows http -> https or www -> bare, so the miss probe does too;
+        // the generator probe does not, because whether img.php redirects is the answer itself.
+        $http = self::$http ?? new Client(timeout: 10, idle: 5, agent: Client::agent('State Check'), redirects: $follow ? 3 : 0);
+
+        try {
+            $answer = $http->request('GET', $url);
+        } catch (TransportException) {
+            return [0, '', ''];
+        }
+
+        return [$answer->status, $answer->headers['content-type'] ?? '', $answer->redirect];
     }
 }

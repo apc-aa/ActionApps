@@ -5,9 +5,12 @@ declare(strict_types=1);
 namespace Tests\Unit\Optimize;
 
 use AA\Cache\ImgCache;
+use AA\Http\Response;
+use AA\Http\TransportException;
 use AA\Optimize\MissCacheRouting;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use Tests\Unit\Fixtures\FakeHttp;
 
 /** The HTTP probes and the config constants need a live install; the rule, its writing and
  *  the reading of the probe answers do not. */
@@ -22,9 +25,15 @@ final class MissCacheRoutingTest extends TestCase
         mkdir($this->tmp, 0o775);
     }
 
+    public static function setUpBeforeClass(): void
+    {
+        require_once __DIR__ . '/../fixtures/FakeHttp.php';
+    }
+
     protected function tearDown(): void
     {
         ImgCache::useConfig(null);
+        MissCacheRouting::useHttp(null);
         @chmod($this->tmp, 0o775);
         array_map('unlink', glob($this->tmp . '/mC/.htaccess*') ?: []);
         @rmdir($this->tmp . '/mC');
@@ -158,5 +167,35 @@ final class MissCacheRoutingTest extends TestCase
     public function test_img_php_runs(int $status, string $location, bool $expected): void
     {
         $this->assertSame($expected, MissCacheRouting::imgPhpRuns($status, $location, 'https://example.org/aa/images/blank.gif'));
+    }
+
+    /** What the two probes read out of an answer - the verdicts above are fed from this triple */
+    public function test_probe_reports_the_status_and_type_the_server_answered_with(): void
+    {
+        MissCacheRouting::useHttp(new FakeHttp([new Response(200, '', ['content-type' => 'image/gif'])]));
+
+        $this->assertSame([200, 'image/gif', ''], MissCacheRouting::probe('https://example.org/aa/img_upload/mC/x.jpg', true));
+    }
+
+    public function test_probe_reports_where_a_redirect_points(): void
+    {
+        MissCacheRouting::useHttp(new FakeHttp([new Response(302, '', [], 'https://example.org/aa/images/blank.gif')]));
+
+        [$status, , $location] = MissCacheRouting::probe('https://example.org/aa/img.php', false);
+        $this->assertSame(302, $status);
+        $this->assertSame('https://example.org/aa/images/blank.gif', $location, 'imgPhpRuns() compares this with the blank image');
+    }
+
+    /** A server that does not answer is a zero, not an exception - the finding says "no answer" */
+    public function test_probe_turns_no_answer_into_a_zero(): void
+    {
+        MissCacheRouting::useHttp(new class implements \AA\Http\ClientInterface {
+            public function request(string $method, string $url, ?string $body = null, array $headers = []): Response
+            {
+                throw new TransportException('No answer from ' . $url . ' - Connection refused');
+            }
+        });
+
+        $this->assertSame([0, '', ''], MissCacheRouting::probe('https://example.org/aa/img.php', false));
     }
 }
