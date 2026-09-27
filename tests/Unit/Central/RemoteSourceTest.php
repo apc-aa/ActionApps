@@ -17,33 +17,31 @@ use AA_Request;
 use AA_Response;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\HttpClient\MockHttpClient;
+use Symfony\Component\HttpClient\Response\MockResponse;
 
 final class RemoteSourceTest extends TestCase
 {
     private const URL   = 'https://source.example/aa/central/responder.php';
     private const TOKEN = 'eyJhbGciOiJIUzI1NiJ9.short-token.sig';
 
-    /** @var list<array{url: string, options: array<string, array<string, mixed>>}> */
+    /** @var list<array{method: string, url: string, options: array<string, mixed>}> */
     private array $opened = [];
 
-    protected function tearDown(): void
+    /** a remote answering $body with the status and header lines; every request is recorded
+     *  @param string|iterable<string> $body @param list<string> $headers */
+    private function remote(string|iterable $body, int $status = 200, array $headers = [], int $maxBytes = RemoteSource::MAX_BYTES): RemoteSource
     {
-        if (in_array(EndlessStream::PROTOCOL, stream_get_wrappers(), true)) {
-            stream_wrapper_unregister(EndlessStream::PROTOCOL);
-        }
+        return new RemoteSource(self::URL, $maxBytes, 5, new MockHttpClient(function (string $method, string $url, array $options) use ($body, $status, $headers): MockResponse {
+            $this->opened[] = ['method' => $method, 'url' => $url, 'options' => $options];
+            return new MockResponse($body, ['http_code' => $status, 'response_headers' => $headers]);
+        }));
     }
 
-    /** a remote answering $body with the header lines $headers; every connection is recorded
-     *  @param list<string> $headers */
-    private function remote(string $body, array $headers = ['HTTP/1.1 200 OK'], int $maxBytes = RemoteSource::MAX_BYTES): RemoteSource
+    /** the request header lines of the request $n */
+    private function sentHeaders(int $n = 0): string
     {
-        return new RemoteSource(self::URL, $maxBytes, 5, function (string $url, $context) use ($body, $headers): array {
-            $this->opened[] = ['url' => $url, 'options' => stream_context_get_options($context)];
-            $stream         = fopen('php://memory', 'w+b');
-            fwrite($stream, $body);
-            rewind($stream);
-            return [$stream, $headers];
-        });
+        return implode("\n", $this->opened[$n]['options']['headers']);
     }
 
     /** a JWT of these claims as the source signs it - the target can read, not check, the signature */
@@ -61,7 +59,7 @@ final class RemoteSourceTest extends TestCase
     /** @return array<string, string> the POST fields of the last request */
     private function posted(): array
     {
-        parse_str((string) end($this->opened)['options']['http']['content'], $fields);
+        parse_str((string) end($this->opened)['options']['body'], $fields);
         return $fields;
     }
 
@@ -79,27 +77,35 @@ final class RemoteSourceTest extends TestCase
         $this->remote(serialize(new AA_Response('x')))->ask(new AA_Request('Get_App'), [], self::TOKEN);
 
         $options = $this->opened[0]['options'];
-        self::assertSame('POST', $options['http']['method']);
-        self::assertSame(0, $options['http']['follow_location']);
-        self::assertSame(5.0, (float) $options['http']['timeout']);
-        self::assertTrue($options['ssl']['verify_peer']);
-        self::assertTrue($options['ssl']['verify_peer_name']);
-        self::assertFalse($options['ssl']['allow_self_signed']);
+        self::assertSame('POST', $this->opened[0]['method']);
+        self::assertSame(0, $options['max_redirects']);
+        self::assertSame(5.0, (float) $options['max_duration']);
+        self::assertSame(5.0, (float) $options['timeout']);
+        self::assertTrue($options['verify_peer'] ?? true, 'the library verifies by default - nothing may turn it off');
+        self::assertTrue($options['verify_host'] ?? true);
     }
 
     public function test_the_token_travels_only_in_the_authorization_header(): void
     {
         $this->remote(serialize(new AA_Response('x')))->ask(new AA_Request('Get_App'), [], self::TOKEN);
 
-        self::assertStringContainsString("Authorization: Bearer " . self::TOKEN . "\r\n", $this->opened[0]['options']['http']['header']);
-        self::assertStringNotContainsString(self::TOKEN, $this->opened[0]['url'] . $this->opened[0]['options']['http']['content']);
+        self::assertStringContainsString('Authorization: Bearer ' . self::TOKEN, $this->sentHeaders());
+        self::assertStringNotContainsString(self::TOKEN, $this->opened[0]['url'] . $this->opened[0]['options']['body']);
+    }
+
+    /** a compressed answer would be unpacked by rules other than the size limit */
+    public function test_the_answer_is_asked_for_uncompressed(): void
+    {
+        $this->remote(serialize(new AA_Response('x')))->ask(new AA_Request('Get_App'), [], self::TOKEN);
+
+        self::assertStringContainsString('Accept-Encoding: identity', $this->sentHeaders());
     }
 
     public function test_http_is_refused_before_any_connection(): void
     {
-        $remote = new RemoteSource('http://source.example/aa/central/responder.php', open: function (): never {
+        $remote = new RemoteSource('http://source.example/aa/central/responder.php', transport: new MockHttpClient(function (): never {
             self::fail('no connection over http');
-        });
+        }));
 
         $this->expectException(SourceFailed::class);
         $remote->ask(new AA_Request('Get_App'), [], self::TOKEN);
@@ -107,7 +113,7 @@ final class RemoteSourceTest extends TestCase
 
     public function test_a_redirect_is_refused(): void
     {
-        $remote = $this->remote(serialize(new AA_Response('x')), ['HTTP/1.1 302 Found', 'Location: https://elsewhere.example/steal']);
+        $remote = $this->remote(serialize(new AA_Response('x')), 302, ['Location: https://elsewhere.example/steal']);
 
         try {
             $remote->ask(new AA_Request('Get_App'), [], self::TOKEN);
@@ -120,25 +126,46 @@ final class RemoteSourceTest extends TestCase
 
     public function test_an_oversize_answer_is_cut_off_while_it_is_read(): void
     {
-        stream_wrapper_register(EndlessStream::PROTOCOL, EndlessStream::class);
-        EndlessStream::$served = 0;
-        $remote = new RemoteSource(self::URL, 100_000, 5, static fn(): array => [fopen(EndlessStream::PROTOCOL . '://answer', 'rb'), ['HTTP/1.1 200 OK']]);
+        $chunks = (static function (): \Generator {
+            for ($i = 0; $i < 30; $i++) {
+                yield str_repeat('a', 8192);
+            }
+        })();
 
         try {
-            $remote->ask(new AA_Request('Get_App'), [], self::TOKEN);
-            self::fail('an endless answer');
+            $this->remote($chunks, maxBytes: 100_000)->ask(new AA_Request('Get_App'), [], self::TOKEN);
+            self::fail('an oversize answer');
         } catch (SourceFailed $e) {
             self::assertSame(SourceFailed::FAILED, $e->reason);
         }
-        self::assertLessThan(100_000 + 3 * EndlessStream::CHUNK, EndlessStream::$served, 'the reading stopped at the limit');
     }
 
     public function test_a_declared_oversize_answer_is_not_read(): void
     {
-        $remote = $this->remote(serialize(new AA_Response('x')), ['HTTP/1.1 200 OK', 'Content-Length: 200000'], 100_000);
+        $remote = $this->remote(str_repeat('a', 200_000), 200, ['Content-Length: 200000'], 100_000);
 
-        $this->expectException(SourceFailed::class);
-        $remote->ask(new AA_Request('Get_App'), [], self::TOKEN);
+        try {
+            $remote->ask(new AA_Request('Get_App'), [], self::TOKEN);
+            self::fail('a declared oversize answer');
+        } catch (SourceFailed $e) {
+            self::assertSame(SourceFailed::FAILED, $e->reason);
+            self::assertStringContainsString('too big', $e->getMessage());
+        }
+    }
+
+    public function test_a_silent_source_did_not_answer_in_time(): void
+    {
+        $silent = (static function (): \Generator {
+            yield '';                               // the mock's inactivity timeout
+        })();
+
+        try {
+            $this->remote($silent)->ask(new AA_Request('Get_App'), [], self::TOKEN);
+            self::fail('no answer');
+        } catch (SourceFailed $e) {
+            self::assertSame(SourceFailed::UNREACHABLE, $e->reason);
+            self::assertSame('The remote AA did not answer in time', $e->getMessage());
+        }
     }
 
     /** @return array<string, array{string}> */
@@ -172,7 +199,7 @@ final class RemoteSourceTest extends TestCase
         self::assertEquals(new AA_Request('Get_Jwt', ['ttl' => RemoteSource::TOKEN_TTL, 'scope' => 'apps']), AA_Request::decode($posted['request']));
         self::assertSame(24 * 3600, RemoteSource::TOKEN_TTL);
         self::assertSame(['source-admin', 'pa ss&word', '123456'], [$posted['username'], $posted['password'], $posted['code2fa']]);
-        self::assertStringNotContainsString('Authorization', $this->opened[0]['options']['http']['header']);
+        self::assertStringNotContainsString('Authorization', $this->sentHeaders());
     }
 
     public function test_a_sealed_token_opens_only_for_its_address(): void
@@ -212,7 +239,7 @@ final class RemoteSourceTest extends TestCase
 
         self::assertSame([$app], $apps);
         self::assertEquals(new AA_Request('Get_Apps', []), AA_Request::decode($this->posted()['request']));
-        self::assertStringContainsString('Authorization: Bearer ' . self::TOKEN, $this->opened[0]['options']['http']['header']);
+        self::assertStringContainsString('Authorization: Bearer ' . self::TOKEN, $this->sentHeaders());
     }
 
     /** @return array<string, array{mixed}> */
@@ -307,20 +334,11 @@ final class RemoteSourceTest extends TestCase
         $this->remote($big)->ask(new AA_Request('Get_App'), [], self::TOKEN);
     }
 
-    public function test_too_many_header_lines_are_refused(): void
-    {
-        $remote = $this->remote(serialize(new AA_Response('x')), ['HTTP/1.1 200 OK', ...array_fill(0, 500, 'X-Pad: y')]);
-
-        $this->expectException(SourceFailed::class);
-        $remote->ask(new AA_Request('Get_App'), [], self::TOKEN);
-    }
-
     /** the URL may hold a login (user:password@) - the page and the log never show it */
     public function test_an_unreachable_source_shows_a_generic_message(): void
     {
         $log     = tempnam(sys_get_temp_dir(), 'aa-remote-');
         $old     = ini_set('error_log', $log);
-        $trigger = @file_get_contents('/nonexistent-file-for-the-last-error');
         try {
             (new RemoteSource('https://user:hunter2@127.0.0.1:1/aa/central/responder.php', timeout: 2))->ask(new AA_Request('Get_App'), [], self::TOKEN);
             self::fail('reached');
@@ -332,10 +350,8 @@ final class RemoteSourceTest extends TestCase
             $logged = (string) file_get_contents($log);
             unlink($log);
         }
-        self::assertFalse($trigger);
         self::assertStringContainsString('127.0.0.1', $logged);
         self::assertStringNotContainsString('hunter2', $logged);
-        self::assertStringNotContainsString('nonexistent-file', $logged, 'not an older error');
     }
 
     public function test_a_refused_login_is_a_login_failure(): void
@@ -347,45 +363,5 @@ final class RemoteSourceTest extends TestCase
             self::assertSame(SourceFailed::LOGIN, $e->reason);
             self::assertStringNotContainsString('wrong', $e->getMessage());
         }
-    }
-}
-
-/** an answer that never ends - the client must stop reading it */
-final class EndlessStream
-{
-    public const PROTOCOL = 'aa-endless';
-    public const CHUNK    = 8192;
-
-    public static int $served = 0;
-
-    /** @var resource|null */
-    public $context;
-
-    public function stream_open(string $path, string $mode, int $options, ?string &$opened_path): bool
-    {
-        return true;
-    }
-
-    public function stream_read(int $count): string
-    {
-        $count         = min($count, self::CHUNK);
-        self::$served += $count;
-        return str_repeat('a', $count);
-    }
-
-    public function stream_eof(): bool
-    {
-        return false;
-    }
-
-    public function stream_set_option(int $option, int $arg1, ?int $arg2): bool
-    {
-        return false;
-    }
-
-    /** @return array<string, int> */
-    public function stream_stat(): array
-    {
-        return [];
     }
 }

@@ -154,4 +154,42 @@ final class RequestAskTest extends TestCase
         self::assertSame(3, $answer->getError());
         self::assertSame('Bad response', $answer->getResponse());
     }
+
+    public function test_anOversizeAnswerIsErrorThree(): void
+    {
+        $big = new class implements \AA\Http\ClientInterface {
+            public function request(string $method, string $url, ?string $body = null, array $headers = []): Response
+            {
+                throw new \AA\Http\ResponseTooLargeException('over');
+            }
+        };
+        $answer = (new AA_Request('Get_Sessionid'))->ask('https://remote.example/central/index.php', [], [], $big);
+
+        self::assertSame(3, $answer->getError());
+        self::assertStringContainsString('too big', (string) $answer->getResponse());
+    }
+
+    /** the real client, not a fake: an answer of the remote AA is at most 16 MB */
+    public function test_theAnswerIsLimited(): void
+    {
+        $shared = (new \ReflectionClass(AA_Request::class))->getProperty('shared_http');
+        $shared->setValue(null, null);
+        $answer = (new AA_Request('Get_Sessionid'))->ask('https://127.0.0.1:1/central/index.php');   // nobody listens there
+        $client = $shared->getValue();
+
+        self::assertSame(3, $answer->getError());
+        self::assertInstanceOf(\AA\Http\Client::class, $client);
+        self::assertSame(16 * 1024 * 1024, (new \ReflectionProperty($client, 'maxBytes'))->getValue($client));
+    }
+
+    public function test_aDeeplyNestedAnswerIsReportedAsErrorThree(): void
+    {
+        $deep = 'x';
+        for ($i = 0; $i < 70; $i++) {
+            $deep = [$deep];
+        }
+        $answer = @self::ask(self::answering(200, serialize(new AA_Response($deep))));
+
+        self::assertSame(3, $answer->getError());
+    }
 }

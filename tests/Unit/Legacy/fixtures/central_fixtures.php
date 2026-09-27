@@ -31,12 +31,12 @@ trait CentralTestHelpers
  *  answered with the next body (the last one repeats). */
 final class StubbedActionapps extends \AA\Central\Actionapps
 {
-    /** @var list<array{url: string, options: array<string, array<string, mixed>>}> */
+    /** @var list<array{method: string, url: string, options: array<string, mixed>}> */
     public array $opened = [];
 
-    /** @var list<string> the response header lines of every answer */
+    /** @var list<string> the status line and the header lines of every answer */
     public array $headers = ['HTTP/1.1 200 OK'];
-    /** thrown instead of connecting - as RemoteSource's own connection fails */
+    /** thrown instead of answering - as RemoteSource's own connection fails */
     public ?\AA\Central\SourceFailed $refuse = null;
 
     /** @param list<string> $bodies raw answers, serialized AA_Response as a rule */
@@ -53,29 +53,33 @@ final class StubbedActionapps extends \AA\Central\Actionapps
 
     protected function remote(): \AA\Central\RemoteSource
     {
-        return new \AA\Central\RemoteSource($this->getComunicatorUrl(), open: \Closure::fromCallable([$this, 'open']));
+        return new \AA\Central\RemoteSource($this->getComunicatorUrl(), transport: new \Symfony\Component\HttpClient\MockHttpClient(\Closure::fromCallable([$this, 'answer'])));
     }
 
     /** the POST fields of the last request
      *  @return array<string, string> */
     public function posted(): array
     {
-        parse_str((string) (end($this->opened)['options']['http']['content'] ?? ''), $fields);
+        parse_str((string) (end($this->opened)['options']['body'] ?? ''), $fields);
         return $fields;
     }
 
-    /** @return array{resource, list<string>} */
-    private function open(string $url, $context): array
+    /** the request header lines of the request $n */
+    public function sentHeaders(int $n = 0): string
     {
-        $this->opened[] = ['url' => $url, 'options' => stream_context_get_options($context)];
+        return implode("\n", $this->opened[$n]['options']['headers'] ?? []);
+    }
+
+    /** @param array<string, mixed> $options */
+    private function answer(string $method, string $url, array $options): \Symfony\Component\HttpClient\Response\MockResponse
+    {
+        $this->opened[] = ['method' => $method, 'url' => $url, 'options' => $options];
         if ($this->refuse) {
             throw $this->refuse;
         }
         $body   = (count($this->bodies) > 1) ? array_shift($this->bodies) : $this->bodies[0];
-        $stream = fopen('php://memory', 'w+b');
-        fwrite($stream, $body);
-        rewind($stream);
-        return [$stream, $this->headers];
+        $status = preg_match('~^HTTP/\S+\s+(\d{3})~', $this->headers[0] ?? '', $m) ? (int) $m[1] : 200;
+        return new \Symfony\Component\HttpClient\Response\MockResponse($body, ['http_code' => $status, 'response_headers' => array_slice($this->headers, 1)]);
     }
 }
 

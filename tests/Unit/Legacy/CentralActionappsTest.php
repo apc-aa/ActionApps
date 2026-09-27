@@ -383,8 +383,8 @@ final class CentralActionappsTest extends TestCase
 
         $this->assertEquals(new AA_Response(['ok']), $aa->getResponse(new AA_Request('Get_Aaname')));
         $this->assertSame('https://r.example.org/aa/central/responder.php', $aa->opened[0]['url']);
-        $this->assertStringContainsString('Authorization: Bearer ' . self::TOKEN, $aa->opened[0]['options']['http']['header']);
-        $this->assertStringNotContainsString('Cookie', $aa->opened[0]['options']['http']['header']);
+        $this->assertStringContainsString('Authorization: Bearer ' . self::TOKEN, $aa->sentHeaders());
+        $this->assertStringNotContainsString('Cookie', $aa->sentHeaders());
         $this->assertSame(['request'], array_keys($aa->posted()));
         $this->assertNull($aa->getLastError());
     }

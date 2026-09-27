@@ -30,6 +30,8 @@ use AA\Central\TransferProgress;
 use AA_Request;
 use AA_Response;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\HttpClient\MockHttpClient;
+use Symfony\Component\HttpClient\Response\MockResponse;
 use Tests\Unit\Central\Package\Fixtures\FakeSource;
 use Tests\Unit\Central\Package\Fixtures\ImportFixture;
 use Tests\Unit\Central\Package\Fixtures\TableDb;
@@ -80,12 +82,11 @@ final class RemoteTransferTest extends TestCase
     /** the source AA: its responder.php answering Get_App for a superadmin with a Bearer token */
     private function remote(): RemoteSource
     {
-        return new RemoteSource('https://source.example/aa/central/responder.php', open: function (string $url, $context): array {
-            $options = stream_context_get_options($context)['http'];
-            parse_str((string) $options['content'], $post);
+        return new RemoteSource('https://source.example/aa/central/responder.php', transport: new MockHttpClient(function (string $method, string $url, array $options): MockResponse {
+            parse_str((string) $options['body'], $post);
             $request       = AA_Request::decode($post['request']);
             $this->asked[] = $request->getCommand();
-            $bearer        = preg_match('/^Authorization: Bearer (\S+)\r$/m', (string) $options['header'], $m) ? $m[1] : '';
+            $bearer        = preg_match('/^Authorization: Bearer (\S+)$/m', implode("\n", $options['headers']), $m) ? $m[1] : '';
             $export        = new AppExport($this->source, ['url' => 'https://source.example/aa/', 'aa-version' => '2026.9'], static fn(): bool => true, true);
             $response      = match (true) {
                 ($this->answer !== null) && (($own = ($this->answer)($request)) !== null) => $own,
@@ -97,11 +98,8 @@ final class RemoteTransferTest extends TestCase
                 $request->getCommand() !== 'Get_App' => new AA_Response('Bad request', ResponderPolicy::ERR_UNKNOWN_COMMAND),
                 default                              => (new AppRequest($export, 'source-admin', static function (): void {}, $this->sourceAa))->answer($request->getParameters()),
             };
-            $stream = fopen('php://memory', 'w+b');
-            fwrite($stream, serialize($response));
-            rewind($stream);
-            return [$stream, ['HTTP/1.1 200 OK']];
-        });
+            return new MockResponse(serialize($response));
+        }));
     }
 
     private static function jwtOf(array $claims): string
@@ -226,12 +224,7 @@ final class RemoteTransferTest extends TestCase
 
     public function test_a_module_list_of_a_foreign_form_is_refused(): void
     {
-        $remote = new RemoteSource('https://source.example/aa/central/responder.php', open: static function (): array {
-            $stream = fopen('php://memory', 'w+b');
-            fwrite($stream, serialize(new AA_Response(['not-an-id' => ['nested']])));
-            rewind($stream);
-            return [$stream, ['HTTP/1.1 200 OK']];
-        });
+        $remote = new RemoteSource('https://source.example/aa/central/responder.php', transport: new MockHttpClient(new MockResponse(serialize(new AA_Response(['not-an-id' => ['nested']])))));
 
         $this->expectException(SourceFailed::class);
         (new RemoteAppSource($remote, self::TOKEN))->modules(['S']);

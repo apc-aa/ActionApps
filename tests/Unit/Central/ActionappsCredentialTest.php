@@ -324,10 +324,10 @@ final class ActionappsCredentialTest extends TestCase
         self::assertCount(1, $aa->opened);
         [$url, $options] = [$aa->opened[0]['url'], $aa->opened[0]['options']];
         self::assertSame(self::URL, $url);
-        self::assertSame(0, $options['http']['follow_location']);
-        self::assertTrue($options['ssl']['verify_peer']);
-        self::assertTrue($options['ssl']['verify_peer_name']);
-        self::assertStringContainsString('Authorization: Bearer ' . self::TOKEN . "\r\n", $options['http']['header']);
+        self::assertSame(0, $options['max_redirects']);
+        self::assertTrue($options['verify_peer'] ?? true);
+        self::assertTrue($options['verify_host'] ?? true);
+        self::assertStringContainsString('Authorization: Bearer ' . self::TOKEN, $aa->sentHeaders());
         $posted = $aa->posted();
         self::assertSame($command, unserialize($posted['request'], ['allowed_classes' => [AA_Request::class, ForbiddenAskRequest::class]])->getCommand());
         self::assertSame(['request'], array_keys($posted), 'no login in the request');
@@ -415,9 +415,9 @@ final class ActionappsCredentialTest extends TestCase
 
         self::assertSame($token, $aa->requestJwt('central', 'pw'));
         $options = $aa->opened[0]['options'];
-        self::assertSame(0, $options['http']['follow_location']);
-        self::assertTrue($options['ssl']['verify_peer']);
-        self::assertStringNotContainsString('Authorization', $options['http']['header']);
+        self::assertSame(0, $options['max_redirects']);
+        self::assertTrue($options['verify_peer'] ?? true);
+        self::assertStringNotContainsString('Authorization', $aa->sentHeaders());
         $posted = $aa->posted();
         self::assertSame(['central', 'pw'], [$posted['username'], $posted['password']]);
         self::assertSame('Get_Jwt', AA_Request::decode($posted['request'])->getCommand());

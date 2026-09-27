@@ -2,6 +2,7 @@
 
 use AA\Http\Client;
 use AA\Http\ClientInterface;
+use AA\Http\ResponseTooLargeException;
 use AA\Http\TransportException;
 
 /**
@@ -192,7 +193,10 @@ class AA_Request
             // a synchronize or a module import runs for minutes on the remote side (copyslice2.php
             // gives itself five); 60 s of silence is what the old default_socket_timeout allowed.
             // No redirects: the Central url has to be exact, and a redirected POST loses its body.
-            $answer = ($http ?? self::$shared_http ??= new Client(timeout: 300, idle: 60))->request('POST', $url, http_build_query($ask_arr), $headers);
+            // the answer at most as big as a Central package (AA\Central\RemoteSource::MAX_BYTES)
+            $answer = ($http ?? self::$shared_http ??= new Client(timeout: 300, idle: 60, maxBytes: 16 * 1024 * 1024))->request('POST', $url, http_build_query($ask_arr), $headers);
+        } catch (ResponseTooLargeException) {
+            return new AA_Response('The answer of ' . $url . ' is too big', 3);
         } catch (TransportException $e) {
             return new AA_Response('No response received from ' . $url . ' (' . $e->getMessage() . ')', 3);
         }
@@ -212,7 +216,7 @@ class AA_Request
             AA_Definition_Module_Slice::class,
             AA_Definition_Module_Site::class,
             AA_Definition_Module_Alerts::class,
-        ]]);
+        ], 'max_depth' => 64]);
         if ($response === false) {
             return new AA_Response("Bad response", 3);
         }
