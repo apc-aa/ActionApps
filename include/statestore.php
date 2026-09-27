@@ -1250,8 +1250,8 @@ class AA_Components
             $classfilter = substr($mask, $pos + 1);
             $classdir    = substr($mask, 3, $pos - 3);
 
-            $dirname = AA_BASE_PATH . 'src/' . $classdir;
-            $files = AA_Directory_Wrapper::wrapper($dirname)->getFileNames();
+            $dirname = AA_BASE_PATH . 'src/' . str_replace('\\', '/', $classdir);   // nested namespace = nested directory
+            $files = AA_Directory_Wrapper::wrapper($dirname)->getFileNames() ?: [];  // false = no such directory
             foreach ($files as $file) {
                 $name = str_replace(['.php'], [''], $file);
 

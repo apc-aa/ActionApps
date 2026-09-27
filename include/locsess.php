@@ -120,7 +120,7 @@ spl_autoload_register(static function ($class_name) {
     $matches = [];
     preg_match('/^aa_([a-z0-9]+)/', strtolower($class_name), $matches);
 
-    // the core name of the class (like "widget" for "AA_Widget_Fld", ...)
+    // the core name of the class (like "widget" for "AA_Widget_Fld", ...); '' for anything else
     $core = $matches[1] ?? '';
 
     switch ($core) {

@@ -92,7 +92,12 @@ $varset      = new CVarset();
 $superadmin  = IsSuperadmin();
 $module_id   = AA::$module_id;
 
-if ($template['P']) {        // add module
+// Adding or editing is decided ONCE - for the permission check, for the processing gate and for the
+// write target. They used to be derived separately: "template" + "update" passed the "add" check and
+// then overwrote an existing module, and a bare "insert" created a module with edit rights only.
+$is_add = !empty($template['P']);
+
+if ($is_add) {
     if (!CheckPerms(AuthGetUid(), "aa", AA_ID, PS_ADD)) {
         MsgPage(_m("You do not have permissions to add polls"));
         exit;
@@ -103,7 +108,7 @@ if ($template['P']) {        // add module
     exit;
 }
 
-if ($insert || $update) {
+if ($is_add ? $insert : $update) {
     do {
         if (!$owner) {  // insert new owner
             if (!($owner = CreateNewOwner($new_owner, $new_owner_email, $err, $varset))) {
@@ -128,7 +133,7 @@ if ($insert || $update) {
         }
 
         // write all fields needed for module table
-        $module_id = WriteModuleFields(($update && $module_id) ? $module_id : null, $superadmin, 'P', $name, $slice_url, $priority, $lang_file, $owner, $deleted);
+        $module_id = WriteModuleFields($is_add ? null : ($module_id ?: null), $superadmin, 'P', $name, $slice_url, $priority, $lang_file, $owner, $deleted);
 
         if (!$module_id) {      // error?
             break;
@@ -137,7 +142,7 @@ if ($insert || $update) {
         $slice_id = $module_id;
 
         // now set all module specific settings
-        if ($update) {
+        if (!$is_add) {
             $record = ["module_id"        => $module_id,
                 'status_code'      => 0,   // status_code=0 flags this poll as default for this poll module
                 "logging"          => $logging,

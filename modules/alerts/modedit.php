@@ -79,7 +79,10 @@ if ($cancel) {
 $err         = [];
 $superadmin  = IsSuperadmin();
 $module_id   = AA::$module_id;
-$is_add      = $no_slice_id || $insert;   // adding a new Alerts module
+// Adding or editing is decided ONCE - for the permission check, for the processing gate and for the
+// write target. They used to be derived separately, so a request carrying both "insert" and "update"
+// passed the "add" check and then overwrote an existing module.
+$is_add      = $no_slice_id || $insert;
 
 if ($is_add) {
     if (!CheckPerms(AuthGetUid(), "aa", AA_ID, PS_ADD)) {
@@ -91,7 +94,7 @@ if ($is_add) {
     exit;
 }
 
-if ($insert || $update) {
+if ($is_add ? $insert : $update) {
     do {
         if (!$owner) {  // insert new owner
             if (!($owner = CreateNewOwner($new_owner, $new_owner_email, $err, new CVarset()))) {
@@ -106,14 +109,14 @@ if ($insert || $update) {
         }
 
         // module table (also runs AddPermObject() on insert)
-        $module_id = WriteModuleFields(($update && $module_id) ? $module_id : null, $superadmin, 'Alerts', $name, $slice_url, $priority, $lang_file, $owner, $deleted);
+        $module_id = WriteModuleFields($is_add ? null : ($module_id ?: null), $superadmin, 'Alerts', $name, $slice_url, $priority, $lang_file, $owner, $deleted);
         if (!$module_id) {
             break;
         }
         AA::$module_id = $module_id;
 
         // alerts_collection satellite (1:1 by module_id)
-        if ($update && DB_AA::test('alerts_collection', [['module_id', $module_id, 'l']])) {
+        if (!$is_add && DB_AA::test('alerts_collection', [['module_id', $module_id, 'l']])) {
             DB_AA::update(
                 'alerts_collection',
                 [['emailid_welcome', $emailid_welcome, 'i'], ['emailid_alert', $emailid_alert, 'i']],
@@ -132,7 +135,7 @@ if ($insert || $update) {
     } while (false);
 
     if (!count($err)) {
-        if ($insert) {   // brand new Alerts module
+        if ($is_add) {   // brand new Alerts module
             go_url(StateUrl(self_base() . "index.php"));
             exit;
         }

@@ -410,7 +410,7 @@ abstract class AA_Module
             }
 
             $form = AA_Form::factoryForm($class, $modulesetings_id, $module_id);
-            if ($form->process($_POST['aa']) === AA_Form::REFUSED) {
+            if ($form->process($_POST['aa'] ?? []) === AA_Form::REFUSED) {
                 return $form->getError();
             }
         }

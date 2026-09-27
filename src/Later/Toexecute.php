@@ -34,10 +34,12 @@ namespace AA\Later;
 
 use AA;
 use AA\IO\DB\DB_AA;
+use AA\Util\FatalLogger;
 use AA\Util\FileLock;
 use AA\Util\LogOnce;
 use AA\Util\ReportTrait;
 use AA_Log;
+use AA_Logentry;
 use AA_Logentry_X;
 use AA_Logentry_Xrun;
 use Cvarset;
@@ -84,6 +86,9 @@ class Toexecute
 
     /** log.type of the tasks left in the queue because their class is missing */
     public const LOG_CLASS_MISSING = 'TASK_MISS';
+
+    /** log.type of a task that threw (log.type is 10 bytes); CheckQueue reports them */
+    public const FAILED_EVENT = 'TOEXEC_ERR';
 
     /** later function
      *  Stores the object and params to the database for later execution.
@@ -335,9 +340,9 @@ class Toexecute
         AA_Log::write('TOEXECUTE', 'AA\Later\Toexecute', new AA_Logentry_Xrun(['done' => $count, 'started' => $started, 'duration' => sprintf('%.3g', microtime(true) - $execute_start), 'allowed' => $allowed_time]));
     }
 
-    /** @return int 1 = task executed, 0 = out of allowed time (caller stops),
-     *              -1 = lost the claim to a concurrent runner, or the task's class is
-     *                   missing and the task stays queued (caller skips) */
+    /** @return int 1 = task executed (or failed and left for a retry), 0 = out of
+     *              allowed time (caller stops), -1 = lost the claim to a concurrent
+     *              runner, or the task's class is missing and the task stays queued (caller skips) */
     public function _exeOne($task, &$execute_times, $execute_start, $allowed_time): int
     {
         $task_type = get_if($task['selector'], 'aa_unspecified');
@@ -374,19 +379,32 @@ class Toexecute
             return -1;
         }
 
-        $object = unserialize($task['object']);
-        if ($object instanceof \__PHP_Incomplete_Class) {
-            return $this->taskOfMissingClass($task, $object);
-        }
-        $params = unserialize((string) $task['params']);   // also fed to the log row below, so unserialize once
-        if (is_object($object)) {
-            $retcode = $this->execute_one($object, $params);
-            $this->message($retcode);
-            $selector = AA_Log::selector($object);
-        } else {
-            $this->message('Toexecute:execute - unserialize err:' . $task['object']);
-            $retcode = 'no execute, removed from queue';
-            $selector = AA_Log::selector('no object', $task['object']);
+        try {
+            $object = unserialize($task['object']);   // __wakeup() is task code too
+            if ($object instanceof \__PHP_Incomplete_Class) {
+                return $this->taskOfMissingClass($task, $object);
+            }
+            $params = unserialize((string) $task['params']);   // also fed to the log row below, so unserialize once
+            if (is_object($object)) {
+                $retcode = $this->execute_one($object, $params);
+                $this->message($retcode);
+                $selector = AA_Log::selector($object);
+            } else {
+                // id + class + size only - the serialized object may hold credentials
+                $what = "#{$task['id']} " . (preg_match('/^[OC]:\d+:"([^"]+)"/', (string) $task['object'], $m) ? $m[1] : '?') . ' (' . strlen((string) $task['object']) . ' B)';
+                $this->message('Toexecute:execute - unserialize err: ' . $what);
+                $retcode = 'no execute, removed from queue';
+                $selector = AA_Log::selector('no object', $what);
+            }
+        } catch (\Throwable $e) {
+            // One broken task must not end the round for the tasks behind it. Its row
+            // stays as the claim above left it - that is the queue's retry: again after
+            // the lease, one priority lower, given up at 0. Never the exception message -
+            // it may carry passwords or personal data.
+            $execute_times[$task_type] = microtime(true) - $task_start;
+            $this->message("#{$task['id']}: " . _m('the task failed with %1', [$e::class]));
+            AA_Log::write(self::FAILED_EVENT, $task_type, self::failureParams((int) $task['id'], $e));
+            return 1;
         }
 
         // Task is done - remove it from queue
@@ -417,6 +435,20 @@ class Toexecute
         LogOnce::daily(self::LOG_CLASS_MISSING, $class, (string) $task['selector']);
         $this->message("Toexecute: class $class is missing - task left in the queue");
         return -1;
+    }
+
+    /** The FAILED_EVENT row: "#id Class file:line", never the message (it may carry
+     *  passwords). The AA-relative path gives up its head first, so the file name and
+     *  line survive the log.params width.
+     */
+    public static function failureParams(int $id, \Throwable $e): string
+    {
+        $head  = "#$id " . $e::class . ' ';
+        $where = FatalLogger::format('', $e->getFile(), $e->getLine(), defined('AA_BASE_PATH') ? (string) constant('AA_BASE_PATH') : '')['selector'];
+        // cut forward to a character boundary (drop UTF-8 continuation bytes); backing
+        // up would overflow the column and the final cut would eat the line number
+        $row   = $head . ltrim(substr($where, max(0, strlen($head) + strlen($where) - AA_Logentry::PARAMS_MAX)), "\x80..\xBF");
+        return mb_strcut($row, 0, AA_Logentry::PARAMS_MAX);   // over only when the class name alone does not fit
     }
 
     /** execute_one function

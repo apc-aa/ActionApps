@@ -96,7 +96,12 @@ $superadmin  = IsSuperadmin();
 $module_id   = AA::$module_id;
 
 
-if ($template['Links']) {        // add module
+// Adding or editing is decided ONCE - for the permission check, for the processing gate and for the
+// write target. They used to be derived separately: "template" + "update" passed the "add" check and
+// then overwrote an existing module, and a bare "insert" created a module with edit rights only.
+$is_add = !empty($template['Links']);
+
+if ($is_add) {
     if (!CheckPerms(AuthGetUid(), "aa", AA_ID, PS_ADD)) {
         MsgPage(_m('No permission to add module'));
         exit;
@@ -107,7 +112,7 @@ if ($template['Links']) {        // add module
     exit;
 }
 
-if (($insert && $superadmin) || $update) {
+if ($is_add ? ($insert && $superadmin) : $update) {
     do {
         if (!$owner) { // insert new owner
             if (!($owner = CreateNewOwner($new_owner, $new_owner_email, $err, $varset))) {
@@ -129,14 +134,14 @@ if (($insert && $superadmin) || $update) {
         }
 
         // write all fields needed for module table
-        $module_id = WriteModuleFields(($update && $module_id) ? $module_id : null, $superadmin, 'Links', $name, $slice_url, $priority, $lang_file, $owner, $deleted, Links_Category2SliceID($start_id));
+        $module_id = WriteModuleFields($is_add ? null : ($module_id ?: null), $superadmin, 'Links', $name, $slice_url, $priority, $lang_file, $owner, $deleted, Links_Category2SliceID($start_id));
         if (!$module_id) {       // error?
             break;
         }
         $slice_id = $module_id;
 
         // now set all module specific settings
-        if ($update && $superadmin) {
+        if (!$is_add && $superadmin) {
             // tree_start and select_start could be changed only by superadmin
             // Maybe we could allow also administrators to change $select_start in
             // future
@@ -157,7 +162,7 @@ if (($insert && $superadmin) || $update) {
                 $err["DB"] = MsgErr("Can't change links table");
                 break;
             }
-        } elseif ($insert && $superadmin) { // insert (add)
+        } elseif ($is_add && $superadmin) { // insert (add)
             $varset->clear();
 
             $p_template_id = ($template['Links']
