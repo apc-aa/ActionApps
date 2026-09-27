@@ -77,7 +77,7 @@ final class Client implements ClientInterface
                 $out[strtolower($name)] = (string) ($values[0] ?? '');
             }
             // false: do not let the library throw on 4xx/5xx - the status is the answer we want
-            $content = ($this->maxBytes > 0) ? $this->limitedContent($answer, $out, $url) : $answer->getContent(false);
+            $content = ($this->maxBytes > 0) ? $this->limitedContent($answer, $out, $url, strtoupper($method) !== 'HEAD' && !in_array($status, [204, 304], true)) : $answer->getContent(false);
             // where a 3xx we did not follow points, resolved against the request - the link
             // checker records the whole chain and State Check compares the target
             $redirect = (string) ($answer->getInfo('redirect_url') ?? '');
@@ -88,10 +88,13 @@ final class Client implements ClientInterface
         return new Response($status, $content, $out, $redirect);
     }
 
-    /** @param array<string, string> $headers */
-    private function limitedContent(ResponseInterface $answer, array $headers, string $url): string
+    /**
+     * @param array<string, string> $headers
+     * @param bool $has_body HEAD, 204 and 304 carry the length of a body they do not send
+     */
+    private function limitedContent(ResponseInterface $answer, array $headers, string $url, bool $has_body): string
     {
-        if ((int) ($headers['content-length'] ?? 0) > $this->maxBytes) {
+        if ($has_body && ((int) ($headers['content-length'] ?? 0) > $this->maxBytes)) {
             $answer->cancel();
             throw new ResponseTooLargeException("The answer from $url is over {$this->maxBytes} bytes");
         }

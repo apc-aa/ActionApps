@@ -59,12 +59,49 @@ final class ClientTest extends TestCase
 
     public function test_aBodyOverTheLimitIsRefusedByItsDeclaredLength(): void
     {
+        // a short body under a long declared length: only the Content-Length check can refuse it
+        // ('identity' keeps the mock from checking the length itself)
         $client = new Client(maxBytes: 10, http: new MockHttpClient([
-            new MockResponse(str_repeat('x', 11), ['response_headers' => ['Content-Length' => '11']]),
+            new MockResponse('short', ['response_headers' => ['Content-Length' => '11', 'Content-Encoding' => 'identity']]),
         ]));
 
         $this->expectException(ResponseTooLargeException::class);
         $client->request('GET', 'https://example.org/big');
+    }
+
+    public function test_aHeadIsNotRefusedForTheBodyItDoesNotSend(): void
+    {
+        $client = new Client(maxBytes: 10, http: new MockHttpClient([
+            new MockResponse('', ['response_headers' => ['Content-Length' => '67108864']]),
+        ]));
+
+        self::assertSame(200, $client->request('HEAD', 'https://example.org/big')->status);
+    }
+
+    public function test_underTheLimitAStalledOrBrokenBodyIsStillNoAnswer(): void
+    {
+        $broken = static function (): \Generator {
+            yield 'xx';
+            throw new \RuntimeException('connection reset');
+        };
+        foreach ([new MockResponse(['xxxx', '']), new MockResponse($broken())] as $mock) {
+            $client = new Client(idle: 1, maxBytes: 10, http: new MockHttpClient([$mock]));
+            try {
+                $client->request('GET', 'https://example.org/stall');
+                self::fail('a body that never finishes is not an answer');
+            } catch (TransportException) {
+                self::assertTrue(true);
+            }
+        }
+    }
+
+    public function test_aLimitedReadStillSaysWhereARedirectPoints(): void
+    {
+        $client = new Client(maxBytes: 10, http: new MockHttpClient([
+            new MockResponse('', ['http_code' => 301, 'redirect_url' => 'https://example.org/new']),
+        ]));
+
+        self::assertSame('https://example.org/new', $client->request('GET', 'https://example.org/old')->redirect);
     }
 
     public function test_aBodyOverTheLimitIsRefusedWithoutADeclaredLength(): void

@@ -333,6 +333,7 @@ Feeding/import back-ends; each declares `name()` + `description()` shown in the 
 | Http/ClientInterface.php | What a caller may ask of it; hand one in to test | request() | S |
 | Http/Response.php | One answer: status, body, headers, redirect target | ok(), json(), excerpt() | S |
 | Http/TransportException.php | No answer at all - not a status | Exception | S |
+| Http/ResponseTooLargeException.php | The answer is over the size the caller allowed | Exception | S |
 
 ### Doit & Expand
 
