@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Unit\Http;
 
 use AA\Http\Client;
+use AA\Http\ResponseTooLargeException;
 use AA\Http\TransportException;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpClient\MockHttpClient;
@@ -54,6 +55,37 @@ final class ClientTest extends TestCase
 
         $this->expectException(TransportException::class);
         $client->request('GET', 'https://example.org/x');
+    }
+
+    public function test_aBodyOverTheLimitIsRefusedByItsDeclaredLength(): void
+    {
+        $client = new Client(maxBytes: 10, http: new MockHttpClient([
+            new MockResponse(str_repeat('x', 11), ['response_headers' => ['Content-Length' => '11']]),
+        ]));
+
+        $this->expectException(ResponseTooLargeException::class);
+        $client->request('GET', 'https://example.org/big');
+    }
+
+    public function test_aBodyOverTheLimitIsRefusedWithoutADeclaredLength(): void
+    {
+        // the mock hands over the whole body at once, so this pins the refusal, not how early the
+        // download stops - that is stream() + cancel() on a real connection
+        $client = new Client(maxBytes: 10, http: new MockHttpClient([new MockResponse(['xxxx', 'xxxx', 'xxxx'])]));
+
+        $this->expectException(ResponseTooLargeException::class);
+        $client->request('GET', 'https://example.org/endless');
+    }
+
+    public function test_aBodyUpToTheLimitComesBackWhole(): void
+    {
+        $client = new Client(maxBytes: 10, http: new MockHttpClient([
+            new MockResponse(['12345', '67890'], ['http_code' => 404]),
+        ]));
+
+        $answer = $client->request('GET', 'https://example.org/exact');
+        self::assertSame('1234567890', $answer->body);
+        self::assertSame(404, $answer->status, 'the limit does not change what a status means');
     }
 
     public function test_aBodyThatIsNotJsonIsRefusedRatherThanGuessed(): void

@@ -7,6 +7,7 @@ namespace AA\Http;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Symfony\Contracts\HttpClient\ResponseInterface;
 
 /**
  * AA's HTTP client, on symfony/http-client.
@@ -45,8 +46,10 @@ final class Client implements ClientInterface
      * @param string $agent  '' takes AA's own name. There is no way to send none: left out, the
      *                       library fills in its own name
      * @param int $redirects how many 3xx hops to follow; 0 means the 3xx itself is the answer
+     * @param int $maxBytes  largest body accepted, 0 = no limit; over it ResponseTooLargeException,
+     *                       decided by Content-Length when sent, else while the body arrives
      */
-    public function __construct(int $timeout = 30, int $idle = 10, string $agent = '', int $redirects = 0, ?HttpClientInterface $http = null)
+    public function __construct(int $timeout = 30, int $idle = 10, string $agent = '', int $redirects = 0, ?HttpClientInterface $http = null, private readonly int $maxBytes = 0)
     {
         $options = [
             'max_duration'  => $timeout,
@@ -69,12 +72,12 @@ final class Client implements ClientInterface
         try {
             $answer  = $this->http->request(strtoupper($method), $url, $options);
             $status  = $answer->getStatusCode();
-            // false: do not let the library throw on 4xx/5xx - the status is the answer we want
-            $content = $answer->getContent(false);
             $out     = [];
             foreach ($answer->getHeaders(false) as $name => $values) {
                 $out[strtolower($name)] = (string) ($values[0] ?? '');
             }
+            // false: do not let the library throw on 4xx/5xx - the status is the answer we want
+            $content = ($this->maxBytes > 0) ? $this->limitedContent($answer, $out, $url) : $answer->getContent(false);
             // where a 3xx we did not follow points, resolved against the request - the link
             // checker records the whole chain and State Check compares the target
             $redirect = (string) ($answer->getInfo('redirect_url') ?? '');
@@ -83,5 +86,24 @@ final class Client implements ClientInterface
         }
 
         return new Response($status, $content, $out, $redirect);
+    }
+
+    /** @param array<string, string> $headers */
+    private function limitedContent(ResponseInterface $answer, array $headers, string $url): string
+    {
+        if ((int) ($headers['content-length'] ?? 0) > $this->maxBytes) {
+            $answer->cancel();
+            throw new ResponseTooLargeException("The answer from $url is over {$this->maxBytes} bytes");
+        }
+        // Content-Length may be missing or false; count what really arrives (decoded)
+        $content = '';
+        foreach ($this->http->stream($answer) as $chunk) {
+            $content .= $chunk->getContent();
+            if (strlen($content) > $this->maxBytes) {
+                $answer->cancel();
+                throw new ResponseTooLargeException("The answer from $url is over {$this->maxBytes} bytes");
+            }
+        }
+        return $content;
     }
 }
