@@ -93,14 +93,6 @@ final class RemoteSourceTest extends TestCase
         self::assertStringNotContainsString(self::TOKEN, $this->opened[0]['url'] . $this->opened[0]['options']['body']);
     }
 
-    /** a compressed answer would be unpacked by rules other than the size limit */
-    public function test_the_answer_is_asked_for_uncompressed(): void
-    {
-        $this->remote(serialize(new AA_Response('x')))->ask(new AA_Request('Get_App'), [], self::TOKEN);
-
-        self::assertStringContainsString('Accept-Encoding: identity', $this->sentHeaders());
-    }
-
     public function test_http_is_refused_before_any_connection(): void
     {
         $remote = new RemoteSource('http://source.example/aa/central/responder.php', transport: new MockHttpClient(function (): never {

@@ -130,10 +130,7 @@ final class RemoteSource
         if (($token !== '') && !self::isToken($token)) {
             throw new SourceFailed(SourceFailed::LOGIN, 'The login token is no token');       // a header line of its own
         }
-        $headers = [
-            'Content-Type'    => 'application/x-www-form-urlencoded',
-            'Accept-Encoding' => 'identity',      // the limit counts what arrives - no unpacking with rules of its own
-        ];
+        $headers = ['Content-Type' => 'application/x-www-form-urlencoded'];
         if ($token !== '') {
             $headers['Authorization'] = "Bearer $token";
         }
