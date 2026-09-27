@@ -145,12 +145,12 @@ class DbBinaryTrailingZeros extends AbstractOptimize
         $this->_fixTable('field', 'content_id', "varbinary(16)  default NULL");
         $this->_fixTable('jump', 'slice_id', "varbinary(16)  NOT NULL default ''");
         $this->_fixTable('jump', 'dest_slice_id', "varbinary(16)  NOT NULL default ''");
-        $this->_fixTable('object_float', 'object_id', "varbinary(16)  NOT NULL default ''");
-        $this->_fixTable('object_float', 'property', "varbinary(32)  NOT NULL default ''");
-        $this->_fixTable('object_integer', 'object_id', "varbinary(16)  NOT NULL default ''");
-        $this->_fixTable('object_integer', 'property', "varbinary(32)  NOT NULL default ''");
-        $this->_fixTable('object_text', 'object_id', "varbinary(16)  NOT NULL default ''");
-        $this->_fixTable('object_text', 'property', "varbinary(32)  NOT NULL default ''");
+        $this->_fixTable('object_float', 'object_id', "varbinary(32)  NOT NULL default ''");
+        $this->_fixTable('object_float', 'property', "varbinary(16)  NOT NULL default ''");
+        $this->_fixTable('object_integer', 'object_id', "varbinary(32)  NOT NULL default ''");
+        $this->_fixTable('object_integer', 'property', "varbinary(16)  NOT NULL default ''");
+        $this->_fixTable('object_text', 'object_id', "varbinary(32)  NOT NULL default ''");
+        $this->_fixTable('object_text', 'property', "varbinary(16)  NOT NULL default ''");
         $this->_fixTable('pagecache', 'id', "varbinary(32)  NOT NULL default ''");
         $this->_fixTable('pagecache_str2find', 'pagecache_id', "varbinary(32)  NOT NULL default ''");
         $this->_fixTable('polls', 'id', "varbinary(32)  NOT NULL default ''");
