@@ -45,6 +45,7 @@ use AA\Central\AppExport;
 use AA\Central\AppSource;
 use AA\Central\AppStore;
 use AA\Central\ExportRefused;
+use AA\Central\FindingText;
 use AA\Central\InstallRun;
 use AA\Central\ItemIdCheck;
 use AA\Central\Package\AaAfterCommit;
@@ -59,6 +60,7 @@ use AA\Central\Package\ImportReport;
 use AA\Central\Package\ItemLint;
 use AA\Central\Package\LintFinding;
 use AA\Central\Package\Model\Module;
+use AA\Central\Package\Model\Package;
 use AA\Central\Package\Planner;
 use AA\Central\Package\Reader;
 use AA\Central\Package\SliceRoles;
@@ -166,6 +168,10 @@ $apage->addRequire('
     .aa-installapp-findings td, .aa-installapp-findings th { padding: 0.2em 0.6em; text-align: left; vertical-align: top; border-bottom: 1px solid var(--clr-border, #ddd); }
     .aa-installapp-findings .aa-num { text-align: right; font-variant-numeric: tabular-nums; }
     .aa-installapp-findings code { word-break: break-all; }
+    .aa-installapp-findings small code { color: var(--clr-muted, #777); }
+    .aa-installapp-code { margin: 0.5em 0 1em; max-width: 60em; }
+    .aa-installapp-code h4 { margin: 0.8em 0 0.2em; }
+    .aa-installapp-code p { margin: 0.2em 0; }
     .aa-installapp fieldset { border: 0; padding: 0; margin: 0 0 1em; }
     .aa-installapp [hidden] { display: none; }
 ', 'AA_Req_CSScode');
@@ -599,7 +605,7 @@ function installapp_show_preview(AppSource $from, array $prepared, string $mode,
                 . json_encode(_m('Preview again first'), JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) . '; } }));</script>';
         }
     }
-    installapp_findings($prepared['findings']);
+    installapp_findings($prepared['findings'], $prepared['package']);
     if (!installapp_importable($prepared)) {
         echo '<div class="aa-err">' . _m('The app cannot be installed - see the errors (E) above.') . '</div>';
         return false;
@@ -699,7 +705,7 @@ function installapp_write(string $run_id, string $site, array $modules, array $i
         return;
     }
     if (!installapp_importable($prepared)) {
-        installapp_findings($prepared['findings']);
+        installapp_findings($prepared['findings'], $prepared['package']);
         echo '<div class="aa-err">' . _m('The app cannot be installed - see the errors (E) above.') . '</div>';
         return;
     }
@@ -714,13 +720,13 @@ function installapp_write(string $run_id, string $site, array $modules, array $i
         echo '<div class="aa-err">' . safe(installapp_error(_m('Writing the app'), $e)) . '</div>';
         return;
     }
-    installapp_report($report);
+    installapp_report($report, $prepared['package']);
     if ($run->mode() === InstallRun::TRANSFER) {
         installapp_progress($run_id, $uid, true);
     }
 }
 
-function installapp_report(ImportReport $report): void
+function installapp_report(ImportReport $report, ?Package $package): void
 {
     echo '<div class="aa-ok">' . _m('The definitions are written.') . '</div><table class="aa-installapp-findings"><tr><th>' . _m('Module') . '</th><th>' . _m('Type') . '</th><th>' . _m('Id') . '</th></tr>';
     foreach ($report->modules as $m) {
@@ -731,7 +737,7 @@ function installapp_report(ImportReport $report): void
     foreach ($report->failures() as [$step, $errors]) {
         echo '<div class="aa-err">' . safe($step . ': ' . implode('; ', $errors)) . '</div>';
     }
-    installapp_findings($report->findings);
+    installapp_findings($report->findings, $package);
 }
 
 /** the slices with settings fields left empty: "N settings to fill in", linked to the settings page once
@@ -746,25 +752,43 @@ function installapp_settings(array $settings): void
     }
 }
 
-/** findings by level; every text is package text
- *  @param list<array{string, LintFinding}> $findings */
-function installapp_findings(array $findings): void
+/** findings by level, a level by code - a security code with what it means and what to check; every
+ *  text is package text
+ *  @param list<array{string, LintFinding}> $findings @param Package|null $package names the places */
+function installapp_findings(array $findings, ?Package $package = null): void
 {
     $levels = [LintFinding::SECURITY => _m('Security findings (S)'), LintFinding::ERROR => _m('Errors (E)'), LintFinding::WARNING => _m('Warnings (W)'), LintFinding::INFO => _m('Notes (I)')];
     $unique = [];
     foreach ($findings as $f) {                  // the export lint and the import lint read the same texts
         $unique[implode("\0", [$f[1]->level, $f[1]->code, $f[0], $f[1]->ref])] ??= $f;
     }
+    $text = new FindingText($package);
     foreach ($levels as $level => $label) {
-        $of = array_filter($unique, static fn(array $f): bool => $f[1]->level === $level);
-        if (!$of) {
+        $by_code = [];
+        foreach ($unique as $f) {
+            if ($f[1]->level === $level) {
+                $by_code[$f[1]->code][] = $f;
+            }
+        }
+        if (!$by_code) {
             continue;
         }
-        echo '<details' . (in_array($level, [LintFinding::SECURITY, LintFinding::ERROR], true) ? ' open' : '') . '><summary>' . $label . ' - ' . count($of) . '</summary><table class="aa-installapp-findings">';
-        foreach ($of as [$path, $finding]) {
-            echo '<tr><td>' . safe($finding->code) . '</td><td><code>' . safe($path) . '</code></td><td><code>' . safe($finding->ref) . '</code></td></tr>';
+        echo '<details' . (in_array($level, [LintFinding::SECURITY, LintFinding::ERROR], true) ? ' open' : '') . '><summary>' . $label . ' - ' . array_sum(array_map('count', $by_code)) . '</summary>';
+        foreach ($by_code as $code => $of) {
+            $explained = FindingText::explain($of[0][1]);
+            echo '<div class="aa-installapp-code"><h4><code>' . safe((string) $code) . '</code> - ' . count($of) . '</h4>';
+            if ($explained) {
+                echo '<p>' . safe($explained[0]) . '</p><p><strong>' . _m('What to do') . ':</strong> ' . safe($explained[1]) . '</p>';
+            }
+            echo '<table class="aa-installapp-findings"><tr><th>' . _m('Where') . '</th><th>' . _m('Found') . '</th></tr>';
+            foreach ($of as [$path, $finding]) {
+                $place = $text->place($path);
+                echo '<tr><td>' . safe($place) . (($place !== $path) ? '<br><small><code>' . safe($path) . '</code></small>' : '') . '</td>'
+                    . '<td><code>' . safe($finding->ref . (preg_match('/^\{(?!.*\}\z)/s', $finding->ref) ? '…' : '')) . '</code></td></tr>';     // a command cut at its first inner {..}
+            }
+            echo '</table></div>';
         }
-        echo '</table></details>';
+        echo '</details>';
     }
 }
 

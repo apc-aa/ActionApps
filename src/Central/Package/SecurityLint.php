@@ -23,14 +23,18 @@ final class SecurityLint
      *  server, cookie, xuser, userinfo (login log of any user); carry or issue
      *  secrets: credentials, jwtencode, setsecret, changepwd*; send mail: mail, mailtemplate, mailform
      *  (attachments read local files); write data: newitem, updateitem, ensureitem, recompute, datovka;
-     *  run code or change the response: internal, redirect, header; re-expand text: expand, dequote */
+     *  run code or redirect: internal, redirect; re-expand text: expand, dequote */
     public const COMMANDS = ['include', 'file2text', 'rss2html', 'fileinfo', 'filelink', 'linkcheck', 'gethostbyaddr',
         'server', 'cookie', 'xuser', 'userinfo', 'credentials', 'jwtencode', 'setsecret', 'changepwd\w*', 'mail', 'mailtemplate',
-        'mailform', 'newitem', 'updateitem', 'ensureitem', 'recompute', 'datovka', 'internal', 'redirect', 'header', 'expand', 'dequote'];
+        'mailform', 'newitem', 'updateitem', 'ensureitem', 'recompute', 'datovka', 'internal', 'redirect', 'expand', 'dequote'];
     /** I: installation facts - debug, version, serverload */
     public const INFO_COMMANDS = ['debug', 'version', 'serverload'];
     /** S `user`: {user:password} (PHP_AUTH_PW) or a computed argument; any other {user..} is I */
     private const USER_S = '~^\{user[:(]\s*(?:password\s*[:)}]|[^:)}]*(?:\{|_#|\x1E))~i';
+    /** I `header`: a status, a content type, a file name or X-Content-Type-Options / X-Xss-Protection /
+     *  Referrer-Policy - they allow a browser nothing more; S is CSP, CORS, Report-To, NEL (what the browser
+     *  runs, who reads the answer, where the reports go) or a computed name */
+    private const HEADER_I = '~^\{header[:(]\s*(?:\d{3}|plain|css|html|bin|js|xml|gif|jpg|png|ico|svg|json|csv|ical|filename|utf-8|XCTO|XSS|RP)\s*(?:[:)}]|\z)~i';
     /** S `img`: a first argument with a scheme or `//` (a fetch by the target), or computed other than one
      *  bare field reference; a relative path or a field is I */
     private const IMG_S = '~^\s*(?:[a-z][a-z0-9+.-]*#?:)?//|^[^:)}]*(?:\{|_#|\x1E)~i';
@@ -108,6 +112,7 @@ final class SecurityLint
             [$command(self::COMMANDS), LintFinding::SECURITY, null],
             [$command(self::INFO_COMMANDS), LintFinding::INFO, null],
             [$command(['user']), $s_or_i(self::USER_S, 0), null],
+            [$command(['header']), static fn(string $at): string => preg_match(self::HEADER_I, $at) ? LintFinding::INFO : LintFinding::SECURITY, null],
             [$command(['img']), static fn(string $at): string => preg_match('~^.{5}\s*(?:\{[A-Za-z0-9_.]{16}\}|_#[A-Z0-9_]{8})\s*[:)}]~s', $at)
                 ? LintFinding::INFO : $s_or_i(self::IMG_S, 5)($at), null],
             ['~' . self::ALIAS_HEAD . '(' . implode('|', self::ALIAS_FUNCTIONS) . ')' . self::BRACES . '~i', static fn(string $at): string => preg_match('~^' . self::ALIAS_HEAD . self::USER_FUNCTION . self::BRACES . '~', $at)
