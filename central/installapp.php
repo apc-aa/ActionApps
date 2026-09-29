@@ -770,16 +770,24 @@ function installapp_report(ImportReport $report, ?Package $package): void
     installapp_findings($report->findings, $package);
 }
 
-/** the slices with settings fields left empty: "N settings to fill in", linked to the settings page once
- *  the slice exists; the names are package text
- *  @param list<array{name: string, fields: array<string, string>, url?: string}> $settings */
+/** the slices with settings fields left empty, linked to the settings page once the slice exists; the
+ *  names are package text @param list<array{name: string, fields: array<string, string>, url?: string}> $settings */
 function installapp_settings(array $settings): void
 {
-    foreach ($settings as $s) {
-        $label = safe(_m('%1 settings to fill in', [count($s['fields'])]));
-        echo '<p>' . safe($s['name']) . ': ' . (isset($s['url']) ? a_href(get_aa_url($s['url']), $label) : $label)
-            . ' <small>(' . safe(implode(', ', array_map(static fn(string $id, string $name): string => ($name !== '') ? $name : $id, array_keys($s['fields']), $s['fields']))) . ')</small></p>';
+    if (!$settings) {
+        return;
     }
+    echo '<div class="aa-installapp-code"><h4>' . _m('Slice settings to fill in') . '</h4><p>'
+        . safe(_m('Some slices have settings - values that hold for the whole slice, not for single items (an address, a version, a switch shown on the pages). An install does not bring their values: the slices start with them empty, and the pages that show them show nothing.'))
+        . '</p><p><strong>' . _m('What to do') . ':</strong> '
+        . safe(array_filter(array_column($settings, 'url')) ? _m('Fill them in by the links below, or later: in the slice open Setting in the menu of the item manager.')
+            : _m('After installing fill them in: in the slice open Setting in the menu of the item manager. The report after installing links there.'))
+        . '</p><ul>';
+    foreach ($settings as $s) {
+        $names = implode(', ', array_map(static fn(string $id, string $name): string => ($name !== '') ? $name : $id, array_keys($s['fields']), $s['fields']));
+        echo '<li>' . safe($s['name']) . ': ' . safe($names) . (isset($s['url']) ? ' - ' . a_href(get_aa_url($s['url']), safe(_m('fill them in'))) : '') . '</li>';
+    }
+    echo '</ul></div>';
 }
 
 /** findings by level, a level by code - a security code with what it means and what to check; every
@@ -803,18 +811,20 @@ function installapp_findings(array $findings, ?Package $package = null): void
         if (!$by_code) {
             continue;
         }
-        echo '<details' . (in_array($level, [LintFinding::SECURITY, LintFinding::ERROR], true) ? ' open' : '') . '><summary>' . $label . ' - ' . array_sum(array_map('count', $by_code)) . '</summary>';
+        echo '<details' . (in_array($level, [LintFinding::SECURITY, LintFinding::ERROR], true) ? ' open' : '') . '><summary>' . $label . ' - ' . array_sum(array_map('count', $by_code)) . '</summary>'
+            . '<p class="tabhlp">' . safe(FindingText::level($level)) . '</p>';
         foreach ($by_code as $code => $of) {
             $explained = FindingText::explain($of[0][1]);
-            echo '<div class="aa-installapp-code"><h4><code>' . safe((string) $code) . '</code> - ' . count($of) . '</h4>';
+            echo '<div class="aa-installapp-code"><h4>' . safe($explained['title'] ?? (string) $code) . ' - ' . count($of) . ($explained ? ' <small><code>' . safe((string) $code) . '</code></small>' : '') . '</h4>';
             if ($explained) {
-                echo '<p>' . safe($explained[0]) . '</p><p><strong>' . _m('What to do') . ':</strong> ' . safe($explained[1]) . '</p>';
+                echo '<p>' . safe($explained['what']) . '</p><p><strong>' . _m('What to do') . ':</strong> ' . safe($explained['todo']) . '</p>';
             }
-            echo '<table class="aa-installapp-findings"><tr><th>' . _m('Where') . '</th><th>' . _m('Found') . '</th></tr>';
+            $any_ref = (bool) array_filter($of, static fn(array $f): bool => FindingText::found($f[1], $f[0]) !== '');
+            echo '<table class="aa-installapp-findings"><tr><th>' . _m('Where') . '</th>' . ($any_ref ? '<th>' . safe($explained['found'] ?? _m('Found')) . '</th>' : '') . '</tr>';
             foreach ($of as [$path, $finding]) {
                 $place = $text->place($path);
                 echo '<tr><td>' . safe($place) . (($place !== $path) ? '<br><small><code>' . safe($path) . '</code></small>' : '') . '</td>'
-                    . '<td><code>' . safe($finding->ref . (preg_match('/^\{(?!.*\}\z)/s', $finding->ref) ? '…' : '')) . '</code></td></tr>';     // a command cut at its first inner {..}
+                    . ($any_ref ? '<td><code>' . safe(FindingText::found($finding, $path)) . '</code></td>' : '') . '</tr>';
             }
             echo '</table></div>';
         }
