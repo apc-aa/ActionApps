@@ -268,10 +268,11 @@ class AaRichtextElement extends HTMLElement {
         if (this.#wasRich) {                    // the way back to the editor the user came from
             const back = document.createElement('button');
             back.type = 'button';
-            back.className = 'btn aa-richtext-editor';
-            back.textContent = this.#l10n.editor ?? 'Editor';
+            back.className = 'btn aa-arealink aa-richtext-editor';
+            // named and placed as the Edit in Editor link it stands in for, which is hidden now
+            back.textContent = this.#links.map(link => link.textContent.trim()).find(Boolean) ?? this.#l10n.editor ?? 'Edit in Editor';
             back.addEventListener('click', () => this.#setMode('rich'));
-            code.after(back);
+            code.before(back);
             this.#back = back;
         }
     }

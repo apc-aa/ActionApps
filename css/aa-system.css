@@ -578,9 +578,17 @@ aa-code[invalid], aa-richtext[invalid] { outline: 2px solid #c00; outline-offset
     width: 100%;
     padding: 4px;
     background: none;
+    box-sizing: border-box;
+    margin: 0;
+    color: inherit;             /* admin buttons are white on dark */
     border: 1px solid var(--clr-border, #ccc);
     border-radius: 4px;
     cursor: pointer;
+}
+.aa-filepicker-list button:is(:hover, :focus-visible) {
+    background: rgb(0 0 0 / 6%);
+    color: inherit;
+    border-color: #888;
 }
 .aa-filepicker-list img {
     width: 100%;
@@ -650,9 +658,6 @@ aa-richtext .tox .tox-split-button {
 aa-richtext .tox .tox-statusbar {
     background: #e8e8e8;
     border-top: 1px solid #d1d1d1;
-}
-.aa-richtext-editor {
-    margin: 2px;
 }
 
 /* tlkt widget */

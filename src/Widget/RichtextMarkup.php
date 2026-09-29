@@ -67,7 +67,7 @@ final class RichtextMarkup
     public static function labels(): array
     {
         return [
-            'editor'    => _m('Editor'),
+            'editor'    => _m('Edit in Editor'),
             'source'    => _m('Source'),
             'search'    => _m('Search'),
             'upload'    => _m('Upload'),
