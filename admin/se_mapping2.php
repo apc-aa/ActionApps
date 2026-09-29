@@ -39,7 +39,7 @@ require_once __DIR__ . "/../include/varset.php";
 
 try {
     // array ( '' => 2, 2 => 3, )
-    $ext_slice = InputVars::intPOST('ext_slice', true); // empty
+    $ext_slice = InputVars::intPOST('ext_slice'); // empty for a local slice
     // array ( )
     $fmap = InputVars::arrayPOST('fmap', true);
     // array ( '4429a8e44bb…' => 2, '164ced40da0…' => 3, )
@@ -96,14 +96,13 @@ foreach ($fmap as $to_field_id => $val) {
             }
             unset($map_to[$val]);
             break;
-        case FEEDMAP_FLAG_EXTMAP:
-        case FEEDMAP_FLAG_MAP:
+        default:  // $val is the id of the source field
             $flag = ($ext_slice) ? FEEDMAP_FLAG_EXTMAP : FEEDMAP_FLAG_MAP ;
             $catVS->add("from_field_id", "text", $val);
             unset($map_to[$val]);
             break;
     }
-    $catVS->add("flag", "quoted", $flag);
+    $catVS->add("flag", "number", $flag);
 
     if (!$catVS->doINSERT('feedmap')) {
         $err["DB"] .= MsgErr("Can't add fields mapping");
@@ -118,7 +117,7 @@ if ($map_to && is_array($map_to)) {
         $catVS->add("to_slice_id", "unpacked", AA::$module_id);
         $catVS->add("from_field_id", "text", $from_field_id);
         $catVS->add("from_field_name", "text", $map_to[$from_field_id]);
-        $catVS->add("flag", "quoted", FEEDMAP_FLAG_EXTMAP);
+        $catVS->add("flag", "number", FEEDMAP_FLAG_EXTMAP);
         if (!$catVS->doINSERT('feedmap')) {
             $err["DB"] .= MsgErr("Can't add fields mapping");
         }
