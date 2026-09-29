@@ -24,8 +24,14 @@ https://www.apc.org/
     $update=1 .. write changes to database
 */
 
+use AA\Central\AppStore;
+use AA\Central\Package\DbSource;
 use AA\IO\DB\DB_AA;
+use AA\Util\FormToken;
 use AA\Util\InputVars;
+
+// the App store part of the form: a superadmin's only, and never by a forged form
+const MODEDIT_APP_TOKEN = 'site-app-store';
 
 // Creating a module: slicedit.php always sends no_slice_id, the template only when one exists already.
 // init_page.php must know, or it falls back to a slice. Not $_REQUEST - that can include cookies.
@@ -81,8 +87,13 @@ try {
     // array ( 'P' => 5, )
     // $uses_modulesp = InputVars::stringPOST('uses_modulesp'); // alpha   - ignore - not needed here
     $cancel = InputVars::boolPOST('cancel');
+    $app_store       = InputVars::stringPOST('app_store');     // its form token - the part was on the form
+    $app_publish     = InputVars::boolPOST('app_publish');
+    $app_description = InputVars::stringPOST('app_description');
+    $app_version     = InputVars::stringPOST('app_version');
+    $app_approve     = InputVars::boolPOST('app_approve');
     
-    $Msg = InputVars::stringGETPOST('Msg');
+    $Msg = InputVars::messageGETPOST();
 } catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
 
 $template_id = $template['W'] ? substr($template['W'],1) : unpack_id('SiteTemplate....');
@@ -114,8 +125,8 @@ if ($template['W']) {        // add module
 
 
 // additional settings - just make sure it is set
-if (!$add) {
-    AA_Module_Site::processModuleObject($module_id);
+if (!$add && ($settings_error = AA_Module_Site::processModuleObject($module_id))) {
+    $err['settings'] = MsgErr($settings_error . ' ' . _m('The settings and the other fields of this page were not saved.'));
 }
 
 if ($add || $update) {
@@ -133,6 +144,18 @@ if ($add || $update) {
         ValidateInput("state_file",   _m("State file"),  $state_file,   $err, false, "text");
         ValidateInput("router",       _m("Router"),      $router,       $err, false, "number");
         ValidateInput("uses_modules", _m("Uses modules"), $uses_modules, $err, false, "id");
+
+        // only modules the user may use (the offered list - $g_modules) - a site using a module grants it
+        // Alertitem's same-site rule. A module related already may stay, whoever added it (the form shows
+        // it selected, also one the user has no rights to); dropping any is fine
+        if (!isset($err['uses_modules'])) {
+            $uses_modules    = array_map('strtolower', (array) $uses_modules);
+            $related_modules = ($update && $module_id) ? DB_AA::select('', 'SELECT LOWER(HEX(`destination_id`)) AS unpackid FROM relation', [['source_id', $module_id, 'l'], ['flag', REL_FLAG_MODULE_DEPEND, 'i']]) : [];
+            $refused         = array_filter($uses_modules, static fn($id) => (($g_modules[$id]['type'] ?? 'W') === 'W') && !in_array($id, $related_modules, true));
+            if ($refused) {
+                $err['uses_modules'] = MsgErr(_m('You can not use these modules in the site - you have no permission to them: %1', [safe(implode(', ', $refused))]));
+            }
+        }
 
         if (count($err)) {
             break;
@@ -197,7 +220,31 @@ if ($add || $update) {
                 $varset->doInsert('site_spot');
             }
 
-            AA_Module_Site::processModuleObject($module_id);
+            if ($settings_error = AA_Module_Site::processModuleObject($module_id)) {
+                $err['settings'] = MsgErr($settings_error);
+                break;
+            }
+        }
+        if ($update && $superadmin && ($app_store !== '')) {
+            if (!FormToken::check(MODEDIT_APP_TOKEN, $app_store)) {
+                $err['app_store'] = MsgErr(_m('The form has expired; reload the page and try again.'));
+                break;
+            }
+            if (($app_input = AA_Modulesettings_Site::appInputError($app_description, $app_version)) !== null) {
+                $err['app_store'] = MsgErr($app_input);
+                break;
+            }
+            // refused now, not by the first AA that tries to install it
+            $app_errors = $app_publish ? AppStore::exportErrors($module_id) : [];
+            if ($app_errors) {
+                $lines = array_map(static fn(array $f): string => '<li>' . safe($f[1]->code . ' ' . $f[0] . ' ' . $f[1]->ref) . '</li>', array_slice($app_errors, 0, 50));
+                $err['app_store'] = MsgErr(_m('The app store settings were not saved - the store cannot give the site until these errors are fixed:') . '<ul>' . implode('', $lines) . '</ul>');
+                break;
+            }
+            // publishing approves the modules the site uses; one added later only by its own checkbox
+            $app_stored = AA_Module_Site::getAppSettings($module_id);
+            $app_used   = (new AppStore(new DbSource()))->modulesOf($module_id);
+            AA_Module_Site::saveAppSettings($module_id, $app_publish, $app_description, $app_version, AppStore::approvedModules($app_stored['publish'] ? $app_stored['modules'] : null, $app_used, $app_approve));
         }
         AA::Pagecache()->invalidateFor($module_id);  // invalidate old cached values for this slice
     } while(false);
@@ -294,6 +341,21 @@ $apage->printHead($err, $Msg);
     if ($module_id) {
         FrmTabSeparator(_m("Additional setting"));
         echo $object_frm;
+    }
+    if ($module_id && $superadmin) {
+        $app = AA_Module_Site::getAppSettings($module_id);
+        FrmTabSeparator(_m("App store"));
+        echo '<tr><td colspan="2"><input type="hidden" name="app_store" value="' . safe(FormToken::get(MODEDIT_APP_TOKEN)) . '">'
+            . _m('A published site can be installed by any AA from this one - with the slices and Alerts it uses: their templates, fields, views and constants, never the items. Only a superadmin sets this.') . '</td></tr>';
+        $app_added = (new AppStore(new DbSource()))->site($module_id)['added'] ?? [];
+        if ($app_added) {
+            $app_names = implode(', ', array_map(static fn(string $id): string => AA_Module::getModuleNameSafe($id), $app_added));
+            echo '<tr><td colspan="2"><div class="aa-err">' . _m("The site's modules changed since publishing: %1 - the app store does not give the site until a superadmin approves them.", [$app_names]) . '</div></td></tr>';
+            FrmInputChBox('app_approve', _m("Approve the changed modules: %1", [$app_names]), false, false, '', 1, false, _m("Their templates, fields, views and constants then go to the app store with the site."));
+        }
+        FrmInputChBox('app_publish', _m("Publish in the app store"), $app['publish'], false, '', 1, false, _m("The published app has no warnings: every warning of its export is an error. A constant group owned by a slice outside every published site stops it too."));
+        FrmTextarea('app_description', _m("App description"), $app['description'], 4, 60, false, _m("What the app does, for the list of the app store."), '', false, false, AA_Modulesettings_Site::APP_DESCRIPTION_MAX);
+        FrmInputText('app_version', _m("App version"), $app['version'], 32, 12, false, _m("Like 1.2.0."), '', false, '1.0.0');
     }
 
     FrmTabEnd($form_buttons);

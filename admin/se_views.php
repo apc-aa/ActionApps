@@ -42,7 +42,7 @@ try {
     $vid = InputVars::intGet('vid');
     $cancel = InputVars::boolPOST('cancel');
     
-    $Msg = InputVars::stringGETPOST('Msg');
+    $Msg = InputVars::messageGETPOST();
 } catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
 
 if ($cancel) {
@@ -59,14 +59,18 @@ $varset      = new Cvarset();
 
 // @todo - use standard Delete action
 if ( $del ) {
-    // check if deleted view is from this slice (for security)
-    if (!AA::Metabase()->doDelete('view', ['id'=>$vid, 'slice_id'=>AA::$module_id])) {
+    // only a view of this slice - doDelete() would match the key alone
+    $deleted = DB_AA::delete('view', [['id', $vid, 'i'], ['slice_id', AA::$module_id, 'l']]);
+    if ($deleted === false) {
         $err["DB"] = MsgErr("Can't delete view");
         exit;
     }
-    AA::Pagecache()->invalidateFor(AA::$module_id);  // invalidate old cached values
-
-    $Msg = MsgOk(_m("View successfully deleted"));
+    if ($deleted) {
+        AA::Pagecache()->invalidateFor(AA::$module_id);  // invalidate old cached values
+        $Msg = MsgOk(_m("View successfully deleted"));
+    } else {    // a reload of the link, or a view of another slice
+        $Msg = MsgErr(_m('The view was not found in this slice.'));
+    }
 }
 
 // returns javascript row for view selection
@@ -118,6 +122,7 @@ $VIEW_TYPES = getViewTypes();
 $view_types_ifeq = array_reduce( array_keys($VIEW_TYPES), static fn($str, $key) => "$str:$key:".str_replace(':','#:', $VIEW_TYPES[$key]['name']));
 
 $managed = AA::Metabase()->getManagerConf('view', $actions);
+$managed->setModule(AA::$module_id);   // its forms and actions change only the views of this slice
 $managed->setColumns([]); // reset columns - use format strings bellow
 $managed->setAction('add',false);
 $managed->setNoitem('');
@@ -155,13 +160,14 @@ $managed->settings['actions'] =  $actions;
 $managed->setAction('add',false);  // views are add by special form below
 
 $manager = new Manager('views', $managed);
-
+// "all rows" of the actions are the views of this slice, as listed
+$manager->setRestrictionConds([
+    new AA_Condition('slice_id', '==', pack_id(AA::$module_id)),
+]);
 
 $manager->performActions();
 
 $aa_set  = $manager->getSet();
-// $aa_set->setModules($module_id);
-$aa_set->addCondition(new AA_Condition('slice_id', '==', pack_id(AA::$module_id)));
 
 $zids    = AA::Metabase()->queryZids(['table'=>'view'], $aa_set);
 

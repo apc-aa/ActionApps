@@ -7,20 +7,20 @@ namespace AA\Central\Package;
 use InvalidArgumentException;
 use RuntimeException;
 
-/** How one value travels in the element text of a package (design balicek-v1.md § 2.2) - both ways,
+/** How one value travels in the element text of a package - both ways,
  *  the writer encodes, the reader decodes. Pure string functions, no DOM.
  *
  *  encode():
  *  - invalid UTF-8, a character XML 1.0 cannot carry (C0 control except TAB LF CR, U+FFFE, U+FFFF),
  *    a lone CR or mixed CRLF/LF line ends => base64 of the bytes as they are; invalid UTF-8 is also a
- *    finding (INVALID_BYTES, W) - the collector converted the module charset to UTF-8 (§ 2.4), so
- *    these bytes were broken already in the source;
+ *    finding (INVALID_BYTES, W) - the collector converted the module charset to UTF-8, so these
+ *    bytes were broken already in the source;
  *  - only CRLF line ends => LF + crlf (XML parsers turn CRLF into LF, even in CDATA);
  *  - `<`, `&` or a line end => CDATA (DOM splits `]]>` itself), else a text node.
- *  A column with the empty value of its type is left out of the row (isEmpty(), § 2.3). */
+ *  A column with the empty value of its type is left out of the row (isEmpty()). */
 final class ValueCodec
 {
-    /** LintFinding code: the value is not valid UTF-8 - carried as base64 of the raw bytes (§ 2.4) */
+    /** LintFinding code: the value is not valid UTF-8 - carried as base64 of the raw bytes */
     public const INVALID_BYTES = 'invalid-bytes';
 
     public const TEXT   = 'text';
@@ -56,6 +56,14 @@ final class ValueCodec
         return ['text' => $text, 'enc' => self::TEXT, 'crlf' => $crlf > 0, 'cdata' => strpbrk($text, "<&\n") !== false, 'finding' => null];
     }
 
+    /** Bytes of the element text Writer makes of the value: base64, CDATA with its `]]>` splits, or a
+     *  text node, where DOM escapes `>` (encode() takes `<` and `&` to CDATA) */
+    public static function xmlLength(string $value, bool $raw = false): int
+    {
+        $enc = self::encode($value, $raw);
+        return strlen($enc['text']) + ($enc['cdata'] ? 12 * (1 + substr_count($enc['text'], ']]>')) : 3 * substr_count($enc['text'], '>'));
+    }
+
     /** The value of an element: its textContent and attributes enc, crlf, null.
      *  @throws InvalidArgumentException null with text, broken base64, base64 with crlf */
     public static function decode(string $text, string $enc = self::TEXT, bool $crlf = false, bool $null = false): ?string
@@ -82,7 +90,7 @@ final class ValueCodec
         return ($value instanceof Model\RawBytes) ? $value->bytes : (is_scalar($value) ? (string) $value : '');
     }
 
-    /** the value of a column the row leaves out (§ 2.3) @param string $type Schema::rowColumns() type */
+    /** the value of a column the row leaves out @param string $type Schema::rowColumns() type */
     public static function emptyValue(string $type): string
     {
         return ($type === 'intValue' || $type === 'floatValue') ? '0' : '';

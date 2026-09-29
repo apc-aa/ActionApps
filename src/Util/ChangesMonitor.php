@@ -16,7 +16,6 @@ use AA_GeneralizedArray;
 use AA_Items;
 use AA_Set;
 use Cvarset;
-use kcfinder\httpCache;
 use zids;
 
 class ChangesMonitor

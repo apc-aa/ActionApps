@@ -5,12 +5,9 @@ declare(strict_types=1);
 namespace AA\Central;
 
 use AA;
-use AA\Central\Task\ImportModuleChunk;
-use AA\Later\Toexecute;
-use AA_Definition_Module_Chunk;
 use Cvarset;
 
-/** Reads module definitions from this AA's database and imports them - the logic behind
+/** Reads module definitions from this AA's database - the logic behind
  *  AA_Definition_Module(_Slice|_Site|_Alerts), which travel between AAs (Get_Module_Defs) and keep
  *  their names and properties; their methods delegate here. */
 final class DefinitionStore
@@ -38,7 +35,7 @@ final class DefinitionStore
             // and the rows of their groups (getModuleRows() gives an array)
             $constant_groups = [];
             foreach ($data['constant'] as $k => $v) {
-                $constant_groups[$v['group_id']] = true;   // get list of all groups
+                $constant_groups[$v['group_id']] = true;
             }
 
             $SQL = "SELECT * FROM constant WHERE group_id='lt_groupNames' AND " . Cvarset::sqlin('value', array_keys($constant_groups));
@@ -84,40 +81,5 @@ final class DefinitionStore
         // @todo - filter is not copied since it need double jopined tabled in metabase's  getModuleRows()
         // $data['alerts_filter']              = $metabase->getModuleRows('alerts_filter', $module_id);
         return $data;
-    }
-
-    /** the definition split into chunks for import, with the ids in $replaces replaced
-     *  @return AA_Definition_Module_Chunk[] */
-    public static function chunks($module_id, $data, $replaces): array
-    {
-        $chunks = [];
-        // replaced on a copy - the same definition is imported to more AAs, each with its own new module ids
-        $data   = is_array($replaces) ? recursive_array_replace(array_keys($replaces), array_values($replaces), $data) : $data;
-
-        foreach ($data as $table => $rows) {
-            $chunks[] = AA_Definition_Module_Chunk::factoryArray($module_id, $table, $rows);
-        }
-        return array_merge(...$chunks);  // avoiding array_merge() in loop
-    }
-
-    /** queues the import of the chunks to another AA (Task Manager); @return int number of the tasks */
-    public static function queueImport(array $chunks, Actionapps|int $aa): int
-    {
-        $toexecute = new Toexecute();
-        foreach ($chunks as $chunk) {
-            // the queue row keeps the id of the AA, not its login; the selector keeps its old name
-            $toexecute->userQueue(new ImportModuleChunk($chunk, $aa), [], 'AA_Task_Import_Module_Chunk');
-        }
-        return count($chunks);
-    }
-
-    /** imports the chunks to this AA; @return list<string> report lines of the chunks ('OK: ...', 'Err: ...') */
-    public static function import(array $chunks): array
-    {
-        $report = [];
-        foreach ($chunks as $chunk) {
-            $report[] = $chunk->importModuleChunk();
-        }
-        return array_merge(...$report);
     }
 }

@@ -73,7 +73,7 @@ try {
     $update = InputVars::boolPOST('update');
     $cancel = InputVars::boolPOST('cancel');
     
-    $Msg = InputVars::stringGETPOST('Msg');
+    $Msg = InputVars::messageGETPOST();
 } catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
 
 if ($cancel) {
@@ -88,14 +88,13 @@ if (!IfSlPerm(PS_FIELDS) || !$slice) {
 }
 
 $err = [];          // error array (Init - just for initializing variable
-$varset = new Cvarset();
 
 /** ShowNewField function
- * @param      $from_slice
- * @param      $slice_id
- * @param bool $slice_fields
+ * @param          $from_slice
+ * @param bool     $slice_fields
+ * @param string[] $template_slices  slice id => label, @see AA_Fields::templateSlices()
  */
-function ShowNewField($from_slice, $slice_id, bool $slice_fields): string
+function ShowNewField($from_slice, bool $slice_fields, array $template_slices): string
 {
     $ret = '';
 
@@ -110,14 +109,10 @@ function ShowNewField($from_slice, $slice_id, bool $slice_fields): string
     $ret .= "\n<tr class=bg-clr-opacity-dark>
           <td colspan=\"8\">". _m('Slice') .' ';
 
-    $template_id = unpack_id('AA_Core_Fields..');
-    $from_slice  = get_if($from_slice, $template_id);
-    $slice_array = AA_Module::getUserModules('S');
-    unset($slice_array[$template_id], $slice_array[$slice_id]);
-    $slice_name  = AA_Slice::getModule($slice_id)?->getName() ?? '';   // raw name - getFrmSelectEasy() safe()s the labels
-    $slice_array = array_merge( [$template_id => '* Action Aplication Core', $slice_id => '* '.$slice_name._m(' (this)')], $slice_array);
+    $from_slice  = get_if($from_slice, unpack_id('AA_Core_Fields..'));
 
-    $ret .= getFrmSelectEasy('from_slice', $slice_array, $from_slice, ['onchange' => "DisplayAaResponse('fieldselection', 'Get_Fields', {slice_id:this.value,slice_fields:" . ($slice_fields ? 1 : 0) . "})"]);
+    // raw names - getFrmSelectEasy() safe()s the labels
+    $ret .= getFrmSelectEasy('from_slice', $template_slices, $from_slice, ['onchange' => "DisplayAaResponse('fieldselection', 'Get_Fields', {slice_id:this.value,slice_fields:" . ($slice_fields ? 1 : 0) . "})"]);
     $ret .= "\n</td>
           </tr>
           <tr class=bg-clr-opacity-dark>
@@ -180,92 +175,14 @@ if ($move_als && $move_als_to) {
 }
 
 
-if ($update) {
-    do {
-        if (!(isset($name) && is_array($name))) {
-            break;
-        }
-        foreach ($name as $key => $val) {
-            if ($key === "New_Field") {
-                continue;
-            }
-            $prior = $pri[$key];
-            ValidateInput("val", _m("Field"), $val, $err, false, "text");
-            ValidateInput("prior", _m("Priority"), $prior, $err, true, "number");
-        }
+$template_slices = AA_Fields::templateSlices(AA::$module_id);
 
-        if (count($err)) {
-          break;
-        }
-
-        $db = getDB();
-        foreach ($name as $key => $val) {
-            if ($key === "New_Field") {   // add new field
-                if ($val == '') {        // if not filled - don't add the field
-                    continue;
-                }
-
-                [$field_slice, $field_type] = explode('-',$ftype,2);
-                $field_setting = DB_AA::select1('', "SELECT * FROM field", [
-                    ['slice_id', $field_slice, 'l'],
-                    ['id', $field_type]
-                ]);
-
-                // copy fields
-                // use the same setting for new field as template in AA_Core_Fields..
-                $varset->clear();
-                $varset->addArray( AA_Fields::FIELDS_TEXT, AA_Fields::FIELDS_NUM );
-                $varset->setFromArray($field_setting);   // from template for this field
-
-                // in AA_Core_Fields.. are fields identified by 'switch' or 'text'
-                // identifiers (without dots!) by default. However, if user add new
-                // "template" field to the AA_Core_Fields.. slice, then the identifier
-                // is full (it contains dots). We need base identifier, for now.
-                // Also, we will add underscore for all "slice fields" - the ones
-                // which are not set for items, but rather for slice (settings)
-                $ftype_base = ($slice_fields ? '_' : '') . AA_Fields::getFieldType($field_type);
-
-                // get new field id
-                $max = -1;  // Was 0
-                $arr = DB_AA::select('id',"SELECT id FROM field", [['slice_id', AA::$module_id, 'l'], ['id',$ftype_base."%", 'LIKE']]);
-                foreach ($arr as $arr_fid) {
-                    $max = max( $max, AA_Fields::getFieldNo($arr_fid), 0);
-                }
-                $max++;
-                //create name like "time...........2"
-                $fieldid = AA_Fields::createFieldId($ftype_base, $max);
-
-                $varset->set("slice_id", AA::$module_id, "unpacked" );
-                $varset->set("id", $fieldid, "text" );
-                $varset->set("name",  $val, "text");
-                $varset->set("input_pri", $pri[$key], "number");
-                $varset->set("required", ($req[$key] ? 1 : 0), "number");
-                $varset->set("input_show", ($shw[$key] ? 1 : 0), "number");
-                if (!$varset->doInsert('field')) {
-                    $err["DB"] .= MsgErr("Can't copy field");
-                    break;
-                }
-            } else { // current field
-                $varset->clear();
-                $varset->add("name", "text", $val);
-                $varset->add("input_pri", "number", $pri[$key]);
-                $varset->add("required", "number", ($req[$key] ? 1 : 0));
-                $varset->add("input_show", "number", ($shw[$key] ? 1 : 0));
-                $SQL = "UPDATE field SET ". $varset->makeUPDATE() ." WHERE id='$key' AND slice_id=". xpack_id(AA::$module_id);
-                if (!$db->query($SQL)) {  // not necessary - we have set the halt_on_error
-                    $err["DB"] = MsgErr("Can't change field");
-                    break;
-                }
-            }
-        }
-        freeDB($db);
-        AA::Pagecache()->invalidateFor(AA::$module_id);  // invalidate old cached values
-
-        if (!count($err)) {
-            $Msg = MsgOk(_m("Fields update successful"));
-            $update = false;   // displyas fields from database instead of posted values (next in the code)
-            }
-    } while (false);           //in order we can use "break;" statement
+if ($update && $name) {
+    $err = array_merge($err, AA_Fields::storeAdminRows(AA::$module_id, $name, $pri, $req, $shw, (string) $ftype, (bool) $slice_fields, array_keys($template_slices)));
+    AA::Pagecache()->invalidateFor(AA::$module_id);  // invalidate old cached values
+    if (!count($err)) {
+        $Msg = MsgOk(_m("Fields update successful"));
+    }
 }
 
 // slice_fields are begins with underscore
@@ -395,7 +312,7 @@ foreach ( $s_fields as $fld) {
 $form_buttons['slice_fields'] = ['value' => ($slice_fields ? 1 : 0)];
 
 // one row for possible new field
-$code .= ShowNewField($from_slice, AA::$module_id, $slice_fields);
+$code .= ShowNewField($from_slice, (bool) $slice_fields, $template_slices);
 $code .= '</tbody>';
 $code .= getFrmTabEnd( $form_buttons);
 

@@ -3,6 +3,7 @@
 namespace AA\Manageraction;
 
 use AA\IO\DB\DB_AA;
+use AA\Managed_Table;
 use AA\Manager;
 use zids;
 
@@ -35,9 +36,15 @@ class Polls_MoveItem extends AbstractManageraction
     /** @inheritDoc */
     public function perform(Manager $manager, zids $item_zids, $action_param): string|false
     {
-        $SQL = "UPDATE polls SET status_code = '" . $this->to_bin . "' WHERE " . $item_zids->sqlin('id', true);
-        DB_AA::sql($SQL);
-        return false;                                     // OK - no error
+        $managed = $manager->getManaged();
+        if (!($managed instanceof Managed_Table) || !is_long_id($module = $manager->getModuleId())) {
+            return _m('This action does not work on this page.');
+        }
+        [$ids, $refused] = $managed->actionable($manager, $item_zids);
+        if ($ids) {
+            DB_AA::update('polls', [['status_code', $this->to_bin, 'i']], [['id', $ids], ['module_id', $module, 'l']]);
+        }
+        return $refused ? _m('Some of the selected polls were not moved - they belong to another module.') : false;
     }
 
     /** Checks if the user have enough permission to perform the action

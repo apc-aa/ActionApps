@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace AA\Util;
 
+use AA\IO\DB\DB_AA;
+
 /**
  * Records PHP fatals and uncaught exceptions (TypeError, ArgumentCountError, …) as
  * `PHP_FATAL` rows in the `log` table, so an install without shell access can be
@@ -11,7 +13,9 @@ namespace AA\Util;
  * `define('AA_LOG_PHP_FATALS', true)` in config.php; locsess.php calls register().
  *
  * The DB write is best-effort: if AA is not booted far enough (no AA_Log, no DB)
- * the entry only goes to error_log(). Never changes how the fatal itself is
+ * or the fatal struck inside DB_AA::transaction() (the row would go to the
+ * transaction's handle and be rolled back with it), the entry only goes to
+ * error_log(). Never changes how the fatal itself is
  * reported — the previous exception handler (or PHP's default) still runs.
  */
 final class FatalLogger
@@ -78,6 +82,12 @@ final class FatalLogger
         ];
     }
 
+    /** the entry may go to the `log` table: AA is booted far enough and no transaction is open */
+    public static function toDb(): bool
+    {
+        return class_exists(\AA_Log::class, false) && function_exists('AuthGetUid') && !DB_AA::inTransaction();
+    }
+
     private static function log(string $message, string $file, int $line): void
     {
         if (self::$logged) {
@@ -86,7 +96,7 @@ final class FatalLogger
         self::$logged = true;
         $row = self::format($message, $file, $line, defined('AA_BASE_PATH') ? (string) AA_BASE_PATH : '');
         try {
-            if (class_exists(\AA_Log::class, false) && function_exists('AuthGetUid')) {
+            if (self::toDb()) {
                 \AA_Log::write(self::EVENT, $row['selector'], $row['params']);
                 return;
             }

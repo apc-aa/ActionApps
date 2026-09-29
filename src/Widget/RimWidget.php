@@ -77,7 +77,8 @@ class RimWidget extends Widget
             item.onclick = null;
             item.querySelector('.id2add').name=widget.getAttribute('data-aa-basename')+'[rim][]';
             const added = widget.querySelector('.itemgroup').appendChild(item);
-            const btns_str = widget.querySelector('template').innerHTML.replaceAll('***_#id***', widget.querySelector('.id2add').value);
+            // the id goes into a JS string in onclick - encoded as on the server (rawurlencode)
+            const btns_str = widget.querySelector('template').innerHTML.replaceAll('***_#id***', encodeURIComponent(widget.querySelector('.id2add').value).replace(/[!'()*]/g, c => '%' + c.charCodeAt(0).toString(16).toUpperCase()));
             const buttons = document.createRange().createContextualFragment(btns_str);            
             added.querySelector('.icogroup').appendChild(buttons);
         }
@@ -331,8 +332,8 @@ class RimWidget extends Widget
         $ret = '';
         $options = $this->getFormattedOptions('', $zids);
         foreach ($options as $id => $html) {
+            $btn = str_replace('***_#id***', safe(rawurlencode((string) $id)), $buttons);   // inside a JS string in onclick
             $id  = safe($id);
-            $btn = str_replace('***_#id***', $id, $buttons);
             $ret .= <<<HTML
                        <article class="item" $item_width>
                            <section class="iteminfo"> $html </section>

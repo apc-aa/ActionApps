@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace AA\Central\Package\Model;
 
-/** An aa-app package in memory (design balicek-v1.md § 4): what the export collects (C4.3 part 3),
- *  Writer turns into XML and the reader returns. Plain data - all texts already in UTF-8 (the
- *  collector converts from the module charset, § 2.4), ids unpacked. The order of the lists does not
- *  matter: Writer sorts everything (§ 2.5). `meta/tables` is not here - Writer derives it from Schema. */
+/** An aa-app package in memory: what the export collects, Writer turns into XML and the reader
+ *  returns. Plain data - all texts already in UTF-8, ids unpacked. The order of the lists does not
+ *  matter: Writer sorts everything. `meta/tables` is not here - Writer derives it from Schema. */
 final readonly class Package
 {
     /**
@@ -17,9 +16,10 @@ final readonly class Package
      *                                              aa-build, site optional
      * @param list<Module>          $modules        at least one (XSD)
      * @param list<ConstantGroup>   $constantGroups
-     * @param string|null           $publish        no | users | all
+     * @param bool                  $published      meta/publish: a store may offer the app to anyone
      * @param string|null           $requires       meta/requires/@aa-version
      * @param bool                  $withItems      meta/contents/@items - modules may carry items only then
+     * @param Batch|null            $batch          meta/batch: one slice with items only
      */
     public function __construct(
         public string $name,
@@ -28,9 +28,10 @@ final readonly class Package
         public array $constantGroups = [],
         public ?string $description = null,
         public ?string $version = null,
-        public ?string $publish = null,
+        public bool $published = false,
         public ?string $requires = null,
         public bool $withItems = false,
         public ?string $doc = null,
+        public ?Batch $batch = null,
     ) {}
 }

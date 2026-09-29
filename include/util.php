@@ -30,6 +30,7 @@
 //
 
 use AA\IO\DB\DB_AA;
+use AA\Util\InputVars;
 use AA\Util\Langs;
 use AA\Util\SingletonTrait;
 
@@ -377,6 +378,9 @@ function array_merge_append(array &$array, $newValues): array
 function array_merge_append_global($newValues): void
 {
     foreach ($newValues as $key => $value) {
+        if (InputVars::isProtectedGlobal((string) $key)) {
+            continue;
+        }
         if (!isset($GLOBALS[$key]) || !is_array($GLOBALS[$key]) || !is_array($value)) {
             $GLOBALS[$key] = $value;
         } else {
@@ -384,18 +388,6 @@ function array_merge_append_global($newValues): void
             $GLOBALS[$key] = array_merge_append($tmp, $value);
         }
     }
-}
-
-function recursive_array_replace($find, $replace, $array): array|string
-{
-    if (!is_array($array)) {
-        return str_replace($find, $replace, $array);
-    }
-    $newArray = [];
-    foreach ($array as $key => $value) {
-        $newArray[$key] = recursive_array_replace($find, $replace, $value);
-    }
-    return $newArray;
 }
 
 /** new_id function
@@ -1487,7 +1479,7 @@ function add_post2shtml_vars($delete = true): void
 {
     global $post2shtml_id;
     add_vars();
-    if (!$post2shtml_id) {
+    if (!is_string($post2shtml_id) || !is_long_id($post2shtml_id)) {   // it comes from the URL and goes to SQL
         return;
     }
     $db = getDB();
@@ -1503,6 +1495,9 @@ function add_post2shtml_vars($delete = true): void
     foreach ($var_types as $var_type) {
         if (is_array($vars[$var_type])) {
             foreach ($vars[$var_type] as $var => $value) {
+                if (InputVars::isProtectedGlobal((string) $var)) {   // any visitor can store the vars
+                    continue;
+                }
                 global $$var;
                 $$var = $value;
             }
@@ -1638,12 +1633,12 @@ class AA_Credentials
     /** we are sending collected slice passwords to {ajax...} */
     public function getAsToken(): string
     {
-        return AA_Stringexpand_Encrypt::get_time_token(['spwd' => array_keys($this->_pwd)]);
+        return AA_Stringexpand_Encrypt::get_time_token(['spwd' => array_keys($this->_pwd)], 'slice-pwd');
     }
 
     public function importFromToken(string $timetoken): void
     {
-        $arr = AA_Stringexpand_Encrypt::decrypt_time_token($timetoken);
+        $arr = AA_Stringexpand_Encrypt::decrypt_time_token($timetoken, 'slice-pwd');
         if (is_array($arr) && is_array($arr['spwd'])) {
             foreach ($arr['spwd'] as $crypted_slice_pwd) {
                 $this->register($crypted_slice_pwd);
@@ -1988,13 +1983,14 @@ function aa_version($format = 'full'): string
     // clock git recorded - converting to the reader's timezone would move the stamp around
     $date    = preg_replace('/T(\d\d:\d\d)\S*/', ' $1', (string) ($release['date'] ?? ''));
     $build   = trim($commit . ' ' . $date);
-    $full    = 'ActionApps ' . $version . ' (' . ($build ?: 'source checkout') . '), PHP ' . PHP_VERSION . ', REMOTE_ADDR: ' . $_SERVER['REMOTE_ADDR'];
     return match ($format) {
         'svn', 'svn2' => $commit,     // were the SVN revision of util.php / `svnversion` of the tree; '' in a source checkout
         'build'       => $build,      // commit and its date, for humans
         'aa'          => $version,
         'php'         => PHP_VERSION,
-        default       => $full,
+        // built here, not above: it reads REMOTE_ADDR, which does not exist on the command line,
+        // so every cron and queue call used to warn for a string it did not ask for
+        default       => 'ActionApps ' . $version . ' (' . ($build ?: 'source checkout') . '), PHP ' . PHP_VERSION . ', REMOTE_ADDR: ' . ($_SERVER['REMOTE_ADDR'] ?? 'cli'),
     };
 }
 
@@ -2134,7 +2130,9 @@ function IsStringable($var): bool // like function is_signed(),function is_numbe
 function RestoreVariables(array $r_state_vars): void
 {
     foreach ($r_state_vars as $k => $v) {
-        $GLOBALS[$k] = $v;
+        if (!InputVars::isProtectedGlobal((string) $k)) {   // the packed state can come from the request
+            $GLOBALS[$k] = $v;
+        }
     }
 }
 

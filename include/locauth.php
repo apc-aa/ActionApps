@@ -27,7 +27,10 @@
 *
 */
 
+use AA\Central\AppStore;
 use AA\IO\DB\DB_AA;
+use AA\Util\LoginToken;
+use AA\Util\LogOnce;
 
 require_once __DIR__ . "/locsess.php";
 require_once __DIR__ . "/perm_core.php"; // always included!
@@ -38,6 +41,11 @@ require_once __DIR__ . "/perm_" . PERM_LIB . ".php";
 
 class AA_Auth extends Auth
 {
+    /** how this request logged in: 'password', 'token', 'bad-token' (refused) or '' - static, as the object itself is saved in the session */
+    private static string $login = '';
+    /** the scope of the token of this request (LoginToken::SCOPE_*); '' for any other login */
+    private static string $scope = '';
+
     public function __construct()
     {
         $this->lifetime = defined('AA_LOGIN_TIMEOUT') ? constant('AA_LOGIN_TIMEOUT') : 1440;   // day
@@ -117,7 +125,12 @@ class AA_Auth extends Auth
 
     protected function _validatelogin($username, $password, $code2fa = ''): false|string
     {
-        $this->auth['uname'] = ($uid = AA::$perm->authenticateUsername($username, $password, $code2fa)) ? $username : '';
+        $uid = AA::$perm->authenticateUsername($username, $password, $code2fa);
+        // its password is public: only central/responder.php takes it, and gives it only a store token there
+        if ($uid && !defined('AA_TOKEN_ENTRY') && AppStore::isPublic((string) $uid)) {
+            $uid = false;
+        }
+        $this->auth['uname'] = $uid ? $username : '';
         $this->auth['uid']   = $uid ?: '';
         AA_Log::write('LOGIN', AA_Log::context($uid), $username);
         return $uid;
@@ -137,30 +150,41 @@ class AA_Auth extends Auth
 
     public function auth_preauth(): false|string
     {
+        self::$login = '';
+        self::$scope = '';
         if (isset($_POST['username']) && isset($_POST['password'])) {
-            return $this->_validatelogin($_POST['username'], $_POST['password'], $_POST['code2fa']);
+            $uid = $this->_validatelogin($_POST['username'], $_POST['password'], $_POST['code2fa']);
+            self::$login = $uid ? 'password' : '';
+            return $uid;
         }
-        // JWT Bearer token authentication (used by Central for remote AA access)
-        if (($auth_header = get_authorization_header()) && str_starts_with($auth_header, 'Bearer ')) {
-            return $this->_validateJwt(substr($auth_header, 7));
+        // Bearer only where the page expects it (central/responder.php) - elsewhere a token must not open a session
+        if (defined('AA_TOKEN_ENTRY') && str_starts_with($header = get_authorization_header(), 'Bearer ')) {
+            $uid = $this->_validateJwt(substr($header, 7));
+            self::$login = $uid ? 'token' : 'bad-token';
+            return $uid;
         }
         return false;
     }
 
-    /** Validate JWT token and set auth context
-     *  JWT must be signed with this AA's AA_ID using HS256
-     */
+    /** how this request logged in - see $login */
+    public static function login(): string
+    {
+        return self::$login;
+    }
+
+    /** the scope of the token this request logged in with - see $scope */
+    public static function scope(): string
+    {
+        return self::$scope;
+    }
+
     protected function _validateJwt(string $jwt): false|string
     {
         try {
-            $decoded = (array) \Firebase\JWT\JWT::decode(
-                $jwt,
-                new \Firebase\JWT\Key(AA_ID, 'HS256'),
-            );
-            $this->auth['uname'] = $decoded['name'] ?? '';
-            $this->auth['uid']   = $decoded['sub'] ?? '';
-            return $decoded['sub'] ?: false;
-        } catch (\Exception $e) {
+            [$this->auth['uid'], $this->auth['uname'], self::$scope] = LoginToken::verify($jwt);
+            return $this->auth['uid'];
+        } catch (\Throwable $e) {   // a malformed token throws TypeError, too
+            LogOnce::daily('JWT_DENY', (string) ($_SERVER['REMOTE_ADDR'] ?? ''), $e->getMessage());
             return false;
         }
     }

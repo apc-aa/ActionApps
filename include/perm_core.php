@@ -68,6 +68,10 @@ const PS_MANAGE_ALL_SLICES   = "S";   // aa    | edit all slices (this
 //         permission is usable, when
 //         you want credit some rights
 const PS_HISTORY             = "T";   // slice | access history log
+const PS_INSTALL_APP         = "U";   // aa    | install an app package (Central aa-app, AA\Central\Package\Importer) -
+//         SUPER only: a package is code running with the rights of this AA
+//         (design central/balicek-v1.md § 3.3, Q-H2); check it on the 'aa'
+//         object (CheckPerms(uid, 'aa', AA_ID, PS_INSTALL_APP)), not IfSlPerm()
 
 //---------- Polls -----------------
 // author        - possibly letters 'abcdefg'
@@ -210,7 +214,7 @@ function IsSuperadmin(): bool {
     if (!$permission_to || $permission_uid != AuthGetUid()) {
         AA::$perm->cache(AuthGetUid());
     }
-    return (bool)$r_superuser[AA_ID] ?: false;
+    return (bool) ($r_superuser[AA_ID] ?? false);
 }
 
 /** IsCatPerm function
@@ -500,6 +504,23 @@ class AA_Perm {
         return true;
     }
 
+    /** No user of AA logs in with $login - as the login name or the e-mail, in any case, with trailing
+     *  spaces or not. The readers of Reader Management slices are left out. Without a user system
+     *  (restrictPermsTo()) it throws: "free" would be a guess.
+     *  @throws LogicException */
+    public function isAdminUsernameFree(string $login): bool {
+        $systems = array_diff_key($this->perm_systems, ['AA_Permsystem_Reader' => true]);
+        if (!$systems) {
+            throw new LogicException('No permission system of users to ask - only the readers are there');
+        }
+        foreach ($systems as $perm_sys) {
+            if (!$perm_sys->isLoginFree($login)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     /**
      * @param string $pattern
      * @param int    $limit
@@ -567,6 +588,16 @@ class AA_Perm {
             return $ps->getIDsInfo($uid);
         }
         return false;
+    }
+
+    /** What changes when the user's password changes, from the backend the id belongs to
+     *  @return ?string null for an id no backend knows as a user, or whose backend cannot tell */
+    public function credentialStamp($uid): ?string
+    {
+        if ($uid && ($ps = $this->_whichUsersystem($uid))) {
+            return $ps->credentialStamp((string) $uid);
+        }
+        return null;
     }
 
     /** Grabs User name from LDAP/SQL/AA
@@ -804,13 +835,9 @@ class AA_Perm {
     {
         global $permission_uid, $permission_to, $sess, $r_superuser;
 
-        if (is_object($sess)) {
-            $sess->register('permission_uid');
-            $sess->register('permission_to');
-            $sess->register('r_superuser');
-        }
-
+        $r_superuser            = [];         // of $user_id only - the flag of the user cached before must not stay
         $permission_uid         = $user_id;
+        $permission_to          = [];
         $permission_to["slice"] = $this->getUserPerms($permission_uid, "slice");
         $permission_to["aa"]    = $this->getUserPerms($permission_uid, "aa");     // aa is parent of all slices
 
@@ -824,6 +851,13 @@ class AA_Perm {
                 $r_superuser[$key] = true;
             }
             $permission_to["aa"][$key] = self::_resolve($val);
+        }
+
+        // after the values are set - register() copies the global into a session which does not have it yet
+        if (is_object($sess)) {
+            $sess->register('permission_uid');
+            $sess->register('permission_to');
+            $sess->register('r_superuser');
         }
     }
 
@@ -931,12 +965,19 @@ abstract class AA_Permsystem {
 
     function isUsernameFree($username): bool                                  { return false; }
 
+    /** no user has $login as the login name or the e-mail - case and trailing spaces ignored */
+    public function isLoginFree(string $login): bool                        { return false; }
+
     /** @return string|array - string "too much" if too many users should be listed (LDAP returns it sometimes) */
     function findUsernames($pattern): array|string { return []; }
 
     function findUserByLogin($user_login): array                              { return []; }
 
     function findGroups($pattern): array { return []; }
+
+    /** What changes when the user's password changes - a long-lived login (AA\Util\LoginToken) dies with it.
+     *  @return ?string null: not a user of this backend, or the backend cannot tell */
+    public function credentialStamp(string $uid): ?string { return null; }
 
     /** getGroup function
      * @param $group_id
@@ -1042,6 +1083,17 @@ class AA_Permsystem_Reader extends AA_Permsystem {
             return $user_id;
         }
         return false;       
+    }
+
+    /** The stored password hash of the reader - only of one authenticateUsername() would find by the
+     *  username, so a reader moved out of the active bin or of the allowed slices has none */
+    public function credentialStamp(string $uid): ?string
+    {
+        $user_info = AA_Reader::getReaderItemContent($uid);
+        if ($user_info->isEmpty() || (AA_Reader::name2Id($user_info->getValue(FIELDID_USERNAME), $this->rm_slices) !== $uid)) {
+            return null;
+        }
+        return ((string) $user_info->getValue(FIELDID_PASSWORD)) ?: null;
     }
 
     /** Do not call this function!!!
@@ -1322,7 +1374,7 @@ class AA_Reader {
     /**
      * @param $email
      * @param null|string[] $slices
-     * @param null $bin
+     * @param int|null $bin     AA_BIN_* bits; null = the active bin
      */
     static function email2Id($email, array $slices=null, $bin=null): ?string
     {

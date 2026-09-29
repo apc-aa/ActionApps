@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace AA\Central;
 
+use AA\Util\LoginToken;
+use Closure;
+
 /** What central/responder.php may run, and from which transport. Pure rules, no state. */
 class ResponderPolicy
 {
@@ -20,7 +23,8 @@ class ResponderPolicy
         'Do_Synchronize',
         'Do_Optimize',
         'Do_Optimize_Type',
-        'Do_Import_Module_Chunk',
+        'Get_App',
+        'Get_Apps',
     ];
 
     /** Admin AJAX commands with a side effect, sent only by the JS AA_Response() helper, which POSTs;
@@ -34,6 +38,42 @@ class ResponderPolicy
     public const ERR_UNKNOWN_OPTIMIZE_TYPE   = 9;
     public const ERR_UNKNOWN_OPTIMIZE_METHOD = 10;
     public const ERR_OPTIMIZE_TYPE_RUNNING   = 11;
+
+    /** Get_Widget: the item (or its slice) does not exist */
+    public const ERR_UNKNOWN_ITEM = 12;
+
+    /** Get_Jwt: no username and password of an AA user in the request */
+    public const ERR_TOKEN_NEEDS_PASSWORD = 13;
+
+    /** a Bearer token was sent and refused - Central has to authenticate again */
+    public const ERR_TOKEN_REFUSED = 14;
+
+    /** Central side, never sent by a responder: no token stored for the AA, so nothing was asked */
+    public const ERR_NOT_AUTHENTICATED = 15;
+
+    /** Get_App: no such app, or the user may not export it - one answer, so it tells no module ids */
+    public const ERR_APP_DENIED = 16;
+    /** Get_App: the export found errors (E); the answer lists them as "code path ref" */
+    public const ERR_APP_EXPORT = 17;
+    /** Get_App: a parameter is missing or of a wrong form */
+    public const ERR_APP_REQUEST = 18;
+    /** Get_App: the source failed - the detail is in its PHP error log */
+    public const ERR_APP_FAILED = 19;
+    /** the token of the request is of a scope that does not allow the command */
+    public const ERR_TOKEN_SCOPE = 20;
+    /** Get_Jwt: ttl or scope of a form this AA cannot read */
+    public const ERR_TOKEN_REQUEST = 21;
+    /** the public account of the app store may not run the command (publicAllows()) */
+    public const ERR_PUBLIC_ACCOUNT = 22;
+    /** the public account sent too many requests from the address this hour (AppStore::admit()) */
+    public const ERR_RATE_LIMIT = 23;
+    /** no permission - isPerm() of the command refused the login */
+    public const ERR_NO_PERMISSION = 101;
+
+    /** what a token of the scope apps may run: what another AA needs to pull an app */
+    private const APPS_SCOPE_COMMANDS = ['Get_App', 'Get_Modules', 'Get_Apps'];
+    /** what the public account runs with its apps token - no module list: the store lists its apps */
+    private const PUBLIC_COMMANDS = ['Get_App', 'Get_Apps'];
 
     /** Optimize types Do_Optimize_Type runs as a chain (AA\Optimize\Chain). The State Check tags
      *  report through findings(), private_fix and opt_feature are one-off, site-chosen repairs. */
@@ -55,6 +95,84 @@ class ResponderPolicy
         return in_array($name, self::REMOTE_COMMANDS, true);
     }
 
+    /** $name = AA_Responder::name(); an admin token runs anything (isPerm() still decides) */
+    public static function scopeAllows(string $scope, string $name): bool
+    {
+        return match ($scope) {
+            LoginToken::SCOPE_ADMIN => true,
+            LoginToken::SCOPE_APPS  => in_array($name, self::APPS_SCOPE_COMMANDS, true),
+            default                 => false,
+        };
+    }
+
+    /** The public account of the app store (AppStore::isPublic()) - its password is public: by it only an
+     *  apps token (Get_Jwt), by the token only the store. Never a session, never an admin token.
+     *  @param string $login AA_Auth::login() @param string $scope asked by Get_Jwt, else of the token */
+    public static function publicAllows(string $name, string $login, string $scope): bool
+    {
+        return match ($login) {
+            'password' => ($name === 'Get_Jwt') && ($scope === LoginToken::SCOPE_APPS),
+            'token'    => ($scope === LoginToken::SCOPE_APPS) && in_array($name, self::PUBLIC_COMMANDS, true),
+            default    => false,
+        };
+    }
+
+    /** isPerm() of the commands another AA runs on its login (Get_Jwt, Get_App, Get_Apps): a token of a
+     *  superadmin, or the app store's public account (ResponderPolicy::publicAllows() limits what it runs)
+     *  @param string $login AA_Auth::login() */
+    public static function centralPerm(string $command, string $login, bool $superadmin, bool $public): bool
+    {
+        return match ($command) {
+            'Get_Jwt'             => $superadmin || $public,
+            'Get_App', 'Get_Apps' => $login === 'token',
+            default               => $superadmin,
+        };
+    }
+
+    /** Get_Jwt issues a token only for the password of this very request - a stolen cookie or token must
+     *  not renew itself; the public account an apps token only */
+    public static function mayIssueJwt(string $login, bool $superadmin, bool $public, string $scope): bool
+    {
+        return ($login === 'password') && ($superadmin || ($public && ($scope === LoginToken::SCOPE_APPS)));
+    }
+
+    /** The checks of central/responder.php after the transport ones, in this order: the token's scope, the
+     *  commands and the limit of the public account (counted before anything runs), then isPerm().
+     *  @param array<string, mixed> $params the request's @param Closure(): bool $admit AppStore::admit()
+     *  @param Closure(): bool $isPerm the command's @return ?int the refusing error code; null = run it */
+    public static function dispatchRefusal(string $command, array $params, string $login, string $tokenScope, bool $public, Closure $admit, Closure $isPerm): ?int
+    {
+        if (($login === 'token') && !self::scopeAllows($tokenScope, $command)) {
+            return self::ERR_TOKEN_SCOPE;
+        }
+        if ($public) {
+            $scope = ($command === 'Get_Jwt') ? (self::jwtParams($params)['scope'] ?? '') : $tokenScope;
+            if (!self::publicAllows($command, $login, $scope)) {
+                return self::ERR_PUBLIC_ACCOUNT;
+            }
+            if (!$admit()) {
+                return self::ERR_RATE_LIMIT;
+            }
+        }
+        return $isPerm() ? null : self::ERR_NO_PERMISSION;
+    }
+
+    /** The parameters of Get_Jwt; null = one of a wrong form - an error, never a silent admin token.
+     *  @return array{ttl: ?int, scope: string}|null ttl null = a day; LoginToken::issue() keeps any ttl within a minute and a day */
+    public static function jwtParams(mixed $param): ?array
+    {
+        $param = is_array($param) ? $param : [];
+        $ttl   = $param['ttl'] ?? null;
+        $scope = $param['scope'] ?? LoginToken::SCOPE_ADMIN;
+        if (is_string($ttl) && preg_match('/^-?\d{1,10}\z/', $ttl)) {
+            $ttl = (int) $ttl;
+        }
+        if ((($ttl !== null) && !is_int($ttl)) || !in_array($scope, [LoginToken::SCOPE_ADMIN, LoginToken::SCOPE_APPS], true)) {
+            return null;
+        }
+        return ['ttl' => $ttl, 'scope' => $scope];
+    }
+
     public static function isPostOnlyCommand(string $name): bool
     {
         return in_array($name, self::POST_ONLY_COMMANDS, true);
@@ -62,7 +180,7 @@ class ResponderPolicy
 
     /** A browser request sent by a page of another origin. SameSite=Lax cookies still ride POSTs
      *  from sibling subdomains (*.ecn.cz share a registrable domain), so Lax alone is no CSRF guard.
-     *  Server-to-server calls (Central's AA_Http) send neither header, so they pass. */
+     *  Server-to-server calls (Central's RemoteSource) send neither header, so they pass. */
     public static function isForeignBrowserRequest(array $server): bool
     {
         if (isset($server['HTTP_SEC_FETCH_SITE'])) {

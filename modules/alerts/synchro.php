@@ -46,7 +46,7 @@ try {
     $change_to_delete = InputVars::boolPOST('change_to_delete');
     $cancel = InputVars::boolPOST('cancel');
 
-    $Msg = InputVars::stringGETPOST('Msg');
+    $Msg = InputVars::messageGETPOST();
 } catch (Exception $e) {
     AA_Adminpageutil::pageParameterError($e);
 }

@@ -52,11 +52,4 @@ CKEDITOR.editorConfig = function( config ) {
     CKEDITOR.dtd.$removeEmpty['i'] = false
 
     config.embed_provider = '//iframe.ly/api/oembed?url={url}&callback={callback}&api_key=31993d559460afddc115dc';
-
-    config.filebrowserBrowseUrl      = AA_GetConf('path') + 'misc/filebrowser/browse.php?opener=ckeditor&format=json&type=files';
-    config.filebrowserImageBrowseUrl = AA_GetConf('path') + 'misc/filebrowser/browse.php?opener=ckeditor&format=json&type=images';
-    config.filebrowserFlashBrowseUrl = AA_GetConf('path') + 'misc/filebrowser/browse.php?opener=ckeditor&format=json&type=flash';
-    config.filebrowserUploadUrl      = AA_GetConf('path') + 'misc/filebrowser/upload.php?opener=ckeditor&format=json&type=files';
-    config.filebrowserImageUploadUrl = AA_GetConf('path') + 'misc/filebrowser/upload.php?opener=ckeditor&format=json&type=images';
-    config.filebrowserFlashUploadUrl = AA_GetConf('path') + 'misc/filebrowser/upload.php?opener=ckeditor&format=json&type=flash';
 };

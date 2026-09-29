@@ -29,9 +29,6 @@ class TxtWidget extends Widget
     protected $audio_mode;
     protected $audio_store;
 
-    /** @var array  list of textareas for CodeMirror creation */
-    protected $ids_4_editor = [];
-
     /** - static member functions
      *  used as simulation of static class variables (not present in php4)
      */
@@ -68,8 +65,12 @@ class TxtWidget extends Widget
     protected function requireLibs($aa_property, $winfo): array
     {
         $ret = (count($aa_property->getTranslations()) > 1) ? ['aa-jslib@3'] : [];
+        // the view follows the stored value (_getRawHtml() passes it); the default flag only without one
+        $view = $winfo['view'] ?? (($aa_property->getContentTypeDefault() & FLAG_HTML) ? 'code' : '');
         if ($aa_property->getContentTypeSwitches()) {
-            $ret[] = 'ckeditor@4';
+            $ret[] = 'aa-richtext@1';
+        } elseif ($view === 'code') {
+            $ret[] = 'aa-code@1';
         }
         if ($this->speechEnabled()) {
             $ret[] = 'aa-speech@1';
@@ -120,6 +121,9 @@ class TxtWidget extends Widget
         }
 
         $value = $content->getAaValue($aa_property->getId());
+        // how the field is edited follows the format the value has now
+        $view       = self::view($this instanceof EdtWidget, $this instanceof CodWidget, $aa_property->getContentTypeSwitches(), (bool) (AA_Formatters::getCurrentFormatter($value, $aa_property) & FLAG_HTML));
+        $rich_attrs = in_array($view, ['rich', 'switch-code', 'switch-plain'], true) ? $this->richtextAttrs($base_name, $content, $type, $view) : [];
         $def_rows = $this->getProperty('rows', 4);
 
         if ($maxlength = (int) $this->getProperty('max_characters', 0)) {
@@ -191,105 +195,101 @@ class TxtWidget extends Widget
                     $attrs['data-aa-speech-lang'] = $per_lang;
                 }
             }
-            $widget .= $this->getOneInput($input_name, $i, $val, $attrs, $required, !$aa_property->getContentTypeSwitches() || $type === 'live', $base);
+            $widget .= $this->getOneInput($input_name, $i, $val, $attrs, $required, !self::editorAllowed($view, $type), $base, $view, $rich_attrs);
             $required = ''; // only one is required
             unset($attrs['autofocus']);
         }
 
-        // if CKEditor called outside AA - in sitemodule, we have to tell, which slice to use for image uploads
-        $_SESSION['r_last_module_id'] = $content->getOwnerID();
-
-        return ['html' => $widget, 'last_input_name' => $input_name, 'base_name' => $base_name, 'base_id' => $base_id, 'required' => $aa_property->isRequired()];
+        return ['html' => $widget, 'last_input_name' => $input_name, 'base_name' => $base_name, 'base_id' => $base_id, 'required' => $aa_property->isRequired(), 'view' => $view];
     }
 
     /**
-     * @param string $input_name
-     * @param $i
-     * @param string $val
-     * @param array $attrs
-     * @param string $widget_add
-     * @param string $widget_add2
-     * @param string $required
-     * @param bool $no_htmleditor_link
-     * @param array $base
+     * @param string                $input_name
+     * @param int|string            $i
+     * @param string                $val
+     * @param array                 $attrs
+     * @param string                $required
+     * @param bool                  $no_htmleditor_link
+     * @param array                 $base
+     * @param string                $view        see view()
+     * @param array<string, string> $rich_attrs  attributes of <aa-richtext>
      * @return string
      */
-    protected function getOneInput($input_name, $i, $val, $attrs, $required, $no_htmleditor_link, $base): string
+    protected function getOneInput($input_name, $i, $val, $attrs, $required, $no_htmleditor_link, $base, string $view = '', array $rich_attrs = []): string
     {
-
-        $showhtmlarea   = $this instanceof \AA\Widget\EdtWidget;
-        $showcodeeditor = $this instanceof \AA\Widget\CodWidget;
-
-        //if ( $showhtmlarea ) {
-        // $this->html_radio($showhtmlarea ? false : 'convertors');
-
-        // fix for IE - where the textarea icons are too big so there is
-        // no space for the text
-        // if ($showhtmlarea) {
-        //    $rows += 8;
-        //}
-        //}
-
-        $input_id = FormArray::formName2Id($input_name);
+        $input_id    = FormArray::formName2Id($input_name);
         $input_value = safe($val);
 
-        $areaclass = '';
         $htmlareaedit = '';
-
-        if ($showhtmlarea || $showcodeeditor) {
-            if ($showhtmlarea) {
-                // CKEditor is still created from a generated per-instance call
-                // in EdtWidget::requireRun(); <aa-code> upgrades itself.
-                $this->ids_4_editor[] = '#' . $input_id;
-            }
-
-            // we do not mark base textarea as required for CodeMirror, since it causes "An invalid form control with name='' is not focusable."
-            if ($showcodeeditor) {
-                $required = '';
-            }
-
-        } elseif (!$no_htmleditor_link) {
-            $htmlareaedit = "<a href=\"javascript:;\" class=\"btn aa-arealink\" style=\"display:none\" onclick=\"this.parentNode.parentNode.querySelector('input[value=\'1\']').checked=true;this.parentNode.parentNode.querySelector('.aa-formatters').style.display='none'; this.style.display='none';CKEDITOR.replace('$input_id');\">" . _m("Edit in Editor") . "</a>"; // used for HTMLArea
-            // conversions menu
-            //$convertor   = $convert ? $this->get_convertors() : false;
-            //if ( $convertor ) {
-            //    $this->echoo('  <table>\n   <tr><td>");
-            //}
+        if (in_array($view, ['switch-code', 'switch-plain'], true) && !$no_htmleditor_link) {
+            // <aa-richtext> shows the link and opens the editor - without it there is none to open
+            $htmlareaedit = '<a href="javascript:;" class="btn aa-arealink" style="display:none" data-aa-editor-for="' . $input_id . '">' . _m('Edit in Editor') . '</a>';
         }
 
         $attr_string = htmlattr($attrs);
-
-        $ret = "<textarea id=\"$input_id\" name=\"$input_name\" $attr_string $required $areaclass>$input_value</textarea>";
-        if ($showcodeeditor) {
-            // <aa-code> only enhances - the textarea stays and is what gets submitted
-            $ret = '<aa-code syntax="html">' . $ret . '</aa-code>';
-        }
+        $ret = "<textarea id=\"$input_id\" name=\"$input_name\" $attr_string $required>$input_value</textarea>";
+        $ret = match ($view) {
+            'code'                        => '<aa-code syntax="html">' . $ret . '</aa-code>',
+            'rich'                        => RichtextMarkup::wrap($ret, 'rich', $rich_attrs),
+            'switch-code', 'switch-plain' => RichtextMarkup::wrap($ret, substr($view, 7), $rich_attrs),
+            default                       => $ret,
+        };
         if ($lang = Langs::getLangNum2Name($i)) {
             $langcode  = Langs::getLangName2Code($lang);
             $translate = '';
 
             if ($langcode != $base['langcode']) {
-                // Read and write wherever the text really lives: the editor instance
-                // when one is attached, the plain textarea otherwise.
-                $source_id = $base['id'];
-                if ($showhtmlarea) {
-                    $get_source = "CKEDITOR.instances['$source_id'].getData()";
-                    $set_target = "CKEDITOR.instances['$input_id'].setData(txt)";
-                } elseif ($showcodeeditor) {
-                    // <aa-code>'s setter goes through the editor and fires change, which live mode needs.
-                    $get_source = "document.getElementById('$source_id').closest('aa-code').value";
-                    $set_target = "document.getElementById('$input_id').closest('aa-code').value = txt";
-                } else {
-                    // No editor bridge here, so nothing else fires onchange - and in
-                    // live mode onchange is AA_SendWidgetLive(), i.e. the save.
-                    $get_source = "document.getElementById('$source_id').value";
-                    $set_target = "const el = document.getElementById('$input_id'); el.value = txt; el.dispatchEvent(new Event('change'))";
-                }
-                $translate = "<span class=\"btn aa-langtrans-tbtn\" onclick=\"AA_TranslateInto(() => $get_source, txt => { $set_target; }, '" . $base['langcode'] . "', '$langcode', this)\">" . _m("translate from") . ' ' . Langs::getLangCode2Name($base['langcode']) . "</span>";
+                // the editor element when there is one: it shows the text and announces the change,
+                // which live mode saves; a bare textarea needs the change fired by hand
+                $source_id  = $base['id'];
+                $get_source = "(el => (el.closest('aa-richtext, aa-code') ?? el).value)(document.getElementById('$source_id'))";
+                $set_target = "(el => { const host = el.closest('aa-richtext, aa-code'); if (host) { host.value = txt; } else { el.value = txt; el.dispatchEvent(new Event('change')); } })(document.getElementById('$input_id'))";
+                $translate  = "<span class=\"btn aa-langtrans-tbtn\" onclick=\"AA_TranslateInto(() => $get_source, txt => { $set_target; }, '" . $base['langcode'] . "', '$langcode', this)\">" . _m("translate from") . ' ' . Langs::getLangCode2Name($base['langcode']) . "</span>";
             }
             $ret = "<div class=\"aa-langtrans aa-lang-$lang\"><strong class=\"aa-langtrans-label\">$lang</strong>$ret$translate</div>";
         }
         return "<div class='aa-one-val'>$htmlareaedit$ret</div>";
+    }
+
+    /**
+     * How the field is edited: 'rich' TinyMCE (edt); 'switch-code' / 'switch-plain' <aa-richtext>
+     * following the HTML / Plain text switch; 'code' CodeMirror (HTML without a switch, and cod);
+     * '' the bare textarea (plain text only).
+     */
+    public static function view(bool $is_edt, bool $is_cod, int $switches, bool $is_html): string
+    {
+        return match (true) {
+            $is_cod         => 'code',
+            $is_edt         => 'rich',
+            $switches !== 0 => $is_html ? 'switch-code' : 'switch-plain',
+            $is_html        => 'code',
+            default         => '',
+        };
+    }
+
+    /**
+     * Whether TinyMCE may open: edt is the editor in every mode; Edit in Editor of a switch only
+     * in the normal form - ajax and live carry the format in a hidden input, and only for HTML,
+     * so a plain-text value opened in the editor would be saved as plain text.
+     */
+    public static function editorAllowed(string $view, string $type): bool
+    {
+        return ($view === 'rich') || ($type === 'normal');
+    }
+
+    /** @return array<string, string> attributes of <aa-richtext> for this field and viewer */
+    private function richtextAttrs(string $base_name, AA_Content $content, string $type, string $view): array
+    {
+        $editor = self::editorAllowed($view, $type);
+        $attrs  = RichtextMarkup::contextAttrs((string) $content->getOwnerID(), $editor);   // no editor, nothing to upload with
+        if ($view !== 'rich') {
+            $attrs['switch-name'] = $base_name . '[flag]';
+            $attrs['switch-html'] = (string) FLAG_HTML;
+        }
+        if ($editor) {
+            $attrs['editor'] = 'editor';
+        }
+        return $attrs;
     }
 
     /** @inheritDoc */

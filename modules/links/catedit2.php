@@ -36,8 +36,6 @@ try {
     // array ( 4 => 2, )
     $tree = InputVars::intPOST('tree');
     $cancel = InputVars::boolPOST('cancel');
-
-    $Msg = InputVars::stringGETPOST('Msg');
 } catch (Exception $e) {
     AA_Adminpageutil::pageParameterError($e);
 }

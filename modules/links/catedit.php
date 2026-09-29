@@ -21,8 +21,6 @@ try {
     $cid = InputVars::intGET('cid');
     $updated = InputVars::boolGETPOST('updated');
     $cancel = InputVars::boolGETPOST('cancel');
-
-    $Msg = InputVars::stringGETPOST('Msg');
 } catch (Exception $e) {
     AA_Adminpageutil::pageParameterError($e);
 }

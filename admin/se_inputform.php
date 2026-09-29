@@ -109,7 +109,7 @@ try {
     $update = InputVars::boolPOST('update');
     $cancel = InputVars::boolPOST('cancel');
 
-    $Msg = InputVars::stringGETPOST('Msg');
+    $Msg = InputVars::messageGETPOST();
 } catch (Exception $e) {
     AA_Adminpageutil::pageParameterError($e);
 }
@@ -273,8 +273,7 @@ if ($update) {
         AA::Pagecache()->invalidateFor(AA::$module_id);  // invalidate old cached values
 
         if (!count($err)) {
-            $Msg = MsgOk(_m("Fields update successful"));
-            go_url($return_url ? (expand_return_url(1) . "&msg=" . rawurlencode($Msg)) : $back_admin_url);  // back to field page  // @todo Mssg
+            go_url(get_url($return_url ? expand_return_url(1) : $back_admin_url, ['Msg' => _m("Fields update successful")]));  // back to field page
         }
     } while (0);           //in order we can use "break;" statement
 }
@@ -301,8 +300,7 @@ foreach ($g_modules as $k => $v) {
 
 // load field
 if (!($fld = AA_Field::factoryFromDb($fid, AA::$module_id))) {
-    // $Msg = MsgErr(_m("No field found"));
-    go_url($return_url ? expand_return_url(1) : $back_admin_url, ['msg' => _m("No field found")]);  // back to field page
+    MsgPage(_m("No field found"), $back_admin_url);
 }
 
 if (!$update) {      // load defaults

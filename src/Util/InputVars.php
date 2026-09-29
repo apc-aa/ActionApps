@@ -178,6 +178,14 @@ class InputVars
         return self::inputCheck($name, $_GET[$name] ?? $_POST[$name], 'array', $required);
     }
 
+    /** Status message passed in the URL after a redirect, as HTML ready to print ('' if none).
+     *  Senders pass plain text, but anyone can craft the link, so it is escaped here.
+     */
+    public static function messageGETPOST(): string
+    {
+        $msg = $_GET['Msg'] ?? $_POST['Msg'] ?? '';
+        return (is_string($msg) && trim($msg) !== '') ? \MsgOk(Txt::safe($msg)) : '';
+    }
 
     // --- General function ---
 
@@ -195,6 +203,20 @@ class InputVars
         return is_array($value) ? array_map([__CLASS__, "StripslashesArray"], $value) : stripslashes($value);
     }
 
+    /** globals the session restores and freeze() saves - the login and the permission cache, which
+     *  IsSuperadmin() and CheckPerms() trust (Session::LEGACY_GLOBAL_VARS without slice.php's public
+     *  'slices'; this file must not load the session classes) */
+    private const SESSION_GLOBALS = [
+        'auth', 'sess', 'r_state', 'r_hidden', 'r_err', 'r_msg', 'permission_uid', 'permission_to', 'r_superuser',
+        'rusr', 'rgrp', 'r_wm_state', 'r_userstate', 'r_sr_state', 'recover', 'r_packed_state_vars', 'scr',
+    ];
+
+    /** a request variable must never become this global - superglobals and the session-backed ones */
+    public static function isProtectedGlobal(string $name): bool
+    {
+        return str_starts_with($name, '_') || ($name === 'GLOBALS') || in_array($name, self::SESSION_GLOBALS, true);
+    }
+
     /** function for processing posted or get variables
      * adds quotes, if magic_quotes are switched off
      * except of variables in $skip array (useful for 'encap' for example)
@@ -205,7 +227,7 @@ class InputVars
     {
         $arr = ($method === "get") ? $_GET : $_POST;
         foreach ($arr as $k => $v) {
-            if (!isset($skip[$k])) {
+            if (!isset($skip[$k]) && !self::isProtectedGlobal((string) $k)) {
                 $GLOBALS[$k] = self::AddslashesArray($v);
             }
         }

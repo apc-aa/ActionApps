@@ -56,8 +56,6 @@ try {
     // array ( 'dcf6f197e02…' => 2, '4429a8e44bb…' => 5, '6c81ec28dd4…' => 1, )
     $import_id = InputVars::idGET('import_id', true);
     $cancel = InputVars::boolPOST('cancel');
-
-    $Msg = InputVars::stringGETPOST('Msg');
 } catch (Exception $e) {
     AA_Adminpageutil::pageParameterError($e);
 }
@@ -178,7 +176,7 @@ if ($feed_id) { // cross server feeding
 }
 
 if (!count($err)) {
-    go_url(StateUrl(self_base() . "se_filters.php") . "&import_id=$import_id&Msg=" . rawurlencode(MsgOk(_m("Content Pooling update successful"))));
+    go_url(StateUrl(self_base() . "se_filters.php") . "&import_id=$import_id&Msg=" . rawurlencode(_m("Content Pooling update successful")));
 } else {
     AA_Adminpageutil::MsgPageMenu(StateUrl(self_base() . "se_import.php"), $err, "admin");
 }

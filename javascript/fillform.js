@@ -353,13 +353,22 @@ function getWidgetValue(widget) {
 
 /* ITEMEDIT.php field JavaScript functions - AA API */
 
+/* the control of the field in new AA forms; not the HTML / Plain text switch ([flag]), which may come first */
+function getFieldControl(fieldID) {
+    return document.querySelector('form[name="inputform"] :is(input,select,textarea)[name*="[' + fieldID.replaceAll('.', '_') + ']"]:not([name$="[flag]"])');
+}
+
 function getField(fieldID) {
     const val = getControlOrAADate('inputform', 'v' + unpackID(fieldID), 'tdctr_', ''); // old AA forms
-    return (val != null) ? val : getControlValue('inputform', document.querySelector('form[name="'+'inputform'+'"] :is(input,select,textarea)[name*="['+fieldID.replaceAll('.','_')+']"').getAttribute('name'));
+    if (val != null) {
+        return val;
+    }
+    const control = getFieldControl(fieldID);
+    return control ? getControlValue('inputform', control.getAttribute('name')) : null;
 }
 
 function setField(fieldID, newValue) {
-    const name = document.querySelector('form[name="inputform"] :is(input,select,textarea)[name*="[' + fieldID.replaceAll('.', '_') + ']"]')?.getAttribute('name') ?? 'v' + unpackID(fieldID);  // new AA forms - basic input fields
+    const name = getFieldControl(fieldID)?.getAttribute('name') ?? 'v' + unpackID(fieldID);  // new AA forms - basic input fields
     const myDate = new Date();
     setControlOrAADate('inputform', name, newValue, 'tdctr_', 0, myDate.getTimezoneOffset()/60);
 }

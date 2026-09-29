@@ -21,13 +21,22 @@ https://www.apc.org/
 */
 
 // anonymous authentication - locauth calls extauthnobody
+use AA\Central\AppExport;
+use AA\Central\AppRequest;
+use AA\Central\AppStore;
+use AA\Central\Package\DbSource;
 use AA\Central\ResponderPolicy;
 use AA\IO\DB\DB_AA;
+use AA\Optimize\CheckSessionidUse;
 use AA\Util\Langs;
+use AA\Util\LoginToken;
 
 if (!empty($_REQUEST['free'])) {   // can't be just POST - we use it in live Tags, which sends GET request
     $nobody = true;
 }
+
+// the only page that accepts Authorization: Bearer (AA_Auth::auth_preauth())
+define('AA_TOKEN_ENTRY', true);
 
 require_once __DIR__ . "/include/init_central.php";
 
@@ -52,7 +61,8 @@ class AA_Responder extends AA_Object
     }
 }
 
-/** Used for autentication
+/** Login for scripts: username and password in, the session id out (used as the AA_Session cookie);
+ *  also AA_ClientAuth. State Check lists the callers (CheckSessionidUse)
  *  @return Session ID
  */
 class AA_Responder_Get_Sessionid extends AA_Responder
@@ -68,31 +78,42 @@ class AA_Responder_Get_Sessionid extends AA_Responder
     public function run(): AA_Response
     {
         global $sess, $auth;
+        CheckSessionidUse::record($_SERVER, $_REQUEST, AuthGetUid(), AA_Auth::login());
         return new AA_Response([$sess->id(), $auth]);
     }
 }
 
-/** Issue a JWT token for authenticated superadmin
- *  Used by Central to obtain long-lived auth token
+/** A login token (AA\Util\LoginToken) of a superadmin, a day at most (ttl in seconds): admin for Central,
+ *  apps for an AA that installs an app of this one. The public account of the app store gets an apps
+ *  token only (AppStore).
  *  @return JWT string
  */
 class AA_Responder_Get_Jwt extends AA_Responder
 {
-    public function __construct() {}
+    /** @var array{ttl: ?int, scope: string}|null */
+    private ?array $request;
 
-    /** Only superadmins can get JWT tokens */
-    // isPerm() inherited — returns IsSuperadmin()
+    public function __construct($param = null)
+    {
+        $this->request = ResponderPolicy::jwtParams($param);
+    }
+
+    public function isPerm(): bool
+    {
+        return ResponderPolicy::centralPerm(static::name(), AA_Auth::login(), IsSuperadmin(), AppStore::isPublic((string) AuthGetUid()));
+    }
 
     public function run(): AA_Response
     {
-        $token = [
-            'sub'  => AuthGetUid(),
-            'name' => AuthGetUname(),
-            'iat'  => time(),
-            'exp'  => time() + 30 * 24 * 3600,  // 30 days
-        ];
-        $jwt = \Firebase\JWT\JWT::encode($token, AA_ID, 'HS256');
-        return new AA_Response($jwt);
+        LoginToken::forgetSession();   // Central never uses the session of this login
+        if ($this->request === null) {
+            return new AA_Response(_m('Get_Jwt needs ttl as seconds and scope admin or apps'), ResponderPolicy::ERR_TOKEN_REQUEST);
+        }
+        // only for the password sent with this very request - a stolen cookie or token must not renew itself;
+        // superadmin checked here too, so the token never depends on isPerm() alone
+        $may = ResponderPolicy::mayIssueJwt(AA_Auth::login(), IsSuperadmin(), AppStore::isPublic((string) AuthGetUid()), $this->request['scope']);
+        $jwt = $may ? LoginToken::issue(AuthGetUid(), null, $this->request['ttl'], $this->request['scope']) : '';
+        return ($jwt === '') ? new AA_Response(_m('A token needs a login by the username and password in this request, of a user whose password change this AA can detect'), ResponderPolicy::ERR_TOKEN_NEEDS_PASSWORD) : new AA_Response($jwt);
     }
 }
 
@@ -283,22 +304,54 @@ class AA_Responder_Do_Optimize_Type extends AA_Responder
     }
 }
 
-/** imports the slice to the database */
-class AA_Responder_Do_Import_Module_Chunk extends AA_Responder
+/** An app of this AA for the AA that installs it: package XML of the definitions or of an item batch,
+ *  the logins of the readers, item counts (AA\Central\AppRequest). Only with a Bearer token - the
+ *  other AA holds a short one of a user of this AA; the rights by the mode in AA\Central\AppExport.
+ */
+class AA_Responder_Get_App extends AA_Responder
 {
-    private ?AA_Definition_Module_Chunk $definition_chunk;
+    private array $param;
 
-    public function __construct($param)
+    public function __construct($param = null)
     {
-        $this->definition_chunk = $param['definition_chunk'];
+        $this->param = is_array($param) ? $param : [];
+    }
+
+    public function isPerm(): bool
+    {
+        return ResponderPolicy::centralPerm(static::name(), AA_Auth::login(), IsSuperadmin(), AppStore::isPublic((string) AuthGetUid()));
     }
 
     public function run(): AA_Response
     {
-        AA_Log::write('IMPORT', AA_Log::context(), new AA_Logentry_Import(['phase' => 'start', 'detail' => serialize($this->definition_chunk)]));
-        $ret = $this->definition_chunk->importModuleChunk();
-        AA_Log::write('IMPORT', AA_Log::context(), new AA_Logentry_Import(['phase' => 'result', 'detail' => $ret]));
-        return new AA_Response($ret);
+        MoreTimeLimit(120);
+        $attributes = ['url' => (string) constant('AA_INSTAL_URL'), 'aa-version' => aa_version('aa')];
+        if (AppStore::isPublic((string) AuthGetUid())) {        // no rights: only what the store publishes
+            $store  = new AppStore(new DbSource());
+            $export = new AppExport(new DbSource(), $attributes, static fn(string $module): bool => in_array($module, $store->publishedModules(), true), false, true);
+            return (new AppRequest($export, (string) AuthGetUid(), null, null, $store))->answer($this->param);
+        }
+        $export = new AppExport(new DbSource(), $attributes, static fn(string $module): bool => IfSlPerm(PS_EDIT, $module), IsSuperadmin());
+        return (new AppRequest($export, (string) AuthGetUid()))->answer($this->param);
+    }
+}
+
+/** The apps of this AA for the AA that installs one (AA\Central\AppStore::apps()): the published sites, and
+ *  for a superadmin's token also the sites whose modules it may edit. Only with a Bearer token, as Get_App.
+ */
+class AA_Responder_Get_Apps extends AA_Responder
+{
+    public function __construct() {}
+
+    public function isPerm(): bool
+    {
+        return ResponderPolicy::centralPerm(static::name(), AA_Auth::login(), IsSuperadmin(), AppStore::isPublic((string) AuthGetUid()));
+    }
+
+    public function run(): AA_Response
+    {
+        $public = AppStore::isPublic((string) AuthGetUid());
+        return new AA_Response((new AppStore(new DbSource()))->apps($public ? null : static fn(string $module): bool => IfSlPerm(PS_EDIT, $module)));
     }
 }
 
@@ -311,6 +364,7 @@ class AA_Responder_Get_Widget extends AA_Responder
     protected string $widget_properties;
     protected string $lang;
     protected string $context;   // slice_pwd (spwd) for now
+    protected string $sig;       // AA\Widget\AjaxSignature of the widget type and properties
 
     public function __construct($param = null)
     {
@@ -320,6 +374,7 @@ class AA_Responder_Get_Widget extends AA_Responder
         $this->widget_properties    = (string) $param['widget_properties'];
         $this->lang                 = (string) $param['lang'];
         $this->context              = (string) $param['context'];
+        $this->sig                  = (string) ($param['sig'] ?? '');
     }
 
     public function isPerm(): bool
@@ -331,9 +386,12 @@ class AA_Responder_Get_Widget extends AA_Responder
     {
 
         $item         = AA_Item::getItem(new zids($this->item_id));
+        $slice_id     = $item?->getSliceID() ?? '';
+        $slice        = AA_Slice::getOwnModule($slice_id);
+        if (!$slice) {   // unknown item id gives an item with no slice
+            return new AA_Response('Item not found', ResponderPolicy::ERR_UNKNOWN_ITEM);
+        }
         $iid          = $item->getItemID();
-        $slice_id     = $item->getSliceID();
-        $slice        = AA_Slice::getModule($slice_id);
 
         // we need to fill AA::$site_id in order we can use translations for example
         $site_ids     = AA_Module::belongsToSites($slice_id);
@@ -361,8 +419,12 @@ class AA_Responder_Get_Widget extends AA_Responder
             AA_Credentials::singleton()->importFromToken($this->context);
         }
 
-        $field = $slice->getField($this->field_id);
-        $widget_html = $field ? $field->getWidgetAjaxHtml($iid, null, null, $this->widget_type, json2asoc($this->widget_properties)) : '';
+        $widget_html = '';
+        if ($field = $slice->getField($this->field_id)) {
+            // widget type and properties only as signed by {ajax} - the request is anonymous
+            [$widget_type, $widget_properties] = \AA\Widget\AjaxSignature::widgetArgs($field, $iid, $this->widget_type, $this->widget_properties, $this->sig);
+            $widget_html = $field->getWidgetAjaxHtml(new ItemContent($iid), $widget_type, $widget_properties);
+        }
 
         // @todo for TagWidget the CSS is loaded this way, but the select2.js do not work by this way. Check it.
         if ($widget_script = AA::Stringexpander()->getRequireScript()) {
@@ -454,16 +516,20 @@ class AA_Responder_Get_Fields extends AA_Responder
     {
         // AA Core Fields slice must be readable by any slice Administrator (for field template picking)
         if ($this->slice_id === '41415f436f72655f4669656c64732e2e') {
+            if (IfSlPerm(PS_FIELDS)) {
+                return true;
+            }
             $slices = GetUserSlices(PS_FIELDS);
             return $slices === 'all' || !empty($slices);
         }
-        return IfSlPerm(PS_FIELDS);
+        // the listed slice, not the current one - the list discloses its fields
+        return IfSlPerm(PS_FIELDS, $this->slice_id);
     }
 
     public function run(): AA_Response
     {
         $ret = '';
-        if ($slice = AA_Slice::getModule($this->slice_id)) {
+        if ($slice = AA_Slice::getOwnModule($this->slice_id)) {
             $encoder = new ConvertCharset();
 
             // AA_Core_Fields.. holds also templates for special slice fields, like _upload_url.....
@@ -512,7 +578,7 @@ class AA_Responder_Tags extends AA_Responder
     {
         $ret    = [];
         $trimed = trim($this->input);
-        $slice  = AA_Slice::getModule($this->slice_id);
+        $slice  = AA_Slice::getOwnModule($this->slice_id);
         $field  = $slice ? $slice->getField($this->field_id) : null;
         $found  = false;
         $widget = null;
@@ -566,7 +632,7 @@ class AA_Responder_Widget_Selection extends AA_Responder
     public function run(): AA_Response
     {
         $ret   = '';
-        $slice = AA_Slice::getModule($this->slice_id);
+        $slice = AA_Slice::getOwnModule($this->slice_id);
         if ($slice && ($widget = $slice->getWidget($this->field_id)) && $this->input !== '') {
             $ret = $widget->getFilterSelection(trim($this->input), $this->limit);
         }
@@ -601,7 +667,7 @@ class AA_Responder_Formatted_By_Widget extends AA_Responder
     public function run(): AA_Response
     {
         $ret   = '';
-        $slice = AA_Slice::getModule($this->slice_id);
+        $slice = AA_Slice::getOwnModule($this->slice_id);
 
         if ($slice && ($widget = $slice->getWidget($this->field_id))) {
             mgettext_bind($slice->getLang(), 'output');
@@ -634,7 +700,7 @@ class AA_Responder_Alertitem extends AA_Responder
             return false;
         }
         if ($item = AA_Items::getItem(new zids($this->item_id, 'l'))) {
-            // @todo should we check also collection_id???
+            // the collection is checked in run() - it must be related to this slice (AA_Collection::relatesToSlice())
             return IfSlPerm(PS_EDIT_ALL_ITEMS, $item->getSliceID());
         }
         return false;
@@ -645,6 +711,16 @@ class AA_Responder_Alertitem extends AA_Responder
         // send_emails() trusts the ids it gets and fatals on an unknown one; errors do not echo the input back
         if (!AA_Collection::isValidId($this->collection_id) || !DB_AA::test('alerts_collection', [['id', $this->collection_id]])) {
             return new AA_Response('Invalid collection id', 7);
+        }
+        // an editor of the slice may send its item only to the readers of the slice's own collections
+        $item = AA_Items::getItem(new zids($this->item_id, 'l'));   // isPerm() found it
+        if (!$item) {
+            return new AA_Response("Collection is not related to the item's slice", 9);
+        }
+        if (!AA_Collection::relatesToSlice($this->collection_id, $item->getSliceID())) {
+            // an old send button may name an unrelated collection - State Check shows it (CheckAlertitemRefusals)
+            AA_Collection::logRefusal($this->collection_id, $item->getSliceID(), $this->item_id);
+            return new AA_Response("Collection is not related to the item's slice", 9);
         }
         // null = an address was given but is not valid - never read that as "none" (= a live send to all readers)
         $test_emails = AA_Collection::testEmails($this->test_email);
@@ -693,6 +769,19 @@ class AA_Responder_Item_History_Diff extends AA_Responder
 }
 
 pageOpen('nobody');
+if (in_array(AA_Auth::login(), ['token', 'bad-token'], true)) {
+    LoginToken::forgetSession();   // a token login lives for this request only
+    if (AA_Auth::login() === 'bad-token') {
+        AA_Response::error(_m('Login token refused (it lives a day, and a password change ends it) - authenticate this AA again in Central'), ResponderPolicy::ERR_TOKEN_REFUSED);
+        exit;
+    }
+}
+// the public account of the app store: anyone knows its password, so it never keeps a session - not even
+// when the request ends in an error below (it logs in nowhere else, so a session login is never it)
+$public_account = in_array(AA_Auth::login(), ['password', 'token'], true) && AppStore::isPublic((string) AuthGetUid());
+if ($public_account) {
+    LoginToken::forgetSession();
+}
 
 // in order {xuser:id} alias works in widgets, for example
 $GLOBALS['apc_state']['xuser'] = AuthGetUname();
@@ -741,8 +830,24 @@ if ((!$via_url || ResponderPolicy::isPostOnlyCommand($responder::name())) && Res
     exit;
 }
 
-if (!$responder->isPerm()) {
-    AA_Response::error(_m("You (%2) don't have permissions to run %1", [$responder::name(),AuthGetUid()]), 101);  // error code > 0
+// an apps token (another AA pulling an app) runs only the commands of its scope - whatever the transport;
+// the public account of the app store only its commands, counted before anything runs
+$refused = ResponderPolicy::dispatchRefusal(
+    $responder::name(),
+    is_array($params = $request->getParameters()) ? $params : [],
+    AA_Auth::login(),
+    AA_Auth::scope(),
+    $public_account,
+    static fn(): bool => AppStore::admit($responder::name(), (string) ($_SERVER['REMOTE_ADDR'] ?? ''), (string) AuthGetUid()),
+    static fn(): bool => (bool) $responder->isPerm(),
+);
+if ($refused !== null) {
+    AA_Response::error(match ($refused) {
+        ResponderPolicy::ERR_TOKEN_SCOPE    => _m("The login token does not allow %1", [$responder::name()]),
+        ResponderPolicy::ERR_PUBLIC_ACCOUNT => _m("The app store account may not run %1", [$responder::name()]),
+        ResponderPolicy::ERR_RATE_LIMIT     => _m("The app store is busy - try again later"),
+        default                             => _m("You (%2) don't have permissions to run %1", [$responder::name(), AuthGetUid()]),
+    }, $refused);
     exit;
 }
 

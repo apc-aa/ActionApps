@@ -10,6 +10,7 @@
  * @package Api
  */
 
+use AA\Api\Controller\FilesController;
 use AA\Api\Controller\SpeechController;
 use AA\Api\Controller\TranslateController;
 use AA\Api\JsonResponse;
@@ -47,6 +48,14 @@ $router->register('POST', '/v1/speech/transcribe', static function (): JsonRespo
 
 $router->register('POST', '/v1/translate', static function (): JsonResponse {
     return (new TranslateController())->translate();
+});
+
+$router->register('POST', '/v1/files', static function (): JsonResponse {
+    return (new FilesController())->upload();
+});
+
+$router->register('GET', '/v1/files', static function (): JsonResponse {
+    return (new FilesController())->list();
 });
 
 $router->dispatch();

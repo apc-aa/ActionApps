@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace AA\Central\Package;
 
-/** What Validator::validate() found in a package (design balicek-v1.md § 3.1 step 9, § 8.4) */
+/** What Validator::validate() found in a package */
 final readonly class ValidationResult
 {
     /** @param list<array{string, LintFinding}> $findings [path, finding]; paths and refs quote package

@@ -51,7 +51,7 @@ try {
     $fire          = InputVars::arrayPOST('fire');
     $emailid_alert = InputVars::intPOST('emailid_alert');
     $set_alert     = InputVars::boolPOST('set_alert');
-    $Msg           = InputVars::stringGETPOST('Msg');
+    $Msg           = InputVars::messageGETPOST();
 } catch (Exception $e) {
     AA_Adminpageutil::pageParameterError($e);
 }

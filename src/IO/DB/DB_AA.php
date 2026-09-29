@@ -3,7 +3,6 @@
 namespace AA\IO\DB;
 
 use AA;
-use AA_Http;
 
 /** proxy class for other db engines */
 final class DB_AA
@@ -62,6 +61,12 @@ final class DB_AA
             self::$tx_db_out = false;
             freeDB($db);
         }
+    }
+
+    /** true inside transaction() - a caller that must own its transaction (a commit of its own) refuses to join */
+    public static function inTransaction(): bool
+    {
+        return self::$tx_db !== null;
     }
 
     /** Handle getDB() must use, or null when no transaction runs. Marks it as checked
@@ -386,6 +391,7 @@ final class DB_AA
      *     !=       - integer           <>               single             ['date', 1478547854, '!=']   // the same as above - "<>"
      *     s<>      - string            <>               single or array    ['name', $name, 's<>']
      *     l<>      - longid            <>               single             ['id', $slice_id, 'l<>']
+     *     l>       - longid            >                single             ['id', $after_id, 'l>']
      *     ISNULL   -                   IS NULL                             ['number', '', 'ISNULL']
      *     NOTNULL  -                   IS NOT NULL                         ['number', '', 'NOTNULL']
      *     LIKE     -                   LIKE             single             ['id', '\_%', 'LIKE']
@@ -451,6 +457,9 @@ final class DB_AA
                 continue;
             } elseif ($type === 'l<>' || $type === 'l!=') {
                 $where[] = "$name <> " . xpack_id($value);
+                continue;
+            } elseif ($type === 'l>') {
+                $where[] = "$name > " . xpack_id($value);
                 continue;
             } elseif ($type === 'FILLED') {
                 $where[] = "$name > '' ";             // this is kind of trick for - not null, not empty, not any whitespace character(s) - thanks: https://stackoverflow.com/questions/1869264#42723975

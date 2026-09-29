@@ -77,7 +77,7 @@ try {
     $submit = InputVars::boolPOST('submit');
     $cancel = InputVars::boolPOST('cancel');
 
-    $Msg = InputVars::stringGETPOST('Msg');
+    $Msg = InputVars::messageGETPOST();
 } catch (Exception $e) {
     AA_Adminpageutil::pageParameterError($e);
 }
@@ -102,16 +102,6 @@ if (!$perm_edit_all && !$perm_edit_self) {
     MsgPage(_m("You do not have permission to edit items in the slice:") . ' ' . AA_Slice::getModuleNameSafe(AA::$module_id));
     exit;
 }
-
-
-//$url_param = [
-//    'Msg' => MsgOk(_m("User successfully added to permission system")),
-//    'UsrSrch' => _m("Search"),
-//    'usr'     => $user_login
-//];
-//huhl(get_url(StateUrl(self_base() . "se_users.php"), $url_param));
-
-
 
 $actions   = new Manageractions();
 $actions->addAction(new Item_MoveItem('Activate', 1));

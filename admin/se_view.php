@@ -96,7 +96,7 @@ try {
 
     $cancel = InputVars::boolPOST('cancel');
 
-    $Msg = InputVars::stringGETPOST('Msg');
+    $Msg = InputVars::messageGETPOST();
 } catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
 
 // ----------------------------------------------------------------------------
@@ -139,7 +139,7 @@ function show_digest_filters(): void
         .($group ? "" : "checked")."> ".
         _m("No. Use this sort[]:")."</b>
         <textarea name=\"aditional3\" cols=\"50\" rows=".get_row_count($sort, 50, 4).">"
-        .$sort."</textarea>
+        .safe($sort)."</textarea>
         </td>
     </tr>";
 
@@ -164,47 +164,11 @@ function show_digest_filters(): void
  */
 function store_digest_filters(): void
 {
-    global $view_id, $filters, $err;
-    $db = getDB ();
-    if (!$view_id) {
-        // "SELECT LAST_INSERT_ID() AS last_vid FROM view";
-        $view_id = $db->last_insert_id();
+    global $view_id, $created, $filters, $err, $aditional, $aditional3;
+    // aditional is a text field of other view types, so it is read as a string
+    if (!AA_Views::storeDigestFilters($view_id, AA::$module_id, (int) $aditional, $aditional3, $filters, $created)) {
+        $err["DB"] = MsgErr(_m("Can't change slice settings"));
     }
-    $varset = new CVarset();
-
-    global $aditional, $aditional3;
-    $varset->clear();
-    $varset->addkey("id", "number", $view_id);
-    $varset->add("aditional", "number", $aditional);
-    $varset->add("aditional3", "text", $aditional3);
-    $db->query($varset->makeUPDATE("view"));
-
-    foreach ($filters as $rowid => $filter) {
-        if (!$filter["description"]) {
-            if (!str_starts_with($rowid, "new")) {
-                $db->query("DELETE FROM alerts_filter WHERE id=$rowid");
-            }
-            continue;
-        }
-        $varset->clear();
-        $varset->add("description", "text", $filter["description"]);
-        $varset->add("conds", "text", $filter["conds"]);
-        $varset->add("vid", "number", $view_id);
-
-        if (!str_starts_with($rowid, "new")) {
-            $SQL = "UPDATE alerts_filter SET ". $varset->makeUPDATE() ." WHERE id='$rowid'";
-            if ( !$db->query($SQL)) {
-                $err["DB"] = MsgErr( _m("Can't change slice settings") );
-                break;   // not necessary - we have set the halt_on_error
-            }
-        } else {
-            if ( !$varset->doINSERT('alerts_filter')) {
-                $err["DB"] = MsgErr(_m("Can't change slice settings"));
-                break;   // not necessary - we have set the halt_on_error
-            }
-        }
-    }
-    freeDB($db);
 }
 
 // ----------------------------------------------------------------------------
@@ -368,6 +332,7 @@ if ( $update ) {
             $varset->add($k, 'number', $v);
         }
 
+        $created = !$view_id;
         if ( $view_id ) {
             $varset->addkey('id','number', $view_id);
                if ( !$varset->doUpdate('view', null, "V.$view_id") ) {  // track history
@@ -623,8 +588,8 @@ if ($view) {
     $set = $view->getSet();
     if ($view_conds   = $set->getCondsAsString()) {
         $view_sort    = $set->getSortAsString();
-        $view_recipe1 = '&lcub;view:' . $view_id . ':-&lcub;ids:'. $view->getSliceId() . ':'. $view_conds . ($view_sort ? ':'.$view_sort: '') . '&rcub;&rcub;';
-        $view_recipe2 = '&lcub;view.php?vid=' . $view_id . '&cmd[' . $view_id . ']=' . (new AA_Set(null, $view->getConds()))->getCondsAsString() . ($view_sort ? '&set[' . $view_id . ']=sort-'.$view_sort: '').'&rcub;';
+        $view_recipe1 = '&lcub;view:' . $view_id . ':-&lcub;ids:'. $view->getSliceId() . ':'. safe($view_conds) . ($view_sort ? ':'.safe($view_sort): '') . '&rcub;&rcub;';
+        $view_recipe2 = '&lcub;view.php?vid=' . $view_id . '&cmd[' . $view_id . ']=' . safe((new AA_Set(null, $view->getConds()))->getCondsAsString()) . ($view_sort ? '&set[' . $view_id . ']=sort-'.safe($view_sort): '').'&rcub;';
     }
 }
 

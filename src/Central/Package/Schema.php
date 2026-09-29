@@ -6,16 +6,15 @@ namespace AA\Central\Package;
 
 use AA_MbC;
 use AA_Metabase;
+use AA_Module_Site;
 use LogicException;
 
-/** The aa-app package format 1.x as THIS AA knows it (design balicek-v1.md § 3.2, § 6): the XSD and
- *  the known child elements per parent, both generated from include/metabase_schema.php + the rules
- *  below - so a column added to the AA schema lands in both in the same commit.
+/** The aa-app package format 1.x as THIS AA knows it: the XSD and the known child elements per parent,
+ *  both generated from include/metabase_schema.php + the rules below, so a new AA column lands in both.
  *
- *  A table row is an element named after the table, a column its child element. What a column is
- *  NOT in the XSD, a package cannot carry: installation columns, the module column (F4) and
- *  AUTO_INCREMENT numbers. The reader validates against xsd(); SchemaTest keeps the repo copy FILE
- *  equal to it - regenerate with `php dev/central/aa-app-xsd.php`.
+ *  A table row is an element named after the table, a column its child element. A column missing in
+ *  the XSD cannot travel: installation columns, the module column and AUTO_INCREMENT numbers.
+ *  SchemaTest keeps FILE equal to xsd() - regenerate with `php dev/central/aa-app-xsd.php`.
  */
 final class Schema
 {
@@ -24,8 +23,8 @@ final class Schema
     /** the generated XSD, validated with DOMDocument::schemaValidateSource() (schemaValidate() would load a file) */
     public const FILE = __DIR__ . '/aa-app-1.xsd';
 
-    /** object classes of format 1.0 (§ 5.4). Settings objects travel only as <settings>, subobjects
-     *  only inside an AA_Set; AA_Form, AA_Plannedtask and tokens never. */
+    /** object classes of format 1.0. Settings objects travel only as <settings>, subobjects only inside
+     *  an AA_Set; AA_Form, AA_Plannedtask and tokens never. */
     public const TOP_CLASSES = ['AA_Aliasfunc', 'AA_Set'];
     public const SUB_CLASSES = ['AA_Condition', 'AA_Sortorder'];
 
@@ -33,9 +32,9 @@ final class Schema
     public const SETTINGS_CLASSES = ['site-module' => 'AA_Modulesettings_Site', 'slice-module' => 'AA_Modulesettings_Slice'];
 
     /** row element => [table, key columns written as attributes: column => [attribute, type, default],
-     *  columns left out, note]. Left out as well: the module column (AA_Metabase::getModuleField() -
-     *  the importer sets it) and AUTO_INCREMENT columns that are no attribute (new numbers on the target).
-     *  A new column of a definition table (field, view, ...) is carried automatically; see CARRIED. */
+     *  columns left out, note]. Also left out: the module column (the importer sets it) and AUTO_INCREMENT
+     *  columns that are no attribute (the target numbers them). New columns of definition tables travel
+     *  automatically; see CARRIED. */
     private const ROWS = [
         'module'                     => ['module', [], ['type', 'owner', 'created_by', 'created_at', 'slice_url', 'deleted', 'priority', 'app_id']],
         'slice'                      => ['slice', [], ['owner', 'created_by', 'created_at', 'slice_url', 'deleted', 'fileman_dir', 'reading_password', 'export_to_all']],
@@ -54,10 +53,9 @@ final class Schema
         'alerts_filter'              => ['alerts_filter', ['id' => ['id', 'xs:positiveInteger']], []],
     ];
 
-    /** Rows of installation state: every column is classified by hand - carried here, or left out in
-     *  ROWS (or an attribute / the module column). A new metabase column in them stops the generator
-     *  (and the sync test) until someone decides whether a package may carry it - it may be a path,
-     *  a password or a permission of the source AA. */
+    /** Tables of installation state: every column is classified by hand (here, or left out in ROWS).
+     *  A new column stops the generator until someone decides - it may be a path, a password or a
+     *  permission of the source AA. */
     private const CARRIED = [
         'module'            => ['name', 'lang_file', 'flag'],
         'slice'             => [
@@ -79,29 +77,33 @@ final class Schema
     /** value types other than by the column type: packed ids joined without a separator */
     private const VALUE_TYPES = ['constant.ancestors' => 'idsValue'];
 
-    /** container => [attributes, children]; child suffix ? = optional, * = any number; a child
-     *  missing in CHILD_TYPES is a row (ROWS). The wrapper decides which tables a module has (§ 6.1). */
+    /** container => [attributes, children]; child suffix ? = optional, * = any number, ! = exactly one but
+     *  in an item batch (meta/batch) none - the XSD cannot tell, the Validator checks it; a child missing
+     *  in CHILD_TYPES is a row (ROWS). owner, reading-password, setting-values, alternate-url: only in a transfer (format 1.1) */
     private const CONTAINERS = [
-        'site-module'    => [[['id', 'longId']], ['doc?', 'module', 'site', 'spot-tree?', 'site_spot*', 'uses*', 'settings?', 'object*']],
-        'slice-module'   => [[['id', 'longId']], ['doc?', 'module', 'slice', 'settings?', 'field*', 'view*', 'email*', 'profile*', 'object*', 'item*']],
-        'alerts-module'  => [[['id', 'longId']], ['doc?', 'module', 'email*', 'alerts_collection?', 'alerts_collection_filter*', 'alerts_collection_howoften*', 'alerts_filter*']],
+        'site-module'    => [[['id', 'longId']], ['doc?', 'module', 'owner?', 'site', 'spot-tree?', 'site_spot*', 'uses*', 'settings?', 'alternate-url*', 'object*']],
+        'slice-module'   => [[['id', 'longId']], ['doc?', 'module!', 'owner?', 'slice!', 'reading-password?', 'setting-values?', 'settings?', 'field*', 'view*', 'email*', 'profile*', 'object*', 'item*']],
+        'alerts-module'  => [[['id', 'longId']], ['doc?', 'module', 'owner?', 'email*', 'alerts_collection?', 'alerts_collection_filter*', 'alerts_collection_howoften*', 'alerts_filter*']],
         'constant-group' => [[['name', 'groupId'], ['owner', 'longIdOrEmpty', '', 'owning slice (constant_slice.slice_id) - a slice of the package, or empty']], ['constant_slice?', 'constant*']],
     ];
 
     /** settings: "<site|slice>Settings", the class fixed by the module type */
-    private const CHILD_TYPES = ['doc' => 'xs:string', 'spot-tree' => 'spotTree', 'object' => 'topObject', 'item' => 'item'];
+    private const CHILD_TYPES = ['doc' => 'xs:string', 'spot-tree' => 'spotTree', 'object' => 'topObject', 'item' => 'item',
+        'owner' => 'owner', 'reading-password' => 'text', 'setting-values' => 'settingValues', 'alternate-url' => 'text'];
 
     /** children of the elements written out in TEMPLATE (SchemaTest checks them against the XSD);
      *  `signature` has any content and is not pruned */
     private const FIXED_CHILDREN = [
         'aa-app'    => ['meta', 'site-module', 'slice-module', 'alerts-module', 'constant-group', 'signature'],
-        'meta'      => ['name', 'description', 'version', 'publish', 'source', 'requires', 'contents', 'tables', 'doc'],
+        'meta'      => ['name', 'description', 'version', 'publish', 'source', 'requires', 'contents', 'batch', 'tables', 'doc'],
         'tables'    => ['table'],
         'spot-tree' => ['spot'],
         'spot'      => ['var', 'cond', 'positions', 'choices'],
         'settings'  => ['p'],
         'object'    => ['p', 'object'],
         'item'      => ['v'],
+        'setting-values' => ['v'],
+        'owner'     => ['name', 'email'],
     ];
 
     /** attributes of the elements written out in TEMPLATE (SchemaTest checks them against the XSD) */
@@ -110,6 +112,7 @@ final class Schema
         'source'    => ['url', 'aa-version', 'aa-build', 'site', 'exported'],
         'requires'  => ['aa-version'],
         'contents'  => ['items'],
+        'batch'     => ['after', 'next', 'finished'],
         'table'     => ['name', 'columns'],
         'spot-tree' => ['start'],
         'spot'      => ['id', 'name', 'parent', 'flag', 'empty'],
@@ -119,6 +122,9 @@ final class Schema
         'p'         => ['n', 'i', 'enc', 'crlf'],
         'item'      => ['id'],
         'v'         => ['f', 'i', 'flag', 'enc', 'crlf'],
+        'reading-password' => ['enc', 'crlf'],
+        'alternate-url'    => ['enc', 'crlf'],
+        'email'     => ['enc', 'crlf'],
     ];
 
     /** attributes of a column by its value type (TEMPLATE); the others have just `null` */
@@ -153,16 +159,15 @@ final class Schema
     }
 
     /** Known child elements per parent element name (declarations of one name merged), in XSD order.
-     *  The reader prunes by it (§ 3.2): an element unknown here only when the package has a higher
-     *  minor format version. Row children are columns - there the rule is the local AA schema
-     *  (rowTables()): unknown columns are always pruned, known but left-out ones (reading_password)
-     *  stay for the XSD to reject. An element that is no key has no element children.
+     *  The reader prunes unknown elements only for a higher minor format version. Columns are checked
+     *  against the local AA schema instead: unknown ones are always pruned, known but left-out ones
+     *  (reading_password) stay for the XSD to reject.
      *  @return array<string, list<string>> */
     public function knownElements(): array
     {
         $known = self::FIXED_CHILDREN;
         foreach (self::CONTAINERS as $element => [, $children]) {
-            $known[$element] = array_map(static fn(string $child): string => rtrim($child, '?*'), $children);
+            $known[$element] = array_map(static fn(string $child): string => rtrim($child, '?*!'), $children);
         }
         foreach (array_keys(self::ROWS) as $element) {
             $known[$element] = array_keys($this->columns($element)[0]);
@@ -171,8 +176,7 @@ final class Schema
     }
 
     /** Known attributes per element name (declarations of one name merged: a column `name` has
-     *  null/enc/crlf, so <meta><name> "knows" them too - the XSD then decides). The reader prunes an
-     *  unknown attribute only when the package has a higher minor format version (§ 3.2).
+     *  null/enc/crlf, so <meta><name> "knows" them too - the XSD then decides).
      *  @return array<string, list<string>> */
     public function knownAttributes(): array
     {
@@ -194,21 +198,41 @@ final class Schema
         return $known;
     }
 
+    /** the row elements of a container (Validator): 1 = exactly one row, ? = at most one, * = any
+     *  @return array<string, string> */
+    public static function rowCounts(string $container): array
+    {
+        $counts = [];
+        foreach (self::CONTAINERS[$container][1] ?? [] as $child) {
+            $element = rtrim($child, '?*!');
+            if (isset(self::ROWS[$element])) {
+                $counts[$element] = in_array(substr($child, -1), ['?', '*'], true) ? substr($child, -1) : '1';
+            }
+        }
+        return $counts;
+    }
+
+    /** true: site.state_file names a control file of the source AA, which site.php would include -
+     *  never code of an app @param array<string, mixed> $site a site row */
+    public static function controlFile(array $site): bool
+    {
+        return ((int) ValueCodec::bytes($site['flag'] ?? '') !== 1) && (AA_Module_Site::stateFileName(ValueCodec::bytes($site['state_file'] ?? '')) !== '');
+    }
+
     /** @return array<string, string> row element => its table in metabase_schema.php */
     public function rowTables(): array
     {
         return array_map(static fn(array $row): string => $row[0], self::ROWS);
     }
 
-    /** Every column of the row element's table in this AA - carried or not. The reader prunes a column
-     *  only when it is not here (§ 3.2); a known one the package must not carry is left to the XSD.
+    /** Every column of the row element's table in this AA - carried or not
      *  @return list<string> */
     public function tableColumns(string $element): array
     {
         return array_keys($this->metabase->getColumns(self::ROWS[$element][0]));
     }
 
-    /** Columns a row element carries as child elements, in metabase_schema.php order (design § 2.5).
+    /** Columns a row element carries as child elements, in metabase_schema.php order
      *  @return array<string, string> column => value type: textValue | intValue | floatValue | idValue | idsValue */
     public function rowColumns(string $element): array
     {
@@ -239,15 +263,26 @@ final class Schema
         }, $this->metabase->getColumns(self::ROWS[$element][0])));
     }
 
-    /** Columns of a row element's table with a length limit: [N, true] for char(N) / varchar(N) -
-     *  N CHARACTERS of the column charset (single-byte on most AA databases: bytes); [N, false] for
-     *  N BYTES - binary(N), varbinary(N), tinytext/blob, text/blob, mediumtext/blob. A packed id column
-     *  (AA_Metabase::isPacked()) holds 2N hex digits of the unpacked ids a package carries. Long types
-     *  have none worth checking (4 GB).
+    /** the default of a column of the row element's table - what a row without the column gets; null = none */
+    public function columnDefault(string $element, string $column): ?string
+    {
+        $default = ($this->metabase->getColumns(self::ROWS[$element][0])[$column] ?? null)?->c[4];
+        return ($default === null) ? null : (string) $default;
+    }
+
+    /** Length limits of a row element's table: [N, true] = N characters (char, varchar), [N, false] =
+     *  N bytes (binary, *text, *blob). A packed id column holds 2N hex digits of the unpacked ids.
+     *  AA_MbT::getVarset4Data() cuts every (N) column at N bytes too (TargetCharset::tooLong()).
      *  @return array<string, array{int, bool}> column => [limit, counts characters] */
     public function lengthLimits(string $element): array
     {
-        $table  = self::ROWS[$element][0];
+        return $this->tableLimits(self::ROWS[$element][0]);
+    }
+
+    /** lengthLimits() of any AA table - the ones outside the row elements too (item, content, object_*)
+     *  @return array<string, array{int, bool}> column => [limit, counts characters] */
+    public function tableLimits(string $table): array
+    {
         $limits = [];
         foreach ($this->metabase->getColumns($table) as $name => $column) {
             $type  = strtolower((string) $column->c[1]);
@@ -333,9 +368,10 @@ final class Schema
         [$prefix, $kind] = explode('-', $element);
         $xsd             = '  <xs:complexType name="' . $prefix . ucfirst($kind) . "\">\n    <xs:sequence>\n";
         foreach ($children as $child) {
-            $name   = rtrim($child, '?*');
+            $name   = rtrim($child, '?*!');
             $type   = $name === 'settings' ? "{$prefix}Settings" : (self::CHILD_TYPES[$name] ?? "row_$name");
-            $occurs = ['?' => ' minOccurs="0"', '*' => ' minOccurs="0" maxOccurs="unbounded"'][substr($child, -1)] ?? '';
+            $occurs = ['?' => ' minOccurs="0"', '!' => ' minOccurs="0"', '*' => ' minOccurs="0" maxOccurs="unbounded"'][substr($child, -1)] ?? '';
+            $xsd   .= str_ends_with($child, '!') ? "      <!-- exactly one, none in an item batch (meta/batch) - the Validator checks it -->\n" : '';
             $xsd   .= "      <xs:element name=\"$name\" type=\"$type\"$occurs";
             if ($name !== 'settings' && $name !== 'object') {
                 $xsd .= "/>\n";
@@ -373,14 +409,13 @@ final class Schema
         return "$xsd    </xs:restriction>\n  </xs:simpleType>\n\n";
     }
 
-    /** The fixed part of the format; {{…}} are generated. Row types, module wrappers and the object
-     *  classes come from the PHP above - edit them there. */
+    /** The fixed part of the format; {{…}} are generated from the constants above */
     private const TEMPLATE = <<<'XSD'
         <?xml version="1.0" encoding="UTF-8"?>
         <!--
           aa-app 1.x - schema of the ActionApps app package, as THIS AA knows it.
           GENERATED by AA\Central\Package\Schema::xsd() from include/metabase_schema.php - do not edit;
-          regenerate with: php dev/central/aa-app-xsd.php. Design: aa/central/design/balicek-v1.md
+          regenerate with: php dev/central/aa-app-xsd.php
 
           - XSD 1.0 (libxml2). Validate with DOMDocument::schemaValidateSource(<this file as string>)
             while the external entity loader returns null - schemaValidate(path) would need the loader.
@@ -465,7 +500,7 @@ final class Schema
             <xs:list itemType="xs:integer"/>
           </xs:simpleType>
 
-          <!-- spot properties that are an EMPTY array (not null) - spot-tree round trip, design § 6.3 -->
+          <!-- spot properties that are an EMPTY array (not null) - kept on the spot-tree round trip -->
           <xs:simpleType name="spotArrayList">
             <xs:list>
               <xs:simpleType>
@@ -674,13 +709,16 @@ final class Schema
             <xs:sequence>
               <xs:element name="name"        type="xs:string"/>
               <xs:element name="description" type="xs:string" minOccurs="0"/>
-              <!-- app version as the author writes it (R5), e.g. 1.2.0 -->
+              <!-- app version as the author writes it, e.g. 1.2.0 -->
               <xs:element name="version"     type="xs:string" minOccurs="0"/>
-              <!-- R5 at the source; the importer sets it to "users" on the new site (design § 9.1, Q-H1) -->
+              <!-- all = published, an app store offers it to anyone; no = not published (so is "users" of
+                   older packages); an installed copy is never published -->
               <xs:element name="publish"     type="publish"   minOccurs="0"/>
               <xs:element name="source"      type="source"/>
               <xs:element name="requires"    type="requires"  minOccurs="0"/>
               <xs:element name="contents"    type="contents"/>
+              <!-- format 1.1: the package is one batch of a slice's items -->
+              <xs:element name="batch"       type="batch"     minOccurs="0"/>
               <!-- columns the exporting AA knew per table (decides "missing = empty" vs "missing = unknown") -->
               <xs:element name="tables"      type="tables"/>
               <xs:element name="doc"         type="xs:string" minOccurs="0"/>
@@ -707,6 +745,14 @@ final class Schema
             <xs:attribute name="items" type="xs:boolean" default="false"/>
           </xs:complexType>
 
+          <!-- one slice-module with its id and items only; items in id order after the cursor `after`, up to
+               `next`; finished = no item of the slice after `next` -->
+          <xs:complexType name="batch">
+            <xs:attribute name="after"    type="longIdOrEmpty" default=""/>
+            <xs:attribute name="next"     type="longIdOrEmpty" default=""/>
+            <xs:attribute name="finished" type="xs:boolean"    use="required"/>
+          </xs:complexType>
+
           <xs:complexType name="tables">
             <xs:sequence>
               <xs:element name="table" maxOccurs="unbounded">
@@ -727,10 +773,30 @@ final class Schema
 
           <!-- ================================================================ modules -->
 
+          <!-- a text that is no column: enc and crlf as in textValue -->
+          <xs:complexType name="text">
+            <xs:simpleContent>
+              <xs:extension base="xs:string">
+                <xs:attribute name="enc"  type="encoding"   default="text"/>
+                <xs:attribute name="crlf" type="xs:boolean" default="false"/>
+              </xs:extension>
+            </xs:simpleContent>
+          </xs:complexType>
+
+          <!-- format 1.1, only in a transfer (the importer's mode - the Validator refuses them in an install):
+               owner = the module owner (slice_owner) by name and e-mail, reading-password = slice.reading_password,
+               alternate-url = the site's domains (AA_Modulesettings_Site.alternate_url) -->
+          <xs:complexType name="owner">
+            <xs:sequence>
+              <xs:element name="name"  type="text"/>
+              <xs:element name="email" type="text"/>
+            </xs:sequence>
+          </xs:complexType>
+
         {{containers}}  <!-- ================================================================ site tree -->
           <!-- site.structure (serialized sitetree/spot) as data - the package never carries PHP serialize();
-               the importer builds the tree with sitetree::fromArray() (new in C4.3/C4.4); ids are written as
-               numbers, fromArray() restores the canonical PHP types (design § 6.3) -->
+               the importer builds the tree with sitetree::fromArray(); ids are written as
+               numbers, fromArray() restores the canonical PHP types -->
 
           <xs:complexType name="spotTree">
             <xs:sequence>
@@ -825,28 +891,37 @@ final class Schema
             <xs:attribute name="i"     type="xs:nonNegativeInteger" default="0"/>
           </xs:complexType>
 
-          <!-- ================================================================ items (explicit request only) -->
+          <!-- ================================================================ items (the batches of a transfer) -->
+
+          <!-- a value of an item or of the slice settings (content) -->
+          <xs:complexType name="contentValue">
+            <xs:simpleContent>
+              <xs:extension base="xs:string">
+                <xs:attribute name="f"    type="fieldId"    use="required"/>
+                <!-- key of the value in GetItemContent(): the position of a multi-value, or
+                     the translation number (>= AA_Value::MAX_INDEX) -->
+                <xs:attribute name="i"    type="xs:nonNegativeInteger" default="0"/>
+                <xs:attribute name="flag" type="xs:integer" default="0"/>
+                <xs:attribute name="enc"  type="encoding"   default="text"/>
+                <xs:attribute name="crlf" type="xs:boolean" default="false"/>
+              </xs:extension>
+            </xs:simpleContent>
+          </xs:complexType>
 
           <!-- only when meta/contents/@items = true -->
           <xs:complexType name="item">
             <xs:sequence>
-              <xs:element name="v" maxOccurs="unbounded">
-                <xs:complexType>
-                  <xs:simpleContent>
-                    <xs:extension base="xs:string">
-                      <xs:attribute name="f"    type="fieldId"    use="required"/>
-                      <!-- key of the value in GetItemContent(): the position of a multi-value, or
-                           the translation number (>= AA_Value::MAX_INDEX) -->
-                      <xs:attribute name="i"    type="xs:nonNegativeInteger" default="0"/>
-                      <xs:attribute name="flag" type="xs:integer" default="0"/>
-                      <xs:attribute name="enc"  type="encoding"   default="text"/>
-                      <xs:attribute name="crlf" type="xs:boolean" default="false"/>
-                    </xs:extension>
-                  </xs:simpleContent>
-                </xs:complexType>
-              </xs:element>
+              <xs:element name="v" type="contentValue" maxOccurs="unbounded"/>
             </xs:sequence>
             <xs:attribute name="id" type="longId" use="required"/>
+          </xs:complexType>
+
+          <!-- format 1.1, only in a transfer: the values of the slice's settings fields (`_...`, the
+               content of the slice id - admin/slicefieldsedit.php) -->
+          <xs:complexType name="settingValues">
+            <xs:sequence>
+              <xs:element name="v" type="contentValue" maxOccurs="unbounded"/>
+            </xs:sequence>
           </xs:complexType>
 
           <!-- ================================================================ table rows (from metabase_schema.php) -->

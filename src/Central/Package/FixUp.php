@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace AA\Central\Package;
 
-/** One change the importer makes to a package (C4.4 part 3; design balicek-v1.md, "Odchylky při
- *  implementaci" C4.4(2), Q-H1). Data for the preview - ImportPlan::$package has it applied already,
- *  the writer (part 4) writes that copy. `old` and `new` quote package text: escape them (safe()) when shown. */
+/** One change the importer makes to a package (FixUps), for the preview -
+ *  ImportPlan::$package has it applied already. `old` and `new` quote package text: escape them (safe()) when shown. */
 final readonly class FixUp
 {
     /** email.attachments of SecurityLint::ATTACHMENTS_DROPPED (a local path or a computed value) - cleared */
@@ -20,7 +19,7 @@ final readonly class FixUp
     public const SPOT_MARKUP = 'spot-markup-stripped';
     /** a site without <spot-tree>: site.structure = '' */
     public const NO_TREE = 'no-spot-tree';
-    /** meta/publish is `users` on the target (Q-H1) */
+    /** a published app is installed unpublished */
     public const PUBLISH = 'publish';
     /** an alerts_filter shared by Alerts modules (the same row, Validator) is created once - by the
      *  first module; `old` = the filter id, `new` = the path of the module that creates it */

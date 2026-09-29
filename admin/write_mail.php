@@ -83,7 +83,7 @@ try {
     $testemail = InputVars::stringPOST('testemail');
     $cancel = InputVars::boolPOST('cancel');
 
-    $Msg = InputVars::stringGETPOST('Msg');
+    $Msg = InputVars::messageGETPOST();
 } catch (Exception $e) {
     AA_Adminpageutil::pageParameterError($e);
 }
@@ -207,7 +207,8 @@ $apage->setTitle(_m("Bulk Email Wizard"));
 $apage->setSubtitle(_m("Write email to users"));
 $apage->setForm();
 
-$apage->addRequire('ckeditor@4');
+$apage->addRequire('aa-jslib@3');    // came along with CKEditor before
+$apage->addRequire('aa-richtext@1');
 // IncludeManagerJavascript() - start
 // $apage->addRequire(get_aa_url('javascript/aajslib.php', ['v'=>AA_JS_VERSION] ));  // already loaded with ckeditor
 $apage->addRequire(get_aa_url('javascript/manager.min.js', ['v' => AA_JS_VERSION]));

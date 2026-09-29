@@ -29,6 +29,7 @@ use AA\IO\DB\DB_AA;
 use AA\Manager;
 use AA\Util\Adminlink;
 use AA\Util\ChangesMonitor;
+use AA\Util\FormToken;
 use AA\Util\InputVars;
 
 $require_default_lang = true;      // do not use module specific language file
@@ -44,18 +45,23 @@ require_once __DIR__ . "/../include/mgettext.php";
 require_once __DIR__ . "/../modules/alerts/util.php";
 
 try {
-    $searchinview = InputVars::boolGET('searchinview');
-    $searchinslice = InputVars::boolGET('searchinslice');
-    $searchinfield = InputVars::boolGET('searchinfield');
-    $searchinobject = InputVars::boolGET('searchinobject');
-    $searchinitems = InputVars::boolGET('searchinitems');
-    $searchincodeitems = InputVars::boolGET('searchincodeitems');
-    $searchinhistory = InputVars::boolGET('searchinhistory');
-    $searchindiscus = InputVars::boolGET('searchindiscus');
-    $searchinspot = InputVars::boolGET('searchinspot');
-    $search = InputVars::stringGET('search'); // empty
-    $replace = InputVars::stringGET('replace'); // empty
-    $go_search = InputVars::boolGET('go_search'); // alpha // convert submit to bool
+    // The search and replace form posts - it carries the token of the replace. A search may still come
+    // as a link (the menu search box), so a GET reads the same fields from the URL.
+    $by_post = (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST');
+    $searchinview      = $by_post ? InputVars::boolPOST('searchinview')      : InputVars::boolGET('searchinview');
+    $searchinslice     = $by_post ? InputVars::boolPOST('searchinslice')     : InputVars::boolGET('searchinslice');
+    $searchinfield     = $by_post ? InputVars::boolPOST('searchinfield')     : InputVars::boolGET('searchinfield');
+    $searchinobject    = $by_post ? InputVars::boolPOST('searchinobject')    : InputVars::boolGET('searchinobject');
+    $searchinitems     = $by_post ? InputVars::boolPOST('searchinitems')     : InputVars::boolGET('searchinitems');
+    $searchincodeitems = $by_post ? InputVars::boolPOST('searchincodeitems') : InputVars::boolGET('searchincodeitems');
+    $searchinhistory   = $by_post ? InputVars::boolPOST('searchinhistory')   : InputVars::boolGET('searchinhistory');
+    $searchindiscus    = $by_post ? InputVars::boolPOST('searchindiscus')    : InputVars::boolGET('searchindiscus');
+    $searchinspot      = $by_post ? InputVars::boolPOST('searchinspot')      : InputVars::boolGET('searchinspot');
+    $search            = $by_post ? InputVars::stringPOST('search')          : InputVars::stringGET('search');
+    $replace           = $by_post ? InputVars::stringPOST('replace')         : InputVars::stringGET('replace');
+    $go_search         = $by_post ? InputVars::boolPOST('go_search')         : InputVars::boolGET('go_search');
+    $go_replace        = $by_post ? InputVars::boolPOST('go_replace')        : InputVars::boolGET('go_replace');
+    $token             = InputVars::stringPOST('token');
     $findinseo = InputVars::boolGET('findinseo');
     $findinview = InputVars::boolGET('findinview');
     $findinslice = InputVars::boolGET('findinslice');
@@ -69,15 +75,13 @@ try {
     $finditem = InputVars::stringGET('finditem'); // alpha, empty
     // array ( 'Jeď!' => 3, )
     $go_finditem = InputVars::boolGET('go_finditem'); // convert submit to bool
-    // array ( 'Replace!' => 6, )
-    $go_replace = InputVars::boolGET('go_replace'); // convert submit to bool
     $finditem_edit = InputVars::stringGET('finditem_edit'); // alpha
     // array ( 'item' => 1, )
     $finditem_edit_op = InputVars::stringGET('finditem_edit_op'); // alpha
     // array ( 'Jeď!' => 1, )
     $go_finditem_edit = InputVars::boolGET('go_finditem_edit'); // convert submit to bool
 
-    $Msg = InputVars::stringGETPOST('Msg');
+    $Msg = InputVars::messageGETPOST();
 } catch (Exception $e) {
     AA_Adminpageutil::pageParameterError($e);
 }
@@ -86,6 +90,12 @@ if (!IsSuperadmin()) {
     AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php", _m("You don't have permissions to do search."), "admin");
     exit;
 }
+
+const AAFINDER_REPLACE_TOKEN = 'aafinder_replace';
+
+// the replace rewrites templates of the whole installation - never on a link or a form from another site
+$may_replace = $go_replace && FormToken::checkPost(AAFINDER_REPLACE_TOKEN, $token, $_SERVER);
+$err = ($go_replace && !$may_replace) ? [_m('The form has expired; reload the page and try again.')] : [];
 // ----------------------------------------------------------------------------------------
 
 function query_search(array $where, string $phrase): string
@@ -100,7 +110,7 @@ function query_search(array $where, string $phrase): string
 
     $items = [[_m('Item'), 'short_id', 'status_code', 'publish_date', 'last_edit', 'edited_by']];
     foreach ($arr as $f) {
-        $items[]    = [Adminlink::itemLink($f['iid'], $f['slice_id']), $f['short_id'], $f['status_code'], date('Y-m-d H:i', (int) $f['post_date']), date('Y-m-d H:i', (int) $f['last_edit']), $f['edited_by']];
+        $items[]    = [Adminlink::itemLink($f['iid'], $f['slice_id']), $f['short_id'], $f['status_code'], date('Y-m-d H:i', (int) $f['post_date']), date('Y-m-d H:i', (int) $f['last_edit']), safe($f['edited_by'])];
     }
 
     return $output . GetHtmlTable($items, 'th') . '<br><br>';
@@ -235,7 +245,7 @@ if (strlen($findtext)) {
         $db->query($SQL);
         echo "<b>slices</b> <small>(" . $db->num_rows() . " matching found)</small><br>";
         while ($db->next_record()) {
-            echo $db->f("name") . " "
+            echo safe($db->f("name")) . " "
                     . "<a href=\"" . StateUrl("se_fulltext.php?change_id=" . unpack_id($db->f("id")))
                     . "\">" . _m("Jump") . "</a><br>";
         }
@@ -254,7 +264,7 @@ if (strlen($findtext)) {
         echo "<b>fields</b> <small>(" . $db->num_rows() . " matching found)</small><br>";
 
         while ($db->next_record()) {
-            echo $db->f("name") . " " . Adminlink::fieldLink($db->f("id"), unpack_id($db->f("slice_id"))) . "<br>";
+            echo safe($db->f("name")) . " " . Adminlink::fieldLink($db->f("id"), unpack_id($db->f("slice_id"))) . "<br>";
         }
         echo '<br><br>';
     }
@@ -290,8 +300,8 @@ if (strlen($findtext)) {
             $managed         = AA_Aliasfunc::getManagerConf();  // we should provide: ['module_id'=>$obj->getOwnerId()]
             $managed->setUrl(get_aa_url('modules/site/aliases.php', [], false));
             $managed->settings['show'] = MGR_ITEMS;
+            // only a list - no performActions(): its buttons lead to the aliases page, which runs them
             $manager         = new Manager('aafindaliases' . AA::$module_id, $managed);
-            $manager->performActions();
             echo $manager->getManagerCode($zids);
         }
     }
@@ -315,8 +325,11 @@ if (strlen($findtext)) {
             $print['slice_id'] = unpack_id($print['slice_id']);
             $print['id'] = unpack_id($print['id']);
             $print['parent']  = unpack_id($print['parent']);
-            $print['item_id'] = Adminlink::itemLink(unpack_id($print['item_id']), $print['slice_id']);
+            $print['item_id'] = unpack_id($print['item_id']);
             $print['date'] = date('Y-m-d H:i:s', (int) $print['date']);
+            $item_link = Adminlink::itemLink($print['item_id'], $print['slice_id']);
+            $print = array_map('safe', $print);  // comments come from anonymous visitors
+            $print['item_id'] = $item_link;
             echo '<tr><td>' . implode('</td><td>', $print) . '</td></tr>';
         }
         echo '</table>';
@@ -346,9 +359,9 @@ if ($go_finditem_edit && $finditem_edit && $finditem_edit_op) {
     }
 }
 
-if (strlen($go_search) || strlen($go_replace)) {
+if ($go_search || $may_replace) {
     $row = [];
-    if (strlen($search) || (strlen($go_replace) && (strlen($replace) > 5))) {
+    if (strlen($search) || ($may_replace && (strlen($replace) > 5))) {
         $metabase = AA::Metabase();
 
         $table2search = [];
@@ -406,7 +419,7 @@ if (strlen($go_search) || strlen($go_replace)) {
             foreach ($fields as $fld) {
                 $row = [];
 
-                if (strlen($go_search)) {
+                if ($go_search) {
                     $SQL = "SELECT `$fld` as txt, INSTR(`$fld`,'" . quote($search) . "') as pos $addfields FROM `$tbl` $addtables WHERE $addconds INSTR(`$fld`,'" . quote($search) . "')>0";
                     $txt = DB_AA::select([], $SQL);
                     if (!$txt) {
@@ -433,7 +446,7 @@ if (strlen($go_search) || strlen($go_replace)) {
                         $row[2] = "<small> $code</small>";
                         FrmTabRow($row);
                     }
-                } elseif (strlen($go_replace) && strlen($search) && strlen($replace) > 5) {
+                } elseif ($may_replace && strlen($search) && strlen($replace) > 5) {
                     $replace_str = str_replace('{#AAA}', '', $replace);
                     $SQL = "UPDATE `$tbl` SET `$fld` = REPLACE(`$fld`, '" . quote($search) . "', '" . quote($replace_str) . "')";
                     $rep = DB_AA::sql($SQL);
@@ -499,7 +512,7 @@ echo '<b>' . _m('Find in') . '</b>
 echo '</form>';
 echo '</td></tr><tr><td>';
 
-echo '<form name="f_replace">';
+echo '<form name="f_replace" method="post" action="' . safe(StateUrl('aafinder.php')) . '">' . FormToken::field(AAFINDER_REPLACE_TOKEN);
 echo '<b>' . _m('Search and Replace in') . '</b>
       <label><input type="checkbox" name="searchinview"      value="1" ' . ((!$search || $searchinview) ? 'checked' : '') . '>' . _m("Views") . '</label>&nbsp;&nbsp;
       <label><input type="checkbox" name="searchinslice"     value="1" ' . ((!$search || $searchinslice) ? 'checked' : '') . '>' . _m("Slices") . '</label>&nbsp;&nbsp;

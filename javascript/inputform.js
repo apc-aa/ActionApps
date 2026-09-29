@@ -217,48 +217,49 @@ function TabWidgetToggle(class2togle) {
 
 
 
-// APC-AA javascript 3 functions for HTMLArea -- was in htmlarea/aafunc.js
+// aa-richtext.js next to this file - for text areas of hand-written forms, which come without <aa-richtext>;
+// kept on the function, where no element id of the page can stand in for it (window.<id> could)
+if (document.currentScript?.src) {
+    const self = new URL(document.currentScript.src);
+    const url  = new URL('widgets/aa-richtext.js', self);
+    url.search = self.search;
+    openHTMLAreaFullscreen.richtextUrl = url.href;
+}
+
+/** "Edit in Editor" of a text area: <aa-richtext> (widgets/aa-richtext.js) does the work */
+function openHTMLAreaFullscreen(name) {
+    const textarea = document.getElementById(name);
+    if (!textarea) {
+        return;
+    }
+    let box = textarea.closest('aa-richtext');
+    if (!box) {
+        box = document.createElement('aa-richtext');
+        box.setAttribute('editor', '');
+        box.setAttribute('switch-name', name + 'html');
+        box.setAttribute('switch-html', 'h');
+        // the textarea goes in first: a defined element looks for it when connected
+        const [parent, next] = [textarea.parentNode, textarea.nextSibling];
+        box.append(textarea);
+        parent.insertBefore(box, next);
+        if (!customElements.get('aa-richtext') && openHTMLAreaFullscreen.richtextUrl) {
+            import(openHTMLAreaFullscreen.richtextUrl).catch(e => console.error('openHTMLAreaFullscreen', e));
+        }
+    }
+    customElements.whenDefined('aa-richtext').then(() => box.showEditor());
+}
+
+/** Shows the "Edit in Editor" link - hand-written forms call it after the textarea */
 function showHTMLAreaLink(name) {
-    var elem;
-    if (CKEDITOR.env.isCompatible) {
-        if ( elem = document.getElementById("arealinkspan"+name) ) {
-            elem.style.display = "inline";
-        }
+    const link = document.getElementById('arealinkspan' + name);
+    if (link) {
+        link.style.display = 'inline';
     }
 }
 
-function OLDopenHTMLAreaFullscreen(name) {    // open HTMLArea in popupwindow
-    if (CKEDITOR.env.isCompatible) {
-        let elem = document.body.querySelectorAll('input[name="' + name + "html" + '"]');
-        for (let i=0; i<elem.length; i++) {
-            if (elem[i].value === "h") {
-                elem[i].checked = true;
-            }
-        }
-        if ( elem = document.getElementById("htmlplainspan"+name) ) {
-            elem.style.display = "none";
-        }
-        if ( elem = document.getElementById("arealinkspan"+name) ) {
-            elem.style.display = "none";
-        }
-        CKEDITOR.replace(name);
-    }
-}
-
-function openHTMLAreaFullscreen(name) {    //
-    let el;
-    if (CKEDITOR.env.isCompatible) {
-        if (el = document.body.querySelector('input[name="' + name + 'html' + '"][value="h"]')) {
-            el.checked = true;
-        }
-        if (el = document.getElementById("htmlplainspan" + name)) {
-            el.style.display = "none";
-        }
-        if (el = document.getElementById("arealinkspan" + name)) {
-            el.style.display = "none";
-        }
-        CKEDITOR.replace(name);
-    }
+/** @deprecated the same as openHTMLAreaFullscreen() */
+function OLDopenHTMLAreaFullscreen(name) {
+    openHTMLAreaFullscreen(name);
 }
 
 

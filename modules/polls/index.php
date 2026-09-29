@@ -47,7 +47,7 @@ require_once __DIR__ . "/../../modules/polls/include/util.php";
 try {
     $cancel = InputVars::boolPOST('cancel');
 
-    $Msg = InputVars::stringGETPOST('Msg');
+    $Msg = InputVars::messageGETPOST();
 } catch (Exception $e) {
     AA_Adminpageutil::pageParameterError($e);
 }
@@ -81,9 +81,10 @@ $module_id = AA::$module_id;
 // modules. Now it is better to use module_id, because in other modules
 // (like Links, ...) it is not so confusing
 
-$p_module_id = q_pack_id($module_id); // packed to 16-digit as stored in database
+$p_module_id = pack_id($module_id);   // AA_Condition quotes it itself
 
 $managed  = AA::Metabase()->getManagerConf('polls', $actions, $switches, ['edit_url' => get_aa_url('modules/polls/polledit.php?poll_id=_#id')]);
+$managed->setModule($module_id);   // its forms and row actions change only the polls of this module
 
 // function - we need translate _m() on use (not at include time)
 
@@ -97,12 +98,14 @@ $managed  = AA::Metabase()->getManagerConf('polls', $actions, $switches, ['edit_
 //                                      ';
 
 $manager = new Manager('poll' . $module_id, $managed);   // no special meaning of the manager_id, just some ID
+// exact match - no SQL parsing (we added this because SQL Syntax parser in AA have problems with packed ids);
+// in the Manager, so "all rows" of the actions are the polls of this module, as listed
+$manager->setRestrictionConds([
+    new AA_Condition('module_id', '==', $p_module_id),
+]);
 $manager->performActions();
 
 $aa_set = $manager->getSet();
-
-// exact match - no SQL parsing (we added this because SQL Syntax parser in AA have problems with packed ids)
-$aa_set->addCondition(new AA_Condition('module_id', '==', $p_module_id));
 
 // there is also one poll which acts as template - managed from Polls Admin
 // (and not from the Polls Manager page) - it has status_code=0,

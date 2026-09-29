@@ -6,16 +6,12 @@ namespace AA\Central\Package;
 
 use AA\Central\Package\Model\Package;
 use Generator;
-use Throwable;
 
-/** The reference lint of an import (design balicek-v1.md § 8.4; the Validator leaves it to the plan):
- *  ReferenceLint over the definition texts of the package as ExportLint reads them (LintTexts) - text
- *  columns of the rows, object properties that are code, spot conditions - with the identity map of the
- *  package: what the plan maps. Finds what the rewrite cannot map (computed views, unknown forms, glued
- *  ids) and what leads outside the package. W and I only - the preview reports them; the structured
- *  references (slice.vid, mlxctrl, emailid_*, ...) are the Validator's. RawBytes are linted as bytes:
- *  the importer writes and rewrites them too (ImportRewrite). Item values are not linted: article
- *  texts link anywhere. Pure. */
+/** The reference lint of an import: ReferenceLint over the definition texts of the package, with the
+ *  package's own ids as the map. Finds what the rewrite cannot map (computed views, unknown forms, glued
+ *  ids) and what leads outside the package - W and I only; the structured references are the Validator's.
+ *  RawBytes are linted too: the importer rewrites them as well. Item values are not linted: article texts
+ *  link anywhere. */
 final class ImportLint
 {
     private readonly LintTexts $texts;
@@ -25,13 +21,15 @@ final class ImportLint
         $this->texts = new LintTexts($schema);
     }
 
-    /** @throws RewriteFailed a regex failed */
-    public function check(Package $package, FindingList $into): void
+    /** @param Package|null $ids the package whose ids the rewrite maps - the whole one, when $package leaves
+     *                           out what an existing slice keeps; null = $package
+     *  @throws RewriteFailed a regex failed */
+    public function check(Package $package, FindingList $into, ?Package $ids = null): void
     {
-        $lint = new ReferenceLint(self::identity($package));
-        foreach ($this->texts($package) as [$path, $text]) {
-            foreach (LintTexts::lint($lint, $path, $text) as $finding) {
-                $into->add($path, $finding);
+        $lint = new ReferenceLint(self::identity($ids ?? $package));
+        foreach ($this->texts($package) as $entry) {
+            foreach (LintTexts::lint($lint, ...$entry) as $finding) {
+                $into->add($entry[0], $finding);
             }
         }
     }
@@ -63,17 +61,15 @@ final class ImportLint
         );
     }
 
-    /** @return Generator<int, array{string, string}> [path, text] */
+    /** @return Generator<int, array{0: string, 1: string, 2?: ?string}> [path, text, group of a group column] */
     private function texts(Package $package): Generator
     {
         foreach ($package->modules as $m) {
             $path = "$m->type[$m->id]";
             yield from $this->texts->rows($path, $m->rows, true);
-            try {       // a malformed object is Validator's E
-                yield from LintTexts::code(isset(Schema::SETTINGS_CLASSES[$m->type]) ? ObjectExport::values($m->type, $m->settings, $m->objects, $path) : [], true);
-            } catch (Throwable) {
-            }
+            yield from LintTexts::code(isset(Schema::SETTINGS_CLASSES[$m->type]) ? ObjectExport::values($m->type, $m->settings, $m->objects, $path) : [], true);
             yield from LintTexts::conditions("$path/spot-tree", $m->spotTree['spots'] ?? null);
+            yield from LintTexts::settingValues($path, $m->transfer['setting-values'] ?? null, true);
         }
         foreach ($package->constantGroups as $group) {
             yield from $this->texts->rows("constant-group[$group->name]", $group->rows, true);

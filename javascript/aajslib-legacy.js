@@ -79,17 +79,18 @@ function AA__Serialize(root) {
     // content would reach the server one byte per line shorter than it used to
     const add = (name, value) => params.append(name, String(value).replace(/\r?\n/g, '\r\n'));
     AA_$$('input, select, textarea', root).forEach(el => {
-        if (!el.name || el.disabled || ['submit', 'button', 'image', 'reset', 'file'].includes(el.type)) {
+        if (!el.name || el.matches(':disabled') || ['submit', 'button', 'image', 'reset', 'file'].includes(el.type)) {
             return;
         }
         if ((el.type === 'checkbox' || el.type === 'radio') && !el.checked) {
             return;
         }
-        if (el.multiple && el.selectedOptions) {
-            [...el.selectedOptions].forEach(opt => add(el.name, opt.value));
-        } else {
-            add(el.name, el.value);
+        if (el.tagName === 'SELECT') {
+            // as jQuery: only enabled selected options, nothing for a select with none
+            [...el.selectedOptions].filter(opt => !opt.matches(':disabled')).forEach(opt => add(el.name, opt.value));
+            return;
         }
+        add(el.name, el.value);
     });
     return params.toString();
 }
@@ -264,6 +265,112 @@ function AA_WindowUnloadQ(e) {
     e.preventDefault();
     // The text is not displayed in most modern browsers, but the value must be set;
     e.returnValue = "Changes are not saved. Do you really want to exit this page?";
+}
+
+/** Live widgets whose last save would be lost on leaving the page: sent without
+ *  keepalive (no room left for it) or failed. */
+if (!window.AA__LiveUnsaved) {
+    window.AA__LiveUnsaved = new Set();
+}
+/** number of the newest save per widget - only its answer may set the widget's state */
+if (!window.AA__LiveSeq) {
+    window.AA__LiveSeq = new Map();
+}
+/** keepalive bytes on their way - browsers give all keepalive requests of a page 64 kB together */
+if (typeof window.AA__LiveKeepalive !== 'number') {
+    window.AA__LiveKeepalive = 0;
+}
+
+/** Asks before leaving a page with an unsaved live edit. Registered on first use:
+ *  Firefox keeps no page with a beforeunload listener in its back/forward cache. */
+function AA_LiveGuard() {
+    if (window.AA__LiveGuarded) {
+        return;
+    }
+    window.AA__LiveGuarded = true;
+    window.addEventListener('beforeunload', e => {
+        // an editor keeps the last edit until focus leaves it - send it now
+        AA_$$('aa-code, aa-richtext').forEach(el => el.flush?.());
+        // a widget an AJAX refresh replaced has nothing left to lose
+        if ([...window.AA__LiveUnsaved].some(id => document.getElementById('widget-' + id))) {
+            AA_WindowUnloadQ(e);
+        }
+    });
+}
+
+/** Saves one live widget - all controls in #widget-<base_id> - through filler.php.
+ *  keepalive lets the save finish when the click that ended the edit leaves the page.
+ *  @param {string}   base_id
+ *  @param {Element}  liveinput  the control that changed (validated first)
+ *  @param {Function} fnc        called after a successful save
+ */
+function AA_SendWidgetLive(base_id, liveinput, fnc) {
+    AA_LiveGuard();
+    AA_StateChange(base_id, 'updating');
+    if (typeof liveinput.checkValidity === 'function' && !liveinput.checkValidity()) {
+        AA_StateChange(base_id, 'invalid');
+        return;
+    }
+    const unsaved = window.AA__LiveUnsaved;
+    const mine    = (window.AA__LiveSeq.get(base_id) ?? 0) + 1;
+    window.AA__LiveSeq.set(base_id, mine);
+    const body    = AA__Serialize(document.getElementById('widget-' + base_id)) + '&inline=1';
+    const bytes   = new Blob([body]).size;
+    // decided before sending: a rejected keepalive request is not sent again - while the
+    // page is being left it may still arrive, and a second copy would save twice
+    const keepalive = (window.AA__LiveKeepalive + bytes) <= 60000;
+    if (keepalive) {
+        window.AA__LiveKeepalive += bytes;
+    } else {
+        unsaved.add(base_id);
+    }
+    fetch(AA_GetConf('path') + 'filler.php', {
+        method:  'POST',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8', 'X-Requested-With': 'XMLHttpRequest'},
+        body,
+        keepalive,
+    }).then(response => response.ok, () => false).then(ok => {
+        if (keepalive) {
+            window.AA__LiveKeepalive -= bytes;
+        }
+        if (window.AA__LiveSeq.get(base_id) !== mine) {
+            return;                 // a newer save of this widget is on its way
+        }
+        if (!ok) {
+            unsaved.add(base_id);
+            AA_StateChange(base_id, 'dirty');
+            return;
+        }
+        unsaved.delete(base_id);
+        AA_StateChange(base_id, 'normal');
+        if (typeof fnc === 'function') {
+            fnc();                  // after the state: an error in it is its own, not a failed save
+        }
+    });
+}
+
+/** Saves every changed {editable} field of the page in one request (widgets/aa-editable.js). */
+function AA_SaveEditors() {
+    const params = new URLSearchParams({ inline: '1' });
+    const saved  = [];
+    AA_$$('[contenteditable][data-aa-field]').forEach((el) => {
+        if (!el.aaEditor?.isDirty()) {
+            return;
+        }
+        const field = `aa[u${el.dataset.aaId}][${el.dataset.aaField}]`;
+        params.append(`${field}[${el.dataset.aaIndex ?? 0}]`, el.aaEditor.getContent());
+        params.append(`${field}[flag]`, '1');
+        saved.push(el.aaEditor);
+    });
+    fetch(AA_GetConf('path') + 'filler.php', { method: 'POST', body: params, headers: { Accept: 'application/json' } })
+        .then(response => response.json())
+        .then((data) => {
+            saved.forEach(editor => editor.markSaved());
+            AA_Toolbar('');
+            window.removeEventListener('beforeunload', AA_WindowUnloadQ);
+            const n = Object.keys(data).length;
+            AA_Message((n === 1) ? 'Zmeny ulozeny' : ('Ulozeno ' + n + ' zmen'));
+        });
 }
 
 function AA_SiteUpdate(item, field, value, action) {
@@ -524,7 +631,7 @@ function AA_NewId() {
     return uuid.join('');
 }
 
-function displayInput(valdivid, item_id, fid, widget_type, widget_properties, context) {
+function displayInput(valdivid, item_id, fid, widget_type, widget_properties, context, sig) {
     // already editing ?
     var el = document.getElementById(valdivid);
     switch (el.getAttribute('data-aa-edited')) {
@@ -537,7 +644,7 @@ function displayInput(valdivid, item_id, fid, widget_type, widget_properties, co
     var width = el.offsetWidth;
     el.innerHTML = AA_GetConf('loader');
     var lang = AA_GetConf('lang');
-    AA_Response('Get_Widget', { "field_id": fid, "item_id": item_id, "widget_type": widget_type, "widget_properties": widget_properties, lang: lang, context: context}, function(responseText) {
+    AA_Response('Get_Widget', { "field_id": fid, "item_id": item_id, "widget_type": widget_type, "widget_properties": widget_properties, lang: lang, context: context, sig: sig || ''}, function(responseText) {
         // var style = 'position:absolute; left:0px; top:0px; width:'+width+'px; z-index:1000;';
         if (width>200) {
             responseText = responseText.replace('class="ajax_widget aa-widget aa-ajax-open"', 'class="ajax_widget aa-widget aa-ajax-open" style="width:'+width+'px;"');
@@ -8613,38 +8720,6 @@ function AA_ReloadAjaxResponse(id, responseText) {
     }
 }
 
-/** This function replaces the older one - proposeChange
- *  The main chane is, that now we use standard AA input names:
- *   aa[i<item_id>][<field_id>][]
- */
-function AA_SendWidgetLive(id, liveinput, fnc) {
-    AA_StateChange(id, 'updating');
-
-    var valdivid   = 'widget-' + id;
-
-    // browser supports HTML5 validation
-    if (typeof liveinput.checkValidity == 'function') {
-        if (!liveinput.checkValidity()) {
-            AA_StateChange(id, 'invalid');
-            return;
-        }
-    }
-
-    var code = Form.serialize(valdivid);
-    code += '&inline=1';  // do not send us whole page as result
-
-    new Ajax.Request(AA_GetConf('path') + 'filler.php', {
-        parameters: code,
-        requestHeaders: {Accept: 'application/json'},
-        onSuccess: function(transport) {
-            AA_StateChange(id, 'normal');
-            if (typeof fnc == 'function') {
-                fnc();
-            }
-        }
-    });
-}
-
 /** rotates the element - hide/show .rot-hide, add/remove class "active" for .rot-active
  *  called as:
  * <div id="mydiv">
@@ -8761,27 +8836,6 @@ function AA_StateChange(id, state) {
 }
 
 
-
-function AA_SaveEditors() {
-  var params = {'inline':1};
-
-  for(var i in CKEDITOR.instances) {   // for each
-    if (CKEDITOR.instances[i].checkDirty()) {
-        params['aa[u'+$(i).readAttribute('data-aa-id')+']['+$(i).readAttribute('data-aa-field')+'][0]'] = CKEDITOR.instances[i].getData();
-        params['aa[u'+$(i).readAttribute('data-aa-id')+']['+$(i).readAttribute('data-aa-field')+'][flag]'] = 1;
-    }
-  }
-
-  new Ajax.Request(AA_GetConf('path') + 'filler.php', {
-      parameters: params,
-      requestHeaders: {Accept: 'application/json'},
-      onSuccess: function(transport) {
-          AA_Toolbar('');
-          window.removeEventListener("beforeunload", AA_WindowUnloadQ);
-          AA_Message((Object.keys(transport.responseJSON).length == 1) ? 'Zmeny ulozeny' : ('Ulozeno ' + Object.keys(transport.responseJSON).length +' zmen'));
-      }
-  });
-}
 
 /** Deprecated
  *  For backward compatibility only. Use $(element).update('text') from

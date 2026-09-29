@@ -70,8 +70,11 @@ use AA\Util\InputVars;
 // We are trying to remove any dependecy on the point 2) and use only $_* superglobals
 function AddslashesDeep($value): array|string { return is_array($value) ? array_map('AddslashesDeep',   $value) : addslashes($value);   }
 
+require_once __DIR__ . '/src/Util/InputVars.php';   // the autoloader comes later
 foreach ($_REQUEST as $k => $v) {
-    $$k = AddslashesDeep($v);
+    if (!\AA\Util\InputVars::isProtectedGlobal((string) $k)) {   // the session and permission globals
+        $$k = AddslashesDeep($v);
+    }
 }
 
 $notshown = (array)($_REQUEST['notshown'] ?? []);
@@ -154,7 +157,7 @@ function SendErrorPage(array $txt): never
         echo '<?xml version="1.0" encoding="iso-8859-1"?>
         <!DOCTYPE wml PUBLIC "-//WAPFORUM//DTD WML 1.3//EN" "http://www.wapforum.org/DTD/wml13.dtd" >
         <wml>
-          <card id="carta1" title="apc.org" ontimer="'.$_REQUEST["err_url"].'">
+          <card id="carta1" title="apc.org" ontimer="'.safe($_REQUEST["err_url"]).'">
             <timer value="1"/>
             </card>
         </wml>
@@ -187,7 +190,7 @@ function SendOkPage($txt, $new_ids = []): void
         echo '<?xml version="1.0" encoding="iso-8859-1"?>
         <!DOCTYPE wml PUBLIC "-//WAPFORUM//DTD WML 1.3//EN" "http://www.wapforum.org/DTD/wml13.dtd" >
         <wml>
-          <card id="carta1" title="apc.org" ontimer="'.$_REQUEST["ok_url"].'">
+          <card id="carta1" title="apc.org" ontimer="'.safe($_REQUEST["ok_url"]).'">
             <timer value="1"/>
           </card>
         </wml>
@@ -340,7 +343,9 @@ if ( isset($_POST['aa']) || isset($_FILES['aa']) ) {
 // global variables should be quoted (since old AA code rely on that fact),
 // however the new code should use $_POST, which are NOT quoted
 foreach ($_REQUEST as $k => $v) {
-    $$k = AddslashesDeep($v);
+    if (!\AA\Util\InputVars::isProtectedGlobal((string) $k)) {   // the session and permission globals
+        $$k = AddslashesDeep($v);
+    }
 }
 
 // init used objects

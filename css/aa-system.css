@@ -544,6 +544,121 @@ aa-code .cm-content:hover {
 aa-code .cm-scroller {
     overflow-x: auto;
 }
+aa-code[invalid], aa-richtext[invalid] { outline: 2px solid #c00; outline-offset: 1px; }
+.aa-invalid-msg { color: #c00; margin: .25em 0; }
+/* file picker of the rich-text editor */
+.aa-filepicker {
+    width: min(90vw, 760px);
+    max-height: 80vh;
+    padding: 12px;
+}
+.aa-filepicker-head {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+.aa-filepicker-head input[type=search] {
+    flex: 1;
+}
+.aa-filepicker-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 8px;
+    list-style: none;
+    margin: 8px 0 0;
+    padding: 0;
+    max-height: 60vh;
+    overflow: auto;
+}
+.aa-filepicker-list button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    width: 100%;
+    padding: 4px;
+    background: none;
+    box-sizing: border-box;
+    margin: 0;
+    color: inherit;             /* admin buttons are white on dark */
+    border: 1px solid var(--clr-border, #ccc);
+    border-radius: 4px;
+    cursor: pointer;
+}
+.aa-filepicker-list button:is(:hover, :focus-visible) {
+    background: rgb(0 0 0 / 6%);
+    color: inherit;
+    border-color: #888;
+}
+.aa-filepicker-list img {
+    width: 100%;
+    height: 90px;
+    object-fit: contain;
+}
+.aa-filepicker-list span {
+    font-size: 11px;
+    overflow-wrap: anywhere;
+}
+/* <aa-richtext> - TinyMCE; fills the row like aa-code */
+aa-richtext {
+    display: block;
+    flex: 1;
+    min-width: 0;
+}
+/* CKEditor 4 look: gray bar, framed groups, small buttons - two rows at 920 px */
+aa-richtext .tox.tox-tinymce {
+    margin: 2px;
+    border: 1px solid #b6b6b6;
+    border-radius: 0;
+}
+aa-richtext .tox.tox-tinymce .tox-editor-header {
+    padding: 2px 0;
+    background: linear-gradient(#f8f8f8, #e8e8e8);
+    border-bottom: 1px solid #b6b6b6;
+    box-shadow: none;
+}
+aa-richtext .tox .tox-toolbar-overlord,
+aa-richtext .tox .tox-toolbar__primary,
+aa-richtext .tox .tox-toolbar {
+    background: transparent;
+    border: 0;
+}
+aa-richtext .tox .tox-toolbar__group {
+    margin: 3px 3px 2px 5px;
+    padding: 0 2px;
+    background: linear-gradient(#fff, #e4e4e4);
+    border: 1px solid #b6b6b6;
+    border-radius: 3px;
+}
+aa-richtext .tox .tox-tbtn {
+    width: 26px;
+    height: 24px;
+    margin: 1px 0;
+    border-radius: 2px;
+}
+aa-richtext .tox .tox-tbtn svg {
+    fill: #474747;
+    transform: scale(.8);
+}
+aa-richtext .tox .tox-tbtn--select,
+aa-richtext .tox .tox-split-button .tox-tbtn,
+aa-richtext .tox .tox-tbtn:has(.tox-tbtn__select-label) {
+    width: auto;
+}
+aa-richtext .tox .tox-tbtn__select-label {
+    font: 12px Arial, sans-serif;
+}
+aa-richtext .tox .tox-tbtn--bespoke .tox-tbtn__select-label {
+    width: 4.6em;
+}
+aa-richtext .tox .tox-split-button {
+    height: 24px;
+    margin: 1px 0;
+}
+aa-richtext .tox .tox-statusbar {
+    background: #e8e8e8;
+    border-top: 1px solid #d1d1d1;
+}
 
 /* tlkt widget */
 .aa-widget-wi2 .aa-input, .aa-widget-iso .aa-input {

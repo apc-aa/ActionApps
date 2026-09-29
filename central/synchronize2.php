@@ -35,8 +35,6 @@ $apage = new AA_Adminpageutil('central', 'synchronize');
 $apage->setTitle(_m("Central - Synchronize ActionApps (2/3) - Slices to Compare"));
 $apage->addRequire('aa-jslib@1');
 $apage->setForm();
-$apage->printHead();
-
 
 // ActionApps to synchronize
 $aas = Actionapps::getArray();
@@ -45,11 +43,18 @@ foreach ( $aas as $k => $aa ) {
     $aas_array[$k] = $aa->getName();
 }
 
+// an AA without a valid token answers nothing - say why instead of an empty list
+$err = [];
+
 // Template slice - grab from remote AA
 $tmplate_slices = $aas[$_POST['template_aa']]->requestSlices();
+$err[] = $aas[$_POST['template_aa']]->lastErrorHtml();
 
 // Compared slice - grab from remote AA
 $cmp_slices = array_merge( [0 => _m('do not compare')], $aas[$_POST['comparation_aa']]->requestSlices());
+$err[] = $aas[$_POST['comparation_aa']]->lastErrorHtml();
+
+$apage->printHead(array_filter($err));
 
 $form_buttons = [
     "compare"      => [

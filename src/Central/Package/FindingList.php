@@ -32,10 +32,23 @@ final class FindingList
         return ($this->count["$level $code"] ?? 0) >= self::MAX_PER_CODE;
     }
 
-    /** $n more findings of the level and code, found but not made (SecurityLint::lint() stops making them) */
+    /** $n more findings of the level and code, found but not made (full()) */
     public function skipped(string $level, string $code, int $n): void
     {
         $this->count["$level $code"] = ($this->count["$level $code"] ?? 0) + $n;
+    }
+
+    /** @return array<string, int> code => findings of the level, kept or not */
+    public function counts(string $level): array
+    {
+        $counts = [];
+        foreach ($this->count as $key => $n) {
+            [$of, $code] = explode(' ', $key, 2);
+            if ($of === $level) {
+                $counts[$code] = $n;
+            }
+        }
+        return $counts;
     }
 
     /** @return list<array{string, LintFinding}> by danger (stable), a code's `+N more` after its findings */

@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace AA\Central\Package\Model;
 
-/** One module of a package: a wrapper element of design balicek-v1.md § 4, its table rows (§ 6),
- *  objects (§ 5.4), site tree (§ 6.3) and items.
+/** One module of a package: its wrapper element, table rows, objects, site tree and items.
  *
  *  A row is `DB column => value` with only the columns a package carries - Schema::rowColumns() plus
  *  the key columns of Schema::rowAttributes() (`view.id`, `relation.destination_id`, ...); the module
@@ -13,13 +12,22 @@ namespace AA\Central\Package\Model;
  *  RawBytes = source bytes the collector could not convert to UTF-8 (text columns, item values) - base64.
  *
  *  Object properties and item values cannot be NULL (<p>, <v> have no null="true"): Writer throws.
- *  Decision for the collector (C4.3 part 3): NULL item values of old rows (GetItemContent(),
- *  include/util.php:1080 - `number` NULL) are mapped to ''. */
+ *  NULL item values of old rows (GetItemContent() of `number` NULL) the collector maps to ''. */
 final readonly class Module
 {
     public const SITE   = 'site-module';
     public const SLICE  = 'slice-module';
     public const ALERTS = 'alerts-module';
+
+    /** the parts of $transfer each wrapper may have (format 1.1) */
+    public const TRANSFER = [
+        self::SITE   => ['owner', 'alternate-url'],
+        self::SLICE  => ['owner', 'reading-password', 'setting-values'],
+        self::ALERTS => ['owner'],
+    ];
+
+    /** module.type in AA => the wrapper */
+    public const TYPES = ['W' => self::SITE, 'S' => self::SLICE, 'Alerts' => self::ALERTS];
 
     /**
      * @param string                                                  $type     self::SITE | SLICE | ALERTS
@@ -40,6 +48,11 @@ final readonly class Module
      *                                                                          field id => [key => {value, flag?}]}, the key a
      *                                                                          position or a translation number (>= AA_Value::MAX_INDEX)
      * @param string|null                                             $doc      author's note shown before installation
+     * @param array<string, mixed>                                    $transfer state of the source installation, only in a
+     *                                                                          transfer (self::TRANSFER): owner {name, email},
+     *                                                                          reading-password, alternate-url (list),
+     *                                                                          setting-values (the slice's settings fields,
+     *                                                                          GetItemContent() form); texts string or RawBytes
      */
     public function __construct(
         public string $type,
@@ -50,5 +63,6 @@ final readonly class Module
         public ?array $spotTree = null,
         public array $items = [],
         public ?string $doc = null,
+        public array $transfer = [],
     ) {}
 }

@@ -7,23 +7,14 @@ namespace AA\Central\Package;
 use AA\Central\Package\Model\Module;
 use AA\Central\Package\Model\Package;
 
-/** What the importer changes in a package before it writes it (C4.4 part 3) - the decisions of
- *  design balicek-v1.md "Odchylky při implementaci" (C4.4(2), Q-H1), each one a FixUp:
- *  - email.attachments the SecurityLint marks ATTACHMENTS_DROPPED (a local path or a computed value
- *    AA_File_Wrapper would read from the target's disk) => '';
- *  - an unknown slice.lang_file (the old copy, Validator W) => the module's lang_file;
- *  - ga_id, alternate_url, app_* of the site settings => dropped (ObjectExport::isLeftOut());
- *  - a tag start (SecurityLint::SPOT_TAG) in a spot name, variable, condition variable or condition
- *    value => strip_tags() (the site tree admin prints them unescaped, modules/site/sitetree.php); a
- *    variable and the condition keyed by it are renamed alike (they pair by name); texts with no tag
- *    start stay as they are (`{if:..:<:3..}`);
- *  - no <spot-tree> => site.structure = '' in the site row (with a tree the writer serialises
- *    sitetree::fromArray() - the row has no `structure` then);
- *  - an alerts_filter several Alerts modules carry (the same row - Validator) => only the first module
- *    keeps the row, the writer creates it once; the other modules' alerts_collection_filter rows keep
- *    the filter id and get the new number from the filter map (IdMap::withFilters());
- *  - meta/publish => `users` (Q-H1).
- *  Pure: the model passed in stays as it is; a changed copy and the list come back. */
+/** What the importer changes in a package before it writes it, each one a FixUp:
+ *  - email.attachments AA_File_Wrapper would read from the target's disk => '';
+ *  - an unknown slice.lang_file => the module's lang_file;
+ *  - ga_id, alternate_url, app_* of the site settings => dropped;
+ *  - a tag start in a spot text => strip_tags() - the site tree admin prints spot texts unescaped;
+ *  - no <spot-tree> => site.structure = '';
+ *  - an alerts_filter several Alerts modules carry => kept in the first module only;
+ *  - a published app => not published: an installed copy is never offered further. */
 final class FixUps
 {
     /** @var list<FixUp> */
@@ -50,10 +41,10 @@ final class FixUps
             }
             $modules[] = self::with($m, $args);
         }
-        if ($package->publish !== 'users') {
-            $this->fixUps[] = new FixUp('meta/publish', FixUp::PUBLISH, (string) $package->publish, 'users');
+        if ($package->published) {
+            $this->fixUps[] = new FixUp('meta/publish', FixUp::PUBLISH, 'all', 'no');
         }
-        return [self::with($package, ['modules' => $modules, 'publish' => 'users']), $this->fixUps];
+        return [self::with($package, ['modules' => $modules, 'published' => false]), $this->fixUps];
     }
 
     /** @param array<string, list<array<string, mixed>>> $rows @return array<string, list<array<string, mixed>>> */
@@ -105,35 +96,19 @@ final class FixUps
         return ['rows' => $rows, 'settings' => $settings, 'spotTree' => $tree];
     }
 
-    /** the name, variables and conditions of a spot with no tag start - paths as SecurityLint::spotTexts()
+    /** the texts of a spot (LintTexts::mapSpot()) with no tag start
      *  @param array<string, mixed> $spot the canonical form of sitetree::toArray() @return array<string, mixed> */
     private function spot(string $at, array $spot): array
     {
-        $clean = function (string $path, mixed $value): mixed {
+        return LintTexts::mapSpot($at, $spot, function (mixed $value, string $path): mixed {
             $text = is_scalar($value) ? (string) $value : '';
             $new  = self::stripped($text);
-            if ($new !== $text) {
-                $this->fixUps[] = new FixUp($path, FixUp::SPOT_MARKUP, $text, $new);
-                return $new;
+            if ($new === $text) {
+                return $value;
             }
-            return $value;
-        };
-        $spot['n'] = $clean("$at@name", $spot['n'] ?? '');
-        if (is_array($spot['v'] ?? null)) {
-            $vars = [];
-            foreach (array_values($spot['v']) as $k => $var) {
-                $vars[self::stripped((string) array_keys($spot['v'])[$k])] = $clean("$at/var[#$k]", $var);
-            }
-            $spot['v'] = $vars;
-        }
-        if (is_array($spot['c'] ?? null)) {
-            $conds = [];
-            foreach (array_keys($spot['c']) as $k => $var) {
-                $conds[(string) $clean("$at/cond[#$k]@var", (string) $var)] = $clean("$at/cond[#$k]", $spot['c'][$var]);
-            }
-            $spot['c'] = $conds;
-        }
-        return $spot;
+            $this->fixUps[] = new FixUp($path, FixUp::SPOT_MARKUP, $text, $new);
+            return $new;
+        });
     }
 
     /** strip_tags() while a tag start is left (`<<b>b>`), then the bare tag starts; no tag start = as it is */

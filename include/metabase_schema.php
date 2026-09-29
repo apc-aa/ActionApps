@@ -136,7 +136,7 @@ return [
             'FILEMAN_BASE_URL' => ['FILEMAN_BASE_URL', 'varbinary(255)', false, '', '', '', ''],
             'FILEMAN_UPLOAD_TIME_LIMIT' => ['FILEMAN_UPLOAD_TIME_LIMIT', 'int(11)', false, '', '0', '', ''],
             'AA_ADMIN_USER' => ['AA_ADMIN_USER', 'varbinary(30)', false, '', '', '', ''],
-            'AA_ADMIN_PWD' => ['AA_ADMIN_PWD', 'varbinary(512)', false, '', '', '', ''],
+            'AA_ADMIN_PWD' => ['AA_ADMIN_PWD', 'varbinary(1024)', false, '', '', '', ''],
             'status_code' => ['status_code', 'smallint(5)', false, '', '0', '', ''],
         ],
         'f' => null,

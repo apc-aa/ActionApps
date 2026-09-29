@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace AA\Central\Package;
 
+use Closure;
 use Generator;
 
-/** What ExportLint and ImportLint share (design balicek-v1.md § 8.4): the identity map of an app, the
+/** What ExportLint and ImportLint share: the identity map of an app, the
  *  definition texts ReferenceLint reads - text columns of rows, spot conditions - and the one finding
- *  that is no finding: the group of a field widget, a structured reference (rewriteInputShowFunc()).
+ *  that is no finding: the group of a group column, a structured reference (ReferenceRewriter::groupColumn()).
  *  Also the texts Collector::groups() searches for {constant(s)/options:<g>} and Planner mirrors. */
 final class LintTexts
 {
@@ -30,36 +31,91 @@ final class LintTexts
         );
     }
 
-    /** Text columns of rows - [path, text]; the input_view of the profile is a structured reference.
+    /** Text columns of rows - [path, text, the group of a group column (ReferenceRewriter::groupColumn()) or
+     *  null]; the input_view of the profile is a structured reference.
      *  RawBytes: skipped, or with $raw their bytes (the import lints what it writes; the regexes are
      *  byte-wise and ASCII-anchored, ModuleCharset::STATELESS).
      *  @param array<string, list<array<string, mixed>>> $elements
-     *  @return Generator<int, array{string, string}> */
+     *  @return Generator<int, array{string, string, ?string}> */
     public function rows(string $path, array $elements, bool $raw = false): Generator
     {
         foreach ($elements as $element => $list) {
             $columns = array_keys($this->schema->rowColumns((string) $element), 'textValue', true);
             foreach ($list as $i => $row) {
+                $group = ReferenceRewriter::groupColumn((string) $element, $row);
                 foreach ($columns as $column) {
                     $text = $row[$column] ?? '';
                     $text = ($raw && ($text instanceof Model\RawBytes)) ? $text->bytes : $text;
                     if (is_string($text) && ($text !== '') && !(($element === 'profile') && (($row['property'] ?? '') === 'input_view'))) {
-                        yield [$this->schema->rowPath($path, (string) $element, $row, $i) . "/$column", $text];
+                        yield [$this->schema->rowPath($path, (string) $element, $row, $i) . "/$column", $text, ($column === $group) ? ReferenceRewriter::rowGroup((string) $element, $row) : null];
                     }
                 }
             }
         }
     }
 
-    /** the condition variables and values of the spots - [path, text]; the n-th condition `cond[#n]`
+    /** The text values of the settings fields a transfer brings (Module::$transfer['setting-values']) - templates
+     *  like any definition; RawBytes as rows() - [path, text]
+     *  @return Generator<int, array{string, string}> */
+    public static function settingValues(string $path, mixed $values, bool $raw = false): Generator
+    {
+        foreach (is_array($values) ? $values : [] as $field => $list) {
+            foreach (is_array($list) ? $list : [] as $key => $v) {
+                $text = is_array($v) ? ($v['value'] ?? '') : '';
+                $text = ($raw && ($text instanceof Model\RawBytes)) ? $text->bytes : $text;
+                if (is_string($text) && ($text !== '')) {
+                    yield ["$path/setting-values/{$field}[$key]", $text];
+                }
+            }
+        }
+    }
+
+    /** The texts of a spot (sitetree::toArray() form), each through $fn(text, path) and back into the spot:
+     *  the name `<at>@name`, the variables `<at>/var[#k]` (keyed by their name), the conditions - variable
+     *  `<at>/cond[#k]@var` and value `<at>/cond[#k]`.
+     *  @param array<mixed> $spot @param Closure(mixed, string): mixed $fn @return array<mixed> */
+    public static function mapSpot(string $at, array $spot, Closure $fn): array
+    {
+        $spot['n'] = $fn($spot['n'] ?? '', "$at@name");
+        if (is_array($spot['v'] ?? null)) {
+            $vars = [];
+            foreach (array_values($spot['v']) as $k => $var) {
+                $name                           = $fn($var, "$at/var[#$k]");
+                $vars[ValueCodec::bytes($name)] = $name;
+            }
+            $spot['v'] = $vars;
+        }
+        if (is_array($spot['c'] ?? null)) {
+            $conds = [];
+            foreach (array_keys($spot['c']) as $k => $var) {
+                $conds[ValueCodec::bytes($fn((string) $var, "$at/cond[#$k]@var"))] = $fn($spot['c'][$var], "$at/cond[#$k]");
+            }
+            $spot['c'] = $conds;
+        }
+        return $spot;
+    }
+
+    /** the texts of a spot (mapSpot()): path => text @param array<mixed> $spot @return array<string, string> */
+    public static function spotTexts(string $at, array $spot): array
+    {
+        $texts = [];
+        self::mapSpot($at, $spot, static function (mixed $text, string $path) use (&$texts): mixed {
+            $texts[$path] = ValueCodec::bytes($text);
+            return $text;
+        });
+        return $texts;
+    }
+
+    /** the condition variables and values of the spots - [path, text]
      *  @param mixed $spots sitetree::toArray()['spots'] @return Generator<int, array{string, string}> */
     public static function conditions(string $path, mixed $spots): Generator
     {
         foreach (is_array($spots) ? $spots : [] as $spot) {
-            foreach (array_keys(is_array($spot['c'] ?? null) ? $spot['c'] : []) as $k => $var) {
-                $at = "$path/spot[" . ValueCodec::bytes($spot['id'] ?? '') . "]/cond[#$k]";
-                yield ["$at@var", (string) $var];
-                yield [$at, ValueCodec::bytes($spot['c'][$var])];
+            $at = "$path/spot[" . ValueCodec::bytes($spot['id'] ?? '') . ']';
+            foreach (self::spotTexts($at, (array) $spot) as $text_at => $text) {
+                if (str_starts_with($text_at, "$at/cond[")) {
+                    yield [$text_at, $text];
+                }
             }
         }
     }
@@ -77,11 +133,11 @@ final class LintTexts
         }
     }
 
-    /** ReferenceLint of one text - without the group of a field widget, a structured reference
+    /** ReferenceLint of one text - without the group of a group column, a structured reference the import rewrites
+     *  @param string|null $group rows()' third value
      *  @return list<LintFinding> */
-    public static function lint(ReferenceLint $lint, string $path, string $text): array
+    public static function lint(ReferenceLint $lint, string $path, string $text, ?string $group = null): array
     {
-        return array_values(array_filter($lint->lint($text), static fn(LintFinding $f): bool => ($f->code !== ReferenceLint::GROUP_OTHER)
-            || !str_ends_with($path, '/input_show_func') || ($f->ref !== ReferenceRewriter::inputShowFuncGroup($text))));
+        return array_values(array_filter($lint->lint($text), static fn(LintFinding $f): bool => ($f->code !== ReferenceLint::GROUP_OTHER) || ($f->ref !== $group)));
     }
 }

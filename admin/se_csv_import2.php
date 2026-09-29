@@ -78,7 +78,7 @@ try {
     $upload = InputVars::boolPOST('upload');
     $cancel = InputVars::boolPOST('cancel');
     
-    $Msg = InputVars::stringGETPOST('Msg');
+    $Msg = InputVars::messageGETPOST();
 } catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
 
 /** findNearestText function

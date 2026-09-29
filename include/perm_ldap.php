@@ -590,7 +590,7 @@ class AA_Permsystem_Ldap extends AA_Permsystem
         }
 
         if ($org = strstr($username, "@")) { // user typed e-mail -> search to get DN
-            $search = "(&(objectclass=inetOrgPerson)(mail=$username))";
+            $search = "(&(objectclass=inetOrgPerson)(mail=" . ldap_escape($username, '', LDAP_ESCAPE_FILTER) . "))";
             if (@ldap_bind($ds, $LDAPserver['binddn'], $LDAPserver['bindpw'])) {
                 $r = ldap_search($ds, $LDAPserver['people'], $search, [""]);
                 $arr = ldap_get_entries($ds, $r);
@@ -602,7 +602,7 @@ class AA_Permsystem_Ldap extends AA_Permsystem
                 }
             }
         } else {                                    // build DN
-            $userdn = "uid=$username," . $LDAPserver['people'];
+            $userdn = "uid=" . ldap_escape($username, '', LDAP_ESCAPE_DN) . "," . $LDAPserver['people'];
         }
 
         if (@ldap_bind($ds, $userdn, $password)) {  // try to authenticate
@@ -621,7 +621,24 @@ class AA_Permsystem_Ldap extends AA_Permsystem
     {
         $aa_default_ldap = self::getLdap();
         // search not only Active bin, but also Holding bin, Pending, ...
-        return ! $this->getIDsInfo("uid=$username," . $aa_default_ldap['people']);
+        return ! $this->getIDsInfo('uid=' . ldap_escape((string) $username, '', LDAP_ESCAPE_DN) . ',' . $aa_default_ldap['people']);
+    }
+
+    /** uid and mail match case-insensitively in LDAP; an unreachable server is no answer - it throws */
+    public function isLoginFree(string $login): bool
+    {
+        $aa_default_ldap = self::getLdap();
+        if (!($ds = InitLDAP())) {
+            throw new RuntimeException('LDAP is not reachable - the login cannot be checked');
+        }
+        $value = ldap_escape(rtrim($login, ' '), '', LDAP_ESCAPE_FILTER);
+        $res   = @ldap_search($ds, $aa_default_ldap['people'], "(|(uid=$value)(mail=$value))", ['uid'], 0, 1);
+        $found = $res ? ldap_count_entries($ds, $res) : false;
+        ldap_unbind($ds);
+        if ($found === false) {
+            throw new RuntimeException('The LDAP search of a login failed');
+        }
+        return $found === 0;
     }
 
     /** findUsers function
@@ -744,46 +761,51 @@ class AA_Permsystem_Ldap extends AA_Permsystem
         }
 
         $filter = "(|(objectclass=groupOfNames)(objectclass=inetOrgPerson))";
-        $result = @ldap_read($ds, $uid, $filter, ["objectclass", "mail", "cn", "sn", "givenname"]);
-        if (!$result) {
+        $result = @ldap_read($ds, $uid, $filter, ["objectclass", "uid", "mail", "cn", "sn", "givenname"]);
+        $entry  = $result ? ldap_first_entry($ds, $result) : false;
+        // attribute names come in the server's case (objectClass, givenName)
+        $arr    = $entry ? array_change_key_case(ldap_get_attributes($ds, $entry)) : [];
+        ldap_unbind($ds);
+        if (!$arr) {
             return false;
         }
-        $entry = ldap_first_entry($ds, $result);
-        $arr   = $entry ? ldap_get_attributes($ds, $entry) : [];
 
-        if (!is_array($arr["objectclass"])) {  // new LDAP is case sensitive (v3)
-            $arr["objectclass"] = $arr["objectClass"];
-        }
-
-        $res       = [];
-        $res['id'] = $uid;
-        for ($i = 0; $i < $arr["objectclass"]["count"]; ++$i) {
+        $res         = [];
+        $res['id']   = $uid;
+        $res['type'] = 'User';
+        for ($i = 0; $i < ($arr["objectclass"]["count"] ?? 0); ++$i) {
             if (stripos($arr["objectclass"][$i], "groupofnames") !== false) {
                 $res["type"] = "Group";
             }
         }
 
-        if (!$res["type"]) {
-            $res["type"] = "User";
+        $res["login"] = $arr["uid"][0] ?? null;
+        $res["name"]  = $arr["cn"][0] ?? null;
+        if (isset($arr["givenname"][0])) {
+            $res["givenname"] = $arr["givenname"][0];
         }
-
-        $res["login"] = $arr["uid"][0];
-        $res["name"]  = $arr["cn"][0];
-        $gname = (is_array($arr["givenname"]) ? $arr["givenname"] : $arr["givenName"]);
-        if (is_array($gname)) {
-            $res["givenname"] = $gname[0];
-        }
-
-        if (is_array($arr["sn"])) {
+        if (isset($arr["sn"][0])) {
             $res["sn"] = $arr["sn"][0];
         }
-        $res["mail"]  = $arr["mail"][0];
-        $res["mails"] = $arr["mail"];
-
-        ldap_unbind($ds);
+        $res["mail"]  = $arr["mail"][0] ?? null;
+        $res["mails"] = $arr["mail"] ?? null;
         return $res;
     }
 
+
+    /** @return ?string null for a group, an unknown DN or an unreachable server - see AA\Util\LdapStamp */
+    public function credentialStamp(string $uid): ?string
+    {
+        if (!str_starts_with($uid, 'uid=') || !($ds = InitLDAP())) {
+            return null;
+        }
+        // modifyTimestamp is operational - returned only when asked for by name
+        $result = @ldap_read($ds, $uid, "(objectclass=inetOrgPerson)", ["modifyTimestamp"]);
+        $entry  = $result ? ldap_first_entry($ds, $result) : false;
+        $attrs  = $entry ? ldap_get_attributes($ds, $entry) : [];
+        ldap_unbind($ds);
+        return \AA\Util\LdapStamp::fromAttributes($attrs);
+    }
 
     //-----------------------------------
 

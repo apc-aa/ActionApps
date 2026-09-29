@@ -34,8 +34,6 @@ try {
     $getOldV = InputVars::boolGETPOST('getOldV');
     $lid = InputVars::intGET('lid');
     $cancel = InputVars::boolGETPOST('cancel');
-
-    $Msg = InputVars::stringGETPOST('Msg');
 } catch (Exception $e) {
     AA_Adminpageutil::pageParameterError($e);
 }

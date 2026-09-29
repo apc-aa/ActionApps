@@ -119,8 +119,11 @@ function AddslashesDeep($value): array|string
     return is_array($value) ? array_map('AddslashesDeep', $value) : addslashes($value);
 }
 
+require_once __DIR__ . '/src/Util/InputVars.php';   // the autoloader comes later
 foreach ($_REQUEST as $k => $v) {
-    $$k = AddslashesDeep($v);
+    if (!\AA\Util\InputVars::isProtectedGlobal((string) $k)) {   // the session and permission globals
+        $$k = AddslashesDeep($v);
+    }
 }
 // ----- input variables normalization - end ----------------------------------
 
@@ -222,7 +225,7 @@ if ((($key != $lock) || $scrl) && is_array($r_state_vars)) {  // command is for 
 
 // url posted command to display specified text instead of slice content -------
 if ($slicetext) {
-    echo $slicetext;
+    echo safe($slicetext);        // it comes from the URL
     ExitPage();
 }
 

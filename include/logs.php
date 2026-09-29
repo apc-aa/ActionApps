@@ -57,6 +57,13 @@ ITEM_DEL        item_id
 M_FLDI_VLD      module_id:field_id              msg:url                        // insert form field validation
 LOGIN           module_id:field_id              msg:url                        // insert form field validation
 STATE_CHK       {CheckClass} | summary          Sc:severity:count:title | Scs:errors:warnings:infos:checks   // daily State Check snapshot (AA\Later\StateCheck)
+ALIAS_FU        level:slice_id:field_id:function  reason:file                   // f_u not calling a usr_* function, once a day (AA\Util\UserAliasFunction, LogOnce)
+ALERT_DENY      collection:slice_id:user        item_id                        // Alertitem send refused, once a day (AA_Collection::logRefusal(), LogOnce)
+JWT_DENY        client IP                       reason                         // Bearer token refused on central/responder.php, once a day (AA_Auth, LogOnce)
+OBJ_DENY        module_id:object_id|-:user      form_class:stored_class:stored_owner  // object form or Manager action refused - not its object or table row (-: none stored at the posted id; form_class of a table: _T<table>), once a day (AA\Managed_Object, AA\Managed_Table, LogOnce)
+SESSID_USE      client IP:reader|password|session                              // Get_Sessionid answered to a login, once a day (AA\Optimize\CheckSessionidUse, LogOnce)
+APP_INST        module_id (a row per new module; none: AA_ID)  App:name:version:source_url  // aa-app package installed (AA\Central\Package\AaAfterCommit)
+APPSTORE        command:client (IPv4; IPv6 "/48 /64")  command               // a request of the app store's public account - the hourly limits count them, keep it logged (AA\Central\AppStore::admit())
 AA_WARN
 */
 
@@ -230,7 +237,10 @@ class AA_Log implements InternalExpandInterface
      *        as `selector LIKE 'prefix%'`. 'LIKE' would be a substring match. */
     public static function getAdminUrl(string $event, string $selector = "", string $oper = '='): string
     {
-        return get_admin_url("aa_log.php", ['srchbr_akce' => 1, 'srchbr_field[0]' => 'selector', 'srchbr_oper[0]' => $oper, "srchbr_value[0]=$selector", 'srchbr_field[1]' => 'type', 'srchbr_oper[1]' => '=', 'srchbr_value[1]' => $event, 'srchbr_order[0]' => 'time', 'srchbr_order_dir[0]' => 'on']);
+        $url = get_admin_url("aa_log.php", ['srchbr_akce' => 1, 'srchbr_field[0]' => 'selector', 'srchbr_oper[0]' => $oper, 'srchbr_value[0]' => $selector, 'srchbr_field[1]' => 'type', 'srchbr_oper[1]' => '=', 'srchbr_value[1]' => $event, 'srchbr_order[0]' => 'time', 'srchbr_order_dir[0]' => 'on']);
+        // the selector is encoded (a logged value may carry " & < ...), but an AA alias in it (_#AA_ID___ in
+        // AA_Plannedtask's manager row) must survive to be substituted - a raw # only starts the fragment
+        return str_replace('_%23', '_#', $url);
     }
 
     /** Get events from log
@@ -343,20 +353,21 @@ class AA_Log implements InternalExpandInterface
         return $tab;
     }
 
-    /** Render a log row's `params` and `selector` cells as inline AA_Logentry
-     *  key-value tables, matching the display used by `admin/aa_log.php`.
-     *  Cells that are not AA_Logentry-serialized are returned unchanged.
+    /** Render a log row as HTML cells, matching the display used by `admin/aa_log.php`:
+     *  `params` and `selector` as inline AA_Logentry key-value tables, every other value
+     *  as text - a log row carries whatever was logged.
      */
     public static function renderLogentryCells(array $row): array
     {
+        $cells = array_map('safe', $row);
         if (!empty($row['params']) && str_contains($row['params'], ':')
                 && ($entry = AA_Logentry::factoryByString($row['params']))) {
-            $row['params'] = $entry->getPrintRow();
+            $cells['params'] = $entry->getPrintRow();
         }
         if (!empty($row['selector']) && ($entry = AA_Logentry::factoryByStringReversed($row['selector']))) {
-            $row['selector'] = $entry->getPrintRow();
+            $cells['selector'] = $entry->getPrintRow();
         }
-        return $row;
+        return $cells;
     }
 
     /** Internal aliases for Admin interface
@@ -374,12 +385,12 @@ class AA_Log implements InternalExpandInterface
                 if ($content && ($logEntry = AA_Logentry::factoryByString($content->getValue('params')))) {
                     return $logEntry->getPrintRow(); // also adds CSS to header
                 }
-                return (string) $content->getValue('params');
+                return safe((string) $content?->getValue('params'));   // not an AA_Logentry - a logged value, printed as text
             case 'context':  // special format of selector logentry - param is first
                 if ($content && ($logEntry = AA_Logentry::factoryByStringReversed($content->getValue('selector')))) {
                     return $logEntry->getPrintRow(); // also adds CSS to header
                 }
-                return (string) $content->getValue('selector');
+                return safe((string) $content?->getValue('selector'));
         }
         return '';
     }
@@ -978,7 +989,7 @@ class AA_Logentry_Csn extends AA_Logentry
     }
 }
 
-/** IMPORT log entry - module-chunk import (central/responder.php) */
+/** IMPORT log entry - written by older AAs importing module chunks; kept so the log page still reads their rows */
 class AA_Logentry_Import extends AA_Logentry
 {
     public static function getClassProperties(): array
@@ -986,6 +997,33 @@ class AA_Logentry_Import extends AA_Logentry
         return [
             'phase'  => new AA_Property('phase', _m('Phase'), 'string'),    // start | result
             'detail' => new AA_Property('detail', _m('Detail'), 'string'),
+        ];
+    }
+}
+
+/** APP_INST params log entry - an aa-app package installed (AA\Central\Package\AaAfterCommit), one row per
+ *  new module (the selector). Short tag `App`. The values are package text: trimmed to PARAMS_MAX (the
+ *  source URL first, then the name), control characters replaced - escape them when shown. */
+class AA_Logentry_App extends AA_Logentry
+{
+    public string $name    = '';
+    public string $version = '';
+    public string $source  = '';
+
+    public static function make(string $name, string $version, string $source): self
+    {
+        $line  = static fn(string $s): string => (string) preg_replace('/[\x00-\x1F\x7F]+/', ' ', $s);
+        $entry = new self(['name' => $line($name), 'version' => $line($version), 'source' => $line($source)]);
+        $entry->trimToFit(['source', 'name', 'version'], self::PARAMS_MAX);
+        return $entry;
+    }
+
+    public static function getClassProperties(): array
+    {
+        return [
+            'name'    => new AA_Property('name', _m('Name'), 'string'),
+            'version' => new AA_Property('version', _m('Version'), 'string'),
+            'source'  => new AA_Property('source', _m('Source'), 'string'),
         ];
     }
 }

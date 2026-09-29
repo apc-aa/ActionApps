@@ -71,8 +71,6 @@ try {
     $change_id = InputVars::idGETPOST('change_id');
     $listlen = InputVars::intGET('listlen');
     $cancel = InputVars::boolPOST('cancel');
-
-    $Msg = InputVars::stringGETPOST('Msg');
 } catch (Exception $e) {
     AA_Adminpageutil::pageParameterError($e);
 }

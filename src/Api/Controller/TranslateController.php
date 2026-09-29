@@ -20,10 +20,24 @@ namespace AA\Api\Controller;
 
 use AA\Api\JsonResponse;
 use AA\Api\SameHostGate;
+use AA\Http\Client;
+use AA\Http\ClientInterface;
+use AA\Http\TransportException;
 
 class TranslateController
 {
     use SameHostGate;
+    /** @param ?ClientInterface $http tests hand in a fake; api/index.php uses new TranslateController() */
+    public function __construct(private ?ClientInterface $http = null) {}
+
+    protected function http(): ClientInterface
+    {
+        // AA's own name, like everything else AA fetches. Tried live on 21 Sep 2026: the keyless
+        // endpoint answers 200 to it and to no User-Agent at all (what the old curl call sent), but
+        // 302 to a blank one - so do not "fix" this by blanking the header. Should translations
+        // start failing with a 403 or a 3xx, a filter on this name is the first thing to suspect.
+        return $this->http ??= new Client();
+    }
 
     /** Free, keyless, undocumented Google endpoint. No terms, no guarantee. */
     protected const ENDPOINT = 'https://translate.googleapis.com/translate_a/single';
@@ -204,30 +218,20 @@ class TranslateController
         ]);
 
         for ($attempt = 0; ; $attempt++) {
-            $ch = curl_init($url);
-            curl_setopt_array($ch, [
-                CURLOPT_POST           => true,
+            try {
                 // POST, not GET: the query-string form caps out at ~16 kB of URL.
-                CURLOPT_POSTFIELDS     => http_build_query(['q' => $text]),
-                CURLOPT_HTTPHEADER     => ['Content-Type: application/x-www-form-urlencoded; charset=UTF-8'],
-                CURLOPT_RETURNTRANSFER => true,
-                CURLOPT_CONNECTTIMEOUT => 10,
-                CURLOPT_TIMEOUT        => 30,
-            ]);
-            $body   = curl_exec($ch);
-            $status = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
-            $err    = curl_error($ch);
-            curl_close($ch);
+                $answer = $this->http()->request('POST', $url, http_build_query(['q' => $text]), ['Content-Type' => 'application/x-www-form-urlencoded; charset=UTF-8']);
+            } catch (TransportException $e) {
+                // The transport message can name an internal proxy, so log it, don't show it.
+                error_log('[aa-translate] request failed: ' . $e->getMessage());
+                return ['ok' => false, 'status' => 502, 'message' => 'Translation service is unreachable'];
+            }
+            $status = $answer->status;
 
             // 429/503 is the free endpoint throttling a burst of clicks — back off.
             if (($status === 429 || $status === 503) && $attempt < static::RETRIES) {
                 usleep(static::RETRY_BASE_US * (2 ** $attempt));
                 continue;
-            }
-            if (!is_string($body)) {
-                // The curl message can name an internal proxy, so log it, don't show it.
-                error_log('[aa-translate] request failed: ' . $err);
-                return ['ok' => false, 'status' => 502, 'message' => 'Translation service is unreachable'];
             }
             if ($status >= 400) {
                 // Logged so throttling of this server's IP is visible somewhere other
@@ -235,7 +239,7 @@ class TranslateController
                 error_log('[aa-translate] provider returned HTTP ' . $status . ' after ' . ($attempt + 1) . ' attempt(s)');
                 return ['ok' => false, 'status' => 502, 'message' => 'Translation service returned HTTP ' . $status];
             }
-            return $this->parseResponse($body);
+            return $this->parseResponse($answer->body);
         }
     }
 

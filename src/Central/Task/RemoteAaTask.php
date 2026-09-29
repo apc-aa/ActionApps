@@ -17,7 +17,7 @@ use AA_Logentry_Obj;
  */
 abstract class RemoteAaTask implements LaterInterface
 {
-    /** the class name the task had before AA\Central\Task - the Task Manager log keeps it */
+    /** the Task Manager log name: the old class name, so older log entries still match */
     protected const LOG_NAME = '';
 
     /** central_conf.id of the AA */
@@ -44,7 +44,6 @@ abstract class RemoteAaTask implements LaterInterface
         return implode("\n", array_filter((array) $this->send($aa), 'is_scalar'));
     }
 
-    /** the Task Manager log (AA_Log::selector()) names the task as before the move */
     public function logSelector(): AA_Logentry
     {
         return AA_Logentry_Obj::make(static::LOG_NAME);

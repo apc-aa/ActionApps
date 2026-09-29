@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace AA\Central\Package;
 
+use AA\Central\Package\Model\Batch;
 use AA\Central\Package\Model\ConstantGroup;
 use AA\Central\Package\Model\Module;
 use AA\Central\Package\Model\Package;
@@ -11,34 +12,21 @@ use AA\Central\Package\Model\RawBytes;
 use DOMElement;
 use InvalidArgumentException;
 
-/** aa-app XML of an untrusted source => package model (design balicek-v1.md § 3.1 steps 1-8, § 3.2;
- *  C4.4 part 1). XmlGuard parses safely, then: root and major version, pruning, XSD, model. The
- *  semantic checks of § 3.1 step 9 (lang_file, state_file, references inside the package, ...) come
- *  after, in the validator of C4.4 part 2 - so does sitetree::fromArray(), the gate of the spot tree.
+/** aa-app XML of an untrusted source => package model.
+ *  XmlGuard parses safely, then: root and major version, pruning, XSD, model. The semantic checks and
+ *  sitetree::fromArray() are the Validator's.
  *
- *  Pruning (§ 3.2), by the parent element: a column unknown to this AA's metabase is always dropped;
- *  a column this AA knows but a package never carries (reading_password, slice_id, view.id) stays for
- *  the XSD to reject. Elements, attributes and object classes unknown to format 1.0 are dropped only
- *  when the package has a higher minor version, otherwise the XSD rejects them. Each drop = a finding.
+ *  Pruning: a column unknown to this AA's metabase is always dropped; one this AA knows but a package
+ *  never carries (reading_password) stays for the XSD to reject. Elements, attributes and object classes
+ *  unknown to this AA's format (Writer::FORMAT) are dropped only in a higher minor version, else the XSD
+ *  rejects them. Each drop = a finding.
  *
- *  The model - exact for any input:
- *  - column and key values are strings, SQL NULL null; integers (intValue columns, integer keys, spot
- *    ids) in the shortest decimal form ('007' => '7'); a key attribute left out is its XSD default;
- *  - a column the row leaves out (or leaves empty): ValueCodec::emptyValue() if meta/tables lists it for
- *    the row element, else absent = the importer takes this AA's default (§ 2.3); metabase order;
- *  - base64 that is valid UTF-8 is a string, else RawBytes (the format does not say which charset raw
- *    bytes have - valid UTF-8 cannot be told from converted text);
- *  - properties: name => scalar when the only value is index 0, else [index => scalar | subobject
- *    {id, class, props}]; items: {id, content: field => [index => {value, flag}]}; maps sorted by key
- *    as the writer sorts them, lists (rows, objects, items, spots, modules) in document order;
- *  - the spot tree in the form of sitetree::toArray(): ids strings, f int, v/c keyed or null, po/ch
- *    lists or null, [] where the `empty` attribute says so.
- *  It is a canonical form only for packages of THIS AA's Writer (every local column in meta/tables,
- *  lists sorted): for them Writer(Reader(x)) === x and Reader(Writer(Reader(x))) === Reader(x). A package
- *  of another AA version or a hand-edited one reads exactly, but absent columns and document order
- *  stay. The importer writes the model to the DB and must not serialise it again - Writer lists every
- *  local column in meta/tables, so "absent = this AA's default" would turn into "empty". Carrying
- *  meta/tables in the model would only serve that re-serialisation, which nothing needs.
+ *  The model: values strings, SQL NULL null, integers in the shortest decimal form; a column the row leaves
+ *  out is ValueCodec::emptyValue() when meta/tables lists it, else absent = this AA's default;
+ *  base64 that is valid UTF-8 a string, else RawBytes; properties name => scalar (index 0 only) or
+ *  [index => scalar | subobject]; the spot tree as sitetree::toArray(). For packages of this AA's Writer
+ *  Writer(Reader(x)) === x; any other reads exactly, but the importer must not serialise the model again
+ *  ("absent = default" would become "empty").
  *
  *  Messages and findings quote package text (cut, XmlGuard::quote()) - escape them (safe()) when shown. */
 final class Reader
@@ -128,7 +116,7 @@ final class Reader
         return new ReadResult($this->package($root), $this->findings, $format);
     }
 
-    // ---------------------------------------------------------------- pruning (§ 3.2)
+    // ---------------------------------------------------------------- pruning
 
     /** @param bool $row $el is a table row - its children are columns */
     private function prune(DOMElement $el, string $path, bool $row, bool $newer): void
@@ -166,7 +154,7 @@ final class Reader
             if ($code !== null) {
                 $el->removeChild($child);
                 $this->found(LintFinding::WARNING, $code, $at, $ref);
-            } elseif ($child_name !== 'signature') {    // any content, not read in v1 (§ 9.4)
+            } elseif ($child_name !== 'signature') {    // any content, not read in format 1.0
                 $this->prune($child, $at, in_array($name, self::CONTAINERS, true) && isset($this->columns[$child_name]), $newer);
             }
         }
@@ -183,7 +171,7 @@ final class Reader
     {
         $children = self::children($root);
         $meta     = $source = $modules = $groups = [];
-        $requires = null;
+        $requires = $batch = null;
         $items    = false;
         foreach (self::children(array_shift($children)) as $el) {   // meta first (XSD): meta/tables before the rows
             if ($el->localName === 'source') {
@@ -196,6 +184,8 @@ final class Reader
                 $requires = $el->hasAttribute('aa-version') ? $el->getAttribute('aa-version') : null;
             } elseif ($el->localName === 'contents') {
                 $items = $this->withItems = self::bool($el->getAttribute('items'));
+            } elseif ($el->localName === 'batch') {
+                $batch = new Batch($el->getAttribute('after'), $el->getAttribute('next'), self::bool($el->getAttribute('finished')));
             } elseif ($el->localName === 'tables') {
                 foreach (self::children($el) as $table) {
                     $name                = $table->getAttribute('name');
@@ -212,28 +202,33 @@ final class Reader
                 $modules[] = $this->module($el);
             }
         }
-        return new Package($meta['name'] ?? '', $source, $modules, $groups, $meta['description'] ?? null, $meta['version'] ?? null, $meta['publish'] ?? null, $requires, $items, $meta['doc'] ?? null);
+        return new Package($meta['name'] ?? '', $source, $modules, $groups, $meta['description'] ?? null, $meta['version'] ?? null, self::published($meta['publish'] ?? ''), $requires, $items, $meta['doc'] ?? null, $batch);
     }
 
     private function module(DOMElement $el): Module
     {
         $path     = self::step($el);
         $settings = $tree = $doc = null;
-        $objects  = $items = [];
+        $objects  = $items = $transfer = [];
         foreach (self::children($el) as $child) {
+            $at = "$path/" . $child->localName;
             match ($child->localName) {
                 'doc'       => $doc = $child->textContent,
                 'spot-tree' => $tree = $this->spotTree($child, "$path/spot-tree"),
                 'settings'  => $settings = $this->props($child, "$path/settings"),
                 'object'    => $objects[] = $this->object($child, $path . '/' . self::step($child), true),
                 'item'      => $items[] = $this->item($child, $path . '/' . self::step($child)),
+                'owner'     => $transfer['owner'] = array_combine(['name', 'email'], array_map(fn(DOMElement $v): string|RawBytes|null => $this->value($v, "$at/$v->localName"), self::children($child))),
+                'reading-password' => $transfer['reading-password'] = $this->value($child, $at),
+                'setting-values'   => $transfer['setting-values'] = $this->item($child, $at)['content'],
+                'alternate-url'    => $transfer['alternate-url'][] = $this->value($child, $at),
                 default     => null,
             };
         }
-        if ($items && !$this->withItems) {    // the flag gates the item import (§ 4, § 9.1)
+        if ($items && !$this->withItems) {    // the flag gates the item import
             throw new PackageRejected("$path: items in a package without items (meta/contents/@items)");
         }
-        return new Module($el->localName, $el->getAttribute('id'), $this->rows($el, $path), $settings, $objects, $tree, $items, $doc);
+        return new Module($el->localName, $el->getAttribute('id'), $this->rows($el, $path), $settings, $objects, $tree, $items, $doc, $transfer);
     }
 
     /** @return array<string, list<array<string, string|RawBytes|null>>> row element => rows, document order */
@@ -267,7 +262,7 @@ final class Reader
         return $rows;
     }
 
-    /** a value element (column, <p>, <v>) decoded by ValueCodec (§ 2.2) */
+    /** a value element (column, <p>, <v>) decoded by ValueCodec */
     private function value(DOMElement $el, string $path, string $type = 'textValue'): string|RawBytes|null
     {
         $enc = $el->getAttribute('enc') ?: ValueCodec::TEXT;
@@ -376,6 +371,12 @@ final class Reader
             }
         }
         return $children;
+    }
+
+    /** meta/publish: `all` = published; `no`, and `users` of older packages, are not */
+    private static function published(string $publish): bool
+    {
+        return $publish === 'all';
     }
 
     /** an element in a finding path: its name and key, e.g. `view[12]` */

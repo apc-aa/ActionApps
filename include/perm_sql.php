@@ -346,6 +346,17 @@ class AA_Permsystem_Sql extends AA_Permsystem {
         return false;
     }
 
+    /** The stored password hash - exactly users.password, so tokens tagged with it stay valid */
+    public function credentialStamp(string $uid): ?string
+    {
+        // MySQL would compare a reader's hex id equal to its leading digits
+        if (!$this->userIdFormatMatches($uid)) {
+            return null;
+        }
+        $hash = DB_AA::select1('password', 'SELECT password FROM `users`', [['id', $uid, 'i'], ['type', 'User']]);
+        return (is_string($hash) && ($hash !== '')) ? $hash : null;
+    }
+
     /** isUsernameFree function
      *  Looks whether the username name is not yet used.
      * @param $username
@@ -353,6 +364,17 @@ class AA_Permsystem_Sql extends AA_Permsystem {
      */
     function isUsernameFree($username): bool {
         return !(DB_AA::select1('', 'SELECT uid FROM `users`', [['uid', $username]]));
+    }
+
+    /** uid is binary (case counts), mail a *_ci char - both folded here, $login in UTF-8 */
+    public function isLoginFree(string $login): bool {
+        $key = mb_strtolower(rtrim($login, ' '), 'UTF-8');
+        foreach (["LOWER(TRIM(TRAILING ' ' FROM CONVERT(uid USING utf8mb4)))", "LOWER(TRIM(TRAILING ' ' FROM mail))"] as $column) {
+            if (DB_AA::select1('id', 'SELECT id FROM `users`', [[$column, $key]])) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /** findUsernames function

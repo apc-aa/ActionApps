@@ -6,30 +6,14 @@ namespace AA\Central\Package;
 
 use AA\Central\Package\Model\Module;
 use AA\Central\Package\Model\Package;
+use AA\Optimize\Convert2innodb;
 use AA_Metabase;
 use InvalidArgumentException;
 
-/** The import planner (design balicek-v1.md § 7.2 step 3; C4.4 part 3): a package that passed the
- *  Validator + a target => ImportPlan, with no write. Pure except for ImportTarget - the questions to
- *  the target (group names taken, new ids) - so tests run without a DB.
- *
- *  1. FixUps: what the importer changes (attachments, lang_file, settings, spot markup, structure,
- *     a shared alerts filter once, publish = users) - applied to a copy, listed for the preview.
- *  2. The charset of each module: its lang_file (ModuleCharset::ofModule(); the target module gets the
- *     package's lang_file - normalised, $langFiles - § 2.4); of a constant group: the export's rule
- *     (GroupPlan: the owner's, else the first module naming it in a widget or a text, a slice preferred).
- *  3. The maps (§ 7.1) - modules, then per module its objects and subobjects and items, then the
- *     constants: new_id(), none twice in the plan; settings objects: string2id(class . new module id),
- *     old => new in the long map too (a package id equal to a new settings id = E; to an old one: the
- *     Validator's E); alerts collections: new_collection_id(); group names: GroupPlan. Views, e-mails
- *     and filters: the writer.
- *  4. TargetCharset: every value converts to its target charset and fits its column (E, W).
- *  5. ImportLint: references the rewrite cannot map or that lead outside the package (W, I).
- *
- *  Not here (they plug in around plan()): the "keep module ids" restore mode (§ 7.1: would replace
- *  the module part of the map after its checks), rights (PS_INSTALL_APP, Q-H2) and the S confirmation
- *  (UI, part 5), the engine / MyISAM check (§ 7.2 step 4, part 4), writing, the re-check of the names
- *  and ids inside the transaction and compensation (part 4, ImportPlan), the chunk mode (part 6). */
+/** The import planner: a package that passed the Validator + a target => ImportPlan, with no write. Pure
+ *  except for ImportTarget, so tests run without a DB. The engine check (E NO_TRANSACTION) is here so the
+ *  preview shows it: the rollback is the only cleanup of a failed import.
+ *  The rights and the S confirmation are the writer's (Importer::write()). */
 final class Planner
 {
     /** I: a constant group gets another name on the target; ref = "old => new" */
@@ -38,8 +22,32 @@ final class Planner
     public const GROUP_NAME_EXHAUSTED = GroupPlan::EXHAUSTED;
     /** E: the module's lang_file names no language - its charset is unknown (Validator's E already) */
     public const LANG_FILE = Validator::LANG_FILE;
-    /** E: an object, item or constant id of the package equals a new settings object id */
+    /** E: an object or constant id of the package equals a new settings object id */
     public const SETTINGS_ID = Validator::DUPLICATE;
+    /** I: an alerts field (`alerts1....<cid>`, getAlertsField()) of a collection the package does not carry
+     *  is written as it is - AA reads it only through a collection whose reader slice is this new slice, so
+     *  it is an inert definition; ref = the collection id */
+    public const ALERTS_FIELD_KEPT = 'alerts-field-kept';
+    /** E: tables the import writes are not InnoDB - no transaction would roll a failed import back; ref =
+     *  noTransaction(): "table (engine), ... - ..." (engine '' = no such table), naming the AA optimization for it */
+    public const NO_TRANSACTION = 'no-transaction';
+    /** the path of a finding about the target AA, not the package */
+    public const TARGET = 'target';
+    /** S: a domain of the source site a transfer gives the new site - confirm it is to move; ref = the URL */
+    public const DOMAIN_KEPT = 'domain-kept';
+    /** W: a domain of the source site left out - a site of this AA answers to it, it is this AA's own
+     *  host, or it names no host; ref = the URL */
+    public const DOMAIN_DROPPED = 'domain-dropped';
+
+    /** E: the owner chosen for the new modules of an install is none of this AA's (slice_owner), or none
+     *  was chosen though it has some; ref = the id */
+    public const OWNER_UNKNOWN = 'owner-unknown';
+
+    /** tables only a transfer writes: the item batches, the owners of the modules */
+    private const TRANSFER_TABLES = ['item', 'content', 'slice_owner'];
+
+    /** an alerts field id: FIELDID_HOWOFTEN / FIELDID_FILTERS padded with dots, then the collection id */
+    private const ALERTS_FIELD_RE = '/^alerts[12]\.+([A-Za-z0-9]{1,9})\z/';
 
     private readonly Schema $schema;
     private FindingList $findings;
@@ -51,19 +59,38 @@ final class Planner
         $this->schema = new Schema($metabase);
     }
 
-    /** @throws InvalidArgumentException the validation has an E - such a package is never planned
+    /** @param bool         $transfer     the importer's mode is a transfer (the Validator was asked the same)
+     *  @param list<string> $readerLogins the login names of the readers the transfer brings (Collector::readerLogins()) -
+     *                                    E for those of a user, or of a reader with AA permissions, of this AA
+     *  @param array<string, string> $into slices of the package going into existing slices of this AA: source id => id here
+     *  @param bool         $sameAa       the source is this AA (AppSource::sameAa())
+     *  @param string       $owner        slice_owner id for the modules an install creates (defaultOwner());
+     *                                    E unless it is one of this AA's - '' only when it has none; the plan
+     *                                    keeps '' when no module is created
+     *  @throws InvalidArgumentException the validation has an E - such a package is never planned; an owner in a transfer
      *  @throws RewriteFailed a regex of the length check failed */
-    public function plan(Package $package, ValidationResult $validation): ImportPlan
+    public function plan(Package $package, ValidationResult $validation, bool $transfer = false, array $readerLogins = [], array $into = [], bool $sameAa = false, string $owner = ''): ImportPlan
     {
         if (!$validation->importable()) {
             throw new InvalidArgumentException('The package did not pass the validation - no import plan');
         }
+        if ($transfer && ($owner !== '')) {
+            throw new InvalidArgumentException('A transfer brings the owners of the source - no owner is chosen');
+        }
         $this->findings = new FindingList();
         $this->used     = [];
         [$fixed, $fix_ups] = (new FixUps($this->schema))->apply($package);
+        $whole             = $this->domains($fixed);
+        $existing          = new ExistingSlices($this->target, $this->schema, $this->findings);
+        $fixed             = $existing->prune($whole, $into, $transfer, $sameAa);
+        $targets           = $existing->targets();
 
         $charsets = $lang_files = [];
         foreach ($fixed->modules as $m) {
+            if (isset($targets[$m->id])) {
+                [$charsets[$m->id], $lang_files[$m->id]] = [$targets[$m->id]->charset, $targets[$m->id]->langFile];
+                continue;
+            }
             [$lang_file, $charset] = ModuleCharset::ofModule(['type' => $m->type] + ($m->rows['module'][0] ?? [])) ?? [null, null];
             if ($charset === null) {
                 $this->add("$m->type[$m->id]/module[#0]/lang_file", LintFinding::ERROR, self::LANG_FILE, ValueCodec::bytes($m->rows['module'][0]['lang_file'] ?? ''));
@@ -72,14 +99,18 @@ final class Planner
             }
         }
         $groups         = new GroupPlan($this->target, new LintTexts($this->schema));
+        $fixed          = $existing->groups($whole, $fixed, $groups);
         $group_charsets = $groups->charsets($fixed, $charsets);
 
         $modules = $long = $settings = $collections = [];
         foreach ($fixed->modules as $m) {
-            $modules[$m->id] = $this->newId();
+            $modules[$m->id] = isset($targets[$m->id]) ? $targets[$m->id]->id : $this->newId();
         }
         foreach ($fixed->modules as $m) {       // before any other new id - none may equal one
-            if (isset(Schema::SETTINGS_CLASSES[$m->type])) {
+            if (isset($targets[$m->id])) {      // its settings stay; references to them go there
+                $class = Schema::SETTINGS_CLASSES[$m->type];
+                $long[string2id($class . strtolower($m->id))] = string2id($class . $targets[$m->id]->id);
+            } elseif (isset(Schema::SETTINGS_CLASSES[$m->type])) {
                 $class                      = Schema::SETTINGS_CLASSES[$m->type];
                 $settings[$m->id]           = string2id($class . strtolower($modules[$m->id]));
                 $long[string2id($class . strtolower($m->id))] = $settings[$m->id];     // the Validator: no package id
@@ -88,7 +119,7 @@ final class Planner
         }
         $settings_of = array_flip($settings);
         foreach ($fixed->modules as $m) {
-            foreach ([...ObjectExport::ids($m->objects), ...array_map(static fn(array $item): string => ValueCodec::bytes($item['id'] ?? ''), $m->items)] as $id) {
+            foreach (ObjectExport::ids($m->objects) as $id) {
                 $long[$this->sourceId($id, $settings_of, "$m->type[$m->id]")] = $this->newId();
             }
             if (($id = ValueCodec::bytes($m->rows['alerts_collection'][0]['id'] ?? '')) !== '') {
@@ -100,11 +131,149 @@ final class Planner
                 $long[$this->sourceId(ValueCodec::bytes($row['id'] ?? ''), $settings_of, "constant-group[$group->name]")] = $this->newId();
             }
         }
-        $map = new IdMap(modules: $modules, longIds: $long, groups: $groups->names($fixed, $this->findings), collections: $collections);
+        $long += $existing->objects();
+        $map   = new IdMap($modules, $long, $existing->views(), $existing->emails(), $groups->names($fixed, $this->findings) + $existing->groupMap(), $collections);
 
+        $existing->differences($map, $transfer);
+        $this->alertsFields($fixed, $map);
         (new TargetCharset($this->schema, $map))->check($fixed, $charsets, $group_charsets, $this->findings);
-        (new ImportLint($this->schema))->check($fixed, $this->findings);
-        return new ImportPlan($fixed, $map, $charsets, $lang_files, $group_charsets, $settings, $fix_ups, $validation->findings, $this->findings->all());
+        (new ImportLint($this->schema))->check($fixed, $this->findings, $whole);
+        $this->readers($readerLogins);
+        if (!$transfer && array_diff_key($modules, $targets)) {
+            $this->owner($owner);
+        } else {
+            $owner = '';            // no module gets it - the writer need not check it
+        }
+        $defaults = [];
+        if (!$transfer) {           // a transfer brings the values of the source
+            foreach ($fixed->modules as $m) {
+                // an existing slice: $m holds only the fields it lacks
+                if (($m->type === Module::SLICE) && ($values = SettingDefaults::of($m, $this->schema, $this->findings, $targets[$m->id]->settings ?? []))) {
+                    $defaults[$m->id] = $values;
+                }
+            }
+        }
+        $this->engines($transfer, (bool) $defaults);
+        return new ImportPlan($fixed, $map, $charsets, $lang_files, $group_charsets, $settings, $fix_ups, $validation->findings, $this->findings->all(), $targets, $defaults, $owner);
+    }
+
+    /** The owner the preview offers first: the one most of the modules the user may edit have; with none
+     *  such, the first by name; '' = this AA has no owner */
+    public function defaultOwner(): string
+    {
+        $owners = $this->target->owners();
+        $counts = [];
+        foreach ($this->target->moduleOwners() as $module => $owner) {
+            if (isset($owners[$owner]) && $this->target->mayEditSlice((string) $module)) {
+                $counts[$owner] = ($counts[$owner] ?? 0) + 1;
+            }
+        }
+        $best = (string) array_key_first($owners);
+        foreach (array_keys($owners) as $id) {          // by name: the first of a tie wins
+            if (($counts[$id] ?? 0) > ($counts[$best] ?? 0)) {
+                $best = (string) $id;
+            }
+        }
+        return $best;
+    }
+
+    /** E OWNER_UNKNOWN: the id comes from the request */
+    private function owner(string $owner): void
+    {
+        $owners = $this->target->owners();
+        if (($owner === '') ? (bool) $owners : !isset($owners[$owner])) {
+            $this->add(self::TARGET, LintFinding::ERROR, self::OWNER_UNKNOWN, $owner);
+        }
+    }
+
+    /** E NO_TRANSACTION for the tables the import writes without a transaction - the whole list (a short
+     *  one: the tables of AA), not cut to ReferenceLint::MAX_REF */
+    private function engines(bool $transfer, bool $settingValues): void
+    {
+        $not = $this->target->nonTransactional(self::tables($this->schema, $transfer, $settingValues));
+        if ($not) {
+            $this->findings->add(self::TARGET, new LintFinding(LintFinding::ERROR, self::NO_TRANSACTION, self::noTransaction($not), 0));
+        }
+    }
+
+    /** The tables an import writes - what must be InnoDB: the planner's E and the writer's check
+     *  (Importer::write()) ask ImportTarget::nonTransactional() about these
+     *  @param bool $settingValues an install writes the defaults of settings fields (ImportPlan::$settingDefaults)
+     *  @return list<string> */
+    public static function tables(Schema $schema, bool $transfer, bool $settingValues = false): array
+    {
+        return array_values(array_unique([...array_values($schema->rowTables()), ...ObjectExport::TABLES, ...($transfer ? self::TRANSFER_TABLES : []), ...($settingValues ? ['content'] : [])]));
+    }
+
+    /** the host a site domain of a package names, lower case; null = none @param string $url a URL or a bare host */
+    public static function domainHost(string $url): ?string
+    {
+        $host = parse_url(str_contains($url, '://') ? $url : "http://$url", PHP_URL_HOST);
+        return (is_string($host) && ($host !== '')) ? strtolower($host) : null;
+    }
+
+    /** a domain the site would take over from another site of this AA, or from AA itself */
+    public function domainTaken(string $host): bool
+    {
+        $bare = static fn(string $h): string => str_starts_with($h, 'www.') ? substr($h, 4) : $h;
+        return in_array($bare(strtolower($host)), array_map($bare, $this->target->ownHosts()), true) || $this->target->domainTaken($host);
+    }
+
+    /** The domains a transfer brings (alternate-url) that no site of this AA answers to and that are not
+     *  this AA's own host - the rest dropped (W): the new site would take a live domain over. A kept one is
+     *  S, confirmed in the preview. */
+    private function domains(Package $package): Package
+    {
+        $modules = [];
+        foreach ($package->modules as $m) {
+            $kept = [];
+            foreach ($m->transfer['alternate-url'] ?? [] as $i => $url) {
+                $text = ValueCodec::bytes($url);
+                $host = self::domainHost($text);
+                $keep = ($host !== null) && !$this->domainTaken($host);
+                $this->add("$m->type[$m->id]/alternate-url[$i]", $keep ? LintFinding::SECURITY : LintFinding::WARNING, $keep ? self::DOMAIN_KEPT : self::DOMAIN_DROPPED, $text);
+                if ($keep) {
+                    $kept[] = $url;
+                }
+            }
+            $transfer = array_diff_key($m->transfer, ['alternate-url' => true]) + ($kept ? ['alternate-url' => $kept] : []);
+            $modules[] = isset($m->transfer['alternate-url']) ? new Module($m->type, $m->id, $m->rows, $m->settings, $m->objects, $m->spotTree, $m->items, $m->doc, $transfer) : $m;
+        }
+        return new Package(...array_merge(get_object_vars($package), ['modules' => $modules]));
+    }
+
+    /** E for the reader logins a transfer brings that a user of this AA, or a reader holding AA
+     *  permissions, has - before any definition is written; the batches check again @param list<string> $logins */
+    private function readers(array $logins): void
+    {
+        $readers = $this->target->readerLogins(ItemLint::USERNAME, $logins);
+        foreach ($logins as $login) {
+            if ($this->target->adminLoginTaken($login)) {
+                $this->add(self::TARGET, LintFinding::ERROR, ItemLint::READER_ADMIN, $login);
+            } elseif ($readers[ItemLint::loginKey($login)] ?? false) {
+                $this->add(self::TARGET, LintFinding::ERROR, ItemLint::READER_PERMS, $login);
+            }
+        }
+    }
+
+    /** the text of the E NO_TRANSACTION (and of the writer's WriteError::ENGINE): the tables, what to do
+     *  @param array<string, string> $not ImportTarget::nonTransactional() - table => engine */
+    public static function noTransaction(array $not): string
+    {
+        $list = implode(', ', array_map(static fn(string $t, string $e): string => "$t ($e)", array_keys($not), $not));
+        return "$list - no transaction would roll a failed import back: run \"" . Convert2innodb::name() . '" (State Check, Optimize) and plan again';
+    }
+
+    /** I ALERTS_FIELD_KEPT for the alerts fields of collections outside the package */
+    private function alertsFields(Package $package, IdMap $map): void
+    {
+        foreach ($package->modules as $m) {
+            foreach ($m->rows['field'] ?? [] as $i => $row) {
+                if (preg_match(self::ALERTS_FIELD_RE, ValueCodec::bytes($row['id'] ?? ''), $match) && ($map->collection($match[1]) === null)) {
+                    $this->add($this->schema->rowPath("$m->type[$m->id]", 'field', $row, $i), LintFinding::INFO, self::ALERTS_FIELD_KEPT, $match[1]);
+                }
+            }
+        }
     }
 
     /** the package id; E when it equals a new settings object id (the map would send it there)

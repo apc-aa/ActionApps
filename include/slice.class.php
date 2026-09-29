@@ -394,7 +394,9 @@ abstract class AA_Module
         return $this->moduleobject_setting?->getProperty($prop);
     }
 
-    public static function processModuleObject($module_id): void
+    /** saves the posted module settings form
+     *  @return string|null  why the settings were not saved; null - saved or nothing posted */
+    public static function processModuleObject($module_id): ?string
     {
         /** @var class-string<AA_AbstractModulesettings> $class name - it is string name of class */
         $class = static::SETTING_CLASS;
@@ -407,9 +409,12 @@ abstract class AA_Module
                 $modulesetings->save();
             }
 
-            $form       = AA_Form::factoryForm($class, $modulesetings_id, $module_id);
-            $form_state = $form->process($_POST['aa']);
+            $form = AA_Form::factoryForm($class, $modulesetings_id, $module_id);
+            if ($form->process($_POST['aa'] ?? []) === AA_Form::REFUSED) {
+                return $form->getError();
+            }
         }
+        return null;
     }
 
     public static function getModuleObjectForm($module_id): string
@@ -499,16 +504,17 @@ abstract class AA_Module
 
     /**
      * @param  string  $module_type
+     * @param  string  $perm         the permission the user must have in the module
      *
      * @return array id => name of current user's modules
      */
-    public static function getUserModules($module_type = ''): array
+    public static function getUserModules($module_type = '', string $perm = PS_EDIT_SELF_ITEMS): array
     {
 
         $all_modules = self::getModules($module_type, true);
         $user_id     =  AuthGetUid();
 
-        return array_filter($all_modules, static fn($mid) => CheckPerms($user_id, 'slice', $mid, PS_EDIT_SELF_ITEMS), ARRAY_FILTER_USE_KEY);
+        return array_filter($all_modules, static fn($mid) => CheckPerms($user_id, 'slice', $mid, $perm), ARRAY_FILTER_USE_KEY);
     }
 
     /**
@@ -545,6 +551,19 @@ class AA_Slice extends AA_Module
 
     protected const SETTING_CLASS = 'AA_Modulesettings_Slice';
     protected const SETTING_TABLE = 'slice';
+
+    /** a stored, not deleted slice - unlike getOwnModule() (a class check, an unknown id still builds
+     *  an AA_Slice) and AA_Module::getModuleType() (an unknown id is 'S'). The letters of the rights mean
+     *  other things in other module types, so a right on an id says nothing about it being a slice.
+     */
+    public static function isStoredSlice(string $id): bool
+    {
+        if (!is_long_id($id)) {
+            return false;
+        }
+        $type = DB_AA::select1('type', 'SELECT `type` FROM `module`', [['id', $id, 'l'], ['deleted', 0, 'i']]);
+        return ($type !== false) && (((string) $type ?: 'S') === 'S');   // no type - an old slice
+    }
 
     // computed values form slice fields
     public $show_func_used; // used show functions in the input form
@@ -1100,6 +1119,22 @@ class AA_Module_Site extends AA_Module
     // (= flag means "don't stringexpand text)"
     public const FLAG_COLLAPSE = 4;   // (visualy) Collapsed spot
 
+    /** the app store settings of the site (AA_Modulesettings_Site::app()) */
+    public static function getAppSettings(string $module_id): array
+    {
+        return AA_Modulesettings_Site::appOf(AA_Modulesettings_Site::load(static::getModuleObjectId($module_id)), $module_id);
+    }
+
+    /** the caller checks the user is a superadmin - publishing hands out the templates of the site's modules
+     *  @param list<string> $modules the site and the modules it uses, approved for the store */
+    public static function saveAppSettings(string $module_id, bool $publish, string $description, string $version, array $modules): void
+    {
+        $id       = static::getModuleObjectId($module_id);
+        $settings = AA_Modulesettings_Site::ofSite(AA_Modulesettings_Site::load($id), $id, $module_id);
+        $settings->setApp($publish, $description, $version, $publish ? $modules : []);
+        $settings->save();
+    }
+
 
     /** all modules config function
      *  @see AA_Module::getModuleconfig()
@@ -1546,6 +1581,10 @@ class AA_Modulesettings_Site extends AA_AbstractModulesettings
     protected $perm_mode;
     protected $ga_id;
     protected $alternate_url;
+    protected $app_publish;
+    protected $app_description;
+    protected $app_version;
+    protected $app_modules;
 
 
     protected $additional_aliases;
@@ -1553,10 +1592,17 @@ class AA_Modulesettings_Site extends AA_AbstractModulesettings
     /** do not display Name property on the form by default */
     public const USES_NAME = false;
 
+    /** The app store settings (AA\Central\AppStore). Publishing hands the templates of every module of the
+     *  site to anyone, so only a superadmin sets them, on their own part of the site form - a form of the
+     *  settings neither shows nor changes them. */
+    public const APP_PROPERTIES = ['app_publish', 'app_description', 'app_version', 'app_modules'];
+    public const APP_VERSION_PATTERN = '/^[0-9A-Za-z.+-]{0,32}\z/';
+    public const APP_DESCRIPTION_MAX = 2000;
+
     /** check, if the $prop is the property of this object */
     public static function isProperty($prop): bool
     {
-        return in_array($prop, ['translate_slice', 'add_aliases', 'web_languages', 'page404', 'page404_code', 'sitemap_alias', 'perm_alias', 'loginpage_code', 'perm_mode', 'ga_id', 'alternate_url']);
+        return in_array($prop, ['translate_slice', 'add_aliases', 'web_languages', 'page404', 'page404_code', 'sitemap_alias', 'perm_alias', 'loginpage_code', 'perm_mode', 'ga_id', 'alternate_url', ...self::APP_PROPERTIES]);
     }
 
     /** allows storing object in database
@@ -1577,7 +1623,79 @@ class AA_Modulesettings_Site extends AA_AbstractModulesettings
             'perm_mode'       => new AA_Property('perm_mode', _m("User login databases"), 'string', false, true, ['enum',  [1 => _m('first Reader Management slice listed in Uses slices'),2 => _m('all Reader Management slices listed in Uses slices'),3 => _m('AA + all Reader Management slices in AA (old behavior)')]], false, _m("First Reader Management slice is encouraged option - only the people from this slice are allowed to login to public pages. If not selected, \"AA + all Reader Management slices\" option is used.")),
             'ga_id'           => new AA_Property('ga_id', _m("Google analytics tracking id"), 'string', false, true, ['text', ['maxlength' => 20]], false, _m("If you are using {generate:HEAD} and {generate:FOOT} in your sitemodule code, then the Google Analytics code is generated with this tracking ID. The generated code could be changed in the future when Google changes the snippet.<br>To use user Consent bar, add {eucookies} or {eucookies:OK to use cookies?:OK:more://www.example.cz/cz/cookies-strategy::No:top} in the site.")),
             'alternate_url'   => new AA_Property('alternate_url', _m("Alternate URL"), 'string', true, true, '', false, _m("Another domain(s) for which the web should be visible. However, consider using server-side redirect to use single domain, which is more SEO friendly.")),
+            // '1' or '' - a string, so loading the settings on every page still reads object_text only
+            'app_publish'     => new AA_Property('app_publish', _m("Publish in the app store"), 'string', false, true, ['enum', ['' => _m('No'), '1' => _m('Yes')]], false, _m("Any AA may then install this site with the slices and Alerts it uses - their templates, fields and views, never the items. Constant groups of other slices must belong to a published site too.")),
+            'app_description' => new AA_Property('app_description', _m("App description"), 'text', false, true, ['text', ['maxlength' => self::APP_DESCRIPTION_MAX]], false, _m("What the app does, for the list of the app store.")),
+            'app_version'     => new AA_Property('app_version', _m("App version"), 'string', false, true, ['regexp', ['pattern' => self::APP_VERSION_PATTERN, 'maxlength' => 32]], false, _m("Like 1.2.0.")),
+            // the site and the modules it used when published, comma separated (AA\Central\AppStore)
+            'app_modules'     => new AA_Property('app_modules', _m("Published modules"), 'string', false, true, ['regexp', ['pattern' => '/^([0-9a-f]{32}(,[0-9a-f]{32})*)?\z/']]),
         ];
+    }
+
+    /** the generic form of the settings - without the app store settings (APP_PROPERTIES) */
+    public static function addFormrows(AA_Form $form): void
+    {
+        foreach (array_diff_key(static::getClassProperties(), array_flip(self::APP_PROPERTIES)) as $property) {
+            $property->addPropertyFormrows($form);
+        }
+    }
+
+    /** a posted form keeps the app store settings as stored, whoever posts them */
+    public static function factoryFromForm($oowner, $otype = null)
+    {
+        $object = parent::factoryFromForm($oowner, $otype);
+        $object->keepAppOf(static::load($object->getId()));
+        return $object;
+    }
+
+    /** the app store settings of $stored; none stored - not published */
+    public function keepAppOf(?AA_Object $stored): void
+    {
+        foreach (self::APP_PROPERTIES as $name) {
+            $this->$name = ($stored instanceof self) ? $stored->$name : '';
+        }
+    }
+
+    /** set only for a superadmin (modules/site/modedit.php)
+     *  @param list<string> $modules the site and the modules it uses, approved for the store */
+    public function setApp(bool $publish, string $description, string $version, array $modules): void
+    {
+        $modules = array_values(array_unique(array_filter(array_map('strtolower', $modules), static fn(string $id): bool => (bool) preg_match('/^[0-9a-f]{32}\z/', $id))));
+        [$this->app_publish, $this->app_description, $this->app_version, $this->app_modules] = [$publish ? '1' : '', $description, $version, implode(',', $modules)];
+    }
+
+    /** @return array{publish: bool, description: string, version: string, modules: list<string>} */
+    public function app(): array
+    {
+        return ['publish' => (string) $this->app_publish === '1', 'description' => (string) $this->app_description, 'version' => (string) $this->app_version,
+            'modules' => array_values(array_filter(explode(',', (string) $this->app_modules)))];
+    }
+
+    /** why the description or version cannot be saved; null = they can */
+    public static function appInputError(string $description, string $version): ?string
+    {
+        return (preg_match(self::APP_VERSION_PATTERN, $version) && (mb_strlen($description) <= self::APP_DESCRIPTION_MAX)) ? null
+            : _m('The app version is at most 32 letters, digits and . + - (like 1.2.0), the description at most %1 characters.', [self::APP_DESCRIPTION_MAX]);
+    }
+
+    /** the app store settings of $stored when they are the site's own; else none - an object at the
+     *  settings id of the site with another owner is not the site's
+     *  @return array{publish: bool, description: string, version: string, modules: list<string>} */
+    public static function appOf(?AA_Object $stored, string $site): array
+    {
+        return (($stored instanceof self) && ($stored->getOwnerId() === $site)) ? $stored->app() : ['publish' => false, 'description' => '', 'version' => '', 'modules' => []];
+    }
+
+    /** the settings object $id of the site to save: $stored, owned by the site again, or a new one */
+    public static function ofSite(?AA_Object $stored, string $id, string $site): self
+    {
+        if ($stored instanceof self) {
+            $stored->setOwnerId($site);
+            return $stored;
+        }
+        $settings = new self();
+        $settings->setNew($id, $site);
+        return $settings;
     }
 
     /** @inheritDoc */

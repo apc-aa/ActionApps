@@ -6,40 +6,28 @@ namespace AA\Central\Package;
 
 use AA_Property;
 
-/** The objects a module owns, as a package carries them (design balicek-v1.md § 5.4; C4.3 part 4):
- *  the module settings (<settings>, the class fixed by the module type, read by the derived id as AA
- *  reads them - string2id(class . module id)), AA_Aliasfunc and AA_Set with its AA_Condition /
- *  AA_Sortorder as nested subobjects. Nothing else ever travels - AA_Form (v1), AA_Plannedtask, tokens
- *  and access of AA\Util\Note, AA_Actionapps, Datovka, AA_Exportsetings, ... Of the owned objects only
- *  the class is read (aa_type, aa_subobjects); the rows of the others are never loaded, and what is left
- *  out is one I finding per class with the count.
- *
- *  Read as AA_Object::load() reads: only the properties of the class (getClassProperties()), a
- *  multi-value property as a list in priority order, a single one as its first value, the object
- *  tables of the class merged text -> integer -> float; an object-typed property holds subobject ids,
- *  read by id (whoever owns them) and carried only when stored as the property's type. Values stay as
- *  stored (the module charset) - map() converts them; object_text.value NULL is ''.
- *
- *  A NEW PROPERTY of a settings class may hold a secret or a state of the installation (as ga_id,
- *  alternate_url): CollectorObjectsTest pins the property names, so it fails until someone decides
- *  whether the property travels (LEFT_OUT). */
+/** The objects a module owns, as a package carries them: the module settings, AA_Aliasfunc and AA_Set
+ *  with its AA_Condition / AA_Sortorder as nested subobjects. Nothing else ever travels (AA_Form, tokens,
+ *  AA_Actionapps, ...) - other owned objects give one I finding per class.
+ *  Read as AA_Object::load() reads them, so the import restores what the source AA saw.
+ *  A NEW PROPERTY of a settings class may hold a secret or installation state (as ga_id, alternate_url):
+ *  CollectorObjectsTest pins the property names until someone decides whether it travels (LEFT_OUT). */
 final class ObjectExport
 {
-    /** I: owned objects v1 does not carry (class outside the allowlist, a settings object AA does not
-     *  read) - left out; one finding per class, ref = "class (count)" */
+    /** I: owned objects not carried; one finding per class, ref = "class (count)" */
     public const OBJECT_DROPPED = 'object-dropped';
-    /** W: a subobject a set refers to is gone, of another class, or no object id (serialized state) -
-     *  left out, the set changes (AA_Object::load() puts an empty object there); ref = the id, if one */
+    /** W: a subobject a set refers to is gone, of another class, or no object id - left out, so the set
+     *  changes (load() puts an empty object there); ref = the id, if one */
     public const SUBOBJECT = 'subobject';
 
     /** the object store in the order AA_Object::load() merges it */
     public const TABLES = ['object_text', 'object_integer', 'object_float'];
 
-    /** settings properties of the source installation (§ 5.4): measuring code, domains; `app_*` is R5 (meta) */
+    /** settings properties of the source installation: measuring code, domains; `app_*` travels in meta */
     private const LEFT_OUT = ['AA_Modulesettings_Site' => ['ga_id', 'alternate_url']];
     private const LEFT_OUT_PREFIX = 'app_';
 
-    /** properties holding module ids - long-id map on import, the closure on export (§ 5.2, § 6.3) */
+    /** properties holding module ids - long-id map on import, the closure on export */
     public const MODULE_PROPS = [
         'AA_Modulesettings_Site'  => ['translate_slice', 'add_aliases'],
         'AA_Modulesettings_Slice' => ['fieldslice'],
@@ -74,20 +62,20 @@ final class ObjectExport
         $owned          = $this->source->objectIds($module_id);
         $index          = self::group($this->source->objectRows($owned, ['aa_type', 'aa_subobjects']));
         $class          = static fn(array $tables): string => (string) ($tables['object_text']['aa_type'][0] ?? '');
-        $listed         = [];         // subobjects of any owned object - they go (or not) with their parent
+        $listed         = [];         // subobjects go (or not) with their parent
         foreach ($index as $tables) {
             array_push($listed, ...array_map('strval', $tables['object_text']['aa_subobjects'] ?? []));
         }
         $settings_class = Schema::SETTINGS_CLASSES[$type];
         $settings_id    = string2id($settings_class . $module_id);
-        $top            = [];            // AA_Aliasfunc, AA_Set - no subobject of another
+        $top            = [];
         foreach ($index as $id => $tables) {
             if (in_array($class($tables), Schema::TOP_CLASSES, true) && !in_array((string) $id, $listed, true)) {
                 $top[] = (string) $id;
             }
         }
         $this->store    = self::group($this->source->objectRows([$settings_id, ...$top]));
-        $subobjects     = [];            // referenced id => the class the property holds
+        $subobjects     = [];            // id => the class the property holds
         foreach ($top as $id) {
             foreach (self::objectProperties($class($this->store[$id] ?? [])) as $name => $sub_class) {
                 foreach (array_filter(array_map('strval', $this->store[$id]['object_text'][$name] ?? []), self::isId(...)) as $sub) {
@@ -210,9 +198,8 @@ final class ObjectExport
     }
 
     /** The settings and objects with fn(value, path, class, property) applied to every scalar property
-     *  value - in the paths Writer reports (`<module>/settings/<p>[i]`, `<module>/object[<id>]/<p>[i]`,
-     *  a subobject's `.../<p>[i]/<sub p>[j]`) - and to the name of an object (property `@name`, path
-     *  `<module>/object[<id>]@name`; a result that is no string drops the name: @name is an attribute).
+     *  value and to the name of an object (property `@name`; a non-string result drops the name - it is
+     *  an attribute). Paths as Writer reports them.
      *  @param array<string, mixed>|null $settings @param list<array<string, mixed>> $objects
      *  @param callable(mixed, string, string, string): mixed $fn
      *  @return array{?array<string, mixed>, list<array<string, mixed>>} */

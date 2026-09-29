@@ -54,7 +54,6 @@ try {
     $items = InputVars::arrayPOST('items');
 
     $cancel = InputVars::boolPOST('cancel');
-    $Msg = InputVars::stringGETPOST('Msg');
 } catch (Exception $e) {
     AA_Adminpageutil::pageParameterError($e);
 }

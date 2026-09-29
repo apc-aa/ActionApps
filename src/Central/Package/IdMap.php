@@ -7,13 +7,14 @@ namespace AA\Central\Package;
 use AA\Optimize\RedefineCoreConstants;
 use InvalidArgumentException;
 
-/** Source id => target id maps of one package import (design balicek-v1.md § 7.1). Immutable.
+/** Source id => target id maps of one package import. Immutable. The plan knows
+ *  every map but views, e-mails and alerts filters - AUTO_INCREMENT numbers them when the rows are written
+ *  (withNumbers()). The export lint uses an identity map of the app.
  *
- *  Keys are the ids the package carries (§ 0.4), values the ids on the target. The import plan
- *  (C4.4 step 3) knows every map except views, e-mails and alerts filters - those get their numbers
- *  from AUTO_INCREMENT only when the rows are written, hence withViews()/withEmails()/withFilters().
- *  For an export lint pass an identity map of the app (old id => same id).
- */
+ *  Item ids are a function, not a list - a transfer has too many items to keep: item() keeps an id, or,
+ *  with an item key (a copy in the same AA, where the source items stay), derives the new id from the key.
+ *  Which ids of a text are items of the package's slices only the DB knows: withPackageItems() takes those
+ *  the caller looked up, for one write, and never stores them (toJson()). */
 final class IdMap
 {
     /** AA_CONSTANT_GROUPS_CORE, include/constedit_util.php:674 - exist on every AA, never renamed */
@@ -32,12 +33,12 @@ final class IdMap
     private array $modules;
     /** @var array<string, string> modules + constants + objects + items + settings ids */
     private array $longIds;
-    /** @var array<int, int> */
-    private array $views;
-    /** @var array<int, int> */
-    private array $emails;
-    /** @var array<int, int> */
-    private array $filters = [];
+    /** @var array<string, array<int, int>> 'view' | 'email' | 'filter' => old => new */
+    private array $numbers;
+    /** '' = item ids stay; else new = string2id(key . old) */
+    private string $itemKey = '';
+    /** @var array<string, string> items of the package's slices named in what is written now: old => item() */
+    private array $items = [];
 
     /**
      * @param array<string, string> $modules     module ids (32 hex, any case; stored lower case)
@@ -64,39 +65,82 @@ final class IdMap
             }
             $this->longIds[$old] = $new;
         }
-        $this->views  = self::numberMap($views);
-        $this->emails = self::numberMap($emails);
+        $this->numbers = ['view' => self::numberMap($views), 'email' => self::numberMap($emails), 'filter' => []];
         self::check($groups, self::GROUP_RE, 'constant group');
         foreach ($groups as $old => $new) {
-            if (($new !== (string) $old) && (!preg_match(self::NEW_GROUP_RE, $new) || in_array((string) $old, self::CORE_GROUPS, true) || in_array($new, self::CORE_GROUPS, true))) {
+            if (!self::renamable((string) $old, $new)) {
                 throw new InvalidArgumentException("Constant group $old cannot be renamed to $new");
             }
         }
         self::check($collections, self::COLLECTION_RE, 'alerts collection');
     }
 
-    /** @param array<int, int> $views */
-    public function withViews(array $views): self
+    /** the group may be mapped to $new: the same name, or a new name spliced safely into templates, core
+     *  groups never */
+    public static function renamable(string $old, string $new): bool
     {
-        $clone        = clone $this;
-        $clone->views = self::numberMap($views);
+        return ($new === $old) || (preg_match(self::GROUP_RE, $old) && preg_match(self::NEW_GROUP_RE, $new)
+            && !in_array($old, self::CORE_GROUPS, true) && !in_array($new, self::CORE_GROUPS, true));
+    }
+
+    /** a group name an app may carry: no `[`-list, no `#sLiCe-<id>` (items of a slice), no core group */
+    public static function isAppGroup(string $name): bool
+    {
+        return ($name !== '') && ($name[0] !== '[') && !str_starts_with($name, '#sLiCe-') && !in_array($name, self::CORE_GROUPS, true);
+    }
+
+    /** the numbers the rows got from AUTO_INCREMENT; `filter`: alerts_filter.id - no text refers to a
+     *  filter, alerts_collection_filter.filterid does
+     *  @param string $kind 'view' | 'email' | 'filter' @param array<int, int> $numbers */
+    public function withNumbers(string $kind, array $numbers): self
+    {
+        if (!isset($this->numbers[$kind])) {
+            throw new InvalidArgumentException("Unknown number map $kind");
+        }
+        $clone                 = clone $this;
+        $clone->numbers[$kind] = self::numberMap($numbers);
         return $clone;
     }
 
-    /** @param array<int, int> $emails */
-    public function withEmails(array $emails): self
+    /** the map of a copy in the same AA: item ids derived from $key - one key per run, so a second copy
+     *  of the same items gets other ids */
+    public function withItemKey(string $key): self
     {
-        $clone         = clone $this;
-        $clone->emails = self::numberMap($emails);
-        return $clone;
-    }
-
-    /** alerts_filter.id - no text refers to a filter; alerts_collection_filter.filterid does
-     *  @param array<int, int> $filters */
-    public function withFilters(array $filters): self
-    {
+        if (!preg_match('/^[0-9a-f]{32}\z/', $key)) {
+            throw new InvalidArgumentException('An item key is 32 lower-case hex');
+        }
         $clone          = clone $this;
-        $clone->filters = self::numberMap($filters);
+        $clone->itemKey = $key;
+        $clone->items   = [];
+        return $clone;
+    }
+
+    /** the key of the item ids; '' = they stay */
+    public function itemKey(): string
+    {
+        return $this->itemKey;
+    }
+
+    /** the target id of an item of the package's slices */
+    public function item(string $old): string
+    {
+        $old = strtolower($old);
+        return ($this->itemKey === '') ? $old : string2id($this->itemKey . $old);
+    }
+
+    /** the map with these source ids known as items of the package's slices - longId() maps them by item()
+     *  @param list<string> $ids */
+    public function withPackageItems(array $ids): self
+    {
+        $clone = clone $this;
+        foreach ($ids as $id) {
+            if (!preg_match('/^[0-9a-f]{32}\z/i', $id)) {
+                throw new InvalidArgumentException("Invalid item id $id");
+            }
+            if (!isset($this->longIds[strtolower($id)])) {
+                $clone->items[strtolower($id)] = $this->item($id);
+            }
+        }
         return $clone;
     }
 
@@ -107,22 +151,22 @@ final class IdMap
 
     public function longId(string $old): ?string
     {
-        return $this->longIds[strtolower($old)] ?? null;
+        return $this->longIds[strtolower($old)] ?? $this->items[strtolower($old)] ?? null;
     }
 
     public function view(int $old): ?int
     {
-        return $this->views[$old] ?? null;
+        return $this->numbers['view'][$old] ?? null;
     }
 
     public function email(int $old): ?int
     {
-        return $this->emails[$old] ?? null;
+        return $this->numbers['email'][$old] ?? null;
     }
 
     public function filter(int $old): ?int
     {
-        return $this->filters[$old] ?? null;
+        return $this->numbers['filter'][$old] ?? null;
     }
 
     public function group(string $old): ?string
@@ -141,28 +185,28 @@ final class IdMap
         return $this->modules;
     }
 
-    /** @return array<string, string> all long ids, modules included, lower case */
+    /** @return array<string, string> all long ids, modules and the package items included, lower case */
     public function longIds(): array
     {
-        return $this->longIds;
+        return $this->longIds + $this->items;
     }
 
     /** @return array<int, int> */
     public function views(): array
     {
-        return $this->views;
+        return $this->numbers['view'];
     }
 
     /** @return array<int, int> */
     public function emails(): array
     {
-        return $this->emails;
+        return $this->numbers['email'];
     }
 
     /** @return array<int, int> */
     public function filters(): array
     {
-        return $this->filters;
+        return $this->numbers['filter'];
     }
 
     /** @return array<string, string> */
@@ -175,6 +219,32 @@ final class IdMap
     public function collections(): array
     {
         return $this->collections;
+    }
+
+    /** the map for a record that outlives the request (the install run); fromJson() reads it back */
+    public function toJson(): string
+    {
+        return json_encode([
+            'modules'     => $this->modules,
+            'longIds'     => array_diff_key($this->longIds, $this->modules),
+            'views'       => $this->numbers['view'],
+            'emails'      => $this->numbers['email'],
+            'filters'     => $this->numbers['filter'],
+            'groups'      => $this->groups,
+            'collections' => $this->collections,
+            'itemKey'     => $this->itemKey,
+        ], JSON_THROW_ON_ERROR);
+    }
+
+    /** checked as a new map - the stored text is no more trusted than a package */
+    public static function fromJson(string $json): self
+    {
+        $data = json_decode($json, true, 4, JSON_THROW_ON_ERROR);
+        $part = static fn(string $key): array => is_array($data[$key] ?? null) ? $data[$key] : throw new InvalidArgumentException("Id map without $key");
+        $map  = (new self($part('modules'), $part('longIds'), $part('views'), $part('emails'), $part('groups'), $part('collections')))
+            ->withNumbers('filter', $part('filters'));
+        $key  = is_string($data['itemKey'] ?? null) ? $data['itemKey'] : throw new InvalidArgumentException('Id map without itemKey');
+        return ($key === '') ? $map : $map->withItemKey($key);
     }
 
     /** Lower case both sides. Exactly 32 hex on both sides - the rewrite must not change the

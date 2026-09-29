@@ -61,8 +61,6 @@ try {
     $text_param = InputVars::stringGET('text_param', true);
     $codemirror = InputVars::stringGET('codemirror');
     $cancel = InputVars::boolPOST('cancel');
-    
-    $Msg = InputVars::stringGETPOST('Msg');
 } catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
 
 

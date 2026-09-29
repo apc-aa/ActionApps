@@ -41,6 +41,7 @@
 namespace AA\Manageraction;
 
 use AA\IO\DB\DB_AA;
+use AA\Managed_Table;
 use AA\Manager;
 use AA\Manageraction\AbstractManageraction;
 use zids;
@@ -77,28 +78,23 @@ class Polls_DeleteTrash extends AbstractManageraction
             return _m("You do not have permissions to remove polls");
         }
 
-        $wherein = '';
+        $managed = $manager->getManaged();
+        if (!($managed instanceof Managed_Table) || !is_long_id($module = $manager->getModuleId())) {
+            return _m('This action does not work on this page.');
+        }
 
-        // restrict the deletion only to selected items
+        // only the trash of this module - the selected ids come from the POST
+        $trash   = [['module_id', $module, 'l'], ['status_code', 3, 'i']];
+        $refused = false;
         if ($this->selected) {
-            $wherein = ' AND ' . $item_zids->sqlin('id', true);
+            [$ids, $refused] = $managed->actionable($manager, $item_zids);
+            $trash[] = ['id', $ids];                  // an empty list matches no poll
         }
 
-        // now we ask, which items we have to delete. We are checking the items even
-        // it is specified in $item_arr - for security reasons - we can delete only
-        // items in current slice and in trash
-
-        $items_to_delete = GetTable2Array("SELECT id FROM polls WHERE status_code=3 $wherein", '', 'id');
-        if (count($items_to_delete) < 1) {
-            return false;     // OK - no errors
+        if ($items_to_delete = DB_AA::select('id', 'SELECT id FROM polls', $trash)) {
+            DB_AA::delete('polls', [['id', $items_to_delete], ['module_id', $module, 'l']]);
         }
-
-        // delete content of all fields
-        // don't worry about fed fields - content is copied
-        $wherein = "IN ('" . join_and_quote("','", $items_to_delete) . "')";
-
-        DB_AA::sql("DELETE FROM polls WHERE id " . $wherein);
-        return false;     // OK - no errors
+        return $refused ? _m('Some of the selected polls were not removed - they belong to another module.') : false;
     }
 
     /** Checks if the user have enough permission to perform the action

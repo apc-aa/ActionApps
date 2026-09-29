@@ -37,7 +37,7 @@ require_once __DIR__ . "/../include/init_page.php";
 
 try {
     $feed_id = InputVars::intGET('feed_id');
-    $Msg     = InputVars::stringGETPOST('Msg');
+    $Msg     = InputVars::messageGETPOST();
 } catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
 
 if (!IfSlPerm(PS_FEEDING)) {

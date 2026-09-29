@@ -34,14 +34,17 @@
 // Code by Mitra based on code in existing other files
 
 use AA\Cache\CacheStr2find;
+use AA\Expand\HttpInclude;
 use AA\FormArray;
 use AA\IO\DB\DB_AA;
 use AA\Later\LaterInterface;
 use AA\Optimize\AddDurationLog;
+use AA\Optimize\CheckCkeditorUse;
 use AA\Util\ChangesMonitor;
 use AA\Util\Langs;
 use AA\Util\LogarithmIndex;
 use AA\Util\NamedInterface;
+use AA\Util\Secret;
 use AA\Util\Txt;
 use BaconQrCode\Common\ErrorCorrectionLevel;
 use BaconQrCode\Renderer\GDLibRenderer;
@@ -5344,7 +5347,6 @@ class AA_Stringexpand_Ajax extends AA_Stringexpand_Nevercache {
                         }
                     }
 
-                    $widget_properties = str_replace(["'", '"',"\r\n", "\r", "\n"], ["\'", "&quot;", " ", " ", " "], (string)$widget_properties);
                     $iid         = $item->getItemID();
                     $input_name  = FormArray::getName4Form($field_id, $item);
                     $input_id    = FormArray::formName2Id($input_name);
@@ -5352,7 +5354,10 @@ class AA_Stringexpand_Ajax extends AA_Stringexpand_Nevercache {
                     $enc_credentials = AA_Credentials::singleton()->getAsToken();
 
                     // the whole content works as button by default. You can redefine it using _#AA_AJAX_ alias like:   The text which works with value <button _#AA_AJAX_>Change it</button>
-                    $ajax_on     = "onclick=\"displayInput('ajaxv_$input_id', '$iid', '$field_id', '$widget_type', '$widget_properties', '$enc_credentials')\"";
+                    // signed - Get_Widget trusts the widget type and properties only with the signature
+                    // newlines as spaces, as always - a newline inside a JSON string breaks json2asoc()
+                    $widget_properties = str_replace(["\r\n", "\r", "\n"], ' ', (string)$widget_properties);
+                    $ajax_on     = AA\Widget\AjaxSignature::onclick("ajaxv_$input_id", $iid, $field_id, (string)$widget_type, $widget_properties, $enc_credentials, AA::$encoding ?: $slice->getCharset());
                     if (str_contains($repre_value, '_#AA_AJAX_')) {
                         $repre_value = str_replace('_#AA_AJAX_', $ajax_on, $repre_value);
                         $show_alias  = str_replace('_#AA_AJAX_', $ajax_on, $show_alias);
@@ -5420,17 +5425,13 @@ class AA_Stringexpand_Editable extends AA_Stringexpand_Nevercache {
                     // do not change the string: contenteditable=true id=... we are using it in AA__SiteUpdateParts() (aajslib-jquery.php)
                     $ret     = AA::Un("<$tag contenteditable=true id=\"". str_replace('.','_', "au-$iid-$field_id-$index")."\" $pholder data-aa-id=\"$iid\" data-aa-field=\"$field_id\" data-aa-index=\"$index\">{". $field_id ."}</$tag>", '', $item);
 
-                    AA::Stringexpander()->addRequire('ckeditor');
-
-                    // '_aa_url = "'.AA_INSTAL_PATH.'";' . "\n" .
-                    $script2run = 'CKEDITOR.on( "instanceCreated", function( event ) {' . "\n" .   // The "instanceCreated" event is fired for every editor instance created.
-                        '  var editor = event.editor;' . "\n" .                          // var toolbarcreated = false;
-                        '  editor.on( "change", function() {' . "\n" .                   // if (!toolbarcreated) { toolbarcreated = true; }     // not necessary to run the code on each change
-                        '    window.addEventListener("beforeunload", AA_WindowUnloadQ);' . "\n" .
-                        '    AA_Toolbar(\'<input type="button" value="'. _m('save changes').'" onclick="AA_SaveEditors();">\');' . "\n" .
-                        '  });' . "\n" .
-                        '});' . "\n";
-                    AA::Stringexpander()->addRequire('aa-jslib');  // for AA_Toolbar(),...
+                    AA::Stringexpander()->addRequire('aa-editable@1');
+                    AA::Stringexpander()->addRequire('aa-jslib');  // AA_Toolbar(), AA_SaveEditors()
+                    // any change of an {editable} field offers the save button and guards leaving the page
+                    $script2run = "document.addEventListener('aa-editable-change', function() {\n" .
+                        "  window.addEventListener('beforeunload', AA_WindowUnloadQ);\n" .
+                        "  AA_Toolbar('<input type=\"button\" value=\"" . _m('save changes') . "\" onclick=\"AA_SaveEditors();\">');\n" .
+                        "});\n";
                     AA::Stringexpander()->addRequire($script2run, 'AA_Req_Run');
                 }
             }
@@ -6259,14 +6260,11 @@ class AA_Stringexpand_Include extends AA_Stringexpand {
             case 'PATCH':
             case 'OPTIONS':
             case 'HEAD':
-                if (false === ($ret = AA_Http::request($fn, $data, $headers, $type, $err))) {
-                    warn(AA_Http::lastErrMsg());
-                }
-                return (string)$ret;
+                return HttpInclude::fetch($type, $fn, (string)$data, $headers, (string)$err);
             case "http":
-                return (string)expandFilenameWithHttp($fn, '', $headers, $data, $err);
+                return expandFilenameWithHttp($fn, '', $headers, $data, $err);
             case "ajax":
-                return (string)expandFilenameWithHttp($fn, 'ajax', $headers, $data, $err);
+                return expandFilenameWithHttp($fn, 'ajax', $headers, $data, $err);
             case "fileman":
                 // Note this won't work if called from a Static view because no slice_id available
                 // This should be fixed.
@@ -6306,9 +6304,9 @@ class AA_Stringexpand_Include extends AA_Stringexpand {
 /** Expand any quotes in the parturl, and fetch via http
  * @param string $parturl
  * @param string $type
- * @return false|string
+ * @return string
  */
-function expandFilenameWithHttp($parturl, string $type='', array $headers=[], $data='', $err=''): false|string
+function expandFilenameWithHttp($parturl, string $type='', array $headers=[], $data='', $err='', int $seconds=0): string
 {
     $filename = str_replace( 'URL_PARAMETERS', DeBackslash(shtml_query_string()), $parturl);
     // filename do not use colons as separators => dequote before callig
@@ -6329,7 +6327,10 @@ function expandFilenameWithHttp($parturl, string $type='', array $headers=[], $d
         }
     }
 
-    return AA_Http::request($filename, $data, $headers, '', $err);
+    // a body makes it a POST as before; headers alone no longer do. The old code forced POST for
+    // any header, and a local include always gets a Cookie header, so every {include:/local/path}
+    // rendered for a visitor with cookies was a POST nobody asked for (request.class.php:116).
+    return HttpInclude::fetch(((string)$data === '') ? 'GET' : 'POST', $filename, (string)$data, $headers, (string)$err, $seconds);
 }
 
 /** Get $_SERVER[<variable>] value
@@ -7508,6 +7509,9 @@ class AA_Requires {
             $hash = $this->addUsrRequire($require, 'AA_Req_Lib');
         } else {
             $hash = $require;   // must be system require
+            if (strtok($require, '@') === 'ckeditor') {
+                CheckCkeditorUse::record($_SERVER, (string) (AA::$site_id ?: AA::$slice_id ?: AA::$module_id));   // who still needs it
+            }
         }
 
         $this->_outputs    = null; // be sure it will be recomputed after adding
@@ -7670,6 +7674,8 @@ class AA_Requires {
             'aa-fillform@1'               => new AA_Req_Lib(get_aa_url('javascript/fillform.min.js', ['v'=>AA_JS_VERSION],false)),
             'aa-constedit@1'              => new AA_Req_Lib(get_aa_url('javascript/constedit.min.js', ['v'=>AA_JS_VERSION],false)),
             'aa-code@1'                   => new AA_Req_Lib(get_aa_url('javascript/widgets/aa-code.js', ['v'=>AA_JS_VERSION],false).' module', '', ['css-aa-system@1']),
+            'aa-richtext@1'               => new AA_Req_Lib(get_aa_url('javascript/widgets/aa-richtext.js', ['v'=>AA_JS_VERSION],false).' module', '', ['css-aa-system@1']),
+            'aa-editable@1'               => new AA_Req_Lib(get_aa_url('javascript/widgets/aa-editable.js', ['v'=>AA_JS_VERSION],false).' module'),
             'aa-speech@1'                 => new AA_Req_Lib(get_aa_url('javascript/aa-speech/aa-speech.js', ['v'=>AA_JS_VERSION],false), '', ['_css-aa-speech@1']),
             '_css-aa-speech@1'            => new AA_Req_Css(get_aa_url('javascript/aa-speech/aa-speech.css', ['v'=>AA_JS_VERSION],false)),
             'aa-jslib@3'                  => new AA_Req_Lib(get_aa_url('javascript/aajslib-jquery.min.js', ['v'=>AA_JS_VERSION],false), '', ['jquery@3']),
@@ -9240,22 +9246,23 @@ class AA_Stringexpand_Encrypt extends AA_Stringexpand {
 
     /**
      * @param $data
+     * @param string $purpose Secret::key() label - 'mail-form', 'slice-pwd'
      * @return string
      */
-    static function get_time_token($data): string {
-        /** @todo use other constant form config.php - like AA_ENCRYPT_CREDENTIALS if defined instead of AA_ID */
-        return AA\Util\Crypt::encryptAesGcm(serialize($data), 'aa-sul'.AA_ID.date('j.n.y H'));
+    static function get_time_token($data, string $purpose): string {
+        return AA\Util\Crypt::encryptAesGcm(serialize($data), Secret::key($purpose).date('j.n.y H'));
     }
 
     /** Try to decode sent token - not older than $hours
      *  $hours must count with cache - the tokens on the form could be in the cache
      * @param string $token
+     * @param string $purpose the label get_time_token() got
      * @param int    $hours
      * @throws Exception
      */
-    static function decrypt_time_token(string $token, int $hours=24): mixed {
+    static function decrypt_time_token(string $token, string $purpose, int $hours=24): mixed {
         for ($i=0; $i<$hours; ++$i) {
-            if (strlen($serialized = AA\Util\Crypt::decryptAesGcm($token, 'aa-sul'.AA_ID.date('j.n.y H',strtotime("-$i hour"))))) {
+            if (strlen($serialized = AA\Util\Crypt::decryptAesGcm($token, Secret::key($purpose).date('j.n.y H',strtotime("-$i hour"))))) {
                 return unserialize($serialized, ['allowed_classes' => false]);
             }
         }
@@ -9400,7 +9407,7 @@ class AA_Stringexpand_Jwtdecode extends AA_Stringexpand {
                         return '';
                     }
                     return $uid;
-                } catch ( Exception $e ) {
+                } catch (Throwable) {   // a malformed token throws TypeError, too
                 }
             }
             // wrong Auth header
@@ -9775,9 +9782,8 @@ class AA_Password_Manager_Reader {
         }
         $user_info = AA_Reader::getReaderItemContent($user_id);
 
-        // generate MD5 hash
-        $email     = $user_info->getValue(FIELDID_EMAIL);
-        $pwdkey    = md5($user_id.$email.AA_ID.round(now()/60));
+        $email     = (string) $user_info->getValue(FIELDID_EMAIL);
+        $pwdkey    = self::resetKey($user_id, $email, (int) round(now()/60));
         $pwd_param = "aapwd2=$pwdkey-$user_id";
 
         // send it via email
@@ -9872,15 +9878,22 @@ class AA_Password_Manager_Reader {
         if (($user_info = AA_Reader::getReaderItemContent($user_id))->isEmpty()) {
             return false;
         }
-        // Check the key
-        $email    = $user_info->getValue(FIELDID_EMAIL);
-        $key_base = $user_id.$email.AA_ID;
+        return self::keyMatches((string) $key, $user_id, (string) $user_info->getValue(FIELDID_EMAIL), (int) round(now()/60));
+    }
+
+    /** the key was issued for this user and e-mail in one of the last KEY_TIMEOUT minutes */
+    public static function keyMatches(string $key, string $user_id, string $email, int $minute): bool {
         for ($i=0; $i< self::KEY_TIMEOUT; $i++) {
-            if (hash('md5', $key_base.round(round(now()/60)-$i)) == $key) {
+            if (hash_equals(self::resetKey($user_id, $email, $minute - $i), $key)) {
                 return true;
             }
         }
         return false;
+    }
+
+    /** the key of the password reset link, valid in the minute it names */
+    private static function resetKey(string $user_id, string $email, int $minute): string {
+        return hash_hmac('sha256', "$user_id\0$email\0$minute", Secret::key('reader-reset'));
     }
 
     private static function bad($text) : string {
@@ -10268,7 +10281,7 @@ class AA_Stringexpand_Mailform extends AA_Stringexpand_Nevercache {
             'from' => $from,
         ];
         $form_id  = 'form'.new_id();
-        $mailconf = AA_Stringexpand_Encrypt::get_time_token($config_arr);
+        $mailconf = AA_Stringexpand_Encrypt::get_time_token($config_arr, 'mail-form');
 
         $ret = "<form id=\"$form_id\" onsubmit=\"AA_AjaxSendForm('$form_id', '".AA_INSTAL_PATH."/mail.php'); return false;\">
         <input type=hidden name=aa_mailconf value=\"$mailconf\">".
@@ -10548,28 +10561,28 @@ class AA_Stringexpand_File2text extends AA_Stringexpand_Nevercache {
         $file_name  = Files::getTmpFilename('importFile2text');
         if (preg_match('/.doc$/i',$url)) {
             if ( defined('CONV_TEXTFILTERS_DOC')) {
-                $dest_file = Files::createFileFromString(expandFilenameWithHttp($url), Files::aadestinationDir(), $file_name);
+                $dest_file = Files::createFileFromString(expandFilenameWithHttp($url, '', [], '', '', HttpInclude::DOWNLOAD_SECONDS), Files::aadestinationDir(), $file_name);
                 $safe_file_name=escapeshellcmd($dest_file);
                 exec(str_replace('%1',$safe_file_name,CONV_TEXTFILTERS_DOC),$out);
                 unlink($dest_file);
             }
         } elseif (preg_match('/.docx$/i',$url)){
             if ( defined('CONV_TEXTFILTERS_DOCX')) {
-                $dest_file = Files::createFileFromString(expandFilenameWithHttp($url), Files::aadestinationDir(), $file_name);
+                $dest_file = Files::createFileFromString(expandFilenameWithHttp($url, '', [], '', '', HttpInclude::DOWNLOAD_SECONDS), Files::aadestinationDir(), $file_name);
                 $safe_file_name=escapeshellcmd($dest_file);
                 exec(str_replace('%1',$safe_file_name,CONV_TEXTFILTERS_DOCX),$out);
                 unlink($dest_file);
             }
         } elseif (preg_match('/.odt$/i',$url)){
             if ( defined('CONV_TEXTFILTERS_ODT')) {
-                $dest_file = Files::createFileFromString(expandFilenameWithHttp($url), Files::aadestinationDir(), $file_name);
+                $dest_file = Files::createFileFromString(expandFilenameWithHttp($url, '', [], '', '', HttpInclude::DOWNLOAD_SECONDS), Files::aadestinationDir(), $file_name);
                 $safe_file_name=escapeshellcmd($dest_file);
                 exec(str_replace('%1',$safe_file_name,CONV_TEXTFILTERS_ODT),$out);
                 unlink($dest_file);
             }
         } elseif (preg_match('/.pdf$/i',$url)){
             if ( defined('CONV_TEXTFILTERS_PDF')) {
-                $dest_file = Files::createFileFromString(expandFilenameWithHttp($url), Files::aadestinationDir(), $file_name);
+                $dest_file = Files::createFileFromString(expandFilenameWithHttp($url, '', [], '', '', HttpInclude::DOWNLOAD_SECONDS), Files::aadestinationDir(), $file_name);
                 $safe_file_name=escapeshellcmd($dest_file);
                 exec(str_replace('%1',$safe_file_name,CONV_TEXTFILTERS_PDF),$out);
                 unlink($dest_file);

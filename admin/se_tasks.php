@@ -26,24 +26,12 @@
 */
 
 use AA\Manager;
-use AA\Util\InputVars;
 
 
 require_once __DIR__ . "/../include/init_page.php";
 // require_once __DIR__ . "/../include/formutil.php";
 // require_once __DIR__ . "/../include/varset.php";
 // require_once __DIR__ . "/../include/item.php";     // GetAliasesFromField funct def
-
-try {
-    // array ( 'Přihlásit' => 2, )
-    // $submit = InputVars::stringSlashedPOST('submit');
-    // $cancel = InputVars::boolPOST('cancel');
-
-    $Msg = InputVars::stringGETPOST('Msg');
-} catch (Exception $e) {
-    AA_Adminpageutil::pageParameterError($e);
-}
-
 
 if (!IfSlPerm(PS_FORMS)) {
     AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php", _m("You do not have permissions to manage tasks"), "admin");

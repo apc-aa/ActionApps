@@ -44,6 +44,9 @@ class Widget extends AA_Object implements NamedInterface
      */
     public $item_index = 1;
 
+    /** properties that came with a request (Get_Widget) - already expanded by {ajax}, never expanded again */
+    protected array $literal = [];
+
     /** name function - part of Widget API
      *
      */
@@ -138,6 +141,13 @@ class Widget extends AA_Object implements NamedInterface
         $this->item_index = ctype_digit((string) $item_index) ? (int) $item_index : 1;
     }
 
+    /** @param string[] $names properties set from a request */
+    public function setLiteral(array $names): static
+    {
+        $this->literal = $names;
+        return $this;
+    }
+
     /**  get Slice for constants or empty string
      * @return string slice with constants | ""
      */
@@ -186,15 +196,7 @@ class Widget extends AA_Object implements NamedInterface
         // and sort
         // if (is_long_id($for_id)) {   // we should unalias not only for items -  d-auth_group......-=-{user:_#COND_PRM} is perfectly valid and do not use item's aliases
 
-        // is the conds contain aliases, unalias it - Just for speedup for the cases the unaliasing is not needed
-        $check = " $filter_conds $filter_conds_rw $sort_by";
-        if (strpos($check, '{') || strpos($check, '_#')) {
-            $item = is_long_id($for_id) ? AA_Items::getItem(new zids($for_id)) : null;
-            $filter_conds    = AA::Un($filter_conds, '', $item);
-            $filter_conds_rw = AA::Un($filter_conds_rw, '', $item);
-            $sort_by         = AA::Un($sort_by, '', $item);
-        }
-        //}
+        [$filter_conds, $filter_conds_rw, $sort_by] = $this->expandConds($for_id, $filter_conds, $filter_conds_rw, $sort_by);
 
         // "#sLiCe-" prefix indicates select from items
         if ($sid = $this->getConstSlice()) {
@@ -216,10 +218,7 @@ class Widget extends AA_Object implements NamedInterface
                 }
             }
             $format = $slice?->getField($slice_field) ? '{substr:{index:' . $slice_field . '}:0:50}' : $slice_field;
-            $set = new AA_Set($sid, $filter_conds, $sort_by, $bin_filter);
-            if ($filter_conds_rw) {
-                $set->addCondsFromString($filter_conds_rw);
-            }
+            $set = $this->optionsSet($sid, $filter_conds, $filter_conds_rw, $sort_by, $bin_filter);
 
             if ($searchterm) {
                 // $sf = AA_Slice::getModule($sid)->getField($slice_field) ? $slice_field : GetHeadlineFieldID($sid);
@@ -228,6 +227,36 @@ class Widget extends AA_Object implements NamedInterface
             return GetFormattedItems($set->query($restrict_zids, $limit), $format, $crypted_additional_slice_pwd, $tag_prefix);
         }
         return GetFormatedConstants($constgroup, $slice_field, $ids_arr, $filter_conds, $sort_by, $for_id, $limit);
+    }
+
+    /** conds and sort with aliases and expressions expanded for the $for_id item - except the literal ones
+     *  @return array{?string, ?string, ?string} [filter_conds, filter_conds_rw, sort_by]
+     */
+    public function expandConds(string $for_id, ?string $filter_conds, ?string $filter_conds_rw, ?string $sort_by): array
+    {
+        $ret = ['filter_conds' => $filter_conds, 'filter_conds_rw' => $filter_conds_rw, 'sort_by' => $sort_by];
+        $item = false;
+        foreach ($ret as $name => $value) {
+            // only if needed - unaliasing is slow
+            if (!in_array($name, $this->literal, true) && (str_contains((string) $value, '{') || str_contains((string) $value, '_#'))) {
+                $item = ($item === false) ? (is_long_id($for_id) ? AA_Items::getItem(new zids($for_id)) : null) : $item;
+                $ret[$name] = AA::Un($value, '', $item);
+            }
+        }
+        return array_values($ret);
+    }
+
+    /** the set of the offered items; a literal sort_by gets no alias (postsort) sorting, which would expand it */
+    public function optionsSet(string $sid, ?string $filter_conds, ?string $filter_conds_rw, ?string $sort_by, $bin_filter): AA_Set
+    {
+        $set = new AA_Set($sid, $filter_conds, $sort_by, $bin_filter);
+        if (in_array('sort_by', $this->literal, true)) {
+            $set->dropPostsort();
+        }
+        if ($filter_conds_rw) {
+            $set->addCondsFromString($filter_conds_rw);
+        }
+        return $set;
     }
 
 

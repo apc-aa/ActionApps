@@ -2,6 +2,9 @@
 
 namespace AA\Util;
 
+use AA\Http\Client;
+use AA\Http\ClientInterface;
+use AA\Http\TransportException;
 use AA\IO\DB\DB_AA;
 
 /** linkcheck class - link validation for links module
@@ -46,6 +49,21 @@ use AA\IO\DB\DB_AA;
  */
 class Linkcheck
 {
+    /** a chain longer than this is a loop, not a move */
+    private const MAX_REDIRECTS = 10;
+    /** seconds for the whole link, redirects included - curl's CURLOPT_TIMEOUT covered the chain
+     *  too, and walking the hops ourselves must not turn one ceiling into eleven */
+    private const MAX_SECONDS = 10;
+
+    /** @param ?ClientInterface $http tests hand in a fake; every caller uses new Linkcheck() */
+    public function __construct(private ?ClientInterface $http = null) {}
+
+    private function http(): ClientInterface
+    {
+        // no redirects: this class follows them itself, hop by hop, and records each one
+        return $this->http ??= new Client(timeout: 10, idle: 7, agent: Client::agent('link checker'));
+    }
+
     // http codes, error names and their weight
     private const HTTP_ERROR_CODES = [
         // first 3 are for checking domain from email
@@ -178,97 +196,90 @@ class Linkcheck
         return $result;
     }
 
-    /**
-     * @param  string  $url
-     * @param  array   $result
-     * @param          $matches
-     * @param          $m
-     *
-     * @return array
-     */
+    /** @param bool $head HEAD asks only for the headers; check_url() retries with GET on a 405 */
     private function url_request(string $url, bool $head = true): array
     {
         $result = self::get_empty_ressult(); // initialize result array
 
-        // --- cURL inicializace ---
-        $ch = curl_init();
-
-        // get chain redirects using callback (PHP 7.1+)
-        curl_setopt_array($ch, [
-            CURLOPT_URL            => $url,
-            CURLOPT_NOBODY         => $head,           // true = HEAD, false = GET  // HEAD request (do not fetch body)
-            CURLOPT_HEADER         => true, // we want headers
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_MAXREDIRS      => 10,
-            CURLOPT_USERAGENT      => 'APC-AA Link Checker (https://actionapps.org/)',
-            CURLOPT_CONNECTTIMEOUT => 7,
-            CURLOPT_TIMEOUT        => 10,
-            CURLOPT_SSL_VERIFYPEER => true,
-            CURLOPT_SSL_VERIFYHOST => 2,
-        ]);
-
-        // Get redirect chain
-        $chain = [];
-        curl_setopt($ch, CURLOPT_HEADERFUNCTION, function ($curl, $header) use (&$chain) {
-            if (preg_match('~^Location:\s*(.+)~i', $header, $m)) {
-                $chain[] = trim($m[1]);
-            }
-            return strlen($header);
-        });
-
-        $response = curl_exec($ch);
-
-        if ($response === false) {
-            $result['code']    = "999";
-            $result['comment'] = 'No response (' . curl_error($ch) . ')';
-            $result['weight']  = 5;
-            $result['error']   = curl_error($ch);
-            return $result;
-        }
-
-        // Get info about redirects and returned codes
-        $info        = curl_getinfo($ch);
-        $http_code   = $info['http_code'];
-        $finalUrl    = $info['url'];
-        $contentType = $info['content_type'] ?? null;
-
-        // get all codes from Location chain from response headers
-        $headers    = explode("\r\n\r\n", trim($response));
+        // The hops are walked here rather than by the client, because this module reports the
+        // status of every one of them and where each pointed. A client that follows redirects by
+        // itself keeps only the headers of the last hop, and the chain is the interesting part -
+        // "200, but after four hops through http" is a different answer from a plain 200.
+        //
+        // One budget for the whole chain: the per-hop ceiling is the client's, so the worst case
+        // is a hop that starts just inside the deadline, not eleven full hops.
+        $chain      = [];
         $http_codes = [];
-        $matches    = [];
-        foreach ($headers as $headerBlock) {
-            if (preg_match('~HTTP/\d+\.\d+\s+(\d{3})~', $headerBlock, $matches)) {
-                $http_codes[] = $matches[1];
+        $finalUrl   = $url;
+        $deadline   = microtime(true) + self::MAX_SECONDS;
+
+        try {
+            for ($hop = 0; ; $hop++) {
+                $answer       = $this->http()->request($head ? 'HEAD' : 'GET', $finalUrl);
+                $http_codes[] = (string) $answer->status;
+                if ($answer->redirect === '') {
+                    break;
+                }
+                // A chain that never ends and a chain that outruns the budget are both dead links,
+                // not the 301 the first hop answered with. curl reported them as CURLE_TOO_MANY_
+                // REDIRECTS and CURLE_OPERATION_TIMEDOUT - both "no response" - and the weight that
+                // goes into links_links.valid_rank has to say the same, or a loop ranks as healthy.
+                if ($hop >= self::MAX_REDIRECTS) {
+                    return self::noAnswer($result, 'more than ' . self::MAX_REDIRECTS . ' redirects', $chain, $http_codes);
+                }
+                if (microtime(true) >= $deadline) {
+                    return self::noAnswer($result, 'the redirect chain took longer than ' . self::MAX_SECONDS . ' s', $chain, $http_codes);
+                }
+                $chain[] = $finalUrl = $answer->redirect;
             }
+        } catch (TransportException $e) {
+            return self::noAnswer($result, $e->getMessage(), $chain, $http_codes);
         }
 
+        $contentType            = $answer->headers['content-type'] ?? null;
         $result['content_type'] = $contentType;
 
         [$type, $params] = explode(';', $contentType . ';', 2);
         $result['mime']    = trim($type);
         $result['charset'] = preg_match('/charset\s*=\s*"?([^\s;"]+)"?/i', $params, $matches) ? strtolower($matches[1]) : '';
 
+        // the first hop is the answer: a link that moved is reported as moved, not as the 200 it
+        // eventually reaches. The loop always records at least one code.
+        $result['code']    = $http_codes[0];
+        $result['comment'] = self::HTTP_ERROR_CODES[$result['code']]['comment'] ?? 'Unknown';
+        $result['weight']  = self::HTTP_ERROR_CODES[$result['code']]['weight'] ?? 5;
+
         if ($chain) {  // redirects
             $result['redir_chain'] = $chain;
             $result['http_codes']  = $http_codes;
             $result['redir']       = $finalUrl;
-            $result['code']        = $http_codes ? (string) $http_codes[0] : (string) $http_code;
-            $result['comment']     = self::HTTP_ERROR_CODES[$result['code']]['comment'] ?? 'Unknown';
-            $result['weight']      = self::HTTP_ERROR_CODES[$result['code']]['weight'] ?? 5;
-
-            // modify weight by the status of the final url
-
-            // last value of http_codes is the last code
+            // the weight comes from where the chain ended, so a 301 to a dead page is not a 0
             $last_code         = end($http_codes);
             $result['weight']  = min(5, max($result['weight'], self::HTTP_ERROR_CODES[$last_code]['weight'] ?? 5));  // weight not 0 but taken from last code
             $result['comment'] .= " - Redirected [$last_code]";
-            return $result;
         }
 
-        $result['code']    = (string) $http_code;
-        $result['comment'] = self::HTTP_ERROR_CODES[$http_code]['comment'] ?? 'Unknown';
-        $result['weight']  = self::HTTP_ERROR_CODES[$http_code]['weight'] ?? 5;
+        return $result;
+    }
+
+    /**
+     * No answer is not a bad page: 999 is this module's own code for "nothing came back".
+     *
+     * Whatever hops were walked before giving up are kept - an editor looking at a dead link
+     * wants to see where it went before it stopped answering.
+     *
+     * @param list<string> $chain
+     * @param list<string> $http_codes
+     */
+    private static function noAnswer(array $result, string $why, array $chain = [], array $http_codes = []): array
+    {
+        $result['code']        = "999";
+        $result['comment']     = 'No response (' . $why . ')';
+        $result['weight']      = 5;
+        $result['error']       = $why;
+        $result['redir_chain'] = $chain;
+        $result['http_codes']  = $http_codes;
+
         return $result;
     }
 

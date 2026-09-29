@@ -112,7 +112,7 @@ spl_autoload_register(static function ($class_name) {
         'zids'               => 'include/zids.php'
     ];
 
-    if ($PAIRS[$class_name]) {
+    if (isset($PAIRS[$class_name])) {
         require (__DIR__ . '/../' . $PAIRS[$class_name]);
         return;
     }
@@ -120,8 +120,8 @@ spl_autoload_register(static function ($class_name) {
     $matches = [];
     preg_match('/^aa_([a-z0-9]+)/', strtolower($class_name), $matches);
 
-    // the core name of the class (like "widget" for "AA_Widget_Fld", ...)
-    $core = $matches[1];
+    // the core name of the class (like "widget" for "AA_Widget_Fld", ...); '' for anything else
+    $core = $matches[1] ?? '';
 
     switch ($core) {
         case 'adminpage':
@@ -152,7 +152,6 @@ spl_autoload_register(static function ($class_name) {
             return;
         case 'response':
         case 'clientauth':
-        case 'http':
             require_once __DIR__ . '/request.class.php';
             return;
         case 'scroller':

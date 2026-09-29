@@ -79,6 +79,13 @@ define('AA_HTTP_DOMAIN', "https://my.domain.org/");
  */
 define("AA_ID", "990111222333444555666777888999A9");
 
+/** Server secret - the key for login tokens of Central, mail forms and password
+ *  reset links. At least 32 bytes, a shorter one is ignored. Without it the keys are
+ *  derived from DB_PASSWORD, so a change of DB_PASSWORD invalidates them, as does a
+ *  change of AA_SECRET: the Centrals have to authenticate again.
+ */
+// define('AA_SECRET', '');  // any long random string, e.g. bin2hex(random_bytes(32))
+
 /** Organization name
  *  It should be also world unique - it is important to have it unique mainly
  *  if you plan exchange articles between servers

@@ -32,7 +32,6 @@ final class SyncExecutor
         $module_id   = $idf->getModuleId();
         $table       = $idf->getTable();
         $row         = $idf->getRow();
-        //$column      = $idf->getColumn();
 
         if (!in_array($table, AA_Sync_Action::TABLES, true)) {
             return _m('Wrong command - this table is not synchronized');
@@ -55,13 +54,20 @@ final class SyncExecutor
                 : _m('%1 %2 in slice %3 updated', [$table, $row, $module_id]);
         }
         if ($type === 'INSERT') {
-            $data = self::withoutOwnNumbering($table, (array) $params);
+            $data = (array) $params;
             if ($table === 'module' || $table === 'slice') {
                 $data['deleted'] = 0;   // a template flagged deleted must not create a deleted slice
             }
             $metabase->fillKeys($data, $idf);
-            return !$metabase->doInsert($table, $data, 'nohalt')
-                ? _m('Error: %1 %2 not inserted into slice %3', [$table, $row, $module_id])
+            // after fillKeys() - it would set the template's view.id / email.id again
+            $data   = self::withoutOwnNumbering($table, $data);
+            $new_id = $metabase->doInsert($table, $data, 'nohalt');
+            if (!$new_id) {
+                return _m('Error: %1 %2 not inserted into slice %3', [$table, $row, $module_id]);
+            }
+            // a key left out is numbered by the DB - the user needs the new number (view 12 is 31 here)
+            return array_diff($metabase->getKeys($table), array_keys($data))
+                ? _m('%1 %2 inserted into slice %3 as %4', [$table, $row, $module_id, $new_id])
                 : _m('%1 %2 inserted into slice %3', [$table, $row, $module_id]);  // field xy inserted into slice yz
         }
         if ($type === 'DELETE') {
@@ -74,12 +80,13 @@ final class SyncExecutor
         return _m("Unknown action (%1) for field %2 in slice %3", [$type, $row, $module_id]);
     }
 
-    /** $data without the auto_increment columns which are not keys (constant.short_id) - each
-     *  installation numbers its rows itself */
+    /** $data without the auto_increment columns (view.id, email.id, constant.short_id) - each
+     *  installation numbers its rows itself; the template's number may be taken here. An update
+     *  gets its key back from fillKeys(), an insert gets a new number. */
     private static function withoutOwnNumbering(string $table, array $data): array
     {
         foreach (AA::Metabase()->getColumns($table) as $colname => $column) {
-            if ($column->isAutoIncrement() && !$column->isKey()) {
+            if ($column->isAutoIncrement()) {
                 unset($data[$colname]);
             }
         }

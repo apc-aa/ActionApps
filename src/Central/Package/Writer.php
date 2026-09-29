@@ -11,31 +11,18 @@ use DOMDocument;
 use DOMElement;
 use DOMNode;
 use InvalidArgumentException;
-use LibXMLError;
 
-/** Package model => aa-app XML (design balicek-v1.md § 2, § 4; C4.3 part 2). Pure: no DB, no clock;
- *  toXml() works on a clone, so no state survives a call.
- *
- *  Values (§ 2.2): a text value - textValue column, object property <p>, item value <v> - is
- *  encoded by ValueCodec (CDATA, crlf, base64, INVALID_BYTES finding). SQL NULL of a column =>
- *  `<col null="true"/>`; a property or item value cannot be NULL (throws). A column with the empty
- *  value of its type is left out - meta/tables lists it, so the reader restores it (§ 2.3); properties
- *  and item values are always written. Other texts (meta, doc, spot tree, attributes, number and id
- *  columns) have no enc/crlf in the XSD: a value XML 1.0 cannot carry throws.
- *
- *  Deterministic output (§ 2.5): modules site -> slice -> alerts, then by id; rows by their key
- *  attributes (constants by pri, id; keyless rows by all columns) - integer columns and attributes
- *  numerically, everything else (ids, names, texts) bytewise; columns in metabase_schema.php order;
- *  properties by name and index; objects, items, groups by id/name, spots by number, item values by
- *  field id and key; 2-space indentation, LF. The result is validated against the XSD - an invalid
- *  model throws InvalidArgumentException. */
+/** Package model => aa-app XML. Pure; toXml() works on a clone.
+ *  Text values go through ValueCodec; SQL NULL of a column => `null="true"`, of a property or item value
+ *  throws; a column with the empty value of its type is left out. Other texts have no enc/crlf, so a value
+ *  XML 1.0 cannot carry throws. The output is deterministic and validated against the XSD. */
 final class Writer
 {
-    public const FORMAT = '1.0';
+    public const FORMAT = '1.1';
 
     private const MODULE_ORDER = [Module::SITE, Module::SLICE, Module::ALERTS];
 
-    /** row order other than by the key attributes (§ 2.5) */
+    /** row order other than by the key attributes */
     private const SORT = ['constant' => ['pri', 'id']];
 
     /** XSD types of key attributes compared as numbers */
@@ -93,7 +80,7 @@ final class Writer
             $el   = $this->el($root, 'constant-group', ['name' => $group->name, 'owner' => $group->owner === '' ? null : $group->owner], path: $path);
             $this->container($el, 'constant-group', $group->rows, [], $path);
         }
-        $this->el($root, 'signature');   // reserved, written empty in v1 (§ 9.4)
+        $this->el($root, 'signature');   // reserved, empty in format 1.x
 
         $xml = (string) $this->dom->saveXML();
         $this->validate($xml);
@@ -117,7 +104,7 @@ final class Writer
                 'name'        => $p->name,
                 'description' => $p->description,
                 'version'     => $p->version,
-                'publish'     => $p->publish,
+                'publish'     => $p->published ? 'all' : null,
                 'doc'         => $p->doc,
                 default       => null,
             };
@@ -125,13 +112,14 @@ final class Writer
                 'source'   => $this->el($meta, 'source', array_map(static fn(string $a): ?string => $source[$a] ?? null, array_combine($this->attributes['source'], $this->attributes['source'])), path: 'meta/source'),
                 'requires' => $p->requires === null ? null : $this->el($meta, 'requires', ['aa-version' => $p->requires], path: 'meta/requires'),
                 'contents' => $this->el($meta, 'contents', ['items' => $p->withItems ? 'true' : 'false']),
+                'batch'    => $p->batch === null ? null : $this->el($meta, 'batch', ['after' => $p->batch->after ?: null, 'next' => $p->batch->next ?: null, 'finished' => $p->batch->finished ? 'true' : 'false'], path: 'meta/batch'),
                 'tables'   => $this->tables($this->el($meta, 'tables')),
                 default    => $text === null ? null : $this->el($meta, $child, text: $text, path: "meta/$child"),
             };
         }
     }
 
-    /** meta/tables: the columns this AA knows per row element (§ 2.3) */
+    /** meta/tables: the columns this AA knows per row element */
     private function tables(DOMElement $tables): void
     {
         foreach (array_keys($this->schema->rowTables()) as $element) {
@@ -154,7 +142,7 @@ final class Writer
             'settings'  => $m->settings,
             'object'    => $m->objects ?: null,
             'item'      => $m->items ?: null,
-        ], static fn($part): bool => $part !== null), $path);
+        ] + $m->transfer, static fn($part): bool => $part !== null), $path);
     }
 
     /** Children of a module or constant group in XSD order: the rows and the other parts.
@@ -182,6 +170,10 @@ final class Writer
                 'settings'  => $this->props($this->el($el, 'settings', ['class' => Schema::SETTINGS_CLASSES[$container]]), $part, "$path/settings"),
                 'object'    => $this->objects($el, $part, $path),
                 'item'      => $this->items($el, $part, $path),
+                'owner'     => $this->owner($this->el($el, 'owner'), $part, "$path/owner"),
+                'reading-password' => $this->value($this->el($el, 'reading-password'), $part, "$path/reading-password"),
+                'setting-values'   => $this->content($this->el($el, 'setting-values'), $part, "$path/setting-values"),
+                'alternate-url'    => array_map(fn(string|RawBytes $url) => $this->value($this->el($el, 'alternate-url'), $url, "$path/alternate-url"), $part),
                 default     => null,
             };
         }
@@ -302,6 +294,14 @@ final class Writer
         }
     }
 
+    /** @param array<string, string|RawBytes> $owner {name, email} */
+    private function owner(DOMElement $el, array $owner, string $path): void
+    {
+        foreach (['name', 'email'] as $child) {
+            $this->value($this->el($el, $child), $owner[$child] ?? throw new InvalidArgumentException("$path: no $child"), "$path/$child");
+        }
+    }
+
     /** GetItemContent() form: field id => [key => {value, flag}], the key a position or a translation
      *  number (>= AA_Value::MAX_INDEX); fields by id, values by key, key 0 is the default
      *  @param list<array<string, mixed>> $items */
@@ -310,17 +310,22 @@ final class Writer
         usort($items, static fn(array $a, array $b): int => strcmp((string) ($a['id'] ?? ''), (string) ($b['id'] ?? '')));
         foreach ($items as $item) {
             $at      = "$path/item[" . ($item['id'] ?? '') . ']';
-            $el      = $this->el($parent, 'item', ['id' => (string) ($item['id'] ?? '')], path: $at);
-            $content = $item['content'] ?? [];
-            ksort($content, SORT_STRING);
-            foreach ($content as $field => $values) {
-                ksort($values, SORT_NUMERIC);
-                foreach ($values as $i => $v) {
-                    $value = $v['value'] ?? throw new InvalidArgumentException("$at/{$field}[$i]: an item value cannot be NULL");
-                    $flag  = (int) ($v['flag'] ?? 0);
-                    $attrs = ['f' => (string) $field, 'i' => $i === 0 ? null : (string) $i, 'flag' => $flag ? (string) $flag : null];
-                    $this->value($this->el($el, 'v', $attrs, path: $at), ($value instanceof RawBytes) ? $value : (string) $value, "$at/{$field}[$i]");
-                }
+            $this->content($this->el($parent, 'item', ['id' => (string) ($item['id'] ?? '')], path: $at), $item['content'] ?? [], $at);
+        }
+    }
+
+    /** <v> of each value of GetItemContent() form: fields by id, values by key
+     *  @param array<string, array<int, array<string, mixed>>> $content */
+    private function content(DOMElement $el, array $content, string $at): void
+    {
+        ksort($content, SORT_STRING);
+        foreach ($content as $field => $values) {
+            ksort($values, SORT_NUMERIC);
+            foreach ($values as $i => $v) {
+                $value = $v['value'] ?? throw new InvalidArgumentException("$at/{$field}[$i]: a content value cannot be NULL");
+                $flag  = (int) ($v['flag'] ?? 0);
+                $attrs = ['f' => (string) $field, 'i' => $i === 0 ? null : (string) $i, 'flag' => $flag ? (string) $flag : null];
+                $this->value($this->el($el, 'v', $attrs, path: $at), ($value instanceof RawBytes) ? $value : (string) $value, "$at/{$field}[$i]");
             }
         }
     }
@@ -394,24 +399,13 @@ final class Writer
         return [$x !== null, !$nx, $nx ? +$x : 0] <=> [$y !== null, !$ny, $ny ? +$y : 0] ?: strcmp((string) $x, (string) $y);
     }
 
-    /** as the reader will (§ 3.1): schema as a string, no external entity may load */
+    /** the same check the reader makes */
     private function validate(string $xml): void
     {
-        $internal = libxml_use_internal_errors(true);
-        $loader   = libxml_get_external_entity_loader();
-        libxml_set_external_entity_loader(static fn() => null);
-        libxml_clear_errors();
         try {
-            $dom = new DOMDocument();
-            if ($dom->loadXML($xml, LIBXML_NONET) && $dom->schemaValidateSource($this->schema->xsd())) {
-                return;
-            }
-            $errors = array_map(static fn(LibXMLError $e): string => "line $e->line: " . trim($e->message), array_slice(libxml_get_errors(), 0, 5));
-            throw new InvalidArgumentException('The package does not match the aa-app schema: ' . implode('; ', $errors));
-        } finally {
-            libxml_clear_errors();
-            libxml_set_external_entity_loader($loader);
-            libxml_use_internal_errors($internal);
+            (new XmlGuard())->validateXml($xml, $this->schema->xsd());
+        } catch (PackageRejected $e) {
+            throw new InvalidArgumentException($e->getMessage(), 0, $e);
         }
     }
 }

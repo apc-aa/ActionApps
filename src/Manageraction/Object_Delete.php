@@ -2,9 +2,9 @@
 
 namespace AA\Manageraction;
 
+use AA\Managed_Object;
 use AA\Manager;
 use AA_Object;
-use AA_Set;
 use zids;
 
 /**  Delete specified object
@@ -38,13 +38,17 @@ class Object_Delete extends AbstractManageraction
         // $event->comes('ITEMS_BEFORE_DELETE', $slice_id, 'S', $items_to_delete);
         // we delete one after another
 
-        /** @var AA_Object $class */
-        if ($class = $manager->getManaged()?->getClass()) {
-            if ($zids2delete = $class::querySet($class, new AA_Set(), $item_zids)) {  // test if all zids are of correct type
-                $class::deleteObjects($zids2delete->getArray());
-            }
+        $managed = $manager->getManaged();
+        if (!($managed instanceof Managed_Object) || !is_long_id($manager->getModuleId())) {
+            return _m('This action does not work on this page.');
         }
-        return false;     // OK
+        [$zids2delete, $refused] = $managed->actionable($manager, $item_zids, PS_EDIT);
+        if (!$zids2delete->isEmpty()) {
+            /** @var class-string<AA_Object> $class */
+            $class = $managed->getClass();
+            $class::deleteObjects($zids2delete->getArray());
+        }
+        return $refused ? _m('Some of the selected objects were not deleted - they belong to a module you can not change them in.') : false;
     }
 
     /** Checks if the user have enough permission to perform the action

@@ -80,6 +80,10 @@ $L_MONTH = [
 
 // set default month and year to current date
 
+$day   = (int) ($day ?? 0);      // all three come from the URL and are printed
+$month = (int) ($month ?? 0);
+$year  = (int) ($year ?? 0);
+
 if ($month == 0) {
     $month = getdate();
     $month = $month["mon"];

@@ -59,6 +59,7 @@ if (!IsSuperadmin()) {
 
 // ActionApps to synchronize
 $aas = Actionapps::getArray();
+$err = [];   // an AA without a valid token answers nothing - say why instead of an empty list
 $slices4template = [];
 $slices2compare  = [];
 
@@ -75,8 +76,10 @@ if (!empty($_POST['compare'])) {
 
     // bool true arrives as [] in the responder - it loaded nothing and the comparison failed
     $template_slice_defs = $aas[$_POST['template_aa']]->requestDefinitions('Slice', $slices4template, ['definitions' => true]);
+    $err[] = $aas[$_POST['template_aa']]->lastErrorHtml();
     if (isset($_POST['comparation_aa'])) {
         $comp_slice_defs = $aas[$_POST['comparation_aa']]->requestDefinitions('Slice', $slices2compare, ['definitions' => true]);
+        $err[] = $aas[$_POST['comparation_aa']]->lastErrorHtml();
         // now compare slices
         $differences = CompareSliceDefs($template_slice_defs, $comp_slice_defs, $_POST['sync_slices']);
     }
@@ -110,7 +113,6 @@ if (!empty($_POST['synchronize'])) {
 $apage = new AA_Adminpageutil('central', 'synchronize');
 $apage->setTitle(_m("Central - Synchronize ActionApps (3/3) - Synchronize Slices"));
 $apage->addRequire('aa-jslib@1');
-$apage->printHead();
 
 // ActionApps to synchronize
 $aas_array = [];
@@ -120,6 +122,9 @@ foreach ($aas as $k => $aa) {
 
 // slices to compare
 $template_slices = $aas[$_POST['template_aa']]->requestSlices();
+$err[] = $aas[$_POST['template_aa']]->lastErrorHtml();
+
+$apage->printHead(array_unique(array_filter($err)));
 
 $form_buttons = [
     "synchronize"  => [

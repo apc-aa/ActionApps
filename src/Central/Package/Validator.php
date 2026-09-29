@@ -7,50 +7,49 @@ namespace AA\Central\Package;
 use AA\Central\Package\Model\ConstantGroup;
 use AA\Central\Package\Model\Module;
 use AA\Central\Package\Model\Package;
+use AA\Central\Package\Model\RawBytes;
 use AA_Metabase;
-use AA_Module_Site;
 use AA_Property;
 use InvalidArgumentException;
 use Throwable;
 
-/** The semantic checks of a read package (design balicek-v1.md § 3.1 step 9, C4.4 part 2): what the
- *  XSD cannot say, and again what it says of structure and ids - the model may come from elsewhere than
- *  Reader (the chunk mode, § 10.1). Pure: collisions with the target, existing modules, the charset
- *  conversion and the text lint against the plan's map (ReferenceLint) are the planner's (part 3).
+/** The semantic checks of a read package: what the XSD cannot say, and again what it says of structure
+ *  and ids - the model may come from elsewhere than Reader. Pure: the target, the charsets and the
+ *  reference lint are the planner's.
  *  E = the package must not be imported; S (SecurityLint) = confirm in the preview; W, I = report.
- *  meta/publish needs no check: the importer sets `users` on the target (Q-H1).
- *  For the importer (part 4): an alerts_filter shared by several Alerts modules is created once; site
- *  settings of `settings-dropped` and email.attachments of SecurityLint::ATTACHMENTS_DROPPED are cleared.
  *  Findings quote package text - escape them (safe()) when shown. */
 final class Validator
 {
     /** E: a row a module type needs is missing or there twice (module; slice / site; constant_slice at
-     *  most once); W: an Alerts module without its collection (deleting the reader slice deletes it, slice.class.php:756) */
+     *  most once); W: an Alerts module without its collection (deleting the reader slice deletes it) */
     public const MODULE_ROWS = 'module-rows';
-    /** E: a table, settings, objects, spot tree or items the container does not have (§ 6.1) */
+    /** E: a table, settings, objects, spot tree or items the container does not have */
     public const TABLE = 'table-not-allowed';
     /** E: an id of the wrong shape: long ids 32 lower-case hex, field ids 16 chars, view / e-mail / filter /
-     *  spot ids 1-10 digits without a leading 0, collection ids 5 letters or digits */
+     *  spot ids 1-10 digits without a leading 0, collection ids 5 letters or digits; a packed column
+     *  (slice.mlxctrl, alerts_collection.slice_id, constant.ancestors: several) not empty and no long id */
     public const INVALID_ID = 'invalid-id';
     /** E: an id twice - long ids across modules, their settings objects (string2id(class . module id)),
-     *  constants, objects, subobjects and items (one map, § 7.1),
+     *  constants, objects, subobjects and items (one id map),
      *  views, e-mails, groups, collections across the package; fields, spots, uses, filters per module; a
      *  filter id of several Alerts modules with other content */
     public const DUPLICATE = 'duplicate-id';
     /** E: uses, a group owner (a slice), a collection filter / howoften outside the package;
      *  W: an ancestor constant not in the group (se_constant.php leaves them when deleting a parent) */
     public const DANGLING = 'dangling-ref';
-    /** E: the alerts collection reads a slice outside the package (§ 6.4) */
+    /** E: the alerts collection reads a slice outside the package. Also E (ReferenceLint codes): an
+     *  alerts_filter.vid or alerts_collection.emailid_* outside the package (0 / empty = none, allowed) - the
+     *  new collection would mail a view or template of the target to readers the package brings */
     public const READER_OUTSIDE = ExportLint::READER_OUTSIDE;
-    /** E: an object class off the allowlist, a property its class lacks, a subobject off its property (§ 5.4), a malformed object */
+    /** E: an object class off the allowlist, a property its class lacks, a subobject off its property, a malformed object */
     public const OBJECT = 'object';
-    /** W: ga_id, alternate_url, app_* of the site settings (§ 5.4) - the importer drops them */
+    /** W: ga_id, alternate_url, app_* of the site settings - the importer drops them */
     public const SETTINGS_DROPPED = 'settings-dropped';
     /** E: sitetree::fromArray() refused the spot tree; ref = its message */
     public const SPOT_TREE = Collector::SPOT_TREE;
     /** W: site_spot of a spot the tree lacks - a new spot could get its id and content on the target */
     public const SPOT_UNUSED = Collector::SPOT_UNUSED;
-    /** E: module.lang_file not in Langs::getFiles(<type>) (§ 2.4) */
+    /** E: module.lang_file not in Langs::getFiles(<type>) */
     public const LANG_FILE = Collector::LANG_FILE;
     /** W: slice.lang_file (the old copy) non-empty and not of the list - the importer writes the module's lang_file instead */
     public const LANG_FILE_REPLACED = 'lang-file-replaced';
@@ -59,32 +58,40 @@ final class Validator
     public const GROUP_NAME = 'group-name';
     /** W: a field widget names a group neither in the package nor a core group */
     public const GROUP_MISSING = Collector::GROUP_MISSING;
-    /** E: site.state_file names a control file (flag ≠ 1, stateFileName() ≠ '') - site.php would include it (§ 3.1) */
+    /** E: site.state_file names a control file (flag ≠ 1, stateFileName() ≠ '') - site.php would include it */
     public const STATE_FILE = Collector::STATE_FILE;
-    /** E: items without meta/contents/@items, or items in a module other than a slice */
+    /** E: items without meta/contents/@items, items in a module other than a slice, or items (the flag)
+     *  outside a batch - items travel only in the batches of a transfer */
     public const ITEMS = 'items';
-    /** E: items (or the item flag) with meta/publish = all - the public catalogue carries no data */
+    /** E: items, the item flag, a batch or the state of the installation in a published package - a transfer
+     *  is never published */
     public const ITEMS_PUBLISHED = Collector::ITEMS_PUBLISHED;
-    /** E: an item value of a pseudo field or of source state (Collector::ITEM_LEFT_OUT) */
+    /** E: an item value of a pseudo field or of source state (Collector::ITEM_LEFT_OUT), or of the source's
+     *  users (Collector::ITEM_TRANSFER_ONLY) in an install */
     public const ITEM_KEY = 'item-key';
     /** W: an item value of a field the slice does not have */
     public const ITEM_FIELD = 'item-field';
+    /** E: a setting value of a field the slice of the package does not have; ref = the field id */
+    public const SETTING_FIELD = 'setting-field';
+    /** a settings field id: `_`, then the rest of the XSD fieldId */
+    private const SETTING_FIELD_RE = '/^_[A-Za-z0-9_.]{15}\z/';
+    /** W: an item without a status_code of a bin (1 active, 2 holding, 3 trash) - ItemWriter writes it as it
+     *  is (a missing one: the column default 0), and no bin shows it; ref = the value ('' = none) */
+    public const ITEM_STATUS = 'item-status';
     /** W: a default profile property AA does not know (admin/se_profile.php) - ignored by AA */
     public const PROFILE = 'profile-property';
     /** W: a switch who may write or log in - slice.permit_anonymous_post/_edit, fileman_access, auth_field_group */
     public const PERMISSION = 'permission';
-    /** W: site perm_mode not 1/2 - AA + all Reader Management slices of the target may log in (site.php:192) */
+    /** W: site perm_mode not 1/2 - AA + all Reader Management slices of the target may log in */
     public const PERM_MODE = 'perm-mode';
     /** E: an integer out of the range of its column (strict sql_mode would fail the insert) */
     public const INT_RANGE = 'int-range';
-
-    /** row elements of each container: 1 = exactly one, ? = at most one, * = any */
-    private const TABLES = [
-        Module::SITE     => ['module' => '1', 'site' => '1', 'site_spot' => '*', 'uses' => '*'],
-        Module::SLICE    => ['module' => '1', 'slice' => '1', 'field' => '*', 'view' => '*', 'email' => '*', 'profile' => '*'],
-        Module::ALERTS   => ['module' => '1', 'email' => '*', 'alerts_collection' => '?', 'alerts_collection_filter' => '*', 'alerts_collection_howoften' => '*', 'alerts_filter' => '*'],
-        'constant-group' => ['constant_slice' => '?', 'constant' => '*'],
-    ];
+    /** E: the state of the source installation (owner, reading password, domains) or an item batch in an
+     *  install - the target decides by its mode, whatever the source sent */
+    public const TRANSFER_ONLY = 'transfer-only';
+    /** E: an item batch (meta/batch) other than one slice with items only, an item outside (after, next],
+     *  a cursor that is no item id of the batch */
+    public const BATCH = 'batch';
 
     /** keyed rows => [id pool (`module` = per module), the key's shape]; long ids share the pool `long` */
     private const UNIQUE = ['field' => ['module', '/^[A-Za-z0-9_.]{16}\z/'], 'view' => ['view', self::NUMBER_RE], 'email' => ['email', self::NUMBER_RE],
@@ -99,6 +106,12 @@ final class Validator
         'fill', 'predefine', 'bookmark', 'ui_manager', 'ui_manager_hide', 'ui_inputform', 'ui_inputform_hide'];
 
     private const PERMISSIONS = ['permit_anonymous_post', 'permit_anonymous_edit', 'fileman_access', 'auth_field_group'];
+
+    /** a packed id, any case (pack_id() takes any) */
+    private const LONG_ID_RE = '/^[0-9a-f]{32}\z/i';
+    /** packed columns holding several ids joined (AA_Metabase::getPacked(): "ancestors are multiple") */
+    private const PACKED_LISTS = ['constant.ancestors' => true];
+    private const LONG_IDS_RE  = '/^(?:[0-9a-f]{32})+\z/i';
 
     private readonly AA_Metabase $metabase;
     private readonly Schema $schema;
@@ -118,11 +131,26 @@ final class Validator
         $this->lint     = new SecurityLint($this->schema);
     }
 
-    public function validate(Package $package): ValidationResult
+    /** @param bool $transfer the importer's mode is a transfer: the package may carry the state of the
+     *                        source installation (Module::$transfer) */
+    public function validate(Package $package, bool $transfer = false): ValidationResult
     {
         $this->findings = new FindingList();
         $this->seen     = $this->types = [];
         $this->has      = ['view' => [], 'email' => [], 'group' => [], 'filter' => []];
+        $items          = $package->withItems || array_filter($package->modules, static fn(Module $m): bool => $m->items !== []);
+        if ($package->published && ($items || ($package->batch !== null) || array_filter($package->modules, static fn(Module $m): bool => $m->transfer !== []))) {
+            $this->add('meta/publish', LintFinding::ERROR, self::ITEMS_PUBLISHED, 'all');
+        }
+        if (!$transfer && ($package->batch !== null)) {
+            $this->add('meta/batch', LintFinding::ERROR, self::TRANSFER_ONLY, 'batch');
+        } elseif ($items && ($package->batch === null)) {
+            $this->add('meta/contents', LintFinding::ERROR, self::ITEMS, $transfer ? 'definitions' : 'install');
+        }
+        if ($package->batch !== null) {
+            $this->batch($package, $transfer);
+            return new ValidationResult($this->lint->package($package, $this->findings));
+        }
         foreach ($package->modules as $m) {
             $this->types[$m->id] ??= $m->type;
             foreach (['view', 'email'] as $element) {
@@ -135,22 +163,19 @@ final class Validator
             $this->has['group'][$group->name] = true;
         }
         foreach ($package->modules as $m) {
-            $this->module($m, $package->withItems);
+            $this->module($m, $package->withItems, $transfer);
         }
         foreach ($package->constantGroups as $group) {
             $this->group($group);
         }
-        if (($package->publish === 'all') && ($package->withItems || array_filter($package->modules, static fn(Module $m): bool => $m->items !== []))) {
-            $this->add('meta/publish', LintFinding::ERROR, self::ITEMS_PUBLISHED, 'all');
-        }
         return new ValidationResult($this->lint->package($package, $this->findings));
     }
 
-    private function module(Module $m, bool $with_items): void
+    private function module(Module $m, bool $with_items, bool $transfer): void
     {
         $path = "$m->type[$m->id]";
         $this->id('long', $m->id, $path, self::LONG_RE);
-        if (isset(Schema::SETTINGS_CLASSES[$m->type]) && preg_match(self::LONG_RE, $m->id)) {    // the settings object: one long map (§ 7.1)
+        if (isset(Schema::SETTINGS_CLASSES[$m->type]) && preg_match(self::LONG_RE, $m->id)) {    // the settings object id shares the long id pool
             $this->id('long', string2id(Schema::SETTINGS_CLASSES[$m->type] . $m->id), "$path/settings");
         }
         $this->rows($path, $m->type, $m->rows);
@@ -164,6 +189,13 @@ final class Validator
         if ($m->items && !$with_items) {
             $this->add("$path/item", LintFinding::ERROR, self::ITEMS, (string) count($m->items));
         }
+        foreach ($m->transfer as $part => $value) {
+            if (!in_array($part, Module::TRANSFER[$m->type] ?? [], true) || !self::transferValue((string) $part, $value)) {
+                $this->add("$path/$part", LintFinding::ERROR, self::TABLE, (string) $part);
+            } elseif (!$transfer) {
+                $this->add("$path/$part", LintFinding::ERROR, self::TRANSFER_ONLY, (string) $part);
+            }
+        }
         if ($objects) {
             $this->objects($m, $path);
         }
@@ -172,7 +204,7 @@ final class Validator
         }
         match ($m->type) {
             Module::SITE   => $this->site($m, $path),
-            Module::SLICE  => $this->slice($m, $path),
+            Module::SLICE  => $this->slice($m, $path, $transfer),
             Module::ALERTS => $this->alerts($m, $path),
             default        => null,
         };
@@ -182,7 +214,7 @@ final class Validator
      *  @param array<string, list<array<string, mixed>>> $elements */
     private function rows(string $path, string $container, array $elements): void
     {
-        $tables = self::TABLES[$container] ?? [];
+        $tables = Schema::rowCounts($container);
         foreach (array_keys($tables + $elements) as $element) {
             $need = $tables[$element] ?? null;
             if ($need === null) {
@@ -207,6 +239,21 @@ final class Validator
                     [$pool, $re] = self::UNIQUE[$element];
                     $this->id(($pool === 'module') ? "$path/$element" : $pool, ValueCodec::bytes($row[$key] ?? ''), $at, $re);
                 }
+                $this->packed($element, $row, (string) $key, $at);
+            }
+        }
+    }
+
+    /** E: a packed column (AA_Metabase::getPacked()) with a value that is no long id - Cvariable writes '' for
+     *  it (include/varset.php); constant.ancestors holds several joined. '' and NULL are fine. The key column
+     *  is id()'s (uses: DANGLING). */
+    private function packed(string $element, array $row, string $key, string $at): void
+    {
+        $table = $this->schema->rowTables()[$element] ?? '';
+        foreach (array_diff(AA_Metabase::getPacked($table), [$key]) as $column) {
+            $value = ValueCodec::bytes($row[$column] ?? '');
+            if (($value !== '') && !preg_match((isset(self::PACKED_LISTS["$table.$column"]) ? self::LONG_IDS_RE : self::LONG_ID_RE), $value)) {
+                $this->add("$at/$column", LintFinding::ERROR, self::INVALID_ID, $value);
             }
         }
     }
@@ -222,7 +269,7 @@ final class Validator
         $this->seen[$pool][$id] = true;
     }
 
-    /** settings and objects: allowlisted classes (§ 5.4), module ids of their properties (§ 5.2) */
+    /** settings and objects: allowlisted classes, module ids of their properties */
     private function objects(Module $m, string $path): void
     {
         if ($m->settings !== null) {
@@ -284,7 +331,7 @@ final class Validator
     private function site(Module $m, string $path): void
     {
         $site = $m->rows['site'][0] ?? [];
-        if (((int) ValueCodec::bytes($site['flag'] ?? '') !== 1) && (AA_Module_Site::stateFileName(ValueCodec::bytes($site['state_file'] ?? '')) !== '')) {
+        if (Schema::controlFile($site)) {
             $this->add("$path/site[#0]/state_file", LintFinding::ERROR, self::STATE_FILE, ValueCodec::bytes($site['state_file']));
         }
         $mode = ValueCodec::bytes($m->settings['perm_mode'] ?? '');
@@ -319,7 +366,7 @@ final class Validator
         }
     }
 
-    private function slice(Module $m, string $path): void
+    private function slice(Module $m, string $path, bool $transfer): void
     {
         $slice = $m->rows['slice'][0] ?? [];
         $this->viewRef($slice['vid'] ?? '', "$path/slice[#0]/vid");
@@ -341,24 +388,104 @@ final class Validator
             }
         }
         $fields = [];
-        foreach ($m->rows['field'] ?? [] as $i => $row) {
+        foreach ($m->rows['field'] ?? [] as $row) {
             $fields[ValueCodec::bytes($row['id'] ?? '')] = true;
-            $group = ReferenceRewriter::inputShowFuncGroup(ValueCodec::bytes($row['input_show_func'] ?? ''));
-            if (($group !== null) && !str_starts_with($group, '#sLiCe-') && ($group[0] !== '[') && !in_array($group, IdMap::CORE_GROUPS, true) && !isset($this->has['group'][$group])) {
-                $this->add($this->schema->rowPath($path, 'field', $row, $i) . '/input_show_func', LintFinding::WARNING, self::GROUP_MISSING, $group);
+        }
+        foreach (is_array($m->transfer['setting-values'] ?? null) ? array_keys($m->transfer['setting-values']) : [] as $field) {
+            if (!isset($fields[(string) $field])) {
+                $this->add("$path/setting-values/$field", LintFinding::ERROR, self::SETTING_FIELD, (string) $field);
             }
         }
+        foreach ($m->rows as $element => $rows) {
+            foreach ($rows as $i => $row) {
+                $group = ReferenceRewriter::rowGroup((string) $element, $row);
+                if (($group !== null) && IdMap::isAppGroup($group) && !isset($this->has['group'][$group])) {
+                    $this->add($this->schema->rowPath($path, (string) $element, $row, $i) . '/' . ReferenceRewriter::groupColumn((string) $element, $row), LintFinding::WARNING, self::GROUP_MISSING, $group);
+                }
+            }
+        }
+        $this->items($m, $path, $fields, $transfer);
+    }
+
+    /** the items' ids, bins and fields @param array<string, true>|null $fields of the slice, null = not
+     *  in the package (a batch: the target checks its own) @return list<string> the item ids */
+    private function items(Module $m, string $path, ?array $fields, bool $transfer): array
+    {
+        $ids = [];
         foreach ($m->items as $item) {
-            $id = ValueCodec::bytes($item['id'] ?? '');
+            $id    = $ids[] = ValueCodec::bytes($item['id'] ?? '');
             $this->id('long', $id, "$path/item[$id]", self::LONG_RE);
+            $status = ValueCodec::bytes(((array) (array_values((array) ($item['content']['status_code.....'] ?? []))[0] ?? []))['value'] ?? '');
+            if (!in_array($status, ['1', '2', '3'], true)) {
+                $this->add("$path/item[$id]/status_code.....", LintFinding::WARNING, self::ITEM_STATUS, $status);
+            }
             foreach (array_keys((array) ($item['content'] ?? [])) as $field) {
-                if (in_array((string) $field, Collector::ITEM_LEFT_OUT, true)) {
+                if (in_array((string) $field, Collector::ITEM_LEFT_OUT, true) || (!$transfer && in_array((string) $field, Collector::ITEM_TRANSFER_ONLY, true))) {
                     $this->add("$path/item[$id]/$field", LintFinding::ERROR, self::ITEM_KEY, (string) $field);
-                } elseif (!isset($fields[$field]) && !$this->metabase->isColumn('item', rtrim((string) $field, '.'))) {
+                } elseif (($fields !== null) && !isset($fields[$field]) && !$this->metabase->isColumn('item', rtrim((string) $field, '.'))) {
                     $this->add("$path/item[$id]/$field", LintFinding::WARNING, self::ITEM_FIELD, (string) $field);
                 }
             }
         }
+        return $ids;
+    }
+
+    /** one slice with its id and items only, the items in (after, next] */
+    private function batch(Package $package, bool $transfer): void
+    {
+        $m = $package->modules[0] ?? null;
+        if (($m === null) || (count($package->modules) !== 1) || ($m->type !== Module::SLICE) || $package->constantGroups) {
+            $this->add('aa-app', LintFinding::ERROR, self::BATCH, count($package->modules) . ' modules, ' . count($package->constantGroups) . ' groups');
+            return;
+        }
+        $path = "$m->type[$m->id]";
+        $this->id('long', $m->id, $path, self::LONG_RE);
+        if ($m->rows || ($m->settings !== null) || $m->objects || ($m->spotTree !== null) || $m->transfer || ($m->doc !== null)) {
+            $this->add($path, LintFinding::ERROR, self::BATCH, 'definition');
+        }
+        if ($m->items && !$package->withItems) {
+            $this->add("$path/item", LintFinding::ERROR, self::ITEMS, (string) count($m->items));
+        }
+        $ids   = $this->items($m, $path, null, $transfer);
+        $batch = $package->batch;
+        if (!preg_match('/^([0-9a-f]{32})?\z/', $batch->after) || !($ids ? in_array($batch->next, $ids, true) : ($batch->next === $batch->after))) {
+            $this->add('meta/batch', LintFinding::ERROR, self::BATCH, "$batch->after $batch->next");
+            return;
+        }
+        foreach ($ids as $id) {
+            if ((strcmp($id, $batch->after) <= 0) || (strcmp($id, $batch->next) > 0)) {
+                $this->add("$path/item[$id]", LintFinding::ERROR, self::BATCH, $id);
+            }
+        }
+    }
+
+    /** the shape of a part of Module::$transfer */
+    private static function transferValue(string $part, mixed $value): bool
+    {
+        $text = static fn(mixed $v): bool => is_string($v) || ($v instanceof RawBytes);
+        return match ($part) {
+            'owner'         => is_array($value) && (array_keys($value) === ['name', 'email']) && $text($value['name']) && $text($value['email']),
+            'alternate-url' => is_array($value) && array_is_list($value) && $value && !array_filter($value, static fn(mixed $v): bool => !$text($v)),
+            'setting-values' => is_array($value) && $value && !array_filter($value, self::settingField(...), ARRAY_FILTER_USE_BOTH),
+            default         => $text($value),
+        };
+    }
+
+    /** true: not a field of setting-values - a settings field id (`_`, the XSD fieldId), values keyed by
+     *  their number, each {value: text, flag: int}. Settings fields only: no item field of the new slice gets
+     *  content this way. @param mixed $values */
+    private static function settingField(mixed $values, int|string $field): bool
+    {
+        if (!preg_match(self::SETTING_FIELD_RE, (string) $field) || !is_array($values) || !$values) {
+            return true;
+        }
+        foreach ($values as $key => $v) {
+            $value = is_array($v) ? ($v['value'] ?? null) : null;
+            if (!is_int($key) || ($key < 0) || !(is_string($value) || ($value instanceof RawBytes)) || !is_int($v['flag'] ?? 0)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private function alerts(Module $m, string $path): void
@@ -373,7 +500,7 @@ final class Validator
             }
             $this->has['filter'][$id] ??= $row;
             $filters[$id] = true;
-            $this->viewRef($row['vid'] ?? '', "$at/vid");
+            $this->viewRef($row['vid'] ?? '', "$at/vid", LintFinding::ERROR);
         }
         foreach (['alerts_collection_filter', 'alerts_collection_howoften'] as $element) {
             foreach ($m->rows[$element] ?? [] as $i => $row) {
@@ -395,7 +522,7 @@ final class Validator
         foreach (['emailid_welcome', 'emailid_alert'] as $column) {
             $email = (int) ValueCodec::bytes($collection[$column] ?? '');
             if (($email > 0) && !isset($this->has['email'][(string) $email])) {
-                $this->add("$at/$column", LintFinding::WARNING, ReferenceLint::EMAIL_OUTSIDE, (string) $email);
+                $this->add("$at/$column", LintFinding::ERROR, ReferenceLint::EMAIL_OUTSIDE, (string) $email);
             }
         }
     }
@@ -422,12 +549,12 @@ final class Validator
         }
     }
 
-    /** W: a structured view reference (slice.vid, profile input_view, alerts_filter.vid) outside the package */
-    private function viewRef(mixed $vid, string $at): void
+    /** a structured view reference (slice.vid, profile input_view: W; alerts_filter.vid: E) outside the package */
+    private function viewRef(mixed $vid, string $at, string $level = LintFinding::WARNING): void
     {
         $vid = (int) ValueCodec::bytes($vid);
         if (($vid > 0) && !isset($this->has['view'][(string) $vid])) {
-            $this->add($at, LintFinding::WARNING, ReferenceLint::VIEW_OUTSIDE, (string) $vid);
+            $this->add($at, $level, ReferenceLint::VIEW_OUTSIDE, (string) $vid);
         }
     }
 

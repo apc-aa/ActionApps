@@ -70,7 +70,7 @@ try {
 // Allow edit current slice without slice_pwd
 AA_Credentials::singleton()->loadFromSlice(AA::$module_id);
 
-InputVars::QuoteVars("post");  // if magicquotes are not set, quote variables
+InputVars::QuoteVars("post", ['slice_id' => 1]);  // slice_id stays the one init_page checked - the fields are stored to it
 
 AA::setEncoding(Langs::getCharset());
 
@@ -89,6 +89,7 @@ if ($_POST['upd_edit']) {
 $action = $update ? "update" : "edit";
 
 $slice = AA_Slice::getModule(AA::$module_id);
+$err = [];   // printed as messages, so not from the request
 $oldcontent4id = ValidateContent4Id($err, $slice, $action, $id);
 $fields = $slice->getFields(true);
 

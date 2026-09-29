@@ -97,8 +97,6 @@ try {
     $post_preview = $_REQUEST['post_preview'] ?? true;
 
     $cancel = InputVars::boolGET('cancel');
-
-    $Msg = InputVars::stringGETPOST('Msg');
 } catch (Exception $e) {
     AA_Adminpageutil::pageParameterError($e);
 }
@@ -161,7 +159,7 @@ if ($encap) {
     add_vars();        // adds values from QUERY_STRING_UNESCAPED
 }                      // and REDIRECT_STRING_UNESCAPED - from url
 
-InputVars::QuoteVars("post", ['encap' => 1]);  // quote variables to global space, but skip (already edited) encap variable
+InputVars::QuoteVars("post", ['encap' => 1, 'slice_id' => 1]);  // encap is already read; slice_id stays the one init_page checked
 AA::setEncoding(Langs::getCharset());
 
 $insert  = false;
@@ -322,9 +320,7 @@ if (($insert || $update) && count($fields)) {
         $added_to_db = $content4id->storeItem($insert ? 'insert' : 'update');     // invalidatecache, feed
 
         Session::page_close();
-        if ($preview) {
-            $preview_url = get_admin_url("preview.php", ["slice_id" => $slice_id, "sh_itm" => $id, "return_url" => $return_url]);
-        }
+        $preview_url = $preview ? get_admin_url("preview.php", ["slice_id" => $slice_id, "sh_itm" => $id, "return_url" => $return_url]) : null;  // not from the form
         if ($anonymous) { // anonymous login
             go_url($r_slice_view_url, '', $encap);
         } elseif ($return_url === 'close_dialog') {
@@ -358,7 +354,7 @@ if ($edit) {
     // fill content array from item and content tables
     $content = GetItemContent($id);
     if (!$content) {
-        $err["DB"] = MsgErr(_m("Bad item ID id=%1", [$id]));
+        $err["DB"] = MsgErr(_m("Bad item ID id=%1", [safe((string) $id)]));
         MsgPage($err);
         exit;
     }
@@ -383,6 +379,7 @@ if ($edit) {
 }
 
 // mimo changes
+$mlx_formheading = '';   // printed in the form, so not from the request
 if ($lang_control) {
     if (is_null($mlx)) {
         $mlx = new MLX($slice);

@@ -132,6 +132,26 @@ class AA_Field implements ArrayAccess, Countable, IteratorAggregate
         // @todo mark all secure and password fields as FIELD_UNREADABLE
     }
 
+    /** password, 2FA secret, a copy of a password or an unreadable field - its value never goes into a widget */
+    public function isProtected(): bool
+    {
+        $type     = AA_Fields::getFieldType($this->getId());
+        [$insert] = explode(':', strtolower((string) $this->data['input_insert_func']), 2);
+        return str_starts_with($type, 'password') || str_starts_with($type, 'secret') || in_array($insert, ['pwd', '2fa'], true) || $this->isSafeStored() || $this->isPasswordCopy();
+    }
+
+    /** the field is the bck_field (copy of the password) of a pwd inserter in its slice */
+    protected function isPasswordCopy(): bool
+    {
+        foreach (AA_Slice::getModule($this->getSliceId())?->getFields() ?? [] as $field) {
+            $insert = (string) $field->getProperty('input_insert_func');
+            if (str_starts_with(strtolower($insert), 'pwd:') && ((AA_Inserter::parseClassProperties($insert)['bck_field'] ?? '') === $this->getId())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /** getProperty function
      * @param string $property
      * @return mixed - field data
@@ -462,29 +482,29 @@ class AA_Field implements ArrayAccess, Countable, IteratorAggregate
 
 
 
-    /** getWidgetAjaxHtml function
-     * @param $item_id
-     * @param $required - redefine default settings of required
-     * @param $function - js function to call after the update
-     * @param $widget_type - wi2|sel|...
-     *                       used, when we want to use another widget, than the default one
-     * @param $widget_properties - array of properties to redefine for $widget_type - array('columns' => 1)
-     * @return string
+    /** widget for in place editing ({ajax}) of this field in $content
+     *  A protected field shows only its own pwd/tfa widget, which never gets the value, or nothing.
+     * @param string|null $widget_type       another widget than the field's own - wi2|sel|...
+     * @param array       $widget_properties properties to redefine for the widget - ['columns' => 1]
      */
-    public function getWidgetAjaxHtml($item_id, $required = null, $function = null, $widget_type = null, $widget_properties = []): string
+    public function getWidgetAjaxHtml(AA_Content $content, ?string $widget_type = null, array $widget_properties = []): string
     {
-        return $this->_getWidget('getAjaxHtml', $item_id, $required, $function, $widget_type, $widget_properties);
-    }
-
-    protected function _getWidget($type, $item_id, $required, $function, $widget_type, $widget_properties)
-    {
-        $widget      = $this->getWidget($widget_type, $widget_properties);
-        $itemcontent = new ItemContent($item_id);
-        $widget_properties['multiple'] =  $widget::multiple();
-        $widget_properties['required'] =  $required;
-        //$widget_properties['name'], $widget_properties['input_help'], ... could be set already in the $widget_properties array
-        $aa_property = $this->getAaProperty($widget_properties);
-        return $widget->$type($aa_property, $itemcontent, $function);
+        if ($this->isProtected()) {
+            $widget = $this->getWidget();
+            if (!($widget instanceof AA\Widget\PwdWidget) && !($widget instanceof AA\Widget\TfaWidget)) {
+                return '';
+            }
+            $widget_properties = [];
+            // pwd only needs to know there is a value (it asks for the current password then) - note: this
+            // overwrites the value in the caller's $content
+            if (!$content->getAaValue($this->getId())->isEmpty()) {
+                $content->setAaValue($this->getId(), new AA_Value('*'));
+            }
+        } else {
+            $widget = $this->getWidget($widget_type, $widget_properties)->setLiteral(array_diff(array_keys($widget_properties), ['const', 'bin_filter', 'filter_conds']));
+        }
+        $widget_properties['multiple'] = $widget::multiple();
+        return $widget->getAjaxHtml($this->getAaProperty($widget_properties), $content);
     }
 
     /** getWidgetNewHtml function
@@ -1185,6 +1205,103 @@ class AA_Fields implements IteratorAggregate, Countable
             $no = "";    // id for 0 is "xxxxx..........."
         }
         return $ftype . substr(str_pad($no, 16, $id_type, STR_PAD_LEFT), -(16 - strlen($ftype)));
+    }
+
+    /** Slices the Fields page (admin/se_fields.php) offers new fields from: AA_Core_Fields.., this slice
+     *  and the slices where the user may change fields - the others would disclose their field settings
+     *
+     * @return string[] slice id => label
+     */
+    public static function templateSlices(string $slice_id): array
+    {
+        $core   = unpack_id('AA_Core_Fields..');
+        $slices = AA_Module::getUserModules('S', PS_FIELDS);
+        $name   = $slices[$slice_id] ?? AA_Slice::getModule($slice_id)?->getName() ?? '';
+        unset($slices[$core], $slices[$slice_id]);
+        return [$core => '* Action Aplication Core', $slice_id => '* ' . $name . _m(' (this)')] + $slices;
+    }
+
+    /** Stores the rows of the Fields page (admin/se_fields.php) - name, priority, required and show,
+     *  keyed by field id. The New_Field row adds a copy of the template field $ftype ("<slice_id>-<field_id>")
+     *  taken from one of $template_slices.
+     *  The keys come from the request, so only existing fields of $slice_id are changed, other keys are ignored.
+     *
+     * @param string   $slice_id
+     * @param array    $names           field id => name
+     * @param array    $pri             field id => priority
+     * @param array    $req             field id => required checkbox
+     * @param array    $shw             field id => show checkbox
+     * @param string   $ftype           template of the new field
+     * @param bool     $slice_fields    the new field is a slice (setting) field
+     * @param string[] $template_slices slices the template may come from - @see templateSlices()
+     * @return string[] errors - nothing is stored, if the rows do not validate
+     */
+    public static function storeAdminRows(string $slice_id, array $names, array $pri, array $req, array $shw, string $ftype, bool $slice_fields, array $template_slices): array
+    {
+        $own  = DB_AA::select('id', 'SELECT `id` FROM `field`', [['slice_id', $slice_id, 'l']]);
+        $rows = [];
+        $err  = [];
+        foreach ($names as $fid => $name) {
+            $fid = (string) $fid;
+            if (($fid !== 'New_Field') && !in_array($fid, $own, true)) {
+                continue;
+            }
+            if (($fid === 'New_Field') && ($name === '')) {
+                continue;
+            }
+            if (!is_string($name)) {
+                $err['val'] = MsgErr(_m("Error in") . ' ' . _m("Field") . " ($fid)");
+                break;
+            }
+            $prior = is_string($pri[$fid] ?? null) ? $pri[$fid] : '';
+            if (!ValidateInput("val", _m("Field"), $name, $err, false, "text") || !ValidateInput("prior", _m("Priority"), $prior, $err, true, "number")) {
+                break;
+            }
+            $rows[$fid] = ['name' => $name, 'input_pri' => (int) $prior, 'required' => empty($req[$fid]) ? 0 : 1, 'input_show' => empty($shw[$fid]) ? 0 : 1];
+        }
+        if ($err) {
+            return $err;
+        }
+
+        foreach ($rows as $fid => $row) {
+            if ($fid !== 'New_Field') {
+                DB_AA::update('field', [['name', $row['name'], 's'], ['input_pri', $row['input_pri'], 'i'], ['required', $row['required'], 'i'], ['input_show', $row['input_show'], 'i']], [['id', $fid], ['slice_id', $slice_id, 'l']]);
+                continue;
+            }
+            [$tpl_slice, $tpl_id] = array_pad(explode('-', $ftype, 2), 2, '');
+            $template = in_array($tpl_slice, $template_slices, true) ? DB_AA::select1('', 'SELECT * FROM `field`', [['slice_id', $tpl_slice, 'l'], ['id', $tpl_id]]) : false;
+            // a field bound to an item column (slice_id, status_code, ...) must stay the only one
+            if (!$template || !in_array((string) ($template['in_item_tbl'] ?? ''), ['', '0'], true)) {
+                $err['DB'] = MsgErr(_m("Can't copy field"));
+                continue;
+            }
+            // AA_Core_Fields.. identifies its templates by bare type ('text'), user added templates by full id
+            $ftype_base = ($slice_fields ? '_' : '') . self::getFieldType($tpl_id);
+            $max = -1;
+            foreach ($own as $own_fid) {
+                if (str_starts_with($own_fid, $ftype_base)) {
+                    $max = max($max, (int) self::getFieldNo($own_fid));
+                }
+            }
+            $new_fid = self::createFieldId($ftype_base, $max + 1);
+            if (!AA_Field::isValidFieldId($new_fid)) {
+                $err['DB'] = MsgErr(_m("Can't copy field"));
+                continue;
+            }
+            // unset template columns are empty, not the database defaults (text_stored defaults to 1)
+            $data = [];
+            foreach (self::FIELDS_TEXT as $col) {
+                $data[$col] = (string) ($template[$col] ?? '');
+            }
+            foreach (self::FIELDS_NUM as $col) {
+                $data[$col] = (int) ($template[$col] ?? 0);
+            }
+            $data = array_merge($data, $row, ['id' => $new_fid, 'slice_id' => $slice_id]);
+            if (!AA::Metabase()->doInsert('field', $data)) {
+                $err['DB'] = MsgErr(_m("Can't copy field"));
+            }
+        }
+        return $err;
     }
 
     /** Experimental field - now used just for history records
