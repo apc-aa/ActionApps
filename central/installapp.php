@@ -99,6 +99,12 @@ try {
     $into     = InstallRun::targetsFrom(InputVars::arrayPOST('into'));
     $choice   = InstallRun::choiceMade(InputVars::arrayPOST('into'));
     $owner    = strtolower(InputVars::idPOST('owner'));       // the planner refuses an id of no owner
+    // the choice between a site and modules: the other one is still in the form, only not shown
+    match (InputVars::stringPOST('what')) {
+        'site'    => $modules = [],
+        'modules' => $site = '',
+        default   => null,
+    };
 } catch (Exception $e) {
     AA_Adminpageutil::pageParameterError($e);
 }
@@ -174,6 +180,17 @@ $apage->addRequire('
     .aa-installapp-code p { margin: 0.2em 0; }
     .aa-installapp fieldset { border: 0; padding: 0; margin: 0 0 1em; }
     .aa-installapp [hidden] { display: none; }
+    .aa-installapp td.tabtxt { width: 11em; }
+    .aa-installapp-what { display: inline-flex; border: 1px solid var(--clr-basic-darker, #A8977A); border-radius: 4px; overflow: hidden; background: #fff; }
+    .aa-installapp-what label { position: relative; padding: 0.35em 1em; cursor: pointer; }
+    .aa-installapp-what label + label { border-left: 1px solid var(--clr-basic-darker, #A8977A); }
+    .aa-installapp-what label:hover { background: var(--clr-surface-selected, #f3e6c3); }
+    .aa-installapp-what input { position: absolute; opacity: 0; }
+    .aa-installapp-what label:has(:checked) { background: var(--clr-dark, #1f1f1f); color: #fff; }
+    .aa-installapp-what label:has(:focus-visible) { outline: 2px solid var(--clr-border-hover, #a59850); outline-offset: -3px; }
+    form:has([name="what"][value="site"]:checked) .aa-installapp-modules,
+    form:has([name="what"][value="modules"]:checked) .aa-installapp-site,
+    form:has([name="mode"][value="install"]:checked) .aa-installapp-bins { display: none; }
 ', 'AA_Req_CSScode');
 $apage->printHead();
 echo '<div class="aa-installapp">';
@@ -348,30 +365,43 @@ function installapp_login_form(int $aa): void
     echo '<p><button class="btn-l" type="submit">' . _m('Log in and choose the app') . '</button></p></form>';
 }
 
-/** @param array<string, string> $sites id => name @param array<string, string> $others slices and Alerts, id => name */
+/** a site, or slices and Alerts modules - a switch shows one of them, the request drops the other (`what`)
+ *  @param array<string, string> $sites id => name @param array<string, string> $others slices and Alerts, id => name */
 function installapp_module_rows(array $sites, array $others): void
 {
-    echo '<tr><td class="tabtxt"><label for="installapp-site">' . _m('Site') . '</label></td><td><select name="site" id="installapp-site">';
-    foreach (['' => _m('- no site, the modules below -')] + $sites as $id => $name) {
-        echo '<option value="' . safe((string) $id) . '">' . safe((string) $name) . '</option>';
+    if ($sites && $others) {
+        echo '<tr><td class="tabtxt">' . _m('Install') . '</td><td><div class="aa-installapp-what" role="radiogroup" aria-label="' . safe(_m('Install')) . '">'
+            . '<label><input type="radio" name="what" value="site" checked> ' . _m('a site') . '</label>'
+            . '<label><input type="radio" name="what" value="modules"> ' . _m('slices and Alerts') . '</label></div></td></tr>';
     }
-    echo '</select><div class="tabhlp">' . _m('The site brings the slices and Alerts modules it uses.') . '</div></td></tr>';
-    echo '<tr><td class="tabtxt"><label for="installapp-modules">' . _m('Slices and Alerts') . '</label></td><td><select name="modules[]" id="installapp-modules" multiple size="10">';
-    foreach ($others as $id => $name) {
-        echo '<option value="' . safe((string) $id) . '">' . safe((string) $name) . '</option>';
+    if ($sites) {
+        echo '<tr class="aa-installapp-site"><td class="tabtxt"><label for="installapp-site">' . _m('Site') . '</label></td><td><select name="site" id="installapp-site">';
+        foreach ($sites as $id => $name) {
+            echo '<option value="' . safe((string) $id) . '">' . safe((string) $name) . '</option>';
+        }
+        echo '</select><div class="tabhlp">' . _m('The site brings the slices and Alerts modules it uses.') . '</div></td></tr>';
     }
-    echo '</select><div class="tabhlp">' . _m('Only when no site is chosen.') . '</div></td></tr>';
+    if ($others) {
+        echo '<tr class="aa-installapp-modules"><td class="tabtxt"><label for="installapp-modules">' . _m('Slices and Alerts') . '</label></td><td><select name="modules[]" id="installapp-modules" multiple size="10">';
+        foreach ($others as $id => $name) {
+            echo '<option value="' . safe((string) $id) . '">' . safe((string) $name) . '</option>';
+        }
+        echo '</select><div class="tabhlp">' . _m('Hold Ctrl to choose more of them.') . '</div></td></tr>';
+    }
 }
 
+/** a transfer is a superadmin's (it hands out the readers' passwords) - others install without asking */
 function installapp_mode_rows(): void
 {
+    if (!IsSuperadmin()) {
+        return;
+    }
     echo '<tr><td class="tabtxt">' . _m('Mode') . '</td><td><fieldset>'
         . '<label><input type="radio" name="mode" value="install" checked> ' . _m('Install - a clean app, no items') . '</label><br>'
         . '<label><input type="radio" name="mode" value="transfer"> ' . _m('Transfer - a copy with the items and readers') . '</label></fieldset></td></tr>';
-    echo '<tr><td class="tabtxt">' . _m('Items of') . '</td><td><fieldset>'
+    echo '<tr class="aa-installapp-bins"><td class="tabtxt">' . _m('Items of') . '</td><td><fieldset>'
         . '<label><input type="radio" name="bins" value="active" checked> ' . _m('the active bin') . '</label><br>'
-        . '<label><input type="radio" name="bins" value="all"> ' . _m('all bins') . '</label></fieldset>'
-        . '<div class="tabhlp">' . _m('A transfer only.') . '</div></td></tr>';
+        . '<label><input type="radio" name="bins" value="all"> ' . _m('all bins') . '</label></fieldset></td></tr>';
 }
 
 /** Logs in to the other AA and opens the run in preview with its token - the only place the token is
