@@ -295,7 +295,7 @@ final class ValidatorTest extends TestCase
     public function test_only_a_transfer_may_carry_the_state_of_the_installation(): void
     {
         $expected = ['E transfer-only ' . self::W . '/owner', 'E transfer-only ' . self::W . '/alternate-url', 'E transfer-only ' . self::S . '/owner',
-            'E transfer-only ' . self::S . '/reading-password', 'E transfer-only ' . self::S . '/setting-values', 'E transfer-only ' . self::A . '/owner'];
+            'E transfer-only ' . self::S . '/reading-password', 'E transfer-only ' . self::A . '/owner'];      // settings values: an install shows them
         sort($expected);
         self::assertSame($expected, array_values(array_diff(self::findings(self::transferred()), self::BASELINE)));
         self::assertSame(self::BASELINE, self::findings(self::transferred(), true));

@@ -169,6 +169,8 @@ final class Collector
             }
             if ($options->transfer()) {
                 $transfer[$id] = $this->installation($id, $module, $raw[$id], $charsets[$id], $path);
+            } elseif ($options->settingValues && ($module['type'] === 'S') && ($values = $this->settingValues($id, $charsets[$id], $path))) {
+                $transfer[$id] = ['setting-values' => $values];
             }
             if (isset(Schema::SETTINGS_CLASSES[Module::TYPES[$module['type']]])) {      // site, slice: alerts own none
                 [$settings, $list, $findings] = $this->objects->collect($id, Module::TYPES[$module['type']], $path);

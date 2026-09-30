@@ -32,6 +32,9 @@ final readonly class CollectOptions
      * @param string|null           $name     meta/name; null = the name of the site / first module
      * @param bool                  $published the app is published - every W finding is an E then; a
      *                                        transfer carries passwords and personal data: never published
+     * @param bool                  $settingValues an install carries the values of the slices' settings fields
+     *                                        (a transfer always does) - they may hold keys: for the source's
+     *                                        superadmin only, never published
      */
     public function __construct(
         public array $source,
@@ -42,12 +45,16 @@ final readonly class CollectOptions
         public ?string $version = null,
         public bool $published = false,
         public ?string $requires = null,
+        public bool $settingValues = false,
     ) {
         if (!in_array($mode, [self::INSTALL, self::TRANSFER], true)) {
             throw new InvalidArgumentException("Unknown mode $mode");
         }
         if (($mode === self::TRANSFER) && $published) {
             throw new InvalidArgumentException('A transfer is never published');
+        }
+        if ($settingValues && $published) {
+            throw new InvalidArgumentException('Settings values are never published');
         }
     }
 

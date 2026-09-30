@@ -54,7 +54,7 @@ final class ImportChoicesTest extends TestCase
         return array_map(static fn(array $f): string => "{$f[1]->level} {$f[1]->code} $f[0]", [...self::$chosen, ...$plan->findings]);
     }
 
-    private static function module(ImportPlan $plan, string $id): ?Module
+    private static function planned(ImportPlan $plan, string $id): ?Module
     {
         foreach ($plan->package->modules as $m) {
             if ($m->id === $id) {
@@ -100,18 +100,18 @@ final class ImportChoicesTest extends TestCase
     {
         $plan = self::plan(new ImportChoices([self::SLICE => 'News', self::SITE => 'Web']));
 
-        self::assertSame('News', ValueCodec::bytes(self::module($plan, self::SLICE)->rows['module'][0]['name']));
-        self::assertSame('News', ValueCodec::bytes(self::module($plan, self::SLICE)->rows['slice'][0]['name']));
-        self::assertSame('Web', ValueCodec::bytes(self::module($plan, self::SITE)->rows['module'][0]['name']));
+        self::assertSame('News', ValueCodec::bytes(self::planned($plan, self::SLICE)->rows['module'][0]['name']));
+        self::assertSame('News', ValueCodec::bytes(self::planned($plan, self::SLICE)->rows['slice'][0]['name']));
+        self::assertSame('Web', ValueCodec::bytes(self::planned($plan, self::SITE)->rows['module'][0]['name']));
     }
 
     public function test_a_slice_left_out_takes_what_names_it_along(): void
     {
         $plan = self::plan(new ImportChoices([], [self::SLICE]));
 
-        self::assertNull(self::module($plan, self::SLICE));
-        self::assertSame([], self::module($plan, self::SITE)->rows['uses'] ?? [], 'the site no longer uses it');
-        self::assertSame('', ValueCodec::bytes(self::module($plan, self::ALERTS)->rows['alerts_collection'][0]['slice_id']), 'the Alerts stay, without readers');
+        self::assertNull(self::planned($plan, self::SLICE));
+        self::assertSame([], self::planned($plan, self::SITE)->rows['uses'] ?? [], 'the site no longer uses it');
+        self::assertSame('', ValueCodec::bytes(self::planned($plan, self::ALERTS)->rows['alerts_collection'][0]['slice_id']), 'the Alerts stay, without readers');
         self::assertContains('W reader-left-out ' . self::A . '/alerts_collection/slice_id', self::findings($plan));
         self::assertContains('W reader-left-out ' . self::A . '/alerts_filter[3]/vid', self::findings($plan), 'a filter by a view of it');
         self::assertSame([], $plan->package->constantGroups, 'a group only it used goes with it');
@@ -135,7 +135,28 @@ final class ImportChoicesTest extends TestCase
         self::assertSame('{include:/etc/passwd}', $plan->settingDefaults[self::SLICE]['_email..........'][0]['value']);
         self::assertArrayNotHasKey('_email..........', array_filter($plan->settingsOfApp[self::SLICE] ?? [], static fn(array $v): bool => $v[0]['value'] === '{include:/etc/passwd}'));
         self::assertContains('S include ' . self::S . '/setting-values/_email..........[0]', self::findings($plan));
-        self::assertSame([], $plan->settingsToFill(self::module($plan, self::SLICE) ?? throw new \LogicException()), 'a typed value fills it');
+        self::assertSame([], $plan->settingsToFill(self::planned($plan, self::SLICE) ?? throw new \LogicException()), 'a typed value fills it');
+    }
+
+    public function test_the_settings_of_the_source_are_the_values_of_the_app_and_a_typed_one_wins(): void
+    {
+        $values  = ['_email..........' => [['value' => 'redakce@example.org', 'flag' => 64]]];
+        $package = self::module2(self::example(), self::SLICE, ['setting-values' => $values]);
+
+        $kept  = self::plan(new ImportChoices(), $package);
+        $typed = self::plan(new ImportChoices(settings: [self::SLICE => ['_email..........' => 'jiny@example.org']]), $package);
+
+        self::assertSame('redakce@example.org', $kept->settingsOfApp[self::SLICE]['_email..........'][0]['value']);
+        self::assertSame('redakce@example.org', $kept->settingDefaults[self::SLICE]['_email..........'][0]['value'], 'written as the source has it');
+        self::assertSame([], self::planned($kept, self::SLICE)->transfer, 'the writer takes the defaults - an install carries no transfer part');
+        self::assertSame('jiny@example.org', $typed->settingDefaults[self::SLICE]['_email..........'][0]['value']);
+        self::assertSame('redakce@example.org', $typed->settingsOfApp[self::SLICE]['_email..........'][0]['value']);
+    }
+
+    /** @param array<string, mixed> $transfer */
+    private static function module2(Package $p, string $id, array $transfer): Package
+    {
+        return self::module($p, $id, static fn(Module $m): Module => new Module($m->type, $m->id, $m->rows, $m->settings, $m->objects, $m->spotTree, $m->items, $m->doc, $transfer));
     }
 
     public function test_no_choice_changes_nothing(): void

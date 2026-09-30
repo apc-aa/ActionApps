@@ -133,7 +133,15 @@ final class AppExport implements AppSource
     private function options(bool $transfer, bool $allBins, int $started, bool $published = false, ?string $description = null, ?string $version = null): CollectOptions
     {
         $source = $this->attributes + ['exported' => gmdate('Y-m-d\TH:i:s\Z', $started)];
-        return new CollectOptions($source, $transfer ? CollectOptions::TRANSFER : CollectOptions::INSTALL, $allBins, description: $description, version: $version, published: $published);
+        return new CollectOptions(
+            $source,
+            $transfer ? CollectOptions::TRANSFER : CollectOptions::INSTALL,
+            $allBins,
+            description: $description,
+            version: $version,
+            published: $published,
+            settingValues: !$transfer && !$published && $this->superadmin,
+        );
     }
 
     /** @param list<array{string, \AA\Central\Package\LintFinding}> $more findings beside the collector's

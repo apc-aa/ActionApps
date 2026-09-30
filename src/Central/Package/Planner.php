@@ -168,11 +168,18 @@ final class Planner
                 if ($m->type !== Module::SLICE) {
                     continue;
                 }
-                $of_app[$m->id] = SettingDefaults::of($m, $this->schema, $this->findings, $targets[$m->id]->settings ?? []);
+                // the values of the source (a superadmin's export), else the defaults of the fields
+                $source         = array_intersect_key($m->transfer['setting-values'] ?? [], array_flip(array_map(static fn(array $r): string => ValueCodec::bytes($r['id'] ?? ''), $m->rows['field'] ?? [])));
+                $source         = array_map(static fn(array $values): array => array_map(static fn(array $v): array => ['value' => ValueCodec::bytes($v['value'] ?? ''), 'flag' => (int) ($v['flag'] ?? 0)], $values), $source);
+                $of_app[$m->id] = $source + SettingDefaults::of($m, $this->schema, $this->findings, [...($targets[$m->id]->settings ?? []), ...array_keys($source)]);
                 if ($values = $this->typed($m, $choices, $of_app[$m->id])) {
                     $defaults[$m->id] = $values;
                 }
             }
+        }
+        if (!$transfer) {           // the values of the source went into the defaults - the writer takes those
+            $fixed = new Package(...array_merge(get_object_vars($fixed), ['modules' => array_map(static fn(Module $m): Module => ($m->transfer === [])
+                ? $m : new Module($m->type, $m->id, $m->rows, $m->settings, $m->objects, $m->spotTree, $m->items, $m->doc, []), $fixed->modules)]));
         }
         $this->engines($transfer, (bool) $defaults, $new_owner !== null);
         return new ImportPlan($fixed, $map, $charsets, $lang_files, $group_charsets, $settings, $fix_ups, $validation->findings, $this->findings->all(), $targets, $defaults, $owner, $new_owner, array_filter($of_app));

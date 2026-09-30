@@ -81,7 +81,8 @@ modules chosen without a site. Its constant groups go with it.
 | What | a clean app: definitions only | a copy or move: definitions + items + the state of the source |
 | Items, readers (hashes, 2FA) | no | yes, in batches; active bin or all bins |
 | Owner | one of this AA's, chosen in the preview (below) | the source's |
-| Reading password, domains, setting values | no (setting defaults, below) | yes |
+| Reading password, domains | no | yes |
+| Setting values | a superadmin's install: the source's values, else the defaults (below) | yes |
 | Who | `PS_INSTALL_APP` (+ `PS_EDIT` on the exported modules) | superadmin on both AAs |
 
 A move is a transfer followed by deleting the source by hand after checking the copy; Central never
@@ -108,9 +109,18 @@ A row of the Central list that names this same installation is detected (the sou
 ### Preview
 
 The source sends the definitions package (`AppExport` locally, `Get_App part=definitions` remotely).
-The target reads it (`Reader` -> `Validator` + `SecurityLint` -> `Planner`) and shows the modules,
-their item counts (transfer), the "Into" choice, the settings to fill in and the findings. Nothing
-is written except the run record. The preview is kept for a day.
+The target reads it (`Reader` -> `Planner::choose()` -> `Validator` + `SecurityLint` -> `Planner`) and
+shows it as one form: every module with its name (editable) and, for a slice, whether it is installed
+and "Into"; the owner of the new modules (one of this AA's or a new one, created by the write); every
+settings field of the slices with the value of the app and a field for a new one; the findings.
+"Check the changes" previews again; after a change the Install button waits for it. The run keeps the
+choices (`ImportChoices`), the write plans with the run's and refuses a form of an older preview.
+Nothing is written except the run record. The preview is kept for a day.
+
+A slice left out takes along what names it structurally: the site's "uses" row, a constant group only
+it used; an Alerts module stays, without its reader slice, the filter views and e-mails of that slice
+(W `reader-left-out`); a group others use loses its owner (W `group-owner-left-out`). References in
+texts stay and are W `module-outside`. A typed settings value goes through the S lint.
 
 Findings levels:
 
@@ -192,7 +202,9 @@ transfer into a slice with unique fields (unique validation, SEO name, sequence)
 
 ### Setting defaults and "settings to fill in"
 
-An install carries no setting values. Each **new** slice's settings fields (id starting `_`) get their
+An install by a superadmin of the source (this AA, or another AA logged in as its superadmin - never the
+app store) carries the source's values of the settings fields; the preview shows them as the values of
+the app and they are written unless one is typed. Otherwise each **new** slice's settings fields (id starting `_`) get their
 `input_default`, evaluated as for a new item - only when the result is the same whoever installs:
 generators `txt`, `qte`, `now`, `never`, `dte`, `mul`, with the insert function none, `qte`, `dte`,
 `num` or `boo`. Any other default (user, random, an AA expression) or an insert function that changes

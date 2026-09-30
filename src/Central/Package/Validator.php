@@ -192,7 +192,7 @@ final class Validator
         foreach ($m->transfer as $part => $value) {
             if (!in_array($part, Module::TRANSFER[$m->type] ?? [], true) || !self::transferValue((string) $part, $value)) {
                 $this->add("$path/$part", LintFinding::ERROR, self::TABLE, (string) $part);
-            } elseif (!$transfer) {
+            } elseif (!$transfer && ($part !== 'setting-values')) {       // an install shows them as the values of the app
                 $this->add("$path/$part", LintFinding::ERROR, self::TRANSFER_ONLY, (string) $part);
             }
         }

@@ -953,6 +953,8 @@ namespace Tests\Unit\Central\Package {
             $read = (new Reader())->read((new Writer())->toXml($result->package)->xml);
             $this->assertSame($values, self::moduleOf(new CollectResult($read->package), self::SLICE_A)->transfer['setting-values']);
             $this->assertArrayNotHasKey('setting-values', self::moduleOf((new Collector($source))->fromModules([self::SLICE_A], new CollectOptions(self::SOURCE)), self::SLICE_A)->transfer, 'an install: defaults and "fill settings"');
+            $superadmins = (new Collector($source))->fromModules([self::SLICE_A], new CollectOptions(self::SOURCE, settingValues: true));
+            $this->assertSame(['setting-values' => $values], self::moduleOf($superadmins, self::SLICE_A)->transfer, "a superadmin's install: the values and nothing else of the installation");
         }
 
         /** keyed as GetItemContent() keys them: a translation by its number, a duplicate of the first text left out;
