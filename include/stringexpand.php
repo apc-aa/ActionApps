@@ -8459,6 +8459,11 @@ class AA_Stringexpand_Avatar extends AA_Stringexpand {
  *     <img src="{img:{img_url.........}:w=150&h=150&iar=1}">  /"        // iar - ignore aspect ratio - deform the image to exact size
  *     <div>{img:{img_url.........}::imgb:Logo {_#HEADLINE}}</div>
  *     <div>{img:{img_url.........}:w=300:imgb:Logo {_#HEADLINE}:class="big"}</div>
+ *     {img:_#this:w=800&h=450&zc=1:picture:_#HEADLINE:loading=eager}  // the hero image at the top of the page
+ *
+ *  'im', 'img', 'imgb' and 'picture' are lazy loaded (loading=lazy) unless <param2> sets
+ *  loading itself. Give loading=eager to the hero image - lazy delays its paint (LCP).
+ *  Inside {rotator} only the first frame keeps it; hidden frames are always lazy.
  *
  *  Performance: every <info> which prints the size ('img', 'imgb', 'picture', 'width',
  *  'height', 'hw', 'html') normally has to measure the generated image over HTTP, which
@@ -8507,7 +8512,7 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
             case 'rawurl':
                 return self::getUrl($image, $phpthumb_params, 'abs_raw');
             case 'im':      //  quick version - img without width and height
-                return '<img src="'.self::getUrl($image, $phpthumb_params, 'rel_escaped')."\" $param2 loading=lazy". (($param1 = safe(strip_tags($param1))) ? " title=\"$param1\" alt=\"$param1\" />" : ' />');
+                return '<img src="'.self::getUrl($image, $phpthumb_params, 'rel_escaped')."\" $param2 ".\AA\Util\LazyLoad::attr($param2). (($param1 = safe(strip_tags($param1))) ? " title=\"$param1\" alt=\"$param1\" />" : ' />');
         }
 
         // all remaining $info values need the size of the generated image - 'width' and
@@ -8535,7 +8540,7 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
             case 'imgb':    $param2 .= ' border=0';  // no break!!!
             case 'img':     $param1 = safe(strip_tags($param1));
                 $alt = $param1 ? " title=\"$param1\" alt=\"$param1\"" : '';
-                return '<img src="'.self::getUrl($image, $phpthumb_params, 'rel_escaped').'" loading=lazy '.$a[3] ." $alt $param2 />";
+                return '<img src="'.self::getUrl($image, $phpthumb_params, 'rel_escaped').'" '.\AA\Util\LazyLoad::attr($param2).' '.$a[3] ." $alt $param2 />";
         }
         return '';
     }
@@ -8557,7 +8562,7 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
 
         return "<picture class=aa-picture>"
              . "\n  <source srcset=\"$format_src\" type=\"image/$format\">"
-             . "\n  <img src=\"$src\" width=$w height=$h $add loading=lazy $alt_title>"  // lazy is enough on img for <picture> element
+             . "\n  <img src=\"$src\" width=$w height=$h $add ".\AA\Util\LazyLoad::attr($add)." $alt_title>"  // lazy is enough on img for <picture> element
              . "\n</picture>";
     }
 
@@ -10403,16 +10408,22 @@ class AA_Stringexpand_Rotator extends AA_Stringexpand_Nevercache {
 
         $interval   = (int)$interval ?: 3000;
         $extrastyle = ($effect === 'fade') ? 'position:absolute;' : '';
-        $showfirst  = '';
         $div_id     = 'rot'.get_hash($ids, $code, $interval, $speed, $effect);
 
         $items = AA_Items::getItems($zids);
         $i = 0;
+        $first_frame = '';
         foreach($items as $long_id=>$item) {
             $frame = trim(AA::Un($code, '', $item));
             if ($frame) {
-                $frames[]  = "<div class=rot-hide style=\"$showfirst $extrastyle\">$frame</div>";
-                $showfirst = 'display:none;';
+                if ($frames) {
+                    $frame = \AA\Util\LazyLoad::markup($frame);  // starts hidden - display:none alone does not stop the image downloads
+                    $hide  = 'display:none;';
+                } else {
+                    $first_frame = $frame;
+                    $hide        = '';
+                }
+                $frames[]  = "<div class=rot-hide style=\"$hide $extrastyle\">$frame</div>";
                 if ($li_code) {
                     $active = $i ? '' : ' active';
                     $lis[]  = "<li class=\"rot-active$active\" onclick=\"AA_Rotator.rotators['$div_id'].index=$i;AA_Rotator('$div_id'); \" onmouseover=\"AA_Rotator.rotators['$div_id'].index=$i;AA_Rotator('$div_id');\">".trim(AA::Un($li_code, '', $item))."</li>";
@@ -10424,7 +10435,8 @@ class AA_Stringexpand_Rotator extends AA_Stringexpand_Nevercache {
             return '';
         }
 
-        $extrahightdiv = ($effect === 'fade') ? "<div class=rot-hight style=\"visibility:hidden\">$frame</div>" : '';
+        // keeps the height of the absolutely positioned frames; copies the visible first frame, so its images are not fetched twice
+        $extrahightdiv = ($effect === 'fade') ? "<div class=rot-hight style=\"visibility:hidden\">$first_frame</div>" : '';
         $liswitcher    = $li_code ? "<ul class=\"rot-switcher\">".implode("\n",$lis)."</ul>" : '';
 
         $framesdiv = '<div class="rot-frames">'.implode("\n",$frames).'</div>';

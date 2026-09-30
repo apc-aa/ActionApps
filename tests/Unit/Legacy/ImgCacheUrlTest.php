@@ -371,6 +371,30 @@ final class ImgCacheUrlTest extends TestCase
         self::assertStringStartsWith($expected_prefix, $this->url('img_upload/a/p.jpg', 'w=150'));
     }
 
+    /**
+     * 'im' is lazy unless the template's attributes set loading themselves - loading=eager
+     * for the hero image, which lazy would paint late. Without loading= the tag is the one
+     * AA always printed (characterization).
+     */
+    #[DataProvider('quickImgProvider')]
+    public function testQuickImgIsLazyUnlessTheAttributesSetLoading(string $attrs, string $expected): void
+    {
+        $cls = self::CLS;
+        $src = $this->url('img_upload/a/p.jpg', 'w=150');
+
+        self::assertSame(sprintf($expected, $src), (new $cls())->expand('img_upload/a/p.jpg', 'w=150', 'im', 'Logo', $attrs));
+    }
+
+    /** @return array<string, array{string, string}> */
+    public static function quickImgProvider(): array
+    {
+        return [
+            'no attributes'    => ['', '<img src="%s"  loading=lazy title="Logo" alt="Logo" />'],
+            'other attributes' => ['class="big"', '<img src="%s" class="big" loading=lazy title="Logo" alt="Logo" />'],
+            'hero'             => ['loading=eager', '<img src="%s" loading=eager  title="Logo" alt="Logo" />'],
+        ];
+    }
+
     /** 'rawurl' is meant to be used outside the page (feeds, JSON), so it stays absolute. */
     public function testRawUrlIsAbsoluteEvenOnTheOwnHost(): void
     {
