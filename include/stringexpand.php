@@ -10428,8 +10428,8 @@ class AA_Stringexpand_Rotator extends AA_Stringexpand_Nevercache {
                     $active = $i ? '' : ' active';
                     $lis[]  = "<li class=\"rot-active$active\" onclick=\"AA_Rotator.rotators['$div_id'].index=$i;AA_Rotator('$div_id'); \" onmouseover=\"AA_Rotator.rotators['$div_id'].index=$i;AA_Rotator('$div_id');\">".trim(AA::Un($li_code, '', $item))."</li>";
                 }
+                ++$i;  // counts the frames shown - an empty one is skipped, and AA_Rotator's index must not count it
             }
-            ++$i;
         }
         if (!count($frames)) {
             return '';
