@@ -464,7 +464,7 @@ final class Collector
                 continue;               // a duplicate GetItemContent() skips too
             }
             // a finding quotes the bytes it could not convert - never those of a password
-            $value = $this->utf8((string) ($text ? $row['text'] : $row['number']), $charset, "$path/setting-values/$field", (bool) preg_match('/pass|secret/i', $field));
+            $value = $this->utf8((string) ($text ? $row['text'] : $row['number']), $charset, "$path/setting-values/$field", SettingDefaults::secret($field));
             $entry = ['value' => $value, 'flag' => $text ? ($flag | FLAG_TEXT_STORED) : ($flag & ~FLAG_TEXT_STORED)];
             if ($text && ((int) $row['number'] > 999999)) {
                 $values[$field][(int) $row['number']] = $entry;

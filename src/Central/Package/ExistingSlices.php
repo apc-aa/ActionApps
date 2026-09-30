@@ -273,11 +273,12 @@ final class ExistingSlices
     {
         $path = "$m->type[$m->id]";
         $rows = array_diff_key($m->rows, array_flip(['module', 'slice', 'profile']));
-        $rows['field'] = [];
+        [$rows['field'], $lacks] = [[], []];
         foreach ($m->rows['field'] ?? [] as $i => $row) {
-            $have = $slice->fields[ValueCodec::bytes($row['id'] ?? '')] ?? null;
+            $id   = ValueCodec::bytes($row['id'] ?? '');
+            $have = $slice->fields[$id] ?? null;
             if ($have === null) {
-                $rows['field'][] = $row;
+                [$rows['field'][], $lacks[$id]] = [$row, true];
                 continue;
             }
             $this->kept[$m->id][] = [$i, $row];
@@ -300,10 +301,15 @@ final class ExistingSlices
         }
         $this->views  += $views;
         $this->emails += $emails;
-        if ($m->transfer) {
+        // an install: the values for the settings fields the slice gets and has no value of; the state a transfer
+        // brings stays the slice's own
+        $values = [];
+        if (!$transfer) {
+            $values = array_diff_key(array_intersect_key($m->transfer['setting-values'] ?? [], $lacks), array_flip($slice->settings));
+        } elseif ($m->transfer) {
             $this->add($path, LintFinding::INFO, self::STATE_KEPT, implode(', ', array_keys($m->transfer)));
         }
-        return new Module($m->type, $m->id, array_filter($rows), null, $this->objectsOf($path, $m->objects, $slice), $m->spotTree, $m->items, $m->doc, []);
+        return new Module($m->type, $m->id, array_filter($rows), null, $this->objectsOf($path, $m->objects, $slice), $m->spotTree, $m->items, $m->doc, $values ? ['setting-values' => $values] : []);
     }
 
     /** W UNIQUE_FIELD for the fields of the slice as it will be whose values must be unique in it

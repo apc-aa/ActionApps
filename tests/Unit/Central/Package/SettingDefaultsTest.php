@@ -233,6 +233,19 @@ final class SettingDefaultsTest extends TestCase
         self::assertSame("admin/slicefieldsedit.php?edit=1&change_id=$t", $report->settings[0]['url']);
     }
 
+    public function test_the_values_of_the_source_reach_the_settings_fields_an_existing_slice_gets(): void
+    {
+        $t       = self::existingSlice();
+        $values  = ['_email..........' => [['value' => 'from the source', 'flag' => 64]], '_title..........' => [['value' => 'source title', 'flag' => 64]]];
+        $package = self::module(self::withSettings(['_title..........' => ['txt:Hello', []]]), self::SLICE, static fn(Module $m): Module => self::with($m, ['transfer' => ['setting-values' => $values]]));
+        $db      = new TableDbTarget($this->target);
+
+        $plan = (new Planner($db))->plan($package, (new Validator())->validate($package), false, [], [self::SLICE => $t]);
+
+        self::assertSame(['_email..........' => [['value' => 'from the source', 'flag' => 64]]], $plan->settingDefaults[self::SLICE] ?? [], 'a superadmin\'s install; _title has a value there - it stays');
+        self::assertSame([], array_values(array_filter($plan->allFindings(), static fn(array $f): bool => $f[1]->code === 'slice-state-kept')), 'an install into an existing slice keeps no state it could report');
+    }
+
     public function test_a_default_added_to_an_existing_slice_is_in_its_charset(): void
     {
         $t = self::existingSlice();

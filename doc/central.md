@@ -183,7 +183,7 @@ copy them by hand, and switch the domain only after checking the copy.
 
 In the preview each package slice may go into a **new slice** or an **existing slice** that the user
 may edit ("Into"). Nothing is pre-selected. Changing a choice disables the write button until
-"Preview again with these slices"; the write takes only the choice of the last preview.
+"Check the changes"; the write takes only the choices of the last check.
 
 What the existing slice has stays: its module and slice rows, profiles, settings, and the state a
 transfer would bring (I `slice-state-kept`). What it lacks is added:
@@ -194,7 +194,8 @@ transfer would bring (I `slice-state-kept`). What it lacks is added:
   existing one is reused and the package's references go to it (I `view-exists`, ...); an unmatched
   one is added (W `view-unmatched`, ...); a view of the same name that differs in type or main format
   stays as it is (W `view-differs`);
-- the package slice id maps to the existing slice, so relations, sets and alerts point there.
+- the package slice id maps to the existing slice, so relations, sets and alerts point there;
+- in an install, the settings fields it lacks get the source's or the typed values, else their defaults.
 
 E cases: no such slice or not editable, chosen twice (`target-slice`), a transfer into its own source
 slice (`into-source`), Reader Management into another kind or back (`slice-type-differs`). A
@@ -211,19 +212,32 @@ generators `txt`, `qte`, `now`, `never`, `dte`, `mul`, with the insert function 
 the value (a password) is skipped with I `setting-default-skipped`. A transfer brings the source's
 values instead; a slice going into an existing one keeps its own.
 
+A value typed in the preview travels as a setting value of the package (`Planner::choose()`), in place of
+the source's: it is linted (S), checked for the target charset and references like any other, and the
+source's value it replaces is no longer checked; the source's translations of it stay. The value must pass
+the field's `input_validate` where that judges the value alone (e-mail, URL, number, date, regexp, enum:
+E `setting-invalid`); a number field takes a whole number (E `setting-not-number`), a `boo` field offers
+Yes / No, a field whose insert function changes the value (a password) takes none (E
+`setting-insert-func`) - it is filled in the slice later. A slice going into an existing one takes no
+typed value for a field it has. The choices form posts UTF-8 whatever the admin charset. A published app
+carries the typed values only, nothing of its source (E `items-published`). A setting that may hold a
+password or a key (`SettingDefaults::secret()`, by its id) is shown masked, in the preview and in every
+finding; a superadmin's install copies it unless another value is typed.
+
 The preview and the report list "*N* settings to fill in" per slice (the settings fields left empty),
 linked to the slice's Setting page once it exists.
 
 ### Owner of the new modules
 
 An install gives every module it creates an owner (`module.owner`, and `slice.owner` of a slice) - the
-module settings cannot be saved without one. The write form offers this AA's owners (`slice_owner`);
+module settings cannot be saved without one. The preview offers this AA's owners (`slice_owner`);
 preselected is the owner most of the modules the user may edit have, else the first by name. Owners
-whose id lost its trailing zero bytes (an old repair) are not offered. Changing the owner needs no new
-preview, and "Preview again with these slices" keeps it. The id is checked on the server: E
+whose id lost its trailing zero bytes (an old repair) are not offered. Or a new owner (name and
+e-mail): the write creates it once, in the charset of the first module it creates - E `owner-invalid`
+unless both fit that charset and `slice_owner` (80 bytes), `slice_owner` must be InnoDB. Like any
+choice, a change waits for "Check the changes". The id is checked on the server: E
 `owner-unknown` for an id of no owner, and for no owner while this AA has some; the writer checks it
-again in its transaction. With no owner on this AA the form says so and the modules get none - once
-an owner exists, preview again; Central creates no owner for an install. A slice going into an
+again in its transaction. A slice going into an
 existing one keeps that slice's owner; with no new module no owner is asked for. A transfer brings the
 source's owner instead (found by name and e-mail, or created) and writes it to `slice.owner` too.
 New modules get `slice_url` = `''`, not NULL.

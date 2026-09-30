@@ -9,6 +9,7 @@ use AA\Central\Package\Model\Module;
 use AA\Central\Package\Model\Package;
 use AA\Optimize\Convert2innodb;
 use AA_Metabase;
+use AA_Value;
 use InvalidArgumentException;
 
 /** The import planner: a package that passed the Validator + a target => ImportPlan, with no write. Pure
@@ -48,8 +49,13 @@ final class Planner
     /** W: an Alerts module using a slice the preview left out - its readers, the view of a filter or an
      *  e-mail: it gets none; ref = the slice id, the view or e-mail number */
     public const READER_LEFT_OUT = 'reader-left-out';
-    /** E: a value typed in the preview for a settings field of numbers is no number; ref = the value */
+    /** E: a value typed in the preview for a settings field of numbers is no whole number; ref = the value */
     public const SETTING_NUMBER = 'setting-not-number';
+    /** E: a value typed in the preview for a settings field whose insert function changes it (a password
+     *  stores its hash) - it is filled in the slice after installing; ref = the insert function */
+    public const SETTING_INSERT = 'setting-insert-func';
+    /** E: a value typed in the preview for a settings field does not pass its input_validate; ref = the value */
+    public const SETTING_INVALID = 'setting-invalid';
     /** W: a constant group of a slice the preview left out stays, used by the rest - it gets no owner; ref = the slice id */
     public const GROUP_OWNER_LEFT_OUT = 'group-owner-left-out';
 
@@ -77,8 +83,8 @@ final class Planner
      *  @param string       $owner        slice_owner id for the modules an install creates (defaultOwner());
      *                                    E unless it is one of this AA's - '' only when it has none; the plan
      *                                    keeps '' when no module is created
-     *  @param ImportChoices|null $choices a new owner and typed settings values; the names and the slices
-     *                                    left out are choose()'s, before the validation
+     *  @param ImportChoices|null $choices a new owner; the names, the slices left out and the values typed
+     *                                    for the settings are choose()'s, before the validation
      *  @throws InvalidArgumentException the validation has an E - such a package is never planned; an owner in a transfer
      *  @throws RewriteFailed a regex of the length check failed */
     public function plan(Package $package, ValidationResult $validation, bool $transfer = false, array $readerLogins = [], array $into = [], bool $sameAa = false, string $owner = '', ?ImportChoices $choices = null): ImportPlan
@@ -153,44 +159,29 @@ final class Planner
         (new ImportLint($this->schema))->check($fixed, $this->findings, $whole);
         $this->readers($readerLogins);
         $new_owner = null;
-        if ($transfer || !array_diff_key($modules, $targets)) {
+        $created   = array_diff_key($modules, $targets);
+        if ($transfer || !$created) {
             $owner = '';            // no module gets it - the writer need not check it
         } elseif ($choices->newOwner !== null) {
             [$owner, $new_owner] = ['', $choices->newOwner];
-            if (($new_owner['name'] === '') || !filter_var($new_owner['email'], FILTER_VALIDATE_EMAIL)
-                || (mb_strlen($new_owner['name']) > ImportChoices::OWNER_MAX) || (mb_strlen($new_owner['email']) > ImportChoices::OWNER_MAX)) {
-                $this->add(self::TARGET, LintFinding::ERROR, self::OWNER_INVALID, $new_owner['email']);
-            }
+            $this->newOwner($new_owner, $charsets[array_key_first($created)] ?? 'utf-8');
         } else {
             $this->owner($owner);
         }
-        $defaults = $of_app = [];
-        if (!$transfer) {           // a transfer brings the values of the source
+        $defaults = [];
+        if (!$transfer) {           // a transfer writes the values it brings, the typed ones among them (choose())
+            $cleared = [];
             foreach ($fixed->modules as $m) {
-                // an existing slice: $m holds only the fields it lacks
-                if ($m->type !== Module::SLICE) {
-                    continue;
-                }
-                // the values of the source (a superadmin's export), else the defaults of the fields
-                $source         = array_intersect_key($m->transfer['setting-values'] ?? [], array_flip(array_map(static fn(array $r): string => ValueCodec::bytes($r['id'] ?? ''), $m->rows['field'] ?? [])));
-                $source         = array_map(static fn(array $values): array => array_map(static fn(array $v): array => ['value' => ValueCodec::bytes($v['value'] ?? ''), 'flag' => (int) ($v['flag'] ?? 0) & (FLAG_HTML | FLAG_TEXT_STORED)], $values), $source);
-                $source         = array_diff_key($source, array_flip($targets[$m->id]->settings ?? []));   // an existing slice keeps its values
-                $of_app[$m->id] = $source + SettingDefaults::of($m, $this->schema, $this->findings, [...($targets[$m->id]->settings ?? []), ...array_keys($source)]);
-                if ($values = $this->typed($m, $choices, $of_app[$m->id], $charsets[$m->id] ?? 'utf-8', $targets[$m->id]->settings ?? [])) {
+                // an existing slice: only the fields it lacks and has no value of (ExistingSlices::into())
+                if (($m->type === Module::SLICE) && ($values = SettingDefaults::values($m, $this->schema, $this->findings, $targets[$m->id]->settings ?? []))) {
                     $defaults[$m->id] = $values;
                 }
+                $cleared[] = ($m->transfer === []) ? $m : self::withTransfer($m, []);     // the writer takes the values from the defaults
             }
+            $fixed = new Package(...array_merge(get_object_vars($fixed), ['modules' => $cleared]));
         }
-        // an install: the values of the source went into the defaults - the writer takes those; a transfer
-        // writes the values of the source, those typed in the preview instead
-        $fixed = new Package(...array_merge(get_object_vars($fixed), ['modules' => array_map(fn(Module $m): Module => match (true) {
-            !$transfer                                              => ($m->transfer === []) ? $m : self::withTransfer($m, []),
-            ($m->type !== Module::SLICE) || isset($targets[$m->id]) => $m,
-            !($typed = $this->typed($m, $choices, [], $charsets[$m->id] ?? 'utf-8'))  => $m,
-            default                                                 => self::withTransfer($m, ['setting-values' => $typed + ($m->transfer['setting-values'] ?? [])] + $m->transfer),
-        }, $fixed->modules)]));
         $this->engines($transfer, (bool) $defaults, $new_owner !== null);
-        return new ImportPlan($fixed, $map, $charsets, $lang_files, $group_charsets, $settings, $fix_ups, $validation->findings, $this->findings->all(), $targets, $defaults, $owner, $new_owner, array_filter($of_app));
+        return new ImportPlan($fixed, $map, $charsets, $lang_files, $group_charsets, $settings, $fix_ups, $validation->findings, $this->findings->all(), $targets, $defaults, $owner, $new_owner);
     }
 
     /** The owner the preview offers first: the one most of the modules the user may edit have; with none
@@ -213,6 +204,25 @@ final class Planner
         return $best;
     }
 
+    /** E OWNER_INVALID unless the new owner has a name and a valid e-mail that RowWriter::owner() writes:
+     *  each in the charset of the first module it is created for and within its slice_owner column
+     *  @param array{name: string, email: string} $owner */
+    private function newOwner(array $owner, string $charset): void
+    {
+        $limits = $this->schema->tableLimits('slice_owner');
+        try {
+            foreach (['name', 'email'] as $column) {
+                RowStore::plain($owner[$column], $charset, self::TARGET, $limits[$column] ?? null);
+            }
+            $valid = ($owner['name'] !== '') && filter_var($owner['email'], FILTER_VALIDATE_EMAIL);
+        } catch (WriteError) {
+            $valid = false;
+        }
+        if (!$valid) {
+            $this->add(self::TARGET, LintFinding::ERROR, self::OWNER_INVALID, $owner['email']);
+        }
+    }
+
     /** E OWNER_UNKNOWN: the id comes from the request */
     private function owner(string $owner): void
     {
@@ -224,9 +234,9 @@ final class Planner
 
     /** E NO_TRANSACTION for the tables the import writes without a transaction - the whole list (a short
      *  one: the tables of AA), not cut to ReferenceLint::MAX_REF */
-    private function engines(bool $transfer, bool $settingValues, bool $newOwner = false): void
+    private function engines(bool $transfer, bool $settingValues, bool $newOwner): void
     {
-        $not = $this->target->nonTransactional(array_values(array_unique([...self::tables($this->schema, $transfer, $settingValues), ...($newOwner ? ['slice_owner'] : [])])));
+        $not = $this->target->nonTransactional(self::tables($this->schema, $transfer, $settingValues, $newOwner));
         if ($not) {
             $this->findings->add(self::TARGET, new LintFinding(LintFinding::ERROR, self::NO_TRANSACTION, self::noTransaction($not), 0));
         }
@@ -235,10 +245,12 @@ final class Planner
     /** The tables an import writes - what must be InnoDB: the planner's E and the writer's check
      *  (Importer::write()) ask ImportTarget::nonTransactional() about these
      *  @param bool $settingValues an install writes the defaults of settings fields (ImportPlan::$settingDefaults)
+     *  @param bool $newOwner      an install creates an owner (ImportPlan::$newOwner)
      *  @return list<string> */
-    public static function tables(Schema $schema, bool $transfer, bool $settingValues = false): array
+    public static function tables(Schema $schema, bool $transfer, bool $settingValues = false, bool $newOwner = false): array
     {
-        return array_values(array_unique([...array_values($schema->rowTables()), ...ObjectExport::TABLES, ...($transfer ? self::TRANSFER_TABLES : []), ...($settingValues ? ['content'] : [])]));
+        return array_values(array_unique([...array_values($schema->rowTables()), ...ObjectExport::TABLES, ...($transfer ? self::TRANSFER_TABLES : []),
+            ...($settingValues ? ['content'] : []), ...($newOwner ? ['slice_owner'] : [])]));
     }
 
     /** the host a site domain of a package names, lower case; null = none @param string $url a URL or a bare host */
@@ -342,10 +354,10 @@ final class Planner
     }
 
     /** The package as the preview chose it, to be validated and planned: new names of the modules, the
-     *  slices left out. What names a left-out slice structurally goes with it or is cut off: the site's
-     *  "uses" row, the reader slice of an Alerts module (W - it stays without readers), the owner of a
-     *  constant group the rest still uses (W), a group only it used (left out); a reference in a text stays
-     *  and the plan reports it (W).
+     *  slices left out, the values typed for the settings of the slices (typed()). What names a left-out
+     *  slice structurally goes with it or is cut off: the site's "uses" row, the reader slice of an Alerts
+     *  module (W - it stays without readers), the owner of a constant group the rest still uses (W), a group
+     *  only it used (left out); a reference in a text stays and the plan reports it (W).
      *  @return array{Package, list<array{string, LintFinding}>} */
     public function choose(Package $package, ImportChoices $choices): array
     {
@@ -359,7 +371,14 @@ final class Planner
             $package->modules,
             static fn(Module $m): bool => ($m->type === Module::SLICE) && $choices->skips($m->id),
         )));
-        if (!$skip && !$choices->names) {
+        $renames = [];
+        foreach ($package->modules as $m) {         // the form sends every name back - a rename is another one
+            $name = $choices->names[strtolower($m->id)] ?? null;
+            if (($name !== null) && ($name !== trim(ValueCodec::bytes($m->rows['module'][0]['name'] ?? '')))) {
+                $renames[$m->id] = $name;
+            }
+        }
+        if (!$skip && !$renames && !$choices->settings) {
             return $package;
         }
         $gone = ['view' => [], 'email' => []];      // what the Alerts may use of a slice left out
@@ -374,7 +393,7 @@ final class Planner
                 continue;
             }
             $rows = $m->rows;
-            if (($name = $choices->names[strtolower($m->id)] ?? null) !== null) {
+            if (($name = $renames[$m->id] ?? null) !== null) {
                 foreach (($m->type === Module::SLICE) ? ['module', 'slice'] : ['module'] as $element) {
                     if (isset($rows[$element][0])) {
                         $rows[$element][0]['name'] = $name;
@@ -399,9 +418,12 @@ final class Planner
                 }
             }
             $rows = array_filter($rows, static fn(array $r, string $element): bool => ($r !== []) || isset($m->rows[$element]), ARRAY_FILTER_USE_BOTH);
-            $modules[] = new Module($m->type, $m->id, $rows, $m->settings, $m->objects, $m->spotTree, $m->items, $m->doc, $m->transfer);
+            $modules[] = new Module($m->type, $m->id, $rows, $m->settings, $m->objects, $m->spotTree, $m->items, $m->doc, $this->typed($m, $choices->settings[strtolower($m->id)] ?? []));
         }
-        $kept   = new Package(...array_merge(get_object_vars($package), ['modules' => $modules]));
+        $kept = new Package(...array_merge(get_object_vars($package), ['modules' => $modules]));
+        if (!array_filter($package->constantGroups, static fn(ConstantGroup $g): bool => isset($skip[$g->owner]))) {
+            return $kept;
+        }
         $used   = (new GroupPlan($this->target, new LintTexts($this->schema)))->usedNames($kept);
         $groups = [];
         foreach ($package->constantGroups as $g) {
@@ -415,36 +437,56 @@ final class Planner
         return new Package(...array_merge(get_object_vars($kept), ['constantGroups' => $groups]));
     }
 
-    /** the values typed in the preview over the defaults of the app, each through the security lint (a
-     *  setting is a template like any other); only fields the slice writes and has no value of. E for a
-     *  value the slice cannot store: a character of no $charset, a text in a field of numbers
-     *  @param array<string, array<int, array{value: string, flag: int}>> $defaults @param list<string> $has
-     *  @return array<string, array<int, array{value: string, flag: int}>> */
-    private function typed(Module $m, ImportChoices $choices, array $defaults, string $charset, array $has = []): array
+    /** The transfer part of a slice with the values typed for its settings fields, over those of the source
+     *  (its translations stay): the Validator lints them and the plan checks their charset and references as
+     *  it does the source's. E for a value the field's input_validate refuses, no whole number in a number
+     *  field, a boo field other than 0 or 1, a field whose insert function changes the value (a password its
+     *  hash) - that one is filled in the slice later.
+     *  @param array<string, string> $typed field id => value (ImportChoices::$settings of the slice)
+     *  @return array<string, mixed> */
+    private function typed(Module $m, array $typed): array
     {
-        $lint = null;
+        if (!$typed || ($m->type !== Module::SLICE)) {
+            return $m->transfer;
+        }
+        $values = [];
         foreach ($m->rows['field'] ?? [] as $row) {
             $id = ValueCodec::bytes($row['id'] ?? '');
-            if ((($value = $choices->settings[strtolower($m->id)][$id] ?? null) === null) || in_array($id, $has, true)) {
+            if (!isset($typed[$id])) {
                 continue;
             }
-            $column = fn(string $c): string => ValueCodec::bytes(array_key_exists($c, $row) ? $row[$c] : $this->schema->columnDefault('field', $c));
-            $flag   = ((int) $column('html_default') > 0 ? FLAG_HTML : 0) | ((int) $column('text_stored') !== 0 ? FLAG_TEXT_STORED : 0);
+            $flag   = SettingDefaults::flag($row, $this->schema);
+            $insert = SettingDefaults::insert($row, $this->schema);
+            $number = ($insert !== 'boo') && !($flag & FLAG_TEXT_STORED);
+            $value  = ($number || ($insert === 'boo')) ? trim($typed[$id]) : $typed[$id];
             $at     = "$m->type[$m->id]/setting-values/{$id}[0]";
-            if (!($flag & FLAG_TEXT_STORED) && !is_numeric(trim($value))) {
-                $this->add($at, LintFinding::ERROR, self::SETTING_NUMBER, $value);
+            if (!SettingDefaults::plainInsert($insert)) {
+                $this->add($at, LintFinding::ERROR, self::SETTING_INSERT, $insert);
                 continue;
             }
-            if ((strcasecmp($charset, 'utf-8') !== 0) && (@iconv('UTF-8', $charset, $value) === false)) {
-                $this->add($at, LintFinding::ERROR, TargetCharset::CHARSET, $value);
+            if ($number && (($value = self::wholeNumber($value)) === null)) {
+                $this->add($at, LintFinding::ERROR, self::SETTING_NUMBER, $typed[$id]);
                 continue;
             }
-            $defaults[$id] = [0 => ['value' => ($flag & FLAG_TEXT_STORED) ? $value : trim($value), 'flag' => $flag]];
-            foreach (($lint ??= new SecurityLint($this->schema))->lint($value) as $finding) {
-                $this->findings->add($at, $finding);
+            // boo: the preview offers 0 and 1 - PHP would take "no" for true
+            if ((($insert === 'boo') && !in_array($value, ['0', '1'], true)) || (($value = SettingDefaults::checked($row, $this->schema, $value)) === null)) {
+                $this->add($at, LintFinding::ERROR, self::SETTING_INVALID, $typed[$id]);
+                continue;
             }
+            $translations = array_filter($m->transfer['setting-values'][$id] ?? [], static fn(int|string $key): bool => (int) $key >= AA_Value::MAX_INDEX, ARRAY_FILTER_USE_KEY);
+            $values[$id]  = [0 => ['value' => SettingDefaults::stored($insert, $value), 'flag' => $flag]] + $translations;
         }
-        return $defaults;
+        return $values ? ['setting-values' => $values + ($m->transfer['setting-values'] ?? [])] + $m->transfer : $m->transfer;
+    }
+
+    /** a whole number content.number (bigint) holds, without leading zeros; null = none */
+    private static function wholeNumber(string $value): ?string
+    {
+        if (!preg_match('/^([+-]?)0*(\d{1,19})\z/', $value, $match)) {
+            return null;
+        }
+        $int = filter_var($match[1] . $match[2], FILTER_VALIDATE_INT);
+        return ($int === false) ? null : (string) $int;
     }
 
     /** @param array<string, mixed> $transfer */

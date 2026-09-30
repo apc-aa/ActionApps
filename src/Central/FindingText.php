@@ -8,6 +8,7 @@ use AA\Central\Package\LintFinding;
 use AA\Central\Package\Model\Module;
 use AA\Central\Package\Model\Package;
 use AA\Central\Package\SecurityLint;
+use AA\Central\Package\SettingDefaults;
 use AA\Central\Package\ValueCodec;
 
 /** Findings of an app check in words of the admin: what is wrong and what to do about it, and where it is
@@ -78,11 +79,19 @@ final class FindingText
                 'todo' => _m('Run the optimization named in the value (AA > Optimize) and preview the app again.'),
                 'found' => _m('Tables')],
             $code === 'setting-not-number' => ['title' => _m('A setting takes a number'),
-                'what' => _m('The value you typed for this slice setting is no number, and the field stores numbers only.'),
+                'what' => _m('The value you typed for this slice setting is no whole number, and the field stores whole numbers only.'),
                 'todo' => _m('Type a number, or leave the field empty to keep the value of the app, and check the changes.'),
                 'found' => _m('Value')],
+            $code === 'setting-invalid' => ['title' => _m('A setting refuses the value'),
+                'what' => _m('The value you typed for this slice setting does not pass the check of its field (an e-mail, a URL, a number, a value of a list, yes or no, ...).'),
+                'todo' => _m('Type a value the field takes, or leave the field empty to keep the value of the app, and check the changes.'),
+                'found' => _m('Value')],
+            $code === 'setting-insert-func' => ['title' => _m('A setting to fill in later'),
+                'what' => _m('The field of this slice setting changes the value when it is saved (a password stores its hash, for example), so a value typed here would be stored wrong.'),
+                'todo' => _m('Leave the field empty and check the changes; after installing fill it in: in the slice open Setting in the menu of the item manager.'),
+                'found' => _m('Insert function')],
             $code === 'owner-invalid' => ['title' => _m('The new owner is not complete'),
-                'what' => _m('A new owner needs a name and a valid e-mail, each at most 80 characters.'),
+                'what' => _m('A new owner needs a name and a valid e-mail, each at most 80 bytes (a letter with an accent may take two) and in characters the new modules can store.'),
                 'todo' => _m('Fill in both in "Owner of the new modules" above and check the changes.'),
                 'found' => _m('E-mail')],
             $code === 'reader-left-out' => ['title' => _m('Alerts lose a part of a slice left out'),
@@ -95,7 +104,7 @@ final class FindingText
                 'found' => _m('Slice left out')],
             $code === 'owner-unknown' => ['title' => _m('No owner for the new modules'),
                 'what' => _m('The new slices and sites need an owner of this AA, and none was chosen.'),
-                'todo' => _m('Choose the owner in the form below and install again.')],
+                'todo' => _m('Choose the owner in "Owner of the new modules" above and check the changes.')],
             $code === 'login-charset' => ['title' => _m('Reader logins with broken characters'),
                 'what' => _m('Login names of some readers in the AA the app comes from are not valid text, so this AA cannot check whether they collide with its own logins.'),
                 'todo' => _m('Fix the login names of those readers in the AA the app comes from and transfer again.')],
@@ -336,6 +345,9 @@ final class FindingText
     public static function found(LintFinding $finding, string $path): string
     {
         $ref = $finding->ref;
+        if (($ref !== '') && preg_match('~/setting-values/([^/\[]+)~', $path, $setting) && SettingDefaults::secret($setting[1])) {
+            return '••••••';        // a setting that may hold a password: no finding shows a part of it
+        }
         if ($finding->code === 'perm-mode') {
             return [
                 '1' => _m('first Reader Management slice listed in Uses slices'),

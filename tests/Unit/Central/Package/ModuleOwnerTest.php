@@ -13,6 +13,7 @@ declare(strict_types=1);
 namespace Tests\Unit\Central\Package;
 
 use AA\Central\InstallRun;
+use AA\Central\Package\ImportChoices;
 use AA\Central\Package\ImportConfirmation;
 use AA\Central\Package\ImportPlan;
 use AA\Central\Package\Planner;
@@ -89,6 +90,37 @@ final class ModuleOwnerTest extends TestCase
         self::assertCount(1, $created);
         self::assertSame(['Delta', 'delta@ecn.cz'], [$created[0]['name'], $created[0]['email']]);
         self::assertSame(array_fill(0, 3, $created[0]['id']), array_values(array_column(TableDb::rows('module'), 'owner')));
+    }
+
+    /** the plan of an install creating the owner $name, of $package (the example) */
+    private function newOwner(string $name, ?\AA\Central\Package\Model\Package $package = null): ImportPlan
+    {
+        $package ??= self::example();
+        return (new Planner($this->target))->plan($package, (new Validator())->validate($package), false, [], [], false, '', new ImportChoices(newOwner: ['name' => $name, 'email' => 'delta@ecn.cz']));
+    }
+
+    public function test_a_new_owner_is_checked_as_the_writer_stores_it(): void
+    {
+        $this->owners();
+        $cp1250 = self::lang(self::example(), self::SITE, 'cz_site_lang.php');     // the site is the first module
+
+        self::assertSame([], self::found($this->newOwner(str_repeat('ř', 40)), Planner::OWNER_INVALID), '80 bytes fit');
+        self::assertSame(['E owner-invalid target delta@ecn.cz'], self::found($this->newOwner(str_repeat('ř', 41)), Planner::OWNER_INVALID), 'slice_owner.name holds 80 bytes, not 80 letters with accents');
+        self::assertSame(['E owner-invalid target delta@ecn.cz'], self::found($this->newOwner('Иван', $cp1250), Planner::OWNER_INVALID), 'windows-1250, the charset it is written in, has no Cyrillic');
+        self::assertSame([], self::found($this->newOwner('Příliš žluťoučký', $cp1250), Planner::OWNER_INVALID));
+    }
+
+    public function test_the_writer_needs_a_transaction_on_the_owners_it_creates(): void
+    {
+        $this->owners();
+        $plan = $this->newOwner('Delta');
+        $this->target->engines = ['slice_owner' => 'MyISAM'];
+
+        $e = $this->failure($plan);
+
+        self::assertSame(WriteError::ENGINE, $e->getPrevious()?->reason ?? null);
+        self::assertContains('slice_owner', Planner::tables(new \AA\Central\Package\Schema(), false, false, true));
+        self::assertNotContains('slice_owner', Planner::tables(new \AA\Central\Package\Schema(), false));
     }
 
     public function test_a_new_module_has_an_empty_slice_url_and_fileman_dir_not_null(): void

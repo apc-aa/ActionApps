@@ -92,7 +92,7 @@ final class FindingTextTest extends TestCase
             'setting-field', 'settings-dropped', 'slice-state-kept', 'slice-type-differs', 'source-count-unknown', 'spot-markup', 'spot-tree', 'spot-unused', 'state-file', 'subobject',
             'table-not-allowed', 'target-slice', 'too-long', 'transfer-only', 'unique-field', 'unknown-form', 'view-differs', 'view-exists', 'view-outside', 'view-unmatched',
             'export-failed', 'export-denied', 'invalid-bytes', 'unknown-column', 'unknown-element', 'unknown-attribute', 'unknown-class', 'newer-format', 'schema-location',
-            'spot-markup-stripped', 'no-spot-tree', 'owner-invalid', 'setting-not-number', 'reader-left-out', 'group-owner-left-out', 'debug', 'version', 'serverload', 'header', 'user', 'img'];
+            'spot-markup-stripped', 'no-spot-tree', 'owner-invalid', 'setting-not-number', 'setting-insert-func', 'setting-invalid', 'reader-left-out', 'group-owner-left-out', 'debug', 'version', 'serverload', 'header', 'user', 'img'];
         return array_combine($codes, array_map(static fn(string $c): array => [$c], $codes));
     }
 
@@ -125,5 +125,20 @@ final class FindingTextTest extends TestCase
         self::assertSame('not set', FindingText::found(new LintFinding(LintFinding::WARNING, 'perm-mode', '', 0), 'x/settings/perm_mode'));
         self::assertSame('{include:…', FindingText::found(new LintFinding(LintFinding::SECURITY, 'include', '{include:', 0), 'x'));
         self::assertSame('Slice "News" › Allow anonymous posting of items', (new FindingText(self::package()))->place($post));
+    }
+
+    public function test_a_setting_that_may_hold_a_password_shows_no_part_of_it(): void
+    {
+        $at = static fn(string $field): string => 'slice-module[' . self::SLICE . "]/setting-values/{$field}[0]";
+
+        self::assertSame('••••••', FindingText::found(new LintFinding(LintFinding::SECURITY, 'slice-pwd', 'slice_pwd=S3cr3t', 0), $at('_feed_key.......')));
+        self::assertSame('slice_pwd=x', FindingText::found(new LintFinding(LintFinding::SECURITY, 'slice-pwd', 'slice_pwd=x', 0), $at('_author.........')), 'no secret by its id');
+        foreach (['_api............', '_auth_url.......', '_smtp_heslo.....', '_client_secret..', '_Token..........', '_smtppass.......', '_pass2..........',
+            '_passphrase.....', '_smtppwd........', '_sshkey.........', '_oauth..........'] as $secret) {
+            self::assertSame('••••••', FindingText::found(new LintFinding(LintFinding::ERROR, 'charset', 'x', 0), $at($secret)), $secret);
+        }
+        foreach (['_capital........', '_email..........', '_author.........', '_keywords.......', '_passage........'] as $plain) {
+            self::assertSame('x', FindingText::found(new LintFinding(LintFinding::ERROR, 'charset', 'x', 0), $at($plain)), $plain);
+        }
     }
 }

@@ -51,13 +51,13 @@ final class AppExport implements AppSource
         return [$xml, $findings, time()];
     }
 
-    /** @throws InvalidArgumentException not a slice, a cursor of no id */
     /** an install of this user carries the values of the slices' settings (they may hold keys): a superadmin's, never the store's */
     public function carriesSettings(bool $transfer): bool
     {
         return !$transfer && !$this->store && $this->superadmin;
     }
 
+    /** @throws InvalidArgumentException not a slice, a cursor of no id */
     public function batch(string $slice, string $after, bool $allBins, int $started): array
     {
         return array_slice($this->batchOf($slice, $after, $allBins, $started), 0, 2);

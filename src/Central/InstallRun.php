@@ -227,6 +227,7 @@ final class InstallRun extends AA_Object
         if (!$slices) {
             $this->token = '';
         }
+        $this->choices     = '';          // written: the values typed (keys among them) are in the slices now
         $this->id_map      = $map->toJson();
         $this->fingerprint = hash('sha256', $definitions);
         $this->slices      = json_encode($slices, JSON_THROW_ON_ERROR);
@@ -235,7 +236,7 @@ final class InstallRun extends AA_Object
         $this->written     = json_encode((object) array_fill_keys($slices, 0), JSON_THROW_ON_ERROR);
         $this->warnings    = '{}';
         $this->moved       = (string) time();
-        $this->update(['state', 'moved', 'id_map', 'fingerprint', 'slices', 'slice', 'cursor', 'written', 'warnings', 'token']);
+        $this->update(['state', 'moved', 'id_map', 'fingerprint', 'slices', 'slice', 'cursor', 'written', 'warnings', 'token', 'choices']);
     }
 
     /** The preview of a run opened at the login to another AA: the definitions package it showed, which

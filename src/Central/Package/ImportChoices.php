@@ -13,8 +13,8 @@ use JsonException;
  *  All strings are request text - the planner checks them as package text (charset, length, lint). */
 final readonly class ImportChoices
 {
-    /** longest name of a new owner or its e-mail - slice_owner columns, char(80) */
-    public const OWNER_MAX = 80;
+    /** a module id of the choices: a long id, lower case */
+    private const ID_RE = '/^[0-9a-f]{32}\z/';
 
     /**
      * @param array<string, string>                $names    source module id => its new name (trimmed, not empty)
@@ -32,16 +32,16 @@ final readonly class ImportChoices
         public array $settings = [],
     ) {
         foreach ([...array_keys($names), ...$skip, ...array_keys($settings)] as $id) {
-            if (!preg_match('/^[0-9a-f]{32}\z/', (string) $id)) {
+            if (!preg_match(self::ID_RE, (string) $id)) {
                 throw new InvalidArgumentException('A module of the choices is a long id, lower case');
             }
         }
-        if (($owner !== '') && !preg_match('/^[0-9a-f]{32}\z/', $owner)) {
+        if (($owner !== '') && !preg_match(self::ID_RE, $owner)) {
             throw new InvalidArgumentException('The owner is a long id, lower case');
         }
         foreach ($settings as $fields) {
             foreach (array_keys($fields) as $field) {
-                if (!preg_match('/^_[\w.]{15}\z/', (string) $field)) {
+                if (!preg_match(Validator::SETTING_FIELD_RE, (string) $field)) {
                     throw new InvalidArgumentException('A settings field id starts with _ and has 16 characters');
                 }
             }
@@ -49,14 +49,16 @@ final readonly class ImportChoices
     }
 
     /** The choices a preview form sends: name[<module>], skip[<slice>], owner, new_owner, new_owner_email,
-     *  setting[<slice>][<field>]; what is of no shape left out - the planner reports what is wrong
+     *  setting[<slice>][<field>]; what is of no shape left out, text that is no UTF-8 too (no browser sends
+     *  it) - the planner reports what is wrong. The form sends every name back: choose() renames only by another.
      *  @param array<mixed, mixed> $post */
     public static function fromPost(array $post): self
     {
-        $long  = static fn(mixed $id): bool => is_string($id) && (bool) preg_match('/^[0-9a-f]{32}\z/i', $id);
+        $long  = static fn(mixed $id): bool => is_string($id) && (bool) preg_match(self::ID_RE, strtolower($id));
+        $text  = static fn(mixed $v): bool => is_string($v) && mb_check_encoding($v, 'UTF-8');
         $names = [];
         foreach ((array) ($post['name'] ?? []) as $id => $name) {
-            if ($long($id) && is_string($name) && (($name = trim($name)) !== '')) {
+            if ($long($id) && $text($name) && (($name = trim($name)) !== '')) {
                 $names[strtolower((string) $id)] = $name;
             }
         }
@@ -69,7 +71,7 @@ final readonly class ImportChoices
         $settings = [];
         foreach ((array) ($post['setting'] ?? []) as $id => $fields) {
             foreach (is_array($fields) && $long($id) ? $fields : [] as $field => $value) {
-                if (is_string($value) && (trim($value) !== '') && preg_match('/^_[\w.]{15}\z/', (string) $field)) {
+                if ($text($value) && (trim($value) !== '') && preg_match(Validator::SETTING_FIELD_RE, (string) $field)) {
                     $settings[strtolower((string) $id)][(string) $field] = $value;
                 }
             }
@@ -77,9 +79,22 @@ final readonly class ImportChoices
         $owner     = is_string($post['owner'] ?? null) && $long($post['owner']) ? strtolower($post['owner']) : '';
         $new_name  = is_string($post['new_owner'] ?? null) ? trim($post['new_owner']) : '';
         $new_email = is_string($post['new_owner_email'] ?? null) ? trim($post['new_owner_email']) : '';
-        $new_owner = ($new_name === '') ? null : ['name' => $new_name, 'email' => $new_email];      // the planner says what is too long
+        // the planner says what is too long or no text - a new owner asked for is never the list's instead
+        $new_owner = ($new_name === '') ? null : ['name' => $text($new_name) ? $new_name : '', 'email' => $text($new_email) ? $new_email : ''];
         sort($skip);
         return new self($names, array_values(array_unique($skip)), $new_owner ? '' : $owner, $new_owner, $settings);
+    }
+
+    /** the choices without the values typed for some settings fields @param array<string, list<string>> $fields source slice id => field ids */
+    public function withoutSettings(array $fields): self
+    {
+        $settings = $this->settings;
+        foreach ($fields as $slice => $ids) {
+            if (isset($settings[$slice])) {
+                $settings[$slice] = array_diff_key($settings[$slice], array_flip($ids));
+            }
+        }
+        return new self($this->names, $this->skip, $this->owner, $this->newOwner, array_filter($settings));
     }
 
     /** the choices as the run keeps them - key order fixed, so equal choices give an equal text */

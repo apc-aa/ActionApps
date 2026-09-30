@@ -64,7 +64,7 @@ final class Validator
      *  outside a batch - items travel only in the batches of a transfer */
     public const ITEMS = 'items';
     /** E: items, the item flag, a batch or the state of the installation in a published package - a transfer
-     *  is never published */
+     *  is never published; the values typed in the preview excepted (Planner::choose() puts them there) */
     public const ITEMS_PUBLISHED = Collector::ITEMS_PUBLISHED;
     /** E: an item value of a pseudo field or of source state (Collector::ITEM_LEFT_OUT), or of the source's
      *  users (Collector::ITEM_TRANSFER_ONLY) in an install */
@@ -74,7 +74,7 @@ final class Validator
     /** E: a setting value of a field the slice of the package does not have; ref = the field id */
     public const SETTING_FIELD = 'setting-field';
     /** a settings field id: `_`, then the rest of the XSD fieldId */
-    private const SETTING_FIELD_RE = '/^_[A-Za-z0-9_.]{15}\z/';
+    public const SETTING_FIELD_RE = '/^_[A-Za-z0-9_.]{15}\z/';
     /** W: an item without a status_code of a bin (1 active, 2 holding, 3 trash) - ItemWriter writes it as it
      *  is (a missing one: the column default 0), and no bin shows it; ref = the value ('' = none) */
     public const ITEM_STATUS = 'item-status';
@@ -132,14 +132,23 @@ final class Validator
     }
 
     /** @param bool $transfer the importer's mode is a transfer: the package may carry the state of the
-     *                        source installation (Module::$transfer) */
-    public function validate(Package $package, bool $transfer = false): ValidationResult
+     *                        source installation (Module::$transfer)
+     *  @param array<string, list<string>> $typed source slice id => the settings fields typed in the preview -
+     *                        the setting values a published package may carry */
+    public function validate(Package $package, bool $transfer = false, array $typed = []): ValidationResult
     {
         $this->findings = new FindingList();
         $this->seen     = $this->types = [];
         $this->has      = ['view' => [], 'email' => [], 'group' => [], 'filter' => []];
         $items          = $package->withItems || array_filter($package->modules, static fn(Module $m): bool => $m->items !== []);
-        if ($package->published && ($items || ($package->batch !== null) || array_filter($package->modules, static fn(Module $m): bool => $m->transfer !== []))) {
+        // a published package may hold the values typed in the preview only - no translation kept beside one
+        $state = static function (Module $m) use ($typed): bool {
+            $values = $m->transfer['setting-values'] ?? [];
+            $own    = array_intersect_key($values, array_flip($typed[strtolower($m->id)] ?? []));
+            return (array_diff_key($m->transfer, ['setting-values' => true]) !== []) || (count($own) < count($values))
+                || array_filter($own, static fn(array $v): bool => array_keys($v) !== [0]);
+        };
+        if ($package->published && ($items || ($package->batch !== null) || array_filter($package->modules, $state))) {
             $this->add('meta/publish', LintFinding::ERROR, self::ITEMS_PUBLISHED, 'all');
         }
         if (!$transfer && ($package->batch !== null)) {
